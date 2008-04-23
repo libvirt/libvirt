@@ -1,20 +1,127 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Reporting bugs and getting help</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Reporting bugs and getting help</h1><p>There is a mailing-list <a href="mailto:libvir-list@redhat.com">libvir-list@redhat.com</a> for libvirt,
-with an  <a href="https://www.redhat.com/archives/libvir-list/">on-line
-archive</a>. Please subscribe to this list before posting by visiting the <a href="https://www.redhat.com/mailman/listinfo/libvir-list">associated Web</a>
-page and follow the instructions. Patches with explanations and provided as
-attachments are really appreciated and will be discussed on the mailing list.
-If possible generate the patches by using cvs diff -u in a CVS checkout.</p><p>We use Red Hat Bugzilla to track bugs and new feature requests to libvirt.
-If you want to report a bug or ask for a feature, please check <a href="http://bugzilla.redhat.com/bugzilla/buglist.cgi?component=libvirt&amp;component=libvirt-devel&amp;component=libvirt-python&amp;bug_status=ASSIGNED&amp;bug_status=INVESTIGATE&amp;bug_status=NEW&amp;bug_status=REOPENED&amp;bug_status=VERIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr&amp;long_desc=&amp;Search=Search">the existing open bugs</a>, then if yours isn't a duplicate of
-an existing bug:</p><ul><li>If you are using official binaries from Fedora: <a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Fedora&amp;component=libvirt">log a new bug for Fedora</a></li>
-<li>If you are using official binaries from Red Hat Enterprise Linux 5: <a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Fedora&amp;component=Red%20Hat%20Enterprise%20Linux%205">log a new bug for RHEL</a></li>
-<li>Otherwise: <a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Fedora&amp;component=Virtualization%20Tools">log a new bug here</a></li>
-</ul><p> Don't forget to attach any patch or extra data that you may have available. It is always a good idea to also
-to post to the <a href="mailto:libvir-list@redhat.com">mailing-list</a>
-too, so that everybody working on the project can see it, thanks !</p><p>Some of the libvirt developers may be found on IRC on the OFTC
-network. Use the settings:</p><ul><li>server: irc.oftc.net</li>
-  <li>port: 6667 (the usual IRC port)</li>
-  <li>channel: #virt</li>
-</ul><p> But there is no guarantee that someone will be watching or able to reply,
-use the mailing-list if you don't get an answer there.</p></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvirt architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="format.html">XML Format</a></li><li><a href="python.html">Bindings for other languages</a></li><li><a href="errors.html">Handling of errors</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a href="windows.html">Windows support</a></li><li><a href="remote.html">Remote support</a></li><li><a href="auth.html">Access control</a></li><li><a href="uri.html">Connection URIs</a></li><li><a href="hvsupport.html">Hypervisor support</a></li><li><a href="storage.html">Storage Management</a></li><li><a href="html/index.html">API Menu</a></li><li><a href="examples/index.html">C code examples</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li><li><a href="http://virt-manager.et.redhat.com/">virt-manager</a></li><li><a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></li><li><a href="http://libvirt.org/ocaml/">OCaml bindings</a></li><li><a href="http://libvirt.org/ruby/">Ruby bindings</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul><p class="credits">Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!--
+        This file is autogenerated from bugs.html.in
+        Do not edit this file. Changes will be lost.
+      -->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <link rel="stylesheet" type="text/css" href="main.css" />
+    <link rel="SHORTCUT ICON" href="32favicon.png" />
+    <title>libvirt: Bug reporting</title>
+    <meta name="description" content="libvirt, virtualization, virtualization API" />
+  </head>
+  <body>
+    <div id="header">
+      <div id="headerLogo"></div>
+      <div id="headerSearch">
+        <form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
+          <input id="query" name="query" type="text" size="12" value="" />
+          <input id="submit" name="submit" type="submit" value="Search" />
+        </form>
+      </div>
+    </div>
+    <div id="body">
+      <div id="content">
+        <h1>Bug reporting</h1>
+        <p>
+      The <a href="http://bugzilla.redhat.com">Red Hat Bugzilla Server</a>
+      should be used to report bugs and request features against libvirt.
+      Before submitting a ticket, check the existing tickets to see if
+      the bug/feature is already tracked.
+    </p>
+        <h2>General libvirt bug reports</h2>
+        <p>
+      If you are using official libvirt binaries from a Linux distribution
+      check below for distribution specific bug reporting policies first.
+      For general libvirt bug reports, from self-built releases, CVS snapshots
+      and any other non-distribution supported builds, enter tickets under
+      the <code>Virtualization Tools</code> product and the <code>libvirt</code>
+      component.
+    </p>
+        <ul><li><a href="">View libvirt tickets</a></li><li><a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Virtualization%20Tools&amp;component=libvirt">New libvirt ticket</a></li></ul>
+        <h2>Linux Distribution specific bug reports</h2>
+        <ul><li>
+	If you are using official binaries from a <strong>Fedora distribution</strong>, enter
+	tickets against the <code>Fedora</code> product and the <code>libvirt</code>
+	component.
+	<ul><li><a href="">View Fedora libvirt tickets</a></li><li><a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Fedora&amp;component=libvirt">New Fedora libvirt ticket</a></li></ul></li><li>
+	If you are using official binaries from <strong>Red Hat Enterprise Linux distribution</strong>,
+	tickets against the <code>Red Hat Enterprise Linux 5</code> product and
+	the <code>libvirt</code> component.
+	<ul><li><a href="">View Red Hat Enterprise Linux libvirt tickets</a></li><li><a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Red%20Hat%20Enterprise%20Linux%205&amp;component=libvirt">New Red Hat Enterprise Linux libvirt ticket</a></li></ul></li><li>
+	If you are using official binaries from another Linux distribution first
+	follow their own bug reporting guidelines.
+      </li></ul>
+        <h2>How to file high quality bug reports</h2>
+        <p>
+      To increase the likelihood of your bug report being addressed it is
+      important to provide as much information as possible. When filing
+      libvirt bugs use this checklist to see if you are providing enough
+      information:
+    </p>
+        <ul><li>The version number of the libvirt build, or date of the CVS
+	checkout</li><li>The hardware architecture being used</li><li>The name of the hypervisor (Xen, QEMU, KVM)</li><li>The XML config of the guest domain if relevant</li><li>For Xen hypervisor, the XenD logfile from /var/log/xen</li><li>For QEMU/KVM, the domain logfile from /var/log/libvirt/qemu</li></ul>
+        <p>
+      If requesting a new feature attach any available patch to the ticket
+      and also email the patch to the libvirt mailing list for discussion
+    </p>
+      </div>
+      <div id="menu">
+        <ul class="l0"><li>
+            <a title="Front page of the libvirt website" class="inactive" href="index.html">Home</a>
+          </li><li>
+            <a title="Details of new features and bugs fixed in each release" class="inactive" href="news.html">News</a>
+          </li><li>
+            <a title="Get the latest source releases, binary builds and get access to the source repository" class="inactive" href="downloads.html">Downloads</a>
+          </li><li>
+            <a title="Information for users, administrators and developers" class="inactive" href="docs.html">Documentation</a>
+          </li><li>
+            <a title="User contributed content" class="inactive" href="http://wiki.libvirt.org">Wiki</a>
+          </li><li>
+            <a title="Frequently asked questions" class="inactive" href="FAQ.html">FAQ</a>
+          </li><li>
+            <span class="active">Bug reports</span>
+          </li><li>
+            <a title="How to contact the developers via email and IRC" class="inactive" href="contact.html">Contact</a>
+          </li><li>
+            <a title="Miscellaneous links of interest related to libvirt" class="inactive" href="relatedlinks.html">Related Links</a>
+          </li><li>
+            <a title="Overview of all content on the website" class="inactive" href="sitemap.html">Sitemap</a>
+          </li></ul>
+      </div>
+    </div>
+    <div id="footer">
+      <div id="projects">
+        <dl id="p1"><dt>
+            <a href="http://augeas.net/">Augeas</a>
+          </dt><dd>
+            <span>A configuration editing tool and API</span>
+          </dd><dt>
+            <a href="http://libvirt.org/">libvirt</a>
+          </dt><dd>
+            <span>The open source virtualization API</span>
+          </dd></dl>
+        <dl id="p2"><dt>
+            <a href="http://cobbler.et.redhat.com/">Cobbler</a>
+          </dt><dd>
+            <span>OS provisioning and profile management</span>
+          </dd><dt>
+            <a href="http://ovirt.org/">oVirt</a>
+          </dt><dd>
+            <span>Virtualization management across the data center</span>
+          </dd></dl>
+        <dl id="p3"><dt>
+            <a href="http://freeipa.org/">FreeIPA</a>
+          </dt><dd>
+            <span>Identity, policy and audit management</span>
+          </dd><dt>
+            <a href="http://virt-manager.org/">Virtual Machine Manager</a>
+          </dt><dd>
+            <span>Virtualization management from the desktop</span>
+          </dd></dl>
+      </div>
+    </div>
+  </body>
+</html>

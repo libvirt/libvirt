@@ -1,0 +1,224 @@
+<html>
+  <body>
+    <h1>Sitemap</h1>
+
+    <div id="sitemap">
+    <ul>
+      <li>
+        <a href="index.html">Home</a>
+        <span>Front page of the libvirt website</span>
+      </li>
+      <li>
+        <a href="news.html">News</a>
+        <span>Details of new features and bugs fixed in each release</span>
+        <ul>
+          <li>
+            <a href="ChangeLog.html">Changelog</a>
+            <span>Latest commit messages from the source repository </span>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="downloads.html">Downloads</a>
+        <span>Get the latest source releases, binary builds and get access to the source repository</span>
+      </li>
+      <li>
+        <a href="docs.html">Documentation</a>
+        <span>Information for users, administrators and developers</span>
+        <ul>
+          <li>
+            <a href="deployment.html">Deployment</a>
+            <span>Information about deploying and using libvirt</span>
+            <ul>
+              <li>
+                <a href="uri.html">URI format</a>
+                <span>The URI formats used for connecting to libvirt</span>
+              </li>
+              <li>
+                <a href="remote.html">Remote access</a>
+                <span>Enable remote access over TCP</span>
+              </li>
+              <li>
+                <a href="auth.html">Authentication</a>
+                <span>Configure authentication for the libvirt daemon</span>
+              </li>
+              <li>
+                <a href="windows.html">Windows port</a>
+                <span>Access the libvirt daemon from a native Windows client</span>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="intro.html">Architecture</a>
+            <span>Overview of the logical subsystems in the libvirt API</span>
+            <ul>
+              <li>
+                <a href="archdomain.html">Domains</a>
+                <span>Managing virtual machines</span>
+              </li>
+              <li>
+                <a href="archnetwork.html">Network</a>
+                <span>Providing isolated networks and NAT based network connectivity</span>
+              </li>
+              <li>
+                <a href="archstorage.html">Storage</a>
+                <span>Managing storage pools and volumes</span>
+              </li>
+              <li>
+                <a href="archnode.html">Node Devices</a>
+                <span>Enumerating host node devices</span>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="format.html">XML format</a>
+            <span>Description of the XML formats used in libvirt</span>
+            <ul>
+              <li>
+                <a href="formatdomain.html">Domains</a>
+                <span>The domain XML format</span>
+              </li>
+              <li>
+                <a href="formatnetwork.html">Networks</a>
+                <span>The virtual network XML format</span>
+              </li>
+              <li>
+                <a href="formatstorage.html">Storage</a>
+                <span>The storage pool and volume XML format</span>
+              </li>
+              <li>
+                <a href="formatcaps.html">Capabilities</a>
+                <span>The driver capabilities XML format</span>
+              </li>
+              <li>
+                <a href="formatnode.html">Node Devices</a>
+                <span>The host device XML format</span>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="drivers.html">Drivers</a>
+            <span>Hypervisor specific driver information</span>
+            <ul>
+              <li>
+                <a href="drvxen.html">Xen</a>
+                <span>Driver the Xen hypervisor</span>
+              </li>
+              <li>
+                <a href="drvqemu.html">QEMU / KVM</a>
+                <span>Driver for QEMU, KQEMU, KVM and Xenner</span>
+              </li>
+              <li>
+                <a href="drvlxc.html">Linux Container</a>
+                <span>Driver for the Linux native container API</span>
+              </li>
+              <li>
+                <a href="drvtest.html">Test</a>
+                <span>Psuedo-driver simulating APIs in memory for test suites</span>
+              </li>
+              <li>
+                <a href="drvremote.html">Remote</a>
+                <span>Driver providing secure remote to the libvirt APIs</span>
+              </li>
+              <li>
+                <a href="drvopenvz.html">OpenVZ</a>
+                <span>Driver for the OpenVZ container technology</span>
+              </li>
+              <li>
+                <a href="storage.html">Storage</a>
+                <span>Driver for the storage management APIs</span>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="html/index.html">API reference</a>
+            <span>Reference manual for the C public API</span>
+            <!-- This is the desired new style API breakdown
+            <ul>
+              <li>
+                <a href="apiconn.html">Connection</a>
+                <span>API reference for virConnectPtr objects</span>
+              </li>
+              <li>
+                <a href="apidomain.html">Domain</a>
+                <span>API reference for virDomainPtr objects</span>
+              </li>
+              <li>
+                <a href="apierror.html">Error</a>
+                <span>API reference for virErrorPtr objects</span>
+              </li>
+              <li>
+                <a href="apinetwork.html">Network</a>
+                <span>API reference for virNetworkPtr objects</span>
+              </li>
+              <li>
+                <a href="apistorage.html">Storage</a>
+                <span>API reference for virStoragePoolptr and virStorageVolPtr objects</span>
+              </li>
+              <li>
+                <a href="apinode.html">Node Device</a>
+                <span>API reference for virNodeDevicePtr objects</span>
+              </li>
+            </ul>
+            -->
+            <ul>
+              <li>
+                <a href="html/libvirt-libvirt.html">libvirt</a>
+                <span>core interfaces for the libvirt library</span>
+              </li>
+              <li>
+                <a href="html/libvirt-virterror.html">virterror</a>
+                <span>error handling interfaces for the libvirt library</span>
+              </li>
+	      <li>
+		<a href="hvsupport.html">Driver support</a>
+		<span>matrix of API support per hypervisor per release</span>
+	      </li>
+            </ul>
+          </li>
+          <li>
+            <a href="bindings.html">Language bindings</a>
+            <span>Bindings of the libvirt API for other languages</span>
+            <ul>
+              <li>
+                <a href="python.html">Python</a>
+                <span>overview of the python API bindings</span>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="http://wiki.libvirt.org">Wiki</a>
+        <span>User contributed content</span>
+      </li>
+      <li>
+        <a href="FAQ.html">FAQ</a>
+        <span>Frequently asked questions</span>
+      </li>
+      <li>
+        <a href="bugs.html">Bug reports</a>
+        <span>How and where to report bugs and request features</span>
+      </li>
+      <li>
+        <a href="contact.html">Contact</a>
+        <span>How to contact the developers via email and IRC</span>
+      </li>
+      <li>
+        <a href="relatedlinks.html">Related Links</a>
+        <span>Miscellaneous links of interest related to libvirt</span>
+        <ul>
+          <li>
+            <a href="apps.html">Applications</a>
+            <span>Overview of applications using the libvirt APIs</span>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="sitemap.html">Sitemap</a>
+        <span>Overview of all content on the website</span>
+      </li>
+    </ul>
+    </div>
+  </body>
+</html>

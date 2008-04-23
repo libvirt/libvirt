@@ -1,0 +1,255 @@
+<html>
+  <body>
+    <h1>Domain XML format</h1>
+
+    <p>This section describes the XML format used to represent domains, there are
+variations on the format based on the kind of domains run and the options
+used to launch them:</p>
+
+    <h3 id="Normal"><a name="Normal1" id="Normal1">Normal paravirtualized Xen
+guests</a>:</h3>
+
+    <p>The root element must be called <code>domain</code> with no namespace, the
+<code>type</code> attribute indicates the kind of hypervisor used, 'xen' is
+the default value. The <code>id</code> attribute gives the domain id at
+runtime (not however that this may change, for example if the domain is saved
+to disk and restored). The domain has a few children whose order is not
+significant:</p>
+    <ul>
+      <li>name: the domain name, preferably ASCII based</li>
+      <li>memory: the maximum memory allocated to the domain in kilobytes</li>
+      <li>vcpu: the number of virtual cpu configured for the domain</li>
+      <li>os: a block describing the Operating System, its content will be
+    dependent on the OS type
+    <ul><li>type: indicate the OS type, always linux at this point</li><li>kernel: path to the kernel on the Domain 0 filesystem</li><li>initrd: an optional path for the init ramdisk on the Domain 0
+        filesystem</li><li>cmdline: optional command line to the kernel</li><li>root: the root filesystem from the guest viewpoint, it may be
+        passed as part of the cmdline content too</li></ul></li>
+      <li>devices: a list of <code>disk</code>, <code>interface</code> and
+    <code>console</code> descriptions in no special order</li>
+    </ul>
+    <p>The format of the devices and their type may grow over time, but the
+following should be sufficient for basic use:</p>
+    <p>A <code>disk</code> device indicates a block device, it can have two
+values for the type attribute either 'file' or 'block' corresponding to the 2
+options available at the Xen layer. It has two mandatory children, and one
+optional one in no specific order:</p>
+    <ul>
+      <li>source with a file attribute containing the path in Domain 0 to the
+    file or a dev attribute if using a block device, containing the device
+    name ('hda5' or '/dev/hda5')</li>
+      <li>target indicates in a dev attribute the device where it is mapped in
+    the guest</li>
+      <li>readonly an optional empty element indicating the device is
+  read-only</li>
+      <li>shareable an optional empty element indicating the device
+  can be used read/write with other domains</li>
+    </ul>
+    <p>An <code>interface</code> element describes a network device mapped on the
+guest, it also has a type whose value is currently 'bridge', it also have a
+number of children in no specific order:</p>
+    <ul>
+      <li>source: indicating the bridge name</li>
+      <li>mac: the optional mac address provided in the address attribute</li>
+      <li>ip: the optional IP address provided in the address attribute</li>
+      <li>script: the script used to bridge the interface in the Domain 0</li>
+      <li>target: and optional target indicating the device name.</li>
+    </ul>
+    <p>A <code>console</code> element describes a serial console connection to
+the guest. It has no children, and a single attribute <code>tty</code> which
+provides the path to the Pseudo TTY on which the guest console can be
+accessed</p>
+    <p>Life cycle actions for the domain can also be expressed in the XML format,
+they drive what should be happening if the domain crashes, is rebooted or is
+poweroff. There is various actions possible when this happen:</p>
+    <ul>
+      <li>destroy: The domain is cleaned up (that's the default normal processing
+    in Xen)</li>
+      <li>restart: A new domain is started in place of the old one with the same
+    configuration parameters</li>
+      <li>preserve: The domain will remain in memory until it is destroyed
+    manually, it won't be running but allows for post-mortem debugging</li>
+      <li>rename-restart: a variant of the previous one but where the old domain
+    is renamed before being saved to allow a restart</li>
+    </ul>
+    <p>The following could be used for a Xen production system:</p>
+    <pre>&lt;domain&gt;
+  ...
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_crash&gt;rename-restart&lt;/on_crash&gt;
+  ...
+&lt;/domain&gt;</pre>
+    <p>While the format may be extended in various ways as support for more
+hypervisor types and features are added, it is expected that this core subset
+will remain functional in spite of the evolution of the library.</p>
+
+    <h3 id="Fully"><a name="Fully1" id="Fully1">Fully virtualized guests</a></h3>
+    <p>There is a few things to notice specifically for HVM domains:</p>
+    <ul>
+      <li>the optional <code>&lt;features&gt;</code> block is used to enable
+    certain guest CPU / system features. For HVM guests the following
+    features are defined:
+    <ul><li><code>pae</code> - enable PAE memory addressing</li><li><code>apic</code> - enable IO APIC</li><li><code>acpi</code> - enable ACPI bios</li></ul></li>
+      <li>the optional <code>&lt;clock&gt;</code> element is used to specify
+     whether the emulated BIOS clock in the guest is synced to either
+     <code>localtime</code> or <code>utc</code>. In general Windows will
+     want <code>localtime</code> while all other operating systems will
+     want <code>utc</code>. The default is thus <code>utc</code></li>
+      <li>the <code>&lt;os&gt;</code> block description is very different, first
+    it indicates that the type is 'hvm' for hardware virtualization, then
+    instead of a kernel, boot and command line arguments, it points to an os
+    boot loader which will extract the boot information from the boot device
+    specified in a separate boot element. The <code>dev</code> attribute on
+    the <code>boot</code> tag can be one of:
+    <ul><li><code>fd</code> - boot from first floppy device</li><li><code>hd</code> - boot from first harddisk device</li><li><code>cdrom</code> - boot from first cdrom device</li></ul></li>
+      <li>the <code>&lt;devices&gt;</code> section includes an emulator entry
+    pointing to an additional program in charge of emulating the devices</li>
+      <li>the disk entry indicates in the dev target section that the emulation
+    for the drive is the first IDE disk device hda. The list of device names
+    supported is dependent on the Hypervisor, but for Xen it can be any IDE
+    device <code>hda</code>-<code>hdd</code>, or a floppy device
+    <code>fda</code>, <code>fdb</code>. The <code>&lt;disk&gt;</code> element
+    also supports a 'device' attribute to indicate what kinda of hardware to
+    emulate. The following values are supported:
+    <ul><li><code>floppy</code> - a floppy disk controller</li><li><code>disk</code> - a generic hard drive (the default it
+      omitted)</li><li><code>cdrom</code> - a CDROM device</li></ul>
+    For Xen 3.0.2 and earlier a CDROM device can only be emulated on the
+    <code>hdc</code> channel, while for 3.0.3 and later, it can be emulated
+    on any IDE channel.</li>
+      <li>the <code>&lt;devices&gt;</code> section also include at least one
+    entry for the graphic device used to render the os. Currently there is
+    just 2 types possible 'vnc' or 'sdl'. If the type is 'vnc', then an
+    additional <code>port</code> attribute will be present indicating the TCP
+    port on which the VNC server is accepting client connections.</li>
+    </ul>
+    <p>It is likely that the HVM description gets additional optional elements
+and attributes as the support for fully virtualized domain expands,
+especially for the variety of devices emulated and the graphic support
+options offered.</p>
+
+    <h3>
+      <a name="Net1" id="Net1">Networking interface options</a>
+    </h3>
+    <p>The networking support in the QEmu and KVM case is more flexible, and
+support a variety of options:</p>
+    <ol>
+      <li>Userspace SLIRP stack
+    <p>Provides a virtual LAN with NAT to the outside world. The virtual
+    network has DHCP &amp; DNS services and will give the guest VM addresses
+    starting from <code>10.0.2.15</code>. The default router will be
+    <code>10.0.2.2</code> and the DNS server will be <code>10.0.2.3</code>.
+    This networking is the only option for unprivileged users who need their
+    VMs to have outgoing access. Example configs are:</p>
+    <pre>&lt;interface type='user'/&gt;</pre>
+    <pre>
+&lt;interface type='user'&gt;
+  &lt;mac address="11:22:33:44:55:66"/&gt;
+&lt;/interface&gt;
+    </pre>
+  </li>
+      <li>Virtual network
+    <p>Provides a virtual network using a bridge device in the host.
+    Depending on the virtual network configuration, the network may be
+    totally isolated, NAT'ing to an explicit network device, or NAT'ing to
+    the default route. DHCP and DNS are provided on the virtual network in
+    all cases and the IP range can be determined by examining the virtual
+    network config with '<code>virsh net-dumpxml &lt;network
+    name&gt;</code>'. There is one virtual network called 'default' setup out
+    of the box which does NAT'ing to the default route and has an IP range of
+    <code>192.168.22.0/255.255.255.0</code>. Each guest will have an
+    associated tun device created with a name of vnetN, which can also be
+    overridden with the &lt;target&gt; element. Example configs are:</p>
+    <pre>&lt;interface type='network'&gt;
+  &lt;source network='default'/&gt;
+&lt;/interface&gt;
+
+&lt;interface type='network'&gt;
+  &lt;source network='default'/&gt;
+  &lt;target dev='vnet7'/&gt;
+  &lt;mac address="11:22:33:44:55:66"/&gt;
+&lt;/interface&gt;
+    </pre>
+  </li>
+      <li>Bridge to to LAN
+    <p>Provides a bridge from the VM directly onto the LAN. This assumes
+    there is a bridge device on the host which has one or more of the hosts
+    physical NICs enslaved. The guest VM will have an associated tun device
+    created with a name of vnetN, which can also be overridden with the
+    &lt;target&gt; element. The tun device will be enslaved to the bridge.
+    The IP range / network configuration is whatever is used on the LAN. This
+    provides the guest VM full incoming &amp; outgoing net access just like a
+    physical machine. Examples include:</p>
+    <pre>&lt;interface type='bridge'&gt;
+ &lt;source bridge='br0'/&gt;
+&lt;/interface&gt;
+
+&lt;interface type='bridge'&gt;
+  &lt;source bridge='br0'/&gt;
+  &lt;target dev='vnet7'/&gt;
+  &lt;mac address="11:22:33:44:55:66"/&gt;
+&lt;/interface&gt;</pre>
+  </li>
+      <li>Generic connection to LAN
+    <p>Provides a means for the administrator to execute an arbitrary script
+    to connect the guest's network to the LAN. The guest will have a tun
+    device created with a name of vnetN, which can also be overridden with the
+    &lt;target&gt; element. After creating the tun device a shell script will
+    be run which is expected to do whatever host network integration is
+    required. By default this script is called /etc/qemu-ifup but can be
+    overridden.</p>
+    <pre>&lt;interface type='ethernet'/&gt;
+
+&lt;interface type='ethernet'&gt;
+  &lt;target dev='vnet7'/&gt;
+  &lt;script path='/etc/qemu-ifup-mynet'/&gt;
+&lt;/interface&gt;</pre>
+  </li>
+      <li>Multicast tunnel
+    <p>A multicast group is setup to represent a virtual network. Any VMs
+    whose network devices are in the same multicast group can talk to each
+    other even across hosts. This mode is also available to unprivileged
+    users. There is no default DNS or DHCP support and no outgoing network
+    access. To provide outgoing network access, one of the VMs should have a
+    2nd NIC which is connected to one of the first 4 network types and do the
+    appropriate routing. The multicast protocol is compatible with that used
+    by user mode linux guests too. The source address used must be from the
+    multicast address block.</p>
+    <pre>&lt;interface type='mcast'&gt;
+  &lt;source address='230.0.0.1' port='5558'/&gt;
+&lt;/interface&gt;</pre>
+  </li>
+      <li>TCP tunnel
+    <p>A TCP client/server architecture provides a virtual network. One VM
+    provides the server end of the network, all other VMS are configured as
+    clients. All network traffic is routed between the VMs via the server.
+    This mode is also available to unprivileged users. There is no default
+    DNS or DHCP support and no outgoing network access. To provide outgoing
+    network access, one of the VMs should have a 2nd NIC which is connected
+    to one of the first 4 network types and do the appropriate routing.</p>
+    <p>Example server config:</p>
+    <pre>&lt;interface type='server'&gt;
+  &lt;source address='192.168.0.1' port='5558'/&gt;
+&lt;/interface&gt;</pre>
+    <p>Example client config:</p>
+    <pre>&lt;interface type='client'&gt;
+  &lt;source address='192.168.0.1' port='5558'/&gt;
+&lt;/interface&gt;</pre>
+  </li>
+    </ol>
+    <p>To be noted, options 2, 3, 4 are also supported by Xen VMs, so it is
+possible to use these configs to have networking with both Xen &amp;
+QEMU/KVMs connected to each other.</p>
+
+    <h2>Example configs</h2>
+
+    <p>
+      Example configurations for each driver are provide on the
+      driver specific pages listed below
+    </p>
+
+    <ul>
+      <li><a href="drvxen.html#xmlconfig">Xen examples</a></li>
+      <li><a href="drvqemu.html#xmlconfig">QEMU/KVM examples</a></li>
+    </ul>
+  </body>
+</html>

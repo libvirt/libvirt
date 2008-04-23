@@ -1,0 +1,237 @@
+<html>
+  <body>
+    <h1>Storage pool and volume XML format</h1>
+
+    <ul>
+      <li>
+	<a href="#StoragePool">Storage pool XML</a>
+	<ul>
+          <li>
+            <a href="#StoragePoolFirst">First level elements</a>
+          </li>
+          <li>
+            <a href="#StoragePoolSource">Source elements</a>
+          </li>
+          <li>
+            <a href="#StoragePoolTarget">Target elements</a>
+          </li>
+          <li>
+            <a href="#StoragePoolExtents">Device extents</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#StorageVol">Storage volume XML</a>
+        <ul>
+          <li>
+            <a href="#StorageVolFirst">First level elements</a>
+          </li>
+          <li>
+            <a href="#StorageVolSource">Source elements</a>
+          </li>
+          <li>
+            <a href="#StorageVolTarget">Target elements</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+        <h3>
+          <a name="StoragePool" id="StoragePool">Storage pool XML</a>
+        </h3>
+        <p>
+Although all storage pool backends share the same public APIs and
+XML format, they have varying levels of capabilities. Some may
+allow creation of volumes, others may only allow use of pre-existing
+volumes. Some may have constraints on volume size, or placement.
+</p>
+        <p>The is the top level tag for a storage pool document is 'pool'. It has
+a single attribute <code>type</code>, which is one of <code>dir</code>,
+<code>fs</code>,<code>netfs</code>,<code>disk</code>,<code>iscsi</code>,
+<code>logical</code>. This corresponds to the storage backend drivers
+listed further along in this document.
+</p>
+        <h4>
+          <a name="StoragePoolFirst" id="StoragePoolFirst">First level elements</a>
+        </h4>
+        <dl>
+          <dt>name</dt>
+          <dd>Providing a name for the pool which is unique to the host.
+This is mandatory when defining a pool</dd>
+          <dt>uuid</dt>
+          <dd>Providing an identifier for the pool which is globally unique.
+This is optional when defining a pool, a UUID will be generated if
+omitted</dd>
+          <dt>allocation</dt>
+          <dd>Providing the total storage allocation for the pool. This may
+be larger than the sum of the allocation of all volumes due to
+metadata overhead. This value is in bytes. This is not applicable
+when creating a pool.</dd>
+          <dt>capacity</dt>
+          <dd>Providing the total storage capacity for the pool. Due to
+underlying device constraints it may not be possible to use the
+full capacity for storage volumes. This value is in bytes. This
+is not applicable when creating a pool.</dd>
+          <dt>available</dt>
+          <dd>Providing the free space available for allocating new volumes
+in the pool. Due to underlying device constraints it may not be
+possible to allocate the entire free space to a single volume.
+This value is in bytes. This is not applicable when creating a
+pool.</dd>
+          <dt>source</dt>
+          <dd>Provides information about the source of the pool, such as
+the underlying host devices, or remote server</dd>
+          <dt>target</dt>
+          <dd>Provides information about the representation of the pool
+on the local host.</dd>
+        </dl>
+        <h4>
+          <a name="StoragePoolSource" id="StoragePoolSource">Source elements</a>
+        </h4>
+        <dl>
+          <dt>device</dt>
+          <dd>Provides the source for pools backed by physical devices.
+May be repeated multiple times depending on backend driver. Contains
+a single attribute <code>path</code> which is the fully qualified
+path to the block device node.</dd>
+          <dt>directory</dt>
+          <dd>Provides the source for pools backed by directories. May
+only occur once. Contains a single attribute <code>path</code>
+which is the fully qualified path to the block device node.</dd>
+          <dt>host</dt>
+          <dd>Provides the source for pools backed by storage from a
+remote server. Will be used in combination with a <code>directory</code>
+or <code>device</code> element. Contains an attribute <code>name<code>
+which is the hostname or IP address of the server. May optionally
+contain a <code>port</code> attribute for the protocol specific
+port number.</code></code></dd>
+          <dt>format</dt>
+          <dd>Provides information about the format of the pool. This
+contains a single attribute <code>type</code> whose value is
+backend specific. This is typically used to indicate filesystem
+type, or network filesystem type, or partition table type, or
+LVM metadata type. All drivers are required to have a default
+value for this, so it is optional.</dd>
+        </dl>
+        <h4>
+          <a name="StoragePoolTarget" id="StoragePoolTarget">Target elements</a>
+        </h4>
+        <dl>
+          <dt>path</dt>
+          <dd>Provides the location at which the pool will be mapped into
+the local filesystem namespace. For a filesystem/directory based
+pool it will be the name of the directory in which volumes will
+be created. For device based pools it will be the name of the directory in which
+devices nodes exist. For the latter <code>/dev/</code> may seem
+like the logical choice, however, devices nodes there are not
+guaranteed stable across reboots, since they are allocated on
+demand. It is preferable to use a stable location such as one
+of the <code>/dev/disk/by-{path,id,uuid,label</code> locations.
+</dd>
+          <dt>permissions</dt>
+          <dd>Provides information about the default permissions to use
+when creating volumes. This is currently only useful for directory
+or filesystem based pools, where the volumes allocated are simple
+files. For pools where the volumes are device nodes, the hotplug
+scripts determine permissions. It contains 4 child elements. The
+<code>mode</code> element contains the octal permission set. The
+<code>owner</code> element contains the numeric user ID. The <code>group</code>
+element contains the numeric group ID. The <code>label</code> element
+contains the MAC (eg SELinux) label string.
+</dd>
+        </dl>
+        <h4>
+          <a name="StoragePoolExtents" id="StoragePoolExtents">Device extents</a>
+        </h4>
+        <p>
+If a storage pool exposes information about its underlying
+placement / allocation scheme, the <code>device</code> element
+within the <code>source</code> element may contain information
+about its available extents. Some pools have a constraint that
+a volume must be allocated entirely within a single constraint
+(eg disk partition pools). Thus the extent information allows an
+application to determine the maximum possible size for a new
+volume
+</p>
+        <p>
+For storage pools supporting extent information, within each
+<code>device</code> element there will be zero or more <code>freeExtent</code>
+elements. Each of these elements contains two attributes, <code>start</code>
+and <code>end</code> which provide the boundaries of the extent on the
+device, measured in bytes.
+</p>
+        <h3>
+          <a name="StorageVol" id="StorageVol">Storage volume XML</a>
+        </h3>
+        <p>
+A storage volume will be either a file or a device node.
+</p>
+        <h4>
+          <a name="StorageVolFirst" id="StorageVolFirst">First level elements</a>
+        </h4>
+        <dl>
+          <dt>name</dt>
+          <dd>Providing a name for the pool which is unique to the host.
+This is mandatory when defining a pool</dd>
+          <dt>uuid</dt>
+          <dd>Providing an identifier for the pool which is globally unique.
+This is optional when defining a pool, a UUID will be generated if
+omitted</dd>
+          <dt>allocation</dt>
+          <dd>Providing the total storage allocation for the volume. This
+may be smaller than the logical capacity if the volume is sparsely
+allocated. It may also be larger than the logical capacity if the
+volume has substantial metadata overhead. This value is in bytes.
+If omitted when creating a volume, the volume will be fully
+allocated at time of creation. If set to a value smaller than the
+capacity, the pool has the <strong>option</strong> of deciding
+to sparsely allocate a volume. It does not have to honour requests
+for sparse allocation though.</dd>
+          <dt>capacity</dt>
+          <dd>Providing the logical capacity for the volume. This value is
+in bytes. This is compulsory when creating a volume</dd>
+          <dt>source</dt>
+          <dd>Provides information about the underlying storage allocation
+of the volume. This may not be available for some pool types.</dd>
+          <dt>target</dt>
+          <dd>Provides information about the representation of the volume
+on the local host.</dd>
+        </dl>
+        <h4>
+          <a name="StorageVolTarget" id="StorageVolTarget">Target elements</a>
+        </h4>
+        <dl>
+          <dt>path</dt>
+          <dd>Provides the location at which the pool will be mapped into
+the local filesystem namespace. For a filesystem/directory based
+pool it will be the name of the directory in which volumes will
+be created. For device based pools it will be the name of the directory in which
+devices nodes exist. For the latter <code>/dev/</code> may seem
+like the logical choice, however, devices nodes there are not
+guaranteed stable across reboots, since they are allocated on
+demand. It is preferrable to use a stable location such as one
+of the <code>/dev/disk/by-{path,id,uuid,label</code> locations.
+</dd>
+          <dt>format</dt>
+          <dd>Provides information about the pool specific volume format.
+For disk pools it will provide the partition type. For filesystem
+or directory pools it will provide the file format type, eg cow,
+qcow, vmdk, raw. If omitted when creating a volume, the pool's
+default format will be used. The actual format is specified via
+the <code>type</code>. Consult the pool-specific docs for the
+list of valid values.</dd>
+          <dt>permissions</dt>
+          <dd>Provides information about the default permissions to use
+when creating volumes. This is currently only useful for directory
+or filesystem based pools, where the volumes allocated are simple
+files. For pools where the volumes are device nodes, the hotplug
+scripts determine permissions. It contains 4 child elements. The
+<code>mode</code> element contains the octal permission set. The
+<code>owner</code> element contains the numeric user ID. The <code>group</code>
+element contains the numeric group ID. The <code>label</code> element
+contains the MAC (eg SELinux) label string.
+</dd>
+        </dl>
+
+  </body>
+</html>

@@ -1,3 +1,17 @@
+Wed Apr 23 12:18:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* docs/libvir.html, docs/*.html.in: Removed merged HTML docs
+	and replaced with one file per page
+	* docs/*.html: Re-generated with new page layout
+	* docs/page.xsl: New master page template and navigation
+	* docs/site.xsl, docs/newapi.xsl, docs/ChangeLog.xsl: Updated
+	to use new page.xsl templates
+	* libvirt-net-*.{fig,png}: Added diagrams illustrating some
+	ways of using virtual networking
+	* docs/*.css: New styles for site
+	* docs/html/*: Re-generated for new page layout & removed
+	unused files
+
 2008-04-21  Jim Meyering  <meyering@redhat.com>
 
 	Enable 'make syntax-check's sc_changelog rule.

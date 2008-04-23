@@ -1,0 +1,64 @@
+<html>
+  <body>
+    <h1>Related links</h1>
+
+    <p>
+      This page contains some links of interest in the area of virtualization.
+      There are separate pages covering <a href="apps.html">applications using libvirt</a>
+      and <a href="bindings.html">language bindings for libvirt</a>.
+    </p>
+
+    <h2>Other library bindings</h2>
+
+    <ul>
+      <li><a href="/CIM/">CIM provider</a></li>
+      <li><a href="http://search.cpan.org/dist/Sys-Virt/">Perl bindings</a></li>
+      <li><a href="/ocaml/">OCaml bindings</a></li>
+      <li><a href="/ruby/">Ruby bindings</a></li>
+    </ul>
+
+    <h2>Hypervisors / emulators / containers</h2>
+
+    <ul>
+      <li>
+	The <a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen</a> hypervisor
+      </li>
+      <li>
+	The <a href="http://fabrice.bellard.free.fr/qemu/">QEMU</a> emulator
+      </li>
+      <li>
+	The <a href="http://kvm.qumranet.com/kvmwiki">KVM</a> Linux hypervisor
+      </li>
+      <li>
+	The <a href="http://lxc.sourceforge.net/">LXC</a> Linux container system
+      </li>
+      <li>
+	The <a href="http://openvz.org/">OpenVZ</a> Linux container system
+      </li>
+      <li>
+	The <a href="http://virt.kernelnewbies.org/lguest">lGuest</a> paravirtualized hypervisor
+      </li>
+      <li>
+	The <a href="http://virt.kernelnewbies.org/Linux-VServer">Linux-VServer</a> container system
+      </li>
+      <li>
+	The <a href="http://virt.kernelnewbies.org/UML">User Mode Linux</a> paravirtualized hypervisor
+      </li>
+    </ul>
+
+    <h2>Virtualization technology</h2>
+
+    <ul>
+      <li>
+	<a href="http://virt.kernelnewbies.org/">Kernel Newbies Virtualization guide</a>
+      </li>
+      <li>
+	<a href="http://www-128.ibm.com/developerworks/linux/library/l-linuxvirt/?ca=dgr-lnxw01Virtual-Linux">IBM developerworks virtualization guide</a>
+      </li>
+      <li>
+	<a href="http://en.wikipedia.org/wiki/Virtualization">Wikipedia Virtualization</a>
+      </li>
+    </ul>
+
+  </body>
+</html>

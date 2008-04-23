@@ -1,0 +1,70 @@
+<html>
+  <body>
+    <h1>Driver capabilities XML format</h1>
+
+        <p>As new virtualization engine support gets added to libvirt, and to handle
+cases like QEmu supporting a variety of emulations, a query interface has
+been added in 0.2.1 allowing to list the set of supported virtualization
+capabilities on the host:</p>
+        <pre>    char * virConnectGetCapabilities (virConnectPtr conn);</pre>
+        <p>The value returned is an XML document listing the virtualization
+capabilities of the host and virtualization engine to which
+<code>@conn</code> is connected. One can test it using <code>virsh</code>
+command line tool command '<code>capabilities</code>', it dumps the XML
+associated to the current connection. For example in the case of a 64 bits
+machine with hardware virtualization capabilities enabled in the chip and
+BIOS you will see</p>
+        <pre>&lt;capabilities&gt;
+  <span style="color: #E50000">&lt;host&gt;
+    &lt;cpu&gt;
+      &lt;arch&gt;x86_64&lt;/arch&gt;
+      &lt;features&gt;
+        &lt;vmx/&gt;
+      &lt;/features&gt;
+    &lt;/cpu&gt;
+  &lt;/host&gt;</span>
+
+  &lt;!-- xen-3.0-x86_64 --&gt;
+  <span style="color: #0000E5">&lt;guest&gt;
+    &lt;os_type&gt;xen&lt;/os_type&gt;
+    &lt;arch name="x86_64"&gt;
+      &lt;wordsize&gt;64&lt;/wordsize&gt;
+      &lt;domain type="xen"&gt;&lt;/domain&gt;
+      &lt;emulator&gt;/usr/lib64/xen/bin/qemu-dm&lt;/emulator&gt;
+    &lt;/arch&gt;
+    &lt;features&gt;
+    &lt;/features&gt;
+  &lt;/guest&gt;</span>
+
+  &lt;!-- hvm-3.0-x86_32 --&gt;
+  <span style="color: #00B200">&lt;guest&gt;
+    &lt;os_type&gt;hvm&lt;/os_type&gt;
+    &lt;arch name="i686"&gt;
+      &lt;wordsize&gt;32&lt;/wordsize&gt;
+      &lt;domain type="xen"&gt;&lt;/domain&gt;
+      &lt;emulator&gt;/usr/lib/xen/bin/qemu-dm&lt;/emulator&gt;
+      &lt;machine&gt;pc&lt;/machine&gt;
+      &lt;machine&gt;isapc&lt;/machine&gt;
+      &lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
+    &lt;/arch&gt;
+    &lt;features&gt;
+    &lt;/features&gt;
+  &lt;/guest&gt;</span>
+  ...
+&lt;/capabilities&gt;</pre>
+        <p>The first block (in red) indicates the host hardware capabilities, currently
+it is limited to the CPU properties but other information may be available,
+it shows the CPU architecture, and the features of the chip (the feature
+block is similar to what you will find in a Xen fully virtualized domain
+description).</p>
+        <p>The second block (in blue) indicates the paravirtualization support of the
+Xen support, you will see the os_type of xen to indicate a paravirtual
+kernel, then architecture information and potential features.</p>
+        <p>The third block (in green) gives similar information but when running a
+32 bit OS fully virtualized with Xen using the hvm support.</p>
+        <p>This section is likely to be updated and augmented in the future, see <a href="https://www.redhat.com/archives/libvir-list/2007-March/msg00215.html">the
+discussion</a> which led to the capabilities format in the mailing-list
+archives.</p>
+
+  </body>
+</html>

@@ -1,0 +1,50 @@
+<html>
+  <body>
+    <h1>Network XML format</h1>
+
+
+    <h2>Example configuration</h2>
+
+    <h3>NAT based network</h3>
+
+    <pre>
+      &lt;network&gt;
+	&lt;name&gt;default&lt;/name&gt;
+	&lt;bridge name="virbr0" /&gt;
+	&lt;forward type="nat"/&gt;
+	&lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
+	  &lt;dhcp&gt;
+	    &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
+	  &lt;/dhcp&gt;
+	&lt;/ip&gt;
+      &lt;/network&gt;</pre>
+
+    <h3>Routed network config</h3>
+
+    <pre>
+      &lt;network&gt;
+	&lt;name&gt;local&lt;/name&gt;
+	&lt;bridge name="virbr1" /&gt;
+	&lt;forward type="route" dev="eth1"/&gt;
+	&lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
+	  &lt;dhcp&gt;
+	    &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
+	  &lt;/dhcp&gt;
+	&lt;/ip&gt;
+      &lt;/network&gt;</pre>
+
+    <h3>Isolated network config</h3>
+
+    <pre>
+      &lt;network&gt;
+	&lt;name&gt;private&lt;/name&gt;
+	&lt;bridge name="virbr2" /&gt;
+	&lt;ip address="192.168.152.1" netmask="255.255.255.0"&gt;
+	  &lt;dhcp&gt;
+	    &lt;range start="192.168.152.2" end="192.168.152.254" /&gt;
+	  &lt;/dhcp&gt;
+	&lt;/ip&gt;
+      &lt;/network&gt;</pre>
+
+  </body>
+</html>

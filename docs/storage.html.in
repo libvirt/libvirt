@@ -1,0 +1,354 @@
+<?xml version="1.0"?>
+<html>
+  <body>
+    <h1 >Storage Management</h1>
+    <p>
+This page describes the backends for the storage management capabilities in
+libvirt.
+</p>
+    <ul>
+      <li>
+        <a href="#StorageBackendDir">Directory backend</a>
+      </li>
+      <li>
+        <a href="#StorageBackendFS">Local filesystem backend</a>
+      </li>
+      <li>
+        <a href="#StorageBackendNetFS">Network filesystem backend</a>
+      </li>
+      <li>
+        <a href="#StorageBackendLogical">Logical backend</a>
+      </li>
+      <li>
+        <a href="#StorageBackendDisk">Disk backend</a>
+      </li>
+      <li>
+        <a href="#StorageBackendISCSI">iSCSI backend</a>
+      </li>
+    </ul>
+
+    <h2><a name="StorageBackendDir" id="StorageBackendDir">Directory pool</a></h2>
+    <p>
+      A pool with a type of <code>dir</code> provides the means to manage
+      files within a directory. The files can be fully allocated raw files,
+      sparsely allocated raw files, or one of the special disk formats
+      such as <code>qcow</code>,<code>qcow2</code>,<code>vmdk</code>,
+      <code>cow</code>, etc as supported  by the <code>qemu-img</code>
+      program. If the directory does not exist at the time the pool is
+      defined, the <code>build</code> operation can be used to create it.
+    </p>
+
+    <h3>Example pool input definition</h3>
+    <pre>
+      &lt;pool type="dir"&gt;
+        &lt;name&gt;virtimages&lt;/name&gt;
+        &lt;target&gt;
+          &lt;path&gt;/var/lib/virt/images&lt;/path&gt;
+        &lt;/target&gt;
+      &lt;/pool&gt;
+    </pre>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The directory pool does not use the pool format type element.
+    </p>
+
+    <h3>Valid volume format types</h3>
+    <p>
+      One of the following options:
+    </p>
+    <ul>
+      <li><code>raw</code>: a plain file</li>
+      <li><code>bochs</code>: Bochs disk image format</li>
+      <li><code>cloop</code>: compressed loopback disk image format</li>
+      <li><code>cow</code>: User Mode Linux disk image format</li>
+      <li><code>dmg</code>: Mac disk image format</li>
+      <li><code>iso</code>: CDROM disk image format</li>
+      <li><code>qcow</code>: QEMU v1 disk image format</li>
+      <li><code>qcow2</code>: QEMU v2 disk image format</li>
+      <li><code>vmdk</code>: VMWare disk image format</li>
+      <li><code>vpc</code>: VirtualPC disk image format</li>
+    </ul>
+    <p>
+      When listing existing volumes all these formats are supported
+      natively. When creating new volumes, only a subset may be
+      available. The <code>raw</code> type is guaranteed always
+      available. The <code>qcow2</code> type can be created if
+      either <code>qemu-img</code> or <code>qcow-create</code> tools
+      are present. The others are dependent on support of the
+      <code>qemu-img</code> tool.
+
+    </p>
+
+    <h2><a name="StorageBackendFS" id="StorageBackendFS">Filesystem pool</a></h2>
+    <p>
+      This is a variant of the directory pool. Instead of creating a
+      directory on an existing mounted filesystem though, it expects
+      a source block device to be named. This block device will be
+      mounted and files managed in the directory of its mount point.
+      It will default to allowing the kernel to automatically discover
+      the filesystem type, though it can be specified manually if
+      required.
+    </p>
+
+    <h3>Example pool input</h3>
+    <pre>
+      &lt;pool type="fs"&gt;
+        &lt;name&gt;virtimages&lt;/name&gt;
+        &lt;source&gt;
+          &lt;device path="/dev/VolGroup00/VirtImages"/&gt;
+        &lt;/source&gt;
+        &lt;target&gt;
+          &lt;path&gt;/var/lib/virt/images&lt;/path&gt;
+        &lt;/target&gt;
+      &lt;/pool&gt;
+    </pre>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The filesystem pool supports the following formats:
+    </p>
+    <ul>
+      <li><code>auto</code> - automatically determine format</li>
+      <li>
+        <code>ext2</code>
+      </li>
+      <li>
+        <code>ext3</code>
+      </li>
+      <li>
+        <code>ext4</code>
+      </li>
+      <li>
+        <code>ufs</code>
+      </li>
+      <li>
+        <code>iso9660</code>
+      </li>
+      <li>
+        <code>udf</code>
+      </li>
+      <li>
+        <code>gfs</code>
+      </li>
+      <li>
+        <code>gfs2</code>
+      </li>
+      <li>
+        <code>vfat</code>
+      </li>
+      <li>
+        <code>hfs+</code>
+      </li>
+      <li>
+        <code>xfs</code>
+      </li>
+    </ul>
+
+    <h3>Valid volume format types</h3>
+    <p>
+      The valid volume types are the same as for the <code>directory</code>
+      pool type.
+    </p>
+
+
+    <h2><a name="StorageBackendNetFS" id="StorageBackendNetFS">Network filesystem pool</a></h2>
+    <p>
+      This is a variant of the filesystem pool. Instead of requiring
+      a local block device as the source, it requires the name of a
+      host and path of an exported directory. It will mount this network
+      filesystem and manage files within the directory of its mount
+      point. It will default to using NFS as the protocol.
+    </p>
+
+    <h3>Example pool input</h3>
+    <pre>
+      &lt;pool type="netfs"&gt;
+        &lt;name&gt;virtimages&lt;/name&gt;
+        &lt;source&gt;
+          &lt;host name="nfs.example.com"/&gt;
+          &lt;dir path="/var/lib/virt/images"/&gt;
+        &lt;/source&gt;
+        &lt;target&gt;
+          &lt;path&gt;/var/lib/virt/images&lt;/path&gt;
+        &lt;/target&gt;
+      &lt;/pool&gt;
+    </pre>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The network filesystem pool supports the following formats:
+    </p>
+    <ul>
+      <li><code>auto</code> - automatically determine format</li>
+      <li>
+        <code>nfs</code>
+      </li>
+    </ul>
+
+    <h3>Valid volume format types</h3>
+    <p>
+      The valid volume types are the same as for the <code>directory</code>
+      pool type.
+    </p>
+
+
+    <h2><a name="StorageBackendLogical" id="StorageBackendLogical">Logical volume pools</a></h2>
+    <p>
+      This provides a pool based on an LVM volume group. For a
+      pre-defined LVM volume group, simply providing the group
+      name is sufficient, while to build a new group requires
+      providing a list of source devices to serve as physical
+      volumes. Volumes will be allocated by carving out chunks
+      of storage from the volume group.
+    </p>
+
+    <h3>Example pool input</h3>
+    <pre>
+      &lt;pool type="logical"&gt;
+        &lt;name&gt;HostVG&lt;/name&gt;
+        &lt;source&gt;
+          &lt;device path="/dev/sda1"/&gt;
+          &lt;device path="/dev/sdb1"/&gt;
+          &lt;device path="/dev/sdc1"/&gt;
+        &lt;/source&gt;
+        &lt;target&gt;
+          &lt;path&gt;/dev/HostVG&lt;/path&gt;
+        &lt;/target&gt;
+      &lt;/pool&gt;
+    </pre>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The logical volume pool does not use the pool format type element.
+    </p>
+
+    <h3>Valid volume format types</h3>
+    <p>
+      The logical volume pool does not use the volume format type element.
+    </p>
+
+
+    <h2><a name="StorageBackendDisk" id="StorageBackendDisk">Disk volume pools</a></h2>
+    <p>
+      This provides a pool based on a physical disk. Volumes are created
+      by adding partitions to the disk. Disk pools are have constraints
+      on the size and placement of volumes. The 'free extents'
+      information will detail the regions which are available for creating
+      new volumes. A volume cannot span across 2 different free extents.
+    </p>
+
+    <h3>Example pool input</h3>
+    <pre>
+      &lt;pool type="disk"&gt;
+        &lt;name&gt;sda&lt;/name&gt;
+        &lt;source&gt;
+          &lt;device path='/dev/sda'/&gt;
+        &lt;/source&gt;
+        &lt;target&gt;
+          &lt;path&gt;/dev&lt;/path&gt;
+        &lt;/target&gt;
+      &lt;/pool&gt;
+    </pre>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The disk volume pool accepts the following pool format types, representing
+      the common partition table types:
+    </p>
+    <ul>
+      <li>
+        <code>dos</code>
+      </li>
+      <li>
+        <code>dvh</code>
+      </li>
+      <li>
+        <code>gpt</code>
+      </li>
+      <li>
+        <code>mac</code>
+      </li>
+      <li>
+        <code>bsd</code>
+      </li>
+      <li>
+        <code>pc98</code>
+      </li>
+      <li>
+        <code>sun</code>
+      </li>
+    </ul>
+    <p>
+      The <code>dos</code> or <code>gpt</code> formats are recommended for
+      best portability - the latter is needed for disks larger than 2TB.
+    </p>
+
+    <h3>Valid volume format types</h3>
+    <p>
+      The disk volume pool accepts the following volume format types, representing
+      the common partition entry types:
+    </p>
+    <ul>
+      <li>
+        <code>none</code>
+      </li>
+      <li>
+        <code>linux</code>
+      </li>
+      <li>
+        <code>fat16</code>
+      </li>
+      <li>
+        <code>fat32</code>
+      </li>
+      <li>
+        <code>linux-swap</code>
+      </li>
+      <li>
+        <code>linux-lvm</code>
+      </li>
+      <li>
+        <code>linux-raid</code>
+      </li>
+      <li>
+        <code>extended</code>
+      </li>
+    </ul>
+
+
+    <h2><a name="StorageBackendISCSI" id="StorageBackendISCSI">iSCSI volume pools</a></h2>
+    <p>
+      This provides a pool based on an iSCSI target. Volumes must be
+      pre-allocated on the iSCSI server, and cannot be created via
+      the libvirt APIs. Since /dev/XXX names may change each time libvirt
+      logs into the iSCSI target, it is recommended to configure the pool
+      to use <code>/dev/disk/by-path</code> or <code>/dev/disk/by-id</code>
+      for the target path. These provide persistent stable naming for LUNs
+    </p>
+
+    <h3>Example pool input</h3>
+    <pre>
+      &lt;pool type="iscsi"&gt;
+        &lt;name&gt;virtimages&lt;/name&gt;
+        &lt;source&gt;
+          &lt;host name="iscsi.example.com"/&gt;
+          &lt;device path="demo-target"/&gt;
+        &lt;/source&gt;
+        &lt;target&gt;
+          &lt;path&gt;/dev/disk/by-path&lt;/path&gt;
+        &lt;/target&gt;
+      &lt;/pool&gt;
+    </pre>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The logical volume pool does not use the pool format type element.
+    </p>
+
+    <h3>Valid volume format types</h3>
+    <p>
+      The logical volume pool does not use the volume format type element.
+    </p>
+  </body>
+</html>

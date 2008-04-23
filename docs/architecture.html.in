@@ -1,0 +1,101 @@
+<html>
+  <body>
+    <h1 >libvirt architecture</h1>
+    <p>Currently libvirt supports 2 kind of virtualization, and its
+internal structure is based on a driver model which simplifies adding new
+engines:</p>
+    <ul>
+      <li>
+        <a href="#Xen">Xen hypervisor</a>
+      </li>
+      <li>
+        <a href="#QEmu">QEmu and KVM based virtualization</a>
+      </li>
+      <li>
+        <a href="#drivers">the driver architecture</a>
+      </li>
+    </ul>
+    <h3>
+      <a name="Xen" id="Xen">Libvirt Xen support</a>
+    </h3>
+    <p>When running in a Xen environment, programs using libvirt have to execute
+in "Domain 0", which is the primary Linux OS loaded on the machine. That OS
+kernel provides most if not all of the actual drivers used by the set of
+domains. It also runs the Xen Store, a database of information shared by the
+hypervisor, the kernels, the drivers and the xen daemon. Xend. The xen daemon
+supervise the control and execution of the sets of domains. The hypervisor,
+drivers, kernels and daemons communicate though a shared system bus
+implemented in the hypervisor. The figure below tries to provide a view of
+this environment:</p>
+    <img src="architecture.gif" alt="The Xen architecture" />
+    <p>The library can be initialized in 2 ways depending on the level of
+privilege of the embedding program. If it runs with root access,
+virConnectOpen() can be used, it will use three different ways to connect to
+the Xen infrastructure:</p>
+    <ul>
+      <li>a connection to the Xen Daemon though an HTTP RPC layer</li>
+      <li>a read/write connection to the Xen Store</li>
+      <li>use Xen Hypervisor calls</li>
+      <li>when used as non-root libvirt connect to a proxy daemon running
+      as root and providing read-only support</li>
+    </ul>
+    <p>The library will usually interact with the Xen daemon for any operation
+changing the state of the system, but for performance and accuracy reasons
+may talk directly to the hypervisor when gathering state information at
+least when possible (i.e. when the running program using libvirt has root
+privilege access).</p>
+    <p>If it runs without root access virConnectOpenReadOnly() should be used to
+connect to initialize the library. It will then fork a libvirt_proxy
+program running as root and providing read_only access to the API, this is
+then only useful for reporting and monitoring.</p>
+    <h3>
+      <a name="QEmu" id="QEmu">Libvirt QEmu and KVM support</a>
+    </h3>
+    <p>The model for QEmu and KVM is completely similar, basically KVM is based
+on QEmu for the process controlling a new domain, only small details differs
+between the two. In both case the libvirt API is provided by a controlling
+process forked by libvirt in the background and which launch and control the
+QEmu or KVM process. That program called libvirt_qemud talks though a specific
+protocol to the library, and connects to the console of the QEmu process in
+order to control and report on its status. Libvirt tries to expose all the
+emulations models of QEmu, the selection is done when creating the new
+domain, by specifying the architecture and machine type targeted.</p>
+    <p>The code controlling the QEmu process is available in the
+<code>qemud/</code> directory.</p>
+    <h3>
+      <a name="drivers" id="drivers">the driver based architecture</a>
+    </h3>
+    <p>As the previous section explains, libvirt can communicate using different
+channels with the current hypervisor, and should also be able to use
+different kind of hypervisor. To simplify the internal design, code, ease
+maintenance and simplify the support of other virtualization engine the
+internals have been structured as one core component, the libvirt.c module
+acting as a front-end for the library API and a set of hypervisor drivers
+defining a common set of routines. That way the Xen Daemon access, the Xen
+Store one, the Hypervisor hypercall are all isolated in separate C modules
+implementing at least a subset of the common operations defined by the
+drivers present in driver.h:</p>
+    <ul>
+      <li>xend_internal: implements the driver functions though the Xen
+  Daemon</li>
+      <li>xs_internal: implements the subset of the driver available though the
+    Xen Store</li>
+      <li>xen_internal: provide the implementation of the functions possible via
+    direct hypervisor access</li>
+      <li>proxy_internal: provide read-only Xen access via a proxy, the proxy code
+    is in the <code>proxy/</code>directory.</li>
+      <li>xm_internal: provide support for Xen defined but not running
+    domains.</li>
+      <li>qemu_internal: implement the driver functions for QEmu and
+    KVM virtualization engines. It also uses a qemud/ specific daemon
+    which interacts with the QEmu process to implement libvirt API.</li>
+      <li>test: this is a test driver useful for regression tests of the
+    front-end part of libvirt.</li>
+    </ul>
+    <p>Note that a given driver may only implement a subset of those functions,
+(for example saving a Xen domain state to disk and restoring it is only
+possible though the Xen Daemon), in that case the driver entry points for
+unsupported functions are initialized to NULL.</p>
+    <p></p>
+  </body>
+</html>

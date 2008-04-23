@@ -1,0 +1,239 @@
+<?xml version="1.0"?>
+<html>
+  <body>
+    <h1 >Windows support</h1>
+    <p>
+Instructions for compiling and installing libvirt on Windows.
+</p>
+    <ul>
+      <li>
+        <a href="#Windows_binaries">Binaries</a>
+      </li>
+      <li>
+        <a href="#Windows_compiling">Compiling from source</a>
+      </li>
+    </ul>
+    <h3>
+      <a name="Windows_binaries" id="Windows_binaries">Binaries</a>
+    </h3>
+    <p>
+Binaries will be available from
+<a href="ftp://libvirt.org/libvirt/win32">the download area</a>
+(but we don't have binaries at the moment).
+</p>
+    <h3>
+      <a name="Windows_compiling" id="Windows_compiling">Compiling from source</a>
+    </h3>
+    <p>
+These are the steps to compile libvirt and the other
+tools from source on Windows.
+</p>
+    <p>
+You will need:
+</p>
+    <ol>
+      <li> MS Windows.  Microsoft makes free (as beer) versions
+of some of its operating systems available to
+<a href="http://msdn.microsoft.com/">MSDN subscribers</a>.
+We used Windows 2008 Server for testing, virtualized under
+Linux using KVM-53 (earlier versions of KVM and QEMU won't
+run recent versions of Windows because of lack of full ACPI
+support, so make sure you have the latest KVM).
+</li>
+      <li><a href="http://www.cygwin.com/">Cygwin</a>'s
+<a href="http://www.cygwin.com/setup.exe">setup.exe</a>.
+</li>
+      <li> A large amount of free disk space to install Cygwin.
+Make sure you have 10 GB free to install most Cygwin packages,
+although if you pare down the list of dependencies you may
+get away with much less. </li>
+      <li> A network connection for Windows, since Cygwin downloads packages
+from the net as it installs. </li>
+      <li>
+        <a href="http://www.libvirt.org/downloads.html">Libvirt
+latest version from CVS</a>
+      </li>
+      <li> The latest source patch from
+<a href="ftp://libvirt.org/libvirt/win32">the download area</a>. </li>
+      <li> A version of Cygwin sunrpc, patched to support building
+  <code>librpc.dll</code>.
+  A patch and a binary package are available from
+  <a href="ftp://libvirt.org/libvirt/win32">the download area</a>. </li>
+    </ol>
+    <p>
+These are the steps to take to compile libvirt from
+source on Windows:
+</p>
+    <ol>
+      <li>
+        <p>Run Cygwin
+    <a href="http://www.cygwin.com/setup.exe">setup.exe</a>.
+    When it starts up it will show a dialog like this:
+  </p>
+        <img src="windows-cygwin-1.png" width="504" height="388" alt="Cygwin Net Release Setup Program"/>
+      </li>
+      <li>
+        <p>Step through the setup program accepting defaults
+    or making choices as appropriate, until you get to the
+    screen for selecting packages:</p>
+        <img src="windows-cygwin-2.png" width="505" height="388" alt="Cygwin Select Packages screen"/>
+        <p>
+    The user interface here is very confusing.  You have to
+    click the "recycling icon" as shown by the arrow:
+  </p>
+        <img src="windows-cygwin-3.png" width="298" height="200" alt="Cygwin Recycling Icon"/>
+        <p>
+    which takes the package (and all packages in the subtree)
+    through several states such as "Install", "Reinstall", "Keep",
+    "Skip", "Uninstall", etc.
+  </p>
+      </li>
+      <li>
+        <p>You can install "All" (everything) or better select
+    just the groups and packages needed.  Select the following
+    groups and packages for installation:
+  </p>
+        <table>
+          <tr>
+            <th valign="top" align="right"> Groups </th>
+            <td>
+	Archive <br/>
+	Base <br/>
+	Devel <br/>
+	Editors <br/>
+	Mingw <br/>
+	Perl <br/>
+	Python <br/>
+	Shells <br/></td>
+          </tr>
+          <tr>
+            <th valign="top" align="right"> Packages </th>
+            <td>
+	openssh <br/>
+	sunrpc &#x2265; 4.0-4 (see below) <br/></td>
+          </tr>
+        </table>
+      </li>
+      <li>
+        <p> Once Cygwin has finished installing, start a Cygwin bash shell
+    (either click on the desktop icon or look for Cygwin bash shell
+    in the Start menu). </p>
+        <p> The very first time you start the Cygwin bash shell, you may
+    find you need to run the <code>mkpasswd</code> and <code>mkgroup</code>
+    commands in order to create <code>/etc/passwd</code> and
+    <code>/etc/group</code> files from Windows users.  If this
+    is needed then a message is printed in the shell.
+    Note that you need to do this as Windows Administrator. </p>
+      </li>
+      <li>
+        <p> Install Cygwin sunrpc &#x2265; 4.0-4 package, patched to include
+    <code>librpc.dll</code>.
+    To do this, first check to see whether <code>/usr/lib/librpc.dll</code>
+    exists.  If it does, you're good to go and can skip to the next
+    step. </p>
+        <p>
+    If you don't have this file, either install the binary package
+    <a href="ftp://libvirt.org/libvirt/win32/sunrpc-4.0-4.tar.bz2">sunrpc-4.0-4.tar.bz2</a> (just unpack it, as Administrator, in the Cygwin root directory).
+    Or you can download the
+    <a href="ftp://libvirt.org/libvirt/win32/sunrpc-4.0-dll.patch">source patch</a>
+    and apply it by hand to the Cygwin sunrpc package (eg. using
+    cygport).
+  </p>
+      </li>
+      <li>
+        <p>
+    Check out
+    <a href="http://www.libvirt.org/downloads.html">Libvirt from CVS</a> and
+    <a href="ftp://libvirt.org/libvirt/win32">apply the latest Windows patch</a>
+    to the source.
+  </p>
+      </li>
+      <li>
+        <p> Configure libvirt by doing: </p>
+        <pre>
+autoreconf
+./configure --without-xen --without-qemu
+</pre>
+        <p> (The autoreconf step is probably optional). </p>
+        <p> The configure step will tell you if you have all the
+    required parts installed.  If something is missing you
+    will need to go back through Cygwin setup and install it.
+  </p>
+      </li>
+      <li>
+        <p> Rebuild the XDR structures: </p>
+        <pre>
+rm qemud/remote_protocol.[ch] qemud/remote_dispatch_*.h
+make -C qemud remote_protocol.c
+</pre>
+      </li>
+      <li>
+        <p> Build: </p>
+        <pre>
+make
+</pre>
+        <p> If this step is not successful, you should post a full
+    report <i>including complete messages</i> to
+    <a href="http://www.redhat.com/mailman/listinfo/libvir-list">the
+      libvirt mailing list</a>.
+  </p>
+      </li>
+      <li>
+        <p> Test it.  If you have access to a remote machine
+    running Xen or QEMU/KVM, and the libvirt daemon (<code>libvirtd</code>)
+    then you should be able to connect to it and display
+    domains using, eg:
+  </p>
+        <pre>
+src/virsh.exe <a href="http://libvirt.org/uri.html">-c qemu://remote/system</a> list --all
+</pre>
+        <p>
+    Please read more about <a href="http://libvirt.org/remote.html">remote
+      support</a> before sending bug reports, to make sure that
+    any problems are really Windows and not just with remote
+    configuration / security.
+  </p>
+      </li>
+      <li>
+        <p>
+    You may want to install the library and programs by doing:
+  </p>
+        <pre>
+make install
+</pre>
+      </li>
+      <li>
+        <p>
+    The above steps should also build and install Python modules.
+    However for reasons which I don't fully understand, Python won't
+    look in the
+    non-standard <code>/usr/local/lib/python*/site-packages/</code>
+    directory by default so you may need to set the environment
+    variable PYTHONPATH:
+  </p>
+        <pre>
+export PYTHONPATH=/usr/local/lib/python2.5/site-packages
+</pre>
+        <p>
+    (Change the version number to your version of Python).  You
+    can test Python support from the command line:
+  </p>
+        <pre>
+python
+&gt;&gt;&gt; import libvirt
+&gt;&gt;&gt; conn = libvirt.open ("test:///default")
+&gt;&gt;&gt; conn.listDomainsID ()
+[1]
+&gt;&gt;&gt; dom = conn.lookupByID (1)
+&gt;&gt;&gt; dom.XMLDesc (0)
+"&lt;domain type='test' id='1'&gt; ..."
+</pre>
+        <p>
+    The most common failure will be with <code>import libvirt</code>
+    which usually indicates that either <code>PYTHONPATH</code> is
+    wrong or a DLL cannot be loaded.
+  </p>
+      </li>
+    </ol>
+  </body>
+</html>

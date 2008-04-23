@@ -1853,6 +1853,9 @@
           <ref name='virStoragePoolGetInfo'/>
           <ref name='virStorageVolGetInfo'/>
         </word>
+        <word name='above'>
+          <ref name='_virError'/>
+        </word>
         <word name='access'>
           <ref name='_virNodeInfo'/>
           <ref name='virConnectGetVersion'/>
@@ -3665,6 +3668,9 @@
           <ref name='virConnGetLastError'/>
           <ref name='virGetLastError'/>
         </word>
+        <word name='note'>
+          <ref name='_virError'/>
+        </word>
         <word name='now'>
           <ref name='virStoragePoolBuild'/>
           <ref name='virStoragePoolCreate'/>
@@ -4178,6 +4184,7 @@
           <ref name='virStorageVolGetName'/>
         </word>
         <word name='see'>
+          <ref name='_virError'/>
           <ref name='virDomainGetUUIDString'/>
           <ref name='virDomainMigrate'/>
           <ref name='virNetworkGetUUIDString'/>

@@ -13,7 +13,7 @@
   exclude-result-prefixes="exsl str">
 
   <!-- Import the main part of the site stylesheets -->
-  <xsl:import href="site.xsl"/>
+  <xsl:import href="page.xsl"/>
 
   <!-- Generate XHTML-1.0 transitional -->
   <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"
@@ -81,14 +81,13 @@
   </xsl:template>
 
   <xsl:template match="macro" mode="toc">
-    <pre class="programlisting">
-    <xsl:text>#define </xsl:text><a href="#{@name}"><xsl:value-of select="@name"/></a>
-    </pre>
+    <xsl:text>#define </xsl:text>
+    <a href="#{@name}"><xsl:value-of select="@name"/></a>
+    <xsl:text>
+</xsl:text>
   </xsl:template>
 
   <xsl:template match="variable" mode="toc">
-    <pre class="programlisting">
-    <xsl:text>Variable </xsl:text>
     <xsl:call-template name="dumptext">
       <xsl:with-param name="text" select="string(@type)"/>
     </xsl:call-template>
@@ -96,23 +95,19 @@
     <a name="{@name}"></a>
     <xsl:value-of select="@name"/>
     <xsl:text>
-
 </xsl:text>
-    </pre>
   </xsl:template>
 
   <xsl:template match="typedef" mode="toc">
-    <xsl:variable name="name" select="string(@name)"/>
-    <pre class="programlisting">
+    <xsl:text>typedef </xsl:text><xsl:variable name="name" select="string(@name)"/>
     <xsl:choose>
       <xsl:when test="@type = 'enum'">
-	<xsl:text>Enum </xsl:text>
+        <xsl:text>enum </xsl:text>
 	<a href="#{$name}"><xsl:value-of select="$name"/></a>
 	<xsl:text>
 </xsl:text>
       </xsl:when>
       <xsl:otherwise>
-	<xsl:text>Typedef </xsl:text>
 	<xsl:call-template name="dumptext">
 	  <xsl:with-param name="text" select="@type"/>
 	</xsl:call-template>
@@ -122,82 +117,99 @@
 </xsl:text>
       </xsl:otherwise>
     </xsl:choose>
-    </pre>
   </xsl:template>
 
   <xsl:template match="typedef[@type = 'enum']">
     <xsl:variable name="name" select="string(@name)"/>
-    <h3>Enum <a name="{$name}"><xsl:value-of select="$name"/></a></h3>
-    <pre class="programlisting">
-      <xsl:text>Enum </xsl:text>
-      <xsl:value-of select="$name"/>
-      <xsl:text> {
+    <h3><a name="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
+    <div class="api">
+      <pre>
+        <xsl:text>enum </xsl:text>
+        <xsl:value-of select="$name"/>
+        <xsl:text> {
 </xsl:text>
-      <xsl:for-each select="/api/symbols/enum[@type = $name]">
-        <xsl:sort select="@value" data-type="number" order="ascending"/>
-        <xsl:text>    </xsl:text>
-        <a name="{@name}"><xsl:value-of select="@name"/></a>
-        <xsl:text> = </xsl:text>
-        <xsl:value-of select="@value"/>
-        <xsl:if test="@info != ''">
-	  <xsl:text> : </xsl:text>
-	  <xsl:call-template name="dumptext">
-	    <xsl:with-param name="text" select="@info"/>
-	  </xsl:call-template>
-        </xsl:if>
-        <xsl:text>
+      </pre>
+      <table>
+        <xsl:for-each select="/api/symbols/enum[@type = $name]">
+          <xsl:sort select="@value" data-type="number" order="ascending"/>
+          <tr>
+            <td><a name="{@name}"><xsl:value-of select="@name"/></a></td>
+            <td><xsl:text> = </xsl:text></td>
+            <td><xsl:value-of select="@value"/></td>
+            <xsl:if test="@info != ''">
+              <td>
+                <xsl:text> : </xsl:text>
+                <xsl:call-template name="dumptext">
+                  <xsl:with-param name="text" select="@info"/>
+                </xsl:call-template>
+              </td>
+            </xsl:if>
+          </tr>
+        </xsl:for-each>
+      </table>
+      <pre>
+        <xsl:text>}
 </xsl:text>
-      </xsl:for-each>
-      <xsl:text>}
-</xsl:text>
-    </pre>
+      </pre>
+    </div>
   </xsl:template>
 
   <xsl:template match="struct" mode="toc">
-    <pre class="programlisting">
-    <xsl:text>Structure </xsl:text><a href="#{@name}"><xsl:value-of select="@name"/></a><br/>
-    <xsl:value-of select="@type"/><xsl:text>
+    <xsl:text>typedef </xsl:text>
+    <xsl:value-of select="@type"/>
+    <xsl:text> </xsl:text>
+    <a href="#{@name}"><xsl:value-of select="@name"/></a>
+    <xsl:text>
 </xsl:text>
-    <xsl:if test="not(field)">
-      <xsl:text>The content of this structure is not made public by the API.
-</xsl:text>
-    </xsl:if>
-    </pre>
   </xsl:template>
 
   <xsl:template match="struct">
-    <h3><a name="{@name}">Structure <xsl:value-of select="@name"/></a></h3>
-    <pre class="programlisting">
-    <xsl:text>Structure </xsl:text><xsl:value-of select="@name"/><br/>
-    <xsl:value-of select="@type"/><xsl:text> {
+    <h3><a name="{@name}"><code><xsl:value-of select="@name"/></code></a></h3>
+    <div class="api">
+      <pre>
+        <xsl:text>struct </xsl:text>
+        <xsl:value-of select="@name"/>
+        <xsl:text>{
 </xsl:text>
-    <xsl:if test="not(field)">
-      <xsl:text>The content of this structure is not made public by the API.
+      </pre>
+      <table>
+        <xsl:for-each select="field">
+          <tr>
+            <td>
+              <xsl:call-template name="dumptext">
+                <xsl:with-param name="text" select="@type"/>
+              </xsl:call-template>
+            </td>
+            <td><xsl:value-of select="@name"/></td>
+            <xsl:if test="@info != ''">
+              <td>
+                <xsl:text> : </xsl:text>
+                <xsl:call-template name="dumptext">
+                  <xsl:with-param name="text" select="@info"/>
+                </xsl:call-template>
+              </td>
+            </xsl:if>
+          </tr>
+        </xsl:for-each>
+        <xsl:if test="not(field)">
+          <tr>
+            <td colspan="3">
+              <xsl:text>The content of this structure is not made public by the API</xsl:text>
+            </td>
+          </tr>
+        </xsl:if>
+      </table>
+      <pre>
+        <xsl:text>
+}
 </xsl:text>
-    </xsl:if>
-    <xsl:for-each select="field">
-        <xsl:text>    </xsl:text>
-	<xsl:call-template name="dumptext">
-	  <xsl:with-param name="text" select="@type"/>
-	</xsl:call-template>
-	<xsl:text>&#9;</xsl:text>
-	<xsl:value-of select="@name"/>
-	<xsl:if test="@info != ''">
-	  <xsl:text>&#9;: </xsl:text>
-	  <xsl:call-template name="dumptext">
-	    <xsl:with-param name="text" select="substring(@info, 1, 40)"/>
-	  </xsl:call-template>
-	</xsl:if>
-	<xsl:text>
-</xsl:text>
-    </xsl:for-each>
-    <xsl:text>}</xsl:text>
-    </pre>
+      </pre>
+    </div>
   </xsl:template>
 
   <xsl:template match="macro">
     <xsl:variable name="name" select="string(@name)"/>
-    <h3><a name="{$name}"></a>Macro: <xsl:value-of select="$name"/></h3>
+    <h3><a name="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
     <pre><xsl:text>#define </xsl:text><xsl:value-of select="$name"/></pre>
     <p>
     <xsl:call-template name="dumptext">
@@ -212,7 +224,6 @@
     <xsl:variable name="nlen" select="string-length($name)"/>
     <xsl:variable name="tlen" select="string-length(return/@type)"/>
     <xsl:variable name="blen" select="(($nlen + 8) - (($nlen + 8) mod 8)) + (($tlen + 8) - (($tlen + 8) mod 8))"/>
-    <pre class="programlisting">
     <xsl:call-template name="dumptext">
       <xsl:with-param name="text" select="return/@type"/>
     </xsl:call-template>
@@ -245,8 +256,7 @@
 	<xsl:text>&#9;&#9;&#9;&#9;&#9; </xsl:text>
       </xsl:if>
     </xsl:for-each>
-    <xsl:text>)</xsl:text>
-    </pre><xsl:text>
+    <xsl:text>)
 </xsl:text>
   </xsl:template>
 
@@ -255,8 +265,7 @@
     <xsl:variable name="nlen" select="string-length($name)"/>
     <xsl:variable name="tlen" select="string-length(return/@type)"/>
     <xsl:variable name="blen" select="(($nlen + 8) - (($nlen + 8) mod 8)) + (($tlen + 8) - (($tlen + 8) mod 8))"/>
-    <pre class="programlisting">
-    <xsl:text>Function type: </xsl:text>
+    <xsl:text>typedef </xsl:text>
     <a href="#{$name}"><xsl:value-of select="$name"/></a>
     <xsl:text>
 </xsl:text>
@@ -294,7 +303,6 @@
     </xsl:for-each>
     <xsl:text>)
 </xsl:text>
-    </pre>
     <xsl:text>
 </xsl:text>
   </xsl:template>
@@ -304,20 +312,13 @@
     <xsl:variable name="nlen" select="string-length($name)"/>
     <xsl:variable name="tlen" select="string-length(return/@type)"/>
     <xsl:variable name="blen" select="(($nlen + 8) - (($nlen + 8) mod 8)) + (($tlen + 8) - (($tlen + 8) mod 8))"/>
-    <h3>
-      <a name="{$name}"></a>
-      <xsl:text>Function type: </xsl:text>
-      <xsl:value-of select="$name"/>
-    </h3>
+    <h3><a name="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
     <pre class="programlisting">
-    <xsl:text>Function type: </xsl:text>
-    <xsl:value-of select="$name"/>
-    <xsl:text>
-</xsl:text>
+    <xsl:text>typedef </xsl:text>
     <xsl:call-template name="dumptext">
       <xsl:with-param name="text" select="return/@type"/>
     </xsl:call-template>
-    <xsl:text>&#9;</xsl:text>
+    <xsl:text>&#9;(*</xsl:text>
     <xsl:value-of select="@name"/>
     <xsl:if test="$blen - 40 &lt; -8">
       <xsl:text>&#9;</xsl:text>
@@ -325,7 +326,7 @@
     <xsl:if test="$blen - 40 &lt; 0">
       <xsl:text>&#9;</xsl:text>
     </xsl:if>
-    <xsl:text>&#9;(</xsl:text>
+    <xsl:text>)&#9;(</xsl:text>
     <xsl:if test="not(arg)">
       <xsl:text>void</xsl:text>
     </xsl:if>
@@ -388,7 +389,7 @@
     <xsl:variable name="nlen" select="string-length($name)"/>
     <xsl:variable name="tlen" select="string-length(return/@type)"/>
     <xsl:variable name="blen" select="(($nlen + 8) - (($nlen + 8) mod 8)) + (($tlen + 8) - (($tlen + 8) mod 8))"/>
-    <h3><a name="{$name}"></a>Function: <xsl:value-of select="$name"/></h3>
+    <h3><a name="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
     <pre class="programlisting">
     <xsl:call-template name="dumptext">
       <xsl:with-param name="text" select="return/@type"/>
@@ -496,83 +497,50 @@
   <xsl:template match="file">
     <xsl:variable name="name" select="@name"/>
     <xsl:variable name="title">Module <xsl:value-of select="$name"/> from <xsl:value-of select="/api/@name"/></xsl:variable>
-    <xsl:document href="{$htmldir}/libvirt-{$name}.html" method="xml" encoding="ISO-8859-1"
-      doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
-      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-      <html>
-        <head>
-          <xsl:call-template name="style"/>
-          <xsl:element name="title">
-            <xsl:value-of select="$title"/>
-          </xsl:element>
-        </head>
-	<body>
-	<div id="container">
-	  <div id="intro">
-	    <div id="adjustments"/>
-	    <div id="pageHeader"/>
-	    <div id="content2">
-	      <xsl:call-template name="titlebox">
-		<xsl:with-param name="title" select="$title"/>
-	      </xsl:call-template>
-	    <xsl:call-template name="navbar"/>
-	    <xsl:call-template name="description"/>
-	    <xsl:choose>
-	      <xsl:when test="deprecated">
-	        <div class="deprecated">
-		  <h2>Table of Contents</h2>
-		  <xsl:apply-templates select="exports" mode="toc"/>
-		  <h2>Description</h2>
-		  <xsl:text>
-</xsl:text>
-		  <xsl:apply-templates select="exports"/>
-		</div>
-	      </xsl:when>
-	      <xsl:otherwise>
-		<h2>Table of Contents</h2>
-		<xsl:apply-templates select="exports[@type='macro']" mode="toc">
-		  <xsl:sort select='@symbol'/>
-		</xsl:apply-templates>
-		<xsl:apply-templates select="exports[@type='enum']" mode="toc">
-		  <xsl:sort select='@symbol'/>
-		</xsl:apply-templates>
-		<xsl:apply-templates select="exports[@type='typedef']" mode="toc">
-		  <xsl:sort select='@symbol'/>
-		</xsl:apply-templates>
-		<xsl:apply-templates select="exports[@type='struct']" mode="toc">
-		  <xsl:sort select='@symbol'/>
-		</xsl:apply-templates>
-		<xsl:apply-templates select="exports[@type='function']" mode="toc">
-		  <xsl:sort select='@symbol'/>
-		</xsl:apply-templates>
-		<h2>Description</h2>
-		<xsl:text>
-</xsl:text>
-		<xsl:apply-templates select="exports[@type='macro']">
-		  <xsl:sort select='@symbol'/>
-		</xsl:apply-templates>
-		<xsl:apply-templates select="exports[@type='enum']">
-		  <xsl:sort select='@symbol'/>
-		</xsl:apply-templates>
-		<xsl:apply-templates select="exports[@type='typedef']">
-		  <xsl:sort select='@symbol'/>
-		</xsl:apply-templates>
-		<xsl:apply-templates select="exports[@type='struct']">
-		  <xsl:sort select='@symbol'/>
-		</xsl:apply-templates>
-		<xsl:apply-templates select="exports[@type='function']">
-		  <xsl:sort select='@symbol'/>
-		</xsl:apply-templates>
-	      </xsl:otherwise>
-	    </xsl:choose>
-	    </div>
-	  </div>
-	  <xsl:call-template name="linkList2"/>
-	  <xsl:call-template name="bottom"/>
-	</div>
-	</body>
-      </html>
-    </xsl:document>
+    <html>
+      <body>
+        <h1><xsl:value-of select="$title"/></h1>
+        <xsl:call-template name="description"/>
+        <h2>Table of Contents</h2>
+        <xsl:if test="count(exports[@type='macro']) > 0">
+          <h3><a href="#macros">Macros</a></h3>
+          <pre>
+            <xsl:apply-templates select="exports[@type='macro']" mode="toc">
+              <xsl:sort select='@symbol'/>
+            </xsl:apply-templates>
+          </pre>
+        </xsl:if>
+        <h3><a href="#types">Types</a></h3>
+        <pre>
+          <xsl:apply-templates select="exports[@type='typedef']" mode="toc">
+            <xsl:sort select='@symbol'/>
+          </xsl:apply-templates>
+        </pre>
+        <h3><a href="#functions">Functions</a></h3>
+        <pre>
+          <xsl:apply-templates select="exports[@type='function']" mode="toc">
+            <xsl:sort select='@symbol'/>
+          </xsl:apply-templates>
+        </pre>
+
+        <h2>Description</h2>
+
+        <xsl:if test="count(exports[@type='macro']) > 0">
+          <h3><a name="macros">Macros</a></h3>
+          <xsl:apply-templates select="exports[@type='macro']">
+            <xsl:sort select='@symbol'/>
+          </xsl:apply-templates>
+        </xsl:if>
+        <h3><a name="types">Types</a></h3>
+        <xsl:apply-templates select="exports[@type='typedef']">
+          <xsl:sort select='@symbol'/>
+        </xsl:apply-templates>
+        <h3><a name="functions">Functions</a></h3>
+        <xsl:apply-templates select="exports[@type='function']">
+          <xsl:sort select='@symbol'/>
+        </xsl:apply-templates>
+      </body>
+    </html>
   </xsl:template>
 
   <xsl:template match="file" mode="toc">
@@ -585,52 +553,50 @@
   </xsl:template>
 
   <xsl:template name="mainpage">
-    <xsl:param name="file" select="concat($htmldir, '/index.html')"/>
     <xsl:variable name="title">Reference Manual for <xsl:value-of select="/api/@name"/></xsl:variable>
-    <xsl:document href="{$file}" method="xml" encoding="ISO-8859-1"
-      doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
-      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-      <html>
-        <head>
-          <xsl:call-template name="style"/>
-          <xsl:element name="title">
-            <xsl:value-of select="$title"/>
-          </xsl:element>
-        </head>
-	<body>
-	<div id="container">
-	  <div id="intro">
-	    <div id="adjustments"/>
-	    <div id="pageHeader"/>
-	    <div id="content2">
-	      <xsl:call-template name="titlebox">
-		<xsl:with-param name="title" select="$title"/>
-	      </xsl:call-template>
-		<h2>Table of Contents</h2>
-		<ul>
-		<xsl:apply-templates select="/api/files/file" mode="toc"/>
-		</ul>
-	    </div>
-	  </div>
-	  <xsl:call-template name="linkList2"/>
-	  <xsl:call-template name="bottom"/>
-	</div>
-	</body>
-      </html>
-    </xsl:document>
+    <html>
+      <body>
+        <h1><xsl:value-of select="$title"/></h1>
+        <h2>Table of Contents</h2>
+        <ul>
+          <xsl:apply-templates select="/api/files/file" mode="toc"/>
+        </ul>
+      </body>
+    </html>
   </xsl:template>
 
   <xsl:template match="/">
     <!-- Save the main index.html as well as a couple of copies -->
-    <xsl:call-template name="mainpage"/>
-    <xsl:call-template name="mainpage">
-      <xsl:with-param name="file" select="concat($htmldir, '/book1.html')"/>
-    </xsl:call-template>
-    <xsl:call-template name="mainpage">
-      <xsl:with-param name="file" select="concat($htmldir, '/libvirt-lib.html')"/>
-    </xsl:call-template>
-    <!-- now build the file for each of the modules -->
-    <xsl:apply-templates select="/api/files/file"/>
+    <xsl:variable name="mainpage">
+      <xsl:call-template name="mainpage"/>
+    </xsl:variable>
+    <xsl:document
+      href="{concat($htmldir, '/index.html')}"
+      method="xml"
+      encoding="ISO-8859-1"
+      doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
+      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <xsl:apply-templates select="exsl:node-set($mainpage)" mode="page">
+        <xsl:with-param name="pagename" select="concat($htmldir, '/index.html')"/>
+      </xsl:apply-templates>
+    </xsl:document>
+
+    <xsl:for-each select="/api/files/file">
+      <xsl:variable name="subpage">
+        <xsl:apply-templates select="."/>
+      </xsl:variable>
+
+      <xsl:document
+        href="{concat($htmldir, '/libvirt-', @name, '.html')}"
+        method="xml"
+        encoding="ISO-8859-1"
+        doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
+        doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        <xsl:apply-templates select="exsl:node-set($subpage)" mode="page">
+          <xsl:with-param name="pagename" select="concat($htmldir, '/libvirt-', @name, '.html')"/>
+        </xsl:apply-templates>
+      </xsl:document>
+    </xsl:for-each>
   </xsl:template>
 
 </xsl:stylesheet>

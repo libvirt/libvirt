@@ -1,421 +1,109 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>XML Format</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">XML Format</h1><p>This section describes the XML format used to represent domains, there are
-variations on the format based on the kind of domains run and the options
-used to launch them:</p><ul><li><a href="#Normal1">Normal paravirtualized Xen domains</a></li>
-  <li><a href="#Fully1">Fully virtualized Xen domains</a></li>
-  <li><a href="#KVM1">KVM domains</a></li>
-  <li><a href="#Net1">Networking options for QEmu and KVM</a></li>
-  <li><a href="#QEmu1">QEmu domains</a></li>
-  <li><a href="#Capa1">Discovering virtualization capabilities</a></li>
-</ul><p>The formats try as much as possible to follow the same structure and reuse
-elements and attributes where it makes sense.</p><h3 id="Normal"><a name="Normal1" id="Normal1">Normal paravirtualized Xen
-guests</a>:</h3><p>The library use an XML format to describe domains, as input to <a href="html/libvirt-libvirt.html#virDomainCreateLinux">virDomainCreateLinux()</a>
-and as the output of <a href="html/libvirt-libvirt.html#virDomainGetXMLDesc">virDomainGetXMLDesc()</a>,
-the following is an example of the format as returned by the shell command
-<code>virsh xmldump fc4</code> , where fc4 was one of the running domains:</p><pre>&lt;domain type='xen' <span style="color: #0071FF; background-color: #FFFFFF">id='18'</span>&gt;
-  &lt;name&gt;fc4&lt;/name&gt;
-  <span style="color: #00B200; background-color: #FFFFFF">&lt;os&gt;
-    &lt;type&gt;linux&lt;/type&gt;
-    &lt;kernel&gt;/boot/vmlinuz-2.6.15-1.43_FC5guest&lt;/kernel&gt;
-    &lt;initrd&gt;/boot/initrd-2.6.15-1.43_FC5guest.img&lt;/initrd&gt;
-    &lt;root&gt;/dev/sda1&lt;/root&gt;
-    &lt;cmdline&gt; ro selinux=0 3&lt;/cmdline&gt;
-  &lt;/os&gt;</span>
-  &lt;memory&gt;131072&lt;/memory&gt;
-  &lt;vcpu&gt;1&lt;/vcpu&gt;
-  &lt;devices&gt;
-    <span style="color: #FF0080; background-color: #FFFFFF">&lt;disk type='file'&gt;
-      &lt;source file='/u/fc4.img'/&gt;
-      &lt;target dev='sda1'/&gt;
-    &lt;/disk&gt;</span>
-    <span style="color: #0000FF; background-color: #FFFFFF">&lt;interface type='bridge'&gt;
-      &lt;source bridge='xenbr0'/&gt;
-      &lt;mac address='</span><span style="color: #0000FF; background-color: #FFFFFF"></span><span style="color: #0000FF; background-color: #FFFFFF">aa:00:00:00:00:11'/&gt;
-      &lt;script path='/etc/xen/scripts/vif-bridge'/&gt;
-    &lt;/interface&gt;</span>
-    <span style="color: #FF8000; background-color: #FFFFFF">&lt;console tty='/dev/pts/5'/&gt;</span>
-  &lt;/devices&gt;
-&lt;/domain&gt;</pre><p>The root element must be called <code>domain</code> with no namespace, the
-<code>type</code> attribute indicates the kind of hypervisor used, 'xen' is
-the default value. The <code>id</code> attribute gives the domain id at
-runtime (not however that this may change, for example if the domain is saved
-to disk and restored). The domain has a few children whose order is not
-significant:</p><ul><li>name: the domain name, preferably ASCII based</li>
-  <li>memory: the maximum memory allocated to the domain in kilobytes</li>
-  <li>vcpu: the number of virtual cpu configured for the domain</li>
-  <li>os: a block describing the Operating System, its content will be
-    dependent on the OS type
-    <ul><li>type: indicate the OS type, always linux at this point</li>
-      <li>kernel: path to the kernel on the Domain 0 filesystem</li>
-      <li>initrd: an optional path for the init ramdisk on the Domain 0
-        filesystem</li>
-      <li>cmdline: optional command line to the kernel</li>
-      <li>root: the root filesystem from the guest viewpoint, it may be
-        passed as part of the cmdline content too</li>
-    </ul></li>
-  <li>devices: a list of <code>disk</code>, <code>interface</code> and
-    <code>console</code> descriptions in no special order</li>
-</ul><p>The format of the devices and their type may grow over time, but the
-following should be sufficient for basic use:</p><p>A <code>disk</code> device indicates a block device, it can have two
-values for the type attribute either 'file' or 'block' corresponding to the 2
-options available at the Xen layer. It has two mandatory children, and one
-optional one in no specific order:</p><ul><li>source with a file attribute containing the path in Domain 0 to the
-    file or a dev attribute if using a block device, containing the device
-    name ('hda5' or '/dev/hda5')</li>
-  <li>target indicates in a dev attribute the device where it is mapped in
-    the guest</li>
-  <li>readonly an optional empty element indicating the device is
-  read-only</li>
-  <li>shareable an optional empty element indicating the device
-  can be used read/write with other domains</li>
-</ul><p>An <code>interface</code> element describes a network device mapped on the
-guest, it also has a type whose value is currently 'bridge', it also have a
-number of children in no specific order:</p><ul><li>source: indicating the bridge name</li>
-  <li>mac: the optional mac address provided in the address attribute</li>
-  <li>ip: the optional IP address provided in the address attribute</li>
-  <li>script: the script used to bridge the interface in the Domain 0</li>
-  <li>target: and optional target indicating the device name.</li>
-</ul><p>A <code>console</code> element describes a serial console connection to
-the guest. It has no children, and a single attribute <code>tty</code> which
-provides the path to the Pseudo TTY on which the guest console can be
-accessed</p><p>Life cycle actions for the domain can also be expressed in the XML format,
-they drive what should be happening if the domain crashes, is rebooted or is
-poweroff. There is various actions possible when this happen:</p><ul><li>destroy: The domain is cleaned up (that's the default normal processing
-    in Xen)</li>
-  <li>restart: A new domain is started in place of the old one with the same
-    configuration parameters</li>
-  <li>preserve: The domain will remain in memory until it is destroyed
-    manually, it won't be running but allows for post-mortem debugging</li>
-  <li>rename-restart: a variant of the previous one but where the old domain
-    is renamed before being saved to allow a restart</li>
-</ul><p>The following could be used for a Xen production system:</p><pre>&lt;domain&gt;
-  ...
-  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
-  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
-  &lt;on_crash&gt;rename-restart&lt;/on_crash&gt;
-  ...
-&lt;/domain&gt;</pre><p>While the format may be extended in various ways as support for more
-hypervisor types and features are added, it is expected that this core subset
-will remain functional in spite of the evolution of the library.</p><h3 id="Fully"><a name="Fully1" id="Fully1">Fully virtualized guests</a>
-(added in 0.1.3):</h3><p>Here is an example of a domain description used to start a fully
-virtualized (a.k.a. HVM) Xen domain. This requires hardware virtualization
-support at the processor level but allows to run unmodified operating
-systems:</p><pre>&lt;domain type='xen' id='3'&gt;
-  &lt;name&gt;fv0&lt;/name&gt;
-  &lt;uuid&gt;4dea22b31d52d8f32516782e98ab3fa0&lt;/uuid&gt;
-  &lt;os&gt;
-    <span style="color: #0000E5; background-color: #FFFFFF">&lt;type&gt;hvm&lt;/type&gt;</span>
-    <span style="color: #0000E5; background-color: #FFFFFF">&lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;</span>
-    <span style="color: #0000E5; background-color: #FFFFFF">&lt;boot dev='hd'/&gt;</span>
-  &lt;/os&gt;
-  &lt;memory&gt;524288&lt;/memory&gt;
-  &lt;vcpu&gt;1&lt;/vcpu&gt;
-  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
-  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
-  &lt;on_crash&gt;restart&lt;/on_crash&gt;
-  &lt;features&gt;
-     <span style="color: #E50000; background-color: #FFFFFF">&lt;pae/&gt;
-     &lt;acpi/&gt;
-     &lt;apic/&gt;</span>
-  &lt;/features&gt;
-  <span style="color: #0000E5; background-color: #FFFFFF">&lt;clock sync="localtime"/&gt;</span>
-  &lt;devices&gt;
-    <span style="color: #0000E5; background-color: #FFFFFF">&lt;emulator&gt;/usr/lib/xen/bin/qemu-dm&lt;/emulator&gt;</span>
-    &lt;interface type='bridge'&gt;
-      &lt;source bridge='xenbr0'/&gt;
-      &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
-      &lt;script path='vif-bridge'/&gt;
-    &lt;/interface&gt;
-    &lt;disk type='file'&gt;
-      &lt;source file='/root/fv0'/&gt;
-      &lt;target <span style="color: #0000E5; background-color: #FFFFFF">dev='hda'</span>/&gt;
-    &lt;/disk&gt;
-    &lt;disk type='file' <span style="color: #0000E5; background-color: #FFFFFF">device='cdrom'</span>&gt;
-      &lt;source file='/root/fc5-x86_64-boot.iso'/&gt;
-      &lt;target <span style="color: #0000E5; background-color: #FFFFFF">dev='hdc'</span>/&gt;
-      &lt;readonly/&gt;
-    &lt;/disk&gt;
-    &lt;disk type='file' <span style="color: #0000E5; background-color: #FFFFFF">device='floppy'</span>&gt;
-      &lt;source file='/root/fd.img'/&gt;
-      &lt;target <span style="color: #0000E5; background-color: #FFFFFF">dev='fda'</span>/&gt;
-    &lt;/disk&gt;
-    <span style="color: #0000E5; background-color: #FFFFFF">&lt;graphics type='vnc' port='5904'/&gt;</span>
-  &lt;/devices&gt;
-&lt;/domain&gt;</pre><p>There is a few things to notice specifically for HVM domains:</p><ul><li>the optional <code>&lt;features&gt;</code> block is used to enable
-    certain guest CPU / system features. For HVM guests the following
-    features are defined:
-    <ul><li><code>pae</code> - enable PAE memory addressing</li>
-      <li><code>apic</code> - enable IO APIC</li>
-      <li><code>acpi</code> - enable ACPI bios</li>
-    </ul></li>
-  <li>the optional <code>&lt;clock&gt;</code> element is used to specify
-     whether the emulated BIOS clock in the guest is synced to either
-     <code>localtime</code> or <code>utc</code>. In general Windows will
-     want <code>localtime</code> while all other operating systems will
-     want <code>utc</code>. The default is thus <code>utc</code></li>
-  <li>the <code>&lt;os&gt;</code> block description is very different, first
-    it indicates that the type is 'hvm' for hardware virtualization, then
-    instead of a kernel, boot and command line arguments, it points to an os
-    boot loader which will extract the boot information from the boot device
-    specified in a separate boot element. The <code>dev</code> attribute on
-    the <code>boot</code> tag can be one of:
-    <ul><li><code>fd</code> - boot from first floppy device</li>
-      <li><code>hd</code> - boot from first harddisk device</li>
-      <li><code>cdrom</code> - boot from first cdrom device</li>
-    </ul></li>
-  <li>the <code>&lt;devices&gt;</code> section includes an emulator entry
-    pointing to an additional program in charge of emulating the devices</li>
-  <li>the disk entry indicates in the dev target section that the emulation
-    for the drive is the first IDE disk device hda. The list of device names
-    supported is dependent on the Hypervisor, but for Xen it can be any IDE
-    device <code>hda</code>-<code>hdd</code>, or a floppy device
-    <code>fda</code>, <code>fdb</code>. The <code>&lt;disk&gt;</code> element
-    also supports a 'device' attribute to indicate what kinda of hardware to
-    emulate. The following values are supported:
-    <ul><li><code>floppy</code> - a floppy disk controller</li>
-      <li><code>disk</code> - a generic hard drive (the default it
-      omitted)</li>
-      <li><code>cdrom</code> - a CDROM device</li>
-    </ul>
-    For Xen 3.0.2 and earlier a CDROM device can only be emulated on the
-    <code>hdc</code> channel, while for 3.0.3 and later, it can be emulated
-    on any IDE channel.</li>
-  <li>the <code>&lt;devices&gt;</code> section also include at least one
-    entry for the graphic device used to render the os. Currently there is
-    just 2 types possible 'vnc' or 'sdl'. If the type is 'vnc', then an
-    additional <code>port</code> attribute will be present indicating the TCP
-    port on which the VNC server is accepting client connections.</li>
-</ul><p>It is likely that the HVM description gets additional optional elements
-and attributes as the support for fully virtualized domain expands,
-especially for the variety of devices emulated and the graphic support
-options offered.</p><h3><a name="KVM1" id="KVM1">KVM domain (added in 0.2.0)</a></h3><p>Support for the <a href="http://kvm.qumranet.com/">KVM virtualization</a>
-is provided in recent Linux kernels (2.6.20 and onward). This requires
-specific hardware with acceleration support and the availability of the
-special version of the <a href="http://fabrice.bellard.free.fr/qemu/">QEmu</a> binary. Since this
-relies on QEmu for the machine emulation like fully virtualized guests the
-XML description is quite similar, here is a simple example:</p><pre>&lt;domain <span style="color: #FF0000; background-color: #FFFFFF">type='kvm'</span>&gt;
-  &lt;name&gt;demo2&lt;/name&gt;
-  &lt;uuid&gt;4dea24b3-1d52-d8f3-2516-782e98a23fa0&lt;/uuid&gt;
-  &lt;memory&gt;131072&lt;/memory&gt;
-  &lt;vcpu&gt;1&lt;/vcpu&gt;
-  &lt;os&gt;
-    &lt;type&gt;hvm&lt;/type&gt;
-  &lt;/os&gt;
-  <span style="color: #0000E5; background-color: #FFFFFF">&lt;clock sync="localtime"/&gt;</span>
-  &lt;devices&gt;
-    <span style="color: #FF0000; background-color: #FFFFFF">&lt;emulator&gt;/home/user/usr/kvm-devel/bin/qemu-system-x86_64&lt;/emulator&gt;</span>
-    &lt;disk type='file' device='disk'&gt;
-      &lt;source file='/home/user/fedora/diskboot.img'/&gt;
-      &lt;target dev='hda'/&gt;
-    &lt;/disk&gt;
-    &lt;interface <span style="color: #FF0000; background-color: #FFFFFF">type='user'</span>&gt;
-      &lt;mac address='24:42:53:21:52:45'/&gt;
-    &lt;/interface&gt;
-    &lt;graphics type='vnc' port='-1'/&gt;
-  &lt;/devices&gt;
-&lt;/domain&gt;</pre><p>The specific points to note if using KVM are:</p><ul><li>the top level domain element carries a type of 'kvm'</li>
-  <li>the &lt;clock&gt; optional is supported as with Xen HVM</li>
-  <li>the &lt;devices&gt; emulator points to the special qemu binary required
-    for KVM</li>
-  <li>networking interface definitions definitions are somewhat different due
-    to a different model from Xen see below</li>
-</ul><p>except those points the options should be quite similar to Xen HVM
-ones.</p><h3><a name="Net1" id="Net1">Networking options for QEmu and KVM (added in 0.2.0)</a></h3><p>The networking support in the QEmu and KVM case is more flexible, and
-support a variety of options:</p><ol><li>Userspace SLIRP stack
-    <p>Provides a virtual LAN with NAT to the outside world. The virtual
-    network has DHCP &amp; DNS services and will give the guest VM addresses
-    starting from <code>10.0.2.15</code>. The default router will be
-    <code>10.0.2.2</code> and the DNS server will be <code>10.0.2.3</code>.
-    This networking is the only option for unprivileged users who need their
-    VMs to have outgoing access. Example configs are:</p>
-    <pre>&lt;interface type='user'/&gt;</pre>
-    <pre>
-&lt;interface type='user'&gt;
-  &lt;mac address="11:22:33:44:55:66"/&gt;
-&lt;/interface&gt;
-    </pre>
-  </li>
-  <li>Virtual network
-    <p>Provides a virtual network using a bridge device in the host.
-    Depending on the virtual network configuration, the network may be
-    totally isolated, NAT'ing to an explicit network device, or NAT'ing to
-    the default route. DHCP and DNS are provided on the virtual network in
-    all cases and the IP range can be determined by examining the virtual
-    network config with '<code>virsh net-dumpxml &lt;network
-    name&gt;</code>'. There is one virtual network called 'default' setup out
-    of the box which does NAT'ing to the default route and has an IP range of
-    <code>192.168.22.0/255.255.255.0</code>. Each guest will have an
-    associated tun device created with a name of vnetN, which can also be
-    overridden with the &lt;target&gt; element. Example configs are:</p>
-    <pre>&lt;interface type='network'&gt;
-  &lt;source network='default'/&gt;
-&lt;/interface&gt;
-
-&lt;interface type='network'&gt;
-  &lt;source network='default'/&gt;
-  &lt;target dev='vnet7'/&gt;
-  &lt;mac address="11:22:33:44:55:66"/&gt;
-&lt;/interface&gt;
-    </pre>
-  </li>
-  <li>Bridge to to LAN
-    <p>Provides a bridge from the VM directly onto the LAN. This assumes
-    there is a bridge device on the host which has one or more of the hosts
-    physical NICs enslaved. The guest VM will have an associated tun device
-    created with a name of vnetN, which can also be overridden with the
-    &lt;target&gt; element. The tun device will be enslaved to the bridge.
-    The IP range / network configuration is whatever is used on the LAN. This
-    provides the guest VM full incoming &amp; outgoing net access just like a
-    physical machine. Examples include:</p>
-    <pre>&lt;interface type='bridge'&gt;
- &lt;source bridge='br0'/&gt;
-&lt;/interface&gt;
-
-&lt;interface type='bridge'&gt;
-  &lt;source bridge='br0'/&gt;
-  &lt;target dev='vnet7'/&gt;
-  &lt;mac address="11:22:33:44:55:66"/&gt;
-&lt;/interface&gt;</pre>
-  </li>
-  <li>Generic connection to LAN
-    <p>Provides a means for the administrator to execute an arbitrary script
-    to connect the guest's network to the LAN. The guest will have a tun
-    device created with a name of vnetN, which can also be overridden with the
-    &lt;target&gt; element. After creating the tun device a shell script will
-    be run which is expected to do whatever host network integration is
-    required. By default this script is called /etc/qemu-ifup but can be
-    overridden.</p>
-    <pre>&lt;interface type='ethernet'/&gt;
-
-&lt;interface type='ethernet'&gt;
-  &lt;target dev='vnet7'/&gt;
-  &lt;script path='/etc/qemu-ifup-mynet'/&gt;
-&lt;/interface&gt;</pre>
-  </li>
-  <li>Multicast tunnel
-    <p>A multicast group is setup to represent a virtual network. Any VMs
-    whose network devices are in the same multicast group can talk to each
-    other even across hosts. This mode is also available to unprivileged
-    users. There is no default DNS or DHCP support and no outgoing network
-    access. To provide outgoing network access, one of the VMs should have a
-    2nd NIC which is connected to one of the first 4 network types and do the
-    appropriate routing. The multicast protocol is compatible with that used
-    by user mode linux guests too. The source address used must be from the
-    multicast address block.</p>
-    <pre>&lt;interface type='mcast'&gt;
-  &lt;source address='230.0.0.1' port='5558'/&gt;
-&lt;/interface&gt;</pre>
-  </li>
-  <li>TCP tunnel
-    <p>A TCP client/server architecture provides a virtual network. One VM
-    provides the server end of the network, all other VMS are configured as
-    clients. All network traffic is routed between the VMs via the server.
-    This mode is also available to unprivileged users. There is no default
-    DNS or DHCP support and no outgoing network access. To provide outgoing
-    network access, one of the VMs should have a 2nd NIC which is connected
-    to one of the first 4 network types and do the appropriate routing.</p>
-    <p>Example server config:</p>
-    <pre>&lt;interface type='server'&gt;
-  &lt;source address='192.168.0.1' port='5558'/&gt;
-&lt;/interface&gt;</pre>
-    <p>Example client config:</p>
-    <pre>&lt;interface type='client'&gt;
-  &lt;source address='192.168.0.1' port='5558'/&gt;
-&lt;/interface&gt;</pre>
-  </li>
-</ol><p>To be noted, options 2, 3, 4 are also supported by Xen VMs, so it is
-possible to use these configs to have networking with both Xen &amp;
-QEMU/KVMs connected to each other.</p><h3>Q<a name="QEmu1" id="QEmu1">Emu domain (added in 0.2.0)</a></h3><p>Libvirt support for KVM and QEmu is the same code base with only minor
-changes. The configuration is as a result nearly identical, the only changes
-are related to QEmu ability to emulate <a href="http://www.qemu.org/status.html">various CPU type and hardware
-platforms</a>, and kqemu support (QEmu own kernel accelerator when the
-emulated CPU is i686 as well as the target machine):</p><pre>&lt;domain <span style="color: #FF0000; background-color: #FFFFFF">type='qemu'</span>&gt;
-  &lt;name&gt;QEmu-fedora-i686&lt;/name&gt;
-  &lt;uuid&gt;c7a5fdbd-cdaf-9455-926a-d65c16db1809&lt;/uuid&gt;
-  &lt;memory&gt;219200&lt;/memory&gt;
-  &lt;currentMemory&gt;219200&lt;/currentMemory&gt;
-  &lt;vcpu&gt;2&lt;/vcpu&gt;
-  &lt;os&gt;
-    <span style="color: #FF0000; background-color: #FFFFFF">&lt;type arch='i686' machine='pc'&gt;hvm&lt;/type&gt;</span>
-    &lt;boot dev='cdrom'/&gt;
-  &lt;/os&gt;
-  &lt;devices&gt;
-    <span style="color: #FF0000; background-color: #FFFFFF">&lt;emulator&gt;/usr/bin/qemu&lt;/emulator&gt;</span>
-    &lt;disk type='file' device='cdrom'&gt;
-      &lt;source file='/home/user/boot.iso'/&gt;
-      &lt;target dev='hdc'/&gt;
-      &lt;readonly/&gt;
-    &lt;/disk&gt;
-    &lt;disk type='file' device='disk'&gt;
-      &lt;source file='/home/user/fedora.img'/&gt;
-      &lt;target dev='hda'/&gt;
-    &lt;/disk&gt;
-    &lt;interface type='network'&gt;
-      &lt;source name='default'/&gt;
-    &lt;/interface&gt;
-    &lt;graphics type='vnc' port='-1'/&gt;
-  &lt;/devices&gt;
-&lt;/domain&gt;</pre><p>The difference here are:</p><ul><li>the value of type on top-level domain, it's 'qemu' or kqemu if asking
-    for <a href="http://www.qemu.org/kqemu-tech.html">kernel assisted
-    acceleration</a></li>
-  <li>the os type block defines the architecture to be emulated, and
-    optionally the machine type, see the discovery API below</li>
-  <li>the emulator string must point to the right emulator for that
-    architecture</li>
-</ul><h3><a name="Capa1" id="Capa1">Discovering virtualization capabilities (Added in 0.2.1)</a></h3><p>As new virtualization engine support gets added to libvirt, and to handle
-cases like QEmu supporting a variety of emulations, a query interface has
-been added in 0.2.1 allowing to list the set of supported virtualization
-capabilities on the host:</p><pre>    char * virConnectGetCapabilities (virConnectPtr conn);</pre><p>The value returned is an XML document listing the virtualization
-capabilities of the host and virtualization engine to which
-<code>@conn</code> is connected. One can test it using <code>virsh</code>
-command line tool command '<code>capabilities</code>', it dumps the XML
-associated to the current connection. For example in the case of a 64 bits
-machine with hardware virtualization capabilities enabled in the chip and
-BIOS you will see</p><pre>&lt;capabilities&gt;
-  <span style="color: #E50000; background-color: #FFFFFF">&lt;host&gt;
-    &lt;cpu&gt;
-      &lt;arch&gt;x86_64&lt;/arch&gt;
-      &lt;features&gt;
-        &lt;vmx/&gt;
-      &lt;/features&gt;
-    &lt;/cpu&gt;
-  &lt;/host&gt;</span>
-
-  &lt;!-- xen-3.0-x86_64 --&gt;
-  <span style="color: #0000E5; background-color: #FFFFFF">&lt;guest&gt;
-    &lt;os_type&gt;xen&lt;/os_type&gt;
-    &lt;arch name="x86_64"&gt;
-      &lt;wordsize&gt;64&lt;/wordsize&gt;
-      &lt;domain type="xen"&gt;&lt;/domain&gt;
-      &lt;emulator&gt;/usr/lib64/xen/bin/qemu-dm&lt;/emulator&gt;
-    &lt;/arch&gt;
-    &lt;features&gt;
-    &lt;/features&gt;
-  &lt;/guest&gt;</span>
-
-  &lt;!-- hvm-3.0-x86_32 --&gt;
-  <span style="color: #00B200; background-color: #FFFFFF">&lt;guest&gt;
-    &lt;os_type&gt;hvm&lt;/os_type&gt;
-    &lt;arch name="i686"&gt;
-      &lt;wordsize&gt;32&lt;/wordsize&gt;
-      &lt;domain type="xen"&gt;&lt;/domain&gt;
-      &lt;emulator&gt;/usr/lib/xen/bin/qemu-dm&lt;/emulator&gt;
-      &lt;machine&gt;pc&lt;/machine&gt;
-      &lt;machine&gt;isapc&lt;/machine&gt;
-      &lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
-    &lt;/arch&gt;
-    &lt;features&gt;
-    &lt;/features&gt;
-  &lt;/guest&gt;</span>
-  ...
-&lt;/capabilities&gt;</pre><p>The first block (in red) indicates the host hardware capabilities, currently
-it is limited to the CPU properties but other information may be available,
-it shows the CPU architecture, and the features of the chip (the feature
-block is similar to what you will find in a Xen fully virtualized domain
-description).</p><p>The second block (in blue) indicates the paravirtualization support of the
-Xen support, you will see the os_type of xen to indicate a paravirtual
-kernel, then architecture information and potential features.</p><p>The third block (in green) gives similar information but when running a
-32 bit OS fully virtualized with Xen using the hvm support.</p><p>This section is likely to be updated and augmented in the future, see <a href="https://www.redhat.com/archives/libvir-list/2007-March/msg00215.html">the
-discussion</a> which led to the capabilities format in the mailing-list
-archives.</p></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvirt architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="format.html">XML Format</a></li><li><a href="python.html">Bindings for other languages</a></li><li><a href="errors.html">Handling of errors</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a href="windows.html">Windows support</a></li><li><a href="remote.html">Remote support</a></li><li><a href="auth.html">Access control</a></li><li><a href="uri.html">Connection URIs</a></li><li><a href="hvsupport.html">Hypervisor support</a></li><li><a href="storage.html">Storage Management</a></li><li><a href="html/index.html">API Menu</a></li><li><a href="examples/index.html">C code examples</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li><li><a href="http://virt-manager.et.redhat.com/">virt-manager</a></li><li><a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></li><li><a href="http://libvirt.org/ocaml/">OCaml bindings</a></li><li><a href="http://libvirt.org/ruby/">Ruby bindings</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul><p class="credits">Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!--
+        This file is autogenerated from format.html.in
+        Do not edit this file. Changes will be lost.
+      -->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <link rel="stylesheet" type="text/css" href="main.css" />
+    <link rel="SHORTCUT ICON" href="32favicon.png" />
+    <title>libvirt: XML Format</title>
+    <meta name="description" content="libvirt, virtualization, virtualization API" />
+  </head>
+  <body>
+    <div id="header">
+      <div id="headerLogo"></div>
+      <div id="headerSearch">
+        <form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
+          <input id="query" name="query" type="text" size="12" value="" />
+          <input id="submit" name="submit" type="submit" value="Search" />
+        </form>
+      </div>
+    </div>
+    <div id="body">
+      <div id="content">
+        <h1>XML Format</h1>
+      </div>
+      <div id="menu">
+        <ul class="l0"><li>
+            <a title="Front page of the libvirt website" class="inactive" href="index.html">Home</a>
+          </li><li>
+            <a title="Details of new features and bugs fixed in each release" class="inactive" href="news.html">News</a>
+          </li><li>
+            <a title="Get the latest source releases, binary builds and get access to the source repository" class="inactive" href="downloads.html">Downloads</a>
+          </li><li>
+            <a title="Information for users, administrators and developers" class="active" href="docs.html">Documentation</a>
+            <ul class="l1"><li>
+                <a title="Information about deploying and using libvirt" class="inactive" href="deployment.html">Deployment</a>
+              </li><li>
+                <a title="Overview of the logical subsystems in the libvirt API" class="inactive" href="intro.html">Architecture</a>
+              </li><li>
+                <span class="active">XML format</span>
+                <ul class="l2"><li>
+                    <a title="The domain XML format" class="inactive" href="formatdomain.html">Domains</a>
+                  </li><li>
+                    <a title="The virtual network XML format" class="inactive" href="formatnetwork.html">Networks</a>
+                  </li><li>
+                    <a title="The storage pool and volume XML format" class="inactive" href="formatstorage.html">Storage</a>
+                  </li><li>
+                    <a title="The driver capabilities XML format" class="inactive" href="formatcaps.html">Capabilities</a>
+                  </li><li>
+                    <a title="The host device XML format" class="inactive" href="formatnode.html">Node Devices</a>
+                  </li></ul>
+              </li><li>
+                <a title="Hypervisor specific driver information" class="inactive" href="drivers.html">Drivers</a>
+              </li><li>
+                <a title="Reference manual for the C public API" class="inactive" href="html/index.html">API reference</a>
+              </li><li>
+                <a title="Bindings of the libvirt API for other languages" class="inactive" href="bindings.html">Language bindings</a>
+              </li></ul>
+          </li><li>
+            <a title="User contributed content" class="inactive" href="http://wiki.libvirt.org">Wiki</a>
+          </li><li>
+            <a title="Frequently asked questions" class="inactive" href="FAQ.html">FAQ</a>
+          </li><li>
+            <a title="How and where to report bugs and request features" class="inactive" href="bugs.html">Bug reports</a>
+          </li><li>
+            <a title="How to contact the developers via email and IRC" class="inactive" href="contact.html">Contact</a>
+          </li><li>
+            <a title="Miscellaneous links of interest related to libvirt" class="inactive" href="relatedlinks.html">Related Links</a>
+          </li><li>
+            <a title="Overview of all content on the website" class="inactive" href="sitemap.html">Sitemap</a>
+          </li></ul>
+      </div>
+    </div>
+    <div id="footer">
+      <div id="projects">
+        <dl id="p1"><dt>
+            <a href="http://augeas.net/">Augeas</a>
+          </dt><dd>
+            <span>A configuration editing tool and API</span>
+          </dd><dt>
+            <a href="http://libvirt.org/">libvirt</a>
+          </dt><dd>
+            <span>The open source virtualization API</span>
+          </dd></dl>
+        <dl id="p2"><dt>
+            <a href="http://cobbler.et.redhat.com/">Cobbler</a>
+          </dt><dd>
+            <span>OS provisioning and profile management</span>
+          </dd><dt>
+            <a href="http://ovirt.org/">oVirt</a>
+          </dt><dd>
+            <span>Virtualization management across the data center</span>
+          </dd></dl>
+        <dl id="p3"><dt>
+            <a href="http://freeipa.org/">FreeIPA</a>
+          </dt><dd>
+            <span>Identity, policy and audit management</span>
+          </dd><dt>
+            <a href="http://virt-manager.org/">Virtual Machine Manager</a>
+          </dt><dd>
+            <span>Virtualization management from the desktop</span>
+          </dd></dl>
+      </div>
+    </div>
+  </body>
+</html>

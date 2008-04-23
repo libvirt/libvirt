@@ -1,0 +1,24 @@
+<html>
+  <body>
+    <h1 >Bindings for other languages</h1>
+    <p>Libvirt comes with bindings to support other languages than
+pure C. First the headers embeds the necessary declarations to
+allow direct acces from C++ code, but also we have bindings for
+higher level kind of languages:</p>
+    <ul>
+      <li>Python: Libvirt comes with direct support for the Python language
+     (just make sure you installed the libvirt-python package if not
+     compiling from sources). See below for more information about
+     using libvirt with python</li>
+      <li>Perl: Daniel Berrange provides <a href="http://search.cpan.org/dist/Sys-Virt/">bindings for
+     Perl</a>.</li>
+      <li>OCaml: Richard Jones supplies <a href="http://libvirt.org/ocaml/">bindings for OCaml</a>.</li>
+      <li>Ruby: David Lutterkort provides <a href="http://libvirt.org/ruby/">bindings for Ruby</a>.</li>
+    </ul>
+    <p>Support, requests or help for libvirt bindings are welcome on
+the <a href="https://www.redhat.com/mailman/listinfo/libvir-list/">mailing
+list</a>, as usual try to provide enough background information
+and make sure you use recent version, see the <a href="bugs.html">help
+page</a>.</p>
+  </body>
+</html>

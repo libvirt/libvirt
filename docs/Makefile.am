@@ -4,23 +4,36 @@ SUBDIRS= . examples devhelp
 # The directory containing the source code (if it contains documentation).
 DOC_SOURCE_DIR=../src
 
-PAGES= index.html bugs.html FAQ.html remote.html
-
 man_MANS=
 
-html =			\
-  book1.html		\
+apihtml =		\
   index.html		\
-  libvirt-conf.html	\
-  libvirt-lib.html	\
   libvirt-libvirt.html	\
   libvirt-virterror.html
 
-png =		\
+apipng =	\
   left.png	\
   up.png	\
   home.png	\
   right.png
+
+png = \
+  16favicon.png \
+  32favicon.png \
+  et_logo.png \
+  footer_corner.png \
+  footer_pattern.png \
+  libvirHeader.png \
+  libvirLogo.png \
+  libvirt-header-bg.png \
+  libvirt-header-logo.png \
+  libvirtLogo.png \
+  libvirt-net-logical.png \
+  libvirt-net-physical.png \
+  madeWith.png \
+  windows-cygwin-1.png \
+  windows-cygwin-2.png \
+  windows-cygwin-3.png
 
 gif = \
   Libxml2-Logo-90x34.gif \
@@ -28,21 +41,8 @@ gif = \
   node.gif \
   redhat.gif
 
-dot_html = \
-  FAQ.html \
-  architecture.html \
-  bugs.html \
-  downloads.html \
-  errors.html \
-  format.html \
-  hvsupport.html \
-  index.html \
-  intro.html \
-  libvir.html \
-  news.html \
-  python.html \
-  remote.html \
-  uri.html
+dot_html_in = $(wildcard *.html.in)
+dot_html = $(dot_html_in:%.html.in=%.html)
 
 xml = \
   libvirt-api.xml \
@@ -57,12 +57,16 @@ rng = \
   libvirt.rng \
   network.rng
 
+fig = \
+  libvirt-net-logical.fig \
+  libvirt-net-physical.fig
+
 EXTRA_DIST=					\
   libvirt-api.xml libvirt-refs.xml apibuild.py	\
-  site.xsl newapi.xsl news.xsl		\
-  $(dot_html) $(gif) html			\
-  $(xml) $(rng) \
-  virsh.pod
+  site.xsl newapi.xsl news.xsl page.xsl	ChangeLog.xsl	\
+  $(dot_html) $(dot_html_in) $(gif) html/*.html html/*.png \
+  $(xml) $(rng) $(fig) $(png) \
+  virsh.pod ChangeLog.awk
 
 all: web $(top_builddir)/NEWS $(man_MANS)
 
@@ -73,18 +77,30 @@ virsh.1: virsh.pod
 
 api: libvirt-api.xml libvirt-refs.xml $(srcdir)/html/index.html
 
-web: $(PAGES)
+web: $(dot_html)
 
-$(PAGES): libvir.html site.xsl
-	-@(if [ -x $(XSLTPROC) ] ; then \
-	  echo "Rebuilding the HTML Web pages from libvir.html" ; \
-	  $(XSLTPROC) --nonet --html $(top_srcdir)/docs/site.xsl $(top_srcdir)/docs/libvir.html > index.html ; fi );
-	-@(if [ -x $(XMLLINT) ] ; then \
-	  echo "Validating the HTML Web pages" ; \
-	  $(XMLLINT) --nonet --valid --noout $(PAGES) ; fi );
+ChangeLog.xml: ../ChangeLog ChangeLog.awk
+	awk -f ChangeLog.awk < $< > $@
+
+ChangeLog.html.in: ChangeLog.xml ChangeLog.xsl
+	@(if [ -x $(XSLTPROC) ] ; then \
+	  echo "Generating $@"; \
+	  name=`echo $@ | sed -e 's/.tmp//'`; \
+	  $(XSLTPROC) --nonet $(top_srcdir)/docs/ChangeLog.xsl $< > $@ || (rm $@ && exit 1) ; fi )
+
+%.html.tmp: %.html.in site.xsl page.xsl sitemap.html.in
+	@(if [ -x $(XSLTPROC) ] ; then \
+	  echo "Generating $@"; \
+	  name=`echo $@ | sed -e 's/.tmp//'`; \
+	  $(XSLTPROC) --stringparam pagename $$name --nonet --html $(top_srcdir)/docs/site.xsl $< > $@ || (rm $@ && exit 1) ; fi )
+
+%.html: %.html.tmp
+	@(if [ -x $(XMLLINT) ] ; then \
+	  echo "Validating $@" ; \
+	  $(XMLLINT) --nonet --format --valid $< > $@ || : ; fi );
 
 
-$(srcdir)/html/index.html: libvirt-api.xml $(srcdir)/newapi.xsl
+$(srcdir)/html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
 	-@(if [ -x $(XSLTPROC) ] ; then \
 	  echo "Rebuilding the HTML pages from the XML API" ; \
 	  $(XSLTPROC) --nonet $(srcdir)/newapi.xsl libvirt-api.xml ; fi )
@@ -115,11 +131,11 @@ install-data-local:
 	    $(srcdir)/redhat.gif $(srcdir)/Libxml2-Logo-90x34.gif \
 	  $(DESTDIR)$(HTML_DIR)
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/html
-	for h in $(html); do \
+	for h in $(apihtml); do \
 	  $(INSTALL) -m 0644 $(srcdir)/html/$$h $(DESTDIR)$(HTML_DIR)/html; done
-	for p in $(png); do \
+	for p in $(apipng); do \
 	  $(INSTALL) -m 0644 $(srcdir)/html/$$p $(DESTDIR)$(HTML_DIR)/html; done
 
 uninstall-local:
-	for h in $(html); do rm $(DESTDIR)$(HTML_DIR)/html/$$h; done
-	for p in $(png); do rm $(DESTDIR)$(HTML_DIR)/html/$$p; done
+	for h in $(apihtml); do rm $(DESTDIR)$(HTML_DIR)/html/$$h; done
+	for p in $(apipng); do rm $(DESTDIR)$(HTML_DIR)/html/$$p; done

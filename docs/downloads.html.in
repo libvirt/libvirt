@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<html>
+  <body>
+    <h1 >Downloads</h1>
+
+    <h2>Official Releases</h2>
+
+    <p>
+      The latest versions of the libvirt C library can be downloaded from:
+    </p>
+
+    <ul>
+      <li><a href="ftp://libvirt.org/libvirt/">libvirt.org FTP server</a></li>
+      <li><a href="http://libvirt.org/sources/">libvirt.org HTTP server</a></li>
+    </ul>
+
+    <h2>Hourly development snapshots</h2>
+
+    <p>
+      Once an hour, an automated snapshot is made from the latest CVS server
+      source tree. These snapshots should be usable, but we make no guarentees
+      about their stability:
+    </p>
+
+    <ul>
+      <li><a href="ftp://libvirt.org/libvirt/libvirt-cvs-snapshot.tar.gz">libvirt.org FTP server</a></li>
+      <li><a href="http://libvirt.org/sources/libvirt-cvs-snapshot.tar.gz">libvirt.org HTTP server</a></li>
+    </ul>
+
+    <h2>CVS repository access</h2>
+
+    <p>
+      The master source repository uses <a href="http://ximbiot.com/cvs/cvshome/docs/">CVS</a>
+      and anonymous access is provided. Prior to accessing the server is it neccessary
+      to authenticate using the password <code>anoncvs</code>. This can be accomplished with the
+      <code>cvs login</code> command:
+    </p>
+
+    <pre>
+
+      # cvs -d :pserver:anoncvs@libvirt.org:2401/data/cvs login
+    </pre>
+
+    <p>
+      Once authenticated, a checkout can be obtained using
+    </p>
+
+    <pre>
+
+      # cvs -d :pserver:anoncvs@libvirt.org:2401/data/cvs co libvirt
+    </pre>
+
+    <p>
+      The libvirt build process uses GNU autotools, so after obtaining a checkout
+      it is neccessary to generate the configure script and Makefile.in templates
+      using the <code>autogen.sh</code> command. As an example, to do a complete
+      build and install it into your home directory run:
+    </p>
+
+    <pre>
+
+      ./autogen.sh --prefix=$HOME/usr
+      make
+      make install
+    </pre>
+
+    <h2>GIT repository mirror</h2>
+
+    <p>
+      The CVS source repository is also mirrored using GIT, and is available
+      for anonymous access via:
+    </p>
+
+    <pre>
+
+      git clone git://git.et.redhat.com/libvirt.git
+    </pre>
+
+    <p>
+      It can also be browsed at
+    </p>
+
+    <pre>
+
+      <a href="http://git.et.redhat.com/?p=libvirt.git;a=summary">http://git.et.redhat.com/?p=libvirt.git;a=summary</a>
+    </pre>
+
+  </body>
+</html>

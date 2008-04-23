@@ -1,0 +1,295 @@
+<?xml version="1.0"?>
+<html>
+  <body>
+    <h1 >Connection URIs</h1>
+    <p>
+Since libvirt supports many different kinds of virtualization
+(often referred to as "drivers" or "hypervisors"), we need a
+way to be able to specify which driver a connection refers to.
+Additionally we may want to refer to a driver on a remote
+machine over the network.
+</p>
+    <p>
+To this end, libvirt uses URIs as used on the Web and as defined in <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>. This page
+documents libvirt URIs.
+</p>
+    <ul>
+      <li>
+        <a href="#URI_libvirt">Specifying URIs to libvirt</a>
+      </li>
+      <li>
+        <a href="#URI_virsh">Specifying URIs to virsh, virt-manager and virt-install</a>
+      </li>
+      <li>
+        <a href="#URI_xen">xen:/// URI</a>
+      </li>
+      <li>
+        <a href="#URI_qemu">qemu:///... QEMU and KVM URIs</a>
+      </li>
+      <li>
+        <a href="#URI_remote">Remote URIs</a>
+      </li>
+      <li>
+        <a href="#URI_test">test:///... Test URIs</a>
+      </li>
+      <li>
+        <a href="#URI_legacy">Other &amp; legacy URI formats</a>
+      </li>
+    </ul>
+    <h3>
+      <a name="URI_libvirt" id="URI_libvirt">Specifying URIs to libvirt</a>
+    </h3>
+    <p>
+The URI is passed as the <code>name</code> parameter to <a href="html/libvirt-libvirt.html#virConnectOpen"><code>virConnectOpen</code></a> or <a href="html/libvirt-libvirt.html#virConnectOpenReadOnly"><code>virConnectOpenReadOnly</code></a>.  For example:
+</p>
+    <pre>
+virConnectPtr conn = virConnectOpenReadOnly (<b>"test:///default"</b>);
+</pre>
+    <h3>
+      <a name="URI_virsh" id="URI_virsh">Specifying URIs to virsh, virt-manager and virt-install</a>
+    </h3>
+    <p>
+In virsh use the <code>-c</code> or <code>--connect</code> option:
+</p>
+    <pre>
+virsh <b>-c test:///default</b> list
+</pre>
+    <p>
+If virsh finds the environment variable
+<code>VIRSH_DEFAULT_CONNECT_URI</code> set, it will try this URI by
+default.
+</p>
+    <p>
+When using the interactive virsh shell, you can also use the
+<code>connect</code> <i>URI</i> command to reconnect to another
+hypervisor.
+</p>
+    <p>
+In virt-manager use the <code>-c</code> or <code>--connect=</code><i>URI</i> option:
+</p>
+    <pre>
+virt-manager <b>-c test:///default</b>
+</pre>
+    <p>
+In virt-install use the <code>--connect=</code><i>URI</i> option:
+</p>
+    <pre>
+virt-install <b>--connect=test:///default</b> <i>[other options]</i>
+</pre>
+    <h3>
+      <a name="URI_xen" id="URI_xen">xen:/// URI</a>
+    </h3>
+    <p>
+      <i>This section describes a feature which is new in libvirt &gt;
+0.2.3.  For libvirt &#x2264; 0.2.3 use <a href="#URI_legacy_xen"><code>"xen"</code></a>.</i>
+    </p>
+    <p>
+To access a Xen hypervisor running on the local machine
+use the URI <code>xen:///</code>.
+</p>
+    <h3>
+      <a name="URI_qemu" id="URI_qemu">qemu:///... QEMU and KVM URIs</a>
+    </h3>
+    <p>
+To use QEMU support in libvirt you must be running the
+<code>libvirtd</code> daemon (named <code>libvirt_qemud</code>
+in releases prior to 0.3.0).  The purpose of this
+daemon is to manage qemu instances.
+</p>
+    <p>
+The <code>libvirtd</code> daemon should be started by the
+init scripts when the machine boots. It should appear as
+a process <code>libvirtd --daemon</code> running as root
+in the background and will handle qemu instances on behalf
+of all users of the machine (among other things). </p>
+    <p>
+So to connect to the daemon, one of two different URIs is used:
+</p>
+    <ul>
+      <li><code>qemu:///system</code> connects to a system mode daemon. </li>
+      <li><code>qemu:///session</code> connects to a session mode daemon. </li>
+    </ul>
+    <p>
+(If you do <code>libvirtd --help</code>, the daemon will print
+out the paths of the Unix domain socket(s) that it listens on in
+the various different modes).
+</p>
+    <p>
+KVM URIs are identical.  You select between qemu, qemu accelerated and
+KVM guests in the <a href="format.html#KVM1">guest XML as described
+here</a>.
+</p>
+    <h3>
+      <a name="URI_remote" id="URI_remote">Remote URIs</a>
+    </h3>
+    <p>
+Remote URIs are formed by taking ordinary local URIs and adding a
+hostname and/or transport name.  For example:
+</p>
+    <table class="top_table">
+      <tr>
+        <th> Local URI </th>
+        <th> Remote URI </th>
+        <th> Meaning </th>
+      </tr>
+      <tr>
+        <td>
+          <code>xen:///</code>
+        </td>
+        <td>
+          <code>xen://oirase/</code>
+        </td>
+        <td> Connect to the Xen hypervisor running on host <code>oirase</code>
+  using TLS. </td>
+      </tr>
+      <tr>
+        <td>
+          <code>xen:///</code>
+        </td>
+        <td>
+          <code>xen+ssh://oirase/</code>
+        </td>
+        <td> Connect to the Xen hypervisor running on host <code>oirase</code>
+  by going over an <code>ssh</code> connection. </td>
+      </tr>
+      <tr>
+        <td>
+          <code>test:///default</code>
+        </td>
+        <td>
+          <code>test+tcp://oirase/default</code>
+        </td>
+        <td> Connect to the test driver on host <code>oirase</code>
+  using an unsecured TCP connection. </td>
+      </tr>
+    </table>
+    <p>
+Remote URIs in libvirt offer a rich syntax and many features.
+We refer you to <a href="remote.html#Remote_URI_reference">the libvirt
+remote URI reference</a> and <a href="remote.html">full documentation
+for libvirt remote support</a>.
+</p>
+    <h3>
+      <a name="URI_test" id="URI_test">test:///... Test URIs</a>
+    </h3>
+    <p>
+The test driver is a dummy hypervisor for test purposes.
+The URIs supported are:
+</p>
+    <ul>
+      <li><code>test:///default</code> connects to a default set of
+host definitions built into the driver. </li>
+      <li><code>test:///path/to/host/definitions</code> connects to
+a set of host definitions held in the named file.
+</li>
+    </ul>
+    <h3>
+      <a name="URI_legacy" id="URI_legacy">Other &amp; legacy URI formats</a>
+    </h3>
+    <h4>
+      <a name="URI_NULL" id="URI_NULL">NULL and empty string URIs</a>
+    </h4>
+    <p>
+Libvirt allows you to pass a <code>NULL</code> pointer to
+<code>virConnectOpen*</code>.  Empty string (<code>""</code>) acts in
+the same way.  Traditionally this has meant
+<q>connect to the local Xen hypervisor</q>.  However in future this
+may change to mean <q>connect to the best available hypervisor</q>.
+</p>
+    <p>
+The theory is that if, for example, Xen is unavailable but the
+machine is running an OpenVZ kernel, then we should not try to
+connect to the Xen hypervisor since that is obviously the wrong
+thing to do.
+</p>
+    <p>
+In any case applications linked to libvirt can continue to pass
+<code>NULL</code> as a default choice, but should always allow the
+user to override the URI, either by constructing one or by allowing
+the user to type a URI in directly (if that is appropriate).  If your
+application wishes to connect specifically to a Xen hypervisor, then
+for future proofing it should choose a full <a href="#URI_xen"><code>xen:///</code> URI</a>.
+</p>
+    <h4>
+      <a name="URI_file" id="URI_file">File paths (xend-unix-server)</a>
+    </h4>
+    <p>
+If XenD is running and configured in <code>/etc/xen/xend-config.sxp</code>:
+</p>
+    <pre>
+(xend-unix-server yes)
+</pre>
+    <p>
+then it listens on a Unix domain socket, usually at
+<code>/var/lib/xend/xend-socket</code>.  You may pass a different path
+using a file URI such as:
+</p>
+    <pre>
+virsh -c ///var/run/xend/xend-socket
+</pre>
+    <h4>
+      <a name="URI_http" id="URI_http">Legacy: <code>http://...</code> (xend-http-server)</a>
+    </h4>
+    <p>
+If XenD is running and configured in <code>/etc/xen/xend-config.sxp</code>:
+
+</p>
+    <pre>
+(xend-http-server yes)
+</pre>
+    <p>
+then it listens on TCP port 8000.  libvirt allows you to
+try to connect to xend running on remote machines by passing
+<code>http://<i>hostname</i>[:<i>port</i>]/</code>, for example:
+
+</p>
+    <pre>
+virsh -c http://oirase/ list
+</pre>
+    <p>
+This method is unencrypted and insecure and is definitely not
+recommended for production use.  Instead use <a href="remote.html">libvirt's remote support</a>.
+</p>
+    <p>
+Notes:
+</p>
+    <ol>
+      <li> The HTTP client does not fully support IPv6. </li>
+      <li> Many features do not work as expected across HTTP connections, in
+ particular, <a href="html/libvirt-libvirt.html#virConnectGetCapabilities">virConnectGetCapabilities</a>.
+ The <a href="remote.html">remote support</a> however does work
+ correctly. </li>
+      <li> XenD's new-style XMLRPC interface is not supported by
+ libvirt, only the old-style sexpr interface known in the Xen
+ documentation as "unix server" or "http server".</li>
+    </ol>
+    <h4>
+      <a name="URI_legacy_xen" id="URI_legacy_xen">Legacy: <code>"xen"</code></a>
+    </h4>
+    <p>
+Another legacy URI is to specify name as the string
+<code>"xen"</code>.  This will continue to refer to the Xen
+hypervisor.  However you should prefer a full <a href="#URI_xen"><code>xen:///</code> URI</a> in all future code.
+</p>
+    <h4>
+      <a name="URI_legacy_proxy" id="URI_legacy_proxy">Legacy: Xen proxy</a>
+    </h4>
+    <p>
+Libvirt continues to support connections to a separately running Xen
+proxy daemon.  This provides a way to allow non-root users to make a
+safe (read-only) subset of queries to the hypervisor.
+</p>
+    <p>
+There is no specific "Xen proxy" URI.  However if a Xen URI of any of
+the ordinary or legacy forms is used (eg. <code>NULL</code>,
+<code>""</code>, <code>"xen"</code>, ...) which fails, <i>and</i> the
+user is not root, <i>and</i> the Xen proxy socket can be connected to
+(<code>/tmp/libvirt_proxy_conn</code>), then libvirt will use a proxy
+connection.
+</p>
+    <p>
+You should consider using <a href="remote.html">libvirt remote support</a>
+in future.
+</p>
+  </body>
+</html>

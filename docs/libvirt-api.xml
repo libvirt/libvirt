@@ -567,14 +567,14 @@
       <field name='domain' type='int' info=' What part of the library raised this error'/>
       <field name='message' type='char *' info=' human-readable informative error message'/>
       <field name='level' type='virErrorLevel' info=' how consequent is the error'/>
-      <field name='conn' type='virConnectPtr' info=' the connection if available'/>
-      <field name='dom' type='virDomainPtr' info=' the domain if available'/>
+      <field name='conn' type='virConnectPtr' info=' connection if available, see note above'/>
+      <field name='dom' type='virDomainPtr' info=' domain if available, see note above'/>
       <field name='str1' type='char *' info=' extra string information'/>
       <field name='str2' type='char *' info=' extra string information'/>
       <field name='str3' type='char *' info=' extra string information'/>
       <field name='int1' type='int' info=' extra number information'/>
       <field name='int2' type='int' info=' extra number information'/>
-      <field name='net' type='virNetworkPtr' info=' the network if available'/>
+      <field name='net' type='virNetworkPtr' info=' network if available, see note above'/>
     </struct>
     <typedef name='virErrorDomain' file='virterror' type='enum'/>
     <typedef name='virErrorLevel' file='virterror' type='enum'/>

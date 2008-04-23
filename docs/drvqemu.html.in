@@ -1,0 +1,97 @@
+<html>
+  <body>
+    <h1>QEMU/KVM hypervisor driver</h1>
+
+    <p>
+      The libvirt QEMU driver can manage any QEMU emulator from version 0.8.1
+      or later. It can also manage anything that provides the same QEMU command
+      line syntax and monitor interaction. This includes KVM, and Xenner.
+    </p>
+
+    <h2>Deployment pre-requisites</h2>
+
+    <ul>
+      <li>
+	<strong>QEMU emulators</strong>: The driver will probe <code>/usr/bin</code>
+	for the presence of <code>qemu</code>, <code>qemu-system-x86_64</code>,
+	<code>qemu-system-mips</code>,<code>qemu-system-mipsel</code>,
+	<code>qemu-system-sparc</code>,<code>qemu-system-ppc</code>. The results
+	of this can be seen from the capabilities XML output.
+      </li>
+      <li>
+	<strong>KVM hypervisor</strong>: The driver will probe <code>/usr/bin</code>
+	for the presence of <code>qemu-kvm</code> and <code>/dev/kvm</code> device
+	node. If both are found, then KVM fullyvirtualized, hardware accelerated
+	guests will be available.
+      </li>
+      <li>
+	<strong>Xenner hypervisor</strong>: The driver will probe <code>/usr/bin</code>
+	for the presence of <code>xenner</code> and <code>/dev/kvm</code> device
+	node. If both are found, then Xen paravirtualized guests can be run using
+	the KVM hardware acceleration.
+      </li>
+    </ul>
+
+    <h2><a name="xmlconfig">Example domain XML config</a></h2>
+
+    <h3>QEMU emulated guest on x86_64</h3>
+
+        <pre>&lt;domain type='qemu'&gt;
+  &lt;name&gt;QEmu-fedora-i686&lt;/name&gt;
+  &lt;uuid&gt;c7a5fdbd-cdaf-9455-926a-d65c16db1809&lt;/uuid&gt;
+  &lt;memory&gt;219200&lt;/memory&gt;
+  &lt;currentMemory&gt;219200&lt;/currentMemory&gt;
+  &lt;vcpu&gt;2&lt;/vcpu&gt;
+  &lt;os&gt;
+    &lt;type arch='i686' machine='pc'&gt;hvm&lt;/type&gt;
+    &lt;boot dev='cdrom'/&gt;
+  &lt;/os&gt;
+  &lt;devices&gt;
+    &lt;emulator&gt;/usr/bin/qemu-system-x86_64&lt;/emulator&gt;
+    &lt;disk type='file' device='cdrom'&gt;
+      &lt;source file='/home/user/boot.iso'/&gt;
+      &lt;target dev='hdc'/&gt;
+      &lt;readonly/&gt;
+    &lt;/disk&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;source file='/home/user/fedora.img'/&gt;
+      &lt;target dev='hda'/&gt;
+    &lt;/disk&gt;
+    &lt;interface type='network'&gt;
+      &lt;source name='default'/&gt;
+    &lt;/interface&gt;
+    &lt;graphics type='vnc' port='-1'/&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;</pre>
+
+    <h3>KVM hardware accelerated guest on i686</h3>
+
+        <pre>&lt;domain type='kvm'&gt;
+  &lt;name&gt;demo2&lt;/name&gt;
+  &lt;uuid&gt;4dea24b3-1d52-d8f3-2516-782e98a23fa0&lt;/uuid&gt;
+  &lt;memory&gt;131072&lt;/memory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;os&gt;
+    &lt;type arch="i686"&gt;hvm&lt;/type&gt;
+  &lt;/os&gt;
+  &lt;clock sync="localtime"/&gt;
+  &lt;devices&gt;
+    &lt;emulator&gt;/usr/bin/qemu-kvm&lt;/emulator&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;source file='/var/lib/libvirt/images/demo2.img'/&gt;
+      &lt;target dev='hda'/&gt;
+    &lt;/disk&gt;
+    &lt;interface type='network'&gt;
+      &lt;source network='default'/&gt;
+      &lt;mac address='24:42:53:21:52:45'/&gt;
+    &lt;/interface&gt;
+    &lt;graphics type='vnc' port='-1'/&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;</pre>
+
+    <h3>Xen paravirtualized guests with hardware acceleration</h3>
+
+    
+
+  </body>
+</html>
