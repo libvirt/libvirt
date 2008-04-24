@@ -67,14 +67,14 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     int	domain	: What part of the library raised this error
     char *	message	: human-readable informative error message
     <a href="libvirt-virterror.html#virErrorLevel">virErrorLevel</a>	level	: how consequent is the error
-    <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	conn	: the connection if available
-    <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	dom	: the domain if available
+    <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	conn	: connection if available, see note above
+    <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	dom	: domain if available, see note above
     char *	str1	: extra string information
     char *	str2	: extra string information
     char *	str3	: extra string information
     int	int1	: extra number information
     int	int2	: extra number information
-    <a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a>	net	: the network if available
+    <a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a>	net	: network if available, see note above
 } virError;
 </pre><p/>
 </div>

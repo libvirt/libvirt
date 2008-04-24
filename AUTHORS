@@ -8,11 +8,11 @@ The libvirt project was initiated by:
 The primary maintainers for various code sub-systems / drivers
 are:
 
-  Daniel Veillard      <veillard@redhat.com>   (xen & everything else)
+  Daniel Veillard      <veillard@redhat.com>
   Karel Zak            <kzak@redhat.com>       (virsh tool)
-  Daniel Berrange      <berrange@redhat.com>   (test & qemu drivers)
+  Daniel Berrange      <berrange@redhat.com>
   Mark McLoughlin      <markmc@redhat.com>     (network driver)
-  Richard W.M. Jones   <rjones@redhat.com>     (remote driver)
+  Richard W.M. Jones   <rjones@redhat.com>
 
 Patches have also been contributed by:
 
@@ -45,5 +45,6 @@ Patches have also been contributed by:
 
   [....send patches to get your name here....]
 
+The libvirt Logo was designed by Diana Fong
 
 -- End

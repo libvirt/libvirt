@@ -4,7 +4,7 @@
   Note that this is automatically generated from the news webpage at:
        http://libvirt.org/news.html
 
-Releases
+
 0.4.2: Apr 8 2008:
    - New features: memory operation for QEmu/KVM driver (Cole Robinson),
       new routed networking schemas (Mads Olesen)
@@ -39,9 +39,9 @@ Releases
       driver (Cole Robinson), xen and hvm added to test driver capabilities
       (Cole Robinson)
    - Code cleanup: remove unused getopt header (Jim Meyering), mark more
-      strings as translatable (Guido GÃ¼nther and Jim Meyering), convert
+      strings as translatable (Guido Günther and Jim Meyering), convert
       error strings to something meaningful and translatable (Jim Meyering),
-      Linux Containers code cleanup, last error initializer (Guido GÃ¼nther)
+      Linux Containers code cleanup, last error initializer (Guido Günther)
 
 
 0.4.1: Mar 3 2008:

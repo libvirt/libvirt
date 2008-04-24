@@ -1027,7 +1027,9 @@ def analyzeHTML(doc, resource):
 
 def analyzeHTMLPages():
     ret = 0
-    HTMLfiles = glob.glob("*.html") + glob.glob("tutorial/*.html")
+    HTMLfiles = glob.glob("*.html") + glob.glob("tutorial/*.html") + \
+                glob.glob("CIM/*.html") + glob.glob("ocaml/*.html") + \
+		glob.glob("ruby/*.html")
     for html in HTMLfiles:
 	if html[0:3] == "API":
 	    continue
