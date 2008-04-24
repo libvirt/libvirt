@@ -1,6 +1,10 @@
+Thu Apr 24 11:42:53 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.css search.php: fix the search box and PHP output
+
 Thu Apr 24 18:00:21 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
 
-	* proxy/libvirt_proxy.c docs/* fixing typos
+	* proxy/libvirt_proxy.c docs/*: fixing typos
 
 Thu Apr 24 09:54:19 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
