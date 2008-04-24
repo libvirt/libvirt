@@ -114,11 +114,9 @@
               <dd><span>Virtualization management from the desktop</span></dd>
             </dl>
           </div>
-          <!--
           <p id="et">
-            <a href="http://et.redhat.com/"><img src="{$href_base}et_logo.png" alt="A Red Hat Emerging Technology Project"/></a>
+            <a href="http://et.redhat.com/"><img src="{$href_base}redhat.gif" alt="Project sponsored by Red Hat"/></a>
           </p>
-          -->
         </div>
       </body>
     </html>

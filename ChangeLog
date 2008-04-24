@@ -1,3 +1,8 @@
+Thu Apr 24 17:18:18 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/page.xsl docs/redhat.gif docs/*.html: using the shadowman
+	  logo to indicate Red Hat sponsoring, regenerated.
+
 Thu Apr 24 14:34:37 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* AUTHORS: update, list people with commit access

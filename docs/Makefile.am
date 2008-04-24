@@ -20,7 +20,6 @@ apipng =	\
 png = \
   16favicon.png \
   32favicon.png \
-  et_logo.png \
   footer_corner.png \
   footer_pattern.png \
   libvirHeader.png \
