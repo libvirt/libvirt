@@ -1,3 +1,7 @@
+Thu Apr 24 18:00:21 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
+
+	* proxy/libvirt_proxy.c docs/* fixing typos
+
 Thu Apr 24 09:54:19 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* AUTHORS: indicate that the Logo is by Diana Fong

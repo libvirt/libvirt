@@ -13,7 +13,7 @@
     <h2>Hypervisor drivers</h2>
 
     <p>
-      The hypervisor drivers currently supported by livirt are:
+      The hypervisor drivers currently supported by libvirt are:
     </p>
 
     <ul>

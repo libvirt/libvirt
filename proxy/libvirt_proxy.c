@@ -151,7 +151,7 @@ proxyCloseUnixSocket(void) {
 
 /**
  * proxyListenUnixSocket:
- * @path: the fileame for the socket
+ * @path: the filename for the socket
  *
  * create a new abstract socket based on that path and listen on it
  *
@@ -700,7 +700,7 @@ proxyProcessRequests(void) {
                 if (exit_timeout == 0) {
                     done = 1;
                     if (debug > 0) {
-                        fprintf(stderr, "Exitting after 30s without clients\n");
+                        fprintf(stderr, "Exiting after 30s without clients\n");
                     }
                 }
             } else

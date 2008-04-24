@@ -18,7 +18,7 @@
 
     <p>
       Once an hour, an automated snapshot is made from the latest CVS server
-      source tree. These snapshots should be usable, but we make no guarentees
+      source tree. These snapshots should be usable, but we make no guarantees
       about their stability:
     </p>
 
@@ -31,7 +31,7 @@
 
     <p>
       The master source repository uses <a href="http://ximbiot.com/cvs/cvshome/docs/">CVS</a>
-      and anonymous access is provided. Prior to accessing the server is it neccessary
+      and anonymous access is provided. Prior to accessing the server is it necessary
       to authenticate using the password <code>anoncvs</code>. This can be accomplished with the
       <code>cvs login</code> command:
     </p>
@@ -52,7 +52,7 @@
 
     <p>
       The libvirt build process uses GNU autotools, so after obtaining a checkout
-      it is neccessary to generate the configure script and Makefile.in templates
+      it is necessary to generate the configure script and Makefile.in templates
       using the <code>autogen.sh</code> command. As an example, to do a complete
       build and install it into your home directory run:
     </p>
