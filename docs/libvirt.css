@@ -341,3 +341,10 @@ p.image {
 #projects span {
     color: #ccc;
 }
+
+
+#sponsor {
+    color: white;
+    text-decoration: inherit;
+    font-size: 1.2em;
+}

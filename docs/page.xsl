@@ -114,7 +114,8 @@
               <dd><span>Virtualization management from the desktop</span></dd>
             </dl>
           </div>
-          <p id="et">
+          <p id="sponsor">
+	    Sponsored by:<br/>
             <a href="http://et.redhat.com/"><img src="{$href_base}redhat.gif" alt="Project sponsored by Red Hat"/></a>
           </p>
         </div>
