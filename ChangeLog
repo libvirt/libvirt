@@ -1,3 +1,7 @@
+Thu Apr 24 14:34:37 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* AUTHORS: update, list people with commit access
+
 Thu Apr 24 11:42:53 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* libvirt.css search.php: fix the search box and PHP output

@@ -5,28 +5,29 @@ The libvirt project was initiated by:
 
   Daniel Veillard      <veillard@redhat.com> or <daniel@veillard.com>
 
-The primary maintainers for various code sub-systems / drivers
-are:
+The primary maintainers and people with commit access rights:
 
   Daniel Veillard      <veillard@redhat.com>
-  Karel Zak            <kzak@redhat.com>       (virsh tool)
   Daniel Berrange      <berrange@redhat.com>
-  Mark McLoughlin      <markmc@redhat.com>     (network driver)
   Richard W.M. Jones   <rjones@redhat.com>
+  Karel Zak            <kzak@redhat.com>
+  Mark McLoughlin      <markmc@redhat.com>
+  Anthony Liguori      <aliguori@us.ibm.com>
+  Jim Meyering         <meyering@redhat.com>
+  Jim Fehlig           <jfehlig@novell.com>
+  Chris Lalancette     <clalance@redhat.com>
+  Atsushi SAKAI        <sakaia@jp.fujitsu.com>
+  Dave Leskovec        <dlesko@linux.vnet.ibm.com>
 
 Patches have also been contributed by:
 
   David Lutterkort     <dlutter@redhat.com>
-  Anthony Liguori      <aliguori@us.ibm.com>
-  Jim Meyering         <meyering@redhat.com>
   Andrew Puch          <apuch@redhat.com>
-  Jim Fehlig           <jfehlig@novell.com>
   Philippe Berthault   <philippe.berthault@Bull.net>
   Hugh Brock           <hbrock@redhat.com>
   Michel Ponceau       <michel.ponceau@bull.net>
   Jeremy Katz          <katzj@redhat.com>
   Pete Vetere          <pvetere@redhat.com>
-  Atsushi SAKAI        <sakaia@jp.fujitsu.com>
   Kazuki Mizushima     <mizushima.kazuk@jp.fujitsu.com>
   Saori Fukuta         <fukuta.saori@jp.fujitsu.com>
   Tatsuro Enokura      <fj7716hz@aa.jp.fujitsu.com>
@@ -37,7 +38,6 @@ Patches have also been contributed by:
   Christian Ehrhardt   <ehrhardt@linux.vnet.ibm.com>
   Shuveb Hussain       <shuveb@binarykarma.com>
   Jim Paris            <jim@jtan.com>
-  Chris Lalancette     <clalance@redhat.com>
   Guido Guenther       <agx@sigxcpu.org>
   Daniel Hokka Zakrisson <daniel@hozac.com>
   Mads Chr. Olesen     <shiyee@shiyee.dk>
