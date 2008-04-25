@@ -13,9 +13,6 @@ h2, h3, h4, h5, h6 {
 }
 
 #header {
-    position: absolute;
-    top: 0px;
-    left: 0px;
     margin: 0px;
     height: 104px;
     width: 100%;
@@ -24,27 +21,21 @@ h2, h3, h4, h5, h6 {
 }
 
 #body {
-    position: relative;
+    float: left;
+    width: 100%;
     border: 0px;
-    padding-top: 104px;
     left: 0px;
     margin: 0px;
-    padding-left: 250px;
 }
 
 #content {
-    float: right;
+    margin-left: 230px;
     padding: 0px;
-    width: 100%;
     padding-bottom: 1em;
 }
 
 #menu {
-    border: 0px;
-    margin-left: -250px;
-    position: relative;
-    margin-top: 0px;
-    left: 0px;
+    float: left;
     width: 220px;
     margin-bottom: 1em;
 }
@@ -63,6 +54,8 @@ h2, h3, h4, h5, h6 {
     list-style: none;
     color: black;
     padding: 0px;
+    margin: 0px;
+    border: 0px;
     font-weight: bold;
     font-size: 1.2em;
 }
@@ -247,8 +240,12 @@ p.image {
     padding: 0px;
     border: 0px;
     width: 100%;
-    background: #757575 url(footer_pattern.png) repeat-x;
     height: 180px;
+    background: #757575;
+}
+/* This is hidden from IE <= 6 because it can't do transparency */
+body > #footer {
+    background: #757575 url(footer_pattern.png) repeat-x;
 }
 
 #footer p {
@@ -278,13 +275,15 @@ p.image {
 #projects dl {
     margin: 0px;
     border: 0px solid white;
-    background: url(footer_corner.png) no-repeat;
     height: 180px;
     position: absolute;
     top: 0px;
     left: 0px;
 }
-
+/* This is hidden from IE <= 6 because it can't do transparency */
+head:first-child+body #projects dl {
+    background: url(footer_corner.png) no-repeat ! important;
+}
 
 #projects #p1 {
     margin-left: 25%;

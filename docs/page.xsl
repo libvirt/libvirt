@@ -15,7 +15,8 @@
     <xsl:param name="level"/>
     <ul class="{concat('l', $level)}">
       <xsl:for-each select="li">
-        <li>
+        <!-- The extra div tag here works around an IE6 whitespace collapsing problem -->
+        <li><div>
           <!-- A menu is active if there is an 'a' tag with
                a href matching this pagename at this level
                or a child menu -->
@@ -53,7 +54,7 @@
               <xsl:with-param name="level" select="$level + 1"/>
             </xsl:apply-templates>
           </xsl:if>
-        </li>
+        </div></li>
       </xsl:for-each>
     </ul>
   </xsl:template>
@@ -77,20 +78,22 @@
           <div id="headerLogo"/>
           <div id="headerSearch">
             <form action="{$href_base}search.php" enctype="application/x-www-form-urlencoded" method="get">
-              <input id="query" name="query" type="text" size="12" value=""/>
-              <input id="submit" name="submit" type="submit" value="Search"/>
+              <div>
+                <input id="query" name="query" type="text" size="12" value=""/>
+                <input id="submit" name="submit" type="submit" value="Search"/>
+              </div>
             </form>
           </div>
         </div>
         <div id="body">
-          <div id="content">
-            <xsl:copy-of select="html/body/*"/>
-          </div>
           <div id="menu">
             <xsl:apply-templates select="exsl:node-set($sitemap)/ul" mode="menu">
               <xsl:with-param name="pagename" select="$pagename"/>
               <xsl:with-param name="level" select="0"/>
             </xsl:apply-templates>
+          </div>
+          <div id="content">
+            <xsl:copy-of select="html/body/*"/>
           </div>
         </div>
         <div id="footer">

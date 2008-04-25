@@ -1,3 +1,11 @@
+Fri Apr 25 12:21:28 EST 2008 Daniel P. Berrange <berrange@redhat.coM>
+
+	* docs/page.xsl, docs/libvir.css: Re-arrange layout to workaround
+	IE6 bugs
+	* docs/site.xsl, docs/newapi.xsl, docs/ChangeLog.xsl: Switch to
+	HTML strict to avoid layout bugs in transitional mode
+	* docs/*.html: Re-generate files with new layout
+
 Fri Apr 25 17:44:28 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/qemud.c: applied patch from Anton Protopopov to change
