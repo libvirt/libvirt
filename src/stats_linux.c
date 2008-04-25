@@ -1,7 +1,7 @@
 /*
  * Linux block and network stats.
  *
- * Copyright (C) 2007 Red Hat, Inc.
+ * Copyright (C) 2007, 2008 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -262,7 +262,7 @@ xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
         }
 
         if (path[4] != '\0') {
-            if (!isdigit(path[4]) || path[4] == '0' ||
+            if (!isdigit(to_uchar(path[4])) || path[4] == '0' ||
                 virStrToLong_i(path+4, NULL, 10, &part) < 0 ||
                 part < 1 || part > 15) {
                 statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
@@ -306,7 +306,7 @@ xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
             } else {
                 p = path + 3;
             }
-            if (p && (!isdigit(*p) || *p == '0' ||
+            if (p && (!isdigit(to_uchar(*p)) || *p == '0' ||
                       virStrToLong_i(p, NULL, 10, &part) < 0 ||
                       part < 1 || part > 15)) {
                 statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
@@ -332,7 +332,7 @@ xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
         }
 
         if (path[3] != '\0') {
-            if (!isdigit(path[3]) || path[3] == '0' ||
+            if (!isdigit(to_uchar(path[3])) || path[3] == '0' ||
                 virStrToLong_i(path+3, NULL, 10, &part) < 0 ||
                 part < 1 || part > 63) {
                 statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,

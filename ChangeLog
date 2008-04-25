@@ -1,3 +1,14 @@
+Fri Apr 25 16:51:58 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	avoid problems with sign-extended "char" operand to is* functions
+	* src/util.h (to_uchar): Define function.
+	* src/sexpr.c (_string2sexpr): Apply to_uchar to is* operand.
+	* src/nodeinfo.c (linuxNodeInfoCPUPopulate): Likewise.
+	* src/qemu_driver.c (qemudExtractMonitorPath): Likewise.
+	* src/stats_linux.c (xenLinuxDomainDeviceID): Likewise.
+	* src/util.c (TOLOWER, __virMacAddrCompare, virParseMacAddr): Likewise.
+	* src/virsh.c (cmdVcpupin, vshCommandGetToken): Likewise.
+
 Thu Apr 24 17:18:18 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/page.xsl docs/redhat.gif docs/*.html: using the shadowman

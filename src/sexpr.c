@@ -20,6 +20,7 @@
 
 #include "internal.h"
 #include "sexpr.h"
+#include "util.h"
 
 /**
  * virSexprError:
@@ -357,7 +358,8 @@ _string2sexpr(const char *buffer, size_t * end)
         } else {
             start = ptr;
 
-            while (*ptr && !isspace(*ptr) && *ptr != ')' && *ptr != '(') {
+            while (*ptr && !isspace(to_uchar(*ptr))
+                   && *ptr != ')' && *ptr != '(') {
                 ptr++;
             }
 

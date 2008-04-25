@@ -1763,7 +1763,7 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
     for (i = 0; cpulist[i]; i++) {
         switch (state) {
         case expect_num:
-            if (!isdigit (cpulist[i])) {
+          if (!isdigit (to_uchar(cpulist[i]))) {
                 vshError( ctl, FALSE, _("cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."), cpulist, i, cpulist[i]);
                 virDomainFree (dom);
                 return FALSE;
@@ -1773,7 +1773,7 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
         case expect_num_or_comma:
             if (cpulist[i] == ',')
                 state = expect_num;
-            else if (!isdigit (cpulist[i])) {
+            else if (!isdigit (to_uchar(cpulist[i]))) {
                 vshError(ctl, FALSE, _("cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%c')."), cpulist, i, cpulist[i]);
                 virDomainFree (dom);
                 return FALSE;
@@ -5685,7 +5685,7 @@ vshCommandGetToken(vshControl * ctl, char *str, char **end, char **res)
 
         if (tk == VSH_TK_NONE) {
             if (*p == '-' && *(p + 1) == '-' && *(p + 2)
-                && isalnum((unsigned char) *(p + 2))) {
+                && isalnum(to_uchar(*(p + 2)))) {
                 tk = VSH_TK_OPTION;
                 p += 2;
             } else {

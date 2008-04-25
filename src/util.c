@@ -57,7 +57,7 @@
 
 #define MAX_ERROR_LEN   1024
 
-#define TOLOWER(Ch) (isupper (Ch) ? tolower (Ch) : (Ch))
+#define TOLOWER(Ch) (isupper (to_uchar(Ch)) ? tolower (Ch) : (Ch))
 
 #define virLog(msg...) fprintf(stderr, msg)
 
@@ -704,9 +704,9 @@ __virMacAddrCompare (const char *p, const char *q)
 {
     unsigned char c, d;
     do {
-        while (*p == '0' && isxdigit (p[1]))
+        while (*p == '0' && isxdigit (to_uchar(p[1])))
             ++p;
-        while (*q == '0' && isxdigit (q[1]))
+        while (*q == '0' && isxdigit (to_uchar(q[1])))
             ++q;
         c = TOLOWER (*p);
         d = TOLOWER (*q);
@@ -749,7 +749,7 @@ virParseMacAddr(const char* str, unsigned char *addr)
         /* This is solely to avoid accepting the leading
          * space or "+" that strtoul would otherwise accept.
          */
-        if (!isxdigit(*str))
+        if (!isxdigit(to_uchar(*str)))
             break;
 
         result = strtoul(str, &end_ptr, 16);

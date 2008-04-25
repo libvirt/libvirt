@@ -1,7 +1,7 @@
 /*
  * nodeinfo.c: Helper routines for OS specific node information
  *
- * Copyright (C) 2006, 2007 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -59,7 +59,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
         char *buf = line;
         if (STREQLEN(buf, "processor", 9)) { /* aka a single logical CPU */
             buf += 9;
-            while (*buf && isspace(*buf))
+            while (*buf && isspace(to_uchar(*buf)))
                 buf++;
             if (*buf != ':') {
                 __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
@@ -72,7 +72,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
             char *p;
             unsigned int ui;
             buf += 9;
-            while (*buf && isspace(*buf))
+            while (*buf && isspace(to_uchar(*buf)))
                 buf++;
             if (*buf != ':' || !buf[1]) {
                 __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
@@ -82,13 +82,13 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
             }
             if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0
                 /* Accept trailing fractional part.  */
-                && (*p == '\0' || *p == '.' || isspace(*p)))
+                && (*p == '\0' || *p == '.' || isspace(to_uchar(*p))))
                 nodeinfo->mhz = ui;
         } else if (STREQLEN(buf, "cpu cores", 9)) { /* aka cores */
             char *p;
             unsigned int id;
             buf += 9;
-            while (*buf && isspace(*buf))
+            while (*buf && isspace(to_uchar(*buf)))
                 buf++;
             if (*buf != ':' || !buf[1]) {
                 __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
@@ -97,7 +97,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
                 return -1;
             }
             if (virStrToLong_ui(buf+1, &p, 10, &id) == 0
-                && (*p == '\0' || isspace(*p))
+                && (*p == '\0' || isspace(to_uchar(*p)))
                 && id > nodeinfo->cores)
                 nodeinfo->cores = id;
         }

@@ -513,7 +513,7 @@ static int qemudExtractMonitorPath(const char *haystack, char *path, int pathmax
          * The monitor path ends at first whitespace char
          * so lets search for it & NULL terminate it there
          */
-        if (isspace(*path)) {
+        if (isspace(to_uchar(*path))) {
             *path = '\0';
             return 0;
         }
