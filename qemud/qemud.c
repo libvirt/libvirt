@@ -2156,6 +2156,18 @@ int main(int argc, char **argv) {
     if (remoteReadConfigFile (server, remote_config_file) < 0)
         goto error1;
 
+    /* Change the group ownership of /var/run/libvirt to unix_sock_gid */
+    if (getuid() != 0) {
+        qemudLog (QEMUD_WARN,
+                  "%s", _("Cannot set group ownership when not running as root"));
+    } else {
+        const char *sockdirname = LOCAL_STATE_DIR "/run/libvirt";
+
+        if (chown(sockdirname, -1, unix_sock_gid) < 0)
+            qemudLog(QEMUD_ERR, "%s %s",
+                    _("Failed to change group ownership of "), sockdirname);
+    }
+
     if (godaemon) {
         openlog("libvirtd", 0, 0);
         if (qemudGoDaemon() < 0) {

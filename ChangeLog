@@ -1,3 +1,8 @@
+Fri Apr 25 17:44:28 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/qemud.c: applied patch from Anton Protopopov to change
+	  group ownership of /var/run/libvirt/ to unix_sock_gid.
+
 Fri Apr 25 16:51:58 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	avoid problems with sign-extended "char" operand to is* functions
