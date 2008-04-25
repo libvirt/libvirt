@@ -381,7 +381,6 @@ qemudReadMonitorOutput(virConnectPtr conn,
                        const char *what)
 {
 #define MONITOR_TIMEOUT 3000
-
     int got = 0;
     buf[0] = '\0';
 
@@ -498,48 +497,88 @@ static int qemudOpenMonitor(virConnectPtr conn,
     return ret;
 }
 
-static int qemudExtractMonitorPath(const char *haystack, char *path, int pathmax) {
+static int qemudExtractMonitorPath(const char *haystack,
+                                   size_t *offset,
+                                   char *path, int pathmax) {
     static const char needle[] = "char device redirected to";
     char *tmp;
 
-    if (!(tmp = strstr(haystack, needle)))
+    /* First look for our magic string */
+    if (!(tmp = strstr(haystack + *offset, needle)))
         return -1;
 
+    /* Grab all the trailing data */
     strncpy(path, tmp+sizeof(needle), pathmax-1);
     path[pathmax-1] = '\0';
 
-    while (*path) {
-        /*
-         * The monitor path ends at first whitespace char
-         * so lets search for it & NULL terminate it there
-         */
-        if (isspace(to_uchar(*path))) {
-            *path = '\0';
+    /*
+     * And look for first whitespace character and nul terminate
+     * to mark end of the pty path
+     */
+    tmp = path;
+    while (*tmp) {
+        if (isspace(to_uchar(*tmp))) {
+            *tmp = '\0';
+            *offset += (sizeof(needle)-1) + strlen(path);
             return 0;
         }
-        path++;
+        tmp++;
     }
 
     /*
      * We found a path, but didn't find any whitespace,
      * so it must be still incomplete - we should at
-     * least see a \n
+     * least see a \n - indicate that we want to carry
+     * on trying again
      */
     return -1;
 }
 
 static int
-qemudOpenMonitorPath(virConnectPtr conn,
-                     struct qemud_driver *driver,
-                     struct qemud_vm *vm,
-                     const char *output,
-                     int fd ATTRIBUTE_UNUSED)
+qemudFindCharDevicePTYs(virConnectPtr conn,
+                        struct qemud_driver *driver,
+                        struct qemud_vm *vm,
+                        const char *output,
+                        int fd ATTRIBUTE_UNUSED)
 {
     char monitor[PATH_MAX];
+    size_t offset = 0;
+    struct qemud_vm_chr_def *chr;
 
-    if (qemudExtractMonitorPath(output, monitor, sizeof(monitor)) < 0)
+    /* The order in which QEMU prints out the PTY paths is
+       the order in which it procsses its monitor, serial
+       and parallel device args. This code must match that
+       ordering.... */
+
+    /* So first comes the monitor device */
+    if (qemudExtractMonitorPath(output, &offset, monitor, sizeof(monitor)) < 0)
         return 1; /* keep reading */
 
+    /* then the serial devices */
+    chr = vm->def->serials;
+    while (chr) {
+        if (chr->srcType == QEMUD_CHR_SRC_TYPE_PTY) {
+            if (qemudExtractMonitorPath(output, &offset,
+                                        chr->srcData.file.path,
+                                        sizeof(chr->srcData.file.path)) < 0)
+                return 1; /* keep reading */
+        }
+        chr = chr->next;
+    }
+
+    /* and finally the parallel devices */
+    chr = vm->def->parallels;
+    while (chr) {
+        if (chr->srcType == QEMUD_CHR_SRC_TYPE_PTY) {
+            if (qemudExtractMonitorPath(output, &offset,
+                                        chr->srcData.file.path,
+                                        sizeof(chr->srcData.file.path)) < 0)
+                return 1; /* keep reading */
+        }
+        chr = chr->next;
+    }
+
+    /* Got them all, so now open the monitor console */
     return qemudOpenMonitor(conn, driver, vm, monitor);
 }
 
@@ -550,7 +589,7 @@ static int qemudWaitForMonitor(virConnectPtr conn,
     int ret = qemudReadMonitorOutput(conn,
                                      driver, vm, vm->stderr,
                                      buf, sizeof(buf),
-                                     qemudOpenMonitorPath,
+                                     qemudFindCharDevicePTYs,
                                      "console");
 
     buf[sizeof(buf)-1] = '\0';

@@ -66,6 +66,10 @@ extern "C" {
 #define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
 #define STRCASENEQLEN(a,b,n) (strncasecmp((a),(b),(n)) != 0)
 
+
+#define NUL_TERMINATE(buf) do { (buf)[sizeof(buf)-1] = '\0'; } while (0)
+#define ARRAY_CARDINALITY(Array) (sizeof (Array) / sizeof *(Array))
+
 /* If configured with --enable-debug=yes then library calls
  * are printed to stderr for debugging.
  */

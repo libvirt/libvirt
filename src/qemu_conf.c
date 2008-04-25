@@ -205,6 +205,8 @@ void qemudFreeVMDef(struct qemud_vm_def *def) {
     struct qemud_vm_disk_def *disk = def->disks;
     struct qemud_vm_net_def *net = def->nets;
     struct qemud_vm_input_def *input = def->inputs;
+    struct qemud_vm_chr_def *serial = def->serials;
+    struct qemud_vm_chr_def *parallel = def->parallels;
 
     while (disk) {
         struct qemud_vm_disk_def *prev = disk;
@@ -219,6 +221,16 @@ void qemudFreeVMDef(struct qemud_vm_def *def) {
     while (input) {
         struct qemud_vm_input_def *prev = input;
         input = input->next;
+        free(prev);
+    }
+    while (serial) {
+        struct qemud_vm_chr_def *prev = serial;
+        serial = serial->next;
+        free(prev);
+    }
+    while (parallel) {
+        struct qemud_vm_chr_def *prev = parallel;
+        parallel = parallel->next;
         free(prev);
     }
     xmlFree(def->keymap);
@@ -945,6 +957,333 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
 }
 
 
+/* Parse the XML definition for a character device
+ * @param net pre-allocated & zero'd net record
+ * @param node XML nodeset to parse for net definition
+ * @return 0 on success, -1 on failure
+ *
+ * The XML we're dealing with looks like
+ *
+ * <serial type="pty">
+ *   <source path="/dev/pts/3"/>
+ *   <target port="1"/>
+ * </serial>
+ *
+ * <serial type="dev">
+ *   <source path="/dev/ttyS0"/>
+ *   <target port="1"/>
+ * </serial>
+ *
+ * <serial type="tcp">
+ *   <source mode="connect" host="0.0.0.0" service="2445"/>
+ *   <target port="1"/>
+ * </serial>
+ *
+ * <serial type="tcp">
+ *   <source mode="bind" host="0.0.0.0" service="2445"/>
+ *   <target port="1"/>
+ * </serial>
+ *
+ * <serial type="udp">
+ *   <source mode="bind" host="0.0.0.0" service="2445"/>
+ *   <source mode="connect" host="0.0.0.0" service="2445"/>
+ *   <target port="1"/>
+ * </serial>
+ *
+ * <serial type="unix">
+ *   <source mode="bind" path="/tmp/foo"/>
+ *   <target port="1"/>
+ * </serial>
+ *
+ */
+static int qemudParseCharXML(virConnectPtr conn,
+                             struct qemud_vm_chr_def *chr,
+                             int portNum,
+                             xmlNodePtr node) {
+    xmlNodePtr cur;
+    xmlChar *type = NULL;
+    xmlChar *bindHost = NULL;
+    xmlChar *bindService = NULL;
+    xmlChar *connectHost = NULL;
+    xmlChar *connectService = NULL;
+    xmlChar *path = NULL;
+    xmlChar *mode = NULL;
+    xmlChar *protocol = NULL;
+    int ret = -1;
+
+    chr->srcType = QEMUD_CHR_SRC_TYPE_PTY;
+    type = xmlGetProp(node, BAD_CAST "type");
+    if (type != NULL) {
+        if (xmlStrEqual(type, BAD_CAST "null"))
+            chr->srcType = QEMUD_CHR_SRC_TYPE_NULL;
+        else if (xmlStrEqual(type, BAD_CAST "vc"))
+            chr->srcType = QEMUD_CHR_SRC_TYPE_VC;
+        else if (xmlStrEqual(type, BAD_CAST "pty"))
+            chr->srcType = QEMUD_CHR_SRC_TYPE_PTY;
+        else if (xmlStrEqual(type, BAD_CAST "dev"))
+            chr->srcType = QEMUD_CHR_SRC_TYPE_DEV;
+        else if (xmlStrEqual(type, BAD_CAST "file"))
+            chr->srcType = QEMUD_CHR_SRC_TYPE_FILE;
+        else if (xmlStrEqual(type, BAD_CAST "pipe"))
+            chr->srcType = QEMUD_CHR_SRC_TYPE_PIPE;
+        else if (xmlStrEqual(type, BAD_CAST "stdio"))
+            chr->srcType = QEMUD_CHR_SRC_TYPE_STDIO;
+        else if (xmlStrEqual(type, BAD_CAST "udp"))
+            chr->srcType = QEMUD_CHR_SRC_TYPE_UDP;
+        else if (xmlStrEqual(type, BAD_CAST "tcp"))
+            chr->srcType = QEMUD_CHR_SRC_TYPE_TCP;
+        else if (xmlStrEqual(type, BAD_CAST "unix"))
+            chr->srcType = QEMUD_CHR_SRC_TYPE_UNIX;
+        else
+            chr->srcType = QEMUD_CHR_SRC_TYPE_NULL;
+    }
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(cur->name, BAD_CAST "source")) {
+                if (mode == NULL)
+                    mode = xmlGetProp(cur, BAD_CAST "mode");
+
+                switch (chr->srcType) {
+                case QEMUD_CHR_SRC_TYPE_PTY:
+                case QEMUD_CHR_SRC_TYPE_DEV:
+                case QEMUD_CHR_SRC_TYPE_FILE:
+                case QEMUD_CHR_SRC_TYPE_PIPE:
+                case QEMUD_CHR_SRC_TYPE_UNIX:
+                    if (path == NULL)
+                        path = xmlGetProp(cur, BAD_CAST "path");
+
+                    break;
+
+                case QEMUD_CHR_SRC_TYPE_UDP:
+                case QEMUD_CHR_SRC_TYPE_TCP:
+                    if (mode == NULL ||
+                        STREQ((const char *)mode, "connect")) {
+
+                        if (connectHost == NULL)
+                            connectHost = xmlGetProp(cur, BAD_CAST "host");
+                        if (connectService == NULL)
+                            connectService = xmlGetProp(cur, BAD_CAST "service");
+                    } else {
+                        if (bindHost == NULL)
+                            bindHost = xmlGetProp(cur, BAD_CAST "host");
+                        if (bindService == NULL)
+                            bindService = xmlGetProp(cur, BAD_CAST "service");
+                    }
+
+                    if (chr->srcType == QEMUD_CHR_SRC_TYPE_UDP) {
+                        xmlFree(mode);
+                        mode = NULL;
+                    }
+                }
+            } else if (xmlStrEqual(cur->name, BAD_CAST "protocol")) {
+                if (protocol == NULL)
+                    protocol = xmlGetProp(cur, BAD_CAST "type");
+            }
+        }
+        cur = cur->next;
+    }
+
+
+    chr->dstPort = portNum;
+
+    switch (chr->srcType) {
+    case QEMUD_CHR_SRC_TYPE_NULL:
+        /* Nada */
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_VC:
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_PTY:
+        /* @path attribute is an output only property - pty is auto-allocted */
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_DEV:
+    case QEMUD_CHR_SRC_TYPE_FILE:
+    case QEMUD_CHR_SRC_TYPE_PIPE:
+        if (path == NULL) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("Missing source path attribute for char device"));
+            goto cleanup;
+        }
+
+        strncpy(chr->srcData.file.path, (const char *)path,
+                sizeof(chr->srcData.file.path));
+        NUL_TERMINATE(chr->srcData.file.path);
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_STDIO:
+        /* Nada */
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_TCP:
+        if (mode == NULL ||
+            STREQ((const char *)mode, "connect")) {
+            if (connectHost == NULL) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("Missing source host attribute for char device"));
+                goto cleanup;
+            }
+            if (connectService == NULL) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("Missing source service attribute for char device"));
+                goto cleanup;
+            }
+
+            strncpy(chr->srcData.tcp.host, (const char *)connectHost,
+                    sizeof(chr->srcData.tcp.host));
+            NUL_TERMINATE(chr->srcData.tcp.host);
+            strncpy(chr->srcData.tcp.service, (const char *)connectService,
+                    sizeof(chr->srcData.tcp.service));
+            NUL_TERMINATE(chr->srcData.tcp.service);
+
+            chr->srcData.tcp.listen = 0;
+        } else {
+            if (bindHost == NULL) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("Missing source host attribute for char device"));
+                goto cleanup;
+            }
+            if (bindService == NULL) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("Missing source service attribute for char device"));
+                goto cleanup;
+            }
+
+            strncpy(chr->srcData.tcp.host, (const char *)bindHost,
+                    sizeof(chr->srcData.tcp.host));
+            NUL_TERMINATE(chr->srcData.tcp.host);
+            strncpy(chr->srcData.tcp.service, (const char *)bindService,
+                    sizeof(chr->srcData.tcp.service));
+            NUL_TERMINATE(chr->srcData.tcp.service);
+
+            chr->srcData.tcp.listen = 1;
+        }
+        if (protocol != NULL &&
+            STREQ((const char *)protocol, "telnet"))
+            chr->srcData.tcp.protocol = QEMUD_CHR_SRC_TCP_PROTOCOL_TELNET;
+        else
+            chr->srcData.tcp.protocol = QEMUD_CHR_SRC_TCP_PROTOCOL_RAW;
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_UDP:
+        if (connectService == NULL) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("Missing source service attribute for char device"));
+            goto cleanup;
+        }
+
+        if (connectHost != NULL) {
+            strncpy(chr->srcData.udp.connectHost, (const char *)connectHost,
+                    sizeof(chr->srcData.udp.connectHost));
+            NUL_TERMINATE(chr->srcData.udp.connectHost);
+        }
+        strncpy(chr->srcData.udp.connectService, (const char *)connectService,
+                sizeof(chr->srcData.udp.connectService));
+        NUL_TERMINATE(chr->srcData.udp.connectService);
+
+        if (bindHost != NULL) {
+            strncpy(chr->srcData.udp.bindHost, (const char *)bindHost,
+                    sizeof(chr->srcData.udp.bindHost));
+            NUL_TERMINATE(chr->srcData.udp.bindHost);
+        }
+        if (bindService != NULL) {
+            strncpy(chr->srcData.udp.bindService, (const char *)bindService,
+                    sizeof(chr->srcData.udp.bindService));
+            NUL_TERMINATE(chr->srcData.udp.bindService);
+        }
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_UNIX:
+        if (path == NULL) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("Missing source path attribute for char device"));
+            goto cleanup;
+        }
+
+        if (mode != NULL &&
+            STRNEQ((const char *)mode, "connect"))
+            chr->srcData.nix.listen = 1;
+        else
+            chr->srcData.nix.listen = 0;
+
+        strncpy(chr->srcData.nix.path, (const char *)path,
+                sizeof(chr->srcData.nix.path));
+        NUL_TERMINATE(chr->srcData.nix.path);
+        break;
+    }
+
+    ret = 0;
+
+cleanup:
+    xmlFree(mode);
+    xmlFree(protocol);
+    xmlFree(type);
+    xmlFree(bindHost);
+    xmlFree(bindService);
+    xmlFree(connectHost);
+    xmlFree(connectService);
+    xmlFree(path);
+
+    return ret;
+}
+
+
+static int qemudParseCharXMLDevices(virConnectPtr conn,
+                                    xmlXPathContextPtr ctxt,
+                                    const char *xpath,
+                                    unsigned int *ndevs,
+                                    struct qemud_vm_chr_def **devs)
+{
+    xmlXPathObjectPtr obj;
+    int i, ret = -1;
+
+    obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
+        struct qemud_vm_chr_def *prev = *devs;
+        if (ndevs == NULL &&
+            obj->nodesetval->nodeNr > 1) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("too many character devices"));
+            goto cleanup;
+        }
+
+        for (i = 0; i < obj->nodesetval->nodeNr; i++) {
+            struct qemud_vm_chr_def *chr = calloc(1, sizeof(*chr));
+            if (!chr) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                                 "%s",
+                                 _("failed to allocate space for char device"));
+                goto cleanup;
+            }
+
+            if (qemudParseCharXML(conn, chr, i, obj->nodesetval->nodeTab[i]) < 0) {
+                free(chr);
+                goto cleanup;
+            }
+            if (ndevs)
+                (*ndevs)++;
+            chr->next = NULL;
+            if (i == 0) {
+                *devs = chr;
+            } else {
+                prev->next = chr;
+            }
+            prev = chr;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    xmlXPathFreeObject(obj);
+    return ret;
+}
+
+
 /* Parse the XML definition for a network interface */
 static int qemudParseInputXML(virConnectPtr conn,
                               struct qemud_vm_input_def *input,
@@ -1423,6 +1762,45 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         }
     }
     xmlXPathFreeObject(obj);
+    obj = NULL;
+
+    /* analysis of the character devices */
+    if (qemudParseCharXMLDevices(conn, ctxt,
+                                 "/domain/devices/parallel",
+                                 &def->nparallels,
+                                 &def->parallels) < 0)
+        goto error;
+    if (qemudParseCharXMLDevices(conn, ctxt,
+                                 "/domain/devices/serial",
+                                 &def->nserials,
+                                 &def->serials) < 0)
+        goto error;
+
+    /*
+     * If no serial devices were listed, then look for console
+     * devices which is the legacy syntax for the same thing
+     */
+    if (def->nserials == 0) {
+        obj = xmlXPathEval(BAD_CAST "/domain/devices/console", ctxt);
+        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+            struct qemud_vm_chr_def *chr = calloc(1, sizeof(*chr));
+            if (!chr) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                                 "%s",
+                                 _("failed to allocate space for char device"));
+                goto error;
+            }
+
+            if (qemudParseCharXML(conn, chr, 0, obj->nodesetval->nodeTab[0]) < 0) {
+                free(chr);
+                goto error;
+            }
+            def->nserials = 1;
+            def->serials = chr;
+        }
+        xmlXPathFreeObject(obj);
+    }
 
 
     /* analysis of the network devices */
@@ -1617,6 +1995,78 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     return NULL;
 }
 
+static int qemudBuildCommandLineChrDevStr(struct qemud_vm_chr_def *dev,
+                                          char *buf,
+                                          int buflen)
+{
+    switch (dev->srcType) {
+    case QEMUD_CHR_SRC_TYPE_NULL:
+        strncpy(buf, "null", buflen);
+        buf[buflen-1] = '\0';
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_VC:
+        strncpy(buf, "vc", buflen);
+        buf[buflen-1] = '\0';
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_PTY:
+        strncpy(buf, "pty", buflen);
+        buf[buflen-1] = '\0';
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_DEV:
+        if (snprintf(buf, buflen, "%s",
+                     dev->srcData.file.path) >= buflen)
+            return -1;
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_FILE:
+        if (snprintf(buf, buflen, "file:%s",
+                     dev->srcData.file.path) >= buflen)
+            return -1;
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_PIPE:
+        if (snprintf(buf, buflen, "pipe:%s",
+                     dev->srcData.file.path) >= buflen)
+            return -1;
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_STDIO:
+        strncpy(buf, "stdio", buflen);
+        buf[buflen-1] = '\0';
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_UDP:
+        if (snprintf(buf, buflen, "udp:%s:%s@%s:%s",
+                     dev->srcData.udp.connectHost,
+                     dev->srcData.udp.connectService,
+                     dev->srcData.udp.bindHost,
+                     dev->srcData.udp.bindService) >= buflen)
+            return -1;
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_TCP:
+        if (snprintf(buf, buflen, "%s:%s:%s%s",
+                     dev->srcData.tcp.protocol == QEMUD_CHR_SRC_TCP_PROTOCOL_TELNET ? "telnet" : "tcp",
+                     dev->srcData.tcp.host,
+                     dev->srcData.tcp.service,
+                     dev->srcData.tcp.listen ? ",listen" : "") >= buflen)
+            return -1;
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_UNIX:
+        if (snprintf(buf, buflen, "unix:%s%s",
+                     dev->srcData.nix.path,
+                     dev->srcData.nix.listen ? ",listen" : "") >= buflen)
+            return -1;
+        break;
+    }
+
+    return 0;
+}
+
 /*
  * Constructs a argv suitable for launching qemu with config defined
  * for a given virtual machine.
@@ -1633,6 +2083,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
     struct qemud_vm_disk_def *disk = vm->def->disks;
     struct qemud_vm_net_def *net = vm->def->nets;
     struct qemud_vm_input_def *input = vm->def->inputs;
+    struct qemud_vm_chr_def *serial = vm->def->serials;
+    struct qemud_vm_chr_def *parallel = vm->def->parallels;
     struct utsname ut;
     int disableKQEMU = 0;
 
@@ -1681,6 +2133,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
         (vm->def->nnets > 0 ? (4 * vm->def->nnets) : 2) + /* networks */
         1 + /* usb */
         2 * vm->def->ninputs + /* input devices */
+        (vm->def->nserials > 0 ? (2 * vm->def->nserials) : 2) + /* character devices */
+        (vm->def->nparallels > 0 ? (2 * vm->def->nparallels) : 2) + /* character devices */
         2 + /* memory*/
         2 + /* cpus */
         2 + /* boot device */
@@ -1910,6 +2364,48 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             net = net->next;
             vlan++;
+        }
+    }
+
+    if (!serial) {
+        if (!((*argv)[++n] = strdup("-serial")))
+            goto no_memory;
+        if (!((*argv)[++n] = strdup("none")))
+            goto no_memory;
+    } else {
+        while (serial) {
+            char buf[4096];
+
+            if (qemudBuildCommandLineChrDevStr(serial, buf, sizeof(buf)) < 0)
+                goto error;
+
+            if (!((*argv)[++n] = strdup("-serial")))
+                goto no_memory;
+            if (!((*argv)[++n] = strdup(buf)))
+                goto no_memory;
+
+            serial = serial->next;
+        }
+    }
+
+    if (!parallel) {
+        if (!((*argv)[++n] = strdup("-parallel")))
+            goto no_memory;
+        if (!((*argv)[++n] = strdup("none")))
+            goto no_memory;
+    } else {
+        while (parallel) {
+            char buf[4096];
+
+            if (qemudBuildCommandLineChrDevStr(parallel, buf, sizeof(buf)) < 0)
+                goto error;
+
+            if (!((*argv)[++n] = strdup("-parallel")))
+                goto no_memory;
+            if (!((*argv)[++n] = strdup(buf)))
+                goto no_memory;
+
+            parallel = parallel->next;
         }
     }
 
@@ -2838,6 +3334,127 @@ int qemudScanConfigs(struct qemud_driver *driver) {
     return 0;
 }
 
+static int qemudGenerateXMLChar(virBufferPtr buf,
+                                const struct qemud_vm_chr_def *dev,
+                                const char *type)
+{
+    const char *const types[] = {
+        "null",
+        "vc",
+        "pty",
+        "dev",
+        "file",
+        "pipe",
+        "stdio",
+        "udp",
+        "tcp",
+        "unix"
+    };
+    /*verify(ARRAY_CARDINALITY(types) == QEMUD_CHR_SRC_TYPE_LAST);*/
+
+    if (dev->srcType < 0 || dev->srcType >= QEMUD_CHR_SRC_TYPE_LAST)
+        return -1;
+
+    /* Compat with legacy  <console tty='/dev/pts/5'/> syntax */
+    if (STREQ(type, "console") &&
+        dev->srcType == QEMUD_CHR_SRC_TYPE_PTY &&
+        dev->srcData.file.path[0] != '\0') {
+        if (virBufferVSprintf(buf, "    <%s type='%s' tty='%s'>\n",
+                              type, types[dev->srcType],
+                              dev->srcData.file.path) < 0)
+            return -1;
+    } else {
+        if (virBufferVSprintf(buf, "    <%s type='%s'>\n",
+                              type, types[dev->srcType]) < 0)
+            return -1;
+    }
+
+    switch (dev->srcType) {
+    case QEMUD_CHR_SRC_TYPE_NULL:
+    case QEMUD_CHR_SRC_TYPE_VC:
+    case QEMUD_CHR_SRC_TYPE_STDIO:
+        /* nada */
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_PTY:
+    case QEMUD_CHR_SRC_TYPE_DEV:
+    case QEMUD_CHR_SRC_TYPE_FILE:
+    case QEMUD_CHR_SRC_TYPE_PIPE:
+        if (dev->srcType != QEMUD_CHR_SRC_TYPE_PTY ||
+            dev->srcData.file.path[0]) {
+            if (virBufferVSprintf(buf, "      <source path='%s'/>\n",
+                                  dev->srcData.file.path) < 0)
+                return -1;
+        }
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_UDP:
+        if (dev->srcData.udp.bindService[0] != '\0' &&
+            dev->srcData.udp.bindHost[0] != '\0') {
+            if (virBufferVSprintf(buf, "      <source mode='bind' host='%s' service='%s'/>\n",
+                                  dev->srcData.udp.bindHost,
+                                  dev->srcData.udp.bindService) < 0)
+                return -1;
+        } else if (dev->srcData.udp.bindHost[0] !='\0') {
+            if (virBufferVSprintf(buf, "      <source mode='bind' host='%s'/>\n",
+                                  dev->srcData.udp.bindHost) < 0)
+                return -1;
+        } else if (dev->srcData.udp.bindService[0] != '\0') {
+            if (virBufferVSprintf(buf, "      <source mode='bind' service='%s'/>\n",
+                                  dev->srcData.udp.bindService) < 0)
+                return -1;
+        }
+
+        if (dev->srcData.udp.connectService[0] != '\0' &&
+            dev->srcData.udp.connectHost[0] != '\0') {
+            if (virBufferVSprintf(buf, "      <source mode='connect' host='%s' service='%s'/>\n",
+                                  dev->srcData.udp.connectHost,
+                                  dev->srcData.udp.connectService) < 0)
+                return -1;
+        } else if (dev->srcData.udp.connectHost[0] != '\0') {
+            if (virBufferVSprintf(buf, "      <source mode='connect' host='%s'/>\n",
+                                  dev->srcData.udp.connectHost) < 0)
+                return -1;
+        } else if (dev->srcData.udp.connectService[0] != '\0') {
+            if (virBufferVSprintf(buf, "      <source mode='connect' service='%s'/>\n",
+                                  dev->srcData.udp.connectService) < 0)
+                return -1;
+        }
+
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_TCP:
+        if (virBufferVSprintf(buf, "      <source mode='%s' host='%s' service='%s'/>\n",
+                              dev->srcData.tcp.listen ? "bind" : "connect",
+                              dev->srcData.tcp.host,
+                              dev->srcData.tcp.service) < 0)
+            return -1;
+        if (virBufferVSprintf(buf, "      <protocol type='%s'/>\n",
+                              dev->srcData.tcp.protocol == QEMUD_CHR_SRC_TCP_PROTOCOL_TELNET
+                              ? "telnet" : "raw") < 0)
+            return -1;
+        break;
+
+    case QEMUD_CHR_SRC_TYPE_UNIX:
+        if (virBufferVSprintf(buf, "      <source mode='%s' path='%s'/>\n",
+                              dev->srcData.nix.listen ? "bind" : "connect",
+                              dev->srcData.nix.path) < 0)
+            return -1;
+        break;
+    }
+
+    if (virBufferVSprintf(buf, "      <target port='%d'/>\n",
+                          dev->dstPort) < 0)
+        return -1;
+
+    if (virBufferVSprintf(buf, "    </%s>\n",
+                          type) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /* Generate an XML document describing the guest's configuration */
 char *qemudGenerateXML(virConnectPtr conn,
                        struct qemud_driver *driver ATTRIBUTE_UNUSED,
@@ -2847,9 +3464,10 @@ char *qemudGenerateXML(virConnectPtr conn,
     virBufferPtr buf = 0;
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    struct qemud_vm_disk_def *disk;
-    struct qemud_vm_net_def *net;
-    struct qemud_vm_input_def *input;
+    const struct qemud_vm_disk_def *disk;
+    const struct qemud_vm_net_def *net;
+    const struct qemud_vm_input_def *input;
+    const struct qemud_vm_chr_def *chr;
     const char *type = NULL;
     int n;
 
@@ -3078,6 +3696,27 @@ char *qemudGenerateXML(virConnectPtr conn,
         net = net->next;
     }
 
+    chr = def->serials;
+    while (chr) {
+        if (qemudGenerateXMLChar(buf, chr, "serial") < 0)
+            goto no_memory;
+
+        chr = chr->next;
+    }
+
+    chr = def->parallels;
+    while (chr) {
+        if (qemudGenerateXMLChar(buf, chr, "parallel") < 0)
+            goto no_memory;
+
+        chr = chr->next;
+    }
+
+    /* First serial device is the primary console */
+    if (def->nserials > 0 &&
+        qemudGenerateXMLChar(buf, def->serials, "console") < 0)
+        goto no_memory;
+
     input = def->inputs;
     while (input) {
         if (input->bus != QEMU_INPUT_BUS_PS2 &&
@@ -3123,9 +3762,6 @@ char *qemudGenerateXML(virConnectPtr conn,
     case QEMUD_GRAPHICS_NONE:
     default:
         break;
-    }
-
-    if (def->graphicsType == QEMUD_GRAPHICS_VNC) {
     }
 
     if (virBufferAddLit(buf, "  </devices>\n") < 0)

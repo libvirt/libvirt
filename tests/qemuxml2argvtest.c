@@ -15,7 +15,7 @@
 #include "qemu_conf.h"
 
 static char *progname;
-static char *abs_top_srcdir;
+static char *abs_srcdir;
 static struct qemud_driver driver;
 
 #define MAX_FILE 4096
@@ -71,11 +71,8 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd) {
         tmp++;
     }
 
-    if (strcmp(expectargv, actualargv)) {
-        if (getenv("DEBUG_TESTS")) {
-            printf("Expect %4d '%s'\n", (int)strlen(expectargv), expectargv);
-            printf("Actual %4d '%s'\n", (int)strlen(actualargv), actualargv);
-        }
+    if (STRNEQ(expectargv, actualargv)) {
+        virtTestDifference(stderr, expectargv, actualargv);
         goto fail;
     }
 
@@ -100,10 +97,10 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd) {
 static int testCompareXMLToArgvHelper(const void *data) {
     char xml[PATH_MAX];
     char args[PATH_MAX];
-    snprintf(xml, PATH_MAX, "%s/tests/qemuxml2argvdata/qemuxml2argv-%s.xml",
-             abs_top_srcdir, (const char*)data);
-    snprintf(args, PATH_MAX, "%s/tests/qemuxml2argvdata/qemuxml2argv-%s.args",
-             abs_top_srcdir, (const char*)data);
+    snprintf(xml, PATH_MAX, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
+             abs_srcdir, (const char*)data);
+    snprintf(args, PATH_MAX, "%s/qemuxml2argvdata/qemuxml2argv-%s.args",
+             abs_srcdir, (const char*)data);
     return testCompareXMLToArgvFiles(xml, args);
 }
 
@@ -113,6 +110,7 @@ int
 main(int argc, char **argv)
 {
     int ret = 0;
+    char cwd[PATH_MAX];
 
     progname = argv[0];
 
@@ -121,76 +119,45 @@ main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    abs_top_srcdir = getenv("abs_top_srcdir");
-    if (!abs_top_srcdir)
-      return 1;
+    abs_srcdir = getenv("abs_srcdir");
+    if (!abs_srcdir)
+        abs_srcdir = getcwd(cwd, sizeof(cwd));
 
     driver.caps = qemudCapsInit();
 
-    if (virtTestRun("QEMU XML-2-ARGV minimal",
-                    1, testCompareXMLToArgvHelper, "minimal") < 0)
-        ret = -1;
+#define DO_TEST(name) \
+    if (virtTestRun("QEMU XML-2-ARGV " name, \
+                    1, testCompareXMLToArgvHelper, (name)) < 0) \
+        ret = -1
 
-    if (virtTestRun("QEMU XML-2-ARGV Boot CDROM",
-                    1, testCompareXMLToArgvHelper, "boot-cdrom") < 0)
-        ret = -1;
+    DO_TEST("minimal");
+    DO_TEST("boot-cdrom");
+    DO_TEST("boot-network");
+    DO_TEST("boot-floppy");
+    DO_TEST("clock-utc");
+    DO_TEST("clock-localtime");
+    DO_TEST("disk-cdrom");
+    DO_TEST("disk-floppy");
+    DO_TEST("disk-many");
+    DO_TEST("graphics-vnc");
+    DO_TEST("graphics-sdl");
+    DO_TEST("input-usbmouse");
+    DO_TEST("input-usbtablet");
+    DO_TEST("misc-acpi");
+    DO_TEST("misc-no-reboot");
+    DO_TEST("net-user");
 
-    if (virtTestRun("QEMU XML-2-ARGV Boot Network",
-                    1, testCompareXMLToArgvHelper, "boot-network") < 0)
-        ret = -1;
-
-    if (virtTestRun("QEMU XML-2-ARGV Boot Floppy",
-                    1, testCompareXMLToArgvHelper, "boot-floppy") < 0)
-        ret = -1;
-
-    if (virtTestRun("QEMU XML-2-ARGV Clock UTC",
-                    1, testCompareXMLToArgvHelper, "clock-utc") < 0)
-        ret = -1;
-
-    if (virtTestRun("QEMU XML-2-ARGV Clock Localtime",
-                    1, testCompareXMLToArgvHelper, "clock-localtime") < 0)
-        ret = -1;
-
-    if (virtTestRun("QEMU XML-2-ARGV Disk CDROM",
-                    1, testCompareXMLToArgvHelper, "disk-cdrom") < 0)
-        ret = -1;
-
-    if (virtTestRun("QEMU XML-2-ARGV Disk Floppy",
-                    1, testCompareXMLToArgvHelper, "disk-floppy") < 0)
-        ret = -1;
-
-    if (virtTestRun("QEMU XML-2-ARGV Disk Many",
-                    1, testCompareXMLToArgvHelper, "disk-many") < 0)
-        ret = -1;
-
-    if (virtTestRun("QEMU XML-2-ARGV Graphics VNC",
-                    1, testCompareXMLToArgvHelper, "graphics-vnc") < 0)
-        ret = -1;
-
-    if (virtTestRun("QEMU XML-2-ARGV Graphics SDL",
-                    1, testCompareXMLToArgvHelper, "graphics-sdl") < 0)
-        ret = -1;
-
-    if (virtTestRun("QEMU XML-2-ARGV Input USB Mouse",
-                    1, testCompareXMLToArgvHelper, "input-usbmouse") < 0)
-        ret = -1;
-
-    if (virtTestRun("QEMU XML-2-ARGV Input USB Tablet",
-                    1, testCompareXMLToArgvHelper, "input-usbtablet") < 0)
-        ret = -1;
-
-    if (virtTestRun("QEMU XML-2-ARGV Misc ACPI",
-                    1, testCompareXMLToArgvHelper, "misc-acpi") < 0)
-        ret = -1;
-
-    if (virtTestRun("QEMU XML-2-ARGV Misc No Reboot",
-                    1, testCompareXMLToArgvHelper, "misc-no-reboot") < 0)
-        ret = -1;
-
-    if (virtTestRun("QEMU XML-2-ARGV Net User",
-                    1, testCompareXMLToArgvHelper, "net-user") < 0)
-        ret = -1;
-
+    DO_TEST("serial-vc");
+    DO_TEST("serial-pty");
+    DO_TEST("serial-dev");
+    DO_TEST("serial-file");
+    DO_TEST("serial-unix");
+    DO_TEST("serial-tcp");
+    DO_TEST("serial-udp");
+    DO_TEST("serial-tcp-telnet");
+    DO_TEST("serial-many");
+    DO_TEST("parallel-tcp");
+    DO_TEST("console-compat");
 
     virCapabilitiesFree(driver.caps);
 

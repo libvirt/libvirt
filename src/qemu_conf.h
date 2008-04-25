@@ -119,6 +119,54 @@ struct qemud_vm_net_def {
     struct qemud_vm_net_def *next;
 };
 
+enum qemu_vm_chr_dst_type {
+    QEMUD_CHR_SRC_TYPE_NULL,
+    QEMUD_CHR_SRC_TYPE_VC,
+    QEMUD_CHR_SRC_TYPE_PTY,
+    QEMUD_CHR_SRC_TYPE_DEV,
+    QEMUD_CHR_SRC_TYPE_FILE,
+    QEMUD_CHR_SRC_TYPE_PIPE,
+    QEMUD_CHR_SRC_TYPE_STDIO,
+    QEMUD_CHR_SRC_TYPE_UDP,
+    QEMUD_CHR_SRC_TYPE_TCP,
+    QEMUD_CHR_SRC_TYPE_UNIX,
+
+    QEMUD_CHR_SRC_TYPE_LAST,
+};
+
+enum {
+    QEMUD_CHR_SRC_TCP_PROTOCOL_RAW,
+    QEMUD_CHR_SRC_TCP_PROTOCOL_TELNET,
+};
+
+struct qemud_vm_chr_def {
+    int dstPort;
+
+    int srcType;
+    union {
+        struct {
+            char path[PATH_MAX];
+        } file; /* pty, file, pipe, or device */
+        struct {
+            char host[BR_INET_ADDR_MAXLEN];
+            char service[BR_INET_ADDR_MAXLEN];
+            int listen;
+            int protocol;
+        } tcp;
+        struct {
+            char bindHost[BR_INET_ADDR_MAXLEN];
+            char bindService[BR_INET_ADDR_MAXLEN];
+            char connectHost[BR_INET_ADDR_MAXLEN];
+            char connectService[BR_INET_ADDR_MAXLEN];
+        } udp;
+        struct {
+            char path[PATH_MAX];
+            int listen;
+        } nix;
+    } srcData;
+
+    struct qemud_vm_chr_def *next;
+};
 
 enum qemu_vm_input_type {
     QEMU_INPUT_TYPE_MOUSE,
@@ -215,14 +263,20 @@ struct qemud_vm_def {
     char vncListen[BR_INET_ADDR_MAXLEN];
     char *keymap;
 
-    int ndisks;
+    unsigned int ndisks;
     struct qemud_vm_disk_def *disks;
 
-    int nnets;
+    unsigned int nnets;
     struct qemud_vm_net_def *nets;
 
-    int ninputs;
+    unsigned int ninputs;
     struct qemud_vm_input_def *inputs;
+
+    unsigned int nserials;
+    struct qemud_vm_chr_def *serials;
+
+    unsigned int nparallels;
+    struct qemud_vm_chr_def *parallels;
 };
 
 /* Guest VM runtime state */

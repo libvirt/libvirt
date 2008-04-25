@@ -1,4 +1,16 @@
-Fri Apr 25 12:21:28 EST 2008 Daniel P. Berrange <berrange@redhat.coM>
+Fri Apr 25 16:45:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/internal.c: Convenience macros for fixed arrays
+	* src/qemu_driver.c: Extract TTY paths for serial and parallel
+	devices too
+	* src/qemu_conf.c, src/qemu_conf.h: Support arbitrary serial
+	and parallel devices.
+	* tests/qemuxml2argvtest.c, tests/qemuxml2xmltest.c: Add tests
+	for serial and parallel devices
+	* tests/qemuxml2argvdata/*: Updated and added data files for
+	new test cases
+
+Fri Apr 25 12:21:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* docs/page.xsl, docs/libvir.css: Re-arrange layout to workaround
 	IE6 bugs
