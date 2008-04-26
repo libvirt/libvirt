@@ -1,3 +1,13 @@
+Sat Apr 26 10:21:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xm_internal.c, src/xml.c, src/xml.h, src/xend_internal.c,
+	src/xend_internal.h: Added support for serial and parallel
+	devices
+	* tests/sexpr2xmltest.c, tests/xml2sexprtest.c, tests/xmconfigtest.c:
+	added tests for serial and parallel devices
+	* tests/sexpr2xmldata/*, tests/xml2sexprdata/*, tests/xmconfigdata/*:
+	updated for new test cases
+
 Fri Apr 25 16:45:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/internal.c: Convenience macros for fixed arrays

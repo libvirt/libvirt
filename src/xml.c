@@ -673,6 +673,178 @@ virDomainParseXMLGraphicsDescVFB(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+int
+virDomainParseXMLOSDescHVMChar(virConnectPtr conn,
+                               char *buf,
+                               size_t buflen,
+                               xmlNodePtr node)
+{
+    xmlChar *type = NULL;
+    xmlChar *path = NULL;
+    xmlChar *bindHost = NULL;
+    xmlChar *bindService = NULL;
+    xmlChar *connectHost = NULL;
+    xmlChar *connectService = NULL;
+    xmlChar *mode = NULL;
+    xmlChar *protocol = NULL;
+    xmlNodePtr cur;
+
+    type = xmlGetProp(node, BAD_CAST "type");
+
+    if (type != NULL) {
+        cur = node->children;
+        while (cur != NULL) {
+            if (cur->type == XML_ELEMENT_NODE) {
+                if (xmlStrEqual(cur->name, BAD_CAST "source")) {
+                    if (mode == NULL)
+                        mode = xmlGetProp(cur, BAD_CAST "mode");
+
+                    if (STREQ((const char *)type, "dev") ||
+                        STREQ((const char *)type, "file") ||
+                        STREQ((const char *)type, "pipe") ||
+                        STREQ((const char *)type, "unix")) {
+                        if (path == NULL)
+                            path = xmlGetProp(cur, BAD_CAST "path");
+
+                    } else if (STREQ((const char *)type, "udp") ||
+                               STREQ((const char *)type, "tcp")) {
+                        if (mode == NULL ||
+                            STREQ((const char *)mode, "connect")) {
+
+                            if (connectHost == NULL)
+                                connectHost = xmlGetProp(cur, BAD_CAST "host");
+                            if (connectService == NULL)
+                                connectService = xmlGetProp(cur, BAD_CAST "service");
+                        } else {
+                            if (bindHost == NULL)
+                                bindHost = xmlGetProp(cur, BAD_CAST "host");
+                            if (bindService == NULL)
+                                bindService = xmlGetProp(cur, BAD_CAST "service");
+                        }
+
+                        if (STREQ((const char*)type, "udp")) {
+                            xmlFree(mode);
+                            mode = NULL;
+                        }
+                    }
+                } else if (xmlStrEqual(cur->name, BAD_CAST "protocol")) {
+                    if (protocol == NULL)
+                        protocol = xmlGetProp(cur, BAD_CAST "type");
+                }
+            }
+            cur = cur->next;
+        }
+    }
+
+    if (type == NULL ||
+        STREQ((const char *)type, "pty")) {
+        strncpy(buf, "pty", buflen);
+    } else if (STREQ((const char *)type, "null") ||
+               STREQ((const char *)type, "stdio") ||
+               STREQ((const char *)type, "vc")) {
+        snprintf(buf, buflen, "%s", type);
+    } else if (STREQ((const char *)type, "file") ||
+               STREQ((const char *)type, "dev") ||
+               STREQ((const char *)type, "pipe")) {
+        if (path == NULL) {
+            virXMLError(conn, VIR_ERR_XML_ERROR,
+                        _("Missing source path attribute for char device"), 0);
+            goto cleanup;
+        }
+
+        if (STREQ((const char *)type, "dev"))
+            strncpy(buf, (const char *)path, buflen);
+        else
+            snprintf(buf, buflen, "%s:%s", type, path);
+    } else if (STREQ((const char *)type, "tcp")) {
+        int telnet = 0;
+        if (protocol != NULL &&
+            STREQ((const char *)protocol, "telnet"))
+            telnet = 1;
+
+        if (mode == NULL ||
+            STREQ((const char *)mode, "connect")) {
+            if (connectHost == NULL) {
+                virXMLError(conn, VIR_ERR_INTERNAL_ERROR,
+                            _("Missing source host attribute for char device"), 0);
+                goto cleanup;
+            }
+            if (connectService == NULL) {
+                virXMLError(conn, VIR_ERR_INTERNAL_ERROR,
+                            _("Missing source service attribute for char device"), 0);
+                goto cleanup;
+            }
+
+            snprintf(buf, buflen, "%s:%s:%s",
+                     (telnet ? "telnet" : "tcp"),
+                     connectHost, connectService);
+        } else {
+            if (bindHost == NULL) {
+                virXMLError(conn, VIR_ERR_INTERNAL_ERROR,
+                            _("Missing source host attribute for char device"), 0);
+                goto cleanup;
+            }
+            if (bindService == NULL) {
+                virXMLError(conn, VIR_ERR_INTERNAL_ERROR,
+                            _("Missing source service attribute for char device"), 0);
+                goto cleanup;
+            }
+
+            snprintf(buf, buflen, "%s:%s:%s,listen",
+                     (telnet ? "telnet" : "tcp"),
+                     bindHost, bindService);
+        }
+    } else if (STREQ((const char *)type, "udp")) {
+        if (connectService == NULL) {
+            virXMLError(conn, VIR_ERR_XML_ERROR,
+                        _("Missing source service attribute for char device"), 0);
+            goto cleanup;
+        }
+
+        snprintf(buf, buflen, "udp:%s:%s@%s:%s",
+                 connectHost ? (const char *)connectHost : "",
+                 connectService,
+                 bindHost ? (const char *)bindHost : "",
+                 bindService ? (const char *)bindService : "");
+    } else if (STREQ((const char *)type, "unix")) {
+        if (path == NULL) {
+            virXMLError(conn, VIR_ERR_XML_ERROR,
+                        _("Missing source path attribute for char device"), 0);
+            goto cleanup;
+        }
+
+        if (mode == NULL ||
+            STREQ((const char *)mode, "connect")) {
+            snprintf(buf, buflen, "%s:%s", type, path);
+        } else {
+            snprintf(buf, buflen, "%s:%s,listen", type, path);
+        }
+    }
+    buf[buflen-1] = '\0';
+
+    xmlFree(mode);
+    xmlFree(protocol);
+    xmlFree(type);
+    xmlFree(bindHost);
+    xmlFree(bindService);
+    xmlFree(connectHost);
+    xmlFree(connectService);
+    xmlFree(path);
+
+    return 0;
+
+cleanup:
+    xmlFree(mode);
+    xmlFree(protocol);
+    xmlFree(type);
+    xmlFree(bindHost);
+    xmlFree(bindService);
+    xmlFree(connectHost);
+    xmlFree(connectService);
+    xmlFree(path);
+    return -1;
+}
+
 /**
  * virDomainParseXMLOSDescHVM:
  * @conn: pointer to the hypervisor connection
@@ -877,23 +1049,52 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
         nodes = NULL;
     }
 
-
-    res = virXPathBoolean("count(domain/devices/console) > 0", ctxt);
-    if (res < 0) {
-        virXMLError(conn, VIR_ERR_XML_ERROR, NULL, 0);
-        goto error;
+    cur = virXPathNode("/domain/devices/parallel[1]", ctxt);
+    if (cur != NULL) {
+        char scratch[PATH_MAX];
+        if (virDomainParseXMLOSDescHVMChar(conn, scratch, sizeof(scratch), cur) < 0)
+            goto error;
+        if (virBufferVSprintf(buf, "(parallel %s)", scratch) < 0)
+            goto no_memory;
+    } else {
+        if (virBufferAddLit(buf, "(parallel none)") < 0)
+            goto no_memory;
     }
-    if (res) {
-        virBufferAddLit(buf, "(serial pty)");
+
+    cur = virXPathNode("/domain/devices/serial[1]", ctxt);
+    if (cur != NULL) {
+        char scratch[PATH_MAX];
+        if (virDomainParseXMLOSDescHVMChar(conn, scratch, sizeof(scratch), cur) < 0)
+            goto error;
+        if (virBufferVSprintf(buf, "(serial %s)", scratch) < 0)
+            goto no_memory;
+    } else {
+        res = virXPathBoolean("count(domain/devices/console) > 0", ctxt);
+        if (res < 0) {
+            virXMLError(conn, VIR_ERR_XML_ERROR, NULL, 0);
+            goto error;
+        }
+        if (res) {
+            if (virBufferAddLit(buf, "(serial pty)") < 0)
+                goto no_memory;
+        } else {
+            if (virBufferAddLit(buf, "(serial none)") < 0)
+                goto no_memory;
+        }
     }
 
     str = virXPathString("string(/domain/clock/@offset)", ctxt);
     if (str != NULL && !strcmp(str, "localtime")) {
-        virBufferAddLit(buf, "(localtime 1)");
+        if (virBufferAddLit(buf, "(localtime 1)") < 0)
+            goto no_memory;
     }
     free(str);
 
     return (0);
+
+no_memory:
+    virXMLError(conn, VIR_ERR_XML_ERROR,
+                _("cannot allocate memory for buffer"), 0);
 
   error:
     free(nodes);

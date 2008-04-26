@@ -18,5 +18,8 @@
       <source dev='/dev/MainVG/GuestVG'/>
       <target dev='xvda'/>
     </disk>
+    <console type='pty'>
+      <target port='0'/>
+    </console>
   </devices>
 </domain>

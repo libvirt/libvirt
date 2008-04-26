@@ -1025,11 +1025,22 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
     }
 
     if (hvm) {
-        if (xenXMConfigGetString(conf, "serial", &str) == 0 && !strcmp(str, "pty")) {
-            virBufferAddLit(buf, "    <console/>\n");
+        if (xenXMConfigGetString(conf, "parallel", &str) == 0) {
+            if (STRNEQ(str, "none"))
+                xend_parse_sexp_desc_char(conn, buf, "parallel", 0, str, NULL);
         }
-    } else { /* Paravirt implicitly always has a console */
-        virBufferAddLit(buf, "    <console/>\n");
+        if (xenXMConfigGetString(conf, "serial", &str) == 0) {
+            if (STRNEQ(str, "none")) {
+                xend_parse_sexp_desc_char(conn, buf, "serial", 0, str, NULL);
+                /* Add back-compat console tag for primary console */
+                xend_parse_sexp_desc_char(conn, buf, "console", 0, str, NULL);
+            }
+        }
+    } else {
+        /* Paravirt implicitly always has a single console */
+        virBufferAddLit(buf, "    <console type='pty'>\n");
+        virBufferAddLit(buf, "      <target port='0'/>\n");
+        virBufferAddLit(buf, "    </console>\n");
     }
 
     virBufferAddLit(buf, "  </devices>\n");
@@ -2267,14 +2278,38 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
     obj = NULL;
 
     if (hvm) {
-        obj = xmlXPathEval(BAD_CAST "count(/domain/devices/console) > 0", ctxt);
-        if ((obj != NULL) && (obj->type == XPATH_BOOLEAN) &&
-            (obj->boolval)) {
-            if (xenXMConfigSetString(conf, "serial", "pty") < 0)
+        xmlNodePtr cur;
+        cur = virXPathNode("/domain/devices/parallel[1]", ctxt);
+        if (cur != NULL) {
+            char scratch[PATH_MAX];
+
+            if (virDomainParseXMLOSDescHVMChar(conn, scratch, sizeof(scratch), cur) < 0) {
+                goto error;
+            }
+
+            if (xenXMConfigSetString(conf, "parallel", scratch) < 0)
+                goto error;
+        } else {
+            if (xenXMConfigSetString(conf, "parallel", "none") < 0)
                 goto error;
         }
-        xmlXPathFreeObject(obj);
-        obj = NULL;
+
+        cur = virXPathNode("/domain/devices/serial[1]", ctxt);
+        if (cur != NULL) {
+            char scratch[PATH_MAX];
+            if (virDomainParseXMLOSDescHVMChar(conn, scratch, sizeof(scratch), cur) < 0)
+                goto error;
+            if (xenXMConfigSetString(conf, "serial", scratch) < 0)
+                goto error;
+        } else {
+            if (virXPathBoolean("count(/domain/devices/console) > 0", ctxt)) {
+                if (xenXMConfigSetString(conf, "serial", "pty") < 0)
+                    goto error;
+            } else {
+                if (xenXMConfigSetString(conf, "serial", "none") < 0)
+                    goto error;
+            }
+        }
     }
 
     xmlFreeDoc(doc);

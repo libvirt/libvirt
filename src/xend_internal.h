@@ -20,11 +20,11 @@
 
 #include "libvirt/libvirt.h"
 #include "capabilities.h"
+#include "buf.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 /**
  * \brief Setup the connection to a xend instance via TCP
@@ -179,6 +179,13 @@ char *xenDaemonDomainDumpXMLByName(virConnectPtr xend,
  * a buffer with a null terminator.
  */
     int xend_log(virConnectPtr xend, char *buffer, size_t n_buffer);
+
+    int xend_parse_sexp_desc_char(virConnectPtr conn,
+                                  virBufferPtr buf,
+                                  const char *devtype,
+                                  int portNum,
+                                  const char *value,
+                                  const char *tty);
 
   char *xend_parse_domain_sexp(virConnectPtr conn,  char *root, int xendConfigVersion);
 

@@ -1376,6 +1376,244 @@ xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf
     return(0);
 }
 
+
+int
+xend_parse_sexp_desc_char(virConnectPtr conn,
+                          virBufferPtr buf,
+                          const char *devtype,
+                          int portNum,
+                          const char *value,
+                          const char *tty)
+{
+    const char *type;
+    int telnet = 0;
+    char *bindPort = NULL;
+    char *bindHost = NULL;
+    char *connectPort = NULL;
+    char *connectHost = NULL;
+    char *path = NULL;
+    int ret = -1;
+
+    if (value[0] == '/') {
+        type = "dev";
+    } else if (STRPREFIX(value, "null")) {
+        type = "null";
+        value = NULL;
+    } else if (STRPREFIX(value, "vc")) {
+        type = "vc";
+        value = NULL;
+    } else if (STRPREFIX(value, "pty")) {
+        type = "pty";
+        value = NULL;
+    } else if (STRPREFIX(value, "stdio")) {
+        type = "stdio";
+        value = NULL;
+    } else if (STRPREFIX(value, "file:")) {
+        type = "file";
+        value += sizeof("file:")-1;
+    } else if (STRPREFIX(value, "pipe:")) {
+        type = "pipe";
+        value += sizeof("pipe:")-1;
+    } else if (STRPREFIX(value, "tcp:")) {
+        type = "tcp";
+        value += sizeof("tcp:")-1;
+    } else if (STRPREFIX(value, "telnet:")) {
+        type = "tcp";
+        value += sizeof("telnet:")-1;
+        telnet = 1;
+    } else if (STRPREFIX(value, "udp:")) {
+        type = "udp";
+        value += sizeof("udp:")-1;
+    } else if (STRPREFIX(value, "unix:")) {
+        type = "unix";
+        value += sizeof("unix:")-1;
+    } else {
+        virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                     _("Unknown char device type"));
+        return -1;
+    }
+
+    /* Compat with legacy  <console tty='/dev/pts/5'/> syntax */
+    if (STREQ(devtype, "console") &&
+        STREQ(type, "pty") &&
+        tty != NULL) {
+        if (virBufferVSprintf(buf, "    <%s type='%s' tty='%s'>\n",
+                              devtype, type, tty) < 0)
+            goto no_memory;
+    } else {
+        if (virBufferVSprintf(buf, "    <%s type='%s'>\n",
+                              devtype, type) < 0)
+            goto no_memory;
+    }
+
+    if (STREQ(type, "null") ||
+        STREQ(type, "vc") ||
+        STREQ(type, "stdio")) {
+        /* no source needed */
+    } else if (STREQ(type, "pty")) {
+        if (tty &&
+            virBufferVSprintf(buf, "      <source path='%s'/>\n",
+                              tty) < 0)
+            goto no_memory;
+    } else if (STREQ(type, "file") ||
+               STREQ(type, "pipe")) {
+        if (virBufferVSprintf(buf, "      <source path='%s'/>\n",
+                              value) < 0)
+            goto no_memory;
+    } else if (STREQ(type, "tcp")) {
+        const char *offset = strchr(value, ':');
+        const char *offset2;
+        const char *mode, *protocol;
+
+        if (offset == NULL) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         _("malformed char device string"));
+            goto error;
+        }
+
+        if (offset != value &&
+            (bindHost = strndup(value, offset - value)) == NULL)
+            goto no_memory;
+
+        offset2 = strchr(offset, ',');
+        if (offset2 == NULL)
+            bindPort = strdup(offset+1);
+        else
+            bindPort = strndup(offset+1, offset2-(offset+1));
+        if (bindPort == NULL)
+            goto no_memory;
+
+        if (offset2 && strstr(offset2, ",listen"))
+            mode = "bind";
+        else
+            mode = "connect";
+        protocol = telnet ? "telnet":"raw";
+
+        if (bindHost) {
+            if (virBufferVSprintf(buf,
+                                  "      <source mode='%s' host='%s' service='%s'/>\n",
+                                  mode, bindHost, bindPort) < 0)
+                goto no_memory;
+        } else {
+            if (virBufferVSprintf(buf,
+                                  "      <source mode='%s' service='%s'/>\n",
+                                  mode, bindPort) < 0)
+                goto no_memory;
+        }
+        if (virBufferVSprintf(buf,
+                              "      <protocol type='%s'/>\n",
+                              protocol) < 0)
+            goto no_memory;
+    } else if (STREQ(type, "udp")) {
+        const char *offset = strchr(value, ':');
+        const char *offset2, *offset3;
+
+        if (offset == NULL) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         _("malformed char device string"));
+            goto error;
+        }
+
+        if (offset != value &&
+            (connectHost = strndup(value, offset - value)) == NULL)
+            goto no_memory;
+
+        offset2 = strchr(offset, '@');
+        if (offset2 != NULL) {
+            if ((connectPort = strndup(offset + 1, offset2-(offset+1))) == NULL)
+                goto no_memory;
+
+            offset3 = strchr(offset2, ':');
+            if (offset3 == NULL) {
+                virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("malformed char device string"));
+                goto error;
+            }
+
+            if (offset3 > (offset2 + 1) &&
+                (bindHost = strndup(offset2 + 1, offset3 - (offset2+1))) == NULL)
+                goto no_memory;
+
+            if ((bindPort = strdup(offset3 + 1)) == NULL)
+                goto no_memory;
+        } else {
+            if ((connectPort = strdup(offset + 1)) == NULL)
+                goto no_memory;
+        }
+
+        if (connectPort) {
+            if (connectHost) {
+                if (virBufferVSprintf(buf,
+                                      "      <source mode='connect' host='%s' service='%s'/>\n",
+                                      connectHost, connectPort) < 0)
+                    goto no_memory;
+            } else {
+                if (virBufferVSprintf(buf,
+                                      "      <source mode='connect' service='%s'/>\n",
+                                      connectPort) < 0)
+                    goto no_memory;
+            }
+        }
+        if (bindPort) {
+            if (bindHost) {
+                if (virBufferVSprintf(buf,
+                                      "      <source mode='bind' host='%s' service='%s'/>\n",
+                                      bindHost, bindPort) < 0)
+                    goto no_memory;
+            } else {
+                if (virBufferVSprintf(buf,
+                                      "      <source mode='bind' service='%s'/>\n",
+                                      bindPort) < 0)
+                    goto no_memory;
+            }
+        }
+
+    } else if (STREQ(type, "unix")) {
+        const char *offset = strchr(value, ',');
+        int dolisten = 0;
+        if (offset)
+            path = strndup(value, (offset - value));
+        else
+            path = strdup(value);
+        if (path == NULL)
+            goto no_memory;
+
+        if (offset != NULL &&
+            strstr(offset, ",listen") != NULL)
+            dolisten = 1;
+
+        if (virBufferVSprintf(buf, "      <source mode='%s' path='%s'/>\n",
+                              dolisten ? "bind" : "connect", path) < 0)
+            goto no_memory;
+    }
+
+    if (virBufferVSprintf(buf, "      <target port='%d'/>\n",
+                          portNum) < 0)
+        goto no_memory;
+
+    if (virBufferVSprintf(buf, "    </%s>\n",
+                          devtype) < 0)
+        goto no_memory;
+
+    ret = 0;
+
+    if (ret == -1) {
+no_memory:
+        virXendError(conn, VIR_ERR_NO_MEMORY,
+                     _("no memory for char device config"));
+    }
+
+error:
+
+    free(path);
+    free(bindHost);
+    free(bindPort);
+    free(connectHost);
+    free(connectPort);
+
+    return ret;
+}
+
 /**
  * xend_parse_sexp_desc:
  * @conn: the connection associated with the XML
@@ -1828,10 +2066,33 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
     }
 
     tty = xenStoreDomainGetConsolePath(conn, domid);
-    if (tty) {
-        virBufferVSprintf(&buf, "    <console tty='%s'/>\n", tty);
-        free(tty);
+    if (hvm) {
+        tmp = sexpr_node(root, "domain/image/hvm/serial");
+        if (tmp && STRNEQ(tmp, "none")) {
+            if (xend_parse_sexp_desc_char(conn, &buf, "serial", 0, tmp, tty) < 0)
+                goto error;
+            /* Add back-compat <console/> tag for primary console */
+            if (xend_parse_sexp_desc_char(conn, &buf, "console", 0, tmp, tty) < 0)
+                goto error;
+        }
+        tmp = sexpr_node(root, "domain/image/hvm/parallel");
+        if (tmp && STRNEQ(tmp, "none")) {
+            /* XXX does XenD stuff parallel port tty info into xenstore somewhere ? */
+            if (xend_parse_sexp_desc_char(conn, &buf, "parallel", 0, tmp, NULL) < 0)
+                goto error;
+        }
+    } else {
+        /* Paravirt always has a console */
+        if (tty) {
+            virBufferVSprintf(&buf, "    <console type='pty' tty='%s'>\n", tty);
+            virBufferVSprintf(&buf, "      <source path='%s'/>\n", tty);
+        } else {
+            virBufferAddLit(&buf, "    <console type='pty'>\n");
+        }
+        virBufferAddLit(&buf, "      <target port='0'/>\n");
+        virBufferAddLit(&buf, "    </console>\n");
     }
+    free(tty);
 
     virBufferAddLit(&buf, "  </devices>\n");
     virBufferAddLit(&buf, "</domain>\n");

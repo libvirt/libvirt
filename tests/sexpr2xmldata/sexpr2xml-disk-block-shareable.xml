@@ -21,5 +21,8 @@
       <mac address='00:16:3e:23:9e:eb'/>
       <script path='vif-bridge'/>
     </interface>
+    <console type='pty'>
+      <target port='0'/>
+    </console>
   </devices>
 </domain>

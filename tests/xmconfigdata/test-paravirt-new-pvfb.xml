@@ -20,6 +20,8 @@
     </interface>
     <input type='mouse' bus='xen'/>
     <graphics type='vnc' port='-1' listen='127.0.0.1' passwd='123poi'/>
-    <console/>
+    <console type='pty'>
+      <target port='0'/>
+    </console>
   </devices>
 </domain>

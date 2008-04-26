@@ -128,11 +128,8 @@ static int testCompareFormatXML(const char *xmcfg, const char *xml,
     if (!(gotxml = xenXMDomainFormatXML(conn, conf)))
         goto fail;
 
-    if (strcmp(xmlData, gotxml)) {
-        if (getenv("DEBUG_TESTS")) {
-            printf("Expect %d '%s'\n", (int)strlen(xmlData), xmlData);
-            printf("Actual %d '%s'\n", (int)strlen(gotxml), gotxml);
-        }
+    if (STRNEQ(xmlData, gotxml)) {
+        virtTestDifference(stderr, xmlData, gotxml);
         goto fail;
     }
 
@@ -211,6 +208,17 @@ main(int argc, char **argv)
     DO_TEST("fullvirt-localtime", 2);
     DO_TEST("fullvirt-usbtablet", 2);
     DO_TEST("fullvirt-usbmouse", 2);
+    DO_TEST("fullvirt-serial-file", 2);
+    DO_TEST("fullvirt-serial-null", 2);
+    DO_TEST("fullvirt-serial-pipe", 2);
+    DO_TEST("fullvirt-serial-pty", 2);
+    DO_TEST("fullvirt-serial-stdio", 2);
+    DO_TEST("fullvirt-serial-tcp", 2);
+    DO_TEST("fullvirt-serial-tcp-telnet", 2);
+    DO_TEST("fullvirt-serial-udp", 2);
+    DO_TEST("fullvirt-serial-unix", 2);
+
+    DO_TEST("fullvirt-parallel-tcp", 2);
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

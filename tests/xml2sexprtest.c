@@ -6,6 +6,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #if WITH_XEN
 
@@ -14,11 +15,11 @@
 #include "testutils.h"
 
 static char *progname;
-static char *abs_top_srcdir;
+static char *abs_srcdir;
 
 #define MAX_FILE 4096
 
-static int testCompareFiles(const char *xml_rel, const char *sexpr_rel,
+static int testCompareFiles(const char *xml, const char *sexpr,
                             const char *name, int xendConfigVersion) {
   char xmlData[MAX_FILE];
   char sexprData[MAX_FILE];
@@ -27,11 +28,6 @@ static int testCompareFiles(const char *xml_rel, const char *sexpr_rel,
   char *xmlPtr = &(xmlData[0]);
   char *sexprPtr = &(sexprData[0]);
   int ret = -1;
-  char xml[PATH_MAX];
-  char sexpr[PATH_MAX];
-
-  snprintf(xml, sizeof xml - 1, "%s/tests/%s", abs_top_srcdir, xml_rel);
-  snprintf(sexpr, sizeof sexpr - 1, "%s/tests/%s", abs_top_srcdir, sexpr_rel);
 
   if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
     goto fail;
@@ -42,11 +38,8 @@ static int testCompareFiles(const char *xml_rel, const char *sexpr_rel,
   if (!(gotsexpr = virDomainParseXMLDesc(NULL, xmlData, &gotname, xendConfigVersion)))
     goto fail;
 
-  if (strcmp(sexprData, gotsexpr)) {
-      if (getenv("DEBUG_TESTS")) {
-        printf("Expect %d '%s'\n", (int)strlen(sexprData), sexprData);
-        printf("Actual %d '%s'\n", (int)strlen(gotsexpr), gotsexpr);
-      }
+  if (STRNEQ(sexprData, gotsexpr)) {
+      virtTestDifference(stderr, sexprData, gotsexpr);
       goto fail;
   }
 
@@ -65,302 +58,89 @@ static int testCompareFiles(const char *xml_rel, const char *sexpr_rel,
   return ret;
 }
 
-static int testComparePVversion1(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-pv.xml",
-                          "xml2sexprdata/xml2sexpr-pv.sexpr",
-                          "pvtest",
-                          1);
+struct testInfo {
+    const char *input;
+    const char *output;
+    const char *name;
+    int version;
+};
+
+static int testCompareHelper(const void *data) {
+    const struct testInfo *info = data;
+    char xml[PATH_MAX];
+    char args[PATH_MAX];
+    snprintf(xml, PATH_MAX, "%s/xml2sexprdata/xml2sexpr-%s.xml",
+             abs_srcdir, info->input);
+    snprintf(args, PATH_MAX, "%s/xml2sexprdata/xml2sexpr-%s.sexpr",
+             abs_srcdir, info->output);
+    return testCompareFiles(xml, args, info->name, info->version);
 }
-
-static int testCompareFVversion1(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-fv.xml",
-                          "xml2sexprdata/xml2sexpr-fv.sexpr",
-                          "fvtest",
-                          1);
-}
-
-static int testComparePVversion2(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-pv.xml",
-                          "xml2sexprdata/xml2sexpr-pv.sexpr",
-                          "pvtest",
-                          2);
-}
-
-static int testCompareFVversion2(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-fv.xml",
-                          "xml2sexprdata/xml2sexpr-fv-v2.sexpr",
-                          "fvtest",
-                          2);
-}
-
-static int testCompareFVversion2VNC(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-fv-vncunused.xml",
-                          "xml2sexprdata/xml2sexpr-fv-vncunused.sexpr",
-                          "fvtest",
-                          2);
-}
-
-static int testComparePVOrigVFB(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-pv-vfb-orig.xml",
-                          "xml2sexprdata/xml2sexpr-pv-vfb-orig.sexpr",
-                          "pvtest",
-                          2);
-}
-
-
-static int testComparePVNewVFB(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-pv-vfb-new.xml",
-                          "xml2sexprdata/xml2sexpr-pv-vfb-new.sexpr",
-                          "pvtest",
-                          3);
-}
-
-static int testComparePVBootloader(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-pv-bootloader.xml",
-                          "xml2sexprdata/xml2sexpr-pv-bootloader.sexpr",
-                          "pvtest",
-                          1);
-}
-
-static int testCompareDiskFile(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-disk-file.xml",
-                          "xml2sexprdata/xml2sexpr-disk-file.sexpr",
-                          "pvtest",
-                          2);
-}
-
-static int testCompareDiskBlock(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-disk-block.xml",
-                          "xml2sexprdata/xml2sexpr-disk-block.sexpr",
-                          "pvtest",
-                          2);
-}
-
-static int testCompareDiskShareable(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-disk-block-shareable.xml",
-                          "xml2sexprdata/xml2sexpr-disk-block-shareable.sexpr",
-                          "pvtest",
-                          2);
-}
-
-static int testCompareDiskDrvLoop(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-disk-drv-loop.xml",
-                          "xml2sexprdata/xml2sexpr-disk-drv-loop.sexpr",
-                          "pvtest",
-                          2);
-}
-
-static int testCompareDiskDrvBlkback(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-disk-drv-blkback.xml",
-                          "xml2sexprdata/xml2sexpr-disk-drv-blkback.sexpr",
-                          "pvtest",
-                          2);
-}
-
-static int testCompareDiskDrvBlktap(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-disk-drv-blktap.xml",
-                          "xml2sexprdata/xml2sexpr-disk-drv-blktap.sexpr",
-                          "pvtest",
-                          2);
-}
-
-static int testCompareDiskDrvBlktapQcow(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-disk-drv-blktap-qcow.xml",
-                          "xml2sexprdata/xml2sexpr-disk-drv-blktap-qcow.sexpr",
-                          "pvtest",
-                          2);
-}
-
-static int testCompareDiskDrvBlktapRaw(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-disk-drv-blktap-raw.xml",
-                          "xml2sexprdata/xml2sexpr-disk-drv-blktap-raw.sexpr",
-                          "pvtest",
-                          2);
-}
-
-static int testCompareMemoryResize(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-curmem.xml",
-                          "xml2sexprdata/xml2sexpr-curmem.sexpr",
-                          "rhel5",
-                          2);
-}
-
-static int testCompareNetRouted(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-net-routed.xml",
-                          "xml2sexprdata/xml2sexpr-net-routed.sexpr",
-                          "pvtest",
-                          2);
-}
-
-static int testCompareNetBridged(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-net-bridged.xml",
-                          "xml2sexprdata/xml2sexpr-net-bridged.sexpr",
-                          "pvtest",
-                          2);
-}
-
-static int testCompareNoSourceCDRom(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-no-source-cdrom.xml",
-                          "xml2sexprdata/xml2sexpr-no-source-cdrom.sexpr",
-                          "test",
-                          2);
-}
-
-static int testCompareFVclockUTC(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-fv-utc.xml",
-                          "xml2sexprdata/xml2sexpr-fv-utc.sexpr",
-                          "fvtest",
-                          1);
-}
-
-static int testCompareFVclockLocaltime(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-fv-localtime.xml",
-                          "xml2sexprdata/xml2sexpr-fv-localtime.sexpr",
-                          "fvtest",
-                          1);
-}
-
-
-static int testCompareFVInputUSBMouse(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-fv-usbmouse.xml",
-                          "xml2sexprdata/xml2sexpr-fv-usbmouse.sexpr",
-                          "fvtest",
-                          1);
-}
-
-static int testCompareFVInputUSBTablet(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-fv-usbtablet.xml",
-                          "xml2sexprdata/xml2sexpr-fv-usbtablet.sexpr",
-                          "fvtest",
-                          1);
-}
-
-static int testCompareFVKernel(const void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexprdata/xml2sexpr-fv-kernel.xml",
-                          "xml2sexprdata/xml2sexpr-fv-kernel.sexpr",
-                          "fvtest",
-                          1);
-}
-
 
 
 int
 main(int argc, char **argv)
 {
     int ret = 0;
+    char cwd[PATH_MAX];
 
     progname = argv[0];
 
-    abs_top_srcdir = getenv("abs_top_srcdir");
-    if (!abs_top_srcdir) {
-        fprintf(stderr, "missing enviroment variable abs_top_srcdir\n");
-        exit(EXIT_FAILURE);
-    }
-
+    abs_srcdir = getenv("abs_srcdir");
+    if (!abs_srcdir)
+        abs_srcdir = getcwd(cwd, sizeof(cwd));
 
     if (argc > 1) {
         fprintf(stderr, "Usage: %s\n", progname);
         exit(EXIT_FAILURE);
     }
 
-    if (virtTestRun("XML-2-SEXPR PV config (format 1)",
-                    1, testComparePVversion1, NULL) != 0)
-        ret = -1;
+#define DO_TEST(in, out, name, version)                                \
+    do {                                                               \
+        struct testInfo info = { in, out, name, version };             \
+        if (virtTestRun("Xen XML-2-SEXPR " in " -> " out,              \
+                        1, testCompareHelper, &info) < 0)     \
+            ret = -1;                                                  \
+    } while (0)
 
-    if (virtTestRun("XML-2-SEXPR FV config (format 1)",
-                    1, testCompareFVversion1, NULL) != 0)
-        ret = -1;
+    DO_TEST("pv", "pv", "pvtest", 1);
+    DO_TEST("fv", "fv", "fvtest", 1);
+    DO_TEST("pv", "pv", "pvtest", 2);
+    DO_TEST("fv", "fv-v2", "fvtest", 2);
+    DO_TEST("fv-vncunused", "fv-vncunused", "fvtest", 2);
+    DO_TEST("pv-vfb-orig", "pv-vfb-orig", "pvtest", 2);
+    DO_TEST("pv-vfb-new", "pv-vfb-new", "pvtest", 3);
+    DO_TEST("pv-bootloader", "pv-bootloader", "pvtest", 1);
 
-    if (virtTestRun("XML-2-SEXPR PV config (format 2)",
-                    1, testComparePVversion2, NULL) != 0)
-        ret = -1;
+    DO_TEST("disk-file", "disk-file", "pvtest", 2);
+    DO_TEST("disk-block", "disk-block", "pvtest", 2);
+    DO_TEST("disk-block-shareable", "disk-block-shareable", "pvtest", 2);
+    DO_TEST("disk-drv-loop", "disk-drv-loop", "pvtest", 2);
+    DO_TEST("disk-drv-blkback", "disk-drv-blkback", "pvtest", 2);
+    DO_TEST("disk-drv-blktap", "disk-drv-blktap", "pvtest", 2);
+    DO_TEST("disk-drv-blktap-raw", "disk-drv-blktap-raw", "pvtest", 2);
+    DO_TEST("disk-drv-blktap-qcow", "disk-drv-blktap-qcow", "pvtest", 2);
 
-    if (virtTestRun("XML-2-SEXPR FV config (format 2)",
-                    1, testCompareFVversion2, NULL) != 0)
-        ret = -1;
+    DO_TEST("curmem", "curmem", "rhel5", 2);
+    DO_TEST("net-routed", "net-routed", "pvtest", 2);
+    DO_TEST("net-bridged", "net-bridged", "pvtest", 2);
+    DO_TEST("no-source-cdrom", "no-source-cdrom", "test", 2);
 
-    if (virtTestRun("XML-2-SEXPR FV config (format 2, VNC unused)",
-                    1, testCompareFVversion2VNC, NULL) != 0)
-        ret = -1;
+    DO_TEST("fv-utc", "fv-utc", "fvtest", 1);
+    DO_TEST("fv-localtime", "fv-localtime", "fvtest", 1);
+    DO_TEST("fv-usbmouse", "fv-usbmouse", "fvtest", 1);
+    DO_TEST("fv-usbmouse", "fv-usbmouse", "fvtest", 1);
+    DO_TEST("fv-kernel", "fv-kernel", "fvtest", 1);
 
-    if (virtTestRun("XML-2-SEXPR PV config (Orig VFB)",
-                    1, testComparePVOrigVFB, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR PV config (New VFB)",
-                    1, testComparePVNewVFB, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR PV config with bootloader",
-                    1, testComparePVBootloader, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR Disk File",
-                    1, testCompareDiskFile, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR Disk Block",
-                    1, testCompareDiskBlock, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR Disk Shareable",
-                    1, testCompareDiskShareable, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR Disk Drv Loop",
-                    1, testCompareDiskDrvLoop, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR Disk Drv Blkback",
-                    1, testCompareDiskDrvBlkback, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR Disk Drv Blktap",
-                    1, testCompareDiskDrvBlktap, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR Disk Drv Blktap QCow",
-                    1, testCompareDiskDrvBlktapQcow, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR Disk Drv Blktap Raw",
-                    1, testCompareDiskDrvBlktapRaw, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR Memory Resize",
-                    1, testCompareMemoryResize, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR Net Routed",
-                    1, testCompareNetRouted, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR Net Bridged",
-                    1, testCompareNetBridged, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR No Source CDRom",
-                    1, testCompareNoSourceCDRom, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR FV usb mouse)",
-                    1, testCompareFVInputUSBMouse, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("XML-2-SEXPR FV usb tablet)",
-                    1, testCompareFVInputUSBTablet, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR clock UTC",
-                    1, testCompareFVclockUTC, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR clock Localtime",
-                    1, testCompareFVclockLocaltime, NULL) != 0)
-        ret = -1;
-
-    if (virtTestRun("XML-2-SEXPR FV kernel",
-                    1, testCompareFVKernel, NULL) != 0)
-        ret = -1;
+    DO_TEST("fv-serial-null", "fv-serial-null", "fvtest", 1);
+    DO_TEST("fv-serial-file", "fv-serial-file", "fvtest", 1);
+    DO_TEST("fv-serial-stdio", "fv-serial-stdio", "fvtest", 1);
+    DO_TEST("fv-serial-pty", "fv-serial-pty", "fvtest", 1);
+    DO_TEST("fv-serial-pipe", "fv-serial-pipe", "fvtest", 1);
+    DO_TEST("fv-serial-tcp", "fv-serial-tcp", "fvtest", 1);
+    DO_TEST("fv-serial-udp", "fv-serial-udp", "fvtest", 1);
+    DO_TEST("fv-serial-tcp-telnet", "fv-serial-tcp-telnet", "fvtest", 1);
+    DO_TEST("fv-serial-unix", "fv-serial-unix", "fvtest", 1);
+    DO_TEST("fv-parallel-tcp", "fv-parallel-tcp", "fvtest", 1);
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

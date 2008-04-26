@@ -36,5 +36,11 @@
     </disk>
     <input type='mouse' bus='ps2'/>
     <graphics type='vnc' port='5906'/>
+    <serial type='pty'>
+      <target port='0'/>
+    </serial>
+    <console type='pty'>
+      <target port='0'/>
+    </console>
   </devices>
 </domain>

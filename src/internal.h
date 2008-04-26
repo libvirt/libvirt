@@ -65,7 +65,7 @@ extern "C" {
 #define STRCASEEQLEN(a,b,n) (strncasecmp((a),(b),(n)) == 0)
 #define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
 #define STRCASENEQLEN(a,b,n) (strncasecmp((a),(b),(n)) != 0)
-
+#define STRPREFIX(a,b) (strncmp((a),(b),strlen((b))) == 0)
 
 #define NUL_TERMINATE(buf) do { (buf)[sizeof(buf)-1] = '\0'; } while (0)
 #define ARRAY_CARDINALITY(Array) (sizeof (Array) / sizeof *(Array))

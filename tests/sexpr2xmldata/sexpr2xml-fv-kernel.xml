@@ -22,5 +22,11 @@
       <source file='/root/some.img'/>
       <target dev='xvda'/>
     </disk>
+    <serial type='pty'>
+      <target port='0'/>
+    </serial>
+    <console type='pty'>
+      <target port='0'/>
+    </console>
   </devices>
 </domain>

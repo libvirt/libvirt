@@ -14,5 +14,8 @@
       <source file='/root/some.img'/>
       <target dev='xvda'/>
     </disk>
+    <console type='pty'>
+      <target port='0'/>
+    </console>
   </devices>
 </domain>
