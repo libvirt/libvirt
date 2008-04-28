@@ -1,0 +1,44 @@
+{
+   bashMemoryLeak1
+   Memcheck:Leak
+   fun:malloc
+   fun:xmalloc
+   fun:set_signal
+   fun:trap_builtin
+   obj:/bin/bash
+   obj:/bin/bash
+   fun:execute_command_internal
+   fun:parse_and_execute
+   obj:/bin/bash
+   fun:source_file
+   fun:source_builtin
+   obj:/bin/bash
+}
+{
+   bashMemoryLeak2
+   Memcheck:Leak
+   fun:malloc
+   fun:xmalloc
+   fun:make_command
+   fun:yyparse
+   fun:parse_command
+   fun:read_command
+   fun:reader_loop
+   fun:main
+}
+{
+   bashMemoryLeak3
+   Memcheck:Leak
+   fun:malloc
+   fun:xmalloc
+   obj:/bin/bash
+   fun:execute_command_internal
+   obj:/bin/bash
+   fun:execute_command_internal
+   fun:execute_command_internal
+   obj:/bin/bash
+   obj:/bin/bash
+   fun:execute_command_internal
+   fun:parse_and_execute
+   fun:command_substitute
+}

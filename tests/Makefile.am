@@ -73,7 +73,7 @@ TESTS_ENVIRONMENT =				\
   $(VG)
 
 valgrind:
-	$(MAKE) check VG="valgrind --quiet --leak-check=full"
+	$(MAKE) check VG="valgrind --quiet --leak-check=full --suppressions=$(srcdir)/.valgrind.supp"
 
 # Note: xmlrpc.[c|h] is not in libvirt yet
 xmlrpctest_SOURCES = \
