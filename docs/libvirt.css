@@ -241,12 +241,13 @@ p.image {
     border: 0px;
     width: 100%;
     height: 180px;
-    background: #757575;
+    background: #FFFFFF;
+/*    background: #757575; */
 }
 /* This is hidden from IE <= 6 because it can't do transparency */
-body > #footer {
+/* body > #footer {
     background: #757575 url(footer_pattern.png) repeat-x;
-}
+} */
 
 #footer p {
     position: absolute;
@@ -343,7 +344,7 @@ head:first-child+body #projects dl {
 
 
 #sponsor {
-    color: white;
+    color: #757575;
     text-decoration: inherit;
     font-size: 1.2em;
 }

@@ -1,3 +1,10 @@
+Mon Apr 28 10:26:17 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/Makefile.am docs/et.png docs/libvirt.css docs/page.xsl
+	  docs/*.html docs/html/*.html: removed footer, added sponsor logo
+	  regenerated the html pages also fixed 'make distcheck' as
+	  pointed by Jim.
+
 Sat Apr 26 10:21:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xm_internal.c, src/xml.c, src/xml.h, src/xend_internal.c,

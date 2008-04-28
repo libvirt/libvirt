@@ -6,16 +6,16 @@ DOC_SOURCE_DIR=../src
 
 man_MANS=
 
-apihtml =		\
-  index.html		\
-  libvirt-libvirt.html	\
-  libvirt-virterror.html
+apihtml =			\
+  html/index.html		\
+  html/libvirt-libvirt.html	\
+  html/libvirt-virterror.html
 
 apipng =	\
-  left.png	\
-  up.png	\
-  home.png	\
-  right.png
+  html/left.png	\
+  html/up.png	\
+  html/home.png	\
+  html/right.png
 
 png = \
   16favicon.png \
@@ -32,13 +32,13 @@ png = \
   madeWith.png \
   windows-cygwin-1.png \
   windows-cygwin-2.png \
-  windows-cygwin-3.png
+  windows-cygwin-3.png \
+  et.png
 
 gif = \
   Libxml2-Logo-90x34.gif \
   architecture.gif \
-  node.gif \
-  redhat.gif
+  node.gif
 
 dot_html_in = $(wildcard *.html.in)
 dot_html = $(dot_html_in:%.html.in=%.html)
@@ -63,7 +63,7 @@ fig = \
 EXTRA_DIST=					\
   libvirt-api.xml libvirt-refs.xml apibuild.py	\
   site.xsl newapi.xsl news.xsl page.xsl	ChangeLog.xsl	\
-  $(dot_html) $(dot_html_in) $(gif) html/*.html html/*.png \
+  $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(xml) $(rng) $(fig) $(png) \
   virsh.pod ChangeLog.awk
 
@@ -131,10 +131,10 @@ install-data-local:
 	  $(DESTDIR)$(HTML_DIR)
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/html
 	for h in $(apihtml); do \
-	  $(INSTALL) -m 0644 $(srcdir)/html/$$h $(DESTDIR)$(HTML_DIR)/html; done
+	  $(INSTALL) -m 0644 $(srcdir)/$$h $(DESTDIR)$(HTML_DIR)/html; done
 	for p in $(apipng); do \
-	  $(INSTALL) -m 0644 $(srcdir)/html/$$p $(DESTDIR)$(HTML_DIR)/html; done
+	  $(INSTALL) -m 0644 $(srcdir)/$$p $(DESTDIR)$(HTML_DIR)/html; done
 
 uninstall-local:
-	for h in $(apihtml); do rm $(DESTDIR)$(HTML_DIR)/html/$$h; done
-	for p in $(apipng); do rm $(DESTDIR)$(HTML_DIR)/html/$$p; done
+	for h in $(apihtml); do rm $(DESTDIR)$(HTML_DIR)/$$h; done
+	for p in $(apipng); do rm $(DESTDIR)$(HTML_DIR)/$$p; done
