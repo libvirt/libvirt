@@ -2885,10 +2885,9 @@ cmdPoolCreateAs(vshControl * ctl, vshCmd * cmd)
 {
     virStoragePoolPtr pool;
     int found;
+    char *xml;
     char *name, *type, *srcHost, *srcPath, *srcDev, *target;
-    virBuffer buf;
-
-    memset(&buf, 0, sizeof(buf));
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -2905,39 +2904,36 @@ cmdPoolCreateAs(vshControl * ctl, vshCmd * cmd)
     srcDev = vshCommandOptString(cmd, "source-dev", &found);
     target = vshCommandOptString(cmd, "target", &found);
 
-    if (virBufferVSprintf(&buf, "<pool type='%s'>\n", type) < 0)
-        goto cleanup;
-    if (virBufferVSprintf(&buf, "  <name>%s</name>\n", name) < 0)
-        goto cleanup;
+    virBufferVSprintf(&buf, "<pool type='%s'>\n", type);
+    virBufferVSprintf(&buf, "  <name>%s</name>\n", name);
     if (srcHost || srcPath || srcDev) {
-        if (virBufferAddLit(&buf, "  <source>\n") < 0)
-            goto cleanup;
-        if (srcHost &&
-            virBufferVSprintf(&buf, "    <host name='%s'>\n", srcHost) < 0)
-            goto cleanup;
-        if (srcPath &&
-            virBufferVSprintf(&buf, "    <dir path='%s'/>\n", srcPath) < 0)
-            goto cleanup;
-        if (srcDev &&
-            virBufferVSprintf(&buf, "    <device path='%s'/>\n", srcDev) < 0)
-            goto cleanup;
+        virBufferAddLit(&buf, "  <source>\n");
+        if (srcHost)
+            virBufferVSprintf(&buf, "    <host name='%s'>\n", srcHost);
 
-        if (virBufferAddLit(&buf, "  </source>\n") < 0)
-            goto cleanup;
+        if (srcPath)
+            virBufferVSprintf(&buf, "    <dir path='%s'/>\n", srcPath);
+
+        if (srcDev)
+            virBufferVSprintf(&buf, "    <device path='%s'/>\n", srcDev);
+
+        virBufferAddLit(&buf, "  </source>\n");
     }
     if (target) {
-        if (virBufferAddLit(&buf, "  <target>\n") < 0)
-            goto cleanup;
-        if (virBufferVSprintf(&buf, "    <path>%s</path>\n", target) < 0)
-            goto cleanup;
-        if (virBufferAddLit(&buf, "  </target>\n") < 0)
-            goto cleanup;
+        virBufferAddLit(&buf, "  <target>\n");
+        virBufferVSprintf(&buf, "    <path>%s</path>\n", target);
+        virBufferAddLit(&buf, "  </target>\n");
     }
-    if (virBufferAddLit(&buf, "</pool>\n") < 0)
-        goto cleanup;
+    virBufferAddLit(&buf, "</pool>\n");
 
-    pool = virStoragePoolCreateXML(ctl->conn, buf.content, 0);
-    free (buf.content);
+    if (virBufferError(&buf)) {
+        vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
+        return FALSE;
+    }
+    xml = virBufferContentAndReset(&buf);
+
+    pool = virStoragePoolCreateXML(ctl->conn, xml, 0);
+    free (xml);
 
     if (pool != NULL) {
         vshPrint(ctl, _("Pool %s created\n"), name);
@@ -2949,7 +2945,7 @@ cmdPoolCreateAs(vshControl * ctl, vshCmd * cmd)
     }
 
  cleanup:
-    free(buf.content);
+    free(virBufferContentAndReset(&buf));
     return FALSE;
 }
 
@@ -3028,10 +3024,9 @@ cmdPoolDefineAs(vshControl * ctl, vshCmd * cmd)
 {
     virStoragePoolPtr pool;
     int found;
+    char *xml;
     char *name, *type, *srcHost, *srcPath, *srcDev, *target;
-    virBuffer buf;
-
-    memset(&buf, 0, sizeof(buf));
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -3048,39 +3043,35 @@ cmdPoolDefineAs(vshControl * ctl, vshCmd * cmd)
     srcDev = vshCommandOptString(cmd, "source-dev", &found);
     target = vshCommandOptString(cmd, "target", &found);
 
-    if (virBufferVSprintf(&buf, "<pool type='%s'>\n", type) < 0)
-        goto cleanup;
-    if (virBufferVSprintf(&buf, "  <name>%s</name>\n", name) < 0)
-        goto cleanup;
+    virBufferVSprintf(&buf, "<pool type='%s'>\n", type);
+    virBufferVSprintf(&buf, "  <name>%s</name>\n", name);
     if (srcHost || srcPath || srcDev) {
-        if (virBufferAddLit(&buf, "  <source>\n") < 0)
-            goto cleanup;
-        if (srcHost &&
-            virBufferVSprintf(&buf, "    <host>%s</host>\n", srcHost) < 0)
-            goto cleanup;
-        if (srcPath &&
-            virBufferVSprintf(&buf, "    <path>%s</path>\n", srcPath) < 0)
-            goto cleanup;
-        if (srcDev &&
-            virBufferVSprintf(&buf, "    <device>%s</device>\n", srcDev) < 0)
-            goto cleanup;
+        virBufferAddLit(&buf, "  <source>\n");
+        if (srcHost)
+            virBufferVSprintf(&buf, "    <host>%s</host>\n", srcHost);
+        if (srcPath)
+            virBufferVSprintf(&buf, "    <path>%s</path>\n", srcPath);
+        if (srcDev)
+            virBufferVSprintf(&buf, "    <device>%s</device>\n", srcDev);
 
-        if (virBufferAddLit(&buf, "  </source>\n") < 0)
-            goto cleanup;
+        virBufferAddLit(&buf, "  </source>\n");
     }
     if (target) {
-        if (virBufferAddLit(&buf, "  <target>\n") < 0)
-            goto cleanup;
-        if (virBufferVSprintf(&buf, "    <path>%s</path>\n", target) < 0)
-            goto cleanup;
-        if (virBufferAddLit(&buf, "  </target>\n") < 0)
-            goto cleanup;
+        virBufferAddLit(&buf, "  <target>\n");
+        virBufferVSprintf(&buf, "    <path>%s</path>\n", target);
+        virBufferAddLit(&buf, "  </target>\n");
     }
-    if (virBufferAddLit(&buf, "</pool>\n") < 0)
-        goto cleanup;
+    virBufferAddLit(&buf, "</pool>\n");
 
-    pool = virStoragePoolDefineXML(ctl->conn, buf.content, 0);
-    free (buf.content);
+
+    if (virBufferError(&buf)) {
+        vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
+        return FALSE;
+    }
+    xml = virBufferContentAndReset(&buf);
+
+    pool = virStoragePoolDefineXML(ctl->conn, xml, 0);
+    free (xml);
 
     if (pool != NULL) {
         vshPrint(ctl, _("Pool %s defined\n"), name);
@@ -3092,7 +3083,7 @@ cmdPoolDefineAs(vshControl * ctl, vshCmd * cmd)
     }
 
  cleanup:
-    free(buf.content);
+    free(virBufferContentAndReset(&buf));
     return FALSE;
 }
 
@@ -3641,11 +3632,10 @@ cmdVolCreateAs(vshControl * ctl, vshCmd * cmd)
     virStoragePoolPtr pool;
     virStorageVolPtr vol;
     int found;
+    char *xml;
     char *name, *capacityStr, *allocationStr, *format;
     unsigned long long capacity, allocation = 0;
-    virBuffer buf;
-
-    memset(&buf, 0, sizeof(buf));
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -3671,30 +3661,28 @@ cmdVolCreateAs(vshControl * ctl, vshCmd * cmd)
 
     format = vshCommandOptString(cmd, "format", &found);
 
-    if (virBufferAddLit(&buf, "<volume>\n") < 0)
-        goto cleanup;
-    if (virBufferVSprintf(&buf, "  <name>%s</name>\n", name) < 0)
-        goto cleanup;
-    if (virBufferVSprintf(&buf, "  <capacity>%llu</capacity>\n", capacity) < 0)
-        goto cleanup;
-    if (allocationStr &&
-        virBufferVSprintf(&buf, "  <allocation>%llu</allocation>\n", allocation) < 0)
-        goto cleanup;
+    virBufferAddLit(&buf, "<volume>\n");
+    virBufferVSprintf(&buf, "  <name>%s</name>\n", name);
+    virBufferVSprintf(&buf, "  <capacity>%llu</capacity>\n", capacity);
+    if (allocationStr)
+        virBufferVSprintf(&buf, "  <allocation>%llu</allocation>\n", allocation);
 
     if (format) {
-        if (virBufferAddLit(&buf, "  <target>\n") < 0)
-            goto cleanup;
+        virBufferAddLit(&buf, "  <target>\n");
         if (format)
-            if (virBufferVSprintf(&buf, "    <format type='%s'/>\n",format) < 0)
-                goto cleanup;
-        if (virBufferAddLit(&buf, "  </target>\n") < 0)
-            goto cleanup;
+            virBufferVSprintf(&buf, "    <format type='%s'/>\n",format);
+        virBufferAddLit(&buf, "  </target>\n");
     }
-    if (virBufferAddLit(&buf, "</volume>\n") < 0)
-        goto cleanup;
+    virBufferAddLit(&buf, "</volume>\n");
 
-    vol = virStorageVolCreateXML(pool, buf.content, 0);
-    free (buf.content);
+
+    if (virBufferError(&buf)) {
+        vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
+        return FALSE;
+    }
+    xml = virBufferContentAndReset(&buf);
+    vol = virStorageVolCreateXML(pool, xml, 0);
+    free (xml);
     virStoragePoolFree(pool);
 
     if (vol != NULL) {
@@ -3707,7 +3695,7 @@ cmdVolCreateAs(vshControl * ctl, vshCmd * cmd)
     }
 
  cleanup:
-    free(buf.content);
+    free(virBufferContentAndReset(&buf));
     virStoragePoolFree(pool);
     return FALSE;
 }

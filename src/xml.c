@@ -102,19 +102,13 @@ parseCpuNumber(const char **str, int maxcpu)
 char *
 virSaveCpuSet(virConnectPtr conn, char *cpuset, int maxcpu)
 {
-    virBufferPtr buf;
-    char *ret;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     int start, cur;
     int first = 1;
 
     if ((cpuset == NULL) || (maxcpu <= 0) || (maxcpu > 100000))
         return (NULL);
 
-    buf = virBufferNew(1000);
-    if (buf == NULL) {
-        virXMLError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"), 1000);
-        return (NULL);
-    }
     cur = 0;
     start = -1;
     while (cur < maxcpu) {
@@ -123,27 +117,32 @@ virSaveCpuSet(virConnectPtr conn, char *cpuset, int maxcpu)
                 start = cur;
         } else if (start != -1) {
             if (!first)
-                virBufferAddLit(buf, ",");
+                virBufferAddLit(&buf, ",");
             else
                 first = 0;
             if (cur == start + 1)
-                virBufferVSprintf(buf, "%d", start);
+                virBufferVSprintf(&buf, "%d", start);
             else
-                virBufferVSprintf(buf, "%d-%d", start, cur - 1);
+                virBufferVSprintf(&buf, "%d-%d", start, cur - 1);
             start = -1;
         }
         cur++;
     }
     if (start != -1) {
         if (!first)
-            virBufferAddLit(buf, ",");
+            virBufferAddLit(&buf, ",");
         if (maxcpu == start + 1)
-            virBufferVSprintf(buf, "%d", start);
+            virBufferVSprintf(&buf, "%d", start);
         else
-            virBufferVSprintf(buf, "%d-%d", start, maxcpu - 1);
+            virBufferVSprintf(&buf, "%d-%d", start, maxcpu - 1);
     }
-    ret = virBufferContentAndFree(buf);
-    return (ret);
+
+    if (virBufferError(&buf)) {
+        virXMLError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"), 1000);
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
 }
 
 /**
@@ -1054,11 +1053,9 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
         char scratch[PATH_MAX];
         if (virDomainParseXMLOSDescHVMChar(conn, scratch, sizeof(scratch), cur) < 0)
             goto error;
-        if (virBufferVSprintf(buf, "(parallel %s)", scratch) < 0)
-            goto no_memory;
+        virBufferVSprintf(buf, "(parallel %s)", scratch);
     } else {
-        if (virBufferAddLit(buf, "(parallel none)") < 0)
-            goto no_memory;
+        virBufferAddLit(buf, "(parallel none)");
     }
 
     cur = virXPathNode("/domain/devices/serial[1]", ctxt);
@@ -1066,8 +1063,7 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
         char scratch[PATH_MAX];
         if (virDomainParseXMLOSDescHVMChar(conn, scratch, sizeof(scratch), cur) < 0)
             goto error;
-        if (virBufferVSprintf(buf, "(serial %s)", scratch) < 0)
-            goto no_memory;
+        virBufferVSprintf(buf, "(serial %s)", scratch);
     } else {
         res = virXPathBoolean("count(domain/devices/console) > 0", ctxt);
         if (res < 0) {
@@ -1075,26 +1071,19 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
             goto error;
         }
         if (res) {
-            if (virBufferAddLit(buf, "(serial pty)") < 0)
-                goto no_memory;
+            virBufferAddLit(buf, "(serial pty)");
         } else {
-            if (virBufferAddLit(buf, "(serial none)") < 0)
-                goto no_memory;
+            virBufferAddLit(buf, "(serial none)");
         }
     }
 
     str = virXPathString("string(/domain/clock/@offset)", ctxt);
-    if (str != NULL && !strcmp(str, "localtime")) {
-        if (virBufferAddLit(buf, "(localtime 1)") < 0)
-            goto no_memory;
+    if (str != NULL && STREQ(str, "localtime")) {
+        virBufferAddLit(buf, "(localtime 1)");
     }
     free(str);
 
     return (0);
-
-no_memory:
-    virXMLError(conn, VIR_ERR_XML_ERROR,
-                _("cannot allocate memory for buffer"), 0);
 
   error:
     free(nodes);
@@ -1509,7 +1498,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
     xmlDocPtr xml = NULL;
     xmlNodePtr node;
     char *nam = NULL;
-    virBuffer buf;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     xmlChar *prop;
     xmlParserCtxtPtr pctxt;
     xmlXPathContextPtr ctxt = NULL;
@@ -1525,11 +1514,6 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
 
     if (name != NULL)
         *name = NULL;
-    buf.content = malloc(1000);
-    if (buf.content == NULL)
-        return (NULL);
-    buf.size = 1000;
-    buf.use = 0;
 
     pctxt = xmlNewParserCtxt();
     if ((pctxt == NULL) || (pctxt->sax == NULL)) {
@@ -1787,7 +1771,6 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
 
 
     virBufferAddLit(&buf, ")"); /* closes (vm */
-    buf.content[buf.use] = 0;
 
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
@@ -1798,7 +1781,12 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
     else
         free(nam);
 
-    return (buf.content);
+    if (virBufferError(&buf)) {
+        virXMLError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
 
   error:
     free(nam);
@@ -1809,7 +1797,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
         xmlFreeDoc(xml);
     if (pctxt != NULL)
         xmlFreeParserCtxt(pctxt);
-    free(buf.content);
+    free(virBufferContentAndReset(&buf));
     return (NULL);
 }
 
@@ -1834,14 +1822,8 @@ virParseXMLDevice(virConnectPtr conn, const char *xmldesc, int hvm,
 {
     xmlDocPtr xml = NULL;
     xmlNodePtr node;
-    virBuffer buf;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    buf.content = malloc(1000);
-    if (buf.content == NULL)
-        return (NULL);
-    buf.size = 1000;
-    buf.use = 0;
-    buf.content[0] = 0;
     xml = xmlReadDoc((const xmlChar *) xmldesc, "device.xml", NULL,
                      XML_PARSE_NOENT | XML_PARSE_NONET |
                      XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
@@ -1856,9 +1838,6 @@ virParseXMLDevice(virConnectPtr conn, const char *xmldesc, int hvm,
         if (virDomainParseXMLDiskDesc(conn, node, &buf, hvm,
                                       xendConfigVersion) != 0)
             goto error;
-        /* SXP is not created when device is "floppy". */
-        else if (buf.use == 0)
-            goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
         if (virDomainParseXMLIfDesc(conn, node, &buf, hvm,
                                     xendConfigVersion) != 0)
@@ -1867,14 +1846,20 @@ virParseXMLDevice(virConnectPtr conn, const char *xmldesc, int hvm,
         virXMLError(conn, VIR_ERR_XML_ERROR, (const char *) node->name, 0);
         goto error;
     }
-  cleanup:
-    if (xml != NULL)
-        xmlFreeDoc(xml);
-    return buf.content;
+
+    xmlFreeDoc(xml);
+
+    if (virBufferError(&buf)) {
+        virXMLError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
+
   error:
-    free(buf.content);
-    buf.content = NULL;
-    goto cleanup;
+    free(virBufferContentAndReset(&buf));
+    xmlFreeDoc(xml);
+    return NULL;
 }
 
 

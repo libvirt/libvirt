@@ -1523,34 +1523,30 @@ static int testSetVcpus(virDomainPtr domain,
 
 static char *testDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
 {
-    virBufferPtr buf;
-    char *xml;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     GET_DOMAIN(domain, NULL);
 
-    if (!(buf = virBufferNew(4000))) {
-        testError(domain->conn, domain, NULL, VIR_ERR_NO_MEMORY, __FUNCTION__);
-        return (NULL);
-    }
-
-    virBufferVSprintf(buf, "<domain type='test' id='%d'>\n", domain->id);
-    virBufferVSprintf(buf, "  <name>%s</name>\n", domain->name);
+    virBufferVSprintf(&buf, "<domain type='test' id='%d'>\n", domain->id);
+    virBufferVSprintf(&buf, "  <name>%s</name>\n", domain->name);
     uuid = domain->uuid;
     virUUIDFormat(uuid, uuidstr);
-    virBufferVSprintf(buf, "  <uuid>%s</uuid>\n", uuidstr);
-    virBufferVSprintf(buf, "  <memory>%lu</memory>\n", privdom->info.maxMem);
-    virBufferVSprintf(buf, "  <vcpu>%d</vcpu>\n", privdom->info.nrVirtCpu);
-    virBufferVSprintf(buf, "  <on_reboot>%s</on_reboot>\n", testRestartFlagToString(privdom->onReboot));
-    virBufferVSprintf(buf, "  <on_poweroff>%s</on_poweroff>\n", testRestartFlagToString(privdom->onPoweroff));
-    virBufferVSprintf(buf, "  <on_crash>%s</on_crash>\n", testRestartFlagToString(privdom->onCrash));
+    virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", uuidstr);
+    virBufferVSprintf(&buf, "  <memory>%lu</memory>\n", privdom->info.maxMem);
+    virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n", privdom->info.nrVirtCpu);
+    virBufferVSprintf(&buf, "  <on_reboot>%s</on_reboot>\n", testRestartFlagToString(privdom->onReboot));
+    virBufferVSprintf(&buf, "  <on_poweroff>%s</on_poweroff>\n", testRestartFlagToString(privdom->onPoweroff));
+    virBufferVSprintf(&buf, "  <on_crash>%s</on_crash>\n", testRestartFlagToString(privdom->onCrash));
 
-    virBufferAddLit(buf, "</domain>\n");
+    virBufferAddLit(&buf, "</domain>\n");
 
-    xml = buf->content;
-    free(buf);
+    if (virBufferError(&buf)) {
+        testError(domain->conn, domain, NULL, VIR_ERR_NO_MEMORY, __FUNCTION__);
+        return NULL;
+    }
 
-    return (xml);
+    return virBufferContentAndReset(&buf);
 }
 
 static int testNumOfDefinedDomains(virConnectPtr conn) {
@@ -1928,44 +1924,40 @@ static int testNetworkDestroy(virNetworkPtr network) {
 }
 
 static char *testNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSED) {
-    virBufferPtr buf;
-    char *xml;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     GET_NETWORK(network, NULL);
 
-    if (!(buf = virBufferNew(4000))) {
-        testError(network->conn, NULL, network, VIR_ERR_NO_MEMORY, __FUNCTION__);
-        return (NULL);
-    }
-
-    virBufferAddLit(buf, "<network>\n");
-    virBufferVSprintf(buf, "  <name>%s</name>\n", network->name);
+    virBufferAddLit(&buf, "<network>\n");
+    virBufferVSprintf(&buf, "  <name>%s</name>\n", network->name);
     uuid = network->uuid;
     virUUIDFormat(uuid, uuidstr);
-    virBufferVSprintf(buf, "  <uuid>%s</uuid>\n", uuidstr);
-    virBufferVSprintf(buf, "  <bridge name='%s'/>\n", privnet->bridge);
+    virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", uuidstr);
+    virBufferVSprintf(&buf, "  <bridge name='%s'/>\n", privnet->bridge);
     if (privnet->forward) {
         if (privnet->forwardDev[0])
-            virBufferVSprintf(buf, "  <forward dev='%s'/>\n", privnet->forwardDev);
+            virBufferVSprintf(&buf, "  <forward dev='%s'/>\n", privnet->forwardDev);
         else
-            virBufferAddLit(buf, "  <forward/>\n");
+            virBufferAddLit(&buf, "  <forward/>\n");
     }
 
-    virBufferVSprintf(buf, "  <ip address='%s' netmask='%s'>\n",
+    virBufferVSprintf(&buf, "  <ip address='%s' netmask='%s'>\n",
                       privnet->ipAddress, privnet->ipNetmask);
-    virBufferAddLit(buf, "    <dhcp>\n");
-    virBufferVSprintf(buf, "      <range start='%s' end='%s'/>\n",
+    virBufferAddLit(&buf, "    <dhcp>\n");
+    virBufferVSprintf(&buf, "      <range start='%s' end='%s'/>\n",
                       privnet->dhcpStart, privnet->dhcpEnd);
-    virBufferAddLit(buf, "    </dhcp>\n");
-    virBufferAddLit(buf, "  </ip>\n");
+    virBufferAddLit(&buf, "    </dhcp>\n");
+    virBufferAddLit(&buf, "  </ip>\n");
 
-    virBufferAddLit(buf, "</network>\n");
+    virBufferAddLit(&buf, "</network>\n");
 
-    xml = buf->content;
-    free(buf);
+    if (virBufferError(&buf)) {
+        testError(network->conn, NULL, network, VIR_ERR_NO_MEMORY, __FUNCTION__);
+        return NULL;
+    }
 
-    return (xml);
+    return virBufferContentAndReset(&buf);
 }
 
 static char *testNetworkGetBridgeName(virNetworkPtr network) {

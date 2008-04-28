@@ -3359,14 +3359,12 @@ static int qemudGenerateXMLChar(virBufferPtr buf,
     if (STREQ(type, "console") &&
         dev->srcType == QEMUD_CHR_SRC_TYPE_PTY &&
         dev->srcData.file.path[0] != '\0') {
-        if (virBufferVSprintf(buf, "    <%s type='%s' tty='%s'>\n",
-                              type, types[dev->srcType],
-                              dev->srcData.file.path) < 0)
-            return -1;
+        virBufferVSprintf(buf, "    <%s type='%s' tty='%s'>\n",
+                          type, types[dev->srcType],
+                          dev->srcData.file.path);
     } else {
-        if (virBufferVSprintf(buf, "    <%s type='%s'>\n",
-                              type, types[dev->srcType]) < 0)
-            return -1;
+        virBufferVSprintf(buf, "    <%s type='%s'>\n",
+                          type, types[dev->srcType]);
     }
 
     switch (dev->srcType) {
@@ -3382,74 +3380,62 @@ static int qemudGenerateXMLChar(virBufferPtr buf,
     case QEMUD_CHR_SRC_TYPE_PIPE:
         if (dev->srcType != QEMUD_CHR_SRC_TYPE_PTY ||
             dev->srcData.file.path[0]) {
-            if (virBufferVSprintf(buf, "      <source path='%s'/>\n",
-                                  dev->srcData.file.path) < 0)
-                return -1;
+            virBufferVSprintf(buf, "      <source path='%s'/>\n",
+                              dev->srcData.file.path);
         }
         break;
 
     case QEMUD_CHR_SRC_TYPE_UDP:
         if (dev->srcData.udp.bindService[0] != '\0' &&
             dev->srcData.udp.bindHost[0] != '\0') {
-            if (virBufferVSprintf(buf, "      <source mode='bind' host='%s' service='%s'/>\n",
-                                  dev->srcData.udp.bindHost,
-                                  dev->srcData.udp.bindService) < 0)
-                return -1;
+            virBufferVSprintf(buf, "      <source mode='bind' host='%s' service='%s'/>\n",
+                              dev->srcData.udp.bindHost,
+                              dev->srcData.udp.bindService);
         } else if (dev->srcData.udp.bindHost[0] !='\0') {
-            if (virBufferVSprintf(buf, "      <source mode='bind' host='%s'/>\n",
-                                  dev->srcData.udp.bindHost) < 0)
-                return -1;
+            virBufferVSprintf(buf, "      <source mode='bind' host='%s'/>\n",
+                              dev->srcData.udp.bindHost);
         } else if (dev->srcData.udp.bindService[0] != '\0') {
-            if (virBufferVSprintf(buf, "      <source mode='bind' service='%s'/>\n",
-                                  dev->srcData.udp.bindService) < 0)
-                return -1;
+            virBufferVSprintf(buf, "      <source mode='bind' service='%s'/>\n",
+                              dev->srcData.udp.bindService);
         }
 
         if (dev->srcData.udp.connectService[0] != '\0' &&
             dev->srcData.udp.connectHost[0] != '\0') {
-            if (virBufferVSprintf(buf, "      <source mode='connect' host='%s' service='%s'/>\n",
-                                  dev->srcData.udp.connectHost,
-                                  dev->srcData.udp.connectService) < 0)
-                return -1;
+            virBufferVSprintf(buf, "      <source mode='connect' host='%s' service='%s'/>\n",
+                              dev->srcData.udp.connectHost,
+                              dev->srcData.udp.connectService);
         } else if (dev->srcData.udp.connectHost[0] != '\0') {
-            if (virBufferVSprintf(buf, "      <source mode='connect' host='%s'/>\n",
-                                  dev->srcData.udp.connectHost) < 0)
-                return -1;
+            virBufferVSprintf(buf, "      <source mode='connect' host='%s'/>\n",
+                              dev->srcData.udp.connectHost);
         } else if (dev->srcData.udp.connectService[0] != '\0') {
-            if (virBufferVSprintf(buf, "      <source mode='connect' service='%s'/>\n",
-                                  dev->srcData.udp.connectService) < 0)
-                return -1;
+            virBufferVSprintf(buf, "      <source mode='connect' service='%s'/>\n",
+                              dev->srcData.udp.connectService);
         }
 
         break;
 
     case QEMUD_CHR_SRC_TYPE_TCP:
-        if (virBufferVSprintf(buf, "      <source mode='%s' host='%s' service='%s'/>\n",
-                              dev->srcData.tcp.listen ? "bind" : "connect",
-                              dev->srcData.tcp.host,
-                              dev->srcData.tcp.service) < 0)
-            return -1;
-        if (virBufferVSprintf(buf, "      <protocol type='%s'/>\n",
-                              dev->srcData.tcp.protocol == QEMUD_CHR_SRC_TCP_PROTOCOL_TELNET
-                              ? "telnet" : "raw") < 0)
-            return -1;
+        virBufferVSprintf(buf, "      <source mode='%s' host='%s' service='%s'/>\n",
+                          dev->srcData.tcp.listen ? "bind" : "connect",
+                          dev->srcData.tcp.host,
+                          dev->srcData.tcp.service);
+        virBufferVSprintf(buf, "      <protocol type='%s'/>\n",
+                          dev->srcData.tcp.protocol == QEMUD_CHR_SRC_TCP_PROTOCOL_TELNET
+                          ? "telnet" : "raw");
         break;
 
     case QEMUD_CHR_SRC_TYPE_UNIX:
-        if (virBufferVSprintf(buf, "      <source mode='%s' path='%s'/>\n",
-                              dev->srcData.nix.listen ? "bind" : "connect",
-                              dev->srcData.nix.path) < 0)
-            return -1;
+        virBufferVSprintf(buf, "      <source mode='%s' path='%s'/>\n",
+                          dev->srcData.nix.listen ? "bind" : "connect",
+                          dev->srcData.nix.path);
         break;
     }
 
-    if (virBufferVSprintf(buf, "      <target port='%d'/>\n",
-                          dev->dstPort) < 0)
-        return -1;
+    virBufferVSprintf(buf, "      <target port='%d'/>\n",
+                      dev->dstPort);
 
-    if (virBufferVSprintf(buf, "    </%s>\n",
-                          type) < 0)
-        return -1;
+    virBufferVSprintf(buf, "    </%s>\n",
+                      type);
 
     return 0;
 }
@@ -3461,7 +3447,7 @@ char *qemudGenerateXML(virConnectPtr conn,
                        struct qemud_vm *vm,
                        struct qemud_vm_def *def,
                        int live) {
-    virBufferPtr buf = 0;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     const struct qemud_vm_disk_def *disk;
@@ -3470,10 +3456,6 @@ char *qemudGenerateXML(virConnectPtr conn,
     const struct qemud_vm_chr_def *chr;
     const char *type = NULL;
     int n;
-
-    buf = virBufferNew (QEMUD_MAX_XML_LEN);
-    if (!buf)
-        goto no_memory;
 
     switch (def->virtType) {
     case QEMUD_VIRT_QEMU:
@@ -3492,49 +3474,34 @@ char *qemudGenerateXML(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (qemudIsActiveVM(vm) && live) {
-        if (virBufferVSprintf(buf, "<domain type='%s' id='%d'>\n", type, vm->id) < 0)
-            goto no_memory;
-    } else {
-        if (virBufferVSprintf(buf, "<domain type='%s'>\n", type) < 0)
-            goto no_memory;
-    }
+    if (qemudIsActiveVM(vm) && live)
+        virBufferVSprintf(&buf, "<domain type='%s' id='%d'>\n", type, vm->id);
+    else
+        virBufferVSprintf(&buf, "<domain type='%s'>\n", type);
 
-    if (virBufferVSprintf(buf, "  <name>%s</name>\n", def->name) < 0)
-        goto no_memory;
+    virBufferVSprintf(&buf, "  <name>%s</name>\n", def->name);
 
     uuid = def->uuid;
     virUUIDFormat(uuid, uuidstr);
-    if (virBufferVSprintf(buf, "  <uuid>%s</uuid>\n", uuidstr) < 0)
-        goto no_memory;
-    if (virBufferVSprintf(buf, "  <memory>%lu</memory>\n", def->maxmem) < 0)
-        goto no_memory;
-    if (virBufferVSprintf(buf, "  <currentMemory>%lu</currentMemory>\n", def->memory) < 0)
-        goto no_memory;
-    if (virBufferVSprintf(buf, "  <vcpu>%d</vcpu>\n", def->vcpus) < 0)
-        goto no_memory;
+    virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", uuidstr);
 
-    if (virBufferAddLit(buf, "  <os>\n") < 0)
-        goto no_memory;
+    virBufferVSprintf(&buf, "  <memory>%lu</memory>\n", def->maxmem);
+    virBufferVSprintf(&buf, "  <currentMemory>%lu</currentMemory>\n", def->memory);
+    virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n", def->vcpus);
+    virBufferAddLit(&buf, "  <os>\n");
 
-    if (def->virtType == QEMUD_VIRT_QEMU) {
-        if (virBufferVSprintf(buf, "    <type arch='%s' machine='%s'>%s</type>\n",
-                              def->os.arch, def->os.machine, def->os.type) < 0)
-            goto no_memory;
-    } else {
-        if (virBufferVSprintf(buf, "    <type>%s</type>\n", def->os.type) < 0)
-            goto no_memory;
-    }
+    if (def->virtType == QEMUD_VIRT_QEMU)
+        virBufferVSprintf(&buf, "    <type arch='%s' machine='%s'>%s</type>\n",
+                          def->os.arch, def->os.machine, def->os.type);
+    else
+        virBufferVSprintf(&buf, "    <type>%s</type>\n", def->os.type);
 
     if (def->os.kernel[0])
-        if (virBufferVSprintf(buf, "    <kernel>%s</kernel>\n", def->os.kernel) < 0)
-            goto no_memory;
+        virBufferVSprintf(&buf, "    <kernel>%s</kernel>\n", def->os.kernel);
     if (def->os.initrd[0])
-        if (virBufferVSprintf(buf, "    <initrd>%s</initrd>\n", def->os.initrd) < 0)
-            goto no_memory;
+        virBufferVSprintf(&buf, "    <initrd>%s</initrd>\n", def->os.initrd);
     if (def->os.cmdline[0])
-        if (virBufferVSprintf(buf, "    <cmdline>%s</cmdline>\n", def->os.cmdline) < 0)
-            goto no_memory;
+        virBufferVSprintf(&buf, "    <cmdline>%s</cmdline>\n", def->os.cmdline);
 
     for (n = 0 ; n < def->os.nBootDevs ; n++) {
         const char *boottype = "hd";
@@ -3552,41 +3519,29 @@ char *qemudGenerateXML(virConnectPtr conn,
             boottype = "network";
             break;
         }
-        if (virBufferVSprintf(buf, "    <boot dev='%s'/>\n", boottype) < 0)
-            goto no_memory;
+        virBufferVSprintf(&buf, "    <boot dev='%s'/>\n", boottype);
     }
 
-    if (virBufferAddLit(buf, "  </os>\n") < 0)
-        goto no_memory;
+    virBufferAddLit(&buf, "  </os>\n");
 
     if (def->features & QEMUD_FEATURE_ACPI) {
-        if (virBufferAddLit(buf, "  <features>\n") < 0)
-            goto no_memory;
-        if (virBufferAddLit(buf, "    <acpi/>\n") < 0)
-            goto no_memory;
-        if (virBufferAddLit(buf, "  </features>\n") < 0)
-            goto no_memory;
+        virBufferAddLit(&buf, "  <features>\n");
+        virBufferAddLit(&buf, "    <acpi/>\n");
+        virBufferAddLit(&buf, "  </features>\n");
     }
 
-    virBufferVSprintf(buf, "  <clock offset='%s'/>\n", def->localtime ? "localtime" : "utc");
+    virBufferVSprintf(&buf, "  <clock offset='%s'/>\n", def->localtime ? "localtime" : "utc");
 
-    if (virBufferAddLit(buf, "  <on_poweroff>destroy</on_poweroff>\n") < 0)
-        goto no_memory;
-    if (def->noReboot) {
-        if (virBufferAddLit(buf, "  <on_reboot>destroy</on_reboot>\n") < 0)
-            goto no_memory;
-    } else {
-        if (virBufferAddLit(buf, "  <on_reboot>restart</on_reboot>\n") < 0)
-            goto no_memory;
-    }
-    if (virBufferAddLit(buf, "  <on_crash>destroy</on_crash>\n") < 0)
-        goto no_memory;
+    virBufferAddLit(&buf, "  <on_poweroff>destroy</on_poweroff>\n");
+    if (def->noReboot)
+        virBufferAddLit(&buf, "  <on_reboot>destroy</on_reboot>\n");
+    else
+        virBufferAddLit(&buf, "  <on_reboot>restart</on_reboot>\n");
 
-    if (virBufferAddLit(buf, "  <devices>\n") < 0)
-        goto no_memory;
+    virBufferAddLit(&buf, "  <on_crash>destroy</on_crash>\n");
+    virBufferAddLit(&buf, "  <devices>\n");
 
-    if (virBufferVSprintf(buf, "    <emulator>%s</emulator>\n", def->os.binary) < 0)
-        goto no_memory;
+    virBufferVSprintf(&buf, "    <emulator>%s</emulator>\n", def->os.binary);
 
     disk = def->disks;
     while (disk) {
@@ -3603,24 +3558,19 @@ char *qemudGenerateXML(virConnectPtr conn,
             "cdrom",
             "floppy",
         };
-        if (virBufferVSprintf(buf, "    <disk type='%s' device='%s'>\n",
-                              types[disk->type], devices[disk->device]) < 0)
-            goto no_memory;
+        virBufferVSprintf(&buf, "    <disk type='%s' device='%s'>\n",
+                          types[disk->type], devices[disk->device]);
 
         if (disk->src[0])
-            if (virBufferVSprintf(buf, "      <source %s='%s'/>\n",
-                                  typeAttrs[disk->type], disk->src) < 0)
-                goto no_memory;
+            virBufferVSprintf(&buf, "      <source %s='%s'/>\n",
+                              typeAttrs[disk->type], disk->src);
 
-        if (virBufferVSprintf(buf, "      <target dev='%s'/>\n", disk->dst) < 0)
-            goto no_memory;
+        virBufferVSprintf(&buf, "      <target dev='%s'/>\n", disk->dst);
 
         if (disk->readonly)
-            if (virBufferAddLit(buf, "      <readonly/>\n") < 0)
-                goto no_memory;
+            virBufferAddLit(&buf, "      <readonly/>\n");
 
-        if (virBufferAddLit(buf, "    </disk>\n") < 0)
-            goto no_memory;
+        virBufferAddLit(&buf, "    </disk>\n");
 
         disk = disk->next;
     }
@@ -3636,69 +3586,53 @@ char *qemudGenerateXML(virConnectPtr conn,
             "network",
             "bridge",
         };
-        if (virBufferVSprintf(buf, "    <interface type='%s'>\n",
-                              types[net->type]) < 0)
-            goto no_memory;
+        virBufferVSprintf(&buf, "    <interface type='%s'>\n",
+                          types[net->type]);
 
-        if (virBufferVSprintf(buf, "      <mac address='%02x:%02x:%02x:%02x:%02x:%02x'/>\n",
-                              net->mac[0], net->mac[1], net->mac[2],
-                              net->mac[3], net->mac[4], net->mac[5]) < 0)
-            goto no_memory;
+        virBufferVSprintf(&buf, "      <mac address='%02x:%02x:%02x:%02x:%02x:%02x'/>\n",
+                          net->mac[0], net->mac[1], net->mac[2],
+                          net->mac[3], net->mac[4], net->mac[5]);
 
         switch (net->type) {
         case QEMUD_NET_NETWORK:
-            if (virBufferVSprintf(buf, "      <source network='%s'/>\n", net->dst.network.name) < 0)
-                goto no_memory;
+            virBufferVSprintf(&buf, "      <source network='%s'/>\n", net->dst.network.name);
 
-            if (net->dst.network.ifname[0] != '\0') {
-                if (virBufferVSprintf(buf, "      <target dev='%s'/>\n", net->dst.network.ifname) < 0)
-                    goto no_memory;
-            }
+            if (net->dst.network.ifname[0] != '\0')
+                virBufferVSprintf(&buf, "      <target dev='%s'/>\n", net->dst.network.ifname);
             break;
 
         case QEMUD_NET_ETHERNET:
-            if (net->dst.ethernet.ifname[0] != '\0') {
-                if (virBufferVSprintf(buf, "      <target dev='%s'/>\n", net->dst.ethernet.ifname) < 0)
-                    goto no_memory;
-            }
-            if (net->dst.ethernet.script[0] != '\0') {
-                if (virBufferVSprintf(buf, "      <script path='%s'/>\n", net->dst.ethernet.script) < 0)
-                    goto no_memory;
-            }
+            if (net->dst.ethernet.ifname[0] != '\0')
+                virBufferVSprintf(&buf, "      <target dev='%s'/>\n", net->dst.ethernet.ifname);
+            if (net->dst.ethernet.script[0] != '\0')
+                virBufferVSprintf(&buf, "      <script path='%s'/>\n", net->dst.ethernet.script);
             break;
 
         case QEMUD_NET_BRIDGE:
-            if (virBufferVSprintf(buf, "      <source bridge='%s'/>\n", net->dst.bridge.brname) < 0)
-                goto no_memory;
-            if (net->dst.bridge.ifname[0] != '\0') {
-                if (virBufferVSprintf(buf, "      <target dev='%s'/>\n", net->dst.bridge.ifname) < 0)
-                    goto no_memory;
-            }
+            virBufferVSprintf(&buf, "      <source bridge='%s'/>\n", net->dst.bridge.brname);
+            if (net->dst.bridge.ifname[0] != '\0')
+                virBufferVSprintf(&buf, "      <target dev='%s'/>\n", net->dst.bridge.ifname);
             break;
 
         case QEMUD_NET_SERVER:
         case QEMUD_NET_CLIENT:
         case QEMUD_NET_MCAST:
-            if (net->dst.socket.address[0] != '\0') {
-                if (virBufferVSprintf(buf, "      <source address='%s' port='%d'/>\n",
-                                      net->dst.socket.address, net->dst.socket.port) < 0)
-                    goto no_memory;
-            } else {
-                if (virBufferVSprintf(buf, "      <source port='%d'/>\n",
-                                      net->dst.socket.port) < 0)
-                    goto no_memory;
-            }
+            if (net->dst.socket.address[0] != '\0')
+                virBufferVSprintf(&buf, "      <source address='%s' port='%d'/>\n",
+                                  net->dst.socket.address, net->dst.socket.port);
+            else
+                virBufferVSprintf(&buf, "      <source port='%d'/>\n",
+                                  net->dst.socket.port);
         }
 
-        if (virBufferAddLit(buf, "    </interface>\n") < 0)
-            goto no_memory;
+        virBufferAddLit(&buf, "    </interface>\n");
 
         net = net->next;
     }
 
     chr = def->serials;
     while (chr) {
-        if (qemudGenerateXMLChar(buf, chr, "serial") < 0)
+        if (qemudGenerateXMLChar(&buf, chr, "serial") < 0)
             goto no_memory;
 
         chr = chr->next;
@@ -3706,7 +3640,7 @@ char *qemudGenerateXML(virConnectPtr conn,
 
     chr = def->parallels;
     while (chr) {
-        if (qemudGenerateXMLChar(buf, chr, "parallel") < 0)
+        if (qemudGenerateXMLChar(&buf, chr, "parallel") < 0)
             goto no_memory;
 
         chr = chr->next;
@@ -3714,49 +3648,41 @@ char *qemudGenerateXML(virConnectPtr conn,
 
     /* First serial device is the primary console */
     if (def->nserials > 0 &&
-        qemudGenerateXMLChar(buf, def->serials, "console") < 0)
+        qemudGenerateXMLChar(&buf, def->serials, "console") < 0)
         goto no_memory;
 
     input = def->inputs;
     while (input) {
-        if (input->bus != QEMU_INPUT_BUS_PS2 &&
-            virBufferVSprintf(buf, "    <input type='%s' bus='usb'/>\n",
-                              input->type == QEMU_INPUT_TYPE_MOUSE ? "mouse" : "tablet") < 0)
-            goto no_memory;
+        if (input->bus != QEMU_INPUT_BUS_PS2)
+            virBufferVSprintf(&buf, "    <input type='%s' bus='usb'/>\n",
+                              input->type == QEMU_INPUT_TYPE_MOUSE ? "mouse" : "tablet");
         input = input->next;
     }
     /* If graphics is enable, add implicit mouse */
     if (def->graphicsType != QEMUD_GRAPHICS_NONE)
-        if (virBufferAddLit(buf, "    <input type='mouse' bus='ps2'/>\n") < 0)
-            goto no_memory;
+        virBufferAddLit(&buf, "    <input type='mouse' bus='ps2'/>\n");
 
     switch (def->graphicsType) {
     case QEMUD_GRAPHICS_VNC:
-        if (virBufferAddLit(buf, "    <graphics type='vnc'") < 0)
-            goto no_memory;
+        virBufferAddLit(&buf, "    <graphics type='vnc'");
 
-        if (def->vncPort &&
-            virBufferVSprintf(buf, " port='%d'",
-                              qemudIsActiveVM(vm) && live ? def->vncActivePort : def->vncPort) < 0)
-            goto no_memory;
+        if (def->vncPort)
+            virBufferVSprintf(&buf, " port='%d'",
+                              qemudIsActiveVM(vm) && live ? def->vncActivePort : def->vncPort);
 
-        if (def->vncListen[0] &&
-            virBufferVSprintf(buf, " listen='%s'",
-                              def->vncListen) < 0)
-            goto no_memory;
+        if (def->vncListen[0])
+            virBufferVSprintf(&buf, " listen='%s'",
+                              def->vncListen);
 
-        if (def->keymap &&
-            virBufferVSprintf(buf, " keymap='%s'",
-                              def->keymap) < 0)
-            goto no_memory;
+        if (def->keymap)
+            virBufferVSprintf(&buf, " keymap='%s'",
+                              def->keymap);
 
-        if (virBufferAddLit(buf, "/>\n") < 0)
-            goto no_memory;
+        virBufferAddLit(&buf, "/>\n");
         break;
 
     case QEMUD_GRAPHICS_SDL:
-        if (virBufferAddLit(buf, "    <graphics type='sdl'/>\n") < 0)
-            goto no_memory;
+        virBufferAddLit(&buf, "    <graphics type='sdl'/>\n");
         break;
 
     case QEMUD_GRAPHICS_NONE:
@@ -3764,20 +3690,19 @@ char *qemudGenerateXML(virConnectPtr conn,
         break;
     }
 
-    if (virBufferAddLit(buf, "  </devices>\n") < 0)
+    virBufferAddLit(&buf, "  </devices>\n");
+    virBufferAddLit(&buf, "</domain>\n");
+
+    if (virBufferError(&buf))
         goto no_memory;
 
-
-    if (virBufferAddLit(buf, "</domain>\n") < 0)
-        goto no_memory;
-
-    return virBufferContentAndFree (buf);
+    return virBufferContentAndReset(&buf);
 
  no_memory:
     qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                      "%s", _("failed to generate XML: out of memory"));
  cleanup:
-    if (buf) virBufferFree (buf);
+    free(virBufferContentAndReset(&buf));
     return NULL;
 }
 
@@ -3786,89 +3711,73 @@ char *qemudGenerateNetworkXML(virConnectPtr conn,
                               struct qemud_driver *driver ATTRIBUTE_UNUSED,
                               struct qemud_network *network,
                               struct qemud_network_def *def) {
-    virBufferPtr buf = 0;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    buf = virBufferNew (QEMUD_MAX_XML_LEN);
-    if (!buf)
-        goto no_memory;
+    virBufferAddLit(&buf, "<network>\n");
 
-    if (virBufferAddLit(buf, "<network>\n") < 0)
-        goto no_memory;
-
-    if (virBufferVSprintf(buf, "  <name>%s</name>\n", def->name) < 0)
-        goto no_memory;
+    virBufferVSprintf(&buf, "  <name>%s</name>\n", def->name);
 
     uuid = def->uuid;
     virUUIDFormat(uuid, uuidstr);
-    if (virBufferVSprintf(buf, "  <uuid>%s</uuid>\n", uuidstr) < 0)
-        goto no_memory;
+    virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", uuidstr);
 
     if (def->forward) {
         if (def->forwardDev[0]) {
-            virBufferVSprintf(buf, "  <forward dev='%s' mode='%s'/>\n",
+            virBufferVSprintf(&buf, "  <forward dev='%s' mode='%s'/>\n",
                               def->forwardDev, (def->forwardMode == QEMUD_NET_FORWARD_ROUTE ? "route" : "nat"));
         } else {
-            virBufferVSprintf(buf, "  <forward mode='%s'/>\n", (def->forwardMode == QEMUD_NET_FORWARD_ROUTE ? "route" : "nat"));
+            virBufferVSprintf(&buf, "  <forward mode='%s'/>\n", (def->forwardMode == QEMUD_NET_FORWARD_ROUTE ? "route" : "nat"));
         }
     }
 
-    virBufferAddLit(buf, "  <bridge");
+    virBufferAddLit(&buf, "  <bridge");
     if (qemudIsActiveNetwork(network)) {
-        if (virBufferVSprintf(buf, " name='%s'", network->bridge) < 0)
-            goto no_memory;
+        virBufferVSprintf(&buf, " name='%s'", network->bridge);
     } else if (def->bridge[0]) {
-        if (virBufferVSprintf(buf, " name='%s'", def->bridge) < 0)
-            goto no_memory;
+        virBufferVSprintf(&buf, " name='%s'", def->bridge);
     }
-    if (virBufferVSprintf(buf, " stp='%s' forwardDelay='%d' />\n",
-                       def->disableSTP ? "off" : "on",
-                       def->forwardDelay) < 0)
-        goto no_memory;
+    virBufferVSprintf(&buf, " stp='%s' forwardDelay='%d' />\n",
+                      def->disableSTP ? "off" : "on",
+                      def->forwardDelay);
 
     if (def->ipAddress[0] || def->netmask[0]) {
-        if (virBufferAddLit(buf, "  <ip") < 0)
-            goto no_memory;
+        virBufferAddLit(&buf, "  <ip");
 
-        if (def->ipAddress[0] &&
-            virBufferVSprintf(buf, " address='%s'", def->ipAddress) < 0)
-            goto no_memory;
+        if (def->ipAddress[0])
+            virBufferVSprintf(&buf, " address='%s'", def->ipAddress);
 
-        if (def->netmask[0] &&
-            virBufferVSprintf(buf, " netmask='%s'", def->netmask) < 0)
-            goto no_memory;
+        if (def->netmask[0])
+            virBufferVSprintf(&buf, " netmask='%s'", def->netmask);
 
-        if (virBufferAddLit(buf, ">\n") < 0)
-            goto no_memory;
+        virBufferAddLit(&buf, ">\n");
 
         if (def->ranges) {
             struct qemud_dhcp_range_def *range = def->ranges;
-            if (virBufferAddLit(buf, "    <dhcp>\n") < 0)
-                goto no_memory;
+            virBufferAddLit(&buf, "    <dhcp>\n");
             while (range) {
-                if (virBufferVSprintf(buf, "      <range start='%s' end='%s' />\n",
-                                      range->start, range->end) < 0)
-                    goto no_memory;
+                virBufferVSprintf(&buf, "      <range start='%s' end='%s' />\n",
+                                  range->start, range->end);
                 range = range->next;
             }
-            if (virBufferAddLit(buf, "    </dhcp>\n") < 0)
-                goto no_memory;
+            virBufferAddLit(&buf, "    </dhcp>\n");
         }
 
-        if (virBufferAddLit(buf, "  </ip>\n") < 0)
-            goto no_memory;
+        virBufferAddLit(&buf, "  </ip>\n");
     }
 
-    if (virBufferAddLit(buf, "</network>\n") < 0)
+    virBufferAddLit(&buf, "</network>\n");
+
+    if (virBufferError(&buf))
         goto no_memory;
 
-    return virBufferContentAndFree (buf);
+    return virBufferContentAndReset(&buf);
 
  no_memory:
     qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                      "%s", _("failed to generate XML: out of memory"));
-    if (buf) virBufferFree (buf);
+    free(virBufferContentAndReset(&buf));
     return NULL;
 }
 

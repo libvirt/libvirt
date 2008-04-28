@@ -688,99 +688,49 @@ char *lxcGenerateXML(virConnectPtr conn,
                      lxc_vm_t *vm,
                      lxc_vm_def_t *def)
 {
-    virBufferPtr buf = 0;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     lxc_mount_t *mount;
 
-    buf = virBufferNew(LXC_MAX_XML_LENGTH);
-    if (!buf) {
-        goto no_memory;
-    }
+    if (lxcIsActiveVM(vm))
+        virBufferVSprintf(&buf, "<domain type='%s' id='%d'>\n",
+                          LXC_DOMAIN_TYPE, vm->def->id);
+    else
+        virBufferVSprintf(&buf, "<domain type='%s'>\n",
+                          LXC_DOMAIN_TYPE);
 
-    if (lxcIsActiveVM(vm)) {
-        if (virBufferVSprintf(buf, "<domain type='%s' id='%d'>\n",
-                              LXC_DOMAIN_TYPE, vm->def->id) < 0) {
-            goto no_memory;
-        }
-    } else {
-        if (virBufferVSprintf(buf, "<domain type='%s'>\n",
-                              LXC_DOMAIN_TYPE) < 0) {
-            goto no_memory;
-        }
-    }
-
-    if (virBufferVSprintf(buf, "    <name>%s</name>\n", def->name) < 0) {
-        goto no_memory;
-    }
+    virBufferVSprintf(&buf, "    <name>%s</name>\n", def->name);
 
     uuid = def->uuid;
     virUUIDFormat(uuid, uuidstr);
-    if (virBufferVSprintf(buf, "    <uuid>%s</uuid>\n", uuidstr) < 0) {
-        goto no_memory;
-    }
-
-    if (virBufferAddLit(buf, "    <os>\n") < 0) {
-        goto no_memory;
-    }
-
-    if (virBufferVSprintf(buf, "        <init>%s</init>\n", def->init) < 0) {
-        goto no_memory;
-    }
-
-    if (virBufferAddLit(buf, "    </os>\n") < 0) {
-        goto no_memory;
-    }
-
-    if (virBufferVSprintf(buf, "    <memory>%d</memory>\n", def->maxMemory) < 0) {
-        goto no_memory;
-    }
-
-    if (virBufferAddLit(buf, "    <devices>\n") < 0) {
-        goto no_memory;
-    }
+    virBufferVSprintf(&buf, "    <uuid>%s</uuid>\n", uuidstr);
+    virBufferAddLit(&buf, "    <os>\n");
+    virBufferVSprintf(&buf, "        <init>%s</init>\n", def->init);
+    virBufferAddLit(&buf, "    </os>\n");
+    virBufferVSprintf(&buf, "    <memory>%d</memory>\n", def->maxMemory);
+    virBufferAddLit(&buf, "    <devices>\n");
 
     /* loop adding mounts */
     for (mount = def->mounts; mount; mount = mount->next) {
-        if (virBufferAddLit(buf, "        <filesystem type='mount'>\n") < 0) {
-            goto no_memory;
-        }
-
-        if (virBufferVSprintf(buf, "            <source dir='%s'/>\n",
-                              mount->source) < 0) {
-            goto no_memory;
-        }
-
-        if (virBufferVSprintf(buf, "            <target dir='%s'/>\n",
-                              mount->target) < 0) {
-            goto no_memory;
-        }
-
-        if (virBufferAddLit(buf, "        </filesystem>\n") < 0) {
-            goto no_memory;
-        }
-
+        virBufferAddLit(&buf, "        <filesystem type='mount'>\n");
+        virBufferVSprintf(&buf, "            <source dir='%s'/>\n",
+                          mount->source);
+        virBufferVSprintf(&buf, "            <target dir='%s'/>\n",
+                          mount->target);
+        virBufferAddLit(&buf, "        </filesystem>\n");
     }
 
-    if (virBufferVSprintf(buf, "        <console tty='%s'/>\n", def->tty) < 0) {
-        goto no_memory;
+    virBufferVSprintf(&buf, "        <console tty='%s'/>\n", def->tty);
+    virBufferAddLit(&buf, "    </devices>\n");
+    virBufferAddLit(&buf, "</domain>\n");
+
+    if (virBufferError(&buf)) {
+        lxcError(conn, NULL, VIR_ERR_NO_MEMORY,_("allocate buffer"));
+        return NULL;
     }
 
-    if (virBufferAddLit(buf, "    </devices>\n") < 0) {
-        goto no_memory;
-    }
-
-    if (virBufferAddLit(buf, "</domain>\n") < 0) {
-        goto no_memory;
-    }
-
-    return virBufferContentAndFree(buf);
-
-no_memory:
-    lxcError(conn, NULL, VIR_ERR_NO_MEMORY, "generateXml");
-    virBufferFree(buf);
-
-    return NULL;
+    return virBufferContentAndReset(&buf);
 }
 
 void lxcFreeVMDef(lxc_vm_def_t *vmdef)

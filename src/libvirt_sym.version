@@ -184,6 +184,8 @@
         __virBufferVSprintf;
         __virBufferAdd;
         __virBufferAddChar;
+        __virBufferContentAndReset;
+        __virBufferError;
 
 	__virMacAddrCompare;
 

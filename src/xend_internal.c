@@ -608,16 +608,9 @@ xend_op_ext2(virConnectPtr xend, const char *path, char *error,
              size_t n_error, const char *key, va_list ap)
 {
     const char *k = key, *v;
-    virBuffer buf;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     int ret;
-
-    buf.content = malloc(1000);
-    if (buf.content == NULL) {
-        virXendError(xend, VIR_ERR_NO_MEMORY, _("allocate new buffer"));
-        return -1;
-    }
-    buf.size = 1000;
-    buf.use = 0;
+    char *content;
 
     while (k) {
         v = va_arg(ap, const char *);
@@ -631,8 +624,14 @@ xend_op_ext2(virConnectPtr xend, const char *path, char *error,
             virBufferVSprintf(&buf, "%s", "&");
     }
 
-    ret = http2unix(xend, xend_post(xend, path, buf.content, error, n_error));
-    free(buf.content);
+    if (virBufferError(&buf)) {
+        virXendError(NULL, VIR_ERR_NO_MEMORY, _("allocate buffer"));
+        return -1;
+    }
+
+    content = virBufferContentAndReset(&buf);
+    ret = http2unix(xend, xend_post(xend, path, content, error, n_error));
+    free(content);
 
     return ret;
 }
@@ -1437,13 +1436,11 @@ xend_parse_sexp_desc_char(virConnectPtr conn,
     if (STREQ(devtype, "console") &&
         STREQ(type, "pty") &&
         tty != NULL) {
-        if (virBufferVSprintf(buf, "    <%s type='%s' tty='%s'>\n",
-                              devtype, type, tty) < 0)
-            goto no_memory;
+        virBufferVSprintf(buf, "    <%s type='%s' tty='%s'>\n",
+                          devtype, type, tty);
     } else {
-        if (virBufferVSprintf(buf, "    <%s type='%s'>\n",
-                              devtype, type) < 0)
-            goto no_memory;
+        virBufferVSprintf(buf, "    <%s type='%s'>\n",
+                          devtype, type);
     }
 
     if (STREQ(type, "null") ||
@@ -1451,15 +1448,13 @@ xend_parse_sexp_desc_char(virConnectPtr conn,
         STREQ(type, "stdio")) {
         /* no source needed */
     } else if (STREQ(type, "pty")) {
-        if (tty &&
+        if (tty)
             virBufferVSprintf(buf, "      <source path='%s'/>\n",
-                              tty) < 0)
-            goto no_memory;
+                              tty);
     } else if (STREQ(type, "file") ||
                STREQ(type, "pipe")) {
-        if (virBufferVSprintf(buf, "      <source path='%s'/>\n",
-                              value) < 0)
-            goto no_memory;
+        virBufferVSprintf(buf, "      <source path='%s'/>\n",
+                          value);
     } else if (STREQ(type, "tcp")) {
         const char *offset = strchr(value, ':');
         const char *offset2;
@@ -1490,20 +1485,17 @@ xend_parse_sexp_desc_char(virConnectPtr conn,
         protocol = telnet ? "telnet":"raw";
 
         if (bindHost) {
-            if (virBufferVSprintf(buf,
-                                  "      <source mode='%s' host='%s' service='%s'/>\n",
-                                  mode, bindHost, bindPort) < 0)
-                goto no_memory;
+            virBufferVSprintf(buf,
+                              "      <source mode='%s' host='%s' service='%s'/>\n",
+                              mode, bindHost, bindPort);
         } else {
-            if (virBufferVSprintf(buf,
-                                  "      <source mode='%s' service='%s'/>\n",
-                                  mode, bindPort) < 0)
-                goto no_memory;
+            virBufferVSprintf(buf,
+                              "      <source mode='%s' service='%s'/>\n",
+                              mode, bindPort);
         }
-        if (virBufferVSprintf(buf,
-                              "      <protocol type='%s'/>\n",
-                              protocol) < 0)
-            goto no_memory;
+        virBufferVSprintf(buf,
+                          "      <protocol type='%s'/>\n",
+                          protocol);
     } else if (STREQ(type, "udp")) {
         const char *offset = strchr(value, ':');
         const char *offset2, *offset3;
@@ -1543,28 +1535,24 @@ xend_parse_sexp_desc_char(virConnectPtr conn,
 
         if (connectPort) {
             if (connectHost) {
-                if (virBufferVSprintf(buf,
-                                      "      <source mode='connect' host='%s' service='%s'/>\n",
-                                      connectHost, connectPort) < 0)
-                    goto no_memory;
+                virBufferVSprintf(buf,
+                                  "      <source mode='connect' host='%s' service='%s'/>\n",
+                                  connectHost, connectPort);
             } else {
-                if (virBufferVSprintf(buf,
-                                      "      <source mode='connect' service='%s'/>\n",
-                                      connectPort) < 0)
-                    goto no_memory;
+                virBufferVSprintf(buf,
+                                  "      <source mode='connect' service='%s'/>\n",
+                                  connectPort);
             }
         }
         if (bindPort) {
             if (bindHost) {
-                if (virBufferVSprintf(buf,
-                                      "      <source mode='bind' host='%s' service='%s'/>\n",
-                                      bindHost, bindPort) < 0)
-                    goto no_memory;
+                virBufferVSprintf(buf,
+                                  "      <source mode='bind' host='%s' service='%s'/>\n",
+                                  bindHost, bindPort);
             } else {
-                if (virBufferVSprintf(buf,
-                                      "      <source mode='bind' service='%s'/>\n",
-                                      bindPort) < 0)
-                    goto no_memory;
+                virBufferVSprintf(buf,
+                                  "      <source mode='bind' service='%s'/>\n",
+                                  bindPort);
             }
         }
 
@@ -1582,18 +1570,15 @@ xend_parse_sexp_desc_char(virConnectPtr conn,
             strstr(offset, ",listen") != NULL)
             dolisten = 1;
 
-        if (virBufferVSprintf(buf, "      <source mode='%s' path='%s'/>\n",
-                              dolisten ? "bind" : "connect", path) < 0)
-            goto no_memory;
+        virBufferVSprintf(buf, "      <source mode='%s' path='%s'/>\n",
+                          dolisten ? "bind" : "connect", path);
     }
 
-    if (virBufferVSprintf(buf, "      <target port='%d'/>\n",
-                          portNum) < 0)
-        goto no_memory;
+    virBufferVSprintf(buf, "      <target port='%d'/>\n",
+                      portNum);
 
-    if (virBufferVSprintf(buf, "    </%s>\n",
-                          devtype) < 0)
-        goto no_memory;
+    virBufferVSprintf(buf, "    </%s>\n",
+                      devtype);
 
     ret = 0;
 
@@ -1635,7 +1620,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
     struct sexpr *cur, *node;
     const char *tmp;
     char *tty;
-    virBuffer buf;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     int hvm = 0, bootloader = 0, vfb = 0;
     int domid = -1;
     int max_mem, cur_mem;
@@ -1647,11 +1632,6 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
         /* ERROR */
         return (NULL);
     }
-    buf.content = malloc(4000);
-    if (buf.content == NULL)
-        return (NULL);
-    buf.size = 4000;
-    buf.use = 0;
 
     tmp = sexpr_node(root, "domain/domid");
     if (tmp == NULL && xendConfigVersion < 3) { /* Old XenD, domid was mandatory */
@@ -2097,11 +2077,15 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
     virBufferAddLit(&buf, "  </devices>\n");
     virBufferAddLit(&buf, "</domain>\n");
 
-    buf.content[buf.use] = 0;
-    return (buf.content);
+    if (virBufferError(&buf)) {
+        virXendError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"));
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
 
   error:
-    free(buf.content);
+    free(virBufferContentAndReset(&buf));
     return (NULL);
 }
 

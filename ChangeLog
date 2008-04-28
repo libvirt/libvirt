@@ -1,3 +1,14 @@
+Mon Apr 28 10:24:22 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/buf.c, src/buf.h: Change API to move errors checks to
+	a single place
+	* src/capabilities.c, src/conf.c, src/lxc_conf.c, src/qemu_conf.c,
+	src/qparams.c, src/storage_conf.c, src/test.c, src/virsh.c,
+	src/xend_internal.c, src/xm_internal.c, src/xml.c, src/xmlrpc.c,
+	src/xmlrpc.h, tests/xmlrpctest.c: Update to conform with new
+	virBuffer API
+	* src/libvirt_sym.version: Add new virBuffer APIs for virsh
+
 Mon Apr 28 16:11:22 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	fix typo in bootstrap script

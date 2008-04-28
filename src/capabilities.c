@@ -521,172 +521,127 @@ virCapabilitiesDefaultGuestEmulator(virCapsPtr caps,
 char *
 virCapabilitiesFormatXML(virCapsPtr caps)
 {
-    virBuffer xml = { NULL, 0, 0 };
+    virBuffer xml = VIR_BUFFER_INITIALIZER;
     int i, j, k;
 
-    if (virBufferAddLit(&xml, "<capabilities>\n\n") < 0)
-      goto no_memory;
-    if (virBufferAddLit(&xml, "  <host>\n") < 0)
-        goto no_memory;
-    if (virBufferAddLit(&xml, "    <cpu>\n") < 0)
-        goto no_memory;
-    if (virBufferVSprintf(&xml, "      <arch>%s</arch>\n",
-                          caps->host.arch) < 0)
-        goto no_memory;
+    virBufferAddLit(&xml, "<capabilities>\n\n");
+    virBufferAddLit(&xml, "  <host>\n");
+    virBufferAddLit(&xml, "    <cpu>\n");
+    virBufferVSprintf(&xml, "      <arch>%s</arch>\n",
+                      caps->host.arch);
 
     if (caps->host.nfeatures) {
-        if (virBufferAddLit(&xml, "      <features>\n") < 0)
-            goto no_memory;
+        virBufferAddLit(&xml, "      <features>\n");
         for (i = 0 ; i < caps->host.nfeatures ; i++) {
-            if (virBufferVSprintf(&xml, "        <%s/>\n",
-                                  caps->host.features[i]) <0)
-                goto no_memory;
+            virBufferVSprintf(&xml, "        <%s/>\n",
+                              caps->host.features[i]);
         }
-        if (virBufferAddLit(&xml, "      </features>\n") < 0)
-            goto no_memory;
+        virBufferAddLit(&xml, "      </features>\n");
     }
-    if (virBufferAddLit(&xml, "    </cpu>\n") < 0)
-        goto no_memory;
+    virBufferAddLit(&xml, "    </cpu>\n");
 
     if (caps->host.offlineMigrate) {
-        if (virBufferAddLit(&xml, "    <migration_features>\n") < 0)
-            goto no_memory;
-        if (caps->host.liveMigrate &&
-            virBufferAddLit(&xml, "      <live/>\n") < 0)
-            goto no_memory;
+        virBufferAddLit(&xml, "    <migration_features>\n");
+        if (caps->host.liveMigrate)
+            virBufferAddLit(&xml, "      <live/>\n");
         if (caps->host.nmigrateTrans) {
-            if (virBufferAddLit(&xml, "      <uri_transports>\n") < 0)
-                goto no_memory;
+            virBufferAddLit(&xml, "      <uri_transports>\n");
             for (i = 0 ; i < caps->host.nmigrateTrans ; i++) {
-                if (virBufferVSprintf(&xml, "        <uri_transport>%s</uri_transport>\n",
-                                      caps->host.migrateTrans[i]) < 0)
-                    goto no_memory;
+                virBufferVSprintf(&xml, "        <uri_transport>%s</uri_transport>\n",
+                                      caps->host.migrateTrans[i]);
             }
-            if (virBufferAddLit(&xml, "      </uri_transports>\n") < 0)
-                goto no_memory;
+            virBufferAddLit(&xml, "      </uri_transports>\n");
         }
-        if (virBufferAddLit(&xml, "    </migration_features>\n") < 0)
-            goto no_memory;
+        virBufferAddLit(&xml, "    </migration_features>\n");
     }
 
     if (caps->host.nnumaCell) {
-        if (virBufferAddLit(&xml, "    <topology>\n") < 0)
-            goto no_memory;
-        if (virBufferVSprintf(&xml, "      <cells num='%d'>\n",
-                              caps->host.nnumaCell) < 0)
-            goto no_memory;
+        virBufferAddLit(&xml, "    <topology>\n");
+        virBufferVSprintf(&xml, "      <cells num='%d'>\n",
+                          caps->host.nnumaCell);
         for (i = 0 ; i < caps->host.nnumaCell ; i++) {
-            if (virBufferVSprintf(&xml, "        <cell id='%d'>\n",
-                                  caps->host.numaCell[i]->num) < 0)
-                goto no_memory;
-            if (virBufferVSprintf(&xml, "          <cpus num='%d'>\n",
-                                  caps->host.numaCell[i]->ncpus) < 0)
-                goto no_memory;
+            virBufferVSprintf(&xml, "        <cell id='%d'>\n",
+                              caps->host.numaCell[i]->num);
+            virBufferVSprintf(&xml, "          <cpus num='%d'>\n",
+                              caps->host.numaCell[i]->ncpus);
             for (j = 0 ; j < caps->host.numaCell[i]->ncpus ; j++)
-                if (virBufferVSprintf(&xml, "            <cpu id='%d'/>\n",
-                                      caps->host.numaCell[i]->cpus[j]) < 0)
-                    goto no_memory;
-            if (virBufferAddLit(&xml, "          </cpus>\n") < 0)
-                goto no_memory;
-            if (virBufferAddLit(&xml, "        </cell>\n") < 0)
-                goto no_memory;
+                virBufferVSprintf(&xml, "            <cpu id='%d'/>\n",
+                                  caps->host.numaCell[i]->cpus[j]);
+            virBufferAddLit(&xml, "          </cpus>\n");
+            virBufferAddLit(&xml, "        </cell>\n");
         }
-        if (virBufferAddLit(&xml, "      </cells>\n") < 0)
-            goto no_memory;
-        if (virBufferAddLit(&xml, "    </topology>\n") < 0)
-            goto no_memory;
+        virBufferAddLit(&xml, "      </cells>\n");
+        virBufferAddLit(&xml, "    </topology>\n");
     }
-    if (virBufferAddLit(&xml, "  </host>\n\n") < 0)
-        goto no_memory;
+    virBufferAddLit(&xml, "  </host>\n\n");
 
 
     for (i = 0 ; i < caps->nguests ; i++) {
-        if (virBufferAddLit(&xml, "  <guest>\n") < 0)
-            goto no_memory;
-        if (virBufferVSprintf(&xml, "    <os_type>%s</os_type>\n",
-                              caps->guests[i]->ostype) < 0)
-            goto no_memory;
-        if (virBufferVSprintf(&xml, "    <arch name='%s'>\n",
-                              caps->guests[i]->arch.name) < 0)
-            goto no_memory;
-        if (virBufferVSprintf(&xml, "      <wordsize>%d</wordsize>\n",
-                              caps->guests[i]->arch.wordsize) < 0)
-            goto no_memory;
-        if (caps->guests[i]->arch.defaultInfo.emulator &&
+        virBufferAddLit(&xml, "  <guest>\n");
+        virBufferVSprintf(&xml, "    <os_type>%s</os_type>\n",
+                          caps->guests[i]->ostype);
+        virBufferVSprintf(&xml, "    <arch name='%s'>\n",
+                          caps->guests[i]->arch.name);
+        virBufferVSprintf(&xml, "      <wordsize>%d</wordsize>\n",
+                          caps->guests[i]->arch.wordsize);
+        if (caps->guests[i]->arch.defaultInfo.emulator)
             virBufferVSprintf(&xml, "      <emulator>%s</emulator>\n",
-                              caps->guests[i]->arch.defaultInfo.emulator) < 0)
-            goto no_memory;
-        if (caps->guests[i]->arch.defaultInfo.loader &&
-            virBufferVSprintf(&xml, "      <loader>%s</loader>\n",
-                              caps->guests[i]->arch.defaultInfo.loader) < 0)
-            goto no_memory;
+                              caps->guests[i]->arch.defaultInfo.emulator);
+            if (caps->guests[i]->arch.defaultInfo.loader)
+                virBufferVSprintf(&xml, "      <loader>%s</loader>\n",
+                                  caps->guests[i]->arch.defaultInfo.loader);
 
         for (j = 0 ; j < caps->guests[i]->arch.defaultInfo.nmachines ; j++) {
-            if (virBufferVSprintf(&xml, "      <machine>%s</machine>\n",
-                                  caps->guests[i]->arch.defaultInfo.machines[j]) < 0)
-                goto no_memory;
+            virBufferVSprintf(&xml, "      <machine>%s</machine>\n",
+                              caps->guests[i]->arch.defaultInfo.machines[j]);
         }
 
         for (j = 0 ; j < caps->guests[i]->arch.ndomains ; j++) {
-            if (virBufferVSprintf(&xml, "      <domain type='%s'>\n",
-                                  caps->guests[i]->arch.domains[j]->type) < 0)
-            goto no_memory;
-            if (caps->guests[i]->arch.domains[j]->info.emulator &&
+            virBufferVSprintf(&xml, "      <domain type='%s'>\n",
+                                  caps->guests[i]->arch.domains[j]->type);
+            if (caps->guests[i]->arch.domains[j]->info.emulator)
                 virBufferVSprintf(&xml, "        <emulator>%s</emulator>\n",
-                                  caps->guests[i]->arch.domains[j]->info.emulator) < 0)
-                goto no_memory;
-            if (caps->guests[i]->arch.domains[j]->info.loader &&
+                                  caps->guests[i]->arch.domains[j]->info.emulator);
+            if (caps->guests[i]->arch.domains[j]->info.loader)
                 virBufferVSprintf(&xml, "        <loader>%s</loader>\n",
-                                  caps->guests[i]->arch.domains[j]->info.loader) < 0)
-                goto no_memory;
+                                  caps->guests[i]->arch.domains[j]->info.loader);
 
             for (k = 0 ; k < caps->guests[i]->arch.domains[j]->info.nmachines ; k++) {
-                if (virBufferVSprintf(&xml, "        <machine>%s</machine>\n",
-                                      caps->guests[i]->arch.domains[j]->info.machines[k]) < 0)
-                    goto no_memory;
+                virBufferVSprintf(&xml, "        <machine>%s</machine>\n",
+                                  caps->guests[i]->arch.domains[j]->info.machines[k]);
             }
-            if (virBufferAddLit(&xml, "      </domain>\n") < 0)
-                goto no_memory;
+            virBufferAddLit(&xml, "      </domain>\n");
         }
 
-        if (virBufferAddLit(&xml, "    </arch>\n") < 0)
-            goto no_memory;
+        virBufferAddLit(&xml, "    </arch>\n");
 
         if (caps->guests[i]->nfeatures) {
-            if (virBufferAddLit(&xml, "    <features>\n") < 0)
-                goto no_memory;
+            virBufferAddLit(&xml, "    <features>\n");
 
             for (j = 0 ; j < caps->guests[i]->nfeatures ; j++) {
                 if (STREQ(caps->guests[i]->features[j]->name, "pae") ||
                     STREQ(caps->guests[i]->features[j]->name, "nonpae") ||
                     STREQ(caps->guests[i]->features[j]->name, "ia64_be")) {
-                    if (virBufferVSprintf(&xml, "      <%s/>\n",
-                                          caps->guests[i]->features[j]->name) < 0)
-                        goto no_memory;
+                    virBufferVSprintf(&xml, "      <%s/>\n",
+                                      caps->guests[i]->features[j]->name);
                 } else {
-                    if (virBufferVSprintf(&xml, "      <%s default='%s' toggle='%s'/>\n",
-                                          caps->guests[i]->features[j]->name,
-                                          caps->guests[i]->features[j]->defaultOn ? "on" : "off",
-                                          caps->guests[i]->features[j]->toggle ? "yes" : "no") < 0)
-                        goto no_memory;
+                    virBufferVSprintf(&xml, "      <%s default='%s' toggle='%s'/>\n",
+                                      caps->guests[i]->features[j]->name,
+                                      caps->guests[i]->features[j]->defaultOn ? "on" : "off",
+                                      caps->guests[i]->features[j]->toggle ? "yes" : "no");
                 }
             }
 
-            if (virBufferAddLit(&xml, "    </features>\n") < 0)
-                goto no_memory;
+            virBufferAddLit(&xml, "    </features>\n");
         }
 
-
-        if (virBufferAddLit(&xml, "  </guest>\n\n") < 0)
-            goto no_memory;
+        virBufferAddLit(&xml, "  </guest>\n\n");
     }
 
-    if (virBufferAddLit(&xml, "</capabilities>\n") < 0)
-      goto no_memory;
+    virBufferAddLit(&xml, "</capabilities>\n");
 
-    return xml.content;
+    if (virBufferError(&xml))
+        return NULL;
 
- no_memory:
-    free(xml.content);
-    return NULL;
+    return virBufferContentAndReset(&xml);
 }

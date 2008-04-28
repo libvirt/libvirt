@@ -414,7 +414,7 @@ char *
 virStoragePoolDefFormat(virConnectPtr conn,
                         virStoragePoolDefPtr def) {
     virStorageBackendPoolOptionsPtr options;
-    virBufferPtr buf;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *type;
     char uuid[VIR_UUID_STRING_BUFLEN];
     int i;
@@ -423,126 +423,96 @@ virStoragePoolDefFormat(virConnectPtr conn,
     if (options == NULL)
         return NULL;
 
-    if ((buf = virBufferNew(8192)) == NULL)
-        goto no_memory;
-
     type = virStorageBackendToString(def->type);
     if (!type) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("unexpected pool type"));
         goto cleanup;
     }
-    if (virBufferVSprintf(buf, "<pool type='%s'>\n", type) < 0)
-        goto no_memory;
-
-    if (virBufferVSprintf(buf,"  <name>%s</name>\n", def->name) < 0)
-        goto no_memory;
+    virBufferVSprintf(&buf, "<pool type='%s'>\n", type);
+    virBufferVSprintf(&buf,"  <name>%s</name>\n", def->name);
 
     virUUIDFormat(def->uuid, uuid);
-    if (virBufferVSprintf(buf,"  <uuid>%s</uuid>\n", uuid) < 0)
-        goto no_memory;
+    virBufferVSprintf(&buf,"  <uuid>%s</uuid>\n", uuid);
 
-    if (virBufferVSprintf(buf,"  <capacity>%llu</capacity>\n",
-                          def->capacity) < 0)
-        goto no_memory;
-    if (virBufferVSprintf(buf,"  <allocation>%llu</allocation>\n",
-                          def->allocation) < 0)
-        goto no_memory;
-    if (virBufferVSprintf(buf,"  <available>%llu</available>\n",
-                          def->available) < 0)
-        goto no_memory;
+    virBufferVSprintf(&buf,"  <capacity>%llu</capacity>\n",
+                      def->capacity);
+    virBufferVSprintf(&buf,"  <allocation>%llu</allocation>\n",
+                      def->allocation);
+    virBufferVSprintf(&buf,"  <available>%llu</available>\n",
+                      def->available);
 
-
-    if (virBufferAddLit(buf,"  <source>\n") < 0)
-        goto no_memory;
+    virBufferAddLit(&buf,"  <source>\n");
     if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_HOST) &&
-        def->source.host.name &&
-        virBufferVSprintf(buf,"    <host name='%s'/>\n", def->source.host.name) < 0)
-        goto no_memory;
+        def->source.host.name)
+        virBufferVSprintf(&buf,"    <host name='%s'/>\n", def->source.host.name);
+
     if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE) &&
         def->source.ndevice) {
         for (i = 0 ; i < def->source.ndevice ; i++) {
-            if (virBufferVSprintf(buf,"    <device path='%s'>\n", def->source.devices[i].path) < 0)
-                goto no_memory;
+            virBufferVSprintf(&buf,"    <device path='%s'>\n", def->source.devices[i].path);
             if (def->source.devices[i].nfreeExtent) {
                 int j;
                 for (j = 0 ; j < def->source.devices[i].nfreeExtent ; j++) {
-                    if (virBufferVSprintf(buf, "    <freeExtent start='%llu' end='%llu'/>\n",
-                                          def->source.devices[i].freeExtents[j].start,
-                                          def->source.devices[i].freeExtents[j].end) < 0)
-                        goto no_memory;
+                    virBufferVSprintf(&buf, "    <freeExtent start='%llu' end='%llu'/>\n",
+                                      def->source.devices[i].freeExtents[j].start,
+                                      def->source.devices[i].freeExtents[j].end);
                 }
             }
-            if (virBufferAddLit(buf,"    </device>\n") < 0)
-                goto no_memory;
+            virBufferAddLit(&buf,"    </device>\n");
         }
     }
     if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_DIR) &&
-        def->source.dir &&
-        virBufferVSprintf(buf,"    <dir path='%s'/>\n", def->source.dir) < 0)
-        goto no_memory;
+        def->source.dir)
+        virBufferVSprintf(&buf,"    <dir path='%s'/>\n", def->source.dir);
     if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_ADAPTER) &&
-        def->source.adapter &&
-        virBufferVSprintf(buf,"    <adapter name='%s'/>\n", def->source.adapter) < 0)
-        goto no_memory;
+        def->source.adapter)
+        virBufferVSprintf(&buf,"    <adapter name='%s'/>\n", def->source.adapter);
 
     if (options->formatToString) {
         const char *format = (options->formatToString)(conn, def->source.format);
         if (!format)
             goto cleanup;
-        if (virBufferVSprintf(buf,"    <format type='%s'/>\n", format) < 0)
-            goto no_memory;
+        virBufferVSprintf(&buf,"    <format type='%s'/>\n", format);
     }
 
 
-    if (def->source.authType == VIR_STORAGE_POOL_AUTH_CHAP &&
-        virBufferVSprintf(buf,"    <auth type='chap' login='%s' passwd='%s'>\n",
+    if (def->source.authType == VIR_STORAGE_POOL_AUTH_CHAP)
+        virBufferVSprintf(&buf,"    <auth type='chap' login='%s' passwd='%s'>\n",
                           def->source.auth.chap.login,
-                          def->source.auth.chap.passwd) < 0)
-        goto no_memory;
-    if (virBufferAddLit(buf,"  </source>\n") < 0)
+                          def->source.auth.chap.passwd);
+    virBufferAddLit(&buf,"  </source>\n");
+
+    virBufferAddLit(&buf,"  <target>\n");
+
+    if (def->target.path)
+        virBufferVSprintf(&buf,"    <path>%s</path>\n", def->target.path);
+
+    virBufferAddLit(&buf,"    <permissions>\n");
+    virBufferVSprintf(&buf,"      <mode>0%o</mode>\n",
+                      def->target.perms.mode);
+    virBufferVSprintf(&buf,"      <owner>%d</owner>\n",
+                      def->target.perms.uid);
+    virBufferVSprintf(&buf,"      <group>%d</group>\n",
+                      def->target.perms.gid);
+
+    if (def->target.perms.label)
+        virBufferVSprintf(&buf,"      <label>%s</label>\n",
+                          def->target.perms.label);
+
+    virBufferAddLit(&buf,"    </permissions>\n");
+    virBufferAddLit(&buf,"  </target>\n");
+    virBufferAddLit(&buf,"</pool>\n");
+
+    if (virBufferError(&buf))
         goto no_memory;
 
-
-
-    if (virBufferAddLit(buf,"  <target>\n") < 0)
-        goto no_memory;
-
-    if (def->target.path &&
-        virBufferVSprintf(buf,"    <path>%s</path>\n", def->target.path) < 0)
-        goto no_memory;
-
-    if (virBufferAddLit(buf,"    <permissions>\n") < 0)
-        goto no_memory;
-    if (virBufferVSprintf(buf,"      <mode>0%o</mode>\n",
-                          def->target.perms.mode) < 0)
-        goto no_memory;
-    if (virBufferVSprintf(buf,"      <owner>%d</owner>\n",
-                          def->target.perms.uid) < 0)
-        goto no_memory;
-    if (virBufferVSprintf(buf,"      <group>%d</group>\n",
-                          def->target.perms.gid) < 0)
-        goto no_memory;
-
-    if (def->target.perms.label) {
-        if (virBufferVSprintf(buf,"      <label>%s</label>\n",
-                              def->target.perms.label) < 0)
-            goto no_memory;
-    }
-    if (virBufferAddLit(buf,"    </permissions>\n") < 0)
-        goto no_memory;
-    if (virBufferAddLit(buf,"  </target>\n") < 0)
-        goto no_memory;
-
-    if (virBufferAddLit(buf,"</pool>\n") < 0)
-        goto no_memory;
-
-    return virBufferContentAndFree(buf);
+    return virBufferContentAndReset(&buf);
 
  no_memory:
     virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("xml"));
  cleanup:
-    virBufferFree(buf);
+    free(virBufferContentAndReset(&buf));
     return NULL;
 }
 
@@ -804,26 +774,17 @@ virStorageVolDefFormat(virConnectPtr conn,
                        virStoragePoolDefPtr pool,
                        virStorageVolDefPtr def) {
     virStorageBackendVolOptionsPtr options;
-    virBufferPtr buf = virBufferNew(8192);
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     options = virStorageBackendVolOptionsForType(pool->type);
     if (options == NULL)
         return NULL;
 
-    if (!buf)
-        goto no_memory;
+    virBufferAddLit(&buf, "<volume>\n");
+    virBufferVSprintf(&buf,"  <name>%s</name>\n", def->name);
+    virBufferVSprintf(&buf,"  <key>%s</key>\n", def->key);
+    virBufferAddLit(&buf, "  <source>\n");
 
-    if (virBufferAddLit(buf, "<volume>\n") < 0)
-        goto no_memory;
-
-    if (virBufferVSprintf(buf,"  <name>%s</name>\n", def->name) < 0)
-        goto no_memory;
-
-    if (virBufferVSprintf(buf,"  <key>%s</key>\n", def->key) < 0)
-        goto no_memory;
-
-    if (virBufferAddLit(buf, "  <source>\n") < 0)
-        goto no_memory;
     if (def->source.nextent) {
         int i;
         const char *thispath = NULL;
@@ -831,81 +792,67 @@ virStorageVolDefFormat(virConnectPtr conn,
             if (thispath == NULL ||
                 STRNEQ(thispath, def->source.extents[i].path)) {
                 if (thispath != NULL)
-                    if (virBufferAddLit(buf, "    </device>\n") < 0)
-                        goto no_memory;
-                if (virBufferVSprintf(buf, "    <device path='%s'>\n",
-                                      def->source.extents[i].path) < 0)
-                    goto no_memory;
+                    virBufferAddLit(&buf, "    </device>\n");
+
+                virBufferVSprintf(&buf, "    <device path='%s'>\n",
+                                  def->source.extents[i].path);
             }
 
-            if (virBufferVSprintf(buf,
-                                  "      <extent start='%llu' end='%llu'/>\n",
-                                  def->source.extents[i].start,
-                                  def->source.extents[i].end) < 0)
-                goto no_memory;
+            virBufferVSprintf(&buf,
+                              "      <extent start='%llu' end='%llu'/>\n",
+                              def->source.extents[i].start,
+                              def->source.extents[i].end);
             thispath = def->source.extents[i].path;
         }
         if (thispath != NULL)
-            if (virBufferAddLit(buf, "    </device>\n") < 0)
-                goto no_memory;
+            virBufferAddLit(&buf, "    </device>\n");
     }
-    if (virBufferAddLit(buf, "  </source>\n") < 0)
-        goto no_memory;
+    virBufferAddLit(&buf, "  </source>\n");
 
-    if (virBufferVSprintf(buf,"  <capacity>%llu</capacity>\n",
-                          def->capacity) < 0)
-        goto no_memory;
-    if (virBufferVSprintf(buf,"  <allocation>%llu</allocation>\n",
-                          def->allocation) < 0)
-        goto no_memory;
+    virBufferVSprintf(&buf,"  <capacity>%llu</capacity>\n",
+                      def->capacity);
+    virBufferVSprintf(&buf,"  <allocation>%llu</allocation>\n",
+                      def->allocation);
 
-    if (virBufferAddLit(buf, "  <target>\n") < 0)
-        goto no_memory;
+    virBufferAddLit(&buf, "  <target>\n");
 
-    if (def->target.path &&
-        virBufferVSprintf(buf,"    <path>%s</path>\n", def->target.path) < 0)
-        goto no_memory;
+    if (def->target.path)
+        virBufferVSprintf(&buf,"    <path>%s</path>\n", def->target.path);
 
     if (options->formatToString) {
         const char *format = (options->formatToString)(conn,
                                                        def->target.format);
         if (!format)
             goto cleanup;
-        if (virBufferVSprintf(buf,"    <format type='%s'/>\n", format) < 0)
-            goto no_memory;
+        virBufferVSprintf(&buf,"    <format type='%s'/>\n", format);
     }
 
-    if (virBufferAddLit(buf,"    <permissions>\n") < 0)
-        goto no_memory;
-    if (virBufferVSprintf(buf,"      <mode>0%o</mode>\n",
-                          def->target.perms.mode) < 0)
-        goto no_memory;
-    if (virBufferVSprintf(buf,"      <owner>%d</owner>\n",
-                          def->target.perms.uid) < 0)
-        goto no_memory;
-    if (virBufferVSprintf(buf,"      <group>%d</group>\n",
-                          def->target.perms.gid) < 0)
+    virBufferAddLit(&buf,"    <permissions>\n");
+    virBufferVSprintf(&buf,"      <mode>0%o</mode>\n",
+                      def->target.perms.mode);
+    virBufferVSprintf(&buf,"      <owner>%d</owner>\n",
+                      def->target.perms.uid);
+    virBufferVSprintf(&buf,"      <group>%d</group>\n",
+                      def->target.perms.gid);
+
+
+    if (def->target.perms.label)
+        virBufferVSprintf(&buf,"      <label>%s</label>\n",
+                          def->target.perms.label);
+
+    virBufferAddLit(&buf,"    </permissions>\n");
+    virBufferAddLit(&buf, "  </target>\n");
+    virBufferAddLit(&buf,"</volume>\n");
+
+    if (virBufferError(&buf))
         goto no_memory;
 
-    if (def->target.perms.label &&
-        virBufferVSprintf(buf,"      <label>%s</label>\n",
-                          def->target.perms.label) < 0)
-        goto no_memory;
-    if (virBufferAddLit(buf,"    </permissions>\n") < 0)
-        goto no_memory;
-
-    if (virBufferAddLit(buf, "  </target>\n") < 0)
-        goto no_memory;
-
-    if (virBufferAddLit(buf,"</volume>\n") < 0)
-        goto no_memory;
-
-    return virBufferContentAndFree(buf);
+    return virBufferContentAndReset(&buf);
 
  no_memory:
     virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("xml"));
  cleanup:
-    virBufferFree(buf);
+    free(virBufferContentAndReset(&buf));
     return NULL;
 }
 

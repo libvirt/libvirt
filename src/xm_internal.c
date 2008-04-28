@@ -579,8 +579,7 @@ int xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
  * domain, suitable for later feeding for virDomainCreateLinux
  */
 char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
-    virBufferPtr buf;
-    char *xml;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *name;
     unsigned char uuid[VIR_UUID_BUFLEN];
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -602,12 +601,10 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
     if (xenXMConfigGetUUID(conf, "uuid", uuid) < 0)
         return (NULL);
 
-    buf = virBufferNew(4096);
-
-    virBufferAddLit(buf, "<domain type='xen'>\n");
-    virBufferVSprintf(buf, "  <name>%s</name>\n", name);
+    virBufferAddLit(&buf, "<domain type='xen'>\n");
+    virBufferVSprintf(&buf, "  <name>%s</name>\n", name);
     virUUIDFormat(uuid, uuidstr);
-    virBufferVSprintf(buf, "  <uuid>%s</uuid>\n", uuidstr);
+    virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", uuidstr);
 
     if ((xenXMConfigGetString(conf, "builder", &str) == 0) &&
         !strcmp(str, "hvm"))
@@ -615,10 +612,10 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
 
     if (hvm) {
         const char *boot;
-        virBufferAddLit(buf, "  <os>\n");
-        virBufferAddLit(buf, "    <type>hvm</type>\n");
+        virBufferAddLit(&buf, "  <os>\n");
+        virBufferAddLit(&buf, "    <type>hvm</type>\n");
         if (xenXMConfigGetString(conf, "kernel", &str) == 0)
-            virBufferVSprintf(buf, "    <loader>%s</loader>\n", str);
+            virBufferVSprintf(&buf, "    <loader>%s</loader>\n", str);
 
         if (xenXMConfigGetString(conf, "boot", &boot) < 0)
             boot = "c";
@@ -637,90 +634,90 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 dev = "hd";
                 break;
             }
-            virBufferVSprintf(buf, "    <boot dev='%s'/>\n", dev);
+            virBufferVSprintf(&buf, "    <boot dev='%s'/>\n", dev);
             boot++;
         }
 
-        virBufferAddLit(buf, "  </os>\n");
+        virBufferAddLit(&buf, "  </os>\n");
     } else {
 
         if (xenXMConfigGetString(conf, "bootloader", &str) == 0)
-            virBufferVSprintf(buf, "  <bootloader>%s</bootloader>\n", str);
+            virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", str);
         if (xenXMConfigGetString(conf, "bootargs", &str) == 0)
-            virBufferEscapeString(buf, "  <bootloader_args>%s</bootloader_args>\n", str);
+            virBufferEscapeString(&buf, "  <bootloader_args>%s</bootloader_args>\n", str);
         if (xenXMConfigGetString(conf, "kernel", &str) == 0) {
-            virBufferAddLit(buf, "  <os>\n");
-            virBufferAddLit(buf, "    <type>linux</type>\n");
-            virBufferVSprintf(buf, "    <kernel>%s</kernel>\n", str);
+            virBufferAddLit(&buf, "  <os>\n");
+            virBufferAddLit(&buf, "    <type>linux</type>\n");
+            virBufferVSprintf(&buf, "    <kernel>%s</kernel>\n", str);
             if (xenXMConfigGetString(conf, "ramdisk", &str) == 0)
-                virBufferVSprintf(buf, "    <initrd>%s</initrd>\n", str);
+                virBufferVSprintf(&buf, "    <initrd>%s</initrd>\n", str);
             if (xenXMConfigGetString(conf, "extra", &str) == 0)
-                virBufferEscapeString(buf, "    <cmdline>%s</cmdline>\n", str);
-            virBufferAddLit(buf, "  </os>\n");
+                virBufferEscapeString(&buf, "    <cmdline>%s</cmdline>\n", str);
+            virBufferAddLit(&buf, "  </os>\n");
         }
     }
 
     if (xenXMConfigGetInt(conf, "memory", &val) < 0)
         val = MIN_XEN_GUEST_SIZE * 2;
-    virBufferVSprintf(buf, "  <currentMemory>%ld</currentMemory>\n",
+    virBufferVSprintf(&buf, "  <currentMemory>%ld</currentMemory>\n",
                       val * 1024);
 
     if (xenXMConfigGetInt(conf, "maxmem", &val) < 0)
         if (xenXMConfigGetInt(conf, "memory", &val) < 0)
             val = MIN_XEN_GUEST_SIZE * 2;
-    virBufferVSprintf(buf, "  <memory>%ld</memory>\n", val * 1024);
+    virBufferVSprintf(&buf, "  <memory>%ld</memory>\n", val * 1024);
 
-    virBufferAddLit(buf, "  <vcpu");
+    virBufferAddLit(&buf, "  <vcpu");
     if (xenXMConfigGetString(conf, "cpus", &str) == 0) {
         char *ranges;
 
         ranges = virConvertCpuSet(conn, str, 0);
         if (ranges != NULL) {
-            virBufferVSprintf(buf, " cpuset='%s'", ranges);
+            virBufferVSprintf(&buf, " cpuset='%s'", ranges);
             free(ranges);
         } else
-            virBufferVSprintf(buf, " cpuset='%s'", str);
+            virBufferVSprintf(&buf, " cpuset='%s'", str);
     }
     if (xenXMConfigGetInt(conf, "vcpus", &val) < 0)
         val = 1;
-    virBufferVSprintf(buf, ">%ld</vcpu>\n", val);
+    virBufferVSprintf(&buf, ">%ld</vcpu>\n", val);
 
     if (xenXMConfigGetString(conf, "on_poweroff", &str) < 0)
         str = "destroy";
-    virBufferVSprintf(buf, "  <on_poweroff>%s</on_poweroff>\n", str);
+    virBufferVSprintf(&buf, "  <on_poweroff>%s</on_poweroff>\n", str);
 
     if (xenXMConfigGetString(conf, "on_reboot", &str) < 0)
         str = "restart";
-    virBufferVSprintf(buf, "  <on_reboot>%s</on_reboot>\n", str);
+    virBufferVSprintf(&buf, "  <on_reboot>%s</on_reboot>\n", str);
 
     if (xenXMConfigGetString(conf, "on_crash", &str) < 0)
         str = "restart";
-    virBufferVSprintf(buf, "  <on_crash>%s</on_crash>\n", str);
+    virBufferVSprintf(&buf, "  <on_crash>%s</on_crash>\n", str);
 
 
     if (hvm) {
-        virBufferAddLit(buf, "  <features>\n");
+        virBufferAddLit(&buf, "  <features>\n");
         if (xenXMConfigGetInt(conf, "pae", &val) == 0 &&
             val)
-            virBufferAddLit(buf, "    <pae/>\n");
+            virBufferAddLit(&buf, "    <pae/>\n");
         if (xenXMConfigGetInt(conf, "acpi", &val) == 0 &&
             val)
-            virBufferAddLit(buf, "    <acpi/>\n");
+            virBufferAddLit(&buf, "    <acpi/>\n");
         if (xenXMConfigGetInt(conf, "apic", &val) == 0 &&
             val)
-            virBufferAddLit(buf, "    <apic/>\n");
-        virBufferAddLit(buf, "  </features>\n");
+            virBufferAddLit(&buf, "    <apic/>\n");
+        virBufferAddLit(&buf, "  </features>\n");
 
         if (xenXMConfigGetInt(conf, "localtime", &val) < 0)
             val = 0;
-        virBufferVSprintf(buf, "  <clock offset='%s'/>\n", val ? "localtime" : "utc");
+        virBufferVSprintf(&buf, "  <clock offset='%s'/>\n", val ? "localtime" : "utc");
     }
 
-    virBufferAddLit(buf, "  <devices>\n");
+    virBufferAddLit(&buf, "  <devices>\n");
 
     if (hvm) {
         if (xenXMConfigGetString(conf, "device_model", &str) == 0)
-            virBufferVSprintf(buf, "    <emulator>%s</emulator>\n", str);
+            virBufferVSprintf(&buf, "    <emulator>%s</emulator>\n", str);
     }
 
     list = virConfGetValue(conf, "disk");
@@ -808,23 +805,23 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 tmp[0] = '\0';
             }
 
-            virBufferVSprintf(buf, "    <disk type='%s' device='%s'>\n",
+            virBufferVSprintf(&buf, "    <disk type='%s' device='%s'>\n",
                               block ? "block" : "file",
                               cdrom ? "cdrom" : "disk");
             if (drvType[0])
-                virBufferVSprintf(buf, "      <driver name='%s' type='%s'/>\n", drvName, drvType);
+                virBufferVSprintf(&buf, "      <driver name='%s' type='%s'/>\n", drvName, drvType);
             else
-                virBufferVSprintf(buf, "      <driver name='%s'/>\n", drvName);
+                virBufferVSprintf(&buf, "      <driver name='%s'/>\n", drvName);
             if (src[0])
-                virBufferVSprintf(buf, "      <source %s='%s'/>\n", block ? "dev" : "file", src);
-            virBufferVSprintf(buf, "      <target dev='%s'/>\n", dev);
+                virBufferVSprintf(&buf, "      <source %s='%s'/>\n", block ? "dev" : "file", src);
+            virBufferVSprintf(&buf, "      <target dev='%s'/>\n", dev);
             if (!strcmp(head, "r") ||
                 !strcmp(head, "ro"))
-                virBufferAddLit(buf, "      <readonly/>\n");
+                virBufferAddLit(&buf, "      <readonly/>\n");
             else if ((!strcmp(head, "w!")) ||
                      (!strcmp(head, "!")))
-                virBufferAddLit(buf, "      <shareable/>\n");
-            virBufferAddLit(buf, "    </disk>\n");
+                virBufferAddLit(&buf, "      <shareable/>\n");
+            virBufferAddLit(&buf, "    </disk>\n");
 
         skipdisk:
             list = list->next;
@@ -833,12 +830,12 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
 
     if (hvm && priv->xendConfigVersion == 1) {
         if (xenXMConfigGetString(conf, "cdrom", &str) == 0) {
-            virBufferAddLit(buf, "    <disk type='file' device='cdrom'>\n");
-            virBufferAddLit(buf, "      <driver name='file'/>\n");
-            virBufferVSprintf(buf, "      <source file='%s'/>\n", str);
-            virBufferAddLit(buf, "      <target dev='hdc'/>\n");
-            virBufferAddLit(buf, "      <readonly/>\n");
-            virBufferAddLit(buf, "    </disk>\n");
+            virBufferAddLit(&buf, "    <disk type='file' device='cdrom'>\n");
+            virBufferAddLit(&buf, "      <driver name='file'/>\n");
+            virBufferVSprintf(&buf, "      <source file='%s'/>\n", str);
+            virBufferAddLit(&buf, "      <target dev='hdc'/>\n");
+            virBufferAddLit(&buf, "      <readonly/>\n");
+            virBufferAddLit(&buf, "    </disk>\n");
         }
     }
 
@@ -909,16 +906,16 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 type = 1;
             }
 
-            virBufferAddLit(buf, "    <interface type='bridge'>\n");
+            virBufferAddLit(&buf, "    <interface type='bridge'>\n");
             if (mac[0])
-                virBufferVSprintf(buf, "      <mac address='%s'/>\n", mac);
+                virBufferVSprintf(&buf, "      <mac address='%s'/>\n", mac);
             if (type == 1 && bridge[0])
-                virBufferVSprintf(buf, "      <source bridge='%s'/>\n", bridge);
+                virBufferVSprintf(&buf, "      <source bridge='%s'/>\n", bridge);
             if (script[0])
-                virBufferVSprintf(buf, "      <script path='%s'/>\n", script);
+                virBufferVSprintf(&buf, "      <script path='%s'/>\n", script);
             if (ip[0])
-                virBufferVSprintf(buf, "      <ip address='%s'/>\n", ip);
-            virBufferAddLit(buf, "    </interface>\n");
+                virBufferVSprintf(&buf, "      <ip address='%s'/>\n", ip);
+            virBufferAddLit(&buf, "    </interface>\n");
 
         skipnic:
             list = list->next;
@@ -928,9 +925,9 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
     if (hvm) {
         if (xenXMConfigGetString(conf, "usbdevice", &str) == 0 && str) {
             if (!strcmp(str, "tablet"))
-                virBufferAddLit(buf, "    <input type='tablet' bus='usb'/>\n");
+                virBufferAddLit(&buf, "    <input type='tablet' bus='usb'/>\n");
             else if (!strcmp(str, "mouse"))
-                virBufferAddLit(buf, "    <input type='mouse' bus='usb'/>\n");
+                virBufferAddLit(&buf, "    <input type='mouse' bus='usb'/>\n");
             /* Ignore else branch - probably some other non-input device we don't
                support in libvirt yet */
         }
@@ -1003,54 +1000,56 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
     }
 
     if (vnc || sdl) {
-        virBufferVSprintf(buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2":"xen");
+        virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2":"xen");
     }
     if (vnc) {
-        virBufferVSprintf(buf,
+        virBufferVSprintf(&buf,
                           "    <graphics type='vnc' port='%ld'",
                           (vncunused ? -1 : 5900+vncdisplay));
         if (vnclisten) {
-            virBufferVSprintf(buf, " listen='%s'", vnclisten);
+            virBufferVSprintf(&buf, " listen='%s'", vnclisten);
         }
         if (vncpasswd) {
-            virBufferVSprintf(buf, " passwd='%s'", vncpasswd);
+            virBufferVSprintf(&buf, " passwd='%s'", vncpasswd);
         }
         if (keymap) {
-            virBufferVSprintf(buf, " keymap='%s'", keymap);
+            virBufferVSprintf(&buf, " keymap='%s'", keymap);
         }
-        virBufferAddLit(buf, "/>\n");
+        virBufferAddLit(&buf, "/>\n");
     }
     if (sdl) {
-        virBufferAddLit(buf, "    <graphics type='sdl'/>\n");
+        virBufferAddLit(&buf, "    <graphics type='sdl'/>\n");
     }
 
     if (hvm) {
         if (xenXMConfigGetString(conf, "parallel", &str) == 0) {
             if (STRNEQ(str, "none"))
-                xend_parse_sexp_desc_char(conn, buf, "parallel", 0, str, NULL);
+                xend_parse_sexp_desc_char(conn, &buf, "parallel", 0, str, NULL);
         }
         if (xenXMConfigGetString(conf, "serial", &str) == 0) {
             if (STRNEQ(str, "none")) {
-                xend_parse_sexp_desc_char(conn, buf, "serial", 0, str, NULL);
+                xend_parse_sexp_desc_char(conn, &buf, "serial", 0, str, NULL);
                 /* Add back-compat console tag for primary console */
-                xend_parse_sexp_desc_char(conn, buf, "console", 0, str, NULL);
+                xend_parse_sexp_desc_char(conn, &buf, "console", 0, str, NULL);
             }
         }
     } else {
         /* Paravirt implicitly always has a single console */
-        virBufferAddLit(buf, "    <console type='pty'>\n");
-        virBufferAddLit(buf, "      <target port='0'/>\n");
-        virBufferAddLit(buf, "    </console>\n");
+        virBufferAddLit(&buf, "    <console type='pty'>\n");
+        virBufferAddLit(&buf, "      <target port='0'/>\n");
+        virBufferAddLit(&buf, "    </console>\n");
     }
 
-    virBufferAddLit(buf, "  </devices>\n");
+    virBufferAddLit(&buf, "  </devices>\n");
 
-    virBufferAddLit(buf, "</domain>\n");
+    virBufferAddLit(&buf, "</domain>\n");
 
-    xml = buf->content;
-    buf->content = NULL;
-    virBufferFree(buf);
-    return (xml);
+    if (virBufferError(&buf)) {
+        xenXMError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"));
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
 }
 
 
@@ -1254,7 +1253,7 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
 {
     const char *filename;
     xenXMConfCachePtr entry;
-    virBufferPtr mapbuf;
+    virBuffer mapbuf = VIR_BUFFER_INITIALIZER;
     char *mapstr = NULL;
     char *ranges = NULL;
     int i, j, n, comma = 0;
@@ -1288,33 +1287,24 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
     }
 
     /* from bit map, build character string of mapped CPU numbers */
-    mapbuf = virBufferNew (16);
-    if (mapbuf == NULL) {
-        xenXMError (domain->conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
-        return -1;
-    }
     for (i = 0; i < maplen; i++)
         for (j = 0; j < 8; j++)
             if ((cpumap[i] & (1 << j))) {
                 n = i*8 + j;
 
-                if (comma) {
-                    if (virBufferAddLit (mapbuf, ",") == -1) {
-                        xenXMError (domain->conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
-                        virBufferFree (mapbuf);
-                    return -1;
-                    }
-                }
+                if (comma)
+                    virBufferAddLit (&mapbuf, ",");
                 comma = 1;
 
-                if (virBufferVSprintf (mapbuf, "%d", n) == -1) {
-                    xenXMError (domain->conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
-                    virBufferFree (mapbuf);
-                    return -1;
-                }
+                virBufferVSprintf (&mapbuf, "%d", n);
             }
 
-    mapstr = virBufferContentAndFree (mapbuf);
+    if (virBufferError(&mapbuf)) {
+        xenXMError(domain->conn, VIR_ERR_NO_MEMORY, _("allocate buffer"));
+        return -1;
+    }
+
+    mapstr = virBufferContentAndReset(&mapbuf);
 
     /* convert the mapstr to a range based string */
     ranges = virConvertCpuSet(domain->conn, mapstr, 0);

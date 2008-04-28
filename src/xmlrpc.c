@@ -363,13 +363,11 @@ void xmlRpcValueMarshal(xmlRpcValuePtr value, virBufferPtr buf, int indent)
     virBufferStrcat(buf, "</value>\n", NULL);
 }
 
-virBufferPtr xmlRpcMarshalRequest(const char *request,
-                                  int argc, xmlRpcValuePtr *argv)
+void xmlRpcMarshalRequest(const char *request,
+                          virBufferPtr buf,
+                          int argc, xmlRpcValuePtr *argv)
 {
-    virBufferPtr buf;
     int i;
-
-    buf = virBufferNew(1024);
 
     virBufferStrcat(buf,
                     "<?xml version=\"1.0\"?>\n"
@@ -386,7 +384,6 @@ virBufferPtr xmlRpcMarshalRequest(const char *request,
     virBufferStrcat(buf,
                     "  </params>\n"
                     "</methodCall>\n", NULL);
-    return buf;
 }
 
 xmlRpcValuePtr xmlRpcUnmarshalResponse(xmlNodePtr node, bool *is_fault)
@@ -564,13 +561,14 @@ int xmlRpcCall(xmlRpcContextPtr context, const char *method,
     va_list ap;
     int argc;
     xmlRpcValuePtr *argv;
-    virBufferPtr buf;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *ret;
     xmlDocPtr xml;
     xmlNodePtr node;
     bool fault;
     xmlRpcValuePtr value;
     void *retval = NULL;
+    char *content;
 
     va_start(ap, fmt);
 
@@ -582,16 +580,16 @@ int xmlRpcCall(xmlRpcContextPtr context, const char *method,
 
     va_end(ap);
 
-    buf = xmlRpcMarshalRequest(method, argc, argv);
+    xmlRpcMarshalRequest(method, &buf, argc, argv);
 
     xmlRpcArgvFree(argc, argv);
 
-    if (!buf)
+    if (virBufferError(&buf))
         return -1;
 
-    ret = xmlRpcCallRaw(context->uri, buf->content);
-
-    virBufferFree(buf);
+    content = virBufferContentAndReset(&buf);
+    ret = xmlRpcCallRaw(context->uri, content);
+    free(content);
 
     if (!ret)
         return -1;

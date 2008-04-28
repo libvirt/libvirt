@@ -59,22 +59,20 @@ testMethodPlusDOUBLE(const void *data)
     return retval==(10.1234+10.1234) ? 0 : -1;
 }
 
-static virBufferPtr
-marshalRequest(const char *fmt, ...)
+static void
+marshalRequest(virBufferPtr buf, const char *fmt, ...)
 {
     int argc;
     xmlRpcValuePtr *argv;
-    virBufferPtr buf;
     va_list ap;
 
     va_start(ap, fmt);
     argv = xmlRpcArgvNew(fmt, ap, &argc);
     va_end(ap);
 
-    buf = xmlRpcMarshalRequest("test", argc, argv);
+    xmlRpcMarshalRequest("test", buf, argc, argv);
 
     xmlRpcArgvFree(argc, argv);
-    return buf;
 }
 
 static int
@@ -132,14 +130,21 @@ testMarshalRequestINT(const void *data)
     int num = INT_MAX;
     int ret = 0;
     int check = data ? *((int *)data) : 0;
-    virBufferPtr buf = marshalRequest("i", num);
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    marshalRequest(&buf, "i", num);
+    char *content;
+
+    if (virBufferError(&buf))
+        return -1;
+
+    content = virBufferContentAndReset(&buf);
 
     if (check)
-        ret = checkRequestValue(buf->content,
+        ret = checkRequestValue(content,
                 "number(/methodCall/params/param[1]/value/int)",
                 XML_RPC_INTEGER, (void *) &num);
 
-    virBufferFree(buf);
+    free(content);
     return ret;
 }
 
@@ -149,13 +154,21 @@ testMarshalRequestSTRING(const void *data ATTRIBUTE_UNUSED)
     const char *str = "This library will be really sexy.";
     int ret = 0;
     int check = data ? *((int *)data) : 0;
-    virBufferPtr buf = marshalRequest("s", str);
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *content;
 
+    marshalRequest(&buf, "s", str);
+
+    if (virBufferError(&buf))
+        return -1;
+
+    content = virBufferContentAndReset(&buf);
     if (check)
-        ret = checkRequestValue(buf->content,
+        ret = checkRequestValue(content,
                 "string(/methodCall/params/param[1]/value/string)",
                 XML_RPC_STRING, (void *) str);
-    virBufferFree(buf);
+
+    free(content);
     return ret;
 }
 
@@ -165,42 +178,24 @@ testMarshalRequestDOUBLE(const void *data)
     double num = 123456789.123;
     int ret = 0;
     int check = data ? *((int *)data) : 0;
-    virBufferPtr buf = marshalRequest("f", num);
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *content;
 
+    marshalRequest(&buf, "f", num);
+
+    if (virBufferError(&buf))
+        return -1;
+
+    content = virBufferContentAndReset(&buf);
     if (check)
-        ret = checkRequestValue(buf->content,
+        ret = checkRequestValue(content,
                 "number(/methodCall/params/param[1]/value/double)",
                 XML_RPC_DOUBLE, (void *) &num);
 
-    virBufferFree(buf);
+    free(content);
     return ret;
 }
 
-static int
-testBufferStrcat(const void *data ATTRIBUTE_UNUSED)
-{
-    virBufferPtr buf = virBufferNew(1000*32);  /* don't waste time with realloc */
-    int i;
-
-    for (i=0; i < 1000; i++)
-        virBufferStrcat(buf, "My name is ", "libvirt", ".\n", NULL);
-
-    virBufferFree(buf);
-    return 0;
-}
-
-static int
-testBufferVSprintf(const void *data ATTRIBUTE_UNUSED)
-{
-    virBufferPtr buf = virBufferNew(1000*32);  /* don't waste time with realloc */
-    int i;
-
-    for (i=0; i < 1000; i++)
-        virBufferVSprintf(buf, "My name is %s.\n", "libvirt");
-
-    virBufferFree(buf);
-    return 0;
-}
 
 int
 main(int argc, char **argv)
@@ -263,13 +258,7 @@ main(int argc, char **argv)
                 NLOOPS, testMarshalRequestSTRING, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("Buffer: strcat", NLOOPS, testBufferStrcat, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Buffer: sprintf", NLOOPS, testBufferVSprintf, NULL) != 0)
-        ret = -1;
-
-
-        exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
 

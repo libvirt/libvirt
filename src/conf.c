@@ -877,43 +877,45 @@ __virConfSetValue (virConfPtr conf,
 int
 __virConfWriteFile(const char *filename, virConfPtr conf)
 {
-    virBufferPtr buf;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     virConfEntryPtr cur;
     int ret;
     int fd;
+    char *content;
+    unsigned int use;
 
     if (conf == NULL)
         return(-1);
 
-    buf = virBufferNew(500);
-    if (buf == NULL) {
-        virConfError(NULL, VIR_ERR_NO_MEMORY, _("failed to allocate buffer"), 0);
-        return(-1);
-    }
-
     cur = conf->entries;
     while (cur != NULL) {
-        virConfSaveEntry(buf, cur);
+        virConfSaveEntry(&buf, cur);
         cur = cur->next;
+    }
+
+    if (virBufferError(&buf)) {
+        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
+        return -1;
     }
 
     fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR );
     if (fd < 0) {
         virConfError(NULL, VIR_ERR_WRITE_FAILED, _("failed to open file"), 0);
-        ret = -1;
-        goto error;
+        free(virBufferContentAndReset(&buf));
+        return -1;
     }
 
-    ret = safewrite(fd, buf->content, buf->use);
+    use = virBufferUse(&buf);
+    content = virBufferContentAndReset(&buf);
+    ret = safewrite(fd, content, use);
+    free(content);
     close(fd);
-    if (ret != (int) buf->use) {
+    if (ret != (int)use) {
         virConfError(NULL, VIR_ERR_WRITE_FAILED, _("failed to save content"), 0);
-        ret = -1;
-        goto error;
+        return -1;
     }
-error:
-    virBufferFree(buf);
-    return(ret);
+
+    return ret;
 }
 
 /**
@@ -932,34 +934,35 @@ error:
 int
 __virConfWriteMem(char *memory, int *len, virConfPtr conf)
 {
-    virBufferPtr buf;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     virConfEntryPtr cur;
-    int ret;
+    char *content;
+    unsigned int use;
 
     if ((memory == NULL) || (len == NULL) || (*len <= 0) || (conf == NULL))
         return(-1);
 
-    buf = virBufferNew(500);
-    if (buf == NULL) {
-        virConfError(NULL, VIR_ERR_NO_MEMORY, _("failed to allocate buffer"), 0);
-        return(-1);
-    }
-
     cur = conf->entries;
     while (cur != NULL) {
-        virConfSaveEntry(buf, cur);
+        virConfSaveEntry(&buf, cur);
         cur = cur->next;
     }
 
-    if ((int) buf->use >= *len) {
-        *len = buf->use;
-        ret = -1;
-        goto error;
+    if (virBufferError(&buf)) {
+        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
+        return -1;
     }
-    memcpy(memory, buf->content, buf->use);
-    ret = buf->use;
-    *len = buf->use;
-error:
-    virBufferFree(buf);
-    return(ret);
+
+    use = virBufferUse(&buf);
+    content = virBufferContentAndReset(&buf);
+
+    if ((int)use >= *len) {
+        *len = (int)use;
+        free(content);
+        return -1;
+    }
+    memcpy(memory, content, use);
+    free(content);
+    *len = use;
+    return use;
 }

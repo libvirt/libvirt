@@ -136,20 +136,23 @@ append_qparam (struct qparam_set *ps,
 char *
 qparam_get_query (const struct qparam_set *ps)
 {
-    virBufferPtr buf;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     int i, amp = 0;
 
-    buf = virBufferNew (100);
     for (i = 0; i < ps->n; ++i) {
         if (!ps->p[i].ignore) {
-            if (amp) virBufferAddChar (buf, '&');
-            virBufferStrcat (buf, ps->p[i].name, "=", NULL);
-            virBufferURIEncodeString (buf, ps->p[i].value);
+            if (amp) virBufferAddChar (&buf, '&');
+            virBufferStrcat (&buf, ps->p[i].name, "=", NULL);
+            virBufferURIEncodeString (&buf, ps->p[i].value);
             amp = 1;
         }
     }
 
-    return virBufferContentAndFree (buf);
+    if (virBufferError(&buf)) {
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
 }
 
 void

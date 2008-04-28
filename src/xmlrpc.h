@@ -89,8 +89,9 @@ struct _xmlRpcContext;
 xmlRpcValuePtr *xmlRpcArgvNew(const char *fmt, va_list ap, int *argc);
 void xmlRpcArgvFree(int argc, xmlRpcValuePtr *argv);
 
-virBufferPtr xmlRpcMarshalRequest(const char *request,
-                                  int argc, xmlRpcValuePtr *argv);
+void xmlRpcMarshalRequest(const char *request,
+                          virBufferPtr buf,
+                          int argc, xmlRpcValuePtr *argv);
 
 xmlRpcValuePtr xmlRpcUnmarshalResponse(xmlNodePtr node, bool *is_fault);
 
