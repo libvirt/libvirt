@@ -42,3 +42,43 @@
    fun:parse_and_execute
    fun:command_substitute
 }
+{
+   bashMemoryLeak4
+   Memcheck:Leak
+   fun:malloc
+   fun:xmalloc
+   fun:make_bare_simple_command
+   fun:make_simple_command
+   fun:yyparse
+   fun:parse_command
+   fun:read_command
+   fun:reader_loop
+   fun:main
+}
+{
+   bashMemoryLeak5
+   Memcheck:Leak
+   fun:malloc
+   fun:xmalloc
+   fun:set_signal
+   fun:trap_builtin
+   obj:/bin/bash
+   obj:/bin/bash
+   fun:execute_command_internal
+   fun:execute_command
+   fun:reader_loop
+   fun:main
+}
+{
+   bashMemoryLeak6
+   Memcheck:Leak
+   fun:malloc
+   fun:xmalloc
+   fun:make_bare_simple_command
+   fun:make_simple_command
+   fun:yyparse
+   fun:parse_command
+   fun:read_command
+   fun:reader_loop
+   fun:main
+}
