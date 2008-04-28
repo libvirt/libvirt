@@ -25,6 +25,7 @@
 #include <libxml/threads.h>
 #include "internal.h"
 #include "hash.h"
+#include "memory.h"
 
 #define MAX_HASH_LEN 8
 
@@ -85,22 +86,22 @@ virHashComputeKey(virHashTablePtr table, const char *name)
 virHashTablePtr
 virHashCreate(int size)
 {
-    virHashTablePtr table;
+    virHashTablePtr table = NULL;
 
     if (size <= 0)
         size = 256;
 
-    table = malloc(sizeof(*table));
-    if (table) {
-        table->size = size;
-        table->nbElems = 0;
-        table->table = calloc(1, size * sizeof(*(table->table)));
-        if (table->table) {
-            return (table);
-        }
-        free(table);
+    if (VIR_ALLOC(table) < 0)
+        return NULL;
+
+    table->size = size;
+    table->nbElems = 0;
+    if (VIR_ALLOC_N(table->table, size) < 0) {
+        VIR_FREE(table);
+        return NULL;
     }
-    return (NULL);
+
+    return table;
 }
 
 /**
@@ -136,8 +137,7 @@ virHashGrow(virHashTablePtr table, int size)
     if (oldtable == NULL)
         return (-1);
 
-    table->table = calloc(1, size * sizeof(*(table->table)));
-    if (table->table == NULL) {
+    if (VIR_ALLOC_N(table->table, size) < 0) {
         table->table = oldtable;
         return (-1);
     }
@@ -170,7 +170,7 @@ virHashGrow(virHashTablePtr table, int size)
             if (table->table[key].valid == 0) {
                 memcpy(&(table->table[key]), iter, sizeof(virHashEntry));
                 table->table[key].next = NULL;
-                free(iter);
+                VIR_FREE(iter);
             } else {
                 iter->next = table->table[key].next;
                 table->table[key].next = iter;
@@ -184,7 +184,7 @@ virHashGrow(virHashTablePtr table, int size)
         }
     }
 
-    free(oldtable);
+    VIR_FREE(oldtable);
 
 #ifdef DEBUG_GROW
     xmlGenericError(xmlGenericErrorContext,
@@ -225,19 +225,19 @@ virHashFree(virHashTablePtr table, virHashDeallocator f)
                 next = iter->next;
                 if ((f != NULL) && (iter->payload != NULL))
                     f(iter->payload, iter->name);
-                free(iter->name);
+                VIR_FREE(iter->name);
                 iter->payload = NULL;
                 if (!inside_table)
-                    free(iter);
+                    VIR_FREE(iter);
                 nbElems--;
                 inside_table = 0;
                 iter = next;
             }
             inside_table = 0;
         }
-        free(table->table);
+        VIR_FREE(table->table);
     }
-    free(table);
+    VIR_FREE(table);
 }
 
 /**
@@ -281,8 +281,7 @@ virHashAddEntry(virHashTablePtr table, const char *name, void *userdata)
     if (insert == NULL) {
         entry = &(table->table[key]);
     } else {
-        entry = malloc(sizeof(*entry));
-        if (entry == NULL)
+        if (VIR_ALLOC(entry) < 0)
             return (-1);
     }
 
@@ -354,8 +353,7 @@ virHashUpdateEntry(virHashTablePtr table, const char *name,
     if (insert == NULL) {
         entry = &(table->table[key]);
     } else {
-        entry = malloc(sizeof(*entry));
-        if (entry == NULL)
+        if (VIR_ALLOC(entry) < 0)
             return (-1);
     }
 
@@ -451,10 +449,10 @@ virHashRemoveEntry(virHashTablePtr table, const char *name,
                 if ((f != NULL) && (entry->payload != NULL))
                     f(entry->payload, entry->name);
                 entry->payload = NULL;
-                free(entry->name);
+                VIR_FREE(entry->name);
                 if (prev) {
                     prev->next = entry->next;
-                    free(entry);
+                    VIR_FREE(entry);
                 } else {
                     if (entry->next == NULL) {
                         entry->valid = 0;
@@ -462,7 +460,7 @@ virHashRemoveEntry(virHashTablePtr table, const char *name,
                         entry = entry->next;
                         memcpy(&(table->table[key]), entry,
                                sizeof(virHashEntry));
-                        free(entry);
+                        VIR_FREE(entry);
                     }
                 }
                 table->nbElems--;
@@ -535,11 +533,11 @@ int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, virHashDealloc
             if (iter(entry->payload, entry->name, data)) {
                 count++;
                 f(entry->payload, entry->name);
-                free(entry->name);
+                VIR_FREE(entry->name);
                 table->nbElems--;
                 if (prev) {
                     prev->next = entry->next;
-                    free(entry);
+                    VIR_FREE(entry);
                     entry = prev;
                 } else {
                     if (entry->next == NULL) {
@@ -549,7 +547,7 @@ int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, virHashDealloc
                         entry = entry->next;
                         memcpy(&(table->table[i]), entry,
                                sizeof(virHashEntry));
-                        free(entry);
+                        VIR_FREE(entry);
                         entry = &(table->table[i]);
                         continue;
                     }
@@ -689,8 +687,7 @@ virConnectPtr
 virGetConnect(void) {
     virConnectPtr ret;
 
-    ret = calloc(1, sizeof(*ret));
-    if (ret == NULL) {
+    if (VIR_ALLOC(ret) < 0) {
         virHashError(NULL, VIR_ERR_NO_MEMORY, _("allocating connection"));
         goto failed;
     }
@@ -729,7 +726,7 @@ failed:
             virHashFree(ret->storageVols, (virHashDeallocator) virStorageVolFreeName);
 
         pthread_mutex_destroy(&ret->lock);
-        free(ret);
+        VIR_FREE(ret);
     }
     return(NULL);
 }
@@ -759,11 +756,11 @@ virReleaseConnect(virConnectPtr conn) {
     if (__lastErr.conn == conn)
         __lastErr.conn = NULL;
 
-    free(conn->name);
+    VIR_FREE(conn->name);
 
     pthread_mutex_unlock(&conn->lock);
     pthread_mutex_destroy(&conn->lock);
-    free(conn);
+    VIR_FREE(conn);
 }
 
 /**
@@ -824,8 +821,8 @@ __virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) 
     ret = (virDomainPtr) virHashLookup(conn->domains, name);
     /* TODO check the UUID */
     if (ret == NULL) {
-        ret = (virDomainPtr) calloc(1, sizeof(*ret));
-        if (ret == NULL) {
+        VIR_ALLOC(ret);
+        if (0) {
             virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
             goto error;
         }
@@ -854,8 +851,8 @@ __virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) 
  error:
     pthread_mutex_unlock(&conn->lock);
     if (ret != NULL) {
-        free(ret->name );
-        free(ret);
+        VIR_FREE(ret->name);
+        VIR_FREE(ret);
     }
     return(NULL);
 }
@@ -888,8 +885,8 @@ virReleaseDomain(virDomainPtr domain) {
         __lastErr.dom = NULL;
     domain->magic = -1;
     domain->id = -1;
-    free(domain->name);
-    free(domain);
+    VIR_FREE(domain->name);
+    VIR_FREE(domain);
 
     DEBUG("unref connection %p %s %d", conn, conn->name, conn->refs);
     conn->refs--;
@@ -962,8 +959,7 @@ __virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid)
     ret = (virNetworkPtr) virHashLookup(conn->networks, name);
     /* TODO check the UUID */
     if (ret == NULL) {
-        ret = (virNetworkPtr) calloc(1, sizeof(*ret));
-        if (ret == NULL) {
+        if (VIR_ALLOC(ret) < 0) {
             virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating network"));
             goto error;
         }
@@ -991,8 +987,8 @@ __virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid)
  error:
     pthread_mutex_unlock(&conn->lock);
     if (ret != NULL) {
-        free(ret->name );
-        free(ret);
+        VIR_FREE(ret->name);
+        VIR_FREE(ret);
     }
     return(NULL);
 }
@@ -1025,8 +1021,8 @@ virReleaseNetwork(virNetworkPtr network) {
         __lastErr.net = NULL;
 
     network->magic = -1;
-    free(network->name);
-    free(network);
+    VIR_FREE(network->name);
+    VIR_FREE(network);
 
     DEBUG("unref connection %p %s %d", conn, conn->name, conn->refs);
     conn->refs--;
@@ -1100,8 +1096,7 @@ __virGetStoragePool(virConnectPtr conn, const char *name, const unsigned char *u
     ret = (virStoragePoolPtr) virHashLookup(conn->storagePools, name);
     /* TODO check the UUID */
     if (ret == NULL) {
-        ret = (virStoragePoolPtr) calloc(1, sizeof(*ret));
-        if (ret == NULL) {
+        if (VIR_ALLOC(ret) < 0) {
             virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating storage pool"));
             goto error;
         }
@@ -1129,8 +1124,8 @@ __virGetStoragePool(virConnectPtr conn, const char *name, const unsigned char *u
 error:
     pthread_mutex_unlock(&conn->lock);
     if (ret != NULL) {
-        free(ret->name);
-        free(ret);
+        VIR_FREE(ret->name);
+        VIR_FREE(ret);
     }
     return(NULL);
 }
@@ -1159,8 +1154,8 @@ virReleaseStoragePool(virStoragePoolPtr pool) {
                      _("pool missing from connection hash table"));
 
     pool->magic = -1;
-    free(pool->name);
-    free(pool);
+    VIR_FREE(pool->name);
+    VIR_FREE(pool);
 
     DEBUG("unref connection %p %s %d", conn, conn->name, conn->refs);
     conn->refs--;
@@ -1232,8 +1227,7 @@ __virGetStorageVol(virConnectPtr conn, const char *pool, const char *name, const
 
     ret = (virStorageVolPtr) virHashLookup(conn->storageVols, key);
     if (ret == NULL) {
-        ret = (virStorageVolPtr) calloc(1, sizeof(*ret));
-        if (ret == NULL) {
+        if (VIR_ALLOC(ret) < 0) {
             virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating storage vol"));
             goto error;
         }
@@ -1266,9 +1260,9 @@ __virGetStorageVol(virConnectPtr conn, const char *pool, const char *name, const
 error:
     pthread_mutex_unlock(&conn->lock);
     if (ret != NULL) {
-        free(ret->name);
-        free(ret->pool);
-        free(ret);
+        VIR_FREE(ret->name);
+        VIR_FREE(ret->pool);
+        VIR_FREE(ret);
     }
     return(NULL);
 }
@@ -1297,9 +1291,9 @@ virReleaseStorageVol(virStorageVolPtr vol) {
                      _("vol missing from connection hash table"));
 
     vol->magic = -1;
-    free(vol->name);
-    free(vol->pool);
-    free(vol);
+    VIR_FREE(vol->name);
+    VIR_FREE(vol->pool);
+    VIR_FREE(vol);
 
     DEBUG("unref connection %p %s %d", conn, conn->name, conn->refs);
     conn->refs--;

@@ -25,6 +25,7 @@
 
 #include "capabilities.h"
 #include "buf.h"
+#include "memory.h"
 
 
 /**
@@ -42,7 +43,7 @@ virCapabilitiesNew(const char *arch,
 {
     virCapsPtr caps;
 
-    if ((caps = calloc(1, sizeof(*caps))) == NULL)
+    if (VIR_ALLOC(caps) < 0)
         goto no_memory;
 
     if ((caps->host.arch = strdup(arch)) == NULL)
@@ -60,53 +61,53 @@ virCapabilitiesNew(const char *arch,
 static void
 virCapabilitiesFreeHostNUMACell(virCapsHostNUMACellPtr cell)
 {
-    free(cell->cpus);
-    free(cell);
+    VIR_FREE(cell->cpus);
+    VIR_FREE(cell);
 }
 
 static void
 virCapabilitiesFreeGuestDomain(virCapsGuestDomainPtr dom)
 {
     int i;
-    free(dom->info.emulator);
-    free(dom->info.loader);
+    VIR_FREE(dom->info.emulator);
+    VIR_FREE(dom->info.loader);
     for (i = 0 ; i < dom->info.nmachines ; i++)
-        free(dom->info.machines[i]);
-    free(dom->info.machines);
-    free(dom->type);
+        VIR_FREE(dom->info.machines[i]);
+    VIR_FREE(dom->info.machines);
+    VIR_FREE(dom->type);
 
-    free(dom);
+    VIR_FREE(dom);
 }
 
 static void
 virCapabilitiesFreeGuestFeature(virCapsGuestFeaturePtr feature)
 {
-    free(feature->name);
-    free(feature);
+    VIR_FREE(feature->name);
+    VIR_FREE(feature);
 }
 
 static void
 virCapabilitiesFreeGuest(virCapsGuestPtr guest)
 {
     int i;
-    free(guest->ostype);
+    VIR_FREE(guest->ostype);
 
-    free(guest->arch.name);
-    free(guest->arch.defaultInfo.emulator);
-    free(guest->arch.defaultInfo.loader);
+    VIR_FREE(guest->arch.name);
+    VIR_FREE(guest->arch.defaultInfo.emulator);
+    VIR_FREE(guest->arch.defaultInfo.loader);
     for (i = 0 ; i < guest->arch.defaultInfo.nmachines ; i++)
-        free(guest->arch.defaultInfo.machines[i]);
-    free(guest->arch.defaultInfo.machines);
+        VIR_FREE(guest->arch.defaultInfo.machines[i]);
+    VIR_FREE(guest->arch.defaultInfo.machines);
 
     for (i = 0 ; i < guest->arch.ndomains ; i++)
         virCapabilitiesFreeGuestDomain(guest->arch.domains[i]);
-    free(guest->arch.domains);
+    VIR_FREE(guest->arch.domains);
 
     for (i = 0 ; i < guest->nfeatures ; i++)
         virCapabilitiesFreeGuestFeature(guest->features[i]);
-    free(guest->features);
+    VIR_FREE(guest->features);
 
-    free(guest);
+    VIR_FREE(guest);
 }
 
 
@@ -122,21 +123,21 @@ virCapabilitiesFree(virCapsPtr caps) {
 
     for (i = 0 ; i < caps->nguests ; i++)
         virCapabilitiesFreeGuest(caps->guests[i]);
-    free(caps->guests);
+    VIR_FREE(caps->guests);
 
     for (i = 0 ; i < caps->host.nfeatures ; i++)
-        free(caps->host.features[i]);
-    free(caps->host.features);
+        VIR_FREE(caps->host.features[i]);
+    VIR_FREE(caps->host.features);
     for (i = 0 ; i < caps->host.nnumaCell ; i++)
         virCapabilitiesFreeHostNUMACell(caps->host.numaCell[i]);
-    free(caps->host.numaCell);
+    VIR_FREE(caps->host.numaCell);
 
     for (i = 0 ; i < caps->host.nmigrateTrans ; i++)
-        free(caps->host.migrateTrans[i]);
-    free(caps->host.migrateTrans);
+        VIR_FREE(caps->host.migrateTrans[i]);
+    VIR_FREE(caps->host.migrateTrans);
 
-    free(caps->host.arch);
-    free(caps);
+    VIR_FREE(caps->host.arch);
+    VIR_FREE(caps);
 }
 
 
@@ -151,12 +152,9 @@ int
 virCapabilitiesAddHostFeature(virCapsPtr caps,
                               const char *name)
 {
-    char **features;
-
-    if ((features = realloc(caps->host.features,
-                            sizeof(*features) * (caps->host.nfeatures+1))) == NULL)
+    if (VIR_REALLOC_N(caps->host.features,
+                      caps->host.nfeatures + 1) < 0)
         return -1;
-    caps->host.features = features;
 
     if ((caps->host.features[caps->host.nfeatures] = strdup(name)) == NULL)
         return -1;
@@ -177,12 +175,9 @@ int
 virCapabilitiesAddHostMigrateTransport(virCapsPtr caps,
                                        const char *name)
 {
-    char **migrateTrans;
-
-    if ((migrateTrans = realloc(caps->host.migrateTrans,
-                                sizeof(*migrateTrans) * (caps->host.nmigrateTrans+1))) == NULL)
+    if (VIR_REALLOC_N(caps->host.migrateTrans,
+                      caps->host.nmigrateTrans + 1) < 0)
         return -1;
-    caps->host.migrateTrans = migrateTrans;
 
     if ((caps->host.migrateTrans[caps->host.nmigrateTrans] = strdup(name)) == NULL)
         return -1;
@@ -208,19 +203,18 @@ virCapabilitiesAddHostNUMACell(virCapsPtr caps,
                                int ncpus,
                                const int *cpus)
 {
-    virCapsHostNUMACellPtr cell, *cells;
+    virCapsHostNUMACellPtr cell;
 
-    if ((cells = realloc(caps->host.numaCell,
-                         sizeof(*cells) * (caps->host.nnumaCell+1))) == NULL)
+    if (VIR_REALLOC_N(caps->host.numaCell,
+                      caps->host.nnumaCell + 1) < 0)
         return -1;
-    caps->host.numaCell = cells;
 
-    if ((cell = calloc(1, sizeof(cell))) == NULL)
+    if (VIR_ALLOC(cell) < 0)
         return -1;
     caps->host.numaCell[caps->host.nnumaCell] = cell;
 
-    if ((caps->host.numaCell[caps->host.nnumaCell]->cpus =
-         malloc(ncpus * sizeof(*cpus))) == NULL)
+    if (VIR_ALLOC_N(caps->host.numaCell[caps->host.nnumaCell]->cpus,
+                    ncpus) < 0)
         return -1;
     memcpy(caps->host.numaCell[caps->host.nnumaCell]->cpus,
            cpus,
@@ -259,10 +253,10 @@ virCapabilitiesAddGuest(virCapsPtr caps,
                         int nmachines,
                         const char *const *machines)
 {
-    virCapsGuestPtr guest, *guests;
+    virCapsGuestPtr guest;
     int i;
 
-    if ((guest = calloc(1, sizeof(*guest))) == NULL)
+    if (VIR_ALLOC(guest) < 0)
         goto no_memory;
 
     if ((guest->ostype = strdup(ostype)) == NULL)
@@ -279,8 +273,8 @@ virCapabilitiesAddGuest(virCapsPtr caps,
         (guest->arch.defaultInfo.loader = strdup(loader)) == NULL)
         goto no_memory;
     if (nmachines) {
-        if ((guest->arch.defaultInfo.machines =
-             calloc(nmachines, sizeof(*guest->arch.defaultInfo.machines))) == NULL)
+        if (VIR_ALLOC_N(guest->arch.defaultInfo.machines,
+                        nmachines) < 0)
             goto no_memory;
         for (i = 0 ; i < nmachines ; i++) {
             if ((guest->arch.defaultInfo.machines[i] = strdup(machines[i])) == NULL)
@@ -289,11 +283,9 @@ virCapabilitiesAddGuest(virCapsPtr caps,
         }
     }
 
-    if ((guests = realloc(caps->guests,
-                          sizeof(*guests) *
-                          (caps->nguests + 1))) == NULL)
+    if (VIR_REALLOC_N(caps->guests,
+                      caps->nguests + 1) < 0)
         goto no_memory;
-    caps->guests = guests;
     caps->guests[caps->nguests] = guest;
     caps->nguests++;
 
@@ -325,10 +317,10 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
                               int nmachines,
                               const char *const *machines)
 {
-    virCapsGuestDomainPtr dom, *doms;
+    virCapsGuestDomainPtr dom;
     int i;
 
-    if ((dom = calloc(1, sizeof(*dom))) == NULL)
+    if (VIR_ALLOC(dom) < 0)
         goto no_memory;
 
     if ((dom->type = strdup(hvtype)) == NULL)
@@ -341,8 +333,7 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
         (dom->info.loader = strdup(loader)) == NULL)
         goto no_memory;
     if (nmachines) {
-        if ((dom->info.machines =
-             calloc(nmachines, sizeof(*dom->info.machines))) == NULL)
+        if (VIR_ALLOC_N(dom->info.machines, nmachines) < 0)
             goto no_memory;
         for (i = 0 ; i < nmachines ; i++) {
             if ((dom->info.machines[i] = strdup(machines[i])) == NULL)
@@ -351,11 +342,9 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
         }
     }
 
-    if ((doms = realloc(guest->arch.domains,
-                        sizeof(*doms) *
-                        (guest->arch.ndomains + 1))) == NULL)
+    if (VIR_REALLOC_N(guest->arch.domains,
+                      guest->arch.ndomains + 1) < 0)
         goto no_memory;
-    guest->arch.domains = doms;
     guest->arch.domains[guest->arch.ndomains] = dom;
     guest->arch.ndomains++;
 
@@ -383,9 +372,9 @@ virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
                                int defaultOn,
                                int toggle)
 {
-    virCapsGuestFeaturePtr feature, *features;
+    virCapsGuestFeaturePtr feature;
 
-    if ((feature = calloc(1, sizeof(*feature))) == NULL)
+    if (VIR_ALLOC(feature) < 0)
         goto no_memory;
 
     if ((feature->name = strdup(name)) == NULL)
@@ -393,11 +382,9 @@ virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
     feature->defaultOn = defaultOn;
     feature->toggle = toggle;
 
-    if ((features = realloc(guest->features,
-                            sizeof(*features) *
-                            (guest->nfeatures + 1))) == NULL)
+    if (VIR_REALLOC_N(guest->features,
+                      guest->nfeatures + 1) < 0)
         goto no_memory;
-    guest->features = features;
     guest->features[guest->nfeatures] = feature;
     guest->nfeatures++;
 

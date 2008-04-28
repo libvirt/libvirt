@@ -33,6 +33,7 @@ CLIENT_SOURCES =						\
 		libvirt.c internal.h				\
 		gnutls_1_0_compat.h				\
 		socketcompat.h					\
+                memory.c memory.h				\
 		hash.c hash.h					\
 		test.c test.h                                   \
                 buf.c buf.h					\

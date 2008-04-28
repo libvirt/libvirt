@@ -1,3 +1,13 @@
+Mon Apr 28 17:24:22 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/memory.h, src/memory.c: Added safer APIs for dealing
+	with low level memory allocation.
+	* src/hash.c, src/capabilities.c: Convert to new memory
+	allocation APIs
+	* src/internal.h: Define ATTRIBUTE_RETURN_CHECK and fix
+	type in virDebug no-op impl
+	* proxy/Makefile.am: Build and link against memory.c
+
 Mon Apr 28 10:24:22 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/buf.c, src/buf.h: Change API to move errors checks to

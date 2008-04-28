@@ -78,7 +78,7 @@ extern int debugFlag;
 #define VIR_DEBUG(category, fmt,...)                                    \
     do { if (debugFlag) fprintf (stderr, "DEBUG: %s: %s (" fmt ")\n", category, __func__, __VA_ARGS__); } while (0)
 #else
-#define VIR_DEBUG(category, fmt,...)
+#define VIR_DEBUG(category, fmt,...) \
     do { } while (0)
 #endif /* !ENABLE_DEBUG */
 
@@ -88,6 +88,11 @@ extern int debugFlag;
 #endif
 
 #ifdef __GNUC__
+
+#ifndef __GNUC_PREREQ
+#define __GNUC_PREREQ(maj,min) 0
+#endif
+
 /**
  * ATTRIBUTE_UNUSED:
  *
@@ -107,9 +112,18 @@ extern int debugFlag;
 #define ATTRIBUTE_FORMAT(args...) __attribute__((__format__ (args)))
 #endif
 
+#ifndef ATTRIBUTE_RETURN_CHECK
+#if __GNUC_PREREQ (3, 4)
+#define ATTRIBUTE_RETURN_CHECK __attribute__((__warn_unused_result__))
+#else
+#define ATTRIBUTE_RETURN_CHECK
+#endif
+#endif
+
 #else
 #define ATTRIBUTE_UNUSED
 #define ATTRIBUTE_FORMAT(...)
+#define ATTRIBUTE_RETURN_CHECK
 #endif				/* __GNUC__ */
 
 /**
