@@ -48,7 +48,7 @@ cleanup_gnulib() {
 
 case ${GNULIB_SRCDIR--} in
 -)
-  if [ ! -d gnulib ]; then
+  if [ ! -d .gnulib ]; then
     echo "$0: getting gnulib files..."
 
     trap cleanup_gnulib 1 2 13 15

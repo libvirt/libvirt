@@ -1,3 +1,9 @@
+Mon Apr 28 16:11:22 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	fix typo in bootstrap script
+	* bootstrap: Fix typo: s/gnulib/.gnulib/.  Reported by
+	Daniel P. Berrange.
+
 Mon Apr 28 09:32:22 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/.valgrind.supp, tests/Makefile.am: Ignore bash bugs when
