@@ -1745,7 +1745,7 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
     }
 
     if (vcpu >= info.nrVirtCpu) {
-        vshError(ctl, FALSE, _("vcpupin: Invalid vCPU number."));
+        vshError(ctl, FALSE, "%s", _("vcpupin: Invalid vCPU number."));
         virDomainFree(dom);
         return FALSE;
     }

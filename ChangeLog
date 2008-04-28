@@ -1,3 +1,9 @@
+Mon Apr 28 11:08:58 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	avoid format-related warnings
+	* qemud/qemud.c (main): Fix a bogus format string reported as unmarked.
+	* src/virsh.c (cmdVcpupin): Non-literal with no args.
+
 Mon Apr 28 10:26:17 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/Makefile.am docs/et.png docs/libvirt.css docs/page.xsl

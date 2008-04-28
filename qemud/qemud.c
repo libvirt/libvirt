@@ -2164,8 +2164,8 @@ int main(int argc, char **argv) {
         const char *sockdirname = LOCAL_STATE_DIR "/run/libvirt";
 
         if (chown(sockdirname, -1, unix_sock_gid) < 0)
-            qemudLog(QEMUD_ERR, "%s %s",
-                    _("Failed to change group ownership of "), sockdirname);
+            qemudLog(QEMUD_ERR, _("Failed to change group ownership of %s"),
+                     sockdirname);
     }
 
     if (godaemon) {
