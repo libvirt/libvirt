@@ -821,8 +821,7 @@ __virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) 
     ret = (virDomainPtr) virHashLookup(conn->domains, name);
     /* TODO check the UUID */
     if (ret == NULL) {
-        VIR_ALLOC(ret);
-        if (0) {
+        if (VIR_ALLOC(ret) < 0) {
             virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
             goto error;
         }
