@@ -1,5 +1,5 @@
 /* Test of <sys/stat.h> substitute.
-   Copyright (C) 2007 Free Software Foundation, Inc.
+   Copyright (C) 2007-2008 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -252,6 +252,9 @@ verify (!S_ISWHT (S_IFLNK));
 #ifdef S_IFSOCK
 verify (!S_ISWHT (S_IFSOCK));
 #endif
+
+/* Check the existence of some types.  */
+nlink_t t1;
 
 int
 main ()

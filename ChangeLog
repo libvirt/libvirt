@@ -1,5 +1,56 @@
 Tue Apr 29 21:43:28 CEST 2008 Jim Meyering <meyering@redhat.com>
 
+	update from gnulib
+	* gnulib/lib/inet_ntop.h: Remove file.
+	* gnulib/m4/onceonly_2_57.m4: Remove file.
+	* build-aux/useless-if-before-free: Update.
+	* build-aux/vc-list-files: Update.
+	* gnulib/lib/.cvsignore: Update.
+	* gnulib/lib/Makefile.am: Update.
+	* gnulib/lib/fseeko.c: Update.
+	* gnulib/lib/getaddrinfo.c: Update.
+	* gnulib/lib/getdelim.c: Update.
+	* gnulib/lib/inet_ntop.c: Update.
+	* gnulib/lib/inet_ntop.h: Update.
+	* gnulib/lib/poll.c: Update.
+	* gnulib/lib/snprintf.c: Update.
+	* gnulib/lib/stdlib.in.h: Update.
+	* gnulib/lib/string.in.h: Update.
+	* gnulib/lib/sys_socket.in.h: Update.
+	* gnulib/lib/sys_stat.in.h: Update.
+	* gnulib/lib/vasnprintf.c: Update.
+	* gnulib/lib/vasprintf.c: Update.
+	* gnulib/lib/wchar.in.h: Update.
+	* gnulib/m4/arpa_inet_h.m4: Update.
+	* gnulib/m4/extensions.m4: Update.
+	* gnulib/m4/gnulib-common.m4: Update.
+	* gnulib/m4/gnulib-comp.m4: Update.
+	* gnulib/m4/include_next.m4: Update.
+	* gnulib/m4/inet_ntop.m4: Update.
+	* gnulib/m4/netinet_in_h.m4: Update.
+	* gnulib/m4/onceonly_2_57.m4: Update.
+	* gnulib/m4/physmem.m4: Update.
+	* gnulib/m4/snprintf.m4: Update.
+	* gnulib/m4/stdint.m4: Update.
+	* gnulib/m4/stdio_h.m4: Update.
+	* gnulib/m4/stdlib_h.m4: Update.
+	* gnulib/m4/string_h.m4: Update.
+	* gnulib/m4/strndup.m4: Update.
+	* gnulib/m4/sys_select_h.m4: Update.
+	* gnulib/m4/sys_socket_h.m4: Update.
+	* gnulib/m4/sys_stat_h.m4: Update.
+	* gnulib/m4/vasnprintf.m4: Update.
+	* gnulib/tests/Makefile.am: Update.
+	* gnulib/tests/test-fseeko.c: Update.
+	* gnulib/tests/test-getaddrinfo.c: Update.
+	* gnulib/tests/test-getdelim.c: Update.
+	* gnulib/tests/test-getline.c: Update.
+	* gnulib/tests/test-lseek.c: Update.
+	* gnulib/tests/test-snprintf.c: Update.
+	* gnulib/tests/test-sys_stat.c: Update.
+	* gnulib/tests/test-vasnprintf.c: Update.
+	* gnulib/tests/test-vasprintf.c: Update.
+
 	remove useless tests before xmlFree
 	* src/qemu_conf.c (qemudParseDiskXML, qemudParseInterfaceXML):
 	(qemudParseInputXML, qemudParseDhcpRangesXML):

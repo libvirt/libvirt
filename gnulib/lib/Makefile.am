@@ -62,11 +62,20 @@ arpa/inet.h:
 	@MKDIR_P@ arpa
 	rm -f $@-t $@
 	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
-	  echo '#include <sys/socket.h>'; \
+	  sed -e 's/@''INCLUDE_NEXT''@/$(INCLUDE_NEXT)/g' \
+	      -e 's|@''NEXT_ARPA_INET_H''@|$(NEXT_ARPA_INET_H)|g' \
+	      -e 's|@''HAVE_ARPA_INET_H''@|$(HAVE_ARPA_INET_H)|g' \
+	      -e 's|@''GNULIB_INET_NTOP''@|$(GNULIB_INET_NTOP)|g' \
+	      -e 's|@''GNULIB_INET_PTON''@|$(GNULIB_INET_PTON)|g' \
+	      -e 's|@''HAVE_DECL_INET_NTOP''@|$(HAVE_DECL_INET_NTOP)|g' \
+	      -e 's|@''HAVE_DECL_INET_PTON''@|$(HAVE_DECL_INET_PTON)|g' \
+	      < $(srcdir)/arpa_inet.in.h; \
 	} > $@-t
 	mv $@-t $@
 MOSTLYCLEANFILES += arpa/inet.h arpa/inet.h-t
 MOSTLYCLEANDIRS += arpa
+
+EXTRA_DIST += arpa_inet.in.h
 
 ## end   gnulib module arpa_inet
 
@@ -93,7 +102,7 @@ EXTRA_DIST += float.in.h
 ## begin gnulib module fseeko
 
 
-EXTRA_DIST += fseeko.c
+EXTRA_DIST += fseeko.c stdio-impl.h
 
 EXTRA_libgnu_la_SOURCES += fseeko.c
 
@@ -167,7 +176,7 @@ EXTRA_DIST += $(top_srcdir)/build-aux/config.rpath
 ## begin gnulib module inet_ntop
 
 
-EXTRA_DIST += inet_ntop.c inet_ntop.h
+EXTRA_DIST += inet_ntop.c
 
 EXTRA_libgnu_la_SOURCES += inet_ntop.c
 
@@ -433,17 +442,22 @@ stdlib.h: stdlib.in.h
 	      -e 's|@''GNULIB_MKDTEMP''@|$(GNULIB_MKDTEMP)|g' \
 	      -e 's|@''GNULIB_MKSTEMP''@|$(GNULIB_MKSTEMP)|g' \
 	      -e 's|@''GNULIB_PUTENV''@|$(GNULIB_PUTENV)|g' \
+	      -e 's|@''GNULIB_RPMATCH''@|$(GNULIB_RPMATCH)|g' \
 	      -e 's|@''GNULIB_SETENV''@|$(GNULIB_SETENV)|g' \
+	      -e 's|@''GNULIB_STRTOD''@|$(GNULIB_STRTOD)|g' \
 	      -e 's|@''GNULIB_UNSETENV''@|$(GNULIB_UNSETENV)|g' \
 	      -e 's|@''HAVE_CALLOC_POSIX''@|$(HAVE_CALLOC_POSIX)|g' \
 	      -e 's|@''HAVE_GETSUBOPT''@|$(HAVE_GETSUBOPT)|g' \
 	      -e 's|@''HAVE_MALLOC_POSIX''@|$(HAVE_MALLOC_POSIX)|g' \
 	      -e 's|@''HAVE_MKDTEMP''@|$(HAVE_MKDTEMP)|g' \
 	      -e 's|@''HAVE_REALLOC_POSIX''@|$(HAVE_REALLOC_POSIX)|g' \
+	      -e 's|@''HAVE_RPMATCH''@|$(HAVE_RPMATCH)|g' \
 	      -e 's|@''HAVE_SETENV''@|$(HAVE_SETENV)|g' \
+	      -e 's|@''HAVE_STRTOD''@|$(HAVE_STRTOD)|g' \
 	      -e 's|@''HAVE_UNSETENV''@|$(HAVE_UNSETENV)|g' \
 	      -e 's|@''REPLACE_MKSTEMP''@|$(REPLACE_MKSTEMP)|g' \
 	      -e 's|@''REPLACE_PUTENV''@|$(REPLACE_PUTENV)|g' \
+	      -e 's|@''REPLACE_STRTOD''@|$(REPLACE_STRTOD)|g' \
 	      -e 's|@''VOID_UNSETENV''@|$(VOID_UNSETENV)|g' \
 	      -e '/definition of GL_LINK_WARNING/r $(LINK_WARNING_H)' \
 	      < $(srcdir)/stdlib.in.h; \
@@ -492,6 +506,7 @@ string.h: string.in.h
 	      -e 's|@''GNULIB_MEMMEM''@|$(GNULIB_MEMMEM)|g' \
 	      -e 's|@''GNULIB_MEMPCPY''@|$(GNULIB_MEMPCPY)|g' \
 	      -e 's|@''GNULIB_MEMRCHR''@|$(GNULIB_MEMRCHR)|g' \
+	      -e 's|@''GNULIB_RAWMEMCHR''@|$(GNULIB_RAWMEMCHR)|g' \
 	      -e 's|@''GNULIB_STPCPY''@|$(GNULIB_STPCPY)|g' \
 	      -e 's|@''GNULIB_STPNCPY''@|$(GNULIB_STPNCPY)|g' \
 	      -e 's|@''GNULIB_STRCHRNUL''@|$(GNULIB_STRCHRNUL)|g' \
@@ -508,6 +523,7 @@ string.h: string.in.h
 	      -e 's|@''HAVE_DECL_MEMMEM''@|$(HAVE_DECL_MEMMEM)|g' \
 	      -e 's|@''HAVE_MEMPCPY''@|$(HAVE_MEMPCPY)|g' \
 	      -e 's|@''HAVE_DECL_MEMRCHR''@|$(HAVE_DECL_MEMRCHR)|g' \
+	      -e 's|@''HAVE_RAWMEMCHR''@|$(HAVE_RAWMEMCHR)|g' \
 	      -e 's|@''HAVE_STPCPY''@|$(HAVE_STPCPY)|g' \
 	      -e 's|@''HAVE_STPNCPY''@|$(HAVE_STPNCPY)|g' \
 	      -e 's|@''HAVE_STRCHRNUL''@|$(HAVE_STRCHRNUL)|g' \
@@ -631,9 +647,8 @@ sys/stat.h: sys_stat.in.h
 	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
 	  sed -e 's/@''INCLUDE_NEXT''@/$(INCLUDE_NEXT)/g' \
 	      -e 's|@''NEXT_SYS_STAT_H''@|$(NEXT_SYS_STAT_H)|g' \
-	      -e 's|@''HAVE_IO_H''@|$(HAVE_IO_H)|g' \
 	      -e 's|@''HAVE_LSTAT''@|$(HAVE_LSTAT)|g' \
-	      -e 's|@''HAVE_DECL_MKDIR''@|$(HAVE_DECL_MKDIR)|g' \
+	      -e 's|@''REPLACE_MKDIR''@|$(REPLACE_MKDIR)|g' \
 	      < $(srcdir)/sys_stat.in.h; \
 	} > $@-t
 	mv $@-t $@

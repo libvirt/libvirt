@@ -42,6 +42,14 @@ libtests_a_DEPENDENCIES = $(gltests_LIBOBJS)
 EXTRA_libtests_a_SOURCES =
 AM_LIBTOOLFLAGS = --preserve-dup-deps
 
+## begin gnulib module EOVERFLOW-tests
+
+TESTS += test-EOVERFLOW
+check_PROGRAMS += test-EOVERFLOW
+EXTRA_DIST += test-EOVERFLOW.c
+
+## end   gnulib module EOVERFLOW-tests
+
 ## begin gnulib module alloca-opt-tests
 
 TESTS += test-alloca-opt
@@ -73,6 +81,7 @@ EXTRA_DIST += test-fseeko.c test-fseeko.sh
 
 TESTS += test-getaddrinfo
 check_PROGRAMS += test-getaddrinfo
+test_getaddrinfo_LDADD = $(LDADD) @LIBINTL@
 
 EXTRA_DIST += test-getaddrinfo.c
 

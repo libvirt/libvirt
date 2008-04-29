@@ -1,8 +1,27 @@
-# gnulib-common.m4 serial 3
-dnl Copyright (C) 2007 Free Software Foundation, Inc.
+# gnulib-common.m4 serial 4
+dnl Copyright (C) 2007-2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
+
+# gl_COMMON
+# is expanded unconditionally through gnulib-tool magic.
+AC_DEFUN([gl_COMMON], [
+  dnl Use AC_REQUIRE here, so that the code is expanded once only.
+  AC_REQUIRE([gl_COMMON_BODY])
+])
+AC_DEFUN([gl_COMMON_BODY], [
+  AH_VERBATIM([isoc99_inline],
+[/* Work around a bug in Apple GCC 4.0.1 build 5465: In C99 mode, it supports
+   the ISO C 99 semantics of 'extern inline' (unlike the GNU C semantics of
+   earlier versions), but does not display it by setting __GNUC_STDC_INLINE__.
+   __APPLE__ && __MACH__ test for MacOS X.
+   __APPLE_CC__ tests for the Apple compiler and its version.
+   __STDC_VERSION__ tests for the C99 mode.  */
+#if defined __APPLE__ && defined __MACH__ && __APPLE_CC__ >= 5465 && !defined __cplusplus && __STDC_VERSION__ >= 199901L && !defined __GNUC_STDC_INLINE__
+# define __GNUC_STDC_INLINE__ 1
+#endif])
+])
 
 # gl_MODULE_INDICATOR([modulename])
 # defines a C macro indicating the presence of the given module.

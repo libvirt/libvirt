@@ -1,5 +1,5 @@
 /* getdelim.c --- Implementation of replacement getdelim function.
-   Copyright (C) 1994, 1996, 1997, 1998, 2001, 2003, 2005, 2006, 2007 Free
+   Copyright (C) 1994, 1996, 1997, 1998, 2001, 2003, 2005, 2006, 2007, 2008 Free
    Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or
@@ -40,11 +40,6 @@
 #if !HAVE_FUNLOCKFILE
 # undef funlockfile
 # define funlockfile(x) ((void) 0)
-#endif
-
-/* Some systems, like OSF/1 4.0 and Woe32, don't have EOVERFLOW.  */
-#ifndef EOVERFLOW
-# define EOVERFLOW E2BIG
 #endif
 
 /* Read up to (and including) a DELIMITER from FP into *LINEPTR (and

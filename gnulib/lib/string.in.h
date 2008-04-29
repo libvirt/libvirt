@@ -93,6 +93,22 @@ extern void *memrchr (void const *, int, size_t)
      memrchr (a, b, c))
 #endif
 
+/* Find the first occurrence of C in S.  More efficient than
+   memchr(S,C,N), at the expense of undefined behavior if C does not
+   occur within N bytes.  */
+#if @GNULIB_RAWMEMCHR@
+# if ! @HAVE_RAWMEMCHR@
+extern void *rawmemchr (void const *__s, int __c_in)
+  __attribute__ ((__pure__));
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef rawmemchr
+# define rawmemchr(a,b) \
+    (GL_LINK_WARNING ("rawmemchr is unportable - " \
+                      "use gnulib module rawmemchr for portability"), \
+     rawmemchr (a, b))
+#endif
+
 /* Copy SRC to DST, returning the address of the terminating '\0' in DST.  */
 #if @GNULIB_STPCPY@
 # if ! @HAVE_STPCPY@

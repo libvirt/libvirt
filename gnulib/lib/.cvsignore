@@ -5,6 +5,7 @@
 Makefile
 Makefile.in
 alloca.h
+arpa_inet.h
 float.h
 netinet_in.h
 poll.h

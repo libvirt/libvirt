@@ -1,6 +1,6 @@
 /* A substitute for ISO C99 <wchar.h>, for platforms that have issues.
 
-   Copyright (C) 2007 Free Software Foundation, Inc.
+   Copyright (C) 2007-2008 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as published by
@@ -25,6 +25,14 @@
  * For now, this just ensures proper prerequisite inclusion order and
  * the declaration of wcwidth().
  */
+
+#ifdef __need_mbstate_t
+/* Special invocation convention inside uClibc header files.  */
+
+#@INCLUDE_NEXT@ @NEXT_WCHAR_H@
+
+#else
+/* Normal invocation convention.  */
 
 #ifndef _GL_WCHAR_H
 
@@ -80,3 +88,4 @@ extern int wcwidth (int /* actually wchar_t */);
 
 #endif /* _GL_WCHAR_H */
 #endif /* _GL_WCHAR_H */
+#endif

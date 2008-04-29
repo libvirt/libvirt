@@ -117,11 +117,6 @@
 # include "fpucw.h"
 #endif
 
-/* Some systems, like OSF/1 4.0 and Woe32, don't have EOVERFLOW.  */
-#ifndef EOVERFLOW
-# define EOVERFLOW E2BIG
-#endif
-
 #if HAVE_WCHAR_T
 # if HAVE_WCSLEN
 #  define local_wcslen wcslen
@@ -182,10 +177,12 @@ local_wcslen (const wchar_t *s)
 # endif
 #else
   /* TCHAR_T is char.  */
-# /* Use snprintf if it exists under the name 'snprintf' or '_snprintf'.
+  /* Use snprintf if it exists under the name 'snprintf' or '_snprintf'.
      But don't use it on BeOS, since BeOS snprintf produces no output if the
-     size argument is >= 0x3000000.  */
-# if (HAVE_DECL__SNPRINTF || HAVE_SNPRINTF) && !defined __BEOS__
+     size argument is >= 0x3000000.
+     Also don't use it on Linux libc5, since there snprintf with size = 1
+     writes any output without bounds, like sprintf.  */
+# if (HAVE_DECL__SNPRINTF || HAVE_SNPRINTF) && !defined __BEOS__ && !(__GNU_LIBRARY__ == 1)
 #  define USE_SNPRINTF 1
 # else
 #  define USE_SNPRINTF 0
@@ -1306,9 +1303,9 @@ floorlog10l (long double x)
     }
   /* Now 0.95 <= z <= 1.01.  */
   z = 1 - z;
-  /* log(1-z) = - z - z^2/2 - z^3/3 - z^4/4 - ...
+  /* log2(1-z) = 1/log(2) * (- z - z^2/2 - z^3/3 - z^4/4 - ...)
      Four terms are enough to get an approximation with error < 10^-7.  */
-  l -= z * (1.0 + z * (0.5 + z * ((1.0 / 3) + z * 0.25)));
+  l -= 1.4426950408889634074 * z * (1.0 + z * (0.5 + z * ((1.0 / 3) + z * 0.25)));
   /* Finally multiply with log(2)/log(10), yields an approximation for
      log10(x).  */
   l *= 0.30102999566398119523;
@@ -1397,9 +1394,9 @@ floorlog10 (double x)
     }
   /* Now 0.95 <= z <= 1.01.  */
   z = 1 - z;
-  /* log(1-z) = - z - z^2/2 - z^3/3 - z^4/4 - ...
+  /* log2(1-z) = 1/log(2) * (- z - z^2/2 - z^3/3 - z^4/4 - ...)
      Four terms are enough to get an approximation with error < 10^-7.  */
-  l -= z * (1.0 + z * (0.5 + z * ((1.0 / 3) + z * 0.25)));
+  l -= 1.4426950408889634074 * z * (1.0 + z * (0.5 + z * ((1.0 / 3) + z * 0.25)));
   /* Finally multiply with log(2)/log(10), yields an approximation for
      log10(x).  */
   l *= 0.30102999566398119523;
@@ -1408,6 +1405,20 @@ floorlog10 (double x)
 }
 
 # endif
+
+/* Tests whether a string of digits consists of exactly PRECISION zeroes and
+   a single '1' digit.  */
+static int
+is_borderline (const char *digits, size_t precision)
+{
+  for (; precision > 0; precision--, digits++)
+    if (*digits != '0')
+      return 0;
+  if (*digits != '1')
+    return 0;
+  digits++;
+  return *digits == '\0';
+}
 
 #endif
 
@@ -2858,8 +2869,32 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 					  exponent += 1;
 					adjusted = 1;
 				      }
-
 				    /* Here ndigits = precision+1.  */
+				    if (is_borderline (digits, precision))
+				      {
+					/* Maybe the exponent guess was too high
+					   and a smaller exponent can be reached
+					   by turning a 10...0 into 9...9x.  */
+					char *digits2 =
+					  scale10_round_decimal_long_double (arg,
+									     (int)precision - exponent + 1);
+					if (digits2 == NULL)
+					  {
+					    free (digits);
+					    END_LONG_DOUBLE_ROUNDING ();
+					    goto out_of_memory;
+					  }
+					if (strlen (digits2) == precision + 1)
+					  {
+					    free (digits);
+					    digits = digits2;
+					    exponent -= 1;
+					  }
+					else
+					  free (digits2);
+				      }
+				    /* Here ndigits = precision+1.  */
+
 				    *p++ = digits[--ndigits];
 				    if ((flags & FLAG_ALT) || precision > 0)
 				      {
@@ -2969,6 +3004,30 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 					else
 					  exponent += 1;
 					adjusted = 1;
+				      }
+				    /* Here ndigits = precision.  */
+				    if (is_borderline (digits, precision - 1))
+				      {
+					/* Maybe the exponent guess was too high
+					   and a smaller exponent can be reached
+					   by turning a 10...0 into 9...9x.  */
+					char *digits2 =
+					  scale10_round_decimal_long_double (arg,
+									     (int)(precision - 1) - exponent + 1);
+					if (digits2 == NULL)
+					  {
+					    free (digits);
+					    END_LONG_DOUBLE_ROUNDING ();
+					    goto out_of_memory;
+					  }
+					if (strlen (digits2) == precision)
+					  {
+					    free (digits);
+					    digits = digits2;
+					    exponent -= 1;
+					  }
+					else
+					  free (digits2);
 				      }
 				    /* Here ndigits = precision.  */
 
@@ -3211,8 +3270,31 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 					  exponent += 1;
 					adjusted = 1;
 				      }
-
 				    /* Here ndigits = precision+1.  */
+				    if (is_borderline (digits, precision))
+				      {
+					/* Maybe the exponent guess was too high
+					   and a smaller exponent can be reached
+					   by turning a 10...0 into 9...9x.  */
+					char *digits2 =
+					  scale10_round_decimal_double (arg,
+									(int)precision - exponent + 1);
+					if (digits2 == NULL)
+					  {
+					    free (digits);
+					    goto out_of_memory;
+					  }
+					if (strlen (digits2) == precision + 1)
+					  {
+					    free (digits);
+					    digits = digits2;
+					    exponent -= 1;
+					  }
+					else
+					  free (digits2);
+				      }
+				    /* Here ndigits = precision+1.  */
+
 				    *p++ = digits[--ndigits];
 				    if ((flags & FLAG_ALT) || precision > 0)
 				      {
@@ -3335,6 +3417,29 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 					else
 					  exponent += 1;
 					adjusted = 1;
+				      }
+				    /* Here ndigits = precision.  */
+				    if (is_borderline (digits, precision - 1))
+				      {
+					/* Maybe the exponent guess was too high
+					   and a smaller exponent can be reached
+					   by turning a 10...0 into 9...9x.  */
+					char *digits2 =
+					  scale10_round_decimal_double (arg,
+									(int)(precision - 1) - exponent + 1);
+					if (digits2 == NULL)
+					  {
+					    free (digits);
+					    goto out_of_memory;
+					  }
+					if (strlen (digits2) == precision)
+					  {
+					    free (digits);
+					    digits = digits2;
+					    exponent -= 1;
+					  }
+					else
+					  free (digits2);
 				      }
 				    /* Here ndigits = precision.  */
 
@@ -3661,6 +3766,44 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		  }
 #endif
 
+		/* Decide whether to handle the precision ourselves.  */
+#if NEED_PRINTF_UNBOUNDED_PRECISION
+		switch (dp->conversion)
+		  {
+		  case 'd': case 'i': case 'u':
+		  case 'o':
+		  case 'x': case 'X': case 'p':
+		    prec_ourselves = has_precision && (precision > 0);
+		    break;
+		  default:
+		    prec_ourselves = 0;
+		    break;
+		  }
+#endif
+
+		/* Decide whether to perform the padding ourselves.  */
+#if !NEED_PRINTF_FLAG_LEFTADJUST && (!DCHAR_IS_TCHAR || ENABLE_UNISTDIO || NEED_PRINTF_FLAG_ZERO || NEED_PRINTF_UNBOUNDED_PRECISION)
+		switch (dp->conversion)
+		  {
+# if !DCHAR_IS_TCHAR || ENABLE_UNISTDIO
+		  /* If we need conversion from TCHAR_T[] to DCHAR_T[], we need
+		     to perform the padding after this conversion.  Functions
+		     with unistdio extensions perform the padding based on
+		     character count rather than element count.  */
+		  case 'c': case 's':
+# endif
+# if NEED_PRINTF_FLAG_ZERO
+		  case 'f': case 'F': case 'e': case 'E': case 'g': case 'G':
+		  case 'a': case 'A':
+# endif
+		    pad_ourselves = 1;
+		    break;
+		  default:
+		    pad_ourselves = prec_ourselves;
+		    break;
+		  }
+#endif
+
 #if !USE_SNPRINTF
 		/* Allocate a temporary buffer of sufficient size for calling
 		   sprintf.  */
@@ -3837,18 +3980,22 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		      abort ();
 		    }
 
+		  if (!pad_ourselves)
+		    {
 # if ENABLE_UNISTDIO
-		  /* Padding considers the number of characters, therefore the
-		     number of elements after padding may be
-		       > max (tmp_length, width)
-		     but is certainly
-		       <= tmp_length + width.  */
-		  tmp_length = xsum (tmp_length, width);
+		      /* Padding considers the number of characters, therefore
+			 the number of elements after padding may be
+			   > max (tmp_length, width)
+			 but is certainly
+			   <= tmp_length + width.  */
+		      tmp_length = xsum (tmp_length, width);
 # else
-		  /* Padding considers the number of elements, says POSIX.  */
-		  if (tmp_length < width)
-		    tmp_length = width;
+		      /* Padding considers the number of elements,
+			 says POSIX.  */
+		      if (tmp_length < width)
+			tmp_length = width;
 # endif
+		    }
 
 		  tmp_length = xsum (tmp_length, 1); /* account for trailing NUL */
 		}
@@ -3866,44 +4013,6 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		    if (tmp == NULL)
 		      /* Out of memory.  */
 		      goto out_of_memory;
-		  }
-#endif
-
-		/* Decide whether to handle the precision ourselves.  */
-#if NEED_PRINTF_UNBOUNDED_PRECISION
-		switch (dp->conversion)
-		  {
-		  case 'd': case 'i': case 'u':
-		  case 'o':
-		  case 'x': case 'X': case 'p':
-		    prec_ourselves = has_precision && (precision > 0);
-		    break;
-		  default:
-		    prec_ourselves = 0;
-		    break;
-		  }
-#endif
-
-		/* Decide whether to perform the padding ourselves.  */
-#if !NEED_PRINTF_FLAG_LEFTADJUST && (!DCHAR_IS_TCHAR || ENABLE_UNISTDIO || NEED_PRINTF_FLAG_ZERO || NEED_PRINTF_UNBOUNDED_PRECISION)
-		switch (dp->conversion)
-		  {
-# if !DCHAR_IS_TCHAR || ENABLE_UNISTDIO
-		  /* If we need conversion from TCHAR_T[] to DCHAR_T[], we need
-		     to perform the padding after this conversion.  Functions
-		     with unistdio extensions perform the padding based on
-		     character count rather than element count.  */
-		  case 'c': case 's':
-# endif
-# if NEED_PRINTF_FLAG_ZERO
-		  case 'f': case 'F': case 'e': case 'E': case 'g': case 'G':
-		  case 'a': case 'A':
-# endif
-		    pad_ourselves = 1;
-		    break;
-		  default:
-		    pad_ourselves = prec_ourselves;
-		    break;
 		  }
 #endif
 
@@ -4403,14 +4512,14 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		      }
 #endif
 
-#if !DCHAR_IS_TCHAR
-# if !USE_SNPRINTF
+#if !USE_SNPRINTF
 		    if (count >= tmp_length)
 		      /* tmp_length was incorrectly calculated - fix the
 			 code above!  */
 		      abort ();
-# endif
+#endif
 
+#if !DCHAR_IS_TCHAR
 		    /* Convert from TCHAR_T[] to DCHAR_T[].  */
 		    if (dp->conversion == 'c' || dp->conversion == 's')
 		      {
@@ -4528,7 +4637,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 			if (w < width)
 			  {
 			    size_t pad = width - w;
-# if USE_SNPRINTF
+
 			    /* Make room for the result.  */
 			    if (xsum (count, pad) > allocated - length)
 			      {
@@ -4538,12 +4647,16 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 				  xmax (xsum3 (length, count, pad),
 					xtimes (allocated, 2));
 
+# if USE_SNPRINTF
 				length += count;
 				ENSURE_ALLOCATION (n);
 				length -= count;
+# else
+				ENSURE_ALLOCATION (n);
+# endif
 			      }
 			    /* Here count + pad <= allocated - length.  */
-# endif
+
 			    {
 # if !DCHAR_IS_TCHAR || USE_SNPRINTF
 			      DCHAR_T * const rp = result + length;
@@ -4553,7 +4666,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 			      DCHAR_T *p = rp + count;
 			      DCHAR_T *end = p + pad;
 			      DCHAR_T *pad_ptr;
-# if !DCHAR_IS_TCHAR
+# if !DCHAR_IS_TCHAR || ENABLE_UNISTDIO
 			      if (dp->conversion == 'c'
 				  || dp->conversion == 's')
 				/* No zero-padding for string directives.  */
@@ -4602,13 +4715,6 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 			    }
 			  }
 		      }
-#endif
-
-#if DCHAR_IS_TCHAR && !USE_SNPRINTF
-		    if (count >= tmp_length)
-		      /* tmp_length was incorrectly calculated - fix the
-			 code above!  */
-		      abort ();
 #endif
 
 		    /* Here still count <= allocated - length.  */

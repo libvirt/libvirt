@@ -1,5 +1,6 @@
-/* Provide a sys/socket header file for systems lacking it (read: MinGW).
-   Copyright (C) 2005, 2006, 2007 Free Software Foundation, Inc.
+/* Provide a sys/socket header file for systems lacking it (read: MinGW)
+   and for systems where it is incomplete.
+   Copyright (C) 2005-2008 Free Software Foundation, Inc.
    Written by Simon Josefsson.
 
    This program is free software; you can redistribute it and/or modify
@@ -16,8 +17,9 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-/* This file is supposed to be used on platforms that lack <sys/socket.h>
-   and on platforms where <sys/socket.h> cannot be included standalone.
+/* This file is supposed to be used on platforms that lack <sys/socket.h>,
+   on platforms where <sys/socket.h> cannot be included standalone, and on
+   platforms where <sys/socket.h> does not provide all necessary definitions.
    It is intended to provide definitions and prototypes needed by an
    application.  */
 
@@ -37,7 +39,22 @@
 #ifndef _GL_SYS_SOCKET_H
 #define _GL_SYS_SOCKET_H
 
-#if !@HAVE_SYS_SOCKET_H@
+#if @HAVE_SYS_SOCKET_H@
+
+/* A platform that has <sys/socket.h>.  */
+
+/* For shutdown().  */
+# if !defined SHUT_RD
+#  define SHUT_RD 0
+# endif
+# if !defined SHUT_WR
+#  define SHUT_WR 1
+# endif
+# if !defined SHUT_RDWR
+#  define SHUT_RDWR 2
+# endif
+
+#else
 
 /* A platform that lacks <sys/socket.h>.
 
@@ -83,6 +100,16 @@
 #  define ECONNRESET              WSAECONNRESET
 #  define ENOTCONN                WSAENOTCONN
 #  define ESHUTDOWN               WSAESHUTDOWN
+# endif
+
+# if (defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__
+#  define setsockopt(a,b,c,d,e) rpl_setsockopt(a,b,c,d,e)
+static inline int
+rpl_setsockopt(int socket, int level, int optname, const void *optval,
+	       socklen_t optlen)
+{
+  return (setsockopt)(socket, level, optname, optval, optlen);
+}
 # endif
 
 #endif /* HAVE_SYS_SOCKET_H */

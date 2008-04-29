@@ -39,7 +39,9 @@ AC_DEFUN([gl_INIT],
   m4_pushdef([AC_LIBOBJ], m4_defn([gl_LIBOBJ]))
   m4_pushdef([AC_REPLACE_FUNCS], m4_defn([gl_REPLACE_FUNCS]))
   m4_pushdef([AC_LIBSOURCES], m4_defn([gl_LIBSOURCES]))
+  gl_COMMON
   gl_source_base='gnulib/lib'
+  gl_EOVERFLOW
   gl_FUNC_ALLOCA
   gl_HEADER_ARPA_INET
   AC_PROG_MKDIR_P
@@ -57,6 +59,7 @@ AC_DEFUN([gl_INIT],
   AC_SUBST([LIBINTL])
   AC_SUBST([LTLIBINTL])
   gl_INET_NTOP
+  gl_ARPA_INET_MODULE_INDICATOR([inet_ntop])
   gl_FUNC_LSEEK
   gl_UNISTD_MODULE_INDICATOR([lseek])
   gl_FUNC_MALLOC_POSIX
@@ -126,6 +129,7 @@ AC_DEFUN([gl_INIT],
   m4_pushdef([AC_LIBOBJ], m4_defn([gltests_LIBOBJ]))
   m4_pushdef([AC_REPLACE_FUNCS], m4_defn([gltests_REPLACE_FUNCS]))
   m4_pushdef([AC_LIBSOURCES], m4_defn([gltests_LIBSOURCES]))
+  gl_COMMON
   gl_source_base='gnulib/tests'
   gt_TYPE_WCHAR_T
   gt_TYPE_WINT_T
@@ -230,6 +234,7 @@ AC_DEFUN([gl_FILE_LIST], [
   build-aux/useless-if-before-free
   build-aux/vc-list-files
   lib/alloca.in.h
+  lib/arpa_inet.in.h
   lib/asnprintf.c
   lib/asprintf.c
   lib/dummy.c
@@ -245,7 +250,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/getpass.h
   lib/gettext.h
   lib/inet_ntop.c
-  lib/inet_ntop.h
   lib/lseek.c
   lib/malloc.c
   lib/netinet_in.in.h
@@ -262,6 +266,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/snprintf.c
   lib/stdbool.in.h
   lib/stdint.in.h
+  lib/stdio-impl.h
   lib/stdio.in.h
   lib/stdlib.in.h
   lib/strdup.c
@@ -316,12 +321,13 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/malloc.m4
   m4/netinet_in_h.m4
   m4/nls.m4
-  m4/onceonly_2_57.m4
+  m4/onceonly.m4
   m4/physmem.m4
   m4/po.m4
   m4/poll.m4
   m4/posix-shell.m4
   m4/printf-posix.m4
+  m4/printf.m4
   m4/progtest.m4
   m4/realloc.m4
   m4/size_max.m4
@@ -352,6 +358,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/wchar_t.m4
   m4/wint_t.m4
   m4/xsize.m4
+  tests/test-EOVERFLOW.c
   tests/test-alloca-opt.c
   tests/test-arpa_inet.c
   tests/test-fseeko.c

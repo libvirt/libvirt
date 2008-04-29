@@ -1,5 +1,5 @@
-# stdlib_h.m4 serial 5
-dnl Copyright (C) 2007 Free Software Foundation, Inc.
+# stdlib_h.m4 serial 7
+dnl Copyright (C) 2007, 2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -26,7 +26,9 @@ AC_DEFUN([gl_STDLIB_H_DEFAULTS],
   GNULIB_MKDTEMP=0;       AC_SUBST([GNULIB_MKDTEMP])
   GNULIB_MKSTEMP=0;       AC_SUBST([GNULIB_MKSTEMP])
   GNULIB_PUTENV=0;        AC_SUBST([GNULIB_PUTENV])
+  GNULIB_RPMATCH=0;       AC_SUBST([GNULIB_RPMATCH])
   GNULIB_SETENV=0;        AC_SUBST([GNULIB_SETENV])
+  GNULIB_STRTOD=0;        AC_SUBST([GNULIB_STRTOD])
   GNULIB_UNSETENV=0;      AC_SUBST([GNULIB_UNSETENV])
   dnl Assume proper GNU behavior unless another module says otherwise.
   HAVE_CALLOC_POSIX=1;    AC_SUBST([HAVE_CALLOC_POSIX])
@@ -34,9 +36,12 @@ AC_DEFUN([gl_STDLIB_H_DEFAULTS],
   HAVE_MALLOC_POSIX=1;    AC_SUBST([HAVE_MALLOC_POSIX])
   HAVE_MKDTEMP=1;         AC_SUBST([HAVE_MKDTEMP])
   HAVE_REALLOC_POSIX=1;   AC_SUBST([HAVE_REALLOC_POSIX])
+  HAVE_RPMATCH=1;         AC_SUBST([HAVE_RPMATCH])
   HAVE_SETENV=1;          AC_SUBST([HAVE_SETENV])
+  HAVE_STRTOD=1;          AC_SUBST([HAVE_STRTOD])
   HAVE_UNSETENV=1;        AC_SUBST([HAVE_UNSETENV])
   REPLACE_MKSTEMP=0;      AC_SUBST([REPLACE_MKSTEMP])
   REPLACE_PUTENV=0;       AC_SUBST([REPLACE_PUTENV])
+  REPLACE_STRTOD=0;       AC_SUBST([REPLACE_STRTOD])
   VOID_UNSETENV=0;        AC_SUBST([VOID_UNSETENV])
 ])

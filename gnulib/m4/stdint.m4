@@ -1,5 +1,5 @@
-# stdint.m4 serial 29
-dnl Copyright (C) 2001-2007 Free Software Foundation, Inc.
+# stdint.m4 serial 31
+dnl Copyright (C) 2001-2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -240,7 +240,7 @@ AC_DEFUN([gl_STDINT_BITSIZEOF],
   dnl - extra AH_TEMPLATE calls, so that autoheader knows what to put into
   dnl   config.h.in,
   dnl - extra AC_SUBST calls, so that the right substitutions are made.
-  AC_FOREACH([gltype], [$1],
+  m4_foreach_w([gltype], [$1],
     [AH_TEMPLATE([BITSIZEOF_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]),
        [Define to the number of bits in type ']gltype['.])])
   for gltype in $1 ; do
@@ -265,7 +265,7 @@ AC_DEFUN([gl_STDINT_BITSIZEOF],
     AC_DEFINE_UNQUOTED([BITSIZEOF_${GLTYPE}], [$result])
     eval BITSIZEOF_${GLTYPE}=\$result
   done
-  AC_FOREACH([gltype], [$1],
+  m4_foreach_w([gltype], [$1],
     [AC_SUBST([BITSIZEOF_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]))])
 ])
 
@@ -278,7 +278,7 @@ AC_DEFUN([gl_CHECK_TYPES_SIGNED],
   dnl - extra AH_TEMPLATE calls, so that autoheader knows what to put into
   dnl   config.h.in,
   dnl - extra AC_SUBST calls, so that the right substitutions are made.
-  AC_FOREACH([gltype], [$1],
+  m4_foreach_w([gltype], [$1],
     [AH_TEMPLATE([HAVE_SIGNED_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]),
        [Define to 1 if ']gltype[' is a signed integer type.])])
   for gltype in $1 ; do
@@ -298,7 +298,7 @@ AC_DEFUN([gl_CHECK_TYPES_SIGNED],
       eval HAVE_SIGNED_${GLTYPE}=0
     fi
   done
-  AC_FOREACH([gltype], [$1],
+  m4_foreach_w([gltype], [$1],
     [AC_SUBST([HAVE_SIGNED_]translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]))])
 ])
 
@@ -311,7 +311,7 @@ AC_DEFUN([gl_INTEGER_TYPE_SUFFIX],
   dnl - extra AH_TEMPLATE calls, so that autoheader knows what to put into
   dnl   config.h.in,
   dnl - extra AC_SUBST calls, so that the right substitutions are made.
-  AC_FOREACH([gltype], [$1],
+  m4_foreach_w([gltype], [$1],
     [AH_TEMPLATE(translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_])[_SUFFIX],
        [Define to l, ll, u, ul, ull, etc., as suitable for
         constants of type ']gltype['.])])
@@ -337,9 +337,9 @@ AC_DEFUN([gl_INTEGER_TYPE_SUFFIX],
            ui64)gltype1='unsigned __int64';;
          esac
          AC_COMPILE_IFELSE(
-           [AC_LANG_PROGRAM([$2
+           [AC_LANG_PROGRAM([$2[
               extern $gltype foo;
-              extern $gltype1 foo;])],
+              extern $gltype1 foo;]])],
            [eval gl_cv_type_${gltype}_suffix=\$glsuf])
          eval result=\$gl_cv_type_${gltype}_suffix
          test "$result" != no && break
@@ -350,7 +350,7 @@ AC_DEFUN([gl_INTEGER_TYPE_SUFFIX],
     eval ${GLTYPE}_SUFFIX=\$result
     AC_DEFINE_UNQUOTED([${GLTYPE}_SUFFIX], $result)
   done
-  AC_FOREACH([gltype], [$1],
+  m4_foreach_w([gltype], [$1],
     [AC_SUBST(translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_])[_SUFFIX])])
 ])
 

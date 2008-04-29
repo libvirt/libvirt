@@ -1,5 +1,5 @@
-# sys_socket_h.m4 serial 4
-dnl Copyright (C) 2005, 2006, 2007 Free Software Foundation, Inc.
+# sys_socket_h.m4 serial 6
+dnl Copyright (C) 2005-2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -8,18 +8,39 @@ dnl From Simon Josefsson.
 
 AC_DEFUN([gl_HEADER_SYS_SOCKET],
 [
+  AC_REQUIRE([AC_C_INLINE])
+
   AC_CACHE_CHECK([whether <sys/socket.h> is self-contained],
     [gl_cv_header_sys_socket_h_selfcontained],
     [
-      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <sys/socket.h>], [])],
+      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/socket.h>]], [[]])],
         [gl_cv_header_sys_socket_h_selfcontained=yes],
         [gl_cv_header_sys_socket_h_selfcontained=no])
     ])
   if test $gl_cv_header_sys_socket_h_selfcontained = yes; then
     SYS_SOCKET_H=''
+    dnl If the shutdown function exists, <sys/socket.h> should define
+    dnl SHUT_RD, SHUT_WR, SHUT_RDWR.
+    AC_CHECK_FUNCS([shutdown])
+    if test $ac_cv_func_shutdown = yes; then
+      AC_CACHE_CHECK([whether <sys/socket.h> defines the SHUT_* macros],
+        [gl_cv_header_sys_socket_h_shut],
+        [
+          AC_COMPILE_IFELSE(
+            [AC_LANG_PROGRAM([[#include <sys/socket.h>]],
+               [[int a[] = { SHUT_RD, SHUT_WR, SHUT_RDWR };]])],
+            [gl_cv_header_sys_socket_h_shut=yes],
+            [gl_cv_header_sys_socket_h_shut=no])
+        ])
+      if test $gl_cv_header_sys_socket_h_shut = no; then
+        SYS_SOCKET_H='sys/socket.h'
+      fi
+    fi
   else
     SYS_SOCKET_H='sys/socket.h'
-
+  fi
+  if test -n "$SYS_SOCKET_H"; then
+    dnl Check prerequisites of the <sys/socket.h> replacement.
     gl_CHECK_NEXT_HEADERS([sys/socket.h])
     if test $ac_cv_header_sys_socket_h = yes; then
       HAVE_SYS_SOCKET_H=1

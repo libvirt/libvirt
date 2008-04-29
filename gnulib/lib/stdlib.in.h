@@ -1,6 +1,6 @@
 /* A GNU-like <stdlib.h>.
 
-   Copyright (C) 1995, 2001-2004, 2006-2007 Free Software Foundation, Inc.
+   Copyright (C) 1995, 2001-2004, 2006-2008 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as published by
@@ -176,6 +176,21 @@ extern int putenv (char *string);
 #endif
 
 
+#if @GNULIB_RPMATCH@
+# if !@HAVE_RPMATCH@
+/* Test a user response to a question.
+   Return 1 if it is affirmative, 0 if it is negative, or -1 if not clear.  */
+extern int rpmatch (const char *response);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef rpmatch
+# define rpmatch(r) \
+    (GL_LINK_WARNING ("rpmatch is unportable - " \
+                      "use gnulib module rpmatch for portability"), \
+     rpmatch (r))
+#endif
+
+
 #if @GNULIB_SETENV@
 # if !@HAVE_SETENV@
 /* Set NAME to VALUE in the environment.
@@ -196,6 +211,23 @@ extern int setenv (const char *name, const char *value, int replace);
 /* Remove the variable NAME from the environment.  */
 extern int unsetenv (const char *name);
 # endif
+#endif
+
+
+#if @GNULIB_STRTOD@
+# if @REPLACE_STRTOD@
+#  define strtod rpl_strtod
+# endif
+# if !@HAVE_STRTOD@ || @REPLACE_STRTOD@
+ /* Parse a double from STRING, updating ENDP if appropriate.  */
+extern double strtod (const char *str, char **endp);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef strtod
+# define strtod(s, e)                           \
+    (GL_LINK_WARNING ("strtod is unportable - " \
+                      "use gnulib module strtod for portability"), \
+     strtod (s, e))
 #endif
 
 

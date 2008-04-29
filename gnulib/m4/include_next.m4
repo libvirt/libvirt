@@ -1,4 +1,4 @@
-# include_next.m4 serial 5
+# include_next.m4 serial 6
 dnl Copyright (C) 2006-2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -71,7 +71,7 @@ AC_DEFUN([gl_CHECK_NEXT_HEADERS],
   AC_REQUIRE([gl_INCLUDE_NEXT])
   AC_CHECK_HEADERS_ONCE([$1])
 
-  AC_FOREACH([gl_HEADER_NAME], [$1],
+  m4_foreach_w([gl_HEADER_NAME], [$1],
     [AS_VAR_PUSHDEF([gl_next_header],
 		    [gl_cv_next_]m4_quote(m4_defn([gl_HEADER_NAME])))
      if test $gl_cv_have_include_next = yes; then

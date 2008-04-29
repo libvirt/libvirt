@@ -1,5 +1,5 @@
 /* Formatted output to strings.
-   Copyright (C) 2004, 2006-2007 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2006-2008 Free Software Foundation, Inc.
    Written by Simon Josefsson and Paul Eggert.
 
    This program is free software; you can redistribute it and/or modify
@@ -28,11 +28,6 @@
 #include <string.h>
 
 #include "vasnprintf.h"
-
-/* Some systems, like OSF/1 4.0 and Woe32, don't have EOVERFLOW.  */
-#ifndef EOVERFLOW
-# define EOVERFLOW E2BIG
-#endif
 
 /* Print formatted output to string STR.  Similar to sprintf, but
    additional length SIZE limit how much is written into STR.  Returns

@@ -19,7 +19,7 @@
 
 #include <config.h>
 #include "getaddrinfo.h"
-#include "inet_ntop.h"
+#include <arpa/inet.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -54,9 +54,17 @@ int simple (char *host, char *service)
 
   if (res != 0)
     {
+      /* IRIX reports EAI_NONAME for "https".  Don't fail the test
+	 merely because of this.  */
+      if (res == EAI_NONAME)
+	return 0;
       /* Solaris reports EAI_SERVICE for "http" and "https".  Don't
          fail the test merely because of this.  */
       if (res == EAI_SERVICE)
+	return 0;
+      /* AIX reports EAI_NODATA for "https".  Don't fail the test
+	 merely because of this.  */
+      if (res == EAI_NODATA)
 	return 0;
 
       return 1;

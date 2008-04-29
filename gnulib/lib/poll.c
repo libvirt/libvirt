@@ -43,10 +43,6 @@
 #define INFTIM (-1)
 #endif
 
-#ifndef EOVERFLOW
-#define EOVERFLOW EINVAL
-#endif
-
 /* BeOS does not have MSG_PEEK.  */
 #ifndef MSG_PEEK
 #define MSG_PEEK 0
