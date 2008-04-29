@@ -3,6 +3,7 @@ Tue Apr 29 21:43:28 CEST 2008 Jim Meyering <meyering@redhat.com>
 	Fix build errors.
 	* proxy/Makefile.am (libvirt_proxy_LDADD): Add ../gnulib/lib/libgnu.la.
 	* gnulib/lib/arpa_inet.in.h: Add new file from gnulib.
+	* gnulib/tests/test-EOVERFLOW.c: Likewise.
 
 	update from gnulib
 	* gnulib/lib/inet_ntop.h: Remove file.
