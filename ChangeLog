@@ -15,6 +15,9 @@ Tue Apr 29 09:46:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 Tue Apr 29 15:20:12 CEST 2008 Jim Meyering <meyering@redhat.com>
 
+	also check for useless test-before-xmlFree
+	* Makefile.cfg (useless_free_options): Add --name=xmlFree.
+
 	Recognize more uses of strcmp.
 	* Makefile.maint (sc_prohibit_strcmp): Relax regexp.
 
