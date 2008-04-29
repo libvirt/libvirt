@@ -11,6 +11,7 @@ netinet_in.h
 poll.h
 stdbool.h
 stdint.h
+stdio-impl.h
 stdio.h
 stdlib.h
 string.h

@@ -24,3 +24,4 @@ test-unistd
 test-vasnprintf
 test-vasprintf
 test-wchar
+test-EOVERFLOW.c
