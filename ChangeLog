@@ -1,3 +1,8 @@
+Tue Apr 29 11:36:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/Makefile.am: Explicitly tell gcov to look in .libs for
+	coverage data files
+
 Tue Apr 29 10:10:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xen_internal.c: Fix array out of bounds access in parsing
