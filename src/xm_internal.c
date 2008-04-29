@@ -1657,10 +1657,8 @@ static int xenXMParseXMLDisk(xmlNodePtr node, int hvm, int xendConfigVersion, ch
     }
 
     if (target == NULL) {
-        if (source != NULL)
-            xmlFree(source);
-        if (device != NULL)
-            xmlFree(device);
+        xmlFree(source);
+        xmlFree(device);
         return (-1);
     }
 
@@ -1687,10 +1685,8 @@ static int xenXMParseXMLDisk(xmlNodePtr node, int hvm, int xendConfigVersion, ch
     }
 
     if (source == NULL && !cdrom) {
-        if (target != NULL)
-            xmlFree(target);
-        if (device != NULL)
-            xmlFree(device);
+        xmlFree(target);
+        xmlFree(device);
         return (-1);
     }
 
@@ -1765,8 +1761,7 @@ static int xenXMParseXMLDisk(xmlNodePtr node, int hvm, int xendConfigVersion, ch
     xmlFree(drvName);
     xmlFree(device);
     xmlFree(target);
-    if(source)
-        xmlFree(source);
+    xmlFree(source);
     *disk = buf;
 
     return (ret);
@@ -1877,14 +1872,10 @@ static char *xenXMParseXMLVif(virConnectPtr conn, xmlNodePtr node, int hvm) {
 
  cleanup:
     free(bridge);
-    if (mac != NULL)
-        xmlFree(mac);
-    if (source != NULL)
-        xmlFree(source);
-    if (script != NULL)
-        xmlFree(script);
-    if (ip != NULL)
-        xmlFree(ip);
+    xmlFree(mac);
+    xmlFree(source);
+    xmlFree(script);
+    xmlFree(ip);
 
     return buf;
 }
@@ -2164,8 +2155,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
                             strcat(val, ",vncdisplay=");
                             strcat(val, portstr);
                         }
-                        if (vncport)
-                            xmlFree(vncport);
+                        xmlFree(vncport);
                         if (vnclisten) {
                             strcat(val, ",vnclisten=");
                             strcat(val, (const char*)vnclisten);
@@ -2310,8 +2300,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
  error:
     if (conf)
         virConfFree(conf);
-    if (prop != NULL)
-        xmlFree(prop);
+    xmlFree(prop);
     xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
     if (doc != NULL)
@@ -2960,12 +2949,9 @@ xenXMAttachInterface(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm,
     goto cleanup;
 
  node_cleanup:
-    if (node_tmp)
-        xmlFree(node_tmp);
-    if (attr_node)
-        xmlFree(attr_node);
-    if (text_node)
-        xmlFree(text_node);
+    xmlFree(node_tmp);
+    xmlFree(attr_node);
+    xmlFree(text_node);
  cleanup:
     free(type);
     free(source);

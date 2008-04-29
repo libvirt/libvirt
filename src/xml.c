@@ -1341,16 +1341,11 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node,
     virBufferAddLit(buf, ")");
 
   cleanup:
-    if (drvType)
-        xmlFree(drvType);
-    if (drvName)
-        xmlFree(drvName);
-    if (device)
-        xmlFree(device);
-    if (target)
-        xmlFree(target);
-    if (source)
-        xmlFree(source);
+    xmlFree(drvType);
+    xmlFree(drvName);
+    xmlFree(device);
+    xmlFree(target);
+    xmlFree(source);
     return (ret);
 }
 
@@ -1466,14 +1461,10 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED,
     virBufferAddLit(buf, ")");
     ret = 0;
   error:
-    if (mac != NULL)
-        xmlFree(mac);
-    if (source != NULL)
-        xmlFree(source);
-    if (script != NULL)
-        xmlFree(script);
-    if (ip != NULL)
-        xmlFree(ip);
+    xmlFree(mac);
+    xmlFree(source);
+    xmlFree(script);
+    xmlFree(ip);
     return (ret);
 }
 
@@ -1953,8 +1944,7 @@ virDomainXMLDevID(virDomainPtr domain, const char *xmldesc, char *class,
   cleanup:
     if (xml != NULL)
         xmlFreeDoc(xml);
-    if (attr != NULL)
-        xmlFree(attr);
+    xmlFree(attr);
     return ret;
 }
 #endif /* WITH_XEN */

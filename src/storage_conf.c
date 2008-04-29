@@ -357,8 +357,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
 
  cleanup:
     free(uuid);
-    if (type)
-        xmlFree(type);
+    xmlFree(type);
     virStoragePoolDefFree(ret);
     return NULL;
 }

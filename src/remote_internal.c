@@ -434,9 +434,9 @@ doRemoteOpen (virConnectPtr conn,
     }
 
 #ifdef HAVE_XMLURI_QUERY_RAW
-    if (uri->query_raw) xmlFree (uri->query_raw);
+    xmlFree (uri->query_raw);
 #else
-    if (uri->query) xmlFree (uri->query);
+    xmlFree (uri->query);
 #endif
 
     if ((
@@ -464,10 +464,10 @@ doRemoteOpen (virConnectPtr conn,
             transport_str[-1] = '\0';
         }
         /* Remove the username, server name and port number. */
-        if (uri->user) xmlFree (uri->user);
+        xmlFree (uri->user);
         uri->user = 0;
 
-        if (uri->server) xmlFree (uri->server);
+        xmlFree (uri->server);
         uri->server = 0;
 
         uri->port = 0;

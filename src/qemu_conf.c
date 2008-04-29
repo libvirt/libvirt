@@ -680,14 +680,10 @@ static int qemudParseDiskXML(virConnectPtr conn,
     return 0;
 
  error:
-    if (type)
-        xmlFree(type);
-    if (target)
-        xmlFree(target);
-    if (source)
-        xmlFree(source);
-    if (device)
-        xmlFree(device);
+    xmlFree(type);
+    xmlFree(target);
+    xmlFree(source);
+    xmlFree(device);
     return -1;
 }
 
@@ -941,18 +937,12 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
     return 0;
 
  error:
-    if (network)
-        xmlFree(network);
-    if (address)
-        xmlFree(address);
-    if (port)
-        xmlFree(port);
-    if (ifname)
-        xmlFree(ifname);
-    if (script)
-        xmlFree(script);
-    if (bridge)
-        xmlFree(bridge);
+    xmlFree(network);
+    xmlFree(address);
+    xmlFree(port);
+    xmlFree(ifname);
+    xmlFree(script);
+    xmlFree(bridge);
     return -1;
 }
 
@@ -1334,18 +1324,14 @@ static int qemudParseInputXML(virConnectPtr conn,
             input->bus = QEMU_INPUT_BUS_USB;
     }
 
-    if (type)
-        xmlFree(type);
-    if (bus)
-        xmlFree(bus);
+    xmlFree(type);
+    xmlFree(bus);
 
     return 0;
 
  error:
-    if (type)
-        xmlFree(type);
-    if (bus)
-        xmlFree(bus);
+    xmlFree(type);
+    xmlFree(bus);
 
     return -1;
 }
@@ -2860,10 +2846,8 @@ static int qemudParseDhcpRangesXML(virConnectPtr conn,
             free(range);
         }
 
-        if (start)
-            xmlFree(start);
-        if (end)
-            xmlFree(end);
+        xmlFree(start);
+        xmlFree(end);
 
         cur = cur->next;
     }

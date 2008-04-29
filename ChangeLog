@@ -1,3 +1,15 @@
+Tue Apr 29 21:43:28 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	remove useless tests before xmlFree
+	* src/qemu_conf.c (qemudParseDiskXML, qemudParseInterfaceXML):
+	(qemudParseInputXML, qemudParseDhcpRangesXML):
+	* src/remote_internal.c (doRemoteOpen):
+	* src/storage_conf.c (virStoragePoolDefParseDoc):
+	* src/xm_internal.c (xenXMParseXMLDisk, xenXMParseXMLVif):
+	(xenXMParseXMLToConfig, xenXMAttachInterface):
+	* src/xml.c (virDomainParseXMLDiskDesc, virDomainParseXMLIfDesc):
+	(virDomainXMLDevID):
+
 Tue Apr 29 11:36:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/Makefile.am: Explicitly tell gcov to look in .libs for
