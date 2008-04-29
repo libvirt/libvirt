@@ -1,3 +1,9 @@
+Tue Apr 29 09:15:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/parthelper.c: Don't fail if PED_PARTITION_PROTECTED
+	  is not defined because of ancient libparted
+	  (Soren Hansen).
+
 Mon Apr 28 17:24:22 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/memory.h, src/memory.c: Added safer APIs for dealing

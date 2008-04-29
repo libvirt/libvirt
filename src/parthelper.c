@@ -67,8 +67,10 @@ int main(int argc, char **argv)
                 content = "free";
             else if (part->type & PED_PARTITION_METADATA)
                 content = "metadata";
+#ifdef PED_PARTITION_PROTECTED
             else if (part->type & PED_PARTITION_PROTECTED)
                 content = "protected";
+#endif
             else
                 content = "data";
         } else if (part->type == PED_PARTITION_EXTENDED) {
@@ -80,8 +82,10 @@ int main(int argc, char **argv)
                 content = "free";
             else if (part->type & PED_PARTITION_METADATA)
                 content = "metadata";
+#ifdef PED_PARTITION_PROTECTED
             else if (part->type & PED_PARTITION_PROTECTED)
                 content = "protected";
+#endif
             else
                 content = "data";
         }
