@@ -148,16 +148,18 @@ EXTRA_DIST += parthelper.c
 endif
 
 cov: clean-cov
-	for i in $(CLIENT_SOURCES); do			\
-	  case $$i in *.c) ;; *) continue;; esac;	\
-	  b=$$(basename $$i .c);			\
-	  o_files=;					\
-	  for i in '' _test; do				\
+	for i in $(CLIENT_SOURCES); do			        \
+	  case $$i in *.c) ;; *) continue;; esac;	        \
+	  b=$$(basename $$i .c);			        \
+	  o_files=;					        \
+	  for i in '' _test; do				        \
+	    g="$(LV_LIBTOOL_OBJDIR)/libvirt$${i}_la-$$b.gcda";	\
 	    o="$(LV_LIBTOOL_OBJDIR)/libvirt$${i}_la-$$b.o";	\
-	    test -f "$$o"				\
-	      && o_files="$$o_files $$o";		\
-	  done;						\
-	  gcov -b -f $$o_files > $$b.cov;		\
+	    test -f "$$o" -a -f "$$g"				\
+	      && o_files="$$o_files $$o";		        \
+	  done;						        \
+	  test -n "$$o_files"                                   \
+              && gcov -o $(LV_LIBTOOL_OBJDIR) -b -f $$o_files > $$b.cov;	\
 	done
 
 clean-cov:
