@@ -35,6 +35,12 @@
 #include <parted/parted.h>
 #include <stdio.h>
 
+/* Make the comparisons below fail if your parted headers
+   are so old that they lack the definition.  */
+#ifndef PED_PARTITION_PROTECTED
+# define PED_PARTITION_PROTECTED 0
+#endif
+
 int main(int argc, char **argv)
 {
     PedDevice *dev;
@@ -67,10 +73,8 @@ int main(int argc, char **argv)
                 content = "free";
             else if (part->type & PED_PARTITION_METADATA)
                 content = "metadata";
-#ifdef PED_PARTITION_PROTECTED
             else if (part->type & PED_PARTITION_PROTECTED)
                 content = "protected";
-#endif
             else
                 content = "data";
         } else if (part->type == PED_PARTITION_EXTENDED) {
@@ -82,10 +86,8 @@ int main(int argc, char **argv)
                 content = "free";
             else if (part->type & PED_PARTITION_METADATA)
                 content = "metadata";
-#ifdef PED_PARTITION_PROTECTED
             else if (part->type & PED_PARTITION_PROTECTED)
                 content = "protected";
-#endif
             else
                 content = "data";
         }

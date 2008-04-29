@@ -1,3 +1,9 @@
+Tue Apr 29 15:20:12 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	Avoid in-function #if directives.
+	* src/parthelper.c [!PED_PARTITION_PROTECTED]: Define to 0.
+	Remove in-function #ifdefs.
+
 Tue Apr 29 09:15:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/parthelper.c: Don't fail if PED_PARTITION_PROTECTED
