@@ -1,3 +1,8 @@
+Tue Apr 29 10:10:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xen_internal.c: Fix array out of bounds access in parsing
+	capabilities data from Xen
+
 Tue Apr 29 10:06:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* docs/formatnetwork.html, docs/formatnetwork.html.in: Added

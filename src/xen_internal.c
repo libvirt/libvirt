@@ -2349,28 +2349,31 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn,
 
             if (regexec (&xen_cap_rec, token, sizeof subs / sizeof subs[0],
                          subs, 0) == 0) {
-                int hvm = strncmp (&token[subs[1].rm_so], "hvm", 3) == 0;
+                int hvm = STRPREFIX(&token[subs[1].rm_so], "hvm");
                 const char *model;
                 int bits, pae = 0, nonpae = 0, ia64_be = 0;
-                if (strncmp (&token[subs[2].rm_so], "x86_32", 6) == 0) {
+
+                if (STRPREFIX(&token[subs[2].rm_so], "x86_32")) {
                     model = "i686";
                     bits = 32;
-                    if (strncmp (&token[subs[3].rm_so], "p", 1) == 0)
+                    if (subs[3].rm_so != -1 &&
+                        STRPREFIX(&token[subs[3].rm_so], "p"))
                         pae = 1;
                     else
                         nonpae = 1;
                 }
-                else if (strncmp (&token[subs[2].rm_so], "x86_64", 6) == 0) {
+                else if (STRPREFIX(&token[subs[2].rm_so], "x86_64")) {
                     model = "x86_64";
                     bits = 64;
                 }
-                else if (strncmp (&token[subs[2].rm_so], "ia64", 4) == 0) {
+                else if (STRPREFIX(&token[subs[2].rm_so], "ia64")) {
                     model = "ia64";
                     bits = 64;
-                    if (strncmp (&token[subs[3].rm_so], "be", 2) == 0)
+                    if (subs[3].rm_so != -1 &&
+                        STRPREFIX(&token[subs[3].rm_so], "be"))
                         ia64_be = 1;
                 }
-                else if (strncmp (&token[subs[2].rm_so], "powerpc64", 4) == 0) {
+                else if (STRPREFIX(&token[subs[2].rm_so], "powerpc64")) {
                     model = "ppc64";
                     bits = 64;
                 } else {
@@ -2380,7 +2383,7 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn,
 
                 /* Search for existing matching (model,hvm) tuple */
                 for (i = 0 ; i < nr_guest_archs ; i++) {
-                    if (!strcmp(guest_archs[i].model, model) &&
+                    if (STREQ(guest_archs[i].model, model) &&
                         guest_archs[i].hvm == hvm) {
                         break;
                     }
