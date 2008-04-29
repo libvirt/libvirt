@@ -1,5 +1,9 @@
 Tue Apr 29 15:20:12 CEST 2008 Jim Meyering <meyering@redhat.com>
 
+	Avoid "make syntax-check" failures.
+	* src/memory.c: Include "config.h".
+	Remove trailing blanks.
+
 	Avoid in-function #if directives.
 	* src/parthelper.c [!PED_PARTITION_PROTECTED]: Define to 0.
 	Remove in-function #ifdefs.

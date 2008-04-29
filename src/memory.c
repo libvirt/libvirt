@@ -19,6 +19,7 @@
  *
  */
 
+#include <config.h>
 #include <stdlib.h>
 
 #include "memory.h"
@@ -72,7 +73,7 @@ int virAlloc(void *ptrptr, size_t size)
  * @size: number of bytes to allocate
  * @count: number of elements to allocate
  *
- * Allocate an array of memory 'count' elements long, 
+ * Allocate an array of memory 'count' elements long,
  * each with 'size' bytes. Return the address of the
  * allocated memory in 'ptrptr'.  The newly allocated
  * memory is filled with zeros.
@@ -101,7 +102,7 @@ int virAllocN(void *ptrptr, size_t size, size_t count)
  * Resize the block of memory in 'ptrptr' to be an array of
  * 'count' elements, each 'size' bytes in length. Update 'ptrptr'
  * with the address of the newly allocated memory. On failure,
- * 'ptrptr' is not changed and still points to the original memory 
+ * 'ptrptr' is not changed and still points to the original memory
  * block. The newly allocated memory is filled with zeros.
  *
  * Returns -1 on failure to allocate, zero on success
