@@ -1,3 +1,8 @@
+Tue Apr 29 10:06:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* docs/formatnetwork.html, docs/formatnetwork.html.in: Added
+	docs on XML format for networks
+
 Tue Apr 29 09:46:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/hash.c: remove bogus test code accidentally added in
