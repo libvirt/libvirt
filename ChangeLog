@@ -1,3 +1,8 @@
+Tue Apr 29 12:32:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: Remove compatability macros AC_CHECK_*_ONCE for
+	now part of onceonly.m4 in gnulib/m4/
+
 Wed Apr 29 18:10:00 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	update from gnulib, again
