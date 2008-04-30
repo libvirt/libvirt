@@ -845,6 +845,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
         while (list) {
             int type = -1;
             char script[PATH_MAX];
+            char model[10];
             char ip[16];
             char mac[18];
             char bridge[50];
@@ -854,6 +855,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             mac[0] = '\0';
             script[0] = '\0';
             ip[0] = '\0';
+            model[0] = '\0';
 
             if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
                 goto skipnic;
@@ -886,6 +888,12 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                         len = PATH_MAX-1;
                     strncpy(script, data, len);
                     script[len] = '\0';
+                } else if (!strncmp(key, "model=", 6)) {
+                    int len = nextkey ? (nextkey - data) : sizeof(model)-1;
+                    if (len > (sizeof(model)-1))
+                        len = sizeof(model)-1;
+                    strncpy(model, data, len);
+                    model[len] = '\0';
                 } else if (!strncmp(key, "ip=", 3)) {
                     int len = nextkey ? (nextkey - data) : 15;
                     if (len > 15)
@@ -915,6 +923,8 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 virBufferVSprintf(&buf, "      <script path='%s'/>\n", script);
             if (ip[0])
                 virBufferVSprintf(&buf, "      <ip address='%s'/>\n", ip);
+            if (model[0])
+                virBufferVSprintf(&buf, "      <model type='%s'/>\n", model);
             virBufferAddLit(&buf, "    </interface>\n");
 
         skipnic:
@@ -1772,6 +1782,7 @@ static char *xenXMParseXMLVif(virConnectPtr conn, xmlNodePtr node, int hvm) {
     xmlChar *source = NULL;
     xmlChar *mac = NULL;
     xmlChar *script = NULL;
+    xmlChar *model = NULL;
     xmlChar *ip = NULL;
     int typ = 0;
     char *buf = NULL;
@@ -1803,6 +1814,9 @@ static char *xenXMParseXMLVif(virConnectPtr conn, xmlNodePtr node, int hvm) {
             } else if ((mac == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "mac"))) {
                 mac = xmlGetProp(cur, BAD_CAST "address");
+            } else if ((model == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "model"))) {
+                model = xmlGetProp(cur, BAD_CAST "type");
             } else if ((ip == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "ip"))) {
                 ip = xmlGetProp(cur, BAD_CAST "address");
@@ -1838,6 +1852,8 @@ static char *xenXMParseXMLVif(virConnectPtr conn, xmlNodePtr node, int hvm) {
         buflen += 11;
     if (script)
         buflen += 8 + strlen((const char*)script);
+    if (model)
+        buflen += 7 + strlen((const char*)model);
     if (ip)
         buflen += 4 + strlen((const char*)ip);
 
@@ -1865,6 +1881,10 @@ static char *xenXMParseXMLVif(virConnectPtr conn, xmlNodePtr node, int hvm) {
         strcat(buf, ",script=");
         strcat(buf, (const char*)script);
     }
+    if (model) {
+        strcat(buf, ",model=");
+        strcat(buf, (const char*)model);
+    }
     if (ip) {
         strcat(buf, ",ip=");
         strcat(buf, (const char*)ip);
@@ -1876,6 +1896,7 @@ static char *xenXMParseXMLVif(virConnectPtr conn, xmlNodePtr node, int hvm) {
     xmlFree(source);
     xmlFree(script);
     xmlFree(ip);
+    xmlFree(model);
 
     return buf;
 }

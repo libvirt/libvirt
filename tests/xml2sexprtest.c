@@ -123,6 +123,7 @@ main(int argc, char **argv)
     DO_TEST("curmem", "curmem", "rhel5", 2);
     DO_TEST("net-routed", "net-routed", "pvtest", 2);
     DO_TEST("net-bridged", "net-bridged", "pvtest", 2);
+    DO_TEST("net-e1000", "net-e1000", "pvtest", 2);
     DO_TEST("no-source-cdrom", "no-source-cdrom", "test", 2);
 
     DO_TEST("fv-utc", "fv-utc", "fvtest", 1);

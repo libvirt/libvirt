@@ -109,6 +109,7 @@ main(int argc, char **argv)
     DO_TEST("misc-acpi");
     DO_TEST("misc-no-reboot");
     DO_TEST("net-user");
+    DO_TEST("net-virtio");
 
     DO_TEST("serial-vc");
     DO_TEST("serial-pty");

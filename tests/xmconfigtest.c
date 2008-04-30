@@ -202,6 +202,7 @@ main(int argc, char **argv)
 
     DO_TEST("paravirt-old-pvfb", 2);
     DO_TEST("paravirt-new-pvfb", 3);
+    DO_TEST("paravirt-net-e1000", 3);
     DO_TEST("fullvirt-old-cdrom", 1);
     DO_TEST("fullvirt-new-cdrom", 2);
     DO_TEST("fullvirt-utc", 2);

@@ -1,3 +1,17 @@
+Tue Apr 29 08:13:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c, src/qemu_conf.h, src/xend_internal.c,
+	src/xm_internal.c, src/xml.c: Added support for network
+	interface model type setting
+	* tests/qemuxml2argvtest.c, tests/qemuxml2xmltest.c,
+	tests/sexpr2xmltest.c, tests/xmconfigtest.c,
+	tests/xml2sexprtest.c: Added test cases for NIC model type
+	* tests/qemuxml2argvdata/qemuxml2argv-net-virtio.{xml,args},
+	tests/sexpr2xmldata/sexpr2xml-net-e1000.{sexpr,xml},
+	tests/xml2sexprdata/xml2sexpr-net-e1000.{sexpr,xml},
+	tests/xmconfigdata/test-paravirt-net-e1000.{cfg,xml}: Added
+	new data files for test cases
+
 Tue Apr 29 21:43:28 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	Fix build errors.

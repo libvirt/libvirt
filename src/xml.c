@@ -1373,6 +1373,7 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED,
     xmlChar *source = NULL;
     xmlChar *mac = NULL;
     xmlChar *script = NULL;
+    xmlChar *model = NULL;
     xmlChar *ip = NULL;
     int typ = 0;
     int ret = -1;
@@ -1404,6 +1405,9 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED,
             } else if ((script == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "script"))) {
                 script = xmlGetProp(cur, BAD_CAST "path");
+            } else if ((model == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "model"))) {
+                model = xmlGetProp(cur, BAD_CAST "type");
             } else if ((ip == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "ip"))) {
                 /* XXX in future expect to need to have > 1 ip
@@ -1449,6 +1453,8 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
     if (script != NULL)
         virBufferVSprintf(buf, "(script '%s')", script);
+    if (model != NULL)
+        virBufferVSprintf(buf, "(model '%s')", model);
     if (ip != NULL)
         virBufferVSprintf(buf, "(ip '%s')", ip);
     /*
@@ -1465,6 +1471,7 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED,
     xmlFree(source);
     xmlFree(script);
     xmlFree(ip);
+    xmlFree(model);
     return (ret);
 }
 

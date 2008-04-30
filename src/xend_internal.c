@@ -1893,9 +1893,10 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
             free(drvName);
             free(drvType);
         } else if (sexpr_lookup(node, "device/vif")) {
-            const char *tmp2;
+            const char *tmp2, *model;
             tmp2 = sexpr_node(node, "device/vif/script");
             tmp = sexpr_node(node, "device/vif/bridge");
+            model = sexpr_node(node, "device/vif/model");
             if ((tmp2 && strstr(tmp2, "bridge")) || tmp) {
                 virBufferAddLit(&buf, "    <interface type='bridge'>\n");
                 if (tmp != NULL)
@@ -1923,6 +1924,10 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
             if (tmp2)
                 virBufferVSprintf(&buf, "      <script path='%s'/>\n",
                                   tmp2);
+
+            if (model)
+                virBufferVSprintf(&buf, "      <model type='%s'/>\n",
+                                  model);
 
             virBufferAddLit(&buf, "    </interface>\n");
             vif_index++;

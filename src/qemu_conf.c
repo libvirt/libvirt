@@ -714,6 +714,7 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
     xmlChar *script = NULL;
     xmlChar *address = NULL;
     xmlChar *port = NULL;
+    xmlChar *model = NULL;
 
     net->type = QEMUD_NET_USER;
 
@@ -775,6 +776,8 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
                        (net->type == QEMUD_NET_ETHERNET) &&
                        xmlStrEqual(cur->name, BAD_CAST "script")) {
                 script = xmlGetProp(cur, BAD_CAST "path");
+            } else if (xmlStrEqual (cur->name, BAD_CAST "model")) {
+                model = xmlGetProp (cur, BAD_CAST "type");
             }
         }
         cur = cur->next;
@@ -934,6 +937,39 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
         xmlFree(address);
     }
 
+    /* NIC model (see -net nic,model=?).  We only check that it looks
+     * reasonable, not that it is a supported NIC type.  FWIW kvm
+     * supports these types as of April 2008:
+     * i82551 i82557b i82559er ne2k_pci pcnet rtl8139 e1000 virtio
+     */
+    if (model != NULL) {
+        int i, len, char_ok;
+
+        len = xmlStrlen (model);
+        if (len >= QEMUD_MODEL_MAX_LEN) {
+            qemudReportError (conn, NULL, NULL, VIR_ERR_INVALID_ARG,
+                              _("Model name '%s' is too long"), model);
+            goto error;
+        }
+        for (i = 0; i < len; ++i) {
+            char_ok =
+                (model[i] >= '0' && model[i] <= '9') ||
+                (model[i] >= 'a' && model[i] <= 'z') ||
+                (model[i] >= 'A' && model[i] <= 'Z') || model[i] == '_';
+            if (!char_ok) {
+                qemudReportError (conn, NULL, NULL, VIR_ERR_INVALID_ARG,
+                                  _("Model name contains invalid characters"));
+                goto error;
+            }
+        }
+        strncpy (net->model, (const char*) model, len);
+        net->model[len] = '\0';
+
+        xmlFree (model);
+        model = NULL;
+    } else
+        net->model[0] = '\0';
+
     return 0;
 
  error:
@@ -943,6 +979,7 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
     xmlFree(ifname);
     xmlFree(script);
     xmlFree(bridge);
+    xmlFree(model);
     return -1;
 }
 
@@ -2271,11 +2308,13 @@ int qemudBuildCommandLine(virConnectPtr conn,
         while (net) {
             char nic[100];
 
-            if (snprintf(nic, sizeof(nic), "nic,macaddr=%02x:%02x:%02x:%02x:%02x:%02x,vlan=%d",
+            if (snprintf(nic, sizeof(nic),
+                         "nic,macaddr=%02x:%02x:%02x:%02x:%02x:%02x,vlan=%d%s%s",
                          net->mac[0], net->mac[1],
                          net->mac[2], net->mac[3],
                          net->mac[4], net->mac[5],
-                         vlan) >= sizeof(nic))
+                         vlan,
+                         (net->model[0] ? ",model=" : ""), net->model) >= sizeof(nic))
                 goto error;
 
             if (!((*argv)[++n] = strdup("-net")))
@@ -3395,7 +3434,6 @@ static int qemudGenerateXMLChar(virBufferPtr buf,
             virBufferVSprintf(buf, "      <source mode='connect' service='%s'/>\n",
                               dev->srcData.udp.connectService);
         }
-
         break;
 
     case QEMUD_CHR_SRC_TYPE_TCP:
@@ -3607,6 +3645,11 @@ char *qemudGenerateXML(virConnectPtr conn,
             else
                 virBufferVSprintf(&buf, "      <source port='%d'/>\n",
                                   net->dst.socket.port);
+        }
+
+        if (net->model && net->model[0] != '\0') {
+            virBufferVSprintf(&buf, "      <model type='%s'/>\n",
+                              net->model);
         }
 
         virBufferAddLit(&buf, "    </interface>\n");

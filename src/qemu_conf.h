@@ -68,6 +68,7 @@ struct qemud_vm_disk_def {
 };
 
 #define QEMUD_MAC_ADDRESS_LEN 6
+#define QEMUD_MODEL_MAX_LEN 10
 #define QEMUD_OS_TYPE_MAX_LEN 10
 #define QEMUD_OS_ARCH_MAX_LEN 10
 #define QEMUD_OS_MACHINE_MAX_LEN 10
@@ -97,6 +98,7 @@ enum qemud_vm_net_forward_type {
 struct qemud_vm_net_def {
     int type;
     unsigned char mac[QEMUD_MAC_ADDRESS_LEN];
+    char model[QEMUD_MODEL_MAX_LEN];
     union {
         struct {
             char ifname[BR_IFNAME_MAXLEN];

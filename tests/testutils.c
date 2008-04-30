@@ -23,6 +23,7 @@
 #include <fcntl.h>
 #include <limits.h>
 #include "testutils.h"
+#include "internal.h"
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
@@ -231,23 +232,27 @@ int virtTestDifference(FILE *stream,
     const char *expectEnd = expect + (strlen(expect)-1);
     const char *actualStart = actual;
     const char *actualEnd = actual + (strlen(actual)-1);
+    const char *debug;
 
-    if (getenv("DEBUG_TESTS") == NULL)
+    if ((debug = getenv("DEBUG_TESTS")) == NULL)
         return 0;
 
-    /* Skip to first character where they differ */
-    while (*expectStart && *actualStart &&
-           *actualStart == *expectStart) {
-        actualStart++;
-        expectStart++;
-    }
+    if (STREQ(debug, "") ||
+        STREQ(debug, "1")) {
+        /* Skip to first character where they differ */
+        while (*expectStart && *actualStart &&
+               *actualStart == *expectStart) {
+            actualStart++;
+            expectStart++;
+        }
 
-    /* Work backwards to last character where they differ */
-    while (actualEnd > actualStart &&
-           expectEnd > expectStart &&
-           *actualEnd == *expectEnd) {
-        actualEnd--;
-        expectEnd--;
+        /* Work backwards to last character where they differ */
+        while (actualEnd > actualStart &&
+               expectEnd > expectStart &&
+               *actualEnd == *expectEnd) {
+            actualEnd--;
+            expectEnd--;
+        }
     }
 
     /* Show the trimmed differences */
