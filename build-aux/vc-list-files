@@ -2,7 +2,7 @@
 # List version-controlled file names.
 
 # Print a version string.
-scriptversion=2008-04-03.17
+scriptversion=2008-04-30.12
 
 # Copyright (C) 2006-2008 Free Software Foundation, Inc.
 
@@ -76,6 +76,7 @@ if test -d .git; then
 elif test -d .hg; then
   eval exec hg locate '"$dir/*"' $postprocess
 elif test -d CVS; then
+  test "$postprocess" = '' && postprocess="| sed 's|^\./||'"
   if test -x build-aux/cvsu; then
     eval build-aux/cvsu --find --types=AFGM '"$dir"' $postprocess
   elif (cvsu --help) >/dev/null 2>&1; then
@@ -87,7 +88,7 @@ elif test -d CVS; then
 	  sub(/CVS\/Entries/, "", f);	\
 	  print f $2;			\
 	}}'\''				\
-      $(find ${*-*} -name Entries -print) /dev/null' $postprocess
+      $(find "$dir" -name Entries -print) /dev/null' $postprocess
   fi
 else
   echo "$0: Failed to determine type of version control used in `pwd`" 1>&2

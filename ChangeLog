@@ -1,3 +1,14 @@
+Wed Apr 29 18:10:00 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	update from gnulib, again
+	* gnulib/m4/onceonly.m4: New file.
+	* gnulib/m4/printf.m4: New file.
+	* build-aux/useless-if-before-free: Update.
+	* build-aux/vc-list-files: Update.
+	* gnulib/lib/arpa_inet.in.h: Update.
+	* gnulib/lib/stdio-impl.h: Update.
+	* gnulib/m4/inet_ntop.m4: Update.
+
 Tue Apr 29 11:54:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: Add compatability macros AC_CHECK_*_ONCE for
