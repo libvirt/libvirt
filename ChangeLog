@@ -1,3 +1,8 @@
+Tue Apr 29 11:54:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: Add compatability macros AC_CHECK_*_ONCE for
+	older autoconf (RHEL-5 vintage)
+
 Tue Apr 29 08:13:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c, src/qemu_conf.h, src/xend_internal.c,

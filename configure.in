@@ -41,6 +41,17 @@ m4_ifndef([m4_foreach_w],
   [m4_define([m4_foreach_w],
     [m4_foreach([$1], m4_split(m4_normalize([$2]), [ ]), [$3])])])
 
+dnl Compatability macros for RHEL-5 era autoconf
+m4_ifndef([AC_CHECK_HEADERS_ONCE],
+  [m4_define([AC_CHECK_HEADERS_ONCE],
+    [AC_CHECK_HEADERS([$1])])])
+m4_ifndef([AC_CHECK_DECLS_ONCE],
+  [m4_define([AC_CHECK_DECLS_ONCE],
+    [AC_CHECK_DECLS([$1])])])
+m4_ifndef([AC_CHECK_FUNCS_ONCE],
+  [m4_define([AC_CHECK_FUNCS_ONCE],
+    [AC_CHECK_FUNCS([$1])])])
+
 gl_EARLY
 gl_INIT
 
