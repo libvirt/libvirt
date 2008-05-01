@@ -439,13 +439,12 @@ doRemoteOpen (virConnectPtr conn,
     xmlFree (uri->query);
 #endif
 
-    if ((
 #ifdef HAVE_XMLURI_QUERY_RAW
-         uri->query_raw =
+    uri->query_raw =
 #else
-         uri->query =
+    uri->query =
 #endif
-         qparam_get_query (vars)) == NULL) goto failed;
+         qparam_get_query (vars);
 
     free_qparam_set (vars);
 
