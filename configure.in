@@ -217,7 +217,7 @@ if test x"$LOKKIT_PATH" != x; then
    AC_DEFINE_UNQUOTED(LOKKIT_PATH, "$LOKKIT_PATH", [path to lokkit binary])
 fi
 
-AC_PATH_PROG(IPTABLES_PATH, iptables, /sbin/iptables)
+AC_PATH_PROG(IPTABLES_PATH, iptables, /sbin/iptables, [/usr/sbin:$PATH])
 AC_DEFINE_UNQUOTED(IPTABLES_PATH, "$IPTABLES_PATH", [path to iptables binary])
 
 dnl

@@ -1,3 +1,9 @@
+Mon May  5 15:57:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: Check in /usr/sbin for iptables too, for SUSE
+	distros (Jim Fehlig)
+
+
 Thu May  1 14:10:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Cope with NULL from qparam_get_query
