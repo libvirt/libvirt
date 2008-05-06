@@ -1,3 +1,7 @@
+Mon May  6 17:43:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/memory.c: Add missing stddefs.h for ptrdiff_t type
+
 Tue May  6 23:20:12 EST 2008 Jim Meyering <meyering@redhat.com>
 
 	* build-aux/vc-list-files: Add support for bzr.
