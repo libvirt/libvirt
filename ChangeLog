@@ -1,8 +1,12 @@
+Tue May  6 23:20:12 EST 2008 Jim Meyering <meyering@redhat.com>
+
+	* build-aux/vc-list-files: Add support for bzr.
+	Patch by Soren Hansen.
+
 Mon May  5 15:57:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: Check in /usr/sbin for iptables too, for SUSE
 	distros (Jim Fehlig)
-
 
 Thu May  1 14:10:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 

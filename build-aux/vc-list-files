@@ -75,6 +75,9 @@ if test -d .git; then
   eval exec git ls-files '"$dir"' $postprocess
 elif test -d .hg; then
   eval exec hg locate '"$dir/*"' $postprocess
+elif test -d .bzr; then
+  test "$postprocess" = '' && postprocess="| sed 's|^\./||'"
+  eval exec bzr ls --versioned '"$dir"' $postprocess
 elif test -d CVS; then
   test "$postprocess" = '' && postprocess="| sed 's|^\./||'"
   if test -x build-aux/cvsu; then
