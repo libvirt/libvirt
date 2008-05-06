@@ -59,6 +59,54 @@
     </ul>
   </xsl:template>
 
+  <xsl:template name="toc">
+    <ul>
+      <xsl:for-each select="/html/body/h2[count(a) = 1]">
+        <xsl:variable name="thishead" select="."/>
+        <li>
+          <a href="#{a/@name}"><xsl:value-of select="a/text()"/></a>
+          <xsl:if test="count(./following-sibling::h3[preceding-sibling::h2[1] = $thishead and count(a) = 1]) > 0">
+            <ul>
+              <xsl:for-each select="./following-sibling::h3[preceding-sibling::h2[1] = $thishead and count(a) = 1]">
+                <xsl:variable name="thissubhead" select="."/>
+                <li>
+                  <a href="#{a/@name}"><xsl:value-of select="a/text()"/></a>
+                  <xsl:if test="count(./following-sibling::h4[preceding-sibling::h3[1] = $thissubhead and count(a) = 1]) > 0">
+                    <ul>
+                      <xsl:for-each select="./following-sibling::h4[preceding-sibling::h3[1] = $thissubhead and count(a) = 1]">
+                        <li>
+                          <a href="#{a/@name}"><xsl:value-of select="a/text()"/></a>
+                          <xsl:if test="count(./following-sibling::h5[preceding-sibling::h4[1] = $thissubhead and count(a) = 1]) > 0">
+                            <ul>
+                              <xsl:for-each select="./following-sibling::h5[preceding-sibling::h4[1] = $thissubhead and count(a) = 1]">
+                                <li>
+                                  <a href="#{a/@name}"><xsl:value-of select="a/text()"/></a>
+                                  <xsl:if test="count(./following-sibling::h6[preceding-sibling::h5[1] = $thissubhead and count(a) = 1]) > 0">
+                                    <ul>
+                                      <xsl:for-each select="./following-sibling::h6[preceding-sibling::h5[1] = $thissubhead and count(a) = 1]">
+                                        <li>
+                                          <a href="#{a/@name}"><xsl:value-of select="a/text()"/></a>
+                                        </li>
+                                      </xsl:for-each>
+                                    </ul>
+                                  </xsl:if>
+                                </li>
+                              </xsl:for-each>
+                            </ul>
+                          </xsl:if>
+                        </li>
+                      </xsl:for-each>
+                    </ul>
+                  </xsl:if>
+                </li>
+              </xsl:for-each>
+            </ul>
+          </xsl:if>
+        </li>
+      </xsl:for-each>
+    </ul>
+  </xsl:template>
+
   <!-- This is the master page structure -->
   <xsl:template match="/" mode="page">
     <xsl:param name="pagename"/>
@@ -93,7 +141,16 @@
             </xsl:apply-templates>
           </div>
           <div id="content">
-            <xsl:copy-of select="html/body/*"/>
+            <xsl:for-each select="html/body/*">
+              <xsl:choose>
+                <xsl:when test="name() = 'ul' and @id = 'toc'">
+                  <xsl:call-template name="toc"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:copy-of select="."/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:for-each>
           </div>
         </div>
         <div id="footer">

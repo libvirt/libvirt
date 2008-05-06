@@ -348,3 +348,9 @@ head:first-child+body #projects dl {
     text-decoration: inherit;
     font-size: 1.2em;
 }
+
+span.since {
+    color: #3c857c;
+    font-style: italic;
+    font-weight: bold;
+}

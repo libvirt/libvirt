@@ -2,20 +2,24 @@
   <body>
     <h1>Network XML format</h1>
 
+    <ul id="toc">
+    </ul>
+
     <p>
       This page provides an introduction to the network XML format. For background
       information on the concepts referred to here, consult the <a href="archnetwork.html">network driver architecture</a>
       page.
     </p>
 
-    <h2>Element and attribute overview</h2>
+    <h2><a name="elements">Element and attribute overview</a></h2>
 
     <p>
       The root element required for all virtual networks is
       named <code>network</code> and has no attributes.
+      The network XML format is available <span class="since">since 0.3.0</span>
     </p>
 
-    <h3>General metadata</h3>
+    <h3><a name="elementsMetadata">General metadata</a></h3>
 
     <p>
       The first elements provide basic metadata about the virtual
@@ -35,16 +39,16 @@
 	consist only of alpha-numeric characters and is required
 	to be unique within the scope of a single host. It is
 	used to form the filename for storing the persistent
-	configuration file.</dd>
+	configuration file. <span class="since">Since 0.3.0</span></dd>
       <dt><code>uuid</code></dt>
       <dd>The content of the <code>uuid</code> element provides
 	a globally unique identifier for the virtual network.
 	The format must be RFC 4122 compliant, eg <code>3e3fce45-4f53-4fa7-bb32-11f34168b82b</code>.
 	If omitted when defining/creating a new network, a random
-	UUID is generated.</dd>
+	UUID is generated. <span class="since">Since 0.3.0</span></dd>
     </dl>
 
-    <h3>Connectivity</h3>
+    <h3><a name="elementsConnect">Connectivity</a></h3>
 
     <p>
       The next set of elements control how a virtual network is
@@ -54,7 +58,7 @@
     <pre>
         ...
         &lt;bridge name="virbr0" /&gt;
-	&lt;forward type="nat"/&gt;
+	&lt;forward mode="nat" dev="eth0"/&gt;
 	...</pre>
 
     <dl>
@@ -66,7 +70,8 @@
 	may also be connected to the LAN. It is recommended that bridge
 	device names started with the prefix <code>vir</code>, but the name
 	<code>virbr0</code> is reserved for the "default" virtual network.
-	This element should always be provided when defining a new network
+	This element should always be provided when defining a new network.
+	<span class="since">Since 0.3.0</span>
       </dd>
       <dt><code>forward</code></dt>
       <dd>Inclusion of the <code>forward</code> element indicates that
@@ -75,13 +80,14 @@
 	Firewall rules will allow forwarding to any other network device whether
 	ethernet, wireless, dialup, or VPN. If the <code>dev</code> attribute
 	is set, the firewall rules will restrict forwarding to the named
-	device only. If the <code>type</code> attribute is set to <code>route</code>
+	device only. If the <code>mode</code> attribute is set to <code>route</code>
 	then the traffic will not have NAT applied. This presumes that the
 	local LAN router has suitable routing table entries to return traffic
-	to this host.</dd>
+	to this host. <span class="since">Since 0.3.0; 'mode' attribute since
+        0.4.2</span></dd>
     </dl>
 
-    <h3>Addressing</h3>
+    <h3><a name="elementsAddress">Addressing</a></h3>
 
     <p>
       The final set of elements define the IPv4 address range available,
@@ -104,26 +110,27 @@
 	device associated with the virtual network. To the guests this
 	address will be their default route. The <code>netmask</code>
 	attribute defines the significant bits of the network address,
-	again specified in dotted-decimal format.
+	again specified in dotted-decimal format.  <span class="since">Since 0.3.0</span>
       </dd>
       <dt><code>dhcp</code></dt>
       <dd>Immediately within the <code>ip</code> element there is an
 	optional <code>dhcp</code> element. The presence of this element
 	enables DHCP services on the virtual network. It will further
 	contain one or more <code>range</code> elements.
+	<span class="since">Since 0.3.0</span>
       </dd>
       <dt><code>range</code></dt>
       <dd>The <code>start</code> and <code>end</code> attributes on the
 	<code>range</code> element specify the boundaries of a pool of
 	IPv4 addresses to be provided to DHCP clients. These two addresses
 	must lie within the scope of the network defined on the parent
-	<code>ip</code> element.
+	<code>ip</code> element.  <span class="since">Since 0.3.0</span>
       </dd>
     </dl>
 
-    <h2>Example configuration</h2>
+    <h2><a name="examples">Example configuration</a></h2>
 
-    <h3>NAT based network</h3>
+    <h3><a name="examplesNAT">NAT based network</a></h3>
 
     <p>
       This example is the so called "default" virtual network. It is
@@ -147,7 +154,7 @@
 	&lt;/ip&gt;
       &lt;/network&gt;</pre>
 
-    <h3>Routed network config</h3>
+    <h3><a name="examplesRoute">Routed network config</a></h3>
 
     <p>
       This is a variant on the default network which routes traffic
@@ -170,7 +177,7 @@
 	&lt;/ip&gt;
       &lt;/network&gt;</pre>
 
-    <h3>Isolated network config</h3>
+    <h3><a name="examplesPrivate">Isolated network config</a></h3>
 
     <p>
       This variant provides a completely isolated private network
