@@ -1,3 +1,8 @@
+Wed May  7 14:49:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c, src/xml.c: Disable certain sound functions
+	when built into proxy
+
 Wed May  7 18:12:11 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	*  src/qemu_conf.c src/qemu_conf.h src/qemu_driver.c: another patch

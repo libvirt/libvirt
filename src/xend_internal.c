@@ -851,6 +851,7 @@ urlencode(const char *string)
 
     return buffer;
 }
+#endif /* ! PROXY */
 
 /* Applicable sound models */
 const char *sound_models[] = { "sb16", "es1370" };
@@ -952,7 +953,6 @@ char *sound_string_to_xml(const char *sound) {
     return NULL;
 }
 
-#endif /* ! PROXY */
 
 /* PUBLIC FUNCTIONS */
 

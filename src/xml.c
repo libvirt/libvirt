@@ -290,6 +290,7 @@ virConvertCpuSet(virConnectPtr conn, const char *str, int maxcpu) {
     return (res);
 }
 
+#ifndef PROXY
 /**
  * virBuildSoundStringFromXML
  * @sound buffer to populate
@@ -361,6 +362,7 @@ char * virBuildSoundStringFromXML(virConnectPtr conn,
     free(nodes);
     return NULL;
 }
+#endif /* !PROXY */
 #endif /* WITH_XEN */
 #ifndef PROXY
 
