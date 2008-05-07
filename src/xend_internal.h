@@ -189,6 +189,11 @@ char *xenDaemonDomainDumpXMLByName(virConnectPtr xend,
 
   char *xend_parse_domain_sexp(virConnectPtr conn,  char *root, int xendConfigVersion);
 
+  int is_sound_model_valid(const char *model);
+  int is_sound_model_conflict(const char *model, const char *soundstr);
+  char *sound_string_to_xml(const char *sound);
+
+
 /* refactored ones */
 int xenDaemonOpen(virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int flags);
 int xenDaemonClose(virConnectPtr conn);

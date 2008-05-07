@@ -143,6 +143,8 @@ main(int argc, char **argv)
     DO_TEST("fv-serial-unix", "fv-serial-unix", "fvtest", 1);
     DO_TEST("fv-parallel-tcp", "fv-parallel-tcp", "fvtest", 1);
 
+    DO_TEST("fv-sound", "fv-sound", "fvtest", 1);
+
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 

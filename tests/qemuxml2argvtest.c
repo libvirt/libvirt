@@ -159,6 +159,7 @@ main(int argc, char **argv)
     DO_TEST("serial-many");
     DO_TEST("parallel-tcp");
     DO_TEST("console-compat");
+    DO_TEST("sound");
 
     virCapabilitiesFree(driver.caps);
 

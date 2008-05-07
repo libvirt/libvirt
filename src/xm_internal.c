@@ -1050,16 +1050,34 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
         virBufferAddLit(&buf, "    </console>\n");
     }
 
+    if (hvm) {
+        if ((xenXMConfigGetString(conf, "soundhw", &str) == 0) && str) {
+            char *soundxml;
+            if ((soundxml = sound_string_to_xml(str))) {
+                virBufferVSprintf(&buf, "%s", soundxml);
+                free(soundxml);
+            } else {
+                xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                           _("parsing soundhw string failed."));
+                goto error;
+            }
+        }
+    }
+
     virBufferAddLit(&buf, "  </devices>\n");
 
     virBufferAddLit(&buf, "</domain>\n");
 
     if (virBufferError(&buf)) {
         xenXMError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"));
-        return NULL;
+        goto error;
     }
 
     return virBufferContentAndReset(&buf);
+
+  error:
+    free(virBufferContentAndReset(&buf));
+    return NULL;
 }
 
 
@@ -2310,6 +2328,17 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
                 if (xenXMConfigSetString(conf, "serial", "none") < 0)
                     goto error;
             }
+        }
+
+        if (virXPathNode("/domain/devices/sound", ctxt)) {
+            char *soundstr;
+            if (!(soundstr = virBuildSoundStringFromXML(conn, ctxt)))
+                goto error;
+            if (xenXMConfigSetString(conf, "soundhw", soundstr) < 0) {
+                free(soundstr);
+                goto error;
+            }
+            free(soundstr);
         }
     }
 

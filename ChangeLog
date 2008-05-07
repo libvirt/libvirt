@@ -1,3 +1,12 @@
+Wed May  7 16:02:07 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_conf.c src/qemu_conf.h src/xend_internal.c
+	  src/xend_internal.h src/xm_internal.c src/xml.c src/xml.h:
+	  Patch from Cole Robinson adding sound support for QEmu and Xen
+	* tests/qemuxml2argvtest.c tests/sexpr2xmltest.c
+	  tests/xmconfigtest.c tests/xml2sexprtest.c:
+	  Associated regression tests
+
 Mon May  6 17:43:28 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/memory.c: Add missing stddefs.h for ptrdiff_t type

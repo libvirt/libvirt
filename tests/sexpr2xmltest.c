@@ -136,6 +136,9 @@ main(int argc, char **argv)
     DO_TEST("fv-serial-unix", "fv-serial-unix", 1);
     DO_TEST("fv-parallel-tcp", "fv-parallel-tcp", 1);
 
+    DO_TEST("fv-sound", "fv-sound", 1);
+    DO_TEST("fv-sound-all", "fv-sound-all", 1);
+
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 #else /* WITHOUT_XEN */

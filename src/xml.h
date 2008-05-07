@@ -61,6 +61,8 @@ int		virDomainXMLDevID(virDomainPtr domain,
                                  char *class,
                                  char *ref,
                                  int ref_len);
+char * virBuildSoundStringFromXML(virConnectPtr conn,
+                                  xmlXPathContextPtr ctxt);
 #endif
 
 #ifdef __cplusplus

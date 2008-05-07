@@ -1373,6 +1373,58 @@ static int qemudParseInputXML(virConnectPtr conn,
     return -1;
 }
 
+/* Sound device helper functions */
+static int qemudSoundModelFromString(const char *model) {
+    if (STREQ(model, "sb16")) {
+        return QEMU_SOUND_SB16;
+    } else if (STREQ(model, "es1370")) {
+        return QEMU_SOUND_ES1370;
+    } else if (STREQ(model, "pcspk")) {
+        return QEMU_SOUND_PCSPK;
+    }
+
+    return -1;
+}
+
+static const char *qemudSoundModelToString(const int model) {
+
+    if (model == QEMU_SOUND_SB16) {
+        return "sb16";
+    } else if (model == QEMU_SOUND_ES1370) {
+        return "es1370";
+    } else if (model == QEMU_SOUND_PCSPK) {
+        return "pcspk";
+    }
+
+    return NULL;
+}
+
+
+static int qemudParseSoundXML(virConnectPtr conn,
+                              struct qemud_vm_sound_def *sound,
+                              const xmlNodePtr node) {
+
+    int err = -1;
+    xmlChar *model = NULL;
+    model = xmlGetProp(node, BAD_CAST "model");
+
+    if (!model) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("missing sound model"));
+        goto error;
+    }
+    if ((sound->model = qemudSoundModelFromString((char *) model)) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("invalid sound model '%s'"), (char *) model);
+        goto error;
+    }
+
+    err = 0;
+ error:
+    xmlFree(model);
+    return err;
+}
+
 
 /*
  * Parses a libvirt XML definition of a guest, and populates the
@@ -1887,6 +1939,50 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         }
     }
     xmlXPathFreeObject(obj);
+
+    /* Parse sound driver xml */
+    obj = xmlXPathEval(BAD_CAST "/domain/devices/sound", ctxt);
+    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
+        struct qemud_vm_sound_def *prev = NULL;
+        for (i = 0; i < obj->nodesetval->nodeNr; i++) {
+
+            struct qemud_vm_sound_def *sound = calloc(1, sizeof(*sound));
+            struct qemud_vm_sound_def *check = def->sounds;
+            int collision = 0;
+            if (!sound) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                         "%s", _("failed to allocate space for sound dev"));
+                goto error;
+            }
+            if (qemudParseSoundXML(conn, sound,
+                                   obj->nodesetval->nodeTab[i]) < 0) {
+                free(sound);
+                goto error;
+            }
+
+            // Check that model type isn't already present in sound dev list
+            while(check) {
+                if (check->model == sound->model) {
+                    collision = 1;
+                    break;
+                }
+                check = check->next;
+            }
+            if (collision)
+                continue;
+
+            def->nsounds++;
+            sound->next = NULL;
+            if (def->sounds == NULL) {
+                def->sounds = sound;
+            } else {
+                prev->next = sound;
+            }
+            prev = sound;
+        }
+    }
+    xmlXPathFreeObject(obj);
     obj = NULL;
 
     /* If graphics are enabled, there's an implicit PS2 mouse */
@@ -2106,6 +2202,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     struct qemud_vm_disk_def *disk = vm->def->disks;
     struct qemud_vm_net_def *net = vm->def->nets;
     struct qemud_vm_input_def *input = vm->def->inputs;
+    struct qemud_vm_sound_def *sound = vm->def->sounds;
     struct qemud_vm_chr_def *serial = vm->def->serials;
     struct qemud_vm_chr_def *parallel = vm->def->parallels;
     struct utsname ut;
@@ -2156,6 +2253,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         (vm->def->nnets > 0 ? (4 * vm->def->nnets) : 2) + /* networks */
         1 + /* usb */
         2 * vm->def->ninputs + /* input devices */
+        ((vm->def->nsounds > 0) ? 2 : 0) + /* sound */
         (vm->def->nserials > 0 ? (2 * vm->def->nserials) : 2) + /* character devices */
         (vm->def->nparallels > 0 ? (2 * vm->def->nparallels) : 2) + /* character devices */
         2 + /* memory*/
@@ -2491,6 +2589,32 @@ int qemudBuildCommandLine(virConnectPtr conn,
         /* SDL is the default. no args needed */
     }
 
+    /* Add sound hardware */
+    if (sound) {
+        int size = 100;
+        char *modstr = calloc(1, size+1);
+        if (!modstr)
+            goto no_memory;
+        if (!((*argv)[++n] = strdup("-soundhw")))
+            goto no_memory;
+
+        while(sound && size > 0) {
+            const char *model = qemudSoundModelToString(sound->model);
+            if (!model) {
+               qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                _("invalid sound model"));
+               goto error;
+            }
+            strncat(modstr, model, size);
+            size -= strlen(model);
+            sound = sound->next;
+            if (sound)
+               strncat(modstr, ",", size--);
+        }
+        if (!((*argv)[++n] = modstr))
+            goto no_memory;
+    }
+
     if (vm->migrateFrom[0]) {
         if (!((*argv)[++n] = strdup("-S")))
             goto no_memory;
@@ -2602,6 +2726,9 @@ qemudParseVMDeviceDef(virConnectPtr conn,
     } else if (xmlStrEqual(node->name, BAD_CAST "input")) {
         dev->type = QEMUD_DEVICE_DISK;
         qemudParseInputXML(conn, &(dev->data.input), node);
+    } else if (xmlStrEqual(node->name, BAD_CAST "sound")) {
+        dev->type = QEMUD_DEVICE_SOUND;
+        qemudParseSoundXML(conn, &(dev->data.sound), node);
     } else {
         qemudReportError(conn, NULL, NULL, VIR_ERR_XML_ERROR,
                          "%s", _("unknown device type"));
@@ -3475,6 +3602,7 @@ char *qemudGenerateXML(virConnectPtr conn,
     const struct qemud_vm_disk_def *disk;
     const struct qemud_vm_net_def *net;
     const struct qemud_vm_input_def *input;
+    const struct qemud_vm_sound_def *sound;
     const struct qemud_vm_chr_def *chr;
     const char *type = NULL;
     int n;
@@ -3715,6 +3843,18 @@ char *qemudGenerateXML(virConnectPtr conn,
     case QEMUD_GRAPHICS_NONE:
     default:
         break;
+    }
+
+    sound = def->sounds;
+    while(sound) {
+        const char *model = qemudSoundModelToString(sound->model);
+        if (!model) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("invalid sound model"));
+            goto cleanup;
+        }
+        virBufferVSprintf(&buf, "    <sound model='%s'/>\n", model);
+        sound = sound->next;
     }
 
     virBufferAddLit(&buf, "  </devices>\n");

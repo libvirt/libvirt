@@ -851,6 +851,107 @@ urlencode(const char *string)
 
     return buffer;
 }
+
+/* Applicable sound models */
+const char *sound_models[] = { "sb16", "es1370" };
+
+/**
+ * is_sound_model_valid:
+ * @model : model string to check against whitelist
+ *
+ * checks passed model string against whitelist of acceptable models
+ *
+ * Returns 0 if invalid, 1 otherwise
+ */
+int is_sound_model_valid(const char *model) {
+    int i;
+
+    for (i = 0; i < sizeof(sound_models)/sizeof(*sound_models); ++i) {
+        if (STREQ(model, sound_models[i])) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/**
+ * is_sound_model_conflict:
+ * @model : model string to look for duplicates of
+ * @soundstr : soundhw string for the form m1,m2,m3 ...
+ *
+ * Returns 0 if no conflict, 1 otherwise
+ */
+int is_sound_model_conflict(const char *model, const char *soundstr) {
+
+    char *dupe;
+    char *cur = (char *) soundstr;
+    while ((dupe = strstr(cur, model))) {
+        if (( (dupe == cur) ||                     // (Start of line |
+              (*(dupe - 1) == ',') ) &&            //  Preceded by comma) &
+            ( (dupe[strlen(model)] == ',') ||      // (Ends with comma |
+               (dupe[strlen(model)] == '\0') ))    //  Ends whole string)
+            return 1;
+        else
+            cur = dupe + strlen(model);
+    }
+    return 0;
+}
+
+/**
+ * sound_string_to_xml:
+ * @soundstr : soundhw string for the form m1,m2,m3 ...
+ *
+ * Parses the passed string and returns a heap allocated string containing
+ * the valid libvirt soundxml. Must be free'd by caller.
+ *
+ * Returns NULL on fail, xml string on success (can be the empty string).
+ */
+char *sound_string_to_xml(const char *sound) {
+
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    while (sound) {
+        int modelsize, valid, collision = 0;
+        char *model = NULL;
+        char *model_end = strchr(sound, ',');
+        modelsize = (model_end ? (model_end - sound) : strlen(sound));
+
+        if(!(model = strndup(sound, modelsize)))
+            goto error;
+
+        if (!(valid = is_sound_model_valid(model))) {
+            // Check for magic 'all' model. If found, throw out current xml
+            // and build with all available models
+            if (STREQ(model, "all")) {
+                int i;
+                free(virBufferContentAndReset(&buf));
+
+                for (i=0; i < sizeof(sound_models)/sizeof(*sound_models); ++i)
+                    virBufferVSprintf(&buf, "    <sound model='%s'/>\n",
+                                      sound_models[i]);
+                free(model);
+                break;
+            }
+        }
+
+        if (valid && model_end)
+            collision = is_sound_model_conflict(model, model_end);
+        if (valid && !collision)
+            virBufferVSprintf(&buf, "    <sound model='%s'/>\n", model);
+
+        sound = (model_end ? ++model_end : NULL);
+        free(model);
+    }
+
+    if (virBufferError(&buf))
+        goto error;
+    return virBufferContentAndReset(&buf);
+
+  error:
+    free(virBufferContentAndReset(&buf));
+    return NULL;
+}
+
 #endif /* ! PROXY */
 
 /* PUBLIC FUNCTIONS */
@@ -2078,6 +2179,23 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
         virBufferAddLit(&buf, "    </console>\n");
     }
     free(tty);
+
+    if (hvm) {
+        if (sexpr_node(root, "domain/image/hvm/soundhw")) {
+            char *soundxml;
+            tmp = sexpr_node(root, "domain/image/hvm/soundhw");
+            if (tmp && *tmp) {
+                if ((soundxml = sound_string_to_xml(tmp))) {
+                    virBufferVSprintf(&buf, "%s", soundxml);
+                    free(soundxml);
+                } else {
+                    virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("parsing soundhw string failed."));
+                    goto error;
+                }
+            }
+        }
+    }
 
     virBufferAddLit(&buf, "  </devices>\n");
     virBufferAddLit(&buf, "</domain>\n");

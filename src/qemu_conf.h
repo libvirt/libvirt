@@ -186,11 +186,24 @@ struct qemud_vm_input_def {
     struct qemud_vm_input_def *next;
 };
 
+enum qemu_vm_sound_model {
+    QEMU_SOUND_NONE   = 0,
+    QEMU_SOUND_SB16,
+    QEMU_SOUND_ES1370,
+    QEMU_SOUND_PCSPK,
+};
+
+struct qemud_vm_sound_def {
+    int model;
+    struct qemud_vm_sound_def *next;
+};
+
 /* Flags for the 'type' field in next struct */
 enum qemud_vm_device_type {
     QEMUD_DEVICE_DISK,
     QEMUD_DEVICE_NET,
     QEMUD_DEVICE_INPUT,
+    QEMUD_DEVICE_SOUND,
 };
 
 struct qemud_vm_device_def {
@@ -199,6 +212,7 @@ struct qemud_vm_device_def {
         struct qemud_vm_disk_def disk;
         struct qemud_vm_net_def net;
         struct qemud_vm_input_def input;
+        struct qemud_vm_sound_def sound;
     } data;
 };
 
@@ -273,6 +287,9 @@ struct qemud_vm_def {
 
     unsigned int ninputs;
     struct qemud_vm_input_def *inputs;
+
+    unsigned int nsounds;
+    struct qemud_vm_sound_def *sounds;
 
     unsigned int nserials;
     struct qemud_vm_chr_def *serials;

@@ -221,6 +221,8 @@ main(int argc, char **argv)
 
     DO_TEST("fullvirt-parallel-tcp", 2);
 
+    DO_TEST("fullvirt-sound", 2);
+
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 #else /* WITHOUT_XEN */

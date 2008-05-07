@@ -29,6 +29,7 @@
 #include "util.h"
 #include "xs_internal.h"        /* for xenStoreDomainGetNetworkID */
 #include "xen_unified.h"
+#include "xend_internal.h"      /* for is_sound_* functions */
 
 /**
  * virXMLError:
@@ -287,6 +288,78 @@ virConvertCpuSet(virConnectPtr conn, const char *str, int maxcpu) {
     res = virSaveCpuSet(conn, cpuset, maxcpu);
     free(cpuset);
     return (res);
+}
+
+/**
+ * virBuildSoundStringFromXML
+ * @sound buffer to populate
+ * @len size of preallocated buffer 'sound'
+ * @ctxt xml context to pull sound info from
+ *
+ * Builds a string of the form m1,m2,m3 from the different sound models
+ * in the xml. String must be free'd by caller.
+ *
+ * Returns string on success, NULL on error
+ */
+char * virBuildSoundStringFromXML(virConnectPtr conn,
+                                  xmlXPathContextPtr ctxt) {
+
+    int nb_nodes, size = 256;
+    char *sound;
+    xmlNodePtr *nodes = NULL;
+
+    if (!(sound = calloc(1, size+1))) {
+        virXMLError(conn, VIR_ERR_NO_MEMORY,
+                    _("failed to allocate sound string"), 0);
+        return NULL;
+    }
+
+    nb_nodes = virXPathNodeSet("/domain/devices/sound", ctxt, &nodes);
+    if (nb_nodes > 0) {
+        int i;
+        for (i = 0; i < nb_nodes && size > 0; i++) {
+            char *model = NULL;
+            int collision = 0;
+
+            model = (char *) xmlGetProp(nodes[i], (xmlChar *) "model");
+            if (!model) {
+                virXMLError(conn, VIR_ERR_XML_ERROR,
+                            _("no model for sound device"), 0);
+                goto error;
+            }
+
+            if (!is_sound_model_valid(model)) {
+                virXMLError(conn, VIR_ERR_XML_ERROR,
+                            _("unknown sound model type"), 0);
+                free(model);
+                goto error;
+            }
+
+            // Check for duplicates in currently built string
+            if (*sound)
+                collision = is_sound_model_conflict(model, sound);
+
+            // If no collision, add to string
+            if (!collision) {
+                if (*sound && (size >= (strlen(model) + 1))) {
+                    strncat(sound, ",", size--);
+                } else if (*sound || size < strlen(model)) {
+                    free(model);
+                    continue;
+                }
+                strncat(sound, model, size);
+                size -= strlen(model);
+            }
+
+            free(model);
+        }
+    }
+    free(nodes);
+    return sound;
+
+  error:
+    free(nodes);
+    return NULL;
 }
 #endif /* WITH_XEN */
 #ifndef PROXY
@@ -969,7 +1042,6 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
         }
     }
 
-
     /* get the cdrom device file */
     /* Only XenD <= 3.0.2 wants cdrom config here */
     if (xendConfigVersion == 1) {
@@ -1075,6 +1147,15 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
         } else {
             virBufferAddLit(buf, "(serial none)");
         }
+    }
+
+    cur = virXPathNode("/domain/devices/sound", ctxt);
+    if (cur) {
+        char *soundstr;
+        if (!(soundstr = virBuildSoundStringFromXML(conn, ctxt)))
+            goto error;
+        virBufferVSprintf(buf, "(soundhw '%s')", soundstr);
+        free(soundstr);
     }
 
     str = virXPathString("string(/domain/clock/@offset)", ctxt);
