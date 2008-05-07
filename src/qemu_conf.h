@@ -503,6 +503,7 @@ char *      qemudGenerateNetworkXML     (virConnectPtr conn,
                                          struct qemud_network *network,
                                          struct qemud_network_def *def);
 
+const char *qemudVirtTypeToString       (int type);
 
 #endif /* WITH_QEMU */
 

@@ -554,6 +554,21 @@ int qemudExtractVersion(virConnectPtr conn,
     return 0;
 }
 
+/* Converts def->virtType to applicable string type
+ * @param type integer virt type
+ * @return string type on success, NULL on fail
+ */
+const char * qemudVirtTypeToString(int type) {
+    switch (type) {
+        case QEMUD_VIRT_QEMU:
+            return "qemu";
+        case QEMUD_VIRT_KQEMU:
+            return "kqemu";
+        case QEMUD_VIRT_KVM:
+            return "kvm";
+    }
+    return NULL;
+}
 
 /* Parse the XML definition for a disk
  * @param disk pre-allocated & zero'd disk record
@@ -1751,9 +1766,12 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     obj = xmlXPathEval(BAD_CAST "string(/domain/devices/emulator[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        const char *type = (def->virtType == QEMUD_VIRT_QEMU ? "qemu" :
-                            def->virtType == QEMUD_VIRT_KQEMU ? "kqemu":
-                            "kvm");
+        const char *type = qemudVirtTypeToString(def->virtType);
+        if (!type) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("unknown virt type"));
+            goto error;
+        }
         const char *emulator = virCapabilitiesDefaultGuestEmulator(driver->caps,
                                                                    def->os.type,
                                                                    def->os.arch,
@@ -3607,18 +3625,7 @@ char *qemudGenerateXML(virConnectPtr conn,
     const char *type = NULL;
     int n;
 
-    switch (def->virtType) {
-    case QEMUD_VIRT_QEMU:
-        type = "qemu";
-        break;
-    case QEMUD_VIRT_KQEMU:
-        type = "kqemu";
-        break;
-    case QEMUD_VIRT_KVM:
-        type = "kvm";
-        break;
-    }
-    if (!type) {
+    if (!(type = qemudVirtTypeToString(def->virtType))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("unexpected domain type %d"), def->virtType);
         goto cleanup;

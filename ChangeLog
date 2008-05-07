@@ -1,3 +1,8 @@
+Wed May  7 18:12:11 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	*  src/qemu_conf.c src/qemu_conf.h src/qemu_driver.c: another patch
+	   from Cole Robinson adding SetVcpus and DomainGetMaxVcpus for QEmu
+
 Wed May  7 16:42:59 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* tests/qemuxml2argvdata/qemuxml2argv-sound.args

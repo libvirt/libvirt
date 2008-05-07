@@ -113,6 +113,8 @@ static int qemudShutdownNetworkDaemon(virConnectPtr conn,
                                       struct qemud_driver *driver,
                                       struct qemud_network *network);
 
+static int qemudDomainGetMaxVcpus(virDomainPtr dom);
+
 static struct qemud_driver *qemu_driver = NULL;
 
 
@@ -1563,21 +1565,23 @@ static const char *qemudGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
     return "QEMU";
 }
 
-static int qemudGetMaxVCPUs(virConnectPtr conn ATTRIBUTE_UNUSED,
-                            const char *type) {
+static int qemudGetMaxVCPUs(virConnectPtr conn, const char *type) {
     if (!type)
         return 16;
 
-    if (!strcmp(type, "qemu"))
+    if (STRCASEEQ(type, "qemu"))
         return 16;
 
     /* XXX future KVM will support SMP. Need to probe
        kernel to figure out KVM module version i guess */
-    if (!strcmp(type, "kvm"))
+    if (STRCASEEQ(type, "kvm"))
         return 1;
 
-    if (!strcmp(type, "kqemu"))
+    if (STRCASEEQ(type, "kqemu"))
         return 1;
+
+    qemudReportError(conn, NULL, NULL, VIR_ERR_INVALID_ARG,
+                     _("unknown type '%s'"), type);
     return -1;
 }
 
@@ -2158,6 +2162,67 @@ static int qemudDomainSave(virDomainPtr dom,
         qemudRemoveInactiveVM(driver, vm);
 
     return 0;
+}
+
+
+static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
+    const struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
+    int max;
+
+    if (!vm) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         _("no domain with matching uuid '%s'"), dom->uuid);
+        return -1;
+    }
+
+    if (qemudIsActiveVM(vm)) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("cannot change vcpu count of an active domain"));
+        return -1;
+    }
+
+    if ((max = qemudDomainGetMaxVcpus(dom)) < 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("could not determine max vcpus for the domain"));
+        return -1;
+    }
+
+    if (nvcpus > max) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                         _("requested vcpus is greater than max allowable"
+                           " vcpus for the domain: %d > %d"), nvcpus, max);
+        return -1;
+    }
+
+    vm->def->vcpus = nvcpus;
+    return 0;
+}
+
+static int qemudDomainGetMaxVcpus(virDomainPtr dom) {
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
+    const char *type;
+    int ret;
+
+    if (!vm) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         _("no domain with matching uuid '%s'"), dom->uuid);
+        return -1;
+    }
+
+    if (!(type = qemudVirtTypeToString(vm->def->virtType))) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unknown virt type in domain definition '%d'"),
+                         vm->def->virtType);
+        return -1;
+    }
+
+    if ((ret = qemudGetMaxVCPUs(dom->conn, type)) < 0) {
+        return -1;
+    }
+
+    return ret;
 }
 
 
@@ -3081,10 +3146,10 @@ static virDriver qemuDriver = {
     qemudDomainSave, /* domainSave */
     qemudDomainRestore, /* domainRestore */
     NULL, /* domainCoreDump */
-    NULL, /* domainSetVcpus */
+    qemudDomainSetVcpus, /* domainSetVcpus */
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
-    NULL, /* domainGetMaxVcpus */
+    qemudDomainGetMaxVcpus, /* domainGetMaxVcpus */
     qemudDomainDumpXML, /* domainDumpXML */
     qemudListDefinedDomains, /* listDomains */
     qemudNumDefinedDomains, /* numOfDomains */
