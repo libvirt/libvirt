@@ -1,3 +1,17 @@
+Wed May  7 16:42:59 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* tests/qemuxml2argvdata/qemuxml2argv-sound.args
+	  tests/qemuxml2argvdata/qemuxml2argv-sound.xml
+	  tests/sexpr2xmldata/sexpr2xml-fv-sound-all.sexpr
+	  tests/sexpr2xmldata/sexpr2xml-fv-sound-all.xml
+	  tests/sexpr2xmldata/sexpr2xml-fv-sound.sexpr
+	  tests/sexpr2xmldata/sexpr2xml-fv-sound.xml
+	  tests/xmconfigdata/test-fullvirt-sound.cfg
+	  tests/xmconfigdata/test-fullvirt-sound.xml
+	  tests/xml2sexprdata/xml2sexpr-fv-sound.sexpr
+	  tests/xml2sexprdata/xml2sexpr-fv-sound.xml: other regression
+	  tests from previous commit
+
 Wed May  7 16:02:07 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_conf.c src/qemu_conf.h src/xend_internal.c
