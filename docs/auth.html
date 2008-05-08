@@ -186,11 +186,15 @@ while requiring <code>joe</code> to authenticate with the admin password,
 would require adding the following snippet to <code>PolicyKit.conf</code>.
 </p>
         <pre>
-  &lt;match action="org.libvirt.unix.manage" user="fred"&gt;
-    &lt;return result="yes"/&gt;
+  &lt;match action="org.libvirt.unix.manage"&gt;
+    &lt;match user="fred"&gt;
+      &lt;return result="yes"/&gt;
+    &lt;/match&gt;
   &lt;/match&gt;
-  &lt;match action="org.libvirt.unix.manage" user="joe"&gt;
-    &lt;return result="auth_admin"/&gt;
+  &lt;match action="org.libvirt.unix.manage"&gt;
+    &lt;match user="joe"&gt;
+      &lt;return result="auth_admin"/&gt;
+    &lt;/match&gt;
   &lt;/match&gt;
 </pre>
         <h3>

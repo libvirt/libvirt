@@ -1,3 +1,8 @@
+Thu May  8 07:51:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/auth.html.in, src/auth.html: Fix policykit config docs
+	(Cole Robinson)
+
 Wed May  7 14:49:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c, src/xml.c: Disable certain sound functions
