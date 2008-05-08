@@ -1,3 +1,9 @@
+Thu May  8 10:19:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* docs/page.xsl: Fix detection of sub-headings
+	* docs/domain.html, docs/domain.html.in: Re-write content to
+	reflect current domain XML format
+
 Thu May  8 07:51:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/auth.html.in, src/auth.html: Fix policykit config docs
