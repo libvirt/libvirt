@@ -1,5 +1,9 @@
 Thu May  8 10:36:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
+	* HACKING: Added notes on string/memory/buffer internal APIs
+
+Thu May  8 10:36:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
 	* src/xm_internal.c, src/xend_internal.c: Added 'bus' attribute
 	to disk target.
 	* tests/sexpr2xmldata/*.xml, tests/xmconfigdata/*.xml: Update

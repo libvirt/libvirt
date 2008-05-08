@@ -43,3 +43,118 @@ Note that sometimes you'll have to postprocess that output further, by
 piping it through "expand -i", since some leading TABs can get through.
 Usually they're in macro definitions or strings, and should be converted
 anyhow.
+
+
+Low level memory management
+===========================
+
+Use of the malloc/free/realloc/calloc APIs is deprecated in the libvirt
+codebase, because they encourage a number of serious coding bugs and do
+not enable compile time verification of checks for NULL. Instead of these
+routines, use the macros from memory.h
+
+  - eg to allocate  a single object:
+
+      virDomainPtr domain;
+
+      if (VIR_ALLOC(domain) < 0) {
+         __virRaiseError(VIR_ERROR_NO_MEMORY)
+         return NULL;
+      }
+
+
+  - eg to allocate an array of objects
+
+       virDomainPtr domains;
+       int ndomains = 10;
+
+       if (VIR_ALLOC_N(domains, ndomains) < 0) {
+         __virRaiseError(VIR_ERROR_NO_MEMORY)
+         return NULL;
+       }
+
+  - eg to allocate an array of object pointers
+
+       virDomainPtr *domains;
+       int ndomains = 10;
+
+       if (VIR_ALLOC_N(domains, ndomains) < 0) {
+         __virRaiseError(VIR_ERROR_NO_MEMORY)
+         return NULL;
+       }
+
+   - eg to re-allocate the array of domains to be longer
+
+       ndomains = 20
+
+       if (VIR_REALLOC_N(domains, ndomains) < 0) {
+         __virRaiseError(VIR_ERROR_NO_MEMORY)
+         return NULL;
+       }
+
+   - eg to free the domain
+
+       VIR_FREE(domain);
+
+
+
+String comparisons
+==================
+
+Do not use the strcmp, strncmp, etc functions directly. Instead use
+one of the following semantically named macros
+
+  - For strict equality:
+
+     STREQ(a,b)
+     STRNEQ(a,b)
+
+  - For case sensitive equality:
+     STRCASEEQ(a,b)
+     STRCASENEQ(a,b)
+
+  - For strict equality of a substring:
+
+     STREQLEN(a,b,n)
+     STRNEQLEN(a,b,n)
+
+  - For case sensitive equality of a substring:
+
+     STRCASEEQLEN(a,b,n)
+     STRCASENEQLEN(a,b,n)
+
+  - For strict equality of a prefix:
+
+     STRPREFIX(a,b)
+
+
+
+Variable length string buffer
+=============================
+
+If there is a need for complex string concatenations, avoid using
+the usual sequence of malloc/strcpy/strcat/snprintf functions and
+make use of the virBuffer API described in buf.h
+
+eg typical usage is as follows:
+
+  char *
+  somefunction(...) {
+     virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+     ...
+
+     virBufferAddLit(&buf, "<domain>\n");
+     virBufferVSprint(&buf, "  <memory>%d</memory>\n", memory);
+     ...
+     virBufferAddLit(&buf, "</domain>\n");
+
+     ....
+
+     if (virBufferError(&buf)) {
+         __virRaiseError(...);
+         return NULL;
+     }
+
+     return virBufferContentAndReset(&buf);
+  }
