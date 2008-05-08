@@ -1860,6 +1860,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
             const char *src = NULL;
             const char *dst = NULL;
             const char *mode = NULL;
+            const char *bus = NULL;
 
             /* Again dealing with (vbd...) vs (tap ...) differences */
             if (sexpr_lookup(node, "device/vbd")) {
@@ -1979,7 +1980,16 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                 /* This case is the cdrom device only */
                 virBufferAddLit(&buf, "    <disk device='cdrom'>\n");
             }
-            virBufferVSprintf(&buf, "      <target dev='%s'/>\n", dst);
+
+            if (STRPREFIX(dst, "xvd") || !hvm) {
+                bus = "xen";
+            } else if (STRPREFIX(dst, "sd")) {
+                bus = "scsi";
+            } else {
+                bus = "ide";
+            }
+            virBufferVSprintf(&buf, "      <target dev='%s' bus='%s'/>\n",
+                              dst, bus);
 
 
             /* XXX should we force mode == r, if cdrom==1, or assume
@@ -2068,14 +2078,14 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
         if ((tmp != NULL) && (tmp[0] != 0)) {
             virBufferAddLit(&buf, "    <disk type='file' device='floppy'>\n");
             virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
-            virBufferAddLit(&buf, "      <target dev='fda'/>\n");
+            virBufferAddLit(&buf, "      <target dev='fda' bus='fdc'/>\n");
             virBufferAddLit(&buf, "    </disk>\n");
         }
         tmp = sexpr_node(root, "domain/image/hvm/fdb");
         if ((tmp != NULL) && (tmp[0] != 0)) {
             virBufferAddLit(&buf, "    <disk type='file' device='floppy'>\n");
             virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
-            virBufferAddLit(&buf, "      <target dev='fdb'/>\n");
+            virBufferAddLit(&buf, "      <target dev='fdb' bus='fdc'/>\n");
             virBufferAddLit(&buf, "    </disk>\n");
         }
 
@@ -2086,7 +2096,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                 virBufferAddLit(&buf, "    <disk type='file' device='cdrom'>\n");
                 virBufferAddLit(&buf, "      <driver name='file'/>\n");
                 virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
-                virBufferAddLit(&buf, "      <target dev='hdc'/>\n");
+                virBufferAddLit(&buf, "      <target dev='hdc' bus='ide'/>\n");
                 virBufferAddLit(&buf, "      <readonly/>\n");
                 virBufferAddLit(&buf, "    </disk>\n");
             }

@@ -733,6 +733,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             char *head;
             char *offset;
             char *tmp, *tmp1;
+            const char *bus;
 
             if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
                 goto skipdisk;
@@ -805,6 +806,14 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 tmp[0] = '\0';
             }
 
+            if (STRPREFIX(dev, "xvd") || !hvm) {
+                bus = "xen";
+            } else if (STRPREFIX(dev, "sd")) {
+                bus = "scsi";
+            } else {
+                bus = "ide";
+            }
+
             virBufferVSprintf(&buf, "    <disk type='%s' device='%s'>\n",
                               block ? "block" : "file",
                               cdrom ? "cdrom" : "disk");
@@ -814,7 +823,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 virBufferVSprintf(&buf, "      <driver name='%s'/>\n", drvName);
             if (src[0])
                 virBufferVSprintf(&buf, "      <source %s='%s'/>\n", block ? "dev" : "file", src);
-            virBufferVSprintf(&buf, "      <target dev='%s'/>\n", dev);
+            virBufferVSprintf(&buf, "      <target dev='%s' bus='%s'/>\n", dev, bus);
             if (!strcmp(head, "r") ||
                 !strcmp(head, "ro"))
                 virBufferAddLit(&buf, "      <readonly/>\n");
@@ -833,7 +842,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             virBufferAddLit(&buf, "    <disk type='file' device='cdrom'>\n");
             virBufferAddLit(&buf, "      <driver name='file'/>\n");
             virBufferVSprintf(&buf, "      <source file='%s'/>\n", str);
-            virBufferAddLit(&buf, "      <target dev='hdc'/>\n");
+            virBufferAddLit(&buf, "      <target dev='hdc' bus='ide'/>\n");
             virBufferAddLit(&buf, "      <readonly/>\n");
             virBufferAddLit(&buf, "    </disk>\n");
         }

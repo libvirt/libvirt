@@ -1,3 +1,11 @@
+Thu May  8 10:36:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xm_internal.c, src/xend_internal.c: Added 'bus' attribute
+	to disk target.
+	* tests/sexpr2xmldata/*.xml, tests/xmconfigdata/*.xml: Update
+	to add bus attribute to disks
+	* tests/sexpr2xmltest.c: Fix XenD config version for 2 test cases
+
 Thu May  8 10:19:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* docs/page.xsl: Fix detection of sub-headings

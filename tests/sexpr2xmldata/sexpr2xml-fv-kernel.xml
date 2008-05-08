@@ -20,7 +20,7 @@
     <disk type='file' device='disk'>
       <driver name='file'/>
       <source file='/root/some.img'/>
-      <target dev='xvda'/>
+      <target dev='xvda' bus='xen'/>
     </disk>
     <serial type='pty'>
       <target port='0'/>

@@ -113,11 +113,11 @@ main(int argc, char **argv)
     DO_TEST("disk-drv-blktap-raw", "disk-drv-blktap-raw", 2);
     DO_TEST("disk-drv-blktap-qcow", "disk-drv-blktap-qcow", 2);
 
-    DO_TEST("curmem", "curmem", 1);
+    DO_TEST("curmem", "curmem", 2);
     DO_TEST("net-routed", "net-routed", 2);
     DO_TEST("net-bridged", "net-bridged", 2);
     DO_TEST("net-e1000", "net-e1000", 2);
-    DO_TEST("no-source-cdrom", "no-source-cdrom", 1);
+    DO_TEST("no-source-cdrom", "no-source-cdrom", 2);
 
     DO_TEST("fv-utc", "fv-utc", 1);
     DO_TEST("fv-localtime", "fv-localtime", 1);

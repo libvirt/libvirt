@@ -28,14 +28,14 @@
     <disk type='block' device='disk'>
       <driver name='phy'/>
       <source dev='/dev/sda8'/>
-      <target dev='hda:disk'/>
+      <target dev='hda' bus='ide'/>
     </disk>
     <disk device='cdrom'>
-      <target dev='hdc'/>
+      <target dev='hdc' bus='ide'/>
       <readonly/>
     </disk>
     <input type='mouse' bus='ps2'/>
-    <graphics type='vnc' port='5906'/>
+    <graphics type='vnc' port='-1'/>
     <serial type='pty'>
       <target port='0'/>
     </serial>

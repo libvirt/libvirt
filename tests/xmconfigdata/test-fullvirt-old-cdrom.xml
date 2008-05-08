@@ -23,12 +23,12 @@
     <disk type='block' device='disk'>
       <driver name='phy'/>
       <source dev='/dev/HostVG/XenGuest2'/>
-      <target dev='hda'/>
+      <target dev='hda' bus='ide'/>
     </disk>
     <disk type='file' device='cdrom'>
       <driver name='file'/>
       <source file='/root/boot.iso'/>
-      <target dev='hdc'/>
+      <target dev='hdc' bus='ide'/>
       <readonly/>
     </disk>
     <interface type='bridge'>

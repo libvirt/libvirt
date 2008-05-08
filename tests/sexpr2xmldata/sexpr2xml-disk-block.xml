@@ -16,7 +16,7 @@
     <disk type='block' device='disk'>
       <driver name='phy'/>
       <source dev='/dev/MainVG/GuestVG'/>
-      <target dev='xvda'/>
+      <target dev='xvda' bus='xen'/>
     </disk>
     <console type='pty'>
       <target port='0'/>

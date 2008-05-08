@@ -20,7 +20,7 @@
     <disk type='file' device='disk'>
       <driver name='file'/>
       <source file='/root/foo.img'/>
-      <target dev='hda'/>
+      <target dev='hda' bus='ide'/>
     </disk>
     <interface type='bridge'>
       <source bridge='xenbr0'/>
@@ -31,7 +31,7 @@
     <disk type='file' device='cdrom'>
       <driver name='file'/>
       <source file='/root/boot.iso'/>
-      <target dev='hdc'/>
+      <target dev='hdc' bus='ide'/>
       <readonly/>
     </disk>
     <input type='mouse' bus='usb'/>

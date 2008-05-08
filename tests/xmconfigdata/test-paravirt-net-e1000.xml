@@ -12,7 +12,7 @@
     <disk type='block' device='disk'>
       <driver name='phy'/>
       <source dev='/dev/HostVG/XenGuest1'/>
-      <target dev='xvda'/>
+      <target dev='xvda' bus='xen'/>
     </disk>
     <interface type='bridge'>
       <mac address='00:16:3E:66:94:9C'/>
