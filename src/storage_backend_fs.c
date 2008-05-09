@@ -79,7 +79,7 @@ enum {
 };
 
 /* Either 'magic' or 'extension' *must* be provided */
-static const struct {
+struct FileTypeInfo {
     int type;           /* One of the constants above */
     const char *magic;  /* Optional string of file magic
                          * to check at head of file */
@@ -94,7 +94,8 @@ static const struct {
                            * -1 to use st_size as capacity */
     int sizeBytes;        /* Number of bytes for size field */
     int sizeMultiplier;   /* A scaling factor if size is not in bytes */
-} fileTypeInfo[] = {
+};
+const struct FileTypeInfo const fileTypeInfo[] = {
     /* Bochs */
     /* XXX Untested
     { VIR_STORAGE_VOL_BOCHS, "Bochs Virtual HD Image", NULL,
