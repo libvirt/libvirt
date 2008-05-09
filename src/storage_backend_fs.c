@@ -79,7 +79,7 @@ enum {
 };
 
 /* Either 'magic' or 'extension' *must* be provided */
-struct {
+static const struct {
     int type;           /* One of the constants above */
     const char *magic;  /* Optional string of file magic
                          * to check at head of file */

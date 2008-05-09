@@ -1,3 +1,15 @@
+Fri May  9 10:01:34 EST 2008 Jim Meyering <meyering@redhat.com>
+
+	add "const" and "static" attributes to file-scoped globals
+	* src/storage_backend_fs.c (fileTypeInfo): Add "static" and two
+	"const" attributes.
+	(FileTypeInfo): Name the previously anonymous struct,
+	so the declaration of fileTypeInfo looks more conventional.
+	* src/xend_internal.c (sound_models): Mark as static, and
+	as an array of "const" entries.
+	These were relatively new additions to the list from here:
+	nm src/*.o|grep ' D '
+
 Thu May  9 00:07:34 PST 2008 David L. Leskovec <dlesko@linux.vnet.ibm.com>
 
 	* src/lxc_driver.c: use epoll in tty process to avoid consuming the

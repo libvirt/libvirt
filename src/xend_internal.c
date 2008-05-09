@@ -854,7 +854,7 @@ urlencode(const char *string)
 #endif /* ! PROXY */
 
 /* Applicable sound models */
-const char *sound_models[] = { "sb16", "es1370" };
+static const char *const sound_models[] = { "sb16", "es1370" };
 
 /**
  * is_sound_model_valid:
