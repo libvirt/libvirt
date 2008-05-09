@@ -1,5 +1,8 @@
 Fri May  9 10:01:34 EST 2008 Jim Meyering <meyering@redhat.com>
 
+	sytnax-check: add a check for risky ctype macro use
+	* Makefile.maint (sc_risky_ctype_macros): New rule.
+
 	avoid one more ctype vs. sign-extension problem
 	* src/util.c (TOLOWER): Also convert tolower argument.
 

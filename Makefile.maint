@@ -302,6 +302,15 @@ sc_TAB_in_indentation:
 	  { echo '$(ME): found TAB(s) use for indentation; use spaces'	\
 		1>&2; exit 1; } || :
 
+ctype_re = isalnum|isalpha|isascii|isblank|iscntrl|isdigit|isgraph|islower\
+|isprint|ispunct|isspace|isupper|isxdigit|tolower|toupper
+
+sc_risky_ctype_macros:
+	@grep -E '\b($(ctype_re)) *\(' /dev/null			\
+	     $$($(VC_LIST_EXCEPT)) | grep -v to_uchar &&		\
+	  { echo '$(ME): found ctype macro use without to_uchar'	\
+		1>&2; exit 1; } || :
+
 # Match lines like the following, but where there is only one space
 # between the options and the description:
 #   -D, --all-repeated[=delimit-method]  print all duplicate lines\n
