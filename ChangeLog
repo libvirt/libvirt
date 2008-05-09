@@ -1,5 +1,12 @@
 Fri May  9 15:45:39 CEST 2008 Jim Meyering <meyering@redhat.com>
 
+	Add new files from gnulib.
+	* gnulib/lib/c-ctype.c: New file.
+	* gnulib/lib/c-ctype.h: Likewise.
+	* gnulib/tests/test-c-ctype.c: Likewise.
+	* gnulib/tests/test-vc-list-files-git.sh: Likewise.
+	* gnulib/tests/test-vc-list-files-cvs.sh: Likewise.
+
 	Use gnulib's c-ctype.h, not <ctype.h>.
 	# Convert uses of isspace to c_isspace, isdigit to c_isdigit, etc.
 	re=$(man isspace|grep is.....,.is|sed 's/ -.*//' \
