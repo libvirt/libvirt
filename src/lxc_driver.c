@@ -26,9 +26,10 @@
 #ifdef WITH_LXC
 
 #include <fcntl.h>
-#include <poll.h>
+#include <sys/epoll.h>
 #include <sched.h>
 #include <sys/utsname.h>
+#include <stdbool.h>
 #include <string.h>
 #include <sys/types.h>
 #include <termios.h>
@@ -552,7 +553,7 @@ static int lxcSetupContainerTty(virConnectPtr conn,
     int rc = -1;
     char tempTtyName[PATH_MAX];
 
-    *ttymaster = posix_openpt(O_RDWR|O_NOCTTY);
+    *ttymaster = posix_openpt(O_RDWR|O_NOCTTY|O_NONBLOCK);
     if (*ttymaster < 0) {
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
                  _("posix_openpt failed: %s"), strerror(errno));
@@ -593,75 +594,155 @@ cleanup:
 }
 
 /**
+ * lxcFdForward:
+ * @readFd: file descriptor to read
+ * @writeFd: file desriptor to write
+ *
+ * Reads 1 byte of data from readFd and writes to writeFd.
+ *
+ * Returns 0 on success, EAGAIN if returned on read, or -1 in case of error
+ */
+static int lxcFdForward(int readFd, int writeFd)
+{
+    int rc = -1;
+    char buf[2];
+
+    if (1 != (saferead(readFd, buf, 1))) {
+        if (EAGAIN == errno) {
+            rc = EAGAIN;
+            goto cleanup;
+        }
+
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("read of fd %d failed: %s"), readFd, strerror(errno));
+        goto cleanup;
+    }
+
+    if (1 != (safewrite(writeFd, buf, 1))) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("write to fd %d failed: %s"), writeFd, strerror(errno));
+        goto cleanup;
+    }
+
+    rc = 0;
+
+cleanup:
+    return rc;
+}
+
+typedef struct _lxcTtyForwardFd_t {
+    int fd;
+    bool active;
+} lxcTtyForwardFd_t;
+
+/**
  * lxcTtyForward:
  * @fd1: Open fd
  * @fd1: Open fd
  *
  * Forwards traffic between fds.  Data read from fd1 will be written to fd2
- * Data read from fd2 will be written to fd1.  This process loops forever.
+ * This process loops forever.
+ * This uses epoll in edge triggered mode to avoid a hard loop on POLLHUP
+ * events when the user disconnects the virsh console via ctrl-]
  *
  * Returns 0 on success or -1 in case of error
  */
 static int lxcTtyForward(int fd1, int fd2)
 {
     int rc = -1;
-    int i;
-    char buf[2];
-    struct pollfd fds[2];
-    int numFds = 0;
+    int epollFd;
+    struct epoll_event epollEvent;
+    int numEvents;
+    int numActive = 0;
+    lxcTtyForwardFd_t fdArray[2];
+    int timeout = -1;
+    int curFdOff = 0;
+    int writeFdOff = 0;
 
-    if (0 <= fd1) {
-        fds[numFds].fd = fd1;
-        fds[numFds].events = POLLIN;
-        ++numFds;
+    fdArray[0].fd = fd1;
+    fdArray[0].active = false;
+    fdArray[1].fd = fd2;
+    fdArray[1].active = false;
+
+    /* create the epoll fild descriptor */
+    epollFd = epoll_create(2);
+    if (0 > epollFd) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("epoll_create(2) failed: %s"), strerror(errno));
+        goto cleanup;
     }
 
-    if (0 <= fd2) {
-        fds[numFds].fd = fd2;
-        fds[numFds].events = POLLIN;
-        ++numFds;
+    /* add the file descriptors the epoll fd */
+    memset(&epollEvent, 0x00, sizeof(epollEvent));
+    epollEvent.events = EPOLLIN|EPOLLET;    /* edge triggered */
+    epollEvent.data.fd = fd1;
+    epollEvent.data.u32 = 0;                /* fdArray position */
+    if (0 > epoll_ctl(epollFd, EPOLL_CTL_ADD, fd1, &epollEvent)) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("epoll_ctl(fd1) failed: %s"), strerror(errno));
+        goto cleanup;
     }
-
-    if (0 == numFds) {
-        DEBUG0("No fds to monitor, return");
+    epollEvent.data.fd = fd2;
+    epollEvent.data.u32 = 1;                /* fdArray position */
+    if (0 > epoll_ctl(epollFd, EPOLL_CTL_ADD, fd2, &epollEvent)) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("epoll_ctl(fd2) failed: %s"), strerror(errno));
         goto cleanup;
     }
 
     while (1) {
-        if ((rc = poll(fds, numFds, -1)) <= 0) {
+        /* if active fd's, return if no events, else wait forever */
+        timeout = (numActive > 0) ? 0 : -1;
+        numEvents = epoll_wait(epollFd, &epollEvent, 1, timeout);
+        if (0 < numEvents) {
+            if (epollEvent.events & EPOLLIN) {
+                curFdOff = epollEvent.data.u32;
+                if (!fdArray[curFdOff].active) {
+                    fdArray[curFdOff].active = true;
+                    ++numActive;
+                }
 
-            if ((0 == rc) || (errno == EINTR) || (errno == EAGAIN)) {
+            } else if (epollEvent.events & EPOLLHUP) {
+                DEBUG("EPOLLHUP from fd %d", epollEvent.data.fd);
+                continue;
+            } else {
+                lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("error event %d"), epollEvent.events);
+                goto cleanup;
+            }
+
+        } else if (0 == numEvents) {
+            if (2 == numActive) {
+                /* both fds active, toggle between the two */
+                curFdOff ^= 1;
+            } else {
+                /* only one active, if current is active, use it, else it */
+                /* must be the other one (ie. curFd just went inactive) */
+                curFdOff = fdArray[curFdOff].active ? curFdOff : curFdOff ^ 1;
+            }
+
+        } else  {
+            if (EINTR == errno) {
                 continue;
             }
 
+            /* error */
             lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("poll returned error: %s"), strerror(errno));
+                     _("epoll_wait() failed: %s"), strerror(errno));
             goto cleanup;
+
         }
 
-        for (i = 0; i < numFds; ++i) {
-            if (!fds[i].revents) {
-                continue;
-            }
+        if (0 < numActive) {
+            writeFdOff = curFdOff ^ 1;
+            rc = lxcFdForward(fdArray[curFdOff].fd, fdArray[writeFdOff].fd);
 
-            if (fds[i].revents & POLLIN) {
-                if (1 != (saferead(fds[i].fd, buf, 1))) {
-                    lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("read of fd %d failed: %s"), i,
-                             strerror(errno));
-                    goto cleanup;
-                }
-
-                if (1 < numFds) {
-                    if (1 != (safewrite(fds[i ^ 1].fd, buf, 1))) {
-                        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("write to fd %d failed: %s"), i,
-                                 strerror(errno));
-                        goto cleanup;
-                    }
-
-                }
-
+            if (EAGAIN == rc) {
+                /* this fd no longer has data, set it as inactive */
+                --numActive;
+                fdArray[curFdOff].active = false;
+            } else if (-1 == rc) {
+                goto cleanup;
             }
 
         }
@@ -671,7 +752,10 @@ static int lxcTtyForward(int fd1, int fd2)
     rc = 0;
 
 cleanup:
-    return rc;
+    close(fd1);
+    close(fd2);
+    close(epollFd);
+    exit(rc);
 }
 
 /**

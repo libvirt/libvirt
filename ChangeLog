@@ -1,3 +1,8 @@
+Thu May  9 00:07:34 PST 2008 David L. Leskovec <dlesko@linux.vnet.ibm.com>
+
+	* src/lxc_driver.c: use epoll in tty process to avoid consuming the
+	cpu when the slave side disconnects
+
 Thu May  8 10:36:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* HACKING: Added notes on string/memory/buffer internal APIs
