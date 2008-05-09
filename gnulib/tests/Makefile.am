@@ -68,6 +68,15 @@ EXTRA_DIST += test-arpa_inet.c
 
 ## end   gnulib module arpa_inet-tests
 
+## begin gnulib module c-ctype-tests
+
+TESTS += test-c-ctype
+check_PROGRAMS += test-c-ctype
+
+EXTRA_DIST += test-c-ctype.c
+
+## end   gnulib module c-ctype-tests
+
 ## begin gnulib module fseeko-tests
 
 TESTS += test-fseeko.sh
@@ -246,6 +255,15 @@ check_PROGRAMS += test-vasprintf
 EXTRA_DIST += test-vasprintf.c
 
 ## end   gnulib module vasprintf-tests
+
+## begin gnulib module vc-list-files-tests
+
+TESTS += test-vc-list-files-git.sh
+TESTS += test-vc-list-files-cvs.sh
+TESTS_ENVIRONMENT += PATH='$(abs_aux_dir)':"$$PATH"
+EXTRA_DIST += test-vc-list-files-git.sh test-vc-list-files-cvs.sh
+
+## end   gnulib module vc-list-files-tests
 
 ## begin gnulib module verify
 

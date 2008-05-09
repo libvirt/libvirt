@@ -15,11 +15,11 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib/lib --m4-base=gnulib/m4 --doc-base=doc --aux-dir=build-aux --with-tests --lgpl=2 --libtool --macro-prefix=gl getaddrinfo getpass gettext mktempd physmem poll posix-shell strndup strsep sys_stat useless-if-before-free vasprintf vc-list-files
+#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib/lib --m4-base=gnulib/m4 --doc-base=doc --aux-dir=build-aux --with-tests --lgpl=2 --libtool --macro-prefix=gl c-ctype getaddrinfo getpass gettext mktempd physmem poll posix-shell strndup strsep sys_stat useless-if-before-free vasprintf vc-list-files
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
-gl_MODULES([getaddrinfo getpass gettext mktempd physmem poll posix-shell strndup strsep sys_stat useless-if-before-free vasprintf vc-list-files])
+gl_MODULES([c-ctype getaddrinfo getpass gettext mktempd physmem poll posix-shell strndup strsep sys_stat useless-if-before-free vasprintf vc-list-files])
 gl_AVOID([])
 gl_SOURCE_BASE([gnulib/lib])
 gl_M4_BASE([gnulib/m4])

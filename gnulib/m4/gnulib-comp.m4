@@ -134,6 +134,8 @@ AC_DEFUN([gl_INIT],
   gt_TYPE_WCHAR_T
   gt_TYPE_WINT_T
   AC_CHECK_FUNCS([shutdown])
+  abs_aux_dir=`cd "$ac_aux_dir"; pwd`
+  AC_SUBST([abs_aux_dir])
   m4_popdef([AC_LIBSOURCES])
   m4_popdef([AC_REPLACE_FUNCS])
   m4_popdef([AC_LIBOBJ])
@@ -237,7 +239,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/arpa_inet.in.h
   lib/asnprintf.c
   lib/asprintf.c
-  lib/dummy.c
+  lib/c-ctype.c
+  lib/c-ctype.h
   lib/float+.h
   lib/float.in.h
   lib/fseeko.c
@@ -361,6 +364,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-EOVERFLOW.c
   tests/test-alloca-opt.c
   tests/test-arpa_inet.c
+  tests/test-c-ctype.c
   tests/test-fseeko.c
   tests/test-fseeko.sh
   tests/test-getaddrinfo.c
@@ -382,6 +386,8 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-unistd.c
   tests/test-vasnprintf.c
   tests/test-vasprintf.c
+  tests/test-vc-list-files-cvs.sh
+  tests/test-vc-list-files-git.sh
   tests/test-wchar.c
   tests=lib/dummy.c
   tests=lib/intprops.h

@@ -1,5 +1,5 @@
 /* Get address information.
-   Copyright (C) 1996-2002, 2003, 2004, 2005, 2006
+   Copyright (C) 1996-2002, 2003, 2004, 2005, 2006, 2008
                  Free Software Foundation, Inc.
    Contributed by Simon Josefsson <simon@josefsson.org>.
 
@@ -84,6 +84,14 @@ struct addrinfo
 # define EAI_SERVICE	  -8	/* SERVICE not supported for `ai_socktype'.  */
 # define EAI_MEMORY	  -10	/* Memory allocation failure.  */
 #endif
+
+/* Since EAI_NODATA is deprecated by RFC3493, some systems (at least
+   FreeBSD, which does define EAI_BADFLAGS) have removed the definition
+   in favor of EAI_NONAME.  */
+#if !defined EAI_NODATA && defined EAI_NONAME
+# define EAI_NODATA EAI_NONAME
+#endif
+
 #ifndef EAI_OVERFLOW
 /* Not defined on mingw32. */
 # define EAI_OVERFLOW	  -12	/* Argument buffer overflow.  */

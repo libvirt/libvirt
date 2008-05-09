@@ -64,6 +64,23 @@ esac
 gnulib_tool=$GNULIB_SRCDIR/gnulib-tool
 <$gnulib_tool || exit
 
+modules='
+c-ctype
+getaddrinfo
+getpass
+gettext
+mktempd
+physmem
+poll
+posix-shell
+strndup
+strsep
+sys_stat
+useless-if-before-free
+vasprintf
+vc-list-files
+'
+
 # Tell gnulib to:
 #   require LGPLv2+
 #   put *.m4 files in new gnulib/m4/ dir
@@ -75,13 +92,7 @@ $gnulib_tool			\
   --m4-base=gnulib/m4		\
   --source-base=gnulib/lib	\
   --tests-base=gnulib/tests	\
-  --import physmem getaddrinfo  \
-    sys_stat vasprintf strndup  \
-    strsep poll gettext getpass \
-    useless-if-before-free      \
-    posix-shell                 \
-    mktempd                     \
-    vc-list-files
+  --import $modules
 
 rm -f				\
     .gitignore			\
