@@ -229,6 +229,10 @@ int	xenDaemonDomainGetVcpus		(virDomainPtr domain,
                                          int maxinfo,
                                          unsigned char *cpumaps,
                                          int maplen);
+int xenDaemonDomainGetAutostart          (virDomainPtr dom,
+                                          int *autostart);
+int xenDaemonDomainSetAutostart          (virDomainPtr domain,
+                                          int autostart);
 
 /* xen_unified calls through here. */
 extern struct xenUnifiedDriver xenDaemonDriver;

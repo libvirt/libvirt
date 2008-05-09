@@ -1128,6 +1128,34 @@ xenUnifiedDomainDetachDevice (virDomainPtr dom, const char *xml)
     return -1;
 }
 
+static int
+xenUnifiedDomainGetAutostart (virDomainPtr dom, int *autostart)
+{
+    GET_PRIVATE(dom->conn);
+    int i;
+
+    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
+        if (priv->opened[i] && drivers[i]->domainGetAutostart &&
+            drivers[i]->domainGetAutostart (dom, autostart) == 0)
+            return 0;
+
+    return -1;
+}
+
+static int
+xenUnifiedDomainSetAutostart (virDomainPtr dom, int autostart)
+{
+    GET_PRIVATE(dom->conn);
+    int i;
+
+    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
+        if (priv->opened[i] && drivers[i]->domainSetAutostart &&
+            drivers[i]->domainSetAutostart (dom, autostart) == 0)
+            return 0;
+
+    return -1;
+}
+
 static char *
 xenUnifiedDomainGetSchedulerType (virDomainPtr dom, int *nparams)
 {
@@ -1291,6 +1319,8 @@ static virDriver xenUnifiedDriver = {
     .domainUndefine 		= xenUnifiedDomainUndefine,
     .domainAttachDevice 		= xenUnifiedDomainAttachDevice,
     .domainDetachDevice 		= xenUnifiedDomainDetachDevice,
+    .domainGetAutostart             = xenUnifiedDomainGetAutostart,
+    .domainSetAutostart             = xenUnifiedDomainSetAutostart,
     .domainGetSchedulerType	= xenUnifiedDomainGetSchedulerType,
     .domainGetSchedulerParameters	= xenUnifiedDomainGetSchedulerParameters,
     .domainSetSchedulerParameters	= xenUnifiedDomainSetSchedulerParameters,

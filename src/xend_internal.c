@@ -115,8 +115,8 @@ struct xenUnifiedDriver xenDaemonDriver = {
     xenDaemonDomainUndefine, /* domainUndefine */
     xenDaemonAttachDevice, /* domainAttachDevice */
     xenDaemonDetachDevice, /* domainDetachDevice */
-    NULL, /* domainGetAutostart */
-    NULL, /* domainSetAutostart */
+    xenDaemonDomainGetAutostart, /* domainGetAutostart */
+    xenDaemonDomainSetAutostart, /* domainSetAutostart */
     xenDaemonGetSchedulerType, /* domainGetSchedulerType */
     xenDaemonGetSchedulerParameters, /* domainGetSchedulerParameters */
     xenDaemonSetSchedulerParameters, /* domainSetSchedulerParameters */
@@ -3728,6 +3728,115 @@ xenDaemonDetachDevice(virDomainPtr domain, const char *xml)
         "type", class, "dev", ref, "force", "0", "rm_cfg", "1", NULL));
 }
 
+int
+xenDaemonDomainGetAutostart(virDomainPtr domain,
+                            int *autostart)
+{
+    struct sexpr *root;
+    const char *tmp;
+    xenUnifiedPrivatePtr priv;
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+                     __FUNCTION__);
+        return (-1);
+    }
+
+    /* xm_internal.c (the support for defined domains from /etc/xen
+     * config files used by old Xen) will handle this.
+     */
+    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
+    if (priv->xendConfigVersion < 3)
+        return(-1);
+
+    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    if (root == NULL) {
+        virXendError (domain->conn, VIR_ERR_XEN_CALL,
+                      _("xenDaemonGetAutostart failed to find this domain"));
+        return (-1);
+    }
+
+    *autostart = 0;
+
+    tmp = sexpr_node(root, "domain/on_xend_start");
+    if (tmp && STREQ(tmp, "start")) {
+        *autostart = 1;
+    }
+
+    sexpr_free(root);
+    return 0;
+}
+
+int
+xenDaemonDomainSetAutostart(virDomainPtr domain,
+                            int autostart)
+{
+    struct sexpr *root, *autonode;
+    const char *autostr;
+    char buf[4096];
+    int ret = -1;
+    xenUnifiedPrivatePtr priv;
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INTERNAL_ERROR,
+                     __FUNCTION__);
+        return (-1);
+    }
+
+    /* xm_internal.c (the support for defined domains from /etc/xen
+     * config files used by old Xen) will handle this.
+     */
+    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
+    if (priv->xendConfigVersion < 3)
+        return(-1);
+
+    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    if (root == NULL) {
+        virXendError (domain->conn, VIR_ERR_XEN_CALL,
+                      _("xenDaemonSetAutostart failed to find this domain"));
+        return (-1);
+    }
+
+    autostr = sexpr_node(root, "domain/on_xend_start");
+    if (autostr) {
+        if (!STREQ(autostr, "ignore") && !STREQ(autostr, "start")) {
+            virXendError(domain->conn, VIR_ERR_INTERNAL_ERROR,
+                         _("unexpected value from on_xend_start"));
+            goto error;
+        }
+
+        // Change the autostart value in place, then define the new sexpr
+        autonode = sexpr_lookup(root, "domain/on_xend_start");
+        free(autonode->u.s.car->u.value);
+        autonode->u.s.car->u.value = (autostart ? strdup("start")
+                                                : strdup("ignore"));
+        if (!(autonode->u.s.car->u.value)) {
+            virXendError(domain->conn, VIR_ERR_INTERNAL_ERROR,
+                         _("no memory"));
+            goto error;
+        }
+
+        if (sexpr2string(root, buf, sizeof(buf)) == 0) {
+            virXendError(domain->conn, VIR_ERR_INTERNAL_ERROR,
+                         _("sexpr2string failed"));
+            goto error;
+        }
+        if (xend_op(domain->conn, "", "op", "new", "config", buf, NULL) != 0) {
+            virXendError(domain->conn, VIR_ERR_XEN_CALL,
+                         _("Failed to redefine sexpr"));
+            goto error;
+        }
+    } else {
+        virXendError(domain->conn, VIR_ERR_INTERNAL_ERROR,
+                     _("on_xend_start not present in sexpr"));
+        goto error;
+    }
+
+    ret = 0;
+  error:
+    sexpr_free(root);
+    return ret;
+}
 
 int
 xenDaemonDomainMigratePrepare (virConnectPtr dconn,

@@ -1,3 +1,8 @@
+Fri May  9 10:10:28 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_unified.c src/xend_internal.c src/xend_internal.h: patch
+	  from Cole Robinson implementing autostart for running Xen domains
+
 Fri May  9 10:01:34 EST 2008 Jim Meyering <meyering@redhat.com>
 
 	sytnax-check: add a check for risky ctype macro use
