@@ -57,7 +57,8 @@
 
 #define MAX_ERROR_LEN   1024
 
-#define TOLOWER(Ch) (isupper (to_uchar(Ch)) ? tolower (Ch) : (Ch))
+#define TOLOWER(Ch) (isupper (to_uchar(Ch)) \
+		     ? tolower (to_uchar (Ch)) : (to_uchar (Ch)))
 
 #define virLog(msg...) fprintf(stderr, msg)
 

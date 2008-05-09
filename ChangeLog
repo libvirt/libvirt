@@ -1,5 +1,8 @@
 Fri May  9 10:01:34 EST 2008 Jim Meyering <meyering@redhat.com>
 
+	avoid one more ctype vs. sign-extension problem
+	* src/util.c (TOLOWER): Also convert tolower argument.
+
 	add "const" and "static" attributes to file-scoped globals
 	* src/storage_backend_fs.c (fileTypeInfo): Add "static" and two
 	"const" attributes.
