@@ -157,6 +157,16 @@ sc_prohibit_quotearg_without_use:
 sc_prohibit_quote_without_use:
 	@h='"quote.h"' re='\<quote(_n)? *\(' $(_header_without_use)
 
+# Prohibit the inclusion of c-ctype.h without an actual use.
+sc_prohibit_c_ctype_without_use:
+	@h='[<"]c-ctype.h[">]' re='\<c_($(ctype_re)) *\(' $(_header_without_use)
+
+# Prohibit the inclusion of <ctype.h>.
+sc_prohibit_ctype_h:
+	@grep -E '^# *include  *<ctype\.h>' $$($(VC_LIST_EXCEPT)) &&	\
+	  { echo "$(ME): don't use ctype.h; instead, use c-ctype.h"	\
+		1>&2; exit 1; } || :
+
 sc_obsolete_symbols:
 	@grep -nE '\<(HAVE''_FCNTL_H|O''_NDELAY)\>'			\
 	     $$($(VC_LIST_EXCEPT)) &&					\
@@ -305,10 +315,10 @@ sc_TAB_in_indentation:
 ctype_re = isalnum|isalpha|isascii|isblank|iscntrl|isdigit|isgraph|islower\
 |isprint|ispunct|isspace|isupper|isxdigit|tolower|toupper
 
-sc_risky_ctype_macros:
+sc_avoid_ctype_macros:
 	@grep -E '\b($(ctype_re)) *\(' /dev/null			\
-	     $$($(VC_LIST_EXCEPT)) | grep -v to_uchar &&		\
-	  { echo '$(ME): found ctype macro use without to_uchar'	\
+	     $$($(VC_LIST_EXCEPT)) &&					\
+	  { echo "$(ME): don't use ctype macros (use c-ctype.h)"	\
 		1>&2; exit 1; } || :
 
 # Match lines like the following, but where there is only one space

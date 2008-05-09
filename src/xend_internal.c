@@ -30,7 +30,6 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <libxml/uri.h>
-#include <ctype.h>
 #include <errno.h>
 
 #include "libvirt/libvirt.h"

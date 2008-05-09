@@ -1,7 +1,7 @@
 /*
  * buf.c: buffers for libvirt
  *
- * Copyright (C) 2005-2007 Red Hat, Inc.
+ * Copyright (C) 2005-2008 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -16,7 +16,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <ctype.h>
 
 #define __VIR_BUFFER_C__
 

@@ -18,7 +18,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
-#include <ctype.h>
+#include <c-ctype.h>
 
 #ifdef WITH_XEN
 #include <xs.h>
@@ -262,7 +262,7 @@ xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
         }
 
         if (path[4] != '\0') {
-            if (!isdigit(to_uchar(path[4])) || path[4] == '0' ||
+            if (!c_isdigit(path[4]) || path[4] == '0' ||
                 virStrToLong_i(path+4, NULL, 10, &part) < 0 ||
                 part < 1 || part > 15) {
                 statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
@@ -306,7 +306,7 @@ xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
             } else {
                 p = path + 3;
             }
-            if (p && (!isdigit(to_uchar(*p)) || *p == '0' ||
+            if (p && (!c_isdigit(*p) || *p == '0' ||
                       virStrToLong_i(p, NULL, 10, &part) < 0 ||
                       part < 1 || part > 15)) {
                 statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
@@ -332,7 +332,7 @@ xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
         }
 
         if (path[3] != '\0') {
-            if (!isdigit(to_uchar(path[3])) || path[3] == '0' ||
+            if (!c_isdigit(path[3]) || path[3] == '0' ||
                 virStrToLong_i(path+3, NULL, 10, &part) < 0 ||
                 part < 1 || part > 63) {
                 statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,

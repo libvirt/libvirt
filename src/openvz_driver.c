@@ -45,7 +45,6 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <paths.h>
-#include <ctype.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <sys/wait.h>

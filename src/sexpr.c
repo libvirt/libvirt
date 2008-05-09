@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
+#include <c-ctype.h>
 #include <errno.h>
 
 #include "internal.h"
@@ -358,7 +358,7 @@ _string2sexpr(const char *buffer, size_t * end)
         } else {
             start = ptr;
 
-            while (*ptr && !isspace(to_uchar(*ptr))
+            while (*ptr && !c_isspace(*ptr)
                    && *ptr != ')' && *ptr != '(') {
                 ptr++;
             }

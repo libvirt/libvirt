@@ -27,11 +27,6 @@
 #include "internal.h"
 #include "util-lib.h"
 
-/* Convert a possibly-signed character to an unsigned character.  This is
-   a bit safer than casting to unsigned char, since it catches some type
-   errors that the cast doesn't.  */
-static inline unsigned char to_uchar (char ch) { return ch; }
-
 int virExec(virConnectPtr conn, char **argv, int *retpid,
             int infd, int *outfd, int *errfd);
 int virExecNonBlock(virConnectPtr conn, char **argv, int *retpid,

@@ -27,7 +27,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <ctype.h>
+#include <c-ctype.h>
 
 #ifdef HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
@@ -59,7 +59,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
         char *buf = line;
         if (STREQLEN(buf, "processor", 9)) { /* aka a single logical CPU */
             buf += 9;
-            while (*buf && isspace(to_uchar(*buf)))
+            while (*buf && c_isspace(*buf))
                 buf++;
             if (*buf != ':') {
                 __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
@@ -72,7 +72,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
             char *p;
             unsigned int ui;
             buf += 9;
-            while (*buf && isspace(to_uchar(*buf)))
+            while (*buf && c_isspace(*buf))
                 buf++;
             if (*buf != ':' || !buf[1]) {
                 __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
@@ -82,13 +82,13 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
             }
             if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0
                 /* Accept trailing fractional part.  */
-                && (*p == '\0' || *p == '.' || isspace(to_uchar(*p))))
+                && (*p == '\0' || *p == '.' || c_isspace(*p)))
                 nodeinfo->mhz = ui;
         } else if (STREQLEN(buf, "cpu cores", 9)) { /* aka cores */
             char *p;
             unsigned int id;
             buf += 9;
-            while (*buf && isspace(to_uchar(*buf)))
+            while (*buf && c_isspace(*buf))
                 buf++;
             if (*buf != ':' || !buf[1]) {
                 __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
@@ -97,7 +97,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
                 return -1;
             }
             if (virStrToLong_ui(buf+1, &p, 10, &id) == 0
-                && (*p == '\0' || isspace(to_uchar(*p)))
+                && (*p == '\0' || c_isspace(*p))
                 && id > nodeinfo->cores)
                 nodeinfo->cores = id;
         }

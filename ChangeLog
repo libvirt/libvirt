@@ -1,5 +1,25 @@
 Fri May  9 15:45:39 CEST 2008 Jim Meyering <meyering@redhat.com>
 
+	Use gnulib's c-ctype.h, not <ctype.h>.
+	# Convert uses of isspace to c_isspace, isdigit to c_isdigit, etc.
+	re=$(man isspace|grep is.....,.is|sed 's/ -.*//' \
+	  |tr -s ', \n' \||sed 's/^|//;s/|$//')
+	git grep -l -E "$re"|grep -Ev 'Chan|gnulib' \
+	  |xargs perl -pi -e 's/\b('"$re"')\b/c_$1/g'
+	# Remove all uses of to_uchar
+	git grep -l to_uchar|xargs perl -pi -e 's/to_uchar\((.*?)\)/$1/g'
+	* src/util.h (to_uchar): Remove definition.
+	(TOLOWER): Remove definition.
+	(__virMacAddrCompare): Use c_tolower, not TOLOWER.
+	Globally:
+	  Where needed, change <ctype.h> to <c-ctype.h>.
+	  Remove unnecessary inclusion of <ctype.h>.
+	Ensure the global changes are never needed again:
+	* Makefile.maint (sc_avoid_ctype_macros): Prohibit use of ctype
+	macros.   Recommend c-ctype.h instead.
+	(sc_prohibit_c_ctype_without_use): New rule.
+	(sc_prohibit_ctype_h): New rule.  Disallow use of <ctype.h>.
+
 	Prepare to use gnulib's c-type module.
 	* bootstrap: Move module list into separate variable w/less syntax.
 	(modules): Add c-ctype.

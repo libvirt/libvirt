@@ -37,7 +37,7 @@
 #include <sys/wait.h>
 #endif
 #include <string.h>
-#include <ctype.h>
+#include <c-ctype.h>
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
@@ -56,9 +56,6 @@
 #endif
 
 #define MAX_ERROR_LEN   1024
-
-#define TOLOWER(Ch) (isupper (to_uchar(Ch)) \
-		     ? tolower (to_uchar (Ch)) : (to_uchar (Ch)))
 
 #define virLog(msg...) fprintf(stderr, msg)
 
@@ -705,12 +702,12 @@ __virMacAddrCompare (const char *p, const char *q)
 {
     unsigned char c, d;
     do {
-        while (*p == '0' && isxdigit (to_uchar(p[1])))
+        while (*p == '0' && c_isxdigit (p[1]))
             ++p;
-        while (*q == '0' && isxdigit (to_uchar(q[1])))
+        while (*q == '0' && c_isxdigit (q[1]))
             ++q;
-        c = TOLOWER (*p);
-        d = TOLOWER (*q);
+        c = c_tolower (*p);
+        d = c_tolower (*q);
 
         if (c == 0 || d == 0)
             break;
@@ -750,7 +747,7 @@ virParseMacAddr(const char* str, unsigned char *addr)
         /* This is solely to avoid accepting the leading
          * space or "+" that strtoul would otherwise accept.
          */
-        if (!isxdigit(to_uchar(*str)))
+        if (!c_isxdigit(*str))
             break;
 
         result = strtoul(str, &end_ptr, 16);

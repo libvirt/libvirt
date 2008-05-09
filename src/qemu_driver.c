@@ -41,7 +41,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <paths.h>
-#include <ctype.h>
+#include <c-ctype.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <sys/wait.h>
@@ -519,7 +519,7 @@ static int qemudExtractMonitorPath(const char *haystack,
      */
     tmp = path;
     while (*tmp) {
-        if (isspace(to_uchar(*tmp))) {
+        if (c_isspace(*tmp)) {
             *tmp = '\0';
             *offset += (sizeof(needle)-1) + strlen(path);
             return 0;
