@@ -286,6 +286,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/vasnprintf.c
   lib/vasnprintf.h
   lib/vasprintf.c
+  lib/verify.h
   lib/wchar.in.h
   lib/xsize.h
   m4/alloca.m4
@@ -391,5 +392,4 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-wchar.c
   tests=lib/dummy.c
   tests=lib/intprops.h
-  tests=lib/verify.h
 ])

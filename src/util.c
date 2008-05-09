@@ -769,3 +769,44 @@ virParseMacAddr(const char* str, unsigned char *addr)
 
     return -1;
 }
+
+/* Translates a device name of the form (regex) "[fhv]d[a-z]+" into
+ * the corresponding index (e.g. sda => 1, hdz => 26, vdaa => 27)
+ * @param name The name of the device
+ * @return name's index, or -1 on failure
+ */
+int virDiskNameToIndex(const char *name) {
+    const char *ptr = NULL;
+    int idx = 0;
+
+    if (strlen(name) < 3)
+        return -1;
+
+    switch (*name) {
+        case 'f':
+        case 'h':
+        case 'v':
+        case 's':
+            break;
+        default:
+            return 0;
+    }
+
+    if (*(name + 1) != 'd')
+        return -1;
+
+    ptr = name+2;
+
+    while (*ptr) {
+        idx = idx * 26;
+
+        if ('a' > *ptr || 'z' < *ptr)
+            return -1;
+
+        idx += *ptr - 'a';
+        ptr++;
+    }
+
+    return idx;
+}
+

@@ -56,10 +56,20 @@ enum qemud_vm_disk_device {
     QEMUD_DISK_FLOPPY,
 };
 
+enum qemud_vm_disk_bus {
+    QEMUD_DISK_BUS_IDE,
+    QEMUD_DISK_BUS_FDC,
+    QEMUD_DISK_BUS_SCSI,
+    QEMUD_DISK_BUS_VIRTIO,
+
+    QEMUD_DISK_BUS_LAST
+};
+
 /* Stores the virtual disk configuration */
 struct qemud_vm_disk_def {
     int type;
     int device;
+    int bus;
     char src[PATH_MAX];
     char dst[NAME_MAX];
     int readonly;
@@ -234,9 +244,11 @@ enum qemud_vm_graphics_type {
 
 /* Internal flags to keep track of qemu command line capabilities */
 enum qemud_cmd_flags {
-    QEMUD_CMD_FLAG_KQEMU = 1,
-    QEMUD_CMD_FLAG_VNC_COLON = 2,
-    QEMUD_CMD_FLAG_NO_REBOOT = 4,
+    QEMUD_CMD_FLAG_KQEMU          = (1 << 0),
+    QEMUD_CMD_FLAG_VNC_COLON      = (1 << 1),
+    QEMUD_CMD_FLAG_NO_REBOOT      = (1 << 2),
+    QEMUD_CMD_FLAG_DRIVE_OPT      = (1 << 3),
+    QEMUD_CMD_FLAG_DRIVE_BOOT_OPT = (1 << 4),
 };
 
 

@@ -265,12 +265,6 @@ EXTRA_DIST += test-vc-list-files-git.sh test-vc-list-files-cvs.sh
 
 ## end   gnulib module vc-list-files-tests
 
-## begin gnulib module verify
-
-libtests_a_SOURCES += verify.h
-
-## end   gnulib module verify
-
 ## begin gnulib module wchar-tests
 
 TESTS += test-wchar

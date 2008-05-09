@@ -1,3 +1,18 @@
+Thu May  9 12:40:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* bootstrap: Added verify module
+	* gnulib/lib/.cvsignore, gnulib/lib/Makefile.am: New verify module
+	* gnulib/lib/c-ctype.c, gnulib/lib/c-ctype.h: Refreshed
+	* gnulib/lib/verify.h: Refreshed upstream
+	* gnulib/m4/gnulib-cache.m4, gnulib/m4/gnulib-comp.m4,
+	  gnulib/tests/Makefile.am: Refreshed with upstream
+	* gnulib/tests/verify.h: Removed
+	* src/qemu_conf.c, src/qemu_conf.h: Support -drive syntax and
+	support virtio, and add bus attribute
+	* src/util.c, src/util.h: helper for drive name to index convertor
+	* tests/qemuxml2argvtest.c: Added virtio test
+	* tests/qemuxml2argvdata/*.xml: Updated with bus attribute
+
 Fri May  9 15:45:39 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	Add new files from gnulib.

@@ -16,7 +16,7 @@
     <emulator>/usr/bin/qemu</emulator>
     <disk type='block' device='cdrom'>
       <source dev='/dev/cdrom'/>
-      <target dev='hdc'/>
+      <target dev='hdc' bus='ide'/>
       <readonly/>
     </disk>
   </devices>

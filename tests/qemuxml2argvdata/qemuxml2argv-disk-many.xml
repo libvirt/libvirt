@@ -16,19 +16,19 @@
     <emulator>/usr/bin/qemu</emulator>
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest1'/>
-      <target dev='hda'/>
+      <target dev='hda' bus='ide'/>
     </disk>
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest2'/>
-      <target dev='hdb'/>
+      <target dev='hdb' bus='ide'/>
     </disk>
     <disk type='file' device='disk'>
       <source file='/tmp/data.img'/>
-      <target dev='hdc'/>
+      <target dev='hdc' bus='ide'/>
     </disk>
     <disk type='file' device='disk'>
       <source file='/tmp/logs.img'/>
-      <target dev='hdd'/>
+      <target dev='hdd' bus='ide'/>
     </disk>
   </devices>
 </domain>

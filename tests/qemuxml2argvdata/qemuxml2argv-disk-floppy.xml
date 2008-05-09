@@ -16,15 +16,15 @@
     <emulator>/usr/bin/qemu</emulator>
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest1'/>
-      <target dev='hda'/>
+      <target dev='hda' bus='ide'/>
     </disk>
     <disk type='block' device='floppy'>
       <source dev='/dev/fd0'/>
-      <target dev='fda'/>
+      <target dev='fda' bus='fdc'/>
     </disk>
     <disk type='file' device='floppy'>
       <source file='/tmp/firmware.img'/>
-      <target dev='fdb'/>
+      <target dev='fdb' bus='fdc'/>
     </disk>
   </devices>
 </domain>

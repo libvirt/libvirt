@@ -18,10 +18,17 @@
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
     </disk>
-    <parallel type='tcp'>
-      <source mode='bind' host='127.0.0.1' service='9999'/>
-      <protocol type='raw'/>
-      <target port='0'/>
-    </parallel>
+    <disk type='block' device='cdrom'>
+      <source dev='/dev/HostVG/QEMUGuest2'/>
+      <target dev='hdc' bus='ide'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/data.img'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/logs.img'/>
+      <target dev='vdg' bus='virtio'/>
+    </disk>
   </devices>
 </domain>

@@ -49,6 +49,7 @@
 #include "buf.h"
 #include "conf.h"
 #include "util.h"
+#include <verify.h>
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 
@@ -491,6 +492,10 @@ static int qemudExtractVersionInfo(const char *qemu, int *version, int *flags) {
             *flags |= QEMUD_CMD_FLAG_KQEMU;
         if (strstr(help, "-no-reboot"))
             *flags |= QEMUD_CMD_FLAG_NO_REBOOT;
+        if (strstr(help, "\n-drive"))
+            *flags |= QEMUD_CMD_FLAG_DRIVE_OPT;
+        if (strstr(help, "boot=on"))
+            *flags |= QEMUD_CMD_FLAG_DRIVE_BOOT_OPT;
         if (*version >= 9000)
             *flags |= QEMUD_CMD_FLAG_VNC_COLON;
         ret = 0;
@@ -583,6 +588,7 @@ static int qemudParseDiskXML(virConnectPtr conn,
     xmlChar *source = NULL;
     xmlChar *target = NULL;
     xmlChar *type = NULL;
+    xmlChar *bus = NULL;
     int typ = 0;
 
     type = xmlGetProp(node, BAD_CAST "type");
@@ -613,6 +619,7 @@ static int qemudParseDiskXML(virConnectPtr conn,
             } else if ((target == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "target"))) {
                 target = xmlGetProp(cur, BAD_CAST "dev");
+                bus = xmlGetProp(cur, BAD_CAST "bus");
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
                 disk->readonly = 1;
             }
@@ -658,10 +665,9 @@ static int qemudParseDiskXML(virConnectPtr conn,
         disk->readonly = 1;
 
     if ((!device || !strcmp((const char *)device, "disk")) &&
-        strcmp((const char *)target, "hda") &&
-        strcmp((const char *)target, "hdb") &&
-        strcmp((const char *)target, "hdc") &&
-        strcmp((const char *)target, "hdd")) {
+        strncmp((const char *)target, "hd", 2) &&
+        strncmp((const char *)target, "sd", 2) &&
+        strncmp((const char *)target, "vd", 2)) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Invalid harddisk device name: %s"), target);
         goto error;
@@ -688,13 +694,41 @@ static int qemudParseDiskXML(virConnectPtr conn,
         goto error;
     }
 
+    if (!bus) {
+        if (disk->device == QEMUD_DISK_FLOPPY)
+            disk->bus = QEMUD_DISK_BUS_FDC;
+        else
+            disk->bus = QEMUD_DISK_BUS_IDE;
+    } else if (STREQ((const char *)bus, "ide"))
+        disk->bus = QEMUD_DISK_BUS_IDE;
+    else if (STREQ((const char *)bus, "fdc"))
+        disk->bus = QEMUD_DISK_BUS_FDC;
+    else if (STREQ((const char *)bus, "scsi"))
+        disk->bus = QEMUD_DISK_BUS_SCSI;
+    else if (STREQ((const char *)bus, "virtio"))
+        disk->bus = QEMUD_DISK_BUS_VIRTIO;
+    else {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Invalid bus type: %s"), bus);
+        goto error;
+    }
+
+    if (disk->device == QEMUD_DISK_FLOPPY &&
+        disk->bus != QEMUD_DISK_BUS_FDC) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Invalid bus type '%s' for floppy disk"), bus);
+        goto error;
+    }
+
     xmlFree(device);
     xmlFree(target);
     xmlFree(source);
+    xmlFree(bus);
 
     return 0;
 
  error:
+    xmlFree(bus);
     xmlFree(type);
     xmlFree(target);
     xmlFree(source);
@@ -1388,6 +1422,25 @@ static int qemudParseInputXML(virConnectPtr conn,
     return -1;
 }
 
+static int qemudDiskCompare(const void *aptr, const void *bptr) {
+    struct qemud_vm_disk_def *a = (struct qemud_vm_disk_def *) aptr;
+    struct qemud_vm_disk_def *b = (struct qemud_vm_disk_def *) bptr;
+    if (a->bus == b->bus)
+        return virDiskNameToIndex(a->dst) - virDiskNameToIndex(b->dst);
+    else
+        return a->bus - b->bus;
+}
+
+static const char *qemudBusIdToName(int busId, int qemuIF) {
+    const char *busnames[] = { "ide",
+                               (qemuIF ? "floppy" : "fdc"),
+                               "scsi",
+                               "virtio" };
+    verify_true(ARRAY_CARDINALITY(busnames) == QEMUD_DISK_BUS_LAST);
+
+    return busnames[busId];
+}
+
 /* Sound device helper functions */
 static int qemudSoundModelFromString(const char *model) {
     if (STREQ(model, "sb16")) {
@@ -1439,7 +1492,6 @@ static int qemudParseSoundXML(virConnectPtr conn,
     xmlFree(model);
     return err;
 }
-
 
 /*
  * Parses a libvirt XML definition of a guest, and populates the
@@ -1832,7 +1884,6 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     obj = xmlXPathEval(BAD_CAST "/domain/devices/disk", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
-        struct qemud_vm_disk_def *prev = NULL;
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
             struct qemud_vm_disk_def *disk = calloc(1, sizeof(*disk));
             if (!disk) {
@@ -1845,13 +1896,20 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
                 goto error;
             }
             def->ndisks++;
-            disk->next = NULL;
             if (i == 0) {
+                disk->next = NULL;
                 def->disks = disk;
             } else {
-                prev->next = disk;
+                struct qemud_vm_disk_def *ptr = def->disks;
+                while (ptr) {
+                    if (!ptr->next || qemudDiskCompare(disk, ptr->next) < 0) {
+                        disk->next = ptr->next;
+                        ptr->next = disk;
+                        break;
+                    }
+                    ptr = ptr->next;
+                }
             }
-            prev = disk;
         }
     }
     xmlXPathFreeObject(obj);
@@ -2292,7 +2350,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     snprintf(memory, sizeof(memory), "%lu", vm->def->memory/1024);
     snprintf(vcpus, sizeof(vcpus), "%d", vm->def->vcpus);
 
-    if (!(*argv = malloc(sizeof(**argv) * (len+1))))
+    if (!(*argv = calloc(len+1, sizeof(**argv))))
         goto no_memory;
     if (!((*argv)[++n] = strdup(vm->def->os.binary)))
         goto no_memory;
@@ -2390,28 +2448,102 @@ int qemudBuildCommandLine(virConnectPtr conn,
             goto no_memory;
     }
 
-    while (disk) {
-        char dev[NAME_MAX];
-        char file[PATH_MAX];
-        if (!strcmp(disk->dst, "hdc") &&
-            disk->device == QEMUD_DISK_CDROM) {
-            if (disk->src[0])
-                snprintf(dev, NAME_MAX, "-%s", "cdrom");
-            else {
-                /* Don't put anything on the cmdline for an empty cdrom*/
-                disk = disk->next;
-                continue;
+    /* If QEMU supports -drive param instead of old -hda, -hdb, -cdrom .. */
+    if (vm->qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_OPT) {
+        int bootCD = 0, bootFloppy = 0, bootDisk = 0;
+
+        /* If QEMU supports boot=on for -drive param... */
+        if (vm->qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_BOOT_OPT) {
+            for (i = 0 ; i < vm->def->os.nBootDevs ; i++) {
+                switch (vm->def->os.bootDevs[i]) {
+                case QEMUD_BOOT_CDROM:
+                    bootCD = 1;
+                    break;
+                case QEMUD_BOOT_FLOPPY:
+                    bootFloppy = 1;
+                    break;
+                case QEMUD_BOOT_DISK:
+                    bootDisk = 1;
+                    break;
+                }
             }
-        } else
-            snprintf(dev, NAME_MAX, "-%s", disk->dst);
-        snprintf(file, PATH_MAX, "%s", disk->src);
+        }
 
-        if (!((*argv)[++n] = strdup(dev)))
-            goto no_memory;
-        if (!((*argv)[++n] = strdup(file)))
-            goto no_memory;
+        while (disk) {
+            char opt[PATH_MAX];
+            const char *media = NULL;
+            int bootable = 0;
+            int idx = virDiskNameToIndex(disk->dst);
+            if (!((*argv)[++n] = strdup("-drive")))
+                goto no_memory;
 
-        disk = disk->next;
+            if (idx < 0) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("unsupported disk type '%s'"), disk->dst);
+                goto error;
+            }
+
+            if (disk->device == QEMUD_DISK_CDROM)
+                media = "media=cdrom,";
+
+            switch (disk->device) {
+            case QEMUD_DISK_CDROM:
+                bootable = bootCD;
+                bootCD = 0;
+                break;
+            case QEMUD_DISK_FLOPPY:
+                bootable = bootFloppy;
+                bootFloppy = 0;
+                break;
+            case QEMUD_DISK_DISK:
+                bootable = bootDisk;
+                bootDisk = 0;
+                break;
+            }
+
+            snprintf(opt, PATH_MAX, "file=%s,if=%s,%sindex=%d%s",
+                     disk->src, qemudBusIdToName(disk->bus, 1),
+                     media ? media : "",
+                     idx,
+                     bootable ? ",boot=on" : "");
+
+            if (!((*argv)[++n] = strdup(opt)))
+                goto no_memory;
+            disk = disk->next;
+        }
+    } else {
+        while (disk) {
+            char dev[NAME_MAX];
+            char file[PATH_MAX];
+
+            if (STREQ(disk->dst, "hdc") &&
+                disk->device == QEMUD_DISK_CDROM) {
+                if (disk->src[0]) {
+                    snprintf(dev, NAME_MAX, "-%s", "cdrom");
+                } else {
+                    disk = disk->next;
+                    continue;
+                }
+            } else {
+                if (STRPREFIX(disk->dst, "hd") ||
+                    STRPREFIX(disk->dst, "fd")) {
+                    snprintf(dev, NAME_MAX, "-%s", disk->dst);
+                } else {
+                    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                     _("unsupported disk type '%s'"), disk->dst);
+                    goto error;
+                }
+            }
+
+            snprintf(file, PATH_MAX, "%s", disk->src);
+
+            if (!((*argv)[++n] = strdup(dev)))
+                goto no_memory;
+            if (!((*argv)[++n] = strdup(file)))
+                goto no_memory;
+
+            disk = disk->next;
+        }
     }
 
     if (!net) {
@@ -2661,6 +2793,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         for (i = 0 ; i < n ; i++)
             free((*argv)[i]);
         free(*argv);
+        *argv = NULL;
     }
     return -1;
 }
@@ -3518,10 +3651,7 @@ static int qemudGenerateXMLChar(virBufferPtr buf,
         "tcp",
         "unix"
     };
-    /*verify(ARRAY_CARDINALITY(types) == QEMUD_CHR_SRC_TYPE_LAST);*/
-
-    if (dev->srcType < 0 || dev->srcType >= QEMUD_CHR_SRC_TYPE_LAST)
-        return -1;
+    verify_true(ARRAY_CARDINALITY(types) == QEMUD_CHR_SRC_TYPE_LAST);
 
     /* Compat with legacy  <console tty='/dev/pts/5'/> syntax */
     if (STREQ(type, "console") &&
@@ -3722,7 +3852,8 @@ char *qemudGenerateXML(virConnectPtr conn,
             virBufferVSprintf(&buf, "      <source %s='%s'/>\n",
                               typeAttrs[disk->type], disk->src);
 
-        virBufferVSprintf(&buf, "      <target dev='%s'/>\n", disk->dst);
+        virBufferVSprintf(&buf, "      <target dev='%s' bus='%s'/>\n",
+                          disk->dst, qemudBusIdToName(disk->bus, 0));
 
         if (disk->readonly)
             virBufferAddLit(&buf, "      <readonly/>\n");

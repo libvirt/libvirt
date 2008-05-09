@@ -20,7 +20,7 @@ static struct qemud_driver driver;
 
 #define MAX_FILE 4096
 
-static int testCompareXMLToArgvFiles(const char *xml, const char *cmd) {
+static int testCompareXMLToArgvFiles(const char *xml, const char *cmd, int driveFlag) {
     char xmlData[MAX_FILE];
     char argvData[MAX_FILE];
     char *xmlPtr = &(xmlData[0]);
@@ -47,6 +47,10 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd) {
     vm.qemuVersion = 0 * 1000 * 100 + (8 * 1000) + 1;
     vm.qemuCmdFlags = QEMUD_CMD_FLAG_VNC_COLON |
         QEMUD_CMD_FLAG_NO_REBOOT;
+    if (driveFlag) {
+        vm.qemuCmdFlags |= QEMUD_CMD_FLAG_DRIVE_OPT;
+        vm.qemuCmdFlags |= QEMUD_CMD_FLAG_DRIVE_BOOT_OPT;
+    }
     vm.migrateFrom[0] = '\0';
 
     vmdef->vncActivePort = vmdef->vncPort;
@@ -94,14 +98,20 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd) {
 }
 
 
+struct testInfo {
+    const char *name;
+    int driveFlag;
+};
+
 static int testCompareXMLToArgvHelper(const void *data) {
+    const struct testInfo *info = data;
     char xml[PATH_MAX];
     char args[PATH_MAX];
     snprintf(xml, PATH_MAX, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
-             abs_srcdir, (const char*)data);
+             abs_srcdir, info->name);
     snprintf(args, PATH_MAX, "%s/qemuxml2argvdata/qemuxml2argv-%s.args",
-             abs_srcdir, (const char*)data);
-    return testCompareXMLToArgvFiles(xml, args);
+             abs_srcdir, info->name);
+    return testCompareXMLToArgvFiles(xml, args, info->driveFlag);
 }
 
 
@@ -125,41 +135,45 @@ main(int argc, char **argv)
 
     driver.caps = qemudCapsInit();
 
-#define DO_TEST(name) \
-    if (virtTestRun("QEMU XML-2-ARGV " name, \
-                    1, testCompareXMLToArgvHelper, (name)) < 0) \
-        ret = -1
+#define DO_TEST(name, driveFlag)                                        \
+    do {                                                                \
+        struct testInfo info = { name, driveFlag };                     \
+        if (virtTestRun("QEMU XML-2-ARGV " name,                        \
+                        1, testCompareXMLToArgvHelper, &info) < 0)      \
+            ret = -1;                                                   \
+    } while (0)
 
-    DO_TEST("minimal");
-    DO_TEST("boot-cdrom");
-    DO_TEST("boot-network");
-    DO_TEST("boot-floppy");
-    DO_TEST("clock-utc");
-    DO_TEST("clock-localtime");
-    DO_TEST("disk-cdrom");
-    DO_TEST("disk-floppy");
-    DO_TEST("disk-many");
-    DO_TEST("graphics-vnc");
-    DO_TEST("graphics-sdl");
-    DO_TEST("input-usbmouse");
-    DO_TEST("input-usbtablet");
-    DO_TEST("misc-acpi");
-    DO_TEST("misc-no-reboot");
-    DO_TEST("net-user");
-    DO_TEST("net-virtio");
+    DO_TEST("minimal", 0);
+    DO_TEST("boot-cdrom", 0);
+    DO_TEST("boot-network", 0);
+    DO_TEST("boot-floppy", 0);
+    DO_TEST("clock-utc", 0);
+    DO_TEST("clock-localtime", 0);
+    DO_TEST("disk-cdrom", 0);
+    DO_TEST("disk-floppy", 0);
+    DO_TEST("disk-many", 0);
+    DO_TEST("disk-virtio", 1);
+    DO_TEST("graphics-vnc", 0);
+    DO_TEST("graphics-sdl", 0);
+    DO_TEST("input-usbmouse", 0);
+    DO_TEST("input-usbtablet", 0);
+    DO_TEST("misc-acpi", 0);
+    DO_TEST("misc-no-reboot", 0);
+    DO_TEST("net-user", 0);
+    DO_TEST("net-virtio", 0);
 
-    DO_TEST("serial-vc");
-    DO_TEST("serial-pty");
-    DO_TEST("serial-dev");
-    DO_TEST("serial-file");
-    DO_TEST("serial-unix");
-    DO_TEST("serial-tcp");
-    DO_TEST("serial-udp");
-    DO_TEST("serial-tcp-telnet");
-    DO_TEST("serial-many");
-    DO_TEST("parallel-tcp");
-    DO_TEST("console-compat");
-    DO_TEST("sound");
+    DO_TEST("serial-vc", 0);
+    DO_TEST("serial-pty", 0);
+    DO_TEST("serial-dev", 0);
+    DO_TEST("serial-file", 0);
+    DO_TEST("serial-unix", 0);
+    DO_TEST("serial-tcp", 0);
+    DO_TEST("serial-udp", 0);
+    DO_TEST("serial-tcp-telnet", 0);
+    DO_TEST("serial-many", 0);
+    DO_TEST("parallel-tcp", 0);
+    DO_TEST("console-compat", 0);
+    DO_TEST("sound", 0);
 
     virCapabilitiesFree(driver.caps);
 

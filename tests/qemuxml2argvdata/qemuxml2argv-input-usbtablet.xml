@@ -16,7 +16,7 @@
     <emulator>/usr/bin/qemu</emulator>
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest1'/>
-      <target dev='hda'/>
+      <target dev='hda' bus='ide'/>
     </disk>
     <input type='tablet' bus='usb'/>
   </devices>

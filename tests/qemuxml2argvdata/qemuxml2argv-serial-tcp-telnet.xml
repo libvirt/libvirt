@@ -16,7 +16,7 @@
     <emulator>/usr/bin/qemu</emulator>
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest1'/>
-      <target dev='hda'/>
+      <target dev='hda' bus='ide'/>
     </disk>
     <serial type='tcp'>
       <source mode='bind' host='127.0.0.1' service='9999'/>

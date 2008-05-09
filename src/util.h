@@ -87,4 +87,6 @@ int virParseNumber(const char **str);
 
 int virParseMacAddr(const char* str, unsigned char *addr);
 
+int virDiskNameToIndex(const char* str);
+
 #endif /* __VIR_UTIL_H__ */

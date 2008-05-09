@@ -78,6 +78,7 @@ strsep
 sys_stat
 useless-if-before-free
 vasprintf
+verify
 vc-list-files
 '
 
