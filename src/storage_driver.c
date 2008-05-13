@@ -1245,6 +1245,7 @@ static virStateDriver stateDriver = {
     storageDriverShutdown,
     storageDriverReload,
     storageDriverActive,
+    NULL
 };
 
 int storageRegister(void) {

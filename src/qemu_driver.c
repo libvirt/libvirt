@@ -3198,6 +3198,7 @@ static virStateDriver qemuStateDriver = {
     qemudShutdown,
     qemudReload,
     qemudActive,
+    NULL
 };
 
 int qemudRegister(void) {

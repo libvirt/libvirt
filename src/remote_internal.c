@@ -4793,6 +4793,7 @@ static virStateDriver state_driver = {
     NULL,
     NULL,
     NULL,
+    NULL
 };
 
 

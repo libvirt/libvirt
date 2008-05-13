@@ -109,16 +109,16 @@ static gnutls_dh_params_t dh_params;
 static sig_atomic_t sig_errors = 0;
 static int sig_lasterrno = 0;
 
-static void sig_handler(int sig) {
-    unsigned char sigc = sig;
+static void sig_handler(int sig, siginfo_t * siginfo,
+                        void* context ATTRIBUTE_UNUSED) {
     int origerrno;
     int r;
 
-    if (sig == SIGCHLD) /* We explicitly waitpid the child later */
-        return;
+    /* set the sig num in the struct */
+    siginfo->si_signo = sig;
 
     origerrno = errno;
-    r = safewrite(sigwrite, &sigc, 1);
+    r = safewrite(sigwrite, siginfo, sizeof(*siginfo));
     if (r == -1) {
         sig_errors++;
         sig_lasterrno = errno;
@@ -232,10 +232,10 @@ static void qemudDispatchSignalEvent(int fd ATTRIBUTE_UNUSED,
                                      int events ATTRIBUTE_UNUSED,
                                      void *opaque) {
     struct qemud_server *server = (struct qemud_server *)opaque;
-    unsigned char sigc;
+    siginfo_t siginfo;
     int ret;
 
-    if (read(server->sigread, &sigc, 1) != 1) {
+    if (saferead(server->sigread, &siginfo, sizeof(siginfo)) != sizeof(siginfo)) {
         qemudLog(QEMUD_ERR, _("Failed to read from signal pipe: %s"),
                  strerror(errno));
         return;
@@ -243,7 +243,7 @@ static void qemudDispatchSignalEvent(int fd ATTRIBUTE_UNUSED,
 
     ret = 0;
 
-    switch (sigc) {
+    switch (siginfo.si_signo) {
     case SIGHUP:
         qemudLog(QEMUD_INFO, "%s", _("Reloading configuration on SIGHUP"));
         if (virStateReload() < 0)
@@ -253,11 +253,15 @@ static void qemudDispatchSignalEvent(int fd ATTRIBUTE_UNUSED,
     case SIGINT:
     case SIGQUIT:
     case SIGTERM:
-        qemudLog(QEMUD_WARN, _("Shutting down on signal %d"), sigc);
+        qemudLog(QEMUD_WARN, _("Shutting down on signal %d"),
+                 siginfo.si_signo);
         server->shutdown = 1;
         break;
 
     default:
+        qemudLog(QEMUD_INFO, _("Received signal %d, dispatching to drivers"),
+                 siginfo.si_signo);
+        virStateSigDispatcher(&siginfo);
         break;
     }
 
@@ -2186,8 +2190,8 @@ int main(int argc, char **argv) {
             goto error1;
     }
 
-    sig_action.sa_handler = sig_handler;
-    sig_action.sa_flags = 0;
+    sig_action.sa_sigaction = sig_handler;
+    sig_action.sa_flags = SA_SIGINFO;
     sigemptyset(&sig_action.sa_mask);
 
     sigaction(SIGHUP, &sig_action, NULL);

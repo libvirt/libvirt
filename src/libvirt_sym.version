@@ -170,6 +170,7 @@
 	__virStateCleanup;
 	__virStateReload;
 	__virStateActive;
+	__virStateSigDispatcher;
 
 	__virDrvSupportsFeature;
 

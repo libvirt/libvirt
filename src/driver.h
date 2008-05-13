@@ -11,6 +11,8 @@
 
 #include <libxml/uri.h>
 
+#include <signal.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -565,6 +567,7 @@ typedef int (*virDrvStateInitialize) (void);
 typedef int (*virDrvStateCleanup) (void);
 typedef int (*virDrvStateReload) (void);
 typedef int (*virDrvStateActive) (void);
+typedef int (*virDrvSigHandler) (siginfo_t *siginfo);
 
 typedef struct _virStateDriver virStateDriver;
 typedef virStateDriver *virStateDriverPtr;
@@ -574,6 +577,7 @@ struct _virStateDriver {
     virDrvStateCleanup     cleanup;
     virDrvStateReload      reload;
     virDrvStateActive      active;
+    virDrvSigHandler       sigHandler;
 };
 
 /*

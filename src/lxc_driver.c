@@ -925,6 +925,70 @@ error_out:
 }
 
 /**
+ * lxcVmCleanup:
+ * @vm: Ptr to VM to clean up
+ *
+ * waitpid() on the container process.  kill and wait the tty process
+ * This is called by boh lxcDomainDestroy and lxcSigHandler when a
+ * container exits.
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int lxcVMCleanup(lxc_driver_t *driver, lxc_vm_t * vm)
+{
+    int rc = -1;
+    int waitRc;
+    int childStatus = -1;
+
+    while (((waitRc = waitpid(vm->def->id, &childStatus, 0)) == -1) &&
+           errno == EINTR);
+
+    if (waitRc != vm->def->id) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("waitpid failed to wait for container %d: %d %s"),
+                 vm->def->id, waitRc, strerror(errno));
+        goto kill_tty;
+    }
+
+    rc = 0;
+
+    if (WIFEXITED(childStatus)) {
+        rc = WEXITSTATUS(childStatus);
+        DEBUG("container exited with rc: %d", rc);
+    }
+
+kill_tty:
+    if (0 > (kill(vm->pid, SIGKILL))) {
+        if (ESRCH != errno) {
+            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("sending SIGKILL to tty process failed: %s"),
+                     strerror(errno));
+
+            goto tty_error_out;
+        }
+    }
+
+    while (((waitRc = waitpid(vm->pid, &childStatus, 0)) == -1) &&
+           errno == EINTR);
+
+    if (waitRc != vm->pid) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("waitpid failed to wait for tty %d: %d %s"),
+                 vm->pid, waitRc, strerror(errno));
+    }
+
+tty_error_out:
+    vm->state = VIR_DOMAIN_SHUTOFF;
+    vm->pid = -1;
+    vm->def->id = -1;
+    driver->nactivevms--;
+    driver->ninactivevms++;
+    lxcSaveConfig(NULL, driver, vm, vm->def);
+
+    return rc;
+ }
+
+/**
  * lxcDomainDestroy:
  * @dom: Ptr to domain to destroy
  *
@@ -935,10 +999,8 @@ error_out:
 static int lxcDomainDestroy(virDomainPtr dom)
 {
     int rc = -1;
-    int waitRc;
     lxc_driver_t *driver = (lxc_driver_t*)dom->conn->privateData;
     lxc_vm_t *vm = lxcFindVMByID(driver, dom->id);
-    int childStatus;
 
     if (!vm) {
         lxcError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
@@ -957,47 +1019,7 @@ static int lxcDomainDestroy(virDomainPtr dom)
 
     vm->state = VIR_DOMAIN_SHUTDOWN;
 
-    while (((waitRc = waitpid(vm->def->id, &childStatus, 0)) == -1) &&
-           errno == EINTR);
-
-    if (waitRc != vm->def->id) {
-        lxcError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
-                 _("waitpid failed to wait for container %d: %d %s"),
-                 vm->def->id, waitRc, strerror(errno));
-        goto kill_tty;
-    }
-
-    rc = WEXITSTATUS(childStatus);
-    DEBUG("container exited with rc: %d", rc);
-
-kill_tty:
-    if (0 > (kill(vm->pid, SIGKILL))) {
-        if (ESRCH != errno) {
-            lxcError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
-                     _("sending SIGKILL to tty process failed: %s"),
-                     strerror(errno));
-
-            goto tty_error_out;
-        }
-    }
-
-    while (((waitRc = waitpid(vm->pid, &childStatus, 0)) == -1) &&
-           errno == EINTR);
-
-    if (waitRc != vm->pid) {
-        lxcError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
-                 _("waitpid failed to wait for tty %d: %d %s"),
-                 vm->pid, waitRc, strerror(errno));
-    }
-
-tty_error_out:
-    vm->state = VIR_DOMAIN_SHUTOFF;
-    vm->pid = -1;
-    vm->def->id = -1;
-    driver->nactivevms--;
-    driver->ninactivevms++;
-
-    rc = 0;
+    rc = lxcVMCleanup(driver, vm);
 
 error_out:
     return rc;
@@ -1077,6 +1099,37 @@ lxcActive(void) {
     return 0;
 }
 
+/**
+ * lxcSigHandler:
+ * @siginfo: Pointer to siginfo_t structure
+ *
+ * Handles signals received by libvirtd.  Currently this is used to
+ * catch SIGCHLD from an exiting container.
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int lxcSigHandler(siginfo_t *siginfo)
+{
+    int rc = -1;
+    lxc_vm_t *vm;
+
+    if (siginfo->si_signo == SIGCHLD) {
+        vm = lxcFindVMByID(lxc_driver, siginfo->si_pid);
+
+        if (NULL == vm) {
+            DEBUG("Ignoring SIGCHLD from non-container process %d\n",
+                  siginfo->si_pid);
+            goto cleanup;
+        }
+
+        rc = lxcVMCleanup(lxc_driver, vm);
+
+    }
+
+cleanup:
+    return rc;
+}
+
 
 /* Function Tables */
 static virDriver lxcDriver = {
@@ -1145,6 +1198,7 @@ static virStateDriver lxcStateDriver = {
     lxcShutdown,
     NULL, /* reload */
     lxcActive,
+    lxcSigHandler
 };
 
 int lxcRegister(void)
