@@ -1,3 +1,9 @@
+Tue May 13 10:55:43 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	avoid "not a string literal..." warnings
+	* src/qemu_conf.c (qemudParseInterfaceXML): Add "%s".
+	(qemudBuildCommandLine, qemudGenerateXML): Likewise.
+
 Mon May 12 23:32:21 PST 2008 David L. Leskovec <dlesko@linux.vnet.ibm.com>
 
 	* qemud/qemud.c: get siginfo with signals, distribute to drivers that

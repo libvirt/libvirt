@@ -1006,7 +1006,7 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
                 (model[i] >= 'a' && model[i] <= 'z') ||
                 (model[i] >= 'A' && model[i] <= 'Z') || model[i] == '_';
             if (!char_ok) {
-                qemudReportError (conn, NULL, NULL, VIR_ERR_INVALID_ARG,
+                qemudReportError (conn, NULL, NULL, VIR_ERR_INVALID_ARG, "%s",
                                   _("Model name contains invalid characters"));
                 goto error;
             }
@@ -2751,9 +2751,9 @@ int qemudBuildCommandLine(virConnectPtr conn,
         while(sound && size > 0) {
             const char *model = qemudSoundModelToString(sound->model);
             if (!model) {
-               qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                _("invalid sound model"));
-               goto error;
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("invalid sound model"));
+                goto error;
             }
             strncat(modstr, model, size);
             size -= strlen(model);
@@ -3988,7 +3988,7 @@ char *qemudGenerateXML(virConnectPtr conn,
         const char *model = qemudSoundModelToString(sound->model);
         if (!model) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("invalid sound model"));
+                             "%s", _("invalid sound model"));
             goto cleanup;
         }
         virBufferVSprintf(&buf, "    <sound model='%s'/>\n", model);
