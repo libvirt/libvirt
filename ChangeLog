@@ -1,13 +1,13 @@
 Mon May 12 23:32:21 PST 2008 David L. Leskovec <dlesko@linux.vnet.ibm.com>
 
 	* qemud/qemud.c: get siginfo with signals, distribute to drivers that
-    register a handler
+	registers a handler
 	* src/driver.h: add sighandler function to state driver table
 	* src/internal.h: define virStateSigDispatcher functions
 	* src/libvirt.c: add __virStateSigDispatcher function
 	* src/libvirt_sym.version: add __virStateSigDispatcher
 	* src/lxc_driver.c: add sig handler function, cleanup vm when sigchld
-    received from container process
+	received from container process
 	* src/qemu_driver.c: NULL for sig handler (no handler) in state driver
 	* src/remote_internal.c: NULL for sig handler (no handler) in state driver
 	* src/storage_driver.c: NULL for sig handler (no handler) in state driver
