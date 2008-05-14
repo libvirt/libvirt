@@ -429,7 +429,7 @@ static char *xmlRpcCallRaw(const char *url, const char *request)
                 goto error;
         }
 
-        if (contentType && strcmp(contentType, "text/xml") != 0) {
+        if (contentType && STRNEQ(contentType, "text/xml")) {
                 errno = EINVAL;
                 xmlRpcError(VIR_ERR_POST_FAILED, _("unexpected mime type"), 0);
                 goto error;

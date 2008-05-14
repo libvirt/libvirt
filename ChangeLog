@@ -1,3 +1,16 @@
+Wed May 14 15:34:43 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* proxy/libvirt_proxy.c, src/conf.c, src/hash.c,
+	src/iptables.c, src/libvirt.c, src/openvz_conf.c,
+	src/qemu_conf.c, src/remote_internal.c, src/sexpr.c,
+	src/test.c, src/util.c, src/virsh.c, src/xen_unified.c,
+	src/xend_internal.c, src/xm_internal.c, src/xml.c,
+	src/xmlrpc.c, tests/virshtest.c, tests/xml2sexprtest.c,
+	tests/xmlrpctest.c: Replace all use of strcmp, strncmp,
+	etc with STREQ/STREQLEN/STRPREFIX macros.
+	* Makefile.cfg: Enable strcmp syntax check
+	* .x-sc_prohibit_strcmp: Blacklist gnulib module
+
 Tue May 13 10:55:43 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	avoid "not a string literal..." warnings

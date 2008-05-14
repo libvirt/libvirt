@@ -655,7 +655,7 @@ virGetVersion(unsigned long *libVer, const char *type,
             type = "Xen";
         for (i = 0;i < virDriverTabCount;i++) {
             if ((virDriverTab[i] != NULL) &&
-                (!strcasecmp(virDriverTab[i]->name, type))) {
+                (STRCASEEQ(virDriverTab[i]->name, type))) {
                 *typeVer = virDriverTab[i]->ver;
                 break;
             }
@@ -721,7 +721,7 @@ do_open (const char *name,
     }
 
     /* Convert xen -> xen:/// for back compat */
-    if (!strcasecmp(name, "xen"))
+    if (STRCASEEQ(name, "xen"))
         name = "xen:///";
 
     /* Convert xen:// -> xen:/// because xmlParseURI cannot parse the

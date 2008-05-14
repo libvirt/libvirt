@@ -270,11 +270,11 @@ virHashAddEntry(virHashTablePtr table, const char *name, void *userdata)
     } else {
         for (insert = &(table->table[key]); insert->next != NULL;
              insert = insert->next) {
-            if (!strcmp(insert->name, name))
+            if (STREQ(insert->name, name))
                 return (-1);
             len++;
         }
-        if (!strcmp(insert->name, name))
+        if (STREQ(insert->name, name))
             return (-1);
     }
 
@@ -335,14 +335,14 @@ virHashUpdateEntry(virHashTablePtr table, const char *name,
     } else {
         for (insert = &(table->table[key]); insert->next != NULL;
              insert = insert->next) {
-            if (!strcmp(insert->name, name)) {
+            if (STREQ(insert->name, name)) {
                 if (f)
                     f(insert->payload, insert->name);
                 insert->payload = userdata;
                 return (0);
             }
         }
-        if (!strcmp(insert->name, name)) {
+        if (STREQ(insert->name, name)) {
             if (f)
                 f(insert->payload, insert->name);
             insert->payload = userdata;
@@ -393,7 +393,7 @@ virHashLookup(virHashTablePtr table, const char *name)
     if (table->table[key].valid == 0)
         return (NULL);
     for (entry = &(table->table[key]); entry != NULL; entry = entry->next) {
-        if (!strcmp(entry->name, name))
+        if (STREQ(entry->name, name))
             return (entry->payload);
     }
     return (NULL);
@@ -445,7 +445,7 @@ virHashRemoveEntry(virHashTablePtr table, const char *name,
     } else {
         for (entry = &(table->table[key]); entry != NULL;
              entry = entry->next) {
-            if (!strcmp(entry->name, name)) {
+            if (STREQ(entry->name, name)) {
                 if ((f != NULL) && (entry->payload != NULL))
                     f(entry->payload, entry->name);
                 entry->payload = NULL;

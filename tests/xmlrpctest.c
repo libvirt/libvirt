@@ -108,7 +108,7 @@ checkRequestValue(const char *xmlstr, const char *xpath, int type, void *expecte
             break;
          case XML_RPC_STRING:
             if ((obj->type != XPATH_STRING) ||
-                    (strcmp((const char *)obj->stringval, (const char *)expected)))
+                    (STRNEQ((const char *)obj->stringval, (const char *)expected)))
                 goto error;
             break;
         default:

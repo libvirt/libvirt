@@ -107,7 +107,7 @@ struct openvz_vm
     struct  openvz_vm *vm = driver->vms;
 
     while (vm) {
-        if (!strcmp(vm->vmdef->name, name))
+        if (STREQ(vm->vmdef->name, name))
             return vm;
         vm = vm->next;
     }
@@ -324,7 +324,7 @@ static struct openvz_vm_def
         goto bail_out;
     }
 
-    if (strcmp((char *)prop, "openvz")){
+    if (STRNEQ((char *)prop, "openvz")){
         error(conn, VIR_ERR_INTERNAL_ERROR, _("invalid domain type attribute"));
         goto bail_out;
     }
@@ -553,7 +553,7 @@ openvzGetVPSInfo(virConnectPtr conn) {
                   _("Failed to parse vzlist output"));
             goto error;
         }
-        if(strcmp(status, "stopped")) {
+        if(STRNEQ(status, "stopped")) {
             (*pnext)->status = VIR_DOMAIN_RUNNING;
             driver->num_active ++;
             (*pnext)->vpsid = veid;
@@ -673,7 +673,7 @@ openvzGetVPSUUID(int vpsid, char *uuidstr)
         }
 
         sscanf(line, "%s %s\n", iden, uuidbuf);
-        if(!strcmp(iden, "#UUID:")) {
+        if(STREQ(iden, "#UUID:")) {
             strncpy(uuidstr, uuidbuf, VIR_UUID_STRING_BUFLEN);
             break;
         }
@@ -747,7 +747,7 @@ int openvzAssignUUIDs(void)
 
     while((dent = readdir(dp))) {
         res = sscanf(dent->d_name, "%d.%5s", &vpsid, ext);
-        if(!(res == 2 && !strcmp(ext, "conf")))
+        if(!(res == 2 && STREQ(ext, "conf")))
             continue;
         if(vpsid > 0) /* '0.conf' belongs to the host, ignore it */
             openvzSetUUID(vpsid);

@@ -403,7 +403,7 @@ sreads(virConnectPtr xend, int fd, char *buffer, size_t n_buffer)
 static int
 istartswith(const char *haystack, const char *needle)
 {
-    return (strncasecmp(haystack, needle, strlen(needle)) == 0);
+    return STRCASEEQLEN(haystack, needle, strlen(needle));
 }
 
 
@@ -426,7 +426,7 @@ xend_req(virConnectPtr xend, int fd, char *content, size_t n_content)
     int retcode = 0;
 
     while (sreads(xend, fd, buffer, sizeof(buffer)) > 0) {
-        if (strcmp(buffer, "\r\n") == 0)
+        if (STREQ(buffer, "\r\n"))
             break;
 
         if (istartswith(buffer, "Content-Length: "))
@@ -487,7 +487,7 @@ xend_get(virConnectPtr xend, const char *path,
     close(s);
 
     if (((ret < 0) || (ret >= 300)) &&
-        ((ret != 404) || (strncmp(path, "/xend/domain/", 13)))) {
+        ((ret != 404) || (STRNEQLEN(path, "/xend/domain/", 13)))) {
         virXendError(xend, VIR_ERR_GET_FAILED, content);
     }
 
@@ -1882,7 +1882,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                 /* There is a case without the uname to the CD-ROM device */
                 offset = strchr(dst, ':');
                 if (offset) {
-                    if (hvm && !strcmp( offset , ":cdrom")) {
+                    if (hvm && STREQ( offset , ":cdrom")) {
                         isNoSrcCdrom = 1;
                     }
                     offset[0] = '\0';
@@ -1913,7 +1913,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
 
                 src = offset + 1;
 
-                if (!strcmp(drvName, "tap")) {
+                if (STREQ(drvName, "tap")) {
                     offset = strchr(src, ':');
                     if (!offset) {
                         virXendError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -1936,23 +1936,23 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                        omnipotent, we can revisit this, perhaps stat()'ing
                        the src file in question */
                     isBlock = 0;
-                } else if (!strcmp(drvName, "phy")) {
+                } else if (STREQ(drvName, "phy")) {
                     isBlock = 1;
-                } else if (!strcmp(drvName, "file")) {
+                } else if (STREQ(drvName, "file")) {
                     isBlock = 0;
                 }
             }
 
-            if (!strncmp(dst, "ioemu:", 6))
+            if (STREQLEN(dst, "ioemu:", 6))
                 dst += 6;
 
             /* New style disk config from Xen >= 3.0.3 */
             if (xendConfigVersion > 1) {
                 offset = strrchr(dst, ':');
                 if (offset) {
-                    if (!strcmp(offset, ":cdrom")) {
+                    if (STREQ(offset, ":cdrom")) {
                         cdrom = 1;
-                    } else if (!strcmp(offset, ":disk")) {
+                    } else if (STREQ(offset, ":disk")) {
                         /* The default anyway */
                     } else {
                         /* Unknown, lets pretend its a disk too */
@@ -1993,9 +1993,9 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
 
             /* XXX should we force mode == r, if cdrom==1, or assume
                xend has already done this ? */
-            if ((mode != NULL) && (!strcmp(mode, "r")))
+            if ((mode != NULL) && (STREQ(mode, "r")))
                 virBufferAddLit(&buf, "      <readonly/>\n");
-            else if ((mode != NULL) && (!strcmp(mode, "w!")))
+            else if ((mode != NULL) && (STREQ(mode, "w!")))
                 virBufferAddLit(&buf, "      <shareable/>\n");
             virBufferAddLit(&buf, "    </disk>\n");
 
@@ -2046,11 +2046,11 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
              * or for HVM guests in >= 3.0.5 */
             tmp = sexpr_node(node, "device/vfb/type");
 
-            if (tmp && !strcmp(tmp, "sdl")) {
+            if (tmp && STREQ(tmp, "sdl")) {
                 vfb = 1;
                 virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2": "xen");
                 virBufferAddLit(&buf, "    <graphics type='sdl'/>\n");
-            } else if (tmp && !strcmp(tmp, "vnc")) {
+            } else if (tmp && STREQ(tmp, "vnc")) {
                 int port = xenStoreDomainGetVNCPort(conn, domid);
                 const char *listenAddr = sexpr_node(node, "device/vfb/vnclisten");
                 const char *vncPasswd = NULL;
@@ -2109,9 +2109,9 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
             if (sexpr_lookup(node, "usbdevice")) {
                 tmp = sexpr_node(node, "usbdevice");
                 if (tmp && *tmp) {
-                    if (!strcmp(tmp, "tablet"))
+                    if (STREQ(tmp, "tablet"))
                         virBufferAddLit(&buf, "    <input type='tablet' bus='usb'/>\n");
-                    else if (!strcmp(tmp, "mouse"))
+                    else if (STREQ(tmp, "mouse"))
                         virBufferAddLit(&buf, "    <input type='mouse' bus='usb'/>\n");
                 }
             }
@@ -2399,7 +2399,7 @@ sexpr_to_xend_topology(virConnectPtr conn,
             goto parse_error;
         cur++;
         virSkipSpaces(&cur);
-        if (!strncmp(cur, "no cpus", 7)) {
+        if (STREQLEN(cur, "no cpus", 7)) {
             nb_cpus = 0;
             for (cpu = 0; cpu < numCpus; cpu++)
                 cpuset[cpu] = 0;
@@ -3460,7 +3460,7 @@ xenDaemonDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
     for (s = root; s->kind == SEXPR_CONS; s = s->u.s.cdr) {
         if ((s->u.s.car->kind == SEXPR_CONS) &&
             (s->u.s.car->u.s.car->kind == SEXPR_VALUE) &&
-            !strcmp(s->u.s.car->u.s.car->u.value, "vcpu")) {
+            STREQ(s->u.s.car->u.s.car->u.value, "vcpu")) {
             t = s->u.s.car;
             vcpu = ipt->number = sexpr_int(t, "vcpu/number");
             if ((oln = sexpr_int(t, "vcpu/online")) != 0) {
@@ -3481,7 +3481,7 @@ xenDaemonDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
                 for (t = t->u.s.cdr; t->kind == SEXPR_CONS; t = t->u.s.cdr)
                     if ((t->u.s.car->kind == SEXPR_CONS) &&
                         (t->u.s.car->u.s.car->kind == SEXPR_VALUE) &&
-                        !strcmp(t->u.s.car->u.s.car->u.value, "cpumap") &&
+                        STREQ(t->u.s.car->u.s.car->u.value, "cpumap") &&
                         (t->u.s.car->u.s.cdr->kind == SEXPR_CONS)) {
                         for (t = t->u.s.car->u.s.cdr->u.s.car; t->kind == SEXPR_CONS; t = t->u.s.cdr)
                             if (t->u.s.car->kind == SEXPR_VALUE
@@ -3677,7 +3677,7 @@ xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
         return (-1);
 
     str = virDomainGetOSType(domain);
-    if (strcmp(str, "linux"))
+    if (STREQ(str, "hvm"))
         hvm = 1;
     free(str);
     sexpr = virParseXMLDevice(domain->conn, xml, hvm, priv->xendConfigVersion);

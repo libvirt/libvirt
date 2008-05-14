@@ -304,7 +304,7 @@ static int xenXMConfigReaper(const void *payload, const char *key ATTRIBUTE_UNUS
            is currently mapped as owner of a named domain. */
         if (xenXMConfigGetString(entry->conf, "name", &olddomname) != -1) {
             char *nameowner = (char *)virHashLookup(nameConfigMap, olddomname);
-            if (nameowner && !strcmp(nameowner, key)) {
+            if (nameowner && STREQ(nameowner, key)) {
                 virHashRemoveEntry(nameConfigMap, olddomname, NULL);
             }
         }
@@ -353,19 +353,19 @@ static int xenXMConfigCacheRefresh (virConnectPtr conn) {
          */
 
         /* Like 'dot' files... */
-        if (!strncmp(ent->d_name, ".", 1))
+        if (STREQLEN(ent->d_name, ".", 1))
             continue;
         /* ...and the XenD server config file */
-        if (!strncmp(ent->d_name, XEND_CONFIG_FILE, strlen(XEND_CONFIG_FILE)))
+        if (STREQLEN(ent->d_name, XEND_CONFIG_FILE, strlen(XEND_CONFIG_FILE)))
             continue;
         /* ...and random PCI config cruft */
-        if (!strncmp(ent->d_name, XEND_PCI_CONFIG_PREFIX, strlen(XEND_PCI_CONFIG_PREFIX)))
+        if (STREQLEN(ent->d_name, XEND_PCI_CONFIG_PREFIX, strlen(XEND_PCI_CONFIG_PREFIX)))
             continue;
         /* ...and the example domain configs */
-        if (!strncmp(ent->d_name, XM_EXAMPLE_PREFIX, strlen(XM_EXAMPLE_PREFIX)))
+        if (STREQLEN(ent->d_name, XM_EXAMPLE_PREFIX, strlen(XM_EXAMPLE_PREFIX)))
             continue;
         /* ...and the QEMU networking script */
-        if (!strncmp(ent->d_name, QEMU_IF_SCRIPT, strlen(QEMU_IF_SCRIPT)))
+        if (STREQLEN(ent->d_name, QEMU_IF_SCRIPT, strlen(QEMU_IF_SCRIPT)))
             continue;
 
         /* ...and editor backups */
@@ -401,7 +401,7 @@ static int xenXMConfigCacheRefresh (virConnectPtr conn) {
                re-acquire it later - just in case it was renamed */
             if (xenXMConfigGetString(entry->conf, "name", &olddomname) != -1) {
                 char *nameowner = (char *)virHashLookup(nameConfigMap, olddomname);
-                if (nameowner && !strcmp(nameowner, path)) {
+                if (nameowner && STREQ(nameowner, path)) {
                     virHashRemoveEntry(nameConfigMap, olddomname, NULL);
                 }
             }
@@ -607,7 +607,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
     virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", uuidstr);
 
     if ((xenXMConfigGetString(conf, "builder", &str) == 0) &&
-        !strcmp(str, "hvm"))
+        STREQ(str, "hvm"))
         hvm = 1;
 
     if (hvm) {
@@ -778,7 +778,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             }
 
             /* And the source driver sub-type */
-            if (!strncmp(drvName, "tap", 3)) {
+            if (STREQLEN(drvName, "tap", 3)) {
                 if (!(tmp1 = strchr(tmp+1, ':')) || !tmp1[0])
                     goto skipdisk;
                 strncpy(drvType, tmp+1, (tmp1-(tmp+1)));
@@ -790,18 +790,18 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             }
 
             /* phy: type indicates a block device */
-            if (!strcmp(drvName, "phy")) {
+            if (STREQ(drvName, "phy")) {
                 block = 1;
             }
 
             /* Remove legacy ioemu: junk */
-            if (!strncmp(dev, "ioemu:", 6)) {
+            if (STREQLEN(dev, "ioemu:", 6)) {
                 memmove(dev, dev+6, strlen(dev)-5);
             }
 
             /* Check for a :cdrom/:disk postfix */
             if ((tmp = strchr(dev, ':')) != NULL) {
-                if (!strcmp(tmp, ":cdrom"))
+                if (STREQ(tmp, ":cdrom"))
                     cdrom = 1;
                 tmp[0] = '\0';
             }
@@ -824,11 +824,11 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             if (src[0])
                 virBufferVSprintf(&buf, "      <source %s='%s'/>\n", block ? "dev" : "file", src);
             virBufferVSprintf(&buf, "      <target dev='%s' bus='%s'/>\n", dev, bus);
-            if (!strcmp(head, "r") ||
-                !strcmp(head, "ro"))
+            if (STREQ(head, "r") ||
+                STREQ(head, "ro"))
                 virBufferAddLit(&buf, "      <readonly/>\n");
-            else if ((!strcmp(head, "w!")) ||
-                     (!strcmp(head, "!")))
+            else if ((STREQ(head, "w!")) ||
+                     (STREQ(head, "!")))
                 virBufferAddLit(&buf, "      <shareable/>\n");
             virBufferAddLit(&buf, "    </disk>\n");
 
@@ -878,32 +878,32 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                     goto skipnic;
                 data++;
 
-                if (!strncmp(key, "mac=", 4)) {
+                if (STRPREFIX(key, "mac=")) {
                     int len = nextkey ? (nextkey - data) : 17;
                     if (len > 17)
                         len = 17;
                     strncpy(mac, data, len);
                     mac[len] = '\0';
-                } else if (!strncmp(key, "bridge=", 7)) {
+                } else if (STRPREFIX(key, "bridge=")) {
                     int len = nextkey ? (nextkey - data) : sizeof(bridge)-1;
                     type = 1;
                     if (len > (sizeof(bridge)-1))
                         len = sizeof(bridge)-1;
                     strncpy(bridge, data, len);
                     bridge[len] = '\0';
-                } else if (!strncmp(key, "script=", 7)) {
+                } else if (STRPREFIX(key, "script=")) {
                     int len = nextkey ? (nextkey - data) : PATH_MAX-1;
                     if (len > (PATH_MAX-1))
                         len = PATH_MAX-1;
                     strncpy(script, data, len);
                     script[len] = '\0';
-                } else if (!strncmp(key, "model=", 6)) {
+                } else if (STRPREFIX(key, "model=")) {
                     int len = nextkey ? (nextkey - data) : sizeof(model)-1;
                     if (len > (sizeof(model)-1))
                         len = sizeof(model)-1;
                     strncpy(model, data, len);
                     model[len] = '\0';
-                } else if (!strncmp(key, "ip=", 3)) {
+                } else if (STRPREFIX(key, "ip=")) {
                     int len = nextkey ? (nextkey - data) : 15;
                     if (len > 15)
                         len = 15;
@@ -943,9 +943,9 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
 
     if (hvm) {
         if (xenXMConfigGetString(conf, "usbdevice", &str) == 0 && str) {
-            if (!strcmp(str, "tablet"))
+            if (STREQ(str, "tablet"))
                 virBufferAddLit(&buf, "    <input type='tablet' bus='usb'/>\n");
-            else if (!strcmp(str, "mouse"))
+            else if (STREQ(str, "mouse"))
                 virBufferAddLit(&buf, "    <input type='mouse' bus='usb'/>\n");
             /* Ignore else branch - probably some other non-input device we don't
                support in libvirt yet */
@@ -993,19 +993,19 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                     break;
                 data++;
 
-                if (!strncmp(key, "type=sdl", 8)) {
+                if (STRPREFIX(key, "type=sdl")) {
                     sdl = 1;
-                } else if (!strncmp(key, "type=vnc", 8)) {
+                } else if (STRPREFIX(key, "type=vnc")) {
                     vnc = 1;
-                } else if (!strncmp(key, "vncunused=", 10)) {
+                } else if (STRPREFIX(key, "vncunused=")) {
                     vncunused = strtol(key+10, NULL, 10);
-                } else if (!strncmp(key, "vnclisten=", 10)) {
+                } else if (STRPREFIX(key, "vnclisten=")) {
                     vnclisten = key + 10;
-                } else if (!strncmp(key, "vncpasswd=", 10)) {
+                } else if (STRPREFIX(key, "vncpasswd=")) {
                     vncpasswd = key + 10;
-                } else if (!strncmp(key, "keymap=", 7)) {
+                } else if (STRPREFIX(key, "keymap=")) {
                     keymap = key + 7;
-                } else if (!strncmp(key, "vncdisplay=", 11)) {
+                } else if (STRPREFIX(key, "vncdisplay=")) {
                     vncdisplay = strtol(key+11, NULL, 10);
                 }
 
@@ -1682,7 +1682,7 @@ static int xenXMParseXMLDisk(xmlNodePtr node, int hvm, int xendConfigVersion, ch
             } else if ((drvName == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "driver"))) {
                 drvName = xmlGetProp(cur, BAD_CAST "name");
-                if (drvName && !strcmp((const char *)drvName, "tap"))
+                if (drvName && STREQ((const char *)drvName, "tap"))
                     drvType = xmlGetProp(cur, BAD_CAST "type");
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
                 readonly = 1;
@@ -1704,7 +1704,7 @@ static int xenXMParseXMLDisk(xmlNodePtr node, int hvm, int xendConfigVersion, ch
      */
     if (hvm &&
         device &&
-        !strcmp((const char *)device, "floppy")) {
+        STREQ((const char *)device, "floppy")) {
         ret = 0;
         goto cleanup;
     }
@@ -1712,7 +1712,7 @@ static int xenXMParseXMLDisk(xmlNodePtr node, int hvm, int xendConfigVersion, ch
     /* Xend <= 3.0.2 doesn't include cdrom config here */
     if (hvm &&
         device &&
-        !strcmp((const char *)device, "cdrom")) {
+        STREQ((const char *)device, "cdrom")) {
         if (xendConfigVersion == 1) {
             ret = 0;
             goto cleanup;
@@ -1729,7 +1729,7 @@ static int xenXMParseXMLDisk(xmlNodePtr node, int hvm, int xendConfigVersion, ch
 
     if (drvName) {
         buflen += strlen((const char*)drvName) + 1;
-        if (!strcmp((const char*)drvName, "tap")) {
+        if (STREQ((const char*)drvName, "tap")) {
             if (drvType)
                 buflen += strlen((const char*)drvType) + 1;
             else
@@ -1761,7 +1761,7 @@ static int xenXMParseXMLDisk(xmlNodePtr node, int hvm, int xendConfigVersion, ch
     if(source) {
         if (drvName) {
             strcpy(buf, (const char*)drvName);
-            if (!strcmp((const char*)drvName, "tap")) {
+            if (STREQ((const char*)drvName, "tap")) {
                 strcat(buf, ":");
                 if (drvType)
                     strcat(buf, (const char*)drvType);
@@ -2024,7 +2024,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type)", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && !strcmp((char*)obj->stringval, "hvm"))
+        (obj->stringval != NULL) && STREQ((char*)obj->stringval, "hvm"))
         hvm = 1;
     xmlXPathFreeObject(obj);
 
@@ -2043,11 +2043,11 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
         obj = xmlXPathEval(BAD_CAST "string(/domain/os/boot/@dev)", ctxt);
         if ((obj != NULL) && (obj->type == XPATH_STRING) &&
             (obj->stringval != NULL)) {
-            if (!strcmp((const char*)obj->stringval, "fd"))
+            if (STREQ((const char*)obj->stringval, "fd"))
                 boot = "a";
-            else if (!strcmp((const char*)obj->stringval, "hd"))
+            else if (STREQ((const char*)obj->stringval, "hd"))
                 boot = "c";
-            else if (!strcmp((const char*)obj->stringval, "cdrom"))
+            else if (STREQ((const char*)obj->stringval, "cdrom"))
                 boot = "d";
         }
         xmlXPathFreeObject(obj);
@@ -2069,7 +2069,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
         obj = xmlXPathEval(BAD_CAST "string(/domain/clock/@offset)", ctxt);
         if ((obj != NULL) && (obj->type == XPATH_STRING) &&
             (obj->stringval != NULL)) {
-            if (!strcmp((const char*)obj->stringval, "localtime"))
+            if (STREQ((const char*)obj->stringval, "localtime"))
                 clockLocal = 1;
         }
         xmlXPathFreeObject(obj);
@@ -2173,15 +2173,15 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
                 if (!(type = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "type"))) {
                     continue;
                 }
-                if (!strcmp((const char*)type, "sdl")) {
+                if (STREQ((const char*)type, "sdl")) {
                     val = strdup("type=sdl");
-                } else if (!strcmp((const char*)type, "vnc")) {
+                } else if (STREQ((const char*)type, "vnc")) {
                     int len = 8 + 1; /* type=vnc & NULL */
                     xmlChar *vncport = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "port");
                     xmlChar *vnclisten = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "listen");
                     xmlChar *vncpasswd = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "passwd");
                     xmlChar *keymap = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "keymap");
-                    int vncunused = vncport ? (!strcmp((const char*)vncport, "-1") ? 1 : 0) : 1;
+                    int vncunused = vncport ? (STREQ((const char*)vncport, "-1") ? 1 : 0) : 1;
                     if (vncunused)
                         len += 12;
                     else
@@ -2743,9 +2743,9 @@ xenXMAttachDisk(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm,
         xenXMError(domain->conn, VIR_ERR_XML_ERROR, XM_XML_ERROR);
         goto cleanup;
     }
-    if (!strcmp((const char *) type, "block"))
+    if (STREQ((const char *) type, "block"))
         source = xmlGetProp(node, BAD_CAST "dev");
-    else if (!strcmp((const char *) type, "file"))
+    else if (STREQ((const char *) type, "file"))
         source = xmlGetProp(node, BAD_CAST "file");
     else {
         xenXMError(domain->conn, VIR_ERR_XML_ERROR, XM_XML_ERROR);
@@ -2788,7 +2788,7 @@ xenXMAttachDisk(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm,
             head = offset + 1;
 
             /* Remove legacy ioemu: junk */
-            if (!strncmp(domdev, "ioemu:", 6)) {
+            if (STRPREFIX(domdev, "ioemu:")) {
                 memmove(domdev, domdev+6, strlen(domdev)-5);
             }
 
@@ -2796,7 +2796,7 @@ xenXMAttachDisk(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm,
             if ((tmp = strchr(domdev, ':')))
                 tmp[0] = '\0';
 
-            if (!(strcmp(domdev, (const char *) target)))
+            if (STREQ(domdev, (const char *) target))
                 break;
          skip:
             prev = list_val;
@@ -2895,7 +2895,7 @@ xenXMAttachInterface(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm,
                     goto skip;
                 data++;
 
-                if (!strncmp(key, "mac=", 4)) {
+                if (STRPREFIX(key, "mac=")) {
                     int len = nextkey ? (nextkey - data) : 17;
                     if (len > 17)
                         len = 17;
@@ -3114,7 +3114,7 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
     else if (list_ptr && list_ptr->type == VIR_CONF_LIST) {
         list_val = list_ptr->list;
         while (list_val) {
-            if (!(strcmp(device, "disk"))) {
+            if (STREQ(device, "disk")) {
                 char domdev[NAME_MAX];
                 char *head;
                 char *offset;
@@ -3141,7 +3141,7 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
                 head = offset + 1;
 
                 /* Remove legacy ioemu: junk */
-                if (!strncmp(domdev, "ioemu:", 6)) {
+                if (STRPREFIX(domdev, "ioemu:")) {
                     memmove(domdev, domdev+6, strlen(domdev)-5);
                 }
 
@@ -3149,7 +3149,7 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
                 if ((tmp = strchr(domdev, ':')))
                     tmp[0] = '\0';
 
-                if (!(strcmp(domdev, (const char *) key)))
+                if (STREQ(domdev, (const char *) key))
                     break;
             } else {
                 char dommac[18];
@@ -3169,7 +3169,7 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
                         goto skip;
                     data++;
 
-                    if (!strncmp(mac, "mac=", 4)) {
+                    if (STRPREFIX(mac, "mac=")) {
                         int len = nextmac ? (nextmac - data) : 17;
                         if (len > 17)
                             len = 17;

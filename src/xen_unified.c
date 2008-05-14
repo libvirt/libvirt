@@ -245,8 +245,8 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int f
 
     /* Refuse any scheme which isn't "xen://" or "http://". */
     if (uri->scheme &&
-        strcasecmp(uri->scheme, "xen") != 0 &&
-        strcasecmp(uri->scheme, "http") != 0)
+        STRCASENEQ(uri->scheme, "xen") &&
+        STRCASENEQ(uri->scheme, "http"))
         return VIR_DRV_OPEN_DECLINED;
 
     /* xmlParseURI will parse a naked string like "foo" as a URI with
@@ -258,7 +258,7 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int f
         return VIR_DRV_OPEN_DECLINED;
 
     /* Refuse any xen:// URI with a server specified - allow remote to do it */
-    if (uri->scheme && strcasecmp(uri->scheme, "xen") == 0 && uri->server)
+    if (uri->scheme && STRCASEEQ(uri->scheme, "xen") && uri->server)
         return VIR_DRV_OPEN_DECLINED;
 
     /* Allocate per-connection private data. */

@@ -384,8 +384,8 @@ int virFileMatchesNameSuffix(const char *file,
     int suffixlen = strlen(suffix);
 
     if (filelen == (namelen + suffixlen) &&
-        !strncmp(file, name, namelen) &&
-        !strncmp(file + namelen, suffix, suffixlen))
+        STREQLEN(file, name, namelen) &&
+        STREQLEN(file + namelen, suffix, suffixlen))
         return 1;
     else
         return 0;
@@ -400,7 +400,7 @@ int virFileHasSuffix(const char *str,
     if (len < suffixlen)
         return 0;
 
-    return strcmp(str + len - suffixlen, suffix) == 0;
+    return STREQ(str + len - suffixlen, suffix);
 }
 
 #ifndef __MINGW32__
@@ -479,7 +479,7 @@ int virFileLinkPointsTo(const char *checkLink,
     }
 
     /* compare */
-    if (strcmp(checkReal, real) != 0) {
+    if (STRNEQ(checkReal, real)) {
         virLog("Link '%s' does not point to '%s', ignoring",
                checkLink, checkReal);
         return 0;

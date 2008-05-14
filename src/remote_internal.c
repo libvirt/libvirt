@@ -316,15 +316,15 @@ doRemoteOpen (virConnectPtr conn,
         trans_tcp,
     } transport;
 
-    if (!transport_str || strcasecmp (transport_str, "tls") == 0)
+    if (!transport_str || STRCASEEQ (transport_str, "tls"))
         transport = trans_tls;
-    else if (strcasecmp (transport_str, "unix") == 0)
+    else if (STRCASEEQ (transport_str, "unix"))
         transport = trans_unix;
-    else if (strcasecmp (transport_str, "ssh") == 0)
+    else if (STRCASEEQ (transport_str, "ssh"))
         transport = trans_ssh;
-    else if (strcasecmp (transport_str, "ext") == 0)
+    else if (STRCASEEQ (transport_str, "ext"))
         transport = trans_ext;
-    else if (strcasecmp (transport_str, "tcp") == 0)
+    else if (STRCASEEQ (transport_str, "tcp"))
         transport = trans_tcp;
     else {
         error (conn, VIR_ERR_INVALID_ARG,

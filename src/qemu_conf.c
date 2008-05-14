@@ -166,7 +166,7 @@ struct qemud_vm *qemudFindVMByName(const struct qemud_driver *driver,
     struct qemud_vm *vm = driver->vms;
 
     while (vm) {
-        if (!strcmp(vm->def->name, name))
+        if (STREQ(vm->def->name, name))
             return vm;
         vm = vm->next;
     }
@@ -192,7 +192,7 @@ struct qemud_network *qemudFindNetworkByName(const struct qemud_driver *driver,
     struct qemud_network *network = driver->networks;
 
     while (network) {
-        if (!strcmp(network->def->name, name))
+        if (STREQ(network->def->name, name))
             return network;
         network = network->next;
     }
@@ -644,30 +644,30 @@ static int qemudParseDiskXML(virConnectPtr conn,
     }
 
     if (device &&
-        !strcmp((const char *)device, "floppy") &&
-        strcmp((const char *)target, "fda") &&
-        strcmp((const char *)target, "fdb")) {
+        STREQ((const char *)device, "floppy") &&
+        STRNEQ((const char *)target, "fda") &&
+        STRNEQ((const char *)target, "fdb")) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Invalid floppy device name: %s"), target);
         goto error;
     }
 
     if (device &&
-        !strcmp((const char *)device, "cdrom") &&
-        strcmp((const char *)target, "hdc")) {
+        STREQ((const char *)device, "cdrom") &&
+        STRNEQ((const char *)target, "hdc")) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Invalid cdrom device name: %s"), target);
         goto error;
     }
 
     if (device &&
-        !strcmp((const char *)device, "cdrom"))
+        STREQ((const char *)device, "cdrom"))
         disk->readonly = 1;
 
-    if ((!device || !strcmp((const char *)device, "disk")) &&
-        strncmp((const char *)target, "hd", 2) &&
-        strncmp((const char *)target, "sd", 2) &&
-        strncmp((const char *)target, "vd", 2)) {
+    if ((!device || STREQ((const char *)device, "disk")) &&
+        !STRPREFIX((const char *)target, "hd") &&
+        !STRPREFIX((const char *)target, "sd") &&
+        !STRPREFIX((const char *)target, "vd")) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Invalid harddisk device name: %s"), target);
         goto error;
@@ -682,11 +682,11 @@ static int qemudParseDiskXML(virConnectPtr conn,
 
     if (!device)
         disk->device = QEMUD_DISK_DISK;
-    else if (!strcmp((const char *)device, "disk"))
+    else if (STREQ((const char *)device, "disk"))
         disk->device = QEMUD_DISK_DISK;
-    else if (!strcmp((const char *)device, "cdrom"))
+    else if (STREQ((const char *)device, "cdrom"))
         disk->device = QEMUD_DISK_CDROM;
-    else if (!strcmp((const char *)device, "floppy"))
+    else if (STREQ((const char *)device, "floppy"))
         disk->device = QEMUD_DISK_FLOPPY;
     else {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -1376,9 +1376,9 @@ static int qemudParseInputXML(virConnectPtr conn,
         goto error;
     }
 
-    if (!strcmp((const char *)type, "mouse")) {
+    if (STREQ((const char *)type, "mouse")) {
         input->type = QEMU_INPUT_TYPE_MOUSE;
-    } else if (!strcmp((const char *)type, "tablet")) {
+    } else if (STREQ((const char *)type, "tablet")) {
         input->type = QEMU_INPUT_TYPE_TABLET;
     } else {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -1388,7 +1388,7 @@ static int qemudParseInputXML(virConnectPtr conn,
     }
 
     if (bus) {
-        if (!strcmp((const char*)bus, "ps2")) { /* Only allow mouse */
+        if (STREQ((const char*)bus, "ps2")) { /* Only allow mouse */
             if (input->type == QEMU_INPUT_TYPE_TABLET) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                                  _("ps2 bus does not support %s input device"),
@@ -1396,7 +1396,7 @@ static int qemudParseInputXML(virConnectPtr conn,
                 goto error;
             }
             input->bus = QEMU_INPUT_BUS_PS2;
-        } else if (!strcmp((const char *)bus, "usb")) { /* Allow mouse & keyboard */
+        } else if (STREQ((const char *)bus, "usb")) { /* Allow mouse & keyboard */
             input->bus = QEMU_INPUT_BUS_USB;
         } else {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -1537,11 +1537,11 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         goto error;
     }
 
-    if (!strcmp((char *)prop, "qemu"))
+    if (STREQ((char *)prop, "qemu"))
         def->virtType = QEMUD_VIRT_QEMU;
-    else if (!strcmp((char *)prop, "kqemu"))
+    else if (STREQ((char *)prop, "kqemu"))
         def->virtType = QEMUD_VIRT_KQEMU;
-    else if (!strcmp((char *)prop, "kvm"))
+    else if (STREQ((char *)prop, "kvm"))
         def->virtType = QEMUD_VIRT_KVM;
     else {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -1654,7 +1654,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
         def->noReboot = 0;
     } else {
-        if (!strcmp((char*)obj->stringval, "destroy"))
+        if (STREQ((char*)obj->stringval, "destroy"))
             def->noReboot = 1;
         else
             def->noReboot = 0;
@@ -1667,7 +1667,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
         def->localtime = 0;
     } else {
-        if (!strcmp((char*)obj->stringval, "localtime"))
+        if (STREQ((char*)obj->stringval, "localtime"))
             def->localtime = 1;
         else
             def->localtime = 0;
@@ -1791,13 +1791,13 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         for (i = 0; i < obj->nodesetval->nodeNr && i < QEMUD_MAX_BOOT_DEVS ; i++) {
             if (!(prop = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "dev")))
                 continue;
-            if (!strcmp((char *)prop, "hd")) {
+            if (STREQ((char *)prop, "hd")) {
                 def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_DISK;
-            } else if (!strcmp((char *)prop, "fd")) {
+            } else if (STREQ((char *)prop, "fd")) {
                 def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_FLOPPY;
-            } else if (!strcmp((char *)prop, "cdrom")) {
+            } else if (STREQ((char *)prop, "cdrom")) {
                 def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_CDROM;
-            } else if (!strcmp((char *)prop, "network")) {
+            } else if (STREQ((char *)prop, "network")) {
                 def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_NET;
             } else {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -1849,7 +1849,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr == 0)) {
         def->graphicsType = QEMUD_GRAPHICS_NONE;
     } else if ((prop = xmlGetProp(obj->nodesetval->nodeTab[0], BAD_CAST "type"))) {
-        if (!strcmp((char *)prop, "vnc")) {
+        if (STREQ((char *)prop, "vnc")) {
             xmlChar *vncport, *vnclisten;
             def->graphicsType = QEMUD_GRAPHICS_VNC;
             vncport = xmlGetProp(obj->nodesetval->nodeTab[0], BAD_CAST "port");
@@ -1868,7 +1868,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
             def->keymap = (char *) xmlGetProp(obj->nodesetval->nodeTab[0], BAD_CAST "keymap");
             xmlFree(vncport);
             xmlFree(vnclisten);
-        } else if (!strcmp((char *)prop, "sdl")) {
+        } else if (STREQ((char *)prop, "sdl")) {
             def->graphicsType = QEMUD_GRAPHICS_SDL;
         } else {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -2318,7 +2318,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
      * 3. The qemu binary has the -no-kqemu flag
      */
     if ((vm->qemuCmdFlags & QEMUD_CMD_FLAG_KQEMU) &&
-        !strcmp(ut.machine, vm->def->os.arch) &&
+        STREQ(ut.machine, vm->def->os.arch) &&
         vm->def->virtType == QEMUD_VIRT_QEMU)
         disableKQEMU = 1;
 

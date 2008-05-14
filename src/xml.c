@@ -1083,9 +1083,9 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
             if (!itype) {
                 goto error;
             }
-            if (!strcmp((const char *) itype, "tablet"))
+            if (STREQ((const char *) itype, "tablet"))
                 isMouse = 0;
-            else if (strcmp((const char *) itype, "mouse")) {
+            else if (STRNEQ((const char *) itype, "mouse")) {
                 xmlFree(itype);
                 virXMLError(conn, VIR_ERR_XML_ERROR,
                             _("invalid input device"), 0);
@@ -1101,7 +1101,7 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
                     virBufferAddLit(buf, "(usbdevice tablet)");
                 }
             } else {
-                if (!strcmp((const char *) bus, "ps2")) {
+                if (STREQ((const char *) bus, "ps2")) {
                     if (!isMouse) {
                         xmlFree(bus);
                         virXMLError(conn, VIR_ERR_XML_ERROR,
@@ -1109,7 +1109,7 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
                         goto error;
                     }
                     /* Nothing - implicit ps2 */
-                } else if (!strcmp((const char *) bus, "usb")) {
+                } else if (STREQ((const char *) bus, "usb")) {
                     if (isMouse)
                         virBufferAddLit(buf, "(usbdevice mouse)");
                     else
@@ -1320,7 +1320,7 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node,
             } else if ((drvName == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "driver"))) {
                 drvName = xmlGetProp(cur, BAD_CAST "name");
-                if (drvName && !strcmp((const char *) drvName, "tap"))
+                if (drvName && STREQ((const char *) drvName, "tap"))
                     drvType = xmlGetProp(cur, BAD_CAST "type");
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
                 ro = 1;
@@ -1335,7 +1335,7 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node,
         /* There is a case without the source
          * to the CD-ROM device
          */
-        if (hvm && device && !strcmp((const char *) device, "cdrom")) {
+        if (hvm && device && STREQ((const char *) device, "cdrom")) {
             isNoSrcCdrom = 1;
         }
         if (!isNoSrcCdrom) {
@@ -1353,12 +1353,12 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node,
     /* Xend (all versions) put the floppy device config
      * under the hvm (image (os)) block
      */
-    if (hvm && device && !strcmp((const char *) device, "floppy")) {
+    if (hvm && device && STREQ((const char *) device, "floppy")) {
         goto cleanup;
     }
 
     /* Xend <= 3.0.2 doesn't include cdrom config here */
-    if (hvm && device && !strcmp((const char *) device, "cdrom")) {
+    if (hvm && device && STREQ((const char *) device, "cdrom")) {
         if (xendConfigVersion == 1)
             goto cleanup;
         else
@@ -1370,7 +1370,7 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node,
     /* Normally disks are in a (device (vbd ...)) block
      * but blktap disks ended up in a differently named
      * (device (tap ....)) block.... */
-    if (drvName && !strcmp((const char *) drvName, "tap")) {
+    if (drvName && STREQ((const char *) drvName, "tap")) {
         virBufferAddLit(buf, "(tap ");
     } else {
         virBufferAddLit(buf, "(vbd ");
@@ -1380,7 +1380,7 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node,
         char *tmp = (char *) target;
 
         /* Just in case user mistakenly still puts ioemu: in their XML */
-        if (!strncmp((const char *) tmp, "ioemu:", 6))
+        if (STRPREFIX((const char *) tmp, "ioemu:"))
             tmp += 6;
 
         /* Xend <= 3.0.2 wants a ioemu: prefix on devices for HVM */
@@ -1393,7 +1393,7 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node,
         virBufferVSprintf(buf, "(dev '%s')", (const char *) target);
 
     if (drvName && !isNoSrcCdrom) {
-        if (!strcmp((const char *) drvName, "tap")) {
+        if (STREQ((const char *) drvName, "tap")) {
             virBufferVSprintf(buf, "(uname '%s:%s:%s')",
                               (const char *) drvName,
                               (drvType ? (const char *) drvType : "aio"),

@@ -114,7 +114,7 @@ stripLine(char *str, int len, const char *line)
     s = str;
 
     while ((p = strchr(s, '\n'))) {
-        if (p == s || strncmp(s, line, p - s) != 0) {
+        if (p == s || STRNEQLEN(s, line, p - s)) {
             s = ++p;
             continue;
         }
@@ -125,7 +125,7 @@ stripLine(char *str, int len, const char *line)
         changed = 1;
     }
 
-    if (strcmp(s, line) == 0) {
+    if (STREQ(s, line)) {
         *s = '\0';
         changed = 1;
     }
@@ -310,7 +310,7 @@ iptRulesRemove(iptRules *rules,
     int i;
 
     for (i = 0; i < rules->nrules; i++)
-        if (!strcmp(rules->rules[i].rule, rule))
+        if (STREQ(rules->rules[i].rule, rule))
             break;
 
     if (i >= rules->nrules)

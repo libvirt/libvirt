@@ -800,7 +800,7 @@ __virConfGetValue(virConfPtr conf, const char *setting)
 
     cur = conf->entries;
     while (cur != NULL) {
-        if ((cur->name != NULL) && (!strcmp(cur->name, setting)))
+        if ((cur->name != NULL) && (STREQ(cur->name, setting)))
             return(cur->value);
         cur = cur->next;
     }
@@ -829,7 +829,7 @@ __virConfSetValue (virConfPtr conf,
 
     cur = conf->entries;
     while (cur != NULL) {
-        if ((cur->name != NULL) && (!strcmp(cur->name, setting))) {
+        if ((cur->name != NULL) && (STREQ(cur->name, setting))) {
             break;
         }
         prev = cur;

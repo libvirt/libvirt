@@ -196,13 +196,13 @@ testError(virConnectPtr con,
 }
 
 static int testRestartStringToFlag(const char *str) {
-    if (!strcmp(str, "restart")) {
+    if (STREQ(str, "restart")) {
         return VIR_DOMAIN_RESTART;
-    } else if (!strcmp(str, "destroy")) {
+    } else if (STREQ(str, "destroy")) {
         return VIR_DOMAIN_DESTROY;
-    } else if (!strcmp(str, "preserve")) {
+    } else if (STREQ(str, "preserve")) {
         return VIR_DOMAIN_PRESERVE;
-    } else if (!strcmp(str, "rename-restart")) {
+    } else if (STREQ(str, "rename-restart")) {
         return VIR_DOMAIN_RENAME_RESTART;
     } else {
         return (0);
@@ -914,7 +914,7 @@ static int testOpen(virConnectPtr conn,
     if (!uri)
         return VIR_DRV_OPEN_DECLINED;
 
-    if (!uri->scheme || strcmp(uri->scheme, "test") != 0)
+    if (!uri->scheme || STRNEQ(uri->scheme, "test"))
         return VIR_DRV_OPEN_DECLINED;
 
     /* Remote driver should handle these. */
@@ -1170,7 +1170,7 @@ static virDomainPtr testLookupDomainByName(virConnectPtr conn,
 
     for (i = 0 ; i < MAX_DOMAINS ; i++) {
         if (privconn->domains[i].active &&
-            strcmp(name, privconn->domains[i].name) == 0) {
+            STREQ(name, privconn->domains[i].name)) {
             idx = i;
             break;
         }
@@ -1767,7 +1767,7 @@ static virNetworkPtr testLookupNetworkByName(virConnectPtr conn,
 
     for (i = 0 ; i < MAX_NETWORKS ; i++) {
         if (privconn->networks[i].active &&
-            strcmp(name, privconn->networks[i].name) == 0) {
+            STREQ(name, privconn->networks[i].name)) {
             idx = i;
             break;
         }

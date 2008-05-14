@@ -433,7 +433,7 @@ sexpr_lookup_key(const struct sexpr *sexpr, const char *node)
         return NULL;
     }
 
-    if (strcmp(sexpr->u.s.car->u.value, token) != 0) {
+    if (STRNEQ(sexpr->u.s.car->u.value, token)) {
         return NULL;
     }
 
@@ -451,7 +451,7 @@ sexpr_lookup_key(const struct sexpr *sexpr, const char *node)
                 continue;
             }
 
-            if (strcmp(i->u.s.car->u.s.car->u.value, token) == 0) {
+            if (STREQ(i->u.s.car->u.s.car->u.value, token)) {
                 sexpr = i->u.s.car;
                 break;
             }

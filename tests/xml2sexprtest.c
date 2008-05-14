@@ -43,7 +43,7 @@ static int testCompareFiles(const char *xml, const char *sexpr,
       goto fail;
   }
 
-  if (strcmp(name, gotname)) {
+  if (STRNEQ(name, gotname)) {
       printf("Got wrong name: expected %s, got %s\n", name, gotname);
       goto fail;
   }

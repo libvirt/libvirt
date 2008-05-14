@@ -4351,7 +4351,7 @@ cmdVNCDisplay(vshControl * ctl, vshCmd * cmd)
     obj = xmlXPathEval(BAD_CAST "string(/domain/devices/graphics[@type='vnc']/@listen)", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0) ||
-        !strcmp((const char*)obj->stringval, "0.0.0.0")) {
+        STREQ((const char*)obj->stringval, "0.0.0.0")) {
         vshPrint(ctl, ":%d\n", port-5900);
     } else {
         vshPrint(ctl, "%s:%d\n", (const char *)obj->stringval, port-5900);
@@ -4587,9 +4587,9 @@ cmdAttachInterface(vshControl * ctl, vshCmd * cmd)
     script = vshCommandOptString(cmd, "script", NULL);
 
     /* check interface type */
-    if (strcmp(type, "network") == 0) {
+    if (STREQ(type, "network")) {
         typ = 1;
-    } else if (strcmp(type, "bridge") == 0) {
+    } else if (STREQ(type, "bridge")) {
         typ = 2;
     } else {
         vshError(ctl, FALSE, _("No support %s in command 'attach-interface'"), type);
@@ -4824,23 +4824,23 @@ cmdAttachDisk(vshControl * ctl, vshCmd * cmd)
     mode = vshCommandOptString(cmd, "mode", NULL);
 
     if (type) {
-        if (strcmp(type, "cdrom") && strcmp(type, "disk")) {
+        if (STRNEQ(type, "cdrom") && STRNEQ(type, "disk")) {
             vshError(ctl, FALSE, _("No support %s in command 'attach-disk'"), type);
             goto cleanup;
         }
     }
 
     if (driver) {
-        if (!strcmp(driver, "file") || !strcmp(driver, "tap")) {
+        if (STREQ(driver, "file") || STREQ(driver, "tap")) {
             isFile = 1;
-        } else if (strcmp(driver, "phy")) {
+        } else if (STRNEQ(driver, "phy")) {
             vshError(ctl, FALSE, _("No support %s in command 'attach-disk'"), driver);
             goto cleanup;
         }
     }
 
     if (mode) {
-        if (strcmp(mode, "readonly") && strcmp(mode, "shareable")) {
+        if (STRNEQ(mode, "readonly") && STRNEQ(mode, "shareable")) {
             vshError(ctl, FALSE, _("No support %s in command 'attach-disk'"), mode);
             goto cleanup;
         }
@@ -5171,7 +5171,7 @@ vshCmddefGetInfo(vshCmdDef * cmd, const char *name)
     vshCmdInfo *info;
 
     for (info = cmd->info; info && info->name; info++) {
-        if (strcmp(info->name, name) == 0)
+        if (STREQ(info->name, name))
             return info->data;
     }
     return NULL;
@@ -5183,7 +5183,7 @@ vshCmddefGetOption(vshCmdDef * cmd, const char *name)
     vshCmdOptDef *opt;
 
     for (opt = cmd->opts; opt && opt->name; opt++)
-        if (strcmp(opt->name, name) == 0)
+        if (STREQ(opt->name, name))
             return opt;
     return NULL;
 }
@@ -5244,7 +5244,7 @@ vshCmddefSearch(const char *cmdname)
     vshCmdDef *c;
 
     for (c = commands; c->name; c++)
-        if (strcmp(c->name, cmdname) == 0)
+        if (STREQ(c->name, cmdname))
             return c;
     return NULL;
 }
@@ -5343,7 +5343,7 @@ vshCommandOpt(vshCmd * cmd, const char *name)
     vshCmdOpt *opt = cmd->opts;
 
     while (opt) {
-        if (opt->def && strcmp(opt->def->name, name) == 0)
+        if (opt->def && STREQ(opt->def->name, name))
             return opt;
         opt = opt->next;
     }
@@ -5617,7 +5617,7 @@ vshCommandRun(vshControl * ctl, vshCmd * cmd)
         if (ctl->timing)
             GETTIMEOFDAY(&after);
 
-        if (strcmp(cmd->def->name, "quit") == 0)        /* hack ... */
+        if (STREQ(cmd->def->name, "quit"))        /* hack ... */
             return ret;
 
         if (ctl->timing)
@@ -6213,7 +6213,7 @@ vshReadlineCommandGenerator(const char *text, int state)
      */
     while ((name = commands[list_index].name)) {
         list_index++;
-        if (strncmp(name, text, len) == 0)
+        if (STREQLEN(name, text, len))
             return vshStrdup(NULL, name);
     }
 
@@ -6262,7 +6262,7 @@ vshReadlineOptionsGenerator(const char *text, int state)
             continue;
 
         if (len > 2) {
-            if (strncmp(name, text + 2, len - 2))
+            if (STRNEQLEN(name, text + 2, len - 2))
                 continue;
         }
         res = vshMalloc(NULL, strlen(name) + 3);
@@ -6435,7 +6435,7 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
                         if (sz == 2 && *(last + 1) == o->val)
                             /* valid virsh short option */
                             valid = TRUE;
-                        else if (sz > 2 && strcmp(o->name, last + 2) == 0)
+                        else if (sz > 2 && STREQ(o->name, last + 2))
                             /* valid virsh long option */
                             valid = TRUE;
                     }

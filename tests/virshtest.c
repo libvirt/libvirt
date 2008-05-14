@@ -52,8 +52,10 @@ static int testCompareOutput(const char *expect_rel, const char *filter,
       printf("Expect %d '%s'\n", (int)strlen(expectData), expectData);
       printf("Actual %d '%s'\n", (int)strlen(actualData), actualData);
   }
-  if (strcmp(expectData, actualData))
-    return -1;
+  if (STRNEQ(expectData, actualData)) {
+      virtTestDifference(stderr, expectData, actualData);
+      return -1;
+  }
 
   return 0;
 }

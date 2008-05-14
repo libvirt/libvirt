@@ -802,9 +802,9 @@ int main(int argc, char **argv) {
     }
 
     for (i = 1; i < argc; i++) {
-         if (!strcmp(argv[i], "-v")) {
+         if (STREQ(argv[i], "-v")) {
              debug++;
-         } else if (!strcmp(argv[i], "-no-timeout")) {
+         } else if (STREQ(argv[i], "-no-timeout")) {
              persist = 1;
          } else {
              usage(argv[0]);
