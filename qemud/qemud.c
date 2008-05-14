@@ -69,6 +69,7 @@ static int ipsock = 0;          /* -l  Listen for TCP/IP */
 /* Defaults for configuration file elements */
 static int listen_tls = 1;
 static int listen_tcp = 0;
+static char *listen_addr  = (char *) LIBVIRTD_LISTEN_ADDR;
 static char *tls_port = (char *) LIBVIRTD_TLS_PORT;
 static char *tcp_port = (char *) LIBVIRTD_TCP_PORT;
 
@@ -541,7 +542,7 @@ static int qemudListenUnix(struct qemud_server *server,
 
 // See: http://people.redhat.com/drepper/userapi-ipv6.html
 static int
-remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *service)
+remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *node, const char *service)
 {
     struct addrinfo *ai;
     struct addrinfo hints;
@@ -549,7 +550,7 @@ remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *service)
     hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
     hints.ai_socktype = SOCK_STREAM;
 
-    int e = getaddrinfo (NULL, service, &hints, &ai);
+    int e = getaddrinfo (node, service, &hints, &ai);
     if (e != 0) {
         qemudLog (QEMUD_ERR, _("getaddrinfo: %s\n"), gai_strerror (e));
         return -1;
@@ -593,6 +594,7 @@ remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *service)
  */
 static int
 remoteListenTCP (struct qemud_server *server,
+		 const char *addr,
                  const char *port,
                  int type,
                  int auth)
@@ -602,7 +604,7 @@ remoteListenTCP (struct qemud_server *server,
     int i;
     struct qemud_socket *sock;
 
-    if (remoteMakeSockets (fds, 2, &nfds, port) == -1)
+    if (remoteMakeSockets (fds, 2, &nfds, addr, port) == -1)
         return -1;
 
     for (i = 0; i < nfds; ++i) {
@@ -779,14 +781,14 @@ static struct qemud_server *qemudNetworkInit(struct qemud_server *server) {
 #endif
 
     if (ipsock) {
-        if (listen_tcp && remoteListenTCP (server, tcp_port, QEMUD_SOCK_TYPE_TCP, auth_tcp) < 0)
+        if (listen_tcp && remoteListenTCP (server, listen_addr, tcp_port, QEMUD_SOCK_TYPE_TCP, auth_tcp) < 0)
             goto cleanup;
 
         if (listen_tls) {
             if (remoteInitializeGnuTLS () < 0)
                 goto cleanup;
 
-            if (remoteListenTCP (server, tls_port, QEMUD_SOCK_TYPE_TLS, auth_tls) < 0)
+            if (remoteListenTCP (server, listen_addr, tls_port, QEMUD_SOCK_TYPE_TLS, auth_tls) < 0)
                 goto cleanup;
         }
     }
@@ -1921,7 +1923,8 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     GET_CONF_INT (conf, filename, listen_tls);
     GET_CONF_STR (conf, filename, tls_port);
     GET_CONF_STR (conf, filename, tcp_port);
-
+    GET_CONF_STR (conf, filename, listen_addr);
+    
     if (remoteConfigGetAuth(conf, "auth_unix_rw", &auth_unix_rw, filename) < 0)
         goto free_and_fail;
 #if HAVE_POLKIT
@@ -2006,10 +2009,10 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     free (unix_sock_rw_perms);
     free (unix_sock_group);
 
-    /* Don't bother trying to free tcp_port, tls_port, key_file, cert_file,
-       ca_file, or crl_file, since they are initialized to non-malloc'd
-       strings.  Besides, these are static variables, and callers are
-       unlikely to call this function more than once, so there wouldn't
+    /* Don't bother trying to free listen_addr, tcp_port, tls_port, key_file,
+       cert_file, ca_file, or crl_file, since they are initialized to
+       non-malloc'd strings.  Besides, these are static variables, and callers
+       are unlikely to call this function more than once, so there wouldn't
        even be a real leak.  */
 
     if (tls_allowed_dn_list) {

@@ -1,5 +1,12 @@
 Wed May 14 15:34:43 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
+	* qemud/qemud.c: Add 'listen_addr' config param to control
+	the IP address the daemon listens on (Stefan de Konink)
+	* qemud/libvirtd.conf: Added example listen_addr config param
+	* src/remote_internal.h: #define constant for default IP addr
+
+Wed May 14 15:34:43 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
 	* proxy/libvirt_proxy.c, src/conf.c, src/hash.c,
 	src/iptables.c, src/libvirt.c, src/openvz_conf.c,
 	src/qemu_conf.c, src/remote_internal.c, src/sexpr.c,

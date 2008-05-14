@@ -32,6 +32,7 @@ extern "C" {
 
 int remoteRegister (void);
 
+#define LIBVIRTD_LISTEN_ADDR NULL
 #define LIBVIRTD_TLS_PORT "16514"
 #define LIBVIRTD_TCP_PORT "16509"
 #define LIBVIRTD_PRIV_UNIX_SOCKET LOCAL_STATE_DIR "/run/libvirt/libvirt-sock"
