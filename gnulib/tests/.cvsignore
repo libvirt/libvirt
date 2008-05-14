@@ -25,3 +25,5 @@ test-vasnprintf
 test-vasprintf
 test-wchar
 test-EOVERFLOW.c
+test-EOVERFLOW
+test-c-ctype
