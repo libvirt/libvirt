@@ -594,7 +594,7 @@ remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *node, const c
  */
 static int
 remoteListenTCP (struct qemud_server *server,
-		 const char *addr,
+                 const char *addr,
                  const char *port,
                  int type,
                  int auth)
