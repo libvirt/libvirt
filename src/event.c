@@ -1,5 +1,5 @@
 /*
- * event.h: event loop for monitoring file handles
+ * event.c: event loop for monitoring file handles
  *
  * Copyright (C) 2007 Daniel P. Berrange
  * Copyright (C) 2007 Red Hat, Inc.

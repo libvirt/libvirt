@@ -223,7 +223,7 @@ retry_wait:
 
 /**
  * virProxyOpenClientSocket:
- * @path: the fileame for the socket
+ * @path: the filename for the socket
  *
  * try to connect to the socket open by libvirt_proxy
  *

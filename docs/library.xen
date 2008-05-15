@@ -75,7 +75,7 @@ some of the existing code ?
     Pros:
      - avoid the GPL Licence problem potentially more users
      - allow do build a cleaner more stable layer
-     - the existing code is frigthening
+     - the existing code is frightening
     Cons:
      - awful lot of work debugging very hard
      - will still require existing Xen code to be running
@@ -93,7 +93,7 @@ some of the existing code ?
 
   Potentially the API could be implemented as a layer on top of the existing
 libxc C code library and then progressively migrating out the existing
-dependance to Xen code as the interfaces stabilize.
+dependence to Xen code as the interfaces stabilize.
 
 Daniel Veillard <veillard@redhat.com>
 

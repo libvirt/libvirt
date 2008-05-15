@@ -15,7 +15,7 @@
 #    mysqladmin -u root password new_password
 # Create the new database libvir
 #    mysqladmin -p create libvir
-# Create a database user 'veillard' and give him passord access
+# Create a database user 'veillard' and give him password access
 # change veillard and abcde with the right user name and passwd
 #    mysql -p
 #    password:
@@ -55,7 +55,7 @@ def callback(ctx, str):
 libxml2.registerErrorHandler(callback, None)
 
 #
-# The dictionnary of tables required and the SQL command needed
+# The dictionary of tables required and the SQL command needed
 # to create them
 #
 TABLES={
@@ -449,7 +449,7 @@ def updateWordArchive(name, id, relevance):
 
 #########################################################################
 #									#
-#                  Word dictionnary and analysis routines		#
+#                  Word dictionary and analysis routines		#
 #									#
 #########################################################################
 

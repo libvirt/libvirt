@@ -1,3 +1,12 @@
+Thu May 15 15:07:49 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
+
+	* qemud/libvirtd.init.in: change libvirtd description
+	which supports various guest not only Qemu
+	* docs/*: typo fixes
+	* include/libvirt/libvirt.h, include/libvirt/libvirt.h.in,
+	qemud/event.c, qemud/qemud.c, qemud/remote.c,
+	src/event.c, src/proxy_internal.c: typo fixes in comment
+
 Wed May 14 23:17:55 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	exempt gnulib/ from "make syntax-check" strcmp prohibition

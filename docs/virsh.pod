@@ -531,7 +531,7 @@ L<xm(1)>, L<xmdomain.cfg(5)>, L<xentop(1)> , L<http://www.libvirt.org/>
 
 =head1 BUGS
 
-Bugs can be view on the RedHat buzilla page under the libvirt
+Bugs can be view on the RedHat bugzilla page under the libvirt
 L<https://bugzilla.redhat.com/>
 
 L<https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&component=libvirt&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&bug_status=MODIFIED&short_desc_type=allwordssubstr&short_desc=&long_desc_type=allwordssubstr>

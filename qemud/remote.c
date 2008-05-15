@@ -2111,7 +2111,7 @@ static char *addrToString(struct qemud_client *client,
 
 /*
  * Initializes the SASL session in prepare for authentication
- * and gives the client a list of allowed mechansims to choose
+ * and gives the client a list of allowed mechanisms to choose
  *
  * XXX callbacks for stuff like password verification ?
  */

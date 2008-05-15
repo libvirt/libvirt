@@ -8,17 +8,17 @@
 # Should-Start: xend
 # Default-Start: 3 4 5
 # Short-Description: daemon for libvirt virtualization API
-# Description: This is a daemon for managing QEMU guest instances
+# Description: This is a daemon for managing guest instances
 #              and libvirt virtual networks
 #              See http://libvirt.org
 ### END INIT INFO
 
 # the following is chkconfig init header
 #
-# libvirtd:   QEMU and virtual network management daemon
+# libvirtd:   guest and virtual network management daemon
 #
 # chkconfig: 345 97 03
-# description:  This is a daemon for managing QEMU guest instances
+# description:  This is a daemon for managing guest instances
 #               and libvirt virtual networks
 #               See http://libvirt.org
 #

@@ -363,7 +363,7 @@ extern virConnectAuthPtr virConnectAuthPtrDefault;
 
 #define VIR_UUID_STRING_BUFLEN (36+1)
 
-/* library versionning */
+/* library versioning */
 
 /**
  * LIBVIR_VERSION_NUMBER:

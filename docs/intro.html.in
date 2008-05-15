@@ -28,7 +28,7 @@ generic and stable layer to manage domains on a node.</p>
     libvirt APIs</li>
       <li>the API should allow to do efficiently and cleanly all the operations
     needed to manage domains on a node</li>
-      <li>the API will not try to provide hight level multi-nodes management
+      <li>the API will not try to provide high level multi-nodes management
     features like load balancing, though they could be implemented on top of
     libvirt</li>
       <li>stability of the API is a big concern, libvirt should isolate

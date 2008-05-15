@@ -1115,7 +1115,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
         if (qemudGetSocketIdentity(client->fd, &uid, &pid) < 0)
             goto cleanup;
 
-        /* Cient is running as root, so disable auth */
+        /* Client is running as root, so disable auth */
         if (uid == 0) {
             qemudLog(QEMUD_INFO, _("Turn off polkit auth for privileged client %d"), pid);
             client->auth = REMOTE_AUTH_NONE;
