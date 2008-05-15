@@ -492,10 +492,12 @@ static int qemudExtractVersionInfo(const char *qemu, int *version, int *flags) {
             *flags |= QEMUD_CMD_FLAG_KQEMU;
         if (strstr(help, "-no-reboot"))
             *flags |= QEMUD_CMD_FLAG_NO_REBOOT;
-        if (strstr(help, "\n-drive"))
-            *flags |= QEMUD_CMD_FLAG_DRIVE_OPT;
+        if (strstr(help, "-name"))
+            *flags |= QEMUD_CMD_FLAG_NAME;
+        if (strstr(help, "-drive"))
+            *flags |= QEMUD_CMD_FLAG_DRIVE;
         if (strstr(help, "boot=on"))
-            *flags |= QEMUD_CMD_FLAG_DRIVE_BOOT_OPT;
+            *flags |= QEMUD_CMD_FLAG_DRIVE_BOOT;
         if (*version >= 9000)
             *flags |= QEMUD_CMD_FLAG_VNC_COLON;
         ret = 0;
@@ -2350,6 +2352,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     len = 1 + /* qemu */
         2 + /* machine type */
         disableKQEMU + /* Disable kqemu */
+        (vm->qemuCmdFlags & QEMUD_CMD_FLAG_NAME ? 2 : 0) + /* -name XXX */
         2 * vm->def->ndisks + /* disks*/
         (vm->def->nnets > 0 ? (4 * vm->def->nnets) : 2) + /* networks */
         1 + /* usb */
@@ -2396,6 +2399,12 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if (!((*argv)[++n] = strdup(vcpus)))
         goto no_memory;
 
+    if (vm->qemuCmdFlags & QEMUD_CMD_FLAG_NAME) {
+        if (!((*argv)[++n] = strdup("-name")))
+            goto no_memory;
+        if (!((*argv)[++n] = strdup(vm->def->name)))
+            goto no_memory;
+    }
     /*
      * NB, -nographic *MUST* come before any serial, or monitor
      * or parallel port flags due to QEMU craziness, where it
@@ -2474,11 +2483,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     /* If QEMU supports -drive param instead of old -hda, -hdb, -cdrom .. */
-    if (vm->qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_OPT) {
+    if (vm->qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE) {
         int bootCD = 0, bootFloppy = 0, bootDisk = 0;
 
         /* If QEMU supports boot=on for -drive param... */
-        if (vm->qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_BOOT_OPT) {
+        if (vm->qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_BOOT) {
             for (i = 0 ; i < vm->def->os.nBootDevs ; i++) {
                 switch (vm->def->os.bootDevs[i]) {
                 case QEMUD_BOOT_CDROM:

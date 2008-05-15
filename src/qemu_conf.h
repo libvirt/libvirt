@@ -249,8 +249,9 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_KQEMU          = (1 << 0),
     QEMUD_CMD_FLAG_VNC_COLON      = (1 << 1),
     QEMUD_CMD_FLAG_NO_REBOOT      = (1 << 2),
-    QEMUD_CMD_FLAG_DRIVE_OPT      = (1 << 3),
-    QEMUD_CMD_FLAG_DRIVE_BOOT_OPT = (1 << 4),
+    QEMUD_CMD_FLAG_DRIVE          = (1 << 3),
+    QEMUD_CMD_FLAG_DRIVE_BOOT     = (1 << 4),
+    QEMUD_CMD_FLAG_NAME           = (1 << 5),
 };
 
 

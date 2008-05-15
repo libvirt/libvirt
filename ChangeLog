@@ -1,7 +1,14 @@
+Thu May 15 12:11:08 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c, src/qemu_conf.h: Pass the -name flag to QEMU
+	if available.
+	* tests/qemuxml2argvdata/qemuxml2argv-minimal.args,
+	tests/qemuxml2argvtest.c: Test for launching with -name flag
+
 Thu May 15 12:08:08 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Support paravirt framebuffer input configuration for xenner guests
-	* src/qemu_drive.c, src/qemu_conf.c, src/qemu_conf.h: Add support
+	* src/qemu_driver.c, src/qemu_conf.c, src/qemu_conf.h: Add support
 	 for 'xen' input device type for Xenner PVFB
 	* tests/qemuxml2argv-input-xen.{args,xml}: Test case data
 	files for xen input devices

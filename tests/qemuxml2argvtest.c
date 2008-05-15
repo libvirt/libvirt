@@ -20,7 +20,7 @@ static struct qemud_driver driver;
 
 #define MAX_FILE 4096
 
-static int testCompareXMLToArgvFiles(const char *xml, const char *cmd, int driveFlag) {
+static int testCompareXMLToArgvFiles(const char *xml, const char *cmd, int extraFlags) {
     char xmlData[MAX_FILE];
     char argvData[MAX_FILE];
     char *xmlPtr = &(xmlData[0]);
@@ -47,10 +47,7 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd, int drive
     vm.qemuVersion = 0 * 1000 * 100 + (8 * 1000) + 1;
     vm.qemuCmdFlags = QEMUD_CMD_FLAG_VNC_COLON |
         QEMUD_CMD_FLAG_NO_REBOOT;
-    if (driveFlag) {
-        vm.qemuCmdFlags |= QEMUD_CMD_FLAG_DRIVE_OPT;
-        vm.qemuCmdFlags |= QEMUD_CMD_FLAG_DRIVE_BOOT_OPT;
-    }
+    vm.qemuCmdFlags |= extraFlags;
     vm.migrateFrom[0] = '\0';
 
     vmdef->vncActivePort = vmdef->vncPort;
@@ -100,7 +97,7 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd, int drive
 
 struct testInfo {
     const char *name;
-    int driveFlag;
+    int extraFlags;
 };
 
 static int testCompareXMLToArgvHelper(const void *data) {
@@ -111,7 +108,7 @@ static int testCompareXMLToArgvHelper(const void *data) {
              abs_srcdir, info->name);
     snprintf(args, PATH_MAX, "%s/qemuxml2argvdata/qemuxml2argv-%s.args",
              abs_srcdir, info->name);
-    return testCompareXMLToArgvFiles(xml, args, info->driveFlag);
+    return testCompareXMLToArgvFiles(xml, args, info->extraFlags);
 }
 
 
@@ -135,15 +132,15 @@ main(int argc, char **argv)
 
     driver.caps = qemudCapsInit();
 
-#define DO_TEST(name, driveFlag)                                        \
+#define DO_TEST(name, extraFlags)                                       \
     do {                                                                \
-        struct testInfo info = { name, driveFlag };                     \
+        struct testInfo info = { name, extraFlags };                    \
         if (virtTestRun("QEMU XML-2-ARGV " name,                        \
                         1, testCompareXMLToArgvHelper, &info) < 0)      \
             ret = -1;                                                   \
     } while (0)
 
-    DO_TEST("minimal", 0);
+    DO_TEST("minimal", QEMUD_CMD_FLAG_NAME);
     DO_TEST("boot-cdrom", 0);
     DO_TEST("boot-network", 0);
     DO_TEST("boot-floppy", 0);
@@ -152,8 +149,10 @@ main(int argc, char **argv)
     DO_TEST("disk-cdrom", 0);
     DO_TEST("disk-floppy", 0);
     DO_TEST("disk-many", 0);
-    DO_TEST("disk-virtio", 1);
-    DO_TEST("disk-xenvbd", 1);
+    DO_TEST("disk-virtio", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_BOOT);
+    DO_TEST("disk-xenvbd", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_BOOT);
     DO_TEST("graphics-vnc", 0);
     DO_TEST("graphics-sdl", 0);
     DO_TEST("input-usbmouse", 0);
