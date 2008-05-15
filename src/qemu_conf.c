@@ -1702,22 +1702,37 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     xmlXPathFreeObject(obj);
 
 
+    /* Extract bootloader */
+    obj = xmlXPathEval(BAD_CAST "string(/domain/bootloader)", ctxt);
+    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
+        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
+        strncpy(def->os.bootloader, (const char*)obj->stringval, sizeof(def->os.bootloader));
+        NUL_TERMINATE(def->os.bootloader);
+        xmlXPathFreeObject(obj);
+
+        /* Set a default OS type, since <type> is optional with bootloader */
+        strcpy(def->os.type, "xen");
+    }
+
     /* Extract OS type info */
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_OS_TYPE,
-                         "%s", _("no OS type"));
-        goto error;
+        if (!def->os.type[0]) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_OS_TYPE,
+                             "%s", _("no OS type"));
+            goto error;
+        }
+    } else {
+        strcpy(def->os.type, (const char *)obj->stringval);
+        xmlXPathFreeObject(obj);
     }
-    if (!virCapabilitiesSupportsGuestOSType(driver->caps, (const char*)obj->stringval)) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_OS_TYPE,
-                         "%s", obj->stringval);
-        goto error;
-    }
-    strcpy(def->os.type, (const char *)obj->stringval);
-    xmlXPathFreeObject(obj);
 
+    if (!virCapabilitiesSupportsGuestOSType(driver->caps, def->os.type)) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OS_TYPE,
+                         "%s", def->os.type);
+        goto error;
+    }
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1]/@arch)", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
@@ -1772,75 +1787,76 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     xmlXPathFreeObject(obj);
 
 
-    obj = xmlXPathEval(BAD_CAST "string(/domain/os/kernel[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        if (strlen((const char *)obj->stringval) >= (PATH_MAX-1)) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("kernel path too long"));
-            goto error;
-        }
-        strcpy(def->os.kernel, (const char *)obj->stringval);
-    }
-    xmlXPathFreeObject(obj);
-
-
-    obj = xmlXPathEval(BAD_CAST "string(/domain/os/initrd[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        if (strlen((const char *)obj->stringval) >= (PATH_MAX-1)) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("initrd path too long"));
-            goto error;
-        }
-        strcpy(def->os.initrd, (const char *)obj->stringval);
-    }
-    xmlXPathFreeObject(obj);
-
-
-    obj = xmlXPathEval(BAD_CAST "string(/domain/os/cmdline[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        if (strlen((const char *)obj->stringval) >= (PATH_MAX-1)) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("cmdline arguments too long"));
-            goto error;
-        }
-        strcpy(def->os.cmdline, (const char *)obj->stringval);
-    }
-    xmlXPathFreeObject(obj);
-
-
-    /* analysis of the disk devices */
-    obj = xmlXPathEval(BAD_CAST "/domain/os/boot", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
-        for (i = 0; i < obj->nodesetval->nodeNr && i < QEMUD_MAX_BOOT_DEVS ; i++) {
-            if (!(prop = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "dev")))
-                continue;
-            if (STREQ((char *)prop, "hd")) {
-                def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_DISK;
-            } else if (STREQ((char *)prop, "fd")) {
-                def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_FLOPPY;
-            } else if (STREQ((char *)prop, "cdrom")) {
-                def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_CDROM;
-            } else if (STREQ((char *)prop, "network")) {
-                def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_NET;
-            } else {
+    if (!def->os.bootloader[0]) {
+        obj = xmlXPathEval(BAD_CAST "string(/domain/os/kernel[1])", ctxt);
+        if ((obj != NULL) && (obj->type == XPATH_STRING) &&
+            (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
+            if (strlen((const char *)obj->stringval) >= (PATH_MAX-1)) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("unknown boot device \'%s\'"), (char*)prop);
+                                 "%s", _("kernel path too long"));
                 goto error;
             }
-            xmlFree(prop);
-            prop = NULL;
+            strcpy(def->os.kernel, (const char *)obj->stringval);
+        }
+        xmlXPathFreeObject(obj);
+
+
+        obj = xmlXPathEval(BAD_CAST "string(/domain/os/initrd[1])", ctxt);
+        if ((obj != NULL) && (obj->type == XPATH_STRING) &&
+            (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
+            if (strlen((const char *)obj->stringval) >= (PATH_MAX-1)) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("initrd path too long"));
+                goto error;
+            }
+            strcpy(def->os.initrd, (const char *)obj->stringval);
+        }
+        xmlXPathFreeObject(obj);
+
+
+        obj = xmlXPathEval(BAD_CAST "string(/domain/os/cmdline[1])", ctxt);
+        if ((obj != NULL) && (obj->type == XPATH_STRING) &&
+            (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
+            if (strlen((const char *)obj->stringval) >= (PATH_MAX-1)) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("cmdline arguments too long"));
+                goto error;
+            }
+            strcpy(def->os.cmdline, (const char *)obj->stringval);
+        }
+        xmlXPathFreeObject(obj);
+
+
+        /* analysis of the disk devices */
+        obj = xmlXPathEval(BAD_CAST "/domain/os/boot", ctxt);
+        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
+            for (i = 0; i < obj->nodesetval->nodeNr && i < QEMUD_MAX_BOOT_DEVS ; i++) {
+                if (!(prop = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "dev")))
+                    continue;
+                if (STREQ((char *)prop, "hd")) {
+                    def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_DISK;
+                } else if (STREQ((char *)prop, "fd")) {
+                    def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_FLOPPY;
+                } else if (STREQ((char *)prop, "cdrom")) {
+                    def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_CDROM;
+                } else if (STREQ((char *)prop, "network")) {
+                    def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_NET;
+                } else {
+                    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                     _("unknown boot device \'%s\'"), (char*)prop);
+                    goto error;
+                }
+                xmlFree(prop);
+                prop = NULL;
+            }
+        }
+        xmlXPathFreeObject(obj);
+        if (def->os.nBootDevs == 0) {
+            def->os.nBootDevs = 1;
+            def->os.bootDevs[0] = QEMUD_BOOT_DISK;
         }
     }
-    xmlXPathFreeObject(obj);
-    if (def->os.nBootDevs == 0) {
-        def->os.nBootDevs = 1;
-        def->os.bootDevs[0] = QEMUD_BOOT_DISK;
-    }
-
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/devices/emulator[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
@@ -2371,6 +2387,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         (vm->def->os.kernel[0] ? 2 : 0) + /* kernel */
         (vm->def->os.initrd[0] ? 2 : 0) + /* initrd */
         (vm->def->os.cmdline[0] ? 2 : 0) + /* cmdline */
+        (vm->def->os.bootloader[0] ? 2 : 0) + /* bootloader */
         (vm->def->graphicsType == QEMUD_GRAPHICS_VNC ? 2 :
          (vm->def->graphicsType == QEMUD_GRAPHICS_SDL ? 0 : 1)) + /* graphics */
         (vm->migrateFrom[0] ? 3 : 0); /* migrateFrom */
@@ -2438,47 +2455,54 @@ int qemudBuildCommandLine(virConnectPtr conn,
             goto no_memory;
     }
 
-    for (i = 0 ; i < vm->def->os.nBootDevs ; i++) {
-        switch (vm->def->os.bootDevs[i]) {
-        case QEMUD_BOOT_CDROM:
-            boot[i] = 'd';
-            break;
-        case QEMUD_BOOT_FLOPPY:
-            boot[i] = 'a';
-            break;
-        case QEMUD_BOOT_DISK:
-            boot[i] = 'c';
-            break;
-        case QEMUD_BOOT_NET:
-            boot[i] = 'n';
-            break;
-        default:
-            boot[i] = 'c';
-            break;
+    if (!vm->def->os.bootloader[0]) {
+        for (i = 0 ; i < vm->def->os.nBootDevs ; i++) {
+            switch (vm->def->os.bootDevs[i]) {
+            case QEMUD_BOOT_CDROM:
+                boot[i] = 'd';
+                break;
+            case QEMUD_BOOT_FLOPPY:
+                boot[i] = 'a';
+                break;
+            case QEMUD_BOOT_DISK:
+                boot[i] = 'c';
+                break;
+            case QEMUD_BOOT_NET:
+                boot[i] = 'n';
+                break;
+            default:
+                boot[i] = 'c';
+                break;
+            }
         }
-    }
-    boot[vm->def->os.nBootDevs] = '\0';
-    if (!((*argv)[++n] = strdup("-boot")))
-        goto no_memory;
-    if (!((*argv)[++n] = strdup(boot)))
-        goto no_memory;
+        boot[vm->def->os.nBootDevs] = '\0';
+        if (!((*argv)[++n] = strdup("-boot")))
+            goto no_memory;
+        if (!((*argv)[++n] = strdup(boot)))
+            goto no_memory;
 
-    if (vm->def->os.kernel[0]) {
-        if (!((*argv)[++n] = strdup("-kernel")))
+        if (vm->def->os.kernel[0]) {
+            if (!((*argv)[++n] = strdup("-kernel")))
+                goto no_memory;
+            if (!((*argv)[++n] = strdup(vm->def->os.kernel)))
+                goto no_memory;
+        }
+        if (vm->def->os.initrd[0]) {
+            if (!((*argv)[++n] = strdup("-initrd")))
+                goto no_memory;
+            if (!((*argv)[++n] = strdup(vm->def->os.initrd)))
+                goto no_memory;
+        }
+        if (vm->def->os.cmdline[0]) {
+            if (!((*argv)[++n] = strdup("-append")))
+                goto no_memory;
+            if (!((*argv)[++n] = strdup(vm->def->os.cmdline)))
+                goto no_memory;
+        }
+    } else {
+        if (!((*argv)[++n] = strdup("-bootloader")))
             goto no_memory;
-        if (!((*argv)[++n] = strdup(vm->def->os.kernel)))
-            goto no_memory;
-    }
-    if (vm->def->os.initrd[0]) {
-        if (!((*argv)[++n] = strdup("-initrd")))
-            goto no_memory;
-        if (!((*argv)[++n] = strdup(vm->def->os.initrd)))
-            goto no_memory;
-    }
-    if (vm->def->os.cmdline[0]) {
-        if (!((*argv)[++n] = strdup("-append")))
-            goto no_memory;
-        if (!((*argv)[++n] = strdup(vm->def->os.cmdline)))
+        if (!((*argv)[++n] = strdup(vm->def->os.bootloader)))
             goto no_memory;
     }
 
@@ -3809,6 +3833,8 @@ char *qemudGenerateXML(virConnectPtr conn,
     virBufferVSprintf(&buf, "  <memory>%lu</memory>\n", def->maxmem);
     virBufferVSprintf(&buf, "  <currentMemory>%lu</currentMemory>\n", def->memory);
     virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n", def->vcpus);
+    if (def->os.bootloader[0])
+        virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", def->os.bootloader);
     virBufferAddLit(&buf, "  <os>\n");
 
     if (def->virtType == QEMUD_VIRT_QEMU)
@@ -3817,30 +3843,32 @@ char *qemudGenerateXML(virConnectPtr conn,
     else
         virBufferVSprintf(&buf, "    <type>%s</type>\n", def->os.type);
 
-    if (def->os.kernel[0])
-        virBufferVSprintf(&buf, "    <kernel>%s</kernel>\n", def->os.kernel);
-    if (def->os.initrd[0])
-        virBufferVSprintf(&buf, "    <initrd>%s</initrd>\n", def->os.initrd);
-    if (def->os.cmdline[0])
-        virBufferVSprintf(&buf, "    <cmdline>%s</cmdline>\n", def->os.cmdline);
+    if (!def->os.bootloader[0]) {
+        if (def->os.kernel[0])
+            virBufferVSprintf(&buf, "    <kernel>%s</kernel>\n", def->os.kernel);
+        if (def->os.initrd[0])
+            virBufferVSprintf(&buf, "    <initrd>%s</initrd>\n", def->os.initrd);
+        if (def->os.cmdline[0])
+            virBufferVSprintf(&buf, "    <cmdline>%s</cmdline>\n", def->os.cmdline);
 
-    for (n = 0 ; n < def->os.nBootDevs ; n++) {
-        const char *boottype = "hd";
-        switch (def->os.bootDevs[n]) {
-        case QEMUD_BOOT_FLOPPY:
-            boottype = "fd";
-            break;
-        case QEMUD_BOOT_DISK:
-            boottype = "hd";
-            break;
-        case QEMUD_BOOT_CDROM:
-            boottype = "cdrom";
-            break;
-        case QEMUD_BOOT_NET:
-            boottype = "network";
-            break;
+        for (n = 0 ; n < def->os.nBootDevs ; n++) {
+            const char *boottype = "hd";
+            switch (def->os.bootDevs[n]) {
+            case QEMUD_BOOT_FLOPPY:
+                boottype = "fd";
+                break;
+            case QEMUD_BOOT_DISK:
+                boottype = "hd";
+                break;
+            case QEMUD_BOOT_CDROM:
+                boottype = "cdrom";
+                break;
+            case QEMUD_BOOT_NET:
+                boottype = "network";
+                break;
+            }
+            virBufferVSprintf(&buf, "    <boot dev='%s'/>\n", boottype);
         }
-        virBufferVSprintf(&buf, "    <boot dev='%s'/>\n", boottype);
     }
 
     virBufferAddLit(&buf, "  </os>\n");

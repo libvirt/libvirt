@@ -97,6 +97,7 @@ main(int argc, char **argv)
     DO_TEST("boot-cdrom");
     DO_TEST("boot-network");
     DO_TEST("boot-floppy");
+    DO_TEST("bootloader");
     DO_TEST("clock-utc");
     DO_TEST("clock-localtime");
     DO_TEST("disk-cdrom");

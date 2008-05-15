@@ -270,6 +270,7 @@ struct qemud_vm_os_def {
     char initrd[PATH_MAX];
     char cmdline[PATH_MAX];
     char binary[PATH_MAX];
+    char bootloader[PATH_MAX];
 };
 
 /* Guest VM main configuration */

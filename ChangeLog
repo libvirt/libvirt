@@ -1,3 +1,13 @@
+Thu May 15 12:16:08 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Support xenner bootloader capability
+	* src/qemu_conf.c, src/qemu_conf.h: Add support for specifying a
+	bootloader for paravirt xen guests
+	* tests/qemuxml2argv-bootloader.{args,xml}: Test case data
+	files for xen bootloader
+	* tests/qemuxml2argvtest.c, tests/qemuxml2xmltest.c: Add
+	test case for xen bootloader
+
 Thu May 15 12:11:08 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c, src/qemu_conf.h: Pass the -name flag to QEMU
