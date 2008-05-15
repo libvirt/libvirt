@@ -698,10 +698,20 @@ static int qemudParseDiskXML(virConnectPtr conn,
     }
 
     if (!bus) {
-        if (disk->device == QEMUD_DISK_FLOPPY)
+        if (disk->device == QEMUD_DISK_FLOPPY) {
             disk->bus = QEMUD_DISK_BUS_FDC;
-        else
-            disk->bus = QEMUD_DISK_BUS_IDE;
+        } else {
+            if (STRPREFIX((const char *)target, "hd"))
+                disk->bus = QEMUD_DISK_BUS_IDE;
+            else if (STRPREFIX((const char *)target, "sd"))
+                disk->bus = QEMUD_DISK_BUS_SCSI;
+            else if (STRPREFIX((const char *)target, "vd"))
+                disk->bus = QEMUD_DISK_BUS_VIRTIO;
+            else if (STRPREFIX((const char *)target, "xvd"))
+                disk->bus = QEMUD_DISK_BUS_XEN;
+            else
+                disk->bus = QEMUD_DISK_BUS_IDE;
+        }
     } else if (STREQ((const char *)bus, "ide"))
         disk->bus = QEMUD_DISK_BUS_IDE;
     else if (STREQ((const char *)bus, "fdc"))

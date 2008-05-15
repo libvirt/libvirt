@@ -1,3 +1,7 @@
+Thu May 15 12:21:08 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c: Fix default disk bus selection logic
+
 Thu May 15 12:16:08 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Support xenner bootloader capability
