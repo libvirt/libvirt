@@ -1436,7 +1436,7 @@ static int qemudParseInputXML(virConnectPtr conn,
             }
         }
     } else {
-        if (!strcmp(vm->os.type, "hvm")) {
+        if (STREQ(vm->os.type, "hvm")) {
             if (input->type == QEMU_INPUT_TYPE_MOUSE)
                 input->bus = QEMU_INPUT_BUS_PS2;
             else
