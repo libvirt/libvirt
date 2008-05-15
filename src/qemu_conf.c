@@ -667,7 +667,8 @@ static int qemudParseDiskXML(virConnectPtr conn,
     if ((!device || STREQ((const char *)device, "disk")) &&
         !STRPREFIX((const char *)target, "hd") &&
         !STRPREFIX((const char *)target, "sd") &&
-        !STRPREFIX((const char *)target, "vd")) {
+        !STRPREFIX((const char *)target, "vd") &&
+        !STRPREFIX((const char *)target, "xvd")) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Invalid harddisk device name: %s"), target);
         goto error;
@@ -707,6 +708,8 @@ static int qemudParseDiskXML(virConnectPtr conn,
         disk->bus = QEMUD_DISK_BUS_SCSI;
     else if (STREQ((const char *)bus, "virtio"))
         disk->bus = QEMUD_DISK_BUS_VIRTIO;
+    else if (STREQ((const char *)bus, "xen"))
+        disk->bus = QEMUD_DISK_BUS_XEN;
     else {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Invalid bus type: %s"), bus);
@@ -1435,7 +1438,8 @@ static const char *qemudBusIdToName(int busId, int qemuIF) {
     const char *busnames[] = { "ide",
                                (qemuIF ? "floppy" : "fdc"),
                                "scsi",
-                               "virtio" };
+                               "virtio",
+                               "xen"};
     verify_true(ARRAY_CARDINALITY(busnames) == QEMUD_DISK_BUS_LAST);
 
     return busnames[busId];

@@ -153,6 +153,7 @@ main(int argc, char **argv)
     DO_TEST("disk-floppy", 0);
     DO_TEST("disk-many", 0);
     DO_TEST("disk-virtio", 1);
+    DO_TEST("disk-xenvbd", 1);
     DO_TEST("graphics-vnc", 0);
     DO_TEST("graphics-sdl", 0);
     DO_TEST("input-usbmouse", 0);

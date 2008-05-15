@@ -61,6 +61,7 @@ enum qemud_vm_disk_bus {
     QEMUD_DISK_BUS_FDC,
     QEMUD_DISK_BUS_SCSI,
     QEMUD_DISK_BUS_VIRTIO,
+    QEMUD_DISK_BUS_XEN,
 
     QEMUD_DISK_BUS_LAST
 };

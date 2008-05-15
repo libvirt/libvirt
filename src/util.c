@@ -778,24 +778,18 @@ virParseMacAddr(const char* str, unsigned char *addr)
 int virDiskNameToIndex(const char *name) {
     const char *ptr = NULL;
     int idx = 0;
+    static char const* const drive_prefix[] = {"fd", "hd", "vd", "sd", "xvd"};
+    unsigned int i;
 
-    if (strlen(name) < 3)
-        return -1;
-
-    switch (*name) {
-        case 'f':
-        case 'h':
-        case 'v':
-        case 's':
+    for (i = 0; i < ARRAY_CARDINALITY(drive_prefix); i++) {
+        if (STRPREFIX(name, drive_prefix[i])) {
+            ptr = name + strlen(drive_prefix[i]);
             break;
-        default:
-            return 0;
+        }
     }
 
-    if (*(name + 1) != 'd')
+    if (!ptr)
         return -1;
-
-    ptr = name+2;
 
     while (*ptr) {
         idx = idx * 26;
