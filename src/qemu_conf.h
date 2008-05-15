@@ -189,6 +189,7 @@ enum qemu_vm_input_type {
 enum qemu_vm_input_bus {
     QEMU_INPUT_BUS_PS2,
     QEMU_INPUT_BUS_USB,
+    QEMU_INPUT_BUS_XEN,
 };
 
 struct qemud_vm_input_def {
@@ -474,7 +475,7 @@ void        qemudRemoveInactiveVM       (struct qemud_driver *driver,
 
 struct qemud_vm_device_def *
             qemudParseVMDeviceDef       (virConnectPtr conn,
-                                         struct qemud_driver *driver,
+                                         const struct qemud_vm_def *def,
                                          const char *xmlStr);
 
 struct qemud_vm_def *

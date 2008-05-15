@@ -107,6 +107,7 @@ main(int argc, char **argv)
     DO_TEST("graphics-sdl");
     DO_TEST("input-usbmouse");
     DO_TEST("input-usbtablet");
+    DO_TEST("input-xen");
     DO_TEST("misc-acpi");
     DO_TEST("misc-no-reboot");
     DO_TEST("net-user");

@@ -1365,6 +1365,7 @@ cleanup:
 
 /* Parse the XML definition for a network interface */
 static int qemudParseInputXML(virConnectPtr conn,
+                              const struct qemud_vm_def *vm,
                               struct qemud_vm_input_def *input,
                               xmlNodePtr node) {
     xmlChar *type = NULL;
@@ -1391,26 +1392,46 @@ static int qemudParseInputXML(virConnectPtr conn,
     }
 
     if (bus) {
-        if (STREQ((const char*)bus, "ps2")) { /* Only allow mouse */
-            if (input->type == QEMU_INPUT_TYPE_TABLET) {
+        if (STREQ(vm->os.type, "hvm")) {
+            if (STREQ((const char*)bus, "ps2")) { /* Only allow mouse */
+                if (input->type != QEMU_INPUT_TYPE_MOUSE) {
+                    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                     _("ps2 bus does not support %s input device"),
+                                     (const char*)type);
+                    goto error;
+                }
+                input->bus = QEMU_INPUT_BUS_PS2;
+            } else if (STREQ((const char *)bus, "usb")) { /* Allow mouse & tablet */
+                input->bus = QEMU_INPUT_BUS_USB;
+            } else {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("ps2 bus does not support %s input device"),
-                                 (const char*)type);
+                                 _("unsupported input bus %s"), (const char*)bus);
                 goto error;
             }
-            input->bus = QEMU_INPUT_BUS_PS2;
-        } else if (STREQ((const char *)bus, "usb")) { /* Allow mouse & keyboard */
-            input->bus = QEMU_INPUT_BUS_USB;
         } else {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("unsupported input bus %s"), (const char*)bus);
-            goto error;
+            if (STREQ((const char *)bus, "xen")) { /* Allow mouse only */
+                input->bus = QEMU_INPUT_BUS_XEN;
+                if (input->type != QEMU_INPUT_TYPE_MOUSE) {
+                    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                     _("xen bus does not support %s input device"),
+                                     (const char*)type);
+                    goto error;
+                }
+            } else {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("unsupported input bus %s"), (const char*)bus);
+                goto error;
+            }
         }
     } else {
-        if (input->type == QEMU_INPUT_TYPE_MOUSE)
-            input->bus = QEMU_INPUT_BUS_PS2;
-        else
-            input->bus = QEMU_INPUT_BUS_USB;
+        if (!strcmp(vm->os.type, "hvm")) {
+            if (input->type == QEMU_INPUT_TYPE_MOUSE)
+                input->bus = QEMU_INPUT_BUS_PS2;
+            else
+                input->bus = QEMU_INPUT_BUS_USB;
+        } else {
+            input->bus = QEMU_INPUT_BUS_XEN;
+        }
     }
 
     xmlFree(type);
@@ -1998,7 +2019,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
                          "%s", _("failed to allocate space for input string"));
                 goto error;
             }
-            if (qemudParseInputXML(conn, input, obj->nodesetval->nodeTab[i]) < 0) {
+            if (qemudParseInputXML(conn, def, input, obj->nodesetval->nodeTab[i]) < 0) {
                 free(input);
                 goto error;
             }
@@ -2852,7 +2873,7 @@ static int qemudSaveConfig(virConnectPtr conn,
 
 struct qemud_vm_device_def *
 qemudParseVMDeviceDef(virConnectPtr conn,
-                      struct qemud_driver *driver ATTRIBUTE_UNUSED,
+                      const struct qemud_vm_def *def,
                       const char *xmlStr)
 {
     xmlDocPtr xml;
@@ -2880,7 +2901,7 @@ qemudParseVMDeviceDef(virConnectPtr conn,
         qemudParseInterfaceXML(conn, &(dev->data.net), node);
     } else if (xmlStrEqual(node->name, BAD_CAST "input")) {
         dev->type = QEMUD_DEVICE_DISK;
-        qemudParseInputXML(conn, &(dev->data.input), node);
+        qemudParseInputXML(conn, def, &(dev->data.input), node);
     } else if (xmlStrEqual(node->name, BAD_CAST "sound")) {
         dev->type = QEMUD_DEVICE_SOUND;
         qemudParseSoundXML(conn, &(dev->data.sound), node);
@@ -3950,14 +3971,15 @@ char *qemudGenerateXML(virConnectPtr conn,
 
     input = def->inputs;
     while (input) {
-        if (input->bus != QEMU_INPUT_BUS_PS2)
+        if (input->bus == QEMU_INPUT_BUS_USB)
             virBufferVSprintf(&buf, "    <input type='%s' bus='usb'/>\n",
                               input->type == QEMU_INPUT_TYPE_MOUSE ? "mouse" : "tablet");
         input = input->next;
     }
     /* If graphics is enable, add implicit mouse */
     if (def->graphicsType != QEMUD_GRAPHICS_NONE)
-        virBufferAddLit(&buf, "    <input type='mouse' bus='ps2'/>\n");
+        virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n",
+                          STREQ(def->os.type, "hvm") ? "ps2" : "xen");
 
     switch (def->graphicsType) {
     case QEMUD_GRAPHICS_VNC:

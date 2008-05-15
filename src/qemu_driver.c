@@ -2516,7 +2516,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         return -1;
     }
 
-    dev = qemudParseVMDeviceDef(dom->conn, driver, xml);
+    dev = qemudParseVMDeviceDef(dom->conn, vm->def, xml);
     if (dev == NULL) {
         return -1;
     }

@@ -158,6 +158,7 @@ main(int argc, char **argv)
     DO_TEST("graphics-sdl", 0);
     DO_TEST("input-usbmouse", 0);
     DO_TEST("input-usbtablet", 0);
+    DO_TEST("input-xen", 0);
     DO_TEST("misc-acpi", 0);
     DO_TEST("misc-no-reboot", 0);
     DO_TEST("net-user", 0);
