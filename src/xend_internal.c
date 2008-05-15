@@ -487,7 +487,7 @@ xend_get(virConnectPtr xend, const char *path,
     close(s);
 
     if (((ret < 0) || (ret >= 300)) &&
-        ((ret != 404) || (STRNEQLEN(path, "/xend/domain/", 13)))) {
+        ((ret != 404) || (!STRPREFIX(path, "/xend/domain/")))) {
         virXendError(xend, VIR_ERR_GET_FAILED, content);
     }
 
@@ -1943,7 +1943,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                 }
             }
 
-            if (STREQLEN(dst, "ioemu:", 6))
+            if (STRPREFIX(dst, "ioemu:"))
                 dst += 6;
 
             /* New style disk config from Xen >= 3.0.3 */
@@ -2399,7 +2399,7 @@ sexpr_to_xend_topology(virConnectPtr conn,
             goto parse_error;
         cur++;
         virSkipSpaces(&cur);
-        if (STREQLEN(cur, "no cpus", 7)) {
+        if (STRPREFIX(cur, "no cpus")) {
             nb_cpus = 0;
             for (cpu = 0; cpu < numCpus; cpu++)
                 cpuset[cpu] = 0;

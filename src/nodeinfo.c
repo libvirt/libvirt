@@ -57,7 +57,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
     /* XXX hyperthreads */
     while (fgets(line, sizeof(line), cpuinfo) != NULL) {
         char *buf = line;
-        if (STREQLEN(buf, "processor", 9)) { /* aka a single logical CPU */
+        if (STRPREFIX(buf, "processor")) { /* aka a single logical CPU */
             buf += 9;
             while (*buf && c_isspace(*buf))
                 buf++;
@@ -68,7 +68,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
                 return -1;
             }
             nodeinfo->cpus++;
-        } else if (STREQLEN(buf, "cpu MHz", 7)) {
+        } else if (STRPREFIX(buf, "cpu MHz")) {
             char *p;
             unsigned int ui;
             buf += 9;
@@ -84,7 +84,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
                 /* Accept trailing fractional part.  */
                 && (*p == '\0' || *p == '.' || c_isspace(*p)))
                 nodeinfo->mhz = ui;
-        } else if (STREQLEN(buf, "cpu cores", 9)) { /* aka cores */
+        } else if (STRPREFIX(buf, "cpu cores")) { /* aka cores */
             char *p;
             unsigned int id;
             buf += 9;

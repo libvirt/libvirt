@@ -230,7 +230,7 @@ xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
 
     /* Strip leading path if any */
     if (strlen(path) > 5 &&
-        STREQLEN(path, "/dev/", 5))
+        STRPREFIX(path, "/dev/"))
         path += 5;
 
     /*
@@ -251,7 +251,7 @@ xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
      */
 
     if (strlen (path) >= 4 &&
-        STREQLEN (path, "xvd", 3)) {
+        STRPREFIX (path, "xvd")) {
         /* Xen paravirt device handling */
         disk = (path[3] - 'a');
         if (disk < 0 || disk > 15) {
@@ -274,7 +274,7 @@ xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
 
         return (XENVBD_MAJOR * 256) + (disk * 16) + part;
     } else if (strlen (path) >= 3 &&
-               STREQLEN (path, "sd", 2)) {
+               STRPREFIX (path, "sd")) {
         /* SCSI device handling */
         int majors[] = { SCSI_DISK0_MAJOR, SCSI_DISK1_MAJOR, SCSI_DISK2_MAJOR,
                          SCSI_DISK3_MAJOR, SCSI_DISK4_MAJOR, SCSI_DISK5_MAJOR,
@@ -318,7 +318,7 @@ xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
 
         return (majors[disk/16] * 256) + ((disk%16) * 16) + part;
     } else if (strlen (path) >= 3 &&
-               STREQLEN (path, "hd", 2)) {
+               STRPREFIX (path, "hd")) {
         /* IDE device handling */
         int majors[] = { IDE0_MAJOR, IDE1_MAJOR, IDE2_MAJOR, IDE3_MAJOR,
                          IDE4_MAJOR, IDE5_MAJOR, IDE6_MAJOR, IDE7_MAJOR,

@@ -353,19 +353,19 @@ static int xenXMConfigCacheRefresh (virConnectPtr conn) {
          */
 
         /* Like 'dot' files... */
-        if (STREQLEN(ent->d_name, ".", 1))
+        if (STRPREFIX(ent->d_name, "."))
             continue;
         /* ...and the XenD server config file */
-        if (STREQLEN(ent->d_name, XEND_CONFIG_FILE, strlen(XEND_CONFIG_FILE)))
+        if (STRPREFIX(ent->d_name, XEND_CONFIG_FILE))
             continue;
         /* ...and random PCI config cruft */
-        if (STREQLEN(ent->d_name, XEND_PCI_CONFIG_PREFIX, strlen(XEND_PCI_CONFIG_PREFIX)))
+        if (STRPREFIX(ent->d_name, XEND_PCI_CONFIG_PREFIX))
             continue;
         /* ...and the example domain configs */
-        if (STREQLEN(ent->d_name, XM_EXAMPLE_PREFIX, strlen(XM_EXAMPLE_PREFIX)))
+        if (STRPREFIX(ent->d_name, XM_EXAMPLE_PREFIX))
             continue;
         /* ...and the QEMU networking script */
-        if (STREQLEN(ent->d_name, QEMU_IF_SCRIPT, strlen(QEMU_IF_SCRIPT)))
+        if (STRPREFIX(ent->d_name, QEMU_IF_SCRIPT))
             continue;
 
         /* ...and editor backups */
@@ -778,7 +778,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             }
 
             /* And the source driver sub-type */
-            if (STREQLEN(drvName, "tap", 3)) {
+            if (STRPREFIX(drvName, "tap")) {
                 if (!(tmp1 = strchr(tmp+1, ':')) || !tmp1[0])
                     goto skipdisk;
                 strncpy(drvType, tmp+1, (tmp1-(tmp+1)));
@@ -795,7 +795,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             }
 
             /* Remove legacy ioemu: junk */
-            if (STREQLEN(dev, "ioemu:", 6)) {
+            if (STRPREFIX(dev, "ioemu:")) {
                 memmove(dev, dev+6, strlen(dev)-5);
             }
 

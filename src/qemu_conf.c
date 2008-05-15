@@ -816,7 +816,7 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
                         (net->type == QEMUD_NET_BRIDGE)) &&
                        xmlStrEqual(cur->name, BAD_CAST "target")) {
                 ifname = xmlGetProp(cur, BAD_CAST "dev");
-                if (STREQLEN("vnet", (const char*)ifname, 4)) {
+                if (STRPREFIX((const char*)ifname, "vnet")) {
                     /* An auto-generated target name, blank it out */
                     xmlFree(ifname);
                     ifname = NULL;
@@ -2130,7 +2130,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         }
         brname = network->bridge;
         if (net->dst.network.ifname[0] == '\0' ||
-            STREQLEN(net->dst.network.ifname, "vnet", 4) ||
+            STRPREFIX(net->dst.network.ifname, "vnet") ||
             strchr(net->dst.network.ifname, '%')) {
             strcpy(net->dst.network.ifname, "vnet%d");
         }
@@ -2138,7 +2138,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     } else if (net->type == QEMUD_NET_BRIDGE) {
         brname = net->dst.bridge.brname;
         if (net->dst.bridge.ifname[0] == '\0' ||
-            STREQLEN(net->dst.bridge.ifname, "vnet", 4) ||
+            STRPREFIX(net->dst.bridge.ifname, "vnet") ||
             strchr(net->dst.bridge.ifname, '%')) {
             strcpy(net->dst.bridge.ifname, "vnet%d");
         }

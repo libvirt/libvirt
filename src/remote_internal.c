@@ -4339,7 +4339,7 @@ call (virConnectPtr conn, struct private_data *priv,
             rerror.domain == VIR_FROM_REMOTE &&
             rerror.code == VIR_ERR_RPC &&
             rerror.level == VIR_ERR_ERROR &&
-            STREQLEN(*rerror.message, "unknown procedure", 17)) {
+            STRPREFIX(*rerror.message, "unknown procedure")) {
             return -2;
         }
         server_error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, &rerror);

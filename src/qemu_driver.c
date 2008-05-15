@@ -2650,12 +2650,12 @@ qemudDomainBlockStats (virDomainPtr dom,
      *   cdrom    to  ide1-cd0
      *   fd[a-]   to  floppy[0-]
      */
-    if (STREQLEN (path, "hd", 2) && path[2] >= 'a' && path[2] <= 'z')
+    if (STRPREFIX (path, "hd") && path[2] >= 'a' && path[2] <= 'z')
         snprintf (qemu_dev_name, sizeof (qemu_dev_name),
                   "ide0-hd%d", path[2] - 'a');
     else if (STREQ (path, "cdrom"))
         strcpy (qemu_dev_name, "ide1-cd0");
-    else if (STREQLEN (path, "fd", 2) && path[2] >= 'a' && path[2] <= 'z')
+    else if (STRPREFIX (path, "fd") && path[2] >= 'a' && path[2] <= 'z')
         snprintf (qemu_dev_name, sizeof (qemu_dev_name),
                   "floppy%d", path[2] - 'a');
     else {
@@ -2679,7 +2679,7 @@ qemudDomainBlockStats (virDomainPtr dom,
      * unlikely to be the name of a block device, we can use this
      * to detect if qemu supports the command.
      */
-    if (STREQLEN (info, "info ", 5)) {
+    if (STRPREFIX (info, "info ")) {
         free (info);
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                           "%s",
@@ -2711,19 +2711,19 @@ qemudDomainBlockStats (virDomainPtr dom,
             p += len+2;         /* Skip to first label. */
 
             while (*p) {
-                if (STREQLEN (p, "rd_bytes=", 9)) {
+                if (STRPREFIX (p, "rd_bytes=")) {
                     p += 9;
                     if (virStrToLong_ll (p, &dummy, 10, &stats->rd_bytes) == -1)
                         DEBUG ("error reading rd_bytes: %s", p);
-                } else if (STREQLEN (p, "wr_bytes=", 9)) {
+                } else if (STRPREFIX (p, "wr_bytes=")) {
                     p += 9;
                     if (virStrToLong_ll (p, &dummy, 10, &stats->wr_bytes) == -1)
                         DEBUG ("error reading wr_bytes: %s", p);
-                } else if (STREQLEN (p, "rd_operations=", 14)) {
+                } else if (STRPREFIX (p, "rd_operations=")) {
                     p += 14;
                     if (virStrToLong_ll (p, &dummy, 10, &stats->rd_req) == -1)
                         DEBUG ("error reading rd_req: %s", p);
-                } else if (STREQLEN (p, "wr_operations=", 14)) {
+                } else if (STRPREFIX (p, "wr_operations=")) {
                     p += 14;
                     if (virStrToLong_ll (p, &dummy, 10, &stats->wr_req) == -1)
                         DEBUG ("error reading wr_req: %s", p);

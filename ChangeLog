@@ -1,5 +1,18 @@
 Thu May 15 09:12:08 CEST 2008 Jim Meyering <meyering@redhat.com>
 
+	Avoid using STREQLEN with a literal; use STRPREFIX instead
+	Likewise for STRNEQLEN -> !STRPREFIX.
+	* src/nodeinfo.c (linuxNodeInfoCPUPopulate):
+	* src/qemu_conf.c (qemudNetworkIfaceConnect):
+	(qemudParseInterfaceXML):
+	* src/qemu_driver.c (qemudDomainBlockStats):
+	* src/remote_internal.c (call):
+	* src/stats_linux.c (xenLinuxDomainDeviceID):
+	* src/xend_internal.c (xend_parse_sexp_desc):
+	(xend_get, sexpr_to_xend_topology):
+	* src/xm_internal.c (xenXMConfigCacheRefresh)
+	(xenXMDomainFormatXML):
+
 	* Makefile.maint (sc_prohibit_strcmp): Also prohibit strncmp.
 
 Thu May 15 15:07:49 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
