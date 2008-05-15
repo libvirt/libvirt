@@ -1,3 +1,7 @@
+Thu May 15 09:12:08 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	* Makefile.maint (sc_prohibit_strcmp): Also prohibit strncmp.
+
 Thu May 15 15:07:49 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
 
 	* qemud/libvirtd.init.in: change libvirtd description
