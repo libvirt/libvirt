@@ -1716,11 +1716,11 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
         strncpy(def->os.bootloader, (const char*)obj->stringval, sizeof(def->os.bootloader));
         NUL_TERMINATE(def->os.bootloader);
-        xmlXPathFreeObject(obj);
 
         /* Set a default OS type, since <type> is optional with bootloader */
         strcpy(def->os.type, "xen");
     }
+    xmlXPathFreeObject(obj);
 
     /* Extract OS type info */
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1])", ctxt);
@@ -1733,9 +1733,9 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         }
     } else {
         strcpy(def->os.type, (const char *)obj->stringval);
-        xmlXPathFreeObject(obj);
-        obj = NULL;
     }
+    xmlXPathFreeObject(obj);
+    obj = NULL;
 
     if (!virCapabilitiesSupportsGuestOSType(driver->caps, def->os.type)) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OS_TYPE,

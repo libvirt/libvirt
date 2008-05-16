@@ -1,3 +1,8 @@
+Fri May 16 18:53:12 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	plug two leaks
+	* src/qemu_conf.c (qemudParseXML): Free "obj" unconditionally.
+
 Fri May 16 12:50:08 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Make QEMU test cases independant of QEMU capabilities on
