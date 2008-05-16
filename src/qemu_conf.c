@@ -49,7 +49,8 @@
 #include "buf.h"
 #include "conf.h"
 #include "util.h"
-#include <verify.h>
+#include "verify.h"
+#include "c-ctype.h"
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 
@@ -1007,7 +1008,7 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
      * i82551 i82557b i82559er ne2k_pci pcnet rtl8139 e1000 virtio
      */
     if (model != NULL) {
-        int i, len, char_ok;
+        int i, len;
 
         len = xmlStrlen (model);
         if (len >= QEMUD_MODEL_MAX_LEN) {
@@ -1016,10 +1017,7 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
             goto error;
         }
         for (i = 0; i < len; ++i) {
-            char_ok =
-                (model[i] >= '0' && model[i] <= '9') ||
-                (model[i] >= 'a' && model[i] <= 'z') ||
-                (model[i] >= 'A' && model[i] <= 'Z') || model[i] == '_';
+            int char_ok = c_isalnum(model[i]) || model[i] == '_';
             if (!char_ok) {
                 qemudReportError (conn, NULL, NULL, VIR_ERR_INVALID_ARG, "%s",
                                   _("Model name contains invalid characters"));

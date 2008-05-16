@@ -18,7 +18,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
-#include <c-ctype.h>
+#include "c-ctype.h"
 
 #ifdef WITH_XEN
 #include <xs.h>

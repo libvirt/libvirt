@@ -32,6 +32,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "c-ctype.h"
 #include "internal.h"
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
@@ -105,6 +106,22 @@ virUUIDGenerate(unsigned char *uuid)
     return virUUIDGeneratePseudoRandomBytes(uuid, VIR_UUID_BUFLEN);
 }
 
+/* Convert C from hexadecimal character to integer.  */
+static int
+hextobin (unsigned char c)
+{
+  switch (c)
+    {
+    default: return c - '0';
+    case 'a': case 'A': return 10;
+    case 'b': case 'B': return 11;
+    case 'c': case 'C': return 12;
+    case 'd': case 'D': return 13;
+    case 'e': case 'E': return 14;
+    case 'f': case 'F': return 15;
+    }
+}
+
 /**
  * virUUIDParse:
  * @uuidstr: zero terminated string representation of the UUID
@@ -136,26 +153,16 @@ virUUIDParse(const char *uuidstr, unsigned char *uuid) {
             cur++;
             continue;
         }
-        if ((*cur >= '0') && (*cur <= '9'))
-            uuid[i] = *cur - '0';
-        else if ((*cur >= 'a') && (*cur <= 'f'))
-            uuid[i] = *cur - 'a' + 10;
-        else if ((*cur >= 'A') && (*cur <= 'F'))
-            uuid[i] = *cur - 'A' + 10;
-        else
+        if (!c_isxdigit(*cur))
             goto error;
+        uuid[i] = hextobin(*cur);
         uuid[i] *= 16;
         cur++;
         if (*cur == 0)
             goto error;
-        if ((*cur >= '0') && (*cur <= '9'))
-            uuid[i] += *cur - '0';
-        else if ((*cur >= 'a') && (*cur <= 'f'))
-            uuid[i] += *cur - 'a' + 10;
-        else if ((*cur >= 'A') && (*cur <= 'F'))
-            uuid[i] += *cur - 'A' + 10;
-        else
+        if (!c_isxdigit(*cur))
             goto error;
+        uuid[i] += hextobin(*cur);
         i++;
         cur++;
     }

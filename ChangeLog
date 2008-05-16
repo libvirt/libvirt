@@ -1,5 +1,42 @@
 Fri May 16 11:29:30 CEST 2008 Jim Meyering <meyering@redhat.com>
 
+	start using c-ctype functions
+	Up to now, we've been avoiding ctype functions like isspace, isdigit,
+	etc.  because they are locale-dependent.  Now that we have the c-ctype
+	functions, we can start using *them*, to make the code more readable
+	with changes like these:
+
+	-        /* This may not work on EBCDIC. */
+	-        if ((*p >= 'a' && *p <= 'z') ||
+	-            (*p >= 'A' && *p <= 'Z') ||
+	-            (*p >= '0' && *p <= '9'))
+	+        if (c_isalnum(*p))
+
+	-    while ((*cur >= '0') && (*cur <= '9')) {
+	+    while (c_isdigit(*cur)) {
+
+	Also, some macros in conf.c used names that conflicted with
+	standard meaning of "BLANK" and "SPACE", so I've adjusted them
+	to be in line with the definition of e.g., isblank.
+	In addition, I've wrapped those statement macros with do {...} while (0),
+	so that we can't forget the ";" after a use.  There was one like that
+	already (fixed below).  The missing semicolon would mess up automatic
+	indenting.
+	* src/buf.c (virBufferURIEncodeString):
+	* src/conf.c (IS_EOL, SKIP_BLANKS_AND_EOL, SKIP_BLANKS)
+	(virConfParseLong, virConfParseValue, virConfParseName)
+	(virConfParseSeparator, virConfParseStatement, IS_BLANK, IS_CHAR)
+	(IS_DIGIT, IS_SPACE, SKIP_SPACES):
+	* src/nodeinfo.c:
+	* src/qemu_conf.c (qemudParseInterfaceXML):
+	* src/qemu_driver.c (qemudDomainBlockStats):
+	* src/sexpr.c:
+	* src/stats_linux.c:
+	* src/util.c (virParseNumber, virDiskNameToIndex):
+	* src/uuid.c (hextobin, virUUIDParse):
+	* src/virsh.c:
+	* src/xml.c (parseCpuNumber, virParseCpuSet):
+
 	avoid a double-free bug
 	* src/qemu_conf.c (qemudParseXML): Ensure that "obj" is either
 	NULL or a valid malloc'd pointer before we might "goto error"

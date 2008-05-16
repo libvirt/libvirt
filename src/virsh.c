@@ -26,7 +26,7 @@
 #include <getopt.h>
 #include <sys/types.h>
 #include <sys/time.h>
-#include <c-ctype.h>
+#include "c-ctype.h"
 #include <fcntl.h>
 #include <locale.h>
 #include <time.h>

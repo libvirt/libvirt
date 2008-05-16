@@ -27,7 +27,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <c-ctype.h>
+#include "c-ctype.h"
 
 #ifdef HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>

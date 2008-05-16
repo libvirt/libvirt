@@ -37,7 +37,7 @@
 #include <sys/wait.h>
 #endif
 #include <string.h>
-#include <c-ctype.h>
+#include "c-ctype.h"
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
@@ -681,7 +681,7 @@ virParseNumber(const char **str)
     if ((*cur < '0') || (*cur > '9'))
         return (-1);
 
-    while ((*cur >= '0') && (*cur <= '9')) {
+    while (c_isdigit(*cur)) {
         unsigned int c = *cur - '0';
 
         if ((ret > INT_MAX / 10) ||
@@ -794,7 +794,7 @@ int virDiskNameToIndex(const char *name) {
     while (*ptr) {
         idx = idx * 26;
 
-        if ('a' > *ptr || 'z' < *ptr)
+        if (!c_islower(*ptr))
             return -1;
 
         idx += *ptr - 'a';

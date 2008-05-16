@@ -76,10 +76,10 @@ parseCpuNumber(const char **str, int maxcpu)
     int ret = 0;
     const char *cur = *str;
 
-    if ((*cur < '0') || (*cur > '9'))
+    if (!c_isdigit(*cur))
         return (-1);
 
-    while ((*cur >= '0') && (*cur <= '9')) {
+    while (c_isdigit(*cur)) {
         ret = ret * 10 + (*cur - '0');
         if (ret >= maxcpu)
             return (-1);
@@ -197,7 +197,7 @@ virParseCpuSet(virConnectPtr conn, const char **str, char sep,
             neg = 1;
         }
 
-        if ((*cur < '0') || (*cur > '9'))
+        if (!c_isdigit(*cur))
             goto parse_error;
         start = parseCpuNumber(&cur, maxcpu);
         if (start < 0)

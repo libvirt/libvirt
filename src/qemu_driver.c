@@ -41,7 +41,6 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <paths.h>
-#include <c-ctype.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <sys/wait.h>
@@ -49,6 +48,7 @@
 
 #include "libvirt/virterror.h"
 
+#include "c-ctype.h"
 #include "event.h"
 #include "buf.h"
 #include "util.h"
@@ -2650,12 +2650,12 @@ qemudDomainBlockStats (virDomainPtr dom,
      *   cdrom    to  ide1-cd0
      *   fd[a-]   to  floppy[0-]
      */
-    if (STRPREFIX (path, "hd") && path[2] >= 'a' && path[2] <= 'z')
+    if (STRPREFIX (path, "hd") && c_islower(path[2]))
         snprintf (qemu_dev_name, sizeof (qemu_dev_name),
                   "ide0-hd%d", path[2] - 'a');
     else if (STREQ (path, "cdrom"))
         strcpy (qemu_dev_name, "ide1-cd0");
-    else if (STRPREFIX (path, "fd") && path[2] >= 'a' && path[2] <= 'z')
+    else if (STRPREFIX (path, "fd") && c_islower(path[2]))
         snprintf (qemu_dev_name, sizeof (qemu_dev_name),
                   "floppy%d", path[2] - 'a');
     else {

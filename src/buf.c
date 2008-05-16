@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include "c-ctype.h"
 
 #define __VIR_BUFFER_C__
 
@@ -349,10 +350,7 @@ virBufferURIEncodeString (virBufferPtr buf, const char *str)
         return;
 
     for (p = str; *p; ++p) {
-        /* This may not work on EBCDIC. */
-        if ((*p >= 'a' && *p <= 'z') ||
-            (*p >= 'A' && *p <= 'Z') ||
-            (*p >= '0' && *p <= '9'))
+        if (c_isalnum(*p))
             grow_size++;
         else
             grow_size += 3; /* %ab */
@@ -362,10 +360,7 @@ virBufferURIEncodeString (virBufferPtr buf, const char *str)
         return;
 
     for (p = str; *p; ++p) {
-        /* This may not work on EBCDIC. */
-        if ((*p >= 'a' && *p <= 'z') ||
-            (*p >= 'A' && *p <= 'Z') ||
-            (*p >= '0' && *p <= '9'))
+        if (c_isalnum(*p))
             buf->content[buf->use++] = *p;
         else {
             uc = (unsigned char) *p;

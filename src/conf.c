@@ -22,6 +22,7 @@
 #include "buf.h"
 #include "conf.h"
 #include "util.h"
+#include "c-ctype.h"
 
 /************************************************************************
  *									*
@@ -45,17 +46,14 @@ struct _virConfParserCtxt {
 #define CUR (*ctxt->cur)
 #define NEXT if (ctxt->cur < ctxt->end) ctxt->cur++;
 #define IS_EOL(c) (((c) == '\n') || ((c) == '\r'))
-#define IS_BLANK(c) (((c) == ' ') || ((c) == '\n') || ((c) == '\r') ||	\
-                     ((c) == '\t'))
-#define SKIP_BLANKS {while ((ctxt->cur < ctxt->end) && (IS_BLANK(CUR))){\
-                           if (CUR == '\n') ctxt->line++;		\
-                           ctxt->cur++;}}
-#define IS_SPACE(c) (((c) == ' ') || ((c) == '\t'))
-#define SKIP_SPACES {while ((ctxt->cur < ctxt->end) && (IS_SPACE(CUR)))	\
-                           ctxt->cur++;}
-#define IS_CHAR(c) ((((c) >= 'a') && ((c) <= 'z')) ||			\
-                    (((c) >= 'A') && ((c) <= 'Z')))
-#define IS_DIGIT(c) (((c) >= '0') && ((c) <= '9'))
+
+#define SKIP_BLANKS_AND_EOL                                             \
+  do { while ((ctxt->cur < ctxt->end) && (c_isblank(CUR) || IS_EOL(CUR))) { \
+         if (CUR == '\n') ctxt->line++;	                                \
+         ctxt->cur++;}} while (0)
+#define SKIP_BLANKS                                                     \
+  do { while ((ctxt->cur < ctxt->end) && (c_isblank(CUR)))              \
+          ctxt->cur++; } while (0)
 
 /************************************************************************
  *									*
@@ -338,12 +336,12 @@ virConfParseLong(virConfParserCtxtPtr ctxt, long *val)
     } else if (CUR == '+') {
         NEXT;
     }
-    if ((ctxt->cur >= ctxt->end) || (!IS_DIGIT(CUR))) {
+    if ((ctxt->cur >= ctxt->end) || (!c_isdigit(CUR))) {
         virConfError(NULL, VIR_ERR_CONF_SYNTAX, _("unterminated number"),
                      ctxt->line);
         return(-1);
     }
-    while ((ctxt->cur < ctxt->end) && (IS_DIGIT(CUR))) {
+    while ((ctxt->cur < ctxt->end) && (c_isdigit(CUR))) {
         l = l * 10 + (CUR - '0');
         NEXT;
     }
@@ -428,7 +426,7 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
     char *str = NULL;
     long  l = 0;
 
-    SKIP_SPACES;
+    SKIP_BLANKS;
     if (ctxt->cur >= ctxt->end) {
         virConfError(NULL, VIR_ERR_CONF_SYNTAX, _("expecting a value"),
                      ctxt->line);
@@ -442,10 +440,10 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
     } else if (CUR == '[') {
         type = VIR_CONF_LIST;
         NEXT;
-        SKIP_BLANKS;
+        SKIP_BLANKS_AND_EOL;
         if ((ctxt->cur < ctxt->end) && (CUR != ']')) {
             lst = virConfParseValue(ctxt);
-            SKIP_BLANKS;
+            SKIP_BLANKS_AND_EOL;
         }
         while ((ctxt->cur < ctxt->end) && (CUR != ']')) {
             if (CUR != ',') {
@@ -455,7 +453,7 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
                 return(NULL);
             }
             NEXT;
-            SKIP_BLANKS;
+            SKIP_BLANKS_AND_EOL;
             if (CUR == ']') {
                 break;
             }
@@ -467,7 +465,7 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
             prev = lst;
             while (prev->next != NULL) prev = prev->next;
             prev->next = tmp;
-            SKIP_BLANKS;
+            SKIP_BLANKS_AND_EOL;
         }
         if (CUR == ']') {
             NEXT;
@@ -477,7 +475,7 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
             virConfFreeList(lst);
             return(NULL);
         }
-    } else if (IS_DIGIT(CUR) || (CUR == '-') || (CUR == '+')) {
+    } else if (c_isdigit(CUR) || (CUR == '-') || (CUR == '+')) {
         if (virConfParseLong(ctxt, &l) < 0) {
             return(NULL);
         }
@@ -514,14 +512,14 @@ virConfParseName(virConfParserCtxtPtr ctxt)
     const char *base;
     char *ret;
 
-    SKIP_SPACES;
+    SKIP_BLANKS;
     base = ctxt->cur;
     /* TODO: probably need encoding support and UTF-8 parsing ! */
-    if (!IS_CHAR(CUR)) {
+    if (!c_isalpha(CUR)) {
         virConfError(NULL, VIR_ERR_CONF_SYNTAX, _("expecting a name"), ctxt->line);
         return(NULL);
     }
-    while ((ctxt->cur < ctxt->end) && ((IS_CHAR(CUR)) || (IS_DIGIT(CUR)) || (CUR == '_')))
+    while ((ctxt->cur < ctxt->end) && (c_isalnum(CUR) || (CUR == '_')))
         NEXT;
     ret = strndup(base, ctxt->cur - base);
     if (ret == NULL) {
@@ -572,14 +570,14 @@ virConfParseComment(virConfParserCtxtPtr ctxt)
 static int
 virConfParseSeparator(virConfParserCtxtPtr ctxt)
 {
-    SKIP_SPACES;
+    SKIP_BLANKS;
     if (ctxt->cur >= ctxt->end)
         return(0);
     if (IS_EOL(CUR)) {
-        SKIP_BLANKS
+        SKIP_BLANKS_AND_EOL;
     } else if (CUR == ';') {
         NEXT;
-        SKIP_BLANKS;
+        SKIP_BLANKS_AND_EOL;
     } else {
         virConfError(NULL, VIR_ERR_CONF_SYNTAX, _("expecting a separator"),
                      ctxt->line);
@@ -604,27 +602,27 @@ virConfParseStatement(virConfParserCtxtPtr ctxt)
     virConfValuePtr value;
     char *comm = NULL;
 
-    SKIP_BLANKS;
+    SKIP_BLANKS_AND_EOL;
     if (CUR == '#') {
         return(virConfParseComment(ctxt));
     }
     name = virConfParseName(ctxt);
     if (name == NULL)
         return(-1);
-    SKIP_SPACES;
+    SKIP_BLANKS;
     if (CUR != '=') {
         virConfError(NULL, VIR_ERR_CONF_SYNTAX, _("expecting an assignment"),
                      ctxt->line);
         return(-1);
     }
     NEXT;
-    SKIP_SPACES;
+    SKIP_BLANKS;
     value = virConfParseValue(ctxt);
     if (value == NULL) {
         free(name);
         return(-1);
     }
-    SKIP_SPACES;
+    SKIP_BLANKS;
     if (CUR == '#') {
         NEXT;
         base = ctxt->cur;
