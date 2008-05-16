@@ -1736,6 +1736,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     } else {
         strcpy(def->os.type, (const char *)obj->stringval);
         xmlXPathFreeObject(obj);
+        obj = NULL;
     }
 
     if (!virCapabilitiesSupportsGuestOSType(driver->caps, def->os.type)) {
