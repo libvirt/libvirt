@@ -2326,7 +2326,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
     char memory[50];
     char vcpus[50];
     char boot[QEMUD_MAX_BOOT_DEVS+1];
-    struct stat sb;
     struct qemud_vm_disk_def *disk = vm->def->disks;
     struct qemud_vm_net_def *net = vm->def->nets;
     struct qemud_vm_input_def *input = vm->def->inputs;
@@ -2335,18 +2334,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
     struct qemud_vm_chr_def *parallel = vm->def->parallels;
     struct utsname ut;
     int disableKQEMU = 0;
-
-    /* Make sure the binary we are about to try exec'ing exists.
-     * Technically we could catch the exec() failure, but that's
-     * in a sub-process so its hard to feed back a useful error
-     */
-    if (stat(vm->def->os.binary, &sb) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Cannot find QEMU binary %s: %s"),
-                         vm->def->os.binary,
-                         strerror(errno));
-        return -1;
-    }
 
     if (vm->qemuVersion == 0) {
         if (qemudExtractVersionInfo(vm->def->os.binary,

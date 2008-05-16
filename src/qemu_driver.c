@@ -646,6 +646,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     char **argv = NULL, **tmp;
     int i, ret;
     char logfile[PATH_MAX];
+    struct stat sb;
 
     if (qemudIsActiveVM(vm)) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -701,6 +702,19 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         vm->logfile = -1;
         return -1;
     }
+
+    /* Make sure the binary we are about to try exec'ing exists.
+     * Technically we could catch the exec() failure, but that's
+     * in a sub-process so its hard to feed back a useful error
+     */
+    if (stat(vm->def->os.binary, &sb) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Cannot find QEMU binary %s: %s"),
+                         vm->def->os.binary,
+                         strerror(errno));
+        return -1;
+    }
+
 
     if (qemudBuildCommandLine(conn, driver, vm, &argv) < 0) {
         close(vm->logfile);

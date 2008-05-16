@@ -13,6 +13,7 @@
 #include "internal.h"
 #include "testutils.h"
 #include "qemu_conf.h"
+#include "testutilsqemu.h"
 
 static char *progname;
 static char *abs_srcdir;
@@ -86,7 +87,7 @@ main(int argc, char **argv)
     if (!abs_srcdir)
         abs_srcdir = getcwd(cwd, sizeof(cwd));
 
-    driver.caps = qemudCapsInit();
+    driver.caps = testQemuCapsInit();
 
 #define DO_TEST(name) \
     if (virtTestRun("QEMU XML-2-XML " name, \

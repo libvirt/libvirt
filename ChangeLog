@@ -1,3 +1,15 @@
+Fri May 16 12:50:08 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Make QEMU test cases independant of QEMU capabilities on
+	the host OS.
+	* src/qemu_conf.c, src/qemu_driver.c: Move stat() check on
+	qemu binary out of qemudBuildCommandLine() and into caller.
+	* tests/Makefile.am: Add testutilsqemu.{c,h} to qemu tests
+	* tests/qemuxml2argvtest.c, tests/qemuxml2xmltest.c: use
+	stable capability set in tests, independant of host OS.
+	* tests/testutilsqemu.c, tests/testutilsqemu.h: Define a
+	stable capability set for test suites
+
 Fri May 16 11:29:30 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	* src/xml.c: Include "c-ctype.h".

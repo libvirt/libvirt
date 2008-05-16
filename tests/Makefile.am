@@ -100,12 +100,12 @@ xmconfigtest_SOURCES = \
 xmconfigtest_LDADD = $(LDADDS)
 
 qemuxml2argvtest_SOURCES = \
-	qemuxml2argvtest.c \
+	qemuxml2argvtest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
 qemuxml2argvtest_LDADD = $(LDADDS)
 
 qemuxml2xmltest_SOURCES = \
-	qemuxml2xmltest.c \
+	qemuxml2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
 qemuxml2xmltest_LDADD = $(LDADDS)
 
