@@ -21,6 +21,7 @@
 #include <xs.h>
 #endif
 #include <math.h>               /* for isnan() */
+#include "c-ctype.h"
 #include "internal.h"
 #include "hash.h"
 #include "sexpr.h"
