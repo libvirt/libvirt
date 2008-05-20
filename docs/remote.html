@@ -595,8 +595,12 @@ Blank lines and comments beginning with <code>#</code> are ignored.
         <p>The following settings, values and default are:</p>
         <table class="top_table"><tr><th> Line </th><th> Default </th><th> Meaning </th></tr><tr><td> listen_tls <i>[0|1]</i> </td><td> 1 (on) </td><td>
   Listen for secure TLS connections on the public TCP/IP port.
+  Note: it is also necessary to start the server in listening mode by
+  running it with --listen or editing /etc/sysconfig/libvirtd by uncommenting the LIBVIRTD_ARGS="--listen" line
+  to cause the server to come up in listening mode whenever it is started.
 </td></tr><tr><td> listen_tcp <i>[0|1]</i> </td><td> 0 (off) </td><td>
   Listen for unencrypted TCP connections on the public TCP/IP port.
+  Note: it is also necessary to start the server in listening mode.
 </td></tr><tr><td> tls_port <i>"service"</i> </td><td> "16514" </td><td>
   The port number or service name to listen on for secure TLS connections.
 </td></tr><tr><td> tcp_port <i>"service"</i> </td><td> "16509" </td><td>

@@ -1,3 +1,8 @@
+Tue May 20 17:53:29 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/remote.html docs/remote.html.in: patch from Kenneth Nagin
+	  with Notes on the use of listen_tls/listen_tcp
+
 Fri May 16 18:53:12 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	plug two leaks
