@@ -1,3 +1,10 @@
+Tue May 20 12:15:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c: Re-factor daemon startup code to avoid
+	initializing the drivers if the pidfile is already claimed
+	by another daemon instance. Always claim pidfile when running
+	as root, even in non-daemon mode
+
 Tue May 20 17:53:29 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/remote.html docs/remote.html.in: patch from Kenneth Nagin

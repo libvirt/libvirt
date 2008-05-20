@@ -2143,38 +2143,6 @@ int main(int argc, char **argv) {
         }
     }
 
-    if (pipe(sigpipe) < 0 ||
-        qemudSetNonBlock(sigpipe[0]) < 0 ||
-        qemudSetNonBlock(sigpipe[1]) < 0 ||
-        qemudSetCloseExec(sigpipe[0]) < 0 ||
-        qemudSetCloseExec(sigpipe[1]) < 0) {
-        qemudLog(QEMUD_ERR, _("Failed to create pipe: %s"),
-                 strerror(errno));
-        goto error1;
-    }
-    sigwrite = sigpipe[1];
-
-    if (!(server = qemudInitialize(sigpipe[0]))) {
-        ret = 2;
-        goto error1;
-    }
-
-    /* Read the config file (if it exists). */
-    if (remoteReadConfigFile (server, remote_config_file) < 0)
-        goto error1;
-
-    /* Change the group ownership of /var/run/libvirt to unix_sock_gid */
-    if (getuid() != 0) {
-        qemudLog (QEMUD_WARN,
-                  "%s", _("Cannot set group ownership when not running as root"));
-    } else {
-        const char *sockdirname = LOCAL_STATE_DIR "/run/libvirt";
-
-        if (chown(sockdirname, -1, unix_sock_gid) < 0)
-            qemudLog(QEMUD_ERR, _("Failed to change group ownership of %s"),
-                     sockdirname);
-    }
-
     if (godaemon) {
         openlog("libvirtd", 0, 0);
         if (qemudGoDaemon() < 0) {
@@ -2182,16 +2150,29 @@ int main(int argc, char **argv) {
                      strerror(errno));
             goto error1;
         }
-
-        /* Choose the name of the PID file. */
-        if (!pid_file) {
-            if (REMOTE_PID_FILE[0] != '\0')
-                pid_file = REMOTE_PID_FILE;
-        }
-
-        if (pid_file && qemudWritePidFile (pid_file) < 0)
-            goto error1;
     }
+
+    /* If running as root and no PID file is set, use the default */
+    if (pid_file == NULL &&
+        getuid() == 0 &&
+        REMOTE_PID_FILE[0] != '\0')
+        pid_file = REMOTE_PID_FILE;
+
+    /* If we have a pidfile set, claim it now, exiting if already taken */
+    if (pid_file != NULL &&
+        qemudWritePidFile (pid_file) < 0)
+        goto error1;
+
+    if (pipe(sigpipe) < 0 ||
+        qemudSetNonBlock(sigpipe[0]) < 0 ||
+        qemudSetNonBlock(sigpipe[1]) < 0 ||
+        qemudSetCloseExec(sigpipe[0]) < 0 ||
+        qemudSetCloseExec(sigpipe[1]) < 0) {
+        qemudLog(QEMUD_ERR, _("Failed to create pipe: %s"),
+                 strerror(errno));
+        goto error2;
+    }
+    sigwrite = sigpipe[1];
 
     sig_action.sa_sigaction = sig_handler;
     sig_action.sa_flags = SA_SIGINFO;
@@ -2205,6 +2186,24 @@ int main(int argc, char **argv) {
 
     sig_action.sa_handler = SIG_IGN;
     sigaction(SIGPIPE, &sig_action, NULL);
+
+    if (!(server = qemudInitialize(sigpipe[0]))) {
+        ret = 2;
+        goto error2;
+    }
+
+    /* Read the config file (if it exists). */
+    if (remoteReadConfigFile (server, remote_config_file) < 0)
+        goto error2;
+
+    /* Change the group ownership of /var/run/libvirt to unix_sock_gid */
+    if (getuid() == 0) {
+        const char *sockdirname = LOCAL_STATE_DIR "/run/libvirt";
+
+        if (chown(sockdirname, -1, unix_sock_gid) < 0)
+            qemudLog(QEMUD_ERR, _("Failed to change group ownership of %s"),
+                     sockdirname);
+    }
 
     if (virEventAddHandleImpl(sigpipe[0],
                               POLLIN,
@@ -2223,19 +2222,17 @@ int main(int argc, char **argv) {
 
     qemudRunLoop(server);
 
-    close(sigwrite);
-
-    if (godaemon)
-        closelog();
-
     ret = 0;
 
- error2:
-    if (godaemon && pid_file)
-        unlink (pid_file);
-
- error1:
+error2:
     if (server)
         qemudCleanup(server);
+    if (pid_file)
+        unlink (pid_file);
+    close(sigwrite);
+
+error1:
+    if (godaemon)
+        closelog();
     return ret;
 }
