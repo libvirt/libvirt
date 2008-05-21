@@ -1,3 +1,8 @@
+Wed May 21 15:42:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c: Run qemu with -help and don't pollute
+	libvirtd environment
+
 Tue May 20 12:15:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c: Re-factor daemon startup code to avoid

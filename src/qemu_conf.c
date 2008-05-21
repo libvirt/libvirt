@@ -448,6 +448,9 @@ static int qemudExtractVersionInfo(const char *qemu, int *version, int *flags) {
     }
 
     if (child == 0) { /* Kid */
+        /* Just in case QEMU is translated someday we force to C locale.. */
+        const char *const qemuenv[] = { "LANG=C", NULL };
+
         if (close(STDIN_FILENO) < 0)
             goto cleanup1;
         if (close(STDERR_FILENO) < 0)
@@ -457,9 +460,9 @@ static int qemudExtractVersionInfo(const char *qemu, int *version, int *flags) {
         if (dup2(newstdout[1], STDOUT_FILENO) < 0)
             goto cleanup1;
 
-        /* Just in case QEMU is translated someday.. */
-        setenv("LANG", "C", 1);
-        execl(qemu, qemu, (char*)NULL);
+        /* Passing -help, rather than relying on no-args which doesn't
+           always work */
+        execle(qemu, qemu, "-help", (char*)NULL, qemuenv);
 
     cleanup1:
         _exit(-1); /* Just in case */
