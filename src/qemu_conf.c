@@ -526,7 +526,7 @@ static int qemudExtractVersionInfo(const char *qemu, int *version, int *flags) {
         /* Check & log unexpected exit status, but don't fail,
          * as there's really no need to throw an error if we did
          * actually read a valid version number above */
-        if (WEXITSTATUS(got) != 1) {
+        if (WEXITSTATUS(got) != 0) {
             qemudLog(QEMUD_WARN,
                      _("Unexpected exit status '%d', qemu probably failed"),
                      got);

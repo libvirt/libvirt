@@ -1,3 +1,7 @@
+Wed May 21 17:13:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c: Fix exit status check when using -help arg
+
 Wed May 21 16:24:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix up misc memory leaks / incorrect docs (Cole Robinson)
