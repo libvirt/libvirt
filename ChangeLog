@@ -1,3 +1,15 @@
+Wed May 21 16:24:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix up misc memory leaks / incorrect docs (Cole Robinson)
+	* qemud/remote.c: Free the virDomainPtr object in the
+	virDomainDestroy handler to avoid leak
+	* src/hash.c: Added more ref count debug
+	* src/libvirt.c: Clarified docs on virXXXDestroy to
+	match reality
+	* src/remote_internal.c: Free virDomain/Network objects
+	after dispatching RPC error
+	* src/virsh.c: Added some more virDomainFree calls
+
 Wed May 21 15:42:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* python/generator.py: Don't free the underlying virDomainPtr

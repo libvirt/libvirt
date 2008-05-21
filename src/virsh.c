@@ -1468,9 +1468,9 @@ cmdDestroy(vshControl * ctl, vshCmd * cmd)
     } else {
         vshError(ctl, FALSE, _("Failed to destroy domain %s"), name);
         ret = FALSE;
-        virDomainFree(dom);
     }
 
+    virDomainFree(dom);
     return ret;
 }
 
@@ -2433,9 +2433,9 @@ cmdNetworkDestroy(vshControl * ctl, vshCmd * cmd)
     } else {
         vshError(ctl, FALSE, _("Failed to destroy network %s"), name);
         ret = FALSE;
-        virNetworkFree(network);
     }
 
+    virNetworkFree(network);
     return ret;
 }
 
@@ -3161,9 +3161,9 @@ cmdPoolDestroy(vshControl * ctl, vshCmd * cmd)
     } else {
         vshError(ctl, FALSE, _("Failed to destroy pool %s"), name);
         ret = FALSE;
-        virStoragePoolFree(pool);
     }
 
+    virStoragePoolFree(pool);
     return ret;
 }
 

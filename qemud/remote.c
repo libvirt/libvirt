@@ -940,9 +940,11 @@ remoteDispatchDomainDestroy (struct qemud_server *server ATTRIBUTE_UNUSED,
         return -2;
     }
 
-    if (virDomainDestroy (dom) == -1)
+    if (virDomainDestroy (dom) == -1) {
+        virDomainFree(dom);
         return -1;
-    /* No need to free dom - destroy does it for us */
+    }
+    virDomainFree(dom);
     return 0;
 }
 

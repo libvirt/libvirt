@@ -842,6 +842,9 @@ __virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) 
             goto error;
         }
         conn->refs++;
+        DEBUG("New hash entry %p", ret);
+    } else {
+        DEBUG("Existing hash entry %p: refs now %d", ret, ret->refs+1);
     }
     ret->refs++;
     pthread_mutex_unlock(&conn->lock);

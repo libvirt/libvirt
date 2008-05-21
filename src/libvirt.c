@@ -1390,10 +1390,9 @@ virDomainLookupByName(virConnectPtr conn, const char *name)
  * @domain: a domain object
  *
  * Destroy the domain object. The running instance is shutdown if not down
- * already and all resources used by it are given back to the hypervisor.
- * The data structure is freed and should not be used thereafter if the
- * call does not return an error.
- * This function may requires privileged access
+ * already and all resources used by it are given back to the hypervisor. This
+ * does not free the associated virDomainPtr object.
+ * This function may require privileged access
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -3502,10 +3501,9 @@ virNetworkCreate(virNetworkPtr network)
  * @network: a network object
  *
  * Destroy the network object. The running instance is shutdown if not down
- * already and all resources used by it are given back to the hypervisor.
- * The data structure is freed and should not be used thereafter if the
- * call does not return an error.
- * This function may requires privileged access
+ * already and all resources used by it are given back to the hypervisor. This
+ * does not free the associated virNetworkPtr object.
+ * This function may require privileged access
  *
  * Returns 0 in case of success and -1 in case of failure.
  */

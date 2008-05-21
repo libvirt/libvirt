@@ -4606,6 +4606,10 @@ server_error (virConnectPtr conn, remote_error *err)
                      err->str3 ? *err->str3 : NULL,
                      err->int1, err->int2,
                      "%s", err->message ? *err->message : NULL);
+    if (dom)
+        virDomainFree(dom);
+    if (net)
+        virNetworkFree(net);
 }
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
