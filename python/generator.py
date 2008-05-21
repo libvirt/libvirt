@@ -628,12 +628,7 @@ function_classes = {}
 
 function_classes["None"] = []
 
-function_post = {
-    'virDomainDestroy': "self._o = None",
-    'virNetworkDestroy': "self._o = None",
-    'virStoragePoolDestroy': "self._o = None",
-    'virStorageVolDestroy': "self._o = None",
-}
+function_post = {}
 
 # Functions returning an integral type which need special rules to
 # check for errors and raise exceptions.
