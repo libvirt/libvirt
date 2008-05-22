@@ -24,6 +24,8 @@ while (<>) {
 	next;
     }
 
+    s/\t/        /g;
+
     if (m/^}/) {
 	$in_function = 0;
 
@@ -52,7 +54,7 @@ while (<>) {
 	    foreach (keys %uses) {
 		$i = $uses{$_};
 		unshift @function,
-		("\tchar **objp_cpp$i = (char **) (void *) &$_;\n");
+		("        char **objp_cpp$i = (char **) (void *) &$_;\n");
 		$i++;
 	    }
 	    @function =

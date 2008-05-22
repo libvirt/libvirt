@@ -491,6 +491,21 @@ case REMOTE_PROC_NETWORK_UNDEFINE:
         args = (char *) &lv_remote_network_undefine_args;
         memset (&lv_remote_network_undefine_args, 0, sizeof lv_remote_network_undefine_args);
         break;
+case REMOTE_PROC_NODE_GET_CELLS_FREE_MEMORY:
+        fn = (dispatch_fn) remoteDispatchNodeGetCellsFreeMemory;
+        args_filter = (xdrproc_t) xdr_remote_node_get_cells_free_memory_args;
+        args = (char *) &lv_remote_node_get_cells_free_memory_args;
+        memset (&lv_remote_node_get_cells_free_memory_args, 0, sizeof lv_remote_node_get_cells_free_memory_args);
+        ret_filter = (xdrproc_t) xdr_remote_node_get_cells_free_memory_ret;
+        ret = (char *) &lv_remote_node_get_cells_free_memory_ret;
+        memset (&lv_remote_node_get_cells_free_memory_ret, 0, sizeof lv_remote_node_get_cells_free_memory_ret);
+        break;
+case REMOTE_PROC_NODE_GET_FREE_MEMORY:
+        fn = (dispatch_fn) remoteDispatchNodeGetFreeMemory;
+        ret_filter = (xdrproc_t) xdr_remote_node_get_free_memory_ret;
+        ret = (char *) &lv_remote_node_get_free_memory_ret;
+        memset (&lv_remote_node_get_free_memory_ret, 0, sizeof lv_remote_node_get_free_memory_ret);
+        break;
 case REMOTE_PROC_NODE_GET_INFO:
         fn = (dispatch_fn) remoteDispatchNodeGetInfo;
         ret_filter = (xdrproc_t) xdr_remote_node_get_info_ret;

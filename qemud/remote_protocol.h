@@ -30,6 +30,7 @@ typedef remote_nonnull_string *remote_string;
 #define REMOTE_STORAGE_POOL_NAME_LIST_MAX 256
 #define REMOTE_STORAGE_VOL_NAME_LIST_MAX 1024
 #define REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX 16
+#define REMOTE_NODE_MAX_CELLS 1024
 #define REMOTE_AUTH_SASL_DATA_MAX 65536
 #define REMOTE_AUTH_TYPE_LIST_MAX 20
 
@@ -175,6 +176,25 @@ struct remote_get_capabilities_ret {
         remote_nonnull_string capabilities;
 };
 typedef struct remote_get_capabilities_ret remote_get_capabilities_ret;
+
+struct remote_node_get_cells_free_memory_args {
+        int startCell;
+        int maxCells;
+};
+typedef struct remote_node_get_cells_free_memory_args remote_node_get_cells_free_memory_args;
+
+struct remote_node_get_cells_free_memory_ret {
+        struct {
+                u_int freeMems_len;
+                quad_t *freeMems_val;
+        } freeMems;
+};
+typedef struct remote_node_get_cells_free_memory_ret remote_node_get_cells_free_memory_ret;
+
+struct remote_node_get_free_memory_ret {
+        quad_t freeMem;
+};
+typedef struct remote_node_get_free_memory_ret remote_node_get_free_memory_ret;
 
 struct remote_domain_get_scheduler_type_args {
         remote_nonnull_domain dom;
@@ -1116,6 +1136,8 @@ enum remote_procedure {
         REMOTE_PROC_STORAGE_VOL_GET_INFO = 98,
         REMOTE_PROC_STORAGE_VOL_DUMP_XML = 99,
         REMOTE_PROC_STORAGE_VOL_GET_PATH = 100,
+        REMOTE_PROC_NODE_GET_CELLS_FREE_MEMORY = 101,
+        REMOTE_PROC_NODE_GET_FREE_MEMORY = 102,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -1172,6 +1194,9 @@ extern  bool_t xdr_remote_get_max_vcpus_args (XDR *, remote_get_max_vcpus_args*)
 extern  bool_t xdr_remote_get_max_vcpus_ret (XDR *, remote_get_max_vcpus_ret*);
 extern  bool_t xdr_remote_node_get_info_ret (XDR *, remote_node_get_info_ret*);
 extern  bool_t xdr_remote_get_capabilities_ret (XDR *, remote_get_capabilities_ret*);
+extern  bool_t xdr_remote_node_get_cells_free_memory_args (XDR *, remote_node_get_cells_free_memory_args*);
+extern  bool_t xdr_remote_node_get_cells_free_memory_ret (XDR *, remote_node_get_cells_free_memory_ret*);
+extern  bool_t xdr_remote_node_get_free_memory_ret (XDR *, remote_node_get_free_memory_ret*);
 extern  bool_t xdr_remote_domain_get_scheduler_type_args (XDR *, remote_domain_get_scheduler_type_args*);
 extern  bool_t xdr_remote_domain_get_scheduler_type_ret (XDR *, remote_domain_get_scheduler_type_ret*);
 extern  bool_t xdr_remote_domain_get_scheduler_parameters_args (XDR *, remote_domain_get_scheduler_parameters_args*);
@@ -1344,6 +1369,9 @@ extern bool_t xdr_remote_get_max_vcpus_args ();
 extern bool_t xdr_remote_get_max_vcpus_ret ();
 extern bool_t xdr_remote_node_get_info_ret ();
 extern bool_t xdr_remote_get_capabilities_ret ();
+extern bool_t xdr_remote_node_get_cells_free_memory_args ();
+extern bool_t xdr_remote_node_get_cells_free_memory_ret ();
+extern bool_t xdr_remote_node_get_free_memory_ret ();
 extern bool_t xdr_remote_domain_get_scheduler_type_args ();
 extern bool_t xdr_remote_domain_get_scheduler_type_ret ();
 extern bool_t xdr_remote_domain_get_scheduler_parameters_args ();

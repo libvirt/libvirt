@@ -596,6 +596,53 @@ remoteDispatchGetCapabilities (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 static int
+remoteDispatchNodeGetCellsFreeMemory (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                      struct qemud_client *client,
+                                      remote_message_header *req,
+                                      remote_node_get_cells_free_memory_args *args,
+                                      remote_node_get_cells_free_memory_ret *ret)
+{
+    CHECK_CONN(client);
+
+    if (args->maxCells > REMOTE_NODE_MAX_CELLS) {
+        remoteDispatchError (client, req,
+                             "%s", _("maxCells > REMOTE_NODE_MAX_CELLS"));
+        return -2;
+    }
+
+    /* Allocate return buffer. */
+    ret->freeMems.freeMems_val = calloc (args->maxCells, sizeof (*(ret->freeMems.freeMems_val)));
+
+    ret->freeMems.freeMems_len = virNodeGetCellsFreeMemory(client->conn,
+                                                           (unsigned long long *)ret->freeMems.freeMems_val,
+                                                           args->startCell,
+                                                           args->maxCells);
+    if (ret->freeMems.freeMems_len == 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+remoteDispatchNodeGetFreeMemory (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                 struct qemud_client *client,
+                                 remote_message_header *req,
+                                 void *args ATTRIBUTE_UNUSED,
+                                 remote_node_get_free_memory_ret *ret)
+{
+    unsigned long long freeMem;
+    CHECK_CONN(client);
+
+    freeMem = virNodeGetFreeMemory(client->conn);
+    if (freeMem == 0) return -1;
+
+    ret->freeMem = freeMem;
+    return 0;
+}
+
+
+static int
 remoteDispatchDomainGetSchedulerType (struct qemud_server *server ATTRIBUTE_UNUSED,
                                       struct qemud_client *client,
                                       remote_message_header *req,

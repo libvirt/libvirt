@@ -1,3 +1,16 @@
+Thu May 22 11:15:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Support the free memory API calls in the remote driver/daemon
+	* qemud/Makefile.am: Remove tabs from generated RPC header
+	* qemud/qemud/remote_generate_stubs.pl: Remove tabs from
+	generated C file
+	* qemud/remote_dispatch_*.h: Re-generated with for RPC calls
+	* qemud/remote_protocol.x: Added NUMA free memory apis
+	* qemud/remote_protocol.{c,h}: Re-generated with new RPC calls
+	* qemud/remote.c: Implement dispatcher for free memory APIs
+	* src/remote_internal.c: Implement functions for free
+	memory APIs
+
 Thu May 22 11:06:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix misc memory leaks

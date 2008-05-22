@@ -387,6 +387,36 @@ xdr_remote_get_capabilities_ret (XDR *xdrs, remote_get_capabilities_ret *objp)
 }
 
 bool_t
+xdr_remote_node_get_cells_free_memory_args (XDR *xdrs, remote_node_get_cells_free_memory_args *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->startCell))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->maxCells))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_get_cells_free_memory_ret (XDR *xdrs, remote_node_get_cells_free_memory_ret *objp)
+{
+
+         if (!xdr_array (xdrs, (char **)&objp->freeMems.freeMems_val, (u_int *) &objp->freeMems.freeMems_len, REMOTE_NODE_MAX_CELLS,
+                sizeof (quad_t), (xdrproc_t) xdr_quad_t))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_get_free_memory_ret (XDR *xdrs, remote_node_get_free_memory_ret *objp)
+{
+
+         if (!xdr_quad_t (xdrs, &objp->freeMem))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_domain_get_scheduler_type_args (XDR *xdrs, remote_domain_get_scheduler_type_args *objp)
 {
 

@@ -87,6 +87,9 @@ const REMOTE_STORAGE_VOL_NAME_LIST_MAX = 1024;
 /* Upper limit on list of scheduler parameters. */
 const REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX = 16;
 
+/* Upper limit on number of NUMA cells */
+const REMOTE_NODE_MAX_CELLS = 1024;
+
 /* Upper limit on SASL auth negotiation packet */
 const REMOTE_AUTH_SASL_DATA_MAX = 65536;
 
@@ -252,6 +255,19 @@ struct remote_node_get_info_ret {
 
 struct remote_get_capabilities_ret {
     remote_nonnull_string capabilities;
+};
+
+struct remote_node_get_cells_free_memory_args {
+    int startCell;
+    int maxCells;
+};
+
+struct remote_node_get_cells_free_memory_ret {
+    hyper freeMems<REMOTE_NODE_MAX_CELLS>;
+};
+
+struct remote_node_get_free_memory_ret {
+    hyper freeMem;
 };
 
 struct remote_domain_get_scheduler_type_args {
@@ -1017,7 +1033,10 @@ enum remote_procedure {
     REMOTE_PROC_STORAGE_VOL_LOOKUP_BY_PATH = 97,
     REMOTE_PROC_STORAGE_VOL_GET_INFO = 98,
     REMOTE_PROC_STORAGE_VOL_DUMP_XML = 99,
-    REMOTE_PROC_STORAGE_VOL_GET_PATH = 100
+    REMOTE_PROC_STORAGE_VOL_GET_PATH = 100,
+
+    REMOTE_PROC_NODE_GET_CELLS_FREE_MEMORY = 101,
+    REMOTE_PROC_NODE_GET_FREE_MEMORY = 102
 };
 
 /* Custom RPC structure. */

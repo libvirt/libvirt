@@ -26,6 +26,9 @@ endif
 .x.h:
 	rm -f $@
 	rpcgen -h -o $@ $<
+if GLIBC_RPCGEN
+	perl -i -p -e 's/\t/        /g' $@
+endif
 endif
 
 remote_protocol.c: remote_protocol.h

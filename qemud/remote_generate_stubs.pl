@@ -84,8 +84,8 @@ if ($opt_d) {
     my @keys = sort (keys %calls);
     foreach (@keys) {
 	print "$_:\n";
-	print "\tname $calls{$_}->{name} ($calls{$_}->{ProcName})\n";
-	print "\t$calls{$_}->{args} -> $calls{$_}->{ret}\n";
+	print "        name $calls{$_}->{name} ($calls{$_}->{ProcName})\n";
+	print "        $calls{$_}->{args} -> $calls{$_}->{ret}\n";
     }
 }
 
@@ -117,18 +117,18 @@ elsif ($opt_w) {
     my @keys = sort (keys %calls);
     foreach (@keys) {
 	print "case REMOTE_PROC_$calls{$_}->{UC_NAME}:\n";
-	print "\tfn = (dispatch_fn) remoteDispatch$calls{$_}->{ProcName};\n";
+	print "        fn = (dispatch_fn) remoteDispatch$calls{$_}->{ProcName};\n";
 	if ($calls{$_}->{args} ne "void") {
-	    print "\targs_filter = (xdrproc_t) xdr_$calls{$_}->{args};\n";
-	    print "\targs = (char *) &lv_$calls{$_}->{args};\n";
-	    print "\tmemset (&lv_$calls{$_}->{args}, 0, sizeof lv_$calls{$_}->{args});\n"
+	    print "        args_filter = (xdrproc_t) xdr_$calls{$_}->{args};\n";
+	    print "        args = (char *) &lv_$calls{$_}->{args};\n";
+	    print "        memset (&lv_$calls{$_}->{args}, 0, sizeof lv_$calls{$_}->{args});\n"
 	}
 	if ($calls{$_}->{ret} ne "void") {
-	    print "\tret_filter = (xdrproc_t) xdr_$calls{$_}->{ret};\n";
-	    print "\tret = (char *) &lv_$calls{$_}->{ret};\n";
-	    print "\tmemset (&lv_$calls{$_}->{ret}, 0, sizeof lv_$calls{$_}->{ret});\n"
+	    print "        ret_filter = (xdrproc_t) xdr_$calls{$_}->{ret};\n";
+	    print "        ret = (char *) &lv_$calls{$_}->{ret};\n";
+	    print "        memset (&lv_$calls{$_}->{ret}, 0, sizeof lv_$calls{$_}->{ret});\n"
 	}
-	print "\tbreak;\n";
+	print "        break;\n";
     }
 }
 

@@ -1329,6 +1329,58 @@ remoteGetCapabilities (virConnectPtr conn)
 }
 
 static int
+remoteNodeGetCellsFreeMemory(virConnectPtr conn,
+                            unsigned long long *freeMems,
+                            int startCell,
+                            int maxCells)
+{
+    remote_node_get_cells_free_memory_args args;
+    remote_node_get_cells_free_memory_ret ret;
+    int i;
+    GET_PRIVATE (conn, -1);
+
+    if (maxCells > REMOTE_NODE_MAX_CELLS) {
+        errorf (conn, VIR_ERR_RPC,
+                _("too many NUMA cells: %d > %d"),
+                maxCells,
+                REMOTE_NODE_MAX_CELLS);
+        return -1;
+    }
+
+    args.startCell = startCell;
+    args.maxCells = maxCells;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_NODE_GET_CELLS_FREE_MEMORY,
+              (xdrproc_t) xdr_remote_node_get_cells_free_memory_args, (char *)&args,
+              (xdrproc_t) xdr_remote_node_get_cells_free_memory_ret, (char *)&ret) == -1)
+        return -1;
+
+    for (i = 0 ; i < ret.freeMems.freeMems_len ; i++)
+        freeMems[i] = ret.freeMems.freeMems_val[i];
+
+    xdr_free((xdrproc_t) xdr_remote_node_get_cells_free_memory_ret, (char *) &ret);
+
+    return ret.freeMems.freeMems_len;
+}
+
+static unsigned long long
+remoteNodeGetFreeMemory (virConnectPtr conn)
+{
+    remote_node_get_free_memory_ret ret;
+    GET_PRIVATE (conn, -1);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_NODE_GET_FREE_MEMORY,
+              (xdrproc_t) xdr_void, NULL,
+              (xdrproc_t) xdr_remote_node_get_free_memory_ret, (char *)&ret) == -1)
+        return 0;
+
+    return ret.freeMem;
+}
+
+
+static int
 remoteListDomains (virConnectPtr conn, int *ids, int maxids)
 {
     int i;
@@ -4732,7 +4784,8 @@ static virDriver driver = {
     .domainMigrateFinish = remoteDomainMigrateFinish,
     .domainBlockStats = remoteDomainBlockStats,
     .domainInterfaceStats = remoteDomainInterfaceStats,
-    .nodeGetCellsFreeMemory = NULL,
+    .nodeGetCellsFreeMemory = remoteNodeGetCellsFreeMemory,
+    .getFreeMemory = remoteNodeGetFreeMemory,
 };
 
 static virNetworkDriver network_driver = {
