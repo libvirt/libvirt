@@ -2411,8 +2411,8 @@ static int qemudBuildCommandLineChrDevStr(struct qemud_vm_chr_def *dev,
 int qemudBuildCommandLine(virConnectPtr conn,
                           struct qemud_driver *driver,
                           struct qemud_vm *vm,
-                          char ***argv) {
-    int len, n = -1, i;
+                          char ***retargv) {
+    int i;
     char memory[50];
     char vcpus[50];
     char boot[QEMUD_MAX_BOOT_DEVS+1];
@@ -2424,6 +2424,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
     struct qemud_vm_chr_def *parallel = vm->def->parallels;
     struct utsname ut;
     int disableKQEMU = 0;
+    int qargc = 0, qarga = 0;
+    char **qargv = NULL;
 
     if (vm->qemuVersion == 0) {
         if (qemudExtractVersionInfo(vm->def->os.binary,
@@ -2451,65 +2453,46 @@ int qemudBuildCommandLine(virConnectPtr conn,
         vm->def->virtType == QEMUD_VIRT_QEMU)
         disableKQEMU = 1;
 
-    len = 1 + /* qemu */
-        1 + /* Stopped */
-        2 + /* machine type */
-        disableKQEMU + /* Disable kqemu */
-        (vm->qemuCmdFlags & QEMUD_CMD_FLAG_NAME ? 2 : 0) + /* -name XXX */
-        2 * vm->def->ndisks + /* disks*/
-        (vm->def->nnets > 0 ? (4 * vm->def->nnets) : 2) + /* networks */
-        1 + /* usb */
-        2 * vm->def->ninputs + /* input devices */
-        ((vm->def->nsounds > 0) ? 2 : 0) + /* sound */
-        (vm->def->nserials > 0 ? (2 * vm->def->nserials) : 2) + /* character devices */
-        (vm->def->nparallels > 0 ? (2 * vm->def->nparallels) : 2) + /* character devices */
-        2 + /* memory*/
-        2 + /* cpus */
-        2 + /* boot device */
-        2 + /* monitor */
-        (vm->def->localtime ? 1 : 0) + /* localtime */
-        (vm->qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT &&
-         vm->def->noReboot ? 1 : 0) + /* no-reboot */
-        (vm->def->features & QEMUD_FEATURE_ACPI ? 0 : 1) + /* acpi */
-        (vm->def->os.kernel[0] ? 2 : 0) + /* kernel */
-        (vm->def->os.initrd[0] ? 2 : 0) + /* initrd */
-        (vm->def->os.cmdline[0] ? 2 : 0) + /* cmdline */
-        (vm->def->os.bootloader[0] ? 2 : 0) + /* bootloader */
-        (vm->def->graphicsType == QEMUD_GRAPHICS_VNC ? 2 :
-         (vm->def->graphicsType == QEMUD_GRAPHICS_SDL ? 0 : 1)) + /* graphics */
-        (vm->migrateFrom[0] ? 2 : 0); /* migrateFrom */
+#define ADD_ARG_SPACE                                                   \
+    do { \
+        if (qargc == qarga) {                                           \
+            qarga += 10;                                                \
+            if (VIR_REALLOC_N(qargv, qarga) < 0)                        \
+                goto no_memory;                                         \
+        }                                                               \
+    } while (0)
+
+#define ADD_ARG(thisarg)                                                \
+    do {                                                                \
+        ADD_ARG_SPACE;                                                  \
+        qargv[qargc++] = thisarg;                                       \
+    } while (0)
+
+#define ADD_ARG_LIT(thisarg)                                            \
+    do {                                                                \
+        ADD_ARG_SPACE;                                                  \
+        if ((qargv[qargc++] = strdup(thisarg)) == NULL)                 \
+            goto no_memory;                                             \
+    } while (0)
 
     snprintf(memory, sizeof(memory), "%lu", vm->def->memory/1024);
     snprintf(vcpus, sizeof(vcpus), "%d", vm->def->vcpus);
 
-    if (!(*argv = calloc(len+1, sizeof(**argv))))
-        goto no_memory;
-    if (!((*argv)[++n] = strdup(vm->def->os.binary)))
-        goto no_memory;
-    if (!((*argv)[++n] = strdup("-S")))
-        goto no_memory;
-    if (!((*argv)[++n] = strdup("-M")))
-        goto no_memory;
-    if (!((*argv)[++n] = strdup(vm->def->os.machine)))
-        goto no_memory;
-    if (disableKQEMU) {
-        if (!((*argv)[++n] = strdup("-no-kqemu")))
-            goto no_memory;
-    }
-    if (!((*argv)[++n] = strdup("-m")))
-        goto no_memory;
-    if (!((*argv)[++n] = strdup(memory)))
-        goto no_memory;
-    if (!((*argv)[++n] = strdup("-smp")))
-        goto no_memory;
-    if (!((*argv)[++n] = strdup(vcpus)))
-        goto no_memory;
+
+    ADD_ARG_LIT(vm->def->os.binary);
+    ADD_ARG_LIT("-S");
+    ADD_ARG_LIT("-M");
+    ADD_ARG_LIT(vm->def->os.machine);
+    if (disableKQEMU)
+        ADD_ARG_LIT("-no-kqemu");
+    ADD_ARG_LIT("-m");
+    ADD_ARG_LIT(memory);
+    ADD_ARG_LIT("-smp");
+    ADD_ARG_LIT(vcpus);
 
     if (vm->qemuCmdFlags & QEMUD_CMD_FLAG_NAME) {
-        if (!((*argv)[++n] = strdup("-name")))
-            goto no_memory;
-        if (!((*argv)[++n] = strdup(vm->def->name)))
-            goto no_memory;
+        ADD_ARG_LIT("-name");
+        ADD_ARG_LIT(vm->def->name);
     }
     /*
      * NB, -nographic *MUST* come before any serial, or monitor
@@ -2518,31 +2501,21 @@ int qemudBuildCommandLine(virConnectPtr conn,
      * if you ask for nographic. So we have to make sure we override
      * these defaults ourselves...
      */
-    if (vm->def->graphicsType == QEMUD_GRAPHICS_NONE) {
-        if (!((*argv)[++n] = strdup("-nographic")))
-            goto no_memory;
-    }
+    if (vm->def->graphicsType == QEMUD_GRAPHICS_NONE)
+        ADD_ARG_LIT("-nographic");
 
-    if (!((*argv)[++n] = strdup("-monitor")))
-        goto no_memory;
-    if (!((*argv)[++n] = strdup("pty")))
-        goto no_memory;
+    ADD_ARG_LIT("-monitor");
+    ADD_ARG_LIT("pty");
 
-    if (vm->def->localtime) {
-        if (!((*argv)[++n] = strdup("-localtime")))
-            goto no_memory;
-    }
+    if (vm->def->localtime)
+        ADD_ARG_LIT("-localtime");
 
-    if (vm->qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT &&
-        vm->def->noReboot) {
-        if (!((*argv)[++n] = strdup("-no-reboot")))
-            goto no_memory;
-    }
+    if ((vm->qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT) &&
+        vm->def->noReboot)
+        ADD_ARG_LIT("-no-reboot");
 
-    if (!(vm->def->features & QEMUD_FEATURE_ACPI)) {
-        if (!((*argv)[++n] = strdup("-no-acpi")))
-            goto no_memory;
-    }
+    if (!(vm->def->features & QEMUD_FEATURE_ACPI))
+        ADD_ARG_LIT("-no-acpi");
 
     if (!vm->def->os.bootloader[0]) {
         for (i = 0 ; i < vm->def->os.nBootDevs ; i++) {
@@ -2565,34 +2538,24 @@ int qemudBuildCommandLine(virConnectPtr conn,
             }
         }
         boot[vm->def->os.nBootDevs] = '\0';
-        if (!((*argv)[++n] = strdup("-boot")))
-            goto no_memory;
-        if (!((*argv)[++n] = strdup(boot)))
-            goto no_memory;
+        ADD_ARG_LIT("-boot");
+        ADD_ARG_LIT(boot);
 
         if (vm->def->os.kernel[0]) {
-            if (!((*argv)[++n] = strdup("-kernel")))
-                goto no_memory;
-            if (!((*argv)[++n] = strdup(vm->def->os.kernel)))
-                goto no_memory;
+            ADD_ARG_LIT("-kernel");
+            ADD_ARG_LIT(vm->def->os.kernel);
         }
         if (vm->def->os.initrd[0]) {
-            if (!((*argv)[++n] = strdup("-initrd")))
-                goto no_memory;
-            if (!((*argv)[++n] = strdup(vm->def->os.initrd)))
-                goto no_memory;
+            ADD_ARG_LIT("-initrd");
+            ADD_ARG_LIT(vm->def->os.initrd);
         }
         if (vm->def->os.cmdline[0]) {
-            if (!((*argv)[++n] = strdup("-append")))
-                goto no_memory;
-            if (!((*argv)[++n] = strdup(vm->def->os.cmdline)))
-                goto no_memory;
+            ADD_ARG_LIT("-append");
+            ADD_ARG_LIT(vm->def->os.cmdline);
         }
     } else {
-        if (!((*argv)[++n] = strdup("-bootloader")))
-            goto no_memory;
-        if (!((*argv)[++n] = strdup(vm->def->os.bootloader)))
-            goto no_memory;
+        ADD_ARG_LIT("-bootloader");
+        ADD_ARG_LIT(vm->def->os.bootloader);
     }
 
     /* If QEMU supports -drive param instead of old -hda, -hdb, -cdrom .. */
@@ -2621,8 +2584,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
             const char *media = NULL;
             int bootable = 0;
             int idx = virDiskNameToIndex(disk->dst);
-            if (!((*argv)[++n] = strdup("-drive")))
-                goto no_memory;
 
             if (idx < 0) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -2654,8 +2615,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
                      idx,
                      bootable ? ",boot=on" : "");
 
-            if (!((*argv)[++n] = strdup(opt)))
-                goto no_memory;
+            ADD_ARG_LIT("-drive");
+            ADD_ARG_LIT(opt);
             disk = disk->next;
         }
     } else {
@@ -2684,20 +2645,16 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             snprintf(file, PATH_MAX, "%s", disk->src);
 
-            if (!((*argv)[++n] = strdup(dev)))
-                goto no_memory;
-            if (!((*argv)[++n] = strdup(file)))
-                goto no_memory;
+            ADD_ARG_LIT(dev);
+            ADD_ARG_LIT(file);
 
             disk = disk->next;
         }
     }
 
     if (!net) {
-        if (!((*argv)[++n] = strdup("-net")))
-            goto no_memory;
-        if (!((*argv)[++n] = strdup("none")))
-            goto no_memory;
+        ADD_ARG_LIT("-net");
+        ADD_ARG_LIT("none");
     } else {
         int vlan = 0;
         while (net) {
@@ -2712,19 +2669,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
                          (net->model[0] ? ",model=" : ""), net->model) >= sizeof(nic))
                 goto error;
 
-            if (!((*argv)[++n] = strdup("-net")))
-                goto no_memory;
-            if (!((*argv)[++n] = strdup(nic)))
-                goto no_memory;
-
-            if (!((*argv)[++n] = strdup("-net")))
-                goto no_memory;
+            ADD_ARG_LIT("-net");
+            ADD_ARG_LIT(nic);
+            ADD_ARG_LIT("-net");
 
             switch (net->type) {
             case QEMUD_NET_NETWORK:
             case QEMUD_NET_BRIDGE:
-                if (!((*argv)[++n] = qemudNetworkIfaceConnect(conn, driver, vm, net, vlan)))
-                    goto error;
+                ADD_ARG(qemudNetworkIfaceConnect(conn, driver, vm, net, vlan));
                 break;
 
             case QEMUD_NET_ETHERNET:
@@ -2736,8 +2688,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                                  vlan) >= (PATH_MAX-1))
                         goto error;
 
-                    if (!((*argv)[++n] = strdup(arg)))
-                        goto no_memory;
+                    ADD_ARG_LIT(arg);
                 }
                 break;
 
@@ -2765,8 +2716,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                                  vlan) >= (PATH_MAX-1))
                         goto error;
 
-                    if (!((*argv)[++n] = strdup(arg)))
-                        goto no_memory;
+                    ADD_ARG_LIT(arg);
                 }
                 break;
 
@@ -2777,8 +2727,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                     if (snprintf(arg, PATH_MAX-1, "user,vlan=%d", vlan) >= (PATH_MAX-1))
                         goto error;
 
-                    if (!((*argv)[++n] = strdup(arg)))
-                        goto no_memory;
+                    ADD_ARG_LIT(arg);
                 }
             }
 
@@ -2788,10 +2737,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     if (!serial) {
-        if (!((*argv)[++n] = strdup("-serial")))
-            goto no_memory;
-        if (!((*argv)[++n] = strdup("none")))
-            goto no_memory;
+        ADD_ARG_LIT("-serial");
+        ADD_ARG_LIT("none");
     } else {
         while (serial) {
             char buf[4096];
@@ -2799,20 +2746,16 @@ int qemudBuildCommandLine(virConnectPtr conn,
             if (qemudBuildCommandLineChrDevStr(serial, buf, sizeof(buf)) < 0)
                 goto error;
 
-            if (!((*argv)[++n] = strdup("-serial")))
-                goto no_memory;
-            if (!((*argv)[++n] = strdup(buf)))
-                goto no_memory;
+            ADD_ARG_LIT("-serial");
+            ADD_ARG_LIT(buf);
 
             serial = serial->next;
         }
     }
 
     if (!parallel) {
-        if (!((*argv)[++n] = strdup("-parallel")))
-            goto no_memory;
-        if (!((*argv)[++n] = strdup("none")))
-            goto no_memory;
+        ADD_ARG_LIT("-parallel");
+        ADD_ARG_LIT("none");
     } else {
         while (parallel) {
             char buf[4096];
@@ -2820,23 +2763,18 @@ int qemudBuildCommandLine(virConnectPtr conn,
             if (qemudBuildCommandLineChrDevStr(parallel, buf, sizeof(buf)) < 0)
                 goto error;
 
-            if (!((*argv)[++n] = strdup("-parallel")))
-                goto no_memory;
-            if (!((*argv)[++n] = strdup(buf)))
-                goto no_memory;
+            ADD_ARG_LIT("-parallel");
+            ADD_ARG_LIT(buf);
 
             parallel = parallel->next;
         }
     }
 
-    if (!((*argv)[++n] = strdup("-usb")))
-        goto no_memory;
+    ADD_ARG_LIT("-usb");
     while (input) {
         if (input->bus == QEMU_INPUT_BUS_USB) {
-            if (!((*argv)[++n] = strdup("-usbdevice")))
-                goto no_memory;
-            if (!((*argv)[++n] = strdup(input->type == QEMU_INPUT_TYPE_MOUSE ? "mouse" : "tablet")))
-                goto no_memory;
+            ADD_ARG_LIT("-usbdevice");
+            ADD_ARG_LIT(input->type == QEMU_INPUT_TYPE_MOUSE ? "mouse" : "tablet");
         }
 
         input = input->next;
@@ -2870,15 +2808,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
         if (ret < 0 || ret >= (int)sizeof(vncdisplay))
             goto error;
 
-        if (!((*argv)[++n] = strdup("-vnc")))
-            goto no_memory;
-        if (!((*argv)[++n] = strdup(vncdisplay)))
-            goto no_memory;
+        ADD_ARG_LIT("-vnc");
+        ADD_ARG_LIT(vncdisplay);
         if (vm->def->keymap) {
-            if (!((*argv)[++n] = strdup("-k")))
-                goto no_memory;
-            if (!((*argv)[++n] = strdup(vm->def->keymap)))
-                goto no_memory;
+            ADD_ARG_LIT("-k");
+            ADD_ARG_LIT(vm->def->keymap);
         }
     } else if (vm->def->graphicsType == QEMUD_GRAPHICS_NONE) {
         /* Nada - we added -nographic earlier in this function */
@@ -2892,12 +2826,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
         char *modstr = calloc(1, size+1);
         if (!modstr)
             goto no_memory;
-        if (!((*argv)[++n] = strdup("-soundhw")))
-            goto no_memory;
 
         while(sound && size > 0) {
             const char *model = qemudSoundModelToString(sound->model);
             if (!model) {
+                free(modstr);
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("invalid sound model"));
                 goto error;
@@ -2908,19 +2841,18 @@ int qemudBuildCommandLine(virConnectPtr conn,
             if (sound)
                strncat(modstr, ",", size--);
         }
-        if (!((*argv)[++n] = modstr))
-            goto no_memory;
+        ADD_ARG_LIT("-soundhw");
+        ADD_ARG(modstr);
     }
 
     if (vm->migrateFrom[0]) {
-        if (!((*argv)[++n] = strdup("-incoming")))
-            goto no_memory;
-        if (!((*argv)[++n] = strdup(vm->migrateFrom)))
-            goto no_memory;
+        ADD_ARG_LIT("-incoming");
+        ADD_ARG_LIT(vm->migrateFrom);
     }
 
-    (*argv)[++n] = NULL;
+    ADD_ARG(NULL);
 
+    *retargv = qargv;
     return 0;
 
  no_memory:
@@ -2934,13 +2866,16 @@ int qemudBuildCommandLine(virConnectPtr conn,
         vm->tapfds = NULL;
         vm->ntapfds = 0;
     }
-    if (argv) {
-        for (i = 0 ; i < n ; i++)
-            free((*argv)[i]);
-        free(*argv);
-        *argv = NULL;
+    if (qargv) {
+        for (i = 0 ; i < qargc ; i++)
+            free((qargv)[i]);
+        free(qargv);
     }
     return -1;
+
+#undef ADD_ARG
+#undef ADD_ARG_LIT
+#undef ADD_ARG_SPACE
 }
 
 

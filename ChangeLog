@@ -1,3 +1,8 @@
+Thu May 22 19:44:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c: Refactor qemudBuildCommandLine to use a
+	macro for readability
+
 Thu May 22 12:22:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Apply CPU pinning at startup if requested for QEMU
