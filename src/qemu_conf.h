@@ -328,6 +328,9 @@ struct qemud_vm {
     int *tapfds;
     int ntapfds;
 
+    int nvcpupids;
+    int *vcpupids;
+
     int qemuVersion;
     int qemuCmdFlags; /* values from enum qemud_cmd_flags */
 

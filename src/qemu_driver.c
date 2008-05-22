@@ -50,6 +50,10 @@
 #include <numa.h>
 #endif
 
+#if HAVE_SCHED_H
+#include <sched.h>
+#endif
+
 #include "libvirt/virterror.h"
 
 #include "c-ctype.h"
@@ -61,6 +65,7 @@
 #include "nodeinfo.h"
 #include "stats_linux.h"
 #include "capabilities.h"
+#include "memory.h"
 
 static int qemudShutdown(void);
 
@@ -118,6 +123,10 @@ static int qemudShutdownNetworkDaemon(virConnectPtr conn,
                                       struct qemud_network *network);
 
 static int qemudDomainGetMaxVcpus(virDomainPtr dom);
+static int qemudMonitorCommand (const struct qemud_driver *driver,
+                                const struct qemud_vm *vm,
+                                const char *cmd,
+                                char **reply);
 
 static struct qemud_driver *qemu_driver = NULL;
 
@@ -608,6 +617,106 @@ static int qemudWaitForMonitor(virConnectPtr conn,
     return ret;
 }
 
+static int
+qemudDetectVcpuPIDs(virConnectPtr conn,
+                    struct qemud_driver *driver,
+                    struct qemud_vm *vm) {
+    char *qemucpus = NULL;
+    char *line;
+    int lastVcpu = -1;
+
+    /* Only KVM has seperate threads for CPUs,
+       others just use main QEMU process for CPU */
+    if (vm->def->virtType != QEMUD_VIRT_KVM)
+        vm->nvcpupids = 1;
+    else
+        vm->nvcpupids = vm->def->vcpus;
+
+    if (VIR_ALLOC_N(vm->vcpupids, vm->nvcpupids) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                         "%s", _("allocate cpumap"));
+        return -1;
+    }
+
+    if (vm->def->virtType != QEMUD_VIRT_KVM) {
+        vm->vcpupids[0] = vm->pid;
+        return 0;
+    }
+
+    if (qemudMonitorCommand(driver, vm, "info cpus", &qemucpus) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("cannot run monitor command to fetch CPU thread info"));
+        VIR_FREE(vm->vcpupids);
+        vm->nvcpupids = 0;
+        return -1;
+    }
+
+    /*
+     * This is the gross format we're about to parse :-{
+     *
+     * (qemu) info cpus
+     * * CPU #0: pc=0x00000000000f0c4a thread_id=30019
+     *   CPU #1: pc=0x00000000fffffff0 thread_id=30020
+     *   CPU #2: pc=0x00000000fffffff0 thread_id=30021
+     *
+     */
+    line = qemucpus;
+    do {
+        char *offset = strchr(line, '#');
+        char *end = NULL;
+        int vcpu = 0, tid = 0;
+
+        /* See if we're all done */
+        if (offset == NULL)
+            break;
+
+        /* Extract VCPU number */
+        if (virStrToLong_i(offset + 1, &end, 10, &vcpu) < 0)
+            goto error;
+        if (end == NULL || *end != ':')
+            goto error;
+
+        /* Extract host Thread ID */
+        if ((offset = strstr(line, "thread_id=")) == NULL)
+            goto error;
+        if (virStrToLong_i(offset + strlen("thread_id="), &end, 10, &tid) < 0)
+            goto error;
+        if (end == NULL || !c_isspace(*end))
+            goto error;
+
+        /* Validate the VCPU is in expected range & order */
+        if (vcpu > vm->nvcpupids ||
+            vcpu != (lastVcpu + 1))
+            goto error;
+
+        lastVcpu = vcpu;
+        vm->vcpupids[vcpu] = tid;
+
+        /* Skip to next data line */
+        line = strchr(offset, '\r');
+        if (line == NULL)
+            line = strchr(offset, '\n');
+    } while (line != NULL);
+
+    /* Validate we got data for all VCPUs we expected */
+    if (lastVcpu != (vm->def->vcpus - 1))
+        goto error;
+
+    free(qemucpus);
+    return 0;
+
+error:
+    VIR_FREE(vm->vcpupids);
+    vm->vcpupids = 0;
+    free(qemucpus);
+
+    /* Explicitly return success, not error. Older KVM does
+       not have vCPU -> Thread mapping info and we don't
+       want to break its use. This merely disables ability
+       to pin vCPUS with libvirt */
+    return 0;
+}
+
 static int qemudNextFreeVNCPort(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
     int i;
 
@@ -785,6 +894,11 @@ static int qemudStartVMDaemon(virConnectPtr conn,
             qemudShutdownVMDaemon(conn, driver, vm);
             return -1;
         }
+
+        if (qemudDetectVcpuPIDs(conn, driver, vm) < 0) {
+            qemudShutdownVMDaemon(conn, driver, vm);
+            return -1;
+        }
     }
 
     return ret;
@@ -857,6 +971,9 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     vm->pid = -1;
     vm->id = -1;
     vm->state = VIR_DOMAIN_SHUTOFF;
+    free(vm->vcpupids);
+    vm->vcpupids = NULL;
+    vm->nvcpupids = 0;
 
     if (vm->newDef) {
         qemudFreeVMDef(vm->def);
@@ -2280,6 +2397,130 @@ static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
     return 0;
 }
 
+
+#if HAVE_SCHED_GETAFFINITY
+static int
+qemudDomainPinVcpu(virDomainPtr dom,
+                   unsigned int vcpu,
+                   unsigned char *cpumap,
+                   int maplen) {
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
+    cpu_set_t mask;
+    int i, maxcpu;
+    virNodeInfo nodeinfo;
+
+    if (!qemudIsActiveVM(vm)) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                         "%s",_("cannot pin vcpus on an inactive domain"));
+        return -1;
+    }
+
+    if (vcpu > (vm->nvcpupids-1)) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                         _("vcpu number out of range %d > %d"),
+                         vcpu, vm->nvcpupids);
+        return -1;
+    }
+
+    if (virNodeInfoPopulate(dom->conn, &nodeinfo) < 0)
+        return -1;
+
+    maxcpu = maplen * 8;
+    if (maxcpu > nodeinfo.cpus)
+        maxcpu = nodeinfo.cpus;
+
+    CPU_ZERO(&mask);
+    for (i = 0 ; i < maxcpu ; i++) {
+        if ((cpumap[i/8] >> (i % 8)) & 1)
+            CPU_SET(i, &mask);
+    }
+
+    if (vm->vcpupids != NULL) {
+        if (sched_setaffinity(vm->vcpupids[vcpu], sizeof(mask), &mask) < 0) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                             _("cannot set affinity: %s"), strerror(errno));
+            return -1;
+        }
+    } else {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                         "%s", _("cpu affinity is not supported"));
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+qemudDomainGetVcpus(virDomainPtr dom,
+                    virVcpuInfoPtr info,
+                    int maxinfo,
+                    unsigned char *cpumaps,
+                    int maplen) {
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
+    virNodeInfo nodeinfo;
+    int i, v, maxcpu;
+
+    if (!qemudIsActiveVM(vm)) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                         "%s",_("cannot pin vcpus on an inactive domain"));
+        return -1;
+    }
+
+    if (virNodeInfoPopulate(dom->conn, &nodeinfo) < 0)
+        return -1;
+
+    maxcpu = maplen * 8;
+    if (maxcpu > nodeinfo.cpus)
+        maxcpu = nodeinfo.cpus;
+
+    /* Clamp to actual number of vcpus */
+    if (maxinfo > vm->nvcpupids)
+        maxinfo = vm->nvcpupids;
+
+    if (maxinfo < 1)
+        return 0;
+
+    if (info != NULL) {
+        memset(info, 0, sizeof(*info) * maxinfo);
+        for (i = 0 ; i < maxinfo ; i++) {
+            info[i].number = i;
+            info[i].state = VIR_VCPU_RUNNING;
+            /* XXX cpu time, current pCPU mapping */
+        }
+    }
+
+    if (cpumaps != NULL) {
+        memset(cpumaps, 0, maplen * maxinfo);
+        if (vm->vcpupids != NULL) {
+            for (v = 0 ; v < maxinfo ; v++) {
+                cpu_set_t mask;
+                unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
+                CPU_ZERO(&mask);
+
+                if (sched_getaffinity(vm->vcpupids[v], sizeof(mask), &mask) < 0) {
+                    qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                                     _("cannot get affinity: %s"), strerror(errno));
+                    return -1;
+                }
+
+                for (i = 0 ; i < maxcpu ; i++)
+                    if (CPU_ISSET(i, &mask))
+                        VIR_USE_CPU(cpumap, i);
+            }
+        } else {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                             "%s", _("cpu affinity is not available"));
+            return -1;
+        }
+    }
+
+    return maxinfo;
+}
+#endif /* HAVE_SCHED_GETAFFINITY */
+
+
 static int qemudDomainGetMaxVcpus(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
@@ -3228,8 +3469,13 @@ static virDriver qemuDriver = {
     qemudDomainRestore, /* domainRestore */
     NULL, /* domainCoreDump */
     qemudDomainSetVcpus, /* domainSetVcpus */
+#if HAVE_SCHED_GETAFFINITY
+    qemudDomainPinVcpu, /* domainPinVcpu */
+    qemudDomainGetVcpus, /* domainGetVcpus */
+#else
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
+#endif
     qemudDomainGetMaxVcpus, /* domainGetMaxVcpus */
     qemudDomainDumpXML, /* domainDumpXML */
     qemudListDefinedDomains, /* listDomains */

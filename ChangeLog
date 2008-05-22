@@ -1,3 +1,11 @@
+Thu May 22 12:20:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Add support for VCPU pinning in QEMU driver
+	* configure.in: Add checks for sched.h/sched_getaffinity
+	* src/qemu_conf.h: Add mapping of vcpu -> pids
+	* src/qemu_driver.c: Detect vcpu -> pid mapping at startup
+	of VMs. Support vcpu info and vcpu pinning driver APIs
+
 Thu May 22 12:18:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/testutilsqemu.c: Added missing config.h include

@@ -61,10 +61,10 @@ AM_PROG_CC_C_O
 LIBVIRT_COMPILE_WARNINGS([maximum])
 
 dnl Availability of various common functions (non-fatal if missing).
-AC_CHECK_FUNCS([cfmakeraw regexec uname])
+AC_CHECK_FUNCS([cfmakeraw regexec uname sched_getaffinity])
 
 dnl Availability of various common headers (non-fatal if missing).
-AC_CHECK_HEADERS([pwd.h paths.h sys/syslimits.h sys/utsname.h sys/wait.h winsock2.h])
+AC_CHECK_HEADERS([pwd.h paths.h sys/syslimits.h sys/utsname.h sys/wait.h winsock2.h sched.h])
 
 dnl Where are the XDR functions?
 dnl If portablexdr is installed, prefer that.
