@@ -41,7 +41,7 @@ EXTRA_DIST =		\
 
 noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
 	reconnect xmconfigtest xencapstest qemuxml2argvtest qemuxml2xmltest \
-        nodeinfotest statstest
+        nodeinfotest statstest qparamtest
 
 test_scripts = \
 	daemon-conf \
@@ -53,7 +53,7 @@ EXTRA_DIST += $(test_scripts)
 
 TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh xmconfigtest \
         xencapstest qemuxml2argvtest qemuxml2xmltest nodeinfotest \
-	statstest $(test_scripts)
+	statstest qparamtest $(test_scripts)
 if ENABLE_XEN_TESTS
   TESTS += reconnect
 endif
@@ -129,6 +129,10 @@ nodeinfotest_LDADD = $(LDADDS)
 statstest_SOURCES = \
 	statstest.c testutils.h testutils.c
 statstest_LDADD = $(LDADDS)
+
+qparamtest_SOURCES = \
+	qparamtest.c testutils.h testutils.c
+qparamtest_LDADD = $(LDADDS)
 
 reconnect_SOURCES = \
 	reconnect.c

@@ -1,3 +1,10 @@
+Thu May 22 19:47:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qparams.c: Support ; as a param separator. Misc memory
+	leaks
+	* tests/qparamtest.c, tests/Makefile.am: Add test suite for
+	qparams code
+
 Thu May 22 19:44:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c: Refactor qemudBuildCommandLine to use a

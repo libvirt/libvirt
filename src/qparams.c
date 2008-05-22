@@ -166,7 +166,7 @@ struct qparam_set *
 qparam_query_parse (const char *query)
 {
     struct qparam_set *ps;
-    const char *name, *value, *end, *eq;
+    const char *end, *eq;
 
     ps = new_qparam_set (0, NULL);
     if (!ps) return NULL;
@@ -174,9 +174,14 @@ qparam_query_parse (const char *query)
     if (!query || query[0] == '\0') return ps;
 
     while (*query) {
+        char *name = NULL, *value = NULL;
+
         /* Find the next separator, or end of the string. */
         end = strchr (query, '&');
-        if (!end) end = query + strlen (query);
+        if (!end)
+            end = strchr (query, ';');
+        if (!end)
+            end = query + strlen (query);
 
         /* Find the first '=' character between here and end. */
         eq = strchr (query, '=');
@@ -191,7 +196,6 @@ qparam_query_parse (const char *query)
          */
         else if (!eq) {
             name = xmlURIUnescapeString (query, end - query, NULL);
-            value = "";
             if (!name) goto out_of_memory;
         }
         /* Or if we have "name=" here (works around annoying
@@ -199,7 +203,6 @@ qparam_query_parse (const char *query)
          */
         else if (eq+1 == end) {
             name = xmlURIUnescapeString (query, eq - query, NULL);
-            value = "";
             if (!name) goto out_of_memory;
         }
         /* If the '=' character is at the beginning then we have
@@ -211,12 +214,23 @@ qparam_query_parse (const char *query)
         /* Otherwise it's "name=value". */
         else {
             name = xmlURIUnescapeString (query, eq - query, NULL);
+            if (!name)
+                goto out_of_memory;
             value = xmlURIUnescapeString (eq+1, end - (eq+1), NULL);
-            if (!name || !value) goto out_of_memory;
+            if (!value) {
+                VIR_FREE(name);
+                goto out_of_memory;
+            }
         }
 
         /* Append to the parameter set. */
-        if (append_qparam (ps, name, value) == -1) goto out_of_memory;
+        if (append_qparam (ps, name, value ? value : "") == -1) {
+            VIR_FREE(name);
+            VIR_FREE(value);
+            goto out_of_memory;
+        }
+        VIR_FREE(name);
+        VIR_FREE(value);
 
     next:
         query = end;

@@ -14,6 +14,7 @@ qemuxml2xmltest
 qemuxml2argvtest
 nodeinfotest
 statstest
+qparamtest
 *.gcda
 *.gcno
 
