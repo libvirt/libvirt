@@ -42,6 +42,10 @@
 #include <libxml/xpath.h>
 #include <libxml/uri.h>
 
+#if HAVE_NUMACTL
+#include <numa.h>
+#endif
+
 #include "libvirt/virterror.h"
 
 #include "qemu_conf.h"
@@ -49,6 +53,7 @@
 #include "buf.h"
 #include "conf.h"
 #include "util.h"
+#include "memory.h"
 #include "verify.h"
 #include "c-ctype.h"
 
@@ -390,6 +395,65 @@ qemudCapsInitGuest(virCapsPtr caps,
     return 0;
 }
 
+#if HAVE_NUMACTL
+#define MAX_CPUS 4096
+#define MAX_CPUS_MASK_SIZE (sizeof(unsigned long))
+#define MAX_CPUS_MASK_LEN (MAX_CPUS / MAX_CPUS_MASK_SIZE)
+#define MAX_CPUS_MASK_BYTES (MAX_CPUS / 8)
+
+#define MASK_CPU_ISSET(mask, cpu) \
+    (((mask)[((cpu) / MAX_CPUS_MASK_SIZE)] >> ((cpu) % MAX_CPUS_MASK_SIZE)) & 1)
+
+static int
+qemudCapsInitNUMA(virCapsPtr caps)
+{
+    int n, i;
+    unsigned long *mask = NULL;
+    int ncpus;
+    int *cpus = NULL;
+    int ret = -1;
+
+    if (numa_available() < 0)
+        return 0;
+
+    if (VIR_ALLOC_N(mask, MAX_CPUS_MASK_LEN) < 0)
+        goto cleanup;
+
+    for (n = 0 ; n <= numa_max_node() ; n++) {
+        if (numa_node_to_cpus(n, mask, MAX_CPUS_MASK_BYTES) < 0)
+            goto cleanup;
+
+        for (ncpus = 0, i = 0 ; i < MAX_CPUS ; i++)
+            if (MASK_CPU_ISSET(mask, i))
+                ncpus++;
+
+        if (VIR_ALLOC_N(cpus, ncpus) < 0)
+            goto cleanup;
+
+        for (ncpus = 0, i = 0 ; i < MAX_CPUS ; i++)
+            if (MASK_CPU_ISSET(mask, i))
+                cpus[ncpus++] = i;
+
+        if (virCapabilitiesAddHostNUMACell(caps,
+                                           n,
+                                           ncpus,
+                                           cpus) < 0)
+            goto cleanup;
+
+        VIR_FREE(cpus);
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cpus);
+    VIR_FREE(mask);
+    return ret;
+}
+#else
+static int qemudCapsInitNUMA(virCapsPtr caps ATTRIBUTE_UNUSED) { return 0; }
+#endif
+
 virCapsPtr qemudCapsInit(void) {
     struct utsname utsname;
     virCapsPtr caps;
@@ -400,6 +464,9 @@ virCapsPtr qemudCapsInit(void) {
 
     if ((caps = virCapabilitiesNew(utsname.machine,
                                    0, 0)) == NULL)
+        goto no_memory;
+
+    if (qemudCapsInitNUMA(caps) < 0)
         goto no_memory;
 
     for (i = 0 ; i < (sizeof(arch_info_hvm)/sizeof(arch_info_hvm[0])) ; i++)

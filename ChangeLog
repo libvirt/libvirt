@@ -1,3 +1,12 @@
+Thu May 22 11:24:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Support for NUMA info in the QEMU driver
+	* configure.in: check for libnuma
+	* libvirt.spec.in: add requirement on libnuma-devel at build
+	* src/Makefile.am: add NUMA compiler / linker flags
+	* src/qemu_conf.c: populate capabilities data with NUMA topology
+	* src/qemu_driver.c: implement free memory APIs
+
 Thu May 22 11:15:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Support the free memory API calls in the remote driver/daemon

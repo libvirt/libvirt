@@ -534,6 +534,40 @@ AM_CONDITIONAL(HAVE_SELINUX, [test "$with_selinux" != "no"])
 AC_SUBST(SELINUX_CFLAGS)
 AC_SUBST(SELINUX_LIBS)
 
+dnl NUMA lib
+AC_ARG_WITH(numactl,
+  [  --with-numactl         use numactl for host topology info],
+  [],
+  [with_numactl=check])
+
+NUMACTL_CFLAGS=
+NUMACTL_LIBS=
+if test "$with_qemu" = "yes" -a "$with_numactl" != "no"; then
+  old_cflags="$CFLAGS"
+  old_libs="$LIBS"
+  if test "$with_numactl" = "check"; then
+    AC_CHECK_HEADER([numa.h],[],[with_numactl=no])
+    AC_CHECK_LIB(numa, numa_available,[],[with_numactl=no])
+    if test "$with_numactl" != "no"; then
+      with_numactl="yes"
+    fi
+  else
+    AC_CHECK_HEADER([numa.h],[],
+       [AC_MSG_ERROR([You must install the numactl development package in order to compile libvirt])])
+    AC_CHECK_LIB(numa, numa_available,[],
+       [AC_MSG_ERROR([You must install the numactl development package in order to compile and run libvirt])])
+  fi
+  CFLAGS="$old_cflags"
+  LIBS="$old_libs"
+fi
+if test "$with_numactl" = "yes"; then
+  NUMACTL_LIBS="-lnuma"
+  AC_DEFINE_UNQUOTED(HAVE_NUMACTL, 1, [whether Numactl is available for security])
+fi
+AM_CONDITIONAL(HAVE_NUMACTL, [test "$with_numactl" != "no"])
+AC_SUBST(NUMACTL_CFLAGS)
+AC_SUBST(NUMACTL_LIBS)
+
 dnl virsh libraries
 AC_CHECK_HEADERS([readline/readline.h])
 
@@ -1000,6 +1034,11 @@ if test "$with_selinux" = "yes" ; then
 AC_MSG_NOTICE([  selinux: $SELINUX_CFLAGS $SELINUX_LIBS])
 else
 AC_MSG_NOTICE([  selinux: no])
+fi
+if test "$with_numactl" = "yes" ; then
+AC_MSG_NOTICE([  numactl: $NUMACTL_CFLAGS $NUMACTL_LIBS])
+else
+AC_MSG_NOTICE([  numactl: no])
 fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])

@@ -46,6 +46,10 @@
 #include <sys/wait.h>
 #include <libxml/uri.h>
 
+#if HAVE_NUMACTL
+#include <numa.h>
+#endif
+
 #include "libvirt/virterror.h"
 
 #include "c-ctype.h"
@@ -1619,6 +1623,61 @@ static char *qemudGetCapabilities(virConnectPtr conn) {
 }
 
 
+#if HAVE_NUMACTL
+static int
+qemudNodeGetCellsFreeMemory(virConnectPtr conn,
+                            unsigned long long *freeMems,
+                            int startCell,
+                            int maxCells)
+{
+    int n, lastCell, numCells;
+
+    if (numa_available() < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
+                         "%s", _("NUMA not supported on this host"));
+        return -1;
+    }
+    lastCell = startCell + maxCells - 1;
+    if (lastCell > numa_max_node())
+        lastCell = numa_max_node();
+
+    for (numCells = 0, n = startCell ; n <= lastCell ; n++) {
+        long long mem;
+        if (numa_node_size64(n, &mem) < 0) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("Failed to query NUMA free memory"));
+            return -1;
+        }
+        freeMems[numCells++] = mem;
+    }
+    return numCells;
+}
+
+static unsigned long long
+qemudNodeGetFreeMemory (virConnectPtr conn)
+{
+    unsigned long long freeMem = 0;
+    int n;
+    if (numa_available() < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
+                         "%s", _("NUMA not supported on this host"));
+        return -1;
+    }
+
+    for (n = 0 ; n <= numa_max_node() ; n++) {
+        long long mem;
+        if (numa_node_size64(n, &mem) < 0) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("Failed to query NUMA free memory"));
+            return -1;
+        }
+        freeMem += mem;
+    }
+
+    return freeMem;
+}
+
+#endif
 
 static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
     char proc[PATH_MAX];
@@ -3182,8 +3241,13 @@ static virDriver qemuDriver = {
     NULL, /* domainMigrateFinish */
     qemudDomainBlockStats, /* domainBlockStats */
     qemudDomainInterfaceStats, /* domainInterfaceStats */
+#if HAVE_NUMACTL
+    qemudNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
+    qemudNodeGetFreeMemory,  /* getFreeMemory */
+#else
     NULL, /* nodeGetCellsFreeMemory */
     NULL, /* getFreeMemory */
+#endif
 };
 
 static virNetworkDriver qemuNetworkDriver = {

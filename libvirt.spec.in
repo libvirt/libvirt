@@ -67,6 +67,9 @@ BuildRequires: dnsmasq
 BuildRequires: bridge-utils
 BuildRequires: qemu
 BuildRequires: cyrus-sasl-devel
+%if %{with_qemu}
+BuildRequires: numactl-devel
+%endif
 %if %{with_polkit}
 BuildRequires: PolicyKit-devel >= 0.6
 %endif
