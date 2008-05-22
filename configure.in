@@ -355,16 +355,14 @@ if test -z "$PKG_CONFIG" ; then
      [GNUTLS_FOUND=yes], [GNUTLS_FOUND=no])
 fi
 if test "$GNUTLS_FOUND" = "no"; then
-  AC_CHECK_HEADER([gnutls/gnutls.h],
-    [],
-    AC_MSG_ERROR(
-      [You must install the GnuTLS development package in order to compile libvirt]))
+  fail=0
   old_libs="$LIBS"
-  AC_CHECK_LIB([gnutls], [gnutls_handshake],
-    [],
-    [AC_MSG_ERROR(
-       [You must install the GnuTLS library in order to compile and run libvirt])],
-    [-lgcrypt])
+  AC_CHECK_HEADER([gnutls/gnutls.h], [], [fail=1])
+  AC_CHECK_LIB([gnutls], [gnutls_handshake],[], [fail=1], [-lgcrypt])
+
+  test $fail = 1 &&
+    AC_MSG_ERROR([You must install the GnuTLS library in order to compile and run libvirt])
+
   GNUTLS_LIBS=$LIBS
   LIBS="$old_libs"
 fi
@@ -400,6 +398,7 @@ if test "x$with_sasl" != "xno"; then
     SASL_CFLAGS="-I$with_sasl"
     SASL_LIBS="-L$with_sasl"
   fi
+  fail=0
   old_cflags="$CFLAGS"
   old_libs="$LIBS"
   CFLAGS="$CFLAGS $SASL_CFLAGS"
@@ -408,18 +407,18 @@ if test "x$with_sasl" != "xno"; then
     if test "x$with_sasl" != "xcheck" ; then
         with_sasl=no
     else
-        AC_MSG_ERROR(
-          [You must install the Cyrus SASL development package in order to compile libvirt])
+        fail=1
     fi])
   if test "x$with_sasl" != "xno" ; then
     AC_CHECK_LIB([sasl2], [sasl_client_init],[with_sasl=yes],[
       if test "x$with_sasl" = "xcheck" ; then
           with_sasl=no
       else
-          AC_MSG_ERROR(
-            [You must install the Cyrus SASL library in order to compile and run libvirt])
+          fail=1
       fi])
   fi
+  test $fail = 1 &&
+    AC_MSG_ERROR([You must install the Cyrus SASL development package in order to compile libvirt])
   CFLAGS="$old_cflags"
   LIBS="$old_libs"
   SASL_LIBS="$SASL_LIBS -lsasl2"
@@ -518,10 +517,11 @@ if test "$with_selinux" != "no"; then
       with_selinux="yes"
     fi
   else
-    AC_CHECK_HEADER([selinux/selinux.h],[],
-       [AC_MSG_ERROR([You must install the SELinux development package in order to compile libvirt])])
-    AC_CHECK_LIB([selinux], [fgetfilecon],[],
-       [AC_MSG_ERROR([You must install the SELinux development package in order to compile and run libvirt])])
+    fail=0
+    AC_CHECK_HEADER([selinux/selinux.h],[],[fail=1])
+    AC_CHECK_LIB([selinux], [fgetfilecon],[],[fail=1])
+    test $fail = 1 &&
+      AC_MSG_ERROR([You must install the SELinux development package in order to compile libvirt])
   fi
   CFLAGS="$old_cflags"
   LIBS="$old_libs"
@@ -552,10 +552,11 @@ if test "$with_qemu" = "yes" -a "$with_numactl" != "no"; then
       with_numactl="yes"
     fi
   else
-    AC_CHECK_HEADER([numa.h],[],
-       [AC_MSG_ERROR([You must install the numactl development package in order to compile libvirt])])
-    AC_CHECK_LIB([numa], [numa_available],[],
-       [AC_MSG_ERROR([You must install the numactl development package in order to compile and run libvirt])])
+    fail=0
+    AC_CHECK_HEADER([numa.h],[],[fail=1])
+    AC_CHECK_LIB([numa], [numa_available],[],[fail=1])
+    test $fail = 1 &&
+      AC_MSG_ERROR([You must install the numactl development package in order to compile and run libvirt])
   fi
   CFLAGS="$old_cflags"
   LIBS="$old_libs"
@@ -632,7 +633,7 @@ if test "$with_storage_fs" = "yes" -o "$with_storage_fs" = "check"; then
   AC_PATH_PROG([UMOUNT], [umount], [], [$PATH:/sbin:/usr/sbin])
   if test "$with_storage_fs" = "yes" ; then
     if test -z "$MOUNT" ; then AC_MSG_ERROR([We need mount for FS storage driver]) ; fi
-    if test -z "$UMOUNT" ; then AC_MSG_ERROR([We need mount for FS storage driver]) ; fi
+    if test -z "$UMOUNT" ; then AC_MSG_ERROR([We need umount for FS storage driver]) ; fi
   else
     if test -z "$MOUNT" ; then with_storage_fs=no ; fi
     if test -z "$UMOUNT" ; then with_storage_fs=no ; fi
