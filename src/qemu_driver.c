@@ -1213,12 +1213,20 @@ qemudRemoveIptablesRules(struct qemud_driver *driver,
                          struct qemud_network *network) {
     if (network->def->forward) {
         iptablesRemoveForwardMasquerade(driver->iptables,
-                                     network->def->network,
-                                     network->def->forwardDev);
-        iptablesRemoveForwardAllowIn(driver->iptables,
-                                   network->def->network,
-                                   network->bridge,
-                                   network->def->forwardDev);
+                                        network->def->network,
+                                        network->def->forwardDev);
+
+        if (network->def->forwardMode == QEMUD_NET_FORWARD_NAT)
+            iptablesRemoveForwardAllowRelatedIn(driver->iptables,
+                                                network->def->network,
+                                                network->bridge,
+                                                network->def->forwardDev);
+        else if (network->def->forwardMode == QEMUD_NET_FORWARD_ROUTE)
+            iptablesRemoveForwardAllowIn(driver->iptables,
+                                         network->def->network,
+                                         network->bridge,
+                                         network->def->forwardDev);
+
         iptablesRemoveForwardAllowOut(driver->iptables,
                                       network->def->network,
                                       network->bridge,
