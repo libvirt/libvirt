@@ -154,7 +154,7 @@
       <dt><code>type</code></dt>
       <dd>This element has the same semantics as described earlier in the
 	<a href="#elementsOSBIOS">BIOS boot section</a></dd>
-      <dt><code>type</code></dt>
+      <dt><code>loader</code></dt>
       <dd>This element has the same semantics as described earlier in the
 	<a href="#elementsOSBIOS">BIOS boot section</a></dd>
       <dt><code>kernel</code></dt>
@@ -215,10 +215,10 @@
       <dt><code>on_poweroff</code></dt>
       <dd>The content of this element specifies the action to take when
 	the guest requests a poweroff.</dd>
-      <dt><code>on_poweroff</code></dt>
+      <dt><code>on_reboot</code></dt>
       <dd>The content of this element specifies the action to take when
 	the guest requests a reboot.</dd>
-      <dt><code>on_poweroff</code></dt>
+      <dt><code>on_crash</code></dt>
       <dd>The content of this element specifies the action to take when
 	the guest crashes.</dd>
     </dl>

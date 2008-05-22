@@ -304,7 +304,7 @@
 	&lt;/os&gt;
 	...</pre>
         <dl><dt><code>type</code></dt><dd>This element has the same semantics as described earlier in the
-	<a href="#elementsOSBIOS">BIOS boot section</a></dd><dt><code>type</code></dt><dd>This element has the same semantics as described earlier in the
+	<a href="#elementsOSBIOS">BIOS boot section</a></dd><dt><code>loader</code></dt><dd>This element has the same semantics as described earlier in the
 	<a href="#elementsOSBIOS">BIOS boot section</a></dd><dt><code>kernel</code></dt><dd>The contents of this element specify the fully-qualified path
 	to the kernel image in the host OS.</dd><dt><code>initrd</code></dt><dd>The contents of this element specify the fully-qualified path
 	to the (optional) ramdisk image in the host OS.</dd><dt><code>cmdline</code></dt><dd>The contents of this element specify arguments to be passed to
@@ -344,8 +344,8 @@
 	&lt;on_crash&gt;restart&lt;/on_crash&gt;
 	...</pre>
         <dl><dt><code>on_poweroff</code></dt><dd>The content of this element specifies the action to take when
-	the guest requests a poweroff.</dd><dt><code>on_poweroff</code></dt><dd>The content of this element specifies the action to take when
-	the guest requests a reboot.</dd><dt><code>on_poweroff</code></dt><dd>The content of this element specifies the action to take when
+	the guest requests a poweroff.</dd><dt><code>on_reboot</code></dt><dd>The content of this element specifies the action to take when
+	the guest requests a reboot.</dd><dt><code>on_crash</code></dt><dd>The content of this element specifies the action to take when
 	the guest crashes.</dd></dl>
         <p>
       Each of these states allow for the same four possible actions.

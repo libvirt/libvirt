@@ -1,3 +1,8 @@
+Thu May 22 16:56:12 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/formatdomain.html docs/formatdomain.html.in: Anton Protopopov
+	  pointed out a few "copy-paste" errors
+
 Wed May 21 17:13:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c: Fix exit status check when using -help arg
