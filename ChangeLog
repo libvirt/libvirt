@@ -1,3 +1,7 @@
+Thu May 22 11:35:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: Fix misleading comment about numactl
+
 Thu May 22 11:31:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: Quote all args to macros

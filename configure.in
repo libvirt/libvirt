@@ -562,7 +562,7 @@ if test "$with_qemu" = "yes" -a "$with_numactl" != "no"; then
 fi
 if test "$with_numactl" = "yes"; then
   NUMACTL_LIBS="-lnuma"
-  AC_DEFINE_UNQUOTED([HAVE_NUMACTL], 1, [whether Numactl is available for security])
+  AC_DEFINE_UNQUOTED([HAVE_NUMACTL], 1, [whether numactl is available for topology info])
 fi
 AM_CONDITIONAL([HAVE_NUMACTL], [test "$with_numactl" != "no"])
 AC_SUBST([NUMACTL_CFLAGS])
