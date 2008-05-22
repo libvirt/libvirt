@@ -1,3 +1,12 @@
+Thu May 22 11:06:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix misc memory leaks
+	* qemud/remote.c: Fix memory leaks in stats/migration APIs
+	* src/libvirt.c: Fix use of uninitialized memory & memory
+	leak in default auth helper
+	* src/qparams.c: Fix memory leak, and convert to use new
+	style memory allocation APIs
+
 Thu May 22 16:56:12 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/formatdomain.html docs/formatdomain.html.in: Anton Protopopov

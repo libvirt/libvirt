@@ -27,7 +27,7 @@
 #include <stdarg.h>
 
 #include "buf.h"
-
+#include "memory.h"
 #include "qparams.h"
 
 struct qparam_set *
@@ -39,13 +39,12 @@ new_qparam_set (int init_alloc, ...)
 
     if (init_alloc <= 0) init_alloc = 1;
 
-    ps = malloc (sizeof (*ps));
-    if (!ps) return NULL;
+    if (VIR_ALLOC(ps) < 0)
+        return NULL;
     ps->n = 0;
     ps->alloc = init_alloc;
-    ps->p = malloc (init_alloc * sizeof (ps->p[0]));
-    if (!ps->p) {
-        free (ps);
+    if (VIR_ALLOC_N(ps->p, ps->alloc) < 0) {
+        VIR_FREE (ps);
         return NULL;
     }
 
@@ -87,13 +86,8 @@ append_qparams (struct qparam_set *ps, ...)
 static int
 grow_qparam_set (struct qparam_set *ps)
 {
-    struct qparam *old_p;
-
     if (ps->n >= ps->alloc) {
-        old_p = ps->p;
-        ps->p = realloc (ps->p, 2 * ps->alloc * sizeof (ps->p[0]));
-        if (!ps->p) {
-            ps->p = old_p;
+        if (VIR_REALLOC_N(ps->p, ps->alloc * 2) < 0) {
             perror ("realloc");
             return -1;
         }
@@ -115,13 +109,13 @@ append_qparam (struct qparam_set *ps,
 
     pvalue = strdup (value);
     if (!pvalue) {
-        free (pname);
+        VIR_FREE (pname);
         return -1;
     }
 
     if (grow_qparam_set (ps) == -1) {
-        free (pname);
-        free (pvalue);
+        VIR_FREE (pname);
+        VIR_FREE (pvalue);
         return -1;
     }
 
@@ -161,10 +155,11 @@ free_qparam_set (struct qparam_set *ps)
     int i;
 
     for (i = 0; i < ps->n; ++i) {
-        free (ps->p[i].name);
-        free (ps->p[i].value);
+        VIR_FREE (ps->p[i].name);
+        VIR_FREE (ps->p[i].value);
     }
-    free (ps);
+    VIR_FREE (ps->p);
+    VIR_FREE (ps);
 }
 
 struct qparam_set *

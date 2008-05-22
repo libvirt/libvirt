@@ -792,8 +792,11 @@ remoteDispatchDomainBlockStats (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
     path = args->path;
 
-    if (virDomainBlockStats (dom, path, &stats, sizeof stats) == -1)
+    if (virDomainBlockStats (dom, path, &stats, sizeof stats) == -1) {
+        virDomainFree (dom);
         return -1;
+    }
+    virDomainFree (dom);
 
     ret->rd_req = stats.rd_req;
     ret->rd_bytes = stats.rd_bytes;
@@ -823,8 +826,11 @@ remoteDispatchDomainInterfaceStats (struct qemud_server *server ATTRIBUTE_UNUSED
     }
     path = args->path;
 
-    if (virDomainInterfaceStats (dom, path, &stats, sizeof stats) == -1)
+    if (virDomainInterfaceStats (dom, path, &stats, sizeof stats) == -1) {
+        virDomainFree (dom);
         return -1;
+    }
+    virDomainFree (dom);
 
     ret->rx_bytes = stats.rx_bytes;
     ret->rx_packets = stats.rx_packets;
@@ -1221,14 +1227,22 @@ remoteDispatchDomainMigratePrepare (struct qemud_server *server ATTRIBUTE_UNUSED
     r = __virDomainMigratePrepare (client->conn, &cookie, &cookielen,
                                    uri_in, uri_out,
                                    args->flags, dname, args->resource);
-    if (r == -1) return -1;
+    if (r == -1) {
+        free(uri_out);
+        return -1;
+    }
 
     /* remoteDispatchClientRequest will free cookie, uri_out and
      * the string if there is one.
      */
     ret->cookie.cookie_len = cookielen;
     ret->cookie.cookie_val = cookie;
-    ret->uri_out = *uri_out == NULL ? NULL : uri_out;
+    if (*uri_out == NULL) {
+        ret->uri_out = NULL;
+        free(uri_out);
+    } else {
+        ret->uri_out = uri_out;
+    }
 
     return 0;
 }
@@ -1258,6 +1272,7 @@ remoteDispatchDomainMigratePerform (struct qemud_server *server ATTRIBUTE_UNUSED
                                    args->cookie.cookie_len,
                                    args->uri,
                                    args->flags, dname, args->resource);
+    virDomainFree (dom);
     if (r == -1) return -1;
 
     return 0;
@@ -1281,7 +1296,7 @@ remoteDispatchDomainMigrateFinish (struct qemud_server *server ATTRIBUTE_UNUSED,
     if (ddom == NULL) return -1;
 
     make_nonnull_domain (&ret->ddom, ddom);
-
+    virDomainFree (ddom);
     return 0;
 }
 

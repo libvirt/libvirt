@@ -170,13 +170,15 @@ static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
             return -1;
         }
 
-        if (STREQ(bufptr, "") && cred[i].defresult)
-            cred[i].result = strdup(cred[i].defresult);
-        else
-            cred[i].result = strdup(bufptr);
-        if (!cred[i].result)
-            return -1;
-        cred[i].resultlen = strlen(cred[i].result);
+        if (cred[i].type != VIR_CRED_EXTERNAL) {
+            if (STREQ(bufptr, "") && cred[i].defresult)
+                cred[i].result = strdup(cred[i].defresult);
+            else
+                cred[i].result = strdup(bufptr);
+            if (!cred[i].result)
+                return -1;
+            cred[i].resultlen = strlen(cred[i].result);
+        }
     }
 
     return 0;
