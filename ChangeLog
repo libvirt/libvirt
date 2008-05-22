@@ -1,3 +1,13 @@
+Thu May 22 12:22:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Apply CPU pinning at startup if requested for QEMU
+	* src/qemu_conf.h: Store global CPU pinning data
+	* src/qemu_conf.c: Parse and format CPU set mask for vCPUs
+	* src/qemu_driver.c: Apply CPU pinning at startup
+	* tests/qemuxml2argvdata/*.args: Add in -S arg which is now
+	always used
+	* src/xml.c, xml.h: Allow use of CPU set functions from QEMU
+
 Thu May 22 12:20:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Add support for VCPU pinning in QEMU driver

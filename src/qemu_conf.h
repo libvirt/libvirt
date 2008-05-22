@@ -33,6 +33,7 @@
 #include "iptables.h"
 #include "capabilities.h"
 #include <netinet/in.h>
+#include <sched.h>
 
 #define qemudDebug(fmt, ...) do {} while(0)
 
@@ -104,6 +105,7 @@ enum qemud_vm_net_forward_type {
 #define QEMUD_MAX_NAME_LEN 50
 #define QEMUD_MAX_XML_LEN 4096
 #define QEMUD_MAX_ERROR_LEN 1024
+#define QEMUD_CPUMASK_LEN CPU_SETSIZE
 
 /* Stores the virtual network interface configuration */
 struct qemud_vm_net_def {
@@ -282,6 +284,7 @@ struct qemud_vm_def {
     unsigned long memory;
     unsigned long maxmem;
     int vcpus;
+    char cpumask[QEMUD_CPUMASK_LEN];
 
     int noReboot;
 

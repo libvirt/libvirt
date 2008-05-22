@@ -56,6 +56,7 @@
 #include "memory.h"
 #include "verify.h"
 #include "c-ctype.h"
+#include "xml.h"
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 
@@ -1744,6 +1745,25 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     }
     xmlXPathFreeObject(obj);
 
+    /* Extract domain vcpu info */
+    obj = xmlXPathEval(BAD_CAST "string(/domain/vcpu[1]/@cpuset)", ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
+        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+        /* Allow use on all CPUS */
+        memset(def->cpumask, 1, QEMUD_CPUMASK_LEN);
+    } else {
+        char *set = (char *)obj->stringval;
+        memset(def->cpumask, 0, QEMUD_CPUMASK_LEN);
+        if (virParseCpuSet(conn, (const char **)&set,
+                           0, def->cpumask,
+                           QEMUD_CPUMASK_LEN) < 0) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("malformed vcpu mask information"));
+            goto error;
+        }
+    }
+    xmlXPathFreeObject(obj);
+
     /* See if ACPI feature is requested */
     obj = xmlXPathEval(BAD_CAST "/domain/features/acpi", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
@@ -2432,6 +2452,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         disableKQEMU = 1;
 
     len = 1 + /* qemu */
+        1 + /* Stopped */
         2 + /* machine type */
         disableKQEMU + /* Disable kqemu */
         (vm->qemuCmdFlags & QEMUD_CMD_FLAG_NAME ? 2 : 0) + /* -name XXX */
@@ -2456,7 +2477,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         (vm->def->os.bootloader[0] ? 2 : 0) + /* bootloader */
         (vm->def->graphicsType == QEMUD_GRAPHICS_VNC ? 2 :
          (vm->def->graphicsType == QEMUD_GRAPHICS_SDL ? 0 : 1)) + /* graphics */
-        (vm->migrateFrom[0] ? 3 : 0); /* migrateFrom */
+        (vm->migrateFrom[0] ? 2 : 0); /* migrateFrom */
 
     snprintf(memory, sizeof(memory), "%lu", vm->def->memory/1024);
     snprintf(vcpus, sizeof(vcpus), "%d", vm->def->vcpus);
@@ -2464,6 +2485,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if (!(*argv = calloc(len+1, sizeof(**argv))))
         goto no_memory;
     if (!((*argv)[++n] = strdup(vm->def->os.binary)))
+        goto no_memory;
+    if (!((*argv)[++n] = strdup("-S")))
         goto no_memory;
     if (!((*argv)[++n] = strdup("-M")))
         goto no_memory;
@@ -2890,8 +2913,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     if (vm->migrateFrom[0]) {
-        if (!((*argv)[++n] = strdup("-S")))
-            goto no_memory;
         if (!((*argv)[++n] = strdup("-incoming")))
             goto no_memory;
         if (!((*argv)[++n] = strdup(vm->migrateFrom)))
@@ -3877,7 +3898,7 @@ char *qemudGenerateXML(virConnectPtr conn,
     const struct qemud_vm_sound_def *sound;
     const struct qemud_vm_chr_def *chr;
     const char *type = NULL;
-    int n;
+    int n, allones = 1;
 
     if (!(type = qemudVirtTypeToString(def->virtType))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -3898,7 +3919,24 @@ char *qemudGenerateXML(virConnectPtr conn,
 
     virBufferVSprintf(&buf, "  <memory>%lu</memory>\n", def->maxmem);
     virBufferVSprintf(&buf, "  <currentMemory>%lu</currentMemory>\n", def->memory);
-    virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n", def->vcpus);
+
+    for (n = 0 ; n < QEMUD_CPUMASK_LEN ; n++)
+        if (def->cpumask[n] != 1)
+            allones = 0;
+
+    if (allones) {
+        virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n", def->vcpus);
+    } else {
+        char *cpumask = NULL;
+        if ((cpumask = virSaveCpuSet(conn, def->cpumask, QEMUD_CPUMASK_LEN)) == NULL) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                             "%s", _("allocating cpu mask"));
+            goto cleanup;
+        }
+        virBufferVSprintf(&buf, "  <vcpu cpuset='%s'>%d</vcpu>\n", cpumask, def->vcpus);
+        free(cpumask);
+    }
+
     if (def->os.bootloader[0])
         virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", def->os.bootloader);
     virBufferAddLit(&buf, "  <os>\n");

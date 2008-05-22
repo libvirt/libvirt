@@ -60,7 +60,7 @@ virXMLError(virConnectPtr conn, virErrorNumber error, const char *info,
  * Parser and converter for the CPUset strings used in libvirt		*
  *									*
  ************************************************************************/
-#if WITH_XEN
+#if WITH_XEN || WITH_QEMU
 /**
  * parseCpuNumber:
  * @str: pointer to the char pointer used
@@ -249,8 +249,9 @@ virParseCpuSet(virConnectPtr conn, const char **str, char sep,
                 _("topology cpuset syntax error"), 0);
     return (-1);
 }
+#endif
 
-
+#if WITH_XEN
 /**
  * virConvertCpuSet:
  * @conn: connection

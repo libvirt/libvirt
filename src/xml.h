@@ -32,7 +32,7 @@ int		virXPathNodeSet	(const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  xmlNodePtr **list);
 
-#if WITH_XEN
+#if WITH_XEN || WITH_QEMU
 int		virParseCpuSet	(virConnectPtr conn,
                                  const char **str,
                                  char sep,
@@ -41,6 +41,8 @@ int		virParseCpuSet	(virConnectPtr conn,
 char *          virSaveCpuSet	(virConnectPtr conn,
                                  char *cpuset,
                                  int maxcpu);
+#endif
+#if WITH_XEN
 char *		virConvertCpuSet(virConnectPtr conn,
                                  const char *str,
                                  int maxcpu);

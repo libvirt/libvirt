@@ -717,6 +717,52 @@ error:
     return 0;
 }
 
+static int
+qemudInitCpus(virConnectPtr conn,
+              struct qemud_driver *driver,
+              struct qemud_vm *vm) {
+    char *info = NULL;
+#if HAVE_SCHED_GETAFFINITY
+    cpu_set_t mask;
+    int i, maxcpu = QEMUD_CPUMASK_LEN;
+    virNodeInfo nodeinfo;
+
+    if (virNodeInfoPopulate(conn, &nodeinfo) < 0)
+        return -1;
+
+    /* setaffinity fails if you set bits for CPUs which
+     * aren't present, so we have to limit ourselves */
+    if (maxcpu > nodeinfo.cpus)
+        maxcpu = nodeinfo.cpus;
+
+    CPU_ZERO(&mask);
+    for (i = 0 ; i < maxcpu ; i++)
+        if (vm->def->cpumask[i])
+            CPU_SET(i, &mask);
+
+    for (i = 0 ; i < vm->nvcpupids ; i++) {
+        if (sched_setaffinity(vm->vcpupids[i],
+                              sizeof(mask), &mask) < 0) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("failed to set CPU affinity %s"),
+                             strerror(errno));
+            return -1;
+        }
+    }
+#endif /* HAVE_SCHED_GETAFFINITY */
+
+    /* Allow the CPUS to start executing */
+    if (qemudMonitorCommand(driver, vm, "cont", &info) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("resume operation failed"));
+        return -1;
+    }
+    free(info);
+
+    return 0;
+}
+
+
 static int qemudNextFreeVNCPort(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
     int i;
 
@@ -874,28 +920,17 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     }
 
     if (ret == 0) {
-        if (virEventAddHandle(vm->stdout,
-                              POLLIN | POLLERR | POLLHUP,
-                              qemudDispatchVMEvent,
-                              driver) < 0) {
-            qemudShutdownVMDaemon(conn, driver, vm);
-            return -1;
-        }
-
-        if (virEventAddHandle(vm->stderr,
-                              POLLIN | POLLERR | POLLHUP,
-                              qemudDispatchVMEvent,
-                              driver) < 0) {
-            qemudShutdownVMDaemon(conn, driver, vm);
-            return -1;
-        }
-
-        if (qemudWaitForMonitor(conn, driver, vm) < 0) {
-            qemudShutdownVMDaemon(conn, driver, vm);
-            return -1;
-        }
-
-        if (qemudDetectVcpuPIDs(conn, driver, vm) < 0) {
+        if ((virEventAddHandle(vm->stdout,
+                               POLLIN | POLLERR | POLLHUP,
+                               qemudDispatchVMEvent,
+                               driver) < 0) ||
+            (virEventAddHandle(vm->stderr,
+                               POLLIN | POLLERR | POLLHUP,
+                               qemudDispatchVMEvent,
+                               driver) < 0) ||
+            (qemudWaitForMonitor(conn, driver, vm) < 0) ||
+            (qemudDetectVcpuPIDs(conn, driver, vm) < 0) ||
+            (qemudInitCpus(conn, driver, vm) < 0)) {
             qemudShutdownVMDaemon(conn, driver, vm);
             return -1;
         }
