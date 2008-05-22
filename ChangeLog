@@ -1,3 +1,7 @@
+Thu May 22 12:18:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* tests/testutilsqemu.c: Added missing config.h include
+
 Thu May 22 11:49:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Fix removal of iptables forwarding rules
