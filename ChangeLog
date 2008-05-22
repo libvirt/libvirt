@@ -1,3 +1,7 @@
+Thu May 22 11:31:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: Quote all args to macros
+
 Thu May 22 11:24:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Support for NUMA info in the QEMU driver
