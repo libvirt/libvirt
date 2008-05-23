@@ -33,6 +33,7 @@
 #include <sys/utsname.h>
 #endif
 
+#include "internal.h"
 #include "nodeinfo.h"
 #include "physmem.h"
 #include "util.h"

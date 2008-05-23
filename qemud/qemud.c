@@ -48,13 +48,13 @@
 #include <grp.h>
 #include <signal.h>
 
-#include "libvirt/virterror.h"
-
 #include "internal.h"
+
+#include "qemud.h"
 #include "getaddrinfo.h"
-#include "../src/util.h"
-#include "../src/remote_internal.h"
-#include "../src/conf.h"
+#include "util.h"
+#include "remote_internal.h"
+#include "conf.h"
 #include "event.h"
 #ifdef HAVE_AVAHI
 #include "mdns.h"

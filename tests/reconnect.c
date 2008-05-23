@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "libvirt/libvirt.h"
-#include "libvirt/virterror.h"
 #include "internal.h"
 
 static void errorHandler(void *userData ATTRIBUTE_UNUSED,

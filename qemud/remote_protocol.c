@@ -4,7 +4,7 @@
  */
 
 #include "remote_protocol.h"
-#include "libvirt/libvirt.h"
+#include "internal.h"
 
 bool_t
 xdr_remote_nonnull_string (XDR *xdrs, remote_nonnull_string *objp)

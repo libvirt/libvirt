@@ -1,3 +1,22 @@
+Fri May 23 08:56:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Standardize use of header files, making internal.h primary.
+	* qemud/internal.h, qemud/qemud.h: Rename this file so it
+	doesn't conflict with src/internal.h.
+	* HACKING: Document how header files should be used.
+	* qemud/Makefile.am: Add src/ directory to includes.
+	* qemud/event.c, qemud/mdns.c, qemud/qemud.c, qemud/remote.c,
+	qemud/remote_protocol.c, qemud/remote_protocol.h,
+	qemud/remote_protocol.x, src/buf.c, src/libvirt.c,
+	src/nodeinfo.c, src/qemu_conf.c, src/qemu_driver.c,
+	src/stats_linux.c, src/storage_backend.c, src/storage_backend_fs.c,
+	src/storage_backend_iscsi.c, src/storage_backend_logical.c,
+	src/storage_conf.c, src/storage_driver.c, src/util.c,
+	src/util.h, src/virsh.c, src/virterror.c, src/xend_internal.c,
+	src/xml.c, tests/reconnect.c, tests/xmlrpctest.c,
+	tests/qparamtest.c: Standardize	use of header files.
+	* docs/*, po/*: Rebuild docs.
+
 Fri May 23 08:54:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Fix type-punning warning in remote code.

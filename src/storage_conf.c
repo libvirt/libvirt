@@ -23,9 +23,6 @@
 
 #include <config.h>
 
-#include <libvirt/libvirt.h>
-#include <libvirt/virterror.h>
-
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
@@ -41,6 +38,7 @@
 #include <fcntl.h>
 #include <string.h>
 
+#include "internal.h"
 #include "storage_conf.h"
 #include "storage_backend.h"
 #include "xml.h"

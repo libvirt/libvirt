@@ -43,7 +43,6 @@
 #include <paths.h>
 #endif
 
-#include "libvirt/virterror.h"
 #include "internal.h"
 #include "event.h"
 #include "buf.h"

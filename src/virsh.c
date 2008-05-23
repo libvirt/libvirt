@@ -15,8 +15,6 @@
 
 #include <config.h>
 
-#include "libvirt/libvirt.h"
-#include "libvirt/virterror.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,7 +33,6 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <inttypes.h>
-#include <test.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -46,6 +43,7 @@
 #include <readline/history.h>
 #endif
 
+#include "internal.h"
 #include "buf.h"
 #include "console.h"
 #include "util.h"

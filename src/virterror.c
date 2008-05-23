@@ -14,9 +14,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include "libvirt/libvirt.h"
-#include "libvirt/virterror.h"
+
 #include "internal.h"
+#include "libvirt/virterror.h"
 
 virError __lastErr =       /* the last error */
   { .code = 0, .domain = 0, .message = NULL, .level = VIR_ERR_NONE,

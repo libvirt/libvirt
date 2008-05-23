@@ -36,6 +36,7 @@
 #include <mntent.h>
 #include <string.h>
 
+#include "internal.h"
 #include "storage_backend_fs.h"
 #include "storage_conf.h"
 #include "util.h"

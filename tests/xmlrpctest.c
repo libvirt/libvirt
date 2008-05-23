@@ -21,7 +21,7 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
-#include "libvirt/libvirt.h"
+#include "internal.h"
 #include "buf.h"
 #include "xmlrpc.h"
 

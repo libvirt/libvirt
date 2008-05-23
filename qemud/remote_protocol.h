@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-#include "libvirt/libvirt.h"
+#include "internal.h"
 #define REMOTE_MESSAGE_MAX 262144
 #define REMOTE_STRING_MAX 65536
 

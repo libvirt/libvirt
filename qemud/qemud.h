@@ -1,5 +1,5 @@
 /*
- * internal.h: daemon data structure definitions
+ * qemud.h: daemon data structure definitions
  *
  * Copyright (C) 2006, 2007 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
@@ -27,11 +27,11 @@
 
 #include <config.h>
 
-#include "../src/socketcompat.h"
+#include "socketcompat.h"
 
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
-#include "../src/gnutls_1_0_compat.h"
+#include "gnutls_1_0_compat.h"
 #if HAVE_SASL
 #include <sasl/sasl.h>
 #endif

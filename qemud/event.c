@@ -29,7 +29,7 @@
 #include <sys/time.h>
 #include <errno.h>
 
-#include "internal.h"
+#include "qemud.h"
 #include "event.h"
 
 #define EVENT_DEBUG(fmt, ...) qemudDebug("EVENT: " fmt, __VA_ARGS__)

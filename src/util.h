@@ -24,7 +24,6 @@
 #ifndef __VIR_UTIL_H__
 #define __VIR_UTIL_H__
 
-#include "internal.h"
 #include "util-lib.h"
 
 int virExec(virConnectPtr conn, char **argv, int *retpid,

@@ -10,8 +10,6 @@
 
 #include <config.h>
 
-#include "libvirt/libvirt.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

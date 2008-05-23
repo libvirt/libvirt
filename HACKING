@@ -158,3 +158,44 @@ eg typical usage is as follows:
 
      return virBufferContentAndReset(&buf);
   }
+
+
+Include files
+=============
+
+There are now quite a large number of include files, both libvirt
+internal and external, and system includes.  To manage all this
+complexity it's best to stick to the following general plan for all
+*.c source files:
+
+  /*
+   * Copyright notice
+   * ....
+   * ....
+   * ....
+   *
+   */
+
+  #include <config.h>             Must come first in every file.
+
+  #include <stdio.h>              Any system includes you need.
+  #include <string.h>
+  #include <limits.h>
+
+  #if HAVE_NUMACTL                Some system includes aren't supported
+  #include <numa.h>               everywhere so need these #if defences.
+  #endif
+
+  #include "internal.h"           Include this first, after system includes.
+
+  #include "util.h"               Any libvirt internal header files.
+  #include "buf.h"
+
+  static myInternalFunc ()        The actual code.
+  {
+    ...
+
+Of particular note: *DO NOT* include libvirt/libvirt.h or
+libvirt/virterror.h.  It is included by "internal.h" already and there
+are some special reasons why you cannot include these files
+explicitly.

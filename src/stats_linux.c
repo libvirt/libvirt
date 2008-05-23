@@ -24,6 +24,7 @@
 #include <xs.h>
 #endif
 
+#include "internal.h"
 #include "util.h"
 #include "xen_unified.h"
 #include "stats_linux.h"

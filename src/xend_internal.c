@@ -32,7 +32,7 @@
 #include <libxml/uri.h>
 #include <errno.h>
 
-#include "libvirt/libvirt.h"
+#include "internal.h"
 #include "driver.h"
 #include "util.h"
 #include "sexpr.h"

@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#include "internal.h"
 #include "storage_backend_logical.h"
 #include "storage_conf.h"
 #include "util.h"

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "internal.h"
 #include "testutils.h"
 #include "qparams.h"
 #include "util.h"

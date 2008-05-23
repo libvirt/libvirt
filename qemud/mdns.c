@@ -37,10 +37,11 @@
 #include <avahi-common/error.h>
 #include <avahi-common/timeval.h>
 
+#include "internal.h"
+#include "qemud.h"
 #include "mdns.h"
 #include "event.h"
-#include "../src/remote_internal.h"
-#include "../src/internal.h"
+#include "remote_internal.h"
 
 #define AVAHI_DEBUG(fmt, ...) qemudDebug("AVAHI: " fmt, __VA_ARGS__)
 

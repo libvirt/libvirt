@@ -48,10 +48,8 @@
 #include <polkit-dbus/polkit-dbus.h>
 #endif
 
-#include "libvirt/virterror.h"
-
 #include "internal.h"
-#include "../src/internal.h"
+#include "qemud.h"
 
 #define DEBUG 0
 

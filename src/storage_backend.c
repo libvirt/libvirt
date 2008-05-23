@@ -36,6 +36,9 @@
 #if HAVE_SELINUX
 #include <selinux/selinux.h>
 #endif
+
+#include "internal.h"
+
 #if WITH_STORAGE_LVM
 #include "storage_backend_logical.h"
 #endif
@@ -45,7 +48,6 @@
 #if WITH_STORAGE_DISK
 #include "storage_backend_disk.h"
 #endif
-
 
 #include "util.h"
 
