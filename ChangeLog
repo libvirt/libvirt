@@ -1,3 +1,9 @@
+Fri May 23 08:54:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Fix type-punning warning in remote code.
+	* qemud/rpcgen_fix.pl: Case-insensitive string match on identifiers.
+	* qemud/remote_protocol.c: Update this generated file.
+
 Thu May 22 19:47:29 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qparams.c: Support ; as a param separator. Misc memory

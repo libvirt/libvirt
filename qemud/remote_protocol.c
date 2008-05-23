@@ -400,8 +400,9 @@ xdr_remote_node_get_cells_free_memory_args (XDR *xdrs, remote_node_get_cells_fre
 bool_t
 xdr_remote_node_get_cells_free_memory_ret (XDR *xdrs, remote_node_get_cells_free_memory_ret *objp)
 {
+        char **objp_cpp0 = (char **) (void *) &objp->freeMems.freeMems_val;
 
-         if (!xdr_array (xdrs, (char **)&objp->freeMems.freeMems_val, (u_int *) &objp->freeMems.freeMems_len, REMOTE_NODE_MAX_CELLS,
+         if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->freeMems.freeMems_len, REMOTE_NODE_MAX_CELLS,
                 sizeof (quad_t), (xdrproc_t) xdr_quad_t))
                  return FALSE;
         return TRUE;
