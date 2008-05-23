@@ -1,3 +1,12 @@
+Fri May 23 09:23:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Deprecate the conn, dom and net fields in the _virError structure.
+	* include/libvirt/libvirt.h.in: Add VIR_DEPRECATED macro.
+	* src/internal.h: Internal code is allowed to use deprecated
+	features, so override VIR_DEPRECATED here.
+	* include/libvirt/virterror.h: Deprecate the conn, dom and net
+	fields in the _virError structure.
+
 Fri May 23 08:56:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Standardize use of header files, making internal.h primary.

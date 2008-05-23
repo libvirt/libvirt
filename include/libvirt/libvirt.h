@@ -1,4 +1,3 @@
-
 /* -*- c -*-
  * libvirt.h:
  * Summary: core interfaces for the libvirt library
@@ -20,6 +19,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#ifndef VIR_DEPRECATED
+  /* The feature is present in gcc-3.1 and newer.  */
+# if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1)
+#  define VIR_DEPRECATED __attribute__((__deprecated__))
+# else
+#  define VIR_DEPRECATED /* nothing */
+# endif
+#endif /* VIR_DEPRECATED */
 
 /**
  * virConnect:

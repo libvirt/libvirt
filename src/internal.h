@@ -24,6 +24,12 @@
 #define pthread_mutex_unlock(lk) /*empty*/
 #endif
 
+/* The library itself is allowed to use deprecated functions /
+ * variables, so effectively undefine the deprecated attribute
+ * which would otherwise be defined in libvirt.h.
+ */
+#define VIR_DEPRECATED /*empty*/
+
 #include "gettext.h"
 
 #include "hash.h"
