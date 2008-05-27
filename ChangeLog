@@ -1,3 +1,9 @@
+Tue May 27 09:54:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Fix use of header files in disk storage backend.
+	* src/storage_backend_disk.c: Include internal.h to resolve use
+	of header files.
+
 Fri May 23 09:23:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Deprecate the conn, dom and net fields in the _virError structure.

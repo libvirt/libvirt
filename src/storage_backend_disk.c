@@ -23,6 +23,7 @@
 
 #include <config.h>
 
+#include "internal.h"
 #include "storage_backend_disk.h"
 #include "util.h"
 
