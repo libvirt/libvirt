@@ -1492,7 +1492,7 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
 {
     virDomainInfo info;
     virDomainPtr dom;
-    int ret = TRUE;
+    int ret = TRUE, autostart;
     unsigned int id;
     char *str, uuid[VIR_UUID_STRING_BUFLEN];
 
@@ -1543,6 +1543,11 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
 
     } else {
         ret = FALSE;
+    }
+
+    if (!virDomainGetAutostart(dom, &autostart)) {
+        vshPrint(ctl, "%-15s %-15s\n", _("Autostart:"),
+                 autostart ? _("enable") : _("disable") );
     }
 
     virDomainFree(dom);
