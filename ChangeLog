@@ -1,5 +1,12 @@
 Thu May 29 11:12:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
+	* tests/testutils.c, tests/testutils.h: Add generic main()
+	impl for test programs to leverage OOM testing
+	* tests/Makefile.am, tests/oomtrace.pl: post-processor for
+	generating file/line number backtraces from OOM reports.
+
+Thu May 29 11:12:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
 	* src/memory.c, src/memory.h, configure.ac: Add generics hooks
 	for out-of-memory testing
 

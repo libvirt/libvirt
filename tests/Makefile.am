@@ -33,6 +33,7 @@ LDADDS = \
         $(COVERAGE_LDFLAGS)
 
 EXTRA_DIST =		\
+        oomtrace.pl     \
 	test-lib.sh	\
 	xmlrpcserver.py	\
 	test_conf.sh	\

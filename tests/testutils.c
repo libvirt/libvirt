@@ -24,6 +24,12 @@
 #include <limits.h>
 #include "testutils.h"
 #include "internal.h"
+#include "memory.h"
+#include "util.h"
+
+#if TEST_OOM_TRACE
+#include <execinfo.h>
+#endif
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
@@ -37,6 +43,10 @@
 #define DIFF_MSEC(T, U)                                 \
     ((((int) ((T)->tv_sec - (U)->tv_sec)) * 1000000.0 +	\
       ((int) ((T)->tv_usec - (U)->tv_usec))) / 1000.0)
+
+static unsigned int testOOM = 0;
+static unsigned int testDebug = 0;
+static unsigned int testCounter = 0;
 
 double
 virtTestCountAverage(double *items, int nitems)
@@ -60,12 +70,13 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
 {
     int i, ret = 0;
     double *ts = NULL;
-    static int counter = 0;
 
-    counter++;
+    testCounter++;
 
-    fprintf(stderr, "%2d) %-65s ... ", counter, title);
-    fflush(stderr);
+    if (testOOM < 2) {
+        fprintf(stderr, "%2d) %-65s ... ", testCounter, title);
+        fflush(stderr);
+    }
 
     if (nloops > 1 && (ts = calloc(nloops,
                                    sizeof(double)))==NULL)
@@ -83,13 +94,15 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
             ts[i] = DIFF_MSEC(&after, &before);
         }
     }
-    if (ret == 0 && ts)
-        fprintf(stderr, "OK     [%.5f ms]\n",
-                virtTestCountAverage(ts, nloops));
-    else if (ret == 0)
-        fprintf(stderr, "OK\n");
-    else
-        fprintf(stderr, "FAILED\n");
+    if (testOOM < 2) {
+        if (ret == 0 && ts)
+            fprintf(stderr, "OK     [%.5f ms]\n",
+                    virtTestCountAverage(ts, nloops));
+        else if (ret == 0)
+            fprintf(stderr, "OK\n");
+        else
+            fprintf(stderr, "FAILED\n");
+    }
 
     free(ts);
     return ret;
@@ -232,13 +245,14 @@ int virtTestDifference(FILE *stream,
     const char *expectEnd = expect + (strlen(expect)-1);
     const char *actualStart = actual;
     const char *actualEnd = actual + (strlen(actual)-1);
-    const char *debug;
 
-    if ((debug = getenv("DEBUG_TESTS")) == NULL)
+    if (testOOM < 2)
         return 0;
 
-    if (STREQ(debug, "") ||
-        STREQ(debug, "1")) {
+    if (!testDebug)
+        return 0;
+
+    if (testDebug < 2) {
         /* Skip to first character where they differ */
         while (*expectStart && *actualStart &&
                *actualStart == *expectStart) {
@@ -271,4 +285,115 @@ int virtTestDifference(FILE *stream,
     fprintf(stream, "                                                                      ... ");
 
     return 0;
+}
+
+static void
+virtTestErrorFuncQuiet(void *data ATTRIBUTE_UNUSED,
+                       virErrorPtr err ATTRIBUTE_UNUSED)
+{ }
+
+static void
+virtTestErrorHook(void *data ATTRIBUTE_UNUSED)
+{
+#if TEST_OOM_TRACE
+    void *trace[30];
+    int ntrace = ARRAY_CARDINALITY(trace);
+    int i;
+    char **symbols = NULL;
+
+    ntrace = backtrace(trace, ntrace);
+    symbols = backtrace_symbols(trace, ntrace);
+    if (symbols) {
+        fprintf(stderr, "Failing an allocation at:\n");
+        for (i = 0 ; i < ntrace ; i++) {
+            if (symbols[i])
+                fprintf(stderr, "  TRACE:  %s\n", symbols[i]);
+        }
+        free(symbols);
+    }
+#endif
+}
+
+
+int virtTestMain(int argc,
+                 char **argv,
+                 int (*func)(int, char **))
+{
+#if TEST_OOM
+    int ret;
+    int approxAlloc = 0;
+    int n;
+    char *oomStr = NULL, *debugStr;
+    int oomCount;
+
+    if ((debugStr = getenv("VIR_TEST_DEBUG")) != NULL) {
+        if (virStrToLong_i(debugStr, NULL, 10, &testDebug) < 0)
+            testDebug = 0;
+
+        if (testDebug < 0)
+            testDebug = 0;
+    }
+
+    if ((oomStr = getenv("VIR_TEST_OOM")) != NULL) {
+        if (virStrToLong_i(oomStr, NULL, 10, &oomCount) < 0)
+            oomCount = 0;
+
+        if (oomCount < 0)
+            oomCount = 0;
+        if (oomCount)
+            testOOM = 1;
+    }
+
+    if (testOOM)
+        virAllocTestInit();
+
+    /* Run once to count allocs, and ensure it passes :-) */
+    ret = (func)(argc, argv);
+    if (ret != EXIT_SUCCESS)
+        return EXIT_FAILURE;
+
+    if (testDebug)
+        virAllocTestHook(virtTestErrorHook, NULL);
+
+
+    if (testOOM) {
+        /* Makes next test runs quiet... */
+        testOOM++;
+        virSetErrorFunc(NULL, virtTestErrorFuncQuiet);
+
+        approxAlloc = virAllocTestCount();
+        testCounter++;
+        if (testDebug)
+            fprintf(stderr, "%d) OOM...\n", testCounter);
+        else
+            fprintf(stderr, "%d) OOM of %d allocs ", testCounter, approxAlloc);
+
+        /* Run once for each alloc, failing a different one
+           and validating that the test case failed */
+        for (n = 0; n < approxAlloc ; n++) {
+            if (!testDebug) {
+                fprintf(stderr, ".");
+                fflush(stderr);
+            }
+            virAllocTestOOM(n+1, oomCount);
+
+            if (((func)(argc, argv)) != EXIT_FAILURE) {
+                ret = EXIT_FAILURE;
+                break;
+            }
+        }
+
+        if (testDebug)
+            fprintf(stderr, " ... OOM of %d allocs", approxAlloc);
+
+        if (ret == EXIT_SUCCESS)
+            fprintf(stderr, " OK\n");
+        else
+            fprintf(stderr, " FAILED\n");
+    }
+    return ret;
+
+#else
+    return (func)(argc, argv);
+#endif
 }

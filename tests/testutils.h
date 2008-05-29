@@ -37,6 +37,15 @@ extern "C" {
                            const char *expect,
                            const char *actual);
 
+    int virtTestMain(int argc,
+                     char **argv,
+                     int (*func)(int, char **));
+
+#define VIRT_TEST_MAIN(func)                    \
+    int main(int argc, char **argv)  {          \
+        return virtTestMain(argc,argv, func);   \
+    }
+
 #ifdef __cplusplus
 }
 #endif
