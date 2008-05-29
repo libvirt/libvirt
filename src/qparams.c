@@ -30,6 +30,14 @@
 #include "memory.h"
 #include "qparams.h"
 
+static void
+qparam_report_oom(void)
+{
+    const char *virerr = __virErrorMsg(VIR_ERR_NO_MEMORY, NULL);
+    __virRaiseError(NULL, NULL, NULL, VIR_FROM_NONE, VIR_ERR_NO_MEMORY, VIR_ERR_ERROR,
+                    virerr, NULL, NULL, -1, -1, virerr, NULL);
+}
+
 struct qparam_set *
 new_qparam_set (int init_alloc, ...)
 {
@@ -39,12 +47,15 @@ new_qparam_set (int init_alloc, ...)
 
     if (init_alloc <= 0) init_alloc = 1;
 
-    if (VIR_ALLOC(ps) < 0)
+    if (VIR_ALLOC(ps) < 0) {
+        qparam_report_oom();
         return NULL;
+    }
     ps->n = 0;
     ps->alloc = init_alloc;
     if (VIR_ALLOC_N(ps->p, ps->alloc) < 0) {
         VIR_FREE (ps);
+        qparam_report_oom();
         return NULL;
     }
 
@@ -88,7 +99,7 @@ grow_qparam_set (struct qparam_set *ps)
 {
     if (ps->n >= ps->alloc) {
         if (VIR_REALLOC_N(ps->p, ps->alloc * 2) < 0) {
-            perror ("realloc");
+            qparam_report_oom();
             return -1;
         }
         ps->alloc *= 2;
@@ -104,12 +115,15 @@ append_qparam (struct qparam_set *ps,
     char *pname, *pvalue;
 
     pname = strdup (name);
-    if (!pname)
+    if (!pname) {
+        qparam_report_oom();
         return -1;
+    }
 
     pvalue = strdup (value);
     if (!pvalue) {
         VIR_FREE (pname);
+        qparam_report_oom();
         return -1;
     }
 
@@ -143,6 +157,7 @@ qparam_get_query (const struct qparam_set *ps)
     }
 
     if (virBufferError(&buf)) {
+        qparam_report_oom();
         return NULL;
     }
 
@@ -169,7 +184,10 @@ qparam_query_parse (const char *query)
     const char *end, *eq;
 
     ps = new_qparam_set (0, NULL);
-    if (!ps) return NULL;
+    if (!ps) {
+        qparam_report_oom();
+        return NULL;
+    }
 
     if (!query || query[0] == '\0') return ps;
 
@@ -240,6 +258,7 @@ qparam_query_parse (const char *query)
     return ps;
 
  out_of_memory:
+    qparam_report_oom();
     free_qparam_set (ps);
     return NULL;
 }

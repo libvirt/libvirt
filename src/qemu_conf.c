@@ -214,6 +214,7 @@ void qemudFreeVMDef(struct qemud_vm_def *def) {
     struct qemud_vm_input_def *input = def->inputs;
     struct qemud_vm_chr_def *serial = def->serials;
     struct qemud_vm_chr_def *parallel = def->parallels;
+    struct qemud_vm_sound_def *sound = def->sounds;
 
     while (disk) {
         struct qemud_vm_disk_def *prev = disk;
@@ -238,6 +239,11 @@ void qemudFreeVMDef(struct qemud_vm_def *def) {
     while (parallel) {
         struct qemud_vm_chr_def *prev = parallel;
         parallel = parallel->next;
+        free(prev);
+    }
+    while (sound) {
+        struct qemud_vm_sound_def *prev = sound;
+        sound = sound->next;
         free(prev);
     }
     xmlFree(def->keymap);
@@ -2186,8 +2192,10 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
                 }
                 check = check->next;
             }
-            if (collision)
+            if (collision) {
+                free(sound);
                 continue;
+            }
 
             def->nsounds++;
             sound->next = NULL;

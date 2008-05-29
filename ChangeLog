@@ -1,3 +1,11 @@
+Thu May 29 11:23:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Misc memory handling / cleanup fixes
+	* src/capabilities.c: Avoiding deferencing NULL pointer in
+	cleanup code
+	* src/qemu_conf.c: Free sound structs on cleanup
+	* src/qparams.c: raise a libvirt error upon OOM
+
 Thu May 29 11:12:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/testutils.c, tests/testutils.h: Add generic main()

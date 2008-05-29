@@ -44,7 +44,7 @@ virCapabilitiesNew(const char *arch,
     virCapsPtr caps;
 
     if (VIR_ALLOC(caps) < 0)
-        goto no_memory;
+        return NULL;
 
     if ((caps->host.arch = strdup(arch)) == NULL)
         goto no_memory;
@@ -61,6 +61,9 @@ virCapabilitiesNew(const char *arch,
 static void
 virCapabilitiesFreeHostNUMACell(virCapsHostNUMACellPtr cell)
 {
+    if (cell == NULL)
+        return;
+
     VIR_FREE(cell->cpus);
     VIR_FREE(cell);
 }
@@ -69,6 +72,9 @@ static void
 virCapabilitiesFreeGuestDomain(virCapsGuestDomainPtr dom)
 {
     int i;
+    if (dom == NULL)
+        return;
+
     VIR_FREE(dom->info.emulator);
     VIR_FREE(dom->info.loader);
     for (i = 0 ; i < dom->info.nmachines ; i++)
@@ -82,6 +88,8 @@ virCapabilitiesFreeGuestDomain(virCapsGuestDomainPtr dom)
 static void
 virCapabilitiesFreeGuestFeature(virCapsGuestFeaturePtr feature)
 {
+    if (feature == NULL)
+        return;
     VIR_FREE(feature->name);
     VIR_FREE(feature);
 }
@@ -90,6 +98,9 @@ static void
 virCapabilitiesFreeGuest(virCapsGuestPtr guest)
 {
     int i;
+    if (guest == NULL)
+        return;
+
     VIR_FREE(guest->ostype);
 
     VIR_FREE(guest->arch.name);
@@ -120,6 +131,8 @@ virCapabilitiesFreeGuest(virCapsGuestPtr guest)
 void
 virCapabilitiesFree(virCapsPtr caps) {
     int i;
+    if (caps == NULL)
+        return;
 
     for (i = 0 ; i < caps->nguests ; i++)
         virCapabilitiesFreeGuest(caps->guests[i]);
