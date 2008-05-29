@@ -6,5 +6,5 @@ State:          running
 CPU(s):         1
 Max memory:     261072 kB
 Used memory:    131072 kB
-Autostart:      disable        
+Autostart:      disable
 

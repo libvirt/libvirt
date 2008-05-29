@@ -1,3 +1,8 @@
+Thu May 29 13:26:40 JST 2008 Atushi SAKAI <sakaia@jp.fujitsu.com>
+
+	Fix make syntax-check caused by trailing blank(s)
+	* test/virshdata/dominfo-fc4.txt: remove trailing blanks
+
 Tue May 27 14:50:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Fix virsh dominfo test.
