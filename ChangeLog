@@ -1,3 +1,8 @@
+Thu May 29 14:46:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/memory.h, src/memory.c, tests/testutils.c: Pass allocation
+	number to hook callback
+
 Thu May 29 14:45:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/buf.c: Convert to use new memory allocation APIs

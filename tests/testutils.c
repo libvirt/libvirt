@@ -293,7 +293,7 @@ virtTestErrorFuncQuiet(void *data ATTRIBUTE_UNUSED,
 { }
 
 static void
-virtTestErrorHook(void *data ATTRIBUTE_UNUSED)
+virtTestErrorHook(int n, void *data ATTRIBUTE_UNUSED)
 {
 #if TEST_OOM_TRACE
     void *trace[30];
@@ -304,7 +304,7 @@ virtTestErrorHook(void *data ATTRIBUTE_UNUSED)
     ntrace = backtrace(trace, ntrace);
     symbols = backtrace_symbols(trace, ntrace);
     if (symbols) {
-        fprintf(stderr, "Failing an allocation at:\n");
+        fprintf(stderr, "Failing allocation %d at:\n", n);
         for (i = 0 ; i < ntrace ; i++) {
             if (symbols[i])
                 fprintf(stderr, "  TRACE:  %s\n", symbols[i]);

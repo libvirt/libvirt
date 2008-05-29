@@ -83,7 +83,7 @@ void virFree(void *ptrptr);
 void virAllocTestInit(void);
 int virAllocTestCount(void);
 void virAllocTestOOM(int n, int m);
-void virAllocTestHook(void (*func)(void*), void *data);
+void virAllocTestHook(void (*func)(int, void*), void *data);
 #endif
 
 

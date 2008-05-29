@@ -30,7 +30,7 @@
 static int testMallocNext = 0;
 static int testMallocFailFirst = 0;
 static int testMallocFailLast = 0;
-static void (*testMallocHook)(void*) = NULL;
+static void (*testMallocHook)(int, void*) = NULL;
 static void *testMallocHookData = NULL;
 
 void virAllocTestInit(void)
@@ -45,7 +45,7 @@ int virAllocTestCount(void)
     return testMallocNext - 1;
 }
 
-void virAllocTestHook(void (*func)(void*), void *data)
+void virAllocTestHook(void (*func)(int, void*), void *data)
 {
     testMallocHook = func;
     testMallocHookData = data;
@@ -69,7 +69,7 @@ static int virAllocTestFail(void)
         testMallocNext <= testMallocFailLast;
 
     if (fail && testMallocHook)
-        (testMallocHook)(testMallocHookData);
+        (testMallocHook)(testMallocNext, testMallocHookData);
 
     testMallocNext++;
     return fail;
