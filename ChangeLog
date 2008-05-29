@@ -1,3 +1,13 @@
+Thu May 29 11:29:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* tests/nodeinfotest.c, tests/qemuxml2argvtest.c,
+	tests/qemuxml2xmltest.c, tests/qparamtest.c,
+	tests/sexpr2xmltest.c, tests/statstest.c,
+	tests/xencapstest.c, tests/xmconfigtest.c,
+	tests/xml2sexprtest.c: Convert over to new test suite
+	infrastructure to enable OOM testing. Avoid use of
+	the abs_top_srcdir variable in favour of abs_srcdir
+
 Thu May 29 11:23:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Misc memory handling / cleanup fixes

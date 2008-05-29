@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #ifdef WITH_XEN
 
@@ -12,7 +13,7 @@
 #include "xen_internal.h"
 
 static char *progname;
-static char *abs_top_srcdir;
+static char *abs_srcdir;
 
 #define MAX_FILE 4096
 
@@ -31,12 +32,12 @@ static int testCompareFiles(const char *hostmachine,
   char cpuinfo[PATH_MAX];
   char capabilities[PATH_MAX];
 
-  snprintf(xml, sizeof xml - 1, "%s/tests/%s",
-           abs_top_srcdir, xml_rel);
-  snprintf(cpuinfo, sizeof cpuinfo - 1, "%s/tests/%s",
-           abs_top_srcdir, cpuinfo_rel);
-  snprintf(capabilities, sizeof capabilities - 1, "%s/tests/%s",
-           abs_top_srcdir, capabilities_rel);
+  snprintf(xml, sizeof xml - 1, "%s/%s",
+           abs_srcdir, xml_rel);
+  snprintf(cpuinfo, sizeof cpuinfo - 1, "%s/%s",
+           abs_srcdir, cpuinfo_rel);
+  snprintf(capabilities, sizeof capabilities - 1, "%s/%s",
+           abs_srcdir, capabilities_rel);
 
   if (virtTestLoadFile(xml, &expectxml, MAX_FILE) < 0)
     goto fail;
@@ -147,21 +148,22 @@ static int testXenppc64(const void *data ATTRIBUTE_UNUSED) {
 }
 
 
-int
-main(int argc, char **argv)
+static int
+mymain(int argc, char **argv)
 {
     int ret = 0;
+    char cwd[PATH_MAX];
 
     progname = argv[0];
 
     if (argc > 1) {
         fprintf(stderr, "Usage: %s\n", progname);
-        exit(EXIT_FAILURE);
+        return(EXIT_FAILURE);
     }
 
-    abs_top_srcdir = getenv("abs_top_srcdir");
-    if (!abs_top_srcdir)
-      return 1;
+    abs_srcdir = getenv("abs_srcdir");
+    if (!abs_srcdir)
+        abs_srcdir = getcwd(cwd, sizeof(cwd));
 
     virInitialize();
 
@@ -213,8 +215,10 @@ main(int argc, char **argv)
         ret = -1;
 
 
-    exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
+
+VIRT_TEST_MAIN(mymain)
 
 #else /* !WITH_XEN */
 

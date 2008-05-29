@@ -3,13 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "testutils.h"
 #include "internal.h"
 #include "nodeinfo.h"
 
 static char *progname;
-static char *abs_top_srcdir;
+static char *abs_srcdir;
 
 #define MAX_FILE 4096
 
@@ -56,17 +57,17 @@ static int linuxTestCompareFiles(const char *cpuinfofile, const char *outputfile
 static int linuxTestNodeInfo(const void *data) {
     char cpuinfo[PATH_MAX];
     char output[PATH_MAX];
-    snprintf(cpuinfo, PATH_MAX, "%s/tests/nodeinfodata/linux-%s.cpuinfo",
-             abs_top_srcdir, (const char*)data);
-    snprintf(output, PATH_MAX, "%s/tests/nodeinfodata/linux-%s.txt",
-             abs_top_srcdir, (const char*)data);
+    snprintf(cpuinfo, PATH_MAX, "%s/nodeinfodata/linux-%s.cpuinfo",
+             abs_srcdir, (const char*)data);
+    snprintf(output, PATH_MAX, "%s/nodeinfodata/linux-%s.txt",
+             abs_srcdir, (const char*)data);
     return linuxTestCompareFiles(cpuinfo, output);
 }
 #endif
 
 
-int
-main(int argc, char **argv)
+static int
+mymain(int argc, char **argv)
 {
     int ret = 0;
 #ifdef __linux__
@@ -79,16 +80,17 @@ main(int argc, char **argv)
         "nodeinfo-5",
         "nodeinfo-6",
     };
+    char cwd[PATH_MAX];
 
-    abs_top_srcdir = getenv("abs_top_srcdir");
-    if (!abs_top_srcdir)
-      return EXIT_FAILURE;
+    abs_srcdir = getenv("abs_srcdir");
+    if (!abs_srcdir)
+        abs_srcdir = getcwd(cwd, sizeof(cwd));
 
     progname = argv[0];
 
     if (argc > 1) {
         fprintf(stderr, "Usage: %s\n", progname);
-        exit(EXIT_FAILURE);
+        return(EXIT_FAILURE);
     }
 
     virInitialize();
@@ -98,5 +100,7 @@ main(int argc, char **argv)
         ret = -1;
 #endif
 
-    exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
+
+VIRT_TEST_MAIN(mymain)

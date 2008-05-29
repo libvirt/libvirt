@@ -70,8 +70,8 @@ static int testCompareXMLToXMLHelper(const void *data) {
 }
 
 
-int
-main(int argc, char **argv)
+static int
+mymain(int argc, char **argv)
 {
     int ret = 0;
     char cwd[PATH_MAX];
@@ -80,14 +80,15 @@ main(int argc, char **argv)
 
     if (argc > 1) {
         fprintf(stderr, "Usage: %s\n", progname);
-        exit(EXIT_FAILURE);
+        return (EXIT_FAILURE);
     }
 
     abs_srcdir = getenv("abs_srcdir");
     if (!abs_srcdir)
         abs_srcdir = getcwd(cwd, sizeof(cwd));
 
-    driver.caps = testQemuCapsInit();
+    if ((driver.caps = testQemuCapsInit()) == NULL)
+        return (EXIT_FAILURE);
 
 #define DO_TEST(name) \
     if (virtTestRun("QEMU XML-2-XML " name, \
@@ -129,8 +130,10 @@ main(int argc, char **argv)
 
     virCapabilitiesFree(driver.caps);
 
-    exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
+
+VIRT_TEST_MAIN(mymain)
 
 #else
 

@@ -69,8 +69,8 @@ static int testCompareHelper(const void *data) {
 }
 
 
-int
-main(int argc, char **argv)
+static int
+mymain(int argc, char **argv)
 {
     int ret = 0;
     char cwd[PATH_MAX];
@@ -79,7 +79,7 @@ main(int argc, char **argv)
 
     if (argc > 1) {
         fprintf(stderr, "Usage: %s\n", progname);
-        exit(EXIT_FAILURE);
+        return(EXIT_FAILURE);
     }
 
     abs_srcdir = getenv("abs_srcdir");
@@ -88,7 +88,7 @@ main(int argc, char **argv)
 
     if (argc > 1) {
         fprintf(stderr, "Usage: %s\n", progname);
-        exit(EXIT_FAILURE);
+        return(EXIT_FAILURE);
     }
 
 #define DO_TEST(in, out, version)                                      \
@@ -139,8 +139,11 @@ main(int argc, char **argv)
     DO_TEST("fv-sound", "fv-sound", 1);
     DO_TEST("fv-sound-all", "fv-sound-all", 1);
 
-    exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
+
+VIRT_TEST_MAIN(mymain)
+
 #else /* WITHOUT_XEN */
 int
 main(void)

@@ -45,8 +45,9 @@ static int testDeviceHelper(const void *data)
 
 #endif
 
-int
-main(void)
+static int
+mymain(int argc ATTRIBUTE_UNUSED,
+       char **argv ATTRIBUTE_UNUSED)
 {
     int ret = 0;
 #if __linux__ && WITH_XEN
@@ -54,7 +55,7 @@ main(void)
      * register a handler to stop error messages cluttering
      * up display
      */
-    if (!getenv("DEBUG_TESTS"))
+    if (!getenv("VIR_TEST_DEBUG"))
         virSetErrorFunc(NULL, testQuietError);
 
 #define DO_TEST(dev, num)                                              \
@@ -177,5 +178,7 @@ main(void)
     DO_TEST("/dev/xvda15", 51727);
 
 #endif
-    exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
+
+VIRT_TEST_MAIN(mymain)

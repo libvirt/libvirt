@@ -8,6 +8,7 @@
 #include "testutils.h"
 #include "qparams.h"
 #include "util.h"
+#include "memory.h"
 
 struct qparamParseDataEntry {
     const char *name;
@@ -181,8 +182,9 @@ static const struct qparamParseDataEntry const params4[] = { { "foo", "" } };
 static const struct qparamParseDataEntry const params5[] = { { "foo", "one two" } };
 static const struct qparamParseDataEntry const params6[] = { { "foo", "one" } };
 
-int
-main(void)
+static int
+mymain(int argc ATTRIBUTE_UNUSED,
+       char **argv ATTRIBUTE_UNUSED)
 {
     int ret = 0;
 
@@ -221,5 +223,7 @@ main(void)
     if (virtTestRun("Add vargs", 1, qparamTestAddVargs, NULL) < 0)
         ret = -1;
 
-    exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
+
+VIRT_TEST_MAIN(mymain)
