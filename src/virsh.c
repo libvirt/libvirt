@@ -1535,7 +1535,7 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
             vshPrint(ctl, "%-15s %lu kB\n", _("Max memory:"),
                  info.maxMem);
         else
-            vshPrint(ctl, "%-15s %-15s\n", _("Max memory:"),
+            vshPrint(ctl, "%-15s %s\n", _("Max memory:"),
                  _("no limit"));
 
         vshPrint(ctl, "%-15s %lu kB\n", _("Used memory:"),
@@ -1546,7 +1546,7 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
     }
 
     if (!virDomainGetAutostart(dom, &autostart)) {
-        vshPrint(ctl, "%-15s %-15s\n", _("Autostart:"),
+        vshPrint(ctl, "%-15s %s\n", _("Autostart:"),
                  autostart ? _("enable") : _("disable") );
     }
 

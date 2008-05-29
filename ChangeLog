@@ -1,3 +1,7 @@
+Thu May 29 10:55:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/virsh.c: Don't add trailing blanks in dominfo output
+
 Thu May 29 10:41:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* python/libvirt-python-api.xml: Add API overrides for functions
