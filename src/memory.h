@@ -31,7 +31,6 @@ int virAllocN(void *ptrptr, size_t size, size_t count) ATTRIBUTE_RETURN_CHECK;
 int virReallocN(void *ptrptr, size_t size, size_t count) ATTRIBUTE_RETURN_CHECK;
 void virFree(void *ptrptr);
 
-
 /**
  * VIR_ALLOC:
  * @ptr: pointer to hold address of allocated memory
@@ -78,5 +77,15 @@ void virFree(void *ptrptr);
  * to NULL.
  */
 #define VIR_FREE(ptr) virFree(&(ptr));
+
+
+#if TEST_OOM
+void virAllocTestInit(void);
+int virAllocTestCount(void);
+void virAllocTestOOM(int n, int m);
+void virAllocTestHook(void (*func)(void*), void *data);
+#endif
+
+
 
 #endif /* __VIR_MEMORY_H_ */

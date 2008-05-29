@@ -1,3 +1,8 @@
+Thu May 29 11:12:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/memory.c, src/memory.h, configure.ac: Add generics hooks
+	for out-of-memory testing
+
 Thu May 29 10:55:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/virsh.c: Don't add trailing blanks in dominfo output

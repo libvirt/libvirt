@@ -26,6 +26,57 @@
 #include "memory.h"
 
 
+#if TEST_OOM
+static int testMallocNext = 0;
+static int testMallocFailFirst = 0;
+static int testMallocFailLast = 0;
+static void (*testMallocHook)(void*) = NULL;
+static void *testMallocHookData = NULL;
+
+void virAllocTestInit(void)
+{
+    testMallocNext = 1;
+    testMallocFailFirst = 0;
+    testMallocFailLast = 0;
+}
+
+int virAllocTestCount(void)
+{
+    return testMallocNext - 1;
+}
+
+void virAllocTestHook(void (*func)(void*), void *data)
+{
+    testMallocHook = func;
+    testMallocHookData = data;
+}
+
+void virAllocTestOOM(int n, int m)
+{
+    testMallocNext = 1;
+    testMallocFailFirst = n;
+    testMallocFailLast = n + m - 1;
+}
+
+static int virAllocTestFail(void)
+{
+    int fail = 0;
+    if (testMallocNext == 0)
+        return 0;
+
+    fail =
+        testMallocNext >= testMallocFailFirst &&
+        testMallocNext <= testMallocFailLast;
+
+    if (fail && testMallocHook)
+        (testMallocHook)(testMallocHookData);
+
+    testMallocNext++;
+    return fail;
+}
+#endif
+
+
 /* Return 1 if an array of N objects, each of size S, cannot exist due
    to size arithmetic overflow.  S must be positive and N must be
    nonnegative.  This is a macro, not an inline function, so that it
@@ -55,12 +106,17 @@
  */
 int virAlloc(void *ptrptr, size_t size)
 {
+#if TEST_OOM
+    if (virAllocTestFail()) {
+        *(void **)ptrptr = NULL;
+        return -1;
+    }
+#endif
+
     if (size == 0) {
         *(void **)ptrptr = NULL;
         return 0;
     }
-
-
 
     *(void **)ptrptr = calloc(1, size);
     if (*(void **)ptrptr == NULL)
@@ -83,6 +139,13 @@ int virAlloc(void *ptrptr, size_t size)
  */
 int virAllocN(void *ptrptr, size_t size, size_t count)
 {
+#if TEST_OOM
+    if (virAllocTestFail()) {
+        *(void **)ptrptr = NULL;
+        return -1;
+    }
+#endif
+
     if (size == 0 || count == 0) {
         *(void **)ptrptr = NULL;
         return 0;
@@ -111,6 +174,11 @@ int virAllocN(void *ptrptr, size_t size, size_t count)
 int virReallocN(void *ptrptr, size_t size, size_t count)
 {
     void *tmp;
+#if TEST_OOM
+    if (virAllocTestFail())
+        return -1;
+#endif
+
     if (size == 0 || count == 0) {
         free(*(void **)ptrptr);
         *(void **)ptrptr = NULL;
