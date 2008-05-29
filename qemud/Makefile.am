@@ -43,7 +43,7 @@ confdir = $(sysconfdir)/libvirt/
 conf_DATA = libvirtd.conf
 
 libvirtd_SOURCES = \
-		qemud.c internal.h \
+		qemud.c qemud.h \
 		remote_protocol.h remote_protocol.c \
 		remote.c \
 		$(srcdir)/../src/util-lib.c \
