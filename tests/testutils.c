@@ -287,15 +287,17 @@ int virtTestDifference(FILE *stream,
     return 0;
 }
 
+#if TEST_OOM
 static void
 virtTestErrorFuncQuiet(void *data ATTRIBUTE_UNUSED,
                        virErrorPtr err ATTRIBUTE_UNUSED)
 { }
+#endif
 
+#if TEST_OOM_TRACE
 static void
 virtTestErrorHook(int n, void *data ATTRIBUTE_UNUSED)
 {
-#if TEST_OOM_TRACE
     void *trace[30];
     int ntrace = ARRAY_CARDINALITY(trace);
     int i;
@@ -311,8 +313,8 @@ virtTestErrorHook(int n, void *data ATTRIBUTE_UNUSED)
         }
         free(symbols);
     }
-#endif
 }
+#endif
 
 
 int virtTestMain(int argc,
@@ -352,9 +354,10 @@ int virtTestMain(int argc,
     if (ret != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
+#if TEST_OOM_TRACE
     if (testDebug)
         virAllocTestHook(virtTestErrorHook, NULL);
-
+#endif
 
     if (testOOM) {
         /* Makes next test runs quiet... */

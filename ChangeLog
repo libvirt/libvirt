@@ -1,3 +1,7 @@
+Thu May 29 15:41:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* tests/testutils.c: Fix warning when OOM testing is disabled
+
 Thu May 29 15:25:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in, scripts/*: Remove all coverage helper scripts
