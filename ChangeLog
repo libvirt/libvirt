@@ -1,3 +1,10 @@
+Thu May 29 15:25:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in, scripts/*: Remove all coverage helper scripts
+	in favour of using lcov
+	* src/Makefile.am, Makefile.am: Switch to use lcov for pretty
+	code coverage reports
+
 Thu May 29 15:17:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt.c: Don't register storage API if daemon is
