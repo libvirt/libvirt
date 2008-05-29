@@ -19,6 +19,7 @@
 #define __VIR_BUFFER_C__
 
 #include "buf.h"
+#include "memory.h"
 
 
 /* If adding more fields, ensure to edit buf.h to match
@@ -40,8 +41,7 @@ struct _virBuffer {
 static void
 virBufferNoMemory(const virBufferPtr buf)
 {
-    free(buf->content);
-    buf->content = NULL;
+    VIR_FREE(buf->content);
     buf->size = 0;
     buf->use = 0;
     buf->error = 1;
@@ -60,7 +60,6 @@ static int
 virBufferGrow(virBufferPtr buf, unsigned int len)
 {
     int size;
-    char *newbuf;
 
     if (buf->error)
         return -1;
@@ -70,12 +69,10 @@ virBufferGrow(virBufferPtr buf, unsigned int len)
 
     size = buf->use + len + 1000;
 
-    newbuf = realloc(buf->content, size);
-    if (newbuf == NULL) {
+    if (VIR_REALLOC_N(buf->content, size) < 0) {
         virBufferNoMemory(buf);
         return -1;
     }
-    buf->content = newbuf;
     buf->size = size;
     return 0;
 }
@@ -269,8 +266,7 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
         return;
 
     len = strlen(str);
-    escaped = malloc(5 * len + 1);
-    if (escaped == NULL) {
+    if (VIR_ALLOC_N(escaped, 5 * len + 1) < 0) {
         virBufferNoMemory(buf);
         return;
     }
@@ -314,14 +310,14 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
         buf->content[buf->use] = 0;
         grow_size = (count > 1000) ? count : 1000;
         if (virBufferGrow(buf, grow_size) < 0) {
-            free(escaped);
+            VIR_FREE(escaped);
             return;
         }
         size = buf->size - buf->use - 1;
     }
     buf->use += count;
     buf->content[buf->use] = '\0';
-    free(escaped);
+    VIR_FREE(escaped);
 }
 
 /**

@@ -1,3 +1,7 @@
+Thu May 29 14:45:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/buf.c: Convert to use new memory allocation APIs
+
 Thu May 29 14:44:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Fix missing check for failure
