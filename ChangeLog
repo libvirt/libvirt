@@ -1,3 +1,7 @@
+Thu May 29 16:43:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* autobuild.sh: Only run converage tests if lcov is installed
+
 Thu May 29 16:09:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/Makefile.am: Change internal.h to qemud.h to fix
