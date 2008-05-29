@@ -924,6 +924,10 @@ char *sound_string_to_xml(const char *sound) {
             // and build with all available models
             if (STREQ(model, "all")) {
                 int i;
+                if (virBufferError(&buf)) {
+                    free(model);
+                    goto error;
+                }
                 free(virBufferContentAndReset(&buf));
 
                 for (i=0; i < sizeof(sound_models)/sizeof(*sound_models); ++i)

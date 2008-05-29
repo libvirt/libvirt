@@ -1,3 +1,7 @@
+Thu May 29 14:44:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Fix missing check for failure
+
 Thu May 29 11:29:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/nodeinfotest.c, tests/qemuxml2argvtest.c,
