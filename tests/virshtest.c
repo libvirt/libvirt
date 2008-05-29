@@ -9,7 +9,7 @@
 #include "testutils.h"
 
 static char *progname;
-static char *abs_top_srcdir;
+static char *abs_srcdir;
 #define MAX_FILE 4096
 
 static int testFilterLine(char *buffer,
@@ -36,7 +36,7 @@ static int testCompareOutput(const char *expect_rel, const char *filter,
   char *actualPtr = &(actualData[0]);
   char expect[PATH_MAX];
 
-  snprintf(expect, sizeof expect - 1, "%s/tests/%s", abs_top_srcdir, expect_rel);
+  snprintf(expect, sizeof expect - 1, "%s/%s", abs_srcdir, expect_rel);
 
   if (virtTestLoadFile(expect, &expectPtr, MAX_FILE) < 0)
     return -1;
@@ -271,24 +271,25 @@ static int testCompareDomstateByName(const void *data ATTRIBUTE_UNUSED) {
 
 
 
-int
-main(int argc, char **argv)
+static int
+mymain(int argc, char **argv)
 {
     int ret = 0;
     char buffer[PATH_MAX];
+    char cwd[PATH_MAX];
 
-    abs_top_srcdir = getenv("abs_top_srcdir");
-    if (!abs_top_srcdir)
-      return 1;
+    abs_srcdir = getenv("abs_srcdir");
+    if (!abs_srcdir)
+        abs_srcdir = getcwd(cwd, sizeof(cwd));
 
-    snprintf(buffer, PATH_MAX-1, "test://%s/docs/testnode.xml", abs_top_srcdir);
+    snprintf(buffer, PATH_MAX-1, "test://%s/../docs/testnode.xml", abs_srcdir);
     buffer[PATH_MAX-1] = '\0';
     progname = argv[0];
     custom_uri = buffer;
 
     if (argc > 1) {
         fprintf(stderr, "Usage: %s\n", progname);
-        exit(EXIT_FAILURE);
+        return(EXIT_FAILURE);
     }
 
     if (virtTestRun("virsh list (default)",
@@ -355,5 +356,7 @@ main(int argc, char **argv)
                     1, testCompareDomstateByName, NULL) != 0)
         ret = -1;
 
-    exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+    return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
+
+VIRT_TEST_MAIN(mymain)

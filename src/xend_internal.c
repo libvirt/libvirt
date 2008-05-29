@@ -44,6 +44,7 @@
 #include "xend_internal.h"
 #include "xen_internal.h" /* for DOM0_INTERFACE_VERSION */
 #include "xs_internal.h" /* To extract VNC port & Serial console TTY */
+#include "memory.h"
 
 /* required for cpumap_t */
 #include <xen/dom0_ops.h>
@@ -630,7 +631,7 @@ xend_op_ext2(virConnectPtr xend, const char *path, char *error,
 
     content = virBufferContentAndReset(&buf);
     ret = http2unix(xend, xend_post(xend, path, content, error, n_error));
-    free(content);
+    VIR_FREE(content);
 
     return ret;
 }
@@ -825,14 +826,15 @@ static char *
 urlencode(const char *string)
 {
     size_t len = strlen(string);
-    char *buffer = malloc(len * 3 + 1);
-    char *ptr = buffer;
+    char *buffer;
+    char *ptr;
     size_t i;
 
-    if (buffer == NULL) {
+    if (VIR_ALLOC_N(buffer, len * 3 + 1) < 0) {
         virXendError(NULL, VIR_ERR_NO_MEMORY, _("allocate new buffer"));
         return (NULL);
     }
+    ptr = buffer;
     for (i = 0; i < len; i++) {
         switch (string[i]) {
             case ' ':
@@ -909,6 +911,7 @@ int is_sound_model_conflict(const char *model, const char *soundstr) {
 char *sound_string_to_xml(const char *sound) {
 
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *tmp;
 
     while (sound) {
         int modelsize, valid, collision = 0;
@@ -925,15 +928,16 @@ char *sound_string_to_xml(const char *sound) {
             if (STREQ(model, "all")) {
                 int i;
                 if (virBufferError(&buf)) {
-                    free(model);
+                    VIR_FREE(model);
                     goto error;
                 }
-                free(virBufferContentAndReset(&buf));
+                tmp = virBufferContentAndReset(&buf);
+                VIR_FREE(tmp);
 
                 for (i=0; i < sizeof(sound_models)/sizeof(*sound_models); ++i)
                     virBufferVSprintf(&buf, "    <sound model='%s'/>\n",
                                       sound_models[i]);
-                free(model);
+                VIR_FREE(model);
                 break;
             }
         }
@@ -944,7 +948,7 @@ char *sound_string_to_xml(const char *sound) {
             virBufferVSprintf(&buf, "    <sound model='%s'/>\n", model);
 
         sound = (model_end ? ++model_end : NULL);
-        free(model);
+        VIR_FREE(model);
     }
 
     if (virBufferError(&buf))
@@ -952,7 +956,8 @@ char *sound_string_to_xml(const char *sound) {
     return virBufferContentAndReset(&buf);
 
   error:
-    free(virBufferContentAndReset(&buf));
+    tmp = virBufferContentAndReset(&buf);
+    VIR_FREE(tmp);
     return NULL;
 }
 
@@ -1092,8 +1097,7 @@ xenDaemonListDomainsOld(virConnectPtr xend)
         count++;
     }
 
-    ptr = malloc((count + 1) * sizeof(char *) + extra);
-    if (ptr == NULL)
+    if (VIR_ALLOC_N(ptr, count + 1 + extra) < 0)
         goto error;
 
     ret = (char **) ptr;
@@ -1149,7 +1153,7 @@ xenDaemonDomainCreateLinux(virConnectPtr xend, const char *sexpr)
     ret = xend_op(xend, "", "op", "create", "config", ptr, NULL);
 
     serrno = errno;
-    free(ptr);
+    VIR_FREE(ptr);
     errno = serrno;
 
     return ret;
@@ -1250,10 +1254,8 @@ xenDaemonDomainLookupByID(virConnectPtr xend,
 
 error:
     sexpr_free(root);
-    if (domname && *domname) {
-      free(*domname);
-      *domname = NULL;
-    }
+    if (domname)
+        VIR_FREE(*domname);
     return (-1);
 }
 
@@ -1694,11 +1696,11 @@ no_memory:
 
 error:
 
-    free(path);
-    free(bindHost);
-    free(bindPort);
-    free(connectHost);
-    free(connectPort);
+    VIR_FREE(path);
+    VIR_FREE(bindHost);
+    VIR_FREE(bindPort);
+    VIR_FREE(connectHost);
+    VIR_FREE(connectPort);
 
     return ret;
 }
@@ -1723,7 +1725,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
 {
     struct sexpr *cur, *node;
     const char *tmp;
-    char *tty;
+    char *tty, *val;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int hvm = 0, bootloader = 0, vfb = 0;
     int domid = -1;
@@ -1906,8 +1908,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                     goto bad_parse;
                 }
 
-                drvName = malloc((offset-src)+1);
-                if (!drvName) {
+                if (VIR_ALLOC_N(drvName, (offset-src)+1) < 0) {
                     virXendError(conn, VIR_ERR_NO_MEMORY,
                                  _("allocate new buffer"));
                     goto bad_parse;
@@ -1925,8 +1926,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                         goto bad_parse;
                     }
 
-                    drvType = malloc((offset-src)+1);
-                    if (!drvType) {
+                    if (VIR_ALLOC_N(drvType, (offset-src)+1)< 0) {
                         virXendError(conn, VIR_ERR_NO_MEMORY,
                                      _("allocate new buffer"));
                         goto bad_parse;
@@ -2004,8 +2004,8 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
             virBufferAddLit(&buf, "    </disk>\n");
 
             bad_parse:
-            free(drvName);
-            free(drvType);
+            VIR_FREE(drvName);
+            VIR_FREE(drvType);
         } else if (sexpr_lookup(node, "device/vif")) {
             const char *tmp2, *model;
             tmp2 = sexpr_node(node, "device/vif/script");
@@ -2191,7 +2191,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
         virBufferAddLit(&buf, "      <target port='0'/>\n");
         virBufferAddLit(&buf, "    </console>\n");
     }
-    free(tty);
+    VIR_FREE(tty);
 
     if (hvm) {
         if (sexpr_node(root, "domain/image/hvm/soundhw")) {
@@ -2200,7 +2200,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
             if (tmp && *tmp) {
                 if ((soundxml = sound_string_to_xml(tmp))) {
                     virBufferVSprintf(&buf, "%s", soundxml);
-                    free(soundxml);
+                    VIR_FREE(soundxml);
                 } else {
                     virXendError(conn, VIR_ERR_INTERNAL_ERROR,
                                  _("parsing soundhw string failed."));
@@ -2221,7 +2221,8 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
     return virBufferContentAndReset(&buf);
 
   error:
-    free(virBufferContentAndReset(&buf));
+    val = virBufferContentAndReset(&buf);
+    VIR_FREE(val);
     return (NULL);
 }
 
@@ -2379,11 +2380,9 @@ sexpr_to_xend_topology(virConnectPtr conn,
     numCpus = sexpr_int(root, "node/nr_cpus");
 
 
-    cpuset = malloc(numCpus * sizeof(*cpuset));
-    if (cpuset == NULL)
+    if (VIR_ALLOC_N(cpuset, numCpus) < 0)
         goto memory_error;
-    cpuNums = malloc(numCpus * sizeof(*cpuNums));
-    if (cpuNums == NULL)
+    if (VIR_ALLOC_N(cpuNums, numCpus) < 0)
         goto memory_error;
 
     cur = nodeToCpu;
@@ -2423,21 +2422,21 @@ sexpr_to_xend_topology(virConnectPtr conn,
                                            cpuNums) < 0)
             goto memory_error;
     }
-    free(cpuNums);
-    free(cpuset);
+    VIR_FREE(cpuNums);
+    VIR_FREE(cpuset);
     return (0);
 
   parse_error:
     virXendError(conn, VIR_ERR_XEN_CALL, _("topology syntax error"));
   error:
-    free(cpuNums);
-    free(cpuset);
+    VIR_FREE(cpuNums);
+    VIR_FREE(cpuset);
 
     return (-1);
 
   memory_error:
-    free(cpuNums);
-    free(cpuset);
+    VIR_FREE(cpuNums);
+    VIR_FREE(cpuset);
     virXendError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"));
     return (-1);
 }
@@ -3269,7 +3268,7 @@ xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids)
     }
 
 error:
-        sexpr_free(root);
+    sexpr_free(root);
     return(ret);
 }
 
@@ -3302,7 +3301,7 @@ xenDaemonNumOfDomains(virConnectPtr conn)
     }
 
 error:
-        sexpr_free(root);
+    sexpr_free(root);
     return(ret);
 }
 #endif /* ! PROXY */
@@ -3331,11 +3330,11 @@ xenDaemonLookupByID(virConnectPtr conn, int id) {
     if (ret == NULL) return NULL;
 
     ret->id = id;
-    free(name);
+    VIR_FREE(name);
     return (ret);
 
  error:
-    free(name);
+    VIR_FREE(name);
     return (NULL);
 }
 
@@ -3543,7 +3542,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
             }
             tmp++;
         }
-        free(names);
+        VIR_FREE(names);
     } else { /* New approach for xen >= 3.0.4 */
         char *domname = NULL;
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -3569,7 +3568,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (ret == NULL) return NULL;
 
     ret->id = id;
-    free(name);
+    VIR_FREE(name);
     return (ret);
 }
 
@@ -3610,14 +3609,14 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
     if ((sexpr == NULL) || (name == NULL)) {
         virXendError(conn, VIR_ERR_XML_ERROR,
                      _("failed to parse domain description"));
-        free(sexpr);
-        free(name);
+        VIR_FREE(sexpr);
+        VIR_FREE(name);
 
         return (NULL);
     }
 
     ret = xenDaemonDomainCreateLinux(conn, sexpr);
-    free(sexpr);
+    VIR_FREE(sexpr);
     if (ret != 0) {
         goto error;
     }
@@ -3633,7 +3632,7 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
     if ((ret = xenDaemonDomainResume(dom)) < 0)
         goto error;
 
-    free(name);
+    VIR_FREE(name);
 
     return (dom);
 
@@ -3643,7 +3642,7 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
         xenDaemonDomainDestroy(dom);
         virUnrefDomain(dom);
     }
-    free(name);
+    VIR_FREE(name);
     return (NULL);
 }
 
@@ -3683,7 +3682,7 @@ xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
     str = virDomainGetOSType(domain);
     if (STREQ(str, "hvm"))
         hvm = 1;
-    free(str);
+    VIR_FREE(str);
     sexpr = virParseXMLDevice(domain->conn, xml, hvm, priv->xendConfigVersion);
     if (sexpr == NULL)
         return (-1);
@@ -3702,7 +3701,7 @@ xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
         ret = xend_op(domain->conn, domain->name, "op", "device_configure",
                       "config", conf, "dev", ref, NULL);
     }
-    free(sexpr);
+    VIR_FREE(sexpr);
     return ret;
 }
 
@@ -3810,7 +3809,7 @@ xenDaemonDomainSetAutostart(virDomainPtr domain,
 
         // Change the autostart value in place, then define the new sexpr
         autonode = sexpr_lookup(root, "domain/on_xend_start");
-        free(autonode->u.s.car->u.value);
+        VIR_FREE(autonode->u.s.car->u.value);
         autonode->u.s.car->u.value = (autostart ? strdup("start")
                                                 : strdup("ignore"));
         if (!(autonode->u.s.car->u.value)) {
@@ -3996,7 +3995,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
                    "port", port,
                    "resource", "0", /* required, xend ignores it */
                    NULL);
-    free (hostname);
+    VIR_FREE (hostname);
 
     DEBUG0("migration done");
 
@@ -4028,14 +4027,14 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
     if ((sexpr == NULL) || (name == NULL)) {
         virXendError(conn, VIR_ERR_XML_ERROR,
                      _("failed to parse domain description"));
-        free(sexpr);
-        free(name);
+        VIR_FREE(sexpr);
+        VIR_FREE(name);
 
         return (NULL);
     }
 
     ret = xend_op(conn, "", "op", "new", "config", sexpr, NULL);
-    free(sexpr);
+    VIR_FREE(sexpr);
     if (ret != 0) {
         fprintf(stderr, _("Failed to create inactive domain %s\n"), name);
         goto error;
@@ -4048,7 +4047,7 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
 
     return (dom);
   error:
-    free(name);
+    VIR_FREE(name);
     return (NULL);
 }
 int xenDaemonDomainCreate(virDomainPtr domain)
@@ -4318,7 +4317,7 @@ xenDaemonGetSchedulerParameters(virDomainPtr domain,
 
 error:
     sexpr_free(root);
-    free(sched_type);
+    VIR_FREE(sched_type);
     return (ret);
 }
 
@@ -4430,7 +4429,7 @@ xenDaemonSetSchedulerParameters(virDomainPtr domain,
 
 error:
     sexpr_free(root);
-    free(sched_type);
+    VIR_FREE(sched_type);
     return (ret);
 }
 

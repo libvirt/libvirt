@@ -105,7 +105,6 @@ virConfError(virConfPtr conf ATTRIBUTE_UNUSED,
  *		Structures allocations and deallocations		*
  *									*
  ************************************************************************/
-static void virConfFreeValue(virConfValuePtr val);
 
 /**
  * virConfFreeList:
@@ -132,8 +131,8 @@ virConfFreeList(virConfValuePtr list)
  *
  * Free a value
  */
-static void
-virConfFreeValue(virConfValuePtr val)
+void
+__virConfFreeValue(virConfValuePtr val)
 {
     if (val == NULL)
         return;

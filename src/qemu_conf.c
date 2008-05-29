@@ -121,7 +121,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     p = virConfGetValue (conf, "vnc_tls_x509_cert_dir");
     CHECK_TYPE ("vnc_tls_x509_cert_dir", VIR_CONF_STRING);
     if (p && p->str) {
-        free(driver->vncTLSx509certdir);
+        VIR_FREE(driver->vncTLSx509certdir);
         if (!(driver->vncTLSx509certdir = strdup(p->str))) {
             qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY,
                              "%s", _("failed to allocate vncTLSx509certdir"));
@@ -219,42 +219,42 @@ void qemudFreeVMDef(struct qemud_vm_def *def) {
     while (disk) {
         struct qemud_vm_disk_def *prev = disk;
         disk = disk->next;
-        free(prev);
+        VIR_FREE(prev);
     }
     while (net) {
         struct qemud_vm_net_def *prev = net;
         net = net->next;
-        free(prev);
+        VIR_FREE(prev);
     }
     while (input) {
         struct qemud_vm_input_def *prev = input;
         input = input->next;
-        free(prev);
+        VIR_FREE(prev);
     }
     while (serial) {
         struct qemud_vm_chr_def *prev = serial;
         serial = serial->next;
-        free(prev);
+        VIR_FREE(prev);
     }
     while (parallel) {
         struct qemud_vm_chr_def *prev = parallel;
         parallel = parallel->next;
-        free(prev);
+        VIR_FREE(prev);
     }
     while (sound) {
         struct qemud_vm_sound_def *prev = sound;
         sound = sound->next;
-        free(prev);
+        VIR_FREE(prev);
     }
     xmlFree(def->keymap);
-    free(def);
+    VIR_FREE(def);
 }
 
 void qemudFreeVM(struct qemud_vm *vm) {
     qemudFreeVMDef(vm->def);
     if (vm->newDef)
         qemudFreeVMDef(vm->newDef);
-    free(vm);
+    VIR_FREE(vm);
 }
 
 
@@ -1417,8 +1417,8 @@ static int qemudParseCharXMLDevices(virConnectPtr conn,
         }
 
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-            struct qemud_vm_chr_def *chr = calloc(1, sizeof(*chr));
-            if (!chr) {
+            struct qemud_vm_chr_def *chr;
+            if (VIR_ALLOC(chr) < 0) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                                  "%s",
                                  _("failed to allocate space for char device"));
@@ -1426,7 +1426,7 @@ static int qemudParseCharXMLDevices(virConnectPtr conn,
             }
 
             if (qemudParseCharXML(conn, chr, i, obj->nodesetval->nodeTab[i]) < 0) {
-                free(chr);
+                VIR_FREE(chr);
                 goto cleanup;
             }
             if (ndevs)
@@ -1619,7 +1619,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     int i;
     struct qemud_vm_def *def;
 
-    if (!(def = calloc(1, sizeof(*def)))) {
+    if (VIR_ALLOC(def) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                          "%s", _("failed to allocate space for xmlXPathContext"));
         return NULL;
@@ -1659,8 +1659,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
                          "%s", _("invalid domain type attribute"));
         goto error;
     }
-    free(prop);
-    prop = NULL;
+    VIR_FREE(prop);
 
 
     /* Extract domain name */
@@ -2032,14 +2031,14 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-            struct qemud_vm_disk_def *disk = calloc(1, sizeof(*disk));
-            if (!disk) {
+            struct qemud_vm_disk_def *disk;
+            if (VIR_ALLOC(disk) < 0) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                            "%s", _("failed to allocate space for disk string"));
                 goto error;
             }
             if (qemudParseDiskXML(conn, disk, obj->nodesetval->nodeTab[i]) < 0) {
-                free(disk);
+                VIR_FREE(disk);
                 goto error;
             }
             def->ndisks++;
@@ -2082,8 +2081,8 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         obj = xmlXPathEval(BAD_CAST "/domain/devices/console", ctxt);
         if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
             (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-            struct qemud_vm_chr_def *chr = calloc(1, sizeof(*chr));
-            if (!chr) {
+            struct qemud_vm_chr_def *chr;
+            if (VIR_ALLOC(chr) < 0) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                                  "%s",
                                  _("failed to allocate space for char device"));
@@ -2091,7 +2090,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
             }
 
             if (qemudParseCharXML(conn, chr, 0, obj->nodesetval->nodeTab[0]) < 0) {
-                free(chr);
+                VIR_FREE(chr);
                 goto error;
             }
             def->nserials = 1;
@@ -2107,14 +2106,14 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         struct qemud_vm_net_def *prev = NULL;
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-            struct qemud_vm_net_def *net = calloc(1, sizeof(*net));
-            if (!net) {
+            struct qemud_vm_net_def *net;
+            if (VIR_ALLOC(net) < 0) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                            "%s", _("failed to allocate space for net string"));
                 goto error;
             }
             if (qemudParseInterfaceXML(conn, net, obj->nodesetval->nodeTab[i]) < 0) {
-                free(net);
+                VIR_FREE(net);
                 goto error;
             }
             def->nnets++;
@@ -2135,20 +2134,20 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         struct qemud_vm_input_def *prev = NULL;
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-            struct qemud_vm_input_def *input = calloc(1, sizeof(*input));
-            if (!input) {
+            struct qemud_vm_input_def *input;
+            if (VIR_ALLOC(input) < 0) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                          "%s", _("failed to allocate space for input string"));
                 goto error;
             }
             if (qemudParseInputXML(conn, def, input, obj->nodesetval->nodeTab[i]) < 0) {
-                free(input);
+                VIR_FREE(input);
                 goto error;
             }
             /* Mouse + PS/2 is implicit with graphics, so don't store it */
             if (input->bus == QEMU_INPUT_BUS_PS2 &&
                 input->type == QEMU_INPUT_TYPE_MOUSE) {
-                free(input);
+                VIR_FREE(input);
                 continue;
             }
             def->ninputs++;
@@ -2170,17 +2169,17 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         struct qemud_vm_sound_def *prev = NULL;
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
 
-            struct qemud_vm_sound_def *sound = calloc(1, sizeof(*sound));
+            struct qemud_vm_sound_def *sound;
             struct qemud_vm_sound_def *check = def->sounds;
             int collision = 0;
-            if (!sound) {
+            if (VIR_ALLOC(sound) < 0) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                          "%s", _("failed to allocate space for sound dev"));
                 goto error;
             }
             if (qemudParseSoundXML(conn, sound,
                                    obj->nodesetval->nodeTab[i]) < 0) {
-                free(sound);
+                VIR_FREE(sound);
                 goto error;
             }
 
@@ -2193,7 +2192,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
                 check = check->next;
             }
             if (collision) {
-                free(sound);
+                VIR_FREE(sound);
                 continue;
             }
 
@@ -2222,8 +2221,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         }
 
         if (!hasPS2mouse) {
-            input = calloc(1, sizeof(*input));
-            if (!input) {
+            if (VIR_ALLOC(input) < 0) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                          "%s", _("failed to allocate space for input string"));
                 goto error;
@@ -2241,7 +2239,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     return def;
 
  error:
-    free(prop);
+    VIR_FREE(prop);
     xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
     qemudFreeVMDef(def);
@@ -2263,7 +2261,6 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     char *retval = NULL;
     int err;
     int tapfd = -1;
-    int *tapfds;
 
     if (net->type == QEMUD_NET_NETWORK) {
         if (!(network = qemudFindNetworkByName(driver, net->dst.network.name))) {
@@ -2320,10 +2317,9 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     if (!(retval = strdup(tapfdstr)))
         goto no_memory;
 
-    if (!(tapfds = realloc(vm->tapfds, sizeof(*tapfds) * (vm->ntapfds+2))))
+    if (VIR_ALLOC_N(vm->tapfds, vm->ntapfds+2) < 0)
         goto no_memory;
 
-    vm->tapfds = tapfds;
     vm->tapfds[vm->ntapfds++] = tapfd;
     vm->tapfds[vm->ntapfds]   = -1;
 
@@ -2333,7 +2329,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                      "%s", _("failed to allocate space for tapfds string"));
  error:
-    free(retval);
+    VIR_FREE(retval);
     if (tapfd != -1)
         close(tapfd);
     return NULL;
@@ -2830,14 +2826,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
     /* Add sound hardware */
     if (sound) {
         int size = 100;
-        char *modstr = calloc(1, size+1);
-        if (!modstr)
+        char *modstr;
+        if (VIR_ALLOC_N(modstr, size+1) < 0)
             goto no_memory;
 
         while(sound && size > 0) {
             const char *model = qemudSoundModelToString(sound->model);
             if (!model) {
-                free(modstr);
+                VIR_FREE(modstr);
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("invalid sound model"));
                 goto error;
@@ -2869,14 +2865,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if (vm->tapfds) {
         for (i = 0; vm->tapfds[i] != -1; i++)
             close(vm->tapfds[i]);
-        free(vm->tapfds);
+        VIR_FREE(vm->tapfds);
         vm->tapfds = NULL;
         vm->ntapfds = 0;
     }
     if (qargv) {
         for (i = 0 ; i < qargc ; i++)
-            free((qargv)[i]);
-        free(qargv);
+            VIR_FREE((qargv)[i]);
+        VIR_FREE(qargv);
     }
     return -1;
 
@@ -2928,7 +2924,7 @@ static int qemudSaveConfig(virConnectPtr conn,
     if (fd != -1)
         close(fd);
 
-    free(xml);
+    VIR_FREE(xml);
 
     return ret;
 }
@@ -2940,13 +2936,18 @@ qemudParseVMDeviceDef(virConnectPtr conn,
 {
     xmlDocPtr xml;
     xmlNodePtr node;
-    struct qemud_vm_device_def *dev = calloc(1, sizeof(*dev));
+    struct qemud_vm_device_def *dev;
+
+    if (VIR_ALLOC(dev) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        return NULL;
+    }
 
     if (!(xml = xmlReadDoc(BAD_CAST xmlStr, "device.xml", NULL,
                            XML_PARSE_NOENT | XML_PARSE_NONET |
                            XML_PARSE_NOERROR | XML_PARSE_NOWARNING))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_XML_ERROR, NULL);
-        return NULL;
+        goto error;
     }
 
     node = xmlDocGetRootElement(xml);
@@ -2979,7 +2980,7 @@ qemudParseVMDeviceDef(virConnectPtr conn,
 
   error:
     if (xml) xmlFreeDoc(xml);
-    free(dev);
+    VIR_FREE(dev);
     return NULL;
 }
 
@@ -3027,7 +3028,7 @@ qemudAssignVMDef(virConnectPtr conn,
         return vm;
     }
 
-    if (!(vm = calloc(1, sizeof(*vm)))) {
+    if (VIR_ALLOC(vm) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                          "%s", _("failed to allocate space for vm string"));
         return NULL;
@@ -3155,7 +3156,7 @@ static int qemudSaveNetworkConfig(virConnectPtr conn,
 
  cleanup:
 
-    free(xml);
+    VIR_FREE(xml);
 
     return ret;
 }
@@ -3164,17 +3165,17 @@ void qemudFreeNetworkDef(struct qemud_network_def *def) {
     struct qemud_dhcp_range_def *range = def->ranges;
     while (range) {
         struct qemud_dhcp_range_def *next = range->next;
-        free(range);
+        VIR_FREE(range);
         range = next;
     }
-    free(def);
+    VIR_FREE(def);
 }
 
 void qemudFreeNetwork(struct qemud_network *network) {
     qemudFreeNetworkDef(network->def);
     if (network->newDef)
         qemudFreeNetworkDef(network->newDef);
-    free(network);
+    VIR_FREE(network);
 }
 
 static int qemudParseBridgeXML(struct qemud_driver *driver ATTRIBUTE_UNUSED,
@@ -3227,7 +3228,7 @@ static int qemudParseDhcpRangesXML(virConnectPtr conn,
             continue;
         }
 
-        if (!(range = calloc(1, sizeof(*range)))) {
+        if (VIR_ALLOC(range) < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                          "%s", _("failed to allocate space for range string"));
             return 0;
@@ -3247,7 +3248,7 @@ static int qemudParseDhcpRangesXML(virConnectPtr conn,
             def->ranges = range;
             def->nranges++;
         } else {
-            free(range);
+            VIR_FREE(range);
         }
 
         xmlFree(start);
@@ -3318,7 +3319,7 @@ static struct qemud_network_def *qemudParseNetworkXML(virConnectPtr conn,
     xmlXPathObjectPtr obj = NULL, tmp = NULL;
     struct qemud_network_def *def;
 
-    if (!(def = calloc(1, sizeof(*def)))) {
+    if (VIR_ALLOC(def) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                    "%s", _("failed to allocate space for network_def string"));
         return NULL;
@@ -3492,7 +3493,7 @@ qemudAssignNetworkDef(virConnectPtr conn,
         return network;
     }
 
-    if (!(network = calloc(1, sizeof(*network)))) {
+    if (VIR_ALLOC(network) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                          "%s", _("failed to allocate space for network string"));
         return NULL;
@@ -3703,7 +3704,7 @@ int qemudScanConfigDir(struct qemud_driver *driver,
         else
             qemudLoadNetworkConfig(driver, entry->d_name, path, xml, autostartLink);
 
-        free(xml);
+        VIR_FREE(xml);
     }
 
     closedir(dir);
@@ -3839,7 +3840,7 @@ char *qemudGenerateXML(virConnectPtr conn,
     const struct qemud_vm_input_def *input;
     const struct qemud_vm_sound_def *sound;
     const struct qemud_vm_chr_def *chr;
-    const char *type = NULL;
+    const char *type = NULL, *tmp;
     int n, allones = 1;
 
     if (!(type = qemudVirtTypeToString(def->virtType))) {
@@ -3876,7 +3877,7 @@ char *qemudGenerateXML(virConnectPtr conn,
             goto cleanup;
         }
         virBufferVSprintf(&buf, "  <vcpu cpuset='%s'>%d</vcpu>\n", cpumask, def->vcpus);
-        free(cpumask);
+        VIR_FREE(cpumask);
     }
 
     if (def->os.bootloader[0])
@@ -4116,7 +4117,8 @@ char *qemudGenerateXML(virConnectPtr conn,
     qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                      "%s", _("failed to generate XML: out of memory"));
  cleanup:
-    free(virBufferContentAndReset(&buf));
+    tmp = virBufferContentAndReset(&buf);
+    VIR_FREE(tmp);
     return NULL;
 }
 
@@ -4127,6 +4129,7 @@ char *qemudGenerateNetworkXML(virConnectPtr conn,
                               struct qemud_network_def *def) {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
+    char *tmp;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virBufferAddLit(&buf, "<network>\n");
@@ -4191,7 +4194,8 @@ char *qemudGenerateNetworkXML(virConnectPtr conn,
  no_memory:
     qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                      "%s", _("failed to generate XML: out of memory"));
-    free(virBufferContentAndReset(&buf));
+    tmp = virBufferContentAndReset(&buf);
+    VIR_FREE(tmp);
     return NULL;
 }
 

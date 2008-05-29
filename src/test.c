@@ -45,6 +45,7 @@
 #include "util.h"
 #include "uuid.h"
 #include "capabilities.h"
+#include "memory.h"
 
 /* Flags that determine the action to take on a shutdown or crash of a domain
  */
@@ -275,7 +276,7 @@ static int testLoadDomain(virConnectPtr conn,
         testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("domain uuid"));
         goto error;
     }
-    free(str);
+    VIR_FREE(str);
 
 
     ret = virXPathLong("string(/domain/memory[1])", ctxt, &l);
@@ -309,30 +310,30 @@ static int testLoadDomain(virConnectPtr conn,
     if (str != NULL) {
         if (!(onReboot = testRestartStringToFlag(str))) {
             testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("domain reboot behaviour"));
-            free(str);
+            VIR_FREE(str);
             goto error;
         }
-        free(str);
+        VIR_FREE(str);
     }
 
     str = virXPathString("string(/domain/on_poweroff[1])", ctxt);
     if (str != NULL) {
         if (!(onPoweroff = testRestartStringToFlag(str))) {
             testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("domain poweroff behaviour"));
-            free(str);
+            VIR_FREE(str);
             goto error;
         }
-        free(str);
+        VIR_FREE(str);
     }
 
     str = virXPathString("string(/domain/on_crash[1])", ctxt);
     if (str != NULL) {
         if (!(onCrash = testRestartStringToFlag(str))) {
             testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("domain crash behaviour"));
-            free(str);
+            VIR_FREE(str);
             goto error;
         }
-        free(str);
+        VIR_FREE(str);
     }
 
     for (i = 0 ; i < MAX_DOMAINS ; i++) {
@@ -348,7 +349,7 @@ static int testLoadDomain(virConnectPtr conn,
     privconn->domains[handle].id = domid;
     strncpy(privconn->domains[handle].name, name, sizeof(privconn->domains[handle].name)-1);
     privconn->domains[handle].name[sizeof(privconn->domains[handle].name)-1] = '\0';
-    free(name);
+    VIR_FREE(name);
     name = NULL;
 
     if (memory > maxMem)
@@ -371,7 +372,7 @@ static int testLoadDomain(virConnectPtr conn,
 
  error:
     xmlXPathFreeContext(ctxt);
-    free(name);
+    VIR_FREE(name);
     return (-1);
 }
 
@@ -464,7 +465,7 @@ static int testLoadNetwork(virConnectPtr conn,
         testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("network uuid"));
         goto error;
     }
-    free(str);
+    VIR_FREE(str);
 
 
     forward = virXPathBoolean("count(/network/forward) != 0", ctxt);
@@ -512,10 +513,10 @@ static int testLoadNetwork(virConnectPtr conn,
     privconn->networks[handle].name[sizeof(privconn->networks[handle].name)-1] = '\0';
     strncpy(privconn->networks[handle].bridge, bridge ? bridge : name, sizeof(privconn->networks[handle].bridge)-1);
     privconn->networks[handle].bridge[sizeof(privconn->networks[handle].bridge)-1] = '\0';
-    free(name);
+    VIR_FREE(name);
     name = NULL;
     if (bridge) {
-        free(bridge);
+        VIR_FREE(bridge);
         bridge = NULL;
     }
 
@@ -524,32 +525,32 @@ static int testLoadNetwork(virConnectPtr conn,
     if (forwardDev) {
         strncpy(privconn->networks[handle].forwardDev, forwardDev, sizeof(privconn->networks[handle].forwardDev)-1);
         privconn->networks[handle].forwardDev[sizeof(privconn->networks[handle].forwardDev)-1] = '\0';
-        free(forwardDev);
+        VIR_FREE(forwardDev);
     }
 
     strncpy(privconn->networks[handle].ipAddress, ipaddress, sizeof(privconn->networks[handle].ipAddress)-1);
     privconn->networks[handle].ipAddress[sizeof(privconn->networks[handle].ipAddress)-1] = '\0';
-    free(ipaddress);
+    VIR_FREE(ipaddress);
     strncpy(privconn->networks[handle].ipNetmask, ipnetmask, sizeof(privconn->networks[handle].ipNetmask)-1);
     privconn->networks[handle].ipNetmask[sizeof(privconn->networks[handle].ipNetmask)-1] = '\0';
-    free(ipnetmask);
+    VIR_FREE(ipnetmask);
     strncpy(privconn->networks[handle].dhcpStart, dhcpstart, sizeof(privconn->networks[handle].dhcpStart)-1);
     privconn->networks[handle].dhcpStart[sizeof(privconn->networks[handle].dhcpStart)-1] = '\0';
-    free(dhcpstart);
+    VIR_FREE(dhcpstart);
     strncpy(privconn->networks[handle].dhcpEnd, dhcpend, sizeof(privconn->networks[handle].dhcpEnd)-1);
     privconn->networks[handle].dhcpEnd[sizeof(privconn->networks[handle].dhcpEnd)-1] = '\0';
-    free(dhcpend);
+    VIR_FREE(dhcpend);
     xmlXPathFreeContext(ctxt);
     return (handle);
 
  error:
     xmlXPathFreeContext(ctxt);
-    free (forwardDev);
-    free(ipaddress);
-    free(ipnetmask);
-    free(dhcpstart);
-    free(dhcpend);
-    free(name);
+    VIR_FREE (forwardDev);
+    VIR_FREE(ipaddress);
+    VIR_FREE(ipnetmask);
+    VIR_FREE(dhcpstart);
+    VIR_FREE(dhcpend);
+    VIR_FREE(name);
     return (-1);
 }
 
@@ -601,8 +602,8 @@ static int testLoadNetworkFromFile(virConnectPtr conn,
 static int testOpenDefault(virConnectPtr conn) {
     int u;
     struct timeval tv;
-    testConnPtr privconn = malloc(sizeof(*privconn));
-    if (!privconn) {
+    testConnPtr privconn;
+    if (VIR_ALLOC(privconn) < 0) {
         testError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "testConn");
         return VIR_DRV_OPEN_ERROR;
     }
@@ -677,7 +678,9 @@ static char *testBuildFilename(const char *relativeTo,
 
     offset = strrchr(relativeTo, '/');
     if ((baseLen = (offset-relativeTo+1))) {
-        char *absFile = malloc(baseLen + strlen(filename) + 1);
+        char *absFile;
+        if (VIR_ALLOC_N(absFile, baseLen + strlen(filename) + 1) < 0)
+            return NULL;
         strncpy(absFile, relativeTo, baseLen);
         absFile[baseLen] = '\0';
         strcat(absFile, filename);
@@ -697,8 +700,8 @@ static int testOpenFromFile(virConnectPtr conn,
     xmlNodePtr *domains, *networks = NULL;
     xmlXPathContextPtr ctxt = NULL;
     virNodeInfoPtr nodeInfo;
-    testConnPtr privconn = calloc(1, sizeof(*privconn));
-    if (!privconn) {
+    testConnPtr privconn;
+    if (VIR_ALLOC(privconn) < 0) {
         testError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY, "testConn");
         return VIR_DRV_OPEN_ERROR;
     }
@@ -794,7 +797,7 @@ static int testOpenFromFile(virConnectPtr conn,
     if (str != NULL) {
         strncpy(nodeInfo->model, str, sizeof(nodeInfo->model)-1);
         nodeInfo->model[sizeof(nodeInfo->model)-1] = '\0';
-        free(str);
+        VIR_FREE(str);
     }
 
     ret = virXPathLong("string(/node/memory[1])", ctxt, &l);
@@ -815,21 +818,21 @@ static int testOpenFromFile(virConnectPtr conn,
         xmlChar *domFile = xmlGetProp(domains[i], BAD_CAST "file");
         char *absFile = testBuildFilename(file, (const char *)domFile);
         int domid = privconn->nextDomID++, handle;
-        free(domFile);
+        VIR_FREE(domFile);
         if (!absFile) {
             testError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("resolving domain filename"));
             goto error;
         }
         if ((handle = testLoadDomainFromFile(conn, domid, absFile)) < 0) {
-            free(absFile);
+            VIR_FREE(absFile);
             goto error;
         }
         privconn->domains[handle].config = 1;
-        free(absFile);
+        VIR_FREE(absFile);
         privconn->numDomains++;
     }
     if (domains != NULL) {
-        free(domains);
+        VIR_FREE(domains);
         domains = NULL;
     }
 
@@ -840,21 +843,21 @@ static int testOpenFromFile(virConnectPtr conn,
             xmlChar *netFile = xmlGetProp(networks[i], BAD_CAST "file");
             char *absFile = testBuildFilename(file, (const char *)netFile);
             int handle;
-            free(netFile);
+            VIR_FREE(netFile);
             if (!absFile) {
                 testError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("resolving network filename"));
                 goto error;
             }
             if ((handle = testLoadNetworkFromFile(conn, absFile)) < 0) {
-                free(absFile);
+                VIR_FREE(absFile);
                 goto error;
             }
             privconn->networks[handle].config = 1;
-            free(absFile);
+            VIR_FREE(absFile);
             privconn->numNetworks++;
         }
         if (networks != NULL) {
-            free(networks);
+            VIR_FREE(networks);
             networks = NULL;
         }
     }
@@ -866,13 +869,13 @@ static int testOpenFromFile(virConnectPtr conn,
 
  error:
     xmlXPathFreeContext(ctxt);
-    free(domains);
-    free(networks);
+    VIR_FREE(domains);
+    VIR_FREE(networks);
     if (xml)
         xmlFreeDoc(xml);
     if (fd != -1)
         close(fd);
-    free(privconn);
+    VIR_FREE(privconn);
     conn->privateData = NULL;
     return VIR_DRV_OPEN_ERROR;
 }
@@ -945,7 +948,7 @@ static int testOpen(virConnectPtr conn,
 static int testClose(virConnectPtr conn)
 {
     GET_CONNECTION(conn, -1);
-    free (privconn);
+    VIR_FREE (privconn);
     conn->privateData = conn;
     return 0;
 }
@@ -1361,11 +1364,11 @@ static int testDomainSave(virDomainPtr domain,
     if (safewrite(fd, xml, len) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
                   _("cannot write metadata"));
-        free(xml);
+        VIR_FREE(xml);
         close(fd);
         return (-1);
     }
-    free(xml);
+    VIR_FREE(xml);
     if (close(fd) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
                   _("cannot save domain data"));
@@ -1419,8 +1422,7 @@ static int testDomainRestore(virConnectPtr conn,
         close(fd);
         return (-1);
     }
-    xml = malloc(len+1);
-    if (!xml) {
+    if (VIR_ALLOC_N(xml, len+1) < 0) {
         testError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "xml");
         close(fd);
         return (-1);
@@ -1435,7 +1437,7 @@ static int testDomainRestore(virConnectPtr conn,
     close(fd);
     domid = privconn->nextDomID++;
     ret = testLoadDomainFromDoc(conn, domid, xml);
-    free(xml);
+    VIR_FREE(xml);
     return ret < 0 ? -1 : 0;
 }
 

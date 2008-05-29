@@ -26,6 +26,7 @@
 #include "xml.h"
 #include "buf.h"
 #include "util.h"
+#include "memory.h"
 #include "xs_internal.h"        /* for xenStoreDomainGetNetworkID */
 #include "xen_unified.h"
 #include "xend_internal.h"      /* for is_sound_* functions */
@@ -274,19 +275,18 @@ virConvertCpuSet(virConnectPtr conn, const char *str, int maxcpu) {
     if (maxcpu <= 0)
         maxcpu = 4096;
 
-    cpuset = calloc(maxcpu, sizeof(*cpuset));
-    if (cpuset == NULL) {
+    if (VIR_ALLOC_N(cpuset, maxcpu) < 0) {
         virXMLError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
         return(NULL);
     }
 
     ret = virParseCpuSet(conn, &cur, 0, cpuset, maxcpu);
     if (ret < 0) {
-        free(cpuset);
+        VIR_FREE(cpuset);
         return(NULL);
     }
     res = virSaveCpuSet(conn, cpuset, maxcpu);
-    free(cpuset);
+    VIR_FREE(cpuset);
     return (res);
 }
 
@@ -309,7 +309,7 @@ char * virBuildSoundStringFromXML(virConnectPtr conn,
     char *sound;
     xmlNodePtr *nodes = NULL;
 
-    if (!(sound = calloc(1, size+1))) {
+    if (VIR_ALLOC_N(sound, size + 1) < 0) {
         virXMLError(conn, VIR_ERR_NO_MEMORY,
                     _("failed to allocate sound string"), 0);
         return NULL;
@@ -332,7 +332,7 @@ char * virBuildSoundStringFromXML(virConnectPtr conn,
             if (!is_sound_model_valid(model)) {
                 virXMLError(conn, VIR_ERR_XML_ERROR,
                             _("unknown sound model type"), 0);
-                free(model);
+                VIR_FREE(model);
                 goto error;
             }
 
@@ -345,21 +345,21 @@ char * virBuildSoundStringFromXML(virConnectPtr conn,
                 if (*sound && (size >= (strlen(model) + 1))) {
                     strncat(sound, ",", size--);
                 } else if (*sound || size < strlen(model)) {
-                    free(model);
+                    VIR_FREE(model);
                     continue;
                 }
                 strncat(sound, model, size);
                 size -= strlen(model);
             }
 
-            free(model);
+            VIR_FREE(model);
         }
     }
-    free(nodes);
+    VIR_FREE(nodes);
     return sound;
 
   error:
-    free(nodes);
+    VIR_FREE(nodes);
     return NULL;
 }
 #endif /* !PROXY */
@@ -590,11 +590,11 @@ virXPathNodeSet(const char *xpath, xmlXPathContextPtr ctxt,
 
     ret = obj->nodesetval->nodeNr;
     if (list != NULL) {
-        *list = malloc(ret * sizeof(**list));
-        if (*list == NULL) {
+        if (VIR_ALLOC_N(*list, ret) < 0) {
             virXMLError(NULL, VIR_ERR_NO_MEMORY,
                         _("allocate string array"),
                         ret * sizeof(**list));
+            ret = -1;
         } else {
             memcpy(*list, obj->nodesetval->nodeTab,
                    ret * sizeof(xmlNodePtr));
@@ -1026,7 +1026,7 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
         fdfile = xmlGetProp(cur, BAD_CAST "file");
         if (fdfile != NULL) {
             virBufferVSprintf(buf, "(fda '%s')", fdfile);
-            free(fdfile);
+            VIR_FREE(fdfile);
         }
     }
 
@@ -1040,7 +1040,7 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
         fdfile = xmlGetProp(cur, BAD_CAST "file");
         if (fdfile != NULL) {
             virBufferVSprintf(buf, "(fdb '%s')", fdfile);
-            free(fdfile);
+            VIR_FREE(fdfile);
         }
     }
 
@@ -1118,7 +1118,7 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
             }
             xmlFree(bus);
         }
-        free(nodes);
+        VIR_FREE(nodes);
         nodes = NULL;
     }
 
@@ -1157,19 +1157,19 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
         if (!(soundstr = virBuildSoundStringFromXML(conn, ctxt)))
             goto error;
         virBufferVSprintf(buf, "(soundhw '%s')", soundstr);
-        free(soundstr);
+        VIR_FREE(soundstr);
     }
 
     str = virXPathString("string(/domain/clock/@offset)", ctxt);
     if (str != NULL && STREQ(str, "localtime")) {
         virBufferAddLit(buf, "(localtime 1)");
     }
-    free(str);
+    VIR_FREE(str);
 
     return (0);
 
   error:
-    free(nodes);
+    VIR_FREE(nodes);
     return (-1);
 }
 
@@ -1531,7 +1531,7 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED,
             }
             virNetworkFree(network);
             virBufferVSprintf(buf, "(bridge '%s')", bridge);
-            free(bridge);
+            VIR_FREE(bridge);
         }
     }
     if (script != NULL)
@@ -1578,7 +1578,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
 {
     xmlDocPtr xml = NULL;
     xmlNodePtr node;
-    char *nam = NULL;
+    char *nam = NULL, *tmp;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     xmlChar *prop;
     xmlParserCtxtPtr pctxt;
@@ -1675,30 +1675,29 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
          * it in a range format guaranteed to be understood by Xen.
          */
         if (maxcpu > 0) {
-            cpuset = malloc(maxcpu * sizeof(*cpuset));
-            if (cpuset != NULL) {
-                res = virParseCpuSet(conn, &cur, 0, cpuset, maxcpu);
-                if (res > 0) {
-                    ranges = virSaveCpuSet(conn, cpuset, maxcpu);
-                    if (ranges != NULL) {
-                        virBufferVSprintf(&buf, "(cpus '%s')", ranges);
-                        free(ranges);
-                    }
-                }
-                free(cpuset);
-                if (res < 0)
-                    goto error;
-            } else {
+            if (VIR_ALLOC_N(cpuset, maxcpu) < 0) {
                 virXMLError(conn, VIR_ERR_NO_MEMORY, xmldesc, 0);
+                goto error;
             }
+            res = virParseCpuSet(conn, &cur, 0, cpuset, maxcpu);
+            if (res > 0) {
+                ranges = virSaveCpuSet(conn, cpuset, maxcpu);
+                if (ranges != NULL) {
+                    virBufferVSprintf(&buf, "(cpus '%s')", ranges);
+                    VIR_FREE(ranges);
+                }
+            }
+            VIR_FREE(cpuset);
+            if (res < 0)
+                goto error;
         }
-        free(str);
+        VIR_FREE(str);
     }
 
     str = virXPathString("string(/domain/uuid[1])", ctxt);
     if (str != NULL) {
         virBufferVSprintf(&buf, "(uuid '%s')", str);
-        free(str);
+        VIR_FREE(str);
     }
 
     str = virXPathString("string(/domain/bootloader[1])", ctxt);
@@ -1709,7 +1708,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
          * significant and should be discarded
          */
         bootloader = 1;
-        free(str);
+        VIR_FREE(str);
     } else if (virXPathNumber("count(/domain/bootloader)", ctxt, &f) == 0
                && (f > 0)) {
         virBufferAddLit(&buf, "(bootloader)");
@@ -1726,25 +1725,25 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
          * ignore the bootloader_args value unless a bootloader was specified
          */
         virBufferVSprintf(&buf, "(bootloader_args '%s')", str);
-        free(str);
+        VIR_FREE(str);
     }
 
     str = virXPathString("string(/domain/on_poweroff[1])", ctxt);
     if (str != NULL) {
         virBufferVSprintf(&buf, "(on_poweroff '%s')", str);
-        free(str);
+        VIR_FREE(str);
     }
 
     str = virXPathString("string(/domain/on_reboot[1])", ctxt);
     if (str != NULL) {
         virBufferVSprintf(&buf, "(on_reboot '%s')", str);
-        free(str);
+        VIR_FREE(str);
     }
 
     str = virXPathString("string(/domain/on_crash[1])", ctxt);
     if (str != NULL) {
         virBufferVSprintf(&buf, "(on_crash '%s')", str);
-        free(str);
+        VIR_FREE(str);
     }
 
     if (!bootloader) {
@@ -1810,11 +1809,11 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
             res = virDomainParseXMLDiskDesc(conn, nodes[i], &buf,
                                             hvm, xendConfigVersion);
             if (res != 0) {
-                free(nodes);
+                VIR_FREE(nodes);
                 goto error;
             }
         }
-        free(nodes);
+        VIR_FREE(nodes);
     }
 
     nb_nodes = virXPathNodeSet("/domain/devices/interface", ctxt, &nodes);
@@ -1825,12 +1824,12 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
                 virDomainParseXMLIfDesc(conn, nodes[i], &buf, hvm,
                                         xendConfigVersion);
             if (res != 0) {
-                free(nodes);
+                VIR_FREE(nodes);
                 goto error;
             }
             virBufferAddLit(&buf, ")");
         }
-        free(nodes);
+        VIR_FREE(nodes);
     }
 
     /* New style PV graphics config xen >= 3.0.4,
@@ -1842,11 +1841,11 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
             for (i = 0; i < nb_nodes; i++) {
                 res = virDomainParseXMLGraphicsDescVFB(conn, nodes[i], &buf);
                 if (res != 0) {
-                    free(nodes);
+                    VIR_FREE(nodes);
                     goto error;
                 }
             }
-            free(nodes);
+            VIR_FREE(nodes);
         }
     }
 
@@ -1860,7 +1859,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
     if (name != NULL)
         *name = nam;
     else
-        free(nam);
+        VIR_FREE(nam);
 
     if (virBufferError(&buf)) {
         virXMLError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
@@ -1870,7 +1869,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
     return virBufferContentAndReset(&buf);
 
   error:
-    free(nam);
+    VIR_FREE(nam);
     if (name != NULL)
         *name = NULL;
     xmlXPathFreeContext(ctxt);
@@ -1878,7 +1877,8 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
         xmlFreeDoc(xml);
     if (pctxt != NULL)
         xmlFreeParserCtxt(pctxt);
-    free(virBufferContentAndReset(&buf));
+    tmp = virBufferContentAndReset(&buf);
+    VIR_FREE(tmp);
     return (NULL);
 }
 

@@ -47,7 +47,7 @@
 #include "event.h"
 #include "buf.h"
 #include "util.h"
-
+#include "memory.h"
 #include "util-lib.c"
 
 #ifndef MIN
@@ -302,19 +302,14 @@ fread_file_lim (FILE *stream, size_t max_len, size_t *length)
         size_t requested;
 
         if (size + BUFSIZ + 1 > alloc) {
-            char *new_buf;
-
             alloc += alloc / 2;
             if (alloc < size + BUFSIZ + 1)
                 alloc = size + BUFSIZ + 1;
 
-            new_buf = realloc (buf, alloc);
-            if (!new_buf) {
+            if (VIR_ALLOC_N(buf, alloc) < 0) {
                 save_errno = errno;
                 break;
             }
-
-            buf = new_buf;
         }
 
         /* Ensure that (size + requested <= max_len); */
@@ -358,7 +353,7 @@ int __virFileReadAll(const char *path, int maxlen, char **buf)
     }
 
     if (len > maxlen || (int)len != len) {
-        free(s);
+        VIR_FREE(s);
         virLog("File '%s' is too large %d, max %d",
                path, (int)len, maxlen);
         goto error;
