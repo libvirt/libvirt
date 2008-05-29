@@ -283,7 +283,9 @@ virInitialize(void)
 #ifdef WITH_LXC
     if (lxcRegister() == -1) return -1;
 #endif
+#ifdef WITH_LIBVIRTD
     if (storageRegister() == -1) return -1;
+#endif
 #ifdef WITH_REMOTE
     if (remoteRegister () == -1) return -1;
 #endif
