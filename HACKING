@@ -2,6 +2,46 @@ Libvirt contributor guidelines
 ==============================
 
 
+General tips for contributing patches
+=====================================
+
+(1) Discuss any large changes on the mailing list first.  Post patches
+early and listen to feedback.
+
+(2) Post patches in unified diff format.  A command similar to this
+should work:
+
+  diff -urp libvirt.orig/ libvirt.modified/ > libvirt-myfeature.patch
+
+or:
+
+  cvs diff -up > libvirt-myfeature.patch
+
+(3) Split large changes into a series of smaller patches, self-contained
+if possible, with an explanation of each patch and an explanation of how
+the sequence of patches fits together.
+
+(4) Make sure your patches apply against libvirt CVS.  Developers
+only follow CVS and don't care much about released versions.
+
+(5) Run the automated tests on your code before submitting any changes.
+In particular, configure with compile warnings set to -Werror:
+
+  ./configure --enable-compile-warnings=error
+
+and run the tests:
+
+  make check
+  make syntax-check
+  make -C tests valgrind
+
+The latter test checks for memory leaks.
+
+(6) Update tests and/or documentation, particularly if you are adding
+a new feature or changing the output of a program.
+
+
+
 Code indentation
 ================
 Libvirt's C source code generally adheres to some basic code-formatting
