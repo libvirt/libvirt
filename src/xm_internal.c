@@ -2004,20 +2004,15 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
         char *ranges;
 
         ranges = virConvertCpuSet(conn, cpus, 0);
-        if (ranges != NULL) {
-            VIR_FREE(cpus);
-            if (xenXMConfigSetString(conf, "cpus", ranges) < 0) {
-                VIR_FREE(ranges);
-                goto error;
-            }
-            VIR_FREE(ranges);
-        } else {
-            if (xenXMConfigSetString(conf, "cpus", cpus) < 0) {
-                VIR_FREE(cpus);
-                goto error;
-            }
-            VIR_FREE(cpus);
+        VIR_FREE(cpus);
+        if (ranges == NULL) {
+            goto error;
         }
+        if (xenXMConfigSetString(conf, "cpus", ranges) < 0) {
+            VIR_FREE(ranges);
+            goto error;
+        }
+        VIR_FREE(ranges);
     }
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type)", ctxt);
