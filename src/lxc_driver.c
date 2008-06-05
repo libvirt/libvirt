@@ -328,6 +328,8 @@ static int lxcDomainUndefine(virDomainPtr dom)
 
     vm->configFile[0] = '\0';
 
+    lxcDeleteTtyPidFile(vm);
+
     lxcRemoveInactiveVM(driver, vm);
 
     return 0;
@@ -798,6 +800,10 @@ static int lxcVmStart(virConnectPtr conn,
         lxcTtyForward(vm->parentTty, vm->containerTtyFd);
     }
 
+    if (lxcStoreTtyPid(driver, vm)) {
+        DEBUG0("unable to store tty pid");
+    }
+
     close(vm->parentTty);
     close(vm->containerTtyFd);
 
@@ -943,7 +949,7 @@ static int lxcVMCleanup(lxc_driver_t *driver, lxc_vm_t * vm)
     while (((waitRc = waitpid(vm->def->id, &childStatus, 0)) == -1) &&
            errno == EINTR);
 
-    if (waitRc != vm->def->id) {
+    if ((waitRc != vm->def->id) && (errno != ECHILD)) {
         lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                  _("waitpid failed to wait for container %d: %d %s"),
                  vm->def->id, waitRc, strerror(errno));
@@ -958,6 +964,11 @@ static int lxcVMCleanup(lxc_driver_t *driver, lxc_vm_t * vm)
     }
 
 kill_tty:
+    if (2 > vm->pid) {
+        DEBUG("not killing tty process with pid %d", vm->pid);
+        goto tty_error_out;
+    }
+
     if (0 > (kill(vm->pid, SIGKILL))) {
         if (ESRCH != errno) {
             lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -971,7 +982,7 @@ kill_tty:
     while (((waitRc = waitpid(vm->pid, &childStatus, 0)) == -1) &&
            errno == EINTR);
 
-    if (waitRc != vm->pid) {
+    if ((waitRc != vm->pid) && (errno != ECHILD)) {
         lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                  _("waitpid failed to wait for tty %d: %d %s"),
                  vm->pid, waitRc, strerror(errno));
@@ -980,6 +991,7 @@ kill_tty:
 tty_error_out:
     vm->state = VIR_DOMAIN_SHUTOFF;
     vm->pid = -1;
+    lxcDeleteTtyPidFile(vm);
     vm->def->id = -1;
     driver->nactivevms--;
     driver->ninactivevms++;
@@ -1063,6 +1075,7 @@ static int lxcStartup(void)
 static void lxcFreeDriver(lxc_driver_t *driver)
 {
     free(driver->configDir);
+    free(driver->stateDir);
     free(driver);
 }
 

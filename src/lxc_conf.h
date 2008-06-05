@@ -71,6 +71,8 @@ struct __lxc_vm {
     char configFile[PATH_MAX];
     char configFileBase[PATH_MAX];
 
+    char ttyPidFile[PATH_MAX];
+
     int parentTty;
     int containerTtyFd;
     char *containerTty;
@@ -86,6 +88,7 @@ struct __lxc_driver {
     int nactivevms;
     int ninactivevms;
     char* configDir;
+    char* stateDir;
 };
 
 /* Types and structs */
@@ -124,6 +127,7 @@ lxc_vm_t *lxcFindVMByUUID(const lxc_driver_t *driver,
                           const unsigned char *uuid);
 lxc_vm_t *lxcFindVMByName(const lxc_driver_t *driver,
                           const char *name);
+int lxcCheckContainerProcess(lxc_vm_def_t *vm);
 void lxcRemoveInactiveVM(lxc_driver_t *driver,
                          lxc_vm_t *vm);
 void lxcFreeVMs(lxc_vm_t *vms);
@@ -133,6 +137,9 @@ int lxcDeleteConfig(virConnectPtr conn,
                     lxc_driver_t *driver,
                     const char *configFile,
                     const char *name);
+int lxcStoreTtyPid(const lxc_driver_t *driver, lxc_vm_t *vm);
+int lxcLoadTtyPid(const lxc_driver_t *driver, lxc_vm_t *vm);
+int lxcDeleteTtyPidFile(const lxc_vm_t *vm);
 
 void lxcError(virConnectPtr conn,
               virDomainPtr dom,

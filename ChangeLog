@@ -1,3 +1,15 @@
+Wed Jun  4 23:02:21 PST 2008 David L. Leskovec <dlesko@linux.vnet.ibm.com>
+
+	* src/lxc_driver.c: Add sanity of tty pid before kill()
+	Ignore ECHILD errors during VM cleanup
+	Call functions to store tty pid and cleanup tty pid file
+	* src/lxc_conf.h: Add function to verify container process exists
+	Add facilities to manage storing the tty forward process pid
+	* src/lxc_conf.c: Add function to verify container process exists
+	Call function to verify container process during config load
+	Add facilities to manage storing the tty forward process pid
+	Call function to load tty pid during load config
+
 Tue Jun  3 08:58:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/xm_internal.c: If vcpu cpuset attribute is invalid
