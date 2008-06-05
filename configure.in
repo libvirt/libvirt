@@ -60,6 +60,10 @@ AM_PROG_CC_C_O
 
 LIBVIRT_COMPILE_WARNINGS([maximum])
 
+dnl Support large files / 64 bit seek offsets.
+dnl Use --disable-largefile if you don't want this.
+AC_SYS_LARGEFILE
+
 dnl Availability of various common functions (non-fatal if missing).
 AC_CHECK_FUNCS([cfmakeraw regexec uname sched_getaffinity])
 
@@ -981,8 +985,6 @@ AC_SUBST([CYGWIN_EXTRA_LDFLAGS])
 AC_SUBST([CYGWIN_EXTRA_LIBADD])
 AC_SUBST([CYGWIN_EXTRA_PYTHON_LIBADD])
 AC_SUBST([MINGW_EXTRA_LDFLAGS])
-
-AC_SYS_LARGEFILE
 
 # Set LV_LIBTOOL_OBJDIR to "." or $lt_cv_objdir, depending on whether
 # we're building shared libraries.  This is the name of the directory

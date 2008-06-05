@@ -1,3 +1,18 @@
+Thu Jun  5 14:10:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	virDomainBlockPeek call
+	* configure.in: Document AC_SYS_LARGEFILE.
+	* docs/hvsupport.html.in: Document HV support for virDomainBlockPeek.
+	* include/libvirt/libvirt.h.in, src/driver.h, src/libvirt.c,
+	src/libvirt_sym.version: Add virDomainBlockPeek infrastructure.
+	* src/qemu_driver.c, src/test.c: Null versions of this call.
+	* src/xen_unified.c, src/xend_internal.c, src/xend_internal.h,
+	src/xm_internal.c, src/xm_internal.h: Xen implementation.
+	* tests/sexpr2xmldata/sexpr2xml-curmem.xml,
+	tests/sexpr2xmldata/sexpr2xml-no-source-cdrom.xml: XML output
+	has been reordered slightly in the Xen driver, but should be
+	functionally the same.
+
 Wed Jun  4 23:02:21 PST 2008 David L. Leskovec <dlesko@linux.vnet.ibm.com>
 
 	* src/lxc_driver.c: Add sanity of tty pid before kill()

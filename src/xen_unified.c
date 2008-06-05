@@ -1235,6 +1235,29 @@ xenUnifiedDomainInterfaceStats (virDomainPtr dom, const char *path,
 }
 
 static int
+xenUnifiedDomainBlockPeek (virDomainPtr dom, const char *path,
+                           unsigned long long offset, size_t size,
+                           void *buffer)
+{
+    int r;
+    GET_PRIVATE (dom->conn);
+
+    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
+        r = xenDaemonDomainBlockPeek (dom, path, offset, size, buffer);
+        if (r != -2) return r;
+        /* r == -2 means declined, so fall through to XM driver ... */
+    }
+
+    if (priv->opened[XEN_UNIFIED_XM_OFFSET]) {
+        if (xenXMDomainBlockPeek (dom, path, offset, size, buffer) == 0)
+            return 0;
+    }
+
+    xenUnifiedError (dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
+static int
 xenUnifiedNodeGetCellsFreeMemory (virConnectPtr conn, unsigned long long *freeMems,
                                   int startCell, int maxCells)
 {
@@ -1329,6 +1352,7 @@ static virDriver xenUnifiedDriver = {
     .domainMigrateFinish		= xenUnifiedDomainMigrateFinish,
     .domainBlockStats	= xenUnifiedDomainBlockStats,
     .domainInterfaceStats = xenUnifiedDomainInterfaceStats,
+    .domainBlockPeek	= xenUnifiedDomainBlockPeek,
     .nodeGetCellsFreeMemory = xenUnifiedNodeGetCellsFreeMemory,
     .getFreeMemory = xenUnifiedNodeGetFreeMemory,
 };

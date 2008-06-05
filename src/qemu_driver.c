@@ -3521,6 +3521,7 @@ static virDriver qemuDriver = {
     NULL, /* domainMigrateFinish */
     qemudDomainBlockStats, /* domainBlockStats */
     qemudDomainInterfaceStats, /* domainInterfaceStats */
+    NULL, /* domainBlockPeek */
 #if HAVE_NUMACTL
     qemudNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
     qemudNodeGetFreeMemory,  /* getFreeMemory */

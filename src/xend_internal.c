@@ -18,6 +18,8 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/errno.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
@@ -1705,6 +1707,219 @@ error:
     return ret;
 }
 
+typedef int
+  (*sexp_blockdevs_cb)
+  (virConnectPtr conn, void *data,
+   int isBlock, int cdrom, int isNoSrcCdrom, int hvm,
+   const char *drvName, const char *drvType,
+   const char *src, const char *dst,
+   const char *mode);
+
+/**
+ * xend_parse_sexp_blockdevs:
+ * @conn: connection
+ * @root: root sexpr
+ * @xendConfigVersion: version of xend
+ * @fn: callback function
+ * @data: optional data for callback function
+ *
+ * This parses out block devices from the domain sexpr and calls
+ * fn (conn, data, ...) for each block device found.
+ *
+ * Returns 0 if successful or -1 if failed.
+ */
+static int
+xend_parse_sexp_blockdevs (virConnectPtr conn, struct sexpr *root,
+                           int xendConfigVersion,
+                           sexp_blockdevs_cb fn, void *data)
+{
+    struct sexpr *cur, *node;
+    int hvm;
+
+    hvm = sexpr_lookup(root, "domain/image/hvm") ? 1 : 0;
+
+    for (cur = root; cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
+        node = cur->u.s.car;
+        /* Normally disks are in a (device (vbd ...)) block
+           but blktap disks ended up in a differently named
+           (device (tap ....)) block.... */
+        if (sexpr_lookup(node, "device/vbd") ||
+            sexpr_lookup(node, "device/tap")) {
+            char *offset;
+            int ret = -1;
+            int isBlock = 0;
+            int cdrom = 0;
+            int isNoSrcCdrom = 0;
+            char *drvName = NULL;
+            char *drvType = NULL;
+            const char *src = NULL;
+            const char *dst = NULL;
+            const char *mode = NULL;
+
+            /* Again dealing with (vbd...) vs (tap ...) differences */
+            if (sexpr_lookup(node, "device/vbd")) {
+                src = sexpr_node(node, "device/vbd/uname");
+                dst = sexpr_node(node, "device/vbd/dev");
+                mode = sexpr_node(node, "device/vbd/mode");
+            } else {
+                src = sexpr_node(node, "device/tap/uname");
+                dst = sexpr_node(node, "device/tap/dev");
+                mode = sexpr_node(node, "device/tap/mode");
+            }
+
+            if (dst == NULL) {
+                virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("domain information incomplete, vbd has no dev"));
+                goto bad_parse;
+            }
+
+            if (src == NULL) {
+                /* There is a case without the uname to the CD-ROM device */
+                offset = strchr(dst, ':');
+                if (offset) {
+                    if (hvm && STREQ(offset, ":cdrom")) {
+                        isNoSrcCdrom = 1;
+                    }
+                    offset[0] = '\0';
+                }
+                if (!isNoSrcCdrom) {
+                    virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("domain information incomplete, vbd has no src"));
+                    goto bad_parse;
+                }
+            }
+
+            if (!isNoSrcCdrom) {
+                offset = strchr(src, ':');
+                if (!offset) {
+                    virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("cannot parse vbd filename, missing driver name"));
+                    goto bad_parse;
+                }
+
+                if (VIR_ALLOC_N(drvName, (offset-src)+1) < 0) {
+                    virXendError(conn, VIR_ERR_NO_MEMORY,
+                                 _("allocate new buffer"));
+                    goto bad_parse;
+                }
+                strncpy(drvName, src, (offset-src));
+                drvName[offset-src] = '\0';
+
+                src = offset + 1;
+
+                if (STREQ (drvName, "tap")) {
+                    offset = strchr(src, ':');
+                    if (!offset) {
+                        virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                                     _("cannot parse vbd filename, missing driver type"));
+                        goto bad_parse;
+                    }
+
+                    if (VIR_ALLOC_N(drvType, (offset-src)+1)< 0) {
+                        virXendError(conn, VIR_ERR_NO_MEMORY,
+                                     _("allocate new buffer"));
+                        goto bad_parse;
+                    }
+                    strncpy(drvType, src, (offset-src));
+                    drvType[offset-src] = '\0';
+                    src = offset + 1;
+                    /* Its possible to use blktap driver for block devs
+                       too, but kinda pointless because blkback is better,
+                       so we assume common case here. If blktap becomes
+                       omnipotent, we can revisit this, perhaps stat()'ing
+                       the src file in question */
+                    isBlock = 0;
+                } else if (STREQ(drvName, "phy")) {
+                    isBlock = 1;
+                } else if (STREQ(drvName, "file")) {
+                    isBlock = 0;
+                }
+            }
+
+            if (STREQLEN (dst, "ioemu:", 6))
+                dst += 6;
+
+            /* New style disk config from Xen >= 3.0.3 */
+            if (xendConfigVersion > 1) {
+                offset = strrchr(dst, ':');
+                if (offset) {
+                    if (STREQ (offset, ":cdrom")) {
+                        cdrom = 1;
+                    } else if (STREQ (offset, ":disk")) {
+                        /* The default anyway */
+                    } else {
+                        /* Unknown, lets pretend its a disk too */
+                    }
+                    offset[0] = '\0';
+                }
+            }
+
+            /* Call the callback function. */
+            ret = fn (conn, data, isBlock, cdrom, isNoSrcCdrom, hvm,
+                      drvName, drvType, src, dst, mode);
+
+        bad_parse:
+            VIR_FREE(drvName);
+            VIR_FREE(drvType);
+
+            if (ret == -1) return -1;
+        }
+    }
+
+    return 0;
+}
+
+static int
+xend_parse_sexp_desc_blockdev (virConnectPtr conn ATTRIBUTE_UNUSED,
+                               void *data,
+                               int isBlock, int cdrom, int isNoSrcCdrom,
+                               int hvm,
+                               const char *drvName, const char *drvType,
+                               const char *src, const char *dst,
+                               const char *mode)
+{
+    virBuffer *buf = (virBuffer *) data;
+    const char *bus = NULL;
+
+    if (!isNoSrcCdrom) {
+        virBufferVSprintf(buf, "    <disk type='%s' device='%s'>\n",
+                          isBlock ? "block" : "file",
+                          cdrom ? "cdrom" : "disk");
+        if (drvType) {
+            virBufferVSprintf(buf, "      <driver name='%s' type='%s'/>\n", drvName, drvType);
+        } else {
+            virBufferVSprintf(buf, "      <driver name='%s'/>\n", drvName);
+        }
+        if (isBlock) {
+            virBufferVSprintf(buf, "      <source dev='%s'/>\n", src);
+        } else {
+            virBufferVSprintf(buf, "      <source file='%s'/>\n", src);
+        }
+    } else {
+        /* This case is the cdrom device only */
+        virBufferAddLit(buf, "    <disk device='cdrom'>\n");
+    }
+    if (STRPREFIX(dst, "xvd") || !hvm) {
+        bus = "xen";
+    } else if (STRPREFIX(dst, "sd")) {
+        bus = "scsi";
+    } else {
+        bus = "ide";
+    }
+    virBufferVSprintf(buf, "      <target dev='%s' bus='%s'/>\n",
+                      dst, bus);
+
+    /* XXX should we force mode == r, if cdrom==1, or assume
+       xend has already done this ? */
+    if ((mode != NULL) && (STREQ (mode, "r")))
+        virBufferAddLit(buf, "      <readonly/>\n");
+    else if ((mode != NULL) && (STREQ (mode, "w!")))
+        virBufferAddLit(buf, "      <shareable/>\n");
+    virBufferAddLit(buf, "    </disk>\n");
+
+    return 0;
+}
+
 /**
  * xend_parse_sexp_desc:
  * @conn: the connection associated with the XML
@@ -1849,164 +2064,15 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
     if ((tmp != NULL) && (tmp[0] != 0))
         virBufferVSprintf(&buf, "    <emulator>%s</emulator>\n", tmp);
 
+    /* append block devices */
+    if (xend_parse_sexp_blockdevs (conn, root, xendConfigVersion,
+                                   xend_parse_sexp_desc_blockdev, &buf) == -1)
+        goto error;
+
+    /* append network devices and framebuffer */
     for (cur = root; cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
         node = cur->u.s.car;
-        /* Normally disks are in a (device (vbd ...)) block
-           but blktap disks ended up in a differently named
-           (device (tap ....)) block.... */
-        if (sexpr_lookup(node, "device/vbd") ||
-            sexpr_lookup(node, "device/tap")) {
-            char *offset;
-            int isBlock = 0;
-            int cdrom = 0;
-            int isNoSrcCdrom = 0;
-            char *drvName = NULL;
-            char *drvType = NULL;
-            const char *src = NULL;
-            const char *dst = NULL;
-            const char *mode = NULL;
-            const char *bus = NULL;
-
-            /* Again dealing with (vbd...) vs (tap ...) differences */
-            if (sexpr_lookup(node, "device/vbd")) {
-                src = sexpr_node(node, "device/vbd/uname");
-                dst = sexpr_node(node, "device/vbd/dev");
-                mode = sexpr_node(node, "device/vbd/mode");
-            } else {
-                src = sexpr_node(node, "device/tap/uname");
-                dst = sexpr_node(node, "device/tap/dev");
-                mode = sexpr_node(node, "device/tap/mode");
-            }
-
-            if (dst == NULL) {
-                virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("domain information incomplete, vbd has no dev"));
-                goto bad_parse;
-            }
-
-            if (src == NULL) {
-                /* There is a case without the uname to the CD-ROM device */
-                offset = strchr(dst, ':');
-                if (offset) {
-                    if (hvm && STREQ( offset , ":cdrom")) {
-                        isNoSrcCdrom = 1;
-                    }
-                    offset[0] = '\0';
-                }
-                if (!isNoSrcCdrom) {
-                    virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 _("domain information incomplete, vbd has no src"));
-                    goto bad_parse;
-                }
-            }
-
-            if (!isNoSrcCdrom) {
-                offset = strchr(src, ':');
-                if (!offset) {
-                    virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 _("cannot parse vbd filename, missing driver name"));
-                    goto bad_parse;
-                }
-
-                if (VIR_ALLOC_N(drvName, (offset-src)+1) < 0) {
-                    virXendError(conn, VIR_ERR_NO_MEMORY,
-                                 _("allocate new buffer"));
-                    goto bad_parse;
-                }
-                strncpy(drvName, src, (offset-src));
-                drvName[offset-src] = '\0';
-
-                src = offset + 1;
-
-                if (STREQ(drvName, "tap")) {
-                    offset = strchr(src, ':');
-                    if (!offset) {
-                        virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-                                     _("cannot parse vbd filename, missing driver type"));
-                        goto bad_parse;
-                    }
-
-                    if (VIR_ALLOC_N(drvType, (offset-src)+1)< 0) {
-                        virXendError(conn, VIR_ERR_NO_MEMORY,
-                                     _("allocate new buffer"));
-                        goto bad_parse;
-                    }
-                    strncpy(drvType, src, (offset-src));
-                    drvType[offset-src] = '\0';
-                    src = offset + 1;
-                    /* Its possible to use blktap driver for block devs
-                       too, but kinda pointless because blkback is better,
-                       so we assume common case here. If blktap becomes
-                       omnipotent, we can revisit this, perhaps stat()'ing
-                       the src file in question */
-                    isBlock = 0;
-                } else if (STREQ(drvName, "phy")) {
-                    isBlock = 1;
-                } else if (STREQ(drvName, "file")) {
-                    isBlock = 0;
-                }
-            }
-
-            if (STRPREFIX(dst, "ioemu:"))
-                dst += 6;
-
-            /* New style disk config from Xen >= 3.0.3 */
-            if (xendConfigVersion > 1) {
-                offset = strrchr(dst, ':');
-                if (offset) {
-                    if (STREQ(offset, ":cdrom")) {
-                        cdrom = 1;
-                    } else if (STREQ(offset, ":disk")) {
-                        /* The default anyway */
-                    } else {
-                        /* Unknown, lets pretend its a disk too */
-                    }
-                    offset[0] = '\0';
-                }
-            }
-
-            if (!isNoSrcCdrom) {
-                virBufferVSprintf(&buf, "    <disk type='%s' device='%s'>\n",
-                                  isBlock ? "block" : "file",
-                                  cdrom ? "cdrom" : "disk");
-                if (drvType) {
-                    virBufferVSprintf(&buf, "      <driver name='%s' type='%s'/>\n", drvName, drvType);
-                } else {
-                    virBufferVSprintf(&buf, "      <driver name='%s'/>\n", drvName);
-                }
-                if (isBlock) {
-                    virBufferVSprintf(&buf, "      <source dev='%s'/>\n", src);
-                } else {
-                    virBufferVSprintf(&buf, "      <source file='%s'/>\n", src);
-                }
-            } else {
-                /* This case is the cdrom device only */
-                virBufferAddLit(&buf, "    <disk device='cdrom'>\n");
-            }
-
-            if (STRPREFIX(dst, "xvd") || !hvm) {
-                bus = "xen";
-            } else if (STRPREFIX(dst, "sd")) {
-                bus = "scsi";
-            } else {
-                bus = "ide";
-            }
-            virBufferVSprintf(&buf, "      <target dev='%s' bus='%s'/>\n",
-                              dst, bus);
-
-
-            /* XXX should we force mode == r, if cdrom==1, or assume
-               xend has already done this ? */
-            if ((mode != NULL) && (STREQ(mode, "r")))
-                virBufferAddLit(&buf, "      <readonly/>\n");
-            else if ((mode != NULL) && (STREQ(mode, "w!")))
-                virBufferAddLit(&buf, "      <shareable/>\n");
-            virBufferAddLit(&buf, "    </disk>\n");
-
-            bad_parse:
-            VIR_FREE(drvName);
-            VIR_FREE(drvType);
-        } else if (sexpr_lookup(node, "device/vif")) {
+        if (sexpr_lookup(node, "device/vif")) {
             const char *tmp2, *model;
             tmp2 = sexpr_node(node, "device/vif/script");
             tmp = sexpr_node(node, "device/vif/bridge");
@@ -4431,6 +4497,111 @@ error:
     sexpr_free(root);
     VIR_FREE(sched_type);
     return (ret);
+}
+
+struct check_path_data {
+    const char *path;
+    int ok;
+};
+
+static int
+check_path (virConnectPtr conn ATTRIBUTE_UNUSED, void *vp,
+            int isBlock ATTRIBUTE_UNUSED,
+            int cdrom, int isNoSrcCdrom,
+            int hvm ATTRIBUTE_UNUSED,
+            const char *drvName ATTRIBUTE_UNUSED,
+            const char *drvType ATTRIBUTE_UNUSED,
+            const char *src, const char *dst ATTRIBUTE_UNUSED,
+            const char *mode ATTRIBUTE_UNUSED)
+{
+    struct check_path_data *data = (struct check_path_data *) vp;
+
+    if (!isNoSrcCdrom && !cdrom && src && STREQ (src, data->path))
+        data->ok = 1;
+
+    return 0;
+}
+
+/**
+ * xenDaemonDomainBlockPeek:
+ * @dom: domain object
+ * @path: path to the file or device
+ * @offset: offset
+ * @size: size
+ * @buffer: return buffer
+ *
+ * Returns 0 if successful, -1 if error, -2 if declined.
+ */
+int
+xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
+                          unsigned long long offset, size_t size,
+                          void *buffer)
+{
+    xenUnifiedPrivatePtr priv;
+    struct sexpr *root;
+    struct check_path_data data;
+    int fd, ret = -1;
+    struct stat statbuf;
+
+    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
+
+    if (domain->id < 0 && priv->xendConfigVersion < 3)
+        return -2;              /* Decline, allow XM to handle it. */
+
+    /* Security check: The path must correspond to a block device. */
+    if (domain->id > 0)
+        root = sexpr_get (domain->conn, "/xend/domain/%d?detail=1",
+                          domain->id);
+    else if (domain->id < 0)
+        root = sexpr_get (domain->conn, "/xend/domain/%s?detail=1",
+                          domain->name);
+    else {
+        /* This call always fails for dom0. */
+        virXendError (domain->conn, VIR_ERR_NO_SUPPORT,
+                      _("domainBlockPeek is not supported for dom0"));
+        return -1;
+    }
+
+    if (!root) {
+        virXendError (domain->conn, VIR_ERR_XEN_CALL, __FUNCTION__);
+        return -1;
+    }
+
+    data.path = path;
+    data.ok = 0;
+
+    if (xend_parse_sexp_blockdevs (domain->conn, root,
+                                   priv->xendConfigVersion,
+                                   check_path, &data) == -1)
+        return -1;
+
+    if (!data.ok) {
+        virXendError (domain->conn, VIR_ERR_INVALID_ARG,
+                      _("invalid path"));
+        return -1;
+    }
+
+    /* The path is correct, now try to open it and get its size. */
+    fd = open (path, O_RDONLY);
+    if (fd == -1 || fstat (fd, &statbuf) == -1) {
+        virXendError (domain->conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        goto done;
+    }
+
+    /* Seek and read. */
+    /* NB. Because we configure with AC_SYS_LARGEFILE, off_t should
+     * be 64 bits on all platforms.
+     */
+    if (lseek (fd, offset, SEEK_SET) == (off_t) -1 ||
+        saferead (fd, buffer, size) == (ssize_t) -1) {
+        virXendError (domain->conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        goto done;
+    }
+
+    ret = 0;
+ done:
+    if (fd >= 0) close (fd);
+    return ret;
 }
 
 #endif /* ! PROXY */

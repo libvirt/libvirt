@@ -60,6 +60,7 @@ int xenXMDomainUndefine(virDomainPtr domain);
 
 virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml);
 char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf);
+int xenXMDomainBlockPeek (virDomainPtr dom, const char *path, unsigned long long offset, size_t size, void *buffer);
 
 #ifdef __cplusplus
 }

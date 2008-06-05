@@ -73,6 +73,7 @@
 	virDomainSetSchedulerParameters;
 	virDomainBlockStats;
 	virDomainInterfaceStats;
+	virDomainBlockPeek;
 	virDomainAttachDevice;
 	virDomainDetachDevice;
 

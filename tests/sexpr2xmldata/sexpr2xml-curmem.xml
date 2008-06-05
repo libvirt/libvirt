@@ -15,17 +15,17 @@
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
   <devices>
+    <disk type='file' device='disk'>
+      <driver name='tap' type='aio'/>
+      <source file='/xen/rhel5.img'/>
+      <target dev='xvda' bus='xen'/>
+    </disk>
     <interface type='bridge'>
       <source bridge='xenbr0'/>
       <target dev='vif5.0'/>
       <mac address='00:16:3e:1d:06:15'/>
       <script path='vif-bridge'/>
     </interface>
-    <disk type='file' device='disk'>
-      <driver name='tap' type='aio'/>
-      <source file='/xen/rhel5.img'/>
-      <target dev='xvda' bus='xen'/>
-    </disk>
     <input type='mouse' bus='xen'/>
     <graphics type='vnc' port='-1'/>
     <console type='pty'>

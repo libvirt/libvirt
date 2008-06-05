@@ -2586,7 +2586,84 @@ virDomainInterfaceStats (virDomainPtr dom, const char *path,
     return -1;
 }
 
+/**
+ * virDomainBlockPeek:
+ * @dom: pointer to the domain object
+ * @path: path to the block device
+ * @offset: offset within block device
+ * @size: size to read
+ * @buffer: return buffer (must be at least size bytes)
+ * @flags: unused, always pass 0
+ *
+ * This function allows you to read the contents of a domain's
+ * disk device.
+ *
+ * Typical uses for this are to determine if the domain has
+ * written a Master Boot Record (indicating that the domain
+ * has completed installation), or to try to work out the state
+ * of the domain's filesystems.
+ *
+ * (Note that in the local case you might try to open the
+ * block device or file directly, but that won't work in the
+ * remote case, nor if you don't have sufficient permission.
+ * Hence the need for this call).
+ *
+ * 'path' must be a device or file corresponding to the domain.
+ * In other words it must be the precise string returned in
+ * a <disk><source dev='...'/></disk> from
+ * virDomainGetXMLDesc.
+ *
+ * 'offset' and 'size' represent an area which must lie entirely
+ * within the device or file.  'size' may be 0 to test if the
+ * call would succeed.
+ *
+ * 'buffer' is the return buffer and must be at least 'size' bytes.
+ *
+ * Returns: 0 in case of success or -1 in case of failure.
+ */
+int
+virDomainBlockPeek (virDomainPtr dom,
+                    const char *path,
+                    unsigned long long offset /* really 64 bits */,
+                    size_t size,
+                    void *buffer,
+                    unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("domain=%p, path=%s, offset=%lld, size=%zi, buffer=%p",
+          dom, path, offset, size, buffer);
 
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError (NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return -1;
+    }
+    conn = dom->conn;
+
+    if (!path) {
+        virLibDomainError (dom, VIR_ERR_INVALID_ARG,
+                           _("path is NULL"));
+        return -1;
+    }
+
+    if (flags != 0) {
+        virLibDomainError (dom, VIR_ERR_INVALID_ARG,
+                           _("flags must be zero"));
+        return -1;
+    }
+
+    /* Allow size == 0 as an access test. */
+    if (size > 0 && !buffer) {
+        virLibDomainError (dom, VIR_ERR_INVALID_ARG,
+                           _("buffer is NULL"));
+        return -1;
+    }
+
+    if (conn->driver->domainBlockPeek)
+        return conn->driver->domainBlockPeek (dom, path, offset, size, buffer);
+
+    virLibDomainError (dom, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
 
 
 /************************************************************************

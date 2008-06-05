@@ -3241,4 +3241,15 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
     return (ret);
 }
 
+int
+xenXMDomainBlockPeek (virDomainPtr dom,
+                      const char *path ATTRIBUTE_UNUSED,
+                      unsigned long long offset ATTRIBUTE_UNUSED,
+                      size_t size ATTRIBUTE_UNUSED,
+                      void *buffer ATTRIBUTE_UNUSED)
+{
+    xenXMError (dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
 #endif /* WITH_XEN */
