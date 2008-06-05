@@ -1,3 +1,19 @@
+Thu Jun  5 22:08:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	virDomainBlockPeek QEMU and remote support
+	* qemud/remote.c, qemud/remote_protocol.x, src/remote_internal.c:
+	  Remote support.
+	* qemud/remote_dispatch_localvars.h,
+	  qemud/remote_dispatch_proc_switch.h,
+	  qemud/remote_dispatch_prototypes.h,
+	  qemud/remote_protocol.c,
+	  qemud/remote_protocol.h:
+	  Generated files for remote support.
+	* src/xen_unified.c, src/driver.h, src/libvirt.c: Small fix -
+	  pass flags around internally.
+	* src/qemu_driver.c: Support for QEMU.
+	* src/xend_internal.c: Remove redundant fstat call from Xen.
+
 Thu Jun  5 14:10:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	virDomainBlockPeek call

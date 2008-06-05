@@ -1237,7 +1237,7 @@ xenUnifiedDomainInterfaceStats (virDomainPtr dom, const char *path,
 static int
 xenUnifiedDomainBlockPeek (virDomainPtr dom, const char *path,
                            unsigned long long offset, size_t size,
-                           void *buffer)
+                           void *buffer, unsigned int flags ATTRIBUTE_UNUSED)
 {
     int r;
     GET_PRIVATE (dom->conn);

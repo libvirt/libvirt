@@ -33,6 +33,7 @@ typedef remote_nonnull_string *remote_string;
 #define REMOTE_NODE_MAX_CELLS 1024
 #define REMOTE_AUTH_SASL_DATA_MAX 65536
 #define REMOTE_AUTH_TYPE_LIST_MAX 20
+#define REMOTE_DOMAIN_BLOCK_PEEK_BUFFER_MAX 65536
 
 typedef char remote_uuid[VIR_UUID_BUFLEN];
 
@@ -262,6 +263,23 @@ struct remote_domain_interface_stats_ret {
         quad_t tx_drop;
 };
 typedef struct remote_domain_interface_stats_ret remote_domain_interface_stats_ret;
+
+struct remote_domain_block_peek_args {
+        remote_nonnull_domain dom;
+        remote_nonnull_string path;
+        u_quad_t offset;
+        u_int size;
+        u_int flags;
+};
+typedef struct remote_domain_block_peek_args remote_domain_block_peek_args;
+
+struct remote_domain_block_peek_ret {
+        struct {
+                u_int buffer_len;
+                char *buffer_val;
+        } buffer;
+};
+typedef struct remote_domain_block_peek_ret remote_domain_block_peek_ret;
 
 struct remote_list_domains_args {
         int maxids;
@@ -1138,6 +1156,7 @@ enum remote_procedure {
         REMOTE_PROC_STORAGE_VOL_GET_PATH = 100,
         REMOTE_PROC_NODE_GET_CELLS_FREE_MEMORY = 101,
         REMOTE_PROC_NODE_GET_FREE_MEMORY = 102,
+        REMOTE_PROC_DOMAIN_BLOCK_PEEK = 103,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -1206,6 +1225,8 @@ extern  bool_t xdr_remote_domain_block_stats_args (XDR *, remote_domain_block_st
 extern  bool_t xdr_remote_domain_block_stats_ret (XDR *, remote_domain_block_stats_ret*);
 extern  bool_t xdr_remote_domain_interface_stats_args (XDR *, remote_domain_interface_stats_args*);
 extern  bool_t xdr_remote_domain_interface_stats_ret (XDR *, remote_domain_interface_stats_ret*);
+extern  bool_t xdr_remote_domain_block_peek_args (XDR *, remote_domain_block_peek_args*);
+extern  bool_t xdr_remote_domain_block_peek_ret (XDR *, remote_domain_block_peek_ret*);
 extern  bool_t xdr_remote_list_domains_args (XDR *, remote_list_domains_args*);
 extern  bool_t xdr_remote_list_domains_ret (XDR *, remote_list_domains_ret*);
 extern  bool_t xdr_remote_num_of_domains_ret (XDR *, remote_num_of_domains_ret*);
@@ -1381,6 +1402,8 @@ extern bool_t xdr_remote_domain_block_stats_args ();
 extern bool_t xdr_remote_domain_block_stats_ret ();
 extern bool_t xdr_remote_domain_interface_stats_args ();
 extern bool_t xdr_remote_domain_interface_stats_ret ();
+extern bool_t xdr_remote_domain_block_peek_args ();
+extern bool_t xdr_remote_domain_block_peek_ret ();
 extern bool_t xdr_remote_list_domains_args ();
 extern bool_t xdr_remote_list_domains_ret ();
 extern bool_t xdr_remote_num_of_domains_ret ();

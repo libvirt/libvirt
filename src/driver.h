@@ -230,7 +230,8 @@ typedef int
                     (virDomainPtr domain,
                      const char *path,
                      unsigned long long offset, size_t size,
-                     void *buffer);
+                     void *buffer,
+                     unsigned int flags);
 
 typedef int
     (*virDrvDomainMigratePrepare)

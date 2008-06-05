@@ -890,6 +890,54 @@ remoteDispatchDomainInterfaceStats (struct qemud_server *server ATTRIBUTE_UNUSED
 }
 
 static int
+remoteDispatchDomainBlockPeek (struct qemud_server *server ATTRIBUTE_UNUSED,
+                               struct qemud_client *client,
+                               remote_message_header *req,
+                               remote_domain_block_peek_args *args,
+                               remote_domain_block_peek_ret *ret)
+{
+    virDomainPtr dom;
+    char *path;
+    unsigned long long offset;
+    size_t size;
+    unsigned int flags;
+    CHECK_CONN (client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "%s", _("domain not found"));
+        return -2;
+    }
+    path = args->path;
+    offset = args->offset;
+    size = args->size;
+    flags = args->flags;
+
+    if (size > REMOTE_DOMAIN_BLOCK_PEEK_BUFFER_MAX) {
+        remoteDispatchError (client, req,
+                             "%s", _("size > maximum buffer size"));
+        return -2;
+    }
+
+    ret->buffer.buffer_len = size;
+    ret->buffer.buffer_val = malloc (size);
+    if (!ret->buffer.buffer_val) {
+        remoteDispatchError (client, req, "%s", strerror (errno));
+        return -2;
+    }
+
+    if (virDomainBlockPeek (dom, path, offset, size,
+                            ret->buffer.buffer_val, flags) == -1) {
+        /* free (ret->buffer.buffer_val); - caller frees */
+        virDomainFree (dom);
+        return -1;
+    }
+    virDomainFree (dom);
+
+    return 0;
+}
+
+static int
 remoteDispatchDomainAttachDevice (struct qemud_server *server ATTRIBUTE_UNUSED,
                                   struct qemud_client *client,
                                   remote_message_header *req,

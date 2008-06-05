@@ -9,6 +9,7 @@ static int remoteDispatchAuthSaslStart (struct qemud_server *server, struct qemu
 static int remoteDispatchAuthSaslStep (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_auth_sasl_step_args *args, remote_auth_sasl_step_ret *ret);
 static int remoteDispatchClose (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, void *ret);
 static int remoteDispatchDomainAttachDevice (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_attach_device_args *args, void *ret);
+static int remoteDispatchDomainBlockPeek (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_block_peek_args *args, remote_domain_block_peek_ret *ret);
 static int remoteDispatchDomainBlockStats (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_block_stats_args *args, remote_domain_block_stats_ret *ret);
 static int remoteDispatchDomainCoreDump (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_core_dump_args *args, void *ret);
 static int remoteDispatchDomainCreate (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_create_args *args, void *ret);

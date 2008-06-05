@@ -2659,7 +2659,8 @@ virDomainBlockPeek (virDomainPtr dom,
     }
 
     if (conn->driver->domainBlockPeek)
-        return conn->driver->domainBlockPeek (dom, path, offset, size, buffer);
+        return conn->driver->domainBlockPeek (dom, path, offset, size,
+                                              buffer, flags);
 
     virLibDomainError (dom, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;

@@ -47,6 +47,15 @@ case REMOTE_PROC_DOMAIN_ATTACH_DEVICE:
         args = (char *) &lv_remote_domain_attach_device_args;
         memset (&lv_remote_domain_attach_device_args, 0, sizeof lv_remote_domain_attach_device_args);
         break;
+case REMOTE_PROC_DOMAIN_BLOCK_PEEK:
+        fn = (dispatch_fn) remoteDispatchDomainBlockPeek;
+        args_filter = (xdrproc_t) xdr_remote_domain_block_peek_args;
+        args = (char *) &lv_remote_domain_block_peek_args;
+        memset (&lv_remote_domain_block_peek_args, 0, sizeof lv_remote_domain_block_peek_args);
+        ret_filter = (xdrproc_t) xdr_remote_domain_block_peek_ret;
+        ret = (char *) &lv_remote_domain_block_peek_ret;
+        memset (&lv_remote_domain_block_peek_ret, 0, sizeof lv_remote_domain_block_peek_ret);
+        break;
 case REMOTE_PROC_DOMAIN_BLOCK_STATS:
         fn = (dispatch_fn) remoteDispatchDomainBlockStats;
         args_filter = (xdrproc_t) xdr_remote_domain_block_stats_args;

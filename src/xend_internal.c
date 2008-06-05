@@ -4541,7 +4541,6 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
     struct sexpr *root;
     struct check_path_data data;
     int fd, ret = -1;
-    struct stat statbuf;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
@@ -4583,7 +4582,7 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
 
     /* The path is correct, now try to open it and get its size. */
     fd = open (path, O_RDONLY);
-    if (fd == -1 || fstat (fd, &statbuf) == -1) {
+    if (fd == -1) {
         virXendError (domain->conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
         goto done;
     }

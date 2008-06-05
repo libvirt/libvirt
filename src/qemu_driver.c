@@ -3163,6 +3163,64 @@ qemudDomainInterfaceStats (virDomainPtr dom,
 #endif
 }
 
+static int
+qemudDomainBlockPeek (virDomainPtr dom,
+                      const char *path,
+                      unsigned long long offset, size_t size,
+                      void *buffer,
+                      unsigned int flags ATTRIBUTE_UNUSED)
+{
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    struct qemud_vm *vm = qemudFindVMByUUID (driver, dom->uuid);
+    int i;
+    int fd, ret = -1;
+
+    if (!vm) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                          _("no domain with matching uuid"));
+        return -1;
+    }
+
+    if (!path || path[0] == '\0') {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                         _("NULL or empty path"));
+        return -1;
+    }
+
+    /* Check the path belongs to this domain. */
+    for (i = 0; i < vm->def->ndisks; ++i) {
+        if (STREQ (vm->def->disks[i].src, path)) goto found;
+    }
+    qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                      _("invalid path"));
+    return -1;
+
+found:
+    /* The path is correct, now try to open it and get its size. */
+    fd = open (path, O_RDONLY);
+    if (fd == -1) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_SYSTEM_ERROR,
+                          "%s", strerror (errno));
+        goto done;
+    }
+
+    /* Seek and read. */
+    /* NB. Because we configure with AC_SYS_LARGEFILE, off_t should
+     * be 64 bits on all platforms.
+     */
+    if (lseek (fd, offset, SEEK_SET) == (off_t) -1 ||
+        saferead (fd, buffer, size) == (ssize_t) -1) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_SYSTEM_ERROR,
+                          "%s", strerror (errno));
+        goto done;
+    }
+
+    ret = 0;
+ done:
+    if (fd >= 0) close (fd);
+    return ret;
+}
+
 static virNetworkPtr qemudNetworkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      const unsigned char *uuid) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
@@ -3521,7 +3579,7 @@ static virDriver qemuDriver = {
     NULL, /* domainMigrateFinish */
     qemudDomainBlockStats, /* domainBlockStats */
     qemudDomainInterfaceStats, /* domainInterfaceStats */
-    NULL, /* domainBlockPeek */
+    qemudDomainBlockPeek, /* domainBlockPeek */
 #if HAVE_NUMACTL
     qemudNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
     qemudNodeGetFreeMemory,  /* getFreeMemory */
