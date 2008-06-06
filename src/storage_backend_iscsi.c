@@ -37,6 +37,7 @@
 #include "internal.h"
 #include "storage_backend_iscsi.h"
 #include "util.h"
+#include "memory.h"
 
 static int
 virStorageBackendISCSITargetIP(virConnectPtr conn,
@@ -253,7 +254,7 @@ virStorageBackendISCSIMakeLUN(virConnectPtr conn,
 
     snprintf(lunid, sizeof(lunid)-1, "lun-%s", groups[3]);
 
-    if ((vol = calloc(1, sizeof(virStorageVolDef))) == NULL) {
+    if (VIR_ALLOC(vol) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
         goto cleanup;
     }
@@ -263,14 +264,13 @@ virStorageBackendISCSIMakeLUN(virConnectPtr conn,
         goto cleanup;
     }
 
-    if ((devpath = malloc(5 + strlen(dev) + 1)) == NULL) {
+    if (VIR_ALLOC_N(devpath, 5 + strlen(dev) + 1) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("devpath"));
         goto cleanup;
     }
     strcpy(devpath, "/dev/");
     strcat(devpath, dev);
-    free(dev);
-    dev = NULL;
+    VIR_FREE(dev);
     /* It can take a little while between logging into the ISCSI
      * server and udev creating the /dev nodes, so if we get ENOENT
      * we must retry a few times - they should eventually appear.
@@ -303,8 +303,7 @@ virStorageBackendISCSIMakeLUN(virConnectPtr conn,
         goto cleanup;
 
     if (devpath != vol->target.path)
-        free(devpath);
-    devpath = NULL;
+        VIR_FREE(devpath);
 
     if (virStorageBackendUpdateVolInfoFD(conn, vol, fd, 1) < 0)
         goto cleanup;
@@ -330,9 +329,9 @@ virStorageBackendISCSIMakeLUN(virConnectPtr conn,
 
  cleanup:
     if (fd != -1) close(fd);
-    free(devpath);
+    VIR_FREE(devpath);
     virStorageVolDefFree(vol);
-    free(dev);
+    VIR_FREE(dev);
     return -1;
 }
 
@@ -422,8 +421,7 @@ virStorageBackendISCSIPortal(virConnectPtr conn,
                                        ipaddr, sizeof(ipaddr)) < 0)
         return NULL;
 
-    portal = malloc(strlen(ipaddr) + 1 + 4 + 2 + 1);
-    if (portal == NULL) {
+    if (VIR_ALLOC_N(portal, strlen(ipaddr) + 1 + 4 + 2 + 1) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("portal"));
         return NULL;
     }
@@ -457,10 +455,10 @@ virStorageBackendISCSIStartPool(virConnectPtr conn,
     if ((portal = virStorageBackendISCSIPortal(conn, pool)) == NULL)
         return -1;
     if (virStorageBackendISCSILogin(conn, pool, portal) < 0) {
-        free(portal);
+        VIR_FREE(portal);
         return -1;
     }
-    free(portal);
+    VIR_FREE(portal);
     return 0;
 }
 
@@ -478,12 +476,12 @@ virStorageBackendISCSIRefreshPool(virConnectPtr conn,
         goto cleanup;
     if (virStorageBackendISCSIFindLUNs(conn, pool, session) < 0)
         goto cleanup;
-    free(session);
+    VIR_FREE(session);
 
     return 0;
 
  cleanup:
-    free(session);
+    VIR_FREE(session);
     return -1;
 }
 
@@ -498,10 +496,10 @@ virStorageBackendISCSIStopPool(virConnectPtr conn,
         return -1;
 
     if (virStorageBackendISCSILogout(conn, pool, portal) < 0) {
-        free(portal);
+        VIR_FREE(portal);
         return -1;
     }
-    free(portal);
+    VIR_FREE(portal);
 
     return 0;
 }

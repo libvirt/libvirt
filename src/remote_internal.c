@@ -71,6 +71,7 @@
 #include "qparams.h"
 #include "remote_internal.h"
 #include "remote_protocol.h"
+#include "memory.h"
 
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt,__VA_ARGS__)
 #define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
@@ -638,8 +639,7 @@ doRemoteOpen (virConnectPtr conn,
 
         // Generate the final command argv[] array.
         //   ssh -p $port [-l $username] $hostname $netcat -U $sockname [NULL]
-        cmd_argv = malloc (nr_args * sizeof (*cmd_argv));
-        if (cmd_argv == NULL) {
+        if (VIR_ALLOC_N(cmd_argv, nr_args) < 0) {
             error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
             goto failed;
         }
@@ -702,8 +702,7 @@ doRemoteOpen (virConnectPtr conn,
 
             // Run the external process.
             if (!cmd_argv) {
-                cmd_argv = malloc (2 * sizeof (*cmd_argv));
-                if (cmd_argv == NULL) {
+                if (VIR_ALLOC_N(cmd_argv, 2) < 0) {
                     error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
                     goto failed;
                 }
@@ -811,8 +810,7 @@ remoteOpen (virConnectPtr conn,
     if (inside_daemon)
         return VIR_DRV_OPEN_DECLINED;
 
-    priv = calloc (1, sizeof(*priv));
-    if (!priv) {
+    if (VIR_ALLOC(priv) < 0) {
         error (conn, VIR_ERR_NO_MEMORY, _("struct private_data"));
         return VIR_DRV_OPEN_ERROR;
     }
@@ -856,7 +854,7 @@ remoteOpen (virConnectPtr conn,
     ret = doRemoteOpen(conn, priv, uri, auth, rflags);
     if (ret != VIR_DRV_OPEN_SUCCESS) {
         conn->privateData = NULL;
-        free(priv);
+        VIR_FREE(priv);
     } else {
         priv->magic = MAGIC;
         conn->privateData = priv;
@@ -2268,9 +2266,7 @@ remoteDomainSetSchedulerParameters (virDomainPtr domain,
 
     /* Serialise the scheduler parameters. */
     args.params.params_len = nparams;
-    args.params.params_val = malloc (sizeof (*args.params.params_val)
-                                     * nparams);
-    if (args.params.params_val == NULL) {
+    if (VIR_ALLOC_N(args.params.params_val, nparams) < 0) {
         error (domain->conn, VIR_ERR_RPC, _("out of memory allocating array"));
         return -1;
     }
@@ -2446,9 +2442,9 @@ remoteNetworkOpen (virConnectPtr conn,
          * use the UNIX transport. This handles Xen driver
          * which doesn't have its own impl of the network APIs.
          */
-        struct private_data *priv = calloc (1, sizeof(*priv));
+        struct private_data *priv;
         int ret, rflags = 0;
-        if (!priv) {
+        if (VIR_ALLOC(priv) < 0) {
             error (conn, VIR_ERR_NO_MEMORY, _("struct private_data"));
             return VIR_DRV_OPEN_ERROR;
         }
@@ -2461,7 +2457,7 @@ remoteNetworkOpen (virConnectPtr conn,
         ret = doRemoteOpen(conn, priv, uri, auth, rflags);
         if (ret != VIR_DRV_OPEN_SUCCESS) {
             conn->networkPrivateData = NULL;
-            free(priv);
+            VIR_FREE(priv);
         } else {
             priv->magic = MAGIC;
             priv->localUses = 1;
@@ -2480,7 +2476,7 @@ remoteNetworkClose (virConnectPtr conn)
         priv->localUses--;
         if (!priv->localUses) {
             ret = doRemoteClose(conn, priv);
-            free(priv);
+            VIR_FREE(priv);
             conn->networkPrivateData = NULL;
         }
     }
@@ -2852,9 +2848,9 @@ remoteStorageOpen (virConnectPtr conn,
          * use the UNIX transport. This handles Xen driver
          * which doesn't have its own impl of the network APIs.
          */
-        struct private_data *priv = calloc (1, sizeof(struct private_data));
+        struct private_data *priv;
         int ret, rflags = 0;
-        if (!priv) {
+        if (VIR_ALLOC(priv) < 0) {
             error (NULL, VIR_ERR_NO_MEMORY, _("struct private_data"));
             return VIR_DRV_OPEN_ERROR;
         }
@@ -2867,7 +2863,7 @@ remoteStorageOpen (virConnectPtr conn,
         ret = doRemoteOpen(conn, priv, uri, auth, rflags);
         if (ret != VIR_DRV_OPEN_SUCCESS) {
             conn->storagePrivateData = NULL;
-            free(priv);
+            VIR_FREE(priv);
         } else {
             priv->magic = MAGIC;
             priv->localUses = 1;
@@ -2886,7 +2882,7 @@ remoteStorageClose (virConnectPtr conn)
         priv->localUses--;
         if (!priv->localUses) {
             ret = doRemoteClose(conn, priv);
-            free(priv);
+            VIR_FREE(priv);
             conn->storagePrivateData = NULL;
         }
     }
@@ -3605,7 +3601,7 @@ remoteAuthenticate (virConnectPtr conn, struct private_data *priv, int in_open,
             mech = authtype + 5;
 
         if (remoteAuthSASL(conn, priv, in_open, auth, mech) < 0) {
-            free(ret.types.types_val);
+            VIR_FREE(ret.types.types_val);
             return -1;
         }
         break;
@@ -3615,7 +3611,7 @@ remoteAuthenticate (virConnectPtr conn, struct private_data *priv, int in_open,
 #if HAVE_POLKIT
     case REMOTE_AUTH_POLKIT:
         if (remoteAuthPolkit(conn, priv, in_open, auth) < 0) {
-            free(ret.types.types_val);
+            VIR_FREE(ret.types.types_val);
             return -1;
         }
         break;
@@ -3631,11 +3627,11 @@ remoteAuthenticate (virConnectPtr conn, struct private_data *priv, int in_open,
                          NULL, NULL, NULL, 0, 0,
                          _("unsupported authentication type %d"),
                          ret.types.types_val[0]);
-        free(ret.types.types_val);
+        VIR_FREE(ret.types.types_val);
         return -1;
     }
 
-    free(ret.types.types_val);
+    VIR_FREE(ret.types.types_val);
 
     return 0;
 }
@@ -3664,8 +3660,7 @@ static char *addrToString(struct sockaddr_storage *sa, socklen_t salen)
         return NULL;
     }
 
-    addr = malloc(strlen(host) + 1 + strlen(port) + 1);
-    if (!addr) {
+    if (VIR_ALLOC_N(addr, strlen(host) + 1 + strlen(port) + 1) < 0) {
         __virRaiseError (NULL, NULL, NULL, VIR_FROM_REMOTE,
                          VIR_ERR_NO_MEMORY, VIR_ERR_ERROR,
                          NULL, NULL, NULL, 0, 0,
@@ -3758,9 +3753,9 @@ static int remoteAuthCredSASL2Vir(int vircred)
  */
 static sasl_callback_t *remoteAuthMakeCallbacks(int *credtype, int ncredtype)
 {
-    sasl_callback_t *cbs = calloc(ncredtype+1, sizeof (*cbs));
+    sasl_callback_t *cbs;
     int i, n;
-    if (!cbs) {
+    if (VIR_ALLOC_N(cbs, ncredtype+1) < 0) {
         return NULL;
     }
 
@@ -3795,14 +3790,13 @@ static int remoteAuthMakeCredentials(sasl_interact_t *interact,
     for (ninteract = 0 ; interact[ninteract].id != 0 ; ninteract++)
         ; /* empty */
 
-    *cred = calloc(ninteract, sizeof(*cred));
-    if (!*cred)
+    if (VIR_ALLOC_N(*cred, ninteract) < 0)
         return -1;
 
     for (ninteract = 0 ; interact[ninteract].id != 0 ; ninteract++) {
         (*cred)[ninteract].type = remoteAuthCredSASL2Vir(interact[ninteract].id);
         if (!(*cred)[ninteract].type) {
-            free(*cred);
+            VIR_FREE(*cred);
             return -1;
         }
         if (interact[ninteract].challenge)
@@ -3821,8 +3815,8 @@ static void remoteAuthFreeCredentials(virConnectCredentialPtr cred,
 {
     int i;
     for (i = 0 ; i < ncred ; i++)
-        free(cred[i].result);
-    free(cred);
+        VIR_FREE(cred[i].result);
+    VIR_FREE(cred);
 }
 
 
@@ -3990,7 +3984,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
                              NULL, NULL, NULL, 0, 0,
                              _("SASL mechanism %s not supported by server"),
                              wantmech);
-            free(iret.mechlist);
+            VIR_FREE(iret.mechlist);
             goto cleanup;
         }
         mechlist = wantmech;
@@ -4009,7 +4003,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
                          VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          _("Failed to start SASL negotiation: %d (%s)"),
                          err, sasl_errdetail(saslconn));
-        free(iret.mechlist);
+        VIR_FREE(iret.mechlist);
         goto cleanup;
     }
 
@@ -4026,7 +4020,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
                              VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR,
                              NULL, NULL, NULL, 0, 0,
                              "%s", _("Failed to make auth credentials"));
-            free(iret.mechlist);
+            VIR_FREE(iret.mechlist);
             goto cleanup;
         }
         /* Run the authentication callback */
@@ -4044,7 +4038,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
                          0, 0, "%s", msg);
         goto cleanup;
     }
-    free(iret.mechlist);
+    VIR_FREE(iret.mechlist);
 
     if (clientoutlen > REMOTE_AUTH_SASL_DATA_MAX) {
         __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
@@ -4123,8 +4117,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         }
 
         if (serverin) {
-            free(serverin);
-            serverin = NULL;
+            VIR_FREE(serverin);
         }
         DEBUG("Client step result %d. Data %d bytes %p", err, clientoutlen, clientout);
 
@@ -4156,7 +4149,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
 
         /* This server call shows complete, and earlier client step was OK */
         if (complete && err == SASL_OK) {
-            free(serverin);
+            VIR_FREE(serverin);
             break;
         }
     }
@@ -4186,11 +4179,11 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     ret = 0;
 
  cleanup:
-    free(localAddr);
-    free(remoteAddr);
-    free(serverin);
+    VIR_FREE(localAddr);
+    VIR_FREE(remoteAddr);
+    VIR_FREE(serverin);
 
-    free(saslcb);
+    VIR_FREE(saslcb);
     remoteAuthFreeCredentials(cred, ncred);
     if (ret != 0 && saslconn)
         sasl_dispose(&saslconn);

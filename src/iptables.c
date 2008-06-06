@@ -45,6 +45,7 @@
 #include "internal.h"
 #include "iptables.h"
 #include "util.h"
+#include "memory.h"
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 
@@ -156,7 +157,7 @@ notifyRulesRemoved(const char *table,
     snprintf(arg, sizeof(arg), "--custom-rules=ipv4:%s:%s", table, path);
 
     if (!stripLine(content, len, arg)) {
-        free(content);
+        VIR_FREE(content);
         return;
     }
 
@@ -171,7 +172,7 @@ notifyRulesRemoved(const char *table,
         goto write_error;
     }
 
-    free(content);
+    VIR_FREE(content);
 
     return;
 
@@ -181,7 +182,7 @@ notifyRulesRemoved(const char *table,
              strerror(errno));
     if (f)
         fclose(f);
-    free(content);
+    VIR_FREE(content);
 
 #undef MAX_FILE_LEN
 }
@@ -264,14 +265,14 @@ iptRulesSave(iptRules *rules)
 static void
 iptRuleFree(iptRule *rule)
 {
-    free(rule->rule);
+    VIR_FREE(rule->rule);
     rule->rule = NULL;
 
     if (rule->argv) {
         int i = 0;
         while (rule->argv[i])
-            free(rule->argv[i++]);
-        free(rule->argv);
+            VIR_FREE(rule->argv[i++]);
+        VIR_FREE(rule->argv);
         rule->argv = NULL;
     }
 }
@@ -282,17 +283,13 @@ iptRulesAppend(iptRules *rules,
                char **argv,
                int command_idx)
 {
-    iptRule *r;
-
-    if (!(r = realloc(rules->rules, sizeof(*r) * (rules->nrules+1)))) {
+    if (VIR_REALLOC_N(rules->rules, rules->nrules+1) < 0) {
         int i = 0;
         while (argv[i])
-            free(argv[i++]);
-        free(argv);
+            VIR_FREE(argv[i++]);
+        VIR_FREE(argv);
         return ENOMEM;
     }
-
-    rules->rules = r;
 
     rules->rules[rules->nrules].rule        = rule;
     rules->rules[rules->nrules].argv        = argv;
@@ -332,23 +329,17 @@ iptRulesFree(iptRules *rules)
 {
     int i;
 
-    if (rules->table) {
-        free(rules->table);
-        rules->table = NULL;
-    }
+    if (rules->table)
+        VIR_FREE(rules->table);
 
-    if (rules->chain) {
-        free(rules->chain);
-        rules->chain = NULL;
-    }
-
+    if (rules->chain)
+        VIR_FREE(rules->chain);
 
     if (rules->rules) {
         for (i = 0; i < rules->nrules; i++)
             iptRuleFree(&rules->rules[i]);
 
-        free(rules->rules);
-        rules->rules = NULL;
+        VIR_FREE(rules->rules);
 
         rules->nrules = 0;
     }
@@ -358,7 +349,7 @@ iptRulesFree(iptRules *rules)
     rules->path[0] = '\0';
 #endif /* ENABLE_IPTABLES_LOKKIT */
 
-    free(rules);
+    VIR_FREE(rules);
 }
 
 static iptRules *
@@ -367,7 +358,7 @@ iptRulesNew(const char *table,
 {
     iptRules *rules;
 
-    if (!(rules = calloc(1, sizeof (*rules))))
+    if (VIR_ALLOC(rules) < 0)
         return NULL;
 
     if (!(rules->table = strdup(table)))
@@ -404,8 +395,9 @@ argvToString(char **argv)
     for (len = 1, i = 0; argv[i]; i++)
         len += strlen(argv[i]) + 1;
 
-    if (!(p = ret = (char *)malloc(len)))
+    if (VIR_ALLOC_N(ret, len) < 0)
         return NULL;
+    p = ret;
 
     for (i = 0; argv[i]; i++) {
         if (i != 0)
@@ -441,7 +433,7 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
 
     va_end(args);
 
-    if (!(argv = calloc(n + 1, sizeof(*argv))))
+    if (VIR_ALLOC_N(argv, n + 1) < 0)
         goto error;
 
     n = 0;
@@ -478,7 +470,7 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
         goto error;
 
     if (action == REMOVE) {
-        free(argv[command_idx]);
+        VIR_FREE(argv[command_idx]);
         if (!(argv[command_idx] = strdup("--delete")))
             goto error;
     }
@@ -497,13 +489,13 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
     }
 
  error:
-    free(rule);
+    VIR_FREE(rule);
 
     if (argv) {
         n = 0;
         while (argv[n])
-            free(argv[n++]);
-        free(argv);
+            VIR_FREE(argv[n++]);
+        VIR_FREE(argv);
     }
 
     return retval;
@@ -521,7 +513,7 @@ iptablesContextNew(void)
 {
     iptablesContext *ctx;
 
-    if (!(ctx = calloc(1, sizeof (*ctx))))
+    if (VIR_ALLOC(ctx) < 0)
         return NULL;
 
     if (!(ctx->input_filter = iptRulesNew("filter", "INPUT")))
@@ -555,7 +547,7 @@ iptablesContextFree(iptablesContext *ctx)
         iptRulesFree(ctx->forward_filter);
     if (ctx->nat_postrouting)
         iptRulesFree(ctx->nat_postrouting);
-    free(ctx);
+    VIR_FREE(ctx);
 }
 
 /**

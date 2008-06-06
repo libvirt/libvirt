@@ -35,6 +35,7 @@
 #include "lxc_container.h"
 #include "lxc_conf.h"
 #include "util.h"
+#include "memory.h"
 
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
 #define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
@@ -54,8 +55,8 @@ static int lxcExecContainerInit(const lxc_vm_def_t *vmDef)
     char* execString;
     size_t execStringLen = strlen(vmDef->init) + 1 + 5;
 
-    if (NULL == (execString = calloc(execStringLen, sizeof(char)))) {
-       lxcError(NULL, NULL, VIR_ERR_NO_MEMORY,
+    if (VIR_ALLOC_N(execString, execStringLen) < 0) {
+        lxcError(NULL, NULL, VIR_ERR_NO_MEMORY,
                  _("failed to calloc memory for init string: %s"),
                  strerror(errno));
         goto error_out;

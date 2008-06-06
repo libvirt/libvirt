@@ -37,7 +37,7 @@
 #include "util.h"
 #include "storage_driver.h"
 #include "storage_conf.h"
-
+#include "memory.h"
 #include "storage_backend.h"
 
 #define storageLog(msg...) fprintf(stderr, msg)
@@ -104,9 +104,8 @@ storageDriverStartup(void) {
     char *base = NULL;
     char driverConf[PATH_MAX];
 
-    if (!(driverState = calloc(1, sizeof(virStorageDriverState)))) {
+    if (VIR_ALLOC(driverState) < 0)
         return -1;
-    }
 
     if (!uid) {
         if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)

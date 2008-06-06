@@ -40,6 +40,7 @@
 #include "xm_internal.h"
 #include "xml.h"
 #include "util.h"
+#include "memory.h"
 
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt,__VA_ARGS__)
 #define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
@@ -172,15 +173,13 @@ xenDomainUsedCpus(virDomainPtr dom)
     if (xenUnifiedNodeGetInfo(dom->conn, &nodeinfo) < 0)
         return(NULL);
 
-    cpulist = calloc(nb_cpu, sizeof(*cpulist));
-    if (cpulist == NULL)
+    if (VIR_ALLOC_N(cpulist, nb_cpu) < 0)
         goto done;
-    cpuinfo = malloc(sizeof(*cpuinfo) * nb_vcpu);
-    if (cpuinfo == NULL)
+    if (VIR_ALLOC_N(cpuinfo, nb_vcpu) < 0)
         goto done;
     cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
-    cpumap = (unsigned char *) calloc(nb_vcpu, cpumaplen);
-    if (cpumap == NULL)
+    if (xalloc_oversized(nb_vcpu, cpumaplen) ||
+        VIR_ALLOC_N(cpumap, nb_vcpu * cpumaplen) < 0)
         goto done;
 
     if ((ncpus = xenUnifiedDomainGetVcpus(dom, cpuinfo, nb_vcpu,
@@ -202,9 +201,9 @@ xenDomainUsedCpus(virDomainPtr dom)
     }
 
 done:
-    free(cpulist);
-    free(cpumap);
-    free(cpuinfo);
+    VIR_FREE(cpulist);
+    VIR_FREE(cpumap);
+    VIR_FREE(cpuinfo);
     return(res);
 }
 
@@ -262,8 +261,7 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int f
         return VIR_DRV_OPEN_DECLINED;
 
     /* Allocate per-connection private data. */
-    priv = calloc (1, sizeof *priv);
-    if (!priv) {
+    if (VIR_ALLOC(priv) < 0) {
         xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, "allocating private data");
         return VIR_DRV_OPEN_ERROR;
     }
@@ -342,7 +340,7 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int f
     DEBUG0("Failed to activate a mandatory sub-driver");
     for (i = 0 ; i < XEN_UNIFIED_NR_DRIVERS ; i++)
         if (priv->opened[i]) drivers[i]->close(conn);
-    free(priv);
+    VIR_FREE(priv);
     return VIR_DRV_OPEN_ERROR;
 }
 
@@ -961,7 +959,7 @@ xenUnifiedDomainDumpXML (virDomainPtr dom, int flags)
             char *cpus, *res;
             cpus = xenDomainUsedCpus(dom);
             res = xenDaemonDomainDumpXML(dom, flags, cpus);
-                free(cpus);
+            VIR_FREE(cpus);
             return(res);
         }
         if (priv->opened[XEN_UNIFIED_PROXY_OFFSET])

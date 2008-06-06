@@ -42,7 +42,7 @@
 #include "util.h"
 #include "uuid.h"
 #include "xml.h"
-
+#include "memory.h"
 #include "lxc_conf.h"
 
 /* debug macros */
@@ -183,10 +183,10 @@ static int lxcParseDomainUUID(virConnectPtr conn, unsigned char *uuid,
         if (virUUIDParse(res, uuid) < 0) {
             lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
                      _("invalid uuid element"));
-            free(res);
+            VIR_FREE(res);
             return(-1);
         }
-        free(res);
+        VIR_FREE(res);
     }
     return(0);
 }
@@ -206,15 +206,14 @@ static int lxcParseDomainMounts(virConnectPtr conn,
     res = virXPathNodeSet("/domain/devices/filesystem", contextPtr, &list);
     if (res > 0) {
         for (i = 0; i < res; ++i) {
-            mountObj = calloc(1, sizeof(lxc_mount_t));
-            if (NULL == mountObj) {
+            if (VIR_ALLOC(mountObj) < 0) {
                 lxcError(conn, NULL, VIR_ERR_NO_MEMORY, "mount");
                 goto parse_complete;
             }
 
             rc = lxcParseMountXML(conn, list[i], mountObj);
             if (0 > rc) {
-                free(mountObj);
+                VIR_FREE(mountObj);
                 goto parse_complete;
             }
 
@@ -228,7 +227,7 @@ static int lxcParseDomainMounts(virConnectPtr conn,
             }
             prevObj = mountObj;
         }
-        free(list);
+        VIR_FREE(list);
     }
 
     rc = nmounts;
@@ -252,7 +251,7 @@ static int lxcParseDomainInit(virConnectPtr conn, char** init,
     if (strlen(res) >= PATH_MAX - 1) {
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
                  _("init string too long"));
-        free(res);
+        VIR_FREE(res);
         return(-1);
     }
 
@@ -307,7 +306,7 @@ static lxc_vm_def_t * lxcParseXML(virConnectPtr conn, xmlDocPtr docPtr)
     xmlChar *xmlProp = NULL;
     lxc_vm_def_t *containerDef;
 
-    if (!(containerDef = calloc(1, sizeof(*containerDef)))) {
+    if (VIR_ALLOC(containerDef) < 0) {
         lxcError(conn, NULL, VIR_ERR_NO_MEMORY, "containerDef");
         return NULL;
     }
@@ -339,8 +338,7 @@ static lxc_vm_def_t * lxcParseXML(virConnectPtr conn, xmlDocPtr docPtr)
                  _("invalid domain type"));
         goto error;
     }
-    free(xmlProp);
-    xmlProp = NULL;
+    VIR_FREE(xmlProp);
 
     if ((xmlProp = xmlGetProp(rootNodePtr, BAD_CAST "id"))) {
         if (0 > virStrToLong_i((char*)xmlProp, NULL, 10, &(containerDef->id))) {
@@ -357,8 +355,7 @@ static lxc_vm_def_t * lxcParseXML(virConnectPtr conn, xmlDocPtr docPtr)
     } else {
         containerDef->id = -1;
     }
-    free(xmlProp);
-    xmlProp = NULL;
+    VIR_FREE(xmlProp);
 
     if (lxcParseDomainName(conn, &(containerDef->name), contextPtr) < 0) {
         goto error;
@@ -391,7 +388,7 @@ static lxc_vm_def_t * lxcParseXML(virConnectPtr conn, xmlDocPtr docPtr)
     return containerDef;
 
  error:
-    free(xmlProp);
+    VIR_FREE(xmlProp);
     xmlXPathFreeContext(contextPtr);
     lxcFreeVMDef(containerDef);
 
@@ -442,7 +439,7 @@ lxc_vm_t * lxcAssignVMDef(virConnectPtr conn,
         return vm;
     }
 
-    if (!(vm = calloc(1, sizeof(lxc_vm_t)))) {
+    if (VIR_ALLOC(vm) < 0) {
         lxcError(conn, NULL, VIR_ERR_NO_MEMORY, "vm");
         return NULL;
     }
@@ -575,7 +572,7 @@ int lxcSaveConfig(virConnectPtr conn,
         close(fd);
     }
 
-    free(xmlDef);
+    VIR_FREE(xmlDef);
 
     return rc;
 }
@@ -689,7 +686,7 @@ int lxcLoadContainerConfigFile(lxc_driver_t *driver,
 
     lxcLoadConfig(driver, file, tempPath, xmlData);
 
-    free(xmlData);
+    VIR_FREE(xmlData);
 
 load_complete:
     return rc;
@@ -796,14 +793,14 @@ void lxcFreeVMDef(lxc_vm_def_t *vmdef)
     curMount = vmdef->mounts;
     while (curMount) {
         nextMount = curMount->next;
-        free(curMount);
+        VIR_FREE(curMount);
         curMount = nextMount;
     }
 
-    free(vmdef->name);
-    free(vmdef->init);
-    free(vmdef->tty);
-    free(vmdef);
+    VIR_FREE(vmdef->name);
+    VIR_FREE(vmdef->init);
+    VIR_FREE(vmdef->tty);
+    VIR_FREE(vmdef);
 }
 
 void lxcFreeVMs(lxc_vm_t *vms)
@@ -821,8 +818,8 @@ void lxcFreeVMs(lxc_vm_t *vms)
 void lxcFreeVM(lxc_vm_t *vm)
 {
     lxcFreeVMDef(vm->def);
-    free(vm->containerTty);
-    free(vm);
+    VIR_FREE(vm->containerTty);
+    VIR_FREE(vm);
 }
 
 lxc_vm_t *lxcFindVMByID(const lxc_driver_t *driver, int id)

@@ -12,6 +12,7 @@
 
 #include "xmlrpc.h"
 #include "internal.h"
+#include "memory.h"
 
 #include <libxml/nanohttp.h>
 
@@ -47,9 +48,8 @@ static void xmlRpcError(virErrorNumber error, const char *info, int value)
 
 static xmlRpcValuePtr xmlRpcValueNew(xmlRpcValueType type)
 {
-    xmlRpcValuePtr ret = malloc(sizeof(*ret));
-
-    if (!ret)
+    xmlRpcValuePtr ret = NULL;
+    if (VIR_ALLOC(ret) < 0)
         xmlRpcError(VIR_ERR_NO_MEMORY, _("allocate value"), sizeof(*ret));
     else
         ret->kind = type;
@@ -115,7 +115,7 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalInteger(xmlNodePtr node)
 
     if (ret && value)
         ret->value.integer = atoi(value);
-    free(value);
+    VIR_FREE(value);
     return ret;
 }
 
@@ -130,7 +130,7 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalBoolean(xmlNodePtr node)
         ret->value.boolean = true;
     else
         ret->value.boolean = false;
-    free(value);
+    VIR_FREE(value);
     return ret;
 }
 
@@ -141,7 +141,7 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalDouble(xmlNodePtr node)
 
     if (ret && value)
         ret->value.real = atof(value);
-    free(value);
+    VIR_FREE(value);
     return ret;
 }
 
@@ -158,11 +158,10 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalArray(xmlNodePtr node)
     for (cur = xmlFirstElement(node); cur; cur = xmlNextElement(cur))
         n_elements += 1;
 
-    elems = malloc(n_elements * sizeof(*elems));
-    if (!elems) {
+    if (VIR_ALLOC_N(elems, n_elements) < 0) {
         xmlRpcError(VIR_ERR_NO_MEMORY, _("allocate value array"),
                     n_elements * sizeof(*elems));
-        free(ret);
+        VIR_FREE(ret);
         return NULL;
     }
     n_elements = 0;
@@ -179,10 +178,10 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalArray(xmlNodePtr node)
 
 static xmlRpcValueDictElementPtr xmlRpcValueUnmarshalDictElement(xmlNodePtr node)
 {
-    xmlRpcValueDictElementPtr ret = malloc(sizeof(*ret));
+    xmlRpcValueDictElementPtr ret;
     xmlNodePtr cur;
 
-    if (!ret) {
+    if (VIR_ALLOC(ret) < 0) {
         xmlRpcError(VIR_ERR_NO_MEMORY, _("allocate dict"), sizeof(*ret));
         return NULL;
     }
@@ -195,10 +194,10 @@ static xmlRpcValueDictElementPtr xmlRpcValueUnmarshalDictElement(xmlNodePtr node
             ret->value = xmlRpcValueUnmarshal(cur);
         } else {
             xmlRpcError(VIR_ERR_XML_ERROR, _("unexpected dict node"), 0);
-            free(ret->name);
+            VIR_FREE(ret->name);
             if (ret->value)
                 xmlRpcValueFree(ret->value);
-            free(ret);
+            VIR_FREE(ret);
             return NULL;
         }
     }
@@ -283,26 +282,26 @@ void xmlRpcValueFree(xmlRpcValuePtr value)
     case XML_RPC_ARRAY:
         for (i = 0; i < value->value.array.n_elements; i++)
             xmlRpcValueFree(value->value.array.elements[i]);
-        free(value->value.array.elements);
+        VIR_FREE(value->value.array.elements);
         break;
     case XML_RPC_STRUCT:
         next = value->value.dict.root;
         while (next) {
             cur = next;
             next = next->next;
-            free(cur->name);
+            VIR_FREE(cur->name);
             xmlRpcValueFree(cur->value);
-            free(cur);
+            VIR_FREE(cur);
         }
         break;
     case XML_RPC_STRING:
-        free(value->value.string);
+        VIR_FREE(value->value.string);
         break;
     default:
         break;
     }
 
-    free(value);
+    VIR_FREE(value);
 }
 
 void xmlRpcValueMarshal(xmlRpcValuePtr value, virBufferPtr buf, int indent)
@@ -436,15 +435,14 @@ static char *xmlRpcCallRaw(const char *url, const char *request)
         }
 
         len = xmlNanoHTTPContentLength(cxt);
-        response = malloc(len + 1);
-        if (response == NULL) {
+        if (VIR_ALLOC_N(response, len + 1) < 0) {
                 xmlRpcError(VIR_ERR_NO_MEMORY, _("allocate response"), len);
                 goto error;
         }
         ret = xmlNanoHTTPRead(cxt, response, len);
         if (ret != len) {
                 errno = EINVAL;
-                free(response);
+                VIR_FREE(response);
                 response = NULL;
                 xmlRpcError(VIR_ERR_POST_FAILED, _("read response"), 0);
         }
@@ -455,7 +453,7 @@ static char *xmlRpcCallRaw(const char *url, const char *request)
         serrno = errno;
         if (cxt) {
                 xmlNanoHTTPClose(cxt);
-                free(contentType);
+                VIR_FREE(contentType);
         }
         errno = serrno;
 
@@ -477,7 +475,7 @@ static char **xmlRpcStringArray(xmlRpcValuePtr value)
         if (value->value.array.elements[i]->kind == XML_RPC_STRING)
             size += strlen(value->value.array.elements[i]->value.string) + 1;
 
-    if (!(ptr = malloc(size))) {
+    if (VIR_ALLOC_N(ptr, size) < 0) {
         xmlRpcError(VIR_ERR_NO_MEMORY, _("allocate string array"), size);
         return NULL;
     }
@@ -507,7 +505,7 @@ xmlRpcArgvNew(const char *fmt, va_list ap, int *argc)
     int i;
 
     *argc = strlen(fmt);
-    if (!(argv = malloc(sizeof(*argv) * *argc))) {
+    if (VIR_ALLOC_N(argv, *argc) < 0) {
         xmlRpcError(VIR_ERR_NO_MEMORY, _("read response"), sizeof(*argv) * *argc);
         return NULL;
     }
@@ -552,7 +550,7 @@ xmlRpcArgvFree(int argc, xmlRpcValuePtr *argv)
     for (i = 0; i < argc; i++)
         xmlRpcValueFree(argv[i]);
 
-    free(argv);
+    VIR_FREE(argv);
 }
 
 int xmlRpcCall(xmlRpcContextPtr context, const char *method,
@@ -589,7 +587,7 @@ int xmlRpcCall(xmlRpcContextPtr context, const char *method,
 
     content = virBufferContentAndReset(&buf);
     ret = xmlRpcCallRaw(context->uri, content);
-    free(content);
+    VIR_FREE(content);
 
     if (!ret)
         return -1;
@@ -597,7 +595,7 @@ int xmlRpcCall(xmlRpcContextPtr context, const char *method,
     xml = xmlReadDoc((const xmlChar *)ret, "response.xml", NULL,
                      XML_PARSE_NOENT | XML_PARSE_NONET |
                      XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
-    free(ret);
+    VIR_FREE(ret);
 
     if (xml == NULL) {
         errno = EINVAL;
@@ -659,13 +657,14 @@ int xmlRpcCall(xmlRpcContextPtr context, const char *method,
 
 xmlRpcContextPtr xmlRpcContextNew(const char *uri)
 {
-    xmlRpcContextPtr ret = malloc(sizeof(*ret));
+    xmlRpcContextPtr ret;
 
-    if (ret) {
+    if (VIR_ALLOC(ret) < 0) {
+        xmlRpcError(VIR_ERR_NO_MEMORY, _("allocate new context"), sizeof(*ret));
+    } else {
         ret->uri = strdup(uri);
         ret->faultMessage = NULL;
-    } else
-        xmlRpcError(VIR_ERR_NO_MEMORY, _("allocate new context"), sizeof(*ret));
+    }
 
     return ret;
 }
@@ -673,9 +672,9 @@ xmlRpcContextPtr xmlRpcContextNew(const char *uri)
 void xmlRpcContextFree(xmlRpcContextPtr context)
 {
     if (context) {
-        free(context->uri);
-        free(context->faultMessage);
-        free(context);
+        VIR_FREE(context->uri);
+        VIR_FREE(context->faultMessage);
+        VIR_FREE(context);
     }
 }
 

@@ -50,6 +50,7 @@
 #endif
 
 #include "util.h"
+#include "memory.h"
 
 #include "storage_backend.h"
 #include "storage_backend_fs.h"
@@ -237,8 +238,7 @@ virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
     vol->target.perms.uid = sb.st_uid;
     vol->target.perms.gid = sb.st_gid;
 
-    free(vol->target.perms.label);
-    vol->target.perms.label = NULL;
+    VIR_FREE(vol->target.perms.label);
 
 #if HAVE_SELINUX
     if (fgetfilecon(fd, &filecon) == -1) {
@@ -310,9 +310,8 @@ virStorageBackendStablePath(virConnectPtr conn,
         if (dent->d_name[0] == '.')
             continue;
 
-        stablepath = malloc(strlen(pool->def->target.path) +
-                            1 + strlen(dent->d_name) + 1);
-        if (stablepath == NULL) {
+        if (VIR_ALLOC_N(stablepath, strlen(pool->def->target.path) +
+                        1 + strlen(dent->d_name) + 1) < 0) {
             virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("path"));
             closedir(dh);
             return NULL;
@@ -327,7 +326,7 @@ virStorageBackendStablePath(virConnectPtr conn,
             return stablepath;
         }
 
-        free(stablepath);
+        VIR_FREE(stablepath);
     }
 
     closedir(dh);
@@ -365,7 +364,7 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
     char **groups;
 
     /* Compile all regular expressions */
-    if ((reg = calloc(nregex, sizeof(*reg))) == NULL) {
+    if (VIR_ALLOC_N(reg, nregex) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("regex"));
         return -1;
     }
@@ -379,7 +378,7 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
                                   _("Failed to compile regex %s"), error);
             for (j = 0 ; j <= i ; j++)
                 regfree(&reg[j]);
-            free(reg);
+            VIR_FREE(reg);
             return -1;
         }
 
@@ -390,12 +389,12 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
     }
 
     /* Storage for matched variables */
-    if ((groups = calloc(totgroups, sizeof(*groups))) == NULL) {
+    if (VIR_ALLOC_N(groups, totgroups) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY,
                               "%s", _("regex groups"));
         goto cleanup;
     }
-    if ((vars = calloc(maxvars+1, sizeof(*vars))) == NULL) {
+    if (VIR_ALLOC_N(vars, maxvars+1) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY,
                               "%s", _("regex groups"));
         goto cleanup;
@@ -445,7 +444,7 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
 
                     /* Release matches & restart to matching the first regex */
                     for (j = 0 ; j < totgroups ; j++) {
-                        free(groups[j]);
+                        VIR_FREE(groups[j]);
                         groups[j] = NULL;
                     }
                     maxReg = 0;
@@ -460,15 +459,15 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
  cleanup:
     if (groups) {
         for (j = 0 ; j < totgroups ; j++)
-            free(groups[j]);
-        free(groups);
+            VIR_FREE(groups[j]);
+        VIR_FREE(groups);
     }
-    free(vars);
+    VIR_FREE(vars);
 
     for (i = 0 ; i < nregex ; i++)
         regfree(&reg[i]);
 
-    free(reg);
+    VIR_FREE(reg);
 
     if (list)
         fclose(list);
@@ -534,8 +533,7 @@ virStorageBackendRunProgNul(virConnectPtr conn,
     if (n_columns == 0)
         return -1;
 
-    if (n_columns > SIZE_MAX / sizeof *v
-        || (v = malloc (n_columns * sizeof *v)) == NULL) {
+    if (VIR_ALLOC_N(v, n_columns) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY,
                               "%s", _("n_columns too large"));
         return -1;

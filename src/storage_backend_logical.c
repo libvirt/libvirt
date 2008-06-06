@@ -35,7 +35,7 @@
 #include "storage_backend_logical.h"
 #include "storage_conf.h"
 #include "util.h"
-
+#include "memory.h"
 
 #define PV_BLANK_SECTOR_SIZE 512
 
@@ -97,7 +97,6 @@ virStorageBackendLogicalMakeVol(virConnectPtr conn,
                                 void *data)
 {
     virStorageVolDefPtr vol = NULL;
-    virStorageVolSourceExtentPtr tmp;
     unsigned long long offset, size, length;
 
     /* See if we're only looking for a specific volume */
@@ -113,7 +112,7 @@ virStorageBackendLogicalMakeVol(virConnectPtr conn,
 
     /* Or a completely new volume */
     if (vol == NULL) {
-        if ((vol = calloc(1, sizeof(*vol))) == NULL) {
+        if (VIR_ALLOC(vol) < 0) {
             virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
             return -1;
         }
@@ -129,8 +128,8 @@ virStorageBackendLogicalMakeVol(virConnectPtr conn,
     }
 
     if (vol->target.path == NULL) {
-        if ((vol->target.path = malloc(strlen(pool->def->target.path) +
-                                       1 + strlen(vol->name) + 1)) == NULL) {
+        if (VIR_ALLOC_N(vol->target.path, strlen(pool->def->target.path) +
+                        1 + strlen(vol->name) + 1) < 0) {
             virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
             return -1;
         }
@@ -150,12 +149,11 @@ virStorageBackendLogicalMakeVol(virConnectPtr conn,
 
 
     /* Finally fill in extents information */
-    if ((tmp = realloc(vol->source.extents, sizeof(*tmp)
-                       * (vol->source.nextent + 1))) == NULL) {
+    if (VIR_REALLOC_N(vol->source.extents,
+                      vol->source.nextent + 1) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("extents"));
         return -1;
     }
-    vol->source.extents = tmp;
 
     if ((vol->source.extents[vol->source.nextent].path =
          strdup(groups[2])) == NULL) {
@@ -266,7 +264,7 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn,
     memset(zeros, 0, sizeof(zeros));
 
     /* XXX multiple pvs */
-    if ((vgargv = malloc(sizeof(char*) * (1))) == NULL) {
+    if (VIR_ALLOC_N(vgargv, 1) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("command line"));
         return -1;
     }
@@ -318,12 +316,12 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn,
     if (virRun(conn, (char**)vgargv, NULL) < 0)
         goto cleanup;
 
-    free(vgargv);
+    VIR_FREE(vgargv);
 
     return 0;
 
  cleanup:
-    free(vgargv);
+    VIR_FREE(vgargv);
     return -1;
 }
 

@@ -42,6 +42,7 @@
 #include "driver.h"
 #include "internal.h"
 #include "util.h"
+#include "memory.h"
 
 /* debug macros */
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
@@ -85,8 +86,7 @@ static int lxcCheckContainerSupport( void )
     char *stack;
     int childStatus;
 
-    stack = malloc(getpagesize() * 4);
-    if(!stack) {
+    if (VIR_ALLOC_N(stack, getpagesize() * 4) < 0) {
         DEBUG0("Unable to allocate stack");
         rc = -1;
         goto check_complete;
@@ -102,7 +102,7 @@ static int lxcCheckContainerSupport( void )
         waitpid(cpid, &childStatus, 0);
     }
 
-    free(stack);
+    VIR_FREE(stack);
 
 check_complete:
     return rc;
@@ -263,7 +263,7 @@ static int lxcListDefinedDomains(virConnectPtr conn,
 
  cleanup:
     for (i = 0 ; i < numDoms ; i++) {
-        free(names[i]);
+        VIR_FREE(names[i]);
     }
 
     return -1;
@@ -400,16 +400,15 @@ static int lxcStartContainer(virConnectPtr conn,
     int rc = -1;
     int flags;
     int stacksize = getpagesize() * 4;
-    void *stack, *stacktop;
+    char *stack, *stacktop;
 
     /* allocate a stack for the container */
-    stack = malloc(stacksize);
-    if (!stack) {
+    if (VIR_ALLOC_N(stack, stacksize) < 0) {
         lxcError(conn, NULL, VIR_ERR_NO_MEMORY,
                  _("unable to allocate container stack"));
         goto error_exit;
     }
-    stacktop = (char*)stack + stacksize;
+    stacktop = stack + stacksize;
 
     flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWUSER|CLONE_NEWIPC|SIGCHLD;
 
@@ -574,8 +573,7 @@ static int lxcSetupContainerTty(virConnectPtr conn,
         goto cleanup;
     }
 
-    *ttyName = malloc(sizeof(char) * (strlen(tempTtyName) + 1));
-    if (NULL == ttyName) {
+    if (VIR_ALLOC_N(*ttyName, strlen(tempTtyName) + 1) < 0) {
         lxcError(conn, NULL, VIR_ERR_NO_MEMORY,
                  _("unable to allocate container name string"));
         goto cleanup;
@@ -1046,8 +1044,7 @@ static int lxcStartup(void)
         return -1;
     }
 
-    lxc_driver = calloc(1, sizeof(lxc_driver_t));
-    if (NULL == lxc_driver) {
+    if (VIR_ALLOC(lxc_driver) < 0) {
         return -1;
     }
 
@@ -1074,9 +1071,9 @@ static int lxcStartup(void)
 
 static void lxcFreeDriver(lxc_driver_t *driver)
 {
-    free(driver->configDir);
-    free(driver->stateDir);
-    free(driver);
+    VIR_FREE(driver->configDir);
+    VIR_FREE(driver->stateDir);
+    VIR_FREE(driver);
 }
 
 static int lxcShutdown(void)

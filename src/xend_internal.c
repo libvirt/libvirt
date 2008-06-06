@@ -26,7 +26,6 @@
 #include <stdbool.h>
 #include <math.h>
 #include <stdarg.h>
-#include <malloc.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <arpa/inet.h>

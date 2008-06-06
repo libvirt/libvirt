@@ -53,6 +53,7 @@
 #include "openvz_conf.h"
 #include "uuid.h"
 #include "buf.h"
+#include "memory.h"
 
 #include <string.h>
 
@@ -152,23 +153,22 @@ openvzFreeVMDef(struct openvz_vm_def *def)
             struct ovz_quota *prev = quota;
 
             quota = quota->next;
-            free(prev);
+            VIR_FREE(prev);
         }
         while (ip) {
             struct ovz_ip *prev = ip;
 
             ip = ip->next;
-            free(prev);
+            VIR_FREE(prev);
         }
         while (ns) {
             struct ovz_ns *prev = ns;
 
             ns = ns->next;
-            free(prev);
+            VIR_FREE(prev);
         }
 
-        free(def);
-        def = NULL;
+        VIR_FREE(def);
     }
 }
 
@@ -201,8 +201,7 @@ openvzFreeVM(struct openvz_driver *driver, struct openvz_vm *vm,
     }
     if (vms) {
         openvzFreeVMDef(vm->vmdef);
-        free(vm);
-        vm = NULL;
+        VIR_FREE(vm);
     }
 }
 
@@ -217,8 +216,7 @@ openvzFreeDriver(struct openvz_driver *driver)
     if (driver->vms)
         for(next = driver->vms->next; driver->vms; driver->vms = next)
             openvzFreeVM(driver, driver->vms, 0);
-    free(driver);
-    driver = NULL;
+    VIR_FREE(driver);
 }
 
 struct openvz_vm *
@@ -247,7 +245,7 @@ openvzAssignVMDef(virConnectPtr conn,
         return vm;
     }
 
-    if (!(vm = calloc(1, sizeof(*vm)))) {
+    if (VIR_ALLOC(vm) < 0) {
         openvzFreeVMDef(def);
         error(conn, VIR_ERR_NO_MEMORY, "vm");
         return NULL;
@@ -299,7 +297,7 @@ static struct openvz_vm_def
     struct ovz_ip *ovzIp;
     struct ovz_ns *ovzNs;
 
-    if (!(def = calloc(1, sizeof(*def)))) {
+    if (VIR_ALLOC(def) < 0) {
         error(conn, VIR_ERR_NO_MEMORY, "xmlXPathContext");
         return NULL;
     }
@@ -328,8 +326,7 @@ static struct openvz_vm_def
         error(conn, VIR_ERR_INTERNAL_ERROR, _("invalid domain type attribute"));
         goto bail_out;
     }
-    free(prop);
-    prop = NULL;
+    VIR_FREE(prop);
 
     /* Extract domain name */
     obj = xmlXPathEval(BAD_CAST "string(/domain/name[1])", ctxt);
@@ -396,7 +393,7 @@ static struct openvz_vm_def
         error(conn, VIR_ERR_INTERNAL_ERROR, errorMessage);
         goto bail_out;
     }
-    if (!(ovzIp = calloc(1, sizeof(*ovzIp)))) {
+    if (VIR_ALLOC(ovzIp) < 0) {
         openvzLog(OPENVZ_ERR,
                   _("Failed to Create Memory for 'ovz_ip' structure"));
         goto bail_out;
@@ -478,7 +475,7 @@ static struct openvz_vm_def
         error(conn, VIR_ERR_INTERNAL_ERROR, errorMessage);
         goto bail_out;
     }
-    if (!(ovzNs = calloc(1, sizeof(*ovzNs)))) {
+    if (VIR_ALLOC(ovzNs) < 0) {
         openvzLog(OPENVZ_ERR,
                   _("Failed to Create Memory for 'ovz_ns' structure"));
         goto bail_out;
@@ -509,7 +506,7 @@ static struct openvz_vm_def
     return def;
 
  bail_out:
-    free(prop);
+    VIR_FREE(prop);
     xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
     openvzFreeVMDef(def);
@@ -539,8 +536,7 @@ openvzGetVPSInfo(virConnectPtr conn) {
     }
     pnext = &vm;
     while(!feof(fp)) {
-        *pnext = calloc(1, sizeof(**pnext));
-        if(!*pnext) {
+        if (VIR_ALLOC(*pnext) < 0) {
             error(conn, VIR_ERR_INTERNAL_ERROR, _("calloc failed"));
             goto error;
         }
@@ -568,8 +564,7 @@ openvzGetVPSInfo(virConnectPtr conn) {
             (*pnext)->vpsid = -1;
         }
 
-        vmdef = calloc(1, sizeof(*vmdef));
-        if(!vmdef) {
+        if (VIR_ALLOC(vmdef) < 0) {
             error(conn, VIR_ERR_INTERNAL_ERROR, _("calloc failed"));
             goto error;
         }
@@ -581,7 +576,7 @@ openvzGetVPSInfo(virConnectPtr conn) {
         if(ret == -1) {
             error(conn, VIR_ERR_INTERNAL_ERROR,
                   _("UUID in config file malformed"));
-            free(vmdef);
+            VIR_FREE(vmdef);
             goto error;
         }
 
@@ -594,8 +589,8 @@ error:
         struct openvz_vm *next;
 
         next = vm->next;
-        free(vm->vmdef);
-        free(vm);
+        VIR_FREE(vm->vmdef);
+        VIR_FREE(vm);
         vm = next;
     }
     return NULL;
@@ -656,7 +651,7 @@ openvzGetVPSUUID(int vpsid, char *uuidstr)
     if (conf_dir == NULL)
         return -1;
     sprintf(conf_file, "%s/%d.conf", conf_dir, vpsid);
-    free(conf_dir);
+    VIR_FREE(conf_dir);
 
     fd = open(conf_file, O_RDWR);
     if(fd == -1)
@@ -697,7 +692,7 @@ openvzSetUUID(int vpsid)
     if (conf_dir == NULL)
         return -1;
     sprintf(conf_file, "%s/%d.conf", conf_dir, vpsid);
-    free(conf_dir);
+    VIR_FREE(conf_dir);
 
     if (openvzGetVPSUUID(vpsid, uuidstr))
         return -1;
@@ -741,7 +736,7 @@ int openvzAssignUUIDs(void)
 
     dp = opendir(conf_dir);
     if(dp == NULL) {
-        free(conf_dir);
+        VIR_FREE(conf_dir);
         return 0;
     }
 
@@ -753,7 +748,7 @@ int openvzAssignUUIDs(void)
             openvzSetUUID(vpsid);
     }
     closedir(dp);
-    free(conf_dir);
+    VIR_FREE(conf_dir);
     return 0;
 }
 

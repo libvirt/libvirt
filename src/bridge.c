@@ -45,6 +45,7 @@
 #include <net/if_arp.h>    /* ARPHRD_ETHER */
 
 #include "internal.h"
+#include "memory.h"
 
 #define MAX_BRIDGE_ID 256
 
@@ -84,8 +85,7 @@ brInit(brControl **ctlp)
         return err;
     }
 
-    *ctlp = malloc(sizeof(**ctlp));
-    if (!*ctlp) {
+    if (VIR_ALLOC(*ctlp) < 0) {
         close(fd);
         return ENOMEM;
     }
@@ -110,7 +110,7 @@ brShutdown(brControl *ctl)
     close(ctl->fd);
     ctl->fd = 0;
 
-    free(ctl);
+    VIR_FREE(ctl);
 }
 
 /**
@@ -681,7 +681,7 @@ brSetForwardDelay(brControl *ctl ATTRIBUTE_UNUSED,
 
     snprintf(delayStr, sizeof(delayStr), "%d", delay);
 
-    if (!(argv = calloc(n + 1, sizeof(*argv))))
+    if (VIR_ALLOC_N(argv, n + 1) < 0)
         goto error;
 
     n = 0;
@@ -706,8 +706,8 @@ brSetForwardDelay(brControl *ctl ATTRIBUTE_UNUSED,
     if (argv) {
         n = 0;
         while (argv[n])
-            free(argv[n++]);
-        free(argv);
+            VIR_FREE(argv[n++]);
+        VIR_FREE(argv);
     }
 
     return retval;
@@ -738,7 +738,7 @@ brSetEnableSTP(brControl *ctl ATTRIBUTE_UNUSED,
         1 + /* brige name */
         1;  /* value */
 
-    if (!(argv = calloc(n + 1, sizeof(*argv))))
+    if (VIR_ALLOC_N(argv, n + 1) < 0)
         goto error;
 
     n = 0;
@@ -763,8 +763,8 @@ brSetEnableSTP(brControl *ctl ATTRIBUTE_UNUSED,
     if (argv) {
         n = 0;
         while (argv[n])
-            free(argv[n++]);
-        free(argv);
+            VIR_FREE(argv[n++]);
+        VIR_FREE(argv);
     }
 
     return retval;

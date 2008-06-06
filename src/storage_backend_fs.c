@@ -40,8 +40,7 @@
 #include "storage_backend_fs.h"
 #include "storage_conf.h"
 #include "util.h"
-#include "config.h"
-
+#include "memory.h"
 
 enum {
     VIR_STORAGE_POOL_FS_AUTO = 0,
@@ -530,25 +529,27 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
     }
 
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
-        src = malloc(strlen(pool->def->source.host.name) +
-                     1 + strlen(pool->def->source.dir) + 1);
+        if (VIR_ALLOC_N(src, strlen(pool->def->source.host.name) +
+                        1 + strlen(pool->def->source.dir) + 1) < 0) {
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("source"));
+            return -1;
+        }
         strcpy(src, pool->def->source.host.name);
         strcat(src, ":");
         strcat(src, pool->def->source.dir);
     } else {
-        src = strdup(pool->def->source.devices[0].path);
-    }
-    if (src == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("source"));
-        return -1;
+        if ((src = strdup(pool->def->source.devices[0].path)) == NULL) {
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("source"));
+            return -1;
+        }
     }
     mntargv[3] = src;
 
     if (virRun(conn, (char**)mntargv, NULL) < 0) {
-        free(src);
+        VIR_FREE(src);
         return -1;
     }
-    free(src);
+    VIR_FREE(src);
     return 0;
 }
 
@@ -679,8 +680,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
         virStorageVolDefPtr vol;
         int ret;
 
-        vol = calloc(1, sizeof(virStorageVolDef));
-        if (vol == NULL) {
+        if (VIR_ALLOC(vol) < 0) {
             virStorageReportError(conn, VIR_ERR_NO_MEMORY,
                                   "%s", _("volume"));
             goto cleanup;
@@ -688,18 +688,17 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
 
         vol->name = strdup(ent->d_name);
         if (vol->name == NULL) {
-            free(vol);
+            VIR_FREE(vol);
             virStorageReportError(conn, VIR_ERR_NO_MEMORY,
                                   "%s", _("volume name"));
             goto cleanup;
         }
 
         vol->target.format = VIR_STORAGE_VOL_RAW; /* Real value is filled in during probe */
-        vol->target.path = malloc(strlen(pool->def->target.path) +
-                                  1 + strlen(vol->name) + 1);
-        if (vol->target.path == NULL) {
-            free(vol->target.path);
-            free(vol);
+        if (VIR_ALLOC_N(vol->target.path, strlen(pool->def->target.path) +
+                        1 + strlen(vol->name) + 1) < 0) {
+            VIR_FREE(vol->target.path);
+            VIR_FREE(vol);
             virStorageReportError(conn, VIR_ERR_NO_MEMORY,
                                   "%s", _("volume name"));
             goto cleanup;
@@ -708,19 +707,19 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
         strcat(vol->target.path, "/");
         strcat(vol->target.path, vol->name);
         if ((vol->key = strdup(vol->target.path)) == NULL) {
-            free(vol->name);
-            free(vol->target.path);
-            free(vol);
+            VIR_FREE(vol->name);
+            VIR_FREE(vol->target.path);
+            VIR_FREE(vol);
             virStorageReportError(conn, VIR_ERR_NO_MEMORY,
                                   "%s", _("volume key"));
             goto cleanup;
         }
 
         if ((ret = virStorageBackendProbeFile(conn, vol) < 0)) {
-            free(vol->key);
-            free(vol->name);
-            free(vol->target.path);
-            free(vol);
+            VIR_FREE(vol->key);
+            VIR_FREE(vol->name);
+            VIR_FREE(vol->target.path);
+            VIR_FREE(vol);
             if (ret == -1)
                 goto cleanup;
             else
@@ -821,9 +820,8 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
 {
     int fd;
 
-    vol->target.path = malloc(strlen(pool->def->target.path) +
-                              1 + strlen(vol->name) + 1);
-    if (vol->target.path == NULL) {
+    if (VIR_ALLOC_N(vol->target.path, strlen(pool->def->target.path) +
+                    1 + strlen(vol->name) + 1) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("target"));
         return -1;
     }

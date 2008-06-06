@@ -48,6 +48,7 @@
 
 #include "buf.h"
 #include "capabilities.h"
+#include "memory.h"
 
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
 #define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
@@ -223,17 +224,17 @@ typedef struct xen_v2s4_availheap  xen_v2s4_availheap;
 
 #define XEN_GETDOMAININFOLIST_ALLOC(domlist, size)                      \
     (hypervisor_version < 2 ?                                           \
-     ((domlist.v0 = malloc(sizeof(*domlist.v0)*(size))) != NULL) :      \
+     (VIR_ALLOC_N(domlist.v0, (size)) == 0) :                           \
      (dom_interface_version < 5 ?                                       \
-      ((domlist.v2 = malloc(sizeof(*domlist.v2)*(size))) != NULL) :     \
-      ((domlist.v2d5 = malloc(sizeof(*domlist.v2d5)*(size))) != NULL)))
+      (VIR_ALLOC_N(domlist.v2, (size)) == 0) :                          \
+      (VIR_ALLOC_N(domlist.v2d5, (size)) == 0)))
 
-#define XEN_GETDOMAININFOLIST_FREE(domlist)        \
-    (hypervisor_version < 2 ?                      \
-     free(domlist.v0) :                            \
-     (dom_interface_version < 5 ?                  \
-      free(domlist.v2) :                           \
-      free(domlist.v2d5)))
+#define XEN_GETDOMAININFOLIST_FREE(domlist)            \
+    (hypervisor_version < 2 ?                          \
+     VIR_FREE(domlist.v0) :                            \
+     (dom_interface_version < 5 ?                      \
+      VIR_FREE(domlist.v2) :                           \
+      VIR_FREE(domlist.v2d5)))
 
 #define XEN_GETDOMAININFOLIST_CLEAR(domlist, size)            \
     (hypervisor_version < 2 ?                                 \
@@ -796,8 +797,7 @@ virXenPerror (virConnectPtr conn, const char *msg)
 {
     char *msg_s;
 
-    msg_s = malloc (strlen (msg) + 10);
-    if (msg_s) {
+    if (VIR_ALLOC_N(msg_s, strlen (msg) + 10) == 0) {
         strcpy (msg_s, msg);
         strcat (msg_s, ": %s");
     }
@@ -1659,8 +1659,7 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
         /* The allocated memory to cpumap must be 'sizeof(uint64_t)' byte *
          * for Xen, and also nr_cpus must be 'sizeof(uint64_t) * 8'       */
         if (maplen < 8) {
-            new = calloc(1, sizeof(uint64_t));
-            if (!new) {
+            if (VIR_ALLOC_N(new, sizeof(uint64_t)) < 0) {
                 virXenErrorFunc(NULL, VIR_ERR_NO_MEMORY, __FUNCTION__,
                                 "allocating private data", 0);
                 return (-1);
@@ -1683,7 +1682,7 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
             op.u.setvcpumapd5.cpumap.nr_cpus = nr_cpus;
         }
         ret = xenHypervisorDoV2Dom(handle, &op);
-        free(new);
+        VIR_FREE(new);
 
         if (unlock_pages(cpumap, maplen) < 0) {
             virXenError(NULL, VIR_ERR_XEN_CALL, " release", maplen);
@@ -1985,8 +1984,7 @@ xenHypervisorInit(void)
      */
     hypervisor_version = 2;
 
-    ipt = malloc(sizeof(*ipt));
-    if (ipt == NULL){
+    if (VIR_ALLOC(ipt) < 0) {
         virXenError(NULL, VIR_ERR_NO_MEMORY, __FUNCTION__, 0);
         return(-1);
     }
@@ -2053,13 +2051,13 @@ xenHypervisorInit(void)
     virXenError(NULL, VIR_ERR_XEN_CALL, " ioctl ", IOCTL_PRIVCMD_HYPERCALL);
     close(fd);
     in_init = 0;
-    free(ipt);
+    VIR_FREE(ipt);
     return(-1);
 
  done:
     close(fd);
     in_init = 0;
-    free(ipt);
+    VIR_FREE(ipt);
     return(0);
 }
 
@@ -2647,7 +2645,7 @@ xenHypervisorLookupDomainByID(virConnectPtr conn,
     ret = virGetDomain(conn, name, XEN_GETDOMAININFO_UUID(dominfo));
     if (ret)
         ret->id = id;
-    free(name);
+    VIR_FREE(name);
     return ret;
 }
 
@@ -2714,7 +2712,7 @@ xenHypervisorLookupDomainByUUID(virConnectPtr conn,
     ret = virGetDomain(conn, name, uuid);
     if (ret)
         ret->id = id;
-    free(name);
+    VIR_FREE(name);
     return ret;
 }
 #endif

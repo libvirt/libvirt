@@ -45,6 +45,7 @@
 #include "uuid.h"
 #include "buf.h"
 #include "util.h"
+#include "memory.h"
 
 #define virStorageLog(msg...) fprintf(stderr, msg)
 
@@ -70,40 +71,40 @@ virStorageReportError(virConnectPtr conn, int code, const char *fmt, ...) {
 void
 virStorageVolDefFree(virStorageVolDefPtr def) {
     int i;
-    free(def->name);
-    free(def->key);
+    VIR_FREE(def->name);
+    VIR_FREE(def->key);
 
     for (i = 0 ; i < def->source.nextent ; i++) {
-        free(def->source.extents[i].path);
+        VIR_FREE(def->source.extents[i].path);
     }
-    free(def->source.extents);
+    VIR_FREE(def->source.extents);
 
-    free(def->target.path);
-    free(def->target.perms.label);
-    free(def);
+    VIR_FREE(def->target.path);
+    VIR_FREE(def->target.perms.label);
+    VIR_FREE(def);
 }
 
 void
 virStoragePoolDefFree(virStoragePoolDefPtr def) {
     int i;
 
-    free(def->name);
-    free(def->source.host.name);
+    VIR_FREE(def->name);
+    VIR_FREE(def->source.host.name);
     for (i = 0 ; i < def->source.ndevice ; i++) {
-        free(def->source.devices[i].freeExtents);
-        free(def->source.devices[i].path);
+        VIR_FREE(def->source.devices[i].freeExtents);
+        VIR_FREE(def->source.devices[i].path);
     }
-    free(def->source.devices);
-    free(def->source.dir);
+    VIR_FREE(def->source.devices);
+    VIR_FREE(def->source.dir);
 
     if (def->source.authType == VIR_STORAGE_POOL_AUTH_CHAP) {
-        free(def->source.auth.chap.login);
-        free(def->source.auth.chap.passwd);
+        VIR_FREE(def->source.auth.chap.login);
+        VIR_FREE(def->source.auth.chap.passwd);
     }
 
-    free(def->target.path);
-    free(def->target.perms.label);
-    free(def);
+    VIR_FREE(def->target.path);
+    VIR_FREE(def->target.perms.label);
+    VIR_FREE(def);
 }
 
 
@@ -114,9 +115,9 @@ virStoragePoolObjFree(virStoragePoolObjPtr obj) {
     if (obj->newDef)
         virStoragePoolDefFree(obj->newDef);
 
-    free(obj->configFile);
-    free(obj->autostartLink);
-    free(obj);
+    VIR_FREE(obj->configFile);
+    VIR_FREE(obj->autostartLink);
+    VIR_FREE(obj);
 }
 
 void
@@ -225,8 +226,11 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
     char *uuid = NULL;
     char *authType = NULL;
 
-    if ((ret = calloc(1, sizeof(virStoragePoolDef))) == NULL)
+    if (VIR_ALLOC(ret) < 0) {
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY,
+                              "%s", _("cannot allocate storage pool"));
         return NULL;
+    }
 
     if (STRNEQ((const char *)root->name, "pool")) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR,
@@ -263,17 +267,16 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
                                   "%s", _("malformed uuid element"));
             goto cleanup;
         }
-        free(uuid);
-        uuid = NULL;
+        VIR_FREE(uuid);
     }
 
     if (options->formatFromString) {
         char *format = virXPathString("string(/pool/source/format/@type)", ctxt);
         if ((ret->source.format = (options->formatFromString)(conn, format)) < 0) {
-            free(format);
+            VIR_FREE(format);
             goto cleanup;
         }
-        free(format);
+        VIR_FREE(format);
     }
 
     if (options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_HOST) {
@@ -292,22 +295,22 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
                                   "%s", _("cannot extract source devices"));
             goto cleanup;
         }
-        if ((ret->source.devices = calloc(nsource, sizeof(*ret->source.devices))) == NULL) {
-            free(nodeset);
+        if (VIR_ALLOC_N(ret->source.devices, nsource) < 0) {
+            VIR_FREE(nodeset);
             virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("device"));
             goto cleanup;
         }
         for (i = 0 ; i < nsource ; i++) {
             xmlChar *path = xmlGetProp(nodeset[i], BAD_CAST "path");
             if (path == NULL) {
-                free(nodeset);
+                VIR_FREE(nodeset);
                 virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                       "%s", _("missing source device path"));
                 goto cleanup;
             }
             ret->source.devices[i].path = (char *)path;
         }
-        free(nodeset);
+        VIR_FREE(nodeset);
         ret->source.ndevice = nsource;
     }
     if (options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_DIR) {
@@ -329,12 +332,10 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   _("unknown auth type '%s'"),
                                   (const char *)authType);
-            free(authType);
-            authType = NULL;
+            VIR_FREE(authType);
             goto cleanup;
         }
-        free(authType);
-        authType = NULL;
+        VIR_FREE(authType);
     }
 
     if (ret->source.authType == VIR_STORAGE_POOL_AUTH_CHAP) {
@@ -354,7 +355,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
     return ret;
 
  cleanup:
-    free(uuid);
+    VIR_FREE(uuid);
     xmlFree(type);
     virStoragePoolDefFree(ret);
     return NULL;
@@ -649,8 +650,11 @@ virStorageVolDefParseDoc(virConnectPtr conn,
     if (options == NULL)
         return NULL;
 
-    if ((ret = calloc(1, sizeof(virStorageVolDef))) == NULL)
+    if (VIR_ALLOC(ret) < 0) {
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY,
+                              "%s", _("cannot allocate storage vol"));
         return NULL;
+    }
 
     if (STRNEQ((const char *)root->name, "volume")) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR,
@@ -677,20 +681,16 @@ virStorageVolDefParseDoc(virConnectPtr conn,
     }
     if (virStorageSize(conn, unit, capacity, &ret->capacity) < 0)
         goto cleanup;
-    free(capacity);
-    capacity = NULL;
-    free(unit);
-    unit = NULL;
+    VIR_FREE(capacity);
+    VIR_FREE(unit);
 
     allocation = virXPathString("string(/volume/allocation)", ctxt);
     if (allocation) {
         unit = virXPathString("string(/volume/allocation/@unit)", ctxt);
         if (virStorageSize(conn, unit, allocation, &ret->allocation) < 0)
             goto cleanup;
-        free(allocation);
-        allocation = NULL;
-        free(unit);
-        unit = NULL;
+        VIR_FREE(allocation);
+        VIR_FREE(unit);
     } else {
         ret->allocation = ret->capacity;
     }
@@ -699,10 +699,10 @@ virStorageVolDefParseDoc(virConnectPtr conn,
     if (options->formatFromString) {
         char *format = virXPathString("string(/volume/target/format/@type)", ctxt);
         if ((ret->target.format = (options->formatFromString)(conn, format)) < 0) {
-            free(format);
+            VIR_FREE(format);
             goto cleanup;
         }
-        free(format);
+        VIR_FREE(format);
     }
 
     if (virStorageVolDefParsePerms(conn, ctxt, &ret->target.perms) < 0)
@@ -711,9 +711,9 @@ virStorageVolDefParseDoc(virConnectPtr conn,
     return ret;
 
  cleanup:
-    free(allocation);
-    free(capacity);
-    free(unit);
+    VIR_FREE(allocation);
+    VIR_FREE(capacity);
+    VIR_FREE(unit);
     virStorageVolDefFree(ret);
     return NULL;
 }
@@ -772,6 +772,7 @@ virStorageVolDefFormat(virConnectPtr conn,
                        virStorageVolDefPtr def) {
     virStorageBackendVolOptionsPtr options;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *tmp;
 
     options = virStorageBackendVolOptionsForType(pool->type);
     if (options == NULL)
@@ -849,7 +850,8 @@ virStorageVolDefFormat(virConnectPtr conn,
  no_memory:
     virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("xml"));
  cleanup:
-    free(virBufferContentAndReset(&buf));
+    tmp = virBufferContentAndReset(&buf);
+    VIR_FREE(tmp);
     return NULL;
 }
 
@@ -955,7 +957,7 @@ virStoragePoolObjAssignDef(virConnectPtr conn,
         return pool;
     }
 
-    if (!(pool = calloc(1, sizeof(virStoragePoolObj)))) {
+    if (VIR_ALLOC(pool) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY,
                               "%s", _("pool"));
         return NULL;
@@ -1063,7 +1065,7 @@ virStoragePoolObjScanConfigs(virStorageDriverStatePtr driver) {
 
         virStoragePoolObjLoad(driver, entry->d_name, path, xml, autostartLink);
 
-        free(xml);
+        VIR_FREE(xml);
     }
 
     closedir(dir);
@@ -1108,15 +1110,13 @@ virStoragePoolObjSaveDef(virConnectPtr conn,
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                   "%s", _("cannot construct "
                                           "autostart link path"));
-            free(pool->configFile);
-            pool->configFile = NULL;
+            VIR_FREE(pool->configFile);
             return -1;
         }
         if (!(pool->autostartLink = strdup(path))) {
             virStorageReportError(conn, VIR_ERR_NO_MEMORY,
                                   "%s", _("config file"));
-            free(pool->configFile);
-            pool->configFile = NULL;
+            VIR_FREE(pool->configFile);
             return -1;
         }
     }
@@ -1157,7 +1157,7 @@ virStoragePoolObjSaveDef(virConnectPtr conn,
     if (fd != -1)
         close(fd);
 
-    free(xml);
+    VIR_FREE(xml);
 
     return ret;
 }

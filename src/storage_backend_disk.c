@@ -26,6 +26,7 @@
 #include "internal.h"
 #include "storage_backend_disk.h"
 #include "util.h"
+#include "memory.h"
 
 enum {
     VIR_STORAGE_POOL_DISK_DOS = 0,
@@ -174,7 +175,7 @@ virStorageBackendDiskMakeDataVol(virConnectPtr conn,
     char *tmp, *devpath;
 
     if (vol == NULL) {
-        if ((vol = calloc(1, sizeof(virStorageVolDef))) == NULL) {
+        if (VIR_ALLOC(vol) < 0) {
             virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("volume"));
             return -1;
         }
@@ -211,8 +212,7 @@ virStorageBackendDiskMakeDataVol(virConnectPtr conn,
             return -1;
 
         if (devpath != vol->target.path)
-            free(devpath);
-        devpath = NULL;
+            VIR_FREE(devpath);
     }
 
     if (vol->key == NULL) {
@@ -224,8 +224,7 @@ virStorageBackendDiskMakeDataVol(virConnectPtr conn,
     }
 
     if (vol->source.extents == NULL) {
-        if ((vol->source.extents =
-             calloc(1, sizeof(*(vol->source.extents)))) == NULL) {
+        if (VIR_ALLOC(vol->source.extents) < 0) {
             virStorageReportError(conn, VIR_ERR_NO_MEMORY,
                                   _("volume extents"));
             return -1;
@@ -275,16 +274,15 @@ virStorageBackendDiskMakeFreeExtent(virConnectPtr conn ATTRIBUTE_UNUSED,
                                     virStoragePoolObjPtr pool,
                                     char **const groups)
 {
-    virStoragePoolSourceDeviceExtentPtr tmp;
     virStoragePoolSourceDevicePtr dev = &pool->def->source.devices[0];
 
-    if ((tmp = realloc(dev->freeExtents,
-                       sizeof(*tmp) * (dev->nfreeExtent+1))) == NULL)
+    if (VIR_REALLOC_N(dev->freeExtents,
+                      dev->nfreeExtent + 1) < 0)
         return -1;
-    dev->freeExtents = tmp;
 
     memset(dev->freeExtents +
-           dev->nfreeExtent, 0, sizeof(*tmp));
+           dev->nfreeExtent, 0,
+           sizeof(dev->freeExtents[0]));
 
     if (virStrToLong_ull(groups[3], NULL, 10,
                          &dev->freeExtents[dev->nfreeExtent].start) < 0)
@@ -388,9 +386,8 @@ static int
 virStorageBackendDiskRefreshPool(virConnectPtr conn,
                                  virStoragePoolObjPtr pool)
 {
-    free(pool->def->source.devices[0].freeExtents);
+    VIR_FREE(pool->def->source.devices[0].freeExtents);
     pool->def->source.devices[0].nfreeExtent = 0;
-    pool->def->source.devices[0].freeExtents = NULL;
 
     return virStorageBackendDiskReadPartitions(conn, pool, NULL);
 }
@@ -476,9 +473,8 @@ virStorageBackendDiskCreateVol(virConnectPtr conn,
         return -1;
 
     /* Blow away free extent info, as we're about to re-populate it */
-    free(pool->def->source.devices[0].freeExtents);
+    VIR_FREE(pool->def->source.devices[0].freeExtents);
     pool->def->source.devices[0].nfreeExtent = 0;
-    pool->def->source.devices[0].freeExtents = NULL;
 
     /* Fetch actual extent info */
     if (virStorageBackendDiskReadPartitions(conn, pool, vol) < 0)

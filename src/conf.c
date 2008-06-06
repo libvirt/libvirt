@@ -23,6 +23,7 @@
 #include "conf.h"
 #include "util.h"
 #include "c-ctype.h"
+#include "memory.h"
 
 /************************************************************************
  *									*
@@ -138,11 +139,11 @@ __virConfFreeValue(virConfValuePtr val)
         return;
     if (val->type == VIR_CONF_STRING &&
         val->str != NULL)
-        free(val->str);
+        VIR_FREE(val->str);
     if (val->type == VIR_CONF_LIST &&
         val->list != NULL)
         virConfFreeList(val->list);
-    free(val);
+    VIR_FREE(val);
 }
 
 virConfPtr
@@ -150,8 +151,7 @@ __virConfNew(void)
 {
     virConfPtr ret;
 
-    ret = calloc(1, sizeof(*ret));
-    if (ret == NULL) {
+    if (VIR_ALLOC(ret) < 0) {
         virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"), 0);
         return(NULL);
     }
@@ -199,8 +199,7 @@ virConfAddEntry(virConfPtr conf, char *name, virConfValuePtr value, char *comm)
     if ((comm == NULL) && (name == NULL))
         return(NULL);
 
-    ret = calloc(1, sizeof(*ret));
-    if (ret == NULL) {
+    if (VIR_ALLOC(ret) < 0) {
         virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"), 0);
         return(NULL);
     }
@@ -441,7 +440,8 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
         NEXT;
         SKIP_BLANKS_AND_EOL;
         if ((ctxt->cur < ctxt->end) && (CUR != ']')) {
-            lst = virConfParseValue(ctxt);
+            if ((lst = virConfParseValue(ctxt)) == NULL)
+                return(NULL);
             SKIP_BLANKS_AND_EOL;
         }
         while ((ctxt->cur < ctxt->end) && (CUR != ']')) {
@@ -484,10 +484,10 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
                      ctxt->line);
         return(NULL);
     }
-    ret = calloc(1, sizeof(*ret));
-    if (ret == NULL) {
+    if (VIR_ALLOC(ret) < 0) {
         virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"), 0);
-            free(str);
+        virConfFreeList(lst);
+        VIR_FREE(str);
         return(NULL);
     }
     ret->type = type;
@@ -618,7 +618,7 @@ virConfParseStatement(virConfParserCtxtPtr ctxt)
     SKIP_BLANKS;
     value = virConfParseValue(ctxt);
     if (value == NULL) {
-        free(name);
+        VIR_FREE(name);
         return(-1);
     }
     SKIP_BLANKS;
@@ -630,15 +630,15 @@ virConfParseStatement(virConfParserCtxtPtr ctxt)
         if (comm == NULL) {
             virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"),
                          ctxt->line);
-            free(name);
+            VIR_FREE(name);
             virConfFreeValue(value);
             return(-1);
         }
     }
     if (virConfAddEntry(ctxt->conf, name, value, comm) == NULL) {
-        free(name);
+        VIR_FREE(name);
         virConfFreeValue(value);
-    free(comm);
+        VIR_FREE(comm);
         return(-1);
     }
     return(0);
@@ -720,7 +720,7 @@ __virConfReadFile(const char *filename)
 
     conf = virConfParse(filename, content, len);
 
-    free(content);
+    VIR_FREE(content);
 
     return conf;
 }
@@ -769,14 +769,14 @@ __virConfFree(virConfPtr conf)
     tmp = conf->entries;
     while (tmp) {
         virConfEntryPtr next;
-        free(tmp->name);
+        VIR_FREE(tmp->name);
         virConfFreeValue(tmp->value);
-        free(tmp->comment);
+        VIR_FREE(tmp->comment);
         next = tmp->next;
-        free(tmp);
+        VIR_FREE(tmp);
         tmp = next;
     }
-    free(conf);
+    VIR_FREE(conf);
     return(0);
 }
 
@@ -834,14 +834,14 @@ __virConfSetValue (virConfPtr conf,
     }
 
     if (!cur) {
-        if (!(cur = malloc(sizeof(*cur)))) {
+        if (VIR_ALLOC(cur) < 0) {
             virConfFreeValue(value);
             return (-1);
         }
         cur->comment = NULL;
         if (!(cur->name = strdup(setting))) {
             virConfFreeValue(value);
-            free(cur);
+            VIR_FREE(cur);
             return (-1);
         }
         cur->value = value;
@@ -897,15 +897,16 @@ __virConfWriteFile(const char *filename, virConfPtr conf)
 
     fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR );
     if (fd < 0) {
+        char *tmp = virBufferContentAndReset(&buf);
         virConfError(NULL, VIR_ERR_WRITE_FAILED, _("failed to open file"), 0);
-        free(virBufferContentAndReset(&buf));
+        VIR_FREE(tmp);
         return -1;
     }
 
     use = virBufferUse(&buf);
     content = virBufferContentAndReset(&buf);
     ret = safewrite(fd, content, use);
-    free(content);
+    VIR_FREE(content);
     close(fd);
     if (ret != (int)use) {
         virConfError(NULL, VIR_ERR_WRITE_FAILED, _("failed to save content"), 0);
@@ -955,11 +956,11 @@ __virConfWriteMem(char *memory, int *len, virConfPtr conf)
 
     if ((int)use >= *len) {
         *len = (int)use;
-        free(content);
+        VIR_FREE(content);
         return -1;
     }
     memcpy(memory, content, use);
-    free(content);
+    VIR_FREE(content);
     *len = use;
     return use;
 }

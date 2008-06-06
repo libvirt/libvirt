@@ -21,6 +21,7 @@
 #include "internal.h"
 #include "sexpr.h"
 #include "util.h"
+#include "memory.h"
 
 /**
  * virSexprError:
@@ -55,8 +56,7 @@ sexpr_new(void)
 {
     struct sexpr *ret;
 
-    ret = (struct sexpr *) malloc(sizeof(*ret));
-    if (ret == NULL) {
+    if (VIR_ALLOC(ret) < 0) {
         virSexprError(VIR_ERR_NO_MEMORY, _("failed to allocate a node"));
         return (NULL);
     }
@@ -85,13 +85,13 @@ sexpr_free(struct sexpr *sexpr)
             sexpr_free(sexpr->u.s.cdr);
             break;
         case SEXPR_VALUE:
-            free(sexpr->u.value);
+            VIR_FREE(sexpr->u.value);
             break;
         case SEXPR_NIL:
             break;
     }
 
-    free(sexpr);
+    VIR_FREE(sexpr);
 
     errno = serrno;
 }
@@ -171,16 +171,23 @@ sexpr_cons(const struct sexpr *car, const struct sexpr *cdr)
  *
  * Internal operation appending a value at the end of an existing list
  */
-static void
+static int
 append(struct sexpr *lst, const struct sexpr *value)
 {
+    struct sexpr *nil = sexpr_nil();
+
+    if (nil == NULL)
+        return -1;
+
     while (lst->kind != SEXPR_NIL) {
         lst = lst->u.s.cdr;
     }
 
     lst->kind = SEXPR_CONS;
     lst->u.s.car = (struct sexpr *) value;
-    lst->u.s.cdr = sexpr_nil();
+    lst->u.s.cdr = nil;
+
+    return 0;
 }
 
 /**
@@ -198,7 +205,8 @@ sexpr_append(struct sexpr *lst, const struct sexpr *value)
         return (NULL);
     if (value == NULL)
         return (lst);
-    append(lst, value);
+    if (append(lst, value) < 0)
+        return (NULL);
     return (lst);
 }
 
@@ -318,8 +326,11 @@ _string2sexpr(const char *buffer, size_t * end)
 
             tmp = _string2sexpr(ptr, &tmp_len);
             if (tmp == NULL)
-                return NULL;
-            append(ret, tmp);
+                goto error;
+            if (append(ret, tmp) < 0) {
+                sexpr_free(tmp);
+                goto error;
+            }
 #if 0
             if (0) {
                 char buf[4096];
@@ -351,6 +362,7 @@ _string2sexpr(const char *buffer, size_t * end)
             if (ret->u.value == NULL) {
                 virSexprError(VIR_ERR_NO_MEMORY,
                               _("failed to copy a string"));
+                goto error;
             }
 
             if (*ptr == '\'')
@@ -367,6 +379,7 @@ _string2sexpr(const char *buffer, size_t * end)
             if (ret->u.value == NULL) {
                 virSexprError(VIR_ERR_NO_MEMORY,
                               _("failed to copy a string"));
+                goto error;
             }
         }
 

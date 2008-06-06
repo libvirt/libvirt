@@ -28,6 +28,7 @@
 #include "proxy_internal.h"
 #include "util.h"
 #include "xen_unified.h"
+#include "memory.h"
 
 #define STANDALONE
 
@@ -992,8 +993,7 @@ xenProxyGetCapabilities (virConnectPtr conn)
     }
 
     xmllen = ans.len - sizeof (virProxyPacket);
-    xml = malloc (xmllen+1);
-    if (!xml) {
+    if (VIR_ALLOC_N(xml, xmllen+1) < 0) {
         virProxyError (conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
         return NULL;
     }
@@ -1044,7 +1044,7 @@ xenProxyDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
         return (NULL);
     }
     xmllen = ans.len - sizeof(virProxyPacket);
-    if (!(xml = malloc(xmllen+1))) {
+    if (VIR_ALLOC_N(xml, xmllen+1) < 0) {
         virProxyError(domain->conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
         return NULL;
     }
@@ -1097,7 +1097,7 @@ xenProxyDomainGetOSType(virDomainPtr domain)
         return (NULL);
     }
     oslen = ans.len - sizeof(virProxyPacket);
-    if (!(ostype = malloc(oslen+1))) {
+    if (VIR_ALLOC_N(ostype, oslen+1) < 0) {
         virProxyError(domain->conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
         return NULL;
     }
