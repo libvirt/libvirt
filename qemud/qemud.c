@@ -56,6 +56,7 @@
 #include "remote_internal.h"
 #include "conf.h"
 #include "event.h"
+#include "memory.h"
 #ifdef HAVE_AVAHI
 #include "mdns.h"
 #endif
@@ -466,12 +467,12 @@ static int qemudWritePidFile(const char *pidFile) {
 
 static int qemudListenUnix(struct qemud_server *server,
                            const char *path, int readonly, int auth) {
-    struct qemud_socket *sock = calloc(1, sizeof(*sock));
+    struct qemud_socket *sock;
     struct sockaddr_un addr;
     mode_t oldmask;
     gid_t oldgrp;
 
-    if (!sock) {
+    if (VIR_ALLOC(sock) < 0) {
         qemudLog(QEMUD_ERR,
                  "%s", _("Failed to allocate memory for struct qemud_socket"));
         return -1;
@@ -611,12 +612,10 @@ remoteListenTCP (struct qemud_server *server,
         struct sockaddr_storage sa;
         socklen_t salen = sizeof(sa);
 
-        sock = calloc (1, sizeof *sock);
-
-        if (!sock) {
+        if (VIR_ALLOC(sock) < 0) {
             qemudLog (QEMUD_ERR,
                       _("remoteListenTCP: calloc: %s"), strerror (errno));
-            return -1;
+            goto cleanup;
         }
 
         sock->readonly = 0;
@@ -629,7 +628,7 @@ remoteListenTCP (struct qemud_server *server,
         sock->auth = auth;
 
         if (getsockname(sock->fd, (struct sockaddr *)(&sa), &salen) < 0)
-            return -1;
+            goto cleanup;
 
         if (sa.ss_family == AF_INET)
             sock->port = htons(((struct sockaddr_in*)&sa)->sin_port);
@@ -642,12 +641,12 @@ remoteListenTCP (struct qemud_server *server,
 
         if (qemudSetCloseExec(sock->fd) < 0 ||
             qemudSetNonBlock(sock->fd) < 0)
-            return -1;
+            goto cleanup;
 
         if (listen (sock->fd, 30) < 0) {
             qemudLog (QEMUD_ERR,
                       _("remoteListenTCP: listen: %s"), strerror (errno));
-            return -1;
+            goto cleanup;
         }
 
         if (virEventAddHandleImpl(sock->fd,
@@ -655,12 +654,17 @@ remoteListenTCP (struct qemud_server *server,
                                   qemudDispatchServerEvent,
                                   server) < 0) {
             qemudLog(QEMUD_ERR, "%s", _("Failed to add server event callback"));
-            return -1;
+            goto cleanup;
         }
 
     }
 
     return 0;
+
+cleanup:
+    for (i = 0; i < nfds; ++i)
+        close(fds[0]);
+    return -1;
 }
 
 static int qemudInitPaths(struct qemud_server *server,
@@ -712,7 +716,7 @@ static int qemudInitPaths(struct qemud_server *server,
 static struct qemud_server *qemudInitialize(int sigread) {
     struct qemud_server *server;
 
-    if (!(server = calloc(1, sizeof(*server)))) {
+    if (VIR_ALLOC(server) < 0) {
         qemudLog(QEMUD_ERR, "%s", _("Failed to allocate struct qemud_server"));
         return NULL;
     }
@@ -1092,8 +1096,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
         return -1;
     }
 
-    client = calloc(1, sizeof(*client));
-    if (client == NULL)
+    if (VIR_ALLOC(client) < 0)
         goto cleanup;
     client->magic = QEMUD_CLIENT_MAGIC;
     client->fd = fd;
@@ -1733,8 +1736,7 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
 
     switch (p->type) {
     case VIR_CONF_STRING:
-        list = malloc (2 * sizeof (*list));
-        if (list == NULL) {
+        if (VIR_ALLOC_N(list, 2) < 0) {
             qemudLog (QEMUD_ERR,
                       _("failed to allocate memory for %s config list"), key);
             return -1;
@@ -1745,7 +1747,7 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
             qemudLog (QEMUD_ERR,
                       _("failed to allocate memory for %s config list value"),
                       key);
-            free (list);
+            VIR_FREE(list);
             return -1;
         }
         break;
@@ -1755,8 +1757,7 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
         virConfValuePtr pp;
         for (pp = p->list; pp; pp = pp->next)
             len++;
-        list = calloc (1+len, sizeof (*list));
-        if (list == NULL) {
+        if (VIR_ALLOC_N(list, 1+len) < 0) {
             qemudLog (QEMUD_ERR,
                       _("failed to allocate memory for %s config list"), key);
             return -1;
@@ -1766,15 +1767,15 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
                 qemudLog (QEMUD_ERR, _("remoteReadConfigFile: %s: %s:"
                           " must be a string or list of strings\n"),
                           filename, key);
-                free (list);
+                VIR_FREE(list);
                 return -1;
             }
             list[i] = strdup (pp->str);
             if (list[i] == NULL) {
                 int j;
                 for (j = 0 ; j < i ; j++)
-                    free (list[j]);
-                free (list);
+                    VIR_FREE(list[j]);
+                VIR_FREE(list);
                 qemudLog (QEMUD_ERR, _("failed to allocate memory"
                                        " for %s config list value"), key);
                 return -1;

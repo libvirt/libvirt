@@ -1,3 +1,10 @@
+Fri Jun  6 11:41:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/event.c, qemud/mdns.c, qemud/qemud.c, qemud/remote.c:
+	Switch over to use internal memory allocation APIs.
+	* src/libvirt_sym.version, src/memory.c, src/memory.h: Export
+	virAlloc/Realloc/Free to use by libvirtd daemon
+
 Thu Jun  5 22:08:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	virDomainBlockPeek QEMU and remote support

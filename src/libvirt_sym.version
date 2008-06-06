@@ -191,5 +191,10 @@
 
 	__virMacAddrCompare;
 
+        __virAlloc;
+        __virAllocN;
+        __virReallocN;
+        __virFree;
+
     local: *;
 };

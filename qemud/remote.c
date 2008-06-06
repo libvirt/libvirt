@@ -50,6 +50,7 @@
 
 #include "internal.h"
 #include "qemud.h"
+#include "memory.h"
 
 #define DEBUG 0
 
@@ -609,14 +610,19 @@ remoteDispatchNodeGetCellsFreeMemory (struct qemud_server *server ATTRIBUTE_UNUS
     }
 
     /* Allocate return buffer. */
-    ret->freeMems.freeMems_val = calloc (args->maxCells, sizeof (*(ret->freeMems.freeMems_val)));
+    if (VIR_ALLOC_N(ret->freeMems.freeMems_val, args->maxCells) < 0) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+        return -2;
+    }
 
     ret->freeMems.freeMems_len = virNodeGetCellsFreeMemory(client->conn,
                                                            (unsigned long long *)ret->freeMems.freeMems_val,
                                                            args->startCell,
                                                            args->maxCells);
-    if (ret->freeMems.freeMems_len == 0)
+    if (ret->freeMems.freeMems_len == 0) {
+        VIR_FREE(ret->freeMems.freeMems_val);
         return -1;
+    }
 
     return 0;
 }
@@ -688,15 +694,14 @@ remoteDispatchDomainGetSchedulerParameters (struct qemud_server *server ATTRIBUT
         remoteDispatchError (client, req, "%s", _("nparams too large"));
         return -2;
     }
-    params = malloc (sizeof (*params) * nparams);
-    if (params == NULL) {
-        remoteDispatchError (client, req, "%s", _("out of memory allocating array"));
+    if (VIR_ALLOC_N(params, nparams) < 0) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
         return -2;
     }
 
     dom = get_nonnull_domain (client->conn, args->dom);
     if (dom == NULL) {
-        free (params);
+        VIR_FREE(params);
         remoteDispatchError (client, req, "%s", _("domain not found"));
         return -2;
     }
@@ -704,32 +709,21 @@ remoteDispatchDomainGetSchedulerParameters (struct qemud_server *server ATTRIBUT
     r = virDomainGetSchedulerParameters (dom, params, &nparams);
     if (r == -1) {
         virDomainFree(dom);
-        free (params);
+        VIR_FREE(params);
         return -1;
     }
 
     /* Serialise the scheduler parameters. */
     ret->params.params_len = nparams;
-    ret->params.params_val = malloc (sizeof (*(ret->params.params_val))
-                                     * nparams);
-    if (ret->params.params_val == NULL) {
-        virDomainFree(dom);
-        free (params);
-        remoteDispatchError (client, req,
-                             "%s", _("out of memory allocating return array"));
-        return -2;
-    }
+    if (VIR_ALLOC_N(ret->params.params_val, nparams) < 0)
+        goto oom;
 
     for (i = 0; i < nparams; ++i) {
         // remoteDispatchClientRequest will free this:
         ret->params.params_val[i].field = strdup (params[i].field);
-        if (ret->params.params_val[i].field == NULL) {
-            virDomainFree(dom);
-            free (params);
-            remoteDispatchError (client, req,
-                                 "%s", _("out of memory allocating return array"));
-            return -2;
-        }
+        if (ret->params.params_val[i].field == NULL)
+            goto oom;
+
         ret->params.params_val[i].value.type = params[i].type;
         switch (params[i].type) {
         case VIR_DOMAIN_SCHED_FIELD_INT:
@@ -745,16 +739,23 @@ remoteDispatchDomainGetSchedulerParameters (struct qemud_server *server ATTRIBUT
         case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
             ret->params.params_val[i].value.remote_sched_param_value_u.b = params[i].value.b; break;
         default:
-            virDomainFree(dom);
-            free (params);
             remoteDispatchError (client, req, "%s", _("unknown type"));
-            return -2;
+            goto cleanup;
         }
     }
     virDomainFree(dom);
-    free (params);
+    VIR_FREE(params);
 
     return 0;
+
+oom:
+    remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+cleanup:
+    virDomainFree(dom);
+    for (i = 0 ; i < nparams ; i++)
+        VIR_FREE(ret->params.params_val[i].field);
+    VIR_FREE(params);
+    return -2;
 }
 
 static int
@@ -775,9 +776,8 @@ remoteDispatchDomainSetSchedulerParameters (struct qemud_server *server ATTRIBUT
         remoteDispatchError (client, req, "%s", _("nparams too large"));
         return -2;
     }
-    params = malloc (sizeof (*params) * nparams);
-    if (params == NULL) {
-        remoteDispatchError (client, req, "%s", _("out of memory allocating array"));
+    if (VIR_ALLOC_N(params, nparams)) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
         return -2;
     }
 
@@ -805,14 +805,14 @@ remoteDispatchDomainSetSchedulerParameters (struct qemud_server *server ATTRIBUT
 
     dom = get_nonnull_domain (client->conn, args->dom);
     if (dom == NULL) {
-        free (params);
+        VIR_FREE(params);
         remoteDispatchError (client, req, "%s", _("domain not found"));
         return -2;
     }
 
     r = virDomainSetSchedulerParameters (dom, params, nparams);
     virDomainFree(dom);
-    free (params);
+    VIR_FREE(params);
     if (r == -1) return -1;
 
     return 0;
@@ -914,14 +914,15 @@ remoteDispatchDomainBlockPeek (struct qemud_server *server ATTRIBUTE_UNUSED,
     flags = args->flags;
 
     if (size > REMOTE_DOMAIN_BLOCK_PEEK_BUFFER_MAX) {
+        virDomainFree (dom);
         remoteDispatchError (client, req,
                              "%s", _("size > maximum buffer size"));
         return -2;
     }
 
     ret->buffer.buffer_len = size;
-    ret->buffer.buffer_val = malloc (size);
-    if (!ret->buffer.buffer_val) {
+    if (VIR_ALLOC_N(ret->buffer.buffer_val, size) < 0) {
+        virDomainFree (dom);
         remoteDispatchError (client, req, "%s", strerror (errno));
         return -2;
     }
@@ -1238,9 +1239,9 @@ remoteDispatchDomainGetVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
                               remote_domain_get_vcpus_args *args,
                               remote_domain_get_vcpus_ret *ret)
 {
-    virDomainPtr dom;
-    virVcpuInfoPtr info;
-    unsigned char *cpumaps;
+    virDomainPtr dom = NULL;
+    virVcpuInfoPtr info = NULL;
+    unsigned char *cpumaps = NULL;
     int info_len, i;
     CHECK_CONN(client);
 
@@ -1263,20 +1264,25 @@ remoteDispatchDomainGetVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     /* Allocate buffers to take the results. */
-    info = calloc (args->maxinfo, sizeof (*info));
-    cpumaps = calloc (args->maxinfo * args->maplen, sizeof (*cpumaps));
+    if (VIR_ALLOC_N(info, args->maxinfo) < 0)
+        goto oom;
+    if (VIR_ALLOC_N(cpumaps, args->maxinfo) < 0)
+        goto oom;
 
     info_len = virDomainGetVcpus (dom,
                                   info, args->maxinfo,
                                   cpumaps, args->maplen);
     if (info_len == -1) {
+        VIR_FREE(info);
+        VIR_FREE(cpumaps);
         virDomainFree(dom);
         return -1;
     }
 
     /* Allocate the return buffer for info. */
     ret->info.info_len = info_len;
-    ret->info.info_val = calloc (info_len, sizeof (*(ret->info.info_val)));
+    if (VIR_ALLOC_N(ret->info.info_val, info_len) < 0)
+        goto oom;
 
     for (i = 0; i < info_len; ++i) {
         ret->info.info_val[i].number = info[i].number;
@@ -1292,8 +1298,16 @@ remoteDispatchDomainGetVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
     ret->cpumaps.cpumaps_len = args->maxinfo * args->maplen;
     ret->cpumaps.cpumaps_val = (char *) cpumaps;
 
+    VIR_FREE(info);
     virDomainFree(dom);
     return 0;
+
+oom:
+    VIR_FREE(info);
+    VIR_FREE(cpumaps);
+    virDomainFree(dom);
+    remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+    return -2;
 }
 
 static int
@@ -1315,13 +1329,16 @@ remoteDispatchDomainMigratePrepare (struct qemud_server *server ATTRIBUTE_UNUSED
     dname = args->dname == NULL ? NULL : *args->dname;
 
     /* Wacky world of XDR ... */
-    uri_out = calloc (1, sizeof (*uri_out));
+    if (VIR_ALLOC(uri_out) < 0) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+        return -2;
+    }
 
     r = __virDomainMigratePrepare (client->conn, &cookie, &cookielen,
                                    uri_in, uri_out,
                                    args->flags, dname, args->resource);
     if (r == -1) {
-        free(uri_out);
+        VIR_FREE(uri_out);
         return -1;
     }
 
@@ -1332,7 +1349,7 @@ remoteDispatchDomainMigratePrepare (struct qemud_server *server ATTRIBUTE_UNUSED
     ret->cookie.cookie_val = cookie;
     if (*uri_out == NULL) {
         ret->uri_out = NULL;
-        free(uri_out);
+        VIR_FREE(uri_out);
     } else {
         ret->uri_out = uri_out;
     }
@@ -1409,12 +1426,18 @@ remoteDispatchListDefinedDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     /* Allocate return buffer. */
-    ret->names.names_val = calloc (args->maxnames, sizeof (*(ret->names.names_val)));
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+        return -2;
+    }
 
     ret->names.names_len =
         virConnectListDefinedDomains (client->conn,
                                       ret->names.names_val, args->maxnames);
-    if (ret->names.names_len == -1) return -1;
+    if (ret->names.names_len == -1) {
+        VIR_FREE(ret->names.names_val);
+        return -1;
+    }
 
     return 0;
 }
@@ -1817,12 +1840,18 @@ remoteDispatchListDefinedNetworks (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     /* Allocate return buffer. */
-    ret->names.names_val = calloc (args->maxnames, sizeof (*(ret->names.names_val)));
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+        return -2;
+    }
 
     ret->names.names_len =
         virConnectListDefinedNetworks (client->conn,
                                        ret->names.names_val, args->maxnames);
-    if (ret->names.names_len == -1) return -1;
+    if (ret->names.names_len == -1) {
+        VIR_FREE(ret->names.names_val);
+        return -1;
+    }
 
     return 0;
 }
@@ -1843,11 +1872,17 @@ remoteDispatchListDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     /* Allocate return buffer. */
-    ret->ids.ids_val = calloc (args->maxids, sizeof (*(ret->ids.ids_val)));
+    if (VIR_ALLOC_N(ret->ids.ids_val, args->maxids) < 0) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+        return -2;
+    }
 
     ret->ids.ids_len = virConnectListDomains (client->conn,
                                               ret->ids.ids_val, args->maxids);
-    if (ret->ids.ids_len == -1) return -1;
+    if (ret->ids.ids_len == -1) {
+        VIR_FREE(ret->ids.ids_val);
+        return -1;
+    }
 
     return 0;
 }
@@ -1868,12 +1903,18 @@ remoteDispatchListNetworks (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     /* Allocate return buffer. */
-    ret->names.names_val = calloc (args->maxnames, sizeof (*(ret->names.names_val)));
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+        return -2;
+    }
 
     ret->names.names_len =
         virConnectListNetworks (client->conn,
                                 ret->names.names_val, args->maxnames);
-    if (ret->names.names_len == -1) return -1;
+    if (ret->names.names_len == -1) {
+        VIR_FREE(ret->names.names_len);
+        return -1;
+    }
 
     return 0;
 }
@@ -2176,8 +2217,8 @@ remoteDispatchAuthList (struct qemud_server *server ATTRIBUTE_UNUSED,
                         remote_auth_list_ret *ret)
 {
     ret->types.types_len = 1;
-    if ((ret->types.types_val = calloc (ret->types.types_len, sizeof (*(ret->types.types_val)))) == NULL) {
-        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, "auth types");
+    if (VIR_ALLOC_N(ret->types.types_val, ret->types.types_len) < 0) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
         return -2;
     }
     ret->types.types_val[0] = client->auth;
@@ -2206,9 +2247,8 @@ static char *addrToString(struct qemud_client *client,
         return NULL;
     }
 
-    addr = malloc(strlen(host) + 1 + strlen(port) + 1);
-    if (!addr) {
-        remoteDispatchError(client, req, "%s", _("cannot allocate address"));
+    if (VIR_ALLOC_N(addr, strlen(host) + 1 + strlen(port) + 1) < 0) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
         return NULL;
     }
 
@@ -2264,11 +2304,11 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
     if (getpeername(client->fd, (struct sockaddr*)&sa, &salen) < 0) {
         remoteDispatchError(client, req, _("failed to get peer address %d (%s)"),
                             errno, strerror(errno));
-        free(localAddr);
+        VIR_FREE(localAddr);
         return -2;
     }
     if ((remoteAddr = addrToString(client, req, &sa, salen)) == NULL) {
-        free(localAddr);
+        VIR_FREE(localAddr);
         return -2;
     }
 
@@ -2280,8 +2320,8 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
                           NULL, /* XXX Callbacks */
                           SASL_SUCCESS_DATA,
                           &client->saslconn);
-    free(localAddr);
-    free(remoteAddr);
+    VIR_FREE(localAddr);
+    VIR_FREE(remoteAddr);
     if (err != SASL_OK) {
         qemudLog(QEMUD_ERR, _("sasl context setup failed %d (%s)"),
                  err, sasl_errstring(err, NULL, NULL));
@@ -2525,10 +2565,8 @@ remoteDispatchAuthSaslStart (struct qemud_server *server,
 
     /* NB, distinction of NULL vs "" is *critical* in SASL */
     if (serverout) {
-        ret->data.data_val = malloc(serveroutlen);
-        if (!ret->data.data_val) {
-            remoteDispatchError (client, req,
-                                 "%s", _("out of memory allocating array"));
+        if (VIR_ALLOC_N(ret->data.data_val, serveroutlen) < 0) {
+            remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
             return -2;
         }
         memcpy(ret->data.data_val, serverout, serveroutlen);
@@ -2606,10 +2644,8 @@ remoteDispatchAuthSaslStep (struct qemud_server *server,
 
     /* NB, distinction of NULL vs "" is *critical* in SASL */
     if (serverout) {
-        ret->data.data_val = malloc(serveroutlen);
-        if (!ret->data.data_val) {
-            remoteDispatchError (client, req,
-                                 "%s", _("out of memory allocating array"));
+        if (VIR_ALLOC_N(ret->data.data_val, serveroutlen) < 0) {
+            remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
             return -2;
         }
         memcpy(ret->data.data_val, serverout, serveroutlen);
@@ -2826,12 +2862,18 @@ remoteDispatchListDefinedStoragePools (struct qemud_server *server ATTRIBUTE_UNU
     }
 
     /* Allocate return buffer. */
-    ret->names.names_val = calloc (args->maxnames, sizeof (char *));
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+        return -2;
+    }
 
     ret->names.names_len =
         virConnectListDefinedStoragePools (client->conn,
-                                       ret->names.names_val, args->maxnames);
-    if (ret->names.names_len == -1) return -1;
+                                           ret->names.names_val, args->maxnames);
+    if (ret->names.names_len == -1) {
+        VIR_FREE(ret->names.names_val);
+        return -1;
+    }
 
     return 0;
 }
@@ -2852,12 +2894,18 @@ remoteDispatchListStoragePools (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     /* Allocate return buffer. */
-    ret->names.names_val = calloc (args->maxnames, sizeof (char *));
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+        return -2;
+    }
 
     ret->names.names_len =
         virConnectListStoragePools (client->conn,
                                 ret->names.names_val, args->maxnames);
-    if (ret->names.names_len == -1) return -1;
+    if (ret->names.names_len == -1) {
+        VIR_FREE(ret->names.names_val);
+        return -1;
+    }
 
     return 0;
 }
@@ -3261,13 +3309,20 @@ remoteDispatchStoragePoolListVolumes (struct qemud_server *server ATTRIBUTE_UNUS
     }
 
     /* Allocate return buffer. */
-    ret->names.names_val = calloc (args->maxnames, sizeof (char *));
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        virStoragePoolFree(pool);
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+        return -2;
+    }
 
     ret->names.names_len =
         virStoragePoolListVolumes (pool,
                                    ret->names.names_val, args->maxnames);
     virStoragePoolFree(pool);
-    if (ret->names.names_len == -1) return -1;
+    if (ret->names.names_len == -1) {
+        VIR_FREE(ret->names.names_val);
+        return -1;
+    }
 
     return 0;
 }

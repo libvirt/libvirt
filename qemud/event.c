@@ -31,6 +31,7 @@
 
 #include "qemud.h"
 #include "event.h"
+#include "memory.h"
 
 #define EVENT_DEBUG(fmt, ...) qemudDebug("EVENT: " fmt, __VA_ARGS__)
 
@@ -82,16 +83,11 @@ static int nextTimer = 0;
 int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb, void *opaque) {
     EVENT_DEBUG("Add handle %d %d %p %p", fd, events, cb, opaque);
     if (eventLoop.handlesCount == eventLoop.handlesAlloc) {
-        struct virEventHandle *tmp;
         EVENT_DEBUG("Used %d handle slots, adding %d more",
                     eventLoop.handlesAlloc, EVENT_ALLOC_EXTENT);
-        tmp = realloc(eventLoop.handles,
-                      sizeof(struct virEventHandle) *
-                      (eventLoop.handlesAlloc + EVENT_ALLOC_EXTENT));
-        if (!tmp) {
+        if (VIR_REALLOC_N(eventLoop.handles,
+                          (eventLoop.handlesAlloc + EVENT_ALLOC_EXTENT)) < 0)
             return -1;
-        }
-        eventLoop.handles = tmp;
         eventLoop.handlesAlloc += EVENT_ALLOC_EXTENT;
     }
 
@@ -152,16 +148,11 @@ int virEventAddTimeoutImpl(int frequency, virEventTimeoutCallback cb, void *opaq
     }
 
     if (eventLoop.timeoutsCount == eventLoop.timeoutsAlloc) {
-        struct virEventTimeout *tmp;
         EVENT_DEBUG("Used %d timeout slots, adding %d more",
                     eventLoop.timeoutsAlloc, EVENT_ALLOC_EXTENT);
-        tmp = realloc(eventLoop.timeouts,
-                      sizeof(struct virEventTimeout) *
-                      (eventLoop.timeoutsAlloc + EVENT_ALLOC_EXTENT));
-        if (!tmp) {
+        if (VIR_REALLOC_N(eventLoop.timeouts,
+                          (eventLoop.timeoutsAlloc + EVENT_ALLOC_EXTENT)) < 0)
             return -1;
-        }
-        eventLoop.timeouts = tmp;
         eventLoop.timeoutsAlloc += EVENT_ALLOC_EXTENT;
     }
 
@@ -281,7 +272,7 @@ static int virEventMakePollFDs(struct pollfd **retfds) {
     }
     *retfds = NULL;
     /* Setup the poll file handle data structs */
-    if (!(fds = malloc(sizeof(*fds) * nfds)))
+    if (VIR_ALLOC_N(fds, nfds) < 0)
         return -1;
 
     for (i = 0, nfds = 0 ; i < eventLoop.handlesCount ; i++) {
@@ -398,16 +389,11 @@ static int virEventCleanupTimeouts(void) {
 
     /* Release some memory if we've got a big chunk free */
     if ((eventLoop.timeoutsAlloc - EVENT_ALLOC_EXTENT) > eventLoop.timeoutsCount) {
-        struct virEventTimeout *tmp;
         EVENT_DEBUG("Releasing %d out of %d timeout slots used, releasing %d",
                    eventLoop.timeoutsCount, eventLoop.timeoutsAlloc, EVENT_ALLOC_EXTENT);
-        tmp = realloc(eventLoop.timeouts,
-                      sizeof(struct virEventTimeout) *
-                      (eventLoop.timeoutsAlloc - EVENT_ALLOC_EXTENT));
-        if (!tmp) {
+        if (VIR_REALLOC_N(eventLoop.timeouts,
+                          (eventLoop.timeoutsAlloc - EVENT_ALLOC_EXTENT)) < 0)
             return -1;
-        }
-        eventLoop.timeouts = tmp;
         eventLoop.timeoutsAlloc -= EVENT_ALLOC_EXTENT;
     }
     return 0;
@@ -439,16 +425,11 @@ static int virEventCleanupHandles(void) {
 
     /* Release some memory if we've got a big chunk free */
     if ((eventLoop.handlesAlloc - EVENT_ALLOC_EXTENT) > eventLoop.handlesCount) {
-        struct virEventHandle *tmp;
         EVENT_DEBUG("Releasing %d out of %d handles slots used, releasing %d",
                    eventLoop.handlesCount, eventLoop.handlesAlloc, EVENT_ALLOC_EXTENT);
-        tmp = realloc(eventLoop.handles,
-                      sizeof(struct virEventHandle) *
-                      (eventLoop.handlesAlloc - EVENT_ALLOC_EXTENT));
-        if (!tmp) {
+        if (VIR_REALLOC_N(eventLoop.handles,
+                          (eventLoop.handlesAlloc - EVENT_ALLOC_EXTENT)) < 0)
             return -1;
-        }
-        eventLoop.handles = tmp;
         eventLoop.handlesAlloc -= EVENT_ALLOC_EXTENT;
     }
     return 0;
@@ -466,7 +447,7 @@ int virEventRunOnce(void) {
         return -1;
 
     if (virEventCalculateTimeout(&timeout) < 0) {
-        free(fds);
+        VIR_FREE(fds);
         return -1;
     }
 
@@ -478,20 +459,20 @@ int virEventRunOnce(void) {
         if (errno == EINTR) {
             goto retry;
         }
-        free(fds);
+        VIR_FREE(fds);
         return -1;
     }
     if (virEventDispatchTimeouts() < 0) {
-        free(fds);
+        VIR_FREE(fds);
         return -1;
     }
 
     if (ret > 0 &&
         virEventDispatchHandles(fds) < 0) {
-        free(fds);
+        VIR_FREE(fds);
         return -1;
     }
-    free(fds);
+    VIR_FREE(fds);
 
     if (virEventCleanupTimeouts() < 0)
         return -1;
