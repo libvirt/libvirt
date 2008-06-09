@@ -1,3 +1,9 @@
+Mon Jun  9 13:14:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Better error messages in xend driver.
+	* src/xend_internal.c: Change virXendError function to take
+	varargs.  Better error messages throughout.
+
 Fri Jun  6 12:01:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/bridge.c, src/conf.c, src/iptables.c, src/lxc_conf.c,

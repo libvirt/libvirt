@@ -160,25 +160,37 @@ struct xend {
 };
 
 
+static void virXendError(virConnectPtr conn, virErrorNumber error,
+                         const char *fmt, ...)
+    ATTRIBUTE_FORMAT(printf,3,4);
+
+#define MAX_ERROR_MESSAGE_LEN 1024
+
 /**
  * virXendError:
  * @conn: the connection if available
  * @error: the error number
- * @info: extra information string
+ * @fmt: format string followed by variable args
  *
  * Handle an error at the xend daemon interface
  */
 static void
-virXendError(virConnectPtr conn, virErrorNumber error, const char *info)
+virXendError(virConnectPtr conn, virErrorNumber error,
+             const char *fmt, ...)
 {
-    const char *errmsg;
+    va_list args;
+    char msg[MAX_ERROR_MESSAGE_LEN];
+    const char *msg2;
 
-    if (error == VIR_ERR_OK)
-        return;
+    if (fmt) {
+        va_start (args, fmt);
+        vsnprintf (msg, sizeof (msg), fmt, args);
+        va_end (args);
+    }
 
-    errmsg = __virErrorMsg(error, info);
+    msg2 = __virErrorMsg (error, fmt ? msg : NULL);
     __virRaiseError(conn, NULL, NULL, VIR_FROM_XEND, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, 0, 0, errmsg, info);
+                    msg2, msg, NULL, 0, 0, msg2, msg);
 }
 
 /**
@@ -490,7 +502,8 @@ xend_get(virConnectPtr xend, const char *path,
 
     if (((ret < 0) || (ret >= 300)) &&
         ((ret != 404) || (!STRPREFIX(path, "/xend/domain/")))) {
-        virXendError(xend, VIR_ERR_GET_FAILED, content);
+        virXendError(xend, VIR_ERR_GET_FAILED,
+                     _("xend_get: error from xen daemon: %s"), content);
     }
 
     return ret;
@@ -539,16 +552,19 @@ xend_post(virConnectPtr xend, const char *path, const char *ops,
     close(s);
 
     if ((ret < 0) || (ret >= 300)) {
-        virXendError(xend, VIR_ERR_POST_FAILED, content);
+        virXendError(xend, VIR_ERR_POST_FAILED,
+                     _("xend_post: error from xen daemon: %s"), content);
     } else if ((ret == 202) && (strstr(content, "failed") != NULL)) {
-        virXendError(xend, VIR_ERR_POST_FAILED, content);
+        virXendError(xend, VIR_ERR_POST_FAILED,
+                     _("xend_post: error from xen daemon: %s"), content);
         ret = -1;
     } else if (((ret >= 200) && (ret <= 202)) && (strstr(content, "xend.err") != NULL)) {
         /* This is to catch case of things like 'virsh dump Domain-0 foo'
          * which returns a success code, but the word 'xend.err'
          * in body to indicate error :-(
          */
-        virXendError(xend, VIR_ERR_POST_FAILED, content);
+        virXendError(xend, VIR_ERR_POST_FAILED,
+                     _("xend_post: error from xen daemon: %s"), content);
         ret = -1;
     }
 
@@ -1026,7 +1042,8 @@ xenDaemonOpen_tcp(virConnectPtr conn, const char *host, int port)
     pent = gethostbyname(host);
     if (pent == NULL) {
         if (inet_aton(host, &ip) == 0) {
-            virXendError(NULL, VIR_ERR_UNKNOWN_HOST, host);
+            virXendError(NULL, VIR_ERR_UNKNOWN_HOST,
+                         _("gethostbyname failed: %s"), host);
             errno = ESRCH;
             return (-1);
         }
@@ -3925,12 +3942,14 @@ xenDaemonDomainMigratePrepare (virConnectPtr dconn,
     if (uri_in == NULL) {
         r = gethostname (hostname, HOST_NAME_MAX+1);
         if (r == -1) {
-            virXendError (dconn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            virXendError (dconn, VIR_ERR_SYSTEM_ERROR,
+                          _("gethostname failed: %s"), strerror (errno));
             return -1;
         }
         *uri_out = strdup (hostname);
         if (*uri_out == NULL) {
-            virXendError (dconn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            virXendError (dconn, VIR_ERR_SYSTEM_ERROR,
+                          _("failed to strdup hostname: %s"), strerror (errno));
             return -1;
         }
     }
@@ -4575,14 +4594,16 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
 
     if (!data.ok) {
         virXendError (domain->conn, VIR_ERR_INVALID_ARG,
-                      _("invalid path"));
+                      _("%s: invalid path"), path);
         return -1;
     }
 
     /* The path is correct, now try to open it and get its size. */
     fd = open (path, O_RDONLY);
     if (fd == -1) {
-        virXendError (domain->conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        virXendError (domain->conn, VIR_ERR_SYSTEM_ERROR,
+                      _("failed to open for reading: %s: %s"),
+                      path, strerror (errno));
         goto done;
     }
 
@@ -4592,7 +4613,9 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
      */
     if (lseek (fd, offset, SEEK_SET) == (off_t) -1 ||
         saferead (fd, buffer, size) == (ssize_t) -1) {
-        virXendError (domain->conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        virXendError (domain->conn, VIR_ERR_SYSTEM_ERROR,
+                      _("failed to lseek or read from file: %s: %s"),
+                      path, strerror (errno));
         goto done;
     }
 
