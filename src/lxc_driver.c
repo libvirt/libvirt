@@ -41,6 +41,7 @@
 #include "lxc_driver.h"
 #include "driver.h"
 #include "internal.h"
+#include "memory.h"
 #include "util.h"
 #include "memory.h"
 
@@ -484,7 +485,7 @@ static int lxcSetupTtyTunnel(virConnectPtr conn,
     char *ptsStr;
 
     if (0 < strlen(vmDef->tty)) {
-        *ttyDev = open(vmDef->tty, O_RDWR|O_NOCTTY|O_NONBLOCK);
+        *ttyDev = posix_openpt(O_RDWR|O_NOCTTY|O_NONBLOCK);
         if (*ttyDev < 0) {
             lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
                      "open() tty failed: %s", strerror(errno));
@@ -513,8 +514,11 @@ static int lxcSetupTtyTunnel(virConnectPtr conn,
             goto setup_complete;
         }
         /* This value needs to be stored in the container configuration file */
-        if (STRNEQ(ptsStr, vmDef->tty)) {
-            strcpy(vmDef->tty, ptsStr);
+        VIR_FREE(vmDef->tty);
+        if (!(vmDef->tty = strdup(ptsStr))) {
+            lxcError(conn, NULL, VIR_ERR_NO_MEMORY,
+                     _("unable to get storage for vm tty name"));
+            goto setup_complete;
         }
 
         /* Enter raw mode, so all characters are passed directly to child */
