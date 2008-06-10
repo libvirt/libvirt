@@ -1,3 +1,8 @@
+Tue Jun 10 17:34:12 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in: patch  from Cole Robinson to reactivate storage
+	  support
+
 Tue Jun 10 17:10:31 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* python/generator.py python/libvir.c python/libvirt-python-api.xml:

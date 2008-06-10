@@ -259,6 +259,10 @@ if test "$with_remote" = "yes" ; then
     LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_REMOTE"
 fi
 
+if test "$with_libvirtd" = "yes" ; then
+    LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_LIBVIRTD"
+fi
+
 if test "$with_xen" = "yes" ; then
     dnl search for the Xen store library
     AC_SEARCH_LIBS(xs_read, [xenstore],
