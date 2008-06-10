@@ -864,6 +864,33 @@ libvirt_virDomainGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
 }
 
 static PyObject *
+libvirt_virDomainGetUUIDString(PyObject *self ATTRIBUTE_UNUSED,
+                               PyObject *args) {
+    PyObject *py_retval;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virDomainPtr dom;
+    PyObject *pyobj_dom;
+    int c_retval;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virDomainGetUUIDString",
+                          &pyobj_dom))
+        return(NULL);
+    dom = (virDomainPtr) PyvirDomain_Get(pyobj_dom);
+
+    if (dom == NULL)
+        return VIR_PY_NONE;
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virDomainGetUUIDString(dom, &uuidstr[0]);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    py_retval = PyString_FromString((char *) &uuidstr[0]);
+    return(py_retval);
+}
+
+static PyObject *
 libvirt_virDomainLookupByUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
     virDomainPtr c_retval;
@@ -993,6 +1020,33 @@ libvirt_virNetworkGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
         return VIR_PY_NONE;
     py_retval = PyString_FromStringAndSize((char *) &uuid[0], VIR_UUID_BUFLEN);
 
+    return(py_retval);
+}
+
+static PyObject *
+libvirt_virNetworkGetUUIDString(PyObject *self ATTRIBUTE_UNUSED,
+                                PyObject *args) {
+    PyObject *py_retval;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virNetworkPtr net;
+    PyObject *pyobj_net;
+    int c_retval;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virNetworkGetUUIDString",
+                          &pyobj_net))
+        return(NULL);
+    net = (virNetworkPtr) PyvirNetwork_Get(pyobj_net);
+
+    if (net == NULL)
+        return VIR_PY_NONE;
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virNetworkGetUUIDString(net, &uuidstr[0]);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    py_retval = PyString_FromString((char *) &uuidstr[0]);
     return(py_retval);
 }
 
@@ -1363,6 +1417,31 @@ libvirt_virStoragePoolGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     return(py_retval);
 }
 
+static PyObject *
+libvirt_virStoragePoolGetUUIDString(PyObject *self ATTRIBUTE_UNUSED,
+                                    PyObject *args) {
+    PyObject *py_retval;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virStoragePoolPtr pool;
+    PyObject *pyobj_pool;
+    int c_retval;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virStoragePoolGetUUIDString", &pyobj_pool))
+        return(NULL);
+    pool = (virStoragePoolPtr) PyvirStoragePool_Get(pyobj_pool);
+
+    if (pool == NULL)
+        return VIR_PY_NONE;
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virStoragePoolGetUUIDString(pool, &uuidstr[0]);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    py_retval = PyString_FromString((char *) &uuidstr[0]);
+    return(py_retval);
+}
 
 static PyObject *
 libvirt_virStoragePoolLookupByUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
@@ -1403,6 +1482,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainGetInfo", libvirt_virDomainGetInfo, METH_VARARGS, NULL},
     {(char *) "virNodeGetInfo", libvirt_virNodeGetInfo, METH_VARARGS, NULL},
     {(char *) "virDomainGetUUID", libvirt_virDomainGetUUID, METH_VARARGS, NULL},
+    {(char *) "virDomainGetUUIDString", libvirt_virDomainGetUUIDString, METH_VARARGS, NULL},
     {(char *) "virDomainLookupByUUID", libvirt_virDomainLookupByUUID, METH_VARARGS, NULL},
     {(char *) "virRegisterErrorHandler", libvirt_virRegisterErrorHandler, METH_VARARGS, NULL},
     {(char *) "virGetLastError", libvirt_virGetLastError, METH_VARARGS, NULL},
@@ -1410,6 +1490,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnectListNetworks", libvirt_virConnectListNetworks, METH_VARARGS, NULL},
     {(char *) "virConnectListDefinedNetworks", libvirt_virConnectListDefinedNetworks, METH_VARARGS, NULL},
     {(char *) "virNetworkGetUUID", libvirt_virNetworkGetUUID, METH_VARARGS, NULL},
+    {(char *) "virNetworkGetUUIDString", libvirt_virNetworkGetUUIDString, METH_VARARGS, NULL},
     {(char *) "virNetworkLookupByUUID", libvirt_virNetworkLookupByUUID, METH_VARARGS, NULL},
     {(char *) "virDomainGetAutostart", libvirt_virDomainGetAutostart, METH_VARARGS, NULL},
     {(char *) "virNetworkGetAutostart", libvirt_virNetworkGetAutostart, METH_VARARGS, NULL},
@@ -1428,6 +1509,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virStoragePoolGetInfo", libvirt_virStoragePoolGetInfo, METH_VARARGS, NULL},
     {(char *) "virStorageVolGetInfo", libvirt_virStorageVolGetInfo, METH_VARARGS, NULL},
     {(char *) "virStoragePoolGetUUID", libvirt_virStoragePoolGetUUID, METH_VARARGS, NULL},
+    {(char *) "virStoragePoolGetUUIDString", libvirt_virStoragePoolGetUUIDString, METH_VARARGS, NULL},
     {(char *) "virStoragePoolLookupByUUID", libvirt_virStoragePoolLookupByUUID, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };

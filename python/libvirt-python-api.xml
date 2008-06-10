@@ -48,10 +48,30 @@
       <return type='char *' info='the 16 bytes string or None in case of error'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
+    <function name='virDomainGetUUIDString' file='python'>
+      <info>Fetch globally unique ID of the domain as a string.</info>
+      <return type='char *' info='the UUID string or None in case of error'/>
+      <arg name='pool' type='virDomainPtr' info='a domain object'/>
+    </function>
     <function name='virNetworkGetUUID' file='python'>
       <info>Extract the UUID unique Identifier of a network.</info>
       <return type='char *' info='the 16 bytes string or None in case of error'/>
       <arg name='domain' type='virNetworkPtr' info='a network object'/>
+    </function>
+    <function name='virNetworkGetUUIDString' file='python'>
+      <info>Fetch globally unique ID of the network as a string.</info>
+      <return type='char *' info='the UUID string or None in case of error'/>
+      <arg name='net' type='virNetworkPtr' info='a network object'/>
+    </function>
+    <function name='virStoragePoolGetUUID' file='python'>
+      <info>Extract the UUID unique Identifier of a storage pool.</info>
+      <return type='char *' info='the 16 bytes string or None in case of error'/>
+      <arg name='pool' type='virStoragePoolPtr' info='a storage pool object'/>
+    </function>
+    <function name='virStoragePoolGetUUIDString' file='python'>
+      <info>Fetch globally unique ID of the storage pool as a string.</info>
+      <return type='char *' info='the UUID string or None in case of error'/>
+      <arg name='pool' type='virStoragePoolPtr' info='a storage pool object'/>
     </function>
     <function name='virNetworkGetAutostart' file='python'>
       <info>Extract the autostart flag for a network.</info>
