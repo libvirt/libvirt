@@ -2619,6 +2619,10 @@ virDomainInterfaceStats (virDomainPtr dom, const char *path,
  *
  * 'buffer' is the return buffer and must be at least 'size' bytes.
  *
+ * NB. The remote driver imposes a 64K byte limit on 'size'.
+ * For your program to be able to work reliably over a remote
+ * connection you should split large requests to <= 65536 bytes.
+ *
  * Returns: 0 in case of success or -1 in case of failure.
  */
 int
@@ -2661,6 +2665,96 @@ virDomainBlockPeek (virDomainPtr dom,
     if (conn->driver->domainBlockPeek)
         return conn->driver->domainBlockPeek (dom, path, offset, size,
                                               buffer, flags);
+
+    virLibDomainError (dom, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
+/**
+ * virDomainMemoryPeek:
+ * @dom: pointer to the domain object
+ * @start: start of memory to peek
+ * @size: size of memory to peek
+ * @buffer: return buffer (must be at least size bytes)
+ * @flags: flags, see below
+ *
+ * This function allows you to read the contents of a domain's
+ * memory.
+ *
+ * The memory which is read is controlled by the 'start', 'size'
+ * and 'flags' parameters.
+ *
+ * If 'flags' is VIR_MEMORY_VIRTUAL then the 'start' and 'size'
+ * parameters are interpreted as virtual memory addresses for
+ * whichever task happens to be running on the domain at the
+ * moment.  Although this sounds haphazard it is in fact what
+ * you want in order to read Linux kernel state, because it
+ * ensures that pointers in the kernel image can be interpreted
+ * coherently.
+ *
+ * 'buffer' is the return buffer and must be at least 'size' bytes.
+ * 'size' may be 0 to test if the call would succeed.
+ *
+ * NB. The remote driver imposes a 64K byte limit on 'size'.
+ * For your program to be able to work reliably over a remote
+ * connection you should split large requests to <= 65536 bytes.
+ *
+ * Returns: 0 in case of success or -1 in case of failure.
+ */
+int
+virDomainMemoryPeek (virDomainPtr dom,
+                     unsigned long long start /* really 64 bits */,
+                     size_t size,
+                     void *buffer,
+                     unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG ("domain=%p, start=%lld, size=%zi, buffer=%p, flags=%d",
+           dom, start, size, buffer, flags);
+
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError (NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return -1;
+    }
+    conn = dom->conn;
+
+    /* Flags must be VIR_MEMORY_VIRTUAL at the moment.
+     *
+     * Note on access to physical memory: A VIR_MEMORY_PHYSICAL flag is
+     * a possibility.  However it isn't really useful unless the caller
+     * can also access registers, particularly CR3 on x86 in order to
+     * get the Page Table Directory.  Since registers are different on
+     * every architecture, that would imply another call to get the
+     * machine registers.
+     *
+     * The QEMU driver handles only VIR_MEMORY_VIRTUAL, mapping it
+     * to the qemu 'memsave' command which does the virtual to physical
+     * mapping inside qemu.
+     *
+     * At time of writing there is no Xen driver.  However the Xen
+     * hypervisor only lets you map physical pages from other domains,
+     * and so the Xen driver would have to do the virtual to physical
+     * mapping by chasing 2, 3 or 4-level page tables from the PTD.
+     * There is example code in libxc (xc_translate_foreign_address)
+     * which does this, although we cannot copy this code directly
+     * because of incompatible licensing.
+     */
+    if (flags != VIR_MEMORY_VIRTUAL) {
+        virLibDomainError (dom, VIR_ERR_INVALID_ARG,
+                           _("flags parameter must be VIR_MEMORY_VIRTUAL"));
+        return -1;
+    }
+
+    /* Allow size == 0 as an access test. */
+    if (size > 0 && !buffer) {
+        virLibDomainError (dom, VIR_ERR_INVALID_ARG,
+                           _("buffer is NULL but size is non-zero"));
+        return -1;
+    }
+
+    if (conn->driver->domainMemoryPeek)
+        return conn->driver->domainMemoryPeek (dom, start, size,
+                                               buffer, flags);
 
     virLibDomainError (dom, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;

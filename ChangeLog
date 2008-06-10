@@ -1,3 +1,20 @@
+Tue Jun 10 11:34:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	virDomainMemoryPeek API
+	* include/libvirt/libvirt.h.in, src/libvirt.c, src/driver.h,
+	  src/libvirt_sym.version: New virDomainMemoryPeek API.
+	* qemud/remote.c, qemud/remote_protocol.x, src/remote_internal.c:
+	  Support for remote.
+	* src/qemu_driver.c: QEMU driver implementation of API.
+	* src/test.c: Test driver (null) implementation of API.
+	* docs/hvsupport.html.in: Document API.
+	* libvirt.spec.in: New path /var/cache/libvirt for temporary
+	  storage of memory images.
+	* qemud/libvirtd.init.in: Remove any old temp files in
+	  /var/cache/libvirt on restarts.
+	* src/Makefile.am: make install creates /var/cache/libvirt.
+	* configure.in: Detect mkdir -p.
+
 Mon Jun  9 15:42:34 PST 2008 David L. Leskovec <dlesko@linux.vnet.ibm.com>
 
 	* src/lxc_driver.c: Console element is output only.  Always open new

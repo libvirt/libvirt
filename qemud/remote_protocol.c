@@ -562,6 +562,31 @@ xdr_remote_domain_block_peek_ret (XDR *xdrs, remote_domain_block_peek_ret *objp)
 }
 
 bool_t
+xdr_remote_domain_memory_peek_args (XDR *xdrs, remote_domain_memory_peek_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_u_quad_t (xdrs, &objp->offset))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->size))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_memory_peek_ret (XDR *xdrs, remote_domain_memory_peek_ret *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->buffer.buffer_val;
+
+         if (!xdr_bytes (xdrs, objp_cpp0, (u_int *) &objp->buffer.buffer_len, REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_list_domains_args (XDR *xdrs, remote_list_domains_args *objp)
 {
 

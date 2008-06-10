@@ -139,6 +139,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.a
 install -d -m 0755 $RPM_BUILD_ROOT%{_localstatedir}/run/libvirt/
+install -d -m 0755 $RPM_BUILD_ROOT%{_localstatedir}/cache/libvirt/
 
 # We don't want to install /etc/libvirt/qemu/networks in the main %files list
 # because if the admin wants to delete the default network completely, we don't
@@ -202,6 +203,7 @@ fi
 %dir %{_datadir}/libvirt/networks/
 %{_datadir}/libvirt/networks/default.xml
 %dir %{_localstatedir}/run/libvirt/
+%dir %{_localstatedir}/cache/libvirt/
 %dir %{_localstatedir}/lib/libvirt/
 %if %{with_polkit}
 %{_datadir}/PolicyKit/policy/libvirtd.policy

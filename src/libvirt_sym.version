@@ -74,6 +74,7 @@
 	virDomainBlockStats;
 	virDomainInterfaceStats;
 	virDomainBlockPeek;
+	virDomainMemoryPeek;
 	virDomainAttachDevice;
 	virDomainDetachDevice;
 

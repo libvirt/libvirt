@@ -99,6 +99,8 @@ AC_PATH_PROG([TAR], [tar], [/bin/tar])
 AC_PATH_PROG([XMLLINT], [xmllint], [/usr/bin/xmllint])
 AC_PATH_PROG([XSLTPROC], [xsltproc], [/usr/bin/xsltproc])
 
+AC_PROG_MKDIR_P
+
 dnl External programs that we can use if they are available.
 dnl We will hard-code paths to these programs unless we cannot
 dnl detect them, in which case we'll search for the program

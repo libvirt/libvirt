@@ -537,6 +537,17 @@ int                     virDomainBlockPeek (virDomainPtr dom,
                                             void *buffer,
                                             unsigned int flags);
 
+/* Memory peeking flags. */
+typedef enum {
+  VIR_MEMORY_VIRTUAL              = 1, /* addresses are virtual addresses */
+} virDomainMemoryFlags;
+
+int                     virDomainMemoryPeek (virDomainPtr dom,
+                                             unsigned long long start,
+                                             size_t size,
+                                             void *buffer,
+                                             unsigned int flags);
+
 /*
  * defined but not running domains
  */

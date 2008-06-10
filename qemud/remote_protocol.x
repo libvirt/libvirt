@@ -96,11 +96,17 @@ const REMOTE_AUTH_SASL_DATA_MAX = 65536;
 /* Maximum number of auth types */
 const REMOTE_AUTH_TYPE_LIST_MAX = 20;
 
-/* Maximum length of a block or memory peek buffer message.
+/* Maximum length of a block peek buffer message.
  * Note applications need to be aware of this limit and issue multiple
  * requests for large amounts of data.
  */
 const REMOTE_DOMAIN_BLOCK_PEEK_BUFFER_MAX = 65536;
+
+/* Maximum length of a memory peek buffer message.
+ * Note applications need to be aware of this limit and issue multiple
+ * requests for large amounts of data.
+ */
+const REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX = 65536;
 
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
@@ -338,6 +344,17 @@ struct remote_domain_block_peek_args {
 
 struct remote_domain_block_peek_ret {
     opaque buffer<REMOTE_DOMAIN_BLOCK_PEEK_BUFFER_MAX>;
+};
+
+struct remote_domain_memory_peek_args {
+    remote_nonnull_domain dom;
+    unsigned hyper offset;
+    unsigned size;
+    unsigned flags;
+};
+
+struct remote_domain_memory_peek_ret {
+    opaque buffer<REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX>;
 };
 
 struct remote_list_domains_args {
@@ -1056,7 +1073,8 @@ enum remote_procedure {
     REMOTE_PROC_NODE_GET_CELLS_FREE_MEMORY = 101,
     REMOTE_PROC_NODE_GET_FREE_MEMORY = 102,
 
-    REMOTE_PROC_DOMAIN_BLOCK_PEEK = 103
+    REMOTE_PROC_DOMAIN_BLOCK_PEEK = 103,
+    REMOTE_PROC_DOMAIN_MEMORY_PEEK = 104
 };
 
 /* Custom RPC structure. */

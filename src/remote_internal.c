@@ -2416,6 +2416,50 @@ remoteDomainBlockPeek (virDomainPtr domain,
     return 0;
 }
 
+static int
+remoteDomainMemoryPeek (virDomainPtr domain,
+                        unsigned long long offset,
+                        size_t size,
+                        void *buffer,
+                        unsigned int flags)
+{
+    remote_domain_memory_peek_args args;
+    remote_domain_memory_peek_ret ret;
+    GET_PRIVATE (domain->conn, -1);
+
+    if (size > REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX) {
+        errorf (domain->conn, VIR_ERR_RPC,
+                _("memory peek request too large for remote protocol, %zi > %d"),
+                size, REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX);
+        return -1;
+    }
+
+    make_nonnull_domain (&args.dom, domain);
+    args.offset = offset;
+    args.size = size;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_MEMORY_PEEK,
+              (xdrproc_t) xdr_remote_domain_memory_peek_args,
+                (char *) &args,
+              (xdrproc_t) xdr_remote_domain_memory_peek_ret,
+                (char *) &ret) == -1)
+        return -1;
+
+    if (ret.buffer.buffer_len != size) {
+            errorf (domain->conn, VIR_ERR_RPC,
+                    _("returned buffer is not same size as requested"));
+            free (ret.buffer.buffer_val);
+            return -1;
+    }
+
+    memcpy (buffer, ret.buffer.buffer_val, size);
+    free (ret.buffer.buffer_val);
+
+    return 0;
+}
+
 /*----------------------------------------------------------------------*/
 
 static int
@@ -4824,6 +4868,7 @@ static virDriver driver = {
     .domainBlockStats = remoteDomainBlockStats,
     .domainInterfaceStats = remoteDomainInterfaceStats,
     .domainBlockPeek = remoteDomainBlockPeek,
+    .domainMemoryPeek = remoteDomainMemoryPeek,
     .nodeGetCellsFreeMemory = remoteNodeGetCellsFreeMemory,
     .getFreeMemory = remoteNodeGetFreeMemory,
 };

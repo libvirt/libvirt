@@ -30,6 +30,7 @@ static int remoteDispatchDomainInterfaceStats (struct qemud_server *server, stru
 static int remoteDispatchDomainLookupById (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_lookup_by_id_args *args, remote_domain_lookup_by_id_ret *ret);
 static int remoteDispatchDomainLookupByName (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_lookup_by_name_args *args, remote_domain_lookup_by_name_ret *ret);
 static int remoteDispatchDomainLookupByUuid (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_lookup_by_uuid_args *args, remote_domain_lookup_by_uuid_ret *ret);
+static int remoteDispatchDomainMemoryPeek (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_memory_peek_args *args, remote_domain_memory_peek_ret *ret);
 static int remoteDispatchDomainMigrateFinish (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_migrate_finish_args *args, remote_domain_migrate_finish_ret *ret);
 static int remoteDispatchDomainMigratePerform (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_migrate_perform_args *args, void *ret);
 static int remoteDispatchDomainMigratePrepare (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_migrate_prepare_args *args, remote_domain_migrate_prepare_ret *ret);

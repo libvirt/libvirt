@@ -66,6 +66,9 @@
 #include "capabilities.h"
 #include "memory.h"
 
+/* For storing short-lived temporary files. */
+#define TEMPDIR LOCAL_STATE_DIR "/cache/libvirt"
+
 static int qemudShutdown(void);
 
 /* qemudDebug statements should be changed to use this macro instead. */
@@ -3221,6 +3224,68 @@ found:
     return ret;
 }
 
+static int
+qemudDomainMemoryPeek (virDomainPtr dom,
+                       unsigned long long offset, size_t size,
+                       void *buffer,
+                       unsigned int flags)
+{
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    struct qemud_vm *vm = qemudFindVMByID (driver, dom->id);
+    char cmd[256], *info;
+    char tmp[] = TEMPDIR "/qemu.mem.XXXXXX";
+    int fd = -1, ret = -1;
+
+    if (flags != VIR_MEMORY_VIRTUAL) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                          _("QEMU driver only supports virtual memory addrs"));
+        return -1;
+    }
+
+    if (!vm) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                          _("no domain with matching id %d"), dom->id);
+        return -1;
+    }
+
+    if (!qemudIsActiveVM(vm)) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("domain is not running"));
+        return -1;
+    }
+
+    /* Create a temporary filename. */
+    if ((fd = mkstemp (tmp)) == -1) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_SYSTEM_ERROR,
+                          "%s", strerror (errno));
+        return -1;
+    }
+
+    /* Issue the memsave command. */
+    snprintf (cmd, sizeof cmd, "memsave %llu %zi \"%s\"", offset, size, tmp);
+    if (qemudMonitorCommand (driver, vm, cmd, &info) < 0) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                          "%s", _("'info blockstats' command failed"));
+        goto done;
+    }
+
+    DEBUG ("memsave reply: %s", info);
+    free (info);
+
+    /* Read the memory file into buffer. */
+    if (saferead (fd, buffer, size) == (ssize_t) -1) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_SYSTEM_ERROR,
+                          "%s", strerror (errno));
+        goto done;
+    }
+
+    ret = 0;
+done:
+    if (fd >= 0) close (fd);
+    unlink (tmp);
+    return ret;
+}
+
 static virNetworkPtr qemudNetworkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      const unsigned char *uuid) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
@@ -3580,6 +3645,7 @@ static virDriver qemuDriver = {
     qemudDomainBlockStats, /* domainBlockStats */
     qemudDomainInterfaceStats, /* domainInterfaceStats */
     qemudDomainBlockPeek, /* domainBlockPeek */
+    qemudDomainMemoryPeek, /* domainMemoryPeek */
 #if HAVE_NUMACTL
     qemudNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
     qemudNodeGetFreeMemory,  /* getFreeMemory */

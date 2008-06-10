@@ -234,6 +234,13 @@ typedef int
                      unsigned int flags);
 
 typedef int
+    (*virDrvDomainMemoryPeek)
+                    (virDomainPtr domain,
+                     unsigned long long start, size_t size,
+                     void *buffer,
+                     unsigned int flags);
+
+typedef int
     (*virDrvDomainMigratePrepare)
                     (virConnectPtr dconn,
                      char **cookie,
@@ -346,6 +353,7 @@ struct _virDriver {
     virDrvDomainBlockStats      domainBlockStats;
     virDrvDomainInterfaceStats  domainInterfaceStats;
     virDrvDomainBlockPeek	domainBlockPeek;
+    virDrvDomainMemoryPeek      domainMemoryPeek;
     virDrvNodeGetCellsFreeMemory	nodeGetCellsFreeMemory;
     virDrvNodeGetFreeMemory		getFreeMemory;
 };
