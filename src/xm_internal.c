@@ -767,9 +767,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             if (!src[0]) {
                 strcpy(drvName, "phy");
                 tmp = &src[0];
-            } else if (!(tmp = strchr(src, ':')) || !tmp[0]) {
-                    goto skipdisk;
-            } else {
+            } else if ((tmp = strchr(src, ':')) != NULL) {
                 strncpy(drvName, src, (tmp-src));
                 drvName[tmp-src] = '\0';
             }
@@ -782,7 +780,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 memmove(src, src+(tmp1-src)+1, strlen(src)-(tmp1-src));
             } else {
                 drvType[0] = '\0';
-                if (src[0])
+                if (src[0] && tmp)
                         memmove(src, src+(tmp-src)+1, strlen(src)-(tmp-src));
             }
 

@@ -1,3 +1,10 @@
+Tue Jun 10 15:33:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Pass syntax check for XM block devices over to XenD
+	* src/xm_internal.c: Pass responsibility for checking syntax
+	  of XM block devices over the XenD (see also Xen cset 17617).
+	  (Hiroyuki Kaguchi).
+
 Tue Jun 10 11:34:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	virDomainMemoryPeek API
