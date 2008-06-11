@@ -151,6 +151,6 @@ endif
 
 # Create the /var/cache/libvirt directory when installing.
 install-exec-local:
-	$(MKDIR_P) $(DESTDIR)@localstatedir@/cache/libvirt
+	$(MKDIR_P) $(DESTDIR)$(localstatedir)/cache/libvirt
 
 CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda

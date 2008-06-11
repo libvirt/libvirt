@@ -1,3 +1,7 @@
+Wed Jun 11 12:25:57 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/Makefile.am: Tweak install rule to fix RPM build
+
 Wed Jun 11 09:42:57 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* python/libvir.py python/libvirt-python-api.xml: more python
