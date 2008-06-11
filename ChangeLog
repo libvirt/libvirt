@@ -1,3 +1,7 @@
+Wed Jun 11 17:21:13 CEST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* po/*: update and regenerated
+
 Wed Jun 11 12:25:57 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/Makefile.am: Tweak install rule to fix RPM build
