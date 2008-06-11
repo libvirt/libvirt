@@ -83,6 +83,11 @@
       <return type='int' info='the autostart flag, or None in case of error'/>
       <arg name='domain' type='virDomainPtr' info='a network object'/>
     </function>
+    <function name='virStoragePoolGetAutostart' file='python'>
+      <info>Extract the autostart flag for a storage pool</info>
+      <return type='int' info='the autostart flag, or None in case of error'/>
+      <arg name='pool' type='virStoragePoolPtr' info='a storage pool object'/>
+    </function>
     <function name='virDomainBlockStats' file='python'>
       <info>Extracts block device statistics for a domain</info>
       <return type='virDomainBlockStats' info='a tuple of statistics'/>

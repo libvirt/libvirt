@@ -1,3 +1,8 @@
+Wed Jun 11 09:42:57 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* python/libvir.py python/libvirt-python-api.xml: more python
+	  cleanups by Cole Robinson
+
 Tue Jun 10 17:34:12 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in: patch  from Cole Robinson to reactivate storage
