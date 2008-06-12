@@ -1,3 +1,8 @@
+Thu Jun 12 11:18:08 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c: Deal with failure due to inactive virtual
+	network when creating domain.
+
 Thu Jun 12 10:53:08 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: patch from Kaitlin Rupert, changing vcpu or

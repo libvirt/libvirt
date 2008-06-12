@@ -2679,8 +2679,13 @@ int qemudBuildCommandLine(virConnectPtr conn,
             switch (net->type) {
             case QEMUD_NET_NETWORK:
             case QEMUD_NET_BRIDGE:
-                ADD_ARG(qemudNetworkIfaceConnect(conn, driver, vm, net, vlan));
-                break;
+                {
+                    char *tap = qemudNetworkIfaceConnect(conn, driver, vm, net, vlan);
+                    if (tap == NULL)
+                        goto error;
+                    ADD_ARG(tap);
+                    break;
+                }
 
             case QEMUD_NET_ETHERNET:
                 {
