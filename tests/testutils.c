@@ -329,10 +329,7 @@ int virtTestMain(int argc,
     int oomCount;
 
     if ((debugStr = getenv("VIR_TEST_DEBUG")) != NULL) {
-        if (virStrToLong_i(debugStr, NULL, 10, &testDebug) < 0)
-            testDebug = 0;
-
-        if (testDebug < 0)
+        if (virStrToLong_ui(debugStr, NULL, 10, &testDebug) < 0)
             testDebug = 0;
     }
 

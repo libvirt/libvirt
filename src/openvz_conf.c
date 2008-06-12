@@ -41,21 +41,20 @@
 #include <unistd.h>
 #include <limits.h>
 #include <errno.h>
+#include <string.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 #include <libxml/uri.h>
 
-#include "libvirt/virterror.h"
+#include "internal.h"
 
 #include "openvz_driver.h"
 #include "openvz_conf.h"
 #include "uuid.h"
 #include "buf.h"
 #include "memory.h"
-
-#include <string.h>
 
 static char *openvzLocateConfDir(void);
 static void error (virConnectPtr conn, virErrorNumber code, const char *info);

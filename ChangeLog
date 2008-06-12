@@ -1,5 +1,12 @@
 Thu Jun 12 14:46:08 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
+	* src/lxc_driver.c, src/openvz_driver.c: Add missing driver
+	entry points
+	* src/lxc_conf.c: Re-arrange headers to comply with standard
+	* tests/testutils.c: Fix use of signed/unsigned ints
+
+Thu Jun 12 14:46:08 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
 	* src/qemu_driver.c: Fix saving of iptables rules
 
 Thu Jun 12 11:18:08 BST 2008 Daniel P. Berrange <berrange@redhat.com>

@@ -761,6 +761,8 @@ static virDriver openvzDriver = {
     NULL, /* domainMigrateFinish */
     NULL, /* domainBlockStats */
     NULL, /* domainInterfaceStats */
+    NULL, /* domainBlockPeek */
+    NULL, /* domainMemoryPeek */
     NULL, /* nodeGetCellsFreeMemory */
     NULL, /* nodeGetFreeMemory */
 };
@@ -770,6 +772,7 @@ static virStateDriver openvzStateDriver = {
     openvzShutdown,
     openvzReload,
     openvzActive,
+    NULL, /* sigHandler */
 };
 
 int openvzRegister(void) {
