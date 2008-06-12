@@ -2148,7 +2148,7 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     }
 
     if (qemudIsActiveVM(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          "%s", _("cannot set memory of an active domain"));
         return -1;
     }
@@ -2404,7 +2404,7 @@ static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
     }
 
     if (qemudIsActiveVM(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT, "%s",
                          _("cannot change vcpu count of an active domain"));
         return -1;
     }

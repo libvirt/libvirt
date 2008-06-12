@@ -1,4 +1,9 @@
-Wed Jun 11 17:21:13 CEST 2008 Daniel P. Berrange <berrange@redhat.com>
+Thu Jun 12 10:53:08 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: patch from Kaitlin Rupert, changing vcpu or
+	  memory of an active domain is a NO_SUPPORT not INTERNAL_ERROR
+
+Wed Jun 11 17:21:13 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* po/*: update and regenerated
 
