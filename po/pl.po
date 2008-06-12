@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-11 14:59+0200\n"
+"POT-Creation-Date: 2008-06-12 17:49+0200\n"
 "PO-Revision-Date: 2008-04-14 01:58+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -89,232 +89,232 @@ msgstr "Łańcuch parametru nie jest poprawnie zakodowany"
 msgid "Unknown error"
 msgstr "Nieznany błąd"
 
-#: qemud/qemud.c:141 src/remote_internal.c:887
+#: qemud/qemud.c:142 src/remote_internal.c:885
 #, c-format
 msgid "Cannot access %s '%s': %s (%d)"
 msgstr "Nie można uzyskać dostępu do %s \"%s\": %s (%d)"
 
-#: qemud/qemud.c:158
+#: qemud/qemud.c:159
 #, c-format
 msgid "gnutls_certificate_allocate_credentials: %s"
 msgstr "gnutls_certificate_allocate_credentials: %s"
 
-#: qemud/qemud.c:171
+#: qemud/qemud.c:172
 #, c-format
 msgid "gnutls_certificate_set_x509_trust_file: %s"
 msgstr "gnutls_certificate_set_x509_trust_file: %s"
 
-#: qemud/qemud.c:185
+#: qemud/qemud.c:186
 #, c-format
 msgid "gnutls_certificate_set_x509_crl_file: %s"
 msgstr "gnutls_certificate_set_x509_crl_file: %s"
 
-#: qemud/qemud.c:203
+#: qemud/qemud.c:204
 #, c-format
 msgid "gnutls_certificate_set_x509_key_file: %s"
 msgstr "gnutls_certificate_set_x509_key_file: %s"
 
-#: qemud/qemud.c:216
+#: qemud/qemud.c:217
 #, c-format
 msgid "gnutls_dh_params_init: %s"
 msgstr "gnutls_dh_params_init: %s"
 
-#: qemud/qemud.c:222
+#: qemud/qemud.c:223
 #, c-format
 msgid "gnutls_dh_params_generate2: %s"
 msgstr "gnutls_dh_params_generate2: %s"
 
-#: qemud/qemud.c:240
+#: qemud/qemud.c:241
 #, c-format
 msgid "Failed to read from signal pipe: %s"
 msgstr "Odczytanie z sygnału potoku nie powiodło się: %s"
 
-#: qemud/qemud.c:249
+#: qemud/qemud.c:250
 msgid "Reloading configuration on SIGHUP"
 msgstr "Ponowne wczytywanie konfiguracji po SIGHUP"
 
-#: qemud/qemud.c:251
+#: qemud/qemud.c:252
 msgid "Error while reloading drivers"
 msgstr "Błąd podczas ponownego wczytywania sterowników"
 
-#: qemud/qemud.c:257
+#: qemud/qemud.c:258
 #, c-format
 msgid "Shutting down on signal %d"
 msgstr "Wyłączanie po sygnale %d"
 
-#: qemud/qemud.c:263
+#: qemud/qemud.c:264
 #, c-format
 msgid "Received signal %d, dispatching to drivers"
 msgstr ""
 
-#: qemud/qemud.c:283 src/qemu_driver.c:87 src/util.c:142 src/util.c:154
+#: qemud/qemud.c:284 src/qemu_driver.c:90 src/util.c:142 src/util.c:154
 msgid "Failed to set close-on-exec file descriptor flag"
 msgstr "Ustawienie flagi deskryptora pliku \"close-on-exec\" nie powiodło się"
 
-#: qemud/qemud.c:298 src/qemu_driver.c:102 src/util.c:138 src/util.c:150
+#: qemud/qemud.c:299 src/qemu_driver.c:105 src/util.c:138 src/util.c:150
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "Ustawienie nieblokującej flagi deskryptora pliku nie powiodło się"
 
-#: qemud/qemud.c:439
+#: qemud/qemud.c:440
 #, c-format
 msgid "Failed to open pid file '%s' : %s"
 msgstr "Otwarcie pliku PID \"%s\" nie powiodło się: %s"
 
-#: qemud/qemud.c:445
+#: qemud/qemud.c:446
 #, c-format
 msgid "Failed to fdopen pid file '%s' : %s"
 msgstr "Wykonanie fdopen na pliku PID \"%s\" nie powiodło się: %s"
 
-#: qemud/qemud.c:452
+#: qemud/qemud.c:453
 #, c-format
 msgid "Failed to write to pid file '%s' : %s"
 msgstr "Zapisanie do pliku PID \"%s\" nie powiodło się: %s"
 
-#: qemud/qemud.c:459
+#: qemud/qemud.c:460
 #, c-format
 msgid "Failed to close pid file '%s' : %s"
 msgstr "Zamknięcie pliku PID \"%s\" nie powiodło się: %s"
 
-#: qemud/qemud.c:476
+#: qemud/qemud.c:477
 msgid "Failed to allocate memory for struct qemud_socket"
 msgstr "Przydzielenie pamięci dla agregacji qemud_socket nie powiodło się"
 
-#: qemud/qemud.c:486
+#: qemud/qemud.c:487
 #, c-format
 msgid "Failed to create socket: %s"
 msgstr "Utworzenie gniazda nie powiodło się: %s"
 
-#: qemud/qemud.c:508
+#: qemud/qemud.c:509
 #, c-format
 msgid "Failed to bind socket to '%s': %s"
 msgstr "Dowiązanie gniazda do \"%s\" nie powiodło się: %s"
 
-#: qemud/qemud.c:517
+#: qemud/qemud.c:518
 #, c-format
 msgid "Failed to listen for connections on '%s': %s"
 msgstr "Nasłuchiwanie połączeń na \"%s\" nie powiodło się: %s"
 
-#: qemud/qemud.c:526 qemud/qemud.c:657
+#: qemud/qemud.c:527 qemud/qemud.c:656
 msgid "Failed to add server event callback"
 msgstr "Dodanie wywołania zwrotnego zdarzenia serwera nie powiodło się"
 
-#: qemud/qemud.c:555
+#: qemud/qemud.c:556
 #, c-format
 msgid "getaddrinfo: %s\n"
 msgstr "getaddrinfo: %s\n"
 
-#: qemud/qemud.c:564
+#: qemud/qemud.c:565
 #, c-format
 msgid "socket: %s"
 msgstr "gniazdo: %s"
 
-#: qemud/qemud.c:573
+#: qemud/qemud.c:574
 #, c-format
 msgid "bind: %s"
 msgstr "dowiązanie: %s"
 
-#: qemud/qemud.c:580
+#: qemud/qemud.c:581
 #, c-format
 msgid "listen: %s"
 msgstr "nasłuchiwanie: %s"
 
-#: qemud/qemud.c:618
+#: qemud/qemud.c:617
 #, c-format
 msgid "remoteListenTCP: calloc: %s"
 msgstr "remoteListenTCP: wywołanie zwrotne: %s"
 
-#: qemud/qemud.c:649
+#: qemud/qemud.c:648
 #, c-format
 msgid "remoteListenTCP: listen: %s"
 msgstr "remoteListenTCP: nasłuchiwanie: %s"
 
-#: qemud/qemud.c:691 src/qemu_driver.c:195
+#: qemud/qemud.c:695 src/qemu_driver.c:198
 #, c-format
 msgid "Failed to find user record for uid '%d': %s"
 msgstr "Znalezienie rekordu użytkownika dla UID \"%d\" nie powiodło się: %s"
 
-#: qemud/qemud.c:708
+#: qemud/qemud.c:712
 msgid "Resulting path too long for buffer in qemudInitPaths()"
 msgstr "Ścieżka wynikowa jest za długa dla bufora w qemudInitPaths()"
 
-#: qemud/qemud.c:716
+#: qemud/qemud.c:720
 msgid "Failed to allocate struct qemud_server"
 msgstr "Przydzielenie struct qemud_server nie powiodło się"
 
-#: qemud/qemud.c:760
+#: qemud/qemud.c:764
 #, c-format
 msgid "Failed to initialize SASL authentication %s"
 msgstr "Zainicjowanie uwierzytelniania SASL %s nie powiodło się"
 
-#: qemud/qemud.c:775
+#: qemud/qemud.c:779
 #, c-format
 msgid "Failed to connect to system bus for PolicyKit auth: %s"
 msgstr ""
 "Połączenie z magistralą systemową dla uwierzytelniania PolicyKit nie "
 "powiodło się: %s"
 
-#: qemud/qemud.c:886
+#: qemud/qemud.c:890
 #, c-format
 msgid "remoteInitializeTLSSession: %s"
 msgstr "remoteInitializeTLSSession: %s"
 
-#: qemud/qemud.c:903
+#: qemud/qemud.c:907
 #, c-format
 msgid "remoteCheckDN: gnutls_x509_cert_get_dn: %s"
 msgstr "remoteCheckDN: gnutls_x509_cert_get_dn: %s"
 
-#: qemud/qemud.c:922
+#: qemud/qemud.c:926
 #, c-format
 msgid "remoteCheckDN: failed: client DN is %s"
 msgstr "remoteCheckDN: nie powiodło się: klient DN jest %s"
 
-#: qemud/qemud.c:938
+#: qemud/qemud.c:942
 #, c-format
 msgid "remoteCheckCertificate: verify failed: %s"
 msgstr "remoteCheckCertificate: sprawdzenie nie powiodło się: %s"
 
-#: qemud/qemud.c:946
+#: qemud/qemud.c:950
 msgid "remoteCheckCertificate: the client certificate is not trusted."
 msgstr "remoteCheckCertificate: certyfikat klienta nie jest zaufany."
 
-#: qemud/qemud.c:951
+#: qemud/qemud.c:955
 msgid "remoteCheckCertificate: the client certificate has unknown issuer."
 msgstr ""
 "remoteCheckCertificate: certyfikat klienta został posiada nieznanego "
 "wystawcę."
 
-#: qemud/qemud.c:956
+#: qemud/qemud.c:960
 msgid "remoteCheckCertificate: the client certificate has been revoked."
 msgstr "remoteCheckCertificate: certyfikat klienta został odrzucony."
 
-#: qemud/qemud.c:962
+#: qemud/qemud.c:966
 msgid ""
 "remoteCheckCertificate: the client certificate uses an insecure algorithm."
 msgstr ""
 "remoteCheckCertificate:certyfikat klienta używa niebezpiecznego algorytmu."
 
-#: qemud/qemud.c:971
+#: qemud/qemud.c:975
 msgid "remoteCheckCertificate: certificate is not X.509"
 msgstr "remoteCheckCertificate: certyfikat nie jest X.509"
 
-#: qemud/qemud.c:976
+#: qemud/qemud.c:980
 msgid "remoteCheckCertificate: no peers"
 msgstr "remoteCheckCertificate: brak równych"
 
-#: qemud/qemud.c:987
+#: qemud/qemud.c:991
 msgid "remoteCheckCertificate: gnutls_x509_crt_init failed"
 msgstr "remoteCheckCertificate: gnutls_x509_crt_init nie powiodło się"
 
-#: qemud/qemud.c:997
+#: qemud/qemud.c:1001
 msgid "remoteCheckCertificate: the client certificate has expired"
 msgstr "remoteCheckCertificate: certyfikat klienta wygasł"
 
-#: qemud/qemud.c:1004
+#: qemud/qemud.c:1008
 msgid "remoteCheckCertificate: the client certificate is not yet activated"
 msgstr ""
 "remoteCheckCertificate: certyfikat klienta nie został jeszcze aktywowany"
 
-#: qemud/qemud.c:1013
+#: qemud/qemud.c:1017
 msgid ""
 "remoteCheckCertificate: client's Distinguished Name is not on the list of "
 "allowed clients (tls_allowed_dn_list).  Use 'openssl x509 -in clientcert.pem "
@@ -326,12 +326,12 @@ msgstr ""
 "certyfikatklienta.pem -text\", aby wyświetlić pole rozróżnionej nazwy w "
 "certyfikacie klienta lub uruchom tego demona z opcją --verbose."
 
-#: qemud/qemud.c:1030
+#: qemud/qemud.c:1034
 msgid "remoteCheckCertificate: failed to verify client's certificate"
 msgstr ""
 "remoteCheckCertificate: sprawdzenie certyfikatu klienta nie powiodło się"
 
-#: qemud/qemud.c:1034
+#: qemud/qemud.c:1038
 msgid ""
 "remoteCheckCertificate: tls_no_verify_certificate is set so the bad "
 "certificate is ignored"
@@ -339,456 +339,448 @@ msgstr ""
 "remoteCheckCertificate: tls_no_verify_certificate jest ustawione, więc "
 "błędny certyfikat został zignorowany"
 
-#: qemud/qemud.c:1056
+#: qemud/qemud.c:1060
 #, c-format
 msgid "Failed to verify client credentials: %s"
 msgstr "Sprawdzenie danych uwierzytelniających klienta nie powiodło się: %s"
 
-#: qemud/qemud.c:1081
+#: qemud/qemud.c:1085
 #, c-format
 msgid "Failed to accept connection: %s"
 msgstr "Zaakceptowanie połączenia nie powiodło się: %s"
 
-#: qemud/qemud.c:1120
+#: qemud/qemud.c:1123
 #, c-format
 msgid "Turn off polkit auth for privileged client %d"
 msgstr ""
 
-#: qemud/qemud.c:1159 qemud/qemud.c:1396 qemud/qemud.c:1534
+#: qemud/qemud.c:1162 qemud/qemud.c:1399 qemud/qemud.c:1537
 #, c-format
 msgid "TLS handshake failed: %s"
 msgstr "Nawiązanie TLS nie powiodło się: %s"
 
-#: qemud/qemud.c:1224
+#: qemud/qemud.c:1227
 #, c-format
 msgid "read: %s"
 msgstr "odczytaj: %s"
 
-#: qemud/qemud.c:1237
+#: qemud/qemud.c:1240
 #, c-format
 msgid "gnutls_record_recv: %s"
 msgstr "gnutls_record_recv: %s"
 
-#: qemud/qemud.c:1420
+#: qemud/qemud.c:1423
 #, c-format
 msgid "write: %s"
 msgstr "zapisz: %s"
 
-#: qemud/qemud.c:1430
+#: qemud/qemud.c:1433
 #, c-format
 msgid "gnutls_record_send: %s"
 msgstr "gnutls_record_send: %s"
 
-#: qemud/qemud.c:1642
+#: qemud/qemud.c:1645
 #, c-format
 msgid "Signal handler reported %d errors: last error: %s"
 msgstr "Obsługa sygnału zgłosiła %d błędów: ostatni błąd: %s"
 
-#: qemud/qemud.c:1739 qemud/qemud.c:1761
+#: qemud/qemud.c:1741 qemud/qemud.c:1762
 #, c-format
 msgid "failed to allocate memory for %s config list"
 msgstr "Przydzielenie pamięci dla listy konfiguracji %s nie powiodło się"
 
-#: qemud/qemud.c:1746 qemud/qemud.c:1778
+#: qemud/qemud.c:1748 qemud/qemud.c:1779
 #, c-format
 msgid "failed to allocate memory for %s config list value"
 msgstr ""
 "Przydzielenie pamięci dla wartości listy konfiguracji %s nie powiodło się"
 
-#: qemud/qemud.c:1766 qemud/qemud.c:1789
+#: qemud/qemud.c:1767 qemud/qemud.c:1790
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: must be a string or list of strings\n"
 msgstr "remoteReadConfigFile: %s: %s: musi być łańcuchem lub listą łańcuchów\n"
 
-#: qemud/qemud.c:1806
+#: qemud/qemud.c:1807
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: invalid type: got %s; expected %s\n"
 msgstr ""
 "remoteReadConfigFile: %s: %s: nieprawidłowy typ: otrzymano %s; oczekiwano %"
 "s\n"
 
-#: qemud/qemud.c:1827
+#: qemud/qemud.c:1828
 #, c-format
 msgid "remoteReadConfigFile: %s\n"
 msgstr "remoteReadConfigFile: %s\n"
 
-#: qemud/qemud.c:1871
+#: qemud/qemud.c:1872
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: unsupported auth %s\n"
 msgstr "remoteReadConfigFile: %s: %s: nieobsługiwane uwierzytelnianie %s\n"
 
-#: qemud/qemud.c:1948
+#: qemud/qemud.c:1949
 msgid "Cannot set group when not running as root"
 msgstr "Nie można ustawić grupy, nie będąc uruchomionym jako root"
 
-#: qemud/qemud.c:1952
+#: qemud/qemud.c:1953
 #, c-format
 msgid "Failed to lookup group '%s'"
 msgstr "Wyszukanie grupy \"%s\" nie powiodło się"
 
-#: qemud/qemud.c:1965 qemud/qemud.c:1976
+#: qemud/qemud.c:1966 qemud/qemud.c:1977
 #, c-format
 msgid "Failed to parse mode '%s'"
 msgstr "Przeanalizowanie trybu \"%s\" nie powiodło się"
 
-#: qemud/qemud.c:2149
+#: qemud/qemud.c:2150
 #, c-format
 msgid "Failed to fork as daemon: %s"
 msgstr "Rozdzielenie jako demon nie powiodło się: %s"
 
-#: qemud/qemud.c:2171
+#: qemud/qemud.c:2172
 #, c-format
 msgid "Failed to create pipe: %s"
 msgstr "Utworzenie potoku nie powiodło się: %s"
 
-#: qemud/qemud.c:2204
+#: qemud/qemud.c:2205
 #, fuzzy, c-format
 msgid "Failed to change group ownership of %s"
 msgstr "Zrzucanie core domeny %s do %s nie powiodło się"
 
-#: qemud/qemud.c:2213
+#: qemud/qemud.c:2214
 msgid "Failed to register callback for signal pipe"
 msgstr "Zarejestrowanie wywołania zwrotnego nie powiodło się"
 
-#: qemud/remote.c:101
+#: qemud/remote.c:102
 msgid "xdr_remote_message_header"
 msgstr "xdr_remote_message_header"
 
-#: qemud/remote.c:109
+#: qemud/remote.c:110
 #, c-format
 msgid "program mismatch (actual %x, expected %x)"
 msgstr "program nie zgadza się (jest %x, oczekiwano %x)"
 
-#: qemud/remote.c:116
+#: qemud/remote.c:117
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
 msgstr "wersja nie zgadza się (jest %x, oczekiwano %x)"
 
-#: qemud/remote.c:122
+#: qemud/remote.c:123
 #, c-format
 msgid "direction (%d) != REMOTE_CALL"
 msgstr "kierunek (%d) != REMOTE_CALL"
 
-#: qemud/remote.c:128
+#: qemud/remote.c:129
 #, c-format
 msgid "status (%d) != REMOTE_OK"
 msgstr "stan (%d) != REMOTE_OK"
 
-#: qemud/remote.c:144
+#: qemud/remote.c:145
 msgid "authentication required"
 msgstr "uwierzytelnienie jest wymagane"
 
-#: qemud/remote.c:157
+#: qemud/remote.c:158
 #, c-format
 msgid "unknown procedure: %d"
 msgstr "nieznana procedura: %d"
 
-#: qemud/remote.c:165
+#: qemud/remote.c:166
 msgid "parse args failed"
 msgstr "przeanalizowanie argumentów nie powiodło się"
 
-#: qemud/remote.c:181
+#: qemud/remote.c:182
 #, c-format
 msgid "internal error - dispatch function returned invalid code %d"
 msgstr "wewnętrzny błąd - funkcja dispatch zwróciła nieprawidłowy kod %d"
 
-#: qemud/remote.c:203
+#: qemud/remote.c:204
 msgid "dummy length"
 msgstr "pusta długość"
 
-#: qemud/remote.c:210
+#: qemud/remote.c:211
 msgid "serialise reply header"
 msgstr "szereguj nagłówki odpowiedzi"
 
-#: qemud/remote.c:219
+#: qemud/remote.c:220
 msgid "serialise return struct"
 msgstr "szereguj struct zwrotny"
 
-#: qemud/remote.c:274
+#: qemud/remote.c:275
 msgid "serialise return error"
 msgstr "szereguj błąd zwrotny"
 
-#: qemud/remote.c:283
+#: qemud/remote.c:284
 msgid "xdr_setpos"
 msgstr "xdr_setpos"
 
-#: qemud/remote.c:289
+#: qemud/remote.c:290
 msgid "serialise return length"
 msgstr "szereguj długość zwrotną"
 
-#: qemud/remote.c:423
+#: qemud/remote.c:424
 msgid "connection already open"
 msgstr "połączenie jest już otwarte"
 
-#: qemud/remote.c:449
+#: qemud/remote.c:450
 msgid "connection not open"
 msgstr "połączenie nie jest otwarte"
 
-#: qemud/remote.c:496
+#: qemud/remote.c:497
 msgid "out of memory in strdup"
 msgstr "brak pamięci w strdup"
 
-#: qemud/remote.c:607
+#: qemud/remote.c:608
 #, fuzzy
 msgid "maxCells > REMOTE_NODE_MAX_CELLS"
 msgstr "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"
 
-#: qemud/remote.c:657 qemud/remote.c:700 qemud/remote.c:809 qemud/remote.c:835
-#: qemud/remote.c:869 qemud/remote.c:904 qemud/remote.c:928 qemud/remote.c:990
-#: qemud/remote.c:1014 qemud/remote.c:1039 qemud/remote.c:1065
-#: qemud/remote.c:1090 qemud/remote.c:1122 qemud/remote.c:1147
-#: qemud/remote.c:1172 qemud/remote.c:1201 qemud/remote.c:1309
-#: qemud/remote.c:1456 qemud/remote.c:1489 qemud/remote.c:1528
-#: qemud/remote.c:1552 qemud/remote.c:1576 qemud/remote.c:1600
-#: qemud/remote.c:1624 qemud/remote.c:1648 qemud/remote.c:1672
-#: qemud/remote.c:1696 qemud/remote.c:1720 qemud/remote.c:1744
+#: qemud/remote.c:663 qemud/remote.c:705 qemud/remote.c:809 qemud/remote.c:835
+#: qemud/remote.c:869 qemud/remote.c:908 qemud/remote.c:956
+#: qemud/remote.c:1000 qemud/remote.c:1024 qemud/remote.c:1086
+#: qemud/remote.c:1110 qemud/remote.c:1135 qemud/remote.c:1161
+#: qemud/remote.c:1186 qemud/remote.c:1218 qemud/remote.c:1243
+#: qemud/remote.c:1268 qemud/remote.c:1297 qemud/remote.c:1421
+#: qemud/remote.c:1574 qemud/remote.c:1607 qemud/remote.c:1646
+#: qemud/remote.c:1670 qemud/remote.c:1694 qemud/remote.c:1718
+#: qemud/remote.c:1742 qemud/remote.c:1766 qemud/remote.c:1790
+#: qemud/remote.c:1814 qemud/remote.c:1838 qemud/remote.c:1862
 msgid "domain not found"
 msgstr "nie znaleziono domeny"
 
-#: qemud/remote.c:688 qemud/remote.c:775
+#: qemud/remote.c:694 qemud/remote.c:776
 msgid "nparams too large"
 msgstr "nparams jest za duże"
 
-#: qemud/remote.c:693 qemud/remote.c:780 qemud/remote.c:2483
-#: qemud/remote.c:2564 src/remote_internal.c:2274
-msgid "out of memory allocating array"
-msgstr "brak pamięci podczas przydzielania tablicy"
-
-#: qemud/remote.c:719 qemud/remote.c:730
-msgid "out of memory allocating return array"
-msgstr "brak pamięci podczas przydzielania tablicy zwrotu"
-
-#: qemud/remote.c:750
+#: qemud/remote.c:742
 msgid "unknown type"
 msgstr "nieznany typ"
 
-#: qemud/remote.c:1207
+#: qemud/remote.c:919 qemud/remote.c:965
+msgid "size > maximum buffer size"
+msgstr ""
+
+#: qemud/remote.c:1303
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
-#: qemud/remote.c:1213
+#: qemud/remote.c:1309
 msgid "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 
-#: qemud/remote.c:1359
+#: qemud/remote.c:1471
 msgid "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"
 msgstr "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"
 
-#: qemud/remote.c:1462
+#: qemud/remote.c:1580
 msgid "cpumap_len > REMOTE_CPUMAP_MAX"
 msgstr "cpumap_len > REMOTE_CPUMAP_MAX"
 
-#: qemud/remote.c:1767 qemud/remote.c:1818 qemud/remote.c:2776
+#: qemud/remote.c:1885 qemud/remote.c:1948 qemud/remote.c:2907
 msgid "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
 msgstr "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
 
-#: qemud/remote.c:1793
+#: qemud/remote.c:1917
 msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 
-#: qemud/remote.c:1845 qemud/remote.c:1905 qemud/remote.c:1929
-#: qemud/remote.c:1955 qemud/remote.c:1979 qemud/remote.c:2041
-#: qemud/remote.c:2065
+#: qemud/remote.c:1981 qemud/remote.c:2041 qemud/remote.c:2065
+#: qemud/remote.c:2091 qemud/remote.c:2115 qemud/remote.c:2177
+#: qemud/remote.c:2201
 msgid "network not found"
 msgstr "nie znaleziono sieci"
 
-#: qemud/remote.c:2156 src/remote_internal.c:3616
+#: qemud/remote.c:2292 src/remote_internal.c:3702
 #, c-format
 msgid "Cannot resolve address %d: %s"
 msgstr "Nie można rozwiązać adresu %d: %s"
 
-#: qemud/remote.c:2163
-msgid "cannot allocate address"
-msgstr "nie można przydzielić adresu"
-
-#: qemud/remote.c:2197
+#: qemud/remote.c:2332
 msgid "client tried invalid SASL init request"
 msgstr "klient spróbował nieprawidłowe żądanie inicjowania SASL"
 
-#: qemud/remote.c:2206 src/remote_internal.c:3846
+#: qemud/remote.c:2341 src/remote_internal.c:3930
 #, c-format
 msgid "failed to get sock address %d (%s)"
 msgstr "uzyskanie adresu gniazda %d nie powiodło się (%s)"
 
-#: qemud/remote.c:2217 src/remote_internal.c:3858
+#: qemud/remote.c:2352 src/remote_internal.c:3942
 #, c-format
 msgid "failed to get peer address %d (%s)"
 msgstr "uzyskanie adresu peera %d nie powiodło się (%s)"
 
-#: qemud/remote.c:2238
+#: qemud/remote.c:2373
 #, c-format
 msgid "sasl context setup failed %d (%s)"
 msgstr "ustawienie kontekstu SASL nie powiodło się %d (%s)"
 
-#: qemud/remote.c:2252
+#: qemud/remote.c:2387
 msgid "cannot TLS get cipher size"
 msgstr "TLS nie może uzyskać rozmiaru szyfru"
 
-#: qemud/remote.c:2262
+#: qemud/remote.c:2397
 #, c-format
 msgid "cannot set SASL external SSF %d (%s)"
 msgstr "nie można ustawić zewnętrznego SSF SASL %d (%s)"
 
-#: qemud/remote.c:2291
+#: qemud/remote.c:2426
 #, c-format
 msgid "cannot set SASL security props %d (%s)"
 msgstr "nie można ustawić podparcia bezpieczeństwa SASL %d (%s)"
 
-#: qemud/remote.c:2308
+#: qemud/remote.c:2443
 #, c-format
 msgid "cannot list SASL mechanisms %d (%s)"
 msgstr "nie można wyświetlić listy mechanizmów SASL %d (%s)"
 
-#: qemud/remote.c:2318
+#: qemud/remote.c:2453
 msgid "cannot allocate mechlist"
 msgstr "nie można przydzielić listy mechanizmów"
 
-#: qemud/remote.c:2343 src/remote_internal.c:4124
+#: qemud/remote.c:2478 src/remote_internal.c:4207
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr "nie można odpytać SSF SASL na połączeniu %d (%s)"
 
-#: qemud/remote.c:2353
+#: qemud/remote.c:2488
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "wynegocjowane SSF %d nie było wystarczająco silne"
 
-#: qemud/remote.c:2383
+#: qemud/remote.c:2518
 #, c-format
 msgid "cannot query SASL username on connection %d (%s)"
 msgstr "nie można odpytać nazwy użytkownika na połączeniu %d (%s)"
 
-#: qemud/remote.c:2391
+#: qemud/remote.c:2526
 msgid "no client username was found"
 msgstr "nie znaleziono nazwy użytkownika klienta"
 
-#: qemud/remote.c:2401
+#: qemud/remote.c:2536
 msgid "out of memory copying username"
 msgstr "brak pamięci podczas kopiowania nazwy użytkownika"
 
-#: qemud/remote.c:2420
+#: qemud/remote.c:2555
 #, c-format
 msgid "SASL client %s not allowed in whitelist"
 msgstr "klient SASL %s nie znajduje się na liści dozwolonych"
 
-#: qemud/remote.c:2446 qemud/remote.c:2527
+#: qemud/remote.c:2581 qemud/remote.c:2660
 msgid "client tried invalid SASL start request"
 msgstr "klient spróbował nieprawidłowego żądania uruchomienia SASL"
 
-#: qemud/remote.c:2462
+#: qemud/remote.c:2597
 #, c-format
 msgid "sasl start failed %d (%s)"
 msgstr "uruchomienie SASL nie powiodło się %d (%s)"
 
-#: qemud/remote.c:2470
+#: qemud/remote.c:2605
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr "dane odpowiedzi uruchomienia SASL są za długie %d"
 
-#: qemud/remote.c:2542
+#: qemud/remote.c:2675
 #, c-format
 msgid "sasl step failed %d (%s)"
 msgstr "krok SASL nie powiódł się %d (%s)"
 
-#: qemud/remote.c:2551
+#: qemud/remote.c:2684
 #, c-format
 msgid "sasl step reply data too long %d"
 msgstr "dane odpowiedzi kroku SASL są za długie %d"
 
-#: qemud/remote.c:2602
+#: qemud/remote.c:2733
 msgid "client tried unsupported SASL init request"
 msgstr "klient spróbował nieobsługiwanego żądania inicjowania SASL"
 
-#: qemud/remote.c:2614
+#: qemud/remote.c:2745
 msgid "client tried unsupported SASL start request"
 msgstr "klient spróbował nieobsługiwanego żądania uruchomienia SASL"
 
-#: qemud/remote.c:2626
+#: qemud/remote.c:2757
 msgid "client tried unsupported SASL step request"
 msgstr "klient spróbował nieobsługiwanego żądania kroku SASL"
 
-#: qemud/remote.c:2656
+#: qemud/remote.c:2787
 msgid "client tried invalid PolicyKit init request"
 msgstr "klient spróbował nieprawidłowego żądania inicjowania PolicyKit"
 
-#: qemud/remote.c:2662
+#: qemud/remote.c:2793
 msgid "cannot get peer socket identity"
 msgstr "nie można uzyskać tożsamości równego gniazda"
 
-#: qemud/remote.c:2667
+#: qemud/remote.c:2798
 #, c-format
 msgid "Checking PID %d running as %d"
 msgstr "Sprawdzanie PID-u %d uruchomionego jako %d"
 
-#: qemud/remote.c:2672
+#: qemud/remote.c:2803
 #, c-format
 msgid "Failed to lookup policy kit caller: %s"
 msgstr "Wyszukanie wywołania PolicyKit nie powiodło się: %s"
 
-#: qemud/remote.c:2680
+#: qemud/remote.c:2811
 #, c-format
 msgid "Failed to create polkit action %s\n"
 msgstr "Utworzenie działania PolicyKit %s nie powiodło się\n"
 
-#: qemud/remote.c:2690
+#: qemud/remote.c:2821
 #, c-format
 msgid "Failed to create polkit context %s\n"
 msgstr "Utworzenie kontekstu PolicyKit %s nie powiodło się\n"
 
-#: qemud/remote.c:2710
+#: qemud/remote.c:2841
 #, c-format
 msgid "Policy kit failed to check authorization %d %s"
 msgstr "Sprawdzenie upoważnienia %d %s przez PolicyKit nie powiodło się"
 
-#: qemud/remote.c:2726
+#: qemud/remote.c:2857
 #, c-format
 msgid "Policy kit denied action %s from pid %d, uid %d, result: %s\n"
 msgstr "PolicyKit zabronił działania %s z PID %d, UID %d, wynik: %s\n"
 
-#: qemud/remote.c:2734
+#: qemud/remote.c:2865
 #, c-format
 msgid "Policy allowed action %s from pid %d, uid %d, result %s"
 msgstr "PolicyKit zezwolił na działanie %s z PID %d, UID %d, wynik %s"
 
-#: qemud/remote.c:2753
+#: qemud/remote.c:2884
 msgid "client tried unsupported PolicyKit init request"
 msgstr "klient spróbował nieobsługiwanego żądania inicjowania PolicyKit"
 
-#: qemud/remote.c:2802
+#: qemud/remote.c:2939
 msgid "maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX"
 msgstr "maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX"
 
-#: qemud/remote.c:2829 qemud/remote.c:2889 qemud/remote.c:2914
-#: qemud/remote.c:2938 qemud/remote.c:2962 qemud/remote.c:2987
-#: qemud/remote.c:3018 qemud/remote.c:3044 qemud/remote.c:3127
-#: qemud/remote.c:3151 qemud/remote.c:3211 qemud/remote.c:3240
-#: qemud/remote.c:3271 qemud/remote.c:3407
+#: qemud/remote.c:2972 qemud/remote.c:3032 qemud/remote.c:3057
+#: qemud/remote.c:3081 qemud/remote.c:3105 qemud/remote.c:3130
+#: qemud/remote.c:3161 qemud/remote.c:3187 qemud/remote.c:3270
+#: qemud/remote.c:3294 qemud/remote.c:3354 qemud/remote.c:3390
+#: qemud/remote.c:3421 qemud/remote.c:3557
 msgid "storage_pool not found"
 msgstr "Nie znaleziono storage_pool"
 
-#: qemud/remote.c:3205
+#: qemud/remote.c:3348
 msgid "maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX"
 msgstr "maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX"
 
-#: qemud/remote.c:3297 qemud/remote.c:3322 qemud/remote.c:3352
-#: qemud/remote.c:3379
+#: qemud/remote.c:3447 qemud/remote.c:3472 qemud/remote.c:3502
+#: qemud/remote.c:3529
 msgid "storage_vol not found"
 msgstr "Nie znaleziono storage_vol"
 
-#: src/conf.c:155 src/conf.c:204 src/conf.c:489 src/conf.c:525 src/conf.c:553
+#: src/conf.c:155 src/conf.c:203 src/conf.c:488 src/conf.c:525 src/conf.c:553
 #: src/conf.c:631
 msgid "allocating configuration"
 msgstr "przydzielanie konfiguracji"
 
-#: src/conf.c:339
+#: src/conf.c:338
 msgid "unterminated number"
 msgstr "niezakończona liczba"
 
-#: src/conf.c:373 src/conf.c:390 src/conf.c:402
+#: src/conf.c:372 src/conf.c:389 src/conf.c:401
 msgid "unterminated string"
 msgstr "niezakończony łańcuch"
 
-#: src/conf.c:430 src/conf.c:483
+#: src/conf.c:429 src/conf.c:483
 msgid "expecting a value"
 msgstr "oczekiwana wartość"
 
@@ -812,18 +804,18 @@ msgstr "oczekiwane rozdzielenie"
 msgid "expecting an assignment"
 msgstr "oczekiwane wyznaczenie"
 
-#: src/conf.c:894 src/conf.c:949 src/lxc_conf.c:781 src/xend_internal.c:628
-#: src/xend_internal.c:2217 src/xend_internal.c:2440 src/xm_internal.c:1078
-#: src/xm_internal.c:1338 src/xml.c:142 src/xml.c:279 src/xml.c:1865
+#: src/conf.c:894 src/conf.c:950 src/lxc_conf.c:778 src/xend_internal.c:645
+#: src/xend_internal.c:2299 src/xend_internal.c:2522 src/xm_internal.c:1076
+#: src/xm_internal.c:1336 src/xml.c:142 src/xml.c:279 src/xml.c:1865
 #: src/xml.c:1934
 msgid "allocate buffer"
 msgstr "przydziel bufor"
 
-#: src/conf.c:900
+#: src/conf.c:901
 msgid "failed to open file"
 msgstr "otwarcie pliku nie powiodło się"
 
-#: src/conf.c:911
+#: src/conf.c:912
 msgid "failed to save content"
 msgstr "zapisanie zawartości nie powiodło się"
 
@@ -912,36 +904,36 @@ msgstr ""
 msgid "vol missing from connection hash table"
 msgstr "brak woluminu w tablicy hashów połączenia"
 
-#: src/iptables.c:103
+#: src/iptables.c:104
 msgid "Failed to run '"
 msgstr "Nie powiodło się uruchomienie \""
 
-#: src/iptables.c:151
+#: src/iptables.c:152
 msgid "Failed to read "
 msgstr "Nie powiodło się odczytanie "
 
-#: src/iptables.c:179
+#: src/iptables.c:180
 msgid "Failed to write to "
 msgstr "Nie powiodło się zapisanie "
 
-#: src/iptables.c:244
+#: src/iptables.c:245
 #, c-format
 msgid "Failed to create directory %s : %s"
 msgstr "Utworzenie folderu %s nie powiodło się: %s"
 
-#: src/iptables.c:250
+#: src/iptables.c:251
 #, c-format
 msgid "Failed to saves iptables rules to %s : %s"
 msgstr "Zapisanie reguł iptables do %s nie powiodło się: %s"
 
-#: src/iptables.c:591
+#: src/iptables.c:583
 #, c-format
 msgid "Failed to remove iptables rule '%s' from chain '%s' in table '%s': %s"
 msgstr ""
 "Usunięcie reguły iptables \"%s\" z łańcucha \"%s\" w tablicy \"%s\" nie "
 "powiodło się: %s"
 
-#: src/iptables.c:600
+#: src/iptables.c:592
 #, c-format
 msgid "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s"
 msgstr ""
@@ -959,6 +951,26 @@ msgstr "przydzielanie conn->name"
 #: src/libvirt.c:2180
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare nie ustawiło URI"
+
+#: src/libvirt.c:2648
+msgid "path is NULL"
+msgstr ""
+
+#: src/libvirt.c:2654
+msgid "flags must be zero"
+msgstr ""
+
+#: src/libvirt.c:2661
+msgid "buffer is NULL"
+msgstr ""
+
+#: src/libvirt.c:2744
+msgid "flags parameter must be VIR_MEMORY_VIRTUAL"
+msgstr ""
+
+#: src/libvirt.c:2751
+msgid "buffer is NULL but size is non-zero"
+msgstr ""
 
 #: src/lxc_conf.c:87
 msgid "missing filesystem type"
@@ -992,197 +1004,197 @@ msgstr "utworzenie UUID nie powiodło się"
 msgid "invalid uuid element"
 msgstr "nieprawidłowy element UUID"
 
-#: src/lxc_conf.c:248
+#: src/lxc_conf.c:247
 msgid "invalid or missing init element"
 msgstr "brak lub nieprawidłowy element init"
 
-#: src/lxc_conf.c:254
+#: src/lxc_conf.c:253
 msgid "init string too long"
 msgstr "łańcuch init jest za długi"
 
-#: src/lxc_conf.c:293
+#: src/lxc_conf.c:292
 msgid "invalid memory value"
 msgstr "nieprawidłowa wartość pamięci"
 
-#: src/lxc_conf.c:320
+#: src/lxc_conf.c:319
 msgid "invalid root element"
 msgstr "nieprawidłowy element roota"
 
-#: src/lxc_conf.c:333
+#: src/lxc_conf.c:332
 msgid "missing domain type"
 msgstr "brak typu domeny"
 
-#: src/lxc_conf.c:339
+#: src/lxc_conf.c:338
 msgid "invalid domain type"
 msgstr "nieprawidłowy typ domeny"
 
-#: src/lxc_conf.c:348
+#: src/lxc_conf.c:346
 msgid "invalid domain id"
 msgstr "nieprawidłowy identyfikator domeny"
 
-#: src/lxc_conf.c:438
+#: src/lxc_conf.c:435
 #, c-format
 msgid "Can't redefine active VM with name %s"
 msgstr ""
 "Nie można ponownie określić aktywnej maszyny wirtualnej za pomocą nazwy %s"
 
-#: src/lxc_conf.c:491
+#: src/lxc_conf.c:488
 #, c-format
 msgid "error checking container process: %d %s"
 msgstr ""
 
-#: src/lxc_conf.c:551 src/qemu_conf.c:2901 src/qemu_conf.c:3135
+#: src/lxc_conf.c:548 src/qemu_conf.c:2906 src/qemu_conf.c:3140
 #: src/storage_conf.c:1134
 #, c-format
 msgid "cannot create config file %s: %s"
 msgstr "nie można utworzyć pliku konfiguracji %s: %s"
 
-#: src/lxc_conf.c:559 src/qemu_conf.c:2909 src/qemu_conf.c:3143
+#: src/lxc_conf.c:556 src/qemu_conf.c:2914 src/qemu_conf.c:3148
 #: src/storage_conf.c:1142
 #, c-format
 msgid "cannot write config file %s: %s"
 msgstr "nie można zapisać pliku konfiguracji %s: %s"
 
-#: src/lxc_conf.c:566 src/qemu_conf.c:2916 src/qemu_conf.c:3150
+#: src/lxc_conf.c:563 src/qemu_conf.c:2921 src/qemu_conf.c:3155
 #: src/storage_conf.c:1149
 #, c-format
 msgid "cannot save config file %s: %s"
 msgstr "nie można zapisać pliku konfiguracji %s: %s"
 
-#: src/lxc_conf.c:593 src/qemu_conf.c:3087 src/qemu_conf.c:3126
-#: src/qemu_conf.c:3546 src/storage_conf.c:1089
+#: src/lxc_conf.c:590 src/qemu_conf.c:3092 src/qemu_conf.c:3131
+#: src/qemu_conf.c:3551 src/storage_conf.c:1091
 #, c-format
 msgid "cannot create config directory %s: %s"
 msgstr "nie można utworzyć folderu konfiguracji %s: %s"
 
-#: src/lxc_conf.c:601 src/qemu_conf.c:3095 src/qemu_conf.c:3554
-#: src/storage_conf.c:1097
+#: src/lxc_conf.c:598 src/qemu_conf.c:3100 src/qemu_conf.c:3559
+#: src/storage_conf.c:1099
 msgid "cannot construct config file path"
 msgstr "nie można skonstruować ścieżki do pliku konfiguracji"
 
-#: src/lxc_conf.c:710
+#: src/lxc_conf.c:707
 #, c-format
 msgid "failed to open config directory %s: %s"
 msgstr "otworzenie folderu konfiguracji %s nie powiodło się: %s"
 
-#: src/lxc_conf.c:877 src/qemu_conf.c:4209 src/storage_conf.c:1170
+#: src/lxc_conf.c:874 src/qemu_conf.c:4214 src/storage_conf.c:1170
 #, c-format
 msgid "no config file for %s"
 msgstr "brak pliku konfiguracji dla %s"
 
-#: src/lxc_conf.c:883 src/qemu_conf.c:4215 src/storage_conf.c:1176
+#: src/lxc_conf.c:880 src/qemu_conf.c:4220 src/storage_conf.c:1176
 #, c-format
 msgid "cannot remove config for %s"
 msgstr "nie można usunąć konfiguracji dla %s"
 
-#: src/lxc_conf.c:909 src/lxc_conf.c:987
+#: src/lxc_conf.c:906 src/lxc_conf.c:984
 #, fuzzy, c-format
 msgid "cannot create lxc state directory %s: %s"
 msgstr "nie można utworzyć folderu automatycznego uruchamiania %s: %s"
 
-#: src/lxc_conf.c:917 src/lxc_conf.c:995
+#: src/lxc_conf.c:914 src/lxc_conf.c:992
 #, fuzzy
 msgid "cannot construct tty pid file path"
 msgstr "nie można skonstruować ścieżki do pliku konfiguracji"
 
-#: src/lxc_conf.c:926
+#: src/lxc_conf.c:923
 #, fuzzy, c-format
 msgid "cannot create tty pid file %s: %s"
 msgstr "nie można utworzyć pliku konfiguracji %s: %s"
 
-#: src/lxc_conf.c:933
+#: src/lxc_conf.c:930
 #, fuzzy, c-format
 msgid "cannot fdopen tty pid file %s: %s"
 msgstr "Wykonanie fdopen na pliku PID \"%s\" nie powiodło się: %s"
 
-#: src/lxc_conf.c:938 src/lxc_conf.c:958 src/lxc_conf.c:1021
+#: src/lxc_conf.c:935 src/lxc_conf.c:955 src/lxc_conf.c:1018
 #, fuzzy, c-format
 msgid "failed to close tty pid file %s: %s"
 msgstr "Zamknięcie pliku PID \"%s\" nie powiodło się: %s"
 
-#: src/lxc_conf.c:947
+#: src/lxc_conf.c:944
 #, fuzzy, c-format
 msgid "cannot write tty pid file %s: %s"
 msgstr "nie można zapisać pliku konfiguracji %s: %s"
 
-#: src/lxc_conf.c:1007
+#: src/lxc_conf.c:1004
 #, fuzzy, c-format
 msgid "cannot open tty pid file %s: %s"
 msgstr "nie można rozszerzyć pliku \"%s\": %s"
 
-#: src/lxc_conf.c:1014
+#: src/lxc_conf.c:1011
 #, fuzzy, c-format
 msgid "cannot read tty pid file %s: %s"
 msgstr "nie można utworzyć pliku konfiguracji %s: %s"
 
-#: src/lxc_conf.c:1053
+#: src/lxc_conf.c:1050
 #, fuzzy, c-format
 msgid "cannot remove ttyPidFile %s: %s"
 msgstr "nie można odczytać folderu %s: %s"
 
-#: src/lxc_container.c:59
+#: src/lxc_container.c:60
 #, fuzzy, c-format
 msgid "failed to calloc memory for init string: %s"
 msgstr "Przydzielenie przestrzeni dla łańcucha wejścia nie powiodło się"
 
-#: src/lxc_container.c:69
+#: src/lxc_container.c:70
 #, fuzzy, c-format
 msgid "execl failed to exec init: %s"
 msgstr "wykonanie %s nie powiodło się\n"
 
-#: src/lxc_container.c:91
+#: src/lxc_container.c:92
 #, fuzzy, c-format
 msgid "setsid failed: %s"
 msgstr "operacja nie powiodła się: %s"
 
-#: src/lxc_container.c:98
+#: src/lxc_container.c:99
 #, fuzzy, c-format
 msgid "open(%s) failed: %s"
 msgstr "operacja nie powiodła się: %s"
 
-#: src/lxc_container.c:104
+#: src/lxc_container.c:105
 #, c-format
 msgid "ioctl(TIOCSTTY) failed: %s"
 msgstr ""
 
-#: src/lxc_container.c:112
+#: src/lxc_container.c:113
 #, fuzzy, c-format
 msgid "dup2(stdin) failed: %s"
 msgstr "operacja nie powiodła się: %s"
 
-#: src/lxc_container.c:118
+#: src/lxc_container.c:119
 #, fuzzy, c-format
 msgid "dup2(stdout) failed: %s"
 msgstr "operacja nie powiodła się: %s"
 
-#: src/lxc_container.c:124
+#: src/lxc_container.c:125
 #, fuzzy, c-format
 msgid "dup2(stderr) failed: %s"
 msgstr "operacja nie powiodła się: %s"
 
-#: src/lxc_container.c:182
+#: src/lxc_container.c:183
 msgid "lxcChild() passed invalid vm definition"
 msgstr ""
 
-#: src/lxc_container.c:197
+#: src/lxc_container.c:198
 #, fuzzy, c-format
 msgid "failed to mount %s at %s for container: %s"
 msgstr "oczekiwanie na polecenie nie nie powiodło się: %s"
 
-#: src/lxc_container.c:207
+#: src/lxc_container.c:208
 #, fuzzy, c-format
 msgid "failed to mount /proc for container: %s"
 msgstr "oczekiwanie na polecenie nie nie powiodło się: %s"
 
-#: src/lxc_driver.c:315 src/lxc_driver.c:346 src/lxc_driver.c:379
-#: src/openvz_driver.c:176 src/openvz_driver.c:218 src/openvz_driver.c:528
-#: src/qemu_driver.c:2091 src/qemu_driver.c:2169 src/qemu_driver.c:2696
-#: src/qemu_driver.c:2741 src/qemu_driver.c:2779 src/qemu_driver.c:2857
-#: src/qemu_driver.c:2910 src/qemu_driver.c:2926
+#: src/lxc_driver.c:316 src/lxc_driver.c:347 src/lxc_driver.c:380
+#: src/openvz_driver.c:175 src/openvz_driver.c:217 src/openvz_driver.c:527
+#: src/qemu_driver.c:2093 src/qemu_driver.c:2171 src/qemu_driver.c:2698
+#: src/qemu_driver.c:2743 src/qemu_driver.c:2781 src/qemu_driver.c:2859
+#: src/qemu_driver.c:2912 src/qemu_driver.c:2928 src/qemu_driver.c:3182
 msgid "no domain with matching uuid"
 msgstr "brak domeny pasującej do UUID"
 
-#: src/lxc_driver.c:321 src/openvz_driver.c:533 src/qemu_driver.c:2785
+#: src/lxc_driver.c:322 src/openvz_driver.c:532 src/qemu_driver.c:2787
 msgid "cannot delete active domain"
 msgstr "nie można usunąć aktywnej domeny"
 
@@ -1196,284 +1208,289 @@ msgstr "przydzielenie węzła nie powiodło się"
 msgid "clone() failed, %s"
 msgstr "calloc nie powiodło się"
 
-#: src/lxc_driver.c:561
+#: src/lxc_driver.c:520
+#, fuzzy
+msgid "unable to get storage for vm tty name"
+msgstr "nie można uzyskać obecnego czasu"
+
+#: src/lxc_driver.c:564
 #, fuzzy, c-format
 msgid "posix_openpt failed: %s"
 msgstr "operacja nie powiodła się: %s"
 
-#: src/lxc_driver.c:567
+#: src/lxc_driver.c:570
 #, fuzzy, c-format
 msgid "unlockpt failed: %s"
 msgstr "operacja nie powiodła się: %s"
 
-#: src/lxc_driver.c:573
+#: src/lxc_driver.c:576
 #, fuzzy, c-format
 msgid "ptsname_r failed: %s"
 msgstr "operacja nie powiodła się: %s"
 
-#: src/lxc_driver.c:580
+#: src/lxc_driver.c:582
 #, fuzzy
 msgid "unable to allocate container name string"
 msgstr ""
 "przydzielenie przestrzeni dla łańcucha nazwy maszyny wirtualnej nie powiodło "
 "się"
 
-#: src/lxc_driver.c:619
+#: src/lxc_driver.c:621
 #, fuzzy, c-format
 msgid "read of fd %d failed: %s"
 msgstr "operacja nie powiodła się: %s"
 
-#: src/lxc_driver.c:625
+#: src/lxc_driver.c:627
 #, fuzzy, c-format
 msgid "write to fd %d failed: %s"
 msgstr "Wykonanie fdopen na pliku PID \"%s\" nie powiodło się: %s"
 
-#: src/lxc_driver.c:673
+#: src/lxc_driver.c:675
 #, fuzzy, c-format
 msgid "epoll_create(2) failed: %s"
 msgstr "operacja nie powiodła się: %s"
 
-#: src/lxc_driver.c:684
+#: src/lxc_driver.c:686
 #, c-format
 msgid "epoll_ctl(fd1) failed: %s"
 msgstr ""
 
-#: src/lxc_driver.c:691
+#: src/lxc_driver.c:693
 #, c-format
 msgid "epoll_ctl(fd2) failed: %s"
 msgstr ""
 
-#: src/lxc_driver.c:712
+#: src/lxc_driver.c:714
 #, c-format
 msgid "error event %d"
 msgstr ""
 
-#: src/lxc_driver.c:733
+#: src/lxc_driver.c:735
 #, fuzzy, c-format
 msgid "epoll_wait() failed: %s"
 msgstr "operacja nie powiodła się: %s"
 
-#: src/lxc_driver.c:793
+#: src/lxc_driver.c:795
 #, fuzzy, c-format
 msgid "unable to fork tty forwarding process: %s"
 msgstr "nie można uzyskać atrybutów TTY: %s\n"
 
-#: src/lxc_driver.c:912 src/lxc_driver.c:1019
+#: src/lxc_driver.c:914 src/lxc_driver.c:1021
 #, fuzzy, c-format
 msgid "no domain with id %d"
 msgstr "brak domeny pasującej do identyfikatora %d"
 
-#: src/lxc_driver.c:919
+#: src/lxc_driver.c:921
 #, fuzzy, c-format
 msgid "sending SIGTERM failed: %s"
 msgstr "operacja nie powiodła się: %s"
 
-#: src/lxc_driver.c:954
+#: src/lxc_driver.c:956
 #, fuzzy, c-format
 msgid "waitpid failed to wait for container %d: %d %s"
 msgstr "oczekiwanie na polecenie nie nie powiodło się: %s"
 
-#: src/lxc_driver.c:975
+#: src/lxc_driver.c:977
 #, c-format
 msgid "sending SIGKILL to tty process failed: %s"
 msgstr ""
 
-#: src/lxc_driver.c:987
+#: src/lxc_driver.c:989
 #, fuzzy, c-format
 msgid "waitpid failed to wait for tty %d: %d %s"
 msgstr "oczekiwanie na polecenie nie nie powiodło się: %s"
 
-#: src/lxc_driver.c:1026
+#: src/lxc_driver.c:1028
 #, fuzzy, c-format
 msgid "sending SIGKILL failed: %s"
 msgstr "operacja nie powiodła się: %s"
 
-#: src/openvz_conf.c:241
+#: src/openvz_conf.c:238
 #, c-format
 msgid "Error already an active OPENVZ VM having id '%s'"
 msgstr ""
 "Błąd jest już na aktywnej maszynie wirtualnej OpenVZ posiadającej "
 "identyfikator \"%s\""
 
-#: src/openvz_conf.c:311 src/qemu_conf.c:1632 src/qemu_conf.c:3332
+#: src/openvz_conf.c:308 src/qemu_conf.c:1632 src/qemu_conf.c:3337
 msgid "incorrect root element"
 msgstr "niepoprawny element roota"
 
-#: src/openvz_conf.c:323 src/qemu_conf.c:1647
+#: src/openvz_conf.c:320 src/qemu_conf.c:1647
 msgid "missing domain type attribute"
 msgstr "brak atrybutu typu domeny"
 
-#: src/openvz_conf.c:328 src/qemu_conf.c:1659
+#: src/openvz_conf.c:325 src/qemu_conf.c:1659
 msgid "invalid domain type attribute"
 msgstr "nieprawidłowy atrybut typu domeny"
 
-#: src/openvz_conf.c:338
+#: src/openvz_conf.c:334
 msgid "invalid domain name"
 msgstr "nieprawidłowa nazwa domeny"
 
-#: src/openvz_conf.c:345
+#: src/openvz_conf.c:341
 msgid "VPS ID Error (must be an integer greater than 100"
 msgstr "Błąd identyfikatora VPS (musi być stałą większą niż 100"
 
-#: src/openvz_conf.c:358
+#: src/openvz_conf.c:354
 msgid "Failed to generate UUID"
 msgstr "utworzenie UUID nie powiodło się"
 
-#: src/openvz_conf.c:362 src/qemu_conf.c:1693 src/qemu_conf.c:3372
-#: src/storage_conf.c:263
+#: src/openvz_conf.c:358 src/qemu_conf.c:1693 src/qemu_conf.c:3377
+#: src/storage_conf.c:267
 msgid "malformed uuid element"
 msgstr "błędnie sformatowany element UUID"
 
-#: src/openvz_conf.c:388
+#: src/openvz_conf.c:384
 #, c-format
 msgid "No IP address in the given xml config file '%s'"
 msgstr "Brak adresu IP w podanym pliku konfiguracji XML \"%s\""
 
-#: src/openvz_conf.c:395
+#: src/openvz_conf.c:391
 msgid "ipaddress length too long"
 msgstr "adres IP jest za długi"
 
-#: src/openvz_conf.c:401
+#: src/openvz_conf.c:397
 msgid "Failed to Create Memory for 'ovz_ip' structure"
 msgstr "Utworzenie pamięci dla struktury \"ovz_ip\" nie powiodło się"
 
-#: src/openvz_conf.c:413
+#: src/openvz_conf.c:409
 #, c-format
 msgid "No Netmask address in the given xml config file '%s'"
 msgstr "Brak adresu maski sieciowej w podanym pliku konfiguracji XML \"%s\""
 
-#: src/openvz_conf.c:420
+#: src/openvz_conf.c:416
 msgid "netmask length too long"
 msgstr "maska sieciowa jest za długa"
 
-#: src/openvz_conf.c:432
+#: src/openvz_conf.c:428
 #, c-format
 msgid "No hostname in the given xml config file '%s'"
 msgstr "Brak nazwy hosta w podanym pliku konfiguracji XML \"%s\""
 
-#: src/openvz_conf.c:439
+#: src/openvz_conf.c:435
 msgid "hostname length too long"
 msgstr "nazwa hosta jest za długa"
 
-#: src/openvz_conf.c:451
+#: src/openvz_conf.c:447
 #, c-format
 msgid "No Gateway address in the given xml config file '%s'"
 msgstr "Brak adresu bramy w podanym pliku konfiguracji XML \"%s\""
 
-#: src/openvz_conf.c:458
+#: src/openvz_conf.c:454
 msgid "gateway length too long"
 msgstr "brama jest za długa"
 
-#: src/openvz_conf.c:470
+#: src/openvz_conf.c:466
 #, c-format
 msgid "No Nameserver address inthe given xml config file '%s'"
 msgstr "Brak adresu serwera nazw w podanym pliku konfiguracji XML \"%s\""
 
-#: src/openvz_conf.c:477
+#: src/openvz_conf.c:473
 msgid "nameserver length too long"
 msgstr "serwer nazw jest za długi"
 
-#: src/openvz_conf.c:483
+#: src/openvz_conf.c:479
 msgid "Failed to Create Memory for 'ovz_ns' structure"
 msgstr "Utworzenie pamięci dla struktury \"ovz_ns\" nie powiodło się"
 
-#: src/openvz_conf.c:501
+#: src/openvz_conf.c:497
 msgid "profile length too long"
 msgstr "profil jest za długi"
 
-#: src/openvz_conf.c:537
+#: src/openvz_conf.c:533
 msgid "popen failed"
 msgstr "popen nie powiodło się"
 
-#: src/openvz_conf.c:544 src/openvz_conf.c:573
+#: src/openvz_conf.c:539 src/openvz_conf.c:567
 msgid "calloc failed"
 msgstr "calloc nie powiodło się"
 
-#: src/openvz_conf.c:553
+#: src/openvz_conf.c:548
 msgid "Failed to parse vzlist output"
 msgstr "Przeanalizowanie wyjścia vzlist nie powiodło się"
 
-#: src/openvz_conf.c:583
+#: src/openvz_conf.c:577
 msgid "UUID in config file malformed"
 msgstr "UUID w pliku konfiguracji jest błędnie sformatowany"
 
-#: src/openvz_driver.c:148 src/openvz_driver.c:242 src/openvz_driver.c:287
-#: src/openvz_driver.c:482
+#: src/openvz_driver.c:147 src/openvz_driver.c:241 src/openvz_driver.c:286
+#: src/openvz_driver.c:481
 msgid "no domain with matching id"
 msgstr "brak domeny pasującej do identyfikatora"
 
-#: src/openvz_driver.c:197
+#: src/openvz_driver.c:196
 msgid "no domain with matching name"
 msgstr "brak domeny pasującej do nazwy"
 
-#: src/openvz_driver.c:248 src/openvz_driver.c:293
+#: src/openvz_driver.c:247 src/openvz_driver.c:292
 msgid "domain is not in running state"
 msgstr "domena nie jest uruchomiona"
 
-#: src/openvz_driver.c:255 src/openvz_driver.c:300 src/openvz_driver.c:359
-#: src/openvz_driver.c:427 src/openvz_driver.c:443 src/openvz_driver.c:497
-#: src/openvz_driver.c:540
+#: src/openvz_driver.c:254 src/openvz_driver.c:299 src/openvz_driver.c:358
+#: src/openvz_driver.c:426 src/openvz_driver.c:442 src/openvz_driver.c:496
+#: src/openvz_driver.c:539
 msgid "Error in parsing Options to OPENVZ"
 msgstr "Błąd podczas analizowania opcji dla OpenVZ"
 
-#: src/openvz_driver.c:330
+#: src/openvz_driver.c:329
 #, c-format
 msgid "Already an OPENVZ VM active with the id '%s'"
 msgstr "Maszyna wirtualna OpenVZ o identyfikatorze \"%s\" jest już aktywna"
 
-#: src/openvz_driver.c:336 src/openvz_driver.c:403
+#: src/openvz_driver.c:335 src/openvz_driver.c:402
 msgid "Error creating OPENVZ VM"
 msgstr "Błąd podczas tworzenia maszyny wirtualnej OpenVZ"
 
-#: src/openvz_driver.c:398
+#: src/openvz_driver.c:397
 #, c-format
 msgid "Already an OPENVZ VM defined with the id '%d'"
 msgstr "Maszyna wirtualna OpenVZ o identyfikatorze \"%d\" jest już określona"
 
-#: src/openvz_driver.c:488
+#: src/openvz_driver.c:487
 msgid "domain is not in shutoff state"
 msgstr "domena nie jest wyłączona"
 
-#: src/proxy_internal.c:197
+#: src/proxy_internal.c:198
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "wykonanie %s nie powiodło się\n"
 
-#: src/proxy_internal.c:291
+#: src/proxy_internal.c:292
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "Zamknięcie gniazda %d nie powiodło się\n"
 
-#: src/proxy_internal.c:324
+#: src/proxy_internal.c:325
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "Odczytanie z gniazda %d nie powiodło się\n"
 
-#: src/proxy_internal.c:351
+#: src/proxy_internal.c:352
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "Zapisanie do gniazda nie powiodło się %d\n"
 
-#: src/proxy_internal.c:443 src/proxy_internal.c:464 src/proxy_internal.c:484
+#: src/proxy_internal.c:444 src/proxy_internal.c:465 src/proxy_internal.c:485
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "Błąd komunikacji z pośrednikiem: uzyskano %d bajtów z %d\n"
 
-#: src/proxy_internal.c:451
+#: src/proxy_internal.c:452
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "Błąd komunikacji z pośrednikiem: oczekiwano %d bajtów, otrzymano %d\n"
 
-#: src/proxy_internal.c:473
+#: src/proxy_internal.c:474
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "Błąd komunikacji z pośrednikiem: otrzymano pakiet %d bajtów\n"
 
-#: src/proxy_internal.c:497
+#: src/proxy_internal.c:498
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "Błąd komunikacji z pośrednikiem: niesformowany pakiet\n"
 
-#: src/proxy_internal.c:503
+#: src/proxy_internal.c:504
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "uzyskano niesynchroniczny pakiet o numerze %d\n"
@@ -1493,7 +1510,7 @@ msgid "Unexpected exit status '%d', qemu probably failed"
 msgstr ""
 "Nieoczekiwany stan wyjścia \"%d\", QEMU prawdopodobnie się nie powiodło"
 
-#: src/qemu_conf.c:629 src/qemu_driver.c:866
+#: src/qemu_conf.c:629 src/qemu_driver.c:869
 #, c-format
 msgid "Cannot find QEMU binary %s: %s"
 msgstr "Nie można znaleźć binaria QEMU %s: %s"
@@ -1659,7 +1676,7 @@ msgstr "przydzielenie przestrzeni dla xmlXPathContext nie powiodło się"
 msgid "domain name length too long"
 msgstr "nazwa domeny jest za długa"
 
-#: src/qemu_conf.c:1688 src/qemu_conf.c:3367
+#: src/qemu_conf.c:1688 src/qemu_conf.c:3372
 #, c-format
 msgid "Failed to generate UUID: %s"
 msgstr "Utworzenie UUID nie powiodło się: %s"
@@ -1765,7 +1782,7 @@ msgstr "Sieć \"%s\" nie jest aktywna"
 msgid "Network type %d is not supported"
 msgstr "Typ sieci %d nie jest obsługiwany"
 
-#: src/qemu_conf.c:2300 src/qemu_driver.c:1424
+#: src/qemu_conf.c:2300 src/qemu_driver.c:1426
 #, c-format
 msgid "cannot initialize bridge support: %s"
 msgstr "nie można zainicjować obsługi mostka: %s"
@@ -1784,159 +1801,159 @@ msgstr "przydzielenie przestrzeni dla łańcucha tapfds nie powiodło się"
 msgid "unsupported disk type '%s'"
 msgstr "Nieobsługiwany typ grafiki %s"
 
-#: src/qemu_conf.c:2838 src/qemu_conf.c:4101
+#: src/qemu_conf.c:2843 src/qemu_conf.c:4106
 #, fuzzy
 msgid "invalid sound model"
 msgstr "nieprawidłowa nazwa domeny"
 
-#: src/qemu_conf.c:2863
+#: src/qemu_conf.c:2868
 msgid "failed to allocate space for argv string"
 msgstr "Przydzielenie przestrzeni dla łańcucha argv nie powiodło się"
 
-#: src/qemu_conf.c:2956 src/storage_conf.c:392 src/storage_conf.c:750
+#: src/qemu_conf.c:2961 src/storage_conf.c:393 src/storage_conf.c:750
 msgid "missing root element"
 msgstr "brak elementu roota"
 
-#: src/qemu_conf.c:2973
+#: src/qemu_conf.c:2978
 msgid "unknown device type"
 msgstr "nieznany typ urządzenia"
 
-#: src/qemu_conf.c:3033
+#: src/qemu_conf.c:3038
 msgid "failed to allocate space for vm string"
 msgstr ""
 "przydzielenie przestrzeni dla łańcucha maszyny wirtualnej nie powiodło się"
 
-#: src/qemu_conf.c:3102 src/qemu_conf.c:3561 src/storage_conf.c:1109
+#: src/qemu_conf.c:3107 src/qemu_conf.c:3566 src/storage_conf.c:1111
 msgid "cannot construct autostart link path"
 msgstr ""
 "nie można skonstruować ścieżki do dowiązania automatycznego uruchamiania"
 
-#: src/qemu_conf.c:3233
+#: src/qemu_conf.c:3238
 msgid "failed to allocate space for range string"
 msgstr "przydzielenie przestrzeni dla łańcucha zakresu nie powiodło się"
 
-#: src/qemu_conf.c:3324
+#: src/qemu_conf.c:3329
 msgid "failed to allocate space for network_def string"
 msgstr "przydzielenie przestrzeni dla łańcucha network_def nie powiodło się"
 
-#: src/qemu_conf.c:3339
+#: src/qemu_conf.c:3344
 msgid "failed to allocate space for xmlXPathContext string"
 msgstr ""
 "przydzielenie przestrzeni dla łańcucha xmlXPathContext nie powiodło się"
 
-#: src/qemu_conf.c:3353
+#: src/qemu_conf.c:3358
 msgid "network name length too long"
 msgstr "nazwa sieci jest za długa"
 
-#: src/qemu_conf.c:3404
+#: src/qemu_conf.c:3409
 msgid "Forwarding requested, but no IPv4 address/netmask provided"
 msgstr "Zażądano przekazywania, ale nie podano adresu/maski sieciowej IPv4"
 
-#: src/qemu_conf.c:3426
+#: src/qemu_conf.c:3431
 #, c-format
 msgid "forward device name '%s' is too long"
 msgstr "nazwa urządzenia przekazywania \"%s\" jest za długa"
 
-#: src/qemu_conf.c:3498
+#: src/qemu_conf.c:3503
 msgid "failed to allocate space for network string"
 msgstr "przydzielenie przestrzeni dla łańcucha sieci nie powiodło się"
 
-#: src/qemu_conf.c:3582
+#: src/qemu_conf.c:3587
 #, c-format
 msgid "Error parsing QEMU guest config '%s' : %s"
 msgstr "Błąd podczas analizowania konfiguracji gościa QEMU \"%s\": %s"
 
-#: src/qemu_conf.c:3584
+#: src/qemu_conf.c:3589
 msgid "BUG: unknown error - please report it\n"
 msgstr "BŁĄD: nieznany błąd - prosimy go zgłosić\n"
 
-#: src/qemu_conf.c:3590
+#: src/qemu_conf.c:3595
 #, c-format
 msgid "QEMU guest config filename '%s' does not match guest name '%s'"
 msgstr ""
 "Nazwa pliku konfiguracji gościa QEMU \"%s\" nie zgadza się z nazwą gościa \"%"
 "s\""
 
-#: src/qemu_conf.c:3599
+#: src/qemu_conf.c:3604
 #, c-format
 msgid "Failed to load QEMU guest config '%s': out of memory"
 msgstr ""
 "Wczytanie konfiguracji gościa QEMU \"%s\" nie powiodło się: brak pamięci"
 
-#: src/qemu_conf.c:3627
+#: src/qemu_conf.c:3632
 #, c-format
 msgid "Error parsing network config '%s' : %s"
 msgstr "Błąd podczas analizowania konfiguracji sieci \"%s\": %s"
 
-#: src/qemu_conf.c:3634
+#: src/qemu_conf.c:3639
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr ""
 "Nazwa pliku konfiguracji sieci \"%s\" nie zgadza się z nazwą sieci \"%s\""
 
-#: src/qemu_conf.c:3643
+#: src/qemu_conf.c:3648
 #, c-format
 msgid "Failed to load network config '%s': out of memory"
 msgstr "Wczytanie konfiguracji sieci \"%s\" nie powiodło się: brak pamięci"
 
-#: src/qemu_conf.c:3670
+#: src/qemu_conf.c:3675
 #, c-format
 msgid "Failed to open dir '%s': %s"
 msgstr "Otwarcie folderu \"%s\" nie powiodło się: %s"
 
-#: src/qemu_conf.c:3687
+#: src/qemu_conf.c:3692
 #, c-format
 msgid "Config filename '%s/%s' is too long"
 msgstr "Nazwa pliku konfiguracji \"%s/%s\" jest za długa"
 
-#: src/qemu_conf.c:3694
+#: src/qemu_conf.c:3699
 #, c-format
 msgid "Autostart link path '%s/%s' is too long"
 msgstr ""
 "Ścieżka do automatycznie uruchamianego dowiązania \"%s/%s\" jest za długa"
 
-#: src/qemu_conf.c:3848
+#: src/qemu_conf.c:3853
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "nieoczekiwany typ domeny %d"
 
-#: src/qemu_conf.c:3876
+#: src/qemu_conf.c:3881
 #, fuzzy
 msgid "allocating cpu mask"
 msgstr "przydzielanie domeny"
 
-#: src/qemu_conf.c:4118 src/qemu_conf.c:4196
+#: src/qemu_conf.c:4123 src/qemu_conf.c:4201
 msgid "failed to generate XML: out of memory"
 msgstr "utworzenie XML-a nie powiodło się: brak pamięci"
 
-#: src/qemu_driver.c:146
+#: src/qemu_driver.c:149
 #, c-format
 msgid "Failed to autostart network '%s': %s"
 msgstr "Automatyczne uruchomienie sieci \"%s\" nie powiodło się: %s"
 
-#: src/qemu_driver.c:161
+#: src/qemu_driver.c:164
 #, c-format
 msgid "Failed to autostart VM '%s': %s"
 msgstr ""
 "Automatyczne uruchomienie maszyny wirtualnej \"%s\" nie powiodło się: %s"
 
-#: src/qemu_driver.c:205
+#: src/qemu_driver.c:208
 msgid "out of memory in asprintf"
 msgstr "brak pamięci w asprintf"
 
-#: src/qemu_driver.c:250
+#: src/qemu_driver.c:253
 msgid "Resulting path to long for buffer in qemudInitPaths()"
 msgstr "Ścieżka wynikowa jest za długa dla bufora w qemudInitPaths()"
 
-#: src/qemu_driver.c:255
+#: src/qemu_driver.c:258
 msgid "qemudStartup: out of memory"
 msgstr "qemudStartup: brak pamięci"
 
-#: src/qemu_driver.c:273
+#: src/qemu_driver.c:276
 msgid "Reloading iptables rules"
 msgstr "Ponowne wczytywanie reguł iptables"
 
-#: src/qemu_driver.c:404
+#: src/qemu_driver.c:407
 #, c-format
 msgid ""
 "QEMU quit during %s startup\n"
@@ -1945,627 +1962,636 @@ msgstr ""
 "Zakończono QEMU podczas uruchamiania %s\n"
 "%s"
 
-#: src/qemu_driver.c:414 src/qemu_driver.c:427
+#: src/qemu_driver.c:417 src/qemu_driver.c:430
 #, c-format
 msgid "Failure while reading %s startup output: %s"
 msgstr "Odczytanie wyjścia uruchamiania %s nie powiodło się: %s"
 
-#: src/qemu_driver.c:422
+#: src/qemu_driver.c:425
 #, c-format
 msgid "Timed out while reading %s startup output"
 msgstr "Przekroczono czas podczas odczytywania wyjścia uruchamiania %s"
 
-#: src/qemu_driver.c:438
+#: src/qemu_driver.c:441
 #, c-format
 msgid "Failure while reading %s startup output"
 msgstr "Odczytanie wyjścia uruchamiania %s nie powiodło się"
 
-#: src/qemu_driver.c:450
+#: src/qemu_driver.c:453
 #, c-format
 msgid "Out of space while reading %s startup output"
 msgstr "Brak przestrzeni podczas odczytywania wyjścia uruchamiania %s"
 
-#: src/qemu_driver.c:481
+#: src/qemu_driver.c:484
 #, c-format
 msgid "Unable to open monitor path %s"
 msgstr "Nie można otworzyć ścieżki do monitora %s"
 
-#: src/qemu_driver.c:486
+#: src/qemu_driver.c:489
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "Nie można ustawić flagi monitora close-on-exec"
 
-#: src/qemu_driver.c:491
+#: src/qemu_driver.c:494
 msgid "Unable to put monitor into non-blocking mode"
 msgstr "Nie można umieścić monitora w trybie nie blokowania"
 
-#: src/qemu_driver.c:609 src/qemu_driver.c:956 src/qemu_driver.c:1656
-#: src/qemu_driver.c:1666
+#: src/qemu_driver.c:612 src/qemu_driver.c:959 src/qemu_driver.c:1658
+#: src/qemu_driver.c:1668
 #, c-format
 msgid "Unable to log VM console data: %s"
 msgstr "Nie można zapisać danych konsoli maszyny wirtualnej w dzienniku: %s"
 
-#: src/qemu_driver.c:632
+#: src/qemu_driver.c:635
 #, fuzzy
 msgid "allocate cpumap"
 msgstr "przydziel nowy słownik"
 
-#: src/qemu_driver.c:643
+#: src/qemu_driver.c:646
 msgid "cannot run monitor command to fetch CPU thread info"
 msgstr ""
 
-#: src/qemu_driver.c:742
+#: src/qemu_driver.c:745
 #, fuzzy, c-format
 msgid "failed to set CPU affinity %s"
 msgstr "uzyskanie domeny \"%s\" nie powiodło się"
 
-#: src/qemu_driver.c:752 src/qemu_driver.c:2035
+#: src/qemu_driver.c:755 src/qemu_driver.c:2037
 msgid "resume operation failed"
 msgstr "operacja wznowienia nie powiodła się"
 
-#: src/qemu_driver.c:807
+#: src/qemu_driver.c:810
 msgid "VM is already active"
 msgstr "Maszyna wirtualna jest już aktywna"
 
-#: src/qemu_driver.c:815
+#: src/qemu_driver.c:818
 msgid "Unable to find an unused VNC port"
 msgstr "Nie można znaleźć nieużywanego portu VNC"
 
-#: src/qemu_driver.c:828
+#: src/qemu_driver.c:831
 #, c-format
 msgid "config file path too long: %s/%s.log"
 msgstr "ścieżka do pliku konfiguracji jest za długa: %s/%s.log"
 
-#: src/qemu_driver.c:839
+#: src/qemu_driver.c:842
 #, c-format
 msgid "cannot create log directory %s: %s"
 msgstr "nie można utworzyć folderu dziennika %s: %s"
 
-#: src/qemu_driver.c:847
+#: src/qemu_driver.c:850
 #, c-format
 msgid "failed to create logfile %s: %s"
 msgstr "utworzenie pliku dziennika %s nie powiodło się: %s"
 
-#: src/qemu_driver.c:853
+#: src/qemu_driver.c:856
 #, c-format
 msgid "Unable to set VM logfile close-on-exec flag %s"
 msgstr ""
 "Nie można ustawić flagi pliku dziennika maszyny wirtualnej close-on-exec %s"
 
-#: src/qemu_driver.c:882 src/qemu_driver.c:885 src/qemu_driver.c:890
+#: src/qemu_driver.c:885 src/qemu_driver.c:888 src/qemu_driver.c:893
 #, c-format
 msgid "Unable to write argv to logfile %d: %s"
 msgstr "Nie można zapisać argv do pliku dziennika %d: %s"
 
-#: src/qemu_driver.c:970
+#: src/qemu_driver.c:973
 #, c-format
 msgid "Shutting down VM '%s'"
 msgstr "Wyłączanie maszyny wirtualnej \"%s\""
 
-#: src/qemu_driver.c:981
+#: src/qemu_driver.c:984
 #, c-format
 msgid "Unable to close logfile %d: %s"
 msgstr "Nie można zamknąć pliku dziennika %d: %s"
 
-#: src/qemu_driver.c:996
+#: src/qemu_driver.c:999
 msgid "Got unexpected pid, damn"
 msgstr "Otrzymano nieoczekiwany PID, cholera"
 
-#: src/qemu_driver.c:1127
+#: src/qemu_driver.c:1130
 msgid "failed to allocate space for dnsmasq argv"
 msgstr "przydzielenie przestrzeni dla dnsmasq argv nie powiodło się"
 
-#: src/qemu_driver.c:1141
+#: src/qemu_driver.c:1144
 msgid "cannot start dhcp daemon without IP address for server"
 msgstr "nie można uruchomić demona DHCP bez adresu IP serwera"
 
-#: src/qemu_driver.c:1169
+#: src/qemu_driver.c:1172
 #, c-format
 msgid "failed to add iptables rule to allow forwarding from '%s' : %s\n"
 msgstr ""
 "dodanie reguły iptables pozwalającej na przekazywanie z \"%s\" nie powiodło "
 "się: %s\n"
 
-#: src/qemu_driver.c:1180
+#: src/qemu_driver.c:1183
 #, c-format
 msgid "failed to add iptables rule to allow forwarding to '%s' : %s\n"
 msgstr ""
 "dodanie reguły iptables pozwalającej na przekazywanie do \"%s\" nie powiodło "
 "się: %s\n"
 
-#: src/qemu_driver.c:1190
+#: src/qemu_driver.c:1193
 #, c-format
 msgid "failed to add iptables rule to enable masquerading : %s\n"
 msgstr "dodanie reguły iptables włączającej maskaradę nie powiodło się: %s\n"
 
-#: src/qemu_driver.c:1222
+#: src/qemu_driver.c:1225
 #, c-format
 msgid "failed to add iptables rule to allow routing from '%s' : %s\n"
 msgstr ""
 "dodanie reguły iptables pozwalającej na routowanie z \"%s\" nie powiodło "
 "się: %s\n"
 
-#: src/qemu_driver.c:1233
+#: src/qemu_driver.c:1236
 #, c-format
 msgid "failed to add iptables rule to allow routing to '%s' : %s\n"
 msgstr ""
 "dodanie reguły iptables pozwalającej na routowanie do \"%s\" nie powiodło "
 "się: %s\n"
 
-#: src/qemu_driver.c:1258
+#: src/qemu_driver.c:1261
 msgid "failed to allocate space for IP tables support"
 msgstr "przydzielenie przestrzeni dla obsługi iptables nie powiodło się"
 
-#: src/qemu_driver.c:1266 src/qemu_driver.c:1273
+#: src/qemu_driver.c:1269 src/qemu_driver.c:1276
 #, c-format
 msgid "failed to add iptables rule to allow DHCP requests from '%s' : %s"
 msgstr ""
 "dodanie reguły iptables pozwalającej na żądania DHCP z \"%s\" nie powiodło "
 "się: %s"
 
-#: src/qemu_driver.c:1281 src/qemu_driver.c:1288
+#: src/qemu_driver.c:1284 src/qemu_driver.c:1291
 #, c-format
 msgid "failed to add iptables rule to allow DNS requests from '%s' : %s"
 msgstr ""
 "dodanie reguły iptables pozwalającej na żądania DNS z \"%s\" nie powiodło "
 "się: %s"
 
-#: src/qemu_driver.c:1298
+#: src/qemu_driver.c:1301
 #, c-format
 msgid "failed to add iptables rule to block outbound traffic from '%s' : %s"
 msgstr ""
 "dodanie reguły iptables blokującej ruch wychodzący z \"%s\" nie powiodło "
 "się: %s"
 
-#: src/qemu_driver.c:1305
+#: src/qemu_driver.c:1308
 #, c-format
 msgid "failed to add iptables rule to block inbound traffic to '%s' : %s"
 msgstr ""
 "dodanie reguły iptables blokującej ruch przychodzący do \"%s\" nie powiodło "
 "się: %s"
 
-#: src/qemu_driver.c:1313
+#: src/qemu_driver.c:1316
 #, c-format
 msgid "failed to add iptables rule to allow cross bridge traffic on '%s' : %s"
 msgstr ""
 "dodanie reguły iptables pozwalającej na ruch między mostkami na \"%s\" nie "
 "powiodło się: %s"
 
-#: src/qemu_driver.c:1418
+#: src/qemu_driver.c:1420
 msgid "network is already active"
 msgstr "sieć jest już aktywna"
 
-#: src/qemu_driver.c:1437
+#: src/qemu_driver.c:1439
 #, c-format
 msgid "cannot create bridge '%s' : %s"
 msgstr "nie można utworzyć mostka \"%s\": %s"
 
-#: src/qemu_driver.c:1445
+#: src/qemu_driver.c:1447
 #, c-format
 msgid "failed to set bridge forward delay to %d"
 msgstr "ustawienie opóźnienia przekazywania mostka na %d nie powiodło się"
 
-#: src/qemu_driver.c:1452
+#: src/qemu_driver.c:1454
 #, c-format
 msgid "failed to set bridge STP to %s"
 msgstr "ustawienie mostka STP na %s nie powiodło się"
 
-#: src/qemu_driver.c:1460
+#: src/qemu_driver.c:1462
 #, c-format
 msgid "cannot set IP address on bridge '%s' to '%s' : %s"
 msgstr "nie można ustawić adresu IP na mostku \"%s\" na \"%s\": %s"
 
-#: src/qemu_driver.c:1468
+#: src/qemu_driver.c:1470
 #, c-format
 msgid "cannot set netmask on bridge '%s' to '%s' : %s"
 msgstr "nie można ustawić maski sieciowej na mostku \"%s\" na \"%s\": %s"
 
-#: src/qemu_driver.c:1476
+#: src/qemu_driver.c:1478
 #, c-format
 msgid "failed to bring the bridge '%s' up : %s"
 msgstr "podniesienie mostku \"%s\" nie powiodło się: %s"
 
-#: src/qemu_driver.c:1487
+#: src/qemu_driver.c:1489
 #, c-format
 msgid "failed to enable IP forwarding : %s"
 msgstr "włączenie przekazywania IP nie powiodło się: %s"
 
-#: src/qemu_driver.c:1508 src/qemu_driver.c:1539
+#: src/qemu_driver.c:1510 src/qemu_driver.c:1541
 #, c-format
 msgid "Failed to bring down bridge '%s' : %s"
 msgstr "Opuszczanie mostku \"%s\" nie powiodło się: %s"
 
-#: src/qemu_driver.c:1514 src/qemu_driver.c:1544
+#: src/qemu_driver.c:1516 src/qemu_driver.c:1546
 #, c-format
 msgid "Failed to delete bridge '%s' : %s"
 msgstr "Usunięcie mostku \"%s\" nie powiodło się: %s"
 
-#: src/qemu_driver.c:1527
+#: src/qemu_driver.c:1529
 #, c-format
 msgid "Shutting down network '%s'"
 msgstr "Wyłączanie sieci \"%s\""
 
-#: src/qemu_driver.c:1553
+#: src/qemu_driver.c:1555
 msgid "Got unexpected pid for dnsmasq"
 msgstr "Otrzymano nieoczekiwany PID dla dnsmasq"
 
-#: src/qemu_driver.c:1753
+#: src/qemu_driver.c:1755
 #, fuzzy, c-format
 msgid "unknown type '%s'"
 msgstr "nieznany typ uwierzytelniania \"%s\""
 
-#: src/qemu_driver.c:1769
+#: src/qemu_driver.c:1771
 msgid "failed to allocate space for capabilities support"
 msgstr "przydzielenie przestrzeni dla obsługi możliwości nie powiodło się"
 
-#: src/qemu_driver.c:1788 src/qemu_driver.c:1814
+#: src/qemu_driver.c:1790 src/qemu_driver.c:1816
 #, fuzzy
 msgid "NUMA not supported on this host"
 msgstr "Nazwa serwera nie jest obsługiwana dla ai_socktype"
 
-#: src/qemu_driver.c:1799 src/qemu_driver.c:1822
+#: src/qemu_driver.c:1801 src/qemu_driver.c:1824
 #, fuzzy
 msgid "Failed to query NUMA free memory"
 msgstr "Wolna pamięć NUMA"
 
-#: src/qemu_driver.c:1994 src/qemu_driver.c:2023 src/qemu_driver.c:2052
-#: src/qemu_driver.c:2072 src/qemu_driver.c:2300 src/qemu_driver.c:2984
-#: src/qemu_driver.c:3119
+#: src/qemu_driver.c:1996 src/qemu_driver.c:2025 src/qemu_driver.c:2054
+#: src/qemu_driver.c:2074 src/qemu_driver.c:2302 src/qemu_driver.c:2986
+#: src/qemu_driver.c:3121 src/qemu_driver.c:3246
 #, c-format
 msgid "no domain with matching id %d"
 msgstr "brak domeny pasującej do identyfikatora %d"
 
-#: src/qemu_driver.c:1999 src/qemu_driver.c:2028 src/qemu_driver.c:2306
-#: src/qemu_driver.c:2989 src/qemu_driver.c:3125
+#: src/qemu_driver.c:2001 src/qemu_driver.c:2030 src/qemu_driver.c:2308
+#: src/qemu_driver.c:2991 src/qemu_driver.c:3127 src/qemu_driver.c:3252
 msgid "domain is not running"
 msgstr "Domena nie jest uruchomiona"
 
-#: src/qemu_driver.c:2007
+#: src/qemu_driver.c:2009
 msgid "suspend operation failed"
 msgstr "operacja uśpienia nie powiodła się"
 
-#: src/qemu_driver.c:2058
+#: src/qemu_driver.c:2060
 msgid "shutdown operation failed"
 msgstr "operacja wyłączenia nie powiodła się"
 
-#: src/qemu_driver.c:2097
+#: src/qemu_driver.c:2099
 msgid "failed to allocate space for ostype"
 msgstr ""
 "przydzielenie przestrzeni dla typu systemu operacyjnego nie powiodło się"
 
-#: src/qemu_driver.c:2110 src/qemu_driver.c:2123 src/qemu_driver.c:2143
-#: src/qemu_driver.c:2399 src/qemu_driver.c:2558
+#: src/qemu_driver.c:2112 src/qemu_driver.c:2125 src/qemu_driver.c:2145
+#: src/qemu_driver.c:2401 src/qemu_driver.c:2560
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "brak domeny pasującej do UUID \"%s\""
 
-#: src/qemu_driver.c:2129
+#: src/qemu_driver.c:2131
 msgid "cannot set max memory lower than current memory"
 msgstr "nie można ustawić maksymalnej pamięci poniżej obecnej pamięci"
 
-#: src/qemu_driver.c:2149
+#: src/qemu_driver.c:2151
 msgid "cannot set memory of an active domain"
 msgstr "nie można ustawić pamięci aktywnej domeny"
 
-#: src/qemu_driver.c:2155
+#: src/qemu_driver.c:2157
 msgid "cannot set memory higher than max memory"
 msgstr "nie można ustawić pamięci powyżej maksymalnej pamięci"
 
-#: src/qemu_driver.c:2315
+#: src/qemu_driver.c:2317
 msgid "failed to pause domain"
 msgstr "wstrzymanie domeny nie powiodło się"
 
-#: src/qemu_driver.c:2324
+#: src/qemu_driver.c:2326
 msgid "failed to get domain xml"
 msgstr "uzyskanie XML-a domeny nie powiodło się"
 
-#: src/qemu_driver.c:2332
+#: src/qemu_driver.c:2334
 #, c-format
 msgid "failed to create '%s'"
 msgstr "utworzenie \"%s\" nie powiodło się"
 
-#: src/qemu_driver.c:2339
+#: src/qemu_driver.c:2341
 msgid "failed to write save header"
 msgstr "zapisanie nagłówka nie powiodło się"
 
-#: src/qemu_driver.c:2347
+#: src/qemu_driver.c:2349
 msgid "failed to write xml"
 msgstr "zapisanie XML-a nie powiodło się"
 
-#: src/qemu_driver.c:2360 src/qemu_driver.c:2367 src/qemu_driver.c:2618
-#: src/qemu_driver.c:2815 src/qemu_driver.c:2823 src/qemu_driver.c:2831
-#: src/remote_internal.c:2283 src/virterror.c:435
+#: src/qemu_driver.c:2362 src/qemu_driver.c:2369 src/qemu_driver.c:2620
+#: src/qemu_driver.c:2817 src/qemu_driver.c:2825 src/qemu_driver.c:2833
+#: src/remote_internal.c:2279 src/virterror.c:435
 msgid "out of memory"
 msgstr "brak pamięci"
 
-#: src/qemu_driver.c:2375
+#: src/qemu_driver.c:2377
 msgid "migrate operation failed"
 msgstr "operacja migracji nie powiodła się"
 
-#: src/qemu_driver.c:2405
+#: src/qemu_driver.c:2407
 #, fuzzy
 msgid "cannot change vcpu count of an active domain"
 msgstr "nie można ustawić pamięci aktywnej domeny"
 
-#: src/qemu_driver.c:2411
+#: src/qemu_driver.c:2413
 msgid "could not determine max vcpus for the domain"
 msgstr ""
 
-#: src/qemu_driver.c:2417
+#: src/qemu_driver.c:2419
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
 msgstr ""
 
-#: src/qemu_driver.c:2441 src/qemu_driver.c:2493
+#: src/qemu_driver.c:2443 src/qemu_driver.c:2495
 #, fuzzy
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "nie można podłączyć urządzenia do nieaktywnej domeny"
 
-#: src/qemu_driver.c:2447
+#: src/qemu_driver.c:2449
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr ""
 
-#: src/qemu_driver.c:2468
+#: src/qemu_driver.c:2470
 #, fuzzy, c-format
 msgid "cannot set affinity: %s"
 msgstr "nie można ustawić właściciela pliku \"%s\": %s"
 
-#: src/qemu_driver.c:2473
+#: src/qemu_driver.c:2475
 #, fuzzy
 msgid "cpu affinity is not supported"
 msgstr "ai_family nie jest obsługiwane"
 
-#: src/qemu_driver.c:2530
+#: src/qemu_driver.c:2532
 #, fuzzy, c-format
 msgid "cannot get affinity: %s"
 msgstr "nie można uzyskać kontekstu pliku %s: %s"
 
-#: src/qemu_driver.c:2540
+#: src/qemu_driver.c:2542
 msgid "cpu affinity is not available"
 msgstr ""
 
-#: src/qemu_driver.c:2564
+#: src/qemu_driver.c:2566
 #, fuzzy, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "nie można odczytać definicji domeny w XML-u"
 
-#: src/qemu_driver.c:2590 src/test.c:1398
+#: src/qemu_driver.c:2592 src/test.c:1398
 msgid "cannot read domain image"
 msgstr "nie można odczytać obrazu domeny"
 
-#: src/qemu_driver.c:2596
+#: src/qemu_driver.c:2598
 msgid "failed to read qemu header"
 msgstr "odczytanie nagłówka QEMU nie powiodło się"
 
-#: src/qemu_driver.c:2603
+#: src/qemu_driver.c:2605
 msgid "image magic is incorrect"
 msgstr "magia obrazu jest niepoprawna"
 
-#: src/qemu_driver.c:2610
+#: src/qemu_driver.c:2612
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "wersja obrazu nie jest obsługiwana (%d > %d)"
 
-#: src/qemu_driver.c:2625
+#: src/qemu_driver.c:2627
 msgid "failed to read XML"
 msgstr "odczytanie XML-a nie powiodło się"
 
-#: src/qemu_driver.c:2634
+#: src/qemu_driver.c:2636
 msgid "failed to parse XML"
 msgstr "przeanalizowanie XML-a nie powiodło się"
 
-#: src/qemu_driver.c:2646
+#: src/qemu_driver.c:2648
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "domena jest już aktywna jako \"%s\""
 
-#: src/qemu_driver.c:2653
+#: src/qemu_driver.c:2655
 msgid "failed to assign new VM"
 msgstr "przydzielenie nowej maszyny wirtualnej nie powiodło się"
 
-#: src/qemu_driver.c:2668
+#: src/qemu_driver.c:2670
 msgid "failed to start VM"
 msgstr "uruchomienie maszyny wirtualnej nie powiodło się"
 
-#: src/qemu_driver.c:2679
+#: src/qemu_driver.c:2681
 msgid "failed to resume domain"
 msgstr "wznowienie domeny nie powiodło się"
 
-#: src/qemu_driver.c:2713 src/qemu_driver.c:3226 src/qemu_driver.c:3254
+#: src/qemu_driver.c:2715 src/qemu_driver.c:3348 src/qemu_driver.c:3376
 msgid "failed to allocate space for VM name string"
 msgstr ""
 "przydzielenie przestrzeni dla łańcucha nazwy maszyny wirtualnej nie powiodło "
 "się"
 
-#: src/qemu_driver.c:2793 src/qemu_driver.c:3329
+#: src/qemu_driver.c:2795 src/qemu_driver.c:3451
 #, c-format
 msgid "Failed to delete autostart link '%s': %s"
 msgstr ""
 "Usunięcie automatycznie uruchamianego dowiązania \"%s\" nie powiodło się: %s"
 
-#: src/qemu_driver.c:2837
+#: src/qemu_driver.c:2839
 msgid "cannot change cdrom media"
 msgstr "nie można zmienić nośnika CD-ROM"
 
-#: src/qemu_driver.c:2863
+#: src/qemu_driver.c:2865
 msgid "cannot attach device on inactive domain"
 msgstr "nie można podłączyć urządzenia do nieaktywnej domeny"
 
-#: src/qemu_driver.c:2874
+#: src/qemu_driver.c:2876
 msgid "only CDROM disk devices can be attached"
 msgstr "można podłączyć tylko urządzenia dysków CD-ROM"
 
-#: src/qemu_driver.c:2889
+#: src/qemu_driver.c:2891
 msgid "CDROM not attached, cannot change media"
 msgstr "nie podłączono CD-ROM-u, nie można zmienić nośnika"
 
-#: src/qemu_driver.c:2940 src/qemu_driver.c:3438 src/storage_driver.c:793
+#: src/qemu_driver.c:2942 src/qemu_driver.c:3560 src/storage_driver.c:792
 #, c-format
 msgid "cannot create autostart directory %s: %s"
 msgstr "nie można utworzyć folderu automatycznego uruchamiania %s: %s"
 
-#: src/qemu_driver.c:2947 src/qemu_driver.c:3445 src/storage_driver.c:800
+#: src/qemu_driver.c:2949 src/qemu_driver.c:3567 src/storage_driver.c:799
 #, c-format
 msgid "Failed to create symlink '%s' to '%s': %s"
 msgstr ""
 "Utworzenie dowiązania symbolicznego \"%s\" do \"%s\" nie powiodło się: %s"
 
-#: src/qemu_driver.c:2954 src/qemu_driver.c:3452 src/storage_driver.c:809
+#: src/qemu_driver.c:2956 src/qemu_driver.c:3574 src/storage_driver.c:808
 #, c-format
 msgid "Failed to delete symlink '%s': %s"
 msgstr "Usunięcie dowiązania symbolicznego \"%s\" nie powiodło się: %s"
 
-#: src/qemu_driver.c:3011
+#: src/qemu_driver.c:3013
 #, c-format
 msgid "invalid path: %s"
 msgstr "nieprawidłowa ścieżka: %s"
 
-#: src/qemu_driver.c:3019
+#: src/qemu_driver.c:3021 src/qemu_driver.c:3267
 msgid "'info blockstats' command failed"
 msgstr "polecenie \"info blockstats\" nie powiodło się"
 
-#: src/qemu_driver.c:3034
+#: src/qemu_driver.c:3036
 msgid "'info blockstats' not supported by this qemu"
 msgstr "\"info blockstats\" nie jest obsługiwane przez to QEMU"
 
-#: src/qemu_driver.c:3099
+#: src/qemu_driver.c:3101
 #, c-format
 msgid "device not found: %s (%s)"
 msgstr "nie znaleziono urządzenia: %s (%s)"
 
-#: src/qemu_driver.c:3131
+#: src/qemu_driver.c:3133 src/qemu_driver.c:3188
 msgid "NULL or empty path"
 msgstr "NULL lub pusta ścieżka"
 
-#: src/qemu_driver.c:3154
+#: src/qemu_driver.c:3156
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "nieprawidłowa ścieżka, \"%s\" nie jest znanym interfejsem"
 
-#: src/qemu_driver.c:3174 src/qemu_driver.c:3321 src/qemu_driver.c:3346
-#: src/qemu_driver.c:3360 src/qemu_driver.c:3375 src/qemu_driver.c:3408
-#: src/qemu_driver.c:3424
+#: src/qemu_driver.c:3197
+#, fuzzy
+msgid "invalid path"
+msgstr "nieprawidłowa ścieżka: %s"
+
+#: src/qemu_driver.c:3240
+msgid "QEMU driver only supports virtual memory addrs"
+msgstr ""
+
+#: src/qemu_driver.c:3296 src/qemu_driver.c:3443 src/qemu_driver.c:3468
+#: src/qemu_driver.c:3482 src/qemu_driver.c:3497 src/qemu_driver.c:3530
+#: src/qemu_driver.c:3546
 msgid "no network with matching uuid"
 msgstr "brak sieci pasującej do UUID"
 
-#: src/qemu_driver.c:3189
+#: src/qemu_driver.c:3311
 msgid "no network with matching name"
 msgstr "brak sieci pasującej do nazwy"
 
-#: src/qemu_driver.c:3388
+#: src/qemu_driver.c:3510
 msgid "no network with matching id"
 msgstr "brak sieci pasującej do identyfikatora"
 
-#: src/qemu_driver.c:3395
+#: src/qemu_driver.c:3517
 msgid "failed to allocate space for network bridge string"
 msgstr "przydzielenie przestrzeni dla łańcucha mostka sieci nie powiodło się"
 
-#: src/remote_internal.c:107 src/remote_internal.c:115
+#: src/remote_internal.c:108 src/remote_internal.c:116
 msgid "tried to use a closed or uninitialised handle"
 msgstr "spróbowano użyć zamkniętej lub niezainicjowanej obsługi"
 
-#: src/remote_internal.c:224
+#: src/remote_internal.c:225
 msgid "failed to find libvirtd binary"
 msgstr "Znalezienie programu binarnego libvirtd nie powiodło się"
 
-#: src/remote_internal.c:331
+#: src/remote_internal.c:332
 msgid ""
 "remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp)"
 msgstr ""
 "remote_open: przesył w URL nie został rozpoznany (powinien być tls|unix|ssh|"
 "ext|tcp)"
 
-#: src/remote_internal.c:372
+#: src/remote_internal.c:373
 msgid "allocating priv->hostname"
 msgstr "przydzielanie priv->hostname"
 
-#: src/remote_internal.c:454
+#: src/remote_internal.c:455
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: dla przesyłu \"ext\" wymagane jest polecenie"
 
-#: src/remote_internal.c:729
+#: src/remote_internal.c:728
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "metody przesyłu unix, ssh i ext nie są obsługiwane w Windows"
 
-#: src/remote_internal.c:772
+#: src/remote_internal.c:771
 msgid "uri params"
 msgstr "uri params"
 
-#: src/remote_internal.c:816 src/remote_internal.c:2406
-#: src/remote_internal.c:2812
+#: src/remote_internal.c:814 src/remote_internal.c:2492
+#: src/remote_internal.c:2898
 msgid "struct private_data"
 msgstr "agregacja private_data"
 
-#: src/remote_internal.c:1026
+#: src/remote_internal.c:1024
 msgid "server verification (of our certificate or IP address) failed\n"
 msgstr "sprawdzenie serwera (certyfikatu lub adresu IP) nie powiodło się\n"
 
-#: src/remote_internal.c:1081
+#: src/remote_internal.c:1079
 msgid "Certificate type is not X.509"
 msgstr "Typ certyfikatu nie jest X.509"
 
-#: src/remote_internal.c:1086
+#: src/remote_internal.c:1084
 msgid "gnutls_certificate_get_peers failed"
 msgstr "gnutls_certificate_get_peers nie powiodło się"
 
-#: src/remote_internal.c:1107
+#: src/remote_internal.c:1105
 msgid "The certificate has expired"
 msgstr "Certyfikat wygasł"
 
-#: src/remote_internal.c:1113
+#: src/remote_internal.c:1111
 msgid "The certificate is not yet activated"
 msgstr "Certyfikat nie został aktywowany"
 
-#: src/remote_internal.c:1125
+#: src/remote_internal.c:1123
 #, c-format
 msgid "Certificate's owner does not match the hostname (%s)"
 msgstr "Właściciel certyfikatu nie zgadza się z nazwą hosta (%s)"
 
-#: src/remote_internal.c:1344
+#: src/remote_internal.c:1342
 #, fuzzy, c-format
 msgid "too many NUMA cells: %d > %d"
 msgstr "za dużo zdalnych sieci: %d > %d"
 
-#: src/remote_internal.c:1393 src/remote_internal.c:1407
+#: src/remote_internal.c:1391 src/remote_internal.c:1405
 #, c-format
 msgid "too many remote domain IDs: %d > %d"
 msgstr "za dużo identyfikatorów zdalnych domen: %d > %d"
 
-#: src/remote_internal.c:1781
+#: src/remote_internal.c:1779
 #, c-format
 msgid "map length greater than maximum: %d > %d"
 msgstr "długość mapy jest większa niż maksimum: %d > %d"
 
-#: src/remote_internal.c:1813
+#: src/remote_internal.c:1811
 #, c-format
 msgid "vCPU count exceeds maximum: %d > %d"
 msgstr "licznik wirtualnych procesorów przekracza maksimum: %d > %d"
 
-#: src/remote_internal.c:1819
+#: src/remote_internal.c:1817
 #, c-format
 msgid "vCPU map buffer length exceeds maximum: %d > %d"
 msgstr ""
 "długość mapy buforów wirtualnych procesorów przekracza maksimum: %d > %d"
 
-#: src/remote_internal.c:1836
+#: src/remote_internal.c:1834
 #, c-format
 msgid "host reports too many vCPUs: %d > %d"
 msgstr "host zgłasza za dużo wirtualnych procesorów: %d > %d"
 
-#: src/remote_internal.c:1843
+#: src/remote_internal.c:1841
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr ""
 "host zgłasza, że długość mapy buforów wirtualnych procesorów przekracza "
 "maksimum: %d > %d"
 
-#: src/remote_internal.c:2005 src/remote_internal.c:2019
+#: src/remote_internal.c:2003 src/remote_internal.c:2017
 #, c-format
 msgid "too many remote domain names: %d > %d"
 msgstr "za dużo nazw zdalnych domen: %d > %d"
 
-#: src/remote_internal.c:2221
+#: src/remote_internal.c:2219
 msgid ""
 "remoteDomainGetSchedulerParameters: returned number of parameters exceeds "
 "limit"
@@ -2573,171 +2599,189 @@ msgstr ""
 "remoteDomainGetSchedulerParameters: zwrócono liczbę parametrów "
 "przekraczających ograniczenie"
 
-#: src/remote_internal.c:2249
+#: src/remote_internal.c:2247
 msgid "remoteDomainGetSchedulerParameters: unknown parameter type"
 msgstr "remoteDomainGetSchedulerParameters: nieznany typ parametru"
 
-#: src/remote_internal.c:2301
+#: src/remote_internal.c:2270
+msgid "out of memory allocating array"
+msgstr "brak pamięci podczas przydzielania tablicy"
+
+#: src/remote_internal.c:2297
 msgid "unknown parameter type"
 msgstr "nieznany typ parametru"
 
-#: src/remote_internal.c:2469 src/remote_internal.c:2483
-#: src/remote_internal.c:2528 src/remote_internal.c:2542
+#: src/remote_internal.c:2387
+#, c-format
+msgid "block peek request too large for remote protocol, %zi > %d"
+msgstr ""
+
+#: src/remote_internal.c:2408 src/remote_internal.c:2452
+msgid "returned buffer is not same size as requested"
+msgstr ""
+
+#: src/remote_internal.c:2432
+#, c-format
+msgid "memory peek request too large for remote protocol, %zi > %d"
+msgstr ""
+
+#: src/remote_internal.c:2555 src/remote_internal.c:2569
+#: src/remote_internal.c:2614 src/remote_internal.c:2628
 #, c-format
 msgid "too many remote networks: %d > %d"
 msgstr "za dużo zdalnych sieci: %d > %d"
 
-#: src/remote_internal.c:2874 src/remote_internal.c:2929
+#: src/remote_internal.c:2960 src/remote_internal.c:3015
 msgid "too many storage pools requested"
 msgstr "zażądano za dużo pul pamięci masowej"
 
-#: src/remote_internal.c:2886 src/remote_internal.c:2941
+#: src/remote_internal.c:2972 src/remote_internal.c:3027
 msgid "too many storage pools received"
 msgstr "otrzymano za dużo pul pamięci masowej"
 
-#: src/remote_internal.c:3286
+#: src/remote_internal.c:3372
 msgid "too many storage volumes requested"
 msgstr "zażądano za dużo woluminów pamięci masowej"
 
-#: src/remote_internal.c:3299
+#: src/remote_internal.c:3385
 msgid "too many storage volumes received"
 msgstr "otrzymano za dużo woluminów pamięci masowej"
 
-#: src/remote_internal.c:3535
+#: src/remote_internal.c:3621
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "nieznany typ uwierzytelniania %s"
 
-#: src/remote_internal.c:3545
+#: src/remote_internal.c:3631
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr "żądany typ uwierzytelniania %s został odrzucony"
 
-#: src/remote_internal.c:3586
+#: src/remote_internal.c:3672
 #, c-format
 msgid "unsupported authentication type %d"
 msgstr "nieobsługiwany typ uwierzytelniania %d"
 
-#: src/remote_internal.c:3836
+#: src/remote_internal.c:3920
 #, c-format
 msgid "failed to initialize SASL library: %d (%s)"
 msgstr "zainicjowanie biblioteki SASL nie powiodło się: %d (%s)"
 
-#: src/remote_internal.c:3884
+#: src/remote_internal.c:3968
 #, c-format
 msgid "Failed to create SASL client context: %d (%s)"
 msgstr "Utworzenie kontekstu klienta SASL nie powiodło się: %d (%s)"
 
-#: src/remote_internal.c:3897
+#: src/remote_internal.c:3981
 msgid "invalid cipher size for TLS session"
 msgstr "nieprawidłowy rozmiar szyfru dla sesji TLS"
 
-#: src/remote_internal.c:3907
+#: src/remote_internal.c:3991
 #, c-format
 msgid "cannot set external SSF %d (%s)"
 msgstr "nie można ustawić zewnętrznego SSF %d (%s)"
 
-#: src/remote_internal.c:3926
+#: src/remote_internal.c:4010
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "nie można ustawić podparcia bezpieczeństwa %d (%s)"
 
-#: src/remote_internal.c:3945
+#: src/remote_internal.c:4029
 #, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "mechanizm SASL %s nie jest obsługiwany przez serwer"
 
-#: src/remote_internal.c:3964
+#: src/remote_internal.c:4048
 #, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
 msgstr "Uruchomienie negocjacji SASL nie powiodło się: %d (%s)"
 
-#: src/remote_internal.c:3982 src/remote_internal.c:4060
+#: src/remote_internal.c:4066 src/remote_internal.c:4144
 msgid "Failed to make auth credentials"
 msgstr "Utworzenie danych uwierzytelniających nie powiodło się"
 
-#: src/remote_internal.c:4006
+#: src/remote_internal.c:4090
 #, c-format
 msgid "SASL negotiation data too long: %d bytes"
 msgstr "dane negocjacji SASL są za długie: %d bajtów"
 
-#: src/remote_internal.c:4046
+#: src/remote_internal.c:4130
 #, c-format
 msgid "Failed SASL step: %d (%s)"
 msgstr "Krok SASL nie powiódł się: %d (%s)"
 
-#: src/remote_internal.c:4133
+#: src/remote_internal.c:4216
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr "negocjacja SSF %d nie była wystarczająco silna"
 
-#: src/remote_internal.c:4187
+#: src/remote_internal.c:4270
 msgid "Failed to collect auth credentials"
 msgstr "Zgromadzenie danych uwierzytelniających nie powiodło się"
 
-#: src/remote_internal.c:4254
+#: src/remote_internal.c:4337
 msgid "xdr_remote_message_header failed"
 msgstr "xdr_remote_message_header nie powiodło się"
 
-#: src/remote_internal.c:4260
+#: src/remote_internal.c:4343
 msgid "marshalling args"
 msgstr "porządkowanie argumentów"
 
-#: src/remote_internal.c:4277
+#: src/remote_internal.c:4360
 msgid "xdr_int (length word)"
 msgstr "xdr_int (długość wyrazu)"
 
-#: src/remote_internal.c:4294
+#: src/remote_internal.c:4377
 msgid "xdr_int (length word, reply)"
 msgstr "xdr_int (długość wyrazu, odpowiedź)"
 
-#: src/remote_internal.c:4304
+#: src/remote_internal.c:4387
 msgid "packet received from server too large"
 msgstr "pakiet odebrany od serwera jest za duży"
 
-#: src/remote_internal.c:4316
+#: src/remote_internal.c:4399
 msgid "invalid header in reply"
 msgstr "nieprawidłowy nagłówek w odpowiedzi"
 
-#: src/remote_internal.c:4325
+#: src/remote_internal.c:4408
 #, c-format
 msgid "unknown program (received %x, expected %x)"
 msgstr "nieznany program (otrzymano %x, oczekiwano %x)"
 
-#: src/remote_internal.c:4333
+#: src/remote_internal.c:4416
 #, c-format
 msgid "unknown protocol version (received %x, expected %x)"
 msgstr "nieznana wersja protokołu (otrzymano %x, oczekiwano %x)"
 
-#: src/remote_internal.c:4346
+#: src/remote_internal.c:4429
 #, c-format
 msgid "unknown procedure (received %x, expected %x)"
 msgstr "nieznana procedura (otrzymano %x, oczekiwano %x)"
 
-#: src/remote_internal.c:4354
+#: src/remote_internal.c:4437
 #, c-format
 msgid "unknown direction (received %x, expected %x)"
 msgstr "nieznany kierunek (otrzymano %x, oczekiwano %x)"
 
-#: src/remote_internal.c:4361
+#: src/remote_internal.c:4444
 #, c-format
 msgid "unknown serial (received %x, expected %x)"
 msgstr "nieznany szeregowy (otrzymano %x, oczekiwano %x)"
 
-#: src/remote_internal.c:4374
+#: src/remote_internal.c:4457
 msgid "unmarshalling ret"
 msgstr "zmienianie porządku ret"
 
-#: src/remote_internal.c:4384
+#: src/remote_internal.c:4467
 msgid "unmarshalling remote_error"
 msgstr "zmienianie porządku remote_error"
 
-#: src/remote_internal.c:4404
+#: src/remote_internal.c:4487
 #, c-format
 msgid "unknown status (received %x)"
 msgstr "nieznany stan (otrzymano %x)"
 
-#: src/remote_internal.c:4513 src/remote_internal.c:4530
+#: src/remote_internal.c:4596 src/remote_internal.c:4613
 msgid "socket closed unexpectedly"
 msgstr "gniazdo zostało nieoczekiwanie zamknięte"
 
@@ -2745,36 +2789,36 @@ msgstr "gniazdo zostało nieoczekiwanie zamknięte"
 msgid "failed to allocate a node"
 msgstr "przydzielenie węzła nie powiodło się"
 
-#: src/sexpr.c:353 src/sexpr.c:369
+#: src/sexpr.c:364 src/sexpr.c:381
 msgid "failed to copy a string"
 msgstr "skopiowanie łańcucha nie powiodło się"
 
-#: src/storage_backend.c:83
+#: src/storage_backend.c:84
 #, c-format
 msgid "missing backend for pool type %d"
 msgstr "brak zaplecza dla typu puli %d"
 
-#: src/storage_backend.c:128
+#: src/storage_backend.c:129
 #, c-format
 msgid "unknown storage backend type %s"
 msgstr "nieznany typ zaplecza pamięci masowej %s"
 
-#: src/storage_backend.c:158
+#: src/storage_backend.c:159
 #, c-format
 msgid "unknown storage backend type %d"
 msgstr "nieznany typ zaplecza pamięci masowej %d"
 
-#: src/storage_backend.c:172 src/storage_backend_fs.c:342
+#: src/storage_backend.c:173 src/storage_backend_fs.c:341
 #, c-format
 msgid "cannot open volume '%s': %s"
 msgstr "nie można otworzyć woluminu \"%s\": %s"
 
-#: src/storage_backend.c:200
+#: src/storage_backend.c:201
 #, c-format
 msgid "cannot stat file '%s': %s"
 msgstr "nie można wykonać stat na pliku \"%s\": %s"
 
-#: src/storage_backend.c:228
+#: src/storage_backend.c:229
 #, c-format
 msgid "cannot seek to end of file '%s':%s"
 msgstr "nie można znaleźć końca pliku \"%s\": %s"
@@ -2793,272 +2837,272 @@ msgstr "kontekst"
 msgid "cannot read dir %s: %s"
 msgstr "nie można odczytać folderu %s: %s"
 
-#: src/storage_backend.c:316 src/storage_driver.c:1198
+#: src/storage_backend.c:315 src/storage_driver.c:1197
 msgid "path"
 msgstr "ścieżka"
 
-#: src/storage_backend.c:369
+#: src/storage_backend.c:368
 msgid "regex"
 msgstr "wyrażenie regularne"
 
-#: src/storage_backend.c:379
+#: src/storage_backend.c:378
 #, c-format
 msgid "Failed to compile regex %s"
 msgstr "Skompilowanie wyrażenia regularnego %s nie powiodło się"
 
-#: src/storage_backend.c:395 src/storage_backend.c:400
-#: src/storage_backend.c:436
+#: src/storage_backend.c:394 src/storage_backend.c:399
+#: src/storage_backend.c:435
 msgid "regex groups"
 msgstr "grupy wyrażeń regularnych"
 
-#: src/storage_backend.c:412 src/storage_backend.c:553
+#: src/storage_backend.c:411 src/storage_backend.c:551
 msgid "cannot read fd"
 msgstr "nie można odczytać fd"
 
-#: src/storage_backend.c:486 src/storage_backend.c:608
+#: src/storage_backend.c:485 src/storage_backend.c:606
 #, c-format
 msgid "failed to wait for command: %s"
 msgstr "oczekiwanie na polecenie nie nie powiodło się: %s"
 
-#: src/storage_backend.c:493 src/storage_backend.c:615
+#: src/storage_backend.c:492 src/storage_backend.c:613
 #, c-format
 msgid "non-zero exit status from command %d"
 msgstr "stan wyjścia nie będący zerem od polecenia %d"
 
-#: src/storage_backend.c:499 src/storage_backend.c:621
+#: src/storage_backend.c:498 src/storage_backend.c:619
 msgid "command did not exit cleanly"
 msgstr "polecenie nie zostało poprawnie wyłączone"
 
-#: src/storage_backend.c:540
+#: src/storage_backend.c:538
 msgid "n_columns too large"
 msgstr "n_columns jest za duże"
 
-#: src/storage_backend.c:587
+#: src/storage_backend.c:585
 #, c-format
 msgid "read error: %s"
 msgstr "błąd podczas odczytywania: %s"
 
-#: src/storage_backend_disk.c:84 src/storage_backend_logical.c:57
+#: src/storage_backend_disk.c:85 src/storage_backend_logical.c:57
 #, c-format
 msgid "unsupported pool format %s"
 msgstr "nieobsługiwany format puli %s"
 
-#: src/storage_backend_disk.c:109 src/storage_backend_logical.c:70
+#: src/storage_backend_disk.c:110 src/storage_backend_logical.c:70
 #, c-format
 msgid "unsupported pool format %d"
 msgstr "nieobsługiwany format puli %d"
 
-#: src/storage_backend_disk.c:137 src/storage_backend_fs.c:188
-#: src/storage_backend_fs.c:258 src/storage_backend_fs.c:310
+#: src/storage_backend_disk.c:138 src/storage_backend_fs.c:187
+#: src/storage_backend_fs.c:257 src/storage_backend_fs.c:309
 #, c-format
 msgid "unsupported volume format %s"
 msgstr "nieobsługiwany format woluminu %s"
 
-#: src/storage_backend_disk.c:164 src/storage_backend_fs.c:221
-#: src/storage_backend_fs.c:293 src/storage_backend_fs.c:325
+#: src/storage_backend_disk.c:165 src/storage_backend_fs.c:220
+#: src/storage_backend_fs.c:292 src/storage_backend_fs.c:324
 #, c-format
 msgid "unsupported volume format %d"
 msgstr "nieobsługiwany format woluminu %d"
 
-#: src/storage_backend_disk.c:178 src/storage_backend_disk.c:191
-#: src/storage_backend_disk.c:198 src/storage_backend_disk.c:221
-#: src/storage_backend_fs.c:685 src/storage_backend_iscsi.c:257
-#: src/storage_backend_logical.c:117 src/storage_backend_logical.c:122
-#: src/storage_backend_logical.c:134 src/storage_backend_logical.c:144
+#: src/storage_backend_disk.c:179 src/storage_backend_disk.c:192
+#: src/storage_backend_disk.c:199 src/storage_backend_disk.c:221
+#: src/storage_backend_fs.c:685 src/storage_backend_iscsi.c:258
+#: src/storage_backend_logical.c:116 src/storage_backend_logical.c:121
+#: src/storage_backend_logical.c:133 src/storage_backend_logical.c:143
 msgid "volume"
 msgstr "wolumin"
 
-#: src/storage_backend_disk.c:230
+#: src/storage_backend_disk.c:229
 msgid "volume extents"
 msgstr "obszary woluminu"
 
-#: src/storage_backend_disk.c:238
+#: src/storage_backend_disk.c:237
 msgid "cannot parse device start location"
 msgstr "nie można przeanalizować położenia początkowego urządzenia"
 
-#: src/storage_backend_disk.c:245
+#: src/storage_backend_disk.c:244
 msgid "cannot parse device end location"
 msgstr "nie można przeanalizować położenia końcowego urządzenia"
 
-#: src/storage_backend_disk.c:251 src/storage_backend_logical.c:155
-#: src/storage_backend_logical.c:162
+#: src/storage_backend_disk.c:250 src/storage_backend_logical.c:154
+#: src/storage_backend_logical.c:160
 msgid "extents"
 msgstr "obszary"
 
-#: src/storage_backend_disk.c:464
+#: src/storage_backend_disk.c:461
 msgid "no large enough free extent"
 msgstr "brak wystarczająco dużego wolnego obszaru"
 
-#: src/storage_backend_disk.c:499
+#: src/storage_backend_disk.c:495
 msgid "Disk pools are not yet supported"
 msgstr "Pule dysku nie są jeszcze obsługiwane"
 
-#: src/storage_backend_fs.c:354
+#: src/storage_backend_fs.c:353
 #, c-format
 msgid "cannot read header '%s': %s"
 msgstr "nie można odczytać nagłówka \"%s\": %s"
 
-#: src/storage_backend_fs.c:462
+#: src/storage_backend_fs.c:461
 #, c-format
 msgid "cannot read %s: %s"
 msgstr "nie można odczytać %s: %s"
 
-#: src/storage_backend_fs.c:508 src/storage_backend_fs.c:573
-#: src/storage_backend_iscsi.c:446
+#: src/storage_backend_fs.c:507 src/storage_backend_fs.c:574
+#: src/storage_backend_iscsi.c:444
 msgid "missing source host"
 msgstr "brak hosta źródłowego"
 
-#: src/storage_backend_fs.c:513 src/storage_conf.c:316
+#: src/storage_backend_fs.c:512 src/storage_conf.c:319
 msgid "missing source path"
 msgstr "brak ścieżki źródłowej"
 
-#: src/storage_backend_fs.c:519 src/storage_backend_fs.c:584
-#: src/storage_backend_iscsi.c:453
+#: src/storage_backend_fs.c:518 src/storage_backend_fs.c:585
+#: src/storage_backend_iscsi.c:451
 msgid "missing source device"
 msgstr "brak urządzenia źródłowego"
 
-#: src/storage_backend_fs.c:542
+#: src/storage_backend_fs.c:534 src/storage_backend_fs.c:542
 msgid "source"
 msgstr "źródło"
 
-#: src/storage_backend_fs.c:578
+#: src/storage_backend_fs.c:579
 msgid "missing source dir"
 msgstr "brak folderu źródłowego"
 
-#: src/storage_backend_fs.c:650 src/storage_backend_fs.c:844
-#: src/storage_backend_fs.c:883
+#: src/storage_backend_fs.c:651 src/storage_backend_fs.c:842
+#: src/storage_backend_fs.c:881
 #, c-format
 msgid "cannot create path '%s': %s"
 msgstr "nie można utworzyć ścieżki \"%s\": %s"
 
-#: src/storage_backend_fs.c:673
+#: src/storage_backend_fs.c:674
 #, c-format
 msgid "cannot open path '%s': %s"
 msgstr "nie można otworzyć ścieżki \"%s\": %s"
 
-#: src/storage_backend_fs.c:693 src/storage_backend_fs.c:704
+#: src/storage_backend_fs.c:693 src/storage_backend_fs.c:703
 msgid "volume name"
 msgstr "nazwa woluminu"
 
-#: src/storage_backend_fs.c:715
+#: src/storage_backend_fs.c:714
 msgid "volume key"
 msgstr "klucz woluminu"
 
-#: src/storage_backend_fs.c:742
+#: src/storage_backend_fs.c:741
 #, c-format
 msgid "cannot statvfs path '%s': %s"
 msgstr "nie można wykonać statvfs na ścieżce \"%s\": %s"
 
-#: src/storage_backend_fs.c:803
+#: src/storage_backend_fs.c:802
 #, c-format
 msgid "cannot unlink path '%s': %s"
 msgstr "nie można usunąć dowiązania do ścieżki \"%s\": %s"
 
-#: src/storage_backend_fs.c:827
+#: src/storage_backend_fs.c:825
 msgid "target"
 msgstr "cel"
 
-#: src/storage_backend_fs.c:836
+#: src/storage_backend_fs.c:834
 msgid "storage vol key"
 msgstr "klucz woluminu pamięci masowej"
 
-#: src/storage_backend_fs.c:861
+#: src/storage_backend_fs.c:859
 #, c-format
 msgid "cannot fill file '%s': %s"
 msgstr "nie można wypełnić pliku \"%s\": %s"
 
-#: src/storage_backend_fs.c:874
+#: src/storage_backend_fs.c:872
 #, c-format
 msgid "cannot extend file '%s': %s"
 msgstr "nie można rozszerzyć pliku \"%s\": %s"
 
-#: src/storage_backend_fs.c:890 src/storage_backend_fs.c:926
-#: src/storage_backend_fs.c:961 src/storage_backend_logical.c:436
+#: src/storage_backend_fs.c:888 src/storage_backend_fs.c:924
+#: src/storage_backend_fs.c:959 src/storage_backend_logical.c:434
 #, c-format
 msgid "cannot read path '%s': %s"
 msgstr "nie można odczytać ścieżki \"%s\": %s"
 
-#: src/storage_backend_fs.c:903
+#: src/storage_backend_fs.c:901
 #, c-format
 msgid "unknown storage vol type %d"
 msgstr "nieznany typ woluminu pamięci masowej %d"
 
-#: src/storage_backend_fs.c:941
+#: src/storage_backend_fs.c:939
 #, c-format
 msgid "unsupported storage vol type %d"
 msgstr "nieobsługiwany typ woluminu pamięci masowej %d"
 
-#: src/storage_backend_fs.c:968
+#: src/storage_backend_fs.c:966
 msgid "creation of non-raw images is not supported without qemu-img"
 msgstr "utworzenie niesurowych obrazów nie jest obsługiwane bez qemu-img"
 
-#: src/storage_backend_fs.c:978 src/storage_backend_logical.c:445
+#: src/storage_backend_fs.c:976 src/storage_backend_logical.c:443
 #, c-format
 msgid "cannot set file owner '%s': %s"
 msgstr "nie można ustawić właściciela pliku \"%s\": %s"
 
-#: src/storage_backend_fs.c:987 src/storage_backend_logical.c:452
+#: src/storage_backend_fs.c:985 src/storage_backend_logical.c:450
 #, c-format
 msgid "cannot set file mode '%s': %s"
 msgstr "nie można ustawić trybu pliku \"%s\": %s"
 
-#: src/storage_backend_fs.c:1003 src/storage_backend_logical.c:459
+#: src/storage_backend_fs.c:1001 src/storage_backend_logical.c:457
 #, c-format
 msgid "cannot close file '%s': %s"
 msgstr "nie można zamknąć pliku \"%s\": %s"
 
-#: src/storage_backend_fs.c:1026
+#: src/storage_backend_fs.c:1024
 #, c-format
 msgid "cannot unlink file '%s': %s"
 msgstr "nie można usunąć dowiązania symbolicznego do pliku \"%s\": %s"
 
-#: src/storage_backend_iscsi.c:60
+#: src/storage_backend_iscsi.c:61
 #, c-format
 msgid "host lookup failed %s"
 msgstr "wyszukanie hosta nie powiodło się %s"
 
-#: src/storage_backend_iscsi.c:67
+#: src/storage_backend_iscsi.c:68
 #, c-format
 msgid "no IP address for target %s"
 msgstr "brak adresu IP dla celu %s"
 
-#: src/storage_backend_iscsi.c:76
+#: src/storage_backend_iscsi.c:77
 #, c-format
 msgid "cannot format ip addr for %s"
 msgstr "nie można sformatować adresu IP dla %s"
 
-#: src/storage_backend_iscsi.c:96
+#: src/storage_backend_iscsi.c:97
 msgid "session"
 msgstr "sesja"
 
-#: src/storage_backend_iscsi.c:137
+#: src/storage_backend_iscsi.c:138
 msgid "cannot find session"
 msgstr "nie można znaleźć sesji"
 
-#: src/storage_backend_iscsi.c:195
+#: src/storage_backend_iscsi.c:196
 msgid "Failed parsing iscsiadm commands"
 msgstr "Analizowanie poleceń iscsiadm nie powiodło się"
 
-#: src/storage_backend_iscsi.c:212
+#: src/storage_backend_iscsi.c:213
 #, c-format
 msgid "Failed to find the sysfs path for %d:%d:%d:%d: %s"
 msgstr "Znalezienie ścieżki do sysfs dla %d:%d:%d:%d nie powiodło się: %s"
 
-#: src/storage_backend_iscsi.c:221
+#: src/storage_backend_iscsi.c:222
 #, c-format
 msgid "Failed to opendir sysfs path %s: %s"
 msgstr "Otwarcie folderu ścieżki do sysfs %s nie powiodło się: %s"
 
-#: src/storage_backend_iscsi.c:249
+#: src/storage_backend_iscsi.c:250
 #, c-format
 msgid "Failed to find SCSI device for %d:%d:%d:%d: %s"
 msgstr "Znalezienie urządzenia SCSI dla %d:%d:%d:%d nie powiodło się: %s"
 
-#: src/storage_backend_iscsi.c:262 src/storage_driver.c:870
+#: src/storage_backend_iscsi.c:263 src/storage_driver.c:869
 msgid "name"
 msgstr "nazwa"
 
-#: src/storage_backend_iscsi.c:267
+#: src/storage_backend_iscsi.c:268
 msgid "devpath"
 msgstr "ścieżka do urządzenia"
 
@@ -3067,153 +3111,163 @@ msgstr "ścieżka do urządzenia"
 msgid "cannot open %s: %s"
 msgstr "nie można otworzyć %s: %s"
 
-#: src/storage_backend_iscsi.c:315
+#: src/storage_backend_iscsi.c:314
 msgid "key"
 msgstr "klucz"
 
-#: src/storage_backend_iscsi.c:427
+#: src/storage_backend_iscsi.c:425
 msgid "portal"
 msgstr "portal"
 
-#: src/storage_backend_logical.c:168
+#: src/storage_backend_logical.c:166
 msgid "malformed volume extent offset value"
 msgstr "błędnie sformatowana wartość offset obszaru woluminu"
 
-#: src/storage_backend_logical.c:173
+#: src/storage_backend_logical.c:171
 msgid "malformed volume extent length value"
 msgstr "błędnie sformatowana wartość długości obszaru woluminu"
 
-#: src/storage_backend_logical.c:178
+#: src/storage_backend_logical.c:176
 msgid "malformed volume extent size value"
 msgstr "błędnie sformatowana wartość rozmiaru obszaru woluminu"
 
-#: src/storage_backend_logical.c:270
+#: src/storage_backend_logical.c:268
 msgid "command line"
 msgstr "wiersz poleceń"
 
-#: src/storage_backend_logical.c:287
+#: src/storage_backend_logical.c:285
 #, c-format
 msgid "cannot open device %s"
 msgstr "nie można otworzyć urządzenia %s"
 
-#: src/storage_backend_logical.c:293
+#: src/storage_backend_logical.c:291
 #, c-format
 msgid "cannot clear device header %s"
 msgstr "nie można wyczyścić nagłówka urządzenia %s"
 
-#: src/storage_backend_logical.c:300
+#: src/storage_backend_logical.c:298
 #, c-format
 msgid "cannot close device %s"
 msgstr "nie można zamknąć urządzenia %s"
 
-#: src/storage_backend_logical.c:468
+#: src/storage_backend_logical.c:466
 #, c-format
 msgid "cannot find newly created volume '%s': %s"
 msgstr "nie można znaleźć nowo utworzonego woluminu \"%s\": %s"
 
-#: src/storage_conf.c:154
+#: src/storage_conf.c:155
 msgid "missing auth host attribute"
 msgstr "brak atrybutu uwierzytelniania hosta"
 
-#: src/storage_conf.c:161
+#: src/storage_conf.c:162
 msgid "missing auth passwd attribute"
 msgstr "brak atrybutu passwd hosta"
 
-#: src/storage_conf.c:184 src/storage_conf.c:532
+#: src/storage_conf.c:185 src/storage_conf.c:533
 msgid "malformed octal mode"
 msgstr "błędnie sformatowany tryb ósemkowy"
 
-#: src/storage_conf.c:194
+#: src/storage_conf.c:195
 msgid "malformed owner element"
 msgstr "błędnie sformatowany element właściciela"
 
-#: src/storage_conf.c:205
+#: src/storage_conf.c:206
 msgid "malformed group element"
 msgstr "błędnie sformatowany grupy"
 
-#: src/storage_conf.c:233 src/storage_conf.c:657
+#: src/storage_conf.c:231
+#, fuzzy
+msgid "cannot allocate storage pool"
+msgstr "przydzielanie puli pamięci masowej"
+
+#: src/storage_conf.c:237 src/storage_conf.c:661
 msgid "unknown root element"
 msgstr "nieznany element roota"
 
-#: src/storage_conf.c:249 src/storage_conf.c:664
+#: src/storage_conf.c:253 src/storage_conf.c:668
 msgid "missing name element"
 msgstr "brak elementu nazwy"
 
-#: src/storage_conf.c:257
+#: src/storage_conf.c:261
 msgid "unable to generate uuid"
 msgstr "nie można utworzyć UUID"
 
-#: src/storage_conf.c:282
+#: src/storage_conf.c:285
 msgid "missing source host name"
 msgstr "brak nazwy hosta źródłowego"
 
-#: src/storage_conf.c:292
+#: src/storage_conf.c:295
 msgid "cannot extract source devices"
 msgstr "nie można wydobyć urządzeń źródłowych"
 
-#: src/storage_conf.c:297
+#: src/storage_conf.c:300
 msgid "device"
 msgstr "urządzenie"
 
-#: src/storage_conf.c:305
+#: src/storage_conf.c:308
 msgid "missing source device path"
 msgstr "brak ścieżki do urządzenia źródłowego"
 
-#: src/storage_conf.c:330
+#: src/storage_conf.c:333
 #, c-format
 msgid "unknown auth type '%s'"
 msgstr "nieznany typ uwierzytelniania \"%s\""
 
-#: src/storage_conf.c:347
+#: src/storage_conf.c:348
 msgid "missing target path"
 msgstr "brak ścieżki docelowej"
 
-#: src/storage_conf.c:378 src/storage_conf.c:736
+#: src/storage_conf.c:379 src/storage_conf.c:736
 msgid "malformed xml document"
 msgstr "błędnie sformatowany dokument XML"
 
-#: src/storage_conf.c:385 src/storage_conf.c:743
+#: src/storage_conf.c:386 src/storage_conf.c:743
 msgid "xmlXPathContext"
 msgstr "xmlXPathContext"
 
-#: src/storage_conf.c:426
+#: src/storage_conf.c:427
 msgid "unexpected pool type"
 msgstr "nieoczekiwany typ puli"
 
-#: src/storage_conf.c:510 src/storage_conf.c:850
+#: src/storage_conf.c:511 src/storage_conf.c:851
 msgid "xml"
 msgstr "XML"
 
-#: src/storage_conf.c:542 src/storage_conf.c:552
+#: src/storage_conf.c:543 src/storage_conf.c:553
 msgid "missing owner element"
 msgstr "brak elementu właściciela"
 
-#: src/storage_conf.c:616
+#: src/storage_conf.c:617
 #, c-format
 msgid "unknown size units '%s'"
 msgstr "nieznane jednostki rozmiaru \"%s\""
 
-#: src/storage_conf.c:623
+#: src/storage_conf.c:624
 msgid "malformed capacity element"
 msgstr "błędnie sformatowany element pojemności"
 
-#: src/storage_conf.c:628
+#: src/storage_conf.c:629
 msgid "capacity element value too large"
 msgstr "wartość elementu pojemności jest za duża"
 
-#: src/storage_conf.c:675
+#: src/storage_conf.c:655
+#, fuzzy
+msgid "cannot allocate storage vol"
+msgstr "przydzielanie woluminu pamięci masowej"
+
+#: src/storage_conf.c:679
 msgid "missing capacity element"
 msgstr "brak elementu pojemności"
 
-#: src/storage_conf.c:960
+#: src/storage_conf.c:962
 msgid "pool"
 msgstr "pula"
 
-#: src/storage_conf.c:1102
+#: src/storage_conf.c:1104
 msgid "configFile"
 msgstr "plik konfiguracji"
 
-#: src/storage_conf.c:1117
+#: src/storage_conf.c:1118
 msgid "config file"
 msgstr "plik konfiguracji"
 
@@ -3221,85 +3275,85 @@ msgstr "plik konfiguracji"
 msgid "failed to generate XML"
 msgstr "utworzenie XML-a nie powiodło się"
 
-#: src/storage_driver.c:267 src/storage_driver.c:751 src/storage_driver.c:773
+#: src/storage_driver.c:266 src/storage_driver.c:750 src/storage_driver.c:772
 msgid "no pool with matching uuid"
 msgstr "brak puli pasującej do UUID"
 
-#: src/storage_driver.c:285
+#: src/storage_driver.c:284
 msgid "no pool with matching name"
 msgstr "brak puli pasującej do nazwy"
 
-#: src/storage_driver.c:335 src/storage_driver.c:372
+#: src/storage_driver.c:334 src/storage_driver.c:371
 msgid "names"
 msgstr "nazwy"
 
-#: src/storage_driver.c:407
+#: src/storage_driver.c:406
 msgid "storage pool already exists"
 msgstr "pula pamięci masowej już istnieje"
 
-#: src/storage_driver.c:480 src/storage_driver.c:517 src/storage_driver.c:556
-#: src/storage_driver.c:587 src/storage_driver.c:628 src/storage_driver.c:665
-#: src/storage_driver.c:706 src/storage_driver.c:735 src/storage_driver.c:829
-#: src/storage_driver.c:854 src/storage_driver.c:899 src/storage_driver.c:983
-#: src/storage_driver.c:1037 src/storage_driver.c:1100
-#: src/storage_driver.c:1144 src/storage_driver.c:1178
+#: src/storage_driver.c:479 src/storage_driver.c:516 src/storage_driver.c:555
+#: src/storage_driver.c:586 src/storage_driver.c:627 src/storage_driver.c:664
+#: src/storage_driver.c:705 src/storage_driver.c:734 src/storage_driver.c:828
+#: src/storage_driver.c:853 src/storage_driver.c:898 src/storage_driver.c:982
+#: src/storage_driver.c:1036 src/storage_driver.c:1099
+#: src/storage_driver.c:1143 src/storage_driver.c:1177
 msgid "no storage pool with matching uuid"
 msgstr "brak puli pamięci masowej pasującej do UUID"
 
-#: src/storage_driver.c:486
+#: src/storage_driver.c:485
 msgid "pool is still active"
 msgstr "pula jest ciągle aktywna"
 
-#: src/storage_driver.c:527
+#: src/storage_driver.c:526
 msgid "pool already active"
 msgstr "pula jest już aktywna"
 
-#: src/storage_driver.c:566
+#: src/storage_driver.c:565
 msgid "storage pool is already active"
 msgstr "pula pamięci masowej jest już aktywna"
 
-#: src/storage_driver.c:597 src/storage_driver.c:675 src/storage_driver.c:835
-#: src/storage_driver.c:860 src/storage_driver.c:905 src/storage_driver.c:989
-#: src/storage_driver.c:1043 src/storage_driver.c:1106
-#: src/storage_driver.c:1150 src/storage_driver.c:1184
+#: src/storage_driver.c:596 src/storage_driver.c:674 src/storage_driver.c:834
+#: src/storage_driver.c:859 src/storage_driver.c:904 src/storage_driver.c:988
+#: src/storage_driver.c:1042 src/storage_driver.c:1105
+#: src/storage_driver.c:1149 src/storage_driver.c:1183
 msgid "storage pool is not active"
 msgstr "pula pamięci masowej nie jest aktywna"
 
-#: src/storage_driver.c:638
+#: src/storage_driver.c:637
 msgid "storage pool is still active"
 msgstr "pula pamięci masowej jest ciągle aktywna"
 
-#: src/storage_driver.c:644
+#: src/storage_driver.c:643
 msgid "pool does not support volume delete"
 msgstr "pula nie obsługuje usuwania woluminów"
 
-#: src/storage_driver.c:779
+#: src/storage_driver.c:778
 msgid "pool has no config file"
 msgstr "pula nie posiada pliku konfiguracji"
 
-#: src/storage_driver.c:913 src/storage_driver.c:1054
-#: src/storage_driver.c:1114 src/storage_driver.c:1158
-#: src/storage_driver.c:1192
+#: src/storage_driver.c:912 src/storage_driver.c:1053
+#: src/storage_driver.c:1113 src/storage_driver.c:1157
+#: src/storage_driver.c:1191
 msgid "no storage vol with matching name"
 msgstr "brak woluminu pamięci masowej pasującego do nazwy"
 
-#: src/storage_driver.c:942
+#: src/storage_driver.c:941
 msgid "no storage vol with matching key"
 msgstr "brak woluminu pamięci masowej pasującego do klucza"
 
-#: src/storage_driver.c:967
+#: src/storage_driver.c:966
 msgid "no storage vol with matching path"
 msgstr "brak woluminu pamięci masowej pasującego do ścieżki"
 
-#: src/storage_driver.c:1002
+#: src/storage_driver.c:1001
 msgid "storage vol already exists"
 msgstr "wolumin pamięci masowej już istnieje"
 
-#: src/storage_driver.c:1009
+#: src/storage_driver.c:1008
 msgid "storage pool does not support volume creation"
 msgstr "pula pamięci masowej nie obsługuje tworzenia woluminów"
 
-#: src/storage_driver.c:1060
+#: src/storage_driver.c:1059
 msgid "storage pool does not support vol deletion"
 msgstr "pula pamięci masowej nie obsługuje usuwania woluminów"
 
@@ -5967,223 +6021,268 @@ msgstr "Zaufany parametr wagi planisty (%d) jest poza zakresem (1-65535)"
 msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
 msgstr "Zaufany parametr nakrycia planisty (%d) jest poza zakresem (1-65535)"
 
-#: src/xen_internal.c:2504
+#: src/xen_internal.c:2502
 #, c-format
 msgid "allocating %d domain info"
 msgstr "przydzielanie %d informacji o domenie"
 
-#: src/xend_internal.c:233
+#: src/xend_internal.c:246
 msgid "failed to create a socket"
 msgstr "utworzenie gniazda nie powiodło się"
 
-#: src/xend_internal.c:255
+#: src/xend_internal.c:268
 msgid "failed to connect to xend"
 msgstr "połączenie się z xend nie powiodło się"
 
-#: src/xend_internal.c:302 src/xend_internal.c:305
+#: src/xend_internal.c:315 src/xend_internal.c:318
 msgid "failed to read from Xen Daemon"
 msgstr "odczytanie z demona Xen nie powiodło się"
 
-#: src/xend_internal.c:834 src/xend_internal.c:1913 src/xend_internal.c:1931
+#: src/xend_internal.c:506
+#, fuzzy, c-format
+msgid "xend_get: error from xen daemon: %s"
+msgstr "Rozdzielenie jako demon nie powiodło się: %s"
+
+#: src/xend_internal.c:556 src/xend_internal.c:559 src/xend_internal.c:567
+#, c-format
+msgid "xend_post: error from xen daemon: %s"
+msgstr ""
+
+#: src/xend_internal.c:851 src/xend_internal.c:1818 src/xend_internal.c:1836
 msgid "allocate new buffer"
 msgstr "przydziel nowy bufor"
 
-#: src/xend_internal.c:1149
+#: src/xend_internal.c:1046
+#, fuzzy, c-format
+msgid "gethostbyname failed: %s"
+msgstr "operacja nie powiodła się: %s"
+
+#: src/xend_internal.c:1167
 msgid "failed to urlencode the create S-Expr"
 msgstr "zakodowanie opisu użytego do utworzenia domeny nie powiodło się"
 
-#: src/xend_internal.c:1190
+#: src/xend_internal.c:1208
 msgid "domain information incomplete, missing domid"
 msgstr "informacje o domenie są niekompletne, brak domid"
 
-#: src/xend_internal.c:1196
+#: src/xend_internal.c:1214
 msgid "domain information incorrect domid not numeric"
 msgstr "informacje o domenie są nieprawidłowe, domid nie jest numeryczne"
 
-#: src/xend_internal.c:1201 src/xend_internal.c:1248
+#: src/xend_internal.c:1219 src/xend_internal.c:1266
 msgid "domain information incomplete, missing uuid"
 msgstr "informacje o domenie są niekompletne, brak UUID"
 
-#: src/xend_internal.c:1240 src/xend_internal.c:1757 src/xend_internal.c:1764
+#: src/xend_internal.c:1258 src/xend_internal.c:1988 src/xend_internal.c:1995
 msgid "domain information incomplete, missing name"
 msgstr "informacje o domenie są niekompletne, brak nazwy"
 
-#: src/xend_internal.c:1423
+#: src/xend_internal.c:1441
 msgid "domain information incomplete, missing HVM loader"
 msgstr "informacje o domenie są niekompletne, brak wczytywania HVM"
 
-#: src/xend_internal.c:1475
+#: src/xend_internal.c:1493
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "informacje o domenie są niekompletne, brak jądra i programu startowego"
 
-#: src/xend_internal.c:1537
+#: src/xend_internal.c:1555
 #, fuzzy
 msgid "Unknown char device type"
 msgstr "nieznany typ urządzenia"
 
-#: src/xend_internal.c:1571 src/xend_internal.c:1611 src/xend_internal.c:1627
+#: src/xend_internal.c:1589 src/xend_internal.c:1629 src/xend_internal.c:1645
 #, fuzzy
 msgid "malformed char device string"
 msgstr "błędnie sformatowany tryb ósemkowy"
 
-#: src/xend_internal.c:1694
+#: src/xend_internal.c:1712
 msgid "no memory for char device config"
 msgstr ""
 
-#: src/xend_internal.c:1745
-msgid "domain information incomplete, missing id"
-msgstr "informacje o domenie są niekompletne, brak identyfikatora"
-
-#: src/xend_internal.c:1883
+#: src/xend_internal.c:1788
 msgid "domain information incomplete, vbd has no dev"
 msgstr "informacje o domenie są niekompletne, vbd nie ma dev"
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1803
 msgid "domain information incomplete, vbd has no src"
 msgstr "informacje o domenie są niekompletne, vbd nie ma src"
 
-#: src/xend_internal.c:1907
+#: src/xend_internal.c:1812
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "nie można przeanalizować nazwy pliku vbd, brak nazwy sterownika"
 
-#: src/xend_internal.c:1925
+#: src/xend_internal.c:1830
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "nie można przeanalizować nazwy pliku vbd, brak typu sterownika"
 
-#: src/xend_internal.c:2206 src/xm_internal.c:1067
+#: src/xend_internal.c:1976
+msgid "domain information incomplete, missing id"
+msgstr "informacje o domenie są niekompletne, brak identyfikatora"
+
+#: src/xend_internal.c:2288 src/xm_internal.c:1065
 msgid "parsing soundhw string failed."
 msgstr ""
 
-#: src/xend_internal.c:2376
+#: src/xend_internal.c:2458
 msgid "failed to parse topology information"
 msgstr "przeanalizowanie informacji o topologii nie powiodło się"
 
-#: src/xend_internal.c:2430
+#: src/xend_internal.c:2512
 msgid "topology syntax error"
 msgstr "błąd składni topologii"
 
-#: src/xend_internal.c:2494
+#: src/xend_internal.c:2576
 msgid "failed to parse Xend domain information"
 msgstr "przeanalizowanie informacji o domenie Xend nie powiodło się"
 
-#: src/xend_internal.c:2974
+#: src/xend_internal.c:3056
 msgid "xenDaemonDomainDumpXMLByID failed to find this domain"
 msgstr ""
 "znalezienie tej domeny przez xenDaemonDomainDumpXMLByID nie powiodło się"
 
-#: src/xend_internal.c:2999
+#: src/xend_internal.c:3081
 msgid "xenDaemonDomainDumpXMLByName failed to find this domain"
 msgstr ""
 "znalezienie tej domeny przez xenDaemonDomainDumpXMLByName nie powiodło się"
 
-#: src/xend_internal.c:3611 src/xend_internal.c:4029
+#: src/xend_internal.c:3693 src/xend_internal.c:4113
 msgid "failed to parse domain description"
 msgstr "przeanalizowanie opisu domeny nie powiodło się"
 
-#: src/xend_internal.c:3757
+#: src/xend_internal.c:3839
 #, fuzzy
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr ""
 "znalezienie tej domeny przez xenDaemonDomainDumpXMLByID nie powiodło się"
 
-#: src/xend_internal.c:3798
+#: src/xend_internal.c:3880
 #, fuzzy
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr ""
 "znalezienie tej domeny przez xenDaemonDomainDumpXMLByID nie powiodło się"
 
-#: src/xend_internal.c:3806
+#: src/xend_internal.c:3888
 #, fuzzy
 msgid "unexpected value from on_xend_start"
 msgstr "nieoczekiwana wartość węzła"
 
-#: src/xend_internal.c:3817
+#: src/xend_internal.c:3899
 #, fuzzy
 msgid "no memory"
 msgstr "węzeł pamięć"
 
-#: src/xend_internal.c:3823
+#: src/xend_internal.c:3905
 #, fuzzy
 msgid "sexpr2string failed"
 msgstr "operacja nie powiodła się"
 
-#: src/xend_internal.c:3828
+#: src/xend_internal.c:3910
 #, fuzzy
 msgid "Failed to redefine sexpr"
 msgstr "Określenia puli %s nie powiodło się"
 
-#: src/xend_internal.c:3833
+#: src/xend_internal.c:3915
 msgid "on_xend_start not present in sexpr"
 msgstr ""
 
-#: src/xend_internal.c:3899
+#: src/xend_internal.c:3946
+#, fuzzy, c-format
+msgid "gethostname failed: %s"
+msgstr "operacja nie powiodła się: %s"
+
+#: src/xend_internal.c:3952
+#, fuzzy, c-format
+msgid "failed to strdup hostname: %s"
+msgstr "uzyskanie nazwy hosta nie powiodło się"
+
+#: src/xend_internal.c:3983
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
 "xenDaemonDomainMigrate: Xen nie obsługuje zmieniania domen podczas migracji"
 
-#: src/xend_internal.c:3909
+#: src/xend_internal.c:3993
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
 "xenDaemonDomainMigrate: Xen nie obsługuje ograniczeń pasma podczas migracji"
 
-#: src/xend_internal.c:3921
+#: src/xend_internal.c:4005
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr "xenDaemonDomainMigrate: nieobsługiwana flaga"
 
-#: src/xend_internal.c:3934
+#: src/xend_internal.c:4018
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr "xenDaemonDomainMigrate: nieprawidłowe URI"
 
-#: src/xend_internal.c:3939
+#: src/xend_internal.c:4023
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
 "xenDaemonDomainMigrate: tylko migracje xenmigr:// są obsługiwane przez Xena"
 
-#: src/xend_internal.c:3946
+#: src/xend_internal.c:4030
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr "xenDaemonDomainMigrate: nazwa hosta musi zostać podana w URI"
 
-#: src/xend_internal.c:3953 src/xend_internal.c:3975 src/xend_internal.c:3983
-#: src/xend_internal.c:4208 src/xend_internal.c:4215 src/xml.c:405
+#: src/xend_internal.c:4037 src/xend_internal.c:4059 src/xend_internal.c:4067
+#: src/xend_internal.c:4292 src/xend_internal.c:4299 src/xml.c:405
 msgid "strdup failed"
 msgstr "strdup nie powiodło się"
 
-#: src/xend_internal.c:3966
+#: src/xend_internal.c:4050
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr "xenDaemonDomainMigrate: nieprawidłowy numer portu"
 
-#: src/xend_internal.c:4039
+#: src/xend_internal.c:4123
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Utworzenie nieaktywnej domeny %s nie powiodło się\n"
 
-#: src/xend_internal.c:4190 src/xend_internal.c:4266 src/xend_internal.c:4356
+#: src/xend_internal.c:4274 src/xend_internal.c:4350 src/xend_internal.c:4440
 msgid "unsupported in xendConfigVersion < 4"
 msgstr "nieobsługiwane w xendConfigVersion < 4"
 
-#: src/xend_internal.c:4202
+#: src/xend_internal.c:4286
 msgid "node information incomplete, missing scheduler name"
 msgstr "informacje o węźle są niekompletne, brak nazwy planisty"
 
-#: src/xend_internal.c:4220 src/xend_internal.c:4314 src/xend_internal.c:4426
+#: src/xend_internal.c:4304 src/xend_internal.c:4398 src/xend_internal.c:4510
 msgid "Unknown scheduler"
 msgstr "Nieznany planista"
 
-#: src/xend_internal.c:4279 src/xend_internal.c:4369
+#: src/xend_internal.c:4363 src/xend_internal.c:4453
 msgid "Failed to get a scheduler name"
 msgstr "Uzyskanie nazwy planisty nie powiodło się"
 
-#: src/xend_internal.c:4292 src/xend_internal.c:4405
+#: src/xend_internal.c:4376 src/xend_internal.c:4489
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "informacje o domenie są niekompletne, brak cpu_weight"
 
-#: src/xend_internal.c:4297 src/xend_internal.c:4414
+#: src/xend_internal.c:4381 src/xend_internal.c:4498
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "informacje o domenie są niekompletne, brak cpu_cap"
+
+#: src/xend_internal.c:4578
+#, fuzzy
+msgid "domainBlockPeek is not supported for dom0"
+msgstr "ai_socktype nie jest obsługiwane"
+
+#: src/xend_internal.c:4597
+#, fuzzy, c-format
+msgid "%s: invalid path"
+msgstr "nieprawidłowa ścieżka: %s"
+
+#: src/xend_internal.c:4605
+#, fuzzy, c-format
+msgid "failed to open for reading: %s: %s"
+msgstr "otwarcie %s do odczytania nie powiodło się"
+
+#: src/xend_internal.c:4617
+#, fuzzy, c-format
+msgid "failed to lseek or read from file: %s: %s"
+msgstr "Zamknięcie pliku PID \"%s\" nie powiodło się: %s"
 
 #: src/xm_internal.c:435
 msgid "xenXMConfigCacheRefresh: name"
@@ -6193,83 +6292,83 @@ msgstr "xenXMConfigCacheRefresh: nazwa"
 msgid "xenXMConfigCacheRefresh: virHashAddEntry"
 msgstr "xenXMConfigCacheRefresh: virHashAddEntry"
 
-#: src/xm_internal.c:1305
+#: src/xm_internal.c:1303
 msgid "read only connection"
 msgstr "połączenie tylko do odczytu"
 
-#: src/xm_internal.c:1310
+#: src/xm_internal.c:1308
 msgid "not inactive domain"
 msgstr "nieaktywne domeny"
 
-#: src/xm_internal.c:1315
+#: src/xm_internal.c:1313
 msgid "virHashLookup"
 msgstr "virHashLookup"
 
-#: src/xm_internal.c:1320
+#: src/xm_internal.c:1318
 msgid "can't retrieve config file for domain"
 msgstr "nie można pobrać pliku konfiguracji dla domeny"
 
-#: src/xm_internal.c:1946 src/xm_internal.c:2674 src/xm_internal.c:2696
-#: src/xm_internal.c:3093
+#: src/xm_internal.c:1944 src/xm_internal.c:2672 src/xm_internal.c:2694
+#: src/xm_internal.c:3091
 msgid "cannot read XML domain definition"
 msgstr "nie można odczytać definicji domeny w XML-u"
 
-#: src/xm_internal.c:1952
+#: src/xm_internal.c:1950
 msgid "missing top level domain element"
 msgstr "brak elementu najwyższego poziomu domeny"
 
-#: src/xm_internal.c:1960
+#: src/xm_internal.c:1958
 msgid "domain type is invalid"
 msgstr "typ domeny jest nieprawidłowy"
 
-#: src/xm_internal.c:1968 src/xm_internal.c:2679 src/xm_internal.c:2701
-#: src/xm_internal.c:3098
+#: src/xm_internal.c:1966 src/xm_internal.c:2677 src/xm_internal.c:2699
+#: src/xm_internal.c:3096
 msgid "cannot create XPath context"
 msgstr "nie można utworzyć kontekstu XPath"
 
-#: src/xm_internal.c:2160 src/xm_internal.c:2234 src/xm_internal.c:2255
-#: src/xm_internal.c:2271 src/xm_internal.c:2290 src/xm_internal.c:2305
-#: src/xm_internal.c:2478
+#: src/xm_internal.c:2158 src/xm_internal.c:2232 src/xm_internal.c:2253
+#: src/xm_internal.c:2269 src/xm_internal.c:2288 src/xm_internal.c:2303
+#: src/xm_internal.c:2476
 msgid "config"
 msgstr "konfiguracja"
 
-#: src/xm_internal.c:2416
+#: src/xm_internal.c:2414
 msgid "name config parameter is missing"
 msgstr "brak parametru nazwy konfiguracji"
 
-#: src/xm_internal.c:2425
+#: src/xm_internal.c:2423
 msgid "can't retrieve config filename for domain to overwrite"
 msgstr "nie można pobrać nazwy pliku konfiguracji dla domeny do zastąpienia"
 
-#: src/xm_internal.c:2431
+#: src/xm_internal.c:2429
 msgid "can't retrieve config entry for domain to overwrite"
 msgstr "nie można pobrać wpisu konfiguracji dla domeny do zastąpienia"
 
-#: src/xm_internal.c:2437 src/xm_internal.c:2493
+#: src/xm_internal.c:2435 src/xm_internal.c:2491
 msgid "uuid config parameter is missing"
 msgstr "brak parametru konfiguracji UUID"
 
-#: src/xm_internal.c:2447 src/xm_internal.c:2454
+#: src/xm_internal.c:2445 src/xm_internal.c:2452
 msgid "failed to remove old domain from config map"
 msgstr "usunięcie starej domeny z mapy konfiguracji nie powiodło się"
 
-#: src/xm_internal.c:2463
+#: src/xm_internal.c:2461
 msgid "config file name is too long"
 msgstr "nazwa pliku konfiguracji jest za długa"
 
-#: src/xm_internal.c:2473
+#: src/xm_internal.c:2471
 msgid "unable to write config file"
 msgstr "nie można zapisać pliku konfiguracji"
 
-#: src/xm_internal.c:2484
+#: src/xm_internal.c:2482
 msgid "unable to get current time"
 msgstr "nie można uzyskać obecnego czasu"
 
-#: src/xm_internal.c:2499 src/xm_internal.c:2506
+#: src/xm_internal.c:2497 src/xm_internal.c:2504
 msgid "unable to store config file handle"
 msgstr "nie można przechować obsługi pliku konfiguracji"
 
-#: src/xm_internal.c:2713
+#: src/xm_internal.c:2711
 msgid "unknown device"
 msgstr "nieznane urządzenie"
 
@@ -6311,7 +6410,7 @@ msgstr "Nieprawidłowy parametr virXPathNode()"
 msgid "Invalid parameter to virXPathNodeSet()"
 msgstr "Nieprawidłowy parametr virXPathNodeSet()"
 
-#: src/xml.c:595 src/xmlrpc.c:481
+#: src/xml.c:595 src/xmlrpc.c:479
 msgid "allocate string array"
 msgstr "przydziel tablicę łańcuchów"
 
@@ -6335,49 +6434,55 @@ msgstr "przydziel wartość"
 msgid "copying node content"
 msgstr "kopiowanie zawartości węzła"
 
-#: src/xmlrpc.c:163
+#: src/xmlrpc.c:162
 msgid "allocate value array"
 msgstr "przydziel tablicę wartości"
 
-#: src/xmlrpc.c:186
+#: src/xmlrpc.c:185
 msgid "allocate dict"
 msgstr "przydziel nowy słownik"
 
-#: src/xmlrpc.c:197
+#: src/xmlrpc.c:196
 msgid "unexpected dict node"
 msgstr "nieoczekiwany węzeł słownika"
 
-#: src/xmlrpc.c:268
+#: src/xmlrpc.c:267
 msgid "unexpected value node"
 msgstr "nieoczekiwana wartość węzła"
 
-#: src/xmlrpc.c:428
+#: src/xmlrpc.c:427
 msgid "send request"
 msgstr "wyślij żądanie"
 
-#: src/xmlrpc.c:434
+#: src/xmlrpc.c:433
 msgid "unexpected mime type"
 msgstr "nieoczekiwany typ MIME"
 
-#: src/xmlrpc.c:441
+#: src/xmlrpc.c:439
 msgid "allocate response"
 msgstr "przydziel odpowiedź"
 
-#: src/xmlrpc.c:449 src/xmlrpc.c:511
+#: src/xmlrpc.c:447 src/xmlrpc.c:509
 msgid "read response"
 msgstr "odczytaj odpowiedź"
 
-#: src/xmlrpc.c:604
+#: src/xmlrpc.c:602
 msgid "parse server response failed"
 msgstr "przeanalizowanie odpowiedzi serwera nie powiodło się"
 
-#: src/xmlrpc.c:668
+#: src/xmlrpc.c:663
 msgid "allocate new context"
 msgstr "przydziel nowy kontekst"
 
 #: src/xs_internal.c:329
 msgid "failed to connect to Xen Store"
 msgstr "połączenie się z Xen Store nie powiodło się"
+
+#~ msgid "out of memory allocating return array"
+#~ msgstr "brak pamięci podczas przydzielania tablicy zwrotu"
+
+#~ msgid "cannot allocate address"
+#~ msgstr "nie można przydzielić adresu"
 
 #~ msgid "Allowing PID %d running as root"
 #~ msgstr "Pozwalanie PID-owi %d uruchomienia jako root"

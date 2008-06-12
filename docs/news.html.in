@@ -5,6 +5,65 @@
     <p>Here is the list of official releases, however since it is early on in the
 development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
+    <h3>0.4.3: Jun 12 2008</h3>
+    <ul>
+      <li>New features: Linux Container start and stop (Dave Leskovec),
+          Network interface model settings (Daniel Berrange),serial and parallel
+	  device support for QEmu and Xen (Daniel Berrange),
+          Sound support for QEmu and Xen (Cole Robinson), vCPU settings for
+	  QEmu (Cole Robinson), support for NUMA and vCPU pinning in QEmu
+	  (Daniel Berrange), new virDomainBlockPeek API (Richard Jones)</li>
+      <li>Documentation: coding guidelines (Jim Meyering and Richard Jones),
+          small man page missing entries and cleanup,
+	  Web site revamp (Daniel Berrange),
+	  typo fixes (Atsushi SAKAI), more docs on network XML format
+	  (Daniel Berrange), libvirt Wiki (Daniel Berrange),
+	  policykit config docs (Cole Robinson), XML domain docs revamp
+	  (Daniel Berrange), docs for remote listen-tls/tcp fixes (Kenneth
+	  Nagin),  </li>
+      <li>Bug fixes: save change to config file for Xen (Ryan Scott),
+          fix /var/run/libvirt/ group ownership (Anton Protopopov),
+	  ancient libparted workaround (Soren Hansen), out of bount
+	  array access (Daniel Berrange), remote check bug (Dave Leskovec),
+	  LXC signal and daemon restart problems (Dave Leskovec), bus selection
+	  logic fix in the daemon config (Daniel Berrange), 2 memory leaks
+	  in the daemon (Jim Meyering), daemon pid file logic bug fix
+	  (Daniel Berrange), python generator fixes (Daniel Berrange),
+	  ivarious leaks and memory problem pointed by valgrind (Daniel
+	  Berrange), iptables forwarding cleanup (Daniel Berrange),
+	  Xen cpuset value checking (Hiroyuki Kaguchi), container process
+	  checks for LXC (Dave Leskovec), let xend check block device syntax
+	  (Hiroyuki Kaguchi), UUIDString for python fixes (Cole Robinson)</li>
+      <li>Improvements: fixes for MinGW compilation (Richard Jones),
+          autostart for running Xen domains (Cole Robinson),
+	  control of listening IP for daemon (Stefan de Konink),
+	  various Xenner related fixes and improvements (Daniel Berrange)
+	  autostart status printed in virsh domainfo (Shigeki Sakamoto),
+	  better error messages for xend driver (Richard Jones)</li>
+      <li>Code cleanups: OpenVZ compilation (Richard Jones), conn dom and
+          net fields deprecation in error structures (Richard Jones),
+	  Xen-ism on UUID (Richard Jones), add missing .pod to dist (Richard
+	  Jones), tab cleanup from sources (Jim Meyering), remove unused field
+	  in virsh control structure (Richard Jones), compilation without
+	  pthread.h (Jim Meyering), cleanup of tests (Daniel Berrange),
+	  syntax-check improvements (Jim Meyering), python cleanup,
+	  remove dependancy on libc is_* character tests (Jim Meyering),
+	  format related cleanups (Jim Meyering), cleanup of the buffer
+	  internal APIs (Daniel Berrange), conversion to the new memory
+	  allocation API (Daniel Berrange), lcov coverage testing
+	  (Daniel Berrange), gnulib updates (Jim Meyering), compatibility
+	  fix with RHEL 5 (Daniel Berrange), SuSE compatibility fix (Jim
+	  Fehlig), const'ification of a number of structures (Jim Meyering),
+	  string comparison macro cleanups (Daniel Berrange), character
+	  range testing cleanups and assorted bug fixes (Jim Meyering),
+	  QEmu test fixes (Daniel Berrange), configure macro cleanup (Daniel
+	  Berrange), refactor QEmu command line building code (Daniel Berrange),
+	  type punning warning in remote code (Richard Jones), refactoring
+	  of internal headers (Richard Jones), generic out of memory
+	  testing and associated bug fixes (Daniel Berrange), don't raise
+	  internal error for unsupported features (Kaitlin Rupert),
+	  missing driver entry points (Daniel Berrange)</li>
+    </ul>
     <h3>0.4.2: Apr 8 2008</h3>
     <ul>
       <li>New features: memory operation for QEmu/KVM driver (Cole Robinson),

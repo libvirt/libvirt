@@ -1,3 +1,8 @@
+Thu Jun 12 17:49:23 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in NEWS libvirt.spec* doc/* po/*: making libvirt-0.4.3
+	  release
+
 Thu Jun 12 14:46:08 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/lxc_driver.c, src/openvz_driver.c: Add missing driver

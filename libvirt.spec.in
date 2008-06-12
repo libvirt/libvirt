@@ -1,23 +1,34 @@
 # -*- rpm-spec -*-
 
-%if "%{fedora}" >= "8"
-%define with_polkit 1
-%define with_proxy no
-%else
-%define with_polkit 0
-%define with_proxy yes
+%define with_xen       1
+%define with_xen_proxy 1
+%define with_qemu      1
+%define with_polkit    0
+
+# Xen is available only on i386 x86_64 ia64
+%ifnarch i386 i686 x86_64 ia64
+%define with_xen 0
+%endif
+
+%if ! %{with_xen}
+%define with_xen_proxy 0
 %endif
 
 %if "%{fedora}"
-%define with_qemu 1
-%else
+%ifarch ppc64
 %define with_qemu 0
+%endif
+%endif
+
+%if 0%{fedora} >= 8
+%define with_polkit    1
+%define with_xen_proxy 0
 %endif
 
 Summary: Library providing a simple API virtualization
 Name: libvirt
 Version: @VERSION@
-Release: 1%{?extra_release}
+Release: 1%{?dist}%{?extra_release}
 License: LGPL
 Group: Development/Libraries
 Source: libvirt-%{version}.tar.gz
@@ -46,8 +57,10 @@ BuildRequires: util-linux
 # From QEMU RPMs
 Requires: /usr/bin/qemu-img
 %else
+%if %{with_xen}
 # From Xen RPMs
 Requires: /usr/sbin/qcow-create
+%endif
 %endif
 # For LVM drivers
 Requires: lvm2
@@ -55,7 +68,9 @@ Requires: lvm2
 Requires: iscsi-initiator-utils
 # For disk driver
 Requires: parted
+%if %{with_xen}
 BuildRequires: xen-devel
+%endif
 BuildRequires: libxml2-devel
 BuildRequires: readline-devel
 BuildRequires: ncurses-devel
@@ -65,11 +80,10 @@ BuildRequires: avahi-devel
 BuildRequires: libselinux-devel
 BuildRequires: dnsmasq
 BuildRequires: bridge-utils
-BuildRequires: qemu
-BuildRequires: cyrus-sasl-devel
 %if %{with_qemu}
-BuildRequires: numactl-devel
+BuildRequires: qemu
 %endif
+BuildRequires: cyrus-sasl-devel
 %if %{with_polkit}
 BuildRequires: PolicyKit-devel >= 0.6
 %endif
@@ -79,8 +93,10 @@ BuildRequires: util-linux
 # From QEMU RPMs
 BuildRequires: /usr/bin/qemu-img
 %else
+%if %{with_xen}
 # From Xen RPMs
 BuildRequires: /usr/sbin/qcow-create
+%endif
 %endif
 # For LVM drivers
 BuildRequires: lvm2
@@ -89,7 +105,9 @@ BuildRequires: iscsi-initiator-utils
 # For disk driver
 BuildRequires: parted-devel
 Obsoletes: libvir
-ExclusiveArch: i386 x86_64 ia64
+
+# Fedora build root suckage
+BuildRequires: gawk
 
 %description
 Libvirt is a C toolkit to interact with the virtualization capabilities
@@ -100,6 +118,9 @@ Summary: Libraries, includes, etc. to compile with the libvirt library
 Group: Development/Libraries
 Requires: libvirt = %{version}
 Requires: pkgconfig
+%if %{with_xen}
+Requires: xen-devel
+%endif
 Obsoletes: libvir-devel
 
 %description devel
@@ -122,10 +143,19 @@ of recent versions of Linux (and other OSes).
 %setup -q
 
 %build
-%configure --with-init-script=redhat \
+%if ! %{with_xen}
+%define _without_xen --without-xen
+%endif
+
+%if ! %{with_qemu}
+%define _without_qemu --without-qemu
+%endif
+
+%configure %{?_without_xen} \
+           %{?_without_qemu} \
+           --with-init-script=redhat \
            --with-qemud-pid-file=%{_localstatedir}/run/libvirt_qemud.pid \
-           --with-remote-file=%{_localstatedir}/run/libvirtd.pid \
-           --with-xen-proxy=%{with_proxy}
+           --with-remote-file=%{_localstatedir}/run/libvirtd.pid
 make
 
 %install
@@ -139,7 +169,10 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.a
 install -d -m 0755 $RPM_BUILD_ROOT%{_localstatedir}/run/libvirt/
-install -d -m 0755 $RPM_BUILD_ROOT%{_localstatedir}/cache/libvirt/
+# Default dir for disk images defined in SELinux policy
+install -d -m 0755 $RPM_BUILD_ROOT%{_localstatedir}/lib/libvirt/images/
+# Default dir for kernel+initrd images defnied in SELinux policy
+install -d -m 0755 $RPM_BUILD_ROOT%{_localstatedir}/lib/libvirt/boot/
 
 # We don't want to install /etc/libvirt/qemu/networks in the main %files list
 # because if the admin wants to delete the default network completely, we don't
@@ -203,13 +236,14 @@ fi
 %dir %{_datadir}/libvirt/networks/
 %{_datadir}/libvirt/networks/default.xml
 %dir %{_localstatedir}/run/libvirt/
-%dir %{_localstatedir}/cache/libvirt/
 %dir %{_localstatedir}/lib/libvirt/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/images/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/boot/
 %if %{with_polkit}
 %{_datadir}/PolicyKit/policy/libvirtd.policy
 %endif
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
-%if %{with_proxy} == "yes"
+%if %{with_xen_proxy}
 %attr(4755, root, root) %{_libexecdir}/libvirt_proxy
 %endif
 %attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
@@ -245,6 +279,10 @@ fi
 %doc docs/examples/python
 
 %changelog
+* Thu Jun 12 2008 Daniel Veillard <veillard@redhat.com> - 0.4.3-1
+- release of 0.4.3
+- lots of bug fixes and small improvements
+
 * Tue Apr  8 2008 Daniel Veillard <veillard@redhat.com> - 0.4.2-1
 - release of 0.4.2
 - lots of bug fixes and small improvements
