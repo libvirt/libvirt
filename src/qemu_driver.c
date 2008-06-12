@@ -1259,7 +1259,7 @@ qemudAddIptablesRules(virConnectPtr conn,
     if (!driver->iptables && !(driver->iptables = iptablesContextNew())) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
                      "%s", _("failed to allocate space for IP tables support"));
-        return 1;
+        return 0;
     }
 
 
@@ -1319,23 +1319,22 @@ qemudAddIptablesRules(virConnectPtr conn,
     }
 
 
-    /* The remaining rules are only needed for IP forwarding */
-    if (!network->def->forward) {
-        iptablesSaveRules(driver->iptables);
-        return 1;
+    if (network->def->forward) {
+        /* If masquerading is enabled, set up the rules*/
+        if (network->def->forwardMode == QEMUD_NET_FORWARD_NAT &&
+            !qemudAddMasqueradingIptablesRules(conn, driver, network))
+            goto err8;
+        /* else if routing is enabled, set up the rules*/
+        else if (network->def->forwardMode == QEMUD_NET_FORWARD_ROUTE &&
+                 !qemudAddRoutingIptablesRules(conn, driver, network))
+            goto err8;
     }
 
-    /* If masquerading is enabled, set up the rules*/
-    if (network->def->forwardMode == QEMUD_NET_FORWARD_NAT) {
-        if (qemudAddMasqueradingIptablesRules(conn, driver, network))
-            return 1;
-    }
-    /* else if routing is enabled, set up the rules*/
-    else if (network->def->forwardMode == QEMUD_NET_FORWARD_ROUTE) {
-        if (qemudAddRoutingIptablesRules(conn, driver, network))
-            return 1;
-    }
+    iptablesSaveRules(driver->iptables);
 
+    return 1;
+
+ err8:
     iptablesRemoveForwardAllowCross(driver->iptables,
                                     network->bridge);
  err7:

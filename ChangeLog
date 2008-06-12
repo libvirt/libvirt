@@ -1,3 +1,7 @@
+Thu Jun 12 14:46:08 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: Fix saving of iptables rules
+
 Thu Jun 12 11:18:08 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c: Deal with failure due to inactive virtual
