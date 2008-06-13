@@ -1,3 +1,8 @@
+Fri Jun 13 09:55:17 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_conf.c: patch from Kaitlin Rupert, dynamic devices
+	  for network should be defined in an 'interface' node not 'net'
+
 Thu Jun 12 17:49:23 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in NEWS libvirt.spec* doc/* po/*: making libvirt-0.4.3

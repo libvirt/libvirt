@@ -2964,7 +2964,7 @@ qemudParseVMDeviceDef(virConnectPtr conn,
     if (xmlStrEqual(node->name, BAD_CAST "disk")) {
         dev->type = QEMUD_DEVICE_DISK;
         qemudParseDiskXML(conn, &(dev->data.disk), node);
-    } else if (xmlStrEqual(node->name, BAD_CAST "net")) {
+    } else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
         dev->type = QEMUD_DEVICE_NET;
         qemudParseInterfaceXML(conn, &(dev->data.net), node);
     } else if (xmlStrEqual(node->name, BAD_CAST "input")) {
