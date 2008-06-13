@@ -14,7 +14,8 @@ EXTRA_DIST = \
   $(man_MANS) autobuild.sh \
   .x-sc_avoid_if_before_free \
   .x-sc_prohibit_strcmp \
-  .x-sc_require_config_h
+  .x-sc_require_config_h \
+  autogen.sh
 
 man_MANS = virsh.1
 

@@ -1,3 +1,7 @@
+Fri Jun 13 11:07:52 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* Makefile.am: adding autogen.sh to EXTRA_DIST
+
 Fri Jun 13 09:55:17 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_conf.c: patch from Kaitlin Rupert, dynamic devices
