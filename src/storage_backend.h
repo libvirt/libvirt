@@ -133,7 +133,8 @@ int virStorageBackendRunProgRegex(virConnectPtr conn,
                                   const char **regex,
                                   int *nvars,
                                   virStorageBackendListVolRegexFunc func,
-                                  void *data);
+                                  void *data,
+                                  int *exitstatus);
 
 int virStorageBackendRunProgNul(virConnectPtr conn,
                                 virStoragePoolObjPtr pool,

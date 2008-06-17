@@ -214,14 +214,30 @@ virStorageBackendLogicalFindLVs(virConnectPtr conn,
         pool->def->name, NULL
     };
 
-    return virStorageBackendRunProgRegex(conn,
-                                         pool,
-                                         prog,
-                                         1,
-                                         regexes,
-                                         vars,
-                                         virStorageBackendLogicalMakeVol,
-                                         vol);
+    int exitstatus;
+
+    if (virStorageBackendRunProgRegex(conn,
+                                      pool,
+                                      prog,
+                                      1,
+                                      regexes,
+                                      vars,
+                                      virStorageBackendLogicalMakeVol,
+                                      vol,
+                                      &exitstatus) < 0) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("lvs command failed"));
+                              return -1;
+    }
+
+    if (exitstatus != 0) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("lvs command failed with exitstatus %d"),
+                              exitstatus);
+        return -1;
+    }
+
+    return 0;
 }
 
 static int
@@ -347,6 +363,7 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn,
         "--nosuffix", "--options", "vg_size,vg_free",
         pool->def->name, NULL
     };
+    int exitstatus;
 
     /* Get list of all logical volumes */
     if (virStorageBackendLogicalFindLVs(conn, pool, NULL) < 0) {
@@ -362,7 +379,13 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn,
                                       regexes,
                                       vars,
                                       virStorageBackendLogicalRefreshPoolFunc,
-                                      NULL) < 0) {
+                                      NULL,
+                                      &exitstatus) < 0) {
+        virStoragePoolObjClearVols(pool);
+        return -1;
+    }
+
+    if (exitstatus != 0) {
         virStoragePoolObjClearVols(pool);
         return -1;
     }

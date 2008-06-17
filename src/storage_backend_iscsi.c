@@ -124,13 +124,18 @@ virStorageBackendISCSISession(virConnectPtr conn,
     };
     char *session = NULL;
 
+    /* Note that we ignore the exitstatus.  Older versions of iscsiadm tools
+     * returned an exit status of > 0, even if they succeeded.  We will just
+     * rely on whether session got filled in properly.
+     */
     if (virStorageBackendRunProgRegex(conn, pool,
                                       prog,
                                       1,
                                       regexes,
                                       vars,
                                       virStorageBackendISCSIExtractSession,
-                                      &session) < 0)
+                                      &session,
+                                      NULL) < 0)
         return NULL;
 
     if (session == NULL) {
@@ -373,7 +378,7 @@ virStorageBackendISCSIFindLUNs(virConnectPtr conn,
                                          regexes,
                                          vars,
                                          virStorageBackendISCSIMakeLUN,
-                                         (void *)session);
+                                         (void *)session, NULL);
 }
 
 

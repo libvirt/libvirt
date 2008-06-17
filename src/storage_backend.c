@@ -352,7 +352,8 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
                               const char **regex,
                               int *nvars,
                               virStorageBackendListVolRegexFunc func,
-                              void *data)
+                              void *data,
+                              int *outexit)
 {
     int child = 0, fd = -1, exitstatus, err, failed = 1;
     FILE *list = NULL;
@@ -487,12 +488,8 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
         return -1;
     } else {
         if (WIFEXITED(exitstatus)) {
-            if (WEXITSTATUS(exitstatus) != 0) {
-                virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                      _("non-zero exit status from command %d"),
-                                      WEXITSTATUS(exitstatus));
-                return -1;
-            }
+            if (outexit != NULL)
+                *outexit = WEXITSTATUS(exitstatus);
         } else {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                   "%s", _("command did not exit cleanly"));
