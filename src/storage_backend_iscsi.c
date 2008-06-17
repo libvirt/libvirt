@@ -119,7 +119,7 @@ virStorageBackendISCSISession(virConnectPtr conn,
     int vars[] = {
         2,
     };
-    const char *prog[] = {
+    const char *const prog[] = {
         ISCSIADM, "--mode", "session", NULL
     };
     char *session = NULL;
@@ -153,7 +153,7 @@ virStorageBackendISCSIConnection(virConnectPtr conn,
                                  const char *portal,
                                  const char *action)
 {
-    const char *cmdargv[] = {
+    const char *const cmdargv[] = {
         ISCSIADM, "--mode", "node", "--portal", portal,
         "--targetname", pool->def->source.devices[0].path, action, NULL
     };
@@ -164,110 +164,30 @@ virStorageBackendISCSIConnection(virConnectPtr conn,
     return 0;
 }
 
-
 static int
-virStorageBackendISCSIMakeLUN(virConnectPtr conn,
-                              virStoragePoolObjPtr pool,
-                              char **const groups,
-                              void *data)
+virStorageBackendISCSINewLun(virConnectPtr conn, virStoragePoolObjPtr pool,
+                             unsigned int lun, const char *dev)
 {
     virStorageVolDefPtr vol;
     int fd = -1;
-    unsigned int target, channel, id, lun;
-    char lunid[100];
-    int opentries = 0;
     char *devpath = NULL;
-    char *session = data;
-    char sysfs_path[PATH_MAX];
-    char *dev = NULL;
-    DIR *sysdir;
-    struct dirent *block_dirent;
-    struct stat sbuf;
-    int len;
-
-    if ((virStrToLong_ui(groups[0], NULL, 10, &target) < 0) ||
-        (virStrToLong_ui(groups[1], NULL, 10, &channel) < 0) ||
-        (virStrToLong_ui(groups[2], NULL, 10, &id) < 0) ||
-        (virStrToLong_ui(groups[3], NULL, 10, &lun) < 0)) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
-                              _("Failed parsing iscsiadm commands"));
-        return -1;
-    }
-
-    if (lun == 0) {
-        /* the 0'th LUN isn't a real LUN, it's just a control LUN; skip it */
-        return 0;
-    }
-
-    snprintf(sysfs_path, PATH_MAX,
-             "/sys/class/iscsi_session/session%s/device/"
-             "target%d:%d:%d/%d:%d:%d:%d/block",
-             session, target, channel, id, target, channel, id, lun);
-
-    if (stat(sysfs_path, &sbuf) < 0) {
-        /* block path in subdir didn't exist; this is unexpected, so fail */
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to find the sysfs path for %d:%d:%d:%d: %s"),
-                              target, channel, id, lun, strerror(errno));
-        return -1;
-    }
-
-    sysdir = opendir(sysfs_path);
-    if (sysdir == NULL) {
-        /* we failed for some reason; return an error */
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to opendir sysfs path %s: %s"),
-                              sysfs_path, strerror(errno));
-        return -1;
-    }
-
-    while ((block_dirent = readdir(sysdir)) != NULL) {
-        len = strlen(block_dirent->d_name);
-        if ((len == 1 && block_dirent->d_name[0] == '.') ||
-            (len == 2 && block_dirent->d_name[0] == '.' && block_dirent->d_name[1] == '.')) {
-            /* the . and .. directories; just skip them */
-            continue;
-        }
-
-        /* OK, not . or ..; let's see if it is a SCSI device */
-        if (len > 2 &&
-            block_dirent->d_name[0] == 's' &&
-            block_dirent->d_name[1] == 'd') {
-            /* looks like a scsi device, smells like scsi device; it must be
-               a scsi device */
-            dev = strdup(block_dirent->d_name);
-            break;
-        }
-    }
-    closedir(sysdir);
-
-    if (dev == NULL) {
-        /* we didn't find the sd? device we were looking for; fail */
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to find SCSI device for %d:%d:%d:%d: %s"),
-                              target, channel, id, lun, strerror(errno));
-        return -1;
-    }
-
-    snprintf(lunid, sizeof(lunid)-1, "lun-%s", groups[3]);
+    int opentries = 0;
 
     if (VIR_ALLOC(vol) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
         goto cleanup;
     }
 
-    if ((vol->name = strdup(lunid)) == NULL) {
+    if (asprintf(&(vol->name), "lun-%d", lun) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("name"));
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(devpath, 5 + strlen(dev) + 1) < 0) {
+    if (asprintf(&devpath, "/dev/%s", dev) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("devpath"));
         goto cleanup;
     }
-    strcpy(devpath, "/dev/");
-    strcat(devpath, dev);
-    VIR_FREE(dev);
+
     /* It can take a little while between logging into the ISCSI
      * server and udev creating the /dev nodes, so if we get ENOENT
      * we must retry a few times - they should eventually appear.
@@ -328,8 +248,52 @@ virStorageBackendISCSIMakeLUN(virConnectPtr conn,
     if (fd != -1) close(fd);
     VIR_FREE(devpath);
     virStorageVolDefFree(vol);
-    VIR_FREE(dev);
     return -1;
+}
+
+static int notdotdir(const struct dirent *dir)
+{
+    return !(STREQLEN(dir->d_name, ".", 1) || STREQLEN(dir->d_name, "..", 2));
+}
+
+/* Function to check if the type file in the given sysfs_path is a
+ * Direct-Access device (i.e. type 0).  Return -1 on failure, 0 if not
+ * a Direct-Access device, and 1 if a Direct-Access device
+ */
+static int directAccessDevice(const char *sysfs_path)
+{
+    char typestr[3];
+    char *gottype, *p;
+    FILE *typefile;
+    int type;
+
+    typefile = fopen(sysfs_path, "r");
+    if (typefile == NULL) {
+        /* there was no type file; that doesn't seem right */
+        return -1;
+    }
+    gottype = fgets(typestr, 3, typefile);
+    fclose(typefile);
+
+    if (gottype == NULL) {
+        /* we couldn't read the type file; have to give up */
+        return -1;
+    }
+
+    /* we don't actually care about p, but if you pass NULL and the last
+     * character is not \0, virStrToLong_i complains
+     */
+    if (virStrToLong_i(typestr, &p, 10, &type) < 0) {
+        /* Hm, type wasn't an integer; seems strange */
+        return -1;
+    }
+
+    if (type != 0) {
+        /* saw a device other than Direct-Access */
+        return 0;
+    }
+
+    return 1;
 }
 
 static int
@@ -337,49 +301,209 @@ virStorageBackendISCSIFindLUNs(virConnectPtr conn,
                                virStoragePoolObjPtr pool,
                                const char *session)
 {
-    /*
-     * # iscsiadm --mode session -r $session -P 3
-     *
-     *           scsi1 Channel 00 Id 0 Lun: 0
-     *           scsi1 Channel 00 Id 0 Lun: 1
-     *                   Attached scsi disk sdc          State: running
-     *           scsi1 Channel 00 Id 0 Lun: 2
-     *                   Attached scsi disk sdd          State: running
-     *           scsi1 Channel 00 Id 0 Lun: 3
-     *                   Attached scsi disk sde          State: running
-     *           scsi1 Channel 00 Id 0 Lun: 4
-     *                   Attached scsi disk sdf          State: running
-     *           scsi1 Channel 00 Id 0 Lun: 5
-     *                   Attached scsi disk sdg          State: running
-     *
-     * Need a regex to match the Channel:Id:Lun lines
+    char sysfs_path[PATH_MAX];
+    uint32_t host, bus, target, lun;
+    DIR *sysdir;
+    struct dirent *sys_dirent;
+    struct dirent **namelist;
+    int i, n, tries, retval, directaccess;
+    char *block, *scsidev, *block2;
+
+    retval = 0;
+    block = NULL;
+    scsidev = NULL;
+
+    snprintf(sysfs_path, PATH_MAX,
+             "/sys/class/iscsi_session/session%s/device", session);
+
+    sysdir = opendir(sysfs_path);
+    if (sysdir == NULL) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Failed to opendir sysfs path %s: %s"),
+                              sysfs_path, strerror(errno));
+        return -1;
+    }
+    while ((sys_dirent = readdir(sysdir))) {
+        /* double-negative, so we can use the same function for scandir below */
+        if (!notdotdir(sys_dirent))
+            continue;
+
+        if (STREQLEN(sys_dirent->d_name, "target", 6)) {
+            if (sscanf(sys_dirent->d_name, "target%u:%u:%u",
+                       &host, &bus, &target) != 3) {
+                virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Failed to parse target from sysfs path %s/%s"),
+                                      sysfs_path, sys_dirent->d_name);
+                closedir(sysdir);
+                return -1;
+            }
+            break;
+        }
+    }
+    closedir(sysdir);
+
+    /* we now have the host, bus, and target; let's scan for LUNs */
+    snprintf(sysfs_path, PATH_MAX,
+             "/sys/class/iscsi_session/session%s/device/target%u:%u:%u",
+             session, host, bus, target);
+
+    n = scandir(sysfs_path, &namelist, notdotdir, versionsort);
+    if (n <= 0) {
+        /* we didn't find any reasonable entries; return failure */
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Failed to find any LUNs for session %s: %s"),
+                              session, strerror(errno));
+
+        return -1;
+    }
+
+    for (i=0; i<n; i++) {
+        block = NULL;
+        scsidev = NULL;
+
+        if (sscanf(namelist[i]->d_name, "%u:%u:%u:%u\n",
+                   &host, &bus, &target, &lun) != 4)
+            continue;
+
+        /* we found a LUN */
+        /* Note, however, that just finding a LUN doesn't mean it is
+         * actually useful to us.  There are a few different types of
+         * LUNs, enumerated in the linux kernel in
+         * drivers/scsi/scsi.c:scsi_device_types[].  Luckily, these device
+         * types form part of the ABI between the kernel and userland, so
+         * are unlikely to change.  For now, we ignore everything that isn't
+         * type 0; that is, a Direct-Access device
+         */
+        snprintf(sysfs_path, PATH_MAX,
+                 "/sys/bus/scsi/devices/%u:%u:%u:%u/type",
+                 host, bus, target, lun);
+
+        directaccess = directAccessDevice(sysfs_path);
+        if (directaccess < 0) {
+            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("Failed to determine if %u:%u:%u:%u is a Direct-Access LUN"),
+                                  host, bus, target, lun);
+            retval = -1;
+            goto namelist_cleanup;
+        }
+        else if (directaccess == 0) {
+            /* not a direct-access device; skip */
+            continue;
+        }
+        /* implicit else if (access == 1); Direct-Access device */
+
+        /* It might take some time for the
+         * /sys/bus/scsi/devices/host:bus:target:lun/block{:sda,/sda}
+         * link to show up; wait up to 5 seconds for it, then give up
+         */
+        tries = 0;
+        while (block == NULL && tries < 50) {
+            snprintf(sysfs_path, PATH_MAX, "/sys/bus/scsi/devices/%u:%u:%u:%u",
+                     host, bus, target, lun);
+
+            sysdir = opendir(sysfs_path);
+            if (sysdir == NULL) {
+                virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Failed to opendir sysfs path %s: %s"),
+                                      sysfs_path, strerror(errno));
+                retval = -1;
+                goto namelist_cleanup;
+            }
+            while ((sys_dirent = readdir(sysdir))) {
+                if (!notdotdir(sys_dirent))
+                    continue;
+                if (STREQLEN(sys_dirent->d_name, "block", 5)) {
+                    block = strdup(sys_dirent->d_name);
+                    break;
+                }
+            }
+            closedir(sysdir);
+            tries++;
+            if (block == NULL)
+                 usleep(100 * 1000);
+        }
+
+        if (block == NULL) {
+            /* we couldn't find the device link for this device; fail */
+            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("Failed to find device link for lun %d"),
+                                  lun);
+            retval = -1;
+            goto namelist_cleanup;
+        }
+
+        if (strlen(block) == 5) {
+            /* OK, this is exactly "block"; must be new-style */
+            snprintf(sysfs_path, PATH_MAX,
+                     "/sys/bus/scsi/devices/%u:%u:%u:%u/block",
+                     host, bus, target, lun);
+            sysdir = opendir(sysfs_path);
+            if (sysdir == NULL) {
+                virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Failed to opendir sysfs path %s: %s"),
+                                      sysfs_path, strerror(errno));
+                retval = -1;
+                goto namelist_cleanup;
+            }
+            while ((sys_dirent = readdir(sysdir))) {
+                if (!notdotdir(sys_dirent))
+                    continue;
+
+                scsidev = strdup(sys_dirent->d_name);
+                break;
+            }
+            closedir(sysdir);
+        }
+        else {
+            /* old-style; just parse out the sd */
+            block2 = strrchr(block, ':');
+            if (block2 == NULL) {
+                /* Hm, wasn't what we were expecting; have to give up */
+                virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Failed to parse block path %s"),
+                                      block);
+                retval = -1;
+                goto namelist_cleanup;
+            }
+            block2++;
+            scsidev = strdup(block2);
+        }
+        if (scsidev == NULL) {
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s",
+                                  _("Failed allocating memory for scsidev"));
+            retval = -1;
+            goto namelist_cleanup;
+        }
+
+        retval = virStorageBackendISCSINewLun(conn, pool, lun, scsidev);
+        if (retval < 0)
+            break;
+        VIR_FREE(scsidev);
+        VIR_FREE(block);
+    }
+
+namelist_cleanup:
+    /* we call these VIR_FREE here to make sure we don't leak memory on
+     * error cases; in the success case, these are already freed but NULL,
+     * which should be fine
      */
-    const char *regexes[] = {
-        "^\\s*scsi(\\S+)\\s+Channel\\s+(\\S+)\\s+Id\\s+(\\S+)\\s+Lun:\\s+(\\S+)\\s*$"
-    };
-    int vars[] = {
-        4
-    };
-    const char *prog[] = {
-        ISCSIADM, "--mode", "session", "-r", session, "-P", "3", NULL,
-    };
+    VIR_FREE(scsidev);
+    VIR_FREE(block);
 
-    return virStorageBackendRunProgRegex(conn, pool,
-                                         prog,
-                                         1,
-                                         regexes,
-                                         vars,
-                                         virStorageBackendISCSIMakeLUN,
-                                         (void *)session, NULL);
+    for (i=0; i<n; i++)
+        VIR_FREE(namelist[i]);
+	
+    VIR_FREE(namelist);
+ 
+    return retval;
 }
-
 
 static int
 virStorageBackendISCSIRescanLUNs(virConnectPtr conn,
                                  virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                  const char *session)
 {
-    const char *cmdargv[] = {
+    const char *const cmdargv[] = {
         ISCSIADM, "--mode", "session", "-r", session, "-R", NULL,
     };
 
