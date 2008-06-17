@@ -158,14 +158,6 @@ virStorageBackendISCSIConnection(virConnectPtr conn,
         "--targetname", pool->def->source.devices[0].path, action, NULL
     };
 
-    const char *cmdsendtarget[] = {
-        ISCSIADM, "--mode", "discovery", "--type", "sendtargets",
-        "--portal", portal, NULL
-    };
-
-    if (virRun(conn, (char **)cmdsendtarget, NULL) < 0)
-        return -1;
-
     if (virRun(conn, (char **)cmdargv, NULL) < 0)
         return -1;
 
@@ -403,6 +395,14 @@ virStorageBackendISCSILogin(virConnectPtr conn,
                             virStoragePoolObjPtr pool,
                             const char *portal)
 {
+    const char *const cmdsendtarget[] = {
+        ISCSIADM, "--mode", "discovery", "--type", "sendtargets",
+        "--portal", portal, NULL
+    };
+
+    if (virRun(conn, (char **)cmdsendtarget, NULL) < 0)
+        return -1;
+
     return virStorageBackendISCSIConnection(conn, pool, portal, "--login");
 }
 
