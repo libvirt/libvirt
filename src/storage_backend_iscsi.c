@@ -107,7 +107,7 @@ virStorageBackendISCSISession(virConnectPtr conn,
                               virStoragePoolObjPtr pool)
 {
     /*
-     * # iscsiadm --mode session  -P 0
+     * # iscsiadm --mode session
      * tcp: [1] 192.168.122.170:3260,1 demo-tgt-b
      * tcp: [2] 192.168.122.170:3260,1 demo-tgt-a
      *
@@ -120,7 +120,7 @@ virStorageBackendISCSISession(virConnectPtr conn,
         2,
     };
     const char *prog[] = {
-        ISCSIADM, "--mode", "session", "-P", "0", NULL
+        ISCSIADM, "--mode", "session", NULL
     };
     char *session = NULL;
 
