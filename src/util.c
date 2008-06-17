@@ -341,20 +341,20 @@ int __virFileReadAll(const char *path, int maxlen, char **buf)
     char *s;
 
     if (!(fh = fopen(path, "r"))) {
-        virLog("Failed to open file '%s': %s",
+        virLog("Failed to open file '%s': %s\n",
                path, strerror(errno));
         goto error;
     }
 
     s = fread_file_lim(fh, maxlen+1, &len);
     if (s == NULL) {
-        virLog("Failed to read '%s': %s", path, strerror (errno));
+        virLog("Failed to read '%s': %s\n", path, strerror (errno));
         goto error;
     }
 
     if (len > maxlen || (int)len != len) {
         VIR_FREE(s);
-        virLog("File '%s' is too large %d, max %d",
+        virLog("File '%s' is too large %d, max %d\n",
                path, (int)len, maxlen);
         goto error;
     }
@@ -415,16 +415,16 @@ int virFileLinkPointsTo(const char *checkLink,
             return 0;
 
         case EINVAL:
-            virLog("File '%s' is not a symlink",
+            virLog("File '%s' is not a symlink\n",
                    checkLink);
             return 0;
 
         }
-        virLog("Failed to read symlink '%s': %s",
+        virLog("Failed to read symlink '%s': %s\n",
                checkLink, strerror(errno));
         return 0;
     } else if (n >= PATH_MAX) {
-        virLog("Symlink '%s' contents too long to fit in buffer",
+        virLog("Symlink '%s' contents too long to fit in buffer\n",
                checkLink);
         return 0;
     }
@@ -441,7 +441,7 @@ int virFileLinkPointsTo(const char *checkLink,
         dir[PATH_MAX-1] = '\0';
 
         if (!(p = strrchr(dir, '/'))) {
-            virLog("Symlink path '%s' is not absolute", checkLink);
+            virLog("Symlink path '%s' is not absolute\n", checkLink);
             return 0;
         }
 
@@ -451,7 +451,7 @@ int virFileLinkPointsTo(const char *checkLink,
         *p = '\0';
 
         if (virFileBuildPath(dir, dest, NULL, tmp, PATH_MAX) < 0) {
-            virLog("Path '%s/%s' is too long", dir, dest);
+            virLog("Path '%s/%s' is too long\n", dir, dest);
             return 0;
         }
 
@@ -461,20 +461,20 @@ int virFileLinkPointsTo(const char *checkLink,
 
     /* canonicalize both paths */
     if (!realpath(dest, real)) {
-        virLog("Failed to expand path '%s' :%s", dest, strerror(errno));
+        virLog("Failed to expand path '%s' :%s\n", dest, strerror(errno));
         strncpy(real, dest, PATH_MAX);
         real[PATH_MAX-1] = '\0';
     }
 
     if (!realpath(checkDest, checkReal)) {
-        virLog("Failed to expand path '%s' :%s", checkDest, strerror(errno));
+        virLog("Failed to expand path '%s' :%s\n", checkDest, strerror(errno));
         strncpy(checkReal, checkDest, PATH_MAX);
         checkReal[PATH_MAX-1] = '\0';
     }
 
     /* compare */
     if (STRNEQ(checkReal, real)) {
-        virLog("Link '%s' does not point to '%s', ignoring",
+        virLog("Link '%s' does not point to '%s', ignoring\n",
                checkLink, checkReal);
         return 0;
     }
@@ -492,7 +492,7 @@ int
 virFileLinkPointsTo (const char *checkLink ATTRIBUTE_UNUSED,
                      const char *checkDest ATTRIBUTE_UNUSED)
 {
-    virLog (_("%s: not implemented"), __FUNCTION__);
+    virLog (_("%s: not implemented\n"), __FUNCTION__);
     return 0;
 }
 
