@@ -492,9 +492,9 @@ namelist_cleanup:
 
     for (i=0; i<n; i++)
         VIR_FREE(namelist[i]);
-	
+
     VIR_FREE(namelist);
- 
+
     return retval;
 }
 
