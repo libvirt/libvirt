@@ -2317,7 +2317,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     if (!(retval = strdup(tapfdstr)))
         goto no_memory;
 
-    if (VIR_ALLOC_N(vm->tapfds, vm->ntapfds+2) < 0)
+    if (VIR_REALLOC_N(vm->tapfds, vm->ntapfds+2) < 0)
         goto no_memory;
 
     vm->tapfds[vm->ntapfds++] = tapfd;
