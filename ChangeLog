@@ -1,3 +1,35 @@
+Thu Jun 19 13:47:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+
+	* src/memory.c: the new memory API changed the semantics of ALLOC,
+	  such that calling VIR_ALLOC(0) returned NULL.  This differed from
+	  glibc semantics for malloc().  Remove the offending code to restore
+	  glibc semantics.
+
+Thu Jun 19 12:38:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+
+	* src/qemu_conf.c: fix a bug where we were calling VIR_ALLOC_N
+	  in the qemu driver instead of VIR_REALLOC_N, which was causing
+	  libvirt to not start domains with multiple networks properly.
+
+Tue Jun 17 14:43:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+
+	* src/storage_backend.c,src/storage_backend.h,
+	  src/storage_backend_iscsi.c, src/storage_backend_logical.c: Change
+	  virStorageBackendRunProgRegex to return the exit status instead of
+	  reporting an error with non-zero return code.
+	* src/util.c: add carriage returns to all virLog() calls since they
+	  really just map to fprintf(stderr)
+	* src/storage_backend_iscsi.c: Change the call to
+	  "iscsiadm --mode session -P 0" to "iscsiadm --mode session"; this
+	  will work on all iscsiadm version back to Fedora Core 6.
+	* src/storage_backend_iscsi.c: Move the iscsiadm sendtargets discovery
+	  mechanism to only be called during --login; we don't need it in
+	  --logout.
+	* src/storage_backend_iscsi.c: Rewrite the findLuns function to only
+	  use sysfs to find LUNs.  Use sysfs "type" parameter to determine if
+	  this is a valid LUN or not.  Fix a race condition between sysfs
+	  scanning and udev.  Constify all of the "iscsiadm" strings.
+
 Fri Jun 13 11:07:52 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* Makefile.am: adding autogen.sh to EXTRA_DIST
