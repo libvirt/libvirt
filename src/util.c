@@ -306,7 +306,7 @@ fread_file_lim (FILE *stream, size_t max_len, size_t *length)
             if (alloc < size + BUFSIZ + 1)
                 alloc = size + BUFSIZ + 1;
 
-            if (VIR_ALLOC_N(buf, alloc) < 0) {
+            if (VIR_REALLOC_N(buf, alloc) < 0) {
                 save_errno = errno;
                 break;
             }
@@ -797,4 +797,3 @@ int virDiskNameToIndex(const char *name) {
 
     return idx;
 }
-

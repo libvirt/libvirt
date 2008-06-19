@@ -1,3 +1,11 @@
+Thu Jun 19 13:50:41 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	virsh fails to read files larger than BUFSIZ bytes
+	* src/util.c (fread_file_lim): Use VIR_REALLOC_N, not VIR_ALLOC_N.
+	Bug introduced in d3470efcda15f59549ac0aaa76cd25df319c217b.
+	* tests/Makefile.am (test_scripts): Add read-bufsiz.
+	* tests/read-bufsiz: New test for the above.
+
 Thu Jun 19 13:47:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
 
 	* src/memory.c: the new memory API changed the semantics of ALLOC,

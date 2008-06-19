@@ -47,6 +47,7 @@ noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
 test_scripts = \
 	daemon-conf \
 	int-overflow \
+	read-bufsiz \
 	read-non-seekable \
 	vcpupin
 
