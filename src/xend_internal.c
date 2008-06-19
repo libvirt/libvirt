@@ -3330,7 +3330,10 @@ xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids)
     struct sexpr *_for_i, *node;
     long id;
 
-    if ((ids == NULL) || (maxids <= 0))
+    if (maxids == 0)
+        return(0);
+
+    if ((ids == NULL) || (maxids < 0))
         goto error;
     root = sexpr_get(conn, "/xend/domain");
     if (root == NULL)
@@ -4219,8 +4222,11 @@ int xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxn
     if (priv->xendConfigVersion < 3)
         return(-1);
 
-    if ((names == NULL) || (maxnames <= 0))
+    if ((names == NULL) || (maxnames < 0))
         goto error;
+    if (maxnames == 0)
+        return(0);
+
     root = sexpr_get(conn, "/xend/domain?state=halted");
     if (root == NULL)
         goto error;

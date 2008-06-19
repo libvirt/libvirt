@@ -2554,8 +2554,11 @@ xenHypervisorListDomains(virConnectPtr conn, int *ids, int maxids)
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
     if (priv->handle < 0 ||
-        (ids == NULL) || (maxids < 1))
+        (ids == NULL) || (maxids < 0))
         return (-1);
+
+    if (maxids == 0)
+        return(0);
 
     if (!(XEN_GETDOMAININFOLIST_ALLOC(dominfos, maxids))) {
         virXenError(conn, VIR_ERR_NO_MEMORY, "allocating %d domain info",

@@ -1,3 +1,8 @@
+Thu Jun 19 16:29:33 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c src/xend_internal.c: fix a couple of issues
+	  for List functions where max given is 0
+
 Thu Jun 19 13:50:41 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	virsh fails to read files larger than BUFSIZ bytes
