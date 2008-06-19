@@ -97,11 +97,6 @@ int __virAlloc(void *ptrptr, size_t size)
     }
 #endif
 
-    if (size == 0) {
-        *(void **)ptrptr = NULL;
-        return 0;
-    }
-
     *(void **)ptrptr = calloc(1, size);
     if (*(void **)ptrptr == NULL)
         return -1;
@@ -129,11 +124,6 @@ int __virAllocN(void *ptrptr, size_t size, size_t count)
         return -1;
     }
 #endif
-
-    if (size == 0 || count == 0) {
-        *(void **)ptrptr = NULL;
-        return 0;
-    }
 
     *(void**)ptrptr = calloc(count, size);
     if (*(void**)ptrptr == NULL)
@@ -163,11 +153,6 @@ int __virReallocN(void *ptrptr, size_t size, size_t count)
         return -1;
 #endif
 
-    if (size == 0 || count == 0) {
-        free(*(void **)ptrptr);
-        *(void **)ptrptr = NULL;
-        return 0;
-    }
     if (xalloc_oversized(count, size)) {
         errno = ENOMEM;
         return -1;
