@@ -347,7 +347,7 @@ virStorageBackendStablePath(virConnectPtr conn,
 int
 virStorageBackendRunProgRegex(virConnectPtr conn,
                               virStoragePoolObjPtr pool,
-                              const char **prog,
+                              const char *const*prog,
                               int nregex,
                               const char **regex,
                               int *nvars,

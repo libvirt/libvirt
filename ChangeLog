@@ -1,3 +1,8 @@
+Tue Jun 24 15:29:33 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/storage_backend.h, src/storage_backend.c: Fix const-ness
+	of virStorageBackendRunProgRegex()
+
 Thu Jun 19 16:29:33 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c src/xend_internal.c: fix a couple of issues
