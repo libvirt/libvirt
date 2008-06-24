@@ -764,6 +764,28 @@ virParseMacAddr(const char* str, unsigned char *addr)
     return -1;
 }
 
+int virEnumFromString(const char *const*types,
+                      unsigned int ntypes,
+                      const char *type)
+{
+    unsigned int i;
+    for (i = 0 ; i < ntypes ; i++)
+        if (STREQ(types[i], type))
+            return i;
+
+    return -1;
+}
+
+const char *virEnumToString(const char *const*types,
+                            unsigned int ntypes,
+                            int type)
+{
+    if (type < 0 || type >= ntypes)
+        return NULL;
+
+    return types[type];
+}
+
 /* Translates a device name of the form (regex) "[fhv]d[a-z]+" into
  * the corresponding index (e.g. sda => 1, hdz => 26, vdaa => 27)
  * @param name The name of the device

@@ -25,6 +25,7 @@
 #define __VIR_UTIL_H__
 
 #include "util-lib.h"
+#include "verify.h"
 
 int virExec(virConnectPtr conn, char **argv, int *retpid,
             int infd, int *outfd, int *errfd);
@@ -87,5 +88,32 @@ int virParseNumber(const char **str);
 int virParseMacAddr(const char* str, unsigned char *addr);
 
 int virDiskNameToIndex(const char* str);
+
+
+int virEnumFromString(const char *const*types,
+                      unsigned int ntypes,
+                      const char *type);
+
+const char *virEnumToString(const char *const*types,
+                            unsigned int ntypes,
+                            int type);
+
+#define VIR_ENUM_IMPL(name, lastVal, ...)                               \
+    static const char const *name ## TypeList[] = { __VA_ARGS__ };      \
+    verify(ARRAY_CARDINALITY(name ## TypeList) == lastVal);             \
+    const char *name ## TypeToString(int type) {                        \
+        return virEnumToString(name ## TypeList,                        \
+                               ARRAY_CARDINALITY(name ## TypeList),     \
+                               type);                                   \
+    }                                                                   \
+    int name ## TypeFromString(const char *type) {                      \
+        return virEnumFromString(name ## TypeList,                      \
+                                 ARRAY_CARDINALITY(name ## TypeList),   \
+                                 type);                                 \
+    }
+
+#define VIR_ENUM_DECL(name)                             \
+    const char *name ## TypeToString(int type);         \
+    int name ## TypeFromString(const char*type);
 
 #endif /* __VIR_UTIL_H__ */

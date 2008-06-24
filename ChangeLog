@@ -1,3 +1,8 @@
+Tue Jun 24 15:59:33 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/util.h, src/util.c: Added helpers for managing enumerations
+	and conversion to/from string vs integer format
+
 Tue Jun 24 15:29:33 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/storage_backend.h, src/storage_backend.c: Fix const-ness
