@@ -1,3 +1,9 @@
+Wed Jun 25 16:21:12 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	quiet "make syntax-check"
+	* Makefile.maint (strftime-check): Add "@" prefix.
+	(po-check): Likewise.
+
 Wed Jun 25 13:40:25 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* python/types.c: patch from Ryan Scott to remove misplaced verbosity

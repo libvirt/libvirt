@@ -420,7 +420,7 @@ patch-check:
 # which date accepts but GNU strftime does not.
 extract_char = sed 's/^[^%][^%]*%\(.\).*/\1/'
 strftime-check:
-	if test -f $(srcdir)/src/date.c; then				\
+	@if test -f $(srcdir)/src/date.c; then				\
 	  grep '^  %.  ' $(srcdir)/src/date.c | sort			\
 	    | $(extract_char) > $@-src;					\
 	  { echo N;							\
@@ -467,7 +467,7 @@ m4-check:
 # Verify that all source files using _() are listed in po/POTFILES.in.
 # FIXME: don't hard-code file names below; use a more general mechanism.
 po-check:
-	if test -f po/POTFILES.in; then					\
+	@if test -f po/POTFILES.in; then					\
 	  grep -E -v '^(#|$$)' po/POTFILES.in				\
 	    | grep -v '^src/false\.c$$' | sort > $@-1;			\
 	  files=;							\
