@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-25 10:42+0200\n"
+"POT-Creation-Date: 2008-06-25 10:54+0200\n"
 "PO-Revision-Date: 2007-09-24 18:04+0530\n"
 "Last-Translator: I felix <ifelix@redhat.com>\n"
 "Language-Team: Tamil <fedora-trans-ta@redhat.com>\n"
@@ -823,8 +823,8 @@ msgid "expecting an assignment"
 msgstr "திட்டம் எதிர்பார்க்கப்படுகிறது"
 
 #: src/conf.c:894 src/conf.c:950 src/lxc_conf.c:778 src/xend_internal.c:645
-#: src/xend_internal.c:2299 src/xend_internal.c:2522 src/xm_internal.c:1076
-#: src/xm_internal.c:1336 src/xml.c:142 src/xml.c:279 src/xml.c:1865
+#: src/xend_internal.c:2299 src/xend_internal.c:2522 src/xm_internal.c:1079
+#: src/xm_internal.c:1339 src/xml.c:142 src/xml.c:279 src/xml.c:1865
 #: src/xml.c:1934
 #, fuzzy
 msgid "allocate buffer"
@@ -6302,7 +6302,7 @@ msgstr "vbd கோப்பு பெயரை பிரிக்க முட�
 msgid "domain information incomplete, missing id"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட id"
 
-#: src/xend_internal.c:2288 src/xm_internal.c:1065
+#: src/xend_internal.c:2288 src/xm_internal.c:1068
 msgid "parsing soundhw string failed."
 msgstr ""
 
@@ -6473,94 +6473,94 @@ msgstr ""
 msgid "xenXMConfigCacheRefresh: virHashAddEntry"
 msgstr ""
 
-#: src/xm_internal.c:1303
+#: src/xm_internal.c:1306
 #, fuzzy
 msgid "read only connection"
 msgstr "வாசிப்பு மட்டும் இணைப்புகள்"
 
-#: src/xm_internal.c:1308
+#: src/xm_internal.c:1311
 #, fuzzy
 msgid "not inactive domain"
 msgstr "செயலிலில்லாத செயற்களங்களை பட்டியலிடவும்"
 
-#: src/xm_internal.c:1313
+#: src/xm_internal.c:1316
 msgid "virHashLookup"
 msgstr ""
 
-#: src/xm_internal.c:1318
+#: src/xm_internal.c:1321
 #, fuzzy
 msgid "can't retrieve config file for domain"
 msgstr "கட்டமைப்பு கோப்பினை எழுத முடியவில்லை: %s"
 
-#: src/xm_internal.c:1944 src/xm_internal.c:2672 src/xm_internal.c:2694
-#: src/xm_internal.c:3091
+#: src/xm_internal.c:1947 src/xm_internal.c:2675 src/xm_internal.c:2697
+#: src/xm_internal.c:3094
 #, fuzzy
 msgid "cannot read XML domain definition"
 msgstr "செயற்கள விளக்க கோப்பினை ஏற்றவும்"
 
-#: src/xm_internal.c:1950
+#: src/xm_internal.c:1953
 #, fuzzy
 msgid "missing top level domain element"
 msgstr "விடுபட்ட ரூட் சாதன தகவல்"
 
-#: src/xm_internal.c:1958
+#: src/xm_internal.c:1961
 #, fuzzy
 msgid "domain type is invalid"
 msgstr "செயற்களம் %s ஏற்கனவே உள்ளது"
 
-#: src/xm_internal.c:1966 src/xm_internal.c:2677 src/xm_internal.c:2699
-#: src/xm_internal.c:3096
+#: src/xm_internal.c:1969 src/xm_internal.c:2680 src/xm_internal.c:2702
+#: src/xm_internal.c:3099
 #, fuzzy
 msgid "cannot create XPath context"
 msgstr "xpath சூழலை உருவாக்குகிறது"
 
-#: src/xm_internal.c:2158 src/xm_internal.c:2232 src/xm_internal.c:2253
-#: src/xm_internal.c:2269 src/xm_internal.c:2288 src/xm_internal.c:2303
-#: src/xm_internal.c:2476
+#: src/xm_internal.c:2161 src/xm_internal.c:2235 src/xm_internal.c:2256
+#: src/xm_internal.c:2272 src/xm_internal.c:2291 src/xm_internal.c:2306
+#: src/xm_internal.c:2479
 msgid "config"
 msgstr ""
 
-#: src/xm_internal.c:2414
+#: src/xm_internal.c:2417
 msgid "name config parameter is missing"
 msgstr ""
 
-#: src/xm_internal.c:2423
+#: src/xm_internal.c:2426
 msgid "can't retrieve config filename for domain to overwrite"
 msgstr ""
 
-#: src/xm_internal.c:2429
+#: src/xm_internal.c:2432
 msgid "can't retrieve config entry for domain to overwrite"
 msgstr ""
 
-#: src/xm_internal.c:2435 src/xm_internal.c:2491
+#: src/xm_internal.c:2438 src/xm_internal.c:2494
 msgid "uuid config parameter is missing"
 msgstr ""
 
-#: src/xm_internal.c:2445 src/xm_internal.c:2452
+#: src/xm_internal.c:2448 src/xm_internal.c:2455
 #, fuzzy
 msgid "failed to remove old domain from config map"
 msgstr "%s லிருந்து செயற்களத்தை மீட்டெடுக்க முடியவில்லை"
 
-#: src/xm_internal.c:2461
+#: src/xm_internal.c:2464
 msgid "config file name is too long"
 msgstr ""
 
-#: src/xm_internal.c:2471
+#: src/xm_internal.c:2474
 #, fuzzy
 msgid "unable to write config file"
 msgstr "கட்டமைப்பு கோப்பினை எழுத முடியவில்லை"
 
-#: src/xm_internal.c:2482
+#: src/xm_internal.c:2485
 #, fuzzy
 msgid "unable to get current time"
 msgstr "செயற்களத்தின் நடப்பு நினைவகம்"
 
-#: src/xm_internal.c:2497 src/xm_internal.c:2504
+#: src/xm_internal.c:2500 src/xm_internal.c:2507
 #, fuzzy
 msgid "unable to store config file handle"
 msgstr "கட்டமைப்பு கோப்பு %s ஐ வாசிக்க முடியவில்லை"
 
-#: src/xm_internal.c:2711
+#: src/xm_internal.c:2714
 #, fuzzy
 msgid "unknown device"
 msgstr "தெரியாத OS வகை"

@@ -5,6 +5,17 @@
        http://libvirt.org/news.html
 
 
+0.4.4: Jun 25 2008:
+   - Bug fixes: QEmu network serialization (Kaitlin Rupert), internal
+          memory allocation fixes (Chris Lalancette Jim Meyering), virsh
+	  large file config problem (Jim Meyering), xen list APIs when
+	  max is zero, string escape problems in the xm driver 
+   - Improvements: add autogen to tarballs, improve iSCSI support
+          (Chris Lalancette), localization updates 
+   - Cleanups: const-ness fixed (Daniel P. Berrange), string helpers
+          for enumeations (Daniel P. Berrange)
+
+
 0.4.3: Jun 12 2008:
    - New features: Linux Container start and stop (Dave Leskovec),
           Network interface model settings (Daniel Berrange),serial and parallel

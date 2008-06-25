@@ -599,7 +599,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
         return (NULL);
 
     virBufferAddLit(&buf, "<domain type='xen'>\n");
-    virBufferVSprintf(&buf, "  <name>%s</name>\n", name);
+    virBufferEscapeString(&buf, "  <name>%s</name>\n", name);
     virUUIDFormat(uuid, uuidstr);
     virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", uuidstr);
 
@@ -612,7 +612,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
         virBufferAddLit(&buf, "  <os>\n");
         virBufferAddLit(&buf, "    <type>hvm</type>\n");
         if (xenXMConfigGetString(conf, "kernel", &str) == 0)
-            virBufferVSprintf(&buf, "    <loader>%s</loader>\n", str);
+            virBufferEscapeString(&buf, "    <loader>%s</loader>\n", str);
 
         if (xenXMConfigGetString(conf, "boot", &boot) < 0)
             boot = "c";
@@ -639,15 +639,15 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
     } else {
 
         if (xenXMConfigGetString(conf, "bootloader", &str) == 0)
-            virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", str);
+            virBufferEscapeString(&buf, "  <bootloader>%s</bootloader>\n", str);
         if (xenXMConfigGetString(conf, "bootargs", &str) == 0)
             virBufferEscapeString(&buf, "  <bootloader_args>%s</bootloader_args>\n", str);
         if (xenXMConfigGetString(conf, "kernel", &str) == 0) {
             virBufferAddLit(&buf, "  <os>\n");
             virBufferAddLit(&buf, "    <type>linux</type>\n");
-            virBufferVSprintf(&buf, "    <kernel>%s</kernel>\n", str);
+            virBufferEscapeString(&buf, "    <kernel>%s</kernel>\n", str);
             if (xenXMConfigGetString(conf, "ramdisk", &str) == 0)
-                virBufferVSprintf(&buf, "    <initrd>%s</initrd>\n", str);
+                virBufferEscapeString(&buf, "    <initrd>%s</initrd>\n", str);
             if (xenXMConfigGetString(conf, "extra", &str) == 0)
                 virBufferEscapeString(&buf, "    <cmdline>%s</cmdline>\n", str);
             virBufferAddLit(&buf, "  </os>\n");
@@ -714,7 +714,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
 
     if (hvm) {
         if (xenXMConfigGetString(conf, "device_model", &str) == 0)
-            virBufferVSprintf(&buf, "    <emulator>%s</emulator>\n", str);
+            virBufferEscapeString(&buf, "    <emulator>%s</emulator>\n", str);
     }
 
     list = virConfGetValue(conf, "disk");
@@ -816,9 +816,12 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 virBufferVSprintf(&buf, "      <driver name='%s' type='%s'/>\n", drvName, drvType);
             else
                 virBufferVSprintf(&buf, "      <driver name='%s'/>\n", drvName);
-            if (src[0])
-                virBufferVSprintf(&buf, "      <source %s='%s'/>\n", block ? "dev" : "file", src);
-            virBufferVSprintf(&buf, "      <target dev='%s' bus='%s'/>\n", dev, bus);
+            if (src[0]) {
+                virBufferVSprintf(&buf, "      <source %s=", block ? "dev" : "file");
+		virBufferEscapeString(&buf, "'%s'/>\n",  src);
+	    }
+            virBufferEscapeString(&buf, "      <target dev='%s'", dev);
+            virBufferVSprintf(&buf, " bus='%s'/>\n", bus);
             if (STREQ(head, "r") ||
                 STREQ(head, "ro"))
                 virBufferAddLit(&buf, "      <readonly/>\n");
@@ -836,7 +839,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
         if (xenXMConfigGetString(conf, "cdrom", &str) == 0) {
             virBufferAddLit(&buf, "    <disk type='file' device='cdrom'>\n");
             virBufferAddLit(&buf, "      <driver name='file'/>\n");
-            virBufferVSprintf(&buf, "      <source file='%s'/>\n", str);
+            virBufferEscapeString(&buf, "      <source file='%s'/>\n", str);
             virBufferAddLit(&buf, "      <target dev='hdc' bus='ide'/>\n");
             virBufferAddLit(&buf, "      <readonly/>\n");
             virBufferAddLit(&buf, "    </disk>\n");
@@ -924,7 +927,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             if (type == 1 && bridge[0])
                 virBufferVSprintf(&buf, "      <source bridge='%s'/>\n", bridge);
             if (script[0])
-                virBufferVSprintf(&buf, "      <script path='%s'/>\n", script);
+                virBufferEscapeString(&buf, "      <script path='%s'/>\n", script);
             if (ip[0])
                 virBufferVSprintf(&buf, "      <ip address='%s'/>\n", ip);
             if (model[0])
@@ -1024,10 +1027,10 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             virBufferVSprintf(&buf, " listen='%s'", vnclisten);
         }
         if (vncpasswd) {
-            virBufferVSprintf(&buf, " passwd='%s'", vncpasswd);
+            virBufferEscapeString(&buf, " passwd='%s'", vncpasswd);
         }
         if (keymap) {
-            virBufferVSprintf(&buf, " keymap='%s'", keymap);
+            virBufferEscapeString(&buf, " keymap='%s'", keymap);
         }
         virBufferAddLit(&buf, "/>\n");
     }

@@ -1,3 +1,12 @@
+Wed Jun 25 10:52:05 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in NEWS libvirt.spec* doc/* po/*: making libvirt-0.4.4
+	  release
+	* src/xm_internal.c: fix xm driver serialization escapes
+	* tests/xmconfigtest.c tests/xmconfigdata/test-escape-paths.cfg
+	  tests/xmconfigdata/test-escape-paths.xml: add test for previous
+	  problem
+
 Wed Jun 25 10:48:39 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* po/*: updated a couple of localizations and regenerated the

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-25 10:42+0200\n"
+"POT-Creation-Date: 2008-06-25 10:54+0200\n"
 "PO-Revision-Date: 2008-06-12 18:54+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -804,8 +804,8 @@ msgid "expecting an assignment"
 msgstr "oczekiwane wyznaczenie"
 
 #: src/conf.c:894 src/conf.c:950 src/lxc_conf.c:778 src/xend_internal.c:645
-#: src/xend_internal.c:2299 src/xend_internal.c:2522 src/xm_internal.c:1076
-#: src/xm_internal.c:1336 src/xml.c:142 src/xml.c:279 src/xml.c:1865
+#: src/xend_internal.c:2299 src/xend_internal.c:2522 src/xm_internal.c:1079
+#: src/xm_internal.c:1339 src/xml.c:142 src/xml.c:279 src/xml.c:1865
 #: src/xml.c:1934
 msgid "allocate buffer"
 msgstr "przydziel bufor"
@@ -6120,7 +6120,7 @@ msgstr "nie można przeanalizować nazwy pliku vbd, brak typu sterownika"
 msgid "domain information incomplete, missing id"
 msgstr "informacje o domenie są niekompletne, brak identyfikatora"
 
-#: src/xend_internal.c:2288 src/xm_internal.c:1065
+#: src/xend_internal.c:2288 src/xm_internal.c:1068
 msgid "parsing soundhw string failed."
 msgstr "przeanalizowanie łańcucha soundhw nie powiodło się."
 
@@ -6285,83 +6285,83 @@ msgstr "xenXMConfigCacheRefresh: nazwa"
 msgid "xenXMConfigCacheRefresh: virHashAddEntry"
 msgstr "xenXMConfigCacheRefresh: virHashAddEntry"
 
-#: src/xm_internal.c:1303
+#: src/xm_internal.c:1306
 msgid "read only connection"
 msgstr "połączenie tylko do odczytu"
 
-#: src/xm_internal.c:1308
+#: src/xm_internal.c:1311
 msgid "not inactive domain"
 msgstr "nieaktywne domeny"
 
-#: src/xm_internal.c:1313
+#: src/xm_internal.c:1316
 msgid "virHashLookup"
 msgstr "virHashLookup"
 
-#: src/xm_internal.c:1318
+#: src/xm_internal.c:1321
 msgid "can't retrieve config file for domain"
 msgstr "nie można pobrać pliku konfiguracji dla domeny"
 
-#: src/xm_internal.c:1944 src/xm_internal.c:2672 src/xm_internal.c:2694
-#: src/xm_internal.c:3091
+#: src/xm_internal.c:1947 src/xm_internal.c:2675 src/xm_internal.c:2697
+#: src/xm_internal.c:3094
 msgid "cannot read XML domain definition"
 msgstr "nie można odczytać definicji domeny w XML-u"
 
-#: src/xm_internal.c:1950
+#: src/xm_internal.c:1953
 msgid "missing top level domain element"
 msgstr "brak elementu najwyższego poziomu domeny"
 
-#: src/xm_internal.c:1958
+#: src/xm_internal.c:1961
 msgid "domain type is invalid"
 msgstr "typ domeny jest nieprawidłowy"
 
-#: src/xm_internal.c:1966 src/xm_internal.c:2677 src/xm_internal.c:2699
-#: src/xm_internal.c:3096
+#: src/xm_internal.c:1969 src/xm_internal.c:2680 src/xm_internal.c:2702
+#: src/xm_internal.c:3099
 msgid "cannot create XPath context"
 msgstr "nie można utworzyć kontekstu XPath"
 
-#: src/xm_internal.c:2158 src/xm_internal.c:2232 src/xm_internal.c:2253
-#: src/xm_internal.c:2269 src/xm_internal.c:2288 src/xm_internal.c:2303
-#: src/xm_internal.c:2476
+#: src/xm_internal.c:2161 src/xm_internal.c:2235 src/xm_internal.c:2256
+#: src/xm_internal.c:2272 src/xm_internal.c:2291 src/xm_internal.c:2306
+#: src/xm_internal.c:2479
 msgid "config"
 msgstr "konfiguracja"
 
-#: src/xm_internal.c:2414
+#: src/xm_internal.c:2417
 msgid "name config parameter is missing"
 msgstr "brak parametru nazwy konfiguracji"
 
-#: src/xm_internal.c:2423
+#: src/xm_internal.c:2426
 msgid "can't retrieve config filename for domain to overwrite"
 msgstr "nie można pobrać nazwy pliku konfiguracji dla domeny do zastąpienia"
 
-#: src/xm_internal.c:2429
+#: src/xm_internal.c:2432
 msgid "can't retrieve config entry for domain to overwrite"
 msgstr "nie można pobrać wpisu konfiguracji dla domeny do zastąpienia"
 
-#: src/xm_internal.c:2435 src/xm_internal.c:2491
+#: src/xm_internal.c:2438 src/xm_internal.c:2494
 msgid "uuid config parameter is missing"
 msgstr "brak parametru konfiguracji UUID"
 
-#: src/xm_internal.c:2445 src/xm_internal.c:2452
+#: src/xm_internal.c:2448 src/xm_internal.c:2455
 msgid "failed to remove old domain from config map"
 msgstr "usunięcie starej domeny z mapy konfiguracji nie powiodło się"
 
-#: src/xm_internal.c:2461
+#: src/xm_internal.c:2464
 msgid "config file name is too long"
 msgstr "nazwa pliku konfiguracji jest za długa"
 
-#: src/xm_internal.c:2471
+#: src/xm_internal.c:2474
 msgid "unable to write config file"
 msgstr "nie można zapisać pliku konfiguracji"
 
-#: src/xm_internal.c:2482
+#: src/xm_internal.c:2485
 msgid "unable to get current time"
 msgstr "nie można uzyskać obecnego czasu"
 
-#: src/xm_internal.c:2497 src/xm_internal.c:2504
+#: src/xm_internal.c:2500 src/xm_internal.c:2507
 msgid "unable to store config file handle"
 msgstr "nie można przechować obsługi pliku konfiguracji"
 
-#: src/xm_internal.c:2711
+#: src/xm_internal.c:2714
 msgid "unknown device"
 msgstr "nieznane urządzenie"
 

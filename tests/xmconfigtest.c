@@ -223,6 +223,7 @@ mymain(int argc, char **argv)
 
     DO_TEST("fullvirt-sound", 2);
 
+    DO_TEST("escape-paths", 2);
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
