@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: as\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-12 17:49+0200\n"
+"POT-Creation-Date: 2008-06-25 10:42+0200\n"
 "PO-Revision-Date: 2007-09-25 17:39+0530\n"
 "Last-Translator: Amitakhya Phukan <aphukan@fedoraproject.org>\n"
 "Language-Team: Assamese\n"
@@ -2863,46 +2863,46 @@ msgstr ""
 msgid "path"
 msgstr ""
 
-#: src/storage_backend.c:368
+#: src/storage_backend.c:369
 msgid "regex"
 msgstr ""
 
-#: src/storage_backend.c:378
+#: src/storage_backend.c:379
 #, fuzzy, c-format
 msgid "Failed to compile regex %s"
 msgstr "পঢ়াৰ বাবে %s খোলোঁতে বিফল"
 
-#: src/storage_backend.c:394 src/storage_backend.c:399
-#: src/storage_backend.c:435
+#: src/storage_backend.c:395 src/storage_backend.c:400
+#: src/storage_backend.c:436
 msgid "regex groups"
 msgstr ""
 
-#: src/storage_backend.c:411 src/storage_backend.c:551
+#: src/storage_backend.c:412 src/storage_backend.c:548
 msgid "cannot read fd"
 msgstr ""
 
-#: src/storage_backend.c:485 src/storage_backend.c:606
+#: src/storage_backend.c:486 src/storage_backend.c:603
 #, fuzzy, c-format
 msgid "failed to wait for command: %s"
 msgstr "বিন্যাস নথিপত্ৰ লিখিবলৈ বিফল: %s"
 
-#: src/storage_backend.c:492 src/storage_backend.c:613
-#, c-format
-msgid "non-zero exit status from command %d"
-msgstr ""
-
-#: src/storage_backend.c:498 src/storage_backend.c:619
+#: src/storage_backend.c:495 src/storage_backend.c:616
 msgid "command did not exit cleanly"
 msgstr ""
 
-#: src/storage_backend.c:538
+#: src/storage_backend.c:535
 msgid "n_columns too large"
 msgstr ""
 
-#: src/storage_backend.c:585
+#: src/storage_backend.c:582
 #, fuzzy, c-format
 msgid "read error: %s"
 msgstr "ভিতৰুৱা ভুল %s"
+
+#: src/storage_backend.c:610
+#, c-format
+msgid "non-zero exit status from command %d"
+msgstr ""
 
 #: src/storage_backend_disk.c:85 src/storage_backend_logical.c:57
 #, c-format
@@ -2928,7 +2928,7 @@ msgstr ""
 
 #: src/storage_backend_disk.c:179 src/storage_backend_disk.c:192
 #: src/storage_backend_disk.c:199 src/storage_backend_disk.c:221
-#: src/storage_backend_fs.c:685 src/storage_backend_iscsi.c:258
+#: src/storage_backend_fs.c:685 src/storage_backend_iscsi.c:177
 #: src/storage_backend_logical.c:116 src/storage_backend_logical.c:121
 #: src/storage_backend_logical.c:133 src/storage_backend_logical.c:143
 msgid "volume"
@@ -2970,7 +2970,7 @@ msgid "cannot read %s: %s"
 msgstr ""
 
 #: src/storage_backend_fs.c:507 src/storage_backend_fs.c:574
-#: src/storage_backend_iscsi.c:444
+#: src/storage_backend_iscsi.c:573
 #, fuzzy
 msgid "missing source host"
 msgstr "যন্ত্ৰৰ বাবে উৎসৰ তথ্য নাই"
@@ -2981,7 +2981,7 @@ msgid "missing source path"
 msgstr "যন্ত্ৰৰ বাবে উৎসৰ তথ্য নাই"
 
 #: src/storage_backend_fs.c:518 src/storage_backend_fs.c:585
-#: src/storage_backend_iscsi.c:451
+#: src/storage_backend_iscsi.c:580
 #, fuzzy
 msgid "missing source device"
 msgstr "যন্ত্ৰৰ বাবে উৎসৰ তথ্য নাই"
@@ -3043,7 +3043,7 @@ msgid "cannot extend file '%s': %s"
 msgstr ""
 
 #: src/storage_backend_fs.c:888 src/storage_backend_fs.c:924
-#: src/storage_backend_fs.c:959 src/storage_backend_logical.c:434
+#: src/storage_backend_fs.c:959 src/storage_backend_logical.c:457
 #, c-format
 msgid "cannot read path '%s': %s"
 msgstr ""
@@ -3062,17 +3062,17 @@ msgstr ""
 msgid "creation of non-raw images is not supported without qemu-img"
 msgstr ""
 
-#: src/storage_backend_fs.c:976 src/storage_backend_logical.c:443
+#: src/storage_backend_fs.c:976 src/storage_backend_logical.c:466
 #, fuzzy, c-format
 msgid "cannot set file owner '%s': %s"
 msgstr "পঢ়াৰ বাবে %s খোলোঁতে বিফল"
 
-#: src/storage_backend_fs.c:985 src/storage_backend_logical.c:450
+#: src/storage_backend_fs.c:985 src/storage_backend_logical.c:473
 #, fuzzy, c-format
 msgid "cannot set file mode '%s': %s"
 msgstr "পঢ়াৰ বাবে %s খোলোঁতে বিফল"
 
-#: src/storage_backend_fs.c:1001 src/storage_backend_logical.c:457
+#: src/storage_backend_fs.c:1001 src/storage_backend_logical.c:480
 #, c-format
 msgid "cannot close file '%s': %s"
 msgstr ""
@@ -3101,48 +3101,65 @@ msgstr ""
 msgid "session"
 msgstr ""
 
-#: src/storage_backend_iscsi.c:138
+#: src/storage_backend_iscsi.c:143
 msgid "cannot find session"
 msgstr ""
 
-#: src/storage_backend_iscsi.c:196
-msgid "Failed parsing iscsiadm commands"
-msgstr ""
-
-#: src/storage_backend_iscsi.c:213
-#, fuzzy, c-format
-msgid "Failed to find the sysfs path for %d:%d:%d:%d: %s"
-msgstr "নে'টৱৰ্ক বিচাৰিবলৈ অক্ষম: %s"
-
-#: src/storage_backend_iscsi.c:222
-#, fuzzy, c-format
-msgid "Failed to opendir sysfs path %s: %s"
-msgstr "পঢ়াৰ বাবে %s খোলোঁতে বিফল"
-
-#: src/storage_backend_iscsi.c:250
-#, fuzzy, c-format
-msgid "Failed to find SCSI device for %d:%d:%d:%d: %s"
-msgstr "নে'টৱৰ্ক বিচাৰিবলৈ অক্ষম: %s"
-
-#: src/storage_backend_iscsi.c:263 src/storage_driver.c:869
+#: src/storage_backend_iscsi.c:182 src/storage_driver.c:869
 #, fuzzy
 msgid "name"
 msgstr "নাম:"
 
-#: src/storage_backend_iscsi.c:268
+#: src/storage_backend_iscsi.c:187
 msgid "devpath"
 msgstr ""
 
-#: src/storage_backend_iscsi.c:289 src/util.c:113
+#: src/storage_backend_iscsi.c:206 src/util.c:113
 #, fuzzy, c-format
 msgid "cannot open %s: %s"
 msgstr "পঢ়াৰ বাবে %s খোলোঁতে বিফল"
 
-#: src/storage_backend_iscsi.c:314
+#: src/storage_backend_iscsi.c:231
 msgid "key"
 msgstr ""
 
-#: src/storage_backend_iscsi.c:425
+#: src/storage_backend_iscsi.c:322 src/storage_backend_iscsi.c:407
+#: src/storage_backend_iscsi.c:443
+#, fuzzy, c-format
+msgid "Failed to opendir sysfs path %s: %s"
+msgstr "পঢ়াৰ বাবে %s খোলোঁতে বিফল"
+
+#: src/storage_backend_iscsi.c:335
+#, fuzzy, c-format
+msgid "Failed to parse target from sysfs path %s/%s"
+msgstr "পঢ়াৰ বাবে %s খোলোঁতে বিফল"
+
+#: src/storage_backend_iscsi.c:354
+#, fuzzy, c-format
+msgid "Failed to find any LUNs for session %s: %s"
+msgstr "নে'টৱৰ্ক বিচাৰিবলৈ অক্ষম: %s"
+
+#: src/storage_backend_iscsi.c:384
+#, c-format
+msgid "Failed to determine if %u:%u:%u:%u is a Direct-Access LUN"
+msgstr ""
+
+#: src/storage_backend_iscsi.c:429
+#, fuzzy, c-format
+msgid "Failed to find device link for lun %d"
+msgstr "নে'টৱৰ্ক বিচাৰিবলৈ অক্ষম: %s"
+
+#: src/storage_backend_iscsi.c:463
+#, fuzzy, c-format
+msgid "Failed to parse block path %s"
+msgstr "বিন্যাস নথিপত্ৰ লিখিবলৈ বিফল"
+
+#: src/storage_backend_iscsi.c:473
+#, fuzzy
+msgid "Failed allocating memory for scsidev"
+msgstr "বিন্যাস নথিপত্ৰ লিখিবলৈ বিফল"
+
+#: src/storage_backend_iscsi.c:554
 msgid "portal"
 msgstr ""
 
@@ -3158,26 +3175,36 @@ msgstr ""
 msgid "malformed volume extent size value"
 msgstr ""
 
-#: src/storage_backend_logical.c:268
+#: src/storage_backend_logical.c:229
+#, fuzzy
+msgid "lvs command failed"
+msgstr "কাৰ্য্যকৰণ বিফল"
+
+#: src/storage_backend_logical.c:235
+#, c-format
+msgid "lvs command failed with exitstatus %d"
+msgstr ""
+
+#: src/storage_backend_logical.c:284
 msgid "command line"
 msgstr ""
 
-#: src/storage_backend_logical.c:285
+#: src/storage_backend_logical.c:301
 #, c-format
 msgid "cannot open device %s"
 msgstr ""
 
-#: src/storage_backend_logical.c:291
+#: src/storage_backend_logical.c:307
 #, c-format
 msgid "cannot clear device header %s"
 msgstr ""
 
-#: src/storage_backend_logical.c:298
+#: src/storage_backend_logical.c:314
 #, c-format
 msgid "cannot close device %s"
 msgstr ""
 
-#: src/storage_backend_logical.c:466
+#: src/storage_backend_logical.c:489
 #, c-format
 msgid "cannot find newly created volume '%s': %s"
 msgstr ""
@@ -3613,7 +3640,7 @@ msgstr "পঢ়াৰ বাবে %s খোলোঁতে বিফল"
 
 #: src/util.c:495
 #, c-format
-msgid "%s: not implemented"
+msgid "%s: not implemented\n"
 msgstr ""
 
 #: src/uuid.c:103
@@ -6183,136 +6210,136 @@ msgstr ""
 msgid "xenDaemonDomainDumpXMLByName failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:3693 src/xend_internal.c:4113
+#: src/xend_internal.c:3696 src/xend_internal.c:4116
 #, fuzzy
 msgid "failed to parse domain description"
 msgstr "পঢ়াৰ বাবে বিন্যাস নথিপত্ৰ খোলোঁতে বিফল"
 
-#: src/xend_internal.c:3839
+#: src/xend_internal.c:3842
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:3880
+#: src/xend_internal.c:3883
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:3888
+#: src/xend_internal.c:3891
 #, fuzzy
 msgid "unexpected value from on_xend_start"
 msgstr "অপ্ৰত্যাশিত value node"
 
-#: src/xend_internal.c:3899
+#: src/xend_internal.c:3902
 #, fuzzy
 msgid "no memory"
 msgstr "স্মৃতিশক্তিৰ অপৰ্য্যাপ্ত"
 
-#: src/xend_internal.c:3905
+#: src/xend_internal.c:3908
 #, fuzzy
 msgid "sexpr2string failed"
 msgstr "কাৰ্য্যকৰণ বিফল"
 
-#: src/xend_internal.c:3910
+#: src/xend_internal.c:3913
 #, fuzzy
 msgid "Failed to redefine sexpr"
 msgstr "নে'টৱৰ্ক বিচাৰিবলৈ অক্ষম: %s"
 
-#: src/xend_internal.c:3915
+#: src/xend_internal.c:3918
 msgid "on_xend_start not present in sexpr"
 msgstr ""
 
-#: src/xend_internal.c:3946
+#: src/xend_internal.c:3949
 #, fuzzy, c-format
 msgid "gethostname failed: %s"
 msgstr "কাৰ্য্যকৰণ বিফল: %s"
 
-#: src/xend_internal.c:3952
+#: src/xend_internal.c:3955
 #, fuzzy, c-format
 msgid "failed to strdup hostname: %s"
 msgstr "বিন্যাস নথিপত্ৰ লিখিবলৈ বিফল"
 
-#: src/xend_internal.c:3983
+#: src/xend_internal.c:3986
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:3993
+#: src/xend_internal.c:3996
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:4005
+#: src/xend_internal.c:4008
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr ""
 
-#: src/xend_internal.c:4018
+#: src/xend_internal.c:4021
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr ""
 
-#: src/xend_internal.c:4023
+#: src/xend_internal.c:4026
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
 
-#: src/xend_internal.c:4030
+#: src/xend_internal.c:4033
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr ""
 
-#: src/xend_internal.c:4037 src/xend_internal.c:4059 src/xend_internal.c:4067
-#: src/xend_internal.c:4292 src/xend_internal.c:4299 src/xml.c:405
+#: src/xend_internal.c:4040 src/xend_internal.c:4062 src/xend_internal.c:4070
+#: src/xend_internal.c:4298 src/xend_internal.c:4305 src/xml.c:405
 msgid "strdup failed"
 msgstr ""
 
-#: src/xend_internal.c:4050
+#: src/xend_internal.c:4053
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr ""
 
-#: src/xend_internal.c:4123
+#: src/xend_internal.c:4126
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr ""
 
-#: src/xend_internal.c:4274 src/xend_internal.c:4350 src/xend_internal.c:4440
+#: src/xend_internal.c:4280 src/xend_internal.c:4356 src/xend_internal.c:4446
 msgid "unsupported in xendConfigVersion < 4"
 msgstr ""
 
-#: src/xend_internal.c:4286
+#: src/xend_internal.c:4292
 msgid "node information incomplete, missing scheduler name"
 msgstr ""
 
-#: src/xend_internal.c:4304 src/xend_internal.c:4398 src/xend_internal.c:4510
+#: src/xend_internal.c:4310 src/xend_internal.c:4404 src/xend_internal.c:4516
 #, fuzzy
 msgid "Unknown scheduler"
 msgstr "অজ্ঞাত গৃহস্থ"
 
-#: src/xend_internal.c:4363 src/xend_internal.c:4453
+#: src/xend_internal.c:4369 src/xend_internal.c:4459
 #, fuzzy
 msgid "Failed to get a scheduler name"
 msgstr "বিন্যাস নথিপত্ৰ লিখিবলৈ বিফল"
 
-#: src/xend_internal.c:4376 src/xend_internal.c:4489
+#: src/xend_internal.c:4382 src/xend_internal.c:4495
 msgid "domain information incomplete, missing cpu_weight"
 msgstr ""
 
-#: src/xend_internal.c:4381 src/xend_internal.c:4498
+#: src/xend_internal.c:4387 src/xend_internal.c:4504
 msgid "domain information incomplete, missing cpu_cap"
 msgstr ""
 
-#: src/xend_internal.c:4578
+#: src/xend_internal.c:4584
 msgid "domainBlockPeek is not supported for dom0"
 msgstr ""
 
-#: src/xend_internal.c:4597
+#: src/xend_internal.c:4603
 #, fuzzy, c-format
 msgid "%s: invalid path"
 msgstr "%s ত অবৈধ তৰ্ক"
 
-#: src/xend_internal.c:4605
+#: src/xend_internal.c:4611
 #, fuzzy, c-format
 msgid "failed to open for reading: %s: %s"
 msgstr "পঢ়াৰ বাবে %s খোলোঁতে বিফল"
 
-#: src/xend_internal.c:4617
+#: src/xend_internal.c:4623
 #, fuzzy, c-format
 msgid "failed to lseek or read from file: %s: %s"
 msgstr "পঢ়াৰ বাবে %s খোলোঁতে বিফল"
@@ -6522,6 +6549,10 @@ msgstr "নতুন সন্দৰ্ভ বিতৰণ কৰক"
 #: src/xs_internal.c:329
 msgid "failed to connect to Xen Store"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Failed to find the sysfs path for %d:%d:%d:%d: %s"
+#~ msgstr "নে'টৱৰ্ক বিচাৰিবলৈ অক্ষম: %s"
 
 #, fuzzy
 #~ msgid "out of memory allocating return array"

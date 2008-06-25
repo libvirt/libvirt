@@ -1,3 +1,8 @@
+Wed Jun 25 10:48:39 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* po/*: updated a couple of localizations and regenerated the
+	  files
+
 Tue Jun 24 15:59:33 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/util.h, src/util.c: Added helpers for managing enumerations

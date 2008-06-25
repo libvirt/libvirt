@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-12 17:49+0200\n"
-"PO-Revision-Date: 2008-04-14 01:58+0200\n"
+"POT-Creation-Date: 2008-06-25 10:42+0200\n"
+"PO-Revision-Date: 2008-06-12 18:54+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -15,7 +15,7 @@ msgstr ""
 
 #: gnulib/lib/gai_strerror.c:44
 msgid "Address family for hostname not supported"
-msgstr "Rodzina adresów dla nazwy hosta nie jest obsługiwana"
+msgstr "Rodzina adresów dla nazwy hosta jest nieobsługiwana"
 
 #: gnulib/lib/gai_strerror.c:45
 msgid "Temporary failure in name resolution"
@@ -31,7 +31,7 @@ msgstr "Rozwiązanie nazw nie powiodło się, niemożliwe do przywrócenia"
 
 #: gnulib/lib/gai_strerror.c:48
 msgid "ai_family not supported"
-msgstr "ai_family nie jest obsługiwane"
+msgstr "ai_family jest nieobsługiwane"
 
 #: gnulib/lib/gai_strerror.c:49
 msgid "Memory allocation failure"
@@ -47,11 +47,11 @@ msgstr "Nieznana nazwa lub usługa"
 
 #: gnulib/lib/gai_strerror.c:52
 msgid "Servname not supported for ai_socktype"
-msgstr "Nazwa serwera nie jest obsługiwana dla ai_socktype"
+msgstr "Nazwa serwera jest nieobsługiwana dla ai_socktype"
 
 #: gnulib/lib/gai_strerror.c:53
 msgid "ai_socktype not supported"
-msgstr "ai_socktype nie jest obsługiwane"
+msgstr "ai_socktype jest nieobsługiwane"
 
 #: gnulib/lib/gai_strerror.c:54
 msgid "System error"
@@ -145,7 +145,7 @@ msgstr "Wyłączanie po sygnale %d"
 #: qemud/qemud.c:264
 #, c-format
 msgid "Received signal %d, dispatching to drivers"
-msgstr ""
+msgstr "Otrzymano sygnał %d, wykonywanie dispatch do sterowników"
 
 #: qemud/qemud.c:284 src/qemu_driver.c:90 src/util.c:142 src/util.c:154
 msgid "Failed to set close-on-exec file descriptor flag"
@@ -352,7 +352,7 @@ msgstr "Zaakceptowanie połączenia nie powiodło się: %s"
 #: qemud/qemud.c:1123
 #, c-format
 msgid "Turn off polkit auth for privileged client %d"
-msgstr ""
+msgstr "Wyłącz uwierzytelnianie PolicyKit dla uprawnionego klienta %d"
 
 #: qemud/qemud.c:1162 qemud/qemud.c:1399 qemud/qemud.c:1537
 #, c-format
@@ -442,9 +442,9 @@ msgid "Failed to create pipe: %s"
 msgstr "Utworzenie potoku nie powiodło się: %s"
 
 #: qemud/qemud.c:2205
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to change group ownership of %s"
-msgstr "Zrzucanie core domeny %s do %s nie powiodło się"
+msgstr "Zmiana właściciela grupy %s nie powiodła się"
 
 #: qemud/qemud.c:2214
 msgid "Failed to register callback for signal pipe"
@@ -529,9 +529,8 @@ msgid "out of memory in strdup"
 msgstr "brak pamięci w strdup"
 
 #: qemud/remote.c:608
-#, fuzzy
 msgid "maxCells > REMOTE_NODE_MAX_CELLS"
-msgstr "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"
+msgstr "maxCells > REMOTE_NODE_MAX_CELLS"
 
 #: qemud/remote.c:663 qemud/remote.c:705 qemud/remote.c:809 qemud/remote.c:835
 #: qemud/remote.c:869 qemud/remote.c:908 qemud/remote.c:956
@@ -1041,7 +1040,7 @@ msgstr ""
 #: src/lxc_conf.c:488
 #, c-format
 msgid "error checking container process: %d %s"
-msgstr ""
+msgstr "błąd podczas sprawdzania procesu kontenera: %d %s"
 
 #: src/lxc_conf.c:548 src/qemu_conf.c:2906 src/qemu_conf.c:3140
 #: src/storage_conf.c:1134
@@ -1088,103 +1087,102 @@ msgid "cannot remove config for %s"
 msgstr "nie można usunąć konfiguracji dla %s"
 
 #: src/lxc_conf.c:906 src/lxc_conf.c:984
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create lxc state directory %s: %s"
-msgstr "nie można utworzyć folderu automatycznego uruchamiania %s: %s"
+msgstr "nie można utworzyć folderu stanu LXC %s: %s"
 
 #: src/lxc_conf.c:914 src/lxc_conf.c:992
-#, fuzzy
 msgid "cannot construct tty pid file path"
-msgstr "nie można skonstruować ścieżki do pliku konfiguracji"
+msgstr "nie można skonstruować ścieżki do pliku PID TTY"
 
 #: src/lxc_conf.c:923
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create tty pid file %s: %s"
-msgstr "nie można utworzyć pliku konfiguracji %s: %s"
+msgstr "nie można utworzyć pliku PID TTY %s: %s"
 
 #: src/lxc_conf.c:930
-#, fuzzy, c-format
+#, c-format
 msgid "cannot fdopen tty pid file %s: %s"
-msgstr "Wykonanie fdopen na pliku PID \"%s\" nie powiodło się: %s"
+msgstr "nie można wykonać fdopen na pliku PID TTY %s: %s"
 
 #: src/lxc_conf.c:935 src/lxc_conf.c:955 src/lxc_conf.c:1018
-#, fuzzy, c-format
+#, c-format
 msgid "failed to close tty pid file %s: %s"
-msgstr "Zamknięcie pliku PID \"%s\" nie powiodło się: %s"
+msgstr "Zamknięcie pliku PID TTY %s nie powiodło się: %s"
 
 #: src/lxc_conf.c:944
-#, fuzzy, c-format
+#, c-format
 msgid "cannot write tty pid file %s: %s"
-msgstr "nie można zapisać pliku konfiguracji %s: %s"
+msgstr "nie można zapisać pliku PID TTY %s: %s"
 
 #: src/lxc_conf.c:1004
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open tty pid file %s: %s"
-msgstr "nie można rozszerzyć pliku \"%s\": %s"
+msgstr "nie można otworzyć pliku PID TTY %s: %s"
 
 #: src/lxc_conf.c:1011
-#, fuzzy, c-format
+#, c-format
 msgid "cannot read tty pid file %s: %s"
-msgstr "nie można utworzyć pliku konfiguracji %s: %s"
+msgstr "nie można odczytać pliku PID TTY %s: %s"
 
 #: src/lxc_conf.c:1050
-#, fuzzy, c-format
+#, c-format
 msgid "cannot remove ttyPidFile %s: %s"
-msgstr "nie można odczytać folderu %s: %s"
+msgstr "nie można usunąć pliku PID TTY %s: %s"
 
 #: src/lxc_container.c:60
-#, fuzzy, c-format
+#, c-format
 msgid "failed to calloc memory for init string: %s"
-msgstr "Przydzielenie przestrzeni dla łańcucha wejścia nie powiodło się"
+msgstr "przydzielenie pamięci dla łańcucha init nie powiodło się: %s"
 
 #: src/lxc_container.c:70
-#, fuzzy, c-format
+#, c-format
 msgid "execl failed to exec init: %s"
-msgstr "wykonanie %s nie powiodło się\n"
+msgstr "wykonanie init przez execl nie powiodło się: %s"
 
 #: src/lxc_container.c:92
-#, fuzzy, c-format
+#, c-format
 msgid "setsid failed: %s"
-msgstr "operacja nie powiodła się: %s"
+msgstr "setsid nie powiodło się: %s"
 
 #: src/lxc_container.c:99
-#, fuzzy, c-format
+#, c-format
 msgid "open(%s) failed: %s"
-msgstr "operacja nie powiodła się: %s"
+msgstr "open(%s) nie powiodło się: %s"
 
 #: src/lxc_container.c:105
 #, c-format
 msgid "ioctl(TIOCSTTY) failed: %s"
-msgstr ""
+msgstr "ioctl(TIOCSTTY) nie powiodło się: %s"
 
 #: src/lxc_container.c:113
-#, fuzzy, c-format
+#, c-format
 msgid "dup2(stdin) failed: %s"
-msgstr "operacja nie powiodła się: %s"
+msgstr "dup2(stdin) nie powiodło się: %s"
 
 #: src/lxc_container.c:119
-#, fuzzy, c-format
+#, c-format
 msgid "dup2(stdout) failed: %s"
-msgstr "operacja nie powiodła się: %s"
+msgstr "dup2(stdout) nie powiodło się: %s"
 
 #: src/lxc_container.c:125
-#, fuzzy, c-format
+#, c-format
 msgid "dup2(stderr) failed: %s"
-msgstr "operacja nie powiodła się: %s"
+msgstr "dup2(stderr) nie powiodło się: %s"
 
 #: src/lxc_container.c:183
 msgid "lxcChild() passed invalid vm definition"
-msgstr ""
+msgstr "lxcChild() przekazał nieprawidłową definicję maszyny wirtualnej"
 
 #: src/lxc_container.c:198
-#, fuzzy, c-format
+#, c-format
 msgid "failed to mount %s at %s for container: %s"
-msgstr "oczekiwanie na polecenie nie nie powiodło się: %s"
+msgstr "zamontowanie %s na %s dla kontenera nie powiodło się: %s"
 
 #: src/lxc_container.c:208
-#, fuzzy, c-format
+#, c-format
 msgid "failed to mount /proc for container: %s"
-msgstr "oczekiwanie na polecenie nie nie powiodło się: %s"
+msgstr "zamontowanie /proc dla kontenera nie powiodło się: %s"
 
 #: src/lxc_driver.c:316 src/lxc_driver.c:347 src/lxc_driver.c:380
 #: src/openvz_driver.c:175 src/openvz_driver.c:217 src/openvz_driver.c:527
@@ -1199,14 +1197,13 @@ msgid "cannot delete active domain"
 msgstr "nie można usunąć aktywnej domeny"
 
 #: src/lxc_driver.c:409
-#, fuzzy
 msgid "unable to allocate container stack"
-msgstr "przydzielenie węzła nie powiodło się"
+msgstr "nie można przydzielić stosu kontenera"
 
 #: src/lxc_driver.c:422
-#, fuzzy, c-format
+#, c-format
 msgid "clone() failed, %s"
-msgstr "calloc nie powiodło się"
+msgstr "clone() nie powiodło się, %s"
 
 #: src/lxc_driver.c:520
 #, fuzzy
@@ -1214,96 +1211,93 @@ msgid "unable to get storage for vm tty name"
 msgstr "nie można uzyskać obecnego czasu"
 
 #: src/lxc_driver.c:564
-#, fuzzy, c-format
+#, c-format
 msgid "posix_openpt failed: %s"
-msgstr "operacja nie powiodła się: %s"
+msgstr "posix_openpt nie powiodło się: %s"
 
 #: src/lxc_driver.c:570
-#, fuzzy, c-format
+#, c-format
 msgid "unlockpt failed: %s"
-msgstr "operacja nie powiodła się: %s"
+msgstr "unlockpt nie powiodło się: %s"
 
 #: src/lxc_driver.c:576
-#, fuzzy, c-format
+#, c-format
 msgid "ptsname_r failed: %s"
-msgstr "operacja nie powiodła się: %s"
+msgstr "ptsname_r nie powiodło się: %s"
 
 #: src/lxc_driver.c:582
-#, fuzzy
 msgid "unable to allocate container name string"
-msgstr ""
-"przydzielenie przestrzeni dla łańcucha nazwy maszyny wirtualnej nie powiodło "
-"się"
+msgstr "nie można przydzielić łańcucha nazwy kontenera"
 
 #: src/lxc_driver.c:621
-#, fuzzy, c-format
+#, c-format
 msgid "read of fd %d failed: %s"
-msgstr "operacja nie powiodła się: %s"
+msgstr "odczytanie fd %d nie powiodło się: %s"
 
 #: src/lxc_driver.c:627
-#, fuzzy, c-format
+#, c-format
 msgid "write to fd %d failed: %s"
-msgstr "Wykonanie fdopen na pliku PID \"%s\" nie powiodło się: %s"
+msgstr "zapisanie fd %d nie powiodło się: %s"
 
 #: src/lxc_driver.c:675
-#, fuzzy, c-format
+#, c-format
 msgid "epoll_create(2) failed: %s"
-msgstr "operacja nie powiodła się: %s"
+msgstr "epoll_create(2) nie powiodło się: %s"
 
 #: src/lxc_driver.c:686
 #, c-format
 msgid "epoll_ctl(fd1) failed: %s"
-msgstr ""
+msgstr "epoll_ctl(fd1) nie powiodło się: %s"
 
 #: src/lxc_driver.c:693
 #, c-format
 msgid "epoll_ctl(fd2) failed: %s"
-msgstr ""
+msgstr "epoll_ctl(fd2) nie powiodło się: %s"
 
 #: src/lxc_driver.c:714
 #, c-format
 msgid "error event %d"
-msgstr ""
+msgstr "zdarzenie błędu %d"
 
 #: src/lxc_driver.c:735
-#, fuzzy, c-format
+#, c-format
 msgid "epoll_wait() failed: %s"
-msgstr "operacja nie powiodła się: %s"
+msgstr "epoll_wait() nie powiodło się: %s"
 
 #: src/lxc_driver.c:795
-#, fuzzy, c-format
+#, c-format
 msgid "unable to fork tty forwarding process: %s"
-msgstr "nie można uzyskać atrybutów TTY: %s\n"
+msgstr "nie można rozdzielić procesu przekazywania TTY: %s"
 
 #: src/lxc_driver.c:914 src/lxc_driver.c:1021
-#, fuzzy, c-format
+#, c-format
 msgid "no domain with id %d"
-msgstr "brak domeny pasującej do identyfikatora %d"
+msgstr "brak domeny o identyfikatorze %d"
 
 #: src/lxc_driver.c:921
-#, fuzzy, c-format
+#, c-format
 msgid "sending SIGTERM failed: %s"
-msgstr "operacja nie powiodła się: %s"
+msgstr "wysyłanie SIGTERM nie powiodło się: %s"
 
 #: src/lxc_driver.c:956
-#, fuzzy, c-format
+#, c-format
 msgid "waitpid failed to wait for container %d: %d %s"
-msgstr "oczekiwanie na polecenie nie nie powiodło się: %s"
+msgstr "oczekiwanie waitpid na kontener %d nie powiodło się: %d %s"
 
 #: src/lxc_driver.c:977
 #, c-format
 msgid "sending SIGKILL to tty process failed: %s"
-msgstr ""
+msgstr "wysyłanie SIGKILL do procesu TTY nie powiodło się: %s"
 
 #: src/lxc_driver.c:989
-#, fuzzy, c-format
+#, c-format
 msgid "waitpid failed to wait for tty %d: %d %s"
-msgstr "oczekiwanie na polecenie nie nie powiodło się: %s"
+msgstr "oczekiwanie waitpid na TTY %d nie powiodło się: %d %s"
 
 #: src/lxc_driver.c:1028
-#, fuzzy, c-format
+#, c-format
 msgid "sending SIGKILL failed: %s"
-msgstr "operacja nie powiodła się: %s"
+msgstr "wysyłanie SIGKILL powiodło się: %s"
 
 #: src/openvz_conf.c:238
 #, c-format
@@ -1536,14 +1530,14 @@ msgid "Invalid device type: %s"
 msgstr "Nieprawidłowy typ urządzenia: %s"
 
 #: src/qemu_conf.c:804
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid bus type: %s"
-msgstr "Nieprawidłowy typ urządzenia: %s"
+msgstr "Nieprawidłowy typ magistrali: %s"
 
 #: src/qemu_conf.c:811
 #, c-format
 msgid "Invalid bus type '%s' for floppy disk"
-msgstr ""
+msgstr "Nieprawidłowy typ magistrali \"%s\" dla dyskietki"
 
 #: src/qemu_conf.c:954
 msgid ""
@@ -1600,39 +1594,34 @@ msgid "IP address '%s' is too long"
 msgstr "Adres IP \"%s\" jest za długi"
 
 #: src/qemu_conf.c:1092
-#, fuzzy, c-format
+#, c-format
 msgid "Model name '%s' is too long"
-msgstr "nazwa urządzenia przekazywania \"%s\" jest za długa"
+msgstr "Nazwa modelu \"%s\" jest za długa"
 
 #: src/qemu_conf.c:1099
 msgid "Model name contains invalid characters"
-msgstr ""
+msgstr "Nazwa modelu zawiera nieprawidłowe znaki"
 
 #: src/qemu_conf.c:1273 src/qemu_conf.c:1367 src/xml.c:825 src/xml.c:886
-#, fuzzy
 msgid "Missing source path attribute for char device"
-msgstr "brak informacji źródłowych dla urządzenia"
+msgstr "Brak atrybutu ścieżki źródłowej dla urządzenia znakowego"
 
 #: src/qemu_conf.c:1291 src/qemu_conf.c:1311 src/xml.c:843 src/xml.c:858
-#, fuzzy
 msgid "Missing source host attribute for char device"
-msgstr "brak informacji źródłowych dla urządzenia"
+msgstr "Brak atrybutu hosta źródłowego dla urządzenia znakowego"
 
 #: src/qemu_conf.c:1296 src/qemu_conf.c:1316 src/qemu_conf.c:1339
 #: src/xml.c:848 src/xml.c:863 src/xml.c:874
-#, fuzzy
 msgid "Missing source service attribute for char device"
-msgstr "brak informacji źródłowych dla urządzenia"
+msgstr "Brak atrybutu usługi źródłowej dla urządzenia znakowego"
 
 #: src/qemu_conf.c:1415
-#, fuzzy
 msgid "too many character devices"
-msgstr "za dużo urządzeń startowych"
+msgstr "za dużo urządzeń znakowych"
 
 #: src/qemu_conf.c:1424 src/qemu_conf.c:2088
-#, fuzzy
 msgid "failed to allocate space for char device"
-msgstr "Przydzielenie przestrzeni dla łańcucha argv nie powiodło się"
+msgstr "Przydzielenie przestrzeni dla urządzenia znakowego powiodło się"
 
 #: src/qemu_conf.c:1465
 msgid "missing input device type"
@@ -1654,19 +1643,18 @@ msgid "unsupported input bus %s"
 msgstr "nieobsługiwana magistrala wejścia %s"
 
 #: src/qemu_conf.c:1502
-#, fuzzy, c-format
+#, c-format
 msgid "xen bus does not support %s input device"
-msgstr "magistrala ps2 nie obsługuje urządzenia wejścia %s"
+msgstr "magistrala Xena nie obsługuje urządzenia wejścia %s"
 
 #: src/qemu_conf.c:1592
-#, fuzzy
 msgid "missing sound model"
-msgstr "brak montowania źródłowego"
+msgstr "brak modelu dźwięku"
 
 #: src/qemu_conf.c:1597
-#, fuzzy, c-format
+#, c-format
 msgid "invalid sound model '%s'"
-msgstr "nieprawidłowy wskaźnik domeny w %s"
+msgstr "nieprawidłowy model dźwięku \"%s\""
 
 #: src/qemu_conf.c:1624 src/qemu_conf.c:1639
 msgid "failed to allocate space for xmlXPathContext"
@@ -1694,9 +1682,8 @@ msgid "malformed vcpu information"
 msgstr "błędnie sformatowane informacje o wirtualnym procesorze"
 
 #: src/qemu_conf.c:1765
-#, fuzzy
 msgid "malformed vcpu mask information"
-msgstr "błędnie sformatowane informacje o wirtualnym procesorze"
+msgstr "błędnie sformatowane informacje o masce wirtualnego procesora"
 
 #: src/qemu_conf.c:1825
 msgid "no OS type"
@@ -1729,12 +1716,11 @@ msgstr "argumenty wiersza poleceń są za długie"
 #: src/qemu_conf.c:1950
 #, c-format
 msgid "unknown boot device '%s'"
-msgstr "nieznane urządzenie uruchamiania \"%s\""
+msgstr "nieznane urządzenie startowe \"%s\""
 
 #: src/qemu_conf.c:1970
-#, fuzzy
 msgid "unknown virt type"
-msgstr "nieznany typ urządzenia"
+msgstr "nieznany typ wirtualizacji"
 
 #: src/qemu_conf.c:1979
 msgid "unsupported guest type"
@@ -1762,10 +1748,8 @@ msgid "failed to allocate space for input string"
 msgstr "Przydzielenie przestrzeni dla łańcucha wejścia nie powiodło się"
 
 #: src/qemu_conf.c:2177
-#, fuzzy
 msgid "failed to allocate space for sound dev"
-msgstr ""
-"przydzielenie przestrzeni dla typu systemu operacyjnego nie powiodło się"
+msgstr "przydzielenie przestrzeni dla urządzenia dźwiękowego nie powiodło się"
 
 #: src/qemu_conf.c:2268
 #, c-format
@@ -1775,12 +1759,12 @@ msgstr "Nie znaleziono sieci \"%s\""
 #: src/qemu_conf.c:2273
 #, c-format
 msgid "Network '%s' not active"
-msgstr "Sieć \"%s\" nie jest aktywna"
+msgstr "Sieć \"%s\" jest nieaktywna"
 
 #: src/qemu_conf.c:2294
 #, c-format
 msgid "Network type %d is not supported"
-msgstr "Typ sieci %d nie jest obsługiwany"
+msgstr "Typ sieci %d jest nieobsługiwany"
 
 #: src/qemu_conf.c:2300 src/qemu_driver.c:1426
 #, c-format
@@ -1797,14 +1781,13 @@ msgid "failed to allocate space for tapfds string"
 msgstr "przydzielenie przestrzeni dla łańcucha tapfds nie powiodło się"
 
 #: src/qemu_conf.c:2593 src/qemu_conf.c:2644
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported disk type '%s'"
-msgstr "Nieobsługiwany typ grafiki %s"
+msgstr "Nieobsługiwany typ dysku \"%s\""
 
 #: src/qemu_conf.c:2843 src/qemu_conf.c:4106
-#, fuzzy
 msgid "invalid sound model"
-msgstr "nieprawidłowa nazwa domeny"
+msgstr "nieprawidłowy model dźwięku"
 
 #: src/qemu_conf.c:2868
 msgid "failed to allocate space for argv string"
@@ -1918,9 +1901,8 @@ msgid "unexpected domain type %d"
 msgstr "nieoczekiwany typ domeny %d"
 
 #: src/qemu_conf.c:3881
-#, fuzzy
 msgid "allocating cpu mask"
-msgstr "przydzielanie domeny"
+msgstr "przydzielanie maski procesorowi"
 
 #: src/qemu_conf.c:4123 src/qemu_conf.c:4201
 msgid "failed to generate XML: out of memory"
@@ -2002,18 +1984,19 @@ msgid "Unable to log VM console data: %s"
 msgstr "Nie można zapisać danych konsoli maszyny wirtualnej w dzienniku: %s"
 
 #: src/qemu_driver.c:635
-#, fuzzy
 msgid "allocate cpumap"
-msgstr "przydziel nowy słownik"
+msgstr "przydziel mapy procesora"
 
 #: src/qemu_driver.c:646
 msgid "cannot run monitor command to fetch CPU thread info"
 msgstr ""
+"nie można uruchomić polecenia monitora, aby przechwycić informacji o wątkach "
+"procesora"
 
 #: src/qemu_driver.c:745
-#, fuzzy, c-format
+#, c-format
 msgid "failed to set CPU affinity %s"
-msgstr "uzyskanie domeny \"%s\" nie powiodło się"
+msgstr "ustawienie pokrewieństwa procesora %s nie powiodło się"
 
 #: src/qemu_driver.c:755 src/qemu_driver.c:2037
 msgid "resume operation failed"
@@ -2206,23 +2189,21 @@ msgid "Got unexpected pid for dnsmasq"
 msgstr "Otrzymano nieoczekiwany PID dla dnsmasq"
 
 #: src/qemu_driver.c:1755
-#, fuzzy, c-format
+#, c-format
 msgid "unknown type '%s'"
-msgstr "nieznany typ uwierzytelniania \"%s\""
+msgstr "nieznany typ \"%s\""
 
 #: src/qemu_driver.c:1771
 msgid "failed to allocate space for capabilities support"
 msgstr "przydzielenie przestrzeni dla obsługi możliwości nie powiodło się"
 
 #: src/qemu_driver.c:1790 src/qemu_driver.c:1816
-#, fuzzy
 msgid "NUMA not supported on this host"
-msgstr "Nazwa serwera nie jest obsługiwana dla ai_socktype"
+msgstr "NUMA jest nieobsługiwane na tym hoście"
 
 #: src/qemu_driver.c:1801 src/qemu_driver.c:1824
-#, fuzzy
 msgid "Failed to query NUMA free memory"
-msgstr "Wolna pamięć NUMA"
+msgstr "Odpytanie wolnej pamięci NUMA nie powiodło się"
 
 #: src/qemu_driver.c:1996 src/qemu_driver.c:2025 src/qemu_driver.c:2054
 #: src/qemu_driver.c:2074 src/qemu_driver.c:2302 src/qemu_driver.c:2986
@@ -2299,53 +2280,52 @@ msgid "migrate operation failed"
 msgstr "operacja migracji nie powiodła się"
 
 #: src/qemu_driver.c:2407
-#, fuzzy
 msgid "cannot change vcpu count of an active domain"
-msgstr "nie można ustawić pamięci aktywnej domeny"
+msgstr "nie można zmienić licznika wirtualnych procesorów aktywnej domeny"
 
 #: src/qemu_driver.c:2413
 msgid "could not determine max vcpus for the domain"
-msgstr ""
+msgstr "nie można określić maksymalnych wirtualnych procesorów dla domeny"
 
 #: src/qemu_driver.c:2419
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
 msgstr ""
+"żądane procesory wirtualne są większe od maksymalnych dostępnych wirtualnych "
+"procesorów dla domeny: %d > %d"
 
 #: src/qemu_driver.c:2443 src/qemu_driver.c:2495
-#, fuzzy
 msgid "cannot pin vcpus on an inactive domain"
-msgstr "nie można podłączyć urządzenia do nieaktywnej domeny"
+msgstr "nie można przypiąć wirtualnych procesorów do nieaktywnej domeny"
 
 #: src/qemu_driver.c:2449
 #, c-format
 msgid "vcpu number out of range %d > %d"
-msgstr ""
+msgstr "numer wirtualnego procesora jest poza zakresem %d > %d"
 
 #: src/qemu_driver.c:2470
-#, fuzzy, c-format
+#, c-format
 msgid "cannot set affinity: %s"
-msgstr "nie można ustawić właściciela pliku \"%s\": %s"
+msgstr "nie można ustawić pokrewieństwa: %s"
 
 #: src/qemu_driver.c:2475
-#, fuzzy
 msgid "cpu affinity is not supported"
-msgstr "ai_family nie jest obsługiwane"
+msgstr "pokrewieństwo procesora jest nieobsługiwane"
 
 #: src/qemu_driver.c:2532
-#, fuzzy, c-format
+#, c-format
 msgid "cannot get affinity: %s"
-msgstr "nie można uzyskać kontekstu pliku %s: %s"
+msgstr "nie można uzyskać pokrewieństwa: %s"
 
 #: src/qemu_driver.c:2542
 msgid "cpu affinity is not available"
-msgstr ""
+msgstr "pokrewieństwo procesora jest niedostępne"
 
 #: src/qemu_driver.c:2566
-#, fuzzy, c-format
+#, c-format
 msgid "unknown virt type in domain definition '%d'"
-msgstr "nie można odczytać definicji domeny w XML-u"
+msgstr "nieznany typ wirtualizacji w definicji domeny \"%d\""
 
 #: src/qemu_driver.c:2592 src/test.c:1398
 msgid "cannot read domain image"
@@ -2362,7 +2342,7 @@ msgstr "magia obrazu jest niepoprawna"
 #: src/qemu_driver.c:2612
 #, c-format
 msgid "image version is not supported (%d > %d)"
-msgstr "wersja obrazu nie jest obsługiwana (%d > %d)"
+msgstr "wersja obrazu jest nieobsługiwana (%d > %d)"
 
 #: src/qemu_driver.c:2627
 msgid "failed to read XML"
@@ -2444,7 +2424,7 @@ msgstr "polecenie \"info blockstats\" nie powiodło się"
 
 #: src/qemu_driver.c:3036
 msgid "'info blockstats' not supported by this qemu"
-msgstr "\"info blockstats\" nie jest obsługiwane przez to QEMU"
+msgstr "\"info blockstats\" jest nieobsługiwane przez to QEMU"
 
 #: src/qemu_driver.c:3101
 #, c-format
@@ -2549,9 +2529,9 @@ msgid "Certificate's owner does not match the hostname (%s)"
 msgstr "Właściciel certyfikatu nie zgadza się z nazwą hosta (%s)"
 
 #: src/remote_internal.c:1342
-#, fuzzy, c-format
+#, c-format
 msgid "too many NUMA cells: %d > %d"
-msgstr "za dużo zdalnych sieci: %d > %d"
+msgstr "za dużo komórek NUMA: %d > %d"
 
 #: src/remote_internal.c:1391 src/remote_internal.c:1405
 #, c-format
@@ -2689,7 +2669,7 @@ msgstr "nie można ustawić podparcia bezpieczeństwa %d (%s)"
 #: src/remote_internal.c:4029
 #, c-format
 msgid "SASL mechanism %s not supported by server"
-msgstr "mechanizm SASL %s nie jest obsługiwany przez serwer"
+msgstr "mechanizm SASL %s jest nieobsługiwany przez serwer"
 
 #: src/remote_internal.c:4048
 #, c-format
@@ -2841,46 +2821,46 @@ msgstr "nie można odczytać folderu %s: %s"
 msgid "path"
 msgstr "ścieżka"
 
-#: src/storage_backend.c:368
+#: src/storage_backend.c:369
 msgid "regex"
 msgstr "wyrażenie regularne"
 
-#: src/storage_backend.c:378
+#: src/storage_backend.c:379
 #, c-format
 msgid "Failed to compile regex %s"
 msgstr "Skompilowanie wyrażenia regularnego %s nie powiodło się"
 
-#: src/storage_backend.c:394 src/storage_backend.c:399
-#: src/storage_backend.c:435
+#: src/storage_backend.c:395 src/storage_backend.c:400
+#: src/storage_backend.c:436
 msgid "regex groups"
 msgstr "grupy wyrażeń regularnych"
 
-#: src/storage_backend.c:411 src/storage_backend.c:551
+#: src/storage_backend.c:412 src/storage_backend.c:548
 msgid "cannot read fd"
 msgstr "nie można odczytać fd"
 
-#: src/storage_backend.c:485 src/storage_backend.c:606
+#: src/storage_backend.c:486 src/storage_backend.c:603
 #, c-format
 msgid "failed to wait for command: %s"
-msgstr "oczekiwanie na polecenie nie nie powiodło się: %s"
+msgstr "oczekiwanie na polecenie nie powiodło się: %s"
 
-#: src/storage_backend.c:492 src/storage_backend.c:613
-#, c-format
-msgid "non-zero exit status from command %d"
-msgstr "stan wyjścia nie będący zerem od polecenia %d"
-
-#: src/storage_backend.c:498 src/storage_backend.c:619
+#: src/storage_backend.c:495 src/storage_backend.c:616
 msgid "command did not exit cleanly"
 msgstr "polecenie nie zostało poprawnie wyłączone"
 
-#: src/storage_backend.c:538
+#: src/storage_backend.c:535
 msgid "n_columns too large"
 msgstr "n_columns jest za duże"
 
-#: src/storage_backend.c:585
+#: src/storage_backend.c:582
 #, c-format
 msgid "read error: %s"
 msgstr "błąd podczas odczytywania: %s"
+
+#: src/storage_backend.c:610
+#, c-format
+msgid "non-zero exit status from command %d"
+msgstr "stan wyjścia nie będący zerem od polecenia %d"
 
 #: src/storage_backend_disk.c:85 src/storage_backend_logical.c:57
 #, c-format
@@ -2906,7 +2886,7 @@ msgstr "nieobsługiwany format woluminu %d"
 
 #: src/storage_backend_disk.c:179 src/storage_backend_disk.c:192
 #: src/storage_backend_disk.c:199 src/storage_backend_disk.c:221
-#: src/storage_backend_fs.c:685 src/storage_backend_iscsi.c:258
+#: src/storage_backend_fs.c:685 src/storage_backend_iscsi.c:177
 #: src/storage_backend_logical.c:116 src/storage_backend_logical.c:121
 #: src/storage_backend_logical.c:133 src/storage_backend_logical.c:143
 msgid "volume"
@@ -2948,7 +2928,7 @@ msgid "cannot read %s: %s"
 msgstr "nie można odczytać %s: %s"
 
 #: src/storage_backend_fs.c:507 src/storage_backend_fs.c:574
-#: src/storage_backend_iscsi.c:444
+#: src/storage_backend_iscsi.c:573
 msgid "missing source host"
 msgstr "brak hosta źródłowego"
 
@@ -2957,7 +2937,7 @@ msgid "missing source path"
 msgstr "brak ścieżki źródłowej"
 
 #: src/storage_backend_fs.c:518 src/storage_backend_fs.c:585
-#: src/storage_backend_iscsi.c:451
+#: src/storage_backend_iscsi.c:580
 msgid "missing source device"
 msgstr "brak urządzenia źródłowego"
 
@@ -3017,7 +2997,7 @@ msgid "cannot extend file '%s': %s"
 msgstr "nie można rozszerzyć pliku \"%s\": %s"
 
 #: src/storage_backend_fs.c:888 src/storage_backend_fs.c:924
-#: src/storage_backend_fs.c:959 src/storage_backend_logical.c:434
+#: src/storage_backend_fs.c:959 src/storage_backend_logical.c:457
 #, c-format
 msgid "cannot read path '%s': %s"
 msgstr "nie można odczytać ścieżki \"%s\": %s"
@@ -3034,19 +3014,19 @@ msgstr "nieobsługiwany typ woluminu pamięci masowej %d"
 
 #: src/storage_backend_fs.c:966
 msgid "creation of non-raw images is not supported without qemu-img"
-msgstr "utworzenie niesurowych obrazów nie jest obsługiwane bez qemu-img"
+msgstr "utworzenie niesurowych obrazów jest nieobsługiwane bez qemu-img"
 
-#: src/storage_backend_fs.c:976 src/storage_backend_logical.c:443
+#: src/storage_backend_fs.c:976 src/storage_backend_logical.c:466
 #, c-format
 msgid "cannot set file owner '%s': %s"
 msgstr "nie można ustawić właściciela pliku \"%s\": %s"
 
-#: src/storage_backend_fs.c:985 src/storage_backend_logical.c:450
+#: src/storage_backend_fs.c:985 src/storage_backend_logical.c:473
 #, c-format
 msgid "cannot set file mode '%s': %s"
 msgstr "nie można ustawić trybu pliku \"%s\": %s"
 
-#: src/storage_backend_fs.c:1001 src/storage_backend_logical.c:457
+#: src/storage_backend_fs.c:1001 src/storage_backend_logical.c:480
 #, c-format
 msgid "cannot close file '%s': %s"
 msgstr "nie można zamknąć pliku \"%s\": %s"
@@ -3075,47 +3055,64 @@ msgstr "nie można sformatować adresu IP dla %s"
 msgid "session"
 msgstr "sesja"
 
-#: src/storage_backend_iscsi.c:138
+#: src/storage_backend_iscsi.c:143
 msgid "cannot find session"
 msgstr "nie można znaleźć sesji"
 
-#: src/storage_backend_iscsi.c:196
-msgid "Failed parsing iscsiadm commands"
-msgstr "Analizowanie poleceń iscsiadm nie powiodło się"
-
-#: src/storage_backend_iscsi.c:213
-#, c-format
-msgid "Failed to find the sysfs path for %d:%d:%d:%d: %s"
-msgstr "Znalezienie ścieżki do sysfs dla %d:%d:%d:%d nie powiodło się: %s"
-
-#: src/storage_backend_iscsi.c:222
-#, c-format
-msgid "Failed to opendir sysfs path %s: %s"
-msgstr "Otwarcie folderu ścieżki do sysfs %s nie powiodło się: %s"
-
-#: src/storage_backend_iscsi.c:250
-#, c-format
-msgid "Failed to find SCSI device for %d:%d:%d:%d: %s"
-msgstr "Znalezienie urządzenia SCSI dla %d:%d:%d:%d nie powiodło się: %s"
-
-#: src/storage_backend_iscsi.c:263 src/storage_driver.c:869
+#: src/storage_backend_iscsi.c:182 src/storage_driver.c:869
 msgid "name"
 msgstr "nazwa"
 
-#: src/storage_backend_iscsi.c:268
+#: src/storage_backend_iscsi.c:187
 msgid "devpath"
 msgstr "ścieżka do urządzenia"
 
-#: src/storage_backend_iscsi.c:289 src/util.c:113
+#: src/storage_backend_iscsi.c:206 src/util.c:113
 #, c-format
 msgid "cannot open %s: %s"
 msgstr "nie można otworzyć %s: %s"
 
-#: src/storage_backend_iscsi.c:314
+#: src/storage_backend_iscsi.c:231
 msgid "key"
 msgstr "klucz"
 
-#: src/storage_backend_iscsi.c:425
+#: src/storage_backend_iscsi.c:322 src/storage_backend_iscsi.c:407
+#: src/storage_backend_iscsi.c:443
+#, c-format
+msgid "Failed to opendir sysfs path %s: %s"
+msgstr "Otwarcie folderu ścieżki do sysfs %s nie powiodło się: %s"
+
+#: src/storage_backend_iscsi.c:335
+#, fuzzy, c-format
+msgid "Failed to parse target from sysfs path %s/%s"
+msgstr "Otwarcie folderu ścieżki do sysfs %s nie powiodło się: %s"
+
+#: src/storage_backend_iscsi.c:354
+#, fuzzy, c-format
+msgid "Failed to find any LUNs for session %s: %s"
+msgstr "Znalezienie sterownika pamięci masowej nie powiodło się: %s"
+
+#: src/storage_backend_iscsi.c:384
+#, c-format
+msgid "Failed to determine if %u:%u:%u:%u is a Direct-Access LUN"
+msgstr ""
+
+#: src/storage_backend_iscsi.c:429
+#, fuzzy, c-format
+msgid "Failed to find device link for lun %d"
+msgstr "Odłączenie urządzenia z %s nie powiodło się"
+
+#: src/storage_backend_iscsi.c:463
+#, fuzzy, c-format
+msgid "Failed to parse block path %s"
+msgstr "Uzyskanie statystyk urządzenia blokowego %s %s nie powiodło się"
+
+#: src/storage_backend_iscsi.c:473
+#, fuzzy
+msgid "Failed allocating memory for scsidev"
+msgstr "Przydzielenie pamięci dla agregacji qemud_socket nie powiodło się"
+
+#: src/storage_backend_iscsi.c:554
 msgid "portal"
 msgstr "portal"
 
@@ -3131,26 +3128,36 @@ msgstr "błędnie sformatowana wartość długości obszaru woluminu"
 msgid "malformed volume extent size value"
 msgstr "błędnie sformatowana wartość rozmiaru obszaru woluminu"
 
-#: src/storage_backend_logical.c:268
+#: src/storage_backend_logical.c:229
+#, fuzzy
+msgid "lvs command failed"
+msgstr "polecenie \"info blockstats\" nie powiodło się"
+
+#: src/storage_backend_logical.c:235
+#, c-format
+msgid "lvs command failed with exitstatus %d"
+msgstr ""
+
+#: src/storage_backend_logical.c:284
 msgid "command line"
 msgstr "wiersz poleceń"
 
-#: src/storage_backend_logical.c:285
+#: src/storage_backend_logical.c:301
 #, c-format
 msgid "cannot open device %s"
 msgstr "nie można otworzyć urządzenia %s"
 
-#: src/storage_backend_logical.c:291
+#: src/storage_backend_logical.c:307
 #, c-format
 msgid "cannot clear device header %s"
 msgstr "nie można wyczyścić nagłówka urządzenia %s"
 
-#: src/storage_backend_logical.c:298
+#: src/storage_backend_logical.c:314
 #, c-format
 msgid "cannot close device %s"
 msgstr "nie można zamknąć urządzenia %s"
 
-#: src/storage_backend_logical.c:466
+#: src/storage_backend_logical.c:489
 #, c-format
 msgid "cannot find newly created volume '%s': %s"
 msgstr "nie można znaleźć nowo utworzonego woluminu \"%s\": %s"
@@ -3317,7 +3324,7 @@ msgstr "pula pamięci masowej jest już aktywna"
 #: src/storage_driver.c:1042 src/storage_driver.c:1105
 #: src/storage_driver.c:1149 src/storage_driver.c:1183
 msgid "storage pool is not active"
-msgstr "pula pamięci masowej nie jest aktywna"
+msgstr "pula pamięci masowej jest nieaktywna"
 
 #: src/storage_driver.c:637
 msgid "storage pool is still active"
@@ -3576,8 +3583,8 @@ msgid "cannot fork child process: %s"
 msgstr "nie można rozdzielić procesu potomnego: %s"
 
 #: src/util.c:495
-#, c-format
-msgid "%s: not implemented"
+#, fuzzy, c-format
+msgid "%s: not implemented\n"
 msgstr "%s: nie zaimplementowano"
 
 #: src/uuid.c:103
@@ -4004,7 +4011,7 @@ msgstr "stosownie wyłącz domenę"
 
 #: src/virsh.c:1364
 msgid "Run shutdown in the target domain."
-msgstr "Uruchom shutdown w docelowej domenie."
+msgstr "Wykonaj shutdown w docelowej domenie."
 
 #: src/virsh.c:1387
 #, c-format
@@ -4022,7 +4029,7 @@ msgstr "uruchom ponownie domenę"
 
 #: src/virsh.c:1403
 msgid "Run a reboot command in the target domain."
-msgstr "Uruchom polecenie reboot w docelowej domenie."
+msgstr "Wykonaj polecenie reboot w docelowej domenie."
 
 #: src/virsh.c:1426
 #, c-format
@@ -4102,18 +4109,16 @@ msgid "Used memory:"
 msgstr "Użyta pamięć:"
 
 #: src/virsh.c:1549
-#, fuzzy
 msgid "Autostart:"
-msgstr "Automatyczne uruchamianie"
+msgstr "Automatyczne uruchamianie:"
 
 #: src/virsh.c:1550
-#, fuzzy
 msgid "enable"
-msgstr "nazwa"
+msgstr "włącz"
 
 #: src/virsh.c:1550
 msgid "disable"
-msgstr ""
+msgstr "wyłącz"
 
 #: src/virsh.c:1562
 msgid "NUMA free memory"
@@ -4180,9 +4185,8 @@ msgid "vcpupin: Missing cpulist"
 msgstr "vcpupin: brak cpulist"
 
 #: src/virsh.c:1745
-#, fuzzy
 msgid "vcpupin: failed to get domain informations."
-msgstr "uzyskanie informacji o węźle nie powiodło się"
+msgstr "vcpupin: uzyskanie informacji o domenie nie powiodło się."
 
 #: src/virsh.c:1751
 msgid "vcpupin: Invalid vCPU number."
@@ -4319,7 +4323,7 @@ msgstr "Wątków na rdzeń:"
 
 #: src/virsh.c:2022
 msgid "NUMA cell(s):"
-msgstr "Wywołania NUMA:"
+msgstr "Komórki NUMA:"
 
 #: src/virsh.c:2023
 msgid "Memory size:"
@@ -4675,9 +4679,8 @@ msgid "target for underlying storage"
 msgstr "cel podstawowej pamięci masowej"
 
 #: src/virsh.c:2933 src/virsh.c:3071 src/virsh.c:3683
-#, fuzzy
 msgid "Failed to allocate XML buffer"
-msgstr "przydzielenie bufora nie powiodło się"
+msgstr "Przydzielenie bufora XML-a nie powiodło się"
 
 #: src/virsh.c:2942
 #, c-format
@@ -5807,13 +5810,13 @@ msgstr "zarejestrowano za dużo sterowników w %s"
 #: src/virterror.c:568
 msgid "library call failed, possibly not supported"
 msgstr ""
-"wywołanie biblioteki nie powiodło się, prawdopodobnie nie jest obsługiwana"
+"wywołanie biblioteki nie powiodło się, prawdopodobnie jest nieobsługiwana"
 
 #: src/virterror.c:570
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr ""
-"wywołanie biblioteki %s nie powiodło się, prawdopodobnie nie jest obsługiwana"
+"wywołanie biblioteki %s nie powiodło się, prawdopodobnie jest nieobsługiwana"
 
 #: src/virterror.c:574
 msgid "XML description not well formed or invalid"
@@ -6055,7 +6058,7 @@ msgstr "przydziel nowy bufor"
 #: src/xend_internal.c:1046
 #, fuzzy, c-format
 msgid "gethostbyname failed: %s"
-msgstr "operacja nie powiodła się: %s"
+msgstr "ptsname_r nie powiodło się: %s"
 
 #: src/xend_internal.c:1167
 msgid "failed to urlencode the create S-Expr"
@@ -6086,18 +6089,16 @@ msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "informacje o domenie są niekompletne, brak jądra i programu startowego"
 
 #: src/xend_internal.c:1555
-#, fuzzy
 msgid "Unknown char device type"
-msgstr "nieznany typ urządzenia"
+msgstr "nieznany typ urządzenia znakowego"
 
 #: src/xend_internal.c:1589 src/xend_internal.c:1629 src/xend_internal.c:1645
-#, fuzzy
 msgid "malformed char device string"
-msgstr "błędnie sformatowany tryb ósemkowy"
+msgstr "błędnie sformatowany łańcuch urządzenia znakowego"
 
 #: src/xend_internal.c:1712
 msgid "no memory for char device config"
-msgstr ""
+msgstr "brak pamięci dla konfiguracji urządzenia znakowego"
 
 #: src/xend_internal.c:1788
 msgid "domain information incomplete, vbd has no dev"
@@ -6121,7 +6122,7 @@ msgstr "informacje o domenie są niekompletne, brak identyfikatora"
 
 #: src/xend_internal.c:2288 src/xm_internal.c:1065
 msgid "parsing soundhw string failed."
-msgstr ""
+msgstr "przeanalizowanie łańcucha soundhw nie powiodło się."
 
 #: src/xend_internal.c:2458
 msgid "failed to parse topology information"
@@ -6145,144 +6146,136 @@ msgid "xenDaemonDomainDumpXMLByName failed to find this domain"
 msgstr ""
 "znalezienie tej domeny przez xenDaemonDomainDumpXMLByName nie powiodło się"
 
-#: src/xend_internal.c:3693 src/xend_internal.c:4113
+#: src/xend_internal.c:3696 src/xend_internal.c:4116
 msgid "failed to parse domain description"
 msgstr "przeanalizowanie opisu domeny nie powiodło się"
 
-#: src/xend_internal.c:3839
-#, fuzzy
+#: src/xend_internal.c:3842
 msgid "xenDaemonGetAutostart failed to find this domain"
-msgstr ""
-"znalezienie tej domeny przez xenDaemonDomainDumpXMLByID nie powiodło się"
+msgstr "znalezienie tej domeny przez xenDaemonGetAutostart nie powiodło się"
 
-#: src/xend_internal.c:3880
-#, fuzzy
+#: src/xend_internal.c:3883
 msgid "xenDaemonSetAutostart failed to find this domain"
-msgstr ""
-"znalezienie tej domeny przez xenDaemonDomainDumpXMLByID nie powiodło się"
+msgstr "znalezienie tej domeny przez xenDaemonSetAutostart nie powiodło się"
 
-#: src/xend_internal.c:3888
-#, fuzzy
+#: src/xend_internal.c:3891
 msgid "unexpected value from on_xend_start"
-msgstr "nieoczekiwana wartość węzła"
+msgstr "nieoczekiwana wartość z on_xend_start"
 
-#: src/xend_internal.c:3899
-#, fuzzy
+#: src/xend_internal.c:3902
 msgid "no memory"
-msgstr "węzeł pamięć"
+msgstr "brak pamięci"
 
-#: src/xend_internal.c:3905
-#, fuzzy
+#: src/xend_internal.c:3908
 msgid "sexpr2string failed"
-msgstr "operacja nie powiodła się"
+msgstr "sexpr2string nie powiodło się"
 
-#: src/xend_internal.c:3910
-#, fuzzy
+#: src/xend_internal.c:3913
 msgid "Failed to redefine sexpr"
-msgstr "Określenia puli %s nie powiodło się"
+msgstr "Ponowne określenia sexpr nie powiodło się"
 
-#: src/xend_internal.c:3915
+#: src/xend_internal.c:3918
 msgid "on_xend_start not present in sexpr"
-msgstr ""
+msgstr "brak on_xend_start w sexpr"
 
-#: src/xend_internal.c:3946
+#: src/xend_internal.c:3949
 #, fuzzy, c-format
 msgid "gethostname failed: %s"
-msgstr "operacja nie powiodła się: %s"
+msgstr "ptsname_r nie powiodło się: %s"
 
-#: src/xend_internal.c:3952
+#: src/xend_internal.c:3955
 #, fuzzy, c-format
 msgid "failed to strdup hostname: %s"
 msgstr "uzyskanie nazwy hosta nie powiodło się"
 
-#: src/xend_internal.c:3983
+#: src/xend_internal.c:3986
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
 "xenDaemonDomainMigrate: Xen nie obsługuje zmieniania domen podczas migracji"
 
-#: src/xend_internal.c:3993
+#: src/xend_internal.c:3996
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
 "xenDaemonDomainMigrate: Xen nie obsługuje ograniczeń pasma podczas migracji"
 
-#: src/xend_internal.c:4005
+#: src/xend_internal.c:4008
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr "xenDaemonDomainMigrate: nieobsługiwana flaga"
 
-#: src/xend_internal.c:4018
+#: src/xend_internal.c:4021
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr "xenDaemonDomainMigrate: nieprawidłowe URI"
 
-#: src/xend_internal.c:4023
+#: src/xend_internal.c:4026
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
 "xenDaemonDomainMigrate: tylko migracje xenmigr:// są obsługiwane przez Xena"
 
-#: src/xend_internal.c:4030
+#: src/xend_internal.c:4033
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr "xenDaemonDomainMigrate: nazwa hosta musi zostać podana w URI"
 
-#: src/xend_internal.c:4037 src/xend_internal.c:4059 src/xend_internal.c:4067
-#: src/xend_internal.c:4292 src/xend_internal.c:4299 src/xml.c:405
+#: src/xend_internal.c:4040 src/xend_internal.c:4062 src/xend_internal.c:4070
+#: src/xend_internal.c:4298 src/xend_internal.c:4305 src/xml.c:405
 msgid "strdup failed"
 msgstr "strdup nie powiodło się"
 
-#: src/xend_internal.c:4050
+#: src/xend_internal.c:4053
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr "xenDaemonDomainMigrate: nieprawidłowy numer portu"
 
-#: src/xend_internal.c:4123
+#: src/xend_internal.c:4126
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Utworzenie nieaktywnej domeny %s nie powiodło się\n"
 
-#: src/xend_internal.c:4274 src/xend_internal.c:4350 src/xend_internal.c:4440
+#: src/xend_internal.c:4280 src/xend_internal.c:4356 src/xend_internal.c:4446
 msgid "unsupported in xendConfigVersion < 4"
 msgstr "nieobsługiwane w xendConfigVersion < 4"
 
-#: src/xend_internal.c:4286
+#: src/xend_internal.c:4292
 msgid "node information incomplete, missing scheduler name"
 msgstr "informacje o węźle są niekompletne, brak nazwy planisty"
 
-#: src/xend_internal.c:4304 src/xend_internal.c:4398 src/xend_internal.c:4510
+#: src/xend_internal.c:4310 src/xend_internal.c:4404 src/xend_internal.c:4516
 msgid "Unknown scheduler"
 msgstr "Nieznany planista"
 
-#: src/xend_internal.c:4363 src/xend_internal.c:4453
+#: src/xend_internal.c:4369 src/xend_internal.c:4459
 msgid "Failed to get a scheduler name"
 msgstr "Uzyskanie nazwy planisty nie powiodło się"
 
-#: src/xend_internal.c:4376 src/xend_internal.c:4489
+#: src/xend_internal.c:4382 src/xend_internal.c:4495
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "informacje o domenie są niekompletne, brak cpu_weight"
 
-#: src/xend_internal.c:4381 src/xend_internal.c:4498
+#: src/xend_internal.c:4387 src/xend_internal.c:4504
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "informacje o domenie są niekompletne, brak cpu_cap"
 
-#: src/xend_internal.c:4578
+#: src/xend_internal.c:4584
 #, fuzzy
 msgid "domainBlockPeek is not supported for dom0"
-msgstr "ai_socktype nie jest obsługiwane"
+msgstr "ai_socktype jest nieobsługiwane"
 
-#: src/xend_internal.c:4597
+#: src/xend_internal.c:4603
 #, fuzzy, c-format
 msgid "%s: invalid path"
 msgstr "nieprawidłowa ścieżka: %s"
 
-#: src/xend_internal.c:4605
+#: src/xend_internal.c:4611
 #, fuzzy, c-format
 msgid "failed to open for reading: %s: %s"
 msgstr "otwarcie %s do odczytania nie powiodło się"
 
-#: src/xend_internal.c:4617
+#: src/xend_internal.c:4623
 #, fuzzy, c-format
 msgid "failed to lseek or read from file: %s: %s"
-msgstr "Zamknięcie pliku PID \"%s\" nie powiodło się: %s"
+msgstr "Zamknięcie pliku PID TTY %s nie powiodło się: %s"
 
 #: src/xm_internal.c:435
 msgid "xenXMConfigCacheRefresh: name"
@@ -6377,18 +6370,16 @@ msgid "topology cpuset syntax error"
 msgstr "błąd składni topologii cpuset"
 
 #: src/xml.c:314
-#, fuzzy
 msgid "failed to allocate sound string"
-msgstr "przydzielenie przestrzeni dla łańcucha sieci nie powiodło się"
+msgstr "przydzielenie łańcucha dźwięku nie powiodło się"
 
 #: src/xml.c:328
 msgid "no model for sound device"
-msgstr ""
+msgstr "brak modelu dl urządzenia dźwiękowego"
 
 #: src/xml.c:334
-#, fuzzy
 msgid "unknown sound model type"
-msgstr "nieznany typ woluminu pamięci masowej %d"
+msgstr "nieznany typ modelu dźwięku"
 
 #: src/xml.c:393
 msgid "Invalid parameter to virXPathString()"
@@ -6484,5 +6475,11 @@ msgstr "połączenie się z Xen Store nie powiodło się"
 #~ msgid "cannot allocate address"
 #~ msgstr "nie można przydzielić adresu"
 
-#~ msgid "Allowing PID %d running as root"
-#~ msgstr "Pozwalanie PID-owi %d uruchomienia jako root"
+#~ msgid "Failed parsing iscsiadm commands"
+#~ msgstr "Analizowanie poleceń iscsiadm nie powiodło się"
+
+#~ msgid "Failed to find the sysfs path for %d:%d:%d:%d: %s"
+#~ msgstr "Znalezienie ścieżki do sysfs dla %d:%d:%d:%d nie powiodło się: %s"
+
+#~ msgid "Failed to find SCSI device for %d:%d:%d:%d: %s"
+#~ msgstr "Znalezienie urządzenia SCSI dla %d:%d:%d:%d nie powiodło się: %s"
