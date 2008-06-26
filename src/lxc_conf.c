@@ -71,6 +71,187 @@ void lxcError(virConnectPtr conn, virDomainPtr dom, int code,
                     codeErrorMessage, errorMessage);
 }
 
+/**
+ * lxcParseInterfaceXML:
+ * @conn: pointer to connection
+ * @nodePtr: pointer to xml node structure
+ * @vm: pointer to net definition structure to fill in
+ *
+ * Parses the XML for a network interface and places the configuration
+ * in the given structure.
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int lxcParseInterfaceXML(virConnectPtr conn, xmlNodePtr nodePtr,
+                                lxc_net_def_t *netDef)
+{
+    int rc = -1;
+    xmlNodePtr cur;
+    xmlChar *type = NULL;
+    xmlChar *parentIfName = NULL;
+    xmlChar *network = NULL;
+    xmlChar *bridge = NULL;
+    xmlChar *macaddr = NULL;
+
+    netDef->type = LXC_NET_NETWORK;
+
+    type = xmlGetProp(nodePtr, BAD_CAST "type");
+    if (type != NULL) {
+        if (xmlStrEqual(type, BAD_CAST "network")) {
+            netDef->type = LXC_NET_NETWORK;
+        }
+        else if (xmlStrEqual(type, BAD_CAST "bridge")) {
+            netDef->type = LXC_NET_BRIDGE;
+        }
+        else {
+            lxcError(conn, NULL, VIR_ERR_XML_ERROR,
+                     _("invalid interface type: %s"), type);
+            goto error_out;
+        }
+    }
+
+    cur = nodePtr->children;
+    for (cur = nodePtr->children; cur != NULL; cur = cur->next) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            DEBUG("cur->name: %s", (char*)(cur->name));
+            if ((macaddr == NULL) &&
+                (xmlStrEqual(cur->name, BAD_CAST "mac"))) {
+                macaddr = xmlGetProp(cur, BAD_CAST "address");
+            } else if ((network == NULL) &&
+                       (netDef->type == LXC_NET_NETWORK) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "source"))) {
+                network = xmlGetProp(cur, BAD_CAST "network");
+                parentIfName = xmlGetProp(cur, BAD_CAST "dev");
+            } else if ((bridge == NULL) &&
+                       (netDef->type == LXC_NET_BRIDGE) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "source"))) {
+                bridge = xmlGetProp(cur, BAD_CAST "bridge");
+            } else if ((parentIfName == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "target"))) {
+                parentIfName = xmlGetProp(cur, BAD_CAST "dev");
+            }
+        }
+    }
+
+    if (netDef->type == LXC_NET_NETWORK) {
+        if (network == NULL) {
+            lxcError(conn, NULL, VIR_ERR_XML_ERROR,
+                     _("No <source> 'network' attribute specified with <interface type='network'/>"));
+            goto error_out;
+        }
+
+        netDef->txName = strdup((char *)network);
+        if (NULL == netDef->txName) {
+            lxcError(conn, NULL, VIR_ERR_NO_MEMORY,
+                     _("No storage for network name"));
+            goto error_out;
+        }
+
+    } else if (netDef->type == LXC_NET_BRIDGE) {
+        if (bridge == NULL) {
+            lxcError(conn, NULL, VIR_ERR_XML_ERROR,
+                     _("No <source> 'bridge' attribute specified with <interface type='bridge'/>"));
+            goto error_out;
+        }
+
+        netDef->txName = strdup((char *)bridge);
+        if (NULL == netDef->txName) {
+            lxcError(conn, NULL, VIR_ERR_NO_MEMORY,
+                     _("No storage for bridge name"));
+            goto error_out;
+        }
+    }
+
+    if (parentIfName != NULL) {
+        DEBUG("set netDef->parentVeth: %s", netDef->parentVeth);
+        netDef->parentVeth = strdup((char *)parentIfName);
+        if (NULL == netDef->parentVeth) {
+            lxcError(conn, NULL, VIR_ERR_NO_MEMORY,
+                     _("No storage for parent veth device name"));
+            goto error_out;
+        }
+    } else {
+        netDef->parentVeth = NULL;
+        DEBUG0("set netDef->parentVeth: NULL");
+    }
+
+    rc = 0;
+
+error_out:
+    xmlFree(macaddr);
+    xmlFree(network);
+    xmlFree(bridge);
+    xmlFree(parentIfName);
+
+    return rc;
+}
+
+/**
+ * lxcParseDomainInterfaces:
+ * @conn: pointer to connection
+ * @nets: on success, points to an list of net def structs
+ * @contextPtr: pointer to xml context
+ *
+ * Parses the domain network interfaces and returns the information in a list
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int lxcParseDomainInterfaces(virConnectPtr conn,
+                                    lxc_net_def_t **nets,
+                                    xmlXPathContextPtr contextPtr)
+{
+    int rc = -1;
+    int i;
+    lxc_net_def_t *netDef;
+    lxc_net_def_t *prevDef = NULL;
+    int numNets = 0;
+    xmlNodePtr *list;
+    int res;
+
+    DEBUG0("parsing nets");
+
+    res = virXPathNodeSet("/domain/devices/interface", contextPtr, &list);
+    if (res > 0) {
+        for (i = 0; i < res; ++i) {
+            netDef = calloc(1, sizeof(lxc_net_def_t));
+            if (NULL == netDef) {
+                lxcError(conn, NULL, VIR_ERR_NO_MEMORY,
+                         _("No storage for net def structure"));
+                free(list);
+                goto parse_complete;
+            }
+
+            rc = lxcParseInterfaceXML(conn, list[i], netDef);
+            if (0 > rc) {
+                DEBUG("failed parsing a net: %d", rc);
+
+                free(netDef);
+                free(list);
+                goto parse_complete;
+            }
+
+            DEBUG0("parsed a net");
+
+            /* set the linked list pointers */
+            numNets++;
+            netDef->next = NULL;
+            if (0 == i) {
+                *nets = netDef;
+            } else {
+                prevDef->next = netDef;
+            }
+            prevDef = netDef;
+        }
+        free(list);
+    }
+
+    rc = numNets;
+
+parse_complete:
+    DEBUG("parsed %d nets", rc);
+    return rc;
+}
+
 static int lxcParseMountXML(virConnectPtr conn, xmlNodePtr nodePtr,
                             lxc_mount_t *lxcMount)
 {
@@ -372,6 +553,13 @@ static lxc_vm_def_t * lxcParseXML(virConnectPtr conn, xmlDocPtr docPtr)
     containerDef->nmounts = lxcParseDomainMounts(conn, &(containerDef->mounts),
                                                  contextPtr);
     if (0 > containerDef->nmounts) {
+        goto error;
+    }
+
+    containerDef->numNets = lxcParseDomainInterfaces(conn,
+                                                     &(containerDef->nets),
+                                                     contextPtr);
+    if (0 > containerDef->numNets) {
         goto error;
     }
 
@@ -741,6 +929,7 @@ char *lxcGenerateXML(virConnectPtr conn,
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     lxc_mount_t *mount;
+    lxc_net_def_t *net;
 
     if (lxcIsActiveVM(vm))
         virBufferVSprintf(&buf, "<domain type='%s' id='%d'>\n",
@@ -770,6 +959,27 @@ char *lxcGenerateXML(virConnectPtr conn,
         virBufferAddLit(&buf, "        </filesystem>\n");
     }
 
+    /* loop adding nets */
+    for (net = def->nets; net; net = net->next) {
+        if (net->type == LXC_NET_NETWORK) {
+            virBufferAddLit(&buf, "        <interface type='network'>\n");
+            virBufferVSprintf(&buf, "            <source network='%s'/>\n",
+                              net->txName);
+        } else {
+            virBufferAddLit(&buf, "        <interface type='bridge'>\n");
+            virBufferVSprintf(&buf, "            <source bridge='%s'/>\n",
+                              net->txName);
+        }
+
+        if (NULL != net->parentVeth) {
+            virBufferVSprintf(&buf, "            <target dev='%s'/>\n",
+                              net->parentVeth);
+        }
+
+        virBufferAddLit(&buf, "        </interface>\n");
+
+    }
+
     virBufferVSprintf(&buf, "        <console tty='%s'/>\n", def->tty);
     virBufferAddLit(&buf, "    </devices>\n");
     virBufferAddLit(&buf, "</domain>\n");
@@ -786,6 +996,8 @@ void lxcFreeVMDef(lxc_vm_def_t *vmdef)
 {
     lxc_mount_t *curMount;
     lxc_mount_t *nextMount;
+    lxc_net_def_t *curNet;
+    lxc_net_def_t *nextNet;
 
     if (vmdef == NULL)
         return;
@@ -795,6 +1007,17 @@ void lxcFreeVMDef(lxc_vm_def_t *vmdef)
         nextMount = curMount->next;
         VIR_FREE(curMount);
         curMount = nextMount;
+    }
+
+    curNet = vmdef->nets;
+    while (curNet) {
+        nextNet = curNet->next;
+        printf("Freeing %s:%s\n", curNet->parentVeth, curNet->containerVeth);
+        VIR_FREE(curNet->parentVeth);
+        VIR_FREE(curNet->containerVeth);
+        VIR_FREE(curNet->txName);
+        VIR_FREE(curNet);
+        curNet = nextNet;
     }
 
     VIR_FREE(vmdef->name);

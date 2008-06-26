@@ -36,6 +36,22 @@
 #define LXC_MAX_ERROR_LEN 1024
 #define LXC_DOMAIN_TYPE "lxc"
 
+/* types of networks for containers */
+enum lxc_net_type {
+    LXC_NET_NETWORK,
+    LXC_NET_BRIDGE
+};
+
+typedef struct __lxc_net_def lxc_net_def_t;
+struct __lxc_net_def {
+    int type;
+    char *parentVeth;       /* veth device in parent namespace */
+    char *containerVeth;    /* veth device in container namespace */
+    char *txName;           /* bridge or network name */
+
+    lxc_net_def_t *next;
+};
+
 typedef struct __lxc_mount lxc_mount_t;
 struct __lxc_mount {
     char source[PATH_MAX]; /* user's directory */
@@ -61,6 +77,10 @@ struct __lxc_vm_def {
 
     /* tty device */
     char *tty;
+
+    /* network devices */
+    int numNets;
+    lxc_net_def_t *nets;
 };
 
 typedef struct __lxc_vm lxc_vm_t;

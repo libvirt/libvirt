@@ -291,6 +291,13 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
         return NULL;
     }
 
+    if ((def->nets != NULL) && !(driver->have_netns)) {
+        lxcError(conn, NULL, VIR_ERR_NO_SUPPORT,
+                 _("System lacks NETNS support"));
+        lxcFreeVMDef(def);
+        return NULL;
+    }
+
     if (!(vm = lxcAssignVMDef(conn, driver, def))) {
         lxcFreeVMDef(def);
         return NULL;
