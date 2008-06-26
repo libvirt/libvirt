@@ -69,7 +69,9 @@
 /* For storing short-lived temporary files. */
 #define TEMPDIR LOCAL_STATE_DIR "/cache/libvirt"
 
+#ifdef WITH_LIBVIRTD
 static int qemudShutdown(void);
+#endif
 
 /* qemudDebug statements should be changed to use this macro instead. */
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
@@ -169,6 +171,7 @@ void qemudAutostartConfigs(struct qemud_driver *driver) {
     }
 }
 
+#ifdef WITH_LIBVIRTD
 /**
  * qemudStartup:
  *
@@ -375,6 +378,7 @@ qemudShutdown(void) {
 
     return 0;
 }
+#endif
 
 /* Return -1 for error, 1 to continue reading and 0 for success */
 typedef int qemudHandlerMonitorOutput(virConnectPtr conn,
@@ -3675,6 +3679,7 @@ static virNetworkDriver qemuNetworkDriver = {
     qemudNetworkSetAutostart, /* networkSetAutostart */
 };
 
+#ifdef WITH_LIBVIRTD
 static virStateDriver qemuStateDriver = {
     qemudStartup,
     qemudShutdown,
@@ -3682,11 +3687,14 @@ static virStateDriver qemuStateDriver = {
     qemudActive,
     NULL
 };
+#endif
 
 int qemudRegister(void) {
     virRegisterDriver(&qemuDriver);
     virRegisterNetworkDriver(&qemuNetworkDriver);
+#ifdef WITH_LIBVIRTD
     virRegisterStateDriver(&qemuStateDriver);
+#endif
     return 0;
 }
 

@@ -346,6 +346,7 @@ int               virUnrefStorageVol  (virStorageVolPtr vol);
 #define virGetStoragePool(c,n,u) __virGetStoragePool((c),(n),(u))
 #define virGetStorageVol(c,p,n,u) __virGetStorageVol((c),(p),(n),(u))
 
+#ifdef WITH_LIBVIRTD
 int __virStateInitialize(void);
 int __virStateCleanup(void);
 int __virStateReload(void);
@@ -356,6 +357,7 @@ int __virStateSigDispatcher(siginfo_t *siginfo);
 #define virStateReload() __virStateReload()
 #define virStateActive() __virStateActive()
 #define virStateSigDispatcher(s) __virStateSigDispatcher(s)
+#endif
 
 int __virDrvSupportsFeature (virConnectPtr conn, int feature);
 

@@ -60,8 +60,10 @@ static virNetworkDriverPtr virNetworkDriverTab[MAX_DRIVERS];
 static int virNetworkDriverTabCount = 0;
 static virStorageDriverPtr virStorageDriverTab[MAX_DRIVERS];
 static int virStorageDriverTabCount = 0;
+#ifdef WITH_LIBVIRTD
 static virStateDriverPtr virStateDriverTab[MAX_DRIVERS];
 static int virStateDriverTabCount = 0;
+#endif
 static int initialized = 0;
 
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
@@ -532,6 +534,7 @@ virRegisterDriver(virDriverPtr driver)
     return virDriverTabCount++;
 }
 
+#ifdef WITH_LIBVIRTD
 /**
  * virRegisterStateDriver:
  * @driver: pointer to a driver block
@@ -620,6 +623,7 @@ int __virStateSigDispatcher(siginfo_t *siginfo) {
     }
     return ret;
 }
+#endif
 
 
 

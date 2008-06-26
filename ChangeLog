@@ -1,3 +1,12 @@
+Thu Jun 26 18:25:25 JST 2008  Atsushi SAKAI <sakaia@jp.fujitsu.com>
+
+	Compilation fix for MinGW
+	* src/driver.h src/internal.h src/libvirt.c src/qemu_driver.c
+	  src/remote_internal.c: add WITH_LIBVIRTD flag consideration
+	* tests/Makefile.am tests/testutils.c tests/testutilsqemu.c
+	  tests/virshtest.c: add WITH_LIBVIRTD flag consideration
+	* qemud/Makefile.am: Pass $(LIBVIRT_FEATURES) to consider WITH_LIBVIRTD
+
 Wed Jun 25 16:21:12 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	quiet "make syntax-check"

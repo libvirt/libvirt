@@ -168,6 +168,7 @@ static char *get_transport_from_scheme (char *scheme);
 static int initialise_gnutls (virConnectPtr conn);
 static gnutls_session_t negotiate_gnutls_on_connection (virConnectPtr conn, struct private_data *priv, int no_verify);
 
+#ifdef WITH_LIBVIRTD
 static int
 remoteStartup(void)
 {
@@ -177,6 +178,7 @@ remoteStartup(void)
     inside_daemon = 1;
     return 0;
 }
+#endif
 
 /**
  * remoteFindServerPath:
@@ -4930,6 +4932,7 @@ static virStorageDriver storage_driver = {
     .volGetPath = remoteStorageVolGetPath,
 };
 
+#ifdef WITH_LIBVIRTD
 static virStateDriver state_driver = {
     remoteStartup,
     NULL,
@@ -4937,6 +4940,7 @@ static virStateDriver state_driver = {
     NULL,
     NULL
 };
+#endif
 
 
 /** remoteRegister:
@@ -4951,7 +4955,9 @@ remoteRegister (void)
     if (virRegisterDriver (&driver) == -1) return -1;
     if (virRegisterNetworkDriver (&network_driver) == -1) return -1;
     if (virRegisterStorageDriver (&storage_driver) == -1) return -1;
+#ifdef WITH_LIBVIRTD
     if (virRegisterStateDriver (&state_driver) == -1) return -1;
+#endif
 
     return 0;
 }

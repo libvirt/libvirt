@@ -1,5 +1,5 @@
 #include <config.h>
-
+#ifdef WITH_QEMU
 #include <sys/utsname.h>
 #include <stdlib.h>
 
@@ -70,3 +70,4 @@ cleanup:
     virCapabilitiesFree(caps);
     return NULL;
 }
+#endif

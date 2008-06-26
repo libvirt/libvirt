@@ -36,7 +36,6 @@ EXTRA_DIST =		\
         oomtrace.pl     \
 	test-lib.sh	\
 	xmlrpcserver.py	\
-	test_conf.sh	\
 	qemuxml2argvdata \
 	nodeinfodata
 
@@ -44,16 +43,20 @@ noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
 	reconnect xmconfigtest xencapstest qemuxml2argvtest qemuxml2xmltest \
         nodeinfotest statstest qparamtest
 
-test_scripts = \
+test_scripts =
+if WITH_LIBVIRTD
+test_scripts += \
+	test_conf.sh \
 	daemon-conf \
 	int-overflow \
 	read-bufsiz \
 	read-non-seekable \
 	vcpupin
+endif
 
 EXTRA_DIST += $(test_scripts)
 
-TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh xmconfigtest \
+TESTS = xml2sexprtest sexpr2xmltest virshtest xmconfigtest \
         xencapstest qemuxml2argvtest qemuxml2xmltest nodeinfotest \
 	statstest qparamtest $(test_scripts)
 if ENABLE_XEN_TESTS

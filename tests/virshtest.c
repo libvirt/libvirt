@@ -270,7 +270,7 @@ static int testCompareDomstateByName(const void *data ATTRIBUTE_UNUSED) {
 }
 
 
-
+#ifndef WIN32
 static int
 mymain(int argc, char **argv)
 {
@@ -358,5 +358,10 @@ mymain(int argc, char **argv)
 
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
+#else /* ! WIN32 */
+
+static int mymain (void) { exit (77); /* means 'test skipped' for automake */ }
+
+#endif /* WIN32 */
 
 VIRT_TEST_MAIN(mymain)

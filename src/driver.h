@@ -584,6 +584,7 @@ typedef int (*virDrvStateInitialize) (void);
 typedef int (*virDrvStateCleanup) (void);
 typedef int (*virDrvStateReload) (void);
 typedef int (*virDrvStateActive) (void);
+#ifdef WITH_LIBVIRTD
 typedef int (*virDrvSigHandler) (siginfo_t *siginfo);
 
 typedef struct _virStateDriver virStateDriver;
@@ -596,6 +597,7 @@ struct _virStateDriver {
     virDrvStateActive      active;
     virDrvSigHandler       sigHandler;
 };
+#endif
 
 /*
  * Registration
@@ -605,7 +607,9 @@ struct _virStateDriver {
 int virRegisterDriver(virDriverPtr);
 int virRegisterNetworkDriver(virNetworkDriverPtr);
 int virRegisterStorageDriver(virStorageDriverPtr);
+#ifdef WITH_LIBVIRTD
 int virRegisterStateDriver(virStateDriverPtr);
+#endif
 
 #ifdef __cplusplus
 }

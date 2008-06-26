@@ -17,7 +17,9 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifndef WIN32
 #include <sys/wait.h>
+#endif
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
@@ -139,6 +141,7 @@ int virtTestLoadFile(const char *name,
     return st.st_size;
 }
 
+#ifndef WIN32
 static
 void virtTestCaptureProgramExecChild(const char *const argv[],
                                      int pipefd) {
@@ -180,7 +183,6 @@ void virtTestCaptureProgramExecChild(const char *const argv[],
     if (stderrfd != -1)
         close(stderrfd);
 }
-
 
 int virtTestCaptureProgramOutput(const char *const argv[],
                                  char **buf,
@@ -227,6 +229,7 @@ int virtTestCaptureProgramOutput(const char *const argv[],
         }
     }
 }
+#endif /* !WIN32 */
 
 
 /**

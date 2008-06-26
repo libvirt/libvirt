@@ -1,5 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
+INCLUDES = $(LIBVIRT_FEATURES)
+
 # Distribute the generated files so that rpcgen isn't required on the
 # target machine (although almost any Unix machine will have it).
 EXTRA_DIST = libvirtd.init.in libvirtd.sysconf default-network.xml \
