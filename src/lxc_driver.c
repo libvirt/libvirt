@@ -44,6 +44,9 @@
 #include "memory.h"
 #include "util.h"
 #include "memory.h"
+#include "bridge.h"
+#include "qemu_conf.h"
+#include "veth.h"
 
 /* debug macros */
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
@@ -395,6 +398,202 @@ static char *lxcDomainDumpXML(virDomainPtr dom,
 }
 
 /**
+ * lxcSetupInterfaces:
+ * @conn: pointer to connection
+ * @vm: pointer to virtual machine structure
+ *
+ * Sets up the container interfaces by creating the veth device pairs and
+ * attaching the parent end to the appropriate bridge.  The container end
+ * will moved into the container namespace later after clone has been called.
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int lxcSetupInterfaces(virConnectPtr conn,
+                              lxc_vm_t *vm)
+{
+    int rc = -1;
+    lxc_driver_t *driver = conn->privateData;
+    struct qemud_driver *networkDriver =
+        (struct qemud_driver *)(conn->networkPrivateData);
+    lxc_net_def_t *net = vm->def->nets;
+    char* bridge;
+    char parentVeth[PATH_MAX] = "";
+    char containerVeth[PATH_MAX] = "";
+
+    if ((vm->def->nets != NULL) && (driver->have_netns == 0)) {
+        lxcError(conn, NULL, VIR_ERR_NO_SUPPORT,
+                 _("System lacks NETNS support"));
+        return -1;
+    }
+
+    for (net = vm->def->nets; net; net = net->next) {
+        if (LXC_NET_NETWORK == net->type) {
+            virNetworkPtr network = virNetworkLookupByName(conn, net->txName);
+            if (!network) {
+                goto error_exit;
+            }
+
+            bridge = virNetworkGetBridgeName(network);
+
+            virNetworkFree(network);
+
+        } else {
+            bridge = net->txName;
+        }
+
+        DEBUG("bridge: %s", bridge);
+        if (NULL == bridge) {
+            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("failed to get bridge for interface"));
+            goto error_exit;
+        }
+
+        DEBUG0("calling vethCreate()");
+        if (NULL != net->parentVeth) {
+            strcpy(parentVeth, net->parentVeth);
+        }
+        if (NULL != net->containerVeth) {
+            strcpy(containerVeth, net->containerVeth);
+        }
+        DEBUG("parentVeth: %s, containerVeth: %s", parentVeth, containerVeth);
+        if (0 != (rc = vethCreate(parentVeth, PATH_MAX, containerVeth, PATH_MAX))) {
+            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("failed to create veth device pair: %d"), rc);
+            goto error_exit;
+        }
+        if (NULL == net->parentVeth) {
+            net->parentVeth = strdup(parentVeth);
+        }
+        if (NULL == net->containerVeth) {
+            net->containerVeth = strdup(containerVeth);
+        }
+
+        if ((NULL == net->parentVeth) || (NULL == net->containerVeth)) {
+            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("failed to allocate veth names"));
+            goto error_exit;
+        }
+
+        if (!(networkDriver->brctl) && (rc = brInit(&(networkDriver->brctl)))) {
+            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("cannot initialize bridge support: %s"),
+                     strerror(rc));
+            goto error_exit;
+        }
+
+        if (0 != (rc = brAddInterface(networkDriver->brctl, bridge, parentVeth))) {
+            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("failed to add %s device to %s: %s"),
+                     parentVeth,
+                     bridge,
+                     strerror(rc));
+            goto error_exit;
+        }
+
+        if (0 != (rc = vethInterfaceUpOrDown(parentVeth, 1))) {
+            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("failed to enable parent ns veth device: %d"), rc);
+            goto error_exit;
+        }
+
+    }
+
+    rc = 0;
+
+error_exit:
+    return rc;
+}
+
+/**
+ * lxcMoveInterfacesToNetNs:
+ * @conn: pointer to connection
+ * @vm: pointer to virtual machine structure
+ *
+ * Starts a container process by calling clone() with the namespace flags
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int lxcMoveInterfacesToNetNs(virConnectPtr conn,
+                                    const lxc_vm_t *vm)
+{
+    int rc = -1;
+    lxc_net_def_t *net;
+
+    for (net = vm->def->nets; net; net = net->next) {
+        if (0 != moveInterfaceToNetNs(net->containerVeth, vm->def->id)) {
+            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("failed to move interface %s to ns %d"),
+                     net->containerVeth, vm->def->id);
+            goto error_exit;
+        }
+    }
+
+    rc = 0;
+
+error_exit:
+    return rc;
+}
+
+/**
+ * lxcCleanupInterfaces:
+ * @conn: pointer to connection
+ * @vm: pointer to virtual machine structure
+ *
+ * Cleans up the container interfaces by deleting the veth device pairs.
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int lxcCleanupInterfaces(const lxc_vm_t *vm)
+{
+    int rc = -1;
+    lxc_net_def_t *net;
+
+    for (net = vm->def->nets; net; net = net->next) {
+        if (0 != (rc = vethDelete(net->parentVeth))) {
+            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("failed to delete veth: %s"), net->parentVeth);
+            /* will continue to try to cleanup any other interfaces */
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * lxcSendContainerContinue:
+ * @vm: pointer to virtual machine structure
+ *
+ * Sends the continue message via the socket pair stored in the vm
+ * structure.
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int lxcSendContainerContinue(const lxc_vm_t *vm)
+{
+    int rc = -1;
+    lxc_message_t msg = LXC_CONTINUE_MSG;
+    int writeCount = 0;
+
+    if (NULL == vm) {
+        goto error_out;
+    }
+
+    writeCount = safewrite(vm->sockpair[LXC_PARENT_SOCKET], &msg,
+                           sizeof(msg));
+    if (writeCount != sizeof(msg)) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("unable to send container continue message: %s"),
+                 strerror(errno));
+        goto error_out;
+    }
+
+    rc = 0;
+
+error_out:
+    return rc;
+}
+
+/**
  * lxcStartContainer:
  * @conn: pointer to connection
  * @driver: pointer to driver structure
@@ -422,6 +621,9 @@ static int lxcStartContainer(virConnectPtr conn,
     stacktop = stack + stacksize;
 
     flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWUSER|CLONE_NEWIPC|SIGCHLD;
+
+    if (vm->def->nets != NULL)
+        flags |= CLONE_NEWNET;
 
     vm->def->id = clone(lxcChild, stacktop, flags, (void *)vm);
 
@@ -819,15 +1021,42 @@ static int lxcVmStart(virConnectPtr conn,
     close(vm->parentTty);
     close(vm->containerTtyFd);
 
-    rc = lxcStartContainer(conn, driver, vm);
-
-    if (rc == 0) {
-        vm->state = VIR_DOMAIN_RUNNING;
-        driver->ninactivevms--;
-        driver->nactivevms++;
+    if (0 != (rc = lxcSetupInterfaces(conn, vm))) {
+        goto cleanup;
     }
 
+    /* create a socket pair to send continue message to the container once */
+    /* we've completed the post clone configuration */
+    if (0 != socketpair(PF_UNIX, SOCK_STREAM, 0, vm->sockpair)) {
+        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("sockpair failed: %s"), strerror(errno));
+        goto cleanup;
+    }
+
+    /* check this rc */
+
+    rc = lxcStartContainer(conn, driver, vm);
+    if (rc != 0)
+        goto cleanup;
+
+    rc = lxcMoveInterfacesToNetNs(conn, vm);
+    if (rc != 0)
+        goto cleanup;
+
+    rc = lxcSendContainerContinue(vm);
+    if (rc != 0)
+        goto cleanup;
+
+    vm->state = VIR_DOMAIN_RUNNING;
+    driver->ninactivevms--;
+    driver->nactivevms++;
+
 cleanup:
+    close(vm->sockpair[LXC_PARENT_SOCKET]);
+    vm->sockpair[LXC_PARENT_SOCKET] = -1;
+    close(vm->sockpair[LXC_CONTAINER_SOCKET]);
+    vm->sockpair[LXC_CONTAINER_SOCKET] = -1;
+
     return rc;
 }
 
@@ -957,6 +1186,9 @@ static int lxcVMCleanup(lxc_driver_t *driver, lxc_vm_t * vm)
     int rc = -1;
     int waitRc;
     int childStatus = -1;
+
+    /* if this fails, we'll continue.  it will report any errors */
+    lxcCleanupInterfaces(vm);
 
     while (((waitRc = waitpid(vm->def->id, &childStatus, 0)) == -1) &&
            errno == EINTR);

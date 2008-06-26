@@ -36,6 +36,7 @@
 #include "lxc_conf.h"
 #include "util.h"
 #include "memory.h"
+#include "veth.h"
 
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
 #define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
@@ -159,6 +160,72 @@ exit_with_error:
 }
 
 /**
+ * lxcWaitForContinue:
+ * @vm: Pointer to vm structure
+ *
+ * This function will wait for the container continue message from the
+ * parent process.  It will send this message on the socket pair stored in
+ * the vm structure once it has completed the post clone container setup.
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int lxcWaitForContinue(lxc_vm_t *vm)
+{
+    int rc = -1;
+    lxc_message_t msg;
+    int readLen;
+
+    readLen = saferead(vm->sockpair[LXC_CONTAINER_SOCKET], &msg, sizeof(msg));
+    if (readLen != sizeof(msg)) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("Failed to read the container continue message: %s"),
+                 strerror(errno));
+        goto error_out;
+    }
+
+    DEBUG0("Received container continue message");
+
+    close(vm->sockpair[LXC_PARENT_SOCKET]);
+    vm->sockpair[LXC_PARENT_SOCKET] = -1;
+    close(vm->sockpair[LXC_CONTAINER_SOCKET]);
+    vm->sockpair[LXC_CONTAINER_SOCKET] = -1;
+
+    rc = 0;
+
+error_out:
+    return rc;
+}
+
+/**
+ * lxcEnableInterfaces:
+ * @vm: Pointer to vm structure
+ *
+ * This function will enable the interfaces for this container.
+ *
+ * Returns 0 on success or nonzero in case of error
+ */
+static int lxcEnableInterfaces(const lxc_vm_t *vm)
+{
+    int rc = 0;
+    const lxc_net_def_t *net;
+
+    for (net = vm->def->nets; net; net = net->next) {
+        DEBUG("Enabling %s", net->containerVeth);
+        rc =  vethInterfaceUpOrDown(net->containerVeth, 1);
+        if (0 != rc) {
+            goto error_out;
+        }
+    }
+
+    /* enable lo device only if there were other net devices */
+    if (vm->def->nets)
+        rc = vethInterfaceUpOrDown("lo", 1);
+
+error_out:
+    return rc;
+}
+
+/**
  * lxcChild:
  * @argv: Pointer to container arguments
  *
@@ -207,6 +274,16 @@ int lxcChild( void *argv )
         lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                  _("failed to mount /proc for container: %s"),
                  strerror(errno));
+        goto cleanup;
+    }
+
+    /* Wait for interface devices to show up */
+    if (0 != (rc = lxcWaitForContinue(vm))) {
+        goto cleanup;
+    }
+
+    /* enable interfaces */
+    if (0 != (rc = lxcEnableInterfaces(vm))) {
         goto cleanup;
     }
 
