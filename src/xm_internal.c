@@ -818,8 +818,8 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 virBufferVSprintf(&buf, "      <driver name='%s'/>\n", drvName);
             if (src[0]) {
                 virBufferVSprintf(&buf, "      <source %s=", block ? "dev" : "file");
-		virBufferEscapeString(&buf, "'%s'/>\n",  src);
-	    }
+                virBufferEscapeString(&buf, "'%s'/>\n",  src);
+            }
             virBufferEscapeString(&buf, "      <target dev='%s'", dev);
             virBufferVSprintf(&buf, " bus='%s'/>\n", bus);
             if (STREQ(head, "r") ||

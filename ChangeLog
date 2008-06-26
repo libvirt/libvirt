@@ -1,3 +1,8 @@
+Thu Jun 26 19:51:19 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com> 
+
+	fix make syntax-check
+	* src/xm_internal.c: replace tabs to spaces
+
 Thu Jun 26 18:25:25 JST 2008  Atsushi SAKAI <sakaia@jp.fujitsu.com>
 
 	Compilation fix for MinGW
