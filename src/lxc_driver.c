@@ -66,6 +66,9 @@
 #ifndef CLONE_NEWIPC
 #define CLONE_NEWIPC  0x08000000
 #endif
+#ifndef CLONE_NEWNET
+#define CLONE_NEWNET  0x40000000 /* New network namespace */
+#endif
 
 static int lxcStartup(void);
 static int lxcShutdown(void);
@@ -77,11 +80,11 @@ static int lxcDummyChild( void *argv ATTRIBUTE_UNUSED )
     exit(0);
 }
 
-static int lxcCheckContainerSupport( void )
+static int lxcCheckContainerSupport(int extra_flags)
 {
     int rc = 0;
     int flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWUSER|
-        CLONE_NEWIPC|SIGCHLD;
+        CLONE_NEWIPC|SIGCHLD|extra_flags;
     int cpid;
     char *childStack;
     char *stack;
@@ -112,7 +115,7 @@ check_complete:
 static const char *lxcProbe(void)
 {
 #ifdef __linux__
-    if (0 == lxcCheckContainerSupport()) {
+    if (0 == lxcCheckContainerSupport(0)) {
         return("lxc:///");
     }
 #endif
@@ -1039,6 +1042,22 @@ error_out:
     return rc;
 }
 
+static int lxcCheckNetNsSupport(void)
+{
+    const char *argv[] = {"ip", "link", "set", "lo", "netns", "-1", NULL};
+    int ip_rc;
+    int user_netns = 0;
+    int kern_netns = 0;
+
+    if (virRun(NULL, (char **)argv, &ip_rc) == 0)
+        user_netns = WIFEXITED(ip_rc) && (WEXITSTATUS(ip_rc) != 255);
+
+    if (lxcCheckContainerSupport(CLONE_NEWNET) == 0)
+        kern_netns = 1;
+
+    return kern_netns && user_netns;
+}
+
 static int lxcStartup(void)
 {
     uid_t uid = getuid();
@@ -1053,10 +1072,11 @@ static int lxcStartup(void)
     }
 
     /* Check that this is a container enabled kernel */
-    if(0 != lxcCheckContainerSupport()) {
+    if(0 != lxcCheckContainerSupport(0)) {
         return -1;
     }
 
+    lxc_driver->have_netns = lxcCheckNetNsSupport();
 
     /* Call function to load lxc driver configuration information */
     if (lxcLoadDriverConfig(lxc_driver) < 0) {

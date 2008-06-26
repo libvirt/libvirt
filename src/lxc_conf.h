@@ -89,6 +89,7 @@ struct __lxc_driver {
     int ninactivevms;
     char* configDir;
     char* stateDir;
+    int have_netns;
 };
 
 /* Types and structs */
