@@ -64,6 +64,7 @@ CLIENT_SOURCES =						\
 		lxc_driver.c lxc_driver.h			\
 		lxc_conf.c lxc_conf.h				\
 		lxc_container.c lxc_container.h			\
+		veth.c veth.h			\
                 nodeinfo.h nodeinfo.c                           \
 		util.c util.h
 
