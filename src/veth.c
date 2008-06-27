@@ -192,14 +192,12 @@ error_out:
  */
 int moveInterfaceToNetNs(const char* interface, int pidInNs)
 {
-    int rc;
-    /* offset of the pid field in the following args */
+    int rc = -1;
     char *pid = NULL;
     const char *argv[] = {
         "ip", "link", "set", interface, "netns", NULL, NULL
     };
     int cmdResult;
-    int len;
 
     if (NULL == interface) {
         goto error_out;
