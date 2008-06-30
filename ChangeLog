@@ -1,3 +1,8 @@
+Mon Jun 30 14:07:56 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
+
+	Compilation fix for MinGW
+	* src/veth.c: add WITH_LXC ifdef
+
 Thu Jun 26 19:51:19 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com> 
 
 	fix make syntax-check
