@@ -3,6 +3,10 @@ Mon Jun 30 14:07:56 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
 	Compilation fix for MinGW
 	* src/veth.c: add WITH_LXC ifdef
 
+Fri Jun 27 15:05:31 PDT 2008 Dan Smith <danms@us.ibm.com>
+	Fix compiler warnings in LXC
+	* src/veth.c: remove unused and fix uninitialized variable
+
 Thu Jun 26 19:51:19 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com> 
 
 	fix make syntax-check
@@ -16,6 +20,13 @@ Thu Jun 26 18:25:25 JST 2008  Atsushi SAKAI <sakaia@jp.fujitsu.com>
 	* tests/Makefile.am tests/testutils.c tests/testutilsqemu.c
 	  tests/virshtest.c: add WITH_LIBVIRTD flag consideration
 	* qemud/Makefile.am: Pass $(LIBVIRT_FEATURES) to consider WITH_LIBVIRTD
+
+Thu Jun 26 16:09:48 PDT 2008 Dan Smith <danms@us.ibm.com>
+
+	Add NETNS support for LXC
+	* src/veth.c src/veth.h: Support for managing veth pairs
+	* src/lxc_conf.c src/lxc_conf.h src/lxc_container.c
+	  src/lxc_driver.c: Add interface parsing and setup for LXC
 
 Wed Jun 25 16:21:12 CEST 2008 Jim Meyering <meyering@redhat.com>
 
