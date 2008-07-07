@@ -634,7 +634,7 @@ static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
     ret = virExec(conn, (char **)cmd, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
         error(conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
-        return (int)NULL;
+        return -1;
     }
 
     while(got < nids){
@@ -665,7 +665,7 @@ static int openvzListDefinedDomains(virConnectPtr conn,
     ret = virExec(conn, (char **)cmd, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
         error(conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
-        return (int)NULL;
+        return -1;
     }
 
     while(got < nnames){

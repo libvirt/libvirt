@@ -1,3 +1,8 @@
+Mon Jul  7 12:46:56 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/openvz_driver.c: Don't cast pointers to ints, and fix
+	the return value to be -1, not 0.
+
 Mon Jul  7 11:34:56 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/testutils.c: Remove bogus return statement which
