@@ -249,9 +249,6 @@ int virtTestDifference(FILE *stream,
     const char *actualStart = actual;
     const char *actualEnd = actual + (strlen(actual)-1);
 
-    if (testOOM < 2)
-        return 0;
-
     if (!testDebug)
         return 0;
 

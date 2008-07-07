@@ -1,3 +1,8 @@
+Mon Jul  7 11:34:56 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* tests/testutils.c: Remove bogus return statement which
+	prevented viewing of differences
+
 Mon Jul  7 11:02:56 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/testutils.c: Allow OOM testing to be parallelized by
