@@ -10,10 +10,10 @@
  */
 
 #include <config.h>
+#include <stdio.h>
 
 #ifdef WITH_XEN
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>

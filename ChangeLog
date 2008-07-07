@@ -1,3 +1,8 @@
+Mon Jul  7 11:59:07 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* proxy/libvirt_proxy.c: fix a compilation problem without Xen
+	* libvirt.spec.in: add %{release] to BuildRoot
+
 Mon Jul  7 10:39:56 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/capabilities.c: Refactor to avoid memory leak when in
