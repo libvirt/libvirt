@@ -1,3 +1,8 @@
+Mon Jul  7 10:39:56 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/capabilities.c: Refactor to avoid memory leak when in
+	cleanup from OOM condition
+
 Mon Jun 30 14:07:56 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
 
 	Compilation fix for MinGW

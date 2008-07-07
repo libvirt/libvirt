@@ -224,17 +224,19 @@ virCapabilitiesAddHostNUMACell(virCapsPtr caps,
 
     if (VIR_ALLOC(cell) < 0)
         return -1;
-    caps->host.numaCell[caps->host.nnumaCell] = cell;
 
-    if (VIR_ALLOC_N(caps->host.numaCell[caps->host.nnumaCell]->cpus,
-                    ncpus) < 0)
+    if (VIR_ALLOC_N(cell->cpus, ncpus) < 0) {
+        VIR_FREE(cell);
         return -1;
-    memcpy(caps->host.numaCell[caps->host.nnumaCell]->cpus,
+    }
+    memcpy(cell->cpus,
            cpus,
            ncpus * sizeof(*cpus));
 
-    caps->host.numaCell[caps->host.nnumaCell]->ncpus = ncpus;
-    caps->host.numaCell[caps->host.nnumaCell]->num = num;
+    cell->ncpus = ncpus;
+    cell->num = num;
+
+    caps->host.numaCell[caps->host.nnumaCell] = cell;
     caps->host.nnumaCell++;
 
     return 0;
