@@ -330,7 +330,9 @@ int virtTestMain(int argc,
     int n;
     char *oomStr = NULL, *debugStr;
     int oomCount;
-
+    int mp = 0;
+    pid_t *workers;
+    int worker = 0;
     if ((debugStr = getenv("VIR_TEST_DEBUG")) != NULL) {
         if (virStrToLong_ui(debugStr, NULL, 10, &testDebug) < 0)
             testDebug = 0;
@@ -344,6 +346,13 @@ int virtTestMain(int argc,
             oomCount = 0;
         if (oomCount)
             testOOM = 1;
+    }
+
+    if (getenv("VIR_TEST_MP") != NULL) {
+        mp = sysconf(_SC_NPROCESSORS_ONLN);
+        fprintf(stderr, "Using %d worker processes\n", mp);
+        if (VIR_ALLOC_N(workers, mp) < 0)
+            return EXIT_FAILURE;
     }
 
     if (testOOM)
@@ -371,11 +380,27 @@ int virtTestMain(int argc,
         else
             fprintf(stderr, "%d) OOM of %d allocs ", testCounter, approxAlloc);
 
+        if (mp) {
+            int i;
+            for (i = 0 ; i < mp ; i++) {
+                workers[i] = fork();
+                if (workers[i] == 0) {
+                    worker = i + 1;
+                    break;
+                }
+            }
+        }
+
         /* Run once for each alloc, failing a different one
            and validating that the test case failed */
-        for (n = 0; n < approxAlloc ; n++) {
+        for (n = 0; n < approxAlloc && (!mp || worker) ; n++) {
+            if ((n % mp) != (worker - 1))
+                continue;
             if (!testDebug) {
-                fprintf(stderr, ".");
+                if (mp)
+                    fprintf(stderr, "%d", worker);
+                else
+                    fprintf(stderr, ".");
                 fflush(stderr);
             }
             virAllocTestOOM(n+1, oomCount);
@@ -383,6 +408,20 @@ int virtTestMain(int argc,
             if (((func)(argc, argv)) != EXIT_FAILURE) {
                 ret = EXIT_FAILURE;
                 break;
+            }
+        }
+
+        if (mp) {
+            if (worker) {
+                _exit(ret);
+            } else {
+                int i, status;
+                for (i = 0 ; i < mp ; i++) {
+                    waitpid(workers[i], &status, 0);
+                    if (WEXITSTATUS(status) != EXIT_SUCCESS)
+                        ret = EXIT_FAILURE;
+                }
+                VIR_FREE(workers);
             }
         }
 
