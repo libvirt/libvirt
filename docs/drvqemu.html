@@ -16,137 +16,109 @@
     <div id="header">
       <div id="headerLogo"></div>
       <div id="headerSearch">
-        <form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
-          <div>
+        <form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><div>
             <input id="query" name="query" type="text" size="12" value="" />
             <input id="submit" name="submit" type="submit" value="Search" />
-          </div>
-        </form>
+          </div></form>
       </div>
     </div>
     <div id="body">
       <div id="menu">
-        <ul class="l0">
-          <li>
+        <ul class="l0"><li>
             <div>
               <a title="Front page of the libvirt website" class="inactive" href="index.html">Home</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Details of new features and bugs fixed in each release" class="inactive" href="news.html">News</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Get the latest source releases, binary builds and get access to the source repository" class="inactive" href="downloads.html">Downloads</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Information for users, administrators and developers" class="active" href="docs.html">Documentation</a>
-              <ul class="l1">
-                <li>
+              <ul class="l1"><li>
                   <div>
                     <a title="Information about deploying and using libvirt" class="inactive" href="deployment.html">Deployment</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Overview of the logical subsystems in the libvirt API" class="inactive" href="intro.html">Architecture</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Description of the XML formats used in libvirt" class="inactive" href="format.html">XML format</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Hypervisor specific driver information" class="active" href="drivers.html">Drivers</a>
-                    <ul class="l2">
-                      <li>
+                    <ul class="l2"><li>
                         <div>
                           <a title="Driver the Xen hypervisor" class="inactive" href="drvxen.html">Xen</a>
                         </div>
-                      </li>
-                      <li>
+                      </li><li>
                         <div>
                           <span class="active">QEMU / KVM</span>
                         </div>
-                      </li>
-                      <li>
+                      </li><li>
                         <div>
                           <a title="Driver for the Linux native container API" class="inactive" href="drvlxc.html">Linux Container</a>
                         </div>
-                      </li>
-                      <li>
+                      </li><li>
                         <div>
                           <a title="Psuedo-driver simulating APIs in memory for test suites" class="inactive" href="drvtest.html">Test</a>
                         </div>
-                      </li>
-                      <li>
+                      </li><li>
                         <div>
                           <a title="Driver providing secure remote to the libvirt APIs" class="inactive" href="drvremote.html">Remote</a>
                         </div>
-                      </li>
-                      <li>
+                      </li><li>
                         <div>
                           <a title="Driver for the OpenVZ container technology" class="inactive" href="drvopenvz.html">OpenVZ</a>
                         </div>
-                      </li>
-                      <li>
+                      </li><li>
                         <div>
                           <a title="Driver for the storage management APIs" class="inactive" href="storage.html">Storage</a>
                         </div>
-                      </li>
-                    </ul>
+                      </li></ul>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Reference manual for the C public API" class="inactive" href="html/index.html">API reference</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Bindings of the libvirt API for other languages" class="inactive" href="bindings.html">Language bindings</a>
                   </div>
-                </li>
-              </ul>
+                </li></ul>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="User contributed content" class="inactive" href="http://wiki.libvirt.org">Wiki</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Frequently asked questions" class="inactive" href="FAQ.html">FAQ</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="How and where to report bugs and request features" class="inactive" href="bugs.html">Bug reports</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="How to contact the developers via email and IRC" class="inactive" href="contact.html">Contact</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Miscellaneous links of interest related to libvirt" class="inactive" href="relatedlinks.html">Related Links</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Overview of all content on the website" class="inactive" href="sitemap.html">Sitemap</a>
             </div>
-          </li>
-        </ul>
+          </li></ul>
       </div>
       <div id="content">
         <h1>QEMU/KVM hypervisor driver</h1>
@@ -156,24 +128,23 @@
       line syntax and monitor interaction. This includes KVM, and Xenner.
     </p>
         <h2>Deployment pre-requisites</h2>
-        <ul>
-          <li><strong>QEMU emulators</strong>: The driver will probe <code>/usr/bin</code>
+        <ul><li>
+	<strong>QEMU emulators</strong>: The driver will probe <code>/usr/bin</code>
 	for the presence of <code>qemu</code>, <code>qemu-system-x86_64</code>,
 	<code>qemu-system-mips</code>,<code>qemu-system-mipsel</code>,
 	<code>qemu-system-sparc</code>,<code>qemu-system-ppc</code>. The results
 	of this can be seen from the capabilities XML output.
-      </li>
-          <li><strong>KVM hypervisor</strong>: The driver will probe <code>/usr/bin</code>
+      </li><li>
+	<strong>KVM hypervisor</strong>: The driver will probe <code>/usr/bin</code>
 	for the presence of <code>qemu-kvm</code> and <code>/dev/kvm</code> device
 	node. If both are found, then KVM fullyvirtualized, hardware accelerated
 	guests will be available.
-      </li>
-          <li><strong>Xenner hypervisor</strong>: The driver will probe <code>/usr/bin</code>
+      </li><li>
+	<strong>Xenner hypervisor</strong>: The driver will probe <code>/usr/bin</code>
 	for the presence of <code>xenner</code> and <code>/dev/kvm</code> device
 	node. If both are found, then Xen paravirtualized guests can be run using
 	the KVM hardware acceleration.
-      </li>
-        </ul>
+      </li></ul>
         <h2>
           <a name="xmlconfig" id="xmlconfig">Example domain XML config</a>
         </h2>
@@ -200,7 +171,7 @@
       &lt;target dev='hda'/&gt;
     &lt;/disk&gt;
     &lt;interface type='network'&gt;
-      &lt;source name='default'/&gt;
+      &lt;source network='default'/&gt;
     &lt;/interface&gt;
     &lt;graphics type='vnc' port='-1'/&gt;
   &lt;/devices&gt;

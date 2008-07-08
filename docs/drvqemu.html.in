@@ -58,7 +58,7 @@
       &lt;target dev='hda'/&gt;
     &lt;/disk&gt;
     &lt;interface type='network'&gt;
-      &lt;source name='default'/&gt;
+      &lt;source network='default'/&gt;
     &lt;/interface&gt;
     &lt;graphics type='vnc' port='-1'/&gt;
   &lt;/devices&gt;

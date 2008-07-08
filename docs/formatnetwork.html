@@ -16,160 +16,123 @@
     <div id="header">
       <div id="headerLogo"></div>
       <div id="headerSearch">
-        <form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
-          <div>
+        <form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><div>
             <input id="query" name="query" type="text" size="12" value="" />
             <input id="submit" name="submit" type="submit" value="Search" />
-          </div>
-        </form>
+          </div></form>
       </div>
     </div>
     <div id="body">
       <div id="menu">
-        <ul class="l0">
-          <li>
+        <ul class="l0"><li>
             <div>
               <a title="Front page of the libvirt website" class="inactive" href="index.html">Home</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Details of new features and bugs fixed in each release" class="inactive" href="news.html">News</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Get the latest source releases, binary builds and get access to the source repository" class="inactive" href="downloads.html">Downloads</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Information for users, administrators and developers" class="active" href="docs.html">Documentation</a>
-              <ul class="l1">
-                <li>
+              <ul class="l1"><li>
                   <div>
                     <a title="Information about deploying and using libvirt" class="inactive" href="deployment.html">Deployment</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Overview of the logical subsystems in the libvirt API" class="inactive" href="intro.html">Architecture</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Description of the XML formats used in libvirt" class="active" href="format.html">XML format</a>
-                    <ul class="l2">
-                      <li>
+                    <ul class="l2"><li>
                         <div>
                           <a title="The domain XML format" class="inactive" href="formatdomain.html">Domains</a>
                         </div>
-                      </li>
-                      <li>
+                      </li><li>
                         <div>
                           <span class="active">Networks</span>
                         </div>
-                      </li>
-                      <li>
+                      </li><li>
                         <div>
                           <a title="The storage pool and volume XML format" class="inactive" href="formatstorage.html">Storage</a>
                         </div>
-                      </li>
-                      <li>
+                      </li><li>
                         <div>
                           <a title="The driver capabilities XML format" class="inactive" href="formatcaps.html">Capabilities</a>
                         </div>
-                      </li>
-                      <li>
+                      </li><li>
                         <div>
                           <a title="The host device XML format" class="inactive" href="formatnode.html">Node Devices</a>
                         </div>
-                      </li>
-                    </ul>
+                      </li></ul>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Hypervisor specific driver information" class="inactive" href="drivers.html">Drivers</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Reference manual for the C public API" class="inactive" href="html/index.html">API reference</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Bindings of the libvirt API for other languages" class="inactive" href="bindings.html">Language bindings</a>
                   </div>
-                </li>
-              </ul>
+                </li></ul>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="User contributed content" class="inactive" href="http://wiki.libvirt.org">Wiki</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Frequently asked questions" class="inactive" href="FAQ.html">FAQ</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="How and where to report bugs and request features" class="inactive" href="bugs.html">Bug reports</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="How to contact the developers via email and IRC" class="inactive" href="contact.html">Contact</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Miscellaneous links of interest related to libvirt" class="inactive" href="relatedlinks.html">Related Links</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Overview of all content on the website" class="inactive" href="sitemap.html">Sitemap</a>
             </div>
-          </li>
-        </ul>
+          </li></ul>
       </div>
       <div id="content">
         <h1>Network XML format</h1>
-        <ul>
-          <li>
+        <ul><li>
             <a href="#elements">Element and attribute overview</a>
-            <ul>
-              <li>
+            <ul><li>
                 <a href="#elementsMetadata">General metadata</a>
-              </li>
-              <li>
+              </li><li>
                 <a href="#elementsConnect">Connectivity</a>
-              </li>
-              <li>
+              </li><li>
                 <a href="#elementsAddress">Addressing</a>
-              </li>
-            </ul>
-          </li>
-          <li>
+              </li></ul>
+          </li><li>
             <a href="#examples">Example configuration</a>
-            <ul>
-              <li>
+            <ul><li>
                 <a href="#examplesNAT">NAT based network</a>
-              </li>
-              <li>
+              </li><li>
                 <a href="#examplesRoute">Routed network config</a>
-              </li>
-              <li>
+              </li><li>
                 <a href="#examplesPrivate">Isolated network config</a>
-              </li>
-            </ul>
-          </li>
-        </ul>
+              </li></ul>
+          </li></ul>
         <p>
       This page provides an introduction to the network XML format. For background
       information on the concepts referred to here, consult the <a href="archnetwork.html">network driver architecture</a>
@@ -195,25 +158,16 @@
         &lt;name&gt;default&lt;/name&gt;
         &lt;uuid&gt;3e3fce45-4f53-4fa7-bb32-11f34168b82b&lt;/uuid&gt;
         ...</pre>
-        <dl>
-          <dt>
-            <code>name</code>
-          </dt>
-          <dd>The content of the <code>name</code> element provides
+        <dl><dt><code>name</code></dt><dd>The content of the <code>name</code> element provides
 	a short name for the virtual network. This name should
 	consist only of alpha-numeric characters and is required
 	to be unique within the scope of a single host. It is
 	used to form the filename for storing the persistent
-	configuration file. <span class="since">Since 0.3.0</span></dd>
-          <dt>
-            <code>uuid</code>
-          </dt>
-          <dd>The content of the <code>uuid</code> element provides
+	configuration file. <span class="since">Since 0.3.0</span></dd><dt><code>uuid</code></dt><dd>The content of the <code>uuid</code> element provides
 	a globally unique identifier for the virtual network.
 	The format must be RFC 4122 compliant, eg <code>3e3fce45-4f53-4fa7-bb32-11f34168b82b</code>.
 	If omitted when defining/creating a new network, a random
-	UUID is generated. <span class="since">Since 0.3.0</span></dd>
-        </dl>
+	UUID is generated. <span class="since">Since 0.3.0</span></dd></dl>
         <h3>
           <a name="elementsConnect" id="elementsConnect">Connectivity</a>
         </h3>
@@ -226,11 +180,7 @@
         &lt;bridge name="virbr0" /&gt;
 	&lt;forward mode="nat" dev="eth0"/&gt;
 	...</pre>
-        <dl>
-          <dt>
-            <code>bridge</code>
-          </dt>
-          <dd>The <code>name</code> attribute on the <code>bridge</code> element
+        <dl><dt><code>bridge</code></dt><dd>The <code>name</code> attribute on the <code>bridge</code> element
 	defines the name of a bridge device which will be used to construct
 	the virtual network. The virtual machines will be connected to this
 	bridge device allowing them to talk to each other. The bridge device
@@ -239,11 +189,7 @@
 	<code>virbr0</code> is reserved for the "default" virtual network.
 	This element should always be provided when defining a new network.
 	<span class="since">Since 0.3.0</span>
-      </dd>
-          <dt>
-            <code>forward</code>
-          </dt>
-          <dd>Inclusion of the <code>forward</code> element indicates that
+      </dd><dt><code>forward</code></dt><dd>Inclusion of the <code>forward</code> element indicates that
 	the virtual network is to be connected to the physical LAN. If
 	no attributes are set, NAT forwarding will be used for connectivity.
 	Firewall rules will allow forwarding to any other network device whether
@@ -253,8 +199,7 @@
 	then the traffic will not have NAT applied. This presumes that the
 	local LAN router has suitable routing table entries to return traffic
 	to this host. <span class="since">Since 0.3.0; 'mode' attribute since
-        0.4.2</span></dd>
-        </dl>
+        0.4.2</span></dd></dl>
         <h3>
           <a name="elementsAddress" id="elementsAddress">Addressing</a>
         </h3>
@@ -270,36 +215,23 @@
 	  &lt;/dhcp&gt;
 	&lt;/ip&gt;
       &lt;/network&gt;</pre>
-        <dl>
-          <dt>
-            <code>ip</code>
-          </dt>
-          <dd>The <code>address</code> attribute defines an IPv4 address in
+        <dl><dt><code>ip</code></dt><dd>The <code>address</code> attribute defines an IPv4 address in
 	dotted-decimal format, that will be configured on the bridge
 	device associated with the virtual network. To the guests this
 	address will be their default route. The <code>netmask</code>
 	attribute defines the significant bits of the network address,
 	again specified in dotted-decimal format.  <span class="since">Since 0.3.0</span>
-      </dd>
-          <dt>
-            <code>dhcp</code>
-          </dt>
-          <dd>Immediately within the <code>ip</code> element there is an
+      </dd><dt><code>dhcp</code></dt><dd>Immediately within the <code>ip</code> element there is an
 	optional <code>dhcp</code> element. The presence of this element
 	enables DHCP services on the virtual network. It will further
 	contain one or more <code>range</code> elements.
 	<span class="since">Since 0.3.0</span>
-      </dd>
-          <dt>
-            <code>range</code>
-          </dt>
-          <dd>The <code>start</code> and <code>end</code> attributes on the
+      </dd><dt><code>range</code></dt><dd>The <code>start</code> and <code>end</code> attributes on the
 	<code>range</code> element specify the boundaries of a pool of
 	IPv4 addresses to be provided to DHCP clients. These two addresses
 	must lie within the scope of the network defined on the parent
 	<code>ip</code> element.  <span class="since">Since 0.3.0</span>
-      </dd>
-        </dl>
+      </dd></dl>
         <h2>
           <a name="examples" id="examples">Example configuration</a>
         </h2>
@@ -319,7 +251,7 @@
       &lt;network&gt;
 	&lt;name&gt;default&lt;/name&gt;
 	&lt;bridge name="virbr0" /&gt;
-	&lt;forward type="nat"/&gt;
+	&lt;forward mode="nat"/&gt;
 	&lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
 	  &lt;dhcp&gt;
 	    &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
@@ -341,7 +273,7 @@
       &lt;network&gt;
 	&lt;name&gt;local&lt;/name&gt;
 	&lt;bridge name="virbr1" /&gt;
-	&lt;forward type="route" dev="eth1"/&gt;
+	&lt;forward mode="route" dev="eth1"/&gt;
 	&lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
 	  &lt;dhcp&gt;
 	    &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;

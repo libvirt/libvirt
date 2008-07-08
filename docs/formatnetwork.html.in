@@ -146,7 +146,7 @@
       &lt;network&gt;
 	&lt;name&gt;default&lt;/name&gt;
 	&lt;bridge name="virbr0" /&gt;
-	&lt;forward type="nat"/&gt;
+	&lt;forward mode="nat"/&gt;
 	&lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
 	  &lt;dhcp&gt;
 	    &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
@@ -169,7 +169,7 @@
       &lt;network&gt;
 	&lt;name&gt;local&lt;/name&gt;
 	&lt;bridge name="virbr1" /&gt;
-	&lt;forward type="route" dev="eth1"/&gt;
+	&lt;forward mode="route" dev="eth1"/&gt;
 	&lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
 	  &lt;dhcp&gt;
 	    &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
