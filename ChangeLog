@@ -1,3 +1,8 @@
+Tue Jul  8 18:47:56 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xs_internal.c: Fix typo in domain state constant (Toth
+	István)
+
 Tue Jul  8 18:42:56 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* docs/drvqemu.html.in, docs/formatnetwork.html.in: Fix three

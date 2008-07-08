@@ -399,7 +399,7 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
             info->state = VIR_DOMAIN_RUNNING;
         free(tmp);
     } else {
-        info->state = VIR_DOMAIN_NONE;
+        info->state = VIR_DOMAIN_NOSTATE;
     }
     tmp = virDomainDoStoreQuery(domain->conn, domain->id, "memory/target");
     if (tmp != NULL) {
