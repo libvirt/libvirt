@@ -8,88 +8,130 @@
 
   <!--
       We handle only document defining a domain
-      Currently the virtualization types supported are:
-        - xen, either paravirualized with a linux os or fully virtualized (hvm)
-	- kvm, requiring a path to the emulator in devices
-	- qemu, where the arch and machine must be provided in the os block
     -->
   <define name='domain'>
     <element name="domain">
+      <ref name='hvs'/>
+      <ref name='ids'/>
+      <interleave>
+        <ref name='os'/>
+        <ref name='clock'/>
+        <ref name='resources'/>
+        <ref name='features'/>
+        <ref name='termination'/>
+	<optional>
+          <ref name='devices'/>
+	</optional>
+      </interleave>
+    </element>
+  </define>
+
+  <define name='hvs'>
+    <attribute name='type'>
       <choice>
-        <ref name='xen-domain'/>
-        <ref name='kvm-domain'/>
-        <ref name='qemu-domain'/>
+	<value>xen</value>
+	<value>kvm</value>
+	<value>kqemu</value>
+	<value>qemu</value>
+	<value>lxc</value>
+	<value>openvz</value>
+	<value>test</value>
+      </choice>
+    </attribute>
+  </define>
+
+  <define name='os'>
+    <choice>
+      <ref name='osxen'/>
+      <ref name='oshvm'/>
+    </choice>
+  </define>
+
+  <define name='osxen'>
+    <choice>
+      <group>
+	<optional>
+          <ref name='bootloader'/>
+	</optional>
+	<element name='os'>
+	  <ref name='ostypexen'/>
+          <ref name='osbootkernel'/>
+	</element>
+      </group>
+      <group>
+	<ref name='bootloader'/>
+	<optional>
+	  <element name='os'>
+	    <ref name='ostypexen'/>
+	    <optional>
+              <ref name='osbootkernel'/>
+	    </optional>
+	  </element>
+	</optional>
+      </group>
+    </choice>
+  </define>
+
+
+  <define name='oshvm'>
+    <element name='os'>
+      <ref name='ostypehvm'/>
+      <interleave>
+	<optional>
+	  <element name='loader'>
+	    <ref name='absFilePath'/>
+	  </element>
+	</optional>
+	<choice>
+          <ref name='osbootkernel'/>
+          <ref name='osbootdev'/>
+	</choice>
+      </interleave>
+    </element>
+  </define>
+
+
+  <define name='ostypexen'>
+    <element name='type'>
+      <optional>
+	<attribute name='arch'>
+	  <choice>
+	    <value>i686</value>
+	    <value>x86_64</value>
+	    <value>ia64</value>
+	  </choice>
+	</attribute>
+      </optional>
+      <optional>
+	<attribute name='machine'>
+	  <choice>
+	    <value>xenpv</value>
+	    <value>xenner</value>
+	  </choice>
+	</attribute>
+      </optional>
+      <choice>
+	<value>xen</value>
+	<value>linux</value>
       </choice>
     </element>
   </define>
 
-  <!--
-      Description of a Xen domain:
-      The description must start with the identification information and then
-      os or bootloader, resources, features, devices and termination information
-      can be given in any order.
-    -->
-  <define name='xen-domain'>
-    <group>
-      <attribute name='type'>
-        <value>xen</value>
-      </attribute>
-      <ref name='ids'/>
-      <interleave>
-        <choice>
-	  <group>
-            <ref name='os'/>
-	    <optional>
-              <ref name='bootloader'/>
-	    </optional>
-	  </group>
-	  <group>
-	    <ref name='bootloader'/>
-	    <optional>
-              <ref name='os'/>
-	    </optional>
-	  </group>
+  <define name='ostypehvm'>
+    <element name='type'>
+      <optional>
+	<choice>
+	  <ref name='hvmx86'/>
+	  <ref name='hvmmips'/>
+	  <ref name='hvmsparc'/>
+	  <ref name='hvmppc'/>
 	</choice>
-        <ref name='resources'/>
-        <ref name='features'/>
-        <ref name='termination'/>
-        <ref name='devices'/>
-      </interleave>
-    </group>
+      </optional>
+      <value>hvm</value>
+    </element>
   </define>
 
-  <!--
-      Description of a QEmu domain:
-      The description must start with the identification information and then
-      os, resources, devices can be given in any order.
-      The specific part are the combinations of architectures and machines
-      being emulated.
-    -->
-  <define name='qemu-domain'>
-    <group>
-      <attribute name='type'>
-        <value>qemu</value>
-      </attribute>
-      <ref name='ids'/>
-      <interleave>
-        <element name='os'>
-	  <element name='type'>
-	    <choice>
-	      <ref name='qemu-x86'/>
-	      <ref name='qemu-mips'/>
-	      <ref name='qemu-sparc'/>
-	      <ref name='qemu-ppc'/>
-	    </choice>
-	    <value>hvm</value>
-	  </element>
-	</element>
-        <ref name='resources'/>
-        <ref name='devices'/>
-      </interleave>
-    </group>
-  </define>
-
-  <define name='qemu-x86'>
+  <define name='hvmx86'>
     <group>
       <attribute name='arch'>
 	<choice>
@@ -106,7 +148,7 @@
     </group>
   </define>
 
-  <define name='qemu-mips'>
+  <define name='hvmmips'>
     <group>
       <attribute name='arch'>
         <value>mips</value>
@@ -117,7 +159,7 @@
     </group>
   </define>
 
-  <define name='qemu-sparc'>
+  <define name='hvmsparc'>
     <group>
       <attribute name='arch'>
 	<value>sparc</value>
@@ -128,7 +170,7 @@
     </group>
   </define>
 
-  <define name='qemu-ppc'>
+  <define name='hvmppc'>
     <group>
       <attribute name='arch'>
 	<value>ppc</value>
@@ -143,28 +185,6 @@
     </group>
   </define>
 
-  <!--
-      Description of a KVM domain:
-      The description must start with the identification information and then
-      os, resources, devices can be given in any order.
-    -->
-  <define name='kvm-domain'>
-    <group>
-      <attribute name='type'>
-        <value>kvm</value>
-      </attribute>
-      <ref name='ids'/>
-      <interleave>
-        <element name='os'>
-	  <element name='type'>
-	    <value>hvm</value>
-	  </element>
-	</element>
-        <ref name='resources'/>
-        <ref name='devices-with-emulator'/>
-      </interleave>
-    </group>
-  </define>
 
   <!--
       The Identifiers can be:
@@ -208,10 +228,27 @@
       </optional>
       <optional>
         <element name='vcpu'>
+          <optional>
+            <attribute name='cpuset' />
+          </optional>
           <ref name='countCPU'/>
         </element>
       </optional>
     </interleave>
+  </define>
+
+  <define name='clock'>
+    <optional>
+      <element name='clock'>
+        <attribute name='offset'>
+          <choice>
+            <value>localtime</value>
+            <value>utc</value>
+          </choice>
+        </attribute>
+        <empty/>
+      </element>
+    </optional>
   </define>
 
   <!--
@@ -220,32 +257,22 @@
       binary or script used to extract the data from the first disk device.
     -->
   <define name='bootloader'>
-    <element name='bootloader'>
-      <ref name='absFilePath'/>
-    </element>
-  </define>
-  <!--
-      The Operating system can be:
-      - a linux paravirtualized OS
-      - a fully virtualized machine where the OS is unknown
-    -->
-  <define name='os'>
-    <element name='os'>
-      <choice>
-        <ref name='linux'/>
-        <ref name='hvm'/>
-      </choice>
-    </element>
+    <interleave>
+      <element name='bootloader'>
+	<choice>
+	  <ref name='absFilePath'/>
+	  <empty/>
+	</choice>
+      </element>
+      <optional>
+	<element name='bootloader_args'>
+	  <text/>
+	</element>
+      </optional>
+    </interleave>
   </define>
 
-  <!--
-      A paravirtualized linux domain, this requires at least a kernel path
-      and the root device, the initrd and command line arguments are optional
-    -->
-  <define name='linux'>
-    <element name='type'>
-      <value>linux</value>
-    </element>
+  <define name='osbootkernel'>
     <interleave>
       <element name='kernel'>
         <ref name='absFilePath'/>
@@ -268,31 +295,36 @@
     </interleave>
   </define>
 
-  <!--
-      A fully virtualized domain, this requires the path to the loader and
-      an optional boot device (hd, fd or cdrom).
-    -->
-  <define name='hvm'>
-    <element name='type'>
-      <value>hvm</value>
+  <define name='osbootdev'>
+    <element name='boot'>
+      <attribute name='dev'>
+        <choice>
+          <value>hd</value>
+          <value>fd</value>
+          <value>cdrom</value>
+          <value>network</value>
+        </choice>
+      </attribute>
+      <empty/>
     </element>
-    <interleave>
-      <element name='loader'>
-        <ref name='absFilePath'/>
+  </define>
+
+
+  <define name='diskspec'>
+    <optional>
+      <ref name='driver'/>
+    </optional>
+    <ref name='target'/>
+    <optional>
+      <element name='readonly'>
+        <empty/>
       </element>
-      <optional>
-        <element name='boot'>
-	  <attribute name='dev'>
-	    <choice>
-	      <value>hd</value>
-	      <value>fd</value>
-	      <value>cdrom</value>
-	    </choice>
-	  </attribute>
-	  <empty/>
-	</element>
-      </optional>
-    </interleave>
+    </optional>
+    <optional>
+      <element name='shareable'>
+        <empty/>
+      </element>
+    </optional>
   </define>
 
   <!--
@@ -315,43 +347,36 @@
         <group>
           <attribute name='type'>
 	    <value>file</value>
-	  </attribute>
+          </attribute>
 	  <interleave>
-	    <element name='source'>
-	      <attribute name='file'>
-	        <ref name='absFilePath'/>
-	      </attribute>
-	      <empty/>
-	    </element>
 	    <optional>
-	      <ref name='driver'/>
+  	      <element name='source'>
+  		<attribute name='file'>
+  	          <ref name='absFilePath'/>
+  		</attribute>
+  		<empty/>
+  	      </element>
 	    </optional>
-	    <ref name='target'/>
-	    <optional>
-	      <ref name='readonly'/>
-	    </optional>
-	  </interleave>
+            <ref name='diskspec'/>
+  	  </interleave>
         </group>
         <group>
           <attribute name='type'>
-	    <value>block</value>
-	  </attribute>
-	  <interleave>
-	    <element name='source'>
-	      <attribute name='dev'>
-	        <ref name='deviceName'/>
-	      </attribute>
-	      <empty/>
-	    </element>
+  	    <value>block</value>
+  	  </attribute>
+  	  <interleave>
 	    <optional>
-	      <ref name='driver'/>
+  	      <element name='source'>
+  		<attribute name='dev'>
+  	          <ref name='deviceName'/>
+  		</attribute>
+  		<empty/>
+  	      </element>
 	    </optional>
-	    <ref name='target'/>
-	    <optional>
-	      <ref name='readonly'/>
-	    </optional>
-	  </interleave>
+            <ref name='diskspec'/>
+  	  </interleave>
         </group>
+        <ref name='diskspec'/>
       </choice>
     </element>
   </define>
@@ -361,12 +386,16 @@
       <attribute name='dev'>
 	<ref name='deviceName'/>
       </attribute>
-    </element>
-  </define>
-
-  <define name='readonly'>
-    <element name='readonly'>
-      <empty/>
+      <optional>
+         <attribute name='bus'>
+           <choice>
+             <value>ide</value>
+             <value>virtio</value>
+             <value>fdc</value>
+             <value>xen</value>
+           </choice>
+         </attribute>
+      </optional>
     </element>
   </define>
 
@@ -376,23 +405,23 @@
       extended in the future, and libvirt doesn't look for specific values.
     -->
   <define name='driver'>
-      <element name='driver'>
-        <attribute name='name'>
+    <element name='driver'>
+      <attribute name='name'>
+	<ref name='genericName'/>
+      </attribute>
+      <optional>
+        <attribute name='type'>
 	  <ref name='genericName'/>
 	</attribute>
-        <optional>
-          <attribute name='type'>
-	    <ref name='genericName'/>
-	  </attribute>
-	</optional>
-	<empty/>
-      </element>
+      </optional>
+      <empty/>
+    </element>
   </define>
   <!--
       An interface description can either be of type bridge in which case
       it will use a bridging source, or of type ethernet which uses a device
       source and a device target instead. They both share a set of interface
-      options.
+      options. FIXME
     -->
   <define name='interface'>
     <element name='interface'>
@@ -402,12 +431,14 @@
             <value>bridge</value>
           </attribute>
 	  <interleave>
-	    <element name='source'>
-	      <attribute name='bridge'>
-		<ref name='deviceName'/>
-	      </attribute>
-	      <empty/>
-	    </element>
+            <optional>
+	      <element name='source'>
+	        <attribute name='bridge'>
+	  	  <ref name='deviceName'/>
+	        </attribute>
+	        <empty/>
+	      </element>
+            </optional>
 	    <ref name='interface-options'/>
 	  </interleave>
 	</group>
@@ -416,8 +447,24 @@
             <value>ethernet</value>
           </attribute>
 	  <interleave>
+            <optional>
+	      <element name='source'>
+  	        <attribute name='dev'>
+	  	  <ref name='deviceName'/>
+	        </attribute>
+	        <empty/>
+	      </element>
+            </optional>
+	    <ref name='interface-options'/>
+	  </interleave>
+	</group>
+        <group>
+          <attribute name='type'>
+            <value>network</value>
+          </attribute>
+	  <interleave>
 	    <element name='source'>
-	      <attribute name='dev'>
+	      <attribute name='network'>
 		<ref name='deviceName'/>
 	      </attribute>
 	      <empty/>
@@ -445,44 +492,50 @@
 	- the target device used
     -->
   <define name='interface-options'>
-      <interleave>
-	<optional>
-	  <element name='target'>
-	    <attribute name='dev'>
-	      <ref name='deviceName'/>
+    <interleave>
+      <optional>
+	<element name='target'>
+	  <attribute name='dev'>
+	    <ref name='deviceName'/>
+	  </attribute>
+	  <empty/>
+	</element>
+      </optional>
+      <optional>
+	<element name='mac'>
+	  <attribute name='address'>
+	    <ref name='addrMAC'/>
 	    </attribute>
-	    <empty/>
-	  </element>
-	</optional>
-	<optional>
-	  <element name='mac'>
-	    <attribute name='address'>
-	      <ref name='addrMAC'/>
-	    </attribute>
-	    <empty/>
-	  </element>
-	</optional>
-	<optional>
-	  <element name='ip'>
-	    <attribute name='address'>
-	      <ref name='addrIP'/>
-	    </attribute>
-	    <empty/>
-	  </element>
-	</optional>
-	<optional>
-	  <element name='script'>
-	    <attribute name='path'>
-	      <ref name='filePath'/>
-	    </attribute>
-	    <empty/>
-	  </element>
-	</optional>
-      </interleave>
+	  <empty/>
+	</element>
+      </optional>
+      <optional>
+	<element name='ip'>
+	  <attribute name='address'>
+	    <ref name='addrIP'/>
+	  </attribute>
+	  <empty/>
+	</element>
+      </optional>
+      <optional>
+	<element name='script'>
+	  <attribute name='path'>
+	    <ref name='filePath'/>
+	  </attribute>
+	  <empty/>
+	</element>
+      </optional>
+      <optional>
+	<element name='model'>
+	  <attribute name='type' />
+	  <empty/>
+	</element>
+      </optional>
+    </interleave>
   </define>
 
   <!--
-      An emulator descritpion is just a path to the binary used for the task
+      An emulator description is just a path to the binary used for the task
     -->
   <define name='emulator'>
     <element name='emulator'>
@@ -493,7 +546,8 @@
   <!--
       A graphic description, currently in Xen only 2 types are supported:
         - sdl without arguments
-	- vnc with a required port and optional listen IP address and password
+	- vnc with a required port and optional listen IP address, password
+          and keymap
     -->
   <define name='graphic'>
     <element name='graphics'>
@@ -505,9 +559,19 @@
           <attribute name='type'>
 	    <value>vnc</value>
 	  </attribute>
-          <attribute name='port'>
-	    <ref name='PortNumber'/>
-	  </attribute>
+	  <optional>
+            <attribute name='port'>
+	      <ref name='PortNumber'/>
+	    </attribute>
+	  </optional>
+	  <optional>
+	    <attribute name='autoport'>
+	      <choice>
+		<value>yes</value>
+		<value>no</value>
+	      </choice>
+	    </attribute>
+	  </optional>
 	  <optional>
 	    <attribute name='listen'>
 	      <ref name='addrIP'/>
@@ -518,6 +582,11 @@
 	      <text/>
 	    </attribute>
 	  </optional>
+          <optional>
+            <attribute name='keymap'>
+              <text/>
+            </attribute>
+          </optional>
 	</group>
       </choice>
     </element>
@@ -565,24 +634,130 @@
   </define>
 
   <!--
+      Specific setup for a qemu emulated character device.  Note: this
+      definition doesn't fully specify the constraints on this node.
+    -->
+  <define name='qemucdev'>
+    <attribute name='type'>
+      <choice>
+        <value>dev</value>
+        <value>file</value>
+        <value>pipe</value>
+        <value>unix</value>
+        <value>tcp</value>
+        <value>udp</value>
+        <value>null</value>
+        <value>stdio</value>
+        <value>vc</value>
+        <value>pty</value>
+      </choice>
+    </attribute>
+    
+    <interleave>
+      <optional>
+        <oneOrMore>
+          <element name='source'>
+            <optional>
+              <attribute name='mode' />
+            </optional>
+            <optional>
+              <attribute name='path' />
+            </optional>
+            <optional>
+              <attribute name='host' />
+            </optional>
+            <optional>
+              <attribute name='service' />
+            </optional>
+            <optional>
+              <attribute name='wiremode' />
+            </optional>
+          </element>
+        </oneOrMore>
+      </optional>
+      <optional>
+        <element name='protocol'>
+          <optional>
+            <attribute name='type' />
+          </optional>
+        </element>
+      </optional>
+      <optional>
+        <element name='target'>
+          <optional>
+            <attribute name='port' />
+          </optional>
+        </element>
+      </optional>
+    </interleave>
+  </define>
+
+  <!--
       The description for a console
       just a tty device
     -->
   <define name='console'>
     <element name='console'>
-      <attribute name='tty'>
-        <ref name='devicePath'/>
+      <choice>
+        <group>
+          <optional>
+            <attribute name='tty'>
+              <ref name='devicePath'/>
+            </attribute>
+          </optional>
+          <empty/>
+        </group>
+        <ref name='qemucdev' />
+      </choice>
+    </element>
+  </define>
+
+  <define name='sound'>
+    <element name='sound'>
+      <attribute name='model'>
+        <choice>
+          <value>sb16</value>
+          <value>es1370</value>
+          <value>pcspk</value>
+        </choice>
       </attribute>
-      <empty/>
+    </element>
+  </define>
+
+  <define name='parallel'>
+    <element name='parallel'>
+      <ref name='qemucdev' />
+    </element>
+  </define>
+
+  <define name='serial'>
+    <element name='serial'>
+      <ref name='qemucdev' />
+    </element>
+  </define>
+
+  <define name='input'>
+    <element name='input'>
+      <attribute name='type'>
+        <choice>
+          <value>tablet</value>
+          <value>mouse</value>
+        </choice>
+      </attribute>
+      <optional>
+        <attribute name='bus'>
+          <choice>
+            <value>ps2</value>
+            <value>usb</value>
+            <value>xen</value>
+          </choice>
+        </attribute>
+      </optional>
     </element>
   </define>
 
   <!--
-      The devices bloc allows:
-      - an optional emulator path, restricted to hvm configs but hard to check
-      - an optional graphic description , restricted to hvm configs too
-      - zero or more disk devices
-      - zero or more interface devices
+      Devices attached to a domain.
     -->
   <define name='devices'>
     <element name='devices'>
@@ -590,41 +765,18 @@
 	<optional>
 	  <ref name='emulator'/>
 	</optional>
-	<optional>
-	  <ref name='graphic'/>
-	</optional>
 	<zeroOrMore>
-	  <ref name='disk'/>
+	  <choice>
+	    <ref name='graphic'/>
+	    <ref name='disk'/>
+	    <ref name='interface'/>
+	    <ref name='console'/>
+            <ref name='sound'/>
+            <ref name='parallel'/>
+            <ref name='serial'/>
+            <ref name='input'/>
+	  </choice>
 	</zeroOrMore>
-	<zeroOrMore>
-	  <ref name='interface'/>
-	</zeroOrMore>
-	<optional>
-	  <ref name='console'/>
-	</optional>
-      </interleave>
-    </element>
-  </define>
-
-  <!--
-      Sometimes the emulator is mandatory, e.g. with KVM
-    -->
-  <define name='devices-with-emulator'>
-    <element name='devices'>
-      <interleave>
-	<ref name='emulator'/>
-	<optional>
-	  <ref name='graphic'/>
-	</optional>
-	<zeroOrMore>
-	  <ref name='disk'/>
-	</zeroOrMore>
-	<zeroOrMore>
-	  <ref name='interface'/>
-	</zeroOrMore>
-	<optional>
-	  <ref name='console'/>
-	</optional>
       </interleave>
     </element>
   </define>
@@ -688,7 +840,7 @@
   </define>
   <define name='domainName'>
     <data type='string'>
-      <param name="pattern">[a-zA-Z0-9_\+\-]+</param>
+      <param name="pattern">[a-zA-Z0-9_\+\-&amp;]+</param>
     </data>
   </define>
   <define name='genericName'>
@@ -708,12 +860,12 @@
   </define>
   <define name='filePath'>
     <data type='string'>
-      <param name="pattern">[a-zA-Z0-9_\+\-%./]+</param>
+      <param name="pattern">[a-zA-Z0-9_\+\-%./&amp;]+</param>
     </data>
   </define>
   <define name='absFilePath'>
     <data type='string'>
-      <param name="pattern">/[a-zA-Z0-9_\+\-%./]+</param>
+      <param name="pattern">/[a-zA-Z0-9_\+\-%./&amp;]+</param>
     </data>
   </define>
   <define name='devicePath'>

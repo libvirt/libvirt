@@ -4,9 +4,9 @@
   <memory>219200</memory>
   <currentMemory>219200</currentMemory>
   <vcpu>1</vcpu>
+  <bootloader>/foo</bootloader>
   <os>
     <type>xen</type>
-    <boot dev='hd'/>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
