@@ -2304,9 +2304,17 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
 
     if ((err = brAddTap(driver->brctl, brname,
                         ifname, BR_IFNAME_MAXLEN, &tapfd))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("Failed to add tap interface '%s' to bridge '%s' : %s"),
-                         ifname, brname, strerror(err));
+        if (errno == ENOTSUP) {
+            /* In this particular case, give a better diagnostic. */
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("Failed to add tap interface to bridge. "
+                               "%s is not a bridge device"), brname);
+        } else {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("Failed to add tap interface '%s' "
+                               "to bridge '%s' : %s"),
+                             ifname, brname, strerror(err));
+        }
         goto error;
     }
 

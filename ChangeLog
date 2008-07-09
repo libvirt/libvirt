@@ -1,3 +1,9 @@
+Wed Jul  9 07:23:31 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	give a more useful diagnostic for tap-add failure w/ENOTSUP
+	* src/qemu_conf.c (qemudNetworkIfaceConnect):
+	Suggestion from Daniel P. Berrange.
+
 Tue Jul  8 18:47:56 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xs_internal.c: Fix typo in domain state constant (Toth
@@ -49,7 +55,7 @@ Fri Jun 27 15:05:31 PDT 2008 Dan Smith <danms@us.ibm.com>
 	Fix compiler warnings in LXC
 	* src/veth.c: remove unused and fix uninitialized variable
 
-Thu Jun 26 19:51:19 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com> 
+Thu Jun 26 19:51:19 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
 
 	fix make syntax-check
 	* src/xm_internal.c: replace tabs to spaces
