@@ -1,3 +1,8 @@
+Wed Jul  9 09:19:44 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* tests/qemuxml2argvdata/qemuxml2argv-input-xen.args: Fix to
+	match previous change to XML
+
 Wed Jul  9 09:19:31 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xml.c: Preserve the XPath context node to allow relative
