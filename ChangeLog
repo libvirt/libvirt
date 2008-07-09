@@ -3,6 +3,7 @@ Wed Jul  9 13:53:25 CEST 2008 Daniel Veillard <veillard@redhat.com>
 	* src/openvz_conf.c src/openvz_conf.h src/openvz_driver.c: applied
 	  patch from Evgeniy Sokolov fixing error diagnostic when exec'ing
 	  OpenVZ commands.
+	* AUTHORS: add Evgeniy
 
 Wed Jul  9 11:25:44 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
