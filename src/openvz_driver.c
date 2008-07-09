@@ -125,18 +125,6 @@ static void cmdExecFree(char *cmdExec[])
     }
 }
 
-/* For errors internal to this library. */
-static void
-error (virConnectPtr conn, virErrorNumber code, const char *info)
-{
-    const char *errmsg;
-
-    errmsg = __virErrorMsg (code, info);
-    __virRaiseError (conn, NULL, NULL, VIR_FROM_OPENVZ,
-                     code, VIR_ERR_ERROR, errmsg, info, NULL, 0, 0,
-                     errmsg, info);
-}
-
 static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
                                    int id) {
     struct openvz_driver *driver = (struct openvz_driver *)conn->privateData;
@@ -257,7 +245,8 @@ static int openvzDomainShutdown(virDomainPtr dom) {
 
     ret = virExec(dom->conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(dom->conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
+        error(dom->conn, VIR_ERR_INTERNAL_ERROR, 
+              _("Could not exec %s"), VZCTL);
         return -1;
     }
 
@@ -301,7 +290,8 @@ static int openvzDomainReboot(virDomainPtr dom,
     }
     ret = virExec(dom->conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(dom->conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
+        error(dom->conn, VIR_ERR_INTERNAL_ERROR, 
+               _("Could not exec %s"), VZCTL);
         return -1;
     }
 
@@ -360,7 +350,8 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     }
     ret = virExec(conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
+        error(conn, VIR_ERR_INTERNAL_ERROR, 
+               _("Could not exec %s"), VZCTL);
         goto bail_out2;
     }
 
@@ -428,7 +419,8 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
     }
     ret = virExec(conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
+        error(conn, VIR_ERR_INTERNAL_ERROR, 
+               _("Could not exec %s"), VZCTL);
         return NULL;
     }
 
@@ -444,7 +436,8 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
     }
     ret = virExec(conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
+        error(conn, VIR_ERR_INTERNAL_ERROR, 
+               _("Could not exec %s"), VZCTL);
         return NULL;
     }
 
@@ -498,7 +491,8 @@ openvzDomainCreate(virDomainPtr dom)
     }
     ret = virExec(dom->conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(dom->conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
+        error(dom->conn, VIR_ERR_INTERNAL_ERROR, 
+               _("Could not exec %s"), VZCTL);
         return -1;
     }
 
@@ -541,7 +535,8 @@ openvzDomainUndefine(virDomainPtr dom)
     }
     ret = virExec(conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
+        error(conn, VIR_ERR_INTERNAL_ERROR, 
+               _("Could not exec %s"), VZCTL);
         return -1;
     }
 
@@ -633,7 +628,8 @@ static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
 
     ret = virExec(conn, (char **)cmd, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
+        error(conn, VIR_ERR_INTERNAL_ERROR, 
+               _("Could not exec %s"), VZLIST);
         return -1;
     }
 
@@ -664,7 +660,8 @@ static int openvzListDefinedDomains(virConnectPtr conn,
     /* the -S options lists only stopped domains */
     ret = virExec(conn, (char **)cmd, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
+        error(conn, VIR_ERR_INTERNAL_ERROR, 
+               _("Could not exec %s"), VZLIST);
         return -1;
     }
 

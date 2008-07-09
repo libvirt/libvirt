@@ -57,21 +57,29 @@
 #include "memory.h"
 
 static char *openvzLocateConfDir(void);
-static void error (virConnectPtr conn, virErrorNumber code, const char *info);
 static struct openvz_vm_def *openvzParseXML(virConnectPtr conn, xmlDocPtr xml);
 static int openvzGetVPSUUID(int vpsid, char *uuidstr);
 static int openvzSetUUID(int vpsid);
 
-/* For errors internal to this library. */
-static void
-error (virConnectPtr conn, virErrorNumber code, const char *info)
+void
+error (virConnectPtr conn, virErrorNumber code, const char *fmt, ...)
 {
+    va_list args;
+    char errorMessage[OPENVZ_MAX_ERROR_LEN];
     const char *errmsg;
 
-    errmsg = __virErrorMsg (code, info);
+    if (fmt) {
+        va_start(args, fmt);
+        vsnprintf(errorMessage, OPENVZ_MAX_ERROR_LEN-1, fmt, args);
+        va_end(args);
+    } else {
+        errorMessage[0] = '\0';
+    }
+
+    errmsg = __virErrorMsg(code, (errorMessage[0] ? errorMessage : NULL));
     __virRaiseError (conn, NULL, NULL, VIR_FROM_OPENVZ,
-                     code, VIR_ERR_ERROR, errmsg, info, NULL, 0, 0,
-                     errmsg, info);
+                     code, VIR_ERR_ERROR, errmsg, errorMessage, NULL, 0, 0,
+                     errmsg, errorMessage);
 }
 
 struct openvz_vm
