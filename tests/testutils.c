@@ -321,20 +321,24 @@ int virtTestMain(int argc,
                  char **argv,
                  int (*func)(int, char **))
 {
+    char *debugStr;
 #if TEST_OOM
     int ret;
     int approxAlloc = 0;
     int n;
-    char *oomStr = NULL, *debugStr;
+    char *oomStr = NULL;
     int oomCount;
     int mp = 0;
     pid_t *workers;
     int worker = 0;
+#endif
+
     if ((debugStr = getenv("VIR_TEST_DEBUG")) != NULL) {
         if (virStrToLong_ui(debugStr, NULL, 10, &testDebug) < 0)
             testDebug = 0;
     }
 
+#if TEST_OOM
     if ((oomStr = getenv("VIR_TEST_OOM")) != NULL) {
         if (virStrToLong_i(oomStr, NULL, 10, &oomCount) < 0)
             oomCount = 0;

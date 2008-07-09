@@ -1,3 +1,10 @@
+Wed Jul  9 11:25:44 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* tests/testutils.c: Ensure VIR_TEST_DEBUG is used even when
+	OOM testing is not compiled in
+	* tests/.valgrind.supp: Supress some bogus warnings caused by
+	global data we don't expect to ever free.
+
 Wed Jul  9 11:16:44 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/virshtest.c: Remove legacy debugging output
