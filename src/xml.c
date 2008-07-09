@@ -386,6 +386,7 @@ char *
 virXPathString(const char *xpath, xmlXPathContextPtr ctxt)
 {
     xmlXPathObjectPtr obj;
+    xmlNodePtr relnode;
     char *ret;
 
     if ((ctxt == NULL) || (xpath == NULL)) {
@@ -393,6 +394,7 @@ virXPathString(const char *xpath, xmlXPathContextPtr ctxt)
                     _("Invalid parameter to virXPathString()"), 0);
         return (NULL);
     }
+    relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
@@ -404,6 +406,7 @@ virXPathString(const char *xpath, xmlXPathContextPtr ctxt)
     if (ret == NULL) {
         virXMLError(NULL, VIR_ERR_NO_MEMORY, _("strdup failed"), 0);
     }
+    ctxt->node = relnode;
     return (ret);
 }
 
@@ -422,21 +425,25 @@ int
 virXPathNumber(const char *xpath, xmlXPathContextPtr ctxt, double *value)
 {
     xmlXPathObjectPtr obj;
+    xmlNodePtr relnode;
 
     if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
         virXMLError(NULL, VIR_ERR_INTERNAL_ERROR,
                     _("Invalid parameter to virXPathNumber()"), 0);
         return (-1);
     }
+    relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
         (isnan(obj->floatval))) {
         xmlXPathFreeObject(obj);
+        ctxt->node = relnode;
         return (-1);
     }
 
     *value = obj->floatval;
     xmlXPathFreeObject(obj);
+    ctxt->node = relnode;
     return (0);
 }
 
@@ -456,6 +463,7 @@ int
 virXPathLong(const char *xpath, xmlXPathContextPtr ctxt, long *value)
 {
     xmlXPathObjectPtr obj;
+    xmlNodePtr relnode;
     int ret = 0;
 
     if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
@@ -463,6 +471,7 @@ virXPathLong(const char *xpath, xmlXPathContextPtr ctxt, long *value)
                     _("Invalid parameter to virXPathNumber()"), 0);
         return (-1);
     }
+    relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
@@ -486,6 +495,7 @@ virXPathLong(const char *xpath, xmlXPathContextPtr ctxt, long *value)
     }
 
     xmlXPathFreeObject(obj);
+    ctxt->node = relnode;
     return (ret);
 }
 
@@ -502,6 +512,7 @@ int
 virXPathBoolean(const char *xpath, xmlXPathContextPtr ctxt)
 {
     xmlXPathObjectPtr obj;
+    xmlNodePtr relnode;
     int ret;
 
     if ((ctxt == NULL) || (xpath == NULL)) {
@@ -509,6 +520,7 @@ virXPathBoolean(const char *xpath, xmlXPathContextPtr ctxt)
                     _("Invalid parameter to virXPathBoolean()"), 0);
         return (-1);
     }
+    relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
     if ((obj == NULL) || (obj->type != XPATH_BOOLEAN) ||
         (obj->boolval < 0) || (obj->boolval > 1)) {
@@ -518,6 +530,7 @@ virXPathBoolean(const char *xpath, xmlXPathContextPtr ctxt)
     ret = obj->boolval;
 
     xmlXPathFreeObject(obj);
+    ctxt->node = relnode;
     return (ret);
 }
 
@@ -535,6 +548,7 @@ xmlNodePtr
 virXPathNode(const char *xpath, xmlXPathContextPtr ctxt)
 {
     xmlXPathObjectPtr obj;
+    xmlNodePtr relnode;
     xmlNodePtr ret;
 
     if ((ctxt == NULL) || (xpath == NULL)) {
@@ -542,16 +556,19 @@ virXPathNode(const char *xpath, xmlXPathContextPtr ctxt)
                     _("Invalid parameter to virXPathNode()"), 0);
         return (NULL);
     }
+    relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
         (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr <= 0) ||
         (obj->nodesetval->nodeTab == NULL)) {
         xmlXPathFreeObject(obj);
+        ctxt->node = relnode;
         return (NULL);
     }
 
     ret = obj->nodesetval->nodeTab[0];
     xmlXPathFreeObject(obj);
+    ctxt->node = relnode;
     return (ret);
 }
 
@@ -571,6 +588,7 @@ virXPathNodeSet(const char *xpath, xmlXPathContextPtr ctxt,
                 xmlNodePtr ** list)
 {
     xmlXPathObjectPtr obj;
+    xmlNodePtr relnode;
     int ret;
 
     if ((ctxt == NULL) || (xpath == NULL)) {
@@ -578,6 +596,7 @@ virXPathNodeSet(const char *xpath, xmlXPathContextPtr ctxt,
                     _("Invalid parameter to virXPathNodeSet()"), 0);
         return (-1);
     }
+    relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
         (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr <= 0) ||
@@ -585,6 +604,7 @@ virXPathNodeSet(const char *xpath, xmlXPathContextPtr ctxt,
         xmlXPathFreeObject(obj);
         if (list != NULL)
             *list = NULL;
+        ctxt->node = relnode;
         return (-1);
     }
 
@@ -601,6 +621,7 @@ virXPathNodeSet(const char *xpath, xmlXPathContextPtr ctxt,
         }
     }
     xmlXPathFreeObject(obj);
+    ctxt->node = relnode;
     return (ret);
 }
 
@@ -1139,7 +1160,7 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
             goto error;
         virBufferVSprintf(buf, "(serial %s)", scratch);
     } else {
-        res = virXPathBoolean("count(domain/devices/console) > 0", ctxt);
+        res = virXPathBoolean("count(/domain/devices/console) > 0", ctxt);
         if (res < 0) {
             virXMLError(conn, VIR_ERR_XML_ERROR, NULL, 0);
             goto error;

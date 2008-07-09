@@ -1,3 +1,8 @@
+Wed Jul  9 09:19:31 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xml.c: Preserve the XPath context node to allow relative
+	XPath queries to be used
+
 Wed Jul  9 07:23:31 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	give a more useful diagnostic for tap-add failure w/ENOTSUP
