@@ -1,3 +1,7 @@
+Wed Jul  9 11:16:44 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* tests/virshtest.c: Remove legacy debugging output
+
 Wed Jul  9 09:19:44 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/qemuxml2argvdata/qemuxml2argv-input-xen.args: Fix to
