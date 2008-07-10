@@ -1,3 +1,8 @@
+Thu Jul 10 17:28:19 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c: Evgeniy Sokolov found a driver open bug
+	  in do_open()
+
 Thu Jul 10 14:18:51 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_conf.c src/openvz_conf.h src/openvz_driver.c

@@ -699,7 +699,7 @@ do_open (const char *name,
             const char *use = NULL;
             const char *latest;
             int probes = 0;
-            for (i = 0; i < virNetworkDriverTabCount; i++) {
+            for (i = 0; i < virDriverTabCount; i++) {
                 if ((virDriverTab[i]->probe != NULL) &&
                     ((latest = virDriverTab[i]->probe()) != NULL)) {
                     probes++;
