@@ -1,3 +1,9 @@
+Thu Jul 10 14:18:51 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/openvz_conf.c src/openvz_conf.h src/openvz_driver.c
+	  Makefile.maint: patch from Evgeniy Sokolov cleaning up the
+	  error function used and format check based on Jim's fedback.
+
 Thu Jul 10 09:58:42 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/libvirt.rng: domain name validation fix by John Levon

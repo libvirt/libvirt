@@ -132,13 +132,13 @@ static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
     virDomainPtr dom;
 
     if (!vm) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, _("no domain with matching id"));
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("no domain with matching id"));
         return NULL;
     }
 
     dom = virGetDomain(conn, vm->vmdef->name, vm->vmdef->uuid);
     if (!dom) {
-        error(conn, VIR_ERR_NO_MEMORY, "virDomainPtr");
+        openvzError(conn, VIR_ERR_NO_MEMORY, _("virDomainPtr"));
         return NULL;
     }
 
@@ -160,13 +160,13 @@ static virDomainPtr openvzDomainLookupByUUID(virConnectPtr conn,
     virDomainPtr dom;
 
     if (!vm) {
-        error(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        openvzError(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
         return NULL;
     }
 
     dom = virGetDomain(conn, vm->vmdef->name, vm->vmdef->uuid);
     if (!dom) {
-        error(conn, VIR_ERR_NO_MEMORY, "virDomainPtr");
+        openvzError(conn, VIR_ERR_NO_MEMORY, _("virDomainPtr"));
         return NULL;
     }
 
@@ -181,13 +181,13 @@ static virDomainPtr openvzDomainLookupByName(virConnectPtr conn,
     virDomainPtr dom;
 
     if (!vm) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, _("no domain with matching name"));
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("no domain with matching name"));
         return NULL;
     }
 
     dom = virGetDomain(conn, vm->vmdef->name, vm->vmdef->uuid);
     if (!dom) {
-        error(conn, VIR_ERR_NO_MEMORY, "virDomainPtr");
+        openvzError(conn, VIR_ERR_NO_MEMORY, _("virDomainPtr"));
         return NULL;
     }
 
@@ -201,7 +201,7 @@ static int openvzDomainGetInfo(virDomainPtr dom,
     struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
 
     if (!vm) {
-        error(dom->conn, VIR_ERR_INVALID_DOMAIN,
+        openvzError(dom->conn, VIR_ERR_INVALID_DOMAIN,
               _("no domain with matching uuid"));
         return -1;
     }
@@ -225,13 +225,13 @@ static int openvzDomainShutdown(virDomainPtr dom) {
     struct openvz_vm *vm = openvzFindVMByID(driver, dom->id);
 
     if (!vm) {
-        error(dom->conn, VIR_ERR_INVALID_DOMAIN,
+        openvzError(dom->conn, VIR_ERR_INVALID_DOMAIN,
               _("no domain with matching id"));
         return -1;
     }
 
     if (vm->status != VIR_DOMAIN_RUNNING) {
-        error(dom->conn, VIR_ERR_OPERATION_DENIED,
+        openvzError(dom->conn, VIR_ERR_OPERATION_DENIED,
               _("domain is not in running state"));
         return -1;
     }
@@ -245,7 +245,7 @@ static int openvzDomainShutdown(virDomainPtr dom) {
 
     ret = virExec(dom->conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(dom->conn, VIR_ERR_INTERNAL_ERROR,
+        openvzError(dom->conn, VIR_ERR_INTERNAL_ERROR,
               _("Could not exec %s"), VZCTL);
         return -1;
     }
@@ -271,13 +271,13 @@ static int openvzDomainReboot(virDomainPtr dom,
     struct openvz_vm *vm = openvzFindVMByID(driver, dom->id);
 
     if (!vm) {
-        error(dom->conn, VIR_ERR_INVALID_DOMAIN,
+        openvzError(dom->conn, VIR_ERR_INVALID_DOMAIN,
               _("no domain with matching id"));
         return -1;
     }
 
     if (vm->status != VIR_DOMAIN_RUNNING) {
-        error(dom->conn, VIR_ERR_OPERATION_DENIED,
+        openvzError(dom->conn, VIR_ERR_OPERATION_DENIED,
               _("domain is not in running state"));
         return -1;
     }
@@ -290,7 +290,7 @@ static int openvzDomainReboot(virDomainPtr dom,
     }
     ret = virExec(dom->conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(dom->conn, VIR_ERR_INTERNAL_ERROR,
+        openvzError(dom->conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZCTL);
         return -1;
     }
@@ -350,7 +350,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     }
     ret = virExec(conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(conn, VIR_ERR_INTERNAL_ERROR,
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZCTL);
         goto bail_out2;
     }
@@ -419,7 +419,7 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
     }
     ret = virExec(conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(conn, VIR_ERR_INTERNAL_ERROR,
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZCTL);
         return NULL;
     }
@@ -436,7 +436,7 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
     }
     ret = virExec(conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(conn, VIR_ERR_INTERNAL_ERROR,
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZCTL);
         return NULL;
     }
@@ -470,13 +470,13 @@ openvzDomainCreate(virDomainPtr dom)
     struct openvz_vm_def *vmdef;
 
     if (!vm) {
-        error(dom->conn, VIR_ERR_INVALID_DOMAIN,
+        openvzError(dom->conn, VIR_ERR_INVALID_DOMAIN,
               _("no domain with matching id"));
         return -1;
     }
 
     if (vm->status != VIR_DOMAIN_SHUTOFF) {
-        error(dom->conn, VIR_ERR_OPERATION_DENIED,
+        openvzError(dom->conn, VIR_ERR_OPERATION_DENIED,
               _("domain is not in shutoff state"));
         return -1;
     }
@@ -491,7 +491,7 @@ openvzDomainCreate(virDomainPtr dom)
     }
     ret = virExec(dom->conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(dom->conn, VIR_ERR_INTERNAL_ERROR,
+        openvzError(dom->conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZCTL);
         return -1;
     }
@@ -518,12 +518,12 @@ openvzDomainUndefine(virDomainPtr dom)
     struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
 
     if (!vm) {
-        error(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        openvzError(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
         return -1;
     }
 
     if (openvzIsActiveVM(vm)) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, _("cannot delete active domain"));
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("cannot delete active domain"));
         return -1;
     }
     snprintf(cmdbuf, CMDBUF_LEN - 1, VZCTL " destroy %s ", vm->vmdef->name);
@@ -535,7 +535,7 @@ openvzDomainUndefine(virDomainPtr dom)
     }
     ret = virExec(conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(conn, VIR_ERR_INTERNAL_ERROR,
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZCTL);
         return -1;
     }
@@ -553,17 +553,17 @@ openvzDomainSetAutostart(virDomainPtr dom, int autostart)
     virConnectPtr conn= dom->conn;
     struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
     struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
-    const char *prog[] = { VZCTL, "set", vm->vmdef->name, 
-                           "--onboot", autostart ? "yes" : "no", 
+    const char *prog[] = { VZCTL, "set", vm->vmdef->name,
+                           "--onboot", autostart ? "yes" : "no",
                            "--save", NULL };
 
     if (!vm) {
-        error(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        openvzError(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
         return -1;
     }
 
     if (virRun(conn, (char **)prog, NULL) < 0) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, _("Could not exec %s"), VZCTL);
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("Could not exec %s"), VZCTL);
         return -1;
     }
 
@@ -579,18 +579,18 @@ openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
     char value[1024];
 
     if (!vm) {
-        error(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        openvzError(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
         return -1;
     }
 
     if (openvzReadConfigParam(vm->vpsid , "ONBOOT", value, sizeof(value)) < 0) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, _("Cound not read container config"));
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("Cound not read container config"));
         return -1;
     }
 
     *autostart = 0;
     if (STREQ(value,"yes"))
-        *autostart = 1; 
+        *autostart = 1;
 
     return 0;
 }
@@ -676,7 +676,7 @@ static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
 
     ret = virExec(conn, (char **)cmd, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(conn, VIR_ERR_INTERNAL_ERROR,
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZLIST);
         return -1;
     }
@@ -708,7 +708,7 @@ static int openvzListDefinedDomains(virConnectPtr conn,
     /* the -S options lists only stopped domains */
     ret = virExec(conn, (char **)cmd, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
-        error(conn, VIR_ERR_INTERNAL_ERROR,
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZLIST);
         return -1;
     }

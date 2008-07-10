@@ -110,7 +110,8 @@ openvzIsActiveVM(struct openvz_vm *vm)
     return vm->vpsid != -1;
 }
 
-void error (virConnectPtr conn, virErrorNumber code, const char *fmt, ...);
+void openvzError (virConnectPtr conn, virErrorNumber code, const char *fmt, ...)
+    ATTRIBUTE_FORMAT(printf, 3, 4);
 int openvz_readline(int fd, char *ptr, int maxlen);
 int openvzReadConfigParam(int vpsid ,const char * param, char *value, int maxlen);
 struct openvz_vm *openvzFindVMByID(const struct openvz_driver *driver, int id);

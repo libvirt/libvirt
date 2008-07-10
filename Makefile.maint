@@ -351,6 +351,7 @@ msg_gen_function += xenXMError
 msg_gen_function += ReportError
 msg_gen_function += qemudReportError
 msg_gen_function += openvzLog
+msg_gen_function += openvzError
 
 # Uncomment the following and run "make syntax-check" to see diagnostics
 # that are not yet marked for translation, but that need to be rewritten
