@@ -840,7 +840,7 @@
   </define>
   <define name='domainName'>
     <data type='string'>
-      <param name="pattern">[a-zA-Z0-9_\+\-&amp;]+</param>
+      <param name="pattern">[A-Za-z0-9_.:/\+\-&amp;-]+</param>
     </data>
   </define>
   <define name='genericName'>
