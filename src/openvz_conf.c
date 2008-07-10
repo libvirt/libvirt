@@ -603,6 +603,63 @@ error:
     return NULL;
 }
 
+/*
+* Read parameter from container config
+* sample: 133, "OSTEMPLATE", value, 1024
+* return: -1 - error
+*	   0 - don't found
+*          1 - OK
+*/
+int
+openvzReadConfigParam(int vpsid ,const char * param, char *value, int maxlen)
+{
+    char conf_file[PATH_MAX] ;
+    char line[PATH_MAX] ;
+    int ret, found = 0;
+    char * conf_dir;
+    int fd ;
+    char * sf, * token;
+    char *saveptr = NULL;
+
+        
+    conf_dir = openvzLocateConfDir();
+    if (conf_dir == NULL)
+        return -1;
+
+    if (snprintf(conf_file, PATH_MAX,"%s/%d.conf",conf_dir,vpsid) >= PATH_MAX) 
+        return -1;
+
+    VIR_FREE(conf_dir);
+
+    value[0] = 0;
+
+    fd = open(conf_file, O_RDONLY);
+    if (fd == -1) 
+        return -1;
+
+    while(1) {
+        ret = openvz_readline(fd, line, sizeof(line));
+        if(ret <= 0)
+            break;
+        saveptr = NULL;
+        if (STREQLEN(line, param, strlen(param))) { 
+            sf = line;
+            sf += strlen(param);
+            if (sf[0] == '=' && (token = strtok_r(sf,"\"\t=\n", &saveptr)) != NULL) {
+                strncpy(value, token, maxlen) ;
+                value[maxlen-1] = '\0';
+                found = 1;
+            }
+	}
+    }
+    close(fd);
+
+    if (ret == 0 && found)
+        ret = 1;
+
+    return ret ;
+}
+
 static char
 *openvzLocateConfDir(void)
 {
@@ -680,6 +737,8 @@ openvzGetVPSUUID(int vpsid, char *uuidstr)
             break;
         }
     }
+    close(fd);
+
     return 0;
 }
 

@@ -547,6 +547,54 @@ bail_out5:
     return ret;
 }
 
+static int
+openvzDomainSetAutostart(virDomainPtr dom, int autostart)
+{
+    virConnectPtr conn= dom->conn;
+    struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
+    struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
+    const char *prog[] = { VZCTL, "set", vm->vmdef->name, 
+                           "--onboot", autostart ? "yes" : "no", 
+                           "--save", NULL };
+
+    if (!vm) {
+        error(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        return -1;
+    }
+
+    if (virRun(conn, (char **)prog, NULL) < 0) {
+        error(conn, VIR_ERR_INTERNAL_ERROR, _("Could not exec %s"), VZCTL);
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
+{
+    virConnectPtr conn= dom->conn;
+    struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
+    struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
+    char value[1024];
+
+    if (!vm) {
+        error(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        return -1;
+    }
+
+    if (openvzReadConfigParam(vm->vpsid , "ONBOOT", value, sizeof(value)) < 0) {
+        error(conn, VIR_ERR_INTERNAL_ERROR, _("Cound not read container config"));
+        return -1;
+    }
+
+    *autostart = 0;
+    if (STREQ(value,"yes"))
+        *autostart = 1; 
+
+    return 0;
+}
+
 static const char *openvzProbe(void)
 {
 #ifdef __linux__
@@ -748,8 +796,8 @@ static virDriver openvzDriver = {
     openvzDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */
     NULL, /* domainDetachDevice */
-    NULL, /* domainGetAutostart */
-    NULL, /* domainSetAutostart */
+    openvzDomainGetAutostart, /* domainGetAutostart */
+    openvzDomainSetAutostart, /* domainSetAutostart */
     NULL, /* domainGetSchedulerType */
     NULL, /* domainGetSchedulerParameters */
     NULL, /* domainSetSchedulerParameters */

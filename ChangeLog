@@ -1,3 +1,8 @@
+Thu Jul 10 09:50:39 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/openvz_conf.c src/openvz_conf.h src/openvz_driver.c: new
+	  patch from Evgeniy Sokolov adding OpenVZ autostart get and set support
+
 Wed Jul  9 13:53:25 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_conf.c src/openvz_conf.h src/openvz_driver.c: applied
