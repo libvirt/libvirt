@@ -6,7 +6,7 @@
   <vcpu>1</vcpu>
   <bootloader>/foo</bootloader>
   <os>
-    <type>xen</type>
+    <type arch='x86_64' machine='xenner'>xen</type>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
@@ -19,6 +19,6 @@
       <target dev='hda' bus='ide'/>
     </disk>
     <input type='mouse' bus='xen'/>
-    <graphics type='vnc' port='-1'/>
+    <graphics type='vnc' port='5903' autoport='no' listen='127.0.0.1'/>
   </devices>
 </domain>

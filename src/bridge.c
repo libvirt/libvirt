@@ -281,7 +281,6 @@ brDeleteInterface(brControl *ctl ATTRIBUTE_UNUSED,
  * @ctl: bridge control pointer
  * @bridge: the bridge name
  * @ifname: the interface name (or name template)
- * @maxlen: size of @ifname array
  * @tapfd: file descriptor return value for the new tap device
  *
  * This function creates a new tap device on a bridge. @ifname can be either
@@ -294,8 +293,7 @@ brDeleteInterface(brControl *ctl ATTRIBUTE_UNUSED,
 int
 brAddTap(brControl *ctl,
          const char *bridge,
-         char *ifname,
-         int maxlen,
+         char **ifname,
          int *tapfd)
 {
     int id, subst, fd;
@@ -305,7 +303,7 @@ brAddTap(brControl *ctl,
 
     subst = id = 0;
 
-    if (strstr(ifname, "%d"))
+    if (strstr(*ifname, "%d"))
         subst = 1;
 
     if ((fd = open("/dev/net/tun", O_RDWR)) < 0)
@@ -320,19 +318,19 @@ brAddTap(brControl *ctl,
         try.ifr_flags = IFF_TAP|IFF_NO_PI;
 
         if (subst) {
-            len = snprintf(try.ifr_name, maxlen, ifname, id);
-            if (len >= maxlen) {
+            len = snprintf(try.ifr_name, BR_IFNAME_MAXLEN, *ifname, id);
+            if (len >= BR_IFNAME_MAXLEN) {
                 errno = EADDRINUSE;
                 goto error;
             }
         } else {
-            len = strlen(ifname);
-            if (len >= maxlen - 1) {
+            len = strlen(*ifname);
+            if (len >= BR_IFNAME_MAXLEN - 1) {
                 errno = EINVAL;
                 goto error;
             }
 
-            strncpy(try.ifr_name, ifname, len);
+            strncpy(try.ifr_name, *ifname, len);
             try.ifr_name[len] = '\0';
         }
 
@@ -341,8 +339,11 @@ brAddTap(brControl *ctl,
                 goto error;
             if ((errno = brSetInterfaceUp(ctl, try.ifr_name, 1)))
                 goto error;
-            if (ifname)
-                strncpy(ifname, try.ifr_name, maxlen);
+            VIR_FREE(*ifname);
+            if (!(*ifname = strdup(try.ifr_name))) {
+                errno = ENOMEM;
+                goto error;
+            }
             *tapfd = fd;
             return 0;
         }

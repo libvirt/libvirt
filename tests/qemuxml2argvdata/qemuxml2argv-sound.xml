@@ -16,15 +16,10 @@
     <emulator>/usr/bin/qemu</emulator>
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest1'/>
-      <target dev='hda'/>
+      <target dev='hda' bus='ide'/>
     </disk>
     <sound model='pcspk'/>
-    <sound model='pcspk'/>
     <sound model='es1370'/>
-    <sound model='pcspk'/>
-    <sound model='sb16'/>
-    <sound model='es1370'/>
-    <sound model='pcspk'/>
     <sound model='sb16'/>
   </devices>
 </domain>

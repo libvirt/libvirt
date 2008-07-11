@@ -6,7 +6,7 @@
   <vcpu>1</vcpu>
   <bootloader>/usr/bin/pygrub</bootloader>
   <os>
-    <type>xen</type>
+    <type arch='x86_64' machine='xenner'>xen</type>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

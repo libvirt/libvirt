@@ -23,39 +23,33 @@ static struct qemud_driver driver;
 #define MAX_FILE 4096
 
 static int testCompareXMLToArgvFiles(const char *xml, const char *cmd, int extraFlags) {
-    char xmlData[MAX_FILE];
     char argvData[MAX_FILE];
-    char *xmlPtr = &(xmlData[0]);
     char *expectargv = &(argvData[0]);
     char *actualargv = NULL;
     char **argv = NULL;
     char **tmp = NULL;
-    int ret = -1, len;
-    struct qemud_vm_def *vmdef = NULL;
-    struct qemud_vm vm;
-
-    if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
-        goto fail;
+    int ret = -1, len, flags;
+    virDomainDefPtr vmdef = NULL;
+    virDomainObj vm;
 
     if (virtTestLoadFile(cmd, &expectargv, MAX_FILE) < 0)
         goto fail;
 
-    if (!(vmdef = qemudParseVMDef(NULL, &driver, xmlData, "test")))
+    if (!(vmdef = virDomainDefParseFile(NULL, driver.caps, xml)))
         goto fail;
 
     memset(&vm, 0, sizeof vm);
     vm.def = vmdef;
+    vm.def->id = -1;
     vm.pid = -1;
-    vm.id = -1;
-    vm.qemuVersion = 0 * 1000 * 100 + (8 * 1000) + 1;
-    vm.qemuCmdFlags = QEMUD_CMD_FLAG_VNC_COLON |
-        QEMUD_CMD_FLAG_NO_REBOOT;
-    vm.qemuCmdFlags |= extraFlags;
-    vm.migrateFrom[0] = '\0';
 
-    vmdef->vncActivePort = vmdef->vncPort;
+    flags = QEMUD_CMD_FLAG_VNC_COLON |
+        QEMUD_CMD_FLAG_NO_REBOOT |
+        extraFlags;
 
-    if (qemudBuildCommandLine(NULL, &driver, &vm, &argv) < 0)
+    if (qemudBuildCommandLine(NULL, &driver,
+                              &vm, flags, &argv,
+                              NULL, NULL, NULL) < 0)
         goto fail;
 
     tmp = argv;
@@ -92,8 +86,7 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd, int extra
         }
         free(argv);
     }
-    if (vmdef)
-        qemudFreeVMDef(vmdef);
+    virDomainDefFree(vmdef);
     return ret;
 }
 
