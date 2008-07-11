@@ -56,6 +56,7 @@ typedef enum {
     VIR_FROM_STATS_LINUX, /* Error in the Linux Stats code */
     VIR_FROM_LXC,   /* Error from Linux Container driver */
     VIR_FROM_STORAGE,   /* Error from storage driver */
+    VIR_FROM_NETWORK,   /* Error from network config */
 } virErrorDomain;
 
 

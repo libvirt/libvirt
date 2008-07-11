@@ -1,3 +1,13 @@
+Fri Jul 11 11:35:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Generic APIs for network XML configuration
+	* include/libvirt/virterror.h, src/virterror.c: Added new
+	scope VIR_FROM_NETWORK
+	* src/Makefile.am, po/POTFILES.in: Added network_conf.{c,h}
+	* src/xml.c, src/xml.h: Added virXPathULong function
+	* src/network_conf.c, src/network_conf.h: Added generic
+	APIs for network XML configuration
+
 Fri Jul 11 10:55:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c: Fix booting off CDROM devices

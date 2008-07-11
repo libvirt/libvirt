@@ -26,6 +26,9 @@ int		virXPathNumber	(const char *xpath,
 int		virXPathLong	(const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  long *value);
+int		virXPathULong	(const char *xpath,
+                                 xmlXPathContextPtr ctxt,
+                                 unsigned long *value);
 xmlNodePtr	virXPathNode	(const char *xpath,
                                  xmlXPathContextPtr ctxt);
 int		virXPathNodeSet	(const char *xpath,

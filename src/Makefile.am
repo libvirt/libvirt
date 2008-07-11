@@ -52,6 +52,7 @@ CLIENT_SOURCES =						\
 		driver.h					\
 		proxy_internal.c proxy_internal.h		\
 		conf.c conf.h                                   \
+		network_conf.c network_conf.h                   \
 		xm_internal.c xm_internal.h                     \
 		remote_internal.c remote_internal.h		\
 		bridge.c bridge.h				\
