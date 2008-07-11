@@ -307,6 +307,9 @@ virDefaultErrorFunc(virErrorPtr err)
         case VIR_FROM_NETWORK:
             dom = "Network Config ";
             break;
+        case VIR_FROM_DOMAIN:
+            dom = "Domain Config ";
+            break;
 
     }
     if ((err->dom != NULL) && (err->code != VIR_ERR_INVALID_DOMAIN)) {

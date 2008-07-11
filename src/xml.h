@@ -23,6 +23,12 @@ char *		virXPathString	(const char *xpath,
 int		virXPathNumber	(const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  double *value);
+int		virXPathInt	(const char *xpath,
+                                 xmlXPathContextPtr ctxt,
+                                 int *value);
+int		virXPathUInt	(const char *xpath,
+                                 xmlXPathContextPtr ctxt,
+                                 unsigned int *value);
 int		virXPathLong	(const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  long *value);
@@ -34,6 +40,10 @@ xmlNodePtr	virXPathNode	(const char *xpath,
 int		virXPathNodeSet	(const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  xmlNodePtr **list);
+
+char *          virXMLPropString(xmlNodePtr node,
+                                 const char *name);
+
 
 #if WITH_XEN || WITH_QEMU
 int		virParseCpuSet	(virConnectPtr conn,

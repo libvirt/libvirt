@@ -551,6 +551,13 @@ virXPathULong(const char *xpath, xmlXPathContextPtr ctxt, unsigned long *value)
     return (ret);
 }
 
+char *
+virXMLPropString(xmlNodePtr node,
+                 const char *name)
+{
+    return (char *)xmlGetProp(node, BAD_CAST name);
+}
+
 /**
  * virXPathBoolean:
  * @xpath: the XPath string to evaluate
@@ -648,20 +655,21 @@ virXPathNodeSet(const char *xpath, xmlXPathContextPtr ctxt,
                     _("Invalid parameter to virXPathNodeSet()"), 0);
         return (-1);
     }
+
+    if (list != NULL)
+        *list = NULL;
+
     relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
-        (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr <= 0) ||
-        (obj->nodesetval->nodeTab == NULL)) {
+        (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr < 0)) {
         xmlXPathFreeObject(obj);
-        if (list != NULL)
-            *list = NULL;
         ctxt->node = relnode;
         return (-1);
     }
 
     ret = obj->nodesetval->nodeNr;
-    if (list != NULL) {
+    if (list != NULL && ret) {
         if (VIR_ALLOC_N(*list, ret) < 0) {
             virXMLError(NULL, VIR_ERR_NO_MEMORY,
                         _("allocate string array"),

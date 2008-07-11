@@ -39,6 +39,7 @@ CLIENT_SOURCES =						\
 		test.c test.h                                   \
                 buf.c buf.h					\
 		qparams.c qparams.h				\
+                domain_conf.c domain_conf.h                     \
                 capabilities.c capabilities.h			\
 		xml.c xml.h					\
 		event.c event.h					\

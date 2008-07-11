@@ -1,3 +1,16 @@
+Fri Jul 11 15:49:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Generic APIs for domain XML configuration
+	* include/libvirt/virterror.h, src/virterror.c: Added new
+	scope VIR_FROM_DOMAIN
+	* src/Makefile.am, po/POTFILES.in: Added domain_conf.{c,h}
+	* src/xml.c, src/xml.h: Added virXPath{Int,UInt} and
+	virXMLPropString functions
+	* src/network_conf.c, src/network_conf.h: Added generic
+	APIs for domain XML configuration
+	* src/util.h: Re-write verify() hook for enums, to allow
+	multiple enum declarations per file.
+
 Fri Jul 11 13:08:13 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_driver.c: fix from Evgeniy Sokolov to the probe function
