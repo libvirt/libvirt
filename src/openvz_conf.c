@@ -60,6 +60,7 @@ static char *openvzLocateConfDir(void);
 static struct openvz_vm_def *openvzParseXML(virConnectPtr conn, xmlDocPtr xml);
 static int openvzGetVPSUUID(int vpsid, char *uuidstr);
 static int openvzSetUUID(int vpsid);
+static int openvzLocateConfFile(int vpsid, char *conffile, int maxlen);
 
 void
 openvzError (virConnectPtr conn, virErrorNumber code, const char *fmt, ...)
@@ -595,19 +596,12 @@ openvzReadConfigParam(int vpsid ,const char * param, char *value, int maxlen)
     char conf_file[PATH_MAX] ;
     char line[PATH_MAX] ;
     int ret, found = 0;
-    char * conf_dir;
     int fd ;
     char * sf, * token;
     char *saveptr = NULL;
 
-    conf_dir = openvzLocateConfDir();
-    if (conf_dir == NULL)
+    if (openvzLocateConfFile(vpsid, conf_file, PATH_MAX)<0)
         return -1;
-
-    if (snprintf(conf_file, PATH_MAX, "%s/%d.conf", conf_dir,vpsid) >= PATH_MAX)
-        return -1;
-
-    VIR_FREE(conf_dir);
 
     value[0] = 0;
 
@@ -636,6 +630,27 @@ openvzReadConfigParam(int vpsid ,const char * param, char *value, int maxlen)
         ret = 1;
 
     return ret ;
+}
+
+/* Locate config file of container
+* return -1 - error
+*         0 - OK
+*/
+static int
+openvzLocateConfFile(int vpsid, char *conffile, int maxlen)
+{
+    char * confdir;
+    int ret = 0;
+
+    confdir = openvzLocateConfDir();
+    if (confdir == NULL)
+        return -1;
+
+    if (snprintf(conffile, maxlen, "%s/%d.conf", confdir, vpsid) >= maxlen)
+        ret = -1;
+
+    VIR_FREE(confdir);
+    return ret;
 }
 
 static char
@@ -686,16 +701,12 @@ openvzGetVPSUUID(int vpsid, char *uuidstr)
     char line[1024];
     char uuidbuf[1024];
     char iden[1024];
-    char *conf_dir;
     int fd, ret;
 
-    conf_dir = openvzLocateConfDir();
-    if (conf_dir == NULL)
-        return -1;
-    sprintf(conf_file, "%s/%d.conf", conf_dir, vpsid);
-    VIR_FREE(conf_dir);
+   if (openvzLocateConfFile(vpsid, conf_file, PATH_MAX)<0)
+       return -1;
 
-    fd = open(conf_file, O_RDWR);
+    fd = open(conf_file, O_RDONLY);
     if(fd == -1)
         return -1;
 
@@ -730,13 +741,9 @@ openvzSetUUID(int vpsid)
     char conf_file[PATH_MAX];
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     unsigned char uuid[VIR_UUID_BUFLEN];
-    char *conf_dir;
 
-    conf_dir = openvzLocateConfDir();
-    if (conf_dir == NULL)
-        return -1;
-    sprintf(conf_file, "%s/%d.conf", conf_dir, vpsid);
-    VIR_FREE(conf_dir);
+   if (openvzLocateConfFile(vpsid, conf_file, PATH_MAX)<0)
+       return -1;
 
     if (openvzGetVPSUUID(vpsid, uuidstr))
         return -1;

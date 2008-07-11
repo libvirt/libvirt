@@ -1,3 +1,8 @@
+Fri Jul 11 10:53:59 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/openvz_conf.c: cleanup OpenVZ config file accesses, patch
+	  from Evgeniy Sokolov
+
 Thu Jul 10 17:28:19 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c: Evgeniy Sokolov found a driver open bug
