@@ -1,3 +1,7 @@
+Fri Jul 11 13:08:13 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/openvz_driver.c: fix from Evgeniy Sokolov to the probe function
+
 Fri Jul 11 11:35:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Generic APIs for network XML configuration

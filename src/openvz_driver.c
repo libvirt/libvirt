@@ -599,7 +599,7 @@ static const char *openvzProbe(void)
 {
 #ifdef __linux__
     if ((getuid() == 0) && (virFileExists("/proc/vz")))
-        return("openvz:///");
+        return("openvz:///system");
 #endif
     return(NULL);
 }
