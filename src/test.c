@@ -46,6 +46,7 @@
 #include "uuid.h"
 #include "capabilities.h"
 #include "memory.h"
+#include "network_conf.h"
 
 /* Flags that determine the action to take on a shutdown or crash of a domain
  */
@@ -85,26 +86,6 @@ struct _testDom {
 typedef struct _testDom testDom;
 typedef struct _testDom *testDomPtr;
 
-struct _testNet {
-    int active;
-    int config;
-    int running;
-    char name[20];
-    char bridge[20];
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    int forward;
-    char forwardDev[IF_NAMESIZE];
-    char ipAddress[INET_ADDRSTRLEN];
-    char ipNetmask[INET_ADDRSTRLEN];
-
-    char dhcpStart[INET_ADDRSTRLEN];
-    char dhcpEnd[INET_ADDRSTRLEN];
-
-    int autostart;
-};
-typedef struct _testNet testNet;
-typedef struct _testNet *testNetPtr;
-
 #define MAX_DOMAINS 20
 #define MAX_NETWORKS 20
 #define MAX_CPUS 128
@@ -125,8 +106,7 @@ struct _testConn {
     virNodeInfo nodeInfo;
     int numDomains;
     testDom domains[MAX_DOMAINS];
-    int numNetworks;
-    testNet networks[MAX_NETWORKS];
+    virNetworkObjPtr networks;
     int numCells;
     testCell cells[MAX_CELLS];
 };
@@ -161,17 +141,18 @@ static const virNodeInfo defaultNodeInfo = {
     privdom = &privconn->domains[domidx];
 
 #define GET_NETWORK(net, ret)                                           \
-    int netidx;                                                         \
     testConnPtr privconn;                                               \
-    testNetPtr privnet;                                                 \
+    virNetworkObjPtr privnet;                                           \
                                                                         \
     privconn = (testConnPtr)net->conn->privateData;                     \
-    if ((netidx = getNetworkIndex(net)) < 0) {                          \
-        testError((net)->conn, NULL, (net), VIR_ERR_INVALID_ARG,        \
-                  __FUNCTION__);                                        \
-        return (ret);                                                   \
-    }                                                                   \
-    privnet = &privconn->networks[netidx];
+    do {                                                                \
+        if ((privnet = virNetworkFindByName(privconn->networks,         \
+                                            (net)->name)) == NULL) {    \
+            testError((net)->conn, NULL, (net), VIR_ERR_INVALID_ARG,    \
+                      __FUNCTION__);                                    \
+            return (ret);                                               \
+        }                                                               \
+    } while (0)
 
 #define GET_CONNECTION(conn, ret)                                       \
     testConnPtr privconn;                                               \
@@ -423,191 +404,30 @@ static int testLoadDomainFromFile(virConnectPtr conn,
 }
 
 
-static int testLoadNetwork(virConnectPtr conn,
-                           xmlDocPtr xml) {
-    xmlNodePtr root = NULL;
-    xmlXPathContextPtr ctxt = NULL;
-    char *name = NULL, *bridge = NULL;
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    char *str;
-    char *ipaddress = NULL, *ipnetmask = NULL, *dhcpstart = NULL, *dhcpend = NULL;
-    int forward;
-    char *forwardDev = NULL;
-    int handle = -1, i;
-    GET_CONNECTION(conn, -1);
-
-    root = xmlDocGetRootElement(xml);
-    if ((root == NULL) || (!xmlStrEqual(root->name, BAD_CAST "network"))) {
-        testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("network"));
-        goto error;
-    }
-
-    ctxt = xmlXPathNewContext(xml);
-    if (ctxt == NULL) {
-        testError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("creating xpath context"));
-        goto error;
-    }
-
-    name = virXPathString("string(/network/name[1])", ctxt);
-    if (name == NULL) {
-        testError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("network name"));
-        goto error;
-    }
-
-    bridge = virXPathString("string(/network/bridge[1]/@name)", ctxt);
-
-    str = virXPathString("string(/network/uuid[1])", ctxt);
-    if (str == NULL) {
-        testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("network uuid"));
-        goto error;
-    }
-    if (virUUIDParse(str, uuid) < 0) {
-        testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("network uuid"));
-        goto error;
-    }
-    VIR_FREE(str);
-
-
-    forward = virXPathBoolean("count(/network/forward) != 0", ctxt);
-    if (forward < 0) {
-        testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("network forward"));
-        goto error;
-    }
-
-    forwardDev = virXPathString("string(/network/forward/@dev)", ctxt);
-
-
-    ipaddress = virXPathString("string(/network/ip/@address)", ctxt);
-    if (ipaddress == NULL) {
-        testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("ip address"));
-        goto error;
-    }
-    ipnetmask = virXPathString("string(/network/ip/@netmask)", ctxt);
-    if (ipnetmask == NULL) {
-        testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("ip netmask"));
-        goto error;
-    }
-    dhcpstart = virXPathString("string(/network/ip/dhcp/range[1]/@start)", ctxt);
-    if (dhcpstart == NULL) {
-        testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("ip address"));
-        goto error;
-    }
-    dhcpend = virXPathString("string(/network/ip/dhcp/range[1]/@end)", ctxt);
-    if (dhcpend == NULL) {
-        testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("ip address"));
-        goto error;
-    }
-
-    for (i = 0 ; i < MAX_NETWORKS ; i++) {
-        if (!privconn->networks[i].active) {
-            handle = i;
-            break;
-        }
-    }
-    if (handle < 0)
-        return (-1);
-
-    privconn->networks[handle].active = 1;
-    privconn->networks[handle].running = 1;
-    strncpy(privconn->networks[handle].name, name, sizeof(privconn->networks[handle].name)-1);
-    privconn->networks[handle].name[sizeof(privconn->networks[handle].name)-1] = '\0';
-    strncpy(privconn->networks[handle].bridge, bridge ? bridge : name, sizeof(privconn->networks[handle].bridge)-1);
-    privconn->networks[handle].bridge[sizeof(privconn->networks[handle].bridge)-1] = '\0';
-    VIR_FREE(name);
-    name = NULL;
-    if (bridge) {
-        VIR_FREE(bridge);
-        bridge = NULL;
-    }
-
-    memmove(privconn->networks[handle].uuid, uuid, VIR_UUID_BUFLEN);
-    privconn->networks[handle].forward = forward;
-    if (forwardDev) {
-        strncpy(privconn->networks[handle].forwardDev, forwardDev, sizeof(privconn->networks[handle].forwardDev)-1);
-        privconn->networks[handle].forwardDev[sizeof(privconn->networks[handle].forwardDev)-1] = '\0';
-        VIR_FREE(forwardDev);
-    }
-
-    strncpy(privconn->networks[handle].ipAddress, ipaddress, sizeof(privconn->networks[handle].ipAddress)-1);
-    privconn->networks[handle].ipAddress[sizeof(privconn->networks[handle].ipAddress)-1] = '\0';
-    VIR_FREE(ipaddress);
-    strncpy(privconn->networks[handle].ipNetmask, ipnetmask, sizeof(privconn->networks[handle].ipNetmask)-1);
-    privconn->networks[handle].ipNetmask[sizeof(privconn->networks[handle].ipNetmask)-1] = '\0';
-    VIR_FREE(ipnetmask);
-    strncpy(privconn->networks[handle].dhcpStart, dhcpstart, sizeof(privconn->networks[handle].dhcpStart)-1);
-    privconn->networks[handle].dhcpStart[sizeof(privconn->networks[handle].dhcpStart)-1] = '\0';
-    VIR_FREE(dhcpstart);
-    strncpy(privconn->networks[handle].dhcpEnd, dhcpend, sizeof(privconn->networks[handle].dhcpEnd)-1);
-    privconn->networks[handle].dhcpEnd[sizeof(privconn->networks[handle].dhcpEnd)-1] = '\0';
-    VIR_FREE(dhcpend);
-    xmlXPathFreeContext(ctxt);
-    return (handle);
-
- error:
-    xmlXPathFreeContext(ctxt);
-    VIR_FREE (forwardDev);
-    VIR_FREE(ipaddress);
-    VIR_FREE(ipnetmask);
-    VIR_FREE(dhcpstart);
-    VIR_FREE(dhcpend);
-    VIR_FREE(name);
-    return (-1);
-}
-
-static int testLoadNetworkFromDoc(virConnectPtr conn,
-                                 const char *doc) {
-    int ret;
-    xmlDocPtr xml;
-    if (!(xml = xmlReadDoc(BAD_CAST doc, "network.xml", NULL,
-                           XML_PARSE_NOENT | XML_PARSE_NONET |
-                           XML_PARSE_NOERROR | XML_PARSE_NOWARNING))) {
-        testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("network"));
-        return (-1);
-    }
-
-    ret = testLoadNetwork(conn, xml);
-
-    xmlFreeDoc(xml);
-
-    return (ret);
-}
-
-
-static int testLoadNetworkFromFile(virConnectPtr conn,
-                                  const char *filename) {
-    int ret, fd;
-    xmlDocPtr xml;
-
-    if ((fd = open(filename, O_RDONLY)) < 0) {
-        testError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("load network definition file"));
-        return (-1);
-    }
-
-    if (!(xml = xmlReadFd(fd, filename, NULL,
-                          XML_PARSE_NOENT | XML_PARSE_NONET |
-                          XML_PARSE_NOERROR | XML_PARSE_NOWARNING))) {
-        testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("network"));
-        return (-1);
-    }
-
-    ret = testLoadNetwork(conn, xml);
-
-    xmlFreeDoc(xml);
-    close(fd);
-
-    return (ret);
-}
+static const char *defaultNetworkXML =
+"<network>"
+"  <name>default</name>"
+"  <bridge name='virbr0' />"
+"  <forward/>"
+"  <ip address='192.168.122.1' netmask='255.255.255.0'>"
+"    <dhcp>"
+"      <range start='192.168.122.2' end='192.168.122.254' />"
+"    </dhcp>"
+"  </ip>"
+"</network>";
 
 
 static int testOpenDefault(virConnectPtr conn) {
     int u;
     struct timeval tv;
     testConnPtr privconn;
+    virNetworkDefPtr netdef;
+    virNetworkObjPtr netobj;
+
     if (VIR_ALLOC(privconn) < 0) {
         testError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "testConn");
         return VIR_DRV_OPEN_ERROR;
     }
-    memset(privconn, 0, sizeof(testConn));
 
     if (gettimeofday(&tv, NULL) < 0) {
         testError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("getting time of day"));
@@ -636,21 +456,15 @@ static int testOpenDefault(virConnectPtr conn) {
     privconn->domains[0].info.cpuTime = ((tv.tv_sec * 1000ll * 1000ll  * 1000ll) + (tv.tv_usec * 1000ll));
 
 
-    privconn->numNetworks = 1;
-    privconn->networks[0].active = 1;
-    privconn->networks[0].config = 1;
-    privconn->networks[0].running = 1;
-    strcpy(privconn->networks[0].name, "default");
-    strcpy(privconn->networks[0].bridge, "default");
-    for (u = 0 ; u < VIR_UUID_BUFLEN ; u++) {
-        privconn->networks[0].uuid[u] = (u * 75)%255;
+    if (!(netdef = virNetworkDefParseString(conn, defaultNetworkXML))) {
+        return VIR_DRV_OPEN_ERROR;
     }
-    privconn->networks[0].forward = 1;
-    strcpy(privconn->networks[0].forwardDev, "eth0");
-    strcpy(privconn->networks[0].ipAddress, "192.168.122.1");
-    strcpy(privconn->networks[0].ipNetmask, "255.255.255.0");
-    strcpy(privconn->networks[0].dhcpStart, "192.168.122.128");
-    strcpy(privconn->networks[0].dhcpEnd, "192.168.122.253");
+    if (!(netobj = virNetworkAssignDef(conn, &privconn->networks, netdef))) {
+        virNetworkDefFree(netdef);
+        return VIR_DRV_OPEN_ERROR;
+    }
+    netobj->active = 1;
+    netobj->persistent = 1;
 
     // Numa setup
     privconn->numCells = 2;
@@ -736,7 +550,6 @@ static int testOpenFromFile(virConnectPtr conn,
     conn->privateData = privconn;
     privconn->nextDomID = 1;
     privconn->numDomains = 0;
-    privconn->numNetworks = 0;
     privconn->numCells = 0;
     strncpy(privconn->path, file, PATH_MAX-1);
     privconn->path[PATH_MAX-1] = '\0';
@@ -838,28 +651,41 @@ static int testOpenFromFile(virConnectPtr conn,
 
 
     ret = virXPathNodeSet("/node/network", ctxt, &networks);
-    if (ret > 0) {
-        for (i = 0 ; i < ret ; i++) {
-            xmlChar *netFile = xmlGetProp(networks[i], BAD_CAST "file");
-            char *absFile = testBuildFilename(file, (const char *)netFile);
-            int handle;
-            VIR_FREE(netFile);
+    if (ret < 0) {
+        testError(NULL, NULL, NULL, VIR_ERR_XML_ERROR, _("node network list"));
+        goto error;
+    }
+    for (i = 0 ; i < ret ; i++) {
+        virNetworkDefPtr def;
+        virNetworkObjPtr net;
+        char *relFile = virXMLPropString(networks[i], "file");
+        if (relFile != NULL) {
+            char *absFile = testBuildFilename(file, relFile);
+            VIR_FREE(relFile);
             if (!absFile) {
                 testError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("resolving network filename"));
                 goto error;
             }
-            if ((handle = testLoadNetworkFromFile(conn, absFile)) < 0) {
-                VIR_FREE(absFile);
-                goto error;
-            }
-            privconn->networks[handle].config = 1;
+
+            def = virNetworkDefParseFile(conn, absFile);
             VIR_FREE(absFile);
-            privconn->numNetworks++;
+            if (!def)
+                goto error;
+        } else {
+            if ((def = virNetworkDefParseNode(conn, xml, networks[i])) == NULL)
+                goto error;
         }
-        if (networks != NULL) {
-            VIR_FREE(networks);
-            networks = NULL;
+        if (!(net = virNetworkAssignDef(conn, &privconn->networks,
+                                        def))) {
+            virNetworkDefFree(def);
+            goto error;
         }
+
+        net->persistent = 1;
+    }
+    if (networks != NULL) {
+        VIR_FREE(networks);
+        networks = NULL;
     }
 
     xmlXPathFreeContext(ctxt);
@@ -892,17 +718,6 @@ static int getDomainIndex(virDomainPtr domain) {
             if (STREQ(domain->name, privconn->domains[i].name))
                 return (i);
         }
-    }
-    return (-1);
-}
-
-static int getNetworkIndex(virNetworkPtr network) {
-    int i;
-    GET_CONNECTION(network->conn, -1);
-
-    for (i = 0 ; i < MAX_NETWORKS ; i++) {
-        if (STREQ(network->name, privconn->networks[i].name))
-            return (i);
     }
     return (-1);
 }
@@ -1742,160 +1557,151 @@ static int testCloseNetwork(virConnectPtr conn) {
 static virNetworkPtr testLookupNetworkByUUID(virConnectPtr conn,
                                            const unsigned char *uuid)
 {
-    int i, idx = -1;
+    virNetworkObjPtr net = NULL;
     GET_CONNECTION(conn, NULL);
 
-    for (i = 0 ; i < MAX_NETWORKS ; i++) {
-        if (privconn->networks[i].active &&
-            memcmp(uuid, privconn->networks[i].uuid, VIR_UUID_BUFLEN) == 0) {
-            idx = i;
-            break;
-        }
-    }
-
-    if (idx < 0) {
+    if ((net = virNetworkFindByUUID(privconn->networks, uuid)) == NULL) {
         testError (conn, NULL, NULL, VIR_ERR_NO_NETWORK, NULL);
         return NULL;
     }
 
-    return virGetNetwork(conn, privconn->networks[idx].name, privconn->networks[idx].uuid);
+    return virGetNetwork(conn, net->def->name, net->def->uuid);
 }
 
 static virNetworkPtr testLookupNetworkByName(virConnectPtr conn,
-                                           const char *name)
+                                             const char *name)
 {
-    int i, idx = -1;
+    virNetworkObjPtr net = NULL;
     GET_CONNECTION(conn, NULL);
 
-    for (i = 0 ; i < MAX_NETWORKS ; i++) {
-        if (privconn->networks[i].active &&
-            STREQ(name, privconn->networks[i].name)) {
-            idx = i;
-            break;
-        }
-    }
-
-    if (idx < 0) {
+    if ((net = virNetworkFindByName(privconn->networks, name)) == NULL) {
         testError (conn, NULL, NULL, VIR_ERR_NO_NETWORK, NULL);
         return NULL;
     }
 
-    return virGetNetwork(conn, privconn->networks[idx].name, privconn->networks[idx].uuid);
+    return virGetNetwork(conn, net->def->name, net->def->uuid);
 }
 
 
 static int testNumNetworks(virConnectPtr conn) {
-    int numInactive = 0, i;
+    int numActive = 0;
+    virNetworkObjPtr net;
     GET_CONNECTION(conn, -1);
 
-    for (i = 0 ; i < MAX_NETWORKS ; i++) {
-        if (!privconn->networks[i].active ||
-            !privconn->networks[i].running)
-            continue;
-        numInactive++;
+    net = privconn->networks;
+    while (net) {
+        if (virNetworkIsActive(net))
+            numActive++;
+        net = net->next;
     }
-    return (numInactive);
+    return numActive;
 }
 
 static int testListNetworks(virConnectPtr conn, char **const names, int nnames) {
-    int n = 0, i;
+    int n = 0;
+    virNetworkObjPtr net;
     GET_CONNECTION(conn, -1);
 
-    for (i = 0, n = 0 ; i < MAX_NETWORKS && n < nnames ; i++) {
-        if (privconn->networks[i].active &&
-            privconn->networks[i].running) {
-            names[n++] = strdup(privconn->networks[i].name);
-        }
+    net = privconn->networks;
+    memset(names, 0, sizeof(*names)*nnames);
+    while (net && n < nnames) {
+        if (virNetworkIsActive(net) &&
+            !(names[n++] = strdup(net->def->name)))
+            goto no_memory;
+        net = net->next;
     }
-    return (n);
+    return n;
+
+no_memory:
+    testError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+    for (n = 0 ; n < nnames ; n++)
+        VIR_FREE(names[n]);
+    return (-1);
 }
 
 static int testNumDefinedNetworks(virConnectPtr conn) {
-    int numInactive = 0, i;
+    int numInactive = 0;
+    virNetworkObjPtr net;
     GET_CONNECTION(conn, -1);
 
-    for (i = 0 ; i < MAX_NETWORKS ; i++) {
-        if (!privconn->networks[i].active ||
-            privconn->networks[i].running)
-            continue;
-        numInactive++;
+    net = privconn->networks;
+    while (net) {
+        if (!virNetworkIsActive(net))
+            numInactive++;
+        net = net->next;
     }
-    return (numInactive);
+    return numInactive;
 }
 
 static int testListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
-    int n = 0, i;
+    int n = 0;
+    virNetworkObjPtr net;
     GET_CONNECTION(conn, -1);
 
-    for (i = 0, n = 0 ; i < MAX_NETWORKS && n < nnames ; i++) {
-        if (privconn->networks[i].active &&
-            !privconn->networks[i].running) {
-            names[n++] = strdup(privconn->networks[i].name);
-        }
+    net = privconn->networks;
+    memset(names, 0, sizeof(*names)*nnames);
+    while (net && n < nnames) {
+        if (!virNetworkIsActive(net) &&
+            !(names[n++] = strdup(net->def->name)))
+            goto no_memory;
+        net = net->next;
     }
-    return (n);
+    return n;
+
+no_memory:
+    testError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+    for (n = 0 ; n < nnames ; n++)
+        VIR_FREE(names[n]);
+    return (-1);
 }
 
 static virNetworkPtr testNetworkCreate(virConnectPtr conn, const char *xml) {
-    int handle = -1;
-    virNetworkPtr net;
+    virNetworkDefPtr def;
+    virNetworkObjPtr net;
     GET_CONNECTION(conn, NULL);
 
-    if (xml == NULL) {
-        testError(conn, NULL, NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (NULL);
+    if ((def = virNetworkDefParseString(conn, xml)) == NULL)
+        return NULL;
+
+    if ((net = virNetworkAssignDef(conn, &privconn->networks,
+                                   def)) == NULL) {
+        virNetworkDefFree(def);
+        return NULL;
     }
+    net->active = 1;
 
-    if (privconn->numNetworks == MAX_NETWORKS) {
-        testError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("too many networks"));
-        return (NULL);
-    }
-
-    if ((handle = testLoadNetworkFromDoc(conn, xml)) < 0)
-        return (NULL);
-    privconn->networks[handle].config = 0;
-
-    net = virGetNetwork(conn, privconn->networks[handle].name, privconn->networks[handle].uuid);
-    if (net == NULL) return NULL;
-    privconn->numNetworks++;
-    return (net);
+    return virGetNetwork(conn, def->name, def->uuid);
 }
 
 static virNetworkPtr testNetworkDefine(virConnectPtr conn, const char *xml) {
-    int handle = -1;
-    virNetworkPtr net;
+    virNetworkDefPtr def;
+    virNetworkObjPtr net;
     GET_CONNECTION(conn, NULL);
 
-    if (xml == NULL) {
-        testError(conn, NULL, NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (NULL);
+    if ((def = virNetworkDefParseString(conn, xml)) == NULL)
+        return NULL;
+
+    if ((net = virNetworkAssignDef(conn, &privconn->networks,
+                                   def)) == NULL) {
+        virNetworkDefFree(def);
+        return NULL;
     }
+    net->persistent = 1;
 
-    if (privconn->numNetworks == MAX_NETWORKS) {
-        testError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("too many networks"));
-        return (NULL);
-    }
-
-    if ((handle = testLoadNetworkFromDoc(conn, xml)) < 0)
-        return (NULL);
-
-    net = virGetNetwork(conn, privconn->networks[handle].name, privconn->networks[handle].uuid);
-    privconn->networks[handle].config = 1;
-    if (net == NULL) return NULL;
-    privconn->numNetworks++;
-    return (net);
+    return virGetNetwork(conn, def->name, def->uuid);
 }
 
 static int testNetworkUndefine(virNetworkPtr network) {
     GET_NETWORK(network, -1);
 
-    if (privnet->running) {
+    if (virNetworkIsActive(privnet)) {
         testError(network->conn, NULL, network, VIR_ERR_INTERNAL_ERROR,
                   _("Network is still running"));
         return (-1);
     }
 
-    privnet->active = 0;
+    virNetworkRemoveInactive(&privconn->networks,
+                             privnet);
 
     return (0);
 }
@@ -1903,13 +1709,13 @@ static int testNetworkUndefine(virNetworkPtr network) {
 static int testNetworkStart(virNetworkPtr network) {
     GET_NETWORK(network, -1);
 
-    if (privnet->running) {
+    if (virNetworkIsActive(privnet)) {
         testError(network->conn, NULL, network, VIR_ERR_INTERNAL_ERROR,
                   _("Network is already running"));
         return (-1);
     }
 
-    privnet->running = 1;
+    privnet->active = 1;
 
     return (0);
 }
@@ -1917,56 +1723,25 @@ static int testNetworkStart(virNetworkPtr network) {
 static int testNetworkDestroy(virNetworkPtr network) {
     GET_NETWORK(network, -1);
 
-    if (privnet->config) {
-        privnet->running = 0;
-    } else {
-        privnet->active = 0;
+    privnet->active = 0;
+    if (!privnet->persistent) {
+        virNetworkRemoveInactive(&privconn->networks,
+                                 privnet);
     }
     return (0);
 }
 
 static char *testNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSED) {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    unsigned char *uuid;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
     GET_NETWORK(network, NULL);
 
-    virBufferAddLit(&buf, "<network>\n");
-    virBufferVSprintf(&buf, "  <name>%s</name>\n", network->name);
-    uuid = network->uuid;
-    virUUIDFormat(uuid, uuidstr);
-    virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", uuidstr);
-    virBufferVSprintf(&buf, "  <bridge name='%s'/>\n", privnet->bridge);
-    if (privnet->forward) {
-        if (privnet->forwardDev[0])
-            virBufferVSprintf(&buf, "  <forward dev='%s'/>\n", privnet->forwardDev);
-        else
-            virBufferAddLit(&buf, "  <forward/>\n");
-    }
-
-    virBufferVSprintf(&buf, "  <ip address='%s' netmask='%s'>\n",
-                      privnet->ipAddress, privnet->ipNetmask);
-    virBufferAddLit(&buf, "    <dhcp>\n");
-    virBufferVSprintf(&buf, "      <range start='%s' end='%s'/>\n",
-                      privnet->dhcpStart, privnet->dhcpEnd);
-    virBufferAddLit(&buf, "    </dhcp>\n");
-    virBufferAddLit(&buf, "  </ip>\n");
-
-    virBufferAddLit(&buf, "</network>\n");
-
-    if (virBufferError(&buf)) {
-        testError(network->conn, NULL, network, VIR_ERR_NO_MEMORY, __FUNCTION__);
-        return NULL;
-    }
-
-    return virBufferContentAndReset(&buf);
+    return virNetworkDefFormat(network->conn, privnet->def);
 }
 
 static char *testNetworkGetBridgeName(virNetworkPtr network) {
-    char *bridge;
+    char *bridge = NULL;
     GET_NETWORK(network, NULL);
-    bridge = strdup(privnet->bridge);
-    if (!bridge) {
+    if (privnet->def->bridge &&
+        !(bridge = strdup(privnet->def->bridge))) {
         testError(network->conn, NULL, network, VIR_ERR_NO_MEMORY, "network");
         return NULL;
     }
