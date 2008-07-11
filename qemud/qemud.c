@@ -1926,6 +1926,14 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     GET_CONF_STR (conf, filename, tcp_port);
     GET_CONF_STR (conf, filename, listen_addr);
 
+#if HAVE_POLKIT
+    /* Change the default back to no auth for non-root */
+    if (getuid() != 0 && auth_unix_rw == REMOTE_AUTH_POLKIT)
+        auth_unix_rw = REMOTE_AUTH_NONE;
+    if (getuid() != 0 && auth_unix_ro == REMOTE_AUTH_POLKIT)
+        auth_unix_ro = REMOTE_AUTH_NONE;
+#endif
+
     if (remoteConfigGetAuth(conf, "auth_unix_rw", &auth_unix_rw, filename) < 0)
         goto free_and_fail;
 #if HAVE_POLKIT

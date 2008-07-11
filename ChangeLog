@@ -1,3 +1,8 @@
+Fri Jul 11 10:48:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c: Don't default to polkit auth when running
+	as non-root
+
 Fri Jul 11 10:46:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Fix parsing of QEMU stdout looking for
