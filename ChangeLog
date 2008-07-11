@@ -1,3 +1,8 @@
+Fri Jul 11 20:28:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/domain_conf.c: Set state to SHUTOFF when loading domain
+	config
+
 Fri Jul 11 18:58:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/network_conf.c, src/domain_conf.c: Use full path when

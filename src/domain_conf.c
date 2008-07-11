@@ -2814,6 +2814,7 @@ virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
     if (!(dom = virDomainAssignDef(conn, doms, def)))
         goto error;
 
+    dom->state = VIR_DOMAIN_SHUTOFF;
     dom->configFile = configFile;
     dom->autostartLink = autostartLink;
     dom->autostart = autostart;
