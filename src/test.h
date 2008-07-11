@@ -24,7 +24,7 @@
 #ifndef __VIR_TEST_INTERNAL_H__
 #define __VIR_TEST_INTERNAL_H__
 
-#include "libvirt/virterror.h"
+#include "internal.h"
 
 #ifdef __cplusplus
 extern "C" {

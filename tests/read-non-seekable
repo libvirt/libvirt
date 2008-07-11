@@ -31,6 +31,9 @@ cat <<\EOF > dom
   <uuid>004b96e1-2d78-c30f-5aa5-000000000000</uuid>
   <memory>8388608</memory>
   <vcpu>2</vcpu>
+  <os>
+    <type>xen</type>
+  </os>
   <on_reboot>restart</on_reboot>
   <on_poweroff>destroy</on_poweroff>
   <on_crash>restart</on_crash>

@@ -2,7 +2,7 @@
   <name>fc4</name>
   <uuid>EF86180145B911CB88E3AFBFE5370493</uuid>
   <os>
-    <type>linux</type>
+    <type>xen</type>
     <kernel>/boot/vmlinuz-2.6.15-1.43_FC5guest</kernel>
     <initrd>/boot/initrd-2.6.15-1.43_FC5guest.img</initrd>
     <root>/dev/sda1</root>
