@@ -158,6 +158,10 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_DRIVE_BOOT);
     DO_TEST("disk-xenvbd", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_BOOT);
+    DO_TEST("disk-drive-boot-disk", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_BOOT);
+    DO_TEST("disk-drive-boot-cdrom", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_BOOT);
     DO_TEST("graphics-vnc", 0);
     DO_TEST("graphics-sdl", 0);
     DO_TEST("input-usbmouse", 0);

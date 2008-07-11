@@ -2624,7 +2624,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
                      disk->src, qemudBusIdToName(disk->bus, 1),
                      media ? media : "",
                      idx,
-                     bootable ? ",boot=on" : "");
+                     bootable && disk->device == QEMUD_DISK_DISK
+                     ? ",boot=on" : "");
 
             ADD_ARG_LIT("-drive");
             ADD_ARG_LIT(opt);
