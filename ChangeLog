@@ -1,3 +1,17 @@
+Fri Jul 11 18:58:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/network_conf.c, src/domain_conf.c: Use full path when
+	opening XML files
+
+Fri Jul 11 18:34:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c, src/qemu_conf.h, src/qemu_driver.c: Switch
+	over to generic domain APIs
+	* tests/qemuxml2argvtest.c, tests/qemuxml2xmltest.c: Update
+	to new APIs
+	* tests/qemuxml2argvdata/: Update data files to match new
+	XML generation format
+
 Fri Jul 11 18:32:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/bridge.c, src/bridge.h, src/qemu_conf.c, src/qemu_conf.h,

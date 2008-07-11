@@ -606,7 +606,7 @@ virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
         goto error;
 
-    if (!(def = virNetworkDefParseFile(conn, file)))
+    if (!(def = virNetworkDefParseFile(conn, configFile)))
         goto error;
 
     if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {

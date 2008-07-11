@@ -2800,7 +2800,7 @@ virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
         goto error;
 
-    if (!(def = virDomainDefParseFile(conn, caps, file)))
+    if (!(def = virDomainDefParseFile(conn, caps, configFile)))
         goto error;
 
     if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
