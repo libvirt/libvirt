@@ -1,3 +1,8 @@
+Fri Jul 11 10:46:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: Fix parsing of QEMU stdout looking for
+	serial device PTY with Xenner
+
 Fri Jul 11 10:53:59 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_conf.c: cleanup OpenVZ config file accesses, patch

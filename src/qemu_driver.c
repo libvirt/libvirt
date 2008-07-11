@@ -528,6 +528,9 @@ static int qemudExtractMonitorPath(const char *haystack,
     strncpy(path, tmp+sizeof(needle), pathmax-1);
     path[pathmax-1] = '\0';
 
+    /* Update offset to point to where we found the needle..*/
+    *offset = tmp - haystack;
+
     /*
      * And look for first whitespace character and nul terminate
      * to mark end of the pty path
@@ -536,6 +539,7 @@ static int qemudExtractMonitorPath(const char *haystack,
     while (*tmp) {
         if (c_isspace(*tmp)) {
             *tmp = '\0';
+            /* ... now further update offset till we get EOL */
             *offset += (sizeof(needle)-1) + strlen(path);
             return 0;
         }
