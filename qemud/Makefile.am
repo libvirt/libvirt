@@ -13,7 +13,8 @@ EXTRA_DIST = libvirtd.init.in libvirtd.sysconf default-network.xml \
 	remote_dispatch_proc_switch.h \
 	mdns.c mdns.h \
         libvirtd.sasl \
-        libvirtd.conf
+        libvirtd.conf \
+        libvirtd.policy
 
 if RPCGEN
 SUFFIXES = .x
@@ -75,9 +76,7 @@ libvirtd_LDADD = ../src/libvirt.la ../gnulib/lib/libgnu.la
 
 if HAVE_POLKIT
 policydir = $(datadir)/PolicyKit/policy
-policy_DATA = libvirtd.policy
 endif
-EXTRA_DIST += libvirtd.policy
 
 if HAVE_AVAHI
 libvirtd_SOURCES += mdns.c mdns.h
@@ -86,7 +85,7 @@ libvirtd_LDADD += $(AVAHI_LIBS)
 endif
 
 default_xml_dest = libvirt/qemu/networks/default.xml
-install-data-local: install-init install-data-sasl
+install-data-local: install-init install-data-sasl install-data-polkit
 	mkdir -p $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart
 	$(INSTALL_DATA) $(srcdir)/default-network.xml \
 	  $(DESTDIR)$(sysconfdir)/$(default_xml_dest)
@@ -99,7 +98,7 @@ install-data-local: install-init install-data-sasl
 	mkdir -p $(DESTDIR)$(localstatedir)/run/libvirt
 	mkdir -p $(DESTDIR)$(localstatedir)/lib/libvirt
 
-uninstall-local:: uninstall-init uninstall-data-sasl
+uninstall-local:: uninstall-init uninstall-data-sasl install-data-polkit
 	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
 	rm -f $(DESTDIR)$(sysconfdir)/$(default_xml_dest)
 	rmdir $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart || :
@@ -119,6 +118,18 @@ else
 install-data-sasl:
 uninstall-data-sasl:
 endif
+
+if HAVE_POLKIT
+install-data-polkit:: install-init
+	mkdir -p $(DESTDIR)$(policydir)
+	$(INSTALL_DATA) libvirtd.policy $(DESTDIR)$(policydir)/org.libvirt.unix.policy
+uninstall-data-polkit:: install-init
+	rm -f $(DESTDIR)$(policydir)/org.libvirt.unix.policy
+else
+install-data-polkit::
+uninstall-data-polkit::
+endif
+
 
 remote.c: remote_dispatch_prototypes.h \
 	  remote_dispatch_localvars.h \

@@ -1,3 +1,10 @@
+Fri Jul 11 10:50:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* libvirt.spec.in, qemud/Makefile.am: Rename installed polkit
+	policy file to org.libvirt.unix.policy
+	* qemud/libvirtd.policy: Default to admin auth instead of
+	user auth.
+
 Fri Jul 11 10:48:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c: Don't default to polkit auth when running
