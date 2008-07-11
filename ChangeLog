@@ -1,3 +1,8 @@
+Fri Jul 11 18:32:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/bridge.c, src/bridge.h, src/qemu_conf.c, src/qemu_conf.h,
+	src/qemu_driver.c: Switch over to generic network APIs
+
 Fri Jul 11 17:39:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/test.c, src/test.h: Convert to the new domain XML apis

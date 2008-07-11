@@ -47,9 +47,7 @@ int     brInit                  (brControl **ctl);
 void    brShutdown              (brControl *ctl);
 
 int     brAddBridge             (brControl *ctl,
-                                 const char *nameOrFmt,
-                                 char *name,
-                                 int maxlen);
+                                 char **name);
 int     brDeleteBridge          (brControl *ctl,
                                  const char *name);
 

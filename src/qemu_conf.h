@@ -32,6 +32,7 @@
 #include "bridge.h"
 #include "iptables.h"
 #include "capabilities.h"
+#include "network_conf.h"
 #include <netinet/in.h>
 #include <sched.h>
 
@@ -94,12 +95,6 @@ enum qemud_vm_net_type {
     QEMUD_NET_MCAST,
     QEMUD_NET_NETWORK,
     QEMUD_NET_BRIDGE,
-};
-
-/* 2 possible types of forwarding */
-enum qemud_vm_net_forward_type {
-    QEMUD_NET_FORWARD_NAT,
-    QEMUD_NET_FORWARD_ROUTE,
 };
 
 #define QEMUD_MAX_NAME_LEN 50
@@ -349,53 +344,6 @@ struct qemud_vm {
     struct qemud_vm *next;
 };
 
-/* Store start and end addresses of a dhcp range */
-struct qemud_dhcp_range_def {
-    char start[BR_INET_ADDR_MAXLEN];
-    char end[BR_INET_ADDR_MAXLEN];
-
-    struct qemud_dhcp_range_def *next;
-};
-
-/* Virtual Network main configuration */
-struct qemud_network_def {
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    char name[QEMUD_MAX_NAME_LEN];
-
-    char bridge[BR_IFNAME_MAXLEN];
-    int disableSTP;
-    int forwardDelay;
-
-    int forward;
-    int forwardMode; /* From qemud_vm_net_forward_type */
-    char forwardDev[BR_IFNAME_MAXLEN];
-
-    char ipAddress[BR_INET_ADDR_MAXLEN];
-    char netmask[BR_INET_ADDR_MAXLEN];
-    char network[BR_INET_ADDR_MAXLEN+BR_INET_ADDR_MAXLEN+1];
-
-    int nranges;
-    struct qemud_dhcp_range_def *ranges;
-};
-
-/* Virtual Network runtime state */
-struct qemud_network {
-    char configFile[PATH_MAX];
-    char autostartLink[PATH_MAX];
-
-    struct qemud_network_def *def; /* The current definition */
-    struct qemud_network_def *newDef; /* New definition to activate at shutdown */
-
-    char bridge[BR_IFNAME_MAXLEN];
-    int dnsmasqPid;
-
-    unsigned int active : 1;
-    unsigned int autostart : 1;
-
-    struct qemud_network *next;
-};
-
-
 /* Main driver state */
 struct qemud_driver {
     int qemuVersion;
@@ -403,9 +351,9 @@ struct qemud_driver {
     int ninactivevms;
     struct qemud_vm *vms;
     int nextvmid;
-    int nactivenetworks;
-    int ninactivenetworks;
-    struct qemud_network *networks;
+
+    virNetworkObjPtr networks;
+
     brControl *brctl;
     iptablesContext *iptables;
     char *configDir;
@@ -428,12 +376,6 @@ qemudIsActiveVM(const struct qemud_vm *vm)
     return vm->id != -1;
 }
 
-static inline int
-qemudIsActiveNetwork(const struct qemud_network *network)
-{
-    return network->active;
-}
-
 void qemudReportError(virConnectPtr conn,
                       virDomainPtr dom,
                       virNetworkPtr net,
@@ -450,11 +392,6 @@ struct qemud_vm *qemudFindVMByUUID(const struct qemud_driver *driver,
                                    const unsigned char *uuid);
 struct qemud_vm *qemudFindVMByName(const struct qemud_driver *driver,
                                    const char *name);
-
-struct qemud_network *qemudFindNetworkByUUID(const struct qemud_driver *driver,
-                                             const unsigned char *uuid);
-struct qemud_network *qemudFindNetworkByName(const struct qemud_driver *driver,
-                                             const char *name);
 
 virCapsPtr  qemudCapsInit               (void);
 
@@ -500,30 +437,6 @@ char *      qemudGenerateXML            (virConnectPtr conn,
                                          struct qemud_vm *vm,
                                          struct qemud_vm_def *def,
                                          int live);
-
-void        qemudFreeNetworkDef         (struct qemud_network_def *def);
-void        qemudFreeNetwork            (struct qemud_network *network);
-
-struct qemud_network *
-            qemudAssignNetworkDef       (virConnectPtr conn,
-                                         struct qemud_driver *driver,
-                                         struct qemud_network_def *def);
-void        qemudRemoveInactiveNetwork  (struct qemud_driver *driver,
-                                         struct qemud_network *network);
-
-struct qemud_network_def *
-            qemudParseNetworkDef        (virConnectPtr conn,
-                                         struct qemud_driver *driver,
-                                         const char *xmlStr,
-                                         const char *displayName);
-int         qemudSaveNetworkDef         (virConnectPtr conn,
-                                         struct qemud_driver *driver,
-                                         struct qemud_network *network,
-                                         struct qemud_network_def *def);
-char *      qemudGenerateNetworkXML     (virConnectPtr conn,
-                                         struct qemud_driver *driver,
-                                         struct qemud_network *network,
-                                         struct qemud_network_def *def);
 
 const char *qemudVirtTypeToString       (int type);
 

@@ -116,60 +116,41 @@ brShutdown(brControl *ctl)
 /**
  * brAddBridge:
  * @ctl: bridge control pointer
- * @nameOrFmt: the bridge name (or name template)
- * @name: pointer to @maxlen bytes to store the bridge name
- * @maxlen: size of @name array
+ * @name: the bridge name
  *
- * This function register a new bridge, @nameOrFmt can be either
- * a fixed name or a name template with '%d' for dynamic name allocation.
- * in either case the final name for the bridge will be stored in @name.
+ * This function register a new bridge
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
 #ifdef SIOCBRADDBR
 int
 brAddBridge(brControl *ctl,
-            const char *nameOrFmt,
-            char *name,
-            int maxlen)
+            char **name)
 {
-    int id, subst;
-
-    if (!ctl || !ctl->fd || !nameOrFmt || !name)
+    if (!ctl || !ctl->fd || !name)
         return EINVAL;
 
-    if (maxlen >= BR_IFNAME_MAXLEN)
-        maxlen = BR_IFNAME_MAXLEN;
-
-    subst = id = 0;
-
-    if (strstr(nameOrFmt, "%d"))
-        subst = 1;
-
-    do {
-        char try[BR_IFNAME_MAXLEN];
-        int len;
-
-        if (subst) {
-            len = snprintf(try, maxlen, nameOrFmt, id);
-            if (len >= maxlen)
-                return EADDRINUSE;
-        } else {
-            len = strlen(nameOrFmt);
-            if (len >= maxlen - 1)
-                return EINVAL;
-
-            strncpy(try, nameOrFmt, len);
-            try[len] = '\0';
-        }
-
-        if (ioctl(ctl->fd, SIOCBRADDBR, try) == 0) {
-            strncpy(name, try, maxlen);
+    if (*name) {
+        if (ioctl(ctl->fd, SIOCBRADDBR, *name) == 0)
             return 0;
-        }
+    } else {
+        int id = 0;
+        do {
+            char try[50];
 
-        id++;
-    } while (subst && id <= MAX_BRIDGE_ID);
+            snprintf(try, sizeof(try), "virbr%d", id);
+
+            if (ioctl(ctl->fd, SIOCBRADDBR, try) == 0) {
+                if (!(*name = strdup(try))) {
+                    ioctl(ctl->fd, SIOCBRDELBR, name);
+                    return ENOMEM;
+                }
+                return 0;
+            }
+
+            id++;
+        } while (id < MAX_BRIDGE_ID);
+    }
 
     return errno;
 }
