@@ -48,7 +48,6 @@
 #include "util.h"
 #include "memory.h"
 #include "verify.h"
-#include "c-ctype.h"
 
 VIR_ENUM_DECL(virDomainDiskQEMUBus)
 VIR_ENUM_IMPL(virDomainDiskQEMUBus, VIR_DOMAIN_DISK_BUS_LAST,
