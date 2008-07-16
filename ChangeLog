@@ -1,3 +1,8 @@
+Wed Jul 16 17:25:02 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/openvz_driver.c: fix the lookup by ID function and error
+	  reporting in OpenVZ, fix by Evgeniy Sokolov
+
 Wed Jul 16 16:44:27 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_driver.c: another cleanup patch from Evgeniy Sokolov

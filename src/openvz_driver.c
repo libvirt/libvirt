@@ -197,11 +197,22 @@ static int openvzDomainDefineCmd(virConnectPtr conn,
 static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
                                    int id) {
     struct openvz_driver *driver = (struct openvz_driver *)conn->privateData;
-    struct openvz_vm *vm = openvzFindVMByID(driver, id);
+    struct openvz_vm *vm;
     virDomainPtr dom;
 
+    vm = openvzFindVMByID(driver, id);
+
+    if (!vm) { /*try to find by name*/
+        char name[OPENVZ_NAME_MAX];
+        if (snprintf(name, OPENVZ_NAME_MAX, "%d",id) >= OPENVZ_NAME_MAX) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("Too long domain name"));
+            return NULL;
+        }
+        vm = openvzFindVMByName(driver, name);
+    }
+
     if (!vm) {
-        openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("no domain with matching id"));
+        openvzError(conn, VIR_ERR_NO_DOMAIN, NULL);
         return NULL;
     }
 
@@ -229,7 +240,7 @@ static virDomainPtr openvzDomainLookupByUUID(virConnectPtr conn,
     virDomainPtr dom;
 
     if (!vm) {
-        openvzError(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        openvzError(conn, VIR_ERR_NO_DOMAIN, NULL);
         return NULL;
     }
 
@@ -250,7 +261,7 @@ static virDomainPtr openvzDomainLookupByName(virConnectPtr conn,
     virDomainPtr dom;
 
     if (!vm) {
-        openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("no domain with matching name"));
+        openvzError(conn, VIR_ERR_NO_DOMAIN, NULL);
         return NULL;
     }
 
