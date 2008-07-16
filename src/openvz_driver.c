@@ -202,15 +202,6 @@ static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
 
     vm = openvzFindVMByID(driver, id);
 
-    if (!vm) { /*try to find by name*/
-        char name[OPENVZ_NAME_MAX];
-        if (snprintf(name, OPENVZ_NAME_MAX, "%d",id) >= OPENVZ_NAME_MAX) {
-            openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("Too long domain name"));
-            return NULL;
-        }
-        vm = openvzFindVMByName(driver, name);
-    }
-
     if (!vm) {
         openvzError(conn, VIR_ERR_NO_DOMAIN, NULL);
         return NULL;

@@ -1253,6 +1253,8 @@ virDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
  * @id: the domain ID number
  *
  * Try to find a domain based on the hypervisor ID number
+ * Note that this won't work for inactive domains which have an ID of -1,
+ * in that case a lookup based on the Name or UUId need to be done instead.
  *
  * Returns a new domain object or NULL in case of failure.  If the
  * domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.

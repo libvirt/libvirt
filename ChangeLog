@@ -1,3 +1,8 @@
+Wed Jul 16 22:36:43 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c src/openvz_driver.c: fix the description of the ID 
+	  domain lookup and fix the OpenVZ routine
+
 Wed Jul 16 17:25:02 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_driver.c: fix the lookup by ID function and error
