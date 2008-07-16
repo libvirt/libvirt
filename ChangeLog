@@ -1,3 +1,8 @@
+Wed Jul 16 16:44:27 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/openvz_driver.c: another cleanup patch from Evgeniy Sokolov
+	  cleaning up the exec calls to OpenVZ binaries
+
 Sat Jul 12 14:52:59 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c: Remove unneccessary c-ctype.h include
