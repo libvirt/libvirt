@@ -1,3 +1,8 @@
+Thu Jul 17 17:18:24 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/storage_backend_fs.c: patch from Cole Robinson fixing 
+	  pool-create for netfs format 'auto'
+
 Thu Jul 17 13:47:56 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: patch from Evgeniy Sokolov for the undefine command

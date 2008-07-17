@@ -487,7 +487,23 @@ static int
 virStorageBackendFileSystemMount(virConnectPtr conn,
                                  virStoragePoolObjPtr pool) {
     char *src;
-    const char *mntargv[] = {
+    const char **mntargv;
+
+    /* 'mount -t auto' doesn't seem to auto determine nfs (or cifs),
+     *  while plain 'mount' does. We have to craft separate argvs to
+     *  accommodate this */
+    int netauto = (pool->def->type == VIR_STORAGE_POOL_NETFS &&
+                   pool->def->source.format == VIR_STORAGE_POOL_NETFS_AUTO);
+    int source_index;
+
+    const char *netfs_auto_argv[] = {
+        MOUNT,
+        NULL, /* source path */
+        pool->def->target.path,
+        NULL,
+    };
+
+    const char *fs_argv[] =  {
         MOUNT,
         "-t",
         pool->def->type == VIR_STORAGE_POOL_FS ?
@@ -495,10 +511,20 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
                                                       pool->def->source.format) :
         virStorageBackendFileSystemNetPoolFormatToString(conn,
                                                          pool->def->source.format),
-        NULL, /* Fill in shortly - careful not to add extra fields before this */
+        NULL, /* Fill in shortly - careful not to add extra fields
+                 before this */
         pool->def->target.path,
         NULL,
     };
+
+    if (netauto) {
+        mntargv = netfs_auto_argv;
+        source_index = 1;
+    } else {
+        mntargv = fs_argv;
+        source_index = 3;
+    }
+
     int ret;
 
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
@@ -543,7 +569,7 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
             return -1;
         }
     }
-    mntargv[3] = src;
+    mntargv[source_index] = src;
 
     if (virRun(conn, (char**)mntargv, NULL) < 0) {
         VIR_FREE(src);
