@@ -1,3 +1,8 @@
+Thu Jul 17 13:47:56 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: patch from Evgeniy Sokolov for the undefine command
+	  which can't take an id
+
 Wed Jul 16 22:36:43 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c src/openvz_driver.c: fix the description of the ID 

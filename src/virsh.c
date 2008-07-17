@@ -978,7 +978,8 @@ cmdUndefine(vshControl * ctl, vshCmd * cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
+    if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", &name,
+                                      VSH_BYNAME|VSH_BYUUID)))
         return FALSE;
 
     if (virDomainUndefine(dom) == 0) {
