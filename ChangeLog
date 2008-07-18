@@ -1,6 +1,13 @@
+Wed Jul 18 13:01:38 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	enable format-safety checks for virDomainReportError
+	* src/domain_conf.c (virDomainReportError): Declare using
+	ATTRIBUTE_FORMAT(printf, 3, 4).
+	* Makefile.maint (msg_gen_function): Add virDomainReportError.
+
 Thu Jul 17 17:18:24 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
-	* src/storage_backend_fs.c: patch from Cole Robinson fixing 
+	* src/storage_backend_fs.c: patch from Cole Robinson fixing
 	  pool-create for netfs format 'auto'
 
 Thu Jul 17 13:47:56 CEST 2008 Daniel Veillard <veillard@redhat.com>
@@ -10,7 +17,7 @@ Thu Jul 17 13:47:56 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 Wed Jul 16 22:36:43 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
-	* src/libvirt.c src/openvz_driver.c: fix the description of the ID 
+	* src/libvirt.c src/openvz_driver.c: fix the description of the ID
 	  domain lookup and fix the OpenVZ routine
 
 Wed Jul 16 17:25:02 CEST 2008 Daniel Veillard <veillard@redhat.com>

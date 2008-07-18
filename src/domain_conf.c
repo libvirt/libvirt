@@ -128,6 +128,10 @@ VIR_ENUM_IMPL(virDomainGraphics, VIR_DOMAIN_GRAPHICS_TYPE_LAST,
 
 static void virDomainReportError(virConnectPtr conn,
                                  int code, const char *fmt, ...)
+  ATTRIBUTE_FORMAT(printf, 3, 4);
+
+static void virDomainReportError(virConnectPtr conn,
+                                 int code, const char *fmt, ...)
 {
     va_list args;
     char errorMessage[1024];
