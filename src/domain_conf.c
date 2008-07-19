@@ -700,7 +700,6 @@ virDomainNetDefParseXML(virConnectPtr conn,
                 if (STRPREFIX((const char*)ifname, "vnet")) {
                     /* An auto-generated target name, blank it out */
                     VIR_FREE(ifname);
-                    ifname = NULL;
                 }
             } else if ((script == NULL) &&
                        (def->type == VIR_DOMAIN_NET_TYPE_ETHERNET) &&
@@ -958,10 +957,8 @@ virDomainChrDefParseXML(virConnectPtr conn,
                             bindService = virXMLPropString(cur, "service");
                     }
 
-                    if (def->type == VIR_DOMAIN_CHR_TYPE_UDP) {
+                    if (def->type == VIR_DOMAIN_CHR_TYPE_UDP)
                         VIR_FREE(mode);
-                        mode = NULL;
-                    }
                 }
             } else if (xmlStrEqual(cur->name, BAD_CAST "protocol")) {
                 if (protocol == NULL)

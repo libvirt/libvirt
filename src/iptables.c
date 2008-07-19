@@ -266,14 +266,12 @@ static void
 iptRuleFree(iptRule *rule)
 {
     VIR_FREE(rule->rule);
-    rule->rule = NULL;
 
     if (rule->argv) {
         int i = 0;
         while (rule->argv[i])
             VIR_FREE(rule->argv[i++]);
         VIR_FREE(rule->argv);
-        rule->argv = NULL;
     }
 }
 

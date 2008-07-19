@@ -444,10 +444,8 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
                         goto cleanup;
 
                     /* Release matches & restart to matching the first regex */
-                    for (j = 0 ; j < totgroups ; j++) {
+                    for (j = 0 ; j < totgroups ; j++)
                         VIR_FREE(groups[j]);
-                        groups[j] = NULL;
-                    }
                     maxReg = 0;
                     ngroup = 0;
                 }

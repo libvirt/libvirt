@@ -1,4 +1,14 @@
-Wed Jul 18 13:01:38 CEST 2008 Jim Meyering <meyering@redhat.com>
+Sat Jul 19 09:41:53 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	remove unnecessary "V = NULL;" stmts after VIR_FREE(V)
+	* src/domain_conf.c (virDomainChrDefParseXML)
+	(virDomainNetDefParseXML): Likewise.
+	* src/iptables.c (iptRuleFree): Likewise.
+	* src/storage_backend.c (virStorageBackendRunProgRegex): Likewise.
+	* src/test.c (testOpenFromFile): Likewise.
+	* src/xmlrpc.c (xmlRpcCallRaw): Likewise.
+
+Fri Jul 18 13:01:38 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	enable format-safety checks for virDomainReportError
 	* src/domain_conf.c (virDomainReportError): Declare using

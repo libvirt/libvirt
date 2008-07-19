@@ -443,7 +443,6 @@ static char *xmlRpcCallRaw(const char *url, const char *request)
         if (ret != len) {
                 errno = EINVAL;
                 VIR_FREE(response);
-                response = NULL;
                 xmlRpcError(VIR_ERR_POST_FAILED, _("read response"), 0);
         }
 

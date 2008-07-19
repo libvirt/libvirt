@@ -461,10 +461,8 @@ static int testOpenFromFile(virConnectPtr conn,
         dom->def->id = privconn->nextDomID++;
         dom->persistent = 1;
     }
-    if (domains != NULL) {
+    if (domains != NULL)
         VIR_FREE(domains);
-        domains = NULL;
-    }
 
     ret = virXPathNodeSet("/node/network", ctxt, &networks);
     if (ret < 0) {
@@ -498,10 +496,8 @@ static int testOpenFromFile(virConnectPtr conn,
 
         net->persistent = 1;
     }
-    if (networks != NULL) {
+    if (networks != NULL)
         VIR_FREE(networks);
-        networks = NULL;
-    }
 
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
