@@ -289,7 +289,7 @@ static int openvzDomainGetInfo(virDomainPtr dom,
 
 static int openvzDomainShutdown(virDomainPtr dom) {
     struct openvz_driver *driver = (struct openvz_driver *)dom->conn->privateData;
-    struct openvz_vm *vm = openvzFindVMByID(driver, dom->id);
+    struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
     const char *prog[] = {VZCTL, "--quiet", "stop", vm->vmdef->name, NULL};
 
     if (!vm) {
@@ -321,7 +321,7 @@ static int openvzDomainShutdown(virDomainPtr dom) {
 static int openvzDomainReboot(virDomainPtr dom,
                               unsigned int flags ATTRIBUTE_UNUSED) {
     struct openvz_driver *driver = (struct openvz_driver *)dom->conn->privateData;
-    struct openvz_vm *vm = openvzFindVMByID(driver, dom->id);
+    struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
     const char *prog[] = {VZCTL, "--quiet", "restart", vm->vmdef->name, NULL};
 
     if (!vm) {
@@ -358,7 +358,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     if ((vmdef = openvzParseVMDef(conn, xml, NULL)) == NULL)
         return NULL;
 
-    vm = openvzFindVMByID(driver, strtoI(vmdef->name));
+    vm = openvzFindVMByName(driver, vmdef->name);
     if (vm) {
         openvzLog(OPENVZ_ERR, _("Already an OPENVZ VM active with the id '%s'"),
                   vmdef->name);
@@ -404,7 +404,7 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
     if (!(vmdef = openvzParseVMDef(conn, xml, NULL)))
         return NULL;
 
-    vm = openvzFindVMByID(driver, strtoI(vmdef->name));
+    vm = openvzFindVMByName(driver, vmdef->name);
     if (vm) {
         openvzFreeVMDef(vmdef);
         openvzLog(OPENVZ_ERR,
@@ -547,7 +547,7 @@ openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
         return -1;
     }
 
-    if (openvzReadConfigParam(vm->vpsid , "ONBOOT", value, sizeof(value)) < 0) {
+    if (openvzReadConfigParam(strtoI(vm->vmdef->name), "ONBOOT", value, sizeof(value)) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("Cound not read container config"));
         return -1;
     }
