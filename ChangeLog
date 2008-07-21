@@ -1,3 +1,8 @@
+Mon Jul 21 10:01:36 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in: patch from David Lively to try to detect the xen
+	  libs when using --with-xen-distdir= on 64bit arches.
+
 Mon Jul 21 09:29:22 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_driver.c: patch from Evgeniy Sokolov avoiding domain

@@ -235,7 +235,7 @@ AC_ARG_WITH([xen-distdir], [AC_HELP_STRING([--with-xen-distdir=path],
 if test "x$with_xen_distdir" != "x"
 then
 CPPFLAGS="$CPPFLAGS -I$withval/install/usr/include"
-LDFLAGS="$LDFLAGS -L$withval/install/usr/lib"
+LDFLAGS="$LDFLAGS -L$withval/install/usr/lib -L$withval/install/usr/lib64"
 fi
 
 LIBVIRT_FEATURES=
