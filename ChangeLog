@@ -1,3 +1,8 @@
+Mon Jul 21 10:07:08 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/openvz_driver.c: patch from Evgeniy Sokolov to get OpenVZ
+	  domain cpu time consumption.
+
 Mon Jul 21 10:01:36 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in: patch from David Lively to try to detect the xen

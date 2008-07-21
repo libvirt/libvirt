@@ -94,6 +94,8 @@ static int openvzDomainUndefine(virDomainPtr dom);
 static int convCmdbufExec(char cmdbuf[], char *cmdExec[]);
 static void cmdExecFree(char *cmdExec[]);
 
+static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid);
+
 struct openvz_driver ovz_driver;
 
 static int convCmdbufExec(char cmdbuf[], char *cmdExec[])
@@ -278,6 +280,16 @@ static int openvzDomainGetInfo(virDomainPtr dom,
     }
 
     info->state = vm->status;
+
+    if (!openvzIsActiveVM(vm)) {
+        info->cpuTime = 0;
+    } else {
+        if (openvzGetProcessInfo(&(info->cpuTime), dom->id) < 0) {
+            openvzError(dom->conn, VIR_ERR_OPERATION_FAILED,
+                            _("cannot read cputime for domain %d"), dom->id);
+            return -1;
+        }
+    }
 
     /* TODO These need to be calculated differently for OpenVZ */
     //info->cpuTime =
@@ -687,6 +699,51 @@ static int openvzListDefinedDomains(virConnectPtr conn,
     }
     waitpid(pid, NULL, 0);
     return got;
+}
+
+static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid) {
+    int fd;
+    char line[1024] ;
+    unsigned long long usertime, systime, nicetime;
+    int readvps = 0, ret;
+
+/* read statistic from /proc/vz/vestat.
+sample:
+Version: 2.2
+      VEID     user      nice     system     uptime                 idle   other..
+        33       78         0       1330   59454597      142650441835148   other..
+        55      178         0       5340   59424597      542650441835148   other..
+*/
+
+    if ((fd = open("/proc/vz/vestat", O_RDONLY)) == -1)
+        return -1;
+
+    /*search line with VEID=vpsid*/
+    while(1) {
+        ret = openvz_readline(fd, line, sizeof(line));
+        if(ret <= 0)
+            break;
+
+        if (sscanf(line, "%d %llu %llu %llu",
+                          &readvps, &usertime, &nicetime, &systime) != 4)
+            continue;
+
+        if (readvps == vpsid)
+            break; /*found vpsid*/
+    }
+
+    close(fd);
+    if (ret < 0)
+        return -1;
+
+    if (readvps != vpsid) /*not found*/
+        return -1;
+
+    /* convert jiffies to nanoseconds */
+    *cpuTime = 1000ull * 1000ull * 1000ull * (usertime + nicetime  + systime)
+                                     / (unsigned long long)sysconf(_SC_CLK_TCK);
+
+    return 0;
 }
 
 static int openvzNumDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED) {
