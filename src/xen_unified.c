@@ -344,7 +344,7 @@ clean:
     for (i = 0 ; i < XEN_UNIFIED_NR_DRIVERS ; i++)
         if (priv->opened[i]) drivers[i]->close(conn);
     VIR_FREE(priv);
-    return ret
+    return ret;
 }
 
 #define GET_PRIVATE(conn) \
