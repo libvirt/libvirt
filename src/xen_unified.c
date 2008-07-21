@@ -239,7 +239,7 @@ xenUnifiedProbe (void)
 static int
 xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int flags)
 {
-    int i;
+    int i, ret = VIR_DRV_OPEN_DECLINED;
     xenUnifiedPrivatePtr priv;
 
     /* Refuse any scheme which isn't "xen://" or "http://". */
@@ -329,19 +329,22 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int f
             }
 #else
             DEBUG0("Handing off for remote driver");
-            return VIR_DRV_OPEN_DECLINED; /* Let remote_driver try instead */
+            ret = VIR_DRV_OPEN_DECLINED; /* Let remote_driver try instead */
+            goto clean;
 #endif
         }
     }
 
     return VIR_DRV_OPEN_SUCCESS;
 
- fail:
+fail:
+    ret = VIR_DRV_OPEN_ERROR;
+clean:
     DEBUG0("Failed to activate a mandatory sub-driver");
     for (i = 0 ; i < XEN_UNIFIED_NR_DRIVERS ; i++)
         if (priv->opened[i]) drivers[i]->close(conn);
     VIR_FREE(priv);
-    return VIR_DRV_OPEN_ERROR;
+    return ret
 }
 
 #define GET_PRIVATE(conn) \
