@@ -1,3 +1,8 @@
+Mon Jul 21 15:31:52 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/openvz_conf.c src/openvz_driver.c: patch from Evgeniy Sokolov
+	  cleaning up integer string parsing.
+
 Mon Jul 21 11:47:08 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_unified.c: fix a leak in xenUnifiedOpen

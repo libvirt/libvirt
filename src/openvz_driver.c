@@ -449,7 +449,7 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
         goto exit;
     }
 
-    sscanf(vmdef->name, "%d", &vm->vpsid);
+    vm->vpsid = strtoI(vmdef->name);
     vm->status = VIR_DOMAIN_RUNNING;
     ovz_driver.num_inactive--;
     ovz_driver.num_active++;
@@ -487,7 +487,7 @@ openvzDomainCreate(virDomainPtr dom)
         return -1;
     }
 
-    sscanf(vm->vmdef->name, "%d", &vm->vpsid);
+    vm->vpsid = strtoI(vm->vmdef->name);
     vm->status = VIR_DOMAIN_RUNNING;
     ovz_driver.num_inactive --;
     ovz_driver.num_active ++;
@@ -648,6 +648,7 @@ static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
     int veid, pid, outfd, errfd;
     int ret;
     char buf[32];
+    char *endptr;
     const char *cmd[] = {VZLIST, "-ovpsid", "-H" , NULL};
 
     ret = virExec(conn, (char **)cmd, &pid, -1, &outfd, &errfd);
@@ -660,7 +661,11 @@ static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
     while(got < nids){
         ret = openvz_readline(outfd, buf, 32);
         if(!ret) break;
-        sscanf(buf, "%d", &veid);
+        if (virStrToLong_i(buf, &endptr, 10, &veid) < 0) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("Could not parse VPS ID %s"), buf);
+            continue;
+        }
         ids[got] = veid;
         got ++;
     }
@@ -679,6 +684,7 @@ static int openvzListDefinedDomains(virConnectPtr conn,
     int veid, pid, outfd, errfd, ret;
     char vpsname[OPENVZ_NAME_MAX];
     char buf[32];
+    char *endptr;
     const char *cmd[] = {VZLIST, "-ovpsid", "-H", "-S", NULL};
 
     /* the -S options lists only stopped domains */
@@ -692,7 +698,11 @@ static int openvzListDefinedDomains(virConnectPtr conn,
     while(got < nnames){
         ret = openvz_readline(outfd, buf, 32);
         if(!ret) break;
-        sscanf(buf, "%d\n", &veid);
+        if (virStrToLong_i(buf, &endptr, 10, &veid) < 0) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("Could not parse VPS ID %s"), buf);
+            continue;
+        }
         sprintf(vpsname, "%d", veid);
         names[got] = strdup(vpsname);
         got ++;

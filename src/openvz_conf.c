@@ -55,6 +55,7 @@
 #include "uuid.h"
 #include "buf.h"
 #include "memory.h"
+#include "util.h"
 
 static char *openvzLocateConfDir(void);
 static struct openvz_vm_def *openvzParseXML(virConnectPtr conn, xmlDocPtr xml);
@@ -127,17 +128,11 @@ struct openvz_vm
 int
 strtoI(const char *str)
 {
-    int base = 10;
-    char *endptr;
     int val;
 
-    val = (int) strtol(str, &endptr, base);
+    if (virStrToLong_i(str, NULL, 10, &val) < 0)
+        return 0 ;
 
-    /* Check for various possible errors */
-    if ((endptr == str)         /* "No digits were found" */
-        ||((*endptr != '\0')
-            && (*endptr != ' ')) /*"Name contain characters other than integers" */ )
-        return 0;
     return val;
 }
 
