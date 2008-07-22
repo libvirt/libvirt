@@ -1,3 +1,8 @@
+Tue Jul 22 19:48:51 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/java.html docs/java.html.in: added documentation for the
+	  java bindings
+
 Tue Jul 22 18:11:13 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	better diagnostic when failing to undefine a running domain via ID
