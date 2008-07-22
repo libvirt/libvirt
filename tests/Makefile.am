@@ -51,6 +51,7 @@ test_scripts += \
 	int-overflow \
 	read-bufsiz \
 	read-non-seekable \
+	undefine \
 	vcpupin
 endif
 

@@ -1,0 +1,55 @@
+#!/bin/sh
+# exercise virsh's "undefine" command
+
+# Copyright (C) 2008 Free Software Foundation, Inc.
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+if test "$VERBOSE" = yes; then
+  set -x
+  virsh --version
+fi
+
+. $srcdir/test-lib.sh
+
+fail=0
+
+# Attempt to undefine a running domain, by domain name.
+virsh -q -c test:///default undefine test > out 2>&1
+test $? = 1 || fail=1
+cat <<\EOF > exp || fail=1
+libvir: Test error test: internal error Domain is still running
+error: Failed to undefine domain test
+EOF
+compare out exp || fail=1
+
+# A different diagnostic when specifying a domain ID
+virsh -q -c test:///default undefine 1 > out 2>&1
+test $? = 1 || fail=1
+cat <<\EOF > exp || fail=1
+error: a running domain like 1 cannot be undefined;
+to undefine, first shutdown then undefine using its name or UUID
+EOF
+compare out exp || fail=1
+
+# Succeed, now: first shut down, then undefine, both via name.
+virsh -q -c test:///default 'shutdown test; undefine test' > out 2>&1
+test $? = 0 || fail=1
+cat <<\EOF > exp || fail=1
+Domain test is being shutdown
+Domain test has been undefined
+EOF
+compare out exp || fail=1
+
+(exit $fail); exit $fail

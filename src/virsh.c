@@ -974,10 +974,24 @@ cmdUndefine(vshControl * ctl, vshCmd * cmd)
     virDomainPtr dom;
     int ret = TRUE;
     char *name;
+    int found;
+    int id;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
+    name = vshCommandOptString(cmd, "domain", &found);
+    if (!found)
+        return FALSE;
+
+    if (name && virStrToLong_i(name, NULL, 10, &id) == 0
+        && id >= 0 && (dom = virDomainLookupByID(ctl->conn, id))) {
+        vshError(ctl, FALSE, _("a running domain like %s cannot be undefined;\n"
+                               "to undefine, first shutdown then undefine"
+                               " using its name or UUID"), name);
+        virDomainFree(dom);
+        return FALSE;
+    }
     if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", &name,
                                       VSH_BYNAME|VSH_BYUUID)))
         return FALSE;

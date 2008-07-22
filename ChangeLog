@@ -1,3 +1,11 @@
+Tue Jul 22 18:11:13 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	better diagnostic when failing to undefine a running domain via ID
+	* src/virsh.c (cmdUndefine): Tell user to shutdown and then use name
+	or UUID.
+	* tests/undefine: New test.  Exercise virsh's undefine command.
+	* tests/Makefile.am (test_scripts): Add undefine.
+
 Mon Jul 21 15:31:52 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_conf.c src/openvz_driver.c: patch from Evgeniy Sokolov
