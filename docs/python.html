@@ -16,107 +16,89 @@
     <div id="header">
       <div id="headerLogo"></div>
       <div id="headerSearch">
-        <form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
-          <div>
+        <form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><div>
             <input id="query" name="query" type="text" size="12" value="" />
             <input id="submit" name="submit" type="submit" value="Search" />
-          </div>
-        </form>
+          </div></form>
       </div>
     </div>
     <div id="body">
       <div id="menu">
-        <ul class="l0">
-          <li>
+        <ul class="l0"><li>
             <div>
               <a title="Front page of the libvirt website" class="inactive" href="index.html">Home</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Details of new features and bugs fixed in each release" class="inactive" href="news.html">News</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Get the latest source releases, binary builds and get access to the source repository" class="inactive" href="downloads.html">Downloads</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Information for users, administrators and developers" class="active" href="docs.html">Documentation</a>
-              <ul class="l1">
-                <li>
+              <ul class="l1"><li>
                   <div>
                     <a title="Information about deploying and using libvirt" class="inactive" href="deployment.html">Deployment</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Overview of the logical subsystems in the libvirt API" class="inactive" href="intro.html">Architecture</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Description of the XML formats used in libvirt" class="inactive" href="format.html">XML format</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Hypervisor specific driver information" class="inactive" href="drivers.html">Drivers</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Reference manual for the C public API" class="inactive" href="html/index.html">API reference</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Bindings of the libvirt API for other languages" class="active" href="bindings.html">Language bindings</a>
-                    <ul class="l2">
-                      <li>
+                    <ul class="l2"><li>
                         <div>
                           <span class="active">Python</span>
                         </div>
-                      </li>
-                    </ul>
+                      </li><li>
+                        <div>
+                          <a title="overview of the Java API bindings" class="inactive" href="java.html">Java</a>
+                        </div>
+                      </li></ul>
                   </div>
-                </li>
-              </ul>
+                </li></ul>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="User contributed content" class="inactive" href="http://wiki.libvirt.org">Wiki</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Frequently asked questions" class="inactive" href="FAQ.html">FAQ</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="How and where to report bugs and request features" class="inactive" href="bugs.html">Bug reports</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="How to contact the developers via email and IRC" class="inactive" href="contact.html">Contact</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Miscellaneous links of interest related to libvirt" class="inactive" href="relatedlinks.html">Related Links</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Overview of all content on the website" class="inactive" href="sitemap.html">Sitemap</a>
             </div>
-          </li>
-        </ul>
+          </li></ul>
       </div>
       <div id="content">
         <h1>Python API bindings</h1>
@@ -128,32 +110,29 @@ becomes methods for the classes, their name is just stripped from the
 virConnect or virDomain(Get) prefix and the first letter gets converted to
 lower case, for example the C functions:</p>
         <p>
-          <code>int <a href="html/libvirt-libvirt.html#virConnectNumOfDomains">virConnectNumOfDomains</a>
+      <code>int <a href="html/libvirt-libvirt.html#virConnectNumOfDomains">virConnectNumOfDomains</a>
 (virConnectPtr conn);</code>
-        </p>
+    </p>
         <p>
-          <code>int <a href="html/libvirt-libvirt.html#virDomainSetMaxMemory">virDomainSetMaxMemory</a>
+      <code>int <a href="html/libvirt-libvirt.html#virDomainSetMaxMemory">virDomainSetMaxMemory</a>
 (virDomainPtr domain, unsigned long memory);</code>
-        </p>
+    </p>
         <p>become</p>
         <p>
-          <code>virConn::numOfDomains(self)</code>
-        </p>
+      <code>virConn::numOfDomains(self)</code>
+    </p>
         <p>
-          <code>virDomain::setMaxMemory(self, memory)</code>
-        </p>
+      <code>virDomain::setMaxMemory(self, memory)</code>
+    </p>
         <p>This process is fully automated, you can get a summary of the conversion
 in the file libvirtclass.txt present in the python dir or in the docs.There
 is a couple of function who don't map directly to their C counterparts due to
 specificities in their argument conversions:</p>
-        <ul>
-          <li><code><a href="html/libvirt-libvirt.html#virConnectListDomains">virConnectListDomains</a></code>
+        <ul><li><code><a href="html/libvirt-libvirt.html#virConnectListDomains">virConnectListDomains</a></code>
     is replaced by <code>virDomain::listDomainsID(self)</code> which returns
-    a list of the integer ID for the currently running domains</li>
-          <li><code><a href="html/libvirt-libvirt.html#virDomainGetInfo">virDomainGetInfo</a></code>
+    a list of the integer ID for the currently running domains</li><li><code><a href="html/libvirt-libvirt.html#virDomainGetInfo">virDomainGetInfo</a></code>
     is replaced by <code>virDomain::info()</code> which returns a list of
-    <ol><li>state: one of the state values (virDomainState)</li><li>maxMemory: the maximum memory used by the domain</li><li>memory: the current amount of memory used by the domain</li><li>nbVirtCPU: the number of virtual CPU</li><li>cpuTime: the time used by the domain in nanoseconds</li></ol></li>
-        </ul>
+    <ol><li>state: one of the state values (virDomainState)</li><li>maxMemory: the maximum memory used by the domain</li><li>memory: the current amount of memory used by the domain</li><li>nbVirtCPU: the number of virtual CPU</li><li>cpuTime: the time used by the domain in nanoseconds</li></ol></li></ul>
         <p>So let's look at a simple example inspired from the <code>basic.py</code>
 test found in <code>python/tests/</code> in the source tree:</p>
         <pre>import <span style="color: #0071FF; background-color: #FFFFFF">libvirt</span>
@@ -174,16 +153,10 @@ print "Domain 0: id %d running %s" % (dom0.<span style="color: #FF0080; backgrou
 print dom0.<span style="color: #FF0080; background-color: #FFFFFF">info</span>()</pre>
         <p>There is not much to comment about it, it really is a straight mapping
 from the C API, the only points to notice are:</p>
-        <ul>
-          <li>the import of the module called <code><span style="color: #0071FF; background-color: #FFFFFF">libvirt</span></code></li>
-          <li>getting a connection to the hypervisor, in that case using the
-    openReadOnly function allows the code to execute as a normal user.</li>
-          <li>getting an object representing the Domain 0 using <span style="color: #007F00; background-color: #FFFFFF">lookupByName</span></li>
-          <li>if the domain is not found a libvirtError exception will be raised</li>
-          <li>extracting and printing some information about the domain using
+        <ul><li>the import of the module called <code><span style="color: #0071FF; background-color: #FFFFFF">libvirt</span></code></li><li>getting a connection to the hypervisor, in that case using the
+    openReadOnly function allows the code to execute as a normal user.</li><li>getting an object representing the Domain 0 using <span style="color: #007F00; background-color: #FFFFFF">lookupByName</span></li><li>if the domain is not found a libvirtError exception will be raised</li><li>extracting and printing some information about the domain using
     various <span style="color: #E50073; background-color: #FFFFFF">methods</span>
-    associated to the virDomain class.</li>
-        </ul>
+    associated to the virDomain class.</li></ul>
       </div>
     </div>
     <div id="footer">

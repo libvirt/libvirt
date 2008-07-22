@@ -184,6 +184,10 @@
                 <a href="python.html">Python</a>
                 <span>overview of the python API bindings</span>
               </li>
+              <li>
+                <a href="java.html">Java</a>
+                <span>overview of the Java API bindings</span>
+              </li>
             </ul>
           </li>
         </ul>

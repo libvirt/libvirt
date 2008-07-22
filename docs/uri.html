@@ -16,122 +16,97 @@
     <div id="header">
       <div id="headerLogo"></div>
       <div id="headerSearch">
-        <form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
-          <div>
+        <form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><div>
             <input id="query" name="query" type="text" size="12" value="" />
             <input id="submit" name="submit" type="submit" value="Search" />
-          </div>
-        </form>
+          </div></form>
       </div>
     </div>
     <div id="body">
       <div id="menu">
-        <ul class="l0">
-          <li>
+        <ul class="l0"><li>
             <div>
               <a title="Front page of the libvirt website" class="inactive" href="index.html">Home</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Details of new features and bugs fixed in each release" class="inactive" href="news.html">News</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Get the latest source releases, binary builds and get access to the source repository" class="inactive" href="downloads.html">Downloads</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Information for users, administrators and developers" class="active" href="docs.html">Documentation</a>
-              <ul class="l1">
-                <li>
+              <ul class="l1"><li>
                   <div>
                     <a title="Information about deploying and using libvirt" class="active" href="deployment.html">Deployment</a>
-                    <ul class="l2">
-                      <li>
+                    <ul class="l2"><li>
                         <div>
                           <span class="active">URI format</span>
                         </div>
-                      </li>
-                      <li>
+                      </li><li>
                         <div>
                           <a title="Enable remote access over TCP" class="inactive" href="remote.html">Remote access</a>
                         </div>
-                      </li>
-                      <li>
+                      </li><li>
                         <div>
                           <a title="Configure authentication for the libvirt daemon" class="inactive" href="auth.html">Authentication</a>
                         </div>
-                      </li>
-                      <li>
+                      </li><li>
                         <div>
                           <a title="Access the libvirt daemon from a native Windows client" class="inactive" href="windows.html">Windows port</a>
                         </div>
-                      </li>
-                    </ul>
+                      </li></ul>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Overview of the logical subsystems in the libvirt API" class="inactive" href="intro.html">Architecture</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Description of the XML formats used in libvirt" class="inactive" href="format.html">XML format</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Hypervisor specific driver information" class="inactive" href="drivers.html">Drivers</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Reference manual for the C public API" class="inactive" href="html/index.html">API reference</a>
                   </div>
-                </li>
-                <li>
+                </li><li>
                   <div>
                     <a title="Bindings of the libvirt API for other languages" class="inactive" href="bindings.html">Language bindings</a>
                   </div>
-                </li>
-              </ul>
+                </li></ul>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="User contributed content" class="inactive" href="http://wiki.libvirt.org">Wiki</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Frequently asked questions" class="inactive" href="FAQ.html">FAQ</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="How and where to report bugs and request features" class="inactive" href="bugs.html">Bug reports</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="How to contact the developers via email and IRC" class="inactive" href="contact.html">Contact</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Miscellaneous links of interest related to libvirt" class="inactive" href="relatedlinks.html">Related Links</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Overview of all content on the website" class="inactive" href="sitemap.html">Sitemap</a>
             </div>
-          </li>
-        </ul>
+          </li></ul>
       </div>
       <div id="content">
         <h1>Connection URIs</h1>
@@ -146,32 +121,24 @@ machine over the network.
 To this end, libvirt uses URIs as used on the Web and as defined in <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>. This page
 documents libvirt URIs.
 </p>
-        <ul>
-          <li>
-            <a href="#URI_libvirt">Specifying URIs to libvirt</a>
-          </li>
-          <li>
-            <a href="#URI_virsh">Specifying URIs to virsh, virt-manager and virt-install</a>
-          </li>
-          <li>
-            <a href="#URI_xen">xen:/// URI</a>
-          </li>
-          <li>
-            <a href="#URI_qemu">qemu:///... QEMU and KVM URIs</a>
-          </li>
-          <li>
-            <a href="#URI_remote">Remote URIs</a>
-          </li>
-          <li>
-            <a href="#URI_test">test:///... Test URIs</a>
-          </li>
-          <li>
-            <a href="#URI_legacy">Other &amp; legacy URI formats</a>
-          </li>
-        </ul>
+        <ul><li>
+        <a href="#URI_libvirt">Specifying URIs to libvirt</a>
+      </li><li>
+        <a href="#URI_virsh">Specifying URIs to virsh, virt-manager and virt-install</a>
+      </li><li>
+        <a href="#URI_xen">xen:/// URI</a>
+      </li><li>
+        <a href="#URI_qemu">qemu:///... QEMU and KVM URIs</a>
+      </li><li>
+        <a href="#URI_remote">Remote URIs</a>
+      </li><li>
+        <a href="#URI_test">test:///... Test URIs</a>
+      </li><li>
+        <a href="#URI_legacy">Other &amp; legacy URI formats</a>
+      </li></ul>
         <h3>
-          <a name="URI_libvirt" id="URI_libvirt">Specifying URIs to libvirt</a>
-        </h3>
+      <a name="URI_libvirt" id="URI_libvirt">Specifying URIs to libvirt</a>
+    </h3>
         <p>
 The URI is passed as the <code>name</code> parameter to <a href="html/libvirt-libvirt.html#virConnectOpen"><code>virConnectOpen</code></a> or <a href="html/libvirt-libvirt.html#virConnectOpenReadOnly"><code>virConnectOpenReadOnly</code></a>.  For example:
 </p>
@@ -179,8 +146,8 @@ The URI is passed as the <code>name</code> parameter to <a href="html/libvirt-li
 virConnectPtr conn = virConnectOpenReadOnly (<b>"test:///default"</b>);
 </pre>
         <h3>
-          <a name="URI_virsh" id="URI_virsh">Specifying URIs to virsh, virt-manager and virt-install</a>
-        </h3>
+      <a name="URI_virsh" id="URI_virsh">Specifying URIs to virsh, virt-manager and virt-install</a>
+    </h3>
         <p>
 In virsh use the <code>-c</code> or <code>--connect</code> option:
 </p>
@@ -210,19 +177,19 @@ In virt-install use the <code>--connect=</code><i>URI</i> option:
 virt-install <b>--connect=test:///default</b> <i>[other options]</i>
 </pre>
         <h3>
-          <a name="URI_xen" id="URI_xen">xen:/// URI</a>
-        </h3>
+      <a name="URI_xen" id="URI_xen">xen:/// URI</a>
+    </h3>
         <p>
-          <i>This section describes a feature which is new in libvirt &gt;
+      <i>This section describes a feature which is new in libvirt &gt;
 0.2.3.  For libvirt &#8804; 0.2.3 use <a href="#URI_legacy_xen"><code>"xen"</code></a>.</i>
-        </p>
+    </p>
         <p>
 To access a Xen hypervisor running on the local machine
 use the URI <code>xen:///</code>.
 </p>
         <h3>
-          <a name="URI_qemu" id="URI_qemu">qemu:///... QEMU and KVM URIs</a>
-        </h3>
+      <a name="URI_qemu" id="URI_qemu">qemu:///... QEMU and KVM URIs</a>
+    </h3>
         <p>
 To use QEMU support in libvirt you must be running the
 <code>libvirtd</code> daemon (named <code>libvirt_qemud</code>
@@ -238,10 +205,7 @@ of all users of the machine (among other things). </p>
         <p>
 So to connect to the daemon, one of two different URIs is used:
 </p>
-        <ul>
-          <li><code>qemu:///system</code> connects to a system mode daemon. </li>
-          <li><code>qemu:///session</code> connects to a session mode daemon. </li>
-        </ul>
+        <ul><li><code>qemu:///system</code> connects to a system mode daemon. </li><li><code>qemu:///session</code> connects to a session mode daemon. </li></ul>
         <p>
 (If you do <code>libvirtd --help</code>, the daemon will print
 out the paths of the Unix domain socket(s) that it listens on in
@@ -253,49 +217,28 @@ KVM guests in the <a href="format.html#KVM1">guest XML as described
 here</a>.
 </p>
         <h3>
-          <a name="URI_remote" id="URI_remote">Remote URIs</a>
-        </h3>
+      <a name="URI_remote" id="URI_remote">Remote URIs</a>
+    </h3>
         <p>
 Remote URIs are formed by taking ordinary local URIs and adding a
 hostname and/or transport name.  For example:
 </p>
-        <table class="top_table">
-          <tr>
-            <th> Local URI </th>
-            <th> Remote URI </th>
-            <th> Meaning </th>
-          </tr>
-          <tr>
-            <td>
-              <code>xen:///</code>
-            </td>
-            <td>
-              <code>xen://oirase/</code>
-            </td>
-            <td> Connect to the Xen hypervisor running on host <code>oirase</code>
-  using TLS. </td>
-          </tr>
-          <tr>
-            <td>
-              <code>xen:///</code>
-            </td>
-            <td>
-              <code>xen+ssh://oirase/</code>
-            </td>
-            <td> Connect to the Xen hypervisor running on host <code>oirase</code>
-  by going over an <code>ssh</code> connection. </td>
-          </tr>
-          <tr>
-            <td>
-              <code>test:///default</code>
-            </td>
-            <td>
-              <code>test+tcp://oirase/default</code>
-            </td>
-            <td> Connect to the test driver on host <code>oirase</code>
-  using an unsecured TCP connection. </td>
-          </tr>
-        </table>
+        <table class="top_table"><tr><th> Local URI </th><th> Remote URI </th><th> Meaning </th></tr><tr><td>
+          <code>xen:///</code>
+        </td><td>
+          <code>xen://oirase/</code>
+        </td><td> Connect to the Xen hypervisor running on host <code>oirase</code>
+  using TLS. </td></tr><tr><td>
+          <code>xen:///</code>
+        </td><td>
+          <code>xen+ssh://oirase/</code>
+        </td><td> Connect to the Xen hypervisor running on host <code>oirase</code>
+  by going over an <code>ssh</code> connection. </td></tr><tr><td>
+          <code>test:///default</code>
+        </td><td>
+          <code>test+tcp://oirase/default</code>
+        </td><td> Connect to the test driver on host <code>oirase</code>
+  using an unsecured TCP connection. </td></tr></table>
         <p>
 Remote URIs in libvirt offer a rich syntax and many features.
 We refer you to <a href="remote.html#Remote_URI_reference">the libvirt
@@ -303,25 +246,22 @@ remote URI reference</a> and <a href="remote.html">full documentation
 for libvirt remote support</a>.
 </p>
         <h3>
-          <a name="URI_test" id="URI_test">test:///... Test URIs</a>
-        </h3>
+      <a name="URI_test" id="URI_test">test:///... Test URIs</a>
+    </h3>
         <p>
 The test driver is a dummy hypervisor for test purposes.
 The URIs supported are:
 </p>
-        <ul>
-          <li><code>test:///default</code> connects to a default set of
-host definitions built into the driver. </li>
-          <li><code>test:///path/to/host/definitions</code> connects to
+        <ul><li><code>test:///default</code> connects to a default set of
+host definitions built into the driver. </li><li><code>test:///path/to/host/definitions</code> connects to
 a set of host definitions held in the named file.
-</li>
-        </ul>
+</li></ul>
         <h3>
-          <a name="URI_legacy" id="URI_legacy">Other &amp; legacy URI formats</a>
-        </h3>
+      <a name="URI_legacy" id="URI_legacy">Other &amp; legacy URI formats</a>
+    </h3>
         <h4>
-          <a name="URI_NULL" id="URI_NULL">NULL and empty string URIs</a>
-        </h4>
+      <a name="URI_NULL" id="URI_NULL">NULL and empty string URIs</a>
+    </h4>
         <p>
 Libvirt allows you to pass a <code>NULL</code> pointer to
 <code>virConnectOpen*</code>.  Empty string (<code>""</code>) acts in
@@ -344,8 +284,8 @@ application wishes to connect specifically to a Xen hypervisor, then
 for future proofing it should choose a full <a href="#URI_xen"><code>xen:///</code> URI</a>.
 </p>
         <h4>
-          <a name="URI_file" id="URI_file">File paths (xend-unix-server)</a>
-        </h4>
+      <a name="URI_file" id="URI_file">File paths (xend-unix-server)</a>
+    </h4>
         <p>
 If XenD is running and configured in <code>/etc/xen/xend-config.sxp</code>:
 </p>
@@ -361,8 +301,8 @@ using a file URI such as:
 virsh -c ///var/run/xend/xend-socket
 </pre>
         <h4>
-          <a name="URI_http" id="URI_http">Legacy: <code>http://...</code> (xend-http-server)</a>
-        </h4>
+      <a name="URI_http" id="URI_http">Legacy: <code>http://...</code> (xend-http-server)</a>
+    </h4>
         <p>
 If XenD is running and configured in <code>/etc/xen/xend-config.sxp</code>:
 
@@ -386,27 +326,23 @@ recommended for production use.  Instead use <a href="remote.html">libvirt's rem
         <p>
 Notes:
 </p>
-        <ol>
-          <li> The HTTP client does not fully support IPv6. </li>
-          <li> Many features do not work as expected across HTTP connections, in
+        <ol><li> The HTTP client does not fully support IPv6. </li><li> Many features do not work as expected across HTTP connections, in
  particular, <a href="html/libvirt-libvirt.html#virConnectGetCapabilities">virConnectGetCapabilities</a>.
  The <a href="remote.html">remote support</a> however does work
- correctly. </li>
-          <li> XenD's new-style XMLRPC interface is not supported by
+ correctly. </li><li> XenD's new-style XMLRPC interface is not supported by
  libvirt, only the old-style sexpr interface known in the Xen
- documentation as "unix server" or "http server".</li>
-        </ol>
+ documentation as "unix server" or "http server".</li></ol>
         <h4>
-          <a name="URI_legacy_xen" id="URI_legacy_xen">Legacy: <code>"xen"</code></a>
-        </h4>
+      <a name="URI_legacy_xen" id="URI_legacy_xen">Legacy: <code>"xen"</code></a>
+    </h4>
         <p>
 Another legacy URI is to specify name as the string
 <code>"xen"</code>.  This will continue to refer to the Xen
 hypervisor.  However you should prefer a full <a href="#URI_xen"><code>xen:///</code> URI</a> in all future code.
 </p>
         <h4>
-          <a name="URI_legacy_proxy" id="URI_legacy_proxy">Legacy: Xen proxy</a>
-        </h4>
+      <a name="URI_legacy_proxy" id="URI_legacy_proxy">Legacy: Xen proxy</a>
+    </h4>
         <p>
 Libvirt continues to support connections to a separately running Xen
 proxy daemon.  This provides a way to allow non-root users to make a

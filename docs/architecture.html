@@ -16,88 +16,71 @@
     <div id="header">
       <div id="headerLogo"></div>
       <div id="headerSearch">
-        <form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
-          <div>
+        <form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><div>
             <input id="query" name="query" type="text" size="12" value="" />
             <input id="submit" name="submit" type="submit" value="Search" />
-          </div>
-        </form>
+          </div></form>
       </div>
     </div>
     <div id="body">
       <div id="menu">
-        <ul class="l0">
-          <li>
+        <ul class="l0"><li>
             <div>
               <a title="Front page of the libvirt website" class="inactive" href="index.html">Home</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Details of new features and bugs fixed in each release" class="inactive" href="news.html">News</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Get the latest source releases, binary builds and get access to the source repository" class="inactive" href="downloads.html">Downloads</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Information for users, administrators and developers" class="inactive" href="docs.html">Documentation</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="User contributed content" class="inactive" href="http://wiki.libvirt.org">Wiki</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Frequently asked questions" class="inactive" href="FAQ.html">FAQ</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="How and where to report bugs and request features" class="inactive" href="bugs.html">Bug reports</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="How to contact the developers via email and IRC" class="inactive" href="contact.html">Contact</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Miscellaneous links of interest related to libvirt" class="inactive" href="relatedlinks.html">Related Links</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Overview of all content on the website" class="inactive" href="sitemap.html">Sitemap</a>
             </div>
-          </li>
-        </ul>
+          </li></ul>
       </div>
       <div id="content">
         <h1>libvirt architecture</h1>
         <p>Currently libvirt supports 2 kind of virtualization, and its
 internal structure is based on a driver model which simplifies adding new
 engines:</p>
-        <ul>
-          <li>
-            <a href="#Xen">Xen hypervisor</a>
-          </li>
-          <li>
-            <a href="#QEmu">QEmu and KVM based virtualization</a>
-          </li>
-          <li>
-            <a href="#drivers">the driver architecture</a>
-          </li>
-        </ul>
+        <ul><li>
+        <a href="#Xen">Xen hypervisor</a>
+      </li><li>
+        <a href="#QEmu">QEmu and KVM based virtualization</a>
+      </li><li>
+        <a href="#drivers">the driver architecture</a>
+      </li></ul>
         <h3>
-          <a name="Xen" id="Xen">Libvirt Xen support</a>
-        </h3>
+      <a name="Xen" id="Xen">Libvirt Xen support</a>
+    </h3>
         <p>When running in a Xen environment, programs using libvirt have to execute
 in "Domain 0", which is the primary Linux OS loaded on the machine. That OS
 kernel provides most if not all of the actual drivers used by the set of
@@ -112,13 +95,8 @@ this environment:</p>
 privilege of the embedding program. If it runs with root access,
 virConnectOpen() can be used, it will use three different ways to connect to
 the Xen infrastructure:</p>
-        <ul>
-          <li>a connection to the Xen Daemon though an HTTP RPC layer</li>
-          <li>a read/write connection to the Xen Store</li>
-          <li>use Xen Hypervisor calls</li>
-          <li>when used as non-root libvirt connect to a proxy daemon running
-      as root and providing read-only support</li>
-        </ul>
+        <ul><li>a connection to the Xen Daemon though an HTTP RPC layer</li><li>a read/write connection to the Xen Store</li><li>use Xen Hypervisor calls</li><li>when used as non-root libvirt connect to a proxy daemon running
+      as root and providing read-only support</li></ul>
         <p>The library will usually interact with the Xen daemon for any operation
 changing the state of the system, but for performance and accuracy reasons
 may talk directly to the hypervisor when gathering state information at
@@ -129,8 +107,8 @@ connect to initialize the library. It will then fork a libvirt_proxy
 program running as root and providing read_only access to the API, this is
 then only useful for reporting and monitoring.</p>
         <h3>
-          <a name="QEmu" id="QEmu">Libvirt QEmu and KVM support</a>
-        </h3>
+      <a name="QEmu" id="QEmu">Libvirt QEmu and KVM support</a>
+    </h3>
         <p>The model for QEmu and KVM is completely similar, basically KVM is based
 on QEmu for the process controlling a new domain, only small details differs
 between the two. In both case the libvirt API is provided by a controlling
@@ -143,8 +121,8 @@ domain, by specifying the architecture and machine type targeted.</p>
         <p>The code controlling the QEmu process is available in the
 <code>qemud/</code> directory.</p>
         <h3>
-          <a name="drivers" id="drivers">the driver based architecture</a>
-        </h3>
+      <a name="drivers" id="drivers">the driver based architecture</a>
+    </h3>
         <p>As the previous section explains, libvirt can communicate using different
 channels with the current hypervisor, and should also be able to use
 different kind of hypervisor. To simplify the internal design, code, ease
@@ -155,23 +133,15 @@ defining a common set of routines. That way the Xen Daemon access, the Xen
 Store one, the Hypervisor hypercall are all isolated in separate C modules
 implementing at least a subset of the common operations defined by the
 drivers present in driver.h:</p>
-        <ul>
-          <li>xend_internal: implements the driver functions though the Xen
-  Daemon</li>
-          <li>xs_internal: implements the subset of the driver available though the
-    Xen Store</li>
-          <li>xen_internal: provide the implementation of the functions possible via
-    direct hypervisor access</li>
-          <li>proxy_internal: provide read-only Xen access via a proxy, the proxy code
-    is in the <code>proxy/</code>directory.</li>
-          <li>xm_internal: provide support for Xen defined but not running
-    domains.</li>
-          <li>qemu_internal: implement the driver functions for QEmu and
+        <ul><li>xend_internal: implements the driver functions though the Xen
+  Daemon</li><li>xs_internal: implements the subset of the driver available though the
+    Xen Store</li><li>xen_internal: provide the implementation of the functions possible via
+    direct hypervisor access</li><li>proxy_internal: provide read-only Xen access via a proxy, the proxy code
+    is in the <code>proxy/</code>directory.</li><li>xm_internal: provide support for Xen defined but not running
+    domains.</li><li>qemu_internal: implement the driver functions for QEmu and
     KVM virtualization engines. It also uses a qemud/ specific daemon
-    which interacts with the QEmu process to implement libvirt API.</li>
-          <li>test: this is a test driver useful for regression tests of the
-    front-end part of libvirt.</li>
-        </ul>
+    which interacts with the QEmu process to implement libvirt API.</li><li>test: this is a test driver useful for regression tests of the
+    front-end part of libvirt.</li></ul>
         <p>Note that a given driver may only implement a subset of those functions,
 (for example saving a Xen domain state to disk and restoring it is only
 possible though the Xen Daemon), in that case the driver entry points for

@@ -339,7 +339,9 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int f
 
 fail:
     ret = VIR_DRV_OPEN_ERROR;
+#ifndef WITH_PROXY
 clean:
+#endif
     DEBUG0("Failed to activate a mandatory sub-driver");
     for (i = 0 ; i < XEN_UNIFIED_NR_DRIVERS ; i++)
         if (priv->opened[i]) drivers[i]->close(conn);

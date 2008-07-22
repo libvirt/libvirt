@@ -16,77 +16,60 @@
     <div id="header">
       <div id="headerLogo"></div>
       <div id="headerSearch">
-        <form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
-          <div>
+        <form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><div>
             <input id="query" name="query" type="text" size="12" value="" />
             <input id="submit" name="submit" type="submit" value="Search" />
-          </div>
-        </form>
+          </div></form>
       </div>
     </div>
     <div id="body">
       <div id="menu">
-        <ul class="l0">
-          <li>
+        <ul class="l0"><li>
             <div>
               <a title="Front page of the libvirt website" class="inactive" href="index.html">Home</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Details of new features and bugs fixed in each release" class="inactive" href="news.html">News</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Get the latest source releases, binary builds and get access to the source repository" class="inactive" href="downloads.html">Downloads</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Information for users, administrators and developers" class="inactive" href="docs.html">Documentation</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="User contributed content" class="inactive" href="http://wiki.libvirt.org">Wiki</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Frequently asked questions" class="inactive" href="FAQ.html">FAQ</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="How and where to report bugs and request features" class="inactive" href="bugs.html">Bug reports</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="How to contact the developers via email and IRC" class="inactive" href="contact.html">Contact</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Miscellaneous links of interest related to libvirt" class="inactive" href="relatedlinks.html">Related Links</a>
             </div>
-          </li>
-          <li>
+          </li><li>
             <div>
               <a title="Overview of all content on the website" class="inactive" href="sitemap.html">Sitemap</a>
             </div>
-          </li>
-        </ul>
+          </li></ul>
       </div>
       <div id="content">
         <h1>Handling of errors</h1>
         <p>The main goals of libvirt when it comes to error handling are:</p>
-        <ul>
-          <li>provide as much detail as possible</li>
-          <li>provide the information as soon as possible</li>
-          <li>dont force the library user into one style of error handling</li>
-        </ul>
+        <ul><li>provide as much detail as possible</li><li>provide the information as soon as possible</li><li>dont force the library user into one style of error handling</li></ul>
         <p>As result the library provide both synchronous, callback based and
 asynchronous error reporting. When an error happens in the library code the
 error is logged, allowing to retrieve it later and if the user registered an
@@ -99,43 +82,30 @@ the current connection they are related to, that way the error is stored in a
 dynamic structure which can be made thread specific. Error callback can be
 set specifically to a connection with</p>
         <p>So error handling in the code is the following:</p>
-        <ol>
-          <li>if the error can be associated to a connection for example when failing
+        <ol><li>if the error can be associated to a connection for example when failing
     to look up a domain
     <ol><li>if there is a callback associated to the connection set with <a href="html/libvirt-virterror.html#virConnSetErrorFunc">virConnSetErrorFunc</a>,
         call it with the error information</li><li>otherwise if there is a global callback set with <a href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a>,
         call it with the error information</li><li>otherwise call <a href="html/libvirt-virterror.html#virDefaultErrorFunc">virDefaultErrorFunc</a>
         which is the default error function of the library issuing the error
-        on stderr</li><li>save the error in the connection for later retrieval with <a href="html/libvirt-virterror.html#virConnGetLastError">virConnGetLastError</a></li></ol></li>
-          <li>otherwise like when failing to create an hypervisor connection:
+        on stderr</li><li>save the error in the connection for later retrieval with <a href="html/libvirt-virterror.html#virConnGetLastError">virConnGetLastError</a></li></ol></li><li>otherwise like when failing to create an hypervisor connection:
     <ol><li>if there is a global callback set with <a href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a>,
         call it with the error information</li><li>otherwise call <a href="html/libvirt-virterror.html#virDefaultErrorFunc">virDefaultErrorFunc</a>
         which is the default error function of the library issuing the error
-        on stderr</li><li>save the error in the connection for later retrieval with <a href="html/libvirt-virterror.html#virGetLastError">virGetLastError</a></li></ol></li>
-        </ol>
+        on stderr</li><li>save the error in the connection for later retrieval with <a href="html/libvirt-virterror.html#virGetLastError">virGetLastError</a></li></ol></li></ol>
         <p>In all cases the error information is provided as a <a href="html/libvirt-virterror.html#virErrorPtr">virErrorPtr</a> pointer to
 read-only structure <a href="html/libvirt-virterror.html#virError">virError</a> containing the
 following fields:</p>
-        <ul>
-          <li>code: an error number from the <a href="html/libvirt-virterror.html#virErrorNumber">virErrorNumber</a>
-  enum</li>
-          <li>domain: an enum indicating which part of libvirt raised the error see
-    <a href="html/libvirt-virterror.html#virErrorDomain">virErrorDomain</a></li>
-          <li>level: the error level, usually VIR_ERR_ERROR, though there is room for
-    warnings like VIR_ERR_WARNING</li>
-          <li>message: the full human-readable formatted string of the error</li>
-          <li>conn: if available a pointer to the <a href="html/libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>
-    connection to the hypervisor where this happened</li>
-          <li>dom: if available a pointer to the <a href="html/libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain
-    targeted in the operation</li>
-        </ul>
+        <ul><li>code: an error number from the <a href="html/libvirt-virterror.html#virErrorNumber">virErrorNumber</a>
+  enum</li><li>domain: an enum indicating which part of libvirt raised the error see
+    <a href="html/libvirt-virterror.html#virErrorDomain">virErrorDomain</a></li><li>level: the error level, usually VIR_ERR_ERROR, though there is room for
+    warnings like VIR_ERR_WARNING</li><li>message: the full human-readable formatted string of the error</li><li>conn: if available a pointer to the <a href="html/libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>
+    connection to the hypervisor where this happened</li><li>dom: if available a pointer to the <a href="html/libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain
+    targeted in the operation</li></ul>
         <p>and then extra raw information about the error which may be initialized
 to 0 or NULL if unused</p>
-        <ul>
-          <li>str1, str2, str3: string information, usually str1 is the error
-    message format</li>
-          <li>int1, int2: integer information</li>
-        </ul>
+        <ul><li>str1, str2, str3: string information, usually str1 is the error
+    message format</li><li>int1, int2: integer information</li></ul>
         <p>So usually, setting up specific error handling with libvirt consist of
 registering an handler with with <a href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a> or
 with <a href="html/libvirt-virterror.html#virConnSetErrorFunc">virConnSetErrorFunc</a>,
