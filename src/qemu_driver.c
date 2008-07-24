@@ -2006,6 +2006,15 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     if (!(def = virDomainDefParseString(conn, driver->caps, xml)))
         return NULL;
 
+    vm = virDomainFindByName(driver->domains, def->name);
+    if (vm && virDomainIsActive(vm)) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("domain %s is already defined and running"),
+                         def->name);
+        virDomainDefFree(def);
+        return NULL;
+    }
+
     if (!(vm = virDomainAssignDef(conn,
                                   &driver->domains,
                                   def))) {

@@ -1,3 +1,8 @@
+Thu Jul 24 09:26:51 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: another patch from Guido Günther checking
+	  for an already running domain on create
+
 Thu Jul 24 09:08:32 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: patch from Guido Günther checking for
