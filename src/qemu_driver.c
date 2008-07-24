@@ -2417,6 +2417,19 @@ static int qemudDomainSave(virDomainPtr dom,
         return -1;
     }
 
+    DEBUG ("migrate reply: %s", info);
+
+    /* If the command isn't supported then qemu prints:
+     * unknown command: migrate" */
+    if (strstr(info, "unknown command:")) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                          "%s",
+                          _("'migrate' not supported by this qemu"));
+        VIR_FREE(info);
+        VIR_FREE(command);
+        return -1;
+    }
+
     VIR_FREE(info);
     VIR_FREE(command);
 

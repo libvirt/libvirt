@@ -1,3 +1,8 @@
+Thu Jul 24 09:08:32 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: patch from Guido Günther checking for
+	  unsupported migrate command
+
 Tue Jul 22 19:48:51 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/java.html docs/java.html.in: added documentation for the
