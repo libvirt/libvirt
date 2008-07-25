@@ -15,8 +15,13 @@
 extern "C" {
 #endif
 
+#include "internal.h"
+#include "capabilities.h"
+
 extern struct xenUnifiedDriver xenHypervisorDriver;
 int	xenHypervisorInit		(void);
+
+virCapsPtr xenHypervisorMakeCapabilities (void);
 
 /* The following calls are made directly by the Xen proxy: */
 
@@ -36,11 +41,10 @@ int	xenHypervisorOpen		(virConnectPtr conn,
 int	xenHypervisorClose		(virConnectPtr conn);
 int	xenHypervisorGetVersion		(virConnectPtr conn,
                                          unsigned long *hvVer);
-char *
-        xenHypervisorMakeCapabilitiesXML (virConnectPtr conn,
-                                          const char *hostmachine,
-                                          FILE *cpuinfo,
-                                          FILE *capabilities);
+virCapsPtr
+        xenHypervisorMakeCapabilitiesInternal(const char *hostmachine,
+                                              FILE *cpuinfo,
+                                              FILE *capabilities);
 char *
         xenHypervisorGetCapabilities    (virConnectPtr conn);
 unsigned long

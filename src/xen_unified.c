@@ -197,7 +197,7 @@ xenDomainUsedCpus(virDomainPtr dom)
                 }
             }
         }
-        res = virSaveCpuSet(dom->conn, cpulist, nb_cpu);
+        res = virDomainCpuSetFormat(dom->conn, cpulist, nb_cpu);
     }
 
 done:
@@ -335,6 +335,11 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int f
         }
     }
 
+    if (!(priv->caps = xenHypervisorMakeCapabilities())) {
+        DEBUG0("Failed to make capabilities");
+        goto fail;
+    }
+
     return VIR_DRV_OPEN_SUCCESS;
 
 fail:
@@ -358,6 +363,7 @@ xenUnifiedClose (virConnectPtr conn)
     GET_PRIVATE(conn);
     int i;
 
+    virCapabilitiesFree(priv->caps);
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] && drivers[i]->close)
             (void) drivers[i]->close (conn);

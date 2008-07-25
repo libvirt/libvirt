@@ -11,48 +11,47 @@
 #if WITH_XEN
 
 #include "internal.h"
-#include "xml.h"
+#include "xend_internal.h"
 #include "testutils.h"
+#include "testutilsxen.h"
 
 static char *progname;
 static char *abs_srcdir;
+static virCapsPtr caps;
 
 #define MAX_FILE 4096
 
 static int testCompareFiles(const char *xml, const char *sexpr,
-                            const char *name, int xendConfigVersion) {
+                            int xendConfigVersion) {
   char xmlData[MAX_FILE];
   char sexprData[MAX_FILE];
-  char *gotname = NULL;
   char *gotsexpr = NULL;
   char *xmlPtr = &(xmlData[0]);
   char *sexprPtr = &(sexprData[0]);
   int ret = -1;
+  virDomainDefPtr def = NULL;
 
   if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
-    goto fail;
+      goto fail;
 
   if (virtTestLoadFile(sexpr, &sexprPtr, MAX_FILE) < 0)
-    goto fail;
+      goto fail;
 
-  if (!(gotsexpr = virDomainParseXMLDesc(NULL, xmlData, &gotname, xendConfigVersion)))
-    goto fail;
+  if (!(def = virDomainDefParseString(NULL, caps, xmlData)))
+      goto fail;
+
+  if (!(gotsexpr = xenDaemonFormatSxpr(NULL, def, xendConfigVersion)))
+      goto fail;
 
   if (STRNEQ(sexprData, gotsexpr)) {
       virtTestDifference(stderr, sexprData, gotsexpr);
       goto fail;
   }
 
-  if (STRNEQ(name, gotname)) {
-      printf("Got wrong name: expected %s, got %s\n", name, gotname);
-      goto fail;
-  }
-
   ret = 0;
 
  fail:
-
-  free(gotname);
+  virDomainDefFree(def);
   free(gotsexpr);
 
   return ret;
@@ -73,7 +72,7 @@ static int testCompareHelper(const void *data) {
              abs_srcdir, info->input);
     snprintf(args, PATH_MAX, "%s/xml2sexprdata/xml2sexpr-%s.sexpr",
              abs_srcdir, info->output);
-    return testCompareFiles(xml, args, info->name, info->version);
+    return testCompareFiles(xml, args, info->version);
 }
 
 
@@ -101,6 +100,9 @@ mymain(int argc, char **argv)
                         1, testCompareHelper, &info) < 0)     \
             ret = -1;                                                  \
     } while (0)
+
+    if (!(caps = testXenCapsInit()))
+        return(EXIT_FAILURE);
 
     DO_TEST("pv", "pv", "pvtest", 1);
     DO_TEST("fv", "fv", "fvtest", 1);
@@ -144,6 +146,8 @@ mymain(int argc, char **argv)
     DO_TEST("fv-parallel-tcp", "fv-parallel-tcp", "fvtest", 1);
 
     DO_TEST("fv-sound", "fv-sound", "fvtest", 1);
+
+    virCapabilitiesFree(caps);
 
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

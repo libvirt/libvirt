@@ -1475,16 +1475,9 @@ int xenXMDomainCreate(virDomainPtr domain) {
     int ret;
     unsigned char uuid[VIR_UUID_BUFLEN];
     xenUnifiedPrivatePtr priv;
-
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
-        xenXMError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-                   __FUNCTION__);
-        return (-1);
-    }
+    virDomainDefPtr def;
 
     if (domain->id != -1)
-        return (-1);
-    if (domain->conn->flags & VIR_CONNECT_RO)
         return (-1);
 
     if (!(xml = xenXMDomainDumpXML(domain, 0)))
@@ -1492,11 +1485,20 @@ int xenXMDomainCreate(virDomainPtr domain) {
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
-    if (!(sexpr = virDomainParseXMLDesc(domain->conn, xml, NULL, priv->xendConfigVersion))) {
-        VIR_FREE(xml);
+    if (!(def = virDomainDefParseString(domain->conn, priv->caps, xml))) {
+        xenXMError(domain->conn, VIR_ERR_XML_ERROR,
+                   _("failed to parse domain description"));
         return (-1);
     }
     VIR_FREE(xml);
+
+    if (!(sexpr = xenDaemonFormatSxpr(domain->conn, def, priv->xendConfigVersion))) {
+        virDomainDefFree(def);
+        xenXMError(domain->conn, VIR_ERR_XML_ERROR,
+                   _("failed to build sexpr"));
+        return (-1);
+    }
+    virDomainDefFree(def);
 
     ret = xenDaemonDomainCreateLinux(domain->conn, sexpr);
     VIR_FREE(sexpr);

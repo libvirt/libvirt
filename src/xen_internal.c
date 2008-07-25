@@ -2161,8 +2161,7 @@ struct guest_arch {
 
 
 static virCapsPtr
-xenHypervisorBuildCapabilities(virConnectPtr conn,
-                               const char *hostmachine,
+xenHypervisorBuildCapabilities(const char *hostmachine,
                                int host_pae,
                                char *hvm_type,
                                struct guest_arch *guest_archs,
@@ -2188,7 +2187,7 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
 
 
     if (sys_interface_version >= 4) {
-        if (xenDaemonNodeGetTopology(conn, caps) != 0) {
+        if (xenDaemonNodeGetTopology(NULL, caps) != 0) {
             virCapabilitiesFree(caps);
             return NULL;
         }
@@ -2273,10 +2272,9 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
  *
  * Return the capabilities of this hypervisor.
  */
-char *
-xenHypervisorMakeCapabilitiesXML(virConnectPtr conn,
-                                 const char *hostmachine,
-                                 FILE *cpuinfo, FILE *capabilities)
+virCapsPtr
+xenHypervisorMakeCapabilitiesInternal(const char *hostmachine,
+                                      FILE *cpuinfo, FILE *capabilities)
 {
     char line[1024], *str, *token;
     regmatch_t subs[4];
@@ -2287,10 +2285,6 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn,
     int host_pae = 0;
     struct guest_arch guest_archs[32];
     int nr_guest_archs = 0;
-
-    char *xml;
-
-
     virCapsPtr caps = NULL;
 
     memset(guest_archs, 0, sizeof(guest_archs));
@@ -2412,24 +2406,64 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn,
         }
     }
 
-    if ((caps = xenHypervisorBuildCapabilities(conn,
-                                               hostmachine,
+    if ((caps = xenHypervisorBuildCapabilities(hostmachine,
                                                host_pae,
                                                hvm_type,
                                                guest_archs,
                                                nr_guest_archs)) == NULL)
         goto no_memory;
-    if ((xml = virCapabilitiesFormatXML(caps)) == NULL)
-        goto no_memory;
 
-    virCapabilitiesFree(caps);
-    return xml;
+    return caps;
 
  no_memory:
-    virXenError(conn, VIR_ERR_NO_MEMORY, __FUNCTION__, 0);
+    virXenError(NULL, VIR_ERR_NO_MEMORY, __FUNCTION__, 0);
     virCapabilitiesFree(caps);
     return NULL;
 }
+
+/**
+ * xenHypervisorMakeCapabilities:
+ *
+ * Return the capabilities of this hypervisor.
+ */
+virCapsPtr
+xenHypervisorMakeCapabilities(void)
+{
+    virCapsPtr caps;
+    FILE *cpuinfo, *capabilities;
+    struct utsname utsname;
+
+    /* Really, this never fails - look at the man-page. */
+    uname (&utsname);
+
+    cpuinfo = fopen ("/proc/cpuinfo", "r");
+    if (cpuinfo == NULL) {
+        if (errno != ENOENT) {
+            virXenPerror (NULL, "/proc/cpuinfo");
+            return NULL;
+        }
+    }
+
+    capabilities = fopen ("/sys/hypervisor/properties/capabilities", "r");
+    if (capabilities == NULL) {
+        if (errno != ENOENT) {
+            fclose(cpuinfo);
+            virXenPerror (NULL, "/sys/hypervisor/properties/capabilities");
+            return NULL;
+        }
+    }
+
+    caps = xenHypervisorMakeCapabilitiesInternal(utsname.machine, cpuinfo, capabilities);
+
+    if (cpuinfo)
+        fclose(cpuinfo);
+    if (capabilities)
+        fclose(capabilities);
+
+    return caps;
+}
+
+
 
 /**
  * xenHypervisorGetCapabilities:
@@ -2440,39 +2474,17 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn,
 char *
 xenHypervisorGetCapabilities (virConnectPtr conn)
 {
+    xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
     char *xml;
-    FILE *cpuinfo, *capabilities;
-    struct utsname utsname;
 
-    /* Really, this never fails - look at the man-page. */
-    uname (&utsname);
-
-    cpuinfo = fopen ("/proc/cpuinfo", "r");
-    if (cpuinfo == NULL) {
-        if (errno != ENOENT) {
-            virXenPerror (conn, "/proc/cpuinfo");
-            return NULL;
-        }
+    if (!(xml = virCapabilitiesFormatXML(priv->caps))) {
+        virXenError(conn, VIR_ERR_NO_MEMORY, NULL, 0);
+        return NULL;
     }
-
-    capabilities = fopen ("/sys/hypervisor/properties/capabilities", "r");
-    if (capabilities == NULL) {
-        if (errno != ENOENT) {
-            fclose(cpuinfo);
-            virXenPerror (conn, "/sys/hypervisor/properties/capabilities");
-            return NULL;
-        }
-    }
-
-    xml = xenHypervisorMakeCapabilitiesXML(conn, utsname.machine, cpuinfo, capabilities);
-
-    if (cpuinfo)
-        fclose(cpuinfo);
-    if (capabilities)
-        fclose(capabilities);
 
     return xml;
 }
+
 
 /**
  * xenHypervisorNumOfDomains:

@@ -12,6 +12,7 @@
 #define __VIR_XEN_UNIFIED_H__
 
 #include "internal.h"
+#include "capabilities.h"
 
 #ifndef HAVE_WINSOCK2_H
 #include <sys/un.h>
@@ -91,6 +92,7 @@ struct xenUnifiedDriver {
  * low-level drivers access parts of this structure.
  */
 struct _xenUnifiedPrivate {
+    virCapsPtr caps;
 #ifdef WITH_XEN
     int handle;			/* Xen hypervisor handle */
 

@@ -1,3 +1,24 @@
+Fri Jul 25 14:00:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Convert XenD XML->SEXPR conversion to new domain XML APIs
+
+	* proxy/Makefile.am: no longer need to link xml.c
+	* proxy/libvirt_proxy.c: Adapt to use new domain XML
+	API contract
+	* src/xen_internal.c, src/xen_internal.h: Don't pass a
+	connection object when building capabilities.
+	* src/xen_unified.c, src/xen_unified.h:  Initialize
+	a virCapsPtr object when opening the connection
+	* src/xend_internal.c, src/xend_internal.h: Add code
+	for converting from XML to SEXPR.
+	* src/xml.h, src/xml.c: Remove code for generating SXPR
+	* src/xm_intenral.c: Adapt to new SXPR generation
+	* tests/xml2sexprdata/*: Update to match new ordering
+	for XML / SXPR generation
+	* tests/xencapstest.c, tests/xml2sexprtest.c: Fix up
+	to work with new internal APIs
+	* src/domain_conf.c: Back compat workaround for Xen
+
 Fri Jul 25 14:35:47 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* python/generator.py: skip generation for virDomainBlockPeek and
@@ -5,7 +26,7 @@ Fri Jul 25 14:35:47 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 Fri Jul 25 11:45:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
-	Convert XenD SEXPR->XML convesion to new domain XML APIs
+	Convert XenD SEXPR->XML conversion to new domain XML APIs
 
 	* proxy/Makefile.am: Link to domain XML formatting APIs
 	* src/domain_conf.c, src/domain_conf.h: Disable XML parsing

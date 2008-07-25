@@ -1,24 +1,26 @@
 /*
- * libxend/xend.h -- Xend library
+ * xend_internal.h
  *
  * Copyright (C) 2005,2006
  *
  *      Anthony Liguori <aliguori@us.ibm.com>
  *	Daniel Veillard <veillard@redhat.com>
  *
+ * Copyright 2006-2008 Red Hat
+ *
  *  This file is subject to the terms and conditions of the GNU Lesser General
  *  Public License. See the file COPYING in the main directory of this archive
  *  for more details.
  */
 
-#ifndef _LIBXEND_XEND_H_
-#define _LIBXEND_XEND_H_
+#ifndef __XEND_INTERNAL_H_
+#define __XEND_INTERNAL_H_
 
 #include <sys/types.h>
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "libvirt/libvirt.h"
+#include "internal.h"
 #include "capabilities.h"
 #include "domain_conf.h"
 #include "buf.h"
@@ -84,15 +86,11 @@ int xenDaemonDomainLookupByID(virConnectPtr xend,
                               char **name, unsigned char *uuid);
 
 
-char *xenDaemonDomainDumpXMLByID(virConnectPtr xend,
-                                 int domid,
-                                 int flags,
-                                 const char *cpus);
-
-char *xenDaemonDomainDumpXMLByName(virConnectPtr xend,
-                                   const char *name,
-                                   int flags,
-                                   const char *cpus);
+virDomainDefPtr
+xenDaemonDomainFetch(virConnectPtr xend,
+                     int domid,
+                     const char *name,
+                     const char *cpus);
 
     int xend_parse_sexp_desc_char(virConnectPtr conn,
                                   virBufferPtr buf,
@@ -105,6 +103,10 @@ virDomainDefPtr
 xenDaemonParseSxprString(virConnectPtr conn,
                          const char *sexpr,
                          int xendConfigVersion);
+char *
+xenDaemonFormatSxpr(virConnectPtr conn,
+                    virDomainDefPtr def,
+                    int xendConfigVersion);
 
   int is_sound_model_valid(const char *model);
   int is_sound_model_conflict(const char *model, const char *soundstr);
@@ -163,7 +165,4 @@ int xenDaemonDomainMigratePerform (virDomainPtr domain, const char *cookie, int 
 
 int xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path, unsigned long long offset, size_t size, void *buffer);
 
-#ifdef __cplusplus
-}
-#endif
-#endif
+#endif /* __XEND_INTERNAL_H_ */

@@ -495,6 +495,12 @@ virDomainDiskDefParseXML(virConnectPtr conn,
                        (xmlStrEqual(cur->name, BAD_CAST "target"))) {
                 target = virXMLPropString(cur, "dev");
                 bus = virXMLPropString(cur, "bus");
+
+                /* HACK: Work around for compat with Xen
+                 * driver in previous libvirt releases */
+                if (target &&
+                    STRPREFIX(target, "ioemu:"))
+                    memmove(target, target+6, strlen(target)-5);
             } else if ((driverName == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "driver"))) {
                 driverName = virXMLPropString(cur, "name");

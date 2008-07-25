@@ -91,7 +91,7 @@ xmlrpctest_SOURCES = \
 xmlrpctest_LDADD = $(LDADDS)
 
 xml2sexprtest_SOURCES = \
-	xml2sexprtest.c \
+	xml2sexprtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
 xml2sexprtest_LDADD = $(LDADDS)
 

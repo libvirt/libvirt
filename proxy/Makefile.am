@@ -11,7 +11,7 @@ libexec_PROGRAMS = libvirt_proxy
 
 libvirt_proxy_SOURCES = libvirt_proxy.c @top_srcdir@/src/xend_internal.c \
 	    @top_srcdir@/src/xen_internal.c @top_srcdir@/src/virterror.c \
-	    @top_srcdir@/src/sexpr.c @top_srcdir@/src/xml.c \
+	    @top_srcdir@/src/sexpr.c  \
             @top_srcdir@/src/xs_internal.c @top_srcdir@/src/buf.c \
             @top_srcdir@/src/capabilities.c \
             @top_srcdir@/src/memory.c \

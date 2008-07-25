@@ -25,6 +25,7 @@ static int testCompareFiles(const char *hostmachine,
   char *expectxml = &(xmlData[0]);
   char *actualxml = NULL;
   FILE *fp1 = NULL, *fp2 = NULL;
+  virCapsPtr caps = NULL;
 
   int ret = -1;
 
@@ -40,16 +41,19 @@ static int testCompareFiles(const char *hostmachine,
            abs_srcdir, capabilities_rel);
 
   if (virtTestLoadFile(xml, &expectxml, MAX_FILE) < 0)
-    goto fail;
+      goto fail;
 
   if (!(fp1 = fopen(cpuinfo, "r")))
-    goto fail;
+      goto fail;
 
   if (!(fp2 = fopen(capabilities, "r")))
-    goto fail;
+      goto fail;
 
-  if (!(actualxml = xenHypervisorMakeCapabilitiesXML(NULL, hostmachine, fp1, fp2)))
-    goto fail;
+  if (!(caps = xenHypervisorMakeCapabilitiesInternal(hostmachine, fp1, fp2)))
+      goto fail;
+
+  if (!(actualxml = virCapabilitiesFormatXML(caps)))
+      goto fail;
 
   if (STRNEQ(expectxml, actualxml)) {
       virtTestDifference(stderr, expectxml, actualxml);
@@ -66,6 +70,7 @@ static int testCompareFiles(const char *hostmachine,
   if (fp2)
     fclose(fp2);
 
+  virCapabilitiesFree(caps);
   return ret;
 }
 

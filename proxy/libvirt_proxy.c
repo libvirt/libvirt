@@ -358,6 +358,7 @@ proxyWriteClientSocket(int nr, virProxyPacketPtr req) {
  */
 static int
 proxyReadClientSocket(int nr) {
+    virDomainDefPtr def;
     virProxyFullPacket request;
     virProxyPacketPtr req = (virProxyPacketPtr) &request;
     int ret;
@@ -622,22 +623,29 @@ retry2:
              * rather hard to get from that code path. So proxy
              * users won't see CPU pinning (last NULL arg)
              */
-            xml = xenDaemonDomainDumpXMLByID(conn, request.data.arg, 0, NULL);
-            if (!xml) {
+            def = xenDaemonDomainFetch(conn, request.data.arg, NULL, NULL);
+            if (!def) {
                 req->data.arg = -1;
                 req->len = sizeof(virProxyPacket);
             } else {
-                int xmllen = strlen(xml);
-                if (xmllen > (int) sizeof(request.extra.str)) {
-                    req->data.arg = -2;
+                xml = virDomainDefFormat(conn, def, 0);
+                if (!xml) {
+                    req->data.arg = -1;
                     req->len = sizeof(virProxyPacket);
                 } else {
-                    req->data.arg = 0;
-                    memmove(&request.extra.str[0], xml, xmllen);
-                    req->len = sizeof(virProxyPacket) + xmllen;
+                    int xmllen = strlen(xml);
+                    if (xmllen > (int) sizeof(request.extra.str)) {
+                        req->data.arg = -2;
+                        req->len = sizeof(virProxyPacket);
+                    } else {
+                        req->data.arg = 0;
+                        memmove(&request.extra.str[0], xml, xmllen);
+                        req->len = sizeof(virProxyPacket) + xmllen;
+                    }
+                    free(xml);
                 }
-                free(xml);
             }
+            virDomainDefFree(def);
             break;
         case VIR_PROXY_DOMAIN_OSTYPE:
             if (req->len != sizeof(virProxyPacket))
