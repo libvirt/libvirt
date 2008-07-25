@@ -1,20 +1,21 @@
 <domain type='xen' id='1'>
   <name>s10u4</name>
   <uuid>fde0533d-d043-88c6-dfba-4822fa32f309</uuid>
+  <memory>1048576</memory>
+  <currentMemory>1048576</currentMemory>
+  <vcpu>1</vcpu>
   <os>
     <type>hvm</type>
     <loader>/usr/lib/xen/boot/hvmloader</loader>
     <boot dev='hd'/>
   </os>
-  <memory>1048576</memory>
-  <vcpu>1</vcpu>
-  <on_poweroff>destroy</on_poweroff>
-  <on_reboot>restart</on_reboot>
-  <on_crash>restart</on_crash>
   <features>
     <pae/>
   </features>
   <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
   <devices>
     <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
     <interface type='ethernet'>

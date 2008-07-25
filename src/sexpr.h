@@ -47,6 +47,7 @@ void sexpr_free(struct sexpr *sexpr);
 
 /* lookup in S-Expressions */
 const char *sexpr_node(const struct sexpr *sexpr, const char *node);
+int sexpr_node_copy(const struct sexpr *sexpr, const char *node, char **dst);
 const char *sexpr_fmt_node(const struct sexpr *sexpr, const char *fmt, ...)
   ATTRIBUTE_FORMAT(printf,2,3);
 struct sexpr *sexpr_lookup(const struct sexpr *sexpr, const char *node);

@@ -1,3 +1,18 @@
+Fri Jul 25 11:45:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Convert XenD SEXPR->XML convesion to new domain XML APIs
+
+	* proxy/Makefile.am: Link to domain XML formatting APIs
+	* src/domain_conf.c, src/domain_conf.h: Disable XML parsing
+	routines when used by proxy
+	* src/sexpr.c, src/sexpr.h: Added sexpr_node_copy() API
+	* src/xend_internal.c, src/xend_internal.h: Convert the
+	SEXPR -> XML conversion routines to use the generic domain
+	XML APIs
+	* tests/sexpr2xmltest.c: Adapt for API changes
+	* tests/sexpr2xmldata/*.xml: Update to take account of
+	re-ordering of XML due to new APIs
+
 Fri Jul 25 10:44:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Remove unused/no-op code from xen drivers

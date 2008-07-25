@@ -1,23 +1,23 @@
 <domain type='xen' id='6'>
   <name>test</name>
   <uuid>cc2315e7-d26a-307a-438c-6d188ec4c09c</uuid>
+  <memory>391168</memory>
+  <currentMemory>358400</currentMemory>
+  <vcpu>1</vcpu>
   <os>
     <type>hvm</type>
     <loader>/usr/lib/xen/boot/hvmloader</loader>
     <boot dev='hd'/>
   </os>
-  <memory>391168</memory>
-  <currentMemory>358400</currentMemory>
-  <vcpu>1</vcpu>
-  <on_poweroff>destroy</on_poweroff>
-  <on_reboot>destroy</on_reboot>
-  <on_crash>destroy</on_crash>
   <features>
     <acpi/>
     <apic/>
     <pae/>
   </features>
   <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>destroy</on_reboot>
+  <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
     <disk type='block' device='disk'>
@@ -25,22 +25,22 @@
       <source dev='/dev/sda8'/>
       <target dev='hda' bus='ide'/>
     </disk>
-    <disk device='cdrom'>
+    <disk type='file' device='cdrom'>
       <target dev='hdc' bus='ide'/>
       <readonly/>
     </disk>
     <interface type='bridge'>
+      <mac address='00:16:3e:0a:7b:39'/>
       <source bridge='xenbr0'/>
       <target dev='vif6.0'/>
-      <mac address='00:16:3e:0a:7b:39'/>
     </interface>
-    <input type='mouse' bus='ps2'/>
-    <graphics type='vnc' port='-1'/>
     <serial type='pty'>
       <target port='0'/>
     </serial>
     <console type='pty'>
       <target port='0'/>
     </console>
+    <input type='mouse' bus='ps2'/>
+    <graphics type='vnc' port='-1' autoport='yes'/>
   </devices>
 </domain>

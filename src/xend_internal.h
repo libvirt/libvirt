@@ -20,6 +20,7 @@
 
 #include "libvirt/libvirt.h"
 #include "capabilities.h"
+#include "domain_conf.h"
 #include "buf.h"
 
 #ifdef __cplusplus
@@ -100,7 +101,10 @@ char *xenDaemonDomainDumpXMLByName(virConnectPtr xend,
                                   const char *value,
                                   const char *tty);
 
-  char *xend_parse_domain_sexp(virConnectPtr conn,  char *root, int xendConfigVersion);
+virDomainDefPtr
+xenDaemonParseSxprString(virConnectPtr conn,
+                         const char *sexpr,
+                         int xendConfigVersion);
 
   int is_sound_model_valid(const char *model);
   int is_sound_model_conflict(const char *model, const char *soundstr);

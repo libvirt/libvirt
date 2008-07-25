@@ -550,6 +550,21 @@ sexpr_node(const struct sexpr *sexpr, const char *node)
     return (n && n->u.s.car->kind == SEXPR_VALUE) ? n->u.s.car->u.value : NULL;
 }
 
+int sexpr_node_copy(const struct sexpr *sexpr, const char *node, char **dst)
+{
+    const char *val = sexpr_node(sexpr, node);
+
+    if (val) {
+        *dst = strdup(val);
+        if (!(*dst))
+            return -1;
+    } else {
+        *dst = NULL;
+    }
+    return 0;
+}
+
+
 /**
  * sexpr_fmt_node:
  * @sexpr: a pointer to a parsed S-Expression

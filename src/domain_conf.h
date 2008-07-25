@@ -424,6 +424,7 @@ virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
 void virDomainRemoveInactive(virDomainObjPtr *doms,
                              virDomainObjPtr dom);
 
+#ifndef PROXY
 virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
                                               const virDomainDefPtr def,
                                               const char *xmlStr);
@@ -437,6 +438,7 @@ virDomainDefPtr virDomainDefParseNode(virConnectPtr conn,
                                       virCapsPtr caps,
                                       xmlDocPtr doc,
                                       xmlNodePtr root);
+#endif
 char *virDomainDefFormat(virConnectPtr conn,
                          virDomainDefPtr def,
                          int flags);

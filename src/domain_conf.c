@@ -439,6 +439,7 @@ void virDomainRemoveInactive(virDomainObjPtr *doms,
     virDomainObjFree(dom);
 }
 
+#ifndef PROXY
 static int virDomainDiskCompare(virDomainDiskDefPtr a,
                                 virDomainDiskDefPtr b) {
     if (a->bus == b->bus)
@@ -1916,7 +1917,7 @@ cleanup:
     xmlXPathFreeContext(ctxt);
     return def;
 }
-
+#endif /* ! PROXY */
 
 /************************************************************************
  *									*
@@ -2695,6 +2696,8 @@ char *virDomainDefFormat(virConnectPtr conn,
 }
 
 
+#ifndef PROXY
+
 int virDomainSaveConfig(virConnectPtr conn,
                         const char *configDir,
                         const char *autostartDir,
@@ -2772,6 +2775,7 @@ int virDomainSaveConfig(virConnectPtr conn,
 
     return ret;
 }
+
 
 virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
                                     virCapsPtr caps,
@@ -2890,3 +2894,5 @@ int virDomainDeleteConfig(virConnectPtr conn,
 
     return 0;
 }
+
+#endif /* ! PROXY */

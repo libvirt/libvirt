@@ -1,10 +1,14 @@
 <domain type='xen' id='6'>
   <name>pvtest</name>
   <uuid>49a0c6ff-c066-5392-6498-3632d093c2e7</uuid>
-  <bootloader>/usr/bin/pygrub</bootloader>
   <memory>524288</memory>
   <currentMemory>393216</currentMemory>
   <vcpu>1</vcpu>
+  <bootloader>/usr/bin/pygrub</bootloader>
+  <os>
+    <type>linux</type>
+  </os>
+  <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
@@ -16,10 +20,9 @@
       <shareable/>
     </disk>
     <interface type='bridge'>
+      <mac address='00:16:3e:23:9e:eb'/>
       <source bridge='xenbr0'/>
       <target dev='vif6.0'/>
-      <mac address='00:16:3e:23:9e:eb'/>
-      <script path='vif-bridge'/>
     </interface>
     <console type='pty'>
       <target port='0'/>

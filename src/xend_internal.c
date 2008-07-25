@@ -40,6 +40,7 @@
 #include "xml.h"
 #include "buf.h"
 #include "capabilities.h"
+#include "domain_conf.h"
 #include "uuid.h"
 #include "xen_unified.h"
 #include "xend_internal.h"
@@ -114,6 +115,8 @@ virXendError(virConnectPtr conn, virErrorNumber error,
         va_start (args, fmt);
         vsnprintf (msg, sizeof (msg), fmt, args);
         va_end (args);
+    } else {
+        msg[0] = '\0';
     }
 
     msg2 = __virErrorMsg (error, fmt ? msg : NULL);
@@ -1205,21 +1208,15 @@ xend_detect_config_version(virConnectPtr conn) {
 
 /*****************************************************************
  ******
- ******
- ******
- ******
-             Needed helper code
- ******
- ******
- ******
+ ****** Parsing of SEXPR into virDomainDef objects
  ******
  *****************************************************************/
 
 /**
- * xend_parse_sexp_desc_os:
+ * xenDaemonParseSxprOS
  * @xend: the xend connection object
  * @node: the root of the parsed S-Expression
- * @buf: output buffer object
+ * @def: the domain config
  * @hvm: true or 1 if no contains HVM S-Expression
  * @bootloader: true or 1 if a bootloader is defined
  *
@@ -1228,90 +1225,82 @@ xend_detect_config_version(virConnectPtr conn) {
  * Returns 0 in case of success and -1 in case of error
  */
 static int
-xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf, int hvm, int bootloader)
+xenDaemonParseSxprOS(virConnectPtr xend, struct sexpr *node,
+                     virDomainDefPtr def,
+                     int hvm)
 {
-    const char *loader = NULL;
-    const char *kernel = NULL;
-    const char *initrd = NULL;
-    const char *cmdline = NULL;
-    const char *root = NULL;
-
-    if (node == NULL || buf == NULL) {
-       return(-1);
-    }
-
-    virBufferAddLit(buf, "  <os>\n");
-    if (hvm)
-        virBufferAddLit(buf, "    <type>hvm</type>\n");
-    else
-        virBufferAddLit(buf, "    <type>linux</type>\n");
-
     if (hvm) {
-        loader = sexpr_node(node, "domain/image/hvm/loader");
-        if (loader == NULL) {
-            loader = sexpr_node(node, "domain/image/hvm/kernel");
+        if (sexpr_node_copy(node, "domain/image/hvm/loader", &def->os.loader) < 0)
+            goto no_memory;
+        if (def->os.loader == NULL) {
+            if (sexpr_node_copy(node, "domain/image/hvm/kernel", &def->os.loader) < 0)
+                goto no_memory;
 
-            if (loader == NULL) {
+            if (def->os.loader == NULL) {
                 virXendError(xend, VIR_ERR_INTERNAL_ERROR,
                              _("domain information incomplete, missing HVM loader"));
                 return(-1);
             }
         } else {
-            kernel = sexpr_node(node, "domain/image/hvm/kernel");
-            initrd = sexpr_node(node, "domain/image/hvm/ramdisk");
-            cmdline = sexpr_node(node, "domain/image/hvm/args");
-            root = sexpr_node(node, "domain/image/hvm/root");
+            if (sexpr_node_copy(node, "domain/image/hvm/kernel", &def->os.kernel) < 0)
+                goto no_memory;
+            if (sexpr_node_copy(node, "domain/image/hvm/ramdisk", &def->os.initrd) < 0)
+                goto no_memory;
+            if (sexpr_node_copy(node, "domain/image/hvm/args", &def->os.cmdline) < 0)
+                goto no_memory;
+            if (sexpr_node_copy(node, "domain/image/hvm/root", &def->os.root) < 0)
+                goto no_memory;
         }
     } else {
-        kernel = sexpr_node(node, "domain/image/linux/kernel");
-        initrd = sexpr_node(node, "domain/image/linux/ramdisk");
-        cmdline = sexpr_node(node, "domain/image/linux/args");
-        root = sexpr_node(node, "domain/image/linux/root");
+        if (sexpr_node_copy(node, "domain/image/linux/kernel", &def->os.kernel) < 0)
+            goto no_memory;
+        if (sexpr_node_copy(node, "domain/image/linux/ramdisk", &def->os.initrd) < 0)
+            goto no_memory;
+        if (sexpr_node_copy(node, "domain/image/linux/args", &def->os.cmdline) < 0)
+            goto no_memory;
+        if (sexpr_node_copy(node, "domain/image/linux/root", &def->os.root) < 0)
+            goto no_memory;
     }
 
-    if (hvm)
-        virBufferVSprintf(buf, "    <loader>%s</loader>\n", loader);
+    /* If HVM kenrel == loader, then old xend, so kill off kernel */
+    if (hvm &&
+        def->os.kernel &&
+        STREQ(def->os.kernel, def->os.loader)) {
+        VIR_FREE(def->os.kernel);
+    }
 
-    if ((kernel) && ((!loader) || (STRNEQ(kernel, loader)))) {
-        virBufferVSprintf(buf, "    <kernel>%s</kernel>\n", kernel);
-        if (initrd && initrd[0])
-            virBufferVSprintf(buf, "    <initrd>%s</initrd>\n", initrd);
-        if (root && root[0])
-            virBufferVSprintf(buf, "    <root>%s</root>\n", root);
-        if (cmdline && cmdline[0])
-            virBufferEscapeString(buf, "    <cmdline>%s</cmdline>\n", cmdline);
-    } else {
-        if (hvm) {
-            const char *boot = sexpr_node(node, "domain/image/hvm/boot");
-            if ((boot != NULL) && (boot[0] != 0)) {
-                while (*boot) {
-                    if (*boot == 'a')
-                        /* XXX no way to deal with boot from 2nd floppy */
-                        virBufferAddLit(buf, "    <boot dev='fd'/>\n");
-                    else if (*boot == 'c')
-                        /*
-                         * Don't know what to put here.  Say the vm has been given 3
-                         * disks - hda, hdb, hdc.  How does one identify the boot disk?
-                         * We're going to assume that first disk is the boot disk since
-                         * this is most common practice
-                         */
-                        virBufferAddLit(buf, "    <boot dev='hd'/>\n");
-                    else if (*boot == 'd')
-                        virBufferAddLit(buf, "    <boot dev='cdrom'/>\n");
-                    else if (*boot == 'n')
-                        virBufferAddLit(buf, "    <boot dev='network'/>\n");
-                    boot++;
-                }
+    if (!def->os.kernel &&
+        hvm) {
+        const char *boot = sexpr_node(node, "domain/image/hvm/boot");
+        if ((boot != NULL) && (boot[0] != 0)) {
+            while (*boot &&
+                   def->os.nBootDevs < VIR_DOMAIN_BOOT_LAST) {
+                if (*boot == 'a')
+                    def->os.bootDevs[def->os.nBootDevs++] = VIR_DOMAIN_BOOT_FLOPPY;
+                else if (*boot == 'c')
+                    def->os.bootDevs[def->os.nBootDevs++] = VIR_DOMAIN_BOOT_DISK;
+                else if (*boot == 'd')
+                    def->os.bootDevs[def->os.nBootDevs++] = VIR_DOMAIN_BOOT_CDROM;
+                else if (*boot == 'n')
+                    def->os.bootDevs[def->os.nBootDevs++] = VIR_DOMAIN_BOOT_NET;
+                boot++;
             }
-        } else if (!bootloader) {
-            virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                         _("domain information incomplete, missing kernel & bootloader"));
-            return(-1);
         }
     }
 
-    virBufferAddLit(buf, "  </os>\n");
-    return(0);
+    if (!hvm &&
+        !def->os.kernel &&
+        !def->os.bootloader) {
+        virXendError(xend, VIR_ERR_INTERNAL_ERROR,
+                     _("domain information incomplete, missing kernel & bootloader"));
+        return -1;
+    }
+
+    return 0;
+
+no_memory:
+    virXendError(xend, VIR_ERR_NO_MEMORY, NULL);
+    return -1;
 }
 
 
@@ -1538,36 +1527,170 @@ error:
     return ret;
 }
 
-typedef int
-  (*sexp_blockdevs_cb)
-  (virConnectPtr conn, void *data,
-   int isBlock, int cdrom, int isNoSrcCdrom, int hvm,
-   const char *drvName, const char *drvType,
-   const char *src, const char *dst,
-   const char *mode);
+static virDomainChrDefPtr
+xenDaemonParseSxprChar(virConnectPtr conn,
+                       const char *value,
+                       const char *tty)
+{
+    char prefix[10];
+    char *tmp;
+    virDomainChrDefPtr def;
+
+    if (VIR_ALLOC(def) < 0) {
+        virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+        return NULL;
+    }
+
+    strncpy(prefix, value, sizeof(prefix)-1);
+    NUL_TERMINATE(prefix);
+
+    if (value[0] == '/') {
+        def->type = VIR_DOMAIN_CHR_TYPE_DEV;
+    } else {
+        if ((tmp = strchr(prefix, ':')) != NULL) {
+            *tmp = '\0';
+            value += (tmp - prefix) + 1;
+        }
+
+        if (STREQ(prefix, "telnet")) {
+            def->type = VIR_DOMAIN_CHR_TYPE_TCP;
+            def->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
+        } else {
+            if ((def->type = virDomainChrTypeFromString(prefix)) < 0) {
+                virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unknown chr device type '%s'"), prefix);
+                goto error;
+            }
+        }
+    }
+
+    /* Compat with legacy  <console tty='/dev/pts/5'/> syntax */
+    switch (def->type) {
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+        if (tty != NULL &&
+            !(def->data.file.path = strdup(tty)))
+            goto no_memory;
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+        if (!(def->data.file.path = strdup(value)))
+            goto no_memory;
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+    {
+        const char *offset = strchr(value, ':');
+        const char *offset2;
+
+        if (offset == NULL) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         _("malformed char device string"));
+            goto error;
+        }
+
+        if (offset != value &&
+            (def->data.tcp.host = strndup(value, offset - value)) == NULL)
+            goto no_memory;
+
+        offset2 = strchr(offset, ',');
+        if (offset2 == NULL)
+            def->data.tcp.service = strdup(offset+1);
+        else
+            def->data.tcp.service = strndup(offset+1, offset2-(offset+1));
+        if (def->data.tcp.service == NULL)
+            goto no_memory;
+
+        if (offset2 && strstr(offset2, ",listen"))
+            def->data.tcp.listen = 1;
+    }
+    break;
+
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+    {
+        const char *offset = strchr(value, ':');
+        const char *offset2, *offset3;
+
+        if (offset == NULL) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         _("malformed char device string"));
+            goto error;
+        }
+
+        if (offset != value &&
+            (def->data.udp.connectHost = strndup(value, offset - value)) == NULL)
+            goto no_memory;
+
+        offset2 = strchr(offset, '@');
+        if (offset2 != NULL) {
+            if ((def->data.udp.connectService = strndup(offset + 1, offset2-(offset+1))) == NULL)
+                goto no_memory;
+
+            offset3 = strchr(offset2, ':');
+            if (offset3 == NULL) {
+                virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("malformed char device string"));
+                goto error;
+            }
+
+            if (offset3 > (offset2 + 1) &&
+                (def->data.udp.bindHost = strndup(offset2 + 1, offset3 - (offset2+1))) == NULL)
+                goto no_memory;
+
+            if ((def->data.udp.bindService = strdup(offset3 + 1)) == NULL)
+                goto no_memory;
+        } else {
+            if ((def->data.udp.connectService = strdup(offset + 1)) == NULL)
+                goto no_memory;
+        }
+    }
+    break;
+
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+    {
+        const char *offset = strchr(value, ',');
+        if (offset)
+            def->data.nix.path = strndup(value, (offset - value));
+        else
+            def->data.nix.path = strdup(value);
+        if (def->data.nix.path == NULL)
+            goto no_memory;
+
+        if (offset != NULL &&
+            strstr(offset, ",listen") != NULL)
+            def->data.nix.listen = 1;
+    }
+    break;
+    }
+
+    return def;
+
+no_memory:
+    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+error:
+    virDomainChrDefFree(def);
+    return NULL;
+}
 
 /**
- * xend_parse_sexp_blockdevs:
+ * xend_parse_sexp_desc_disks
  * @conn: connection
  * @root: root sexpr
  * @xendConfigVersion: version of xend
- * @fn: callback function
- * @data: optional data for callback function
  *
- * This parses out block devices from the domain sexpr and calls
- * fn (conn, data, ...) for each block device found.
+ * This parses out block devices from the domain sexpr
  *
  * Returns 0 if successful or -1 if failed.
  */
 static int
-xend_parse_sexp_blockdevs (virConnectPtr conn, struct sexpr *root,
-                           int xendConfigVersion,
-                           sexp_blockdevs_cb fn, void *data)
+xenDaemonParseSxprDisks(virConnectPtr conn,
+                        virDomainDefPtr def,
+                        struct sexpr *root,
+                        int hvm,
+                        int xendConfigVersion)
 {
     struct sexpr *cur, *node;
-    int hvm;
-
-    hvm = sexpr_lookup(root, "domain/image/hvm") ? 1 : 0;
+    virDomainDiskDefPtr disk = NULL, prev = def->disks;
 
     for (cur = root; cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
         node = cur->u.s.car;
@@ -1577,12 +1700,6 @@ xend_parse_sexp_blockdevs (virConnectPtr conn, struct sexpr *root,
         if (sexpr_lookup(node, "device/vbd") ||
             sexpr_lookup(node, "device/tap")) {
             char *offset;
-            int ret = -1;
-            int isBlock = 0;
-            int cdrom = 0;
-            int isNoSrcCdrom = 0;
-            char *drvName = NULL;
-            char *drvType = NULL;
             const char *src = NULL;
             const char *dst = NULL;
             const char *mode = NULL;
@@ -1598,84 +1715,84 @@ xend_parse_sexp_blockdevs (virConnectPtr conn, struct sexpr *root,
                 mode = sexpr_node(node, "device/tap/mode");
             }
 
+            if (VIR_ALLOC(disk) < 0)
+                goto no_memory;
+
             if (dst == NULL) {
                 virXendError(conn, VIR_ERR_INTERNAL_ERROR,
                              _("domain information incomplete, vbd has no dev"));
-                goto bad_parse;
+                goto error;
             }
 
             if (src == NULL) {
                 /* There is a case without the uname to the CD-ROM device */
                 offset = strchr(dst, ':');
-                if (offset) {
-                    if (hvm && STREQ(offset, ":cdrom")) {
-                        isNoSrcCdrom = 1;
-                    }
-                    offset[0] = '\0';
-                }
-                if (!isNoSrcCdrom) {
+                if (!offset ||
+                    !hvm ||
+                    STRNEQ(offset, ":cdrom")) {
                     virXendError(conn, VIR_ERR_INTERNAL_ERROR,
                                  _("domain information incomplete, vbd has no src"));
-                    goto bad_parse;
+                    goto error;
                 }
             }
 
-            if (!isNoSrcCdrom) {
+            if (src != NULL) {
                 offset = strchr(src, ':');
                 if (!offset) {
                     virXendError(conn, VIR_ERR_INTERNAL_ERROR,
                                  _("cannot parse vbd filename, missing driver name"));
-                    goto bad_parse;
+                    goto error;
                 }
 
-                if (VIR_ALLOC_N(drvName, (offset-src)+1) < 0) {
-                    virXendError(conn, VIR_ERR_NO_MEMORY,
-                                 _("allocate new buffer"));
-                    goto bad_parse;
-                }
-                strncpy(drvName, src, (offset-src));
-                drvName[offset-src] = '\0';
+                if (VIR_ALLOC_N(disk->driverName, (offset-src)+1) < 0)
+                    goto no_memory;
+                strncpy(disk->driverName, src, (offset-src));
+                disk->driverName[offset-src] = '\0';
 
                 src = offset + 1;
 
-                if (STREQ (drvName, "tap")) {
+                if (STREQ (disk->driverName, "tap")) {
                     offset = strchr(src, ':');
                     if (!offset) {
                         virXendError(conn, VIR_ERR_INTERNAL_ERROR,
                                      _("cannot parse vbd filename, missing driver type"));
-                        goto bad_parse;
+                        goto error;
                     }
 
-                    if (VIR_ALLOC_N(drvType, (offset-src)+1)< 0) {
-                        virXendError(conn, VIR_ERR_NO_MEMORY,
-                                     _("allocate new buffer"));
-                        goto bad_parse;
-                    }
-                    strncpy(drvType, src, (offset-src));
-                    drvType[offset-src] = '\0';
+                    if (VIR_ALLOC_N(disk->driverType, (offset-src)+1)< 0)
+                        goto no_memory;
+                    strncpy(disk->driverType, src, (offset-src));
+                    disk->driverType[offset-src] = '\0';
+
                     src = offset + 1;
                     /* Its possible to use blktap driver for block devs
                        too, but kinda pointless because blkback is better,
                        so we assume common case here. If blktap becomes
                        omnipotent, we can revisit this, perhaps stat()'ing
                        the src file in question */
-                    isBlock = 0;
-                } else if (STREQ(drvName, "phy")) {
-                    isBlock = 1;
-                } else if (STREQ(drvName, "file")) {
-                    isBlock = 0;
+                    disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
+                } else if (STREQ(disk->driverName, "phy")) {
+                    disk->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
+                } else if (STREQ(disk->driverName, "file")) {
+                    disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
                 }
+            } else {
+                /* No CDROM media so can't really tell. We'll just
+                   call if a FILE for now and update when media
+                   is inserted later */
+                disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
             }
 
             if (STREQLEN (dst, "ioemu:", 6))
                 dst += 6;
 
+            disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
             /* New style disk config from Xen >= 3.0.3 */
             if (xendConfigVersion > 1) {
                 offset = strrchr(dst, ':');
                 if (offset) {
                     if (STREQ (offset, ":cdrom")) {
-                        cdrom = 1;
+                        disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
                     } else if (STREQ (offset, ":disk")) {
                         /* The default anyway */
                     } else {
@@ -1685,78 +1802,409 @@ xend_parse_sexp_blockdevs (virConnectPtr conn, struct sexpr *root,
                 }
             }
 
-            /* Call the callback function. */
-            ret = fn (conn, data, isBlock, cdrom, isNoSrcCdrom, hvm,
-                      drvName, drvType, src, dst, mode);
+            if (!(disk->dst = strdup(dst)))
+                goto no_memory;
+            if (src &&
+                !(disk->src = strdup(src)))
+                goto no_memory;
 
-        bad_parse:
-            VIR_FREE(drvName);
-            VIR_FREE(drvType);
+            if (STRPREFIX(disk->dst, "xvd"))
+                disk->bus = VIR_DOMAIN_DISK_BUS_XEN;
+            else if (STRPREFIX(disk->dst, "hd"))
+                disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
+            else if (STRPREFIX(disk->dst, "sd"))
+                disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
+            else
+                disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
 
-            if (ret == -1) return -1;
+            if (mode &&
+                strchr(mode, 'r'))
+                disk->readonly = 1;
+            if (mode &&
+                strchr(mode, '!'))
+                disk->shared = 1;
+
+            if (prev)
+                prev->next = disk;
+            else
+                def->disks = disk;
+
+            prev = disk;
+            disk = NULL;
         }
     }
 
     return 0;
+
+no_memory:
+    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+
+error:
+    virDomainDiskDefFree(disk);
+    return -1;
+}
+
+
+static int
+xenDaemonParseSxprNets(virConnectPtr conn,
+                       virDomainDefPtr def,
+                       struct sexpr *root)
+{
+    virDomainNetDefPtr net = NULL, prev = def->nets;
+    struct sexpr *cur, *node;
+    const char *tmp;
+    int vif_index = 0;
+
+    for (cur = root; cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
+        node = cur->u.s.car;
+        if (sexpr_lookup(node, "device/vif")) {
+            const char *tmp2, *model;
+            char buf[50];
+            tmp2 = sexpr_node(node, "device/vif/script");
+            tmp = sexpr_node(node, "device/vif/bridge");
+            model = sexpr_node(node, "device/vif/model");
+
+            if (VIR_ALLOC(net) < 0)
+                goto no_memory;
+
+            if ((tmp2 && strstr(tmp2, "bridge")) || tmp) {
+                net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
+                /* XXX virtual network reverse resolve */
+
+                if (tmp &&
+                    !(net->data.bridge.brname = strdup(tmp)))
+                    goto no_memory;
+            } else {
+                net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+            }
+
+            tmp = sexpr_node(node, "device/vif/vifname");
+            if (!tmp) {
+                snprintf(buf, sizeof(buf), "vif%d.%d", def->id, vif_index);
+                tmp = buf;
+            }
+            if (!(net->ifname = strdup(tmp)))
+                goto no_memory;
+
+            tmp = sexpr_node(node, "device/vif/mac");
+            if (tmp) {
+                unsigned int mac[6];
+                if (sscanf(tmp, "%02x:%02x:%02x:%02x:%02x:%02x",
+                           (unsigned int*)&mac[0],
+                           (unsigned int*)&mac[1],
+                           (unsigned int*)&mac[2],
+                           (unsigned int*)&mac[3],
+                           (unsigned int*)&mac[4],
+                           (unsigned int*)&mac[5]) != 6) {
+                    virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("malformed mac address '%s'"),
+                                 tmp);
+                    goto cleanup;
+                }
+                net->mac[0] = mac[0];
+                net->mac[1] = mac[1];
+                net->mac[2] = mac[2];
+                net->mac[3] = mac[3];
+                net->mac[4] = mac[4];
+                net->mac[5] = mac[5];
+            }
+
+            tmp = sexpr_node(node, "device/vif/ip");
+            if (tmp &&
+                !(net->data.ethernet.ipaddr = strdup(tmp)))
+                goto no_memory;
+
+            if (tmp2 &&
+                net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
+                !(net->data.ethernet.script = strdup(tmp2)))
+                goto no_memory;
+
+            if (model &&
+                !(net->model = strdup(model)))
+                goto no_memory;
+
+            if (prev)
+                prev->next = net;
+            else
+                def->nets = net;
+            vif_index++;
+        }
+    }
+
+    return 0;
+
+no_memory:
+    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+cleanup:
+    virDomainNetDefFree(net);
+    return -1;
 }
 
 static int
-xend_parse_sexp_desc_blockdev (virConnectPtr conn ATTRIBUTE_UNUSED,
-                               void *data,
-                               int isBlock, int cdrom, int isNoSrcCdrom,
-                               int hvm,
-                               const char *drvName, const char *drvType,
-                               const char *src, const char *dst,
-                               const char *mode)
+xenDaemonParseSxprSound(virConnectPtr conn,
+                        virDomainDefPtr def,
+                        const char *str)
 {
-    virBuffer *buf = (virBuffer *) data;
-    const char *bus = NULL;
-
-    if (!isNoSrcCdrom) {
-        virBufferVSprintf(buf, "    <disk type='%s' device='%s'>\n",
-                          isBlock ? "block" : "file",
-                          cdrom ? "cdrom" : "disk");
-        if (drvType) {
-            virBufferVSprintf(buf, "      <driver name='%s' type='%s'/>\n", drvName, drvType);
-        } else {
-            virBufferVSprintf(buf, "      <driver name='%s'/>\n", drvName);
-        }
-        if (isBlock) {
-            virBufferVSprintf(buf, "      <source dev='%s'/>\n", src);
-        } else {
-            virBufferVSprintf(buf, "      <source file='%s'/>\n", src);
+    if (STREQ(str, "all")) {
+        int i;
+        virDomainSoundDefPtr prev = NULL;
+        for (i = 0 ; i < VIR_DOMAIN_SOUND_MODEL_LAST ; i++) {
+            virDomainSoundDefPtr sound;
+            if (VIR_ALLOC(sound) < 0)
+                goto no_memory;
+            sound->model = i;
+            if (prev)
+                prev->next = sound;
+            else
+                def->sounds = sound;
+            prev = sound;
         }
     } else {
-        /* This case is the cdrom device only */
-        virBufferAddLit(buf, "    <disk device='cdrom'>\n");
-    }
-    if (STRPREFIX(dst, "xvd") || !hvm) {
-        bus = "xen";
-    } else if (STRPREFIX(dst, "sd")) {
-        bus = "scsi";
-    } else {
-        bus = "ide";
-    }
-    virBufferVSprintf(buf, "      <target dev='%s' bus='%s'/>\n",
-                      dst, bus);
+        char model[10];
+        const char *offset = str, *offset2;
+        virDomainSoundDefPtr prev = NULL;
+        do {
+            int len;
+            virDomainSoundDefPtr sound;
+            offset2 = strchr(offset, ',');
+            if (offset2)
+                len = (offset2 - offset);
+            else
+                len = strlen(offset);
+            if (len > (sizeof(model)-1)) {
+                virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("unexpected sound model %s"), offset);
+                goto error;
+            }
+            strncpy(model, offset, len);
+            model[len] = '\0';
 
-    /* XXX should we force mode == r, if cdrom==1, or assume
-       xend has already done this ? */
-    if ((mode != NULL) && (STREQ (mode, "r")))
-        virBufferAddLit(buf, "      <readonly/>\n");
-    else if ((mode != NULL) && (STREQ (mode, "w!")))
-        virBufferAddLit(buf, "      <shareable/>\n");
-    virBufferAddLit(buf, "    </disk>\n");
+            if (VIR_ALLOC(sound) < 0)
+                goto no_memory;
+
+            if ((sound->model = virDomainSoundModelTypeFromString(model)) < 0) {
+                VIR_FREE(sound);
+                goto error;
+            }
+
+            if (prev)
+                prev->next = sound;
+            else
+                def->sounds = sound;
+            prev = sound;
+            offset = offset2 ? offset2 + 1 : NULL;
+        } while (offset);
+    }
 
     return 0;
+
+no_memory:
+    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+error:
+    return -1;
 }
 
+
+static int
+xenDaemonParseSxprUSB(virConnectPtr conn,
+                      virDomainDefPtr def,
+                      struct sexpr *root)
+{
+    virDomainInputDefPtr prev = def->inputs;
+    struct sexpr *cur, *node;
+    const char *tmp;
+
+    for (cur = sexpr_lookup(root, "domain/image/hvm"); cur && cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
+        node = cur->u.s.car;
+        if (sexpr_lookup(node, "usbdevice")) {
+            tmp = sexpr_node(node, "usbdevice");
+            if (tmp && *tmp) {
+                if (STREQ(tmp, "tablet") ||
+                    STREQ(tmp, "mouse")) {
+                    virDomainInputDefPtr input;
+                    if (VIR_ALLOC(input) < 0)
+                        goto no_memory;
+                    input->bus = VIR_DOMAIN_INPUT_BUS_USB;
+                    if (STREQ(tmp, "tablet"))
+                        input->type = VIR_DOMAIN_INPUT_TYPE_TABLET;
+                    else
+                        input->type = VIR_DOMAIN_INPUT_TYPE_MOUSE;
+
+                    if (prev)
+                        prev->next = input;
+                    else
+                        def->inputs = input;
+                    prev = input;
+                } else {
+                    /* XXX Handle other non-input USB devices later */
+                }
+            }
+        }
+    }
+    return 0;
+
+no_memory:
+    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+    return -1;
+}
+
+static int
+xenDaemonParseSxprGraphicsOld(virConnectPtr conn,
+                              virDomainDefPtr def,
+                              struct sexpr *root,
+                              int hvm,
+                              int xendConfigVersion)
+{
+    const char *tmp;
+    virDomainGraphicsDefPtr graphics = NULL;
+
+    if ((tmp = sexpr_fmt_node(root, "domain/image/%s/vnc", hvm ? "hvm" : "linux")) &&
+        tmp[0] == '1') {
+        /* Graphics device (HVM, or old (pre-3.0.4) style PV VNC config) */
+        int port = xenStoreDomainGetVNCPort(conn, def->id);
+        const char *listenAddr = sexpr_fmt_node(root, "domain/image/%s/vnclisten", hvm ? "hvm" : "linux");
+        const char *vncPasswd = sexpr_fmt_node(root, "domain/image/%s/vncpasswd", hvm ? "hvm" : "linux");
+        const char *keymap = sexpr_fmt_node(root, "domain/image/%s/keymap", hvm ? "hvm" : "linux");
+        const char *unused = sexpr_fmt_node(root, "domain/image/%s/vncunused", hvm ? "hvm" : "linux");
+
+        if (VIR_ALLOC(graphics) < 0)
+            goto no_memory;
+
+        graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
+        /* For Xen >= 3.0.3, don't generate a fixed port mapping
+         * because it will almost certainly be wrong ! Just leave
+         * it as -1 which lets caller see that the VNC server isn't
+         * present yet. Subsquent dumps of the XML will eventually
+         * find the port in XenStore once VNC server has started
+         */
+        if (port == -1 && xendConfigVersion < 2)
+            port = 5900 + def->id;
+
+        if ((unused && STREQ(unused, "1")) || port == -1)
+            graphics->data.vnc.autoport = 1;
+        graphics->data.vnc.port = port;
+
+        if (listenAddr &&
+            !(graphics->data.vnc.listenAddr = strdup(listenAddr)))
+            goto no_memory;
+
+        if (vncPasswd &&
+            !(graphics->data.vnc.passwd = strdup(vncPasswd)))
+            goto no_memory;
+
+        if (keymap &&
+            !(graphics->data.vnc.keymap = strdup(keymap)))
+            goto no_memory;
+
+        def->graphics = graphics;
+    } else if ((tmp = sexpr_fmt_node(root, "domain/image/%s/sdl", hvm ? "hvm" : "linux")) &&
+               tmp[0] == '1') {
+        /* Graphics device (HVM, or old (pre-3.0.4) style PV sdl config) */
+        const char *display = sexpr_fmt_node(root, "domain/image/%s/display", hvm ? "hvm" : "linux");
+        const char *xauth = sexpr_fmt_node(root, "domain/image/%s/xauthority", hvm ? "hvm" : "linux");
+
+        if (VIR_ALLOC(graphics) < 0)
+            goto no_memory;
+
+        graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
+        if (display &&
+            !(graphics->data.sdl.display = strdup(display)))
+            goto no_memory;
+        if (xauth &&
+            !(graphics->data.sdl.xauth = strdup(xauth)))
+            goto no_memory;
+
+        def->graphics = graphics;
+    }
+
+    return 0;
+
+no_memory:
+    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virDomainGraphicsDefFree(graphics);
+    return -1;
+}
+
+
+static int
+xenDaemonParseSxprGraphicsNew(virConnectPtr conn,
+                              virDomainDefPtr def,
+                              struct sexpr *root)
+{
+    virDomainGraphicsDefPtr graphics = NULL;
+    struct sexpr *cur, *node;
+    const char *tmp;
+
+    /* append network devices and framebuffer */
+    for (cur = root; cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
+        node = cur->u.s.car;
+        if (sexpr_lookup(node, "device/vfb")) {
+            /* New style graphics config for PV guests in >= 3.0.4,
+             * or for HVM guests in >= 3.0.5 */
+            tmp = sexpr_node(node, "device/vfb/type");
+
+            if (VIR_ALLOC(graphics) < 0)
+                goto no_memory;
+
+            if ((graphics->type = virDomainGraphicsTypeFromString(tmp)) < 0) {
+                virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unknown graphics type '%s'"), tmp);
+                goto error;
+            }
+
+            if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
+                const char *display = sexpr_node(node, "device/vfb/display");
+                const char *xauth = sexpr_node(node, "device/vfb/xauthority");
+                if (display &&
+                    !(graphics->data.sdl.display = strdup(display)))
+                    goto no_memory;
+                if (xauth &&
+                    !(graphics->data.sdl.xauth = strdup(xauth)))
+                    goto no_memory;
+            } else {
+                int port = xenStoreDomainGetVNCPort(conn, def->id);
+                const char *listenAddr = sexpr_node(node, "device/vfb/vnclisten");
+                const char *vncPasswd = sexpr_node(node, "device/vfb/vncpasswd");;
+                const char *keymap = sexpr_node(node, "device/vfb/keymap");
+                const char *unused = sexpr_node(node, "device/vfb/vncunused");
+
+                if ((unused && STREQ(unused, "1")) || port == -1)
+                    graphics->data.vnc.autoport = 1;
+                graphics->data.vnc.port = port;
+
+                if (listenAddr &&
+                    !(graphics->data.vnc.listenAddr = strdup(listenAddr)))
+                    goto no_memory;
+
+                if (vncPasswd &&
+                    !(graphics->data.vnc.passwd = strdup(vncPasswd)))
+                    goto no_memory;
+
+                if (keymap &&
+                    !(graphics->data.vnc.keymap = strdup(keymap)))
+                    goto no_memory;
+            }
+
+            def->graphics = graphics;
+            break;
+        }
+    }
+
+    return 0;
+
+no_memory:
+    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+error:
+    virDomainGraphicsDefFree(graphics);
+    return -1;
+}
+
+
 /**
- * xend_parse_sexp_desc:
+ * xenDaemonParseSxpr:
  * @conn: the connection associated with the XML
  * @root: the root of the parsed S-Expression
  * @xendConfigVersion: version of xend
- * @flags: a combination of virDomainXMLFlags
  * @cpus: set of cpus the domain may be pinned to
  *
  * Parse the xend sexp description and turn it into the XML format similar
@@ -1765,25 +2213,19 @@ xend_parse_sexp_desc_blockdev (virConnectPtr conn ATTRIBUTE_UNUSED,
  * Returns the 0 terminated XML string or NULL in case of error.
  *         the caller must free() the returned value.
  */
-static char *
-xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
-                     int xendConfigVersion, int flags, const char *cpus)
+static virDomainDefPtr
+xenDaemonParseSxpr(virConnectPtr conn,
+                   struct sexpr *root,
+                   int xendConfigVersion,
+                   const char *cpus)
 {
-    struct sexpr *cur, *node;
     const char *tmp;
-    char *tty, *val;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    int hvm = 0, bootloader = 0, vfb = 0;
-    int domid = -1;
-    int max_mem, cur_mem;
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    int vif_index = 0;
+    virDomainDefPtr def;
+    int hvm = 0;
+    char *tty = NULL;
 
-    if (root == NULL) {
-        /* ERROR */
-        return (NULL);
-    }
+    if (VIR_ALLOC(def) < 0)
+        goto no_memory;
 
     tmp = sexpr_node(root, "domain/domid");
     if (tmp == NULL && xendConfigVersion < 3) { /* Old XenD, domid was mandatory */
@@ -1791,352 +2233,272 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                      _("domain information incomplete, missing id"));
         goto error;
     }
+    def->virtType = VIR_DOMAIN_VIRT_XEN;
     if (tmp)
-        domid = sexpr_int(root, "domain/domid");
+        def->id = sexpr_int(root, "domain/domid");
     else
-        domid = -1;
-    virBufferVSprintf(&buf, "<domain type='xen' id='%d'>\n", domid);
+        def->id = -1;
 
-    tmp = sexpr_node(root, "domain/name");
-    if (tmp == NULL) {
+    if (sexpr_node_copy(root, "domain/name", &def->name) < 0)
+        goto no_memory;
+    if (def->name == NULL) {
         virXendError(conn, VIR_ERR_INTERNAL_ERROR,
                      _("domain information incomplete, missing name"));
         goto error;
     }
-    virBufferVSprintf(&buf, "  <name>%s</name>\n", tmp);
+
     tmp = sexpr_node(root, "domain/uuid");
     if (tmp == NULL) {
         virXendError(conn, VIR_ERR_INTERNAL_ERROR,
                      _("domain information incomplete, missing name"));
         goto error;
     }
-    virUUIDParse(tmp, uuid);
-    virUUIDFormat(uuid, uuidstr);
-    virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", uuidstr);
+    virUUIDParse(tmp, def->uuid);
 
     hvm = sexpr_lookup(root, "domain/image/hvm") ? 1 : 0;
     if (!hvm) {
-        tmp = sexpr_node(root, "domain/bootloader");
-        if (tmp != NULL) {
-            bootloader = 1;
-            virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", tmp);
-        } else if (sexpr_has(root, "domain/bootloader")) {
-            bootloader = 1;
-            virBufferAddLit(&buf, "  <bootloader/>\n");
-        }
-        tmp = sexpr_node(root, "domain/bootloader_args");
-        if (tmp != NULL && bootloader) {
-            /*
-             * Only insert bootloader_args if there is also a bootloader param
-             */
-            virBufferEscapeString(&buf, "  <bootloader_args>%s</bootloader_args>\n", tmp);
-        }
+        if (sexpr_node_copy(root, "domain/bootloader",
+                            &def->os.bootloader) < 0)
+            goto no_memory;
+
+        if (!def->os.bootloader &&
+            sexpr_has(root, "domain/bootloader") &&
+            (def->os.bootloader = strdup("")) == NULL)
+            goto no_memory;
+
+        if (def->os.bootloader &&
+            sexpr_node_copy(root, "domain/bootloader_args",
+                            &def->os.bootloaderArgs) < 0)
+            goto no_memory;
     }
 
-    if (domid != 0) {
+    if (!(def->os.type = strdup(hvm ? "hvm" : "linux")))
+        goto no_memory;
+
+    if (def->id != 0) {
         if (sexpr_lookup(root, "domain/image")) {
-            if (xend_parse_sexp_desc_os(conn, root, &buf, hvm, bootloader) < 0)
+            if (xenDaemonParseSxprOS(conn, root, def, hvm) < 0)
                 goto error;
         }
     }
 
-    max_mem = (int) (sexpr_u64(root, "domain/maxmem") << 10);
-    cur_mem = (int) (sexpr_u64(root, "domain/memory") << 10);
-    if (cur_mem > max_mem)
-        max_mem = cur_mem;
-    virBufferVSprintf(&buf, "  <memory>%d</memory>\n", max_mem);
-    if ((cur_mem >= MIN_XEN_GUEST_SIZE) && (cur_mem != max_mem))
-        virBufferVSprintf(&buf, "  <currentMemory>%d</currentMemory>\n",
-                          cur_mem);
+    def->maxmem = (unsigned long) (sexpr_u64(root, "domain/maxmem") << 10);
+    def->memory = (unsigned long) (sexpr_u64(root, "domain/memory") << 10);
+    if (def->memory > def->maxmem)
+        def->maxmem = def->memory;
 
-    virBufferAddLit(&buf, "  <vcpu");
     if (cpus != NULL) {
-        virBufferVSprintf(&buf, " cpuset='%s'", cpus);
+        if (virDomainCpuSetParse(conn, &cpus,
+                                 0, def->cpumask,
+                                 def->cpumasklen) < 0)
+            goto error;
     }
-    virBufferVSprintf(&buf, ">%d</vcpu>\n",
-                      sexpr_int(root, "domain/vcpus"));
-    /* TODO if need to output the cpus values,
-     * - parse the cpus values if xend exports
-     * or
-     * - analyze the cpus values extracted by xenDaemonDomainGetVcpus
-     */
+    def->vcpus = sexpr_int(root, "domain/vcpus");
+
     tmp = sexpr_node(root, "domain/on_poweroff");
-    if (tmp != NULL)
-        virBufferVSprintf(&buf, "  <on_poweroff>%s</on_poweroff>\n", tmp);
+    if (tmp != NULL) {
+        if ((def->onPoweroff = virDomainLifecycleTypeFromString(tmp)) < 0) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         _("unknown lifecycle type %s"), tmp);
+            goto error;
+        }
+    } else
+        def->onPoweroff = VIR_DOMAIN_LIFECYCLE_DESTROY;
+
     tmp = sexpr_node(root, "domain/on_reboot");
-    if (tmp != NULL)
-        virBufferVSprintf(&buf, "  <on_reboot>%s</on_reboot>\n", tmp);
+    if (tmp != NULL) {
+        if ((def->onReboot = virDomainLifecycleTypeFromString(tmp)) < 0) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         _("unknown lifecycle type %s"), tmp);
+            goto error;
+        }
+    } else
+        def->onReboot = VIR_DOMAIN_LIFECYCLE_RESTART;
+
     tmp = sexpr_node(root, "domain/on_crash");
-    if (tmp != NULL)
-        virBufferVSprintf(&buf, "  <on_crash>%s</on_crash>\n", tmp);
+    if (tmp != NULL) {
+        if ((def->onCrash = virDomainLifecycleTypeFromString(tmp)) < 0) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         _("unknown lifecycle type %s"), tmp);
+            goto error;
+        }
+    } else
+        def->onCrash = VIR_DOMAIN_LIFECYCLE_DESTROY;
+
 
     if (hvm) {
-        int clockLocal;
-
-        virBufferAddLit(&buf, "  <features>\n");
         if (sexpr_int(root, "domain/image/hvm/acpi"))
-            virBufferAddLit(&buf, "    <acpi/>\n");
+            def->features |= (1 << VIR_DOMAIN_FEATURE_ACPI);
         if (sexpr_int(root, "domain/image/hvm/apic"))
-            virBufferAddLit(&buf, "    <apic/>\n");
+            def->features |= (1 << VIR_DOMAIN_FEATURE_APIC);
         if (sexpr_int(root, "domain/image/hvm/pae"))
-            virBufferAddLit(&buf, "    <pae/>\n");
-        virBufferAddLit(&buf, "  </features>\n");
+            def->features |= (1 << VIR_DOMAIN_FEATURE_PAE);
 
-        clockLocal = sexpr_int(root, "domain/image/hvm/localtime");
-        virBufferVSprintf(&buf, "  <clock offset='%s'/>\n", clockLocal ? "localtime" : "utc");
+        if (sexpr_int(root, "domain/image/hvm/localtime"))
+            def->localtime = 1;
     }
 
-    virBufferAddLit(&buf, "  <devices>\n");
-
-    if (hvm)
-        tmp = sexpr_node(root, "domain/image/hvm/device_model");
-    else
-        tmp = sexpr_node(root, "domain/image/linux/device_model");
-    if ((tmp != NULL) && (tmp[0] != 0))
-        virBufferVSprintf(&buf, "    <emulator>%s</emulator>\n", tmp);
+    if (sexpr_node_copy(root, hvm ?
+                        "domain/image/hvm/device_model" :
+                        "domain/image/linux/device_model",
+                        &def->emulator) < 0)
+        goto no_memory;
 
     /* append block devices */
-    if (xend_parse_sexp_blockdevs (conn, root, xendConfigVersion,
-                                   xend_parse_sexp_desc_blockdev, &buf) == -1)
+    if (xenDaemonParseSxprDisks(conn, def, root, hvm, xendConfigVersion) < 0)
         goto error;
 
-    /* append network devices and framebuffer */
-    for (cur = root; cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
-        node = cur->u.s.car;
-        if (sexpr_lookup(node, "device/vif")) {
-            const char *tmp2, *model;
-            tmp2 = sexpr_node(node, "device/vif/script");
-            tmp = sexpr_node(node, "device/vif/bridge");
-            model = sexpr_node(node, "device/vif/model");
-            if ((tmp2 && strstr(tmp2, "bridge")) || tmp) {
-                virBufferAddLit(&buf, "    <interface type='bridge'>\n");
-                if (tmp != NULL)
-                    virBufferVSprintf(&buf, "      <source bridge='%s'/>\n",
-                                      tmp);
-            } else {
-                virBufferAddLit(&buf, "    <interface type='ethernet'>\n");
-            }
+    if (xenDaemonParseSxprNets(conn, def, root) < 0)
+        goto error;
 
-            tmp = sexpr_node(node, "device/vif/vifname");
-            if (tmp)
-                virBufferVSprintf(&buf, "      <target dev='%s'/>\n",
-                                  tmp);
-            else
-                virBufferVSprintf(&buf, "      <target dev='vif%d.%d'/>\n",
-                                  domid, vif_index);
-            tmp = sexpr_node(node, "device/vif/mac");
-            if (tmp)
-                virBufferVSprintf(&buf, "      <mac address='%s'/>\n",
-                                  tmp);
-            tmp = sexpr_node(node, "device/vif/ip");
-            if (tmp)
-                virBufferVSprintf(&buf, "      <ip address='%s'/>\n",
-                                  tmp);
-            if (tmp2)
-                virBufferVSprintf(&buf, "      <script path='%s'/>\n",
-                                  tmp2);
-
-            if (model)
-                virBufferVSprintf(&buf, "      <model type='%s'/>\n",
-                                  model);
-
-            virBufferAddLit(&buf, "    </interface>\n");
-            vif_index++;
-        } else if (sexpr_lookup(node, "device/vfb")) {
-            /* New style graphics config for PV guests in >= 3.0.4,
-             * or for HVM guests in >= 3.0.5 */
-            tmp = sexpr_node(node, "device/vfb/type");
-
-            if (tmp && STREQ(tmp, "sdl")) {
-                vfb = 1;
-                virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2": "xen");
-                virBufferAddLit(&buf, "    <graphics type='sdl'/>\n");
-            } else if (tmp && STREQ(tmp, "vnc")) {
-                int port = xenStoreDomainGetVNCPort(conn, domid);
-                const char *listenAddr = sexpr_node(node, "device/vfb/vnclisten");
-                const char *vncPasswd = NULL;
-                const char *keymap = sexpr_node(node, "device/vfb/keymap");
-                vfb = 1;
-                virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2": "xen");
-                virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'", port);
-                if (listenAddr)
-                    virBufferVSprintf(&buf, " listen='%s'", listenAddr);
-                if (flags & VIR_DOMAIN_XML_SECURE) {
-                    vncPasswd = sexpr_node(node, "device/vfb/vncpasswd");
-                    if (vncPasswd)
-                        virBufferVSprintf(&buf, " passwd='%s'", vncPasswd);
-                }
-                if (keymap)
-                    virBufferVSprintf(&buf, " keymap='%s'", keymap);
-                virBufferAddLit(&buf, "/>\n");
-            }
-        }
-    }
-
-    if (hvm) {
-        tmp = sexpr_node(root, "domain/image/hvm/fda");
-        if ((tmp != NULL) && (tmp[0] != 0)) {
-            virBufferAddLit(&buf, "    <disk type='file' device='floppy'>\n");
-            virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
-            virBufferAddLit(&buf, "      <target dev='fda' bus='fdc'/>\n");
-            virBufferAddLit(&buf, "    </disk>\n");
-        }
-        tmp = sexpr_node(root, "domain/image/hvm/fdb");
-        if ((tmp != NULL) && (tmp[0] != 0)) {
-            virBufferAddLit(&buf, "    <disk type='file' device='floppy'>\n");
-            virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
-            virBufferAddLit(&buf, "      <target dev='fdb' bus='fdc'/>\n");
-            virBufferAddLit(&buf, "    </disk>\n");
-        }
-
-        /* Old style cdrom config from Xen <= 3.0.2 */
-        if (xendConfigVersion == 1) {
-            tmp = sexpr_node(root, "domain/image/hvm/cdrom");
-            if ((tmp != NULL) && (tmp[0] != 0)) {
-                virBufferAddLit(&buf, "    <disk type='file' device='cdrom'>\n");
-                virBufferAddLit(&buf, "      <driver name='file'/>\n");
-                virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
-                virBufferAddLit(&buf, "      <target dev='hdc' bus='ide'/>\n");
-                virBufferAddLit(&buf, "      <readonly/>\n");
-                virBufferAddLit(&buf, "    </disk>\n");
-            }
-        }
-    }
-
-    /* in case of HVM we have devices emulation */
-    if (hvm) {
-        for (cur = sexpr_lookup(root, "domain/image/hvm"); cur && cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
-            node = cur->u.s.car;
-            if (sexpr_lookup(node, "usbdevice")) {
-                tmp = sexpr_node(node, "usbdevice");
-                if (tmp && *tmp) {
-                    if (STREQ(tmp, "tablet"))
-                        virBufferAddLit(&buf, "    <input type='tablet' bus='usb'/>\n");
-                    else if (STREQ(tmp, "mouse"))
-                        virBufferAddLit(&buf, "    <input type='mouse' bus='usb'/>\n");
-                }
-            }
-        }
-    }
+    /* New style graphics device config */
+    if (xenDaemonParseSxprGraphicsNew(conn, def, root) < 0)
+        goto error;
 
     /* Graphics device (HVM <= 3.0.4, or PV <= 3.0.3) vnc config */
-    if (!vfb) {
-        tmp = sexpr_fmt_node(root, "domain/image/%s/vnc", hvm ? "hvm" : "linux");
-        if (tmp != NULL) {
-            if (tmp[0] == '1') {
-                int port = xenStoreDomainGetVNCPort(conn, domid);
-                const char *listenAddr = sexpr_fmt_node(root, "domain/image/%s/vnclisten", hvm ? "hvm" : "linux");
-                const char *vncPasswd = NULL;
-                const char *keymap = sexpr_fmt_node(root, "domain/image/%s/keymap", hvm ? "hvm" : "linux");
-                /* For Xen >= 3.0.3, don't generate a fixed port mapping
-                 * because it will almost certainly be wrong ! Just leave
-                 * it as -1 which lets caller see that the VNC server isn't
-                 * present yet. Subsquent dumps of the XML will eventually
-                 * find the port in XenStore once VNC server has started
-                 */
-                if (port == -1 && xendConfigVersion < 2)
-                    port = 5900 + domid;
-                virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2" : "xen");
-                virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'", port);
-                if (listenAddr)
-                    virBufferVSprintf(&buf, " listen='%s'", listenAddr);
-                if (flags & VIR_DOMAIN_XML_SECURE) {
-                    vncPasswd = sexpr_fmt_node(root, "domain/image/%s/vncpasswd", hvm ? "hvm" : "linux");
-                    if (vncPasswd)
-                        virBufferVSprintf(&buf, " passwd='%s'", vncPasswd);
-                }
-                if (keymap)
-                    virBufferVSprintf(&buf, " keymap='%s'", keymap);
-                virBufferAddLit(&buf, "/>\n");
-            }
-        }
+    if (!def->graphics &&
+        xenDaemonParseSxprGraphicsOld(conn, def, root, hvm, xendConfigVersion) < 0)
+        goto error;
 
-        /* Graphics device (HVM, or old (pre-3.0.4) style PV sdl config) */
-        tmp = sexpr_fmt_node(root, "domain/image/%s/sdl", hvm ? "hvm" : "linux");
-        if (tmp != NULL) {
-            if (tmp[0] == '1') {
-                virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2" : "xen");
-                virBufferAddLit(&buf, "    <graphics type='sdl'/>\n");
+
+    /* Old style cdrom config from Xen <= 3.0.2 */
+    if (hvm &&
+        xendConfigVersion == 1) {
+        tmp = sexpr_node(root, "domain/image/hvm/cdrom");
+        if ((tmp != NULL) && (tmp[0] != 0)) {
+            virDomainDiskDefPtr disk, prev;
+            if (VIR_ALLOC(disk) < 0)
+                goto no_memory;
+            if (!(disk->src = strdup(tmp))) {
+                VIR_FREE(disk);
+                goto no_memory;
+            }
+            disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
+            disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
+            if (!(disk->dst = strdup("hdc"))) {
+                VIR_FREE(disk);
+                goto no_memory;
+            }
+            if (!(disk->driverName = strdup("file"))) {
+                VIR_FREE(disk);
+                goto no_memory;
+            }
+            disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
+            disk->readonly = 1;
+
+            prev = def->disks;
+            while (prev && prev->next) {
+                prev = prev->next;
+            }
+            if (prev)
+                prev->next = disk;
+            else
+                def->disks = disk;
+        }
+    }
+
+
+    /* Floppy disk config */
+    if (hvm) {
+        const char *const fds[] = { "fda", "fdb" };
+        int i;
+        for (i = 0 ; i < sizeof(fds)/sizeof(fds[0]) ; i++) {
+            tmp = sexpr_fmt_node(root, "domain/image/hvm/%s", fds[i]);
+            if ((tmp != NULL) && (tmp[0] != 0)) {
+                virDomainDiskDefPtr disk, prev;
+                if (VIR_ALLOC(disk) < 0)
+                    goto no_memory;
+                if (!(disk->src = strdup(tmp))) {
+                    VIR_FREE(disk);
+                    goto no_memory;
+                }
+                disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
+                disk->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
+                if (!(disk->dst = strdup(fds[i]))) {
+                    VIR_FREE(disk);
+                    goto no_memory;
+                }
+                if (!(disk->driverName = strdup("file"))) {
+                    VIR_FREE(disk);
+                    goto no_memory;
+                }
+                disk->bus = VIR_DOMAIN_DISK_BUS_FDC;
+
+                prev = def->disks;
+                while (prev && prev->next) {
+                    prev = prev->next;
+                }
+                if (prev)
+                    prev->next = disk;
+                else
+                    def->disks = disk;
             }
         }
     }
 
-    tty = xenStoreDomainGetConsolePath(conn, domid);
+    /* in case of HVM we have USB device emulation */
+    if (hvm &&
+        xenDaemonParseSxprUSB(conn, def, root) < 0)
+        goto error;
+
+    /* Character device config */
+    tty = xenStoreDomainGetConsolePath(conn, def->id);
     if (hvm) {
         tmp = sexpr_node(root, "domain/image/hvm/serial");
         if (tmp && STRNEQ(tmp, "none")) {
-            if (xend_parse_sexp_desc_char(conn, &buf, "serial", 0, tmp, tty) < 0)
-                goto error;
-            /* Add back-compat <console/> tag for primary console */
-            if (xend_parse_sexp_desc_char(conn, &buf, "console", 0, tmp, tty) < 0)
+            if ((def->serials = xenDaemonParseSxprChar(conn, tmp, tty)) == NULL)
                 goto error;
         }
         tmp = sexpr_node(root, "domain/image/hvm/parallel");
         if (tmp && STRNEQ(tmp, "none")) {
             /* XXX does XenD stuff parallel port tty info into xenstore somewhere ? */
-            if (xend_parse_sexp_desc_char(conn, &buf, "parallel", 0, tmp, NULL) < 0)
+            if ((def->parallels = xenDaemonParseSxprChar(conn, tmp, NULL)) == NULL)
                 goto error;
         }
     } else {
-        /* Paravirt always has a console */
-        if (tty) {
-            virBufferVSprintf(&buf, "    <console type='pty' tty='%s'>\n", tty);
-            virBufferVSprintf(&buf, "      <source path='%s'/>\n", tty);
-        } else {
-            virBufferAddLit(&buf, "    <console type='pty'>\n");
-        }
-        virBufferAddLit(&buf, "      <target port='0'/>\n");
-        virBufferAddLit(&buf, "    </console>\n");
+        /* Fake a paravirt console, since that's not in the sexpr */
+        if (!(def->console = xenDaemonParseSxprChar(conn, "pty", tty)))
+            goto error;
     }
     VIR_FREE(tty);
 
-    if (hvm) {
-        if (sexpr_node(root, "domain/image/hvm/soundhw")) {
-            char *soundxml;
-            tmp = sexpr_node(root, "domain/image/hvm/soundhw");
-            if (tmp && *tmp) {
-                if ((soundxml = sound_string_to_xml(tmp))) {
-                    virBufferVSprintf(&buf, "%s", soundxml);
-                    VIR_FREE(soundxml);
-                } else {
-                    virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 _("parsing soundhw string failed."));
-                    goto error;
-                }
-            }
-        }
+
+    /* Sound device config */
+    if (hvm &&
+        (tmp = sexpr_node(root, "domain/image/hvm/soundhw")) != NULL &&
+        *tmp) {
+        if (xenDaemonParseSxprSound(conn, def, tmp) < 0)
+            goto error;
     }
 
-    virBufferAddLit(&buf, "  </devices>\n");
-    virBufferAddLit(&buf, "</domain>\n");
+    return def;
 
-    if (virBufferError(&buf)) {
-        virXendError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"));
+no_memory:
+    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+error:
+    VIR_FREE(tty);
+    virDomainDefFree(def);
+    return NULL;
+}
+
+virDomainDefPtr
+xenDaemonParseSxprString(virConnectPtr conn,
+                         const char *sexpr,
+                         int xendConfigVersion)
+{
+    struct sexpr *root = string2sexpr(sexpr);
+    virDomainDefPtr def;
+
+    if (!root)
         return NULL;
-    }
 
-    return virBufferContentAndReset(&buf);
+    def = xenDaemonParseSxpr(conn, root, xendConfigVersion, NULL);
 
-  error:
-    val = virBufferContentAndReset(&buf);
-    VIR_FREE(val);
-    return (NULL);
+    sexpr_free(root);
+
+    return def;
 }
 
-char *
-xend_parse_domain_sexp(virConnectPtr conn, char *sexpr, int xendConfigVersion) {
-  struct sexpr *root = string2sexpr(sexpr);
-  char *data;
-
-  if (!root)
-      return NULL;
-
-  data = xend_parse_sexp_desc(conn, root, xendConfigVersion, 0, NULL);
-
-  sexpr_free(root);
-
-  return data;
-}
 
 /**
  * sexpr_to_xend_domain_info:
@@ -2864,6 +3226,7 @@ xenDaemonDomainDumpXMLByID(virConnectPtr conn, int domid, int flags,
     char *ret = NULL;
     struct sexpr *root;
     xenUnifiedPrivatePtr priv;
+    virDomainDefPtr def;
 
     root = sexpr_get(conn, "/xend/domain/%d?detail=1", domid);
     if (root == NULL) {
@@ -2875,9 +3238,15 @@ xenDaemonDomainDumpXMLByID(virConnectPtr conn, int domid, int flags,
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
-    ret = xend_parse_sexp_desc(conn, root, priv->xendConfigVersion,
-                               flags, cpus);
+    if (!(def = xenDaemonParseSxpr(conn, root, priv->xendConfigVersion,
+                                   cpus)))
+        goto cleanup;
+
+    ret = virDomainDefFormat(conn, def, flags);
+
+cleanup:
     sexpr_free(root);
+    virDomainDefFree(def);
 
     return (ret);
 }
@@ -2889,6 +3258,7 @@ xenDaemonDomainDumpXMLByName(virConnectPtr conn, const char *name, int flags,
     char *ret = NULL;
     struct sexpr *root;
     xenUnifiedPrivatePtr priv;
+    virDomainDefPtr def;
 
     root = sexpr_get(conn, "/xend/domain/%s?detail=1", name);
     if (root == NULL) {
@@ -2900,9 +3270,15 @@ xenDaemonDomainDumpXMLByName(virConnectPtr conn, const char *name, int flags,
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
-    ret = xend_parse_sexp_desc(conn, root, priv->xendConfigVersion,
-                               flags, cpus);
+    if (!(def = xenDaemonParseSxpr(conn, root, priv->xendConfigVersion,
+                                   cpus)))
+        goto cleanup;
+
+    ret = virDomainDefFormat(conn, def, flags);
+
+cleanup:
     sexpr_free(root);
+    virDomainDefFree(def);
 
     return (ret);
 }
@@ -4339,29 +4715,6 @@ error:
     return (ret);
 }
 
-struct check_path_data {
-    const char *path;
-    int ok;
-};
-
-static int
-check_path (virConnectPtr conn ATTRIBUTE_UNUSED, void *vp,
-            int isBlock ATTRIBUTE_UNUSED,
-            int cdrom, int isNoSrcCdrom,
-            int hvm ATTRIBUTE_UNUSED,
-            const char *drvName ATTRIBUTE_UNUSED,
-            const char *drvType ATTRIBUTE_UNUSED,
-            const char *src, const char *dst ATTRIBUTE_UNUSED,
-            const char *mode ATTRIBUTE_UNUSED)
-{
-    struct check_path_data *data = (struct check_path_data *) vp;
-
-    if (!isNoSrcCdrom && !cdrom && src && STREQ (src, data->path))
-        data->ok = 1;
-
-    return 0;
-}
-
 /**
  * xenDaemonDomainBlockPeek:
  * @dom: domain object
@@ -4378,9 +4731,11 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
                           void *buffer)
 {
     xenUnifiedPrivatePtr priv;
-    struct sexpr *root;
-    struct check_path_data data;
-    int fd, ret = -1;
+    struct sexpr *root = NULL;
+    int fd = -1, ret = -1;
+    int found = 0;
+    virDomainDefPtr def;
+    virDomainDiskDefPtr disk;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
@@ -4406,18 +4761,22 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
         return -1;
     }
 
-    data.path = path;
-    data.ok = 0;
+    if (!(def = xenDaemonParseSxpr(domain->conn, root, priv->xendConfigVersion, NULL)))
+        goto cleanup;
 
-    if (xend_parse_sexp_blockdevs (domain->conn, root,
-                                   priv->xendConfigVersion,
-                                   check_path, &data) == -1)
-        return -1;
-
-    if (!data.ok) {
+    disk = def->disks;
+    while (disk) {
+        if (disk->src &&
+            STREQ(disk->src, path)) {
+            found = 1;
+            break;
+        }
+        disk = disk->next;
+    }
+    if (!found) {
         virXendError (domain->conn, VIR_ERR_INVALID_ARG,
                       _("%s: invalid path"), path);
-        return -1;
+        goto cleanup;
     }
 
     /* The path is correct, now try to open it and get its size. */
@@ -4426,7 +4785,7 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
         virXendError (domain->conn, VIR_ERR_SYSTEM_ERROR,
                       _("failed to open for reading: %s: %s"),
                       path, strerror (errno));
-        goto done;
+        goto cleanup;
     }
 
     /* Seek and read. */
@@ -4438,12 +4797,14 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
         virXendError (domain->conn, VIR_ERR_SYSTEM_ERROR,
                       _("failed to lseek or read from file: %s: %s"),
                       path, strerror (errno));
-        goto done;
+        goto cleanup;
     }
 
     ret = 0;
- done:
+ cleanup:
     if (fd >= 0) close (fd);
+    sexpr_free(root);
+    virDomainDefFree(def);
     return ret;
 }
 

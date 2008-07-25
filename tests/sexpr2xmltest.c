@@ -24,19 +24,19 @@ static int testCompareFiles(const char *xml, const char *sexpr,
   char *xmlPtr = &(xmlData[0]);
   char *sexprPtr = &(sexprData[0]);
   int ret = -1;
+  virDomainDefPtr def = NULL;
 
-  if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0) {
-      printf("Missing %s\n", xml);
+  if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
       goto fail;
-  }
 
-  if (virtTestLoadFile(sexpr, &sexprPtr, MAX_FILE) < 0) {
-      printf("Missing %s\n", sexpr);
+  if (virtTestLoadFile(sexpr, &sexprPtr, MAX_FILE) < 0)
       goto fail;
-  }
 
-  if (!(gotxml = xend_parse_domain_sexp(NULL, sexprData, xendConfigVersion)))
-    goto fail;
+  if (!(def = xenDaemonParseSxprString(NULL, sexprData, xendConfigVersion)))
+      goto fail;
+
+  if (!(gotxml = virDomainDefFormat(NULL, def, 0)))
+      goto fail;
 
   if (STRNEQ(xmlData, gotxml)) {
       virtTestDifference(stderr, xmlData, gotxml);
@@ -47,6 +47,7 @@ static int testCompareFiles(const char *xml, const char *sexpr,
 
  fail:
   free(gotxml);
+  virDomainDefFree(def);
 
   return ret;
 }
@@ -122,7 +123,7 @@ mymain(int argc, char **argv)
     DO_TEST("fv-utc", "fv-utc", 1);
     DO_TEST("fv-localtime", "fv-localtime", 1);
     DO_TEST("fv-usbmouse", "fv-usbmouse", 1);
-    DO_TEST("fv-usbmouse", "fv-usbmouse", 1);
+    DO_TEST("fv-usbtablet", "fv-usbtablet", 1);
     DO_TEST("fv-kernel", "fv-kernel", 1);
 
     DO_TEST("fv-serial-null", "fv-serial-null", 1);

@@ -1,6 +1,9 @@
 <domain type='xen' id='5'>
   <name>rhel5</name>
   <uuid>4f77abd2-3019-58e8-3bab-6fbf2118f880</uuid>
+  <memory>394240</memory>
+  <currentMemory>179200</currentMemory>
+  <vcpu>1</vcpu>
   <bootloader>/usr/bin/pygrub</bootloader>
   <os>
     <type>linux</type>
@@ -8,9 +11,7 @@
     <initrd>/var/lib/xen/initrd.gULTf1</initrd>
     <cmdline>ro root=/dev/VolGroup00/LogVol00 rhgb quiet</cmdline>
   </os>
-  <memory>394240</memory>
-  <currentMemory>179200</currentMemory>
-  <vcpu>1</vcpu>
+  <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
@@ -21,15 +22,14 @@
       <target dev='xvda' bus='xen'/>
     </disk>
     <interface type='bridge'>
+      <mac address='00:16:3e:1d:06:15'/>
       <source bridge='xenbr0'/>
       <target dev='vif5.0'/>
-      <mac address='00:16:3e:1d:06:15'/>
-      <script path='vif-bridge'/>
     </interface>
-    <input type='mouse' bus='xen'/>
-    <graphics type='vnc' port='-1'/>
     <console type='pty'>
       <target port='0'/>
     </console>
+    <input type='mouse' bus='xen'/>
+    <graphics type='vnc' port='-1' autoport='yes'/>
   </devices>
 </domain>
