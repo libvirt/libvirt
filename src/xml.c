@@ -16,7 +16,6 @@
 #include <stdarg.h>
 #include <limits.h>
 #include <math.h>               /* for isnan() */
-#include "c-ctype.h"
 #include "internal.h"
 #include "xml.h"
 #include "buf.h"
