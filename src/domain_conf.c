@@ -1396,7 +1396,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
     def->id = -1;
 
-    /* Find out what type of QEMU virtualization to use */
+    /* Find out what type of virtualization to use */
     if (!(tmp = virXPathString(conn, "string(./@type)", ctxt))) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("missing domain type attribute"));
@@ -1762,7 +1762,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
     VIR_FREE(nodes);
 
-    /* analysis of the input devices */
+    /* analysis of the graphics devices */
     if ((n = virXPathNodeSet(conn, "./devices/graphics", ctxt, &nodes)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot extract graphics devices"));
@@ -1847,7 +1847,7 @@ virDomainDefPtr virDomainDefParseString(virConnectPtr conn,
     xmlNodePtr root;
     virDomainDefPtr def = NULL;
 
-    if (!(xml = xmlReadDoc(BAD_CAST xmlStr, "network.xml", NULL,
+    if (!(xml = xmlReadDoc(BAD_CAST xmlStr, "domain.xml", NULL,
                            XML_PARSE_NOENT | XML_PARSE_NONET |
                            XML_PARSE_NOERROR | XML_PARSE_NOWARNING))) {
         virDomainReportError(conn, VIR_ERR_XML_ERROR, NULL);

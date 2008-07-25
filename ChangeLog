@@ -1,3 +1,8 @@
+Fri Jul 25 17:21:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/domain_conf.c: Fix typos in comments, and the dummy
+	filename passed to xmlReadDoc (patch from Chris Lalancette)
+
 Fri Jul 25 17:17:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xml.c: Remove now unused c-ctype.h include
