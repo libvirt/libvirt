@@ -103,6 +103,16 @@ virDomainDefPtr
 xenDaemonParseSxprString(virConnectPtr conn,
                          const char *sexpr,
                          int xendConfigVersion);
+
+int
+xenDaemonParseSxprSound(virConnectPtr conn,
+                        virDomainDefPtr def,
+                        const char *str);
+virDomainChrDefPtr
+xenDaemonParseSxprChar(virConnectPtr conn,
+                       const char *value,
+                       const char *tty);
+
 char *
 xenDaemonFormatSxpr(virConnectPtr conn,
                     virDomainDefPtr def,
@@ -110,7 +120,6 @@ xenDaemonFormatSxpr(virConnectPtr conn,
 
   int is_sound_model_valid(const char *model);
   int is_sound_model_conflict(const char *model, const char *soundstr);
-  char *sound_string_to_xml(const char *sound);
 
 
 /* refactored ones */

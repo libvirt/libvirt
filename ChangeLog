@@ -1,3 +1,11 @@
+Fri Jul 25 14:48:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c, src/xend_internal.h: Remove the
+	sound_string_to_xml() and make xenDaemonParseSxprChar
+	non-static
+	* src/xm_internal.c: Switch config -> XML parser to use
+	the new domain APIs
+
 Fri Jul 25 14:29:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Prepare xm_internal driver for new domain XML apis.

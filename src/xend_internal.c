@@ -828,68 +828,6 @@ int is_sound_model_conflict(const char *model, const char *soundstr) {
     return 0;
 }
 
-/**
- * sound_string_to_xml:
- * @soundstr : soundhw string for the form m1,m2,m3 ...
- *
- * Parses the passed string and returns a heap allocated string containing
- * the valid libvirt soundxml. Must be free'd by caller.
- *
- * Returns NULL on fail, xml string on success (can be the empty string).
- */
-char *sound_string_to_xml(const char *sound) {
-
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *tmp;
-
-    while (sound) {
-        int modelsize, valid, collision = 0;
-        char *model = NULL;
-        char *model_end = strchr(sound, ',');
-        modelsize = (model_end ? (model_end - sound) : strlen(sound));
-
-        if(!(model = strndup(sound, modelsize)))
-            goto error;
-
-        if (!(valid = is_sound_model_valid(model))) {
-            // Check for magic 'all' model. If found, throw out current xml
-            // and build with all available models
-            if (STREQ(model, "all")) {
-                int i;
-                if (virBufferError(&buf)) {
-                    VIR_FREE(model);
-                    goto error;
-                }
-                tmp = virBufferContentAndReset(&buf);
-                VIR_FREE(tmp);
-
-                for (i=0; i < sizeof(sound_models)/sizeof(*sound_models); ++i)
-                    virBufferVSprintf(&buf, "    <sound model='%s'/>\n",
-                                      sound_models[i]);
-                VIR_FREE(model);
-                break;
-            }
-        }
-
-        if (valid && model_end)
-            collision = is_sound_model_conflict(model, model_end);
-        if (valid && !collision)
-            virBufferVSprintf(&buf, "    <sound model='%s'/>\n", model);
-
-        sound = (model_end ? ++model_end : NULL);
-        VIR_FREE(model);
-    }
-
-    if (virBufferError(&buf))
-        goto error;
-    return virBufferContentAndReset(&buf);
-
-  error:
-    tmp = virBufferContentAndReset(&buf);
-    VIR_FREE(tmp);
-    return NULL;
-}
-
 
 /* PUBLIC FUNCTIONS */
 
@@ -1544,7 +1482,7 @@ error:
     return ret;
 }
 
-static virDomainChrDefPtr
+virDomainChrDefPtr
 xenDaemonParseSxprChar(virConnectPtr conn,
                        const char *value,
                        const char *tty)
@@ -1957,7 +1895,8 @@ cleanup:
     return -1;
 }
 
-static int
+
+int
 xenDaemonParseSxprSound(virConnectPtr conn,
                         virDomainDefPtr def,
                         const char *str)
