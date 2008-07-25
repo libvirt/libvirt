@@ -3,7 +3,7 @@
   <files>
     <file name='libvirt'>
      <summary>core interfaces for the libvirt library</summary>
-     <description>Provides the interfaces of the libvirt library to handle Xen domains from a process running in domain 0 </description>
+     <description>Provides the interfaces of the libvirt library to handle virtualized domains </description>
      <author>Daniel Veillard &lt;veillard@redhat.com&gt; </author>
      <exports symbol='VIR_NODEINFO_MAXCPUS' type='macro'/>
      <exports symbol='LIBVIR_VERSION_NUMBER' type='macro'/>
@@ -36,6 +36,7 @@
      <exports symbol='VIR_MIGRATE_LIVE' type='enum'/>
      <exports symbol='VIR_CRED_USERNAME' type='enum'/>
      <exports symbol='VIR_VCPU_OFFLINE' type='enum'/>
+     <exports symbol='VIR_MEMORY_VIRTUAL' type='enum'/>
      <exports symbol='VIR_DOMAIN_RUNNING' type='enum'/>
      <exports symbol='VIR_DOMAIN_BLOCKED' type='enum'/>
      <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
@@ -87,10 +88,11 @@
      <exports symbol='virStorageVolInfoPtr' type='typedef'/>
      <exports symbol='virSchedParameter' type='typedef'/>
      <exports symbol='virConnectFlags' type='typedef'/>
-     <exports symbol='virSchedParameterPtr' type='typedef'/>
+     <exports symbol='virDomainMemoryFlags' type='typedef'/>
      <exports symbol='virStorageVolPtr' type='typedef'/>
      <exports symbol='virVcpuState' type='typedef'/>
      <exports symbol='virStorageVolDeleteFlags' type='typedef'/>
+     <exports symbol='virSchedParameterPtr' type='typedef'/>
      <exports symbol='virConnectAuth' type='typedef'/>
      <exports symbol='virConnectCredential' type='typedef'/>
      <exports symbol='virVcpuInfoPtr' type='typedef'/>
@@ -188,6 +190,7 @@
      <exports symbol='virNetworkLookupByUUIDString' type='function'/>
      <exports symbol='virDomainLookupByID' type='function'/>
      <exports symbol='virStorageVolFree' type='function'/>
+     <exports symbol='virDomainMemoryPeek' type='function'/>
      <exports symbol='virNetworkLookupByUUID' type='function'/>
      <exports symbol='virConnectListDefinedNetworks' type='function'/>
      <exports symbol='virDomainGetUUID' type='function'/>
@@ -233,6 +236,7 @@
      <exports symbol='virStoragePoolCreate' type='function'/>
      <exports symbol='virDomainSetVcpus' type='function'/>
      <exports symbol='virDomainGetID' type='function'/>
+     <exports symbol='virDomainBlockPeek' type='function'/>
      <exports symbol='virDomainInterfaceStats' type='function'/>
      <exports symbol='virConnectListNetworks' type='function'/>
     </file>
@@ -289,6 +293,7 @@
      <exports symbol='VIR_ERR_HTTP_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_PARSE_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_NO_SOURCE' type='enum'/>
+     <exports symbol='VIR_FROM_DOMAIN' type='enum'/>
      <exports symbol='VIR_ERR_NO_TARGET' type='enum'/>
      <exports symbol='VIR_ERR_NETWORK_EXIST' type='enum'/>
      <exports symbol='VIR_WAR_NO_STORAGE' type='enum'/>
@@ -298,6 +303,7 @@
      <exports symbol='VIR_ERR_INVALID_STORAGE_POOL' type='enum'/>
      <exports symbol='VIR_FROM_REMOTE' type='enum'/>
      <exports symbol='VIR_ERR_NO_SUPPORT' type='enum'/>
+     <exports symbol='VIR_FROM_NETWORK' type='enum'/>
      <exports symbol='VIR_FROM_QEMU' type='enum'/>
      <exports symbol='VIR_FROM_XEND' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_STORAGE_VOL' type='enum'/>
@@ -463,8 +469,10 @@
     <enum name='VIR_ERR_XML_ERROR' file='virterror' value='27' type='virErrorNumber' info='an XML description is not well formed or broken'/>
     <enum name='VIR_FROM_CONF' file='virterror' value='9' type='virErrorDomain' info='Error in the configuration file handling'/>
     <enum name='VIR_FROM_DOM' file='virterror' value='6' type='virErrorDomain' info='Error when operating on a domain'/>
+    <enum name='VIR_FROM_DOMAIN' file='virterror' value='20' type='virErrorDomain' info=' Error from domain config'/>
     <enum name='VIR_FROM_LXC' file='virterror' value='17' type='virErrorDomain' info='Error from Linux Container driver'/>
     <enum name='VIR_FROM_NET' file='virterror' value='11' type='virErrorDomain' info='Error when operating on a network'/>
+    <enum name='VIR_FROM_NETWORK' file='virterror' value='19' type='virErrorDomain' info='Error from network config'/>
     <enum name='VIR_FROM_NONE' file='virterror' value='0' type='virErrorDomain'/>
     <enum name='VIR_FROM_OPENVZ' file='virterror' value='14' type='virErrorDomain' info='Error from OpenVZ driver'/>
     <enum name='VIR_FROM_PROXY' file='virterror' value='8' type='virErrorDomain' info='Error in the proxy code'/>
@@ -473,13 +481,14 @@
     <enum name='VIR_FROM_RPC' file='virterror' value='7' type='virErrorDomain' info='Error in the XML-RPC code'/>
     <enum name='VIR_FROM_SEXPR' file='virterror' value='4' type='virErrorDomain' info='Error in the S-Expression code'/>
     <enum name='VIR_FROM_STATS_LINUX' file='virterror' value='16' type='virErrorDomain' info='Error in the Linux Stats code'/>
-    <enum name='VIR_FROM_STORAGE' file='virterror' value='18' type='virErrorDomain' info=' Error from storage driver'/>
+    <enum name='VIR_FROM_STORAGE' file='virterror' value='18' type='virErrorDomain' info='Error from storage driver'/>
     <enum name='VIR_FROM_TEST' file='virterror' value='12' type='virErrorDomain' info='Error from test driver'/>
     <enum name='VIR_FROM_XEN' file='virterror' value='1' type='virErrorDomain' info='Error at Xen hypervisor layer'/>
     <enum name='VIR_FROM_XEND' file='virterror' value='2' type='virErrorDomain' info='Error at connection with xend daemon'/>
     <enum name='VIR_FROM_XENSTORE' file='virterror' value='3' type='virErrorDomain' info='Error at connection with xen store'/>
     <enum name='VIR_FROM_XENXM' file='virterror' value='15' type='virErrorDomain' info='Error at Xen XM layer'/>
     <enum name='VIR_FROM_XML' file='virterror' value='5' type='virErrorDomain' info='Error in the XML code'/>
+    <enum name='VIR_MEMORY_VIRTUAL' file='libvirt' value='1' type='virDomainMemoryFlags' info=' addresses are virtual addresses'/>
     <enum name='VIR_MIGRATE_LIVE' file='libvirt' value='1' type='virDomainMigrateFlags' info=' live migration'/>
     <enum name='VIR_STORAGE_POOL_BUILDING' file='libvirt' value='1' type='virStoragePoolState' info='Initializing pool, not available'/>
     <enum name='VIR_STORAGE_POOL_BUILD_NEW' file='libvirt' value='0' type='virStoragePoolBuildFlags' info='Regular build from scratch'/>
@@ -519,7 +528,7 @@
     <typedef name='virConnectCredentialType' file='libvirt' type='enum'/>
     <typedef name='virConnectFlags' file='libvirt' type='enum'/>
     <typedef name='virConnectPtr' file='libvirt' type='virConnect *'>
-      <info>a virConnectPtr is pointer to a virConnect private structure, this is the type used to reference a connection to the Xen Hypervisor in the API.</info>
+      <info>a virConnectPtr is pointer to a virConnect private structure, this is the type used to reference a connection to the Hypervisor in the API.</info>
     </typedef>
     <struct name='virDomain' file='libvirt' type='struct _virDomain'/>
     <typedef name='virDomainBlockStatsPtr' file='libvirt' type='virDomainBlockStatsStruct *'>
@@ -556,9 +565,10 @@
       <field name='tx_errs' type='long long' info=''/>
       <field name='tx_drop' type='long long' info=''/>
     </struct>
+    <typedef name='virDomainMemoryFlags' file='libvirt' type='enum'/>
     <typedef name='virDomainMigrateFlags' file='libvirt' type='enum'/>
     <typedef name='virDomainPtr' file='libvirt' type='virDomain *'>
-      <info>a virDomainPtr is pointer to a virDomain private structure, this is the type used to reference a Xen domain in the API.</info>
+      <info>a virDomainPtr is pointer to a virDomain private structure, this is the type used to reference a domain in the API.</info>
     </typedef>
     <typedef name='virDomainState' file='libvirt' type='enum'/>
     <typedef name='virDomainXMLFlags' file='libvirt' type='enum'/>
@@ -567,7 +577,8 @@
       <field name='domain' type='int' info=' What part of the library raised this error'/>
       <field name='message' type='char *' info=' human-readable informative error message'/>
       <field name='level' type='virErrorLevel' info=' how consequent is the error'/>
-      <field name='conn' type='virConnectPtr' info=' connection if available, see note above'/>
+      <field name='conn' type='virConnectPtr' info=' connection if available,
+see note above'/>
       <field name='dom' type='virDomainPtr' info=' domain if available, see note above'/>
       <field name='str1' type='char *' info=' extra string information'/>
       <field name='str2' type='char *' info=' extra string information'/>
@@ -812,6 +823,16 @@
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='xml' type='const char *' info='pointer to XML description of one device'/>
     </function>
+    <function name='virDomainBlockPeek' file='libvirt' module='libvirt'>
+      <info>This function allows you to read the contents of a domain&apos;s disk device.  Typical uses for this are to determine if the domain has written a Master Boot Record (indicating that the domain has completed installation), or to try to work out the state of the domain&apos;s filesystems.  (Note that in the local case you might try to open the block device or file directly, but that won&apos;t work in the remote case, nor if you don&apos;t have sufficient permission. Hence the need for this call).  &apos;path&apos; must be a device or file corresponding to the domain. In other words it must be the precise string returned in a &lt;disk&gt;&lt;source dev=&apos;...&apos;/&gt;&lt;/disk&gt; from virDomainGetXMLDesc.  &apos;offset&apos; and &apos;size&apos; represent an area which must lie entirely within the device or file.  &apos;size&apos; may be 0 to test if the call would succeed.  &apos;buffer&apos; is the return buffer and must be at least &apos;size&apos; bytes.  NB. The remote driver imposes a 64K byte limit on &apos;size&apos;. For your program to be able to work reliably over a remote connection you should split large requests to &lt;= 65536 bytes.</info>
+      <return type='int' info='0 in case of success or -1 in case of failure. really 64 bits'/>
+      <arg name='dom' type='virDomainPtr' info='pointer to the domain object'/>
+      <arg name='path' type='const char *' info='path to the block device'/>
+      <arg name='offset' type='unsigned long long' info='offset within block device'/>
+      <arg name='size' type='size_t' info='size to read'/>
+      <arg name='buffer' type='void *' info='return buffer (must be at least size bytes)'/>
+      <arg name='flags' type='unsigned int' info='unused, always pass 0'/>
+    </function>
     <function name='virDomainBlockStats' file='libvirt' module='libvirt'>
       <info>This function returns block device (disk) stats for block devices attached to the domain.  The path parameter is the name of the block device.  Get this by calling virDomainGetXMLDesc and finding the &lt;target dev=&apos;...&apos;&gt; attribute within //domain/devices/disk.  (For example, &quot;xvda&quot;).  Domains may have more than one block device.  To get stats for each you should make multiple calls to this function.  Individual fields within the stats structure may be returned as -1, which indicates that the hypervisor does not support that particular statistic.</info>
       <return type='int' info='0 in case of success or -1 in case of failure.'/>
@@ -846,7 +867,7 @@
       <arg name='xml' type='const char *' info='the XML description for the domain, preferably in UTF-8'/>
     </function>
     <function name='virDomainDestroy' file='libvirt' module='libvirt'>
-      <info>Destroy the domain object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. The data structure is freed and should not be used thereafter if the call does not return an error. This function may requires privileged access</info>
+      <info>Destroy the domain object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. This does not free the associated virDomainPtr object. This function may require privileged access</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
@@ -952,7 +973,7 @@
       <arg name='size' type='size_t' info='size of stats structure'/>
     </function>
     <function name='virDomainLookupByID' file='libvirt' module='libvirt'>
-      <info>Try to find a domain based on the hypervisor ID number</info>
+      <info>Try to find a domain based on the hypervisor ID number Note that this won&apos;t work for inactive domains which have an ID of -1, in that case a lookup based on the Name or UUId need to be done instead.</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure.  If the domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='id' type='int' info='the domain ID number'/>
@@ -974,6 +995,15 @@
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure.  If the domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuidstr' type='const char *' info='the string UUID for the domain'/>
+    </function>
+    <function name='virDomainMemoryPeek' file='libvirt' module='libvirt'>
+      <info>This function allows you to read the contents of a domain&apos;s memory.  The memory which is read is controlled by the &apos;start&apos;, &apos;size&apos; and &apos;flags&apos; parameters.  If &apos;flags&apos; is VIR_MEMORY_VIRTUAL then the &apos;start&apos; and &apos;size&apos; parameters are interpreted as virtual memory addresses for whichever task happens to be running on the domain at the moment.  Although this sounds haphazard it is in fact what you want in order to read Linux kernel state, because it ensures that pointers in the kernel image can be interpreted coherently.  &apos;buffer&apos; is the return buffer and must be at least &apos;size&apos; bytes. &apos;size&apos; may be 0 to test if the call would succeed.  NB. The remote driver imposes a 64K byte limit on &apos;size&apos;. For your program to be able to work reliably over a remote connection you should split large requests to &lt;= 65536 bytes.</info>
+      <return type='int' info='0 in case of success or -1 in case of failure. really 64 bits'/>
+      <arg name='dom' type='virDomainPtr' info='pointer to the domain object'/>
+      <arg name='start' type='unsigned long long' info='start of memory to peek'/>
+      <arg name='size' type='size_t' info='size of memory to peek'/>
+      <arg name='buffer' type='void *' info='return buffer (must be at least size bytes)'/>
+      <arg name='flags' type='unsigned int' info='flags, see below'/>
     </function>
     <function name='virDomainMigrate' file='libvirt' module='libvirt'>
       <info>Migrate the domain object from its current host to the destination host given by dconn (a connection to the destination host).  Flags may be one of more of the following: VIR_MIGRATE_LIVE   Attempt a live migration.  If a hypervisor supports renaming domains during migration, then you may set the dname parameter to the new name (otherwise it keeps the same name).  If this is not supported by the hypervisor, dname must be NULL or else you will get an error.  Since typically the two hypervisors connect directly to each other in order to perform the migration, you may need to specify a path from the source to the destination.  This is the purpose of the uri parameter.  If uri is NULL, then libvirt will try to find the best method.  Uri may specify the hostname or IP address of the destination host as seen from the source.  Or uri may be a URI giving transport, hostname, user, port, etc. in the usual form.  Refer to driver documentation for the particular URIs supported.  The maximum bandwidth (in Mbps) that will be used to do migration can be specified with the bandwidth parameter.  If set to 0, libvirt will choose a suitable default.  Some hypervisors do not support this feature and will return an error if bandwidth is not 0.  To see which features are supported by the current hypervisor, see virConnectGetCapabilities, /capabilities/host/migration_features.  There are many limitations on migration imposed by the underlying technology - for example it may not be possible to migrate between different processors even with the same architecture, or between different types of hypervisor.</info>
@@ -1101,7 +1131,7 @@
       <arg name='xml' type='const char *' info='the XML description for the network, preferably in UTF-8'/>
     </function>
     <function name='virNetworkDestroy' file='libvirt' module='libvirt'>
-      <info>Destroy the network object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. The data structure is freed and should not be used thereafter if the call does not return an error. This function may requires privileged access</info>
+      <info>Destroy the network object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. This does not free the associated virNetworkPtr object. This function may require privileged access</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='network' type='virNetworkPtr' info='a network object'/>
     </function>

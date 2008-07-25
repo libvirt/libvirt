@@ -2,7 +2,7 @@
  * libvirt.h:
  * Summary: core interfaces for the libvirt library
  * Description: Provides the interfaces of the libvirt library to handle
- *              Xen domains from a process running in domain 0
+ *              virtualized domains
  *
  * Copy:  Copyright (C) 2005,2006 Red Hat, Inc.
  *
@@ -33,7 +33,7 @@ extern "C" {
  * virConnect:
  *
  * a virConnect is a private structure representing a connection to
- * the Xen Hypervisor.
+ * the Hypervisor.
  */
 typedef struct _virConnect virConnect;
 
@@ -41,14 +41,14 @@ typedef struct _virConnect virConnect;
  * virConnectPtr:
  *
  * a virConnectPtr is pointer to a virConnect private structure, this is the
- * type used to reference a connection to the Xen Hypervisor in the API.
+ * type used to reference a connection to the Hypervisor in the API.
  */
 typedef virConnect *virConnectPtr;
 
 /**
  * virDomain:
  *
- * a virDomain is a private structure representing a Xen domain.
+ * a virDomain is a private structure representing a domain.
  */
 typedef struct _virDomain virDomain;
 
@@ -56,7 +56,7 @@ typedef struct _virDomain virDomain;
  * virDomainPtr:
  *
  * a virDomainPtr is pointer to a virDomain private structure, this is the
- * type used to reference a Xen domain in the API.
+ * type used to reference a domain in the API.
  */
 typedef virDomain *virDomainPtr;
 
