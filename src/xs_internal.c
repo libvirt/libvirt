@@ -86,16 +86,6 @@ struct xenUnifiedDriver xenStoreDriver = {
     NULL, /* domainSetSchedulerParameters */
 };
 
-/**
- * xenStoreInit:
- *
- * Initialisation.
- */
-int
-xenStoreInit ()
-{
-    return 0;
-}
 #endif /* ! PROXY */
 
 /**

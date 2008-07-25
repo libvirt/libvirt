@@ -87,16 +87,6 @@ struct xenUnifiedDriver xenProxyDriver = {
     NULL, /* domainSetSchedulerParameters */
 };
 
-/**
- * xenProxyInit:
- *
- * Initialise the xen proxy driver.
- */
-int
-xenProxyInit (void)
-{
-    return 0;
-}
 
 /************************************************************************
  *									*

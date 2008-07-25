@@ -1372,9 +1372,6 @@ xenUnifiedRegister (void)
 {
     /* Ignore failures here. */
     (void) xenHypervisorInit ();
-    (void) xenProxyInit ();
-    (void) xenDaemonInit ();
-    (void) xenStoreInit ();
     (void) xenXMInit ();
 
     return virRegisterDriver (&xenUnifiedDriver);

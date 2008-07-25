@@ -54,23 +54,6 @@
 #define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
 
 #ifndef PROXY
-static int xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids);
-static int xenDaemonNumOfDomains(virConnectPtr conn);
-static int xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxnames);
-static int xenDaemonNumOfDefinedDomains(virConnectPtr conn);
-static virDomainPtr xenDaemonCreateLinux(virConnectPtr conn,
-                                         const char *xmlDesc,
-                                         unsigned int flags);
-static char *xenDaemonDomainGetOSType(virDomainPtr domain);
-static int xenDaemonAttachDevice(virDomainPtr domain, const char *xml);
-static int xenDaemonDetachDevice(virDomainPtr domain, const char *xml);
-static int xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
-                                   int flags);
-static char *xenDaemonGetSchedulerType(virDomainPtr domain, int *nparams);
-static int xenDaemonGetSchedulerParameters(virDomainPtr domain,
-                                 virSchedParameterPtr params, int *nparams);
-static int xenDaemonSetSchedulerParameters(virDomainPtr domain,
-                                 virSchedParameterPtr params, int nparams);
 
 /*
  * The number of Xen scheduler parameters
@@ -79,61 +62,6 @@ static int xenDaemonSetSchedulerParameters(virDomainPtr domain,
 #define XEN_SCHED_CRED_NPARAM   2
 
 #endif /* PROXY */
-
-#ifndef PROXY
-struct xenUnifiedDriver xenDaemonDriver = {
-    xenDaemonOpen, /* open */
-    xenDaemonClose, /* close */
-    xenDaemonGetVersion, /* version */
-    NULL, /* hostname */
-    NULL, /* URI */
-    xenDaemonNodeGetInfo, /* nodeGetInfo */
-    NULL, /* getCapabilities */
-    xenDaemonListDomains, /* listDomains */
-    xenDaemonNumOfDomains, /* numOfDomains */
-    xenDaemonCreateLinux, /* domainCreateLinux */
-    xenDaemonDomainSuspend, /* domainSuspend */
-    xenDaemonDomainResume, /* domainResume */
-    xenDaemonDomainShutdown, /* domainShutdown */
-    xenDaemonDomainReboot, /* domainReboot */
-    xenDaemonDomainDestroy, /* domainDestroy */
-    xenDaemonDomainGetOSType, /* domainGetOSType */
-    xenDaemonDomainGetMaxMemory, /* domainGetMaxMemory */
-    xenDaemonDomainSetMaxMemory, /* domainSetMaxMemory */
-    xenDaemonDomainSetMemory, /* domainMaxMemory */
-    xenDaemonDomainGetInfo, /* domainGetInfo */
-    xenDaemonDomainSave, /* domainSave */
-    xenDaemonDomainRestore, /* domainRestore */
-    xenDaemonDomainCoreDump, /* domainCoreDump */
-    xenDaemonDomainSetVcpus, /* domainSetVcpus */
-    xenDaemonDomainPinVcpu, /* domainPinVcpu */
-    xenDaemonDomainGetVcpus, /* domainGetVcpus */
-    NULL, /* domainGetMaxVcpus */
-    xenDaemonListDefinedDomains, /* listDefinedDomains */
-    xenDaemonNumOfDefinedDomains, /* numOfDefinedDomains */
-    xenDaemonDomainCreate, /* domainCreate */
-    xenDaemonDomainDefineXML, /* domainDefineXML */
-    xenDaemonDomainUndefine, /* domainUndefine */
-    xenDaemonAttachDevice, /* domainAttachDevice */
-    xenDaemonDetachDevice, /* domainDetachDevice */
-    xenDaemonDomainGetAutostart, /* domainGetAutostart */
-    xenDaemonDomainSetAutostart, /* domainSetAutostart */
-    xenDaemonGetSchedulerType, /* domainGetSchedulerType */
-    xenDaemonGetSchedulerParameters, /* domainGetSchedulerParameters */
-    xenDaemonSetSchedulerParameters, /* domainSetSchedulerParameters */
-};
-
-/**
- * xenDaemonInit:
- *
- * Initialise the xenDaemon driver.
- */
-int
-xenDaemonInit (void)
-{
-    return 0;
-}
-#endif /* !PROXY */
 
 /**
  * xend_connection_type:
@@ -213,16 +141,6 @@ virXendErrorInt(virConnectPtr conn, virErrorNumber error, int val)
     __virRaiseError(conn, NULL, NULL, VIR_FROM_XEND, error, VIR_ERR_ERROR,
                     errmsg, NULL, NULL, val, 0, errmsg, val);
 }
-
-
-#define foreach(iterator, start) \
-        for (_for_i = (start), *iterator = (start)->u.s.car; \
-             _for_i->kind == SEXPR_CONS; \
-             _for_i = _for_i->u.s.cdr, iterator = _for_i->u.s.car)
-
-#define foreach_node(iterator, start, path) \
-        foreach(iterator, start) \
-            if (sexpr_lookup(iterator, path))
 
 /**
  * do_connect:
@@ -608,7 +526,7 @@ http2unix(virConnectPtr xend, int ret)
 
 #ifndef PROXY
 /**
- * xend_op_ext2:
+ * xend_op_ext:
  * @xend: pointer to the Xen Daemon structure
  * @path: path for the object
  * @error: buffer for the error output
@@ -621,8 +539,8 @@ http2unix(virConnectPtr xend, int ret)
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
-xend_op_ext2(virConnectPtr xend, const char *path, char *error,
-             size_t n_error, const char *key, va_list ap)
+xend_op_ext(virConnectPtr xend, const char *path, char *error,
+            size_t n_error, const char *key, va_list ap)
 {
     const char *k = key, *v;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -655,33 +573,7 @@ xend_op_ext2(virConnectPtr xend, const char *path, char *error,
 
 
 /**
- * xend_node_op:
- * @xend: pointer to the Xen Daemon structure
- * @path: path for the object
- * @key: the key for the operation
- * @...: input values to pass to the operation
- *
- * internal routine to run a POST RPC operation to the Xen Daemon
- *
- * Returns 0 in case of success, -1 in case of failure.
- */
-static int
-xend_node_op(virConnectPtr xend, const char *path, const char *key, ...)
-{
-    va_list ap;
-    int ret;
-    char error[1024];
-
-    va_start(ap, key);
-    ret = xend_op_ext2(xend, path, error, sizeof(error), key, ap);
-    va_end(ap);
-
-    return ret;
-}
-
-
-/**
- * xend_op_ext:
+ * xend_op:
  * @xend: pointer to the Xen Daemon structure
  * @name: the domain name target of this operation
  * @error: buffer for the error output
@@ -706,7 +598,7 @@ xend_op(virConnectPtr xend, const char *name, const char *key, ...)
     snprintf(buffer, sizeof(buffer), "/xend/domain/%s", name);
 
     va_start(ap, key);
-    ret = xend_op_ext2(xend, buffer, error, sizeof(error), key, ap);
+    ret = xend_op_ext(xend, buffer, error, sizeof(error), key, ap);
     va_end(ap);
 
     return ret;
@@ -1027,7 +919,7 @@ xenDaemonOpen_unix(virConnectPtr conn, const char *path)
  *
  * Returns 0 in case of success, -1 in case of error.
  */
-int
+static int
 xenDaemonOpen_tcp(virConnectPtr conn, const char *host, int port)
 {
     struct in_addr ip;
@@ -1309,83 +1201,6 @@ xend_detect_config_version(virConnectPtr conn) {
     return (0);
 }
 
-/**
- * xend_node_shutdown:
- * @xend: A xend instance
- *
- * This method shuts down the physical machine running Xen.
- *
- * Returns 0 on success; -1 (with errno) on error
- */
-int
-xend_node_shutdown(virConnectPtr xend)
-{
-    return xend_node_op(xend, "/xend/node/", "op", "halt", NULL);
-}
-
-/**
- * xend_node_restart:
- * @xend: A xend instance
- *
- * This method restarts the physical machine running Xen.
- *
- * Returns 0 on success; -1 (with errno) on error
- */
-int
-xend_node_restart(virConnectPtr xend)
-{
-    return xend_node_op(xend, "/xend/node/", "op", "restart", NULL);
-}
-
-
-/**
- * xend_dmesg:
- * @xend: A xend instance
- * @buffer: A buffer to hold the messages
- * @n_buffer: Size of buffer (including null terminator)
- *
- * This function will place the debugging messages from the
- * hypervisor into a buffer with a null terminator.
- *
- * Returns 0 on success; -1 (with errno) on error
- */
-int
-xend_dmesg(virConnectPtr xend, char *buffer, size_t n_buffer)
-{
-    return http2unix(xend, xend_get(xend, "/xend/node/dmesg", buffer, n_buffer));
-}
-
-/**
- * xend_dmesg_clear:
- * @xend: A xend instance
- *
- * This function will clear the debugging message ring queue
- * in the hypervisor.
- *
- * Returns 0 on success; -1 (with errno) on error
- */
-int
-xend_dmesg_clear(virConnectPtr xend)
-{
-    return xend_node_op(xend, "/xend/node/dmesg", "op", "clear", NULL);
-}
-
-/**
- * xend_log:
- * @xend: A xend instance
- * @buffer: The buffer to hold the messages
- * @n_buffer: Size of buffer (including null terminator)
- *
- * This function will place the Xend debugging messages into
- * a buffer with a null terminator.
- *
- * Returns 0 on success; -1 (with errno) on error
- */
-int
-xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
-{
-    return http2unix(xend, xend_get(xend, "/xend/node/log", buffer, n_buffer));
-}
 #endif /* PROXY */
 
 /*****************************************************************
@@ -4213,7 +4028,8 @@ error:
     return(ret);
 }
 
-int xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxnames) {
+static int
+xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxnames) {
     struct sexpr *root = NULL;
     int ret = -1;
     struct sexpr *_for_i, *node;
@@ -4630,6 +4446,48 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
     if (fd >= 0) close (fd);
     return ret;
 }
+
+struct xenUnifiedDriver xenDaemonDriver = {
+    xenDaemonOpen,               /* open */
+    xenDaemonClose,              /* close */
+    xenDaemonGetVersion,         /* version */
+    NULL,                        /* hostname */
+    NULL,                        /* URI */
+    xenDaemonNodeGetInfo,        /* nodeGetInfo */
+    NULL,                        /* getCapabilities */
+    xenDaemonListDomains,        /* listDomains */
+    xenDaemonNumOfDomains,       /* numOfDomains */
+    xenDaemonCreateLinux,        /* domainCreateLinux */
+    xenDaemonDomainSuspend,      /* domainSuspend */
+    xenDaemonDomainResume,       /* domainResume */
+    xenDaemonDomainShutdown,     /* domainShutdown */
+    xenDaemonDomainReboot,       /* domainReboot */
+    xenDaemonDomainDestroy,      /* domainDestroy */
+    xenDaemonDomainGetOSType,    /* domainGetOSType */
+    xenDaemonDomainGetMaxMemory, /* domainGetMaxMemory */
+    xenDaemonDomainSetMaxMemory, /* domainSetMaxMemory */
+    xenDaemonDomainSetMemory,    /* domainMaxMemory */
+    xenDaemonDomainGetInfo,      /* domainGetInfo */
+    xenDaemonDomainSave,         /* domainSave */
+    xenDaemonDomainRestore,      /* domainRestore */
+    xenDaemonDomainCoreDump,     /* domainCoreDump */
+    xenDaemonDomainSetVcpus,     /* domainSetVcpus */
+    xenDaemonDomainPinVcpu,      /* domainPinVcpu */
+    xenDaemonDomainGetVcpus,     /* domainGetVcpus */
+    NULL,                        /* domainGetMaxVcpus */
+    xenDaemonListDefinedDomains, /* listDefinedDomains */
+    xenDaemonNumOfDefinedDomains,/* numOfDefinedDomains */
+    xenDaemonDomainCreate,       /* domainCreate */
+    xenDaemonDomainDefineXML,    /* domainDefineXML */
+    xenDaemonDomainUndefine,     /* domainUndefine */
+    xenDaemonAttachDevice,       /* domainAttachDevice */
+    xenDaemonDetachDevice,       /* domainDetachDevice */
+    xenDaemonDomainGetAutostart, /* domainGetAutostart */
+    xenDaemonDomainSetAutostart, /* domainSetAutostart */
+    xenDaemonGetSchedulerType,   /* domainGetSchedulerType */
+    xenDaemonGetSchedulerParameters, /* domainGetSchedulerParameters */
+    xenDaemonSetSchedulerParameters, /* domainSetSchedulerParameters */
+};
 
 #endif /* ! PROXY */
 #endif /* WITH_XEN */

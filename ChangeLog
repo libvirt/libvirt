@@ -1,3 +1,13 @@
+Fri Jul 25 10:44:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Remove unused/no-op code from xen drivers
+	* src/proxy_internal.c: Remove no-op xenProxyInit()
+	* src/xen_unified.c: Remove calls to no-op init functions
+	in sub-drivers.
+	* src/xend_internal.c, src/xend_internal.h: Remove misc
+	unused methods
+	* src/xs_internal.c: Remove no-op xenStoreInit()
+
 Fri Jul 25 10:41:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* autobuild.sh: Force enable OpenVZ, LXC and Xen proxy for

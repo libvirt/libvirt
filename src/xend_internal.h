@@ -26,33 +26,8 @@
 extern "C" {
 #endif
 
-/**
- * \brief Setup the connection to a xend instance via TCP
- * \param host The host name to connect to
- * \param port The port number to connect to
- * \return 0 in case of success, -1 in case of error
- *
- * This method creates a new Xend instance via TCP.
- *
- * This function may not fail if Xend is not running.
- *
- * Make sure to call xenDaemonClose().
- */
-int xenDaemonOpen_tcp(virConnectPtr xend, const char *host, int port);
-
-/**
- * \brief Setup the connection to xend instance via a Unix domain socket
- * \param path The path to the domain socket
- * \return 0 in case of success, -1 in case of error
- *
- * This method creates a new xend instance via a Unix domain socket.
- *
- * This function may not fail if Xend is not running.
- *
- * Make sure to call xenDaemonClose().
- */
-int xenDaemonOpen_unix(virConnectPtr xend, const char *path);
-
+int
+xenDaemonOpen_unix(virConnectPtr conn, const char *path);
 
 /**
  * \brief Blocks until a domain's devices are initialized
@@ -117,68 +92,6 @@ char *xenDaemonDomainDumpXMLByName(virConnectPtr xend,
                                    const char *name,
                                    int flags,
                                    const char *cpus);
-
-/**
- * \brief Lookup information about the host machine
- * \param xend A xend instance
- * \return node info on success; NULL (with errno) on error
- *
- * This method returns information about the physical host
- * machine running Xen.
- */
-    struct xend_node *xend_get_node(virConnectPtr xend);
-
-/**
- * \brief Shutdown physical host machine
- * \param xend A xend instance
- * \return 0 on success; -1 (with errno) on error
- *
- * This method shuts down the physical machine running Xen.
- */
-    int xend_node_shutdown(virConnectPtr xend);
-
-/**
- * \brief Restarts physical host machine
- * \param xend A xend instance
- * \return 0 on success; -1 (with errno) on error
- *
- * This method restarts the physical machine running Xen.
- */
-    int xend_node_restart(virConnectPtr xend);
-
-/**
- * \brief Return hypervisor debugging messages
- * \param xend A xend instance
- * \param buffer A buffer to hold the messages
- * \param n_buffer Size of buffer (including null terminator)
- * \return 0 on success; -1 (with errno) on error
- *
- * This function will place the debugging messages from the
- * hypervisor into a buffer with a null terminator.
- */
-    int xend_dmesg(virConnectPtr xend, char *buffer, size_t n_buffer);
-
-/**
- * \brief Clear the hypervisor debugging messages
- * \param xend A xend instance
- * \return 0 on success; -1 (with errno) on error
- *
- * This function will clear the debugging message ring queue
- * in the hypervisor.
- */
-    int xend_dmesg_clear(virConnectPtr xend);
-
-/**
- * \brief Obtain the Xend log messages
- * \param xend A xend instance
- * \param buffer The buffer to hold the messages
- * \param n_buffer Size of buffer (including null terminator)
- * \return 0 on success; -1 (with errno) on error
- *
- * This function will place the Xend debugging messages into
- * a buffer with a null terminator.
- */
-    int xend_log(virConnectPtr xend, char *buffer, size_t n_buffer);
 
     int xend_parse_sexp_desc_char(virConnectPtr conn,
                                   virBufferPtr buf,
