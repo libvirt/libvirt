@@ -1,3 +1,8 @@
+Fri Jul 25 14:35:47 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* python/generator.py: skip generation for virDomainBlockPeek and
+	  virDomainMemoryPeek as they break the build
+
 Fri Jul 25 11:45:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Convert XenD SEXPR->XML convesion to new domain XML APIs

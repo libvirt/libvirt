@@ -313,6 +313,8 @@ skip_impl = (
     'virStorageVolGetInfo',
     'virStoragePoolGetAutostart',
     'virStoragePoolListVolumes',
+    'virDomainBlockPeek',
+    'virDomainMemoryPeek',
 )
 
 
