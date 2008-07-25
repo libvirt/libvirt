@@ -1,3 +1,7 @@
+Fri Jul 25 08:36:18 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/libvirt.rng: patch from John Levon fixing various patterns
+
 Thu Jul 24 09:26:51 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: another patch from Guido Günther checking
