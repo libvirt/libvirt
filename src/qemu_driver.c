@@ -63,6 +63,7 @@
 #include "stats_linux.h"
 #include "capabilities.h"
 #include "memory.h"
+#include "uuid.h"
 
 /* For storing short-lived temporary files. */
 #define TEMPDIR LOCAL_STATE_DIR "/cache/libvirt"
@@ -2155,8 +2156,11 @@ static unsigned long qemudDomainGetMaxMemory(virDomainPtr dom) {
     virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(dom->uuid, uuidstr);
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         _("no domain with matching uuid '%s'"), dom->uuid);
+                         _("no domain with matching uuid '%s'"), uuidstr);
         return 0;
     }
 
@@ -2168,8 +2172,11 @@ static int qemudDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
     virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(dom->uuid, uuidstr);
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         _("no domain with matching uuid '%s'"), dom->uuid);
+                         _("no domain with matching uuid '%s'"), uuidstr);
         return -1;
     }
 
@@ -2188,8 +2195,11 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(dom->uuid, uuidstr);
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         _("no domain with matching uuid '%s'"), dom->uuid);
+                         _("no domain with matching uuid '%s'"), uuidstr);
         return -1;
     }
 
@@ -2458,8 +2468,11 @@ static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
     int max;
 
     if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(dom->uuid, uuidstr);
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         _("no domain with matching uuid '%s'"), dom->uuid);
+                         _("no domain with matching uuid '%s'"), uuidstr);
         return -1;
     }
 
@@ -2617,8 +2630,11 @@ static int qemudDomainGetMaxVcpus(virDomainPtr dom) {
     int ret;
 
     if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(dom->uuid, uuidstr);
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         _("no domain with matching uuid '%s'"), dom->uuid);
+                         _("no domain with matching uuid '%s'"), uuidstr);
         return -1;
     }
 

@@ -1,3 +1,8 @@
+Fri Jul 25 11:00:27 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: some uuid to string conversion were missing
+	  patch from Guido Günther
+
 Fri Jul 25 10:46:25 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in:
