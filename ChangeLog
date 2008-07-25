@@ -1,3 +1,8 @@
+Fri Jul 25 10:39:54 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: Guido Trotter pointed out a wrong open() failure
+	  detection
+
 Fri Jul 25 08:36:18 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/libvirt.rng: patch from John Levon fixing various patterns

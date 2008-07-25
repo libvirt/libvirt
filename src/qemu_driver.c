@@ -504,7 +504,7 @@ static int qemudOpenMonitor(virConnectPtr conn,
     char buf[1024];
     int ret = -1;
 
-    if (!(monfd = open(monitor, O_RDWR))) {
+    if ((monfd = open(monitor, O_RDWR)) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Unable to open monitor path %s"), monitor);
         return -1;
