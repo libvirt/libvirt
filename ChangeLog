@@ -1,3 +1,8 @@
+Fri Jul 25 10:41:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* autobuild.sh: Force enable OpenVZ, LXC and Xen proxy for
+	automated build testing
+
 Fri Jul 25 10:29:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Miscellaneous minor bug fixes

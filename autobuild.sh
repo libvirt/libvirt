@@ -16,7 +16,10 @@ rm -rf coverage
 
 ./autogen.sh --prefix=$AUTOBUILD_INSTALL_ROOT \
   --enable-test-coverage \
-  --enable-compile-warnings=error
+  --enable-compile-warnings=error \
+  --with-openvz \
+  --with-lxc \
+  --with-xen-proxy
 
 make
 make install
