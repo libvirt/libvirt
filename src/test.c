@@ -314,7 +314,7 @@ static int testOpenFromFile(virConnectPtr conn,
     char *str;
     xmlDocPtr xml = NULL;
     xmlNodePtr root = NULL;
-    xmlNodePtr *domains, *networks = NULL;
+    xmlNodePtr *domains = NULL, *networks = NULL;
     xmlXPathContextPtr ctxt = NULL;
     virNodeInfoPtr nodeInfo;
     virNetworkObjPtr net;

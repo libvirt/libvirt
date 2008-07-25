@@ -91,32 +91,11 @@ static virDomainPtr openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
         unsigned int flags ATTRIBUTE_UNUSED);
 
 static int openvzDomainUndefine(virDomainPtr dom);
-static int convCmdbufExec(char cmdbuf[], char *cmdExec[]);
 static void cmdExecFree(char *cmdExec[]);
 
 static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid);
 
 struct openvz_driver ovz_driver;
-
-static int convCmdbufExec(char cmdbuf[], char *cmdExec[])
-{
-    int i=0, limit = OPENVZ_MAX_ARG - 1;
-    char cmdWord[CMDOP_LEN];
-    while(*cmdbuf)
-    {
-        if(i >= limit)
-        {
-            cmdExec[i] = NULL;
-            return -1;
-        }
-        sscanf(cmdbuf, "%s", cmdWord);
-        cmdbuf += strlen(cmdWord);
-        while(*cmdbuf == ' ') cmdbuf++;
-        cmdExec[i++] = strdup(cmdWord);
-    }
-    cmdExec[i] = NULL;
-    return i;
-}
 
 static void cmdExecFree(char *cmdExec[])
 {

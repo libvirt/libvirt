@@ -160,3 +160,81 @@
    fun:virtTestRun
    fun:mymain
 }
+{
+   xenDriverGlobalRegexes1
+   Memcheck:Leak
+   fun:*
+   fun:regcomp
+   fun:xenHypervisorInit
+   fun:xenUnifiedRegister
+   fun:virInitialize
+   fun:virConnectOpenReadOnly
+   fun:testCompareHelper
+   fun:virtTestRun
+   fun:mymain
+   fun:virtTestMain
+}
+{
+   xenDriverGlobalRegexes2
+   Memcheck:Leak
+   fun:*
+   fun:*
+   fun:regcomp
+   fun:xenHypervisorInit
+   fun:xenUnifiedRegister
+   fun:virInitialize
+   fun:virConnectOpenReadOnly
+   fun:testCompareHelper
+   fun:virtTestRun
+   fun:mymain
+   fun:virtTestMain
+}
+{
+   xenDriverGlobalRegexes3
+   Memcheck:Leak
+   fun:*
+   fun:*
+   fun:*
+   fun:regcomp
+   fun:xenHypervisorInit
+   fun:xenUnifiedRegister
+   fun:virInitialize
+   fun:virConnectOpenReadOnly
+   fun:testCompareHelper
+   fun:virtTestRun
+   fun:mymain
+   fun:virtTestMain
+}
+{
+   xenDriverGlobalRegexes4
+   Memcheck:Leak
+   fun:*
+   fun:*
+   fun:*
+   fun:*
+   fun:regcomp
+   fun:xenHypervisorInit
+   fun:xenUnifiedRegister
+   fun:virInitialize
+   fun:virConnectOpenReadOnly
+   fun:testCompareHelper
+   fun:virtTestRun
+   fun:mymain
+   fun:virtTestMain
+}
+{
+   libXMLGlobals1
+   Memcheck:Leak
+   fun:malloc
+   fun:xmlNewMutex
+   fun:xmlInitGlobals
+   fun:xmlInitParser
+   fun:xmlParseDocument
+   obj:/usr/lib64/libxml2.so.2.6.32
+   fun:virDomainDefParseString
+   fun:testOpen
+   fun:do_open
+   fun:testCompareHelper
+   fun:virtTestRun
+   fun:mymain
+}

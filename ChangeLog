@@ -1,3 +1,15 @@
+Fri Jul 25 10:29:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Miscellaneous minor bug fixes
+	* src/openvz_driver.c: Remove unused convCmdbufExec function
+	* src/qemu_conf.c: Use global default VNC listen address if
+	no domain specific address is available
+	* src/qemu_driver.c: Set CPU affinity to all CPUs if no domain
+	specific mask is provided
+	* src/test.c: Initialize variable to avoid crash on cleanup
+	* tests/.valgrind.supp: Suppress some valgrind warnins from
+	global variables not intended to be free'd
+
 Fri Jul 25 11:00:27 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: some uuid to string conversion were missing

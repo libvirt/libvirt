@@ -770,9 +770,14 @@ qemudInitCpus(virConnectPtr conn,
         maxcpu = nodeinfo.cpus;
 
     CPU_ZERO(&mask);
-    for (i = 0 ; i < maxcpu ; i++)
-        if (vm->def->cpumask[i])
+    if (vm->def->cpumask) {
+        for (i = 0 ; i < maxcpu ; i++)
+            if (vm->def->cpumask[i])
+                CPU_SET(i, &mask);
+    } else {
+        for (i = 0 ; i < maxcpu ; i++)
             CPU_SET(i, &mask);
+    }
 
     for (i = 0 ; i < vm->nvcpupids ; i++) {
         if (sched_setaffinity(vm->vcpupids[i],

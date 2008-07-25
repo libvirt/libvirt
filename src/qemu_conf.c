@@ -1106,7 +1106,9 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 options[sizeof(options)-1] = '\0';
             }
             ret = snprintf(vncdisplay, sizeof(vncdisplay), "%s:%d%s",
-                           vm->def->graphics->data.vnc.listenAddr,
+                           (vm->def->graphics->data.vnc.listenAddr ?
+                            vm->def->graphics->data.vnc.listenAddr :
+                            (driver->vncListen ? driver->vncListen : "")),
                            vm->def->graphics->data.vnc.port - 5900,
                            options);
         } else {
