@@ -28,10 +28,7 @@
 #include "libvirt/libvirt.h"
 #include "conf.h"
 #include "internal.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "domain_conf.h"
 
 extern struct xenUnifiedDriver xenXMDriver;
 int xenXMInit (void);
@@ -58,11 +55,9 @@ int xenXMDomainCreate(virDomainPtr domain);
 virDomainPtr xenXMDomainDefineXML(virConnectPtr con, const char *xml);
 int xenXMDomainUndefine(virDomainPtr domain);
 
-virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml);
-char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf);
+virConfPtr xenXMDomainConfigFormat(virConnectPtr conn, virDomainDefPtr def);
+virDomainDefPtr xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf);
+
 int xenXMDomainBlockPeek (virDomainPtr dom, const char *path, unsigned long long offset, size_t size, void *buffer);
 
-#ifdef __cplusplus
-}
-#endif
 #endif

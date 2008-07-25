@@ -33,10 +33,12 @@
 #include "xen_unified.h"
 #include "xm_internal.h"
 #include "testutils.h"
-#include "conf.h"
+#include "testutilsxen.h"
+#include "memory.h"
 
 static char *progname;
 static char *abs_srcdir;
+static virCapsPtr caps;
 
 #define MAX_FILE 4096
 
@@ -54,6 +56,7 @@ static int testCompareParseXML(const char *xmcfg, const char *xml,
     int wrote = MAX_FILE;
     void *old_priv = NULL;
     struct _xenUnifiedPrivate priv;
+    virDomainDefPtr def = NULL;
 
     conn = virConnectOpenReadOnly("test:///default");
     if (!conn) goto fail;
@@ -67,9 +70,13 @@ static int testCompareParseXML(const char *xmcfg, const char *xml,
 
     /* Many puppies died to bring you this code. */
     priv.xendConfigVersion = xendConfigVersion;
+    priv.caps = caps;
     conn->privateData = &priv;
 
-    if (!(conf = xenXMParseXMLToConfig(conn, xmlPtr)))
+    if (!(def = virDomainDefParseString(NULL, caps, xmlPtr)))
+        goto fail;
+
+    if (!(conf = xenXMDomainConfigFormat(conn, def)))
         goto fail;
 
     if (virConfWriteMem(gotxmcfgPtr, &wrote, conf) < 0)
@@ -86,7 +93,7 @@ static int testCompareParseXML(const char *xmcfg, const char *xml,
  fail:
     if (conf)
         virConfFree(conf);
-
+    virDomainDefFree(def);
     if (conn) {
         conn->privateData = old_priv;
         virConnectClose(conn);
@@ -107,6 +114,7 @@ static int testCompareFormatXML(const char *xmcfg, const char *xml,
     virConnectPtr conn;
     void *old_priv;
     struct _xenUnifiedPrivate priv;
+    virDomainDefPtr def = NULL;
 
     conn = virConnectOpenReadOnly("test:///default");
     if (!conn) goto fail;
@@ -120,12 +128,16 @@ static int testCompareFormatXML(const char *xmcfg, const char *xml,
 
     /* Many puppies died to bring you this code. */
     priv.xendConfigVersion = xendConfigVersion;
+    priv.caps = caps;
     conn->privateData = &priv;
 
     if (!(conf = virConfReadMem(xmcfgPtr, strlen(xmcfgPtr))))
         goto fail;
 
-    if (!(gotxml = xenXMDomainFormatXML(conn, conf)))
+    if (!(def = xenXMDomainConfigParse(conn, conf)))
+        goto fail;
+
+    if (!(gotxml = virDomainDefFormat(conn, def, VIR_DOMAIN_XML_SECURE)))
         goto fail;
 
     if (STRNEQ(xmlData, gotxml)) {
@@ -138,8 +150,8 @@ static int testCompareFormatXML(const char *xmcfg, const char *xml,
  fail:
     if (conf)
         virConfFree(conf);
-    free(gotxml);
-
+    VIR_FREE(gotxml);
+    virDomainDefFree(def);
     if (conn) {
         conn->privateData = old_priv;
         virConnectClose(conn);
@@ -187,6 +199,8 @@ mymain(int argc, char **argv)
     if (!abs_srcdir)
         abs_srcdir = getcwd(cwd, sizeof(cwd));
 
+    if (!(caps = testXenCapsInit()))
+        return(EXIT_FAILURE);
 
 #define DO_TEST(name, version)                                          \
     do {                                                                \
@@ -224,6 +238,9 @@ mymain(int argc, char **argv)
     DO_TEST("fullvirt-sound", 2);
 
     DO_TEST("escape-paths", 2);
+
+    virCapabilitiesFree(caps);
+
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 

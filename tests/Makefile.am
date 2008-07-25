@@ -101,7 +101,7 @@ sexpr2xmltest_SOURCES = \
 sexpr2xmltest_LDADD = $(LDADDS)
 
 xmconfigtest_SOURCES = \
-	xmconfigtest.c \
+	xmconfigtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
 xmconfigtest_LDADD = $(LDADDS)
 

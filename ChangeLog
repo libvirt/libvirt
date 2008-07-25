@@ -1,3 +1,15 @@
+Fri Jul 25 14:29:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Prepare xm_internal driver for new domain XML apis.
+
+	* src/xm_internal.c, src/xm_internal.h: Track internal
+	domain objects as virDomainDefPtr instead of virConfPtr
+	objects, and start to use generic domain APIs
+	* tests/xmconfigdata/*: Update to follow XML ordering
+	for new APIs
+	* tests/xmconfigtest.c: Fixup to comply with new internal
+	APIs.
+
 Fri Jul 25 14:00:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/test.c: Increment dom ID tracker when setting up

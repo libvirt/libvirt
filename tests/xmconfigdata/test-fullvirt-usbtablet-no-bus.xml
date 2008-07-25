@@ -32,7 +32,7 @@
       <readonly/>
     </disk>
     <interface type='bridge'>
-      <mac address='00:16:3E:66:92:9C'/>
+      <mac address='00:16:3e:66:92:9c'/>
       <source bridge='xenbr1'/>
     </interface>
     <input type='tablet'/>
