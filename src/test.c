@@ -362,7 +362,7 @@ static int testOpenFromFile(virConnectPtr conn,
     memmove(&privconn->nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
 
     nodeInfo = &privconn->nodeInfo;
-    ret = virXPathLong("string(/node/cpu/nodes[1])", ctxt, &l);
+    ret = virXPathLong(conn, "string(/node/cpu/nodes[1])", ctxt, &l);
     if (ret == 0) {
         nodeInfo->nodes = l;
     } else if (ret == -2) {
@@ -370,7 +370,7 @@ static int testOpenFromFile(virConnectPtr conn,
         goto error;
     }
 
-    ret = virXPathLong("string(/node/cpu/sockets[1])", ctxt, &l);
+    ret = virXPathLong(conn, "string(/node/cpu/sockets[1])", ctxt, &l);
     if (ret == 0) {
         nodeInfo->sockets = l;
     } else if (ret == -2) {
@@ -378,7 +378,7 @@ static int testOpenFromFile(virConnectPtr conn,
         goto error;
     }
 
-    ret = virXPathLong("string(/node/cpu/cores[1])", ctxt, &l);
+    ret = virXPathLong(conn, "string(/node/cpu/cores[1])", ctxt, &l);
     if (ret == 0) {
         nodeInfo->cores = l;
     } else if (ret == -2) {
@@ -386,7 +386,7 @@ static int testOpenFromFile(virConnectPtr conn,
         goto error;
     }
 
-    ret = virXPathLong("string(/node/cpu/threads[1])", ctxt, &l);
+    ret = virXPathLong(conn, "string(/node/cpu/threads[1])", ctxt, &l);
     if (ret == 0) {
         nodeInfo->threads = l;
     } else if (ret == -2) {
@@ -395,7 +395,7 @@ static int testOpenFromFile(virConnectPtr conn,
     }
 
     nodeInfo->cpus = nodeInfo->cores * nodeInfo->threads * nodeInfo->sockets * nodeInfo->nodes;
-    ret = virXPathLong("string(/node/cpu/active[1])", ctxt, &l);
+    ret = virXPathLong(conn, "string(/node/cpu/active[1])", ctxt, &l);
     if (ret == 0) {
         if (l < nodeInfo->cpus) {
             nodeInfo->cpus = l;
@@ -404,7 +404,7 @@ static int testOpenFromFile(virConnectPtr conn,
         testError(NULL, NULL, NULL, VIR_ERR_XML_ERROR, _("node active cpu"));
         goto error;
     }
-    ret = virXPathLong("string(/node/cpu/mhz[1])", ctxt, &l);
+    ret = virXPathLong(conn, "string(/node/cpu/mhz[1])", ctxt, &l);
     if (ret == 0) {
         nodeInfo->mhz = l;
     } else if (ret == -2) {
@@ -412,14 +412,14 @@ static int testOpenFromFile(virConnectPtr conn,
         goto error;
     }
 
-    str = virXPathString("string(/node/cpu/model[1])", ctxt);
+    str = virXPathString(conn, "string(/node/cpu/model[1])", ctxt);
     if (str != NULL) {
         strncpy(nodeInfo->model, str, sizeof(nodeInfo->model)-1);
         nodeInfo->model[sizeof(nodeInfo->model)-1] = '\0';
         VIR_FREE(str);
     }
 
-    ret = virXPathLong("string(/node/memory[1])", ctxt, &l);
+    ret = virXPathLong(conn, "string(/node/memory[1])", ctxt, &l);
     if (ret == 0) {
         nodeInfo->memory = l;
     } else if (ret == -2) {
@@ -427,7 +427,7 @@ static int testOpenFromFile(virConnectPtr conn,
         goto error;
     }
 
-    ret = virXPathNodeSet("/node/domain", ctxt, &domains);
+    ret = virXPathNodeSet(conn, "/node/domain", ctxt, &domains);
     if (ret < 0) {
         testError(NULL, NULL, NULL, VIR_ERR_XML_ERROR, _("node domain list"));
         goto error;
@@ -464,7 +464,7 @@ static int testOpenFromFile(virConnectPtr conn,
     if (domains != NULL)
         VIR_FREE(domains);
 
-    ret = virXPathNodeSet("/node/network", ctxt, &networks);
+    ret = virXPathNodeSet(conn, "/node/network", ctxt, &networks);
     if (ret < 0) {
         testError(NULL, NULL, NULL, VIR_ERR_XML_ERROR, _("node network list"));
         goto error;

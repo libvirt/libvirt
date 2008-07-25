@@ -243,14 +243,14 @@ virNetworkDefParseXML(virConnectPtr conn,
     }
 
     /* Extract network name */
-    def->name = virXPathString("string(./name[1])", ctxt);
+    def->name = virXPathString(conn, "string(./name[1])", ctxt);
     if (!def->name) {
         virNetworkReportError(conn, VIR_ERR_NO_NAME, NULL);
         goto error;
     }
 
     /* Extract network uuid */
-    tmp = virXPathString("string(./uuid[1])", ctxt);
+    tmp = virXPathString(conn, "string(./uuid[1])", ctxt);
     if (!tmp) {
         int err;
         if ((err = virUUIDGenerate(def->uuid))) {
@@ -269,16 +269,16 @@ virNetworkDefParseXML(virConnectPtr conn,
     }
 
     /* Parse bridge information */
-    def->bridge = virXPathString("string(./bridge[1]/@name)", ctxt);
-    tmp = virXPathString("string(./bridge[1]/@stp)", ctxt);
+    def->bridge = virXPathString(conn, "string(./bridge[1]/@name)", ctxt);
+    tmp = virXPathString(conn, "string(./bridge[1]/@stp)", ctxt);
     def->stp = (tmp && STREQ(tmp, "off")) ? 0 : 1;
     VIR_FREE(tmp);
 
-    if (virXPathULong("string(./bridge[1]/@delay)", ctxt, &def->delay) < 0)
+    if (virXPathULong(conn, "string(./bridge[1]/@delay)", ctxt, &def->delay) < 0)
         def->delay = 0;
 
-    def->ipAddress = virXPathString("string(./ip[1]/@address)", ctxt);
-    def->netmask = virXPathString("string(./ip[1]/@netmask)", ctxt);
+    def->ipAddress = virXPathString(conn, "string(./ip[1]/@address)", ctxt);
+    def->netmask = virXPathString(conn, "string(./ip[1]/@netmask)", ctxt);
     if (def->ipAddress &&
         def->netmask) {
         /* XXX someday we want IPv6 too, so inet_aton won't work there */
@@ -307,14 +307,14 @@ virNetworkDefParseXML(virConnectPtr conn,
             goto error;
         }
 
-        if ((dhcp = virXPathNode("./ip[1]/dhcp[1]", ctxt)) &&
+        if ((dhcp = virXPathNode(conn, "./ip[1]/dhcp[1]", ctxt)) &&
             virNetworkDHCPRangeDefParseXML(conn, def, dhcp) < 0)
             goto error;
     }
 
 
     /* IPv4 forwarding setup */
-    if (virXPathBoolean("count(./forward) > 0", ctxt)) {
+    if (virXPathBoolean(conn, "count(./forward) > 0", ctxt)) {
         if (!def->ipAddress ||
             !def->netmask) {
             virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -322,7 +322,7 @@ virNetworkDefParseXML(virConnectPtr conn,
             goto error;
         }
 
-        tmp = virXPathString("string(./forward[1]/@mode)", ctxt);
+        tmp = virXPathString(conn, "string(./forward[1]/@mode)", ctxt);
         if (tmp) {
             if ((def->forwardType = virNetworkForwardTypeFromString(tmp)) < 0) {
                 virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -336,7 +336,7 @@ virNetworkDefParseXML(virConnectPtr conn,
         }
 
 
-        def->forwardDev = virXPathString("string(./forward[1]/@dev)", ctxt);
+        def->forwardDev = virXPathString(conn, "string(./forward[1]/@dev)", ctxt);
     } else {
         def->forwardType = VIR_NETWORK_FORWARD_NONE;
     }

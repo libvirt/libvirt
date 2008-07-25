@@ -11,28 +11,37 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
-int		virXPathBoolean	(const char *xpath,
+int		virXPathBoolean	(virConnectPtr conn,
+                                 const char *xpath,
                                  xmlXPathContextPtr ctxt);
-char *		virXPathString	(const char *xpath,
+char *		virXPathString	(virConnectPtr conn,
+                                 const char *xpath,
                                  xmlXPathContextPtr ctxt);
-int		virXPathNumber	(const char *xpath,
+int		virXPathNumber	(virConnectPtr conn,
+                                 const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  double *value);
-int		virXPathInt	(const char *xpath,
+int		virXPathInt	(virConnectPtr conn,
+                                 const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  int *value);
-int		virXPathUInt	(const char *xpath,
+int		virXPathUInt	(virConnectPtr conn,
+                                 const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  unsigned int *value);
-int		virXPathLong	(const char *xpath,
+int		virXPathLong	(virConnectPtr conn,
+                                 const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  long *value);
-int		virXPathULong	(const char *xpath,
+int		virXPathULong	(virConnectPtr conn,
+                                 const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  unsigned long *value);
-xmlNodePtr	virXPathNode	(const char *xpath,
+xmlNodePtr	virXPathNode	(virConnectPtr conn,
+                                 const char *xpath,
                                  xmlXPathContextPtr ctxt);
-int		virXPathNodeSet	(const char *xpath,
+int		virXPathNodeSet	(virConnectPtr conn,
+                                 const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  xmlNodePtr **list);
 

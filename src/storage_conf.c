@@ -149,14 +149,14 @@ static int
 virStoragePoolDefParseAuthChap(virConnectPtr conn,
                                xmlXPathContextPtr ctxt,
                                virStoragePoolAuthChapPtr auth) {
-    auth->login = virXPathString("string(/pool/source/auth/@login)", ctxt);
+    auth->login = virXPathString(conn, "string(/pool/source/auth/@login)", ctxt);
     if (auth->login == NULL) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR,
                               "%s", _("missing auth host attribute"));
         return -1;
     }
 
-    auth->passwd = virXPathString("string(/pool/source/auth/@passwd)", ctxt);
+    auth->passwd = virXPathString(conn, "string(/pool/source/auth/@passwd)", ctxt);
     if (auth->passwd == NULL) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR,
                               "%s", _("missing auth passwd attribute"));
@@ -174,7 +174,7 @@ virStoragePoolDefParsePerms(virConnectPtr conn,
     char *mode;
     long v;
 
-    mode = virXPathString("string(/pool/permissions/mode)", ctxt);
+    mode = virXPathString(conn, "string(/pool/permissions/mode)", ctxt);
     if (!mode) {
         perms->mode = 0700;
     } else {
@@ -187,10 +187,10 @@ virStoragePoolDefParsePerms(virConnectPtr conn,
         }
     }
 
-    if (virXPathNode("/pool/permissions/owner", ctxt) == NULL) {
+    if (virXPathNode(conn, "/pool/permissions/owner", ctxt) == NULL) {
         perms->uid = getuid();
     } else {
-        if (virXPathLong("number(/pool/permissions/owner)", ctxt, &v) < 0) {
+        if (virXPathLong(conn, "number(/pool/permissions/owner)", ctxt, &v) < 0) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   "%s", _("malformed owner element"));
             return -1;
@@ -198,10 +198,10 @@ virStoragePoolDefParsePerms(virConnectPtr conn,
         perms->uid = (int)v;
     }
 
-    if (virXPathNode("/pool/permissions/group", ctxt) == NULL) {
+    if (virXPathNode(conn, "/pool/permissions/group", ctxt) == NULL) {
         perms->uid = getgid();
     } else {
-        if (virXPathLong("number(/pool/permissions/group)", ctxt, &v) < 0) {
+        if (virXPathLong(conn, "number(/pool/permissions/group)", ctxt, &v) < 0) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   "%s", _("malformed group element"));
             return -1;
@@ -210,7 +210,7 @@ virStoragePoolDefParsePerms(virConnectPtr conn,
     }
 
     /* NB, we're ignoring missing labels here - they'll simply inherit */
-    perms->label = virXPathString("string(/pool/permissions/label)", ctxt);
+    perms->label = virXPathString(conn, "string(/pool/permissions/label)", ctxt);
 
     return 0;
 }
@@ -248,13 +248,13 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
         goto cleanup;
     }
 
-    if ((ret->name = virXPathString("string(/pool/name)", ctxt)) == NULL) {
+    if ((ret->name = virXPathString(conn, "string(/pool/name)", ctxt)) == NULL) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR,
                               "%s", _("missing name element"));
         goto cleanup;
     }
 
-    uuid = virXPathString("string(/pool/uuid)", ctxt);
+    uuid = virXPathString(conn, "string(/pool/uuid)", ctxt);
     if (uuid == NULL) {
         if (virUUIDGenerate(ret->uuid) < 0) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -271,7 +271,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
     }
 
     if (options->formatFromString) {
-        char *format = virXPathString("string(/pool/source/format/@type)", ctxt);
+        char *format = virXPathString(conn, "string(/pool/source/format/@type)", ctxt);
         if ((ret->source.format = (options->formatFromString)(conn, format)) < 0) {
             VIR_FREE(format);
             goto cleanup;
@@ -280,7 +280,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
     }
 
     if (options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_HOST) {
-        if ((ret->source.host.name = virXPathString("string(/pool/source/host/@name)", ctxt)) == NULL) {
+        if ((ret->source.host.name = virXPathString(conn, "string(/pool/source/host/@name)", ctxt)) == NULL) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   "%s", _("missing source host name"));
             goto cleanup;
@@ -290,7 +290,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
         xmlNodePtr *nodeset = NULL;
         int nsource, i;
 
-        if ((nsource = virXPathNodeSet("/pool/source/device", ctxt, &nodeset)) <= 0) {
+        if ((nsource = virXPathNodeSet(conn, "/pool/source/device", ctxt, &nodeset)) <= 0) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   "%s", _("cannot extract source devices"));
             goto cleanup;
@@ -314,7 +314,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
         ret->source.ndevice = nsource;
     }
     if (options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_DIR) {
-        if ((ret->source.dir = virXPathString("string(/pool/source/dir/@path)", ctxt)) == NULL) {
+        if ((ret->source.dir = virXPathString(conn, "string(/pool/source/dir/@path)", ctxt)) == NULL) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   "%s", _("missing source path"));
             goto cleanup;
@@ -322,7 +322,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
     }
 
 
-    authType = virXPathString("string(/pool/source/auth/@type)", ctxt);
+    authType = virXPathString(conn, "string(/pool/source/auth/@type)", ctxt);
     if (authType == NULL) {
         ret->source.authType = VIR_STORAGE_POOL_AUTH_NONE;
     } else {
@@ -343,7 +343,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
             goto cleanup;
     }
 
-    if ((ret->target.path = virXPathString("string(/pool/target/path)", ctxt)) == NULL) {
+    if ((ret->target.path = virXPathString(conn, "string(/pool/target/path)", ctxt)) == NULL) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR,
                               "%s", _("missing target path"));
         goto cleanup;
@@ -522,7 +522,7 @@ virStorageVolDefParsePerms(virConnectPtr conn,
     char *mode;
     long v;
 
-    mode = virXPathString("string(/volume/permissions/mode)", ctxt);
+    mode = virXPathString(conn, "string(/volume/permissions/mode)", ctxt);
     if (!mode) {
         perms->mode = 0600;
     } else {
@@ -535,20 +535,20 @@ virStorageVolDefParsePerms(virConnectPtr conn,
         }
     }
 
-    if (virXPathNode("/volume/permissions/owner", ctxt) == NULL) {
+    if (virXPathNode(conn, "/volume/permissions/owner", ctxt) == NULL) {
         perms->uid = getuid();
     } else {
-        if (virXPathLong("number(/volume/permissions/owner)", ctxt, &v) < 0) {
+        if (virXPathLong(conn, "number(/volume/permissions/owner)", ctxt, &v) < 0) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   "%s", _("missing owner element"));
             return -1;
         }
         perms->uid = (int)v;
     }
-    if (virXPathNode("/volume/permissions/group", ctxt) == NULL) {
+    if (virXPathNode(conn, "/volume/permissions/group", ctxt) == NULL) {
         perms->gid = getgid();
     } else {
-        if (virXPathLong("number(/volume/permissions/group)", ctxt, &v) < 0) {
+        if (virXPathLong(conn, "number(/volume/permissions/group)", ctxt, &v) < 0) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   "%s", _("missing owner element"));
             return -1;
@@ -557,7 +557,7 @@ virStorageVolDefParsePerms(virConnectPtr conn,
     }
 
     /* NB, we're ignoring missing labels here - they'll simply inherit */
-    perms->label = virXPathString("string(/volume/permissions/label)", ctxt);
+    perms->label = virXPathString(conn, "string(/volume/permissions/label)", ctxt);
 
     return 0;
 }
@@ -662,7 +662,7 @@ virStorageVolDefParseDoc(virConnectPtr conn,
         goto cleanup;
     }
 
-    ret->name = virXPathString("string(/volume/name)", ctxt);
+    ret->name = virXPathString(conn, "string(/volume/name)", ctxt);
     if (ret->name == NULL) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR,
                               "%s", _("missing name element"));
@@ -670,10 +670,10 @@ virStorageVolDefParseDoc(virConnectPtr conn,
     }
 
     /* Auto-generated so deliberately ignore */
-    /*ret->key = virXPathString("string(/volume/key)", ctxt);*/
+    /*ret->key = virXPathString(conn, "string(/volume/key)", ctxt);*/
 
-    capacity = virXPathString("string(/volume/capacity)", ctxt);
-    unit = virXPathString("string(/volume/capacity/@unit)", ctxt);
+    capacity = virXPathString(conn, "string(/volume/capacity)", ctxt);
+    unit = virXPathString(conn, "string(/volume/capacity/@unit)", ctxt);
     if (capacity == NULL) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR,
                               "%s", _("missing capacity element"));
@@ -684,9 +684,9 @@ virStorageVolDefParseDoc(virConnectPtr conn,
     VIR_FREE(capacity);
     VIR_FREE(unit);
 
-    allocation = virXPathString("string(/volume/allocation)", ctxt);
+    allocation = virXPathString(conn, "string(/volume/allocation)", ctxt);
     if (allocation) {
-        unit = virXPathString("string(/volume/allocation/@unit)", ctxt);
+        unit = virXPathString(conn, "string(/volume/allocation/@unit)", ctxt);
         if (virStorageSize(conn, unit, allocation, &ret->allocation) < 0)
             goto cleanup;
         VIR_FREE(allocation);
@@ -695,9 +695,9 @@ virStorageVolDefParseDoc(virConnectPtr conn,
         ret->allocation = ret->capacity;
     }
 
-    ret->target.path = virXPathString("string(/volume/target/path)", ctxt);
+    ret->target.path = virXPathString(conn, "string(/volume/target/path)", ctxt);
     if (options->formatFromString) {
-        char *format = virXPathString("string(/volume/target/format/@type)", ctxt);
+        char *format = virXPathString(conn, "string(/volume/target/format/@type)", ctxt);
         if ((ret->target.format = (options->formatFromString)(conn, format)) < 0) {
             VIR_FREE(format);
             goto cleanup;

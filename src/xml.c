@@ -22,8 +22,6 @@
 #include "buf.h"
 #include "util.h"
 #include "memory.h"
-#include "xend_internal.h"      /* for is_sound_* functions */
-
 
 /**
  * virXMLError:
@@ -66,14 +64,16 @@ virXMLError(virConnectPtr conn, virErrorNumber error, const char *info,
  *         if the evaluation failed.
  */
 char *
-virXPathString(const char *xpath, xmlXPathContextPtr ctxt)
+virXPathString(virConnectPtr conn,
+               const char *xpath,
+               xmlXPathContextPtr ctxt)
 {
     xmlXPathObjectPtr obj;
     xmlNodePtr relnode;
     char *ret;
 
     if ((ctxt == NULL) || (xpath == NULL)) {
-        virXMLError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virXMLError(conn, VIR_ERR_INTERNAL_ERROR,
                     _("Invalid parameter to virXPathString()"), 0);
         return (NULL);
     }
@@ -87,7 +87,7 @@ virXPathString(const char *xpath, xmlXPathContextPtr ctxt)
     ret = strdup((char *) obj->stringval);
     xmlXPathFreeObject(obj);
     if (ret == NULL) {
-        virXMLError(NULL, VIR_ERR_NO_MEMORY, _("strdup failed"), 0);
+        virXMLError(conn, VIR_ERR_NO_MEMORY, _("strdup failed"), 0);
     }
     ctxt->node = relnode;
     return (ret);
@@ -105,13 +105,16 @@ virXPathString(const char *xpath, xmlXPathContextPtr ctxt)
  *         or -1 if the evaluation failed.
  */
 int
-virXPathNumber(const char *xpath, xmlXPathContextPtr ctxt, double *value)
+virXPathNumber(virConnectPtr conn,
+               const char *xpath,
+               xmlXPathContextPtr ctxt,
+               double *value)
 {
     xmlXPathObjectPtr obj;
     xmlNodePtr relnode;
 
     if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
-        virXMLError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virXMLError(conn, VIR_ERR_INTERNAL_ERROR,
                     _("Invalid parameter to virXPathNumber()"), 0);
         return (-1);
     }
@@ -143,14 +146,17 @@ virXPathNumber(const char *xpath, xmlXPathContextPtr ctxt, double *value)
  *         value doesn't have a long format.
  */
 int
-virXPathLong(const char *xpath, xmlXPathContextPtr ctxt, long *value)
+virXPathLong(virConnectPtr conn,
+             const char *xpath,
+             xmlXPathContextPtr ctxt,
+             long *value)
 {
     xmlXPathObjectPtr obj;
     xmlNodePtr relnode;
     int ret = 0;
 
     if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
-        virXMLError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virXMLError(conn, VIR_ERR_INTERNAL_ERROR,
                     _("Invalid parameter to virXPathNumber()"), 0);
         return (-1);
     }
@@ -195,14 +201,17 @@ virXPathLong(const char *xpath, xmlXPathContextPtr ctxt, long *value)
  *         value doesn't have a long format.
  */
 int
-virXPathULong(const char *xpath, xmlXPathContextPtr ctxt, unsigned long *value)
+virXPathULong(virConnectPtr conn,
+              const char *xpath,
+              xmlXPathContextPtr ctxt,
+              unsigned long *value)
 {
     xmlXPathObjectPtr obj;
     xmlNodePtr relnode;
     int ret = 0;
 
     if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
-        virXMLError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virXMLError(conn, VIR_ERR_INTERNAL_ERROR,
                     _("Invalid parameter to virXPathNumber()"), 0);
         return (-1);
     }
@@ -251,14 +260,16 @@ virXMLPropString(xmlNodePtr node,
  * Returns 0 if false, 1 if true, or -1 if the evaluation failed.
  */
 int
-virXPathBoolean(const char *xpath, xmlXPathContextPtr ctxt)
+virXPathBoolean(virConnectPtr conn,
+                const char *xpath,
+                xmlXPathContextPtr ctxt)
 {
     xmlXPathObjectPtr obj;
     xmlNodePtr relnode;
     int ret;
 
     if ((ctxt == NULL) || (xpath == NULL)) {
-        virXMLError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virXMLError(conn, VIR_ERR_INTERNAL_ERROR,
                     _("Invalid parameter to virXPathBoolean()"), 0);
         return (-1);
     }
@@ -287,14 +298,16 @@ virXPathBoolean(const char *xpath, xmlXPathContextPtr ctxt)
  * Returns a pointer to the node or NULL if the evaluation failed.
  */
 xmlNodePtr
-virXPathNode(const char *xpath, xmlXPathContextPtr ctxt)
+virXPathNode(virConnectPtr conn,
+             const char *xpath,
+             xmlXPathContextPtr ctxt)
 {
     xmlXPathObjectPtr obj;
     xmlNodePtr relnode;
     xmlNodePtr ret;
 
     if ((ctxt == NULL) || (xpath == NULL)) {
-        virXMLError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virXMLError(conn, VIR_ERR_INTERNAL_ERROR,
                     _("Invalid parameter to virXPathNode()"), 0);
         return (NULL);
     }
@@ -326,15 +339,17 @@ virXPathNode(const char *xpath, xmlXPathContextPtr ctxt)
  *         must be freed) or -1 if the evaluation failed.
  */
 int
-virXPathNodeSet(const char *xpath, xmlXPathContextPtr ctxt,
-                xmlNodePtr ** list)
+virXPathNodeSet(virConnectPtr conn,
+                const char *xpath,
+                xmlXPathContextPtr ctxt,
+                xmlNodePtr **list)
 {
     xmlXPathObjectPtr obj;
     xmlNodePtr relnode;
     int ret;
 
     if ((ctxt == NULL) || (xpath == NULL)) {
-        virXMLError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virXMLError(conn, VIR_ERR_INTERNAL_ERROR,
                     _("Invalid parameter to virXPathNodeSet()"), 0);
         return (-1);
     }
@@ -354,7 +369,7 @@ virXPathNodeSet(const char *xpath, xmlXPathContextPtr ctxt,
     ret = obj->nodesetval->nodeNr;
     if (list != NULL && ret) {
         if (VIR_ALLOC_N(*list, ret) < 0) {
-            virXMLError(NULL, VIR_ERR_NO_MEMORY,
+            virXMLError(conn, VIR_ERR_NO_MEMORY,
                         _("allocate string array"),
                         ret * sizeof(**list));
             ret = -1;

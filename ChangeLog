@@ -1,3 +1,11 @@
+Fri Jul 25 15:21:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xml.c, src/xml.h: Take a virConnectPtr object as param
+	for all methods to allow proper error reporting.
+	* src/lxc_conf.c, src/domain_conf.c, src/network_conf.c,
+	src/storage_conf.c, src/test.c: Pass virConnect object
+	to XML routines
+
 Fri Jul 25 15:03:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c, src/xend_internal.h: Expose the

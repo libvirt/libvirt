@@ -210,7 +210,7 @@ static int lxcParseDomainInterfaces(virConnectPtr conn,
 
     DEBUG0("parsing nets");
 
-    res = virXPathNodeSet("/domain/devices/interface", contextPtr, &list);
+    res = virXPathNodeSet(conn, "/domain/devices/interface", contextPtr, &list);
     if (res > 0) {
         for (i = 0; i < res; ++i) {
             netDef = calloc(1, sizeof(lxc_net_def_t));
@@ -338,7 +338,7 @@ static int lxcParseDomainName(virConnectPtr conn, char **name,
 {
     char *res;
 
-    res = virXPathString("string(/domain/name[1])", contextPtr);
+    res = virXPathString(conn, "string(/domain/name[1])", contextPtr);
     if (res == NULL) {
         lxcError(conn, NULL, VIR_ERR_NO_NAME, NULL);
         return(-1);
@@ -353,7 +353,7 @@ static int lxcParseDomainUUID(virConnectPtr conn, unsigned char *uuid,
 {
     char *res;
 
-    res = virXPathString("string(/domain/uuid[1])", contextPtr);
+    res = virXPathString(conn, "string(/domain/uuid[1])", contextPtr);
     if (res == NULL) {
         if (virUUIDGenerate(uuid)) {
             lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -384,7 +384,7 @@ static int lxcParseDomainMounts(virConnectPtr conn,
     xmlNodePtr *list;
     int res;
 
-    res = virXPathNodeSet("/domain/devices/filesystem", contextPtr, &list);
+    res = virXPathNodeSet(conn, "/domain/devices/filesystem", contextPtr, &list);
     if (res > 0) {
         for (i = 0; i < res; ++i) {
             if (VIR_ALLOC(mountObj) < 0) {
@@ -422,7 +422,7 @@ static int lxcParseDomainInit(virConnectPtr conn, char** init,
 {
     char *res;
 
-    res = virXPathString("string(/domain/os/init[1])", contextPtr);
+    res = virXPathString(conn, "string(/domain/os/init[1])", contextPtr);
     if (res == NULL) {
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
                  _("invalid or missing init element"));
@@ -446,7 +446,7 @@ static int lxcParseDomainTty(virConnectPtr conn, char **tty, xmlXPathContextPtr 
 {
     char *res;
 
-    res = virXPathString("string(/domain/devices/console[1]/@tty)", contextPtr);
+    res = virXPathString(conn, "string(/domain/devices/console[1]/@tty)", contextPtr);
     if (res == NULL) {
         /* make sure the tty string is empty */
         *tty = strdup("");
@@ -466,7 +466,7 @@ static int lxcParseDomainMemory(virConnectPtr conn, int* memory, xmlXPathContext
     long res;
     int rc;
 
-    rc = virXPathLong("string(/domain/memory[1])", contextPtr, &res);
+    rc = virXPathLong(conn, "string(/domain/memory[1])", contextPtr, &res);
     if ((rc == -2) || ((rc == 0) && (res <= 0))) {
         *memory = -1;
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
