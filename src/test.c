@@ -259,7 +259,7 @@ static int testOpenDefault(virConnectPtr conn) {
         virDomainDefFree(domdef);
         goto error;
     }
-    domobj->def->id = 1;
+    domobj->def->id = privconn->nextDomID++;
     domobj->state = VIR_DOMAIN_RUNNING;
     domobj->persistent = 1;
 
@@ -776,6 +776,8 @@ static int testDestroyDomain (virDomainPtr domain)
     GET_DOMAIN(domain, -1);
 
     privdom->state = VIR_DOMAIN_SHUTOFF;
+    privdom->def->id = -1;
+    domain->id = -1;
     if (!privdom->persistent) {
         virDomainRemoveInactive(&privconn->domains,
                                 privdom);
@@ -1132,7 +1134,7 @@ static int testListDefinedDomains(virConnectPtr conn,
     dom = privconn->domains;
     memset(names, 0, sizeof(*names)*maxnames);
     while (dom && n < maxnames) {
-        if (virDomainIsActive(dom) &&
+        if (!virDomainIsActive(dom) &&
             !(names[n++] = strdup(dom->def->name)))
             goto no_memory;
         dom = dom->next;

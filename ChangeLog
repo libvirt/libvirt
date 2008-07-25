@@ -1,5 +1,11 @@
 Fri Jul 25 14:00:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
+	* src/test.c: Increment dom ID tracker when setting up
+	default domain. Reset dom ID when destroying domain. Fix
+	listing of defined domains
+
+Fri Jul 25 14:00:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
 	Convert XenD XML->SEXPR conversion to new domain XML APIs
 
 	* proxy/Makefile.am: no longer need to link xml.c
