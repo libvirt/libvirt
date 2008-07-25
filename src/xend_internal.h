@@ -113,6 +113,15 @@ xenDaemonParseSxprChar(virConnectPtr conn,
                        const char *value,
                        const char *tty);
 
+int
+xenDaemonFormatSxprChr(virConnectPtr conn,
+                       virDomainChrDefPtr def,
+                       virBufferPtr buf);
+int
+xenDaemonFormatSxprSound(virConnectPtr conn,
+                         virDomainSoundDefPtr sound,
+                         virBufferPtr buf);
+
 char *
 xenDaemonFormatSxpr(virConnectPtr conn,
                     virDomainDefPtr def,

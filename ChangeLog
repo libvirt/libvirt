@@ -1,3 +1,15 @@
+Fri Jul 25 15:03:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c, src/xend_internal.h: Expose the
+	xenDaemonFormatSxprChr and xenDaemonFormatSxprSound()
+	methods to the XM driver
+	* src/xm_internal.c, src/xm_internal.h: Switch to use
+	new domain APIs for the XML -> config formatter
+	* src/xml.h, src/xml.c: Remove unused Xen specific
+	APIs which now live in xend_internal.c
+	* tests/xmconfigdata/test-fullvirt-usb*.cfg: Add an
+	explicit 'usb=1' config setting
+
 Fri Jul 25 14:48:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c, src/xend_internal.h: Remove the

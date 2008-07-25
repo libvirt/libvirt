@@ -39,16 +39,4 @@ int		virXPathNodeSet	(const char *xpath,
 char *          virXMLPropString(xmlNodePtr node,
                                  const char *name);
 
-char *
-virConvertCpuSet(virConnectPtr conn, const char *str, int maxcpu);
-
-char * virBuildSoundStringFromXML(virConnectPtr conn,
-                                  xmlXPathContextPtr ctxt);
-
-int
-virDomainParseXMLOSDescHVMChar(virConnectPtr conn,
-                               char *buf,
-                               size_t buflen,
-                               xmlNodePtr node);
-
 #endif                          /* __VIR_XML_H__ */

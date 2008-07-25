@@ -4936,11 +4936,10 @@ xenDaemonFormatSxprGraphicsOld(virConnectPtr conn,
     return 0;
 }
 
-static int
+int
 xenDaemonFormatSxprChr(virConnectPtr conn,
                        virDomainChrDefPtr def,
-                       virBufferPtr buf,
-                       const char *name)
+                       virBufferPtr buf)
 {
     const char *type = virDomainChrTypeToString(def->type);
 
@@ -4955,20 +4954,20 @@ xenDaemonFormatSxprChr(virConnectPtr conn,
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        virBufferVSprintf(buf, "(%s %s)", name, type);
+        virBufferVSprintf(buf, "%s", type);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        virBufferVSprintf(buf, "(%s %s:%s)", name, type, def->data.file.path);
+        virBufferVSprintf(buf, "%s:%s", type, def->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        virBufferVSprintf(buf, "(%s %s)", name, def->data.file.path);
+        virBufferVSprintf(buf, "%s", def->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
-        virBufferVSprintf(buf, "(%s %s:%s:%s%s)", name,
+        virBufferVSprintf(buf, "%s:%s:%s%s",
                           (def->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW ?
                            "tcp" : "telnet"),
                           (def->data.tcp.host ? def->data.tcp.host : ""),
@@ -4977,7 +4976,7 @@ xenDaemonFormatSxprChr(virConnectPtr conn,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
-        virBufferVSprintf(buf, "(%s %s:%s:%s@%s:%s)", name, type,
+        virBufferVSprintf(buf, "%s:%s:%s@%s:%s", type,
                           (def->data.udp.connectHost ? def->data.udp.connectHost : ""),
                           (def->data.udp.connectService ? def->data.udp.connectService : ""),
                           (def->data.udp.bindHost ? def->data.udp.bindHost : ""),
@@ -4985,7 +4984,7 @@ xenDaemonFormatSxprChr(virConnectPtr conn,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        virBufferVSprintf(buf, "(%s %s:%s%s)", name, type,
+        virBufferVSprintf(buf, "%s:%s%s", type,
                           def->data.nix.path,
                           def->data.nix.listen ? ",listen" : "");
         break;
@@ -5182,17 +5181,14 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
     return 0;
 }
 
-static int
+int
 xenDaemonFormatSxprSound(virConnectPtr conn,
                          virDomainSoundDefPtr sound,
                          virBufferPtr buf)
 {
     const char *str;
     virDomainSoundDefPtr prev = NULL;
-    if (!sound)
-        return 0;
 
-    virBufferAddLit(buf, "(soundhw '");
     while (sound) {
         if (!(str = virDomainSoundModelTypeToString(sound->model))) {
             virXendError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -5204,7 +5200,6 @@ xenDaemonFormatSxprSound(virConnectPtr conn,
         sound = sound->next;
     }
 
-    virBufferAddLit(buf, "')");
     return 0;
 }
 
@@ -5396,14 +5391,18 @@ xenDaemonFormatSxpr(virConnectPtr conn,
             }
 
             if (def->parallels) {
-                if (xenDaemonFormatSxprChr(conn, def->parallels, &buf, "parallel") < 0)
+                virBufferAddLit(&buf, "(parallel ");
+                if (xenDaemonFormatSxprChr(conn, def->parallels, &buf) < 0)
                     goto error;
+                virBufferAddLit(&buf, ")");
             } else {
                 virBufferAddLit(&buf, "(parallel none)");
             }
             if (def->serials) {
-                if (xenDaemonFormatSxprChr(conn, def->serials, &buf, "serial") < 0)
+                virBufferAddLit(&buf, "(serial ");
+                if (xenDaemonFormatSxprChr(conn, def->serials, &buf) < 0)
                     goto error;
+                virBufferAddLit(&buf, ")");
             } else {
                 virBufferAddLit(&buf, "(serial none)");
             }
@@ -5411,8 +5410,12 @@ xenDaemonFormatSxpr(virConnectPtr conn,
             if (def->localtime)
                 virBufferAddLit(&buf, "(localtime 1)");
 
-            if (xenDaemonFormatSxprSound(conn, def->sounds, &buf) < 0)
-                goto error;
+            if (def->sounds) {
+                virBufferAddLit(&buf, "(soundhw '");
+                if (xenDaemonFormatSxprSound(conn, def->sounds, &buf) < 0)
+                    goto error;
+                virBufferAddLit(&buf, "')");
+            }
         }
 
         /* get the device emulation model */

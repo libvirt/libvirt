@@ -25,9 +25,8 @@
 #ifndef _LIBVIRT_XM_INTERNAL_H_
 #define _LIBVIRT_XM_INTERNAL_H_
 
-#include "libvirt/libvirt.h"
-#include "conf.h"
 #include "internal.h"
+#include "conf.h"
 #include "domain_conf.h"
 
 extern struct xenUnifiedDriver xenXMDriver;
