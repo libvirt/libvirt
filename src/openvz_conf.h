@@ -29,6 +29,7 @@
 #define OPENVZ_CONF_H
 
 #include "openvz_driver.h"
+#include "domain_conf.h"
 
 enum { OPENVZ_WARN, OPENVZ_ERR };
 
@@ -61,33 +62,16 @@ struct vps_props {
 
 struct openvz_fs_def {
     char tmpl[OPENVZ_TMPL_MAX];
-    struct ovz_quota *quota;
-};
-
-struct ovz_ip {
-    char ip[OPENVZ_IP_MAX];
-    char netmask[OPENVZ_IP_MAX];
-    struct ovz_ip *next;
-};
-
-struct ovz_ns {
-    char ip[OPENVZ_IP_MAX];
-    struct ovz_ns *next;
-};
-
-struct openvz_net_def {
-    char hostname[OPENVZ_HOSTNAME_MAX];
-    char def_gw[OPENVZ_IP_MAX];
-    struct ovz_ip *ips;
-    struct ovz_ns *ns;
+    long int disksize, diskinodes;
 };
 
 struct openvz_vm_def {
     char name[OPENVZ_NAME_MAX];
     unsigned char uuid[VIR_UUID_BUFLEN];
     char profile[OPENVZ_PROFILE_MAX];
+    unsigned long vcpus;
     struct openvz_fs_def fs;
-    struct openvz_net_def net;
+    virDomainNetDefPtr net;
 };
 
 struct ovz_quota {
@@ -133,4 +117,7 @@ void openvzFreeDriver(struct openvz_driver *driver);
 void openvzFreeVM(struct openvz_driver *driver, struct openvz_vm *vm, int checkCallee);
 void openvzFreeVMDef(struct openvz_vm_def *def);
 int strtoI(const char *str);
+int openvzCheckEmptyMac(const unsigned char *mac);
+char *openvzMacToString(const unsigned char *mac);
+
 #endif /* OPENVZ_CONF_H */

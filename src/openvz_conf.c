@@ -56,6 +56,8 @@
 #include "buf.h"
 #include "memory.h"
 #include "util.h"
+#include "xml.h"
+#include "domain_conf.h"
 
 static char *openvzLocateConfDir(void);
 static struct openvz_vm_def *openvzParseXML(virConnectPtr conn, xmlDocPtr xml);
@@ -136,6 +138,34 @@ strtoI(const char *str)
     return val;
 }
 
+/* function checks MAC address is empty
+   return 0 - empty
+          1 - not
+*/
+int openvzCheckEmptyMac(const unsigned char *mac)
+{
+    int i;
+    for (i = 0; i < VIR_DOMAIN_NET_MAC_SIZE; i++)
+        if (mac[i] != 0x00)
+            return 1;
+
+    return 0;
+}
+
+/* convert mac address to string
+   return pointer to string or NULL
+*/
+char *openvzMacToString(const unsigned char *mac)
+{
+    char str[20];
+    if (snprintf(str, 18, "%02X:%02X:%02X:%02X:%02X:%02X",
+                      mac[0], mac[1], mac[2],
+                      mac[3], mac[4], mac[5]) >= 18)
+        return NULL;
+
+    return strdup(str);
+}
+
 void
 openvzRemoveInactiveVM(struct openvz_driver *driver, struct openvz_vm *vm)
 {
@@ -148,30 +178,7 @@ void
 openvzFreeVMDef(struct openvz_vm_def *def)
 {
     if (def) {
-        struct ovz_quota *quota = def->fs.quota;
-        struct ovz_ip *ip = def->net.ips;
-        struct ovz_ns *ns = def->net.ns;
-
-        while (quota) {
-            struct ovz_quota *prev = quota;
-
-            quota = quota->next;
-            VIR_FREE(prev);
-        }
-        while (ip) {
-            struct ovz_ip *prev = ip;
-
-            ip = ip->next;
-            VIR_FREE(prev);
-        }
-        while (ns) {
-            struct ovz_ns *prev = ns;
-
-            ns = ns->next;
-            VIR_FREE(prev);
-        }
-
-        VIR_FREE(def);
+        virDomainNetDefFree(def->net);
     }
 }
 
@@ -285,6 +292,91 @@ struct openvz_vm_def
     return def;
 }
 
+/* Parse filesystem section
+Sample:
+<filesystem type="template">
+      <source name="fedora-core-5-i386"/>
+      <quota type="size" max="10000"/>
+      <quota type="inodes" max="100"/>
+</filesystem>
+*/
+static int openvzParseDomainFS(virConnectPtr conn,
+                               struct openvz_fs_def *fs,
+                               xmlXPathContextPtr ctxt)
+{
+    xmlNodePtr cur, obj;
+    char *type = NULL;
+    int n;
+    xmlNodePtr *nodes = NULL;
+
+
+    if ((n = virXPathNodeSet("/domain/devices/filesystem", ctxt, &nodes)) < 0) {
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("missing filesystem tag"));
+        goto error;
+    }
+
+    if (n > 1) {
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("There should be only one filesystem tag"));
+        goto error;
+    }
+
+    obj = nodes[0];
+
+    /*check template type*/
+    type = virXMLPropString(obj, "type");
+    if (type == NULL) {
+         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("missing type attribute"));
+         goto error;
+    }
+
+    if (STRNEQ(type, "template")) {
+         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("Unknown type attribute %s"), type);
+         goto error;
+    }
+    VIR_FREE(type);
+
+    cur = obj->children;
+    while(cur != NULL)
+    {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(cur->name, BAD_CAST "source")) {
+                 char * name =  virXMLPropString(cur, "name");
+
+                 if (name != NULL) {
+                     strncpy(fs->tmpl, name,sizeof(fs->tmpl));
+                     fs->tmpl[sizeof(fs->tmpl) - 1] = '\0';
+                 }
+                 VIR_FREE(name);
+            } else if (xmlStrEqual(cur->name, BAD_CAST "quota")) {
+                 char * qtype =  virXMLPropString(cur, "type");
+                 char * max =  virXMLPropString(cur, "max");
+
+                 if (qtype != NULL && STREQ(qtype, "size") && max != NULL)
+                      fs->disksize = strtoI(max);
+                 else if (qtype != NULL && STREQ(qtype, "inodes") && max != NULL)
+                      fs->diskinodes = strtoI(max);
+                 VIR_FREE(qtype);
+                 VIR_FREE(max);
+            }
+        }
+        cur = cur->next;
+    }
+    VIR_FREE(nodes);
+
+    return 0;
+
+ error:
+    VIR_FREE(nodes);
+    VIR_FREE(type);
+
+    return -1;
+}
+
+
 /*
  * Parses a libvirt XML definition of a guest, and populates the
  * the openvz_vm struct with matching data about the guests config
@@ -293,12 +385,12 @@ static struct openvz_vm_def
 *openvzParseXML(virConnectPtr conn,
                         xmlDocPtr xml) {
     xmlNodePtr root = NULL;
-    xmlChar *prop = NULL;
+    char *prop = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlXPathObjectPtr obj = NULL;
-    struct openvz_vm_def *def;
-    struct ovz_ip *ovzIp;
-    struct ovz_ns *ovzNs;
+    struct openvz_vm_def *def = NULL;
+    xmlNodePtr *nodes = NULL;
+    int i, n;
 
     if (VIR_ALLOC(def) < 0) {
         openvzError(conn, VIR_ERR_NO_MEMORY, _("xmlXPathContext"));
@@ -306,7 +398,6 @@ static struct openvz_vm_def
     }
 
     /* Prepare parser / xpath context */
-
     root = xmlDocGetRootElement(xml);
     if ((root == NULL) || (!xmlStrEqual(root->name, BAD_CAST "domain"))) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("incorrect root element"));
@@ -318,14 +409,15 @@ static struct openvz_vm_def
         openvzError(conn, VIR_ERR_NO_MEMORY, _("xmlXPathContext"));
         goto bail_out;
     }
+    ctxt->node = root;
 
     /* Find out what type of OPENVZ virtualization to use */
-    if (!(prop = xmlGetProp(root, BAD_CAST "type"))) {
+    if (!(prop = virXMLPropString(root, "type"))) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("missing domain type attribute"));
         goto bail_out;
     }
 
-    if (STRNEQ((char *)prop, "openvz")){
+    if (STRNEQ(prop, "openvz")){
         openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("invalid domain type attribute"));
         goto bail_out;
     }
@@ -347,142 +439,55 @@ static struct openvz_vm_def
     }
     strncpy(def->name, (const char *) obj->stringval, OPENVZ_NAME_MAX);
     xmlXPathFreeObject(obj);
+    obj = NULL;
 
     /* Extract domain uuid */
-    obj = xmlXPathEval(BAD_CAST "string(/domain/uuid[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
-        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+    prop = virXPathString("string(./uuid[1])", ctxt);
+    if (!prop) {
         int err;
-
         if ((err = virUUIDGenerate(def->uuid))) {
-            openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("Failed to generate UUID"));
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("Failed to generate UUID: %s"),
+                                 strerror(err));
             goto bail_out;
         }
-    } else if (virUUIDParse((const char *)obj->stringval, def->uuid) < 0) {
-        openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("malformed uuid element"));
-        goto bail_out;
+    } else {
+        if (virUUIDParse(prop, def->uuid) < 0) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                                _("malformed uuid element"));
+            goto bail_out;
+        }
+        VIR_FREE(prop);
     }
-    xmlXPathFreeObject(obj);
+
+    /* extract virtual CPUs */
+    if (virXPathULong("string(./vcpu[1])", ctxt, &def->vcpus) < 0)
+        def->vcpus = 0; //use default CPUs count
 
     /* Extract filesystem info */
-    obj = xmlXPathEval(BAD_CAST "string(/domain/container/filesystem/template[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) ||	(obj->stringval == NULL)
-            || (obj->stringval[0] == 0)) {
-        openvzError(conn, VIR_ERR_OS_TYPE, NULL);
-        goto bail_out;
-    }
-    strncpy(def->fs.tmpl, (const char *) obj->stringval, OPENVZ_TMPL_MAX);
-    xmlXPathFreeObject(obj);
-
-    /* TODO Add quota processing here */
-
-    /* TODO analysis of the network devices */
-
-
-    /*          Extract network                 */
-        /*              Extract ipaddress           */
-    obj = xmlXPathEval(BAD_CAST"string(/domain/container/network/ipaddress[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL)
-            || (obj->stringval[0] == 0)) {
-        openvzLog(OPENVZ_WARN,
-                  _("No IP address in the given xml config file '%s'"),
-                  xml->name);
-    }
-    if (xmlStrlen(obj->stringval) >= (OPENVZ_IP_MAX)) {
+    if (openvzParseDomainFS(conn, &(def->fs), ctxt)) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("ipaddress length too long"));
+                               _("malformed filesystem tag"));
         goto bail_out;
     }
-    if (VIR_ALLOC(ovzIp) < 0) {
-        openvzLog(OPENVZ_ERR,
-                  _("Failed to Create Memory for 'ovz_ip' structure"));
-        goto bail_out;
-    }
-    strncpy(ovzIp->ip, (const char *) obj->stringval, OPENVZ_IP_MAX);
-    def->net.ips = ovzIp;
-    xmlXPathFreeObject(obj);
 
-        /*              Extract netmask             */
-    obj = xmlXPathEval(BAD_CAST "string(/domain/container/network/netmask[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING)
-        || (obj->stringval == NULL) || (obj->stringval[0] == 0))
-        openvzLog(OPENVZ_WARN,
-                  _("No Netmask address in the given xml config file '%s'"),
-                  xml->name);
-
-    if (strlen((const char *) obj->stringval) >= (OPENVZ_IP_MAX)) {
+    /* analysis of the network devices */
+    if ((n = virXPathNodeSet("/domain/devices/interface", ctxt, &nodes)) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("netmask length too long"));
+                             "%s", _("cannot extract network devices"));
         goto bail_out;
     }
-    strncpy(def->net.ips->netmask, (const char *) obj->stringval, OPENVZ_IP_MAX);
-    xmlXPathFreeObject(obj);
 
-        /*              Extract hostname            */
-    obj = xmlXPathEval(BAD_CAST "string(/domain/container/network/hostname[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL)
-            || (obj->stringval[0] == 0))
-        openvzLog(OPENVZ_WARN,
-                  _("No hostname in the given xml config file '%s'"),
-                  xml->name);
+    for (i = n - 1 ; i >= 0 ; i--) {
+        virDomainNetDefPtr net = virDomainNetDefParseXML(conn,
+                                                         nodes[i]);
+        if (!net)
+            goto bail_out;
 
-    if (strlen((const char *) obj->stringval) >= (OPENVZ_HOSTNAME_MAX - 1)) {
-        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                     _("hostname length too long"));
-        goto bail_out;
+        net->next = def->net;
+        def->net = net;
     }
-    strncpy(def->net.hostname, (const char *) obj->stringval, OPENVZ_HOSTNAME_MAX - 1);
-    xmlXPathFreeObject(obj);
-
-        /*              Extract gateway             */
-    obj = xmlXPathEval(BAD_CAST"string(/domain/container/network/gateway[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL)
-            || (obj->stringval[0] == 0))
-        openvzLog(OPENVZ_WARN,
-                  _("No Gateway address in the given xml config file '%s'"),
-                  xml->name);
-
-    if (strlen((const char *) obj->stringval) >= (OPENVZ_IP_MAX)) {
-        openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("gateway length too long"));
-        goto bail_out;
-    }
-    strncpy(def->net.def_gw, (const char *) obj->stringval, OPENVZ_IP_MAX);
-    xmlXPathFreeObject(obj);
-
-        /*              Extract nameserver          */
-    obj = xmlXPathEval(BAD_CAST "string(/domain/container/network/nameserver[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL)
-            || (obj->stringval[0] == 0))
-        openvzLog(OPENVZ_WARN,
-                  _("No Nameserver address inthe given xml config file '%s'"),
-                  xml->name);
-
-    if (strlen((const char *) obj->stringval) >= (OPENVZ_IP_MAX)) {
-        openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("nameserver length too long"));
-        goto bail_out;
-    }
-    if (VIR_ALLOC(ovzNs) < 0) {
-        openvzLog(OPENVZ_ERR,
-                  _("Failed to Create Memory for 'ovz_ns' structure"));
-        goto bail_out;
-    }
-    strncpy(ovzNs->ip, (const char *) obj->stringval, OPENVZ_IP_MAX);
-    def->net.ns = ovzNs;
-    xmlXPathFreeObject(obj);
-
-    /*          Extract profile         */
-    obj = xmlXPathEval(BAD_CAST "string(/domain/container/profile[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL)
-            || (obj->stringval[0] == 0)) {
-        openvzError(conn, VIR_ERR_INTERNAL_ERROR, NULL);
-        goto bail_out;
-    }
-    if (strlen((const char *) obj->stringval) >= (OPENVZ_PROFILE_MAX - 1)) {
-        openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("profile length too long"));
-        goto bail_out;
-    }
-    strncpy(def->profile, (const char *) obj->stringval, OPENVZ_PROFILE_MAX - 1);
-    xmlXPathFreeObject(obj);
+    VIR_FREE(nodes);
 
     xmlXPathFreeContext(ctxt);
     return def;

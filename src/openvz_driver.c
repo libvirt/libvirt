@@ -155,14 +155,6 @@ static int openvzDomainDefineCmd(virConnectPtr conn,
         ADD_ARG_LIT("--config");
         ADD_ARG_LIT(vmdef->profile);
     }
-    if ((vmdef->net.ips->ip && *(vmdef->net.ips->ip))) {
-        ADD_ARG_LIT("--ipadd");
-        ADD_ARG_LIT(vmdef->net.ips->ip);
-    }
-    if ((vmdef->net.hostname && *(vmdef->net.hostname))) {
-        ADD_ARG_LIT("--hostname");
-        ADD_ARG_LIT(vmdef->net.hostname);
-    }
 
     ADD_ARG(NULL);
     return 0;
@@ -336,6 +328,98 @@ static int openvzDomainReboot(virDomainPtr dom,
     return 0;
 }
 
+static int
+openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
+                        virDomainNetDefPtr net)
+{
+    int rc = 0, narg;
+    char *prog[OPENVZ_MAX_ARG];
+    char *mac = NULL;
+
+#define ADD_ARG_LIT(thisarg)                                            \
+    do {                                                                \
+        if (narg >= OPENVZ_MAX_ARG)                                             \
+                 goto no_memory;                                        \
+        if ((prog[narg++] = strdup(thisarg)) == NULL)                   \
+            goto no_memory;                                             \
+    } while (0)
+
+
+    if (net == NULL)
+       return 0;
+    if (vpsid == NULL) {
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("Container ID is not specified"));
+        return -1;
+    }
+
+    for (narg = 0; narg < OPENVZ_MAX_ARG; narg++)
+        prog[narg] = NULL;
+
+    narg = 0;
+
+    if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+        net->type == VIR_DOMAIN_NET_TYPE_ETHERNET) {
+        ADD_ARG_LIT(VZCTL);
+        ADD_ARG_LIT("--quiet");
+        ADD_ARG_LIT("set");
+        ADD_ARG_LIT(vpsid);
+    }
+
+    if (openvzCheckEmptyMac(net->mac) > 0)
+          mac = openvzMacToString(net->mac);
+
+    if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE &&
+           net->data.bridge.brname != NULL) {
+        char opt[1024];
+        //--netif_add ifname[,mac,host_ifname,host_mac]
+        ADD_ARG_LIT("--netif_add") ;
+        strncpy(opt, net->data.bridge.brname, 256);
+        if (mac != NULL) {
+            strcat(opt, ",");
+            strcat(opt, mac);
+        }
+        ADD_ARG_LIT(opt) ;
+    }else if (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
+              net->data.ethernet.ipaddr != NULL) {
+        //--ipadd ip
+        ADD_ARG_LIT("--ipadd") ;
+        ADD_ARG_LIT(net->data.ethernet.ipaddr) ;
+    }
+
+    //TODO: processing NAT and physical device
+
+    if (prog[0] != NULL){
+        ADD_ARG_LIT("--save");
+        if (virRun(conn, (char **)prog, NULL) < 0) {
+           openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("Could not exec %s"), VZCTL);
+           rc = -1;
+           goto exit;
+        }
+    }
+
+    if (net->next != NULL)
+       if (openvzDomainSetNetwork(conn, vpsid, net->next) < 0) {
+          rc = -1;
+          goto exit;
+       }
+
+ exit:
+    cmdExecFree(prog);
+    VIR_FREE(mac);
+    return rc;
+
+ no_memory:
+    openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                _("Could not put argument to %s"), VZCTL);
+    cmdExecFree(prog);
+    VIR_FREE(mac);
+    return -1;
+
+#undef ADD_ARG_LIT
+}
+
 static virDomainPtr
 openvzDomainDefineXML(virConnectPtr conn, const char *xml)
 {
@@ -366,6 +450,9 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
         goto exit;
     }
 
+    //TODO: set number virtual CPUs
+    //TODO: set quota
+
     if (virRun(conn, (char **)prog, NULL) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZCTL);
@@ -375,7 +462,14 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     dom = virGetDomain(conn, vm->vmdef->name, vm->vmdef->uuid);
     if (dom)
         dom->id = vm->vpsid;
- exit:
+
+    if (openvzDomainSetNetwork(conn, vmdef->name, vmdef->net) < 0) {
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                  _("Could not configure network"));
+        goto exit;
+    }
+
+    exit:
     cmdExecFree(prog);
     return dom;
 }
@@ -417,6 +511,12 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
     if (virRun(conn, (char **)progcreate, NULL) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZCTL);
+        goto exit;
+    }
+
+    if (openvzDomainSetNetwork(conn, vmdef->name, vmdef->net) < 0) {
+       openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                  _("Could not configure network"));
         goto exit;
     }
 

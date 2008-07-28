@@ -640,7 +640,7 @@ static void virDomainNetRandomMAC(virDomainNetDefPtr def) {
  * @param node XML nodeset to parse for net definition
  * @return 0 on success, -1 on failure
  */
-static virDomainNetDefPtr
+virDomainNetDefPtr
 virDomainNetDefParseXML(virConnectPtr conn,
                         xmlNodePtr node) {
     virDomainNetDefPtr def;

@@ -474,6 +474,9 @@ int virDomainLoadAllConfigs(virConnectPtr conn,
 int virDomainDeleteConfig(virConnectPtr conn,
                           virDomainObjPtr dom);
 
+virDomainNetDefPtr virDomainNetDefParseXML(virConnectPtr conn,
+                        xmlNodePtr node);
+
 VIR_ENUM_DECL(virDomainVirt)
 VIR_ENUM_DECL(virDomainBoot)
 VIR_ENUM_DECL(virDomainFeature)
