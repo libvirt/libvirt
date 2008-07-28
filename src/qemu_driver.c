@@ -2013,10 +2013,21 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
         return NULL;
 
     vm = virDomainFindByName(driver->domains, def->name);
-    if (vm && virDomainIsActive(vm)) {
+    if (vm) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("domain %s is already defined and running"),
+                         _("domain '%s' is already defined and running"),
                          def->name);
+        virDomainDefFree(def);
+        return NULL;
+    }
+    vm = virDomainFindByUUID(driver->domains, def->uuid);
+    if (vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(def->uuid, uuidstr);
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("domain with uuid '%s' is already defined and running"),
+                         uuidstr);
         virDomainDefFree(def);
         return NULL;
     }

@@ -1,3 +1,8 @@
+Mon Jul 28 14:50:55 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: patch from Guido Günther to make sure create
+	  doesn't override an existing domain definition or UUID
+
 Fri Jul 25 17:21:27 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/domain_conf.c: Fix typos in comments, and the dummy
