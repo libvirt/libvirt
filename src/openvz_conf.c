@@ -310,7 +310,8 @@ static int openvzParseDomainFS(virConnectPtr conn,
     xmlNodePtr *nodes = NULL;
 
 
-    if ((n = virXPathNodeSet("/domain/devices/filesystem", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet(conn, "/domain/devices/filesystem",
+                             ctxt, &nodes)) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                                    _("missing filesystem tag"));
         goto error;
@@ -442,7 +443,7 @@ static struct openvz_vm_def
     obj = NULL;
 
     /* Extract domain uuid */
-    prop = virXPathString("string(./uuid[1])", ctxt);
+    prop = virXPathString(conn, "string(./uuid[1])", ctxt);
     if (!prop) {
         int err;
         if ((err = virUUIDGenerate(def->uuid))) {
@@ -461,7 +462,7 @@ static struct openvz_vm_def
     }
 
     /* extract virtual CPUs */
-    if (virXPathULong("string(./vcpu[1])", ctxt, &def->vcpus) < 0)
+    if (virXPathULong(conn, "string(./vcpu[1])", ctxt, &def->vcpus) < 0)
         def->vcpus = 0; //use default CPUs count
 
     /* Extract filesystem info */
@@ -472,7 +473,8 @@ static struct openvz_vm_def
     }
 
     /* analysis of the network devices */
-    if ((n = virXPathNodeSet("/domain/devices/interface", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet(conn, "/domain/devices/interface",
+                             ctxt, &nodes)) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot extract network devices"));
         goto bail_out;

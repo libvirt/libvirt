@@ -144,9 +144,9 @@ AC_ARG_WITH([xen],
 AC_ARG_WITH([qemu],
 [  --with-qemu             add QEMU/KVM support (on)],[],[with_qemu=yes])
 AC_ARG_WITH([openvz],
-[  --with-openvz           add OpenVZ support (off)],[],[with_openvz=no])
+[  --with-openvz           add OpenVZ support (on)],[],[with_openvz=yes])
 AC_ARG_WITH([lxc],
-[  --with-lxc              add Linux Container support (off)],[],[with_lxc=no])
+[  --with-lxc              add Linux Container support (on)],[],[with_lxc=yes])
 AC_ARG_WITH([test],
 [  --with-test             add test driver support (on)],[],[with_test=yes])
 AC_ARG_WITH([remote],
