@@ -888,13 +888,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
 
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-                media = "media=cdrom,";
-
             switch (disk->device) {
             case VIR_DOMAIN_DISK_DEVICE_CDROM:
                 bootable = bootCD;
                 bootCD = 0;
+                media = "media=cdrom,";
                 break;
             case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
                 bootable = bootFloppy;
@@ -907,7 +905,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
             }
 
             snprintf(opt, PATH_MAX, "file=%s,if=%s,%sindex=%d%s",
-                     disk->src, bus,
+                     disk->src ? disk->src : "", bus,
                      media ? media : "",
                      idx,
                      bootable &&

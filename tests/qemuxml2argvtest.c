@@ -145,6 +145,7 @@ mymain(int argc, char **argv)
     DO_TEST("clock-utc", 0);
     DO_TEST("clock-localtime", 0);
     DO_TEST("disk-cdrom", 0);
+    DO_TEST("disk-cdrom-empty", QEMUD_CMD_FLAG_DRIVE);
     DO_TEST("disk-floppy", 0);
     DO_TEST("disk-many", 0);
     DO_TEST("disk-virtio", QEMUD_CMD_FLAG_DRIVE |

@@ -1,3 +1,11 @@
+Tue Jul 29 14:08:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+
+	* src/qemu_conf.c: fix empty CD-ROM source device section
+	* tests/qemuxml2argvtest.c,
+	tests/qemuxml2argvdata/qemuxml2argv-disk-cdrom-empty.xml,
+	tests/qemuxml2argvdata/qemuxml2argv-disk-cdrom-empty.args: Add test
+	for empty source CD-ROM device section
+		
 Tue Jul 29 10:41:30 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_conf.c: fix compilation with new XPath interface
