@@ -3242,7 +3242,7 @@ qemudDomainInterfaceStats (virDomainPtr dom,
 
     /* Check the path is one of the domain's network interfaces. */
     for (net = vm->def->nets; net; net = net->next) {
-        if (STREQ (net->ifname, path))
+        if (net->ifname && STREQ (net->ifname, path))
             goto ok;
     }
 

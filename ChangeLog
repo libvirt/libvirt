@@ -1,3 +1,8 @@
+Wed Jul 30 11:18:50 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: patch from Guido Günther, interface stats should
+	  not crash on interfaces without an ifname.
+
 Wed Jul 30 10:51:12 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/storage_backend_logical.c: patch from David Lively fixing
