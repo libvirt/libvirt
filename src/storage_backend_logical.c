@@ -200,9 +200,11 @@ virStorageBackendLogicalFindLVs(virConnectPtr conn,
      * Pull out name & uuid, device, device extent start #, segment size, extent size.
      *
      * NB can be multiple rows per volume if they have many extents
+     *
+     * NB lvs from some distros (e.g. SLES10 SP2) outputs trailing ":" on each line
      */
     const char *regexes[] = {
-        "^\\s*(\\S+):(\\S+):(\\S+)\\((\\S+)\\):(\\S+):(\\S+)\\s*$"
+        "^\\s*(\\S+):(\\S+):(\\S+)\\((\\S+)\\):(\\S+):([0-9]+):?\\s*$"
     };
     int vars[] = {
         6
@@ -351,9 +353,11 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn,
      *    10603200512:4328521728
      *
      * Pull out size & free
+     *
+     * NB vgs from some distros (e.g. SLES10 SP2) outputs trailing ":" on each line
      */
     const char *regexes[] = {
-        "^\\s*(\\S+):(\\S+)\\s*$"
+        "^\\s*(\\S+):([0-9]+):?\\s*$"
     };
     int vars[] = {
         2
