@@ -1,3 +1,9 @@
+Thu Jul 31 15:37:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/domain_conf.c: fix previous patch to ensure port number
+	is kept as '-1' when autoport is set, and the domain is not
+	running.
+
 Thu Jul 31 14:27:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
 
 	* src/domain_conf.c: patch from Charles Duffy to make sure we print

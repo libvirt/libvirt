@@ -2416,6 +2416,7 @@ virDomainInputDefFormat(virConnectPtr conn,
 static int
 virDomainGraphicsDefFormat(virConnectPtr conn,
                            virBufferPtr buf,
+                           virDomainDefPtr vm,
                            virDomainGraphicsDefPtr def,
                            int flags)
 {
@@ -2431,7 +2432,8 @@ virDomainGraphicsDefFormat(virConnectPtr conn,
 
     switch (def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        if (def->data.vnc.port)
+        if (def->data.vnc.port &&
+            (!def->data.vnc.autoport || vm->id != -1))
             virBufferVSprintf(buf, " port='%d'",
                               def->data.vnc.port);
         else if (def->data.vnc.autoport)
@@ -2674,7 +2676,7 @@ char *virDomainDefFormat(virConnectPtr conn,
         if (virDomainInputDefFormat(conn, &buf, &autoInput) < 0)
             goto cleanup;
 
-        if (virDomainGraphicsDefFormat(conn, &buf, def->graphics, flags) < 0)
+        if (virDomainGraphicsDefFormat(conn, &buf, def, def->graphics, flags) < 0)
             goto cleanup;
     }
 
