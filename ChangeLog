@@ -1,3 +1,8 @@
+Thu Jul 31 14:27:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+
+	* src/domain_conf.c: patch from Charles Duffy to make sure we print
+	the "real" vncport if it exists instead of -1.
+
 Wed Jul 30 11:18:50 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: patch from Guido Günther, interface stats should

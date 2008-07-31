@@ -2431,11 +2431,11 @@ virDomainGraphicsDefFormat(virConnectPtr conn,
 
     switch (def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        if (def->data.vnc.autoport)
-            virBufferAddLit(buf, " port='-1'");
-        else if (def->data.vnc.port)
+        if (def->data.vnc.port)
             virBufferVSprintf(buf, " port='%d'",
                               def->data.vnc.port);
+        else if (def->data.vnc.autoport)
+            virBufferAddLit(buf, " port='-1'");
 
         virBufferVSprintf(buf, " autoport='%s'",
                           def->data.vnc.autoport ? "yes" : "no");
