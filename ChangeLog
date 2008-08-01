@@ -1,4 +1,4 @@
-Fri Aug  1 15:28:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+Fri Aug  1 15:28:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	'virsh edit' and related commands
 	* src/virsh.c: Implement 'virsh edit', 'virsh net-edit' and
