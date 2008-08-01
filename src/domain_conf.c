@@ -429,6 +429,7 @@ virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
         return NULL;
     }
 
+    domain->state = VIR_DOMAIN_SHUTOFF;
     domain->def = def;
     domain->next = *doms;
 

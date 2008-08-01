@@ -1,3 +1,8 @@
+Fri Aug  1 15:15:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/domain_conf.c: Ensure new VM state is initialized to
+	be SHUTOFF, rather than NOSTATE.
+
 Fri Aug  1 15:51:04 CEST 2008 Jim Meyering  <meyering@redhat.com>
 
 	* virsh.c: more const-correctness fixes
