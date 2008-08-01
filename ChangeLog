@@ -1,3 +1,9 @@
+Fri Aug  1 12:24:44 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Link to "how to contribute to open source"
+	* HACKING: Link to external document which describes how to
+	  contribute to open source projects.
+
 Fri Aug  1 13:20:44 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: patch from Chris Lalancette adding missing

@@ -41,6 +41,12 @@ The latter test checks for memory leaks.
 a new feature or changing the output of a program.
 
 
+There is more on this subject, including lots of links to background
+reading on the subject, on this page:
+
+  http://et.redhat.com/~rjones/how-to-supply-code-to-open-source-projects/
+
+
 
 Code indentation
 ================
