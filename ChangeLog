@@ -1,3 +1,8 @@
+Fri Aug  1 08:22:08 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: apply patch from Charles Duffy fixing erro
+	  messages when trying to crate a domain already defined.
+
 Thu Jul 31 15:37:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/domain_conf.c: fix previous patch to ensure port number
