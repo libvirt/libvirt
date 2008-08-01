@@ -1217,6 +1217,9 @@ virDomainGetConnect (virDomainPtr dom)
  * Launch a new Linux guest domain, based on an XML description similar
  * to the one returned by virDomainGetXMLDesc()
  * This function may requires privileged access to the hypervisor.
+ * The domain is not persistent, so its definition will disappear when it
+ * is destroyed, or if the host is restarted (see virDomainDefineXML() to
+ * define persistent domains).
  *
  * Returns a new domain object or NULL in case of failure
  */
@@ -2778,7 +2781,9 @@ virDomainMemoryPeek (virDomainPtr dom,
  * @conn: pointer to the hypervisor connection
  * @xml: the XML description for the domain, preferably in UTF-8
  *
- * define a domain, but does not start it
+ * Define a domain, but does not start it.
+ * This definition is persistent, until explicitly undefined with
+ * virDomainUndefine().
  *
  * Returns NULL in case of error, a pointer to the domain otherwise
  */
@@ -2810,7 +2815,7 @@ virDomainDefineXML(virConnectPtr conn, const char *xml) {
  * virDomainUndefine:
  * @domain: pointer to a defined domain
  *
- * undefine a domain but does not stop it if it is running
+ * Undefine a domain but does not stop it if it is running
  *
  * Returns 0 in case of success, -1 in case of error
  */

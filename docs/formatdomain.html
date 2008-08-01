@@ -649,8 +649,10 @@
         <dl><dt><code>graphics</code></dt><dd>The <code>graphics</code> element has a mandatory <code>type</code>
 	attribute which takes the value "sdl" or "vnc". The former displays
 	a window on the host desktop, while the latter activates a VNC server.
-	If the latter is used the <code>port</code> attributes specifies the
-	TCP port number (with -1 indicating that it should be auto-allocated).
+	If the latter is used the <code>port</code> attribute specifies the TCP
+	port number (with -1 as legacy syntax indicating that it should be
+	auto-allocated). The <code>autoport</code> attribute is the new
+	preferred syntax for indicating autoallocation of the TCP port to use.
 	The <code>listen</code> attribute is an IP address for the server to
 	listen on. The <code>password</code> attribute provides a VNC password
 	in clear text.</dd></dl>

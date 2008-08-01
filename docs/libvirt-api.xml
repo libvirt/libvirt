@@ -854,14 +854,14 @@ see note above'/>
       <arg name='domain' type='virDomainPtr' info='pointer to a defined domain'/>
     </function>
     <function name='virDomainCreateLinux' file='libvirt' module='libvirt'>
-      <info>Launch a new Linux guest domain, based on an XML description similar to the one returned by virDomainGetXMLDesc() This function may requires privileged access to the hypervisor.</info>
+      <info>Launch a new Linux guest domain, based on an XML description similar to the one returned by virDomainGetXMLDesc() This function may requires privileged access to the hypervisor. The domain is not persistent, so its definition will disappear when it is destroyed, or if the host is restarted (see virDomainDefineXML() to define persistent domains).</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xmlDesc' type='const char *' info='string containing an XML description of the domain'/>
       <arg name='flags' type='unsigned int' info='an optional set of virDomainFlags'/>
     </function>
     <function name='virDomainDefineXML' file='libvirt' module='libvirt'>
-      <info>define a domain, but does not start it</info>
+      <info>Define a domain, but does not start it. This definition is persistent, until explicitly undefined with virDomainUndefine().</info>
       <return type='virDomainPtr' info='NULL in case of error, a pointer to the domain otherwise'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xml' type='const char *' info='the XML description for the domain, preferably in UTF-8'/>
@@ -1088,7 +1088,7 @@ see note above'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainUndefine' file='libvirt' module='libvirt'>
-      <info>undefine a domain but does not stop it if it is running</info>
+      <info>Undefine a domain but does not stop it if it is running</info>
       <return type='int' info='0 in case of success, -1 in case of error'/>
       <arg name='domain' type='virDomainPtr' info='pointer to a defined domain'/>
     </function>
