@@ -86,6 +86,12 @@ VIR_ENUM_IMPL(virDomainDiskBus, VIR_DOMAIN_DISK_BUS_LAST,
               "virtio",
               "xen")
 
+VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
+              "mount",
+              "block",
+              "file",
+              "template")
+
 VIR_ENUM_IMPL(virDomainNet, VIR_DOMAIN_NET_TYPE_LAST,
               "user",
               "ethernet",
@@ -237,6 +243,18 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def);
 }
 
+void virDomainFSDefFree(virDomainFSDefPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def->src);
+    VIR_FREE(def->dst);
+
+    virDomainFSDefFree(def->next);
+    VIR_FREE(def);
+}
+
 void virDomainNetDefFree(virDomainNetDefPtr def)
 {
     if (!def)
@@ -345,6 +363,7 @@ void virDomainDefFree(virDomainDefPtr def)
     virDomainGraphicsDefFree(def->graphics);
     virDomainInputDefFree(def->inputs);
     virDomainDiskDefFree(def->disks);
+    virDomainFSDefFree(def->fss);
     virDomainNetDefFree(def->nets);
     virDomainChrDefFree(def->serials);
     virDomainChrDefFree(def->parallels);
@@ -355,6 +374,7 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->os.type);
     VIR_FREE(def->os.arch);
     VIR_FREE(def->os.machine);
+    VIR_FREE(def->os.init);
     VIR_FREE(def->os.kernel);
     VIR_FREE(def->os.initrd);
     VIR_FREE(def->os.cmdline);
@@ -620,6 +640,89 @@ cleanup:
 
  error:
     virDomainDiskDefFree(def);
+    def = NULL;
+    goto cleanup;
+}
+
+
+/* Parse the XML definition for a disk
+ * @param node XML nodeset to parse for disk definition
+ */
+static virDomainFSDefPtr
+virDomainFSDefParseXML(virConnectPtr conn,
+                       xmlNodePtr node) {
+    virDomainFSDefPtr def;
+    xmlNodePtr cur;
+    char *type = NULL;
+    char *source = NULL;
+    char *target = NULL;
+
+    if (VIR_ALLOC(def) < 0) {
+        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        return NULL;
+    }
+
+    type = virXMLPropString(node, "type");
+    if (type) {
+        if ((def->type = virDomainFSTypeFromString(type)) < 0) {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown filesystem type '%s'"), type);
+            goto error;
+        }
+    } else {
+        def->type = VIR_DOMAIN_FS_TYPE_MOUNT;
+    }
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if ((source == NULL) &&
+                (xmlStrEqual(cur->name, BAD_CAST "source"))) {
+
+                if (def->type == VIR_DOMAIN_FS_TYPE_MOUNT)
+                    source = virXMLPropString(cur, "dir");
+                else if (def->type == VIR_DOMAIN_FS_TYPE_FILE)
+                    source = virXMLPropString(cur, "file");
+                else if (def->type == VIR_DOMAIN_FS_TYPE_BLOCK)
+                    source = virXMLPropString(cur, "dev");
+                else if (def->type == VIR_DOMAIN_FS_TYPE_TEMPLATE)
+                    source = virXMLPropString(cur, "name");
+            } else if ((target == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "target"))) {
+                target = virXMLPropString(cur, "dir");
+            } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
+                def->readonly = 1;
+            }
+        }
+        cur = cur->next;
+    }
+
+    if (source == NULL) {
+        virDomainReportError(conn, VIR_ERR_NO_SOURCE,
+                             target ? "%s" : NULL, target);
+        goto error;
+    }
+
+    if (target == NULL) {
+        virDomainReportError(conn, VIR_ERR_NO_TARGET,
+                             source ? "%s" : NULL, source);
+        goto error;
+    }
+
+    def->src = source;
+    source = NULL;
+    def->dst = target;
+    target = NULL;
+
+cleanup:
+    VIR_FREE(type);
+    VIR_FREE(target);
+    VIR_FREE(source);
+
+    return def;
+
+ error:
+    virDomainFSDefFree(def);
     def = NULL;
     goto cleanup;
 }
@@ -1351,6 +1454,10 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
         dev->type = VIR_DOMAIN_DEVICE_DISK;
         if (!(dev->data.disk = virDomainDiskDefParseXML(conn, node)))
             goto error;
+    } else if (xmlStrEqual(node->name, BAD_CAST "filesystem")) {
+        dev->type = VIR_DOMAIN_DEVICE_FS;
+        if (!(dev->data.fs = virDomainFSDefParseXML(conn, node)))
+            goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
         dev->type = VIR_DOMAIN_DEVICE_NET;
         if (!(dev->data.net = virDomainNetDefParseXML(conn, node)))
@@ -1560,7 +1667,21 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         }
     }
 
-    if (!def->os.bootloader) {
+    /*
+     * Booting options for different OS types....
+     *
+     *   - A bootloader (and optional kernel+initrd)  (xen)
+     *   - A kernel + initrd                          (xen)
+     *   - A boot device (and optional kernel+initrd) (hvm)
+     *   - An init script                             (exe)
+     */
+
+    if (STREQ(def->os.type, "exe")) {
+        def->os.init = virXPathString(conn, "string(./os/init[1])", ctxt);
+    }
+
+    if (STREQ(def->os.type, "xen") ||
+        STREQ(def->os.type, "hvm")) {
         def->os.kernel = virXPathString(conn, "string(./os/kernel[1])", ctxt);
         def->os.initrd = virXPathString(conn, "string(./os/initrd[1])", ctxt);
         def->os.cmdline = virXPathString(conn, "string(./os/cmdline[1])", ctxt);
@@ -1610,12 +1731,9 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                                                                    def->os.type,
                                                                    def->os.arch,
                                                                    type);
-        if (!emulator) {
-            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("unsupported guest type"));
-            goto error;
-        }
-        if (!(def->emulator = strdup(emulator))) {
+
+        if (emulator &&
+            !(def->emulator = strdup(emulator))) {
             virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
             goto error;
         }
@@ -1648,6 +1766,23 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                 ptr = ptr->next;
             }
         }
+    }
+    VIR_FREE(nodes);
+
+    /* analysis of the filesystems */
+    if ((n = virXPathNodeSet(conn, "./devices/filesystem", ctxt, &nodes)) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("cannot extract filesystem devices"));
+        goto error;
+    }
+    for (i = n - 1 ; i >= 0 ; i--) {
+        virDomainFSDefPtr fs = virDomainFSDefParseXML(conn,
+                                                      nodes[i]);
+        if (!fs)
+            goto error;
+
+        fs->next = def->fss;
+        def->fss = fs;
     }
     VIR_FREE(nodes);
 
@@ -2248,6 +2383,57 @@ virDomainDiskDefFormat(virConnectPtr conn,
 }
 
 static int
+virDomainFSDefFormat(virConnectPtr conn,
+                     virBufferPtr buf,
+                     virDomainFSDefPtr def)
+{
+    const char *type = virDomainFSTypeToString(def->type);
+
+    if (!type) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected filesystem type %d"), def->type);
+        return -1;
+    }
+
+    virBufferVSprintf(buf,
+                      "    <filesystem type='%s'>\n",
+                      type);
+
+    if (def->src) {
+        switch (def->type) {
+        case VIR_DOMAIN_FS_TYPE_MOUNT:
+            virBufferEscapeString(buf, "      <source dir='%s'/>\n",
+                                  def->src);
+            break;
+
+        case VIR_DOMAIN_FS_TYPE_BLOCK:
+            virBufferEscapeString(buf, "      <source dev='%s'/>\n",
+                                  def->src);
+            break;
+
+        case VIR_DOMAIN_FS_TYPE_FILE:
+            virBufferEscapeString(buf, "      <source file='%s'/>\n",
+                                  def->src);
+            break;
+
+        case VIR_DOMAIN_FS_TYPE_TEMPLATE:
+            virBufferEscapeString(buf, "      <source name='%s'/>\n",
+                                  def->src);
+        }
+    }
+
+    virBufferVSprintf(buf, "      <target dir='%s'/>\n",
+                      def->dst);
+
+    if (def->readonly)
+        virBufferAddLit(buf, "      <readonly/>\n");
+
+    virBufferAddLit(buf, "    </filesystem>\n");
+
+    return 0;
+}
+
+static int
 virDomainNetDefFormat(virConnectPtr conn,
                       virBufferPtr buf,
                       virDomainNetDefPtr def)
@@ -2527,6 +2713,7 @@ char *virDomainDefFormat(virConnectPtr conn,
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainDiskDefPtr disk;
+    virDomainFSDefPtr fs;
     virDomainNetDefPtr net;
     virDomainSoundDefPtr sound;
     virDomainInputDefPtr input;
@@ -2596,6 +2783,9 @@ char *virDomainDefFormat(virConnectPtr conn,
     else
         virBufferVSprintf(&buf, ">%s</type>\n", def->os.type);
 
+    if (def->os.init)
+        virBufferEscapeString(&buf, "    <init>%s</init>\n",
+                              def->os.init);
     if (def->os.loader)
         virBufferEscapeString(&buf, "    <loader>%s</loader>\n",
                               def->os.loader);
@@ -2669,6 +2859,13 @@ char *virDomainDefFormat(virConnectPtr conn,
         if (virDomainDiskDefFormat(conn, &buf, disk) < 0)
             goto cleanup;
         disk = disk->next;
+    }
+
+    fs = def->fss;
+    while (fs) {
+        if (virDomainFSDefFormat(conn, &buf, fs) < 0)
+            goto cleanup;
+        fs = fs->next;
     }
 
     net = def->nets;

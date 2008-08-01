@@ -1,3 +1,13 @@
+Fri Aug  1 13:57:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/domain_conf.h, src/domain_conf.c, docs/libvirt.rng: Add
+	support for an <init> element in <os> block, and <filesystem>
+	device type, and 'exe' OS type.
+	* tests/domainschematest: Check domainschemadata directory for
+	XML files
+	* tests/domainschemadata/domain-lxc-simple.xml: Simple example
+	for LXC driver to validate
+
 Fri Aug  1 13:54:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Always set forward-delay even if zero because

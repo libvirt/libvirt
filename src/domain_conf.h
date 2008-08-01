@@ -94,6 +94,28 @@ struct _virDomainDiskDef {
 };
 
 
+/* Two types of disk backends */
+enum virDomainFSType {
+    VIR_DOMAIN_FS_TYPE_MOUNT,   /* Better named 'bind' */
+    VIR_DOMAIN_FS_TYPE_BLOCK,
+    VIR_DOMAIN_FS_TYPE_FILE,
+    VIR_DOMAIN_FS_TYPE_TEMPLATE,
+
+    VIR_DOMAIN_FS_TYPE_LAST
+};
+
+typedef struct _virDomainFSDef virDomainFSDef;
+typedef virDomainFSDef *virDomainFSDefPtr;
+struct _virDomainFSDef {
+    int type;
+    char *src;
+    char *dst;
+    unsigned int readonly : 1;
+
+    virDomainFSDefPtr next;
+};
+
+
 /* 5 different types of networking config */
 enum virDomainNetType {
     VIR_DOMAIN_NET_TYPE_USER,
@@ -262,6 +284,7 @@ struct _virDomainGraphicsDef {
 /* Flags for the 'type' field in next struct */
 enum virDomainDeviceType {
     VIR_DOMAIN_DEVICE_DISK,
+    VIR_DOMAIN_DEVICE_FS,
     VIR_DOMAIN_DEVICE_NET,
     VIR_DOMAIN_DEVICE_INPUT,
     VIR_DOMAIN_DEVICE_SOUND,
@@ -273,6 +296,7 @@ struct _virDomainDeviceDef {
     int type;
     union {
         virDomainDiskDefPtr disk;
+        virDomainFSDefPtr fs;
         virDomainNetDefPtr net;
         virDomainInputDefPtr input;
         virDomainSoundDefPtr sound;
@@ -318,6 +342,7 @@ struct _virDomainOSDef {
     char *machine;
     int nBootDevs;
     int bootDevs[VIR_DOMAIN_BOOT_LAST];
+    char *init;
     char *kernel;
     char *initrd;
     char *cmdline;
@@ -357,6 +382,7 @@ struct _virDomainDef {
 
     virDomainGraphicsDefPtr graphics;
     virDomainDiskDefPtr disks;
+    virDomainFSDefPtr fss;
     virDomainNetDefPtr nets;
     virDomainInputDefPtr inputs;
     virDomainSoundDefPtr sounds;
@@ -411,6 +437,7 @@ virDomainObjPtr virDomainFindByName(const virDomainObjPtr doms,
 void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def);
 void virDomainInputDefFree(virDomainInputDefPtr def);
 void virDomainDiskDefFree(virDomainDiskDefPtr def);
+void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainNetDefFree(virDomainNetDefPtr def);
 void virDomainChrDefFree(virDomainChrDefPtr def);
 void virDomainSoundDefFree(virDomainSoundDefPtr def);
@@ -484,6 +511,7 @@ VIR_ENUM_DECL(virDomainLifecycle)
 VIR_ENUM_DECL(virDomainDisk)
 VIR_ENUM_DECL(virDomainDiskDevice)
 VIR_ENUM_DECL(virDomainDiskBus)
+VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainNet)
 VIR_ENUM_DECL(virDomainChr)
 VIR_ENUM_DECL(virDomainSoundModel)

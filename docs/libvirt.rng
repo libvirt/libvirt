@@ -44,6 +44,7 @@
     <choice>
       <ref name='osxen'/>
       <ref name='oshvm'/>
+      <ref name='osexe'/>
     </choice>
   </define>
 
@@ -185,6 +186,23 @@
       </attribute>
     </group>
   </define>
+
+
+  <define name='osexe'>
+    <element name='os'>
+      <element name='type'>
+	<value>exe</value>
+      </element>
+      <interleave>
+	<optional>
+	  <element name='init'>
+	    <ref name='absFilePath'/>
+	  </element>
+	</optional>
+      </interleave>
+    </element>
+  </define>
+
 
 
   <!--
@@ -418,6 +436,79 @@
       <empty/>
     </element>
   </define>
+
+  <define name='filesystem'>
+    <element name='filesystem'>
+      <choice>
+        <group>
+          <attribute name='type'>
+	    <value>file</value>
+          </attribute>
+	  <interleave>
+  	    <element name='source'>
+  	      <attribute name='file'>
+  	        <ref name='absFilePath'/>
+  	      </attribute>
+  	      <empty/>
+  	    </element>
+            <ref name='filesystemtgt'/>
+  	  </interleave>
+        </group>
+        <group>
+          <attribute name='type'>
+  	    <value>block</value>
+  	  </attribute>
+  	  <interleave>
+  	    <element name='source'>
+  	      <attribute name='dev'>
+  	        <ref name='deviceName'/>
+  	      </attribute>
+  	      <empty/>
+  	    </element>
+            <ref name='filesystemtgt'/>
+  	  </interleave>
+        </group>
+        <group>
+          <attribute name='type'>
+  	    <value>mount</value>
+  	  </attribute>
+  	  <interleave>
+  	    <element name='source'>
+  	      <attribute name='dir'>
+  	        <ref name='absFilePath'/>
+  	      </attribute>
+  	      <empty/>
+  	    </element>
+            <ref name='filesystemtgt'/>
+  	  </interleave>
+        </group>
+        <group>
+          <attribute name='type'>
+  	    <value>template</value>
+  	  </attribute>
+  	  <interleave>
+  	    <element name='source'>
+  	      <attribute name='name'>
+  	        <ref name='genericName'/>
+  	      </attribute>
+  	      <empty/>
+  	    </element>
+            <ref name='filesystemtgt'/>
+  	  </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+
+  <define name='filesystemtgt'>
+    <element name='target'>
+      <attribute name='dir'>
+	<ref name='absDirPath'/>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
+
   <!--
       An interface description can either be of type bridge in which case
       it will use a bridging source, or of type ethernet which uses a device
@@ -770,6 +861,7 @@
 	  <choice>
 	    <ref name='graphic'/>
 	    <ref name='disk'/>
+	    <ref name='filesystem'/>
 	    <ref name='interface'/>
 	    <ref name='console'/>
             <ref name='sound'/>
@@ -867,6 +959,11 @@
   <define name='absFilePath'>
     <data type='string'>
       <param name="pattern">/[a-zA-Z0-9_\.\+\-&amp;/%]+</param>
+    </data>
+  </define>
+  <define name='absDirPath'>
+    <data type='string'>
+      <param name="pattern">/[a-zA-Z0-9_\.\+\-&amp;/%]*</param>
     </data>
   </define>
   <define name='devicePath'>

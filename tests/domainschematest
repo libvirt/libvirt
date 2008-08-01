@@ -2,7 +2,7 @@
 
 test -z "$srcdir" && srcdir=`pwd`
 
-DOMAINDIRS="qemuxml2argvdata sexpr2xmldata xmconfigdata xml2sexprdata"
+DOMAINDIRS="domainschemadata qemuxml2argvdata sexpr2xmldata xmconfigdata xml2sexprdata"
 
 n=0
 f=0
