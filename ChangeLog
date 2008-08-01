@@ -1,3 +1,11 @@
+Fri Aug  1 10:38:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Improve error messages when XML is not well-formed.
+	* src/domain_conf.c, src/network_conf.c, src/storage_conf.c:
+	  Improve error messages from commands such as 'virsh define'
+	  when the XML is not well-formed by passing libxml2 errors
+	  back out through virterror.
+
 Fri Aug  1 08:40:48 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/formatdomain.html docs/formatdomain.html.in docs/libvirt-api.xml

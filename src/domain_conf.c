@@ -1838,32 +1838,65 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     return NULL;
 }
 
+/* Called from SAX on parsing errors in the XML. */
+static void
+catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
+{
+    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
+
+    if (ctxt) {
+        virConnectPtr conn = ctxt->_private;
+
+        if (conn &&
+            conn->err.code == VIR_ERR_NONE &&
+            ctxt->lastError.level == XML_ERR_FATAL &&
+            ctxt->lastError.message != NULL) {
+            virDomainReportError (conn, VIR_ERR_XML_DETAIL,
+                                  _("at line %d: %s"),
+                                  ctxt->lastError.line,
+                                  ctxt->lastError.message);
+        }
+    }
+}
 
 virDomainDefPtr virDomainDefParseString(virConnectPtr conn,
                                         virCapsPtr caps,
                                         const char *xmlStr)
 {
-    xmlDocPtr xml;
+    xmlParserCtxtPtr pctxt;
+    xmlDocPtr xml = NULL;
     xmlNodePtr root;
     virDomainDefPtr def = NULL;
 
-    if (!(xml = xmlReadDoc(BAD_CAST xmlStr, "domain.xml", NULL,
-                           XML_PARSE_NOENT | XML_PARSE_NONET |
-                           XML_PARSE_NOERROR | XML_PARSE_NOWARNING))) {
-        virDomainReportError(conn, VIR_ERR_XML_ERROR, NULL);
-        return NULL;
+    /* Set up a parser context so we can catch the details of XML errors. */
+    pctxt = xmlNewParserCtxt ();
+    if (!pctxt || !pctxt->sax)
+        goto cleanup;
+    pctxt->sax->error = catchXMLError;
+    pctxt->_private = conn;
+
+    if (conn) virResetError (&conn->err);
+    xml = xmlCtxtReadDoc (pctxt, BAD_CAST xmlStr, "domain.xml", NULL,
+                          XML_PARSE_NOENT | XML_PARSE_NONET |
+                          XML_PARSE_NOWARNING);
+    if (!xml) {
+        if (conn && conn->err.code == VIR_ERR_NONE)
+              virDomainReportError(conn, VIR_ERR_XML_ERROR,
+                                   _("failed to parse xml document"));
+        goto cleanup;
     }
 
     if ((root = xmlDocGetRootElement(xml)) == NULL) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("missing root element"));
-        xmlFreeDoc(xml);
-        return NULL;
+        goto cleanup;
     }
 
     def = virDomainDefParseNode(conn, caps, xml, root);
 
-    xmlFreeDoc(xml);
+cleanup:
+    xmlFreeParserCtxt (pctxt);
+    xmlFreeDoc (xml);
     return def;
 }
 
@@ -1871,27 +1904,40 @@ virDomainDefPtr virDomainDefParseFile(virConnectPtr conn,
                                       virCapsPtr caps,
                                       const char *filename)
 {
-    xmlDocPtr xml;
+    xmlParserCtxtPtr pctxt;
+    xmlDocPtr xml = NULL;
     xmlNodePtr root;
     virDomainDefPtr def = NULL;
 
-    if (!(xml = xmlReadFile(filename, NULL,
-                            XML_PARSE_NOENT | XML_PARSE_NONET |
-                            XML_PARSE_NOERROR | XML_PARSE_NOWARNING))) {
-        virDomainReportError(conn, VIR_ERR_XML_ERROR, NULL);
-        return NULL;
+    /* Set up a parser context so we can catch the details of XML errors. */
+    pctxt = xmlNewParserCtxt ();
+    if (!pctxt || !pctxt->sax)
+        goto cleanup;
+    pctxt->sax->error = catchXMLError;
+    pctxt->_private = conn;
+
+    if (conn) virResetError (&conn->err);
+    xml = xmlCtxtReadFile (pctxt, filename, NULL,
+                           XML_PARSE_NOENT | XML_PARSE_NONET |
+                           XML_PARSE_NOWARNING);
+    if (!xml) {
+        if (conn && conn->err.code == VIR_ERR_NONE)
+              virDomainReportError(conn, VIR_ERR_XML_ERROR,
+                                   _("failed to parse xml document"));
+        goto cleanup;
     }
 
     if ((root = xmlDocGetRootElement(xml)) == NULL) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("missing root element"));
-        xmlFreeDoc(xml);
-        return NULL;
+        goto cleanup;
     }
 
     def = virDomainDefParseNode(conn, caps, xml, root);
 
-    xmlFreeDoc(xml);
+cleanup:
+    xmlFreeParserCtxt (pctxt);
+    xmlFreeDoc (xml);
     return def;
 }
 
