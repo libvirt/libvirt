@@ -11,3 +11,5 @@ virsh
 *.gcov
 *.cov
 libvirt_parthelper
+virsh-net-edit.c
+virsh-pool-edit.c

@@ -277,6 +277,19 @@ Dumps the core of a domain to a file for analysis.
 
 Output the domain information as an XML dump to stdout, this format can be used by the B<create> command.
 
+=item B<edit> I<domain-id>
+
+Edit the XML configuration file for a domain.
+
+This is equivalent to:
+ virsh dumpxml domain > domain.xml
+ edit domain.xml
+ virsh define domain.xml
+except that it does some error checking.
+
+The editor used can be supplied by the C<$EDITOR> environment
+variable, or if that is not defined defaults to C<vi>.
+
 =item B<migrate> optional I<--live> I<domain-id> I<desturi> I<migrateuri>
 
 Migrate domain to another host.  Add --live for live migration. The I<desturi>
@@ -479,6 +492,19 @@ effect immediately.
 =item B<net-dumpxml> I<network>
 
 Output the virtual network information as an XML dump to stdout.
+
+=item B<net-edit> I<network>
+
+Edit the XML configuration file for a network.
+
+This is equivalent to:
+ virsh net-dumpxml network > network.xml
+ edit network.xml
+ virsh define network.xml
+except that it does some error checking.
+
+The editor used can be supplied by the C<$EDITOR> environment
+variable, or if that is not defined defaults to C<vi>.
 
 =item B<net-list> optional I<--inactive> or I<--all>
 

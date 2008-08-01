@@ -138,6 +138,38 @@ virsh_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDFLAGS)
 virsh_DEPENDENCIES = $(DEPS)
 virsh_LDADD = $(LDADDS) $(VIRSH_LIBS)
 virsh_CFLAGS = $(COVERAGE_CFLAGS) $(READLINE_CFLAGS)
+BUILT_SOURCES = virsh-net-edit.c virsh-pool-edit.c
+
+virsh-net-edit.c: virsh.c Makefile.am
+	rm -f $@-tmp
+	echo '/* Automatically generated from: $^ */' > $@-tmp
+	echo 'static int' >> $@-tmp
+	awk '/^cmdEdit/, /^}/' $< \
+	  | sed -e 's/domain/network/g' \
+	      -e 's/Domain/Network/g' \
+	      -e 's/cmdEdit/cmdNetworkEdit/g' \
+	      -e 's/dom/network/g' \
+	>> $@-tmp
+	chmod a-w $@-tmp
+	rm -f $@
+	mv $@-tmp $@
+
+virsh-pool-edit.c: virsh.c Makefile.am
+	rm -f $@-tmp
+	echo '/* Automatically generated from: $^ */' > $@-tmp
+	echo 'static int' >> $@-tmp
+	awk '/^cmdEdit/, /^}/' $< \
+	  | sed -e 's/domain/pool/g' \
+	      -e 's/vshCommandOptDomain/vshCommandOptPool/g' \
+	      -e 's/Domain %s/Pool %s/g' \
+	      -e 's/Domain/StoragePool/g' \
+	      -e 's/cmdEdit/cmdPoolEdit/g' \
+	      -e 's/\(virStoragePoolDefineXML.*\));/\1, 0);/' \
+	      -e 's/dom/pool/g' \
+	>> $@-tmp
+	chmod a-w $@-tmp
+	rm -f $@
+	mv $@-tmp $@
 
 if WITH_STORAGE_DISK
 if WITH_LIBVIRTD

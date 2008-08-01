@@ -5058,6 +5058,263 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+/* Common code for the edit / net-edit / pool-edit functions which follow. */
+static char *
+editWriteToTempFile (vshControl *ctl, const char *doc)
+{
+    char *ret;
+    const char *tmpdir;
+    int fd;
+
+    ret = malloc (PATH_MAX);
+    if (!ret) {
+        vshError(ctl, FALSE,
+                 _("malloc: failed to allocate temporary file name: %s"),
+                 strerror (errno));
+        return NULL;
+    }
+
+    tmpdir = getenv ("TMPDIR");
+    if (!tmpdir) tmpdir = "/tmp";
+    snprintf (ret, PATH_MAX, "%s/virshXXXXXX", tmpdir);
+    fd = mkstemp (ret);
+    if (fd == -1) {
+        vshError(ctl, FALSE,
+                 _("mkstemp: failed to create temporary file: %s"),
+                 strerror (errno));
+        return NULL;
+    }
+
+    if (safewrite (fd, doc, strlen (doc)) == -1) {
+        vshError(ctl, FALSE,
+                 _("write: %s: failed to write to temporary file: %s"),
+                 ret, strerror (errno));
+        close (fd);
+        unlink (ret);
+        free (ret);
+        return NULL;
+    }
+    if (close (fd) == -1) {
+        vshError(ctl, FALSE,
+                 _("close: %s: failed to write or close temporary file: %s"),
+                 ret, strerror (errno));
+        unlink (ret);
+        free (ret);
+        return NULL;
+    }
+
+    /* Temporary filename: caller frees. */
+    return ret;
+}
+
+/* Characters permitted in $EDITOR environment variable and temp filename. */
+#define ACCEPTED_CHARS \
+  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-/_.:@"
+
+static int
+editFile (vshControl *ctl, const char *filename)
+{
+    const char *editor;
+    char *command;
+    int command_ret;
+
+    editor = getenv ("EDITOR");
+    if (!editor) editor = "vi"; /* could be cruel & default to ed(1) here */
+
+    /* Check the editor doesn't contain shell meta-characters, and if
+     * it does, refuse to run.
+     */
+    if (strspn (editor, ACCEPTED_CHARS) != strlen (editor)) {
+        vshError(ctl, FALSE,
+                 _("%s: $EDITOR environment variable contains shell meta or other unacceptable characters"),
+                 editor);
+        return -1;
+    }
+    /* Same for the filename. */
+    if (strspn (filename, ACCEPTED_CHARS) != strlen (filename)) {
+        vshError(ctl, FALSE,
+                 _("%s: temporary filename contains shell meta or other unacceptable characters (is $TMPDIR wrong?)"),
+                 filename);
+        return -1;
+    }
+
+    if (asprintf (&command, "%s %s", editor, filename) == -1) {
+        vshError(ctl, FALSE,
+                 _("asprintf: could not create editing command: %s"),
+                 strerror (errno));
+        return -1;
+    }
+
+    command_ret = system (command);
+    if (command_ret == -1) {
+        vshError(ctl, FALSE,
+                 _("%s: edit command failed: %s"), command, strerror (errno));
+        free (command);
+        return -1;
+    }
+    if (command_ret != WEXITSTATUS (0)) {
+        vshError(ctl, FALSE,
+                 _("%s: command exited with non-zero status"), command);
+        free (command);
+        return -1;
+    }
+    free (command);
+    return 0;
+}
+
+static char *
+editReadBackFile (vshControl *ctl, const char *filename)
+{
+    char *ret;
+
+    if (virFileReadAll (filename, VIRSH_MAX_XML_FILE, &ret) == -1) {
+        vshError(ctl, FALSE,
+                 _("%s: failed to read temporary file: %s"),
+                 filename, strerror (errno));
+        return NULL;
+    }
+    return ret;
+}
+
+/*
+ * "edit" command
+ */
+static const vshCmdInfo info_edit[] = {
+    {"syntax", "edit <domain>"},
+    {"help", gettext_noop("edit XML configuration for a domain")},
+    {"desc", gettext_noop("Edit the XML configuration for a domain.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_edit[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+/* This function also acts as a template to generate cmdNetworkEdit
+ * and cmdPoolEdit functions (below) using a sed script in the Makefile.
+ */
+static int
+cmdEdit (vshControl *ctl, const vshCmd *cmd)
+{
+    int ret = FALSE;
+    virDomainPtr dom = NULL;
+    char *tmp = NULL;
+    char *doc = NULL;
+    char *doc_edited = NULL;
+    char *doc_reread = NULL;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        goto cleanup;
+
+    dom = vshCommandOptDomain (ctl, cmd, "domain", NULL);
+    if (dom == NULL)
+        goto cleanup;
+
+    /* Get the XML configuration of the domain. */
+    doc = virDomainGetXMLDesc (dom, 0);
+    if (!doc)
+        goto cleanup;
+
+    /* Create and open the temporary file. */
+    tmp = editWriteToTempFile (ctl, doc);
+    if (!tmp) goto cleanup;
+
+    /* Start the editor. */
+    if (editFile (ctl, tmp) == -1) goto cleanup;
+
+    /* Read back the edited file. */
+    doc_edited = editReadBackFile (ctl, tmp);
+    if (!doc_edited) goto cleanup;
+
+    unlink (tmp);
+    tmp = NULL;
+
+    /* Compare original XML with edited.  Has it changed at all? */
+    if (STREQ (doc, doc_edited)) {
+        vshPrint (ctl, _("Domain %s XML configuration not changed.\n"),
+                  virDomainGetName (dom));
+        ret = TRUE;
+        goto cleanup;
+    }
+
+    /* Now re-read the domain XML.  Did someone else change it while
+     * it was being edited?  This also catches problems such as us
+     * losing a connection or the domain going away.
+     */
+    doc_reread = virDomainGetXMLDesc (dom, 0);
+    if (!doc_reread)
+        goto cleanup;
+
+    if (STRNEQ (doc, doc_reread)) {
+        vshError (ctl, FALSE,
+                  _("ERROR: the XML configuration was changed by another user"));
+        goto cleanup;
+    }
+
+    /* Everything checks out, so redefine the domain. */
+    virDomainFree (dom);
+    dom = virDomainDefineXML (ctl->conn, doc_edited);
+    if (!dom)
+        goto cleanup;
+
+    vshPrint (ctl, _("Domain %s XML configuration edited.\n"),
+              virDomainGetName(dom));
+
+    ret = TRUE;
+
+ cleanup:
+    if (dom)
+        virDomainFree (dom);
+
+    free (doc);
+    free (doc_edited);
+    free (doc_reread);
+
+    if (tmp) {
+        unlink (tmp);
+        free (tmp);
+    }
+
+    return ret;
+}
+
+/*
+ * "net-edit" command
+ */
+static const vshCmdInfo info_network_edit[] = {
+    {"syntax", "net-edit <network>"},
+    {"help", gettext_noop("edit XML configuration for a network")},
+    {"desc", gettext_noop("Edit the XML configuration for a network.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_network_edit[] = {
+    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+/* This is generated from this file by a sed script in the Makefile. */
+#include "virsh-net-edit.c"
+
+/*
+ * "pool-edit" command
+ */
+static const vshCmdInfo info_pool_edit[] = {
+    {"syntax", "pool-edit <domain>"},
+    {"help", gettext_noop("edit XML configuration for a storage pool")},
+    {"desc", gettext_noop("Edit the XML configuration for a storage pool.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_pool_edit[] = {
+    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool name or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+/* This is generated from this file by a sed script in the Makefile. */
+#include "virsh-pool-edit.c"
+
 /*
  * "quit" command
  */
@@ -5101,6 +5358,7 @@ static const vshCmdDef commands[] = {
     {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat},
     {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat},
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
+    {"edit", cmdEdit, opts_edit, info_edit},
     {"freecell", cmdFreecell, opts_freecell, info_freecell},
     {"hostname", cmdHostname, NULL, info_hostname},
     {"list", cmdList, opts_list, info_list},
@@ -5111,6 +5369,7 @@ static const vshCmdDef commands[] = {
     {"net-define", cmdNetworkDefine, opts_network_define, info_network_define},
     {"net-destroy", cmdNetworkDestroy, opts_network_destroy, info_network_destroy},
     {"net-dumpxml", cmdNetworkDumpXML, opts_network_dumpxml, info_network_dumpxml},
+    {"net-edit", cmdNetworkEdit, opts_network_edit, info_network_edit},
     {"net-list", cmdNetworkList, opts_network_list, info_network_list},
     {"net-name", cmdNetworkName, opts_network_name, info_network_name},
     {"net-start", cmdNetworkStart, opts_network_start, info_network_start},
@@ -5127,6 +5386,7 @@ static const vshCmdDef commands[] = {
     {"pool-destroy", cmdPoolDestroy, opts_pool_destroy, info_pool_destroy},
     {"pool-delete", cmdPoolDelete, opts_pool_delete, info_pool_delete},
     {"pool-dumpxml", cmdPoolDumpXML, opts_pool_dumpxml, info_pool_dumpxml},
+    {"pool-edit", cmdPoolEdit, opts_pool_edit, info_pool_edit},
     {"pool-info", cmdPoolInfo, opts_pool_info, info_pool_info},
     {"pool-list", cmdPoolList, opts_pool_list, info_pool_list},
     {"pool-name", cmdPoolName, opts_pool_name, info_pool_name},
