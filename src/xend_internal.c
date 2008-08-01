@@ -1180,7 +1180,8 @@ xend_detect_config_version(virConnectPtr conn) {
  * Returns 0 in case of success and -1 in case of error
  */
 static int
-xenDaemonParseSxprOS(virConnectPtr xend, struct sexpr *node,
+xenDaemonParseSxprOS(virConnectPtr xend,
+		     const struct sexpr *node,
                      virDomainDefPtr def,
                      int hvm)
 {
@@ -1640,11 +1641,11 @@ error:
 static int
 xenDaemonParseSxprDisks(virConnectPtr conn,
                         virDomainDefPtr def,
-                        struct sexpr *root,
+                        const struct sexpr *root,
                         int hvm,
                         int xendConfigVersion)
 {
-    struct sexpr *cur, *node;
+    const struct sexpr *cur, *node;
     virDomainDiskDefPtr disk = NULL, prev = def->disks;
 
     for (cur = root; cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
@@ -1803,10 +1804,10 @@ error:
 static int
 xenDaemonParseSxprNets(virConnectPtr conn,
                        virDomainDefPtr def,
-                       struct sexpr *root)
+                       const struct sexpr *root)
 {
     virDomainNetDefPtr net = NULL, prev = def->nets;
-    struct sexpr *cur, *node;
+    const struct sexpr *cur, *node;
     const char *tmp;
     int vif_index = 0;
 
@@ -1964,7 +1965,7 @@ error:
 static int
 xenDaemonParseSxprUSB(virConnectPtr conn,
                       virDomainDefPtr def,
-                      struct sexpr *root)
+                      const struct sexpr *root)
 {
     virDomainInputDefPtr prev = def->inputs;
     struct sexpr *cur, *node;
@@ -2007,7 +2008,7 @@ no_memory:
 static int
 xenDaemonParseSxprGraphicsOld(virConnectPtr conn,
                               virDomainDefPtr def,
-                              struct sexpr *root,
+                              const struct sexpr *root,
                               int hvm,
                               int xendConfigVersion)
 {
@@ -2085,10 +2086,10 @@ no_memory:
 static int
 xenDaemonParseSxprGraphicsNew(virConnectPtr conn,
                               virDomainDefPtr def,
-                              struct sexpr *root)
+                              const struct sexpr *root)
 {
     virDomainGraphicsDefPtr graphics = NULL;
-    struct sexpr *cur, *node;
+    const struct sexpr *cur, *node;
     const char *tmp;
 
     /* append network devices and framebuffer */

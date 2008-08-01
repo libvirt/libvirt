@@ -519,7 +519,7 @@ sexpr_lookup(const struct sexpr *sexpr, const char *node)
  * Returns true if the key was found, false otherwise
  */
 int
-sexpr_has(struct sexpr *sexpr, const char *node)
+sexpr_has(const struct sexpr *sexpr, const char *node)
 {
     struct sexpr *s = sexpr_lookup_key(sexpr, node);
 
