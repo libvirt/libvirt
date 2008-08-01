@@ -37,13 +37,14 @@ EXTRA_DIST =		\
 	test-lib.sh	\
 	xmlrpcserver.py	\
 	qemuxml2argvdata \
-	nodeinfodata
+	nodeinfodata     \
+	domainschematest
 
 noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
 	reconnect xmconfigtest xencapstest qemuxml2argvtest qemuxml2xmltest \
         nodeinfotest statstest qparamtest
 
-test_scripts =
+test_scripts = domainschematest
 if WITH_LIBVIRTD
 test_scripts += \
 	test_conf.sh \

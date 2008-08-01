@@ -1,3 +1,10 @@
+Fri Aug  1 11:50:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* docs/libvirt.rng: Add missing xenfv machine type
+	* tests/Makefile.am, tests/domainschematest: Added test
+	case to validate all domain XML files in tests/ directory
+	against RNG schema
+
 Fri Aug  1 10:38:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Improve error messages when XML is not well-formed.

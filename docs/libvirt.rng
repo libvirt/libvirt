@@ -141,6 +141,7 @@
       </attribute>
       <attribute name='machine'>
 	<choice>
+	  <value>xenfv</value>
 	  <value>pc</value>
 	  <value>isapc</value>
 	</choice>
