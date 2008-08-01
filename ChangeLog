@@ -1,3 +1,8 @@
+Fri Aug  1 13:54:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: Always set forward-delay even if zero because
+	the kernel defaults to 15 seconds which is too long
+
 Fri Aug  1 13:19:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Const-correctness fixes in virsh.c

@@ -1480,8 +1480,7 @@ static int qemudStartNetworkDaemon(virConnectPtr conn,
     }
 
 
-    if (network->def->delay &&
-        (err = brSetForwardDelay(driver->brctl, network->def->bridge, network->def->delay))) {
+    if ((err = brSetForwardDelay(driver->brctl, network->def->bridge, network->def->delay))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("failed to set bridge forward delay to %ld"),
                          network->def->delay);
