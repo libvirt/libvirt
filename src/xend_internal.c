@@ -2172,7 +2172,7 @@ error:
  */
 static virDomainDefPtr
 xenDaemonParseSxpr(virConnectPtr conn,
-                   struct sexpr *root,
+                   const struct sexpr *root,
                    int xendConfigVersion,
                    const char *cpus)
 {
