@@ -1,3 +1,8 @@
+Fri Aug  1 13:20:44 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: patch from Chris Lalancette adding missing
+	  carriage returns to logs
+
 Fri Aug  1 11:50:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* docs/libvirt.rng: Add missing xenfv machine type

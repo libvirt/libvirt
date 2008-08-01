@@ -88,7 +88,7 @@ static int qemudSetCloseExec(int fd) {
     return 0;
  error:
     qemudLog(QEMUD_ERR,
-             "%s", _("Failed to set close-on-exec file descriptor flag"));
+             "%s", _("Failed to set close-on-exec file descriptor flag\n"));
     return -1;
 }
 
@@ -103,7 +103,7 @@ static int qemudSetNonBlock(int fd) {
     return 0;
  error:
     qemudLog(QEMUD_ERR,
-             "%s", _("Failed to set non-blocking file descriptor flag"));
+             "%s", _("Failed to set non-blocking file descriptor flag\n"));
     return -1;
 }
 
@@ -148,7 +148,7 @@ void qemudAutostartConfigs(struct qemud_driver *driver) {
             !virNetworkIsActive(network) &&
             qemudStartNetworkDaemon(NULL, driver, network) < 0) {
             virErrorPtr err = virGetLastError();
-            qemudLog(QEMUD_ERR, _("Failed to autostart network '%s': %s"),
+            qemudLog(QEMUD_ERR, _("Failed to autostart network '%s': %s\n"),
                      network->def->name, err->message);
         }
 
@@ -163,7 +163,7 @@ void qemudAutostartConfigs(struct qemud_driver *driver) {
             !virDomainIsActive(vm) &&
             qemudStartVMDaemon(NULL, driver, vm, NULL) < 0) {
             virErrorPtr err = virGetLastError();
-            qemudLog(QEMUD_ERR, _("Failed to autostart VM '%s': %s"),
+            qemudLog(QEMUD_ERR, _("Failed to autostart VM '%s': %s\n"),
                      vm->def->name, err->message);
         }
 
@@ -199,7 +199,7 @@ qemudStartup(void) {
             goto out_of_memory;
     } else {
         if (!(pw = getpwuid(uid))) {
-            qemudLog(QEMUD_ERR, _("Failed to find user record for uid '%d': %s"),
+            qemudLog(QEMUD_ERR, _("Failed to find user record for uid '%d': %s\n"),
                      uid, strerror(errno));
             goto out_of_memory;
         }
@@ -210,7 +210,7 @@ qemudStartup(void) {
 
         if (asprintf (&base, "%s/.libvirt", pw->pw_dir) == -1) {
             qemudLog (QEMUD_ERR,
-                      "%s", _("out of memory in asprintf"));
+                      "%s", _("out of memory in asprintf\n"));
             goto out_of_memory;
         }
     }
@@ -266,7 +266,7 @@ qemudStartup(void) {
 
  out_of_memory:
     qemudLog (QEMUD_ERR,
-              "%s", _("qemudStartup: out of memory"));
+              "%s", _("qemudStartup: out of memory\n"));
     VIR_FREE(base);
     VIR_FREE(qemu_driver);
     return -1;
@@ -293,7 +293,7 @@ qemudReload(void) {
 
      if (qemu_driver->iptables) {
         qemudLog(QEMUD_INFO,
-                 "%s", _("Reloading iptables rules"));
+                 "%s", _("Reloading iptables rules\n"));
         iptablesReloadRules(qemu_driver->iptables);
     }
 
@@ -645,7 +645,7 @@ static int qemudWaitForMonitor(virConnectPtr conn,
 
     if (safewrite(vm->logfile, buf, strlen(buf)) < 0) {
         /* Log, but ignore failures to write logfile for VM */
-        qemudLog(QEMUD_WARN, _("Unable to log VM console data: %s"),
+        qemudLog(QEMUD_WARN, _("Unable to log VM console data: %s\n"),
                  strerror(errno));
     }
     return ret;
@@ -938,15 +938,15 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     tmp = argv;
     while (*tmp) {
         if (safewrite(vm->logfile, *tmp, strlen(*tmp)) < 0)
-            qemudLog(QEMUD_WARN, _("Unable to write argv to logfile %d: %s"),
+            qemudLog(QEMUD_WARN, _("Unable to write argv to logfile %d: %s\n"),
                      errno, strerror(errno));
         if (safewrite(vm->logfile, " ", 1) < 0)
-            qemudLog(QEMUD_WARN, _("Unable to write argv to logfile %d: %s"),
+            qemudLog(QEMUD_WARN, _("Unable to write argv to logfile %d: %s\n"),
                      errno, strerror(errno));
         tmp++;
     }
     if (safewrite(vm->logfile, "\n", 1) < 0)
-        qemudLog(QEMUD_WARN, _("Unable to write argv to logfile %d: %s"),
+        qemudLog(QEMUD_WARN, _("Unable to write argv to logfile %d: %s\n"),
                  errno, strerror(errno));
 
     ret = virExecNonBlock(conn, argv, &vm->pid,
@@ -1007,7 +1007,7 @@ static int qemudVMData(struct qemud_driver *driver ATTRIBUTE_UNUSED,
 
         if (safewrite(vm->logfile, buf, ret) < 0) {
             /* Log, but ignore failures to write logfile for VM */
-            qemudLog(QEMUD_WARN, _("Unable to log VM console data: %s"),
+            qemudLog(QEMUD_WARN, _("Unable to log VM console data: %s\n"),
                      strerror(errno));
         }
     }
@@ -1021,7 +1021,7 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!virDomainIsActive(vm))
         return;
 
-    qemudLog(QEMUD_INFO, _("Shutting down VM '%s'"), vm->def->name);
+    qemudLog(QEMUD_INFO, _("Shutting down VM '%s'\n"), vm->def->name);
 
     kill(vm->pid, SIGTERM);
 
@@ -1032,7 +1032,7 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     virEventRemoveHandle(vm->stderr);
 
     if (close(vm->logfile) < 0)
-        qemudLog(QEMUD_WARN, _("Unable to close logfile %d: %s"),
+        qemudLog(QEMUD_WARN, _("Unable to close logfile %d: %s\n"),
                  errno, strerror(errno));
     close(vm->stdout);
     close(vm->stderr);
@@ -1047,7 +1047,7 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
         kill(vm->pid, SIGKILL);
         if (waitpid(vm->pid, NULL, 0) != vm->pid) {
             qemudLog(QEMUD_WARN,
-                     "%s", _("Got unexpected pid, damn"));
+                     "%s", _("Got unexpected pid, damn\n"));
         }
     }
 
@@ -1543,13 +1543,13 @@ static int qemudStartNetworkDaemon(virConnectPtr conn,
  err_delbr1:
     if (network->def->ipAddress &&
         (err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
-        qemudLog(QEMUD_WARN, _("Failed to bring down bridge '%s' : %s"),
+        qemudLog(QEMUD_WARN, _("Failed to bring down bridge '%s' : %s\n"),
                  network->def->bridge, strerror(err));
     }
 
  err_delbr:
     if ((err = brDeleteBridge(driver->brctl, network->def->bridge))) {
-        qemudLog(QEMUD_WARN, _("Failed to delete bridge '%s' : %s"),
+        qemudLog(QEMUD_WARN, _("Failed to delete bridge '%s' : %s\n"),
                  network->def->bridge, strerror(err));
     }
 
@@ -1562,7 +1562,7 @@ static int qemudShutdownNetworkDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
                                       virNetworkObjPtr network) {
     int err;
 
-    qemudLog(QEMUD_INFO, _("Shutting down network '%s'"), network->def->name);
+    qemudLog(QEMUD_INFO, _("Shutting down network '%s'\n"), network->def->name);
 
     if (!virNetworkIsActive(network))
         return 0;
@@ -1574,12 +1574,12 @@ static int qemudShutdownNetworkDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (network->def->ipAddress &&
         (err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
-        qemudLog(QEMUD_WARN, _("Failed to bring down bridge '%s' : %s"),
+        qemudLog(QEMUD_WARN, _("Failed to bring down bridge '%s' : %s\n"),
                  network->def->bridge, strerror(err));
     }
 
     if ((err = brDeleteBridge(driver->brctl, network->def->bridge))) {
-        qemudLog(QEMUD_WARN, _("Failed to delete bridge '%s' : %s"),
+        qemudLog(QEMUD_WARN, _("Failed to delete bridge '%s' : %s\n"),
                  network->def->bridge, strerror(err));
     }
 
@@ -1588,7 +1588,7 @@ static int qemudShutdownNetworkDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
         kill(network->dnsmasqPid, SIGKILL);
         if (waitpid(network->dnsmasqPid, NULL, 0) != network->dnsmasqPid)
             qemudLog(QEMUD_WARN,
-                     "%s", _("Got unexpected pid for dnsmasq"));
+                     "%s", _("Got unexpected pid for dnsmasq\n"));
     }
 
     network->dnsmasqPid = -1;
@@ -1688,7 +1688,7 @@ qemudMonitorCommand (const struct qemud_driver *driver ATTRIBUTE_UNUSED,
 
     /* Log, but ignore failures to write logfile for VM */
     if (safewrite(vm->logfile, buf, strlen(buf)) < 0)
-        qemudLog(QEMUD_WARN, _("Unable to log VM console data: %s"),
+        qemudLog(QEMUD_WARN, _("Unable to log VM console data: %s\n"),
                  strerror(errno));
 
     *reply = buf;
@@ -1698,7 +1698,7 @@ qemudMonitorCommand (const struct qemud_driver *driver ATTRIBUTE_UNUSED,
     if (buf) {
         /* Log, but ignore failures to write logfile for VM */
         if (safewrite(vm->logfile, buf, strlen(buf)) < 0)
-            qemudLog(QEMUD_WARN, _("Unable to log VM console data: %s"),
+            qemudLog(QEMUD_WARN, _("Unable to log VM console data: %s\n"),
                      strerror(errno));
         VIR_FREE(buf);
     }
