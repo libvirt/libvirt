@@ -172,7 +172,7 @@ typedef struct {
  * vshCmdOpt - command options
  */
 typedef struct vshCmdOpt {
-    vshCmdOptDef *def;          /* pointer to relevant option */
+    const vshCmdOptDef *def;    /* pointer to relevant option */
     char *data;                 /* allocated data */
     struct vshCmdOpt *next;
 } vshCmdOpt;
@@ -183,15 +183,15 @@ typedef struct vshCmdOpt {
 typedef struct {
     const char *name;
     int (*handler) (vshControl *, vshCmd *);    /* command handler */
-    vshCmdOptDef *opts;         /* definition of command options */
-    vshCmdInfo *info;           /* details about command */
+    const vshCmdOptDef *opts;   /* definition of command options */
+    const vshCmdInfo *info;     /* details about command */
 } vshCmdDef;
 
 /*
  * vshCmd - parsed command
  */
 typedef struct __vshCmd {
-    vshCmdDef *def;             /* command definition */
+    const vshCmdDef *def;       /* command definition */
     vshCmdOpt *opts;            /* list of command arguments */
     struct __vshCmd *next;      /* next command */
 } __vshCmd;
@@ -216,7 +216,7 @@ typedef struct __vshControl {
 } __vshControl;
 
 
-static vshCmdDef commands[];
+static const vshCmdDef commands[];
 
 static void vshError(vshControl * ctl, int doexit, const char *format, ...)
     ATTRIBUTE_FORMAT(printf, 3, 4);
@@ -229,8 +229,8 @@ static void vshCloseLogFile(vshControl *ctl);
 
 static int vshParseArgv(vshControl * ctl, int argc, char **argv);
 
-static const char *vshCmddefGetInfo(vshCmdDef * cmd, const char *info);
-static vshCmdDef *vshCmddefSearch(const char *cmdname);
+static const char *vshCmddefGetInfo(const vshCmdDef * cmd, const char *info);
+static const vshCmdDef *vshCmddefSearch(const char *cmdname);
 static int vshCmddefHelp(vshControl * ctl, const char *name, int withprog);
 
 static vshCmdOpt *vshCommandOpt(vshCmd * cmd, const char *name);
@@ -332,7 +332,7 @@ static int namesorter(const void *a, const void *b) {
 /*
  * "help" command
  */
-static vshCmdInfo info_help[] = {
+static const vshCmdInfo info_help[] = {
     {"syntax", "help [<command>]"},
     {"help", gettext_noop("print help")},
     {"desc", gettext_noop("Prints global help or command specific help.")},
@@ -340,7 +340,7 @@ static vshCmdInfo info_help[] = {
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_help[] = {
+static const vshCmdOptDef opts_help[] = {
     {"command", VSH_OT_DATA, 0, gettext_noop("name of command")},
     {NULL, 0, 0, NULL}
 };
@@ -351,7 +351,7 @@ cmdHelp(vshControl * ctl, vshCmd * cmd)
     const char *cmdname = vshCommandOptString(cmd, "command", NULL);
 
     if (!cmdname) {
-        vshCmdDef *def;
+        const vshCmdDef *def;
 
         vshPrint(ctl, "%s", _("Commands:\n\n"));
         for (def = commands; def->name; def++)
@@ -365,7 +365,7 @@ cmdHelp(vshControl * ctl, vshCmd * cmd)
 /*
  * "autostart" command
  */
-static vshCmdInfo info_autostart[] = {
+static const vshCmdInfo info_autostart[] = {
     {"syntax", "autostart [--disable] <domain>"},
     {"help", gettext_noop("autostart a domain")},
     {"desc",
@@ -373,7 +373,7 @@ static vshCmdInfo info_autostart[] = {
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_autostart[] = {
+static const vshCmdOptDef opts_autostart[] = {
     {"domain",  VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"disable", VSH_OT_BOOL, 0, gettext_noop("disable autostarting")},
     {NULL, 0, 0, NULL}
@@ -417,7 +417,7 @@ cmdAutostart(vshControl * ctl, vshCmd * cmd)
 /*
  * "connect" command
  */
-static vshCmdInfo info_connect[] = {
+static const vshCmdInfo info_connect[] = {
     {"syntax", "connect [name] [--readonly]"},
     {"help", gettext_noop("(re)connect to hypervisor")},
     {"desc",
@@ -425,7 +425,7 @@ static vshCmdInfo info_connect[] = {
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_connect[] = {
+static const vshCmdOptDef opts_connect[] = {
     {"name",     VSH_OT_DATA, 0, gettext_noop("hypervisor connection URI")},
     {"readonly", VSH_OT_BOOL, 0, gettext_noop("read-only connection")},
     {NULL, 0, 0, NULL}
@@ -465,7 +465,7 @@ cmdConnect(vshControl * ctl, vshCmd * cmd)
 /*
  * "console" command
  */
-static vshCmdInfo info_console[] = {
+static const vshCmdInfo info_console[] = {
     {"syntax", "console <domain>"},
     {"help", gettext_noop("connect to the guest console")},
     {"desc",
@@ -473,7 +473,7 @@ static vshCmdInfo info_console[] = {
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_console[] = {
+static const vshCmdOptDef opts_console[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -542,14 +542,14 @@ cmdConsole(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 /*
  * "list" command
  */
-static vshCmdInfo info_list[] = {
+static const vshCmdInfo info_list[] = {
     {"syntax", "list [--inactive | --all]"},
     {"help", gettext_noop("list domains")},
     {"desc", gettext_noop("Returns list of domains.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_list[] = {
+static const vshCmdOptDef opts_list[] = {
     {"inactive", VSH_OT_BOOL, 0, gettext_noop("list inactive domains")},
     {"all", VSH_OT_BOOL, 0, gettext_noop("list inactive & active domains")},
     {NULL, 0, 0, NULL}
@@ -660,14 +660,14 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 /*
  * "domstate" command
  */
-static vshCmdInfo info_domstate[] = {
+static const vshCmdInfo info_domstate[] = {
     {"syntax", "domstate <domain>"},
     {"help", gettext_noop("domain state")},
     {"desc", gettext_noop("Returns state about a domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_domstate[] = {
+static const vshCmdOptDef opts_domstate[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -697,14 +697,14 @@ cmdDomstate(vshControl * ctl, vshCmd * cmd)
 
 /* "domblkstat" command
  */
-static vshCmdInfo info_domblkstat[] = {
+static const vshCmdInfo info_domblkstat[] = {
     {"syntax", "domblkstat <domain> <dev>"},
     {"help", gettext_noop("get device block stats for a domain")},
     {"desc", gettext_noop("Get device block stats for a running domain.")},
     {NULL,NULL}
 };
 
-static vshCmdOptDef opts_domblkstat[] = {
+static const vshCmdOptDef opts_domblkstat[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"device", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("block device")},
     {NULL, 0, 0, NULL}
@@ -754,14 +754,14 @@ cmdDomblkstat (vshControl *ctl, vshCmd *cmd)
 
 /* "domifstat" command
  */
-static vshCmdInfo info_domifstat[] = {
+static const vshCmdInfo info_domifstat[] = {
     {"syntax", "domifstat <domain> <dev>"},
     {"help", gettext_noop("get network interface stats for a domain")},
     {"desc", gettext_noop("Get network interface stats for a running domain.")},
     {NULL,NULL}
 };
 
-static vshCmdOptDef opts_domifstat[] = {
+static const vshCmdOptDef opts_domifstat[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("interface device")},
     {NULL, 0, 0, NULL}
@@ -821,14 +821,14 @@ cmdDomIfstat (vshControl *ctl, vshCmd *cmd)
 /*
  * "suspend" command
  */
-static vshCmdInfo info_suspend[] = {
+static const vshCmdInfo info_suspend[] = {
     {"syntax", "suspend <domain>"},
     {"help", gettext_noop("suspend a domain")},
     {"desc", gettext_noop("Suspend a running domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_suspend[] = {
+static const vshCmdOptDef opts_suspend[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -860,14 +860,14 @@ cmdSuspend(vshControl * ctl, vshCmd * cmd)
 /*
  * "create" command
  */
-static vshCmdInfo info_create[] = {
+static const vshCmdInfo info_create[] = {
     {"syntax", "create a domain from an XML <file>"},
     {"help", gettext_noop("create a domain from an XML file")},
     {"desc", gettext_noop("Create a domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_create[] = {
+static const vshCmdOptDef opts_create[] = {
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML domain description")},
     {NULL, 0, 0, NULL}
 };
@@ -908,14 +908,14 @@ cmdCreate(vshControl * ctl, vshCmd * cmd)
 /*
  * "define" command
  */
-static vshCmdInfo info_define[] = {
+static const vshCmdInfo info_define[] = {
     {"syntax", "define a domain from an XML <file>"},
     {"help", gettext_noop("define (but don't start) a domain from an XML file")},
     {"desc", gettext_noop("Define a domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_define[] = {
+static const vshCmdOptDef opts_define[] = {
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML domain description")},
     {NULL, 0, 0, NULL}
 };
@@ -956,14 +956,14 @@ cmdDefine(vshControl * ctl, vshCmd * cmd)
 /*
  * "undefine" command
  */
-static vshCmdInfo info_undefine[] = {
+static const vshCmdInfo info_undefine[] = {
     {"syntax", "undefine <domain>"},
     {"help", gettext_noop("undefine an inactive domain")},
     {"desc", gettext_noop("Undefine the configuration for an inactive domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_undefine[] = {
+static const vshCmdOptDef opts_undefine[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -1011,14 +1011,14 @@ cmdUndefine(vshControl * ctl, vshCmd * cmd)
 /*
  * "start" command
  */
-static vshCmdInfo info_start[] = {
+static const vshCmdInfo info_start[] = {
     {"syntax", "start <domain>"},
     {"help", gettext_noop("start a (previously defined) inactive domain")},
     {"desc", gettext_noop("Start a domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_start[] = {
+static const vshCmdOptDef opts_start[] = {
     {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the inactive domain")},
     {NULL, 0, 0, NULL}
 };
@@ -1056,14 +1056,14 @@ cmdStart(vshControl * ctl, vshCmd * cmd)
 /*
  * "save" command
  */
-static vshCmdInfo info_save[] = {
+static const vshCmdInfo info_save[] = {
     {"syntax", "save <domain> <file>"},
     {"help", gettext_noop("save a domain state to a file")},
     {"desc", gettext_noop("Save a running domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_save[] = {
+static const vshCmdOptDef opts_save[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("where to save the data")},
     {NULL, 0, 0, NULL}
@@ -1100,14 +1100,14 @@ cmdSave(vshControl * ctl, vshCmd * cmd)
 /*
  * "schedinfo" command
  */
-static vshCmdInfo info_schedinfo[] = {
+static const vshCmdInfo info_schedinfo[] = {
     {"syntax", "schedinfo <domain>"},
     {"help", gettext_noop("show/set scheduler parameters")},
     {"desc", gettext_noop("Show/Set scheduler parameters.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_schedinfo[] = {
+static const vshCmdOptDef opts_schedinfo[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"weight", VSH_OT_INT, VSH_OFLAG_NONE, gettext_noop("weight for XEN_CREDIT")},
     {"cap", VSH_OT_INT, VSH_OFLAG_NONE, gettext_noop("cap for XEN_CREDIT")},
@@ -1251,14 +1251,14 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
 /*
  * "restore" command
  */
-static vshCmdInfo info_restore[] = {
+static const vshCmdInfo info_restore[] = {
     {"syntax", "restore a domain from <file>"},
     {"help", gettext_noop("restore a domain from a saved state in a file")},
     {"desc", gettext_noop("Restore a domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_restore[] = {
+static const vshCmdOptDef opts_restore[] = {
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("the state to restore")},
     {NULL, 0, 0, NULL}
 };
@@ -1289,14 +1289,14 @@ cmdRestore(vshControl * ctl, vshCmd * cmd)
 /*
  * "dump" command
  */
-static vshCmdInfo info_dump[] = {
+static const vshCmdInfo info_dump[] = {
     {"syntax", "dump <domain> <file>"},
     {"help", gettext_noop("dump the core of a domain to a file for analysis")},
     {"desc", gettext_noop("Core dump a domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_dump[] = {
+static const vshCmdOptDef opts_dump[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("where to dump the core")},
     {NULL, 0, 0, NULL}
@@ -1334,14 +1334,14 @@ cmdDump(vshControl * ctl, vshCmd * cmd)
 /*
  * "resume" command
  */
-static vshCmdInfo info_resume[] = {
+static const vshCmdInfo info_resume[] = {
     {"syntax", "resume <domain>"},
     {"help", gettext_noop("resume a domain")},
     {"desc", gettext_noop("Resume a previously suspended domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_resume[] = {
+static const vshCmdOptDef opts_resume[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -1373,14 +1373,14 @@ cmdResume(vshControl * ctl, vshCmd * cmd)
 /*
  * "shutdown" command
  */
-static vshCmdInfo info_shutdown[] = {
+static const vshCmdInfo info_shutdown[] = {
     {"syntax", "shutdown <domain>"},
     {"help", gettext_noop("gracefully shutdown a domain")},
     {"desc", gettext_noop("Run shutdown in the target domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_shutdown[] = {
+static const vshCmdOptDef opts_shutdown[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -1412,14 +1412,14 @@ cmdShutdown(vshControl * ctl, vshCmd * cmd)
 /*
  * "reboot" command
  */
-static vshCmdInfo info_reboot[] = {
+static const vshCmdInfo info_reboot[] = {
     {"syntax", "reboot <domain>"},
     {"help", gettext_noop("reboot a domain")},
     {"desc", gettext_noop("Run a reboot command in the target domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_reboot[] = {
+static const vshCmdOptDef opts_reboot[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -1451,14 +1451,14 @@ cmdReboot(vshControl * ctl, vshCmd * cmd)
 /*
  * "destroy" command
  */
-static vshCmdInfo info_destroy[] = {
+static const vshCmdInfo info_destroy[] = {
     {"syntax", "destroy <domain>"},
     {"help", gettext_noop("destroy a domain")},
     {"desc", gettext_noop("Destroy a given domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_destroy[] = {
+static const vshCmdOptDef opts_destroy[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -1490,14 +1490,14 @@ cmdDestroy(vshControl * ctl, vshCmd * cmd)
 /*
  * "dominfo" command
  */
-static vshCmdInfo info_dominfo[] = {
+static const vshCmdInfo info_dominfo[] = {
     {"syntax", "dominfo <domain>"},
     {"help", gettext_noop("domain information")},
     {"desc", gettext_noop("Returns basic information about the domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_dominfo[] = {
+static const vshCmdOptDef opts_dominfo[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -1572,14 +1572,14 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
 /*
  * "freecell" command
  */
-static vshCmdInfo info_freecell[] = {
+static const vshCmdInfo info_freecell[] = {
     {"syntax", "freecell [<cellno>]"},
     {"help", gettext_noop("NUMA free memory")},
     {"desc", gettext_noop("display available free memory for the NUMA cell.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_freecell[] = {
+static const vshCmdOptDef opts_freecell[] = {
     {"cellno", VSH_OT_DATA, 0, gettext_noop("NUMA cell number")},
     {NULL, 0, 0, NULL}
 };
@@ -1614,14 +1614,14 @@ cmdFreecell(vshControl * ctl, vshCmd * cmd)
 /*
  * "vcpuinfo" command
  */
-static vshCmdInfo info_vcpuinfo[] = {
+static const vshCmdInfo info_vcpuinfo[] = {
     {"syntax", "vcpuinfo <domain>"},
     {"help", gettext_noop("domain vcpu information")},
     {"desc", gettext_noop("Returns basic information about the domain virtual CPUs.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_vcpuinfo[] = {
+static const vshCmdOptDef opts_vcpuinfo[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -1701,14 +1701,14 @@ cmdVcpuinfo(vshControl * ctl, vshCmd * cmd)
 /*
  * "vcpupin" command
  */
-static vshCmdInfo info_vcpupin[] = {
+static const vshCmdInfo info_vcpupin[] = {
     {"syntax", "vcpupin <domain> <vcpu> <cpulist>"},
     {"help", gettext_noop("control domain vcpu affinity")},
     {"desc", gettext_noop("Pin domain VCPUs to host physical CPUs.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_vcpupin[] = {
+static const vshCmdOptDef opts_vcpupin[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"vcpu", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("vcpu number")},
     {"cpulist", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("host cpu number(s) (comma separated)")},
@@ -1835,14 +1835,14 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
 /*
  * "setvcpus" command
  */
-static vshCmdInfo info_setvcpus[] = {
+static const vshCmdInfo info_setvcpus[] = {
     {"syntax", "setvcpus <domain> <count>"},
     {"help", gettext_noop("change number of virtual CPUs")},
     {"desc", gettext_noop("Change the number of virtual CPUs in the guest domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_setvcpus[] = {
+static const vshCmdOptDef opts_setvcpus[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"count", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("number of virtual CPUs")},
     {NULL, 0, 0, NULL}
@@ -1892,14 +1892,14 @@ cmdSetvcpus(vshControl * ctl, vshCmd * cmd)
 /*
  * "setmemory" command
  */
-static vshCmdInfo info_setmem[] = {
+static const vshCmdInfo info_setmem[] = {
     {"syntax", "setmem <domain> <kilobytes>"},
     {"help", gettext_noop("change memory allocation")},
     {"desc", gettext_noop("Change the current memory allocation in the guest domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_setmem[] = {
+static const vshCmdOptDef opts_setmem[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"kilobytes", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("number of kilobytes of memory")},
     {NULL, 0, 0, NULL}
@@ -1949,14 +1949,14 @@ cmdSetmem(vshControl * ctl, vshCmd * cmd)
 /*
  * "setmaxmem" command
  */
-static vshCmdInfo info_setmaxmem[] = {
+static const vshCmdInfo info_setmaxmem[] = {
     {"syntax", "setmaxmem <domain> <kilobytes>"},
     {"help", gettext_noop("change maximum memory limit")},
     {"desc", gettext_noop("Change the maximum memory allocation limit in the guest domain.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_setmaxmem[] = {
+static const vshCmdOptDef opts_setmaxmem[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"kilobytes", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("maximum memory limit in kilobytes")},
     {NULL, 0, 0, NULL}
@@ -2009,7 +2009,7 @@ cmdSetmaxmem(vshControl * ctl, vshCmd * cmd)
 /*
  * "nodeinfo" command
  */
-static vshCmdInfo info_nodeinfo[] = {
+static const vshCmdInfo info_nodeinfo[] = {
     {"syntax", "nodeinfo"},
     {"help", gettext_noop("node information")},
     {"desc", gettext_noop("Returns basic information about the node.")},
@@ -2043,7 +2043,7 @@ cmdNodeinfo(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 /*
  * "capabilities" command
  */
-static vshCmdInfo info_capabilities[] = {
+static const vshCmdInfo info_capabilities[] = {
     {"syntax", "capabilities"},
     {"help", gettext_noop("capabilities")},
     {"desc", gettext_noop("Returns capabilities of hypervisor/driver.")},
@@ -2071,14 +2071,14 @@ cmdCapabilities (vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 /*
  * "dumpxml" command
  */
-static vshCmdInfo info_dumpxml[] = {
+static const vshCmdInfo info_dumpxml[] = {
     {"syntax", "dumpxml <domain>"},
     {"help", gettext_noop("domain information in XML")},
     {"desc", gettext_noop("Output the domain information as an XML dump to stdout.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_dumpxml[] = {
+static const vshCmdOptDef opts_dumpxml[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -2111,13 +2111,13 @@ cmdDumpXML(vshControl * ctl, vshCmd * cmd)
 /*
  * "domname" command
  */
-static vshCmdInfo info_domname[] = {
+static const vshCmdInfo info_domname[] = {
     {"syntax", "domname <domain>"},
     {"help", gettext_noop("convert a domain id or UUID to domain name")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_domname[] = {
+static const vshCmdOptDef opts_domname[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -2141,13 +2141,13 @@ cmdDomname(vshControl * ctl, vshCmd * cmd)
 /*
  * "domid" command
  */
-static vshCmdInfo info_domid[] = {
+static const vshCmdInfo info_domid[] = {
     {"syntax", "domid <domain>"},
     {"help", gettext_noop("convert a domain name or UUID to domain id")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_domid[] = {
+static const vshCmdOptDef opts_domid[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -2176,13 +2176,13 @@ cmdDomid(vshControl * ctl, vshCmd * cmd)
 /*
  * "domuuid" command
  */
-static vshCmdInfo info_domuuid[] = {
+static const vshCmdInfo info_domuuid[] = {
     {"syntax", "domuuid <domain>"},
     {"help", gettext_noop("convert a domain name or id to domain UUID")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_domuuid[] = {
+static const vshCmdOptDef opts_domuuid[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain id or name")},
     {NULL, 0, 0, NULL}
 };
@@ -2211,14 +2211,14 @@ cmdDomuuid(vshControl * ctl, vshCmd * cmd)
 /*
  * "migrate" command
  */
-static vshCmdInfo info_migrate[] = {
+static const vshCmdInfo info_migrate[] = {
     {"syntax", "migrate [--live] <domain> <desturi> [<migrateuri>]"},
     {"help", gettext_noop("migrate domain to another host")},
     {"desc", gettext_noop("Migrate domain to another host.  Add --live for live migration.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_migrate[] = {
+static const vshCmdOptDef opts_migrate[] = {
     {"live", VSH_OT_BOOL, 0, gettext_noop("live migration")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"desturi", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("connection URI of the destination host")},
@@ -2274,7 +2274,7 @@ cmdMigrate (vshControl *ctl, vshCmd *cmd)
 /*
  * "net-autostart" command
  */
-static vshCmdInfo info_network_autostart[] = {
+static const vshCmdInfo info_network_autostart[] = {
     {"syntax", "net-autostart [--disable] <network>"},
     {"help", gettext_noop("autostart a network")},
     {"desc",
@@ -2282,7 +2282,7 @@ static vshCmdInfo info_network_autostart[] = {
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_network_autostart[] = {
+static const vshCmdOptDef opts_network_autostart[] = {
     {"network",  VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network name or uuid")},
     {"disable", VSH_OT_BOOL, 0, gettext_noop("disable autostarting")},
     {NULL, 0, 0, NULL}
@@ -2325,14 +2325,14 @@ cmdNetworkAutostart(vshControl * ctl, vshCmd * cmd)
 /*
  * "net-create" command
  */
-static vshCmdInfo info_network_create[] = {
+static const vshCmdInfo info_network_create[] = {
     {"syntax", "create a network from an XML <file>"},
     {"help", gettext_noop("create a network from an XML file")},
     {"desc", gettext_noop("Create a network.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_network_create[] = {
+static const vshCmdOptDef opts_network_create[] = {
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML network description")},
     {NULL, 0, 0, NULL}
 };
@@ -2373,14 +2373,14 @@ cmdNetworkCreate(vshControl * ctl, vshCmd * cmd)
 /*
  * "net-define" command
  */
-static vshCmdInfo info_network_define[] = {
+static const vshCmdInfo info_network_define[] = {
     {"syntax", "define a network from an XML <file>"},
     {"help", gettext_noop("define (but don't start) a network from an XML file")},
     {"desc", gettext_noop("Define a network.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_network_define[] = {
+static const vshCmdOptDef opts_network_define[] = {
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML network description")},
     {NULL, 0, 0, NULL}
 };
@@ -2421,14 +2421,14 @@ cmdNetworkDefine(vshControl * ctl, vshCmd * cmd)
 /*
  * "net-destroy" command
  */
-static vshCmdInfo info_network_destroy[] = {
+static const vshCmdInfo info_network_destroy[] = {
     {"syntax", "net-destroy <network>"},
     {"help", gettext_noop("destroy a network")},
     {"desc", gettext_noop("Destroy a given network.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_network_destroy[] = {
+static const vshCmdOptDef opts_network_destroy[] = {
     {"network", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -2461,14 +2461,14 @@ cmdNetworkDestroy(vshControl * ctl, vshCmd * cmd)
 /*
  * "net-dumpxml" command
  */
-static vshCmdInfo info_network_dumpxml[] = {
+static const vshCmdInfo info_network_dumpxml[] = {
     {"syntax", "net-dumpxml <network>"},
     {"help", gettext_noop("network information in XML")},
     {"desc", gettext_noop("Output the network information as an XML dump to stdout.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_network_dumpxml[] = {
+static const vshCmdOptDef opts_network_dumpxml[] = {
     {"network", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -2502,14 +2502,14 @@ cmdNetworkDumpXML(vshControl * ctl, vshCmd * cmd)
 /*
  * "net-list" command
  */
-static vshCmdInfo info_network_list[] = {
+static const vshCmdInfo info_network_list[] = {
     {"syntax", "net-list [ --inactive | --all ]"},
     {"help", gettext_noop("list networks")},
     {"desc", gettext_noop("Returns list of networks.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_network_list[] = {
+static const vshCmdOptDef opts_network_list[] = {
     {"inactive", VSH_OT_BOOL, 0, gettext_noop("list inactive networks")},
     {"all", VSH_OT_BOOL, 0, gettext_noop("list inactive & active networks")},
     {NULL, 0, 0, NULL}
@@ -2626,13 +2626,13 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 /*
  * "net-name" command
  */
-static vshCmdInfo info_network_name[] = {
+static const vshCmdInfo info_network_name[] = {
     {"syntax", "net-name <network>"},
     {"help", gettext_noop("convert a network UUID to network name")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_network_name[] = {
+static const vshCmdOptDef opts_network_name[] = {
     {"network", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -2657,14 +2657,14 @@ cmdNetworkName(vshControl * ctl, vshCmd * cmd)
 /*
  * "net-start" command
  */
-static vshCmdInfo info_network_start[] = {
+static const vshCmdInfo info_network_start[] = {
     {"syntax", "start <network>"},
     {"help", gettext_noop("start a (previously defined) inactive network")},
     {"desc", gettext_noop("Start a network.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_network_start[] = {
+static const vshCmdOptDef opts_network_start[] = {
     {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the inactive network")},
     {NULL, 0, 0, NULL}
 };
@@ -2696,14 +2696,14 @@ cmdNetworkStart(vshControl * ctl, vshCmd * cmd)
 /*
  * "net-undefine" command
  */
-static vshCmdInfo info_network_undefine[] = {
+static const vshCmdInfo info_network_undefine[] = {
     {"syntax", "net-undefine <network>"},
     {"help", gettext_noop("undefine an inactive network")},
     {"desc", gettext_noop("Undefine the configuration for an inactive network.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_network_undefine[] = {
+static const vshCmdOptDef opts_network_undefine[] = {
     {"network", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network name or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -2735,13 +2735,13 @@ cmdNetworkUndefine(vshControl * ctl, vshCmd * cmd)
 /*
  * "net-uuid" command
  */
-static vshCmdInfo info_network_uuid[] = {
+static const vshCmdInfo info_network_uuid[] = {
     {"syntax", "net-uuid <network>"},
     {"help", gettext_noop("convert a network name to network UUID")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_network_uuid[] = {
+static const vshCmdOptDef opts_network_uuid[] = {
     {"network", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network name")},
     {NULL, 0, 0, NULL}
 };
@@ -2768,21 +2768,10 @@ cmdNetworkUuid(vshControl * ctl, vshCmd * cmd)
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 /*
  * "pool-autostart" command
  */
-static vshCmdInfo info_pool_autostart[] = {
+static const vshCmdInfo info_pool_autostart[] = {
     {"syntax", "pool-autostart [--disable] <pool>"},
     {"help", gettext_noop("autostart a pool")},
     {"desc",
@@ -2790,7 +2779,7 @@ static vshCmdInfo info_pool_autostart[] = {
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_autostart[] = {
+static const vshCmdOptDef opts_pool_autostart[] = {
     {"pool",  VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool name or uuid")},
     {"disable", VSH_OT_BOOL, 0, gettext_noop("disable autostarting")},
     {NULL, 0, 0, NULL}
@@ -2833,14 +2822,14 @@ cmdPoolAutostart(vshControl * ctl, vshCmd * cmd)
 /*
  * "pool-create" command
  */
-static vshCmdInfo info_pool_create[] = {
+static const vshCmdInfo info_pool_create[] = {
     {"syntax", "create a pool from an XML <file>"},
     {"help", gettext_noop("create a pool from an XML file")},
     {"desc", gettext_noop("Create a pool.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_create[] = {
+static const vshCmdOptDef opts_pool_create[] = {
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML pool description")},
     {NULL, 0, 0, NULL}
 };
@@ -2880,14 +2869,14 @@ cmdPoolCreate(vshControl * ctl, vshCmd * cmd)
 /*
  * "pool-create-as" command
  */
-static vshCmdInfo info_pool_create_as[] = {
+static const vshCmdInfo info_pool_create_as[] = {
     {"syntax", "pool-create-as <name> <type>"},
     {"help", gettext_noop("create a pool from a set of args")},
     {"desc", gettext_noop("Create a pool.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_create_as[] = {
+static const vshCmdOptDef opts_pool_create_as[] = {
     {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the pool")},
     {"type", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("type of the pool")},
     {"source-host", VSH_OT_DATA, 0, gettext_noop("source-host for underlying storage")},
@@ -2971,14 +2960,14 @@ cmdPoolCreateAs(vshControl * ctl, vshCmd * cmd)
 /*
  * "pool-define" command
  */
-static vshCmdInfo info_pool_define[] = {
+static const vshCmdInfo info_pool_define[] = {
     {"syntax", "define a pool from an XML <file>"},
     {"help", gettext_noop("define (but don't start) a pool from an XML file")},
     {"desc", gettext_noop("Define a pool.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_define[] = {
+static const vshCmdOptDef opts_pool_define[] = {
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML pool description")},
     {NULL, 0, 0, NULL}
 };
@@ -3019,14 +3008,14 @@ cmdPoolDefine(vshControl * ctl, vshCmd * cmd)
 /*
  * "pool-define-as" command
  */
-static vshCmdInfo info_pool_define_as[] = {
+static const vshCmdInfo info_pool_define_as[] = {
     {"syntax", "pool-define-as <name> <type>"},
     {"help", gettext_noop("define a pool from a set of args")},
     {"desc", gettext_noop("Define a pool.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_define_as[] = {
+static const vshCmdOptDef opts_pool_define_as[] = {
     {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the pool")},
     {"type", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("type of the pool")},
     {"source-host", VSH_OT_DATA, 0, gettext_noop("source-host for underlying storage")},
@@ -3109,14 +3098,14 @@ cmdPoolDefineAs(vshControl * ctl, vshCmd * cmd)
 /*
  * "pool-build" command
  */
-static vshCmdInfo info_pool_build[] = {
+static const vshCmdInfo info_pool_build[] = {
     {"syntax", "pool-build <pool>"},
     {"help", gettext_noop("build a pool")},
     {"desc", gettext_noop("Build a given pool.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_build[] = {
+static const vshCmdOptDef opts_pool_build[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool name or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -3149,14 +3138,14 @@ cmdPoolBuild(vshControl * ctl, vshCmd * cmd)
 /*
  * "pool-destroy" command
  */
-static vshCmdInfo info_pool_destroy[] = {
+static const vshCmdInfo info_pool_destroy[] = {
     {"syntax", "pool-destroy <pool>"},
     {"help", gettext_noop("destroy a pool")},
     {"desc", gettext_noop("Destroy a given pool.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_destroy[] = {
+static const vshCmdOptDef opts_pool_destroy[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool name or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -3189,14 +3178,14 @@ cmdPoolDestroy(vshControl * ctl, vshCmd * cmd)
 /*
  * "pool-delete" command
  */
-static vshCmdInfo info_pool_delete[] = {
+static const vshCmdInfo info_pool_delete[] = {
     {"syntax", "pool-delete <pool>"},
     {"help", gettext_noop("delete a pool")},
     {"desc", gettext_noop("Delete a given pool.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_delete[] = {
+static const vshCmdOptDef opts_pool_delete[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool name or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -3229,14 +3218,14 @@ cmdPoolDelete(vshControl * ctl, vshCmd * cmd)
 /*
  * "pool-refresh" command
  */
-static vshCmdInfo info_pool_refresh[] = {
+static const vshCmdInfo info_pool_refresh[] = {
     {"syntax", "pool-refresh <pool>"},
     {"help", gettext_noop("refresh a pool")},
     {"desc", gettext_noop("Refresh a given pool.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_refresh[] = {
+static const vshCmdOptDef opts_pool_refresh[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool name or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -3269,14 +3258,14 @@ cmdPoolRefresh(vshControl * ctl, vshCmd * cmd)
 /*
  * "pool-dumpxml" command
  */
-static vshCmdInfo info_pool_dumpxml[] = {
+static const vshCmdInfo info_pool_dumpxml[] = {
     {"syntax", "pool-dumpxml <pool>"},
     {"help", gettext_noop("pool information in XML")},
     {"desc", gettext_noop("Output the pool information as an XML dump to stdout.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_dumpxml[] = {
+static const vshCmdOptDef opts_pool_dumpxml[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool name or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -3310,14 +3299,14 @@ cmdPoolDumpXML(vshControl * ctl, vshCmd * cmd)
 /*
  * "pool-list" command
  */
-static vshCmdInfo info_pool_list[] = {
+static const vshCmdInfo info_pool_list[] = {
     {"syntax", "pool-list [ --inactive | --all ]"},
     {"help", gettext_noop("list pools")},
     {"desc", gettext_noop("Returns list of pools.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_list[] = {
+static const vshCmdOptDef opts_pool_list[] = {
     {"inactive", VSH_OT_BOOL, 0, gettext_noop("list inactive pools")},
     {"all", VSH_OT_BOOL, 0, gettext_noop("list inactive & active pools")},
     {NULL, 0, 0, NULL}
@@ -3454,14 +3443,14 @@ prettyCapacity(unsigned long long val,
 /*
  * "pool-info" command
  */
-static vshCmdInfo info_pool_info[] = {
+static const vshCmdInfo info_pool_info[] = {
     {"syntax", "pool-info <pool>"},
     {"help", gettext_noop("storage pool information")},
     {"desc", gettext_noop("Returns basic information about the storage pool.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_info[] = {
+static const vshCmdOptDef opts_pool_info[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool name or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -3530,13 +3519,13 @@ cmdPoolInfo(vshControl * ctl, vshCmd * cmd)
 /*
  * "pool-name" command
  */
-static vshCmdInfo info_pool_name[] = {
+static const vshCmdInfo info_pool_name[] = {
     {"syntax", "pool-name <pool>"},
     {"help", gettext_noop("convert a pool UUID to pool name")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_name[] = {
+static const vshCmdOptDef opts_pool_name[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -3561,14 +3550,14 @@ cmdPoolName(vshControl * ctl, vshCmd * cmd)
 /*
  * "pool-start" command
  */
-static vshCmdInfo info_pool_start[] = {
+static const vshCmdInfo info_pool_start[] = {
     {"syntax", "start <pool>"},
     {"help", gettext_noop("start a (previously defined) inactive pool")},
     {"desc", gettext_noop("Start a pool.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_start[] = {
+static const vshCmdOptDef opts_pool_start[] = {
     {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the inactive pool")},
     {NULL, 0, 0, NULL}
 };
@@ -3600,14 +3589,14 @@ cmdPoolStart(vshControl * ctl, vshCmd * cmd)
 /*
  * "vol-create-as" command
  */
-static vshCmdInfo info_vol_create_as[] = {
+static const vshCmdInfo info_vol_create_as[] = {
     {"syntax", "vol-create-as <pool> <name> <capacity>"},
     {"help", gettext_noop("create a volume from a set of args")},
     {"desc", gettext_noop("Create a vol.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_vol_create_as[] = {
+static const vshCmdOptDef opts_vol_create_as[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool name")},
     {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the volume")},
     {"capacity", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("size of the vol with optional k,M,G,T suffix")},
@@ -3722,14 +3711,14 @@ cmdVolCreateAs(vshControl * ctl, vshCmd * cmd)
 /*
  * "pool-undefine" command
  */
-static vshCmdInfo info_pool_undefine[] = {
+static const vshCmdInfo info_pool_undefine[] = {
     {"syntax", "pool-undefine <pool>"},
     {"help", gettext_noop("undefine an inactive pool")},
     {"desc", gettext_noop("Undefine the configuration for an inactive pool.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_undefine[] = {
+static const vshCmdOptDef opts_pool_undefine[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool name or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -3761,13 +3750,13 @@ cmdPoolUndefine(vshControl * ctl, vshCmd * cmd)
 /*
  * "pool-uuid" command
  */
-static vshCmdInfo info_pool_uuid[] = {
+static const vshCmdInfo info_pool_uuid[] = {
     {"syntax", "pool-uuid <pool>"},
     {"help", gettext_noop("convert a pool name to pool UUID")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_pool_uuid[] = {
+static const vshCmdOptDef opts_pool_uuid[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool name")},
     {NULL, 0, 0, NULL}
 };
@@ -3799,14 +3788,14 @@ cmdPoolUuid(vshControl * ctl, vshCmd * cmd)
 /*
  * "vol-create" command
  */
-static vshCmdInfo info_vol_create[] = {
+static const vshCmdInfo info_vol_create[] = {
     {"syntax", "create <file>"},
     {"help", gettext_noop("create a vol from an XML file")},
     {"desc", gettext_noop("Create a vol.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_vol_create[] = {
+static const vshCmdOptDef opts_vol_create[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool name")},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML vol description")},
     {NULL, 0, 0, NULL}
@@ -3858,14 +3847,14 @@ cmdVolCreate(vshControl * ctl, vshCmd * cmd)
 /*
  * "vol-delete" command
  */
-static vshCmdInfo info_vol_delete[] = {
+static const vshCmdInfo info_vol_delete[] = {
     {"syntax", "vol-delete <vol>"},
     {"help", gettext_noop("delete a vol")},
     {"desc", gettext_noop("Delete a given vol.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_vol_delete[] = {
+static const vshCmdOptDef opts_vol_delete[] = {
     {"pool", VSH_OT_STRING, 0, gettext_noop("pool name or uuid")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("vol name, key or path")},
     {NULL, 0, 0, NULL}
@@ -3900,14 +3889,14 @@ cmdVolDelete(vshControl * ctl, vshCmd * cmd)
 /*
  * "vol-info" command
  */
-static vshCmdInfo info_vol_info[] = {
+static const vshCmdInfo info_vol_info[] = {
     {"syntax", "vol-info <vol>"},
     {"help", gettext_noop("storage vol information")},
     {"desc", gettext_noop("Returns basic information about the storage vol.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_vol_info[] = {
+static const vshCmdOptDef opts_vol_info[] = {
     {"pool", VSH_OT_STRING, 0, gettext_noop("pool name or uuid")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("vol name, key or path")},
     {NULL, 0, 0, NULL}
@@ -3952,14 +3941,14 @@ cmdVolInfo(vshControl * ctl, vshCmd * cmd)
 /*
  * "vol-dumpxml" command
  */
-static vshCmdInfo info_vol_dumpxml[] = {
+static const vshCmdInfo info_vol_dumpxml[] = {
     {"syntax", "vol-dumpxml <vol>"},
     {"help", gettext_noop("vol information in XML")},
     {"desc", gettext_noop("Output the vol information as an XML dump to stdout.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_vol_dumpxml[] = {
+static const vshCmdOptDef opts_vol_dumpxml[] = {
     {"pool", VSH_OT_STRING, 0, gettext_noop("pool name or uuid")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("vol name, key or path")},
     {NULL, 0, 0, NULL}
@@ -3994,14 +3983,14 @@ cmdVolDumpXML(vshControl * ctl, vshCmd * cmd)
 /*
  * "vol-list" command
  */
-static vshCmdInfo info_vol_list[] = {
+static const vshCmdInfo info_vol_list[] = {
     {"syntax", "vol-list <pool>"},
     {"help", gettext_noop("list vols")},
     {"desc", gettext_noop("Returns list of vols by pool.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_vol_list[] = {
+static const vshCmdOptDef opts_vol_list[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool name or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -4073,13 +4062,13 @@ cmdVolList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 /*
  * "vol-name" command
  */
-static vshCmdInfo info_vol_name[] = {
+static const vshCmdInfo info_vol_name[] = {
     {"syntax", "vol-name <vol>"},
     {"help", gettext_noop("convert a vol UUID to vol name")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_vol_name[] = {
+static const vshCmdOptDef opts_vol_name[] = {
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("vol key or path")},
     {NULL, 0, 0, NULL}
 };
@@ -4106,13 +4095,13 @@ cmdVolName(vshControl * ctl, vshCmd * cmd)
 /*
  * "vol-key" command
  */
-static vshCmdInfo info_vol_key[] = {
+static const vshCmdInfo info_vol_key[] = {
     {"syntax", "vol-key <vol>"},
     {"help", gettext_noop("convert a vol UUID to vol key")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_vol_key[] = {
+static const vshCmdOptDef opts_vol_key[] = {
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("vol uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -4139,13 +4128,13 @@ cmdVolKey(vshControl * ctl, vshCmd * cmd)
 /*
  * "vol-path" command
  */
-static vshCmdInfo info_vol_path[] = {
+static const vshCmdInfo info_vol_path[] = {
     {"syntax", "vol-path <pool> <vol>"},
     {"help", gettext_noop("convert a vol UUID to vol path")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_vol_path[] = {
+static const vshCmdOptDef opts_vol_path[] = {
     {"pool", VSH_OT_STRING, 0, gettext_noop("pool name or uuid")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("vol name or key")},
     {NULL, 0, 0, NULL}
@@ -4176,7 +4165,7 @@ cmdVolPath(vshControl * ctl, vshCmd * cmd)
 /*
  * "version" command
  */
-static vshCmdInfo info_version[] = {
+static const vshCmdInfo info_version[] = {
     {"syntax", "version"},
     {"help", gettext_noop("show version")},
     {"desc", gettext_noop("Display the system version information.")},
@@ -4256,7 +4245,7 @@ cmdVersion(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 /*
  * "hostkey" command
  */
-static vshCmdInfo info_hostname[] = {
+static const vshCmdInfo info_hostname[] = {
     {"syntax", "hostname"},
     {"help", gettext_noop("print the hypervisor hostname")},
     {NULL, NULL}
@@ -4285,7 +4274,7 @@ cmdHostname (vshControl *ctl, vshCmd *cmd ATTRIBUTE_UNUSED)
 /*
  * "uri" command
  */
-static vshCmdInfo info_uri[] = {
+static const vshCmdInfo info_uri[] = {
     {"syntax", "uri"},
     {"help", gettext_noop("print the hypervisor canonical URI")},
     {NULL, NULL}
@@ -4314,14 +4303,14 @@ cmdURI (vshControl *ctl, vshCmd *cmd ATTRIBUTE_UNUSED)
 /*
  * "vncdisplay" command
  */
-static vshCmdInfo info_vncdisplay[] = {
+static const vshCmdInfo info_vncdisplay[] = {
     {"syntax", "vncdisplay <domain>"},
     {"help", gettext_noop("vnc display")},
     {"desc", gettext_noop("Output the IP address and port number for the VNC display.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_vncdisplay[] = {
+static const vshCmdOptDef opts_vncdisplay[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -4390,14 +4379,14 @@ cmdVNCDisplay(vshControl * ctl, vshCmd * cmd)
 /*
  * "ttyconsole" command
  */
-static vshCmdInfo info_ttyconsole[] = {
+static const vshCmdInfo info_ttyconsole[] = {
     {"syntax", "ttyconsole <domain>"},
     {"help", gettext_noop("tty console")},
     {"desc", gettext_noop("Output the device for the TTY console.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_ttyconsole[] = {
+static const vshCmdOptDef opts_ttyconsole[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -4451,14 +4440,14 @@ cmdTTYConsole(vshControl * ctl, vshCmd * cmd)
 /*
  * "attach-device" command
  */
-static vshCmdInfo info_attach_device[] = {
+static const vshCmdInfo info_attach_device[] = {
     {"syntax", "attach-device <domain> <file> "},
     {"help", gettext_noop("attach device from an XML file")},
     {"desc", gettext_noop("Attach device from an XML <file>.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_attach_device[] = {
+static const vshCmdOptDef opts_attach_device[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"file",   VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("XML file")},
     {NULL, 0, 0, NULL}
@@ -4508,14 +4497,14 @@ cmdAttachDevice(vshControl * ctl, vshCmd * cmd)
 /*
  * "detach-device" command
  */
-static vshCmdInfo info_detach_device[] = {
+static const vshCmdInfo info_detach_device[] = {
     {"syntax", "detach-device <domain> <file> "},
     {"help", gettext_noop("detach device from an XML file")},
     {"desc", gettext_noop("Detach device from an XML <file>")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_detach_device[] = {
+static const vshCmdOptDef opts_detach_device[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"file",   VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("XML file")},
     {NULL, 0, 0, NULL}
@@ -4565,14 +4554,14 @@ cmdDetachDevice(vshControl * ctl, vshCmd * cmd)
 /*
  * "attach-interface" command
  */
-static vshCmdInfo info_attach_interface[] = {
+static const vshCmdInfo info_attach_interface[] = {
     {"syntax", "attach-interface <domain> <type> <source> [--target <target>] [--mac <mac>] [--script <script>] "},
     {"help", gettext_noop("attach network interface")},
     {"desc", gettext_noop("Attach new network interface.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_attach_interface[] = {
+static const vshCmdOptDef opts_attach_interface[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"type",   VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network interface type")},
     {"source", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("source of network interface")},
@@ -4679,14 +4668,14 @@ cmdAttachInterface(vshControl * ctl, vshCmd * cmd)
 /*
  * "detach-interface" command
  */
-static vshCmdInfo info_detach_interface[] = {
+static const vshCmdInfo info_detach_interface[] = {
     {"syntax", "detach-interface <domain> <type> [--mac <mac>] "},
     {"help", gettext_noop("detach network interface")},
     {"desc", gettext_noop("Detach network interface.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_detach_interface[] = {
+static const vshCmdOptDef opts_detach_interface[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"type",   VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network interface type")},
     {"mac",    VSH_OT_DATA, 0, gettext_noop("MAC address")},
@@ -4798,14 +4787,14 @@ cmdDetachInterface(vshControl * ctl, vshCmd * cmd)
 /*
  * "attach-disk" command
  */
-static vshCmdInfo info_attach_disk[] = {
+static const vshCmdInfo info_attach_disk[] = {
     {"syntax", "attach-disk <domain> <source> <target> [--driver <driver>] [--subdriver <subdriver>] [--type <type>] [--mode <mode>] "},
     {"help", gettext_noop("attach disk device")},
     {"desc", gettext_noop("Attach new disk device.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_attach_disk[] = {
+static const vshCmdOptDef opts_attach_disk[] = {
     {"domain",  VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"source",  VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("source of disk device")},
     {"target",  VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("target of disk device")},
@@ -4961,14 +4950,14 @@ cmdAttachDisk(vshControl * ctl, vshCmd * cmd)
 /*
  * "detach-disk" command
  */
-static vshCmdInfo info_detach_disk[] = {
+static const vshCmdInfo info_detach_disk[] = {
     {"syntax", "detach-disk <domain> <target> "},
     {"help", gettext_noop("detach disk device")},
     {"desc", gettext_noop("Detach disk device.")},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_detach_disk[] = {
+static const vshCmdOptDef opts_detach_disk[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"target", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("target of disk device")},
     {NULL, 0, 0, NULL}
@@ -5072,7 +5061,7 @@ cmdDetachDisk(vshControl * ctl, vshCmd * cmd)
 /*
  * "quit" command
  */
-static vshCmdInfo info_quit[] = {
+static const vshCmdInfo info_quit[] = {
     {"syntax", "quit"},
     {"help", gettext_noop("quit this interactive terminal")},
     {NULL, NULL}
@@ -5088,7 +5077,7 @@ cmdQuit(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 /*
  * Commands
  */
-static vshCmdDef commands[] = {
+static const vshCmdDef commands[] = {
     {"help", cmdHelp, opts_help, info_help},
     {"attach-device", cmdAttachDevice, opts_attach_device, info_attach_device},
     {"attach-disk", cmdAttachDisk, opts_attach_disk, info_attach_disk},
@@ -5184,9 +5173,9 @@ static vshCmdDef commands[] = {
  * ---------------
  */
 static const char *
-vshCmddefGetInfo(vshCmdDef * cmd, const char *name)
+vshCmddefGetInfo(const vshCmdDef * cmd, const char *name)
 {
-    vshCmdInfo *info;
+    const vshCmdInfo *info;
 
     for (info = cmd->info; info && info->name; info++) {
         if (STREQ(info->name, name))
@@ -5195,10 +5184,10 @@ vshCmddefGetInfo(vshCmdDef * cmd, const char *name)
     return NULL;
 }
 
-static vshCmdOptDef *
-vshCmddefGetOption(vshCmdDef * cmd, const char *name)
+static const vshCmdOptDef *
+vshCmddefGetOption(const vshCmdDef * cmd, const char *name)
 {
-    vshCmdOptDef *opt;
+    const vshCmdOptDef *opt;
 
     for (opt = cmd->opts; opt && opt->name; opt++)
         if (STREQ(opt->name, name))
@@ -5206,10 +5195,10 @@ vshCmddefGetOption(vshCmdDef * cmd, const char *name)
     return NULL;
 }
 
-static vshCmdOptDef *
-vshCmddefGetData(vshCmdDef * cmd, int data_ct)
+static const vshCmdOptDef *
+vshCmddefGetData(const vshCmdDef * cmd, int data_ct)
 {
-    vshCmdOptDef *opt;
+    const vshCmdOptDef *opt;
 
     for (opt = cmd->opts; opt && opt->name; opt++) {
         if (opt->type == VSH_OT_DATA) {
@@ -5226,10 +5215,10 @@ vshCmddefGetData(vshCmdDef * cmd, int data_ct)
  * Checks for required options
  */
 static int
-vshCommandCheckOpts(vshControl * ctl, vshCmd * cmd)
+vshCommandCheckOpts(vshControl * ctl, const vshCmd * cmd)
 {
-    vshCmdDef *def = cmd->def;
-    vshCmdOptDef *d;
+    const vshCmdDef *def = cmd->def;
+    const vshCmdOptDef *d;
     int err = 0;
 
     for (d = def->opts; d && d->name; d++) {
@@ -5256,10 +5245,10 @@ vshCommandCheckOpts(vshControl * ctl, vshCmd * cmd)
     return !err;
 }
 
-static vshCmdDef *
+static const vshCmdDef *
 vshCmddefSearch(const char *cmdname)
 {
-    vshCmdDef *c;
+    const vshCmdDef *c;
 
     for (c = commands; c->name; c++)
         if (STREQ(c->name, cmdname))
@@ -5270,13 +5259,13 @@ vshCmddefSearch(const char *cmdname)
 static int
 vshCmddefHelp(vshControl * ctl, const char *cmdname, int withprog)
 {
-    vshCmdDef *def = vshCmddefSearch(cmdname);
+    const vshCmdDef *def = vshCmddefSearch(cmdname);
 
     if (!def) {
         vshError(ctl, FALSE, _("command '%s' doesn't exist"), cmdname);
         return FALSE;
     } else {
-        vshCmdOptDef *opt;
+        const vshCmdOptDef *opt;
         const char *desc = N_(vshCmddefGetInfo(def, "desc"));
         const char *help = N_(vshCmddefGetInfo(def, "help"));
         const char *syntax = vshCmddefGetInfo(def, "syntax");
@@ -5748,7 +5737,7 @@ vshCommandParse(vshControl * ctl, char *cmdstr)
     str = cmdstr;
     while (str && *str) {
         vshCmdOpt *last = NULL;
-        vshCmdDef *cmd = NULL;
+        const vshCmdDef *cmd = NULL;
         int tk = VSH_TK_NONE;
         int data_ct = 0;
 
@@ -5756,7 +5745,7 @@ vshCommandParse(vshControl * ctl, char *cmdstr)
 
         while (tk != VSH_TK_END) {
             char *end = NULL;
-            vshCmdOptDef *opt = NULL;
+            const vshCmdOptDef *opt = NULL;
 
             tkdata = NULL;
 
@@ -6243,7 +6232,7 @@ static char *
 vshReadlineOptionsGenerator(const char *text, int state)
 {
     static int list_index, len;
-    static vshCmdDef *cmd = NULL;
+    static const vshCmdDef *cmd = NULL;
     const char *name;
 
     if (!state) {
@@ -6270,7 +6259,7 @@ vshReadlineOptionsGenerator(const char *text, int state)
         return NULL;
 
     while ((name = cmd->opts[list_index].name)) {
-        vshCmdOptDef *opt = &cmd->opts[list_index];
+        const vshCmdOptDef *opt = &cmd->opts[list_index];
         char *res;
 
         list_index++;
@@ -6379,7 +6368,7 @@ vshDeinit(vshControl * ctl)
 static void
 vshUsage(vshControl * ctl, const char *cmdname)
 {
-    vshCmdDef *cmd;
+    const vshCmdDef *cmd;
 
     /* global help */
     if (!cmdname) {

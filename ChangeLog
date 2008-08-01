@@ -1,3 +1,8 @@
+Fri Aug  1 13:19:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Const-correctness fixes in virsh.c
+	* src/virsh.c: Const-correctness.
+
 Fri Aug  1 12:24:44 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Link to "how to contribute to open source"
