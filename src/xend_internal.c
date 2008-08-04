@@ -1181,7 +1181,7 @@ xend_detect_config_version(virConnectPtr conn) {
  */
 static int
 xenDaemonParseSxprOS(virConnectPtr xend,
-		     const struct sexpr *node,
+                     const struct sexpr *node,
                      virDomainDefPtr def,
                      int hvm)
 {
