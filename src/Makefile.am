@@ -189,3 +189,4 @@ install-exec-local:
 	$(MKDIR_P) $(DESTDIR)$(localstatedir)/cache/libvirt
 
 CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
+DISTCLEANFILES = $(BUILT_SOURCES)

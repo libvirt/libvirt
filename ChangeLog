@@ -1,3 +1,9 @@
+Tue Aug  5 10:43:42 CEST 2008 Jim Meyering  <meyering@redhat.com>
+
+	make distclean: remove generated source files
+	* src/Makefile.am (DISTCLEANFILES): Define to $(BUILT_SOURCES)
+	so "make distcheck" passes.
+
 Mon Aug  4 15:30:02 JST 2008 Atsushi SAKAI      <sakaia@jp.fujitsu.com>
 
 	* src/xend_internal.c: Replace TAB to space.
