@@ -736,13 +736,14 @@ openvzGetVPSUUID(int vpsid, char *uuidstr)
 /* Do actual checking for UUID presence in conf file,
  * assign if not present.
  */
-
-static int
-openvzSetUUID(int vpsid)
+int
+openvzSetDefinedUUID(int vpsid, unsigned char *uuid)
 {
     char conf_file[PATH_MAX];
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    unsigned char uuid[VIR_UUID_BUFLEN];
+
+    if (uuid == NULL)
+        return -1;
 
    if (openvzLocateConfFile(vpsid, conf_file, PATH_MAX)<0)
        return -1;
@@ -755,7 +756,6 @@ openvzSetUUID(int vpsid)
         if (fp == NULL)
           return -1;
 
-        virUUIDGenerate(uuid);
         virUUIDFormat(uuid, uuidstr);
 
         /* Record failure if fprintf or fclose fails,
@@ -766,6 +766,15 @@ openvzSetUUID(int vpsid)
     }
 
     return 0;
+}
+
+static int
+openvzSetUUID(int vpsid){
+    unsigned char uuid[VIR_UUID_BUFLEN];
+
+    virUUIDGenerate(uuid);
+
+    return openvzSetDefinedUUID(vpsid, uuid);
 }
 
 /*

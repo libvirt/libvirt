@@ -119,5 +119,6 @@ void openvzFreeVMDef(struct openvz_vm_def *def);
 int strtoI(const char *str);
 int openvzCheckEmptyMac(const unsigned char *mac);
 char *openvzMacToString(const unsigned char *mac);
+int openvzSetDefinedUUID(int vpsid, unsigned char *uuid);
 
 #endif /* OPENVZ_CONF_H */

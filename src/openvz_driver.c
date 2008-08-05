@@ -459,6 +459,12 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
         goto exit;
     }
 
+    if (openvzSetDefinedUUID(strtoI(vmdef->name), vmdef->uuid) < 0) {
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+               _("Could not set UUID"));
+        goto exit;
+    }
+
     dom = virGetDomain(conn, vm->vmdef->name, vm->vmdef->uuid);
     if (dom)
         dom->id = vm->vpsid;
@@ -511,6 +517,12 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
     if (virRun(conn, (char **)progcreate, NULL) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZCTL);
+        goto exit;
+    }
+
+    if (openvzSetDefinedUUID(strtoI(vmdef->name), vmdef->uuid) < 0) {
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+               _("Could not set UUID"));
         goto exit;
     }
 
