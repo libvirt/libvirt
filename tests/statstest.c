@@ -70,22 +70,34 @@ mymain(int argc ATTRIBUTE_UNUSED,
      * Xen paravirt disks
      ********************************/
 
+    DO_TEST("xvd", -1);
+
     /* first valid disk */
     DO_TEST("xvda", 51712);
     DO_TEST("xvda1", 51713);
     DO_TEST("xvda15", 51727);
-    /* Last valid disk */
+    /* Last non-extended disk */
     DO_TEST("xvdp", 51952);
     DO_TEST("xvdp1", 51953);
     DO_TEST("xvdp15", 51967);
 
-    /* Disk letter to large */
-    DO_TEST("xvdq", -1);
+    /* First extended disk */
+    DO_TEST("xvdq", 268439552);
+    DO_TEST("xvdq1", 268439553);
+    DO_TEST("xvdq15", 268439567);
+    /* Last extended disk */
+    DO_TEST("xvdiz", 268501760);
+    DO_TEST("xvdiz1", 268501761);
+    DO_TEST("xvdiz15", 268501775);
+
+    /* Disk letter too large */
+    DO_TEST("xvdja", -1);
+
     /* missing disk letter */
     DO_TEST("xvd1", -1);
-    /* partition to large */
+    /* partition too large */
     DO_TEST("xvda16", -1);
-    /* partition to small */
+    /* partition too small */
     DO_TEST("xvda0", -1);
     /* leading zeros */
     DO_TEST("xvda01", -1);
@@ -98,26 +110,36 @@ mymain(int argc ATTRIBUTE_UNUSED,
      * IDE disks
      ********************************/
 
-    /* odd numbered disk */
+    DO_TEST("hd", -1);
+
+    /* first numbered disk */
     DO_TEST("hda", 768);
     DO_TEST("hda1", 769);
     DO_TEST("hda63", 831);
-    /* even number disk */
-    DO_TEST("hdd", 5695);
-    DO_TEST("hdd1", 5696);
-    DO_TEST("hdd63", 5758);
+    /* second numbered disk */
+    DO_TEST("hdb", 832);
+    DO_TEST("hdb1", 833);
+    DO_TEST("hdb63", 895);
+    /* third numbered disk */
+    DO_TEST("hdc", 5632);
+    DO_TEST("hdc1", 5633);
+    DO_TEST("hdc63", 5695);
+    /* fourth numbered disk */
+    DO_TEST("hdd", 5696);
+    DO_TEST("hdd1", 5697);
+    DO_TEST("hdd63", 5759);
     /* last valid disk */
-    DO_TEST("hdt", 23359);
-    DO_TEST("hdt1", 23360);
-    DO_TEST("hdt63", 23422);
+    DO_TEST("hdt", 23360);
+    DO_TEST("hdt1", 23361);
+    DO_TEST("hdt63", 23423);
 
     /* Disk letter to large */
     DO_TEST("hdu", -1);
     /* missing disk letter */
     DO_TEST("hd1", -1);
-    /* partition to large */
+    /* partition too large */
     DO_TEST("hda64", -1);
-    /* partition to small */
+    /* partition too small */
     DO_TEST("hda0", -1);
 
 
@@ -125,6 +147,8 @@ mymain(int argc ATTRIBUTE_UNUSED,
     /********************************
      * SCSI disks
      ********************************/
+
+    DO_TEST("sd", -1);
 
     /* first valid disk */
     DO_TEST("sda", 2048);
@@ -159,13 +183,13 @@ mymain(int argc ATTRIBUTE_UNUSED,
     DO_TEST("sdiv1", 34801);
     DO_TEST("sdiv15", 34815);
 
-    /* Disk letter to large */
+    /* Disk letter too large */
     DO_TEST("sdix", -1);
     /* missing disk letter */
     DO_TEST("sd1", -1);
-    /* partition to large */
+    /* partition too large */
     DO_TEST("sda16", -1);
-    /* partition to small */
+    /* partition too small */
     DO_TEST("sda0", -1);
 
 

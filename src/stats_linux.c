@@ -18,6 +18,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
+#include <regex.h>
 #include "c-ctype.h"
 
 #ifdef WITH_XEN
@@ -28,6 +29,7 @@
 #include "util.h"
 #include "xen_unified.h"
 #include "stats_linux.h"
+#include "memory.h"
 
 /**
  * statsErrorFunc:
@@ -224,132 +226,134 @@ read_bd_stats (virConnectPtr conn, xenUnifiedPrivatePtr priv,
     return 0;
 }
 
+static int
+disk_re_match(const char *regex, const char *path, int *part)
+{
+    regex_t myreg;
+    int err;
+    int retval;
+    regmatch_t pmatch[3];
+
+    retval = 0;
+
+    err = regcomp(&myreg, regex, REG_EXTENDED);
+    if (err != 0)
+        return 0;
+
+    err = regexec(&myreg, path, 3, pmatch, 0);
+
+    if (err == 0) {
+        /* OK, we have a match; see if we have a partition */
+        *part = 0;
+        retval = 1;
+        if (pmatch[1].rm_so != -1) {
+            if (virStrToLong_i(path + pmatch[1].rm_so, NULL, 10, part) < 0)
+                retval = 0;
+        }
+    }
+
+    regfree(&myreg);
+
+    return retval;
+}
+
 int
 xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
 {
-    int disk, part = 0;
+    int major, minor;
+    int part;
+    int retval;
+    char *mod_path;
 
-    /* Strip leading path if any */
-    if (strlen(path) > 5 &&
-        STRPREFIX(path, "/dev/"))
-        path += 5;
+    int const scsi_majors[] = { SCSI_DISK0_MAJOR, SCSI_DISK1_MAJOR,
+                                SCSI_DISK2_MAJOR, SCSI_DISK3_MAJOR,
+                                SCSI_DISK4_MAJOR, SCSI_DISK5_MAJOR,
+                                SCSI_DISK6_MAJOR, SCSI_DISK7_MAJOR,
+                                SCSI_DISK8_MAJOR, SCSI_DISK9_MAJOR,
+                                SCSI_DISK10_MAJOR, SCSI_DISK11_MAJOR,
+                                SCSI_DISK12_MAJOR, SCSI_DISK13_MAJOR,
+                                SCSI_DISK14_MAJOR, SCSI_DISK15_MAJOR };
+    int const ide_majors[] = { IDE0_MAJOR, IDE1_MAJOR, IDE2_MAJOR, IDE3_MAJOR,
+                               IDE4_MAJOR, IDE5_MAJOR, IDE6_MAJOR, IDE7_MAJOR,
+                               IDE8_MAJOR, IDE9_MAJOR };
 
     /*
      * Possible block device majors & partition ranges. This
      * matches the ranges supported in Xend xen/util/blkif.py
      *
-     * hdNM:  N=a-t, M=1-63,  major={IDE0_MAJOR -> IDE9_MAJOR}
-     * sdNM:  N=a-z,aa-iv, M=1-15,  major={SCSI_DISK0_MAJOR -> SCSI_DISK15_MAJOR}
-     * xvdNM: N=a-p, M=1-15,  major=XENVBD_MAJOR
-     *
-     * NB, the SCSI major isn't technically correct, as XenD only knows
-     * about major=8. We cope with all SCSI majors in anticipation of
-     * XenD perhaps being fixed one day....
+     * hdNM:  N=a-t, M=1-63, major={IDE0_MAJOR -> IDE9_MAJOR}
+     * sdNM:  N=a-z,aa-iv, M=1-15, major={SCSI_DISK0_MAJOR -> SCSI_DISK15_MAJOR}
+     * xvdNM: N=a-p M=1-15, major=XENVBD_MAJOR
+     * xvdNM: N=q-z,aa-iz M=1-15, major=(1<<28)
      *
      * The path for statistics will be
      *
      * /sys/devices/xen-backend/(vbd|tap)-{domid}-{devid}/statistics/{...}
      */
 
-    if (strlen (path) >= 4 &&
-        STRPREFIX (path, "xvd")) {
-        /* Xen paravirt device handling */
-        disk = (path[3] - 'a');
-        if (disk < 0 || disk > 15) {
-            statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
-                            "invalid path, device names must be in range xvda - xvdp",
-                            domid);
-            return -1;
-        }
+    if (strlen(path) >= 5 && STRPREFIX(path, "/dev/"))
+        retval = asprintf(&mod_path, "%s", path);
+    else
+        retval = asprintf(&mod_path, "/dev/%s", path);
 
-        if (path[4] != '\0') {
-            if (!c_isdigit(path[4]) || path[4] == '0' ||
-                virStrToLong_i(path+4, NULL, 10, &part) < 0 ||
-                part < 1 || part > 15) {
-                statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
-                                "invalid path, partition numbers for xvdN must be in range 1 - 15",
-                                domid);
-                return -1;
-            }
-        }
-
-        return (XENVBD_MAJOR * 256) + (disk * 16) + part;
-    } else if (strlen (path) >= 3 &&
-               STRPREFIX (path, "sd")) {
-        /* SCSI device handling */
-        int majors[] = { SCSI_DISK0_MAJOR, SCSI_DISK1_MAJOR, SCSI_DISK2_MAJOR,
-                         SCSI_DISK3_MAJOR, SCSI_DISK4_MAJOR, SCSI_DISK5_MAJOR,
-                         SCSI_DISK6_MAJOR, SCSI_DISK7_MAJOR, SCSI_DISK8_MAJOR,
-                         SCSI_DISK9_MAJOR, SCSI_DISK10_MAJOR, SCSI_DISK11_MAJOR,
-                         SCSI_DISK12_MAJOR, SCSI_DISK13_MAJOR, SCSI_DISK14_MAJOR,
-                         SCSI_DISK15_MAJOR };
-
-        disk = (path[2] - 'a');
-        if (disk < 0 || disk > 25) {
-            statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
-                            "invalid path, device names must be in range sda - sdiv",
-                            domid);
-            return -1;
-        }
-        if (path[3] != '\0') {
-            const char *p = NULL;
-            if (path[3] >= 'a' && path[3] <= 'z') {
-                disk = ((disk + 1) * 26) + (path[3] - 'a');
-                if (disk < 0 || disk > 255) {
-                    statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
-                                    "invalid path, device names must be in range sda - sdiv",
-                                    domid);
-                    return -1;
-                }
-
-                if (path[4] != '\0')
-                    p = path + 4;
-            } else {
-                p = path + 3;
-            }
-            if (p && (!c_isdigit(*p) || *p == '0' ||
-                      virStrToLong_i(p, NULL, 10, &part) < 0 ||
-                      part < 1 || part > 15)) {
-                statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
-                                "invalid path, partition numbers for sdN must be in range 1 - 15",
-                                domid);
-                return -1;
-            }
-        }
-
-        return (majors[disk/16] * 256) + ((disk%16) * 16) + part;
-    } else if (strlen (path) >= 3 &&
-               STRPREFIX (path, "hd")) {
-        /* IDE device handling */
-        int majors[] = { IDE0_MAJOR, IDE1_MAJOR, IDE2_MAJOR, IDE3_MAJOR,
-                         IDE4_MAJOR, IDE5_MAJOR, IDE6_MAJOR, IDE7_MAJOR,
-                         IDE8_MAJOR, IDE9_MAJOR };
-        disk = (path[2] - 'a');
-        if (disk < 0 || disk > 19) {
-            statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
-                            "invalid path, device names must be in range hda - hdt",
-                            domid);
-            return -1;
-        }
-
-        if (path[3] != '\0') {
-            if (!c_isdigit(path[3]) || path[3] == '0' ||
-                virStrToLong_i(path+3, NULL, 10, &part) < 0 ||
-                part < 1 || part > 63) {
-                statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
-                                "invalid path, partition numbers for hdN must be in range 1 - 63",
-                                domid);
-                return -1;
-            }
-        }
-
-        return (majors[disk/2] * 256) + ((disk % 2) * 63) + part;
+    if (retval < 0) {
+        statsErrorFunc (conn, VIR_ERR_NO_MEMORY, __FUNCTION__,
+                        "allocating mod_path", domid);
+        return -1;
     }
 
-    /* Otherwise, unsupported device name. */
-    statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
-                    "unsupported path, use xvdN, hdN, or sdN", domid);
-    return -1;
+    retval = -1;
+
+    if (disk_re_match("/dev/sd[a-z]([1-9]|1[0-5])?$", mod_path, &part)) {
+        major = scsi_majors[(mod_path[7] - 'a') / 16];
+        minor = ((mod_path[7] - 'a') % 16) * 16 + part;
+        retval = major * 256 + minor;
+    }
+    else if (disk_re_match("/dev/sd[a-h][a-z]([1-9]|1[0-5])?$",
+                           mod_path, &part) ||
+             disk_re_match("/dev/sdi[a-v]([1-9]|1[0-5])?$",
+                           mod_path, &part)) {
+        major = scsi_majors[((mod_path[7] - 'a' + 1) * 26 + (mod_path[8] - 'a')) / 16];
+        minor = (((mod_path[7] - 'a' + 1) * 26 + (mod_path[8] - 'a')) % 16)
+            * 16 + part;
+        retval = major * 256 + minor;
+    }
+    else if (disk_re_match("/dev/hd[a-t]([1-9]|[1-5][0-9]|6[0-3])?$",
+                           mod_path, &part)) {
+        major = ide_majors[(mod_path[7] - 'a') / 2];
+        minor = ((mod_path[7] - 'a') % 2) * 64 + part;
+        retval = major * 256 + minor;
+    }
+    else if (disk_re_match("/dev/xvd[a-p]([1-9]|1[0-5])?$", mod_path, &part))
+        retval = (202 << 8) + ((mod_path[8] - 'a') << 4) + part;
+    else if (disk_re_match("/dev/xvd[q-z]([1-9]|1[0-5])?$", mod_path, &part))
+        retval = (1 << 28) + ((mod_path[8] - 'a') << 8) + part;
+    else if (disk_re_match("/dev/xvd[a-i][a-z]([1-9]|1[0-5])?$",
+                           mod_path, &part))
+        retval = (1 << 28) + (((mod_path[8] - 'a' + 1) * 26 + (mod_path[9] - 'a')) << 8) + part;
+    /*
+     * OK, we've now checked the common case (things that work); check the
+     * beginning of the strings for better error messages
+     */
+    else if (strlen(mod_path) >= 7 && STRPREFIX(mod_path, "/dev/sd"))
+        statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
+                        "invalid path, device names must be in the range sda[1-15] - sdiv[1-15]",
+                        domid);
+    else if (strlen(mod_path) >= 7 && STRPREFIX(mod_path, "/dev/hd"))
+        statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
+                        "invalid path, device names must be in the range hda[1-63] - hdt[1-63]",
+                        domid);
+    else if (strlen(mod_path) >= 8 && STRPREFIX(mod_path, "/dev/xvd"))
+        statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
+                        "invalid path, device names must be in the range xvda[1-15] - xvdiz[1-15]",
+                        domid);
+    else
+        statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
+                        "unsupported path, use xvdN, hdN, or sdN", domid);
+
+    VIR_FREE(mod_path);
+
+    return retval;
 }
 
 int

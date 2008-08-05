@@ -1,3 +1,9 @@
+Tue Aug  5 18:36:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+	* src/stats_linux.c tests/statstest.c: Update the parsing of disks for
+	  xen block statistics.  In particular, add support for > 16 xvd devices
+	  recently put into upstream Xen, and fix up the test suite to fix some
+	  wrong tests and add a couple more.
+	
 Tue Aug  5 12:51:11 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_conf.c src/openvz_conf.h src/openvz_driver.c: patch
