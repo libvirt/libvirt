@@ -1,3 +1,11 @@
+Tue Aug  5 18:43:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+	* src/xend_internal.c: Fix three bugs related to virsh attach-disk: 
+	  a) make sure to break in the xenDaemonAttachDevice() in the switch
+	  b) convert a stray fprintf to a virXendError()
+	  c) remove an additional "(device" on the front of the sexpr
+	  expression passed to xend.  This actually fixes virsh attach-disk
+	  and virsh attach-interface work with Xen again
+	  
 Tue Aug  5 18:36:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
 	* src/stats_linux.c tests/statstest.c: Update the parsing of disks for
 	  xen block statistics.  In particular, add support for > 16 xvd devices

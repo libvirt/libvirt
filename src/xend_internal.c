@@ -3900,6 +3900,7 @@ xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
                                     STREQ(def->os.type, "hvm") ? 1 : 0,
                                     priv->xendConfigVersion) < 0)
             goto cleanup;
+        break;
 
     case VIR_DOMAIN_DEVICE_NET:
         if (xenDaemonFormatSxprNet(domain->conn,
@@ -3908,6 +3909,7 @@ xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
                                    STREQ(def->os.type, "hvm") ? 1 : 0,
                                    priv->xendConfigVersion) < 0)
             goto cleanup;
+        break;
 
     default:
         virXendError(domain->conn, VIR_ERR_NO_SUPPORT, "%s",
@@ -4292,7 +4294,8 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
     ret = xend_op(conn, "", "op", "new", "config", sexpr, NULL);
     VIR_FREE(sexpr);
     if (ret != 0) {
-        fprintf(stderr, _("Failed to create inactive domain %s\n"), name);
+        virXendError(conn, VIR_ERR_XEN_CALL,
+                     _("Failed to create inactive domain %s\n"), name);
         goto error;
     }
 
@@ -5029,7 +5032,6 @@ xenDaemonFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
         xendConfigVersion == 1)
         return 0;
 
-    virBufferAddLit(buf, "(device ");
     /* Normally disks are in a (device (vbd ...)) block
      * but blktap disks ended up in a differently named
      * (device (tap ....)) block.... */
@@ -5083,7 +5085,7 @@ xenDaemonFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
     else
         virBufferAddLit(buf, "(mode 'w')");
 
-    virBufferAddLit(buf, "))");
+    virBufferAddLit(buf, ")");
 
     return 0;
 }
@@ -5117,7 +5119,7 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
         return -1;
     }
 
-    virBufferAddLit(buf, "(device (vif ");
+    virBufferAddLit(buf, "(vif ");
 
     virBufferVSprintf(buf,
                       "(mac '%02x:%02x:%02x:%02x:%02x:%02x')",
@@ -5177,7 +5179,7 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
     if ((hvm) && (xendConfigVersion < 4))
         virBufferAddLit(buf, "(type ioemu)");
 
-    virBufferAddLit(buf, "))");
+    virBufferAddLit(buf, ")");
 
     return 0;
 }
