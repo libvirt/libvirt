@@ -19,7 +19,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <regex.h>
-#include "c-ctype.h"
 
 #ifdef WITH_XEN
 #include <xs.h>

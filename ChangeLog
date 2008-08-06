@@ -1,5 +1,8 @@
 Tue Aug  6 13:30:44 CEST 2008 Jim Meyering  <meyering@redhat.com>
 
+	fix failing "make syntax-check"
+	* src/stats_linux.c: Don't include <c-ctype.h> no longer used.
+
 	work around MinGW build failure due to its lack of inet_aton
 	Use inet_pton instead; pull in gnulib's module by the same name.
 	* src/network_conf.c (virNetworkDefParseXML): Use inet_pton,
