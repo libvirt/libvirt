@@ -91,13 +91,15 @@ xenDaemonFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
                         virDomainDiskDefPtr def,
                         virBufferPtr buf,
                         int hvm,
-                        int xendConfigVersion);
+                        int xendConfigVersion,
+                        int isAttach);
 static int
 xenDaemonFormatSxprNet(virConnectPtr conn ATTRIBUTE_UNUSED,
                        virDomainNetDefPtr def,
                        virBufferPtr buf,
                        int hvm,
-                       int xendConfigVersion);
+                       int xendConfigVersion,
+                       int isAttach);
 static int
 virDomainXMLDevID(virDomainPtr domain,
                   virDomainDeviceDefPtr dev,
@@ -3898,7 +3900,7 @@ xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
                                     dev->data.disk,
                                     &buf,
                                     STREQ(def->os.type, "hvm") ? 1 : 0,
-                                    priv->xendConfigVersion) < 0)
+                                    priv->xendConfigVersion, 1) < 0)
             goto cleanup;
         break;
 
@@ -3907,7 +3909,7 @@ xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
                                    dev->data.net,
                                    &buf,
                                    STREQ(def->os.type, "hvm") ? 1 : 0,
-                                   priv->xendConfigVersion) < 0)
+                                   priv->xendConfigVersion, 1) < 0)
             goto cleanup;
         break;
 
@@ -5017,7 +5019,8 @@ xenDaemonFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
                         virDomainDiskDefPtr def,
                         virBufferPtr buf,
                         int hvm,
-                        int xendConfigVersion)
+                        int xendConfigVersion,
+                        int isAttach)
 {
     /* Xend (all versions) put the floppy device config
      * under the hvm (image (os)) block
@@ -5031,6 +5034,9 @@ xenDaemonFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
         def->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
         xendConfigVersion == 1)
         return 0;
+
+    if (!isAttach)
+        virBufferAddLit(buf, "(device ");
 
     /* Normally disks are in a (device (vbd ...)) block
      * but blktap disks ended up in a differently named
@@ -5085,6 +5091,9 @@ xenDaemonFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
     else
         virBufferAddLit(buf, "(mode 'w')");
 
+    if (!isAttach)
+        virBufferAddLit(buf, ")");
+
     virBufferAddLit(buf, ")");
 
     return 0;
@@ -5109,7 +5118,8 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
                        virDomainNetDefPtr def,
                        virBufferPtr buf,
                        int hvm,
-                       int xendConfigVersion)
+                       int xendConfigVersion,
+                       int isAttach)
 {
     if (def->type != VIR_DOMAIN_NET_TYPE_BRIDGE &&
         def->type != VIR_DOMAIN_NET_TYPE_NETWORK &&
@@ -5118,6 +5128,9 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
                      _("unsupported network type %d"), def->type);
         return -1;
     }
+
+    if (!isAttach)
+        virBufferAddLit(buf, "(device ");
 
     virBufferAddLit(buf, "(vif ");
 
@@ -5178,6 +5191,9 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
      */
     if ((hvm) && (xendConfigVersion < 4))
         virBufferAddLit(buf, "(type ioemu)");
+
+    if (!isAttach)
+        virBufferAddLit(buf, ")");
 
     virBufferAddLit(buf, ")");
 
@@ -5439,14 +5455,14 @@ xenDaemonFormatSxpr(virConnectPtr conn,
 
     disk = def->disks;
     while (disk) {
-        if (xenDaemonFormatSxprDisk(conn, disk, &buf, hvm, xendConfigVersion) < 0)
+        if (xenDaemonFormatSxprDisk(conn, disk, &buf, hvm, xendConfigVersion, 0) < 0)
             goto error;
         disk = disk->next;
     }
 
     net = def->nets;
     while (net) {
-        if (xenDaemonFormatSxprNet(conn, net, &buf, hvm, xendConfigVersion) < 0)
+        if (xenDaemonFormatSxprNet(conn, net, &buf, hvm, xendConfigVersion, 0) < 0)
             goto error;
         net = net->next;
     }

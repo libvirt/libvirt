@@ -1,3 +1,10 @@
+Wed Aug  6 13:24:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+	* src/xend_internal.c: Oops.  My bug fix from yesterday broke the
+	  regressions suite.  We do actually need "(device" on the front of
+	  the sexpr, but only if we are first creating the domain, not when
+	  we are attaching a new disk.  This patch fixes it by adding a flag
+	  that we check, and allows the regression suite to pass.
+	
 Tue Aug  5 18:43:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
 	* src/xend_internal.c: Fix three bugs related to virsh attach-disk: 
 	  a) make sure to break in the xenDaemonAttachDevice() in the switch
