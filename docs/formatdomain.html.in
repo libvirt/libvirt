@@ -182,7 +182,7 @@
     <dl>
       <dt><code>memory</code></dt>
       <dd>The maximum allocation of memory for the guest at boot time.
-	The units for this value are bytes</dd>
+	The units for this value are kilobytes (i.e. blocks of 1024 bytes)</dd>
       <dt><code>currentMemory</code></dt>
       <dd>The actual allocation of memory for the guest. This value
 	be less than the maximum allocation, to allow for ballooning

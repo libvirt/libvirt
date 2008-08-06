@@ -321,7 +321,7 @@
 	&lt;vcpu&gt;1&lt;/vcpu&gt;
 	...</pre>
         <dl><dt><code>memory</code></dt><dd>The maximum allocation of memory for the guest at boot time.
-	The units for this value are bytes</dd><dt><code>currentMemory</code></dt><dd>The actual allocation of memory for the guest. This value
+	The units for this value are kilobytes (i.e. blocks of 1024 bytes)</dd><dt><code>currentMemory</code></dt><dd>The actual allocation of memory for the guest. This value
 	be less than the maximum allocation, to allow for ballooning
 	up the guests memory on the fly. If this is omitted, it defaults
 	to the same value as the <code>memory<code> element</code></code></dd><dt><code>vcpu</code></dt><dd>The content of this element defines the number of virtual

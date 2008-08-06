@@ -1,24 +1,29 @@
+Wed Aug  6 13:36:29 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/formatdomain.html docs/formatdomain.html.in: fix memory unit
+	  as pointed out by matthew chan it's kilobytes
+
 Wed Aug  6 13:24:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
 	* src/xend_internal.c: Oops.  My bug fix from yesterday broke the
 	  regressions suite.  We do actually need "(device" on the front of
 	  the sexpr, but only if we are first creating the domain, not when
 	  we are attaching a new disk.  This patch fixes it by adding a flag
 	  that we check, and allows the regression suite to pass.
-	
+
 Tue Aug  5 18:43:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
-	* src/xend_internal.c: Fix three bugs related to virsh attach-disk: 
+	* src/xend_internal.c: Fix three bugs related to virsh attach-disk:
 	  a) make sure to break in the xenDaemonAttachDevice() in the switch
 	  b) convert a stray fprintf to a virXendError()
 	  c) remove an additional "(device" on the front of the sexpr
 	  expression passed to xend.  This actually fixes virsh attach-disk
 	  and virsh attach-interface work with Xen again
-	  
+
 Tue Aug  5 18:36:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
 	* src/stats_linux.c tests/statstest.c: Update the parsing of disks for
 	  xen block statistics.  In particular, add support for > 16 xvd devices
 	  recently put into upstream Xen, and fix up the test suite to fix some
 	  wrong tests and add a couple more.
-	
+
 Tue Aug  5 12:51:11 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_conf.c src/openvz_conf.h src/openvz_driver.c: patch
