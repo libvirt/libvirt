@@ -69,6 +69,7 @@ c-ctype
 getaddrinfo
 getpass
 gettext
+inet_pton
 mktempd
 physmem
 poll

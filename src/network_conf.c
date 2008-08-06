@@ -286,13 +286,13 @@ virNetworkDefParseXML(virConnectPtr conn,
         char *netaddr;
         xmlNodePtr dhcp;
 
-        if (!inet_aton(def->ipAddress, &inaddress)) {
+        if (inet_pton(AF_INET, def->ipAddress, &inaddress) <= 0) {
             virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                   _("cannot parse IP address '%s'"),
                                   def->ipAddress);
             goto error;
         }
-        if (!inet_aton(def->netmask, &innetmask)) {
+        if (inet_pton(AF_INET, def->netmask, &innetmask) <= 0) {
             virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                   _("cannot parse netmask '%s'"),
                                   def->netmask);

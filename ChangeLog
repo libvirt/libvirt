@@ -1,3 +1,12 @@
+Tue Aug  6 13:30:44 CEST 2008 Jim Meyering  <meyering@redhat.com>
+
+	work around MinGW build failure due to its lack of inet_aton
+	Use inet_pton instead; pull in gnulib's module by the same name.
+	* src/network_conf.c (virNetworkDefParseXML): Use inet_pton,
+	rather than inet_aton.
+	* bootstrap (modules): Add inet_pton.
+	* gnulib/lib/inet_pton.c: New file, from gnulib.
+
 Wed Aug  6 13:36:29 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/formatdomain.html docs/formatdomain.html.in: fix memory unit
