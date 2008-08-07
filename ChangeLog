@@ -1,3 +1,8 @@
+Thu Aug  7 19:47:40 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* tests/domainschematest: patch from Guido Günther to fix RNG checking
+	  in out of tree builds.
+
 Thu Aug  7 06:32:05 PDT 2008 Dan Smith <danms@us.ibm.com>
 
 	* src/veth.c: Fix assigned device name clash
