@@ -212,6 +212,26 @@ extern int vsprintf (char *str, const char *format, va_list args)
 # endif
 #endif
 
+#if @GNULIB_OBSTACK_PRINTF@
+# if @REPLACE_OBSTACK_PRINTF@
+#  define obstack_printf rpl_osbtack_printf
+#  define obstack_vprintf rpl_obstack_vprintf
+# endif
+# if @REPLACE_OBSTACK_PRINTF@ || !@HAVE_DECL_OBSTACK_PRINTF@
+  struct obstack;
+  /* Grow an obstack with formatted output.  Return the number of
+     bytes added to OBS.  No trailing nul byte is added, and the
+     object should be closed with obstack_finish before use.  Upon
+     memory allocation error, call obstack_alloc_failed_handler.  Upon
+     other error, return -1.  */
+  extern int obstack_printf (struct obstack *obs, const char *format, ...)
+    __attribute__ ((__format__ (__printf__, 2, 3)));
+  extern int obstack_vprintf (struct obstack *obs, const char *format,
+			      va_list args)
+    __attribute__ ((__format__ (__printf__, 2, 0)));
+# endif
+#endif
+
 #if @GNULIB_FOPEN@
 # if @REPLACE_FOPEN@
 #  define fopen rpl_fopen

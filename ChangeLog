@@ -1,5 +1,35 @@
 Wed Aug  7 13:30:44 CEST 2008 Jim Meyering <meyering@redhat.com>
 
+	update from gnulib: portability and bug fixes
+	* build-aux/mktempd:
+	* build-aux/useless-if-before-free:
+	* build-aux/vc-list-files:
+	* gnulib/lib/.cvsignore:
+	* gnulib/lib/Makefile.am:
+	* gnulib/lib/poll.c:
+	* gnulib/lib/stdbool.in.h:
+	* gnulib/lib/stdio-impl.h:
+	* gnulib/lib/stdio.in.h (vasprintf, obstack_printf)
+	(obstack_vprintf):
+	* gnulib/lib/vasnprintf.c (_GNU_SOURCE, sprintf, IF_LINT, exp)
+	(remainder, scale10_round_decimal_long_double)
+	(scale10_round_decimal_double, pad_ourselves):
+	* gnulib/m4/gnulib-cache.m4:
+	* gnulib/m4/gnulib-common.m4 (gl_MODULE_INDICATOR):
+	* gnulib/m4/gnulib-tool.m4 (gl_LOCAL_DIR, gl_M4_BASE, gl_PO_BASE)
+	(gl_DOC_BASE, gl_TESTS_BASE, gl_WITH_TESTS, gl_LIB, gl_LGPL)
+	(gl_MAKEFILE_NAME, gl_MACRO_PREFIX, gl_PO_DOMAIN, gl_VC_FILES):
+	* gnulib/m4/lock.m4 (gl_LOCK_EARLY_BODY, gl_PREREQ_LOCK)
+	(gl_DISABLE_THREADS):
+	* gnulib/m4/onceonly.m4:
+	* gnulib/m4/posix-shell.m4 (gl_POSIX_SHELL):
+	* gnulib/m4/stdio_h.m4 (gl_STDIO_H_DEFAULTS):
+	* gnulib/tests/test-getaddrinfo.c (ENABLE_DEBUGGING, dbgprintf)
+	(simple):
+	* gnulib/tests/test-stdint.c (UINTMAX_MAX, or):
+	* gnulib/tests/test-vc-list-files-cvs.sh:
+	* gnulib/tests/test-vc-list-files-git.sh:
+
 	complete the MinGW inet_pton portability fix
 	* gnulib/m4/inet_pton.m4: New file.  Required for MinGW.
 	* gnulib/m4/gnulib-comp.m4: Regenerate via gnulib-tool.

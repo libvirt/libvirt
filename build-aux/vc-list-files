@@ -2,7 +2,7 @@
 # List version-controlled file names.
 
 # Print a version string.
-scriptversion=2008-05-01.10
+scriptversion=2008-07-11.19
 
 # Copyright (C) 2006-2008 Free Software Foundation, Inc.
 
@@ -88,7 +88,8 @@ elif test -d CVS; then
     eval awk -F/ \''{			\
 	if (!$1 && $3 !~ /^-/) {	\
 	  f=FILENAME;			\
-	  sub(/CVS\/Entries/, "", f);	\
+	  if (f ~ /CVS\/Entries$/)	\
+	    f = substr(f, 0, length(f)-11); \
 	  print f $2;			\
 	}}'\''				\
       `find "$dir" -name Entries -print` /dev/null' $postprocess

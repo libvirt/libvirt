@@ -55,19 +55,25 @@ poll (pfd, nfd, timeout)
      int timeout;
 {
   fd_set rfds, wfds, efds;
-  struct timeval tv, *ptv;
+  struct timeval tv;
+  struct timeval *ptv;
   int maxfd, rc;
   nfds_t i;
 
 #ifdef _SC_OPEN_MAX
-  if (nfd > sysconf (_SC_OPEN_MAX))
+  static int sc_open_max = -1;
+
+  if (nfd < 0
+      || (nfd > sc_open_max
+          && (sc_open_max != -1
+	      || nfd > (sc_open_max = sysconf (_SC_OPEN_MAX)))))
     {
       errno = EINVAL;
       return -1;
     }
 #else /* !_SC_OPEN_MAX */
 #ifdef OPEN_MAX
-  if (nfd > OPEN_MAX)
+  if (nfd < 0 || nfd > OPEN_MAX)
     {
       errno = EINVAL;
       return -1;
@@ -84,10 +90,15 @@ poll (pfd, nfd, timeout)
     }
 
   /* convert timeout number into a timeval structure */
-  ptv = &tv;
-  if (timeout >= 0)
+  if (timeout == 0)
     {
-      /* return immediately or after timeout */
+      ptv = &tv;
+      ptv->tv_sec = 0;
+      ptv->tv_usec = 0;
+    }
+  else if (timeout > 0)
+    {
+      ptv = &tv;
       ptv->tv_sec = timeout / 1000;
       ptv->tv_usec = (timeout % 1000) * 1000;
     }
@@ -155,6 +166,7 @@ poll (pfd, nfd, timeout)
 	if (FD_ISSET (pfd[i].fd, &rfds))
 	  {
 	    int r;
+	    int socket_errno;
 
 #if defined __MACH__ && defined __APPLE__
 	    /* There is a bug in Mac OS X that causes it to ignore MSG_PEEK
@@ -162,23 +174,25 @@ poll (pfd, nfd, timeout)
 	       connected socket, a server socket, or something else using a
 	       0-byte recv, and use ioctl(2) to detect POLLHUP.  */
 	    r = recv (pfd[i].fd, NULL, 0, MSG_PEEK);
-	    if (r == 0 || errno == ENOTSOCK)
+	    socket_errno = (r < 0) ? errno : 0;
+	    if (r == 0 || socket_errno == ENOTSOCK)
 	      ioctl(pfd[i].fd, FIONREAD, &r);
 #else
 	    char data[64];
 	    r = recv (pfd[i].fd, data, sizeof (data), MSG_PEEK);
+	    socket_errno = (r < 0) ? errno : 0;
 #endif
 	    if (r == 0)
 	      happened |= POLLHUP;
 
 	    /* If the event happened on an unconnected server socket,
 	       that's fine. */
-	    else if (r > 0 || ( /* (r == -1) && */ errno == ENOTCONN))
+	    else if (r > 0 || ( /* (r == -1) && */ socket_errno == ENOTCONN))
 	      happened |= (POLLIN | POLLRDNORM) & sought;
 
 	    /* Distinguish hung-up sockets from other errors.  */
-	    else if (errno == ESHUTDOWN || errno == ECONNRESET
-		     || errno == ECONNABORTED || errno == ENETRESET)
+	    else if (socket_errno == ESHUTDOWN || socket_errno == ECONNRESET
+		     || socket_errno == ECONNABORTED || socket_errno == ENETRESET)
 	      happened |= POLLHUP;
 
 	    else

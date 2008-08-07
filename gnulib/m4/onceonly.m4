@@ -1,4 +1,4 @@
-# onceonly.m4 serial 5
+# onceonly.m4 serial 6
 dnl Copyright (C) 2002-2003, 2005-2006, 2008 Free Software Foundation, Inc.
 dnl This file is free software, distributed under the terms of the GNU
 dnl General Public License.  As a special exception to the GNU General
@@ -21,13 +21,16 @@ dnl inside an AC_DEFUNed function, the gl_CHECK_HEADERS macro call expands to
 dnl empty, and the check will be inserted before the body of the AC_DEFUNed
 dnl function.
 
-dnl This is like onceonly.m4, except that it uses diversions to named sections
-dnl DEFAULTS and INIT_PREPARE in order to check all requested headers at once,
-dnl thus reducing the size of 'configure'. Works with autoconf-2.57. The
-dnl size reduction is ca. 9%.
+dnl The original code implemented AC_CHECK_HEADERS_ONCE and AC_CHECK_FUNCS_ONCE
+dnl in terms of AC_DEFUN and AC_REQUIRE. This implementation uses diversions to
+dnl named sections DEFAULTS and INIT_PREPARE in order to check all requested
+dnl headers at once, thus reducing the size of 'configure'. It is known to work
+dnl with autoconf 2.57..2.62 at least . The size reduction is ca. 9%.
 
 dnl Autoconf version 2.59 plus gnulib is required; this file is not needed
-dnl with Autoconf 2.60 or greater.
+dnl with Autoconf 2.60 or greater. But note that autoconf's implementation of
+dnl AC_CHECK_DECLS_ONCE expects a comma-separated list of symbols as first
+dnl argument!
 AC_PREREQ([2.59])
 
 # AC_CHECK_HEADERS_ONCE(HEADER1 HEADER2 ...) is a once-only variant of

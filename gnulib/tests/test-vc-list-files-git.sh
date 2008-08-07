@@ -31,7 +31,8 @@ trap '(exit $?); exit $?' 1 2 13 15
 fail=1
 mkdir $tmpdir && cd $tmpdir &&
   # without git, skip the test
-  { git init -q || exit 77; } &&
+  # The double use of 'exit' is needed for the reference to $? inside the trap.
+  { ( git init -q ) > /dev/null 2>&1 || { (exit 77); exit 77; }; } &&
   mkdir d &&
   touch d/a b c &&
   git add . > /dev/null &&

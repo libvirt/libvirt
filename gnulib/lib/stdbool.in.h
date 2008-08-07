@@ -1,4 +1,4 @@
-/* Copyright (C) 2001, 2002, 2003, 2006, 2007 Free Software Foundation, Inc.
+/* Copyright (C) 2001-2003, 2006-2008 Free Software Foundation, Inc.
    Written by Bruno Haible <haible@clisp.cons.org>, 2001.
 
    This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,7 @@
 
 /* BeOS <sys/socket.h> already #defines false 0, true 1.  We use the same
    definitions below, but temporarily we have to #undef them.  */
-#ifdef __BEOS__
+#if defined __BEOS__ && !defined __HAIKU__
 # include <OS.h> /* defines bool but not _Bool */
 # undef false
 # undef true
@@ -73,7 +73,7 @@
    (see ISO C 99 6.7.2.2.(4)); however, '_Bool' must promote to 'int'
    (see ISO C 99 6.3.1.1.(2)).  So we add a negative value to the
    enum; this ensures that '_Bool' promotes to 'int'.  */
-#if defined __cplusplus || defined __BEOS__
+#if defined __cplusplus || (defined __BEOS__ && !defined __HAIKU__)
   /* A compiler known to have 'bool'.  */
   /* If the compiler already has both 'bool' and '_Bool', we can assume they
      are the same types.  */

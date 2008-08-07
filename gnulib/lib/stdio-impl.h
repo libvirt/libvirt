@@ -35,7 +35,7 @@
 			 struct { unsigned char *_base; int _size; } _ub; \
 			 int _ur; \
 			 unsigned char _ubuf[3]; \
-			 unsigned cahr _nbuf[1]; \
+			 unsigned char _nbuf[1]; \
 			 struct { unsigned char *_base; int _size; } _lb; \
 			 int _blksize; \
 			 fpos_t _offset; \
@@ -60,7 +60,7 @@
     };
 #  define fp_ub ((struct __sfileext *) fp->_ext._base)->_ub
 # else                                         /* FreeBSD, DragonFly, MacOS X, Cygwin */
-#  define fp_ub fp->_ub
+#  define fp_ub fp_->_ub
 # endif
 
 # define HASUB(fp) (fp_ub._base != NULL)

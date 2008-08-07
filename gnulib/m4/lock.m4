@@ -1,11 +1,13 @@
-# lock.m4 serial 7 (gettext-0.17)
-dnl Copyright (C) 2005-2007 Free Software Foundation, Inc.
+# lock.m4 serial 8 (gettext-0.18)
+dnl Copyright (C) 2005-2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
 dnl From Bruno Haible.
 
+dnl gl_LOCK
+dnl -------
 dnl Tests for a multithreading library to be used.
 dnl Defines at most one of the macros USE_POSIX_THREADS, USE_SOLARIS_THREADS,
 dnl USE_PTH_THREADS, USE_WIN32_THREADS
@@ -42,17 +44,22 @@ AC_DEFUN([gl_LOCK_EARLY_BODY],
     [AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])],
     [AC_REQUIRE([AC_GNU_SOURCE])])
   dnl Check for multithreading.
+  m4_divert_text([DEFAULTS], [gl_use_threads_default=])
   AC_ARG_ENABLE(threads,
 AC_HELP_STRING([--enable-threads={posix|solaris|pth|win32}], [specify multithreading API])
 AC_HELP_STRING([--disable-threads], [build without multithread safety]),
     [gl_use_threads=$enableval],
-    [case "$host_os" in
-       dnl Disable multithreading by default on OSF/1, because it interferes
-       dnl with fork()/exec(): When msgexec is linked with -lpthread, its child
-       dnl process gets an endless segmentation fault inside execvp().
-       osf*) gl_use_threads=no ;;
-       *)    gl_use_threads=yes ;;
-     esac
+    [if test -n "$gl_use_threads_default"; then
+       gl_use_threads="$gl_use_threads_default"
+     else
+       case "$host_os" in
+         dnl Disable multithreading by default on OSF/1, because it interferes
+         dnl with fork()/exec(): When msgexec is linked with -lpthread, its
+         dnl child process gets an endless segmentation fault inside execvp().
+         osf*) gl_use_threads=no ;;
+         *)    gl_use_threads=yes ;;
+       esac
+     fi
     ])
   if test "$gl_use_threads" = yes || test "$gl_use_threads" = posix; then
     # For using <pthread.h>:
@@ -261,6 +268,18 @@ AC_DEFUN([gl_LOCK],
 AC_DEFUN([gl_PREREQ_LOCK], [
   AC_REQUIRE([AC_C_INLINE])
 ])
+
+
+dnl gl_DISABLE_THREADS
+dnl ------------------
+dnl Sets the gl_LOCK default so that threads are not used by default.
+dnl The user can still override it at installation time, by using the
+dnl configure option '--enable-threads'.
+
+AC_DEFUN([gl_DISABLE_THREADS], [
+  m4_divert_text([INIT_PREPARE], [gl_use_threads_default=no])
+])
+
 
 dnl Survey of platforms:
 dnl

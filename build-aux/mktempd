@@ -44,7 +44,7 @@ rand_bytes()
   dev_rand=/dev/urandom
   if test -r "$dev_rand"; then
     # Note: 256-length($chars) == 194; 3 copies of $chars is 186 + 8 = 194.
-    head -c$n "$dev_rand" | tr -c $chars 01234567$chars$chars$chars
+    dd ibs=$n count=1 if="$dev_rand" | tr -c $chars 01234567$chars$chars$chars
     return
   fi
 
@@ -114,7 +114,9 @@ mktempd()
   base_template=`echo "$template"|sed 's/XX*$//'`
 
   # Calculate how many X's we've just removed.
-  nx=`expr length "$template" - length "$base_template"`
+  template_length=`echo "$template" | wc -c`
+  nx=`echo "$base_template" | wc -c`
+  nx=`expr $template_length - $nx`
 
   err=
   i=1

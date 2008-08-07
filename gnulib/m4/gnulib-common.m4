@@ -1,4 +1,4 @@
-# gnulib-common.m4 serial 4
+# gnulib-common.m4 serial 5
 dnl Copyright (C) 2007-2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -30,6 +30,13 @@ AC_DEFUN([gl_MODULE_INDICATOR],
   AC_DEFINE([GNULIB_]translit([$1],[abcdefghijklmnopqrstuvwxyz./-],[ABCDEFGHIJKLMNOPQRSTUVWXYZ___]), [1],
     [Define to 1 when using the gnulib module ]$1[.])
 ])
+
+# m4_foreach_w
+# is a backport of autoconf-2.59c's m4_foreach_w.
+# Remove this macro when we can assume autoconf >= 2.60.
+m4_ifndef([m4_foreach_w],
+  [m4_define([m4_foreach_w],
+    [m4_foreach([$1], m4_split(m4_normalize([$2]), [ ]), [$3])])])
 
 # AC_PROG_MKDIR_P
 # is a backport of autoconf-2.60's AC_PROG_MKDIR_P.

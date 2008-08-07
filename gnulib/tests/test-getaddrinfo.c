@@ -24,6 +24,15 @@
 #include <stdio.h>
 #include <string.h>
 
+/* Whether to print debugging messages.  */
+#define ENABLE_DEBUGGING 0
+
+#if ENABLE_DEBUGGING
+# define dbgprintf printf
+#else
+# define dbgprintf if (0) printf
+#endif
+
 /* BeOS does not have AF_UNSPEC.  */
 #ifndef AF_UNSPEC
 # define AF_UNSPEC 0
@@ -40,7 +49,7 @@ int simple (char *host, char *service)
   struct addrinfo *ai0, *ai;
   int res;
 
-  printf ("Finding %s service %s...\n", host, service);
+  dbgprintf ("Finding %s service %s...\n", host, service);
 
   /* This initializes "hints" but does not use it.  Is there a reason
      for this?  If so, please fix this comment.  */
@@ -51,7 +60,7 @@ int simple (char *host, char *service)
 
   res = getaddrinfo (host, service, 0, &ai0);
 
-  printf ("res %d: %s\n", res, gai_strerror (res));
+  dbgprintf ("res %d: %s\n", res, gai_strerror (res));
 
   if (res != 0)
     {
@@ -73,18 +82,18 @@ int simple (char *host, char *service)
 
   for (ai = ai0; ai; ai = ai->ai_next)
     {
-      printf ("\tflags %x\n", ai->ai_flags);
-      printf ("\tfamily %x\n", ai->ai_family);
-      printf ("\tsocktype %x\n", ai->ai_socktype);
-      printf ("\tprotocol %x\n", ai->ai_protocol);
-      printf ("\taddrlen %ld: ", (unsigned long) ai->ai_addrlen);
-      printf ("\tFound %s\n",
-	      inet_ntop (ai->ai_family,
-			 &((struct sockaddr_in *)
-			  ai->ai_addr)->sin_addr,
-			 buf, sizeof (buf) - 1));
+      dbgprintf ("\tflags %x\n", ai->ai_flags);
+      dbgprintf ("\tfamily %x\n", ai->ai_family);
+      dbgprintf ("\tsocktype %x\n", ai->ai_socktype);
+      dbgprintf ("\tprotocol %x\n", ai->ai_protocol);
+      dbgprintf ("\taddrlen %ld: ", (unsigned long) ai->ai_addrlen);
+      dbgprintf ("\tFound %s\n",
+		 inet_ntop (ai->ai_family,
+			    &((struct sockaddr_in *)
+			      ai->ai_addr)->sin_addr,
+			    buf, sizeof (buf) - 1));
       if (ai->ai_canonname)
-	printf ("\tFound %s...\n", ai->ai_canonname);
+	dbgprintf ("\tFound %s...\n", ai->ai_canonname);
 
       {
 	char ipbuf[BUFSIZ];
@@ -94,11 +103,11 @@ int simple (char *host, char *service)
 			   ipbuf, sizeof (ipbuf) - 1,
 			   portbuf, sizeof (portbuf) - 1,
 			   NI_NUMERICHOST|NI_NUMERICSERV);
-	printf ("\t\tgetnameinfo %d: %s\n", res, gai_strerror (res));
+	dbgprintf ("\t\tgetnameinfo %d: %s\n", res, gai_strerror (res));
 	if (res == 0)
 	  {
-	    printf ("\t\tip %s\n", ipbuf);
-	    printf ("\t\tport %s\n", portbuf);
+	    dbgprintf ("\t\tip %s\n", ipbuf);
+	    dbgprintf ("\t\tport %s\n", portbuf);
 	  }
       }
 

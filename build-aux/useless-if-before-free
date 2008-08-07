@@ -2,7 +2,7 @@
 # Detect instances of "if (p) free (p);".
 # Likewise for "if (p != NULL) free (p);".  And with braces.
 
-my $VERSION = '2008-05-01 19:11'; # UTC
+my $VERSION = '2008-05-25 17:36'; # UTC
 # The definition above must lie within the first 8 lines in order
 # for the Emacs time-stamp write hook (at end) to update it.
 # If you change this file with Emacs, please let the write hook
@@ -122,14 +122,22 @@ EOF
       while (defined (my $line = <FH>))
         {
           while ($line =~
-              /\b(if\s*\(\s*(\S+?)(?:\s*!=\s*NULL)?\s*\)
-               (?:   \s*$regexp\s*\((?:\s*\([^)]+\))?\s*\2\s*\)|
-                \s*\{\s*$regexp\s*\((?:\s*\([^)]+\))?\s*\2\s*\)\s*;\s*\}))/sxg)
+              /\b(if\s*\(\s*([^)]+?)(?:\s*!=\s*NULL)?\s*\)
+               (?:   \s*$regexp\s*\((?:\s*\([^)]+\))?\s*([^)]+)\)|
+                \s*\{\s*$regexp\s*\((?:\s*\([^)]+\))?\s*([^)]+)\)\s*;\s*\}))/sxg)
             {
-              $found_match = 1;
-              $list
-                and (print "$file\0"), next FILE;
-              print "$file: $1\n";
+              # Compare "if" expression and free'd expression,
+              # without regard to white space.
+              (my $e1 = $2) =~ tr/ \t//d;
+              my $e2 = defined $3 ? $3 : $4;
+              $e2 =~ tr/ \t//d;
+              if ($e1 eq $e2)
+                {
+                  $found_match = 1;
+                  $list
+                    and (print "$file\0"), next FILE;
+                  print "$file: $1\n";
+                }
             }
         }
     }
@@ -149,12 +157,12 @@ my $foo = <<'EOF';
 # This adjusts them, removing the unnecessary "if (p)" part.
 
 # FIXME: do something like this as an option (doesn't do braces):
-git ls-files -z |xargs -0 \
-perl -0x3b -pi -e 's/\bif\s*\(\s*(\S+?)(?:\s*!=\s*NULL)?\s*\)\s+(k?free\s*\(\s*\1\s*\))/$2/s'
-
 useless-if-before-free -l $(lid -knone free) | xargs -0 \
   perl -0x3b -pi -e \
-   's/\bif\s*\(\s*(\S+?)(?:\s*!=\s*NULL)?\s*\)\s+(free\s*\(\s*\1\s*\))/$2/s'
+   's/\bif\s*\(\s*(\S+?)(?:\s*!=\s*NULL)?\s*\)\s+(free\s*\((?:\s*\([^)]+\))?\s*\1\s*\))/$2/s'
+
+# Or, with git:
+git ls-files -z |xargs -0 perl -0x3b -pi -e '...'
 
 Be careful that the result of the above transformation is valid.
 If the matched string is followed by "else", then obviously, it won't be.
