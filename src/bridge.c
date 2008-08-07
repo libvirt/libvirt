@@ -156,9 +156,7 @@ brAddBridge(brControl *ctl,
 }
 #else
 int brAddBridge (brControl *ctl ATTRIBUTE_UNUSED,
-                 const char *nameOrFmt ATTRIBUTE_UNUSED,
-                 char *name ATTRIBUTE_UNUSED,
-                 int maxlen ATTRIBUTE_UNUSED)
+                 char **name ATTRIBUTE_UNUSED)
 {
     return EINVAL;
 }

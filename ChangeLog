@@ -1,3 +1,7 @@
+Thu Aug  7 12:21:31 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/bridge.c: fix a build failure on RHEL4
+
 Wed Aug  7 13:30:44 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	update from gnulib: portability and bug fixes
