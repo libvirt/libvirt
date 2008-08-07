@@ -1,3 +1,7 @@
+Thu Aug  7 06:32:05 PDT 2008 Dan Smith <danms@us.ibm.com>
+
+	* src/veth.c: Fix assigned device name clash
+
 Wed Aug  7 15:02:06 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	add the mkstemp module from gnulib
