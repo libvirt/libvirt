@@ -114,6 +114,15 @@ EXTRA_DIST += test-getline.c
 
 ## end   gnulib module getline-tests
 
+## begin gnulib module gettimeofday-tests
+
+TESTS += test-gettimeofday
+check_PROGRAMS += test-gettimeofday
+
+EXTRA_DIST += test-gettimeofday.c
+
+## end   gnulib module gettimeofday-tests
+
 ## begin gnulib module intprops
 
 

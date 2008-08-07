@@ -6,7 +6,7 @@ dnl with or without modifications, as long as this notice is preserved.
 
 AC_DEFUN([gl_INET_PTON],
 [
-  dnl Persuade Solaris <arpa/inet.h> to declare inet_ntop.
+  dnl Persuade Solaris <arpa/inet.h> to declare inet_pton.
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
 
   AC_REQUIRE([gl_ARPA_INET_H_DEFAULTS])

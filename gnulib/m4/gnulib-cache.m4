@@ -15,7 +15,7 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib/lib --m4-base=gnulib/m4 --doc-base=doc --aux-dir=build-aux --with-tests --lgpl=2 --libtool --macro-prefix=gl c-ctype getaddrinfo getpass gettext inet_pton mktempd physmem poll posix-shell strndup strsep sys_stat useless-if-before-free vasprintf vc-list-files verify
+#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib/lib --m4-base=gnulib/m4 --doc-base=doc --aux-dir=build-aux --with-tests --lgpl=2 --libtool --macro-prefix=gl c-ctype getaddrinfo getpass gettext inet_pton mkstemp mktempd physmem poll posix-shell strndup strsep sys_stat useless-if-before-free vasprintf vc-list-files verify
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
@@ -25,6 +25,7 @@ gl_MODULES([
   getpass
   gettext
   inet_pton
+  mkstemp
   mktempd
   physmem
   poll

@@ -70,6 +70,7 @@ getaddrinfo
 getpass
 gettext
 inet_pton
+mkstemp
 mktempd
 physmem
 poll

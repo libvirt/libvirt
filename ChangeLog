@@ -1,3 +1,23 @@
+Wed Aug  7 15:02:06 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	add the mkstemp module from gnulib
+	* bootstrap (modules): Add mkstemp.
+	The remainder of these changes are the result of running
+	./bootstrap, adding new files, and committing the result.
+	* gnulib/lib/gettimeofday.c: New file.
+	* gnulib/lib/mkstemp.c: New file.
+	* gnulib/lib/tempname.c: New file.
+	* gnulib/lib/tempname.h: New file.
+	* gnulib/m4/gettimeofday.m4: New file.
+	* gnulib/m4/mkstemp.m4: New file.
+	* gnulib/m4/tempname.m4: New file.
+	* gnulib/tests/test-gettimeofday.c: New file.
+	* gnulib/lib/Makefile.am: Update.
+	* gnulib/m4/gnulib-cache.m4: Likewise.
+	* gnulib/m4/gnulib-comp.m4: Likewise.
+	* gnulib/m4/inet_pton.m4: Likewise.
+	* gnulib/tests/Makefile.am: Likewise.
+
 Thu Aug  7 12:21:31 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/bridge.c: fix a build failure on RHEL4
