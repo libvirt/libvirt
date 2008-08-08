@@ -723,6 +723,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     virDomainNetDefPtr net = vm->def->nets;
     virDomainInputDefPtr input = vm->def->inputs;
     virDomainSoundDefPtr sound = vm->def->sounds;
+    virDomainHostdevDefPtr hostdev = vm->def->hostdevs;
     virDomainChrDefPtr serial = vm->def->serials;
     virDomainChrDefPtr parallel = vm->def->parallels;
     struct utsname ut;
@@ -1150,6 +1151,34 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
         ADD_ARG_LIT("-soundhw");
         ADD_ARG(modstr);
+    }
+
+    /* Add host passthrough hardware */
+    while (hostdev) {
+        int ret;
+        char* usbdev;
+
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+            if(hostdev->source.subsys.usb.vendor) {
+                    ret = asprintf(&usbdev, "host:%.4x:%.4x",
+                               hostdev->source.subsys.usb.vendor,
+                               hostdev->source.subsys.usb.product);
+
+            } else {
+                    ret = asprintf(&usbdev, "host:%.3d.%.3d",
+                               hostdev->source.subsys.usb.bus,
+                               hostdev->source.subsys.usb.device);
+            }
+            if (ret < 0) {
+                usbdev = NULL;
+                goto error;
+            }
+            ADD_ARG_LIT("-usbdevice");
+            ADD_ARG_LIT(usbdev);
+            VIR_FREE(usbdev);
+        }
+        hostdev = hostdev->next;
     }
 
     if (migrateFrom) {

@@ -118,6 +118,9 @@ mymain(int argc, char **argv)
     DO_TEST("parallel-tcp");
     DO_TEST("console-compat");
 
+    DO_TEST("hostdev-usb-product");
+    DO_TEST("hostdev-usb-address");
+
     virCapabilitiesFree(driver.caps);
 
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

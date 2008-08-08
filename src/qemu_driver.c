@@ -2951,12 +2951,95 @@ static int qemudDomainChangeCDROM(virDomainPtr dom,
     return 0;
 }
 
+static int qemudDomainAttachCdromDevice(virDomainPtr dom,
+                                        virDomainDeviceDefPtr dev)
+{
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainDiskDefPtr disk;
+
+    if (!vm) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         "%s", _("no domain with matching uuid"));
+        return -1;
+    }
+
+    disk = vm->def->disks;
+    while (disk) {
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
+            STREQ(disk->dst, dev->data.disk->dst))
+            break;
+        disk = disk->next;
+    }
+
+    if (!disk) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                         "%s", _("CDROM not attached, cannot change media"));
+        return -1;
+    }
+
+    if (qemudDomainChangeCDROM(dom, vm, disk, dev->data.disk) < 0) {
+        return -1;
+    }
+    return 0;
+}
+
+static int qemudDomainAttachHostDevice(virDomainPtr dom, virDomainDeviceDefPtr dev)
+{
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    int ret;
+    char *cmd, *reply;
+
+    if (!vm) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         "%s", _("no domain with matching uuid"));
+        return -1;
+    }
+
+    if (dev->data.hostdev->source.subsys.usb.vendor) {
+        ret = asprintf(&cmd, "usb_add host:%.4x:%.4x",
+                       dev->data.hostdev->source.subsys.usb.vendor,
+                       dev->data.hostdev->source.subsys.usb.product);
+    } else {
+        ret = asprintf(&cmd, "usb_add host:%.3d.%.3d",
+                       dev->data.hostdev->source.subsys.usb.bus,
+                       dev->data.hostdev->source.subsys.usb.device);
+    }
+    if (ret == -1) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        return -1;
+    }
+
+    if (qemudMonitorCommand(driver, vm, cmd, &reply) < 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("cannot attach usb device"));
+        VIR_FREE(cmd);
+        return -1;
+    }
+
+    DEBUG ("attach_usb reply: %s", reply);
+    /* If the command failed qemu prints:
+     * Could not add ... */
+    if (strstr(reply, "Could not add ")) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                          "%s",
+                          _("adding usb device failed"));
+        VIR_FREE(reply);
+        VIR_FREE(cmd);
+        return -1;
+    }
+    VIR_FREE(reply);
+    VIR_FREE(cmd);
+    return 0;
+}
+
 static int qemudDomainAttachDevice(virDomainPtr dom,
                                    const char *xml) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
     virDomainDeviceDefPtr dev;
-    virDomainDiskDefPtr disk;
+    int ret = 0;
 
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -2975,36 +3058,21 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         return -1;
     }
 
-    if (dev->type != VIR_DOMAIN_DEVICE_DISK ||
-        dev->data.disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
+        dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
+                ret = qemudDomainAttachCdromDevice(dom, dev);
+    } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
+        dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+        dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+                ret = qemudDomainAttachHostDevice(dom, dev);
+    } else {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
-                         "%s", _("only CDROM disk devices can be attached"));
-        VIR_FREE(dev);
-        return -1;
-    }
-
-    disk = vm->def->disks;
-    while (disk) {
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-            STREQ(disk->dst, dev->data.disk->dst))
-            break;
-        disk = disk->next;
-    }
-
-    if (!disk) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
-                         "%s", _("CDROM not attached, cannot change media"));
-        VIR_FREE(dev);
-        return -1;
-    }
-
-    if (qemudDomainChangeCDROM(dom, vm, disk, dev->data.disk) < 0) {
-        VIR_FREE(dev);
-        return -1;
+                         "%s", _("this devicetype cannnot be attached"));
+        ret = -1;
     }
 
     VIR_FREE(dev);
-    return 0;
+    return ret;
 }
 
 static int qemudDomainGetAutostart(virDomainPtr dom,

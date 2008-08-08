@@ -279,7 +279,52 @@ struct _virDomainGraphicsDef {
     } data;
 };
 
+enum virDomainHostdevMode {
+    VIR_DOMAIN_HOSTDEV_MODE_SUBSYS,
+    VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES,
 
+    VIR_DOMAIN_HOSTDEV_MODE_LAST,
+};
+
+enum virDomainHostdevSubsysType {
+    VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB,
+    VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI,
+
+    VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST
+};
+
+typedef struct _virDomainHostdevDef virDomainHostdevDef;
+typedef virDomainHostdevDef *virDomainHostdevDefPtr;
+struct _virDomainHostdevDef {
+    int mode; /* enum virDomainHostdevMode */
+    union {
+        struct {
+            int type; /* enum virDomainHostdevBusType */
+            union {
+                struct {
+                    unsigned bus;
+                    unsigned device;
+
+                    unsigned vendor;
+                    unsigned product;
+                } usb;
+                struct {
+                     unsigned domain;
+                     unsigned bus;
+                     unsigned slot;
+                     unsigned function;
+                } pci;
+            };
+        } subsys;
+        struct {
+            /* TBD: struct capabilities see:
+             * https://www.redhat.com/archives/libvir-list/2008-July/msg00429.html
+             */
+        } caps;
+    } source;
+    char* target;
+    virDomainHostdevDefPtr next;
+};
 
 /* Flags for the 'type' field in next struct */
 enum virDomainDeviceType {
@@ -288,6 +333,7 @@ enum virDomainDeviceType {
     VIR_DOMAIN_DEVICE_NET,
     VIR_DOMAIN_DEVICE_INPUT,
     VIR_DOMAIN_DEVICE_SOUND,
+    VIR_DOMAIN_DEVICE_HOSTDEV,
 };
 
 typedef struct _virDomainDeviceDef virDomainDeviceDef;
@@ -300,6 +346,7 @@ struct _virDomainDeviceDef {
         virDomainNetDefPtr net;
         virDomainInputDefPtr input;
         virDomainSoundDefPtr sound;
+        virDomainHostdevDefPtr hostdev;
     } data;
 };
 
@@ -386,6 +433,7 @@ struct _virDomainDef {
     virDomainNetDefPtr nets;
     virDomainInputDefPtr inputs;
     virDomainSoundDefPtr sounds;
+    virDomainHostdevDefPtr hostdevs;
     virDomainChrDefPtr serials;
     virDomainChrDefPtr parallels;
     virDomainChrDefPtr console;
@@ -441,6 +489,7 @@ void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainNetDefFree(virDomainNetDefPtr def);
 void virDomainChrDefFree(virDomainChrDefPtr def);
 void virDomainSoundDefFree(virDomainSoundDefPtr def);
+void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
 void virDomainDefFree(virDomainDefPtr vm);
 void virDomainObjFree(virDomainObjPtr vm);
@@ -515,6 +564,8 @@ VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainNet)
 VIR_ENUM_DECL(virDomainChr)
 VIR_ENUM_DECL(virDomainSoundModel)
+VIR_ENUM_DECL(virDomainHostdevMode)
+VIR_ENUM_DECL(virDomainHostdevSubsys)
 VIR_ENUM_DECL(virDomainInput)
 VIR_ENUM_DECL(virDomainInputBus)
 VIR_ENUM_DECL(virDomainGraphics)

@@ -1,3 +1,17 @@
+Fri Aug  8 16:15:55 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/domain_conf.c src/domain_conf.h src/qemu_conf.c
+	  src/qemu_driver.c: Patch from Guido Günther allowing to pass
+	  usb devices to qemu/kvm
+	* docs/libvirt.rng: add the new functionality to the grammar
+	* tests/qemuxml2argvdata/qemuxml2argv-hostdev-usb-address.args
+	  tests/qemuxml2argvdata/qemuxml2argv-hostdev-usb-address.xml
+	  tests/qemuxml2argvdata/qemuxml2argv-hostdev-usb-product.args
+	  tests/qemuxml2argvdata/qemuxml2argv-hostdev-usb-product.xml
+	  tests/qemuxml2argvtest.c tests/qemuxml2xmltest.c: adding examples
+	  to the regression tests
+	* libvirt.spec.in: fix the licence tag
+
 Fri Aug  8 19:18:43 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
 
 	* docs/formatdomain.html docs/formatdomain.html.in

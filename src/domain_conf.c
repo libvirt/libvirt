@@ -131,6 +131,13 @@ VIR_ENUM_IMPL(virDomainGraphics, VIR_DOMAIN_GRAPHICS_TYPE_LAST,
               "sdl",
               "vnc")
 
+VIR_ENUM_IMPL(virDomainHostdevMode, VIR_DOMAIN_HOSTDEV_MODE_LAST,
+              "subsystem",
+              "capabilities")
+
+VIR_ENUM_IMPL(virDomainHostdevSubsys, VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST,
+              "usb",
+              "pci")
 
 static void virDomainReportError(virConnectPtr conn,
                                  int code, const char *fmt, ...)
@@ -332,6 +339,16 @@ void virDomainSoundDefFree(virDomainSoundDefPtr def)
     VIR_FREE(def);
 }
 
+void virDomainHostdevDefFree(virDomainHostdevDefPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def->target);
+    virDomainHostdevDefFree(def->next);
+    VIR_FREE(def);
+}
+
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
 {
     if (!def)
@@ -349,6 +366,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
         break;
     case VIR_DOMAIN_DEVICE_SOUND:
         virDomainSoundDefFree(def->data.sound);
+        break;
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        virDomainHostdevDefFree(def->data.hostdev);
         break;
     }
 
@@ -369,7 +389,7 @@ void virDomainDefFree(virDomainDefPtr def)
     virDomainChrDefFree(def->parallels);
     virDomainChrDefFree(def->console);
     virDomainSoundDefFree(def->sounds);
-
+    virDomainHostdevDefFree(def->hostdevs);
 
     VIR_FREE(def->os.type);
     VIR_FREE(def->os.arch);
@@ -1400,6 +1420,180 @@ error:
     goto cleanup;
 }
 
+static int
+virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
+                                     const xmlNodePtr node,
+                                     virDomainHostdevDefPtr def) {
+
+    int ret = -1;
+    xmlNodePtr cur;
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(cur->name, BAD_CAST "vendor")) {
+                char *vendor = virXMLPropString(cur, "id");
+
+                if (vendor) {
+                    if (virStrToLong_ui(vendor, NULL, 0,
+                                        &def->source.subsys.usb.vendor) < 0) {
+                        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("cannot parse vendor id %s"), vendor);
+                        VIR_FREE(vendor);
+                        goto out;
+                    }
+                    VIR_FREE(vendor);
+                } else {
+                    virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                         "%s", _("usb vendor needs id"));
+                    goto out;
+                }
+            } else if (xmlStrEqual(cur->name, BAD_CAST "product")) {
+                char* product = virXMLPropString(cur, "id");
+
+                if (product) {
+                    if (virStrToLong_ui(product, NULL, 0,
+                                        &def->source.subsys.usb.product) < 0) {
+                        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                            _("cannot parse product %s"), product);
+                        VIR_FREE(product);
+                        goto out;
+                    }
+                    VIR_FREE(product);
+                } else {
+                    virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                         "%s", _("usb product needs id"));
+                    goto out;
+                }
+            } else if (xmlStrEqual(cur->name, BAD_CAST "address")) {
+                char *bus, *device;
+
+                bus = virXMLPropString(cur, "bus");
+                if (bus) {
+                    if (virStrToLong_ui(bus, NULL, 0,
+                                        &def->source.subsys.usb.bus) < 0) {
+                        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                             _("cannot parse bus %s"), bus);
+                        VIR_FREE(bus);
+                        goto out;
+                    }
+                    VIR_FREE(bus);
+                } else {
+                    virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                         "%s", _("usb address needs bus id"));
+                    goto out;
+                }
+
+                device = virXMLPropString(cur, "device");
+                if (device) {
+                    if (virStrToLong_ui(device, NULL, 0,
+                                        &def->source.subsys.usb.device) < 0)  {
+                        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                             _("cannot parse device %s"),
+                                             device);
+                        VIR_FREE(device);
+                        goto out;
+                    }
+                    VIR_FREE(device);
+                } else {
+                    virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                         "%s", _("usb address needs device id"));
+                    goto out;
+                }
+            } else {
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                     _("unknown usb source type '%s'"), cur->name);
+                goto out;
+            }
+        }
+        cur = cur->next;
+    }
+
+    if (def->source.subsys.usb.vendor == 0 &&
+        def->source.subsys.usb.product != 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            _("missing vendor"));
+        goto out;
+    }
+    if (def->source.subsys.usb.vendor != 0 &&
+        def->source.subsys.usb.product == 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            _("missing product"));
+        goto out;
+    }
+
+    ret = 0;
+out:
+    return ret;
+}
+
+
+static virDomainHostdevDefPtr
+virDomainHostdevDefParseXML(virConnectPtr conn,
+                            const xmlNodePtr node) {
+
+    xmlNodePtr cur;
+    virDomainHostdevDefPtr def;
+    char *mode, *type = NULL;
+
+    if (VIR_ALLOC(def) < 0) {
+        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        return NULL;
+    }
+    def->target = NULL;
+
+    mode = virXMLPropString(node, "mode");
+    if (mode) {
+        if ((def->mode=virDomainHostdevModeTypeFromString(mode)) < 0) {
+             virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("unknown hostdev mode '%s'"), mode);
+            goto error;
+        }
+    } else {
+        def->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
+    }
+
+    type = virXMLPropString(node, "type");
+    if (type) {
+        if ((def->source.subsys.type = virDomainHostdevSubsysTypeFromString(type)) < 0) {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown host device type '%s'"), type);
+            goto error;
+        }
+    } else {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("missing type in hostdev"));
+        goto error;
+    }
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(cur->name, BAD_CAST "source")) {
+                if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+                    def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+                        if (virDomainHostdevSubsysUsbDefParseXML(conn, cur, def) < 0)
+                            goto error;
+                }
+            } else {
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                     _("uknown node %s"), cur->name);
+            }
+        }
+        cur = cur->next;
+    }
+
+cleanup:
+    VIR_FREE(type);
+    VIR_FREE(mode);
+    return def;
+
+error:
+    virDomainHostdevDefFree(def);
+    def = NULL;
+    goto cleanup;
+}
+
 
 static int virDomainLifecycleParseXML(virConnectPtr conn,
                                       xmlXPathContextPtr ctxt,
@@ -1470,6 +1664,10 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
     } else if (xmlStrEqual(node->name, BAD_CAST "sound")) {
         dev->type = VIR_DOMAIN_DEVICE_SOUND;
         if (!(dev->data.sound = virDomainSoundDefParseXML(conn, node)))
+            goto error;
+    } else if (xmlStrEqual(node->name, BAD_CAST "hostdev")) {
+        dev->type = VIR_DOMAIN_DEVICE_HOSTDEV;
+        if (!(dev->data.hostdev = virDomainHostdevDefParseXML(conn, node)))
             goto error;
     } else {
         virDomainReportError(conn, VIR_ERR_XML_ERROR,
@@ -1962,6 +2160,22 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
 
         sound->next = def->sounds;
         def->sounds = sound;
+    }
+    VIR_FREE(nodes);
+
+    /* analysis of the host devices */
+    if ((n = virXPathNodeSet(conn, "./devices/hostdev", ctxt, &nodes)) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("cannot extract host devices"));
+        goto error;
+    }
+    for (i = 0 ; i < n ; i++) {
+        virDomainHostdevDefPtr hostdev = virDomainHostdevDefParseXML(conn, nodes[i]);
+        if (!hostdev)
+            goto error;
+
+        hostdev->next = def->hostdevs;
+        def->hostdevs = hostdev;
     }
     VIR_FREE(nodes);
 
@@ -2706,6 +2920,50 @@ virDomainGraphicsDefFormat(virConnectPtr conn,
     return 0;
 }
 
+
+static int
+virDomainHostdevDefFormat(virConnectPtr conn,
+                          virBufferPtr buf,
+                          virDomainHostdevDefPtr def)
+{
+    const char *mode = virDomainHostdevModeTypeToString(def->mode);
+    const char *type;
+
+    if (!mode || def->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected hostdev mode %d"), def->mode);
+        return -1;
+    }
+
+    type = virDomainHostdevSubsysTypeToString(def->source.subsys.type);
+    if (!type || def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected hostdev type %d"),
+                             def->source.subsys.type);
+        return -1;
+    }
+
+    virBufferVSprintf(buf, "    <hostdev mode='%s' type='%s'>\n", mode, type);
+    virBufferAddLit(buf, "      <source>\n");
+
+    if (def->source.subsys.usb.vendor) {
+        virBufferVSprintf(buf, "        <vendor id='0x%.4x'/>\n",
+                          def->source.subsys.usb.vendor);
+        virBufferVSprintf(buf, "        <product id='0x%.4x'/>\n",
+                          def->source.subsys.usb.product);
+    } else {
+        virBufferVSprintf(buf, "        <address bus='%d' device='%d'/>\n",
+                          def->source.subsys.usb.bus,
+                          def->source.subsys.usb.device);
+    }
+
+    virBufferAddLit(buf, "      </source>\n");
+    virBufferAddLit(buf, "    </hostdev>\n");
+
+    return 0;
+}
+
+
 char *virDomainDefFormat(virConnectPtr conn,
                          virDomainDefPtr def,
                          int flags)
@@ -2719,6 +2977,7 @@ char *virDomainDefFormat(virConnectPtr conn,
     virDomainSoundDefPtr sound;
     virDomainInputDefPtr input;
     virDomainChrDefPtr chr;
+    virDomainHostdevDefPtr hostdev;
     const char *type = NULL, *tmp;
     int n, allones = 1;
 
@@ -2929,6 +3188,13 @@ char *virDomainDefFormat(virConnectPtr conn,
         if (virDomainSoundDefFormat(conn, &buf, sound) < 0)
             goto cleanup;
         sound = sound->next;
+    }
+
+    hostdev = def->hostdevs;
+    while (hostdev) {
+        if (virDomainHostdevDefFormat(conn, &buf, hostdev) < 0)
+            goto cleanup;
+        hostdev = hostdev->next;
     }
 
     virBufferAddLit(&buf, "  </devices>\n");

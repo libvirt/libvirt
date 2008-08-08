@@ -848,6 +848,57 @@
     </element>
   </define>
 
+  <define name='hostdev'>
+    <element name='hostdev'>
+      <optional>
+	<attribute name='mode'>
+	  <choice>
+	    <value>subsystem</value>
+	    <value>capabilities</value>
+	  </choice>
+	</attribute>
+        <attribute name='type'>
+          <choice>
+	    <value>usb</value>
+	    <value>pci</value>
+          </choice>
+        </attribute>
+      </optional>
+      <group>
+          <element name='source'>
+            <choice>
+              <ref name="usbproduct"/>
+              <ref name="usbaddress"/>
+            </choice>
+          </element>
+      </group>
+    </element>
+  </define>
+
+  <define name="usbproduct">
+    <element name="vendor">
+      <attribute name="id">
+          <ref name="usbId"/>
+      </attribute>
+    </element>
+    <element name="product">
+      <attribute name="id">
+          <ref name="usbId"/>
+      </attribute>
+    </element>
+  </define>
+  
+  <define name="usbaddress">
+    <element name="address">
+      <attribute name="bus">
+        <ref name="usbAddr"/>
+      </attribute>
+      <attribute name="device">
+        <ref name="usbAddr"/>
+      </attribute>
+    </element>
+  </define>
+
   <!--
       Devices attached to a domain.
     -->
@@ -868,6 +919,7 @@
             <ref name='parallel'/>
             <ref name='serial'/>
             <ref name='input'/>
+            <ref name='hostdev'/>
 	  </choice>
 	</zeroOrMore>
       </interleave>
@@ -984,6 +1036,16 @@
   <define name='addrIP'>
     <data type='string'>
       <param name="pattern">([0-2]?[0-9]?[0-9]\.){3}[0-2]?[0-9]?[0-9]</param>
+    </data>
+  </define>
+  <define name='usbId'>
+    <data type='string'>
+      <param name="pattern">(0x)?[0-9a-fA-F]{1,4}</param>
+    </data>
+  </define>
+  <define name='usbAddr'>
+    <data type='string'>
+      <param name="pattern">(0x)?[0-9a-fA-F]{1,3}</param>
     </data>
   </define>
 </grammar>
