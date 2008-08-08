@@ -1,3 +1,8 @@
+Fri Aug  8 19:18:43 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
+
+	* docs/formatdomain.html docs/formatdomain.html.in
+	docs/java.html docs/java.html.in: fix typos
+
 Thu Aug  7 19:47:40 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* tests/domainschematest: patch from Guido Günther to fix RNG checking
