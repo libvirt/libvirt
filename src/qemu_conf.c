@@ -55,7 +55,8 @@ VIR_ENUM_IMPL(virDomainDiskQEMUBus, VIR_DOMAIN_DISK_BUS_LAST,
               "floppy",
               "scsi",
               "virtio",
-              "xen")
+              "xen",
+              "usb")
 
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
@@ -772,6 +773,16 @@ int qemudBuildCommandLine(virConnectPtr conn,
             goto no_memory;                                             \
     } while (0)
 
+#define ADD_USBDISK(thisarg)                                            \
+    do {                                                                \
+        ADD_ARG_LIT("-usbdevice");                                      \
+        ADD_ARG_SPACE;                                                  \
+        if ((asprintf(&qargv[qargc++], "disk:%s", thisarg)) == -1) {    \
+            qargv[qargc-1] = NULL;                                      \
+            goto no_memory;                                             \
+        }                                                               \
+    } while (0)
+
     snprintf(memory, sizeof(memory), "%lu", vm->def->memory/1024);
     snprintf(vcpus, sizeof(vcpus), "%lu", vm->def->vcpus);
 
@@ -883,6 +894,18 @@ int qemudBuildCommandLine(virConnectPtr conn,
             int idx = virDiskNameToIndex(disk->dst);
             const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
 
+            if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
+                if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+                    ADD_USBDISK(disk->src);
+                } else {
+                    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                     _("unsupported usb disk type for '%s'"), disk->src);
+                    goto error;
+                }
+                disk = disk->next;
+                continue;
+            }
+
             if (idx < 0) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                                  _("unsupported disk type '%s'"), disk->dst);
@@ -921,6 +944,18 @@ int qemudBuildCommandLine(virConnectPtr conn,
         while (disk) {
             char dev[NAME_MAX];
             char file[PATH_MAX];
+
+            if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
+                if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+                    ADD_USBDISK(disk->src);
+                } else {
+                    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                     _("unsupported usb disk type for '%s'"), disk->src);
+                    goto error;
+                }
+                disk = disk->next;
+                continue;
+            }
 
             if (STREQ(disk->dst, "hdc") &&
                 disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {

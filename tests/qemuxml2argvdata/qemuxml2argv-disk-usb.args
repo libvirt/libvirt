@@ -1,0 +1,1 @@
+/usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -monitor pty -no-acpi -boot c -hda /dev/HostVG/QEMUGuest1 -usbdevice disk:/tmp/usbdisk.img -net none -serial none -parallel none -usb

@@ -1,3 +1,14 @@
+Fri Aug  8 16:53:24 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/domain_conf.c src/domain_conf.h src/qemu_conf.c
+	  src/qemu_driver.c: patch from Guido Günther allowing to add
+	  disk as USB devices
+	* docs/libvirt.rng: extend the schemas for the new value
+	* tests/qemuxml2argvdata/qemuxml2argv-disk-usb.args
+	  tests/qemuxml2argvdata/qemuxml2argv-disk-usb.xml
+	  tests/qemuxml2argvtest.c tests/qemuxml2xmltest.c: add a specific
+	  test to the regression suite
+
 Fri Aug  8 16:15:55 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/domain_conf.c src/domain_conf.h src/qemu_conf.c

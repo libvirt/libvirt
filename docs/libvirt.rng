@@ -412,6 +412,7 @@
              <value>virtio</value>
              <value>fdc</value>
              <value>xen</value>
+             <value>usb</value>
            </choice>
          </attribute>
       </optional>

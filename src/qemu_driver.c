@@ -2984,6 +2984,48 @@ static int qemudDomainAttachCdromDevice(virDomainPtr dom,
     return 0;
 }
 
+static int qemudDomainAttachUsbMassstorageDevice(virDomainPtr dom, virDomainDeviceDefPtr dev)
+{
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    int ret;
+    char *cmd, *reply;
+
+    if (!vm) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         "%s", _("no domain with matching uuid"));
+        return -1;
+    }
+
+    ret = asprintf(&cmd, "usb_add disk:%s", dev->data.disk->src);
+    if (ret == -1) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        return ret;
+    }
+
+    if (qemudMonitorCommand(driver, vm, cmd, &reply) < 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("cannot attach usb device"));
+        VIR_FREE(cmd);
+        return -1;
+    }
+
+    DEBUG ("attach_usb reply: %s", reply);
+    /* If the command failed qemu prints:
+     * Could not add ... */
+    if (strstr(reply, "Could not add ")) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                          "%s",
+                          _("adding usb device failed"));
+        VIR_FREE(reply);
+        VIR_FREE(cmd);
+        return -1;
+    }
+    VIR_FREE(reply);
+    VIR_FREE(cmd);
+    return 0;
+}
+
 static int qemudDomainAttachHostDevice(virDomainPtr dom, virDomainDeviceDefPtr dev)
 {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
@@ -3061,6 +3103,10 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
         dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
                 ret = qemudDomainAttachCdromDevice(dom, dev);
+    } else if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
+        dev->data.disk->device == VIR_DOMAIN_DEVICE_DISK &&
+        dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
+                ret = qemudDomainAttachUsbMassstorageDevice(dom, dev);
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
         dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
         dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {

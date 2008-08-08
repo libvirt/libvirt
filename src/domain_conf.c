@@ -84,7 +84,8 @@ VIR_ENUM_IMPL(virDomainDiskBus, VIR_DOMAIN_DISK_BUS_LAST,
               "fdc",
               "scsi",
               "virtio",
-              "xen")
+              "xen",
+              "usb")
 
 VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "mount",
