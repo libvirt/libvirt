@@ -91,13 +91,13 @@ static virDomainPtr openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
         unsigned int flags ATTRIBUTE_UNUSED);
 
 static int openvzDomainUndefine(virDomainPtr dom);
-static void cmdExecFree(char *cmdExec[]);
+static void cmdExecFree(const char *cmdExec[]);
 
 static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid);
 
 struct openvz_driver ovz_driver;
 
-static void cmdExecFree(char *cmdExec[])
+static void cmdExecFree(const char *cmdExec[])
 {
     int i=-1;
     while(cmdExec[++i])
@@ -111,7 +111,7 @@ static void cmdExecFree(char *cmdExec[])
            0 - OK
 */
 static int openvzDomainDefineCmd(virConnectPtr conn,
-                                 char *args[],
+                                 const char *args[],
                                  int maxarg,
                                  struct openvz_vm_def *vmdef)
 {
@@ -287,7 +287,7 @@ static int openvzDomainShutdown(virDomainPtr dom) {
         return -1;
     }
 
-    if (virRun(dom->conn, (char **)prog, NULL) < 0) {
+    if (virRun(dom->conn, prog, NULL) < 0) {
         openvzError(dom->conn, VIR_ERR_INTERNAL_ERROR,
               _("Could not exec %s"), VZCTL);
         return -1;
@@ -319,7 +319,7 @@ static int openvzDomainReboot(virDomainPtr dom,
         return -1;
     }
 
-    if (virRun(dom->conn, (char **)prog, NULL) < 0) {
+    if (virRun(dom->conn, prog, NULL) < 0) {
         openvzError(dom->conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZCTL);
         return -1;
@@ -333,7 +333,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
                         virDomainNetDefPtr net)
 {
     int rc = 0, narg;
-    char *prog[OPENVZ_MAX_ARG];
+    const char *prog[OPENVZ_MAX_ARG];
     char *mac = NULL;
 
 #define ADD_ARG_LIT(thisarg)                                            \
@@ -391,7 +391,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
 
     if (prog[0] != NULL){
         ADD_ARG_LIT("--save");
-        if (virRun(conn, (char **)prog, NULL) < 0) {
+        if (virRun(conn, prog, NULL) < 0) {
            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                     _("Could not exec %s"), VZCTL);
            rc = -1;
@@ -427,7 +427,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     struct openvz_vm_def *vmdef = NULL;
     struct openvz_vm *vm = NULL;
     virDomainPtr dom = NULL;
-    char *prog[OPENVZ_MAX_ARG];
+    const char *prog[OPENVZ_MAX_ARG];
     prog[0] = NULL;
 
     if ((vmdef = openvzParseVMDef(conn, xml, NULL)) == NULL)
@@ -453,7 +453,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     //TODO: set number virtual CPUs
     //TODO: set quota
 
-    if (virRun(conn, (char **)prog, NULL) < 0) {
+    if (virRun(conn, prog, NULL) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZCTL);
         goto exit;
@@ -489,7 +489,7 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
     virDomainPtr dom = NULL;
     struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
     const char *progstart[] = {VZCTL, "--quiet", "start", NULL, NULL};
-    char *progcreate[OPENVZ_MAX_ARG];
+    const char *progcreate[OPENVZ_MAX_ARG];
     progcreate[0] = NULL;
 
     if (!(vmdef = openvzParseVMDef(conn, xml, NULL)))
@@ -514,7 +514,7 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
         goto exit;
     }
 
-    if (virRun(conn, (char **)progcreate, NULL) < 0) {
+    if (virRun(conn, progcreate, NULL) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZCTL);
         goto exit;
@@ -534,7 +534,7 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
 
     progstart[3] = vmdef->name;
 
-    if (virRun(conn, (char **)progstart, NULL) < 0) {
+    if (virRun(conn, progstart, NULL) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZCTL);
         goto exit;
@@ -572,7 +572,7 @@ openvzDomainCreate(virDomainPtr dom)
         return -1;
     }
 
-    if (virRun(dom->conn, (char **)prog, NULL) < 0) {
+    if (virRun(dom->conn, prog, NULL) < 0) {
         openvzError(dom->conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZCTL);
         return -1;
@@ -604,7 +604,7 @@ openvzDomainUndefine(virDomainPtr dom)
         return -1;
     }
 
-    if (virRun(conn, (char **)prog, NULL) < 0) {
+    if (virRun(conn, prog, NULL) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZCTL);
         return -1;
@@ -629,7 +629,7 @@ openvzDomainSetAutostart(virDomainPtr dom, int autostart)
         return -1;
     }
 
-    if (virRun(conn, (char **)prog, NULL) < 0) {
+    if (virRun(conn, prog, NULL) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("Could not exec %s"), VZCTL);
         return -1;
     }
@@ -742,7 +742,7 @@ static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
     char *endptr;
     const char *cmd[] = {VZLIST, "-ovpsid", "-H" , NULL};
 
-    ret = virExec(conn, (char **)cmd, &pid, -1, &outfd, &errfd);
+    ret = virExec(conn, cmd, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZLIST);
@@ -779,7 +779,7 @@ static int openvzListDefinedDomains(virConnectPtr conn,
     const char *cmd[] = {VZLIST, "-ovpsid", "-H", "-S", NULL};
 
     /* the -S options lists only stopped domains */
-    ret = virExec(conn, (char **)cmd, &pid, -1, &outfd, &errfd);
+    ret = virExec(conn, cmd, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZLIST);

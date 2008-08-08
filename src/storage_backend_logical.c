@@ -83,7 +83,7 @@ virStorageBackendLogicalSetActive(virConnectPtr conn,
     cmdargv[2] = pool->def->name;
     cmdargv[3] = NULL;
 
-    if (virRun(conn, (char**)cmdargv, NULL) < 0)
+    if (virRun(conn, cmdargv, NULL) < 0)
         return -1;
 
     return 0;
@@ -324,14 +324,14 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn,
          */
         vgargv[n++] = pool->def->source.devices[i].path;
         pvargv[1] = pool->def->source.devices[i].path;
-        if (virRun(conn, (char**)pvargv, NULL) < 0)
+        if (virRun(conn, pvargv, NULL) < 0)
             goto cleanup;
     }
 
     vgargv[n++] = NULL;
 
     /* Now create the volume group itself */
-    if (virRun(conn, (char**)vgargv, NULL) < 0)
+    if (virRun(conn, vgargv, NULL) < 0)
         goto cleanup;
 
     VIR_FREE(vgargv);
@@ -422,7 +422,7 @@ virStorageBackendLogicalDeletePool(virConnectPtr conn,
         VGREMOVE, "-f", pool->def->name, NULL
     };
 
-    if (virRun(conn, (char**)cmdargv, NULL) < 0)
+    if (virRun(conn, cmdargv, NULL) < 0)
         return -1;
 
     /* XXX clear the PVs too ? ie pvremove ? probably ought to */
@@ -453,7 +453,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     snprintf(size, sizeof(size)-1, "%lluK", vol->capacity/1024);
     size[sizeof(size)-1] = '\0';
 
-    if (virRun(conn, (char**)cmdargv, NULL) < 0)
+    if (virRun(conn, cmdargv, NULL) < 0)
         return -1;
 
     if ((fd = open(vol->target.path, O_RDONLY)) < 0) {
@@ -514,7 +514,7 @@ virStorageBackendLogicalDeleteVol(virConnectPtr conn,
         LVREMOVE, "-f", vol->target.path, NULL
     };
 
-    if (virRun(conn, (char**)cmdargv, NULL) < 0)
+    if (virRun(conn, cmdargv, NULL) < 0)
         return -1;
 
     return 0;

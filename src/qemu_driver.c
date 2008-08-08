@@ -842,7 +842,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
                               virDomainObjPtr vm,
                               const char *migrateFrom) {
-    char **argv = NULL, **tmp;
+    const char **argv = NULL, **tmp;
     int i, ret;
     char logfile[PATH_MAX];
     struct stat sb;
@@ -1087,7 +1087,7 @@ static int qemudDispatchVMFailure(struct qemud_driver *driver, virDomainObjPtr v
 static int
 qemudBuildDnsmasqArgv(virConnectPtr conn,
                       virNetworkObjPtr network,
-                      char ***argv) {
+                      const char ***argv) {
     int i, len, r;
     char buf[PATH_MAX];
 
@@ -1184,7 +1184,7 @@ static int
 dhcpStartDhcpDaemon(virConnectPtr conn,
                     virNetworkObjPtr network)
 {
-    char **argv;
+    const char **argv;
     int ret, i;
 
     if (network->def->ipAddress == NULL) {

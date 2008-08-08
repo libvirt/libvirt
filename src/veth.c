@@ -104,7 +104,7 @@ int vethCreate(char* veth1, int veth1MaxLen,
     }
 
     DEBUG("veth1: %s veth2: %s", veth1, veth2);
-    rc = virRun(NULL, (char**)argv, &cmdResult);
+    rc = virRun(NULL, argv, &cmdResult);
 
     if (0 == rc) {
        rc = cmdResult;
@@ -137,7 +137,7 @@ int vethDelete(const char *veth)
 
     DEBUG("veth: %s", veth);
 
-    rc = virRun(NULL, (char**)argv, &cmdResult);
+    rc = virRun(NULL, argv, &cmdResult);
 
     if (0 == rc) {
        rc = cmdResult;
@@ -172,7 +172,7 @@ int vethInterfaceUpOrDown(const char* veth, int upOrDown)
     else
         argv[2] = "up";
 
-    rc = virRun(NULL, (char**)argv, &cmdResult);
+    rc = virRun(NULL, argv, &cmdResult);
 
     if (0 == rc) {
        rc = cmdResult;
@@ -210,7 +210,7 @@ int moveInterfaceToNetNs(const char* interface, int pidInNs)
         goto error_out;
 
     argv[5] = pid;
-    rc = virRun(NULL, (char**)argv, &cmdResult);
+    rc = virRun(NULL, argv, &cmdResult);
     if (0 == rc)
         rc = cmdResult;
 

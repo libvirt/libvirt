@@ -1,3 +1,13 @@
+Fri Aug  8 16:41:24 BST 2008 Daniel Berrange <berrange@redhat.com>
+
+	* src/iptables.c, src/lxc_driver.c, src/openvz_driver.c,
+	src/qemu_conf.c, src/qemu_conf.h, src/qemu_driver.c,
+	src/storage_backend.c, src/storage_backend_disk.c,
+	src/storage_backend_fs.c, src/storage_backend_iscsi.c,
+	src/storage_backend_logical.c, src/util.c, src/util.h,
+	src/veth.c, tests/qemuxml2argvtest.c: Fix const-correctness
+	of virRun and virExec, and remove unneccessary casts in callers
+
 Fri Aug  8 16:53:24 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/domain_conf.c src/domain_conf.h src/qemu_conf.c

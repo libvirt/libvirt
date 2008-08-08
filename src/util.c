@@ -102,8 +102,8 @@ static int virSetNonBlock(int fd) {
 
 static int
 _virExec(virConnectPtr conn,
-          char **argv,
-          int *retpid, int infd, int *outfd, int *errfd, int non_block) {
+         const char *const*argv,
+         int *retpid, int infd, int *outfd, int *errfd, int non_block) {
     int pid, null;
     int pipeout[2] = {-1,-1};
     int pipeerr[2] = {-1,-1};
@@ -185,7 +185,7 @@ _virExec(virConnectPtr conn,
     if (pipeerr[1] > 0)
         close(pipeerr[1]);
 
-    execvp(argv[0], argv);
+    execvp(argv[0], (char **) argv);
 
     _exit(1);
 
@@ -207,16 +207,16 @@ _virExec(virConnectPtr conn,
 
 int
 virExec(virConnectPtr conn,
-          char **argv,
-          int *retpid, int infd, int *outfd, int *errfd) {
+        const char *const*argv,
+        int *retpid, int infd, int *outfd, int *errfd) {
 
     return(_virExec(conn, argv, retpid, infd, outfd, errfd, 0));
 }
 
 int
 virExecNonBlock(virConnectPtr conn,
-          char **argv,
-          int *retpid, int infd, int *outfd, int *errfd) {
+                const char *const*argv,
+                int *retpid, int infd, int *outfd, int *errfd) {
 
     return(_virExec(conn, argv, retpid, infd, outfd, errfd, 1));
 }
@@ -238,7 +238,7 @@ virExecNonBlock(virConnectPtr conn,
  */
 int
 virRun(virConnectPtr conn,
-       char **argv,
+       const char *const*argv,
        int *status) {
     int childpid, exitstatus, ret;
 

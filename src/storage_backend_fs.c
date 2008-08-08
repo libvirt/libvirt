@@ -571,7 +571,7 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
     }
     mntargv[source_index] = src;
 
-    if (virRun(conn, (char**)mntargv, NULL) < 0) {
+    if (virRun(conn, mntargv, NULL) < 0) {
         VIR_FREE(src);
         return -1;
     }
@@ -625,7 +625,7 @@ virStorageBackendFileSystemUnmount(virConnectPtr conn,
     mntargv[1] = pool->def->target.path;
     mntargv[2] = NULL;
 
-    if (virRun(conn, (char**)mntargv, NULL) < 0) {
+    if (virRun(conn, mntargv, NULL) < 0) {
         return -1;
     }
     return 0;
@@ -940,7 +940,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         imgargv[5] = size;
         imgargv[6] = NULL;
 
-        if (virRun(conn, (char **)imgargv, NULL) < 0) {
+        if (virRun(conn, imgargv, NULL) < 0) {
             unlink(vol->target.path);
             return -1;
         }
@@ -975,7 +975,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         imgargv[2] = vol->target.path;
         imgargv[3] = NULL;
 
-        if (virRun(conn, (char **)imgargv, NULL) < 0) {
+        if (virRun(conn, imgargv, NULL) < 0) {
             unlink(vol->target.path);
             return -1;
         }

@@ -403,7 +403,7 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
 
 
     /* Run the program and capture its output */
-    if (virExec(conn, (char**)prog, &child, -1, &fd, NULL) < 0) {
+    if (virExec(conn, prog, &child, -1, &fd, NULL) < 0) {
         goto cleanup;
     }
 
@@ -537,7 +537,7 @@ virStorageBackendRunProgNul(virConnectPtr conn,
         v[i] = NULL;
 
     /* Run the program and capture its output */
-    if (virExec(conn, (char**)prog, &child, -1, &fd, NULL) < 0) {
+    if (virExec(conn, prog, &child, -1, &fd, NULL) < 0) {
         goto cleanup;
     }
 

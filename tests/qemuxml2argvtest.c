@@ -26,8 +26,8 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd, int extra
     char argvData[MAX_FILE];
     char *expectargv = &(argvData[0]);
     char *actualargv = NULL;
-    char **argv = NULL;
-    char **tmp = NULL;
+    const char **argv = NULL;
+    const char **tmp = NULL;
     int ret = -1, len, flags;
     virDomainDefPtr vmdef = NULL;
     virDomainObj vm;
@@ -81,7 +81,7 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd, int extra
     if (argv) {
         tmp = argv;
         while (*tmp) {
-            free(*tmp);
+            free(*(char**)tmp);
             tmp++;
         }
         free(argv);

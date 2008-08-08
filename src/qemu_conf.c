@@ -712,7 +712,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                           struct qemud_driver *driver,
                           virDomainObjPtr vm,
                           int qemuCmdFlags,
-                          char ***retargv,
+                          const char ***retargv,
                           int **tapfds,
                           int *ntapfds,
                           const char *migrateFrom) {
@@ -730,7 +730,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     struct utsname ut;
     int disableKQEMU = 0;
     int qargc = 0, qarga = 0;
-    char **qargv = NULL;
+    const char **qargv = NULL;
 
     uname(&ut);
 
@@ -777,7 +777,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     do {                                                                \
         ADD_ARG_LIT("-usbdevice");                                      \
         ADD_ARG_SPACE;                                                  \
-        if ((asprintf(&qargv[qargc++], "disk:%s", thisarg)) == -1) {    \
+        if ((asprintf((char **)&(qargv[qargc++]), "disk:%s", thisarg)) == -1) {    \
             qargv[qargc-1] = NULL;                                      \
             goto no_memory;                                             \
         }                                                               \

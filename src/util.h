@@ -27,11 +27,11 @@
 #include "util-lib.h"
 #include "verify.h"
 
-int virExec(virConnectPtr conn, char **argv, int *retpid,
+int virExec(virConnectPtr conn, const char *const*argv, int *retpid,
             int infd, int *outfd, int *errfd);
-int virExecNonBlock(virConnectPtr conn, char **argv, int *retpid,
+int virExecNonBlock(virConnectPtr conn, const char *const*argv, int *retpid,
                     int infd, int *outfd, int *errfd);
-int virRun(virConnectPtr conn, char **argv, int *status);
+int virRun(virConnectPtr conn, const char *const*argv, int *status);
 
 int __virFileReadAll(const char *path,
                      int maxlen,

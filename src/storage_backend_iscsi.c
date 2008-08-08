@@ -158,7 +158,7 @@ virStorageBackendISCSIConnection(virConnectPtr conn,
         "--targetname", pool->def->source.devices[0].path, action, NULL
     };
 
-    if (virRun(conn, (char **)cmdargv, NULL) < 0)
+    if (virRun(conn, cmdargv, NULL) < 0)
         return -1;
 
     return 0;
@@ -507,7 +507,7 @@ virStorageBackendISCSIRescanLUNs(virConnectPtr conn,
         ISCSIADM, "--mode", "session", "-r", session, "-R", NULL,
     };
 
-    if (virRun(conn, (char **)cmdargv, NULL) < 0)
+    if (virRun(conn, cmdargv, NULL) < 0)
         return -1;
 
     return 0;
@@ -524,7 +524,7 @@ virStorageBackendISCSILogin(virConnectPtr conn,
         "--portal", portal, NULL
     };
 
-    if (virRun(conn, (char **)cmdsendtarget, NULL) < 0)
+    if (virRun(conn, cmdsendtarget, NULL) < 0)
         return -1;
 
     return virStorageBackendISCSIConnection(conn, pool, portal, "--login");

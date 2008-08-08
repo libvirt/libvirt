@@ -1288,7 +1288,7 @@ static int lxcCheckNetNsSupport(void)
     int user_netns = 0;
     int kern_netns = 0;
 
-    if (virRun(NULL, (char **)argv, &ip_rc) == 0)
+    if (virRun(NULL, argv, &ip_rc) == 0)
         user_netns = WIFEXITED(ip_rc) && (WEXITSTATUS(ip_rc) != 255);
 
     if (lxcCheckContainerSupport(CLONE_NEWNET) == 0)

@@ -57,7 +57,7 @@ enum {
 typedef struct
 {
     char  *rule;
-    char **argv;
+    const char **argv;
     int    command_idx;
 } iptRule;
 
@@ -91,7 +91,7 @@ notifyRulesUpdated(const char *table,
                    const char *path)
 {
     char arg[PATH_MAX];
-    char *argv[4];
+    const char *argv[4];
 
     snprintf(arg, sizeof(arg), "--custom-rules=ipv4:%s:%s", table, path);
 
@@ -278,7 +278,7 @@ iptRuleFree(iptRule *rule)
 static int
 iptRulesAppend(iptRules *rules,
                char *rule,
-               char **argv,
+               const char **argv,
                int command_idx)
 {
     if (VIR_REALLOC_N(rules->rules, rules->nrules+1) < 0) {
@@ -385,7 +385,7 @@ iptRulesNew(const char *table,
 }
 
 static char *
-argvToString(char **argv)
+argvToString(const char *const *argv)
 {
     int len, i;
     char *ret, *p;
@@ -415,7 +415,7 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
 {
     va_list args;
     int retval = ENOMEM;
-    char **argv;
+    const char **argv;
     char *rule = NULL;
     const char *s;
     int n, command_idx;
@@ -571,7 +571,7 @@ iptRulesReload(iptRules *rules)
 
     for (i = 0; i < rules->nrules; i++) {
         iptRule *rule = &rules->rules[i];
-        char *orig;
+        const char *orig;
 
         orig = rule->argv[rule->command_idx];
         rule->argv[rule->command_idx] = (char *) "--delete";

@@ -95,7 +95,7 @@ int         qemudBuildCommandLine       (virConnectPtr conn,
                                          struct qemud_driver *driver,
                                          virDomainObjPtr dom,
                                          int qemuCmdFlags,
-                                         char ***argv,
+                                         const char ***argv,
                                          int **tapfds,
                                          int *ntapfds,
                                          const char *migrateFrom);
