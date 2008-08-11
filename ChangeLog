@@ -1,3 +1,12 @@
+Fri Aug 11 14:29:02 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	tests: append a newline to expected-output files lacking NL-at-EOF
+	* tests/qemuxml2argvtest.c (testCompareXMLToArgvFiles): Adjust the
+	code that creates "actual" output, so that it too produces a
+	newline-terminated buffer.
+	* tests/qemuxml2argvdata/*.args: Append a newline to each, via:
+	for i in $(find|grep '\.args$'); do echo >> $i;done
+
 Fri Aug  8 16:41:24 BST 2008 Daniel Berrange <berrange@redhat.com>
 
 	* src/iptables.c, src/lxc_driver.c, src/openvz_driver.c,

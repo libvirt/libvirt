@@ -53,7 +53,7 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd, int extra
         goto fail;
 
     tmp = argv;
-    len = 0;
+    len = 1; /* for trailing newline */
     while (*tmp) {
         len += strlen(*tmp) + 1;
         tmp++;
@@ -68,6 +68,7 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd, int extra
         strcat(actualargv, *tmp);
         tmp++;
     }
+    strcat(actualargv, "\n");
 
     if (STRNEQ(expectargv, actualargv)) {
         virtTestDifference(stderr, expectargv, actualargv);
