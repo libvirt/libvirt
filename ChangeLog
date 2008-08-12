@@ -1,3 +1,7 @@
+Tue Aug 12 10:04:33 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* po/*: regeneration of pot file, updates of .po
+
 Tue Aug 12 09:27:03 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/formatdomain.html docs/formatdomain.html.in: documentation
