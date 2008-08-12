@@ -397,106 +397,22 @@ int virFileHasSuffix(const char *str,
     return STREQ(str + len - suffixlen, suffix);
 }
 
-#ifndef __MINGW32__
+#define SAME_INODE(Stat_buf_1, Stat_buf_2) \
+  ((Stat_buf_1).st_ino == (Stat_buf_2).st_ino \
+   && (Stat_buf_1).st_dev == (Stat_buf_2).st_dev)
 
+/* Return nonzero if checkLink and checkDest
+   refer to the same file.  Otherwise, return 0.  */
 int virFileLinkPointsTo(const char *checkLink,
                         const char *checkDest)
 {
-    char dest[PATH_MAX];
-    char real[PATH_MAX];
-    char checkReal[PATH_MAX];
-    int n;
+    struct stat src_sb;
+    struct stat dest_sb;
 
-    /* read the link destination */
-    if ((n = readlink(checkLink, dest, PATH_MAX)) < 0) {
-        switch (errno) {
-        case ENOENT:
-        case ENOTDIR:
-            return 0;
-
-        case EINVAL:
-            virLog("File '%s' is not a symlink\n",
-                   checkLink);
-            return 0;
-
-        }
-        virLog("Failed to read symlink '%s': %s\n",
-               checkLink, strerror(errno));
-        return 0;
-    } else if (n >= PATH_MAX) {
-        virLog("Symlink '%s' contents too long to fit in buffer\n",
-               checkLink);
-        return 0;
-    }
-
-    dest[n] = '\0';
-
-    /* make absolute */
-    if (dest[0] != '/') {
-        char dir[PATH_MAX];
-        char tmp[PATH_MAX];
-        char *p;
-
-        strncpy(dir, checkLink, PATH_MAX);
-        dir[PATH_MAX-1] = '\0';
-
-        if (!(p = strrchr(dir, '/'))) {
-            virLog("Symlink path '%s' is not absolute\n", checkLink);
-            return 0;
-        }
-
-        if (p == dir) /* handle unlikely root dir case */
-            p++;
-
-        *p = '\0';
-
-        if (virFileBuildPath(dir, dest, NULL, tmp, PATH_MAX) < 0) {
-            virLog("Path '%s/%s' is too long\n", dir, dest);
-            return 0;
-        }
-
-        strncpy(dest, tmp, PATH_MAX);
-        dest[PATH_MAX-1] = '\0';
-    }
-
-    /* canonicalize both paths */
-    if (!realpath(dest, real)) {
-        virLog("Failed to expand path '%s' :%s\n", dest, strerror(errno));
-        strncpy(real, dest, PATH_MAX);
-        real[PATH_MAX-1] = '\0';
-    }
-
-    if (!realpath(checkDest, checkReal)) {
-        virLog("Failed to expand path '%s' :%s\n", checkDest, strerror(errno));
-        strncpy(checkReal, checkDest, PATH_MAX);
-        checkReal[PATH_MAX-1] = '\0';
-    }
-
-    /* compare */
-    if (STRNEQ(checkReal, real)) {
-        virLog("Link '%s' does not point to '%s', ignoring\n",
-               checkLink, checkReal);
-        return 0;
-    }
-
-    return 1;
+    return (stat (checkLink, &src_sb) == 0
+            && stat (checkDest, &dest_sb) == 0
+            && SAME_INODE (src_sb, dest_sb));
 }
-
-#else /* !__MINGW32__ */
-
-/* Gnulib has an implementation of readlink which could be used
- * to implement this, but it requires LGPLv3.
- */
-
-int
-virFileLinkPointsTo (const char *checkLink ATTRIBUTE_UNUSED,
-                     const char *checkDest ATTRIBUTE_UNUSED)
-{
-    virLog (_("%s: not implemented\n"), __FUNCTION__);
-    return 0;
-}
-
-#endif /*! __MINGW32__ */
 
 int virFileExists(const char *path)
 {

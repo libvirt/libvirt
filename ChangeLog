@@ -1,3 +1,9 @@
+Tue Aug 12 19:37:23 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	rewrite virFileLinkPointsTo
+	* src/util.c (SAME_INODE): Define.
+	(virFileLinkPointsTo): Rewrite to be more portable and more efficient.
+
 Tue Aug 12 13:28:09 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/storage_backend_disk.c: make sure parted doesn't ask
@@ -32,7 +38,7 @@ Tue Aug 12 09:27:03 CEST 2008 Daniel Veillard <veillard@redhat.com>
 	* docs/formatdomain.html docs/formatdomain.html.in: documentation
 	  for the USB format option by Guido Günther
 
-Fri Aug 11 14:29:02 CEST 2008 Jim Meyering <meyering@redhat.com>
+Mon Aug 11 14:29:02 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	tests: append a newline to expected-output files lacking NL-at-EOF
 	* tests/qemuxml2argvtest.c (testCompareXMLToArgvFiles): Adjust the
