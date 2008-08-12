@@ -406,6 +406,7 @@ virStorageBackendDiskBuildPool(virConnectPtr conn,
         PARTED,
         pool->def->source.devices[0].path,
         "mklabel",
+        "--script",
         virStorageBackendDiskPoolFormatToString(conn, pool->def->source.format),
         NULL,
     };

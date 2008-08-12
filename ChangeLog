@@ -1,3 +1,8 @@
+Tue Aug 12 13:28:09 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/storage_backend_disk.c: make sure parted doesn't ask
+	  confirmation,  patch by Cole Robinson
+
 Tue Aug 12 13:20:07 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/storage.html[.in] src/storage_backend_disk.c: patch from
