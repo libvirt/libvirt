@@ -636,7 +636,7 @@ static int qemudWaitForMonitor(virConnectPtr conn,
                                virDomainObjPtr vm) {
     char buf[1024]; /* Plenty of space to get startup greeting */
     int ret = qemudReadMonitorOutput(conn,
-                                     driver, vm, vm->stderr,
+                                     driver, vm, vm->stderr_fd,
                                      buf, sizeof(buf),
                                      qemudFindCharDevicePTYs,
                                      "console");
@@ -950,7 +950,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                  errno, strerror(errno));
 
     ret = virExecNonBlock(conn, argv, &vm->pid,
-                          vm->stdin, &vm->stdout, &vm->stderr);
+                          vm->stdin_fd, &vm->stdout_fd, &vm->stderr_fd);
     if (ret == 0) {
         vm->def->id = driver->nextvmid++;
         vm->state = migrateFrom ? VIR_DOMAIN_PAUSED : VIR_DOMAIN_RUNNING;
@@ -968,11 +968,11 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     }
 
     if (ret == 0) {
-        if ((virEventAddHandle(vm->stdout,
+        if ((virEventAddHandle(vm->stdout_fd,
                                POLLIN | POLLERR | POLLHUP,
                                qemudDispatchVMEvent,
                                driver) < 0) ||
-            (virEventAddHandle(vm->stderr,
+            (virEventAddHandle(vm->stderr_fd,
                                POLLIN | POLLERR | POLLHUP,
                                qemudDispatchVMEvent,
                                driver) < 0) ||
@@ -1025,22 +1025,22 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     kill(vm->pid, SIGTERM);
 
-    qemudVMData(driver, vm, vm->stdout);
-    qemudVMData(driver, vm, vm->stderr);
+    qemudVMData(driver, vm, vm->stdout_fd);
+    qemudVMData(driver, vm, vm->stderr_fd);
 
-    virEventRemoveHandle(vm->stdout);
-    virEventRemoveHandle(vm->stderr);
+    virEventRemoveHandle(vm->stdout_fd);
+    virEventRemoveHandle(vm->stderr_fd);
 
     if (close(vm->logfile) < 0)
         qemudLog(QEMUD_WARN, _("Unable to close logfile %d: %s\n"),
                  errno, strerror(errno));
-    close(vm->stdout);
-    close(vm->stderr);
+    close(vm->stdout_fd);
+    close(vm->stderr_fd);
     if (vm->monitor != -1)
         close(vm->monitor);
     vm->logfile = -1;
-    vm->stdout = -1;
-    vm->stderr = -1;
+    vm->stdout_fd = -1;
+    vm->stderr_fd = -1;
     vm->monitor = -1;
 
     if (waitpid(vm->pid, NULL, WNOHANG) != vm->pid) {
@@ -1613,8 +1613,8 @@ static void qemudDispatchVMEvent(int fd, int events, void *opaque) {
 
     while (vm) {
         if (virDomainIsActive(vm) &&
-            (vm->stdout == fd ||
-             vm->stderr == fd))
+            (vm->stdout_fd == fd ||
+             vm->stderr_fd == fd))
             break;
 
         vm = vm->next;
@@ -2754,10 +2754,10 @@ static int qemudDomainRestore(virConnectPtr conn,
     }
 
     /* Set the migration source and start it up. */
-    vm->stdin = fd;
+    vm->stdin_fd = fd;
     ret = qemudStartVMDaemon(conn, driver, vm, "stdio");
     close(fd);
-    vm->stdin = -1;
+    vm->stdin_fd = -1;
     if (ret < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("failed to start VM"));

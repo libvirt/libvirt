@@ -444,9 +444,9 @@ struct _virDomainDef {
 typedef struct _virDomainObj virDomainObj;
 typedef virDomainObj *virDomainObjPtr;
 struct _virDomainObj {
-    int stdin;
-    int stdout;
-    int stderr;
+    int stdin_fd;
+    int stdout_fd;
+    int stderr_fd;
     int monitor;
     int logfile;
     int pid;
