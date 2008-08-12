@@ -1,3 +1,8 @@
+Tue Aug 12 17:20:36 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
+
+	* src/domain.conf.c src/network_conf.c src/util.c src/virsh.c
+	  tests/testutilsxen.c: fix compilation for MinGW
+
 Tue Aug 12 10:09:23 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* python/generator.py: patch from Cole Robinson trying to fix

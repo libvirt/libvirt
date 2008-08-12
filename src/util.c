@@ -262,7 +262,7 @@ virRun(virConnectPtr conn,
 
 int
 virExec(virConnectPtr conn,
-        char **argv ATTRIBUTE_UNUSED,
+        const char *const*argv ATTRIBUTE_UNUSED,
         int *retpid ATTRIBUTE_UNUSED,
         int infd ATTRIBUTE_UNUSED,
         int *outfd ATTRIBUTE_UNUSED,
@@ -274,7 +274,7 @@ virExec(virConnectPtr conn,
 
 int
 virExecNonBlock(virConnectPtr conn,
-                char **argv ATTRIBUTE_UNUSED,
+                const char *const*argv ATTRIBUTE_UNUSED,
                 int *retpid ATTRIBUTE_UNUSED,
                 int infd ATTRIBUTE_UNUSED,
                 int *outfd ATTRIBUTE_UNUSED,

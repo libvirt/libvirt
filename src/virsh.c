@@ -80,6 +80,9 @@ static char *progname;
 #define LVL_WARNING   "WARNING"
 #define LVL_ERROR     "ERROR"
 
+#ifndef WEXITSTATUS
+# define WEXITSTATUS(x) ((x) & 0xff)
+#endif
 /**
  * vshErrorLevel:
  *

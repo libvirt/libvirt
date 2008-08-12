@@ -1,5 +1,6 @@
 #include <config.h>
 
+#ifdef WITH_XEN
 #include <sys/utsname.h>
 #include <stdlib.h>
 
@@ -51,3 +52,4 @@ cleanup:
     virCapabilitiesFree(caps);
     return NULL;
 }
+#endif
