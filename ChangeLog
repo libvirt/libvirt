@@ -1,3 +1,8 @@
+Tue Aug 12 09:27:03 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/formatdomain.html docs/formatdomain.html.in: documentation
+	  for the USB format option by Guido Günther
+
 Fri Aug 11 14:29:02 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	tests: append a newline to expected-output files lacking NL-at-EOF
