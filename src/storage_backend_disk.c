@@ -29,7 +29,7 @@
 #include "memory.h"
 
 enum {
-    VIR_STORAGE_POOL_DISK_DOS = 0,
+    VIR_STORAGE_POOL_DISK_MSDOS = 0,
     VIR_STORAGE_POOL_DISK_DVH,
     VIR_STORAGE_POOL_DISK_GPT,
     VIR_STORAGE_POOL_DISK_MAC,
@@ -64,10 +64,10 @@ static int
 virStorageBackendDiskPoolFormatFromString(virConnectPtr conn,
                                           const char *format) {
     if (format == NULL)
-        return VIR_STORAGE_POOL_DISK_DOS;
+        return VIR_STORAGE_POOL_DISK_MSDOS;
 
-    if (STREQ(format, "dos"))
-        return VIR_STORAGE_POOL_DISK_DOS;
+    if (STREQ(format, "msdos"))
+        return VIR_STORAGE_POOL_DISK_MSDOS;
     if (STREQ(format, "dvh"))
         return VIR_STORAGE_POOL_DISK_DVH;
     if (STREQ(format, "gpt"))
@@ -90,8 +90,8 @@ static const char *
 virStorageBackendDiskPoolFormatToString(virConnectPtr conn,
                                         int format) {
     switch (format) {
-    case VIR_STORAGE_POOL_DISK_DOS:
-        return "dos";
+    case VIR_STORAGE_POOL_DISK_MSDOS:
+        return "msdos";
     case VIR_STORAGE_POOL_DISK_DVH:
         return "dvh";
     case VIR_STORAGE_POOL_DISK_GPT:

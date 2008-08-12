@@ -1,3 +1,8 @@
+Tue Aug 12 13:20:07 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/storage.html[.in] src/storage_backend_disk.c: patch from
+	  Cole Robinson to rename the disk type from 'dos' to 'msdos'
+
 Tue Aug 12 17:30:50 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
 
 	* src/domain_conf.h src/qemu_driver.c: name changing of
