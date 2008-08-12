@@ -1,3 +1,8 @@
+Tue Aug 12 10:09:23 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* python/generator.py: patch from Cole Robinson trying to fix
+	  problem of connection lookup when creating storage instances
+
 Tue Aug 12 10:04:33 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* po/*: regeneration of pot file, updates of .po

@@ -962,8 +962,12 @@ def buildWrappers():
 		    list = reference_keepers[classname]
 		    for ref in list:
 		        classes.write("        self.%s = None\n" % ref[1])
-                if classname in [ "virDomain", "virNetwork", "virStoragePool", "virStorageVol" ]:
+                if classname in [ "virDomain", "virNetwork" ]:
                     classes.write("        self._conn = conn\n")
+                elif classname in [ "virStorageVol", "virStoragePool" ]:
+                    classes.write("        self._conn = conn\n" + \
+                                  "        if not isinstance(conn, virConnect):\n" + \
+                                  "            self._conn = conn._conn\n")
 		classes.write("        if _obj != None:self._o = _obj;return\n")
 		classes.write("        self._o = None\n\n");
 	    destruct=None
