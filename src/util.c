@@ -37,6 +37,9 @@
 #include <sys/wait.h>
 #endif
 #include <string.h>
+#if HAVE_TERMIOS_H
+#include <termios.h>
+#endif
 #include "c-ctype.h"
 
 #ifdef HAVE_PATHS_H
@@ -471,6 +474,169 @@ int virFileBuildPath(const char *dir,
         strcat(buf, ext);
     return 0;
 }
+
+
+#ifdef __linux__
+int virFileOpenTty(int *ttymaster,
+                   char **ttyName,
+                   int rawmode)
+{
+    int rc = -1;
+
+    if ((*ttymaster = posix_openpt(O_RDWR|O_NOCTTY|O_NONBLOCK)) < 0)
+        goto cleanup;
+
+    if (unlockpt(*ttymaster) < 0)
+        goto cleanup;
+
+    if (grantpt(*ttymaster) < 0)
+        goto cleanup;
+
+    if (rawmode) {
+        struct termios ttyAttr;
+        if (tcgetattr(*ttymaster, &ttyAttr) < 0)
+            goto cleanup;
+
+        cfmakeraw(&ttyAttr);
+
+        if (tcsetattr(*ttymaster, TCSADRAIN, &ttyAttr) < 0)
+            goto cleanup;
+    }
+
+    if (ttyName) {
+        char tempTtyName[PATH_MAX];
+        if (ptsname_r(*ttymaster, tempTtyName, sizeof(tempTtyName)) < 0)
+            goto cleanup;
+
+        if ((*ttyName = strdup(tempTtyName)) == NULL) {
+            errno = ENOMEM;
+            goto cleanup;
+        }
+    }
+
+    rc = 0;
+
+cleanup:
+    if (rc != 0 &&
+        *ttymaster != -1) {
+        close(*ttymaster);
+    }
+
+    return rc;
+
+}
+#else
+int virFileOpenTty(int *ttymaster ATTRIBUTE_UNUSED,
+                   char **ttyName ATTRIBUTE_UNUSED,
+                   int rawmode ATTRIBUTE_UNUSED)
+{
+    return -1;
+}
+#endif
+
+
+int virFileWritePid(const char *dir,
+                    const char *name,
+                    pid_t pid)
+{
+    int rc;
+    int fd;
+    FILE *file = NULL;
+    char *pidfile = NULL;
+
+    if ((rc = virFileMakePath(dir)))
+        goto cleanup;
+
+    if (asprintf(&pidfile, "%s/%s.pid", dir, name) < 0) {
+        rc = ENOMEM;
+        goto cleanup;
+    }
+
+    if ((fd = open(pidfile,
+                   O_WRONLY | O_CREAT | O_TRUNC,
+                   S_IRUSR | S_IWUSR)) < 0) {
+        rc = errno;
+        goto cleanup;
+    }
+
+    if (!(file = fdopen(fd, "w"))) {
+        rc = errno;
+        close(fd);
+        goto cleanup;
+    }
+
+    if (fprintf(file, "%d", pid) < 0) {
+        rc = errno;
+        goto cleanup;
+    }
+
+    rc = 0;
+
+cleanup:
+    if (file &&
+        fclose(file) < 0) {
+        rc = errno;
+    }
+
+    VIR_FREE(pidfile);
+    return rc;
+}
+
+int virFileReadPid(const char *dir,
+                   const char *name,
+                   pid_t *pid)
+{
+    int rc;
+    FILE *file;
+    char *pidfile = NULL;
+    *pid = 0;
+    if (asprintf(&pidfile, "%s/%s.pid", dir, name) < 0) {
+        rc = ENOMEM;
+        goto cleanup;
+    }
+
+    if (!(file = fopen(pidfile, "r"))) {
+        rc = errno;
+        goto cleanup;
+    }
+
+    if (fscanf(file, "%d", pid) != 1) {
+        rc = EINVAL;
+        goto cleanup;
+    }
+
+    if (fclose(file) < 0) {
+        rc = errno;
+        goto cleanup;
+    }
+
+    rc = 0;
+
+ cleanup:
+    VIR_FREE(pidfile);
+    return rc;
+}
+
+int virFileDeletePid(const char *dir,
+                     const char *name)
+{
+    int rc = 0;
+    char *pidfile = NULL;
+
+    if (asprintf(&pidfile, "%s/%s.pid", dir, name) < 0) {
+        rc = errno;
+        goto cleanup;
+    }
+
+    if (unlink(pidfile) < 0 && errno != ENOENT)
+        rc = errno;
+
+cleanup:
+    VIR_FREE(pidfile);
+    return rc;
+}
+
+
 
 /* Like strtol, but produce an "int" result, and check more carefully.
    Return 0 upon success;  return -1 to indicate failure.

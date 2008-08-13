@@ -69,6 +69,8 @@ typedef char lxc_message_t;
 typedef struct __lxc_child_argv lxc_child_argv_t;
 struct __lxc_child_argv {
     lxc_vm_def_t *config;
+    unsigned int nveths;
+    char **veths;
     int monitor;
     char *ttyPath;
 };
@@ -171,8 +173,7 @@ error_out:
  *
  * Returns 0 on success or -1 in case of error
  */
-int lxcContainerSendContinue(virConnectPtr conn,
-                             int control)
+int lxcContainerSendContinue(int control)
 {
     int rc = -1;
     lxc_message_t msg = LXC_CONTINUE_MSG;
@@ -180,7 +181,7 @@ int lxcContainerSendContinue(virConnectPtr conn,
 
     writeCount = safewrite(control, &msg, sizeof(msg));
     if (writeCount != sizeof(msg)) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                  _("unable to send container continue message: %s"),
                  strerror(errno));
         goto error_out;
@@ -230,21 +231,22 @@ static int lxcContainerWaitForContinue(int control)
  *
  * Returns 0 on success or nonzero in case of error
  */
-static int lxcContainerEnableInterfaces(const lxc_vm_def_t *def)
+static int lxcContainerEnableInterfaces(unsigned int nveths,
+                                        char **veths)
 {
     int rc = 0;
-    const lxc_net_def_t *net;
+    unsigned int i;
 
-    for (net = def->nets; net; net = net->next) {
-        DEBUG("Enabling %s", net->containerVeth);
-        rc =  vethInterfaceUpOrDown(net->containerVeth, 1);
+    for (i = 0 ; i < nveths ; i++) {
+        DEBUG("Enabling %s", veths[i]);
+        rc =  vethInterfaceUpOrDown(veths[i], 1);
         if (0 != rc) {
             goto error_out;
         }
     }
 
     /* enable lo device only if there were other net devices */
-    if (def->nets)
+    if (veths)
         rc = vethInterfaceUpOrDown("lo", 1);
 
 error_out:
@@ -311,7 +313,7 @@ static int lxcContainerChild( void *data )
         return -1;
 
     /* enable interfaces */
-    if (lxcContainerEnableInterfaces(vmDef) < 0)
+    if (lxcContainerEnableInterfaces(argv->nveths, argv->veths) < 0)
         return -1;
 
     /* this function will only return if an error occured */
@@ -320,7 +322,6 @@ static int lxcContainerChild( void *data )
 
 /**
  * lxcContainerStart:
- * @conn: pointer to connection
  * @driver: pointer to driver structure
  * @vm: pointer to virtual machine structure
  *
@@ -328,8 +329,9 @@ static int lxcContainerChild( void *data )
  *
  * Returns PID of container on success or -1 in case of error
  */
-int lxcContainerStart(virConnectPtr conn,
-                      lxc_vm_def_t *def,
+int lxcContainerStart(lxc_vm_def_t *def,
+                      unsigned int nveths,
+                      char **veths,
                       int control,
                       char *ttyPath)
 {
@@ -337,12 +339,11 @@ int lxcContainerStart(virConnectPtr conn,
     int flags;
     int stacksize = getpagesize() * 4;
     char *stack, *stacktop;
-    lxc_child_argv_t args = { def, control, ttyPath };
+    lxc_child_argv_t args = { def, nveths, veths, control, ttyPath };
 
     /* allocate a stack for the container */
     if (VIR_ALLOC_N(stack, stacksize) < 0) {
-        lxcError(conn, NULL, VIR_ERR_NO_MEMORY,
-                 _("unable to allocate container stack"));
+        lxcError(NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
         return -1;
     }
     stacktop = stack + stacksize;
@@ -357,7 +358,7 @@ int lxcContainerStart(virConnectPtr conn,
     DEBUG("clone() returned, %d", pid);
 
     if (pid < 0) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                  _("clone() failed, %s"), strerror(errno));
         return -1;
     }

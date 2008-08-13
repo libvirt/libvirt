@@ -32,11 +32,11 @@ enum {
     LXC_CONTAINER_FEATURE_NET = (1 << 0),
 };
 
-int lxcContainerSendContinue(virConnectPtr conn,
-                             int control);
+int lxcContainerSendContinue(int control);
 
-int lxcContainerStart(virConnectPtr conn,
-                      lxc_vm_def_t *def,
+int lxcContainerStart(lxc_vm_def_t *def,
+                      unsigned int nveths,
+                      char **veths,
                       int control,
                       char *ttyPath);
 

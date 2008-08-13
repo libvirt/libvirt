@@ -833,25 +833,24 @@ static lxc_vm_t * lxcLoadConfig(lxc_driver_t *driver,
     strncpy(vm->configFileBase, file, PATH_MAX);
     vm->configFile[PATH_MAX-1] = '\0';
 
-    if (lxcLoadTtyPid(driver, vm) < 0) {
-        DEBUG0("failed to load tty pid");
-    }
-
     return vm;
 }
 
 int lxcLoadDriverConfig(lxc_driver_t *driver)
 {
     /* Set the container configuration directory */
-    driver->configDir = strdup(SYSCONF_DIR "/libvirt/lxc");
-    if (NULL == driver->configDir) {
-        lxcError(NULL, NULL, VIR_ERR_NO_MEMORY, "configDir");
-        return -1;
-    }
-
-    driver->stateDir = strdup(LOCAL_STATE_DIR "/run/libvirt/lxc");
+    if ((driver->configDir = strdup(SYSCONF_DIR "/libvirt/lxc")) == NULL)
+        goto no_memory;
+    if ((driver->stateDir = strdup(LOCAL_STATE_DIR "/run/libvirt/lxc")) == NULL)
+        goto no_memory;
+    if ((driver->logDir = strdup(LOCAL_STATE_DIR "/log/libvirt/lxc")) == NULL)
+        goto no_memory;
 
     return 0;
+
+no_memory:
+    lxcError(NULL, NULL, VIR_ERR_NO_MEMORY, "configDir");
+    return -1;
 }
 
 int lxcLoadContainerConfigFile(lxc_driver_t *driver,
@@ -1012,9 +1011,7 @@ void lxcFreeVMDef(lxc_vm_def_t *vmdef)
     curNet = vmdef->nets;
     while (curNet) {
         nextNet = curNet->next;
-        printf("Freeing %s:%s\n", curNet->parentVeth, curNet->containerVeth);
         VIR_FREE(curNet->parentVeth);
-        VIR_FREE(curNet->containerVeth);
         VIR_FREE(curNet->txName);
         VIR_FREE(curNet);
         curNet = nextNet;
@@ -1103,178 +1100,6 @@ int lxcDeleteConfig(virConnectPtr conn,
         return -1;
     }
 
-    return 0;
-}
-
-/**
- * lxcStoreTtyPid:
- * @driver: pointer to driver
- * @vm: Ptr to VM
- *
- * Stores the pid of the tty forward process contained in vm->pid
- * LOCAL_STATE_DIR/run/libvirt/lxc/{container_name}.pid
- *
- * Returns 0 on success or -1 in case of error
- */
-int lxcStoreTtyPid(const lxc_driver_t *driver, lxc_vm_t *vm)
-{
-    int rc = -1;
-    int fd;
-    FILE *file = NULL;
-
-    if (vm->ttyPidFile[0] == 0x00) {
-        if ((rc = virFileMakePath(driver->stateDir))) {
-            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("cannot create lxc state directory %s: %s"),
-                     driver->stateDir, strerror(rc));
-            goto error_out;
-        }
-
-        if (virFileBuildPath(driver->stateDir, vm->def->name, ".pid",
-                             vm->ttyPidFile, PATH_MAX) < 0) {
-            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("cannot construct tty pid file path"));
-            goto error_out;
-        }
-    }
-
-    if ((fd = open(vm->ttyPidFile,
-                   O_WRONLY | O_CREAT | O_TRUNC,
-                   S_IRUSR | S_IWUSR)) < 0) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("cannot create tty pid file %s: %s"),
-                 vm->ttyPidFile, strerror(errno));
-        goto error_out;
-    }
-
-    if (!(file = fdopen(fd, "w"))) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("cannot fdopen tty pid file %s: %s"),
-                 vm->ttyPidFile, strerror(errno));
-
-        if (close(fd) < 0) {
-            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("failed to close tty pid file %s: %s"),
-                     vm->ttyPidFile, strerror(errno));
-        }
-
-        goto error_out;
-    }
-
-    if (fprintf(file, "%d", vm->pid) < 0) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("cannot write tty pid file %s: %s"),
-                 vm->ttyPidFile, strerror(errno));
-
-        goto fclose_error_out;
-    }
-
-    rc = 0;
-
-fclose_error_out:
-    if (fclose(file) < 0) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("failed to close tty pid file %s: %s"),
-                 vm->ttyPidFile, strerror(errno));
-    }
-
-error_out:
-    return rc;
-}
-
-/**
- * lxcLoadTtyPid:
- * @driver: pointer to driver
- * @vm: Ptr to VM
- *
- * Loads the pid of the tty forward process from the pid file.
- * LOCAL_STATE_DIR/run/libvirt/lxc/{container_name}.pid
- *
- * Returns
- * > 0 - pid of tty process
- *   0 - no tty pid file
- *  -1 - error
- */
-int lxcLoadTtyPid(const lxc_driver_t *driver, lxc_vm_t *vm)
-{
-    int rc = -1;
-    FILE *file;
-
-    if (vm->ttyPidFile[0] == 0x00) {
-        if ((rc = virFileMakePath(driver->stateDir))) {
-            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("cannot create lxc state directory %s: %s"),
-                     driver->stateDir, strerror(rc));
-            goto cleanup;
-        }
-
-        if (virFileBuildPath(driver->stateDir, vm->def->name, ".pid",
-                             vm->ttyPidFile, PATH_MAX) < 0) {
-            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("cannot construct tty pid file path"));
-            goto cleanup;
-        }
-    }
-
-    if (!(file = fopen(vm->ttyPidFile, "r"))) {
-        if (ENOENT == errno) {
-            rc = 0;
-            goto cleanup;
-        }
-
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("cannot open tty pid file %s: %s"),
-                 vm->ttyPidFile, strerror(errno));
-        goto cleanup;
-    }
-
-    if (fscanf(file, "%d", &(vm->pid)) < 0) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("cannot read tty pid file %s: %s"),
-                 vm->ttyPidFile, strerror(errno));
-        goto cleanup;
-    }
-
-    if (fclose(file) < 0) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("failed to close tty pid file %s: %s"),
-                 vm->ttyPidFile, strerror(errno));
-        goto cleanup;
-    }
-
-    rc = vm->pid;
-
- cleanup:
-    return rc;
-}
-
-/**
- * lxcDeleteTtyPid:
- * @vm: Ptr to VM
- *
- * Unlinks the tty pid file for the vm
- * LOCAL_STATE_DIR/run/libvirt/lxc/{container_name}.pid
- *
- * Returns on 0 success or -1 in case of error
- */
-int lxcDeleteTtyPidFile(const lxc_vm_t *vm)
-{
-    if (vm->ttyPidFile[0] == 0x00) {
-        goto no_file;
-    }
-
-    if (unlink(vm->ttyPidFile) < 0) {
-        if (errno == ENOENT) {
-            goto no_file;
-        }
-
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("cannot remove ttyPidFile %s: %s"), vm->ttyPidFile,
-                 strerror(errno));
-        return -1;
-    }
-
-no_file:
     return 0;
 }
 

@@ -26,7 +26,15 @@
 
 #ifdef WITH_LXC
 
-int lxcControllerMain(int appPty, int contPty);
+#include "lxc_conf.h"
+
+int lxcControllerStart(const char *stateDir,
+                       lxc_vm_def_t *def,
+                       unsigned int nveths,
+                       char **veths,
+                       int monitor,
+                       int appPty,
+                       int logfd);
 
 #endif /* WITH_LXC */
 

@@ -58,6 +58,18 @@ int virFileBuildPath(const char *dir,
                      char *buf,
                      unsigned int buflen);
 
+int virFileOpenTty(int *ttymaster,
+                   char **ttyName,
+                   int rawmode);
+
+int virFileWritePid(const char *dir,
+                    const char *name,
+                    pid_t pid);
+int virFileReadPid(const char *dir,
+                   const char *name,
+                   pid_t *pid);
+int virFileDeletePid(const char *dir,
+                     const char *name);
 
 int __virStrToLong_i(char const *s,
                      char **end_ptr,

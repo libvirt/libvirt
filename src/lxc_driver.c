@@ -31,22 +31,23 @@
 #include <stdbool.h>
 #include <string.h>
 #include <sys/types.h>
-#include <termios.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <sys/poll.h>
 #include <unistd.h>
 #include <wait.h>
 
+#include "internal.h"
 #include "lxc_conf.h"
 #include "lxc_container.h"
 #include "lxc_driver.h"
 #include "lxc_controller.h"
-#include "driver.h"
-#include "internal.h"
 #include "memory.h"
 #include "util.h"
-#include "memory.h"
 #include "bridge.h"
-#include "qemu_conf.h"
 #include "veth.h"
+#include "event.h"
+
 
 /* debug macros */
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
@@ -284,8 +285,6 @@ static int lxcDomainUndefine(virDomainPtr dom)
 
     vm->configFile[0] = '\0';
 
-    lxcDeleteTtyPidFile(vm);
-
     lxcRemoveInactiveVM(driver, vm);
 
     return 0;
@@ -339,10 +338,60 @@ static char *lxcDomainDumpXML(virDomainPtr dom,
     return lxcGenerateXML(dom->conn, driver, vm, vm->def);
 }
 
+
+/**
+ * lxcVmCleanup:
+ * @vm: Ptr to VM to clean up
+ *
+ * waitpid() on the container process.  kill and wait the tty process
+ * This is called by both lxcDomainDestroy and lxcSigHandler when a
+ * container exits.
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int lxcVMCleanup(virConnectPtr conn,
+                        lxc_driver_t *driver,
+                        lxc_vm_t * vm)
+{
+    int rc = -1;
+    int waitRc;
+    int childStatus = -1;
+
+    while (((waitRc = waitpid(vm->pid, &childStatus, 0)) == -1) &&
+           errno == EINTR)
+        ; /* empty */
+
+    if ((waitRc != vm->pid) && (errno != ECHILD)) {
+        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("waitpid failed to wait for container %d: %d %s"),
+                 vm->pid, waitRc, strerror(errno));
+    }
+
+    rc = 0;
+
+    if (WIFEXITED(childStatus)) {
+        rc = WEXITSTATUS(childStatus);
+        DEBUG("container exited with rc: %d", rc);
+    }
+
+    virEventRemoveHandle(vm->monitor);
+    close(vm->monitor);
+
+    virFileDeletePid(driver->stateDir, vm->def->name);
+
+    vm->state = VIR_DOMAIN_SHUTOFF;
+    vm->pid = -1;
+    vm->def->id = -1;
+    vm->monitor = -1;
+    driver->nactivevms--;
+    driver->ninactivevms++;
+
+    return rc;
+}
+
 /**
  * lxcSetupInterfaces:
- * @conn: pointer to connection
- * @vm: pointer to virtual machine structure
+ * @def: pointer to virtual machine structure
  *
  * Sets up the container interfaces by creating the veth device pairs and
  * attaching the parent end to the appropriate bridge.  The container end
@@ -351,24 +400,21 @@ static char *lxcDomainDumpXML(virDomainPtr dom,
  * Returns 0 on success or -1 in case of error
  */
 static int lxcSetupInterfaces(virConnectPtr conn,
-                              lxc_vm_t *vm)
+                              lxc_vm_def_t *def,
+                              unsigned int *nveths,
+                              char ***veths)
 {
     int rc = -1;
-    lxc_driver_t *driver = conn->privateData;
-    struct qemud_driver *networkDriver =
-        (struct qemud_driver *)(conn->networkPrivateData);
-    lxc_net_def_t *net = vm->def->nets;
-    char* bridge;
+    lxc_net_def_t *net;
+    char *bridge = NULL;
     char parentVeth[PATH_MAX] = "";
     char containerVeth[PATH_MAX] = "";
+    brControl *brctl = NULL;
 
-    if ((vm->def->nets != NULL) && (driver->have_netns == 0)) {
-        lxcError(conn, NULL, VIR_ERR_NO_SUPPORT,
-                 _("System lacks NETNS support"));
+    if (brInit(&brctl) != 0)
         return -1;
-    }
 
-    for (net = vm->def->nets; net; net = net->next) {
+    for (net = def->nets; net; net = net->next) {
         if (LXC_NET_NETWORK == net->type) {
             virNetworkPtr network = virNetworkLookupByName(conn, net->txName);
             if (!network) {
@@ -378,7 +424,6 @@ static int lxcSetupInterfaces(virConnectPtr conn,
             bridge = virNetworkGetBridgeName(network);
 
             virNetworkFree(network);
-
         } else {
             bridge = net->txName;
         }
@@ -394,9 +439,6 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         if (NULL != net->parentVeth) {
             strcpy(parentVeth, net->parentVeth);
         }
-        if (NULL != net->containerVeth) {
-            strcpy(containerVeth, net->containerVeth);
-        }
         DEBUG("parentVeth: %s, containerVeth: %s", parentVeth, containerVeth);
         if (0 != (rc = vethCreate(parentVeth, PATH_MAX, containerVeth, PATH_MAX))) {
             lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -406,24 +448,18 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         if (NULL == net->parentVeth) {
             net->parentVeth = strdup(parentVeth);
         }
-        if (NULL == net->containerVeth) {
-            net->containerVeth = strdup(containerVeth);
-        }
+        if (VIR_REALLOC_N(*veths, (*nveths)+1) < 0)
+            goto error_exit;
+        if (((*veths)[(*nveths)++] = strdup(containerVeth)) == NULL)
+            goto error_exit;
 
-        if ((NULL == net->parentVeth) || (NULL == net->containerVeth)) {
-            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+        if (NULL == net->parentVeth) {
+            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                      _("failed to allocate veth names"));
             goto error_exit;
         }
 
-        if (!(networkDriver->brctl) && (rc = brInit(&(networkDriver->brctl)))) {
-            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("cannot initialize bridge support: %s"),
-                     strerror(rc));
-            goto error_exit;
-        }
-
-        if (0 != (rc = brAddInterface(networkDriver->brctl, bridge, parentVeth))) {
+        if (0 != (rc = brAddInterface(brctl, bridge, parentVeth))) {
             lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
                      _("failed to add %s device to %s: %s"),
                      parentVeth,
@@ -433,7 +469,7 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         }
 
         if (0 != (rc = vethInterfaceUpOrDown(parentVeth, 1))) {
-            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                      _("failed to enable parent ns veth device: %d"), rc);
             goto error_exit;
         }
@@ -443,136 +479,144 @@ static int lxcSetupInterfaces(virConnectPtr conn,
     rc = 0;
 
 error_exit:
+    brShutdown(brctl);
     return rc;
 }
 
-/**
- * lxcMoveInterfacesToNetNs:
- * @conn: pointer to connection
- * @vm: pointer to virtual machine structure
- *
- * Starts a container process by calling clone() with the namespace flags
- *
- * Returns 0 on success or -1 in case of error
- */
-static int lxcMoveInterfacesToNetNs(virConnectPtr conn,
-                                    const lxc_vm_t *vm)
+static int lxcMonitorServer(virConnectPtr conn,
+                            lxc_driver_t * driver,
+                            lxc_vm_t *vm)
 {
-    int rc = -1;
-    lxc_net_def_t *net;
+    char *sockpath = NULL;
+    int fd;
+    struct sockaddr_un addr;
 
-    for (net = vm->def->nets; net; net = net->next) {
-        if (0 != moveInterfaceToNetNs(net->containerVeth, vm->def->id)) {
-            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("failed to move interface %s to ns %d"),
-                     net->containerVeth, vm->def->id);
-            goto error_exit;
-        }
+    if (asprintf(&sockpath, "%s/%s.sock",
+                 driver->stateDir, vm->def->name) < 0) {
+        lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
+        return -1;
     }
 
-    rc = 0;
-
-error_exit:
-    return rc;
-}
-
-/**
- * lxcCleanupInterfaces:
- * @conn: pointer to connection
- * @vm: pointer to virtual machine structure
- *
- * Cleans up the container interfaces by deleting the veth device pairs.
- *
- * Returns 0 on success or -1 in case of error
- */
-static int lxcCleanupInterfaces(const lxc_vm_t *vm)
-{
-    int rc = -1;
-    lxc_net_def_t *net;
-
-    for (net = vm->def->nets; net; net = net->next) {
-        if (0 != (rc = vethDelete(net->parentVeth))) {
-            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("failed to delete veth: %s"), net->parentVeth);
-            /* will continue to try to cleanup any other interfaces */
-        }
-    }
-
-    return 0;
-}
-
-
-/**
- * lxcOpenTty:
- * @conn: pointer to connection
- * @ttymaster: pointer to int.  On success, set to fd for master end
- * @ttyName: On success, will point to string slave end of tty.  Caller
- * must free when done (such as in lxcFreeVM).
- *
- * Opens and configures container tty.
- *
- * Returns 0 on success or -1 in case of error
- */
-static int lxcOpenTty(virConnectPtr conn,
-                      int *ttymaster,
-                      char **ttyName,
-                      int rawmode)
-{
-    int rc = -1;
-
-    *ttymaster = posix_openpt(O_RDWR|O_NOCTTY|O_NONBLOCK);
-    if (*ttymaster < 0) {
+    if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("posix_openpt failed: %s"), strerror(errno));
-        goto cleanup;
+                 _("failed to create server socket: %s"),
+                 strerror(errno));
+        goto error;
     }
 
-    if (unlockpt(*ttymaster) < 0) {
+    unlink(sockpath);
+    memset(&addr, 0, sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    strncpy(addr.sun_path, sockpath, sizeof(addr.sun_path));
+
+    if (bind(fd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("unlockpt failed: %s"), strerror(errno));
-        goto cleanup;
+                 _("failed to bind server socket: %s"),
+                 strerror(errno));
+        goto error;
+    }
+    if (listen(fd, 30 /* backlog */ ) < 0) {
+        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("failed to listen server socket: %s"),
+                 strerror(errno));
+        goto error;
+        return (-1);
     }
 
-    if (rawmode) {
-        struct termios ttyAttr;
-        if (tcgetattr(*ttymaster, &ttyAttr) < 0) {
+    VIR_FREE(sockpath);
+    return fd;
+
+error:
+    VIR_FREE(sockpath);
+    if (fd != -1)
+        close(fd);
+    return -1;
+}
+
+static int lxcMonitorClient(virConnectPtr conn,
+                            lxc_driver_t * driver,
+                            lxc_vm_t *vm)
+{
+    char *sockpath = NULL;
+    int fd;
+    struct sockaddr_un addr;
+
+    if (asprintf(&sockpath, "%s/%s.sock",
+                 driver->stateDir, vm->def->name) < 0) {
+        lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
+        return -1;
+    }
+
+    if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
+        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("failed to create client socket: %s"),
+                 strerror(errno));
+        goto error;
+    }
+
+    memset(&addr, 0, sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    strncpy(addr.sun_path, sockpath, sizeof(addr.sun_path));
+
+    if (connect(fd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
+        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("failed to connect to client socket: %s"),
+                 strerror(errno));
+        goto error;
+    }
+
+    VIR_FREE(sockpath);
+    return fd;
+
+error:
+    VIR_FREE(sockpath);
+    if (fd != -1)
+        close(fd);
+    return -1;
+}
+
+
+static int lxcVmTerminate(virConnectPtr conn,
+                          lxc_driver_t *driver,
+                          lxc_vm_t *vm,
+                          int signum)
+{
+    if (signum == 0)
+        signum = SIGINT;
+
+    if (kill(vm->pid, signum) < 0) {
+        if (errno != ESRCH) {
             lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     "tcgetattr() failed: %s", strerror(errno));
-            goto cleanup;
-        }
-
-        cfmakeraw(&ttyAttr);
-
-        if (tcsetattr(*ttymaster, TCSADRAIN, &ttyAttr) < 0) {
-            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     "tcsetattr failed: %s", strerror(errno));
-            goto cleanup;
+                     _("failed to kill pid %d: %s"),
+                     vm->pid, strerror(errno));
+            return -1;
         }
     }
 
-    if (ttyName) {
-        char tempTtyName[PATH_MAX];
-        if (0 != ptsname_r(*ttymaster, tempTtyName, sizeof(tempTtyName))) {
-            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("ptsname_r failed: %s"), strerror(errno));
-            goto cleanup;
-        }
+    vm->state = VIR_DOMAIN_SHUTDOWN;
 
-        if ((*ttyName = strdup(tempTtyName)) == NULL) {
-            lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
-            goto cleanup;
-        }
+    return lxcVMCleanup(conn, driver, vm);
+}
+
+static void lxcMonitorEvent(int fd,
+                            int events ATTRIBUTE_UNUSED,
+                            void *data)
+{
+    lxc_driver_t *driver = data;
+    lxc_vm_t *vm = driver->vms;
+
+    while (vm) {
+        if (vm->monitor == fd)
+            break;
+        vm = vm->next;
+    }
+    if (!vm) {
+        virEventRemoveHandle(fd);
+        return;
     }
 
-    rc = 0;
-
-cleanup:
-    if (rc != 0 &&
-        *ttymaster != -1) {
-        close(*ttymaster);
-    }
-
-    return rc;
+    if (lxcVmTerminate(NULL, driver, vm, SIGINT) < 0)
+        virEventRemoveHandle(fd);
 }
 
 
@@ -591,80 +635,106 @@ static int lxcVmStart(virConnectPtr conn,
                       lxc_vm_t * vm)
 {
     int rc = -1;
-    int sockpair[2] = { -1, -1 };
-    int containerTty, parentTty;
-    char *containerTtyPath = NULL;
+    unsigned int i;
+    int monitor;
+    int parentTty;
+    char *logfile = NULL;
+    int logfd = -1;
+    unsigned int nveths = 0;
+    char **veths = NULL;
+
+    if (virFileMakePath(driver->logDir) < 0) {
+        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("cannot create log directory %s: %s"),
+                 driver->logDir, strerror(rc));
+        return -1;
+    }
+
+    if (asprintf(&logfile, "%s/%s.log",
+                 driver->logDir, vm->def->name) < 0) {
+        lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
+        return -1;
+    }
+
+    if ((monitor = lxcMonitorServer(conn, driver, vm)) < 0)
+        goto cleanup;
 
     /* open parent tty */
     VIR_FREE(vm->def->tty);
-    if (lxcOpenTty(conn, &parentTty, &vm->def->tty, 1) < 0) {
-        goto cleanup;
-    }
-
-    /* open container tty */
-    if (lxcOpenTty(conn, &containerTty, &containerTtyPath, 0) < 0) {
-        goto cleanup;
-    }
-
-    /* fork process to handle the tty io forwarding */
-    if ((vm->pid = fork()) < 0) {
+    if (virFileOpenTty(&parentTty, &vm->def->tty, 1) < 0) {
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("unable to fork tty forwarding process: %s"),
+                 _("failed to allocate tty: %s"),
                  strerror(errno));
         goto cleanup;
     }
 
-    if (vm->pid  == 0) {
-        /* child process calls forward routine */
-        lxcControllerMain(parentTty, containerTty);
-    }
-
-    if (lxcStoreTtyPid(driver, vm)) {
-        DEBUG0("unable to store tty pid");
-    }
-
-    close(parentTty);
-    close(containerTty);
-
-    if (0 != (rc = lxcSetupInterfaces(conn, vm))) {
+    if (lxcSetupInterfaces(conn, vm->def, &nveths, &veths) != 0)
         goto cleanup;
-    }
 
-    /* create a socket pair to send continue message to the container once */
-    /* we've completed the post clone configuration */
-    if (0 != socketpair(PF_UNIX, SOCK_STREAM, 0, sockpair)) {
+    if ((logfd = open(logfile, O_WRONLY | O_TRUNC | O_CREAT,
+             S_IRUSR|S_IWUSR)) < 0) {
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("sockpair failed: %s"), strerror(errno));
+                 _("failed to open %s: %s"), logfile,
+                 strerror(errno));
         goto cleanup;
     }
 
-    /* check this rc */
-
-    vm->def->id = lxcContainerStart(conn,
-                                    vm->def,
-                                    sockpair[1],
-                                    containerTtyPath);
-    if (vm->def->id == -1)
+    if (lxcControllerStart(driver->stateDir,
+                           vm->def, nveths, veths,
+                           monitor, parentTty, logfd) < 0)
         goto cleanup;
-    lxcSaveConfig(conn, driver, vm, vm->def);
+    /* Close the server side of the monitor, now owned
+     * by the controller process */
+    close(monitor);
+    monitor = -1;
 
-    rc = lxcMoveInterfacesToNetNs(conn, vm);
-    if (rc != 0)
-        goto cleanup;
-
-    rc = lxcContainerSendContinue(conn, sockpair[0]);
-    if (rc != 0)
+    /* Connect to the controller as a client *first* because
+     * this will block until the child has written their
+     * pid file out to disk */
+    if ((vm->monitor = lxcMonitorClient(conn, driver, vm)) < 0)
         goto cleanup;
 
+    /* And get its pid */
+    if ((rc = virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) != 0) {
+        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("Failed to read pid file %s/%s.pid: %s"),
+                 driver->stateDir, vm->def->name, strerror(rc));
+        rc = -1;
+        goto cleanup;
+    }
+
+    vm->def->id = vm->pid;
     vm->state = VIR_DOMAIN_RUNNING;
     driver->ninactivevms--;
     driver->nactivevms++;
 
-cleanup:
-    if (sockpair[0] != -1) close(sockpair[0]);
-    if (sockpair[1] != -1) close(sockpair[1]);
-    VIR_FREE(containerTtyPath);
+    if (virEventAddHandle(vm->monitor,
+                          POLLERR | POLLHUP,
+                          lxcMonitorEvent,
+                          driver) < 0) {
+        lxcVmTerminate(conn, driver, vm, 0);
+        goto cleanup;
+    }
 
+    rc = 0;
+
+cleanup:
+    for (i = 0 ; i < nveths ; i++) {
+        if (rc != 0)
+            vethDelete(veths[i]);
+        VIR_FREE(veths[i]);
+    }
+    if (monitor != -1)
+        close(monitor);
+    if (rc != 0 && vm->monitor != -1) {
+        close(vm->monitor);
+        vm->monitor = -1;
+    }
+    if (parentTty != -1)
+        close(parentTty);
+    if (logfd != -1)
+        close(logfd);
+    VIR_FREE(logfile);
     return rc;
 }
 
@@ -752,105 +822,18 @@ return_point:
  */
 static int lxcDomainShutdown(virDomainPtr dom)
 {
-    int rc = -1;
     lxc_driver_t *driver = (lxc_driver_t*)dom->conn->privateData;
     lxc_vm_t *vm = lxcFindVMByID(driver, dom->id);
 
     if (!vm) {
         lxcError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
                  _("no domain with id %d"), dom->id);
-        goto error_out;
+        return -1;
     }
 
-    if (0 > (kill(vm->def->id, SIGINT))) {
-        if (ESRCH != errno) {
-            lxcError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
-                     _("sending SIGTERM failed: %s"), strerror(errno));
-
-            goto error_out;
-        }
-    }
-
-    vm->state = VIR_DOMAIN_SHUTDOWN;
-
-    rc = 0;
-
-error_out:
-    return rc;
+    return lxcVmTerminate(dom->conn, driver, vm, 0);
 }
 
-/**
- * lxcVmCleanup:
- * @vm: Ptr to VM to clean up
- *
- * waitpid() on the container process.  kill and wait the tty process
- * This is called by boh lxcDomainDestroy and lxcSigHandler when a
- * container exits.
- *
- * Returns 0 on success or -1 in case of error
- */
-static int lxcVMCleanup(lxc_driver_t *driver, lxc_vm_t * vm)
-{
-    int rc = -1;
-    int waitRc;
-    int childStatus = -1;
-
-    /* if this fails, we'll continue.  it will report any errors */
-    lxcCleanupInterfaces(vm);
-
-    while (((waitRc = waitpid(vm->def->id, &childStatus, 0)) == -1) &&
-           errno == EINTR);
-
-    if ((waitRc != vm->def->id) && (errno != ECHILD)) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("waitpid failed to wait for container %d: %d %s"),
-                 vm->def->id, waitRc, strerror(errno));
-        goto kill_tty;
-    }
-
-    rc = 0;
-
-    if (WIFEXITED(childStatus)) {
-        rc = WEXITSTATUS(childStatus);
-        DEBUG("container exited with rc: %d", rc);
-    }
-
-kill_tty:
-    if (2 > vm->pid) {
-        DEBUG("not killing tty process with pid %d", vm->pid);
-        goto tty_error_out;
-    }
-
-    if (0 > (kill(vm->pid, SIGKILL))) {
-        if (ESRCH != errno) {
-            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("sending SIGKILL to tty process failed: %s"),
-                     strerror(errno));
-
-            goto tty_error_out;
-        }
-    }
-
-    while (((waitRc = waitpid(vm->pid, &childStatus, 0)) == -1) &&
-           errno == EINTR);
-
-    if ((waitRc != vm->pid) && (errno != ECHILD)) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("waitpid failed to wait for tty %d: %d %s"),
-                 vm->pid, waitRc, strerror(errno));
-    }
-
-tty_error_out:
-    vm->state = VIR_DOMAIN_SHUTOFF;
-    vm->pid = -1;
-    lxcDeleteTtyPidFile(vm);
-    vm->def->id = -1;
-    driver->nactivevms--;
-    driver->ninactivevms++;
-    lxcSaveConfig(NULL, driver, vm, vm->def);
-
-    return rc;
- }
 
 /**
  * lxcDomainDestroy:
@@ -862,31 +845,16 @@ tty_error_out:
  */
 static int lxcDomainDestroy(virDomainPtr dom)
 {
-    int rc = -1;
     lxc_driver_t *driver = (lxc_driver_t*)dom->conn->privateData;
     lxc_vm_t *vm = lxcFindVMByID(driver, dom->id);
 
     if (!vm) {
         lxcError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
                  _("no domain with id %d"), dom->id);
-        goto error_out;
+        return -1;
     }
 
-    if (0 > (kill(vm->def->id, SIGKILL))) {
-        if (ESRCH != errno) {
-            lxcError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
-                     _("sending SIGKILL failed: %s"), strerror(errno));
-
-            goto error_out;
-        }
-    }
-
-    vm->state = VIR_DOMAIN_SHUTDOWN;
-
-    rc = lxcVMCleanup(driver, vm);
-
-error_out:
-    return rc;
+    return lxcVmTerminate(dom->conn, driver, vm, SIGKILL);
 }
 
 static int lxcCheckNetNsSupport(void)
@@ -907,6 +875,7 @@ static int lxcCheckNetNsSupport(void)
 static int lxcStartup(void)
 {
     uid_t uid = getuid();
+    lxc_vm_t *vm;
 
     /* Check that the user is root */
     if (0 != uid) {
@@ -935,6 +904,36 @@ static int lxcStartup(void)
         return -1;
     }
 
+    vm = lxc_driver->vms;
+    while (vm) {
+        int rc;
+        if ((vm->monitor = lxcMonitorClient(NULL, lxc_driver, vm)) < 0) {
+            vm = vm->next;
+            continue;
+        }
+
+        /* Read pid from controller */
+        if ((rc = virFileReadPid(lxc_driver->stateDir, vm->def->name, &vm->pid)) != 0) {
+            close(vm->monitor);
+            vm->monitor = -1;
+            vm = vm->next;
+            continue;
+        }
+
+        if (vm->pid != 0) {
+            vm->def->id = vm->pid;
+            vm->state = VIR_DOMAIN_RUNNING;
+            lxc_driver->ninactivevms--;
+            lxc_driver->nactivevms++;
+        } else {
+            vm->def->id = -1;
+            close(vm->monitor);
+            vm->monitor = -1;
+        }
+
+        vm = vm->next;
+    }
+
     return 0;
 }
 
@@ -942,6 +941,7 @@ static void lxcFreeDriver(lxc_driver_t *driver)
 {
     VIR_FREE(driver->configDir);
     VIR_FREE(driver->stateDir);
+    VIR_FREE(driver->logDir);
     VIR_FREE(driver);
 }
 
@@ -976,37 +976,6 @@ lxcActive(void) {
 
     /* Otherwise we're happy to deal with a shutdown */
     return 0;
-}
-
-/**
- * lxcSigHandler:
- * @siginfo: Pointer to siginfo_t structure
- *
- * Handles signals received by libvirtd.  Currently this is used to
- * catch SIGCHLD from an exiting container.
- *
- * Returns 0 on success or -1 in case of error
- */
-static int lxcSigHandler(siginfo_t *siginfo)
-{
-    int rc = -1;
-    lxc_vm_t *vm;
-
-    if (siginfo->si_signo == SIGCHLD) {
-        vm = lxcFindVMByID(lxc_driver, siginfo->si_pid);
-
-        if (NULL == vm) {
-            DEBUG("Ignoring SIGCHLD from non-container process %d\n",
-                  siginfo->si_pid);
-            goto cleanup;
-        }
-
-        rc = lxcVMCleanup(lxc_driver, vm);
-
-    }
-
-cleanup:
-    return rc;
 }
 
 
@@ -1079,7 +1048,7 @@ static virStateDriver lxcStateDriver = {
     lxcShutdown,
     NULL, /* reload */
     lxcActive,
-    lxcSigHandler
+    NULL,
 };
 
 int lxcRegister(void)

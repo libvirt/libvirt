@@ -1,3 +1,24 @@
+Wed Aug 13 11:48:36 BST 2008 Daniel Berrange <berrange@redhat.com>
+
+	* configure.in: Add check for termios.h
+	* src/util.h, src/util.c: Add virFileOpenTty and helpers
+	for creating/deleting/reading PID files
+	* src/lxc_conf.h, src/lxc_conf.c, src/lxc_container.c,
+	src/lxc_container.h, src/lxc_controller.c,
+	src/lxc_controller.h, src/lxc_driver.c: Re-arrange
+	container launch process so that the I/O helper is
+	a direct parent of the container process. Daemonize
+	container so it survives restarts of libvirtd.
+
+Wed Aug 13 11:23:36 BST 2008 Daniel Berrange <berrange@redhat.com>
+
+	Re-arrange code between LXC driver files
+	* src/lxc_container.c, src/lxc_container.h,
+	src/lxc_controller.h, src/lxc_container.c,
+	src/lxc_driver.c: Move code for I/O handling into
+	a seprate lxc_controller module, and move code for
+	creating containers into lcx_container module.
+
 Wed Aug 13 10:55:36 BST 2008 Daniel Berrange <berrange@redhat.com>
 
 	* src/lxc_conf.h, src/lxc_conf.c, src/lxc_container.h,
