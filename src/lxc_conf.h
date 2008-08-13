@@ -35,12 +35,6 @@
 #define LXC_MAX_XML_LENGTH 16384
 #define LXC_MAX_ERROR_LEN 1024
 #define LXC_DOMAIN_TYPE "lxc"
-#define LXC_PARENT_SOCKET 0
-#define LXC_CONTAINER_SOCKET 1
-
-/* messages between parent and container */
-typedef char lxc_message_t;
-#define LXC_CONTINUE_MSG 'c'
 
 /* types of networks for containers */
 enum lxc_net_type {
@@ -98,12 +92,6 @@ struct __lxc_vm {
     char configFileBase[PATH_MAX];
 
     char ttyPidFile[PATH_MAX];
-
-    int parentTty;
-    int containerTtyFd;
-    char *containerTty;
-
-    int sockpair[2];
 
     lxc_vm_def_t *def;
 

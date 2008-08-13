@@ -1,3 +1,10 @@
+Wed Aug 13 10:55:36 BST 2008 Daniel Berrange <berrange@redhat.com>
+
+	* src/lxc_conf.h, src/lxc_conf.c, src/lxc_container.h,
+	src/lxc_container.c, src/lxc_driver.c: Don't store socket
+	or tty state in lxc_vm_t struct. Pass it around as args
+	to functions when needed
+
 Wed Aug 13 11:43:36 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/storage.html[.in] src/storage_backend_disk.c: revert previous

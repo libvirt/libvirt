@@ -561,27 +561,23 @@ static int lxcCleanupInterfaces(const lxc_vm_t *vm)
 
 /**
  * lxcSendContainerContinue:
- * @vm: pointer to virtual machine structure
+ * @monitor: FD for communicating with child
  *
  * Sends the continue message via the socket pair stored in the vm
  * structure.
  *
  * Returns 0 on success or -1 in case of error
  */
-static int lxcSendContainerContinue(const lxc_vm_t *vm)
+static int lxcSendContainerContinue(virConnectPtr conn,
+                                    int monitor)
 {
     int rc = -1;
     lxc_message_t msg = LXC_CONTINUE_MSG;
     int writeCount = 0;
 
-    if (NULL == vm) {
-        goto error_out;
-    }
-
-    writeCount = safewrite(vm->sockpair[LXC_PARENT_SOCKET], &msg,
-                           sizeof(msg));
+    writeCount = safewrite(monitor, &msg, sizeof(msg));
     if (writeCount != sizeof(msg)) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
                  _("unable to send container continue message: %s"),
                  strerror(errno));
         goto error_out;
@@ -605,12 +601,15 @@ error_out:
  */
 static int lxcStartContainer(virConnectPtr conn,
                              lxc_driver_t* driver,
-                             lxc_vm_t *vm)
+                             lxc_vm_t *vm,
+                             int monitor,
+                             char *ttyPath)
 {
     int rc = -1;
     int flags;
     int stacksize = getpagesize() * 4;
     char *stack, *stacktop;
+    lxc_child_argv_t args = { vm->def, monitor, ttyPath };
 
     /* allocate a stack for the container */
     if (VIR_ALLOC_N(stack, stacksize) < 0) {
@@ -625,7 +624,7 @@ static int lxcStartContainer(virConnectPtr conn,
     if (vm->def->nets != NULL)
         flags |= CLONE_NEWNET;
 
-    vm->def->id = clone(lxcChild, stacktop, flags, (void *)vm);
+    vm->def->id = clone(lxcChild, stacktop, flags, &args);
 
     DEBUG("clone() returned, %d", vm->def->id);
 
@@ -643,117 +642,9 @@ error_exit:
     return rc;
 }
 
-/**
- * lxcPutTtyInRawMode:
- * @conn: pointer to connection
- * @ttyDev: file descriptor for tty
- *
- * Sets tty attributes via cfmakeraw()
- *
- * Returns 0 on success or -1 in case of error
- */
-static int lxcPutTtyInRawMode(virConnectPtr conn, int ttyDev)
-{
-    int rc = -1;
-
-    struct termios ttyAttr;
-
-    if (tcgetattr(ttyDev, &ttyAttr) < 0) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 "tcgetattr() failed: %s", strerror(errno));
-        goto cleanup;
-    }
-
-    cfmakeraw(&ttyAttr);
-
-    if (tcsetattr(ttyDev, TCSADRAIN, &ttyAttr) < 0) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 "tcsetattr failed: %s", strerror(errno));
-        goto cleanup;
-    }
-
-    rc = 0;
-
-cleanup:
-    return rc;
-}
 
 /**
- * lxcSetupTtyTunnel:
- * @conn: pointer to connection
- * @vmDef: pointer to virtual machine definition structure
- * @ttyDev: pointer to int.  On success will be set to fd for master
- * end of tty
- *
- * Opens and configures the parent side tty
- *
- * Returns 0 on success or -1 in case of error
- */
-static int lxcSetupTtyTunnel(virConnectPtr conn,
-                             lxc_vm_def_t *vmDef,
-                             int* ttyDev)
-{
-    int rc = -1;
-    char *ptsStr;
-
-    if (0 < strlen(vmDef->tty)) {
-        *ttyDev = posix_openpt(O_RDWR|O_NOCTTY|O_NONBLOCK);
-        if (*ttyDev < 0) {
-            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     "open() tty failed: %s", strerror(errno));
-            goto setup_complete;
-        }
-
-        rc = grantpt(*ttyDev);
-        if (rc < 0) {
-            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     "grantpt() failed: %s", strerror(errno));
-            goto setup_complete;
-        }
-
-        rc = unlockpt(*ttyDev);
-        if (rc < 0) {
-            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     "unlockpt() failed: %s", strerror(errno));
-            goto setup_complete;
-        }
-
-        /* get the name and print it to stdout */
-        ptsStr = ptsname(*ttyDev);
-        if (ptsStr == NULL) {
-            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     "ptsname() failed");
-            goto setup_complete;
-        }
-        /* This value needs to be stored in the container configuration file */
-        VIR_FREE(vmDef->tty);
-        if (!(vmDef->tty = strdup(ptsStr))) {
-            lxcError(conn, NULL, VIR_ERR_NO_MEMORY,
-                     _("unable to get storage for vm tty name"));
-            goto setup_complete;
-        }
-
-        /* Enter raw mode, so all characters are passed directly to child */
-        if (lxcPutTtyInRawMode(conn, *ttyDev) < 0) {
-            goto setup_complete;
-        }
-
-    } else {
-        *ttyDev = -1;
-    }
-
-    rc = 0;
-
-setup_complete:
-    if((0 != rc) && (*ttyDev > 0)) {
-        close(*ttyDev);
-    }
-
-    return rc;
-}
-
-/**
- * lxcSetupContainerTty:
+ * lxcOpenTty:
  * @conn: pointer to connection
  * @ttymaster: pointer to int.  On success, set to fd for master end
  * @ttyName: On success, will point to string slave end of tty.  Caller
@@ -763,12 +654,12 @@ setup_complete:
  *
  * Returns 0 on success or -1 in case of error
  */
-static int lxcSetupContainerTty(virConnectPtr conn,
-                                int *ttymaster,
-                                char **ttyName)
+static int lxcOpenTty(virConnectPtr conn,
+                      int *ttymaster,
+                      char **ttyName,
+                      int rawmode)
 {
     int rc = -1;
-    char tempTtyName[PATH_MAX];
 
     *ttymaster = posix_openpt(O_RDWR|O_NOCTTY|O_NONBLOCK);
     if (*ttymaster < 0) {
@@ -783,27 +674,43 @@ static int lxcSetupContainerTty(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (0 != ptsname_r(*ttymaster, tempTtyName, sizeof(tempTtyName))) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("ptsname_r failed: %s"), strerror(errno));
-        goto cleanup;
+    if (rawmode) {
+        struct termios ttyAttr;
+        if (tcgetattr(*ttymaster, &ttyAttr) < 0) {
+            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                     "tcgetattr() failed: %s", strerror(errno));
+            goto cleanup;
+        }
+
+        cfmakeraw(&ttyAttr);
+
+        if (tcsetattr(*ttymaster, TCSADRAIN, &ttyAttr) < 0) {
+            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                     "tcsetattr failed: %s", strerror(errno));
+            goto cleanup;
+        }
     }
 
-    if (VIR_ALLOC_N(*ttyName, strlen(tempTtyName) + 1) < 0) {
-        lxcError(conn, NULL, VIR_ERR_NO_MEMORY,
-                 _("unable to allocate container name string"));
-        goto cleanup;
-    }
+    if (ttyName) {
+        char tempTtyName[PATH_MAX];
+        if (0 != ptsname_r(*ttymaster, tempTtyName, sizeof(tempTtyName))) {
+            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("ptsname_r failed: %s"), strerror(errno));
+            goto cleanup;
+        }
 
-    strcpy(*ttyName, tempTtyName);
+        if ((*ttyName = strdup(tempTtyName)) == NULL) {
+            lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
+            goto cleanup;
+        }
+    }
 
     rc = 0;
 
 cleanup:
-    if (0 != rc) {
-        if (-1 != *ttymaster) {
-            close(*ttymaster);
-        }
+    if (rc != 0 &&
+        *ttymaster != -1) {
+        close(*ttymaster);
     }
 
     return rc;
@@ -989,15 +896,18 @@ static int lxcVmStart(virConnectPtr conn,
                       lxc_vm_t * vm)
 {
     int rc = -1;
-    lxc_vm_def_t *vmDef = vm->def;
+    int sockpair[2] = { -1, -1 };
+    int containerTty, parentTty;
+    char *containerTtyPath = NULL;
 
     /* open parent tty */
-    if (lxcSetupTtyTunnel(conn, vmDef, &vm->parentTty) < 0) {
+    VIR_FREE(vm->def->tty);
+    if (lxcOpenTty(conn, &parentTty, &vm->def->tty, 1) < 0) {
         goto cleanup;
     }
 
     /* open container tty */
-    if (lxcSetupContainerTty(conn, &(vm->containerTtyFd), &(vm->containerTty)) < 0) {
+    if (lxcOpenTty(conn, &containerTty, &containerTtyPath, 0) < 0) {
         goto cleanup;
     }
 
@@ -1011,15 +921,15 @@ static int lxcVmStart(virConnectPtr conn,
 
     if (vm->pid  == 0) {
         /* child process calls forward routine */
-        lxcTtyForward(vm->parentTty, vm->containerTtyFd);
+        lxcTtyForward(parentTty, containerTty);
     }
 
     if (lxcStoreTtyPid(driver, vm)) {
         DEBUG0("unable to store tty pid");
     }
 
-    close(vm->parentTty);
-    close(vm->containerTtyFd);
+    close(parentTty);
+    close(containerTty);
 
     if (0 != (rc = lxcSetupInterfaces(conn, vm))) {
         goto cleanup;
@@ -1027,7 +937,7 @@ static int lxcVmStart(virConnectPtr conn,
 
     /* create a socket pair to send continue message to the container once */
     /* we've completed the post clone configuration */
-    if (0 != socketpair(PF_UNIX, SOCK_STREAM, 0, vm->sockpair)) {
+    if (0 != socketpair(PF_UNIX, SOCK_STREAM, 0, sockpair)) {
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
                  _("sockpair failed: %s"), strerror(errno));
         goto cleanup;
@@ -1035,7 +945,9 @@ static int lxcVmStart(virConnectPtr conn,
 
     /* check this rc */
 
-    rc = lxcStartContainer(conn, driver, vm);
+    rc = lxcStartContainer(conn, driver, vm,
+                           sockpair[1],
+                           containerTtyPath);
     if (rc != 0)
         goto cleanup;
 
@@ -1043,7 +955,7 @@ static int lxcVmStart(virConnectPtr conn,
     if (rc != 0)
         goto cleanup;
 
-    rc = lxcSendContainerContinue(vm);
+    rc = lxcSendContainerContinue(conn, sockpair[0]);
     if (rc != 0)
         goto cleanup;
 
@@ -1052,10 +964,9 @@ static int lxcVmStart(virConnectPtr conn,
     driver->nactivevms++;
 
 cleanup:
-    close(vm->sockpair[LXC_PARENT_SOCKET]);
-    vm->sockpair[LXC_PARENT_SOCKET] = -1;
-    close(vm->sockpair[LXC_CONTAINER_SOCKET]);
-    vm->sockpair[LXC_CONTAINER_SOCKET] = -1;
+    if (sockpair[0] != -1) close(sockpair[0]);
+    if (sockpair[1] != -1) close(sockpair[1]);
+    VIR_FREE(containerTtyPath);
 
     return rc;
 }

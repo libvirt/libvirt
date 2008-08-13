@@ -24,7 +24,21 @@
 #ifndef LXC_CONTAINER_H
 #define LXC_CONTAINER_H
 
+#include "lxc_conf.h"
+
 #ifdef WITH_LXC
+
+typedef struct __lxc_child_argv lxc_child_argv_t;
+struct __lxc_child_argv {
+    lxc_vm_def_t *config;
+    int monitor;
+    char *ttyPath;
+};
+
+/* messages between parent and container */
+typedef char lxc_message_t;
+#define LXC_CONTINUE_MSG 'c'
+
 
 /* Function declarations */
 int lxcChild( void *argv );
