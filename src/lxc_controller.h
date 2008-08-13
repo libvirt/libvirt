@@ -1,7 +1,7 @@
 /*
  * Copyright IBM Corp. 2008
  *
- * lxc_container.h: header file for fcns run inside container
+ * lxc_controller.h: linux container process controller
  *
  * Authors:
  *  David L. Leskovec <dlesko at linux.vnet.ibm.com>
@@ -21,27 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef LXC_CONTAINER_H
-#define LXC_CONTAINER_H
-
-#include "lxc_conf.h"
+#ifndef LXC_CONTROLLER_H
+#define LXC_CONTROLLER_H
 
 #ifdef WITH_LXC
 
-enum {
-    LXC_CONTAINER_FEATURE_NET = (1 << 0),
-};
+int lxcControllerMain(int appPty, int contPty);
 
-int lxcContainerSendContinue(virConnectPtr conn,
-                             int control);
+#endif /* WITH_LXC */
 
-int lxcContainerStart(virConnectPtr conn,
-                      lxc_vm_def_t *def,
-                      int control,
-                      char *ttyPath);
-
-int lxcContainerAvailable(int features);
-
-#endif /* LXC_DRIVER_H */
-
-#endif /* LXC_CONTAINER_H */
+#endif /* LXC_CONTROLLER_H */

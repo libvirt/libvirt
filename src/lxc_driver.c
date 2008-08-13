@@ -26,7 +26,6 @@
 #ifdef WITH_LXC
 
 #include <fcntl.h>
-#include <sys/epoll.h>
 #include <sched.h>
 #include <sys/utsname.h>
 #include <stdbool.h>
@@ -39,6 +38,7 @@
 #include "lxc_conf.h"
 #include "lxc_container.h"
 #include "lxc_driver.h"
+#include "lxc_controller.h"
 #include "driver.h"
 #include "internal.h"
 #include "memory.h"
@@ -52,77 +52,19 @@
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
 #define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
 
-/*
- * GLibc headers are behind the kernel, so we define these
- * constants if they're not present already.
- */
-
-#ifndef CLONE_NEWPID
-#define CLONE_NEWPID  0x20000000
-#endif
-#ifndef CLONE_NEWUTS
-#define CLONE_NEWUTS  0x04000000
-#endif
-#ifndef CLONE_NEWUSER
-#define CLONE_NEWUSER 0x10000000
-#endif
-#ifndef CLONE_NEWIPC
-#define CLONE_NEWIPC  0x08000000
-#endif
-#ifndef CLONE_NEWNET
-#define CLONE_NEWNET  0x40000000 /* New network namespace */
-#endif
 
 static int lxcStartup(void);
 static int lxcShutdown(void);
 static lxc_driver_t *lxc_driver = NULL;
 
 /* Functions */
-static int lxcDummyChild( void *argv ATTRIBUTE_UNUSED )
-{
-    exit(0);
-}
-
-static int lxcCheckContainerSupport(int extra_flags)
-{
-    int rc = 0;
-    int flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWUSER|
-        CLONE_NEWIPC|SIGCHLD|extra_flags;
-    int cpid;
-    char *childStack;
-    char *stack;
-    int childStatus;
-
-    if (VIR_ALLOC_N(stack, getpagesize() * 4) < 0) {
-        DEBUG0("Unable to allocate stack");
-        rc = -1;
-        goto check_complete;
-    }
-
-    childStack = stack + (getpagesize() * 4);
-
-    cpid = clone(lxcDummyChild, childStack, flags, NULL);
-    if ((0 > cpid) && (EINVAL == errno)) {
-        DEBUG0("clone call returned EINVAL, container support is not enabled");
-        rc = -1;
-    } else {
-        waitpid(cpid, &childStatus, 0);
-    }
-
-    VIR_FREE(stack);
-
-check_complete:
-    return rc;
-}
 
 static const char *lxcProbe(void)
 {
-#ifdef __linux__
-    if (0 == lxcCheckContainerSupport(0)) {
-        return("lxc:///");
-    }
-#endif
-    return(NULL);
+    if (lxcContainerAvailable(0) < 0)
+        return NULL;
+
+    return("lxc:///");
 }
 
 static virDrvOpenStatus lxcOpen(virConnectPtr conn,
@@ -559,89 +501,6 @@ static int lxcCleanupInterfaces(const lxc_vm_t *vm)
     return 0;
 }
 
-/**
- * lxcSendContainerContinue:
- * @monitor: FD for communicating with child
- *
- * Sends the continue message via the socket pair stored in the vm
- * structure.
- *
- * Returns 0 on success or -1 in case of error
- */
-static int lxcSendContainerContinue(virConnectPtr conn,
-                                    int monitor)
-{
-    int rc = -1;
-    lxc_message_t msg = LXC_CONTINUE_MSG;
-    int writeCount = 0;
-
-    writeCount = safewrite(monitor, &msg, sizeof(msg));
-    if (writeCount != sizeof(msg)) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("unable to send container continue message: %s"),
-                 strerror(errno));
-        goto error_out;
-    }
-
-    rc = 0;
-
-error_out:
-    return rc;
-}
-
-/**
- * lxcStartContainer:
- * @conn: pointer to connection
- * @driver: pointer to driver structure
- * @vm: pointer to virtual machine structure
- *
- * Starts a container process by calling clone() with the namespace flags
- *
- * Returns 0 on success or -1 in case of error
- */
-static int lxcStartContainer(virConnectPtr conn,
-                             lxc_driver_t* driver,
-                             lxc_vm_t *vm,
-                             int monitor,
-                             char *ttyPath)
-{
-    int rc = -1;
-    int flags;
-    int stacksize = getpagesize() * 4;
-    char *stack, *stacktop;
-    lxc_child_argv_t args = { vm->def, monitor, ttyPath };
-
-    /* allocate a stack for the container */
-    if (VIR_ALLOC_N(stack, stacksize) < 0) {
-        lxcError(conn, NULL, VIR_ERR_NO_MEMORY,
-                 _("unable to allocate container stack"));
-        goto error_exit;
-    }
-    stacktop = stack + stacksize;
-
-    flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWUSER|CLONE_NEWIPC|SIGCHLD;
-
-    if (vm->def->nets != NULL)
-        flags |= CLONE_NEWNET;
-
-    vm->def->id = clone(lxcChild, stacktop, flags, &args);
-
-    DEBUG("clone() returned, %d", vm->def->id);
-
-    if (vm->def->id < 0) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("clone() failed, %s"), strerror(errno));
-        goto error_exit;
-    }
-
-    lxcSaveConfig(NULL, driver, vm, vm->def);
-
-    rc = 0;
-
-error_exit:
-    return rc;
-}
-
 
 /**
  * lxcOpenTty:
@@ -716,170 +575,6 @@ cleanup:
     return rc;
 }
 
-/**
- * lxcFdForward:
- * @readFd: file descriptor to read
- * @writeFd: file desriptor to write
- *
- * Reads 1 byte of data from readFd and writes to writeFd.
- *
- * Returns 0 on success, EAGAIN if returned on read, or -1 in case of error
- */
-static int lxcFdForward(int readFd, int writeFd)
-{
-    int rc = -1;
-    char buf[2];
-
-    if (1 != (saferead(readFd, buf, 1))) {
-        if (EAGAIN == errno) {
-            rc = EAGAIN;
-            goto cleanup;
-        }
-
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("read of fd %d failed: %s"), readFd, strerror(errno));
-        goto cleanup;
-    }
-
-    if (1 != (safewrite(writeFd, buf, 1))) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("write to fd %d failed: %s"), writeFd, strerror(errno));
-        goto cleanup;
-    }
-
-    rc = 0;
-
-cleanup:
-    return rc;
-}
-
-typedef struct _lxcTtyForwardFd_t {
-    int fd;
-    bool active;
-} lxcTtyForwardFd_t;
-
-/**
- * lxcTtyForward:
- * @fd1: Open fd
- * @fd1: Open fd
- *
- * Forwards traffic between fds.  Data read from fd1 will be written to fd2
- * This process loops forever.
- * This uses epoll in edge triggered mode to avoid a hard loop on POLLHUP
- * events when the user disconnects the virsh console via ctrl-]
- *
- * Returns 0 on success or -1 in case of error
- */
-static int lxcTtyForward(int fd1, int fd2)
-{
-    int rc = -1;
-    int epollFd;
-    struct epoll_event epollEvent;
-    int numEvents;
-    int numActive = 0;
-    lxcTtyForwardFd_t fdArray[2];
-    int timeout = -1;
-    int curFdOff = 0;
-    int writeFdOff = 0;
-
-    fdArray[0].fd = fd1;
-    fdArray[0].active = false;
-    fdArray[1].fd = fd2;
-    fdArray[1].active = false;
-
-    /* create the epoll fild descriptor */
-    epollFd = epoll_create(2);
-    if (0 > epollFd) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("epoll_create(2) failed: %s"), strerror(errno));
-        goto cleanup;
-    }
-
-    /* add the file descriptors the epoll fd */
-    memset(&epollEvent, 0x00, sizeof(epollEvent));
-    epollEvent.events = EPOLLIN|EPOLLET;    /* edge triggered */
-    epollEvent.data.fd = fd1;
-    epollEvent.data.u32 = 0;                /* fdArray position */
-    if (0 > epoll_ctl(epollFd, EPOLL_CTL_ADD, fd1, &epollEvent)) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("epoll_ctl(fd1) failed: %s"), strerror(errno));
-        goto cleanup;
-    }
-    epollEvent.data.fd = fd2;
-    epollEvent.data.u32 = 1;                /* fdArray position */
-    if (0 > epoll_ctl(epollFd, EPOLL_CTL_ADD, fd2, &epollEvent)) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("epoll_ctl(fd2) failed: %s"), strerror(errno));
-        goto cleanup;
-    }
-
-    while (1) {
-        /* if active fd's, return if no events, else wait forever */
-        timeout = (numActive > 0) ? 0 : -1;
-        numEvents = epoll_wait(epollFd, &epollEvent, 1, timeout);
-        if (0 < numEvents) {
-            if (epollEvent.events & EPOLLIN) {
-                curFdOff = epollEvent.data.u32;
-                if (!fdArray[curFdOff].active) {
-                    fdArray[curFdOff].active = true;
-                    ++numActive;
-                }
-
-            } else if (epollEvent.events & EPOLLHUP) {
-                DEBUG("EPOLLHUP from fd %d", epollEvent.data.fd);
-                continue;
-            } else {
-                lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("error event %d"), epollEvent.events);
-                goto cleanup;
-            }
-
-        } else if (0 == numEvents) {
-            if (2 == numActive) {
-                /* both fds active, toggle between the two */
-                curFdOff ^= 1;
-            } else {
-                /* only one active, if current is active, use it, else it */
-                /* must be the other one (ie. curFd just went inactive) */
-                curFdOff = fdArray[curFdOff].active ? curFdOff : curFdOff ^ 1;
-            }
-
-        } else  {
-            if (EINTR == errno) {
-                continue;
-            }
-
-            /* error */
-            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("epoll_wait() failed: %s"), strerror(errno));
-            goto cleanup;
-
-        }
-
-        if (0 < numActive) {
-            writeFdOff = curFdOff ^ 1;
-            rc = lxcFdForward(fdArray[curFdOff].fd, fdArray[writeFdOff].fd);
-
-            if (EAGAIN == rc) {
-                /* this fd no longer has data, set it as inactive */
-                --numActive;
-                fdArray[curFdOff].active = false;
-            } else if (-1 == rc) {
-                goto cleanup;
-            }
-
-        }
-
-    }
-
-    rc = 0;
-
-cleanup:
-    close(fd1);
-    close(fd2);
-    close(epollFd);
-    exit(rc);
-}
 
 /**
  * lxcVmStart:
@@ -921,7 +616,7 @@ static int lxcVmStart(virConnectPtr conn,
 
     if (vm->pid  == 0) {
         /* child process calls forward routine */
-        lxcTtyForward(parentTty, containerTty);
+        lxcControllerMain(parentTty, containerTty);
     }
 
     if (lxcStoreTtyPid(driver, vm)) {
@@ -945,17 +640,19 @@ static int lxcVmStart(virConnectPtr conn,
 
     /* check this rc */
 
-    rc = lxcStartContainer(conn, driver, vm,
-                           sockpair[1],
-                           containerTtyPath);
-    if (rc != 0)
+    vm->def->id = lxcContainerStart(conn,
+                                    vm->def,
+                                    sockpair[1],
+                                    containerTtyPath);
+    if (vm->def->id == -1)
         goto cleanup;
+    lxcSaveConfig(conn, driver, vm, vm->def);
 
     rc = lxcMoveInterfacesToNetNs(conn, vm);
     if (rc != 0)
         goto cleanup;
 
-    rc = lxcSendContainerContinue(conn, sockpair[0]);
+    rc = lxcContainerSendContinue(conn, sockpair[0]);
     if (rc != 0)
         goto cleanup;
 
@@ -1196,16 +893,15 @@ static int lxcCheckNetNsSupport(void)
 {
     const char *argv[] = {"ip", "link", "set", "lo", "netns", "-1", NULL};
     int ip_rc;
-    int user_netns = 0;
-    int kern_netns = 0;
 
-    if (virRun(NULL, argv, &ip_rc) == 0)
-        user_netns = WIFEXITED(ip_rc) && (WEXITSTATUS(ip_rc) != 255);
+    if (virRun(NULL, argv, &ip_rc) < 0 ||
+        !(WIFEXITED(ip_rc) && (WEXITSTATUS(ip_rc) != 255)))
+        return 0;
 
-    if (lxcCheckContainerSupport(CLONE_NEWNET) == 0)
-        kern_netns = 1;
+    if (lxcContainerAvailable(LXC_CONTAINER_FEATURE_NET) < 0)
+        return 0;
 
-    return kern_netns && user_netns;
+    return 1;
 }
 
 static int lxcStartup(void)
@@ -1222,9 +918,8 @@ static int lxcStartup(void)
     }
 
     /* Check that this is a container enabled kernel */
-    if(0 != lxcCheckContainerSupport(0)) {
+    if(lxcContainerAvailable(0) < 0)
         return -1;
-    }
 
     lxc_driver->have_netns = lxcCheckNetNsSupport();
 
