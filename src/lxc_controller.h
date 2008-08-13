@@ -29,7 +29,7 @@
 #include "lxc_conf.h"
 
 int lxcControllerStart(const char *stateDir,
-                       lxc_vm_def_t *def,
+                       virDomainDefPtr def,
                        unsigned int nveths,
                        char **veths,
                        int monitor,

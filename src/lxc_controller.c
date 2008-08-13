@@ -306,7 +306,7 @@ static int lxcControllerCleanupInterfaces(unsigned int nveths,
 
 static int
 lxcControllerRun(const char *stateDir,
-                 lxc_vm_def_t *def,
+                 virDomainDefPtr def,
                  unsigned int nveths,
                  char **veths,
                  int monitor,
@@ -368,7 +368,7 @@ cleanup:
 
 
 int lxcControllerStart(const char *stateDir,
-                       lxc_vm_def_t *def,
+                       virDomainDefPtr def,
                        unsigned int nveths,
                        char **veths,
                        int monitor,

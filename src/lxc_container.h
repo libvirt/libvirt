@@ -34,7 +34,7 @@ enum {
 
 int lxcContainerSendContinue(int control);
 
-int lxcContainerStart(lxc_vm_def_t *def,
+int lxcContainerStart(virDomainDefPtr def,
                       unsigned int nveths,
                       char **veths,
                       int control,

@@ -1,3 +1,12 @@
+Wed Aug 13 13:40:36 BST 2008 Daniel Berrange <berrange@redhat.com>
+
+	* src/lxc_conf.c, src/lxc_conf.h: Remove all domain XML
+	parsing / formatting methods, and all helpers for loading
+	and saving files on disk. Added capabilities data object
+	* src/lxc_container.c, src/lxc_container.h, src/lxc_driver.c,
+	src/lxc_controller.h, src/lxc_controller.c: Switch over
+	to use generic domain XML processing APIs.
+
 Wed Aug 13 11:48:36 BST 2008 Daniel Berrange <berrange@redhat.com>
 
 	* configure.in: Add check for termios.h

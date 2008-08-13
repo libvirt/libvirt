@@ -68,7 +68,7 @@ typedef char lxc_message_t;
 
 typedef struct __lxc_child_argv lxc_child_argv_t;
 struct __lxc_child_argv {
-    lxc_vm_def_t *config;
+    virDomainDefPtr config;
     unsigned int nveths;
     char **veths;
     int monitor;
@@ -85,10 +85,10 @@ struct __lxc_child_argv {
  *
  * Does not return
  */
-static int lxcContainerExecInit(const lxc_vm_def_t *vmDef)
+static int lxcContainerExecInit(virDomainDefPtr vmDef)
 {
     const char *const argv[] = {
-        vmDef->init,
+        vmDef->os.init,
         NULL,
     };
 
@@ -269,8 +269,8 @@ static int lxcContainerChild( void *data )
 {
     int rc = -1;
     lxc_child_argv_t *argv = data;
-    lxc_vm_def_t *vmDef = argv->config;
-    lxc_mount_t *curMount;
+    virDomainDefPtr vmDef = argv->config;
+    virDomainFSDefPtr curMount;
     int i;
 
     if (NULL == vmDef) {
@@ -281,17 +281,20 @@ static int lxcContainerChild( void *data )
 
     /* handle the bind mounts first before doing anything else that may */
     /* then access those mounted dirs */
-    curMount = vmDef->mounts;
+    curMount = vmDef->fss;
     for (i = 0; curMount; curMount = curMount->next) {
-        rc = mount(curMount->source,
-                   curMount->target,
+        // XXX fix
+        if (curMount->type != VIR_DOMAIN_FS_TYPE_MOUNT)
+            continue;
+        rc = mount(curMount->src,
+                   curMount->dst,
                    NULL,
                    MS_BIND,
                    NULL);
         if (0 != rc) {
             lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                      _("failed to mount %s at %s for container: %s"),
-                     curMount->source, curMount->target, strerror(errno));
+                     curMount->src, curMount->dst, strerror(errno));
             return -1;
         }
     }
@@ -329,7 +332,7 @@ static int lxcContainerChild( void *data )
  *
  * Returns PID of container on success or -1 in case of error
  */
-int lxcContainerStart(lxc_vm_def_t *def,
+int lxcContainerStart(virDomainDefPtr def,
                       unsigned int nveths,
                       char **veths,
                       int control,
