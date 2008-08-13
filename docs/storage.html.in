@@ -258,7 +258,7 @@ libvirt.
     </p>
     <ul>
       <li>
-        <code>msdos</code>
+        <code>dos</code>
       </li>
       <li>
         <code>dvh</code>
@@ -280,7 +280,7 @@ libvirt.
       </li>
     </ul>
     <p>
-      The <code>msdos</code> or <code>gpt</code> formats are recommended for
+      The <code>dos</code> or <code>gpt</code> formats are recommended for
       best portability - the latter is needed for disks larger than 2TB.
     </p>
 

@@ -1,3 +1,8 @@
+Wed Aug 13 11:43:36 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/storage.html[.in] src/storage_backend_disk.c: revert previous
+	  msdos patch and apply new one from Cole Robinson
+
 Tue Aug 12 19:37:23 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	rewrite virFileLinkPointsTo
