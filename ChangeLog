@@ -1,3 +1,7 @@
+Thu Aug 14 10:06:36 BST 2008 Daniel Berrange <berrange@redhat.com>
+
+	* po/POTFILES.in: Add lxc_controller.c, remove lxc_conf.c
+
 Wed Aug 13 13:40:36 BST 2008 Daniel Berrange <berrange@redhat.com>
 
 	* src/lxc_conf.c, src/lxc_conf.h: Remove all domain XML
