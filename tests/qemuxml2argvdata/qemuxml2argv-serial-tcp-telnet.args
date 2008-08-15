@@ -1,1 +1,1 @@
-/usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -monitor pty -no-acpi -boot c -hda /dev/HostVG/QEMUGuest1 -net none -serial telnet:127.0.0.1:9999,listen -parallel none -usb
+/usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -monitor pty -no-acpi -boot c -hda /dev/HostVG/QEMUGuest1 -net none -serial telnet:127.0.0.1:9999,server -parallel none -usb

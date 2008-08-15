@@ -685,12 +685,19 @@ static int qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
-        if (snprintf(buf, buflen, "%s:%s:%s%s",
-                     dev->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET ? "telnet" : "tcp",
-                     dev->data.tcp.host,
-                     dev->data.tcp.service,
-                     dev->data.tcp.listen ? ",listen" : "") >= buflen)
-            return -1;
+        if (dev->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET) {
+            if (snprintf(buf, buflen, "telnet:%s:%s%s",
+                         dev->data.tcp.host,
+                         dev->data.tcp.service,
+                         dev->data.tcp.listen ? ",server" : "") >= buflen)
+                return -1;
+        } else {
+            if (snprintf(buf, buflen, "tcp:%s:%s%s",
+                         dev->data.tcp.host,
+                         dev->data.tcp.service,
+                         dev->data.tcp.listen ? ",listen" : "") >= buflen)
+                return -1;
+        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
