@@ -651,7 +651,7 @@ openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
     }
 
     if (openvzReadConfigParam(strtoI(vm->vmdef->name), "ONBOOT", value, sizeof(value)) < 0) {
-        openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("Cound not read container config"));
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("Could not read container config"));
         return -1;
     }
 

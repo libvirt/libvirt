@@ -1323,7 +1323,7 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     if (virDomainCoreDump(dom, to, 0) == 0) {
-        vshPrint(ctl, _("Domain %s dumpd to %s\n"), name, to);
+        vshPrint(ctl, _("Domain %s dumped to %s\n"), name, to);
     } else {
         vshError(ctl, FALSE, _("Failed to core dump domain %s to %s"),
                  name, to);

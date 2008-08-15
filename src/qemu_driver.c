@@ -1874,7 +1874,7 @@ static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
     }
 
     if (!(pidinfo = fopen(proc, "r"))) {
-        /*printf("cannnot read pid info");*/
+        /*printf("cannot read pid info");*/
         /* VM probably shut down, so fake 0 */
         *cpuTime = 0;
         return 0;
@@ -3113,7 +3113,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                 ret = qemudDomainAttachHostDevice(dom, dev);
     } else {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
-                         "%s", _("this devicetype cannnot be attached"));
+                         "%s", _("this devicetype cannot be attached"));
         ret = -1;
     }
 

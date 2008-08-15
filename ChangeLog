@@ -1,3 +1,8 @@
+Fri Aug 15 10:34:24 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
+
+	* src/virsh.c: fix typo from John Levon
+	* src/domain_conf.c, src/openvz_driver.c, src/qemu_driver.c:fix typos
+
 Thu Aug 14 10:06:36 BST 2008 Daniel Berrange <berrange@redhat.com>
 
 	* po/POTFILES.in: Add lxc_controller.c, remove lxc_conf.c

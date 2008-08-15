@@ -1579,7 +1579,7 @@ virDomainHostdevDefParseXML(virConnectPtr conn,
                 }
             } else {
                 virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                     _("uknown node %s"), cur->name);
+                                     _("unknown node %s"), cur->name);
             }
         }
         cur = cur->next;
