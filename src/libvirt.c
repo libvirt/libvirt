@@ -569,9 +569,6 @@ int __virStateInitialize(void) {
     if (virInitialize() < 0)
         return -1;
 
-    if (virInitialize() < 0)
-        return -1;
-
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
         if (virStateDriverTab[i]->initialize &&
             virStateDriverTab[i]->initialize() < 0)

@@ -1,3 +1,8 @@
+Mon Aug 18 10:22:33 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt.c: Remove duplicate call to virInitialize() in
+	virStateInitialize spotted by Nguyen Anh Quynh
+
 Fri Aug 15 10:34:24 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
 
 	* src/virsh.c: fix typo from John Levon
