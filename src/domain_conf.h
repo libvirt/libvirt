@@ -458,9 +458,6 @@ struct _virDomainObj {
     unsigned int autostart : 1;
     unsigned int persistent : 1;
 
-    char *configFile;
-    char *autostartLink;
-
     virDomainDefPtr def; /* The current definition */
     virDomainDefPtr newDef; /* New definition to activate at shutdown */
 
@@ -532,15 +529,14 @@ char *virDomainCpuSetFormat(virConnectPtr conn,
 
 int virDomainSaveConfig(virConnectPtr conn,
                         const char *configDir,
-                        const char *autostartDir,
-                        virDomainObjPtr dom);
+                        virDomainDefPtr def);
 
 virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
                                     virCapsPtr caps,
                                     virDomainObjPtr *doms,
                                     const char *configDir,
                                     const char *autostartDir,
-                                    const char *file);
+                                    const char *name);
 
 int virDomainLoadAllConfigs(virConnectPtr conn,
                             virCapsPtr caps,
@@ -549,7 +545,13 @@ int virDomainLoadAllConfigs(virConnectPtr conn,
                             const char *autostartDir);
 
 int virDomainDeleteConfig(virConnectPtr conn,
+                          const char *configDir,
+                          const char *autostartDir,
                           virDomainObjPtr dom);
+
+char *virDomainConfigFile(virConnectPtr conn,
+                          const char *dir,
+                          const char *name);
 
 virDomainNetDefPtr virDomainNetDefParseXML(virConnectPtr conn,
                         xmlNodePtr node);

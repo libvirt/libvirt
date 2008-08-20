@@ -89,6 +89,23 @@ ReportError(virConnectPtr conn,
                     NULL, NULL, NULL, -1, -1, "%s", errorMessage);
 }
 
+int virFileStripSuffix(char *str,
+                       const char *suffix)
+{
+    int len = strlen(str);
+    int suffixlen = strlen(suffix);
+
+    if (len < suffixlen)
+        return 0;
+
+    if (!STREQ(str + len - suffixlen, suffix))
+        return 0;
+
+    str[len-suffixlen] = '\0';
+
+    return 1;
+}
+
 #ifndef __MINGW32__
 
 static int virSetCloseExec(int fd) {

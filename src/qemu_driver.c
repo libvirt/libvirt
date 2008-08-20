@@ -351,7 +351,7 @@ qemudShutdown(void) {
         virDomainObjPtr next = vm->next;
         if (virDomainIsActive(vm))
             qemudShutdownVMDaemon(NULL, qemu_driver, vm);
-        if (!vm->configFile)
+        if (!vm->persistent)
             virDomainRemoveInactive(&qemu_driver->domains,
                                     vm);
         vm = next;
@@ -1072,7 +1072,7 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 static int qemudDispatchVMLog(struct qemud_driver *driver, virDomainObjPtr vm, int fd) {
     if (qemudVMData(driver, vm, fd) < 0) {
         qemudShutdownVMDaemon(NULL, driver, vm);
-        if (!vm->configFile)
+        if (!vm->persistent)
             virDomainRemoveInactive(&driver->domains,
                                     vm);
     }
@@ -1082,7 +1082,7 @@ static int qemudDispatchVMLog(struct qemud_driver *driver, virDomainObjPtr vm, i
 static int qemudDispatchVMFailure(struct qemud_driver *driver, virDomainObjPtr vm,
                                   int fd ATTRIBUTE_UNUSED) {
     qemudShutdownVMDaemon(NULL, driver, vm);
-    if (!vm->configFile)
+    if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains,
                                 vm);
     return 0;
@@ -2162,7 +2162,7 @@ static int qemudDomainDestroy(virDomainPtr dom) {
     }
 
     qemudShutdownVMDaemon(dom->conn, driver, vm);
-    if (!vm->configFile)
+    if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains,
                                 vm);
 
@@ -2493,7 +2493,7 @@ static int qemudDomainSave(virDomainPtr dom,
 
     /* Shut it down */
     qemudShutdownVMDaemon(dom->conn, driver, vm);
-    if (!vm->configFile)
+    if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains,
                                 vm);
 
@@ -2785,7 +2785,7 @@ static int qemudDomainRestore(virConnectPtr conn,
     if (ret < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("failed to start VM"));
-        if (!vm->configFile)
+        if (!vm->persistent)
             virDomainRemoveInactive(&driver->domains,
                                     vm);
         return -1;
@@ -2891,11 +2891,11 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
         virDomainDefFree(def);
         return NULL;
     }
+    vm->persistent = 1;
 
     if (virDomainSaveConfig(conn,
                             driver->configDir,
-                            driver->autostartDir,
-                            vm) < 0) {
+                            vm->newDef ? vm->newDef : vm->def) < 0) {
         virDomainRemoveInactive(&driver->domains,
                                 vm);
         return NULL;
@@ -2922,7 +2922,13 @@ static int qemudDomainUndefine(virDomainPtr dom) {
         return -1;
     }
 
-    if (virDomainDeleteConfig(dom->conn, vm) < 0)
+    if (!vm->persistent) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("cannot undefine transient domain"));
+        return -1;
+    }
+
+    if (virDomainDeleteConfig(dom->conn, driver->configDir, driver->autostartDir, vm) < 0)
         return -1;
 
     virDomainRemoveInactive(&driver->domains,
@@ -3162,13 +3168,21 @@ static int qemudDomainGetAutostart(virDomainPtr dom,
 }
 
 static int qemudDomainSetAutostart(virDomainPtr dom,
-                            int autostart) {
+                                   int autostart) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    char *configFile = NULL, *autostartLink = NULL;
+    int ret = -1;
 
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
                          "%s", _("no domain with matching uuid"));
+        return -1;
+    }
+
+    if (!vm->persistent) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("cannot set autostart for transient domain"));
         return -1;
     }
 
@@ -3177,6 +3191,11 @@ static int qemudDomainSetAutostart(virDomainPtr dom,
     if (vm->autostart == autostart)
         return 0;
 
+    if ((configFile = virDomainConfigFile(dom->conn, driver->configDir, vm->def->name)) == NULL)
+        goto cleanup;
+    if ((autostartLink = virDomainConfigFile(dom->conn, driver->autostartDir, vm->def->name)) == NULL)
+        goto cleanup;
+
     if (autostart) {
         int err;
 
@@ -3184,27 +3203,32 @@ static int qemudDomainSetAutostart(virDomainPtr dom,
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
                              _("cannot create autostart directory %s: %s"),
                              driver->autostartDir, strerror(err));
-            return -1;
+            goto cleanup;
         }
 
-        if (symlink(vm->configFile, vm->autostartLink) < 0) {
+        if (symlink(configFile, autostartLink) < 0) {
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("Failed to create symlink '%s' to '%s': %s"),
-                             vm->autostartLink, vm->configFile, strerror(errno));
-            return -1;
+                             _("Failed to create symlink '%s to '%s': %s"),
+                             autostartLink, configFile, strerror(errno));
+            goto cleanup;
         }
     } else {
-        if (unlink(vm->autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
+        if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
                              _("Failed to delete symlink '%s': %s"),
-                             vm->autostartLink, strerror(errno));
-            return -1;
+                             autostartLink, strerror(errno));
+            goto cleanup;
         }
     }
 
     vm->autostart = autostart;
+    ret = 0;
 
-    return 0;
+cleanup:
+    VIR_FREE(configFile);
+    VIR_FREE(autostartLink);
+
+    return ret;
 }
 
 /* This uses the 'info blockstats' monitor command which was

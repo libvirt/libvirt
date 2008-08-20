@@ -421,8 +421,6 @@ void virDomainObjFree(virDomainObjPtr dom)
     virDomainDefFree(dom->newDef);
 
     VIR_FREE(dom->vcpupids);
-    VIR_FREE(dom->configFile);
-    VIR_FREE(dom->autostartLink);
 
     VIR_FREE(dom);
 }
@@ -3220,31 +3218,19 @@ char *virDomainDefFormat(virConnectPtr conn,
 
 int virDomainSaveConfig(virConnectPtr conn,
                         const char *configDir,
-                        const char *autostartDir,
-                        virDomainObjPtr dom)
+                        virDomainDefPtr def)
 {
     char *xml;
+    char *configFile = NULL;
     int fd = -1, ret = -1;
     size_t towrite;
     int err;
 
-    if (!dom->configFile &&
-        asprintf(&dom->configFile, "%s/%s.xml",
-                 configDir, dom->def->name) < 0) {
-        dom->configFile = NULL;
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+    if ((configFile = virDomainConfigFile(conn, configDir, def->name)) == NULL)
         goto cleanup;
-    }
-    if (!dom->autostartLink &&
-        asprintf(&dom->autostartLink, "%s/%s.xml",
-                 autostartDir, dom->def->name) < 0) {
-        dom->autostartLink = NULL;
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
-        goto cleanup;
-    }
 
     if (!(xml = virDomainDefFormat(conn,
-                                   dom->newDef ? dom->newDef : dom->def,
+                                   def,
                                    VIR_DOMAIN_XML_SECURE)))
         goto cleanup;
 
@@ -3255,34 +3241,27 @@ int virDomainSaveConfig(virConnectPtr conn,
         goto cleanup;
     }
 
-    if ((err = virFileMakePath(autostartDir))) {
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("cannot create autostart directory %s: %s"),
-                             autostartDir, strerror(err));
-        goto cleanup;
-    }
-
-    if ((fd = open(dom->configFile,
+    if ((fd = open(configFile,
                    O_WRONLY | O_CREAT | O_TRUNC,
                    S_IRUSR | S_IWUSR )) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot create config file %s: %s"),
-                              dom->configFile, strerror(errno));
+                             _("cannot create config file %s: %s"),
+                             configFile, strerror(errno));
         goto cleanup;
     }
 
     towrite = strlen(xml);
     if (safewrite(fd, xml, towrite) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot write config file %s: %s"),
-                              dom->configFile, strerror(errno));
+                             _("cannot write config file %s: %s"),
+                             configFile, strerror(errno));
         goto cleanup;
     }
 
     if (close(fd) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot save config file %s: %s"),
-                              dom->configFile, strerror(errno));
+                             _("cannot save config file %s: %s"),
+                             configFile, strerror(errno));
         goto cleanup;
     }
 
@@ -3302,25 +3281,18 @@ virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
                                     virDomainObjPtr *doms,
                                     const char *configDir,
                                     const char *autostartDir,
-                                    const char *file)
+                                    const char *name)
 {
     char *configFile = NULL, *autostartLink = NULL;
     virDomainDefPtr def = NULL;
     virDomainObjPtr dom;
     int autostart;
 
-    if (asprintf(&configFile, "%s/%s",
-                 configDir, file) < 0) {
-        configFile = NULL;
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+    if ((configFile = virDomainConfigFile(conn, configDir, name)) == NULL)
         goto error;
-    }
-    if (asprintf(&autostartLink, "%s/%s",
-                 autostartDir, file) < 0) {
-        autostartLink = NULL;
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+    if ((autostartLink = virDomainConfigFile(conn, autostartDir, name)) == NULL)
         goto error;
-    }
+
 
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
         goto error;
@@ -3328,20 +3300,10 @@ virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
     if (!(def = virDomainDefParseFile(conn, caps, configFile)))
         goto error;
 
-    if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("Domain config filename '%s'"
-                                " does not match domain name '%s'"),
-                              configFile, def->name);
-        goto error;
-    }
-
     if (!(dom = virDomainAssignDef(conn, doms, def)))
         goto error;
 
     dom->state = VIR_DOMAIN_SHUTOFF;
-    dom->configFile = configFile;
-    dom->autostartLink = autostartLink;
     dom->autostart = autostart;
 
     return dom;
@@ -3372,20 +3334,24 @@ int virDomainLoadAllConfigs(virConnectPtr conn,
     }
 
     while ((entry = readdir(dir))) {
+        virDomainObjPtr dom;
+
         if (entry->d_name[0] == '.')
             continue;
 
-        if (!virFileHasSuffix(entry->d_name, ".xml"))
+        if (!virFileStripSuffix(entry->d_name, ".xml"))
             continue;
 
         /* NB: ignoring errors, so one malformed config doesn't
            kill the whole process */
-        virDomainLoadConfig(conn,
-                            caps,
-                            doms,
-                            configDir,
-                            autostartDir,
-                            entry->d_name);
+        dom = virDomainLoadConfig(conn,
+                                  caps,
+                                  doms,
+                                  configDir,
+                                  autostartDir,
+                                  entry->d_name);
+        if (dom)
+            dom->persistent = 1;
     }
 
     closedir(dir);
@@ -3394,25 +3360,50 @@ int virDomainLoadAllConfigs(virConnectPtr conn,
 }
 
 int virDomainDeleteConfig(virConnectPtr conn,
-                           virDomainObjPtr dom)
+                          const char *configDir,
+                          const char *autostartDir,
+                          virDomainObjPtr dom)
 {
-    if (!dom->configFile || !dom->autostartLink) {
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("no config file for %s"), dom->def->name);
-        return -1;
-    }
+    char *configFile = NULL, *autostartLink = NULL;
+    int ret = -1;
+
+    if ((configFile = virDomainConfigFile(conn, configDir, dom->def->name)) == NULL)
+        goto cleanup;
+    if ((autostartLink = virDomainConfigFile(conn, autostartDir, dom->def->name)) == NULL)
+        goto cleanup;
 
     /* Not fatal if this doesn't work */
-    unlink(dom->autostartLink);
+    unlink(autostartLink);
 
-    if (unlink(dom->configFile) < 0) {
+    if (unlink(configFile) < 0 &&
+        errno != ENOENT) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot remove config for %s: %s"),
+                             _("cannot remove config for %s: %s"),
                              dom->def->name, strerror(errno));
-        return -1;
+        goto cleanup;
     }
 
-    return 0;
+    ret = 0;
+
+cleanup:
+    VIR_FREE(configFile);
+    VIR_FREE(autostartLink);
+    return ret;
 }
+
+char *virDomainConfigFile(virConnectPtr conn,
+                          const char *dir,
+                          const char *name)
+{
+    char *ret = NULL;
+
+    if (asprintf(&ret, "%s/%s.xml", dir, name) < 0) {
+        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        return NULL;
+    }
+
+    return ret;
+}
+
 
 #endif /* ! PROXY */

@@ -1,3 +1,12 @@
+Wed Aug 20 42:42:09 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/util.c, src/util.h: Add convenience APIs for stripping
+	a file extension
+	* src/domain_conf.c, src/domain_conf.h, src/lxc_driver.c,
+	src/qemu_driver.c: Remove fixed configfile/autostartlink
+	fields in virDomainObjPtr. Generate paths on-demand at time
+	of use
+
 Wed Aug 20 15:42:09 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_conf.c src/openvz_driver.c: patch from Evgeniy Sokolov

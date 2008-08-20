@@ -250,11 +250,11 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
         virDomainDefFree(def);
         return NULL;
     }
+    vm->persistent = 1;
 
     if (virDomainSaveConfig(conn,
                             driver->configDir,
-                            driver->autostartDir,
-                            vm) < 0) {
+                            vm->newDef ? vm->newDef : vm->def) < 0) {
         virDomainRemoveInactive(&driver->domains, vm);
         return NULL;
     }
@@ -284,10 +284,17 @@ static int lxcDomainUndefine(virDomainPtr dom)
         return -1;
     }
 
-    if (virDomainDeleteConfig(dom->conn, vm) <0)
+    if (!vm->persistent) {
+        lxcError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("cannot undefine transient domain"));
         return -1;
+    }
 
-    vm->configFile[0] = '\0';
+    if (virDomainDeleteConfig(dom->conn,
+                              driver->configDir,
+                              driver->autostartDir,
+                              vm) <0)
+        return -1;
 
     virDomainRemoveInactive(&driver->domains, vm);
 

@@ -55,6 +55,9 @@ int virFileMatchesNameSuffix(const char *file,
 int virFileHasSuffix(const char *str,
                      const char *suffix);
 
+int virFileStripSuffix(char *str,
+                       const char *suffix);
+
 int virFileLinkPointsTo(const char *checkLink,
                         const char *checkDest);
 
