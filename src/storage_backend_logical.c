@@ -453,6 +453,19 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     snprintf(size, sizeof(size)-1, "%lluK", vol->capacity/1024);
     size[sizeof(size)-1] = '\0';
 
+    if (vol->target.path != NULL) {
+        /* A target path passed to CreateVol has no meaning */
+        VIR_FREE(vol->target.path);
+    }
+    if (VIR_ALLOC_N(vol->target.path, strlen(pool->def->target.path) +
+                    1 + strlen(vol->name) + 1) < 0) {
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
+        return -1;
+    }
+    strcpy(vol->target.path, pool->def->target.path);
+    strcat(vol->target.path, "/");
+    strcat(vol->target.path, vol->name);
+
     if (virRun(conn, cmdargv, NULL) < 0)
         return -1;
 

@@ -1,3 +1,9 @@
+Wed Aug 20 15:31:47 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/storage_backend_logical.c: Patch from Cole Robinson, fix
+	  creating and cleaning up logical volumes if a target path is
+	  specified.
+
 Wed Aug 20 15:18:54 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/parthelper.c: Patch from Cole Robinson, fix size reporting for
