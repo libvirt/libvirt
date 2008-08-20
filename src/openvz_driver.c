@@ -94,6 +94,9 @@ static int openvzDomainUndefine(virDomainPtr dom);
 static void cmdExecFree(const char *cmdExec[]);
 
 static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid);
+static int openvzGetMaxVCPUs(virConnectPtr conn, const char *type);
+static int openvzDomainGetMaxVcpus(virDomainPtr dom);
+static int openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus);
 
 struct openvz_driver ovz_driver;
 
@@ -266,7 +269,7 @@ static int openvzDomainGetInfo(virDomainPtr dom,
     //info->cpuTime =
     //info->maxMem = vm->def->maxmem;
     //info->memory = vm->def->memory;
-    //info->nrVirtCpu = vm->def->vcpus;
+    info->nrVirtCpu = vm->vmdef->vcpus;
     return 0;
 }
 
@@ -450,7 +453,6 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
         goto exit;
     }
 
-    //TODO: set number virtual CPUs
     //TODO: set quota
 
     if (virRun(conn, prog, NULL) < 0) {
@@ -473,6 +475,14 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                   _("Could not configure network"));
         goto exit;
+    }
+
+    if (vmdef->vcpus > 0) {
+        if (openvzDomainSetVcpus(dom, vmdef->vcpus) < 0) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                     _("Could not set number of virtual cpu"));
+             goto exit;
+        }
     }
 
     exit:
@@ -548,6 +558,15 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
     dom = virGetDomain(conn, vm->vmdef->name, vm->vmdef->uuid);
     if (dom)
         dom->id = vm->vpsid;
+
+    if (vmdef->vcpus > 0) {
+        if (openvzDomainSetVcpus(dom, vmdef->vcpus) < 0) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                     _("Could not set number of virtual cpu"));
+             goto exit;
+        }
+    }
+
  exit:
     cmdExecFree(progcreate);
     return dom;
@@ -659,6 +678,52 @@ openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
     if (STREQ(value,"yes"))
         *autostart = 1;
 
+    return 0;
+}
+
+static int openvzGetMaxVCPUs(virConnectPtr conn, const char *type) {
+    if (STRCASEEQ(type, "openvz"))
+        return 1028; //OpenVZ has no limitation
+
+    openvzError(conn, VIR_ERR_INVALID_ARG,
+                     _("unknown type '%s'"), type);
+    return -1;
+}
+
+
+static int openvzDomainGetMaxVcpus(virDomainPtr dom) {
+    return openvzGetMaxVCPUs(dom->conn, "openvz");
+}
+
+static int openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
+    virConnectPtr conn= dom->conn;
+    struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
+    struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
+    char   str_vcpus[32];
+    const char *prog[] = { VZCTL, "--quiet", "set", vm->vmdef->name,
+                           "--cpus", str_vcpus, "--save", NULL };
+    snprintf(str_vcpus, 31, "%d", nvcpus);
+    str_vcpus[31] = '\0';
+
+    if (nvcpus <= 0) {
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                         _("VCPUs should be >= 1"));
+        return -1;
+    }
+
+    if (!vm) {
+        openvzError(conn, VIR_ERR_INVALID_DOMAIN,
+                         _("no domain with matching uuid"));
+        return -1;
+    }
+
+    if (virRun(conn, prog, NULL) < 0) {
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("Could not exec %s"), VZCTL);
+        return -1;
+    }
+
+    vm->vmdef->vcpus = nvcpus;
     return 0;
 }
 
@@ -886,7 +951,7 @@ static virDriver openvzDriver = {
     NULL, /* version */
     NULL, /* hostname */
     NULL, /* uri */
-    NULL, /* getMaxVcpus */
+    openvzGetMaxVCPUs, /* getMaxVcpus */
     openvzGetNodeInfo, /* nodeGetInfo */
     NULL, /* getCapabilities */
     openvzListDomains, /* listDomains */
@@ -908,10 +973,10 @@ static virDriver openvzDriver = {
     NULL, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
-    NULL, /* domainSetVcpus */
+    openvzDomainSetVcpus, /* domainSetVcpus */
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
-    NULL, /* domainGetMaxVcpus */
+    openvzDomainGetMaxVcpus, /* domainGetMaxVcpus */
     NULL, /* domainDumpXML */
     openvzListDefinedDomains, /* listDomains */
     openvzNumDefinedDomains, /* numOfDomains */

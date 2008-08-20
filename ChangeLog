@@ -1,3 +1,8 @@
+Wed Aug 20 15:42:09 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/openvz_conf.c src/openvz_driver.c: patch from Evgeniy Sokolov
+	  to limit the number of CPUs used by OpenVZ domains.
+
 Wed Aug 20 15:31:47 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/storage_backend_logical.c: Patch from Cole Robinson, fix

@@ -513,6 +513,7 @@ openvzGetVPSInfo(virConnectPtr conn) {
     struct openvz_vm  **pnext;
     struct openvz_driver *driver;
     struct openvz_vm_def *vmdef;
+    char temp[124];
 
     vm =  NULL;
     driver = conn->privateData;
@@ -568,6 +569,17 @@ openvzGetVPSInfo(virConnectPtr conn) {
             VIR_FREE(vmdef);
             goto error;
         }
+
+        /*get VCPU*/
+        ret = openvzReadConfigParam(veid, "CPUS", temp, sizeof(temp));
+        if (ret < 0) {
+             openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                            _("Cound not read config for container %d"), veid);
+             goto error;
+        } else if (ret > 0) {
+             vmdef->vcpus = strtoI(temp);
+        }
+
 
         (*pnext)->vmdef = vmdef;
         pnext = &(*pnext)->next;
