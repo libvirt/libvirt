@@ -64,9 +64,12 @@
 #ifndef PROXY
 static void
 ReportError(virConnectPtr conn,
-                      virDomainPtr dom,
-                      virNetworkPtr net,
-                      int code, const char *fmt, ...) {
+            int code, const char *fmt, ...)
+    ATTRIBUTE_FORMAT(printf, 3, 4);
+
+static void
+ReportError(virConnectPtr conn,
+            int code, const char *fmt, ...) {
     va_list args;
     char errorMessage[MAX_ERROR_LEN];
 
@@ -77,7 +80,7 @@ ReportError(virConnectPtr conn,
     } else {
         errorMessage[0] = '\0';
     }
-    __virRaiseError(conn, dom, net, VIR_FROM_NONE, code, VIR_ERR_ERROR,
+    __virRaiseError(conn, NULL, NULL, VIR_FROM_NONE, code, VIR_ERR_ERROR,
                     NULL, NULL, NULL, -1, -1, "%s", errorMessage);
 }
 
@@ -112,7 +115,7 @@ _virExec(virConnectPtr conn,
     int pipeerr[2] = {-1,-1};
 
     if ((null = open(_PATH_DEVNULL, O_RDONLY)) < 0) {
-        ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
                     _("cannot open %s: %s"),
                     _PATH_DEVNULL, strerror(errno));
         goto cleanup;
@@ -120,13 +123,41 @@ _virExec(virConnectPtr conn,
 
     if ((outfd != NULL && pipe(pipeout) < 0) ||
         (errfd != NULL && pipe(pipeerr) < 0)) {
-        ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
                     _("cannot create pipe: %s"), strerror(errno));
         goto cleanup;
     }
 
+    if (outfd) {
+        if(non_block &&
+           virSetNonBlock(pipeout[0]) == -1) {
+            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("Failed to set non-blocking file descriptor flag"));
+            goto cleanup;
+        }
+
+        if(virSetCloseExec(pipeout[0]) == -1) {
+            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("Failed to set close-on-exec file descriptor flag"));
+            goto cleanup;
+        }
+    }
+    if (errfd) {
+        if(non_block &&
+           virSetNonBlock(pipeerr[0]) == -1) {
+            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("Failed to set non-blocking file descriptor flag"));
+            goto cleanup;
+        }
+        if(virSetCloseExec(pipeerr[0]) == -1) {
+            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("Failed to set close-on-exec file descriptor flag"));
+            goto cleanup;
+        }
+    }
+
     if ((pid = fork()) < 0) {
-        ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
                     _("cannot fork child process: %s"), strerror(errno));
         goto cleanup;
     }
@@ -135,26 +166,10 @@ _virExec(virConnectPtr conn,
         close(null);
         if (outfd) {
             close(pipeout[1]);
-            if(non_block)
-                if(virSetNonBlock(pipeout[0]) == -1)
-                    ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                        _("Failed to set non-blocking file descriptor flag"));
-
-            if(virSetCloseExec(pipeout[0]) == -1)
-                ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                        _("Failed to set close-on-exec file descriptor flag"));
             *outfd = pipeout[0];
         }
         if (errfd) {
             close(pipeerr[1]);
-            if(non_block)
-                if(virSetNonBlock(pipeerr[0]) == -1)
-                    ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                          _("Failed to set non-blocking file descriptor flag"));
-
-            if(virSetCloseExec(pipeerr[0]) == -1)
-                ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                        _("Failed to set close-on-exec file descriptor flag"));
             *errfd = pipeerr[0];
         }
         *retpid = pid;
@@ -163,23 +178,47 @@ _virExec(virConnectPtr conn,
 
     /* child */
 
-    if (pipeout[0] > 0 && close(pipeout[0]) < 0)
-        _exit(1);
-    if (pipeerr[0] > 0 && close(pipeerr[0]) < 0)
-        _exit(1);
+    /* Don't want to report errors against this accidentally, so
+       just discard it */
+    conn = NULL;
+    /* Remove any error callback too, so errors in child now
+       get sent to stderr where they stand a fighting chance
+       of being seen / logged */
+    virSetErrorFunc(NULL, NULL);
 
-    if (dup2(infd >= 0 ? infd : null, STDIN_FILENO) < 0)
+    if (pipeout[0] > 0)
+        close(pipeout[0]);
+    if (pipeerr[0] > 0)
+        close(pipeerr[0]);
+
+
+    if (dup2(infd >= 0 ? infd : null, STDIN_FILENO) < 0) {
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("failed to setup stdin file handle: %s"), strerror(errno));
         _exit(1);
+    }
 #ifndef ENABLE_DEBUG
-    if (dup2(pipeout[1] > 0 ? pipeout[1] : null, STDOUT_FILENO) < 0)
+    if (dup2(pipeout[1] > 0 ? pipeout[1] : null, STDOUT_FILENO) < 0) {
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("failed to setup stdout file handle: %s"), strerror(errno));
         _exit(1);
-    if (dup2(pipeerr[1] > 0 ? pipeerr[1] : null, STDERR_FILENO) < 0)
+    }
+    if (dup2(pipeerr[1] > 0 ? pipeerr[1] : null, STDERR_FILENO) < 0) {
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("failed to setup stderr file handle: %s"), strerror(errno));
         _exit(1);
+    }
 #else /* ENABLE_DEBUG */
-    if (pipeout[1] > 0 && dup2(pipeout[1], STDOUT_FILENO) < 0)
+    if (pipeout[1] > 0 && dup2(pipeout[1], STDOUT_FILENO) < 0) {
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("failed to setup stderr file handle: %s"), strerror(errno));
         _exit(1);
-    if (pipeerr[1] > 0 && dup2(pipeerr[1], STDERR_FILENO) < 0)
+    }
+    if (pipeerr[1] > 0 && dup2(pipeerr[1], STDERR_FILENO) < 0) {
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("failed to setup stdout file handle: %s"), strerror(errno));
         _exit(1);
+    }
 #endif /* ENABLE_DEBUG */
 
     close(null);
@@ -190,11 +229,21 @@ _virExec(virConnectPtr conn,
 
     execvp(argv[0], (char **) argv);
 
+    ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                _("cannot execute binary '%s': %s"),
+                argv[0], strerror(errno));
+
     _exit(1);
 
     return 0;
 
  cleanup:
+    /* This is cleanup of parent process only - child
+       should never jump here on error */
+
+    /* NB we don't ReportError() on any failures here
+       because the code which jumped hre already raised
+       an error condition which we must not overwrite */
     if (pipeerr[0] > 0)
         close(pipeerr[0]);
     if (pipeerr[1] > 0)
@@ -249,12 +298,24 @@ virRun(virConnectPtr conn,
         return ret;
 
     while ((ret = waitpid(childpid, &exitstatus, 0) == -1) && errno == EINTR);
-    if (ret == -1)
+    if (ret == -1) {
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("cannot wait for '%s': %s"),
+                    argv[0], strerror(errno));
         return -1;
+    }
 
     if (status == NULL) {
         errno = EINVAL;
-        return (WIFEXITED(exitstatus) && WEXITSTATUS(exitstatus) == 0) ? 0 : -1;
+        if (WIFEXITED(exitstatus) && WEXITSTATUS(exitstatus) == 0)
+            return 0;
+
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("%s exited with non-zero status %d and signal %d"),
+                    argv[0],
+                    WIFEXITED(exitstatus) ? WEXITSTATUS(exitstatus) : 0,
+                    WIFSIGNALED(exitstatus) ? WTERMSIG(exitstatus) : 0);
+        return -1;
     } else {
         *status = exitstatus;
         return 0;
@@ -271,7 +332,7 @@ virExec(virConnectPtr conn,
         int *outfd ATTRIBUTE_UNUSED,
         int *errfd ATTRIBUTE_UNUSED)
 {
-    ReportError (conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+    ReportError (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
     return -1;
 }
 
@@ -283,7 +344,7 @@ virExecNonBlock(virConnectPtr conn,
                 int *outfd ATTRIBUTE_UNUSED,
                 int *errfd ATTRIBUTE_UNUSED)
 {
-    ReportError (conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+    ReportError (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
     return -1;
 }
 
