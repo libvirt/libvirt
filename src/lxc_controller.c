@@ -23,22 +23,22 @@
 
 #include <config.h>
 
-#ifdef WITH_LXC
-
 #include <sys/epoll.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/un.h>
 #include <unistd.h>
 #include <paths.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <getopt.h>
 
 #include "internal.h"
 #include "util.h"
 
 #include "lxc_conf.h"
 #include "lxc_container.h"
-#include "lxc_controller.h"
 #include "veth.h"
 #include "memory.h"
 #include "util.h"
@@ -47,6 +47,56 @@
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
 #define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
 
+int debugFlag = 0;
+
+static char*lxcMonitorPath(virDomainDefPtr def)
+{
+    char *sockpath;
+    if (asprintf(&sockpath, "%s/%s.sock",
+                 LXC_STATE_DIR, def->name) < 0) {
+        lxcError(NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        return NULL;
+    }
+    return sockpath;
+}
+
+static int lxcMonitorServer(const char *sockpath)
+{
+    int fd;
+    struct sockaddr_un addr;
+
+    if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("failed to create server socket %s: %s"),
+                 sockpath, strerror(errno));
+        goto error;
+    }
+
+    unlink(sockpath);
+    memset(&addr, 0, sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    strncpy(addr.sun_path, sockpath, sizeof(addr.sun_path));
+
+    if (bind(fd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("failed to bind server socket %s: %s"),
+                 sockpath, strerror(errno));
+        goto error;
+    }
+    if (listen(fd, 30 /* backlog */ ) < 0) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("failed to listen server socket %s: %s"),
+                 sockpath, strerror(errno));
+        goto error;
+    }
+
+    return fd;
+
+error:
+    if (fd != -1)
+        close(fd);
+    return -1;
+}
 
 /**
  * lxcFdForward:
@@ -305,8 +355,7 @@ static int lxcControllerCleanupInterfaces(unsigned int nveths,
 
 
 static int
-lxcControllerRun(const char *stateDir,
-                 virDomainDefPtr def,
+lxcControllerRun(virDomainDefPtr def,
                  unsigned int nveths,
                  char **veths,
                  int monitor,
@@ -359,148 +408,187 @@ cleanup:
     if (containerPty != -1)
         close(containerPty);
 
-    kill(container, SIGTERM);
-    waitpid(container, NULL, 0);
-    lxcControllerCleanupInterfaces(nveths, veths);
-    virFileDeletePid(stateDir, def->name);
+    if (container > 1) {
+        kill(container, SIGTERM);
+        waitpid(container, NULL, 0);
+    }
     return rc;
 }
 
 
-int lxcControllerStart(const char *stateDir,
-                       virDomainDefPtr def,
-                       unsigned int nveths,
-                       char **veths,
-                       int monitor,
-                       int appPty,
-                       int logfd)
+int main(int argc, char *argv[])
 {
     pid_t pid;
-    int rc;
-    int status, null;
-    int open_max, i;
+    int rc = 1;
     int client;
-    struct sigaction sig_action;
+    char *name = NULL;
+    int nveths = 0;
+    char **veths = NULL;
+    int monitor = -1;
+    int appPty = -1;
+    int bg = 0;
+    virCapsPtr caps = NULL;
+    virDomainDefPtr def = NULL;
+    int nnets = 0;
+    virDomainNetDefPtr nets = NULL;
+    char *configFile = NULL;
+    char *sockpath = NULL;
+    const struct option const options[] = {
+        { "background", 0, NULL, 'b' },
+        { "name",   1, NULL, 'n' },
+        { "veth",   1, NULL, 'v' },
+        { "console", 1, NULL, 'c' },
+        { "help", 0, NULL, 'h' },
+        { 0, 0, 0, 0 },
+    };
 
-    if ((pid = fork()) < 0)
-        return -1;
+    while (1) {
+        int c;
 
-    if (pid > 0) {
-        /* Original caller waits for first child to exit */
-        while (1) {
-            rc = waitpid(pid, &status, 0);
-            if (rc < 0) {
-                if (errno == EINTR)
-                    continue;
-                return -1;
+        c = getopt_long(argc, argv, "dn:v:m:c:h",
+                       options, NULL);
+
+        if (c == -1)
+            break;
+
+        switch (c) {
+        case 'b':
+            bg = 1;
+            break;
+
+        case 'n':
+            if ((name = strdup(optarg)) == NULL) {
+                fprintf(stderr, "%s", strerror(errno));
+                goto cleanup;
             }
-            if (rc != pid) {
-                fprintf(stderr,
-                        _("Unexpected pid %d != %d from waitpid\n"),
-                        rc, pid);
-                return -1;
+            break;
+
+        case 'v':
+            if (VIR_REALLOC_N(veths, nveths+1) < 0) {
+                fprintf(stderr, "cannot allocate veths %s", strerror(errno));
+                goto cleanup;
             }
-            if (WIFEXITED(status) &&
-                WEXITSTATUS(status) == 0)
-                return 0;
-            else {
-                fprintf(stderr,
-                        _("Unexpected status %d from pid %d\n"),
-                        status, pid);
-                return -1;
+            if ((veths[nveths++] = strdup(optarg)) == NULL) {
+                fprintf(stderr, "cannot allocate veth name %s", strerror(errno));
+                goto cleanup;
             }
+            break;
+
+        case 'c':
+            if (virStrToLong_i(optarg, NULL, 10, &appPty) < 0) {
+                fprintf(stderr, "malformed --console argument '%s'", optarg);
+                goto cleanup;
+            }
+            break;
+
+        case 'h':
+        case '?':
+            fprintf(stderr, "\n");
+            fprintf(stderr, "syntax: %s [OPTIONS]\n", argv[0]);
+            fprintf(stderr, "\n");
+            fprintf(stderr, "Options\n");
+            fprintf(stderr, "\n");
+            fprintf(stderr, "  -b, --background\n");
+            fprintf(stderr, "  -n NAME, --name NAME\n");
+            fprintf(stderr, "  -c FD, --console FD\n");
+            fprintf(stderr, "  -v VETH, --veth VETH\n");
+            fprintf(stderr, "  -h, --help\n");
+            fprintf(stderr, "\n");
+            goto cleanup;
         }
     }
 
-    /* First child is running here */
 
-    /* Clobber all libvirtd's signal handlers so they
-     * don't affect us
-     */
-    sig_action.sa_handler = SIG_DFL;
-    sig_action.sa_flags = 0;
-    sigemptyset(&sig_action.sa_mask);
-
-    sigaction(SIGHUP, &sig_action, NULL);
-    sigaction(SIGINT, &sig_action, NULL);
-    sigaction(SIGQUIT, &sig_action, NULL);
-    sigaction(SIGTERM, &sig_action, NULL);
-    sigaction(SIGCHLD, &sig_action, NULL);
-
-    sig_action.sa_handler = SIG_IGN;
-    sigaction(SIGPIPE, &sig_action, NULL);
-
-
-    /* Don't hold onto any cwd we inherit from libvirtd either */
-    if (chdir("/") < 0) {
-        fprintf(stderr, _("Unable to change to root dir: %s\n"),
-                strerror(errno));
-        _exit(-1);
+    if (name == NULL) {
+        fprintf(stderr, "%s: missing --name argument for configuration\n", argv[0]);
+        goto cleanup;
     }
 
-    if (setsid() < 0) {
-        fprintf(stderr, _("Unable to become session leader: %s\n"),
-                strerror(errno));
-        _exit(-1);
+    if (appPty < 0) {
+        fprintf(stderr, "%s: missing --console argument for container PTY\n", argv[0]);
+        goto cleanup;
     }
 
-    if ((null = open(_PATH_DEVNULL, O_RDONLY)) < 0) {
-        fprintf(stderr, _("Unable to open %s: %s\n"),
-                _PATH_DEVNULL, strerror(errno));
-        _exit(-1);
+    if (getuid() && 0) {
+        fprintf(stderr, "%s: must be run as the 'root' user\n", argv[0]);
+        goto cleanup;
     }
 
-    open_max = sysconf (_SC_OPEN_MAX);
-    for (i = 0; i < open_max; i++)
-        if (i != appPty &&
-            i != monitor &&
-            i != logfd &&
-            i != null)
-            close(i);
+    if ((caps = lxcCapsInit()) == NULL)
+        goto cleanup;
 
-    if (dup2(null, STDIN_FILENO) < 0 ||
-        dup2(logfd, STDOUT_FILENO) < 0 ||
-        dup2(logfd, STDERR_FILENO) < 0) {
-        fprintf(stderr, _("Unable to redirect stdio: %s\n"),
-                strerror(errno));
-        _exit(-1);
+    if ((configFile = virDomainConfigFile(NULL,
+                                          LXC_STATE_DIR,
+                                          name)) == NULL)
+        goto cleanup;
+
+    if ((def = virDomainDefParseFile(NULL, caps, configFile)) == NULL)
+        goto cleanup;
+
+    nets = def->nets;
+    while (nets) {
+        nnets++;
+        nets = nets->next;
+    }
+    if (nnets != nveths) {
+        fprintf(stderr, "%s: expecting %d veths, but got %d\n",
+                argv[0], nnets, nveths);
+        goto cleanup;
     }
 
-    close(null);
-    close(logfd);
+    if ((sockpath = lxcMonitorPath(def)) == NULL)
+        goto cleanup;
 
-    /* Now fork the real controller process */
-    if ((pid = fork()) < 0) {
-        fprintf(stderr, _("Unable to fork controller: %s\n"),
-                strerror(errno));
-        _exit(-1);
-    }
+    if ((monitor = lxcMonitorServer(sockpath)) < 0)
+        goto cleanup;
 
-    if (pid > 0) {
-        if ((rc = virFileWritePid(stateDir, def->name, pid)) != 0) {
-            fprintf(stderr, _("Unable to write pid file: %s\n"),
-                    strerror(rc));
-            _exit(-1);
+    if (bg) {
+        if ((pid = fork()) < 0)
+            goto cleanup;
+
+        if (pid > 0) {
+            if ((rc = virFileWritePid(LXC_STATE_DIR, name, pid)) != 0) {
+                fprintf(stderr, _("Unable to write pid file: %s\n"),
+                        strerror(rc));
+                _exit(1);
+            }
+
+            /* First child now exits, allowing original caller
+             * (ie libvirtd's LXC driver to complete their
+             * waitpid & continue */
+            _exit(0);
         }
-        /* First child now exits, allowing originall caller to
-         * complete their waitpid & continue */
-        _exit(0);
-    }
 
-    /* This is real controller running finally... */
+        /* Don't hold onto any cwd we inherit from libvirtd either */
+        if (chdir("/") < 0) {
+            fprintf(stderr, _("Unable to change to root dir: %s\n"),
+                    strerror(errno));
+            goto cleanup;
+        }
+
+        if (setsid() < 0) {
+            fprintf(stderr, _("Unable to become session leader: %s\n"),
+                    strerror(errno));
+            goto cleanup;
+        }
+    }
 
     /* Accept initial client which is the libvirtd daemon */
-    if ((client = accept(monitor, NULL, 0))) {
+    if ((client = accept(monitor, NULL, 0)) < 0) {
         fprintf(stderr, _("Failed connection from LXC driver: %s\n"),
                 strerror(errno));
-        _exit(-1);
+        goto cleanup;
     }
 
-    /* Controlling libvirtd LXC driver now knows
-       what our PID is, and is able to cleanup after
-       us from now on */
-    _exit(lxcControllerRun(stateDir, def, nveths, veths, monitor, client, appPty));
+    rc = lxcControllerRun(def, nveths, veths, monitor, client, appPty);
+
+
+cleanup:
+    virFileDeletePid(LXC_STATE_DIR, def->name);
+    lxcControllerCleanupInterfaces(nveths, veths);
+    unlink(sockpath);
+    VIR_FREE(sockpath);
+
+    return rc;
 }
 
-
-#endif

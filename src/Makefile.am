@@ -88,8 +88,13 @@ XEN_DRIVER_SOURCES =						\
 LXC_DRIVER_SOURCES =						\
 		lxc_conf.c lxc_conf.h				\
 		lxc_container.c lxc_container.h			\
-		lxc_controller.c lxc_controller.h		\
 		lxc_driver.c lxc_driver.h			\
+		veth.c veth.h
+
+LXC_CONTROLLER_SOURCES =					\
+		lxc_conf.c lxc_conf.h				\
+		lxc_container.c lxc_container.h			\
+		lxc_controller.c				\
 		veth.c veth.h
 
 OPENVZ_DRIVER_SOURCES =						\
@@ -272,9 +277,11 @@ virsh-pool-edit.c: virsh.c Makefile.am
 	rm -f $@
 	mv $@-tmp $@
 
+libexec_PROGRAMS =
+
 if WITH_STORAGE_DISK
 if WITH_LIBVIRTD
-libexec_PROGRAMS = libvirt_parthelper
+libexec_PROGRAMS += libvirt_parthelper
 
 libvirt_parthelper_SOURCES = $(STORAGE_HELPER_DISK_SOURCES)
 libvirt_parthelper_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS)
@@ -284,6 +291,21 @@ endif
 endif
 EXTRA_DIST += $(STORAGE_HELPER_DISK_SOURCES)
 
+
+if WITH_LXC
+if WITH_LIBVIRTD
+libexec_PROGRAMS += libvirt_lxc
+
+libvirt_lxc_SOURCES =						\
+		$(LXC_CONTROLLER_SOURCES)			\
+		$(GENERIC_LIB_SOURCES) 				\
+		$(DOMAIN_CONF_SOURCES)
+libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS)
+libvirt_lxc_LDADD = $(LIBXML_LIBS) ../gnulib/lib/libgnu.la
+libvirt_lxc_CFLAGS =  $(LIBPARTED_CFLAGS)
+endif
+endif
+EXTRA_DIST += $(LXC_CONTROLLER_SOURCES)
 
 # Create the /var/cache/libvirt directory when installing.
 install-exec-local:

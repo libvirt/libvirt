@@ -1109,13 +1109,11 @@ virDomainChrDefParseXML(virConnectPtr conn,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        /* @path attribute is an output only property - pty is auto-allocted */
-        break;
-
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if (path == NULL) {
+        if (path == NULL &&
+            def->type != VIR_DOMAIN_CHR_TYPE_PTY) {
             virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("Missing source path attribute for char device"));
             goto error;

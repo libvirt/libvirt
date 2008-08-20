@@ -1,3 +1,12 @@
+Wed Aug 20 21:50:09 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/domain_conf.c: Include PTY name if available
+	* src/Makefile.am: Add lxc_controller binary
+	* src/lxc_conf.c, src/lxc_conf.h, src/lxc_controller.c,
+	src/lxc_controller.h, src/lxc_driver.c: Move LXC controller
+	into a properly exec'd binary, instead of fork'd child of
+	libvirtd daemon
+
 Wed Aug 20 21:05:09 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in, qemud/Makefile.am, src/Makefile.am: Use automake

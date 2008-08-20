@@ -38,7 +38,6 @@
 #include "lxc_conf.h"
 #include "lxc_container.h"
 #include "lxc_driver.h"
-#include "lxc_controller.h"
 #include "memory.h"
 #include "util.h"
 #include "bridge.h"
@@ -398,6 +397,7 @@ static int lxcVMCleanup(virConnectPtr conn,
     close(vm->monitor);
 
     virFileDeletePid(driver->stateDir, vm->def->name);
+    virDomainDeleteConfig(conn, driver->stateDir, NULL, vm);
 
     vm->state = VIR_DOMAIN_SHUTOFF;
     vm->pid = -1;
@@ -507,55 +507,6 @@ error_exit:
     return rc;
 }
 
-static int lxcMonitorServer(virConnectPtr conn,
-                            lxc_driver_t * driver,
-                            virDomainObjPtr vm)
-{
-    char *sockpath = NULL;
-    int fd;
-    struct sockaddr_un addr;
-
-    if (asprintf(&sockpath, "%s/%s.sock",
-                 driver->stateDir, vm->def->name) < 0) {
-        lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
-        return -1;
-    }
-
-    if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("failed to create server socket: %s"),
-                 strerror(errno));
-        goto error;
-    }
-
-    unlink(sockpath);
-    memset(&addr, 0, sizeof(addr));
-    addr.sun_family = AF_UNIX;
-    strncpy(addr.sun_path, sockpath, sizeof(addr.sun_path));
-
-    if (bind(fd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("failed to bind server socket: %s"),
-                 strerror(errno));
-        goto error;
-    }
-    if (listen(fd, 30 /* backlog */ ) < 0) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("failed to listen server socket: %s"),
-                 strerror(errno));
-        goto error;
-        return (-1);
-    }
-
-    VIR_FREE(sockpath);
-    return fd;
-
-error:
-    VIR_FREE(sockpath);
-    if (fd != -1)
-        close(fd);
-    return -1;
-}
 
 static int lxcMonitorClient(virConnectPtr conn,
                             lxc_driver_t * driver,
@@ -608,6 +559,12 @@ static int lxcVmTerminate(virConnectPtr conn,
     if (signum == 0)
         signum = SIGINT;
 
+    if (vm->pid <= 0) {
+        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("invalid PID %d for container"), vm->pid);
+        return -1;
+    }
+
     if (kill(vm->pid, signum) < 0) {
         if (errno != ESRCH) {
             lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -644,6 +601,102 @@ static void lxcMonitorEvent(int fd,
 }
 
 
+static int lxcControllerStart(virConnectPtr conn,
+                              virDomainObjPtr vm,
+                              int nveths,
+                              char **veths,
+                              int appPty,
+                              int logfd)
+{
+    int i;
+    int rc;
+    int ret = -1;
+    int largc = 0, larga = 0;
+    const char **largv = NULL;
+    pid_t child;
+    int status;
+
+#define ADD_ARG_SPACE                                                   \
+    do { \
+        if (largc == larga) {                                           \
+            larga += 10;                                                \
+            if (VIR_REALLOC_N(largv, larga) < 0)                        \
+                goto no_memory;                                         \
+        }                                                               \
+    } while (0)
+
+#define ADD_ARG(thisarg)                                                \
+    do {                                                                \
+        ADD_ARG_SPACE;                                                  \
+        largv[largc++] = thisarg;                                       \
+    } while (0)
+
+#define ADD_ARG_LIT(thisarg)                                            \
+    do {                                                                \
+        ADD_ARG_SPACE;                                                  \
+        if ((largv[largc++] = strdup(thisarg)) == NULL)                 \
+            goto no_memory;                                             \
+    } while (0)
+
+    ADD_ARG_LIT(vm->def->emulator);
+    ADD_ARG_LIT("--name");
+    ADD_ARG_LIT(vm->def->name);
+    ADD_ARG_LIT("--console");
+    ADD_ARG_LIT("0");  /* Passing console master PTY as FD 0 */
+    ADD_ARG_LIT("--background");
+
+    for (i = 0 ; i < nveths ; i++) {
+        ADD_ARG_LIT("--veth");
+        ADD_ARG_LIT(veths[i]);
+    }
+
+    ADD_ARG(NULL);
+
+    vm->stdin_fd = appPty; /* Passing console master PTY as FD 0 */
+    vm->stdout_fd = vm->stderr_fd = logfd;
+
+    if (virExec(conn, largv, NULL, &child,
+                vm->stdin_fd, &vm->stdout_fd, &vm->stderr_fd,
+                VIR_EXEC_NONE) < 0)
+        goto cleanup;
+
+    /* We now wait for the process to exit - the controller
+     * will fork() itself into the background - waiting for
+     * it to exit thus guarentees it has written its pidfile
+     */
+    while ((rc = waitpid(child, &status, 0) == -1) && errno == EINTR);
+    if (rc == -1) {
+        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("cannot wait for '%s': %s"),
+                 largv[0], strerror(errno));
+        goto cleanup;
+    }
+
+    if (!(WIFEXITED(status) && WEXITSTATUS(status) == 0)) {
+        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("container '%s' unexpectedly shutdown during startup"),
+                 largv[0]);
+        goto cleanup;
+    }
+
+#undef ADD_ARG
+#undef ADD_ARG_LIT
+#undef ADD_ARG_SPACE
+
+    ret = 0;
+
+cleanup:
+    for (i = 0 ; i < largc ; i++)
+        VIR_FREE(largv[i]);
+
+    return ret;
+
+no_memory:
+    lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
+    goto cleanup;
+}
+
+
 /**
  * lxcVmStart:
  * @conn: pointer to connection
@@ -660,7 +713,6 @@ static int lxcVmStart(virConnectPtr conn,
 {
     int rc = -1;
     unsigned int i;
-    int monitor;
     int parentTty;
     char *parentTtyPath = NULL;
     char *logfile = NULL;
@@ -681,9 +733,6 @@ static int lxcVmStart(virConnectPtr conn,
         return -1;
     }
 
-    if ((monitor = lxcMonitorServer(conn, driver, vm)) < 0)
-        goto cleanup;
-
     /* open parent tty */
     if (virFileOpenTty(&parentTty, &parentTtyPath, 1) < 0) {
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -702,6 +751,12 @@ static int lxcVmStart(virConnectPtr conn,
     if (lxcSetupInterfaces(conn, vm->def, &nveths, &veths) != 0)
         goto cleanup;
 
+    /* Persist the live configuration now we have veth & tty info */
+    if (virDomainSaveConfig(conn, driver->stateDir, vm->def) < 0) {
+        rc = -1;
+        goto cleanup;
+    }
+
     if ((logfd = open(logfile, O_WRONLY | O_TRUNC | O_CREAT,
              S_IRUSR|S_IWUSR)) < 0) {
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -710,14 +765,11 @@ static int lxcVmStart(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (lxcControllerStart(driver->stateDir,
-                           vm->def, nveths, veths,
-                           monitor, parentTty, logfd) < 0)
+    if (lxcControllerStart(conn,
+                           vm,
+                           nveths, veths,
+                           parentTty, logfd) < 0)
         goto cleanup;
-    /* Close the server side of the monitor, now owned
-     * by the controller process */
-    close(monitor);
-    monitor = -1;
 
     /* Connect to the controller as a client *first* because
      * this will block until the child has written their
@@ -753,8 +805,6 @@ cleanup:
             vethDelete(veths[i]);
         VIR_FREE(veths[i]);
     }
-    if (monitor != -1)
-        close(monitor);
     if (rc != 0 && vm->monitor != -1) {
         close(vm->monitor);
         vm->monitor = -1;
@@ -951,6 +1001,8 @@ static int lxcStartup(void)
 
     vm = lxc_driver->domains;
     while (vm) {
+        char *config = NULL;
+        virDomainDefPtr tmp;
         int rc;
         if ((vm->monitor = lxcMonitorClient(NULL, lxc_driver, vm)) < 0) {
             vm = vm->next;
@@ -963,6 +1015,19 @@ static int lxcStartup(void)
             vm->monitor = -1;
             vm = vm->next;
             continue;
+        }
+
+        if ((config = virDomainConfigFile(NULL,
+                                          lxc_driver->stateDir,
+                                          vm->def->name)) == NULL)
+            continue;
+
+        /* Try and load the live config */
+        tmp = virDomainDefParseFile(NULL, lxc_driver->caps, config);
+        VIR_FREE(config);
+        if (tmp) {
+            vm->newDef = vm->def;
+            vm->def = tmp;
         }
 
         if (vm->pid != 0) {

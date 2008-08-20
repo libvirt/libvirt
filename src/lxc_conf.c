@@ -71,7 +71,7 @@ virCapsPtr lxcCapsInit(void)
                                          "exe",
                                          utsname.machine,
                                          sizeof(int) == 4 ? 32 : 8,
-                                         NULL,
+                                         BINDIR "/libvirt_lxc",
                                          NULL,
                                          0,
                                          NULL)) == NULL)
@@ -94,11 +94,11 @@ no_memory:
 int lxcLoadDriverConfig(lxc_driver_t *driver)
 {
     /* Set the container configuration directory */
-    if ((driver->configDir = strdup(SYSCONF_DIR "/libvirt/lxc")) == NULL)
+    if ((driver->configDir = strdup(LXC_CONFIG_DIR)) == NULL)
         goto no_memory;
-    if ((driver->stateDir = strdup(LOCAL_STATE_DIR "/run/libvirt/lxc")) == NULL)
+    if ((driver->stateDir = strdup(LXC_STATE_DIR)) == NULL)
         goto no_memory;
-    if ((driver->logDir = strdup(LOCAL_STATE_DIR "/log/libvirt/lxc")) == NULL)
+    if ((driver->logDir = strdup(LXC_LOG_DIR)) == NULL)
         goto no_memory;
 
     return 0;

@@ -30,6 +30,10 @@
 #include "domain_conf.h"
 #include "capabilities.h"
 
+#define LXC_CONFIG_DIR SYSCONF_DIR "/libvirt/lxc"
+#define LXC_STATE_DIR LOCAL_STATE_DIR "/run/libvirt/lxc"
+#define LXC_LOG_DIR LOCAL_STATE_DIR "/log/libvirt/lxc"
+
 typedef struct __lxc_driver lxc_driver_t;
 struct __lxc_driver {
     virCapsPtr caps;
