@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     }
 
     /* Get the first partition, and then iterate over all */
-    part = ped_disk_get_partition(disk, 1);
+    part = ped_disk_next_partition(disk, NULL);
     while (part) {
         const char *type;
         const char *content;

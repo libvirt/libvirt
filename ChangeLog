@@ -1,3 +1,8 @@
+Wed Aug 20 15:18:54 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/parthelper.c: Patch from Cole Robinson, fix size reporting for
+	  disks without partitions.
+
 Wed Aug 20 15:11:57 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in libvirt.spec.in docs/Makefile.am: fix the problem
