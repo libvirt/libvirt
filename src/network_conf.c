@@ -40,6 +40,7 @@
 #include "uuid.h"
 #include "util.h"
 #include "buf.h"
+#include "c-ctype.h"
 
 VIR_ENUM_DECL(virNetworkForward)
 
@@ -114,6 +115,13 @@ void virNetworkDefFree(virNetworkDefPtr def)
         VIR_FREE(def->ranges[i].end);
     }
     VIR_FREE(def->ranges);
+
+    for (i = 0 ; i < def->nhosts && def->hosts ; i++) {
+        VIR_FREE(def->hosts[i].mac);
+        VIR_FREE(def->hosts[i].ip);
+        VIR_FREE(def->hosts[i].name);
+    }
+    VIR_FREE(def->hosts);
 
     VIR_FREE(def);
 }
@@ -197,33 +205,82 @@ virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
 
     cur = node->children;
     while (cur != NULL) {
-        xmlChar *start, *end;
+        if (cur->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(cur->name, BAD_CAST "range")) {
+            xmlChar *start, *end;
 
-        if (cur->type != XML_ELEMENT_NODE ||
-            !xmlStrEqual(cur->name, BAD_CAST "range")) {
-            cur = cur->next;
-            continue;
-        }
+            if (!(start = xmlGetProp(cur, BAD_CAST "start"))) {
+                cur = cur->next;
+                continue;
+            }
+            if (!(end = xmlGetProp(cur, BAD_CAST "end"))) {
+                cur = cur->next;
+                xmlFree(start);
+                continue;
+            }
 
-        if (!(start = xmlGetProp(cur, BAD_CAST "start"))) {
-            cur = cur->next;
-            continue;
-        }
-        if (!(end = xmlGetProp(cur, BAD_CAST "end"))) {
-            cur = cur->next;
-            xmlFree(start);
-            continue;
-        }
+            if (VIR_REALLOC_N(def->ranges, def->nranges + 1) < 0) {
+                xmlFree(start);
+                xmlFree(end);
+                virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+                return -1;
+            }
+            def->ranges[def->nranges].start = (char *)start;
+            def->ranges[def->nranges].end = (char *)end;
+            def->nranges++;
+        } else if (cur->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(cur->name, BAD_CAST "host")) {
+            xmlChar *mac, *name, *ip;
+            unsigned char addr[6];
+            struct in_addr inaddress;
 
-        if (VIR_REALLOC_N(def->ranges, def->nranges + 1) < 0) {
-            xmlFree(start);
-            xmlFree(end);
-            virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
-            return -1;
+            mac = xmlGetProp(cur, BAD_CAST "mac");
+            if ((mac != NULL) &&
+                (virParseMacAddr((const char *) mac, &addr[0]) != 0)) {
+                virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("cannot parse MAC address '%s'"),
+                                      mac);
+                VIR_FREE(mac);
+            }
+            name = xmlGetProp(cur, BAD_CAST "name");
+            if ((name != NULL) && (!c_isalpha(name[0]))) {
+                virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("cannot use name address '%s'"),
+                                      name);
+                VIR_FREE(name);
+            }
+            /*
+             * You need at least one MAC address or one host name
+             */
+            if ((mac == NULL) && (name == NULL)) {
+                VIR_FREE(mac);
+                VIR_FREE(name);
+                cur = cur->next;
+                continue;
+            }
+            ip = xmlGetProp(cur, BAD_CAST "ip");
+            if (inet_pton(AF_INET, (const char *) ip, &inaddress) <= 0) {
+                virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("cannot parse IP address '%s'"),
+                                      ip);
+                VIR_FREE(ip);
+                VIR_FREE(mac);
+                VIR_FREE(name);
+                cur = cur->next;
+                continue;
+            }
+            if (VIR_REALLOC_N(def->hosts, def->nhosts + 1) < 0) {
+                VIR_FREE(ip);
+                VIR_FREE(mac);
+                VIR_FREE(name);
+                virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+                return -1;
+            }
+            def->hosts[def->nhosts].mac = (char *)mac;
+            def->hosts[def->nhosts].name = (char *)name;
+            def->hosts[def->nhosts].ip = (char *)ip;
+            def->nhosts++;
         }
-        def->ranges[def->nranges].start = (char *)start;
-        def->ranges[def->nranges].end = (char *)end;
-        def->nranges++;
 
         cur = cur->next;
     }
@@ -524,12 +581,22 @@ char *virNetworkDefFormat(virConnectPtr conn,
 
         virBufferAddLit(&buf, ">\n");
 
-        if (def->nranges) {
+        if ((def->nranges || def->nhosts)) {
             int i;
             virBufferAddLit(&buf, "    <dhcp>\n");
             for (i = 0 ; i < def->nranges ; i++)
                 virBufferVSprintf(&buf, "      <range start='%s' end='%s' />\n",
                                   def->ranges[i].start, def->ranges[i].end);
+            for (i = 0 ; i < def->nhosts ; i++) {
+                virBufferAddLit(&buf, "      <host ");
+                if (def->hosts[i].mac)
+                    virBufferVSprintf(&buf, "mac='%s' ", def->hosts[i].mac);
+                if (def->hosts[i].name)
+                    virBufferVSprintf(&buf, "name='%s' ", def->hosts[i].name);
+                if (def->hosts[i].ip)
+                    virBufferVSprintf(&buf, "ip='%s' ", def->hosts[i].ip);
+                virBufferAddLit(&buf, "/>\n");
+            }
             virBufferAddLit(&buf, "    </dhcp>\n");
         }
 

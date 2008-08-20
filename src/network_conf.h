@@ -42,6 +42,14 @@ struct _virNetworkDHCPRangeDef {
     char *end;
 };
 
+typedef struct _virNetworkDHCPHostDef virNetworkDHCPHostDef;
+typedef virNetworkDHCPHostDef *virNetworkDHCPHostDefPtr;
+struct _virNetworkDHCPHostDef {
+    char *mac;
+    char *name;
+    char *ip;
+};
+
 typedef struct _virNetworkDef virNetworkDef;
 typedef virNetworkDef *virNetworkDefPtr;
 struct _virNetworkDef {
@@ -61,6 +69,9 @@ struct _virNetworkDef {
 
     unsigned int nranges;        /* Zero or more dhcp ranges */
     virNetworkDHCPRangeDefPtr ranges;
+
+    unsigned int nhosts;         /* Zero or more dhcp hosts */
+    virNetworkDHCPHostDefPtr hosts;
 };
 
 typedef struct _virNetworkObj virNetworkObj;

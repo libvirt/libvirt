@@ -1,3 +1,8 @@
+Wed Aug 20 14:49:29 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/network_conf.c src/network_conf.h src/qemu_driver.c: allow to
+	  add static host definition for dnsmasq
+
 Wed Aug 20 10:16:54 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/util.c, src/util.h: Allow flags to be passed to specify

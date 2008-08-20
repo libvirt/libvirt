@@ -1107,6 +1107,8 @@ qemudBuildDnsmasqArgv(virConnectPtr conn,
         2 + /* --listen-address 10.0.0.1 */
         1 + /* --dhcp-leasefile=path */
         (2 * network->def->nranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
+        /*  --dhcp-host 01:23:45:67:89:0a,hostname,10.0.0.3 */
+        (2 * network->def->nhosts) +
         1;  /* NULL */
 
     if (VIR_ALLOC_N(*argv, len) < 0)
@@ -1165,6 +1167,24 @@ qemudBuildDnsmasqArgv(virConnectPtr conn,
                  network->def->ranges[r].end);
 
         APPEND_ARG(*argv, i++, "--dhcp-range");
+        APPEND_ARG(*argv, i++, buf);
+    }
+
+    for (r = 0 ; r < network->def->nhosts ; r++) {
+        virNetworkDHCPHostDefPtr host = &(network->def->hosts[r]);
+        if ((host->mac) && (host->name)) {
+            snprintf(buf, sizeof(buf), "%s,%s,%s",
+                     host->mac, host->name, host->ip);
+        } else if (host->mac) {
+            snprintf(buf, sizeof(buf), "%s,%s",
+                     host->mac, host->ip);
+        } else if (host->name) {
+            snprintf(buf, sizeof(buf), "%s,%s",
+                     host->name, host->ip);
+        } else
+            continue;
+
+        APPEND_ARG(*argv, i++, "--dhcp-host");
         APPEND_ARG(*argv, i++, buf);
     }
 
