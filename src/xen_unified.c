@@ -10,8 +10,6 @@
 
 #include <config.h>
 
-#ifdef WITH_XEN
-
 /* Note:
  *
  * This driver provides a unified interface to the five
@@ -1383,4 +1381,3 @@ xenUnifiedRegister (void)
     return virRegisterDriver (&xenUnifiedDriver);
 }
 
-#endif /* WITH_XEN */

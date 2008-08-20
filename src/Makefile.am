@@ -30,80 +30,176 @@ EXTRA_DIST = libvirt_sym.version $(conf_DATA)
 
 lib_LTLIBRARIES = libvirt.la
 
-CLIENT_SOURCES =						\
-		libvirt.c internal.h				\
-		gnutls_1_0_compat.h				\
-		socketcompat.h					\
-                memory.c memory.h				\
-		hash.c hash.h					\
-		test.c test.h                                   \
-                buf.c buf.h					\
-		qparams.c qparams.h				\
-                domain_conf.c domain_conf.h                     \
-                capabilities.c capabilities.h			\
-		xml.c xml.h					\
-		event.c event.h					\
-		xen_unified.c xen_unified.h			\
-		xen_internal.c xen_internal.h			\
-		xs_internal.c xs_internal.h			\
-		xend_internal.c xend_internal.h			\
-		stats_linux.c stats_linux.h			\
-		sexpr.c sexpr.h					\
-		virterror.c					\
-		driver.h					\
-		proxy_internal.c proxy_internal.h		\
-		conf.c conf.h                                   \
-		network_conf.c network_conf.h                   \
-		xm_internal.c xm_internal.h                     \
-		remote_internal.c remote_internal.h		\
+# These files are not related to driver APIs. Simply generic
+# helper APIs for various purposes
+GENERIC_LIB_SOURCES =						\
 		bridge.c bridge.h				\
+		buf.c buf.h					\
+		conf.c conf.h					\
+		event.c event.h					\
 		iptables.c iptables.h				\
+		memory.c memory.h				\
+		qparams.c qparams.h				\
+		stats_linux.c stats_linux.h			\
 		uuid.c uuid.h					\
-		qemu_driver.c qemu_driver.h			\
-		qemu_conf.c qemu_conf.h				\
-		openvz_conf.c openvz_conf.h			\
-		openvz_driver.c openvz_driver.h			\
-		lxc_driver.c lxc_driver.h			\
-		lxc_controller.c lxc_controller.h		\
+		util.c util.h					\
+		virterror.c					\
+		xml.c xml.h
+
+# Domain driver generic impl APIs
+DOMAIN_CONF_SOURCES =						\
+		capabilities.c capabilities.h			\
+		domain_conf.c domain_conf.h			\
+		nodeinfo.h nodeinfo.c
+
+# Network driver generic impl APIs
+NETWORK_CONF_SOURCES =						\
+		network_conf.c network_conf.h
+
+# Storage driver generic impl APIs
+STORAGE_CONF_SOURCES =						\
+		storage_conf.h storage_conf.c
+
+
+# The remote RPC driver, covering domains, storage, networks, etc
+REMOTE_DRIVER_SOURCES =						\
+		gnutls_1_0_compat.h				\
+		remote_internal.c remote_internal.h		\
+		../qemud/remote_protocol.c			\
+		../qemud/remote_protocol.h			\
+		socketcompat.h
+
+# Mock driver, covering domains, storage, networks, etc
+TEST_DRIVER_SOURCES =						\
+		test.c test.h
+
+
+
+# Now the Hypervisor specific drivers
+XEN_DRIVER_SOURCES =						\
+		proxy_internal.c proxy_internal.h		\
+		sexpr.c sexpr.h					\
+		xen_internal.c xen_internal.h			\
+		xen_unified.c xen_unified.h			\
+		xend_internal.c xend_internal.h			\
+		xm_internal.c xm_internal.h			\
+		xs_internal.c xs_internal.h
+
+LXC_DRIVER_SOURCES =						\
 		lxc_conf.c lxc_conf.h				\
 		lxc_container.c lxc_container.h			\
-		veth.c veth.h			\
-                nodeinfo.h nodeinfo.c                           \
-		util.c util.h
+		lxc_controller.c lxc_controller.h		\
+		lxc_driver.c lxc_driver.h			\
+		veth.c veth.h
 
-SERVER_SOURCES =						\
-		../qemud/remote_protocol.c ../qemud/remote_protocol.h
+OPENVZ_DRIVER_SOURCES =						\
+		openvz_conf.c openvz_conf.h			\
+		openvz_driver.c openvz_driver.h
 
-if WITH_LIBVIRTD
+# XXX network driver should be split out of this
+QEMU_DRIVER_SOURCES =						\
+		qemu_conf.c qemu_conf.h				\
+		qemu_driver.c qemu_driver.h
 
-CLIENT_SOURCES += 						\
-		storage_conf.h storage_conf.c			\
+
+# And finally storage backend specific impls
+STORAGE_DRIVER_SOURCES =					\
 		storage_driver.h storage_driver.c		\
-		storage_backend.h storage_backend.c		\
+		storage_backend.h storage_backend.c
+
+STORAGE_DRIVER_FS_SOURCES =					\
 		storage_backend_fs.h storage_backend_fs.c
 
+STORAGE_DRIVER_LVM_SOURCES =					\
+		storage_backend_logical.h 			\
+		storage_backend_logical.c
+
+STORAGE_DRIVER_ISCSI_SOURCES =					\
+		storage_backend_iscsi.h storage_backend_iscsi.c
+
+STORAGE_DRIVER_DISK_SOURCES =					\
+		storage_backend_disk.h storage_backend_disk.c
+
+STORAGE_HELPER_DISK_SOURCES =					\
+		parthelper.c
+
+
+
+#########################
+#
+# Build up list of libvirt.la source files based on configure conditions
+#
+# First deal with sources usable in non-daemon context
+
+libvirt_la_SOURCES =						\
+		driver.h					\
+		hash.c hash.h					\
+		internal.h					\
+		libvirt.c					\
+		$(GENERIC_LIB_SOURCES)				\
+		$(DOMAIN_CONF_SOURCES)				\
+		$(NETWORK_CONF_SOURCES)				\
+		$(STORAGE_CONF_SOURCES)
+
+# Drivers usable outside daemon context
+if WITH_TEST
+libvirt_la_SOURCES += $(TEST_DRIVER_SOURCES)
+endif
+
+if WITH_REMOTE
+libvirt_la_SOURCES += $(REMOTE_DRIVER_SOURCES)
+endif
+
+if WITH_XEN
+libvirt_la_SOURCES += $(XEN_DRIVER_SOURCES)
+endif
+
+
+# Drivers usable inside daemon context
+if WITH_LIBVIRTD
+libvirt_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
+libvirt_la_SOURCES += $(STORAGE_DRIVER_FS_SOURCES)
+
+if WITH_QEMU
+libvirt_la_SOURCES += $(QEMU_DRIVER_SOURCES)
+endif
+
+if WITH_LXC
+libvirt_la_SOURCES += $(LXC_DRIVER_SOURCES)
+endif
+
+if WITH_OPENVZ
+libvirt_la_SOURCES += $(OPENVZ_DRIVER_SOURCES)
+endif
+
 if WITH_STORAGE_LVM
-CLIENT_SOURCES += storage_backend_logical.h storage_backend_logical.c
-else
-EXTRA_DIST += storage_backend_logical.h storage_backend_logical.c
+libvirt_la_SOURCES += $(STORAGE_DRIVER_LVM_SOURCES)
 endif
 
 if WITH_STORAGE_ISCSI
-CLIENT_SOURCES +=  storage_backend_iscsi.h storage_backend_iscsi.c
-else
-EXTRA_DIST +=  storage_backend_iscsi.h storage_backend_iscsi.c
+libvirt_la_SOURCES += $(STORAGE_DRIVER_ISCSI_SOURCES)
 endif
 
 if WITH_STORAGE_DISK
-CLIENT_SOURCES += storage_backend_disk.h storage_backend_disk.c
-else
-EXTRA_DIST += storage_backend_disk.h storage_backend_disk.c
+libvirt_la_SOURCES += $(STORAGE_DRIVER_DISK_SOURCES)
+endif
 endif
 
-endif
+# Add all conditional sources just in case...
+EXTRA_DIST +=							\
+		$(TEST_DRIVER_SOURCES)				\
+		$(REMOTE_DRIVER_SOURCES)			\
+		$(XEN_DRIVER_SOURCES)				\
+		$(QEMU_DRIVER_SOURCES)				\
+		$(LXC_DRIVER_SOURCES)				\
+		$(OPENVZ_DRIVER_SOURCES)			\
+		$(STORAGE_DRIVER_SOURCES)			\
+		$(STORAGE_DRIVER_FS_SOURCES)			\
+		$(STORAGE_DRIVER_LVM_SOURCES)			\
+		$(STORAGE_DRIVER_ISCSI_SOURCES)			\
+		$(STORAGE_DRIVER_DISK_SOURCES)
 
 
-libvirt_la_SOURCES = $(CLIENT_SOURCES) $(SERVER_SOURCES)
 libvirt_la_LIBADD = $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS) $(SELINUX_LIBS) \
                     $(NUMACTL_LIBS) \
 		    @CYGWIN_EXTRA_LIBADD@ ../gnulib/lib/libgnu.la
@@ -134,7 +230,11 @@ libvirt_test_la_CFLAGS = $(COVERAGE_CFLAGS)
 
 bin_PROGRAMS = virsh
 
-virsh_SOURCES = virsh.c console.c console.h util-lib.c util-lib.h
+virsh_SOURCES =							\
+		console.c console.h				\
+		util-lib.c util-lib.h				\
+		virsh.c
+
 virsh_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDFLAGS)
 virsh_DEPENDENCIES = $(DEPS)
 virsh_LDADD = $(LDADDS) $(VIRSH_LIBS)
@@ -176,14 +276,14 @@ if WITH_STORAGE_DISK
 if WITH_LIBVIRTD
 libexec_PROGRAMS = libvirt_parthelper
 
-libvirt_parthelper_SOURCES = parthelper.c
+libvirt_parthelper_SOURCES = $(STORAGE_HELPER_DISK_SOURCES)
 libvirt_parthelper_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS)
 libvirt_parthelper_LDADD = $(LIBPARTED_LIBS)
 libvirt_parthelper_CFLAGS =  $(LIBPARTED_CFLAGS)
 endif
-else
-EXTRA_DIST += parthelper.c
 endif
+EXTRA_DIST += $(STORAGE_HELPER_DISK_SOURCES)
+
 
 # Create the /var/cache/libvirt directory when installing.
 install-exec-local:

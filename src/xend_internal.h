@@ -25,10 +25,6 @@
 #include "domain_conf.h"
 #include "buf.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 int
 xenDaemonOpen_unix(virConnectPtr conn, const char *path);
 

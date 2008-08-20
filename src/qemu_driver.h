@@ -27,12 +27,8 @@
 
 #include <config.h>
 
-#ifdef WITH_QEMU
-
 #include "internal.h"
 
 int qemudRegister(void);
-
-#endif /* WITH_QEMU */
 
 #endif /* QEMUD_DRIVER_H */

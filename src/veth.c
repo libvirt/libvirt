@@ -11,8 +11,6 @@
 
 #include <config.h>
 
-#ifdef WITH_LXC
-
 #include <string.h>
 
 #include "veth.h"
@@ -218,4 +216,4 @@ error_out:
     VIR_FREE(pid);
     return rc;
 }
-#endif
+

@@ -26,8 +26,6 @@
 
 #include <config.h>
 
-#ifdef WITH_LXC
-
 #include "internal.h"
 #include "domain_conf.h"
 #include "capabilities.h"
@@ -52,6 +50,5 @@ void lxcError(virConnectPtr conn,
               int code, const char *fmt, ...)
     ATTRIBUTE_FORMAT(printf,4,5);
 
-#endif /* WITH_LXC */
 #endif /* LXC_CONF_H */
 

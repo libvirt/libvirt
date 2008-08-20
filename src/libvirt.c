@@ -36,17 +36,26 @@
 
 #include "uuid.h"
 #include "util.h"
+
+#ifdef WITH_TEST
 #include "test.h"
+#endif
+#ifdef WITH_XEN
 #include "xen_unified.h"
+#endif
+#ifdef WITH_REMOTE
 #include "remote_internal.h"
+#endif
+#ifdef WITH_QEMU
 #include "qemu_driver.h"
-#include "storage_driver.h"
+#endif
 #ifdef WITH_OPENVZ
 #include "openvz_driver.h"
 #endif
 #ifdef WITH_LXC
 #include "lxc_driver.h"
 #endif
+#include "storage_driver.h"
 
 /*
  * TODO:
@@ -273,11 +282,12 @@ virInitialize(void)
 #ifdef WITH_TEST
     if (testRegister() == -1) return -1;
 #endif
-#ifdef WITH_QEMU
-    if (qemudRegister() == -1) return -1;
-#endif
 #ifdef WITH_XEN
     if (xenUnifiedRegister () == -1) return -1;
+#endif
+#ifdef WITH_LIBVIRTD
+#ifdef WITH_QEMU
+    if (qemudRegister() == -1) return -1;
 #endif
 #ifdef WITH_OPENVZ
     if (openvzRegister() == -1) return -1;
@@ -285,11 +295,10 @@ virInitialize(void)
 #ifdef WITH_LXC
     if (lxcRegister() == -1) return -1;
 #endif
-#ifdef WITH_LIBVIRTD
     if (storageRegister() == -1) return -1;
-#endif
 #ifdef WITH_REMOTE
     if (remoteRegister () == -1) return -1;
+#endif
 #endif
 
     return(0);

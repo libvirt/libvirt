@@ -11,10 +11,6 @@
 #ifndef __VIR_CONF_H__
 #define __VIR_CONF_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * virConfType:
  * one of the possible type for a value from the configuration file
@@ -93,7 +89,4 @@ int		__virConfWriteMem	(char *memory,
 #define virConfWriteFile(f,c) __virConfWriteFile((f),(c))
 #define virConfWriteMem(m,l,c) __virConfWriteMem((m),(l),(c))
 
-#ifdef __cplusplus
-}
-#endif
 #endif /* __VIR_CONF_H__ */

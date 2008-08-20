@@ -23,16 +23,12 @@
 
 #include <config.h>
 
-#ifdef WITH_TEST
-
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
-
-#include "socketcompat.h"
 
 #include "test.h"
 #include "buf.h"
@@ -1645,5 +1641,3 @@ testRegister(void)
         return -1;
     return 0;
 }
-
-#endif /* WITH_TEST */

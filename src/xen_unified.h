@@ -21,10 +21,6 @@
 #include <winsock2.h>
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern int xenUnifiedRegister (void);
 
 #define XEN_UNIFIED_HYPERVISOR_OFFSET 0
@@ -93,7 +89,6 @@ struct xenUnifiedDriver {
  */
 struct _xenUnifiedPrivate {
     virCapsPtr caps;
-#ifdef WITH_XEN
     int handle;			/* Xen hypervisor handle */
 
     int xendConfigVersion;      /* XenD config version */
@@ -107,7 +102,6 @@ struct _xenUnifiedPrivate {
     struct sockaddr_in addr_in; /* the inet address */
 
     struct xs_handle *xshandle; /* handle to talk to the xenstore */
-#endif /* WITH_XEN */
 
     int proxy;                  /* fd of proxy. */
 
@@ -124,8 +118,5 @@ typedef struct _xenUnifiedPrivate *xenUnifiedPrivatePtr;
 int xenNbCells(virConnectPtr conn);
 int xenNbCpus(virConnectPtr conn);
 char *xenDomainUsedCpus(virDomainPtr dom);
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __VIR_XEN_UNIFIED_H__ */

@@ -26,14 +26,6 @@
 
 #include "libvirt/libvirt.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-  int virNodeInfoPopulate(virConnectPtr conn, virNodeInfoPtr nodeinfo);
-
-#ifdef __cplusplus
-}
-#endif
+int virNodeInfoPopulate(virConnectPtr conn, virNodeInfoPtr nodeinfo);
 
 #endif /* __VIR_NODEINFO_H__*/

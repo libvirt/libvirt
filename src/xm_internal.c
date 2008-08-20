@@ -22,7 +22,6 @@
  *
  */
 
-#ifdef WITH_XEN
 #include <config.h>
 
 #include <dirent.h>
@@ -2685,4 +2684,3 @@ xenXMDomainBlockPeek (virDomainPtr dom,
     return -1;
 }
 
-#endif /* WITH_XEN */

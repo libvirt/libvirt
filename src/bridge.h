@@ -24,7 +24,7 @@
 
 #include <config.h>
 
-#ifdef WITH_QEMU
+#if defined(WITH_QEMU) || defined(WITH_LXC)
 
 #include <net/if.h>
 #include <netinet/in.h>
@@ -98,6 +98,6 @@ int     brGetEnableSTP          (brControl *ctl,
                                  const char *bridge,
                                  int *enable);
 
-#endif /* WITH_QEMU */
+#endif /* WITH_QEMU || WITH_LXC */
 
 #endif /* __QEMUD_BRIDGE_H__ */

@@ -1,4 +1,22 @@
-Wed Aug 20 42:42:09 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+Wed Aug 20 21:05:09 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in, qemud/Makefile.am, src/Makefile.am: Use automake
+	conditions when deciding which files to include in build
+	* src/bridge.c, src/bridge.h, src/conf.h, src/console.h,
+	src/driver.h, src/hash.h, src/internal.h, src/libvirt.c,
+	src/lxc_conf.c, src/lxc_conf.h, src/lxc_container.c,
+	src/lxc_container.h, src/lxc_driver.c, src/lxc_driver.h,
+	src/nodeinfo.h, src/openvz_conf.c, src/openvz_driver.c,
+	src/proxy_internal.c, src/proxy_internal.h, src/qemu_conf.c,
+	src/qemu_conf.h, src/qemu_driver.c, src/qemu_driver.h,
+	src/remote_internal.h, src/test.c, src/test.h, src/veth.c,
+	src/xen_internal.c, src/xen_internal.h, src/xen_unified.c,
+	src/xen_unified.h, src/xend_internal.c, src/xend_internal.h,
+	src/xm_internal.c, src/xs_internal.c, src/xs_internal.h
+	tests/testutils.h: Remove preprocessor conditions for driver
+	compilation. Remove unneccessary "extern C" declarations.
+
+Wed Aug 20 20:42:09 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/util.c, src/util.h: Add convenience APIs for stripping
 	a file extension

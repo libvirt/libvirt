@@ -25,8 +25,6 @@
  *
  */
 
-#ifdef WITH_OPENVZ
-
 #include <config.h>
 
 #include <stdio.h>
@@ -826,4 +824,3 @@ int openvzAssignUUIDs(void)
     return 0;
 }
 
-#endif

@@ -26,8 +26,6 @@
 
 #include <config.h>
 
-#ifdef WITH_QEMU
-
 #include "internal.h"
 #include "iptables.h"
 #include "bridge.h"
@@ -101,7 +99,5 @@ int         qemudBuildCommandLine       (virConnectPtr conn,
                                          const char *migrateFrom);
 
 const char *qemudVirtTypeToString       (int type);
-
-#endif /* WITH_QEMU */
 
 #endif /* __QEMUD_CONF_H */

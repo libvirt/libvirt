@@ -26,10 +26,6 @@
 
 #include "libvirt/virterror.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 int remoteRegister (void);
 
 #define LIBVIRTD_LISTEN_ADDR NULL
@@ -48,7 +44,5 @@ int remoteRegister (void);
 #define LIBVIRT_SERVERKEY LIBVIRT_PKI_DIR "/libvirt/private/serverkey.pem"
 #define LIBVIRT_SERVERCERT LIBVIRT_PKI_DIR "/libvirt/servercert.pem"
 
-#ifdef __cplusplus
-}
-#endif
+
 #endif /* __VIR_REMOTE_INTERNAL_H__ */

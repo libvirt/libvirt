@@ -8,7 +8,6 @@
  * Daniel Veillard <veillard@redhat.com>
  */
 
-#ifdef WITH_XEN
 #include <config.h>
 
 #include <stdio.h>
@@ -938,5 +937,3 @@ char *xenStoreDomainGetName(virConnectPtr conn,
     return xs_read(priv->xshandle, 0, prop, &len);
 }
 
-
-#endif /* WITH_XEN */

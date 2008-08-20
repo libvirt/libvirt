@@ -10,7 +10,6 @@
  *  archive for more details.
  */
 
-#ifdef WITH_XEN
 #include <config.h>
 
 #include <stdio.h>
@@ -5549,4 +5548,3 @@ virDomainXMLDevID(virDomainPtr domain,
 }
 
 #endif /* ! PROXY */
-#endif /* WITH_XEN */

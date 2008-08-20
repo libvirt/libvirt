@@ -23,8 +23,6 @@
 
 #include <config.h>
 
-#ifdef WITH_QEMU
-
 #include <sys/types.h>
 #include <sys/poll.h>
 #include <dirent.h>
@@ -3971,4 +3969,3 @@ int qemudRegister(void) {
     return 0;
 }
 
-#endif /* WITH_QEMU */

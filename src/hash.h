@@ -12,10 +12,6 @@
 #ifndef __VIR_HASH_H__
 #define __VIR_HASH_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*
  * The hash table.
  */
@@ -90,7 +86,4 @@ int virHashForEach(virHashTablePtr table, virHashIterator iter, const void *data
 int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, virHashDeallocator f, const void *data);
 void *virHashSearch(virHashTablePtr table, virHashSearcher iter, const void *data);
 
-#ifdef __cplusplus
-}
-#endif
 #endif                          /* ! __VIR_HASH_H__ */

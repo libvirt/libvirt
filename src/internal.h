@@ -38,10 +38,6 @@
 #include "libvirt/virterror.h"
 #include "driver.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* On architectures which lack these limits, define them (ie. Cygwin).
  * Note that the libvirt code should be robust enough to handle the
  * case where actual value is longer than these limits (eg. by setting
@@ -366,7 +362,4 @@ int __virDomainMigratePrepare (virConnectPtr dconn, char **cookie, int *cookiele
 int __virDomainMigratePerform (virDomainPtr domain, const char *cookie, int cookielen, const char *uri, unsigned long flags, const char *dname, unsigned long bandwidth);
 virDomainPtr __virDomainMigrateFinish (virConnectPtr dconn, const char *dname, const char *cookie, int cookielen, const char *uri, unsigned long flags);
 
-#ifdef __cplusplus
-}
-#endif                          /* __cplusplus */
 #endif                          /* __VIR_INTERNAL_H__ */

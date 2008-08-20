@@ -13,10 +13,6 @@
 
 #include <signal.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*
  * List of registered drivers numbers
  */
@@ -611,7 +607,4 @@ int virRegisterStorageDriver(virStorageDriverPtr);
 int virRegisterStateDriver(virStateDriverPtr);
 #endif
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 #endif /* __VIR_DRIVER_H__ */

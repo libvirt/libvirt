@@ -2,19 +2,30 @@
 
 INCLUDES = $(LIBVIRT_FEATURES)
 
-# Distribute the generated files so that rpcgen isn't required on the
-# target machine (although almost any Unix machine will have it).
-EXTRA_DIST = libvirtd.init.in libvirtd.sysconf default-network.xml \
-	remote_protocol.x \
-	remote_protocol.c remote_protocol.h \
-	remote_generate_stubs.pl rpcgen_fix.pl \
-	remote_dispatch_prototypes.h \
-	remote_dispatch_localvars.h \
-	remote_dispatch_proc_switch.h \
-	mdns.c mdns.h \
-        libvirtd.sasl \
-        libvirtd.conf \
-        libvirtd.policy
+DAEMON_SOURCES =					\
+		event.c event.h				\
+		qemud.c qemud.h				\
+		remote.c				\
+		remote_dispatch_prototypes.h		\
+		remote_dispatch_localvars.h		\
+		remote_dispatch_proc_switch.h		\
+		remote_protocol.h remote_protocol.c	\
+		$(srcdir)/../src/util-lib.c
+
+AVAHI_SOURCES =						\
+		mdns.c mdns.h
+
+EXTRA_DIST =						\
+	default-network.xml				\
+	remote_generate_stubs.pl rpcgen_fix.pl		\
+	remote_protocol.x				\
+	libvirtd.conf					\
+	libvirtd.init.in				\
+	libvirtd.policy					\
+	libvirtd.sasl					\
+	libvirtd.sysconf				\
+	$(AVAHI_SOURCES)				\
+	$(DAEMON_SOURCES)
 
 if RPCGEN
 SUFFIXES = .x
@@ -45,12 +56,7 @@ sbin_PROGRAMS = libvirtd
 confdir = $(sysconfdir)/libvirt/
 conf_DATA = libvirtd.conf
 
-libvirtd_SOURCES = \
-		qemud.c qemud.h \
-		remote_protocol.h remote_protocol.c \
-		remote.c \
-		$(srcdir)/../src/util-lib.c \
-		event.c event.h
+libvirtd_SOURCES = $(DAEMON_SOURCES)
 
 #-D_XOPEN_SOURCE=600 -D_XOPEN_SOURCE_EXTENDED=1 -D_POSIX_C_SOURCE=199506L
 libvirtd_CFLAGS = \
@@ -79,7 +85,7 @@ policydir = $(datadir)/PolicyKit/policy
 endif
 
 if HAVE_AVAHI
-libvirtd_SOURCES += mdns.c mdns.h
+libvirtd_SOURCES += $(AVAHI_SOURCES)
 libvirtd_CFLAGS += $(AVAHI_CFLAGS)
 libvirtd_LDADD += $(AVAHI_LIBS)
 endif

@@ -25,8 +25,6 @@
 /* includes */
 #include <config.h>
 
-#ifdef WITH_LXC
-
 #include <sys/utsname.h>
 
 #include "lxc_conf.h"
@@ -111,4 +109,3 @@ no_memory:
 }
 
 
-#endif /* WITH_LXC */

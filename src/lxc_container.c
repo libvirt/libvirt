@@ -23,8 +23,6 @@
 
 #include <config.h>
 
-#ifdef WITH_LXC
-
 #include <fcntl.h>
 #include <limits.h>
 #include <stdlib.h>
@@ -406,4 +404,3 @@ int lxcContainerAvailable(int features)
     return 0;
 }
 
-#endif /* WITH_LXC */

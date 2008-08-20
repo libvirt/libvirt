@@ -26,8 +26,6 @@
 
 #include "lxc_conf.h"
 
-#ifdef WITH_LXC
-
 enum {
     LXC_CONTAINER_FEATURE_NET = (1 << 0),
 };
@@ -41,7 +39,5 @@ int lxcContainerStart(virDomainDefPtr def,
                       char *ttyPath);
 
 int lxcContainerAvailable(int features);
-
-#endif /* LXC_DRIVER_H */
 
 #endif /* LXC_CONTAINER_H */

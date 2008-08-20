@@ -8,8 +8,6 @@
  * Daniel Veillard <veillard@redhat.com>
  */
 
-#ifdef WITH_XEN
-
 #include <config.h>
 
 #include <stdio.h>
@@ -3293,4 +3291,3 @@ xenHypervisorGetVcpuMax(virDomainPtr domain)
     return maxcpu;
 }
 
-#endif /* WITH_XEN */

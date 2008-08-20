@@ -25,8 +25,6 @@
  *
  */
 
-#ifdef WITH_OPENVZ
-
 #include <config.h>
 
 #include <sys/types.h>
@@ -1015,4 +1013,3 @@ int openvzRegister(void) {
     return 0;
 }
 
-#endif /* WITH_OPENVZ */

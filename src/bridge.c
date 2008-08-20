@@ -21,7 +21,7 @@
 
 #include <config.h>
 
-#ifdef WITH_QEMU
+#if defined(WITH_QEMU) || defined(WITH_LXC)
 
 #include "bridge.h"
 
@@ -750,4 +750,4 @@ brSetEnableSTP(brControl *ctl ATTRIBUTE_UNUSED,
     return retval;
 }
 
-#endif /* WITH_QEMU */
+#endif /* WITH_QEMU || WITH_LXC */

@@ -11,10 +11,6 @@
 #ifndef __VIR_XEN_INTERNAL_H__
 #define __VIR_XEN_INTERNAL_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "internal.h"
 #include "capabilities.h"
 
@@ -102,7 +98,5 @@ int	xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn,
                                           unsigned long long *freeMems,
                                           int startCell,
                                           int maxCells);
-#ifdef __cplusplus
-}
-#endif
+
 #endif                          /* __VIR_XEN_INTERNAL_H__ */

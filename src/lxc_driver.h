@@ -26,11 +26,7 @@
 
 #include <config.h>
 
-#ifdef WITH_LXC
-
 /* Function declarations */
 int lxcRegister(void);
-
-#endif /* WITH_LXC */
 
 #endif /* LXC_DRIVER_H */

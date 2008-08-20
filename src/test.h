@@ -26,13 +26,6 @@
 
 #include "internal.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 int testRegister(void);
 
-#ifdef __cplusplus
-}
-#endif
 #endif /* __VIR_TEST_INTERNAL_H__ */

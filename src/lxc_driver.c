@@ -23,8 +23,6 @@
 
 #include <config.h>
 
-#ifdef WITH_LXC
-
 #include <fcntl.h>
 #include <sched.h>
 #include <sys/utsname.h>
@@ -1112,5 +1110,3 @@ int lxcRegister(void)
     virRegisterStateDriver(&lxcStateDriver);
     return 0;
 }
-
-#endif /* WITH_LXC */

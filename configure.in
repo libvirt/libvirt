@@ -242,27 +242,35 @@ fi
 LIBVIRT_FEATURES=
 WITH_XEN=0
 
-if test "$with_openvz" = "yes" ; then
+if test "$with_openvz" = "yes"; then
     LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_OPENVZ"
 fi
+AM_CONDITIONAL([WITH_OPENVZ], [test "$with_openvz" = "yes"])
+
 if test "$with_lxc" = "yes" ; then
     LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_LXC"
 fi
+AM_CONDITIONAL([WITH_LXC], [test "$with_lxc" = "yes"])
+
 if test "$with_qemu" = "yes" ; then
     LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_QEMU"
 fi
+AM_CONDITIONAL([WITH_QEMU], [test "$with_qemu" = "yes"])
 
 if test "$with_test" = "yes" ; then
     LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_TEST"
 fi
+AM_CONDITIONAL([WITH_TEST], [test "$with_test" = "yes"])
 
 if test "$with_remote" = "yes" ; then
     LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_REMOTE"
 fi
+AM_CONDITIONAL([WITH_REMOTE], [test "$with_remote" = "yes"])
 
 if test "$with_libvirtd" = "yes" ; then
     LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_LIBVIRTD"
 fi
+AM_CONDITIONAL([WITH_LIBVIRTD], [test "$with_libvirtd" = "yes"])
 
 if test "$with_xen" = "yes" ; then
     dnl search for the Xen store library
@@ -295,11 +303,12 @@ if test "$with_xen" = "yes" ; then
 #include <xen/xen.h>
 ])
 fi
+AM_CONDITIONAL([WITH_XEN], [test "$WITH_XEN" = "1"])
 
 dnl
-dnl check for kernel headers required by qemud/bridge.c
+dnl check for kernel headers required by src/bridge.c
 dnl
-if test "$with_qemu" = "yes" ; then
+if test "$with_qemu" = "yes" -o "$with_lxc" = "yes" ; then
   AC_CHECK_HEADERS([linux/param.h linux/sockios.h linux/if_bridge.h linux/if_tun.h],,
                    AC_MSG_ERROR([You must install kernel-headers in order to compile libvirt]))
 fi

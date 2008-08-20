@@ -11,10 +11,6 @@
 #ifndef __VIR_XS_INTERNAL_H__
 #define __VIR_XS_INTERNAL_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "internal.h"
 
 extern struct xenUnifiedDriver xenStoreDriver;
@@ -57,7 +53,4 @@ char *		xenStoreDomainGetDiskID(virConnectPtr conn,
 char *          xenStoreDomainGetName(virConnectPtr conn,
                                       int id);
 
-#ifdef __cplusplus
-}
-#endif
 #endif /* __VIR_XS_INTERNAL_H__ */

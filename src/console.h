@@ -25,15 +25,7 @@
 
 #ifndef __MINGW32__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-    int vshRunConsole(const char *tty);
-
-#ifdef __cplusplus
-}
-#endif
+int vshRunConsole(const char *tty);
 
 #endif /* !__MINGW32__ */
 

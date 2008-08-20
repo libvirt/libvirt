@@ -23,8 +23,6 @@
 
 #include <config.h>
 
-#ifdef WITH_QEMU
-
 #include <dirent.h>
 #include <string.h>
 #include <limits.h>
@@ -1256,5 +1254,3 @@ int qemudBuildCommandLine(virConnectPtr conn,
 #undef ADD_ARG_SPACE
 }
 
-
-#endif /* WITH_QEMU */

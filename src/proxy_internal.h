@@ -14,10 +14,6 @@
 
 #include "libvirt/libvirt.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define PROXY_SOCKET_PATH "/tmp/livirt_proxy_conn"
 #define PROXY_PROTO_VERSION 1
 
@@ -98,7 +94,4 @@ extern virDomainPtr xenProxyLookupByName(virConnectPtr conn,
 
 extern char *       xenProxyDomainDumpXML(virDomainPtr domain,
                                           int flags);
-#ifdef __cplusplus
-}
-#endif                          /* __cplusplus */
 #endif /* __LIBVIR_PROXY_H__ */
