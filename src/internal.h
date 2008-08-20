@@ -22,6 +22,7 @@
 #define pthread_mutex_destroy(lk) /*empty*/
 #define pthread_mutex_lock(lk) /*empty*/
 #define pthread_mutex_unlock(lk) /*empty*/
+#define pthread_sigmask(h, s, o) sigprocmask((h), (s), (o))
 #endif
 
 /* The library itself is allowed to use deprecated functions /

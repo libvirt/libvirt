@@ -4,6 +4,7 @@
  */
 
 #include "remote_protocol.h"
+#include <config.h>
 #include "internal.h"
 
 bool_t

@@ -37,6 +37,7 @@
 #include <sys/wait.h>
 #endif
 #include <string.h>
+#include <signal.h>
 #if HAVE_TERMIOS_H
 #include <termios.h>
 #endif
@@ -52,6 +53,10 @@
 #include "util.h"
 #include "memory.h"
 #include "util-lib.c"
+
+#ifndef NSIG
+# define NSIG 32
+#endif
 
 #ifndef MIN
 # define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -110,9 +115,23 @@ static int
 _virExec(virConnectPtr conn,
          const char *const*argv,
          int *retpid, int infd, int *outfd, int *errfd, int non_block) {
-    int pid, null;
+    int pid, null, i;
     int pipeout[2] = {-1,-1};
     int pipeerr[2] = {-1,-1};
+    sigset_t oldmask, newmask;
+    struct sigaction sig_action;
+
+    /*
+     * Need to block signals now, so that child process can safely
+     * kill off caller's signal handlers without a race.
+     */
+    sigfillset(&newmask);
+    if (pthread_sigmask(SIG_SETMASK, &newmask, &oldmask) != 0) {
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("cannot block signals: %s"),
+                    strerror(errno));
+        return -1;
+    }
 
     if ((null = open(_PATH_DEVNULL, O_RDONLY)) < 0) {
         ReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -172,6 +191,16 @@ _virExec(virConnectPtr conn,
             close(pipeerr[1]);
             *errfd = pipeerr[0];
         }
+
+        /* Restore our original signal mask now child is safely
+           running */
+        if (pthread_sigmask(SIG_SETMASK, &oldmask, NULL) != 0) {
+            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("cannot unblock signals: %s"),
+                        strerror(errno));
+            return -1;
+        }
+
         *retpid = pid;
         return 0;
     }
@@ -185,6 +214,30 @@ _virExec(virConnectPtr conn,
        get sent to stderr where they stand a fighting chance
        of being seen / logged */
     virSetErrorFunc(NULL, NULL);
+
+    /* Clear out all signal handlers from parent so nothing
+       unexpected can happen in our child once we unblock
+       signals */
+    sig_action.sa_handler = SIG_DFL;
+    sig_action.sa_flags = 0;
+    sigemptyset(&sig_action.sa_mask);
+
+    for (i = 1 ; i < NSIG ; i++)
+        /* Only possible errors are EFAULT or EINVAL
+           The former wont happen, the latter we
+           expect, so no need to check return value */
+        sigaction(i, &sig_action, NULL);
+
+    /* Unmask all signals in child, since we've no idea
+       what the caller's done with their signal mask
+       and don't want to propagate that to children */
+    sigemptyset(&newmask);
+    if (pthread_sigmask(SIG_SETMASK, &newmask, NULL) != 0) {
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("cannot unblock signals: %s"),
+                    strerror(errno));
+        return -1;
+    }
 
     if (pipeout[0] > 0)
         close(pipeout[0]);

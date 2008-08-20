@@ -1,3 +1,12 @@
+Wed Aug 20 09:35:33 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Avoid signal race in virExec()
+	* src/util.c: Block signals when forking and clear child's
+	signal handlers.
+	* src/remote_protocol.{c,h,x}: Add config.h include file
+	* src/internal.h: define pthread_sigmask interms of sigprocmask
+	for non-pthreads systems
+
 Wed Aug 20 09:28:33 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/util.c: Re-arrange virExec() to improve error reporting
