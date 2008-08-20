@@ -736,7 +736,9 @@ static int openvzGetNodeInfo(virConnectPtr conn,
 
 static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
     int got = 0;
-    int veid, pid, outfd, errfd;
+    int veid, pid;
+    int outfd = -1;
+    int errfd = -1;
     int ret;
     char buf[32];
     char *endptr;
@@ -772,7 +774,7 @@ static int openvzNumDomains(virConnectPtr conn ATTRIBUTE_UNUSED) {
 static int openvzListDefinedDomains(virConnectPtr conn,
                             char **const names, int nnames) {
     int got = 0;
-    int veid, pid, outfd, errfd, ret;
+    int veid, pid, outfd = -1, errfd = -1, ret;
     char vpsname[OPENVZ_NAME_MAX];
     char buf[32];
     char *endptr;

@@ -949,6 +949,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         qemudLog(QEMUD_WARN, _("Unable to write argv to logfile %d: %s\n"),
                  errno, strerror(errno));
 
+    vm->stdout_fd = -1;
+    vm->stderr_fd = -1;
+
     ret = virExecNonBlock(conn, argv, &vm->pid,
                           vm->stdin_fd, &vm->stdout_fd, &vm->stderr_fd);
     if (ret == 0) {

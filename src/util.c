@@ -118,6 +118,8 @@ _virExec(virConnectPtr conn,
     int pid, null, i;
     int pipeout[2] = {-1,-1};
     int pipeerr[2] = {-1,-1};
+    int childout = -1;
+    int childerr = -1;
     sigset_t oldmask, newmask;
     struct sigaction sig_action;
 
@@ -140,39 +142,66 @@ _virExec(virConnectPtr conn,
         goto cleanup;
     }
 
-    if ((outfd != NULL && pipe(pipeout) < 0) ||
-        (errfd != NULL && pipe(pipeerr) < 0)) {
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("cannot create pipe: %s"), strerror(errno));
-        goto cleanup;
+    if (outfd != NULL) {
+        if (*outfd == -1) {
+            if (pipe(pipeout) < 0) {
+                ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                            _("cannot create pipe: %s"), strerror(errno));
+                goto cleanup;
+            }
+
+            if (non_block &&
+                virSetNonBlock(pipeout[0]) == -1) {
+                ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                            _("Failed to set non-blocking file descriptor flag"));
+                goto cleanup;
+            }
+
+            if (virSetCloseExec(pipeout[0]) == -1) {
+                ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                            _("Failed to set close-on-exec file descriptor flag"));
+                goto cleanup;
+            }
+
+            childout = pipeout[1];
+        } else {
+            childout = *outfd;
+        }
+#ifndef ENABLE_DEBUG
+    } else {
+        childout = null;
+#endif
     }
 
-    if (outfd) {
-        if(non_block &&
-           virSetNonBlock(pipeout[0]) == -1) {
-            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("Failed to set non-blocking file descriptor flag"));
-            goto cleanup;
-        }
+    if (errfd != NULL) {
+        if (*errfd == -1) {
+            if (pipe(pipeerr) < 0) {
+                ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                            _("Failed to create pipe: %s"), strerror(errno));
+                goto cleanup;
+            }
 
-        if(virSetCloseExec(pipeout[0]) == -1) {
-            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("Failed to set close-on-exec file descriptor flag"));
-            goto cleanup;
+            if (non_block &&
+                virSetNonBlock(pipeerr[0]) == -1) {
+                ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                            _("Failed to set non-blocking file descriptor flag"));
+                goto cleanup;
+            }
+
+            if (virSetCloseExec(pipeerr[0]) == -1) {
+                ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                            _("Failed to set close-on-exec file descriptor flag"));
+                goto cleanup;
+            }
+
+            childerr = pipeerr[1];
+        } else {
+            childerr = *errfd;
         }
-    }
-    if (errfd) {
-        if(non_block &&
-           virSetNonBlock(pipeerr[0]) == -1) {
-            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("Failed to set non-blocking file descriptor flag"));
-            goto cleanup;
-        }
-        if(virSetCloseExec(pipeerr[0]) == -1) {
-            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("Failed to set close-on-exec file descriptor flag"));
-            goto cleanup;
-        }
+#ifndef ENABLE_DEBUG
+    } else {
+        childerr = null;
+#endif
     }
 
     if ((pid = fork()) < 0) {
@@ -183,11 +212,11 @@ _virExec(virConnectPtr conn,
 
     if (pid) { /* parent */
         close(null);
-        if (outfd) {
+        if (outfd && *outfd == -1) {
             close(pipeout[1]);
             *outfd = pipeout[0];
         }
-        if (errfd) {
+        if (errfd && *errfd == -1) {
             close(pipeerr[1]);
             *errfd = pipeerr[0];
         }
@@ -250,35 +279,25 @@ _virExec(virConnectPtr conn,
                     _("failed to setup stdin file handle: %s"), strerror(errno));
         _exit(1);
     }
-#ifndef ENABLE_DEBUG
-    if (dup2(pipeout[1] > 0 ? pipeout[1] : null, STDOUT_FILENO) < 0) {
+    if (childout > 0 &&
+        dup2(childout, STDOUT_FILENO) < 0) {
         ReportError(conn, VIR_ERR_INTERNAL_ERROR,
                     _("failed to setup stdout file handle: %s"), strerror(errno));
         _exit(1);
     }
-    if (dup2(pipeerr[1] > 0 ? pipeerr[1] : null, STDERR_FILENO) < 0) {
+    if (childerr > 0 &&
+        dup2(childerr, STDERR_FILENO) < 0) {
         ReportError(conn, VIR_ERR_INTERNAL_ERROR,
                     _("failed to setup stderr file handle: %s"), strerror(errno));
         _exit(1);
     }
-#else /* ENABLE_DEBUG */
-    if (pipeout[1] > 0 && dup2(pipeout[1], STDOUT_FILENO) < 0) {
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("failed to setup stderr file handle: %s"), strerror(errno));
-        _exit(1);
-    }
-    if (pipeerr[1] > 0 && dup2(pipeerr[1], STDERR_FILENO) < 0) {
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("failed to setup stdout file handle: %s"), strerror(errno));
-        _exit(1);
-    }
-#endif /* ENABLE_DEBUG */
 
     close(null);
-    if (pipeout[1] > 0)
-        close(pipeout[1]);
-    if (pipeerr[1] > 0)
-        close(pipeerr[1]);
+    if (childout > 0)
+        close(childout);
+    if (childerr > 0 &&
+        childerr != childout)
+        close(childerr);
 
     execvp(argv[0], (char **) argv);
 

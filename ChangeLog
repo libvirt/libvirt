@@ -1,3 +1,10 @@
+Wed Aug 20 09:59:54 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/util.c: Allow a pre-opened FD to be passed in for childs
+	stdout/err
+	* src/openvz_driver.c, src/qemu_driver.c: Initialize FDs to
+	-1 before calling virExec()
+
 Wed Aug 20 09:35:33 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Avoid signal race in virExec()
