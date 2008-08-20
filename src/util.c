@@ -111,11 +111,14 @@ static int virSetNonBlock(int fd) {
     return 0;
 }
 
-static int
-_virExec(virConnectPtr conn,
-         const char *const*argv,
-         int *retpid, int infd, int *outfd, int *errfd, int non_block) {
-    int pid, null, i;
+int
+virExec(virConnectPtr conn,
+        const char *const*argv,
+        const char *const*envp,
+        int *retpid,
+        int infd, int *outfd, int *errfd,
+        int flags) {
+    int pid, null, i, openmax;
     int pipeout[2] = {-1,-1};
     int pipeerr[2] = {-1,-1};
     int childout = -1;
@@ -150,7 +153,7 @@ _virExec(virConnectPtr conn,
                 goto cleanup;
             }
 
-            if (non_block &&
+            if ((flags & VIR_EXEC_NONBLOCK) &&
                 virSetNonBlock(pipeout[0]) == -1) {
                 ReportError(conn, VIR_ERR_INTERNAL_ERROR,
                             _("Failed to set non-blocking file descriptor flag"));
@@ -181,7 +184,7 @@ _virExec(virConnectPtr conn,
                 goto cleanup;
             }
 
-            if (non_block &&
+            if ((flags & VIR_EXEC_NONBLOCK) &&
                 virSetNonBlock(pipeerr[0]) == -1) {
                 ReportError(conn, VIR_ERR_INTERNAL_ERROR,
                             _("Failed to set non-blocking file descriptor flag"));
@@ -268,10 +271,40 @@ _virExec(virConnectPtr conn,
         return -1;
     }
 
-    if (pipeout[0] > 0)
-        close(pipeout[0]);
-    if (pipeerr[0] > 0)
-        close(pipeerr[0]);
+    openmax = sysconf (_SC_OPEN_MAX);
+    for (i = 3; i < openmax; i++)
+        if (i != infd &&
+            i != null &&
+            i != childout &&
+            i != childerr)
+            close(i);
+
+    if (flags & VIR_EXEC_DAEMON) {
+        if (setsid() < 0) {
+            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("cannot become session leader: %s"),
+                        strerror(errno));
+            _exit(1);
+        }
+
+        if (chdir("/") < 0) {
+            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("cannot change to root directory: %s"),
+                        strerror(errno));
+            _exit(1);
+        }
+
+        pid = fork();
+        if (pid < 0) {
+            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("cannot fork child process: %s"),
+                        strerror(errno));
+            _exit(1);
+        }
+
+        if (pid > 0)
+            _exit(0);
+    }
 
 
     if (dup2(infd >= 0 ? infd : null, STDIN_FILENO) < 0) {
@@ -299,7 +332,10 @@ _virExec(virConnectPtr conn,
         childerr != childout)
         close(childerr);
 
-    execvp(argv[0], (char **) argv);
+    if (envp)
+        execve(argv[0], (char **) argv, (char**)envp);
+    else
+        execvp(argv[0], (char **) argv);
 
     ReportError(conn, VIR_ERR_INTERNAL_ERROR,
                 _("cannot execute binary '%s': %s"),
@@ -329,22 +365,6 @@ _virExec(virConnectPtr conn,
     return -1;
 }
 
-int
-virExec(virConnectPtr conn,
-        const char *const*argv,
-        int *retpid, int infd, int *outfd, int *errfd) {
-
-    return(_virExec(conn, argv, retpid, infd, outfd, errfd, 0));
-}
-
-int
-virExecNonBlock(virConnectPtr conn,
-                const char *const*argv,
-                int *retpid, int infd, int *outfd, int *errfd) {
-
-    return(_virExec(conn, argv, retpid, infd, outfd, errfd, 1));
-}
-
 /**
  * @conn connection to report errors against
  * @argv NULL terminated argv to run
@@ -366,7 +386,7 @@ virRun(virConnectPtr conn,
        int *status) {
     int childpid, exitstatus, ret;
 
-    if ((ret = virExec(conn, argv, &childpid, -1, NULL, NULL)) < 0)
+    if ((ret = virExec(conn, argv, NULL, &childpid, -1, NULL, NULL, VIR_EXEC_NONE)) < 0)
         return ret;
 
     while ((ret = waitpid(childpid, &exitstatus, 0) == -1) && errno == EINTR);

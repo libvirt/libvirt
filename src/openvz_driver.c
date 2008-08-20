@@ -744,7 +744,7 @@ static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
     char *endptr;
     const char *cmd[] = {VZLIST, "-ovpsid", "-H" , NULL};
 
-    ret = virExec(conn, cmd, &pid, -1, &outfd, &errfd);
+    ret = virExec(conn, cmd, NULL, &pid, -1, &outfd, &errfd, VIR_EXEC_NONE);
     if(ret == -1) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZLIST);
@@ -781,7 +781,7 @@ static int openvzListDefinedDomains(virConnectPtr conn,
     const char *cmd[] = {VZLIST, "-ovpsid", "-H", "-S", NULL};
 
     /* the -S options lists only stopped domains */
-    ret = virExec(conn, cmd, &pid, -1, &outfd, &errfd);
+    ret = virExec(conn, cmd, NULL, &pid, -1, &outfd, &errfd, VIR_EXEC_NONE);
     if(ret == -1) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZLIST);

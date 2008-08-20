@@ -27,10 +27,20 @@
 #include "util-lib.h"
 #include "verify.h"
 
-int virExec(virConnectPtr conn, const char *const*argv, int *retpid,
-            int infd, int *outfd, int *errfd);
-int virExecNonBlock(virConnectPtr conn, const char *const*argv, int *retpid,
-                    int infd, int *outfd, int *errfd);
+enum {
+    VIR_EXEC_NONE   = 0,
+    VIR_EXEC_NONBLOCK = (1 << 0),
+    VIR_EXEC_DAEMON = (1 << 1),
+};
+
+int virExec(virConnectPtr conn,
+            const char *const*argv,
+            const char *const*envp,
+            int *retpid,
+            int infd,
+            int *outfd,
+            int *errfd,
+            int flags);
 int virRun(virConnectPtr conn, const char *const*argv, int *status);
 
 int __virFileReadAll(const char *path,

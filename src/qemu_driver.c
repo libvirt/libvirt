@@ -952,8 +952,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     vm->stdout_fd = -1;
     vm->stderr_fd = -1;
 
-    ret = virExecNonBlock(conn, argv, &vm->pid,
-                          vm->stdin_fd, &vm->stdout_fd, &vm->stderr_fd);
+    ret = virExec(conn, argv, NULL, &vm->pid,
+                  vm->stdin_fd, &vm->stdout_fd, &vm->stderr_fd,
+                  VIR_EXEC_NONBLOCK);
     if (ret == 0) {
         vm->def->id = driver->nextvmid++;
         vm->state = migrateFrom ? VIR_DOMAIN_PAUSED : VIR_DOMAIN_RUNNING;
@@ -1200,7 +1201,7 @@ dhcpStartDhcpDaemon(virConnectPtr conn,
     if (qemudBuildDnsmasqArgv(conn, network, &argv) < 0)
         return -1;
 
-    ret = virExecNonBlock(conn, argv, &network->dnsmasqPid, -1, NULL, NULL);
+    ret = virExec(conn, argv, NULL, &network->dnsmasqPid, -1, NULL, NULL, VIR_EXEC_NONBLOCK);
 
     for (i = 0; argv[i]; i++)
         VIR_FREE(argv[i]);

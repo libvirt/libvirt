@@ -1,3 +1,10 @@
+Wed Aug 20 10:16:54 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/util.c, src/util.h: Allow flags to be passed to specify
+	non-blocking, or daemon mode
+	* src/qemu_driver.c, src/openvz_driver.c, src/storage_backend.c:
+	Switch to virExec() with VIR_EXEC_NONBLOCK flag
+
 Wed Aug 20 09:59:54 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/util.c: Allow a pre-opened FD to be passed in for childs
