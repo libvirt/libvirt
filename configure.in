@@ -97,6 +97,7 @@ AC_PATH_PROG([RM], [rm], [/bin/rm])
 AC_PATH_PROG([MV], [mv], [/bin/mv])
 AC_PATH_PROG([TAR], [tar], [/bin/tar])
 AC_PATH_PROG([XMLLINT], [xmllint], [/usr/bin/xmllint])
+AC_PATH_PROG([XMLCATALOG], [xmlcatalog], [/usr/bin/xmlcatalog])
 AC_PATH_PROG([XSLTPROC], [xsltproc], [/usr/bin/xsltproc])
 
 AC_PROG_MKDIR_P

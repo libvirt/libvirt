@@ -72,6 +72,7 @@ Requires: parted
 BuildRequires: xen-devel
 %endif
 BuildRequires: libxml2-devel
+BuildRequires: xhtml1-dtds
 BuildRequires: readline-devel
 BuildRequires: ncurses-devel
 BuildRequires: gettext

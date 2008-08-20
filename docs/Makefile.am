@@ -94,18 +94,22 @@ ChangeLog.html.in: ChangeLog.xml ChangeLog.xsl
 	  $(XSLTPROC) --stringparam pagename $$name --nonet --html $(top_srcdir)/docs/site.xsl $< > $@ || (rm $@ && exit 1) ; fi )
 
 %.html: %.html.tmp
-	@(if [ -x $(XMLLINT) ] ; then \
+	@(if [ -x $(XMLLINT) -a -x $(XMLCATALOG) ] ; then \
+	  if $(XMLCATALOG) /etc/xml/catalog "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" > /dev/null ; then \
 	  echo "Validating $@" ; \
-	  $(XMLLINT) --nonet --format --valid $< > $@ || : ; fi );
+	  $(XMLLINT) --nonet --format --valid $< > $@ || : ; \
+	  else echo "missing XHTML1 DTD" ; fi ; fi );
 
 
 $(srcdir)/html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
 	-@(if [ -x $(XSLTPROC) ] ; then \
 	  echo "Rebuilding the HTML pages from the XML API" ; \
 	  $(XSLTPROC) --nonet $(srcdir)/newapi.xsl libvirt-api.xml ; fi )
-	-@(if [ -x $(XMLLINT) ] ; then \
+	-@(if [ -x $(XMLLINT) -a -x $(XMLCATALOG) ] ; then \
+	  if $(XMLCATALOG) /etc/xml/catalog "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" > /dev/null ; then \
 	  echo "Validating the resulting XHTML pages" ; \
-	  $(XMLLINT) --nonet --valid --noout html/*.html ; fi );
+	  $(XMLLINT) --nonet --valid --noout html/*.html ; \
+	  else echo "missing XHTML1 DTD" ; fi ; fi );
 
 libvirt-api.xml libvirt-refs.xml: apibuild.py \
 		$(srcdir)/../include/libvirt/*.h \
