@@ -1,3 +1,12 @@
+Wed Aug 21 10:28:09 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* libvirt.spec.in: Add libvirt_lxc to spec file and conditionals
+	for lxc/openvz drivers which are now on by default
+
+Wed Aug 21 09:52:09 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/lxc_controller.h: Remove now unused file
+
 Wed Aug 20 21:50:09 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/domain_conf.c: Include PTY name if available
