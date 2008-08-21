@@ -112,6 +112,14 @@ Mon Aug 18 10:22:33 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 	* src/libvirt.c: Remove duplicate call to virInitialize() in
 	virStateInitialize spotted by Nguyen Anh Quynh
 
+Fri Aug 15 11:00:38 IST 2008 Mark McLoughlin <markmc@redhat.com>
+
+	* src/qemu_conf.c: fix serial/telnet to use "server" option
+	rather than "listen"
+
+	* tests/qemuxml2argvdata/qemuxml2argv-serial-tcp-telnet.args:
+	fix the test case too
+
 Fri Aug 15 10:34:24 JST 2008 Atsushi SAKAI <sakaia@jp.fujitsu.com>
 
 	* src/virsh.c: fix typo from John Levon
