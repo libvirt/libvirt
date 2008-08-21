@@ -371,13 +371,12 @@ doRemoteOpen (virConnectPtr conn,
 
 
     priv->hostname = strdup (uri->server ? uri->server : "localhost");
-    if (!priv->hostname) {
-        error (NULL, VIR_ERR_NO_MEMORY, _("allocating priv->hostname"));
-        goto failed;
-    }
+    if (!priv->hostname)
+        goto out_of_memory;
     if (uri->user) {
         username = strdup (uri->user);
-        if (!username) goto out_of_memory;
+        if (!username)
+            goto out_of_memory;
     }
 
     /* Get the variables from the query string.
@@ -491,12 +490,15 @@ doRemoteOpen (virConnectPtr conn,
         // http://people.redhat.com/drepper/userapi-ipv6.html
         struct addrinfo *res, *r;
         struct addrinfo hints;
+        int saved_errno = EINVAL;
         memset (&hints, 0, sizeof hints);
         hints.ai_socktype = SOCK_STREAM;
         hints.ai_flags = AI_ADDRCONFIG;
         int e = getaddrinfo (priv->hostname, port, &hints, &res);
         if (e != 0) {
-            error (conn, VIR_ERR_INVALID_ARG, gai_strerror (e));
+            errorf (conn, VIR_ERR_SYSTEM_ERROR,
+                    _("unable to resolve hostname '%s': %s"),
+                    priv->hostname, gai_strerror (e));
             goto failed;
         }
 
@@ -516,7 +518,7 @@ doRemoteOpen (virConnectPtr conn,
 
             priv->sock = socket (r->ai_family, SOCK_STREAM, 0);
             if (priv->sock == -1) {
-                error (conn, VIR_ERR_SYSTEM_ERROR, strerror (socket_errno ()));
+                saved_errno = socket_errno();
                 continue;
             }
 
@@ -526,7 +528,7 @@ doRemoteOpen (virConnectPtr conn,
                         sizeof no_slow_start);
 
             if (connect (priv->sock, r->ai_addr, r->ai_addrlen) == -1) {
-                error (conn, VIR_ERR_SYSTEM_ERROR, strerror (socket_errno ()));
+                saved_errno = socket_errno();
                 close (priv->sock);
                 continue;
             }
@@ -545,6 +547,9 @@ doRemoteOpen (virConnectPtr conn,
         }
 
         freeaddrinfo (res);
+        errorf (conn, VIR_ERR_SYSTEM_ERROR,
+                _("unable to connect to '%s': %s"),
+                priv->hostname, strerror (saved_errno));
         goto failed;
 
        tcp_connected:
@@ -563,23 +568,23 @@ doRemoteOpen (virConnectPtr conn,
                 uid_t uid = getuid();
 
                 if (!(pw = getpwuid(uid))) {
-                    error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+                    errorf (conn, VIR_ERR_SYSTEM_ERROR,
+                            _("unable to lookup user '%d': %s"),
+                            uid, strerror (errno));
                     goto failed;
                 }
 
                 if (asprintf (&sockname, "@%s" LIBVIRTD_USER_UNIX_SOCKET, pw->pw_dir) < 0) {
-                    error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
-                    goto failed;
+                    sockname = NULL;
+                    goto out_of_memory;
                 }
             } else {
                 if (flags & VIR_DRV_OPEN_REMOTE_RO)
                     sockname = strdup (LIBVIRTD_PRIV_UNIX_SOCKET_RO);
                 else
                     sockname = strdup (LIBVIRTD_PRIV_UNIX_SOCKET);
-                if (sockname == NULL) {
-                    error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
-                    goto failed;
-                }
+                if (sockname == NULL)
+                    goto out_of_memory;
             }
         }
 
@@ -598,7 +603,9 @@ doRemoteOpen (virConnectPtr conn,
       autostart_retry:
         priv->sock = socket (AF_UNIX, SOCK_STREAM, 0);
         if (priv->sock == -1) {
-            error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            errorf (conn, VIR_ERR_SYSTEM_ERROR,
+                    _("unable to create socket %s"),
+                    strerror (errno));
             goto failed;
         }
         if (connect (priv->sock, (struct sockaddr *) &addr, sizeof addr) == -1) {
@@ -620,7 +627,9 @@ doRemoteOpen (virConnectPtr conn,
                     goto autostart_retry;
                 }
             }
-            error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            errorf (conn, VIR_ERR_SYSTEM_ERROR,
+                    _("unable to connect to '%s': %s"),
+                    sockname, strerror (errno));
             goto failed;
         }
 
@@ -634,17 +643,13 @@ doRemoteOpen (virConnectPtr conn,
         if (no_tty) nr_args += 5;   /* For -T -o BatchMode=yes -e none */
 
         command = command ? : strdup ("ssh");
-        if (command == NULL) {
-            error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
-            goto failed;
-        }
+        if (command == NULL)
+            goto out_of_memory;
 
         // Generate the final command argv[] array.
         //   ssh -p $port [-l $username] $hostname $netcat -U $sockname [NULL]
-        if (VIR_ALLOC_N(cmd_argv, nr_args) < 0) {
-            error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
-            goto failed;
-        }
+        if (VIR_ALLOC_N(cmd_argv, nr_args) < 0)
+            goto out_of_memory;
 
         j = 0;
         cmd_argv[j++] = strdup (command);
@@ -667,12 +672,9 @@ doRemoteOpen (virConnectPtr conn,
         cmd_argv[j++] = strdup (sockname ? sockname : LIBVIRTD_PRIV_UNIX_SOCKET);
         cmd_argv[j++] = 0;
         assert (j == nr_args);
-        for (j = 0; j < (nr_args-1); j++) {
-            if (cmd_argv[j] == NULL) {
-                error (conn, VIR_ERR_SYSTEM_ERROR, strerror (ENOMEM));
-                goto failed;
-            }
-        }
+        for (j = 0; j < (nr_args-1); j++)
+            if (cmd_argv[j] == NULL)
+                goto out_of_memory;
     }
 
         /*FALLTHROUGH*/
@@ -685,28 +687,38 @@ doRemoteOpen (virConnectPtr conn,
          * to faff around with two file descriptors (a la 'pipe(2)').
          */
         if (socketpair (PF_UNIX, SOCK_STREAM, 0, sv) == -1) {
-            error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            errorf (conn, VIR_ERR_SYSTEM_ERROR,
+                    _("unable to create socket pair %s"),
+                    strerror (errno));
             goto failed;
         }
 
         pid = fork ();
         if (pid == -1) {
-            error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            errorf (conn, VIR_ERR_SYSTEM_ERROR,
+                    _("unable to fork external network transport: %s"),
+                    strerror (errno));
             goto failed;
         } else if (pid == 0) { /* Child. */
             close (sv[0]);
             // Connect socket (sv[1]) to stdin/stdout.
             close (0);
-            if (dup (sv[1]) == -1) perror ("dup");
+            if (dup (sv[1]) == -1) {
+                perror ("dup");
+                _exit(1);
+            }
             close (1);
-            if (dup (sv[1]) == -1) perror ("dup");
+            if (dup (sv[1]) == -1) {
+                perror ("dup");
+                _exit(1);
+            }
             close (sv[1]);
 
             // Run the external process.
             if (!cmd_argv) {
                 if (VIR_ALLOC_N(cmd_argv, 2) < 0) {
-                    error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
-                    goto failed;
+                    perror("malloc");
+                    _exit(1);
                 }
                 cmd_argv[0] = command;
                 cmd_argv[1] = 0;
@@ -770,7 +782,7 @@ doRemoteOpen (virConnectPtr conn,
     return retcode;
 
  out_of_memory:
-    error (NULL, VIR_ERR_NO_MEMORY, _("uri params"));
+    error (conn, VIR_ERR_NO_MEMORY, NULL);
 
  failed:
     /* Close the socket if we failed. */
@@ -882,10 +894,9 @@ check_cert_file (virConnectPtr conn, const char *type, const char *file)
 {
     struct stat sb;
     if (stat(file, &sb) < 0) {
-        __virRaiseError (conn, NULL, NULL, VIR_FROM_REMOTE, VIR_ERR_RPC,
-                         VIR_ERR_ERROR, LIBVIRT_CACERT, NULL, NULL, 0, 0,
-                         _("Cannot access %s '%s': %s (%d)"),
-                         type, file, strerror(errno), errno);
+        errorf(conn, VIR_ERR_RPC,
+               _("Cannot access %s '%s': %s (%d)"),
+               type, file, strerror(errno), errno);
         return -1;
     }
     return 0;
@@ -905,7 +916,9 @@ initialise_gnutls (virConnectPtr conn)
     /* X509 stuff */
     err = gnutls_certificate_allocate_credentials (&x509_cred);
     if (err) {
-        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        errorf (conn, VIR_ERR_GNUTLS_ERROR,
+                _("unable to allocate TLS credentials: %s"),
+                gnutls_strerror (err));
         return -1;
     }
 
@@ -923,7 +936,9 @@ initialise_gnutls (virConnectPtr conn)
         gnutls_certificate_set_x509_trust_file (x509_cred, LIBVIRT_CACERT,
                                                 GNUTLS_X509_FMT_PEM);
     if (err < 0) {
-        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        errorf (conn, VIR_ERR_GNUTLS_ERROR,
+                _("unable to load CA certificate: %s"),
+                gnutls_strerror (err));
         return -1;
     }
 
@@ -936,7 +951,9 @@ initialise_gnutls (virConnectPtr conn)
                                               LIBVIRT_CLIENTKEY,
                                               GNUTLS_X509_FMT_PEM);
     if (err < 0) {
-        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        errorf (conn, VIR_ERR_GNUTLS_ERROR,
+                _("unable to load private key/certificate: %s"),
+                gnutls_strerror (err));
         return -1;
     }
 
@@ -963,21 +980,27 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
      */
     err = gnutls_init (&session, GNUTLS_CLIENT);
     if (err) {
-        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        errorf (conn, VIR_ERR_GNUTLS_ERROR,
+                _("unable to initialize TLS client: %s"),
+                gnutls_strerror (err));
         return NULL;
     }
 
     /* Use default priorities */
     err = gnutls_set_default_priority (session);
     if (err) {
-        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        errorf (conn, VIR_ERR_GNUTLS_ERROR,
+                _("unable to set TLS algorithm priority: %s"),
+                gnutls_strerror (err));
         return NULL;
     }
     err =
         gnutls_certificate_type_set_priority (session,
                                               cert_type_priority);
     if (err) {
-        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        errorf (conn, VIR_ERR_GNUTLS_ERROR,
+                _("unable to set certificate priority: %s"),
+                gnutls_strerror (err));
         return NULL;
     }
 
@@ -985,7 +1008,9 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
      */
     err = gnutls_credentials_set (session, GNUTLS_CRD_CERTIFICATE, x509_cred);
     if (err) {
-        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        errorf (conn, VIR_ERR_GNUTLS_ERROR,
+                _("unable to set session credentials: %s"),
+                gnutls_strerror (err));
         return NULL;
     }
 
@@ -998,7 +1023,9 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
     if (err < 0) {
         if (err == GNUTLS_E_AGAIN || err == GNUTLS_E_INTERRUPTED)
             goto again;
-        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        errorf (conn, VIR_ERR_GNUTLS_ERROR,
+                _("unable to complete TLS handshake: %s"),
+                gnutls_strerror (err));
         return NULL;
     }
 
@@ -1018,12 +1045,14 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
     if (len < 0 && len != GNUTLS_E_UNEXPECTED_PACKET_LENGTH) {
         if (len == GNUTLS_E_AGAIN || len == GNUTLS_E_INTERRUPTED)
             goto again_2;
-        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (len));
+        errorf (conn, VIR_ERR_GNUTLS_ERROR,
+                _("unable to complete TLS initialization: %s"),
+                gnutls_strerror (len));
         return NULL;
     }
     if (len != 1 || buf[0] != '\1') {
         error (conn, VIR_ERR_RPC,
-          _("server verification (of our certificate or IP address) failed\n"));
+               _("server verification (of our certificate or IP address) failed\n"));
         return NULL;
     }
 
@@ -1047,33 +1076,39 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
     time_t now;
 
     if ((ret = gnutls_certificate_verify_peers2 (session, &status)) < 0) {
-        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (ret));
+        errorf (conn, VIR_ERR_GNUTLS_ERROR,
+                _("unable to verify server certificate: %s"),
+                gnutls_strerror (ret));
         return -1;
     }
 
     if ((now = time(NULL)) == ((time_t)-1)) {
-        error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        errorf (conn, VIR_ERR_SYSTEM_ERROR,
+                _("cannot get current time: %s"),
+                strerror (errno));
         return -1;
     }
 
     if (status != 0) {
-        const char *reason = "Invalid certificate";
+        const char *reason = _("Invalid certificate");
 
         if (status & GNUTLS_CERT_INVALID)
-            reason = "The certificate is not trusted.";
+            reason = _("The certificate is not trusted.");
 
         if (status & GNUTLS_CERT_SIGNER_NOT_FOUND)
-            reason = "The certificate hasn't got a known issuer.";
+            reason = _("The certificate hasn't got a known issuer.");
 
         if (status & GNUTLS_CERT_REVOKED)
-            reason = "The certificate has been revoked.";
+            reason = _("The certificate has been revoked.");
 
 #ifndef GNUTLS_1_0_COMPAT
         if (status & GNUTLS_CERT_INSECURE_ALGORITHM)
-            reason = "The certificate uses an insecure algorithm";
+            reason = _("The certificate uses an insecure algorithm");
 #endif
 
-        error (conn, VIR_ERR_RPC, reason);
+        errorf (conn, VIR_ERR_RPC,
+                _("server certificate failed validation: %s"),
+                reason);
         return -1;
     }
 
@@ -1092,13 +1127,17 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
 
         ret = gnutls_x509_crt_init (&cert);
         if (ret < 0) {
-            error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (ret));
+            errorf (conn, VIR_ERR_GNUTLS_ERROR,
+                    _("unable to initialize certificate: %s"),
+                    gnutls_strerror (ret));
             return -1;
         }
 
         ret = gnutls_x509_crt_import (cert, &certs[i], GNUTLS_X509_FMT_DER);
         if (ret < 0) {
-            error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (ret));
+            errorf (conn, VIR_ERR_GNUTLS_ERROR,
+                    _("unable to import certificate: %s"),
+                    gnutls_strerror (ret));
             gnutls_x509_crt_deinit (cert);
             return -1;
         }
@@ -1117,13 +1156,9 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
 
         if (i == 0) {
             if (!gnutls_x509_crt_check_hostname (cert, priv->hostname)) {
-                __virRaiseError
-                    (conn, NULL, NULL,
-                     VIR_FROM_REMOTE, VIR_ERR_RPC,
-                     VIR_ERR_ERROR, priv->hostname, NULL, NULL,
-                     0, 0,
-                     _("Certificate's owner does not match the hostname (%s)"),
-                     priv->hostname);
+                errorf(conn, VIR_ERR_RPC,
+                       _("Certificate's owner does not match the hostname (%s)"),
+                       priv->hostname);
                 gnutls_x509_crt_deinit (cert);
                 return -1;
             }
@@ -4721,8 +4756,9 @@ errorf (virConnectPtr conn, virErrorNumber code, const char *fmt, ...)
 
     errmsg = __virErrorMsg (code, errorMessage);
     __virRaiseError (conn, NULL, NULL, VIR_FROM_REMOTE,
-                     code, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                     "%s", errmsg);
+                     code, VIR_ERR_ERROR,
+                     errmsg, errorMessage, NULL, -1, -1,
+                     errmsg, errorMessage);
 }
 
 /* For errors generated on the server side and sent back to us. */

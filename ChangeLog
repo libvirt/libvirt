@@ -1,3 +1,8 @@
+Wed Aug 21 11:14:09 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Clarify error messages from various
+	failures while opening a connection
+
 Wed Aug 21 11:09:09 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt.c: Propagate error from virConnect to global
