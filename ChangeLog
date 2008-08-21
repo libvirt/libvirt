@@ -1,3 +1,8 @@
+Wed Aug 21 11:09:09 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt.c: Propagate error from virConnect to global
+	error object for virConnectOpen() failures
+
 Wed Aug 21 10:28:09 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* libvirt.spec.in: Add libvirt_lxc to spec file and conditionals

@@ -744,10 +744,8 @@ do_open (const char *name,
         name = "xen:///";
 
     ret = virGetConnect();
-    if (ret == NULL) {
-        virLibConnError(NULL, VIR_ERR_NO_MEMORY, _("allocating connection"));
+    if (ret == NULL)
         return NULL;
-    }
 
     uri = xmlParseURI (name);
     if (!uri) {
@@ -848,7 +846,21 @@ do_open (const char *name,
 failed:
     if (ret->driver) ret->driver->close (ret);
     if (uri) xmlFreeURI(uri);
-        virUnrefConnect(ret);
+
+    /* If not global error was set, copy any error set
+       in the connection object we're about to dispose of */
+    if (__lastErr.code == VIR_ERR_OK) {
+        memcpy(&__lastErr, &ret->err, sizeof(ret->err));
+        memset(&ret->err, 0, sizeof(ret->err));
+    }
+
+    /* Still no error set, then raise a generic error */
+    if (__lastErr.code == VIR_ERR_OK)
+        virLibConnError (NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unable to open connection"));
+
+    virUnrefConnect(ret);
+
     return NULL;
 }
 
