@@ -3,6 +3,8 @@
 %define with_xen       1
 %define with_xen_proxy 1
 %define with_qemu      1
+%define with_openvz    1
+%define with_lxc       1
 %define with_polkit    0
 
 # Xen is available only on i386 x86_64 ia64
@@ -152,8 +154,18 @@ of recent versions of Linux (and other OSes).
 %define _without_qemu --without-qemu
 %endif
 
+%if ! %{with_openvz}
+%define _without_openvz --without-openvz
+%endif
+
+%if ! %{with_lxc}
+%define _without_lxc --without-lxc
+%endif
+
 %configure %{?_without_xen} \
            %{?_without_qemu} \
+           %{?_without_openvz} \
+           %{?_without_lxc} \
            --with-init-script=redhat \
            --with-qemud-pid-file=%{_localstatedir}/run/libvirt_qemud.pid \
            --with-remote-file=%{_localstatedir}/run/libvirtd.pid
@@ -248,6 +260,9 @@ fi
 %attr(4755, root, root) %{_libexecdir}/libvirt_proxy
 %endif
 %attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
+%if %{with_lxc}
+%attr(0755, root, root) %{_libexecdir}/libvirt_lxc
+%endif
 %attr(0755, root, root) %{_sbindir}/libvirtd
 %doc docs/*.rng
 %doc docs/*.xml
