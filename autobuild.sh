@@ -5,7 +5,7 @@ set -v
 
 # Make things clean.
 
-test -n "$1" && RESULTS="$1" || RESULTS="results.log"
+test -n "$1" && RESULTS=$1 || RESULTS=results.log
 
 test -f Makefile && make -k distclean || :
 rm -rf coverage
@@ -14,7 +14,7 @@ rm -rf coverage
 #mkdir build
 #cd build
 
-./autogen.sh --prefix=$AUTOBUILD_INSTALL_ROOT \
+./autogen.sh --prefix="$AUTOBUILD_INSTALL_ROOT" \
   --enable-test-coverage \
   --enable-compile-warnings=error \
   --with-openvz \
@@ -25,8 +25,8 @@ make
 make install
 
 set -o pipefail
-make check 2>&1 | tee $RESULTS
-make syntax-check 2>&1 | tee -a $RESULTS
+make check 2>&1 | tee "$RESULTS"
+make syntax-check 2>&1 | tee -a "$RESULTS"
 test -x /usr/bin/lcov && make cov
 
 rm -f *.tar.gz
