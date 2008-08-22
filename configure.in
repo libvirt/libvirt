@@ -90,6 +90,7 @@ AC_CHECK_HEADER([pthread.h],
 	[AC_CHECK_LIB([pthread],[pthread_join],[
 		AC_DEFINE([HAVE_LIBPTHREAD],[],[Define if pthread (-lpthread)])
 		AC_DEFINE([HAVE_PTHREAD_H],[],[Define if <pthread.h>])
+		LIBS="-lpthread $LIBS"
 	])])
 
 dnl Miscellaneous external programs.

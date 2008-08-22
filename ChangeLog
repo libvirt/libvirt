@@ -1,3 +1,12 @@
+Fri Aug 22 10:30:42 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	configure.in: link with -lpthread when necessary
+	* configure.in: Explicitly add -lpthread to $LIBS.
+	With an empty "ACTION_IF_FOUND", AC_CHECK_LIB would have done
+	that for us automatically, but when there is an explicit third
+	argument, those commands are run instead of the default.
+	Reported by Jun Koi <junkoi2004@gmail.com>.
+
 Thu Aug 21 21:29:28 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	autobuild.sh: Fix minor shell-quoting bugs.
