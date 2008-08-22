@@ -1,3 +1,8 @@
+Fri Aug 22 11:49:42 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* python/libvir.py: Use libvirt error message as exception
+	message for improved diagnostics
+
 Fri Aug 22 10:30:42 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	configure.in: link with -lpthread when necessary
