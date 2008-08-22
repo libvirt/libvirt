@@ -375,6 +375,7 @@ static int lxcVMCleanup(virConnectPtr conn,
     int rc = -1;
     int waitRc;
     int childStatus = -1;
+    virDomainNetDefPtr net;
 
     while (((waitRc = waitpid(vm->pid, &childStatus, 0)) == -1) &&
            errno == EINTR)
@@ -403,6 +404,11 @@ static int lxcVMCleanup(virConnectPtr conn,
     vm->pid = -1;
     vm->def->id = -1;
     vm->monitor = -1;
+
+    for (net = vm->def->nets; net; net = net->next) {
+        vethInterfaceUpOrDown(net->ifname, 0);
+        vethDelete(net->ifname);
+    }
 
     return rc;
 }
