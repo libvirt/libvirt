@@ -1,3 +1,8 @@
+Wed Aug 27 12:20:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/openvz_conf.c: Fix handling of EOF when reading list
+	of domains
+
 Wed Aug 27 12:14:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/openvz_driver.c: Remove incorrect usage of virState

@@ -533,6 +533,9 @@ openvzGetVPSInfo(virConnectPtr conn) {
             vm = *pnext;
 
         if (fscanf(fp, "%d %s\n", &veid, status) != 2) {
+            if (feof(fp))
+                break;
+
             openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                   _("Failed to parse vzlist output"));
             goto error;
