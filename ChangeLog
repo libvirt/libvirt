@@ -1,4 +1,13 @@
+Wed Aug 27 12:14:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/openvz_driver.c: Remove incorrect usage of virState
+	driver internal apis only intended for drivers within the
+	daemon.
+	* src/Makefile.am: No need to disable openvz if the
+	daemon is disabled.
+
 Fri Aug 22 08:30:00 PDT 2008 Dan Smith <danms@us.ibm.com>
+
 	* src/lxc_driver.c: Make sure we cleanup veth devices at shutdown
 
 Fri Aug 22 11:49:42 BST 2008 Daniel P. Berrange <berrange@redhat.com>

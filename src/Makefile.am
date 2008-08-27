@@ -159,6 +159,10 @@ if WITH_XEN
 libvirt_la_SOURCES += $(XEN_DRIVER_SOURCES)
 endif
 
+if WITH_OPENVZ
+libvirt_la_SOURCES += $(OPENVZ_DRIVER_SOURCES)
+endif
+
 
 # Drivers usable inside daemon context
 if WITH_LIBVIRTD
@@ -171,10 +175,6 @@ endif
 
 if WITH_LXC
 libvirt_la_SOURCES += $(LXC_DRIVER_SOURCES)
-endif
-
-if WITH_OPENVZ
-libvirt_la_SOURCES += $(OPENVZ_DRIVER_SOURCES)
 endif
 
 if WITH_STORAGE_LVM

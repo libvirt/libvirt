@@ -79,10 +79,6 @@ static int openvzListDomains(virConnectPtr conn, int *ids, int nids);
 static int openvzNumDomains(virConnectPtr conn);
 static int openvzListDefinedDomains(virConnectPtr conn, char **const names, int nnames);
 static int openvzNumDefinedDomains(virConnectPtr conn);
-static int openvzStartup(void);
-static int openvzShutdown(void);
-static int openvzReload(void);
-static int openvzActive(void);
 
 static virDomainPtr openvzDomainDefineXML(virConnectPtr conn, const char *xml);
 static virDomainPtr openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
@@ -760,7 +756,8 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
 
    conn->privateData = &ovz_driver;
 
-   virStateInitialize();
+   openvzAssignUUIDs();
+
    vms = openvzGetVPSInfo(conn);
    ovz_driver.vms = vms;
 
@@ -807,7 +804,8 @@ static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
     char *endptr;
     const char *cmd[] = {VZLIST, "-ovpsid", "-H" , NULL};
 
-    ret = virExec(conn, cmd, NULL, &pid, -1, &outfd, &errfd, VIR_EXEC_NONE);
+    ret = virExec(conn, cmd, NULL, NULL,
+                  &pid, -1, &outfd, &errfd, VIR_EXEC_NONE);
     if(ret == -1) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZLIST);
@@ -844,7 +842,8 @@ static int openvzListDefinedDomains(virConnectPtr conn,
     const char *cmd[] = {VZLIST, "-ovpsid", "-H", "-S", NULL};
 
     /* the -S options lists only stopped domains */
-    ret = virExec(conn, cmd, NULL, &pid, -1, &outfd, &errfd, VIR_EXEC_NONE);
+    ret = virExec(conn, cmd, NULL, NULL,
+                  &pid, -1, &outfd, &errfd, VIR_EXEC_NONE);
     if(ret == -1) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                _("Could not exec %s"), VZLIST);
@@ -916,27 +915,6 @@ static int openvzNumDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED) {
     return ovz_driver.num_inactive;
 }
 
-static int openvzStartup(void) {
-    openvzAssignUUIDs();
-
-    return 0;
-}
-
-static int openvzShutdown(void) {
-
-    return 0;
-}
-
-static int openvzReload(void) {
-
-    return 0;
-}
-
-static int openvzActive(void) {
-
-    return 1;
-}
-
 static virDriver openvzDriver = {
     VIR_DRV_OPENVZ,
     "OPENVZ",
@@ -999,17 +977,8 @@ static virDriver openvzDriver = {
     NULL, /* nodeGetFreeMemory */
 };
 
-static virStateDriver openvzStateDriver = {
-    openvzStartup,
-    openvzShutdown,
-    openvzReload,
-    openvzActive,
-    NULL, /* sigHandler */
-};
-
 int openvzRegister(void) {
     virRegisterDriver(&openvzDriver);
-    virRegisterStateDriver(&openvzStateDriver);
     return 0;
 }
 
