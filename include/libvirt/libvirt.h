@@ -890,6 +890,14 @@ int                     virConnectListDefinedStoragePools(virConnectPtr conn,
                                                           int maxnames);
 
 /*
+ * Query a host for storage pools of a particular type
+ */
+char *                  virConnectFindStoragePoolSources(virConnectPtr conn,
+                                                         const char *type,
+                                                         const char *srcSpec,
+                                                         unsigned int flags);
+
+/*
  * Lookup pool by name or uuid
  */
 virStoragePoolPtr       virStoragePoolLookupByName      (virConnectPtr conn,

@@ -362,4 +362,16 @@ int __virDomainMigratePrepare (virConnectPtr dconn, char **cookie, int *cookiele
 int __virDomainMigratePerform (virDomainPtr domain, const char *cookie, int cookielen, const char *uri, unsigned long flags, const char *dname, unsigned long bandwidth);
 virDomainPtr __virDomainMigrateFinish (virConnectPtr dconn, const char *dname, const char *cookie, int cookielen, const char *uri, unsigned long flags);
 
+typedef struct _virStringList virStringList;
+
+struct _virStringList {
+    char *val;
+    int len;
+    struct _virStringList *next;
+};
+
+char *virStringListJoin(const virStringList *list, const char *pre,
+                        const char *post, const char *sep);
+void virStringListFree(virStringList *list);
+
 #endif                          /* __VIR_INTERNAL_H__ */

@@ -107,7 +107,7 @@
 	virConnectNumOfDefinedStoragePools;
 	virConnectListStoragePools;
 	virConnectListDefinedStoragePools;
-	virConnectDiscoverStoragePools;
+	virConnectFindStoragePoolSources;
 	virStoragePoolLookupByName;
 	virStoragePoolLookupByUUID;
 	virStoragePoolLookupByUUIDString;

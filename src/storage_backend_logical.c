@@ -259,6 +259,75 @@ virStorageBackendLogicalRefreshPoolFunc(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
+virStorageBackendLogicalFindPoolSourcesFunc(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                            virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+                                            char **const groups,
+                                            void *data)
+{
+    virStringList **rest = data;
+    virStringList *newItem;
+    const char *name = groups[0];
+
+    /* Append new XML desc to list */
+
+    if (VIR_ALLOC(newItem) != 0) {
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("new xml desc"));
+        return -1;
+    }
+
+    if (asprintf(&newItem->val, "<source><name>%s</name></source>", name) <= 0) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s", _("asprintf failed"));
+        VIR_FREE(newItem);
+        return -1;
+    }
+
+    newItem->len = strlen(newItem->val);
+    newItem->next = *rest;
+    *rest = newItem;
+
+    return 0;
+}
+
+static char *
+virStorageBackendLogicalFindPoolSources(virConnectPtr conn,
+                                        const char *srcSpec ATTRIBUTE_UNUSED,
+                                        unsigned int flags ATTRIBUTE_UNUSED)
+{
+    /*
+     * # sudo vgs --noheadings -o vg_name
+     *   VolGroup00
+     *   VolGroup01
+     */
+    const char *regexes[] = {
+        "^\\s*(\\S+)\\s*$"
+    };
+    int vars[] = {
+        1
+    };
+    virStringList *descs = NULL;
+    const char *prog[] = { VGS, "--noheadings", "-o", "vg_name", NULL };
+    int exitstatus;
+    char *retval = NULL;
+
+    if (virStorageBackendRunProgRegex(conn, NULL, prog, 1, regexes, vars,
+                                      virStorageBackendLogicalFindPoolSourcesFunc,
+                                      &descs, &exitstatus) < 0)
+        return NULL;
+
+    retval = virStringListJoin(descs, SOURCES_START_TAG, SOURCES_END_TAG, "\n");
+    if (retval == NULL) {
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("retval"));
+        goto cleanup;
+    }
+
+ cleanup:
+    virStringListFree(descs);
+
+    return retval;
+}
+
+
+static int
 virStorageBackendLogicalStartPool(virConnectPtr conn,
                                   virStoragePoolObjPtr pool)
 {
@@ -537,6 +606,7 @@ virStorageBackendLogicalDeleteVol(virConnectPtr conn,
 virStorageBackend virStorageBackendLogical = {
     .type = VIR_STORAGE_POOL_LOGICAL,
 
+    .findPoolSources = virStorageBackendLogicalFindPoolSources,
     .startPool = virStorageBackendLogicalStartPool,
     .buildPool = virStorageBackendLogicalBuildPool,
     .refreshPool = virStorageBackendLogicalRefreshPool,

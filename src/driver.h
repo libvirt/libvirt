@@ -444,6 +444,11 @@ typedef int
     (*virDrvConnectListDefinedStoragePools)  (virConnectPtr conn,
                                               char **const names,
                                               int maxnames);
+typedef char *
+    (*virDrvConnectFindStoragePoolSources)   (virConnectPtr conn,
+                                              const char *type,
+                                              const char *srcSpec,
+                                              unsigned int flags);
 typedef virStoragePoolPtr
     (*virDrvStoragePoolLookupByName)         (virConnectPtr conn,
                                               const char *name);
@@ -548,6 +553,7 @@ struct _virStorageDriver {
     virDrvConnectListStoragePools listPools;
     virDrvConnectNumOfDefinedStoragePools numOfDefinedPools;
     virDrvConnectListDefinedStoragePools listDefinedPools;
+    virDrvConnectFindStoragePoolSources findPoolSources;
     virDrvStoragePoolLookupByName poolLookupByName;
     virDrvStoragePoolLookupByUUID poolLookupByUUID;
     virDrvStoragePoolLookupByVolume poolLookupByVolume;

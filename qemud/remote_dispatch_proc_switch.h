@@ -335,6 +335,15 @@ case REMOTE_PROC_DOMAIN_UNDEFINE:
         args = (char *) &lv_remote_domain_undefine_args;
         memset (&lv_remote_domain_undefine_args, 0, sizeof lv_remote_domain_undefine_args);
         break;
+case REMOTE_PROC_FIND_STORAGE_POOL_SOURCES:
+        fn = (dispatch_fn) remoteDispatchFindStoragePoolSources;
+        args_filter = (xdrproc_t) xdr_remote_find_storage_pool_sources_args;
+        args = (char *) &lv_remote_find_storage_pool_sources_args;
+        memset (&lv_remote_find_storage_pool_sources_args, 0, sizeof lv_remote_find_storage_pool_sources_args);
+        ret_filter = (xdrproc_t) xdr_remote_find_storage_pool_sources_ret;
+        ret = (char *) &lv_remote_find_storage_pool_sources_ret;
+        memset (&lv_remote_find_storage_pool_sources_ret, 0, sizeof lv_remote_find_storage_pool_sources_ret);
+        break;
 case REMOTE_PROC_GET_CAPABILITIES:
         fn = (dispatch_fn) remoteDispatchGetCapabilities;
         ret_filter = (xdrproc_t) xdr_remote_get_capabilities_ret;

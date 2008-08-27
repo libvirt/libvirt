@@ -3422,6 +3422,139 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     return TRUE;
 }
 
+/*
+ * "find-storage-pool-sources-as" command
+ */
+static const vshCmdInfo info_find_storage_pool_sources_as[] = {
+    {"syntax", "find-storage-pool-sources-as <type> [options]"},
+    {"help", gettext_noop("find potential storage pool sources")},
+    {"desc", gettext_noop("Returns XML <sources> document.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_find_storage_pool_sources_as[] = {
+    {"type", VSH_OT_DATA, VSH_OFLAG_REQ,
+     gettext_noop("type of storage pool sources to find")},
+    {"host", VSH_OT_DATA, VSH_OFLAG_NONE, gettext_noop("optional host to query")},
+    {"port", VSH_OT_DATA, VSH_OFLAG_NONE, gettext_noop("optional port to query")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
+{
+    char *type, *host;
+    char *srcSpec = NULL;
+    char *srcList;
+    int found;
+
+    type = vshCommandOptString(cmd, "type", &found);
+    if (!found)
+        return FALSE;
+    host = vshCommandOptString(cmd, "host", &found);
+    if (!found)
+        host = NULL;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (host) {
+        size_t hostlen = strlen(host);
+        char *port = vshCommandOptString(cmd, "port", &found);
+        int ret;
+        if (!found) {
+            port = strrchr(host, ':');
+            if (port) {
+                if (*(++port))
+                    hostlen = port - host - 1;
+                else
+                    port = NULL;
+            }
+        }
+        ret = port ?
+            asprintf(&srcSpec,
+                     "<source><host name='%.*s' port='%s'/></source>",
+                     (int)hostlen, host, port) :
+            asprintf(&srcSpec,
+                     "<source><host name='%.*s'/></source>",
+                     (int)hostlen, host);
+        if (ret < 0) {
+            switch (errno) {
+            case ENOMEM:
+                vshError(ctl, FALSE, "%s", _("Out of memory"));
+                break;
+            default:
+                vshError(ctl, FALSE, _("asprintf failed (errno %d)"), errno);
+            }
+            return FALSE;
+        }
+    }
+
+    srcList = virConnectFindStoragePoolSources(ctl->conn, type, srcSpec, 0);
+    free(srcSpec);
+    if (srcList == NULL) {
+        vshError(ctl, FALSE, _("Failed to find any %s pool sources"), type);
+        return FALSE;
+    }
+    vshPrint(ctl, "%s", srcList);
+    free(srcList);
+
+    return TRUE;
+}
+
+
+/*
+ * "find-storage-pool-sources" command
+ */
+static const vshCmdInfo info_find_storage_pool_sources[] = {
+    {"syntax", "find-storage-pool-sources <type> [srcSpec]"},
+    {"help", gettext_noop("discover potential storage pool sources")},
+    {"desc", gettext_noop("Returns XML <sources> document.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_find_storage_pool_sources[] = {
+    {"type", VSH_OT_DATA, VSH_OFLAG_REQ,
+     gettext_noop("type of storage pool sources to discover")},
+    {"srcSpec", VSH_OT_DATA, VSH_OFLAG_NONE,
+     gettext_noop("optional file of source xml to query for pools")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdPoolDiscoverSources(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
+{
+    char *type, *srcSpec, *srcSpecFile, *srcList;
+    int found;
+
+    type = vshCommandOptString(cmd, "type", &found);
+    if (!found)
+        return FALSE;
+    srcSpecFile = vshCommandOptString(cmd, "srcSpec", &found);
+    if (!found) {
+        srcSpecFile = NULL;
+        srcSpec = NULL;
+    }
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (srcSpecFile && virFileReadAll(srcSpecFile, VIRSH_MAX_XML_FILE, &srcSpec) < 0)
+        return FALSE;
+
+    srcList = virConnectFindStoragePoolSources(ctl->conn, type, srcSpec, 0);
+    free(srcSpec);
+    if (srcList == NULL) {
+        vshError(ctl, FALSE, _("Failed to find any %s pool sources"), type);
+        return FALSE;
+    }
+    vshPrint(ctl, "%s", srcList);
+    free(srcList);
+
+    return TRUE;
+}
+
+
 static double
 prettyCapacity(unsigned long long val,
                const char **unit) {
@@ -5362,6 +5495,10 @@ static const vshCmdDef commands[] = {
     {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat},
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
     {"edit", cmdEdit, opts_edit, info_edit},
+    {"find-storage-pool-sources", cmdPoolDiscoverSources,
+     opts_find_storage_pool_sources, info_find_storage_pool_sources},
+    {"find-storage-pool-sources-as", cmdPoolDiscoverSourcesAs,
+     opts_find_storage_pool_sources_as, info_find_storage_pool_sources_as},
     {"freecell", cmdFreecell, opts_freecell, info_freecell},
     {"hostname", cmdHostname, NULL, info_hostname},
     {"list", cmdList, opts_list, info_list},

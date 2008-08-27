@@ -837,6 +837,18 @@ struct remote_list_defined_storage_pools_ret {
 };
 typedef struct remote_list_defined_storage_pools_ret remote_list_defined_storage_pools_ret;
 
+struct remote_find_storage_pool_sources_args {
+        remote_nonnull_string type;
+        remote_string srcSpec;
+        u_int flags;
+};
+typedef struct remote_find_storage_pool_sources_args remote_find_storage_pool_sources_args;
+
+struct remote_find_storage_pool_sources_ret {
+        remote_nonnull_string xml;
+};
+typedef struct remote_find_storage_pool_sources_ret remote_find_storage_pool_sources_ret;
+
 struct remote_storage_pool_lookup_by_uuid_args {
         remote_uuid uuid;
 };
@@ -1146,7 +1158,7 @@ enum remote_procedure {
         REMOTE_PROC_LIST_STORAGE_POOLS = 72,
         REMOTE_PROC_NUM_OF_DEFINED_STORAGE_POOLS = 73,
         REMOTE_PROC_LIST_DEFINED_STORAGE_POOLS = 74,
-        REMOTE_PROC_DISCOVER_STORAGE_POOLS = 75,
+        REMOTE_PROC_FIND_STORAGE_POOL_SOURCES = 75,
         REMOTE_PROC_STORAGE_POOL_CREATE_XML = 76,
         REMOTE_PROC_STORAGE_POOL_DEFINE_XML = 77,
         REMOTE_PROC_STORAGE_POOL_CREATE = 78,
@@ -1337,6 +1349,8 @@ extern  bool_t xdr_remote_list_storage_pools_ret (XDR *, remote_list_storage_poo
 extern  bool_t xdr_remote_num_of_defined_storage_pools_ret (XDR *, remote_num_of_defined_storage_pools_ret*);
 extern  bool_t xdr_remote_list_defined_storage_pools_args (XDR *, remote_list_defined_storage_pools_args*);
 extern  bool_t xdr_remote_list_defined_storage_pools_ret (XDR *, remote_list_defined_storage_pools_ret*);
+extern  bool_t xdr_remote_find_storage_pool_sources_args (XDR *, remote_find_storage_pool_sources_args*);
+extern  bool_t xdr_remote_find_storage_pool_sources_ret (XDR *, remote_find_storage_pool_sources_ret*);
 extern  bool_t xdr_remote_storage_pool_lookup_by_uuid_args (XDR *, remote_storage_pool_lookup_by_uuid_args*);
 extern  bool_t xdr_remote_storage_pool_lookup_by_uuid_ret (XDR *, remote_storage_pool_lookup_by_uuid_ret*);
 extern  bool_t xdr_remote_storage_pool_lookup_by_name_args (XDR *, remote_storage_pool_lookup_by_name_args*);
@@ -1516,6 +1530,8 @@ extern bool_t xdr_remote_list_storage_pools_ret ();
 extern bool_t xdr_remote_num_of_defined_storage_pools_ret ();
 extern bool_t xdr_remote_list_defined_storage_pools_args ();
 extern bool_t xdr_remote_list_defined_storage_pools_ret ();
+extern bool_t xdr_remote_find_storage_pool_sources_args ();
+extern bool_t xdr_remote_find_storage_pool_sources_ret ();
 extern bool_t xdr_remote_storage_pool_lookup_by_uuid_args ();
 extern bool_t xdr_remote_storage_pool_lookup_by_uuid_ret ();
 extern bool_t xdr_remote_storage_pool_lookup_by_name_args ();

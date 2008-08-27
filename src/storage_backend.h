@@ -63,6 +63,10 @@ struct _virStorageBackendPoolOptions {
     virStoragePoolFormatFromString formatFromString;
 };
 
+#define SOURCES_START_TAG "<sources>"
+#define SOURCES_END_TAG "</sources>"
+
+typedef char * (*virStorageBackendFindPoolSources)(virConnectPtr conn, const char *srcSpec, unsigned int flags);
 typedef int (*virStorageBackendStartPool)(virConnectPtr conn, virStoragePoolObjPtr pool);
 typedef int (*virStorageBackendBuildPool)(virConnectPtr conn, virStoragePoolObjPtr pool, unsigned int flags);
 typedef int (*virStorageBackendRefreshPool)(virConnectPtr conn, virStoragePoolObjPtr pool);
@@ -80,6 +84,7 @@ typedef virStorageBackend *virStorageBackendPtr;
 struct _virStorageBackend {
     int type;
 
+    virStorageBackendFindPoolSources findPoolSources;
     virStorageBackendStartPool startPool;
     virStorageBackendBuildPool buildPool;
     virStorageBackendRefreshPool refreshPool;

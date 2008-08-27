@@ -55,6 +55,9 @@ Requires: PolicyKit >= 0.6
 %endif
 # For mount/umount in FS driver
 BuildRequires: util-linux
+# For showmount in FS driver (netfs discovery)
+BuildRequires: nfs-utils
+Requires: nfs-utils
 %if %{with_qemu}
 # From QEMU RPMs
 Requires: /usr/bin/qemu-img

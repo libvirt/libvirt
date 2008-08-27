@@ -36,6 +36,7 @@
 
 #include "uuid.h"
 #include "util.h"
+#include "memory.h"
 
 #ifdef WITH_TEST
 #include "test.h"
@@ -4125,6 +4126,50 @@ virConnectListDefinedStoragePools(virConnectPtr conn,
 
 
 /**
+ * virConnectFindStoragePoolSources:
+ * @conn: pointer to hypervisor connection
+ * @type: type of storage pool sources to discover
+ * @srcSpec: XML document specifying discovery source
+ * @flags: flags for discovery (unused, pass 0)
+ *
+ * Talks to a storage backend and attempts to auto-discover the set of
+ * available storage pool sources. e.g. For iSCSI this would be a set of
+ * iSCSI targets. For NFS this would be a list of exported paths.  The
+ * srcSpec (optional for some storage pool types, e.g. local ones) is
+ * an instance of the storage pool's source element specifying where
+ * to look for the pools.
+ *
+ * srcSpec is not required for some types (e.g., those querying
+ * local storage resources only)
+ *
+ * Returns an xml document consisting of a SourceList element
+ * containing a source document appropriate to the given pool
+ * type for each discovered source.
+ */
+char *
+virConnectFindStoragePoolSources(virConnectPtr conn,
+                                 const char *type,
+                                 const char *srcSpec,
+                                 unsigned int flags)
+{
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return NULL;
+    }
+    if (type == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return NULL;
+    }
+
+    if (conn->storageDriver && conn->storageDriver->findPoolSources)
+        return conn->storageDriver->findPoolSources(conn, type, srcSpec, flags);
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return NULL;
+}
+
+
+/**
  * virStoragePoolLookupByName:
  * @conn: pointer to hypervisor connection
  * @name: name of pool to fetch
@@ -5233,4 +5278,46 @@ virStorageVolGetPath(virStorageVolPtr vol)
 
     virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
+}
+
+
+
+
+/* Not for public use.  Combines the elements of a virStringList
+ * into a single string.
+ */
+char *virStringListJoin(const virStringList *list, const char *pre,
+                        const char *post, const char *sep)
+{
+    size_t pre_len = strlen(pre);
+    size_t sep_len = strlen(sep);
+    size_t len = pre_len + strlen(post);
+    const virStringList *p;
+    char *retval;
+
+    for (p = list; p; p = p->next)
+        len += p->len + sep_len;
+    if (VIR_ALLOC_N(retval, len+1) < 0)
+        return NULL;
+    strcpy(retval, pre);
+    len = pre_len;
+    for (p = list; p; p = p->next) {
+        strcpy(retval + len, p->val);
+        len += p->len;
+        strcpy(retval + len, sep);
+        len += sep_len;
+    }
+    strcpy(retval + len, post);
+
+    return retval;
+}
+
+
+void virStringListFree(virStringList *list)
+{
+    while (list) {
+        virStringList *p = list->next;
+        VIR_FREE(list);
+        list = p;
+    }
 }

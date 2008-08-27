@@ -671,6 +671,11 @@ if test "$with_storage_fs" = "yes" -o "$with_storage_fs" = "check"; then
   fi
 fi
 AM_CONDITIONAL([WITH_STORAGE_FS], [test "$with_storage_fs" = "yes"])
+if test "$with_storage_fs" = "yes"; then
+  AC_PATH_PROG([SHOWMOUNT], [showmount], [], [$PATH:/sbin:/usr/sbin])
+  AC_DEFINE_UNQUOTED([SHOWMOUNT], ["$SHOWMOUNT"],
+    [Location or name of the showmount program])
+fi
 
 AC_PATH_PROG([QEMU_IMG], [qemu-img], [], [$PATH:/sbin:/usr/sbin:/bin:/usr/bin])
 if test -n "$QEMU_IMG" ; then

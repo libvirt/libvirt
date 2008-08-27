@@ -1,3 +1,21 @@
+Wed Aug 27 20:50:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Storage pool source discovery from David Lively
+
+	* include/libvirt/libvirt.h, include/libvirt/libvirt.h.in,
+	src/libvirt_sym.version, src/libvirt.c, src/driver.h: Add
+	the virConnectFindStoragePoolSources() API
+	* src/remote_internal.c, qemu/remote.c, src/remote_protocol.{c,h,x}
+	Implement remote protocol support for virConnectFindStoragePoolSources
+	* src/remote_dispatch_*.h: Re-generate from remote_protocol.x
+	* libvirt.spec.in:Add dep on nfs-utils
+	* configure.in: Check for showmount binary
+	* src/storage_backend.h, src/storage_driver.c: Generic impl
+	of storage discovery
+	* src/storage_backend_fs.c, src/storage_backend_logical.c: Add
+	specific impl of storage discovery for NFS and LVM
+	* src/virsh.c: Add command to discover storage pools
+
 Wed Aug 27 12:40:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/util.h, src/util.c: Allow virExec to take set of FDs

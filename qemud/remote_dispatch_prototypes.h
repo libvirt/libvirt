@@ -47,6 +47,7 @@ static int remoteDispatchDomainSetVcpus (struct qemud_server *server, struct qem
 static int remoteDispatchDomainShutdown (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_shutdown_args *args, void *ret);
 static int remoteDispatchDomainSuspend (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_suspend_args *args, void *ret);
 static int remoteDispatchDomainUndefine (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_undefine_args *args, void *ret);
+static int remoteDispatchFindStoragePoolSources (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_find_storage_pool_sources_args *args, remote_find_storage_pool_sources_ret *ret);
 static int remoteDispatchGetCapabilities (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_get_capabilities_ret *ret);
 static int remoteDispatchGetHostname (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_get_hostname_ret *ret);
 static int remoteDispatchGetMaxVcpus (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_get_max_vcpus_args *args, remote_get_max_vcpus_ret *ret);

@@ -3079,6 +3079,47 @@ remoteListDefinedStoragePools (virConnectPtr conn,
     return ret.names.names_len;
 }
 
+static char *
+remoteFindStoragePoolSources (virConnectPtr conn,
+                              const char *type,
+                              const char *srcSpec,
+                              unsigned int flags)
+{
+    remote_find_storage_pool_sources_args args;
+    remote_find_storage_pool_sources_ret ret;
+    GET_STORAGE_PRIVATE (conn, NULL);
+    const char *emptyString = "";
+    char *retval;
+
+    args.type = (char*)type;
+    /*
+     * I'd think the following would work here:
+     *    args.srcSpec = (char**)&srcSpec;
+     * since srcSpec is a remote_string (not a remote_nonnull_string).
+     *
+     * But when srcSpec is NULL, this yields:
+     *    libvir: Remote error : marshalling args
+     *
+     * So for now I'm working around this by turning NULL srcSpecs
+     * into empty strings.
+     */
+    args.srcSpec = srcSpec ? (char **)&srcSpec : (char **)&emptyString;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_FIND_STORAGE_POOL_SOURCES,
+              (xdrproc_t) xdr_remote_find_storage_pool_sources_args, (char *) &args,
+              (xdrproc_t) xdr_remote_find_storage_pool_sources_ret, (char *) &ret) == -1)
+        return NULL;
+
+    retval = ret.xml;
+    ret.xml = NULL; /* To stop xdr_free free'ing it */
+
+    xdr_free ((xdrproc_t) xdr_remote_find_storage_pool_sources_ret, (char *) &ret);
+
+    return retval;
+}
+
 static virStoragePoolPtr
 remoteStoragePoolLookupByUUID (virConnectPtr conn,
                                const unsigned char *uuid)
@@ -4940,6 +4981,7 @@ static virStorageDriver storage_driver = {
     .listPools = remoteListStoragePools,
     .numOfDefinedPools = remoteNumOfDefinedStoragePools,
     .listDefinedPools = remoteListDefinedStoragePools,
+    .findPoolSources = remoteFindStoragePoolSources,
     .poolLookupByUUID = remoteStoragePoolLookupByUUID,
     .poolLookupByName = remoteStoragePoolLookupByName,
     .poolLookupByVolume = remoteStoragePoolLookupByVolume,

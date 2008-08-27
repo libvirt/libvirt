@@ -2958,6 +2958,27 @@ remoteDispatchListStoragePools (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 static int
+remoteDispatchFindStoragePoolSources (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                      struct qemud_client *client,
+                                      remote_message_header *req,
+                                      remote_find_storage_pool_sources_args *args,
+                                      remote_find_storage_pool_sources_ret *ret)
+{
+    CHECK_CONN(client);
+
+    ret->xml =
+        virConnectFindStoragePoolSources (client->conn,
+                                          args->type,
+                                          args->srcSpec ? *args->srcSpec : NULL,
+                                          args->flags);
+    if (ret->xml == NULL)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 remoteDispatchStoragePoolCreate (struct qemud_server *server ATTRIBUTE_UNUSED,
                                  struct qemud_client *client,
                                  remote_message_header *req,

@@ -386,6 +386,30 @@ storageListDefinedPools(virConnectPtr conn,
     return -1;
 }
 
+static char *
+storageFindPoolSources(virConnectPtr conn,
+                       const char *type,
+                       const char *srcSpec,
+                       unsigned int flags)
+{
+    int backend_type;
+    virStorageBackendPtr backend;
+
+    backend_type = virStorageBackendFromString(type);
+    if (backend_type < 0)
+        return NULL;
+
+    backend = virStorageBackendForType(backend_type);
+    if (backend == NULL)
+        return NULL;
+
+    if (backend->findPoolSources)
+        return backend->findPoolSources(conn, srcSpec, flags);
+
+    return NULL;
+}
+
+
 static virStoragePoolPtr
 storagePoolCreate(virConnectPtr conn,
                   const char *xml,
@@ -1212,6 +1236,7 @@ static virStorageDriver storageDriver = {
     storageListPools,
     storageNumDefinedPools,
     storageListDefinedPools,
+    storageFindPoolSources,
     storagePoolLookupByName,
     storagePoolLookupByUUID,
     storagePoolLookupByVolume,

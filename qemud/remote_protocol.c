@@ -1502,6 +1502,28 @@ xdr_remote_list_defined_storage_pools_ret (XDR *xdrs, remote_list_defined_storag
 }
 
 bool_t
+xdr_remote_find_storage_pool_sources_args (XDR *xdrs, remote_find_storage_pool_sources_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->type))
+                 return FALSE;
+         if (!xdr_remote_string (xdrs, &objp->srcSpec))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_find_storage_pool_sources_ret (XDR *xdrs, remote_find_storage_pool_sources_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->xml))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_storage_pool_lookup_by_uuid_args (XDR *xdrs, remote_storage_pool_lookup_by_uuid_args *objp)
 {
 
