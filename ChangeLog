@@ -1,3 +1,10 @@
+Wed Aug 27 12:40:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/util.h, src/util.c: Allow virExec to take set of FDs
+	to preserve in child.
+	* src/lxc_driver.c, src/qemu_driver.c, src/storage_backend.c:
+	Preserve FDs as needed
+
 Wed Aug 27 12:20:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/openvz_conf.c: Fix handling of EOF when reading list
