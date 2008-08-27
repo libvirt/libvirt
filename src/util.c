@@ -132,6 +132,7 @@ int
 virExec(virConnectPtr conn,
         const char *const*argv,
         const char *const*envp,
+        const fd_set *keepfd,
         int *retpid,
         int infd, int *outfd, int *errfd,
         int flags) {
@@ -293,7 +294,9 @@ virExec(virConnectPtr conn,
         if (i != infd &&
             i != null &&
             i != childout &&
-            i != childerr)
+            i != childerr &&
+            (!keepfd ||
+             !FD_ISSET(i, keepfd)))
             close(i);
 
     if (flags & VIR_EXEC_DAEMON) {
@@ -403,7 +406,8 @@ virRun(virConnectPtr conn,
        int *status) {
     int childpid, exitstatus, ret;
 
-    if ((ret = virExec(conn, argv, NULL, &childpid, -1, NULL, NULL, VIR_EXEC_NONE)) < 0)
+    if ((ret = virExec(conn, argv, NULL, NULL,
+                       &childpid, -1, NULL, NULL, VIR_EXEC_NONE)) < 0)
         return ret;
 
     while ((ret = waitpid(childpid, &exitstatus, 0) == -1) && errno == EINTR);

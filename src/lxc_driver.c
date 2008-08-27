@@ -621,6 +621,10 @@ static int lxcControllerStart(virConnectPtr conn,
     const char **largv = NULL;
     pid_t child;
     int status;
+    fd_set keepfd;
+    char appPtyStr[30];
+
+    FD_ZERO(&keepfd);
 
 #define ADD_ARG_SPACE                                                   \
     do { \
@@ -644,11 +648,13 @@ static int lxcControllerStart(virConnectPtr conn,
             goto no_memory;                                             \
     } while (0)
 
+    snprintf(appPtyStr, sizeof(appPtyStr), "%d", appPty);
+
     ADD_ARG_LIT(vm->def->emulator);
     ADD_ARG_LIT("--name");
     ADD_ARG_LIT(vm->def->name);
     ADD_ARG_LIT("--console");
-    ADD_ARG_LIT("0");  /* Passing console master PTY as FD 0 */
+    ADD_ARG_LIT(appPtyStr);
     ADD_ARG_LIT("--background");
 
     for (i = 0 ; i < nveths ; i++) {
@@ -658,10 +664,12 @@ static int lxcControllerStart(virConnectPtr conn,
 
     ADD_ARG(NULL);
 
-    vm->stdin_fd = appPty; /* Passing console master PTY as FD 0 */
+    vm->stdin_fd = -1;
     vm->stdout_fd = vm->stderr_fd = logfd;
 
-    if (virExec(conn, largv, NULL, &child,
+    FD_SET(appPty, &keepfd);
+
+    if (virExec(conn, largv, NULL, &keepfd, &child,
                 vm->stdin_fd, &vm->stdout_fd, &vm->stderr_fd,
                 VIR_EXEC_NONE) < 0)
         goto cleanup;

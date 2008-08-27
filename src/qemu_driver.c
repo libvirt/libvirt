@@ -847,6 +847,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     int *tapfds = NULL;
     int ntapfds = 0;
     int qemuCmdFlags;
+    fd_set keepfd;
+
+    FD_ZERO(&keepfd);
 
     if (virDomainIsActive(vm)) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -950,7 +953,10 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     vm->stdout_fd = -1;
     vm->stderr_fd = -1;
 
-    ret = virExec(conn, argv, NULL, &vm->pid,
+    for (i = 0 ; i < ntapfds ; i++)
+        FD_SET(tapfds[i], &keepfd);
+
+    ret = virExec(conn, argv, NULL, &keepfd, &vm->pid,
                   vm->stdin_fd, &vm->stdout_fd, &vm->stderr_fd,
                   VIR_EXEC_NONBLOCK);
     if (ret == 0) {
@@ -1219,7 +1225,8 @@ dhcpStartDhcpDaemon(virConnectPtr conn,
     if (qemudBuildDnsmasqArgv(conn, network, &argv) < 0)
         return -1;
 
-    ret = virExec(conn, argv, NULL, &network->dnsmasqPid, -1, NULL, NULL, VIR_EXEC_NONBLOCK);
+    ret = virExec(conn, argv, NULL, NULL,
+                  &network->dnsmasqPid, -1, NULL, NULL, VIR_EXEC_NONBLOCK);
 
     for (i = 0; argv[i]; i++)
         VIR_FREE(argv[i]);

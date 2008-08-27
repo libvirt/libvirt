@@ -26,6 +26,7 @@
 
 #include "util-lib.h"
 #include "verify.h"
+#include <sys/select.h>
 
 enum {
     VIR_EXEC_NONE   = 0,
@@ -36,6 +37,7 @@ enum {
 int virExec(virConnectPtr conn,
             const char *const*argv,
             const char *const*envp,
+            const fd_set *keepfd,
             int *retpid,
             int infd,
             int *outfd,
