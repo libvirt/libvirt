@@ -21,6 +21,18 @@ rm -rf coverage
   --with-lxc \
   --with-xen-proxy
 
+# If the MAKEFLAGS envvar does not yet include a -j option,
+# add -jN where N depends on the number of processors.
+case $MAKEFLAGS in
+  *-j*) ;;
+  *) n=$(getconf _NPROCESSORS_ONLN 2> /dev/null)
+    test "$n" -gt 0 || n=1
+    n=$(expr $n + 1)
+    MAKEFLAGS="$MAKEFLAGS -j$n"
+    export MAKEFLAGS
+    ;;
+esac
+
 make
 make install
 

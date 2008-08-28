@@ -1,3 +1,11 @@
+Thu Aug 28 11:08:15 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	improve parallel build support
+	* autobuild.sh: Append -j$N to MAKEFLAGS, if no -j option is there.
+	* libvirt.spec.in: Use %{?_smp_mflags} with "make".
+	Based on a patch from James Morris:
+	http://thread.gmane.org/gmane.comp.emulators.libvirt/8201
+
 Wed Aug 27 20:50:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Storage pool source discovery from David Lively
