@@ -4270,7 +4270,6 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
 virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
     int ret;
     char *sexpr;
-    char *name = NULL;
     virDomainPtr dom;
     xenUnifiedPrivatePtr priv;
     virDomainDefPtr def;
@@ -4292,15 +4291,17 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
         goto error;
     }
 
+    DEBUG("Defining w/ sexpr: \n%s", sexpr);
+
     ret = xend_op(conn, "", "op", "new", "config", sexpr, NULL);
     VIR_FREE(sexpr);
     if (ret != 0) {
         virXendError(conn, VIR_ERR_XEN_CALL,
-                     _("Failed to create inactive domain %s\n"), name);
+                     _("Failed to create inactive domain %s\n"), def->name);
         goto error;
     }
 
-    dom = virDomainLookupByName(conn, name);
+    dom = virDomainLookupByName(conn, def->name);
     if (dom == NULL) {
         goto error;
     }

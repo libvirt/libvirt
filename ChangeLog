@@ -1,3 +1,8 @@
+Thu Aug 28 12:58:15 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Fix lookup of Xen VMs after define
+	(patch from Cole Robinson)
+
 Thu Aug 28 11:08:15 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	improve parallel build support
