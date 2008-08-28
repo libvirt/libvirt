@@ -1,3 +1,9 @@
+Thu Aug 28 23:39:15 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/util.c: Fix off-by-one to allow making of paths at root
+	* src/lxc_container.c: Allow for a private root filesystem
+	using pivot_root.
+
 Thu Aug 28 12:58:15 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Fix lookup of Xen VMs after define

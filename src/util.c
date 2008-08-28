@@ -616,13 +616,11 @@ int virFileMakePath(const char *path)
     if (!(p = strrchr(parent, '/')))
         return EINVAL;
 
-    if (p == parent)
-        return EPERM;
-
-    *p = '\0';
-
-    if ((err = virFileMakePath(parent)))
-        return err;
+    if (p != parent) {
+        *p = '\0';
+        if ((err = virFileMakePath(parent)))
+            return err;
+    }
 
     if (mkdir(path, 0777) < 0 && errno != EEXIST)
         return errno;
