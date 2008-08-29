@@ -1,3 +1,9 @@
+Fri Aug 29 08:04:15 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/bridge.c, src/proxy_internal.c, src/qemu_conf.c,
+	src/qemu_conf.h, src/qemu_driver.c, src/remote_internal.c:
+	Switch over to using virExec() function
+
 Thu Aug 28 23:39:15 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/util.c: Fix off-by-one to allow making of paths at root

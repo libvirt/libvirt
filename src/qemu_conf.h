@@ -49,7 +49,7 @@ enum qemud_cmd_flags {
 
 /* Main driver state */
 struct qemud_driver {
-    int qemuVersion;
+    unsigned int qemuVersion;
     int nextvmid;
 
     virDomainObjPtr domains;
@@ -86,13 +86,13 @@ virCapsPtr  qemudCapsInit               (void);
 int         qemudExtractVersion         (virConnectPtr conn,
                                          struct qemud_driver *driver);
 int         qemudExtractVersionInfo     (const char *qemu,
-                                         int *version,
-                                         int *flags);
+                                         unsigned int *version,
+                                         unsigned int *flags);
 
 int         qemudBuildCommandLine       (virConnectPtr conn,
                                          struct qemud_driver *driver,
                                          virDomainObjPtr dom,
-                                         int qemuCmdFlags,
+                                         unsigned int qemuCmdFlags,
                                          const char ***argv,
                                          int **tapfds,
                                          int *ntapfds,

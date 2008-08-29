@@ -394,124 +394,100 @@ virCapsPtr qemudCapsInit(void) {
 }
 
 
-int qemudExtractVersionInfo(const char *qemu, int *version, int *flags) {
+int qemudExtractVersionInfo(const char *qemu,
+                            unsigned int *retversion,
+                            unsigned int *retflags) {
+    const char *const qemuarg[] = { qemu, "-help", NULL };
+    const char *const qemuenv[] = { "LC_ALL=C", NULL };
     pid_t child;
-    int newstdout[2];
+    int newstdout = -1;
+    char help[8192]; /* Ought to be enough to hold QEMU help screen */
+    int got = 0, ret = -1, status;
+    unsigned int major, minor, micro;
+    unsigned int version;
+    unsigned int flags = 0;
 
-    if (flags)
-        *flags = 0;
-    if (version)
-        *version = 0;
+    if (retflags)
+        *retflags = 0;
+    if (retversion)
+        *retversion = 0;
 
-    if (pipe(newstdout) < 0) {
+    if (virExec(NULL, qemuarg, qemuenv, NULL,
+                &child, -1, &newstdout, NULL, VIR_EXEC_NONE) < 0)
         return -1;
-    }
 
-    if ((child = fork()) < 0) {
-        close(newstdout[0]);
-        close(newstdout[1]);
-        return -1;
-    }
 
-    if (child == 0) { /* Kid */
-        /* Just in case QEMU is translated someday we force to C locale.. */
-        const char *const qemuenv[] = { "LANG=C", NULL };
-
-        if (close(STDIN_FILENO) < 0)
-            goto cleanup1;
-        if (close(STDERR_FILENO) < 0)
-            goto cleanup1;
-        if (close(newstdout[0]) < 0)
-            goto cleanup1;
-        if (dup2(newstdout[1], STDOUT_FILENO) < 0)
-            goto cleanup1;
-
-        /* Passing -help, rather than relying on no-args which doesn't
-           always work */
-        execle(qemu, qemu, "-help", (char*)NULL, qemuenv);
-
-    cleanup1:
-        _exit(-1); /* Just in case */
-    } else { /* Parent */
-        char help[8192]; /* Ought to be enough to hold QEMU help screen */
-        int got = 0, ret = -1;
-        int major, minor, micro;
-        int ver;
-
-        if (close(newstdout[1]) < 0)
+    while (got < (sizeof(help)-1)) {
+        int len;
+        if ((len = saferead(newstdout, help+got, sizeof(help)-got-1)) < 0)
             goto cleanup2;
-
-        while (got < (sizeof(help)-1)) {
-            int len;
-            if ((len = read(newstdout[0], help+got, sizeof(help)-got-1)) <= 0) {
-                if (!len)
-                    break;
-                if (errno == EINTR)
-                    continue;
-                goto cleanup2;
-            }
-            got += len;
-        }
-        help[got] = '\0';
-
-        if (sscanf(help, "QEMU PC emulator version %d.%d.%d", &major,&minor, &micro) != 3) {
-            goto cleanup2;
-        }
-
-        ver = (major * 1000 * 1000) + (minor * 1000) + micro;
-        if (version)
-            *version = ver;
-        if (flags) {
-            if (strstr(help, "-no-kqemu"))
-                *flags |= QEMUD_CMD_FLAG_KQEMU;
-            if (strstr(help, "-no-reboot"))
-                *flags |= QEMUD_CMD_FLAG_NO_REBOOT;
-            if (strstr(help, "-name"))
-                *flags |= QEMUD_CMD_FLAG_NAME;
-            if (strstr(help, "-drive"))
-                *flags |= QEMUD_CMD_FLAG_DRIVE;
-            if (strstr(help, "boot=on"))
-                *flags |= QEMUD_CMD_FLAG_DRIVE_BOOT;
-            if (ver >= 9000)
-                *flags |= QEMUD_CMD_FLAG_VNC_COLON;
-        }
-        ret = 0;
-
-        qemudDebug("Version %d %d %d  Cooked version: %d, with flags ? %d",
-                   major, minor, micro, *version, *flags);
-
-    cleanup2:
-        if (close(newstdout[0]) < 0)
-            ret = -1;
-
-    rewait:
-        if (waitpid(child, &got, 0) != child) {
-            if (errno == EINTR) {
-                goto rewait;
-            }
-            qemudLog(QEMUD_ERR,
-                     _("Unexpected exit status from qemu %d pid %lu"),
-                     got, (unsigned long)child);
-            ret = -1;
-        }
-        /* Check & log unexpected exit status, but don't fail,
-         * as there's really no need to throw an error if we did
-         * actually read a valid version number above */
-        if (WEXITSTATUS(got) != 0) {
-            qemudLog(QEMUD_WARN,
-                     _("Unexpected exit status '%d', qemu probably failed"),
-                     got);
-        }
-
-        return ret;
+        if (!len)
+            break;
+        got += len;
     }
+    help[got] = '\0';
+
+    if (sscanf(help, "QEMU PC emulator version %u.%u.%u",
+               &major, &minor, &micro) != 3) {
+        goto cleanup2;
+    }
+
+    version = (major * 1000 * 1000) + (minor * 1000) + micro;
+
+    if (strstr(help, "-no-kqemu"))
+        flags |= QEMUD_CMD_FLAG_KQEMU;
+    if (strstr(help, "-no-reboot"))
+        flags |= QEMUD_CMD_FLAG_NO_REBOOT;
+    if (strstr(help, "-name"))
+        flags |= QEMUD_CMD_FLAG_NAME;
+    if (strstr(help, "-drive"))
+        flags |= QEMUD_CMD_FLAG_DRIVE;
+    if (strstr(help, "boot=on"))
+        flags |= QEMUD_CMD_FLAG_DRIVE_BOOT;
+    if (version >= 9000)
+        flags |= QEMUD_CMD_FLAG_VNC_COLON;
+
+
+    if (retversion)
+        *retversion = version;
+    if (retflags)
+        *retflags = flags;
+
+    ret = 0;
+
+    qemudDebug("Version %d %d %d  Cooked version: %d, with flags ? %d",
+               major, minor, micro, version, flags);
+
+cleanup2:
+    if (close(newstdout) < 0)
+        ret = -1;
+
+rewait:
+    if (waitpid(child, &status, 0) != child) {
+        if (errno == EINTR)
+            goto rewait;
+
+        qemudLog(QEMUD_ERR,
+                 _("Unexpected exit status from qemu %d pid %lu"),
+                 WEXITSTATUS(status), (unsigned long)child);
+        ret = -1;
+    }
+    /* Check & log unexpected exit status, but don't fail,
+     * as there's really no need to throw an error if we did
+     * actually read a valid version number above */
+    if (WEXITSTATUS(status) != 0) {
+        qemudLog(QEMUD_WARN,
+                 _("Unexpected exit status '%d', qemu probably failed"),
+                 WEXITSTATUS(status));
+    }
+
+    return ret;
 }
 
 int qemudExtractVersion(virConnectPtr conn,
                         struct qemud_driver *driver) {
     const char *binary;
     struct stat sb;
-    int ignored;
 
     if (driver->qemuVersion > 0)
         return 0;
@@ -529,7 +505,7 @@ int qemudExtractVersion(virConnectPtr conn,
         return -1;
     }
 
-    if (qemudExtractVersionInfo(binary, &driver->qemuVersion, &ignored) < 0) {
+    if (qemudExtractVersionInfo(binary, &driver->qemuVersion, NULL) < 0) {
         return -1;
     }
 
@@ -716,7 +692,7 @@ static int qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
 int qemudBuildCommandLine(virConnectPtr conn,
                           struct qemud_driver *driver,
                           virDomainObjPtr vm,
-                          int qemuCmdFlags,
+                          unsigned int qemuCmdFlags,
                           const char ***retargv,
                           int **tapfds,
                           int *ntapfds,

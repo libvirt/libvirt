@@ -72,6 +72,7 @@
 #include "remote_internal.h"
 #include "remote_protocol.h"
 #include "memory.h"
+#include "util.h"
 
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt,__VA_ARGS__)
 #define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
@@ -221,62 +222,17 @@ static int
 remoteForkDaemon(virConnectPtr conn)
 {
     const char *daemonPath = remoteFindDaemonPath();
+    const char *const daemonargs[] = { daemonPath, "--timeout=30", NULL };
     int ret, pid, status;
 
     if (!daemonPath) {
         error(conn, VIR_ERR_INTERNAL_ERROR, _("failed to find libvirtd binary"));
-        return(-1);
+        return -1;
     }
 
-    /* Become a daemon */
-    pid = fork();
-    if (pid == 0) {
-        int stdinfd = -1;
-        int stdoutfd = -1;
-        int i, open_max;
-        if ((stdinfd = open(_PATH_DEVNULL, O_RDONLY)) < 0)
-            goto cleanup;
-        if ((stdoutfd = open(_PATH_DEVNULL, O_WRONLY)) < 0)
-            goto cleanup;
-        if (dup2(stdinfd, STDIN_FILENO) != STDIN_FILENO)
-            goto cleanup;
-        if (dup2(stdoutfd, STDOUT_FILENO) != STDOUT_FILENO)
-            goto cleanup;
-        if (dup2(stdoutfd, STDERR_FILENO) != STDERR_FILENO)
-            goto cleanup;
-        if (close(stdinfd) < 0)
-            goto cleanup;
-        stdinfd = -1;
-        if (close(stdoutfd) < 0)
-            goto cleanup;
-        stdoutfd = -1;
-
-        open_max = sysconf (_SC_OPEN_MAX);
-        for (i = 0; i < open_max; i++)
-            if (i != STDIN_FILENO &&
-                i != STDOUT_FILENO &&
-                i != STDERR_FILENO)
-                close(i);
-
-        setsid();
-        if (fork() == 0) {
-            /* Run daemon in auto-shutdown mode, so it goes away when
-               no longer needed by an active guest, or client */
-            execl(daemonPath, daemonPath, "--timeout", "30", NULL);
-        }
-        /*
-         * calling exit() generate troubles for termination handlers
-         */
-        _exit(0);
-
-    cleanup:
-        if (stdoutfd != -1)
-            close(stdoutfd);
-        if (stdinfd != -1)
-            close(stdinfd);
-        _exit(-1);
-    }
-
+    if (virExec(NULL, daemonargs, NULL, NULL,
+                &pid, -1, NULL, NULL, VIR_EXEC_DAEMON) < 0)
+        return -1;
     /*
      * do a waitpid on the intermediate process to avoid zombies.
      */
@@ -287,7 +243,7 @@ remoteForkDaemon(virConnectPtr conn)
             goto retry_wait;
     }
 
-    return (0);
+    return 0;
 }
 #endif
 
@@ -349,7 +305,7 @@ doRemoteOpen (virConnectPtr conn,
     char *name = 0, *command = 0, *sockname = 0, *netcat = 0, *username = 0;
     char *port = 0, *authtype = 0;
     int no_verify = 0, no_tty = 0;
-    char **cmd_argv = 0;
+    char **cmd_argv = NULL;
 
     /* Return code from this function, and the private data. */
     int retcode = VIR_DRV_OPEN_ERROR;
@@ -693,40 +649,9 @@ doRemoteOpen (virConnectPtr conn,
             goto failed;
         }
 
-        pid = fork ();
-        if (pid == -1) {
-            errorf (conn, VIR_ERR_SYSTEM_ERROR,
-                    _("unable to fork external network transport: %s"),
-                    strerror (errno));
+        if (virExec(conn, (const char**)cmd_argv, NULL, NULL,
+                    &pid, sv[1], &(sv[1]), NULL, VIR_EXEC_NONE) < 0)
             goto failed;
-        } else if (pid == 0) { /* Child. */
-            close (sv[0]);
-            // Connect socket (sv[1]) to stdin/stdout.
-            close (0);
-            if (dup (sv[1]) == -1) {
-                perror ("dup");
-                _exit(1);
-            }
-            close (1);
-            if (dup (sv[1]) == -1) {
-                perror ("dup");
-                _exit(1);
-            }
-            close (sv[1]);
-
-            // Run the external process.
-            if (!cmd_argv) {
-                if (VIR_ALLOC_N(cmd_argv, 2) < 0) {
-                    perror("malloc");
-                    _exit(1);
-                }
-                cmd_argv[0] = command;
-                cmd_argv[1] = 0;
-            }
-            execvp (command, cmd_argv);
-            perror (command);
-            _exit (1);
-        }
 
         /* Parent continues here. */
         close (sv[1]);

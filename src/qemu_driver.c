@@ -312,6 +312,7 @@ static int
 qemudActive(void) {
     virDomainObjPtr dom = qemu_driver->domains;
     virNetworkObjPtr net = qemu_driver->networks;
+
     while (dom) {
         if (virDomainIsActive(dom))
             return 1;
@@ -846,7 +847,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     struct stat sb;
     int *tapfds = NULL;
     int ntapfds = 0;
-    int qemuCmdFlags;
+    unsigned int qemuCmdFlags;
     fd_set keepfd;
 
     FD_ZERO(&keepfd);
@@ -1509,19 +1510,11 @@ static int qemudStartNetworkDaemon(virConnectPtr conn,
     }
 
 
-    if ((err = brSetForwardDelay(driver->brctl, network->def->bridge, network->def->delay))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to set bridge forward delay to %ld"),
-                         network->def->delay);
+    if (brSetForwardDelay(driver->brctl, network->def->bridge, network->def->delay) < 0)
         goto err_delbr;
-    }
 
-    if ((err = brSetEnableSTP(driver->brctl, network->def->bridge, network->def->stp ? 1 : 0))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to set bridge STP to %s"),
-                         network->def->stp ? "on" : "off");
+    if (brSetEnableSTP(driver->brctl, network->def->bridge, network->def->stp ? 1 : 0) < 0)
         goto err_delbr;
-    }
 
     if (network->def->ipAddress &&
         (err = brSetInetAddress(driver->brctl, network->def->bridge, network->def->ipAddress))) {

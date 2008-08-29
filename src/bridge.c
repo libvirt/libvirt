@@ -46,6 +46,7 @@
 
 #include "internal.h"
 #include "memory.h"
+#include "util.h"
 
 #define MAX_BRIDGE_ID 256
 
@@ -596,42 +597,6 @@ brGetInetNetmask(brControl *ctl,
     return brGetInetAddr(ctl, ifname, SIOCGIFNETMASK, addr, maxlen);
 }
 
-static int
-brctlSpawn(char * const *argv)
-{
-    pid_t pid, ret;
-    int status;
-    int null = -1;
-
-    if ((null = open(_PATH_DEVNULL, O_RDONLY)) < 0)
-        return errno;
-
-    pid = fork();
-    if (pid == -1) {
-        int saved_errno = errno;
-        close(null);
-        return saved_errno;
-    }
-
-    if (pid == 0) { /* child */
-        dup2(null, STDIN_FILENO);
-        dup2(null, STDOUT_FILENO);
-        dup2(null, STDERR_FILENO);
-        close(null);
-
-        execvp(argv[0], argv);
-
-        _exit (1);
-    }
-
-    close(null);
-
-    while ((ret = waitpid(pid, &status, 0) == -1) && errno == EINTR);
-    if (ret == -1)
-        return errno;
-
-    return (WIFEXITED(status) && WEXITSTATUS(status) == 0) ? 0 : EINVAL;
-}
 
 /**
  * brSetForwardDelay:
@@ -641,7 +606,7 @@ brctlSpawn(char * const *argv)
  *
  * Set the bridge forward delay
  *
- * Returns 0 in case of success or an errno code in case of failure.
+ * Returns 0 in case of success or -1 on failure
  */
 
 int
@@ -649,48 +614,17 @@ brSetForwardDelay(brControl *ctl ATTRIBUTE_UNUSED,
                   const char *bridge,
                   int delay)
 {
-    char **argv;
-    int retval = ENOMEM;
-    int n;
     char delayStr[30];
-
-    n = 1 + /* brctl */
-        1 + /* setfd */
-        1 + /* brige name */
-        1; /* value */
+    const char *const progargv[] = {
+        BRCTL, "setfd", bridge, delayStr, NULL
+    };
 
     snprintf(delayStr, sizeof(delayStr), "%d", delay);
 
-    if (VIR_ALLOC_N(argv, n + 1) < 0)
-        goto error;
+    if (virRun(NULL, progargv, NULL) < 0)
+        return -1;
 
-    n = 0;
-
-    if (!(argv[n++] = strdup(BRCTL)))
-        goto error;
-
-    if (!(argv[n++] = strdup("setfd")))
-        goto error;
-
-    if (!(argv[n++] = strdup(bridge)))
-        goto error;
-
-    if (!(argv[n++] = strdup(delayStr)))
-        goto error;
-
-    argv[n++] = NULL;
-
-    retval = brctlSpawn(argv);
-
- error:
-    if (argv) {
-        n = 0;
-        while (argv[n])
-            VIR_FREE(argv[n++]);
-        VIR_FREE(argv);
-    }
-
-    return retval;
+    return 0;
 }
 
 /**
@@ -702,52 +636,22 @@ brSetForwardDelay(brControl *ctl ATTRIBUTE_UNUSED,
  * Control whether the bridge participates in the spanning tree protocol,
  * in general don't disable it without good reasons.
  *
- * Returns 0 in case of success or an errno code in case of failure.
+ * Returns 0 in case of success or -1 on failure
  */
 int
 brSetEnableSTP(brControl *ctl ATTRIBUTE_UNUSED,
                const char *bridge,
                int enable)
 {
-    char **argv;
-    int retval = ENOMEM;
-    int n;
+    const char *setting = enable ? "on" : "off";
+    const char *const progargv[] = {
+        BRCTL, "stp", bridge, setting, NULL
+    };
 
-    n = 1 + /* brctl */
-        1 + /* stp */
-        1 + /* brige name */
-        1;  /* value */
+    if (virRun(NULL, progargv, NULL) < 0)
+        return -1;
 
-    if (VIR_ALLOC_N(argv, n + 1) < 0)
-        goto error;
-
-    n = 0;
-
-    if (!(argv[n++] = strdup(BRCTL)))
-        goto error;
-
-    if (!(argv[n++] = strdup("stp")))
-        goto error;
-
-    if (!(argv[n++] = strdup(bridge)))
-        goto error;
-
-    if (!(argv[n++] = strdup(enable ? "on" : "off")))
-        goto error;
-
-    argv[n++] = NULL;
-
-    retval = brctlSpawn(argv);
-
- error:
-    if (argv) {
-        n = 0;
-        while (argv[n])
-            VIR_FREE(argv[n++]);
-        VIR_FREE(argv);
-    }
-
-    return retval;
+    return 0;
 }
 
 #endif /* WITH_QEMU || WITH_LXC */
