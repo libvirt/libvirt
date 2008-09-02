@@ -53,6 +53,7 @@ enum {
     VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE  = (1<<1),
     VIR_STORAGE_BACKEND_POOL_SOURCE_DIR     = (1<<2),
     VIR_STORAGE_BACKEND_POOL_SOURCE_ADAPTER = (1<<3),
+    VIR_STORAGE_BACKEND_POOL_SOURCE_NAME    = (1<<4),
 };
 
 typedef struct _virStorageBackendPoolOptions virStorageBackendPoolOptions;

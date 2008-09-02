@@ -96,6 +96,7 @@ virStoragePoolDefFree(virStoragePoolDefPtr def) {
     }
     VIR_FREE(def->source.devices);
     VIR_FREE(def->source.dir);
+    VIR_FREE(def->source.name);
 
     if (def->source.authType == VIR_STORAGE_POOL_AUTH_CHAP) {
         VIR_FREE(def->source.auth.chap.login);
@@ -234,7 +235,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
 
     if (STRNEQ((const char *)root->name, "pool")) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                              "%s", _("unknown root element"));
+                          "%s", _("unknown root elementi for storage pool"));
         goto cleanup;
     }
 
@@ -248,9 +249,13 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
         goto cleanup;
     }
 
-    if ((ret->name = virXPathString(conn, "string(/pool/name)", ctxt)) == NULL) {
+    ret->name = virXPathString(conn, "string(/pool/name)", ctxt);
+    if (ret->name == NULL &&
+        options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_NAME)
+        ret->name = virXPathString(conn, "string(/pool/source/name)", ctxt);
+    if (ret->name == NULL) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                              "%s", _("missing name element"));
+                              "%s", _("missing pool source name element"));
         goto cleanup;
     }
 
@@ -282,7 +287,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
     if (options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_HOST) {
         if ((ret->source.host.name = virXPathString(conn, "string(/pool/source/host/@name)", ctxt)) == NULL) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                                  "%s", _("missing source host name"));
+                             "%s", _("missing storage pool source host name"));
             goto cleanup;
         }
     }
@@ -292,7 +297,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
 
         if ((nsource = virXPathNodeSet(conn, "/pool/source/device", ctxt, &nodeset)) <= 0) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                                  "%s", _("cannot extract source devices"));
+                        "%s", _("cannot extract storage pool source devices"));
             goto cleanup;
         }
         if (VIR_ALLOC_N(ret->source.devices, nsource) < 0) {
@@ -305,7 +310,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
             if (path == NULL) {
                 VIR_FREE(nodeset);
                 virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                                      "%s", _("missing source device path"));
+                        "%s", _("missing storage pool source device path"));
                 goto cleanup;
             }
             ret->source.devices[i].path = (char *)path;
@@ -316,8 +321,16 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
     if (options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_DIR) {
         if ((ret->source.dir = virXPathString(conn, "string(/pool/source/dir/@path)", ctxt)) == NULL) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                                  "%s", _("missing source path"));
+                                "%s", _("missing storage pool source path"));
             goto cleanup;
+        }
+    }
+    if (options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_NAME) {
+        ret->source.name = virXPathString(conn, "string(/pool/source/name)",
+                                          ctxt);
+        if (ret->source.name == NULL) {
+            /* source name defaults to pool name */
+            ret->source.name = strdup(ret->name);
         }
     }
 
@@ -345,7 +358,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
 
     if ((ret->target.path = virXPathString(conn, "string(/pool/target/path)", ctxt)) == NULL) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                              "%s", _("missing target path"));
+                              "%s", _("missing storage pool target path"));
         goto cleanup;
     }
 
@@ -499,6 +512,9 @@ virStoragePoolDefFormat(virConnectPtr conn,
     if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_ADAPTER) &&
         def->source.adapter)
         virBufferVSprintf(&buf,"    <adapter name='%s'/>\n", def->source.adapter);
+    if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_NAME) &&
+        def->source.name)
+        virBufferVSprintf(&buf,"    <name>%s</name>\n", def->source.name);
 
     if (options->formatToString) {
         const char *format = (options->formatToString)(conn, def->source.format);
@@ -698,7 +714,7 @@ virStorageVolDefParseDoc(virConnectPtr conn,
     ret->name = virXPathString(conn, "string(/volume/name)", ctxt);
     if (ret->name == NULL) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                              "%s", _("missing name element"));
+                              "%s", _("missing volume name element"));
         goto cleanup;
     }
 

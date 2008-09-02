@@ -174,6 +174,9 @@ struct _virStoragePoolSource {
     /* Or an adapter */
     char *adapter;
 
+    /* Or a name */
+    char *name;
+
     int authType;       /* virStoragePoolAuthType */
     union {
         virStoragePoolAuthChap chap;

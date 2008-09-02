@@ -3024,6 +3024,7 @@ static const vshCmdOptDef opts_pool_define_as[] = {
     {"source-host", VSH_OT_DATA, 0, gettext_noop("source-host for underlying storage")},
     {"source-path", VSH_OT_DATA, 0, gettext_noop("source path for underlying storage")},
     {"source-dev", VSH_OT_DATA, 0, gettext_noop("source device for underlying storage")},
+    {"source-name", VSH_OT_DATA, 0, gettext_noop("source name for underlying storage")},
     {"target", VSH_OT_DATA, 0, gettext_noop("target for underlying storage")},
     {NULL, 0, 0, NULL}
 };
@@ -3035,7 +3036,7 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr pool;
     int found;
     char *xml;
-    char *name, *type, *srcHost, *srcPath, *srcDev, *target;
+    char *name, *type, *srcHost, *srcPath, *srcDev, *srcName, *target;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
@@ -3051,11 +3052,12 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
     srcHost = vshCommandOptString(cmd, "source-host", &found);
     srcPath = vshCommandOptString(cmd, "source-path", &found);
     srcDev = vshCommandOptString(cmd, "source-dev", &found);
+    srcName = vshCommandOptString(cmd, "source-name", &found);
     target = vshCommandOptString(cmd, "target", &found);
 
     virBufferVSprintf(&buf, "<pool type='%s'>\n", type);
     virBufferVSprintf(&buf, "  <name>%s</name>\n", name);
-    if (srcHost || srcPath || srcDev) {
+    if (srcHost || srcPath || srcDev || srcName) {
         virBufferAddLit(&buf, "  <source>\n");
         if (srcHost)
             virBufferVSprintf(&buf, "    <host>%s</host>\n", srcHost);
@@ -3063,6 +3065,8 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
             virBufferVSprintf(&buf, "    <path>%s</path>\n", srcPath);
         if (srcDev)
             virBufferVSprintf(&buf, "    <device>%s</device>\n", srcDev);
+        if (srcName)
+            virBufferVSprintf(&buf, "    <name>%s</name>\n", srcName);
 
         virBufferAddLit(&buf, "  </source>\n");
     }

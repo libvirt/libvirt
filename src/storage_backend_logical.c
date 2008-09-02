@@ -80,7 +80,7 @@ virStorageBackendLogicalSetActive(virConnectPtr conn,
 
     cmdargv[0] = VGCHANGE;
     cmdargv[1] = on ? "-ay" : "-an";
-    cmdargv[2] = pool->def->name;
+    cmdargv[2] = pool->def->source.name;
     cmdargv[3] = NULL;
 
     if (virRun(conn, cmdargv, NULL) < 0)
@@ -213,7 +213,7 @@ virStorageBackendLogicalFindLVs(virConnectPtr conn,
         LVS, "--separator", ":", "--noheadings", "--units", "b",
         "--unbuffered", "--nosuffix", "--options",
         "lv_name,uuid,devices,seg_size,vg_extent_size",
-        pool->def->name, NULL
+        pool->def->source.name, NULL
     };
 
     int exitstatus;
@@ -357,7 +357,7 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn,
     }
 
     vgargv[n++] = VGCREATE;
-    vgargv[n++] = pool->def->name;
+    vgargv[n++] = pool->def->source.name;
 
     pvargv[0] = PVCREATE;
     pvargv[2] = NULL;
@@ -434,7 +434,7 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn,
     const char *prog[] = {
         VGS, "--separator", ":", "--noheadings", "--units", "b", "--unbuffered",
         "--nosuffix", "--options", "vg_size,vg_free",
-        pool->def->name, NULL
+        pool->def->source.name, NULL
     };
     int exitstatus;
 
@@ -488,7 +488,7 @@ virStorageBackendLogicalDeletePool(virConnectPtr conn,
                                    unsigned int flags ATTRIBUTE_UNUSED)
 {
     const char *cmdargv[] = {
-        VGREMOVE, "-f", pool->def->name, NULL
+        VGREMOVE, "-f", pool->def->source.name, NULL
     };
 
     if (virRun(conn, cmdargv, NULL) < 0)
@@ -618,6 +618,7 @@ virStorageBackend virStorageBackendLogical = {
     .deleteVol = virStorageBackendLogicalDeleteVol,
 
     .poolOptions = {
+        .flags = VIR_STORAGE_BACKEND_POOL_SOURCE_NAME,
         .formatFromString = virStorageBackendLogicalPoolFormatFromString,
         .formatToString = virStorageBackendLogicalPoolFormatToString,
     },

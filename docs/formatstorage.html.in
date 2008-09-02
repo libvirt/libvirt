@@ -91,6 +91,11 @@
 	which is the hostname or IP address of the server. May optionally
 	contain a <code>port</code> attribute for the protocol specific
 	port number. <span class="since">Since 0.4.1</span></dd>
+      <dt><code>name</code></dt>
+      <dd>Provides the source for pools backed by storage from a
+	named element (e.g., a logical volume group name).
+	remote server. Contains a string identifier.
+	<span class="since">Since 0.4.5</span></dd>
       <dt><code>format</code></dt>
       <dd>Provides information about the format of the pool. This
 	contains a single attribute <code>type</code> whose value is

@@ -1,3 +1,12 @@
+Tue Sep  2 16:12:20 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/storage_backend.h src/storage_backend_logical.c
+	  src/storage_conf.c src/storage_conf.h src/virsh.c:
+	  Applied patches from David Lively to add storage source
+	  elements needed for storage pool
+	* docs/formatstorage.html docs/formatstorage.html.in: associated
+	  documentation
+
 Tue Sep  2 12:28:54 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	qemu_conf.c: use new function, virFileReadLimFD
