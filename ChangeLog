@@ -1,3 +1,10 @@
+Tue Sep  2 16:55:01 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_conf.c: patch from Cole Robinson to report in the
+	  capabilities only the ones where the emulators is actually found
+	* po/libvirt.pot: regenerated
+	* src/libvirt.c: small typo fix
+
 Tue Sep  2 16:12:20 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/storage_backend.h src/storage_backend_logical.c

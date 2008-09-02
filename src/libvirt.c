@@ -848,7 +848,7 @@ failed:
     if (ret->driver) ret->driver->close (ret);
     if (uri) xmlFreeURI(uri);
 
-    /* If not global error was set, copy any error set
+    /* If no global error was set, copy any error set
        in the connection object we're about to dispose of */
     if (__lastErr.code == VIR_ERR_OK) {
         memcpy(&__lastErr, &ret->err, sizeof(ret->err));

@@ -226,7 +226,29 @@ qemudCapsInitGuest(virCapsPtr caps,
                    const struct qemu_arch_info *info,
                    int hvm) {
     virCapsGuestPtr guest;
-    int i;
+    int i, haskvm, hasbase, samearch;
+    const char *kvmbin = NULL;
+
+    /* Check for existance of base emulator */
+    hasbase = (access(info->binary, X_OK) == 0);
+
+    samearch = STREQ(info->arch, hostmachine);
+    if (samearch) {
+        const char *const kvmbins[] = { "/usr/bin/qemu-kvm", /* Fedora */
+                                        "/usr/bin/kvm" }; /* Upstream .spec */
+
+        for (i = 0; i < ARRAY_CARDINALITY(kvmbins); ++i) {
+            if ((haskvm = (access(kvmbins[i], X_OK) == 0))) {
+                kvmbin = kvmbins[i];
+                break;
+            }
+        }
+    } else {
+        haskvm = 0;
+    }
+
+    if (!hasbase && !haskvm)
+        return 0;
 
     if ((guest = virCapabilitiesAddGuest(caps,
                                          hvm ? "hvm" : "xen",
@@ -239,8 +261,7 @@ qemudCapsInitGuest(virCapsPtr caps,
         return -1;
 
     if (hvm) {
-        /* Check for existance of base emulator */
-        if (access(info->binary, X_OK) == 0 &&
+        if (hasbase &&
             virCapabilitiesAddGuestDomain(guest,
                                           "qemu",
                                           NULL,
@@ -250,7 +271,7 @@ qemudCapsInitGuest(virCapsPtr caps,
             return -1;
 
         /* If guest & host match, then we can accelerate */
-        if (STREQ(info->arch, hostmachine)) {
+        if (samearch) {
             if (access("/dev/kqemu", F_OK) == 0 &&
                 virCapabilitiesAddGuestDomain(guest,
                                               "kqemu",
@@ -261,9 +282,10 @@ qemudCapsInitGuest(virCapsPtr caps,
                 return -1;
 
             if (access("/dev/kvm", F_OK) == 0 &&
+                haskvm &&
                 virCapabilitiesAddGuestDomain(guest,
                                               "kvm",
-                                              "/usr/bin/qemu-kvm",
+                                              kvmbin,
                                               NULL,
                                               0,
                                               NULL) == NULL)
