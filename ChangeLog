@@ -1,5 +1,9 @@
 Tue Sep  2 12:28:54 CEST 2008 Jim Meyering <meyering@redhat.com>
 
+	qemu_conf.c: use new function, virFileReadLimFD
+	* src/qemu_conf.c (qemudExtractVersionInfo): Use virFileReadLimFD
+	and VIR_FREE in place of an open-coded loop and a static buffer.
+
 	util.c: add a file-descriptor-based wrapper for fread_file_lim
 	* src/util.c (virFileReadLimFP): New function.
 	(__virFileReadLimFD): New function.

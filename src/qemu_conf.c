@@ -401,8 +401,7 @@ int qemudExtractVersionInfo(const char *qemu,
     const char *const qemuenv[] = { "LC_ALL=C", NULL };
     pid_t child;
     int newstdout = -1;
-    char help[8192]; /* Ought to be enough to hold QEMU help screen */
-    int got = 0, ret = -1, status;
+    int ret = -1, status;
     unsigned int major, minor, micro;
     unsigned int version;
     unsigned int flags = 0;
@@ -416,16 +415,11 @@ int qemudExtractVersionInfo(const char *qemu,
                 &child, -1, &newstdout, NULL, VIR_EXEC_NONE) < 0)
         return -1;
 
-
-    while (got < (sizeof(help)-1)) {
-        int len;
-        if ((len = saferead(newstdout, help+got, sizeof(help)-got-1)) < 0)
-            goto cleanup2;
-        if (!len)
-            break;
-        got += len;
-    }
-    help[got] = '\0';
+    char *help = NULL;
+    enum { MAX_HELP_OUTPUT_SIZE = 8192 };
+    int len = virFileReadLimFD(newstdout, MAX_HELP_OUTPUT_SIZE, &help);
+    if (len < 0)
+        goto cleanup2;
 
     if (sscanf(help, "QEMU PC emulator version %u.%u.%u",
                &major, &minor, &micro) != 3) {
@@ -447,7 +441,6 @@ int qemudExtractVersionInfo(const char *qemu,
     if (version >= 9000)
         flags |= QEMUD_CMD_FLAG_VNC_COLON;
 
-
     if (retversion)
         *retversion = version;
     if (retflags)
@@ -459,6 +452,7 @@ int qemudExtractVersionInfo(const char *qemu,
                major, minor, micro, version, flags);
 
 cleanup2:
+    VIR_FREE(help);
     if (close(newstdout) < 0)
         ret = -1;
 
@@ -1229,4 +1223,3 @@ int qemudBuildCommandLine(virConnectPtr conn,
 #undef ADD_ARG_LIT
 #undef ADD_ARG_SPACE
 }
-
