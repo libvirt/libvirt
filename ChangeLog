@@ -1,3 +1,8 @@
+Tue Sep  2 17:30:50 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/domain_conf.c: fix a parsing error for input devices
+	  patch by Cole Robinson
+
 Tue Sep  2 16:55:01 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_conf.c: patch from Cole Robinson to report in the

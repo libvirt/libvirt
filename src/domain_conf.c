@@ -1656,7 +1656,7 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
         if (!(dev->data.net = virDomainNetDefParseXML(conn, node)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "input")) {
-        dev->type = VIR_DOMAIN_DEVICE_DISK;
+        dev->type = VIR_DOMAIN_DEVICE_INPUT;
         if (!(dev->data.input = virDomainInputDefParseXML(conn, def->os.type, node)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "sound")) {
