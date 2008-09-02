@@ -1,3 +1,12 @@
+Tue Sep  2 12:28:54 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	util.c: add a file-descriptor-based wrapper for fread_file_lim
+	* src/util.c (virFileReadLimFP): New function.
+	(__virFileReadLimFD): New function.
+	* src/util.h (__virFileReadLimFD): Declare.
+	(virFileReadLimFD): Define.
+	(virFileReadAll): Rewrite to use virFileReadLimFP.
+
 Fri Aug 29 08:04:15 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/bridge.c, src/proxy_internal.c, src/qemu_conf.c,

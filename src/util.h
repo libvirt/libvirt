@@ -45,9 +45,10 @@ int virExec(virConnectPtr conn,
             int flags);
 int virRun(virConnectPtr conn, const char *const*argv, int *status);
 
-int __virFileReadAll(const char *path,
-                     int maxlen,
-                     char **buf);
+int __virFileReadLimFD(int fd, int maxlen, char **buf);
+#define virFileReadLimFD(fd,m,b) __virFileReadLimFD((fd),(m),(b))
+
+int __virFileReadAll(const char *path, int maxlen, char **buf);
 #define virFileReadAll(p,m,b) __virFileReadAll((p),(m),(b))
 
 int virFileMatchesNameSuffix(const char *file,

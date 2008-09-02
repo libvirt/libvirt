@@ -510,40 +510,63 @@ fread_file_lim (FILE *stream, size_t max_len, size_t *length)
     return NULL;
 }
 
-int __virFileReadAll(const char *path, int maxlen, char **buf)
+/* A wrapper around fread_file_lim that maps a failure due to
+   exceeding the maximum size limitation to EOVERFLOW.  */
+static int virFileReadLimFP(FILE *fp, int maxlen, char **buf)
 {
-    FILE *fh;
-    int ret = -1;
     size_t len;
-    char *s;
-
-    if (!(fh = fopen(path, "r"))) {
-        virLog("Failed to open file '%s': %s\n",
-               path, strerror(errno));
-        goto error;
-    }
-
-    s = fread_file_lim(fh, maxlen+1, &len);
-    if (s == NULL) {
-        virLog("Failed to read '%s': %s\n", path, strerror (errno));
-        goto error;
-    }
-
+    char *s = fread_file_lim (fp, maxlen+1, &len);
+    if (s == NULL)
+        return -1;
     if (len > maxlen || (int)len != len) {
         VIR_FREE(s);
-        virLog("File '%s' is too large %d, max %d\n",
-               path, (int)len, maxlen);
-        goto error;
+        /* There was at least one byte more than MAXLEN.
+           Set errno accordingly. */
+        errno = EOVERFLOW;
+        return -1;
+    }
+    *buf = s;
+    return len;
+}
+
+/* Like virFileReadLimFP, but use a file descriptor rather than a FILE*.  */
+int __virFileReadLimFD(int fd_arg, int maxlen, char **buf)
+{
+    int fd = dup (fd_arg);
+    if (fd >= 0) {
+        FILE *fp = fdopen (fd, "r");
+        if (fp) {
+            int len = virFileReadLimFP (fp, maxlen, buf);
+            int saved_errno = errno;
+            fclose (fp);
+            errno = saved_errno;
+            return len;
+        } else {
+            int saved_errno = errno;
+            close (fd);
+            errno = saved_errno;
+        }
+    }
+    return -1;
+}
+
+int __virFileReadAll(const char *path, int maxlen, char **buf)
+{
+    FILE *fh = fopen(path, "r");
+    if (fh == NULL) {
+        virLog("Failed to open file '%s': %s\n",
+               path, strerror(errno));
+        return -1;
     }
 
-    *buf = s;
-    ret = len;
+    int len = virFileReadLimFP (fh, maxlen, buf);
+    fclose(fh);
+    if (len < 0) {
+        virLog("Failed to read '%s': %s\n", path, strerror (errno));
+        return -1;
+    }
 
- error:
-    if (fh)
-        fclose(fh);
-
-    return ret;
+    return len;
 }
 
 int virFileMatchesNameSuffix(const char *file,
