@@ -331,6 +331,11 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
         if (ret->source.name == NULL) {
             /* source name defaults to pool name */
             ret->source.name = strdup(ret->name);
+            if (ret->source.name == NULL) {
+                virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s",
+                                      _("pool name"));
+                goto cleanup;
+            }
         }
     }
 
