@@ -1,3 +1,7 @@
+Wed Sep  3 10:42:00 EST 2008 Cole Robinson <crobinso@redhat.com>
+
+	* src/qemu_driver.c: scrape media eject output to determine failure
+
 Wed Sep  3 09:58:00 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* src/domain_conf.c: fix disk device ordering when parsing domain

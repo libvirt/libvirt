@@ -2972,6 +2972,19 @@ static int qemudDomainChangeCDROM(virDomainPtr dom,
         VIR_FREE(cmd);
         return -1;
     }
+
+    /* If the command failed qemu prints:
+     * device not found, device is locked ...
+     * No message is printed on success it seems */
+    DEBUG ("cdrom change reply: %s", reply);
+    if (strstr(reply, "\ndevice ")) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                          "%s", _("changing cdrom media failed"));
+        VIR_FREE(reply);
+        VIR_FREE(cmd);
+        return -1;
+    }
+
     VIR_FREE(reply);
     VIR_FREE(cmd);
 
