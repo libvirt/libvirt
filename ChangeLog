@@ -1,3 +1,7 @@
+Wed Sep  3 10:14:00 PDT 2008 Dan Smith <danms@us.ibm.com>
+	* src/lxc_driver.c:
+	  Add hypervisor version implementation
+
 Wed Sep  3 11:52:00 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* src/domain_conf.c src/domain_conf.h src/qemu_driver.c:

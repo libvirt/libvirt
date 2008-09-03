@@ -1110,6 +1110,29 @@ lxcActive(void) {
     return 0;
 }
 
+static int lxcVersion(virConnectPtr conn, unsigned long *version)
+{
+    struct utsname ver;
+    int maj;
+    int min;
+    int rev;
+
+    if (uname(&ver) != 0) {
+        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("uname(): %m"));
+        return -1;
+    }
+
+    if (sscanf(ver.release, "%i.%i.%i", &maj, &min, &rev) != 3) {
+        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("Unknown release: %s"), ver.release);
+        return -1;
+    }
+
+    *version = (maj * 1000 * 1000) + (min * 1000) + rev;
+
+    return 0;
+}
 
 /* Function Tables */
 static virDriver lxcDriver = {
@@ -1121,7 +1144,7 @@ static virDriver lxcDriver = {
     lxcClose, /* close */
     NULL, /* supports_feature */
     NULL, /* type */
-    NULL, /* version */
+    lxcVersion, /* version */
     NULL, /* getHostname */
     NULL, /* getURI */
     NULL, /* getMaxVcpus */
