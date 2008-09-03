@@ -555,6 +555,10 @@ char *virDomainConfigFile(virConnectPtr conn,
                           const char *dir,
                           const char *name);
 
+int virDiskNameToBusDeviceIndex(virDomainDiskDefPtr disk,
+                                int *busIdx,
+                                int *devIdx);
+
 virDomainNetDefPtr virDomainNetDefParseXML(virConnectPtr conn,
                         xmlNodePtr node);
 

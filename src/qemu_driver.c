@@ -2936,36 +2936,137 @@ static int qemudDomainUndefine(virDomainPtr dom) {
     return 0;
 }
 
-static int qemudDomainChangeCDROM(virDomainPtr dom,
-                                  virDomainObjPtr vm,
-                                  virDomainDiskDefPtr olddisk,
-                                  virDomainDiskDefPtr newdisk) {
+/* Return the disks name for use in monitor commands */
+static char *qemudDiskDeviceName(virDomainPtr dom,
+                                 virDomainDiskDefPtr disk) {
+
+    int busid, devid;
+    int ret;
+    char *devname;
+
+    if (virDiskNameToBusDeviceIndex(disk, &busid, &devid) < 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot convert disk '%s' to bus/device index"),
+                         disk->dst);
+        return NULL;
+    }
+
+    switch (disk->bus) {
+        case VIR_DOMAIN_DISK_BUS_IDE:
+            ret = asprintf(&devname, "ide%d-cd%d", busid, devid);
+            break;
+        case VIR_DOMAIN_DISK_BUS_SCSI:
+            ret = asprintf(&devname, "scsi%d-cd%d", busid, devid);
+            break;
+        case VIR_DOMAIN_DISK_BUS_FDC:
+            ret = asprintf(&devname, "floppy%d", devid);
+            break;
+        case VIR_DOMAIN_DISK_BUS_VIRTIO:
+            ret = asprintf(&devname, "virtio%d", devid);
+            break;
+        default:
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                             _("Unsupported disk name mapping for bus '%s'"),
+                             virDomainDiskBusTypeToString(disk->bus));
+            return NULL;
+    }
+
+    if (ret == -1) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        return NULL;
+    }
+
+    return devname;
+}
+
+static int qemudDomainChangeEjectableMedia(virDomainPtr dom,
+                                           virDomainDeviceDefPtr dev)
+{
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainDiskDefPtr origdisk, newdisk;
     char *cmd, *reply, *safe_path;
+    char *devname = NULL;
+    int qemuCmdFlags;
+
+    if (!vm) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         "%s", _("no domain with matching uuid"));
+        return -1;
+    }
+
+    newdisk = dev->data.disk;
+    origdisk = vm->def->disks;
+    while (origdisk) {
+        if (origdisk->bus == newdisk->bus &&
+            STREQ(origdisk->dst, newdisk->dst))
+            break;
+        origdisk = origdisk->next;
+    }
+
+    if (!origdisk) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("No device with bus '%s' and target '%s'"),
+                         virDomainDiskBusTypeToString(newdisk->bus),
+                         newdisk->dst);
+        return -1;
+    }
+
+    if (qemudExtractVersionInfo(vm->def->emulator,
+                                NULL,
+                                &qemuCmdFlags) < 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Cannot determine QEMU argv syntax %s"),
+                         vm->def->emulator);
+        return -1;
+    }
+
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE) {
+        if (!(devname = qemudDiskDeviceName(dom, newdisk)))
+            return -1;
+    } else {
+        /* Back compat for no -drive option */
+        if (newdisk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+            devname = strdup(newdisk->dst);
+        else if (newdisk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
+                 STREQ(newdisk->dst, "hdc"))
+            devname = strdup("cdrom");
+        else {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("Emulator version does not support removable "
+                               "media for device '%s' and target '%s'"),
+                               virDomainDiskDeviceTypeToString(newdisk->device),
+                               newdisk->dst);
+            return -1;
+        }
+
+        if (!devname) {
+            qemudReportError(dom->conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+            return -1;
+        }
+    }
 
     if (newdisk->src) {
         safe_path = qemudEscapeMonitorArg(newdisk->src);
         if (!safe_path) {
-            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                             "%s", _("out of memory"));
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_MEMORY, NULL);
+            VIR_FREE(devname);
             return -1;
         }
-        if (asprintf (&cmd, "change %s \"%s\"",
-                      /* XXX qemu may support multiple CDROM in future */
-                      /* olddisk->dst */ "cdrom",
-                      safe_path) == -1) {
-            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                             "%s", _("out of memory"));
+        if (asprintf (&cmd, "change %s \"%s\"", devname, safe_path) == -1) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_MEMORY, NULL);
             VIR_FREE(safe_path);
+            VIR_FREE(devname);
             return -1;
         }
         VIR_FREE(safe_path);
 
-    } else if (asprintf(&cmd, "eject cdrom") == -1) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("out of memory"));
+    } else if (asprintf(&cmd, "eject %s", devname) == -1) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_MEMORY, NULL);
+        VIR_FREE(devname);
         return -1;
     }
+    VIR_FREE(devname);
 
     if (qemudMonitorCommand(driver, vm, cmd, &reply) < 0) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
@@ -2977,7 +3078,7 @@ static int qemudDomainChangeCDROM(virDomainPtr dom,
     /* If the command failed qemu prints:
      * device not found, device is locked ...
      * No message is printed on success it seems */
-    DEBUG ("cdrom change reply: %s", reply);
+    DEBUG ("ejectable media change reply: %s", reply);
     if (strstr(reply, "\ndevice ")) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                           "%s", _("changing cdrom media failed"));
@@ -2985,49 +3086,16 @@ static int qemudDomainChangeCDROM(virDomainPtr dom,
         VIR_FREE(cmd);
         return -1;
     }
-
     VIR_FREE(reply);
     VIR_FREE(cmd);
 
-    VIR_FREE(olddisk->src);
-    olddisk->src = newdisk->src;
+    VIR_FREE(origdisk->src);
+    origdisk->src = newdisk->src;
     newdisk->src = NULL;
-    olddisk->type = newdisk->type;
+    origdisk->type = newdisk->type;
     return 0;
 }
 
-static int qemudDomainAttachCdromDevice(virDomainPtr dom,
-                                        virDomainDeviceDefPtr dev)
-{
-    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
-    virDomainDiskDefPtr disk;
-
-    if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         "%s", _("no domain with matching uuid"));
-        return -1;
-    }
-
-    disk = vm->def->disks;
-    while (disk) {
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-            STREQ(disk->dst, dev->data.disk->dst))
-            break;
-        disk = disk->next;
-    }
-
-    if (!disk) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
-                         "%s", _("CDROM not attached, cannot change media"));
-        return -1;
-    }
-
-    if (qemudDomainChangeCDROM(dom, vm, disk, dev->data.disk) < 0) {
-        return -1;
-    }
-    return 0;
-}
 
 static int qemudDomainAttachUsbMassstorageDevice(virDomainPtr dom, virDomainDeviceDefPtr dev)
 {
@@ -3179,10 +3247,11 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     }
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
-        dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-                ret = qemudDomainAttachCdromDevice(dom, dev);
+        (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ||
+         dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)) {
+                ret = qemudDomainChangeEjectableMedia(dom, dev);
     } else if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
-        dev->data.disk->device == VIR_DOMAIN_DEVICE_DISK &&
+        dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
         dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
                 ret = qemudDomainAttachUsbMassstorageDevice(dom, dev);
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&

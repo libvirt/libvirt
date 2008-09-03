@@ -1,3 +1,9 @@
+Wed Sep  3 11:52:00 EST 2008 Cole Robinson <crobinso@redhat.com>
+
+	* src/domain_conf.c src/domain_conf.h src/qemu_driver.c:
+	  Fix qemu media connect/eject to work with latest syntax. Add support
+	  for ejecting floppy devices and scsi cdroms.
+
 Wed Sep  3 10:57:00 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* src/domain_conf.c src/domain_conf.h src/qemu_driver.c:

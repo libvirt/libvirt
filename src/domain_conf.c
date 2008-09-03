@@ -3411,5 +3411,42 @@ char *virDomainConfigFile(virConnectPtr conn,
     return ret;
 }
 
+/* Translates a device name of the form (regex) "[fhv]d[a-z]+" into
+ * the corresponding bus,index combination (e.g. sda => (0,0), sdi (1,1),
+ *                                               hdd => (1,1), vdaa => (0,27))
+ * @param disk The disk device
+ * @param busIdx parsed bus number
+ * @param devIdx parsed device number
+ * @return 0 on success, -1 on failure
+ */
+int virDiskNameToBusDeviceIndex(virDomainDiskDefPtr disk,
+                                int *busIdx,
+                                int *devIdx) {
+
+    int idx = virDiskNameToIndex(disk->dst);
+    if (idx < 1)
+        return -1;
+
+    switch (disk->bus) {
+        case VIR_DOMAIN_DISK_BUS_IDE:
+            *busIdx = idx / 2;
+            *devIdx = idx % 2;
+            break;
+        case VIR_DOMAIN_DISK_BUS_SCSI:
+            *busIdx = idx / 7;
+            *devIdx = idx % 7;
+            break;
+        case VIR_DOMAIN_DISK_BUS_FDC:
+        case VIR_DOMAIN_DISK_BUS_USB:
+        case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        case VIR_DOMAIN_DISK_BUS_XEN:
+        default:
+            *busIdx = 0;
+            *devIdx = idx;
+            break;
+    }
+
+    return 0;
+}
 
 #endif /* ! PROXY */
