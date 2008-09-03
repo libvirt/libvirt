@@ -4627,6 +4627,8 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, FALSE, _("Failed to attach device from %s"), from);
         virDomainFree(dom);
         return FALSE;
+    } else {
+        vshPrint(ctl, _("Device attached successfully\n"));
     }
 
     virDomainFree(dom);
@@ -4684,6 +4686,8 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, FALSE, _("Failed to detach device from %s"), from);
         virDomainFree(dom);
         return FALSE;
+    } else {
+        vshPrint(ctl, _("Device detached successfully\n"));
     }
 
     virDomainFree(dom);
@@ -4792,8 +4796,11 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     if (!buf) goto cleanup;
     strcat(buf, "    </interface>\n");
 
-    if (virDomainAttachDevice(dom, buf))
+    if (virDomainAttachDevice(dom, buf)) {
         goto cleanup;
+    } else {
+        vshPrint(ctl, _("Interface attached successfully\n"));
+    }
 
     ret = TRUE;
 
@@ -4909,8 +4916,10 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     ret = virDomainDetachDevice(dom, (char *)xmlBufferContent(xml_buf));
     if (ret != 0)
         ret = FALSE;
-    else
+    else {
+        vshPrint(ctl, _("Interface detached successfully\n"));
         ret = TRUE;
+    }
 
  cleanup:
     if (dom)
@@ -5076,6 +5085,8 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     if (virDomainAttachDevice(dom, buf))
         goto cleanup;
+    else
+        vshPrint(ctl, _("Disk attached successfully\n"));
 
     ret = TRUE;
 
@@ -5183,8 +5194,10 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     ret = virDomainDetachDevice(dom, (char *)xmlBufferContent(xml_buf));
     if (ret != 0)
         ret = FALSE;
-    else
+    else {
+        vshPrint(ctl, _("Disk detached successfully\n"));
         ret = TRUE;
+    }
 
  cleanup:
     xmlXPathFreeObject(obj);

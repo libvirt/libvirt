@@ -1,3 +1,8 @@
+Wed Sep  3 14:37:06 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: patch from Cole Robinson to add output on attach
+	  and detach success
+
 Wed Sep  3 14:23:48 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* AUTHORS: add Cole Robinson as commiter
