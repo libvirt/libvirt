@@ -481,8 +481,8 @@ void virDomainRemoveInactive(virDomainObjPtr *doms,
 }
 
 #ifndef PROXY
-static int virDomainDiskCompare(virDomainDiskDefPtr a,
-                                virDomainDiskDefPtr b) {
+int virDomainDiskCompare(virDomainDiskDefPtr a,
+                         virDomainDiskDefPtr b) {
     if (a->bus == b->bus)
         return virDiskNameToIndex(a->dst) - virDiskNameToIndex(b->dst);
     else

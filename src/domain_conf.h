@@ -526,6 +526,8 @@ char *virDomainCpuSetFormat(virConnectPtr conn,
                             char *cpuset,
                             int maxcpu);
 
+int virDomainDiskCompare(virDomainDiskDefPtr a,
+                         virDomainDiskDefPtr b);
 
 int virDomainSaveConfig(virConnectPtr conn,
                         const char *configDir,

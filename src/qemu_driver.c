@@ -62,6 +62,7 @@
 #include "capabilities.h"
 #include "memory.h"
 #include "uuid.h"
+#include "domain_conf.h"
 
 /* For storing short-lived temporary files. */
 #define TEMPDIR LOCAL_STATE_DIR "/cache/libvirt"
@@ -3034,11 +3035,34 @@ static int qemudDomainAttachUsbMassstorageDevice(virDomainPtr dom, virDomainDevi
     virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
     int ret;
     char *cmd, *reply;
+    virDomainDiskDefPtr *dest, *prev, ptr;
 
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
                          "%s", _("no domain with matching uuid"));
         return -1;
+    }
+
+    /* Find spot in domain definition where we will put the disk */
+    ptr = vm->def->disks;
+    prev = &(vm->def->disks);
+    while (ptr) {
+        if (STREQ(dev->data.disk->dst, ptr->dst)) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("duplicate disk target '%s'"),
+                             dev->data.disk->dst);
+            return -1;
+        }
+        if (virDomainDiskCompare(dev->data.disk, ptr) < 0) {
+            dest = &(ptr);
+            break;
+        }
+        prev = &(ptr->next);
+        ptr = ptr->next;
+    }
+
+    if (!ptr) {
+        dest = prev;
     }
 
     ret = asprintf(&cmd, "usb_add disk:%s", dev->data.disk->src);
@@ -3049,7 +3073,7 @@ static int qemudDomainAttachUsbMassstorageDevice(virDomainPtr dom, virDomainDevi
 
     if (qemudMonitorCommand(driver, vm, cmd, &reply) < 0) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("cannot attach usb device"));
+                         "%s", _("cannot attach usb disk"));
         VIR_FREE(cmd);
         return -1;
     }
@@ -3060,11 +3084,16 @@ static int qemudDomainAttachUsbMassstorageDevice(virDomainPtr dom, virDomainDevi
     if (strstr(reply, "Could not add ")) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                           "%s",
-                          _("adding usb device failed"));
+                          _("adding usb disk failed"));
         VIR_FREE(reply);
         VIR_FREE(cmd);
         return -1;
     }
+
+    /* Actually update the xml */
+    dev->data.disk->next = *dest;
+    *prev = dev->data.disk;
+
     VIR_FREE(reply);
     VIR_FREE(cmd);
     return 0;
@@ -3115,6 +3144,11 @@ static int qemudDomainAttachHostDevice(virDomainPtr dom, virDomainDeviceDefPtr d
         VIR_FREE(cmd);
         return -1;
     }
+
+    /* Update xml */
+    dev->data.hostdev->next = vm->def->hostdevs;
+    vm->def->hostdevs = dev->data.hostdev;
+
     VIR_FREE(reply);
     VIR_FREE(cmd);
     return 0;
@@ -3157,7 +3191,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                 ret = qemudDomainAttachHostDevice(dom, dev);
     } else {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
-                         "%s", _("this devicetype cannot be attached"));
+                         "%s", _("this device type cannot be attached"));
         ret = -1;
     }
 
