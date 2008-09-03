@@ -1,7 +1,9 @@
-Wed Sep  3 14:51:03 CEST 2008 Daniel Veillard <veillard@redhat.com>
+Wed Sep  3 09:58:00 EST 2008 Cole Robinson <crobinso@redhat.com>
 
-	* src/qemu_driver.c: patch from Cole Robinson to avoid a segfault
-	  on KVM CD eject
+	* src/domain_conf.c: fix disk device ordering when parsing domain
+	  xml. check for disk target duplicates as well.
+	* tests/xml2sexprdata/xml2sexpr-fv-v2.sexpr: fix for disk ordering
+	* tests/xml2sexprdata/xml2sexpr-fv-vncunused.sexpr: fix for disk ordering
 
 Wed Sep  3 14:37:06 CEST 2008 Daniel Veillard <veillard@redhat.com>
 

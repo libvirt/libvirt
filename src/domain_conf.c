@@ -1949,19 +1949,27 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
             goto error;
 
         /* Maintain list in sorted order according to target device name */
-        if (def->disks == NULL) {
-            disk->next = def->disks;
-            def->disks = disk;
-        } else {
-            virDomainDiskDefPtr ptr = def->disks;
-            while (ptr) {
-                if (!ptr->next || virDomainDiskCompare(disk, ptr->next) < 0) {
-                    disk->next = ptr->next;
-                    ptr->next = disk;
-                    break;
-                }
-                ptr = ptr->next;
+        virDomainDiskDefPtr ptr = def->disks;
+        virDomainDiskDefPtr *prev = &(def->disks);
+        while (ptr) {
+            if (STREQ(disk->dst, ptr->dst)) {
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                     _("duplicate disk target '%s'"),
+                                     disk->dst);
+                goto error;
             }
+            if (virDomainDiskCompare(disk, ptr) < 0) {
+                disk->next = ptr;
+                *prev = disk;
+                break;
+            }
+            prev = &(ptr->next);
+            ptr = ptr->next;
+        }
+
+        if (!ptr) {
+            disk->next = ptr;
+            *prev = disk;
         }
     }
     VIR_FREE(nodes);
