@@ -1,3 +1,8 @@
+Wed Sep  3 14:51:03 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: patch from Cole Robinson to avoid a segfault
+	  on KVM CD eject
+
 Wed Sep  3 14:37:06 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: patch from Cole Robinson to add output on attach

@@ -2974,7 +2974,10 @@ static int qemudDomainChangeCDROM(virDomainPtr dom,
     }
     VIR_FREE(reply);
     VIR_FREE(cmd);
-    strcpy(olddisk->src, newdisk->src);
+
+    VIR_FREE(olddisk->src);
+    olddisk->src = newdisk->src;
+    newdisk->src = NULL;
     olddisk->type = newdisk->type;
     return 0;
 }
