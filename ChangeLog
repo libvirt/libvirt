@@ -1,3 +1,7 @@
+Wed Sep  3 14:23:48 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* AUTHORS: add Cole Robinson as commiter
+
 Wed Sep  3 09:08:01 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/storage_conf.c: add one missing check in virStoragePoolDefParseDoc

@@ -18,6 +18,7 @@ The primary maintainers and people with commit access rights:
   Chris Lalancette     <clalance@redhat.com>
   Atsushi SAKAI        <sakaia@jp.fujitsu.com>
   Dave Leskovec        <dlesko@linux.vnet.ibm.com>
+  Cole Robinson        <crobinso@redhat.com>
 
 Patches have also been contributed by:
 
@@ -41,7 +42,6 @@ Patches have also been contributed by:
   Guido Guenther       <agx@sigxcpu.org>
   Daniel Hokka Zakrisson <daniel@hozac.com>
   Mads Chr. Olesen     <shiyee@shiyee.dk>
-  Cole Robinson        <crobinso@redhat.com>
   Anton Protopopov     <aspsk2@gmail.com>
   Stefan de Konink     <dekonink@kinkrsoftware.nl>
   Kaitlin Rupert       <kaitlin@linux.vnet.ibm.com>
