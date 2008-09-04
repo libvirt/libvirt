@@ -3637,7 +3637,7 @@ qemudDomainMemoryPeek (virDomainPtr dom,
     snprintf (cmd, sizeof cmd, "memsave %llu %zi \"%s\"", offset, size, tmp);
     if (qemudMonitorCommand (driver, vm, cmd, &info) < 0) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                          "%s", _("'info blockstats' command failed"));
+                          "%s", _("'memsave' command failed"));
         goto done;
     }
 
