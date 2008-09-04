@@ -2884,7 +2884,7 @@ xenDaemonDomainShutdown(virDomainPtr domain)
     }
     if (domain->id < 0)
         return(-1);
-    return xend_op(domain->conn, domain->name, "op", "shutdown", "reason", "halt", NULL);
+    return xend_op(domain->conn, domain->name, "op", "shutdown", "reason", "poweroff", NULL);
 }
 
 /**

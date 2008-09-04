@@ -1,3 +1,8 @@
+Thu Sep  4 11:05:59 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c src/xs_internal.c: use poweroff instead of halt
+	  when shutting down a xen domain, patch by John Levon
+
 Thu Sep  4 10:13:43 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: switch flags to unsigned by James Morris

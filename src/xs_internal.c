@@ -654,7 +654,7 @@ xenStoreDomainShutdown(virDomainPtr domain)
      * this is very hackish, the domU kernel probes for a special
      * node in the xenstore and launch the shutdown command if found.
      */
-    return(virDomainDoStoreWrite(domain, "control/shutdown", "halt"));
+    return(virDomainDoStoreWrite(domain, "control/shutdown", "poweroff"));
 }
 
 /**
