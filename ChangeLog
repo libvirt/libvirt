@@ -1,3 +1,8 @@
+Thu Sep  4 15:33:26 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/storage_backend_fs.c: fix a signed/unsigned issue breaking
+	  virStorageBackendProbeFile(), patch by Cole Robinson
+
 Thu Sep  4 15:18:00 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: fix an error message, patch by Nguyen Anh Quynh

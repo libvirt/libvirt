@@ -338,7 +338,7 @@ virStorageBackendFileSystemNetPoolFormatToString(virConnectPtr conn,
 static int virStorageBackendProbeFile(virConnectPtr conn,
                                       virStorageVolDefPtr def) {
     int fd;
-    char head[4096];
+    unsigned char head[4096];
     int len, i, ret;
 
     if ((fd = open(def->target.path, O_RDONLY)) < 0) {
