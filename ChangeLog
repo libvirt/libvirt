@@ -1,3 +1,8 @@
+Thu Sep  4 11:09:20 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: patch from John Levon shutting down a live
+	  domain is just more hazardous
+
 Thu Sep  4 11:05:59 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c src/xs_internal.c: use poweroff instead of halt
