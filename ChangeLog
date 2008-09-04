@@ -1,3 +1,8 @@
+Thu Sep  4 14:16:20 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/Makefile.am: Fix make check when augparse is not
+	available
+
 Thu Sep  4 15:05:34 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/storage_backend_logical.c: fix a miscalculation of command line
