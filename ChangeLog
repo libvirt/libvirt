@@ -1,4 +1,10 @@
+Thu Sep  4 10:13:43 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: switch flags to unsigned by James Morris
+	* AUTHORS: add James Morris
+
 Wed Sep  3 10:14:00 PDT 2008 Dan Smith <danms@us.ibm.com>
+
 	* src/lxc_driver.c:
 	  Add hypervisor version implementation
 

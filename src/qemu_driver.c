@@ -2987,7 +2987,7 @@ static int qemudDomainChangeEjectableMedia(virDomainPtr dom,
     virDomainDiskDefPtr origdisk, newdisk;
     char *cmd, *reply, *safe_path;
     char *devname = NULL;
-    int qemuCmdFlags;
+    unsigned int qemuCmdFlags;
 
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
