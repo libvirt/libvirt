@@ -255,6 +255,10 @@ fi
 %dir %{_localstatedir}/lib/libvirt/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/images/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/boot/
+%{_datadir}/augeas/lenses/libvirtd.aug
+%{_datadir}/augeas/lenses/libvirtd_qemu.aug
+%{_datadir}/augeas/lenses/tests/test_libvirtd.aug
+%{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
 %if %{with_polkit}
 %{_datadir}/PolicyKit/policy/org.libvirt.unix.policy
 %endif

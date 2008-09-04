@@ -24,6 +24,10 @@ EXTRA_DIST =						\
 	libvirtd.policy					\
 	libvirtd.sasl					\
 	libvirtd.sysconf				\
+	libvirtd.aug                                    \
+	libvirtd_qemu.aug                               \
+	test_libvirtd.aug                               \
+	test_libvirtd_qemu.aug                          \
 	$(AVAHI_SOURCES)				\
 	$(DAEMON_SOURCES)
 
@@ -55,6 +59,12 @@ sbin_PROGRAMS = libvirtd
 
 confdir = $(sysconfdir)/libvirt/
 conf_DATA = libvirtd.conf
+
+augeasdir = $(datadir)/augeas/lenses
+augeas_DATA = libvirtd.aug libvirtd_qemu.aug
+
+augeastestsdir = $(datadir)/augeas/lenses/tests
+augeastests_DATA = test_libvirtd.aug test_libvirtd_qemu.aug
 
 libvirtd_SOURCES = $(DAEMON_SOURCES)
 
@@ -171,6 +181,9 @@ libvirtd.init: libvirtd.init.in
 	    < $< > $@-t
 	chmod a+x $@-t
 	mv $@-t $@
+
+check-local:
+	test -x $(AUGPARSE) && $(AUGPARSE) -I $(srcdir) test_libvirtd.aug
 
 else
 

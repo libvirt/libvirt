@@ -1,3 +1,12 @@
+Thu Sep  4 11:43:20 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Augeas config file support
+	* configure.in: Check for augparse tool for test suite
+	* libvirt.spec.in, qemud/Makefile.am, qemud/libvirtd.aug,
+	qemud/libvirtd_qemu.aug, qemud/test_libvirtd.aug,
+	qemud/test_libvirtd_qemu.aug: Augeas lens for processing
+	libvirtd.conf and qemu.conf
+
 Thu Sep  4 11:09:20 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: patch from John Levon shutting down a live
