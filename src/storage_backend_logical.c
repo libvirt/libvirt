@@ -351,7 +351,7 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn,
     memset(zeros, 0, sizeof(zeros));
 
     /* XXX multiple pvs */
-    if (VIR_ALLOC_N(vgargv, 1) < 0) {
+    if (VIR_ALLOC_N(vgargv, 3 + pool->def->source.ndevice) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("command line"));
         return -1;
     }

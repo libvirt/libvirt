@@ -1,3 +1,8 @@
+Thu Sep  4 15:05:34 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/storage_backend_logical.c: fix a miscalculation of command line
+	  size for vgcreate, patch from Jim Fehlig
+
 Thu Sep  4 11:43:20 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Augeas config file support
