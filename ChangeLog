@@ -1,3 +1,25 @@
+Fri Sep  5 13:02:26 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Fully support mingw builds
+	* .cvsignore: Ignore mingw-libvirt.spec
+	* autobuild.sh: Perform mingw build if toolchain is available
+	* Makefile.am: Add mingw-libvirt.spec to EXTRA_DIST
+	* configure.in: Add check for getuid/getgit. Add gettext()
+	check against libintl. Disable storage drivers if libvirtd
+	is disabled
+	* mingw-libvirt.spec.in: Specfile for mingw cross compile
+	* qemud/remote_protocol.{c,x,h}: Add socketcompat.h include
+	for htons() methods
+	* src/Makefile.am: Don't wrap storage driver conditionals in
+	a  libvirtd conditional
+	* src/storage_backend.c: Add no-op implementations of
+	virStorageBackendRunProgRegex and virStorageBackendRunProgNul
+	functions for mingw
+	* src/storage_conf.c: Fix typo in getgid() call. Avoid
+	not-literal in format string.
+	* src/util.c: Fix signature of virExec() for mingw build
+	* src/util.h: Add stub impl of getuid/getgid calls
+
 Fri Sep  5 12:50:26 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix starting of Xen domains without PVFB console, by not

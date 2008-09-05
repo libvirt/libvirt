@@ -200,7 +200,7 @@ virStoragePoolDefParsePerms(virConnectPtr conn,
     }
 
     if (virXPathNode(conn, "/pool/permissions/group", ctxt) == NULL) {
-        perms->uid = getgid();
+        perms->gid = getgid();
     } else {
         if (virXPathLong(conn, "number(/pool/permissions/group)", ctxt, &v) < 0) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
@@ -425,7 +425,7 @@ virStoragePoolDefParse(virConnectPtr conn,
     if (!xml) {
         if (conn && conn->err.code == VIR_ERR_NONE)
               virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                                    _("failed to parse xml document"));
+                                    "%s",_("failed to parse xml document"));
         goto cleanup;
     }
 
@@ -799,7 +799,7 @@ virStorageVolDefParse(virConnectPtr conn,
     if (!xml) {
         if (conn && conn->err.code == VIR_ERR_NONE)
               virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                                    _("failed to parse xml document"));
+                                    "%s", _("failed to parse xml document"));
         goto cleanup;
     }
 

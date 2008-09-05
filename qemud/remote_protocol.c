@@ -6,6 +6,7 @@
 #include "remote_protocol.h"
 #include <config.h>
 #include "internal.h"
+#include "socketcompat.h"
 
 bool_t
 xdr_remote_nonnull_string (XDR *xdrs, remote_nonnull_string *objp)

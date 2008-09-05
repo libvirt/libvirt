@@ -440,22 +440,13 @@ virRun(virConnectPtr conn,
 int
 virExec(virConnectPtr conn,
         const char *const*argv ATTRIBUTE_UNUSED,
+        const char *const*envp ATTRIBUTE_UNUSED,
+        const fd_set *keepfd ATTRIBUTE_UNUSED,
         int *retpid ATTRIBUTE_UNUSED,
         int infd ATTRIBUTE_UNUSED,
         int *outfd ATTRIBUTE_UNUSED,
-        int *errfd ATTRIBUTE_UNUSED)
-{
-    ReportError (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
-    return -1;
-}
-
-int
-virExecNonBlock(virConnectPtr conn,
-                const char *const*argv ATTRIBUTE_UNUSED,
-                int *retpid ATTRIBUTE_UNUSED,
-                int infd ATTRIBUTE_UNUSED,
-                int *outfd ATTRIBUTE_UNUSED,
-                int *errfd ATTRIBUTE_UNUSED)
+        int *errfd ATTRIBUTE_UNUSED,
+        int flags ATTRIBUTE_UNUSED)
 {
     ReportError (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
     return -1;

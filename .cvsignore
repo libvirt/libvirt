@@ -20,6 +20,7 @@ ltconfig
 update.log
 libvirt.pc
 libvirt.spec
+mingw-libvirt.spec
 COPYING
 m4
 ABOUT-NLS

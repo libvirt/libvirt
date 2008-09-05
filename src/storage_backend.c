@@ -24,9 +24,13 @@
 #include <config.h>
 
 #include <string.h>
+#if HAVE_REGEX_H
 #include <regex.h>
+#endif
 #include <sys/types.h>
+#if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
+#endif
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdint.h>
@@ -38,6 +42,10 @@
 #endif
 
 #include "internal.h"
+#include "util.h"
+#include "memory.h"
+
+#include "storage_backend.h"
 
 #if WITH_STORAGE_LVM
 #include "storage_backend_logical.h"
@@ -48,15 +56,14 @@
 #if WITH_STORAGE_DISK
 #include "storage_backend_disk.h"
 #endif
-
-#include "util.h"
-#include "memory.h"
-
-#include "storage_backend.h"
+#if WITH_STORAGE_DIR
 #include "storage_backend_fs.h"
+#endif
 
 static virStorageBackendPtr backends[] = {
+#if WITH_STORAGE_DIR
     &virStorageBackendDirectory,
+#endif
 #if WITH_STORAGE_FS
     &virStorageBackendFileSystem,
     &virStorageBackendNetFileSystem,
@@ -209,8 +216,12 @@ virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
         return -2;
 
     if (S_ISREG(sb.st_mode)) {
+#ifndef __MINGW32__
         vol->allocation = (unsigned long long)sb.st_blocks *
             (unsigned long long)sb.st_blksize;
+#else
+        vol->allocation = sb.st_size;
+#endif
         /* Regular files may be sparse, so logical size (capacity) is not same
          * as actual allocation above
          */
@@ -337,6 +348,8 @@ virStorageBackendStablePath(virConnectPtr conn,
     return devpath;
 }
 
+
+#ifndef __MINGW32__
 /*
  * Run an external program.
  *
@@ -620,3 +633,33 @@ virStorageBackendRunProgNul(virConnectPtr conn,
 
     return 0;
 }
+
+#else
+
+int
+virStorageBackendRunProgRegex(virConnectPtr conn,
+                              virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+                              const char *const*prog ATTRIBUTE_UNUSED,
+                              int nregex ATTRIBUTE_UNUSED,
+                              const char **regex ATTRIBUTE_UNUSED,
+                              int *nvars ATTRIBUTE_UNUSED,
+                              virStorageBackendListVolRegexFunc func ATTRIBUTE_UNUSED,
+                              void *data ATTRIBUTE_UNUSED,
+                              int *outexit ATTRIBUTE_UNUSED)
+{
+    virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, _("%s not implemented on Win32"), __FUNCTION__);
+    return -1;
+}
+
+int
+virStorageBackendRunProgNul(virConnectPtr conn,
+                            virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+                            const char **prog ATTRIBUTE_UNUSED,
+                            size_t n_columns ATTRIBUTE_UNUSED,
+                            virStorageBackendListVolNulFunc func ATTRIBUTE_UNUSED,
+                            void *data ATTRIBUTE_UNUSED)
+{
+    virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, _("%s not implemented on Win32"), __FUNCTION__);
+    return -1;
+}
+#endif

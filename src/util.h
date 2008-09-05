@@ -144,4 +144,12 @@ const char *virEnumToString(const char *const*types,
     const char *name ## TypeToString(int type);         \
     int name ## TypeFromString(const char*type);
 
+#ifndef HAVE_GETUID
+static inline int getuid (void) { return 0; }
+#endif
+
+#ifndef HAVE_GETGID
+static inline int getgid (void) { return 0; }
+#endif
+
 #endif /* __VIR_UTIL_H__ */

@@ -38,6 +38,7 @@
 
 %#include <config.h>
 %#include "internal.h"
+%#include "socketcompat.h"
 
 /*----- Data types. -----*/
 

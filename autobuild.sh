@@ -17,8 +17,6 @@ rm -rf coverage
 ./autogen.sh --prefix="$AUTOBUILD_INSTALL_ROOT" \
   --enable-test-coverage \
   --enable-compile-warnings=error \
-  --with-openvz \
-  --with-lxc \
   --with-xen-proxy
 
 # If the MAKEFLAGS envvar does not yet include a -j option,
@@ -51,5 +49,40 @@ if [ -f /usr/bin/rpmbuild ]; then
     NOW=`date +"%s"`
     EXTRA_RELEASE=".$USER$NOW"
   fi
-  rpmbuild --nodeps --define "extra_release $EXTRA_RELEASE" -ta --clean *.tar.gz
+
+  rpmbuild --nodeps \
+     --define "extra_release $EXTRA_RELEASE" \
+     --define "_sourcedir `pwd`" \
+     -ba --clean libvirt.spec
+fi
+
+if [ -x /usr/bin/i686-pc-mingw32-gcc ]; then
+  make distclean
+
+  PKG_CONFIG_PATH="$AUTOBUILD_INSTALL_ROOT/i686-pc-mingw32/sys-root/mingw/lib/pkgconfig" \
+  CC="i686-pc-mingw32-gcc" \
+  ./configure \
+    --build=$(uname -m)-pc-linux \
+    --host=i686-pc-mingw32 \
+    --prefix="$AUTOBUILD_INSTALL_ROOT/i686-pc-mingw32/sys-root/mingw" \
+    --without-sasl \
+    --without-avahi \
+    --without-polkit \
+    --without-python \
+    --without-xen \
+    --without-qemu \
+    --without-lxc \
+    --without-openvz \
+    --without-libvirtd
+
+  make
+  make install
+
+  #set -o pipefail
+  #make check 2>&1 | tee "$RESULTS"
+
+  rpmbuild --nodeps \
+     --define "extra_release $EXTRA_RELEASE" \
+     --define "_sourcedir `pwd`" \
+     -ba --clean mingw-libvirt.spec
 fi

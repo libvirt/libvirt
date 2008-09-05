@@ -65,10 +65,10 @@ dnl Use --disable-largefile if you don't want this.
 AC_SYS_LARGEFILE
 
 dnl Availability of various common functions (non-fatal if missing).
-AC_CHECK_FUNCS([cfmakeraw regexec uname sched_getaffinity])
+AC_CHECK_FUNCS([cfmakeraw regexec uname sched_getaffinity getuid getgid])
 
 dnl Availability of various common headers (non-fatal if missing).
-AC_CHECK_HEADERS([pwd.h paths.h sys/syslimits.h sys/utsname.h sys/wait.h winsock2.h sched.h termios.h])
+AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/syslimits.h sys/utsname.h sys/wait.h winsock2.h sched.h termios.h])
 
 dnl Where are the XDR functions?
 dnl If portablexdr is installed, prefer that.
@@ -76,6 +76,8 @@ dnl Otherwise try -lrpc (Cygwin) -lxdr (some MinGW) or none (most Unix)
 AC_CHECK_LIB([portablexdr],[xdrmem_create],[],[
 	AC_SEARCH_LIBS([xdrmem_create],[rpc xdr])
 	])
+
+AC_CHECK_LIB([intl],[gettext],[])
 
 dnl Do we have rpcgen?
 AC_PATH_PROG([RPCGEN], [rpcgen], [no])
@@ -649,6 +651,20 @@ AC_ARG_WITH([storage-iscsi],
 AC_ARG_WITH([storage-disk],
 [  --with-storage-disk         with GPartd Disk backend for the storage driver (on)],[],[with_storage_disk=check])
 
+with_storage_dir=yes
+if test "$with_libvirtd" = "no"; then
+  with_storage_dir=no
+  with_storage_fs=no
+  with_storage_lvm=no
+  with_storage_iscsi=no
+  with_storage_disk=no
+fi
+if test "$with_storage_dir" = "yes" ; then
+  AC_DEFINE_UNQUOTED([WITH_STORAGE_DIR], 1, [whether directory backend for storage driver is enabled])
+fi
+AM_CONDITIONAL([WITH_STORAGE_DIR], [test "$with_storage_dir" = "yes"])
+
+
 if test "$with_storage_fs" = "yes" -o "$with_storage_fs" = "check"; then
   AC_PATH_PROG([MOUNT], [mount], [], [$PATH:/sbin:/usr/sbin])
   AC_PATH_PROG([UMOUNT], [umount], [], [$PATH:/sbin:/usr/sbin])
@@ -1024,7 +1040,7 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
 	  docs/examples/python/Makefile \
 	  gnulib/lib/Makefile \
 	  gnulib/tests/Makefile \
-          libvirt.pc libvirt.spec \
+          libvirt.pc libvirt.spec mingw-libvirt.spec \
           po/Makefile.in \
 	  include/libvirt/Makefile include/libvirt/libvirt.h \
 	  python/Makefile python/tests/Makefile \
@@ -1053,7 +1069,7 @@ AC_MSG_NOTICE([Libvirtd: $with_libvirtd])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Storage Drivers])
 AC_MSG_NOTICE([])
-AC_MSG_NOTICE([     Dir: yes])
+AC_MSG_NOTICE([     Dir: $with_storage_dir])
 AC_MSG_NOTICE([      FS: $with_storage_fs])
 AC_MSG_NOTICE([   NetFS: $with_storage_fs])
 AC_MSG_NOTICE([     LVM: $with_storage_lvm])
