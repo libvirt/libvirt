@@ -1,4 +1,20 @@
-Thu Sep  5 12:33:26 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+Fri Sep  5 12:50:26 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix starting of Xen domains without PVFB console, by not
+	setting emulator path in SEXPR unless asked for
+	* src/domain_conf.c, src/domain_conf.h, src/xm_internal.c: Don't
+	set emulator path with a default value
+	* src/lxc_driver.c, src/qemu_conf.c, src/qemu_driver.c: Find a
+	default emulator path if no explicit path is provided in config
+	* tests/xmconfigdata/test-paravirt-net-e1000.xml,
+	tests/xmconfigdata/test-paravirt-new-pvfb.xml,
+	tests/xmconfigdata/test-paravirt-old-pvfb.xml,
+	tests/xml2sexprdata/xml2sexpr-fv-kernel.xml: Remove default
+	emulator path
+	* tests/xml2sexprdata/xml2sexpr-pv-vfb-new.sexpr: Remove
+	emulator path
+
+Fri Sep  5 12:33:26 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xen_unified.c, src/xen_internal.c, src/xen_internal.h,
 	tests/xencapstest.c: Pass connection object into capabilities

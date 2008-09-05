@@ -785,26 +785,6 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
     if (xenXMConfigCopyStringOpt(conn, conf, "device_model", &def->emulator) < 0)
         goto cleanup;
 
-    if (def->emulator == NULL) {
-        const char *type = virDomainVirtTypeToString(def->virtType);
-        if (!type) {
-            xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("unknown virt type"));
-            goto cleanup;
-        }
-        const char *emulator = virCapabilitiesDefaultGuestEmulator(priv->caps,
-                                                                   def->os.type,
-                                                                   def->os.arch,
-                                                                   type);
-        if (!emulator) {
-            xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("unsupported guest type"));
-            goto cleanup;
-        }
-        if (!(def->emulator = strdup(emulator)))
-            goto no_memory;
-    }
-
     list = virConfGetValue(conf, "disk");
     if (list && list->type == VIR_CONF_LIST) {
         list = list->list;

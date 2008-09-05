@@ -850,6 +850,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     int ntapfds = 0;
     unsigned int qemuCmdFlags;
     fd_set keepfd;
+    const char *emulator;
 
     FD_ZERO(&keepfd);
 
@@ -909,24 +910,30 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         return -1;
     }
 
+    emulator = vm->def->emulator;
+    if (!emulator)
+        emulator = virDomainDefDefaultEmulator(conn, vm->def, driver->caps);
+    if (!emulator)
+        return -1;
+
     /* Make sure the binary we are about to try exec'ing exists.
      * Technically we could catch the exec() failure, but that's
      * in a sub-process so its hard to feed back a useful error
      */
-    if (stat(vm->def->emulator, &sb) < 0) {
+    if (stat(emulator, &sb) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Cannot find QEMU binary %s: %s"),
-                         vm->def->emulator,
+                         emulator,
                          strerror(errno));
         return -1;
     }
 
-    if (qemudExtractVersionInfo(vm->def->emulator,
+    if (qemudExtractVersionInfo(emulator,
                                 NULL,
                                 &qemuCmdFlags) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Cannot determine QEMU argv syntax %s"),
-                         vm->def->emulator);
+                         emulator);
         return -1;
     }
 

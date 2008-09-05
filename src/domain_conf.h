@@ -562,6 +562,11 @@ int virDiskNameToBusDeviceIndex(virDomainDiskDefPtr disk,
 virDomainNetDefPtr virDomainNetDefParseXML(virConnectPtr conn,
                         xmlNodePtr node);
 
+const char *virDomainDefDefaultEmulator(virConnectPtr conn,
+                                        virDomainDefPtr def,
+                                        virCapsPtr caps);
+
+
 VIR_ENUM_DECL(virDomainVirt)
 VIR_ENUM_DECL(virDomainBoot)
 VIR_ENUM_DECL(virDomainFeature)

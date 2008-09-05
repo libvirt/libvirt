@@ -1917,24 +1917,6 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
 
     def->emulator = virXPathString(conn, "string(./devices/emulator[1])", ctxt);
-    if (!def->emulator) {
-        const char *type = virDomainVirtTypeToString(def->virtType);
-        if (!type) {
-            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("unknown virt type"));
-            goto error;
-        }
-        const char *emulator = virCapabilitiesDefaultGuestEmulator(caps,
-                                                                   def->os.type,
-                                                                   def->os.arch,
-                                                                   type);
-
-        if (emulator &&
-            !(def->emulator = strdup(emulator))) {
-            virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
-            goto error;
-        }
-    }
 
     /* analysis of the disk devices */
     if ((n = virXPathNodeSet(conn, "./devices/disk", ctxt, &nodes)) < 0) {
@@ -3448,5 +3430,34 @@ int virDiskNameToBusDeviceIndex(virDomainDiskDefPtr disk,
 
     return 0;
 }
+
+const char *virDomainDefDefaultEmulator(virConnectPtr conn,
+                                        virDomainDefPtr def,
+                                        virCapsPtr caps) {
+    const char *type;
+    const char *emulator;
+
+    type = virDomainVirtTypeToString(def->virtType);
+    if (!type) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("unknown virt type"));
+        return NULL;
+    }
+
+    emulator = virCapabilitiesDefaultGuestEmulator(caps,
+                                                   def->os.type,
+                                                   def->os.arch,
+                                                   type);
+
+    if (!emulator) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("no emulator for domain %s os type %s on architecture %s"),
+                             type, def->os.type, def->os.arch);
+        return NULL;
+    }
+
+    return emulator;
+}
+
 
 #endif /* ! PROXY */

@@ -728,6 +728,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     int disableKQEMU = 0;
     int qargc = 0, qarga = 0;
     const char **qargv = NULL;
+    const char *emulator;
 
     uname(&ut);
 
@@ -783,6 +784,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
     snprintf(memory, sizeof(memory), "%lu", vm->def->memory/1024);
     snprintf(vcpus, sizeof(vcpus), "%lu", vm->def->vcpus);
 
+    emulator = vm->def->emulator;
+    if (!emulator)
+        emulator = virDomainDefDefaultEmulator(conn, vm->def, driver->caps);
+    if (!emulator)
+        return -1;
 
     ADD_ARG_LIT(vm->def->emulator);
     ADD_ARG_LIT("-S");
