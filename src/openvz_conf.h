@@ -28,94 +28,35 @@
 #ifndef OPENVZ_CONF_H
 #define OPENVZ_CONF_H
 
-#include "openvz_driver.h"
+#include "internal.h"
 #include "domain_conf.h"
 
 enum { OPENVZ_WARN, OPENVZ_ERR };
 
-#define OPENVZ_NAME_MAX 8
-#define OPENVZ_TMPL_MAX 256
-#define OPENVZ_UNAME_MAX    32
-#define OPENVZ_IP_MAX   16
-#define OPENVZ_HOSTNAME_MAX 256
-#define OPENVZ_PROFILE_MAX  256
-#define OPENVZ_MAX_ERROR_LEN	 1024
-#define OPENVZ_MAX_XML_LEN	 4096
-#define OPENVZ_MAX_QUOTA	 8
-#define OPENVZ_MAX_XPathEval_LEN 256
-#define OPENVZ_RSRV_VM_LIMIT 100
+#define openvzLog(level, msg...) { if(level == OPENVZ_WARN) \
+                                        fprintf(stderr, "\nWARNING: ");\
+                                else \
+                                        fprintf(stderr, "\nERROR: ");\
+                                fprintf(stderr, "\n\t");\
+                                fprintf(stderr, msg);\
+                                fprintf(stderr, "\n"); }
 
-enum openvz_quota{
-    VM_LEVEL = 0,
-    USER_LEVEL = 1,
+/* OpenVZ commands - Replace with wrapper scripts later? */
+#define VZLIST  "vzlist"
+#define VZCTL   "vzctl"
+
+struct openvz_driver {
+    virCapsPtr caps;
+    virDomainObjPtr domains;
 };
-
-/* TODO Add more properties here */
-struct vps_props {
-   int kmemsize;    /* currently held */
-   int kmemsize_m;  /* max held */
-   int kmemsize_b;  /* barrier */
-   int kmemsize_l;  /* limit */
-   int kmemsize_f;  /* fail count */
-
-};
-
-struct openvz_fs_def {
-    char tmpl[OPENVZ_TMPL_MAX];
-    long int disksize, diskinodes;
-};
-
-struct openvz_vm_def {
-    char name[OPENVZ_NAME_MAX];
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    char profile[OPENVZ_PROFILE_MAX];
-    unsigned long vcpus;
-    struct openvz_fs_def fs;
-    virDomainNetDefPtr net;
-};
-
-struct ovz_quota {
-    enum openvz_quota type;
-    unsigned int size;
-    char uname[OPENVZ_UNAME_MAX];
-    struct ovz_quota *next;
-};
-
-struct openvz_vm {
-    int vpsid;
-    int status;
-    struct openvz_vm_def *vmdef;
-    struct openvz_vm *next;
-};
-
-static inline int
-openvzIsActiveVM(struct openvz_vm *vm)
-{
-    return vm->vpsid != -1;
-}
 
 void openvzError (virConnectPtr conn, virErrorNumber code, const char *fmt, ...)
     ATTRIBUTE_FORMAT(printf, 3, 4);
 int openvz_readline(int fd, char *ptr, int maxlen);
 int openvzReadConfigParam(int vpsid ,const char * param, char *value, int maxlen);
-struct openvz_vm *openvzFindVMByID(const struct openvz_driver *driver, int id);
-struct openvz_vm *openvzFindVMByUUID(const struct openvz_driver *driver,
-                                            const unsigned char *uuid);
-
-struct openvz_vm *openvzFindVMByName(const struct openvz_driver *driver, const char *name);
-struct openvz_vm_def *openvzParseVMDef(virConnectPtr conn, const char *xmlStr,
-                                            const char *displayName);
-
-struct openvz_vm *openvzAssignVMDef(virConnectPtr conn, struct openvz_driver *driver,
-                                    struct openvz_vm_def *def);
-
-struct openvz_vm *openvzGetVPSInfo(virConnectPtr conn);
-void openvzGenerateUUID(unsigned char *uuid);
-int openvzAssignUUIDs(void);
-void openvzRemoveInactiveVM(struct openvz_driver *driver, struct openvz_vm *vm);
+virCapsPtr openvzCapsInit(void);
+int openvzLoadDomains(struct openvz_driver *driver);
 void openvzFreeDriver(struct openvz_driver *driver);
-void openvzFreeVM(struct openvz_driver *driver, struct openvz_vm *vm, int checkCallee);
-void openvzFreeVMDef(struct openvz_vm_def *def);
 int strtoI(const char *str);
 int openvzCheckEmptyMac(const unsigned char *mac);
 char *openvzMacToString(const unsigned char *mac);

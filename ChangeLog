@@ -1,3 +1,8 @@
+Fri Sep  5 15:09:26 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/openvz_conf.c, src/openvz_conf.h, src/openvz_driver.c,
+	src/openvz_driver.h: Convert to generic domain XML apis
+
 Fri Sep  5 13:02:26 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Fully support mingw builds

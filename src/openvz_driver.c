@@ -60,33 +60,6 @@
 #define CMDBUF_LEN 1488
 #define CMDOP_LEN 288
 
-static virDomainPtr openvzDomainLookupByID(virConnectPtr conn, int id);
-static char *openvzGetOSType(virDomainPtr dom);
-static int openvzGetNodeInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo);
-static virDomainPtr openvzDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
-static virDomainPtr openvzDomainLookupByName(virConnectPtr conn, const char *name);
-static int openvzDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info);
-static int openvzDomainShutdown(virDomainPtr dom);
-static int openvzDomainReboot(virDomainPtr dom, unsigned int flags);
-static int openvzDomainCreate(virDomainPtr dom);
-static virDrvOpenStatus openvzOpen(virConnectPtr conn,
-                                 xmlURIPtr uri,
-                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                 int flags ATTRIBUTE_UNUSED);
-static int openvzClose(virConnectPtr conn);
-static const char *openvzGetType(virConnectPtr conn ATTRIBUTE_UNUSED);
-static int openvzListDomains(virConnectPtr conn, int *ids, int nids);
-static int openvzNumDomains(virConnectPtr conn);
-static int openvzListDefinedDomains(virConnectPtr conn, char **const names, int nnames);
-static int openvzNumDefinedDomains(virConnectPtr conn);
-
-static virDomainPtr openvzDomainDefineXML(virConnectPtr conn, const char *xml);
-static virDomainPtr openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
-        unsigned int flags ATTRIBUTE_UNUSED);
-
-static int openvzDomainUndefine(virDomainPtr dom);
-static void cmdExecFree(const char *cmdExec[]);
-
 static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid);
 static int openvzGetMaxVCPUs(virConnectPtr conn, const char *type);
 static int openvzDomainGetMaxVcpus(virDomainPtr dom);
@@ -110,7 +83,7 @@ static void cmdExecFree(const char *cmdExec[])
 static int openvzDomainDefineCmd(virConnectPtr conn,
                                  const char *args[],
                                  int maxarg,
-                                 struct openvz_vm_def *vmdef)
+                                 virDomainDefPtr vmdef)
 {
     int narg;
 
@@ -143,15 +116,29 @@ static int openvzDomainDefineCmd(virConnectPtr conn,
     ADD_ARG_LIT("--quiet");
     ADD_ARG_LIT("create");
     ADD_ARG_LIT(vmdef->name);
+    
+    if (vmdef->fss) {
+        if (vmdef->fss->type != VIR_DOMAIN_FS_TYPE_TEMPLATE) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("only filesystem templates are supported"));
+            return -1;
+        }
+        
+        if (vmdef->fss->next) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("only one filesystem supported"));
+            return -1;
+        }
 
-    if ((vmdef->fs.tmpl && *(vmdef->fs.tmpl))) {
         ADD_ARG_LIT("--ostemplate");
-        ADD_ARG_LIT(vmdef->fs.tmpl);
+        ADD_ARG_LIT(vmdef->fss->src);
     }
+#if 0
     if ((vmdef->profile && *(vmdef->profile))) {
         ADD_ARG_LIT("--config");
         ADD_ARG_LIT(vmdef->profile);
     }
+#endif
 
     ADD_ARG(NULL);
     return 0;
@@ -165,39 +152,48 @@ static int openvzDomainDefineCmd(virConnectPtr conn,
 
 
 static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
-                                   int id) {
+                                           int id) {
     struct openvz_driver *driver = (struct openvz_driver *)conn->privateData;
-    struct openvz_vm *vm;
+    virDomainObjPtr vm;
     virDomainPtr dom;
 
-    vm = openvzFindVMByID(driver, id);
+    vm = virDomainFindByID(driver->domains, id);
 
     if (!vm) {
         openvzError(conn, VIR_ERR_NO_DOMAIN, NULL);
         return NULL;
     }
 
-    dom = virGetDomain(conn, vm->vmdef->name, vm->vmdef->uuid);
-    if (!dom) {
-        openvzError(conn, VIR_ERR_NO_MEMORY, _("virDomainPtr"));
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
+    if (!dom)
         return NULL;
-    }
 
-    dom->id = vm->vpsid;
+    dom->id = vm->def->id;
     return dom;
 }
 
-static char *openvzGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED)
+static char *openvzGetOSType(virDomainPtr dom)
 {
-    /* OpenVZ runs on Linux and runs only Linux */
-    return strdup("linux");
+    struct  openvz_driver *driver = (struct openvz_driver *)dom->conn->privateData;
+    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    char *ret;
+
+    if (!vm) {
+        openvzError(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
+        return NULL;
+    }
+
+    if (!(ret = strdup(vm->def->os.type)))
+        openvzError(dom->conn, VIR_ERR_NO_MEMORY, NULL);
+
+    return ret;
 }
 
 
 static virDomainPtr openvzDomainLookupByUUID(virConnectPtr conn,
-                                     const unsigned char *uuid) {
+                                             const unsigned char *uuid) {
     struct  openvz_driver *driver = (struct openvz_driver *)conn->privateData;
-    struct openvz_vm *vm = openvzFindVMByUUID(driver, uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, uuid);
     virDomainPtr dom;
 
     if (!vm) {
@@ -205,20 +201,18 @@ static virDomainPtr openvzDomainLookupByUUID(virConnectPtr conn,
         return NULL;
     }
 
-    dom = virGetDomain(conn, vm->vmdef->name, vm->vmdef->uuid);
-    if (!dom) {
-        openvzError(conn, VIR_ERR_NO_MEMORY, _("virDomainPtr"));
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
+    if (!dom)
         return NULL;
-    }
 
-    dom->id = vm->vpsid;
+    dom->id = vm->def->id;
     return dom;
 }
 
 static virDomainPtr openvzDomainLookupByName(virConnectPtr conn,
                                      const char *name) {
     struct openvz_driver *driver = (struct openvz_driver *)conn->privateData;
-    struct openvz_vm *vm = openvzFindVMByName(driver, name);
+    virDomainObjPtr vm = virDomainFindByName(driver->domains, name);
     virDomainPtr dom;
 
     if (!vm) {
@@ -226,74 +220,81 @@ static virDomainPtr openvzDomainLookupByName(virConnectPtr conn,
         return NULL;
     }
 
-    dom = virGetDomain(conn, vm->vmdef->name, vm->vmdef->uuid);
-    if (!dom) {
-        openvzError(conn, VIR_ERR_NO_MEMORY, _("virDomainPtr"));
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
+    if (!dom)
         return NULL;
-    }
-
-    dom->id = vm->vpsid;
+ 
+    dom->id = vm->def->id;
     return dom;
 }
 
 static int openvzDomainGetInfo(virDomainPtr dom,
-                       virDomainInfoPtr info) {
+                               virDomainInfoPtr info) {
     struct openvz_driver *driver = (struct openvz_driver *)dom->conn->privateData;
-    struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
         openvzError(dom->conn, VIR_ERR_INVALID_DOMAIN,
-              _("no domain with matching uuid"));
+                    _("no domain with matching uuid"));
         return -1;
     }
 
-    info->state = vm->status;
-
-    if (!openvzIsActiveVM(vm)) {
+    info->state = vm->state;
+    
+    if (!virDomainIsActive(vm)) {
         info->cpuTime = 0;
     } else {
         if (openvzGetProcessInfo(&(info->cpuTime), dom->id) < 0) {
             openvzError(dom->conn, VIR_ERR_OPERATION_FAILED,
-                            _("cannot read cputime for domain %d"), dom->id);
+                        _("cannot read cputime for domain %d"), dom->id);
             return -1;
         }
     }
 
-    /* TODO These need to be calculated differently for OpenVZ */
-    //info->cpuTime =
-    //info->maxMem = vm->def->maxmem;
-    //info->memory = vm->def->memory;
-    info->nrVirtCpu = vm->vmdef->vcpus;
+    info->maxMem = vm->def->maxmem;
+    info->memory = vm->def->memory;
+    info->nrVirtCpu = vm->def->vcpus;
     return 0;
 }
 
+
+static char *openvzDomainDumpXML(virDomainPtr dom, int flags) {
+    struct openvz_driver *driver = (struct openvz_driver *)dom->conn->privateData;
+    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    
+    if (!vm) {
+        openvzError(dom->conn, VIR_ERR_INVALID_DOMAIN,
+                    _("no domain with matching uuid"));
+        return NULL;
+    }
+ 
+    return virDomainDefFormat(dom->conn, vm->def, flags);
+}
+
+
+
 static int openvzDomainShutdown(virDomainPtr dom) {
     struct openvz_driver *driver = (struct openvz_driver *)dom->conn->privateData;
-    struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
-    const char *prog[] = {VZCTL, "--quiet", "stop", vm->vmdef->name, NULL};
+    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    const char *prog[] = {VZCTL, "--quiet", "stop", vm->def->name, NULL};
 
     if (!vm) {
         openvzError(dom->conn, VIR_ERR_INVALID_DOMAIN,
-              _("no domain with matching id"));
+                    _("no domain with matching uuid"));
         return -1;
     }
-
-    if (vm->status != VIR_DOMAIN_RUNNING) {
-        openvzError(dom->conn, VIR_ERR_OPERATION_DENIED,
-              _("domain is not in running state"));
-        return -1;
-    }
-
-    if (virRun(dom->conn, prog, NULL) < 0) {
+    
+    if (vm->state != VIR_DOMAIN_RUNNING) {
         openvzError(dom->conn, VIR_ERR_INTERNAL_ERROR,
-              _("Could not exec %s"), VZCTL);
+                    _("domain is not in running state"));
         return -1;
     }
-
-    vm->vpsid = -1;
-    vm->status = VIR_DOMAIN_SHUTOFF;
-    ovz_driver.num_inactive ++;
-    ovz_driver.num_active --;
+ 
+    if (virRun(dom->conn, prog, NULL) < 0)
+        return -1;
+    
+    vm->def->id = -1;
+    vm->state = VIR_DOMAIN_SHUTOFF;
 
     return 0;
 }
@@ -301,26 +302,23 @@ static int openvzDomainShutdown(virDomainPtr dom) {
 static int openvzDomainReboot(virDomainPtr dom,
                               unsigned int flags ATTRIBUTE_UNUSED) {
     struct openvz_driver *driver = (struct openvz_driver *)dom->conn->privateData;
-    struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
-    const char *prog[] = {VZCTL, "--quiet", "restart", vm->vmdef->name, NULL};
+    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    const char *prog[] = {VZCTL, "--quiet", "restart", vm->def->name, NULL};
 
     if (!vm) {
         openvzError(dom->conn, VIR_ERR_INVALID_DOMAIN,
-              _("no domain with matching id"));
+                    _("no domain with matching uuid"));
         return -1;
     }
 
-    if (vm->status != VIR_DOMAIN_RUNNING) {
-        openvzError(dom->conn, VIR_ERR_OPERATION_DENIED,
-              _("domain is not in running state"));
-        return -1;
-    }
-
-    if (virRun(dom->conn, prog, NULL) < 0) {
+    if (vm->state != VIR_DOMAIN_RUNNING) {
         openvzError(dom->conn, VIR_ERR_INTERNAL_ERROR,
-               _("Could not exec %s"), VZCTL);
+                    _("domain is not in running state"));
         return -1;
     }
+
+    if (virRun(dom->conn, prog, NULL) < 0)
+        return -1;
 
     return 0;
 }
@@ -421,24 +419,31 @@ static virDomainPtr
 openvzDomainDefineXML(virConnectPtr conn, const char *xml)
 {
     struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
-    struct openvz_vm_def *vmdef = NULL;
-    struct openvz_vm *vm = NULL;
+    virDomainDefPtr vmdef = NULL;
+    virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
     const char *prog[OPENVZ_MAX_ARG];
     prog[0] = NULL;
 
-    if ((vmdef = openvzParseVMDef(conn, xml, NULL)) == NULL)
+    if ((vmdef = virDomainDefParseString(conn, driver->caps, xml)) == NULL)
         return NULL;
 
-    vm = openvzFindVMByName(driver, vmdef->name);
+    if (vmdef->os.init == NULL &&
+        !(vmdef->os.init = strdup("/sbin/init"))) {
+        virDomainDefFree(vmdef);
+        return NULL;
+    }
+
+    vm = virDomainFindByName(driver->domains, vmdef->name);
     if (vm) {
+        virDomainDefFree(vmdef);
         openvzLog(OPENVZ_ERR, _("Already an OPENVZ VM active with the id '%s'"),
                   vmdef->name);
         return NULL;
     }
-    if (!(vm = openvzAssignVMDef(conn, driver, vmdef))) {
-        openvzFreeVMDef(vmdef);
-        openvzLog(OPENVZ_ERR, "%s", _("Error creating OPENVZ VM"));
+    if (!(vm = virDomainAssignDef(conn, &driver->domains, vmdef))) {
+        virDomainDefFree(vmdef);
+        return NULL;
     }
 
     if (openvzDomainDefineCmd(conn, prog, OPENVZ_MAX_ARG, vmdef) < 0) {
@@ -461,11 +466,11 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
         goto exit;
     }
 
-    dom = virGetDomain(conn, vm->vmdef->name, vm->vmdef->uuid);
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom)
-        dom->id = vm->vpsid;
+        dom->id = -1;
 
-    if (openvzDomainSetNetwork(conn, vmdef->name, vmdef->net) < 0) {
+    if (openvzDomainSetNetwork(conn, vmdef->name, vmdef->nets) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                   _("Could not configure network"));
         goto exit;
@@ -488,27 +493,33 @@ static virDomainPtr
 openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
                         unsigned int flags ATTRIBUTE_UNUSED)
 {
-    struct openvz_vm_def *vmdef = NULL;
-    struct openvz_vm *vm = NULL;
+    virDomainDefPtr vmdef = NULL;
+    virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
     struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
     const char *progstart[] = {VZCTL, "--quiet", "start", NULL, NULL};
     const char *progcreate[OPENVZ_MAX_ARG];
     progcreate[0] = NULL;
 
-    if (!(vmdef = openvzParseVMDef(conn, xml, NULL)))
+    if ((vmdef = virDomainDefParseString(conn, driver->caps, xml)) == NULL)
         return NULL;
 
-    vm = openvzFindVMByName(driver, vmdef->name);
+    if (vmdef->os.init == NULL &&
+        !(vmdef->os.init = strdup("/sbin/init"))) {
+        virDomainDefFree(vmdef);
+        return NULL;
+    }
+
+    vm = virDomainFindByName(driver->domains, vmdef->name);
     if (vm) {
-        openvzFreeVMDef(vmdef);
+        virDomainDefFree(vmdef);
         openvzLog(OPENVZ_ERR,
                   _("Already an OPENVZ VM defined with the id '%d'"),
                 strtoI(vmdef->name));
         return NULL;
     }
-    if (!(vm = openvzAssignVMDef(conn, driver, vmdef))) {
-        openvzLog(OPENVZ_ERR, "%s", _("Error creating OPENVZ VM"));
+    if (!(vm = virDomainAssignDef(conn, &driver->domains, vmdef))) {
+        virDomainDefFree(vmdef);
         return NULL;
     }
 
@@ -530,7 +541,7 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
         goto exit;
     }
 
-    if (openvzDomainSetNetwork(conn, vmdef->name, vmdef->net) < 0) {
+    if (openvzDomainSetNetwork(conn, vmdef->name, vmdef->nets) < 0) {
        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                   _("Could not configure network"));
         goto exit;
@@ -544,20 +555,19 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
         goto exit;
     }
 
-    vm->vpsid = strtoI(vmdef->name);
-    vm->status = VIR_DOMAIN_RUNNING;
-    ovz_driver.num_inactive--;
-    ovz_driver.num_active++;
-
-    dom = virGetDomain(conn, vm->vmdef->name, vm->vmdef->uuid);
+    vm->pid = strtoI(vmdef->name);
+    vm->def->id = vm->pid;
+    vm->state = VIR_DOMAIN_RUNNING;
+ 
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom)
-        dom->id = vm->vpsid;
+        dom->id = vm->def->id;
 
     if (vmdef->vcpus > 0) {
         if (openvzDomainSetVcpus(dom, vmdef->vcpus) < 0) {
             openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                     _("Could not set number of virtual cpu"));
-             goto exit;
+                        _("Could not set number of virtual cpu"));
+            goto exit;
         }
     }
 
@@ -570,8 +580,8 @@ static int
 openvzDomainCreate(virDomainPtr dom)
 {
     struct openvz_driver *driver = (struct openvz_driver *)dom->conn->privateData;
-    struct openvz_vm *vm = openvzFindVMByName(driver, dom->name);
-    const char *prog[] = {VZCTL, "--quiet", "start", vm->vmdef->name, NULL };
+    virDomainObjPtr vm = virDomainFindByName(driver->domains, dom->name);
+    const char *prog[] = {VZCTL, "--quiet", "start", vm->def->name, NULL };
 
     if (!vm) {
         openvzError(dom->conn, VIR_ERR_INVALID_DOMAIN,
@@ -579,7 +589,7 @@ openvzDomainCreate(virDomainPtr dom)
         return -1;
     }
 
-    if (vm->status != VIR_DOMAIN_SHUTOFF) {
+    if (vm->state != VIR_DOMAIN_SHUTOFF) {
         openvzError(dom->conn, VIR_ERR_OPERATION_DENIED,
               _("domain is not in shutoff state"));
         return -1;
@@ -591,10 +601,9 @@ openvzDomainCreate(virDomainPtr dom)
         return -1;
     }
 
-    vm->vpsid = strtoI(vm->vmdef->name);
-    vm->status = VIR_DOMAIN_RUNNING;
-    ovz_driver.num_inactive --;
-    ovz_driver.num_active ++;
+    vm->pid = strtoI(vm->def->name);
+    vm->def->id = vm->pid;
+    vm->state = VIR_DOMAIN_RUNNING;
 
     return 0;
 }
@@ -604,15 +613,15 @@ openvzDomainUndefine(virDomainPtr dom)
 {
     virConnectPtr conn= dom->conn;
     struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
-    struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
-    const char *prog[] = { VZCTL, "--quiet", "destroy", vm->vmdef->name, NULL };
+    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    const char *prog[] = { VZCTL, "--quiet", "destroy", vm->def->name, NULL };
 
     if (!vm) {
         openvzError(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
         return -1;
     }
 
-    if (openvzIsActiveVM(vm)) {
+    if (virDomainIsActive(vm)) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("cannot delete active domain"));
         return -1;
     }
@@ -623,7 +632,8 @@ openvzDomainUndefine(virDomainPtr dom)
         return -1;
     }
 
-    openvzRemoveInactiveVM(driver, vm);
+    virDomainRemoveInactive(&driver->domains, vm);
+
     return 0;
 }
 
@@ -632,8 +642,8 @@ openvzDomainSetAutostart(virDomainPtr dom, int autostart)
 {
     virConnectPtr conn= dom->conn;
     struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
-    struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
-    const char *prog[] = { VZCTL, "--quiet", "set", vm->vmdef->name,
+    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    const char *prog[] = { VZCTL, "--quiet", "set", vm->def->name,
                            "--onboot", autostart ? "yes" : "no",
                            "--save", NULL };
 
@@ -655,7 +665,7 @@ openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
 {
     virConnectPtr conn= dom->conn;
     struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
-    struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
     char value[1024];
 
     if (!vm) {
@@ -663,7 +673,7 @@ openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
         return -1;
     }
 
-    if (openvzReadConfigParam(strtoI(vm->vmdef->name), "ONBOOT", value, sizeof(value)) < 0) {
+    if (openvzReadConfigParam(strtoI(vm->def->name), "ONBOOT", value, sizeof(value)) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("Could not read container config"));
         return -1;
     }
@@ -692,39 +702,39 @@ static int openvzDomainGetMaxVcpus(virDomainPtr dom) {
 static int openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
     virConnectPtr conn= dom->conn;
     struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
-    struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
     char   str_vcpus[32];
-    const char *prog[] = { VZCTL, "--quiet", "set", vm->vmdef->name,
+    const char *prog[] = { VZCTL, "--quiet", "set", vm->def->name,
                            "--cpus", str_vcpus, "--save", NULL };
     snprintf(str_vcpus, 31, "%d", nvcpus);
     str_vcpus[31] = '\0';
 
     if (nvcpus <= 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                         _("VCPUs should be >= 1"));
+                    _("VCPUs should be >= 1"));
         return -1;
     }
 
     if (!vm) {
         openvzError(conn, VIR_ERR_INVALID_DOMAIN,
-                         _("no domain with matching uuid"));
+                    _("no domain with matching uuid"));
         return -1;
     }
 
     if (virRun(conn, prog, NULL) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("Could not exec %s"), VZCTL);
+                    _("Could not exec %s"), VZCTL);
         return -1;
     }
 
-    vm->vmdef->vcpus = nvcpus;
+    vm->def->vcpus = nvcpus;
     return 0;
 }
 
 static const char *openvzProbe(void)
 {
 #ifdef __linux__
-    if ((getuid() == 0) && (virFileExists("/proc/vz")))
+    if ((geteuid() == 0) && (virFileExists("/proc/vz")))
         return("openvz:///system");
 #endif
     return(NULL);
@@ -735,51 +745,48 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
                                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                  int flags ATTRIBUTE_UNUSED)
 {
-   struct openvz_vm *vms;
-
+    struct openvz_driver *driver;
     /*Just check if the user is root. Nothing really to open for OpenVZ */
-   if (getuid()) { // OpenVZ tools can only be used by r00t
-           return VIR_DRV_OPEN_DECLINED;
-   } else {
-       if (uri == NULL || uri->scheme == NULL || uri->path == NULL)
-                   return VIR_DRV_OPEN_DECLINED;
-       if (STRNEQ (uri->scheme, "openvz"))
-                   return VIR_DRV_OPEN_DECLINED;
-       if (STRNEQ (uri->path, "/system"))
-                   return VIR_DRV_OPEN_DECLINED;
-   }
+    if (geteuid()) { // OpenVZ tools can only be used by r00t
+        return VIR_DRV_OPEN_DECLINED;
+    } else {
+        if (uri == NULL ||
+            uri->scheme == NULL ||
+            uri->path == NULL ||
+            STRNEQ (uri->scheme, "openvz") ||
+            STRNEQ (uri->path, "/system"))
+            return VIR_DRV_OPEN_DECLINED;
+    }
     /* See if we are running an OpenVZ enabled kernel */
-   if(access("/proc/vz/veinfo", F_OK) == -1 ||
-               access("/proc/user_beancounters", F_OK) == -1) {
-       return VIR_DRV_OPEN_DECLINED;
-   }
+    if(access("/proc/vz/veinfo", F_OK) == -1 ||
+       access("/proc/user_beancounters", F_OK) == -1) {
+        return VIR_DRV_OPEN_DECLINED;
+    }
 
-   conn->privateData = &ovz_driver;
+    if (VIR_ALLOC(driver) < 0) {
+        openvzError(conn, VIR_ERR_NO_MEMORY, NULL);
+        return VIR_DRV_OPEN_ERROR;
+    }
 
-   openvzAssignUUIDs();
+    if (!(driver->caps = openvzCapsInit()))
+        goto cleanup;
 
-   vms = openvzGetVPSInfo(conn);
-   ovz_driver.vms = vms;
+    if (openvzLoadDomains(driver) < 0)
+        goto cleanup;
 
-   return VIR_DRV_OPEN_SUCCESS;
+    conn->privateData = driver;
+
+    return VIR_DRV_OPEN_SUCCESS;
+
+cleanup:
+    openvzFreeDriver(driver);
+    return VIR_DRV_OPEN_ERROR;
 };
 
 static int openvzClose(virConnectPtr conn) {
-
     struct openvz_driver *driver = (struct openvz_driver *)conn->privateData;
-    struct openvz_vm *vm = driver->vms;
 
-    while(vm) {
-        openvzFreeVMDef(vm->vmdef);
-        vm = vm->next;
-    }
-    vm = driver->vms;
-    while (vm) {
-        struct openvz_vm *prev = vm;
-        vm = vm->next;
-        free(prev);
-    }
-
+    openvzFreeDriver(driver);
     conn->privateData = NULL;
 
     return 0;
@@ -792,6 +799,12 @@ static const char *openvzGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
 static int openvzGetNodeInfo(virConnectPtr conn,
                              virNodeInfoPtr nodeinfo) {
     return virNodeInfoPopulate(conn, nodeinfo);
+}
+
+static char *openvzGetCapabilities(virConnectPtr conn) {
+    struct openvz_driver *driver = (struct openvz_driver *)conn->privateData;
+
+    return virCapabilitiesFormatXML(driver->caps);
 }
 
 static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
@@ -829,14 +842,22 @@ static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
 }
 
 static int openvzNumDomains(virConnectPtr conn ATTRIBUTE_UNUSED) {
-    return ovz_driver.num_active;
+    struct openvz_driver *driver = conn->privateData;
+    int nactive = 0;
+    virDomainObjPtr vm = driver->domains;
+    while (vm) {
+        if (virDomainIsActive(vm))
+            nactive++;
+        vm = vm->next;
+    }
+    return nactive;
 }
 
 static int openvzListDefinedDomains(virConnectPtr conn,
-                            char **const names, int nnames) {
+                                    char **const names, int nnames) {
     int got = 0;
     int veid, pid, outfd = -1, errfd = -1, ret;
-    char vpsname[OPENVZ_NAME_MAX];
+    char vpsname[32];
     char buf[32];
     char *endptr;
     const char *cmd[] = {VZLIST, "-ovpsid", "-H", "-S", NULL};
@@ -858,12 +879,19 @@ static int openvzListDefinedDomains(virConnectPtr conn,
                     _("Could not parse VPS ID %s"), buf);
             continue;
         }
-        sprintf(vpsname, "%d", veid);
-        names[got] = strdup(vpsname);
+        snprintf(vpsname, sizeof(vpsname), "%d", veid);
+        if (!(names[got] = strdup(vpsname)))
+            goto no_memory;
         got ++;
     }
     waitpid(pid, NULL, 0);
     return got;
+
+no_memory:
+    openvzError(conn, VIR_ERR_NO_MEMORY, NULL);
+    for ( ; got >= 0 ; got--)
+        VIR_FREE(names[got]);
+    return -1;
 }
 
 static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid) {
@@ -911,8 +939,16 @@ Version: 2.2
     return 0;
 }
 
-static int openvzNumDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED) {
-    return ovz_driver.num_inactive;
+static int openvzNumDefinedDomains(virConnectPtr conn) {
+    struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
+    int ninactive = 0;
+    virDomainObjPtr vm = driver->domains;
+    while (vm) {
+        if (!virDomainIsActive(vm))
+            ninactive++;
+        vm = vm->next;
+    }
+    return ninactive;
 }
 
 static virDriver openvzDriver = {
@@ -929,7 +965,7 @@ static virDriver openvzDriver = {
     NULL, /* uri */
     openvzGetMaxVCPUs, /* getMaxVcpus */
     openvzGetNodeInfo, /* nodeGetInfo */
-    NULL, /* getCapabilities */
+    openvzGetCapabilities, /* getCapabilities */
     openvzListDomains, /* listDomains */
     openvzNumDomains, /* numOfDomains */
     openvzDomainCreateLinux, /* domainCreateLinux */
@@ -953,7 +989,7 @@ static virDriver openvzDriver = {
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
     openvzDomainGetMaxVcpus, /* domainGetMaxVcpus */
-    NULL, /* domainDumpXML */
+    openvzDomainDumpXML, /* domainDumpXML */
     openvzListDefinedDomains, /* listDomains */
     openvzNumDefinedDomains, /* numOfDomains */
     openvzDomainCreate, /* domainCreate */

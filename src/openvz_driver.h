@@ -31,24 +31,6 @@
 
 #include "internal.h"
 
-/* OpenVZ commands - Replace with wrapper scripts later? */
-#define VZLIST  "vzlist"
-#define VZCTL   "vzctl"
-
-struct openvz_driver {
-    struct openvz_vm *vms;
-    int num_active;
-    int num_inactive;
-};
-
 int openvzRegister(void);
-
-#define openvzLog(level, msg...) { if(level == OPENVZ_WARN) \
-                                        fprintf(stderr, "\nWARNING: ");\
-                                else \
-                                        fprintf(stderr, "\nERROR: ");\
-                                fprintf(stderr, "\n\t");\
-                                fprintf(stderr, msg);\
-                                fprintf(stderr, "\n"); }
 
 #endif
