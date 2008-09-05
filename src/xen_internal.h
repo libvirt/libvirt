@@ -17,7 +17,7 @@
 extern struct xenUnifiedDriver xenHypervisorDriver;
 int	xenHypervisorInit		(void);
 
-virCapsPtr xenHypervisorMakeCapabilities (void);
+virCapsPtr xenHypervisorMakeCapabilities (virConnectPtr conn);
 
 /* The following calls are made directly by the Xen proxy: */
 
@@ -38,7 +38,8 @@ int	xenHypervisorClose		(virConnectPtr conn);
 int	xenHypervisorGetVersion		(virConnectPtr conn,
                                          unsigned long *hvVer);
 virCapsPtr
-        xenHypervisorMakeCapabilitiesInternal(const char *hostmachine,
+        xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
+                                              const char *hostmachine,
                                               FILE *cpuinfo,
                                               FILE *capabilities);
 char *

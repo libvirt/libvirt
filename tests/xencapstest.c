@@ -49,7 +49,7 @@ static int testCompareFiles(const char *hostmachine,
   if (!(fp2 = fopen(capabilities, "r")))
       goto fail;
 
-  if (!(caps = xenHypervisorMakeCapabilitiesInternal(hostmachine, fp1, fp2)))
+  if (!(caps = xenHypervisorMakeCapabilitiesInternal(NULL, hostmachine, fp1, fp2)))
       goto fail;
 
   if (!(actualxml = virCapabilitiesFormatXML(caps)))

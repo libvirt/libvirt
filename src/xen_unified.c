@@ -333,7 +333,7 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int f
         }
     }
 
-    if (!(priv->caps = xenHypervisorMakeCapabilities())) {
+    if (!(priv->caps = xenHypervisorMakeCapabilities(conn))) {
         DEBUG0("Failed to make capabilities");
         goto fail;
     }

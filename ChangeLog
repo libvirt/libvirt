@@ -1,3 +1,9 @@
+Thu Sep  5 12:33:26 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xen_unified.c, src/xen_internal.c, src/xen_internal.h,
+	tests/xencapstest.c: Pass connection object into capabilities
+	constructor since it needs to talk to XenD
+
 Thu Sep  4 15:33:26 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/storage_backend_fs.c: fix a signed/unsigned issue breaking

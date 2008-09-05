@@ -2159,7 +2159,8 @@ struct guest_arch {
 
 
 static virCapsPtr
-xenHypervisorBuildCapabilities(const char *hostmachine,
+xenHypervisorBuildCapabilities(virConnectPtr conn,
+                               const char *hostmachine,
                                int host_pae,
                                char *hvm_type,
                                struct guest_arch *guest_archs,
@@ -2185,7 +2186,7 @@ xenHypervisorBuildCapabilities(const char *hostmachine,
 
 
     if (sys_interface_version >= 4) {
-        if (xenDaemonNodeGetTopology(NULL, caps) != 0) {
+        if (xenDaemonNodeGetTopology(conn, caps) != 0) {
             virCapabilitiesFree(caps);
             return NULL;
         }
@@ -2271,7 +2272,8 @@ xenHypervisorBuildCapabilities(const char *hostmachine,
  * Return the capabilities of this hypervisor.
  */
 virCapsPtr
-xenHypervisorMakeCapabilitiesInternal(const char *hostmachine,
+xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
+                                      const char *hostmachine,
                                       FILE *cpuinfo, FILE *capabilities)
 {
     char line[1024], *str, *token;
@@ -2404,7 +2406,8 @@ xenHypervisorMakeCapabilitiesInternal(const char *hostmachine,
         }
     }
 
-    if ((caps = xenHypervisorBuildCapabilities(hostmachine,
+    if ((caps = xenHypervisorBuildCapabilities(conn,
+                                               hostmachine,
                                                host_pae,
                                                hvm_type,
                                                guest_archs,
@@ -2425,7 +2428,7 @@ xenHypervisorMakeCapabilitiesInternal(const char *hostmachine,
  * Return the capabilities of this hypervisor.
  */
 virCapsPtr
-xenHypervisorMakeCapabilities(void)
+xenHypervisorMakeCapabilities(virConnectPtr conn)
 {
     virCapsPtr caps;
     FILE *cpuinfo, *capabilities;
@@ -2451,7 +2454,10 @@ xenHypervisorMakeCapabilities(void)
         }
     }
 
-    caps = xenHypervisorMakeCapabilitiesInternal(utsname.machine, cpuinfo, capabilities);
+    caps = xenHypervisorMakeCapabilitiesInternal(conn,
+                                                 utsname.machine,
+                                                 cpuinfo,
+                                                 capabilities);
 
     if (cpuinfo)
         fclose(cpuinfo);
