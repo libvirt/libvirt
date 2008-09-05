@@ -116,14 +116,14 @@ static int openvzDomainDefineCmd(virConnectPtr conn,
     ADD_ARG_LIT("--quiet");
     ADD_ARG_LIT("create");
     ADD_ARG_LIT(vmdef->name);
-    
+
     if (vmdef->fss) {
         if (vmdef->fss->type != VIR_DOMAIN_FS_TYPE_TEMPLATE) {
             openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                         "%s", _("only filesystem templates are supported"));
             return -1;
         }
-        
+
         if (vmdef->fss->next) {
             openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                         "%s", _("only one filesystem supported"));
@@ -223,7 +223,7 @@ static virDomainPtr openvzDomainLookupByName(virConnectPtr conn,
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (!dom)
         return NULL;
- 
+
     dom->id = vm->def->id;
     return dom;
 }
@@ -240,7 +240,7 @@ static int openvzDomainGetInfo(virDomainPtr dom,
     }
 
     info->state = vm->state;
-    
+
     if (!virDomainIsActive(vm)) {
         info->cpuTime = 0;
     } else {
@@ -261,13 +261,13 @@ static int openvzDomainGetInfo(virDomainPtr dom,
 static char *openvzDomainDumpXML(virDomainPtr dom, int flags) {
     struct openvz_driver *driver = (struct openvz_driver *)dom->conn->privateData;
     virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
-    
+
     if (!vm) {
         openvzError(dom->conn, VIR_ERR_INVALID_DOMAIN,
                     _("no domain with matching uuid"));
         return NULL;
     }
- 
+
     return virDomainDefFormat(dom->conn, vm->def, flags);
 }
 
@@ -283,16 +283,16 @@ static int openvzDomainShutdown(virDomainPtr dom) {
                     _("no domain with matching uuid"));
         return -1;
     }
-    
+
     if (vm->state != VIR_DOMAIN_RUNNING) {
         openvzError(dom->conn, VIR_ERR_INTERNAL_ERROR,
                     _("domain is not in running state"));
         return -1;
     }
- 
+
     if (virRun(dom->conn, prog, NULL) < 0)
         return -1;
-    
+
     vm->def->id = -1;
     vm->state = VIR_DOMAIN_SHUTOFF;
 
@@ -558,7 +558,7 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
     vm->pid = strtoI(vmdef->name);
     vm->def->id = vm->pid;
     vm->state = VIR_DOMAIN_RUNNING;
- 
+
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom)
         dom->id = vm->def->id;

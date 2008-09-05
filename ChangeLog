@@ -1,3 +1,8 @@
+Fri Sep  5 15:59:26 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/openvz_conf.c, src/openvz_driver.c: Fix trailing
+	whitespace mistakes
+
 Fri Sep  5 15:09:26 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/openvz_conf.c, src/openvz_conf.h, src/openvz_driver.c,

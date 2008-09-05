@@ -156,19 +156,19 @@ void
 openvzFreeDriver(struct openvz_driver *driver)
 {
     virDomainObjPtr dom;
-  
+
     if (!driver)
         return;
- 
+
     dom = driver->domains;
     while (dom) {
         virDomainObjPtr tmp = dom->next;
         virDomainObjFree(dom);
         dom = tmp;
     }
- 
+
     virCapabilitiesFree(driver->caps);
-} 
+}
 
 
 
@@ -192,38 +192,38 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         if (fscanf(fp, "%d %s\n", &veid, status) != 2) {
             if (feof(fp))
                 break;
-  
+
             openvzError(NULL, VIR_ERR_INTERNAL_ERROR,
                         _("Failed to parse vzlist output"));
             goto cleanup;
         }
- 
+
         if (VIR_ALLOC(dom) < 0 ||
             VIR_ALLOC(dom->def) < 0)
             goto no_memory;
- 
+
         if (STREQ(status, "stopped"))
             dom->state = VIR_DOMAIN_SHUTOFF;
         else
             dom->state = VIR_DOMAIN_RUNNING;
- 
+
         dom->pid = veid;
         dom->def->id = dom->state == VIR_DOMAIN_SHUTOFF ? -1 : veid;
- 
+
         if (asprintf(&dom->def->name, "%i", veid) < 0) {
             dom->def->name = NULL;
             goto no_memory;
         }
- 
+
         openvzGetVPSUUID(veid, uuidstr);
         ret = virUUIDParse(uuidstr, dom->def->uuid);
- 
+
         if (ret == -1) {
             openvzError(NULL, VIR_ERR_INTERNAL_ERROR,
                         _("UUID in config file malformed"));
             goto cleanup;
         }
- 
+
         if (!(dom->def->os.type = strdup("exe")))
             goto no_memory;
         if (!(dom->def->os.init = strdup("/sbin/init")))
@@ -232,7 +232,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         ret = openvzReadConfigParam(veid, "CPUS", temp, sizeof(temp));
         if (ret < 0) {
             openvzError(NULL, VIR_ERR_INTERNAL_ERROR,
-                        _("Cound not read config for container %d"), 
+                        _("Cound not read config for container %d"),
                         veid);
             goto cleanup;
         } else if (ret > 0) {
@@ -242,7 +242,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         }
 
         /* XXX load rest of VM config data .... */
- 
+
         if (prev) {
             prev->next = dom;
         } else {
@@ -250,14 +250,14 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         }
         prev = dom;
     }
- 
+
     fclose(fp);
- 
+
     return 0;
- 
+
  no_memory:
     openvzError(NULL, VIR_ERR_NO_MEMORY, NULL);
- 
+
  cleanup:
     fclose(fp);
     virDomainObjFree(dom);
