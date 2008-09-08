@@ -5,6 +5,100 @@
     <p>Here is the list of official releases, however since it is early on in the
 development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
+    <h3>0.4.5: Sep 8 2008</h3>
+    <ul>
+      <li>New features: NETNS support for Linux containers (Dan Smith),
+          unified XML domain and network parsing for all drivers (Daniel
+          Berrange), OpenVZ features improvements (Evgeniy Sokolov),
+          OpenVZ and Linux containers support now default, USB device
+          passthrough for QEmu/KVM (Guido Günther), storage pool source
+          discovery (David Lively)</li>
+      <li>Portability: fixes for MinGW (Atsushi SAKAI and Daniel Berrange),
+          detection of xen lib improvement (David Lively),
+          storage backend portability for SLES (David Lively),
+          fix make distclean and distcheck (Jim Meyering),
+          fix build failures on RHEL4, lot of MinGW portability fixes (Atsushi
+          SAKAI and Daniel Berrange), HTML generation fix, -lpthread explicit
+          linking when needed (Jim Meyering)</li>
+      <li>Documentation: various typo fixes (Anton Protopopov, Toth
+          István, Atsushi SAKAI, Nguyen Anh Quynh),
+          Java bindings docs, remove Xen centric
+          comments (Guido Günther), various typo in comments (Chris
+          Lalancette), docs and API comments fixes (Charles Duffy),
+          how to contribute to open source link (Richard Jones),
+          memory unit fixups (matthew chan)</li>
+      <li>Bug fixes: memory leaks and testing for OOM (Daniel Berrange),
+          do_open driver bug(Evgeniy Sokolov), don't use polkit auth when
+          running as non-root (Daniel Berrange), boot of CDRom devices
+          in QEmu/KVM (Daniel Berrange), fix OpenVZ probe function (Evgeniy
+          Sokolov), ID related lookup fixes in OpenVZ (Evgeniy Sokolov),
+          pool cration for netfs (Cole Robinson), check for migrate support
+          with QEmu (Guido Günther), check against double create with QEmu
+          (Guido Günther), broken open failure detection in QEmu (Guido
+          Günther), UUID string conversions in QEmu (Guido Günther),
+          various small cleanup and bug fixes (Daniel Berrange), ID
+          related fixes in the test driver (Daniel Berrange), better error
+          reporting on XML parsing (Daniel Berrange), empty CD-ROM source
+          device section (Chris Lalancette), avoid crashes for interface
+          without a name in QEmu (Guido Günther), provide the real
+          vncport (Charles Duffy), fix forward delay (Daniel Berrange),
+          new VM state is initialized to be SHUTOFF (Daniel Berrange),
+          virsh attach-disk bug fixes (Chris Lalancette), veth clash
+          of device names (Dan Smith), connection lookup fixes on
+          storage creation (Cole Robinson), parted call fix (Cole Robinson),
+          use "server" option when using serial/telnet with QEmu (Mark
+          McLoughlin), duplicate virInitialize calls (Nguyen Anh Quynh),
+          many fixes to virExec and related functions (Daniel Berrange),
+          size of disk without partitions (Cole Robinson), creating and
+          cleaning up logical volumes with target path (Cole Robinson),
+          fix reporting of virConnectOpen problems (Daniel Berrange),
+          veth cleanup at shutdown (Dan Smith), lookup of Xen VMs after define
+          (Cole Robinson), fix emulator reported capabilities (Cole Robinson),
+          avoid segfault on KVM CD eject (Cole Robinson), fix disk ordering
+          and avoid duplicate in QEmu XML parsing (Cole Robinson), update
+          domain XML after device hotplug (Cole Robinson), use poweroff instead
+          of halt when shutting down a Xen domain (John Levon), don't dump core
+          of Xen domain live by default (John Levon), vgcreate command line
+          size bug (Jim Fehlig),  signed/unsigned issue in probing file
+          (Cole Robinson), Fix Xen domains without PVFB console (Daniel
+          Berrange), OpenVZ config read bug fix (Evgeniy Sokolov).
+          </li>
+      <li>Improvements: improved failure diagnostic for TAP (Jim Meyering),
+          better exec and error diagnostic for OpenVZ commands (Evgeniy
+          Sokolov), OpenVZ auto start and stop of domains (Evgeniy Sokolov),
+          OpenVZ domain cpu time consumption (Evgeniy Sokolov), virsh
+          shutdown improvements and test (Jim Meyering), better report of
+          XML well formedness errors (Richard Jones), new XML elements
+          (Daniel Berrange), virsh "edit" command (Richard Jones), save
+          UUID of OpenVZ domains (Evgeniy Sokolov), improve xen blocks
+          statistics (Chris Lalancette), gnulib updates (Jim Meyering),
+          allow to add disk as USB devices (Guido Günther), LXC container
+          process should survive libvirtd restarts (Daniel Berrange), allow
+          to define static host domain configs, number of CPU used by
+          OpenVZ domains (Evgeniy Sokolov), private root fs for LXC (Daniel
+          Berrange), storage source information in storage pools (David Lively),
+          virsh reports attach and detach success (Cole Robinson), detect
+          failure in QEmu eject command (Cole Robinson), add support for
+          eect on floppy and SCSI cdroms for QEmu (Cole Robinson), LXC
+          hypervisor version extraction (Dan Smith), Augeas config file support
+          (Daniel Berrange), support for a domain name in network
+          config (JJ Reynolds).</li>
+      <li>Cleanups: Python verbosity cleanup (Ryan Scott),
+          space and tabs cleanups (Atsushi SAKAI), OpenVZ and LXC drivers
+          cleanup and unification of XML handling (Daniel Berrange), updates
+          to Relax-NG XML schemas (John Levon and Daniel Berrange), more
+          printf format checkings (Jim Meyering), VIR_FREE related cleanups
+          (Jim Meyering), integer string parsing cleanup (Evgeniy Sokolov),
+          initial OpenVZ xml refactoring (Evgeniy Sokolov), better error
+          message on domain redefine (Charles Duffy), check XML files against
+          the RNG Schemas (Daniel Berrange), const-correctness in virsh
+          (Richard Jones and Jim Meyering), const-correctness and cleanups
+          in LXC and OpenVZ drivers (Daniel Berrange), virFileLinkPointsTo
+          rewrite (Jim Meyering), cleanup of the conditional compilation
+          of C files (Daniel Berrange), shell quoting fixes (Jim Meyering),
+          parallel build support (James Morris and Jim Meyering), new
+          convenenience virFileReadLimFD function (Jim Meyering).  </li>
+    </ul>
     <h3>0.4.4: Jun 25 2008</h3>
     <ul>
       <li>Bug fixes: QEmu network serialization (Kaitlin Rupert), internal

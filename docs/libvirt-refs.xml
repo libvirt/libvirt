@@ -155,6 +155,7 @@
     <reference name='virConnectCredential' href='html/libvirt-libvirt.html#virConnectCredential'/>
     <reference name='virConnectCredentialPtr' href='html/libvirt-libvirt.html#virConnectCredentialPtr'/>
     <reference name='virConnectCredentialType' href='html/libvirt-libvirt.html#virConnectCredentialType'/>
+    <reference name='virConnectFindStoragePoolSources' href='html/libvirt-libvirt.html#virConnectFindStoragePoolSources'/>
     <reference name='virConnectFlags' href='html/libvirt-libvirt.html#virConnectFlags'/>
     <reference name='virConnectGetCapabilities' href='html/libvirt-libvirt.html#virConnectGetCapabilities'/>
     <reference name='virConnectGetHostname' href='html/libvirt-libvirt.html#virConnectGetHostname'/>
@@ -490,6 +491,7 @@
       <ref name='virConnectCredential'/>
       <ref name='virConnectCredentialPtr'/>
       <ref name='virConnectCredentialType'/>
+      <ref name='virConnectFindStoragePoolSources'/>
       <ref name='virConnectFlags'/>
       <ref name='virConnectGetCapabilities'/>
       <ref name='virConnectGetHostname'/>
@@ -755,6 +757,7 @@
     </type>
     <type name='unsigned int'>
       <ref name='virConnectAuthCallbackPtr'/>
+      <ref name='virConnectFindStoragePoolSources'/>
       <ref name='virDomainBlockPeek'/>
       <ref name='virDomainCreateLinux'/>
       <ref name='virDomainMemoryPeek'/>
@@ -800,6 +803,7 @@
       <ref name='virConnResetLastError'/>
       <ref name='virConnSetErrorFunc'/>
       <ref name='virConnectClose'/>
+      <ref name='virConnectFindStoragePoolSources'/>
       <ref name='virConnectGetCapabilities'/>
       <ref name='virConnectGetHostname'/>
       <ref name='virConnectGetMaxVcpus'/>
@@ -1048,6 +1052,7 @@
       <ref name='virConnectCredential'/>
       <ref name='virConnectCredentialPtr'/>
       <ref name='virConnectCredentialType'/>
+      <ref name='virConnectFindStoragePoolSources'/>
       <ref name='virConnectFlags'/>
       <ref name='virConnectGetCapabilities'/>
       <ref name='virConnectGetHostname'/>
@@ -1497,6 +1502,7 @@
           <ref name='virDomainMigrate'/>
         </word>
         <word name='For'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainBlockStats'/>
           <ref name='virDomainGetUUIDString'/>
@@ -1600,6 +1606,9 @@
         </word>
       </letter>
       <letter name='N'>
+        <word name='NFS'>
+          <ref name='virConnectFindStoragePoolSources'/>
+        </word>
         <word name='NUMA'>
           <ref name='_virNodeInfo'/>
           <ref name='virNodeGetCellsFreeMemory'/>
@@ -1749,6 +1758,9 @@
         <word name='Some'>
           <ref name='virDomainMigrate'/>
         </word>
+        <word name='SourceList'>
+          <ref name='virConnectFindStoragePoolSources'/>
+        </word>
         <word name='Starts'>
           <ref name='virStoragePoolCreate'/>
         </word>
@@ -1759,6 +1771,9 @@
       <letter name='T'>
         <word name='TODO:'>
           <ref name='virDomainShutdown'/>
+        </word>
+        <word name='Talks'>
+          <ref name='virConnectFindStoragePoolSources'/>
         </word>
         <word name='There'>
           <ref name='virDomainMigrate'/>
@@ -1883,6 +1898,7 @@
       </letter>
       <letter name='X'>
         <word name='XML'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virConnectGetCapabilities'/>
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virDomainAttachDevice'/>
@@ -2057,6 +2073,9 @@
         <word name='applications'>
           <ref name='virInitialize'/>
         </word>
+        <word name='appropriate'>
+          <ref name='virConnectFindStoragePoolSources'/>
+        </word>
         <word name='arbitrary'>
           <ref name='virDomainSetVcpus'/>
         </word>
@@ -2133,12 +2152,18 @@
           <ref name='virDomainAttachDevice'/>
           <ref name='virDomainDetachDevice'/>
         </word>
+        <word name='attempts'>
+          <ref name='virConnectFindStoragePoolSources'/>
+        </word>
         <word name='attribute'>
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virDomainBlockStats'/>
         </word>
         <word name='authentication'>
           <ref name='virConnectOpenAuth'/>
+        </word>
+        <word name='auto-discover'>
+          <ref name='virConnectFindStoragePoolSources'/>
         </word>
         <word name='automatically'>
           <ref name='virDomainGetAutostart'/>
@@ -2153,6 +2178,7 @@
         </word>
         <word name='available'>
           <ref name='_virError'/>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virGetVersion'/>
           <ref name='virNodeGetFreeMemory'/>
@@ -2172,6 +2198,7 @@
           <ref name='virStoragePoolGetXMLDesc'/>
         </word>
         <word name='backend'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainAttachDevice'/>
           <ref name='virDomainDetachDevice'/>
         </word>
@@ -2486,10 +2513,14 @@
         <word name='consequent'>
           <ref name='_virError'/>
         </word>
+        <word name='consisting'>
+          <ref name='virConnectFindStoragePoolSources'/>
+        </word>
         <word name='constants'>
           <ref name='_virConnectCredential'/>
         </word>
         <word name='containing'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainCreateLinux'/>
         </word>
         <word name='contains'>
@@ -2695,6 +2726,15 @@
           <ref name='virDomainCreateLinux'/>
           <ref name='virStoragePoolCreateXML'/>
         </word>
+        <word name='discover'>
+          <ref name='virConnectFindStoragePoolSources'/>
+        </word>
+        <word name='discovered'>
+          <ref name='virConnectFindStoragePoolSources'/>
+        </word>
+        <word name='discovery'>
+          <ref name='virConnectFindStoragePoolSources'/>
+        </word>
         <word name='disk'>
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainBlockStats'/>
@@ -2708,6 +2748,7 @@
           <ref name='virDomainShutdown'/>
         </word>
         <word name='document'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virStoragePoolGetXMLDesc'/>
           <ref name='virStorageVolGetXMLDesc'/>
         </word>
@@ -2773,6 +2814,7 @@
       </letter>
       <letter name='e'>
         <word name='each'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainBlockStats'/>
           <ref name='virDomainInterfaceStats'/>
           <ref name='virDomainMigrate'/>
@@ -2784,6 +2826,7 @@
           <ref name='virStorageVolGetPath'/>
         </word>
         <word name='element'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virConnectGetMaxVcpus'/>
         </word>
         <word name='else'>
@@ -2827,6 +2870,9 @@
         <word name='explicitly'>
           <ref name='virDomainDefineXML'/>
           <ref name='virStoragePoolDefineXML'/>
+        </word>
+        <word name='exported'>
+          <ref name='virConnectFindStoragePoolSources'/>
         </word>
         <word name='extra'>
           <ref name='_virError'/>
@@ -2921,6 +2967,7 @@
         <word name='flags'>
           <ref name='_virStoragePoolInfo'/>
           <ref name='_virStorageVolInfo'/>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virConnectOpenAuth'/>
           <ref name='virDomainCoreDump'/>
           <ref name='virDomainMemoryPeek'/>
@@ -3093,6 +3140,7 @@
           <ref name='virStorageVolGetPath'/>
         </word>
         <word name='given'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainCoreDump'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainLookupByName'/>
@@ -3212,6 +3260,9 @@
         </word>
       </letter>
       <letter name='i'>
+        <word name='iSCSI'>
+          <ref name='virConnectFindStoragePoolSources'/>
+        </word>
         <word name='ie:'>
           <ref name='cpumap'/>
           <ref name='virDomainGetVcpus'/>
@@ -3300,6 +3351,7 @@
         </word>
         <word name='instance'>
           <ref name='nodeinfo'/>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainFree'/>
           <ref name='virDomainGetXMLDesc'/>
@@ -3507,6 +3559,7 @@
           <ref name='virStoragePoolListVolumes'/>
         </word>
         <word name='list'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virConnectListDefinedDomains'/>
           <ref name='virConnectListDefinedNetworks'/>
           <ref name='virConnectListDefinedStoragePools'/>
@@ -3526,6 +3579,7 @@
           <ref name='virDomainMigrate'/>
         </word>
         <word name='local'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainBlockPeek'/>
         </word>
         <word name='locally'>
@@ -3537,6 +3591,9 @@
         </word>
         <word name='long'>
           <ref name='virNodeGetCellsFreeMemory'/>
+        </word>
+        <word name='look'>
+          <ref name='virConnectFindStoragePoolSources'/>
         </word>
         <word name='looked'>
           <ref name='virGetVersion'/>
@@ -3885,7 +3942,11 @@
           <ref name='virNetworkCreateXML'/>
           <ref name='virNodeGetCellsFreeMemory'/>
         </word>
+        <word name='ones'>
+          <ref name='virConnectFindStoragePoolSources'/>
+        </word>
         <word name='only'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainGetInfo'/>
         </word>
@@ -3904,6 +3965,7 @@
           <ref name='virDomainShutdown'/>
         </word>
         <word name='optional'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainCreateLinux'/>
           <ref name='virDomainMigrate'/>
         </word>
@@ -3988,6 +4050,7 @@
         </word>
         <word name='pass'>
           <ref name='virConnSetErrorFunc'/>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainBlockPeek'/>
           <ref name='virStorageVolCreateXML'/>
           <ref name='virStorageVolGetXMLDesc'/>
@@ -4005,6 +4068,9 @@
           <ref name='virDomainSave'/>
           <ref name='virStorageVolGetPath'/>
           <ref name='virStorageVolLookupByPath'/>
+        </word>
+        <word name='paths'>
+          <ref name='virConnectFindStoragePoolSources'/>
         </word>
         <word name='peek'>
           <ref name='virDomainMemoryPeek'/>
@@ -4045,6 +4111,7 @@
           <ref name='virDomainMemoryPeek'/>
         </word>
         <word name='pools'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virConnectListDefinedStoragePools'/>
           <ref name='virConnectListStoragePools'/>
           <ref name='virConnectNumOfDefinedStoragePools'/>
@@ -4125,6 +4192,11 @@
         </word>
         <word name='purpose'>
           <ref name='virDomainMigrate'/>
+        </word>
+      </letter>
+      <letter name='q'>
+        <word name='querying'>
+          <ref name='virConnectFindStoragePoolSources'/>
         </word>
       </letter>
       <letter name='r'>
@@ -4253,6 +4325,7 @@
           <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_UUID_BUFLEN'/>
           <ref name='VIR_UUID_STRING_BUFLEN'/>
+          <ref name='virConnectFindStoragePoolSources'/>
         </word>
         <word name='requires'>
           <ref name='virDomainCreateLinux'/>
@@ -4274,6 +4347,7 @@
           <ref name='virSetErrorFunc'/>
         </word>
         <word name='resources'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainSuspend'/>
           <ref name='virNetworkDestroy'/>
@@ -4425,6 +4499,7 @@
         </word>
         <word name='set'>
           <ref name='VIR_USE_CPU'/>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainCreateLinux'/>
           <ref name='virDomainGetInfo'/>
@@ -4485,12 +4560,19 @@
         <word name='software'>
           <ref name='virConnectGetType'/>
         </word>
+        <word name='some'>
+          <ref name='virConnectFindStoragePoolSources'/>
+        </word>
         <word name='sounds'>
           <ref name='virDomainMemoryPeek'/>
         </word>
         <word name='source'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainMigrate'/>
+        </word>
+        <word name='sources'>
+          <ref name='virConnectFindStoragePoolSources'/>
         </word>
         <word name='space'>
           <ref name='_virStoragePoolInfo'/>
@@ -4507,9 +4589,15 @@
         <word name='specify'>
           <ref name='virDomainMigrate'/>
         </word>
+        <word name='specifying'>
+          <ref name='virConnectFindStoragePoolSources'/>
+        </word>
         <word name='split'>
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainMemoryPeek'/>
+        </word>
+        <word name='srcSpec'>
+          <ref name='virConnectFindStoragePoolSources'/>
         </word>
         <word name='start'>
           <ref name='virDomainDefineXML'/>
@@ -4687,6 +4775,9 @@
           <ref name='virDomainBlockStats'/>
           <ref name='virDomainSetMemory'/>
         </word>
+        <word name='targets'>
+          <ref name='virConnectFindStoragePoolSources'/>
+        </word>
         <word name='task'>
           <ref name='virDomainMemoryPeek'/>
         </word>
@@ -4770,6 +4861,7 @@
           <ref name='virNetworkFree'/>
         </word>
         <word name='those'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virSetErrorFunc'/>
         </word>
         <word name='threads'>
@@ -4805,12 +4897,14 @@
         </word>
         <word name='type'>
           <ref name='_virSchedParameter'/>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virDomainGetOSType'/>
           <ref name='virDomainGetSchedulerType'/>
           <ref name='virGetVersion'/>
         </word>
         <word name='types'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainMigrate'/>
         </word>
         <word name='typically'>
@@ -4860,6 +4954,7 @@
           <ref name='virStoragePoolDefineXML'/>
         </word>
         <word name='unused'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainCoreDump'/>
           <ref name='virStoragePoolRefresh'/>
@@ -5192,6 +5287,7 @@
           <ref name='virStoragePoolCreateXML'/>
         </word>
         <word name='where'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSetMaxMemory'/>
@@ -5286,6 +5382,7 @@
           <ref name='virDomainMemoryPeek'/>
         </word>
         <word name='would'>
+          <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainMemoryPeek'/>
         </word>
@@ -5309,6 +5406,9 @@
       <letter name='x'>
         <word name='xen'>
           <ref name='virConnectOpen'/>
+        </word>
+        <word name='xml'>
+          <ref name='virConnectFindStoragePoolSources'/>
         </word>
         <word name='xvda'>
           <ref name='virDomainBlockStats'/>

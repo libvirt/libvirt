@@ -1,3 +1,9 @@
+Mon Sep  8 16:28:30 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in libvirt.spec.in docs/*: preparing release of
+	  libvirt-0.4.5
+	* po/*: rebuilt and updated de.po
+
 Mon Sep  8 14:42:23 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/network_conf.c src/network_conf.h src/qemu_driver.c: add

@@ -184,6 +184,7 @@
      <exports symbol='virConnectListDefinedDomains' type='function'/>
      <exports symbol='virConnectGetCapabilities' type='function'/>
      <exports symbol='virDomainLookupByName' type='function'/>
+     <exports symbol='virConnectFindStoragePoolSources' type='function'/>
      <exports symbol='virDomainPinVcpu' type='function'/>
      <exports symbol='virDomainRestore' type='function'/>
      <exports symbol='virStorageVolGetPath' type='function'/>
@@ -685,6 +686,14 @@ see note above'/>
       <info>This function closes the connection to the Hypervisor. This should not be called if further interaction with the Hypervisor are needed especially if there is running domain which need further monitoring by the application.</info>
       <return type='int' info='0 in case of success or -1 in case of error.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+    </function>
+    <function name='virConnectFindStoragePoolSources' file='libvirt' module='libvirt'>
+      <info>Talks to a storage backend and attempts to auto-discover the set of available storage pool sources. e.g. For iSCSI this would be a set of iSCSI targets. For NFS this would be a list of exported paths.  The srcSpec (optional for some storage pool types, e.g. local ones) is an instance of the storage pool&apos;s source element specifying where to look for the pools.  srcSpec is not required for some types (e.g., those querying local storage resources only)</info>
+      <return type='char *' info='an xml document consisting of a SourceList element containing a source document appropriate to the given pool type for each discovered source.'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
+      <arg name='type' type='const char *' info='type of storage pool sources to discover'/>
+      <arg name='srcSpec' type='const char *' info='XML document specifying discovery source'/>
+      <arg name='flags' type='unsigned int' info='flags for discovery (unused, pass 0)'/>
     </function>
     <function name='virConnectGetCapabilities' file='libvirt' module='libvirt'>
       <info>Provides capabilities of the hypervisor / driver.</info>

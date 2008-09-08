@@ -302,6 +302,13 @@ fi
 %doc docs/examples/python
 
 %changelog
+* Mon Sep  8 2008 Daniel Veillard <veillard@redhat.com> - 0.4.5-1
+- release of 0.4.5
+
+* Wed Jun 25 2008 Daniel Veillard <veillard@redhat.com> - 0.4.4-1
+- release of 0.4.4
+- mostly a few bug fixes from 0.4.3
+
 * Thu Jun 12 2008 Daniel Veillard <veillard@redhat.com> - 0.4.3-1
 - release of 0.4.3
 - lots of bug fixes and small improvements
