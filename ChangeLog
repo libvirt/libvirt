@@ -1,3 +1,7 @@
+Mon Sep  8 13:14:17 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/openvz_driver.c: Fix potential NULL dereference
+
 Mon Sep  8 09:18:17 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/storage_backend_logical.c: finish applying initialization
