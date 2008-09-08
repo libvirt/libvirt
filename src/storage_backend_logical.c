@@ -618,7 +618,8 @@ virStorageBackend virStorageBackendLogical = {
     .deleteVol = virStorageBackendLogicalDeleteVol,
 
     .poolOptions = {
-        .flags = VIR_STORAGE_BACKEND_POOL_SOURCE_NAME,
+        .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_NAME |
+                  VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE),
         .formatFromString = virStorageBackendLogicalPoolFormatFromString,
         .formatToString = virStorageBackendLogicalPoolFormatToString,
     },
