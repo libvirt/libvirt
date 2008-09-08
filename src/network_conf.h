@@ -57,6 +57,7 @@ struct _virNetworkDef {
     char *name;
 
     char *bridge;       /* Name of bridge device */
+    char *domain;
     unsigned long delay;   /* Bridge forward delay (ms) */
     int stp : 1; /* Spanning tree protocol */
 

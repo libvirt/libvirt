@@ -1113,6 +1113,7 @@ qemudBuildDnsmasqArgv(virConnectPtr conn,
         1 + /* --keep-in-foreground */
         1 + /* --strict-order */
         1 + /* --bind-interfaces */
+        (network->def->domain?2:0) + /* --domain name */
         2 + /* --pid-file "" */
         2 + /* --conf-file "" */
         /*2 + *//* --interface virbr0 */
@@ -1143,6 +1144,11 @@ qemudBuildDnsmasqArgv(virConnectPtr conn,
      */
     APPEND_ARG(*argv, i++, "--strict-order");
     APPEND_ARG(*argv, i++, "--bind-interfaces");
+
+    if (network->def->domain) {
+       APPEND_ARG(*argv, i++, "--domain");
+       APPEND_ARG(*argv, i++, network->def->domain);
+    }
 
     APPEND_ARG(*argv, i++, "--pid-file");
     APPEND_ARG(*argv, i++, "");

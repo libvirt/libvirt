@@ -1,3 +1,11 @@
+Mon Sep  8 14:42:23 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/network_conf.c src/network_conf.h src/qemu_driver.c: add
+	  support for a domain name in network configurations, patch by
+	  JJ Reynolds with bugfix raised by Dan
+	* src/openvz_conf.c: fix to small bug in openvzReadConfigParam
+	  by Evgeniy Sokolov
+
 Mon Sep  8 13:14:17 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/openvz_driver.c: Fix potential NULL dereference

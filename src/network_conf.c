@@ -109,6 +109,7 @@ void virNetworkDefFree(virNetworkDefPtr def)
     VIR_FREE(def->ipAddress);
     VIR_FREE(def->network);
     VIR_FREE(def->netmask);
+    VIR_FREE(def->domain);
 
     for (i = 0 ; i < def->nranges && def->ranges ; i++) {
         VIR_FREE(def->ranges[i].start);
@@ -325,6 +326,9 @@ virNetworkDefParseXML(virConnectPtr conn,
         }
         VIR_FREE(tmp);
     }
+
+    /* Parse network domain information */
+    def->domain = virXPathString(conn, "string(./domain[1]/@name)", ctxt);
 
     /* Parse bridge information */
     def->bridge = virXPathString(conn, "string(./bridge[1]/@name)", ctxt);

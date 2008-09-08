@@ -298,10 +298,13 @@ openvzReadConfigParam(int vpsid ,const char * param, char *value, int maxlen)
         if (STREQLEN(line, param, strlen(param))) {
             sf = line;
             sf += strlen(param);
-            if (sf[0] == '=' && (token = strtok_r(sf,"\"\t=\n", &saveptr)) != NULL) {
-                strncpy(value, token, maxlen) ;
-                value[maxlen-1] = '\0';
-                found = 1;
+            if (sf[0] == '=' && sf[1] != '\0' ) {
+                sf ++;
+                if ((token = strtok_r(sf,"\"\t\n", &saveptr)) != NULL) {
+                    strncpy(value, token, maxlen) ;
+                    value[maxlen-1] = '\0';
+                    found = 1;
+                }
             }
        }
     }
