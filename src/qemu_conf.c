@@ -790,7 +790,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if (!emulator)
         return -1;
 
-    ADD_ARG_LIT(vm->def->emulator);
+    ADD_ARG_LIT(emulator);
     ADD_ARG_LIT("-S");
     ADD_ARG_LIT("-M");
     ADD_ARG_LIT(vm->def->os.machine);

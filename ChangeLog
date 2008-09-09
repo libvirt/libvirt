@@ -1,3 +1,8 @@
+Tue Sep  9 09:42:00 EST 2008 Cole Robinson <crobinso@redhat.com>
+
+	* src/qemu_conf.c : fix a segfault if no qemu emulator is passed
+	  when defining a domain.
+
 Mon Sep  8 16:28:30 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in libvirt.spec.in docs/*: preparing release of
