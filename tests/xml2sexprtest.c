@@ -111,6 +111,7 @@ mymain(int argc, char **argv)
     DO_TEST("fv-vncunused", "fv-vncunused", "fvtest", 2);
     DO_TEST("pv-vfb-orig", "pv-vfb-orig", "pvtest", 2);
     DO_TEST("pv-vfb-new", "pv-vfb-new", "pvtest", 3);
+    DO_TEST("pv-vfb-new-auto", "pv-vfb-new-auto", "pvtest", 3);
     DO_TEST("pv-bootloader", "pv-bootloader", "pvtest", 1);
 
     DO_TEST("disk-file", "disk-file", "pvtest", 2);

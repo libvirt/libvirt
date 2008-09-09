@@ -2121,13 +2121,22 @@ xenDaemonParseSxprGraphicsNew(virConnectPtr conn,
                     goto no_memory;
             } else {
                 int port = xenStoreDomainGetVNCPort(conn, def->id);
+                if (port == -1) {
+                    // Didn't find port entry in xenstore
+                    port = sexpr_int(node, "device/vfb/vncdisplay");
+                }
                 const char *listenAddr = sexpr_node(node, "device/vfb/vnclisten");
                 const char *vncPasswd = sexpr_node(node, "device/vfb/vncpasswd");;
                 const char *keymap = sexpr_node(node, "device/vfb/keymap");
                 const char *unused = sexpr_node(node, "device/vfb/vncunused");
 
-                if ((unused && STREQ(unused, "1")) || port == -1)
+                if ((unused && STREQ(unused, "1")) || port == -1) {
                     graphics->data.vnc.autoport = 1;
+                    port = -1;
+                }
+
+                if (port >= 0 && port < 5900)
+                    port += 5900;
                 graphics->data.vnc.port = port;
 
                 if (listenAddr &&

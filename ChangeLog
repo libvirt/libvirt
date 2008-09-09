@@ -1,3 +1,16 @@
+Tue Sep  9 09:50:00 EST 2008 Cole Robinson <crobinso@redhat.com>
+
+	* src/xend_internal.c: fix reading vncdisplay from xend domain
+	* tests/sexpr2xmldata/sexpr2xml-pv-vfb-new-vncdisplay.sexpr
+	  tests/sexpr2xmldata/sexpr2xml-pv-vfb-new-vncdisplay.xml,
+	  tests/xmconfigdata/test-paravirt-new-pvfb-vncdisplay.cfg,
+	  tests/xmconfigdata/test-paravirt-new-pvfb-vncdisplay.xml,
+	  tests/xmconfigdata/test-paravirt-old-pvfb-vncdisplay.cfg,
+	  tests/xmconfigdata/test-paravirt-old-pvfb-vncdisplay.xml,
+	  tests/xml2sexprdata/xml2sexpr-pv-vfb-new-auto.sexpr,
+	  tests/xml2sexprdata/xml2sexpr-pv-vfb-new-auto.xml:
+	  Add tests for various xen vnc cases.
+
 Tue Sep  9 09:42:00 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* src/qemu_conf.c : fix a segfault if no qemu emulator is passed
