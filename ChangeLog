@@ -1,3 +1,7 @@
+Tue Sep 16 12:43:00 EST 2008 Cole Robinson <crobinso@redhat.com>
+
+	* src/storack_backend_disk.c: Implement disk volume delete
+
 Tue Sep  9 09:50:00 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* src/xend_internal.c: fix reading vncdisplay from xend domain

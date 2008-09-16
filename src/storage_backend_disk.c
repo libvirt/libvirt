@@ -22,11 +22,15 @@
  */
 
 #include <config.h>
+#include <string.h>
 
 #include "internal.h"
 #include "storage_backend_disk.h"
 #include "util.h"
 #include "memory.h"
+
+#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
+#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
 
 enum {
     VIR_STORAGE_POOL_DISK_DOS = 0,
@@ -419,13 +423,6 @@ virStorageBackendDiskBuildPool(virConnectPtr conn,
     return 0;
 }
 
-
-static int
-virStorageBackendDiskDeleteVol(virConnectPtr conn,
-                               virStoragePoolObjPtr pool,
-                               virStorageVolDefPtr vol,
-                               unsigned int flags);
-
 static int
 virStorageBackendDiskCreateVol(virConnectPtr conn,
                                virStoragePoolObjPtr pool,
@@ -489,14 +486,61 @@ virStorageBackendDiskCreateVol(virConnectPtr conn,
 
 static int
 virStorageBackendDiskDeleteVol(virConnectPtr conn,
-                               virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
-                               virStorageVolDefPtr vol ATTRIBUTE_UNUSED,
+                               virStoragePoolObjPtr pool,
+                               virStorageVolDefPtr vol,
                                unsigned int flags ATTRIBUTE_UNUSED)
 {
-    /* delete a partition */
-    virStorageReportError(conn, VIR_ERR_NO_SUPPORT,
-                          _("Disk pools are not yet supported"));
-    return -1;
+    char *part_num = NULL;
+    int n;
+    char devpath[PATH_MAX];
+    char *devname, *srcname;
+
+    if ((n = readlink(vol->target.path, devpath, sizeof(devpath))) < 0 &&
+        errno != EINVAL) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Couldn't read volume target path '%s'. %s"),
+                              vol->target.path, strerror(errno));
+        return -1;
+    } else if (n <= 0) {
+        strncpy(devpath, vol->target.path, PATH_MAX);
+    } else {
+        devpath[n] = '\0';
+    }
+
+    devname = basename(devpath);
+    srcname = basename(pool->def->source.devices[0].path);
+    DEBUG("devname=%s, srcname=%s", devname, srcname);
+
+    if (!STRPREFIX(devname, srcname)) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Volume path '%s' did not start with parent "
+                                "pool source device name."), devname);
+        return -1;
+    }
+
+    part_num = devname + strlen(srcname);
+
+    if (!part_num) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("cannot parse partition number from target "
+                                "'%s'"), devname);
+        return -1;
+    }
+
+    /* eg parted /dev/sda rm 2 */
+    const char *prog[] = {
+        PARTED,
+        pool->def->source.devices[0].path,
+        "rm",
+        "--script",
+        part_num,
+        NULL,
+    };
+
+    if (virRun(conn, prog, NULL) < 0)
+        return -1;
+
+    return 0;
 }
 
 
