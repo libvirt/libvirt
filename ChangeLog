@@ -1,3 +1,7 @@
+Wed Sep 17 15:08:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/conf.c: Improved error messages in XM conf module.
+
 Wed Sep 17 15:03:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	* libvirt.spec.in: Specfile enhancements for minimal

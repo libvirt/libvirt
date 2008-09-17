@@ -79,25 +79,34 @@ struct _virConf {
 
 /**
  * virConfError:
- * @conf: the configuration if available
+ * @ctxt: the parser context if available or NULL
  * @error: the error number
  * @info: extra information string
- * @line: line for the error
  *
  * Handle an error at the xend daemon interface
  */
 static void
-virConfError(virConfPtr conf ATTRIBUTE_UNUSED,
-             virErrorNumber error, const char *info, int line)
+virConfError(virConfParserCtxtPtr ctxt,
+             virErrorNumber error, const char *info)
 {
-    const char *errmsg;
+    const char *format;
 
     if (error == VIR_ERR_OK)
         return;
 
-    errmsg = __virErrorMsg(error, info);
-    __virRaiseError(NULL, NULL, NULL, VIR_FROM_CONF, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, line, 0, errmsg, info, line);
+    /* Construct the string 'filename:line: info' if we have that. */
+    if (ctxt && ctxt->filename) {
+        __virRaiseError(NULL, NULL, NULL, VIR_FROM_CONF, error, VIR_ERR_ERROR,
+                        info, ctxt->filename, NULL,
+                        ctxt->line, 0,
+                        "%s:%d: %s", ctxt->filename, ctxt->line, info);
+    } else {
+        format = __virErrorMsg(error, info);
+        __virRaiseError(NULL, NULL, NULL, VIR_FROM_CONF, error, VIR_ERR_ERROR,
+                        info, NULL, NULL,
+                        ctxt ? ctxt->line : 0, 0,
+                        format, info);
+    }
 }
 
 
@@ -152,7 +161,7 @@ __virConfNew(void)
     virConfPtr ret;
 
     if (VIR_ALLOC(ret) < 0) {
-        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"), 0);
+        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"));
         return(NULL);
     }
     ret->filename = NULL;
@@ -200,7 +209,7 @@ virConfAddEntry(virConfPtr conf, char *name, virConfValuePtr value, char *comm)
         return(NULL);
 
     if (VIR_ALLOC(ret) < 0) {
-        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"), 0);
+        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"));
         return(NULL);
     }
 
@@ -335,8 +344,7 @@ virConfParseLong(virConfParserCtxtPtr ctxt, long *val)
         NEXT;
     }
     if ((ctxt->cur >= ctxt->end) || (!c_isdigit(CUR))) {
-        virConfError(NULL, VIR_ERR_CONF_SYNTAX, _("unterminated number"),
-                     ctxt->line);
+        virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("unterminated number"));
         return(-1);
     }
     while ((ctxt->cur < ctxt->end) && (c_isdigit(CUR))) {
@@ -369,8 +377,7 @@ virConfParseString(virConfParserCtxtPtr ctxt)
         while ((ctxt->cur < ctxt->end) && (CUR != '\'') && (!IS_EOL(CUR)))
             NEXT;
         if (CUR != '\'') {
-            virConfError(NULL, VIR_ERR_CONF_SYNTAX, _("unterminated string"),
-                         ctxt->line);
+            virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("unterminated string"));
             return(NULL);
         }
         ret = strndup(base, ctxt->cur - base);
@@ -386,8 +393,7 @@ virConfParseString(virConfParserCtxtPtr ctxt)
         }
         if ((ctxt->cur[0] != '"') || (ctxt->cur[1] != '"') ||
             (ctxt->cur[2] != '"')) {
-            virConfError(NULL, VIR_ERR_CONF_SYNTAX, _("unterminated string"),
-                         ctxt->line);
+            virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("unterminated string"));
             return(NULL);
         }
         ret = strndup(base, ctxt->cur - base);
@@ -398,8 +404,7 @@ virConfParseString(virConfParserCtxtPtr ctxt)
         while ((ctxt->cur < ctxt->end) && (CUR != '"') && (!IS_EOL(CUR)))
             NEXT;
         if (CUR != '"') {
-            virConfError(NULL, VIR_ERR_CONF_SYNTAX, _("unterminated string"),
-                         ctxt->line);
+            virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("unterminated string"));
             return(NULL);
         }
         ret = strndup(base, ctxt->cur - base);
@@ -426,8 +431,7 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
 
     SKIP_BLANKS;
     if (ctxt->cur >= ctxt->end) {
-        virConfError(NULL, VIR_ERR_CONF_SYNTAX, _("expecting a value"),
-                     ctxt->line);
+        virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("expecting a value"));
         return(NULL);
     }
     if ((CUR == '"') || (CUR == '\'')) {
@@ -446,8 +450,8 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
         }
         while ((ctxt->cur < ctxt->end) && (CUR != ']')) {
             if (CUR != ',') {
-                virConfError(NULL, VIR_ERR_CONF_SYNTAX,
-                             _("expecting a separator in list"), ctxt->line);
+                virConfError(ctxt, VIR_ERR_CONF_SYNTAX,
+                             _("expecting a separator in list"));
                 virConfFreeList(lst);
                 return(NULL);
             }
@@ -469,8 +473,8 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
         if (CUR == ']') {
             NEXT;
         } else {
-            virConfError(NULL, VIR_ERR_CONF_SYNTAX,
-                         _("list is not closed with ]"), ctxt->line);
+            virConfError(ctxt, VIR_ERR_CONF_SYNTAX,
+                         _("list is not closed with ]"));
             virConfFreeList(lst);
             return(NULL);
         }
@@ -480,12 +484,11 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
         }
         type = VIR_CONF_LONG;
     } else {
-        virConfError(NULL, VIR_ERR_CONF_SYNTAX, _("expecting a value"),
-                     ctxt->line);
+        virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("expecting a value"));
         return(NULL);
     }
     if (VIR_ALLOC(ret) < 0) {
-        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"), 0);
+        virConfError(ctxt, VIR_ERR_NO_MEMORY, _("allocating configuration"));
         virConfFreeList(lst);
         VIR_FREE(str);
         return(NULL);
@@ -515,15 +518,14 @@ virConfParseName(virConfParserCtxtPtr ctxt)
     base = ctxt->cur;
     /* TODO: probably need encoding support and UTF-8 parsing ! */
     if (!c_isalpha(CUR)) {
-        virConfError(NULL, VIR_ERR_CONF_SYNTAX, _("expecting a name"), ctxt->line);
+        virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("expecting a name"));
         return(NULL);
     }
     while ((ctxt->cur < ctxt->end) && (c_isalnum(CUR) || (CUR == '_')))
         NEXT;
     ret = strndup(base, ctxt->cur - base);
     if (ret == NULL) {
-        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"),
-                     ctxt->line);
+        virConfError(ctxt, VIR_ERR_NO_MEMORY, _("allocating configuration"));
         return(NULL);
     }
     return(ret);
@@ -550,8 +552,7 @@ virConfParseComment(virConfParserCtxtPtr ctxt)
     while ((ctxt->cur < ctxt->end) && (!IS_EOL(CUR))) NEXT;
     comm = strndup(base, ctxt->cur - base);
     if (comm == NULL) {
-        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"),
-                     ctxt->line);
+        virConfError(ctxt, VIR_ERR_NO_MEMORY, _("allocating configuration"));
         return(-1);
     }
     virConfAddEntry(ctxt->conf, NULL, NULL, comm);
@@ -578,8 +579,7 @@ virConfParseSeparator(virConfParserCtxtPtr ctxt)
         NEXT;
         SKIP_BLANKS_AND_EOL;
     } else {
-        virConfError(NULL, VIR_ERR_CONF_SYNTAX, _("expecting a separator"),
-                     ctxt->line);
+        virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("expecting a separator"));
         return(-1);
     }
     return(0);
@@ -610,8 +610,7 @@ virConfParseStatement(virConfParserCtxtPtr ctxt)
         return(-1);
     SKIP_BLANKS;
     if (CUR != '=') {
-        virConfError(NULL, VIR_ERR_CONF_SYNTAX, _("expecting an assignment"),
-                     ctxt->line);
+        virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("expecting an assignment"));
         return(-1);
     }
     NEXT;
@@ -628,8 +627,7 @@ virConfParseStatement(virConfParserCtxtPtr ctxt)
         while ((ctxt->cur < ctxt->end) && (!IS_EOL(CUR))) NEXT;
         comm = strndup(base, ctxt->cur - base);
         if (comm == NULL) {
-            virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"),
-                         ctxt->line);
+            virConfError(ctxt, VIR_ERR_NO_MEMORY, _("allocating configuration"));
             VIR_FREE(name);
             virConfFreeValue(value);
             return(-1);
@@ -709,12 +707,12 @@ __virConfReadFile(const char *filename)
     virConfPtr conf;
 
     if (filename == NULL) {
-        virConfError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__, 0);
+        virConfError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
 
     if ((len = virFileReadAll(filename, MAX_CONFIG_FILE_SIZE, &content)) < 0) {
-        virConfError(NULL, VIR_ERR_OPEN_FAILED, filename, 0);
+        virConfError(NULL, VIR_ERR_OPEN_FAILED, filename);
         return NULL;
     }
 
@@ -740,7 +738,7 @@ virConfPtr
 __virConfReadMem(const char *memory, int len)
 {
     if ((memory == NULL) || (len < 0)) {
-        virConfError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__, 0);
+        virConfError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
     if (len == 0)
@@ -762,7 +760,7 @@ __virConfFree(virConfPtr conf)
 {
     virConfEntryPtr tmp;
     if (conf == NULL) {
-        virConfError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__, 0);
+        virConfError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
 
@@ -891,14 +889,14 @@ __virConfWriteFile(const char *filename, virConfPtr conf)
     }
 
     if (virBufferError(&buf)) {
-        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
+        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocate buffer"));
         return -1;
     }
 
     fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR );
     if (fd < 0) {
         char *tmp = virBufferContentAndReset(&buf);
-        virConfError(NULL, VIR_ERR_WRITE_FAILED, _("failed to open file"), 0);
+        virConfError(NULL, VIR_ERR_WRITE_FAILED, _("failed to open file"));
         VIR_FREE(tmp);
         return -1;
     }
@@ -909,7 +907,7 @@ __virConfWriteFile(const char *filename, virConfPtr conf)
     VIR_FREE(content);
     close(fd);
     if (ret != (int)use) {
-        virConfError(NULL, VIR_ERR_WRITE_FAILED, _("failed to save content"), 0);
+        virConfError(NULL, VIR_ERR_WRITE_FAILED, _("failed to save content"));
         return -1;
     }
 
@@ -947,7 +945,7 @@ __virConfWriteMem(char *memory, int *len, virConfPtr conf)
     }
 
     if (virBufferError(&buf)) {
-        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
+        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocate buffer"));
         return -1;
     }
 
