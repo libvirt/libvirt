@@ -1231,7 +1231,7 @@ virDomainGetConnect (virDomainPtr dom)
  * virDomainCreateLinux:
  * @conn: pointer to the hypervisor connection
  * @xmlDesc: string containing an XML description of the domain
- * @flags: an optional set of virDomainFlags
+ * @flags: callers should always pass 0
  *
  * Launch a new Linux guest domain, based on an XML description similar
  * to the one returned by virDomainGetXMLDesc()

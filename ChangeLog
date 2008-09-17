@@ -1,3 +1,9 @@
+Wed Sep 17 15:10:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	* include/libvirt/libvirt.h.in, src/libvirt.c: Fix comments
+	  which incorrectly referred to non-existent 'virDomainFlags'
+	  type (Anton Protopopov).
+
 Wed Sep 17 15:08:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/conf.c: Improved error messages in XM conf module.
