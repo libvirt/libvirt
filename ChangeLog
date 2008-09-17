@@ -1,5 +1,10 @@
 Wed Sep 17 15:03:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
+	* libvirt.spec.in: Specfile enhancements for minimal
+	  "client only" build (Ben Guthro).
+
+Wed Sep 17 15:03:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
 	* configure.in, src/qemu_driver.h, src/qemu_driver.c: KVM
 	  can determine max VCPUs at runtime (Guido Günther).
 
