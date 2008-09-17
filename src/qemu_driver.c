@@ -42,6 +42,7 @@
 #include <pwd.h>
 #include <stdio.h>
 #include <sys/wait.h>
+#include <sys/ioctl.h>
 
 #if HAVE_NUMACTL
 #include <numa.h>
@@ -1804,6 +1805,27 @@ static const char *qemudGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
     return "QEMU";
 }
 
+
+static int kvmGetMaxVCPUs(void) {
+    int maxvcpus = 1;
+
+    int r, fd;
+    
+    fd = open(KVM_DEVICE, O_RDONLY);
+    if (fd < 0) {
+        qemudLog(QEMUD_WARN, _("Unable to open " KVM_DEVICE ": %s\n"), strerror(errno));
+        return maxvcpus;
+    }
+
+    r = ioctl(fd, KVM_CHECK_EXTENSION, KVM_CAP_NR_VCPUS);
+    if (r > 0)
+        maxvcpus = r;
+
+    close(fd);
+    return maxvcpus;
+}
+
+
 static int qemudGetMaxVCPUs(virConnectPtr conn, const char *type) {
     if (!type)
         return 16;
@@ -1814,7 +1836,7 @@ static int qemudGetMaxVCPUs(virConnectPtr conn, const char *type) {
     /* XXX future KVM will support SMP. Need to probe
        kernel to figure out KVM module version i guess */
     if (STRCASEEQ(type, "kvm"))
-        return 1;
+        return kvmGetMaxVCPUs();
 
     if (STRCASEEQ(type, "kqemu"))
         return 1;

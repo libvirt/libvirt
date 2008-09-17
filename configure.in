@@ -316,6 +316,11 @@ if test "$with_qemu" = "yes" -o "$with_lxc" = "yes" ; then
                    AC_MSG_ERROR([You must install kernel-headers in order to compile libvirt]))
 fi
 
+dnl
+dnl check for kvm headers
+dnl 
+AC_CHECK_HEADERS([linux/kvm.h])
+
 dnl Need to test if pkg-config exists
 PKG_PROG_PKG_CONFIG
 

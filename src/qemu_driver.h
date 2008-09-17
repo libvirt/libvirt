@@ -29,6 +29,24 @@
 
 #include "internal.h"
 
+#if HAVE_LINUX_KVM_H
+#include <linux/kvm.h>
+#endif
+
+/* device for kvm ioctls */
+#define KVM_DEVICE "/dev/kvm"
+
+/* add definitions missing in older linux/kvm.h */
+#ifndef KVMIO
+#  define KVMIO 0xAE
+#endif
+#ifndef KVM_CHECK_EXTENSION
+#  define KVM_CHECK_EXTENSION       _IO(KVMIO,   0x03)
+#endif
+#ifndef KVM_CAP_NR_VCPUS
+#  define KVM_CAP_NR_VCPUS 9       /* returns max vcpus per vm */
+#endif
+
 int qemudRegister(void);
 
 #endif /* QEMUD_DRIVER_H */
