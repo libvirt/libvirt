@@ -1,3 +1,7 @@
+Wed Sep 17 15:18:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/qemu_driver.c: Remove some deadcode (Nguyen Anh Quynh).
+
 Wed Sep 17 15:14:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/virsh.c: Change name of "blocked" state to "idle" (John Levon).

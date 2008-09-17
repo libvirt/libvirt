@@ -1029,8 +1029,6 @@ static int qemudVMData(struct qemud_driver *driver ATTRIBUTE_UNUSED,
                      strerror(errno));
         }
     }
-
-    qemudAutostartConfigs(qemu_driver);
 }
 
 
