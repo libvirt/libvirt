@@ -436,9 +436,10 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
 
     vm = virDomainFindByName(driver->domains, vmdef->name);
     if (vm) {
-        virDomainDefFree(vmdef);
-        openvzLog(OPENVZ_ERR, _("Already an OPENVZ VM active with the id '%s'"),
+        openvzError(conn, VIR_ERR_OPERATION_FAILED,
+                  _("Already an OPENVZ VM active with the id '%s'"),
                   vmdef->name);
+        virDomainDefFree(vmdef);
         return NULL;
     }
     if (!(vm = virDomainAssignDef(conn, &driver->domains, vmdef))) {
@@ -512,10 +513,10 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
 
     vm = virDomainFindByName(driver->domains, vmdef->name);
     if (vm) {
+        openvzError(conn, VIR_ERR_OPERATION_FAILED,
+                  _("Already an OPENVZ VM defined with the id '%s'"),
+                  vmdef->name);
         virDomainDefFree(vmdef);
-        openvzLog(OPENVZ_ERR,
-                  _("Already an OPENVZ VM defined with the id '%d'"),
-                strtoI(vmdef->name));
         return NULL;
     }
     if (!(vm = virDomainAssignDef(conn, &driver->domains, vmdef))) {

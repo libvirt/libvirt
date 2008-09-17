@@ -1,3 +1,8 @@
+Wed Sep 17 17:02:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/openvz_driver.c: Fix segfault in OpenVZ driver
+	  (Evgeniy Sokolov).
+
 Wed Sep 17 16:38:00 BST 2008 Daniel P berrange <berrange@redhat.com>
 
 	* tests/xmconfigdata/test-paravirt-new-pvfb-vncdisplay.xml,
