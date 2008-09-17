@@ -13,7 +13,6 @@
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
   <devices>
-    <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
     <disk type='block' device='disk'>
       <driver name='phy'/>
       <source dev='/dev/HostVG/XenGuest1'/>

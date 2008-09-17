@@ -1,3 +1,10 @@
+Wed Sep 17 16:38:00 BST 2008 Daniel P berrange <berrange@redhat.com>
+
+	* tests/xmconfigdata/test-paravirt-new-pvfb-vncdisplay.xml,
+	 tests/xmconfigdata/test-paravirt-old-pvfb-vncdisplay.xml,
+	 tests/xml2sexprdata/xml2sexpr-pv-vfb-new-auto.sexpr: Remove
+	redundant emulator tags which broke test cases.
+
 Wed Sep 17 15:26:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/storage_backend_disk.c: Missing include file.
