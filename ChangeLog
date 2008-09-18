@@ -1,3 +1,8 @@
+Thu Sep 18 11:19:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* libvirt.spec.in: Remove commands which were deleting
+	development files mistakenly
+
 Thu Sep 18 09:55:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Documentation cleanups.

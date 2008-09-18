@@ -241,13 +241,6 @@ sed -i -e "/<uuid>/d" $RPM_BUILD_ROOT%{_datadir}/libvirt/networks/default.xml
 %endif
 %find_lang %{name}
 
-# If we are not building with certain options, we need to remove files
-# so that we don't get Installed (but unpackaged) errors
-rm -rf $RPM_BUILD_ROOT%{_datadir}/gtk-doc/html/libvirt
-rm -rf $RPM_BUILD_ROOT%{_includedir}/libvirt
-rm -rf $RPM_BUILD_ROOT%{_libdir}/lib*.so
-rm -rf $RPM_BUILD_ROOT%{_libdir}/pkgconfig/libvirt.pc
-
 %if ! %{with_python}
 rm -rf $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-python-%{version}
 %endif
