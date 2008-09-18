@@ -318,7 +318,7 @@ fi
 
 dnl
 dnl check for kvm headers
-dnl 
+dnl
 AC_CHECK_HEADERS([linux/kvm.h])
 
 dnl Need to test if pkg-config exists

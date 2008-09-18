@@ -1808,10 +1808,10 @@ static int kvmGetMaxVCPUs(void) {
     int maxvcpus = 1;
 
     int r, fd;
-    
+
     fd = open(KVM_DEVICE, O_RDONLY);
     if (fd < 0) {
-        qemudLog(QEMUD_WARN, _("Unable to open " KVM_DEVICE ": %s\n"), strerror(errno));
+        qemudLog(QEMUD_WARN, _("Unable to open %s: %s\n"), KVM_DEVICE, strerror(errno));
         return maxvcpus;
     }
 
