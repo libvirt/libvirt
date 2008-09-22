@@ -151,6 +151,146 @@ char *openvzMacToString(const unsigned char *mac)
     return strdup(str);
 }
 
+/*parse MAC from view: 00:18:51:8F:D9:F3
+  return -1 - error
+          0 - OK
+*/
+static int openvzParseMac(const char *macaddr, unsigned char *mac)
+{
+    int ret;
+    ret = sscanf((const char *)macaddr, "%02X:%02X:%02X:%02X:%02X:%02X",
+               (unsigned int*)&mac[0],
+               (unsigned int*)&mac[1],
+               (unsigned int*)&mac[2],
+               (unsigned int*)&mac[3],
+               (unsigned int*)&mac[4],
+               (unsigned int*)&mac[5]) ;
+    if (ret == 6)
+        return 0;
+
+    return -1;
+}
+
+static virDomainNetDefPtr
+openvzReadNetworkConf(virConnectPtr conn, int veid) {
+    int ret;
+    virDomainNetDefPtr net = NULL;
+    virDomainNetDefPtr new_net;
+    char temp[4096];
+    char *token, *saveptr = NULL;
+
+    /*parse routing network configuration*
+     * Sample from config:
+     *   IP_ADDRESS="1.1.1.1 1.1.1.2"
+     *   splited IPs by space
+     */
+    ret = openvzReadConfigParam(veid, "IP_ADDRESS", temp, sizeof(temp));
+    if (ret < 0) {
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                 _("Cound not read 'IP_ADDRESS' from config for container %d"),
+                  veid);
+        goto error;
+    } else if (ret > 0) {
+        token = strtok_r(temp, " ", &saveptr);
+        while (token != NULL) {
+            new_net = NULL;
+            if (VIR_ALLOC(new_net) < 0)
+                goto no_memory;
+            new_net->next = net;
+            net = new_net;
+
+            net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+            net->data.ethernet.ipaddr = strdup(token);
+
+            if (net->data.ethernet.ipaddr == NULL)
+                goto no_memory;
+
+            token = strtok_r(NULL, " ", &saveptr);
+        }
+    }
+
+    /*parse bridge devices*/
+    /*Sample from config:
+     *NETIF="ifname=eth10,mac=00:18:51:C1:05:EE,host_ifname=veth105.10,host_mac=00:18:51:8F:D9:F3"
+     *devices splited by ';'
+     */
+    ret = openvzReadConfigParam(veid, "NETIF", temp, sizeof(temp));
+    if (ret < 0) {
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                     _("Cound not read 'NETIF' from config for container %d"),
+                     veid);
+        goto error;
+    } else if (ret > 0) {
+        token = strtok_r(temp, ";", &saveptr);
+        while (token != NULL) {
+            /*add new device to list*/
+            new_net = NULL;
+            if (VIR_ALLOC(new_net) < 0)
+                goto no_memory;
+            new_net->next = net;
+            net = new_net;
+
+            net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
+
+            char *p = token, *next = token;
+            char cpy_temp[32];
+            int len;
+
+            /*parse string*/
+            do {
+                while (*next != '\0' && *next != ',') next++;
+                if (STRPREFIX(p, "ifname=")) {
+                    p += 7;
+                    len = next - p;
+                    if (len > 16) {
+                        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                                _("Too long network device name"));
+                        goto error;
+                    }
+
+                    if (VIR_ALLOC_N(net->data.bridge.brname, len+1) < 0)
+                        goto no_memory;
+
+                    strncpy(net->data.bridge.brname, p, len);
+                    net->data.bridge.brname[len] = '\0';
+                } else if (STRPREFIX(p, "host_ifname=")) {
+                    p += 12;
+                    //skip in libvirt
+                } else if (STRPREFIX(p, "mac=")) {
+                    p += 4;
+                    len = next - p;
+                    if (len != 17) { //should be 17
+                        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Wrong length MAC address"));
+                        goto error;
+                    }
+                    strncpy(cpy_temp, p, len);
+                    cpy_temp[len] = '\0';
+                    if (openvzParseMac(cpy_temp, net->mac)<0) {
+                        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Wrong MAC address"));
+                        goto error;
+                    }
+                } else if (STRPREFIX(p, "host_mac=")) {
+                    p += 9;
+                    //skip in libvirt
+                }
+                p = ++next;
+            } while (p < token + strlen(token));
+
+            token = strtok_r(NULL, ";", &saveptr);
+        }
+    }
+
+    return net;
+no_memory:
+    openvzError(conn, VIR_ERR_NO_MEMORY, NULL);
+error:
+    virDomainNetDefFree(net);
+    return NULL;
+}
+
+
 /* Free all memory associated with a openvz_driver structure */
 void
 openvzFreeDriver(struct openvz_driver *driver)
@@ -242,6 +382,8 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         }
 
         /* XXX load rest of VM config data .... */
+
+        dom->def->nets = openvzReadNetworkConf(NULL, veid);
 
         if (prev) {
             prev->next = dom;

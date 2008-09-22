@@ -1,3 +1,8 @@
+Mon Sep 22 17:14:25 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/openvz_conf.c: patch from Evgeniy Sokolov to read
+	  network config in OpenVZ driver.
+
 Thu Sep 18 11:19:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* libvirt.spec.in: Remove commands which were deleting
