@@ -295,7 +295,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
         xmlNodePtr *nodeset = NULL;
         int nsource, i;
 
-        if ((nsource = virXPathNodeSet(conn, "/pool/source/device", ctxt, &nodeset)) <= 0) {
+        if ((nsource = virXPathNodeSet(conn, "/pool/source/device", ctxt, &nodeset)) < 0) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                         "%s", _("cannot extract storage pool source devices"));
             goto cleanup;

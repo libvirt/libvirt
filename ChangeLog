@@ -1,3 +1,8 @@
+Mon Sep 22 21:55:55 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/storage_conf.c: fixes parsing to allow no sources for a pool
+	  fix by Dan and Chris Lalancette
+
 Mon Sep 22 18:00:39 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/remote_internal.c src/storage_driver.c: structure init fixes
