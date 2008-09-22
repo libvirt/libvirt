@@ -294,7 +294,7 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn,
                                         unsigned int flags ATTRIBUTE_UNUSED)
 {
     /*
-     * # sudo vgs --noheadings -o vg_name
+     * # vgs --noheadings -o vg_name
      *   VolGroup00
      *   VolGroup01
      */
@@ -350,7 +350,6 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn,
 
     memset(zeros, 0, sizeof(zeros));
 
-    /* XXX multiple pvs */
     if (VIR_ALLOC_N(vgargv, 3 + pool->def->source.ndevice) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("command line"));
         return -1;
@@ -466,11 +465,11 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn,
     return 0;
 }
 
-
-/* XXX should we set LVM to inactive ? Probably not - it would
- * suck if this were your LVM root fs :-)
+/*
+ * This is actually relatively safe; if you happen to try to "stop" the
+ * pool that your / is on, for instance, you will get failure like:
+ * "Can't deactivate volume group "VolGroup00" with 3 open logical volume(s)"
  */
-#if 0
 static int
 virStorageBackendLogicalStopPool(virConnectPtr conn,
                                  virStoragePoolObjPtr pool)
@@ -480,7 +479,6 @@ virStorageBackendLogicalStopPool(virConnectPtr conn,
 
     return 0;
 }
-#endif
 
 static int
 virStorageBackendLogicalDeletePool(virConnectPtr conn,
@@ -488,15 +486,32 @@ virStorageBackendLogicalDeletePool(virConnectPtr conn,
                                    unsigned int flags ATTRIBUTE_UNUSED)
 {
     const char *cmdargv[] = {
-        VGREMOVE, "-f", pool->def->source.name, NULL
+        VGREMOVE, pool->def->source.name, NULL
     };
+    const char *pvargv[3];
+    int i, error;
 
+    /* first remove the volume group */
     if (virRun(conn, cmdargv, NULL) < 0)
         return -1;
 
-    /* XXX clear the PVs too ? ie pvremove ? probably ought to */
+    /* now remove the pv devices and clear them out */
+    error = 0;
+    pvargv[0] = PVREMOVE;
+    pvargv[2] = NULL;
+    for (i = 0 ; i < pool->def->source.ndevice ; i++) {
+        pvargv[1] = pool->def->source.devices[i].path;
+        if (virRun(conn, pvargv, NULL) < 0) {
+            error = -1;
+            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("cannot remove PV device %s: %s"),
+                                  pool->def->source.devices[i].path,
+                                  strerror(errno));
+            break;
+        }
+    }
 
-    return 0;
+    return error;
 }
 
 
@@ -610,9 +625,7 @@ virStorageBackend virStorageBackendLogical = {
     .startPool = virStorageBackendLogicalStartPool,
     .buildPool = virStorageBackendLogicalBuildPool,
     .refreshPool = virStorageBackendLogicalRefreshPool,
-#if 0
     .stopPool = virStorageBackendLogicalStopPool,
-#endif
     .deletePool = virStorageBackendLogicalDeletePool,
     .createVol = virStorageBackendLogicalCreateVol,
     .deleteVol = virStorageBackendLogicalDeleteVol,

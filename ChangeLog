@@ -1,3 +1,9 @@
+Mon Sep 22 22:18:16 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/storage_backend_logical.c: enable stop pool in logical backend
+	  improve portability when deleting a pool and also call pvremove
+	  patch by Chris Lalancette
+
 Mon Sep 22 21:55:55 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/storage_conf.c: fixes parsing to allow no sources for a pool
