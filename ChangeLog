@@ -1,3 +1,8 @@
+Mon Sep 22 18:00:39 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/remote_internal.c src/storage_driver.c: structure init fixes
+	  by Chris Lalancette
+
 Mon Sep 22 17:14:25 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_conf.c: patch from Evgeniy Sokolov to read
