@@ -2048,6 +2048,7 @@
         </word>
         <word name='always'>
           <ref name='virDomainBlockPeek'/>
+          <ref name='virDomainCreateLinux'/>
         </word>
         <word name='amount'>
           <ref name='virDomainGetMaxMemory'/>
@@ -2371,6 +2372,9 @@
           <ref name='virNetworkGetBridgeName'/>
           <ref name='virNetworkGetXMLDesc'/>
           <ref name='virNodeGetCellsFreeMemory'/>
+        </word>
+        <word name='callers'>
+          <ref name='virDomainCreateLinux'/>
         </word>
         <word name='calling'>
           <ref name='virDomainBlockStats'/>
@@ -3966,7 +3970,6 @@
         </word>
         <word name='optional'>
           <ref name='virConnectFindStoragePoolSources'/>
-          <ref name='virDomainCreateLinux'/>
           <ref name='virDomainMigrate'/>
         </word>
         <word name='options'>
@@ -4052,6 +4055,7 @@
           <ref name='virConnSetErrorFunc'/>
           <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainBlockPeek'/>
+          <ref name='virDomainCreateLinux'/>
           <ref name='virStorageVolCreateXML'/>
           <ref name='virStorageVolGetXMLDesc'/>
         </word>
@@ -4501,7 +4505,6 @@
           <ref name='VIR_USE_CPU'/>
           <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virConnectOpenReadOnly'/>
-          <ref name='virDomainCreateLinux'/>
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainMigrate'/>
@@ -4519,6 +4522,7 @@
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainBlockStats'/>
+          <ref name='virDomainCreateLinux'/>
           <ref name='virDomainFree'/>
           <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainInterfaceStats'/>
@@ -5113,10 +5117,6 @@
         <word name='virDomainDefineXML'>
           <ref name='virDomainCreateLinux'/>
         </word>
-        <word name='virDomainFlags'>
-          <ref name='_virDomainInfo'/>
-          <ref name='virDomainCreateLinux'/>
-        </word>
         <word name='virDomainGetSchedulerType'>
           <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainSetSchedulerParameters'/>
@@ -5159,6 +5159,9 @@
         </word>
         <word name='virDomainSave'>
           <ref name='virDomainRestore'/>
+        </word>
+        <word name='virDomainState'>
+          <ref name='_virDomainInfo'/>
         </word>
         <word name='virDomainUndefine'>
           <ref name='virDomainDefineXML'/>

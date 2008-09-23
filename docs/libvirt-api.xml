@@ -544,7 +544,7 @@
     </struct>
     <typedef name='virDomainCreateFlags' file='libvirt' type='enum'/>
     <struct name='virDomainInfo' file='libvirt' type='struct _virDomainInfo'>
-      <field name='state' type='unsigned char' info=' the running state, one of virDomainFlags'/>
+      <field name='state' type='unsigned char' info=' the running state, one of virDomainState'/>
       <field name='maxMem' type='unsigned long' info=' the maximum memory in KBytes allowed'/>
       <field name='memory' type='unsigned long' info=' the memory in KBytes used by the domain'/>
       <field name='nrVirtCpu' type='unsigned short' info=' the number of virtual CPUs for the domain'/>
@@ -867,7 +867,7 @@ see note above'/>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xmlDesc' type='const char *' info='string containing an XML description of the domain'/>
-      <arg name='flags' type='unsigned int' info='an optional set of virDomainFlags'/>
+      <arg name='flags' type='unsigned int' info='callers should always pass 0'/>
     </function>
     <function name='virDomainDefineXML' file='libvirt' module='libvirt'>
       <info>Define a domain, but does not start it. This definition is persistent, until explicitly undefined with virDomainUndefine().</info>

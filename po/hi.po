@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hi\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-08 14:51+0200\n"
+"POT-Creation-Date: 2008-09-23 22:28+0200\n"
 "PO-Revision-Date: 2007-09-26 15:52+0530\n"
 "Last-Translator: Rajesh Ranjan <rranjan@redhat.com>\n"
 "Language-Team: Hindi <hindi.sf.net>\n"
@@ -799,37 +799,37 @@ msgstr ""
 msgid "storage_vol not found"
 msgstr "संजाल नही मिला"
 
-#: src/conf.c:155 src/conf.c:203 src/conf.c:488 src/conf.c:525 src/conf.c:553
-#: src/conf.c:631
+#: src/conf.c:164 src/conf.c:212 src/conf.c:491 src/conf.c:528 src/conf.c:555
+#: src/conf.c:630
 msgid "allocating configuration"
 msgstr "विन्यास संभाजित कर रहा है"
 
-#: src/conf.c:338
+#: src/conf.c:347
 msgid "unterminated number"
 msgstr "गैर अवरूद्ध संख्या"
 
-#: src/conf.c:372 src/conf.c:389 src/conf.c:401
+#: src/conf.c:380 src/conf.c:396 src/conf.c:407
 msgid "unterminated string"
 msgstr "गैर अवरूद्ध स्ट्रिंग"
 
-#: src/conf.c:429 src/conf.c:483
+#: src/conf.c:434 src/conf.c:487
 msgid "expecting a value"
 msgstr "एक मान प्रत्याशित"
 
-#: src/conf.c:450
+#: src/conf.c:454
 msgid "expecting a separator in list"
 msgstr "एक पृथक्कारक सूची में प्रत्याशित"
 
-#: src/conf.c:473
+#: src/conf.c:477
 #, fuzzy
 msgid "list is not closed with ]"
 msgstr "सूची इसके साथ बंद नहीं ] "
 
-#: src/conf.c:518
+#: src/conf.c:521
 msgid "expecting a name"
 msgstr "एक नाम प्रत्याशित"
 
-#: src/conf.c:581
+#: src/conf.c:582
 msgid "expecting a separator"
 msgstr "एक पृथक्कारक प्रत्याशित"
 
@@ -837,17 +837,17 @@ msgstr "एक पृथक्कारक प्रत्याशित"
 msgid "expecting an assignment"
 msgstr "एक कार्य प्रत्याशित"
 
-#: src/conf.c:894 src/conf.c:950 src/xend_internal.c:584
-#: src/xend_internal.c:2657 src/xm_internal.c:1475 src/xm_internal.c:1482
+#: src/conf.c:892 src/conf.c:948 src/xend_internal.c:584
+#: src/xend_internal.c:2666 src/xm_internal.c:1475 src/xm_internal.c:1482
 #, fuzzy
 msgid "allocate buffer"
 msgstr "नया बफर संभाजित करें"
 
-#: src/conf.c:901
+#: src/conf.c:899
 msgid "failed to open file"
 msgstr "फाइल खोलने में विफल"
 
-#: src/conf.c:912
+#: src/conf.c:910
 msgid "failed to save content"
 msgstr "सामग्री सहेजने में विफल"
 
@@ -1168,7 +1168,7 @@ msgstr "अज्ञात OS प्रकार %s"
 msgid "cannot extract disk devices"
 msgstr "अंतरफलक युक्ति"
 
-#: src/domain_conf.c:1939 src/qemu_driver.c:3133
+#: src/domain_conf.c:1939 src/qemu_driver.c:3153
 #, fuzzy, c-format
 msgid "duplicate disk target '%s'"
 msgstr "लक्ष्य युक्ति प्रकार"
@@ -1268,12 +1268,12 @@ msgstr "अप्रत्याशित mime प्रकार"
 msgid "unexpected char type %d"
 msgstr "अप्रत्याशित mime प्रकार"
 
-#: src/domain_conf.c:2815 src/xend_internal.c:5214
+#: src/domain_conf.c:2815 src/xend_internal.c:5223
 #, fuzzy, c-format
 msgid "unexpected sound model %d"
 msgstr "अप्रत्याशित mime प्रकार"
 
-#: src/domain_conf.c:2835 src/xend_internal.c:5237
+#: src/domain_conf.c:2835 src/xend_internal.c:5246
 #, fuzzy, c-format
 msgid "unexpected input type %d"
 msgstr "अप्रत्याशित mime प्रकार"
@@ -1678,22 +1678,22 @@ msgstr ""
 
 #: src/lxc_driver.c:274 src/lxc_driver.c:309 src/lxc_driver.c:335
 #: src/lxc_driver.c:350 src/openvz_driver.c:238 src/openvz_driver.c:267
-#: src/openvz_driver.c:283 src/openvz_driver.c:310 src/openvz_driver.c:620
-#: src/openvz_driver.c:651 src/openvz_driver.c:672 src/openvz_driver.c:713
-#: src/qemu_driver.c:2192 src/qemu_driver.c:2279 src/qemu_driver.c:2828
-#: src/qemu_driver.c:2883 src/qemu_driver.c:2927 src/qemu_driver.c:3007
-#: src/qemu_driver.c:3123 src/qemu_driver.c:3192 src/qemu_driver.c:3247
-#: src/qemu_driver.c:3291 src/qemu_driver.c:3309 src/qemu_driver.c:3567
+#: src/openvz_driver.c:283 src/openvz_driver.c:310 src/openvz_driver.c:621
+#: src/openvz_driver.c:652 src/openvz_driver.c:673 src/openvz_driver.c:714
+#: src/qemu_driver.c:2212 src/qemu_driver.c:2299 src/qemu_driver.c:2848
+#: src/qemu_driver.c:2903 src/qemu_driver.c:2947 src/qemu_driver.c:3027
+#: src/qemu_driver.c:3143 src/qemu_driver.c:3212 src/qemu_driver.c:3267
+#: src/qemu_driver.c:3311 src/qemu_driver.c:3329 src/qemu_driver.c:3587
 #, fuzzy
 msgid "no domain with matching uuid"
 msgstr "डोमेन id या uuid"
 
-#: src/lxc_driver.c:280 src/openvz_driver.c:625 src/qemu_driver.c:2933
+#: src/lxc_driver.c:280 src/openvz_driver.c:626 src/qemu_driver.c:2953
 #, fuzzy
 msgid "cannot delete active domain"
 msgstr "एक निष्क्रिय डोमेन का नाम"
 
-#: src/lxc_driver.c:286 src/qemu_driver.c:2939
+#: src/lxc_driver.c:286 src/qemu_driver.c:2959
 #, fuzzy
 msgid "cannot undefine transient domain"
 msgstr "एक निष्क्रिय डोमेन का नाम"
@@ -1758,7 +1758,7 @@ msgstr "'%s' खोलने में विफल: %s"
 msgid "container '%s' unexpectedly shutdown during startup"
 msgstr ""
 
-#: src/lxc_driver.c:747 src/qemu_driver.c:892
+#: src/lxc_driver.c:747 src/qemu_driver.c:893
 #, fuzzy, c-format
 msgid "cannot create log directory %s: %s"
 msgstr "विन्यास फाइल लिखने में विफल: %s"
@@ -1817,7 +1817,7 @@ msgstr ""
 msgid "unknown forwarding type '%s'"
 msgstr "अज्ञात OS प्रकार %s"
 
-#: src/network_conf.c:662 src/qemu_driver.c:3334 src/qemu_driver.c:3967
+#: src/network_conf.c:662 src/qemu_driver.c:3354 src/qemu_driver.c:3987
 #: src/storage_driver.c:816
 #, c-format
 msgid "cannot create autostart directory %s: %s"
@@ -1833,22 +1833,47 @@ msgstr ""
 msgid "no config file for %s"
 msgstr "फाइल वाक्य रचना त्रुटि विन्यस्त कर रहा है: %s"
 
-#: src/openvz_conf.c:187
+#: src/openvz_conf.c:190
+#, fuzzy, c-format
+msgid "Cound not read 'IP_ADDRESS' from config for container %d"
+msgstr "%s से जुड़ नहीं सका"
+
+#: src/openvz_conf.c:220
+#, fuzzy, c-format
+msgid "Cound not read 'NETIF' from config for container %d"
+msgstr "%s से जुड़ नहीं सका"
+
+#: src/openvz_conf.c:247
+#, fuzzy
+msgid "Too long network device name"
+msgstr "संजाल फाइलनाम हल कर रहा है"
+
+#: src/openvz_conf.c:264
+#, fuzzy
+msgid "Wrong length MAC address"
+msgstr "अमान्य MAC पता"
+
+#: src/openvz_conf.c:271
+#, fuzzy
+msgid "Wrong MAC address"
+msgstr "MAC पता"
+
+#: src/openvz_conf.c:327
 #, fuzzy
 msgid "popen failed"
 msgstr "ऑपरेशन विफल"
 
-#: src/openvz_conf.c:197
+#: src/openvz_conf.c:337
 #, fuzzy
 msgid "Failed to parse vzlist output"
 msgstr "'%s' खोलने में विफल: %s"
 
-#: src/openvz_conf.c:223
+#: src/openvz_conf.c:363
 #, fuzzy
 msgid "UUID in config file malformed"
 msgstr "फाइल वाक्य रचना त्रुटि विन्यस्त कर रहा है: %s"
 
-#: src/openvz_conf.c:235
+#: src/openvz_conf.c:375
 #, fuzzy, c-format
 msgid "Cound not read config for container %d"
 msgstr "%s से जुड़ नहीं सका"
@@ -1885,10 +1910,10 @@ msgstr "डोमेन अभी भी चल रहा है"
 msgid "Container ID is not specified"
 msgstr ""
 
-#: src/openvz_driver.c:391 src/openvz_driver.c:459 src/openvz_driver.c:534
-#: src/openvz_driver.c:554 src/openvz_driver.c:600 src/openvz_driver.c:631
-#: src/openvz_driver.c:656 src/openvz_driver.c:728 src/openvz_driver.c:826
-#: src/openvz_driver.c:872
+#: src/openvz_driver.c:391 src/openvz_driver.c:460 src/openvz_driver.c:535
+#: src/openvz_driver.c:555 src/openvz_driver.c:601 src/openvz_driver.c:632
+#: src/openvz_driver.c:657 src/openvz_driver.c:729 src/openvz_driver.c:827
+#: src/openvz_driver.c:873
 #, fuzzy, c-format
 msgid "Could not exec %s"
 msgstr "%s से जुड़ नहीं सका"
@@ -1898,54 +1923,54 @@ msgstr "%s से जुड़ नहीं सका"
 msgid "Already an OPENVZ VM active with the id '%s'"
 msgstr ""
 
-#: src/openvz_driver.c:451 src/openvz_driver.c:528
+#: src/openvz_driver.c:452 src/openvz_driver.c:529
 msgid "Error creating command for container"
 msgstr ""
 
-#: src/openvz_driver.c:465 src/openvz_driver.c:540
+#: src/openvz_driver.c:466 src/openvz_driver.c:541
 #, fuzzy
 msgid "Could not set UUID"
 msgstr "%s से जुड़ नहीं सका"
 
-#: src/openvz_driver.c:475 src/openvz_driver.c:546
+#: src/openvz_driver.c:476 src/openvz_driver.c:547
 #, fuzzy
 msgid "Could not configure network"
 msgstr "%s से जुड़ नहीं सका"
 
-#: src/openvz_driver.c:482 src/openvz_driver.c:569
+#: src/openvz_driver.c:483 src/openvz_driver.c:570
 #, fuzzy
 msgid "Could not set number of virtual cpu"
 msgstr "वर्चुअल सीपीयू की संख्या बदलें"
 
 #: src/openvz_driver.c:517
 #, c-format
-msgid "Already an OPENVZ VM defined with the id '%d'"
+msgid "Already an OPENVZ VM defined with the id '%s'"
 msgstr ""
 
-#: src/openvz_driver.c:588
+#: src/openvz_driver.c:589
 msgid "no domain with matching id"
 msgstr ""
 
-#: src/openvz_driver.c:594
+#: src/openvz_driver.c:595
 #, fuzzy
 msgid "domain is not in shutoff state"
 msgstr "डोमेन अभी भी चल रहा है"
 
-#: src/openvz_driver.c:677
+#: src/openvz_driver.c:678
 #, fuzzy
 msgid "Could not read container config"
 msgstr "%s से जुड़ नहीं सका"
 
-#: src/openvz_driver.c:693 src/qemu_driver.c:1823
+#: src/openvz_driver.c:694 src/qemu_driver.c:1843
 #, fuzzy, c-format
 msgid "unknown type '%s'"
 msgstr "अज्ञात OS प्रकार %s"
 
-#: src/openvz_driver.c:719
+#: src/openvz_driver.c:720
 msgid "VCPUs should be >= 1"
 msgstr ""
 
-#: src/openvz_driver.c:835 src/openvz_driver.c:881
+#: src/openvz_driver.c:836 src/openvz_driver.c:882
 #, fuzzy, c-format
 msgid "Could not parse VPS ID %s"
 msgstr "%s से जुड़ नहीं सका"
@@ -2009,7 +2034,7 @@ msgstr ""
 msgid "Unexpected exit status '%d', qemu probably failed"
 msgstr ""
 
-#: src/qemu_conf.c:519 src/qemu_driver.c:925
+#: src/qemu_conf.c:519 src/qemu_driver.c:926
 #, fuzzy, c-format
 msgid "Cannot find QEMU binary %s: %s"
 msgstr "'%s' खोलने में विफल: %s"
@@ -2030,7 +2055,7 @@ msgstr "संजाल %s फिर आरंभ किया\n"
 msgid "Network type %d is not supported"
 msgstr "संजाल %s फिर आरंभ किया\n"
 
-#: src/qemu_conf.c:580 src/qemu_driver.c:1515
+#: src/qemu_conf.c:580 src/qemu_driver.c:1514
 #, fuzzy, c-format
 msgid "cannot initialize bridge support: %s"
 msgstr "'%s' खोलने में विफल: %s"
@@ -2070,629 +2095,634 @@ msgstr "इसमें अवैध डोमेन संकेतक"
 msgid "failed to allocate space for argv string"
 msgstr "स्मृति संभाजित करने में विफल"
 
-#: src/qemu_driver.c:90
+#: src/qemu_driver.c:91
 #, fuzzy
 msgid "Failed to set close-on-exec file descriptor flag\n"
 msgstr "लॉग फाइल लिखने में विफल"
 
-#: src/qemu_driver.c:105
+#: src/qemu_driver.c:106
 #, fuzzy
 msgid "Failed to set non-blocking file descriptor flag\n"
 msgstr "Xend डोमेन सूचना विश्लेषण में विफल"
 
-#: src/qemu_driver.c:150
+#: src/qemu_driver.c:151
 #, fuzzy, c-format
 msgid "Failed to autostart network '%s': %s\n"
 msgstr "%s संजाल आरंभ करने में विफल"
 
-#: src/qemu_driver.c:165
+#: src/qemu_driver.c:166
 #, fuzzy, c-format
 msgid "Failed to autostart VM '%s': %s\n"
 msgstr "'%s' खोलने में विफल: %s"
 
 # done by Ravi
-#: src/qemu_driver.c:201
+#: src/qemu_driver.c:202
 #, fuzzy, c-format
 msgid "Failed to find user record for uid '%d': %s\n"
 msgstr "संजाल धुंडने में विफल: %s"
 
-#: src/qemu_driver.c:212
+#: src/qemu_driver.c:213
 #, fuzzy
 msgid "out of memory in asprintf\n"
 msgstr "स्मृति के बाहर"
 
-#: src/qemu_driver.c:268
+#: src/qemu_driver.c:269
 #, fuzzy
 msgid "qemudStartup: out of memory\n"
 msgstr "स्मृति के बाहर"
 
-#: src/qemu_driver.c:295
+#: src/qemu_driver.c:296
 msgid "Reloading iptables rules\n"
 msgstr ""
 
-#: src/qemu_driver.c:433
+#: src/qemu_driver.c:434
 #, c-format
 msgid ""
 "QEMU quit during %s startup\n"
 "%s"
 msgstr ""
 
-#: src/qemu_driver.c:443 src/qemu_driver.c:456
+#: src/qemu_driver.c:444 src/qemu_driver.c:457
 #, c-format
 msgid "Failure while reading %s startup output: %s"
 msgstr ""
 
-#: src/qemu_driver.c:451
+#: src/qemu_driver.c:452
 #, c-format
 msgid "Timed out while reading %s startup output"
 msgstr ""
 
-#: src/qemu_driver.c:467
+#: src/qemu_driver.c:468
 #, c-format
 msgid "Failure while reading %s startup output"
 msgstr ""
 
-#: src/qemu_driver.c:479
+#: src/qemu_driver.c:480
 #, c-format
 msgid "Out of space while reading %s startup output"
 msgstr ""
 
-#: src/qemu_driver.c:510
+#: src/qemu_driver.c:511
 #, fuzzy, c-format
 msgid "Unable to open monitor path %s"
 msgstr "'%s' खोलने में विफल: %s"
 
-#: src/qemu_driver.c:515
+#: src/qemu_driver.c:516
 msgid "Unable to set monitor close-on-exec flag"
 msgstr ""
 
-#: src/qemu_driver.c:520
+#: src/qemu_driver.c:521
 msgid "Unable to put monitor into non-blocking mode"
 msgstr ""
 
-#: src/qemu_driver.c:648 src/qemu_driver.c:1027 src/qemu_driver.c:1726
-#: src/qemu_driver.c:1736
+#: src/qemu_driver.c:649 src/qemu_driver.c:1028 src/qemu_driver.c:1725
+#: src/qemu_driver.c:1735
 #, fuzzy, c-format
 msgid "Unable to log VM console data: %s\n"
 msgstr "लॉग फाइल लिखने में विफल"
 
-#: src/qemu_driver.c:671
+#: src/qemu_driver.c:672
 #, fuzzy
 msgid "allocate cpumap"
 msgstr "नया संदर्भ दें"
 
-#: src/qemu_driver.c:682
+#: src/qemu_driver.c:683
 msgid "cannot run monitor command to fetch CPU thread info"
 msgstr ""
 
-#: src/qemu_driver.c:786
+#: src/qemu_driver.c:787
 #, fuzzy, c-format
 msgid "failed to set CPU affinity %s"
 msgstr "'%s' डोमेन पाने में विफल"
 
-#: src/qemu_driver.c:796 src/qemu_driver.c:2135
+#: src/qemu_driver.c:797 src/qemu_driver.c:2155
 #, fuzzy
 msgid "resume operation failed"
 msgstr "ऑपरेशन विफल"
 
-#: src/qemu_driver.c:859
+#: src/qemu_driver.c:860
 #, fuzzy
 msgid "VM is already active"
 msgstr "डोमेन पहले से सक्रिय"
 
-#: src/qemu_driver.c:869
+#: src/qemu_driver.c:870
 msgid "Unable to find an unused VNC port"
 msgstr ""
 
-#: src/qemu_driver.c:881
+#: src/qemu_driver.c:882
 #, c-format
 msgid "config file path too long: %s/%s.log"
 msgstr ""
 
-#: src/qemu_driver.c:900
+#: src/qemu_driver.c:901
 #, fuzzy, c-format
 msgid "failed to create logfile %s: %s"
 msgstr "लॉग फाइल लिखने में विफल"
 
-#: src/qemu_driver.c:906
+#: src/qemu_driver.c:907
 #, fuzzy, c-format
 msgid "Unable to set VM logfile close-on-exec flag %s"
 msgstr "लॉग फाइल लिखने में विफल"
 
-#: src/qemu_driver.c:935 src/qemu_driver.c:3032
+#: src/qemu_driver.c:936 src/qemu_driver.c:3052
 #, fuzzy, c-format
 msgid "Cannot determine QEMU argv syntax %s"
 msgstr "'%s' खोलने में विफल: %s"
 
-#: src/qemu_driver.c:951 src/qemu_driver.c:954 src/qemu_driver.c:959
+#: src/qemu_driver.c:952 src/qemu_driver.c:955 src/qemu_driver.c:960
 #, fuzzy, c-format
 msgid "Unable to write argv to logfile %d: %s\n"
 msgstr "लॉग फाइल लिखने में विफल"
 
-#: src/qemu_driver.c:1041
+#: src/qemu_driver.c:1040
 #, fuzzy, c-format
 msgid "Shutting down VM '%s'\n"
 msgstr "'%s' संजाल पाने में विफल"
 
-#: src/qemu_driver.c:1052
+#: src/qemu_driver.c:1051
 #, fuzzy, c-format
 msgid "Unable to close logfile %d: %s\n"
 msgstr "लॉग फाइल लिखने में विफल"
 
-#: src/qemu_driver.c:1067
+#: src/qemu_driver.c:1066
 #, fuzzy
 msgid "Got unexpected pid, damn\n"
 msgstr "अप्रत्याशित डिक्ट नोड"
 
-#: src/qemu_driver.c:1221
+#: src/qemu_driver.c:1220
 #, fuzzy
 msgid "failed to allocate space for dnsmasq argv"
 msgstr "एक नोड संभाजित करने में विफल"
 
-#: src/qemu_driver.c:1235
+#: src/qemu_driver.c:1234
 msgid "cannot start dhcp daemon without IP address for server"
 msgstr ""
 
-#: src/qemu_driver.c:1264
+#: src/qemu_driver.c:1263
 #, fuzzy, c-format
 msgid "failed to add iptables rule to allow forwarding from '%s' : %s\n"
 msgstr "डोमेन %s को %s में सहेजने में विफल"
 
-#: src/qemu_driver.c:1275
+#: src/qemu_driver.c:1274
 #, fuzzy, c-format
 msgid "failed to add iptables rule to allow forwarding to '%s' : %s\n"
 msgstr "डोमेन %s को %s में सहेजने में विफल"
 
-#: src/qemu_driver.c:1285
+#: src/qemu_driver.c:1284
 #, fuzzy, c-format
 msgid "failed to add iptables rule to enable masquerading : %s\n"
 msgstr "डोमेन %s को %s में सहेजने में विफल"
 
-#: src/qemu_driver.c:1317
+#: src/qemu_driver.c:1316
 #, fuzzy, c-format
 msgid "failed to add iptables rule to allow routing from '%s' : %s\n"
 msgstr "डोमेन %s को %s में सहेजने में विफल"
 
-#: src/qemu_driver.c:1328
+#: src/qemu_driver.c:1327
 #, fuzzy, c-format
 msgid "failed to add iptables rule to allow routing to '%s' : %s\n"
 msgstr "डोमेन %s को %s में सहेजने में विफल"
 
-#: src/qemu_driver.c:1353
+#: src/qemu_driver.c:1352
 #, fuzzy
 msgid "failed to allocate space for IP tables support"
 msgstr "एक नोड संभाजित करने में विफल"
 
-#: src/qemu_driver.c:1361 src/qemu_driver.c:1368
+#: src/qemu_driver.c:1360 src/qemu_driver.c:1367
 #, fuzzy, c-format
 msgid "failed to add iptables rule to allow DHCP requests from '%s' : %s"
 msgstr "डोमेन %s को %s में सहेजने में विफल"
 
-#: src/qemu_driver.c:1376 src/qemu_driver.c:1383
+#: src/qemu_driver.c:1375 src/qemu_driver.c:1382
 #, fuzzy, c-format
 msgid "failed to add iptables rule to allow DNS requests from '%s' : %s"
 msgstr "डोमेन %s को %s में सहेजने में विफल"
 
-#: src/qemu_driver.c:1393
+#: src/qemu_driver.c:1392
 #, fuzzy, c-format
 msgid "failed to add iptables rule to block outbound traffic from '%s' : %s"
 msgstr "डोमेन %s को %s में सहेजने में विफल"
 
-#: src/qemu_driver.c:1400
+#: src/qemu_driver.c:1399
 #, fuzzy, c-format
 msgid "failed to add iptables rule to block inbound traffic to '%s' : %s"
 msgstr "डोमेन %s को %s में सहेजने में विफल"
 
-#: src/qemu_driver.c:1408
+#: src/qemu_driver.c:1407
 #, fuzzy, c-format
 msgid "failed to add iptables rule to allow cross bridge traffic on '%s' : %s"
 msgstr "डोमेन %s को %s में सहेजने में विफल"
 
-#: src/qemu_driver.c:1509
+#: src/qemu_driver.c:1508
 #, fuzzy
 msgid "network is already active"
 msgstr "डोमेन पहले से सक्रिय"
 
-#: src/qemu_driver.c:1521
+#: src/qemu_driver.c:1520
 #, fuzzy, c-format
 msgid "cannot create bridge '%s' : %s"
 msgstr "विन्यास फाइल लिखने में विफल: %s"
 
-#: src/qemu_driver.c:1536
+#: src/qemu_driver.c:1535
 #, fuzzy, c-format
 msgid "cannot set IP address on bridge '%s' to '%s' : %s"
 msgstr "'%s' खोलने में विफल: %s"
 
-#: src/qemu_driver.c:1544
+#: src/qemu_driver.c:1543
 #, fuzzy, c-format
 msgid "cannot set netmask on bridge '%s' to '%s' : %s"
 msgstr "'%s' खोलने में विफल: %s"
 
-#: src/qemu_driver.c:1552
+#: src/qemu_driver.c:1551
 #, fuzzy, c-format
 msgid "failed to bring the bridge '%s' up : %s"
 msgstr "'%s' खोलने में विफल: %s"
 
-#: src/qemu_driver.c:1563
+#: src/qemu_driver.c:1562
 #, fuzzy, c-format
 msgid "failed to enable IP forwarding : %s"
 msgstr "%s को पढ़ने के लिये खोलने में विफल"
 
-#: src/qemu_driver.c:1581 src/qemu_driver.c:1612
+#: src/qemu_driver.c:1580 src/qemu_driver.c:1611
 #, fuzzy, c-format
 msgid "Failed to bring down bridge '%s' : %s\n"
 msgstr "'%s' खोलने में विफल: %s"
 
-#: src/qemu_driver.c:1587 src/qemu_driver.c:1617
+#: src/qemu_driver.c:1586 src/qemu_driver.c:1616
 #, fuzzy, c-format
 msgid "Failed to delete bridge '%s' : %s\n"
 msgstr "'%s' खोलने में विफल: %s"
 
-#: src/qemu_driver.c:1600
+#: src/qemu_driver.c:1599
 #, fuzzy, c-format
 msgid "Shutting down network '%s'\n"
 msgstr "'%s' संजाल पाने में विफल"
 
-#: src/qemu_driver.c:1626
+#: src/qemu_driver.c:1625
 #, fuzzy
 msgid "Got unexpected pid for dnsmasq\n"
 msgstr "अप्रत्याशित डिक्ट नोड"
 
-#: src/qemu_driver.c:1839
+#: src/qemu_driver.c:1814
+#, fuzzy, c-format
+msgid "Unable to open %s: %s\n"
+msgstr "'%s' खोलने में विफल: %s"
+
+#: src/qemu_driver.c:1859
 #, fuzzy
 msgid "failed to allocate space for capabilities support"
 msgstr "स्मृति संभाजित करने में विफल"
 
-#: src/qemu_driver.c:1858 src/qemu_driver.c:1884
+#: src/qemu_driver.c:1878 src/qemu_driver.c:1904
 msgid "NUMA not supported on this host"
 msgstr ""
 
-#: src/qemu_driver.c:1869 src/qemu_driver.c:1892
+#: src/qemu_driver.c:1889 src/qemu_driver.c:1912
 #, fuzzy
 msgid "Failed to query NUMA free memory"
 msgstr "प्रयुक्त स्मृति:"
 
-#: src/qemu_driver.c:2053
+#: src/qemu_driver.c:2073
 #, fuzzy, c-format
 msgid "domain '%s' is already defined"
 msgstr "%s डोमेन पहले से मौजूद है"
 
-#: src/qemu_driver.c:2064
+#: src/qemu_driver.c:2084
 #, fuzzy, c-format
 msgid "domain with uuid '%s' is already defined"
 msgstr "%s डोमेन पहले से मौजूद है"
 
-#: src/qemu_driver.c:2094 src/qemu_driver.c:2123 src/qemu_driver.c:2152
-#: src/qemu_driver.c:2172 src/qemu_driver.c:2410 src/qemu_driver.c:3383
-#: src/qemu_driver.c:3518 src/qemu_driver.c:3632
+#: src/qemu_driver.c:2114 src/qemu_driver.c:2143 src/qemu_driver.c:2172
+#: src/qemu_driver.c:2192 src/qemu_driver.c:2430 src/qemu_driver.c:3403
+#: src/qemu_driver.c:3538 src/qemu_driver.c:3652
 #, c-format
 msgid "no domain with matching id %d"
 msgstr ""
 
-#: src/qemu_driver.c:2099 src/qemu_driver.c:2128 src/qemu_driver.c:2416
-#: src/qemu_driver.c:3388 src/qemu_driver.c:3524 src/qemu_driver.c:3638
+#: src/qemu_driver.c:2119 src/qemu_driver.c:2148 src/qemu_driver.c:2436
+#: src/qemu_driver.c:3408 src/qemu_driver.c:3544 src/qemu_driver.c:3658
 #, fuzzy
 msgid "domain is not running"
 msgstr "डोमेन अभी भी चल रहा है"
 
-#: src/qemu_driver.c:2107
+#: src/qemu_driver.c:2127
 #, fuzzy
 msgid "suspend operation failed"
 msgstr "ऑपरेशन विफल"
 
-#: src/qemu_driver.c:2158
+#: src/qemu_driver.c:2178
 #, fuzzy
 msgid "shutdown operation failed"
 msgstr "ऑपरेशन विफल"
 
-#: src/qemu_driver.c:2198
+#: src/qemu_driver.c:2218
 #, fuzzy
 msgid "failed to allocate space for ostype"
 msgstr "एक नोड संभाजित करने में विफल"
 
-#: src/qemu_driver.c:2214 src/qemu_driver.c:2230 src/qemu_driver.c:2253
-#: src/qemu_driver.c:2526 src/qemu_driver.c:2688
+#: src/qemu_driver.c:2234 src/qemu_driver.c:2250 src/qemu_driver.c:2273
+#: src/qemu_driver.c:2546 src/qemu_driver.c:2708
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:2236
+#: src/qemu_driver.c:2256
 msgid "cannot set max memory lower than current memory"
 msgstr ""
 
-#: src/qemu_driver.c:2259
+#: src/qemu_driver.c:2279
 #, fuzzy
 msgid "cannot set memory of an active domain"
 msgstr "एक निष्क्रिय डोमेन का नाम"
 
-#: src/qemu_driver.c:2265
+#: src/qemu_driver.c:2285
 msgid "cannot set memory higher than max memory"
 msgstr ""
 
-#: src/qemu_driver.c:2425
+#: src/qemu_driver.c:2445
 #, fuzzy
 msgid "failed to pause domain"
 msgstr "%s डोमेन स्थगम में विफल"
 
-#: src/qemu_driver.c:2434
+#: src/qemu_driver.c:2454
 #, fuzzy
 msgid "failed to get domain xml"
 msgstr "डोमेन UUID पाने में विफल"
 
-#: src/qemu_driver.c:2442
+#: src/qemu_driver.c:2462
 #, fuzzy, c-format
 msgid "failed to create '%s'"
 msgstr "XML बनाने में विफल"
 
-#: src/qemu_driver.c:2449
+#: src/qemu_driver.c:2469
 #, fuzzy
 msgid "failed to write save header"
 msgstr "सॉकेट %d में लिखने में विफल\n"
 
-#: src/qemu_driver.c:2457
+#: src/qemu_driver.c:2477
 #, fuzzy
 msgid "failed to write xml"
 msgstr "सॉकेट %d में लिखने में विफल\n"
 
-#: src/qemu_driver.c:2470 src/qemu_driver.c:2477 src/qemu_driver.c:2748
+#: src/qemu_driver.c:2490 src/qemu_driver.c:2497 src/qemu_driver.c:2768
 #: src/remote_internal.c:2241 src/virterror.c:441
 msgid "out of memory"
 msgstr "स्मृति के बाहर"
 
-#: src/qemu_driver.c:2485
+#: src/qemu_driver.c:2505
 #, fuzzy
 msgid "migrate operation failed"
 msgstr "ऑपरेशन विफल"
 
-#: src/qemu_driver.c:2497
+#: src/qemu_driver.c:2517
 msgid "'migrate' not supported by this qemu"
 msgstr ""
 
-#: src/qemu_driver.c:2532
+#: src/qemu_driver.c:2552
 #, fuzzy
 msgid "cannot change vcpu count of an active domain"
 msgstr "एक निष्क्रिय डोमेन का नाम"
 
-#: src/qemu_driver.c:2538
+#: src/qemu_driver.c:2558
 msgid "could not determine max vcpus for the domain"
 msgstr ""
 
-#: src/qemu_driver.c:2544
+#: src/qemu_driver.c:2564
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
 msgstr ""
 
-#: src/qemu_driver.c:2568 src/qemu_driver.c:2620
+#: src/qemu_driver.c:2588 src/qemu_driver.c:2640
 #, fuzzy
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "एक निष्क्रिय डोमेन अपरिभाषित करें"
 
-#: src/qemu_driver.c:2574
+#: src/qemu_driver.c:2594
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr ""
 
-#: src/qemu_driver.c:2595
+#: src/qemu_driver.c:2615
 #, fuzzy, c-format
 msgid "cannot set affinity: %s"
 msgstr "'%s' खोलने में विफल: %s"
 
-#: src/qemu_driver.c:2600
+#: src/qemu_driver.c:2620
 #, fuzzy
 msgid "cpu affinity is not supported"
 msgstr "लाइब्रेरी कॉल विफल रहा, संभवतः समर्थित नहीं"
 
-#: src/qemu_driver.c:2657
+#: src/qemu_driver.c:2677
 #, fuzzy, c-format
 msgid "cannot get affinity: %s"
 msgstr "XML बनाने में विफल"
 
-#: src/qemu_driver.c:2667
+#: src/qemu_driver.c:2687
 msgid "cpu affinity is not available"
 msgstr ""
 
-#: src/qemu_driver.c:2694
+#: src/qemu_driver.c:2714
 #, fuzzy, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "डोमेन परिभाषा फाइल लोड करें"
 
-#: src/qemu_driver.c:2720 src/test.c:956
+#: src/qemu_driver.c:2740 src/test.c:956
 #, fuzzy
 msgid "cannot read domain image"
 msgstr "नोड डोमेन सूची"
 
-#: src/qemu_driver.c:2726
+#: src/qemu_driver.c:2746
 #, fuzzy
 msgid "failed to read qemu header"
 msgstr "Xen डेमॉन से पढ़ने में विफल"
 
-#: src/qemu_driver.c:2733
+#: src/qemu_driver.c:2753
 msgid "image magic is incorrect"
 msgstr ""
 
-#: src/qemu_driver.c:2740
+#: src/qemu_driver.c:2760
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr ""
 
-#: src/qemu_driver.c:2755
+#: src/qemu_driver.c:2775
 #, fuzzy
 msgid "failed to read XML"
 msgstr "XML बनाने में विफल"
 
-#: src/qemu_driver.c:2764
+#: src/qemu_driver.c:2784
 #, fuzzy
 msgid "failed to parse XML"
 msgstr "XML बनाने में विफल"
 
-#: src/qemu_driver.c:2777
+#: src/qemu_driver.c:2797
 #, fuzzy, c-format
 msgid "domain is already active as '%s'"
 msgstr "डोमेन पहले से सक्रिय"
 
-#: src/qemu_driver.c:2786
+#: src/qemu_driver.c:2806
 #, fuzzy
 msgid "failed to assign new VM"
 msgstr "XML बनाने में विफल"
 
-#: src/qemu_driver.c:2799
+#: src/qemu_driver.c:2819
 #, fuzzy
 msgid "failed to start VM"
 msgstr "%s डोमेन आरंभ करने में विफल"
 
-#: src/qemu_driver.c:2811
+#: src/qemu_driver.c:2831
 #, fuzzy
 msgid "failed to resume domain"
 msgstr "%s डोमेन फिर बहाल करने में विफल"
 
-#: src/qemu_driver.c:2848 src/qemu_driver.c:3741 src/qemu_driver.c:3776
+#: src/qemu_driver.c:2868 src/qemu_driver.c:3761 src/qemu_driver.c:3796
 #, fuzzy
 msgid "failed to allocate space for VM name string"
 msgstr "स्मृति संभाजित करने में विफल"
 
-#: src/qemu_driver.c:2962
+#: src/qemu_driver.c:2982
 #, fuzzy, c-format
 msgid "cannot convert disk '%s' to bus/device index"
 msgstr "अंतरफलक युक्ति"
 
-#: src/qemu_driver.c:2982
+#: src/qemu_driver.c:3002
 #, fuzzy, c-format
 msgid "Unsupported disk name mapping for bus '%s'"
 msgstr "लक्ष्य युक्ति प्रकार"
 
-#: src/qemu_driver.c:3022
+#: src/qemu_driver.c:3042
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3049
+#: src/qemu_driver.c:3069
 #, c-format
 msgid ""
 "Emulator version does not support removable media for device '%s' and target "
 "'%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3086
+#: src/qemu_driver.c:3106
 msgid "cannot change cdrom media"
 msgstr ""
 
-#: src/qemu_driver.c:3097
+#: src/qemu_driver.c:3117
 msgid "changing cdrom media failed"
 msgstr ""
 
-#: src/qemu_driver.c:3157
+#: src/qemu_driver.c:3177
 #, fuzzy
 msgid "cannot attach usb disk"
 msgstr "अंतरफलक युक्ति"
 
-#: src/qemu_driver.c:3168
+#: src/qemu_driver.c:3188
 #, fuzzy
 msgid "adding usb disk failed"
 msgstr "मेजबान परिभाषा फाइल लोड करें"
 
-#: src/qemu_driver.c:3212
+#: src/qemu_driver.c:3232
 #, fuzzy
 msgid "cannot attach usb device"
 msgstr "अंतरफलक युक्ति"
 
-#: src/qemu_driver.c:3223
+#: src/qemu_driver.c:3243
 #, fuzzy
 msgid "adding usb device failed"
 msgstr "मेजबान परिभाषा फाइल लोड करें"
 
-#: src/qemu_driver.c:3253
+#: src/qemu_driver.c:3273
 #, fuzzy
 msgid "cannot attach device on inactive domain"
 msgstr "एक निष्क्रिय डोमेन अपरिभाषित करें"
 
-#: src/qemu_driver.c:3276
+#: src/qemu_driver.c:3296
 msgid "this device type cannot be attached"
 msgstr ""
 
-#: src/qemu_driver.c:3315
+#: src/qemu_driver.c:3335
 #, fuzzy
 msgid "cannot set autostart for transient domain"
 msgstr "एक निष्क्रिय डोमेन का नाम"
 
-#: src/qemu_driver.c:3341
+#: src/qemu_driver.c:3361
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s to '%s': %s"
 msgstr "डोमेन %s को %s में सहेजने में विफल"
 
-#: src/qemu_driver.c:3348 src/qemu_driver.c:3981 src/storage_driver.c:832
+#: src/qemu_driver.c:3368 src/qemu_driver.c:4001 src/storage_driver.c:832
 #, fuzzy, c-format
 msgid "Failed to delete symlink '%s': %s"
 msgstr "'%s' खोलने में विफल: %s"
 
-#: src/qemu_driver.c:3410
+#: src/qemu_driver.c:3430
 #, fuzzy, c-format
 msgid "invalid path: %s"
 msgstr "%s में अवैध तर्क"
 
-#: src/qemu_driver.c:3418
+#: src/qemu_driver.c:3438
 msgid "'info blockstats' command failed"
 msgstr ""
 
-#: src/qemu_driver.c:3433
+#: src/qemu_driver.c:3453
 msgid "'info blockstats' not supported by this qemu"
 msgstr ""
 
 # done by Ravi
-#: src/qemu_driver.c:3498
+#: src/qemu_driver.c:3518
 #, fuzzy, c-format
 msgid "device not found: %s (%s)"
 msgstr "डोमेन नही मिला: %s"
 
-#: src/qemu_driver.c:3530 src/qemu_driver.c:3573
+#: src/qemu_driver.c:3550 src/qemu_driver.c:3593
 msgid "NULL or empty path"
 msgstr ""
 
-#: src/qemu_driver.c:3541
+#: src/qemu_driver.c:3561
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr ""
 
-#: src/qemu_driver.c:3583
+#: src/qemu_driver.c:3603
 #, fuzzy
 msgid "invalid path"
 msgstr "%s में अवैध तर्क"
 
-#: src/qemu_driver.c:3626
+#: src/qemu_driver.c:3646
 msgid "QEMU driver only supports virtual memory addrs"
 msgstr ""
 
-#: src/qemu_driver.c:3653
+#: src/qemu_driver.c:3673
 #, fuzzy
 msgid "'memsave' command failed"
 msgstr "डोमेन नाम"
 
-#: src/qemu_driver.c:3682 src/qemu_driver.c:3850 src/qemu_driver.c:3875
-#: src/qemu_driver.c:3889 src/qemu_driver.c:3904 src/qemu_driver.c:3937
-#: src/qemu_driver.c:3953
+#: src/qemu_driver.c:3702 src/qemu_driver.c:3870 src/qemu_driver.c:3895
+#: src/qemu_driver.c:3909 src/qemu_driver.c:3924 src/qemu_driver.c:3957
+#: src/qemu_driver.c:3973
 msgid "no network with matching uuid"
 msgstr ""
 
-#: src/qemu_driver.c:3697
+#: src/qemu_driver.c:3717
 msgid "no network with matching name"
 msgstr ""
 
-#: src/qemu_driver.c:3856
+#: src/qemu_driver.c:3876
 #, fuzzy
 msgid "network is still active"
 msgstr "डोमेन पहले से सक्रिय"
 
-#: src/qemu_driver.c:3917
+#: src/qemu_driver.c:3937
 #, fuzzy
 msgid "no network with matching id"
 msgstr "XML में संजाल सूचना"
 
-#: src/qemu_driver.c:3924
+#: src/qemu_driver.c:3944
 #, fuzzy
 msgid "failed to allocate space for network bridge string"
 msgstr "एक नोड संभाजित करने में विफल"
 
-#: src/qemu_driver.c:3974 src/storage_driver.c:823
+#: src/qemu_driver.c:3994 src/storage_driver.c:823
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s' to '%s': %s"
 msgstr "डोमेन %s को %s में सहेजने में विफल"
@@ -3213,61 +3243,72 @@ msgstr ""
 msgid "%s not implemented on Win32"
 msgstr ""
 
-#: src/storage_backend_disk.c:85 src/storage_backend_logical.c:57
+#: src/storage_backend_disk.c:90 src/storage_backend_logical.c:57
 #, c-format
 msgid "unsupported pool format %s"
 msgstr ""
 
-#: src/storage_backend_disk.c:110 src/storage_backend_logical.c:70
+#: src/storage_backend_disk.c:115 src/storage_backend_logical.c:70
 #, c-format
 msgid "unsupported pool format %d"
 msgstr ""
 
-#: src/storage_backend_disk.c:138 src/storage_backend_fs.c:192
+#: src/storage_backend_disk.c:143 src/storage_backend_fs.c:192
 #: src/storage_backend_fs.c:262 src/storage_backend_fs.c:314
 #, c-format
 msgid "unsupported volume format %s"
 msgstr ""
 
-#: src/storage_backend_disk.c:165 src/storage_backend_fs.c:225
+#: src/storage_backend_disk.c:170 src/storage_backend_fs.c:225
 #: src/storage_backend_fs.c:297 src/storage_backend_fs.c:329
 #, c-format
 msgid "unsupported volume format %d"
 msgstr ""
 
-#: src/storage_backend_disk.c:179 src/storage_backend_disk.c:192
-#: src/storage_backend_disk.c:199 src/storage_backend_disk.c:221
+#: src/storage_backend_disk.c:184 src/storage_backend_disk.c:197
+#: src/storage_backend_disk.c:204 src/storage_backend_disk.c:226
 #: src/storage_backend_fs.c:839 src/storage_backend_iscsi.c:177
 #: src/storage_backend_logical.c:116 src/storage_backend_logical.c:121
 #: src/storage_backend_logical.c:133 src/storage_backend_logical.c:143
-#: src/storage_backend_logical.c:531
+#: src/storage_backend_logical.c:546
 msgid "volume"
 msgstr ""
 
-#: src/storage_backend_disk.c:229
+#: src/storage_backend_disk.c:234
 msgid "volume extents"
 msgstr ""
 
-#: src/storage_backend_disk.c:237
+#: src/storage_backend_disk.c:242
 msgid "cannot parse device start location"
 msgstr ""
 
-#: src/storage_backend_disk.c:244
+#: src/storage_backend_disk.c:249
 msgid "cannot parse device end location"
 msgstr ""
 
-#: src/storage_backend_disk.c:250 src/storage_backend_logical.c:154
+#: src/storage_backend_disk.c:255 src/storage_backend_logical.c:154
 #: src/storage_backend_logical.c:160
 msgid "extents"
 msgstr ""
 
-#: src/storage_backend_disk.c:464
+#: src/storage_backend_disk.c:462
 msgid "no large enough free extent"
 msgstr ""
 
-#: src/storage_backend_disk.c:498
-msgid "Disk pools are not yet supported"
+#: src/storage_backend_disk.c:502
+#, c-format
+msgid "Couldn't read volume target path '%s'. %s"
 msgstr ""
+
+#: src/storage_backend_disk.c:517
+#, c-format
+msgid "Volume path '%s' did not start with parent pool source device name."
+msgstr ""
+
+#: src/storage_backend_disk.c:526
+#, fuzzy, c-format
+msgid "cannot parse partition number from target '%s'"
+msgstr "'%s' खोलने में विफल: %s"
 
 #: src/storage_backend_fs.c:358
 #, c-format
@@ -3390,7 +3431,7 @@ msgid "cannot extend file '%s': %s"
 msgstr ""
 
 #: src/storage_backend_fs.c:1042 src/storage_backend_fs.c:1078
-#: src/storage_backend_fs.c:1113 src/storage_backend_logical.c:543
+#: src/storage_backend_fs.c:1113 src/storage_backend_logical.c:558
 #, c-format
 msgid "cannot read path '%s': %s"
 msgstr ""
@@ -3409,17 +3450,17 @@ msgstr ""
 msgid "creation of non-raw images is not supported without qemu-img"
 msgstr ""
 
-#: src/storage_backend_fs.c:1130 src/storage_backend_logical.c:552
+#: src/storage_backend_fs.c:1130 src/storage_backend_logical.c:567
 #, fuzzy, c-format
 msgid "cannot set file owner '%s': %s"
 msgstr "'%s' खोलने में विफल: %s"
 
-#: src/storage_backend_fs.c:1139 src/storage_backend_logical.c:559
+#: src/storage_backend_fs.c:1139 src/storage_backend_logical.c:574
 #, fuzzy, c-format
 msgid "cannot set file mode '%s': %s"
 msgstr "'%s' खोलने में विफल: %s"
 
-#: src/storage_backend_fs.c:1155 src/storage_backend_logical.c:566
+#: src/storage_backend_fs.c:1155 src/storage_backend_logical.c:581
 #, c-format
 msgid "cannot close file '%s': %s"
 msgstr ""
@@ -3534,27 +3575,32 @@ msgstr "डोमेन नाम"
 msgid "lvs command failed with exitstatus %d"
 msgstr ""
 
-#: src/storage_backend_logical.c:355
+#: src/storage_backend_logical.c:354
 #, fuzzy
 msgid "command line"
 msgstr "डोमेन नाम"
 
-#: src/storage_backend_logical.c:372
+#: src/storage_backend_logical.c:371
 #, c-format
 msgid "cannot open device %s"
 msgstr ""
 
-#: src/storage_backend_logical.c:378
+#: src/storage_backend_logical.c:377
 #, c-format
 msgid "cannot clear device header %s"
 msgstr ""
 
-#: src/storage_backend_logical.c:385
+#: src/storage_backend_logical.c:384
 #, c-format
 msgid "cannot close device %s"
 msgstr ""
 
-#: src/storage_backend_logical.c:575
+#: src/storage_backend_logical.c:507
+#, fuzzy, c-format
+msgid "cannot remove PV device %s: %s"
+msgstr "विन्यास फाइल लिखने में विफल: %s"
+
+#: src/storage_backend_logical.c:590
 #, c-format
 msgid "cannot find newly created volume '%s': %s"
 msgstr ""
@@ -6122,8 +6168,9 @@ msgid "DATA"
 msgstr "आंकड़ा"
 
 #: src/virsh.c:6292 src/virsh.c:6314
-msgid "blocked"
-msgstr "ब्लॉक किया"
+#, fuzzy
+msgid "idle"
+msgstr "XML फाइल"
 
 #: src/virsh.c:6294
 msgid "paused"
@@ -6768,7 +6815,7 @@ msgstr "डोमेन सूचना गलत domid सांख्यिक
 msgid "domain information incomplete, missing uuid"
 msgstr "डोमेन सूचना अपूर्ण, गुम uuid"
 
-#: src/xend_internal.c:1109 src/xend_internal.c:2204 src/xend_internal.c:2211
+#: src/xend_internal.c:1109 src/xend_internal.c:2213 src/xend_internal.c:2220
 msgid "domain information incomplete, missing name"
 msgstr "डोमेन सूचना अपूर्ण, गुम नाम"
 
@@ -6831,207 +6878,207 @@ msgstr "अप्रत्याशित डिक्ट नोड"
 msgid "unknown graphics type '%s'"
 msgstr "अज्ञात OS प्रकार %s"
 
-#: src/xend_internal.c:2191
+#: src/xend_internal.c:2200
 msgid "domain information incomplete, missing id"
 msgstr "डोमेन सूचना अपूर्ण, गुम id"
 
-#: src/xend_internal.c:2260 src/xend_internal.c:2270 src/xend_internal.c:2280
+#: src/xend_internal.c:2269 src/xend_internal.c:2279 src/xend_internal.c:2289
 #, fuzzy, c-format
 msgid "unknown lifecycle type %s"
 msgstr "अज्ञात OS प्रकार %s"
 
-#: src/xend_internal.c:2593
+#: src/xend_internal.c:2602
 #, fuzzy
 msgid "failed to parse topology information"
 msgstr "Xend डोमेन सूचना विश्लेषण में विफल"
 
-#: src/xend_internal.c:2647
+#: src/xend_internal.c:2656
 #, fuzzy
 msgid "topology syntax error"
 msgstr "विन्यास फाइल वाक्य रचना त्रुटि"
 
-#: src/xend_internal.c:2711
+#: src/xend_internal.c:2720
 msgid "failed to parse Xend domain information"
 msgstr "Xend डोमेन सूचना विश्लेषण में विफल"
 
-#: src/xend_internal.c:3193
+#: src/xend_internal.c:3202
 msgid "xenDaemonDomainFetch failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:3815 src/xend_internal.c:4290 src/xm_internal.c:1617
+#: src/xend_internal.c:3824 src/xend_internal.c:4299 src/xm_internal.c:1617
 #, fuzzy
 msgid "failed to build sexpr"
 msgstr "%s डोमेन स्थगम में विफल"
 
-#: src/xend_internal.c:3917
+#: src/xend_internal.c:3926
 #, fuzzy
 msgid "unsupported device type"
 msgstr "लक्ष्य युक्ति प्रकार"
 
-#: src/xend_internal.c:4020
+#: src/xend_internal.c:4029
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4061
+#: src/xend_internal.c:4070
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4069
+#: src/xend_internal.c:4078
 #, fuzzy
 msgid "unexpected value from on_xend_start"
 msgstr "अप्रत्याशित मान नोड"
 
-#: src/xend_internal.c:4080
+#: src/xend_internal.c:4089
 #, fuzzy
 msgid "no memory"
 msgstr "नोड स्मृति"
 
-#: src/xend_internal.c:4086
+#: src/xend_internal.c:4095
 #, fuzzy
 msgid "sexpr2string failed"
 msgstr "ऑपरेशन विफल"
 
-#: src/xend_internal.c:4091
+#: src/xend_internal.c:4100
 #, fuzzy
 msgid "Failed to redefine sexpr"
 msgstr "अपरिभाषित डोमेन %s में विफल"
 
-#: src/xend_internal.c:4096
+#: src/xend_internal.c:4105
 msgid "on_xend_start not present in sexpr"
 msgstr ""
 
-#: src/xend_internal.c:4127
+#: src/xend_internal.c:4136
 #, fuzzy, c-format
 msgid "gethostname failed: %s"
 msgstr "ऑपरेशन विफल: %s"
 
-#: src/xend_internal.c:4133
+#: src/xend_internal.c:4142
 #, fuzzy, c-format
 msgid "failed to strdup hostname: %s"
 msgstr "होस्टनेम पाने में विफल"
 
-#: src/xend_internal.c:4164
+#: src/xend_internal.c:4173
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:4174
+#: src/xend_internal.c:4183
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:4186
+#: src/xend_internal.c:4195
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr ""
 
-#: src/xend_internal.c:4199
+#: src/xend_internal.c:4208
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr ""
 
-#: src/xend_internal.c:4204
+#: src/xend_internal.c:4213
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
 
-#: src/xend_internal.c:4211
+#: src/xend_internal.c:4220
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr ""
 
-#: src/xend_internal.c:4218 src/xend_internal.c:4240 src/xend_internal.c:4248
-#: src/xend_internal.c:4474 src/xend_internal.c:4481 src/xml.c:89
+#: src/xend_internal.c:4227 src/xend_internal.c:4249 src/xend_internal.c:4257
+#: src/xend_internal.c:4483 src/xend_internal.c:4490 src/xml.c:89
 msgid "strdup failed"
 msgstr ""
 
-#: src/xend_internal.c:4231
+#: src/xend_internal.c:4240
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr ""
 
-#: src/xend_internal.c:4284
+#: src/xend_internal.c:4293
 #, fuzzy
 msgid "failed to parse domain description"
 msgstr "Xend डोमेन सूचना विश्लेषण में विफल"
 
-#: src/xend_internal.c:4300
+#: src/xend_internal.c:4309
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "निष्क्रिय डोमेन %s बनाने में विफल\n"
 
-#: src/xend_internal.c:4456 src/xend_internal.c:4532 src/xend_internal.c:4622
+#: src/xend_internal.c:4465 src/xend_internal.c:4541 src/xend_internal.c:4631
 msgid "unsupported in xendConfigVersion < 4"
 msgstr ""
 
-#: src/xend_internal.c:4468
+#: src/xend_internal.c:4477
 #, fuzzy
 msgid "node information incomplete, missing scheduler name"
 msgstr "डोमेन सूचना अपूर्ण, गुम नाम"
 
 # done by Ravi
-#: src/xend_internal.c:4486 src/xend_internal.c:4580 src/xend_internal.c:4692
+#: src/xend_internal.c:4495 src/xend_internal.c:4589 src/xend_internal.c:4701
 #, fuzzy
 msgid "Unknown scheduler"
 msgstr "अज्ञात"
 
-#: src/xend_internal.c:4545 src/xend_internal.c:4635
+#: src/xend_internal.c:4554 src/xend_internal.c:4644
 #, fuzzy
 msgid "Failed to get a scheduler name"
 msgstr "होस्टनेम पाने में विफल"
 
-#: src/xend_internal.c:4558 src/xend_internal.c:4671
+#: src/xend_internal.c:4567 src/xend_internal.c:4680
 #, fuzzy
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "डोमेन सूचना अपूर्ण, गुम uuid"
 
-#: src/xend_internal.c:4563 src/xend_internal.c:4680
+#: src/xend_internal.c:4572 src/xend_internal.c:4689
 #, fuzzy
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "डोमेन सूचना अपूर्ण, गुम uuid"
 
-#: src/xend_internal.c:4739
+#: src/xend_internal.c:4748
 msgid "domainBlockPeek is not supported for dom0"
 msgstr ""
 
-#: src/xend_internal.c:4762
+#: src/xend_internal.c:4771
 #, fuzzy, c-format
 msgid "%s: invalid path"
 msgstr "%s में अवैध तर्क"
 
-#: src/xend_internal.c:4770
+#: src/xend_internal.c:4779
 #, fuzzy, c-format
 msgid "failed to open for reading: %s: %s"
 msgstr "%s को पढ़ने के लिये खोलने में विफल"
 
-#: src/xend_internal.c:4782
+#: src/xend_internal.c:4791
 #, fuzzy, c-format
 msgid "failed to lseek or read from file: %s: %s"
 msgstr "'%s' खोलने में विफल: %s"
 
-#: src/xend_internal.c:4865 src/xend_internal.c:4911
+#: src/xend_internal.c:4874 src/xend_internal.c:4920
 #, fuzzy, c-format
 msgid "unexpected graphics type %d"
 msgstr "अप्रत्याशित mime प्रकार"
 
-#: src/xend_internal.c:4954
+#: src/xend_internal.c:4963
 #, fuzzy
 msgid "unexpected chr device type"
 msgstr "अप्रत्याशित mime प्रकार"
 
-#: src/xend_internal.c:5128 src/xm_internal.c:1779
+#: src/xend_internal.c:5137 src/xm_internal.c:1779
 #, fuzzy, c-format
 msgid "unsupported network type %d"
 msgstr "अप्रत्याशित mime प्रकार"
 
-#: src/xend_internal.c:5302 src/xend_internal.c:5309 src/xend_internal.c:5316
+#: src/xend_internal.c:5311 src/xend_internal.c:5318 src/xend_internal.c:5325
 #, fuzzy, c-format
 msgid "unexpected lifecycle value %d"
 msgstr "अप्रत्याशित मान नोड"
 
-#: src/xend_internal.c:5333
+#: src/xend_internal.c:5342
 #, fuzzy
 msgid "no HVM domain loader"
 msgstr "नोड डोमेन सूची"
 
-#: src/xend_internal.c:5544
+#: src/xend_internal.c:5553
 #, fuzzy
 msgid "hotplug of device type not supported"
 msgstr "लाइब्रेरी कॉल विफल रहा, संभवतः समर्थित नहीं"
@@ -7209,6 +7256,9 @@ msgstr "नया संदर्भ दें"
 msgid "failed to connect to Xen Store"
 msgstr "Xen भंडार में जुड़ने में विफल"
 
+#~ msgid "blocked"
+#~ msgstr "ब्लॉक किया"
+
 #, fuzzy
 #~ msgid "invalid interface type: %s"
 #~ msgstr "लक्ष्य युक्ति प्रकार"
@@ -7283,10 +7333,6 @@ msgstr "Xen भंडार में जुड़ने में विफल"
 
 #, fuzzy
 #~ msgid "cannot read tty pid file %s: %s"
-#~ msgstr "विन्यास फाइल लिखने में विफल: %s"
-
-#, fuzzy
-#~ msgid "cannot remove ttyPidFile %s: %s"
 #~ msgstr "विन्यास फाइल लिखने में विफल: %s"
 
 #, fuzzy

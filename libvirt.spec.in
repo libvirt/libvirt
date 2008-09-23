@@ -387,6 +387,9 @@ fi
 %endif
 
 %changelog
+* Tue Sep 23 2008 Daniel Veillard <veillard@redhat.com> - 0.4.6-1
+- release of 0.4.6
+
 * Mon Sep  8 2008 Daniel Veillard <veillard@redhat.com> - 0.4.5-1
 - release of 0.4.5
 

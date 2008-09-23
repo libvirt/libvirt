@@ -486,7 +486,7 @@ virStorageBackendLogicalDeletePool(virConnectPtr conn,
                                    unsigned int flags ATTRIBUTE_UNUSED)
 {
     const char *cmdargv[] = {
-        VGREMOVE, pool->def->source.name, NULL
+        VGREMOVE, "-f", pool->def->source.name, NULL
     };
     const char *pvargv[3];
     int i, error;

@@ -1,3 +1,9 @@
+Tue Sep 23 22:45:47 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in libvirt.spec.in NEWS docs/*: release of libvirt-0.4.6
+	* src/storage_backend_logical.c: re-add the -f flag to vgremove
+	* po/*: rebuilt
+
 Tue Sep 23 12:17:22 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* po/pt_BR.po: updated brazilian translation
