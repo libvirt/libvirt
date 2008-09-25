@@ -148,64 +148,61 @@ B<virsh> list
 
 
 Name is the name of the domain.  ID the domain numeric id.
- State is the run state (see below).
-
-=item B<freecell> optional I<cellno>
-
-Prints the available amount of memory on the machine or within a
-NUMA cell if I<cellno> is provided.
+State is the run state (see below).
 
 =over 4
 
 B<STATES>
 
+The State field lists 6 states for a domain, and which ones the
+current domain is in.
 
-The State field lists 6 states for a Xen Domain, and which ones the
-current Domain is in.
-
-=item B<r - running>
+=item B<running>
 
 The domain is currently running on a CPU
 
-=item B<b - blocked>
+=item B<idle>
 
-The domain is blocked, and not running or runnable.  This can be caused
+The domain is idle, and not running or runnable.  This can be caused
 because the domain is waiting on IO (a traditional wait state) or has
 gone to sleep because there was nothing else for it to do.
 
-=item B<p - paused>
+=item B<paused>
 
 The domain has been paused, usually occurring through the administrator
-running B<xm pause>.  When in a paused state the domain will still
+running B<virsh suspend>.  When in a paused state the domain will still
 consume allocated resources like memory, but will not be eligible for
-scheduling by the Xen hypervisor.
+scheduling by the hypervisor.
 
-=item B<s - shutdown>
+=item B<shutdown>
 
 The domain is in the process of shutting down, i.e. the guest operating system
 has been notified and should be in the process of stopping its operations
 gracefully.
 
-=item B<c - crashed>
+=item B<crashed>
 
 The domain has crashed, which is always a violent ending.  Usually
 this state can only occur if the domain has been configured not to
-restart on crash.  See L<xmdomain.cfg> for more info.
+restart on crash.
 
-=item B<d - dying>
+=item B<dying>
 
 The domain is in process of dying, but hasn't completely shutdown or
 crashed.
 
 =back
 
+=item B<freecell> optional I<cellno>
+
+Prints the available amount of memory on the machine or within a
+NUMA cell if I<cellno> is provided.
+
 =head1 DOMAIN COMMANDS
 
 The following commands manipulate domains directly, as stated
 previously most commands take domain-id as the first parameter. The
 I<domain-id> can be specified as an short integer, a name or a full UUID.
-
-=over 4
 
 =item B<autostart> optional I<--disable> I<domain-id>
 
@@ -219,7 +216,7 @@ Connect the virtual serial console for the guest.
 
 =item B<create> I<FILE>
 
-Create a domain from an XML <file> an easy way to create one if you have a pre-existing xen guest created via B<xm> create <XMLFILE>.
+Create a domain from an XML <file>. An easy way to create the XML <file> is to use the B<dumpxml> command to obtain the definition of a pre-existing guest.
 
 B<Example>
 
@@ -303,9 +300,8 @@ command run from the console.  The command returns as soon as it has
 executed the reboot action, which may be significantly before the
 domain actually reboots.
 
-For xen vm the behavior of what happens to a domain when it reboots is set by the
-I<on_reboot> parameter of the xmdomain.cfg file when the domain was
-created.
+The exact behavior of a domain when it reboots is set by the
+I<on_reboot> parameter in the domain's XML definition.
 
 =item B<restore> I<state-file>
 
@@ -360,9 +356,8 @@ to perform graceful shutdown, so there is no guarantee that it will
 succeed, and may take a variable length of time depending on what
 services must be shutdown in the domain.
 
-For a xen guest vm the behavior of what happens to a domain when it reboots is set by the
-I<on_shutdown> parameter of the xmdomain.cfg file when the domain was
-created.
+The exact behavior of a domain when it shuts down is set by the
+I<on_shutdown> parameter in the domain's XML definition.
 
 =item B<start> I<domain-name>
 
@@ -404,8 +399,6 @@ and I<cpulist> is a comma separated list of physical CPU numbers.
 Output the IP address and port number for the VNC display. If the information
 is not available the processes will provide an exit code of 1.
 
-=back
-
 =head1 DEVICES COMMANDS
 
 The following commands manipulate devices associated to domains.
@@ -413,8 +406,6 @@ The domain-id can be specified as an short integer, a name or a full UUID.
 To better understand the values allowed as options for the command
 reading the documentation at L<http://libvirt.org/format.html> on the
 format of the device sections to get the most accurate set of accepted values.
-
-=over 4
 
 =item B<attach-device> I<domain-id> I<FILE>
 
@@ -456,8 +447,6 @@ I<type> can be either I<network> to indicate a physical network device or I<brid
 It is recommended to use the I<mac> option to distinguish between the interfaces
 if more than one are present on the domain.
 
-=back
-
 =head1 VIRTUAL NETWORKS COMMANDS
 
 The following commands manipulate networks. Libvirt has the capability to
@@ -466,8 +455,6 @@ actual network devices. For more detailed information about this feature
 see the documentation at L<http://libvirt.org/format.html#Net1> . A lot
 of the command for virtual networks are similar to the one used for domains,
 but the way to name a virtual network is either by its name or UUID.
-
-=over 4
 
 =item B<net-autostart> I<network> optional I<--disable>
 
@@ -528,29 +515,23 @@ Undefine the configuration for an inactive network.
 
 Convert a network name to network UUID.
 
-=back
-
 =head1 ENVIRONMENT
-
-=over 4
 
 =item VIRSH_DEFAULT_CONNECT_URI
 
 The hypervisor to connect to by default. Set this to a URI, in the same
 format as accepted by the B<connect> option.
 
-=back
-
 =head1 SEE ALSO
 
-L<xm(1)>, L<xmdomain.cfg(5)>, L<xentop(1)> , L<http://www.libvirt.org/>
+L<virt-install(1)>, L<xm(1)>, L<virt-top(1)>, L<virt-mem(1)>, L<virt-df(1)>, L<http://www.libvirt.org/>
 
 =head1 AUTHOR
 
   Andrew Puch <apuch @ redhat.com>
   Daniel Veillard <veillard @ redhat.com>
 
-  Based on the xm man paged by
+  Based on the xm man page by:
   Sean Dague <sean at dague dot net>
   Daniel Stekloff <dsteklof at us dot ibm dot com>
 
