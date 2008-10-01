@@ -50,7 +50,7 @@ GENERATED= libvirt-export.c \
 $(GENERATED): $(srcdir)/$(GENERATE) $(API_DESC)
 	$(PYTHON) $(srcdir)/$(GENERATE) $(srcdir)
 
-libvirt.py: $(srcdir)/libvir.py libvirtclass.py
+libvirt.py: $(srcdir)/libvir.py $(GENERATED)
 	cat $(srcdir)/libvir.py libvirtclass.py > $@-t
 	mv $@-t $@
 

@@ -1884,6 +1884,8 @@ xenDaemonParseSxprNets(virConnectPtr conn,
                 prev->next = net;
             else
                 def->nets = net;
+
+            prev = net;
             vif_index++;
         }
     }

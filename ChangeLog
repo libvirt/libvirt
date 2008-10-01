@@ -1,3 +1,9 @@
+Wed Oct  1 17:28:47 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: fix ordering when parsing multiple Xen
+	  interfaces, patch by Jim Fehlig
+	* python/Makefile.am: fix parallel build
+
 Thu Sep 25 13:37:42 IST 2008 Mark McLoughlin <markmc@redhat.com>
 
 	* docs/virsh.pod: fixup some minor issues - e.g. bogus
