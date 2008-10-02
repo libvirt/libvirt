@@ -566,7 +566,7 @@ static int qemudExtractMonitorPath(virConnectPtr conn,
             strncpy(*path, dev, (tmp-dev));
             (*path)[(tmp-dev)] = '\0';
             /* ... now further update offset till we get EOL */
-            *offset += tmp - haystack;
+            *offset = tmp - haystack;
             return 0;
         }
         tmp++;

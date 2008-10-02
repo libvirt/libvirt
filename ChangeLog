@@ -1,3 +1,7 @@
+Thu Oct  2 10:06:00 EST 2008 Cole Robinson <crobinso@redhat.com>
+
+	* src/qemu_driver.c: Fix startup timeout with multiple pty devices.
+
 Wed Oct  1 17:28:47 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: fix ordering when parsing multiple Xen
