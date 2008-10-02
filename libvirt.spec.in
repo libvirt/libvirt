@@ -26,7 +26,7 @@
 %endif
 %endif
 
-%if 0%{fedora} >= 8
+%if 0%{?fedora} >= 8
 %define with_polkit    0%{!?_without_polkit:1}
 %define with_xen_proxy 0
 %endif
