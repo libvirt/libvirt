@@ -90,13 +90,15 @@ LXC_DRIVER_SOURCES =						\
 		lxc_conf.c lxc_conf.h				\
 		lxc_container.c lxc_container.h			\
 		lxc_driver.c lxc_driver.h			\
-		veth.c veth.h
+		veth.c veth.h					\
+		cgroup.c cgroup.h
 
 LXC_CONTROLLER_SOURCES =					\
 		lxc_conf.c lxc_conf.h				\
 		lxc_container.c lxc_container.h			\
 		lxc_controller.c				\
-		veth.c veth.h
+		veth.c veth.h                                   \
+		cgroup.c cgroup.h
 
 OPENVZ_DRIVER_SOURCES =						\
 		openvz_conf.c openvz_conf.h			\

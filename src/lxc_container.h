@@ -30,6 +30,16 @@ enum {
     LXC_CONTAINER_FEATURE_NET = (1 << 0),
 };
 
+#define LXC_DEV_MAJ_MEMORY  1
+#define LXC_DEV_MIN_NULL    3
+#define LXC_DEV_MIN_ZERO    5
+#define LXC_DEV_MIN_FULL    7
+#define LXC_DEV_MIN_RANDOM  8
+#define LXC_DEV_MIN_URANDOM 9
+
+#define LXC_DEV_MAJ_TTY     5
+#define LXC_DEV_MIN_CONSOLE 1
+
 int lxcContainerSendContinue(int control);
 
 int lxcContainerStart(virDomainDefPtr def,

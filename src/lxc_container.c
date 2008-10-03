@@ -320,12 +320,12 @@ static int lxcContainerPopulateDevices(void)
         mode_t mode;
         const char *path;
     } devs[] = {
-        { 1, 3, 0666, "/dev/null" },
-        { 1, 5, 0666, "/dev/zero" },
-        { 1, 7, 0666, "/dev/full" },
-        { 5, 1, 0600, "/dev/console" },
-        { 1, 8, 0666, "/dev/random" },
-        { 1, 9, 0666, "/dev/urandom" },
+        { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_NULL, 0666, "/dev/null" },
+        { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_ZERO, 0666, "/dev/zero" },
+        { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_FULL, 0666, "/dev/full" },
+        { LXC_DEV_MAJ_TTY, LXC_DEV_MIN_CONSOLE, 0600, "/dev/console" },
+        { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_RANDOM, 0666, "/dev/random" },
+        { LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_URANDOM, 0666, "/dev/urandom" },
     };
 
     if (virFileMakePath("/dev") < 0 ||

@@ -43,6 +43,7 @@
 #include "bridge.h"
 #include "veth.h"
 #include "event.h"
+#include "cgroup.h"
 
 
 /* debug macros */
@@ -376,6 +377,7 @@ static int lxcVMCleanup(virConnectPtr conn,
     int waitRc;
     int childStatus = -1;
     virDomainNetDefPtr net;
+    virCgroupPtr cgroup;
 
     while (((waitRc = waitpid(vm->pid, &childStatus, 0)) == -1) &&
            errno == EINTR)
@@ -408,6 +410,11 @@ static int lxcVMCleanup(virConnectPtr conn,
     for (net = vm->def->nets; net; net = net->next) {
         vethInterfaceUpOrDown(net->ifname, 0);
         vethDelete(net->ifname);
+    }
+
+    if (virCgroupForDomain(vm->def, "lxc", &cgroup) == 0) {
+        virCgroupRemove(cgroup);
+        virCgroupFree(&cgroup);
     }
 
     return rc;

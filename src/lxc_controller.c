@@ -42,12 +42,82 @@
 #include "veth.h"
 #include "memory.h"
 #include "util.h"
-
+#include "cgroup.h"
 
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
 #define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
 
 int debugFlag = 0;
+
+struct cgroup_device_policy {
+    char type;
+    int major;
+    int minor;
+};
+
+/**
+ * lxcSetContainerResources
+ * @def: pointer to virtual machine structure
+ *
+ * Creates a cgroup for the container, moves the task inside,
+ * and sets resource limits
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int lxcSetContainerResources(virDomainDefPtr def)
+{
+    virCgroupPtr cgroup;
+    int rc = -1;
+    int i;
+    struct cgroup_device_policy devices[] = {
+        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_NULL},
+        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_ZERO},
+        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_FULL},
+        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_RANDOM},
+        {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_URANDOM},
+        {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_CONSOLE},
+        {0,   0, 0}};
+
+    if (virCgroupHaveSupport() != 0)
+        return 0; /* Not supported, so claim success */
+
+    rc = virCgroupForDomain(def, "lxc", &cgroup);
+    if (rc != 0) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("Unable to create cgroup for %s\n"), def->name);
+        return rc;
+    }
+
+    rc = virCgroupSetMemory(cgroup, def->maxmem);
+    if (rc != 0)
+        goto out;
+
+    rc = virCgroupDenyAllDevices(cgroup);
+    if (rc != 0)
+        goto out;
+
+    for (i = 0; devices[i].type != 0; i++) {
+        struct cgroup_device_policy *dev = &devices[i];
+        rc = virCgroupAllowDevice(cgroup,
+                                  dev->type,
+                                  dev->major,
+                                  dev->minor);
+        if (rc != 0)
+            goto out;
+    }
+
+    rc = virCgroupAddTask(cgroup, getpid());
+out:
+    if (rc != 0) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("Failed to set lxc resources: %s\n"), strerror(-rc));
+        virCgroupRemove(cgroup);
+    }
+
+    virCgroupFree(&cgroup);
+
+    return rc;
+}
 
 static char*lxcMonitorPath(virDomainDefPtr def)
 {
@@ -392,6 +462,9 @@ lxcControllerRun(virDomainDefPtr def,
     control[1] = -1;
 
     if (lxcControllerMoveInterfaces(nveths, veths, container) < 0)
+        goto cleanup;
+
+    if (lxcSetContainerResources(def) < 0)
         goto cleanup;
 
     if (lxcContainerSendContinue(control[0]) < 0)
