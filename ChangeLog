@@ -1,3 +1,11 @@
+Thu Oct  3 09:32:42 PDT 2008 Dan Smith <danms@us.ibm.com>
+	* src/lxc_container.h src/lxc_container.c
+	  src/lxc_controller.c src/lxc_driver.c: Use internal cgroup
+	  API to manipulate cgroups for LXC resource control
+
+Thu Oct  3 09:32:42 PDT 2008 Dan Smith <danms@us.ibm.com>
+	* src/cgroup.c src/cgroup.h: Add internal cgroup manipulation API
+
 Thu Oct  2 17:01:32 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* libvirt.spec.in: fix bug #465274 to build on RHEL
