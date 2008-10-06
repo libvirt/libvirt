@@ -4104,11 +4104,10 @@ static virNetworkDriver qemuNetworkDriver = {
 
 #ifdef WITH_LIBVIRTD
 static virStateDriver qemuStateDriver = {
-    qemudStartup,
-    qemudShutdown,
-    qemudReload,
-    qemudActive,
-    NULL
+    .initialize = qemudStartup,
+    .cleanup = qemudShutdown,
+    .reload = qemudReload,
+    .active = qemudActive,
 };
 #endif
 

@@ -1,3 +1,9 @@
+Mon Oct  6 17:39:12 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/lxc_driver.c src/qemu_driver.c src/remote_internal.c
+	  src/storage_driver.c: use C99 initializers for virState (Guido
+	  Gunther)
+
 Mon Oct  6 11:23:40 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/Makefile.am: Fix VPATH build (Guido Gunther)

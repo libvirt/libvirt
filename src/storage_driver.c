@@ -1267,11 +1267,10 @@ static virStorageDriver storageDriver = {
 
 
 static virStateDriver stateDriver = {
-    storageDriverStartup,
-    storageDriverShutdown,
-    storageDriverReload,
-    storageDriverActive,
-    NULL
+    .initialize = storageDriverStartup,
+    .cleanup = storageDriverShutdown,
+    .reload = storageDriverReload,
+    .active = storageDriverActive,
 };
 
 int storageRegister(void) {

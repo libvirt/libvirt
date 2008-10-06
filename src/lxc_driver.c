@@ -1214,11 +1214,9 @@ static virDriver lxcDriver = {
 
 
 static virStateDriver lxcStateDriver = {
-    lxcStartup,
-    lxcShutdown,
-    NULL, /* reload */
-    lxcActive,
-    NULL,
+    .initialize = lxcStartup,
+    .cleanup = lxcShutdown,
+    .active = lxcActive,
 };
 
 int lxcRegister(void)

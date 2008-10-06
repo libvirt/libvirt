@@ -4937,11 +4937,7 @@ static virStorageDriver storage_driver = {
 
 #ifdef WITH_LIBVIRTD
 static virStateDriver state_driver = {
-    remoteStartup,
-    NULL,
-    NULL,
-    NULL,
-    NULL
+    .initialize = remoteStartup,
 };
 #endif
 
