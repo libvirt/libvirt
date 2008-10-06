@@ -138,7 +138,7 @@ endif
 if HAVE_POLKIT
 install-data-polkit:: install-init
 	mkdir -p $(DESTDIR)$(policydir)
-	$(INSTALL_DATA) libvirtd.policy $(DESTDIR)$(policydir)/org.libvirt.unix.policy
+	$(INSTALL_DATA) $(srcdir)/libvirtd.policy $(DESTDIR)$(policydir)/org.libvirt.unix.policy
 uninstall-data-polkit:: install-init
 	rm -f $(DESTDIR)$(policydir)/org.libvirt.unix.policy
 else

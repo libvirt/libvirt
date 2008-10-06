@@ -1,3 +1,7 @@
+Mon Oct  6 11:23:40 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/Makefile.am: Fix VPATH build (Guido Gunther)
+
 Mon Oct  6 12:08:40 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* po/no.po: removed it's obsoleted by np.po, fixes #335211
