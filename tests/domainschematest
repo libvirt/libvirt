@@ -13,7 +13,7 @@ do
   for xml in $XML
   do
     n=`expr $n + 1`
-    printf "%4d) %-60s  " $n $xml
+    printf "%4d) %.60s  " $n $(basename $(dirname $xml))"/"$(basename $xml)
     result=`xmllint --relaxng $srcdir/../docs/libvirt.rng --noout $xml 2>&1`
     ret=$?
     if test $ret = 0; then
