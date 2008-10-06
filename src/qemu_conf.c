@@ -1235,7 +1235,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
  error:
     if (tapfds &&
         *tapfds) {
-        for (i = 0; ntapfds; i++)
+        for (i = 0; i < *ntapfds; i++)
             close((*tapfds)[i]);
         VIR_FREE(*tapfds);
         *ntapfds = 0;
