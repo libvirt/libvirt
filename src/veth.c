@@ -18,9 +18,6 @@
 #include "memory.h"
 #include "util.h"
 
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
-
 /* Functions */
 /**
  * getFreeVethName:

@@ -44,9 +44,6 @@
 #include "util.h"
 #include "cgroup.h"
 
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
-
 int debugFlag = 0;
 
 struct cgroup_device_policy {

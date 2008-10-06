@@ -48,9 +48,6 @@
 #include "capabilities.h"
 #include "memory.h"
 
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
-
 /*
  * so far there is 2 versions of the structures usable for doing
  * hypervisor calls.

@@ -46,9 +46,6 @@
 /* required for cpumap_t */
 #include <xen/dom0_ops.h>
 
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt,__VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
-
 #ifndef PROXY
 
 /*

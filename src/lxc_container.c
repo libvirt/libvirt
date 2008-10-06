@@ -46,9 +46,6 @@
 #include "memory.h"
 #include "veth.h"
 
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
-
 /*
  * GLibc headers are behind the kernel, so we define these
  * constants if they're not present already.

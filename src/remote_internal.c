@@ -74,9 +74,6 @@
 #include "memory.h"
 #include "util.h"
 
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt,__VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
-
 /* Per-connection private data. */
 #define MAGIC 999               /* private_data->magic if OK */
 #define DEAD 998                /* private_data->magic if dead/closed */

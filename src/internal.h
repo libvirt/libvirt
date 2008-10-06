@@ -85,6 +85,9 @@ extern int debugFlag;
     do { } while (0)
 #endif /* !ENABLE_DEBUG */
 
+#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
+#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
+
 /* C99 uses __func__.  __FUNCTION__ is legacy. */
 #ifndef __GNUC__
 #define __FUNCTION__ __func__

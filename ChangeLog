@@ -1,3 +1,11 @@
+Mon Oct  6 15:47:00 EST 2008 Cole Robinson <crobinso@redhat.com>
+
+	* qemud/remote.c src/hash.c src/internal.h src/lxc_conf.c
+	  src/lxc_container.c src/lxc_controller.c src/lxc_driver.c
+	  src/remote_internal.c src/storage_backend_disk.c src/veth.c
+	  src/xen_internal.c src/xen_unified.c src/xend_internal.c:
+	  Move DEBUG and DEBUG0 macros to central location.
+
 Mon Oct  6 15:32:00 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* src/qemu_conf.c: Fix possible segfault if starting a qemu guest with

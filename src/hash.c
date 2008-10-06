@@ -29,9 +29,6 @@
 
 #define MAX_HASH_LEN 8
 
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
-
 /* #define DEBUG_GROW */
 
 /*

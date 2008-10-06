@@ -40,9 +40,6 @@
 #include "util.h"
 #include "memory.h"
 
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt,__VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
-
 static int
 xenUnifiedNodeGetInfo (virConnectPtr conn, virNodeInfoPtr info);
 static int

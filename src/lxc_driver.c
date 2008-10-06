@@ -46,11 +46,6 @@
 #include "cgroup.h"
 
 
-/* debug macros */
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
-
-
 static int lxcStartup(void);
 static int lxcShutdown(void);
 static lxc_driver_t *lxc_driver = NULL;

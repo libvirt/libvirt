@@ -76,9 +76,6 @@ static int virStateDriverTabCount = 0;
 #endif
 static int initialized = 0;
 
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
-
 #ifdef ENABLE_DEBUG
 int debugFlag = 0;
 #endif

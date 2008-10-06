@@ -29,10 +29,6 @@
 
 #include "lxc_conf.h"
 
-/* debug macros */
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
-
 /* Functions */
 void lxcError(virConnectPtr conn, virDomainPtr dom, int code,
               const char *fmt, ...)

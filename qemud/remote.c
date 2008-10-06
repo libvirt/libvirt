@@ -52,8 +52,6 @@
 #include "qemud.h"
 #include "memory.h"
 
-#define DEBUG 0
-
 #define REMOTE_DEBUG(fmt,...) qemudDebug("REMOTE: " fmt, __VA_ARGS__)
 
 static void remoteDispatchError (struct qemud_client *client,
@@ -426,10 +424,6 @@ remoteDispatchOpen (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     name = args->name ? *args->name : NULL;
-
-#if DEBUG
-    fprintf (stderr, "remoteDispatchOpen: name = %s\n", name);
-#endif
 
     /* If this connection arrived on a readonly socket, force
      * the connection to be readonly.
