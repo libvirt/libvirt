@@ -201,7 +201,7 @@ qemudStartup(void) {
         if (!(pw = getpwuid(uid))) {
             qemudLog(QEMUD_ERR, _("Failed to find user record for uid '%d': %s\n"),
                      uid, strerror(errno));
-            goto out_of_memory;
+            goto out_nouid;
         }
 
         if (asprintf(&qemu_driver->logDir,
@@ -267,6 +267,7 @@ qemudStartup(void) {
  out_of_memory:
     qemudLog (QEMUD_ERR,
               "%s", _("qemudStartup: out of memory\n"));
+ out_nouid:
     VIR_FREE(base);
     VIR_FREE(qemu_driver);
     return -1;

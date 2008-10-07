@@ -1,3 +1,8 @@
+Tue Oct  7 17:59:59 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: don't print and extra OOM error on top of
+	  getpwuid error (Guido Günther)
+
 Mon Oct  6 15:47:00 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* qemud/remote.c src/hash.c src/internal.h src/lxc_conf.c
