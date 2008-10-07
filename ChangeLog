@@ -1,3 +1,7 @@
+Tue Oct  7 18:33:39 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: another OOM handling cleanup (Guido Günther)
+
 Tue Oct  7 17:59:59 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: don't print and extra OOM error on top of

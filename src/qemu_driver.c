@@ -208,11 +208,8 @@ qemudStartup(void) {
                      "%s/.libvirt/qemu/log", pw->pw_dir) == -1)
             goto out_of_memory;
 
-        if (asprintf (&base, "%s/.libvirt", pw->pw_dir) == -1) {
-            qemudLog (QEMUD_ERR,
-                      "%s", _("out of memory in asprintf\n"));
+        if (asprintf (&base, "%s/.libvirt", pw->pw_dir) == -1)
             goto out_of_memory;
-        }
     }
 
     /* Configuration paths are either ~/.libvirt/qemu/... (session) or
