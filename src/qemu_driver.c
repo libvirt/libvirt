@@ -2176,6 +2176,7 @@ static int qemudDomainShutdown(virDomainPtr dom) {
                          "%s", _("shutdown operation failed"));
         return -1;
     }
+    VIR_FREE(info);
     return 0;
 
 }

@@ -1,3 +1,8 @@
+Wed Oct  8 15:42:44 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/cgroup.c: use safewrite()
+	* src/qemu_driver.c: missing VIR_FREE pojnted out by Eduardo Habkost
+
 Tue Oct  7 23:08:51 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	avoid "make syntax-check" failure
