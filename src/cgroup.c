@@ -649,7 +649,7 @@ int virCgroupAddTask(virCgroupPtr group, pid_t pid)
             goto done;
         }
 
-        if (write(fd, pidstr, strlen(pidstr)) <= 0) {
+        if (safe_write(fd, pidstr, strlen(pidstr)) <= 0) {
             rc = -errno;
             goto done;
         }
