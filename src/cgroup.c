@@ -224,26 +224,6 @@ static int virCgroupSetValueU64(virCgroupPtr group,
     return rc;
 }
 
-#if 0
-/* This is included for completeness, but not yet used */
-
-static int virCgroupSetValueI64(virCgroupPtr group,
-                                const char *key,
-                                int64_t value)
-{
-    char *strval = NULL;
-    int rc;
-
-    if (asprintf(&strval, "%" PRIi64, value) == -1)
-        return -ENOMEM;
-
-    rc = virCgroupSetValueStr(group, key, strval);
-
-    VIR_FREE(strval);
-
-    return rc;
-}
-
 static int virCgroupGetValueStr(virCgroupPtr group,
                                 const char *key,
                                 char **value)
@@ -293,20 +273,21 @@ out:
     return rc;
 }
 
-static int virCgroupGetValueU64(virCgroupPtr group,
+#if 0
+/* This is included for completeness, but not yet used */
+
+static int virCgroupSetValueI64(virCgroupPtr group,
                                 const char *key,
-                                uint64_t *value)
+                                int64_t value)
 {
     char *strval = NULL;
-    int rc = 0;
+    int rc;
 
-    rc = virCgroupGetValueStr(group, key, &strval);
-    if (rc != 0)
-        goto out;
+    if (asprintf(&strval, "%" PRIi64, value) == -1)
+        return -ENOMEM;
 
-    if (sscanf(strval, "%" SCNu64, value) != 1)
-        rc = -EINVAL;
-out:
+    rc = virCgroupSetValueStr(group, key, strval);
+
     VIR_FREE(strval);
 
     return rc;
@@ -331,6 +312,25 @@ out:
     return rc;
 }
 #endif
+
+static int virCgroupGetValueU64(virCgroupPtr group,
+                                const char *key,
+                                uint64_t *value)
+{
+    char *strval = NULL;
+    int rc = 0;
+
+    rc = virCgroupGetValueStr(group, key, &strval);
+    if (rc != 0)
+        goto out;
+
+    if (sscanf(strval, "%" SCNu64, value) != 1)
+        rc = -EINVAL;
+out:
+    VIR_FREE(strval);
+
+    return rc;
+}
 
 static int _virCgroupInherit(const char *path,
                              const char *key)
@@ -759,4 +759,14 @@ out:
     VIR_FREE(devstr);
 
     return rc;
+}
+
+int virCgroupSetCpuShares(virCgroupPtr group, unsigned long shares)
+{
+    return virCgroupSetValueU64(group, "cpu.shares", (uint64_t)shares);
+}
+
+int virCgroupGetCpuShares(virCgroupPtr group, unsigned long *shares)
+{
+    return virCgroupGetValueU64(group, "cpu.shares", (uint64_t *)shares);
 }

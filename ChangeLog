@@ -1,3 +1,8 @@
+Wed Oct  8 08:29:25 PDT 2008 Dan Smith <danms@us.ibm.com>
+	* src/cgroup.c src/cgroup.h: Add cpu shares manipulation
+	* src/lxc_driver.c: Add scheduler parameters interface for cpu shares
+	* src/virsh.c: Add generic scheduler parameter interface
+
 Wed Oct  8 15:42:44 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/cgroup.c: use safewrite()

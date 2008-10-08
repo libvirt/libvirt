@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include <wait.h>
 
+#include "internal.h"
 #include "lxc_conf.h"
 #include "lxc_container.h"
 #include "lxc_driver.h"
@@ -1144,6 +1145,94 @@ static int lxcVersion(virConnectPtr conn, unsigned long *version)
     return 0;
 }
 
+static char *lxcGetSchedulerType(virDomainPtr domain, int *nparams)
+{
+    if (nparams)
+        *nparams = 1;
+
+    return strdup("posix");
+}
+
+static int lxcSetSchedulerParameters(virDomainPtr _domain,
+                                     virSchedParameterPtr params,
+                                     int nparams)
+{
+    int i;
+    int rc;
+    virCgroupPtr group;
+    virDomainObjPtr domain;
+
+    if (virCgroupHaveSupport() != 0)
+        return 0;
+
+    domain = virDomainFindByUUID(lxc_driver->domains, _domain->uuid);
+    if (domain == NULL) {
+        lxcError(NULL, _domain, VIR_ERR_INTERNAL_ERROR,
+                 _("No such domain %s"), _domain->uuid);
+        return -EINVAL;
+    }
+
+    rc = virCgroupForDomain(domain->def, "lxc", &group);
+    if (rc != 0)
+        return rc;
+
+    for (i = 0; i < nparams; i++) {
+        virSchedParameterPtr param = &params[i];
+
+        if (STREQ(param->field, "cpu_shares")) {
+            rc = virCgroupSetCpuShares(group, params[i].value.ui);
+        } else {
+            lxcError(NULL, _domain, VIR_ERR_INVALID_ARG,
+                     _("Invalid parameter `%s'"), param->field);
+            rc = -ENOENT;
+            goto out;
+        }
+    }
+
+    rc = 0;
+out:
+    virCgroupFree(&group);
+
+    return rc;
+}
+
+static int lxcGetSchedulerParameters(virDomainPtr _domain,
+                                     virSchedParameterPtr params,
+                                     int *nparams)
+{
+    int rc = 0;
+    virCgroupPtr group;
+    virDomainObjPtr domain;
+
+    if (virCgroupHaveSupport() != 0)
+        return 0;
+
+    if ((*nparams) != 1) {
+        lxcError(NULL, _domain, VIR_ERR_INVALID_ARG,
+                 _("Invalid parameter count"));
+        return -1;
+    }
+
+    domain = virDomainFindByUUID(lxc_driver->domains, _domain->uuid);
+    if (domain == NULL) {
+        lxcError(NULL, _domain, VIR_ERR_INTERNAL_ERROR,
+                 _("No such domain %s"), _domain->uuid);
+        return -ENOENT;
+    }
+
+    rc = virCgroupForDomain(domain->def, "lxc", &group);
+    if (rc != 0)
+        return rc;
+
+    rc = virCgroupGetCpuShares(group, (unsigned long *)&params[0].value.ul);
+    strncpy(params[0].field, "cpu_shares", sizeof(params[0].field));
+    params[0].type = VIR_DOMAIN_SCHED_FIELD_ULLONG;
+
+    virCgroupFree(&group);
+
+    return rc;
+}
+
 /* Function Tables */
 static virDriver lxcDriver = {
     VIR_DRV_LXC, /* the number virDrvNo */
@@ -1193,9 +1282,9 @@ static virDriver lxcDriver = {
     NULL, /* domainDetachDevice */
     NULL, /* domainGetAutostart */
     NULL, /* domainSetAutostart */
-    NULL, /* domainGetSchedulerType */
-    NULL, /* domainGetSchedulerParameters */
-    NULL, /* domainSetSchedulerParameters */
+    lxcGetSchedulerType, /* domainGetSchedulerType */
+    lxcGetSchedulerParameters, /* domainGetSchedulerParameters */
+    lxcSetSchedulerParameters, /* domainSetSchedulerParameters */
     NULL, /* domainMigratePrepare */
     NULL, /* domainMigratePerform */
     NULL, /* domainMigrateFinish */
@@ -1206,7 +1295,6 @@ static virDriver lxcDriver = {
     NULL, /* nodeGetCellsFreeMemory */
     NULL, /* getFreeMemory */
 };
-
 
 static virStateDriver lxcStateDriver = {
     .initialize = lxcStartup,

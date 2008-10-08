@@ -1112,6 +1112,7 @@ static const vshCmdInfo info_schedinfo[] = {
 
 static const vshCmdOptDef opts_schedinfo[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"set", VSH_OT_STRING, VSH_OFLAG_NONE, gettext_noop("parameter=value")},
     {"weight", VSH_OT_INT, VSH_OFLAG_NONE, gettext_noop("weight for XEN_CREDIT")},
     {"cap", VSH_OT_INT, VSH_OFLAG_NONE, gettext_noop("cap for XEN_CREDIT")},
     {NULL, 0, 0, NULL}
@@ -1121,6 +1122,9 @@ static int
 cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
 {
     char *schedulertype;
+    char *set;
+    char *param_name = NULL;
+    long long int param_value = 0;
     virDomainPtr dom;
     virSchedParameterPtr params = NULL;
     int i, ret;
@@ -1128,6 +1132,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     int nr_inputparams = 0;
     int inputparams = 0;
     int weightfound = 0;
+    int setfound = 0;
     int weight = 0;
     int capfound = 0;
     int cap = 0;
@@ -1141,7 +1146,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
         return FALSE;
 
-    /* Currently supports Xen Credit only */
+    /* Deprecated Xen-only options */
     if(vshCommandOptBool(cmd, "weight")) {
         weight = vshCommandOptInt(cmd, "weight", &weightfound);
         if (!weightfound) {
@@ -1162,6 +1167,25 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
+    if(vshCommandOptBool(cmd, "set")) {
+        set = vshCommandOptString(cmd, "set", &setfound);
+        if (!setfound) {
+            vshError(ctl, FALSE, "%s", _("Error getting param"));
+            goto cleanup;
+        }
+
+        param_name = vshMalloc(ctl, strlen(set) + 1);
+        if (param_name == NULL)
+            goto cleanup;
+
+        if (sscanf(set, "%[^=]=%i", param_name, &param_value) != 2) {
+            vshError(ctl, FALSE, "%s", _("Invalid value of param"));
+            goto cleanup;
+        }
+
+        nr_inputparams++;
+    }
+
     params = vshMalloc(ctl, sizeof (virSchedParameter) * nr_inputparams);
     if (params == NULL) {
         goto cleanup;
@@ -1180,7 +1204,14 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
          params[inputparams].value.ui = cap;
          inputparams++;
     }
-    /* End Currently supports Xen Credit only */
+    /* End Deprecated Xen-only options */
+
+    if (setfound) {
+        strncpy(params[inputparams].field,param_name,sizeof(params[0].field));
+        params[inputparams].type = VIR_DOMAIN_SCHED_FIELD_LLONG;
+        params[inputparams].value.l = param_value;
+        inputparams++;
+    }
 
     assert (inputparams == nr_inputparams);
 
@@ -1247,6 +1278,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     }
  cleanup:
     free(params);
+    free(param_name);
     virDomainFree(dom);
     return ret_val;
 }
