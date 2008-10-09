@@ -50,25 +50,6 @@
 #define virStorageLog(msg...) fprintf(stderr, msg)
 
 void
-virStorageReportError(virConnectPtr conn, int code, const char *fmt, ...) {
-    va_list args;
-    char errorMessage[1024];
-
-    if (fmt) {
-        va_start(args, fmt);
-        vsnprintf(errorMessage, sizeof(errorMessage)-1, fmt, args);
-        va_end(args);
-    } else {
-        errorMessage[0] = '\0';
-    }
-    virStorageLog("%s", errorMessage);
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_STORAGE, code, VIR_ERR_ERROR,
-                    NULL, NULL, NULL, -1, -1, "%s", errorMessage);
-}
-
-
-
-void
 virStorageVolDefFree(virStorageVolDefPtr def) {
     int i;
     VIR_FREE(def->name);

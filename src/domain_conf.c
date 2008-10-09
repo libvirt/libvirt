@@ -141,30 +141,9 @@ VIR_ENUM_IMPL(virDomainHostdevSubsys, VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST,
               "usb",
               "pci")
 
-static void virDomainReportError(virConnectPtr conn,
-                                 int code, const char *fmt, ...)
-  ATTRIBUTE_FORMAT(printf, 3, 4);
-
-static void virDomainReportError(virConnectPtr conn,
-                                 int code, const char *fmt, ...)
-{
-    va_list args;
-    char errorMessage[1024];
-    const char *virerr;
-
-    if (fmt) {
-        va_start(args, fmt);
-        vsnprintf(errorMessage, sizeof(errorMessage)-1, fmt, args);
-        va_end(args);
-    } else {
-        errorMessage[0] = '\0';
-    }
-
-    virerr = __virErrorMsg(code, (errorMessage[0] ? errorMessage : NULL));
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_DOMAIN, code, VIR_ERR_ERROR,
-                    virerr, errorMessage, NULL, -1, -1, virerr, errorMessage);
-}
-
+#define virDomainReportError(conn, code, fmt...)                             \
+        __virReportErrorHelper(conn, VIR_FROM_DOMAIN, code, __FILE__,        \
+                               __FUNCTION__, __LINE__, fmt)
 
 virDomainObjPtr virDomainFindByID(const virDomainObjPtr doms,
                                   int id)

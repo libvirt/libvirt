@@ -30,13 +30,9 @@
 #include "memory.h"
 #include "qparams.h"
 
-static void
-qparam_report_oom(void)
-{
-    const char *virerr = __virErrorMsg(VIR_ERR_NO_MEMORY, NULL);
-    __virRaiseError(NULL, NULL, NULL, VIR_FROM_NONE, VIR_ERR_NO_MEMORY, VIR_ERR_ERROR,
-                    virerr, NULL, NULL, -1, -1, virerr, NULL);
-}
+#define qparam_report_oom(void)                                              \
+        __virReportErrorHelper(NULL, VIR_FROM_NONE, VIR_ERR_NO_MEMORY,       \
+                               __FILE__, __FUNCTION__, __LINE__, NULL)
 
 struct qparam_set *
 new_qparam_set (int init_alloc, ...)

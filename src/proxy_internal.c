@@ -92,26 +92,9 @@ struct xenUnifiedDriver xenProxyDriver = {
  *									*
  ************************************************************************/
 
-/**
- * virProxyError:
- * @conn: the connection if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the xend daemon interface
- */
-static void
-virProxyError(virConnectPtr conn, virErrorNumber error, const char *info)
-{
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = __virErrorMsg(error, info);
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_PROXY, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, 0, 0, errmsg, info);
-}
+#define virProxyError(conn, code, fmt...)                                    \
+        __virReportErrorHelper(conn, VIR_FROM_PROXY, code, __FILE__,         \
+                               __FUNCTION__, __LINE__, fmt)
 
 /************************************************************************
  *									*

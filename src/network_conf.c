@@ -48,26 +48,9 @@ VIR_ENUM_IMPL(virNetworkForward,
               VIR_NETWORK_FORWARD_LAST,
               "none", "nat", "route" )
 
-static void virNetworkReportError(virConnectPtr conn,
-                                  int code, const char *fmt, ...)
-{
-    va_list args;
-    char errorMessage[1024];
-    const char *virerr;
-
-    if (fmt) {
-        va_start(args, fmt);
-        vsnprintf(errorMessage, sizeof(errorMessage)-1, fmt, args);
-        va_end(args);
-    } else {
-        errorMessage[0] = '\0';
-    }
-
-    virerr = __virErrorMsg(code, (errorMessage[0] ? errorMessage : NULL));
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_NETWORK, code, VIR_ERR_ERROR,
-                    virerr, errorMessage, NULL, -1, -1, virerr, errorMessage);
-}
-
+#define virNetworkReportError(conn, code, fmt...)                            \
+        __virReportErrorHelper(conn, VIR_FROM_NETWORK, code, __FILE__,       \
+                               __FUNCTION__, __LINE__, fmt)
 
 virNetworkObjPtr virNetworkFindByUUID(const virNetworkObjPtr nets,
                                       const unsigned char *uuid)

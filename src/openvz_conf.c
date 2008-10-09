@@ -53,28 +53,6 @@ static int openvzGetVPSUUID(int vpsid, char *uuidstr);
 static int openvzLocateConfFile(int vpsid, char *conffile, int maxlen);
 static int openvzAssignUUIDs(void);
 
-void
-openvzError (virConnectPtr conn, virErrorNumber code, const char *fmt, ...)
-{
-    va_list args;
-    char errorMessage[1024];
-    const char *errmsg;
-
-    if (fmt) {
-        va_start(args, fmt);
-        vsnprintf(errorMessage, sizeof(errorMessage)-1, fmt, args);
-        va_end(args);
-    } else {
-        errorMessage[0] = '\0';
-    }
-
-    errmsg = __virErrorMsg(code, (errorMessage[0] ? errorMessage : NULL));
-    __virRaiseError (conn, NULL, NULL, VIR_FROM_OPENVZ,
-                     code, VIR_ERR_ERROR, errmsg, errorMessage, NULL, 0, 0,
-                     errmsg, errorMessage);
-}
-
-
 int
 strtoI(const char *str)
 {

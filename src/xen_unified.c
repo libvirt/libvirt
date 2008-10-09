@@ -58,23 +58,9 @@ static struct xenUnifiedDriver *drivers[XEN_UNIFIED_NR_DRIVERS] = {
     [XEN_UNIFIED_XM_OFFSET] = &xenXMDriver,
 };
 
-/**
- * xenUnifiedError:
- * @conn: the connection
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the xend daemon interface
- */
-static void
-xenUnifiedError (virConnectPtr conn, virErrorNumber error, const char *info)
-{
-    const char *errmsg;
-
-    errmsg = __virErrorMsg (error, info);
-    __virRaiseError (conn, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
-                     errmsg, info, NULL, 0, 0, errmsg, info);
-}
+#define xenUnifiedError(conn, code, fmt...)                                  \
+        __virReportErrorHelper(conn, VIR_FROM_XEN, code, __FILE__,           \
+                               __FUNCTION__, __LINE__, fmt)
 
 /*
  * Helper functions currently used in the NUMA code
@@ -418,12 +404,12 @@ xenUnifiedGetHostname (virConnectPtr conn)
 
     r = gethostname (hostname, HOST_NAME_MAX+1);
     if (r == -1) {
-        xenUnifiedError (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        xenUnifiedError (conn, VIR_ERR_SYSTEM_ERROR, "%s", strerror(errno));
         return NULL;
     }
     str = strdup (hostname);
     if (str == NULL) {
-        xenUnifiedError (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        xenUnifiedError (conn, VIR_ERR_SYSTEM_ERROR, "%s", strerror(errno));
         return NULL;
     }
     return str;

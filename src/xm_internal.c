@@ -124,25 +124,9 @@ struct xenUnifiedDriver xenXMDriver = {
     NULL, /* domainSetSchedulerParameters */
 };
 
-static void
-xenXMError(virConnectPtr conn, int code, const char *fmt, ...)
-{
-    va_list args;
-    char errorMessage[1024];
-    const char *virerr;
-
-    if (fmt) {
-        va_start(args, fmt);
-        vsnprintf(errorMessage, sizeof(errorMessage)-1, fmt, args);
-        va_end(args);
-    } else {
-        errorMessage[0] = '\0';
-    }
-
-    virerr = __virErrorMsg(code, (errorMessage[0] ? errorMessage : NULL));
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_XENXM, code, VIR_ERR_ERROR,
-                    virerr, errorMessage, NULL, -1, -1, virerr, errorMessage);
-}
+#define xenXMError(conn, code, fmt...)                                       \
+        __virReportErrorHelper(conn, VIR_FROM_XENXM, code, __FILE__,         \
+                               __FUNCTION__, __LINE__, fmt)
 
 int
 xenXMInit (void)
@@ -400,7 +384,7 @@ static int xenXMConfigCacheRefresh (virConnectPtr conn) {
     int ret = -1;
 
     if (now == ((time_t)-1)) {
-        xenXMError (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        xenXMError (conn, VIR_ERR_SYSTEM_ERROR, "%s", strerror(errno));
         return (-1);
     }
 
@@ -412,7 +396,7 @@ static int xenXMConfigCacheRefresh (virConnectPtr conn) {
 
     /* Process the files in the config dir */
     if (!(dh = opendir(configDir))) {
-        xenXMError (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        xenXMError (conn, VIR_ERR_SYSTEM_ERROR, "%s", strerror(errno));
         return (-1);
     }
 
@@ -484,7 +468,7 @@ static int xenXMConfigCacheRefresh (virConnectPtr conn) {
         } else { /* Completely new entry */
             newborn = 1;
             if (VIR_ALLOC(entry) < 0) {
-                xenXMError (conn, VIR_ERR_NO_MEMORY, strerror (errno));
+                xenXMError (conn, VIR_ERR_NO_MEMORY, "%s", strerror(errno));
                 goto cleanup;
             }
             memcpy(entry->filename, path, PATH_MAX);

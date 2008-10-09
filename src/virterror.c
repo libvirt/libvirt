@@ -722,3 +722,44 @@ __virErrorMsg(virErrorNumber error, const char *info)
     }
     return (errmsg);
 }
+
+/**
+ * __virReportErrorHelper
+ *
+ * @conn: the connection to the hypervisor if available
+ * @dom: the domain if available
+ * @net: the network if available
+ * @domcode: the virErrorDomain indicating where it's coming from
+ * @errcode: the virErrorNumber code for the error
+ * @filename: Source file error is dispatched from
+ * @funcname: Function error is dispatched from
+ * @linenr: Line number error is dispatched from
+ * @msg:  the message to display/transmit
+ * @...:  extra parameters for the message display
+ *
+ * Helper function to do most of the grunt work for individual driver
+ * ReportError
+ */
+void __virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
+                            const char *filename ATTRIBUTE_UNUSED,
+                            const char *funcname ATTRIBUTE_UNUSED,
+                            long long linenr ATTRIBUTE_UNUSED,
+                            const char *fmt, ...)
+{
+    va_list args;
+    char errorMessage[1024];
+    const char *virerr;
+
+    if (fmt) {
+        va_start(args, fmt);
+        vsnprintf(errorMessage, sizeof(errorMessage)-1, fmt, args);
+        va_end(args);
+    } else {
+        errorMessage[0] = '\0';
+    }
+
+    virerr = __virErrorMsg(errcode, (errorMessage[0] ? errorMessage : NULL));
+    __virRaiseError(conn, NULL, NULL, domcode, errcode, VIR_ERR_ERROR,
+                    virerr, errorMessage, NULL, -1, -1, virerr, errorMessage);
+
+}

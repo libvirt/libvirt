@@ -87,26 +87,9 @@ struct xenUnifiedDriver xenStoreDriver = {
 
 #endif /* ! PROXY */
 
-/**
- * virXenStoreError:
- * @conn: the connection if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the xend store interface
- */
-static void
-virXenStoreError(virConnectPtr conn, virErrorNumber error, const char *info)
-{
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = __virErrorMsg(error, info);
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_XENSTORE, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, 0, 0, errmsg, info);
-}
+#define virXenStoreError(conn, code, fmt...)                                 \
+        __virReportErrorHelper(NULL, VIR_FROM_XENSTORE, code, __FILE__,      \
+                               __FUNCTION__, __LINE__, fmt)
 
 /************************************************************************
  *									*

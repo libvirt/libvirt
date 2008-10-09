@@ -114,22 +114,9 @@ static const virNodeInfo defaultNodeInfo = {
     privconn = (testConnPtr)conn->privateData;
 
 
-static void
-testError(virConnectPtr con,
-          virDomainPtr dom,
-          virNetworkPtr net,
-          virErrorNumber error,
-          const char *info)
-{
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = __virErrorMsg(error, info);
-    __virRaiseError(con, dom, net, VIR_FROM_TEST, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, 0, 0, errmsg, info, 0);
-}
+#define testError(conn, dom, net, code, fmt...)                              \
+        __virReportErrorHelper(conn, VIR_FROM_TEST, code, __FILE__,          \
+                               __FUNCTION__, __LINE__, fmt)
 
 static virCapsPtr
 testBuildCapabilities(virConnectPtr conn) {
@@ -600,12 +587,14 @@ static char *testGetHostname (virConnectPtr conn)
 
     r = gethostname (hostname, HOST_NAME_MAX+1);
     if (r == -1) {
-        testError (conn, NULL, NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        testError (conn, NULL, NULL, VIR_ERR_SYSTEM_ERROR, "%s",
+                   strerror (errno));
         return NULL;
     }
     str = strdup (hostname);
     if (str == NULL) {
-        testError (conn, NULL, NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        testError (conn, NULL, NULL, VIR_ERR_SYSTEM_ERROR, "%s",
+                   strerror (errno));
         return NULL;
     }
     return str;
@@ -617,7 +606,8 @@ static char * testGetURI (virConnectPtr conn)
     GET_CONNECTION(conn);
 
     if (asprintf (&uri, "test://%s", privconn->path) == -1) {
-        testError (conn, NULL, NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        testError (conn, NULL, NULL, VIR_ERR_SYSTEM_ERROR, "%s",
+                   strerror (errno));
         return NULL;
     }
     return uri;

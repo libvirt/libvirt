@@ -30,27 +30,6 @@
 #include "lxc_conf.h"
 
 /* Functions */
-void lxcError(virConnectPtr conn, virDomainPtr dom, int code,
-              const char *fmt, ...)
-{
-    va_list args;
-    char errorMessage[1024];
-    const char *codeErrorMessage;
-
-    if (fmt) {
-        va_start(args, fmt);
-        vsnprintf(errorMessage, sizeof(errorMessage)-1, fmt, args);
-        va_end(args);
-    } else {
-        errorMessage[0] = '\0';
-    }
-
-    codeErrorMessage = __virErrorMsg(code, fmt);
-    __virRaiseError(conn, dom, NULL, VIR_FROM_LXC, code, VIR_ERR_ERROR,
-                    codeErrorMessage, errorMessage, NULL, 0, 0,
-                    codeErrorMessage, errorMessage);
-}
-
 virCapsPtr lxcCapsInit(void)
 {
     struct utsname utsname;

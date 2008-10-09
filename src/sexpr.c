@@ -23,26 +23,9 @@
 #include "util.h"
 #include "memory.h"
 
-/**
- * virSexprError:
- * @conn: the connection if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error in the S-Expression code
- */
-static void
-virSexprError(virErrorNumber error, const char *info)
-{
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = __virErrorMsg(error, info);
-    __virRaiseError(NULL, NULL, NULL, VIR_FROM_SEXPR, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, 0, 0, errmsg, info);
-}
+#define virSexprError(code, fmt...)                                          \
+        __virReportErrorHelper(NULL, VIR_FROM_SEXPR, code, __FILE__,         \
+                               __FUNCTION__, __LINE__, fmt)
 
 /**
  * sexpr_new:
@@ -278,7 +261,7 @@ sexpr2string(const struct sexpr * sexpr, char *buffer, size_t n_buffer)
     return (ret);
   error:
     buffer[n_buffer - 1] = 0;
-    virSexprError(VIR_ERR_SEXPR_SERIAL, buffer);
+    virSexprError(VIR_ERR_SEXPR_SERIAL, "%s", buffer);
     return (0);
 }
 

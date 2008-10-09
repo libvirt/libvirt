@@ -49,10 +49,9 @@ struct __lxc_driver {
 int lxcLoadDriverConfig(lxc_driver_t *driver);
 virCapsPtr lxcCapsInit(void);
 
-void lxcError(virConnectPtr conn,
-              virDomainPtr dom,
-              int code, const char *fmt, ...)
-    ATTRIBUTE_FORMAT(printf,4,5);
+#define lxcError(conn, dom, code, fmt...)                                    \
+        __virReportErrorHelper(conn, VIR_FROM_LXC, code, __FILE__,           \
+                               __FUNCTION__, __LINE__, fmt)
 
 #endif /* LXC_CONF_H */
 

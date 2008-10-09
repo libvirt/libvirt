@@ -62,32 +62,13 @@
 # define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
-#define MAX_ERROR_LEN   1024
-
 #define virLog(msg...) fprintf(stderr, msg)
 
 #ifndef PROXY
-static void
-ReportError(virConnectPtr conn,
-            int code, const char *fmt, ...)
-    ATTRIBUTE_FORMAT(printf, 3, 4);
 
-static void
-ReportError(virConnectPtr conn,
-            int code, const char *fmt, ...) {
-    va_list args;
-    char errorMessage[MAX_ERROR_LEN];
-
-    if (fmt) {
-        va_start(args, fmt);
-        vsnprintf(errorMessage, MAX_ERROR_LEN-1, fmt, args);
-        va_end(args);
-    } else {
-        errorMessage[0] = '\0';
-    }
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_NONE, code, VIR_ERR_ERROR,
-                    NULL, NULL, NULL, -1, -1, "%s", errorMessage);
-}
+#define ReportError(conn, code, fmt...)                                      \
+        __virReportErrorHelper(conn, VIR_FROM_NONE, code, __FILE__,          \
+                               __FUNCTION__, __LINE__, fmt)
 
 int virFileStripSuffix(char *str,
                        const char *suffix)

@@ -71,11 +71,9 @@ struct qemud_driver {
 };
 
 
-void qemudReportError(virConnectPtr conn,
-                      virDomainPtr dom,
-                      virNetworkPtr net,
-                      int code, const char *fmt, ...)
-    ATTRIBUTE_FORMAT(printf,5,6);
+#define qemudReportError(conn, dom, net, code, fmt...)                       \
+        __virReportErrorHelper(conn, VIR_FROM_QEMU, code, __FILE__,          \
+                               __FUNCTION__, __LINE__, fmt)
 
 
 int qemudLoadDriverConfig(struct qemud_driver *driver,

@@ -104,61 +104,12 @@ virDomainXMLDevID(virDomainPtr domain,
                   int ref_len);
 #endif
 
-static void virXendError(virConnectPtr conn, virErrorNumber error,
-                         const char *fmt, ...)
-    ATTRIBUTE_FORMAT(printf,3,4);
+#define virXendError(conn, code, fmt...)                                     \
+        __virReportErrorHelper(conn, VIR_FROM_XEND, code, __FILE__,          \
+                               __FUNCTION__, __LINE__, fmt)
 
-#define MAX_ERROR_MESSAGE_LEN 1024
-
-/**
- * virXendError:
- * @conn: the connection if available
- * @error: the error number
- * @fmt: format string followed by variable args
- *
- * Handle an error at the xend daemon interface
- */
-static void
-virXendError(virConnectPtr conn, virErrorNumber error,
-             const char *fmt, ...)
-{
-    va_list args;
-    char msg[MAX_ERROR_MESSAGE_LEN];
-    const char *msg2;
-
-    if (fmt) {
-        va_start (args, fmt);
-        vsnprintf (msg, sizeof (msg), fmt, args);
-        va_end (args);
-    } else {
-        msg[0] = '\0';
-    }
-
-    msg2 = __virErrorMsg (error, fmt ? msg : NULL);
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_XEND, error, VIR_ERR_ERROR,
-                    msg2, msg, NULL, 0, 0, msg2, msg);
-}
-
-/**
- * virXendErrorInt:
- * @conn: the connection if available
- * @error: the error number
- * @val: extra integer information
- *
- * Handle an error at the xend daemon interface
- */
-static void
-virXendErrorInt(virConnectPtr conn, virErrorNumber error, int val)
-{
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = __virErrorMsg(error, NULL);
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_XEND, error, VIR_ERR_ERROR,
-                    errmsg, NULL, NULL, val, 0, errmsg, val);
-}
+#define virXendErrorInt(conn, code, ival)                                    \
+        virXendError(conn, code, "%d", ival)
 
 /**
  * do_connect:

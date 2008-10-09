@@ -1,3 +1,13 @@
+Thu Oct  9 11:30:00 EST Cole Robinson <crobinso@redhat.com>
+
+	* src/domain_conf.c src/hash.c src/internal.h src/lxc_conf.c
+	  src/lxc_conf.h src/network_conf.c src/openvz_conf.c src/openvz_conf.h
+	  src/proxy_internal.c src/qemu_conf.c src/qemu_conf.h src/qparams.c
+	  src/sexpr.c src/storage_conf.c src/storage_conf.h src/test.c
+	  src/util.c src/virterror.c src/xen_internal.c src/xen_unified.c
+	  src/xend_internal.c src/xm_internal.c src/xml.c src/xs_internal.c:
+	  Centralize majority of error reporting logic.
+
 Thu Oct  9 15:49:25 BST Daniel P Berrange <berrange@redhat.com>
 
 	* src/lxc_driver.c: Annotate unused parameter

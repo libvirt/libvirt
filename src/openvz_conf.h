@@ -41,6 +41,11 @@ enum { OPENVZ_WARN, OPENVZ_ERR };
                                 fprintf(stderr, msg);\
                                 fprintf(stderr, "\n"); }
 
+#define openvzError(conn, code, fmt...)                                      \
+        __virReportErrorHelper(conn, VIR_FROM_OPENVZ, code, __FILE__,        \
+                               __FUNCTION__, __LINE__, fmt)
+
+
 /* OpenVZ commands - Replace with wrapper scripts later? */
 #define VZLIST  "vzlist"
 #define VZCTL   "vzctl"
@@ -50,8 +55,6 @@ struct openvz_driver {
     virDomainObjPtr domains;
 };
 
-void openvzError (virConnectPtr conn, virErrorNumber code, const char *fmt, ...)
-    ATTRIBUTE_FORMAT(printf, 3, 4);
 int openvz_readline(int fd, char *ptr, int maxlen);
 int openvzReadConfigParam(int vpsid ,const char * param, char *value, int maxlen);
 virCapsPtr openvzCapsInit(void);

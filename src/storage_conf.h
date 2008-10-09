@@ -247,10 +247,9 @@ static inline int virStoragePoolObjIsActive(virStoragePoolObjPtr pool) {
     return pool->active;
 }
 
-void virStorageReportError(virConnectPtr conn,
-                           int code,
-                           const char *fmt, ...)
-    ATTRIBUTE_FORMAT(printf, 3, 4);
+#define virStorageReportError(conn, code, fmt...)                            \
+        __virReportErrorHelper(conn, VIR_FROM_STORAGE, code, __FILE__,       \
+                               __FUNCTION__, __LINE__, fmt)
 
 int virStoragePoolObjScanConfigs(virStorageDriverStatePtr driver);
 
