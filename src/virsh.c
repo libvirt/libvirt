@@ -1178,7 +1178,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
         if (param_name == NULL)
             goto cleanup;
 
-        if (sscanf(set, "%[^=]=%i", param_name, &param_value) != 2) {
+        if (sscanf(set, "%[^=]=%lli", param_name, &param_value) != 2) {
             vshError(ctl, FALSE, "%s", _("Invalid value of param"));
             goto cleanup;
         }

@@ -1,3 +1,8 @@
+Thu Oct  9 15:49:25 BST Daniel P Berrange <berrange@redhat.com>
+
+	* src/lxc_driver.c: Annotate unused parameter
+	* src/virsh.c: Fix scanf format specifier
+
 Wed Oct  8 08:29:25 PDT 2008 Dan Smith <danms@us.ibm.com>
 	* src/cgroup.c src/cgroup.h: Add cpu shares manipulation
 	* src/lxc_driver.c: Add scheduler parameters interface for cpu shares

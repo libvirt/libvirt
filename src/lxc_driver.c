@@ -1145,7 +1145,7 @@ static int lxcVersion(virConnectPtr conn, unsigned long *version)
     return 0;
 }
 
-static char *lxcGetSchedulerType(virDomainPtr domain, int *nparams)
+static char *lxcGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED, int *nparams)
 {
     if (nparams)
         *nparams = 1;
