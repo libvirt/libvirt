@@ -28,6 +28,7 @@
 #include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -694,6 +695,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                           virDomainObjPtr vm,
                           unsigned int qemuCmdFlags,
                           const char ***retargv,
+                          const char ***retenv,
                           int **tapfds,
                           int *ntapfds,
                           const char *migrateFrom) {
@@ -705,6 +707,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
     int disableKQEMU = 0;
     int qargc = 0, qarga = 0;
     const char **qargv = NULL;
+    int qenvc = 0, qenva = 0;
+    const char **qenv = NULL;
     const char *emulator;
 
     uname(&ut);
@@ -752,14 +756,59 @@ int qemudBuildCommandLine(virConnectPtr conn,
     do {                                                                \
         ADD_ARG_LIT("-usbdevice");                                      \
         ADD_ARG_SPACE;                                                  \
-        if ((asprintf((char **)&(qargv[qargc++]), "disk:%s", thisarg)) == -1) {    \
+        if ((asprintf((char **)&(qargv[qargc++]),                       \
+                      "disk:%s", thisarg)) == -1) {                     \
             qargv[qargc-1] = NULL;                                      \
             goto no_memory;                                             \
         }                                                               \
     } while (0)
 
+#define ADD_ENV_SPACE                                                   \
+    do {                                                                \
+        if (qenvc == qenva) {                                           \
+            qenva += 10;                                                \
+            if (VIR_REALLOC_N(qenv, qenva) < 0)                         \
+                goto no_memory;                                         \
+        }                                                               \
+    } while (0)
+
+#define ADD_ENV(thisarg)                                                \
+    do {                                                                \
+        ADD_ENV_SPACE;                                                  \
+        qenv[qenvc++] = thisarg;                                        \
+    } while (0)
+
+#define ADD_ENV_LIT(thisarg)                                            \
+    do {                                                                \
+        ADD_ENV_SPACE;                                                  \
+        if ((qenv[qenvc++] = strdup(thisarg)) == NULL)                  \
+            goto no_memory;                                             \
+    } while (0)
+
+#define ADD_ENV_COPY(envname)                                           \
+    do {                                                                \
+        char *val = getenv(envname);                                    \
+        char *envval;                                                   \
+        ADD_ENV_SPACE;                                                  \
+        if (val != NULL) {                                              \
+            if (asprintf(&envval, "%s=%s", envname, val) < 0)           \
+                goto no_memory;                                         \
+            qenv[qenvc++] = envval;                                     \
+        }                                                               \
+    } while (0)
+
     snprintf(memory, sizeof(memory), "%lu", vm->def->memory/1024);
     snprintf(vcpus, sizeof(vcpus), "%lu", vm->def->vcpus);
+
+    ADD_ENV_LIT("LC_ALL=C");
+
+    ADD_ENV_COPY("LD_PRELOAD");
+    ADD_ENV_COPY("LD_LIBRARY_PATH");
+    ADD_ENV_COPY("PATH");
+    ADD_ENV_COPY("HOME");
+    ADD_ENV_COPY("USER");
+    ADD_ENV_COPY("LOGNAME");
+    ADD_ENV_COPY("TMPDIR");
 
     emulator = vm->def->emulator;
     if (!emulator)
@@ -1134,7 +1183,24 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
     } else if (vm->def->graphics &&
                vm->def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
-        /* SDL is the default. no args needed */
+        char *xauth = NULL;
+        char *display = NULL;
+
+        if (vm->def->graphics->data.sdl.xauth &&
+            asprintf(&xauth, "XAUTHORITY=%s",
+                     vm->def->graphics->data.sdl.xauth) < 0)
+            goto no_memory;
+        if (vm->def->graphics->data.sdl.display &&
+            asprintf(&display, "DISPLAY=%s",
+                     vm->def->graphics->data.sdl.display) < 0) {
+            VIR_FREE(xauth);
+            goto no_memory;
+        }
+
+        if (xauth)
+            ADD_ENV(xauth);
+        if (display)
+            ADD_ENV(display);
     }
 
     /* Add sound hardware */
@@ -1196,8 +1262,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     ADD_ARG(NULL);
+    ADD_ENV(NULL);
 
     *retargv = qargv;
+    *retenv = qenv;
     return 0;
 
  no_memory:
@@ -1216,9 +1284,19 @@ int qemudBuildCommandLine(virConnectPtr conn,
             VIR_FREE((qargv)[i]);
         VIR_FREE(qargv);
     }
+    if (qenv) {
+        for (i = 0 ; i < qenvc ; i++)
+            VIR_FREE((qenv)[i]);
+        VIR_FREE(qenv);
+    }
     return -1;
 
 #undef ADD_ARG
 #undef ADD_ARG_LIT
 #undef ADD_ARG_SPACE
+#undef ADD_USBDISK
+#undef ADD_ENV
+#undef ADD_ENV_COPY
+#undef ADD_ENV_LIT
+#undef ADD_ENV_SPACE
 }

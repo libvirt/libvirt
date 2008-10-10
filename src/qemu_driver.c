@@ -747,6 +747,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                               virDomainObjPtr vm,
                               const char *migrateFrom) {
     const char **argv = NULL, **tmp;
+    const char **progenv = NULL;
     int i, ret;
     char logfile[PATH_MAX];
     struct stat sb;
@@ -842,13 +843,23 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     }
 
     if (qemudBuildCommandLine(conn, driver, vm,
-                              qemuCmdFlags, &argv,
+                              qemuCmdFlags, &argv, &progenv,
                               &tapfds, &ntapfds, migrateFrom) < 0) {
         close(vm->logfile);
         vm->logfile = -1;
         return -1;
     }
 
+    tmp = progenv;
+    while (*tmp) {
+        if (safewrite(vm->logfile, *tmp, strlen(*tmp)) < 0)
+            qemudLog(QEMUD_WARN, _("Unable to write envv to logfile %d: %s\n"),
+                     errno, strerror(errno));
+        if (safewrite(vm->logfile, " ", 1) < 0)
+            qemudLog(QEMUD_WARN, _("Unable to write envv to logfile %d: %s\n"),
+                     errno, strerror(errno));
+        tmp++;
+    }
     tmp = argv;
     while (*tmp) {
         if (safewrite(vm->logfile, *tmp, strlen(*tmp)) < 0)
@@ -869,7 +880,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     for (i = 0 ; i < ntapfds ; i++)
         FD_SET(tapfds[i], &keepfd);
 
-    ret = virExec(conn, argv, NULL, &keepfd, &vm->pid,
+    ret = virExec(conn, argv, progenv, &keepfd, &vm->pid,
                   vm->stdin_fd, &vm->stdout_fd, &vm->stderr_fd,
                   VIR_EXEC_NONBLOCK);
     if (ret == 0) {
@@ -880,6 +891,10 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     for (i = 0 ; argv[i] ; i++)
         VIR_FREE(argv[i]);
     VIR_FREE(argv);
+
+    for (i = 0 ; progenv[i] ; i++)
+        VIR_FREE(progenv[i]);
+    VIR_FREE(progenv);
 
     if (tapfds) {
         for (i = 0 ; i < ntapfds ; i++) {

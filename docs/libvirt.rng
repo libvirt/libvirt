@@ -645,9 +645,21 @@
   <define name='graphic'>
     <element name='graphics'>
       <choice>
-        <attribute name='type'>
-	  <value>sdl</value>
-	</attribute>
+	<group>
+          <attribute name='type'>
+	    <value>sdl</value>
+	  </attribute>
+	  <optional>
+	    <attribute name='display'>
+	      <text/>
+	    </attribute>
+	  </optional>
+	  <optional>
+	    <attribute name='xauth'>
+	      <text/>
+	    </attribute>
+	  </optional>
+	</group>
 	<group>
           <attribute name='type'>
 	    <value>vnc</value>

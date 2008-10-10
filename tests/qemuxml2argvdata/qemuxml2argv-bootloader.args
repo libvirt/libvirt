@@ -1,1 +1,1 @@
-/usr/bin/qemu-kvm -S -M xenner -m 214 -smp 1 -nographic -monitor pty -no-acpi -bootloader /usr/bin/pygrub -cdrom /dev/cdrom -net none -serial none -parallel none -usb
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu-kvm -S -M xenner -m 214 -smp 1 -nographic -monitor pty -no-acpi -bootloader /usr/bin/pygrub -cdrom /dev/cdrom -net none -serial none -parallel none -usb
