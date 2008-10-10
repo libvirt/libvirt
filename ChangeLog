@@ -1,3 +1,13 @@
+Fri Oct 10 14:56:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: option to enable/disable network driver
+	* src/Makefile.am: Add network_driver.c/.h files
+	* src/libvirt.c: Import network_driver.h file
+	* src/qemu_conf.c, src/qemu-conf.h, src/qemu_driver.c: Remove
+	all network driver support
+	* src/network_driver.c, src/network_driver.h: Add standalone
+	network driver
+
 Fri Oct 10 13:30:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xml.c, src/xen_internal.c: Cast some args to unsigned

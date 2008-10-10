@@ -27,7 +27,6 @@
 #include <config.h>
 
 #include "internal.h"
-#include "iptables.h"
 #include "bridge.h"
 #include "capabilities.h"
 #include "network_conf.h"
@@ -53,14 +52,10 @@ struct qemud_driver {
     int nextvmid;
 
     virDomainObjPtr domains;
-    virNetworkObjPtr networks;
 
     brControl *brctl;
-    iptablesContext *iptables;
     char *configDir;
     char *autostartDir;
-    char *networkConfigDir;
-    char *networkAutostartDir;
     char *logDir;
     unsigned int vncTLS : 1;
     unsigned int vncTLSx509verify : 1;

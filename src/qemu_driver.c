@@ -68,9 +68,7 @@
 /* For storing short-lived temporary files. */
 #define TEMPDIR LOCAL_STATE_DIR "/cache/libvirt"
 
-#ifdef WITH_LIBVIRTD
 static int qemudShutdown(void);
-#endif
 
 /* qemudDebug statements should be changed to use this macro instead. */
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
@@ -118,13 +116,6 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
                                   struct qemud_driver *driver,
                                   virDomainObjPtr vm);
 
-static int qemudStartNetworkDaemon(virConnectPtr conn,
-                                   struct qemud_driver *driver,
-                                   virNetworkObjPtr network);
-
-static int qemudShutdownNetworkDaemon(virConnectPtr conn,
-                                      struct qemud_driver *driver,
-                                      virNetworkObjPtr network);
 
 static int qemudDomainGetMaxVcpus(virDomainPtr dom);
 static int qemudMonitorCommand (const struct qemud_driver *driver,
@@ -137,23 +128,7 @@ static struct qemud_driver *qemu_driver = NULL;
 
 static
 void qemudAutostartConfigs(struct qemud_driver *driver) {
-    virNetworkObjPtr network;
     virDomainObjPtr vm;
-
-    network = driver->networks;
-    while (network != NULL) {
-        virNetworkObjPtr next = network->next;
-
-        if (network->autostart &&
-            !virNetworkIsActive(network) &&
-            qemudStartNetworkDaemon(NULL, driver, network) < 0) {
-            virErrorPtr err = virGetLastError();
-            qemudLog(QEMUD_ERR, _("Failed to autostart network '%s': %s\n"),
-                     network->def->name, err->message);
-        }
-
-        network = next;
-    }
 
     vm = driver->domains;
     while (vm != NULL) {
@@ -171,7 +146,6 @@ void qemudAutostartConfigs(struct qemud_driver *driver) {
     }
 }
 
-#ifdef WITH_LIBVIRTD
 /**
  * qemudStartup:
  *
@@ -225,13 +199,6 @@ qemudStartup(void) {
     if (asprintf (&qemu_driver->autostartDir, "%s/qemu/autostart", base) == -1)
         goto out_of_memory;
 
-    if (asprintf (&qemu_driver->networkConfigDir, "%s/qemu/networks", base) == -1)
-        goto out_of_memory;
-
-    if (asprintf (&qemu_driver->networkAutostartDir, "%s/qemu/networks/autostart",
-                  base) == -1)
-        goto out_of_memory;
-
     VIR_FREE(base);
 
     if ((qemu_driver->caps = qemudCapsInit()) == NULL)
@@ -247,13 +214,6 @@ qemudStartup(void) {
                                 &qemu_driver->domains,
                                 qemu_driver->configDir,
                                 qemu_driver->autostartDir) < 0) {
-        qemudShutdown();
-        return -1;
-    }
-    if (virNetworkLoadAllConfigs(NULL,
-                                 &qemu_driver->networks,
-                                 qemu_driver->networkConfigDir,
-                                 qemu_driver->networkAutostartDir) < 0) {
         qemudShutdown();
         return -1;
     }
@@ -284,17 +244,6 @@ qemudReload(void) {
                             qemu_driver->configDir,
                             qemu_driver->autostartDir);
 
-    virNetworkLoadAllConfigs(NULL,
-                             &qemu_driver->networks,
-                             qemu_driver->networkConfigDir,
-                             qemu_driver->networkAutostartDir);
-
-     if (qemu_driver->iptables) {
-        qemudLog(QEMUD_INFO,
-                 "%s", _("Reloading iptables rules\n"));
-        iptablesReloadRules(qemu_driver->iptables);
-    }
-
     qemudAutostartConfigs(qemu_driver);
 
     return 0;
@@ -311,18 +260,11 @@ qemudReload(void) {
 static int
 qemudActive(void) {
     virDomainObjPtr dom = qemu_driver->domains;
-    virNetworkObjPtr net = qemu_driver->networks;
 
     while (dom) {
         if (virDomainIsActive(dom))
             return 1;
         dom = dom->next;
-    }
-
-    while (net) {
-        if (virNetworkIsActive(net))
-            return 1;
-        net = net->next;
     }
 
     /* Otherwise we're happy to deal with a shutdown */
@@ -337,7 +279,6 @@ qemudActive(void) {
 static int
 qemudShutdown(void) {
     virDomainObjPtr vm;
-    virNetworkObjPtr network;
 
     if (!qemu_driver)
         return -1;
@@ -365,41 +306,18 @@ qemudShutdown(void) {
     }
     qemu_driver->domains = NULL;
 
-    /* shutdown active networks */
-    network = qemu_driver->networks;
-    while (network) {
-        virNetworkObjPtr next = network->next;
-        if (virNetworkIsActive(network))
-            qemudShutdownNetworkDaemon(NULL, qemu_driver, network);
-        network = next;
-    }
-
-    /* free inactive networks */
-    network = qemu_driver->networks;
-    while (network) {
-        virNetworkObjPtr next = network->next;
-        virNetworkObjFree(network);
-        network = next;
-    }
-    qemu_driver->networks = NULL;
-
     VIR_FREE(qemu_driver->logDir);
     VIR_FREE(qemu_driver->configDir);
     VIR_FREE(qemu_driver->autostartDir);
-    VIR_FREE(qemu_driver->networkConfigDir);
-    VIR_FREE(qemu_driver->networkAutostartDir);
     VIR_FREE(qemu_driver->vncTLSx509certdir);
 
     if (qemu_driver->brctl)
         brShutdown(qemu_driver->brctl);
-    if (qemu_driver->iptables)
-        iptablesContextFree(qemu_driver->iptables);
 
     VIR_FREE(qemu_driver);
 
     return 0;
 }
-#endif
 
 /* Return -1 for error, 1 to continue reading and 0 for success */
 typedef int qemudHandlerMonitorOutput(virConnectPtr conn,
@@ -1095,547 +1013,6 @@ static int qemudDispatchVMFailure(struct qemud_driver *driver, virDomainObjPtr v
     if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains,
                                 vm);
-    return 0;
-}
-
-static int
-qemudBuildDnsmasqArgv(virConnectPtr conn,
-                      virNetworkObjPtr network,
-                      const char ***argv) {
-    int i, len, r;
-    char buf[PATH_MAX];
-
-    len =
-        1 + /* dnsmasq */
-        1 + /* --keep-in-foreground */
-        1 + /* --strict-order */
-        1 + /* --bind-interfaces */
-        (network->def->domain?2:0) + /* --domain name */
-        2 + /* --pid-file "" */
-        2 + /* --conf-file "" */
-        /*2 + *//* --interface virbr0 */
-        2 + /* --except-interface lo */
-        2 + /* --listen-address 10.0.0.1 */
-        1 + /* --dhcp-leasefile=path */
-        (2 * network->def->nranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
-        /*  --dhcp-host 01:23:45:67:89:0a,hostname,10.0.0.3 */
-        (2 * network->def->nhosts) +
-        1;  /* NULL */
-
-    if (VIR_ALLOC_N(*argv, len) < 0)
-        goto no_memory;
-
-#define APPEND_ARG(v, n, s) do {     \
-        if (!((v)[(n)] = strdup(s))) \
-            goto no_memory;          \
-    } while (0)
-
-    i = 0;
-
-    APPEND_ARG(*argv, i++, DNSMASQ);
-
-    APPEND_ARG(*argv, i++, "--keep-in-foreground");
-    /*
-     * Needed to ensure dnsmasq uses same algorithm for processing
-     * multiple namedriver entries in /etc/resolv.conf as GLibC.
-     */
-    APPEND_ARG(*argv, i++, "--strict-order");
-    APPEND_ARG(*argv, i++, "--bind-interfaces");
-
-    if (network->def->domain) {
-       APPEND_ARG(*argv, i++, "--domain");
-       APPEND_ARG(*argv, i++, network->def->domain);
-    }
-
-    APPEND_ARG(*argv, i++, "--pid-file");
-    APPEND_ARG(*argv, i++, "");
-
-    APPEND_ARG(*argv, i++, "--conf-file");
-    APPEND_ARG(*argv, i++, "");
-
-    /*
-     * XXX does not actually work, due to some kind of
-     * race condition setting up ipv6 addresses on the
-     * interface. A sleep(10) makes it work, but that's
-     * clearly not practical
-     *
-     * APPEND_ARG(*argv, i++, "--interface");
-     * APPEND_ARG(*argv, i++, network->def->bridge);
-     */
-    APPEND_ARG(*argv, i++, "--listen-address");
-    APPEND_ARG(*argv, i++, network->def->ipAddress);
-
-    APPEND_ARG(*argv, i++, "--except-interface");
-    APPEND_ARG(*argv, i++, "lo");
-
-    /*
-     * NB, dnsmasq command line arg bug means we need to
-     * use a single arg '--dhcp-leasefile=path' rather than
-     * two separate args in '--dhcp-leasefile path' style
-     */
-    snprintf(buf, sizeof(buf), "--dhcp-leasefile=%s/lib/libvirt/dhcp-%s.leases",
-             LOCAL_STATE_DIR, network->def->name);
-    APPEND_ARG(*argv, i++, buf);
-
-    for (r = 0 ; r < network->def->nranges ; r++) {
-        snprintf(buf, sizeof(buf), "%s,%s",
-                 network->def->ranges[r].start,
-                 network->def->ranges[r].end);
-
-        APPEND_ARG(*argv, i++, "--dhcp-range");
-        APPEND_ARG(*argv, i++, buf);
-    }
-
-    for (r = 0 ; r < network->def->nhosts ; r++) {
-        virNetworkDHCPHostDefPtr host = &(network->def->hosts[r]);
-        if ((host->mac) && (host->name)) {
-            snprintf(buf, sizeof(buf), "%s,%s,%s",
-                     host->mac, host->name, host->ip);
-        } else if (host->mac) {
-            snprintf(buf, sizeof(buf), "%s,%s",
-                     host->mac, host->ip);
-        } else if (host->name) {
-            snprintf(buf, sizeof(buf), "%s,%s",
-                     host->name, host->ip);
-        } else
-            continue;
-
-        APPEND_ARG(*argv, i++, "--dhcp-host");
-        APPEND_ARG(*argv, i++, buf);
-    }
-
-#undef APPEND_ARG
-
-    return 0;
-
- no_memory:
-    if (argv) {
-        for (i = 0; (*argv)[i]; i++)
-            VIR_FREE((*argv)[i]);
-        VIR_FREE(*argv);
-    }
-    qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                     "%s", _("failed to allocate space for dnsmasq argv"));
-    return -1;
-}
-
-
-static int
-dhcpStartDhcpDaemon(virConnectPtr conn,
-                    virNetworkObjPtr network)
-{
-    const char **argv;
-    int ret, i;
-
-    if (network->def->ipAddress == NULL) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "%s", _("cannot start dhcp daemon without IP address for server"));
-        return -1;
-    }
-
-    argv = NULL;
-    if (qemudBuildDnsmasqArgv(conn, network, &argv) < 0)
-        return -1;
-
-    ret = virExec(conn, argv, NULL, NULL,
-                  &network->dnsmasqPid, -1, NULL, NULL, VIR_EXEC_NONBLOCK);
-
-    for (i = 0; argv[i]; i++)
-        VIR_FREE(argv[i]);
-    VIR_FREE(argv);
-
-    return ret;
-}
-
-static int
-qemudAddMasqueradingIptablesRules(virConnectPtr conn,
-                      struct qemud_driver *driver,
-                      virNetworkObjPtr network) {
-    int err;
-    /* allow forwarding packets from the bridge interface */
-    if ((err = iptablesAddForwardAllowOut(driver->iptables,
-                                          network->def->network,
-                                          network->def->bridge,
-                                          network->def->forwardDev))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow forwarding from '%s' : %s\n"),
-                         network->def->bridge, strerror(err));
-        goto masqerr1;
-    }
-
-    /* allow forwarding packets to the bridge interface if they are part of an existing connection */
-    if ((err = iptablesAddForwardAllowRelatedIn(driver->iptables,
-                                         network->def->network,
-                                         network->def->bridge,
-                                         network->def->forwardDev))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow forwarding to '%s' : %s\n"),
-                         network->def->bridge, strerror(err));
-        goto masqerr2;
-    }
-
-    /* enable masquerading */
-    if ((err = iptablesAddForwardMasquerade(driver->iptables,
-                                            network->def->network,
-                                            network->def->forwardDev))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to enable masquerading : %s\n"),
-                         strerror(err));
-        goto masqerr3;
-    }
-
-    return 1;
-
- masqerr3:
-    iptablesRemoveForwardAllowRelatedIn(driver->iptables,
-                                 network->def->network,
-                                 network->def->bridge,
-                                 network->def->forwardDev);
- masqerr2:
-    iptablesRemoveForwardAllowOut(driver->iptables,
-                                  network->def->network,
-                                  network->def->bridge,
-                                  network->def->forwardDev);
- masqerr1:
-    return 0;
-}
-
-static int
-qemudAddRoutingIptablesRules(virConnectPtr conn,
-                      struct qemud_driver *driver,
-                      virNetworkObjPtr network) {
-    int err;
-    /* allow routing packets from the bridge interface */
-    if ((err = iptablesAddForwardAllowOut(driver->iptables,
-                                          network->def->network,
-                                          network->def->bridge,
-                                          network->def->forwardDev))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow routing from '%s' : %s\n"),
-                         network->def->bridge, strerror(err));
-        goto routeerr1;
-    }
-
-    /* allow routing packets to the bridge interface */
-    if ((err = iptablesAddForwardAllowIn(driver->iptables,
-                                         network->def->network,
-                                         network->def->bridge,
-                                         network->def->forwardDev))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow routing to '%s' : %s\n"),
-                         network->def->bridge, strerror(err));
-        goto routeerr2;
-    }
-
-    return 1;
-
-
- routeerr2:
-    iptablesRemoveForwardAllowOut(driver->iptables,
-                                  network->def->network,
-                                  network->def->bridge,
-                                  network->def->forwardDev);
- routeerr1:
-    return 0;
-}
-
-static int
-qemudAddIptablesRules(virConnectPtr conn,
-                      struct qemud_driver *driver,
-                      virNetworkObjPtr network) {
-    int err;
-
-    if (!driver->iptables && !(driver->iptables = iptablesContextNew())) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                     "%s", _("failed to allocate space for IP tables support"));
-        return 0;
-    }
-
-
-    /* allow DHCP requests through to dnsmasq */
-    if ((err = iptablesAddTcpInput(driver->iptables, network->def->bridge, 67))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow DHCP requests from '%s' : %s"),
-                         network->def->bridge, strerror(err));
-        goto err1;
-    }
-
-    if ((err = iptablesAddUdpInput(driver->iptables, network->def->bridge, 67))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow DHCP requests from '%s' : %s"),
-                         network->def->bridge, strerror(err));
-        goto err2;
-    }
-
-    /* allow DNS requests through to dnsmasq */
-    if ((err = iptablesAddTcpInput(driver->iptables, network->def->bridge, 53))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow DNS requests from '%s' : %s"),
-                         network->def->bridge, strerror(err));
-        goto err3;
-    }
-
-    if ((err = iptablesAddUdpInput(driver->iptables, network->def->bridge, 53))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow DNS requests from '%s' : %s"),
-                         network->def->bridge, strerror(err));
-        goto err4;
-    }
-
-
-    /* Catch all rules to block forwarding to/from bridges */
-
-    if ((err = iptablesAddForwardRejectOut(driver->iptables, network->def->bridge))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to block outbound traffic from '%s' : %s"),
-                         network->def->bridge, strerror(err));
-        goto err5;
-    }
-
-    if ((err = iptablesAddForwardRejectIn(driver->iptables, network->def->bridge))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to block inbound traffic to '%s' : %s"),
-                         network->def->bridge, strerror(err));
-        goto err6;
-    }
-
-    /* Allow traffic between guests on the same bridge */
-    if ((err = iptablesAddForwardAllowCross(driver->iptables, network->def->bridge))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow cross bridge traffic on '%s' : %s"),
-                         network->def->bridge, strerror(err));
-        goto err7;
-    }
-
-
-    /* If masquerading is enabled, set up the rules*/
-    if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT &&
-        !qemudAddMasqueradingIptablesRules(conn, driver, network))
-        goto err8;
-    /* else if routing is enabled, set up the rules*/
-    else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE &&
-             !qemudAddRoutingIptablesRules(conn, driver, network))
-        goto err8;
-
-    iptablesSaveRules(driver->iptables);
-
-    return 1;
-
- err8:
-    iptablesRemoveForwardAllowCross(driver->iptables,
-                                    network->def->bridge);
- err7:
-    iptablesRemoveForwardRejectIn(driver->iptables,
-                                  network->def->bridge);
- err6:
-    iptablesRemoveForwardRejectOut(driver->iptables,
-                                   network->def->bridge);
- err5:
-    iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 53);
- err4:
-    iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 53);
- err3:
-    iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 67);
- err2:
-    iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 67);
- err1:
-    return 0;
-}
-
-static void
-qemudRemoveIptablesRules(struct qemud_driver *driver,
-                         virNetworkObjPtr network) {
-    if (network->def->forwardType != VIR_NETWORK_FORWARD_NONE) {
-        iptablesRemoveForwardMasquerade(driver->iptables,
-                                        network->def->network,
-                                        network->def->forwardDev);
-
-        if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT)
-            iptablesRemoveForwardAllowRelatedIn(driver->iptables,
-                                                network->def->network,
-                                                network->def->bridge,
-                                                network->def->forwardDev);
-        else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE)
-            iptablesRemoveForwardAllowIn(driver->iptables,
-                                         network->def->network,
-                                         network->def->bridge,
-                                         network->def->forwardDev);
-
-        iptablesRemoveForwardAllowOut(driver->iptables,
-                                      network->def->network,
-                                      network->def->bridge,
-                                      network->def->forwardDev);
-    }
-    iptablesRemoveForwardAllowCross(driver->iptables, network->def->bridge);
-    iptablesRemoveForwardRejectIn(driver->iptables, network->def->bridge);
-    iptablesRemoveForwardRejectOut(driver->iptables, network->def->bridge);
-    iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 53);
-    iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 53);
-    iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 67);
-    iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 67);
-    iptablesSaveRules(driver->iptables);
-}
-
-static int
-qemudEnableIpForwarding(void)
-{
-#define PROC_IP_FORWARD "/proc/sys/net/ipv4/ip_forward"
-
-    int fd, ret;
-
-    if ((fd = open(PROC_IP_FORWARD, O_WRONLY|O_TRUNC)) == -1)
-        return 0;
-
-    if (safewrite(fd, "1\n", 2) < 0)
-        ret = 0;
-
-    close (fd);
-
-    return 1;
-
-#undef PROC_IP_FORWARD
-}
-
-static int qemudStartNetworkDaemon(virConnectPtr conn,
-                                   struct qemud_driver *driver,
-                                   virNetworkObjPtr network) {
-    int err;
-
-    if (virNetworkIsActive(network)) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "%s", _("network is already active"));
-        return -1;
-    }
-
-    if (!driver->brctl && (err = brInit(&driver->brctl))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot initialize bridge support: %s"), strerror(err));
-        return -1;
-    }
-
-    if ((err = brAddBridge(driver->brctl, &network->def->bridge))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot create bridge '%s' : %s"),
-                         network->def->bridge, strerror(err));
-        return -1;
-    }
-
-
-    if (brSetForwardDelay(driver->brctl, network->def->bridge, network->def->delay) < 0)
-        goto err_delbr;
-
-    if (brSetEnableSTP(driver->brctl, network->def->bridge, network->def->stp ? 1 : 0) < 0)
-        goto err_delbr;
-
-    if (network->def->ipAddress &&
-        (err = brSetInetAddress(driver->brctl, network->def->bridge, network->def->ipAddress))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot set IP address on bridge '%s' to '%s' : %s"),
-                         network->def->bridge, network->def->ipAddress, strerror(err));
-        goto err_delbr;
-    }
-
-    if (network->def->netmask &&
-        (err = brSetInetNetmask(driver->brctl, network->def->bridge, network->def->netmask))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot set netmask on bridge '%s' to '%s' : %s"),
-                         network->def->bridge, network->def->netmask, strerror(err));
-        goto err_delbr;
-    }
-
-    if (network->def->ipAddress &&
-        (err = brSetInterfaceUp(driver->brctl, network->def->bridge, 1))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to bring the bridge '%s' up : %s"),
-                         network->def->bridge, strerror(err));
-        goto err_delbr;
-    }
-
-    if (!qemudAddIptablesRules(conn, driver, network))
-        goto err_delbr1;
-
-    if (network->def->forwardType != VIR_NETWORK_FORWARD_NONE &&
-        !qemudEnableIpForwarding()) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to enable IP forwarding : %s"), strerror(err));
-        goto err_delbr2;
-    }
-
-    if (network->def->nranges &&
-        dhcpStartDhcpDaemon(conn, network) < 0)
-        goto err_delbr2;
-
-    network->active = 1;
-
-    return 0;
-
- err_delbr2:
-    qemudRemoveIptablesRules(driver, network);
-
- err_delbr1:
-    if (network->def->ipAddress &&
-        (err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
-        qemudLog(QEMUD_WARN, _("Failed to bring down bridge '%s' : %s\n"),
-                 network->def->bridge, strerror(err));
-    }
-
- err_delbr:
-    if ((err = brDeleteBridge(driver->brctl, network->def->bridge))) {
-        qemudLog(QEMUD_WARN, _("Failed to delete bridge '%s' : %s\n"),
-                 network->def->bridge, strerror(err));
-    }
-
-    return -1;
-}
-
-
-static int qemudShutdownNetworkDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                      struct qemud_driver *driver,
-                                      virNetworkObjPtr network) {
-    int err;
-
-    qemudLog(QEMUD_INFO, _("Shutting down network '%s'\n"), network->def->name);
-
-    if (!virNetworkIsActive(network))
-        return 0;
-
-    if (network->dnsmasqPid > 0)
-        kill(network->dnsmasqPid, SIGTERM);
-
-    qemudRemoveIptablesRules(driver, network);
-
-    if (network->def->ipAddress &&
-        (err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
-        qemudLog(QEMUD_WARN, _("Failed to bring down bridge '%s' : %s\n"),
-                 network->def->bridge, strerror(err));
-    }
-
-    if ((err = brDeleteBridge(driver->brctl, network->def->bridge))) {
-        qemudLog(QEMUD_WARN, _("Failed to delete bridge '%s' : %s\n"),
-                 network->def->bridge, strerror(err));
-    }
-
-    if (network->dnsmasqPid > 0 &&
-        waitpid(network->dnsmasqPid, NULL, WNOHANG) != network->dnsmasqPid) {
-        kill(network->dnsmasqPid, SIGKILL);
-        if (waitpid(network->dnsmasqPid, NULL, 0) != network->dnsmasqPid)
-            qemudLog(QEMUD_WARN,
-                     "%s", _("Got unexpected pid for dnsmasq\n"));
-    }
-
-    network->dnsmasqPid = -1;
-    network->active = 0;
-
-    if (network->newDef) {
-        virNetworkDefFree(network->def);
-        network->def = network->newDef;
-        network->newDef = NULL;
-    }
-
-    if (!network->configFile)
-        virNetworkRemoveInactive(&driver->networks,
-                                 network);
-
     return 0;
 }
 
@@ -3690,323 +3067,6 @@ done:
     return ret;
 }
 
-static virNetworkPtr qemudNetworkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                              const unsigned char *uuid) {
-    struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, uuid);
-    virNetworkPtr net;
-
-    if (!network) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_NETWORK,
-                         "%s", _("no network with matching uuid"));
-        return NULL;
-    }
-
-    net = virGetNetwork(conn, network->def->name, network->def->uuid);
-    return net;
-}
-static virNetworkPtr qemudNetworkLookupByName(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                              const char *name) {
-    struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByName(driver->networks, name);
-    virNetworkPtr net;
-
-    if (!network) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_NETWORK,
-                         "%s", _("no network with matching name"));
-        return NULL;
-    }
-
-    net = virGetNetwork(conn, network->def->name, network->def->uuid);
-    return net;
-}
-
-static virDrvOpenStatus qemudOpenNetwork(virConnectPtr conn,
-                                         xmlURIPtr uri ATTRIBUTE_UNUSED,
-                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                         int flags ATTRIBUTE_UNUSED) {
-    if (!qemu_driver)
-        return VIR_DRV_OPEN_DECLINED;
-
-    conn->networkPrivateData = qemu_driver;
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
-static int qemudCloseNetwork(virConnectPtr conn) {
-    conn->networkPrivateData = NULL;
-    return 0;
-}
-
-static int qemudNumNetworks(virConnectPtr conn) {
-    int nactive = 0;
-    struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
-    virNetworkObjPtr net = driver->networks;
-    while (net) {
-        if (virNetworkIsActive(net))
-            nactive++;
-        net = net->next;
-    }
-    return nactive;
-}
-
-static int qemudListNetworks(virConnectPtr conn, char **const names, int nnames) {
-    struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
-    virNetworkObjPtr network = driver->networks;
-    int got = 0, i;
-    while (network && got < nnames) {
-        if (virNetworkIsActive(network)) {
-            if (!(names[got] = strdup(network->def->name))) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                     "%s", _("failed to allocate space for VM name string"));
-                goto cleanup;
-            }
-            got++;
-        }
-        network = network->next;
-    }
-    return got;
-
- cleanup:
-    for (i = 0 ; i < got ; i++)
-        VIR_FREE(names[i]);
-    return -1;
-}
-
-static int qemudNumDefinedNetworks(virConnectPtr conn) {
-    int ninactive = 0;
-    struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
-    virNetworkObjPtr net = driver->networks;
-    while (net) {
-        if (!virNetworkIsActive(net))
-            ninactive++;
-        net = net->next;
-    }
-    return ninactive;
-}
-
-static int qemudListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
-    struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
-    virNetworkObjPtr network = driver->networks;
-    int got = 0, i;
-    while (network && got < nnames) {
-        if (!virNetworkIsActive(network)) {
-            if (!(names[got] = strdup(network->def->name))) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                     "%s", _("failed to allocate space for VM name string"));
-                goto cleanup;
-            }
-            got++;
-        }
-        network = network->next;
-    }
-    return got;
-
- cleanup:
-    for (i = 0 ; i < got ; i++)
-        VIR_FREE(names[i]);
-    return -1;
-}
-
-static virNetworkPtr qemudNetworkCreate(virConnectPtr conn, const char *xml) {
- struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
-    virNetworkDefPtr def;
-    virNetworkObjPtr network;
-    virNetworkPtr net;
-
-    if (!(def = virNetworkDefParseString(conn, xml)))
-        return NULL;
-
-    if (!(network = virNetworkAssignDef(conn,
-                                        &driver->networks,
-                                        def))) {
-        virNetworkDefFree(def);
-        return NULL;
-    }
-
-    if (qemudStartNetworkDaemon(conn, driver, network) < 0) {
-        virNetworkRemoveInactive(&driver->networks,
-                                 network);
-        return NULL;
-    }
-
-    net = virGetNetwork(conn, network->def->name, network->def->uuid);
-    return net;
-}
-
-static virNetworkPtr qemudNetworkDefine(virConnectPtr conn, const char *xml) {
-    struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
-    virNetworkDefPtr def;
-    virNetworkObjPtr network;
-
-    if (!(def = virNetworkDefParseString(conn, xml)))
-        return NULL;
-
-    if (!(network = virNetworkAssignDef(conn,
-                                        &driver->networks,
-                                        def))) {
-        virNetworkDefFree(def);
-        return NULL;
-    }
-
-    if (virNetworkSaveConfig(conn,
-                             driver->networkConfigDir,
-                             driver->networkAutostartDir,
-                             network) < 0) {
-        virNetworkRemoveInactive(&driver->networks,
-                                 network);
-        return NULL;
-    }
-
-    return virGetNetwork(conn, network->def->name, network->def->uuid);
-}
-
-static int qemudNetworkUndefine(virNetworkPtr net) {
-    struct qemud_driver *driver = (struct qemud_driver *)net->conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, net->uuid);
-
-    if (!network) {
-        qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_DOMAIN,
-                         "%s", _("no network with matching uuid"));
-        return -1;
-    }
-
-    if (virNetworkIsActive(network)) {
-        qemudReportError(net->conn, NULL, net, VIR_ERR_INTERNAL_ERROR,
-                         "%s", _("network is still active"));
-        return -1;
-    }
-
-    if (virNetworkDeleteConfig(net->conn, network) < 0)
-        return -1;
-
-    virNetworkRemoveInactive(&driver->networks,
-                             network);
-
-    return 0;
-}
-
-static int qemudNetworkStart(virNetworkPtr net) {
-    struct qemud_driver *driver = (struct qemud_driver *)net->conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, net->uuid);
-
-    if (!network) {
-        qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
-                         "%s", _("no network with matching uuid"));
-        return -1;
-    }
-
-    return qemudStartNetworkDaemon(net->conn, driver, network);
-}
-
-static int qemudNetworkDestroy(virNetworkPtr net) {
-    struct qemud_driver *driver = (struct qemud_driver *)net->conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, net->uuid);
-    int ret;
-
-    if (!network) {
-        qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
-                         "%s", _("no network with matching uuid"));
-        return -1;
-    }
-
-    ret = qemudShutdownNetworkDaemon(net->conn, driver, network);
-
-    return ret;
-}
-
-static char *qemudNetworkDumpXML(virNetworkPtr net, int flags ATTRIBUTE_UNUSED) {
-    struct qemud_driver *driver = (struct qemud_driver *)net->conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, net->uuid);
-
-    if (!network) {
-        qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
-                         "%s", _("no network with matching uuid"));
-        return NULL;
-    }
-
-    return virNetworkDefFormat(net->conn, network->def);
-}
-
-static char *qemudNetworkGetBridgeName(virNetworkPtr net) {
-    struct qemud_driver *driver = (struct qemud_driver *)net->conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, net->uuid);
-    char *bridge;
-    if (!network) {
-        qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
-                         "%s", _("no network with matching id"));
-        return NULL;
-    }
-
-    bridge = strdup(network->def->bridge);
-    if (!bridge) {
-        qemudReportError(net->conn, NULL, net, VIR_ERR_NO_MEMORY,
-                 "%s", _("failed to allocate space for network bridge string"));
-        return NULL;
-    }
-    return bridge;
-}
-
-static int qemudNetworkGetAutostart(virNetworkPtr net,
-                             int *autostart) {
-    struct qemud_driver *driver = (struct qemud_driver *)net->conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, net->uuid);
-
-    if (!network) {
-        qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
-                         "%s", _("no network with matching uuid"));
-        return -1;
-    }
-
-    *autostart = network->autostart;
-
-    return 0;
-}
-
-static int qemudNetworkSetAutostart(virNetworkPtr net,
-                             int autostart) {
-    struct qemud_driver *driver = (struct qemud_driver *)net->conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, net->uuid);
-
-    if (!network) {
-        qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
-                         "%s", _("no network with matching uuid"));
-        return -1;
-    }
-
-    autostart = (autostart != 0);
-
-    if (network->autostart == autostart)
-        return 0;
-
-    if (autostart) {
-        int err;
-
-        if ((err = virFileMakePath(driver->networkAutostartDir))) {
-            qemudReportError(net->conn, NULL, net, VIR_ERR_INTERNAL_ERROR,
-                             _("cannot create autostart directory %s: %s"),
-                             driver->networkAutostartDir, strerror(err));
-            return -1;
-        }
-
-        if (symlink(network->configFile, network->autostartLink) < 0) {
-            qemudReportError(net->conn, NULL, net, VIR_ERR_INTERNAL_ERROR,
-                             _("Failed to create symlink '%s' to '%s': %s"),
-                             network->autostartLink, network->configFile, strerror(errno));
-            return -1;
-        }
-    } else {
-        if (unlink(network->autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
-            qemudReportError(net->conn, NULL, net, VIR_ERR_INTERNAL_ERROR,
-                             _("Failed to delete symlink '%s': %s"),
-                             network->autostartLink, strerror(errno));
-            return -1;
-        }
-    }
-
-    network->autostart = autostart;
-
-    return 0;
-}
 
 static virDriver qemuDriver = {
     VIR_DRV_QEMU,
@@ -4080,42 +3140,17 @@ static virDriver qemuDriver = {
 #endif
 };
 
-static virNetworkDriver qemuNetworkDriver = {
-    "QEMU",
-    qemudOpenNetwork, /* open */
-    qemudCloseNetwork, /* close */
-    qemudNumNetworks, /* numOfNetworks */
-    qemudListNetworks, /* listNetworks */
-    qemudNumDefinedNetworks, /* numOfDefinedNetworks */
-    qemudListDefinedNetworks, /* listDefinedNetworks */
-    qemudNetworkLookupByUUID, /* networkLookupByUUID */
-    qemudNetworkLookupByName, /* networkLookupByName */
-    qemudNetworkCreate, /* networkCreateXML */
-    qemudNetworkDefine, /* networkDefineXML */
-    qemudNetworkUndefine, /* networkUndefine */
-    qemudNetworkStart, /* networkCreate */
-    qemudNetworkDestroy, /* networkDestroy */
-    qemudNetworkDumpXML, /* networkDumpXML */
-    qemudNetworkGetBridgeName, /* networkGetBridgeName */
-    qemudNetworkGetAutostart, /* networkGetAutostart */
-    qemudNetworkSetAutostart, /* networkSetAutostart */
-};
 
-#ifdef WITH_LIBVIRTD
 static virStateDriver qemuStateDriver = {
     .initialize = qemudStartup,
     .cleanup = qemudShutdown,
     .reload = qemudReload,
     .active = qemudActive,
 };
-#endif
 
 int qemudRegister(void) {
     virRegisterDriver(&qemuDriver);
-    virRegisterNetworkDriver(&qemuNetworkDriver);
-#ifdef WITH_LIBVIRTD
     virRegisterStateDriver(&qemuStateDriver);
-#endif
     return 0;
 }
 

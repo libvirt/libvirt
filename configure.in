@@ -643,6 +643,17 @@ AC_SUBST([WITH_XEN])
 AC_SUBST([LIBVIRT_FEATURES])
 
 
+AC_ARG_WITH([network],
+[  --with-network              with virtual network driver (on)],[],[with_network=yes])
+if test "$with_libvirtd" = "no" ; then
+  with_network=no
+fi
+if test "$with_network" = "yes" ; then
+  AC_DEFINE_UNQUOTED([WITH_NETWORK], 1, [whether network driver is enabled])
+fi
+AM_CONDITIONAL([WITH_NETWORK], [test "$with_network" = "yes"])
+
+
 dnl
 dnl Storage driver checks
 dnl
@@ -1070,6 +1081,7 @@ AC_MSG_NOTICE([  OpenVZ: $with_openvz])
 AC_MSG_NOTICE([     LXC: $with_lxc])
 AC_MSG_NOTICE([    Test: $with_test])
 AC_MSG_NOTICE([  Remote: $with_remote])
+AC_MSG_NOTICE([ Network: $with_network])
 AC_MSG_NOTICE([Libvirtd: $with_libvirtd])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Storage Drivers])

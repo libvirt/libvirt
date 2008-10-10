@@ -104,11 +104,12 @@ OPENVZ_DRIVER_SOURCES =						\
 		openvz_conf.c openvz_conf.h			\
 		openvz_driver.c openvz_driver.h
 
-# XXX network driver should be split out of this
 QEMU_DRIVER_SOURCES =						\
 		qemu_conf.c qemu_conf.h				\
 		qemu_driver.c qemu_driver.h
 
+NETWORK_DRIVER_SOURCES =					\
+		network_driver.h network_driver.c
 
 # And finally storage backend specific impls
 STORAGE_DRIVER_SOURCES =					\
@@ -165,9 +166,11 @@ if WITH_OPENVZ
 libvirt_la_SOURCES += $(OPENVZ_DRIVER_SOURCES)
 endif
 
-
 # Drivers usable inside daemon context
 if WITH_LIBVIRTD
+if WITH_NETWORK
+libvirt_la_SOURCES += $(NETWORK_DRIVER_SOURCES)
+endif
 libvirt_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
 libvirt_la_SOURCES += $(STORAGE_DRIVER_FS_SOURCES)
 
@@ -200,6 +203,7 @@ EXTRA_DIST +=							\
 		$(QEMU_DRIVER_SOURCES)				\
 		$(LXC_DRIVER_SOURCES)				\
 		$(OPENVZ_DRIVER_SOURCES)			\
+		$(NETWORK_DRIVER_SOURCES)			\
 		$(STORAGE_DRIVER_SOURCES)			\
 		$(STORAGE_DRIVER_FS_SOURCES)			\
 		$(STORAGE_DRIVER_LVM_SOURCES)			\

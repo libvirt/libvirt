@@ -57,6 +57,9 @@
 #include "lxc_driver.h"
 #endif
 #include "storage_driver.h"
+#ifdef WITH_NETWORK
+#include "network_driver.h"
+#endif
 
 /*
  * TODO:
@@ -292,6 +295,9 @@ virInitialize(void)
 #endif
 #ifdef WITH_LXC
     if (lxcRegister() == -1) return -1;
+#endif
+#ifdef WITH_NETWORK
+    if (networkRegister() == -1) return -1;
 #endif
     if (storageRegister() == -1) return -1;
 #ifdef WITH_REMOTE

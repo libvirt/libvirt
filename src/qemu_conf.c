@@ -516,7 +516,6 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
                          virDomainNetDefPtr net,
                          int vlan)
 {
-    virNetworkObjPtr network = NULL;
     char *brname;
     char tapfdstr[4+3+32+7];
     char *retval = NULL;
@@ -524,18 +523,24 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     int tapfd = -1;
 
     if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        if (!(network = virNetworkFindByName(driver->networks, net->data.network.name))) {
+        virNetworkPtr network = virNetworkLookupByName(conn,
+                                                      net->data.network.name);
+        if (!network) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              _("Network '%s' not found"),
                              net->data.network.name);
             goto error;
-        } else if (network->def->bridge == NULL) {
+        }
+        brname = virNetworkGetBridgeName(network);
+
+        virNetworkFree(network);
+
+        if (brname == NULL) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("Network '%s' not active"),
+                             _("Network '%s' is not active"),
                              net->data.network.name);
             goto error;
         }
-        brname = network->def->bridge;
     } else if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
         brname = net->data.bridge.brname;
     } else {
