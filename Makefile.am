@@ -10,7 +10,7 @@ ACLOCAL_AMFLAGS = -I m4 -I gnulib/m4
 
 EXTRA_DIST = \
   libvirt.spec libvirt.spec.in \
-  mingw-libvirt.spec.in \
+  mingw32-libvirt.spec.in \
   libvirt.pc libvirt.pc.in \
   $(man_MANS) autobuild.sh \
   .x-sc_avoid_if_before_free \

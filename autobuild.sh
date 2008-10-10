@@ -42,14 +42,14 @@ test -x /usr/bin/lcov && make cov
 rm -f *.tar.gz
 make dist
 
-if [ -f /usr/bin/rpmbuild ]; then
-  if [ -n "$AUTOBUILD_COUNTER" ]; then
-    EXTRA_RELEASE=".auto$AUTOBUILD_COUNTER"
-  else
-    NOW=`date +"%s"`
-    EXTRA_RELEASE=".$USER$NOW"
-  fi
+if [ -n "$AUTOBUILD_COUNTER" ]; then
+  EXTRA_RELEASE=".auto$AUTOBUILD_COUNTER"
+else
+  NOW=`date +"%s"`
+  EXTRA_RELEASE=".$USER$NOW"
+fi
 
+if [ -f /usr/bin/rpmbuild ]; then
   rpmbuild --nodeps \
      --define "extra_release $EXTRA_RELEASE" \
      --define "_sourcedir `pwd`" \
@@ -81,8 +81,10 @@ if [ -x /usr/bin/i686-pc-mingw32-gcc ]; then
   #set -o pipefail
   #make check 2>&1 | tee "$RESULTS"
 
-  rpmbuild --nodeps \
-     --define "extra_release $EXTRA_RELEASE" \
-     --define "_sourcedir `pwd`" \
-     -ba --clean mingw-libvirt.spec
+  if [ -f /usr/bin/rpmbuild ]; then
+    rpmbuild --nodeps \
+       --define "extra_release $EXTRA_RELEASE" \
+       --define "_sourcedir `pwd`" \
+       -ba --clean mingw32-libvirt.spec
+  fi
 fi
