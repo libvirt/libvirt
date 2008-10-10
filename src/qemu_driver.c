@@ -496,8 +496,7 @@ qemudFindCharDevicePTYs(virConnectPtr conn,
 {
     char *monitor = NULL;
     size_t offset = 0;
-    virDomainChrDefPtr chr;
-    int ret;
+    int ret, i;
 
     /* The order in which QEMU prints out the PTY paths is
        the order in which it procsses its monitor, serial
@@ -509,25 +508,23 @@ qemudFindCharDevicePTYs(virConnectPtr conn,
         goto cleanup;
 
     /* then the serial devices */
-    chr = vm->def->serials;
-    while (chr) {
+    for (i = 0 ; i < vm->def->nserials ; i++) {
+        virDomainChrDefPtr chr = vm->def->serials[i];
         if (chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
             if ((ret = qemudExtractMonitorPath(conn, output, &offset,
                                                &chr->data.file.path)) != 0)
                 goto cleanup;
         }
-        chr = chr->next;
     }
 
     /* and finally the parallel devices */
-    chr = vm->def->parallels;
-    while (chr) {
+    for (i = 0 ; i < vm->def->nparallels ; i++) {
+        virDomainChrDefPtr chr = vm->def->parallels[i];
         if (chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
             if ((ret = qemudExtractMonitorPath(conn, output, &offset,
                                                &chr->data.file.path)) != 0)
                 goto cleanup;
         }
-        chr = chr->next;
     }
 
     /* Got them all, so now open the monitor console */
@@ -2381,6 +2378,7 @@ static int qemudDomainChangeEjectableMedia(virDomainPtr dom,
     char *cmd, *reply, *safe_path;
     char *devname = NULL;
     unsigned int qemuCmdFlags;
+    int i;
 
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -2389,12 +2387,12 @@ static int qemudDomainChangeEjectableMedia(virDomainPtr dom,
     }
 
     newdisk = dev->data.disk;
-    origdisk = vm->def->disks;
-    while (origdisk) {
-        if (origdisk->bus == newdisk->bus &&
-            STREQ(origdisk->dst, newdisk->dst))
+    for (i = 0 ; i < vm->def->ndisks ; i++) {
+        if (vm->def->disks[i]->bus == newdisk->bus &&
+            STREQ(vm->def->disks[i]->dst, newdisk->dst)) {
+            origdisk = vm->def->disks[i];
             break;
-        origdisk = origdisk->next;
+        }
     }
 
     if (!origdisk) {
@@ -2496,7 +2494,6 @@ static int qemudDomainAttachUsbMassstorageDevice(virDomainPtr dom, virDomainDevi
     virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     int ret;
     char *cmd, *reply;
-    virDomainDiskDefPtr *dest, *prev, ptr;
 
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -2504,26 +2501,9 @@ static int qemudDomainAttachUsbMassstorageDevice(virDomainPtr dom, virDomainDevi
         return -1;
     }
 
-    /* Find spot in domain definition where we will put the disk */
-    ptr = vm->def->disks;
-    prev = &(vm->def->disks);
-    while (ptr) {
-        if (STREQ(dev->data.disk->dst, ptr->dst)) {
-            qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("duplicate disk target '%s'"),
-                             dev->data.disk->dst);
-            return -1;
-        }
-        if (virDomainDiskCompare(dev->data.disk, ptr) < 0) {
-            dest = &(ptr);
-            break;
-        }
-        prev = &(ptr->next);
-        ptr = ptr->next;
-    }
-
-    if (!ptr) {
-        dest = prev;
+    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        return -1;
     }
 
     ret = asprintf(&cmd, "usb_add disk:%s", dev->data.disk->src);
@@ -2551,9 +2531,9 @@ static int qemudDomainAttachUsbMassstorageDevice(virDomainPtr dom, virDomainDevi
         return -1;
     }
 
-    /* Actually update the xml */
-    dev->data.disk->next = *dest;
-    *prev = dev->data.disk;
+    vm->def->disks[vm->def->ndisks++] = dev->data.disk;
+    qsort(vm->def->disks, vm->def->ndisks, sizeof(*vm->def->disks),
+          virDomainDiskQSort);
 
     VIR_FREE(reply);
     VIR_FREE(cmd);
@@ -2570,6 +2550,10 @@ static int qemudDomainAttachHostDevice(virDomainPtr dom, virDomainDeviceDefPtr d
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
                          "%s", _("no domain with matching uuid"));
+        return -1;
+    }
+    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
         return -1;
     }
 
@@ -2606,9 +2590,7 @@ static int qemudDomainAttachHostDevice(virDomainPtr dom, virDomainDeviceDefPtr d
         return -1;
     }
 
-    /* Update xml */
-    dev->data.hostdev->next = vm->def->hostdevs;
-    vm->def->hostdevs = dev->data.hostdev;
+    vm->def->hostdevs[vm->def->nhostdevs++] = dev->data.hostdev;
 
     VIR_FREE(reply);
     VIR_FREE(cmd);
@@ -2891,7 +2873,7 @@ qemudDomainInterfaceStats (virDomainPtr dom,
 #ifdef __linux__
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     virDomainObjPtr vm = virDomainFindByID(&driver->domains, dom->id);
-    virDomainNetDefPtr net;
+    int i;
 
     if (!vm) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -2912,8 +2894,9 @@ qemudDomainInterfaceStats (virDomainPtr dom,
     }
 
     /* Check the path is one of the domain's network interfaces. */
-    for (net = vm->def->nets; net; net = net->next) {
-        if (net->ifname && STREQ (net->ifname, path))
+    for (i = 0 ; i < vm->def->nnets ; i++) {
+        if (vm->def->nets[i]->ifname &&
+            STREQ (vm->def->nets[i]->ifname, path))
             goto ok;
     }
 
@@ -2939,8 +2922,7 @@ qemudDomainBlockPeek (virDomainPtr dom,
 {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    virDomainDiskDefPtr disk;
-    int fd, ret = -1;
+    int fd, ret = -1, i;
 
     if (!vm) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -2955,9 +2937,10 @@ qemudDomainBlockPeek (virDomainPtr dom,
     }
 
     /* Check the path belongs to this domain. */
-    for (disk = vm->def->disks ; disk != NULL ; disk = disk->next) {
-        if (disk->src != NULL &&
-            STREQ (disk->src, path)) goto found;
+    for (i = 0 ; i < vm->def->ndisks ; i++) {
+        if (vm->def->disks[i]->src != NULL &&
+            STREQ (vm->def->disks[i]->src, path))
+            goto found;
     }
     qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
                       _("invalid path"));

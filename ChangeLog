@@ -1,3 +1,12 @@
+Fri Oct 10 17:03:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/domain_conf.c, src/domain_conf.h, src/lxc_container.c,
+	src/lxc_controller.c, src/lxc_driver.c, src/openvz_conf.c,
+	src/openvz_driver.c, src/qemu_conf.c, src/qemu_driver.c,
+	src/xend_internal.c, src/xend_internal.h, src/xminternal.c:
+	Switch to using arrays instead of linked lists for devices
+	* tests/sexpr2xmldata/sexpr2xml-fv-v2.xml: Fix device ordering
+
 Fri Oct 10 15:39:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/storage_conf.c, src/storage_conf.h, src/storage_driver.c,

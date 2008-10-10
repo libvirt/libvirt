@@ -365,28 +365,28 @@ static int lxcContainerPopulateDevices(void)
 
 static int lxcContainerMountNewFS(virDomainDefPtr vmDef)
 {
-    virDomainFSDefPtr tmp;
+    int i;
 
     /* Pull in rest of container's mounts */
-    for (tmp = vmDef->fss; tmp; tmp = tmp->next) {
+    for (i = 0 ; i < vmDef->nfss ; i++) {
         char *src;
-        if (STREQ(tmp->dst, "/"))
+        if (STREQ(vmDef->fss[i]->dst, "/"))
             continue;
         // XXX fix
-        if (tmp->type != VIR_DOMAIN_FS_TYPE_MOUNT)
+        if (vmDef->fss[i]->type != VIR_DOMAIN_FS_TYPE_MOUNT)
             continue;
 
-        if (asprintf(&src, "/.oldroot/%s", tmp->src) < 0) {
+        if (asprintf(&src, "/.oldroot/%s", vmDef->fss[i]->src) < 0) {
             lxcError(NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
             return -1;
         }
 
-        if (virFileMakePath(tmp->dst) < 0 ||
-            mount(src, tmp->dst, NULL, MS_BIND, NULL) < 0) {
+        if (virFileMakePath(vmDef->fss[i]->dst) < 0 ||
+            mount(src, vmDef->fss[i]->dst, NULL, MS_BIND, NULL) < 0) {
             VIR_FREE(src);
             lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                      _("failed to mount %s at %s for container: %s"),
-                     tmp->src, tmp->dst, strerror(errno));
+                     vmDef->fss[i]->src, vmDef->fss[i]->dst, strerror(errno));
             return -1;
         }
         VIR_FREE(src);
@@ -479,21 +479,21 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
    but with extra stuff mapped in */
 static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef)
 {
-    virDomainFSDefPtr tmp;
+    int i;
 
-    for (tmp = vmDef->fss; tmp; tmp = tmp->next) {
+    for (i = 0 ; i < vmDef->nfss ; i++) {
         // XXX fix to support other mount types
-        if (tmp->type != VIR_DOMAIN_FS_TYPE_MOUNT)
+        if (vmDef->fss[i]->type != VIR_DOMAIN_FS_TYPE_MOUNT)
             continue;
 
-        if (mount(tmp->src,
-                  tmp->dst,
+        if (mount(vmDef->fss[i]->src,
+                  vmDef->fss[i]->dst,
                   NULL,
                   MS_BIND,
                   NULL) < 0) {
             lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                      _("failed to mount %s at %s for container: %s"),
-                     tmp->src, tmp->dst, strerror(errno));
+                     vmDef->fss[i]->src, vmDef->fss[i]->dst, strerror(errno));
             return -1;
         }
     }
@@ -511,14 +511,14 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef)
 
 static int lxcContainerSetupMounts(virDomainDefPtr vmDef)
 {
-    virDomainFSDefPtr tmp;
+    int i;
     virDomainFSDefPtr root = NULL;
 
-    for (tmp = vmDef->fss; tmp && !root; tmp = tmp->next) {
-        if (tmp->type != VIR_DOMAIN_FS_TYPE_MOUNT)
+    for (i = 0 ; i < vmDef->nfss ; i++) {
+        if (vmDef->fss[i]->type != VIR_DOMAIN_FS_TYPE_MOUNT)
             continue;
-        if (STREQ(tmp->dst, "/"))
-            root = tmp;
+        if (STREQ(vmDef->fss[i]->dst, "/"))
+            root = vmDef->fss[i];
     }
 
     if (root)

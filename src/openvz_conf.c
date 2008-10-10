@@ -149,11 +149,12 @@ static int openvzParseMac(const char *macaddr, unsigned char *mac)
     return -1;
 }
 
-static virDomainNetDefPtr
-openvzReadNetworkConf(virConnectPtr conn, int veid) {
+static int
+openvzReadNetworkConf(virConnectPtr conn,
+                      virDomainDefPtr def,
+                      int veid) {
     int ret;
-    virDomainNetDefPtr net = NULL;
-    virDomainNetDefPtr new_net;
+    virDomainNetDefPtr net;
     char temp[4096];
     char *token, *saveptr = NULL;
 
@@ -171,17 +172,19 @@ openvzReadNetworkConf(virConnectPtr conn, int veid) {
     } else if (ret > 0) {
         token = strtok_r(temp, " ", &saveptr);
         while (token != NULL) {
-            new_net = NULL;
-            if (VIR_ALLOC(new_net) < 0)
+            if (VIR_ALLOC(net) < 0)
                 goto no_memory;
-            new_net->next = net;
-            net = new_net;
 
             net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
             net->data.ethernet.ipaddr = strdup(token);
 
             if (net->data.ethernet.ipaddr == NULL)
                 goto no_memory;
+
+            if (VIR_REALLOC_N(def->nets, def->nnets + 1) < 0)
+                goto no_memory;
+            def->nets[def->nnets++] = net;
+            net = NULL;
 
             token = strtok_r(NULL, " ", &saveptr);
         }
@@ -202,11 +205,8 @@ openvzReadNetworkConf(virConnectPtr conn, int veid) {
         token = strtok_r(temp, ";", &saveptr);
         while (token != NULL) {
             /*add new device to list*/
-            new_net = NULL;
-            if (VIR_ALLOC(new_net) < 0)
+            if (VIR_ALLOC(net) < 0)
                 goto no_memory;
-            new_net->next = net;
-            net = new_net;
 
             net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
 
@@ -256,16 +256,21 @@ openvzReadNetworkConf(virConnectPtr conn, int veid) {
                 p = ++next;
             } while (p < token + strlen(token));
 
+            if (VIR_REALLOC_N(def->nets, def->nnets + 1) < 0)
+                goto no_memory;
+            def->nets[def->nnets++] = net;
+            net = NULL;
+
             token = strtok_r(NULL, ";", &saveptr);
         }
     }
 
-    return net;
+    return 0;
 no_memory:
     openvzError(conn, VIR_ERR_NO_MEMORY, NULL);
 error:
     virDomainNetDefFree(net);
-    return NULL;
+    return -1;
 }
 
 
@@ -353,7 +358,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
 
         /* XXX load rest of VM config data .... */
 
-        dom->def->nets = openvzReadNetworkConf(NULL, veid);
+        openvzReadNetworkConf(NULL, dom->def, veid);
 
         if (VIR_REALLOC_N(driver->domains.objs,
                           driver->domains.count + 1) < 0)

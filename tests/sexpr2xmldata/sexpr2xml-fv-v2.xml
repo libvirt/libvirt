@@ -18,16 +18,16 @@
   <on_crash>restart</on_crash>
   <devices>
     <emulator>/usr/lib64/xen/bin/qemu-dm</emulator>
+    <disk type='file' device='disk'>
+      <driver name='file'/>
+      <source file='/root/foo.img'/>
+      <target dev='hda' bus='ide'/>
+    </disk>
     <disk type='file' device='cdrom'>
       <driver name='file'/>
       <source file='/root/boot.iso'/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
-    </disk>
-    <disk type='file' device='disk'>
-      <driver name='file'/>
-      <source file='/root/foo.img'/>
-      <target dev='hda' bus='ide'/>
     </disk>
     <interface type='bridge'>
       <mac address='00:16:3e:1b:b1:47'/>

@@ -499,8 +499,6 @@ int main(int argc, char *argv[])
     int bg = 0;
     virCapsPtr caps = NULL;
     virDomainDefPtr def = NULL;
-    int nnets = 0;
-    virDomainNetDefPtr nets = NULL;
     char *configFile = NULL;
     char *sockpath = NULL;
     const struct option const options[] = {
@@ -595,14 +593,9 @@ int main(int argc, char *argv[])
     if ((def = virDomainDefParseFile(NULL, caps, configFile)) == NULL)
         goto cleanup;
 
-    nets = def->nets;
-    while (nets) {
-        nnets++;
-        nets = nets->next;
-    }
-    if (nnets != nveths) {
+    if (def->nnets != nveths) {
         fprintf(stderr, "%s: expecting %d veths, but got %d\n",
-                argv[0], nnets, nveths);
+                argv[0], def->nnets, nveths);
         goto cleanup;
     }
 

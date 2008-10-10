@@ -117,21 +117,21 @@ static int openvzDomainDefineCmd(virConnectPtr conn,
     ADD_ARG_LIT("create");
     ADD_ARG_LIT(vmdef->name);
 
-    if (vmdef->fss) {
-        if (vmdef->fss->type != VIR_DOMAIN_FS_TYPE_TEMPLATE) {
+    if (vmdef->nfss) {
+        if (vmdef->fss[0]->type != VIR_DOMAIN_FS_TYPE_TEMPLATE) {
             openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                         "%s", _("only filesystem templates are supported"));
             return -1;
         }
 
-        if (vmdef->fss->next) {
+        if (vmdef->nfss > 1) {
             openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                         "%s", _("only one filesystem supported"));
             return -1;
         }
 
         ADD_ARG_LIT("--ostemplate");
-        ADD_ARG_LIT(vmdef->fss->src);
+        ADD_ARG_LIT(vmdef->fss[0]->src);
     }
 #if 0
     if ((vmdef->profile && *(vmdef->profile))) {
@@ -394,12 +394,6 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         }
     }
 
-    if (net->next != NULL)
-       if (openvzDomainSetNetwork(conn, vpsid, net->next) < 0) {
-          rc = -1;
-          goto exit;
-       }
-
  exit:
     cmdExecFree(prog);
     VIR_FREE(mac);
@@ -422,6 +416,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainDefPtr vmdef = NULL;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
+    int i;
     const char *prog[OPENVZ_MAX_ARG];
     prog[0] = NULL;
 
@@ -471,10 +466,12 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     if (dom)
         dom->id = -1;
 
-    if (openvzDomainSetNetwork(conn, vmdef->name, vmdef->nets) < 0) {
-        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                  _("Could not configure network"));
-        goto exit;
+    for (i = 0 ; i < vmdef->nnets ; i++) {
+        if (openvzDomainSetNetwork(conn, vmdef->name, vmdef->nets[i]) < 0) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("Could not configure network"));
+            goto exit;
+        }
     }
 
     if (vmdef->vcpus > 0) {
@@ -497,6 +494,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     virDomainDefPtr vmdef = NULL;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
+    int i;
     struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
     const char *progstart[] = {VZCTL, "--quiet", "start", NULL, NULL};
     const char *progcreate[OPENVZ_MAX_ARG];
@@ -542,10 +540,12 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
         goto exit;
     }
 
-    if (openvzDomainSetNetwork(conn, vmdef->name, vmdef->nets) < 0) {
-       openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                  _("Could not configure network"));
-        goto exit;
+    for (i = 0 ; i < vmdef->nnets ; i++) {
+        if (openvzDomainSetNetwork(conn, vmdef->name, vmdef->nets[i]) < 0) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("Could not configure network"));
+            goto exit;
+        }
     }
 
     progstart[3] = vmdef->name;

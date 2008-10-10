@@ -115,7 +115,7 @@ xenDaemonFormatSxprChr(virConnectPtr conn,
                        virBufferPtr buf);
 int
 xenDaemonFormatSxprSound(virConnectPtr conn,
-                         virDomainSoundDefPtr sound,
+                         virDomainDefPtr def,
                          virBufferPtr buf);
 
 char *

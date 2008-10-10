@@ -367,8 +367,8 @@ static int lxcVMCleanup(virConnectPtr conn,
     int rc = -1;
     int waitRc;
     int childStatus = -1;
-    virDomainNetDefPtr net;
     virCgroupPtr cgroup;
+    int i;
 
     while (((waitRc = waitpid(vm->pid, &childStatus, 0)) == -1) &&
            errno == EINTR)
@@ -398,9 +398,9 @@ static int lxcVMCleanup(virConnectPtr conn,
     vm->def->id = -1;
     vm->monitor = -1;
 
-    for (net = vm->def->nets; net; net = net->next) {
-        vethInterfaceUpOrDown(net->ifname, 0);
-        vethDelete(net->ifname);
+    for (i = 0 ; i < vm->def->nnets ; i++) {
+        vethInterfaceUpOrDown(vm->def->nets[i]->ifname, 0);
+        vethDelete(vm->def->nets[i]->ifname);
     }
 
     if (virCgroupForDomain(vm->def, "lxc", &cgroup) == 0) {
@@ -426,8 +426,7 @@ static int lxcSetupInterfaces(virConnectPtr conn,
                               unsigned int *nveths,
                               char ***veths)
 {
-    int rc = -1;
-    virDomainNetDefPtr net;
+    int rc = -1, i;
     char *bridge = NULL;
     char parentVeth[PATH_MAX] = "";
     char containerVeth[PATH_MAX] = "";
@@ -436,12 +435,12 @@ static int lxcSetupInterfaces(virConnectPtr conn,
     if (brInit(&brctl) != 0)
         return -1;
 
-    for (net = def->nets; net; net = net->next) {
-        switch (net->type) {
+    for (i = 0 ; i < def->nnets ; i++) {
+        switch (def->nets[i]->type) {
         case VIR_DOMAIN_NET_TYPE_NETWORK:
         {
             virNetworkPtr network = virNetworkLookupByName(conn,
-                                                           net->data.network.name);
+                                                           def->nets[i]->data.network.name);
             if (!network) {
                 goto error_exit;
             }
@@ -452,7 +451,7 @@ static int lxcSetupInterfaces(virConnectPtr conn,
             break;
         }
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
-            bridge = net->data.bridge.brname;
+            bridge = def->nets[i]->data.bridge.brname;
             break;
         }
 
@@ -464,8 +463,8 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         }
 
         DEBUG0("calling vethCreate()");
-        if (NULL != net->ifname) {
-            strcpy(parentVeth, net->ifname);
+        if (NULL != def->nets[i]->ifname) {
+            strcpy(parentVeth, def->nets[i]->ifname);
         }
         DEBUG("parentVeth: %s, containerVeth: %s", parentVeth, containerVeth);
         if (0 != (rc = vethCreate(parentVeth, PATH_MAX, containerVeth, PATH_MAX))) {
@@ -473,15 +472,15 @@ static int lxcSetupInterfaces(virConnectPtr conn,
                      _("failed to create veth device pair: %d"), rc);
             goto error_exit;
         }
-        if (NULL == net->ifname) {
-            net->ifname = strdup(parentVeth);
+        if (NULL == def->nets[i]->ifname) {
+            def->nets[i]->ifname = strdup(parentVeth);
         }
         if (VIR_REALLOC_N(*veths, (*nveths)+1) < 0)
             goto error_exit;
         if (((*veths)[(*nveths)++] = strdup(containerVeth)) == NULL)
             goto error_exit;
 
-        if (NULL == net->ifname) {
+        if (NULL == def->nets[i]->ifname) {
             lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                      _("failed to allocate veth names"));
             goto error_exit;

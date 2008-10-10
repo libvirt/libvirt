@@ -701,13 +701,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
     char memory[50];
     char vcpus[50];
     char boot[VIR_DOMAIN_BOOT_LAST];
-    virDomainDiskDefPtr disk = vm->def->disks;
-    virDomainNetDefPtr net = vm->def->nets;
-    virDomainInputDefPtr input = vm->def->inputs;
-    virDomainSoundDefPtr sound = vm->def->sounds;
-    virDomainHostdevDefPtr hostdev = vm->def->hostdevs;
-    virDomainChrDefPtr serial = vm->def->serials;
-    virDomainChrDefPtr parallel = vm->def->parallels;
     struct utsname ut;
     int disableKQEMU = 0;
     int qargc = 0, qarga = 0;
@@ -874,10 +867,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
             }
         }
 
-        while (disk) {
+        for (i = 0 ; i < vm->def->ndisks ; i++) {
             char opt[PATH_MAX];
             const char *media = NULL;
             int bootable = 0;
+            virDomainDiskDefPtr disk = vm->def->disks[i];
             int idx = virDiskNameToIndex(disk->dst);
             const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
 
@@ -889,7 +883,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
                                      _("unsupported usb disk type for '%s'"), disk->src);
                     goto error;
                 }
-                disk = disk->next;
                 continue;
             }
 
@@ -925,12 +918,12 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             ADD_ARG_LIT("-drive");
             ADD_ARG_LIT(opt);
-            disk = disk->next;
         }
     } else {
-        while (disk) {
+        for (i = 0 ; i < vm->def->ndisks ; i++) {
             char dev[NAME_MAX];
             char file[PATH_MAX];
+            virDomainDiskDefPtr disk = vm->def->disks[i];
 
             if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
                 if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
@@ -940,7 +933,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
                                      _("unsupported usb disk type for '%s'"), disk->src);
                     goto error;
                 }
-                disk = disk->next;
                 continue;
             }
 
@@ -949,7 +941,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 if (disk->src) {
                     snprintf(dev, NAME_MAX, "-%s", "cdrom");
                 } else {
-                    disk = disk->next;
                     continue;
                 }
             } else {
@@ -967,18 +958,17 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             ADD_ARG_LIT(dev);
             ADD_ARG_LIT(file);
-
-            disk = disk->next;
         }
     }
 
-    if (!net) {
+    if (!vm->def->nnets) {
         ADD_ARG_LIT("-net");
         ADD_ARG_LIT("none");
     } else {
         int vlan = 0;
-        while (net) {
+        for (i = 0 ; i < vm->def->nnets ; i++) {
             char nic[100];
+            virDomainNetDefPtr net = vm->def->nets[i];
 
             if (snprintf(nic, sizeof(nic),
                          "nic,macaddr=%02x:%02x:%02x:%02x:%02x:%02x,vlan=%d%s%s",
@@ -1059,53 +1049,50 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 }
             }
 
-            net = net->next;
             vlan++;
         }
     }
 
-    if (!serial) {
+    if (!vm->def->nserials) {
         ADD_ARG_LIT("-serial");
         ADD_ARG_LIT("none");
     } else {
-        while (serial) {
+        for (i = 0 ; i < vm->def->nserials ; i++) {
             char buf[4096];
+            virDomainChrDefPtr serial = vm->def->serials[i];
 
             if (qemudBuildCommandLineChrDevStr(serial, buf, sizeof(buf)) < 0)
                 goto error;
 
             ADD_ARG_LIT("-serial");
             ADD_ARG_LIT(buf);
-
-            serial = serial->next;
         }
     }
 
-    if (!parallel) {
+    if (!vm->def->nparallels) {
         ADD_ARG_LIT("-parallel");
         ADD_ARG_LIT("none");
     } else {
-        while (parallel) {
+        for (i = 0 ; i < vm->def->nparallels ; i++) {
             char buf[4096];
+            virDomainChrDefPtr parallel = vm->def->parallels[i];
 
             if (qemudBuildCommandLineChrDevStr(parallel, buf, sizeof(buf)) < 0)
                 goto error;
 
             ADD_ARG_LIT("-parallel");
             ADD_ARG_LIT(buf);
-
-            parallel = parallel->next;
         }
     }
 
     ADD_ARG_LIT("-usb");
-    while (input) {
+    for (i = 0 ; i < vm->def->ninputs ; i++) {
+        virDomainInputDefPtr input = vm->def->inputs[i];
+
         if (input->bus == VIR_DOMAIN_INPUT_BUS_USB) {
             ADD_ARG_LIT("-usbdevice");
             ADD_ARG_LIT(input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ? "mouse" : "tablet");
         }
-
-        input = input->next;
     }
 
     if (vm->def->graphics &&
@@ -1151,13 +1138,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     /* Add sound hardware */
-    if (sound) {
+    if (vm->def->nsounds) {
         int size = 100;
         char *modstr;
         if (VIR_ALLOC_N(modstr, size+1) < 0)
             goto no_memory;
 
-        while(sound && size > 0) {
+        for (i = 0 ; i < vm->def->nsounds && size > 0 ; i++) {
+            virDomainSoundDefPtr sound = vm->def->sounds[i];
             const char *model = virDomainSoundModelTypeToString(sound->model);
             if (!model) {
                 VIR_FREE(modstr);
@@ -1167,8 +1155,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
             }
             strncat(modstr, model, size);
             size -= strlen(model);
-            sound = sound->next;
-            if (sound)
+            if (i < (vm->def->nsounds - 1))
                strncat(modstr, ",", size--);
         }
         ADD_ARG_LIT("-soundhw");
@@ -1176,9 +1163,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     /* Add host passthrough hardware */
-    while (hostdev) {
+    for (i = 0 ; i < vm->def->nhostdevs ; i++) {
         int ret;
         char* usbdev;
+        virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
 
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
@@ -1200,7 +1188,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
             ADD_ARG_LIT(usbdev);
             VIR_FREE(usbdev);
         }
-        hostdev = hostdev->next;
     }
 
     if (migrateFrom) {

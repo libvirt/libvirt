@@ -90,8 +90,6 @@ struct _virDomainDiskDef {
     char *driverType;
     unsigned int readonly : 1;
     unsigned int shared : 1;
-
-    virDomainDiskDefPtr next;
 };
 
 
@@ -112,8 +110,6 @@ struct _virDomainFSDef {
     char *src;
     char *dst;
     unsigned int readonly : 1;
-
-    virDomainFSDefPtr next;
 };
 
 
@@ -158,8 +154,6 @@ struct _virDomainNetDef {
         } bridge;
     } data;
     char *ifname;
-
-    virDomainNetDefPtr next;
 };
 
 enum virDomainChrSrcType {
@@ -211,8 +205,6 @@ struct _virDomainChrDef {
             int listen;
         } nix;
     } data;
-
-    virDomainChrDefPtr next;
 };
 
 enum virDomainInputType {
@@ -235,7 +227,6 @@ typedef virDomainInputDef *virDomainInputDefPtr;
 struct _virDomainInputDef {
     int type;
     int bus;
-    virDomainInputDefPtr next;
 };
 
 enum virDomainSoundModel {
@@ -250,7 +241,6 @@ typedef struct _virDomainSoundDef virDomainSoundDef;
 typedef virDomainSoundDef *virDomainSoundDefPtr;
 struct _virDomainSoundDef {
     int model;
-    virDomainSoundDefPtr next;
 };
 
 /* 3 possible graphics console modes */
@@ -324,7 +314,6 @@ struct _virDomainHostdevDef {
         } caps;
     } source;
     char* target;
-    virDomainHostdevDefPtr next;
 };
 
 /* Flags for the 'type' field in next struct */
@@ -428,15 +417,34 @@ struct _virDomainDef {
 
     int localtime;
 
+    /* Only 1 */
     virDomainGraphicsDefPtr graphics;
-    virDomainDiskDefPtr disks;
-    virDomainFSDefPtr fss;
-    virDomainNetDefPtr nets;
-    virDomainInputDefPtr inputs;
-    virDomainSoundDefPtr sounds;
-    virDomainHostdevDefPtr hostdevs;
-    virDomainChrDefPtr serials;
-    virDomainChrDefPtr parallels;
+
+    int ndisks;
+    virDomainDiskDefPtr *disks;
+
+    int nfss;
+    virDomainFSDefPtr *fss;
+
+    int nnets;
+    virDomainNetDefPtr *nets;
+
+    int ninputs;
+    virDomainInputDefPtr *inputs;
+
+    int nsounds;
+    virDomainSoundDefPtr *sounds;
+
+    int nhostdevs;
+    virDomainHostdevDefPtr *hostdevs;
+
+    int nserials;
+    virDomainChrDefPtr *serials;
+
+    int nparallels;
+    virDomainChrDefPtr *parallels;
+
+    /* Only 1 */
     virDomainChrDefPtr console;
 };
 
@@ -531,6 +539,7 @@ char *virDomainCpuSetFormat(virConnectPtr conn,
                             char *cpuset,
                             int maxcpu);
 
+int virDomainDiskQSort(const void *a, const void *b);
 int virDomainDiskCompare(virDomainDiskDefPtr a,
                          virDomainDiskDefPtr b);
 

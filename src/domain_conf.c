@@ -209,7 +209,6 @@ void virDomainInputDefFree(virDomainInputDefPtr def)
     if (!def)
         return;
 
-    virDomainInputDefFree(def->next);
     VIR_FREE(def);
 }
 
@@ -223,7 +222,6 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->driverName);
     VIR_FREE(def->driverType);
 
-    virDomainDiskDefFree(def->next);
     VIR_FREE(def);
 }
 
@@ -235,7 +233,6 @@ void virDomainFSDefFree(virDomainFSDefPtr def)
     VIR_FREE(def->src);
     VIR_FREE(def->dst);
 
-    virDomainFSDefFree(def->next);
     VIR_FREE(def);
 }
 
@@ -269,7 +266,6 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     }
 
     VIR_FREE(def->ifname);
-    virDomainNetDefFree(def->next);
     VIR_FREE(def);
 }
 
@@ -303,7 +299,6 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
         break;
     }
 
-    virDomainChrDefFree(def->next);
     VIR_FREE(def);
 }
 
@@ -312,7 +307,6 @@ void virDomainSoundDefFree(virDomainSoundDefPtr def)
     if (!def)
         return;
 
-    virDomainSoundDefFree(def->next);
     VIR_FREE(def);
 }
 
@@ -322,7 +316,6 @@ void virDomainHostdevDefFree(virDomainHostdevDefPtr def)
         return;
 
     VIR_FREE(def->target);
-    virDomainHostdevDefFree(def->next);
     VIR_FREE(def);
 }
 
@@ -354,19 +347,45 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
 
 void virDomainDefFree(virDomainDefPtr def)
 {
+    unsigned int i;
+
     if (!def)
         return;
 
     virDomainGraphicsDefFree(def->graphics);
-    virDomainInputDefFree(def->inputs);
-    virDomainDiskDefFree(def->disks);
-    virDomainFSDefFree(def->fss);
-    virDomainNetDefFree(def->nets);
-    virDomainChrDefFree(def->serials);
-    virDomainChrDefFree(def->parallels);
+
+    for (i = 0 ; i < def->ninputs ; i++)
+        virDomainInputDefFree(def->inputs[i]);
+    VIR_FREE(def->inputs);
+
+    for (i = 0 ; i < def->ndisks ; i++)
+        virDomainDiskDefFree(def->disks[i]);
+    VIR_FREE(def->disks);
+
+    for (i = 0 ; i < def->nfss ; i++)
+        virDomainFSDefFree(def->fss[i]);
+    VIR_FREE(def->fss);
+
+    for (i = 0 ; i < def->nnets ; i++)
+        virDomainNetDefFree(def->nets[i]);
+    VIR_FREE(def->nets);
+    for (i = 0 ; i < def->nserials ; i++)
+        virDomainChrDefFree(def->serials[i]);
+    VIR_FREE(def->serials);
+
+    for (i = 0 ; i < def->nparallels ; i++)
+        virDomainChrDefFree(def->parallels[i]);
+    VIR_FREE(def->parallels);
+
     virDomainChrDefFree(def->console);
-    virDomainSoundDefFree(def->sounds);
-    virDomainHostdevDefFree(def->hostdevs);
+
+    for (i = 0 ; i < def->nsounds ; i++)
+        virDomainSoundDefFree(def->sounds[i]);
+    VIR_FREE(def->sounds);
+
+    for (i = 0 ; i < def->nhostdevs ; i++)
+        virDomainHostdevDefFree(def->hostdevs[i]);
+    VIR_FREE(def->hostdevs);
 
     VIR_FREE(def->os.type);
     VIR_FREE(def->os.arch);
@@ -1677,6 +1696,14 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
     return NULL;
 }
 
+int virDomainDiskQSort(const void *a, const void *b)
+{
+    const virDomainDiskDefPtr *da = a;
+    const virDomainDiskDefPtr *db = b;
+
+    return virDomainDiskCompare(*da, *db);
+}
+
 
 static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                                             virCapsPtr caps,
@@ -1918,36 +1945,18 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                              "%s", _("cannot extract disk devices"));
         goto error;
     }
+    if (n && VIR_ALLOC_N(def->disks, n) < 0)
+        goto no_memory;
     for (i = 0 ; i < n ; i++) {
         virDomainDiskDefPtr disk = virDomainDiskDefParseXML(conn,
                                                             nodes[i]);
         if (!disk)
             goto error;
 
-        /* Maintain list in sorted order according to target device name */
-        virDomainDiskDefPtr ptr = def->disks;
-        virDomainDiskDefPtr *prev = &(def->disks);
-        while (ptr) {
-            if (STREQ(disk->dst, ptr->dst)) {
-                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                     _("duplicate disk target '%s'"),
-                                     disk->dst);
-                goto error;
-            }
-            if (virDomainDiskCompare(disk, ptr) < 0) {
-                disk->next = ptr;
-                *prev = disk;
-                break;
-            }
-            prev = &(ptr->next);
-            ptr = ptr->next;
-        }
-
-        if (!ptr) {
-            disk->next = ptr;
-            *prev = disk;
-        }
+        def->disks[def->ndisks++] = disk;
     }
+    qsort(def->disks, def->ndisks, sizeof(*def->disks),
+          virDomainDiskQSort);
     VIR_FREE(nodes);
 
     /* analysis of the filesystems */
@@ -1956,14 +1965,15 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                              "%s", _("cannot extract filesystem devices"));
         goto error;
     }
-    for (i = n - 1 ; i >= 0 ; i--) {
+    if (n && VIR_ALLOC_N(def->fss, n) < 0)
+        goto no_memory;
+    for (i = 0 ; i < n ; i++) {
         virDomainFSDefPtr fs = virDomainFSDefParseXML(conn,
                                                       nodes[i]);
         if (!fs)
             goto error;
 
-        fs->next = def->fss;
-        def->fss = fs;
+        def->fss[def->nfss++] = fs;
     }
     VIR_FREE(nodes);
 
@@ -1973,14 +1983,15 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                              "%s", _("cannot extract network devices"));
         goto error;
     }
-    for (i = n - 1 ; i >= 0 ; i--) {
+    if (n && VIR_ALLOC_N(def->nets, n) < 0)
+        goto no_memory;
+    for (i = 0 ; i < n ; i++) {
         virDomainNetDefPtr net = virDomainNetDefParseXML(conn,
                                                          nodes[i]);
         if (!net)
             goto error;
 
-        net->next = def->nets;
-        def->nets = net;
+        def->nets[def->nnets++] = net;
     }
     VIR_FREE(nodes);
 
@@ -1991,15 +2002,17 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                              "%s", _("cannot extract parallel devices"));
         goto error;
     }
-    for (i = n - 1 ; i >= 0 ; i--) {
+    if (n && VIR_ALLOC_N(def->parallels, n) < 0)
+        goto no_memory;
+
+    for (i = 0 ; i < n ; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(conn,
                                                          nodes[i]);
         if (!chr)
             goto error;
 
         chr->dstPort = i;
-        chr->next = def->parallels;
-        def->parallels = chr;
+        def->parallels[def->nparallels++] = chr;
     }
     VIR_FREE(nodes);
 
@@ -2008,15 +2021,17 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                              "%s", _("cannot extract serial devices"));
         goto error;
     }
-    for (i = n - 1 ; i >= 0 ; i--) {
+    if (n && VIR_ALLOC_N(def->serials, n) < 0)
+        goto no_memory;
+
+    for (i = 0 ; i < n ; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(conn,
                                                          nodes[i]);
         if (!chr)
             goto error;
 
         chr->dstPort = i;
-        chr->next = def->serials;
-        def->serials = chr;
+        def->serials[def->nserials++] = chr;
     }
     VIR_FREE(nodes);
 
@@ -2024,7 +2039,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
      * If no serial devices were listed, then look for console
      * devices which is the legacy syntax for the same thing
      */
-    if (def->serials == NULL) {
+    if (def->nserials == 0) {
         if ((node = virXPathNode(conn, "./devices/console[1]", ctxt)) != NULL) {
             virDomainChrDefPtr chr = virDomainChrDefParseXML(conn,
                                                              node);
@@ -2037,8 +2052,12 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
              * while for non-HVM it was a parvirt console
              */
             if (STREQ(def->os.type, "hvm")) {
-                chr->next = def->serials;
-                def->serials = chr;
+                if (VIR_ALLOC_N(def->serials, 1) < 0) {
+                    virDomainChrDefFree(chr);
+                    goto no_memory;
+                }
+                def->nserials = 1;
+                def->serials[0] = chr;
             } else {
                 def->console = chr;
             }
@@ -2052,7 +2071,10 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                              "%s", _("cannot extract input devices"));
         goto error;
     }
-    for (i = n - 1 ; i >= 0 ; i--) {
+    if (n && VIR_ALLOC_N(def->inputs, n) < 0)
+        goto no_memory;
+
+    for (i = 0 ; i < n ; i++) {
         virDomainInputDefPtr input = virDomainInputDefParseXML(conn,
                                                                def->os.type,
                                                                nodes[i]);
@@ -2073,8 +2095,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
             continue;
         }
 
-        input->next = def->inputs;
-        def->inputs = input;
+        def->inputs[def->ninputs++] = input;
     }
     VIR_FREE(nodes);
 
@@ -2109,8 +2130,13 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
             input->type = VIR_DOMAIN_INPUT_TYPE_MOUSE;
             input->bus = VIR_DOMAIN_INPUT_BUS_XEN;
         }
-        input->next = def->inputs;
-        def->inputs = input;
+
+        if (VIR_REALLOC_N(def->inputs, def->ninputs + 1) < 0) {
+            virDomainInputDefFree(input);
+            goto no_memory;
+        }
+        def->inputs[def->ninputs] = input;
+        def->ninputs++;
     }
 
 
@@ -2120,28 +2146,26 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                              "%s", _("cannot extract sound devices"));
         goto error;
     }
-    for (i = n - 1 ; i >= 0 ; i--) {
-        int collision = 0;
-        virDomainSoundDefPtr check;
+    if (n && VIR_ALLOC_N(def->sounds, n) < 0)
+        goto no_memory;
+    for (i = 0 ; i < n ; i++) {
+        int collision = 0, j;
         virDomainSoundDefPtr sound = virDomainSoundDefParseXML(conn,
                                                                nodes[i]);
         if (!sound)
             goto error;
 
         /* Verify there's no duplicated sound card */
-        check = def->sounds;
-        while (check) {
-            if (check->model == sound->model)
+        for (j = 0 ; j < def->nsounds ; j++) {
+            if (def->sounds[j]->model == sound->model)
                 collision = 1;
-            check = check->next;
         }
         if (collision) {
             virDomainSoundDefFree(sound);
             continue;
         }
 
-        sound->next = def->sounds;
-        def->sounds = sound;
+        def->sounds[def->nsounds++] = sound;
     }
     VIR_FREE(nodes);
 
@@ -2151,17 +2175,22 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                              "%s", _("cannot extract host devices"));
         goto error;
     }
+    if (n && VIR_ALLOC_N(def->hostdevs, n) < 0)
+        goto no_memory;
     for (i = 0 ; i < n ; i++) {
         virDomainHostdevDefPtr hostdev = virDomainHostdevDefParseXML(conn, nodes[i]);
         if (!hostdev)
             goto error;
 
-        hostdev->next = def->hostdevs;
-        def->hostdevs = hostdev;
+        def->hostdevs[def->nhostdevs++] = hostdev;
     }
     VIR_FREE(nodes);
 
     return def;
+
+no_memory:
+    virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+    /* fallthrough */
 
  error:
     VIR_FREE(tmp);
@@ -2953,13 +2982,6 @@ char *virDomainDefFormat(virConnectPtr conn,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    virDomainDiskDefPtr disk;
-    virDomainFSDefPtr fs;
-    virDomainNetDefPtr net;
-    virDomainSoundDefPtr sound;
-    virDomainInputDefPtr input;
-    virDomainChrDefPtr chr;
-    virDomainHostdevDefPtr hostdev;
     const char *type = NULL, *tmp;
     int n, allones = 1;
 
@@ -3096,67 +3118,49 @@ char *virDomainDefFormat(virConnectPtr conn,
         virBufferEscapeString(&buf, "    <emulator>%s</emulator>\n",
                               def->emulator);
 
-    disk = def->disks;
-    while (disk) {
-        if (virDomainDiskDefFormat(conn, &buf, disk) < 0)
+    for (n = 0 ; n < def->ndisks ; n++)
+        if (virDomainDiskDefFormat(conn, &buf, def->disks[n]) < 0)
             goto cleanup;
-        disk = disk->next;
-    }
 
-    fs = def->fss;
-    while (fs) {
-        if (virDomainFSDefFormat(conn, &buf, fs) < 0)
+    for (n = 0 ; n < def->nfss ; n++)
+        if (virDomainFSDefFormat(conn, &buf, def->fss[n]) < 0)
             goto cleanup;
-        fs = fs->next;
-    }
-
-    net = def->nets;
-    while (net) {
-        if (virDomainNetDefFormat(conn, &buf, net) < 0)
-            goto cleanup;
-        net = net->next;
-    }
 
 
-    chr = def->serials;
-    while (chr) {
-        if (virDomainChrDefFormat(conn, &buf, chr, "serial") < 0)
+    for (n = 0 ; n < def->nnets ; n++)
+        if (virDomainNetDefFormat(conn, &buf, def->nets[n]) < 0)
             goto cleanup;
-        chr = chr->next;
-    }
 
-    chr = def->parallels;
-    while (chr) {
-        if (virDomainChrDefFormat(conn, &buf, chr, "parallel") < 0)
+    for (n = 0 ; n < def->nserials ; n++)
+        if (virDomainChrDefFormat(conn, &buf, def->serials[n], "serial") < 0)
             goto cleanup;
-        chr = chr->next;
-    }
+
+    for (n = 0 ; n < def->nparallels ; n++)
+        if (virDomainChrDefFormat(conn, &buf, def->parallels[n], "parallel") < 0)
+            goto cleanup;
 
     /* If there's a PV console that's preferred.. */
     if (def->console) {
         if (virDomainChrDefFormat(conn, &buf, def->console, "console") < 0)
             goto cleanup;
-    } else if (def->serials != NULL) {
+    } else if (def->nserials != 0) {
         /* ..else for legacy compat duplicate the serial device as a console */
-        if (virDomainChrDefFormat(conn, &buf, def->serials, "console") < 0)
+        if (virDomainChrDefFormat(conn, &buf, def->serials[n], "console") < 0)
             goto cleanup;
     }
 
-    input = def->inputs;
-    while (input) {
-        if (input->bus == VIR_DOMAIN_INPUT_BUS_USB &&
-            virDomainInputDefFormat(conn, &buf, input) < 0)
+    for (n = 0 ; n < def->ninputs ; n++)
+        if (def->inputs[n]->bus == VIR_DOMAIN_INPUT_BUS_USB &&
+            virDomainInputDefFormat(conn, &buf, def->inputs[n]) < 0)
             goto cleanup;
-        input = input->next;
-    }
 
     if (def->graphics) {
         /* If graphics is enabled, add the implicit mouse */
         virDomainInputDef autoInput = {
             VIR_DOMAIN_INPUT_TYPE_MOUSE,
             STREQ(def->os.type, "hvm") ?
-            VIR_DOMAIN_INPUT_BUS_PS2 : VIR_DOMAIN_INPUT_BUS_XEN,
-            NULL };
+            VIR_DOMAIN_INPUT_BUS_PS2 : VIR_DOMAIN_INPUT_BUS_XEN
+        };
 
         if (virDomainInputDefFormat(conn, &buf, &autoInput) < 0)
             goto cleanup;
@@ -3165,19 +3169,13 @@ char *virDomainDefFormat(virConnectPtr conn,
             goto cleanup;
     }
 
-    sound = def->sounds;
-    while(sound) {
-        if (virDomainSoundDefFormat(conn, &buf, sound) < 0)
+    for (n = 0 ; n < def->nsounds ; n++)
+        if (virDomainSoundDefFormat(conn, &buf, def->sounds[n]) < 0)
             goto cleanup;
-        sound = sound->next;
-    }
 
-    hostdev = def->hostdevs;
-    while (hostdev) {
-        if (virDomainHostdevDefFormat(conn, &buf, hostdev) < 0)
+    for (n = 0 ; n < def->nhostdevs ; n++)
+        if (virDomainHostdevDefFormat(conn, &buf, def->hostdevs[n]) < 0)
             goto cleanup;
-        hostdev = hostdev->next;
-    }
 
     virBufferAddLit(&buf, "  </devices>\n");
     virBufferAddLit(&buf, "</domain>\n");

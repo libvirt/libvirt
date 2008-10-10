@@ -1595,7 +1595,7 @@ xenDaemonParseSxprDisks(virConnectPtr conn,
                         int xendConfigVersion)
 {
     const struct sexpr *cur, *node;
-    virDomainDiskDefPtr disk = NULL, prev = def->disks;
+    virDomainDiskDefPtr disk = NULL;
 
     for (cur = root; cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
         node = cur->u.s.car;
@@ -1729,12 +1729,10 @@ xenDaemonParseSxprDisks(virConnectPtr conn,
                 strchr(mode, '!'))
                 disk->shared = 1;
 
-            if (prev)
-                prev->next = disk;
-            else
-                def->disks = disk;
+            if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
+                goto no_memory;
 
-            prev = disk;
+            def->disks[def->ndisks++] = disk;
             disk = NULL;
         }
     }
@@ -1755,7 +1753,7 @@ xenDaemonParseSxprNets(virConnectPtr conn,
                        virDomainDefPtr def,
                        const struct sexpr *root)
 {
-    virDomainNetDefPtr net = NULL, prev = def->nets;
+    virDomainNetDefPtr net = NULL;
     const struct sexpr *cur, *node;
     const char *tmp;
     int vif_index = 0;
@@ -1828,12 +1826,10 @@ xenDaemonParseSxprNets(virConnectPtr conn,
                 !(net->model = strdup(model)))
                 goto no_memory;
 
-            if (prev)
-                prev->next = net;
-            else
-                def->nets = net;
+            if (VIR_REALLOC_N(def->nets, def->nnets + 1) < 0)
+                goto no_memory;
 
-            prev = net;
+            def->nets[def->nnets++] = net;
             vif_index++;
         }
     }
@@ -1855,22 +1851,22 @@ xenDaemonParseSxprSound(virConnectPtr conn,
 {
     if (STREQ(str, "all")) {
         int i;
-        virDomainSoundDefPtr prev = NULL;
+
+        if (VIR_ALLOC_N(def->sounds,
+                        VIR_DOMAIN_SOUND_MODEL_LAST) < 0)
+            goto no_memory;
+
         for (i = 0 ; i < VIR_DOMAIN_SOUND_MODEL_LAST ; i++) {
             virDomainSoundDefPtr sound;
             if (VIR_ALLOC(sound) < 0)
                 goto no_memory;
             sound->model = i;
-            if (prev)
-                prev->next = sound;
-            else
-                def->sounds = sound;
-            prev = sound;
+            def->sounds[def->nsounds++] = sound;
         }
     } else {
         char model[10];
         const char *offset = str, *offset2;
-        virDomainSoundDefPtr prev = NULL;
+
         do {
             int len;
             virDomainSoundDefPtr sound;
@@ -1895,11 +1891,12 @@ xenDaemonParseSxprSound(virConnectPtr conn,
                 goto error;
             }
 
-            if (prev)
-                prev->next = sound;
-            else
-                def->sounds = sound;
-            prev = sound;
+            if (VIR_REALLOC_N(def->sounds, def->nsounds+1) < 0) {
+                virDomainSoundDefFree(sound);
+                goto no_memory;
+            }
+
+            def->sounds[def->nsounds++] = sound;
             offset = offset2 ? offset2 + 1 : NULL;
         } while (offset);
     }
@@ -1918,7 +1915,6 @@ xenDaemonParseSxprUSB(virConnectPtr conn,
                       virDomainDefPtr def,
                       const struct sexpr *root)
 {
-    virDomainInputDefPtr prev = def->inputs;
     struct sexpr *cur, *node;
     const char *tmp;
 
@@ -1938,11 +1934,11 @@ xenDaemonParseSxprUSB(virConnectPtr conn,
                     else
                         input->type = VIR_DOMAIN_INPUT_TYPE_MOUSE;
 
-                    if (prev)
-                        prev->next = input;
-                    else
-                        def->inputs = input;
-                    prev = input;
+                    if (VIR_REALLOC_N(def->inputs, def->ninputs+1) < 0) {
+                        VIR_FREE(input);
+                        goto no_memory;
+                    }
+                    def->inputs[def->ninputs++] = input;
                 } else {
                     /* XXX Handle other non-input USB devices later */
                 }
@@ -2283,34 +2279,31 @@ xenDaemonParseSxpr(virConnectPtr conn,
         xendConfigVersion == 1) {
         tmp = sexpr_node(root, "domain/image/hvm/cdrom");
         if ((tmp != NULL) && (tmp[0] != 0)) {
-            virDomainDiskDefPtr disk, prev;
+            virDomainDiskDefPtr disk;
             if (VIR_ALLOC(disk) < 0)
                 goto no_memory;
             if (!(disk->src = strdup(tmp))) {
-                VIR_FREE(disk);
+                virDomainDiskDefFree(disk);
                 goto no_memory;
             }
             disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
             disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
             if (!(disk->dst = strdup("hdc"))) {
-                VIR_FREE(disk);
+                virDomainDiskDefFree(disk);
                 goto no_memory;
             }
             if (!(disk->driverName = strdup("file"))) {
-                VIR_FREE(disk);
+                virDomainDiskDefFree(disk);
                 goto no_memory;
             }
             disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
             disk->readonly = 1;
 
-            prev = def->disks;
-            while (prev && prev->next) {
-                prev = prev->next;
+            if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
+                virDomainDiskDefFree(disk);
+                goto no_memory;
             }
-            if (prev)
-                prev->next = disk;
-            else
-                def->disks = disk;
+            def->disks[def->ndisks++] = disk;
         }
     }
 
@@ -2322,7 +2315,7 @@ xenDaemonParseSxpr(virConnectPtr conn,
         for (i = 0 ; i < sizeof(fds)/sizeof(fds[0]) ; i++) {
             tmp = sexpr_fmt_node(root, "domain/image/hvm/%s", fds[i]);
             if ((tmp != NULL) && (tmp[0] != 0)) {
-                virDomainDiskDefPtr disk, prev;
+                virDomainDiskDefPtr disk;
                 if (VIR_ALLOC(disk) < 0)
                     goto no_memory;
                 if (!(disk->src = strdup(tmp))) {
@@ -2332,26 +2325,25 @@ xenDaemonParseSxpr(virConnectPtr conn,
                 disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
                 disk->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
                 if (!(disk->dst = strdup(fds[i]))) {
-                    VIR_FREE(disk);
+                    virDomainDiskDefFree(disk);
                     goto no_memory;
                 }
                 if (!(disk->driverName = strdup("file"))) {
-                    VIR_FREE(disk);
+                    virDomainDiskDefFree(disk);
                     goto no_memory;
                 }
                 disk->bus = VIR_DOMAIN_DISK_BUS_FDC;
 
-                prev = def->disks;
-                while (prev && prev->next) {
-                    prev = prev->next;
+                if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
+                    virDomainDiskDefFree(disk);
+                    goto no_memory;
                 }
-                if (prev)
-                    prev->next = disk;
-                else
-                    def->disks = disk;
+                def->disks[def->ndisks++] = disk;
             }
         }
     }
+    qsort(def->disks, def->ndisks, sizeof(*def->disks),
+          virDomainDiskQSort);
 
     /* in case of HVM we have USB device emulation */
     if (hvm &&
@@ -2363,14 +2355,26 @@ xenDaemonParseSxpr(virConnectPtr conn,
     if (hvm) {
         tmp = sexpr_node(root, "domain/image/hvm/serial");
         if (tmp && STRNEQ(tmp, "none")) {
-            if ((def->serials = xenDaemonParseSxprChar(conn, tmp, tty)) == NULL)
+            virDomainChrDefPtr chr;
+            if ((chr = xenDaemonParseSxprChar(conn, tmp, tty)) == NULL)
                 goto error;
+            if (VIR_REALLOC_N(def->serials, def->nserials+1) < 0) {
+                virDomainChrDefFree(chr);
+                goto no_memory;
+            }
+            def->serials[def->nserials++] = chr;
         }
         tmp = sexpr_node(root, "domain/image/hvm/parallel");
         if (tmp && STRNEQ(tmp, "none")) {
+            virDomainChrDefPtr chr;
             /* XXX does XenD stuff parallel port tty info into xenstore somewhere ? */
-            if ((def->parallels = xenDaemonParseSxprChar(conn, tmp, NULL)) == NULL)
+            if ((chr = xenDaemonParseSxprChar(conn, tmp, NULL)) == NULL)
                 goto error;
+            if (VIR_REALLOC_N(def->parallels, def->nparallels+1) < 0) {
+                virDomainChrDefFree(chr);
+                goto no_memory;
+            }
+            def->parallels[def->nparallels++] = chr;
         }
     } else {
         /* Fake a paravirt console, since that's not in the sexpr */
@@ -4676,9 +4680,8 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
     xenUnifiedPrivatePtr priv;
     struct sexpr *root = NULL;
     int fd = -1, ret = -1;
-    int found = 0;
+    int found = 0, i;
     virDomainDefPtr def;
-    virDomainDiskDefPtr disk;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
@@ -4707,14 +4710,12 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
     if (!(def = xenDaemonParseSxpr(domain->conn, root, priv->xendConfigVersion, NULL)))
         goto cleanup;
 
-    disk = def->disks;
-    while (disk) {
-        if (disk->src &&
-            STREQ(disk->src, path)) {
+    for (i = 0 ; i < def->ndisks ; i++) {
+        if (def->disks[i]->src &&
+            STREQ(def->disks[i]->src, path)) {
             found = 1;
             break;
         }
-        disk = disk->next;
     }
     if (!found) {
         virXendError (domain->conn, VIR_ERR_INVALID_ARG,
@@ -5161,21 +5162,20 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
 
 int
 xenDaemonFormatSxprSound(virConnectPtr conn,
-                         virDomainSoundDefPtr sound,
+                         virDomainDefPtr def,
                          virBufferPtr buf)
 {
     const char *str;
-    virDomainSoundDefPtr prev = NULL;
+    int i;
 
-    while (sound) {
-        if (!(str = virDomainSoundModelTypeToString(sound->model))) {
+    for (i = 0 ; i < def->nsounds ; i++) {
+        if (!(str = virDomainSoundModelTypeToString(def->sounds[i]->model))) {
             virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-                         _("unexpected sound model %d"), sound->model);
+                         _("unexpected sound model %d"),
+                         def->sounds[i]->model);
             return -1;
         }
-        virBufferVSprintf(buf, "%s%s", prev ? "," : "", str);
-        prev = sound;
-        sound = sound->next;
+        virBufferVSprintf(buf, "%s%s", i ? "," : "", str);
     }
 
     return 0;
@@ -5225,9 +5225,6 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     const char *tmp;
     int hvm = 0, i;
-    virDomainNetDefPtr net;
-    virDomainDiskDefPtr disk;
-    virDomainInputDefPtr input;
 
     virBufferAddLit(&buf, "(vm ");
     virBufferVSprintf(&buf, "(name '%s')", def->name);
@@ -5339,16 +5336,14 @@ xenDaemonFormatSxpr(virConnectPtr conn,
             /* get the cdrom device file */
             /* Only XenD <= 3.0.2 wants cdrom config here */
             if (xendConfigVersion == 1) {
-                disk = def->disks;
-                while (disk) {
-                    if (disk->type == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-                        STREQ(disk->dst, "hdc") &&
-                        disk->src) {
+                for (i = 0 ; i < def->ndisks ; i++) {
+                    if (def->disks[i]->type == VIR_DOMAIN_DISK_DEVICE_CDROM &&
+                        STREQ(def->disks[i]->dst, "hdc") &&
+                        def->disks[i]->src) {
                         virBufferVSprintf(&buf, "(cdrom '%s')",
-                                          disk->src);
+                                          def->disks[i]->src);
                         break;
                     }
-                    disk = disk->next;
                 }
             }
 
@@ -5361,16 +5356,13 @@ xenDaemonFormatSxpr(virConnectPtr conn,
 
             virBufferAddLit(&buf, "(usb 1)");
 
-            input = def->inputs;
-            while (input) {
-                if (xenDaemonFormatSxprInput(conn, input, &buf) < 0)
+            for (i = 0 ; i < def->ninputs ; i++)
+                if (xenDaemonFormatSxprInput(conn, def->inputs[i], &buf) < 0)
                     goto error;
-                input = input->next;
-            }
 
             if (def->parallels) {
                 virBufferAddLit(&buf, "(parallel ");
-                if (xenDaemonFormatSxprChr(conn, def->parallels, &buf) < 0)
+                if (xenDaemonFormatSxprChr(conn, def->parallels[0], &buf) < 0)
                     goto error;
                 virBufferAddLit(&buf, ")");
             } else {
@@ -5378,7 +5370,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
             }
             if (def->serials) {
                 virBufferAddLit(&buf, "(serial ");
-                if (xenDaemonFormatSxprChr(conn, def->serials, &buf) < 0)
+                if (xenDaemonFormatSxprChr(conn, def->serials[0], &buf) < 0)
                     goto error;
                 virBufferAddLit(&buf, ")");
             } else {
@@ -5390,7 +5382,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
 
             if (def->sounds) {
                 virBufferAddLit(&buf, "(soundhw '");
-                if (xenDaemonFormatSxprSound(conn, def->sounds, &buf) < 0)
+                if (xenDaemonFormatSxprSound(conn, def, &buf) < 0)
                     goto error;
                 virBufferAddLit(&buf, "')");
             }
@@ -5412,19 +5404,15 @@ xenDaemonFormatSxpr(virConnectPtr conn,
         virBufferAddLit(&buf, "))");
     }
 
-    disk = def->disks;
-    while (disk) {
-        if (xenDaemonFormatSxprDisk(conn, disk, &buf, hvm, xendConfigVersion, 0) < 0)
+    for (i = 0 ; i < def->ndisks ; i++)
+        if (xenDaemonFormatSxprDisk(conn, def->disks[i],
+                                    &buf, hvm, xendConfigVersion, 0) < 0)
             goto error;
-        disk = disk->next;
-    }
 
-    net = def->nets;
-    while (net) {
-        if (xenDaemonFormatSxprNet(conn, net, &buf, hvm, xendConfigVersion, 0) < 0)
+    for (i = 0 ; i < def->nnets ; i++)
+        if (xenDaemonFormatSxprNet(conn, def->nets[i],
+                                   &buf, hvm, xendConfigVersion, 0) < 0)
             goto error;
-        net = net->next;
-    }
 
     /* New style PV graphics config xen >= 3.0.4,
      * or HVM graphics config xen >= 3.0.5 */
