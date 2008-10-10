@@ -52,6 +52,10 @@
 void
 virStorageVolDefFree(virStorageVolDefPtr def) {
     int i;
+
+    if (!def)
+        return;
+
     VIR_FREE(def->name);
     VIR_FREE(def->key);
 
@@ -68,6 +72,9 @@ virStorageVolDefFree(virStorageVolDefPtr def) {
 void
 virStoragePoolDefFree(virStoragePoolDefPtr def) {
     int i;
+
+    if (!def)
+        return;
 
     VIR_FREE(def->name);
     VIR_FREE(def->source.host.name);
@@ -92,38 +99,48 @@ virStoragePoolDefFree(virStoragePoolDefPtr def) {
 
 void
 virStoragePoolObjFree(virStoragePoolObjPtr obj) {
-    if (obj->def)
-        virStoragePoolDefFree(obj->def);
-    if (obj->newDef)
-        virStoragePoolDefFree(obj->newDef);
+    if (!obj)
+        return;
+
+    virStoragePoolDefFree(obj->def);
+    virStoragePoolDefFree(obj->newDef);
 
     VIR_FREE(obj->configFile);
     VIR_FREE(obj->autostartLink);
     VIR_FREE(obj);
 }
 
+void virStoragePoolObjListFree(virStoragePoolObjListPtr pools)
+{
+    unsigned int i;
+    for (i = 0 ; i < pools->count ; i++)
+        virStoragePoolObjFree(pools->objs[i]);
+    VIR_FREE(pools->objs);
+    pools->count = 0;
+}
+
 void
-virStoragePoolObjRemove(virStorageDriverStatePtr driver,
+virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
                         virStoragePoolObjPtr pool)
 {
-    virStoragePoolObjPtr prev = NULL, curr;
+    unsigned int i;
 
-    curr = driver->pools;
-    while (curr != pool) {
-        prev = curr;
-        curr = curr->next;
+    for (i = 0 ; i < pools->count ; i++) {
+        if (pools->objs[i] == pool) {
+            virStoragePoolObjFree(pools->objs[i]);
+
+            if (i < (pools->count - 1))
+                memmove(pools->objs + i, pools->objs + i + 1,
+                        sizeof(*(pools->objs)) * (pools->count - (i + 1)));
+
+            if (VIR_REALLOC_N(pools->objs, pools->count - 1) < 0) {
+                ; /* Failure to reduce memory allocation isn't fatal */
+            }
+            pools->count--;
+
+            break;
+        }
     }
-
-    if (curr) {
-        if (prev)
-            prev->next = curr->next;
-        else
-            driver->pools = curr->next;
-
-        driver->ninactivePools--;
-    }
-
-    virStoragePoolObjFree(pool);
 }
 
 
@@ -906,29 +923,25 @@ virStorageVolDefFormat(virConnectPtr conn,
 
 
 virStoragePoolObjPtr
-virStoragePoolObjFindByUUID(virStorageDriverStatePtr driver,
+virStoragePoolObjFindByUUID(virStoragePoolObjListPtr pools,
                             const unsigned char *uuid) {
-    virStoragePoolObjPtr pool = driver->pools;
+    unsigned int i;
 
-    while (pool) {
-        if (!memcmp(pool->def->uuid, uuid, VIR_UUID_BUFLEN))
-            return pool;
-        pool = pool->next;
-    }
+    for (i = 0 ; i < pools->count ; i++)
+        if (!memcmp(pools->objs[i]->def->uuid, uuid, VIR_UUID_BUFLEN))
+            return pools->objs[i];
 
     return NULL;
 }
 
 virStoragePoolObjPtr
-virStoragePoolObjFindByName(virStorageDriverStatePtr driver,
+virStoragePoolObjFindByName(virStoragePoolObjListPtr pools,
                             const char *name) {
-    virStoragePoolObjPtr pool = driver->pools;
+    unsigned int i;
 
-    while (pool) {
-        if (STREQ(pool->def->name, name))
-            return pool;
-        pool = pool->next;
-    }
+    for (i = 0 ; i < pools->count ; i++)
+        if (STREQ(pools->objs[i]->def->name, name))
+            return pools->objs[i];
 
     return NULL;
 }
@@ -936,26 +949,22 @@ virStoragePoolObjFindByName(virStorageDriverStatePtr driver,
 void
 virStoragePoolObjClearVols(virStoragePoolObjPtr pool)
 {
-    virStorageVolDefPtr vol = pool->volumes;
-    while (vol) {
-        virStorageVolDefPtr next = vol->next;
-        virStorageVolDefFree(vol);
-        vol = next;
-    }
-    pool->volumes = NULL;
-    pool->nvolumes = 0;
+    unsigned int i;
+    for (i = 0 ; i < pool->volumes.count ; i++)
+        virStorageVolDefFree(pool->volumes.objs[i]);
+
+    VIR_FREE(pool->volumes.objs);
+    pool->volumes.count = 0;
 }
 
 virStorageVolDefPtr
 virStorageVolDefFindByKey(virStoragePoolObjPtr pool,
                           const char *key) {
-    virStorageVolDefPtr vol = pool->volumes;
+    unsigned int i;
 
-    while (vol) {
-        if (STREQ(vol->key, key))
-            return vol;
-        vol = vol->next;
-    }
+    for (i = 0 ; i < pool->volumes.count ; i++)
+        if (STREQ(pool->volumes.objs[i]->key, key))
+            return pool->volumes.objs[i];
 
     return NULL;
 }
@@ -963,13 +972,11 @@ virStorageVolDefFindByKey(virStoragePoolObjPtr pool,
 virStorageVolDefPtr
 virStorageVolDefFindByPath(virStoragePoolObjPtr pool,
                            const char *path) {
-    virStorageVolDefPtr vol = pool->volumes;
+    unsigned int i;
 
-    while (vol) {
-        if (STREQ(vol->target.path, path))
-            return vol;
-        vol = vol->next;
-    }
+    for (i = 0 ; i < pool->volumes.count ; i++)
+        if (STREQ(pool->volumes.objs[i]->target.path, path))
+            return pool->volumes.objs[i];
 
     return NULL;
 }
@@ -977,24 +984,22 @@ virStorageVolDefFindByPath(virStoragePoolObjPtr pool,
 virStorageVolDefPtr
 virStorageVolDefFindByName(virStoragePoolObjPtr pool,
                            const char *name) {
-    virStorageVolDefPtr vol = pool->volumes;
+    unsigned int i;
 
-    while (vol) {
-        if (STREQ(vol->name, name))
-            return vol;
-        vol = vol->next;
-    }
+    for (i = 0 ; i < pool->volumes.count ; i++)
+        if (STREQ(pool->volumes.objs[i]->name, name))
+            return pool->volumes.objs[i];
 
     return NULL;
 }
 
 virStoragePoolObjPtr
 virStoragePoolObjAssignDef(virConnectPtr conn,
-                           virStorageDriverStatePtr driver,
+                           virStoragePoolObjListPtr pools,
                            virStoragePoolDefPtr def) {
     virStoragePoolObjPtr pool;
 
-    if ((pool = virStoragePoolObjFindByName(driver, def->name))) {
+    if ((pool = virStoragePoolObjFindByName(pools, def->name))) {
         if (!virStoragePoolObjIsActive(pool)) {
             virStoragePoolDefFree(pool->def);
             pool->def = def;
@@ -1014,16 +1019,21 @@ virStoragePoolObjAssignDef(virConnectPtr conn,
 
     pool->active = 0;
     pool->def = def;
-    pool->next = driver->pools;
 
-    driver->pools = pool;
-    driver->ninactivePools++;
+    if (VIR_REALLOC_N(pools->objs, pools->count+1) < 0) {
+        pool->def = NULL;
+        virStoragePoolObjFree(pool);
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        return NULL;
+    }
+    pools->objs[pools->count++] = pool;
 
     return pool;
 }
 
 static virStoragePoolObjPtr
-virStoragePoolObjLoad(virStorageDriverStatePtr driver,
+virStoragePoolObjLoad(virConnectPtr conn,
+                      virStoragePoolObjListPtr pools,
                       const char *file,
                       const char *path,
                       const char *xml,
@@ -1045,7 +1055,7 @@ virStoragePoolObjLoad(virStorageDriverStatePtr driver,
         return NULL;
     }
 
-    if (!(pool = virStoragePoolObjAssignDef(NULL, driver, def))) {
+    if (!(pool = virStoragePoolObjAssignDef(conn, pools, def))) {
         virStorageLog("Failed to load storage pool config '%s': out of memory", path);
         virStoragePoolDefFree(def);
         return NULL;
@@ -1072,15 +1082,18 @@ virStoragePoolObjLoad(virStorageDriverStatePtr driver,
 
 
 int
-virStoragePoolObjScanConfigs(virStorageDriverStatePtr driver) {
+virStoragePoolLoadAllConfigs(virConnectPtr conn,
+                             virStoragePoolObjListPtr pools,
+                             const char *configDir,
+                             const char *autostartDir) {
     DIR *dir;
     struct dirent *entry;
 
-    if (!(dir = opendir(driver->configDir))) {
+    if (!(dir = opendir(configDir))) {
         if (errno == ENOENT)
             return 0;
         virStorageLog("Failed to open dir '%s': %s",
-                      driver->configDir, strerror(errno));
+                      configDir, strerror(errno));
         return -1;
     }
 
@@ -1095,24 +1108,24 @@ virStoragePoolObjScanConfigs(virStorageDriverStatePtr driver) {
         if (!virFileHasSuffix(entry->d_name, ".xml"))
             continue;
 
-        if (virFileBuildPath(driver->configDir, entry->d_name,
+        if (virFileBuildPath(configDir, entry->d_name,
                              NULL, path, PATH_MAX) < 0) {
             virStorageLog("Config filename '%s/%s' is too long",
-                          driver->configDir, entry->d_name);
+                          configDir, entry->d_name);
             continue;
         }
 
-        if (virFileBuildPath(driver->autostartDir, entry->d_name,
+        if (virFileBuildPath(autostartDir, entry->d_name,
                              NULL, autostartLink, PATH_MAX) < 0) {
             virStorageLog("Autostart link path '%s/%s' is too long",
-                          driver->autostartDir, entry->d_name);
+                          autostartDir, entry->d_name);
             continue;
         }
 
         if (virFileReadAll(path, 8192, &xml) < 0)
             continue;
 
-        virStoragePoolObjLoad(driver, entry->d_name, path, xml, autostartLink);
+        virStoragePoolObjLoad(conn, pools, entry->d_name, path, xml, autostartLink);
 
         VIR_FREE(xml);
     }

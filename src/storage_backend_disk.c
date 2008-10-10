@@ -182,9 +182,13 @@ virStorageBackendDiskMakeDataVol(virConnectPtr conn,
             return -1;
         }
 
-        vol->next = pool->volumes;
-        pool->volumes = vol;
-        pool->nvolumes++;
+        if (VIR_REALLOC_N(pool->volumes.objs,
+                          pool->volumes.count+1) < 0) {
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("volume"));
+            virStorageVolDefFree(vol);
+            return -1;
+        }
+        pool->volumes.objs[pool->volumes.count++] = vol;
 
         /* Prepended path will be same for all partitions, so we can
          * strip the path to form a reasonable pool-unique name

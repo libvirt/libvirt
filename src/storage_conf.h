@@ -87,10 +87,14 @@ struct _virStorageVolDef {
 
     virStorageVolSource source;
     virStorageVolTarget target;
-
-    virStorageVolDefPtr next;
 };
 
+typedef struct _virStorageVolDefList virStorageVolDefList;
+typedef virStorageVolDefList *virStorageVolDefListPtr;
+struct _virStorageVolDefList {
+    unsigned int count;
+    virStorageVolDefPtr *objs;
+};
 
 
 
@@ -222,10 +226,14 @@ struct _virStoragePoolObj {
     virStoragePoolDefPtr def;
     virStoragePoolDefPtr newDef;
 
-    int nvolumes;
-    virStorageVolDefPtr volumes;
+    virStorageVolDefList volumes;
+};
 
-    virStoragePoolObjPtr next;
+typedef struct _virStoragePoolObjList virStoragePoolObjList;
+typedef virStoragePoolObjList *virStoragePoolObjListPtr;
+struct _virStoragePoolObjList {
+    unsigned int count;
+    virStoragePoolObjPtr *objs;
 };
 
 
@@ -235,9 +243,8 @@ typedef struct _virStorageDriverState virStorageDriverState;
 typedef virStorageDriverState *virStorageDriverStatePtr;
 
 struct _virStorageDriverState {
-    int nactivePools;
-    int ninactivePools;
-    virStoragePoolObjPtr pools;
+    virStoragePoolObjList pools;
+
     char *configDir;
     char *autostartDir;
 };
@@ -251,11 +258,14 @@ static inline int virStoragePoolObjIsActive(virStoragePoolObjPtr pool) {
         __virReportErrorHelper(conn, VIR_FROM_STORAGE, code, __FILE__,       \
                                __FUNCTION__, __LINE__, fmt)
 
-int virStoragePoolObjScanConfigs(virStorageDriverStatePtr driver);
+int virStoragePoolLoadAllConfigs(virConnectPtr conn,
+                                 virStoragePoolObjListPtr pools,
+                                 const char *configDir,
+                                 const char *autostartDir);
 
-virStoragePoolObjPtr virStoragePoolObjFindByUUID(virStorageDriverStatePtr driver,
+virStoragePoolObjPtr virStoragePoolObjFindByUUID(virStoragePoolObjListPtr pools,
                                                  const unsigned char *uuid);
-virStoragePoolObjPtr virStoragePoolObjFindByName(virStorageDriverStatePtr driver,
+virStoragePoolObjPtr virStoragePoolObjFindByName(virStoragePoolObjListPtr pools,
                                                  const char *name);
 
 virStorageVolDefPtr virStorageVolDefFindByKey(virStoragePoolObjPtr pool,
@@ -282,7 +292,7 @@ char *virStorageVolDefFormat(virConnectPtr conn,
                              virStorageVolDefPtr def);
 
 virStoragePoolObjPtr virStoragePoolObjAssignDef(virConnectPtr conn,
-                                                virStorageDriverStatePtr driver,
+                                                virStoragePoolObjListPtr pools,
                                                 virStoragePoolDefPtr def);
 
 int virStoragePoolObjSaveDef(virConnectPtr conn,
@@ -295,7 +305,8 @@ int virStoragePoolObjDeleteDef(virConnectPtr conn,
 void virStorageVolDefFree(virStorageVolDefPtr def);
 void virStoragePoolDefFree(virStoragePoolDefPtr def);
 void virStoragePoolObjFree(virStoragePoolObjPtr pool);
-void virStoragePoolObjRemove(virStorageDriverStatePtr driver,
+void virStoragePoolObjListFree(virStoragePoolObjListPtr pools);
+void virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
                              virStoragePoolObjPtr pool);
 
 #endif /* __VIR_STORAGE_DRIVER_H__ */

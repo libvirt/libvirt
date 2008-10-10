@@ -119,12 +119,17 @@ virStorageBackendLogicalMakeVol(virConnectPtr conn,
 
         if ((vol->name = strdup(groups[0])) == NULL) {
             virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
+            virStorageVolDefFree(vol);
             return -1;
         }
 
-        vol->next = pool->volumes;
-        pool->volumes = vol;
-        pool->nvolumes++;
+        if (VIR_REALLOC_N(pool->volumes.objs,
+                          pool->volumes.count + 1)) {
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+            virStorageVolDefFree(vol);
+            return -1;
+        }
+        pool->volumes.objs[pool->volumes.count++] = vol;
     }
 
     if (vol->target.path == NULL) {

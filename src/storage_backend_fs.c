@@ -822,6 +822,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
     DIR *dir;
     struct dirent *ent;
     struct statvfs sb;
+    virStorageVolDefPtr vol = NULL;
 
     if (!(dir = opendir(pool->def->target.path))) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -831,61 +832,42 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
     }
 
     while ((ent = readdir(dir)) != NULL) {
-        virStorageVolDefPtr vol;
         int ret;
 
-        if (VIR_ALLOC(vol) < 0) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                                  "%s", _("volume"));
-            goto cleanup;
-        }
+        if (VIR_ALLOC(vol) < 0)
+            goto no_memory;
 
-        vol->name = strdup(ent->d_name);
-        if (vol->name == NULL) {
-            VIR_FREE(vol);
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                                  "%s", _("volume name"));
-            goto cleanup;
-        }
+        if ((vol->name = strdup(ent->d_name)) == NULL)
+            goto no_memory;
 
         vol->target.format = VIR_STORAGE_VOL_RAW; /* Real value is filled in during probe */
         if (VIR_ALLOC_N(vol->target.path, strlen(pool->def->target.path) +
-                        1 + strlen(vol->name) + 1) < 0) {
-            VIR_FREE(vol->target.path);
-            VIR_FREE(vol);
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                                  "%s", _("volume name"));
-            goto cleanup;
-        }
+                        1 + strlen(vol->name) + 1) < 0)
+            goto no_memory;
+
         strcpy(vol->target.path, pool->def->target.path);
         strcat(vol->target.path, "/");
         strcat(vol->target.path, vol->name);
-        if ((vol->key = strdup(vol->target.path)) == NULL) {
-            VIR_FREE(vol->name);
-            VIR_FREE(vol->target.path);
-            VIR_FREE(vol);
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                                  "%s", _("volume key"));
-            goto cleanup;
-        }
+        if ((vol->key = strdup(vol->target.path)) == NULL)
+            goto no_memory;
 
         if ((ret = virStorageBackendProbeFile(conn, vol) < 0)) {
-            VIR_FREE(vol->key);
-            VIR_FREE(vol->name);
-            VIR_FREE(vol->target.path);
-            VIR_FREE(vol);
             if (ret == -1)
-                goto cleanup;
-            else
+                goto no_memory;
+            else {
                 /* Silently ignore non-regular files,
                  * eg '.' '..', 'lost+found' */
+                virStorageVolDefFree(vol);
+                vol = NULL;
                 continue;
+            }
         }
 
-        vol->next = pool->volumes;
-        pool->volumes = vol;
-        pool->nvolumes++;
-        continue;
+        if (VIR_REALLOC_N(pool->volumes.objs,
+                          pool->volumes.count+1) < 0)
+            goto no_memory;
+        pool->volumes.objs[pool->volumes.count++] = vol;
+        vol = NULL;
     }
     closedir(dir);
 
@@ -904,8 +886,13 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
 
     return 0;
 
+no_memory:
+    virStorageReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+    /* fallthrough */
+
  cleanup:
     closedir(dir);
+    virStorageVolDefFree(vol);
     virStoragePoolObjClearVols(pool);
     return -1;
 }

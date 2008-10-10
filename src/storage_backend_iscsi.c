@@ -236,9 +236,12 @@ virStorageBackendISCSINewLun(virConnectPtr conn, virStoragePoolObjPtr pool,
     pool->def->capacity += vol->capacity;
     pool->def->allocation += vol->allocation;
 
-    vol->next = pool->volumes;
-    pool->volumes = vol;
-    pool->nvolumes++;
+    if (VIR_REALLOC_N(pool->volumes.objs,
+                      pool->volumes.count+1) < 0) {
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        goto cleanup;
+    }
+    pool->volumes.objs[pool->volumes.count++] = vol;
 
     close(fd);
 
