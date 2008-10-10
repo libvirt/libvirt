@@ -1,3 +1,8 @@
+Fri Oct 10 10:33:29 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/domain_conf.c src/util.c: fix index creation for disks >
+	  {sd,hd,xvd,vd}z (Sanjay Rao and Chris Wright)
+
 Thu Oct  9 11:30:00 EST Cole Robinson <crobinso@redhat.com>
 
 	* src/domain_conf.c src/hash.c src/internal.h src/lxc_conf.c

@@ -3374,7 +3374,7 @@ char *virDomainConfigFile(virConnectPtr conn,
 
 /* Translates a device name of the form (regex) "[fhv]d[a-z]+" into
  * the corresponding bus,index combination (e.g. sda => (0,0), sdi (1,1),
- *                                               hdd => (1,1), vdaa => (0,27))
+ *                                               hdd => (1,1), vdaa => (0,26))
  * @param disk The disk device
  * @param busIdx parsed bus number
  * @param devIdx parsed device number
