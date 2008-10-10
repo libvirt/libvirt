@@ -70,7 +70,7 @@ typedef struct v1_hypercall_struct
 #define XEN_V1_IOCTL_HYPERCALL_CMD                  \
     _IOC(_IOC_NONE, 'P', 0, sizeof(v1_hypercall_t))
 typedef v1_hypercall_t hypercall_t;
-#elif define(__sun__)
+#elif defined(__sun__)
 typedef privcmd_hypercall_t hypercall_t;
 #else
 #error "unsupported platform"
@@ -335,7 +335,7 @@ lock_pages(void *addr, size_t len)
 {
 #ifdef __linux__
         return (mlock(addr, len));
-#elif define(__sun)
+#elif defined(__sun)
         return (0);
 #endif
 }
@@ -345,7 +345,7 @@ unlock_pages(void *addr, size_t len)
 {
 #ifdef __linux__
         return (munlock(addr, len));
-#elif define(__sun)
+#elif defined(__sun)
         return (0);
 #endif
 }
@@ -661,7 +661,7 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 #define XEN_HYPERVISOR_SOCKET	"/proc/xen/privcmd"
 #define HYPERVISOR_CAPABILITIES	"/sys/hypervisor/properties/capabilities"
 #define CPUINFO			"/proc/cpuinfo"
-#elif define(__sun__)
+#elif defined(__sun__)
 #define XEN_HYPERVISOR_SOCKET	"/dev/xen/privcmd"
 #define HYPERVISOR_CAPABILITIES	""
 #define CPUINFO			"/dev/cpu/self/cpuid"
@@ -684,7 +684,7 @@ struct xenUnifiedDriver xenHypervisorDriver = {
     xenHypervisorGetCapabilities, /* getCapabilities */
     xenHypervisorListDomains, /* listDomains */
     xenHypervisorNumOfDomains, /* numOfDomains */
-    NULL, /* domainCreateLinux */
+    NULL, /* domainCreateXML */
     xenHypervisorPauseDomain, /* domainSuspend */
     xenHypervisorResumeDomain, /* domainResume */
     NULL, /* domainShutdown */

@@ -371,12 +371,12 @@ struct remote_num_of_domains_ret {
     int num;
 };
 
-struct remote_domain_create_linux_args {
+struct remote_domain_create_xml_args {
     remote_nonnull_string xml_desc;
     int flags;
 };
 
-struct remote_domain_create_linux_ret {
+struct remote_domain_create_xml_ret {
     remote_nonnull_domain dom;
 };
 
@@ -981,7 +981,7 @@ enum remote_procedure {
     REMOTE_PROC_GET_CAPABILITIES = 7,
     REMOTE_PROC_DOMAIN_ATTACH_DEVICE = 8,
     REMOTE_PROC_DOMAIN_CREATE = 9,
-    REMOTE_PROC_DOMAIN_CREATE_LINUX = 10,
+    REMOTE_PROC_DOMAIN_CREATE_XML = 10,
 
     REMOTE_PROC_DOMAIN_DEFINE_XML = 11,
     REMOTE_PROC_DOMAIN_DESTROY = 12,

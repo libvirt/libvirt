@@ -92,7 +92,7 @@ struct xenUnifiedDriver xenXMDriver = {
     NULL, /* getCapabilities */
     NULL, /* listDomains */
     NULL, /* numOfDomains */
-    NULL, /* domainCreateLinux */
+    NULL, /* domainCreateXML */
     NULL, /* domainSuspend */
     NULL, /* domainResume */
     NULL, /* domainShutdown */
@@ -604,7 +604,7 @@ int xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
 #define MAX_VFB 1024
 /*
  * Turn a config record into a lump of XML describing the
- * domain, suitable for later feeding for virDomainCreateLinux
+ * domain, suitable for later feeding for virDomainCreateXML
  */
 virDomainDefPtr
 xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
@@ -1237,7 +1237,7 @@ no_memory:
 
 /*
  * Turn a config record into a lump of XML describing the
- * domain, suitable for later feeding for virDomainCreateLinux
+ * domain, suitable for later feeding for virDomainCreateXML
  */
 char *xenXMDomainDumpXML(virDomainPtr domain, int flags) {
     const char *filename;
@@ -1602,7 +1602,7 @@ int xenXMDomainCreate(virDomainPtr domain) {
         return (-1);
     }
 
-    ret = xenDaemonDomainCreateLinux(domain->conn, sexpr);
+    ret = xenDaemonDomainCreateXML(domain->conn, sexpr);
     VIR_FREE(sexpr);
     if (ret != 0) {
         return (-1);

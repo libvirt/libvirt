@@ -1028,16 +1028,16 @@ remoteDispatchDomainCreate (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 static int
-remoteDispatchDomainCreateLinux (struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchDomainCreateXml (struct qemud_server *server ATTRIBUTE_UNUSED,
                                  struct qemud_client *client,
                                  remote_message_header *req,
-                                 remote_domain_create_linux_args *args,
-                                 remote_domain_create_linux_ret *ret)
+                                 remote_domain_create_xml_args *args,
+                                 remote_domain_create_xml_ret *ret)
 {
     virDomainPtr dom;
     CHECK_CONN(client);
 
-    dom = virDomainCreateLinux (client->conn, args->xml_desc, args->flags);
+    dom = virDomainCreateXML (client->conn, args->xml_desc, args->flags);
     if (dom == NULL) return -1;
 
     make_nonnull_domain (&ret->dom, dom);

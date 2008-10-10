@@ -894,7 +894,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
         return FALSE;
 
-    dom = virDomainCreateLinux(ctl->conn, buffer, 0);
+    dom = virDomainCreateXML(ctl->conn, buffer, 0);
     free (buffer);
 
     if (dom != NULL) {

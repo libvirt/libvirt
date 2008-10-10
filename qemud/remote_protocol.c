@@ -618,7 +618,7 @@ xdr_remote_num_of_domains_ret (XDR *xdrs, remote_num_of_domains_ret *objp)
 }
 
 bool_t
-xdr_remote_domain_create_linux_args (XDR *xdrs, remote_domain_create_linux_args *objp)
+xdr_remote_domain_create_xml_args (XDR *xdrs, remote_domain_create_xml_args *objp)
 {
 
          if (!xdr_remote_nonnull_string (xdrs, &objp->xml_desc))
@@ -629,7 +629,7 @@ xdr_remote_domain_create_linux_args (XDR *xdrs, remote_domain_create_linux_args 
 }
 
 bool_t
-xdr_remote_domain_create_linux_ret (XDR *xdrs, remote_domain_create_linux_ret *objp)
+xdr_remote_domain_create_xml_ret (XDR *xdrs, remote_domain_create_xml_ret *objp)
 {
 
          if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))

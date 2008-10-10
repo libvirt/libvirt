@@ -1145,7 +1145,8 @@ static int lxcVersion(virConnectPtr conn, unsigned long *version)
     return 0;
 }
 
-static char *lxcGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED, int *nparams)
+static char *lxcGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED,
+                                 int *nparams)
 {
     if (nparams)
         *nparams = 1;
@@ -1251,7 +1252,7 @@ static virDriver lxcDriver = {
     NULL, /* getCapabilities */
     lxcListDomains, /* listDomains */
     lxcNumDomains, /* numOfDomains */
-    lxcDomainCreateAndStart, /* domainCreateLinux */
+    lxcDomainCreateAndStart, /* domainCreateXML */
     lxcDomainLookupByID, /* domainLookupByID */
     lxcDomainLookupByUUID, /* domainLookupByUUID */
     lxcDomainLookupByName, /* domainLookupByName */

@@ -77,14 +77,14 @@ case REMOTE_PROC_DOMAIN_CREATE:
         args = (char *) &lv_remote_domain_create_args;
         memset (&lv_remote_domain_create_args, 0, sizeof lv_remote_domain_create_args);
         break;
-case REMOTE_PROC_DOMAIN_CREATE_LINUX:
-        fn = (dispatch_fn) remoteDispatchDomainCreateLinux;
-        args_filter = (xdrproc_t) xdr_remote_domain_create_linux_args;
-        args = (char *) &lv_remote_domain_create_linux_args;
-        memset (&lv_remote_domain_create_linux_args, 0, sizeof lv_remote_domain_create_linux_args);
-        ret_filter = (xdrproc_t) xdr_remote_domain_create_linux_ret;
-        ret = (char *) &lv_remote_domain_create_linux_ret;
-        memset (&lv_remote_domain_create_linux_ret, 0, sizeof lv_remote_domain_create_linux_ret);
+case REMOTE_PROC_DOMAIN_CREATE_XML:
+        fn = (dispatch_fn) remoteDispatchDomainCreateXml;
+        args_filter = (xdrproc_t) xdr_remote_domain_create_xml_args;
+        args = (char *) &lv_remote_domain_create_xml_args;
+        memset (&lv_remote_domain_create_xml_args, 0, sizeof lv_remote_domain_create_xml_args);
+        ret_filter = (xdrproc_t) xdr_remote_domain_create_xml_ret;
+        ret = (char *) &lv_remote_domain_create_xml_ret;
+        memset (&lv_remote_domain_create_xml_ret, 0, sizeof lv_remote_domain_create_xml_ret);
         break;
 case REMOTE_PROC_DOMAIN_DEFINE_XML:
         fn = (dispatch_fn) remoteDispatchDomainDefineXml;

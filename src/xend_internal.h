@@ -53,7 +53,7 @@ xenDaemonOpen_unix(virConnectPtr conn, const char *path);
  * domain will be paused after creation and must be unpaused with
  * xenDaemonResumeDomain() to begin execution.
  */
-    int xenDaemonDomainCreateLinux(virConnectPtr xend, const char *sexpr);
+int xenDaemonDomainCreateXML(virConnectPtr xend, const char *sexpr);
 
 /**
  * \brief Lookup the id of a domain

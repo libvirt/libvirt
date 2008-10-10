@@ -4025,7 +4025,7 @@ static virDriver qemuDriver = {
     qemudGetCapabilities, /* getCapabilities */
     qemudListDomains, /* listDomains */
     qemudNumDomains, /* numOfDomains */
-    qemudDomainCreate, /* domainCreateLinux */
+    qemudDomainCreate, /* domainCreateXML */
     qemudDomainLookupByID, /* domainLookupByID */
     qemudDomainLookupByUUID, /* domainLookupByUUID */
     qemudDomainLookupByName, /* domainLookupByName */

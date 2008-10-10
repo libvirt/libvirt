@@ -495,16 +495,16 @@ xenUnifiedNumOfDomains (virConnectPtr conn)
 }
 
 static virDomainPtr
-xenUnifiedDomainCreateLinux (virConnectPtr conn,
-                             const char *xmlDesc, unsigned int flags)
+xenUnifiedDomainCreateXML (virConnectPtr conn,
+                           const char *xmlDesc, unsigned int flags)
 {
     GET_PRIVATE(conn);
     int i;
     virDomainPtr ret;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainCreateLinux) {
-            ret = drivers[i]->domainCreateLinux (conn, xmlDesc, flags);
+        if (priv->opened[i] && drivers[i]->domainCreateXML) {
+            ret = drivers[i]->domainCreateXML (conn, xmlDesc, flags);
             if (ret) return ret;
         }
 
@@ -1303,7 +1303,7 @@ static virDriver xenUnifiedDriver = {
     .getCapabilities 		= xenUnifiedGetCapabilities,
     .listDomains 			= xenUnifiedListDomains,
     .numOfDomains 		= xenUnifiedNumOfDomains,
-    .domainCreateLinux 		= xenUnifiedDomainCreateLinux,
+    .domainCreateXML 		= xenUnifiedDomainCreateXML,
     .domainLookupByID 		= xenUnifiedDomainLookupByID,
     .domainLookupByUUID 		= xenUnifiedDomainLookupByUUID,
     .domainLookupByName 		= xenUnifiedDomainLookupByName,

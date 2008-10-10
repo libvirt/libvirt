@@ -491,7 +491,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
 }
 
 static virDomainPtr
-openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
+openvzDomainCreateXML(virConnectPtr conn, const char *xml,
                         unsigned int flags ATTRIBUTE_UNUSED)
 {
     virDomainDefPtr vmdef = NULL;
@@ -971,7 +971,7 @@ static virDriver openvzDriver = {
     openvzGetCapabilities, /* getCapabilities */
     openvzListDomains, /* listDomains */
     openvzNumDomains, /* numOfDomains */
-    openvzDomainCreateLinux, /* domainCreateLinux */
+    openvzDomainCreateXML, /* domainCreateXML */
     openvzDomainLookupByID, /* domainLookupByID */
     openvzDomainLookupByUUID, /* domainLookupByUUID */
     openvzDomainLookupByName, /* domainLookupByName */

@@ -940,7 +940,7 @@ xenDaemonListDomainsOld(virConnectPtr xend)
 
 #ifndef PROXY
 /**
- * xenDaemonDomainCreateLinux:
+ * xenDaemonDomainCreateXML:
  * @xend: A xend instance
  * @sexpr: An S-Expr description of the domain.
  *
@@ -954,7 +954,7 @@ xenDaemonListDomainsOld(virConnectPtr xend)
  */
 
 int
-xenDaemonDomainCreateLinux(virConnectPtr xend, const char *sexpr)
+xenDaemonDomainCreateXML(virConnectPtr xend, const char *sexpr)
 {
     int ret, serrno;
     char *ptr;
@@ -3741,7 +3741,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 }
 
 /**
- * xenDaemonCreateLinux:
+ * xenDaemonCreateXML:
  * @conn: pointer to the hypervisor connection
  * @xmlDesc: an XML description of the domain
  * @flags: an optional set of virDomainFlags
@@ -3753,7 +3753,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  * Returns a new domain object or NULL in case of failure
  */
 static virDomainPtr
-xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
+xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc,
                      unsigned int flags ATTRIBUTE_UNUSED)
 {
     int ret;
@@ -3776,7 +3776,7 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
         return (NULL);
     }
 
-    ret = xenDaemonDomainCreateLinux(conn, sexpr);
+    ret = xenDaemonDomainCreateXML(conn, sexpr);
     VIR_FREE(sexpr);
     if (ret != 0) {
         goto error;
@@ -4761,7 +4761,7 @@ struct xenUnifiedDriver xenDaemonDriver = {
     NULL,                        /* getCapabilities */
     xenDaemonListDomains,        /* listDomains */
     xenDaemonNumOfDomains,       /* numOfDomains */
-    xenDaemonCreateLinux,        /* domainCreateLinux */
+    xenDaemonCreateXML,          /* domainCreateXML */
     xenDaemonDomainSuspend,      /* domainSuspend */
     xenDaemonDomainResume,       /* domainResume */
     xenDaemonDomainShutdown,     /* domainShutdown */

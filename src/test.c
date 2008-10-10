@@ -656,7 +656,7 @@ static int testNumOfDomains(virConnectPtr conn)
 }
 
 static virDomainPtr
-testDomainCreateLinux(virConnectPtr conn, const char *xml,
+testDomainCreateXML(virConnectPtr conn, const char *xml,
                       unsigned int flags ATTRIBUTE_UNUSED)
 {
     virDomainPtr ret;
@@ -1542,7 +1542,7 @@ static virDriver testDriver = {
     testGetCapabilities, /* getCapabilities */
     testListDomains, /* listDomains */
     testNumOfDomains, /* numOfDomains */
-    testDomainCreateLinux, /* domainCreateLinux */
+    testDomainCreateXML, /* domainCreateXML */
     testLookupDomainByID, /* domainLookupByID */
     testLookupDomainByUUID, /* domainLookupByUUID */
     testLookupDomainByName, /* domainLookupByName */

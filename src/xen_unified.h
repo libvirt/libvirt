@@ -50,7 +50,7 @@ struct xenUnifiedDriver {
         virDrvGetCapabilities		getCapabilities;
         virDrvListDomains		listDomains;
         virDrvNumOfDomains		numOfDomains;
-        virDrvDomainCreateLinux		domainCreateLinux;
+        virDrvDomainCreateXML		domainCreateXML;
         virDrvDomainSuspend		domainSuspend;
         virDrvDomainResume		domainResume;
         virDrvDomainShutdown		domainShutdown;

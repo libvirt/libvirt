@@ -318,16 +318,16 @@ struct remote_num_of_domains_ret {
 };
 typedef struct remote_num_of_domains_ret remote_num_of_domains_ret;
 
-struct remote_domain_create_linux_args {
+struct remote_domain_create_xml_args {
         remote_nonnull_string xml_desc;
         int flags;
 };
-typedef struct remote_domain_create_linux_args remote_domain_create_linux_args;
+typedef struct remote_domain_create_xml_args remote_domain_create_xml_args;
 
-struct remote_domain_create_linux_ret {
+struct remote_domain_create_xml_ret {
         remote_nonnull_domain dom;
 };
-typedef struct remote_domain_create_linux_ret remote_domain_create_linux_ret;
+typedef struct remote_domain_create_xml_ret remote_domain_create_xml_ret;
 
 struct remote_domain_lookup_by_id_args {
         int id;
@@ -1094,7 +1094,7 @@ enum remote_procedure {
         REMOTE_PROC_GET_CAPABILITIES = 7,
         REMOTE_PROC_DOMAIN_ATTACH_DEVICE = 8,
         REMOTE_PROC_DOMAIN_CREATE = 9,
-        REMOTE_PROC_DOMAIN_CREATE_LINUX = 10,
+        REMOTE_PROC_DOMAIN_CREATE_XML = 10,
         REMOTE_PROC_DOMAIN_DEFINE_XML = 11,
         REMOTE_PROC_DOMAIN_DESTROY = 12,
         REMOTE_PROC_DOMAIN_DETACH_DEVICE = 13,
@@ -1264,8 +1264,8 @@ extern  bool_t xdr_remote_domain_memory_peek_ret (XDR *, remote_domain_memory_pe
 extern  bool_t xdr_remote_list_domains_args (XDR *, remote_list_domains_args*);
 extern  bool_t xdr_remote_list_domains_ret (XDR *, remote_list_domains_ret*);
 extern  bool_t xdr_remote_num_of_domains_ret (XDR *, remote_num_of_domains_ret*);
-extern  bool_t xdr_remote_domain_create_linux_args (XDR *, remote_domain_create_linux_args*);
-extern  bool_t xdr_remote_domain_create_linux_ret (XDR *, remote_domain_create_linux_ret*);
+extern  bool_t xdr_remote_domain_create_xml_args (XDR *, remote_domain_create_xml_args*);
+extern  bool_t xdr_remote_domain_create_xml_ret (XDR *, remote_domain_create_xml_ret*);
 extern  bool_t xdr_remote_domain_lookup_by_id_args (XDR *, remote_domain_lookup_by_id_args*);
 extern  bool_t xdr_remote_domain_lookup_by_id_ret (XDR *, remote_domain_lookup_by_id_ret*);
 extern  bool_t xdr_remote_domain_lookup_by_uuid_args (XDR *, remote_domain_lookup_by_uuid_args*);
@@ -1445,8 +1445,8 @@ extern bool_t xdr_remote_domain_memory_peek_ret ();
 extern bool_t xdr_remote_list_domains_args ();
 extern bool_t xdr_remote_list_domains_ret ();
 extern bool_t xdr_remote_num_of_domains_ret ();
-extern bool_t xdr_remote_domain_create_linux_args ();
-extern bool_t xdr_remote_domain_create_linux_ret ();
+extern bool_t xdr_remote_domain_create_xml_args ();
+extern bool_t xdr_remote_domain_create_xml_ret ();
 extern bool_t xdr_remote_domain_lookup_by_id_args ();
 extern bool_t xdr_remote_domain_lookup_by_id_ret ();
 extern bool_t xdr_remote_domain_lookup_by_uuid_args ();

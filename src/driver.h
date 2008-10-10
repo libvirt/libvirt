@@ -103,7 +103,7 @@ typedef int
 typedef int
         (*virDrvNumOfDomains)		(virConnectPtr conn);
 typedef virDomainPtr
-        (*virDrvDomainCreateLinux)	(virConnectPtr conn,
+        (*virDrvDomainCreateXML)	(virConnectPtr conn,
                                          const char *xmlDesc,
                                          unsigned int flags);
 typedef virDomainPtr
@@ -309,7 +309,7 @@ struct _virDriver {
     virDrvGetCapabilities		getCapabilities;
     virDrvListDomains		listDomains;
     virDrvNumOfDomains		numOfDomains;
-    virDrvDomainCreateLinux		domainCreateLinux;
+    virDrvDomainCreateXML		domainCreateXML;
     virDrvDomainLookupByID		domainLookupByID;
     virDrvDomainLookupByUUID	domainLookupByUUID;
     virDrvDomainLookupByName	domainLookupByName;

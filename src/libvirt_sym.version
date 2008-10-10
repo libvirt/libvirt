@@ -16,6 +16,7 @@
 	virConnectNumOfDomains;
         virDomainCreate;
 	virDomainCreateLinux;
+	virDomainCreateXML;
         virDomainDefineXML;
 	virDomainDestroy;
 	virDomainFree;

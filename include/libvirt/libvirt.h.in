@@ -437,7 +437,7 @@ virConnectPtr           virDomainGetConnect     (virDomainPtr domain);
 /*
  * Domain creation and destruction
  */
-virDomainPtr            virDomainCreateLinux    (virConnectPtr conn,
+virDomainPtr            virDomainCreateXML      (virConnectPtr conn,
                                                  const char *xmlDesc,
                                                  unsigned int flags);
 virDomainPtr            virDomainLookupByName   (virConnectPtr conn,
@@ -987,6 +987,12 @@ char *                  virStorageVolGetXMLDesc         (virStorageVolPtr pool,
 
 char *                  virStorageVolGetPath            (virStorageVolPtr vol);
 
+/*
+ * Deprecated calls
+ */
+virDomainPtr            virDomainCreateLinux    (virConnectPtr conn,
+                                                 const char *xmlDesc,
+                                                 unsigned int flags);
 #ifdef __cplusplus
 }
 #endif

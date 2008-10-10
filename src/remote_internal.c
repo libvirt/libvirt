@@ -1391,26 +1391,26 @@ remoteNumOfDomains (virConnectPtr conn)
 }
 
 static virDomainPtr
-remoteDomainCreateLinux (virConnectPtr conn,
+remoteDomainCreateXML (virConnectPtr conn,
                          const char *xmlDesc,
                          unsigned int flags)
 {
     virDomainPtr dom;
-    remote_domain_create_linux_args args;
-    remote_domain_create_linux_ret ret;
+    remote_domain_create_xml_args args;
+    remote_domain_create_xml_ret ret;
     GET_PRIVATE (conn, NULL);
 
     args.xml_desc = (char *) xmlDesc;
     args.flags = flags;
 
     memset (&ret, 0, sizeof ret);
-    if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_CREATE_LINUX,
-              (xdrproc_t) xdr_remote_domain_create_linux_args, (char *) &args,
-              (xdrproc_t) xdr_remote_domain_create_linux_ret, (char *) &ret) == -1)
+    if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_CREATE_XML,
+              (xdrproc_t) xdr_remote_domain_create_xml_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_create_xml_ret, (char *) &ret) == -1)
         return NULL;
 
     dom = get_nonnull_domain (conn, ret.dom);
-    xdr_free ((xdrproc_t) &xdr_remote_domain_create_linux_ret, (char *) &ret);
+    xdr_free ((xdrproc_t) &xdr_remote_domain_create_xml_ret, (char *) &ret);
 
     return dom;
 }
@@ -4829,7 +4829,7 @@ static virDriver driver = {
     .getCapabilities = remoteGetCapabilities,
     .listDomains = remoteListDomains,
     .numOfDomains = remoteNumOfDomains,
-    .domainCreateLinux = remoteDomainCreateLinux,
+    .domainCreateXML = remoteDomainCreateXML,
     .domainLookupByID = remoteDomainLookupByID,
     .domainLookupByUUID = remoteDomainLookupByUUID,
     .domainLookupByName = remoteDomainLookupByName,

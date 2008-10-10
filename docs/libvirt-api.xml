@@ -163,6 +163,7 @@
      <exports symbol='virConnectListDomains' type='function'/>
      <exports symbol='virDomainCoreDump' type='function'/>
      <exports symbol='virDomainSetMemory' type='function'/>
+     <exports symbol='virStoragePoolCreate' type='function'/>
      <exports symbol='virNodeGetInfo' type='function'/>
      <exports symbol='virNetworkSetAutostart' type='function'/>
      <exports symbol='virDomainGetMaxMemory' type='function'/>
@@ -234,7 +235,7 @@
      <exports symbol='virDomainGetConnect' type='function'/>
      <exports symbol='virConnectNumOfDefinedStoragePools' type='function'/>
      <exports symbol='virConnectOpen' type='function'/>
-     <exports symbol='virStoragePoolCreate' type='function'/>
+     <exports symbol='virDomainCreateXML' type='function'/>
      <exports symbol='virDomainSetVcpus' type='function'/>
      <exports symbol='virDomainGetID' type='function'/>
      <exports symbol='virDomainBlockPeek' type='function'/>
@@ -578,15 +579,17 @@
       <field name='domain' type='int' info=' What part of the library raised this error'/>
       <field name='message' type='char *' info=' human-readable informative error message'/>
       <field name='level' type='virErrorLevel' info=' how consequent is the error'/>
-      <field name='conn' type='virConnectPtr' info=' connection if available,
+      <field name='conn' type='virConnectPtr' info=' connection if available, deprecated
 see note above'/>
-      <field name='dom' type='virDomainPtr' info=' domain if available, see note above'/>
+      <field name='dom' type='virDomainPtr' info=' domain if available, deprecated
+see note above'/>
       <field name='str1' type='char *' info=' extra string information'/>
       <field name='str2' type='char *' info=' extra string information'/>
       <field name='str3' type='char *' info=' extra string information'/>
       <field name='int1' type='int' info=' extra number information'/>
       <field name='int2' type='int' info=' extra number information'/>
-      <field name='net' type='virNetworkPtr' info=' network if available, see note above'/>
+      <field name='net' type='virNetworkPtr' info=' network if available, deprecated
+see note above'/>
     </struct>
     <typedef name='virErrorDomain' file='virterror' type='enum'/>
     <typedef name='virErrorLevel' file='virterror' type='enum'/>
@@ -863,7 +866,14 @@ see note above'/>
       <arg name='domain' type='virDomainPtr' info='pointer to a defined domain'/>
     </function>
     <function name='virDomainCreateLinux' file='libvirt' module='libvirt'>
-      <info>Launch a new Linux guest domain, based on an XML description similar to the one returned by virDomainGetXMLDesc() This function may requires privileged access to the hypervisor. The domain is not persistent, so its definition will disappear when it is destroyed, or if the host is restarted (see virDomainDefineXML() to define persistent domains).</info>
+      <info>Deprecated after 0.4.6. Renamed to virDomainCreateXML() providing identical functionality. This existing name will left indefinitely for API compatability.</info>
+      <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='xmlDesc' type='const char *' info='string containing an XML description of the domain'/>
+      <arg name='flags' type='unsigned int' info='callers should always pass 0'/>
+    </function>
+    <function name='virDomainCreateXML' file='libvirt' module='libvirt'>
+      <info>Launch a new guest domain, based on an XML description similar to the one returned by virDomainGetXMLDesc() This function may requires privileged access to the hypervisor. The domain is not persistent, so its definition will disappear when it is destroyed, or if the host is restarted (see virDomainDefineXML() to define persistent domains).</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xmlDesc' type='const char *' info='string containing an XML description of the domain'/>
@@ -968,7 +978,7 @@ see note above'/>
       <arg name='maplen' type='int' info='number of bytes in one cpumap, from 1 up to size of CPU map in underlying virtualization system (Xen...).'/>
     </function>
     <function name='virDomainGetXMLDesc' file='libvirt' module='libvirt'>
-      <info>Provide an XML description of the domain. The description may be reused later to relaunch the domain with virDomainCreateLinux().</info>
+      <info>Provide an XML description of the domain. The description may be reused later to relaunch the domain with virDomainCreateXML().</info>
       <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='flags' type='int' info='an OR&apos;ed set of virDomainXMLFlags'/>

@@ -34,7 +34,7 @@
 
 #ifdef __linux__
 #define XEN_HYPERVISOR_SOCKET "/proc/xen/privcmd"
-#elif define(__sun__)
+#elif defined(__sun__)
 #define XEN_HYPERVISOR_SOCKET "/dev/xen/privcmd"
 #else
 #error "unsupported platform"
@@ -53,7 +53,7 @@ struct xenUnifiedDriver xenStoreDriver = {
     NULL, /* getCapabilities */
     xenStoreListDomains, /* listDomains */
     NULL, /* numOfDomains */
-    NULL, /* domainCreateLinux */
+    NULL, /* domainCreateXML */
     NULL, /* domainSuspend */
     NULL, /* domainResume */
     xenStoreDomainShutdown, /* domainShutdown */

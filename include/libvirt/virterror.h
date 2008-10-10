@@ -78,15 +78,17 @@ struct _virError {
     int		domain;	/* What part of the library raised this error */
     char       *message;/* human-readable informative error message */
     virErrorLevel level;/* how consequent is the error */
-    virConnectPtr conn VIR_DEPRECATED; /* connection if available,
+    virConnectPtr conn VIR_DEPRECATED; /* connection if available, deprecated
                                           see note above */
-    virDomainPtr dom VIR_DEPRECATED; /* domain if available, see note above */
+    virDomainPtr dom VIR_DEPRECATED; /* domain if available, deprecated
+                                        see note above */
     char       *str1;	/* extra string information */
     char       *str2;	/* extra string information */
     char       *str3;	/* extra string information */
     int		int1;	/* extra number information */
     int		int2;	/* extra number information */
-    virNetworkPtr net VIR_DEPRECATED; /* network if available, see note above */
+    virNetworkPtr net VIR_DEPRECATED; /* network if available, deprecated
+                                         see note above */
 };
 
 /**

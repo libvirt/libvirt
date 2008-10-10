@@ -13,7 +13,7 @@ static int remoteDispatchDomainBlockPeek (struct qemud_server *server, struct qe
 static int remoteDispatchDomainBlockStats (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_block_stats_args *args, remote_domain_block_stats_ret *ret);
 static int remoteDispatchDomainCoreDump (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_core_dump_args *args, void *ret);
 static int remoteDispatchDomainCreate (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_create_args *args, void *ret);
-static int remoteDispatchDomainCreateLinux (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_create_linux_args *args, remote_domain_create_linux_ret *ret);
+static int remoteDispatchDomainCreateXml (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_create_xml_args *args, remote_domain_create_xml_ret *ret);
 static int remoteDispatchDomainDefineXml (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_define_xml_args *args, remote_domain_define_xml_ret *ret);
 static int remoteDispatchDomainDestroy (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_destroy_args *args, void *ret);
 static int remoteDispatchDomainDetachDevice (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_detach_device_args *args, void *ret);

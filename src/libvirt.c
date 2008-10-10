@@ -1225,12 +1225,12 @@ virDomainGetConnect (virDomainPtr dom)
 }
 
 /**
- * virDomainCreateLinux:
+ * virDomainCreateXML:
  * @conn: pointer to the hypervisor connection
  * @xmlDesc: string containing an XML description of the domain
  * @flags: callers should always pass 0
  *
- * Launch a new Linux guest domain, based on an XML description similar
+ * Launch a new guest domain, based on an XML description similar
  * to the one returned by virDomainGetXMLDesc()
  * This function may requires privileged access to the hypervisor.
  * The domain is not persistent, so its definition will disappear when it
@@ -1240,8 +1240,8 @@ virDomainGetConnect (virDomainPtr dom)
  * Returns a new domain object or NULL in case of failure
  */
 virDomainPtr
-virDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
-                     unsigned int flags)
+virDomainCreateXML(virConnectPtr conn, const char *xmlDesc,
+                   unsigned int flags)
 {
     DEBUG("conn=%p, xmlDesc=%s, flags=%d", conn, xmlDesc, flags);
 
@@ -1258,13 +1258,31 @@ virDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
         return (NULL);
     }
 
-    if (conn->driver->domainCreateLinux)
-        return conn->driver->domainCreateLinux (conn, xmlDesc, flags);
+    if (conn->driver->domainCreateXML)
+        return conn->driver->domainCreateXML (conn, xmlDesc, flags);
 
     virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 
+/**
+ * virDomainCreateLinux:
+ * @conn: pointer to the hypervisor connection
+ * @xmlDesc: string containing an XML description of the domain
+ * @flags: callers should always pass 0
+ *
+ * Deprecated after 0.4.6.
+ * Renamed to virDomainCreateXML() providing identical functionality.
+ * This existing name will left indefinitely for API compatability.
+ *
+ * Returns a new domain object or NULL in case of failure
+ */
+virDomainPtr
+virDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
+                     unsigned int flags)
+{
+    return(virDomainCreateXML(conn, xmlDesc, flags));
+}
 
 /**
  * virDomainLookupByID:
@@ -2078,7 +2096,7 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
  * @flags: an OR'ed set of virDomainXMLFlags
  *
  * Provide an XML description of the domain. The description may be reused
- * later to relaunch the domain with virDomainCreateLinux().
+ * later to relaunch the domain with virDomainCreateXML().
  *
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
  *         the caller must free() the returned value.
