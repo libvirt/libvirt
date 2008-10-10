@@ -351,7 +351,7 @@ virXPathNodeSet(virConnectPtr conn,
         if (VIR_ALLOC_N(*list, ret) < 0) {
             virXMLError(conn, VIR_ERR_NO_MEMORY,
                         _("allocate string array size %lu"),
-                        ret * sizeof(**list));
+                        (unsigned long)ret * sizeof(**list));
             ret = -1;
         } else {
             memcpy(*list, obj->nodesetval->nodeTab,

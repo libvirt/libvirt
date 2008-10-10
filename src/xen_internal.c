@@ -1927,7 +1927,8 @@ xenHypervisorInit(void)
      */
 
     hypervisor_version = -1;
-    virXenError(NULL, VIR_ERR_XEN_CALL, " ioctl %lu", IOCTL_PRIVCMD_HYPERCALL);
+    virXenError(NULL, VIR_ERR_XEN_CALL, " ioctl %lu",
+                (unsigned long) IOCTL_PRIVCMD_HYPERCALL);
     close(fd);
     in_init = 0;
     return(-1);
@@ -2004,7 +2005,8 @@ xenHypervisorInit(void)
 
     DEBUG0("Failed to find any Xen hypervisor method\n");
     hypervisor_version = -1;
-    virXenError(NULL, VIR_ERR_XEN_CALL, " ioctl %lu", IOCTL_PRIVCMD_HYPERCALL);
+    virXenError(NULL, VIR_ERR_XEN_CALL, " ioctl %lu",
+                (unsigned long)IOCTL_PRIVCMD_HYPERCALL);
     close(fd);
     in_init = 0;
     VIR_FREE(ipt);
