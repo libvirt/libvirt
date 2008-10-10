@@ -51,7 +51,7 @@ struct qemud_driver {
     unsigned int qemuVersion;
     int nextvmid;
 
-    virDomainObjPtr domains;
+    virDomainObjList domains;
 
     brControl *brctl;
     char *configDir;

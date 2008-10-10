@@ -52,7 +52,7 @@ enum { OPENVZ_WARN, OPENVZ_ERR };
 
 struct openvz_driver {
     virCapsPtr caps;
-    virDomainObjPtr domains;
+    virDomainObjList domains;
 };
 
 int openvz_readline(int fd, char *ptr, int maxlen);

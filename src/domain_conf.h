@@ -460,10 +460,14 @@ struct _virDomainObj {
 
     virDomainDefPtr def; /* The current definition */
     virDomainDefPtr newDef; /* New definition to activate at shutdown */
-
-    virDomainObjPtr next;
 };
 
+typedef struct _virDomainObjList virDomainObjList;
+typedef virDomainObjList *virDomainObjListPtr;
+struct _virDomainObjList {
+    unsigned int count;
+    virDomainObjPtr *objs;
+};
 
 static inline int
 virDomainIsActive(virDomainObjPtr dom)
@@ -472,11 +476,11 @@ virDomainIsActive(virDomainObjPtr dom)
 }
 
 
-virDomainObjPtr virDomainFindByID(const virDomainObjPtr doms,
+virDomainObjPtr virDomainFindByID(const virDomainObjListPtr doms,
                                   int id);
-virDomainObjPtr virDomainFindByUUID(const virDomainObjPtr doms,
+virDomainObjPtr virDomainFindByUUID(const virDomainObjListPtr doms,
                                     const unsigned char *uuid);
-virDomainObjPtr virDomainFindByName(const virDomainObjPtr doms,
+virDomainObjPtr virDomainFindByName(const virDomainObjListPtr doms,
                                     const char *name);
 
 
@@ -491,11 +495,12 @@ void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
 void virDomainDefFree(virDomainDefPtr vm);
 void virDomainObjFree(virDomainObjPtr vm);
+void virDomainObjListFree(virDomainObjListPtr vms);
 
 virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
-                                   virDomainObjPtr *doms,
+                                   virDomainObjListPtr doms,
                                    const virDomainDefPtr def);
-void virDomainRemoveInactive(virDomainObjPtr *doms,
+void virDomainRemoveInactive(virDomainObjListPtr doms,
                              virDomainObjPtr dom);
 
 #ifndef PROXY
@@ -535,14 +540,14 @@ int virDomainSaveConfig(virConnectPtr conn,
 
 virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
                                     virCapsPtr caps,
-                                    virDomainObjPtr *doms,
+                                    virDomainObjListPtr doms,
                                     const char *configDir,
                                     const char *autostartDir,
                                     const char *name);
 
 int virDomainLoadAllConfigs(virConnectPtr conn,
                             virCapsPtr caps,
-                            virDomainObjPtr *doms,
+                            virDomainObjListPtr doms,
                             const char *configDir,
                             const char *autostartDir);
 

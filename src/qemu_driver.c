@@ -126,23 +126,18 @@ static int qemudMonitorCommand (const struct qemud_driver *driver,
 static struct qemud_driver *qemu_driver = NULL;
 
 
-static
-void qemudAutostartConfigs(struct qemud_driver *driver) {
-    virDomainObjPtr vm;
+static void
+qemudAutostartConfigs(struct qemud_driver *driver) {
+    unsigned int i;
 
-    vm = driver->domains;
-    while (vm != NULL) {
-        virDomainObjPtr next = vm->next;
-
-        if (vm->autostart &&
-            !virDomainIsActive(vm) &&
-            qemudStartVMDaemon(NULL, driver, vm, NULL) < 0) {
+    for (i = 0 ; i < driver->domains.count ; i++) {
+        if (driver->domains.objs[i]->autostart &&
+            !virDomainIsActive(driver->domains.objs[i]) &&
+            qemudStartVMDaemon(NULL, driver, driver->domains.objs[i], NULL) < 0) {
             virErrorPtr err = virGetLastError();
             qemudLog(QEMUD_ERR, _("Failed to autostart VM '%s': %s\n"),
-                     vm->def->name, err->message);
+                     driver->domains.objs[i]->def->name, err->message);
         }
-
-        vm = next;
     }
 }
 
@@ -238,6 +233,9 @@ qemudStartup(void) {
  */
 static int
 qemudReload(void) {
+    if (!qemu_driver)
+        return 0;
+
     virDomainLoadAllConfigs(NULL,
                             qemu_driver->caps,
                             &qemu_driver->domains,
@@ -259,13 +257,14 @@ qemudReload(void) {
  */
 static int
 qemudActive(void) {
-    virDomainObjPtr dom = qemu_driver->domains;
+    unsigned int i;
 
-    while (dom) {
-        if (virDomainIsActive(dom))
+    if (!qemu_driver)
+        return 0;
+
+    for (i = 0 ; i < qemu_driver->domains.count ; i++)
+        if (virDomainIsActive(qemu_driver->domains.objs[i]))
             return 1;
-        dom = dom->next;
-    }
 
     /* Otherwise we're happy to deal with a shutdown */
     return 0;
@@ -278,7 +277,7 @@ qemudActive(void) {
  */
 static int
 qemudShutdown(void) {
-    virDomainObjPtr vm;
+    unsigned int i;
 
     if (!qemu_driver)
         return -1;
@@ -286,25 +285,16 @@ qemudShutdown(void) {
     virCapabilitiesFree(qemu_driver->caps);
 
     /* shutdown active VMs */
-    vm = qemu_driver->domains;
-    while (vm) {
-        virDomainObjPtr next = vm->next;
-        if (virDomainIsActive(vm))
-            qemudShutdownVMDaemon(NULL, qemu_driver, vm);
-        if (!vm->persistent)
+    for (i = 0 ; i < qemu_driver->domains.count ; i++) {
+        virDomainObjPtr dom = qemu_driver->domains.objs[i];
+        if (virDomainIsActive(dom))
+            qemudShutdownVMDaemon(NULL, qemu_driver, dom);
+        if (!dom->persistent)
             virDomainRemoveInactive(&qemu_driver->domains,
-                                    vm);
-        vm = next;
+                                    dom);
     }
 
-    /* free inactive VMs */
-    vm = qemu_driver->domains;
-    while (vm) {
-        virDomainObjPtr next = vm->next;
-        virDomainObjFree(vm);
-        vm = next;
-    }
-    qemu_driver->domains = NULL;
+    virDomainObjListFree(&qemu_driver->domains);
 
     VIR_FREE(qemu_driver->logDir);
     VIR_FREE(qemu_driver->configDir);
@@ -1019,15 +1009,16 @@ static int qemudDispatchVMFailure(struct qemud_driver *driver, virDomainObjPtr v
 
 static void qemudDispatchVMEvent(int fd, int events, void *opaque) {
     struct qemud_driver *driver = (struct qemud_driver *)opaque;
-    virDomainObjPtr vm = driver->domains;
+    virDomainObjPtr vm = NULL;
+    unsigned int i;
 
-    while (vm) {
-        if (virDomainIsActive(vm) &&
-            (vm->stdout_fd == fd ||
-             vm->stderr_fd == fd))
+    for (i = 0 ; i < driver->domains.count ; i++) {
+        if (virDomainIsActive(driver->domains.objs[i]) &&
+            (driver->domains.objs[i]->stdout_fd == fd ||
+             driver->domains.objs[i]->stderr_fd == fd)) {
+            vm = driver->domains.objs[i];
             break;
-
-        vm = vm->next;
+        }
     }
 
     if (!vm)
@@ -1334,7 +1325,7 @@ static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
 static virDomainPtr qemudDomainLookupByID(virConnectPtr conn,
                                           int id) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
-    virDomainObjPtr vm = virDomainFindByID(driver->domains, id);
+    virDomainObjPtr vm = virDomainFindByID(&driver->domains, id);
     virDomainPtr dom;
 
     if (!vm) {
@@ -1349,7 +1340,7 @@ static virDomainPtr qemudDomainLookupByID(virConnectPtr conn,
 static virDomainPtr qemudDomainLookupByUUID(virConnectPtr conn,
                                             const unsigned char *uuid) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, uuid);
     virDomainPtr dom;
 
     if (!vm) {
@@ -1364,7 +1355,7 @@ static virDomainPtr qemudDomainLookupByUUID(virConnectPtr conn,
 static virDomainPtr qemudDomainLookupByName(virConnectPtr conn,
                                             const char *name) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
-    virDomainObjPtr vm = virDomainFindByName(driver->domains, name);
+    virDomainObjPtr vm = virDomainFindByName(&driver->domains, name);
     virDomainPtr dom;
 
     if (!vm) {
@@ -1410,26 +1401,22 @@ qemudGetHostname (virConnectPtr conn)
 
 static int qemudListDomains(virConnectPtr conn, int *ids, int nids) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
-    virDomainObjPtr vm = driver->domains;
-    int got = 0;
-    while (vm && got < nids) {
-        if (virDomainIsActive(vm)) {
-            ids[got] = vm->def->id;
-            got++;
-        }
-        vm = vm->next;
-    }
+    int got = 0, i;
+
+    for (i = 0 ; i < driver->domains.count && got < nids ; i++)
+        if (virDomainIsActive(driver->domains.objs[i]))
+            ids[got++] = driver->domains.objs[i]->def->id;
+
     return got;
 }
 static int qemudNumDomains(virConnectPtr conn) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
-    int n = 0;
-    virDomainObjPtr dom = driver->domains;
-    while (dom) {
-        if (virDomainIsActive(dom))
+    int n = 0, i;
+
+    for (i = 0 ; i < driver->domains.count ; i++)
+        if (virDomainIsActive(driver->domains.objs[i]))
             n++;
-        dom = dom->next;
-    }
+
     return n;
 }
 static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
@@ -1442,7 +1429,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     if (!(def = virDomainDefParseString(conn, driver->caps, xml)))
         return NULL;
 
-    vm = virDomainFindByName(driver->domains, def->name);
+    vm = virDomainFindByName(&driver->domains, def->name);
     if (vm) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                          _("domain '%s' is already defined"),
@@ -1450,7 +1437,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
         virDomainDefFree(def);
         return NULL;
     }
-    vm = virDomainFindByUUID(driver->domains, def->uuid);
+    vm = virDomainFindByUUID(&driver->domains, def->uuid);
     if (vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
 
@@ -1484,7 +1471,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
 static int qemudDomainSuspend(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     char *info;
-    virDomainObjPtr vm = virDomainFindByID(driver->domains, dom->id);
+    virDomainObjPtr vm = virDomainFindByID(&driver->domains, dom->id);
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN, _("no domain with matching id %d"), dom->id);
         return -1;
@@ -1512,7 +1499,7 @@ static int qemudDomainSuspend(virDomainPtr dom) {
 static int qemudDomainResume(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     char *info;
-    virDomainObjPtr vm = virDomainFindByID(driver->domains, dom->id);
+    virDomainObjPtr vm = virDomainFindByID(&driver->domains, dom->id);
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
                          _("no domain with matching id %d"), dom->id);
@@ -1539,7 +1526,7 @@ static int qemudDomainResume(virDomainPtr dom) {
 
 static int qemudDomainShutdown(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByID(driver->domains, dom->id);
+    virDomainObjPtr vm = virDomainFindByID(&driver->domains, dom->id);
     char* info;
 
     if (!vm) {
@@ -1561,7 +1548,7 @@ static int qemudDomainShutdown(virDomainPtr dom) {
 
 static int qemudDomainDestroy(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByID(driver->domains, dom->id);
+    virDomainObjPtr vm = virDomainFindByID(&driver->domains, dom->id);
 
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -1580,7 +1567,7 @@ static int qemudDomainDestroy(virDomainPtr dom) {
 
 static char *qemudDomainGetOSType(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     char *type;
 
     if (!vm) {
@@ -1600,7 +1587,7 @@ static char *qemudDomainGetOSType(virDomainPtr dom) {
 /* Returns max memory in kb, 0 if error */
 static unsigned long qemudDomainGetMaxMemory(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -1616,7 +1603,7 @@ static unsigned long qemudDomainGetMaxMemory(virDomainPtr dom) {
 
 static int qemudDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -1639,7 +1626,7 @@ static int qemudDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
 
 static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -1669,7 +1656,7 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
 static int qemudDomainGetInfo(virDomainPtr dom,
                               virDomainInfoPtr info) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
                          "%s", _("no domain with matching uuid"));
@@ -1790,7 +1777,7 @@ struct qemud_save_header {
 static int qemudDomainSave(virDomainPtr dom,
                            const char *path) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByID(driver->domains, dom->id);
+    virDomainObjPtr vm = virDomainFindByID(&driver->domains, dom->id);
     char *command, *info;
     int fd;
     char *safe_path;
@@ -1910,8 +1897,8 @@ static int qemudDomainSave(virDomainPtr dom,
 
 
 static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
-    const struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     int max;
 
     if (!vm) {
@@ -1954,7 +1941,7 @@ qemudDomainPinVcpu(virDomainPtr dom,
                    unsigned char *cpumap,
                    int maplen) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     cpu_set_t mask;
     int i, maxcpu;
     virNodeInfo nodeinfo;
@@ -2007,7 +1994,7 @@ qemudDomainGetVcpus(virDomainPtr dom,
                     unsigned char *cpumaps,
                     int maplen) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     virNodeInfo nodeinfo;
     int i, v, maxcpu;
 
@@ -2072,7 +2059,7 @@ qemudDomainGetVcpus(virDomainPtr dom,
 
 static int qemudDomainGetMaxVcpus(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     const char *type;
     int ret;
 
@@ -2165,9 +2152,9 @@ static int qemudDomainRestore(virConnectPtr conn,
     VIR_FREE(xml);
 
     /* Ensure the name and UUID don't already exist in an active VM */
-    vm = virDomainFindByUUID(driver->domains, def->uuid);
+    vm = virDomainFindByUUID(&driver->domains, def->uuid);
     if (!vm)
-        vm = virDomainFindByName(driver->domains, def->name);
+        vm = virDomainFindByName(&driver->domains, def->name);
     if (vm && virDomainIsActive(vm)) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                          _("domain is already active as '%s'"), vm->def->name);
@@ -2218,7 +2205,7 @@ static int qemudDomainRestore(virConnectPtr conn,
 static char *qemudDomainDumpXML(virDomainPtr dom,
                                 int flags ATTRIBUTE_UNUSED) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
                          "%s", _("no domain with matching uuid"));
@@ -2235,19 +2222,18 @@ static char *qemudDomainDumpXML(virDomainPtr dom,
 static int qemudListDefinedDomains(virConnectPtr conn,
                             char **const names, int nnames) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
-    virDomainObjPtr vm = driver->domains;
     int got = 0, i;
-    while (vm && got < nnames) {
-        if (!virDomainIsActive(vm)) {
-            if (!(names[got] = strdup(vm->def->name))) {
+
+    for (i = 0 ; i < driver->domains.count && got < nnames ; i++) {
+        if (!virDomainIsActive(driver->domains.objs[i])) {
+            if (!(names[got++] = strdup(driver->domains.objs[i]->def->name))) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                     "%s", _("failed to allocate space for VM name string"));
+                                 "%s", _("failed to allocate space for VM name string"));
                 goto cleanup;
             }
-            got++;
         }
-        vm = vm->next;
     }
+
     return got;
 
  cleanup:
@@ -2256,23 +2242,21 @@ static int qemudListDefinedDomains(virConnectPtr conn,
     return -1;
 }
 
-
 static int qemudNumDefinedDomains(virConnectPtr conn) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
-    int n = 0;
-    virDomainObjPtr dom = driver->domains;
-    while (dom) {
-        if (!virDomainIsActive(dom))
+    int n = 0, i;
+
+    for (i = 0 ; i < driver->domains.count ; i++)
+        if (!virDomainIsActive(driver->domains.objs[i]))
             n++;
-        dom = dom->next;
-    }
+
     return n;
 }
 
 
 static int qemudDomainStart(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -2316,7 +2300,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
 
 static int qemudDomainUndefine(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -2392,7 +2376,7 @@ static int qemudDomainChangeEjectableMedia(virDomainPtr dom,
                                            virDomainDeviceDefPtr dev)
 {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     virDomainDiskDefPtr origdisk, newdisk;
     char *cmd, *reply, *safe_path;
     char *devname = NULL;
@@ -2509,7 +2493,7 @@ static int qemudDomainChangeEjectableMedia(virDomainPtr dom,
 static int qemudDomainAttachUsbMassstorageDevice(virDomainPtr dom, virDomainDeviceDefPtr dev)
 {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     int ret;
     char *cmd, *reply;
     virDomainDiskDefPtr *dest, *prev, ptr;
@@ -2579,7 +2563,7 @@ static int qemudDomainAttachUsbMassstorageDevice(virDomainPtr dom, virDomainDevi
 static int qemudDomainAttachHostDevice(virDomainPtr dom, virDomainDeviceDefPtr dev)
 {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     int ret;
     char *cmd, *reply;
 
@@ -2634,7 +2618,7 @@ static int qemudDomainAttachHostDevice(virDomainPtr dom, virDomainDeviceDefPtr d
 static int qemudDomainAttachDevice(virDomainPtr dom,
                                    const char *xml) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     virDomainDeviceDefPtr dev;
     int ret = 0;
 
@@ -2680,7 +2664,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
 static int qemudDomainGetAutostart(virDomainPtr dom,
                             int *autostart) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -2696,7 +2680,7 @@ static int qemudDomainGetAutostart(virDomainPtr dom,
 static int qemudDomainSetAutostart(virDomainPtr dom,
                                    int autostart) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     char *configFile = NULL, *autostartLink = NULL;
     int ret = -1;
 
@@ -2766,13 +2750,13 @@ qemudDomainBlockStats (virDomainPtr dom,
                        const char *path,
                        struct _virDomainBlockStats *stats)
 {
-    const struct qemud_driver *driver =
+    struct qemud_driver *driver =
         (struct qemud_driver *)dom->conn->privateData;
     char *dummy, *info;
     const char *p, *eol;
     char qemu_dev_name[32];
     size_t len;
-    const virDomainObjPtr vm = virDomainFindByID(driver->domains, dom->id);
+    const virDomainObjPtr vm = virDomainFindByID(&driver->domains, dom->id);
 
     if (!vm) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -2906,7 +2890,7 @@ qemudDomainInterfaceStats (virDomainPtr dom,
 {
 #ifdef __linux__
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByID(driver->domains, dom->id);
+    virDomainObjPtr vm = virDomainFindByID(&driver->domains, dom->id);
     virDomainNetDefPtr net;
 
     if (!vm) {
@@ -2954,7 +2938,7 @@ qemudDomainBlockPeek (virDomainPtr dom,
                       unsigned int flags ATTRIBUTE_UNUSED)
 {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByUUID(driver->domains, dom->uuid);
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     virDomainDiskDefPtr disk;
     int fd, ret = -1;
 
@@ -3012,7 +2996,7 @@ qemudDomainMemoryPeek (virDomainPtr dom,
                        unsigned int flags)
 {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
-    virDomainObjPtr vm = virDomainFindByID(driver->domains, dom->id);
+    virDomainObjPtr vm = virDomainFindByID(&driver->domains, dom->id);
     char cmd[256], *info;
     char tmp[] = TEMPDIR "/qemu.mem.XXXXXX";
     int fd = -1, ret = -1;

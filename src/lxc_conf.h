@@ -38,7 +38,7 @@ typedef struct __lxc_driver lxc_driver_t;
 struct __lxc_driver {
     virCapsPtr caps;
 
-    virDomainObjPtr domains;
+    virDomainObjList domains;
     char *configDir;
     char *autostartDir;
     char *stateDir;

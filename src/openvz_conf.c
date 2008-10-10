@@ -273,18 +273,10 @@ error:
 void
 openvzFreeDriver(struct openvz_driver *driver)
 {
-    virDomainObjPtr dom;
-
     if (!driver)
         return;
 
-    dom = driver->domains;
-    while (dom) {
-        virDomainObjPtr tmp = dom->next;
-        virDomainObjFree(dom);
-        dom = tmp;
-    }
-
+    virDomainObjListFree(&driver->domains);
     virCapabilitiesFree(driver->caps);
 }
 
@@ -295,7 +287,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
     int veid, ret;
     char status[16];
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    virDomainObjPtr dom = NULL, prev = NULL;
+    virDomainObjPtr dom = NULL;
     char temp[50];
 
     if (openvzAssignUUIDs() < 0)
@@ -363,12 +355,12 @@ int openvzLoadDomains(struct openvz_driver *driver) {
 
         dom->def->nets = openvzReadNetworkConf(NULL, veid);
 
-        if (prev) {
-            prev->next = dom;
-        } else {
-            driver->domains = dom;
-        }
-        prev = dom;
+        if (VIR_REALLOC_N(driver->domains.objs,
+                          driver->domains.count + 1) < 0)
+            goto no_memory;
+
+        driver->domains.objs[driver->domains.count++] = dom;
+        dom = NULL;
     }
 
     fclose(fp);

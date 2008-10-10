@@ -57,7 +57,7 @@ struct _testConn {
     int nextDomID;
     virCapsPtr caps;
     virNodeInfo nodeInfo;
-    virDomainObjPtr domains;
+    virDomainObjList domains;
     virNetworkObjPtr networks;
     int numCells;
     testCell cells[MAX_CELLS];
@@ -86,8 +86,8 @@ static const virNodeInfo defaultNodeInfo = {
                                                                         \
     privconn = (testConnPtr)dom->conn->privateData;                     \
     do {                                                                \
-        if ((privdom = virDomainFindByName(privconn->domains,           \
-                                            (dom)->name)) == NULL) {    \
+        if ((privdom = virDomainFindByName(&privconn->domains,          \
+                                           (dom)->name)) == NULL) {     \
             testError((dom)->conn, (dom), NULL, VIR_ERR_INVALID_ARG,    \
                       __FUNCTION__);                                    \
             return (ret);                                               \
@@ -259,7 +259,7 @@ static int testOpenDefault(virConnectPtr conn) {
     return VIR_DRV_OPEN_SUCCESS;
 
 error:
-    virDomainObjFree(privconn->domains);
+    virDomainObjListFree(&privconn->domains);
     virNetworkObjFree(privconn->networks);
     virCapabilitiesFree(privconn->caps);
     VIR_FREE(privconn);
@@ -494,12 +494,7 @@ static int testOpenFromFile(virConnectPtr conn,
     VIR_FREE(networks);
     if (fd != -1)
         close(fd);
-    dom = privconn->domains;
-    while (dom) {
-        virDomainObjPtr tmp = dom->next;
-        virDomainObjFree(dom);
-        dom = tmp;
-    }
+    virDomainObjListFree(&privconn->domains);
     net = privconn->networks;
     while (net) {
         virNetworkObjPtr tmp = net->next;
@@ -552,16 +547,10 @@ static int testOpen(virConnectPtr conn,
 
 static int testClose(virConnectPtr conn)
 {
-    virDomainObjPtr dom;
     virNetworkObjPtr net;
     GET_CONNECTION(conn);
     virCapabilitiesFree(privconn->caps);
-    dom = privconn->domains;
-    while (dom) {
-        virDomainObjPtr tmp = dom->next;
-        virDomainObjFree(dom);
-        dom = tmp;
-    }
+    virDomainObjListFree(&privconn->domains);
     net = privconn->networks;
     while (net) {
         virNetworkObjPtr tmp = net->next;
@@ -642,16 +631,13 @@ static char *testGetCapabilities (virConnectPtr conn)
 
 static int testNumOfDomains(virConnectPtr conn)
 {
-    int numActive = 0;
-    virDomainObjPtr dom;
+    unsigned int numActive = 0, i;
     GET_CONNECTION(conn);
 
-    dom = privconn->domains;
-    while (dom) {
-        if (virDomainIsActive(dom))
+    for (i = 0 ; i < privconn->domains.count ; i++)
+        if (virDomainIsActive(privconn->domains.objs[i]))
             numActive++;
-        dom = dom->next;
-    }
+
     return numActive;
 }
 
@@ -690,7 +676,7 @@ static virDomainPtr testLookupDomainByID(virConnectPtr conn,
     virDomainPtr ret;
     GET_CONNECTION(conn);
 
-    if ((dom = virDomainFindByID(privconn->domains, id)) == NULL) {
+    if ((dom = virDomainFindByID(&privconn->domains, id)) == NULL) {
         testError (conn, NULL, NULL, VIR_ERR_NO_DOMAIN, NULL);
         return NULL;
     }
@@ -709,7 +695,7 @@ static virDomainPtr testLookupDomainByUUID(virConnectPtr conn,
     virDomainObjPtr dom = NULL;
     GET_CONNECTION(conn);
 
-    if ((dom = virDomainFindByUUID(privconn->domains, uuid)) == NULL) {
+    if ((dom = virDomainFindByUUID(&privconn->domains, uuid)) == NULL) {
         testError (conn, NULL, NULL, VIR_ERR_NO_DOMAIN, NULL);
         return NULL;
     }
@@ -728,7 +714,7 @@ static virDomainPtr testLookupDomainByName(virConnectPtr conn,
     virDomainObjPtr dom = NULL;
     GET_CONNECTION(conn);
 
-    if ((dom = virDomainFindByName(privconn->domains, name)) == NULL) {
+    if ((dom = virDomainFindByName(&privconn->domains, name)) == NULL) {
         testError (conn, NULL, NULL, VIR_ERR_NO_DOMAIN, NULL);
         return NULL;
     }
@@ -744,16 +730,13 @@ static int testListDomains (virConnectPtr conn,
                             int *ids,
                             int maxids)
 {
-    int n = 0;
-    virDomainObjPtr dom;
+    unsigned int n = 0, i;
     GET_CONNECTION(conn);
 
-    dom = privconn->domains;
-    while (dom && n < maxids) {
-        if (virDomainIsActive(dom))
-            ids[n++] = dom->def->id;
-        dom = dom->next;
-    }
+    for (i = 0 ; i < privconn->domains.count && n < maxids ; i++)
+        if (virDomainIsActive(privconn->domains.objs[i]))
+            ids[n++] = privconn->domains.objs[i]->def->id;
+
     return n;
 }
 
@@ -1097,34 +1080,28 @@ static char *testDomainDumpXML(virDomainPtr domain, int flags)
 }
 
 static int testNumOfDefinedDomains(virConnectPtr conn) {
-    int numInactive = 0;
-    virDomainObjPtr dom;
+    unsigned int numInactive = 0, i;
     GET_CONNECTION(conn);
 
-    dom = privconn->domains;
-    while (dom) {
-        if (!virDomainIsActive(dom))
+    for (i = 0 ; i < privconn->domains.count ; i++)
+        if (!virDomainIsActive(privconn->domains.objs[i]))
             numInactive++;
-        dom = dom->next;
-    }
+
     return numInactive;
 }
 
 static int testListDefinedDomains(virConnectPtr conn,
                                   char **const names,
                                   int maxnames) {
-    int n = 0;
-    virDomainObjPtr dom;
+    unsigned int n = 0, i;
     GET_CONNECTION(conn);
 
-    dom = privconn->domains;
     memset(names, 0, sizeof(*names)*maxnames);
-    while (dom && n < maxnames) {
-        if (!virDomainIsActive(dom) &&
-            !(names[n++] = strdup(dom->def->name)))
+    for (i = 0 ; i < privconn->domains.count && n < maxnames ; i++)
+        if (!virDomainIsActive(privconn->domains.objs[i]) &&
+            !(names[n++] = strdup(privconn->domains.objs[i]->def->name)))
             goto no_memory;
-        dom = dom->next;
-    }
+
     return n;
 
 no_memory:

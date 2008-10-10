@@ -1,3 +1,12 @@
+Fri Oct 10 15:19:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/domain_conf.c, src/domain_conf.h: Switch to using
+	array instead of linked list for domain objects
+	* src/lxc_conf.h, src/lxc_driver.c, src/openvz_conf.c,
+	src/openvz_conf.h, src/openvz_driver.c, src/qemu_conf.h,
+	src/qemu_driver.c test.c: Update to manage domain objects
+	in array instead of linked list
+
 Fri Oct 10 14:56:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: option to enable/disable network driver

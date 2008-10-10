@@ -145,44 +145,40 @@ VIR_ENUM_IMPL(virDomainHostdevSubsys, VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST,
         __virReportErrorHelper(conn, VIR_FROM_DOMAIN, code, __FILE__,        \
                                __FUNCTION__, __LINE__, fmt)
 
-virDomainObjPtr virDomainFindByID(const virDomainObjPtr doms,
+virDomainObjPtr virDomainFindByID(const virDomainObjListPtr doms,
                                   int id)
 {
-    virDomainObjPtr dom = doms;
-    while (dom) {
-        if (virDomainIsActive(dom) && dom->def->id == id)
-            return dom;
-        dom = dom->next;
-    }
+    unsigned int i;
+
+    for (i = 0 ; i < doms->count ; i++)
+        if (virDomainIsActive(doms->objs[i]) &&
+            doms->objs[i]->def->id == id)
+            return doms->objs[i];
 
     return NULL;
 }
 
 
-virDomainObjPtr virDomainFindByUUID(const virDomainObjPtr doms,
+virDomainObjPtr virDomainFindByUUID(const virDomainObjListPtr doms,
                                     const unsigned char *uuid)
 {
-    virDomainObjPtr dom = doms;
+    unsigned int i;
 
-    while (dom) {
-        if (!memcmp(dom->def->uuid, uuid, VIR_UUID_BUFLEN))
-            return dom;
-        dom = dom->next;
-    }
+    for (i = 0 ; i < doms->count ; i++)
+        if (!memcmp(doms->objs[i]->def->uuid, uuid, VIR_UUID_BUFLEN))
+            return doms->objs[i];
 
     return NULL;
 }
 
-virDomainObjPtr virDomainFindByName(const virDomainObjPtr doms,
+virDomainObjPtr virDomainFindByName(const virDomainObjListPtr doms,
                                     const char *name)
 {
-    virDomainObjPtr dom = doms;
+    unsigned int i;
 
-    while (dom) {
-        if (STREQ(dom->def->name, name))
-            return dom;
-        dom = dom->next;
-    }
+    for (i = 0 ; i < doms->count ; i++)
+        if (STREQ(doms->objs[i]->def->name, name))
+            return doms->objs[i];
 
     return NULL;
 }
@@ -404,13 +400,24 @@ void virDomainObjFree(virDomainObjPtr dom)
     VIR_FREE(dom);
 }
 
+void virDomainObjListFree(virDomainObjListPtr vms)
+{
+    unsigned int i;
+
+    for (i = 0 ; i < vms->count ; i++)
+        virDomainObjFree(vms->objs[i]);
+
+    VIR_FREE(vms->objs);
+    vms->count = 0;
+}
+
 virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
-                                   virDomainObjPtr *doms,
+                                   virDomainObjListPtr doms,
                                    const virDomainDefPtr def)
 {
     virDomainObjPtr domain;
 
-    if ((domain = virDomainFindByName(*doms, def->name))) {
+    if ((domain = virDomainFindByName(doms, def->name))) {
         if (!virDomainIsActive(domain)) {
             virDomainDefFree(domain->def);
             domain->def = def;
@@ -430,33 +437,41 @@ virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
 
     domain->state = VIR_DOMAIN_SHUTOFF;
     domain->def = def;
-    domain->next = *doms;
 
-    *doms = domain;
+    if (VIR_REALLOC_N(doms->objs, doms->count + 1) < 0) {
+        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        VIR_FREE(domain);
+        return NULL;
+    }
+
+    doms->objs[doms->count] = domain;
+    doms->count++;
 
     return domain;
 }
 
-void virDomainRemoveInactive(virDomainObjPtr *doms,
+void virDomainRemoveInactive(virDomainObjListPtr doms,
                              virDomainObjPtr dom)
 {
-    virDomainObjPtr prev = NULL;
-    virDomainObjPtr curr = *doms;
+    unsigned int i;
 
-    while (curr &&
-           curr != dom) {
-        prev = curr;
-        curr = curr->next;
+    for (i = 0 ; i < doms->count ; i++) {
+        if (doms->objs[i] == dom) {
+            virDomainObjFree(doms->objs[i]);
+
+            if (i < (doms->count - 1))
+                memmove(doms->objs + i, doms->objs + i + 1,
+                        sizeof(*(doms->objs)) * (doms->count - (i + 1)));
+
+            if (VIR_REALLOC_N(doms->objs, doms->count - 1) < 0) {
+                ; /* Failure to reduce memory allocation isn't fatal */
+            }
+            doms->count--;
+
+            break;
+        }
     }
 
-    if (curr) {
-        if (prev)
-            prev->next = curr->next;
-        else
-            *doms = curr->next;
-    }
-
-    virDomainObjFree(dom);
 }
 
 #ifndef PROXY
@@ -3245,7 +3260,7 @@ int virDomainSaveConfig(virConnectPtr conn,
 
 virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
                                     virCapsPtr caps,
-                                    virDomainObjPtr *doms,
+                                    virDomainObjListPtr doms,
                                     const char *configDir,
                                     const char *autostartDir,
                                     const char *name)
@@ -3284,7 +3299,7 @@ error:
 
 int virDomainLoadAllConfigs(virConnectPtr conn,
                             virCapsPtr caps,
-                            virDomainObjPtr *doms,
+                            virDomainObjListPtr doms,
                             const char *configDir,
                             const char *autostartDir)
 {
