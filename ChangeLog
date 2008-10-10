@@ -1,3 +1,8 @@
+Fri Oct 10 19:16:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/memory.c: If size*count== 0, then virRelloc must not
+	return a failure, it is same as virFree.
+
 Fri Oct 10 17:51:00 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* docs/libvirt.rng: Document SDL attributes in schema
