@@ -58,7 +58,7 @@ struct _testConn {
     virCapsPtr caps;
     virNodeInfo nodeInfo;
     virDomainObjList domains;
-    virNetworkObjPtr networks;
+    virNetworkObjList networks;
     int numCells;
     testCell cells[MAX_CELLS];
 };
@@ -100,7 +100,7 @@ static const virNodeInfo defaultNodeInfo = {
                                                                         \
     privconn = (testConnPtr)net->conn->privateData;                     \
     do {                                                                \
-        if ((privnet = virNetworkFindByName(privconn->networks,         \
+        if ((privnet = virNetworkFindByName(&privconn->networks,        \
                                             (net)->name)) == NULL) {    \
             testError((net)->conn, NULL, (net), VIR_ERR_INVALID_ARG,    \
                       __FUNCTION__);                                    \
@@ -260,7 +260,7 @@ static int testOpenDefault(virConnectPtr conn) {
 
 error:
     virDomainObjListFree(&privconn->domains);
-    virNetworkObjFree(privconn->networks);
+    virNetworkObjListFree(&privconn->networks);
     virCapabilitiesFree(privconn->caps);
     VIR_FREE(privconn);
     return VIR_DRV_OPEN_ERROR;
@@ -495,12 +495,7 @@ static int testOpenFromFile(virConnectPtr conn,
     if (fd != -1)
         close(fd);
     virDomainObjListFree(&privconn->domains);
-    net = privconn->networks;
-    while (net) {
-        virNetworkObjPtr tmp = net->next;
-        virNetworkObjFree(net);
-        net = tmp;
-    }
+    virNetworkObjListFree(&privconn->networks);
     VIR_FREE(privconn);
     conn->privateData = NULL;
     return VIR_DRV_OPEN_ERROR;
@@ -547,16 +542,12 @@ static int testOpen(virConnectPtr conn,
 
 static int testClose(virConnectPtr conn)
 {
-    virNetworkObjPtr net;
     GET_CONNECTION(conn);
+
     virCapabilitiesFree(privconn->caps);
     virDomainObjListFree(&privconn->domains);
-    net = privconn->networks;
-    while (net) {
-        virNetworkObjPtr tmp = net->next;
-        virNetworkObjFree(net);
-        net = tmp;
-    }
+    virNetworkObjListFree(&privconn->networks);
+
     VIR_FREE (privconn);
     conn->privateData = conn;
     return 0;
@@ -1283,7 +1274,7 @@ static virNetworkPtr testLookupNetworkByUUID(virConnectPtr conn,
     virNetworkObjPtr net = NULL;
     GET_CONNECTION(conn);
 
-    if ((net = virNetworkFindByUUID(privconn->networks, uuid)) == NULL) {
+    if ((net = virNetworkFindByUUID(&privconn->networks, uuid)) == NULL) {
         testError (conn, NULL, NULL, VIR_ERR_NO_NETWORK, NULL);
         return NULL;
     }
@@ -1297,7 +1288,7 @@ static virNetworkPtr testLookupNetworkByName(virConnectPtr conn,
     virNetworkObjPtr net = NULL;
     GET_CONNECTION(conn);
 
-    if ((net = virNetworkFindByName(privconn->networks, name)) == NULL) {
+    if ((net = virNetworkFindByName(&privconn->networks, name)) == NULL) {
         testError (conn, NULL, NULL, VIR_ERR_NO_NETWORK, NULL);
         return NULL;
     }
@@ -1307,32 +1298,26 @@ static virNetworkPtr testLookupNetworkByName(virConnectPtr conn,
 
 
 static int testNumNetworks(virConnectPtr conn) {
-    int numActive = 0;
-    virNetworkObjPtr net;
+    int numActive = 0, i;
     GET_CONNECTION(conn);
 
-    net = privconn->networks;
-    while (net) {
-        if (virNetworkIsActive(net))
+    for (i = 0 ; i < privconn->networks.count ; i++)
+        if (virNetworkIsActive(privconn->networks.objs[i]))
             numActive++;
-        net = net->next;
-    }
+
     return numActive;
 }
 
 static int testListNetworks(virConnectPtr conn, char **const names, int nnames) {
-    int n = 0;
-    virNetworkObjPtr net;
+    int n = 0, i;
     GET_CONNECTION(conn);
 
-    net = privconn->networks;
     memset(names, 0, sizeof(*names)*nnames);
-    while (net && n < nnames) {
-        if (virNetworkIsActive(net) &&
-            !(names[n++] = strdup(net->def->name)))
+    for (i = 0 ; i < privconn->networks.count && n < nnames ; i++)
+        if (virNetworkIsActive(privconn->networks.objs[i]) &&
+            !(names[n++] = strdup(privconn->networks.objs[i]->def->name)))
             goto no_memory;
-        net = net->next;
-    }
+
     return n;
 
 no_memory:
@@ -1343,32 +1328,26 @@ no_memory:
 }
 
 static int testNumDefinedNetworks(virConnectPtr conn) {
-    int numInactive = 0;
-    virNetworkObjPtr net;
+    int numInactive = 0, i;
     GET_CONNECTION(conn);
 
-    net = privconn->networks;
-    while (net) {
-        if (!virNetworkIsActive(net))
+    for (i = 0 ; i < privconn->networks.count ; i++)
+        if (!virNetworkIsActive(privconn->networks.objs[i]))
             numInactive++;
-        net = net->next;
-    }
+
     return numInactive;
 }
 
 static int testListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
-    int n = 0;
-    virNetworkObjPtr net;
+    int n = 0, i;
     GET_CONNECTION(conn);
 
-    net = privconn->networks;
     memset(names, 0, sizeof(*names)*nnames);
-    while (net && n < nnames) {
-        if (!virNetworkIsActive(net) &&
-            !(names[n++] = strdup(net->def->name)))
+    for (i = 0 ; i < privconn->networks.count && n < nnames ; i++)
+        if (!virNetworkIsActive(privconn->networks.objs[i]) &&
+            !(names[n++] = strdup(privconn->networks.objs[i]->def->name)))
             goto no_memory;
-        net = net->next;
-    }
+
     return n;
 
 no_memory:

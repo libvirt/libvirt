@@ -58,7 +58,7 @@
 
 /* Main driver state */
 struct network_driver {
-    virNetworkObjPtr networks;
+    virNetworkObjList networks;
 
     iptablesContext *iptables;
     brControl *brctl;
@@ -89,23 +89,18 @@ static int networkShutdownNetworkDaemon(virConnectPtr conn,
 static struct network_driver *driverState = NULL;
 
 
-static
-void networkAutostartConfigs(struct network_driver *driver) {
-    virNetworkObjPtr network;
+static void
+networkAutostartConfigs(struct network_driver *driver) {
+    unsigned int i;
 
-    network = driver->networks;
-    while (network != NULL) {
-        virNetworkObjPtr next = network->next;
-
-        if (network->autostart &&
-            !virNetworkIsActive(network) &&
-            networkStartNetworkDaemon(NULL, driver, network) < 0) {
+    for (i = 0 ; i < driver->networks.count ; i++) {
+        if (driver->networks.objs[i]->autostart &&
+            !virNetworkIsActive(driver->networks.objs[i]) &&
+            networkStartNetworkDaemon(NULL, driver, driver->networks.objs[i]) < 0) {
             virErrorPtr err = virGetLastError();
             networkLog(NETWORK_ERR, _("Failed to autostart network '%s': %s\n"),
-                     network->def->name, err->message);
+                       driver->networks.objs[i]->def->name, err->message);
         }
-
-        network = next;
     }
 }
 
@@ -187,6 +182,9 @@ networkStartup(void) {
  */
 static int
 networkReload(void) {
+    if (!driverState)
+        return 0;
+
     virNetworkLoadAllConfigs(NULL,
                              &driverState->networks,
                              driverState->networkConfigDir,
@@ -213,13 +211,14 @@ networkReload(void) {
  */
 static int
 networkActive(void) {
-    virNetworkObjPtr net = driverState->networks;
+    unsigned int i;
 
-    while (net) {
-        if (virNetworkIsActive(net))
+    if (!driverState)
+        return 0;
+
+    for (i = 0 ; i < driverState->networks.count ; i++)
+        if (virNetworkIsActive(driverState->networks.objs[i]))
             return 1;
-        net = net->next;
-    }
 
     /* Otherwise we're happy to deal with a shutdown */
     return 0;
@@ -232,28 +231,19 @@ networkActive(void) {
  */
 static int
 networkShutdown(void) {
-    virNetworkObjPtr network;
+    unsigned int i;
 
     if (!driverState)
         return -1;
 
     /* shutdown active networks */
-    network = driverState->networks;
-    while (network) {
-        virNetworkObjPtr next = network->next;
-        if (virNetworkIsActive(network))
-            networkShutdownNetworkDaemon(NULL, driverState, network);
-        network = next;
-    }
+    for (i = 0 ; i < driverState->networks.count ; i++)
+        if (virNetworkIsActive(driverState->networks.objs[i]))
+            networkShutdownNetworkDaemon(NULL, driverState,
+                                         driverState->networks.objs[i]);
 
     /* free inactive networks */
-    network = driverState->networks;
-    while (network) {
-        virNetworkObjPtr next = network->next;
-        virNetworkObjFree(network);
-        network = next;
-    }
-    driverState->networks = NULL;
+    virNetworkObjListFree(&driverState->networks);
 
     VIR_FREE(driverState->logDir);
     VIR_FREE(driverState->networkConfigDir);
@@ -815,7 +805,7 @@ static int networkShutdownNetworkDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 static virNetworkPtr networkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSED,
                                               const unsigned char *uuid) {
     struct network_driver *driver = (struct network_driver *)conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, uuid);
+    virNetworkObjPtr network = virNetworkFindByUUID(&driver->networks, uuid);
     virNetworkPtr net;
 
     if (!network) {
@@ -830,7 +820,7 @@ static virNetworkPtr networkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSED,
 static virNetworkPtr networkLookupByName(virConnectPtr conn ATTRIBUTE_UNUSED,
                                               const char *name) {
     struct network_driver *driver = (struct network_driver *)conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByName(driver->networks, name);
+    virNetworkObjPtr network = virNetworkFindByName(&driver->networks, name);
     virNetworkPtr net;
 
     if (!network) {
@@ -860,31 +850,29 @@ static int networkCloseNetwork(virConnectPtr conn) {
 }
 
 static int networkNumNetworks(virConnectPtr conn) {
-    int nactive = 0;
+    int nactive = 0, i;
     struct network_driver *driver = (struct network_driver *)conn->networkPrivateData;
-    virNetworkObjPtr net = driver->networks;
-    while (net) {
-        if (virNetworkIsActive(net))
+
+    for (i = 0 ; i < driver->networks.count ; i++)
+        if (virNetworkIsActive(driver->networks.objs[i]))
             nactive++;
-        net = net->next;
-    }
+
     return nactive;
 }
 
 static int networkListNetworks(virConnectPtr conn, char **const names, int nnames) {
     struct network_driver *driver = (struct network_driver *)conn->networkPrivateData;
-    virNetworkObjPtr network = driver->networks;
     int got = 0, i;
-    while (network && got < nnames) {
-        if (virNetworkIsActive(network)) {
-            if (!(names[got] = strdup(network->def->name))) {
+
+    for (i = 0 ; i < driver->networks.count && got < nnames ; i++) {
+        if (virNetworkIsActive(driver->networks.objs[i])) {
+            if (!(names[got] = strdup(driver->networks.objs[i]->def->name))) {
                 networkReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                     "%s", _("failed to allocate space for VM name string"));
+                                   "%s", _("failed to allocate space for VM name string"));
                 goto cleanup;
             }
             got++;
         }
-        network = network->next;
     }
     return got;
 
@@ -895,31 +883,29 @@ static int networkListNetworks(virConnectPtr conn, char **const names, int nname
 }
 
 static int networkNumDefinedNetworks(virConnectPtr conn) {
-    int ninactive = 0;
+    int ninactive = 0, i;
     struct network_driver *driver = (struct network_driver *)conn->networkPrivateData;
-    virNetworkObjPtr net = driver->networks;
-    while (net) {
-        if (!virNetworkIsActive(net))
+
+    for (i = 0 ; i < driver->networks.count ; i++)
+        if (!virNetworkIsActive(driver->networks.objs[i]))
             ninactive++;
-        net = net->next;
-    }
+
     return ninactive;
 }
 
 static int networkListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
     struct network_driver *driver = (struct network_driver *)conn->networkPrivateData;
-    virNetworkObjPtr network = driver->networks;
     int got = 0, i;
-    while (network && got < nnames) {
-        if (!virNetworkIsActive(network)) {
-            if (!(names[got] = strdup(network->def->name))) {
+
+    for (i = 0 ; i < driver->networks.count && got < nnames ; i++) {
+        if (!virNetworkIsActive(driver->networks.objs[i])) {
+            if (!(names[got] = strdup(driver->networks.objs[i]->def->name))) {
                 networkReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                     "%s", _("failed to allocate space for VM name string"));
+                                   "%s", _("failed to allocate space for VM name string"));
                 goto cleanup;
             }
             got++;
         }
-        network = network->next;
     }
     return got;
 
@@ -984,7 +970,7 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
 
 static int networkUndefine(virNetworkPtr net) {
     struct network_driver *driver = (struct network_driver *)net->conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, net->uuid);
+    virNetworkObjPtr network = virNetworkFindByUUID(&driver->networks, net->uuid);
 
     if (!network) {
         networkReportError(net->conn, NULL, net, VIR_ERR_INVALID_DOMAIN,
@@ -1009,7 +995,7 @@ static int networkUndefine(virNetworkPtr net) {
 
 static int networkStart(virNetworkPtr net) {
     struct network_driver *driver = (struct network_driver *)net->conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, net->uuid);
+    virNetworkObjPtr network = virNetworkFindByUUID(&driver->networks, net->uuid);
 
     if (!network) {
         networkReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
@@ -1022,7 +1008,7 @@ static int networkStart(virNetworkPtr net) {
 
 static int networkDestroy(virNetworkPtr net) {
     struct network_driver *driver = (struct network_driver *)net->conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, net->uuid);
+    virNetworkObjPtr network = virNetworkFindByUUID(&driver->networks, net->uuid);
     int ret;
 
     if (!network) {
@@ -1038,7 +1024,7 @@ static int networkDestroy(virNetworkPtr net) {
 
 static char *networkDumpXML(virNetworkPtr net, int flags ATTRIBUTE_UNUSED) {
     struct network_driver *driver = (struct network_driver *)net->conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, net->uuid);
+    virNetworkObjPtr network = virNetworkFindByUUID(&driver->networks, net->uuid);
 
     if (!network) {
         networkReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
@@ -1051,7 +1037,7 @@ static char *networkDumpXML(virNetworkPtr net, int flags ATTRIBUTE_UNUSED) {
 
 static char *networkGetBridgeName(virNetworkPtr net) {
     struct network_driver *driver = (struct network_driver *)net->conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, net->uuid);
+    virNetworkObjPtr network = virNetworkFindByUUID(&driver->networks, net->uuid);
     char *bridge;
     if (!network) {
         networkReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
@@ -1071,7 +1057,7 @@ static char *networkGetBridgeName(virNetworkPtr net) {
 static int networkGetAutostart(virNetworkPtr net,
                              int *autostart) {
     struct network_driver *driver = (struct network_driver *)net->conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, net->uuid);
+    virNetworkObjPtr network = virNetworkFindByUUID(&driver->networks, net->uuid);
 
     if (!network) {
         networkReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
@@ -1087,7 +1073,7 @@ static int networkGetAutostart(virNetworkPtr net,
 static int networkSetAutostart(virNetworkPtr net,
                              int autostart) {
     struct network_driver *driver = (struct network_driver *)net->conn->networkPrivateData;
-    virNetworkObjPtr network = virNetworkFindByUUID(driver->networks, net->uuid);
+    virNetworkObjPtr network = virNetworkFindByUUID(&driver->networks, net->uuid);
 
     if (!network) {
         networkReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
