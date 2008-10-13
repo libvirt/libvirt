@@ -1,3 +1,9 @@
+Mon Oct 13 16:24:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Documentation for NIC model selection.
+	* docs/formatdomain.html.in, docs/formatdomain.html: Add the
+	documentation for NIC model selection.
+
 Mon Oct 13 16:22:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Build failure fixed.

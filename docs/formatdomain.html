@@ -155,6 +155,8 @@
                         <a href="#elementsNICSMulticast">Multicast tunnel</a>
                       </li><li>
                         <a href="#elementsNICSTCP">TCP tunnel</a>
+                      </li><li>
+                        <a href="#elementsNICSModel">Setting the NIC model</a>
                       </li></ul>
                   </li><li>
                     <a href="#elementsInput">Input devices</a>
@@ -648,6 +650,35 @@
       &lt;source address='192.168.0.1' port='5558'/&gt;
       &lt;/interface&gt;
       ...</pre>
+        <h5>
+          <a name="elementsNICSModel" id="elementsNICSModel">Setting the NIC model</a>
+        </h5>
+        <pre>
+      ...
+      &lt;interface type='network'&gt;
+        &lt;source network='default'/&gt;
+        &lt;target dev='vnet1'/&gt;
+        <b>&lt;model type='ne2k_pci'/&gt;</b>
+      &lt;/interface&gt;
+      ...</pre>
+        <p>
+      For hypervisors which support this, you can set the model of
+      emulated network interface card.
+    </p>
+        <p>
+      The values for <code>type</code> aren't defined specifically by
+      libvirt, but by what the underlying hypervisor supports (if
+      any).  For QEMU and KVM you can get a list of supported models
+      with these commands:
+    </p>
+        <pre>
+qemu -net nic,model=? /dev/null
+qemu-kvm -net nic,model=? /dev/null
+</pre>
+        <p>
+      Typical values for QEMU and KVM include:
+      ne2k_isa i82551 i82557b i82559er ne2k_pci pcnet rtl8139 e1000 virtio
+    </p>
         <h4>
           <a name="elementsInput" id="elementsInput">Input devices</a>
         </h4>
