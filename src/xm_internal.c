@@ -487,7 +487,7 @@ static int xenXMConfigCacheRefresh (virConnectPtr conn) {
                 virDomainDefFree(entry->def);
                 VIR_FREE(entry);
                 xenXMError (conn, VIR_ERR_INTERNAL_ERROR,
-                            _("xenXMConfigCacheRefresh: virHashAddEntry"));
+                            "%s", _("xenXMConfigCacheRefresh: virHashAddEntry"));
                 goto cleanup;
             }
         }
@@ -1419,22 +1419,22 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
         xenXMError (domain->conn, VIR_ERR_INVALID_ARG,
-                    _("read only connection"));
+                    "%s", _("read only connection"));
         return -1;
     }
     if (domain->id != -1) {
         xenXMError (domain->conn, VIR_ERR_INVALID_ARG,
-                    _("not inactive domain"));
+                    "%s", _("not inactive domain"));
         return -1;
     }
 
     if (!(filename = virHashLookup(nameConfigMap, domain->name))) {
-        xenXMError (domain->conn, VIR_ERR_INTERNAL_ERROR, _("virHashLookup"));
+        xenXMError (domain->conn, VIR_ERR_INTERNAL_ERROR, "%s", _("virHashLookup"));
         return -1;
     }
     if (!(entry = virHashLookup(configCache, filename))) {
         xenXMError (domain->conn, VIR_ERR_INTERNAL_ERROR,
-                    _("can't retrieve config file for domain"));
+                    "%s", _("can't retrieve config file for domain"));
         return -1;
     }
 
@@ -1452,14 +1452,14 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
             }
 
     if (virBufferError(&mapbuf)) {
-        xenXMError(domain->conn, VIR_ERR_NO_MEMORY, _("allocate buffer"));
+        xenXMError(domain->conn, VIR_ERR_NO_MEMORY, "%s", _("allocate buffer"));
         return -1;
     }
 
     mapstr = virBufferContentAndReset(&mapbuf);
 
     if (VIR_ALLOC_N(cpuset, maxcpu) < 0) {
-        xenXMError(domain->conn, VIR_ERR_NO_MEMORY, _("allocate buffer"));
+        xenXMError(domain->conn, VIR_ERR_NO_MEMORY, "%s", _("allocate buffer"));
         goto cleanup;
     }
     if (virDomainCpuSetParse(domain->conn,
@@ -1594,7 +1594,7 @@ int xenXMDomainCreate(virDomainPtr domain) {
 
     if (!(sexpr = xenDaemonFormatSxpr(domain->conn, entry->def, priv->xendConfigVersion))) {
         xenXMError(domain->conn, VIR_ERR_XML_ERROR,
-                   _("failed to build sexpr"));
+                   "%s", _("failed to build sexpr"));
         return (-1);
     }
 
@@ -2216,13 +2216,13 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
 
         if (!(oldfilename = (char *)virHashLookup(nameConfigMap, def->name))) {
             xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
-                       _("can't retrieve config filename for domain to overwrite"));
+                       "%s", _("can't retrieve config filename for domain to overwrite"));
             goto error;
         }
 
         if (!(entry = virHashLookup(configCache, oldfilename))) {
             xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
-                       _("can't retrieve config entry for domain to overwrite"));
+                       "%s", _("can't retrieve config entry for domain to overwrite"));
             goto error;
         }
 
@@ -2233,14 +2233,14 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
         /* Remove the name -> filename mapping */
         if (virHashRemoveEntry(nameConfigMap, def->name, NULL) < 0) {
             xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
-                       _("failed to remove old domain from config map"));
+                       "%s", _("failed to remove old domain from config map"));
             goto error;
         }
 
         /* Remove the config record itself */
         if (virHashRemoveEntry(configCache, oldfilename, xenXMConfigFree) < 0) {
             xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
-                       _("failed to remove old domain from config map"));
+                       "%s", _("failed to remove old domain from config map"));
             goto error;
         }
 
@@ -2249,7 +2249,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
 
     if ((strlen(configDir) + 1 + strlen(def->name) + 1) > PATH_MAX) {
         xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
-                   _("config file name is too long"));
+                   "%s", _("config file name is too long"));
         goto error;
     }
 
@@ -2261,13 +2261,13 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
         goto error;
 
     if (VIR_ALLOC(entry) < 0) {
-        xenXMError(conn, VIR_ERR_NO_MEMORY, _("config"));
+        xenXMError(conn, VIR_ERR_NO_MEMORY, "%s", _("config"));
         goto error;
     }
 
     if ((entry->refreshedAt = time(NULL)) == ((time_t)-1)) {
         xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
-                   _("unable to get current time"));
+                   "%s", _("unable to get current time"));
         goto error;
     }
 
@@ -2276,14 +2276,14 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
 
     if (virHashAddEntry(configCache, filename, entry) < 0) {
         xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
-                   _("unable to store config file handle"));
+                   "%s", _("unable to store config file handle"));
         goto error;
     }
 
     if (virHashAddEntry(nameConfigMap, def->name, entry->filename) < 0) {
         virHashRemoveEntry(configCache, filename, NULL);
         xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
-                   _("unable to store config file handle"));
+                   "%s", _("unable to store config file handle"));
         goto error;
     }
 
@@ -2471,7 +2471,7 @@ xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
 
     default:
         xenXMError(domain->conn, VIR_ERR_XML_ERROR,
-                   _("unknown device"));
+                   "%s", _("unknown device"));
         goto cleanup;
     }
 
@@ -2586,7 +2586,7 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
     }
     default:
         xenXMError(domain->conn, VIR_ERR_XML_ERROR,
-                   _("unknown device"));
+                   "%s", _("unknown device"));
         goto cleanup;
     }
 

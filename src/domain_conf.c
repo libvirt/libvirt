@@ -1523,13 +1523,13 @@ virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
     if (def->source.subsys.usb.vendor == 0 &&
         def->source.subsys.usb.product != 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-            _("missing vendor"));
+            "%s", _("missing vendor"));
         goto out;
     }
     if (def->source.subsys.usb.vendor != 0 &&
         def->source.subsys.usb.product == 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-            _("missing product"));
+            "%s", _("missing product"));
         goto out;
     }
 
@@ -2244,7 +2244,7 @@ virDomainDefPtr virDomainDefParseString(virConnectPtr conn,
     if (!xml) {
         if (conn && conn->err.code == VIR_ERR_NONE)
               virDomainReportError(conn, VIR_ERR_XML_ERROR,
-                                   _("failed to parse xml document"));
+                                   "%s", _("failed to parse xml document"));
         goto cleanup;
     }
 
@@ -2285,7 +2285,7 @@ virDomainDefPtr virDomainDefParseFile(virConnectPtr conn,
     if (!xml) {
         if (conn && conn->err.code == VIR_ERR_NONE)
               virDomainReportError(conn, VIR_ERR_XML_ERROR,
-                                   _("failed to parse xml document"));
+                                   "%s", _("failed to parse xml document"));
         goto cleanup;
     }
 

@@ -178,13 +178,13 @@ virStorageBackendDiskMakeDataVol(virConnectPtr conn,
 
     if (vol == NULL) {
         if (VIR_ALLOC(vol) < 0) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("volume"));
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
             return -1;
         }
 
         if (VIR_REALLOC_N(pool->volumes.objs,
                           pool->volumes.count+1) < 0) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("volume"));
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
             virStorageVolDefFree(vol);
             return -1;
         }
@@ -195,14 +195,14 @@ virStorageBackendDiskMakeDataVol(virConnectPtr conn,
          */
         tmp = strrchr(groups[0], '/');
         if ((vol->name = strdup(tmp ? tmp + 1 : groups[0])) == NULL) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("volume"));
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
             return -1;
         }
     }
 
     if (vol->target.path == NULL) {
         if ((devpath = strdup(groups[0])) == NULL) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("volume"));
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
             return -1;
         }
 
@@ -224,7 +224,7 @@ virStorageBackendDiskMakeDataVol(virConnectPtr conn,
     if (vol->key == NULL) {
         /* XXX base off a unique key of the underlying disk */
         if ((vol->key = strdup(vol->target.path)) == NULL) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("volume"));
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
             return -1;
         }
     }
@@ -232,7 +232,7 @@ virStorageBackendDiskMakeDataVol(virConnectPtr conn,
     if (vol->source.extents == NULL) {
         if (VIR_ALLOC(vol->source.extents) < 0) {
             virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                                  _("volume extents"));
+                                  "%s", _("volume extents"));
             return -1;
         }
         vol->source.nextent = 1;
@@ -240,20 +240,20 @@ virStorageBackendDiskMakeDataVol(virConnectPtr conn,
         if (virStrToLong_ull(groups[3], NULL, 10,
                              &vol->source.extents[0].start) < 0) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot parse device start location"));
+                                  "%s", _("cannot parse device start location"));
             return -1;
         }
 
         if (virStrToLong_ull(groups[4], NULL, 10,
                              &vol->source.extents[0].end) < 0) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot parse device end location"));
+                                  "%s", _("cannot parse device end location"));
             return -1;
         }
 
         if ((vol->source.extents[0].path =
              strdup(pool->def->source.devices[0].path)) == NULL) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("extents"));
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("extents"));
             return -1;
         }
     }
@@ -460,7 +460,7 @@ virStorageBackendDiskCreateVol(virConnectPtr conn,
     }
     if (smallestExtent == -1) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("no large enough free extent"));
+                              "%s", _("no large enough free extent"));
         return -1;
     }
     startOffset = dev->freeExtents[smallestExtent].start;

@@ -155,13 +155,13 @@ virExec(virConnectPtr conn,
             if ((flags & VIR_EXEC_NONBLOCK) &&
                 virSetNonBlock(pipeout[0]) == -1) {
                 ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                            _("Failed to set non-blocking file descriptor flag"));
+                            "%s", _("Failed to set non-blocking file descriptor flag"));
                 goto cleanup;
             }
 
             if (virSetCloseExec(pipeout[0]) == -1) {
                 ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                            _("Failed to set close-on-exec file descriptor flag"));
+                            "%s", _("Failed to set close-on-exec file descriptor flag"));
                 goto cleanup;
             }
 
@@ -186,13 +186,13 @@ virExec(virConnectPtr conn,
             if ((flags & VIR_EXEC_NONBLOCK) &&
                 virSetNonBlock(pipeerr[0]) == -1) {
                 ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                            _("Failed to set non-blocking file descriptor flag"));
+                            "%s", _("Failed to set non-blocking file descriptor flag"));
                 goto cleanup;
             }
 
             if (virSetCloseExec(pipeerr[0]) == -1) {
                 ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                            _("Failed to set close-on-exec file descriptor flag"));
+                            "%s", _("Failed to set close-on-exec file descriptor flag"));
                 goto cleanup;
             }
 

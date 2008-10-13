@@ -556,7 +556,7 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn,
 
     retval = virStringListJoin(state.list, SOURCES_START_TAG, SOURCES_END_TAG, "\n");
     if (retval == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("retval"));
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("retval"));
         goto cleanup;
     }
 

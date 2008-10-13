@@ -213,7 +213,7 @@ static int testOpenDefault(virConnectPtr conn) {
     conn->privateData = privconn;
 
     if (gettimeofday(&tv, NULL) < 0) {
-        testError(NULL, VIR_ERR_INTERNAL_ERROR, _("getting time of day"));
+        testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s", _("getting time of day"));
         goto error;
     }
 
@@ -311,14 +311,14 @@ static int testOpenFromFile(virConnectPtr conn,
         goto error;
 
     if ((fd = open(file, O_RDONLY)) < 0) {
-        testError(NULL, VIR_ERR_INTERNAL_ERROR, _("loading host definition file"));
+        testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s", _("loading host definition file"));
         goto error;
     }
 
     if (!(xml = xmlReadFd(fd, file, NULL,
                           XML_PARSE_NOENT | XML_PARSE_NONET |
                           XML_PARSE_NOERROR | XML_PARSE_NOWARNING))) {
-        testError(NULL, VIR_ERR_INTERNAL_ERROR, _("host"));
+        testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s", _("host"));
         goto error;
     }
     close(fd);
@@ -326,13 +326,13 @@ static int testOpenFromFile(virConnectPtr conn,
 
     root = xmlDocGetRootElement(xml);
     if ((root == NULL) || (!xmlStrEqual(root->name, BAD_CAST "node"))) {
-        testError(NULL, VIR_ERR_XML_ERROR, _("node"));
+        testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node"));
         goto error;
     }
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        testError(NULL, VIR_ERR_INTERNAL_ERROR, _("creating xpath context"));
+        testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s", _("creating xpath context"));
         goto error;
     }
 
@@ -347,7 +347,7 @@ static int testOpenFromFile(virConnectPtr conn,
     if (ret == 0) {
         nodeInfo->nodes = l;
     } else if (ret == -2) {
-        testError(NULL, VIR_ERR_XML_ERROR, _("node cpu numa nodes"));
+        testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node cpu numa nodes"));
         goto error;
     }
 
@@ -355,7 +355,7 @@ static int testOpenFromFile(virConnectPtr conn,
     if (ret == 0) {
         nodeInfo->sockets = l;
     } else if (ret == -2) {
-        testError(NULL, VIR_ERR_XML_ERROR, _("node cpu sockets"));
+        testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node cpu sockets"));
         goto error;
     }
 
@@ -363,7 +363,7 @@ static int testOpenFromFile(virConnectPtr conn,
     if (ret == 0) {
         nodeInfo->cores = l;
     } else if (ret == -2) {
-        testError(NULL, VIR_ERR_XML_ERROR, _("node cpu cores"));
+        testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node cpu cores"));
         goto error;
     }
 
@@ -371,7 +371,7 @@ static int testOpenFromFile(virConnectPtr conn,
     if (ret == 0) {
         nodeInfo->threads = l;
     } else if (ret == -2) {
-        testError(NULL, VIR_ERR_XML_ERROR, _("node cpu threads"));
+        testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node cpu threads"));
         goto error;
     }
 
@@ -382,14 +382,14 @@ static int testOpenFromFile(virConnectPtr conn,
             nodeInfo->cpus = l;
         }
     } else if (ret == -2) {
-        testError(NULL, VIR_ERR_XML_ERROR, _("node active cpu"));
+        testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node active cpu"));
         goto error;
     }
     ret = virXPathLong(conn, "string(/node/cpu/mhz[1])", ctxt, &l);
     if (ret == 0) {
         nodeInfo->mhz = l;
     } else if (ret == -2) {
-        testError(NULL, VIR_ERR_XML_ERROR, _("node cpu mhz"));
+        testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node cpu mhz"));
         goto error;
     }
 
@@ -404,13 +404,13 @@ static int testOpenFromFile(virConnectPtr conn,
     if (ret == 0) {
         nodeInfo->memory = l;
     } else if (ret == -2) {
-        testError(NULL, VIR_ERR_XML_ERROR, _("node memory"));
+        testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node memory"));
         goto error;
     }
 
     ret = virXPathNodeSet(conn, "/node/domain", ctxt, &domains);
     if (ret < 0) {
-        testError(NULL, VIR_ERR_XML_ERROR, _("node domain list"));
+        testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node domain list"));
         goto error;
     }
 
@@ -421,7 +421,7 @@ static int testOpenFromFile(virConnectPtr conn,
             char *absFile = testBuildFilename(file, relFile);
             VIR_FREE(relFile);
             if (!absFile) {
-                testError(NULL, VIR_ERR_INTERNAL_ERROR, _("resolving domain filename"));
+                testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s", _("resolving domain filename"));
                 goto error;
             }
             def = virDomainDefParseFile(conn, privconn->caps, absFile);
@@ -447,7 +447,7 @@ static int testOpenFromFile(virConnectPtr conn,
 
     ret = virXPathNodeSet(conn, "/node/network", ctxt, &networks);
     if (ret < 0) {
-        testError(NULL, VIR_ERR_XML_ERROR, _("node network list"));
+        testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node network list"));
         goto error;
     }
     for (i = 0 ; i < ret ; i++) {
@@ -457,7 +457,7 @@ static int testOpenFromFile(virConnectPtr conn,
             char *absFile = testBuildFilename(file, relFile);
             VIR_FREE(relFile);
             if (!absFile) {
-                testError(NULL, VIR_ERR_INTERNAL_ERROR, _("resolving network filename"));
+                testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s", _("resolving network filename"));
                 goto error;
             }
 
@@ -525,7 +525,7 @@ static int testOpen(virConnectPtr conn,
         || uri->path[0] == '\0'
         || (uri->path[0] == '/' && uri->path[1] == '\0')) {
         testError (NULL, VIR_ERR_INVALID_ARG,
-                   _("testOpen: supply a path or use test:///default"));
+                   "%s", _("testOpen: supply a path or use test:///default"));
         return VIR_DRV_OPEN_ERROR;
     }
 
@@ -837,7 +837,7 @@ static int testGetDomainInfo (virDomainPtr domain,
 
     if (gettimeofday(&tv, NULL) < 0) {
         testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                  _("getting time of day"));
+                  "%s", _("getting time of day"));
         return (-1);
     }
 
@@ -925,30 +925,30 @@ static int testDomainRestore(virConnectPtr conn,
 
     if ((fd = open(path, O_RDONLY)) < 0) {
         testError(conn, VIR_ERR_INTERNAL_ERROR,
-                  _("cannot read domain image"));
+                  "%s", _("cannot read domain image"));
         return (-1);
     }
     if (read(fd, magic, sizeof(magic)) != sizeof(magic)) {
         testError(conn, VIR_ERR_INTERNAL_ERROR,
-                  _("incomplete save header"));
+                  "%s", _("incomplete save header"));
         close(fd);
         return (-1);
     }
     if (memcmp(magic, TEST_SAVE_MAGIC, sizeof(magic))) {
         testError(conn, VIR_ERR_INTERNAL_ERROR,
-                  _("mismatched header magic"));
+                  "%s", _("mismatched header magic"));
         close(fd);
         return (-1);
     }
     if (read(fd, (char*)&len, sizeof(len)) != sizeof(len)) {
         testError(conn, VIR_ERR_INTERNAL_ERROR,
-                  _("failed to read metadata length"));
+                  "%s", _("failed to read metadata length"));
         close(fd);
         return (-1);
     }
     if (len < 1 || len > 8192) {
         testError(conn, VIR_ERR_INTERNAL_ERROR,
-                  _("length of metadata out of range"));
+                  "%s", _("length of metadata out of range"));
         close(fd);
         return (-1);
     }
@@ -959,7 +959,7 @@ static int testDomainRestore(virConnectPtr conn,
     }
     if (read(fd, xml, len) != len) {
         testError(conn, VIR_ERR_INTERNAL_ERROR,
-                  _("incomplete metdata"));
+                  "%s", _("incomplete metdata"));
         close(fd);
         return (-1);
     }
@@ -1147,7 +1147,7 @@ static int testNodeGetCellsFreeMemory(virConnectPtr conn,
 
     if (startCell > privconn->numCells) {
         testError(conn, VIR_ERR_INVALID_ARG,
-                  _("Range exceeds available cells"));
+                  "%s", _("Range exceeds available cells"));
         return -1;
     }
 

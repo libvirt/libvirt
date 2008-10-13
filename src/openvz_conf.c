@@ -222,7 +222,7 @@ openvzReadNetworkConf(virConnectPtr conn,
                     len = next - p;
                     if (len > 16) {
                         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                                _("Too long network device name"));
+                                "%s", _("Too long network device name"));
                         goto error;
                     }
 
@@ -239,14 +239,14 @@ openvzReadNetworkConf(virConnectPtr conn,
                     len = next - p;
                     if (len != 17) { //should be 17
                         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("Wrong length MAC address"));
+                              "%s", _("Wrong length MAC address"));
                         goto error;
                     }
                     strncpy(cpy_temp, p, len);
                     cpy_temp[len] = '\0';
                     if (openvzParseMac(cpy_temp, net->mac)<0) {
                         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("Wrong MAC address"));
+                              "%s", _("Wrong MAC address"));
                         goto error;
                     }
                 } else if (STRPREFIX(p, "host_mac=")) {
@@ -299,7 +299,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         return -1;
 
     if ((fp = popen(VZLIST " -a -ovpsid,status -H 2>/dev/null", "r")) == NULL) {
-        openvzError(NULL, VIR_ERR_INTERNAL_ERROR, _("popen failed"));
+        openvzError(NULL, VIR_ERR_INTERNAL_ERROR, "%s", _("popen failed"));
         return -1;
     }
 
@@ -309,7 +309,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
                 break;
 
             openvzError(NULL, VIR_ERR_INTERNAL_ERROR,
-                        _("Failed to parse vzlist output"));
+                        "%s", _("Failed to parse vzlist output"));
             goto cleanup;
         }
 
@@ -335,7 +335,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
 
         if (ret == -1) {
             openvzError(NULL, VIR_ERR_INTERNAL_ERROR,
-                        _("UUID in config file malformed"));
+                        "%s", _("UUID in config file malformed"));
             goto cleanup;
         }
 

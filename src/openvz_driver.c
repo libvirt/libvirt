@@ -92,7 +92,7 @@ static int openvzDomainDefineCmd(virConnectPtr conn,
 
     if (vmdef == NULL){
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                   _("Container is not defined"));
+                   "%s", _("Container is not defined"));
         return -1;
     }
 
@@ -235,7 +235,7 @@ static int openvzDomainGetInfo(virDomainPtr dom,
 
     if (!vm) {
         openvzError(dom->conn, VIR_ERR_INVALID_DOMAIN,
-                    _("no domain with matching uuid"));
+                    "%s", _("no domain with matching uuid"));
         return -1;
     }
 
@@ -264,7 +264,7 @@ static char *openvzDomainDumpXML(virDomainPtr dom, int flags) {
 
     if (!vm) {
         openvzError(dom->conn, VIR_ERR_INVALID_DOMAIN,
-                    _("no domain with matching uuid"));
+                    "%s", _("no domain with matching uuid"));
         return NULL;
     }
 
@@ -280,13 +280,13 @@ static int openvzDomainShutdown(virDomainPtr dom) {
 
     if (!vm) {
         openvzError(dom->conn, VIR_ERR_INVALID_DOMAIN,
-                    _("no domain with matching uuid"));
+                    "%s", _("no domain with matching uuid"));
         return -1;
     }
 
     if (vm->state != VIR_DOMAIN_RUNNING) {
         openvzError(dom->conn, VIR_ERR_INTERNAL_ERROR,
-                    _("domain is not in running state"));
+                    "%s", _("domain is not in running state"));
         return -1;
     }
 
@@ -307,13 +307,13 @@ static int openvzDomainReboot(virDomainPtr dom,
 
     if (!vm) {
         openvzError(dom->conn, VIR_ERR_INVALID_DOMAIN,
-                    _("no domain with matching uuid"));
+                    "%s", _("no domain with matching uuid"));
         return -1;
     }
 
     if (vm->state != VIR_DOMAIN_RUNNING) {
         openvzError(dom->conn, VIR_ERR_INTERNAL_ERROR,
-                    _("domain is not in running state"));
+                    "%s", _("domain is not in running state"));
         return -1;
     }
 
@@ -344,7 +344,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
        return 0;
     if (vpsid == NULL) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("Container ID is not specified"));
+                    "%s", _("Container ID is not specified"));
         return -1;
     }
 
@@ -444,7 +444,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
 
     if (openvzDomainDefineCmd(conn, prog, OPENVZ_MAX_ARG, vmdef) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                _("Error creating command for container"));
+                "%s", _("Error creating command for container"));
         goto exit;
     }
 
@@ -458,7 +458,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
 
     if (openvzSetDefinedUUID(strtoI(vmdef->name), vmdef->uuid) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-               _("Could not set UUID"));
+               "%s", _("Could not set UUID"));
         goto exit;
     }
 
@@ -469,7 +469,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     for (i = 0 ; i < vmdef->nnets ; i++) {
         if (openvzDomainSetNetwork(conn, vmdef->name, vmdef->nets[i]) < 0) {
             openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("Could not configure network"));
+                        "%s", _("Could not configure network"));
             goto exit;
         }
     }
@@ -477,7 +477,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     if (vmdef->vcpus > 0) {
         if (openvzDomainSetVcpus(dom, vmdef->vcpus) < 0) {
             openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                     _("Could not set number of virtual cpu"));
+                     "%s", _("Could not set number of virtual cpu"));
              goto exit;
         }
     }
@@ -524,7 +524,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
 
     if (openvzDomainDefineCmd(conn, progcreate, OPENVZ_MAX_ARG, vmdef) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                _("Error creating command for container"));
+                "%s", _("Error creating command for container"));
         goto exit;
     }
 
@@ -536,14 +536,14 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
 
     if (openvzSetDefinedUUID(strtoI(vmdef->name), vmdef->uuid) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-               _("Could not set UUID"));
+               "%s", _("Could not set UUID"));
         goto exit;
     }
 
     for (i = 0 ; i < vmdef->nnets ; i++) {
         if (openvzDomainSetNetwork(conn, vmdef->name, vmdef->nets[i]) < 0) {
             openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("Could not configure network"));
+                        "%s", _("Could not configure network"));
             goto exit;
         }
     }
@@ -567,7 +567,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     if (vmdef->vcpus > 0) {
         if (openvzDomainSetVcpus(dom, vmdef->vcpus) < 0) {
             openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("Could not set number of virtual cpu"));
+                        "%s", _("Could not set number of virtual cpu"));
             goto exit;
         }
     }
@@ -586,13 +586,13 @@ openvzDomainCreate(virDomainPtr dom)
 
     if (!vm) {
         openvzError(dom->conn, VIR_ERR_INVALID_DOMAIN,
-              _("no domain with matching id"));
+              "%s", _("no domain with matching id"));
         return -1;
     }
 
     if (vm->state != VIR_DOMAIN_SHUTOFF) {
         openvzError(dom->conn, VIR_ERR_OPERATION_DENIED,
-              _("domain is not in shutoff state"));
+              "%s", _("domain is not in shutoff state"));
         return -1;
     }
 
@@ -618,12 +618,12 @@ openvzDomainUndefine(virDomainPtr dom)
     const char *prog[] = { VZCTL, "--quiet", "destroy", vm ? vm->def->name : NULL, NULL };
 
     if (!vm) {
-        openvzError(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        openvzError(conn, VIR_ERR_INVALID_DOMAIN, "%s", _("no domain with matching uuid"));
         return -1;
     }
 
     if (virDomainIsActive(vm)) {
-        openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("cannot delete active domain"));
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR, "%s", _("cannot delete active domain"));
         return -1;
     }
 
@@ -649,7 +649,7 @@ openvzDomainSetAutostart(virDomainPtr dom, int autostart)
                            "--save", NULL };
 
     if (!vm) {
-        openvzError(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        openvzError(conn, VIR_ERR_INVALID_DOMAIN, "%s", _("no domain with matching uuid"));
         return -1;
     }
 
@@ -670,12 +670,12 @@ openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
     char value[1024];
 
     if (!vm) {
-        openvzError(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        openvzError(conn, VIR_ERR_INVALID_DOMAIN, "%s", _("no domain with matching uuid"));
         return -1;
     }
 
     if (openvzReadConfigParam(strtoI(vm->def->name), "ONBOOT", value, sizeof(value)) < 0) {
-        openvzError(conn, VIR_ERR_INTERNAL_ERROR, _("Could not read container config"));
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR, "%s", _("Could not read container config"));
         return -1;
     }
 
@@ -711,13 +711,13 @@ static int openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
 
     if (!vm) {
         openvzError(conn, VIR_ERR_INVALID_DOMAIN,
-                    _("no domain with matching uuid"));
+                    "%s", _("no domain with matching uuid"));
         return -1;
     }
 
     if (nvcpus <= 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("VCPUs should be >= 1"));
+                    "%s", _("VCPUs should be >= 1"));
         return -1;
     }
 

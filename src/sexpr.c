@@ -40,7 +40,7 @@ sexpr_new(void)
     struct sexpr *ret;
 
     if (VIR_ALLOC(ret) < 0) {
-        virSexprError(VIR_ERR_NO_MEMORY, _("failed to allocate a node"));
+        virSexprError(VIR_ERR_NO_MEMORY, "%s", _("failed to allocate a node"));
         return (NULL);
     }
     ret->kind = SEXPR_NIL;
@@ -344,7 +344,7 @@ _string2sexpr(const char *buffer, size_t * end)
             ret->u.value = strndup(start, ptr - start);
             if (ret->u.value == NULL) {
                 virSexprError(VIR_ERR_NO_MEMORY,
-                              _("failed to copy a string"));
+                              "%s", _("failed to copy a string"));
                 goto error;
             }
 
@@ -361,7 +361,7 @@ _string2sexpr(const char *buffer, size_t * end)
             ret->u.value = strndup(start, ptr - start);
             if (ret->u.value == NULL) {
                 virSexprError(VIR_ERR_NO_MEMORY,
-                              _("failed to copy a string"));
+                              "%s", _("failed to copy a string"));
                 goto error;
             }
         }

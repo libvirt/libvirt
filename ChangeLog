@@ -1,3 +1,73 @@
+Mon Oct 13 18:45:43 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	avoid many format string warnings
+
+	Building with --disable-nls exposed many new warnings like these:
+	virsh.c:4952: warning: format not a string literal and no format ...
+	util.c:163: warning: format not a string literal and no format arguments
+	All but one of the following changes add a "%s" argument before
+	the offending _(...) argument.
+
+	This was the only manual change:
+	* src/lxc_driver.c (lxcVersion): Use %s and strerror(errno)
+	rather than %m, to avoid a warning from gcc -Wformat-security.
+
+	Add "%s" before each warned about format-string-with-no-%-directive:
+	* src/domain_conf.c (virDomainHostdevSubsysUsbDefParseXML)
+	(virDomainDefParseString, virDomainDefParseFile):
+	* src/hash.c (virGetConnect, __virGetDomain, virReleaseDomain)
+	(__virGetNetwork, virReleaseNetwork, __virGetStoragePool)
+	(virReleaseStoragePool, __virGetStorageVol, virReleaseStorageVol):
+	* src/lxc_container.c (lxcContainerChild):
+	* src/lxc_driver.c (lxcDomainDefine, lxcDomainUndefine)
+	(lxcDomainGetInfo, lxcGetOSType, lxcDomainDumpXML)
+	(lxcSetupInterfaces, lxcDomainStart, lxcDomainCreateAndStart)
+	(lxcVersion, lxcGetSchedulerParameters):
+	* src/network_conf.c (virNetworkDefParseString)
+	(virNetworkDefParseFile):
+	* src/openvz_conf.c (openvzReadNetworkConf, openvzLoadDomains):
+	* src/openvz_driver.c (openvzDomainDefineCmd)
+	(openvzDomainGetInfo, openvzDomainDumpXML, openvzDomainShutdown)
+	(openvzDomainReboot, ADD_ARG_LIT, openvzDomainDefineXML)
+	(openvzDomainCreateXML, openvzDomainCreate, openvzDomainUndefine)
+	(openvzDomainSetAutostart, openvzDomainGetAutostart)
+	(openvzDomainSetVcpus):
+	* src/qemu_driver.c (qemudDomainBlockPeek, qemudDomainMemoryPeek):
+	* src/remote_internal.c (remoteDomainBlockPeek)
+	(remoteDomainMemoryPeek, remoteAuthPolkit):
+	* src/sexpr.c (sexpr_new, _string2sexpr):
+	* src/storage_backend_disk.c (virStorageBackendDiskMakeDataVol)
+	(virStorageBackendDiskCreateVol):
+	* src/storage_backend_fs.c
+	(virStorageBackendFileSystemNetFindPoolSources):
+	* src/storage_backend_logical.c (virStorageBackendLogicalFindLVs)
+	(virStorageBackendLogicalFindPoolSources):
+	* src/test.c (testOpenDefault, testOpenFromFile, testOpen)
+	(testGetDomainInfo, testDomainRestore)
+	(testNodeGetCellsFreeMemory):
+	* src/util.c (virExec):
+	* src/virsh.c (cmdAttachDevice, cmdDetachDevice)
+	(cmdAttachInterface, cmdDetachInterface, cmdAttachDisk)
+	(cmdDetachDisk, cmdEdit):
+	* src/xend_internal.c (do_connect, wr_sync, xend_op_ext)
+	(urlencode, xenDaemonDomainCreateXML)
+	(xenDaemonDomainLookupByName_ids, xenDaemonDomainLookupByID)
+	(xenDaemonParseSxprOS, xend_parse_sexp_desc_char)
+	(xenDaemonParseSxprChar, xenDaemonParseSxprDisks)
+	(xenDaemonParseSxpr, sexpr_to_xend_topology, sexpr_to_domain)
+	(xenDaemonDomainFetch, xenDaemonDomainGetAutostart)
+	(xenDaemonDomainSetAutostart, xenDaemonDomainMigratePerform)
+	(xenDaemonDomainDefineXML, xenDaemonGetSchedulerType)
+	(xenDaemonGetSchedulerParameters)
+	(xenDaemonSetSchedulerParameters, xenDaemonDomainBlockPeek)
+	(xenDaemonFormatSxprChr, virDomainXMLDevID):
+	* src/xm_internal.c (xenXMConfigCacheRefresh, xenXMDomainPinVcpu)
+	(xenXMDomainCreate, xenXMDomainDefineXML)
+	(xenXMDomainAttachDevice, xenXMDomainDetachDevice):
+	* src/xml.c (virXPathString, virXPathNumber, virXPathLong)
+	(virXPathULong, virXPathBoolean, virXPathNode, virXPathNodeSet):
+	* src/xs_internal.c (xenStoreOpen):
+
 Mon Oct 13 16:24:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Documentation for NIC model selection.

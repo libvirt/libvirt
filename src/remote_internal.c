@@ -2364,7 +2364,7 @@ remoteDomainBlockPeek (virDomainPtr domain,
 
     if (ret.buffer.buffer_len != size) {
             errorf (domain->conn, VIR_ERR_RPC,
-                    _("returned buffer is not same size as requested"));
+                    "%s", _("returned buffer is not same size as requested"));
             free (ret.buffer.buffer_val);
             return -1;
     }
@@ -2408,7 +2408,7 @@ remoteDomainMemoryPeek (virDomainPtr domain,
 
     if (ret.buffer.buffer_len != size) {
             errorf (domain->conn, VIR_ERR_RPC,
-                    _("returned buffer is not same size as requested"));
+                    "%s", _("returned buffer is not same size as requested"));
             free (ret.buffer.buffer_val);
             return -1;
     }
@@ -4267,7 +4267,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
             if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0) {
                 __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                                  VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                                 _("Failed to collect auth credentials"));
+                                 "%s", _("Failed to collect auth credentials"));
                 return -1;
             }
         } else {

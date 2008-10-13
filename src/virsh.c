@@ -4660,7 +4660,7 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
         virDomainFree(dom);
         return FALSE;
     } else {
-        vshPrint(ctl, _("Device attached successfully\n"));
+        vshPrint(ctl, "%s", _("Device attached successfully\n"));
     }
 
     virDomainFree(dom);
@@ -4719,7 +4719,7 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
         virDomainFree(dom);
         return FALSE;
     } else {
-        vshPrint(ctl, _("Device detached successfully\n"));
+        vshPrint(ctl, "%s", _("Device detached successfully\n"));
     }
 
     virDomainFree(dom);
@@ -4831,7 +4831,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     if (virDomainAttachDevice(dom, buf)) {
         goto cleanup;
     } else {
-        vshPrint(ctl, _("Interface attached successfully\n"));
+        vshPrint(ctl, "%s", _("Interface attached successfully\n"));
     }
 
     ret = TRUE;
@@ -4949,7 +4949,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     if (ret != 0)
         ret = FALSE;
     else {
-        vshPrint(ctl, _("Interface detached successfully\n"));
+        vshPrint(ctl, "%s", _("Interface detached successfully\n"));
         ret = TRUE;
     }
 
@@ -5118,7 +5118,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     if (virDomainAttachDevice(dom, buf))
         goto cleanup;
     else
-        vshPrint(ctl, _("Disk attached successfully\n"));
+        vshPrint(ctl, "%s", _("Disk attached successfully\n"));
 
     ret = TRUE;
 
@@ -5227,7 +5227,7 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     if (ret != 0)
         ret = FALSE;
     else {
-        vshPrint(ctl, _("Disk detached successfully\n"));
+        vshPrint(ctl, "%s", _("Disk detached successfully\n"));
         ret = TRUE;
     }
 
@@ -5433,7 +5433,7 @@ cmdEdit (vshControl *ctl, const vshCmd *cmd)
 
     if (STRNEQ (doc, doc_reread)) {
         vshError (ctl, FALSE,
-                  _("ERROR: the XML configuration was changed by another user"));
+                  "%s", _("ERROR: the XML configuration was changed by another user"));
         goto cleanup;
     }
 

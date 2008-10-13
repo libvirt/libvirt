@@ -667,7 +667,7 @@ virGetConnect(void) {
     virConnectPtr ret;
 
     if (VIR_ALLOC(ret) < 0) {
-        virHashError(NULL, VIR_ERR_NO_MEMORY, _("allocating connection"));
+        virHashError(NULL, VIR_ERR_NO_MEMORY, "%s", _("allocating connection"));
         goto failed;
     }
     ret->magic = VIR_CONNECT_MAGIC;
@@ -801,12 +801,12 @@ __virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) 
     /* TODO check the UUID */
     if (ret == NULL) {
         if (VIR_ALLOC(ret) < 0) {
-            virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
+            virHashError(conn, VIR_ERR_NO_MEMORY, "%s", _("allocating domain"));
             goto error;
         }
         ret->name = strdup(name);
         if (ret->name == NULL) {
-            virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
+            virHashError(conn, VIR_ERR_NO_MEMORY, "%s", _("allocating domain"));
             goto error;
         }
         ret->magic = VIR_DOMAIN_MAGIC;
@@ -817,7 +817,7 @@ __virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) 
 
         if (virHashAddEntry(conn->domains, name, ret) < 0) {
             virHashError(conn, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add domain to connection hash table"));
+                         "%s", _("failed to add domain to connection hash table"));
             goto error;
         }
         conn->refs++;
@@ -858,7 +858,7 @@ virReleaseDomain(virDomainPtr domain) {
     /* TODO search by UUID first as they are better differenciators */
     if (virHashRemoveEntry(conn->domains, domain->name, NULL) < 0)
         virHashError(conn, VIR_ERR_INTERNAL_ERROR,
-                     _("domain missing from connection hash table"));
+                     "%s", _("domain missing from connection hash table"));
 
     if (conn->err.dom == domain)
         conn->err.dom = NULL;
@@ -941,12 +941,12 @@ __virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid)
     /* TODO check the UUID */
     if (ret == NULL) {
         if (VIR_ALLOC(ret) < 0) {
-            virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating network"));
+            virHashError(conn, VIR_ERR_NO_MEMORY, "%s", _("allocating network"));
             goto error;
         }
         ret->name = strdup(name);
         if (ret->name == NULL) {
-            virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating network"));
+            virHashError(conn, VIR_ERR_NO_MEMORY, "%s", _("allocating network"));
             goto error;
         }
         ret->magic = VIR_NETWORK_MAGIC;
@@ -956,7 +956,7 @@ __virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid)
 
         if (virHashAddEntry(conn->networks, name, ret) < 0) {
             virHashError(conn, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add network to connection hash table"));
+                         "%s", _("failed to add network to connection hash table"));
             goto error;
         }
         conn->refs++;
@@ -994,7 +994,7 @@ virReleaseNetwork(virNetworkPtr network) {
     /* TODO search by UUID first as they are better differenciators */
     if (virHashRemoveEntry(conn->networks, network->name, NULL) < 0)
         virHashError(conn, VIR_ERR_INTERNAL_ERROR,
-                     _("network missing from connection hash table"));
+                     "%s", _("network missing from connection hash table"));
 
     if (conn->err.net == network)
         conn->err.net = NULL;
@@ -1078,12 +1078,12 @@ __virGetStoragePool(virConnectPtr conn, const char *name, const unsigned char *u
     /* TODO check the UUID */
     if (ret == NULL) {
         if (VIR_ALLOC(ret) < 0) {
-            virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating storage pool"));
+            virHashError(conn, VIR_ERR_NO_MEMORY, "%s", _("allocating storage pool"));
             goto error;
         }
         ret->name = strdup(name);
         if (ret->name == NULL) {
-            virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating storage pool"));
+            virHashError(conn, VIR_ERR_NO_MEMORY, "%s", _("allocating storage pool"));
             goto error;
         }
         ret->magic = VIR_STORAGE_POOL_MAGIC;
@@ -1093,7 +1093,7 @@ __virGetStoragePool(virConnectPtr conn, const char *name, const unsigned char *u
 
         if (virHashAddEntry(conn->storagePools, name, ret) < 0) {
             virHashError(conn, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add storage pool to connection hash table"));
+                         "%s", _("failed to add storage pool to connection hash table"));
             goto error;
         }
         conn->refs++;
@@ -1132,7 +1132,7 @@ virReleaseStoragePool(virStoragePoolPtr pool) {
     /* TODO search by UUID first as they are better differenciators */
     if (virHashRemoveEntry(conn->storagePools, pool->name, NULL) < 0)
         virHashError(conn, VIR_ERR_INTERNAL_ERROR,
-                     _("pool missing from connection hash table"));
+                     "%s", _("pool missing from connection hash table"));
 
     pool->magic = -1;
     VIR_FREE(pool->name);
@@ -1209,17 +1209,17 @@ __virGetStorageVol(virConnectPtr conn, const char *pool, const char *name, const
     ret = (virStorageVolPtr) virHashLookup(conn->storageVols, key);
     if (ret == NULL) {
         if (VIR_ALLOC(ret) < 0) {
-            virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating storage vol"));
+            virHashError(conn, VIR_ERR_NO_MEMORY, "%s", _("allocating storage vol"));
             goto error;
         }
         ret->pool = strdup(pool);
         if (ret->pool == NULL) {
-            virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating storage vol"));
+            virHashError(conn, VIR_ERR_NO_MEMORY, "%s", _("allocating storage vol"));
             goto error;
         }
         ret->name = strdup(name);
         if (ret->name == NULL) {
-            virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating storage vol"));
+            virHashError(conn, VIR_ERR_NO_MEMORY, "%s", _("allocating storage vol"));
             goto error;
         }
         strncpy(ret->key, key, sizeof(ret->key)-1);
@@ -1229,7 +1229,7 @@ __virGetStorageVol(virConnectPtr conn, const char *pool, const char *name, const
 
         if (virHashAddEntry(conn->storageVols, key, ret) < 0) {
             virHashError(conn, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add storage vol to connection hash table"));
+                         "%s", _("failed to add storage vol to connection hash table"));
             goto error;
         }
         conn->refs++;
@@ -1269,7 +1269,7 @@ virReleaseStorageVol(virStorageVolPtr vol) {
     /* TODO search by UUID first as they are better differenciators */
     if (virHashRemoveEntry(conn->storageVols, vol->key, NULL) < 0)
         virHashError(conn, VIR_ERR_INTERNAL_ERROR,
-                     _("vol missing from connection hash table"));
+                     "%s", _("vol missing from connection hash table"));
 
     vol->magic = -1;
     VIR_FREE(vol->name);

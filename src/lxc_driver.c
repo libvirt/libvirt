@@ -230,7 +230,7 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
 
     if ((def->nets != NULL) && !(driver->have_netns)) {
         lxcError(conn, NULL, VIR_ERR_NO_SUPPORT,
-                 _("System lacks NETNS support"));
+                 "%s", _("System lacks NETNS support"));
         virDomainDefFree(def);
         return NULL;
     }
@@ -263,13 +263,13 @@ static int lxcDomainUndefine(virDomainPtr dom)
 
     if (!vm) {
         lxcError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
-                 _("no domain with matching uuid"));
+                 "%s", _("no domain with matching uuid"));
         return -1;
     }
 
     if (virDomainIsActive(vm)) {
         lxcError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
-                 _("cannot delete active domain"));
+                 "%s", _("cannot delete active domain"));
         return -1;
     }
 
@@ -298,7 +298,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
 
     if (!vm) {
         lxcError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
-                 _("no domain with matching uuid"));
+                 "%s", _("no domain with matching uuid"));
         return -1;
     }
 
@@ -324,7 +324,7 @@ static char *lxcGetOSType(virDomainPtr dom)
 
     if (!vm) {
         lxcError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
-                 _("no domain with matching uuid"));
+                 "%s", _("no domain with matching uuid"));
         return NULL;
     }
 
@@ -339,7 +339,7 @@ static char *lxcDomainDumpXML(virDomainPtr dom,
 
     if (!vm) {
         lxcError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
-                 _("no domain with matching uuid"));
+                 "%s", _("no domain with matching uuid"));
         return NULL;
     }
 
@@ -458,7 +458,7 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         DEBUG("bridge: %s", bridge);
         if (NULL == bridge) {
             lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("failed to get bridge for interface"));
+                     "%s", _("failed to get bridge for interface"));
             goto error_exit;
         }
 
@@ -482,7 +482,7 @@ static int lxcSetupInterfaces(virConnectPtr conn,
 
         if (NULL == def->nets[i]->ifname) {
             lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("failed to allocate veth names"));
+                     "%s", _("failed to allocate veth names"));
             goto error_exit;
         }
 
@@ -861,7 +861,7 @@ static int lxcDomainStart(virDomainPtr dom)
 
     if ((vm->def->nets != NULL) && !(driver->have_netns)) {
         lxcError(conn, NULL, VIR_ERR_NO_SUPPORT,
-                 _("System lacks NETNS support"));
+                 "%s", _("System lacks NETNS support"));
         goto cleanup;
     }
 
@@ -896,7 +896,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
     if ((def->nets != NULL) && !(driver->have_netns)) {
         virDomainDefFree(def);
         lxcError(conn, NULL, VIR_ERR_NO_SUPPORT,
-                 _("System lacks NETNS support"));
+                 "%s", _("System lacks NETNS support"));
         goto return_point;
     }
 
@@ -1113,7 +1113,7 @@ static int lxcVersion(virConnectPtr conn, unsigned long *version)
 
     if (uname(&ver) != 0) {
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("uname(): %m"));
+                 _("uname(): %s"), strerror(errno));
         return -1;
     }
 
@@ -1193,7 +1193,7 @@ static int lxcGetSchedulerParameters(virDomainPtr _domain,
 
     if ((*nparams) != 1) {
         lxcError(NULL, _domain, VIR_ERR_INVALID_ARG,
-                 _("Invalid parameter count"));
+                 "%s", _("Invalid parameter count"));
         return -1;
     }
 

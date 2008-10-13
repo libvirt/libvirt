@@ -547,7 +547,7 @@ static int lxcContainerChild( void *data )
 
     if (NULL == vmDef) {
         lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("lxcChild() passed invalid vm definition"));
+                 "%s", _("lxcChild() passed invalid vm definition"));
         return -1;
     }
 

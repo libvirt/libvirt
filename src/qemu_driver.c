@@ -2941,13 +2941,13 @@ qemudDomainBlockPeek (virDomainPtr dom,
 
     if (!vm) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                          _("no domain with matching uuid"));
+                          "%s", _("no domain with matching uuid"));
         return -1;
     }
 
     if (!path || path[0] == '\0') {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
-                         _("NULL or empty path"));
+                         "%s", _("NULL or empty path"));
         return -1;
     }
 
@@ -2958,7 +2958,7 @@ qemudDomainBlockPeek (virDomainPtr dom,
             goto found;
     }
     qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
-                      _("invalid path"));
+                      "%s", _("invalid path"));
     return -1;
 
 found:
@@ -3001,7 +3001,7 @@ qemudDomainMemoryPeek (virDomainPtr dom,
 
     if (flags != VIR_MEMORY_VIRTUAL) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
-                          _("QEMU driver only supports virtual memory addrs"));
+                          "%s", _("QEMU driver only supports virtual memory addrs"));
         return -1;
     }
 

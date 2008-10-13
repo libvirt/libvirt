@@ -298,7 +298,7 @@ xenStoreOpen(virConnectPtr conn,
          */
         if (getuid() == 0) {
             virXenStoreError(NULL, VIR_ERR_NO_XEN,
-                                 _("failed to connect to Xen Store"));
+                                 "%s", _("failed to connect to Xen Store"));
         }
         return (-1);
     }

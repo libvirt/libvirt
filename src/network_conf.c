@@ -452,7 +452,7 @@ virNetworkDefPtr virNetworkDefParseString(virConnectPtr conn,
     if (!xml) {
         if (conn && conn->err.code == VIR_ERR_NONE)
               virNetworkReportError(conn, VIR_ERR_XML_ERROR,
-                                    _("failed to parse xml document"));
+                                    "%s", _("failed to parse xml document"));
         goto cleanup;
     }
 
@@ -492,7 +492,7 @@ virNetworkDefPtr virNetworkDefParseFile(virConnectPtr conn,
     if (!xml) {
         if (conn && conn->err.code == VIR_ERR_NONE)
               virNetworkReportError(conn, VIR_ERR_XML_ERROR,
-                                    _("failed to parse xml document"));
+                                    "%s", _("failed to parse xml document"));
         goto cleanup;
     }
 

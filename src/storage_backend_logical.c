@@ -233,7 +233,7 @@ virStorageBackendLogicalFindLVs(virConnectPtr conn,
                                       vol,
                                       &exitstatus) < 0) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("lvs command failed"));
+                              "%s", _("lvs command failed"));
                               return -1;
     }
 
@@ -321,7 +321,7 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn,
 
     retval = virStringListJoin(descs, SOURCES_START_TAG, SOURCES_END_TAG, "\n");
     if (retval == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("retval"));
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("retval"));
         goto cleanup;
     }
 
