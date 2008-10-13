@@ -493,7 +493,6 @@ void virDomainRemoveInactive(virDomainObjListPtr doms,
 
 }
 
-#ifndef PROXY
 int virDomainDiskCompare(virDomainDiskDefPtr a,
                          virDomainDiskDefPtr b) {
     if (a->bus == b->bus)
@@ -503,6 +502,7 @@ int virDomainDiskCompare(virDomainDiskDefPtr a,
 }
 
 
+#ifndef PROXY
 /* Parse the XML definition for a disk
  * @param node XML nodeset to parse for disk definition
  */
@@ -1695,6 +1695,7 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
     VIR_FREE(dev);
     return NULL;
 }
+#endif
 
 int virDomainDiskQSort(const void *a, const void *b)
 {
@@ -1704,7 +1705,7 @@ int virDomainDiskQSort(const void *a, const void *b)
     return virDomainDiskCompare(*da, *db);
 }
 
-
+#ifndef PROXY
 static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                                             virCapsPtr caps,
                                             xmlXPathContextPtr ctxt)
