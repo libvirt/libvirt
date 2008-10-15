@@ -300,9 +300,9 @@ virInitialize(void)
     if (networkRegister() == -1) return -1;
 #endif
     if (storageRegister() == -1) return -1;
+#endif
 #ifdef WITH_REMOTE
     if (remoteRegister () == -1) return -1;
-#endif
 #endif
 
     return(0);
@@ -542,6 +542,9 @@ virRegisterDriver(virDriverPtr driver)
              "virRegisterDriver: tried to register an internal Xen driver");
         return -1;
     }
+
+    DEBUG ("registering %s as driver %d",
+           driver->name, virDriverTabCount);
 
     virDriverTab[virDriverTabCount] = driver;
     return virDriverTabCount++;
