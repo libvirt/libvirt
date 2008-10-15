@@ -1,3 +1,8 @@
+Wed Oct 15 19:38:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	* configure.in, src/Makefile.am, src/virsh_win_icon.rc:
+	Add a Windows icon resource.
+
 Wed Oct 15 11:28:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/libvirt.c: Register the remote driver even when we are

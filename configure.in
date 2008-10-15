@@ -34,6 +34,8 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_CPP
 
+AC_OBJEXT
+
 dnl gl_INIT uses m4_foreach_w, yet that is not defined in autoconf-2.59.
 dnl In order to accommodate developers with such old tools, here's a
 dnl replacement definition.
@@ -1039,6 +1041,10 @@ AC_SUBST([CYGWIN_EXTRA_LDFLAGS])
 AC_SUBST([CYGWIN_EXTRA_LIBADD])
 AC_SUBST([CYGWIN_EXTRA_PYTHON_LIBADD])
 AC_SUBST([MINGW_EXTRA_LDFLAGS])
+
+dnl Look for windres to build a Windows icon resource.
+AC_CHECK_TOOL([WINDRES], [windres], [no])
+AM_CONDITIONAL([WITH_WIN_ICON], [test "$WINDRES" != "no"])
 
 # Set LV_LIBTOOL_OBJDIR to "." or $lt_cv_objdir, depending on whether
 # we're building shared libraries.  This is the name of the directory

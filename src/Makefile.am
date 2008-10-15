@@ -283,6 +283,33 @@ virsh-pool-edit.c: virsh.c Makefile.am
 	rm -f $@
 	mv $@-tmp $@
 
+if WITH_WIN_ICON
+virsh_LDADD += virsh_win_icon.$(OBJEXT)
+virsh_DEPENDENCIES += virsh_win_icon.$(OBJEXT)
+
+# Before you edit virsh_win_icon.rc, please note the following
+# limitations of the resource file format:
+#
+# (1) '..' is not permitted in the icon filename field.
+# (2) '-' is not permitted in the icon filename field.
+# (3) Comments are not permitted in the file.
+#
+# Windows appears to choose the first <= 32x32 icon it finds
+# in the resource file.  Therefore you should list the available
+# icons from largest to smallest, and make sure that the 32x32
+# icon is the most legible.
+#
+# Windows .ICO is a special MS-only format.  GIMP and other
+# tools can write it.  However there are several variations,
+# and Windows seems to do its own colour quantization.  More
+# information is needed in this area.
+
+virsh_win_icon.$(OBJEXT): virsh_win_icon.rc
+	$(WINDRES) \
+	  --input-format rc --input $< \
+	  --output-format coff --output $@
+endif
+
 libexec_PROGRAMS =
 
 if WITH_STORAGE_DISK

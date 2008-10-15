@@ -1,0 +1,4 @@
+xlarge  ICON    libvirt_win_icon_64x64.ico
+large   ICON    libvirt_win_icon_48x48.ico
+medium  ICON    libvirt_win_icon_32x32.ico
+small   ICON    libvirt_win_icon_16x16.ico
