@@ -1,3 +1,8 @@
+Thu Oct 16 15:41:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+	* Compiling with -Werror showed a possible use before initialization
+	in src/qemu_driver.c.  Make sure to initialize the origdisk ptr to
+	NULL.
+
 Thu Oct 16 15:04:36 +0200 Jim Meyering <meyering@redhat.com>
 
 	build: exempt *.ico files from the trailing blank check

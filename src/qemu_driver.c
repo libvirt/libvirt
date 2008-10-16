@@ -2401,6 +2401,7 @@ static int qemudDomainChangeEjectableMedia(virDomainPtr dom,
         return -1;
     }
 
+    origdisk = NULL;
     newdisk = dev->data.disk;
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (vm->def->disks[i]->bus == newdisk->bus &&
