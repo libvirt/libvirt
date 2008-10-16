@@ -275,7 +275,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
 
     if (options->formatFromString) {
         char *format = virXPathString(conn, "string(/pool/source/format/@type)", ctxt);
-        if ((ret->source.format = (options->formatFromString)(conn, format)) < 0) {
+        if ((ret->source.format = (options->formatFromString)(format)) < 0) {
             VIR_FREE(format);
             goto cleanup;
         }
@@ -520,7 +520,7 @@ virStoragePoolDefFormat(virConnectPtr conn,
         virBufferVSprintf(&buf,"    <name>%s</name>\n", def->source.name);
 
     if (options->formatToString) {
-        const char *format = (options->formatToString)(conn, def->source.format);
+        const char *format = (options->formatToString)(def->source.format);
         if (!format)
             goto cleanup;
         virBufferVSprintf(&buf,"    <format type='%s'/>\n", format);
@@ -750,7 +750,7 @@ virStorageVolDefParseDoc(virConnectPtr conn,
     ret->target.path = virXPathString(conn, "string(/volume/target/path)", ctxt);
     if (options->formatFromString) {
         char *format = virXPathString(conn, "string(/volume/target/format/@type)", ctxt);
-        if ((ret->target.format = (options->formatFromString)(conn, format)) < 0) {
+        if ((ret->target.format = (options->formatFromString)(format)) < 0) {
             VIR_FREE(format);
             goto cleanup;
         }
@@ -884,8 +884,7 @@ virStorageVolDefFormat(virConnectPtr conn,
         virBufferVSprintf(&buf,"    <path>%s</path>\n", def->target.path);
 
     if (options->formatToString) {
-        const char *format = (options->formatToString)(conn,
-                                                       def->target.format);
+        const char *format = (options->formatToString)(def->target.format);
         if (!format)
             goto cleanup;
         virBufferVSprintf(&buf,"    <format type='%s'/>\n", format);

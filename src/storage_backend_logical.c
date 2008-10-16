@@ -40,36 +40,14 @@
 #define PV_BLANK_SECTOR_SIZE 512
 
 enum {
-    VIR_STORAGE_POOL_LOGICAL_LVM2 = 0,
+    VIR_STORAGE_POOL_LOGICAL_UNKNOWN = 0,
+    VIR_STORAGE_POOL_LOGICAL_LVM2 = 1,
+    VIR_STORAGE_POOL_LOGICAL_LAST,
 };
-
-
-static int
-virStorageBackendLogicalPoolFormatFromString(virConnectPtr conn,
-                                             const char *format) {
-    if (format == NULL)
-        return VIR_STORAGE_POOL_LOGICAL_LVM2;
-
-    if (STREQ(format, "lvm2"))
-        return VIR_STORAGE_POOL_LOGICAL_LVM2;
-
-    virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("unsupported pool format %s"), format);
-    return -1;
-}
-
-static const char *
-virStorageBackendLogicalPoolFormatToString(virConnectPtr conn,
-                                           int format) {
-    switch (format) {
-    case VIR_STORAGE_POOL_LOGICAL_LVM2:
-        return "lvm2";
-    }
-
-    virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("unsupported pool format %d"), format);
-    return NULL;
-}
+VIR_ENUM_DECL(virStorageBackendLogicalPool);
+VIR_ENUM_IMPL(virStorageBackendLogicalPool,
+              VIR_STORAGE_POOL_LOGICAL_LAST,
+              "unknown", "lvm2");
 
 static int
 virStorageBackendLogicalSetActive(virConnectPtr conn,
@@ -638,8 +616,8 @@ virStorageBackend virStorageBackendLogical = {
     .poolOptions = {
         .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_NAME |
                   VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE),
-        .formatFromString = virStorageBackendLogicalPoolFormatFromString,
-        .formatToString = virStorageBackendLogicalPoolFormatToString,
+        .formatFromString = virStorageBackendLogicalPoolTypeFromString,
+        .formatToString = virStorageBackendLogicalPoolTypeToString,
     },
 
     .volType = VIR_STORAGE_VOL_BLOCK,

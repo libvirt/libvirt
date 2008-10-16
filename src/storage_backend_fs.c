@@ -60,17 +60,28 @@ enum {
     VIR_STORAGE_POOL_FS_VFAT,
     VIR_STORAGE_POOL_FS_HFSPLUS,
     VIR_STORAGE_POOL_FS_XFS,
+    VIR_STORAGE_POOL_FS_LAST,
 };
+VIR_ENUM_DECL(virStorageBackendFileSystemPool);
+VIR_ENUM_IMPL(virStorageBackendFileSystemPool,
+              VIR_STORAGE_POOL_FS_LAST,
+              "auto", "ext2", "ext3",
+              "ext4", "ufs", "iso9660", "udf",
+              "gfs", "gfs2", "vfat", "hfs+", "xfs");
 
 enum {
     VIR_STORAGE_POOL_NETFS_AUTO = 0,
     VIR_STORAGE_POOL_NETFS_NFS,
+    VIR_STORAGE_POOL_NETFS_LAST,
 };
-
+VIR_ENUM_DECL(virStorageBackendFileSystemNetPool);
+VIR_ENUM_IMPL(virStorageBackendFileSystemNetPool,
+              VIR_STORAGE_POOL_NETFS_LAST,
+              "auto", "nfs");
 
 
 enum {
-    VIR_STORAGE_VOL_RAW,
+    VIR_STORAGE_VOL_RAW = 0,
     VIR_STORAGE_VOL_DIR,
     VIR_STORAGE_VOL_BOCHS,
     VIR_STORAGE_VOL_CLOOP,
@@ -81,7 +92,14 @@ enum {
     VIR_STORAGE_VOL_QCOW2,
     VIR_STORAGE_VOL_VMDK,
     VIR_STORAGE_VOL_VPC,
+    VIR_STORAGE_VOL_LAST,
 };
+VIR_ENUM_DECL(virStorageBackendFileSystemVol);
+VIR_ENUM_IMPL(virStorageBackendFileSystemVol,
+              VIR_STORAGE_VOL_LAST,
+              "raw", "dir", "bochs",
+              "cloop", "cow", "dmg", "iso",
+              "qcow", "qcow2", "vmdk", "vpc");
 
 /* Either 'magic' or 'extension' *must* be provided */
 struct FileTypeInfo {
@@ -157,178 +175,6 @@ const struct FileTypeInfo const fileTypeInfo[] = {
 };
 
 
-
-
-static int
-virStorageBackendFileSystemVolFormatFromString(virConnectPtr conn,
-                                               const char *format) {
-    if (format == NULL)
-        return VIR_STORAGE_VOL_RAW;
-
-    if (STREQ(format, "raw"))
-        return VIR_STORAGE_VOL_RAW;
-    if (STREQ(format, "dir"))
-        return VIR_STORAGE_VOL_DIR;
-    if (STREQ(format, "bochs"))
-        return VIR_STORAGE_VOL_BOCHS;
-    if (STREQ(format, "cow"))
-        return VIR_STORAGE_VOL_COW;
-    if (STREQ(format, "cloop"))
-        return VIR_STORAGE_VOL_CLOOP;
-    if (STREQ(format, "dmg"))
-        return VIR_STORAGE_VOL_DMG;
-    if (STREQ(format, "iso"))
-        return VIR_STORAGE_VOL_ISO;
-    if (STREQ(format, "qcow"))
-        return VIR_STORAGE_VOL_QCOW;
-    if (STREQ(format, "qcow2"))
-        return VIR_STORAGE_VOL_QCOW2;
-    if (STREQ(format, "vmdk"))
-        return VIR_STORAGE_VOL_VMDK;
-    if (STREQ(format, "vpc"))
-        return VIR_STORAGE_VOL_VPC;
-
-    virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("unsupported volume format %s"), format);
-    return -1;
-}
-
-static const char *
-virStorageBackendFileSystemVolFormatToString(virConnectPtr conn,
-                                             int format) {
-    switch (format) {
-    case VIR_STORAGE_VOL_RAW:
-        return "raw";
-    case VIR_STORAGE_VOL_DIR:
-        return "dir";
-    case VIR_STORAGE_VOL_BOCHS:
-        return "bochs";
-    case VIR_STORAGE_VOL_CLOOP:
-        return "cloop";
-    case VIR_STORAGE_VOL_COW:
-        return "cow";
-    case VIR_STORAGE_VOL_DMG:
-        return "dmg";
-    case VIR_STORAGE_VOL_ISO:
-        return "iso";
-    case VIR_STORAGE_VOL_QCOW:
-        return "qcow";
-    case VIR_STORAGE_VOL_QCOW2:
-        return "qcow2";
-    case VIR_STORAGE_VOL_VMDK:
-        return "vmdk";
-    case VIR_STORAGE_VOL_VPC:
-        return "vpc";
-    }
-
-    virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("unsupported volume format %d"), format);
-    return NULL;
-}
-
-
-static int
-virStorageBackendFileSystemPoolFormatFromString(virConnectPtr conn,
-                                                const char *format) {
-    if (format == NULL)
-        return VIR_STORAGE_POOL_FS_AUTO;
-
-    if (STREQ(format, "auto"))
-        return VIR_STORAGE_POOL_FS_AUTO;
-    if (STREQ(format, "ext2"))
-        return VIR_STORAGE_POOL_FS_EXT2;
-    if (STREQ(format, "ext3"))
-        return VIR_STORAGE_POOL_FS_EXT3;
-    if (STREQ(format, "ext4"))
-        return VIR_STORAGE_POOL_FS_EXT4;
-    if (STREQ(format, "ufs"))
-        return VIR_STORAGE_POOL_FS_UFS;
-    if (STREQ(format, "iso9660"))
-        return VIR_STORAGE_POOL_FS_ISO;
-    if (STREQ(format, "udf"))
-        return VIR_STORAGE_POOL_FS_UDF;
-    if (STREQ(format, "gfs"))
-        return VIR_STORAGE_POOL_FS_GFS;
-    if (STREQ(format, "gfs2"))
-        return VIR_STORAGE_POOL_FS_GFS2;
-    if (STREQ(format, "vfat"))
-        return VIR_STORAGE_POOL_FS_VFAT;
-    if (STREQ(format, "hfs+"))
-        return VIR_STORAGE_POOL_FS_HFSPLUS;
-    if (STREQ(format, "xfs"))
-        return VIR_STORAGE_POOL_FS_XFS;
-
-    virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("unsupported volume format %s"), format);
-    return -1;
-}
-
-static const char *
-virStorageBackendFileSystemPoolFormatToString(virConnectPtr conn,
-                                              int format) {
-    switch (format) {
-    case VIR_STORAGE_POOL_FS_AUTO:
-        return "auto";
-    case VIR_STORAGE_POOL_FS_EXT2:
-        return "ext2";
-    case VIR_STORAGE_POOL_FS_EXT3:
-        return "ext3";
-    case VIR_STORAGE_POOL_FS_EXT4:
-        return "ext4";
-    case VIR_STORAGE_POOL_FS_UFS:
-        return "ufs";
-    case VIR_STORAGE_POOL_FS_ISO:
-        return "iso";
-    case VIR_STORAGE_POOL_FS_UDF:
-        return "udf";
-    case VIR_STORAGE_POOL_FS_GFS:
-        return "gfs";
-    case VIR_STORAGE_POOL_FS_GFS2:
-        return "gfs2";
-    case VIR_STORAGE_POOL_FS_VFAT:
-        return "vfat";
-    case VIR_STORAGE_POOL_FS_HFSPLUS:
-        return "hfs+";
-    case VIR_STORAGE_POOL_FS_XFS:
-        return "xfs";
-    }
-
-    virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("unsupported volume format %d"), format);
-    return NULL;
-}
-
-
-static int
-virStorageBackendFileSystemNetPoolFormatFromString(virConnectPtr conn,
-                                                   const char *format) {
-    if (format == NULL)
-        return VIR_STORAGE_POOL_NETFS_AUTO;
-
-    if (STREQ(format, "auto"))
-        return VIR_STORAGE_POOL_NETFS_AUTO;
-    if (STREQ(format, "nfs"))
-        return VIR_STORAGE_POOL_NETFS_NFS;
-
-    virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("unsupported volume format %s"), format);
-    return -1;
-}
-
-static const char *
-virStorageBackendFileSystemNetPoolFormatToString(virConnectPtr conn,
-                                                 int format) {
-    switch (format) {
-    case VIR_STORAGE_POOL_NETFS_AUTO:
-        return "auto";
-    case VIR_STORAGE_POOL_NETFS_NFS:
-        return "nfs";
-    }
-
-    virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("unsupported volume format %d"), format);
-    return NULL;
-}
 
 
 /**
@@ -635,10 +481,8 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
         MOUNT,
         "-t",
         pool->def->type == VIR_STORAGE_POOL_FS ?
-        virStorageBackendFileSystemPoolFormatToString(conn,
-                                                      pool->def->source.format) :
-        virStorageBackendFileSystemNetPoolFormatToString(conn,
-                                                         pool->def->source.format),
+        virStorageBackendFileSystemPoolTypeToString(pool->def->source.format) :
+        virStorageBackendFileSystemNetPoolTypeToString(pool->def->source.format),
         NULL, /* Fill in shortly - careful not to add extra fields
                  before this */
         pool->def->target.path,
@@ -1036,8 +880,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         char size[100];
         const char *imgargv[7];
 
-        if ((type = virStorageBackendFileSystemVolFormatToString(conn,
-                                                                 vol->target.format)) == NULL) {
+        if ((type = virStorageBackendFileSystemVolTypeToString(vol->target.format)) == NULL) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                   _("unknown storage vol type %d"),
                                   vol->target.format);
@@ -1194,8 +1037,8 @@ virStorageBackend virStorageBackendDirectory = {
     .deleteVol = virStorageBackendFileSystemVolDelete,
 
     .volOptions = {
-        .formatFromString = virStorageBackendFileSystemVolFormatFromString,
-        .formatToString = virStorageBackendFileSystemVolFormatToString,
+        .formatFromString = virStorageBackendFileSystemVolTypeFromString,
+        .formatToString = virStorageBackendFileSystemVolTypeToString,
     },
     .volType = VIR_STORAGE_VOL_FILE,
 };
@@ -1215,12 +1058,12 @@ virStorageBackend virStorageBackendFileSystem = {
 
     .poolOptions = {
         .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE),
-        .formatFromString = virStorageBackendFileSystemPoolFormatFromString,
-        .formatToString = virStorageBackendFileSystemPoolFormatToString,
+        .formatFromString = virStorageBackendFileSystemPoolTypeFromString,
+        .formatToString = virStorageBackendFileSystemPoolTypeToString,
     },
     .volOptions = {
-        .formatFromString = virStorageBackendFileSystemVolFormatFromString,
-        .formatToString = virStorageBackendFileSystemVolFormatToString,
+        .formatFromString = virStorageBackendFileSystemVolTypeFromString,
+        .formatToString = virStorageBackendFileSystemVolTypeToString,
     },
     .volType = VIR_STORAGE_VOL_FILE,
 };
@@ -1240,12 +1083,12 @@ virStorageBackend virStorageBackendNetFileSystem = {
     .poolOptions = {
         .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_HOST |
                   VIR_STORAGE_BACKEND_POOL_SOURCE_DIR),
-        .formatFromString = virStorageBackendFileSystemNetPoolFormatFromString,
-        .formatToString = virStorageBackendFileSystemNetPoolFormatToString,
+        .formatFromString = virStorageBackendFileSystemNetPoolTypeFromString,
+        .formatToString = virStorageBackendFileSystemNetPoolTypeToString,
     },
     .volOptions = {
-        .formatFromString = virStorageBackendFileSystemVolFormatFromString,
-        .formatToString = virStorageBackendFileSystemVolFormatToString,
+        .formatFromString = virStorageBackendFileSystemVolTypeFromString,
+        .formatToString = virStorageBackendFileSystemVolTypeToString,
     },
     .volType = VIR_STORAGE_VOL_FILE,
 };

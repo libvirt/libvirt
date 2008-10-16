@@ -60,6 +60,11 @@
 #include "storage_backend_fs.h"
 #endif
 
+VIR_ENUM_IMPL(virStorageBackendPartTable,
+              VIR_STORAGE_POOL_DISK_LAST,
+              "unknown", "dos", "dvh", "gpt",
+              "mac", "bsd", "pc98", "sun", "lvm2");
+
 static virStorageBackendPtr backends[] = {
 #if WITH_STORAGE_DIR
     &virStorageBackendDirectory,
@@ -192,6 +197,30 @@ virStorageBackendUpdateVolInfo(virConnectPtr conn,
     return ret;
 }
 
+static struct diskType const disk_types[] = {
+    { VIR_STORAGE_POOL_DISK_LVM2, 0x218, 8, 0x31303020324D564CULL },
+    { VIR_STORAGE_POOL_DISK_GPT,  0x200, 8, 0x5452415020494645ULL },
+    { VIR_STORAGE_POOL_DISK_DVH,  0x0,   4, 0x41A9E50BULL },
+    { VIR_STORAGE_POOL_DISK_MAC,  0x0,   2, 0x5245ULL },
+    { VIR_STORAGE_POOL_DISK_BSD,  0x40,  4, 0x82564557ULL },
+    { VIR_STORAGE_POOL_DISK_SUN,  0x1fc, 2, 0xBEDAULL },
+    /*
+     * NOTE: pc98 is funky; the actual signature is 0x55AA (just like dos), so
+     * we can't use that.  At the moment I'm relying on the "dummy" IPL
+     * bootloader data that comes from parted.  Luckily, the chances of running
+     * into a pc98 machine running libvirt are approximately nil.
+     */
+    /*{ 0x1fe, 2, 0xAA55UL },*/
+    { VIR_STORAGE_POOL_DISK_PC98, 0x0,   8, 0x314C5049000000CBULL },
+    /*
+     * NOTE: the order is important here; some other disk types (like GPT and
+     * and PC98) also have 0x55AA at this offset.  For that reason, the DOS
+     * one must be the last one.
+     */
+    { VIR_STORAGE_POOL_DISK_DOS,  0x1fe, 2, 0xAA55ULL },
+    { -1,                         0x0,   0, 0x0ULL },
+};
+
 int
 virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
                                  virStorageVolDefPtr vol,
@@ -243,6 +272,41 @@ virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
         }
         vol->allocation = end;
         if (withCapacity) vol->capacity = end;
+    }
+
+    /* make sure to set the target format "unknown" to begin with */
+    vol->target.format = VIR_STORAGE_POOL_DISK_UNKNOWN;
+
+    if (S_ISBLK(sb.st_mode)) {
+        off_t start;
+        int i;
+        unsigned char buffer[1024];
+        ssize_t bytes;
+
+        start = lseek(fd, 0, SEEK_SET);
+        if (start < 0) {
+            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("cannot seek to beginning of file '%s':%s"),
+                                  vol->target.path, strerror(errno));
+            return -1;
+        }
+        bytes = saferead(fd, buffer, sizeof(buffer));
+        if (bytes < 0) {
+            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("cannot read beginning of file '%s':%s"),
+                                  vol->target.path, strerror(errno));
+            return -1;
+        }
+
+        for (i = 0; disk_types[i].part_table_type != -1; i++) {
+            if (disk_types[i].offset + disk_types[i].length > bytes)
+                continue;
+            if (memcmp(buffer+disk_types[i].offset, &disk_types[i].magic,
+                disk_types[i].length) == 0) {
+                vol->target.format = disk_types[i].part_table_type;
+                break;
+            }
+        }
     }
 
     vol->target.perms.mode = sb.st_mode;

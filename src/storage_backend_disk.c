@@ -30,16 +30,6 @@
 #include "util.h"
 #include "memory.h"
 
-enum {
-    VIR_STORAGE_POOL_DISK_DOS = 0,
-    VIR_STORAGE_POOL_DISK_DVH,
-    VIR_STORAGE_POOL_DISK_GPT,
-    VIR_STORAGE_POOL_DISK_MAC,
-    VIR_STORAGE_POOL_DISK_BSD,
-    VIR_STORAGE_POOL_DISK_PC98,
-    VIR_STORAGE_POOL_DISK_SUN,
-};
-
 /*
  * XXX these are basically partition types.
  *
@@ -58,115 +48,17 @@ enum {
     VIR_STORAGE_VOL_DISK_LINUX_LVM,
     VIR_STORAGE_VOL_DISK_LINUX_RAID,
     VIR_STORAGE_VOL_DISK_EXTENDED,
+    VIR_STORAGE_VOL_DISK_LAST,
 };
+VIR_ENUM_DECL(virStorageBackendDiskVol);
+VIR_ENUM_IMPL(virStorageBackendDiskVol,
+              VIR_STORAGE_VOL_DISK_LAST,
+              "none", "linux", "fat16",
+              "fat32", "linux-swap",
+              "linux-lvm", "linux-raid",
+              "extended");
 
 #define PARTHELPER BINDIR "/libvirt_parthelper"
-
-static int
-virStorageBackendDiskPoolFormatFromString(virConnectPtr conn,
-                                          const char *format) {
-    if (format == NULL)
-        return VIR_STORAGE_POOL_DISK_DOS;
-
-    if (STREQ(format, "dos"))
-        return VIR_STORAGE_POOL_DISK_DOS;
-    if (STREQ(format, "dvh"))
-        return VIR_STORAGE_POOL_DISK_DVH;
-    if (STREQ(format, "gpt"))
-        return VIR_STORAGE_POOL_DISK_GPT;
-    if (STREQ(format, "mac"))
-        return VIR_STORAGE_POOL_DISK_MAC;
-    if (STREQ(format, "bsd"))
-        return VIR_STORAGE_POOL_DISK_BSD;
-    if (STREQ(format, "pc98"))
-        return VIR_STORAGE_POOL_DISK_PC98;
-    if (STREQ(format, "sun"))
-        return VIR_STORAGE_POOL_DISK_SUN;
-
-    virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("unsupported pool format %s"), format);
-    return -1;
-}
-
-static const char *
-virStorageBackendDiskPoolFormatToString(virConnectPtr conn,
-                                        int format) {
-    switch (format) {
-    case VIR_STORAGE_POOL_DISK_DOS:
-        return "dos";
-    case VIR_STORAGE_POOL_DISK_DVH:
-        return "dvh";
-    case VIR_STORAGE_POOL_DISK_GPT:
-        return "gpt";
-    case VIR_STORAGE_POOL_DISK_MAC:
-        return "mac";
-    case VIR_STORAGE_POOL_DISK_BSD:
-        return "bsd";
-    case VIR_STORAGE_POOL_DISK_PC98:
-        return "pc98";
-    case VIR_STORAGE_POOL_DISK_SUN:
-        return "sun";
-    }
-
-    virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("unsupported pool format %d"), format);
-    return NULL;
-}
-
-static int
-virStorageBackendDiskVolFormatFromString(virConnectPtr conn,
-                                         const char *format) {
-    if (format == NULL)
-        return VIR_STORAGE_VOL_DISK_NONE;
-
-    if (STREQ(format, "none"))
-        return VIR_STORAGE_VOL_DISK_NONE;
-    if (STREQ(format, "linux"))
-        return VIR_STORAGE_VOL_DISK_LINUX;
-    if (STREQ(format, "fat16"))
-        return VIR_STORAGE_VOL_DISK_FAT16;
-    if (STREQ(format, "fat32"))
-        return VIR_STORAGE_VOL_DISK_FAT32;
-    if (STREQ(format, "linux-swap"))
-        return VIR_STORAGE_VOL_DISK_LINUX_SWAP;
-    if (STREQ(format, "linux-lvm"))
-        return VIR_STORAGE_VOL_DISK_LINUX_LVM;
-    if (STREQ(format, "linux-raid"))
-        return VIR_STORAGE_VOL_DISK_LINUX_RAID;
-    if (STREQ(format, "extended"))
-        return VIR_STORAGE_VOL_DISK_EXTENDED;
-
-    virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("unsupported volume format %s"), format);
-    return -1;
-}
-
-static const char *
-virStorageBackendDiskVolFormatToString(virConnectPtr conn,
-                                       int format) {
-    switch (format) {
-    case VIR_STORAGE_VOL_DISK_NONE:
-        return "none";
-    case VIR_STORAGE_VOL_DISK_LINUX:
-        return "linux";
-    case VIR_STORAGE_VOL_DISK_FAT16:
-        return "fat16";
-    case VIR_STORAGE_VOL_DISK_FAT32:
-        return "fat32";
-    case VIR_STORAGE_VOL_DISK_LINUX_SWAP:
-        return "linux-swap";
-    case VIR_STORAGE_VOL_DISK_LINUX_LVM:
-        return "linux-lvm";
-    case VIR_STORAGE_VOL_DISK_LINUX_RAID:
-        return "linux-raid";
-    case VIR_STORAGE_VOL_DISK_EXTENDED:
-        return "extended";
-    }
-
-    virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("unsupported volume format %d"), format);
-    return NULL;
-}
 
 static int
 virStorageBackendDiskMakeDataVol(virConnectPtr conn,
@@ -414,8 +306,7 @@ virStorageBackendDiskBuildPool(virConnectPtr conn,
         "mklabel",
         "--script",
         ((pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) ? "msdos" :
-          virStorageBackendDiskPoolFormatToString(conn,
-                                                  pool->def->source.format)),
+          virStorageBackendPartTableTypeToString(pool->def->source.format)),
         NULL,
     };
 
@@ -557,12 +448,12 @@ virStorageBackend virStorageBackendDisk = {
 
     .poolOptions = {
         .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE),
-        .formatFromString = virStorageBackendDiskPoolFormatFromString,
-        .formatToString = virStorageBackendDiskPoolFormatToString,
+        .formatFromString = virStorageBackendPartTableTypeFromString,
+        .formatToString = virStorageBackendPartTableTypeToString,
     },
     .volOptions = {
-        .formatFromString = virStorageBackendDiskVolFormatFromString,
-        .formatToString = virStorageBackendDiskVolFormatToString,
+        .formatFromString = virStorageBackendDiskVolTypeFromString,
+        .formatToString = virStorageBackendDiskVolTypeToString,
     },
 
     .volType = VIR_STORAGE_VOL_BLOCK,

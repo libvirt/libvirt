@@ -26,18 +26,14 @@
 
 #include <libvirt/libvirt.h>
 #include "storage_conf.h"
+#include "util.h"
 
 
-typedef const char *(*virStorageVolFormatToString)(virConnectPtr conn,
-                                                   int format);
-typedef int (*virStorageVolFormatFromString)(virConnectPtr conn,
-                                             const char *format);
+typedef const char *(*virStorageVolFormatToString)(int format);
+typedef int (*virStorageVolFormatFromString)(const char *format);
 
-typedef const char *(*virStoragePoolFormatToString)(virConnectPtr conn,
-                                                    int format);
-typedef int (*virStoragePoolFormatFromString)(virConnectPtr conn,
-                                              const char *format);
-
+typedef const char *(*virStoragePoolFormatToString)(int format);
+typedef int (*virStoragePoolFormatFromString)(const char *format);
 
 typedef struct _virStorageBackendVolOptions virStorageBackendVolOptions;
 typedef virStorageBackendVolOptions *virStorageBackendVolOptionsPtr;
@@ -55,6 +51,27 @@ enum {
     VIR_STORAGE_BACKEND_POOL_SOURCE_ADAPTER = (1<<3),
     VIR_STORAGE_BACKEND_POOL_SOURCE_NAME    = (1<<4),
 };
+
+enum partTableType {
+    VIR_STORAGE_POOL_DISK_UNKNOWN = 0,
+    VIR_STORAGE_POOL_DISK_DOS = 1,
+    VIR_STORAGE_POOL_DISK_DVH,
+    VIR_STORAGE_POOL_DISK_GPT,
+    VIR_STORAGE_POOL_DISK_MAC,
+    VIR_STORAGE_POOL_DISK_BSD,
+    VIR_STORAGE_POOL_DISK_PC98,
+    VIR_STORAGE_POOL_DISK_SUN,
+    VIR_STORAGE_POOL_DISK_LVM2,
+    VIR_STORAGE_POOL_DISK_LAST,
+};
+
+struct diskType {
+    enum partTableType part_table_type;
+    unsigned short offset;
+    unsigned short length;
+    unsigned long long magic;
+};
+VIR_ENUM_DECL(virStorageBackendPartTable);
 
 typedef struct _virStorageBackendPoolOptions virStorageBackendPoolOptions;
 typedef virStorageBackendPoolOptions *virStorageBackendPoolOptionsPtr;

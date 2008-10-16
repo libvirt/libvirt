@@ -1,3 +1,14 @@
+Thu Oct 16 17:02:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+	* Add support for detecting the partition table type when scanning
+	iSCSI volumes.  This is implemented in the
+	virStorageBackendUpdateVolInfoFD function, so all future callers will
+	automatically benefit.  This is a somewhat large patch because the
+	conversion of the virStorageBackendPartTableTypeToString necessitated
+	a change to the formatToString and formatFromString function pointers,
+	which caused fallout in other places in the storage stuff.  The good
+	news is that most of these callers are now converted over to the
+	VIR_ENUM_IMPL, which means a lot of redundant code is now gone.
+
 Thu Oct 16 15:41:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
 	* Compiling with -Werror showed a possible use before initialization
 	in src/qemu_driver.c.  Make sure to initialize the origdisk ptr to

@@ -636,18 +636,20 @@ virStorageBackendISCSIStopPool(virConnectPtr conn,
     return 0;
 }
 
-
 virStorageBackend virStorageBackendISCSI = {
-  .type = VIR_STORAGE_POOL_ISCSI,
+    .type = VIR_STORAGE_POOL_ISCSI,
 
-  .startPool = virStorageBackendISCSIStartPool,
-  .refreshPool = virStorageBackendISCSIRefreshPool,
-  .stopPool = virStorageBackendISCSIStopPool,
+    .startPool = virStorageBackendISCSIStartPool,
+    .refreshPool = virStorageBackendISCSIRefreshPool,
+    .stopPool = virStorageBackendISCSIStopPool,
 
-  .poolOptions = {
+    .poolOptions = {
         .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_HOST |
                   VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE)
     },
 
-  .volType = VIR_STORAGE_VOL_BLOCK,
+    .volType = VIR_STORAGE_VOL_BLOCK,
+    .volOptions = {
+        .formatToString = virStorageBackendPartTableTypeToString,
+    }
 };
