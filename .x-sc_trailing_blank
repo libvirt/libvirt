@@ -1,6 +1,7 @@
-\.png$
 \.fig$
 \.gif$
-^NEWS$
+\.ico$
+\.png$
 ^ChangeLog$
+^NEWS$
 ^docs/.*

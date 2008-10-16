@@ -1,3 +1,8 @@
+Thu Oct 16 15:04:36 +0200 Jim Meyering <meyering@redhat.com>
+
+	build: exempt *.ico files from the trailing blank check
+	* .x-sc_trailing_blank: Add \.ico$ to the list.
+
 Wed Oct 16 14:03:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
 
 	* "make syntax-check" was complaining that network_driver.c was
