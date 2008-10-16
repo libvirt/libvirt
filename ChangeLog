@@ -1,3 +1,11 @@
+Thu Oct 16 19:17:25 +0200 Jim Meyering <meyering@redhat.com>
+
+	build: when po-check fails, say why and suggest a fix
+	* Makefile.maint (po-check): Before, when this check failed, it just
+	spat out a diff mentioning two temporary files.  Now, it tells you
+	what's wrong and suggests a fix with a patch using the name of the
+	affected file (rather than temporary file names) in the diff output.
+
 Thu Oct 16 17:02:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
 	* Add support for detecting the partition table type when scanning
 	iSCSI volumes.  This is implemented in the

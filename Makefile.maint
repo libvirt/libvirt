@@ -466,8 +466,12 @@ m4-check:
 	  && { echo 'Makefile.maint: quote the first arg to AC_DEFUN' 1>&2; \
 	       exit 1; } || :
 
+fix_po_file_diag = \
+'you have changed the set of files with translatable diagnostics;\n\
+apply the above patch\n'
+
 # Verify that all source files using _() are listed in po/POTFILES.in.
-# FIXME: don't hard-code file names below; use a more general mechanism.
+po_file = po/POTFILES.in
 po-check:
 	@if test -f po/POTFILES.in; then					\
 	  grep -E -v '^(#|$$)' po/POTFILES.in				\
@@ -482,13 +486,14 @@ po-check:
 	    *.[ch])							\
 	      base=`expr " $$file" : ' \(.*\)\..'`;			\
 	      { test -f $$base.l || test -f $$base.y; } && continue;;	\
-	    *) continue;;				\
+	    *) continue;;						\
 	    esac;							\
 	    files="$$files $$file";					\
 	  done;								\
 	  grep -E -l '\b(N?_|gettext *)\([^)"]*("|$$)' $$files		\
 	    | sort -u > $@-2;						\
-	  diff -u $@-1 $@-2 || exit 1;					\
+	  diff -u -L $(po_file) -L $(po_file) $@-1 $@-2			\
+	    || { printf '$(ME): '$(fix_po_file_diag) 1>&2; exit 1; };	\
 	  rm -f $@-1 $@-2;						\
 	fi
 
