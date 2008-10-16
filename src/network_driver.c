@@ -47,7 +47,6 @@
 #include "network_driver.h"
 #include "network_conf.h"
 #include "driver.h"
-#include "c-ctype.h"
 #include "event.h"
 #include "buf.h"
 #include "util.h"

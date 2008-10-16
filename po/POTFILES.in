@@ -11,6 +11,7 @@ src/lxc_container.c
 src/lxc_controller.c
 src/lxc_driver.c
 src/network_conf.c
+src/network_driver.c
 src/openvz_conf.c
 src/openvz_driver.c
 src/proxy_internal.c

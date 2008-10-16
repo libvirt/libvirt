@@ -1,3 +1,9 @@
+Wed Oct 16 14:03:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+
+	* "make syntax-check" was complaining that network_driver.c was
+	missing from POTFILES.in.  Add it, and then fix up one warning about
+	included c-ctypes.h that wasn't being used.
+
 Wed Oct 15 19:38:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	* configure.in, src/Makefile.am, src/virsh_win_icon.rc:
