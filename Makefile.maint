@@ -608,11 +608,27 @@ my-distcheck: $(local-check) check
 	echo "$(distdir).tar.gz is ready for distribution"; \
 	echo "========================"
 
-gi=.gitignore
+cvs-to-git = '\#!/usr/bin/perl\n\
+use warnings;\n\
+use strict;\n\
+use File::Find;\n\
+use File::Copy;\n\
+\n\
+find ({wanted =>\n\
+       sub {$$_ eq q/.cvsignore/ or return;\n\
+	    my $$gi = q/.gitignore/;\n\
+	    unlink $$gi;\n\
+	    copy($$_, $$gi) or die qq/copy failed: $$_->$$gi: $$!\\n/;\n\
+	    chmod 0444, $$gi;\n\
+	    }},\n\
+      q!.!);\n'
+
+.PHONY: sync-vcs-ignore-files
+c2g = cvs-to-git
 sync-vcs-ignore-files:
-	find . -name .cvsignore				\
-	  | sed						\
-	    -e 's,\(.*\),cp -f \1 \1; chmod 444 \1,'	\
-	    -e 's,\.cvsignore; ,$(gi); ,'		\
-	    -e 's,\.cvsignore$$,$(gi),'			\
-	  | $(SHELL)
+	rm -f $(c2g)-t $(c2g)
+	printf $(cvs-to-git) > $(c2g)-t
+	chmod a+x-w $(c2g)-t
+	mv $(c2g)-t $(c2g)
+	perl $(c2g)
+	rm -f $(c2g)

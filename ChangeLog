@@ -1,5 +1,9 @@
 Fri Oct 17 11:58:31 +0200 Jim Meyering <meyering@redhat.com>
 
+	Makefile.maint (sync-vcs-ignore-files): avoid risk of abuse
+	* Makefile.maint (sync-vcs-ignore-files): Rewrite rule so that
+	it won't misbehave even with maliciously-named sub-directories.
+
 	generate .gitignore files from .cvsignore ones
 	* Makefile.maint (sync-vcs-ignore-files): New target.
 	Prompted by a patch from James Morris.
