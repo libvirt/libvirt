@@ -3394,12 +3394,12 @@ char *virDomainConfigFile(virConnectPtr conn,
  * @param devIdx parsed device number
  * @return 0 on success, -1 on failure
  */
-int virDiskNameToBusDeviceIndex(virDomainDiskDefPtr disk,
+int virDiskNameToBusDeviceIndex(const virDomainDiskDefPtr disk,
                                 int *busIdx,
                                 int *devIdx) {
 
     int idx = virDiskNameToIndex(disk->dst);
-    if (idx < 1)
+    if (idx < 0)
         return -1;
 
     switch (disk->bus) {

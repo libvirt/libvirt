@@ -1,3 +1,8 @@
+Fri Oct 17 11:16:30 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/domain_conf.c: fix virDiskNameToBusDeviceIndex() to allow 0
+	  patch by Guido Günther
+
 Thu Oct 16 19:17:25 +0200 Jim Meyering <meyering@redhat.com>
 
 	build: when po-check fails, say why and suggest a fix
