@@ -1,3 +1,8 @@
+Fri Oct 17 11:25:43 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: use qemudDiskDeviceName to determine the block
+	  device name in qemudDomainBlockStats(), patch by Guido Günther
+
 Fri Oct 17 11:20:48 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: fix qemudDiskDeviceName to handle disk devices

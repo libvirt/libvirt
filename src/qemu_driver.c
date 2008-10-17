@@ -2756,11 +2756,13 @@ qemudDomainBlockStats (virDomainPtr dom,
 {
     struct qemud_driver *driver =
         (struct qemud_driver *)dom->conn->privateData;
-    char *dummy, *info;
+    char *dummy, *info = NULL;
     const char *p, *eol;
-    char qemu_dev_name[32];
+    const char *qemu_dev_name = NULL;
     size_t len;
+    int i, ret = -1;
     const virDomainObjPtr vm = virDomainFindByID(&driver->domains, dom->id);
+    virDomainDiskDefPtr disk = NULL;
 
     if (!vm) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -2773,36 +2775,29 @@ qemudDomainBlockStats (virDomainPtr dom,
         return -1;
     }
 
-    /*
-     * QEMU internal block device names are different from the device
-     * names we use in libvirt, so we need to map between them:
-     *
-     *   hd[a-]   to  ide0-hd[0-]
-     *   cdrom    to  ide1-cd0
-     *   fd[a-]   to  floppy[0-]
-     */
-    if (STRPREFIX (path, "hd") && c_islower(path[2]))
-        snprintf (qemu_dev_name, sizeof (qemu_dev_name),
-                  "ide0-hd%d", path[2] - 'a');
-    else if (STREQ (path, "cdrom"))
-        strcpy (qemu_dev_name, "ide1-cd0");
-    else if (STRPREFIX (path, "fd") && c_islower(path[2]))
-        snprintf (qemu_dev_name, sizeof (qemu_dev_name),
-                  "floppy%d", path[2] - 'a');
-    else {
+    for (i = 0 ; i < vm->def->ndisks ; i++) {
+        if (STREQ(path, vm->def->disks[i]->dst)) {
+            disk = vm->def->disks[i];
+            break;
+        }
+    }
+
+    if (!disk) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
                           _("invalid path: %s"), path);
         return -1;
     }
 
+    qemu_dev_name = qemudDiskDeviceName(dom, disk);
+    if (!qemu_dev_name)
+        return -1;
     len = strlen (qemu_dev_name);
 
     if (qemudMonitorCommand (driver, vm, "info blockstats", &info) < 0) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                           "%s", _("'info blockstats' command failed"));
-        return -1;
+        goto out;
     }
-
     DEBUG ("info blockstats reply: %s", info);
 
     /* If the command isn't supported then qemu prints the supported
@@ -2811,11 +2806,10 @@ qemudDomainBlockStats (virDomainPtr dom,
      * to detect if qemu supports the command.
      */
     if (STRPREFIX (info, "info ")) {
-        free (info);
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                           "%s",
                           _("'info blockstats' not supported by this qemu"));
-        return -1;
+        goto out;
     }
 
     stats->rd_req = -1;
@@ -2866,8 +2860,8 @@ qemudDomainBlockStats (virDomainPtr dom,
                 if (!p || p >= eol) break;
                 p++;
             }
-
-            goto done;
+            ret = 0;
+            goto out;
         }
 
         /* Skip to next line. */
@@ -2877,14 +2871,12 @@ qemudDomainBlockStats (virDomainPtr dom,
     }
 
     /* If we reach here then the device was not found. */
-    free (info);
     qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
                       _("device not found: %s (%s)"), path, qemu_dev_name);
-    return -1;
-
- done:
-    free (info);
-    return 0;
+ out:
+    VIR_FREE(qemu_dev_name);
+    VIR_FREE(info);
+    return ret;
 }
 
 static int
