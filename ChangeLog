@@ -1,3 +1,37 @@
+Fri Oct 17 11:58:31 +0200 Jim Meyering <meyering@redhat.com>
+
+	generate .gitignore files from .cvsignore ones
+	* Makefile.maint (sync-vcs-ignore-files): New target.
+	Prompted by a patch from James Morris.
+	http://thread.gmane.org/gmane.comp.emulators.libvirt/8619/focus=8773
+	Add all (now-generated) .gitignore files.
+	* .gitignore: New file.
+	* build-aux/.gitignore: New file.
+	* docs/.gitignore: New file.
+	* docs/devhelp/.gitignore: New file.
+	* docs/examples/.gitignore: New file.
+	* docs/examples/python/.gitignore: New file.
+	* gnulib/lib/.gitignore: New file.
+	* gnulib/lib/arpa/.gitignore: New file.
+	* gnulib/lib/netinet/.gitignore: New file.
+	* gnulib/lib/sys/.gitignore: New file.
+	* gnulib/tests/.gitignore: New file.
+	* include/.gitignore: New file.
+	* include/libvirt/.gitignore: New file.
+	* po/.gitignore: New file.
+	* proxy/.gitignore: New file.
+	* python/.gitignore: New file.
+	* python/tests/.gitignore: New file.
+	* qemud/.gitignore: New file.
+	* src/.gitignore: New file.
+	* tests/.gitignore: New file.
+	* tests/confdata/.gitignore: New file.
+	* tests/sexpr2xmldata/.gitignore: New file.
+	* tests/virshdata/.gitignore: New file.
+	* tests/xencapsdata/.gitignore: New file.
+	* tests/xmconfigdata/.gitignore: New file.
+	* tests/xml2sexprdata/.gitignore: New file.
+
 Fri Oct 17 11:25:43 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: use qemudDiskDeviceName to determine the block
