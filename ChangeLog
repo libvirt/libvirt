@@ -1,3 +1,8 @@
+Fri Oct 17 14:30:48 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: add scsi/virtio hotplug support for KVM
+	  patch by Guido Günther
+
 Fri Oct 17 11:58:31 +0200 Jim Meyering <meyering@redhat.com>
 
 	Makefile.maint (sync-vcs-ignore-files): avoid risk of abuse

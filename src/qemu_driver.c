@@ -2509,6 +2509,75 @@ static int qemudDomainChangeEjectableMedia(virDomainPtr dom,
     return 0;
 }
 
+static int qemudDomainAttachDiskDevice(virDomainPtr dom, virDomainDeviceDefPtr dev)
+{
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    int ret, i;
+    char *cmd, *reply;
+    char *safe_path;
+    const char* type = virDomainDiskBusTypeToString(dev->data.disk->bus);
+
+    if (!vm) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         "%s", _("no domain with matching uuid"));
+        return -1;
+    }
+
+    for (i = 0 ; i < vm->def->ndisks ; i++) {
+        if (STREQ(vm->def->disks[i]->dst, dev->data.disk->dst)) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                           _("target %s already exists"), dev->data.disk->dst);
+            return -1;
+        }
+    }
+
+    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        return -1;
+    }
+
+    safe_path = qemudEscapeMonitorArg(dev->data.disk->src);
+    if (!safe_path) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("out of memory"));
+        return -1;
+    }
+
+    ret = asprintf(&cmd, "pci_add 0 storage file=%s,if=%s",
+                         safe_path, type);
+    VIR_FREE(safe_path);
+    if (ret == -1) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        return ret;
+    }
+
+    if (qemudMonitorCommand(driver, vm, cmd, &reply) < 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("cannot attach %s disk"), type);
+        VIR_FREE(cmd);
+        return -1;
+    }
+
+    DEBUG ("pci_add reply: %s", reply);
+    /* If the command succeeds qemu prints:
+     * OK bus 0... */
+    if (!strstr(reply, "OK bus 0")) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                          _("adding %s disk failed"), type);
+        VIR_FREE(reply);
+        VIR_FREE(cmd);
+        return -1;
+    }
+
+    vm->def->disks[vm->def->ndisks++] = dev->data.disk;
+    qsort(vm->def->disks, vm->def->ndisks, sizeof(*vm->def->disks),
+          virDomainDiskQSort);
+
+    VIR_FREE(reply);
+    VIR_FREE(cmd);
+    return 0;
+}
 
 static int qemudDomainAttachUsbMassstorageDevice(virDomainPtr dom, virDomainDeviceDefPtr dev)
 {
@@ -2624,7 +2693,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     virDomainDeviceDefPtr dev;
-    int ret = 0;
+    int ret = 0, supported = 0;
 
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -2643,19 +2712,32 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         return -1;
     }
 
-    if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
-        (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ||
-         dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)) {
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
+        switch (dev->data.disk->device) {
+            case VIR_DOMAIN_DISK_DEVICE_CDROM:
+            case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
+                supported = 1;
                 ret = qemudDomainChangeEjectableMedia(dom, dev);
-    } else if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
-        dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
-        dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
-                ret = qemudDomainAttachUsbMassstorageDevice(dom, dev);
+                break;
+            case VIR_DOMAIN_DISK_DEVICE_DISK:
+                if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
+                    supported = 1;
+                    ret = qemudDomainAttachUsbMassstorageDevice(dom, dev);
+                } else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
+                           dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
+                    supported = 1;
+                    ret = qemudDomainAttachDiskDevice(dom, dev);
+                }
+                break;
+        }
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
         dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
         dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+                supported = 1;
                 ret = qemudDomainAttachHostDevice(dom, dev);
-    } else {
+    }
+
+    if (!supported) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          "%s", _("this device type cannot be attached"));
         ret = -1;
