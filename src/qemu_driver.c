@@ -2342,8 +2342,8 @@ static int qemudDomainUndefine(virDomainPtr dom) {
 }
 
 /* Return the disks name for use in monitor commands */
-static char *qemudDiskDeviceName(virDomainPtr dom,
-                                 virDomainDiskDefPtr disk) {
+static char *qemudDiskDeviceName(const virDomainPtr dom,
+                                 const virDomainDiskDefPtr disk) {
 
     int busid, devid;
     int ret;
@@ -2358,10 +2358,16 @@ static char *qemudDiskDeviceName(virDomainPtr dom,
 
     switch (disk->bus) {
         case VIR_DOMAIN_DISK_BUS_IDE:
-            ret = asprintf(&devname, "ide%d-cd%d", busid, devid);
+            if (disk->device== VIR_DOMAIN_DISK_DEVICE_DISK)
+                ret = asprintf(&devname, "ide%d-hd%d", busid, devid);
+            else
+                ret = asprintf(&devname, "ide%d-cd%d", busid, devid);
             break;
         case VIR_DOMAIN_DISK_BUS_SCSI:
-            ret = asprintf(&devname, "scsi%d-cd%d", busid, devid);
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
+                ret = asprintf(&devname, "scsi%d-hd%d", busid, devid);
+            else
+                ret = asprintf(&devname, "scsi%d-cd%d", busid, devid);
             break;
         case VIR_DOMAIN_DISK_BUS_FDC:
             ret = asprintf(&devname, "floppy%d", devid);

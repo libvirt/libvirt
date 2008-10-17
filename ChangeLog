@@ -1,3 +1,8 @@
+Fri Oct 17 11:20:48 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: fix qemudDiskDeviceName to handle disk devices
+	  too, patch by Guido Günther
+
 Fri Oct 17 11:16:30 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/domain_conf.c: fix virDiskNameToBusDeviceIndex() to allow 0
