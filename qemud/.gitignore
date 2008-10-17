@@ -1,0 +1,11 @@
+Makefile
+Makefile.in
+.deps
+.libs
+*.lo
+*.la
+libvirt_qemud
+libvirtd
+libvirtd.init
+*.gcno
+*.gcda

@@ -607,3 +607,12 @@ my-distcheck: $(local-check) check
 	@echo "========================"; \
 	echo "$(distdir).tar.gz is ready for distribution"; \
 	echo "========================"
+
+gi=.gitignore
+sync-vcs-ignore-files:
+	find . -name .cvsignore				\
+	  | sed						\
+	    -e 's,\(.*\),cp -f \1 \1; chmod 444 \1,'	\
+	    -e 's,\.cvsignore; ,$(gi); ,'		\
+	    -e 's,\.cvsignore$$,$(gi),'			\
+	  | $(SHELL)
