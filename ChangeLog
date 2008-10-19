@@ -1,3 +1,8 @@
+Sun Oct 19 11:40:49 CEST Jim Meyering <meyering@redhat.com>
+
+	ALL_LINGUAS: remove "no", now that it's superseded by np.po
+	* configure.in: Remove "no" from hard-coded list.
+
 Fri Oct 17 14:30:48 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: add scsi/virtio hotplug support for KVM
