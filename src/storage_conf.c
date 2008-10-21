@@ -276,6 +276,8 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
     if (options->formatFromString) {
         char *format = virXPathString(conn, "string(/pool/source/format/@type)", ctxt);
         if ((ret->source.format = (options->formatFromString)(format)) < 0) {
+            virStorageReportError(conn, VIR_ERR_XML_ERROR,
+                                  _("unknown pool format type %s"), format);
             VIR_FREE(format);
             goto cleanup;
         }
@@ -521,8 +523,12 @@ virStoragePoolDefFormat(virConnectPtr conn,
 
     if (options->formatToString) {
         const char *format = (options->formatToString)(def->source.format);
-        if (!format)
+        if (!format) {
+            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("unknown pool format number %d"),
+                                  def->source.format);
             goto cleanup;
+        }
         virBufferVSprintf(&buf,"    <format type='%s'/>\n", format);
     }
 
@@ -751,6 +757,8 @@ virStorageVolDefParseDoc(virConnectPtr conn,
     if (options->formatFromString) {
         char *format = virXPathString(conn, "string(/volume/target/format/@type)", ctxt);
         if ((ret->target.format = (options->formatFromString)(format)) < 0) {
+            virStorageReportError(conn, VIR_ERR_XML_ERROR,
+                                  _("unknown volume format type %s"), format);
             VIR_FREE(format);
             goto cleanup;
         }
@@ -885,8 +893,12 @@ virStorageVolDefFormat(virConnectPtr conn,
 
     if (options->formatToString) {
         const char *format = (options->formatToString)(def->target.format);
-        if (!format)
+        if (!format) {
+            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("unknown volume format number %d"),
+                                  def->target.format);
             goto cleanup;
+        }
         virBufferVSprintf(&buf,"    <format type='%s'/>\n", format);
     }
 

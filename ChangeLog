@@ -1,3 +1,7 @@
+Tue Oct 21 19:18:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+	* src/storage_conf.c: Make sure to set errors on paths where
+	  ->formatToString() or ->formatFromString() fail.
+
 Tue Oct 21 19:13:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
 	* src/qemu_driver.c src/storage_conf.c src/network_driver.c
 	  src/storage_driver.c: Shore up the uses of virGetLastError() so that
