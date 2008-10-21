@@ -761,6 +761,36 @@ out:
     return rc;
 }
 
+/**
+ * virCgroupAllowDeviceMajor:
+ *
+ * @group: The cgroup to allow an entire device major type for
+ * @type: The device type (i.e., 'c' or 'b')
+ * @major: The major number of the device type
+ *
+ * Returns: 0 on success
+ */
+int virCgroupAllowDeviceMajor(virCgroupPtr group,
+                              char type,
+                              int major)
+{
+    int rc;
+    char *devstr = NULL;
+
+    if (asprintf(&devstr, "%c %i:* rwm", type, major) == -1) {
+        rc = -ENOMEM;
+        goto out;
+    }
+
+    rc = virCgroupSetValueStr(group,
+                              "devices.allow",
+                              devstr);
+ out:
+    VIR_FREE(devstr);
+
+    return rc;
+}
+
 int virCgroupSetCpuShares(virCgroupPtr group, unsigned long shares)
 {
     return virCgroupSetValueU64(group, "cpu.shares", (uint64_t)shares);

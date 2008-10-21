@@ -40,6 +40,8 @@ enum {
 #define LXC_DEV_MAJ_TTY     5
 #define LXC_DEV_MIN_CONSOLE 1
 
+#define LXC_DEV_MAJ_PTY     136
+
 int lxcContainerSendContinue(int control);
 
 int lxcContainerStart(virDomainDefPtr def,

@@ -1,3 +1,8 @@
+Tue Oct 21 09:19:24 PDT 2008 Dan Smith <danms@us.ibm.com>
+	* src/cgroup.c src/cgroup.h: Add function to allow major device range
+	* src/lxc_container.h src/controller.c: Fix cgroup initialization
+	  order and fix /dev/pts cgroup permission
+
 Tue Oct 21 16:25:22 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* HACKING: update with some rules for commiters

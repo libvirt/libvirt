@@ -103,6 +103,10 @@ static int lxcSetContainerResources(virDomainDefPtr def)
             goto out;
     }
 
+    rc = virCgroupAllowDeviceMajor(cgroup, 'c', LXC_DEV_MAJ_PTY);
+    if (rc != 0)
+        goto out;
+
     rc = virCgroupAddTask(cgroup, getpid());
 out:
     if (rc != 0) {
@@ -449,6 +453,9 @@ lxcControllerRun(virDomainDefPtr def,
         goto cleanup;
     }
 
+    if (lxcSetContainerResources(def) < 0)
+        goto cleanup;
+
     if ((container = lxcContainerStart(def,
                                        nveths,
                                        veths,
@@ -459,9 +466,6 @@ lxcControllerRun(virDomainDefPtr def,
     control[1] = -1;
 
     if (lxcControllerMoveInterfaces(nveths, veths, container) < 0)
-        goto cleanup;
-
-    if (lxcSetContainerResources(def) < 0)
         goto cleanup;
 
     if (lxcContainerSendContinue(control[0]) < 0)

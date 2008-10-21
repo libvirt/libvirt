@@ -35,6 +35,9 @@ int virCgroupAllowDevice(virCgroupPtr group,
                          char type,
                          int major,
                          int minor);
+int virCgroupAllowDeviceMajor(virCgroupPtr group,
+                              char type,
+                              int major);
 
 int virCgroupSetCpuShares(virCgroupPtr group, unsigned long shares);
 int virCgroupGetCpuShares(virCgroupPtr group, unsigned long *shares);
