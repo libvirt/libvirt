@@ -1,3 +1,9 @@
+Tue Oct 21 19:22:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+	* src/storage_conf.c: Make logical pool dumpXML more idempotent with
+	  defineXML by outputting <device name='/dev/sdb' /> when we are
+	  dumping XML.  We only use the longer <device
+	  name='/dev/sdb'>foo</device> when a pool has .nfreeExtent defined.
+
 Tue Oct 21 19:18:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
 	* src/storage_conf.c: Make sure to set errors on paths where
 	  ->formatToString() or ->formatFromString() fail.

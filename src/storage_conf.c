@@ -466,7 +466,7 @@ virStoragePoolDefFormat(virConnectPtr conn,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *type;
     char uuid[VIR_UUID_STRING_BUFLEN];
-    int i;
+    int i, j;
 
     options = virStorageBackendPoolOptionsForType(def->type);
     if (options == NULL)
@@ -499,16 +499,19 @@ virStoragePoolDefFormat(virConnectPtr conn,
     if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE) &&
         def->source.ndevice) {
         for (i = 0 ; i < def->source.ndevice ; i++) {
-            virBufferVSprintf(&buf,"    <device path='%s'>\n", def->source.devices[i].path);
             if (def->source.devices[i].nfreeExtent) {
-                int j;
+                virBufferVSprintf(&buf,"    <device path='%s'>\n",
+                                  def->source.devices[i].path);
                 for (j = 0 ; j < def->source.devices[i].nfreeExtent ; j++) {
                     virBufferVSprintf(&buf, "    <freeExtent start='%llu' end='%llu'/>\n",
                                       def->source.devices[i].freeExtents[j].start,
                                       def->source.devices[i].freeExtents[j].end);
                 }
+                virBufferAddLit(&buf,"    </device>\n");
             }
-            virBufferAddLit(&buf,"    </device>\n");
+            else
+                virBufferVSprintf(&buf, "    <device path='%s'/>\n",
+                                  def->source.devices[i].path);
         }
     }
     if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_DIR) &&
