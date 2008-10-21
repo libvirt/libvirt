@@ -1011,12 +1011,7 @@ AM_CONDITIONAL([WITH_LIBVIRTD],[test "x$with_libvirtd" = "xyes"])
 dnl Check for gettext
 AM_GNU_GETTEXT_VERSION([0.14.1])
 AM_GNU_GETTEXT([external])
-if test -d po
-then
-    ALL_LINGUAS=`(cd po > /dev/null && ls *.po) | sed 's+\.po$++'`
-else
-    ALL_LINGUAS="af am ar as be bg bn_IN bn ca cs cy da de el en_GB es et eu_ES fa fi fr gl gu he hi hr hu hy id is it ja ka kn ko ku lo lt lv mk ml mr ms my nb nl nn nso or pa pl pt_BR pt ro ru si sk sl sq sr@latin sr sv ta te th tr uk ur vi zh_CN zh_TW zu"
-fi
+ALL_LINGUAS=`{cd "$srcdir/po" > /dev/null && ls *.po} | sed 's+\.po$++'`
 
 dnl Extra link-time flags for Cygwin.
 dnl Copied from libxml2 configure.in, but I removed mingw changes

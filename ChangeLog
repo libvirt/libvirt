@@ -1,3 +1,8 @@
+Mon Oct 20 09:45:42 CEST Jim Meyering <meyering@redhat.com>
+
+	ALL_LINGUAS: set unconditionally, using $srcdir/po
+	* configure.in: Remove hard-coded list altogether.
+
 Sun Oct 19 11:40:49 CEST Jim Meyering <meyering@redhat.com>
 
 	ALL_LINGUAS: remove "no", now that it's superseded by np.po
