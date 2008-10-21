@@ -98,7 +98,8 @@ networkAutostartConfigs(struct network_driver *driver) {
             networkStartNetworkDaemon(NULL, driver, driver->networks.objs[i]) < 0) {
             virErrorPtr err = virGetLastError();
             networkLog(NETWORK_ERR, _("Failed to autostart network '%s': %s\n"),
-                       driver->networks.objs[i]->def->name, err->message);
+                       driver->networks.objs[i]->def->name,
+                       err ? err->message : NULL);
         }
     }
 }

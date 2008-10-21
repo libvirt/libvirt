@@ -232,7 +232,7 @@ storageDriverShutdown(void) {
                 backend->stopPool(NULL, pool) < 0) {
                 virErrorPtr err = virGetLastError();
                 storageLog("Failed to stop storage pool '%s': %s",
-                           pool->def->name, err->message);
+                           pool->def->name, err ? err->message : NULL);
             }
             virStoragePoolObjClearVols(pool);
         }

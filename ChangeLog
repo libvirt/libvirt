@@ -1,3 +1,9 @@
+Tue Oct 21 19:13:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+	* src/qemu_driver.c src/storage_conf.c src/network_driver.c
+	  src/storage_driver.c: Shore up the uses of virGetLastError() so that
+	  if a path forgets to set a virError, we don't crash while trying
+	  to dereference the NULL pointer to print out.
+
 Tue Oct 21 09:19:24 PDT 2008 Dan Smith <danms@us.ibm.com>
 	* src/cgroup.c src/cgroup.h: Add function to allow major device range
 	* src/lxc_container.h src/controller.c: Fix cgroup initialization

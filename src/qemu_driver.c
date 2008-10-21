@@ -136,7 +136,8 @@ qemudAutostartConfigs(struct qemud_driver *driver) {
             qemudStartVMDaemon(NULL, driver, driver->domains.objs[i], NULL) < 0) {
             virErrorPtr err = virGetLastError();
             qemudLog(QEMUD_ERR, _("Failed to autostart VM '%s': %s\n"),
-                     driver->domains.objs[i]->def->name, err->message);
+                     driver->domains.objs[i]->def->name,
+                     err ? err->message : NULL);
         }
     }
 }

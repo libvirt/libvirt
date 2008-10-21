@@ -1043,7 +1043,7 @@ virStoragePoolObjLoad(virConnectPtr conn,
     if (!(def = virStoragePoolDefParse(NULL, xml, file))) {
         virErrorPtr err = virGetLastError();
         virStorageLog("Error parsing storage pool config '%s' : %s",
-                      path, err->message);
+                      path, err ? err->message : NULL);
         return NULL;
     }
 
