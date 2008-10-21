@@ -2583,7 +2583,8 @@ static int qemudDomainAttachUsbMassstorageDevice(virDomainPtr dom, virDomainDevi
 {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    int ret;
+    int ret, i;
+    char *safe_path;
     char *cmd, *reply;
 
     if (!vm) {
@@ -2592,12 +2593,28 @@ static int qemudDomainAttachUsbMassstorageDevice(virDomainPtr dom, virDomainDevi
         return -1;
     }
 
+    for (i = 0 ; i < vm->def->ndisks ; i++) {
+        if (STREQ(vm->def->disks[i]->dst, dev->data.disk->dst)) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                           _("target %s already exists"), dev->data.disk->dst);
+            return -1;
+        }
+    }
+
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
         qemudReportError(dom->conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
         return -1;
     }
 
-    ret = asprintf(&cmd, "usb_add disk:%s", dev->data.disk->src);
+    safe_path = qemudEscapeMonitorArg(dev->data.disk->src);
+    if (!safe_path) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("out of memory"));
+        return -1;
+    }
+
+    ret = asprintf(&cmd, "usb_add disk:%s", safe_path);
+    VIR_FREE(safe_path);
     if (ret == -1) {
         qemudReportError(dom->conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
         return ret;

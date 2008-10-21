@@ -1,3 +1,8 @@
+Tue Oct 21 15:08:02 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: cleanup patch for usb masstorage hotadd
+	  by Guido Günther
+
 Mon Oct 20 09:45:42 CEST Jim Meyering <meyering@redhat.com>
 
 	ALL_LINGUAS: set unconditionally, using $srcdir/po
