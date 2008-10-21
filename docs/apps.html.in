@@ -103,6 +103,31 @@
       </dd>
     </dl>
 
+    <h2>Monitoring plugins</h2>
+    <dl>
+      <dt><a href="http://honk.sigxcpu.org/projects/libvirt/monitor/">for munin</a></dt>
+      <dd>
+	The two plugins provided by Guido Günther allows to monitor network and
+        block I/O with <a href="http://munin.projects.linpro.no/">Munin</a>.
+      </dd>
+      <dt><a href="http://collectd.org/plugins/libvirt.shtml">for collectd</a></dt>
+      <dd>
+	The libvirt-plugin is part of <a href="http://collectd.org/">collectd</a>
+        and gather statistics about virtualized guests on a system. This
+        way, you can collect CPU, network interface and block device usage
+        for each guest without installing collectd on the guest systems.
+        or a full description of available please refer to the libvirt section
+        in the collectd.conf(5) manual page.
+      </dd>
+      <dt><a href="http://et.redhat.com/~rjones/nagios-virt/">nagios-virt</a></dt>
+      <dd>
+	Nagios-virt is a configuration tool for adding monitoring of your
+	virtualised domains to <a href="http://www.nagios.org/">Nagios</a>.
+        You can use this tool to either set up a new Nagios installation for
+        your Xen or QEMU/KVM guests, or to integrate with your existing Nagios
+        installation.
+      </dd>
+    </dl>
 
   </body>
 </html>

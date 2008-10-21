@@ -1,3 +1,9 @@
+Tue Oct 21 16:25:22 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* HACKING: update with some rules for commiters
+	* docs/apps.html docs/apps.html.in: add a section on monitoring
+	  support
+
 Tue Oct 21 15:08:02 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: cleanup patch for usb masstorage hotadd
