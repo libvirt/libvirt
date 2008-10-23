@@ -280,6 +280,17 @@ typedef unsigned long long
     (*virDrvNodeGetFreeMemory)
                     (virConnectPtr conn);
 
+typedef int
+    (*virDrvDomainEventRegister)
+                    (virConnectPtr conn,
+                     void *callback,
+                     void *opaque);
+
+typedef int
+    (*virDrvDomainEventDeregister)
+                    (virConnectPtr conn,
+                     void *callback);
+
 /**
  * _virDriver:
  *
@@ -352,6 +363,8 @@ struct _virDriver {
     virDrvDomainMemoryPeek      domainMemoryPeek;
     virDrvNodeGetCellsFreeMemory	nodeGetCellsFreeMemory;
     virDrvNodeGetFreeMemory		getFreeMemory;
+    virDrvDomainEventRegister         domainEventRegister;
+    virDrvDomainEventDeregister       domainEventDeregister;
 };
 
 typedef int

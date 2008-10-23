@@ -63,6 +63,9 @@ struct qemud_driver {
     char *vncListen;
 
     virCapsPtr caps;
+
+    /* An array of callbacks */
+    virDomainEventCallbackListPtr domainEventCallbacks;
 };
 
 

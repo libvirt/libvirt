@@ -58,8 +58,9 @@ typedef struct _virConnect <a href="#virConnect">virConnect</a>;
 typedef struct _virVcpuInfo <a href="#virVcpuInfo">virVcpuInfo</a>;
 typedef struct _virDomainInfo <a href="#virDomainInfo">virDomainInfo</a>;
 typedef enum <a href="#virStoragePoolDeleteFlags">virStoragePoolDeleteFlags</a>;
+typedef enum <a href="#virEventHandleType">virEventHandleType</a>;
 typedef struct _virStoragePool <a href="#virStoragePool">virStoragePool</a>;
-typedef <a href="libvirt-libvirt.html#virStoragePool">virStoragePool</a> * <a href="#virStoragePoolPtr">virStoragePoolPtr</a>;
+typedef enum <a href="#virDomainEventType">virDomainEventType</a>;
 typedef struct _virDomainInterfaceStats <a href="#virDomainInterfaceStatsStruct">virDomainInterfaceStatsStruct</a>;
 typedef struct _virStoragePoolInfo <a href="#virStoragePoolInfo">virStoragePoolInfo</a>;
 typedef enum <a href="#virDomainState">virDomainState</a>;
@@ -69,6 +70,7 @@ typedef <a href="libvirt-libvirt.html#virConnectAuth">virConnectAuth</a> * <a hr
 typedef struct _virStorageVolInfo <a href="#virStorageVolInfo">virStorageVolInfo</a>;
 typedef enum <a href="#virSchedParameterType">virSchedParameterType</a>;
 typedef <a href="libvirt-libvirt.html#virConnectCredential">virConnectCredential</a> * <a href="#virConnectCredentialPtr">virConnectCredentialPtr</a>;
+typedef <a href="libvirt-libvirt.html#virStoragePool">virStoragePool</a> * <a href="#virStoragePoolPtr">virStoragePoolPtr</a>;
 typedef <a href="libvirt-libvirt.html#virNodeInfo">virNodeInfo</a> * <a href="#virNodeInfoPtr">virNodeInfoPtr</a>;
 typedef <a href="libvirt-libvirt.html#virNetwork">virNetwork</a> * <a href="#virNetworkPtr">virNetworkPtr</a>;
 typedef <a href="libvirt-libvirt.html#virDomainInfo">virDomainInfo</a> * <a href="#virDomainInfoPtr">virDomainInfoPtr</a>;
@@ -95,14 +97,17 @@ typedef <a href="libvirt-libvirt.html#virStoragePoolInfo">virStoragePoolInfo</a>
 typedef enum <a href="#virDomainCreateFlags">virDomainCreateFlags</a>;
 char *	<a href="#virStoragePoolGetXMLDesc">virStoragePoolGetXMLDesc</a>	(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 unsigned int flags);
 const char *	<a href="#virStorageVolGetKey">virStorageVolGetKey</a>	(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol);
+typedef void <a href="#virEventUpdateTimeoutFunc">virEventUpdateTimeoutFunc</a>	(int timer, <br/>					 int timeout);
 int	<a href="#virConnectClose">virConnectClose</a>			(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainDefineXML">virDomainDefineXML</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * xml);
 int	<a href="#virDomainShutdown">virDomainShutdown</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 int	<a href="#virConnectListStoragePools">virConnectListStoragePools</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames);
 int	<a href="#virGetVersion">virGetVersion</a>			(unsigned long * libVer, <br/>					 const char * type, <br/>					 unsigned long * typeVer);
 int	<a href="#virNodeGetCellsFreeMemory">virNodeGetCellsFreeMemory</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 unsigned long long * freeMems, <br/>					 int startCell, <br/>					 int maxCells);
+int	<a href="#virInitialize">virInitialize</a>			(void);
 int	<a href="#virStoragePoolSetAutostart">virStoragePoolSetAutostart</a>	(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 int autostart);
 <a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a>	<a href="#virStorageVolCreateXML">virStorageVolCreateXML</a>	(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>						 const char * xmldesc, <br/>						 unsigned int flags);
+int	<a href="#virConnectDomainEventDeregister">virConnectDomainEventDeregister</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 <a href="libvirt-libvirt.html#virConnectDomainEventCallback">virConnectDomainEventCallback</a> cb);
 int	<a href="#virDomainGetSchedulerParameters">virDomainGetSchedulerParameters</a>	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virSchedParameterPtr">virSchedParameterPtr</a> params, <br/>					 int * nparams);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainLookupByUUIDString">virDomainLookupByUUIDString</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>						 const char * uuidstr);
 int	<a href="#virConnectNumOfDefinedNetworks">virConnectNumOfDefinedNetworks</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
@@ -118,17 +123,18 @@ int	<a href="#virDomainSetAutostart">virDomainSetAutostart</a>		(<a href="libvir
 <a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a>	<a href="#virStorageVolLookupByName">virStorageVolLookupByName</a>	(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>							 const char * name);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainCreateLinux">virDomainCreateLinux</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * xmlDesc, <br/>					 unsigned int flags);
 int	<a href="#virDomainSetMaxMemory">virDomainSetMaxMemory</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned long memory);
-int	<a href="#virInitialize">virInitialize</a>			(void);
+void	<a href="#virEventRegisterImpl">virEventRegisterImpl</a>		(<a href="libvirt-libvirt.html#virEventAddHandleFunc">virEventAddHandleFunc</a> addHandle, <br/>					 <a href="libvirt-libvirt.html#virEventUpdateHandleFunc">virEventUpdateHandleFunc</a> updateHandle, <br/>					 <a href="libvirt-libvirt.html#virEventRemoveHandleFunc">virEventRemoveHandleFunc</a> removeHandle, <br/>					 <a href="libvirt-libvirt.html#virEventAddTimeoutFunc">virEventAddTimeoutFunc</a> addTimeout, <br/>					 <a href="libvirt-libvirt.html#virEventUpdateTimeoutFunc">virEventUpdateTimeoutFunc</a> updateTimeout, <br/>					 <a href="libvirt-libvirt.html#virEventRemoveTimeoutFunc">virEventRemoveTimeoutFunc</a> removeTimeout);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainMigrate">virDomainMigrate</a>	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> dconn, <br/>					 unsigned long flags, <br/>					 const char * dname, <br/>					 const char * uri, <br/>					 unsigned long bandwidth);
 int	<a href="#virDomainSuspend">virDomainSuspend</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 int	<a href="#virNetworkCreate">virNetworkCreate</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
+typedef void <a href="#virEventUpdateHandleFunc">virEventUpdateHandleFunc</a>	(int fd, <br/>					 int event);
 int	<a href="#virDomainDestroy">virDomainDestroy</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 int	<a href="#virConnectNumOfNetworks">virConnectNumOfNetworks</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 <a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a>	<a href="#virStoragePoolLookupByUUIDString">virStoragePoolLookupByUUIDString</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>							 const char * uuidstr);
 char *	<a href="#virDomainGetXMLDesc">virDomainGetXMLDesc</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 int flags);
 int	<a href="#virStoragePoolGetUUID">virStoragePoolGetUUID</a>		(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 unsigned char * uuid);
 int	<a href="#virStorageVolGetInfo">virStorageVolGetInfo</a>		(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol, <br/>					 <a href="libvirt-libvirt.html#virStorageVolInfoPtr">virStorageVolInfoPtr</a> info);
-const char *	<a href="#virNetworkGetName">virNetworkGetName</a>	(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
+int	<a href="#virDomainGetInfo">virDomainGetInfo</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virDomainInfoPtr">virDomainInfoPtr</a> info);
 int	<a href="#virNetworkDestroy">virNetworkDestroy</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
 <a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a>	<a href="#virStoragePoolLookupByName">virStoragePoolLookupByName</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>							 const char * name);
 int	<a href="#virNetworkGetAutostart">virNetworkGetAutostart</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network, <br/>					 int * autostart);
@@ -150,16 +156,17 @@ int	<a href="#virStoragePoolFree">virStoragePoolFree</a>		(<a href="libvirt-libv
 int	<a href="#virDomainBlockStats">virDomainBlockStats</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 const char * path, <br/>					 <a href="libvirt-libvirt.html#virDomainBlockStatsPtr">virDomainBlockStatsPtr</a> stats, <br/>					 size_t size);
 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virConnectOpenAuth">virConnectOpenAuth</a>	(const char * name, <br/>					 <a href="libvirt-libvirt.html#virConnectAuthPtr">virConnectAuthPtr</a> auth, <br/>					 int flags);
 int	<a href="#virStoragePoolDelete">virStoragePoolDelete</a>		(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 unsigned int flags);
-int	<a href="#virDomainResume">virDomainResume</a>			(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
+typedef int <a href="#virEventRemoveHandleFunc">virEventRemoveHandleFunc</a>	(int fd);
 const char *	<a href="#virStorageVolGetName">virStorageVolGetName</a>	(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol);
 int	<a href="#virStoragePoolGetAutostart">virStoragePoolGetAutostart</a>	(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 int * autostart);
 int	<a href="#virDomainGetAutostart">virDomainGetAutostart</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 int * autostart);
 int	<a href="#virStoragePoolListVolumes">virStoragePoolListVolumes</a>	(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 char ** const names, <br/>					 int maxnames);
 char *	<a href="#virConnectGetHostname">virConnectGetHostname</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
+typedef int <a href="#virEventRemoveTimeoutFunc">virEventRemoveTimeoutFunc</a>	(int timer);
 const char *	<a href="#virDomainGetName">virDomainGetName</a>	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 char *	<a href="#virNetworkGetXMLDesc">virNetworkGetXMLDesc</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network, <br/>					 int flags);
 int	<a href="#virConnectNumOfStoragePools">virConnectNumOfStoragePools</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
-int	<a href="#virDomainGetInfo">virDomainGetInfo</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virDomainInfoPtr">virDomainInfoPtr</a> info);
+const char *	<a href="#virNetworkGetName">virNetworkGetName</a>	(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
 int	<a href="#virConnectListDefinedDomains">virConnectListDefinedDomains</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames);
 char *	<a href="#virConnectGetCapabilities">virConnectGetCapabilities</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainLookupByName">virDomainLookupByName</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * name);
@@ -168,7 +175,9 @@ int	<a href="#virDomainPinVcpu">virDomainPinVcpu</a>		(<a href="libvirt-libvirt.
 int	<a href="#virDomainRestore">virDomainRestore</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * from);
 char *	<a href="#virStorageVolGetPath">virStorageVolGetPath</a>		(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol);
 <a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a>	<a href="#virNetworkLookupByUUIDString">virNetworkLookupByUUIDString</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>						 const char * uuidstr);
+typedef int <a href="#virConnectDomainEventCallback">virConnectDomainEventCallback</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 int event, <br/>					 void * opaque);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainLookupByID">virDomainLookupByID</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 int id);
+int	<a href="#virStorageVolDelete">virStorageVolDelete</a>		(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol, <br/>					 unsigned int flags);
 int	<a href="#virStorageVolFree">virStorageVolFree</a>		(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol);
 int	<a href="#virDomainMemoryPeek">virDomainMemoryPeek</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 unsigned long long start, <br/>					 size_t size, <br/>					 void * buffer, <br/>					 unsigned int flags);
 <a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a>	<a href="#virNetworkLookupByUUID">virNetworkLookupByUUID</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const unsigned char * uuid);
@@ -178,6 +187,7 @@ int	<a href="#virDomainGetUUID">virDomainGetUUID</a>		(<a href="libvirt-libvirt.
 int	<a href="#virDomainGetVcpus">virDomainGetVcpus</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virVcpuInfoPtr">virVcpuInfoPtr</a> info, <br/>					 int maxinfo, <br/>					 unsigned char * cpumaps, <br/>					 int maplen);
 <a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a>	<a href="#virStoragePoolCreateXML">virStoragePoolCreateXML</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>						 const char * xmlDesc, <br/>						 unsigned int flags);
 int	<a href="#virStoragePoolGetInfo">virStoragePoolGetInfo</a>		(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 <a href="libvirt-libvirt.html#virStoragePoolInfoPtr">virStoragePoolInfoPtr</a> info);
+int	<a href="#virDomainResume">virDomainResume</a>			(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 int	<a href="#virStoragePoolRefresh">virStoragePoolRefresh</a>		(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 unsigned int flags);
 int	<a href="#virConnectNumOfDefinedDomains">virConnectNumOfDefinedDomains</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 <a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a>	<a href="#virStorageVolLookupByKey">virStorageVolLookupByKey</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>							 const char * key);
@@ -186,6 +196,7 @@ int	<a href="#virDomainReboot">virDomainReboot</a>			(<a href="libvirt-libvirt.h
 int	<a href="#virNetworkGetUUIDString">virNetworkGetUUIDString</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network, <br/>					 char * buf);
 <a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a>	<a href="#virNetworkLookupByName">virNetworkLookupByName</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * name);
 int	<a href="#virDomainGetMaxVcpus">virDomainGetMaxVcpus</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
+typedef void <a href="#virEventHandleCallback">virEventHandleCallback</a>		(int fd, <br/>					 int events, <br/>					 void * opaque);
 char *	<a href="#virDomainGetSchedulerType">virDomainGetSchedulerType</a>	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 int * nparams);
 int	<a href="#virDomainDetachDevice">virDomainDetachDevice</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 const char * xml);
 int	<a href="#virStoragePoolNumOfVolumes">virStoragePoolNumOfVolumes</a>	(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool);
@@ -197,9 +208,10 @@ char *	<a href="#virConnectGetURI">virConnectGetURI</a>		(<a href="libvirt-libvi
 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virConnectOpenReadOnly">virConnectOpenReadOnly</a>	(const char * name);
 int	<a href="#virNetworkFree">virNetworkFree</a>			(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
 <a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a>	<a href="#virStoragePoolLookupByUUID">virStoragePoolLookupByUUID</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>							 const unsigned char * uuid);
-int	<a href="#virStorageVolDelete">virStorageVolDelete</a>		(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol, <br/>					 unsigned int flags);
+typedef int <a href="#virEventAddHandleFunc">virEventAddHandleFunc</a>		(int fd, <br/>					 int event, <br/>					 <a href="libvirt-libvirt.html#virEventHandleCallback">virEventHandleCallback</a> cb, <br/>					 void * opaque);
 int	<a href="#virNetworkUndefine">virNetworkUndefine</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
 int	<a href="#virConnectListDefinedStoragePools">virConnectListDefinedStoragePools</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>						 char ** const names, <br/>						 int maxnames);
+typedef void <a href="#virEventTimeoutCallback">virEventTimeoutCallback</a>		(int timer, <br/>					 void * opaque);
 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virNetworkGetConnect">virNetworkGetConnect</a>	(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> net);
 unsigned long long	<a href="#virNodeGetFreeMemory">virNodeGetFreeMemory</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virStorageVolGetConnect">virStorageVolGetConnect</a>	(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol);
@@ -215,8 +227,10 @@ int	<a href="#virConnectNumOfDefinedStoragePools">virConnectNumOfDefinedStorageP
 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virConnectOpen">virConnectOpen</a>		(const char * name);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainCreateXML">virDomainCreateXML</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * xmlDesc, <br/>					 unsigned int flags);
 int	<a href="#virDomainSetVcpus">virDomainSetVcpus</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned int nvcpus);
+int	<a href="#virConnectDomainEventRegister">virConnectDomainEventRegister</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 <a href="libvirt-libvirt.html#virConnectDomainEventCallback">virConnectDomainEventCallback</a> cb, <br/>					 void * opaque);
 unsigned int	<a href="#virDomainGetID">virDomainGetID</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 int	<a href="#virDomainBlockPeek">virDomainBlockPeek</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 const char * path, <br/>					 unsigned long long offset, <br/>					 size_t size, <br/>					 void * buffer, <br/>					 unsigned int flags);
+typedef int <a href="#virEventAddTimeoutFunc">virEventAddTimeoutFunc</a>		(int timeout, <br/>					 <a href="libvirt-libvirt.html#virEventTimeoutCallback">virEventTimeoutCallback</a> cb, <br/>					 void * opaque);
 int	<a href="#virDomainInterfaceStats">virDomainInterfaceStats</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 const char * path, <br/>					 <a href="libvirt-libvirt.html#virDomainInterfaceStatsPtr">virDomainInterfaceStatsPtr</a> stats, <br/>					 size_t size);
 int	<a href="#virConnectListNetworks">virConnectListNetworks</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames);
 </pre>
@@ -355,6 +369,19 @@ The content of this structure is not made public by the API.
 </pre><p/>
 </div>
         <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virDomainEventType">Enum </a>virDomainEventType</h3><pre class="programlisting">enum <a href="#virDomainEventType">virDomainEventType</a> {
+    <a name="VIR_DOMAIN_EVENT_ADDED">VIR_DOMAIN_EVENT_ADDED</a> = 1
+    <a name="VIR_DOMAIN_EVENT_REMOVED">VIR_DOMAIN_EVENT_REMOVED</a> = 2
+    <a name="VIR_DOMAIN_EVENT_STARTED">VIR_DOMAIN_EVENT_STARTED</a> = 3
+    <a name="VIR_DOMAIN_EVENT_SUSPENDED">VIR_DOMAIN_EVENT_SUSPENDED</a> = 4
+    <a name="VIR_DOMAIN_EVENT_RESUMED">VIR_DOMAIN_EVENT_RESUMED</a> = 5
+    <a name="VIR_DOMAIN_EVENT_STOPPED">VIR_DOMAIN_EVENT_STOPPED</a> = 6
+    <a name="VIR_DOMAIN_EVENT_SAVED">VIR_DOMAIN_EVENT_SAVED</a> = 7
+    <a name="VIR_DOMAIN_EVENT_RESTORED">VIR_DOMAIN_EVENT_RESTORED</a> = 8
+};
+</pre><p/>
+</div>
+        <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomainInfo">Structure </a>virDomainInfo</h3><pre class="programlisting">struct _virDomainInfo {
     unsigned char	state	: the running state, one of <a href="libvirt-libvirt.html#virDomainState">virDomainState</a>
     unsigned long	maxMem	: the maximum memory in KBytes allowed
@@ -417,6 +444,15 @@ The content of this structure is not made public by the API.
         <div class="refsect2" lang="en"><h3><a name="virDomainXMLFlags">Enum </a>virDomainXMLFlags</h3><pre class="programlisting">enum <a href="#virDomainXMLFlags">virDomainXMLFlags</a> {
     <a name="VIR_DOMAIN_XML_SECURE">VIR_DOMAIN_XML_SECURE</a> = 1 /* dump security sensitive information too */
     <a name="VIR_DOMAIN_XML_INACTIVE">VIR_DOMAIN_XML_INACTIVE</a> = 2 /*  dump inactive domain information */
+};
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virEventHandleType">Enum </a>virEventHandleType</h3><pre class="programlisting">enum <a href="#virEventHandleType">virEventHandleType</a> {
+    <a name="VIR_EVENT_HANDLE_READABLE">VIR_EVENT_HANDLE_READABLE</a> = 1
+    <a name="VIR_EVENT_HANDLE_WRITABLE">VIR_EVENT_HANDLE_WRITABLE</a> = 2
+    <a name="VIR_EVENT_HANDLE_ERROR">VIR_EVENT_HANDLE_ERROR</a> = 4
+    <a name="VIR_EVENT_HANDLE_HANGUP">VIR_EVENT_HANDLE_HANGUP</a> = 8
 };
 </pre><p/>
 </div>
@@ -578,6 +614,42 @@ The content of this structure is not made public by the API.
 </pre><p/>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cred</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>ncred</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>cbdata</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td/></tr></tbody></table></div></div>
         <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectDomainEventCallback"/>Function type virConnectDomainEventCallback</h3><pre class="programlisting">int	virConnectDomainEventCallback	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 int event, <br/>					 void * opaque)<br/>
+</pre><p>A callback function to be registered, and called when a domain event occurs</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td><a href="libvirt-libvirt.html#virConnect">virConnect</a> connection</td></tr><tr><td><span class="term"><i><tt>dom</tt></i>:</span></td><td>The domain on which the event occured</td></tr><tr><td><span class="term"><i><tt>event</tt></i>:</span></td><td>The specfic <a href="libvirt-libvirt.html#virDomainEventType">virDomainEventType</a> which occured</td></tr><tr><td><span class="term"><i><tt>opaque</tt></i>:</span></td><td>opaque user data</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td/></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virEventAddHandleFunc"/>Function type virEventAddHandleFunc</h3><pre class="programlisting">int	virEventAddHandleFunc		(int fd, <br/>					 int event, <br/>					 <a href="libvirt-libvirt.html#virEventHandleCallback">virEventHandleCallback</a> cb, <br/>					 void * opaque)<br/>
+</pre><p>Part of the EventImpl, this callback Adds a file handle callback to listen for specific events</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>fd</tt></i>:</span></td><td>file descriptor to listen on</td></tr><tr><td><span class="term"><i><tt>event</tt></i>:</span></td><td>bitset of events on which to fire the callback</td></tr><tr><td><span class="term"><i><tt>cb</tt></i>:</span></td><td>the callback to be called</td></tr><tr><td><span class="term"><i><tt>opaque</tt></i>:</span></td><td>user data to pass to the callback</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td/></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virEventAddTimeoutFunc"/>Function type virEventAddTimeoutFunc</h3><pre class="programlisting">int	virEventAddTimeoutFunc		(int timeout, <br/>					 <a href="libvirt-libvirt.html#virEventTimeoutCallback">virEventTimeoutCallback</a> cb, <br/>					 void * opaque)<br/>
+</pre><p>Part of the EventImpl, this user-defined callback handles adding an event timeout.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>timeout</tt></i>:</span></td><td>The timeout to monitor</td></tr><tr><td><span class="term"><i><tt>cb</tt></i>:</span></td><td>the callback to call when timeout has expired</td></tr><tr><td><span class="term"><i><tt>opaque</tt></i>:</span></td><td>user data to pass to the callback</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a timer value</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virEventHandleCallback"/>Function type virEventHandleCallback</h3><pre class="programlisting">void	virEventHandleCallback		(int fd, <br/>					 int events, <br/>					 void * opaque)<br/>
+</pre><p>callback for receiving file handle events</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>fd</tt></i>:</span></td><td>file handle on which the event occurred</td></tr><tr><td><span class="term"><i><tt>events</tt></i>:</span></td><td>bitset of events from <a href="libvirt-libvirt.html#virEventHandleType">virEventHandleType</a> constants</td></tr><tr><td><span class="term"><i><tt>opaque</tt></i>:</span></td><td>user data registered with handle</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virEventRemoveHandleFunc"/>Function type virEventRemoveHandleFunc</h3><pre class="programlisting">int	virEventRemoveHandleFunc	(int fd)<br/>
+</pre><p>Part of the EventImpl, this user-provided callback is notified when an fd is no longer being listened on</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>fd</tt></i>:</span></td><td>file descriptor to stop listening on</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td/></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virEventRemoveTimeoutFunc"/>Function type virEventRemoveTimeoutFunc</h3><pre class="programlisting">int	virEventRemoveTimeoutFunc	(int timer)<br/>
+</pre><p>Part of the EventImpl, this user-defined callback removes a timer</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>timer</tt></i>:</span></td><td>the timer to remove</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 on success, -1 on failure</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virEventTimeoutCallback"/>Function type virEventTimeoutCallback</h3><pre class="programlisting">void	virEventTimeoutCallback		(int timer, <br/>					 void * opaque)<br/>
+</pre><p>callback for receiving timer events</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>timer</tt></i>:</span></td><td>timer id emitting the event</td></tr><tr><td><span class="term"><i><tt>opaque</tt></i>:</span></td><td>user data registered with handle</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virEventUpdateHandleFunc"/>Function type virEventUpdateHandleFunc</h3><pre class="programlisting">void	virEventUpdateHandleFunc	(int fd, <br/>					 int event)<br/>
+</pre><p>Part of the EventImpl, this user-provided callback is notified when events to listen on change</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>fd</tt></i>:</span></td><td>file descriptor to modify</td></tr><tr><td><span class="term"><i><tt>event</tt></i>:</span></td><td>new events to listen on</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virEventUpdateTimeoutFunc"/>Function type virEventUpdateTimeoutFunc</h3><pre class="programlisting">void	virEventUpdateTimeoutFunc	(int timer, <br/>					 int timeout)<br/>
+</pre><p>Part of the EventImpl, this user-defined callback updates an event timeout.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>timer</tt></i>:</span></td><td>the timer to modify</td></tr><tr><td><span class="term"><i><tt>timeout</tt></i>:</span></td><td>the new timeout value</td></tr></tbody></table></div></div>
+        <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectAuthPtrDefault">Variable </a>virConnectAuthPtrDefault</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectAuthPtr">virConnectAuthPtr</a> virConnectAuthPtrDefault;
 </pre><p/>
 </div>
@@ -585,6 +657,14 @@ The content of this structure is not made public by the API.
         <div class="refsect2" lang="en"><h3><a name="virConnectClose"/>virConnectClose ()</h3><pre class="programlisting">int	virConnectClose			(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br/>
 </pre><p>This function closes the connection to the Hypervisor. This should not be called if further interaction with the Hypervisor are needed especially if there is running domain which need further monitoring by the application.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 in case of success or -1 in case of error.</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectDomainEventDeregister"/>virConnectDomainEventDeregister ()</h3><pre class="programlisting">int	virConnectDomainEventDeregister	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 <a href="libvirt-libvirt.html#virConnectDomainEventCallback">virConnectDomainEventCallback</a> cb)<br/>
+</pre><p>Removes a Domain Event Callback. De-registering for a domain callback will disable delivery of this event type</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the connection</td></tr><tr><td><span class="term"><i><tt>cb</tt></i>:</span></td><td>callback to the function handling domain events</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 on success, -1 on failure</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectDomainEventRegister"/>virConnectDomainEventRegister ()</h3><pre class="programlisting">int	virConnectDomainEventRegister	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 <a href="libvirt-libvirt.html#virConnectDomainEventCallback">virConnectDomainEventCallback</a> cb, <br/>					 void * opaque)<br/>
+</pre><p>Adds a Domain Event Callback. Registering for a domain callback will enable delivery of the events</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the connection</td></tr><tr><td><span class="term"><i><tt>cb</tt></i>:</span></td><td>callback to the function handling domain events</td></tr><tr><td><span class="term"><i><tt>opaque</tt></i>:</span></td><td>opaque data to pass on to the callback</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 on success, -1 on failure</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectFindStoragePoolSources"/>virConnectFindStoragePoolSources ()</h3><pre class="programlisting">char *	virConnectFindStoragePoolSources	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>						 const char * type, <br/>						 const char * srcSpec, <br/>						 unsigned int flags)<br/>
 </pre><p>Talks to a storage backend and attempts to auto-discover the set of available storage pool sources. e.g. For iSCSI this would be a set of iSCSI targets. For NFS this would be a list of exported paths. The srcSpec (optional for some storage pool types, e.g. local ones) is an instance of the storage pool's source element specifying where to look for the pools. srcSpec is not required for some types (e.g., those querying local storage resources only)</p>
@@ -853,6 +933,10 @@ The content of this structure is not made public by the API.
         <div class="refsect2" lang="en"><h3><a name="virDomainUndefine"/>virDomainUndefine ()</h3><pre class="programlisting">int	virDomainUndefine		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain)<br/>
 </pre><p>Undefine a domain but does not stop it if it is running</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>domain</tt></i>:</span></td><td>pointer to a defined domain</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 in case of success, -1 in case of error</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virEventRegisterImpl"/>virEventRegisterImpl ()</h3><pre class="programlisting">void	virEventRegisterImpl		(<a href="libvirt-libvirt.html#virEventAddHandleFunc">virEventAddHandleFunc</a> addHandle, <br/>					 <a href="libvirt-libvirt.html#virEventUpdateHandleFunc">virEventUpdateHandleFunc</a> updateHandle, <br/>					 <a href="libvirt-libvirt.html#virEventRemoveHandleFunc">virEventRemoveHandleFunc</a> removeHandle, <br/>					 <a href="libvirt-libvirt.html#virEventAddTimeoutFunc">virEventAddTimeoutFunc</a> addTimeout, <br/>					 <a href="libvirt-libvirt.html#virEventUpdateTimeoutFunc">virEventUpdateTimeoutFunc</a> updateTimeout, <br/>					 <a href="libvirt-libvirt.html#virEventRemoveTimeoutFunc">virEventRemoveTimeoutFunc</a> removeTimeout)<br/>
+</pre><p/>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>addHandle</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>updateHandle</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>removeHandle</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>addTimeout</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>updateTimeout</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>removeTimeout</tt></i>:</span></td><td/></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virGetVersion"/>virGetVersion ()</h3><pre class="programlisting">int	virGetVersion			(unsigned long * libVer, <br/>					 const char * type, <br/>					 unsigned long * typeVer)<br/>
 </pre><p>Provides two information back, @libVer is the version of the library while @typeVer will be the version of the hypervisor type @type against which the library was compiled. If @type is NULL, "Xen" is assumed, if @type is unknown or not available, an error code will be returned and @typeVer will be 0.</p>

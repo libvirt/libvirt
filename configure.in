@@ -1067,7 +1067,8 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           tests/sexpr2xmldata/Makefile \
           tests/xmconfigdata/Makefile \
           tests/xencapsdata/Makefile \
-          tests/virshdata/Makefile tests/confdata/Makefile)
+          tests/virshdata/Makefile tests/confdata/Makefile \
+          examples/domain-events/events-c/Makefile)
 
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Configuration summary])

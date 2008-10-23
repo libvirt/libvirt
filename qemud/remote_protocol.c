@@ -1943,6 +1943,35 @@ xdr_remote_storage_vol_get_path_ret (XDR *xdrs, remote_storage_vol_get_path_ret 
 }
 
 bool_t
+xdr_remote_domain_events_register_ret (XDR *xdrs, remote_domain_events_register_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->cb_registered))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_events_deregister_ret (XDR *xdrs, remote_domain_events_deregister_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->cb_registered))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_event_ret (XDR *xdrs, remote_domain_event_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->event))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 

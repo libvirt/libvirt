@@ -400,7 +400,8 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn,
                                       &state, &exitstatus) < 0)
         goto cleanup;
 
-    retval = virStringListJoin(state.list, SOURCES_START_TAG, SOURCES_END_TAG, "\n");
+    retval = __virStringListJoin(state.list, SOURCES_START_TAG,
+                                 SOURCES_END_TAG, "\n");
     if (retval == NULL) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("retval"));
         goto cleanup;
@@ -410,7 +411,7 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn,
     xmlFreeDoc(doc);
     xmlXPathFreeContext(xpath_ctxt);
     VIR_FREE(state.host);
-    virStringListFree(state.list);
+    __virStringListFree(state.list);
 
     return retval;
 }

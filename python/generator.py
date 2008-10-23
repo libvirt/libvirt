@@ -332,6 +332,9 @@ skip_function = (
     'virCopyLastError', # Python API is called virGetLastError instead
     'virConnectOpenAuth', # Python C code is manually written
     'virDefaultErrorFunc', # Python virErrorFuncHandler impl calls this from C
+    'virConnectDomainEventRegister', # TODO: generate python bindings for these below XXX
+    'virConnectDomainEventDeregister',
+    'virEventRegisterImpl',
 )
 
 

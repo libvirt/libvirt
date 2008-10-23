@@ -1552,6 +1552,8 @@ static virDriver testDriver = {
     NULL, /* domainMemoryPeek */
     testNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
     NULL, /* getFreeMemory */
+    NULL, /* domainEventRegister */
+    NULL, /* domainEventDeregister */
 };
 
 static virNetworkDriver testNetworkDriver = {

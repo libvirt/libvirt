@@ -75,6 +75,12 @@ typedef int (*dispatch_fn) (struct qemud_server *server,
                             char *args,
                             char *ret);
 
+/* Prototypes */
+static void
+remoteDispatchDomainEventSend (struct qemud_client *client,
+                               virDomainPtr dom,
+                               virDomainEventType event);
+
 /* This function gets called from qemud when it detects an incoming
  * remote protocol message.  At this point, client->buffer contains
  * the full call message (including length word which we skip).
@@ -405,6 +411,20 @@ remoteDispatchError (struct qemud_client *client,
     remoteDispatchSendError (client, req, VIR_ERR_RPC, msg);
 }
 
+int remoteRelayDomainEvent (virConnectPtr conn ATTRIBUTE_UNUSED,
+                                   virDomainPtr dom,
+                                   int event,
+                                   void *opaque)
+{
+    struct qemud_client *client = opaque;
+    REMOTE_DEBUG("Relaying domain event %d", event);
+
+    if(client) {
+        remoteDispatchDomainEventSend (client, dom, event);
+        qemudDispatchClientWrite(client->server,client);
+    }
+    return 0;
+}
 
 
 /*----- Functions. -----*/
@@ -3620,6 +3640,129 @@ remoteDispatchStorageVolLookupByPath (struct qemud_server *server ATTRIBUTE_UNUS
 }
 
 
+/**************************
+ * Async Events
+ **************************/
+static int
+remoteDispatchDomainEvent (struct qemud_server *server ATTRIBUTE_UNUSED,
+                           struct qemud_client *client ATTRIBUTE_UNUSED,
+                           remote_message_header *req ATTRIBUTE_UNUSED,
+                           void *args ATTRIBUTE_UNUSED,
+                           remote_domain_event_ret *ret ATTRIBUTE_UNUSED)
+{
+    /* This call gets dispatched from a client call.
+     * This does not make sense, as this should not be intiated
+     * from the client side in generated code.
+     */
+     return -1;
+}
+
+/***************************
+ * Register / deregister events
+ ***************************/
+static int
+remoteDispatchDomainEventsRegister (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                    struct qemud_client *client,
+                                    remote_message_header *req ATTRIBUTE_UNUSED,
+                                    void *args ATTRIBUTE_UNUSED,
+                                    remote_domain_events_register_ret *ret ATTRIBUTE_UNUSED)
+{
+    CHECK_CONN(client);
+
+    /* Register event delivery callback */
+    REMOTE_DEBUG("%s","Registering to relay remote events");
+    virConnectDomainEventRegister(client->conn, remoteRelayDomainEvent, client);
+
+    if(ret)
+        ret->cb_registered = 1;
+    return 0;
+}
+
+static int
+remoteDispatchDomainEventsDeregister (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                      struct qemud_client *client,
+                                      remote_message_header *req ATTRIBUTE_UNUSED,
+                                      void *args ATTRIBUTE_UNUSED,
+                                      remote_domain_events_deregister_ret *ret ATTRIBUTE_UNUSED)
+{
+    CHECK_CONN(client);
+
+    /* Deregister event delivery callback */
+    REMOTE_DEBUG("%s","Deregistering to relay remote events");
+    virConnectDomainEventDeregister(client->conn, remoteRelayDomainEvent);
+
+    if(ret)
+        ret->cb_registered = 0;
+    return 0;
+}
+
+static void
+remoteDispatchDomainEventSend (struct qemud_client *client,
+                         virDomainPtr dom,
+                         virDomainEventType event)
+{
+    remote_message_header rep;
+    XDR xdr;
+    int len;
+    remote_domain_event_ret data;
+
+    if(!client) {
+        remoteDispatchError (client, NULL, "%s", _("Invalid Client"));
+        return;
+    }
+
+    rep.prog = REMOTE_PROGRAM;
+    rep.vers = REMOTE_PROTOCOL_VERSION;
+    rep.proc = REMOTE_PROC_DOMAIN_EVENT;
+    rep.direction = REMOTE_MESSAGE;
+    rep.serial = 1;
+    rep.status = REMOTE_OK;
+
+    /* Serialise the return header and event. */
+    xdrmem_create (&xdr, client->buffer, sizeof client->buffer, XDR_ENCODE);
+
+    len = 0; /* We'll come back and write this later. */
+    if (!xdr_int (&xdr, &len)) {
+        remoteDispatchError (client, NULL, "%s", _("xdr_int failed (1)"));
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    if (!xdr_remote_message_header (&xdr, &rep)) {
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    /* build return data */
+    make_nonnull_domain (&data.dom, dom);
+    data.event = (int) event;
+
+    if (!xdr_remote_domain_event_ret(&xdr, &data)) {
+        remoteDispatchError (client, NULL, "%s", _("serialise return struct"));
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    len = xdr_getpos (&xdr);
+    if (xdr_setpos (&xdr, 0) == 0) {
+        remoteDispatchError (client, NULL, "%s", _("xdr_setpos failed"));
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    if (!xdr_int (&xdr, &len)) {
+        remoteDispatchError (client, NULL, "%s", _("xdr_int failed (2)"));
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    xdr_destroy (&xdr);
+
+    /* Send it. */
+    client->mode = QEMUD_MODE_TX_PACKET;
+    client->bufferLength = len;
+    client->bufferOffset = 0;
+}
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire

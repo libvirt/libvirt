@@ -36,7 +36,8 @@
  *
  * returns -1 if the file handle cannot be registered, 0 upon success
  */
-int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb, void *opaque);
+int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb,
+                          void *opaque);
 
 /**
  * virEventUpdateHandleImpl: change event set for a monitored file handle

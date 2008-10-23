@@ -993,6 +993,159 @@ char *                  virStorageVolGetPath            (virStorageVolPtr vol);
 virDomainPtr            virDomainCreateLinux    (virConnectPtr conn,
                                                  const char *xmlDesc,
                                                  unsigned int flags);
+
+/*
+ * Domain Event Notification
+ */
+
+/**
+ * virDomainEventType:
+ *
+ * a virDomainEventType is emitted during domain lifecycle events
+ */
+typedef enum {
+      VIR_DOMAIN_EVENT_ADDED,
+      VIR_DOMAIN_EVENT_REMOVED,
+      VIR_DOMAIN_EVENT_STARTED,
+      VIR_DOMAIN_EVENT_SUSPENDED,
+      VIR_DOMAIN_EVENT_RESUMED,
+      VIR_DOMAIN_EVENT_STOPPED,
+      VIR_DOMAIN_EVENT_SAVED,
+      VIR_DOMAIN_EVENT_RESTORED,
+} virDomainEventType;
+
+/**
+ * virConnectDomainEventCallback:
+ * @conn: virConnect connection
+ * @dom: The domain on which the event occured
+ * @event: The specfic virDomainEventType which occured
+ * @opaque: opaque user data
+ *
+ * A callback function to be registered, and called when a domain event occurs 
+ */
+typedef int (*virConnectDomainEventCallback)(virConnectPtr conn,
+                                             virDomainPtr dom,
+                                             int event,
+                                             void *opaque);
+
+int virConnectDomainEventRegister(virConnectPtr conn,
+                                  virConnectDomainEventCallback cb,
+                                  void *opaque);
+
+int virConnectDomainEventDeregister(virConnectPtr conn,
+                                    virConnectDomainEventCallback cb);
+
+/*
+ * Events Implementation
+ */
+
+/**
+ * virEventHandleType:
+ *
+ * a virEventHandleType is used similar to POLLxxx FD events, but is specific
+ * to libvirt. A client app must translate to, and from POLL events when using
+ * this construct.
+ */
+typedef enum {
+    VIR_EVENT_HANDLE_READABLE  = (1 << 0),
+    VIR_EVENT_HANDLE_WRITABLE  = (1 << 1),
+    VIR_EVENT_HANDLE_ERROR     = (1 << 2),
+    VIR_EVENT_HANDLE_HANGUP    = (1 << 3),
+} virEventHandleType;
+
+/**
+ * virEventHandleCallback:
+ *
+ * @fd: file handle on which the event occurred
+ * @events: bitset of events from virEventHandleType constants
+ * @opaque: user data registered with handle
+ *
+ * callback for receiving file handle events
+ */
+typedef void (*virEventHandleCallback)(int fd, int events, void *opaque);
+
+/**
+ * virEventAddHandleFunc:
+ * @fd: file descriptor to listen on
+ * @event: bitset of events on which to fire the callback
+ * @cb: the callback to be called
+ * @opaque: user data to pass to the callback
+ *
+ * Part of the EventImpl, this callback Adds a file handle callback to
+ *  listen for specific events
+ */
+typedef int (*virEventAddHandleFunc)(int fd, int event,
+                                     virEventHandleCallback cb, void *opaque);
+
+/**
+ * virEventUpdateHandleFunc:
+ * @fd: file descriptor to modify
+ * @event: new events to listen on
+ *
+ * Part of the EventImpl, this user-provided callback is notified when
+ * events to listen on change
+ */
+typedef void (*virEventUpdateHandleFunc)(int fd, int event);
+
+/**
+ * virEventRemoveHandleFunc:
+ * @fd: file descriptor to stop listening on
+ *
+ * Part of the EventImpl, this user-provided callback is notified when
+ * an fd is no longer being listened on
+ */
+typedef int (*virEventRemoveHandleFunc)(int fd);
+
+/**
+ * virEventTimeoutCallback:
+ *
+ * @timer: timer id emitting the event
+ * @opaque: user data registered with handle
+ *
+ * callback for receiving timer events
+ */
+typedef void (*virEventTimeoutCallback)(int timer, void *opaque);
+
+/**
+ * virEventAddTimeoutFunc:
+ * @timeout: The timeout to monitor
+ * @cb: the callback to call when timeout has expired
+ * @opaque: user data to pass to the callback
+ *
+ * Part of the EventImpl, this user-defined callback handles adding an
+ * event timeout.
+ *
+ * Returns a timer value
+ */
+typedef int (*virEventAddTimeoutFunc)(int timeout, virEventTimeoutCallback cb,
+                                      void *opaque);
+
+/**
+ * virEventUpdateTimeoutFunc:
+ * @timer: the timer to modify
+ * @timeout: the new timeout value
+ *
+ * Part of the EventImpl, this user-defined callback updates an
+ * event timeout.
+ */
+typedef void (*virEventUpdateTimeoutFunc)(int timer, int timeout);
+
+/**
+ * virEventRemoveTimeoutFunc:
+ * @timer: the timer to remove
+ *
+ * Part of the EventImpl, this user-defined callback removes a timer
+ *
+ * Returns 0 on success, -1 on failure
+ */
+typedef int (*virEventRemoveTimeoutFunc)(int timer);
+
+void virEventRegisterImpl(virEventAddHandleFunc addHandle,
+                          virEventUpdateHandleFunc updateHandle,
+                          virEventRemoveHandleFunc removeHandle,
+                          virEventAddTimeoutFunc addTimeout,
+                          virEventUpdateTimeoutFunc updateTimeout,
+                          virEventRemoveTimeoutFunc removeTimeout);
 #ifdef __cplusplus
 }
 #endif

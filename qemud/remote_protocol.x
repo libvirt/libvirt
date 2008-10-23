@@ -965,6 +965,25 @@ struct remote_storage_vol_get_path_ret {
     remote_nonnull_string name;
 };
 
+/**
+ * Events Register/Deregister:
+ * It would seem rpcgen does not like both args, and ret
+ * to be null. It will not generate the prototype otherwise.
+ * Pass back a redundant boolean to force prototype generation.
+ */
+struct remote_domain_events_register_ret {
+    int cb_registered;
+};
+
+struct remote_domain_events_deregister_ret {
+    int cb_registered;
+};
+
+struct remote_domain_event_ret {
+    remote_nonnull_domain dom;
+    int event;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -1086,7 +1105,11 @@ enum remote_procedure {
     REMOTE_PROC_NODE_GET_FREE_MEMORY = 102,
 
     REMOTE_PROC_DOMAIN_BLOCK_PEEK = 103,
-    REMOTE_PROC_DOMAIN_MEMORY_PEEK = 104
+    REMOTE_PROC_DOMAIN_MEMORY_PEEK = 104,
+
+    REMOTE_PROC_DOMAIN_EVENTS_REGISTER = 105,
+    REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER = 106,
+    REMOTE_PROC_DOMAIN_EVENT = 107
 };
 
 /* Custom RPC structure. */

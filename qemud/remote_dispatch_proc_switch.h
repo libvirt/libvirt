@@ -116,6 +116,24 @@ case REMOTE_PROC_DOMAIN_DUMP_XML:
         ret = (char *) &lv_remote_domain_dump_xml_ret;
         memset (&lv_remote_domain_dump_xml_ret, 0, sizeof lv_remote_domain_dump_xml_ret);
         break;
+case REMOTE_PROC_DOMAIN_EVENT:
+        fn = (dispatch_fn) remoteDispatchDomainEvent;
+        ret_filter = (xdrproc_t) xdr_remote_domain_event_ret;
+        ret = (char *) &lv_remote_domain_event_ret;
+        memset (&lv_remote_domain_event_ret, 0, sizeof lv_remote_domain_event_ret);
+        break;
+case REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER:
+        fn = (dispatch_fn) remoteDispatchDomainEventsDeregister;
+        ret_filter = (xdrproc_t) xdr_remote_domain_events_deregister_ret;
+        ret = (char *) &lv_remote_domain_events_deregister_ret;
+        memset (&lv_remote_domain_events_deregister_ret, 0, sizeof lv_remote_domain_events_deregister_ret);
+        break;
+case REMOTE_PROC_DOMAIN_EVENTS_REGISTER:
+        fn = (dispatch_fn) remoteDispatchDomainEventsRegister;
+        ret_filter = (xdrproc_t) xdr_remote_domain_events_register_ret;
+        ret = (char *) &lv_remote_domain_events_register_ret;
+        memset (&lv_remote_domain_events_register_ret, 0, sizeof lv_remote_domain_events_register_ret);
+        break;
 case REMOTE_PROC_DOMAIN_GET_AUTOSTART:
         fn = (dispatch_fn) remoteDispatchDomainGetAutostart;
         args_filter = (xdrproc_t) xdr_remote_domain_get_autostart_args;

@@ -811,7 +811,7 @@ static int lxcVmStart(virConnectPtr conn,
     vm->state = VIR_DOMAIN_RUNNING;
 
     if (virEventAddHandle(vm->monitor,
-                          POLLERR | POLLHUP,
+                          VIR_EVENT_HANDLE_ERROR | VIR_EVENT_HANDLE_HANGUP,
                           lxcMonitorEvent,
                           driver) < 0) {
         lxcVmTerminate(conn, driver, vm, 0);
@@ -1278,6 +1278,8 @@ static virDriver lxcDriver = {
     NULL, /* domainMemoryPeek */
     NULL, /* nodeGetCellsFreeMemory */
     NULL, /* getFreeMemory */
+    NULL, /* domainEventRegister */
+    NULL, /* domainEventDeregister */
 };
 
 static virStateDriver lxcStateDriver = {

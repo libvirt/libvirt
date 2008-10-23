@@ -379,8 +379,80 @@ struct _virStringList {
     struct _virStringList *next;
 };
 
-char *virStringListJoin(const virStringList *list, const char *pre,
+char *__virStringListJoin(const virStringList *list, const char *pre,
                         const char *post, const char *sep);
-void virStringListFree(virStringList *list);
+void __virStringListFree(virStringList *list);
+
+/**
+ * Domain Event Notification
+ */
+
+struct _virDomainEventCallback {
+    virConnectPtr conn;
+    virConnectDomainEventCallback cb;
+    void *opaque;
+};
+typedef struct _virDomainEventCallback virDomainEventCallback;
+typedef virDomainEventCallback *virDomainEventCallbackPtr;
+
+struct _virDomainEventCallbackList {
+    unsigned int count;
+    virDomainEventCallbackPtr *callbacks;
+};
+typedef struct _virDomainEventCallbackList virDomainEventCallbackList;
+typedef virDomainEventCallbackList *virDomainEventCallbackListPtr;
+
+void __virDomainEventCallbackListFree(virDomainEventCallbackListPtr list);
+#define virDomainEventCallbackListFree(x) __virDomainEventCallbackListFree(x)
+
+int  __virDomainEventCallbackListAdd(virConnectPtr conn,
+                                  virDomainEventCallbackListPtr cbList,
+                                  virConnectDomainEventCallback callback,
+                                  void *opaque);
+#define virDomainEventCallbackListAdd(a,b,c,d) \
+        __virDomainEventCallbackListAdd((a),(b),(c),(d))
+
+int  __virDomainEventCallbackListRemove(virConnectPtr conn,
+                                      virDomainEventCallbackListPtr cbList,
+                                      virConnectDomainEventCallback callback);
+#define virDomainEventCallbackListRemove(a,b,c) \
+        __virDomainEventCallbackListRemove((a),(b),(c))
+
+int __virEventHandleTypeToPollEvent(virEventHandleType events);
+#define virEventHandleTypeToPollEvent(x) __virEventHandleTypeToPollEvent(x)
+
+virEventHandleType __virPollEventToEventHandleType(int events);
+#define virPollEventToEventHandleType(x) __virPollEventToEventHandleType(x)
+
+/**
+ * Dispatching domain events that come in while
+ * in a call / response rpc
+ */
+struct _virDomainEvent {
+    virDomainPtr dom;
+    virDomainEventType event;
+};
+typedef struct _virDomainEvent virDomainEvent;
+typedef virDomainEvent *virDomainEventPtr;
+
+struct _virDomainEventQueue {
+    unsigned int count;
+    virDomainEventPtr *events;
+};
+typedef struct _virDomainEventQueue virDomainEventQueue;
+typedef virDomainEventQueue *virDomainEventQueuePtr;
+
+int __virDomainEventCallbackQueuePush(virDomainEventQueuePtr evtQueue,
+                                      virDomainPtr dom,
+                                      virDomainEventType event);
+#define virDomainEventCallbackQueuePush(a,b,c) \
+        __virDomainEventCallbackQueuePush((a),(b),(c))
+
+virDomainEventPtr
+__virDomainEventCallbackQueuePop(virDomainEventQueuePtr evtQueue);
+#define virDomainEventCallbackQueuePop(x) __virDomainEventCallbackQueuePop(x)
+
+void __virDomainEventQueueFree(virDomainEventQueuePtr queue);
+#define virDomainEventQueueFree(x) __virDomainEventQueueFree(x)
 
 #endif                          /* __VIR_INTERNAL_H__ */

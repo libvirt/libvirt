@@ -1,3 +1,24 @@
+Thu Oct 23 15:11:03 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in
+	  src/libvirt.c src/libvirt_sym.version: new libvirt event entry
+	  points, big patch provided by Ben Guthro
+	* Makefile.am configure.in src/driver.h src/event.c src/event.h
+	  src/internal.h src/libvirt.c src/libvirt_sym.version src/lxc_driver.c
+	  src/openvz_driver.c src/qemu_conf.h src/qemu_driver.c
+	  src/remote_internal.c src/storage_backend_fs.c src/test.c
+	  qemud/event.c qemud/event.h qemud/mdns.c qemud/qemud.c
+	  qemud/qemud.h qemud/remote.c qemud/remote_dispatch_localvars.h
+	  qemud/remote_dispatch_proc_switch.h qemud/remote_dispatch_prototypes.h
+	  qemud/remote_protocol.c qemud/remote_protocol.h
+	  qemud/remote_protocol.x proxy/Makefile.am python/generator.py:
+	  Not much is left untouched by the patch adding the events support
+	* docs/libvirt-api.xml docs/libvirt-refs.xml
+	  docs/html/libvirt-libvirt.html: regenerated the docs
+	* examples/domain-events/events-c/Makefile.am
+	  examples/domain-events/events-c/event-test.c: a test example
+	* AUTHORS: added Ben Guthro
+
 Thu Oct 23 13:41:49 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/apps.html docs/apps.html.in: update monitoring apps section

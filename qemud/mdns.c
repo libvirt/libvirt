@@ -231,14 +231,16 @@ static void libvirtd_mdns_client_callback(AvahiClient *c, AvahiClientState state
 static void libvirtd_mdns_watch_dispatch(int fd, int events, void *opaque)
 {
     AvahiWatch *w = (AvahiWatch*)opaque;
-    AVAHI_DEBUG("Dispatch watch FD %d Event %d", fd, events);
-    w->revents = events;
-    w->callback(w, fd, events, w->userdata);
+    int fd_events = virEventHandleTypeToPollEvent(events);
+    AVAHI_DEBUG("Dispatch watch FD %d Event %d", fd, fd_events);
+    w->revents = fd_events;
+    w->callback(w, fd, fd_events, w->userdata);
 }
 
 static AvahiWatch *libvirtd_mdns_watch_new(const AvahiPoll *api ATTRIBUTE_UNUSED,
                                             int fd, AvahiWatchEvent event, AvahiWatchCallback cb, void *userdata) {
     AvahiWatch *w;
+    virEventHandleType hEvents;
     if (VIR_ALLOC(w) < 0)
         return NULL;
 
@@ -248,7 +250,9 @@ static AvahiWatch *libvirtd_mdns_watch_new(const AvahiPoll *api ATTRIBUTE_UNUSED
     w->userdata = userdata;
 
     AVAHI_DEBUG("New handle %p FD %d Event %d", w, w->fd, event);
-    if (virEventAddHandleImpl(fd, event, libvirtd_mdns_watch_dispatch, w) < 0) {
+    hEvents = virPollEventToEventHandleType(event);
+    if (virEventAddHandleImpl(fd, hEvents,
+                              libvirtd_mdns_watch_dispatch, w) < 0) {
         VIR_FREE(w);
         return NULL;
     }

@@ -1081,6 +1081,22 @@ struct remote_storage_vol_get_path_ret {
         remote_nonnull_string name;
 };
 typedef struct remote_storage_vol_get_path_ret remote_storage_vol_get_path_ret;
+
+struct remote_domain_events_register_ret {
+        int cb_registered;
+};
+typedef struct remote_domain_events_register_ret remote_domain_events_register_ret;
+
+struct remote_domain_events_deregister_ret {
+        int cb_registered;
+};
+typedef struct remote_domain_events_deregister_ret remote_domain_events_deregister_ret;
+
+struct remote_domain_event_ret {
+        remote_nonnull_domain dom;
+        int event;
+};
+typedef struct remote_domain_event_ret remote_domain_event_ret;
 #define REMOTE_PROGRAM 0x20008086
 #define REMOTE_PROTOCOL_VERSION 1
 
@@ -1189,6 +1205,9 @@ enum remote_procedure {
         REMOTE_PROC_NODE_GET_FREE_MEMORY = 102,
         REMOTE_PROC_DOMAIN_BLOCK_PEEK = 103,
         REMOTE_PROC_DOMAIN_MEMORY_PEEK = 104,
+        REMOTE_PROC_DOMAIN_EVENTS_REGISTER = 105,
+        REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER = 106,
+        REMOTE_PROC_DOMAIN_EVENT = 107,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -1394,6 +1413,9 @@ extern  bool_t xdr_remote_storage_vol_get_info_args (XDR *, remote_storage_vol_g
 extern  bool_t xdr_remote_storage_vol_get_info_ret (XDR *, remote_storage_vol_get_info_ret*);
 extern  bool_t xdr_remote_storage_vol_get_path_args (XDR *, remote_storage_vol_get_path_args*);
 extern  bool_t xdr_remote_storage_vol_get_path_ret (XDR *, remote_storage_vol_get_path_ret*);
+extern  bool_t xdr_remote_domain_events_register_ret (XDR *, remote_domain_events_register_ret*);
+extern  bool_t xdr_remote_domain_events_deregister_ret (XDR *, remote_domain_events_deregister_ret*);
+extern  bool_t xdr_remote_domain_event_ret (XDR *, remote_domain_event_ret*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_direction (XDR *, remote_message_direction*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
@@ -1575,6 +1597,9 @@ extern bool_t xdr_remote_storage_vol_get_info_args ();
 extern bool_t xdr_remote_storage_vol_get_info_ret ();
 extern bool_t xdr_remote_storage_vol_get_path_args ();
 extern bool_t xdr_remote_storage_vol_get_path_ret ();
+extern bool_t xdr_remote_domain_events_register_ret ();
+extern bool_t xdr_remote_domain_events_deregister_ret ();
+extern bool_t xdr_remote_domain_event_ret ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_direction ();
 extern bool_t xdr_remote_message_status ();

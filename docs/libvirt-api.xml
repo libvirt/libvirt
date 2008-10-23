@@ -18,48 +18,60 @@
      <exports symbol='VIR_UNUSE_CPU' type='macro'/>
      <exports symbol='VIR_STORAGE_POOL_BUILD_REPAIR' type='enum'/>
      <exports symbol='VIR_CRED_EXTERNAL' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_ADDED' type='enum'/>
+     <exports symbol='VIR_EVENT_HANDLE_READABLE' type='enum'/>
      <exports symbol='VIR_DOMAIN_SHUTDOWN' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_UINT' type='enum'/>
      <exports symbol='VIR_STORAGE_POOL_BUILDING' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_SAVED' type='enum'/>
      <exports symbol='VIR_CRED_CNONCE' type='enum'/>
      <exports symbol='VIR_CRED_ECHOPROMPT' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_DOUBLE' type='enum'/>
-     <exports symbol='VIR_STORAGE_VOL_BLOCK' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_RESUMED' type='enum'/>
+     <exports symbol='VIR_VCPU_OFFLINE' type='enum'/>
      <exports symbol='VIR_STORAGE_POOL_RUNNING' type='enum'/>
      <exports symbol='VIR_STORAGE_POOL_BUILD_RESIZE' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_LLONG' type='enum'/>
      <exports symbol='VIR_CONNECT_RO' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_STOPPED' type='enum'/>
      <exports symbol='VIR_CRED_AUTHNAME' type='enum'/>
      <exports symbol='VIR_CRED_LANGUAGE' type='enum'/>
      <exports symbol='VIR_CRED_NOECHOPROMPT' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_BOOLEAN' type='enum'/>
      <exports symbol='VIR_MIGRATE_LIVE' type='enum'/>
+     <exports symbol='VIR_STORAGE_POOL_INACTIVE' type='enum'/>
      <exports symbol='VIR_CRED_USERNAME' type='enum'/>
-     <exports symbol='VIR_VCPU_OFFLINE' type='enum'/>
+     <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
      <exports symbol='VIR_MEMORY_VIRTUAL' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_REMOVED' type='enum'/>
      <exports symbol='VIR_DOMAIN_RUNNING' type='enum'/>
-     <exports symbol='VIR_DOMAIN_BLOCKED' type='enum'/>
+     <exports symbol='VIR_EVENT_HANDLE_ERROR' type='enum'/>
+     <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
      <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
      <exports symbol='VIR_STORAGE_POOL_BUILD_NEW' type='enum'/>
-     <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
+     <exports symbol='VIR_EVENT_HANDLE_WRITABLE' type='enum'/>
      <exports symbol='VIR_STORAGE_POOL_DELETE_NORMAL' type='enum'/>
      <exports symbol='VIR_STORAGE_VOL_DELETE_ZEROED' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_INT' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_ULLONG' type='enum'/>
      <exports symbol='VIR_CRED_REALM' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_STARTED' type='enum'/>
      <exports symbol='VIR_STORAGE_VOL_FILE' type='enum'/>
-     <exports symbol='VIR_VCPU_RUNNING' type='enum'/>
+     <exports symbol='VIR_EVENT_HANDLE_HANGUP' type='enum'/>
      <exports symbol='VIR_DOMAIN_PAUSED' type='enum'/>
      <exports symbol='VIR_STORAGE_POOL_DEGRADED' type='enum'/>
      <exports symbol='VIR_DOMAIN_CRASHED' type='enum'/>
+     <exports symbol='VIR_VCPU_RUNNING' type='enum'/>
      <exports symbol='VIR_DOMAIN_XML_INACTIVE' type='enum'/>
+     <exports symbol='VIR_STORAGE_VOL_BLOCK' type='enum'/>
      <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
-     <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_RESTORED' type='enum'/>
      <exports symbol='VIR_CRED_PASSPHRASE' type='enum'/>
      <exports symbol='VIR_STORAGE_VOL_DELETE_NORMAL' type='enum'/>
      <exports symbol='VIR_STORAGE_POOL_DELETE_ZEROED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_BLOCKED' type='enum'/>
      <exports symbol='VIR_DOMAIN_XML_SECURE' type='enum'/>
-     <exports symbol='VIR_STORAGE_POOL_INACTIVE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_SUSPENDED' type='enum'/>
      <exports symbol='virDomainBlockStatsStruct' type='typedef'/>
      <exports symbol='virDomainMigrateFlags' type='typedef'/>
      <exports symbol='virNodeInfo' type='typedef'/>
@@ -69,8 +81,9 @@
      <exports symbol='virVcpuInfo' type='typedef'/>
      <exports symbol='virDomainInfo' type='typedef'/>
      <exports symbol='virStoragePoolDeleteFlags' type='typedef'/>
+     <exports symbol='virEventHandleType' type='typedef'/>
      <exports symbol='virStoragePool' type='typedef'/>
-     <exports symbol='virStoragePoolPtr' type='typedef'/>
+     <exports symbol='virDomainEventType' type='typedef'/>
      <exports symbol='virDomainInterfaceStatsStruct' type='typedef'/>
      <exports symbol='virStoragePoolInfo' type='typedef'/>
      <exports symbol='virDomainState' type='typedef'/>
@@ -80,6 +93,7 @@
      <exports symbol='virStorageVolInfo' type='typedef'/>
      <exports symbol='virSchedParameterType' type='typedef'/>
      <exports symbol='virConnectCredentialPtr' type='typedef'/>
+     <exports symbol='virStoragePoolPtr' type='typedef'/>
      <exports symbol='virNodeInfoPtr' type='typedef'/>
      <exports symbol='virNetworkPtr' type='typedef'/>
      <exports symbol='virDomainInfoPtr' type='typedef'/>
@@ -117,14 +131,17 @@
      <exports symbol='virConnectAuthPtrDefault' type='variable'/>
      <exports symbol='virStoragePoolGetXMLDesc' type='function'/>
      <exports symbol='virStorageVolGetKey' type='function'/>
+     <exports symbol='virEventUpdateTimeoutFunc' type='function'/>
      <exports symbol='virConnectClose' type='function'/>
      <exports symbol='virDomainDefineXML' type='function'/>
      <exports symbol='virDomainShutdown' type='function'/>
      <exports symbol='virConnectListStoragePools' type='function'/>
      <exports symbol='virGetVersion' type='function'/>
      <exports symbol='virNodeGetCellsFreeMemory' type='function'/>
+     <exports symbol='virInitialize' type='function'/>
      <exports symbol='virStoragePoolSetAutostart' type='function'/>
      <exports symbol='virStorageVolCreateXML' type='function'/>
+     <exports symbol='virConnectDomainEventDeregister' type='function'/>
      <exports symbol='virDomainGetSchedulerParameters' type='function'/>
      <exports symbol='virDomainLookupByUUIDString' type='function'/>
      <exports symbol='virConnectNumOfDefinedNetworks' type='function'/>
@@ -140,17 +157,18 @@
      <exports symbol='virStorageVolLookupByName' type='function'/>
      <exports symbol='virDomainCreateLinux' type='function'/>
      <exports symbol='virDomainSetMaxMemory' type='function'/>
-     <exports symbol='virInitialize' type='function'/>
+     <exports symbol='virEventRegisterImpl' type='function'/>
      <exports symbol='virDomainMigrate' type='function'/>
      <exports symbol='virDomainSuspend' type='function'/>
      <exports symbol='virNetworkCreate' type='function'/>
+     <exports symbol='virEventUpdateHandleFunc' type='function'/>
      <exports symbol='virDomainDestroy' type='function'/>
      <exports symbol='virConnectNumOfNetworks' type='function'/>
      <exports symbol='virStoragePoolLookupByUUIDString' type='function'/>
      <exports symbol='virDomainGetXMLDesc' type='function'/>
      <exports symbol='virStoragePoolGetUUID' type='function'/>
      <exports symbol='virStorageVolGetInfo' type='function'/>
-     <exports symbol='virNetworkGetName' type='function'/>
+     <exports symbol='virDomainGetInfo' type='function'/>
      <exports symbol='virNetworkDestroy' type='function'/>
      <exports symbol='virStoragePoolLookupByName' type='function'/>
      <exports symbol='virNetworkGetAutostart' type='function'/>
@@ -172,16 +190,17 @@
      <exports symbol='virDomainBlockStats' type='function'/>
      <exports symbol='virConnectOpenAuth' type='function'/>
      <exports symbol='virStoragePoolDelete' type='function'/>
-     <exports symbol='virDomainResume' type='function'/>
+     <exports symbol='virEventRemoveHandleFunc' type='function'/>
      <exports symbol='virStorageVolGetName' type='function'/>
      <exports symbol='virStoragePoolGetAutostart' type='function'/>
      <exports symbol='virDomainGetAutostart' type='function'/>
      <exports symbol='virStoragePoolListVolumes' type='function'/>
      <exports symbol='virConnectGetHostname' type='function'/>
+     <exports symbol='virEventRemoveTimeoutFunc' type='function'/>
      <exports symbol='virDomainGetName' type='function'/>
      <exports symbol='virNetworkGetXMLDesc' type='function'/>
      <exports symbol='virConnectNumOfStoragePools' type='function'/>
-     <exports symbol='virDomainGetInfo' type='function'/>
+     <exports symbol='virNetworkGetName' type='function'/>
      <exports symbol='virConnectListDefinedDomains' type='function'/>
      <exports symbol='virConnectGetCapabilities' type='function'/>
      <exports symbol='virDomainLookupByName' type='function'/>
@@ -190,7 +209,9 @@
      <exports symbol='virDomainRestore' type='function'/>
      <exports symbol='virStorageVolGetPath' type='function'/>
      <exports symbol='virNetworkLookupByUUIDString' type='function'/>
+     <exports symbol='virConnectDomainEventCallback' type='function'/>
      <exports symbol='virDomainLookupByID' type='function'/>
+     <exports symbol='virStorageVolDelete' type='function'/>
      <exports symbol='virStorageVolFree' type='function'/>
      <exports symbol='virDomainMemoryPeek' type='function'/>
      <exports symbol='virNetworkLookupByUUID' type='function'/>
@@ -200,6 +221,7 @@
      <exports symbol='virDomainGetVcpus' type='function'/>
      <exports symbol='virStoragePoolCreateXML' type='function'/>
      <exports symbol='virStoragePoolGetInfo' type='function'/>
+     <exports symbol='virDomainResume' type='function'/>
      <exports symbol='virStoragePoolRefresh' type='function'/>
      <exports symbol='virConnectNumOfDefinedDomains' type='function'/>
      <exports symbol='virStorageVolLookupByKey' type='function'/>
@@ -208,6 +230,7 @@
      <exports symbol='virNetworkGetUUIDString' type='function'/>
      <exports symbol='virNetworkLookupByName' type='function'/>
      <exports symbol='virDomainGetMaxVcpus' type='function'/>
+     <exports symbol='virEventHandleCallback' type='function'/>
      <exports symbol='virDomainGetSchedulerType' type='function'/>
      <exports symbol='virDomainDetachDevice' type='function'/>
      <exports symbol='virStoragePoolNumOfVolumes' type='function'/>
@@ -219,9 +242,10 @@
      <exports symbol='virConnectOpenReadOnly' type='function'/>
      <exports symbol='virNetworkFree' type='function'/>
      <exports symbol='virStoragePoolLookupByUUID' type='function'/>
-     <exports symbol='virStorageVolDelete' type='function'/>
+     <exports symbol='virEventAddHandleFunc' type='function'/>
      <exports symbol='virNetworkUndefine' type='function'/>
      <exports symbol='virConnectListDefinedStoragePools' type='function'/>
+     <exports symbol='virEventTimeoutCallback' type='function'/>
      <exports symbol='virNetworkGetConnect' type='function'/>
      <exports symbol='virNodeGetFreeMemory' type='function'/>
      <exports symbol='virStorageVolGetConnect' type='function'/>
@@ -237,8 +261,10 @@
      <exports symbol='virConnectOpen' type='function'/>
      <exports symbol='virDomainCreateXML' type='function'/>
      <exports symbol='virDomainSetVcpus' type='function'/>
+     <exports symbol='virConnectDomainEventRegister' type='function'/>
      <exports symbol='virDomainGetID' type='function'/>
      <exports symbol='virDomainBlockPeek' type='function'/>
+     <exports symbol='virEventAddTimeoutFunc' type='function'/>
      <exports symbol='virDomainInterfaceStats' type='function'/>
      <exports symbol='virConnectListNetworks' type='function'/>
     </file>
@@ -403,6 +429,14 @@
     <enum name='VIR_CRED_USERNAME' file='libvirt' value='1' type='virConnectCredentialType' info='Identity to act as'/>
     <enum name='VIR_DOMAIN_BLOCKED' file='libvirt' value='2' type='virDomainState' info='the domain is blocked on resource'/>
     <enum name='VIR_DOMAIN_CRASHED' file='libvirt' value='6' type='virDomainState' info=' the domain is crashed'/>
+    <enum name='VIR_DOMAIN_EVENT_ADDED' file='libvirt' value='1' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_REMOVED' file='libvirt' value='2' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_RESTORED' file='libvirt' value='8' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_RESUMED' file='libvirt' value='5' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_SAVED' file='libvirt' value='7' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_STARTED' file='libvirt' value='3' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_STOPPED' file='libvirt' value='6' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_SUSPENDED' file='libvirt' value='4' type='virDomainEventType'/>
     <enum name='VIR_DOMAIN_NONE' file='libvirt' value='0' type='virDomainCreateFlags'/>
     <enum name='VIR_DOMAIN_NOSTATE' file='libvirt' value='0' type='virDomainState' info='no state'/>
     <enum name='VIR_DOMAIN_PAUSED' file='libvirt' value='3' type='virDomainState' info='the domain is paused by user'/>
@@ -469,6 +503,10 @@
     <enum name='VIR_ERR_XEN_CALL' file='virterror' value='15' type='virErrorNumber' info='failure doing an hypervisor call'/>
     <enum name='VIR_ERR_XML_DETAIL' file='virterror' value='35' type='virErrorNumber' info='detail of an XML error'/>
     <enum name='VIR_ERR_XML_ERROR' file='virterror' value='27' type='virErrorNumber' info='an XML description is not well formed or broken'/>
+    <enum name='VIR_EVENT_HANDLE_ERROR' file='libvirt' value='4' type='virEventHandleType'/>
+    <enum name='VIR_EVENT_HANDLE_HANGUP' file='libvirt' value='8' type='virEventHandleType'/>
+    <enum name='VIR_EVENT_HANDLE_READABLE' file='libvirt' value='1' type='virEventHandleType'/>
+    <enum name='VIR_EVENT_HANDLE_WRITABLE' file='libvirt' value='2' type='virEventHandleType'/>
     <enum name='VIR_FROM_CONF' file='virterror' value='9' type='virErrorDomain' info='Error in the configuration file handling'/>
     <enum name='VIR_FROM_DOM' file='virterror' value='6' type='virErrorDomain' info='Error when operating on a domain'/>
     <enum name='VIR_FROM_DOMAIN' file='virterror' value='20' type='virErrorDomain' info=' Error from domain config'/>
@@ -544,6 +582,7 @@
       <field name='errs' type='long long' info=' In Xen this returns the mysterious &apos;oo_req&apos;.'/>
     </struct>
     <typedef name='virDomainCreateFlags' file='libvirt' type='enum'/>
+    <typedef name='virDomainEventType' file='libvirt' type='enum'/>
     <struct name='virDomainInfo' file='libvirt' type='struct _virDomainInfo'>
       <field name='state' type='unsigned char' info=' the running state, one of virDomainState'/>
       <field name='maxMem' type='unsigned long' info=' the maximum memory in KBytes allowed'/>
@@ -595,6 +634,7 @@ see note above'/>
     <typedef name='virErrorLevel' file='virterror' type='enum'/>
     <typedef name='virErrorNumber' file='virterror' type='enum'/>
     <typedef name='virErrorPtr' file='virterror' type='virError *'/>
+    <typedef name='virEventHandleType' file='libvirt' type='enum'/>
     <struct name='virNetwork' file='libvirt' type='struct _virNetwork'/>
     <typedef name='virNetworkPtr' file='libvirt' type='virNetwork *'>
       <info>a virNetworkPtr is pointer to a virNetwork private structure, this is the type used to reference a virtual network in the API.</info>
@@ -689,6 +729,27 @@ see note above'/>
       <info>This function closes the connection to the Hypervisor. This should not be called if further interaction with the Hypervisor are needed especially if there is running domain which need further monitoring by the application.</info>
       <return type='int' info='0 in case of success or -1 in case of error.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+    </function>
+    <functype name='virConnectDomainEventCallback' file='libvirt' module='libvirt'>
+      <info>A callback function to be registered, and called when a domain event occurs</info>
+      <return type='int' info=''/>
+      <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
+      <arg name='dom' type='virDomainPtr' info='The domain on which the event occured'/>
+      <arg name='event' type='int' info='The specfic virDomainEventType which occured'/>
+      <arg name='opaque' type='void *' info='opaque user data'/>
+    </functype>
+    <function name='virConnectDomainEventDeregister' file='libvirt' module='libvirt'>
+      <info>Removes a Domain Event Callback. De-registering for a domain callback will disable delivery of this event type</info>
+      <return type='int' info='0 on success, -1 on failure'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the connection'/>
+      <arg name='cb' type='virConnectDomainEventCallback' info='callback to the function handling domain events'/>
+    </function>
+    <function name='virConnectDomainEventRegister' file='libvirt' module='libvirt'>
+      <info>Adds a Domain Event Callback. Registering for a domain callback will enable delivery of the events</info>
+      <return type='int' info='0 on success, -1 on failure'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the connection'/>
+      <arg name='cb' type='virConnectDomainEventCallback' info='callback to the function handling domain events'/>
+      <arg name='opaque' type='void *' info='opaque data to pass on to the callback'/>
     </function>
     <function name='virConnectFindStoragePoolSources' file='libvirt' module='libvirt'>
       <info>Talks to a storage backend and attempts to auto-discover the set of available storage pool sources. e.g. For iSCSI this would be a set of iSCSI targets. For NFS this would be a list of exported paths.  The srcSpec (optional for some storage pool types, e.g. local ones) is an instance of the storage pool&apos;s source element specifying where to look for the pools.  srcSpec is not required for some types (e.g., those querying local storage resources only)</info>
@@ -1116,6 +1177,66 @@ see note above'/>
       <return type='void'/>
       <arg name='userData' type='void *' info='user provided data for the error callback'/>
       <arg name='error' type='virErrorPtr' info='the error being raised.'/>
+    </functype>
+    <functype name='virEventAddHandleFunc' file='libvirt' module='libvirt'>
+      <info>Part of the EventImpl, this callback Adds a file handle callback to listen for specific events</info>
+      <return type='int' info=''/>
+      <arg name='fd' type='int' info='file descriptor to listen on'/>
+      <arg name='event' type='int' info='bitset of events on which to fire the callback'/>
+      <arg name='cb' type='virEventHandleCallback' info='the callback to be called'/>
+      <arg name='opaque' type='void *' info='user data to pass to the callback'/>
+    </functype>
+    <functype name='virEventAddTimeoutFunc' file='libvirt' module='libvirt'>
+      <info>Part of the EventImpl, this user-defined callback handles adding an event timeout.</info>
+      <return type='int' info='a timer value'/>
+      <arg name='timeout' type='int' info='The timeout to monitor'/>
+      <arg name='cb' type='virEventTimeoutCallback' info='the callback to call when timeout has expired'/>
+      <arg name='opaque' type='void *' info='user data to pass to the callback'/>
+    </functype>
+    <functype name='virEventHandleCallback' file='libvirt' module='libvirt'>
+      <info>callback for receiving file handle events</info>
+      <return type='void'/>
+      <arg name='fd' type='int' info='file handle on which the event occurred'/>
+      <arg name='events' type='int' info='bitset of events from virEventHandleType constants'/>
+      <arg name='opaque' type='void *' info='user data registered with handle'/>
+    </functype>
+    <function name='virEventRegisterImpl' file='libvirt' module='libvirt'>
+      <info></info>
+      <return type='void'/>
+      <arg name='addHandle' type='virEventAddHandleFunc' info=''/>
+      <arg name='updateHandle' type='virEventUpdateHandleFunc' info=''/>
+      <arg name='removeHandle' type='virEventRemoveHandleFunc' info=''/>
+      <arg name='addTimeout' type='virEventAddTimeoutFunc' info=''/>
+      <arg name='updateTimeout' type='virEventUpdateTimeoutFunc' info=''/>
+      <arg name='removeTimeout' type='virEventRemoveTimeoutFunc' info=''/>
+    </function>
+    <functype name='virEventRemoveHandleFunc' file='libvirt' module='libvirt'>
+      <info>Part of the EventImpl, this user-provided callback is notified when an fd is no longer being listened on</info>
+      <return type='int' info=''/>
+      <arg name='fd' type='int' info='file descriptor to stop listening on'/>
+    </functype>
+    <functype name='virEventRemoveTimeoutFunc' file='libvirt' module='libvirt'>
+      <info>Part of the EventImpl, this user-defined callback removes a timer</info>
+      <return type='int' info='0 on success, -1 on failure'/>
+      <arg name='timer' type='int' info='the timer to remove'/>
+    </functype>
+    <functype name='virEventTimeoutCallback' file='libvirt' module='libvirt'>
+      <info>callback for receiving timer events</info>
+      <return type='void'/>
+      <arg name='timer' type='int' info='timer id emitting the event'/>
+      <arg name='opaque' type='void *' info='user data registered with handle'/>
+    </functype>
+    <functype name='virEventUpdateHandleFunc' file='libvirt' module='libvirt'>
+      <info>Part of the EventImpl, this user-provided callback is notified when events to listen on change</info>
+      <return type='void'/>
+      <arg name='fd' type='int' info='file descriptor to modify'/>
+      <arg name='event' type='int' info='new events to listen on'/>
+    </functype>
+    <functype name='virEventUpdateTimeoutFunc' file='libvirt' module='libvirt'>
+      <info>Part of the EventImpl, this user-defined callback updates an event timeout.</info>
+      <return type='void'/>
+      <arg name='timer' type='int' info='the timer to modify'/>
+      <arg name='timeout' type='int' info='the new timeout value'/>
     </functype>
     <function name='virGetLastError' file='virterror' module='virterror'>
       <info>Provide a pointer to the last error caught at the library level Simpler but may not be suitable for multithreaded accesses, in which case use virCopyLastError()</info>

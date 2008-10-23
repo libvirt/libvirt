@@ -18,6 +18,9 @@ static int remoteDispatchDomainDefineXml (struct qemud_server *server, struct qe
 static int remoteDispatchDomainDestroy (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_destroy_args *args, void *ret);
 static int remoteDispatchDomainDetachDevice (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_detach_device_args *args, void *ret);
 static int remoteDispatchDomainDumpXml (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_dump_xml_args *args, remote_domain_dump_xml_ret *ret);
+static int remoteDispatchDomainEvent (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_domain_event_ret *ret);
+static int remoteDispatchDomainEventsDeregister (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_domain_events_deregister_ret *ret);
+static int remoteDispatchDomainEventsRegister (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_domain_events_register_ret *ret);
 static int remoteDispatchDomainGetAutostart (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_get_autostart_args *args, remote_domain_get_autostart_ret *ret);
 static int remoteDispatchDomainGetInfo (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_get_info_args *args, remote_domain_get_info_ret *ret);
 static int remoteDispatchDomainGetMaxMemory (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_domain_get_max_memory_args *args, remote_domain_get_max_memory_ret *ret);

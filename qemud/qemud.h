@@ -132,6 +132,9 @@ struct qemud_client {
      */
     virConnectPtr conn;
 
+    /* back-pointer to our server */
+    struct qemud_server *server;
+
     struct qemud_client *next;
 };
 
@@ -179,8 +182,16 @@ void qemudLog(int priority, const char *fmt, ...)
 void remoteDispatchClientRequest (struct qemud_server *server,
                                   struct qemud_client *client);
 
+void qemudDispatchClientWrite(struct qemud_server *server,
+                             struct qemud_client *client);
+
 #if HAVE_POLKIT
 int qemudGetSocketIdentity(int fd, uid_t *uid, pid_t *pid);
 #endif
+
+int remoteRelayDomainEvent (virConnectPtr conn ATTRIBUTE_UNUSED,
+                            virDomainPtr dom,
+                            int event,
+                            void *opaque);
 
 #endif

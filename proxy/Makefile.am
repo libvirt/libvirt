@@ -17,6 +17,7 @@ libvirt_proxy_SOURCES = libvirt_proxy.c @top_srcdir@/src/xend_internal.c \
             @top_srcdir@/src/memory.c \
             @top_srcdir@/src/domain_conf.c \
             @top_srcdir@/src/util.c \
+	    @top_srcdir@/src/event.c \
 	    @top_srcdir@/src/uuid.c
 libvirt_proxy_LDFLAGS = $(WARN_CFLAGS)
 libvirt_proxy_DEPENDENCIES =

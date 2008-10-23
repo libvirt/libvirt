@@ -17,6 +17,14 @@
     <reference name='VIR_CRED_USERNAME' href='html/libvirt-libvirt.html#VIR_CRED_USERNAME'/>
     <reference name='VIR_DOMAIN_BLOCKED' href='html/libvirt-libvirt.html#VIR_DOMAIN_BLOCKED'/>
     <reference name='VIR_DOMAIN_CRASHED' href='html/libvirt-libvirt.html#VIR_DOMAIN_CRASHED'/>
+    <reference name='VIR_DOMAIN_EVENT_ADDED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_ADDED'/>
+    <reference name='VIR_DOMAIN_EVENT_REMOVED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_REMOVED'/>
+    <reference name='VIR_DOMAIN_EVENT_RESTORED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_RESTORED'/>
+    <reference name='VIR_DOMAIN_EVENT_RESUMED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_RESUMED'/>
+    <reference name='VIR_DOMAIN_EVENT_SAVED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_SAVED'/>
+    <reference name='VIR_DOMAIN_EVENT_STARTED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_STARTED'/>
+    <reference name='VIR_DOMAIN_EVENT_STOPPED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_STOPPED'/>
+    <reference name='VIR_DOMAIN_EVENT_SUSPENDED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_SUSPENDED'/>
     <reference name='VIR_DOMAIN_NONE' href='html/libvirt-libvirt.html#VIR_DOMAIN_NONE'/>
     <reference name='VIR_DOMAIN_NOSTATE' href='html/libvirt-libvirt.html#VIR_DOMAIN_NOSTATE'/>
     <reference name='VIR_DOMAIN_PAUSED' href='html/libvirt-libvirt.html#VIR_DOMAIN_PAUSED'/>
@@ -84,6 +92,10 @@
     <reference name='VIR_ERR_XEN_CALL' href='html/libvirt-virterror.html#VIR_ERR_XEN_CALL'/>
     <reference name='VIR_ERR_XML_DETAIL' href='html/libvirt-virterror.html#VIR_ERR_XML_DETAIL'/>
     <reference name='VIR_ERR_XML_ERROR' href='html/libvirt-virterror.html#VIR_ERR_XML_ERROR'/>
+    <reference name='VIR_EVENT_HANDLE_ERROR' href='html/libvirt-libvirt.html#VIR_EVENT_HANDLE_ERROR'/>
+    <reference name='VIR_EVENT_HANDLE_HANGUP' href='html/libvirt-libvirt.html#VIR_EVENT_HANDLE_HANGUP'/>
+    <reference name='VIR_EVENT_HANDLE_READABLE' href='html/libvirt-libvirt.html#VIR_EVENT_HANDLE_READABLE'/>
+    <reference name='VIR_EVENT_HANDLE_WRITABLE' href='html/libvirt-libvirt.html#VIR_EVENT_HANDLE_WRITABLE'/>
     <reference name='VIR_FROM_CONF' href='html/libvirt-virterror.html#VIR_FROM_CONF'/>
     <reference name='VIR_FROM_DOM' href='html/libvirt-virterror.html#VIR_FROM_DOM'/>
     <reference name='VIR_FROM_DOMAIN' href='html/libvirt-virterror.html#VIR_FROM_DOMAIN'/>
@@ -155,6 +167,9 @@
     <reference name='virConnectCredential' href='html/libvirt-libvirt.html#virConnectCredential'/>
     <reference name='virConnectCredentialPtr' href='html/libvirt-libvirt.html#virConnectCredentialPtr'/>
     <reference name='virConnectCredentialType' href='html/libvirt-libvirt.html#virConnectCredentialType'/>
+    <reference name='virConnectDomainEventCallback' href='html/libvirt-libvirt.html#virConnectDomainEventCallback'/>
+    <reference name='virConnectDomainEventDeregister' href='html/libvirt-libvirt.html#virConnectDomainEventDeregister'/>
+    <reference name='virConnectDomainEventRegister' href='html/libvirt-libvirt.html#virConnectDomainEventRegister'/>
     <reference name='virConnectFindStoragePoolSources' href='html/libvirt-libvirt.html#virConnectFindStoragePoolSources'/>
     <reference name='virConnectFlags' href='html/libvirt-libvirt.html#virConnectFlags'/>
     <reference name='virConnectGetCapabilities' href='html/libvirt-libvirt.html#virConnectGetCapabilities'/>
@@ -195,6 +210,7 @@
     <reference name='virDomainDefineXML' href='html/libvirt-libvirt.html#virDomainDefineXML'/>
     <reference name='virDomainDestroy' href='html/libvirt-libvirt.html#virDomainDestroy'/>
     <reference name='virDomainDetachDevice' href='html/libvirt-libvirt.html#virDomainDetachDevice'/>
+    <reference name='virDomainEventType' href='html/libvirt-libvirt.html#virDomainEventType'/>
     <reference name='virDomainFree' href='html/libvirt-libvirt.html#virDomainFree'/>
     <reference name='virDomainGetAutostart' href='html/libvirt-libvirt.html#virDomainGetAutostart'/>
     <reference name='virDomainGetConnect' href='html/libvirt-libvirt.html#virDomainGetConnect'/>
@@ -245,6 +261,16 @@
     <reference name='virErrorLevel' href='html/libvirt-virterror.html#virErrorLevel'/>
     <reference name='virErrorNumber' href='html/libvirt-virterror.html#virErrorNumber'/>
     <reference name='virErrorPtr' href='html/libvirt-virterror.html#virErrorPtr'/>
+    <reference name='virEventAddHandleFunc' href='html/libvirt-libvirt.html#virEventAddHandleFunc'/>
+    <reference name='virEventAddTimeoutFunc' href='html/libvirt-libvirt.html#virEventAddTimeoutFunc'/>
+    <reference name='virEventHandleCallback' href='html/libvirt-libvirt.html#virEventHandleCallback'/>
+    <reference name='virEventHandleType' href='html/libvirt-libvirt.html#virEventHandleType'/>
+    <reference name='virEventRegisterImpl' href='html/libvirt-libvirt.html#virEventRegisterImpl'/>
+    <reference name='virEventRemoveHandleFunc' href='html/libvirt-libvirt.html#virEventRemoveHandleFunc'/>
+    <reference name='virEventRemoveTimeoutFunc' href='html/libvirt-libvirt.html#virEventRemoveTimeoutFunc'/>
+    <reference name='virEventTimeoutCallback' href='html/libvirt-libvirt.html#virEventTimeoutCallback'/>
+    <reference name='virEventUpdateHandleFunc' href='html/libvirt-libvirt.html#virEventUpdateHandleFunc'/>
+    <reference name='virEventUpdateTimeoutFunc' href='html/libvirt-libvirt.html#virEventUpdateTimeoutFunc'/>
     <reference name='virGetLastError' href='html/libvirt-virterror.html#virGetLastError'/>
     <reference name='virGetVersion' href='html/libvirt-libvirt.html#virGetVersion'/>
     <reference name='virInitialize' href='html/libvirt-libvirt.html#virInitialize'/>
@@ -350,6 +376,14 @@
       <ref name='VIR_CRED_USERNAME'/>
       <ref name='VIR_DOMAIN_BLOCKED'/>
       <ref name='VIR_DOMAIN_CRASHED'/>
+      <ref name='VIR_DOMAIN_EVENT_ADDED'/>
+      <ref name='VIR_DOMAIN_EVENT_REMOVED'/>
+      <ref name='VIR_DOMAIN_EVENT_RESTORED'/>
+      <ref name='VIR_DOMAIN_EVENT_RESUMED'/>
+      <ref name='VIR_DOMAIN_EVENT_SAVED'/>
+      <ref name='VIR_DOMAIN_EVENT_STARTED'/>
+      <ref name='VIR_DOMAIN_EVENT_STOPPED'/>
+      <ref name='VIR_DOMAIN_EVENT_SUSPENDED'/>
       <ref name='VIR_DOMAIN_NONE'/>
       <ref name='VIR_DOMAIN_NOSTATE'/>
       <ref name='VIR_DOMAIN_PAUSED'/>
@@ -417,6 +451,10 @@
       <ref name='VIR_ERR_XEN_CALL'/>
       <ref name='VIR_ERR_XML_DETAIL'/>
       <ref name='VIR_ERR_XML_ERROR'/>
+      <ref name='VIR_EVENT_HANDLE_ERROR'/>
+      <ref name='VIR_EVENT_HANDLE_HANGUP'/>
+      <ref name='VIR_EVENT_HANDLE_READABLE'/>
+      <ref name='VIR_EVENT_HANDLE_WRITABLE'/>
       <ref name='VIR_FROM_CONF'/>
       <ref name='VIR_FROM_DOM'/>
       <ref name='VIR_FROM_DOMAIN'/>
@@ -492,6 +530,9 @@
       <ref name='virConnectCredential'/>
       <ref name='virConnectCredentialPtr'/>
       <ref name='virConnectCredentialType'/>
+      <ref name='virConnectDomainEventCallback'/>
+      <ref name='virConnectDomainEventDeregister'/>
+      <ref name='virConnectDomainEventRegister'/>
       <ref name='virConnectFindStoragePoolSources'/>
       <ref name='virConnectFlags'/>
       <ref name='virConnectGetCapabilities'/>
@@ -532,6 +573,7 @@
       <ref name='virDomainDefineXML'/>
       <ref name='virDomainDestroy'/>
       <ref name='virDomainDetachDevice'/>
+      <ref name='virDomainEventType'/>
       <ref name='virDomainFree'/>
       <ref name='virDomainGetAutostart'/>
       <ref name='virDomainGetConnect'/>
@@ -582,6 +624,16 @@
       <ref name='virErrorLevel'/>
       <ref name='virErrorNumber'/>
       <ref name='virErrorPtr'/>
+      <ref name='virEventAddHandleFunc'/>
+      <ref name='virEventAddTimeoutFunc'/>
+      <ref name='virEventHandleCallback'/>
+      <ref name='virEventHandleType'/>
+      <ref name='virEventRegisterImpl'/>
+      <ref name='virEventRemoveHandleFunc'/>
+      <ref name='virEventRemoveTimeoutFunc'/>
+      <ref name='virEventTimeoutCallback'/>
+      <ref name='virEventUpdateHandleFunc'/>
+      <ref name='virEventUpdateTimeoutFunc'/>
       <ref name='virGetLastError'/>
       <ref name='virGetVersion'/>
       <ref name='virInitialize'/>
@@ -801,12 +853,19 @@
     <type name='virConnectCredentialPtr'>
       <ref name='virConnectAuthCallbackPtr'/>
     </type>
+    <type name='virConnectDomainEventCallback'>
+      <ref name='virConnectDomainEventDeregister'/>
+      <ref name='virConnectDomainEventRegister'/>
+    </type>
     <type name='virConnectPtr'>
       <ref name='virConnCopyLastError'/>
       <ref name='virConnGetLastError'/>
       <ref name='virConnResetLastError'/>
       <ref name='virConnSetErrorFunc'/>
       <ref name='virConnectClose'/>
+      <ref name='virConnectDomainEventCallback'/>
+      <ref name='virConnectDomainEventDeregister'/>
+      <ref name='virConnectDomainEventRegister'/>
       <ref name='virConnectFindStoragePoolSources'/>
       <ref name='virConnectGetCapabilities'/>
       <ref name='virConnectGetHostname'/>
@@ -861,6 +920,7 @@
       <ref name='virDomainInterfaceStats'/>
     </type>
     <type name='virDomainPtr'>
+      <ref name='virConnectDomainEventCallback'/>
       <ref name='virDomainAttachDevice'/>
       <ref name='virDomainBlockPeek'/>
       <ref name='virDomainBlockStats'/>
@@ -909,6 +969,30 @@
       <ref name='virDefaultErrorFunc'/>
       <ref name='virErrorFunc'/>
       <ref name='virResetError'/>
+    </type>
+    <type name='virEventAddHandleFunc'>
+      <ref name='virEventRegisterImpl'/>
+    </type>
+    <type name='virEventAddTimeoutFunc'>
+      <ref name='virEventRegisterImpl'/>
+    </type>
+    <type name='virEventHandleCallback'>
+      <ref name='virEventAddHandleFunc'/>
+    </type>
+    <type name='virEventRemoveHandleFunc'>
+      <ref name='virEventRegisterImpl'/>
+    </type>
+    <type name='virEventRemoveTimeoutFunc'>
+      <ref name='virEventRegisterImpl'/>
+    </type>
+    <type name='virEventTimeoutCallback'>
+      <ref name='virEventAddTimeoutFunc'/>
+    </type>
+    <type name='virEventUpdateHandleFunc'>
+      <ref name='virEventRegisterImpl'/>
+    </type>
+    <type name='virEventUpdateTimeoutFunc'>
+      <ref name='virEventRegisterImpl'/>
     </type>
     <type name='virNetworkPtr'>
       <ref name='virNetworkCreate'/>
@@ -975,9 +1059,15 @@
     <type name='void *'>
       <ref name='virConnSetErrorFunc'/>
       <ref name='virConnectAuthCallbackPtr'/>
+      <ref name='virConnectDomainEventCallback'/>
+      <ref name='virConnectDomainEventRegister'/>
       <ref name='virDomainBlockPeek'/>
       <ref name='virDomainMemoryPeek'/>
       <ref name='virErrorFunc'/>
+      <ref name='virEventAddHandleFunc'/>
+      <ref name='virEventAddTimeoutFunc'/>
+      <ref name='virEventHandleCallback'/>
+      <ref name='virEventTimeoutCallback'/>
       <ref name='virSetErrorFunc'/>
     </type>
   </functions>
@@ -999,6 +1089,14 @@
       <ref name='VIR_CRED_USERNAME'/>
       <ref name='VIR_DOMAIN_BLOCKED'/>
       <ref name='VIR_DOMAIN_CRASHED'/>
+      <ref name='VIR_DOMAIN_EVENT_ADDED'/>
+      <ref name='VIR_DOMAIN_EVENT_REMOVED'/>
+      <ref name='VIR_DOMAIN_EVENT_RESTORED'/>
+      <ref name='VIR_DOMAIN_EVENT_RESUMED'/>
+      <ref name='VIR_DOMAIN_EVENT_SAVED'/>
+      <ref name='VIR_DOMAIN_EVENT_STARTED'/>
+      <ref name='VIR_DOMAIN_EVENT_STOPPED'/>
+      <ref name='VIR_DOMAIN_EVENT_SUSPENDED'/>
       <ref name='VIR_DOMAIN_NONE'/>
       <ref name='VIR_DOMAIN_NOSTATE'/>
       <ref name='VIR_DOMAIN_PAUSED'/>
@@ -1014,6 +1112,10 @@
       <ref name='VIR_DOMAIN_SHUTOFF'/>
       <ref name='VIR_DOMAIN_XML_INACTIVE'/>
       <ref name='VIR_DOMAIN_XML_SECURE'/>
+      <ref name='VIR_EVENT_HANDLE_ERROR'/>
+      <ref name='VIR_EVENT_HANDLE_HANGUP'/>
+      <ref name='VIR_EVENT_HANDLE_READABLE'/>
+      <ref name='VIR_EVENT_HANDLE_WRITABLE'/>
       <ref name='VIR_GET_CPUMAP'/>
       <ref name='VIR_MEMORY_VIRTUAL'/>
       <ref name='VIR_MIGRATE_LIVE'/>
@@ -1057,6 +1159,9 @@
       <ref name='virConnectCredential'/>
       <ref name='virConnectCredentialPtr'/>
       <ref name='virConnectCredentialType'/>
+      <ref name='virConnectDomainEventCallback'/>
+      <ref name='virConnectDomainEventDeregister'/>
+      <ref name='virConnectDomainEventRegister'/>
       <ref name='virConnectFindStoragePoolSources'/>
       <ref name='virConnectFlags'/>
       <ref name='virConnectGetCapabilities'/>
@@ -1095,6 +1200,7 @@
       <ref name='virDomainDefineXML'/>
       <ref name='virDomainDestroy'/>
       <ref name='virDomainDetachDevice'/>
+      <ref name='virDomainEventType'/>
       <ref name='virDomainFree'/>
       <ref name='virDomainGetAutostart'/>
       <ref name='virDomainGetConnect'/>
@@ -1139,6 +1245,16 @@
       <ref name='virDomainSuspend'/>
       <ref name='virDomainUndefine'/>
       <ref name='virDomainXMLFlags'/>
+      <ref name='virEventAddHandleFunc'/>
+      <ref name='virEventAddTimeoutFunc'/>
+      <ref name='virEventHandleCallback'/>
+      <ref name='virEventHandleType'/>
+      <ref name='virEventRegisterImpl'/>
+      <ref name='virEventRemoveHandleFunc'/>
+      <ref name='virEventRemoveTimeoutFunc'/>
+      <ref name='virEventTimeoutCallback'/>
+      <ref name='virEventUpdateHandleFunc'/>
+      <ref name='virEventUpdateTimeoutFunc'/>
       <ref name='virGetVersion'/>
       <ref name='virInitialize'/>
       <ref name='virNetwork'/>
@@ -1335,6 +1451,10 @@
         <word name='Additional'>
           <ref name='_virConnectCredential'/>
         </word>
+        <word name='Adds'>
+          <ref name='virConnectDomainEventRegister'/>
+          <ref name='virEventAddHandleFunc'/>
+        </word>
         <word name='After'>
           <ref name='virDomainSave'/>
         </word>
@@ -1393,6 +1513,8 @@
         </word>
         <word name='Callback'>
           <ref name='_virConnectAuth'/>
+          <ref name='virConnectDomainEventDeregister'/>
+          <ref name='virConnectDomainEventRegister'/>
         </word>
         <word name='Change'>
           <ref name='virDomainSetSchedulerParameters'/>
@@ -1428,6 +1550,9 @@
         <word name='Daemon'>
           <ref name='virDomainCoreDump'/>
         </word>
+        <word name='De-registering'>
+          <ref name='virConnectDomainEventDeregister'/>
+        </word>
         <word name='Default'>
           <ref name='virDefaultErrorFunc'/>
         </word>
@@ -1455,6 +1580,10 @@
         <word name='Does'>
           <ref name='virStoragePoolFree'/>
         </word>
+        <word name='Domain'>
+          <ref name='virConnectDomainEventDeregister'/>
+          <ref name='virConnectDomainEventRegister'/>
+        </word>
         <word name='Domain0'>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainGetVcpus'/>
@@ -1477,6 +1606,18 @@
       <letter name='E'>
         <word name='Each'>
           <ref name='virDomainPinVcpu'/>
+        </word>
+        <word name='Event'>
+          <ref name='virConnectDomainEventDeregister'/>
+          <ref name='virConnectDomainEventRegister'/>
+        </word>
+        <word name='EventImpl'>
+          <ref name='virEventAddHandleFunc'/>
+          <ref name='virEventAddTimeoutFunc'/>
+          <ref name='virEventRemoveHandleFunc'/>
+          <ref name='virEventRemoveTimeoutFunc'/>
+          <ref name='virEventUpdateHandleFunc'/>
+          <ref name='virEventUpdateTimeoutFunc'/>
         </word>
         <word name='Extract'>
           <ref name='virDomainGetInfo'/>
@@ -1666,6 +1807,14 @@
         </word>
       </letter>
       <letter name='P'>
+        <word name='Part'>
+          <ref name='virEventAddHandleFunc'/>
+          <ref name='virEventAddTimeoutFunc'/>
+          <ref name='virEventRemoveHandleFunc'/>
+          <ref name='virEventRemoveTimeoutFunc'/>
+          <ref name='virEventUpdateHandleFunc'/>
+          <ref name='virEventUpdateTimeoutFunc'/>
+        </word>
         <word name='Prompt'>
           <ref name='_virConnectCredential'/>
         </word>
@@ -1716,11 +1865,17 @@
         <word name='Refer'>
           <ref name='virDomainMigrate'/>
         </word>
+        <word name='Registering'>
+          <ref name='virConnectDomainEventRegister'/>
+        </word>
         <word name='Release'>
           <ref name='virStorageVolFree'/>
         </word>
         <word name='Remaining'>
           <ref name='_virStoragePoolInfo'/>
+        </word>
+        <word name='Removes'>
+          <ref name='virConnectDomainEventDeregister'/>
         </word>
         <word name='Renamed'>
           <ref name='virDomainCreateLinux'/>
@@ -1991,6 +2146,9 @@
         <word name='add'>
           <ref name='virDomainShutdown'/>
         </word>
+        <word name='adding'>
+          <ref name='virEventAddTimeoutFunc'/>
+        </word>
         <word name='additional'>
           <ref name='virNodeGetCellsFreeMemory'/>
         </word>
@@ -2254,6 +2412,7 @@
           <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
           <ref name='virErrorFunc'/>
+          <ref name='virEventRemoveHandleFunc'/>
           <ref name='virResetError'/>
         </word>
         <word name='below'>
@@ -2285,6 +2444,10 @@
         <word name='bits'>
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainMemoryPeek'/>
+        </word>
+        <word name='bitset'>
+          <ref name='virEventAddHandleFunc'/>
+          <ref name='virEventHandleCallback'/>
         </word>
         <word name='block'>
           <ref name='virDomainBlockPeek'/>
@@ -2354,6 +2517,7 @@
           <ref name='virDomainMemoryPeek'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainSetVcpus'/>
+          <ref name='virEventAddTimeoutFunc'/>
           <ref name='virInitialize'/>
           <ref name='virNetworkCreate'/>
           <ref name='virNetworkGetConnect'/>
@@ -2363,16 +2527,29 @@
         </word>
         <word name='callback'>
           <ref name='virConnSetErrorFunc'/>
+          <ref name='virConnectDomainEventCallback'/>
+          <ref name='virConnectDomainEventDeregister'/>
+          <ref name='virConnectDomainEventRegister'/>
           <ref name='virConnectOpenAuth'/>
           <ref name='virErrorFunc'/>
+          <ref name='virEventAddHandleFunc'/>
+          <ref name='virEventAddTimeoutFunc'/>
+          <ref name='virEventHandleCallback'/>
+          <ref name='virEventRemoveHandleFunc'/>
+          <ref name='virEventRemoveTimeoutFunc'/>
+          <ref name='virEventTimeoutCallback'/>
+          <ref name='virEventUpdateHandleFunc'/>
+          <ref name='virEventUpdateTimeoutFunc'/>
           <ref name='virSetErrorFunc'/>
         </word>
         <word name='called'>
           <ref name='virConnSetErrorFunc'/>
           <ref name='virConnectClose'/>
+          <ref name='virConnectDomainEventCallback'/>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
+          <ref name='virEventAddHandleFunc'/>
           <ref name='virSetErrorFunc'/>
         </word>
         <word name='caller'>
@@ -2456,6 +2633,7 @@
           <ref name='virDomainSetMaxMemory'/>
           <ref name='virDomainSetMemory'/>
           <ref name='virDomainSetVcpus'/>
+          <ref name='virEventUpdateHandleFunc'/>
           <ref name='virStoragePoolFree'/>
         </word>
         <word name='char'>
@@ -2541,6 +2719,7 @@
         </word>
         <word name='constants'>
           <ref name='_virConnectCredential'/>
+          <ref name='virEventHandleCallback'/>
         </word>
         <word name='containing'>
           <ref name='virConnectFindStoragePoolSources'/>
@@ -2645,8 +2824,14 @@
       <letter name='d'>
         <word name='data'>
           <ref name='virConnSetErrorFunc'/>
+          <ref name='virConnectDomainEventCallback'/>
+          <ref name='virConnectDomainEventRegister'/>
           <ref name='virDomainFree'/>
           <ref name='virErrorFunc'/>
+          <ref name='virEventAddHandleFunc'/>
+          <ref name='virEventAddTimeoutFunc'/>
+          <ref name='virEventHandleCallback'/>
+          <ref name='virEventTimeoutCallback'/>
           <ref name='virNetworkFree'/>
           <ref name='virSetErrorFunc'/>
         </word>
@@ -2688,6 +2873,10 @@
         <word name='defresult'>
           <ref name='_virConnectCredential'/>
         </word>
+        <word name='delivery'>
+          <ref name='virConnectDomainEventDeregister'/>
+          <ref name='virConnectDomainEventRegister'/>
+        </word>
         <word name='deprecated'>
           <ref name='_virError'/>
         </word>
@@ -2711,6 +2900,11 @@
           <ref name='virStoragePoolCreateXML'/>
           <ref name='virStoragePoolDefineXML'/>
           <ref name='virStorageVolCreateXML'/>
+        </word>
+        <word name='descriptor'>
+          <ref name='virEventAddHandleFunc'/>
+          <ref name='virEventRemoveHandleFunc'/>
+          <ref name='virEventUpdateHandleFunc'/>
         </word>
         <word name='dest'>
           <ref name='virDomainMigrate'/>
@@ -2749,6 +2943,9 @@
         <word name='directly'>
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainMigrate'/>
+        </word>
+        <word name='disable'>
+          <ref name='virConnectDomainEventDeregister'/>
         </word>
         <word name='disappear'>
           <ref name='virDomainCreateXML'/>
@@ -2860,6 +3057,12 @@
         <word name='else'>
           <ref name='virDomainMigrate'/>
         </word>
+        <word name='emitting'>
+          <ref name='virEventTimeoutCallback'/>
+        </word>
+        <word name='enable'>
+          <ref name='virConnectDomainEventRegister'/>
+        </word>
         <word name='encoded'>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virNetworkGetXMLDesc'/>
@@ -2882,6 +3085,22 @@
         <word name='even'>
           <ref name='virDomainMigrate'/>
         </word>
+        <word name='event'>
+          <ref name='virConnectDomainEventCallback'/>
+          <ref name='virConnectDomainEventDeregister'/>
+          <ref name='virEventAddTimeoutFunc'/>
+          <ref name='virEventHandleCallback'/>
+          <ref name='virEventTimeoutCallback'/>
+          <ref name='virEventUpdateTimeoutFunc'/>
+        </word>
+        <word name='events'>
+          <ref name='virConnectDomainEventDeregister'/>
+          <ref name='virConnectDomainEventRegister'/>
+          <ref name='virEventAddHandleFunc'/>
+          <ref name='virEventHandleCallback'/>
+          <ref name='virEventTimeoutCallback'/>
+          <ref name='virEventUpdateHandleFunc'/>
+        </word>
         <word name='example'>
           <ref name='virDomainBlockStats'/>
           <ref name='virDomainMigrate'/>
@@ -2897,6 +3116,9 @@
         </word>
         <word name='expected'>
           <ref name='_virNodeInfo'/>
+        </word>
+        <word name='expired'>
+          <ref name='virEventAddTimeoutFunc'/>
         </word>
         <word name='explicitly'>
           <ref name='virDomainDefineXML'/>
@@ -2964,6 +3186,10 @@
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainCoreDump'/>
           <ref name='virDomainSave'/>
+          <ref name='virEventAddHandleFunc'/>
+          <ref name='virEventHandleCallback'/>
+          <ref name='virEventRemoveHandleFunc'/>
+          <ref name='virEventUpdateHandleFunc'/>
         </word>
         <word name='filesystems'>
           <ref name='virDomainBlockPeek'/>
@@ -2984,6 +3210,9 @@
         </word>
         <word name='finding'>
           <ref name='virDomainBlockStats'/>
+        </word>
+        <word name='fire'>
+          <ref name='virEventAddHandleFunc'/>
         </word>
         <word name='first'>
           <ref name='virConnectOpen'/>
@@ -3094,6 +3323,7 @@
           <ref name='virDomainMigrate'/>
           <ref name='virDomainPinVcpu'/>
           <ref name='virDomainResume'/>
+          <ref name='virEventHandleCallback'/>
           <ref name='virNetworkCreate'/>
           <ref name='virStorageVolDelete'/>
           <ref name='virStorageVolGetKey'/>
@@ -3101,32 +3331,6 @@
         <word name='frozen'>
           <ref name='virDomainResume'/>
           <ref name='virDomainSuspend'/>
-        </word>
-        <word name='function'>
-          <ref name='virConnSetErrorFunc'/>
-          <ref name='virConnectClose'/>
-          <ref name='virConnectOpen'/>
-          <ref name='virConnectOpenAuth'/>
-          <ref name='virConnectOpenReadOnly'/>
-          <ref name='virDomainBlockPeek'/>
-          <ref name='virDomainBlockStats'/>
-          <ref name='virDomainCreateXML'/>
-          <ref name='virDomainDestroy'/>
-          <ref name='virDomainGetConnect'/>
-          <ref name='virDomainInterfaceStats'/>
-          <ref name='virDomainMemoryPeek'/>
-          <ref name='virDomainPinVcpu'/>
-          <ref name='virDomainResume'/>
-          <ref name='virDomainSetMaxMemory'/>
-          <ref name='virDomainSetMemory'/>
-          <ref name='virDomainSetVcpus'/>
-          <ref name='virDomainSuspend'/>
-          <ref name='virErrorFunc'/>
-          <ref name='virNetworkDestroy'/>
-          <ref name='virNetworkGetConnect'/>
-          <ref name='virSetErrorFunc'/>
-          <ref name='virStoragePoolGetConnect'/>
-          <ref name='virStorageVolGetConnect'/>
         </word>
         <word name='functionalities'>
           <ref name='virConnectOpenReadOnly'/>
@@ -3214,14 +3418,22 @@
       </letter>
       <letter name='h'>
         <word name='handle'>
+          <ref name='virEventAddHandleFunc'/>
+          <ref name='virEventHandleCallback'/>
+          <ref name='virEventTimeoutCallback'/>
           <ref name='virStorageVolFree'/>
         </word>
         <word name='handler'>
           <ref name='virConnSetErrorFunc'/>
           <ref name='virSetErrorFunc'/>
         </word>
+        <word name='handles'>
+          <ref name='virEventAddTimeoutFunc'/>
+        </word>
         <word name='handling'>
           <ref name='virConnSetErrorFunc'/>
+          <ref name='virConnectDomainEventDeregister'/>
+          <ref name='virConnectDomainEventRegister'/>
           <ref name='virSetErrorFunc'/>
         </word>
         <word name='haphazard'>
@@ -3236,6 +3448,7 @@
         <word name='has'>
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainGetVcpus'/>
+          <ref name='virEventAddTimeoutFunc'/>
           <ref name='virStoragePoolDestroy'/>
         </word>
         <word name='have'>
@@ -3491,6 +3704,8 @@
           <ref name='virDomainShutdown'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk5'>
       <letter name='l'>
         <word name='lack'>
           <ref name='virConnectGetVersion'/>
@@ -3615,6 +3830,16 @@
         <word name='listed'>
           <ref name='virDomainSave'/>
         </word>
+        <word name='listen'>
+          <ref name='virEventAddHandleFunc'/>
+          <ref name='virEventUpdateHandleFunc'/>
+        </word>
+        <word name='listened'>
+          <ref name='virEventRemoveHandleFunc'/>
+        </word>
+        <word name='listening'>
+          <ref name='virEventRemoveHandleFunc'/>
+        </word>
         <word name='little-endian'>
           <ref name='virDomainPinVcpu'/>
         </word>
@@ -3635,6 +3860,9 @@
         <word name='long'>
           <ref name='virNodeGetCellsFreeMemory'/>
         </word>
+        <word name='longer'>
+          <ref name='virEventRemoveHandleFunc'/>
+        </word>
         <word name='look'>
           <ref name='virConnectFindStoragePoolSources'/>
         </word>
@@ -3654,8 +3882,6 @@
           <ref name='virDomainPinVcpu'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk5'>
       <letter name='m'>
         <word name='machine'>
           <ref name='virDomainGetAutostart'/>
@@ -3787,8 +4013,15 @@
         <word name='model'>
           <ref name='_virNodeInfo'/>
         </word>
+        <word name='modify'>
+          <ref name='virEventUpdateHandleFunc'/>
+          <ref name='virEventUpdateTimeoutFunc'/>
+        </word>
         <word name='moment'>
           <ref name='virDomainMemoryPeek'/>
+        </word>
+        <word name='monitor'>
+          <ref name='virEventAddTimeoutFunc'/>
         </word>
         <word name='monitoring'>
           <ref name='virConnectClose'/>
@@ -3842,6 +4075,8 @@
           <ref name='_virDomainBlockStats'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk6'>
       <letter name='n'>
         <word name='name'>
           <ref name='_virSchedParameter'/>
@@ -3910,6 +4145,8 @@
           <ref name='virDomainLookupByUUIDString'/>
           <ref name='virDomainMigrate'/>
           <ref name='virDomainSetVcpus'/>
+          <ref name='virEventUpdateHandleFunc'/>
+          <ref name='virEventUpdateTimeoutFunc'/>
           <ref name='virNetworkCreateXML'/>
           <ref name='virNetworkLookupByName'/>
           <ref name='virNetworkLookupByUUID'/>
@@ -3943,6 +4180,10 @@
         <word name='note'>
           <ref name='_virError'/>
         </word>
+        <word name='notified'>
+          <ref name='virEventRemoveHandleFunc'/>
+          <ref name='virEventUpdateHandleFunc'/>
+        </word>
         <word name='now'>
           <ref name='virStoragePoolBuild'/>
           <ref name='virStoragePoolCreate'/>
@@ -3965,9 +4206,16 @@
         <word name='obliteration'>
           <ref name='virStoragePoolDelete'/>
         </word>
+        <word name='occured'>
+          <ref name='virConnectDomainEventCallback'/>
+        </word>
         <word name='occurred'>
           <ref name='virConnGetLastError'/>
+          <ref name='virEventHandleCallback'/>
           <ref name='virGetLastError'/>
+        </word>
+        <word name='occurs'>
+          <ref name='virConnectDomainEventCallback'/>
         </word>
         <word name='offline'>
           <ref name='_virVcpuInfo'/>
@@ -3997,6 +4245,10 @@
         </word>
         <word name='oo_req'>
           <ref name='_virDomainBlockStats'/>
+        </word>
+        <word name='opaque'>
+          <ref name='virConnectDomainEventCallback'/>
+          <ref name='virConnectDomainEventRegister'/>
         </word>
         <word name='open'>
           <ref name='virDomainBlockPeek'/>
@@ -4059,8 +4311,6 @@
           <ref name='virDomainMemoryPeek'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk6'>
       <letter name='p'>
         <word name='parameter'>
           <ref name='_virSchedParameter'/>
@@ -4094,10 +4344,13 @@
         </word>
         <word name='pass'>
           <ref name='virConnSetErrorFunc'/>
+          <ref name='virConnectDomainEventRegister'/>
           <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainCreateLinux'/>
           <ref name='virDomainCreateXML'/>
+          <ref name='virEventAddHandleFunc'/>
+          <ref name='virEventAddTimeoutFunc'/>
           <ref name='virStorageVolCreateXML'/>
           <ref name='virStorageVolGetXMLDesc'/>
         </word>
@@ -4241,6 +4494,8 @@
           <ref name='virDomainMigrate'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk7'>
       <letter name='q'>
         <word name='querying'>
           <ref name='virConnectFindStoragePoolSources'/>
@@ -4292,6 +4547,10 @@
           <ref name='virConnCopyLastError'/>
           <ref name='virCopyLastError'/>
         </word>
+        <word name='receiving'>
+          <ref name='virEventHandleCallback'/>
+          <ref name='virEventTimeoutCallback'/>
+        </word>
         <word name='redhat'>
           <ref name='virConnectGetType'/>
         </word>
@@ -4309,6 +4568,11 @@
         </word>
         <word name='refreshed'>
           <ref name='virStoragePoolRefresh'/>
+        </word>
+        <word name='registered'>
+          <ref name='virConnectDomainEventCallback'/>
+          <ref name='virEventHandleCallback'/>
+          <ref name='virEventTimeoutCallback'/>
         </word>
         <word name='related'>
           <ref name='VIR_UNUSE_CPU'/>
@@ -4339,6 +4603,12 @@
           <ref name='virDomainCoreDump'/>
           <ref name='virDomainMemoryPeek'/>
           <ref name='virStoragePoolRefresh'/>
+        </word>
+        <word name='remove'>
+          <ref name='virEventRemoveTimeoutFunc'/>
+        </word>
+        <word name='removes'>
+          <ref name='virEventRemoveTimeoutFunc'/>
         </word>
         <word name='rename'>
           <ref name='virDomainMigrate'/>
@@ -4499,8 +4769,6 @@
           <ref name='virDomainSetMemory'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk7'>
       <letter name='s'>
         <word name='same'>
           <ref name='virConnectGetURI'/>
@@ -4626,8 +4894,12 @@
           <ref name='_virStoragePoolInfo'/>
           <ref name='virStoragePoolGetInfo'/>
         </word>
+        <word name='specfic'>
+          <ref name='virConnectDomainEventCallback'/>
+        </word>
         <word name='specific'>
           <ref name='virConnectGetMaxVcpus'/>
+          <ref name='virEventAddHandleFunc'/>
         </word>
         <word name='specified'>
           <ref name='VIR_COPY_CPUMAP'/>
@@ -4702,6 +4974,7 @@
         </word>
         <word name='stop'>
           <ref name='virDomainUndefine'/>
+          <ref name='virEventRemoveHandleFunc'/>
           <ref name='virNetworkUndefine'/>
         </word>
         <word name='stopped'>
@@ -4817,6 +5090,8 @@
           <ref name='virDomainPinVcpu'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk8'>
       <letter name='t'>
         <word name='target'>
           <ref name='virConnCopyLastError'/>
@@ -4921,6 +5196,16 @@
           <ref name='_virVcpuInfo'/>
           <ref name='virStoragePoolGetAutostart'/>
         </word>
+        <word name='timeout'>
+          <ref name='virEventAddTimeoutFunc'/>
+          <ref name='virEventUpdateTimeoutFunc'/>
+        </word>
+        <word name='timer'>
+          <ref name='virEventAddTimeoutFunc'/>
+          <ref name='virEventRemoveTimeoutFunc'/>
+          <ref name='virEventTimeoutCallback'/>
+          <ref name='virEventUpdateTimeoutFunc'/>
+        </word>
         <word name='together'>
           <ref name='virDomainGetConnect'/>
           <ref name='virNetworkGetConnect'/>
@@ -4946,6 +5231,7 @@
         </word>
         <word name='type'>
           <ref name='_virSchedParameter'/>
+          <ref name='virConnectDomainEventDeregister'/>
           <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virDomainGetOSType'/>
@@ -4960,8 +5246,6 @@
           <ref name='virDomainMigrate'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk8'>
       <letter name='u'>
         <word name='undefined'>
           <ref name='virDomainDefineXML'/>
@@ -5009,6 +5293,9 @@
           <ref name='virStoragePoolRefresh'/>
           <ref name='virStorageVolCreateXML'/>
           <ref name='virStorageVolGetXMLDesc'/>
+        </word>
+        <word name='updates'>
+          <ref name='virEventUpdateTimeoutFunc'/>
         </word>
         <word name='upon'>
           <ref name='virStoragePoolBuild'/>
@@ -5077,11 +5364,25 @@
         <word name='user'>
           <ref name='_virConnectCredential'/>
           <ref name='virConnSetErrorFunc'/>
+          <ref name='virConnectDomainEventCallback'/>
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainMigrate'/>
           <ref name='virErrorFunc'/>
+          <ref name='virEventAddHandleFunc'/>
+          <ref name='virEventAddTimeoutFunc'/>
+          <ref name='virEventHandleCallback'/>
+          <ref name='virEventTimeoutCallback'/>
           <ref name='virNodeGetInfo'/>
           <ref name='virSetErrorFunc'/>
+        </word>
+        <word name='user-defined'>
+          <ref name='virEventAddTimeoutFunc'/>
+          <ref name='virEventRemoveTimeoutFunc'/>
+          <ref name='virEventUpdateTimeoutFunc'/>
+        </word>
+        <word name='user-provided'>
+          <ref name='virEventRemoveHandleFunc'/>
+          <ref name='virEventUpdateHandleFunc'/>
         </word>
         <word name='uses'>
           <ref name='virDomainBlockPeek'/>
@@ -5090,6 +5391,8 @@
           <ref name='virDomainMigrate'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk9'>
       <letter name='v'>
         <word name='value'>
           <ref name='VIR_CPU_USABLE'/>
@@ -5101,6 +5404,8 @@
           <ref name='virDomainGetSchedulerType'/>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainSetSchedulerParameters'/>
+          <ref name='virEventAddTimeoutFunc'/>
+          <ref name='virEventUpdateTimeoutFunc'/>
           <ref name='virGetVersion'/>
           <ref name='virNetworkGetAutostart'/>
           <ref name='virNetworkGetBridgeName'/>
@@ -5130,6 +5435,9 @@
         </word>
         <word name='virConnCopyLastError'>
           <ref name='virConnGetLastError'/>
+        </word>
+        <word name='virConnect'>
+          <ref name='virConnectDomainEventCallback'/>
         </word>
         <word name='virConnectCredentialType'>
           <ref name='_virConnectAuth'/>
@@ -5162,6 +5470,9 @@
         </word>
         <word name='virDomainDefineXML'>
           <ref name='virDomainCreateXML'/>
+        </word>
+        <word name='virDomainEventType'>
+          <ref name='virConnectDomainEventCallback'/>
         </word>
         <word name='virDomainGetSchedulerType'>
           <ref name='virDomainGetSchedulerParameters'/>
@@ -5221,6 +5532,9 @@
         </word>
         <word name='virErrorNumber'>
           <ref name='_virError'/>
+        </word>
+        <word name='virEventHandleType'>
+          <ref name='virEventHandleCallback'/>
         </word>
         <word name='virNetworkCreateXML'>
           <ref name='virNetworkGetXMLDesc'/>
@@ -5304,8 +5618,6 @@
           <ref name='virStorageVolCreateXML'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk9'>
       <letter name='w'>
         <word name='want'>
           <ref name='virDomainMemoryPeek'/>
@@ -5326,10 +5638,14 @@
           <ref name='virStorageVolGetKey'/>
         </word>
         <word name='when'>
+          <ref name='virConnectDomainEventCallback'/>
           <ref name='virDomainCreateXML'/>
           <ref name='virDomainGetAutostart'/>
           <ref name='virDomainSetAutostart'/>
           <ref name='virErrorFunc'/>
+          <ref name='virEventAddTimeoutFunc'/>
+          <ref name='virEventRemoveHandleFunc'/>
+          <ref name='virEventUpdateHandleFunc'/>
           <ref name='virInitialize'/>
           <ref name='virNetworkGetAutostart'/>
           <ref name='virNetworkSetAutostart'/>
@@ -5353,6 +5669,7 @@
           <ref name='virConnGetLastError'/>
           <ref name='virConnSetErrorFunc'/>
           <ref name='virConnectClose'/>
+          <ref name='virConnectDomainEventCallback'/>
           <ref name='virConnectGetHostname'/>
           <ref name='virConnectGetURI'/>
           <ref name='virDomainBlockPeek'/>
@@ -5362,6 +5679,8 @@
           <ref name='virDomainMemoryPeek'/>
           <ref name='virDomainMigrate'/>
           <ref name='virDomainPinVcpu'/>
+          <ref name='virEventAddHandleFunc'/>
+          <ref name='virEventHandleCallback'/>
           <ref name='virGetLastError'/>
           <ref name='virGetVersion'/>
           <ref name='virNetworkGetBridgeName'/>
@@ -5427,6 +5746,8 @@
           <ref name='virConnectGetType'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk10'>
       <letter name='x'>
         <word name='xen'>
           <ref name='virConnectOpen'/>
@@ -5468,12 +5789,13 @@
       <chunk name='chunk1' start='R' end='a'/>
       <chunk name='chunk2' start='b' end='c'/>
       <chunk name='chunk3' start='d' end='f'/>
-      <chunk name='chunk4' start='g' end='l'/>
-      <chunk name='chunk5' start='m' end='o'/>
-      <chunk name='chunk6' start='p' end='r'/>
-      <chunk name='chunk7' start='s' end='t'/>
-      <chunk name='chunk8' start='u' end='v'/>
-      <chunk name='chunk9' start='w' end='z'/>
+      <chunk name='chunk4' start='g' end='k'/>
+      <chunk name='chunk5' start='l' end='m'/>
+      <chunk name='chunk6' start='n' end='p'/>
+      <chunk name='chunk7' start='q' end='s'/>
+      <chunk name='chunk8' start='t' end='u'/>
+      <chunk name='chunk9' start='v' end='w'/>
+      <chunk name='chunk10' start='x' end='z'/>
     </chunks>
   </index>
 </apirefs>

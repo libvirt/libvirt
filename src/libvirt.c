@@ -16,6 +16,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/poll.h>
 #include <unistd.h>
 #include <assert.h>
 #ifdef HAVE_SYS_WAIT_H
@@ -5310,7 +5311,7 @@ virStorageVolGetPath(virStorageVolPtr vol)
 /* Not for public use.  Combines the elements of a virStringList
  * into a single string.
  */
-char *virStringListJoin(const virStringList *list, const char *pre,
+char *__virStringListJoin(const virStringList *list, const char *pre,
                         const char *post, const char *sep)
 {
     size_t pre_len = strlen(pre);
@@ -5337,7 +5338,7 @@ char *virStringListJoin(const virStringList *list, const char *pre,
 }
 
 
-void virStringListFree(virStringList *list)
+void __virStringListFree(virStringList *list)
 {
     while (list) {
         virStringList *p = list->next;
@@ -5345,3 +5346,269 @@ void virStringListFree(virStringList *list)
         list = p;
     }
 }
+
+/*
+ * Domain Event Notification
+ */
+
+/**
+ * virConnectDomainEventRegister:
+ * @conn: pointer to the connection
+ * @cb: callback to the function handling domain events
+ * @opaque: opaque data to pass on to the callback
+ *
+ * Adds a Domain Event Callback.
+ * Registering for a domain callback will enable delivery of the events
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+virConnectDomainEventRegister(virConnectPtr conn,
+                              virConnectDomainEventCallback cb,
+                              void *opaque)
+{
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (cb == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+
+    if ((conn->driver) && (conn->driver->domainEventRegister))
+        return conn->driver->domainEventRegister (conn, cb, opaque);
+    return -1;
+}
+
+/**
+ * virConnectDomainEventDeregister:
+ * @conn: pointer to the connection
+ * @cb: callback to the function handling domain events
+ *
+ * Removes a Domain Event Callback.
+ * De-registering for a domain callback will disable
+ * delivery of this event type
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+virConnectDomainEventDeregister(virConnectPtr conn,
+                                virConnectDomainEventCallback cb)
+{
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (cb == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+    if ((conn->driver) && (conn->driver->domainEventDeregister))
+        return conn->driver->domainEventDeregister (conn, cb);
+
+    return -1;
+}
+
+/**
+ * __virDomainEventCallbackListFree:
+ * @list: event callback list head
+ *
+ * Free the memory in the domain event callback list
+ */
+void
+__virDomainEventCallbackListFree(virDomainEventCallbackListPtr list)
+{
+    int i;
+    for (i=0; i<list->count; i++) {
+        VIR_FREE(list->callbacks[i]);
+    }
+    VIR_FREE(list);
+}
+/**
+ * __virDomainEventCallbackListRemove:
+ * @conn: pointer to the connection
+ * @cbList: the list
+ * @callback: the callback to remove
+ *
+ * Internal function to remove a callback from a virDomainEventCallbackListPtr
+ */
+int
+__virDomainEventCallbackListRemove(virConnectPtr conn,
+                                   virDomainEventCallbackListPtr cbList,
+                                   virConnectDomainEventCallback callback)
+{
+    int i;
+    for (i = 0 ; i < cbList->count ; i++) {
+        if(cbList->callbacks[i]->cb == callback &&
+           cbList->callbacks[i]->conn == conn) {
+            virUnrefConnect(cbList->callbacks[i]->conn);
+            VIR_FREE(cbList->callbacks[i]);
+
+            if (i < (cbList->count - 1))
+                memmove(cbList->callbacks + i,
+                        cbList->callbacks + i + 1,
+                        sizeof(*(cbList->callbacks)) *
+                                (cbList->count - (i + 1)));
+
+            if (VIR_REALLOC_N(cbList->callbacks,
+                              cbList->count - 1) < 0) {
+                ; /* Failure to reduce memory allocation isn't fatal */
+            }
+            cbList->count--;
+
+            return 0;
+        }
+    }
+    return -1;
+}
+
+/**
+ * __virDomainEventCallbackListAdd:
+ * @conn: pointer to the connection
+ * @cbList: the list
+ * @callback: the callback to add
+ * @opaque: opaque data tio pass to callback
+ *
+ * Internal function to add a callback from a virDomainEventCallbackListPtr
+ */
+int
+__virDomainEventCallbackListAdd(virConnectPtr conn,
+                                virDomainEventCallbackListPtr cbList,
+                                virConnectDomainEventCallback callback,
+                                void *opaque)
+{
+    virDomainEventCallbackPtr event;
+    int n;
+
+    /* Check incoming */
+    if ( !cbList ) {
+        return -1;
+    }
+
+    /* check if we already have this callback on our list */
+    for (n=0; n < cbList->count; n++) {
+        if(cbList->callbacks[n]->cb == callback &&
+           conn == cbList->callbacks[n]->conn) {
+            DEBUG0("WARNING: Callback already tracked");
+            return -1;
+        }
+    }
+    /* Allocate new event */
+    if (VIR_ALLOC(event) < 0) {
+        DEBUG0("Error allocating event");
+        return -1;
+    }
+    event->conn = conn;
+    event->cb = callback;
+    event->opaque = opaque;
+
+    /* Make space on list */
+    n = cbList->count;
+    if (VIR_REALLOC_N(cbList->callbacks, n + 1) < 0) {
+        DEBUG0("Error reallocating list");
+        VIR_FREE(event);
+        return -1;
+    }
+
+    event->conn->refs++;
+
+    cbList->callbacks[n] = event;
+    cbList->count++;
+    return 0;
+}
+
+/**
+ * __virDomainEventQueueFree:
+ * @queue: pointer to the queue
+ *
+ * Free the memory in the queue. We process this like a list here
+ */
+void
+__virDomainEventQueueFree(virDomainEventQueuePtr queue)
+{
+    int i;
+    for ( i=0 ; i<queue->count ; i++ ) {
+        VIR_FREE(queue->events[i]);
+    }
+    VIR_FREE(queue);
+}
+
+/**
+ * __virDomainEventCallbackQueuePop:
+ * @evtQueue: the queue of events
+ *
+ * Internal function to pop off, and return the front of the queue
+ * NOTE: The caller is responsible for freeing the returned object
+ *
+ * Returns: virDomainEventPtr on success NULL on failure.
+ */
+virDomainEventPtr
+__virDomainEventCallbackQueuePop(virDomainEventQueuePtr evtQueue)
+{
+    virDomainEventPtr ret;
+
+    if(!evtQueue || evtQueue->count == 0 )
+        return NULL;
+
+    ret = evtQueue->events[0];
+
+    memmove(evtQueue->events,
+            evtQueue->events + 1,
+            sizeof(*(evtQueue->events)) *
+                    (evtQueue->count - 1));
+
+    if (VIR_REALLOC_N(evtQueue->events,
+                        evtQueue->count - 1) < 0) {
+        ; /* Failure to reduce memory allocation isn't fatal */
+    }
+    evtQueue->count--;
+
+    return ret;
+}
+
+/**
+ * __virDomainEventCallbackQueuePush:
+ * @evtQueue: the dom event queue
+ * @dom: the domain to add
+ * @event: the event to add
+ *
+ * Internal function to push onto the back of an virDomainEventQueue
+ *
+ * Returns: 0 on success, -1 on failure
+ */
+int
+__virDomainEventCallbackQueuePush(virDomainEventQueuePtr evtQueue,
+                                  virDomainPtr dom,
+                                  virDomainEventType event)
+{
+    virDomainEventPtr domEvent;
+
+    /* Check incoming */
+    if ( !evtQueue ) {
+        return -1;
+    }
+
+    /* Allocate new event */
+    if (VIR_ALLOC(domEvent) < 0) {
+        DEBUG0("Error allocating event");
+        return -1;
+    }
+    domEvent->dom = dom;
+    domEvent->event = event;
+
+    /* Make space on queue */
+    if (VIR_REALLOC_N(evtQueue->events,
+                      evtQueue->count + 1) < 0) {
+        DEBUG0("Error reallocating queue");
+        VIR_FREE(domEvent);
+        return -1;
+    }
+
+    evtQueue->events[evtQueue->count] = domEvent;
+    evtQueue->count++;
+    return 0;
+}
+

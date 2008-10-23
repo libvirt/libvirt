@@ -106,7 +106,14 @@ static int qemudSetNonBlock(int fd) {
 }
 
 
-static void qemudDispatchVMEvent(int fd, int events, void *opaque);
+static void qemudDomainEventDispatch (struct qemud_driver *driver,
+                                      virDomainObjPtr vm,
+                                      virDomainEventType evt);
+
+static void qemudDispatchVMEvent(int fd,
+                                 int events,
+                                 void *opaque);
+
 static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
                               virDomainObjPtr vm,
@@ -116,8 +123,8 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
                                   struct qemud_driver *driver,
                                   virDomainObjPtr vm);
 
-
 static int qemudDomainGetMaxVcpus(virDomainPtr dom);
+
 static int qemudMonitorCommand (const struct qemud_driver *driver,
                                 const virDomainObjPtr vm,
                                 const char *cmd,
@@ -159,6 +166,10 @@ qemudStartup(void) {
 
     /* Don't have a dom0 so start from 1 */
     qemu_driver->nextvmid = 1;
+
+    /* Init callback list */
+    if(VIR_ALLOC(qemu_driver->domainEventCallbacks) < 0)
+        return -1;
 
     if (!uid) {
         if (asprintf(&qemu_driver->logDir,
@@ -301,6 +312,9 @@ qemudShutdown(void) {
     VIR_FREE(qemu_driver->configDir);
     VIR_FREE(qemu_driver->autostartDir);
     VIR_FREE(qemu_driver->vncTLSx509certdir);
+
+    /* Free domain callback list */
+    virDomainEventCallbackListFree(qemu_driver->domainEventCallbacks);
 
     if (qemu_driver->brctl)
         brShutdown(qemu_driver->brctl);
@@ -743,6 +757,9 @@ static int qemudNextFreeVNCPort(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
     return -1;
 }
 
+static virDomainPtr qemudDomainLookupByName(virConnectPtr conn,
+                                            const char *name);
+
 static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
                               virDomainObjPtr vm,
@@ -906,11 +923,15 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     if (ret == 0) {
         if ((virEventAddHandle(vm->stdout_fd,
-                               POLLIN | POLLERR | POLLHUP,
+                               VIR_EVENT_HANDLE_READABLE |
+                                   VIR_EVENT_HANDLE_ERROR |
+                                   VIR_EVENT_HANDLE_HANGUP,
                                qemudDispatchVMEvent,
                                driver) < 0) ||
             (virEventAddHandle(vm->stderr_fd,
-                               POLLIN | POLLERR | POLLHUP,
+                               VIR_EVENT_HANDLE_READABLE |
+                                   VIR_EVENT_HANDLE_ERROR |
+                                   VIR_EVENT_HANDLE_HANGUP,
                                qemudDispatchVMEvent,
                                driver) < 0) ||
             (qemudWaitForMonitor(conn, driver, vm) < 0) ||
@@ -919,6 +940,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
             qemudShutdownVMDaemon(conn, driver, vm);
             return -1;
         }
+        qemudDomainEventDispatch(driver, vm, VIR_DOMAIN_EVENT_STARTED);
     }
 
     return ret;
@@ -1013,6 +1035,7 @@ static int qemudDispatchVMLog(struct qemud_driver *driver, virDomainObjPtr vm, i
 static int qemudDispatchVMFailure(struct qemud_driver *driver, virDomainObjPtr vm,
                                   int fd ATTRIBUTE_UNUSED) {
     qemudShutdownVMDaemon(NULL, driver, vm);
+    qemudDomainEventDispatch(driver, vm, VIR_DOMAIN_EVENT_STOPPED);
     if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains,
                                 vm);
@@ -1020,7 +1043,8 @@ static int qemudDispatchVMFailure(struct qemud_driver *driver, virDomainObjPtr v
 }
 
 
-static void qemudDispatchVMEvent(int fd, int events, void *opaque) {
+static void
+qemudDispatchVMEvent(int fd, int events, void *opaque) {
     struct qemud_driver *driver = (struct qemud_driver *)opaque;
     virDomainObjPtr vm = NULL;
     unsigned int i;
@@ -1037,7 +1061,7 @@ static void qemudDispatchVMEvent(int fd, int events, void *opaque) {
     if (!vm)
         return;
 
-    if (events == POLLIN)
+    if (events == VIR_EVENT_HANDLE_READABLE)
         qemudDispatchVMLog(driver, vm, fd);
     else
         qemudDispatchVMFailure(driver, vm, fd);
@@ -1504,6 +1528,7 @@ static int qemudDomainSuspend(virDomainPtr dom) {
     }
     vm->state = VIR_DOMAIN_PAUSED;
     qemudDebug("Reply %s", info);
+    qemudDomainEventDispatch(driver, vm, VIR_DOMAIN_EVENT_SUSPENDED);
     VIR_FREE(info);
     return 0;
 }
@@ -1532,6 +1557,7 @@ static int qemudDomainResume(virDomainPtr dom) {
     }
     vm->state = VIR_DOMAIN_RUNNING;
     qemudDebug("Reply %s", info);
+    qemudDomainEventDispatch(driver, vm, VIR_DOMAIN_EVENT_RESUMED);
     VIR_FREE(info);
     return 0;
 }
@@ -1570,10 +1596,10 @@ static int qemudDomainDestroy(virDomainPtr dom) {
     }
 
     qemudShutdownVMDaemon(dom->conn, driver, vm);
+    qemudDomainEventDispatch(driver, vm, VIR_DOMAIN_EVENT_STOPPED);
     if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains,
                                 vm);
-
     return 0;
 }
 
@@ -1904,7 +1930,7 @@ static int qemudDomainSave(virDomainPtr dom,
     if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains,
                                 vm);
-
+    qemudDomainEventDispatch(driver, vm, VIR_DOMAIN_EVENT_SAVED);
     return 0;
 }
 
@@ -2211,6 +2237,7 @@ static int qemudDomainRestore(virConnectPtr conn,
         vm->state = VIR_DOMAIN_RUNNING;
     }
 
+    qemudDomainEventDispatch(driver, vm, VIR_DOMAIN_EVENT_RESTORED);
     return 0;
 }
 
@@ -3149,6 +3176,56 @@ done:
 }
 
 
+static int
+qemudDomainEventRegister (virConnectPtr conn,
+                          void *callback,
+                          void *opaque)
+{
+    struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
+
+    return virDomainEventCallbackListAdd(conn, driver->domainEventCallbacks,
+                                         callback, opaque);
+}
+
+static int
+qemudDomainEventDeregister (virConnectPtr conn,
+                            void *callback)
+{
+    struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
+
+    return virDomainEventCallbackListRemove(conn, driver->domainEventCallbacks,
+                                            callback);
+}
+
+static void qemudDomainEventDispatch (struct qemud_driver *driver,
+                                      virDomainObjPtr vm,
+                                      virDomainEventType evt)
+{
+    int i;
+    virDomainEventCallbackListPtr cbList;
+
+    cbList = driver->domainEventCallbacks;
+
+    for(i=0 ; i < cbList->count ; i++) {
+        if(cbList->callbacks[i] && cbList->callbacks[i]->cb) {
+            virConnectPtr conn = cbList->callbacks[i]->conn;
+            virDomainPtr dom = virGetDomain(conn, vm->def->name,
+                                            vm->def->uuid);
+            if (dom) {
+                dom->id = virDomainIsActive(vm) ? vm->def->id : -1;
+                DEBUG("Dispatching callback %p %p event %d",
+                        cbList->callbacks[i],
+                        cbList->callbacks[i]->cb, evt);
+                cbList->callbacks[i]->cb(cbList->callbacks[i]->conn,
+                                         dom, evt,
+                                         cbList->callbacks[i]->opaque);
+                virDomainFree(dom);
+            }
+        }
+    }
+
+}
+
 static virDriver qemuDriver = {
     VIR_DRV_QEMU,
     "QEMU",
@@ -3219,6 +3296,8 @@ static virDriver qemuDriver = {
     NULL, /* nodeGetCellsFreeMemory */
     NULL, /* getFreeMemory */
 #endif
+    qemudDomainEventRegister, /* domainEventRegister */
+    qemudDomainEventDeregister, /* domainEventDeregister */
 };
 
 

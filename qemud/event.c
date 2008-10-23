@@ -74,13 +74,13 @@ static struct virEventLoop eventLoop;
 /* Unique ID for the next timer to be registered */
 static int nextTimer = 0;
 
-
 /*
  * Register a callback for monitoring file handle events.
  * NB, it *must* be safe to call this from within a callback
  * For this reason we only ever append to existing list.
  */
-int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb, void *opaque) {
+int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb,
+                          void *opaque) {
     EVENT_DEBUG("Add handle %d %d %p %p", fd, events, cb, opaque);
     if (eventLoop.handlesCount == eventLoop.handlesAlloc) {
         EVENT_DEBUG("Used %d handle slots, adding %d more",
@@ -92,7 +92,8 @@ int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb, void *o
     }
 
     eventLoop.handles[eventLoop.handlesCount].fd = fd;
-    eventLoop.handles[eventLoop.handlesCount].events = events;
+    eventLoop.handles[eventLoop.handlesCount].events =
+                                         virEventHandleTypeToPollEvent(events);
     eventLoop.handles[eventLoop.handlesCount].cb = cb;
     eventLoop.handles[eventLoop.handlesCount].opaque = opaque;
     eventLoop.handles[eventLoop.handlesCount].deleted = 0;
@@ -106,7 +107,8 @@ void virEventUpdateHandleImpl(int fd, int events) {
     int i;
     for (i = 0 ; i < eventLoop.handlesCount ; i++) {
         if (eventLoop.handles[i].fd == fd) {
-            eventLoop.handles[i].events = events;
+            eventLoop.handles[i].events =
+                    virEventHandleTypeToPollEvent(events);
             break;
         }
     }
@@ -342,6 +344,7 @@ static int virEventDispatchTimeouts(void) {
  */
 static int virEventDispatchHandles(struct pollfd *fds) {
     int i;
+    virEventHandleType hEvents;
     /* Save this now - it may be changed during dispatch */
     int nhandles = eventLoop.handlesCount;
 
@@ -352,8 +355,10 @@ static int virEventDispatchHandles(struct pollfd *fds) {
         }
 
         if (fds[i].revents) {
-            EVENT_DEBUG("Dispatch %d %d %p", fds[i].fd, fds[i].revents, eventLoop.handles[i].opaque);
-            (eventLoop.handles[i].cb)(fds[i].fd, fds[i].revents,
+            hEvents = virPollEventToEventHandleType(fds[i].revents);
+            EVENT_DEBUG("Dispatch %d %d %p", fds[i].fd, fds[i].revents,
+                        eventLoop.handles[i].opaque);
+            (eventLoop.handles[i].cb)(fds[i].fd, hEvents,
                                       eventLoop.handles[i].opaque);
         }
     }
@@ -481,4 +486,34 @@ int virEventRunOnce(void) {
         return -1;
 
     return 0;
+}
+
+int
+__virEventHandleTypeToPollEvent(virEventHandleType events)
+{
+    int ret = 0;
+    if(events & VIR_EVENT_HANDLE_READABLE)
+        ret |= POLLIN;
+    if(events & VIR_EVENT_HANDLE_WRITABLE)
+        ret |= POLLOUT;
+    if(events & VIR_EVENT_HANDLE_ERROR)
+        ret |= POLLERR;
+    if(events & VIR_EVENT_HANDLE_HANGUP)
+        ret |= POLLHUP;
+    return ret;
+}
+
+virEventHandleType
+__virPollEventToEventHandleType(int events)
+{
+    virEventHandleType ret = 0;
+    if(events & POLLIN)
+        ret |= VIR_EVENT_HANDLE_READABLE;
+    if(events & POLLOUT)
+        ret |= VIR_EVENT_HANDLE_WRITABLE;
+    if(events & POLLERR)
+        ret |= VIR_EVENT_HANDLE_ERROR;
+    if(events & POLLHUP)
+        ret |= VIR_EVENT_HANDLE_HANGUP;
+    return ret;
 }
