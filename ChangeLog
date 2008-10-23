@@ -1,3 +1,8 @@
+Thu Oct 23 13:38:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+	* src/storage_backend_logical.c src/storage_conf.c
+	src/storage_conf.h: Add <device> tags to the XML returned by
+	virConnectFindPoolSources for storage_backend_logical.
+
 Thu Oct 23 13:31:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
 	* src/storage_backend.h src/storage_backend_disk.c
 	src/storage_backend_fs.c src/storage_backend_logical.c

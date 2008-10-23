@@ -249,6 +249,12 @@ struct _virStorageDriverState {
     char *autostartDir;
 };
 
+typedef struct _virStoragePoolSourceList virStoragePoolSourceList;
+typedef virStoragePoolSourceList *virStoragePoolSourceListPtr;
+struct _virStoragePoolSourceList {
+    unsigned int nsources;
+    virStoragePoolSourcePtr sources;
+};
 
 static inline int virStoragePoolObjIsActive(virStoragePoolObjPtr pool) {
     return pool->active;
@@ -303,10 +309,13 @@ int virStoragePoolObjDeleteDef(virConnectPtr conn,
                                virStoragePoolObjPtr pool);
 
 void virStorageVolDefFree(virStorageVolDefPtr def);
+void virStoragePoolSourceFree(virStoragePoolSourcePtr source);
 void virStoragePoolDefFree(virStoragePoolDefPtr def);
 void virStoragePoolObjFree(virStoragePoolObjPtr pool);
 void virStoragePoolObjListFree(virStoragePoolObjListPtr pools);
 void virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
                              virStoragePoolObjPtr pool);
 
-#endif /* __VIR_STORAGE_DRIVER_H__ */
+char *virStoragePoolSourceListFormat(virConnectPtr conn,
+                                     virStoragePoolSourceListPtr def);
+#endif /* __VIR_STORAGE_CONF_H__ */

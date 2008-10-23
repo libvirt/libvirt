@@ -70,26 +70,35 @@ virStorageVolDefFree(virStorageVolDefPtr def) {
 }
 
 void
-virStoragePoolDefFree(virStoragePoolDefPtr def) {
+virStoragePoolSourceFree(virStoragePoolSourcePtr source) {
     int i;
 
+    if (!source)
+        return;
+
+    VIR_FREE(source->host.name);
+    for (i = 0 ; i < source->ndevice ; i++) {
+        VIR_FREE(source->devices[i].freeExtents);
+        VIR_FREE(source->devices[i].path);
+    }
+    VIR_FREE(source->devices);
+    VIR_FREE(source->dir);
+    VIR_FREE(source->name);
+
+    if (source->authType == VIR_STORAGE_POOL_AUTH_CHAP) {
+        VIR_FREE(source->auth.chap.login);
+        VIR_FREE(source->auth.chap.passwd);
+    }
+}
+
+void
+virStoragePoolDefFree(virStoragePoolDefPtr def) {
     if (!def)
         return;
 
     VIR_FREE(def->name);
-    VIR_FREE(def->source.host.name);
-    for (i = 0 ; i < def->source.ndevice ; i++) {
-        VIR_FREE(def->source.devices[i].freeExtents);
-        VIR_FREE(def->source.devices[i].path);
-    }
-    VIR_FREE(def->source.devices);
-    VIR_FREE(def->source.dir);
-    VIR_FREE(def->source.name);
 
-    if (def->source.authType == VIR_STORAGE_POOL_AUTH_CHAP) {
-        VIR_FREE(def->source.auth.chap.login);
-        VIR_FREE(def->source.auth.chap.passwd);
-    }
+    virStoragePoolSourceFree(&def->source);
 
     VIR_FREE(def->target.path);
     VIR_FREE(def->target.perms.label);
@@ -1260,4 +1269,23 @@ virStoragePoolObjDeleteDef(virConnectPtr conn,
     }
 
     return 0;
+}
+
+char *virStoragePoolSourceListFormat(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                     virStoragePoolSourceListPtr def)
+{
+    int i, j;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAddLit(&buf, "<source>");
+
+    for (i = 0; i < def->nsources; i++) {
+        virBufferVSprintf(&buf, "<name>%s</name>", def->sources[i].name);
+        for (j = 0; j < def->sources[i].ndevice; j++)
+            virBufferVSprintf(&buf, "<device path='%s'/>", def->sources[i].devices[j].path);
+    }
+
+    virBufferAddLit(&buf, "</source>");
+
+    return virBufferContentAndReset(&buf);
 }

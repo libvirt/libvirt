@@ -242,33 +242,70 @@ virStorageBackendLogicalRefreshPoolFunc(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendLogicalFindPoolSourcesFunc(virConnectPtr conn ATTRIBUTE_UNUSED,
+virStorageBackendLogicalFindPoolSourcesFunc(virConnectPtr conn,
                                             virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                             char **const groups,
                                             void *data)
 {
-    virStringList **rest = data;
-    virStringList *newItem;
-    const char *name = groups[0];
+    virStoragePoolSourceListPtr sourceList = data;
+    char *pvname = NULL;
+    char *vgname = NULL;
+    int i;
+    virStoragePoolSourceDevicePtr dev;
+    virStoragePoolSource *thisSource;
 
-    /* Append new XML desc to list */
+    pvname = strdup(groups[0]);
+    vgname = strdup(groups[1]);
 
-    if (VIR_ALLOC(newItem) != 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("new xml desc"));
-        return -1;
+    if (pvname == NULL || vgname == NULL) {
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s",
+                              _("allocating pvname or vgname"));
+        goto err_no_memory;
     }
 
-    if (asprintf(&newItem->val, "<source><name>%s</name></source>", name) <= 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s", _("asprintf failed"));
-        VIR_FREE(newItem);
-        return -1;
+    thisSource = NULL;
+    for (i = 0 ; i < sourceList->nsources; i++) {
+        if (STREQ(sourceList->sources[i].name, vgname)) {
+            thisSource = &sourceList->sources[i];
+            break;
+        }
     }
 
-    newItem->len = strlen(newItem->val);
-    newItem->next = *rest;
-    *rest = newItem;
+    if (thisSource == NULL) {
+        if (VIR_REALLOC_N(sourceList->sources, sourceList->nsources + 1) != 0) {
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s",
+                                  _("allocating new source"));
+            goto err_no_memory;
+        }
+
+        thisSource = &sourceList->sources[sourceList->nsources];
+        sourceList->nsources++;
+
+        memset(thisSource, 0, sizeof(*thisSource));
+        thisSource->name = vgname;
+    }
+    else
+        VIR_FREE(vgname);
+
+    if (VIR_REALLOC_N(thisSource->devices, thisSource->ndevice + 1) != 0) {
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s",
+                              _("allocating new device"));
+        goto err_no_memory;
+    }
+
+    dev = &thisSource->devices[thisSource->ndevice];
+    thisSource->ndevice++;
+
+    memset(dev, 0, sizeof(*dev));
+    dev->path = pvname;
 
     return 0;
+
+ err_no_memory:
+    VIR_FREE(pvname);
+    VIR_FREE(vgname);
+
+    return -1;
 }
 
 static char *
@@ -277,34 +314,40 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn,
                                         unsigned int flags ATTRIBUTE_UNUSED)
 {
     /*
-     * # vgs --noheadings -o vg_name
-     *   VolGroup00
-     *   VolGroup01
+     * # pvs --noheadings -o pv_name,vg_name
+     *   /dev/sdb
+     *   /dev/sdc VolGroup00
      */
     const char *regexes[] = {
-        "^\\s*(\\S+)\\s*$"
+        "^\\s*(\\S+)\\s+(\\S+)\\s*$"
     };
     int vars[] = {
-        1
+        2
     };
-    virStringList *descs = NULL;
-    const char *prog[] = { VGS, "--noheadings", "-o", "vg_name", NULL };
+    const char *const prog[] = { PVS, "--noheadings", "-o", "pv_name,vg_name", NULL };
     int exitstatus;
     char *retval = NULL;
+    virStoragePoolSourceList sourceList;
+    int i;
 
+    memset(&sourceList, 0, sizeof(sourceList));
     if (virStorageBackendRunProgRegex(conn, NULL, prog, 1, regexes, vars,
                                       virStorageBackendLogicalFindPoolSourcesFunc,
-                                      &descs, &exitstatus) < 0)
+                                      &sourceList, &exitstatus) < 0)
         return NULL;
 
-    retval = virStringListJoin(descs, SOURCES_START_TAG, SOURCES_END_TAG, "\n");
+    retval = virStoragePoolSourceListFormat(conn, &sourceList);
     if (retval == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("retval"));
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                              _("failed to get source from sourceList"));
         goto cleanup;
     }
 
  cleanup:
-    virStringListFree(descs);
+    for (i = 0; i < sourceList.nsources; i++)
+        virStoragePoolSourceFree(&sourceList.sources[i]);
+
+    VIR_FREE(sourceList.sources);
 
     return retval;
 }
