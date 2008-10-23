@@ -1,3 +1,7 @@
+Thu Oct 23 13:41:49 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/apps.html docs/apps.html.in: update monitoring apps section
+
 Thu Oct 23 13:38:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
 	* src/storage_backend_logical.c src/storage_conf.c
 	src/storage_conf.h: Add <device> tags to the XML returned by
