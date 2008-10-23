@@ -77,6 +77,7 @@ typedef struct _virStorageBackendPoolOptions virStorageBackendPoolOptions;
 typedef virStorageBackendPoolOptions *virStorageBackendPoolOptionsPtr;
 struct _virStorageBackendPoolOptions {
     int flags;
+    int defaultFormat;
     virStoragePoolFormatToString formatToString;
     virStoragePoolFormatFromString formatFromString;
 };

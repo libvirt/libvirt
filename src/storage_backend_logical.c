@@ -616,6 +616,7 @@ virStorageBackend virStorageBackendLogical = {
     .poolOptions = {
         .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_NAME |
                   VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE),
+        .defaultFormat = VIR_STORAGE_POOL_LOGICAL_LVM2,
         .formatFromString = virStorageBackendLogicalPoolTypeFromString,
         .formatToString = virStorageBackendLogicalPoolTypeToString,
     },

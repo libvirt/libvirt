@@ -448,6 +448,7 @@ virStorageBackend virStorageBackendDisk = {
 
     .poolOptions = {
         .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE),
+        .defaultFormat = VIR_STORAGE_POOL_DISK_UNKNOWN,
         .formatFromString = virStorageBackendPartTableTypeFromString,
         .formatToString = virStorageBackendPartTableTypeToString,
     },

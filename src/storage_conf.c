@@ -275,7 +275,12 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
 
     if (options->formatFromString) {
         char *format = virXPathString(conn, "string(/pool/source/format/@type)", ctxt);
-        if ((ret->source.format = (options->formatFromString)(format)) < 0) {
+        if (format == NULL)
+            ret->source.format = options->defaultFormat;
+        else
+            ret->source.format = options->formatFromString(format);
+
+        if (ret->source.format < 0) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   _("unknown pool format type %s"), format);
             VIR_FREE(format);

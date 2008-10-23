@@ -1083,6 +1083,7 @@ virStorageBackend virStorageBackendNetFileSystem = {
     .poolOptions = {
         .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_HOST |
                   VIR_STORAGE_BACKEND_POOL_SOURCE_DIR),
+        .defaultFormat = VIR_STORAGE_POOL_FS_AUTO,
         .formatFromString = virStorageBackendFileSystemNetPoolTypeFromString,
         .formatToString = virStorageBackendFileSystemNetPoolTypeToString,
     },

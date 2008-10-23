@@ -1,3 +1,13 @@
+Thu Oct 23 13:31:00 CEST 2008 Chris Lalancette <clalance@redhat.com>
+	* src/storage_backend.h src/storage_backend_disk.c
+	src/storage_backend_fs.c src/storage_backend_logical.c
+	src/storage_conf.c: Fix up a regression caused by the transition of
+	the storage backends to VIR_ENUM_IMPL.  Before, we would accept
+	no format type, which would then use whatever the default for the pool
+	was.  But the conversion caused this to instead cause a SEGFAULT,
+	which isn't good.  Introduce a .defaultFormat parameter so that we
+	restore the previous behavior, although in a more generic format.
+
 Wed Oct 22 09:53:00 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* configure.in: Fix syntax error which was breaking RPM builds.
