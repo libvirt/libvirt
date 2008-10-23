@@ -1277,15 +1277,16 @@ char *virStoragePoolSourceListFormat(virConnectPtr conn ATTRIBUTE_UNUSED,
     int i, j;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAddLit(&buf, "<source>");
+    virBufferAddLit(&buf, "<sources>");
 
     for (i = 0; i < def->nsources; i++) {
-        virBufferVSprintf(&buf, "<name>%s</name>", def->sources[i].name);
+        virBufferVSprintf(&buf, "<source><name>%s</name>", def->sources[i].name);
         for (j = 0; j < def->sources[i].ndevice; j++)
             virBufferVSprintf(&buf, "<device path='%s'/>", def->sources[i].devices[j].path);
+	virBufferAddLit(&buf, "</source>");
     }
 
-    virBufferAddLit(&buf, "</source>");
+    virBufferAddLit(&buf, "</sources>");
 
     return virBufferContentAndReset(&buf);
 }

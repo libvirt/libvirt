@@ -1,3 +1,9 @@
+Thu Oct 23 15:20:00 CEST 2008 Chris Lalancete <clalance@redhat.com>
+	* src/storage_conf.c: brown paper bag bug.  I didn't preserve the
+	<sources> tags properly, and I didn't put the <source> tag into the
+	proper place, so I totally changed the output of the discovery XML.
+	Fix this up to do the right thing.
+
 Thu Oct 23 15:11:03 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in
