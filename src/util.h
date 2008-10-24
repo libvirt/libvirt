@@ -1,3 +1,4 @@
+
 /*
  * utils.h: common, generic utility functions
  *
@@ -113,7 +114,16 @@ int __virMacAddrCompare (const char *mac1, const char *mac2);
 void virSkipSpaces(const char **str);
 int virParseNumber(const char **str);
 
-int virParseMacAddr(const char* str, unsigned char *addr);
+#define VIR_MAC_BUFLEN 6
+#define VIR_MAC_PREFIX_BUFLEN 3
+#define VIR_MAC_STRING_BUFLEN VIR_MAC_BUFLEN * 3
+
+int virParseMacAddr(const char* str,
+                    unsigned char *addr);
+void virFormatMacAddr(const unsigned char *addr,
+                      char *str);
+void virGenerateMacAddr(const unsigned char *prefix,
+                        unsigned char *addr);
 
 int virDiskNameToIndex(const char* str);
 

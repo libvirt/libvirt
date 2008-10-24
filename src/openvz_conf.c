@@ -108,7 +108,7 @@ no_memory:
 int openvzCheckEmptyMac(const unsigned char *mac)
 {
     int i;
-    for (i = 0; i < VIR_DOMAIN_NET_MAC_SIZE; i++)
+    for (i = 0; i < VIR_MAC_BUFLEN; i++)
         if (mac[i] != 0x00)
             return 1;
 

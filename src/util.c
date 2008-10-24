@@ -983,7 +983,7 @@ virParseMacAddr(const char* str, unsigned char *addr)
     int i;
 
     errno = 0;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < VIR_MAC_BUFLEN; i++) {
         char *end_ptr;
         unsigned long result;
 
@@ -1012,6 +1012,28 @@ virParseMacAddr(const char* str, unsigned char *addr)
 
     return -1;
 }
+
+void virFormatMacAddr(const unsigned char *addr,
+                      char *str)
+{
+    snprintf(str, VIR_MAC_STRING_BUFLEN,
+             "%02X:%02X:%02X:%02X:%02X:%02X",
+             addr[0], addr[1], addr[2],
+             addr[3], addr[4], addr[5]);
+    str[VIR_MAC_STRING_BUFLEN-1] = '\0';
+}
+
+void virGenerateMacAddr(const unsigned char *prefix,
+                        unsigned char *addr)
+{
+    addr[0] = prefix[0];
+    addr[1] = prefix[1];
+    addr[2] = prefix[2];
+    addr[3] = (int)(256*(rand()/(RAND_MAX+1.0)));
+    addr[4] = (int)(256*(rand()/(RAND_MAX+1.0)));
+    addr[5] = (int)(256*(rand()/(RAND_MAX+1.0)));
+}
+
 
 int virEnumFromString(const char *const*types,
                       unsigned int ntypes,

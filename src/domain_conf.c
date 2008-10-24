@@ -762,23 +762,14 @@ cleanup:
 }
 
 
-static void virDomainNetRandomMAC(virDomainNetDefPtr def) {
-    /* XXX there different vendor prefixes per hypervisor */
-    def->mac[0] = 0x52;
-    def->mac[1] = 0x54;
-    def->mac[2] = 0x00;
-    def->mac[3] = 1 + (int)(256*(rand()/(RAND_MAX+1.0)));
-    def->mac[4] = 1 + (int)(256*(rand()/(RAND_MAX+1.0)));
-    def->mac[5] = 1 + (int)(256*(rand()/(RAND_MAX+1.0)));
-}
-
 
 /* Parse the XML definition for a network interface
  * @param node XML nodeset to parse for net definition
  * @return 0 on success, -1 on failure
  */
-virDomainNetDefPtr
+static virDomainNetDefPtr
 virDomainNetDefParseXML(virConnectPtr conn,
+                        virCapsPtr caps,
                         xmlNodePtr node) {
     virDomainNetDefPtr def;
     xmlNodePtr cur;
@@ -857,22 +848,9 @@ virDomainNetDefParseXML(virConnectPtr conn,
     }
 
     if (macaddr) {
-        unsigned int mac[6];
-        sscanf((const char *)macaddr, "%02x:%02x:%02x:%02x:%02x:%02x",
-               (unsigned int*)&mac[0],
-               (unsigned int*)&mac[1],
-               (unsigned int*)&mac[2],
-               (unsigned int*)&mac[3],
-               (unsigned int*)&mac[4],
-               (unsigned int*)&mac[5]);
-        def->mac[0] = mac[0];
-        def->mac[1] = mac[1];
-        def->mac[2] = mac[2];
-        def->mac[3] = mac[3];
-        def->mac[4] = mac[4];
-        def->mac[5] = mac[5];
+        virParseMacAddr((const char *)macaddr, def->mac);
     } else {
-        virDomainNetRandomMAC(def);
+        virCapabilitiesGenerateMac(caps, def->mac);
     }
 
     switch (def->type) {
@@ -1630,6 +1608,7 @@ static int virDomainLifecycleParseXML(virConnectPtr conn,
 
 
 virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
+                                              virCapsPtr caps,
                                               const virDomainDefPtr def,
                                               const char *xmlStr)
 {
@@ -1666,7 +1645,7 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
         dev->type = VIR_DOMAIN_DEVICE_NET;
-        if (!(dev->data.net = virDomainNetDefParseXML(conn, node)))
+        if (!(dev->data.net = virDomainNetDefParseXML(conn, caps, node)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "input")) {
         dev->type = VIR_DOMAIN_DEVICE_INPUT;
@@ -1988,6 +1967,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
         virDomainNetDefPtr net = virDomainNetDefParseXML(conn,
+                                                         caps,
                                                          nodes[i]);
         if (!net)
             goto error;

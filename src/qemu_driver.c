@@ -2423,7 +2423,7 @@ static int qemudDomainChangeEjectableMedia(virDomainPtr dom,
 {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    virDomainDiskDefPtr origdisk, newdisk;
+    virDomainDiskDefPtr origdisk = NULL, newdisk;
     char *cmd, *reply, *safe_path;
     char *devname = NULL;
     unsigned int qemuCmdFlags;
@@ -2752,7 +2752,9 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         return -1;
     }
 
-    dev = virDomainDeviceDefParse(dom->conn, vm->def, xml);
+    dev = virDomainDeviceDefParse(dom->conn,
+                                  driver->caps,
+                                  vm->def, xml);
     if (dev == NULL) {
         return -1;
     }

@@ -42,6 +42,9 @@ virCapsPtr lxcCapsInit(void)
                                    0, 0)) == NULL)
         goto no_memory;
 
+    /* XXX shouldn't 'borrow' KVM's prefix */
+    virCapabilitiesSetMacPrefix(caps, (unsigned char []){ 0x52, 0x54, 0x00 });
+
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "exe",
                                          utsname.machine,

@@ -2422,12 +2422,16 @@ xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
     int ret = -1;
     virDomainDeviceDefPtr dev = NULL;
     virDomainDefPtr def;
+    xenUnifiedPrivatePtr priv;
 
     if ((!domain) || (!domain->conn) || (!domain->name) || (!xml)) {
         xenXMError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
                    __FUNCTION__);
         return -1;
     }
+
+    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
+
     if (domain->conn->flags & VIR_CONNECT_RO)
         return -1;
     if (domain->id != -1)
@@ -2440,6 +2444,7 @@ xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
     def = entry->def;
 
     if (!(dev = virDomainDeviceDefParse(domain->conn,
+                                        priv->caps,
                                         entry->def,
                                         xml)))
         return -1;
@@ -2491,28 +2496,6 @@ xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
 
 
 /**
- * xenXMAutoAssignMac:
- * @mac: pointer to Mac String
- *
- * a mac is assigned automatically.
- *
- * Returns 0 in case of success, -1 in case of failure.
- */
-char *
-xenXMAutoAssignMac() {
-    char *buf;
-
-    if (VIR_ALLOC_N(buf, 18) < 0)
-        return 0;
-    srand((unsigned)time(NULL));
-    sprintf(buf, "00:16:3e:%02x:%02x:%02x"
-            ,1 + (int)(256*(rand()/(RAND_MAX+1.0)))
-            ,1 + (int)(256*(rand()/(RAND_MAX+1.0)))
-            ,1 + (int)(256*(rand()/(RAND_MAX+1.0))));
-    return buf;
-}
-
-/**
  * xenXMDomainDetachDevice:
  * @domain: pointer to domain object
  * @xml: pointer to XML description of device
@@ -2529,12 +2512,16 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
     virDomainDefPtr def;
     int ret = -1;
     int i;
+    xenUnifiedPrivatePtr priv;
 
     if ((!domain) || (!domain->conn) || (!domain->name) || (!xml)) {
         xenXMError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
                    __FUNCTION__);
         return -1;
     }
+
+    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
+
     if (domain->conn->flags & VIR_CONNECT_RO)
         return -1;
     if (domain->id != -1)
@@ -2546,6 +2533,7 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
     def = entry->def;
 
     if (!(dev = virDomainDeviceDefParse(domain->conn,
+                                        priv->caps,
                                         entry->def,
                                         xml)))
         return -1;
@@ -2573,7 +2561,7 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
         for (i = 0 ; i < def->nnets ; i++) {
             if (!memcmp(def->nets[i]->mac,
                         dev->data.net->mac,
-                        VIR_DOMAIN_NET_MAC_SIZE)) {
+                        sizeof(def->nets[i]->mac))) {
                 virDomainNetDefFree(def->nets[i]);
                 if (i < (def->nnets - 1))
                     memmove(def->nets + i,

@@ -26,7 +26,7 @@
 #include "capabilities.h"
 #include "buf.h"
 #include "memory.h"
-
+#include "util.h"
 
 /**
  * virCapabilitiesNew:
@@ -646,4 +646,18 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         return NULL;
 
     return virBufferContentAndReset(&xml);
+}
+
+extern void
+virCapabilitiesSetMacPrefix(virCapsPtr caps,
+                            unsigned char *prefix)
+{
+    memcpy(caps->macPrefix, prefix, sizeof(caps->macPrefix));
+}
+
+extern void
+virCapabilitiesGenerateMac(virCapsPtr caps,
+                           unsigned char *mac)
+{
+    virGenerateMacAddr(caps->macPrefix, mac);
 }

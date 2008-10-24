@@ -365,6 +365,9 @@ virCapsPtr qemudCapsInit(void) {
                                    0, 0)) == NULL)
         goto no_memory;
 
+    /* Using KVM's mac prefix for QEMU too */
+    virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x52, 0x54, 0x00 });
+
     if (qemudCapsInitNUMA(caps) < 0)
         goto no_memory;
 

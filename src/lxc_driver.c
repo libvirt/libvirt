@@ -1187,6 +1187,7 @@ static int lxcGetSchedulerParameters(virDomainPtr _domain,
     int rc = 0;
     virCgroupPtr group;
     virDomainObjPtr domain;
+    unsigned long val;
 
     if (virCgroupHaveSupport() != 0)
         return 0;
@@ -1208,7 +1209,8 @@ static int lxcGetSchedulerParameters(virDomainPtr _domain,
     if (rc != 0)
         return rc;
 
-    rc = virCgroupGetCpuShares(group, (unsigned long *)&params[0].value.ul);
+    rc = virCgroupGetCpuShares(group, &val);
+    params[0].value.ul = val;
     strncpy(params[0].field, "cpu_shares", sizeof(params[0].field));
     params[0].type = VIR_DOMAIN_SCHED_FIELD_ULLONG;
 

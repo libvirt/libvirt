@@ -1,3 +1,16 @@
+Fri Oct 24 12:17:23 BST Daniel P. Berrange <berrange@redhat.com>
+
+	* src/capabilities.c, src/capabilities.h: Record MAC address
+	prefix info for hypervisor
+	* src/domain_conf.c, src/domain_conf.h: Use capabilities to
+	find MAC address prefix when generating MAC addrs
+	* src/lxc_conf.c, src/lxc_driver.c, src/openvz_conf.c,
+	src/qemu_conf.c, src/qemu_driver.c, src/xen_internal.c,
+	src/xend_internal.c, src/xm_internal.c: Provide vendor
+	MAC address prefix to capabilities
+	* src/util.c, src/util.h: Generic method for generating
+	mac addresses.
+
 Fri Oct 24 10:54:23 CEST Jim Meyering <meyering@redhat.com>
 
 	fix mingw compilation warning

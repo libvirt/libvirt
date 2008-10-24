@@ -24,6 +24,9 @@
 #ifndef __VIR_CAPABILITIES_H
 #define __VIR_CAPABILITIES_H
 
+#include "internal.h"
+#include "util.h"
+
 typedef struct _virCapsGuestFeature virCapsGuestFeature;
 typedef virCapsGuestFeature *virCapsGuestFeaturePtr;
 struct _virCapsGuestFeature {
@@ -95,6 +98,7 @@ struct _virCaps {
     virCapsHost host;
     int nguests;
     virCapsGuestPtr *guests;
+    unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
 };
 
 
@@ -106,6 +110,13 @@ virCapabilitiesNew(const char *arch,
 extern void
 virCapabilitiesFree(virCapsPtr caps);
 
+extern void
+virCapabilitiesSetMacPrefix(virCapsPtr caps,
+                            unsigned char *prefix);
+
+extern void
+virCapabilitiesGenerateMac(virCapsPtr caps,
+                           unsigned char *mac);
 
 extern int
 virCapabilitiesAddHostFeature(virCapsPtr caps,

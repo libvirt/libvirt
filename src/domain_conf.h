@@ -127,14 +127,12 @@ enum virDomainNetType {
 };
 
 
-#define VIR_DOMAIN_NET_MAC_SIZE 6
-
 /* Stores the virtual network interface configuration */
 typedef struct _virDomainNetDef virDomainNetDef;
 typedef virDomainNetDef *virDomainNetDefPtr;
 struct _virDomainNetDef {
     int type;
-    unsigned char mac[VIR_DOMAIN_NET_MAC_SIZE];
+    unsigned char mac[VIR_MAC_BUFLEN];
     char *model;
     union {
         struct {
@@ -513,6 +511,7 @@ void virDomainRemoveInactive(virDomainObjListPtr doms,
 
 #ifndef PROXY
 virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
+                                              virCapsPtr caps,
                                               const virDomainDefPtr def,
                                               const char *xmlStr);
 virDomainDefPtr virDomainDefParseString(virConnectPtr conn,
@@ -572,9 +571,6 @@ char *virDomainConfigFile(virConnectPtr conn,
 int virDiskNameToBusDeviceIndex(virDomainDiskDefPtr disk,
                                 int *busIdx,
                                 int *devIdx);
-
-virDomainNetDefPtr virDomainNetDefParseXML(virConnectPtr conn,
-                        xmlNodePtr node);
 
 const char *virDomainDefDefaultEmulator(virConnectPtr conn,
                                         virDomainDefPtr def,
