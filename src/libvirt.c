@@ -16,7 +16,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/poll.h>
 #include <unistd.h>
 #include <assert.h>
 #ifdef HAVE_SYS_WAIT_H

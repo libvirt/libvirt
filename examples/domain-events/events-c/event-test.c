@@ -1,6 +1,9 @@
 #include <config.h>
+
 #include <stdio.h>
 #include <string.h>
+
+#if HAVE_SYS_POLL_H
 #include <sys/types.h>
 #include <sys/poll.h>
 #include <libvirt/libvirt.h>
@@ -259,3 +262,9 @@ int main(int argc, char **argv)
     return 0;
 }
 
+#else
+int main(void) {
+    printf("event-test program not available without sys/poll.h support\n");
+    return 1;
+}
+#endif

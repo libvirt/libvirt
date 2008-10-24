@@ -1,3 +1,11 @@
+Fri Oct 24 14:09:23 BST Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: Add check for sys/poll.h
+	* examples/domain-events/events-c/event-test.c: Stub out
+	no-op main() on platforms without sys/poll.h
+	* src/libvirt.c, src/remote_internal.c: Remove redundant
+	include of sys/poll.h breaking mingw
+
 Fri Oct 24 13:04:23 BST Daniel P. Berrange <berrange@redhat.com>
 
 	* src/storage_conf.c: Remove <tab> character
