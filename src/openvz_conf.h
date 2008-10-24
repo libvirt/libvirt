@@ -47,15 +47,18 @@ enum { OPENVZ_WARN, OPENVZ_ERR };
 
 
 /* OpenVZ commands - Replace with wrapper scripts later? */
-#define VZLIST  "vzlist"
-#define VZCTL   "vzctl"
+#define VZLIST  "/usr/sbin/vzlist"
+#define VZCTL   "/usr/sbin/vzctl"
 
 struct openvz_driver {
     virCapsPtr caps;
     virDomainObjList domains;
+    int version;
 };
 
 int openvz_readline(int fd, char *ptr, int maxlen);
+int openvzExtractVersion(virConnectPtr conn,
+                         struct openvz_driver *driver);
 int openvzReadConfigParam(int vpsid ,const char * param, char *value, int maxlen);
 virCapsPtr openvzCapsInit(void);
 int openvzLoadDomains(struct openvz_driver *driver);

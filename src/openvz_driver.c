@@ -172,6 +172,12 @@ static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
     return dom;
 }
 
+static int openvzGetVersion(virConnectPtr conn, unsigned long *version) {
+    struct  openvz_driver *driver = (struct openvz_driver *)conn->privateData;
+    *version = driver->version;
+    return 0;
+}
+
 static char *openvzGetOSType(virDomainPtr dom)
 {
     struct  openvz_driver *driver = (struct openvz_driver *)dom->conn->privateData;
@@ -777,6 +783,9 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
     if (openvzLoadDomains(driver) < 0)
         goto cleanup;
 
+    if (openvzExtractVersion(conn, driver) < 0)
+        goto cleanup;
+
     conn->privateData = driver;
 
     return VIR_DRV_OPEN_SUCCESS;
@@ -961,7 +970,7 @@ static virDriver openvzDriver = {
     openvzClose, /* close */
     NULL, /* supports_feature */
     openvzGetType, /* type */
-    NULL, /* version */
+    openvzGetVersion, /* version */
     NULL, /* hostname */
     NULL, /* uri */
     openvzGetMaxVCPUs, /* getMaxVcpus */

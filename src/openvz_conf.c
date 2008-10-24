@@ -41,6 +41,7 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/utsname.h>
+#include <sys/wait.h>
 
 #include "openvz_conf.h"
 #include "uuid.h"
@@ -63,6 +64,73 @@ strtoI(const char *str)
 
     return val;
 }
+
+
+static int
+openvzExtractVersionInfo(const char *cmd, int *retversion)
+{
+    const char *const vzarg[] = { cmd, "--help", NULL };
+    const char *const vzenv[] = { "LC_ALL=C", NULL };
+    pid_t child;
+    int newstdout = -1;
+    int ret = -1, status;
+    unsigned int major, minor, micro;
+    unsigned int version;
+
+    if (retversion)
+        *retversion = 0;
+
+    if (virExec(NULL, vzarg, vzenv, NULL,
+                &child, -1, &newstdout, NULL, VIR_EXEC_NONE) < 0)
+        return -1;
+
+    char *help = NULL;
+    int len = virFileReadLimFD(newstdout, 512, &help);
+    if (len < 0)
+        goto cleanup2;
+
+    if (sscanf(help, "vzctl version %u.%u.%u",
+               &major, &minor, &micro) != 3) {
+        goto cleanup2;
+    }
+
+    version = (major * 1000 * 1000) + (minor * 1000) + micro;
+
+    if (retversion)
+        *retversion = version;
+
+    ret = 0;
+
+cleanup2:
+    VIR_FREE(help);
+    if (close(newstdout) < 0)
+        ret = -1;
+
+rewait:
+    if (waitpid(child, &status, 0) != child) {
+        if (errno == EINTR)
+            goto rewait;
+        ret = -1;
+    }
+
+    return ret;
+}
+
+int openvzExtractVersion(virConnectPtr conn,
+                         struct openvz_driver *driver)
+{
+    if (driver->version > 0)
+        return 0;
+
+    if (openvzExtractVersionInfo(VZCTL, &driver->version) < 0) {
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Cound not extract vzctl version"));
+        return -1;
+    }
+
+    return 0;
+}
+
 
 virCapsPtr openvzCapsInit(void)
 {
