@@ -238,8 +238,7 @@ winsock_init (void)
     /* http://msdn2.microsoft.com/en-us/library/ms742213.aspx */
     winsock_version = MAKEWORD (2, 2);
     err = WSAStartup (winsock_version, &winsock_data);
-    if (err != 0)
-        return -1;
+    return err == 0 ? 0 : -1;
 }
 #endif
 
