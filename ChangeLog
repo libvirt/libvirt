@@ -1,3 +1,8 @@
+Fri Oct 24 12:30:23 BST Daniel P. Berrange <berrange@redhat.com>
+
+	Fix mingw build
+	* src/Makefile.am: Add windows icon files to EXTRA_DIST
+
 Fri Oct 24 12:17:23 BST Daniel P. Berrange <berrange@redhat.com>
 
 	* src/capabilities.c, src/capabilities.h: Record MAC address

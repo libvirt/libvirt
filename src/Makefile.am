@@ -25,8 +25,15 @@ VIRSH_LIBS = @VIRSH_LIBS@
 confdir = $(sysconfdir)/libvirt/
 conf_DATA = qemu.conf
 
+ICON_FILES = \
+	libvirt_win_icon_16x16.ico \
+	libvirt_win_icon_32x32.ico \
+	libvirt_win_icon_48x48.ico \
+	libvirt_win_icon_64x64.ico \
+	virsh_win_icon.rc
 
-EXTRA_DIST = libvirt_sym.version $(conf_DATA)
+EXTRA_DIST = libvirt_sym.version $(conf_DATA) $(ICON_FILES)
+
 
 lib_LTLIBRARIES = libvirt.la
 
