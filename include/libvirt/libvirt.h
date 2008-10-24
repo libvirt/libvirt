@@ -1021,7 +1021,7 @@ typedef enum {
  * @event: The specfic virDomainEventType which occured
  * @opaque: opaque user data
  *
- * A callback function to be registered, and called when a domain event occurs 
+ * A callback function to be registered, and called when a domain event occurs
  */
 typedef int (*virConnectDomainEventCallback)(virConnectPtr conn,
                                              virDomainPtr dom,

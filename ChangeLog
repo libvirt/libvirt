@@ -1,3 +1,8 @@
+Fri Oct 24 13:04:23 BST Daniel P. Berrange <berrange@redhat.com>
+
+	* src/storage_conf.c: Remove <tab> character
+	* include/libvirt/libvirt.h.in: Remove trailing whitespace
+
 Fri Oct 24 12:32:23 BST Daniel P. Berrange <berrange@redhat.com>
 
 	* src/openvz_conf.c, src/openvz_conf.h: Extract version
