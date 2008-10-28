@@ -19,7 +19,7 @@
 
 #include <config.h>
 
-#include "getaddrinfo.h"
+#include <netdb.h>
 
 #if HAVE_NETINET_IN_H
 # include <netinet/in.h>
@@ -300,6 +300,22 @@ getaddrinfo (const char *restrict nodename,
   tmp->ai_socktype = (hints) ? hints->ai_socktype : 0;
   tmp->ai_addr->sa_family = he->h_addrtype;
   tmp->ai_family = he->h_addrtype;
+
+#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+  switch (he->h_addrtype)
+    {
+#if HAVE_IPV4
+    case AF_INET:
+      tmp->ai_addr->sa_len = sizeof (struct sockaddr_in);
+      break;
+#endif
+#if HAVE_IPV6
+    case AF_INET6:
+      tmp->ai_addr->sa_len = sizeof (struct sockaddr_in6);
+      break;
+#endif
+    }
+#endif
 
   /* FIXME: If more than one address, create linked list of addrinfo's. */
 

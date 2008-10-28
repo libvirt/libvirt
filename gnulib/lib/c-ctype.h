@@ -5,7 +5,7 @@
    <ctype.h> functions' behaviour depends on the current locale set via
    setlocale.
 
-   Copyright (C) 2000-2003, 2006 Free Software Foundation, Inc.
+   Copyright (C) 2000-2003, 2006, 2008 Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -102,6 +102,21 @@ extern "C" {
 
 
 /* Function declarations. */
+
+/* Unlike the functions in <ctype.h>, which require an argument in the range
+   of the 'unsigned char' type, the functions here operate on values that are
+   in the 'unsigned char' range or in the 'char' range.  In other words,
+   when you have a 'char' value, you need to cast it before using it as
+   argument to a <ctype.h> function:
+
+         const char *s = ...;
+         if (isalpha ((unsigned char) *s)) ...
+
+   but you don't need to cast it for the functions defined in this file:
+
+         const char *s = ...;
+         if (c_isalpha (*s)) ...
+ */
 
 extern bool c_isascii (int c); /* not locale dependent */
 

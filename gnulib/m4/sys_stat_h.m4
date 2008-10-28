@@ -1,4 +1,4 @@
-# sys_stat_h.m4 serial 8   -*- Autoconf -*-
+# sys_stat_h.m4 serial 10   -*- Autoconf -*-
 dnl Copyright (C) 2006-2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -50,6 +50,10 @@ AC_DEFUN([gl_SYS_STAT_MODULE_INDICATOR],
 
 AC_DEFUN([gl_SYS_STAT_H_DEFAULTS],
 [
+  GNULIB_LCHMOD=0; AC_SUBST([GNULIB_LCHMOD])
+  GNULIB_LSTAT=0;  AC_SUBST([GNULIB_LSTAT])
   dnl Assume proper GNU behavior unless another module says otherwise.
+  HAVE_LCHMOD=1;   AC_SUBST([HAVE_LCHMOD])
+  REPLACE_LSTAT=0; AC_SUBST([REPLACE_LSTAT])
   REPLACE_MKDIR=0; AC_SUBST([REPLACE_MKDIR])
 ])

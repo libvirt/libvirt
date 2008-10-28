@@ -42,13 +42,14 @@ libtests_a_DEPENDENCIES = $(gltests_LIBOBJS)
 EXTRA_libtests_a_SOURCES =
 AM_LIBTOOLFLAGS = --preserve-dup-deps
 
-## begin gnulib module EOVERFLOW-tests
+## begin gnulib module accept
 
-TESTS += test-EOVERFLOW
-check_PROGRAMS += test-EOVERFLOW
-EXTRA_DIST += test-EOVERFLOW.c
 
-## end   gnulib module EOVERFLOW-tests
+EXTRA_DIST += accept.c w32sock.h
+
+EXTRA_libtests_a_SOURCES += accept.c
+
+## end   gnulib module accept
 
 ## begin gnulib module alloca-opt-tests
 
@@ -68,6 +69,15 @@ EXTRA_DIST += test-arpa_inet.c
 
 ## end   gnulib module arpa_inet-tests
 
+## begin gnulib module bind
+
+
+EXTRA_DIST += bind.c w32sock.h
+
+EXTRA_libtests_a_SOURCES += bind.c
+
+## end   gnulib module bind
+
 ## begin gnulib module c-ctype-tests
 
 TESTS += test-c-ctype
@@ -76,6 +86,15 @@ check_PROGRAMS += test-c-ctype
 EXTRA_DIST += test-c-ctype.c
 
 ## end   gnulib module c-ctype-tests
+
+## begin gnulib module errno-tests
+
+TESTS += test-errno
+check_PROGRAMS += test-errno
+
+EXTRA_DIST += test-errno.c
+
+## end   gnulib module errno-tests
 
 ## begin gnulib module fseeko-tests
 
@@ -105,6 +124,14 @@ EXTRA_DIST += test-getdelim.c
 
 ## end   gnulib module getdelim-tests
 
+## begin gnulib module gethostname-tests
+
+TESTS += test-gethostname
+check_PROGRAMS += test-gethostname
+EXTRA_DIST += test-gethostname.c
+
+## end   gnulib module gethostname-tests
+
 ## begin gnulib module getline-tests
 
 TESTS += test-getline
@@ -123,12 +150,23 @@ EXTRA_DIST += test-gettimeofday.c
 
 ## end   gnulib module gettimeofday-tests
 
-## begin gnulib module intprops
+## begin gnulib module ioctl
 
 
-EXTRA_DIST += intprops.h
+EXTRA_DIST += ioctl.c w32sock.h
 
-## end   gnulib module intprops
+EXTRA_libtests_a_SOURCES += ioctl.c
+
+## end   gnulib module ioctl
+
+## begin gnulib module listen
+
+
+EXTRA_DIST += listen.c w32sock.h
+
+EXTRA_libtests_a_SOURCES += listen.c
+
+## end   gnulib module listen
 
 ## begin gnulib module lseek-tests
 
@@ -139,6 +177,23 @@ EXTRA_DIST += test-lseek.c test-lseek.sh
 
 ## end   gnulib module lseek-tests
 
+## begin gnulib module lstat-tests
+
+TESTS += test-lstat
+check_PROGRAMS += test-lstat
+EXTRA_DIST += test-lstat.c
+
+## end   gnulib module lstat-tests
+
+## begin gnulib module netdb-tests
+
+TESTS += test-netdb
+check_PROGRAMS += test-netdb
+
+EXTRA_DIST += test-netdb.c
+
+## end   gnulib module netdb-tests
+
 ## begin gnulib module netinet_in-tests
 
 TESTS += test-netinet_in
@@ -148,6 +203,24 @@ EXTRA_DIST += test-netinet_in.c
 
 ## end   gnulib module netinet_in-tests
 
+## begin gnulib module perror-tests
+
+TESTS += test-perror.sh
+TESTS_ENVIRONMENT += EXEEXT='@EXEEXT@' srcdir='$(srcdir)'
+check_PROGRAMS += test-perror
+EXTRA_DIST += test-perror.c test-perror.sh
+
+## end   gnulib module perror-tests
+
+## begin gnulib module poll-tests
+
+TESTS += test-poll
+check_PROGRAMS += test-poll
+test_poll_LDADD = $(LDADD) @LIBSOCKET@
+EXTRA_DIST += test-poll.c
+
+## end   gnulib module poll-tests
+
 ## begin gnulib module snprintf-tests
 
 TESTS += test-snprintf
@@ -156,6 +229,21 @@ check_PROGRAMS += test-snprintf
 EXTRA_DIST += test-snprintf.c
 
 ## end   gnulib module snprintf-tests
+
+## begin gnulib module sockets
+
+libtests_a_SOURCES += sockets.h sockets.c
+
+## end   gnulib module sockets
+
+## begin gnulib module sockets-tests
+
+TESTS += test-sockets
+check_PROGRAMS += test-sockets
+test_sockets_LDADD = $(LDADD) @LIBSOCKET@
+EXTRA_DIST += test-sockets.c
+
+## end   gnulib module sockets-tests
 
 ## begin gnulib module stdbool-tests
 
@@ -193,6 +281,14 @@ EXTRA_DIST += test-stdlib.c
 
 ## end   gnulib module stdlib-tests
 
+## begin gnulib module strerror-tests
+
+TESTS += test-strerror
+check_PROGRAMS += test-strerror
+EXTRA_DIST += test-strerror.c
+
+## end   gnulib module strerror-tests
+
 ## begin gnulib module string-tests
 
 TESTS += test-string
@@ -201,6 +297,33 @@ check_PROGRAMS += test-string
 EXTRA_DIST += test-string.c
 
 ## end   gnulib module string-tests
+
+## begin gnulib module sys_ioctl
+
+BUILT_SOURCES += $(SYS_IOCTL_H)
+
+# We need the following in order to create <sys/ioctl.h> when the system
+# does not have a complete one.
+sys/ioctl.h: sys_ioctl.in.h
+	@MKDIR_P@ sys
+	rm -f $@-t $@
+	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
+	  sed -e 's|@''HAVE_SYS_IOCTL_H''@|$(HAVE_SYS_IOCTL_H)|g' \
+	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
+	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
+	      -e 's|@''NEXT_SYS_IOCTL_H''@|$(NEXT_SYS_IOCTL_H)|g' \
+	      -e 's|@''GNULIB_IOCTL''@|$(GNULIB_IOCTL)|g' \
+	      -e 's|@''SYS_IOCTL_H_HAVE_WINSOCK2_H''@|$(SYS_IOCTL_H_HAVE_WINSOCK2_H)|g' \
+	      -e '/definition of GL_LINK_WARNING/r $(LINK_WARNING_H)' \
+	      < $(srcdir)/sys_ioctl.in.h; \
+	} > $@-t
+	mv $@-t $@
+MOSTLYCLEANFILES += sys/ioctl.h sys/ioctl.h-t
+MOSTLYCLEANDIRS += sys
+
+EXTRA_DIST += sys_ioctl.in.h
+
+## end   gnulib module sys_ioctl
 
 ## begin gnulib module sys_select-tests
 
@@ -282,12 +405,6 @@ check_PROGRAMS += test-wchar
 EXTRA_DIST += test-wchar.c
 
 ## end   gnulib module wchar-tests
-
-## begin gnulib module dummy
-
-libtests_a_SOURCES += dummy.c
-
-## end   gnulib module dummy
 
 # Clean up after Solaris cc.
 clean-local:

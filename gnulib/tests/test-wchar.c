@@ -1,5 +1,5 @@
 /* Test of <wchar.h> substitute.
-   Copyright (C) 2007 Free Software Foundation, Inc.
+   Copyright (C) 2007-2008 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -19,6 +19,10 @@
 #include <config.h>
 
 #include <wchar.h>
+
+/* Check that the types wchar_t and wint_t are defined.  */
+wchar_t a = 'c';
+wint_t b = 'x';
 
 int
 main ()

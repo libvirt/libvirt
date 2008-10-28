@@ -1,5 +1,5 @@
-# getaddrinfo.m4 serial 15
-dnl Copyright (C) 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
+# getaddrinfo.m4 serial 16
+dnl Copyright (C) 2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -7,9 +7,8 @@ dnl with or without modifications, as long as this notice is preserved.
 AC_DEFUN([gl_GETADDRINFO],
 [
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])dnl for HAVE_SYS_SOCKET_H, HAVE_WINSOCK2_H
+  AC_REQUIRE([gl_HEADER_NETDB])dnl for HAVE_NETDB_H
   AC_MSG_NOTICE([checking how to do getaddrinfo, freeaddrinfo and getnameinfo])
-
-  AC_CHECK_HEADERS_ONCE(netdb.h)
 
   AC_SEARCH_LIBS(getaddrinfo, [nsl socket])
   AC_CACHE_CHECK([for getaddrinfo], [gl_cv_func_getaddrinfo], [
@@ -72,7 +71,7 @@ AC_DEFUN([gl_GETADDRINFO],
   gl_PREREQ_GETADDRINFO
 ])
 
-# Prerequisites of lib/getaddrinfo.h and lib/getaddrinfo.c.
+# Prerequisites of lib/getaddrinfo.c.
 AC_DEFUN([gl_PREREQ_GETADDRINFO], [
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])dnl for HAVE_SYS_SOCKET_H, HAVE_WINSOCK2_H
   AC_SEARCH_LIBS(gethostbyname, [inet nsl])
@@ -99,7 +98,12 @@ AC_DEFUN([gl_PREREQ_GETADDRINFO], [
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
   AC_REQUIRE([AC_C_INLINE])
   AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])
-  AC_CHECK_HEADERS_ONCE(netinet/in.h netdb.h)
+
+  dnl Including sys/socket.h is wrong for Windows, but Windows does not
+  dnl have sa_len so the result is correct anyway.
+  AC_CHECK_MEMBERS([struct sockaddr.sa_len], , , [#include <sys/socket.h>])
+
+  AC_CHECK_HEADERS_ONCE(netinet/in.h)
   AC_CHECK_DECLS([getaddrinfo, freeaddrinfo, gai_strerror, getnameinfo],,,[
   /* sys/types.h is not needed according to POSIX, but the
      sys/socket.h in i386-unknown-freebsd4.10 and

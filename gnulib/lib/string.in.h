@@ -18,6 +18,10 @@
 
 #ifndef _GL_STRING_H
 
+#if __GNUC__ >= 3
+@PRAGMA_SYSTEM_HEADER@
+#endif
+
 /* The include_next requires a split double-inclusion guard.  */
 #@INCLUDE_NEXT@ @NEXT_STRING_H@
 
@@ -165,7 +169,11 @@ extern char *strchrnul (char const *__s, int __c_in)
 
 /* Duplicate S, returning an identical malloc'd string.  */
 #if @GNULIB_STRDUP@
-# if ! @HAVE_DECL_STRDUP@ && ! defined strdup
+# if @REPLACE_STRDUP@
+#  undef strdup
+#  define strdup rpl_strdup
+# endif
+# if !(@HAVE_DECL_STRDUP@ || defined strdup) || @REPLACE_STRDUP@
 extern char *strdup (char const *__s);
 # endif
 #elif defined GNULIB_POSIXCHECK
@@ -574,6 +582,18 @@ extern char *strsignal (int __sig);
     (GL_LINK_WARNING ("strsignal is unportable - " \
                       "use gnulib module strsignal for portability"), \
      strsignal (a))
+#endif
+
+#if @GNULIB_STRVERSCMP@
+# if !@HAVE_STRVERSCMP@
+extern int strverscmp (const char *, const char *);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef strverscmp
+# define strverscmp(a, b) \
+    (GL_LINK_WARNING ("strverscmp is unportable - " \
+                      "use gnulib module strverscmp for portability"), \
+     strverscmp (a, b))
 #endif
 
 

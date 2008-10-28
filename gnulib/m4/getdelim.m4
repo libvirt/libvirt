@@ -31,4 +31,5 @@ AC_DEFUN([gl_FUNC_GETDELIM],
 AC_DEFUN([gl_PREREQ_GETDELIM],
 [
   AC_CHECK_FUNCS([flockfile funlockfile])
+  AC_CHECK_DECLS([getc_unlocked])
 ])

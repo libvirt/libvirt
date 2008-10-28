@@ -1,13 +1,13 @@
 dnl A placeholder for ISO C99 <wchar.h>, for platforms that have issues.
 
-dnl Copyright (C) 2007 Free Software Foundation, Inc.
+dnl Copyright (C) 2007-2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
 dnl Written by Eric Blake.
 
-# wchar.m4 serial 4
+# wchar.m4 serial 6
 
 AC_DEFUN([gl_WCHAR_H],
 [
@@ -18,7 +18,16 @@ AC_DEFUN([gl_WCHAR_H],
 wchar_t w;]],
       [gl_cv_header_wchar_h_standalone=yes],
       [gl_cv_header_wchar_h_standalone=no])])
-  if test $gl_cv_header_wchar_h_standalone != yes; then
+
+  AC_REQUIRE([gt_TYPE_WINT_T])
+  if test $gt_cv_c_wint_t = yes; then
+    HAVE_WINT_T=1
+  else
+    HAVE_WINT_T=0
+  fi
+  AC_SUBST([HAVE_WINT_T])
+
+  if test $gl_cv_header_wchar_h_standalone != yes || test $gt_cv_c_wint_t != yes; then
     WCHAR_H=wchar.h
   fi
 
@@ -36,6 +45,13 @@ wchar_t w;]],
   gl_CHECK_NEXT_HEADERS([wchar.h])
 ])
 
+dnl Unconditionally enables the replacement of <wchar.h>.
+AC_DEFUN([gl_REPLACE_WCHAR_H],
+[
+  AC_REQUIRE([gl_WCHAR_H_DEFAULTS])
+  WCHAR_H=wchar.h
+])
+
 AC_DEFUN([gl_WCHAR_MODULE_INDICATOR],
 [
   dnl Use AC_REQUIRE here, so that the default settings are expanded once only.
@@ -49,6 +65,5 @@ AC_DEFUN([gl_WCHAR_H_DEFAULTS],
   dnl Assume proper GNU behavior unless another module says otherwise.
   HAVE_DECL_WCWIDTH=1; AC_SUBST([HAVE_DECL_WCWIDTH])
   REPLACE_WCWIDTH=0;   AC_SUBST([REPLACE_WCWIDTH])
-  WCHAR_H=
-  AC_SUBST([WCHAR_H])
+  WCHAR_H='';          AC_SUBST([WCHAR_H])
 ])

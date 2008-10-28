@@ -32,7 +32,8 @@ fail=1
 mkdir $tmpdir && cd $tmpdir &&
   # without git, skip the test
   # The double use of 'exit' is needed for the reference to $? inside the trap.
-  { ( git init -q ) > /dev/null 2>&1 || { (exit 77); exit 77; }; } &&
+  { ( git init -q ) > /dev/null 2>&1 \
+    || { echo "Skipping test: git not found in PATH"; (exit 77); exit 77; }; } &&
   mkdir d &&
   touch d/a b c &&
   git add . > /dev/null &&

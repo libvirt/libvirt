@@ -1,10 +1,25 @@
-# include_next.m4 serial 6
+# include_next.m4 serial 8
 dnl Copyright (C) 2006-2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
 dnl From Paul Eggert and Derek Price.
+
+dnl Sets INCLUDE_NEXT and PRAGMA_SYSTEM_HEADER.
+dnl
+dnl INCLUDE_NEXT expands to 'include_next' if the compiler supports it, or to
+dnl 'include' otherwise.
+dnl
+dnl PRAGMA_SYSTEM_HEADER can be used in files that contain #include_next,
+dnl so as to avoid GCC warnings when the gcc option -pedantic is used.
+dnl '#pragma GCC system_header' has the same effect as if the file was found
+dnl through the include search path specified with '-isystem' options (as
+dnl opposed to the search path specified with '-I' options). Namely, gcc
+dnl does not warn about some things, and on some systems (Solaris and Interix)
+dnl __STDC__ evaluates to 0 instead of to 1. The latter is an undesired side
+dnl effect; we are therefore careful to use 'defined __STDC__' or '1' instead
+dnl of plain '__STDC__'.
 
 AC_DEFUN([gl_INCLUDE_NEXT],
 [
@@ -13,8 +28,12 @@ AC_DEFUN([gl_INCLUDE_NEXT],
     [gl_cv_have_include_next],
     [rm -rf conftestd1 conftestd2
      mkdir conftestd1 conftestd2
+     dnl The include of <stdio.h> is because IBM C 9.0 on AIX 6.1 supports
+     dnl include_next when used as first preprocessor directive in a file,
+     dnl but not when preceded by another include directive.
      cat <<EOF > conftestd1/conftest.h
 #define DEFINED_IN_CONFTESTD1
+#include <stdio.h>
 #include_next <conftest.h>
 #ifdef DEFINED_IN_CONFTESTD2
 int foo;
@@ -36,18 +55,17 @@ EOF
      CPPFLAGS="$save_CPPFLAGS"
      rm -rf conftestd1 conftestd2
     ])
+  PRAGMA_SYSTEM_HEADER=
   if test $gl_cv_have_include_next = yes; then
-
-    dnl FIXME: Remove HAVE_INCLUDE_NEXT and update everything that uses it
-    dnl to use @INCLUDE_NEXT@ instead.
-    AC_DEFINE([HAVE_INCLUDE_NEXT], 1,
-	      [Define if your compiler supports the #include_next directive.])
-
     INCLUDE_NEXT=include_next
+    if test -n "$GCC"; then
+      PRAGMA_SYSTEM_HEADER='#pragma GCC system_header'
+    fi
   else
     INCLUDE_NEXT=include
   fi
   AC_SUBST([INCLUDE_NEXT])
+  AC_SUBST([PRAGMA_SYSTEM_HEADER])
 ])
 
 # gl_CHECK_NEXT_HEADERS(HEADER1 HEADER2 ...)

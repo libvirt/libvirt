@@ -1,5 +1,5 @@
 /* Test of <sys/select.h> substitute.
-   Copyright (C) 2007 Free Software Foundation, Inc.
+   Copyright (C) 2007-2008 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -19,6 +19,9 @@
 #include <config.h>
 
 #include <sys/select.h>
+
+/* Check that the 'struct timeval' type is defined.  */
+struct timeval t1;
 
 int
 main ()

@@ -24,6 +24,10 @@
 
 #if @HAVE_ARPA_INET_H@
 
+# if __GNUC__ >= 3
+@PRAGMA_SYSTEM_HEADER@
+# endif
+
 /* The include_next requires a split double-inclusion guard.  */
 # @INCLUDE_NEXT@ @NEXT_ARPA_INET_H@
 
@@ -31,6 +35,8 @@
 
 #ifndef _GL_ARPA_INET_H
 #define _GL_ARPA_INET_H
+
+/* The definition of GL_LINK_WARNING is copied here.  */
 
 #if @GNULIB_INET_NTOP@
 # if !@HAVE_DECL_INET_NTOP@

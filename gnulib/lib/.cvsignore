@@ -6,12 +6,13 @@ Makefile
 Makefile.in
 alloca.h
 arpa_inet.h
+errno.h
 float.h
+netdb.h
 netinet_in.h
 poll.h
 stdbool.h
 stdint.h
-stdio-impl.h
 stdio.h
 stdlib.h
 string.h

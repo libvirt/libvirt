@@ -33,13 +33,18 @@
 #ifndef SSIZE_MAX
 # define SSIZE_MAX ((ssize_t) (SIZE_MAX / 2))
 #endif
-#if !HAVE_FLOCKFILE
+
+#if USE_UNLOCKED_IO
+# include "unlocked-io.h"
+# define getc_maybe_unlocked(fp)	getc(fp)
+#elif !HAVE_FLOCKFILE || !HAVE_FUNLOCKFILE || !HAVE_DECL_GETC_UNLOCKED
 # undef flockfile
-# define flockfile(x) ((void) 0)
-#endif
-#if !HAVE_FUNLOCKFILE
 # undef funlockfile
+# define flockfile(x) ((void) 0)
 # define funlockfile(x) ((void) 0)
+# define getc_maybe_unlocked(fp)	getc(fp)
+#else
+# define getc_maybe_unlocked(fp)	getc_unlocked(fp)
 #endif
 
 /* Read up to (and including) a DELIMITER from FP into *LINEPTR (and
@@ -79,7 +84,7 @@ getdelim (char **lineptr, size_t *n, int delimiter, FILE *fp)
     {
       int i;
 
-      i = getc (fp);
+      i = getc_maybe_unlocked (fp);
       if (i == EOF)
 	{
 	  result = -1;

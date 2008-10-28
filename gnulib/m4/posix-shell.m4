@@ -31,12 +31,16 @@ AC_DEFUN([gl_POSIX_SHELL],
        func_ret_failure () {
 	 return 1
        }
+       subshell_umask_sanity () {
+	 (umask 22; (umask 0); test $(umask) -eq 22)
+       }
        test "[$](echo foo)" = foo &&
        func_success &&
        ! func_failure &&
        func_ret_success &&
        ! func_ret_failure &&
-       (set x && func_ret_success y && test x = "[$]1")
+       (set x && func_ret_success y && test x = "[$]1") &&
+       subshell_umask_sanity
      '
      for gl_cv_posix_shell in \
 	 "$CONFIG_SHELL" "$SHELL" /bin/sh /bin/bash /bin/ksh /bin/sh5 no; do

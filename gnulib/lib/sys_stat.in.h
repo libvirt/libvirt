@@ -1,5 +1,5 @@
 /* Provide a more complete sys/stat header file.
-   Copyright (C) 2006-2008 Free Software Foundation, Inc.
+   Copyright (C) 2005-2008 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as published by
@@ -21,6 +21,18 @@
    incomplete.  It is intended to provide definitions and prototypes
    needed by an application.  Start with what the system provides.  */
 
+#if __GNUC__ >= 3
+@PRAGMA_SYSTEM_HEADER@
+#endif
+
+#if defined __need_system_sys_stat_h
+/* Special invocation convention.  */
+
+#@INCLUDE_NEXT@ @NEXT_SYS_STAT_H@
+
+#else
+/* Normal invocation convention.  */
+
 #ifndef _GL_SYS_STAT_H
 
 /* The include_next requires a split double-inclusion guard.  */
@@ -28,6 +40,8 @@
 
 #ifndef _GL_SYS_STAT_H
 #define _GL_SYS_STAT_H
+
+/* The definition of GL_LINK_WARNING is copied here.  */
 
 /* Before doing "#define mkdir rpl_mkdir" below, we need to include all
    headers that may declare mkdir().  */
@@ -261,11 +275,24 @@
 # define S_IRWXUGO (S_IRWXU | S_IRWXG | S_IRWXO)
 #endif
 
+#if @GNULIB_LSTAT@
+# if ! @HAVE_LSTAT@
 /* mingw does not support symlinks, therefore it does not have lstat.  But
    without links, stat does just fine.  */
-#if ! @HAVE_LSTAT@
-# define lstat stat
+#  define lstat stat
+# elif @REPLACE_LSTAT@
+#  undef lstat
+#  define lstat rpl_lstat
+extern int rpl_lstat (const char *name, struct stat *buf);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef lstat
+# define lstat(p,b)							\
+  (GL_LINK_WARNING ("lstat is unportable - "				\
+		    "use gnulib module lstat for portability"),		\
+   lstat (p, b))
 #endif
+
 
 #if @REPLACE_MKDIR@
 # undef mkdir
@@ -287,5 +314,33 @@ rpl_mkdir (char const *name, mode_t mode)
 # endif
 #endif
 
+
+/* Declare BSD extensions.  */
+
+#if @GNULIB_LCHMOD@
+/* Change the mode of FILENAME to MODE, without dereferencing it if FILENAME
+   denotes a symbolic link.  */
+# if !@HAVE_LCHMOD@
+/* The lchmod replacement follows symbolic links.  Callers should take
+   this into account; lchmod should be applied only to arguments that
+   are known to not be symbolic links.  On hosts that lack lchmod,
+   this can lead to race conditions between the check and the
+   invocation of lchmod, but we know of no workarounds that are
+   reliable in general.  You might try requesting support for lchmod
+   from your operating system supplier.  */
+#  define lchmod chmod
+# endif
+# if 0 /* assume already declared */
+extern int lchmod (const char *filename, mode_t mode);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef lchmod
+# define lchmod(f,m) \
+    (GL_LINK_WARNING ("lchmod is unportable - " \
+                      "use gnulib module lchmod for portability"), \
+     lchmod (f, m))
+#endif
+
 #endif /* _GL_SYS_STAT_H */
 #endif /* _GL_SYS_STAT_H */
+#endif

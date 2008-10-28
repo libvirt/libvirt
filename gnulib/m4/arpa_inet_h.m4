@@ -1,4 +1,4 @@
-# arpa_inet_h.m4 serial 4
+# arpa_inet_h.m4 serial 5
 dnl Copyright (C) 2006, 2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -23,6 +23,13 @@ AC_DEFUN([gl_HEADER_ARPA_INET],
   dnl Execute this unconditionally, because ARPA_INET_H may be set by other
   dnl modules, after this code is executed.
   gl_CHECK_NEXT_HEADERS([arpa/inet.h])
+])
+
+dnl Unconditionally enables the replacement of <arpa/inet.h>.
+AC_DEFUN([gl_REPLACE_ARPA_INET_H],
+[
+  AC_REQUIRE([gl_ARPA_INET_H_DEFAULTS])
+  ARPA_INET_H='arpa/inet.h'
 ])
 
 AC_DEFUN([gl_ARPA_INET_MODULE_INDICATOR],

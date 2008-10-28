@@ -1,6 +1,6 @@
 /* A correct <float.h>.
 
-   Copyright (C) 2007 Free Software Foundation, Inc.
+   Copyright (C) 2007-2008 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +16,10 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #ifndef _GL_FLOAT_H
+
+#if __GNUC__ >= 3
+@PRAGMA_SYSTEM_HEADER@
+#endif
 
 /* The include_next requires a split double-inclusion guard.  */
 #@INCLUDE_NEXT@ @NEXT_FLOAT_H@

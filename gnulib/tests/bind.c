@@ -1,4 +1,5 @@
-/* Test of EOVERFLOW macro.
+/* bind.c --- wrappers for Windows bind function
+
    Copyright (C) 2008 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -14,19 +15,26 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
+/* Written by Paolo Bonzini */
+
 #include <config.h>
 
-#include <errno.h>
+#define WIN32_LEAN_AND_MEAN
+/* Get winsock2.h. */
+#include <sys/socket.h>
 
-/* Check that it can be used as an initializer outside of a function.  */
-static int err = EOVERFLOW;
+/* Get set_winsock_errno, FD_TO_SOCKET etc. */
+#include "w32sock.h"
+
+#undef bind
 
 int
-main ()
+rpl_bind (int fd, struct sockaddr *sockaddr, int len)
 {
-  /* snprintf() callers want to distinguish EINVAL and EOVERFLOW.  */
-  if (err == EINVAL)
-    return 1;
+  SOCKET sock = FD_TO_SOCKET (fd);
+  int r = bind (sock, sockaddr, len);
+  if (r < 0)
+    set_winsock_errno ();
 
-  return 0;
+  return r;
 }
