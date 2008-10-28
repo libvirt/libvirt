@@ -36,6 +36,13 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#ifndef HAVE_WINSOCK2_H		/* Unix & Cygwin. */
+# include <sys/un.h>
+# include <net/if.h>
+# include <netinet/in.h>
+# include <netinet/tcp.h>
+#endif
+
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif

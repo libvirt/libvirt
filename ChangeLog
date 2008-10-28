@@ -1,3 +1,7 @@
+Tue Oct 28 13:29:14 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	include netinet etc #ifndef HAVE_WINSOCK2_H
+
 Tue Oct 28 13:29:13 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	* src/remote_internal.c (remoteFindDaemonPath) [!WIN32]: Don't compile.
