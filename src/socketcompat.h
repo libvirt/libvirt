@@ -24,14 +24,7 @@
 #include <config.h>
 
 #include <errno.h>
-
-#ifndef HAVE_WINSOCK2_H		/* Unix & Cygwin. */
-
 #include <sys/socket.h>
-#include <sys/un.h>
-#include <net/if.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
 
 static inline int
 socket_errno (void)
@@ -39,23 +32,11 @@ socket_errno (void)
   return errno;
 }
 
-#else                           /* MinGW & Win32 */
-
-#include <winsock2.h>
-
-/* Socket functions in Windows don't set errno.  Instead of using errno
- * to test for socket errors, call this function to get the errno.
- */
-static inline int
-socket_errno (void)
-{
-  return WSAGetLastError ();
-}
-
-/* Compatibility. */
-#define EWOULDBLOCK             WSAEWOULDBLOCK
-#define ECONNREFUSED            WSAECONNREFUSED
-
+#ifndef HAVE_WINSOCK2_H		/* Unix & Cygwin. */
+# include <sys/un.h>
+# include <net/if.h>
+# include <netinet/in.h>
+# include <netinet/tcp.h>
 #endif /* HAVE_WINSOCK2_H */
 
 #endif /* __WINSOCKWRAPPER_H__ */
