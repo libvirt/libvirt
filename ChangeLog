@@ -1,3 +1,9 @@
+Tue Oct 28 13:29:05 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	use errno, not socket_errno()
+	* remote_internal.c: s/socket_errno()/errno/, now that gnulib's
+	socket module ensures errno is useful in those cases.
+
 Tue Oct 28 12:12:41 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	socketcompat.h: simplify, to match latest gnulib

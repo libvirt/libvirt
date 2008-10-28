@@ -482,7 +482,7 @@ doRemoteOpen (virConnectPtr conn,
 
             priv->sock = socket (r->ai_family, SOCK_STREAM, 0);
             if (priv->sock == -1) {
-                saved_errno = socket_errno();
+                saved_errno = errno;
                 continue;
             }
 
@@ -492,7 +492,7 @@ doRemoteOpen (virConnectPtr conn,
                         sizeof no_slow_start);
 
             if (connect (priv->sock, r->ai_addr, r->ai_addrlen) == -1) {
-                saved_errno = socket_errno();
+                saved_errno = errno;
                 close (priv->sock);
                 continue;
             }
@@ -3980,7 +3980,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                          VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          _("failed to get sock address %d (%s)"),
-                         socket_errno (), strerror(socket_errno ()));
+                         errno, strerror(errno));
         goto cleanup;
     }
     if ((localAddr = addrToString(&sa, salen)) == NULL)
@@ -3992,7 +3992,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                          VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          _("failed to get peer address %d (%s)"),
-                         socket_errno (), strerror(socket_errno ()));
+                         errno, strerror(errno));
         goto cleanup;
     }
     if ((remoteAddr = addrToString(&sa, salen)) == NULL)
@@ -4627,11 +4627,10 @@ really_write_buf (virConnectPtr conn, struct private_data *priv,
         do {
             err = send (priv->sock, p, len, 0);
             if (err == -1) {
-                int errno_ = socket_errno ();
-                if (errno_ == EINTR || errno_ == EAGAIN)
+                if (errno == EINTR || errno == EAGAIN)
                     continue;
                 error (in_open ? NULL : conn,
-                       VIR_ERR_SYSTEM_ERROR, strerror (errno_));
+                       VIR_ERR_SYSTEM_ERROR, strerror (errno));
                 return -1;
             }
             len -= err;
@@ -4710,11 +4709,10 @@ really_read_buf (virConnectPtr conn, struct private_data *priv,
     reread:
         err = recv (priv->sock, bytes, len, 0);
         if (err == -1) {
-            int errno_ = socket_errno ();
-            if (errno_ == EINTR)
+            if (errno == EINTR)
                 goto reread;
             error (in_open ? NULL : conn,
-                   VIR_ERR_SYSTEM_ERROR, strerror (errno_));
+                   VIR_ERR_SYSTEM_ERROR, strerror (errno));
             return -1;
         }
         if (err == 0) {
