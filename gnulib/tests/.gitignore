@@ -2,6 +2,7 @@
 .libs
 Makefile
 Makefile.in
+sys
 test-alloca-opt
 test-arpa_inet
 test-c-ctype
@@ -9,9 +10,11 @@ test-errno
 test-fseeko
 test-getaddrinfo
 test-getdelim
+test-gethostname
 test-getline
 test-gettimeofday
 test-lseek
+test-lstat
 test-netdb
 test-netinet_in
 test-perror

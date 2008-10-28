@@ -6,6 +6,7 @@ Makefile.in
 *.loT
 *.la
 virsh
+*.exe
 *.gcda
 *.gcno
 *.gcov

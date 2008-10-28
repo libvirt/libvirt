@@ -17,4 +17,4 @@ statstest
 qparamtest
 *.gcda
 *.gcno
-
+*.exe

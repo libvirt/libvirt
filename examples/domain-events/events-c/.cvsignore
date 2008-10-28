@@ -1,3 +1,4 @@
+*.exe
 .deps
 .libs
 event-test
