@@ -189,6 +189,7 @@ remoteStartup(void)
 }
 #endif
 
+#ifndef WIN32
 /**
  * remoteFindServerPath:
  *
@@ -218,7 +219,6 @@ remoteFindDaemonPath(void)
     return NULL;
 }
 
-#ifndef WIN32
 /**
  * qemuForkDaemon:
  *
