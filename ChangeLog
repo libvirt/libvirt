@@ -1,3 +1,9 @@
+Tue Oct 28 10:22:45 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	use more gnulib modules
+	* bootstrap: use more gnulib modules: close, connect, perror, recv,
+	send, socket setsockopt, gethostname.
+
 Tue Oct 28 10:22:44 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	adapt to API change in gnulib

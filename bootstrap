@@ -66,16 +66,25 @@ gnulib_tool=$GNULIB_SRCDIR/gnulib-tool
 
 modules='
 c-ctype
+close
+connect
 getaddrinfo
+gethostname
 getpass
 gettext
 inet_pton
 mkstemp
 mktempd
+perror
 physmem
 poll
 posix-shell
+recv
+send
+setsockopt
+socket
 strndup
+strerror
 strsep
 sys_stat
 useless-if-before-free
