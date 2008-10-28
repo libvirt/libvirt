@@ -1,3 +1,8 @@
+/mirror/d/libvirt
+Mon Oct 27 11:17:32 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	exempt gnulib from ctype-macros prohibition
+
 Fri Oct 24 14:09:23 BST Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: Add check for sys/poll.h
