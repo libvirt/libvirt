@@ -8,6 +8,7 @@
 #include "testutils.h"
 #include "internal.h"
 #include "nodeinfo.h"
+#include "util.h"
 
 static char *progname;
 static char *abs_srcdir;
@@ -95,7 +96,7 @@ mymain(int argc, char **argv)
 
     virInitialize();
 
-    for (i = 0 ; i < (sizeof(nodeData)/sizeof(nodeData[0])) ; i++)
+    for (i = 0 ; i < ARRAY_CARDINALITY(nodeData); i++)
       if (virtTestRun(nodeData[i], 1, linuxTestNodeInfo, nodeData[i]) != 0)
         ret = -1;
 #endif

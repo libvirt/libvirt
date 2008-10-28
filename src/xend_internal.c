@@ -2312,7 +2312,7 @@ xenDaemonParseSxpr(virConnectPtr conn,
     if (hvm) {
         const char *const fds[] = { "fda", "fdb" };
         int i;
-        for (i = 0 ; i < sizeof(fds)/sizeof(fds[0]) ; i++) {
+        for (i = 0 ; i < ARRAY_CARDINALITY(fds) ; i++) {
             tmp = sexpr_fmt_node(root, "domain/image/hvm/%s", fds[i]);
             if ((tmp != NULL) && (tmp[0] != 0)) {
                 virDomainDiskDefPtr disk;

@@ -193,7 +193,7 @@ mymain(int argc ATTRIBUTE_UNUSED,
         struct qparamParseData info = {                                 \
             queryIn,                                                    \
             queryOut ? queryOut : queryIn,                              \
-            sizeof(params)/sizeof(params[0]),                           \
+            ARRAY_CARDINALITY(params),                                  \
             params };                                                   \
         if (virtTestRun("Parse " queryIn,                               \
                         1, qparamParseTest, &info) < 0)                 \

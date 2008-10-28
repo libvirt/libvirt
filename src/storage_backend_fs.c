@@ -210,7 +210,7 @@ static int virStorageBackendProbeFile(virConnectPtr conn,
     close(fd);
 
     /* First check file magic */
-    for (i = 0 ; i < sizeof(fileTypeInfo)/sizeof(fileTypeInfo[0]) ; i++) {
+    for (i = 0 ; i < ARRAY_CARDINALITY(fileTypeInfo) ; i++) {
         int mlen;
         if (fileTypeInfo[i].magic == NULL)
             continue;
@@ -276,7 +276,7 @@ static int virStorageBackendProbeFile(virConnectPtr conn,
     }
 
     /* No magic, so check file extension */
-    for (i = 0 ; i < sizeof(fileTypeInfo)/sizeof(fileTypeInfo[0]) ; i++) {
+    for (i = 0 ; i < ARRAY_CARDINALITY(fileTypeInfo) ; i++) {
         if (fileTypeInfo[i].extension == NULL)
             continue;
 

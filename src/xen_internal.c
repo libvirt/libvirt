@@ -29,6 +29,7 @@
 #include "xs_internal.h"
 #include "stats_linux.h"
 #include "xend_internal.h"
+#include "util.h"
 
 /* required for dom0_getdomaininfo_t */
 #include <xen/dom0_ops.h>
@@ -2345,7 +2346,7 @@ xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
                 }
 
                 /* Too many arch flavours - highly unlikely ! */
-                if (i >= sizeof(guest_archs)/sizeof(guest_archs[0]))
+                if (i >= ARRAY_CARDINALITY(guest_archs))
                     continue;
                 /* Didn't find a match, so create a new one */
                 if (i == nr_guest_archs)

@@ -371,7 +371,7 @@ virCapsPtr qemudCapsInit(void) {
     if (qemudCapsInitNUMA(caps) < 0)
         goto no_memory;
 
-    for (i = 0 ; i < (sizeof(arch_info_hvm)/sizeof(arch_info_hvm[0])) ; i++)
+    for (i = 0 ; i < ARRAY_CARDINALITY(arch_info_hvm) ; i++)
         if (qemudCapsInitGuest(caps,
                                utsname.machine,
                                &arch_info_hvm[i], 1) < 0)
@@ -379,7 +379,7 @@ virCapsPtr qemudCapsInit(void) {
 
     if (access("/usr/bin/xenner", X_OK) == 0 &&
         access("/dev/kvm", F_OK) == 0) {
-        for (i = 0 ; i < (sizeof(arch_info_xen)/sizeof(arch_info_xen[0])) ; i++)
+        for (i = 0 ; i < ARRAY_CARDINALITY(arch_info_xen) ; i++)
             /* Allow Xen 32-on-32, 32-on-64 and 64-on-64 */
             if (STREQ(arch_info_xen[i].arch, utsname.machine) ||
                 (STREQ(utsname.machine, "x86_64") &&

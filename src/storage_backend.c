@@ -88,7 +88,7 @@ static virStorageBackendPtr backends[] = {
 virStorageBackendPtr
 virStorageBackendForType(int type) {
     unsigned int i;
-    for (i = 0 ; i < (sizeof(backends)/sizeof(backends[0])) ; i++)
+    for (i = 0 ; i < ARRAY_CARDINALITY(backends); i++)
         if (backends[i]->type == type)
             return backends[i];
 
