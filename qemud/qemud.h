@@ -1,7 +1,7 @@
 /*
  * qemud.h: daemon data structure definitions
  *
- * Copyright (C) 2006, 2007 Red Hat, Inc.
+ * Copyright (C) 2006-2008 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -26,8 +26,6 @@
 #define QEMUD_INTERNAL_H__
 
 #include <config.h>
-
-#include "socketcompat.h"
 
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>

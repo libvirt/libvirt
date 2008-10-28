@@ -74,8 +74,7 @@ REMOTE_DRIVER_SOURCES =						\
 		gnutls_1_0_compat.h				\
 		remote_internal.c remote_internal.h		\
 		../qemud/remote_protocol.c			\
-		../qemud/remote_protocol.h			\
-		socketcompat.h
+		../qemud/remote_protocol.h
 
 # Mock driver, covering domains, storage, networks, etc
 TEST_DRIVER_SOURCES =						\

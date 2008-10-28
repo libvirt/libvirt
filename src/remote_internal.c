@@ -24,7 +24,8 @@
 #include <config.h>
 
 /* Windows socket compatibility functions. */
-#include "socketcompat.h"
+#include <errno.h>
+#include <sys/socket.h>
 
 #include <stdio.h>
 #include <stdlib.h>

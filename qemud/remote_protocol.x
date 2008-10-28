@@ -3,7 +3,7 @@
  *   remote_internal driver and libvirtd.  This protocol is
  *   internal and may change at any time.
  *
- * Copyright (C) 2006-2007 Red Hat, Inc.
+ * Copyright (C) 2006-2008 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,7 +38,7 @@
 
 %#include <config.h>
 %#include "internal.h"
-%#include "socketcompat.h"
+%#include <arpa/inet.h>
 
 /*----- Data types. -----*/
 

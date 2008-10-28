@@ -1,3 +1,16 @@
+Tue Oct 28 19:17:20 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	remove src/socketcompat.h;  no longer needed
+	* src/socketcompat.h: Remove file.
+	* src/remote_internal.c: Don't include socketcompat.h.
+	* qemud/qemud.h: Likewise.
+	* qemud/remote_protocol.x: Likewise, but do include <arpa/inet.h>
+	for htonl.
+	* src/remote_internal.c: Likewise, but do include <errno.h>.
+	* qemud/remote_protocol.c: Regenererate.
+	* qemud/remote_protocol.h: Regenererate.
+	* src/Makefile.am (REMOTE_DRIVER_SOURCES): Remove socketcompat.h.
+
 Tue Oct 28 13:46:50 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	make generated qemud/*.[ch] files read-only
