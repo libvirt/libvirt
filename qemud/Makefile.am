@@ -34,18 +34,21 @@ EXTRA_DIST =						\
 if RPCGEN
 SUFFIXES = .x
 .x.c:
-	rm -f $@
-	rpcgen -c -o $@ $<
+	rm -f $@ $@-t $@-t2
+	rpcgen -c -o $@-t $<
 if GLIBC_RPCGEN
-	mv $@ $@.bak
-	perl -w rpcgen_fix.pl < $@.bak > $@
+	perl -w rpcgen_fix.pl $@-t > $@-t2
+	chmod 444 $@-t2
+	mv $@-t2 $@
 endif
 
 .x.h:
-	rm -f $@
-	rpcgen -h -o $@ $<
+	rm -f $@ $@-t
+	rpcgen -h -o $@-t $<
 if GLIBC_RPCGEN
-	perl -i -p -e 's/\t/        /g' $@
+	perl -pi -e 's/\t/        /g' $@-t
+	chmod 444 $@-t
+	mv $@-t $@
 endif
 endif
 
