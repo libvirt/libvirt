@@ -265,8 +265,6 @@ static int testCompareDomstateByName(const void *data ATTRIBUTE_UNUSED) {
                            argv);
 }
 
-
-#ifndef WIN32
 static int
 mymain(int argc, char **argv)
 {
@@ -277,6 +275,10 @@ mymain(int argc, char **argv)
     abs_srcdir = getenv("abs_srcdir");
     if (!abs_srcdir)
         abs_srcdir = getcwd(cwd, sizeof(cwd));
+
+#ifdef WIN32
+    exit (77); /* means 'test skipped' for automake */
+#endif
 
     snprintf(buffer, PATH_MAX-1, "test://%s/../docs/testnode.xml", abs_srcdir);
     buffer[PATH_MAX-1] = '\0';
@@ -354,10 +356,5 @@ mymain(int argc, char **argv)
 
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
-#else /* ! WIN32 */
-
-static int mymain (void) { exit (77); /* means 'test skipped' for automake */ }
-
-#endif /* WIN32 */
 
 VIRT_TEST_MAIN(mymain)
