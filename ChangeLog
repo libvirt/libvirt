@@ -1,4 +1,7 @@
-/mirror/d/libvirt
+Mon Oct 27 17:14:56 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	exempt gnulib from write-avoidance syntax check
+
 Mon Oct 27 11:17:32 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	exempt gnulib from ctype-macros prohibition
