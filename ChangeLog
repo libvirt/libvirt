@@ -1,5 +1,12 @@
 Tue Oct 28 13:29:14 +0100 2008 Jim Meyering <meyering@redhat.com>
 
+	avoid compiler warning when all storage backends are disabled
+	* src/storage_backend.c (backends): Add a NULL terminator.
+	(virStorageBackendForType): Use NULL terminator rather than
+	warning-provoking (possibly 0) array size.
+
+Tue Oct 28 13:29:14 +0100 2008 Jim Meyering <meyering@redhat.com>
+
 	avoid many mingw-specific warnings
 	* tests/virshtest.c (mymain): Use only one definition of this function.
 	[WIN32]: Call exit(77) to skip the test.

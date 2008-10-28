@@ -82,13 +82,14 @@ static virStorageBackendPtr backends[] = {
 #if WITH_STORAGE_DISK
     &virStorageBackendDisk,
 #endif
+    NULL
 };
 
 
 virStorageBackendPtr
 virStorageBackendForType(int type) {
     unsigned int i;
-    for (i = 0 ; i < ARRAY_CARDINALITY(backends); i++)
+    for (i = 0; backends[i]; i++)
         if (backends[i]->type == type)
             return backends[i];
 
