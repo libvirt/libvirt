@@ -47,11 +47,11 @@
 #include <fnmatch.h>
 #include <grp.h>
 #include <signal.h>
+#include <netdb.h>
 
 #include "internal.h"
 
 #include "qemud.h"
-#include "getaddrinfo.h"
 #include "util.h"
 #include "remote_internal.h"
 #include "conf.h"

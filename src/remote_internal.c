@@ -58,7 +58,7 @@
 #endif
 #include <libxml/uri.h>
 
-#include "getaddrinfo.h"
+#include <netdb.h>
 
 /* AI_ADDRCONFIG is missing on some systems. */
 #ifndef AI_ADDRCONFIG
