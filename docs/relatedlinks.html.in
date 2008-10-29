@@ -12,6 +12,7 @@
 
     <ul>
       <li><a href="/CIM/">CIM provider</a></li>
+      <li><a href="/qpid/">libvirt on the Advanced Message Queuing Protocol (AMQP)</a></li>
       <li><a href="http://search.cpan.org/dist/Sys-Virt/">Perl bindings</a></li>
       <li><a href="/ocaml/">OCaml bindings</a></li>
       <li><a href="/ruby/">Ruby bindings</a></li>
