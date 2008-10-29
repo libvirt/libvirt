@@ -2537,12 +2537,12 @@ static int qemudDomainChangeEjectableMedia(virDomainPtr dom,
     return 0;
 }
 
-static int qemudDomainAttachDiskDevice(virDomainPtr dom, virDomainDeviceDefPtr dev)
+static int qemudDomainAttachPciDiskDevice(virDomainPtr dom, virDomainDeviceDefPtr dev)
 {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     int ret, i;
-    char *cmd, *reply;
+    char *cmd, *reply, *s;
     char *safe_path;
     const char* type = virDomainDiskBusTypeToString(dev->data.disk->bus);
 
@@ -2590,7 +2590,14 @@ static int qemudDomainAttachDiskDevice(virDomainPtr dom, virDomainDeviceDefPtr d
     DEBUG ("pci_add reply: %s", reply);
     /* If the command succeeds qemu prints:
      * OK bus 0... */
-    if (!strstr(reply, "OK bus 0")) {
+#define PCI_ATTACH_OK_MSG "OK bus 0, slot "
+    if ((s=strstr(reply, PCI_ATTACH_OK_MSG))) {
+        char* dummy = s;
+        s += strlen(PCI_ATTACH_OK_MSG);
+
+        if (virStrToLong_i ((const char*)s, &dummy, 10, &dev->data.disk->slotnum) == -1)
+            qemudLog(QEMUD_WARN, _("Unable to parse slot number\n"));
+    } else {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                           _("adding %s disk failed"), type);
         VIR_FREE(reply);
@@ -2773,7 +2780,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                 } else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
                            dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
                     supported = 1;
-                    ret = qemudDomainAttachDiskDevice(dom, dev);
+                    ret = qemudDomainAttachPciDiskDevice(dom, dev);
                 }
                 break;
         }
@@ -2787,6 +2794,123 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     if (!supported) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          "%s", _("this device type cannot be attached"));
+        ret = -1;
+    }
+
+    VIR_FREE(dev);
+    return ret;
+}
+
+static int qemudDomainDetachPciDiskDevice(virDomainPtr dom, virDomainDeviceDefPtr dev)
+{
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    int i, ret = -1;
+    char *cmd, *reply;
+    virDomainDiskDefPtr detach = NULL;
+
+    if (!vm) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         "%s", _("no domain with matching uuid"));
+        return -1;
+    }
+
+    for (i = 0 ; i < vm->def->ndisks ; i++) {
+        if (STREQ(vm->def->disks[i]->dst, dev->data.disk->dst)) {
+            detach = vm->def->disks[i];
+            break;
+        }
+    }
+
+    if (!detach) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("disk %s not found"), dev->data.disk->dst);
+        return -1;
+    }
+
+    if (detach->slotnum < 1) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("disk %s cannot be detached - invalid slot number %d"), 
+                           detach->dst, detach->slotnum);
+        return -1;
+    }
+
+    ret = asprintf(&cmd, "pci_del 0 %d", detach->slotnum);
+    if (ret == -1) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        return ret;
+    }
+
+    if (qemudMonitorCommand(driver, vm, cmd, &reply) < 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                          _("failed to execute detach disk %s command"), detach->dst);
+        VIR_FREE(cmd);
+        return -1;
+    }
+
+    DEBUG ("pci_del reply: %s", reply);
+    /* If the command fails due to a wrong slot qemu prints: invalid slot,
+     * nothing is printed on success */
+    if (strstr(reply, "invalid slot")) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                          _("failed to detach disk %s: invalid slot %d"), 
+                            detach->dst, detach->slotnum);
+        ret = -1;
+        goto out;
+    }
+
+    if (vm->def->ndisks > 1) {
+        vm->def->disks[i] = vm->def->disks[--vm->def->ndisks];
+        if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks) < 0) {
+            qemudReportError(dom->conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+            ret = -1;
+            goto out;
+        }
+        qsort(vm->def->disks, vm->def->ndisks, sizeof(*vm->def->disks),
+              virDomainDiskQSort);
+    } else {
+        VIR_FREE(vm->def->disks[0]);
+        vm->def->ndisks = 0;
+    }
+    ret = 0;
+out:
+    VIR_FREE(reply);
+    VIR_FREE(cmd);
+    return ret;
+}
+
+static int qemudDomainDetachDevice(virDomainPtr dom,
+                                   const char *xml) {
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    virDomainDeviceDefPtr dev;
+    int ret = 0;
+
+    if (!vm) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         "%s", _("no domain with matching uuid"));
+        return -1;
+    }
+
+    if (!virDomainIsActive(vm)) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("cannot attach device on inactive domain"));
+        return -1;
+    }
+
+    dev = virDomainDeviceDefParse(dom->conn, driver->caps, vm->def, xml);
+    if (dev == NULL) {
+        return -1;
+    }
+
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
+        dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
+        (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
+         dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO))
+                    ret = qemudDomainDetachPciDiskDevice(dom, dev);
+    else {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                         "%s", _("only SCSI or virtio disk device can be detached dynamically"));
         ret = -1;
     }
 
@@ -3278,7 +3402,7 @@ static virDriver qemuDriver = {
     qemudDomainDefine, /* domainDefineXML */
     qemudDomainUndefine, /* domainUndefine */
     qemudDomainAttachDevice, /* domainAttachDevice */
-    NULL, /* domainDetachDevice */
+    qemudDomainDetachDevice, /* domainDetachDevice */
     qemudDomainGetAutostart, /* domainGetAutostart */
     qemudDomainSetAutostart, /* domainSetAutostart */
     NULL, /* domainGetSchedulerType */

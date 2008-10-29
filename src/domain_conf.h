@@ -90,6 +90,7 @@ struct _virDomainDiskDef {
     char *driverType;
     unsigned int readonly : 1;
     unsigned int shared : 1;
+    int slotnum; /* pci slot number for unattach */
 };
 
 

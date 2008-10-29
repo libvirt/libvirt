@@ -1,3 +1,8 @@
+Wed Oct 29 15:25:28 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/domain_conf.h src/qemu_driver.c: patch adding hor removal of
+	  scsi/virtio disks for KVM, patch by Guido Günther
+
 Tue Oct 28 19:17:20 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	remove src/socketcompat.h;  no longer needed
