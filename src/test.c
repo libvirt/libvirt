@@ -29,6 +29,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <libxml/xmlsave.h>
 
 #include "test.h"
 #include "buf.h"
@@ -38,6 +39,7 @@
 #include "memory.h"
 #include "network_conf.h"
 #include "domain_conf.h"
+#include "storage_conf.h"
 #include "xml.h"
 
 #define MAX_CPUS 128
@@ -59,6 +61,7 @@ struct _testConn {
     virNodeInfo nodeInfo;
     virDomainObjList domains;
     virNetworkObjList networks;
+    virStoragePoolObjList pools;
     int numCells;
     testCell cells[MAX_CELLS];
 };
@@ -106,11 +109,56 @@ static const virNodeInfo defaultNodeInfo = {
         }                                                               \
     } while (0)
 
+#define GET_POOL(pool, ret)                                             \
+    testConnPtr privconn;                                               \
+    virStoragePoolObjPtr privpool;                                      \
+                                                                        \
+    privconn = (testConnPtr)pool->conn->privateData;                    \
+    do {                                                                \
+        if ((privpool = virStoragePoolObjFindByName(&privconn->pools,   \
+                                                    (pool)->name)) == NULL) {\
+            testError((pool)->conn, VIR_ERR_INVALID_ARG, __FUNCTION__); \
+            return (ret);                                               \
+        }                                                               \
+    } while (0)
+
+#define GET_POOL_FROM_VOL(vol, ret)                                     \
+    GET_POOL(testStoragePoolLookupByName((virConnectPtr)                \
+                                         vol->conn,                     \
+                                         vol->pool), ret)
+
+#define GET_VOL(vol, pool, ret)                                         \
+    virStorageVolDefPtr privvol;                                        \
+                                                                        \
+    privvol = virStorageVolDefFindByName(pool, vol->name);              \
+    do {                                                                \
+        if (!privvol) {                                                 \
+            testError(vol->conn, VIR_ERR_INVALID_STORAGE_VOL,           \
+                      _("no storage vol with matching name '%s'"),      \
+                      vol->name);                                       \
+            return (ret);                                               \
+        }                                                               \
+    } while (0)                                                         \
+
+
 #define GET_CONNECTION(conn)                                            \
     testConnPtr privconn;                                               \
                                                                         \
     privconn = (testConnPtr)conn->privateData;
 
+#define POOL_IS_ACTIVE(pool, ret)                                       \
+    if (!virStoragePoolObjIsActive(pool)) {                             \
+        testError(obj->conn, VIR_ERR_INTERNAL_ERROR,                    \
+                  _("storage pool '%s' is not active"), pool->def->name); \
+       return (ret);                                                    \
+    }                                                                   \
+
+#define POOL_IS_NOT_ACTIVE(pool, ret)                                   \
+    if (virStoragePoolObjIsActive(pool)) {                              \
+        testError(obj->conn, VIR_ERR_INTERNAL_ERROR,                    \
+                  _("storage pool '%s' is already active"), pool->def->name); \
+        return (ret);                                                   \
+    }                                                                   \
 
 #define testError(conn, code, fmt...)                               \
         __virReportErrorHelper(conn, VIR_FROM_TEST, code, __FILE__, \
@@ -196,6 +244,18 @@ static const char *defaultNetworkXML =
 "  </ip>"
 "</network>";
 
+static const char *defaultPoolXML =
+"<pool type='dir'>"
+"  <name>default-pool</name>"
+"  <target>"
+"    <path>/default-pool</path>"
+"  </target>"
+"</pool>";
+
+static const unsigned long long defaultPoolCap = (100 * 1024 * 1024 * 1024ul);
+static const unsigned long long defaultPoolAlloc = 0;
+
+static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr pool);
 
 static int testOpenDefault(virConnectPtr conn) {
     int u;
@@ -205,6 +265,8 @@ static int testOpenDefault(virConnectPtr conn) {
     virDomainObjPtr domobj = NULL;
     virNetworkDefPtr netdef = NULL;
     virNetworkObjPtr netobj = NULL;
+    virStoragePoolDefPtr pooldef = NULL;
+    virStoragePoolObjPtr poolobj = NULL;
 
     if (VIR_ALLOC(privconn) < 0) {
         testError(conn, VIR_ERR_NO_MEMORY, "testConn");
@@ -250,15 +312,27 @@ static int testOpenDefault(virConnectPtr conn) {
         virNetworkDefFree(netdef);
         goto error;
     }
-
     netobj->active = 1;
     netobj->persistent = 1;
+
+    if (!(pooldef = virStoragePoolDefParse(conn, defaultPoolXML, NULL)))
+        goto error;
+
+    if (!(poolobj = virStoragePoolObjAssignDef(conn, &privconn->pools,
+                                               pooldef))) {
+        virStoragePoolDefFree(pooldef);
+        goto error;
+    }
+    if (testStoragePoolObjSetDefaults(poolobj) == -1)
+        goto error;
+    poolobj->active = 1;
 
     return VIR_DRV_OPEN_SUCCESS;
 
 error:
     virDomainObjListFree(&privconn->domains);
     virNetworkObjListFree(&privconn->networks);
+    virStoragePoolObjListFree(&privconn->pools);
     virCapabilitiesFree(privconn->caps);
     VIR_FREE(privconn);
     return VIR_DRV_OPEN_ERROR;
@@ -295,7 +369,7 @@ static int testOpenFromFile(virConnectPtr conn,
     char *str;
     xmlDocPtr xml = NULL;
     xmlNodePtr root = NULL;
-    xmlNodePtr *domains = NULL, *networks = NULL;
+    xmlNodePtr *domains = NULL, *networks = NULL, *pools = NULL;
     xmlXPathContextPtr ctxt = NULL;
     virNodeInfoPtr nodeInfo;
     virNetworkObjPtr net;
@@ -311,7 +385,9 @@ static int testOpenFromFile(virConnectPtr conn,
         goto error;
 
     if ((fd = open(file, O_RDONLY)) < 0) {
-        testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s", _("loading host definition file"));
+        testError(NULL, VIR_ERR_INTERNAL_ERROR,
+                  _("loading host definition file '%s': %s"),
+                  file, strerror(errno));
         goto error;
     }
 
@@ -332,7 +408,8 @@ static int testOpenFromFile(virConnectPtr conn,
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s", _("creating xpath context"));
+        testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("creating xpath context"));
         goto error;
     }
 
@@ -480,6 +557,58 @@ static int testOpenFromFile(virConnectPtr conn,
     if (networks != NULL)
         VIR_FREE(networks);
 
+    /* Parse Storage Pool list */
+    ret = virXPathNodeSet(conn, "/node/pool", ctxt, &pools);
+    if (ret < 0) {
+        testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node pool list"));
+        goto error;
+    }
+    for (i = 0 ; i < ret ; i++) {
+        virStoragePoolDefPtr def;
+        virStoragePoolObjPtr pool;
+        char *relFile = virXMLPropString(pools[i], "file");
+        if (relFile != NULL) {
+            char *absFile = testBuildFilename(file, relFile);
+            VIR_FREE(relFile);
+            if (!absFile) {
+                testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                          _("resolving pool filename"));
+                goto error;
+            }
+
+            def = virStoragePoolDefParse(conn, NULL, absFile);
+            VIR_FREE(absFile);
+            if (!def)
+                goto error;
+        } else {
+            xmlBufferPtr buf;
+            xmlSaveCtxtPtr sctxt;
+
+            buf = xmlBufferCreate();
+            sctxt = xmlSaveToBuffer(buf, NULL, 0);
+            xmlSaveTree(sctxt, pools[i]);
+            xmlSaveClose(sctxt);
+            if ((def = virStoragePoolDefParse(conn,
+                                              (const char *) buf->content,
+                                              NULL)) == NULL) {
+                xmlBufferFree(buf);
+                goto error;
+            }
+        }
+
+        if (!(pool = virStoragePoolObjAssignDef(conn, &privconn->pools,
+                                                def))) {
+            virStoragePoolDefFree(def);
+            goto error;
+        }
+
+        if (testStoragePoolObjSetDefaults(pool) == -1)
+            goto error;
+        pool->active = 1;
+    }
+    if (pools != NULL)
+        VIR_FREE(pools);
+
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
 
@@ -490,10 +619,12 @@ static int testOpenFromFile(virConnectPtr conn,
     xmlFreeDoc(xml);
     VIR_FREE(domains);
     VIR_FREE(networks);
+    VIR_FREE(pools);
     if (fd != -1)
         close(fd);
     virDomainObjListFree(&privconn->domains);
     virNetworkObjListFree(&privconn->networks);
+    virStoragePoolObjListFree(&privconn->pools);
     VIR_FREE(privconn);
     conn->privateData = NULL;
     return VIR_DRV_OPEN_ERROR;
@@ -545,6 +676,7 @@ static int testClose(virConnectPtr conn)
     virCapabilitiesFree(privconn->caps);
     virDomainObjListFree(&privconn->domains);
     virNetworkObjListFree(&privconn->networks);
+    virStoragePoolObjListFree(&privconn->pools);
 
     VIR_FREE (privconn);
     conn->privateData = conn;
@@ -1475,6 +1607,26 @@ static int testNetworkSetAutostart(virNetworkPtr network,
     return (0);
 }
 
+
+/*
+ * Storage Driver routines
+ */
+
+static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr pool) {
+
+    pool->def->capacity = defaultPoolCap;
+    pool->def->allocation = defaultPoolAlloc;
+    pool->def->available = defaultPoolCap - defaultPoolAlloc;
+
+    pool->configFile = strdup("\0");
+    if (!pool->configFile) {
+        testError(NULL, VIR_ERR_NO_MEMORY, "configFile");
+        return -1;
+    }
+
+    return 0;
+}
+
 static virDrvOpenStatus testStorageOpen(virConnectPtr conn,
                                         xmlURIPtr uri ATTRIBUTE_UNUSED,
                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
@@ -1489,6 +1641,566 @@ static virDrvOpenStatus testStorageOpen(virConnectPtr conn,
 static int testStorageClose(virConnectPtr conn) {
     conn->storagePrivateData = NULL;
     return 0;
+}
+
+static virStoragePoolPtr
+testStoragePoolLookupByUUID(virConnectPtr conn,
+                            const unsigned char *uuid) {
+    virStoragePoolObjPtr pool = NULL;
+    GET_CONNECTION(conn);
+
+    if ((pool = virStoragePoolObjFindByUUID(&privconn->pools, uuid)) == NULL) {
+        testError (conn, VIR_ERR_NO_STORAGE_POOL, NULL);
+        return NULL;
+    }
+
+    return virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+}
+
+static virStoragePoolPtr
+testStoragePoolLookupByName(virConnectPtr conn,
+                            const char *name) {
+    virStoragePoolObjPtr pool = NULL;
+    GET_CONNECTION(conn);
+
+    if ((pool = virStoragePoolObjFindByName(&privconn->pools, name)) == NULL) {
+        testError (conn, VIR_ERR_NO_STORAGE_POOL, NULL);
+        return NULL;
+    }
+
+    return virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+}
+
+static virStoragePoolPtr
+testStoragePoolLookupByVolume(virStorageVolPtr vol) {
+    return testStoragePoolLookupByName(vol->conn, vol->pool);
+}
+
+static int
+testStorageNumPools(virConnectPtr conn) {
+
+    int numActive = 0, i;
+    GET_CONNECTION(conn);
+
+    for (i = 0 ; i < privconn->pools.count ; i++)
+        if (virStoragePoolObjIsActive(privconn->pools.objs[i]))
+            numActive++;
+
+    return numActive;
+}
+
+static int
+testStorageListPools(virConnectPtr conn,
+                     char **const names,
+                     int nnames) {
+    int n = 0, i;
+    GET_CONNECTION(conn);
+
+    memset(names, 0, sizeof(*names)*nnames);
+    for (i = 0 ; i < privconn->pools.count && n < nnames ; i++)
+        if (virStoragePoolObjIsActive(privconn->pools.objs[i]) &&
+            !(names[n++] = strdup(privconn->pools.objs[i]->def->name)))
+            goto no_memory;
+
+    return n;
+
+no_memory:
+    testError(conn, VIR_ERR_NO_MEMORY, NULL);
+    for (n = 0 ; n < nnames ; n++)
+        VIR_FREE(names[n]);
+    return (-1);
+}
+
+static int
+testStorageNumDefinedPools(virConnectPtr conn) {
+
+    int numInactive = 0, i;
+    GET_CONNECTION(conn);
+
+    for (i = 0 ; i < privconn->pools.count ; i++)
+        if (!virStoragePoolObjIsActive(privconn->pools.objs[i]))
+            numInactive++;
+
+    return numInactive;
+}
+
+static int
+testStorageListDefinedPools(virConnectPtr conn,
+                            char **const names,
+                            int nnames) {
+    int n = 0, i;
+    GET_CONNECTION(conn);
+
+    memset(names, 0, sizeof(*names)*nnames);
+    for (i = 0 ; i < privconn->pools.count && n < nnames ; i++)
+        if (!virStoragePoolObjIsActive(privconn->pools.objs[i]) &&
+            !(names[n++] = strdup(privconn->pools.objs[i]->def->name)))
+            goto no_memory;
+
+    return n;
+
+no_memory:
+    testError(conn, VIR_ERR_NO_MEMORY, NULL);
+    for (n = 0 ; n < nnames ; n++)
+        VIR_FREE(names[n]);
+    return (-1);
+}
+
+static int
+testStoragePoolRefresh(virStoragePoolPtr obj,
+                       unsigned int flags ATTRIBUTE_UNUSED);
+
+static int
+testStoragePoolStart(virStoragePoolPtr obj,
+                     unsigned int flags ATTRIBUTE_UNUSED) {
+    GET_POOL(obj, -1);
+    POOL_IS_NOT_ACTIVE(privpool, -1);
+
+    if (testStoragePoolRefresh(obj, 0) == 0)
+        return -1;
+    privpool->active = 1;
+
+    return 0;
+}
+
+static char *
+testStorageFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           const char *type ATTRIBUTE_UNUSED,
+                           const char *srcSpec ATTRIBUTE_UNUSED,
+                           unsigned int flags ATTRIBUTE_UNUSED)
+{
+    return NULL;
+}
+
+
+static virStoragePoolPtr
+testStoragePoolCreate(virConnectPtr conn,
+                      const char *xml,
+                      unsigned int flags ATTRIBUTE_UNUSED) {
+    virStoragePoolDefPtr def;
+    virStoragePoolObjPtr pool;
+    GET_CONNECTION(conn);
+
+    if (!(def = virStoragePoolDefParse(conn, xml, NULL)))
+        return NULL;
+
+    if (virStoragePoolObjFindByUUID(&privconn->pools, def->uuid) ||
+        virStoragePoolObjFindByName(&privconn->pools, def->name)) {
+        testError(conn, VIR_ERR_INTERNAL_ERROR,
+                  "%s", _("storage pool already exists"));
+        virStoragePoolDefFree(def);
+        return NULL;
+    }
+
+    if (!(pool = virStoragePoolObjAssignDef(conn, &privconn->pools, def))) {
+        virStoragePoolDefFree(def);
+        return NULL;
+    }
+
+    if (testStoragePoolObjSetDefaults(pool) == -1) {
+        virStoragePoolObjRemove(&privconn->pools, pool);
+        return NULL;
+    }
+    pool->active = 1;
+
+    return virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+}
+
+static virStoragePoolPtr
+testStoragePoolDefine(virConnectPtr conn,
+                      const char *xml,
+                      unsigned int flags ATTRIBUTE_UNUSED) {
+    virStoragePoolDefPtr def;
+    virStoragePoolObjPtr pool;
+    GET_CONNECTION(conn);
+
+    if (!(def = virStoragePoolDefParse(conn, xml, NULL)))
+        return NULL;
+
+    def->capacity = defaultPoolCap;
+    def->allocation = defaultPoolAlloc;
+    def->available = defaultPoolCap - defaultPoolAlloc;
+
+    if (!(pool = virStoragePoolObjAssignDef(conn, &privconn->pools, def))) {
+        virStoragePoolDefFree(def);
+        return NULL;
+    }
+
+    if (testStoragePoolObjSetDefaults(pool) == -1) {
+        virStoragePoolObjRemove(&privconn->pools, pool);
+        return NULL;
+    }
+
+    return virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+}
+
+static int
+testStoragePoolUndefine(virStoragePoolPtr obj) {
+    GET_POOL(obj, -1);
+    POOL_IS_NOT_ACTIVE(privpool, -1);
+
+    virStoragePoolObjRemove(&privconn->pools, privpool);
+
+    return 0;
+}
+
+static int
+testStoragePoolBuild(virStoragePoolPtr obj,
+                     unsigned int flags ATTRIBUTE_UNUSED) {
+    GET_POOL(obj, -1);
+    POOL_IS_NOT_ACTIVE(privpool, -1);
+
+    return 0;
+}
+
+
+static int
+testStoragePoolDestroy(virStoragePoolPtr obj) {
+    GET_POOL(obj, -1);
+    POOL_IS_ACTIVE(privpool, -1);
+
+    privpool->active = 0;
+
+    if (privpool->configFile == NULL)
+        virStoragePoolObjRemove(&privconn->pools, privpool);
+
+    return 0;
+}
+
+
+static int
+testStoragePoolDelete(virStoragePoolPtr obj,
+                      unsigned int flags ATTRIBUTE_UNUSED) {
+    GET_POOL(obj, -1);
+    POOL_IS_NOT_ACTIVE(privpool, -1);
+
+    return 0;
+}
+
+
+static int
+testStoragePoolRefresh(virStoragePoolPtr obj,
+                       unsigned int flags ATTRIBUTE_UNUSED) {
+    GET_POOL(obj, -1);
+    POOL_IS_ACTIVE(privpool, -1);
+
+    return 0;
+}
+
+
+static int
+testStoragePoolGetInfo(virStoragePoolPtr obj,
+                       virStoragePoolInfoPtr info) {
+    GET_POOL(obj, -1);
+
+    memset(info, 0, sizeof(virStoragePoolInfo));
+    if (privpool->active)
+        info->state = VIR_STORAGE_POOL_RUNNING;
+    else
+        info->state = VIR_STORAGE_POOL_INACTIVE;
+    info->capacity = privpool->def->capacity;
+    info->allocation = privpool->def->allocation;
+    info->available = privpool->def->available;
+
+    return 0;
+}
+
+static char *
+testStoragePoolDumpXML(virStoragePoolPtr obj,
+                       unsigned int flags ATTRIBUTE_UNUSED) {
+    GET_POOL(obj, NULL);
+
+    return virStoragePoolDefFormat(obj->conn, privpool->def);
+}
+
+static int
+testStoragePoolGetAutostart(virStoragePoolPtr obj,
+                            int *autostart) {
+    GET_POOL(obj, -1);
+
+    if (!privpool->configFile) {
+        *autostart = 0;
+    } else {
+        *autostart = privpool->autostart;
+    }
+
+    return 0;
+}
+
+static int
+testStoragePoolSetAutostart(virStoragePoolPtr obj,
+                            int autostart) {
+    GET_POOL(obj, -1);
+
+    if (!privpool->configFile) {
+        testError(obj->conn, VIR_ERR_INVALID_ARG,
+                  "%s", _("pool has no config file"));
+        return -1;
+    }
+
+    autostart = (autostart != 0);
+
+    if (privpool->autostart == autostart)
+        return 0;
+
+    privpool->autostart = autostart;
+    return 0;
+}
+
+
+static int
+testStoragePoolNumVolumes(virStoragePoolPtr obj) {
+    GET_POOL(obj, -1);
+    POOL_IS_ACTIVE(privpool, -1);
+
+    return privpool->volumes.count;
+}
+
+static int
+testStoragePoolListVolumes(virStoragePoolPtr obj,
+                           char **const names,
+                           int maxnames) {
+    GET_POOL(obj, -1);
+    POOL_IS_ACTIVE(privpool, -1);
+    int i = 0, n = 0;
+
+    memset(names, 0, maxnames);
+    for (i = 0 ; i < privpool->volumes.count && n < maxnames ; i++) {
+        if ((names[n++] = strdup(privpool->volumes.objs[i]->name)) == NULL) {
+            testError(obj->conn, VIR_ERR_NO_MEMORY, "%s", _("name"));
+            goto cleanup;
+        }
+    }
+
+    return n;
+
+ cleanup:
+    for (n = 0 ; n < maxnames ; n++)
+        VIR_FREE(names[i]);
+
+    memset(names, 0, maxnames);
+    return -1;
+}
+
+
+static virStorageVolPtr
+testStorageVolumeLookupByName(virStoragePoolPtr obj,
+                              const char *name ATTRIBUTE_UNUSED) {
+    GET_POOL(obj, NULL);
+    POOL_IS_ACTIVE(privpool, NULL);
+    virStorageVolDefPtr vol = virStorageVolDefFindByName(privpool, name);
+
+    if (!vol) {
+        testError(obj->conn, VIR_ERR_INVALID_STORAGE_VOL,
+                  _("no storage vol with matching name '%s'"), name);
+        return NULL;
+    }
+
+    return virGetStorageVol(obj->conn, privpool->def->name,
+                            vol->name, vol->key);
+}
+
+
+static virStorageVolPtr
+testStorageVolumeLookupByKey(virConnectPtr conn,
+                             const char *key) {
+    GET_CONNECTION(conn);
+    unsigned int i;
+
+    for (i = 0 ; i < privconn->pools.count ; i++) {
+        if (virStoragePoolObjIsActive(privconn->pools.objs[i])) {
+            virStorageVolDefPtr vol =
+                virStorageVolDefFindByKey(privconn->pools.objs[i], key);
+
+            if (vol)
+                return virGetStorageVol(conn,
+                                        privconn->pools.objs[i]->def->name,
+                                        vol->name,
+                                        vol->key);
+        }
+    }
+
+    testError(conn, VIR_ERR_INVALID_STORAGE_VOL,
+              _("no storage vol with matching key '%s'"), key);
+    return NULL;
+}
+
+static virStorageVolPtr
+testStorageVolumeLookupByPath(virConnectPtr conn,
+                              const char *path) {
+    GET_CONNECTION(conn);
+    unsigned int i;
+
+    for (i = 0 ; i < privconn->pools.count ; i++) {
+        if (virStoragePoolObjIsActive(privconn->pools.objs[i])) {
+            virStorageVolDefPtr vol =
+                virStorageVolDefFindByPath(privconn->pools.objs[i], path);
+
+            if (vol)
+                return virGetStorageVol(conn,
+                                        privconn->pools.objs[i]->def->name,
+                                        vol->name,
+                                        vol->key);
+        }
+    }
+
+    testError(conn, VIR_ERR_INVALID_STORAGE_VOL,
+              _("no storage vol with matching path '%s'"), path);
+    return NULL;
+}
+
+static virStorageVolPtr
+testStorageVolumeCreateXML(virStoragePoolPtr obj,
+                           const char *xmldesc,
+                           unsigned int flags ATTRIBUTE_UNUSED) {
+    GET_POOL(obj, NULL);
+    POOL_IS_ACTIVE(privpool, NULL);
+    virStorageVolDefPtr vol;
+
+    vol = virStorageVolDefParse(obj->conn, privpool->def, xmldesc, NULL);
+    if (vol == NULL)
+        return NULL;
+
+    if (virStorageVolDefFindByName(privpool, vol->name)) {
+        testError(obj->conn, VIR_ERR_INVALID_STORAGE_POOL,
+                  "%s", _("storage vol already exists"));
+        virStorageVolDefFree(vol);
+        return NULL;
+    }
+
+    /* Make sure enough space */
+    if ((privpool->def->allocation + vol->allocation) >
+         privpool->def->capacity) {
+        testError(obj->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("Not enough free space in pool for volume '%s'"),
+                  vol->name);
+        virStorageVolDefFree(vol);
+        return NULL;
+    }
+    privpool->def->available = (privpool->def->capacity -
+                                privpool->def->allocation);
+
+    if (VIR_REALLOC_N(privpool->volumes.objs,
+                      privpool->volumes.count+1) < 0) {
+        testError(obj->conn, VIR_ERR_NO_MEMORY, NULL);
+        virStorageVolDefFree(vol);
+        return NULL;
+    }
+
+    if (VIR_ALLOC_N(vol->target.path, strlen(privpool->def->target.path) +
+                    1 + strlen(vol->name) + 1) < 0) {
+        virStorageVolDefFree(vol);
+        testError(obj->conn, VIR_ERR_NO_MEMORY, "%s", _("target"));
+        return NULL;
+    }
+
+    strcpy(vol->target.path, privpool->def->target.path);
+    strcat(vol->target.path, "/");
+    strcat(vol->target.path, vol->name);
+    vol->key = strdup(vol->target.path);
+    if (vol->key == NULL) {
+        virStorageVolDefFree(vol);
+        testError(obj->conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("storage vol key"));
+        return NULL;
+    }
+
+    privpool->def->allocation += vol->allocation;
+    privpool->def->available = (privpool->def->capacity -
+                                privpool->def->allocation);
+
+    privpool->volumes.objs[privpool->volumes.count++] = vol;
+
+    return virGetStorageVol(obj->conn, privpool->def->name, vol->name,
+                            vol->key);
+}
+
+static int
+testStorageVolumeDelete(virStorageVolPtr obj,
+                        unsigned int flags ATTRIBUTE_UNUSED) {
+    GET_POOL_FROM_VOL(obj, -1);
+    POOL_IS_ACTIVE(privpool, -1);
+    GET_VOL(obj, privpool, -1);
+    int i;
+
+    privpool->def->allocation -= privvol->allocation;
+    privpool->def->available = (privpool->def->capacity -
+                                privpool->def->allocation);
+
+    for (i = 0 ; i < privpool->volumes.count ; i++) {
+        if (privpool->volumes.objs[i] == privvol) {
+            virStorageVolDefFree(privvol);
+
+            if (i < (privpool->volumes.count - 1))
+                memmove(privpool->volumes.objs + i,
+                        privpool->volumes.objs + i + 1,
+                        sizeof(*(privpool->volumes.objs)) *
+                                (privpool->volumes.count - (i + 1)));
+
+            if (VIR_REALLOC_N(privpool->volumes.objs,
+                              privpool->volumes.count - 1) < 0) {
+                ; /* Failure to reduce memory allocation isn't fatal */
+            }
+            privpool->volumes.count--;
+
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
+static int testStorageVolumeTypeForPool(int pooltype) {
+
+    switch(pooltype) {
+        case VIR_STORAGE_POOL_DIR:
+        case VIR_STORAGE_POOL_FS:
+        case VIR_STORAGE_POOL_NETFS:
+            return VIR_STORAGE_VOL_FILE;
+        default:
+            return VIR_STORAGE_VOL_BLOCK;
+    }
+}
+
+static int
+testStorageVolumeGetInfo(virStorageVolPtr obj,
+                         virStorageVolInfoPtr info) {
+    GET_POOL_FROM_VOL(obj, -1);
+    POOL_IS_ACTIVE(privpool, -1);
+    GET_VOL(obj, privpool, -1);
+
+    memset(info, 0, sizeof(*info));
+    info->type = testStorageVolumeTypeForPool(privpool->def->type);
+    info->capacity = privvol->capacity;
+    info->allocation = privvol->allocation;
+
+    return 0;
+}
+
+static char *
+testStorageVolumeGetXMLDesc(virStorageVolPtr obj,
+                            unsigned int flags ATTRIBUTE_UNUSED) {
+    GET_POOL_FROM_VOL(obj, NULL);
+    POOL_IS_ACTIVE(privpool, NULL);
+    GET_VOL(obj, privpool, NULL);
+
+    return virStorageVolDefFormat(obj->conn, privpool->def, privvol);
+}
+
+static char *
+testStorageVolumeGetPath(virStorageVolPtr obj) {
+    GET_POOL_FROM_VOL(obj, NULL);
+    POOL_IS_ACTIVE(privpool, NULL);
+    GET_VOL(obj, privpool, NULL);
+    char *ret;
+
+    ret = strdup(privvol->target.path);
+    if (ret == NULL) {
+        testError(obj->conn, VIR_ERR_NO_MEMORY, "%s", _("path"));
+        return NULL;
+    }
+    return ret;
 }
 
 
@@ -1577,11 +2289,42 @@ static virNetworkDriver testNetworkDriver = {
     testNetworkSetAutostart, /* networkSetAutostart */
 };
 
-
 static virStorageDriver testStorageDriver = {
     .name = "Test",
     .open = testStorageOpen,
     .close = testStorageClose,
+
+    .numOfPools = testStorageNumPools,
+    .listPools = testStorageListPools,
+    .numOfDefinedPools = testStorageNumDefinedPools,
+    .listDefinedPools = testStorageListDefinedPools,
+    .findPoolSources = testStorageFindPoolSources,
+    .poolLookupByName = testStoragePoolLookupByName,
+    .poolLookupByUUID = testStoragePoolLookupByUUID,
+    .poolLookupByVolume = testStoragePoolLookupByVolume,
+    .poolCreateXML = testStoragePoolCreate,
+    .poolDefineXML = testStoragePoolDefine,
+    .poolBuild = testStoragePoolBuild,
+    .poolUndefine = testStoragePoolUndefine,
+    .poolCreate = testStoragePoolStart,
+    .poolDestroy = testStoragePoolDestroy,
+    .poolDelete = testStoragePoolDelete,
+    .poolRefresh = testStoragePoolRefresh,
+    .poolGetInfo = testStoragePoolGetInfo,
+    .poolGetXMLDesc = testStoragePoolDumpXML,
+    .poolGetAutostart = testStoragePoolGetAutostart,
+    .poolSetAutostart = testStoragePoolSetAutostart,
+    .poolNumOfVolumes = testStoragePoolNumVolumes,
+    .poolListVolumes = testStoragePoolListVolumes,
+
+    .volLookupByName = testStorageVolumeLookupByName,
+    .volLookupByKey = testStorageVolumeLookupByKey,
+    .volLookupByPath = testStorageVolumeLookupByPath,
+    .volCreateXML = testStorageVolumeCreateXML,
+    .volDelete = testStorageVolumeDelete,
+    .volGetInfo = testStorageVolumeGetInfo,
+    .volGetXMLDesc = testStorageVolumeGetXMLDesc,
+    .volGetPath = testStorageVolumeGetPath,
 };
 
 /**
