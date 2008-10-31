@@ -1273,6 +1273,8 @@ int xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory) {
         return (-1);
     if (domain->id != -1)
         return (-1);
+    if (memory < 1024 * MIN_XEN_GUEST_SIZE)
+        return (-1);
 
     if (!(filename = virHashLookup(nameConfigMap, domain->name)))
         return (-1);
