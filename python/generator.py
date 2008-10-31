@@ -213,6 +213,8 @@ skipped_modules = {
 
 skipped_types = {
 #    'int *': "usually a return type",
+     'virConnectDomainEventCallback': "No function types in python",
+     'virEventAddHandleFunc': "No function types in python",
 }
 
 #######################################################################
@@ -315,6 +317,7 @@ skip_impl = (
     'virStoragePoolListVolumes',
     'virDomainBlockPeek',
     'virDomainMemoryPeek',
+    'virEventRegisterImpl',
 )
 
 
@@ -332,9 +335,8 @@ skip_function = (
     'virCopyLastError', # Python API is called virGetLastError instead
     'virConnectOpenAuth', # Python C code is manually written
     'virDefaultErrorFunc', # Python virErrorFuncHandler impl calls this from C
-    'virConnectDomainEventRegister', # TODO: generate python bindings for these below XXX
-    'virConnectDomainEventDeregister',
-    'virEventRegisterImpl',
+    'virConnectDomainEventRegister',   # overridden in virConnect.py
+    'virConnectDomainEventDeregister', # overridden in virConnect.py
 )
 
 
@@ -615,7 +617,6 @@ classes_destructors = {
     "virNetwork": "virNetworkFree",
     "virStoragePool": "virStoragePoolFree",
     "virStorageVol": "virStorageVolFree",
-    "virConnect": "virConnectClose",
 }
 
 functions_noexcept = {
@@ -1210,6 +1211,16 @@ def buildWrappers():
 			classes.write("        return ret\n");
 
 		classes.write("\n");
+            # Append "<classname>.py" to class def, iff it exists
+            try:
+                extra = open(classname + ".py", "r")
+                classes.write ("    #\n")
+                classes.write ("    # %s methods from %s.py (hand coded)\n" % (classname,classname))
+                classes.write ("    #\n")
+                classes.writelines(extra.readlines())
+                extra.close()
+            except:
+                pass
 
     #
     # Generate enum constants

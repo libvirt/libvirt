@@ -1,3 +1,13 @@
+Fri Oct 31 11:11:30 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* python/Makefile.am python/generator.py python/libvir.c
+	  python/libvir.py python/libvirt_wrap.h python/types.c:
+	  adds support for events from the python bindings, also
+	  improves the generator allowing to embbed per function
+	  definition files, patch by Ben Guthro
+	* examples/domain-events/events-python/event-test.py: also
+	  adds a programming example
+
 Thu Oct 30 13:39:00 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* src/test.c: Add a test storage driver.

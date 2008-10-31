@@ -13,6 +13,8 @@ DOCS_DIR = $(datadir)/doc/libvirt-python-$(LIBVIRT_VERSION)
 
 DOCS = ${srcdir}/TODO
 
+CLASSES_EXTRA = virConnect.py
+
 EXTRA_DIST =		\
 	libvir.c	\
 	types.c		\
@@ -21,6 +23,7 @@ EXTRA_DIST =		\
 	libvirt.py	\
 	libvir.py	\
 	libvirt-python-api.xml \
+	$(CLASSES_EXTRA) \
 	$(DOCS)
 
 if WITH_PYTHON
@@ -50,7 +53,7 @@ GENERATED= libvirt-export.c \
 $(GENERATED): $(srcdir)/$(GENERATE) $(API_DESC)
 	$(PYTHON) $(srcdir)/$(GENERATE) $(srcdir)
 
-libvirt.py: $(srcdir)/libvir.py $(GENERATED)
+libvirt.py: $(srcdir)/libvir.py $(GENERATED) $(CLASSES_EXTRA)
 	cat $(srcdir)/libvir.py libvirtclass.py > $@-t
 	mv $@-t $@
 

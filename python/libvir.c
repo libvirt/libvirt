@@ -1466,7 +1466,443 @@ libvirt_virStoragePoolLookupByUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *ar
     return(py_retval);
 }
 
+/*******************************************
+ * Helper functions to avoid importing modules
+ * for every callback
+ *******************************************/
+static PyObject *libvirt_module    = NULL;
+static PyObject *libvirt_dict      = NULL;
+static PyObject *libvirt_dom_class = NULL;
 
+static PyObject *
+getLibvirtModuleObject (void) {
+    if(libvirt_module)
+        return libvirt_module;
+
+    // PyImport_ImportModule returns a new reference
+    libvirt_module = PyImport_ImportModule("libvirt");
+    if(!libvirt_module) {
+        printf("%s Error importing libvirt module\n", __FUNCTION__);
+        PyErr_Print();
+        return NULL;
+    }
+
+    return libvirt_module;
+}
+
+static PyObject *
+getLibvirtDictObject (void) {
+    if(libvirt_dict)
+        return libvirt_dict;
+
+    // PyModule_GetDict returns a borrowed reference
+    libvirt_dict = PyModule_GetDict(getLibvirtModuleObject());
+    if(!libvirt_dict) {
+        printf("%s Error importing libvirt dictionary\n", __FUNCTION__);
+        PyErr_Print();
+        return NULL;
+    }
+
+    Py_INCREF(libvirt_dict);
+    return libvirt_dict;
+}
+
+static PyObject *
+getLibvirtDomainClassObject (void) {
+    if(libvirt_dom_class)
+        return libvirt_dom_class;
+
+    // PyDict_GetItemString returns a borrowed reference
+    libvirt_dom_class = PyDict_GetItemString(getLibvirtDictObject(),
+                                             "virDomain");
+    if(!libvirt_dom_class) {
+        printf("%s Error importing virDomain class\n", __FUNCTION__);
+        PyErr_Print();
+        return NULL;
+    }
+
+    Py_INCREF(libvirt_dom_class);
+    return libvirt_dom_class;
+}
+/*******************************************
+ * Domain Events
+ *******************************************/
+
+static int
+libvirt_virConnectDomainEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                      virDomainPtr dom,
+                                      int event,
+                                      void *opaque)
+{
+    PyObject *pyobj_ret;
+
+    PyObject *pyobj_conn_inst = (PyObject*)opaque;
+    PyObject *pyobj_dom = libvirt_virDomainPtrWrap(dom);
+
+    PyObject *pyobj_dom_args;
+    PyObject *pyobj_dom_inst;
+
+    PyObject *dom_class;
+
+    /* Create a python instance of this virDomainPtr */
+    pyobj_dom_args = PyTuple_New(2);
+    if(PyTuple_SetItem(pyobj_dom_args, 0, pyobj_conn_inst)!=0) {
+        printf("%s error creating tuple",__FUNCTION__);
+        return -1;
+    }
+    if(PyTuple_SetItem(pyobj_dom_args, 1, pyobj_dom)!=0) {
+        printf("%s error creating tuple",__FUNCTION__);
+        return -1;
+    }
+    Py_INCREF(pyobj_conn_inst);
+
+    dom_class = getLibvirtDomainClassObject();
+    if(!PyClass_Check(dom_class)) {
+        printf("%s dom_class is not a class!\n", __FUNCTION__);
+        return -1;
+    }
+
+    pyobj_dom_inst = PyInstance_New(dom_class,
+                                    pyobj_dom_args,
+                                    NULL);
+
+    Py_DECREF(pyobj_dom_args);
+
+    if(!pyobj_dom_inst) {
+        printf("%s Error creating a python instance of virDomain\n", __FUNCTION__);
+        PyErr_Print();
+        return -1;
+    }
+
+    /* Call the Callback Dispatcher */
+    pyobj_ret = PyObject_CallMethod(pyobj_conn_inst,
+                                    (char*)"dispatchDomainEventCallbacks",
+                                    (char*)"Oi",
+                                    pyobj_dom_inst,
+                                    event);
+
+    Py_DECREF(pyobj_dom_inst);
+
+    if(!pyobj_ret) {
+        printf("%s - ret:%p\n", __FUNCTION__, pyobj_ret);
+        PyErr_Print();
+        return -1;
+    } else {
+        Py_DECREF(pyobj_ret);
+        return 0;
+    }
+
+}
+
+static PyObject *
+libvirt_virConnectDomainEventRegister(ATTRIBUTE_UNUSED PyObject * self,
+                                      PyObject * args)
+{
+    PyObject *py_retval;        /* return value */
+    PyObject *pyobj_conn;       /* virConnectPtr */
+    PyObject *pyobj_conn_inst;  /* virConnect Python object */
+
+    virConnectPtr conn;
+    int ret = 0;
+
+    if (!PyArg_ParseTuple
+        (args, (char *) "OO:virConnectDomainEventRegister",
+                        &pyobj_conn, &pyobj_conn_inst)) {
+        printf("%s failed parsing tuple\n", __FUNCTION__);
+        return VIR_PY_INT_FAIL;
+        }
+
+#ifdef DEBUG_ERROR
+    printf("libvirt_virConnectDomainEventRegister(%p %p) called\n",
+           pyobj_conn, pyobj_conn_inst);
+#endif
+    conn   = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    Py_INCREF(pyobj_conn_inst);
+
+    ret = virConnectDomainEventRegister(conn,
+                                        libvirt_virConnectDomainEventCallback,
+                                        (void *)pyobj_conn_inst);
+
+    py_retval = libvirt_intWrap(ret);
+    return (py_retval);
+}
+
+static PyObject *
+libvirt_virConnectDomainEventDeregister(ATTRIBUTE_UNUSED PyObject * self,
+                                        PyObject * args)
+{
+    PyObject *py_retval;
+    PyObject *pyobj_conn;
+    PyObject *pyobj_conn_inst;
+
+    virConnectPtr conn;
+    int ret = 0;
+
+    if (!PyArg_ParseTuple
+        (args, (char *) "OO:virConnectDomainEventDeregister",
+         &pyobj_conn, &pyobj_conn_inst))
+        return (NULL);
+
+#ifdef DEBUG_ERROR
+    printf("libvirt_virConnectDomainEventDeregister(%p) called\n", pyobj_conn);
+#endif
+
+    conn   = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    ret = virConnectDomainEventDeregister(conn, libvirt_virConnectDomainEventCallback);
+
+    Py_DECREF(pyobj_conn_inst);
+    py_retval = libvirt_intWrap(ret);
+    return (py_retval);
+}
+
+/*******************************************
+ * Event Impl
+ *******************************************/
+static PyObject *addHandleObj     = NULL;
+static PyObject *updateHandleObj  = NULL;
+static PyObject *removeHandleObj  = NULL;
+static PyObject *addTimeoutObj    = NULL;
+static PyObject *updateTimeoutObj = NULL;
+static PyObject *removeTimeoutObj = NULL;
+
+
+static int
+libvirt_virEventAddHandleFunc  (int fd ATTRIBUTE_UNUSED, int event ATTRIBUTE_UNUSED,
+                                virEventHandleCallback cb, void *opaque)
+{
+    PyObject *result = NULL;
+    PyObject *python_cb;
+    PyObject *cb_obj;
+    PyObject *opaque_obj;
+    PyObject *cb_args;
+    PyObject *pyobj_args;
+
+    /* Lookup the python callback */
+    python_cb = PyDict_GetItemString(getLibvirtDictObject(),
+                                     "eventInvokeHandleCallback");
+    if(!python_cb) {
+        printf("%s Error finding eventInvokeHandleCallback\n", __FUNCTION__);
+        PyErr_Print();
+        return -1;
+    }
+    Py_INCREF(python_cb);
+
+    /* create tuple for cb */
+    cb_obj = libvirt_virEventHandleCallbackWrap(cb);
+    opaque_obj = libvirt_virVoidPtrWrap(opaque);
+
+    cb_args = PyTuple_New(2);
+    PyTuple_SetItem(cb_args, 0, cb_obj);
+    PyTuple_SetItem(cb_args, 1, opaque_obj);
+
+    pyobj_args = PyTuple_New(4);
+    PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(fd));
+    PyTuple_SetItem(pyobj_args, 1, libvirt_intWrap(event));
+    PyTuple_SetItem(pyobj_args, 2, python_cb);
+    PyTuple_SetItem(pyobj_args, 3, cb_args);
+
+    if(addHandleObj && PyCallable_Check(addHandleObj))
+        result = PyEval_CallObject(addHandleObj, pyobj_args);
+
+    Py_XDECREF(result);
+    Py_DECREF(pyobj_args);
+    return 0;
+}
+
+static void
+libvirt_virEventUpdateHandleFunc(int fd, int event)
+{
+    PyObject *result = NULL;
+    PyObject *pyobj_args = PyTuple_New(2);
+    PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(fd));
+    PyTuple_SetItem(pyobj_args, 1, libvirt_intWrap(event));
+
+    if(updateHandleObj && PyCallable_Check(updateHandleObj))
+        result = PyEval_CallObject(updateHandleObj, pyobj_args);
+
+    Py_XDECREF(result);
+    Py_DECREF(pyobj_args);
+}
+
+static int
+libvirt_virEventRemoveHandleFunc(int fd)
+{
+    PyObject *result = NULL;
+    PyObject *pyobj_args = PyTuple_New(1);
+    PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(fd));
+
+    if(removeHandleObj && PyCallable_Check(removeHandleObj))
+        result = PyEval_CallObject(removeHandleObj, pyobj_args);
+
+    Py_XDECREF(result);
+    Py_DECREF(pyobj_args);
+    return 0;
+}
+
+static int
+libvirt_virEventAddTimeoutFunc(int timeout, virEventTimeoutCallback cb,
+                               void *opaque)
+{
+    PyObject *result = NULL;
+
+    PyObject *python_cb;
+
+    PyObject *cb_obj;
+    PyObject *opaque_obj;
+    PyObject *cb_args;
+    PyObject *pyobj_args;
+
+    /* Lookup the python callback */
+    python_cb = PyDict_GetItemString(getLibvirtDictObject(),
+                                     "eventInvokeTimeoutCallback");
+    if(!python_cb) {
+        printf("%s Error finding eventInvokeTimeoutCallback\n", __FUNCTION__);
+        PyErr_Print();
+        return -1;
+    }
+    Py_INCREF(python_cb);
+
+    /* create tuple for cb */
+    cb_obj = libvirt_virEventTimeoutCallbackWrap(cb);
+    opaque_obj = libvirt_virVoidPtrWrap(opaque);
+
+    cb_args = PyTuple_New(2);
+    PyTuple_SetItem(cb_args, 0, cb_obj);
+    PyTuple_SetItem(cb_args, 1, opaque_obj);
+
+    pyobj_args = PyTuple_New(3);
+
+    PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(timeout));
+    PyTuple_SetItem(pyobj_args, 1, python_cb);
+    PyTuple_SetItem(pyobj_args, 2, cb_args);
+
+    if(addTimeoutObj && PyCallable_Check(addTimeoutObj))
+        result = PyEval_CallObject(addTimeoutObj, pyobj_args);
+
+    Py_XDECREF(result);
+    Py_DECREF(pyobj_args);
+    return 0;
+}
+
+static void
+libvirt_virEventUpdateTimeoutFunc(int timer, int timeout)
+{
+    PyObject *result = NULL;
+    PyObject *pyobj_args = PyTuple_New(2);
+    PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(timer));
+    PyTuple_SetItem(pyobj_args, 1, libvirt_intWrap(timeout));
+
+    if(updateTimeoutObj && PyCallable_Check(updateTimeoutObj))
+        result = PyEval_CallObject(updateTimeoutObj, pyobj_args);
+
+    Py_XDECREF(result);
+    Py_DECREF(pyobj_args);
+}
+
+static int
+libvirt_virEventRemoveTimeoutFunc(int timer)
+{
+    PyObject *result = NULL;
+    PyObject *pyobj_args = PyTuple_New(1);
+    PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(timer));
+
+    if(updateTimeoutObj && PyCallable_Check(updateTimeoutObj))
+        result = PyEval_CallObject(removeTimeoutObj, pyobj_args);
+
+    Py_XDECREF(result);
+    Py_DECREF(pyobj_args);
+    return 0;
+}
+
+static PyObject *
+libvirt_virEventRegisterImpl(ATTRIBUTE_UNUSED PyObject * self,
+                             PyObject * args)
+{
+    Py_XDECREF(addHandleObj);
+    Py_XDECREF(updateHandleObj);
+    Py_XDECREF(removeHandleObj);
+    Py_XDECREF(addTimeoutObj);
+    Py_XDECREF(updateTimeoutObj);
+    Py_XDECREF(removeTimeoutObj);
+
+    if (!PyArg_ParseTuple
+        (args, (char *) "OOOOOO:virEventRegisterImpl",
+                        &addHandleObj,
+                        &updateHandleObj,
+                        &removeHandleObj,
+                        &addTimeoutObj,
+                        &updateTimeoutObj,
+                        &removeTimeoutObj
+        ))
+        return VIR_PY_INT_FAIL;
+
+    Py_INCREF(addHandleObj);
+    Py_INCREF(updateHandleObj);
+    Py_INCREF(removeHandleObj);
+    Py_INCREF(addTimeoutObj);
+    Py_INCREF(updateTimeoutObj);
+    Py_INCREF(removeTimeoutObj);
+
+    virEventRegisterImpl(libvirt_virEventAddHandleFunc,
+                         libvirt_virEventUpdateHandleFunc,
+                         libvirt_virEventRemoveHandleFunc,
+                         libvirt_virEventAddTimeoutFunc,
+                         libvirt_virEventUpdateTimeoutFunc,
+                         libvirt_virEventRemoveTimeoutFunc);
+
+    return VIR_PY_INT_SUCCESS;
+}
+
+static PyObject *
+libvirt_virEventInvokeHandleCallback(PyObject *self ATTRIBUTE_UNUSED,
+                                     PyObject *args)
+{
+    int fd, event;
+    PyObject *py_f;
+    PyObject *py_opaque;
+    virEventHandleCallback cb;
+    void *opaque;
+
+    if (!PyArg_ParseTuple
+        (args, (char *) "iiOO:virEventInvokeHandleCallback",
+                        &fd, &event, &py_f, &py_opaque
+        ))
+        return VIR_PY_INT_FAIL;
+
+    cb     = (virEventHandleCallback) PyvirEventHandleCallback_Get(py_f);
+    opaque = (void *) PyvirVoidPtr_Get(py_opaque);
+
+    if(cb)
+        cb (fd, event, opaque);
+
+    return VIR_PY_INT_SUCCESS;
+}
+
+static PyObject *
+libvirt_virEventInvokeTimeoutCallback(PyObject *self ATTRIBUTE_UNUSED,
+                                      PyObject *args)
+{
+    int timer;
+    PyObject *py_f;
+    PyObject *py_opaque;
+    virEventTimeoutCallback cb;
+    void *opaque;
+
+    if (!PyArg_ParseTuple
+        (args, (char *) "iOO:virEventInvokeTimeoutCallback",
+                        &timer, &py_f, &py_opaque
+        ))
+        return VIR_PY_INT_FAIL;
+
+    cb     = (virEventTimeoutCallback) PyvirEventTimeoutCallback_Get(py_f);
+    opaque = (void *) PyvirVoidPtr_Get(py_opaque);
+    if(cb)
+        cb (timer, opaque);
+
+    return VIR_PY_INT_SUCCESS;
+}
 
 /************************************************************************
  *									*
@@ -1479,6 +1915,8 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnectOpenAuth", libvirt_virConnectOpenAuth, METH_VARARGS, NULL},
     {(char *) "virConnectListDomainsID", libvirt_virConnectListDomainsID, METH_VARARGS, NULL},
     {(char *) "virConnectListDefinedDomains", libvirt_virConnectListDefinedDomains, METH_VARARGS, NULL},
+    {(char *) "virConnectDomainEventRegister", libvirt_virConnectDomainEventRegister, METH_VARARGS, NULL},
+    {(char *) "virConnectDomainEventDeregister", libvirt_virConnectDomainEventDeregister, METH_VARARGS, NULL},
     {(char *) "virDomainGetInfo", libvirt_virDomainGetInfo, METH_VARARGS, NULL},
     {(char *) "virNodeGetInfo", libvirt_virNodeGetInfo, METH_VARARGS, NULL},
     {(char *) "virDomainGetUUID", libvirt_virDomainGetUUID, METH_VARARGS, NULL},
@@ -1511,6 +1949,9 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virStoragePoolGetUUID", libvirt_virStoragePoolGetUUID, METH_VARARGS, NULL},
     {(char *) "virStoragePoolGetUUIDString", libvirt_virStoragePoolGetUUIDString, METH_VARARGS, NULL},
     {(char *) "virStoragePoolLookupByUUID", libvirt_virStoragePoolLookupByUUID, METH_VARARGS, NULL},
+    {(char *) "virEventRegisterImpl", libvirt_virEventRegisterImpl, METH_VARARGS, NULL},
+    {(char *) "virEventInvokeHandleCallback", libvirt_virEventInvokeHandleCallback, METH_VARARGS, NULL},
+    {(char *) "virEventInvokeTimeoutCallback", libvirt_virEventInvokeTimeoutCallback, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 
