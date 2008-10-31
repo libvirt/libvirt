@@ -1,3 +1,8 @@
+Fri Oct 31 14:55:46 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* python/virConnect.py: needed for events from the python bindings
+	  by Ben Guthro
+
 Fri Oct 31 14:04:52 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/xm_internal.c: add minimum domain memory size check for Xen
