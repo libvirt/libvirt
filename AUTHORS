@@ -19,6 +19,8 @@ The primary maintainers and people with commit access rights:
   Atsushi SAKAI        <sakaia@jp.fujitsu.com>
   Dave Leskovec        <dlesko@linux.vnet.ibm.com>
   Cole Robinson        <crobinso@redhat.com>
+  Dan Smith            <danms@us.ibm.com>
+  Guido Guenther       <agx@sigxcpu.org>
 
 Patches have also been contributed by:
 
@@ -39,7 +41,6 @@ Patches have also been contributed by:
   Christian Ehrhardt   <ehrhardt@linux.vnet.ibm.com>
   Shuveb Hussain       <shuveb@binarykarma.com>
   Jim Paris            <jim@jtan.com>
-  Guido Guenther       <agx@sigxcpu.org>
   Daniel Hokka Zakrisson <daniel@hozac.com>
   Mads Chr. Olesen     <shiyee@shiyee.dk>
   Anton Protopopov     <aspsk2@gmail.com>

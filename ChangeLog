@@ -1,3 +1,8 @@
+Mon Nov  3 17:12:21 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* AUTHORS: added Guido Günther as new commiter, Dan Smith was missing
+	  too
+
 Mon Nov  3 16:54:39 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_conf.c: switch off cache if disk is shared and not read-only
