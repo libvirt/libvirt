@@ -50,6 +50,7 @@ enum {
     VIR_STORAGE_BACKEND_POOL_SOURCE_DIR     = (1<<2),
     VIR_STORAGE_BACKEND_POOL_SOURCE_ADAPTER = (1<<3),
     VIR_STORAGE_BACKEND_POOL_SOURCE_NAME    = (1<<4),
+    VIR_STORAGE_BACKEND_POOL_STABLE_PATH    = (1<<5),
 };
 
 enum partTableType {
@@ -138,7 +139,7 @@ int virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
 
 char *virStorageBackendStablePath(virConnectPtr conn,
                                   virStoragePoolObjPtr pool,
-                                  char *devpath);
+                                  const char *devpath);
 
 typedef int (*virStorageBackendListVolRegexFunc)(virConnectPtr conn,
                                                  virStoragePoolObjPtr pool,

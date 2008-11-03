@@ -219,8 +219,7 @@ virStorageBackendISCSINewLun(virConnectPtr conn, virStoragePoolObjPtr pool,
                                                         devpath)) == NULL)
         goto cleanup;
 
-    if (devpath != vol->target.path)
-        VIR_FREE(devpath);
+    VIR_FREE(devpath);
 
     if (virStorageBackendUpdateVolInfoFD(conn, vol, fd, 1) < 0)
         goto cleanup;
@@ -645,7 +644,8 @@ virStorageBackend virStorageBackendISCSI = {
 
     .poolOptions = {
         .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_HOST |
-                  VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE)
+                  VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE |
+                  VIR_STORAGE_BACKEND_POOL_STABLE_PATH)
     },
 
     .volType = VIR_STORAGE_VOL_BLOCK,

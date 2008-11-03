@@ -109,8 +109,7 @@ virStorageBackendDiskMakeDataVol(virConnectPtr conn,
                                                             devpath)) == NULL)
             return -1;
 
-        if (devpath != vol->target.path)
-            VIR_FREE(devpath);
+        VIR_FREE(devpath);
     }
 
     if (vol->key == NULL) {
@@ -447,7 +446,8 @@ virStorageBackend virStorageBackendDisk = {
     .deleteVol = virStorageBackendDiskDeleteVol,
 
     .poolOptions = {
-        .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE),
+        .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE|
+                  VIR_STORAGE_BACKEND_POOL_STABLE_PATH),
         .defaultFormat = VIR_STORAGE_POOL_DISK_UNKNOWN,
         .formatFromString = virStorageBackendPartTableTypeFromString,
         .formatToString = virStorageBackendPartTableTypeToString,

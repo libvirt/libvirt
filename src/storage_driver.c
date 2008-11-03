@@ -966,8 +966,34 @@ storageVolumeLookupByPath(virConnectPtr conn,
 
     for (i = 0 ; i < driver->pools.count ; i++) {
         if (virStoragePoolObjIsActive(driver->pools.objs[i])) {
-            virStorageVolDefPtr vol =
-                virStorageVolDefFindByPath(driver->pools.objs[i], path);
+            virStorageVolDefPtr vol;
+            virStorageBackendPoolOptionsPtr options;
+
+            options = virStorageBackendPoolOptionsForType(driver->pools.objs[i]->def->type);
+            if (options == NULL)
+                continue;
+
+            if (options->flags & VIR_STORAGE_BACKEND_POOL_STABLE_PATH) {
+                const char *stable_path;
+
+                stable_path = virStorageBackendStablePath(conn,
+                                                          driver->pools.objs[i],
+                                                          path);
+                /*
+                 * virStorageBackendStablePath already does
+                 * virStorageReportError if it fails; we just need to keep
+                 * propagating the return code
+                 */
+                if (stable_path == NULL)
+                    return NULL;
+
+                vol = virStorageVolDefFindByPath(driver->pools.objs[i],
+                                                 stable_path);
+                VIR_FREE(stable_path);
+            }
+            else
+                vol = virStorageVolDefFindByPath(driver->pools.objs[i], path);
+
 
             if (vol)
                 return virGetStorageVol(conn,

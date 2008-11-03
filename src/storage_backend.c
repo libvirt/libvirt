@@ -357,16 +357,17 @@ virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
 char *
 virStorageBackendStablePath(virConnectPtr conn,
                             virStoragePoolObjPtr pool,
-                            char *devpath)
+                            const char *devpath)
 {
     DIR *dh;
     struct dirent *dent;
+    char *stablepath;
 
     /* Short circuit if pool has no target, or if its /dev */
     if (pool->def->target.path == NULL ||
         STREQ(pool->def->target.path, "/dev") ||
         STREQ(pool->def->target.path, "/dev/"))
-        return devpath;
+        goto ret_strdup;
 
     /* The pool is pointing somewhere like /dev/disk/by-path
      * or /dev/disk/by-id, so we need to check all symlinks in
@@ -382,7 +383,6 @@ virStorageBackendStablePath(virConnectPtr conn,
     }
 
     while ((dent = readdir(dh)) != NULL) {
-        char *stablepath;
         if (dent->d_name[0] == '.')
             continue;
 
@@ -407,10 +407,17 @@ virStorageBackendStablePath(virConnectPtr conn,
 
     closedir(dh);
 
+ ret_strdup:
     /* Couldn't find any matching stable link so give back
      * the original non-stable dev path
      */
-    return devpath;
+
+    stablepath = strdup(devpath);
+
+    if (stablepath == NULL)
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("dup path"));
+
+    return stablepath;
 }
 
 

@@ -1,3 +1,14 @@
+Mon Nov 03 12:37:00 CET 2008 Chris Lalancette <clalance@redhat.com>
+	* src/storage_backend.c src/storage_backend.h
+	src/storage_backend_disk.c src/storage_backend_iscsi.c
+	src/storage_driver.c: Give iSCSI and disk storage backend drivers the
+	ability to resolve any kind of volume path to the pool target volume
+	path.  For instance, if the pool was defined with a
+	<target><path>/dev/disk/by-id</path></target> section, and one of the
+	volumes is /dev/disk/by-id/scsi-S_beaf11, then you would be able to
+	call virStorageVolLookupByPath("/dev/sdc"), and get the correct volume
+	back.
+
 Fri Oct 31 14:55:46 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* python/virConnect.py: needed for events from the python bindings
