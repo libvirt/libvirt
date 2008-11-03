@@ -960,13 +960,15 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 break;
             }
 
-            snprintf(opt, PATH_MAX, "file=%s,if=%s,%sindex=%d%s",
+            snprintf(opt, PATH_MAX, "file=%s,if=%s,%sindex=%d%s%s",
                      disk->src ? disk->src : "", bus,
                      media ? media : "",
                      idx,
                      bootable &&
                      disk->device == VIR_DOMAIN_DISK_DEVICE_DISK
-                     ? ",boot=on" : "");
+                     ? ",boot=on" : "",
+                     disk->shared && ! disk->readonly
+                     ? ",cache=off" : "");
 
             ADD_ARG_LIT("-drive");
             ADD_ARG_LIT(opt);

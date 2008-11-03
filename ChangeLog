@@ -1,3 +1,8 @@
+Mon Nov  3 16:54:39 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_conf.c: switch off cache if disk is shared and not read-only
+	  patch by Charles Duffy
+
 Mon Nov  3 16:52:12 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: oops trailing blanks
