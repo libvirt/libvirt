@@ -1,3 +1,7 @@
+Mon Nov  3 16:52:12 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: oops trailing blanks
+
 Mon Nov 03 12:37:00 CET 2008 Chris Lalancette <clalance@redhat.com>
 	* src/storage_backend.c src/storage_backend.h
 	src/storage_backend_disk.c src/storage_backend_iscsi.c

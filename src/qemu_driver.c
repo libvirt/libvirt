@@ -2830,7 +2830,7 @@ static int qemudDomainDetachPciDiskDevice(virDomainPtr dom, virDomainDeviceDefPt
 
     if (detach->slotnum < 1) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("disk %s cannot be detached - invalid slot number %d"), 
+                         _("disk %s cannot be detached - invalid slot number %d"),
                            detach->dst, detach->slotnum);
         return -1;
     }
@@ -2853,7 +2853,7 @@ static int qemudDomainDetachPciDiskDevice(virDomainPtr dom, virDomainDeviceDefPt
      * nothing is printed on success */
     if (strstr(reply, "invalid slot")) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                          _("failed to detach disk %s: invalid slot %d"), 
+                          _("failed to detach disk %s: invalid slot %d"),
                             detach->dst, detach->slotnum);
         ret = -1;
         goto out;
