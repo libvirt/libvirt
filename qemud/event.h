@@ -105,4 +105,11 @@ int virEventRemoveTimeoutImpl(int timer);
  */
 int virEventRunOnce(void);
 
+int
+virEventHandleTypeToPollEvent(int events);
+int
+virPollEventToEventHandleType(int events);
+
+
+
 #endif /* __VIRTD_EVENT_H__ */

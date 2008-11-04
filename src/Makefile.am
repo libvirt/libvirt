@@ -150,6 +150,7 @@ libvirt_la_SOURCES =						\
 		driver.h					\
 		internal.h					\
 		datatypes.c datatypes.h				\
+		domain_event.c domain_event.h			\
 		libvirt.c libvirt_internal.h			\
 		$(GENERIC_LIB_SOURCES)				\
 		$(DOMAIN_CONF_SOURCES)				\

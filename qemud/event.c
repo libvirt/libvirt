@@ -489,7 +489,7 @@ int virEventRunOnce(void) {
 }
 
 int
-__virEventHandleTypeToPollEvent(virEventHandleType events)
+virEventHandleTypeToPollEvent(int events)
 {
     int ret = 0;
     if(events & VIR_EVENT_HANDLE_READABLE)
@@ -503,10 +503,10 @@ __virEventHandleTypeToPollEvent(virEventHandleType events)
     return ret;
 }
 
-virEventHandleType
-__virPollEventToEventHandleType(int events)
+int
+virPollEventToEventHandleType(int events)
 {
-    virEventHandleType ret = 0;
+    int ret = 0;
     if(events & POLLIN)
         ret |= VIR_EVENT_HANDLE_READABLE;
     if(events & POLLOUT)

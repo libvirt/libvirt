@@ -1,3 +1,17 @@
+Tue Nov  4 23:33:31 UTC 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Move domain events helpers into domain_events.c
+	* qemud/event.c: Remove __ prefix on poll event
+	convertors
+	* qemud/event.h: Add virEventHandleTypeToPollEvent and
+	virPollEventToEventHandleType declarations
+	* src/Makefile.am, src/domain_event.c, src/domain_event.h:
+	Add dedicated file for internal domain events helpers
+	* src/internal.h, src/libvirt.c: Remove domain events
+	helpers
+	* src/qemu_conf.h, src/remote_internal.c: Add includs
+	of domain_event.h
+
 Tue Nov  4 23:08:31 UTC 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Move internal API declarations from generic internal.h file

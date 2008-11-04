@@ -31,6 +31,7 @@
 #include "capabilities.h"
 #include "network_conf.h"
 #include "domain_conf.h"
+#include "domain_event.h"
 
 #define qemudDebug(fmt, ...) do {} while(0)
 
