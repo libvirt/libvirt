@@ -289,7 +289,6 @@ virInitialize(void)
 #ifdef WITH_XEN
     if (xenUnifiedRegister () == -1) return -1;
 #endif
-#ifdef WITH_LIBVIRTD
 #ifdef WITH_QEMU
     if (qemudRegister() == -1) return -1;
 #endif
@@ -302,6 +301,7 @@ virInitialize(void)
 #ifdef WITH_NETWORK
     if (networkRegister() == -1) return -1;
 #endif
+#ifdef WITH_STORAGE_DIR
     if (storageRegister() == -1) return -1;
 #endif
 #ifdef WITH_REMOTE

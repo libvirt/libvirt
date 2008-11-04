@@ -232,59 +232,69 @@ fi
 AC_PATH_PROG([IPTABLES_PATH], [iptables], /sbin/iptables, [/usr/sbin:$PATH])
 AC_DEFINE_UNQUOTED([IPTABLES_PATH], "$IPTABLES_PATH", [path to iptables binary])
 
-dnl
-dnl Specify the xen-distribution directory to be able to compile on a
-dnl non-xenified host
-dnl
-AC_ARG_WITH([xen-distdir], [AC_HELP_STRING([--with-xen-distdir=path],
-            [distribution directory of Xen, default /usr])])
-if test "x$with_xen_distdir" != "x"
-then
-CPPFLAGS="$CPPFLAGS -I$withval/install/usr/include"
-LDFLAGS="$LDFLAGS -L$withval/install/usr/lib -L$withval/install/usr/lib64"
-fi
-
-LIBVIRT_FEATURES=
-WITH_XEN=0
-
 if test "$with_openvz" = "yes"; then
-    LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_OPENVZ"
+    AC_DEFINE_UNQUOTED([WITH_OPENVZ], 1, [whether OpenVZ driver is enabled])
 fi
 AM_CONDITIONAL([WITH_OPENVZ], [test "$with_openvz" = "yes"])
 
+if test "$with_libvirtd" = "no" ; then
+  with_lxc=no
+fi
 if test "$with_lxc" = "yes" ; then
-    LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_LXC"
+    AC_DEFINE_UNQUOTED([WITH_LXC], 1, [whether LXC driver is enabled])
 fi
 AM_CONDITIONAL([WITH_LXC], [test "$with_lxc" = "yes"])
 
+if test "$with_libvirtd" = "no" ; then
+  with_qemu=no
+fi
 if test "$with_qemu" = "yes" ; then
-    LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_QEMU"
+    AC_DEFINE_UNQUOTED([WITH_QEMU], 1, [whether QEMU driver is enabled])
 fi
 AM_CONDITIONAL([WITH_QEMU], [test "$with_qemu" = "yes"])
 
 if test "$with_test" = "yes" ; then
-    LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_TEST"
+    AC_DEFINE_UNQUOTED([WITH_TEST], 1, [whether Test driver is enabled])
 fi
 AM_CONDITIONAL([WITH_TEST], [test "$with_test" = "yes"])
 
 if test "$with_remote" = "yes" ; then
-    LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_REMOTE"
+    AC_DEFINE_UNQUOTED([WITH_REMOTE], 1, [whether Remote driver is enabled])
 fi
 AM_CONDITIONAL([WITH_REMOTE], [test "$with_remote" = "yes"])
 
 if test "$with_libvirtd" = "yes" ; then
-    LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_LIBVIRTD"
+    AC_DEFINE_UNQUOTED([WITH_LIBVIRTD], 1, [whether libvirtd daemon is enabled])
 fi
 AM_CONDITIONAL([WITH_LIBVIRTD], [test "$with_libvirtd" = "yes"])
 
-if test "$with_xen" = "yes" ; then
-    dnl search for the Xen store library
-    AC_SEARCH_LIBS(xs_read, [xenstore],
-                   [WITH_XEN=1],
-                   [AC_MSG_RESULT([Xen store library not found])])
-    if test "$WITH_XEN" != "0" ; then
-        LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_XEN"
+XEN_LIBS=""
+XEN_CFLAGS=""
+dnl search for the Xen store library
+if test "$with_xen" != "no" ; then
+    if test "$with_xen" != "yes" -a "$with_xen" != "check" ; then
+        XEN_CFLAGS="-I$with_xen/include"
+        XEN_LIBS="-L$with_xen/lib64 -L$with_xen/lib"
     fi
+    fail=0
+    old_LIBS="$LIBS"
+    old_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS $XEN_CFLAGS"
+    LIBS="$LIBS $XEN_LIBS"
+    AC_CHECK_LIB([xenstore], [xs_read], [
+           with_xen=yes
+           XEN_LIBS="$XEN_LIBS -lxenstore"
+       ],[
+           if test "$with_xen" = "check" ; then
+               with_xen=no
+           else
+               with_xen=no
+               fail=1
+           fi
+       ])
+
+    test $fail = 1 &&
+      AC_MSG_ERROR([You must install the Xen development package to compile Xen driver with -lxenstore])
 
     AC_CHECK_HEADERS([xen/xen.h xen/version.h xen/dom0_ops.h],,[
 	AC_MSG_ERROR([Cannot find standard Xen headers. Is xen-devel installed?])
@@ -307,8 +317,15 @@ if test "$with_xen" = "yes" ; then
 #include <stdint.h>
 #include <xen/xen.h>
 ])
+    LIBS="$old_LIBS"
+    CFLAGS="$old_CFLAGS"
 fi
-AM_CONDITIONAL([WITH_XEN], [test "$WITH_XEN" = "1"])
+if test "$with_xen" = "yes"; then
+    AC_DEFINE_UNQUOTED([WITH_XEN], 1, [whether Xen driver is enabled])
+fi
+AM_CONDITIONAL([WITH_XEN], [test "$with_xen" = "yes"])
+AC_SUBST([XEN_CFLAGS])
+AC_SUBST([XEN_LIBS])
 
 dnl
 dnl check for kernel headers required by src/bridge.c
@@ -640,9 +657,6 @@ else
 fi
 AC_SUBST([READLINE_CFLAGS])
 AC_SUBST([VIRSH_LIBS])
-
-AC_SUBST([WITH_XEN])
-AC_SUBST([LIBVIRT_FEATURES])
 
 
 AC_ARG_WITH([network],
@@ -1123,6 +1137,11 @@ if test "$with_numactl" = "yes" ; then
 AC_MSG_NOTICE([  numactl: $NUMACTL_CFLAGS $NUMACTL_LIBS])
 else
 AC_MSG_NOTICE([  numactl: no])
+fi
+if test "$with_xen" = "yes" ; then
+AC_MSG_NOTICE([  xen: $XEN_CFLAGS $XEN_LIBS])
+else
+AC_MSG_NOTICE([  xen: no])
 fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])

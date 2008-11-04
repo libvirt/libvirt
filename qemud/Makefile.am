@@ -1,7 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-INCLUDES = $(LIBVIRT_FEATURES)
-
 DAEMON_SOURCES =					\
 		event.c event.h				\
 		qemud.c qemud.h				\

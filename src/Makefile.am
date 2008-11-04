@@ -10,14 +10,15 @@ INCLUDES = \
 	   $(SASL_CFLAGS) \
 	   $(SELINUX_CFLAGS) \
 	   $(NUMACTL_CFLAGS) \
+	   $(XEN_CFLAGS) \
 	   -DBINDIR=\""$(libexecdir)"\" \
 	   -DSBINDIR=\""$(sbindir)"\" \
 	   -DSYSCONF_DIR="\"$(sysconfdir)\"" \
 	   -DLOCALEBASEDIR=\""$(datadir)/locale"\" \
            -DLOCAL_STATE_DIR=\""$(localstatedir)"\" \
            -DGETTEXT_PACKAGE=\"$(PACKAGE)\" \
-	   $(WARN_CFLAGS) \
-	   $(LIBVIRT_FEATURES)
+	   $(WARN_CFLAGS)
+
 DEPS = libvirt.la
 LDADDS = @STATIC_BINARIES@ $(WARN_CFLAGS) libvirt.la ../gnulib/lib/libgnu.la
 VIRSH_LIBS = @VIRSH_LIBS@
@@ -48,7 +49,6 @@ GENERIC_LIB_SOURCES =						\
 		iptables.c iptables.h				\
 		memory.c memory.h				\
 		qparams.c qparams.h				\
-		stats_linux.c stats_linux.h			\
 		uuid.c uuid.h					\
 		util.c util.h					\
 		virterror.c virterror_internal.h		\
@@ -151,13 +151,13 @@ libvirt_la_SOURCES =						\
 		internal.h					\
 		datatypes.c datatypes.h				\
 		domain_event.c domain_event.h			\
+		stats_linux.c stats_linux.h			\
 		libvirt.c libvirt_internal.h			\
 		$(GENERIC_LIB_SOURCES)				\
 		$(DOMAIN_CONF_SOURCES)				\
 		$(NETWORK_CONF_SOURCES)				\
 		$(STORAGE_CONF_SOURCES)
 
-# Drivers usable outside daemon context
 if WITH_TEST
 libvirt_la_SOURCES += $(TEST_DRIVER_SOURCES)
 endif
@@ -174,20 +174,22 @@ if WITH_OPENVZ
 libvirt_la_SOURCES += $(OPENVZ_DRIVER_SOURCES)
 endif
 
-# Drivers usable inside daemon context
-if WITH_LIBVIRTD
-if WITH_NETWORK
-libvirt_la_SOURCES += $(NETWORK_DRIVER_SOURCES)
-endif
-libvirt_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
-libvirt_la_SOURCES += $(STORAGE_DRIVER_FS_SOURCES)
-
 if WITH_QEMU
 libvirt_la_SOURCES += $(QEMU_DRIVER_SOURCES)
 endif
 
 if WITH_LXC
 libvirt_la_SOURCES += $(LXC_DRIVER_SOURCES)
+endif
+
+
+if WITH_NETWORK
+libvirt_la_SOURCES += $(NETWORK_DRIVER_SOURCES)
+endif
+
+if WITH_STORAGE_DIR
+libvirt_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
+libvirt_la_SOURCES += $(STORAGE_DRIVER_FS_SOURCES)
 endif
 
 if WITH_STORAGE_LVM
@@ -200,7 +202,6 @@ endif
 
 if WITH_STORAGE_DISK
 libvirt_la_SOURCES += $(STORAGE_DRIVER_DISK_SOURCES)
-endif
 endif
 
 # Add all conditional sources just in case...
@@ -220,7 +221,7 @@ EXTRA_DIST +=							\
 
 
 libvirt_la_LIBADD = $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS) $(SELINUX_LIBS) \
-                    $(NUMACTL_LIBS) \
+                    $(NUMACTL_LIBS) $(XEN_LIBS) \
 		    @CYGWIN_EXTRA_LIBADD@ ../gnulib/lib/libgnu.la
 libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
                      -version-info @LIBVIRT_VERSION_INFO@ \

@@ -1,5 +1,16 @@
 Tue Nov  4 23:33:31 UTC 2008 Daniel P. Berrange <berrange@redhat.com>
 
+	* configure.in: Set WITH_XXXX conditionals for drivers in
+	config.h instead of compiler args, and auto-disable stateful
+	drivers if daemon is disabled
+	* src/libvirt.c: Remove now redundant WITH_LIBVIRTD condition
+	* tests/Makefile.am, src/Makefile.am, qemud/Makefile.am: Remove
+	LIBVIRT_FEATURES args, now set via config.h instead. Add
+	explicit XEN_LIBS/CFLAGS instead of relying on setting via
+	global flags.
+
+Tue Nov  4 23:33:31 UTC 2008 Daniel P. Berrange <berrange@redhat.com>
+
 	Move domain events helpers into domain_events.c
 	* qemud/event.c: Remove __ prefix on poll event
 	convertors
