@@ -1,4 +1,10 @@
-Tue, 4 Nov 2008 14:58:30 +0100 Jim Meyering <meyering@redhat.com>
+Tue Nov  4 14:58:31 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	don't print an uninitialized integer in a diagnostic
+	* src/virterror.c (__virErrorMsg) [VIR_ERR_XEN_CALL]:
+	Use a format with only one % directive.
+
+Tue Nov  4 14:58:30 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	add a test for today's fix
 	* tests/cpuset: New script.  Test for today's fix.

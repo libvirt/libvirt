@@ -1,7 +1,7 @@
 /*
  * virterror.c: implements error handling and reporting code for libvirt
  *
- * Copy:  Copyright (C) 2006 Red Hat, Inc.
+ * Copy:  Copyright (C) 2006, 2008 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -516,7 +516,7 @@ __virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("could not connect to Xen Store %s");
             break;
         case VIR_ERR_XEN_CALL:
-            errmsg = _("failed Xen syscall %s %d");
+            errmsg = _("failed Xen syscall %s");
             break;
         case VIR_ERR_OS_TYPE:
             if (info == NULL)
