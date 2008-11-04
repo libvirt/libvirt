@@ -33,6 +33,7 @@
 #include <string.h>
 
 #include "virterror_internal.h"
+#include "datatypes.h"
 #include "driver.h"
 #include "util.h"
 #include "storage_driver.h"

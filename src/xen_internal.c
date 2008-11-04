@@ -41,6 +41,7 @@
 #include <xen/sched.h>
 
 #include "virterror_internal.h"
+#include "datatypes.h"
 #include "driver.h"
 #include "util.h"
 #include "xen_unified.h"

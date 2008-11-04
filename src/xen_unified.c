@@ -28,7 +28,7 @@
 #include <libxml/uri.h>
 
 #include "virterror_internal.h"
-
+#include "datatypes.h"
 #include "xen_unified.h"
 
 #include "xen_internal.h"

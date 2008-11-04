@@ -24,7 +24,9 @@
 #ifndef __DOMAIN_CONF_H
 #define __DOMAIN_CONF_H
 
-#include <config.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
 
 #include "internal.h"
 #include "capabilities.h"

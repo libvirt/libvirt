@@ -30,6 +30,7 @@
 #ifdef WITH_XEN
 
 #include "internal.h"
+#include "datatypes.h"
 #include "xen_unified.h"
 #include "xm_internal.h"
 #include "testutils.h"

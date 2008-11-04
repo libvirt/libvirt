@@ -1,3 +1,28 @@
+Tue Nov  4 23:08:31 UTC 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Move internal API declarations from generic internal.h file
+	* src/Makefile.am, src/datatypes.c, src/datatypes.h: Add
+	internal struct definitions for public objects, and helper
+	methods.
+	* src/hash.c: Remove helper methods for public objects
+	* src/libvirt_internal.h: Add definition of semi-secret
+	public APIs for migration & stateful drivers.
+	* src/internal.h: Remove internal API declarations for
+	migration & stateful drivers.
+	* po/POTFILES.in, proxy/libvirt_proxy.c, qemud/qemud.c,
+	qemud/remote.c, src/domain_conf.c, src/domain_conf.h,
+	src/driver.h, src/libvirt.c, src/lxc_driver.c,
+	src/network_conf.c, src/network_conf.h, src/network_driver.c,
+	src/openvz_driver.c, src/proxy_internal.c,
+	src/proxy_internal.h, src/qemu_driver.c, src/qparams.c,
+	src/remote_internal.c, src/stats_linux.c, src/storage_conf.c,
+	src/storage_conf.h, src/storage_driver.c, src/test.c,
+	src/uuid.c, src/veth.c, src/virterror.c, src/xen_internal.c,
+	src/xen_internal.h, src/xen_unified.c, src/xen_unified.h,
+	src/xend_internal.c, src/xend_internal.h, src/xm_internal.c,
+	src/xs_internal.c, tests/xmconfigtest.c: Add includes for
+	libvirt_internal.h and datatypes.h where required
+
 Tue Nov  4 22:52:31 UTC 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c, src/driver.h, src/internal.h, src/libvirt.c

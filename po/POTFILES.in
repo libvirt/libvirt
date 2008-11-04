@@ -3,8 +3,8 @@ qemud/qemud.c
 qemud/remote.c
 src/conf.c
 src/console.c
+src/datatypes.c
 src/domain_conf.c
-src/hash.c
 src/iptables.c
 src/libvirt.c
 src/lxc_container.c

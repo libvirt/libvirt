@@ -24,7 +24,7 @@
 #include <locale.h>
 
 #include "internal.h"
-
+#include "datatypes.h"
 #include "proxy_internal.h"
 #include "util.h"
 #include "xen_internal.h"

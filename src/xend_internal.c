@@ -33,6 +33,7 @@
 #include <errno.h>
 
 #include "virterror_internal.h"
+#include "datatypes.h"
 #include "xend_internal.h"
 #include "driver.h"
 #include "util.h"

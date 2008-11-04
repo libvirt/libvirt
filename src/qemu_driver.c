@@ -53,6 +53,7 @@
 #endif
 
 #include "virterror_internal.h"
+#include "datatypes.h"
 #include "qemu_driver.h"
 #include "qemu_conf.h"
 #include "c-ctype.h"

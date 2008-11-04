@@ -34,6 +34,7 @@
 #include <dirent.h>
 
 #include "virterror_internal.h"
+#include "datatypes.h"
 #include "network_conf.h"
 #include "memory.h"
 #include "xml.h"

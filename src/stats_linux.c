@@ -25,6 +25,7 @@
 #endif
 
 #include "virterror_internal.h"
+#include "datatypes.h"
 #include "util.h"
 #include "xen_unified.h"
 #include "stats_linux.h"

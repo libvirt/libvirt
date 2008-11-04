@@ -13,6 +13,7 @@
 
 #include "internal.h"
 #include "capabilities.h"
+#include "driver.h"
 
 #ifndef HAVE_WINSOCK2_H
 #include <sys/un.h>
@@ -29,6 +30,8 @@ extern int xenUnifiedRegister (void);
 #define XEN_UNIFIED_XS_OFFSET 3
 #define XEN_UNIFIED_XM_OFFSET 4
 #define XEN_UNIFIED_NR_DRIVERS 5
+
+#define MIN_XEN_GUEST_SIZE 64  /* 64 megabytes */
 
 /* _xenUnifiedDriver:
  *

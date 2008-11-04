@@ -74,6 +74,7 @@
 #endif
 
 #include "virterror_internal.h"
+#include "datatypes.h"
 #include "driver.h"
 #include "buf.h"
 #include "qparams.h"

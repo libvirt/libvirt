@@ -30,6 +30,7 @@
 #include <dirent.h>
 
 #include "virterror_internal.h"
+#include "datatypes.h"
 #include "domain_conf.h"
 #include "memory.h"
 #include "verify.h"

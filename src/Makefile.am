@@ -44,6 +44,7 @@ GENERIC_LIB_SOURCES =						\
 		buf.c buf.h					\
 		conf.c conf.h					\
 		event.c event.h					\
+		hash.c hash.h					\
 		iptables.c iptables.h				\
 		memory.c memory.h				\
 		qparams.c qparams.h				\
@@ -147,8 +148,8 @@ STORAGE_HELPER_DISK_SOURCES =					\
 
 libvirt_la_SOURCES =						\
 		driver.h					\
-		hash.c hash.h					\
 		internal.h					\
+		datatypes.c datatypes.h				\
 		libvirt.c libvirt_internal.h			\
 		$(GENERIC_LIB_SOURCES)				\
 		$(DOMAIN_CONF_SOURCES)				\

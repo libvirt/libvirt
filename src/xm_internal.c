@@ -36,6 +36,7 @@
 #include <xen/dom0_ops.h>
 
 #include "virterror_internal.h"
+#include "datatypes.h"
 #include "xm_internal.h"
 #include "xen_unified.h"
 #include "xend_internal.h"

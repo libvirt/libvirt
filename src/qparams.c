@@ -26,6 +26,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#include <libxml/uri.h>
+
 #include "virterror_internal.h"
 #include "buf.h"
 #include "memory.h"

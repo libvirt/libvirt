@@ -27,6 +27,7 @@
 #include <xs.h>
 
 #include "virterror_internal.h"
+#include "datatypes.h"
 #include "driver.h"
 #include "xen_unified.h"
 #include "xs_internal.h"

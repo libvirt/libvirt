@@ -49,7 +49,7 @@
 #include <signal.h>
 #include <netdb.h>
 
-#include "internal.h"
+#include "libvirt_internal.h"
 
 #include "qemud.h"
 #include "util.h"

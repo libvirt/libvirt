@@ -12,7 +12,7 @@
 #ifndef __LIBVIR_PROXY_H__
 #define __LIBVIR_PROXY_H__
 
-#include "libvirt/libvirt.h"
+#include "internal.h"
 
 #define PROXY_SOCKET_PATH "/tmp/livirt_proxy_conn"
 #define PROXY_PROTO_VERSION 1

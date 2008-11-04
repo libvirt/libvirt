@@ -45,6 +45,7 @@
 #include <sys/ioctl.h>
 
 #include "virterror_internal.h"
+#include "datatypes.h"
 #include "network_driver.h"
 #include "network_conf.h"
 #include "driver.h"

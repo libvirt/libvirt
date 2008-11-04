@@ -16,6 +16,7 @@
 #include <stdarg.h>
 
 #include "virterror_internal.h"
+#include "datatypes.h"
 
 virError virLastErr =       /* the last error */
   { .code = 0, .domain = 0, .message = NULL, .level = VIR_ERR_NONE,

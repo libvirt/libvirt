@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include "virterror_internal.h"
+#include "datatypes.h"
 #include "driver.h"
 #include "proxy_internal.h"
 #include "util.h"

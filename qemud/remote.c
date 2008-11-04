@@ -48,7 +48,8 @@
 #include <polkit-dbus/polkit-dbus.h>
 #endif
 
-#include "internal.h"
+#include "libvirt_internal.h"
+#include "datatypes.h"
 #include "qemud.h"
 #include "memory.h"
 

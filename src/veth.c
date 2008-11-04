@@ -12,6 +12,7 @@
 #include <config.h>
 
 #include <string.h>
+#include <stdio.h>
 
 #include "veth.h"
 #include "internal.h"

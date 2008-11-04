@@ -32,6 +32,8 @@
 #endif
 
 #include "virterror_internal.h"
+#include "datatypes.h"
+#include "libvirt_internal.h"
 #include "driver.h"
 
 #include "uuid.h"
@@ -66,6 +68,8 @@
  * - use lock to protect against concurrent accesses ?
  * - use reference counting to guarantee coherent pointer state ?
  */
+
+#define MAX_DRIVERS 10
 
 static virDriverPtr virDriverTab[MAX_DRIVERS];
 static int virDriverTabCount = 0;
@@ -5559,4 +5563,6 @@ __virDomainEventCallbackQueuePush(virDomainEventQueuePtr evtQueue,
     evtQueue->count++;
     return 0;
 }
+
+
 

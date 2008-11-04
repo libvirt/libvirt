@@ -24,7 +24,10 @@
 #ifndef __VIR_STORAGE_CONF_H__
 #define __VIR_STORAGE_CONF_H__
 
-#include <libvirt/libvirt.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+
 #include "internal.h"
 
 /* Shared structs */

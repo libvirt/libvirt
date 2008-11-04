@@ -23,11 +23,6 @@
 
 #include <config.h>
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
-#include <libxml/uri.h>
-
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -39,6 +34,7 @@
 #include <string.h>
 
 #include "virterror_internal.h"
+#include "datatypes.h"
 #include "storage_conf.h"
 #include "storage_backend.h"
 #include "xml.h"

@@ -6,9 +6,6 @@
 #ifndef __VIR_DRIVER_H__
 #define __VIR_DRIVER_H__
 
-#include "libvirt/libvirt.h"
-#include "libvirt/virterror.h"
-
 #include <libxml/uri.h>
 
 /*

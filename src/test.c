@@ -33,6 +33,7 @@
 
 
 #include "virterror_internal.h"
+#include "datatypes.h"
 #include "test.h"
 #include "buf.h"
 #include "util.h"
