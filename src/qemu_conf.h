@@ -44,6 +44,8 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_DRIVE          = (1 << 3),
     QEMUD_CMD_FLAG_DRIVE_BOOT     = (1 << 4),
     QEMUD_CMD_FLAG_NAME           = (1 << 5),
+    QEMUD_CMD_FLAG_UUID           = (1 << 6),
+    QEMUD_CMD_FLAG_DOMID          = (1 << 7), /* Xenner only */
 };
 
 /* Main driver state */

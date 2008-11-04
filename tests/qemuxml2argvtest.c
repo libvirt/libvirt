@@ -43,7 +43,10 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     memset(&vm, 0, sizeof vm);
     vm.def = vmdef;
-    vm.def->id = -1;
+    if (extraFlags & QEMUD_CMD_FLAG_DOMID)
+        vm.def->id = 6;
+    else
+        vm.def->id = -1;
     vm.pid = -1;
 
     flags = QEMUD_CMD_FLAG_VNC_COLON |
@@ -196,6 +199,8 @@ mymain(int argc, char **argv)
     DO_TEST("input-xen", 0);
     DO_TEST("misc-acpi", 0);
     DO_TEST("misc-no-reboot", 0);
+    DO_TEST("misc-uuid", QEMUD_CMD_FLAG_NAME |
+        QEMUD_CMD_FLAG_UUID | QEMUD_CMD_FLAG_DOMID);
     DO_TEST("net-user", 0);
     DO_TEST("net-virtio", 0);
 

@@ -1,3 +1,14 @@
+Tue Nov  4 22:14:31 UTC 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Support passing UUID and ID to qemu/xenner
+	* src/qemu_conf.c, src/qemu_conf.h, src/qemu_driver.c: Detect
+	availability of -uuid and -domid args in QEMU, and use them if
+	available
+	* tests/qemuxml2argvtest.c,
+	tests/qemuxml2argvdata/qemuxml2argv-misc-uuid.args,
+	tests/qemuxml2argvdata/qemuxml2argv-misc-uuid.xml: Add test
+	case for -uuid and -domid args
+
 Tue Nov  4 21:50:31 UTC 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Remove use of virStringList

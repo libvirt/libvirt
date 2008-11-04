@@ -439,6 +439,10 @@ int qemudExtractVersionInfo(const char *qemu,
         flags |= QEMUD_CMD_FLAG_NO_REBOOT;
     if (strstr(help, "-name"))
         flags |= QEMUD_CMD_FLAG_NAME;
+    if (strstr(help, "-uuid"))
+        flags |= QEMUD_CMD_FLAG_UUID;
+    if (strstr(help, "-domid"))
+        flags |= QEMUD_CMD_FLAG_DOMID;
     if (strstr(help, "-drive"))
         flags |= QEMUD_CMD_FLAG_DRIVE;
     if (strstr(help, "boot=on"))
@@ -713,6 +717,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
     int qenvc = 0, qenva = 0;
     const char **qenv = NULL;
     const char *emulator;
+    char uuid[VIR_UUID_STRING_BUFLEN];
+    char domid[50];
 
     uname(&ut);
 
@@ -722,6 +728,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ut.machine[3] == '6' &&
         !ut.machine[4])
         ut.machine[1] = '6';
+
+    virUUIDFormat(vm->def->uuid, uuid);
 
     /* Need to explicitly disable KQEMU if
      * 1. Arch matches host arch
@@ -802,6 +810,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     snprintf(memory, sizeof(memory), "%lu", vm->def->memory/1024);
     snprintf(vcpus, sizeof(vcpus), "%lu", vm->def->vcpus);
+    snprintf(domid, sizeof(domid), "%d", vm->def->id);
 
     ADD_ENV_LIT("LC_ALL=C");
 
@@ -834,6 +843,15 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT("-name");
         ADD_ARG_LIT(vm->def->name);
     }
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_UUID) {
+        ADD_ARG_LIT("-uuid");
+        ADD_ARG_LIT(uuid);
+    }
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DOMID) {
+        ADD_ARG_LIT("-domid");
+        ADD_ARG_LIT(domid);
+    }
+
     /*
      * NB, -nographic *MUST* come before any serial, or monitor
      * or parallel port flags due to QEMU craziness, where it

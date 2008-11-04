@@ -860,10 +860,12 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         return -1;
     }
 
+    vm->def->id = driver->nextvmid++;
     if (qemudBuildCommandLine(conn, driver, vm,
                               qemuCmdFlags, &argv, &progenv,
                               &tapfds, &ntapfds, migrateFrom) < 0) {
         close(vm->logfile);
+        vm->def->id = -1;
         vm->logfile = -1;
         return -1;
     }
@@ -901,10 +903,10 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     ret = virExec(conn, argv, progenv, &keepfd, &vm->pid,
                   vm->stdin_fd, &vm->stdout_fd, &vm->stderr_fd,
                   VIR_EXEC_NONBLOCK);
-    if (ret == 0) {
-        vm->def->id = driver->nextvmid++;
+    if (ret == 0)
         vm->state = migrateFrom ? VIR_DOMAIN_PAUSED : VIR_DOMAIN_RUNNING;
-    }
+    else
+        vm->def->id = -1;
 
     for (i = 0 ; argv[i] ; i++)
         VIR_FREE(argv[i]);
