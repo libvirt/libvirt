@@ -26,12 +26,13 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#include "virterror_internal.h"
 #include "buf.h"
 #include "memory.h"
 #include "qparams.h"
 
 #define qparam_report_oom(void)                                              \
-        __virReportErrorHelper(NULL, VIR_FROM_NONE, VIR_ERR_NO_MEMORY,       \
+        virReportErrorHelper(NULL, VIR_FROM_NONE, VIR_ERR_NO_MEMORY,       \
                                __FILE__, __FUNCTION__, __LINE__, NULL)
 
 struct qparam_set *

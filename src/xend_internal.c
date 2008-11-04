@@ -32,6 +32,7 @@
 #include <libxml/uri.h>
 #include <errno.h>
 
+#include "virterror_internal.h"
 #include "xend_internal.h"
 #include "driver.h"
 #include "util.h"
@@ -105,7 +106,7 @@ virDomainXMLDevID(virDomainPtr domain,
 #endif
 
 #define virXendError(conn, code, fmt...)                                     \
-        __virReportErrorHelper(conn, VIR_FROM_XEND, code, __FILE__,          \
+        virReportErrorHelper(conn, VIR_FROM_XEND, code, __FILE__,          \
                                __FUNCTION__, __LINE__, fmt)
 
 #define virXendErrorInt(conn, code, ival)                                    \

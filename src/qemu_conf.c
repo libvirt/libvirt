@@ -40,6 +40,7 @@
 #include <numa.h>
 #endif
 
+#include "virterror_internal.h"
 #include "qemu_conf.h"
 #include "uuid.h"
 #include "buf.h"

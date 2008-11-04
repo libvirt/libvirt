@@ -33,8 +33,7 @@
 #include <string.h>
 #include <dirent.h>
 
-#include "internal.h"
-
+#include "virterror_internal.h"
 #include "network_conf.h"
 #include "memory.h"
 #include "xml.h"
@@ -50,7 +49,7 @@ VIR_ENUM_IMPL(virNetworkForward,
               "none", "nat", "route" )
 
 #define virNetworkReportError(conn, code, fmt...)                            \
-        __virReportErrorHelper(conn, VIR_FROM_NETWORK, code, __FILE__,       \
+        virReportErrorHelper(conn, VIR_FROM_NETWORK, code, __FILE__,       \
                                __FUNCTION__, __LINE__, fmt)
 
 virNetworkObjPtr virNetworkFindByUUID(const virNetworkObjListPtr nets,

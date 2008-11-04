@@ -16,14 +16,15 @@
 #include <stdarg.h>
 #include <limits.h>
 #include <math.h>               /* for isnan() */
-#include "internal.h"
+
+#include "virterror_internal.h"
 #include "xml.h"
 #include "buf.h"
 #include "util.h"
 #include "memory.h"
 
 #define virXMLError(conn, code, fmt...)                                      \
-        __virReportErrorHelper(conn, VIR_FROM_XML, code, __FILE__,           \
+        virReportErrorHelper(conn, VIR_FROM_XML, code, __FILE__,           \
                                __FUNCTION__, __LINE__, fmt)
 
 

@@ -42,7 +42,7 @@ enum { OPENVZ_WARN, OPENVZ_ERR };
                                 fprintf(stderr, "\n"); }
 
 #define openvzError(conn, code, fmt...)                                      \
-        __virReportErrorHelper(conn, VIR_FROM_OPENVZ, code, __FILE__,        \
+        virReportErrorHelper(conn, VIR_FROM_OPENVZ, code, __FILE__,        \
                                __FUNCTION__, __LINE__, fmt)
 
 

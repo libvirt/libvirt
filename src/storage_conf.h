@@ -262,7 +262,7 @@ static inline int virStoragePoolObjIsActive(virStoragePoolObjPtr pool) {
 }
 
 #define virStorageReportError(conn, code, fmt...)                            \
-        __virReportErrorHelper(conn, VIR_FROM_STORAGE, code, __FILE__,       \
+        virReportErrorHelper(conn, VIR_FROM_STORAGE, code, __FILE__,       \
                                __FUNCTION__, __LINE__, fmt)
 
 int virStoragePoolLoadAllConfigs(virConnectPtr conn,

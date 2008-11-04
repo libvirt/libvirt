@@ -32,7 +32,7 @@
 #include <errno.h>
 #include <string.h>
 
-#include "internal.h"
+#include "virterror_internal.h"
 #include "driver.h"
 #include "util.h"
 #include "storage_driver.h"

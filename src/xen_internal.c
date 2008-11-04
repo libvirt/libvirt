@@ -26,11 +26,6 @@
 #include <errno.h>
 #include <sys/utsname.h>
 
-#include "xs_internal.h"
-#include "stats_linux.h"
-#include "xend_internal.h"
-#include "util.h"
-
 /* required for dom0_getdomaininfo_t */
 #include <xen/dom0_ops.h>
 #include <xen/version.h>
@@ -45,6 +40,14 @@
 /* required for shutdown flags */
 #include <xen/sched.h>
 
+#include "virterror_internal.h"
+#include "driver.h"
+#include "util.h"
+#include "xen_unified.h"
+#include "xen_internal.h"
+#include "xs_internal.h"
+#include "stats_linux.h"
+#include "xend_internal.h"
 #include "buf.h"
 #include "capabilities.h"
 #include "memory.h"
@@ -653,10 +656,6 @@ struct xen_op_v2_dom {
 };
 typedef struct xen_op_v2_dom xen_op_v2_dom;
 
-#include "internal.h"
-#include "driver.h"
-#include "xen_unified.h"
-#include "xen_internal.h"
 
 #ifdef __linux__
 #define XEN_HYPERVISOR_SOCKET	"/proc/xen/privcmd"
@@ -720,7 +719,7 @@ struct xenUnifiedDriver xenHypervisorDriver = {
 
 #define virXenError(conn, code, fmt...)                                      \
         if (in_init == 0)                                                    \
-            __virReportErrorHelper(conn, VIR_FROM_XEN, code, __FILE__,       \
+            virReportErrorHelper(conn, VIR_FROM_XEN, code, __FILE__,       \
                                    __FUNCTION__, __LINE__, fmt)
 
 #ifndef PROXY
@@ -747,15 +746,15 @@ virXenErrorFunc(virConnectPtr conn,
         return;
 
 
-    errmsg = __virErrorMsg(error, info);
+    errmsg =virErrorMsg(error, info);
     if (func != NULL) {
         snprintf(fullinfo, 999, "%s: %s", func, info);
         fullinfo[999] = 0;
-        __virRaiseError(conn, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
+        virRaiseError(conn, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
                         errmsg, fullinfo, NULL, value, 0, errmsg, fullinfo,
                         value);
     } else {
-        __virRaiseError(conn, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
+        virRaiseError(conn, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
                         errmsg, info, NULL, value, 0, errmsg, info,
                         value);
     }

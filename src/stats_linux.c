@@ -24,7 +24,7 @@
 #include <xs.h>
 #endif
 
-#include "internal.h"
+#include "virterror_internal.h"
 #include "util.h"
 #include "xen_unified.h"
 #include "stats_linux.h"
@@ -48,13 +48,13 @@ statsErrorFunc (virConnectPtr conn,
     char fullinfo[1000];
     const char *errmsg;
 
-    errmsg = __virErrorMsg(error, info);
+    errmsg = virErrorMsg(error, info);
     if (func != NULL) {
         snprintf(fullinfo, sizeof (fullinfo) - 1, "%s: %s", func, info);
         fullinfo[sizeof (fullinfo) - 1] = 0;
         info = fullinfo;
     }
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_STATS_LINUX, error,
+    virRaiseError(conn, NULL, NULL, VIR_FROM_STATS_LINUX, error,
                     VIR_ERR_ERROR,
                     errmsg, info, NULL, value, 0, errmsg, info,
                     value);

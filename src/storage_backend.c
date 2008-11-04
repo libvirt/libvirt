@@ -41,7 +41,7 @@
 #include <selinux/selinux.h>
 #endif
 
-#include "internal.h"
+#include "virterror_internal.h"
 #include "util.h"
 #include "memory.h"
 

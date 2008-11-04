@@ -29,8 +29,7 @@
 #include <fcntl.h>
 #include <dirent.h>
 
-#include "internal.h"
-
+#include "virterror_internal.h"
 #include "domain_conf.h"
 #include "memory.h"
 #include "verify.h"
@@ -142,7 +141,7 @@ VIR_ENUM_IMPL(virDomainHostdevSubsys, VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST,
               "pci")
 
 #define virDomainReportError(conn, code, fmt...)                             \
-        __virReportErrorHelper(conn, VIR_FROM_DOMAIN, code, __FILE__,        \
+        virReportErrorHelper(conn, VIR_FROM_DOMAIN, code, __FILE__,        \
                                __FUNCTION__, __LINE__, fmt)
 
 virDomainObjPtr virDomainFindByID(const virDomainObjListPtr doms,

@@ -18,13 +18,13 @@
 #include "c-ctype.h"
 #include <errno.h>
 
-#include "internal.h"
+#include "virterror_internal.h"
 #include "sexpr.h"
 #include "util.h"
 #include "memory.h"
 
 #define virSexprError(code, fmt...)                                          \
-        __virReportErrorHelper(NULL, VIR_FROM_SEXPR, code, __FILE__,         \
+        virReportErrorHelper(NULL, VIR_FROM_SEXPR, code, __FILE__,         \
                                __FUNCTION__, __LINE__, fmt)
 
 /**

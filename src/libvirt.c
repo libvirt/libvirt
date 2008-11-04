@@ -31,7 +31,7 @@
 #include <winsock2.h>
 #endif
 
-#include "internal.h"
+#include "virterror_internal.h"
 #include "driver.h"
 
 #include "uuid.h"
@@ -325,9 +325,9 @@ virLibConnError(virConnectPtr conn, virErrorNumber error, const char *info)
     if (error == VIR_ERR_OK)
         return;
 
-    errmsg = __virErrorMsg(error, info);
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_NONE, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, 0, 0, errmsg, info);
+    errmsg = virErrorMsg(error, info);
+    virRaiseError(conn, NULL, NULL, VIR_FROM_NONE, error, VIR_ERR_ERROR,
+                  errmsg, info, NULL, 0, 0, errmsg, info);
 }
 
 /**
@@ -346,9 +346,9 @@ virLibConnWarning(virConnectPtr conn, virErrorNumber error, const char *info)
     if (error == VIR_ERR_OK)
         return;
 
-    errmsg = __virErrorMsg(error, info);
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_NONE, error, VIR_ERR_WARNING,
-                    errmsg, info, NULL, 0, 0, errmsg, info);
+    errmsg = virErrorMsg(error, info);
+    virRaiseError(conn, NULL, NULL, VIR_FROM_NONE, error, VIR_ERR_WARNING,
+                  errmsg, info, NULL, 0, 0, errmsg, info);
 }
 
 /**
@@ -369,12 +369,12 @@ virLibDomainError(virDomainPtr domain, virErrorNumber error,
     if (error == VIR_ERR_OK)
         return;
 
-    errmsg = __virErrorMsg(error, info);
+    errmsg = virErrorMsg(error, info);
     if (error != VIR_ERR_INVALID_DOMAIN) {
         conn = domain->conn;
     }
-    __virRaiseError(conn, domain, NULL, VIR_FROM_DOM, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, 0, 0, errmsg, info);
+    virRaiseError(conn, domain, NULL, VIR_FROM_DOM, error, VIR_ERR_ERROR,
+                  errmsg, info, NULL, 0, 0, errmsg, info);
 }
 
 /**
@@ -395,12 +395,12 @@ virLibNetworkError(virNetworkPtr network, virErrorNumber error,
     if (error == VIR_ERR_OK)
         return;
 
-    errmsg = __virErrorMsg(error, info);
+    errmsg = virErrorMsg(error, info);
     if (error != VIR_ERR_INVALID_NETWORK) {
         conn = network->conn;
     }
-    __virRaiseError(conn, NULL, network, VIR_FROM_NET, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, 0, 0, errmsg, info);
+    virRaiseError(conn, NULL, network, VIR_FROM_NET, error, VIR_ERR_ERROR,
+                  errmsg, info, NULL, 0, 0, errmsg, info);
 }
 
 /**
@@ -421,12 +421,12 @@ virLibStoragePoolError(virStoragePoolPtr pool, virErrorNumber error,
     if (error == VIR_ERR_OK)
         return;
 
-    errmsg = __virErrorMsg(error, info);
+    errmsg = virErrorMsg(error, info);
     if (error != VIR_ERR_INVALID_STORAGE_POOL)
         conn = pool->conn;
 
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_STORAGE, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, 0, 0, errmsg, info);
+    virRaiseError(conn, NULL, NULL, VIR_FROM_STORAGE, error, VIR_ERR_ERROR,
+                  errmsg, info, NULL, 0, 0, errmsg, info);
 }
 
 /**
@@ -447,12 +447,12 @@ virLibStorageVolError(virStorageVolPtr vol, virErrorNumber error,
     if (error == VIR_ERR_OK)
         return;
 
-    errmsg = __virErrorMsg(error, info);
+    errmsg = virErrorMsg(error, info);
     if (error != VIR_ERR_INVALID_STORAGE_VOL)
         conn = vol->conn;
 
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_STORAGE, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, 0, 0, errmsg, info);
+    virRaiseError(conn, NULL, NULL, VIR_FROM_STORAGE, error, VIR_ERR_ERROR,
+                  errmsg, info, NULL, 0, 0, errmsg, info);
 }
 
 /**
@@ -855,13 +855,13 @@ failed:
 
     /* If no global error was set, copy any error set
        in the connection object we're about to dispose of */
-    if (__lastErr.code == VIR_ERR_OK) {
-        memcpy(&__lastErr, &ret->err, sizeof(ret->err));
+    if (virLastErr.code == VIR_ERR_OK) {
+        memcpy(&virLastErr, &ret->err, sizeof(ret->err));
         memset(&ret->err, 0, sizeof(ret->err));
     }
 
     /* Still no error set, then raise a generic error */
-    if (__lastErr.code == VIR_ERR_OK)
+    if (virLastErr.code == VIR_ERR_OK)
         virLibConnError (NULL, VIR_ERR_INTERNAL_ERROR,
                          _("unable to open connection"));
 

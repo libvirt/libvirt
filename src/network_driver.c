@@ -44,6 +44,7 @@
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 
+#include "virterror_internal.h"
 #include "network_driver.h"
 #include "network_conf.h"
 #include "driver.h"
@@ -73,7 +74,7 @@ static int networkShutdown(void);
 #define networkLog(level, msg...) fprintf(stderr, msg)
 
 #define networkReportError(conn, dom, net, code, fmt...)                \
-    __virReportErrorHelper(conn, VIR_FROM_QEMU, code, __FILE__,         \
+    virReportErrorHelper(conn, VIR_FROM_QEMU, code, __FILE__,         \
                            __FUNCTION__, __LINE__, fmt)
 
 

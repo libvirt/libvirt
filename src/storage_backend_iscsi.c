@@ -34,7 +34,7 @@
 #include <unistd.h>
 #include <dirent.h>
 
-#include "internal.h"
+#include "virterror_internal.h"
 #include "storage_backend_iscsi.h"
 #include "util.h"
 #include "memory.h"

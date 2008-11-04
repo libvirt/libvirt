@@ -50,7 +50,7 @@ GENERIC_LIB_SOURCES =						\
 		stats_linux.c stats_linux.h			\
 		uuid.c uuid.h					\
 		util.c util.h					\
-		virterror.c					\
+		virterror.c virterror_internal.h		\
 		xml.c xml.h
 
 # Domain driver generic impl APIs
@@ -149,7 +149,7 @@ libvirt_la_SOURCES =						\
 		driver.h					\
 		hash.c hash.h					\
 		internal.h					\
-		libvirt.c					\
+		libvirt.c libvirt_internal.h			\
 		$(GENERIC_LIB_SOURCES)				\
 		$(DOMAIN_CONF_SOURCES)				\
 		$(NETWORK_CONF_SOURCES)				\

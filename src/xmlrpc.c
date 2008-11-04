@@ -11,7 +11,7 @@
 #include <config.h>
 
 #include "xmlrpc.h"
-#include "internal.h"
+#include "virterror_internal.h"
 #include "memory.h"
 
 #include <libxml/nanohttp.h>
@@ -41,8 +41,8 @@ static void xmlRpcError(virErrorNumber error, const char *info, int value)
     if (error == VIR_ERR_OK)
         return;
 
-    errmsg = __virErrorMsg(error, info);
-    __virRaiseError(NULL, NULL, NULL, VIR_FROM_RPC, error, VIR_ERR_ERROR,
+    errmsg = virErrorMsg(error, info);
+    virRaiseError(NULL, NULL, NULL, VIR_FROM_RPC, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, value, 0, errmsg, info, value);
 }
 

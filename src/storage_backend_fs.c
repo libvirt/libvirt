@@ -40,7 +40,7 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
-#include "internal.h"
+#include "virterror_internal.h"
 #include "storage_backend_fs.h"
 #include "storage_conf.h"
 #include "util.h"

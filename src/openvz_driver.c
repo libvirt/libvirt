@@ -47,7 +47,7 @@
 #include <stdio.h>
 #include <sys/wait.h>
 
-#include "internal.h"
+#include "virterror_internal.h"
 #include "openvz_driver.h"
 #include "event.h"
 #include "buf.h"

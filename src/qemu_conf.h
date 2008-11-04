@@ -72,7 +72,7 @@ struct qemud_driver {
 
 
 #define qemudReportError(conn, dom, net, code, fmt...)                       \
-        __virReportErrorHelper(conn, VIR_FROM_QEMU, code, __FILE__,          \
+        virReportErrorHelper(conn, VIR_FROM_QEMU, code, __FILE__,          \
                                __FUNCTION__, __LINE__, fmt)
 
 

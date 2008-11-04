@@ -15,18 +15,17 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "internal.h"
-#include "libvirt/virterror.h"
+#include "virterror_internal.h"
 
-virError __lastErr =       /* the last error */
+virError virLastErr =       /* the last error */
   { .code = 0, .domain = 0, .message = NULL, .level = VIR_ERR_NONE,
     .conn = NULL, .dom = NULL, .str1 = NULL, .str2 = NULL, .str3 = NULL,
     .int1 = 0, .int2 = 0, .net = NULL };
-static virErrorFunc virErrorHandler = NULL;     /* global error handler */
-static void *virUserData = NULL;        /* associated data */
+virErrorFunc virErrorHandler = NULL;     /* global error handler */
+void *virUserData = NULL;        /* associated data */
 
 /*
- * Macro used to format the message as a string in __virRaiseError
+ * Macro used to format the message as a string in virRaiseError
  * and borrowed from libxml2.
  */
 #define VIR_GET_VAR_STR(msg, str) {				\
@@ -74,9 +73,9 @@ static void *virUserData = NULL;        /* associated data */
 virErrorPtr
 virGetLastError(void)
 {
-    if (__lastErr.code == VIR_ERR_OK)
+    if (virLastErr.code == VIR_ERR_OK)
         return (NULL);
-    return (&__lastErr);
+    return (&virLastErr);
 }
 
 /*
@@ -94,10 +93,10 @@ virCopyLastError(virErrorPtr to)
 {
     if (to == NULL)
         return (-1);
-    if (__lastErr.code == VIR_ERR_OK)
+    if (virLastErr.code == VIR_ERR_OK)
         return (0);
-    memcpy(to, &__lastErr, sizeof(virError));
-    return (__lastErr.code);
+    memcpy(to, &virLastErr, sizeof(virError));
+    return (virLastErr.code);
 }
 
 /**
@@ -126,7 +125,7 @@ virResetError(virErrorPtr err)
 void
 virResetLastError(void)
 {
-    virResetError(&__lastErr);
+    virResetError(&virLastErr);
 }
 
 /**
@@ -331,7 +330,7 @@ virDefaultErrorFunc(virErrorPtr err)
 }
 
 /**
- * __virRaiseError:
+ * virRaiseError:
  * @conn: the connection to the hypervisor if available
  * @dom: the domain if available
  * @net: the network if available
@@ -350,12 +349,12 @@ virDefaultErrorFunc(virErrorPtr err)
  * immediately if a callback is found and store it for later handling.
  */
 void
-__virRaiseError(virConnectPtr conn, virDomainPtr dom, virNetworkPtr net,
-                int domain, int code, virErrorLevel level,
-                const char *str1, const char *str2, const char *str3,
-                int int1, int int2, const char *msg, ...)
+virRaiseError(virConnectPtr conn, virDomainPtr dom, virNetworkPtr net,
+              int domain, int code, virErrorLevel level,
+              const char *str1, const char *str2, const char *str3,
+              int int1, int int2, const char *msg, ...)
 {
-    virErrorPtr to = &__lastErr;
+    virErrorPtr to = &virLastErr;
     void *userData = virUserData;
     virErrorFunc handler = virErrorHandler;
     char *str;
@@ -414,7 +413,7 @@ __virRaiseError(virConnectPtr conn, virDomainPtr dom, virNetworkPtr net,
 }
 
 /**
- * __virErrorMsg:
+ * virErrorMsg:
  * @error: the virErrorNumber
  * @info: usually the first parameter string
  *
@@ -424,7 +423,7 @@ __virRaiseError(virConnectPtr conn, virDomainPtr dom, virNetworkPtr net,
  * Returns the constant string associated to @error
  */
 const char *
-__virErrorMsg(virErrorNumber error, const char *info)
+virErrorMsg(virErrorNumber error, const char *info)
 {
     const char *errmsg = NULL;
 
@@ -724,7 +723,7 @@ __virErrorMsg(virErrorNumber error, const char *info)
 }
 
 /**
- * __virReportErrorHelper
+ * virReportErrorHelper
  *
  * @conn: the connection to the hypervisor if available
  * @dom: the domain if available
@@ -740,11 +739,11 @@ __virErrorMsg(virErrorNumber error, const char *info)
  * Helper function to do most of the grunt work for individual driver
  * ReportError
  */
-void __virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
-                            const char *filename ATTRIBUTE_UNUSED,
-                            const char *funcname ATTRIBUTE_UNUSED,
-                            long long linenr ATTRIBUTE_UNUSED,
-                            const char *fmt, ...)
+void virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
+                          const char *filename ATTRIBUTE_UNUSED,
+                          const char *funcname ATTRIBUTE_UNUSED,
+                          long long linenr ATTRIBUTE_UNUSED,
+                          const char *fmt, ...)
 {
     va_list args;
     char errorMessage[1024];
@@ -758,8 +757,8 @@ void __virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
         errorMessage[0] = '\0';
     }
 
-    virerr = __virErrorMsg(errcode, (errorMessage[0] ? errorMessage : NULL));
-    __virRaiseError(conn, NULL, NULL, domcode, errcode, VIR_ERR_ERROR,
-                    virerr, errorMessage, NULL, -1, -1, virerr, errorMessage);
+    virerr = virErrorMsg(errcode, (errorMessage[0] ? errorMessage : NULL));
+    virRaiseError(conn, NULL, NULL, domcode, errcode, VIR_ERR_ERROR,
+                  virerr, errorMessage, NULL, -1, -1, virerr, errorMessage);
 
 }

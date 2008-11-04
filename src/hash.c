@@ -23,7 +23,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <libxml/threads.h>
-#include "internal.h"
+
+#include "virterror_internal.h"
 #include "hash.h"
 #include "memory.h"
 
@@ -32,7 +33,7 @@
 /* #define DEBUG_GROW */
 
 #define virHashError(conn, code, fmt...)                                   \
-        __virReportErrorHelper(conn, VIR_FROM_NONE, code, __FILE__,        \
+        virReportErrorHelper(conn, VIR_FROM_NONE, code, __FILE__,        \
                                __FUNCTION__, __LINE__, fmt)
 
 /*
@@ -732,8 +733,8 @@ virReleaseConnect(virConnectPtr conn) {
         virHashFree(conn->storageVols, (virHashDeallocator) virStorageVolFreeName);
 
     virResetError(&conn->err);
-    if (__lastErr.conn == conn)
-        __lastErr.conn = NULL;
+    if (virLastErr.conn == conn)
+        virLastErr.conn = NULL;
 
     VIR_FREE(conn->name);
 
@@ -862,8 +863,8 @@ virReleaseDomain(virDomainPtr domain) {
 
     if (conn->err.dom == domain)
         conn->err.dom = NULL;
-    if (__lastErr.dom == domain)
-        __lastErr.dom = NULL;
+    if (virLastErr.dom == domain)
+        virLastErr.dom = NULL;
     domain->magic = -1;
     domain->id = -1;
     VIR_FREE(domain->name);
@@ -998,8 +999,8 @@ virReleaseNetwork(virNetworkPtr network) {
 
     if (conn->err.net == network)
         conn->err.net = NULL;
-    if (__lastErr.net == network)
-        __lastErr.net = NULL;
+    if (virLastErr.net == network)
+        virLastErr.net = NULL;
 
     network->magic = -1;
     VIR_FREE(network->name);

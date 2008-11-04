@@ -33,7 +33,7 @@
 #include <sys/utsname.h>
 #endif
 
-#include "internal.h"
+#include "virterror_internal.h"
 #include "nodeinfo.h"
 #include "physmem.h"
 #include "util.h"
@@ -63,7 +63,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
             while (*buf && c_isspace(*buf))
                 buf++;
             if (*buf != ':') {
-                __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
+                virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
                                 VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                                 "parsing cpuinfo processor");
                 return -1;
@@ -76,7 +76,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
             while (*buf && c_isspace(*buf))
                 buf++;
             if (*buf != ':' || !buf[1]) {
-                __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
+                virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
                                 VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                                 "parsing cpuinfo cpu MHz");
                 return -1;
@@ -92,7 +92,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
             while (*buf && c_isspace(*buf))
                 buf++;
             if (*buf != ':' || !buf[1]) {
-                __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
+                virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
                                 VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                                 "parsing cpuinfo cpu cores %c", *buf);
                 return -1;
@@ -105,7 +105,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
     }
 
     if (!nodeinfo->cpus) {
-        __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
+        virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
                         VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                         "no cpus found");
         return -1;
@@ -129,7 +129,7 @@ int virNodeInfoPopulate(virConnectPtr conn,
     struct utsname info;
 
     if (uname(&info) < 0) {
-        __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
+        virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
                         VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                         "cannot extract machine type %s", strerror(errno));
         return -1;
@@ -148,7 +148,7 @@ int virNodeInfoPopulate(virConnectPtr conn,
     int ret;
     FILE *cpuinfo = fopen(CPUINFO_PATH, "r");
     if (!cpuinfo) {
-        __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
+        virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
                         VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                         "cannot open %s %s", CPUINFO_PATH, strerror(errno));
         return -1;
@@ -165,7 +165,7 @@ int virNodeInfoPopulate(virConnectPtr conn,
     }
 #else
     /* XXX Solaris will need an impl later if they port QEMU driver */
-    __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
+    virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
                     VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                     "%s:%s not implemented on this platform\n", __FILE__, __FUNCTION__);
     return -1;

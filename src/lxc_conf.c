@@ -27,6 +27,7 @@
 
 #include <sys/utsname.h>
 
+#include "virterror_internal.h"
 #include "lxc_conf.h"
 
 /* Functions */

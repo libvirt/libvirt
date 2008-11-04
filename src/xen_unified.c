@@ -27,7 +27,7 @@
 #include <xen/dom0_ops.h>
 #include <libxml/uri.h>
 
-#include "internal.h"
+#include "virterror_internal.h"
 
 #include "xen_unified.h"
 
@@ -59,7 +59,7 @@ static struct xenUnifiedDriver *drivers[XEN_UNIFIED_NR_DRIVERS] = {
 };
 
 #define xenUnifiedError(conn, code, fmt...)                                  \
-        __virReportErrorHelper(conn, VIR_FROM_XEN, code, __FILE__,           \
+        virReportErrorHelper(conn, VIR_FROM_XEN, code, __FILE__,           \
                                __FUNCTION__, __LINE__, fmt)
 
 /*

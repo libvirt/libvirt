@@ -43,6 +43,7 @@
 #include <sys/utsname.h>
 #include <sys/wait.h>
 
+#include "virterror_internal.h"
 #include "openvz_conf.h"
 #include "uuid.h"
 #include "buf.h"

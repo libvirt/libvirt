@@ -35,6 +35,7 @@
 #include <stdint.h>
 #include <xen/dom0_ops.h>
 
+#include "virterror_internal.h"
 #include "xm_internal.h"
 #include "xen_unified.h"
 #include "xend_internal.h"
@@ -123,7 +124,7 @@ struct xenUnifiedDriver xenXMDriver = {
 };
 
 #define xenXMError(conn, code, fmt...)                                       \
-        __virReportErrorHelper(conn, VIR_FROM_XENXM, code, __FILE__,         \
+        virReportErrorHelper(conn, VIR_FROM_XENXM, code, __FILE__,         \
                                __FUNCTION__, __LINE__, fmt)
 
 int

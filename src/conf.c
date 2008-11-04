@@ -18,7 +18,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include "internal.h"
+#include "virterror_internal.h"
 #include "buf.h"
 #include "conf.h"
 #include "util.h"
@@ -96,13 +96,13 @@ virConfError(virConfParserCtxtPtr ctxt,
 
     /* Construct the string 'filename:line: info' if we have that. */
     if (ctxt && ctxt->filename) {
-        __virRaiseError(NULL, NULL, NULL, VIR_FROM_CONF, error, VIR_ERR_ERROR,
+        virRaiseError(NULL, NULL, NULL, VIR_FROM_CONF, error, VIR_ERR_ERROR,
                         info, ctxt->filename, NULL,
                         ctxt->line, 0,
                         "%s:%d: %s", ctxt->filename, ctxt->line, info);
     } else {
-        format = __virErrorMsg(error, info);
-        __virRaiseError(NULL, NULL, NULL, VIR_FROM_CONF, error, VIR_ERR_ERROR,
+        format = virErrorMsg(error, info);
+        virRaiseError(NULL, NULL, NULL, VIR_FROM_CONF, error, VIR_ERR_ERROR,
                         info, NULL, NULL,
                         ctxt ? ctxt->line : 0, 0,
                         format, info);

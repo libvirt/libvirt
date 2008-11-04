@@ -25,7 +25,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "internal.h"
+#include "virterror_internal.h"
 #include "storage_backend_disk.h"
 #include "util.h"
 #include "memory.h"

@@ -31,6 +31,8 @@
 #include <sys/stat.h>
 #include <libxml/xmlsave.h>
 
+
+#include "virterror_internal.h"
 #include "test.h"
 #include "buf.h"
 #include "util.h"
@@ -161,7 +163,7 @@ static const virNodeInfo defaultNodeInfo = {
     }                                                                   \
 
 #define testError(conn, code, fmt...)                               \
-        __virReportErrorHelper(conn, VIR_FROM_TEST, code, __FILE__, \
+        virReportErrorHelper(conn, VIR_FROM_TEST, code, __FILE__, \
                                __FUNCTION__, __LINE__, fmt)
 
 static virCapsPtr

@@ -21,7 +21,8 @@
 #include <sys/un.h>
 #include <sys/wait.h>
 #include <string.h>
-#include "internal.h"
+
+#include "virterror_internal.h"
 #include "driver.h"
 #include "proxy_internal.h"
 #include "util.h"
@@ -93,7 +94,7 @@ struct xenUnifiedDriver xenProxyDriver = {
  ************************************************************************/
 
 #define virProxyError(conn, code, fmt...)                                    \
-        __virReportErrorHelper(conn, VIR_FROM_PROXY, code, __FILE__,         \
+        virReportErrorHelper(conn, VIR_FROM_PROXY, code, __FILE__,         \
                                __FUNCTION__, __LINE__, fmt)
 
 /************************************************************************

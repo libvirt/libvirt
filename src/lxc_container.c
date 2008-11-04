@@ -41,6 +41,7 @@
 /* For MS_MOVE */
 #include <linux/fs.h>
 
+#include "virterror_internal.h"
 #include "lxc_container.h"
 #include "util.h"
 #include "memory.h"

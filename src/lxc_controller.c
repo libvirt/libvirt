@@ -34,7 +34,7 @@
 #include <signal.h>
 #include <getopt.h>
 
-#include "internal.h"
+#include "virterror_internal.h"
 #include "util.h"
 
 #include "lxc_conf.h"

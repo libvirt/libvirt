@@ -26,7 +26,7 @@
 
 #include <xs.h>
 
-#include "internal.h"
+#include "virterror_internal.h"
 #include "driver.h"
 #include "xen_unified.h"
 #include "xs_internal.h"
@@ -88,7 +88,7 @@ struct xenUnifiedDriver xenStoreDriver = {
 #endif /* ! PROXY */
 
 #define virXenStoreError(conn, code, fmt...)                                 \
-        __virReportErrorHelper(NULL, VIR_FROM_XENSTORE, code, __FILE__,      \
+        virReportErrorHelper(NULL, VIR_FROM_XENSTORE, code, __FILE__,      \
                                __FUNCTION__, __LINE__, fmt)
 
 /************************************************************************

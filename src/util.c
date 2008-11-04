@@ -47,7 +47,7 @@
 #include <paths.h>
 #endif
 
-#include "internal.h"
+#include "virterror_internal.h"
 #include "event.h"
 #include "buf.h"
 #include "util.h"
@@ -67,7 +67,7 @@
 #ifndef PROXY
 
 #define ReportError(conn, code, fmt...)                                      \
-        __virReportErrorHelper(conn, VIR_FROM_NONE, code, __FILE__,          \
+        virReportErrorHelper(conn, VIR_FROM_NONE, code, __FILE__,          \
                                __FUNCTION__, __LINE__, fmt)
 
 int virFileStripSuffix(char *str,

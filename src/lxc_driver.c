@@ -35,7 +35,7 @@
 #include <unistd.h>
 #include <wait.h>
 
-#include "internal.h"
+#include "virterror_internal.h"
 #include "lxc_conf.h"
 #include "lxc_container.h"
 #include "lxc_driver.h"
