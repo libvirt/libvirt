@@ -252,6 +252,7 @@ struct _virStorageDriverState {
 typedef struct _virStoragePoolSourceList virStoragePoolSourceList;
 typedef virStoragePoolSourceList *virStoragePoolSourceListPtr;
 struct _virStoragePoolSourceList {
+    int type;
     unsigned int nsources;
     virStoragePoolSourcePtr sources;
 };

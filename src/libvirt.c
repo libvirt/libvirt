@@ -5305,46 +5305,6 @@ virStorageVolGetPath(virStorageVolPtr vol)
 
 
 
-
-/* Not for public use.  Combines the elements of a virStringList
- * into a single string.
- */
-char *__virStringListJoin(const virStringList *list, const char *pre,
-                        const char *post, const char *sep)
-{
-    size_t pre_len = strlen(pre);
-    size_t sep_len = strlen(sep);
-    size_t len = pre_len + strlen(post);
-    const virStringList *p;
-    char *retval;
-
-    for (p = list; p; p = p->next)
-        len += p->len + sep_len;
-    if (VIR_ALLOC_N(retval, len+1) < 0)
-        return NULL;
-    strcpy(retval, pre);
-    len = pre_len;
-    for (p = list; p; p = p->next) {
-        strcpy(retval + len, p->val);
-        len += p->len;
-        strcpy(retval + len, sep);
-        len += sep_len;
-    }
-    strcpy(retval + len, post);
-
-    return retval;
-}
-
-
-void __virStringListFree(virStringList *list)
-{
-    while (list) {
-        virStringList *p = list->next;
-        VIR_FREE(list);
-        list = p;
-    }
-}
-
 /*
  * Domain Event Notification
  */

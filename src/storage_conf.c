@@ -472,6 +472,68 @@ virStoragePoolDefParse(virConnectPtr conn,
     return NULL;
 }
 
+static int
+virStoragePoolSourceFormat(virConnectPtr conn,
+                           virBufferPtr buf,
+                           virStorageBackendPoolOptionsPtr options,
+                           virStoragePoolSourcePtr src)
+{
+    int i, j;
+
+    virBufferAddLit(buf,"  <source>\n");
+    if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_HOST) &&
+        src->host.name)
+        virBufferVSprintf(buf,"    <host name='%s'/>\n", src->host.name);
+
+    if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE) &&
+        src->ndevice) {
+        for (i = 0 ; i < src->ndevice ; i++) {
+            if (src->devices[i].nfreeExtent) {
+                virBufferVSprintf(buf,"    <device path='%s'>\n",
+                                  src->devices[i].path);
+                for (j = 0 ; j < src->devices[i].nfreeExtent ; j++) {
+                    virBufferVSprintf(buf, "    <freeExtent start='%llu' end='%llu'/>\n",
+                                      src->devices[i].freeExtents[j].start,
+                                      src->devices[i].freeExtents[j].end);
+                }
+                virBufferAddLit(buf,"    </device>\n");
+            }
+            else
+                virBufferVSprintf(buf, "    <device path='%s'/>\n",
+                                  src->devices[i].path);
+        }
+    }
+    if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_DIR) &&
+        src->dir)
+        virBufferVSprintf(buf,"    <dir path='%s'/>\n", src->dir);
+    if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_ADAPTER) &&
+        src->adapter)
+        virBufferVSprintf(buf,"    <adapter name='%s'/>\n", src->adapter);
+    if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_NAME) &&
+        src->name)
+        virBufferVSprintf(buf,"    <name>%s</name>\n", src->name);
+
+    if (options->formatToString) {
+        const char *format = (options->formatToString)(src->format);
+        if (!format) {
+            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("unknown pool format number %d"),
+                                  src->format);
+            return -1;
+        }
+        virBufferVSprintf(buf,"    <format type='%s'/>\n", format);
+    }
+
+
+    if (src->authType == VIR_STORAGE_POOL_AUTH_CHAP)
+        virBufferVSprintf(buf,"    <auth type='chap' login='%s' passwd='%s'>\n",
+                          src->auth.chap.login,
+                          src->auth.chap.passwd);
+    virBufferAddLit(buf,"  </source>\n");
+
+    return 0;
+}
+
 
 char *
 virStoragePoolDefFormat(virConnectPtr conn,
@@ -480,7 +542,6 @@ virStoragePoolDefFormat(virConnectPtr conn,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *type;
     char uuid[VIR_UUID_STRING_BUFLEN];
-    int i, j;
 
     options = virStorageBackendPoolOptionsForType(def->type);
     if (options == NULL)
@@ -505,56 +566,8 @@ virStoragePoolDefFormat(virConnectPtr conn,
     virBufferVSprintf(&buf,"  <available>%llu</available>\n",
                       def->available);
 
-    virBufferAddLit(&buf,"  <source>\n");
-    if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_HOST) &&
-        def->source.host.name)
-        virBufferVSprintf(&buf,"    <host name='%s'/>\n", def->source.host.name);
-
-    if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE) &&
-        def->source.ndevice) {
-        for (i = 0 ; i < def->source.ndevice ; i++) {
-            if (def->source.devices[i].nfreeExtent) {
-                virBufferVSprintf(&buf,"    <device path='%s'>\n",
-                                  def->source.devices[i].path);
-                for (j = 0 ; j < def->source.devices[i].nfreeExtent ; j++) {
-                    virBufferVSprintf(&buf, "    <freeExtent start='%llu' end='%llu'/>\n",
-                                      def->source.devices[i].freeExtents[j].start,
-                                      def->source.devices[i].freeExtents[j].end);
-                }
-                virBufferAddLit(&buf,"    </device>\n");
-            }
-            else
-                virBufferVSprintf(&buf, "    <device path='%s'/>\n",
-                                  def->source.devices[i].path);
-        }
-    }
-    if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_DIR) &&
-        def->source.dir)
-        virBufferVSprintf(&buf,"    <dir path='%s'/>\n", def->source.dir);
-    if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_ADAPTER) &&
-        def->source.adapter)
-        virBufferVSprintf(&buf,"    <adapter name='%s'/>\n", def->source.adapter);
-    if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_NAME) &&
-        def->source.name)
-        virBufferVSprintf(&buf,"    <name>%s</name>\n", def->source.name);
-
-    if (options->formatToString) {
-        const char *format = (options->formatToString)(def->source.format);
-        if (!format) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("unknown pool format number %d"),
-                                  def->source.format);
-            goto cleanup;
-        }
-        virBufferVSprintf(&buf,"    <format type='%s'/>\n", format);
-    }
-
-
-    if (def->source.authType == VIR_STORAGE_POOL_AUTH_CHAP)
-        virBufferVSprintf(&buf,"    <auth type='chap' login='%s' passwd='%s'>\n",
-                          def->source.auth.chap.login,
-                          def->source.auth.chap.passwd);
-    virBufferAddLit(&buf,"  </source>\n");
+    if (virStoragePoolSourceFormat(conn, &buf, options, &def->source) < 0)
+        goto cleanup;
 
     virBufferAddLit(&buf,"  <target>\n");
 
@@ -1271,22 +1284,41 @@ virStoragePoolObjDeleteDef(virConnectPtr conn,
     return 0;
 }
 
-char *virStoragePoolSourceListFormat(virConnectPtr conn ATTRIBUTE_UNUSED,
+char *virStoragePoolSourceListFormat(virConnectPtr conn,
                                      virStoragePoolSourceListPtr def)
 {
-    int i, j;
+    virStorageBackendPoolOptionsPtr options;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *type;
+    int i;
 
-    virBufferAddLit(&buf, "<sources>");
+    options = virStorageBackendPoolOptionsForType(def->type);
+    if (options == NULL)
+        return NULL;
 
-    for (i = 0; i < def->nsources; i++) {
-        virBufferVSprintf(&buf, "<source><name>%s</name>", def->sources[i].name);
-        for (j = 0; j < def->sources[i].ndevice; j++)
-            virBufferVSprintf(&buf, "<device path='%s'/>", def->sources[i].devices[j].path);
-        virBufferAddLit(&buf, "</source>");
+    type = virStorageBackendToString(def->type);
+    if (!type) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              "%s", _("unexpected pool type"));
+        goto cleanup;
     }
 
-    virBufferAddLit(&buf, "</sources>");
+    virBufferAddLit(&buf, "<sources>\n");
+
+    for (i = 0; i < def->nsources; i++) {
+        virStoragePoolSourceFormat(conn, &buf, options, &def->sources[i]);
+    }
+
+    virBufferAddLit(&buf, "</sources>\n");
+
+    if (virBufferError(&buf))
+        goto no_memory;
 
     return virBufferContentAndReset(&buf);
+
+ no_memory:
+    virStorageReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+ cleanup:
+    free(virBufferContentAndReset(&buf));
+    return NULL;
 }

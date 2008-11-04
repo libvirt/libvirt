@@ -295,7 +295,7 @@ static int virStorageBackendProbeFile(virConnectPtr conn,
 #if WITH_STORAGE_FS
 struct _virNetfsDiscoverState {
     const char *host;
-    virStringList *list;
+    virStoragePoolSourceList list;
 };
 
 typedef struct _virNetfsDiscoverState virNetfsDiscoverState;
@@ -307,8 +307,8 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(virConnectPtr conn ATTRIBUTE_U
                                                   void *data)
 {
     virNetfsDiscoverState *state = data;
-    virStringList *newItem;
     const char *name, *path;
+    virStoragePoolSource *src;
 
     path = groups[0];
 
@@ -325,24 +325,17 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(virConnectPtr conn ATTRIBUTE_U
         return -1;
     }
 
-    /* Append new XML desc to list */
-
-    if (VIR_ALLOC(newItem) != 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("new xml desc"));
+    if (VIR_REALLOC_N(state->list.sources, state->list.nsources+1) < 0) {
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, NULL);
         return -1;
     }
+    memset(state->list.sources + state->list.nsources, 0, sizeof(*state->list.sources));
 
-    if (asprintf(&newItem->val,
-                 "<source><host name='%s'/><dir path='%s'/></source>",
-                 state->host, path) <= 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s", _("asprintf failed"));
-        VIR_FREE(newItem);
+    src = state->list.sources + state->list.nsources++;
+    if (!(src->host.name = strdup(state->host)) ||
+        !(src->dir = strdup(path)))
         return -1;
-    }
-
-    newItem->len = strlen(newItem->val);
-    newItem->next = state->list;
-    state->list = newItem;
+    src->format = VIR_STORAGE_POOL_NETFS_NFS;
 
     return 0;
 }
@@ -368,10 +361,18 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn,
     };
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr xpath_ctxt = NULL;
-    virNetfsDiscoverState state = { .host = NULL, .list = NULL };
+    virNetfsDiscoverState state = {
+        .host = NULL,
+        .list = {
+            .type = VIR_STORAGE_POOL_NETFS,
+            .nsources = 0,
+            .sources = NULL
+        }
+    };
     const char *prog[] = { SHOWMOUNT, "--no-headers", "--exports", NULL, NULL };
     int exitstatus;
     char *retval = NULL;
+    unsigned int i;
 
     doc = xmlReadDoc((const xmlChar *)srcSpec, "srcSpec.xml", NULL,
                      XML_PARSE_NOENT | XML_PARSE_NONET |
@@ -400,18 +401,21 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn,
                                       &state, &exitstatus) < 0)
         goto cleanup;
 
-    retval = __virStringListJoin(state.list, SOURCES_START_TAG,
-                                 SOURCES_END_TAG, "\n");
+    retval = virStoragePoolSourceListFormat(conn, &state.list);
     if (retval == NULL) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("retval"));
         goto cleanup;
     }
 
  cleanup:
+    for (i = 0; i < state.list.nsources; i++)
+        virStoragePoolSourceFree(&state.list.sources[i]);
+
+    VIR_FREE(state.list.sources);
+    VIR_FREE(state.host);
+
     xmlFreeDoc(doc);
     xmlXPathFreeContext(xpath_ctxt);
-    VIR_FREE(state.host);
-    __virStringListFree(state.list);
 
     return retval;
 }

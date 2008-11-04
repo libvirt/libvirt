@@ -295,6 +295,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(virConnectPtr conn,
 
     dev = &thisSource->devices[thisSource->ndevice];
     thisSource->ndevice++;
+    thisSource->format = VIR_STORAGE_POOL_LOGICAL_LVM2;
 
     memset(dev, 0, sizeof(*dev));
     dev->path = pvname;
@@ -331,6 +332,8 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn,
     int i;
 
     memset(&sourceList, 0, sizeof(sourceList));
+    sourceList.type = VIR_STORAGE_POOL_LOGICAL;
+
     if (virStorageBackendRunProgRegex(conn, NULL, prog, 1, regexes, vars,
                                       virStorageBackendLogicalFindPoolSourcesFunc,
                                       &sourceList, &exitstatus) < 0)

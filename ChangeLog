@@ -1,3 +1,17 @@
+Tue Nov  4 21:50:31 UTC 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Remove use of virStringList
+	* src/internal.h, src/libvirt.c: Remove virStringList code
+	* src/storage_backend_fs.c: Replace use of virStringList
+	with virStoragePoolSourceList
+	* src/storage_backend_logical.c: Set format to LVM2 and
+	source type to LOGICAL
+	* src/storage_conf.c: Refactor pool source XML formating
+	into virStoragePoolSourceFormat and make both users call
+	the common code
+	* src/storage_conf.h:  Include pool source type in
+	virStoragePoolSourceList struct
+
 Tue Nov  4 14:58:31 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	don't print an uninitialized integer in a diagnostic
