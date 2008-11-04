@@ -48,6 +48,7 @@ test_scripts = domainschematest
 if WITH_LIBVIRTD
 test_scripts += \
 	test_conf.sh \
+	cpuset \
 	daemon-conf \
 	int-overflow \
 	read-bufsiz \
