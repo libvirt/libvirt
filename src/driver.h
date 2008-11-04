@@ -11,8 +11,6 @@
 
 #include <libxml/uri.h>
 
-#include <signal.h>
-
 /*
  * List of registered drivers numbers
  */
@@ -595,12 +593,11 @@ struct _virStorageDriver {
     virDrvStorageVolGetPath volGetPath;
 };
 
+#ifdef WITH_LIBVIRTD
 typedef int (*virDrvStateInitialize) (void);
 typedef int (*virDrvStateCleanup) (void);
 typedef int (*virDrvStateReload) (void);
 typedef int (*virDrvStateActive) (void);
-#ifdef WITH_LIBVIRTD
-typedef int (*virDrvSigHandler) (siginfo_t *siginfo);
 
 typedef struct _virStateDriver virStateDriver;
 typedef virStateDriver *virStateDriverPtr;
@@ -610,7 +607,6 @@ struct _virStateDriver {
     virDrvStateCleanup     cleanup;
     virDrvStateReload      reload;
     virDrvStateActive      active;
-    virDrvSigHandler       sigHandler;
 };
 #endif
 

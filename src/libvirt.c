@@ -625,16 +625,6 @@ int __virStateActive(void) {
     return ret;
 }
 
-int __virStateSigDispatcher(siginfo_t *siginfo) {
-    int i, ret = 0;
-
-    for (i = 0 ; i < virStateDriverTabCount ; i++) {
-        if (virStateDriverTab[i]->sigHandler &&
-            virStateDriverTab[i]->sigHandler(siginfo))
-            ret = 1;
-    }
-    return ret;
-}
 #endif
 
 

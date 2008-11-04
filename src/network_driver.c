@@ -1144,7 +1144,6 @@ static virStateDriver networkStateDriver = {
     networkShutdown,
     networkReload,
     networkActive,
-    NULL
 };
 
 int networkRegister(void) {

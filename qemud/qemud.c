@@ -262,9 +262,8 @@ qemudDispatchSignalEvent(int fd ATTRIBUTE_UNUSED,
         break;
 
     default:
-        qemudLog(QEMUD_INFO, _("Received signal %d, dispatching to drivers"),
+        qemudLog(QEMUD_INFO, _("Received unexpected signal %d"),
                  siginfo.si_signo);
-        virStateSigDispatcher(&siginfo);
         break;
     }
 

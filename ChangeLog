@@ -1,3 +1,9 @@
+Tue Nov  4 22:52:31 UTC 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c, src/driver.h, src/internal.h, src/libvirt.c
+	src/network_driver.c: Remove unused virStateSigDispatcher()
+	internal API
+
 Tue Nov  4 22:20:31 UTC 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Move internal error API declarations into their own file

@@ -333,12 +333,10 @@ int __virStateInitialize(void);
 int __virStateCleanup(void);
 int __virStateReload(void);
 int __virStateActive(void);
-int __virStateSigDispatcher(siginfo_t *siginfo);
 #define virStateInitialize() __virStateInitialize()
 #define virStateCleanup() __virStateCleanup()
 #define virStateReload() __virStateReload()
 #define virStateActive() __virStateActive()
-#define virStateSigDispatcher(s) __virStateSigDispatcher(s)
 #endif
 
 int __virDrvSupportsFeature (virConnectPtr conn, int feature);
