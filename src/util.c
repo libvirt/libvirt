@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <poll.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #if HAVE_SYS_WAIT_H
@@ -414,6 +415,86 @@ virExec(virConnectPtr conn,
                      flags);
 }
 
+static int
+virPipeReadUntilEOF(virConnectPtr conn, int outfd, int errfd,
+                    char **outbuf, char **errbuf) {
+
+    struct pollfd fds[2];
+    int i;
+    int finished[2];
+
+    fds[0].fd = outfd;
+    fds[0].events = POLLIN;
+    finished[0] = 0;
+    fds[1].fd = errfd;
+    fds[1].events = POLLIN;
+    finished[1] = 0;
+
+    while(!(finished[0] && finished[1])) {
+
+        if (poll(fds, ARRAY_CARDINALITY(fds), -1) < 0) {
+            if (errno == EAGAIN)
+                continue;
+            goto pollerr;
+        }
+
+        for (i = 0; i < ARRAY_CARDINALITY(fds); ++i) {
+            char data[1024], **buf;
+            int got, size;
+
+            if (!(fds[i].revents))
+                continue;
+            else if (fds[i].revents & POLLHUP)
+                finished[i] = 1;
+
+            if (!(fds[i].revents & POLLIN)) {
+                if (fds[i].revents & POLLHUP)
+                    continue;
+
+                ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("Unknown poll response."));
+                goto error;
+            }
+
+            got = read(fds[i].fd, data, sizeof(data));
+
+            if (got == 0) {
+                finished[i] = 1;
+                continue;
+            }
+            if (got < 0) {
+                if (errno == EINTR)
+                    continue;
+                if (errno == EAGAIN)
+                    break;
+                goto pollerr;
+            }
+
+            buf = ((fds[i].fd == outfd) ? outbuf : errbuf);
+            size = (*buf ? strlen(*buf) : 0);
+            if (VIR_REALLOC_N(*buf, size+got+1) < 0) {
+                ReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+                goto error;
+            }
+            memmove(*buf+size, data, got);
+            (*buf)[size+got] = '\0';
+        }
+        continue;
+
+    pollerr:
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("poll error: %s"), strerror(errno));
+        goto error;
+    }
+
+    return 0;
+
+error:
+    VIR_FREE(*outbuf);
+    VIR_FREE(*errbuf);
+    return -1;
+}
+
 /**
  * @conn connection to report errors against
  * @argv NULL terminated argv to run
@@ -433,43 +514,66 @@ int
 virRun(virConnectPtr conn,
        const char *const*argv,
        int *status) {
-    int childpid, exitstatus, ret;
-    char *argv_str;
+    int childpid, exitstatus, execret, waitret;
+    int ret = -1;
+    int errfd = -1, outfd = -1;
+    char *outbuf = NULL;
+    char *errbuf = NULL;
+    char *argv_str = NULL;
 
     if ((argv_str = virArgvToString(argv)) == NULL) {
         ReportError(conn, VIR_ERR_NO_MEMORY, _("command debug string"));
-        return -1;
+        goto error;
     }
     DEBUG0(argv_str);
-    VIR_FREE(argv_str);
 
-    if ((ret = __virExec(conn, argv, NULL, NULL,
-                         &childpid, -1, NULL, NULL, VIR_EXEC_NONE)) < 0)
-        return ret;
+    if ((execret = __virExec(conn, argv, NULL, NULL,
+                             &childpid, -1, &outfd, &errfd,
+                             VIR_EXEC_NONE)) < 0) {
+        ret = execret;
+        goto error;
+    }
 
-    while ((ret = waitpid(childpid, &exitstatus, 0) == -1) && errno == EINTR);
-    if (ret == -1) {
+    if (virPipeReadUntilEOF(conn, outfd, errfd, &outbuf, &errbuf) < 0)
+        goto error;
+
+    if (outbuf)
+        DEBUG("Command stdout: %s", outbuf);
+    if (errbuf)
+        DEBUG("Command stderr: %s", errbuf);
+
+    while ((waitret = waitpid(childpid, &exitstatus, 0) == -1) &&
+            errno == EINTR);
+    if (waitret == -1) {
         ReportError(conn, VIR_ERR_INTERNAL_ERROR,
                     _("cannot wait for '%s': %s"),
                     argv[0], strerror(errno));
-        return -1;
+        goto error;
     }
 
     if (status == NULL) {
         errno = EINVAL;
-        if (WIFEXITED(exitstatus) && WEXITSTATUS(exitstatus) == 0)
-            return 0;
+        if (WIFEXITED(exitstatus) && WEXITSTATUS(exitstatus) != 0) {
 
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("%s exited with non-zero status %d and signal %d"),
-                    argv[0],
-                    WIFEXITED(exitstatus) ? WEXITSTATUS(exitstatus) : 0,
-                    WIFSIGNALED(exitstatus) ? WTERMSIG(exitstatus) : 0);
-        return -1;
+            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("'%s' exited with non-zero status %d and "
+                          "signal %d: %s"), argv_str,
+                        WIFEXITED(exitstatus) ? WEXITSTATUS(exitstatus) : 0,
+                        WIFSIGNALED(exitstatus) ? WTERMSIG(exitstatus) : 0,
+                        (errbuf ? errbuf : ""));
+            goto error;
+        }
     } else {
         *status = exitstatus;
-        return 0;
     }
+
+    ret = 0;
+
+  error:
+    VIR_FREE(outbuf);
+    VIR_FREE(errbuf);
+    VIR_FREE(argv_str);
+    return ret;
 }
 
 #else /* __MINGW32__ */
