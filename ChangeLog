@@ -1,4 +1,12 @@
+Wed Nov  5 15:22:12 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	plug two leaks and fix a diagnostic
+	* src/qemu_conf.c (qemudLoadDriverConfig): Don't leak ->vncListen.
+	Fix an erroneous copy-and-pasted diagnostic.
+	* src/qemu_driver.c (qemudShutdown): Don't leak another ->vncListen.
+
 Wed Nov  5 12:41:00 CET 2008 Chris Lalancette <clalance@redhat.com>
+
 	* configure.in, src/storage_backend_logical.c: Call vgscan before
 	attempting to scan logical volumes.  This makes sure we've "touched"
 	any logical volumes, so they appear in the subsequent "pvs" call.

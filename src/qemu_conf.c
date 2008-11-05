@@ -118,9 +118,10 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     p = virConfGetValue (conf, "vnc_listen");
     CHECK_TYPE ("vnc_listen", VIR_CONF_STRING);
     if (p && p->str) {
+        VIR_FREE(driver->vncListen);
         if (!(driver->vncListen = strdup(p->str))) {
             qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY,
-                             "%s", _("failed to allocate vncTLSx509certdir"));
+                             "%s", _("failed to allocate vnc_listen"));
             virConfFree(conf);
             return -1;
         }
