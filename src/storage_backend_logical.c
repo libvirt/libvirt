@@ -326,10 +326,18 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn,
         2
     };
     const char *const prog[] = { PVS, "--noheadings", "-o", "pv_name,vg_name", NULL };
+    const char *const scanprog[] = { VGSCAN, NULL };
     int exitstatus;
     char *retval = NULL;
     virStoragePoolSourceList sourceList;
     int i;
+
+    /*
+     * NOTE: ignoring errors here; this is just to "touch" any logical volumes
+     * that might be hanging around, so if this fails for some reason, the
+     * worst that happens is that scanning doesn't pick everything up
+     */
+    virRun(conn, scanprog, &exitstatus);
 
     memset(&sourceList, 0, sizeof(sourceList));
     sourceList.type = VIR_STORAGE_POOL_LOGICAL;

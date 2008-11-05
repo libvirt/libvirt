@@ -1,3 +1,8 @@
+Wed Nov  5 12:41:00 CET 2008 Chris Lalancette <clalance@redhat.com>
+	* configure.in, src/storage_backend_logical.c: Call vgscan before
+	attempting to scan logical volumes.  This makes sure we've "touched"
+	any logical volumes, so they appear in the subsequent "pvs" call.
+
 Tue Nov  4 23:33:31 UTC 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: Set WITH_XXXX conditionals for drivers in
