@@ -1,3 +1,7 @@
+Wed Nov  5 13:39:00 EST 2008 Cole Robinson <crobinso@redhat.com>
+
+	* src/util.c: Log the argv passed to virExec and virRun
+
 Wed Nov  5 13:19:00 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* src/iptables.c, src/util.c, src/util.h: Move local argvToString to

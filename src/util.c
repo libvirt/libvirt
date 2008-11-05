@@ -136,14 +136,14 @@ static int virSetNonBlock(int fd) {
     return 0;
 }
 
-int
-virExec(virConnectPtr conn,
-        const char *const*argv,
-        const char *const*envp,
-        const fd_set *keepfd,
-        int *retpid,
-        int infd, int *outfd, int *errfd,
-        int flags) {
+static int
+__virExec(virConnectPtr conn,
+          const char *const*argv,
+          const char *const*envp,
+          const fd_set *keepfd,
+          int *retpid,
+          int infd, int *outfd, int *errfd,
+          int flags) {
     int pid, null, i, openmax;
     int pipeout[2] = {-1,-1};
     int pipeerr[2] = {-1,-1};
@@ -393,6 +393,27 @@ virExec(virConnectPtr conn,
     return -1;
 }
 
+int
+virExec(virConnectPtr conn,
+        const char *const*argv,
+        const char *const*envp,
+        const fd_set *keepfd,
+        int *retpid,
+        int infd, int *outfd, int *errfd,
+        int flags) {
+    char *argv_str;
+
+    if ((argv_str = virArgvToString(argv)) == NULL) {
+        ReportError(conn, VIR_ERR_NO_MEMORY, _("command debug string"));
+        return -1;
+    }
+    DEBUG0(argv_str);
+    VIR_FREE(argv_str);
+
+    return __virExec(conn, argv, envp, keepfd, retpid, infd, outfd, errfd,
+                     flags);
+}
+
 /**
  * @conn connection to report errors against
  * @argv NULL terminated argv to run
@@ -413,9 +434,17 @@ virRun(virConnectPtr conn,
        const char *const*argv,
        int *status) {
     int childpid, exitstatus, ret;
+    char *argv_str;
 
-    if ((ret = virExec(conn, argv, NULL, NULL,
-                       &childpid, -1, NULL, NULL, VIR_EXEC_NONE)) < 0)
+    if ((argv_str = virArgvToString(argv)) == NULL) {
+        ReportError(conn, VIR_ERR_NO_MEMORY, _("command debug string"));
+        return -1;
+    }
+    DEBUG0(argv_str);
+    VIR_FREE(argv_str);
+
+    if ((ret = __virExec(conn, argv, NULL, NULL,
+                         &childpid, -1, NULL, NULL, VIR_EXEC_NONE)) < 0)
         return ret;
 
     while ((ret = waitpid(childpid, &exitstatus, 0) == -1) && errno == EINTR);
