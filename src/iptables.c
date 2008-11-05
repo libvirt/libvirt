@@ -384,32 +384,6 @@ iptRulesNew(const char *table,
     return NULL;
 }
 
-static char *
-argvToString(const char *const *argv)
-{
-    int len, i;
-    char *ret, *p;
-
-    for (len = 1, i = 0; argv[i]; i++)
-        len += strlen(argv[i]) + 1;
-
-    if (VIR_ALLOC_N(ret, len) < 0)
-        return NULL;
-    p = ret;
-
-    for (i = 0; argv[i]; i++) {
-        if (i != 0)
-            *(p++) = ' ';
-
-        strcpy(p, argv[i]);
-        p += strlen(argv[i]);
-    }
-
-    *p = '\0';
-
-    return ret;
-}
-
 static int
 iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
 {
@@ -464,7 +438,7 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
 
     va_end(args);
 
-    if (!(rule = argvToString(&argv[command_idx])))
+    if (!(rule = virArgvToString(&argv[command_idx])))
         goto error;
 
     if (action == REMOVE) {

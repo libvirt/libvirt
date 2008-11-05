@@ -1,3 +1,8 @@
+Wed Nov  5 13:19:00 EST 2008 Cole Robinson <crobinso@redhat.com>
+
+	* src/iptables.c, src/util.c, src/util.h: Move local argvToString to
+	virArgvToString.
+
 Wed Nov  5 15:22:12 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	plug two leaks and fix a diagnostic

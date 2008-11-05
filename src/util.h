@@ -88,6 +88,8 @@ int virFileReadPid(const char *dir,
 int virFileDeletePid(const char *dir,
                      const char *name);
 
+char *virArgvToString(const char *const *argv);
+
 int __virStrToLong_i(char const *s,
                      char **end_ptr,
                      int base,
