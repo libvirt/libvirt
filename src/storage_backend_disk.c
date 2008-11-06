@@ -26,6 +26,7 @@
 #include <unistd.h>
 
 #include "virterror_internal.h"
+#include "logging.h"
 #include "storage_backend_disk.h"
 #include "util.h"
 #include "memory.h"

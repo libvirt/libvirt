@@ -71,21 +71,6 @@
 #define NUL_TERMINATE(buf) do { (buf)[sizeof(buf)-1] = '\0'; } while (0)
 #define ARRAY_CARDINALITY(Array) (sizeof (Array) / sizeof *(Array))
 
-/* If configured with --enable-debug=yes then library calls
- * are printed to stderr for debugging.
- */
-#ifdef ENABLE_DEBUG
-extern int debugFlag;
-#define VIR_DEBUG(category, fmt,...)                                    \
-    do { if (debugFlag) fprintf (stderr, "DEBUG: %s: %s (" fmt ")\n", category, __func__, __VA_ARGS__); } while (0)
-#else
-#define VIR_DEBUG(category, fmt,...) \
-    do { } while (0)
-#endif /* !ENABLE_DEBUG */
-
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
-
 /* C99 uses __func__.  __FUNCTION__ is legacy. */
 #ifndef __GNUC__
 #define __FUNCTION__ __func__

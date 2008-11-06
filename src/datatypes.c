@@ -23,6 +23,7 @@
 
 #include "datatypes.h"
 #include "virterror_internal.h"
+#include "logging.h"
 #include "memory.h"
 
 /************************************************************************

@@ -53,6 +53,7 @@
 #endif
 
 #include "virterror_internal.h"
+#include "logging.h"
 #include "datatypes.h"
 #include "qemu_driver.h"
 #include "qemu_conf.h"
@@ -71,10 +72,6 @@
 #define TEMPDIR LOCAL_STATE_DIR "/cache/libvirt"
 
 static int qemudShutdown(void);
-
-/* qemudDebug statements should be changed to use this macro instead. */
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 

@@ -74,6 +74,7 @@
 #endif
 
 #include "virterror_internal.h"
+#include "logging.h"
 #include "datatypes.h"
 #include "domain_event.h"
 #include "driver.h"

@@ -35,6 +35,7 @@
 #include <getopt.h>
 
 #include "virterror_internal.h"
+#include "logging.h"
 #include "util.h"
 
 #include "lxc_conf.h"
@@ -43,8 +44,6 @@
 #include "memory.h"
 #include "util.h"
 #include "cgroup.h"
-
-int debugFlag = 0;
 
 struct cgroup_device_policy {
     char type;

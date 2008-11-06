@@ -23,6 +23,7 @@
 #include <config.h>
 
 #include "domain_event.h"
+#include "logging.h"
 #include "datatypes.h"
 #include "memory.h"
 

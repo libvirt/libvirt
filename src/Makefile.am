@@ -52,6 +52,7 @@ GENERIC_LIB_SOURCES =						\
 		uuid.c uuid.h					\
 		util.c util.h					\
 		virterror.c virterror_internal.h		\
+		logging.c logging.h				\
 		xml.c xml.h
 
 # Domain driver generic impl APIs

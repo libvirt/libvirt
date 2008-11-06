@@ -18,7 +18,8 @@ libvirt_proxy_SOURCES = libvirt_proxy.c @top_srcdir@/src/xend_internal.c \
             @top_srcdir@/src/domain_conf.c \
             @top_srcdir@/src/util.c \
 	    @top_srcdir@/src/event.c \
-	    @top_srcdir@/src/uuid.c
+	    @top_srcdir@/src/uuid.c \
+	    @top_srcdir@/src/logging.c
 libvirt_proxy_LDFLAGS = $(WARN_CFLAGS) $(XEN_LIBS)
 libvirt_proxy_DEPENDENCIES =
 libvirt_proxy_LDADD = ../gnulib/lib/libgnu.la

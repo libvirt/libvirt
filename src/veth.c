@@ -16,6 +16,7 @@
 
 #include "veth.h"
 #include "internal.h"
+#include "logging.h"
 #include "memory.h"
 #include "util.h"
 

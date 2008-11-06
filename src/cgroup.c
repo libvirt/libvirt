@@ -27,9 +27,7 @@
 #include "util.h"
 #include "memory.h"
 #include "cgroup.h"
-
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
+#include "logging.h"
 
 #define CGROUP_MAX_VAL 512
 

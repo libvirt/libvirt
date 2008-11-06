@@ -32,6 +32,7 @@
 #endif
 
 #include "virterror_internal.h"
+#include "logging.h"
 #include "datatypes.h"
 #include "libvirt_internal.h"
 #include "driver.h"
@@ -82,10 +83,6 @@ static virStateDriverPtr virStateDriverTab[MAX_DRIVERS];
 static int virStateDriverTabCount = 0;
 #endif
 static int initialized = 0;
-
-#ifdef ENABLE_DEBUG
-int debugFlag = 0;
-#endif
 
 #if defined(POLKIT_AUTH)
 static int virConnectAuthGainPolkit(const char *privilege) {

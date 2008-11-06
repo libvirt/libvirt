@@ -36,6 +36,7 @@
 #include <wait.h>
 
 #include "virterror_internal.h"
+#include "logging.h"
 #include "datatypes.h"
 #include "lxc_conf.h"
 #include "lxc_container.h"
