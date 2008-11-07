@@ -857,7 +857,7 @@ static int lxcDomainStart(virDomainPtr dom)
 
     if (!vm) {
         lxcError(conn, dom, VIR_ERR_INVALID_DOMAIN,
-                 "no domain with uuid");
+                 _("no domain named %s"), dom->name);
         goto cleanup;
     }
 

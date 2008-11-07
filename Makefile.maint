@@ -353,6 +353,8 @@ msg_gen_function += qemudReportError
 msg_gen_function += openvzLog
 msg_gen_function += openvzError
 msg_gen_function += virDomainReportError
+msg_gen_function += virReportErrorHelper
+msg_gen_function += lxcError
 
 # Uncomment the following and run "make syntax-check" to see diagnostics
 # that are not yet marked for translation, but that need to be rewritten
@@ -360,7 +362,6 @@ msg_gen_function += virDomainReportError
 # msg_gen_function += error
 # msg_gen_function += virXenError
 # msg_gen_function += testError
-# msg_gen_function += lxcError
 
 func_or := $(shell printf '$(msg_gen_function)'|tr -s '[[:space:]]' '|')
 func_re := ($(func_or))

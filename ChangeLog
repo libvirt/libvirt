@@ -1,5 +1,12 @@
 Thu Nov  6 20:45:42 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	mark a few diagnostics for translation
+	* src/lxc_conf.c (lxcLoadDriverConfig): Mark a diagnostic.
+	* src/lxc_driver.c (lxcDomainStart): Likewise.
+	* po/POTFILES.in: Add src/lxc_conf.c.
+	* Makefile.maint (msg_gen_function): Add virReportErrorHelper
+	and lxcError.
+
 	always compile iptables.c
 	Avoid a build error when configuring --without-xen --without-qemu.
 	* src/iptables.c [WITH_QEMU]: Don't #ifdef-out.
