@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007 Red Hat, Inc.
+ * Copyright (C) 2007, 2008 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,8 +21,6 @@
 
 #ifndef __QEMUD_IPTABLES_H__
 #define __QEMUD_IPTABLES_H__
-
-#if WITH_QEMU
 
 typedef struct _iptablesContext iptablesContext;
 
@@ -94,7 +92,5 @@ int              iptablesAddForwardMasquerade    (iptablesContext *ctx,
 int              iptablesRemoveForwardMasquerade (iptablesContext *ctx,
                                                   const char *network,
                                                   const char *physdev);
-
-#endif /* WITH_QEMU */
 
 #endif /* __QEMUD_IPTABLES_H__ */

@@ -580,6 +580,18 @@ virRun(virConnectPtr conn,
 #else /* __MINGW32__ */
 
 int
+virRun(virConnectPtr conn,
+       const char *const *argv ATTRIBUTE_UNUSED,
+       int *status)
+{
+    if (status)
+        *status = ENOTSUP;
+    else
+        ReportError (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+    return -1;
+}
+
+int
 virExec(virConnectPtr conn,
         const char *const*argv ATTRIBUTE_UNUSED,
         const char *const*envp ATTRIBUTE_UNUSED,

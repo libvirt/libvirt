@@ -1,3 +1,11 @@
+Thu Nov  6 20:45:42 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	always compile iptables.c
+	Avoid a build error when configuring --without-xen --without-qemu.
+	* src/iptables.c [WITH_QEMU]: Don't #ifdef-out.
+	* src/iptables.h [WITH_QEMU]: Don't #ifdef-out.
+	* src/util.c (virRun) [__MINGW32__]: Define a stub that always fails.
+
 Thu Nov  6 17:33:34 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/logging.c src/logging.h proxy/Makefile.am proxy/libvirt_proxy.c

@@ -21,8 +21,6 @@
 
 #include <config.h>
 
-#if WITH_QEMU
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -1120,5 +1118,3 @@ iptablesRemoveForwardMasquerade(iptablesContext *ctx,
 {
     return iptablesForwardMasquerade(ctx, network, physdev, REMOVE);
 }
-
-#endif /* WITH_QEMU */
