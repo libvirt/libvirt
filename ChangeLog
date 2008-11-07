@@ -1,5 +1,11 @@
 Thu Nov  6 20:45:42 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	tweak lstat.c to avoid mingw link failure
+	* gnulib/lib/lstat.c: Include <sys/stat.h> *before* the use of stat in
+	orig_stat.  Otherwise, on mingw (which lacks lstat), any program using
+	the lstat module would not get the redefinition-to-stat provided by
+	gnulib's sys/stat.h.  Reported by Daniel P. Berrange.
+
 	mark a few diagnostics for translation
 	* src/lxc_conf.c (lxcLoadDriverConfig): Mark a diagnostic.
 	* src/lxc_driver.c (lxcDomainStart): Likewise.

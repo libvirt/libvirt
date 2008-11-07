@@ -25,14 +25,14 @@
 #include <sys/stat.h>
 #undef __need_system_sys_stat_h
 
+/* Specification.  */
+#include <sys/stat.h>
+
 static inline int
 orig_lstat (const char *filename, struct stat *buf)
 {
   return lstat (filename, buf);
 }
-
-/* Specification.  */
-#include <sys/stat.h>
 
 #include <string.h>
 #include <errno.h>
