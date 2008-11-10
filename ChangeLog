@@ -1,3 +1,8 @@
+Mon Nov 10 12:05:42 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/openvz_conf.c: Read filesytem template name from config
+	files. Increase buffer size when parsing vzctl version number
+
 Thu Nov  6 20:45:42 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	tweak lstat.c to avoid mingw link failure

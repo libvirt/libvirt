@@ -86,7 +86,7 @@ openvzExtractVersionInfo(const char *cmd, int *retversion)
         return -1;
 
     char *help = NULL;
-    int len = virFileReadLimFD(newstdout, 512, &help);
+    int len = virFileReadLimFD(newstdout, 4096, &help);
     if (len < 0)
         goto cleanup2;
 
@@ -343,6 +343,47 @@ error:
 }
 
 
+static int
+openvzReadFSConf(virConnectPtr conn,
+                 virDomainDefPtr def,
+                 int veid) {
+    int ret;
+    virDomainFSDefPtr fs = NULL;
+    char temp[4096];
+
+    ret = openvzReadConfigParam(veid, "OSTEMPLATE", temp, sizeof(temp));
+    if (ret < 0) {
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("Cound not read 'OSTEMPLATE' from config for container %d"),
+                    veid);
+        goto error;
+    } else if (ret > 0) {
+        if (VIR_ALLOC(fs) < 0)
+            goto no_memory;
+
+        fs->type = VIR_DOMAIN_FS_TYPE_TEMPLATE;
+        fs->src = strdup(temp);
+        fs->dst = strdup("/");
+
+        if (fs->src == NULL || fs->dst == NULL)
+            goto no_memory;
+
+        if (VIR_REALLOC_N(def->fss, def->nfss + 1) < 0)
+            goto no_memory;
+        def->fss[def->nfss++] = fs;
+        fs = NULL;
+
+    }
+
+    return 0;
+no_memory:
+    openvzError(conn, VIR_ERR_NO_MEMORY, NULL);
+error:
+    virDomainFSDefFree(fs);
+    return -1;
+}
+
+
 /* Free all memory associated with a openvz_driver structure */
 void
 openvzFreeDriver(struct openvz_driver *driver)
@@ -428,6 +469,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         /* XXX load rest of VM config data .... */
 
         openvzReadNetworkConf(NULL, dom->def, veid);
+        openvzReadFSConf(NULL, dom->def, veid);
 
         if (VIR_REALLOC_N(driver->domains.objs,
                           driver->domains.count + 1) < 0)
