@@ -47,49 +47,27 @@
 
 #include "storage_backend.h"
 
-#if WITH_STORAGE_LVM
-#include "storage_backend_logical.h"
-#endif
-#if WITH_STORAGE_ISCSI
-#include "storage_backend_iscsi.h"
-#endif
-#if WITH_STORAGE_DISK
-#include "storage_backend_disk.h"
-#endif
-#if WITH_STORAGE_DIR
-#include "storage_backend_fs.h"
-#endif
-
 VIR_ENUM_IMPL(virStorageBackendPartTable,
               VIR_STORAGE_POOL_DISK_LAST,
               "unknown", "dos", "dvh", "gpt",
               "mac", "bsd", "pc98", "sun", "lvm2");
 
-static virStorageBackendPtr backends[] = {
-#if WITH_STORAGE_DIR
-    &virStorageBackendDirectory,
-#endif
-#if WITH_STORAGE_FS
-    &virStorageBackendFileSystem,
-    &virStorageBackendNetFileSystem,
-#endif
-#if WITH_STORAGE_LVM
-    &virStorageBackendLogical,
-#endif
-#if WITH_STORAGE_ISCSI
-    &virStorageBackendISCSI,
-#endif
-#if WITH_STORAGE_DISK
-    &virStorageBackendDisk,
-#endif
-    NULL
-};
+static unsigned nbackends = 0;
+static virStorageBackendPtr *backends = NULL;
 
+
+int virStorageBackendRegister(virStorageBackendPtr bk) {
+    if (VIR_REALLOC_N(backends, nbackends+1) < 0)
+        return -1;
+
+    backends[nbackends++] = bk;
+    return 0;
+}
 
 virStorageBackendPtr
 virStorageBackendForType(int type) {
     unsigned int i;
-    for (i = 0; backends[i]; i++)
+    for (i = 0; i < nbackends; i++)
         if (backends[i]->type == type)
             return backends[i];
 
