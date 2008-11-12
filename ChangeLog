@@ -1,3 +1,10 @@
+Wed Nov 12 16:33:42 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* docs/drvopenvz.html, docs/drvopenvz.html.in: Introductory
+	docs for openvz driver
+	* src/openvz_conf.c, src/openvz_conf.h, src/openvz_driver.c:
+	Support bridged network configuration for containers
+
 Wed Nov 12 16:13:42 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/storage_backend.c, src/storage_backend.h, src/storage_driver.c:

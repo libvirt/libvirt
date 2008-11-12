@@ -56,6 +56,7 @@
 #include "openvz_conf.h"
 #include "nodeinfo.h"
 #include "memory.h"
+#include "bridge.h"
 
 #define OPENVZ_MAX_ARG 28
 #define CMDBUF_LEN 1488
@@ -330,13 +331,56 @@ static int openvzDomainReboot(virDomainPtr dom,
     return 0;
 }
 
+static char *
+openvzGenerateVethName(int veid, char *dev_name_ve)
+{
+    char    dev_name[32];
+    int     ifNo = 0;
+
+    if (sscanf(dev_name_ve, "%*[^0-9]%d", &ifNo) != 1)
+        return NULL;
+    if (snprintf(dev_name, sizeof(dev_name), "veth%d.%d", veid, ifNo) < 7)
+        return NULL;
+    return strdup(dev_name);
+}
+
+static char *
+openvzGenerateContainerVethName(int veid)
+{
+    int     ret;
+    char    temp[1024];
+
+    /* try to get line "^NETIF=..." from config */
+    if ( (ret = openvzReadConfigParam(veid, "NETIF", temp, sizeof(temp))) <= 0) {
+        snprintf(temp, sizeof(temp), "eth0");
+    } else {
+        char   *s;
+        int     max = 0;
+
+        /* get maximum interface number (actually, it is the last one) */
+        for (s=strtok(temp, ";"); s; s=strtok(NULL, ";")) {
+            int x;
+
+            if (sscanf(s, "ifname=eth%d", &x) != 1) return NULL;
+            if (x > max) max = x;
+        }
+
+        /* set new name */
+        snprintf(temp, sizeof(temp), "eth%d", max+1);
+    }
+    return strdup(temp);
+}
+
 static int
 openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
-                        virDomainNetDefPtr net)
+                       virDomainNetDefPtr net,
+                       virBufferPtr configBuf)
 {
     int rc = 0, narg;
     const char *prog[OPENVZ_MAX_ARG];
-    char *mac = NULL;
+    char macaddr[VIR_MAC_STRING_BUFLEN];
+    struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
+    char *opt = NULL;
 
 #define ADD_ARG_LIT(thisarg)                                            \
     do {                                                                \
@@ -368,21 +412,61 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         ADD_ARG_LIT(vpsid);
     }
 
-    if (openvzCheckEmptyMac(net->mac) > 0)
-          mac = openvzMacToString(net->mac);
+    virFormatMacAddr(net->mac, macaddr);
 
-    if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE &&
-           net->data.bridge.brname != NULL) {
-        char opt[1024];
+    if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        char *dev_name_ve;
+        int veid = strtoI(vpsid);
+
         //--netif_add ifname[,mac,host_ifname,host_mac]
         ADD_ARG_LIT("--netif_add") ;
-        strncpy(opt, net->data.bridge.brname, 256);
-        if (mac != NULL) {
-            strcat(opt, ",");
-            strcat(opt, mac);
+
+        /* generate interface name in ve and copy it to options */
+        dev_name_ve = openvzGenerateContainerVethName(veid);
+        if (dev_name_ve == NULL) {
+           openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("Could not generate eth name for container"));
+           rc = -1;
+           goto exit;
         }
+
+        /* if user doesn't specified host interface name,
+         * than we need to generate it */
+        if (net->ifname == NULL) {
+            net->ifname = openvzGenerateVethName(veid, dev_name_ve);
+            if (net->ifname == NULL) {
+               openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("Could not generate veth name"));
+               rc = -1;
+               VIR_FREE(dev_name_ve);
+               goto exit;
+            }
+        }
+
+        virBufferAdd(&buf, dev_name_ve, -1); /* Guest dev */
+        virBufferVSprintf(&buf, ",%s", macaddr); /* Guest dev mac */
+        virBufferVSprintf(&buf, ",%s", net->ifname); /* Host dev */
+        virBufferVSprintf(&buf, ",%s", macaddr); /* Host dev mac */
+
+        if (driver->version >= VZCTL_BRIDGE_MIN_VERSION) {
+            virBufferVSprintf(&buf, ",%s", net->data.bridge.brname); /* Host bridge */
+        } else {
+            virBufferVSprintf(configBuf, "ifname=%s", dev_name_ve);
+            virBufferVSprintf(configBuf, ",mac=%s", macaddr); /* Guest dev mac */
+            virBufferVSprintf(configBuf, ",host_ifname=%s", net->ifname); /* Host dev */
+            virBufferVSprintf(configBuf, ",host_mac=%s", macaddr); /* Host dev mac */
+            virBufferVSprintf(configBuf, ",bridge=%s", net->data.bridge.brname); /* Host bridge */
+        }
+
+        VIR_FREE(dev_name_ve);
+
+        if (!(opt = virBufferContentAndReset(&buf)))
+            goto no_memory;
+
         ADD_ARG_LIT(opt) ;
-    }else if (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
+        VIR_FREE(opt);
+    } else if (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
               net->data.ethernet.ipaddr != NULL) {
         //--ipadd ip
         ADD_ARG_LIT("--ipadd") ;
@@ -403,18 +487,66 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
 
  exit:
     cmdExecFree(prog);
-    VIR_FREE(mac);
     return rc;
 
  no_memory:
+    VIR_FREE(opt);
     openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                 _("Could not put argument to %s"), VZCTL);
     cmdExecFree(prog);
-    VIR_FREE(mac);
     return -1;
 
 #undef ADD_ARG_LIT
 }
+
+
+static int
+openvzDomainSetNetworkConfig(virConnectPtr conn,
+                             virDomainDefPtr def)
+{
+    unsigned int i;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *param;
+    int first = 1;
+    struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
+
+    for (i = 0 ; i < def->nnets ; i++) {
+        if (driver->version < VZCTL_BRIDGE_MIN_VERSION &&
+            def->nets[i]->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+            if (first)
+                first = 0;
+            else
+                virBufferAddLit(&buf, ";");
+        }
+
+        if (openvzDomainSetNetwork(conn, def->name, def->nets[i], &buf) < 0) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("Could not configure network"));
+            goto exit;
+        }
+    }
+
+    if (driver->version < VZCTL_BRIDGE_MIN_VERSION && def->nnets) {
+        param = virBufferContentAndReset(&buf);
+        if (param) {
+            if (openvzWriteConfigParam(strtoI(def->name), "NETIF", param) < 0) {
+                VIR_FREE(param);
+                openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("cannot replace NETIF config"));
+                return -1;
+            }
+            VIR_FREE(param);
+        }
+    }
+
+    return 0;
+
+exit:
+    param = virBufferContentAndReset(&buf);
+    VIR_FREE(param);
+    return -1;
+}
+
 
 static virDomainPtr
 openvzDomainDefineXML(virConnectPtr conn, const char *xml)
@@ -423,7 +555,6 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainDefPtr vmdef = NULL;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
-    int i;
     const char *prog[OPENVZ_MAX_ARG];
     prog[0] = NULL;
 
@@ -469,17 +600,12 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
         goto exit;
     }
 
+    if (openvzDomainSetNetworkConfig(conn, vmdef) < 0)
+        goto exit;
+
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom)
         dom->id = -1;
-
-    for (i = 0 ; i < vmdef->nnets ; i++) {
-        if (openvzDomainSetNetwork(conn, vmdef->name, vmdef->nets[i]) < 0) {
-            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("Could not configure network"));
-            goto exit;
-        }
-    }
 
     if (vmdef->vcpus > 0) {
         if (openvzDomainSetVcpus(dom, vmdef->vcpus) < 0) {
@@ -501,7 +627,6 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     virDomainDefPtr vmdef = NULL;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
-    int i;
     struct openvz_driver *driver = (struct openvz_driver *) conn->privateData;
     const char *progstart[] = {VZCTL, "--quiet", "start", NULL, NULL};
     const char *progcreate[OPENVZ_MAX_ARG];
@@ -547,13 +672,8 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
         goto exit;
     }
 
-    for (i = 0 ; i < vmdef->nnets ; i++) {
-        if (openvzDomainSetNetwork(conn, vmdef->name, vmdef->nets[i]) < 0) {
-            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("Could not configure network"));
-            goto exit;
-        }
-    }
+    if (openvzDomainSetNetworkConfig(conn, vmdef) < 0)
+        goto exit;
 
     progstart[3] = vmdef->name;
 

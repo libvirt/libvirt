@@ -50,6 +50,8 @@ enum { OPENVZ_WARN, OPENVZ_ERR };
 #define VZLIST  "/usr/sbin/vzlist"
 #define VZCTL   "/usr/sbin/vzctl"
 
+#define VZCTL_BRIDGE_MIN_VERSION ((3 * 1000 * 1000) + (0 * 1000) + 22 + 1)
+
 struct openvz_driver {
     virCapsPtr caps;
     virDomainObjList domains;
@@ -60,12 +62,11 @@ int openvz_readline(int fd, char *ptr, int maxlen);
 int openvzExtractVersion(virConnectPtr conn,
                          struct openvz_driver *driver);
 int openvzReadConfigParam(int vpsid ,const char * param, char *value, int maxlen);
+int openvzWriteConfigParam(int vpsid, const char *param, const char *value);
 virCapsPtr openvzCapsInit(void);
 int openvzLoadDomains(struct openvz_driver *driver);
 void openvzFreeDriver(struct openvz_driver *driver);
 int strtoI(const char *str);
-int openvzCheckEmptyMac(const unsigned char *mac);
-char *openvzMacToString(const unsigned char *mac);
 int openvzSetDefinedUUID(int vpsid, unsigned char *uuid);
 
 #endif /* OPENVZ_CONF_H */

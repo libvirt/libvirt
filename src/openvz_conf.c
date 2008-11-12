@@ -52,7 +52,7 @@
 
 static char *openvzLocateConfDir(void);
 static int openvzGetVPSUUID(int vpsid, char *uuidstr);
-static int openvzLocateConfFile(int vpsid, char *conffile, int maxlen);
+static int openvzLocateConfFile(int vpsid, char *conffile, int maxlen, const char *ext);
 static int openvzAssignUUIDs(void);
 
 int
@@ -145,6 +145,8 @@ virCapsPtr openvzCapsInit(void)
                                    0, 0)) == NULL)
         goto no_memory;
 
+    virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x52, 0x54, 0x00 });
+
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "exe",
                                          utsname.machine,
@@ -169,54 +171,6 @@ no_memory:
     return NULL;
 }
 
-
-/* function checks MAC address is empty
-   return 0 - empty
-          1 - not
-*/
-int openvzCheckEmptyMac(const unsigned char *mac)
-{
-    int i;
-    for (i = 0; i < VIR_MAC_BUFLEN; i++)
-        if (mac[i] != 0x00)
-            return 1;
-
-    return 0;
-}
-
-/* convert mac address to string
-   return pointer to string or NULL
-*/
-char *openvzMacToString(const unsigned char *mac)
-{
-    char str[20];
-    if (snprintf(str, 18, "%02X:%02X:%02X:%02X:%02X:%02X",
-                      mac[0], mac[1], mac[2],
-                      mac[3], mac[4], mac[5]) >= 18)
-        return NULL;
-
-    return strdup(str);
-}
-
-/*parse MAC from view: 00:18:51:8F:D9:F3
-  return -1 - error
-          0 - OK
-*/
-static int openvzParseMac(const char *macaddr, unsigned char *mac)
-{
-    int ret;
-    ret = sscanf((const char *)macaddr, "%02X:%02X:%02X:%02X:%02X:%02X",
-               (unsigned int*)&mac[0],
-               (unsigned int*)&mac[1],
-               (unsigned int*)&mac[2],
-               (unsigned int*)&mac[3],
-               (unsigned int*)&mac[4],
-               (unsigned int*)&mac[5]) ;
-    if (ret == 6)
-        return 0;
-
-    return -1;
-}
 
 static int
 openvzReadNetworkConf(virConnectPtr conn,
@@ -288,10 +242,27 @@ openvzReadNetworkConf(virConnectPtr conn,
                 while (*next != '\0' && *next != ',') next++;
                 if (STRPREFIX(p, "ifname=")) {
                     p += 7;
+                    /* skip in libvirt */
+                } else if (STRPREFIX(p, "host_ifname=")) {
+                    p += 12;
                     len = next - p;
                     if (len > 16) {
                         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("Too long network device name"));
+                        goto error;
+                    }
+
+                    if (VIR_ALLOC_N(net->ifname, len+1) < 0)
+                        goto no_memory;
+
+                    strncpy(net->ifname, p, len);
+                    net->ifname[len] = '\0';
+                } else if (STRPREFIX(p, "bridge=")) {
+                    p += 7;
+                    len = next - p;
+                    if (len > 16) {
+                        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Too long bridge device name"));
                         goto error;
                     }
 
@@ -300,9 +271,6 @@ openvzReadNetworkConf(virConnectPtr conn,
 
                     strncpy(net->data.bridge.brname, p, len);
                     net->data.bridge.brname[len] = '\0';
-                } else if (STRPREFIX(p, "host_ifname=")) {
-                    p += 12;
-                    //skip in libvirt
                 } else if (STRPREFIX(p, "mac=")) {
                     p += 4;
                     len = next - p;
@@ -313,14 +281,11 @@ openvzReadNetworkConf(virConnectPtr conn,
                     }
                     strncpy(cpy_temp, p, len);
                     cpy_temp[len] = '\0';
-                    if (openvzParseMac(cpy_temp, net->mac)<0) {
+                    if (virParseMacAddr(cpy_temp, net->mac) < 0) {
                         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("Wrong MAC address"));
                         goto error;
                     }
-                } else if (STRPREFIX(p, "host_mac=")) {
-                    p += 9;
-                    //skip in libvirt
                 }
                 p = ++next;
             } while (p < token + strlen(token));
@@ -492,6 +457,68 @@ int openvzLoadDomains(struct openvz_driver *driver) {
     return -1;
 }
 
+
+int
+openvzWriteConfigParam(int vpsid, const char *param, const char *value)
+{
+    char conf_file[PATH_MAX];
+    char temp_file[PATH_MAX];
+    char line[PATH_MAX] ;
+    int fd, temp_fd;
+
+    if (openvzLocateConfFile(vpsid, conf_file, PATH_MAX, "conf")<0)
+        return -1;
+    if (openvzLocateConfFile(vpsid, temp_file, PATH_MAX, "tmp")<0)
+        return -1;
+
+    fd = open(conf_file, O_RDONLY);
+    if (fd == -1)
+        return -1;
+    temp_fd = open(temp_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (temp_fd == -1) {
+        close(fd);
+        return -1;
+    }
+
+    while(1) {
+        if (openvz_readline(fd, line, sizeof(line)) <= 0)
+            break;
+
+        if (!STRPREFIX(line, param) &&
+            line[strlen(param)] == '=') {
+            if (safewrite(temp_fd, line, strlen(line)) !=
+                strlen(line))
+                goto error;
+        }
+    }
+
+    if (safewrite(temp_fd, param, strlen(param)) < 0 ||
+        safewrite(temp_fd, "=\"", 2) < 0 ||
+        safewrite(temp_fd, value, strlen(value)) < 0 ||
+        safewrite(temp_fd, "\"\n", 2) < 0)
+        goto error;
+
+    if (close(fd) < 0)
+        goto error;
+    fd = -1;
+    if (close(temp_fd) < 0)
+        goto error;
+    temp_fd = -1;
+
+    if (rename(temp_file, conf_file) < 0)
+        goto error;
+
+    return 0;
+
+error:
+    if (fd != -1)
+        close(fd);
+    if (temp_fd != -1)
+        close(temp_fd);
+    unlink(temp_file);
+    return -1;
+}
+
 /*
 * Read parameter from container config
 * sample: 133, "OSTEMPLATE", value, 1024
@@ -509,7 +536,7 @@ openvzReadConfigParam(int vpsid ,const char * param, char *value, int maxlen)
     char * sf, * token;
     char *saveptr = NULL;
 
-    if (openvzLocateConfFile(vpsid, conf_file, PATH_MAX)<0)
+    if (openvzLocateConfFile(vpsid, conf_file, PATH_MAX, "conf")<0)
         return -1;
 
     value[0] = 0;
@@ -549,7 +576,7 @@ openvzReadConfigParam(int vpsid ,const char * param, char *value, int maxlen)
 *         0 - OK
 */
 static int
-openvzLocateConfFile(int vpsid, char *conffile, int maxlen)
+openvzLocateConfFile(int vpsid, char *conffile, int maxlen, const char *ext)
 {
     char * confdir;
     int ret = 0;
@@ -558,7 +585,8 @@ openvzLocateConfFile(int vpsid, char *conffile, int maxlen)
     if (confdir == NULL)
         return -1;
 
-    if (snprintf(conffile, maxlen, "%s/%d.conf", confdir, vpsid) >= maxlen)
+    if (snprintf(conffile, maxlen, "%s/%d.%s",
+                 confdir, vpsid, ext ? ext : "conf") >= maxlen)
         ret = -1;
 
     VIR_FREE(confdir);
@@ -615,7 +643,7 @@ openvzGetVPSUUID(int vpsid, char *uuidstr)
     char iden[1024];
     int fd, ret;
 
-   if (openvzLocateConfFile(vpsid, conf_file, PATH_MAX)<0)
+    if (openvzLocateConfFile(vpsid, conf_file, PATH_MAX, "conf")<0)
        return -1;
 
     fd = open(conf_file, O_RDONLY);
@@ -655,7 +683,7 @@ openvzSetDefinedUUID(int vpsid, unsigned char *uuid)
     if (uuid == NULL)
         return -1;
 
-   if (openvzLocateConfFile(vpsid, conf_file, PATH_MAX)<0)
+    if (openvzLocateConfFile(vpsid, conf_file, PATH_MAX, "conf")<0)
        return -1;
 
     if (openvzGetVPSUUID(vpsid, uuidstr))
@@ -723,4 +751,3 @@ static int openvzAssignUUIDs(void)
     VIR_FREE(conf_dir);
     return 0;
 }
-
