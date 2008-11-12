@@ -1,3 +1,8 @@
+Wed Nov 12 16:13:42 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/storage_backend.c, src/storage_backend.h, src/storage_driver.c:
+	Revert previous patch which breaks "test" driver's storage APIs.
+
 Tue Nov 11 15:51:42 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/storage_backend.c, src/storage_backend.h, src/storage_driver.c:

@@ -121,7 +121,6 @@ struct _virStorageBackend {
     int volType;
 };
 
-int virStorageBackendRegister(virStorageBackendPtr bk);
 
 virStorageBackendPtr virStorageBackendForType(int type);
 virStorageBackendPoolOptionsPtr virStorageBackendPoolOptionsForType(int type);

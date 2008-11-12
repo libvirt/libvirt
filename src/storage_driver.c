@@ -41,20 +41,6 @@
 #include "memory.h"
 #include "storage_backend.h"
 
-
-#if WITH_STORAGE_LVM
-#include "storage_backend_logical.h"
-#endif
-#if WITH_STORAGE_ISCSI
-#include "storage_backend_iscsi.h"
-#endif
-#if WITH_STORAGE_DISK
-#include "storage_backend_disk.h"
-#endif
-#if WITH_STORAGE_DIR
-#include "storage_backend_fs.h"
-#endif
-
 #define storageLog(msg...) fprintf(stderr, msg)
 
 static virStorageDriverStatePtr driverState;
@@ -110,29 +96,6 @@ storageDriverStartup(void) {
     struct passwd *pw;
     char *base = NULL;
     char driverConf[PATH_MAX];
-
-#if WITH_STORAGE_DIR
-    if (virStorageBackendRegister(&virStorageBackendDirectory) < 0)
-        return -1;
-#endif
-#if WITH_STORAGE_FS
-    if (virStorageBackendRegister(&virStorageBackendFileSystem) < 0)
-        return -1;
-    if (virStorageBackendRegister(&virStorageBackendNetFileSystem) < 0)
-        return -1;
-#endif
-#if WITH_STORAGE_LVM
-    if (virStorageBackendRegister(&virStorageBackendLogical) < 0)
-        return -1;
-#endif
-#if WITH_STORAGE_ISCSI
-    if (virStorageBackendRegister(&virStorageBackendISCSI) < 0)
-        return -1;
-#endif
-#if WITH_STORAGE_DISK
-    if (virStorageBackendRegister(&virStorageBackendDisk) < 0)
-        return -1;
-#endif
 
     if (VIR_ALLOC(driverState) < 0)
         return -1;
