@@ -1,3 +1,10 @@
+Fri Nov 14 13:22:36 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	avoid format string warnings
+	* src/openvz_driver.c (ADD_ARG_LIT): Add "%s" arg before _(...).
+	* src/qemu_driver.c (PCI_ATTACH_OK_MSG): Likewise.
+	* src/util.c (virExec, virRun): Likewise.
+
 Fri Nov 14 09:38:22 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/remote.c qemud/remote_dispatch_localvars.h

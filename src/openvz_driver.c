@@ -426,7 +426,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         dev_name_ve = openvzGenerateContainerVethName(veid);
         if (dev_name_ve == NULL) {
            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("Could not generate eth name for container"));
+                       "%s", _("Could not generate eth name for container"));
            rc = -1;
            goto exit;
         }
@@ -437,7 +437,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
             net->ifname = openvzGenerateVethName(veid, dev_name_ve);
             if (net->ifname == NULL) {
                openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("Could not generate veth name"));
+                           "%s", _("Could not generate veth name"));
                rc = -1;
                VIR_FREE(dev_name_ve);
                goto exit;

@@ -406,7 +406,7 @@ virExec(virConnectPtr conn,
     char *argv_str;
 
     if ((argv_str = virArgvToString(argv)) == NULL) {
-        ReportError(conn, VIR_ERR_NO_MEMORY, _("command debug string"));
+        ReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("command debug string"));
         return -1;
     }
     DEBUG0(argv_str);
@@ -523,7 +523,7 @@ virRun(virConnectPtr conn,
     char *argv_str = NULL;
 
     if ((argv_str = virArgvToString(argv)) == NULL) {
-        ReportError(conn, VIR_ERR_NO_MEMORY, _("command debug string"));
+        ReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("command debug string"));
         goto error;
     }
     DEBUG0(argv_str);

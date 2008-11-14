@@ -2611,7 +2611,7 @@ static int qemudDomainAttachPciDiskDevice(virDomainPtr dom, virDomainDeviceDefPt
         s += strlen(PCI_ATTACH_OK_MSG);
 
         if (virStrToLong_i ((const char*)s, &dummy, 10, &dev->data.disk->slotnum) == -1)
-            qemudLog(QEMUD_WARN, _("Unable to parse slot number\n"));
+            qemudLog(QEMUD_WARN, "%s", _("Unable to parse slot number\n"));
     } else {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                           _("adding %s disk failed"), type);
