@@ -1,3 +1,8 @@
+Fri Nov 14 09:40:00 EST 2008 Cole Robinson <crobinso@redhat.com>
+
+	* src/storage_backend_logical.c: Use different separator for lvs
+	command to unbreak parsing for encrypted devices.
+
 Fri Nov 14 13:22:36 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	avoid format string warnings

@@ -173,27 +173,30 @@ virStorageBackendLogicalFindLVs(virConnectPtr conn,
                                 virStorageVolDefPtr vol)
 {
     /*
-     *  # lvs --separator : --noheadings --units b --unbuffered --nosuffix --options "lv_name,uuid,devices,seg_size,vg_extent_size" VGNAME
-     *  RootLV:06UgP5-2rhb-w3Bo-3mdR-WeoL-pytO-SAa2ky:/dev/hda2(0):5234491392:33554432
-     *  SwapLV:oHviCK-8Ik0-paqS-V20c-nkhY-Bm1e-zgzU0M:/dev/hda2(156):1040187392:33554432
-     *  Test2:3pg3he-mQsA-5Sui-h0i6-HNmc-Cz7W-QSndcR:/dev/hda2(219):1073741824:33554432
-     *  Test3:UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht:/dev/hda2(251):2181038080:33554432
-     *  Test3:UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht:/dev/hda2(187):1040187392:33554432
+     *  # lvs --separator , --noheadings --units b --unbuffered --nosuffix --options "lv_name,uuid,devices,seg_size,vg_extent_size" VGNAME
+     *  RootLV,06UgP5-2rhb-w3Bo-3mdR-WeoL-pytO-SAa2ky,/dev/hda2(0),5234491392,33554432
+     *  SwapLV,oHviCK-8Ik0-paqS-V20c-nkhY-Bm1e-zgzU0M,/dev/hda2(156),1040187392,33554432
+     *  Test2,3pg3he-mQsA-5Sui-h0i6-HNmc-Cz7W-QSndcR,/dev/hda2(219),1073741824,33554432
+     *  Test3,UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht,/dev/hda2(251),2181038080,33554432
+     *  Test3,UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht,/dev/hda2(187),1040187392,33554432
      *
      * Pull out name & uuid, device, device extent start #, segment size, extent size.
      *
      * NB can be multiple rows per volume if they have many extents
      *
-     * NB lvs from some distros (e.g. SLES10 SP2) outputs trailing ":" on each line
+     * NB lvs from some distros (e.g. SLES10 SP2) outputs trailing "," on each line
+     *
+     * NB Encrypted logical volumes can print ':' in their name, so it is
+     *    not a suitable separator (rhbz 470693).
      */
     const char *regexes[] = {
-        "^\\s*(\\S+):(\\S+):(\\S+)\\((\\S+)\\):(\\S+):([0-9]+):?\\s*$"
+        "^\\s*(\\S+),(\\S+),(\\S+)\\((\\S+)\\),(\\S+),([0-9]+),?\\s*$"
     };
     int vars[] = {
         6
     };
     const char *prog[] = {
-        LVS, "--separator", ":", "--noheadings", "--units", "b",
+        LVS, "--separator", ",", "--noheadings", "--units", "b",
         "--unbuffered", "--nosuffix", "--options",
         "lv_name,uuid,devices,seg_size,vg_extent_size",
         pool->def->source.name, NULL
