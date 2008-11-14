@@ -948,6 +948,62 @@ xdr_remote_domain_migrate_finish_ret (XDR *xdrs, remote_domain_migrate_finish_re
 }
 
 bool_t
+xdr_remote_domain_migrate_prepare2_args (XDR *xdrs, remote_domain_migrate_prepare2_args *objp)
+{
+
+         if (!xdr_remote_string (xdrs, &objp->uri_in))
+                 return FALSE;
+         if (!xdr_u_quad_t (xdrs, &objp->flags))
+                 return FALSE;
+         if (!xdr_remote_string (xdrs, &objp->dname))
+                 return FALSE;
+         if (!xdr_u_quad_t (xdrs, &objp->resource))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->dom_xml))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_migrate_prepare2_ret (XDR *xdrs, remote_domain_migrate_prepare2_ret *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->cookie.cookie_val;
+
+         if (!xdr_bytes (xdrs, objp_cpp0, (u_int *) &objp->cookie.cookie_len, REMOTE_MIGRATE_COOKIE_MAX))
+                 return FALSE;
+         if (!xdr_remote_string (xdrs, &objp->uri_out))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_migrate_finish2_args (XDR *xdrs, remote_domain_migrate_finish2_args *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->cookie.cookie_val;
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->dname))
+                 return FALSE;
+         if (!xdr_bytes (xdrs, objp_cpp0, (u_int *) &objp->cookie.cookie_len, REMOTE_MIGRATE_COOKIE_MAX))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->uri))
+                 return FALSE;
+         if (!xdr_u_quad_t (xdrs, &objp->flags))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->retcode))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_migrate_finish2_ret (XDR *xdrs, remote_domain_migrate_finish2_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->ddom))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_list_defined_domains_args (XDR *xdrs, remote_list_defined_domains_args *objp)
 {
 

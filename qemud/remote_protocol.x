@@ -519,6 +519,31 @@ struct remote_domain_migrate_finish_ret {
     remote_nonnull_domain ddom;
 };
 
+struct remote_domain_migrate_prepare2_args {
+    remote_string uri_in;
+    unsigned hyper flags;
+    remote_string dname;
+    unsigned hyper resource;
+    remote_nonnull_string dom_xml;
+};
+
+struct remote_domain_migrate_prepare2_ret {
+    opaque cookie<REMOTE_MIGRATE_COOKIE_MAX>;
+    remote_string uri_out;
+};
+
+struct remote_domain_migrate_finish2_args {
+    remote_nonnull_string dname;
+    opaque cookie<REMOTE_MIGRATE_COOKIE_MAX>;
+    remote_nonnull_string uri;
+    unsigned hyper flags;
+    int retcode;
+};
+
+struct remote_domain_migrate_finish2_ret {
+    remote_nonnull_domain ddom;
+};
+
 struct remote_list_defined_domains_args {
     int maxnames;
 };
@@ -1109,7 +1134,10 @@ enum remote_procedure {
 
     REMOTE_PROC_DOMAIN_EVENTS_REGISTER = 105,
     REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER = 106,
-    REMOTE_PROC_DOMAIN_EVENT = 107
+    REMOTE_PROC_DOMAIN_EVENT = 107,
+
+    REMOTE_PROC_DOMAIN_MIGRATE_PREPARE2 = 108,
+    REMOTE_PROC_DOMAIN_MIGRATE_FINISH2 = 109
 };
 
 /* Custom RPC structure. */

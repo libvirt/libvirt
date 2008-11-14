@@ -673,7 +673,8 @@ error:
 static int
 qemudInitCpus(virConnectPtr conn,
               struct qemud_driver *driver,
-              virDomainObjPtr vm) {
+              virDomainObjPtr vm,
+              const char *migrateFrom) {
     char *info = NULL;
 #if HAVE_SCHED_GETAFFINITY
     cpu_set_t mask;
@@ -709,13 +710,15 @@ qemudInitCpus(virConnectPtr conn,
     }
 #endif /* HAVE_SCHED_GETAFFINITY */
 
-    /* Allow the CPUS to start executing */
-    if (qemudMonitorCommand(driver, vm, "cont", &info) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "%s", _("resume operation failed"));
-        return -1;
+    if (migrateFrom == NULL) {
+        /* Allow the CPUS to start executing */
+        if (qemudMonitorCommand(driver, vm, "cont", &info) < 0) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("resume operation failed"));
+            return -1;
+        }
+        VIR_FREE(info);
     }
-    VIR_FREE(info);
 
     return 0;
 }
@@ -938,7 +941,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                                driver) < 0) ||
             (qemudWaitForMonitor(conn, driver, vm) < 0) ||
             (qemudDetectVcpuPIDs(conn, driver, vm) < 0) ||
-            (qemudInitCpus(conn, driver, vm) < 0)) {
+            (qemudInitCpus(conn, driver, vm, migrateFrom) < 0)) {
             qemudShutdownVMDaemon(conn, driver, vm);
             return -1;
         }
@@ -1202,6 +1205,16 @@ static int qemudClose(virConnectPtr conn) {
     conn->privateData = NULL;
 
     return 0;
+}
+
+/* Which features are supported by this driver? */
+static int
+qemudSupportsFeature (virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
+{
+    switch (feature) {
+    case VIR_DRV_FEATURE_MIGRATION_V2: return 1;
+    default: return 0;
+    }
 }
 
 static const char *qemudGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
@@ -3354,6 +3367,260 @@ static void qemudDomainEventDispatch (struct qemud_driver *driver,
 
 }
 
+/* Migration support. */
+
+/* Prepare is the first step, and it runs on the destination host.
+ *
+ * This starts an empty VM listening on a TCP port.
+ */
+static int
+qemudDomainMigratePrepare2 (virConnectPtr dconn,
+                            char **cookie ATTRIBUTE_UNUSED,
+                            int *cookielen ATTRIBUTE_UNUSED,
+                            const char *uri_in,
+                            char **uri_out,
+                            unsigned long flags ATTRIBUTE_UNUSED,
+                            const char *dname,
+                            unsigned long resource ATTRIBUTE_UNUSED,
+                            const char *dom_xml)
+{
+    static int port = 0;
+    struct qemud_driver *driver = (struct qemud_driver *)dconn->privateData;
+    virDomainDefPtr def;
+    virDomainObjPtr vm = NULL;
+    int this_port;
+    char hostname [HOST_NAME_MAX+1];
+    char migrateFrom [64];
+    const char *p;
+
+    if (!dom_xml) {
+        qemudReportError (dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                          "%s", _("no domain XML passed"));
+        return -1;
+    }
+
+    /* The URI passed in may be NULL or a string "tcp://somehostname:port".
+     *
+     * If the URI passed in is NULL then we allocate a port number
+     * from our pool of port numbers and return a URI of
+     * "tcp://ourhostname:port".
+     *
+     * If the URI passed in is not NULL then we try to parse out the
+     * port number and use that (note that the hostname is assumed
+     * to be a correct hostname which refers to the target machine).
+     */
+    if (uri_in == NULL) {
+        this_port = QEMUD_MIGRATION_FIRST_PORT + port++;
+        if (port == QEMUD_MIGRATION_NUM_PORTS) port = 0;
+
+        /* Get hostname */
+        if (gethostname (hostname, HOST_NAME_MAX+1) == -1) {
+            qemudReportError (dconn, NULL, NULL, VIR_ERR_SYSTEM_ERROR,
+                              "%s", strerror (errno));
+            return -1;
+        }
+
+        /* Caller frees */
+        if (asprintf(uri_out, "tcp:%s:%d", hostname, this_port) < 0) {
+            qemudReportError (dconn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                              "%s", strerror (errno));
+            return -1;
+        }
+    } else {
+        /* Check the URI starts with "tcp:".  We will escape the
+         * URI when passing it to the qemu monitor, so bad
+         * characters in hostname part don't matter.
+         */
+        if (!STREQLEN (uri_in, "tcp:", 6)) {
+            qemudReportError (dconn, NULL, NULL, VIR_ERR_INVALID_ARG,
+                  "%s", _("only tcp URIs are supported for KVM migrations"));
+            return -1;
+        }
+
+        /* Get the port number. */
+        p = strrchr (uri_in, ':');
+        p++; /* definitely has a ':' in it, see above */
+        this_port = virParseNumber (&p);
+        if (this_port == -1 || p-uri_in != strlen (uri_in)) {
+            qemudReportError (dconn, NULL, NULL, VIR_ERR_INVALID_ARG,
+                              "%s", _("URI did not have ':port' at the end"));
+            return -1;
+        }
+    }
+
+    /* Parse the domain XML. */
+    if (!(def = virDomainDefParseString(dconn, driver->caps, dom_xml))) {
+        qemudReportError (dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                          "%s", _("failed to parse XML"));
+        return -1;
+    }
+
+    /* Target domain name, maybe renamed. */
+    dname = dname ? dname : def->name;
+
+#if 1
+    /* Ensure the name and UUID don't already exist in an active VM */
+    vm = virDomainFindByUUID(&driver->domains, def->uuid);
+#else
+    /* For TESTING ONLY you can change #if 1 -> #if 0 above and use
+     * this code which lets you do localhost migrations.  You must still
+     * supply a fresh 'dname' but this code assigns a random UUID.
+     */
+    if (virUUIDGenerate (def->uuid) == -1) {
+        qemudReportError (dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+            _("could not generate random UUID"));
+    }
+#endif
+
+    if (!vm) vm = virDomainFindByName(&driver->domains, dname);
+    if (vm) {
+        if (virDomainIsActive(vm)) {
+            qemudReportError (dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                              _("domain with the same name or UUID already exists as '%s'"),
+                              vm->def->name);
+            virDomainDefFree(def);
+            return -1;
+        }
+    }
+
+    if (!(vm = virDomainAssignDef(dconn,
+                                  &driver->domains,
+                                  def))) {
+        qemudReportError (dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                          "%s", _("failed to assign new VM"));
+        virDomainDefFree(def);
+        return -1;
+    }
+
+    /* Domain starts inactive, even if the domain XML had an id field. */
+    vm->def->id = -1;
+
+    /* Start the QEMU daemon, with the same command-line arguments plus
+     * -incoming tcp:0.0.0.0:port
+     */
+    snprintf (migrateFrom, sizeof (migrateFrom), "tcp:0.0.0.0:%d", this_port);
+    if (qemudStartVMDaemon (dconn, driver, vm, migrateFrom) < 0) {
+        qemudReportError (dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                          "%s", _("failed to start listening VM"));
+        if (!vm->persistent)
+            virDomainRemoveInactive(&driver->domains, vm);
+
+        return -1;
+    }
+
+    return 0;
+}
+
+/* Perform is the second step, and it runs on the source host. */
+static int
+qemudDomainMigratePerform (virDomainPtr dom,
+                           const char *cookie ATTRIBUTE_UNUSED,
+                           int cookielen ATTRIBUTE_UNUSED,
+                           const char *uri,
+                           unsigned long flags ATTRIBUTE_UNUSED,
+                           const char *dname ATTRIBUTE_UNUSED,
+                           unsigned long resource)
+{
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    virDomainObjPtr vm = virDomainFindByID(&driver->domains, dom->id);
+    char *safe_uri;
+    char cmd[HOST_NAME_MAX+50];
+    char *info;
+
+    if (!vm) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                          _("no domain with matching id %d"), dom->id);
+        return -1;
+    }
+
+    if (!virDomainIsActive(vm)) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                          "%s", _("domain is not running"));
+        return -1;
+    }
+
+    if (resource > 0) {
+        /* Issue migrate_set_speed command.  Don't worry if it fails. */
+        snprintf (cmd, sizeof cmd, "migrate_set_speed %lum", resource);
+        qemudMonitorCommand (driver, vm, cmd, &info);
+
+        DEBUG ("migrate_set_speed reply: %s", info);
+        VIR_FREE (info);
+    }
+
+    /* Issue the migrate command. */
+    safe_uri = qemudEscapeMonitorArg (uri);
+    if (!safe_uri) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_SYSTEM_ERROR,
+                          "%s", strerror (errno));
+        return -1;
+    }
+    snprintf (cmd, sizeof cmd, "migrate \"%s\"", safe_uri);
+    VIR_FREE (safe_uri);
+
+    if (qemudMonitorCommand (driver, vm, cmd, &info) < 0) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                          "%s", _("migrate operation failed"));
+        return -1;
+    }
+
+    DEBUG ("migrate reply: %s", info);
+
+    /* Now check for "fail" in the output string */
+    if (strstr(info, "fail") != NULL) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                          _("migrate failed: %s"), info);
+        VIR_FREE(info);
+        return -1;
+    }
+
+    VIR_FREE (info);
+
+    /* Clean up the source domain. */
+    qemudShutdownVMDaemon (dom->conn, driver, vm);
+    if (!vm->persistent)
+        virDomainRemoveInactive(&driver->domains, vm);
+
+    return 0;
+}
+
+/* Finish is the third and final step, and it runs on the destination host. */
+static virDomainPtr
+qemudDomainMigrateFinish2 (virConnectPtr dconn,
+                           const char *dname,
+                           const char *cookie ATTRIBUTE_UNUSED,
+                           int cookielen ATTRIBUTE_UNUSED,
+                           const char *uri ATTRIBUTE_UNUSED,
+                           unsigned long flags ATTRIBUTE_UNUSED,
+                           int retcode)
+{
+    struct qemud_driver *driver = (struct qemud_driver *)dconn->privateData;
+    virDomainObjPtr vm = virDomainFindByName(&driver->domains, dname);
+    virDomainPtr dom;
+    char *info = NULL;
+
+    if (!vm) {
+        qemudReportError (dconn, NULL, NULL, VIR_ERR_INVALID_DOMAIN,
+                          _("no domain with matching name %s"), dname);
+        return NULL;
+    }
+
+    /* Did the migration go as planned?  If yes, return the domain
+     * object, but if no, clean up the empty qemu process.
+     */
+    if (retcode == 0) {
+        dom = virGetDomain (dconn, vm->def->name, vm->def->uuid);
+        VIR_FREE(info);
+        vm->state = VIR_DOMAIN_RUNNING;
+        return dom;
+    } else {
+        qemudShutdownVMDaemon (dconn, driver, vm);
+        if (!vm->persistent)
+            virDomainRemoveInactive(&driver->domains, vm);
+        return NULL;
+    }
+}
+
 static virDriver qemuDriver = {
     VIR_DRV_QEMU,
     "QEMU",
@@ -3361,7 +3628,7 @@ static virDriver qemuDriver = {
     qemudProbe, /* probe */
     qemudOpen, /* open */
     qemudClose, /* close */
-    NULL, /* supports_feature */
+    qemudSupportsFeature, /* supports_feature */
     qemudGetType, /* type */
     qemudGetVersion, /* version */
     qemudGetHostname, /* hostname */
@@ -3410,8 +3677,8 @@ static virDriver qemuDriver = {
     NULL, /* domainGetSchedulerType */
     NULL, /* domainGetSchedulerParameters */
     NULL, /* domainSetSchedulerParameters */
-    NULL, /* domainMigratePrepare */
-    NULL, /* domainMigratePerform */
+    NULL, /* domainMigratePrepare (v1) */
+    qemudDomainMigratePerform, /* domainMigratePerform */
     NULL, /* domainMigrateFinish */
     qemudDomainBlockStats, /* domainBlockStats */
     qemudDomainInterfaceStats, /* domainInterfaceStats */
@@ -3426,6 +3693,8 @@ static virDriver qemuDriver = {
 #endif
     qemudDomainEventRegister, /* domainEventRegister */
     qemudDomainEventDeregister, /* domainEventDeregister */
+    qemudDomainMigratePrepare2, /* domainMigratePrepare2 */
+    qemudDomainMigrateFinish2, /* domainMigrateFinish2 */
 };
 
 

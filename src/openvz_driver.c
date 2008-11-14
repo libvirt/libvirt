@@ -1144,6 +1144,8 @@ static virDriver openvzDriver = {
     NULL, /* nodeGetFreeMemory */
     NULL, /* domainEventRegister */
     NULL, /* domainEventDeregister */
+    NULL, /* domainMigratePrepare2 */
+    NULL, /* domainMigrateFinish2 */
 };
 
 int openvzRegister(void) {

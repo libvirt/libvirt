@@ -260,6 +260,15 @@ case REMOTE_PROC_DOMAIN_MIGRATE_FINISH:
         ret = (char *) &lv_remote_domain_migrate_finish_ret;
         memset (&lv_remote_domain_migrate_finish_ret, 0, sizeof lv_remote_domain_migrate_finish_ret);
         break;
+case REMOTE_PROC_DOMAIN_MIGRATE_FINISH2:
+        fn = (dispatch_fn) remoteDispatchDomainMigrateFinish2;
+        args_filter = (xdrproc_t) xdr_remote_domain_migrate_finish2_args;
+        args = (char *) &lv_remote_domain_migrate_finish2_args;
+        memset (&lv_remote_domain_migrate_finish2_args, 0, sizeof lv_remote_domain_migrate_finish2_args);
+        ret_filter = (xdrproc_t) xdr_remote_domain_migrate_finish2_ret;
+        ret = (char *) &lv_remote_domain_migrate_finish2_ret;
+        memset (&lv_remote_domain_migrate_finish2_ret, 0, sizeof lv_remote_domain_migrate_finish2_ret);
+        break;
 case REMOTE_PROC_DOMAIN_MIGRATE_PERFORM:
         fn = (dispatch_fn) remoteDispatchDomainMigratePerform;
         args_filter = (xdrproc_t) xdr_remote_domain_migrate_perform_args;
@@ -274,6 +283,15 @@ case REMOTE_PROC_DOMAIN_MIGRATE_PREPARE:
         ret_filter = (xdrproc_t) xdr_remote_domain_migrate_prepare_ret;
         ret = (char *) &lv_remote_domain_migrate_prepare_ret;
         memset (&lv_remote_domain_migrate_prepare_ret, 0, sizeof lv_remote_domain_migrate_prepare_ret);
+        break;
+case REMOTE_PROC_DOMAIN_MIGRATE_PREPARE2:
+        fn = (dispatch_fn) remoteDispatchDomainMigratePrepare2;
+        args_filter = (xdrproc_t) xdr_remote_domain_migrate_prepare2_args;
+        args = (char *) &lv_remote_domain_migrate_prepare2_args;
+        memset (&lv_remote_domain_migrate_prepare2_args, 0, sizeof lv_remote_domain_migrate_prepare2_args);
+        ret_filter = (xdrproc_t) xdr_remote_domain_migrate_prepare2_ret;
+        ret = (char *) &lv_remote_domain_migrate_prepare2_ret;
+        memset (&lv_remote_domain_migrate_prepare2_ret, 0, sizeof lv_remote_domain_migrate_prepare2_ret);
         break;
 case REMOTE_PROC_DOMAIN_PIN_VCPU:
         fn = (dispatch_fn) remoteDispatchDomainPinVcpu;

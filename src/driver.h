@@ -50,6 +50,11 @@ typedef enum {
     /* Driver is not local. */
 #define VIR_DRV_FEATURE_REMOTE 2
 
+    /* Driver supports V2-style virDomainMigrate, ie. domainMigratePrepare2/
+     * domainMigratePerform/domainMigrateFinish2.
+     */
+#define VIR_DRV_FEATURE_MIGRATION_V2 3
+
 /* Internal feature-detection macro.  Don't call drv->supports_feature
  * directly, because it may be NULL, use this macro instead.
  *
@@ -286,6 +291,28 @@ typedef int
                     (virConnectPtr conn,
                      void *callback);
 
+typedef int
+    (*virDrvDomainMigratePrepare2)
+                    (virConnectPtr dconn,
+                     char **cookie,
+                     int *cookielen,
+                     const char *uri_in,
+                     char **uri_out,
+                     unsigned long flags,
+                     const char *dname,
+                     unsigned long resource,
+                     const char *dom_xml);
+
+typedef virDomainPtr
+    (*virDrvDomainMigrateFinish2)
+                    (virConnectPtr dconn,
+                     const char *dname,
+                     const char *cookie,
+                     int cookielen,
+                     const char *uri,
+                     unsigned long flags,
+                     int retcode);
+
 /**
  * _virDriver:
  *
@@ -360,6 +387,8 @@ struct _virDriver {
     virDrvNodeGetFreeMemory		getFreeMemory;
     virDrvDomainEventRegister         domainEventRegister;
     virDrvDomainEventDeregister       domainEventDeregister;
+    virDrvDomainMigratePrepare2	domainMigratePrepare2;
+    virDrvDomainMigrateFinish2	domainMigrateFinish2;
 };
 
 typedef int

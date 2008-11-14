@@ -2269,6 +2269,8 @@ static virDriver testDriver = {
     NULL, /* getFreeMemory */
     NULL, /* domainEventRegister */
     NULL, /* domainEventDeregister */
+    NULL, /* domainMigratePrepare2 */
+    NULL, /* domainMigrateFinish2 */
 };
 
 static virNetworkDriver testNetworkDriver = {

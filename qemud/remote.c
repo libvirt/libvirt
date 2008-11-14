@@ -1473,6 +1473,69 @@ remoteDispatchDomainMigrateFinish (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 static int
+remoteDispatchDomainMigratePrepare2 (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                     struct qemud_client *client,
+                                     remote_message_header *req,
+                                     remote_domain_migrate_prepare2_args *args,
+                                     remote_domain_migrate_prepare2_ret *ret)
+{
+    int r;
+    char *cookie = NULL;
+    int cookielen = 0;
+    char *uri_in;
+    char **uri_out;
+    char *dname;
+    CHECK_CONN (client);
+
+    uri_in = args->uri_in == NULL ? NULL : *args->uri_in;
+    dname = args->dname == NULL ? NULL : *args->dname;
+
+    /* Wacky world of XDR ... */
+    if (VIR_ALLOC(uri_out) < 0) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+        return -2;
+    }
+
+    r = __virDomainMigratePrepare2 (client->conn, &cookie, &cookielen,
+                                    uri_in, uri_out,
+                                    args->flags, dname, args->resource,
+                                    args->dom_xml);
+    if (r == -1) return -1;
+
+    /* remoteDispatchClientRequest will free cookie, uri_out and
+     * the string if there is one.
+     */
+    ret->cookie.cookie_len = cookielen;
+    ret->cookie.cookie_val = cookie;
+    ret->uri_out = *uri_out == NULL ? NULL : uri_out;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainMigrateFinish2 (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                    struct qemud_client *client,
+                                    remote_message_header *req,
+                                    remote_domain_migrate_finish2_args *args,
+                                    remote_domain_migrate_finish2_ret *ret)
+{
+    virDomainPtr ddom;
+    CHECK_CONN (client);
+
+    ddom = __virDomainMigrateFinish2 (client->conn, args->dname,
+                                      args->cookie.cookie_val,
+                                      args->cookie.cookie_len,
+                                      args->uri,
+                                      args->flags,
+                                      args->retcode);
+    if (ddom == NULL) return -1;
+
+    make_nonnull_domain (&ret->ddom, ddom);
+
+    return 0;
+}
+
+static int
 remoteDispatchListDefinedDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
                                   struct qemud_client *client,
                                   remote_message_header *req,

@@ -2258,6 +2258,7 @@ static const vshCmdOptDef opts_migrate[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"desturi", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("connection URI of the destination host")},
     {"migrateuri", VSH_OT_DATA, 0, gettext_noop("migration URI, usually can be omitted")},
+    {"dname", VSH_OT_DATA, 0, gettext_noop("rename to new name during migration (if supported)")},
     {NULL, 0, 0, NULL}
 };
 
@@ -2267,6 +2268,7 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     const char *desturi;
     const char *migrateuri;
+    const char *dname;
     int flags = 0, found, ret = FALSE;
     virConnectPtr dconn = NULL;
     virDomainPtr ddom = NULL;
@@ -2286,6 +2288,9 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
     migrateuri = vshCommandOptString (cmd, "migrateuri", &found);
     if (!found) migrateuri = NULL;
 
+    dname = vshCommandOptString (cmd, "dname", &found);
+    if (!found) migrateuri = dname;
+
     if (vshCommandOptBool (cmd, "live"))
         flags |= VIR_MIGRATE_LIVE;
 
@@ -2294,7 +2299,7 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
     if (!dconn) goto done;
 
     /* Migrate. */
-    ddom = virDomainMigrate (dom, dconn, flags, NULL, migrateuri, 0);
+    ddom = virDomainMigrate (dom, dconn, flags, dname, migrateuri, 0);
     if (!ddom) goto done;
 
     ret = TRUE;

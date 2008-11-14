@@ -59,6 +59,22 @@ virDomainPtr __virDomainMigrateFinish (virConnectPtr dconn,
                                        int cookielen,
                                        const char *uri,
                                        unsigned long flags);
+int __virDomainMigratePrepare2 (virConnectPtr dconn,
+                                char **cookie,
+                                int *cookielen,
+                                const char *uri_in,
+                                char **uri_out,
+                                unsigned long flags,
+                                const char *dname,
+                                unsigned long bandwidth,
+                                const char *dom_xml);
+virDomainPtr __virDomainMigrateFinish2 (virConnectPtr dconn,
+                                        const char *dname,
+                                        const char *cookie,
+                                        int cookielen,
+                                        const char *uri,
+                                        unsigned long flags,
+                                        int retcode);
 
 
 #endif

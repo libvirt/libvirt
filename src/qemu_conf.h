@@ -71,6 +71,9 @@ struct qemud_driver {
     virDomainEventCallbackListPtr domainEventCallbacks;
 };
 
+/* Port numbers used for KVM migration. */
+#define QEMUD_MIGRATION_FIRST_PORT 49152
+#define QEMUD_MIGRATION_NUM_PORTS 64
 
 #define qemudReportError(conn, dom, net, code, fmt...)                       \
         virReportErrorHelper(conn, VIR_FROM_QEMU, code, __FILE__,          \

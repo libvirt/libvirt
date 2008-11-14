@@ -1284,6 +1284,8 @@ static virDriver lxcDriver = {
     NULL, /* getFreeMemory */
     NULL, /* domainEventRegister */
     NULL, /* domainEventDeregister */
+    NULL, /* domainMigratePrepare2 */
+    NULL, /* domainMigrateFinish2 */
 };
 
 static virStateDriver lxcStateDriver = {

@@ -2013,6 +2013,73 @@ remoteDomainMigrateFinish (virConnectPtr dconn,
 }
 
 static int
+remoteDomainMigratePrepare2 (virConnectPtr dconn,
+                             char **cookie, int *cookielen,
+                             const char *uri_in, char **uri_out,
+                             unsigned long flags, const char *dname,
+                             unsigned long resource,
+                             const char *dom_xml)
+{
+    remote_domain_migrate_prepare2_args args;
+    remote_domain_migrate_prepare2_ret ret;
+    GET_PRIVATE (dconn, -1);
+
+    args.uri_in = uri_in == NULL ? NULL : (char **) &uri_in;
+    args.flags = flags;
+    args.dname = dname == NULL ? NULL : (char **) &dname;
+    args.resource = resource;
+    args.dom_xml = (char *) dom_xml;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (dconn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_PREPARE2,
+              (xdrproc_t) xdr_remote_domain_migrate_prepare2_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_migrate_prepare2_ret, (char *) &ret) == -1)
+        return -1;
+
+    if (ret.cookie.cookie_len > 0) {
+        *cookie = ret.cookie.cookie_val; /* Caller frees. */
+        *cookielen = ret.cookie.cookie_len;
+    }
+    if (ret.uri_out)
+        *uri_out = *ret.uri_out; /* Caller frees. */
+
+    return 0;
+}
+
+static virDomainPtr
+remoteDomainMigrateFinish2 (virConnectPtr dconn,
+                            const char *dname,
+                            const char *cookie,
+                            int cookielen,
+                            const char *uri,
+                            unsigned long flags,
+                            int retcode)
+{
+    virDomainPtr ddom;
+    remote_domain_migrate_finish2_args args;
+    remote_domain_migrate_finish2_ret ret;
+    GET_PRIVATE (dconn, NULL);
+
+    args.dname = (char *) dname;
+    args.cookie.cookie_len = cookielen;
+    args.cookie.cookie_val = (char *) cookie;
+    args.uri = (char *) uri;
+    args.flags = flags;
+    args.retcode = retcode;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (dconn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_FINISH2,
+              (xdrproc_t) xdr_remote_domain_migrate_finish2_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_migrate_finish2_ret, (char *) &ret) == -1)
+        return NULL;
+
+    ddom = get_nonnull_domain (dconn, ret.ddom);
+    xdr_free ((xdrproc_t) &xdr_remote_domain_migrate_finish2_ret, (char *) &ret);
+
+    return ddom;
+}
+
+static int
 remoteListDefinedDomains (virConnectPtr conn, char **const names, int maxnames)
 {
     int i;
@@ -4992,6 +5059,8 @@ static virDriver driver = {
     .getFreeMemory = remoteNodeGetFreeMemory,
     .domainEventRegister = remoteDomainEventRegister,
     .domainEventDeregister = remoteDomainEventDeregister,
+    .domainMigratePrepare2 = remoteDomainMigratePrepare2,
+    .domainMigrateFinish2 = remoteDomainMigrateFinish2,
 };
 
 static virNetworkDriver network_driver = {

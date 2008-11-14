@@ -1,3 +1,17 @@
+Fri Nov 14 09:38:22 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/remote.c qemud/remote_dispatch_localvars.h
+	  qemud/remote_dispatch_proc_switch.h qemud/remote_dispatch_prototypes.h
+	  qemud/remote_protocol.c qemud/remote_protocol.h
+	  qemud/remote_protocol.x src/driver.h src/libvirt.c
+	  src/libvirt_internal.h src/libvirt_sym.version src/lxc_driver.c
+	  src/openvz_driver.c src/qemu_conf.h src/qemu_driver.c
+	  src/remote_internal.c src/test.c src/virsh.c: large patch to
+	  add migration support for KVM/QEmu, based on the work of Rich Jones
+	  and Chris Lalancette. This introduce a new version of the prepare
+	  and finish steps of the migration, so changes the driver API and
+	  a lot of code.
+
 Wed Nov 12 16:33:42 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* docs/drvopenvz.html, docs/drvopenvz.html.in: Introductory
