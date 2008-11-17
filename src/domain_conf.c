@@ -3242,18 +3242,20 @@ virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
                                     virDomainObjListPtr doms,
                                     const char *configDir,
                                     const char *autostartDir,
-                                    const char *name)
+                                    const char *name,
+                                    virDomainLoadConfigNotify notify,
+                                    void *opaque)
 {
     char *configFile = NULL, *autostartLink = NULL;
     virDomainDefPtr def = NULL;
     virDomainObjPtr dom;
     int autostart;
+    int newVM = 1;
 
     if ((configFile = virDomainConfigFile(conn, configDir, name)) == NULL)
         goto error;
     if ((autostartLink = virDomainConfigFile(conn, autostartDir, name)) == NULL)
         goto error;
-
 
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
         goto error;
@@ -3261,11 +3263,16 @@ virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
     if (!(def = virDomainDefParseFile(conn, caps, configFile)))
         goto error;
 
+    if (virDomainFindByName(doms, def->name))
+        newVM = 0;
+
     if (!(dom = virDomainAssignDef(conn, doms, def)))
         goto error;
 
-    dom->state = VIR_DOMAIN_SHUTOFF;
     dom->autostart = autostart;
+
+    if (notify)
+        (*notify)(dom, newVM, opaque);
 
     return dom;
 
@@ -3280,7 +3287,9 @@ int virDomainLoadAllConfigs(virConnectPtr conn,
                             virCapsPtr caps,
                             virDomainObjListPtr doms,
                             const char *configDir,
-                            const char *autostartDir)
+                            const char *autostartDir,
+                            virDomainLoadConfigNotify notify,
+                            void *opaque)
 {
     DIR *dir;
     struct dirent *entry;
@@ -3310,7 +3319,9 @@ int virDomainLoadAllConfigs(virConnectPtr conn,
                                   doms,
                                   configDir,
                                   autostartDir,
-                                  entry->d_name);
+                                  entry->d_name,
+                                  notify,
+                                  opaque);
         if (dom)
             dom->persistent = 1;
     }

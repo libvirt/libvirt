@@ -1015,7 +1015,8 @@ static int lxcStartup(void)
                                 lxc_driver->caps,
                                 &lxc_driver->domains,
                                 lxc_driver->configDir,
-                                lxc_driver->autostartDir) < 0) {
+                                lxc_driver->autostartDir,
+                                NULL, NULL) < 0) {
         lxcShutdown();
         return -1;
     }

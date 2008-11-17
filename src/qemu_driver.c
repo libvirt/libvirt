@@ -226,7 +226,8 @@ qemudStartup(void) {
                                 qemu_driver->caps,
                                 &qemu_driver->domains,
                                 qemu_driver->configDir,
-                                qemu_driver->autostartDir) < 0) {
+                                qemu_driver->autostartDir,
+                                NULL, NULL) < 0) {
         qemudShutdown();
         return -1;
     }
@@ -241,6 +242,16 @@ qemudStartup(void) {
     VIR_FREE(base);
     VIR_FREE(qemu_driver);
     return -1;
+}
+
+static void qemudNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
+{
+    struct qemud_driver *driver = opaque;
+
+    if (newVM)
+        qemudDomainEventDispatch(driver, vm,
+                                 VIR_DOMAIN_EVENT_DEFINED,
+                                 VIR_DOMAIN_EVENT_DEFINED_ADDED);
 }
 
 /**
@@ -258,7 +269,8 @@ qemudReload(void) {
                             qemu_driver->caps,
                             &qemu_driver->domains,
                             qemu_driver->configDir,
-                            qemu_driver->autostartDir);
+                            qemu_driver->autostartDir,
+                            qemudNotifyLoadDomain, qemu_driver);
 
     qemudAutostartConfigs(qemu_driver);
 
@@ -2365,9 +2377,14 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     virDomainDefPtr def;
     virDomainObjPtr vm;
     virDomainPtr dom;
+    int newVM = 1;
 
     if (!(def = virDomainDefParseString(conn, driver->caps, xml)))
         return NULL;
+
+    vm = virDomainFindByName(&driver->domains, def->name);
+    if (vm)
+        newVM = 0;
 
     if (!(vm = virDomainAssignDef(conn,
                                   &driver->domains,
@@ -2384,6 +2401,12 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
                                 vm);
         return NULL;
     }
+
+    qemudDomainEventDispatch(driver, vm,
+                             VIR_DOMAIN_EVENT_DEFINED,
+                             newVM ?
+                             VIR_DOMAIN_EVENT_DEFINED_ADDED :
+                             VIR_DOMAIN_EVENT_DEFINED_UPDATED);
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom) dom->id = vm->def->id;
@@ -2414,6 +2437,10 @@ static int qemudDomainUndefine(virDomainPtr dom) {
 
     if (virDomainDeleteConfig(dom->conn, driver->configDir, driver->autostartDir, vm) < 0)
         return -1;
+
+    qemudDomainEventDispatch(driver, vm,
+                             VIR_DOMAIN_EVENT_UNDEFINED,
+                             VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
 
     virDomainRemoveInactive(&driver->domains,
                             vm);

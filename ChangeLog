@@ -1,3 +1,13 @@
+Mon Nov 17 16:45:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
+
+	Generate domain events for QEMU driver config files
+	* src/qemu_driver.c: Generate events when config is defined
+	and undefined
+	* src/domain_conf.c, src/domain_conf.h: Add a callback for
+	notifications of each loaded config file
+	* src/lxc_driver.c: Pass NULL for config file notification
+	callback parameter
+
 Mon Nov 17 16:42:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
 
 	Include an event 'detail' field providing the cause of

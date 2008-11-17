@@ -549,18 +549,26 @@ int virDomainSaveConfig(virConnectPtr conn,
                         const char *configDir,
                         virDomainDefPtr def);
 
+typedef void (*virDomainLoadConfigNotify)(virDomainObjPtr dom,
+                                          int newDomain,
+                                          void *opaque);
+
 virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
                                     virCapsPtr caps,
                                     virDomainObjListPtr doms,
                                     const char *configDir,
                                     const char *autostartDir,
-                                    const char *name);
+                                    const char *name,
+                                    virDomainLoadConfigNotify notify,
+                                    void *opaque);
 
 int virDomainLoadAllConfigs(virConnectPtr conn,
                             virCapsPtr caps,
                             virDomainObjListPtr doms,
                             const char *configDir,
-                            const char *autostartDir);
+                            const char *autostartDir,
+                            virDomainLoadConfigNotify notify,
+                            void *opaque);
 
 int virDomainDeleteConfig(virConnectPtr conn,
                           const char *configDir,
