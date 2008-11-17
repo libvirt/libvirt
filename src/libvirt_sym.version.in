@@ -257,6 +257,19 @@ LIBVIRT_0.5.0 {
 LIBVIRT_PRIVATE_@VERSION@ {
 
   global:
+	/* bridge.h */
+	brAddBridge;
+	brAddInterface;
+	brAddTap;
+	brDeleteBridge;
+	brInit;
+	brSetEnableSTP;
+	brSetForwardDelay;
+	brSetInetAddress;
+	brSetInetNetmask;
+	brSetInterfaceUp;
+	brShutdown;
+
 
 	/* buf.h */
 	virBufferVSprintf;
@@ -264,6 +277,18 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virBufferAddChar;
 	virBufferContentAndReset;
 	virBufferError;
+
+
+	/* caps.h */
+	virCapabilitiesAddGuest;
+	virCapabilitiesAddGuestDomain;
+	virCapabilitiesAddGuestFeature;
+	virCapabilitiesAddHostNUMACell;
+	virCapabilitiesDefaultGuestEmulator;
+	virCapabilitiesFormatXML;
+	virCapabilitiesFree;
+	virCapabilitiesNew;
+	virCapabilitiesSetMacPrefix;
 
 
 	/* conf.h */
@@ -284,7 +309,62 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virGetStorageVol;
 
 
+	/* domain_conf.h */
+	virDiskNameToBusDeviceIndex;
+	virDiskNameToIndex;
+	virDomainAssignDef;
+	virDomainConfigFile;
+	virDomainDefDefaultEmulator;
+	virDomainDefFormat;
+	virDomainDefFree;
+	virDomainDefParseFile;
+	virDomainDefParseString;
+	virDomainDeleteConfig;
+	virDomainDeviceDefParse;
+	virDomainDiskBusTypeToString;
+	virDomainDiskDeviceTypeToString;
+	virDomainDiskQSort;
+	virDomainEventCallbackListAdd;
+	virDomainEventCallbackListFree;
+	virDomainEventCallbackListRemove;
+	virDomainFindByID;
+	virDomainFindByName;
+	virDomainFindByUUID;
+	virDomainLoadAllConfigs;
+	virDomainObjListFree;
+	virDomainRemoveInactive;
+	virDomainSaveConfig;
+	virDomainSoundModelTypeToString;
+	virDomainVirtTypeToString;
+
+
+	/* iptables.h */
+	iptablesAddForwardAllowCross;
+	iptablesAddForwardAllowIn;
+	iptablesAddForwardAllowOut;
+	iptablesAddForwardAllowRelatedIn;
+	iptablesAddForwardMasquerade;
+	iptablesAddForwardRejectIn;
+	iptablesAddForwardRejectOut;
+	iptablesAddTcpInput;
+	iptablesAddUdpInput;
+	iptablesContextFree;
+	iptablesContextNew;
+	iptablesReloadRules;
+	iptablesRemoveForwardAllowCross;
+	iptablesRemoveForwardAllowIn;
+	iptablesRemoveForwardAllowOut;
+	iptablesRemoveForwardAllowRelatedIn;
+	iptablesRemoveForwardMasquerade;
+	iptablesRemoveForwardRejectIn;
+	iptablesRemoveForwardRejectOut;
+	iptablesRemoveTcpInput;
+	iptablesRemoveUdpInput;
+	iptablesSaveRules;
+
+
 	/* libvirt_internal.h */
+	debugFlag;
 	virStateInitialize;
 	virStateCleanup;
 	virStateReload;
@@ -296,6 +376,10 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virDomainMigrateFinish;
 	virDomainMigratePrepare2;
 	virDomainMigrateFinish2;
+	virRegisterDriver;
+	virRegisterNetworkDriver;
+	virRegisterStateDriver;
+	virRegisterStorageDriver;
 
 
 	/* memory.h */
@@ -305,13 +389,104 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virFree;
 
 
+	/* network_conf.h */
+	virNetworkAssignDef;
+	virNetworkDefFormat;
+	virNetworkDefFree;
+	virNetworkDefParseString;
+	virNetworkDeleteConfig;
+	virNetworkFindByName;
+	virNetworkFindByUUID;
+	virNetworkLoadAllConfigs;
+	virNetworkObjListFree;
+	virNetworkRemoveInactive;
+	virNetworkSaveConfig;
+
+
+	/* nodeinfo.h */
+	virNodeInfoPopulate;
+
+
+	/* stats_linux.h */
+	linuxDomainInterfaceStats;
+
+
+	/* storage_backend.h */
+	virStorageBackendForType;
+	virStorageBackendFromString;
+	virStorageBackendPartTableTypeFromString;
+	virStorageBackendPartTableTypeToString;
+	virStorageBackendRegister;
+	virStorageBackendRunProgNul;
+	virStorageBackendRunProgRegex;
+	virStorageBackendStablePath;
+	virStorageBackendUpdateVolInfo;
+	virStorageBackendUpdateVolInfoFD;
+
+
+	/* storage_conf.h */
+	virStoragePoolDefFormat;
+	virStoragePoolDefFree;
+	virStoragePoolDefParse;
+	virStoragePoolLoadAllConfigs;
+	virStoragePoolObjAssignDef;
+	virStoragePoolObjClearVols;
+	virStoragePoolObjDeleteDef;
+	virStoragePoolObjFindByName;
+	virStoragePoolObjFindByUUID;
+	virStoragePoolObjListFree;
+	virStoragePoolObjRemove;
+	virStoragePoolObjSaveDef;
+	virStoragePoolSourceFree;
+	virStoragePoolSourceListFormat;
+	virStorageVolDefFindByKey;
+	virStorageVolDefFindByName;
+	virStorageVolDefFindByPath;
+	virStorageVolDefFormat;
+	virStorageVolDefFree;
+	virStorageVolDefParse;
+	virStoragePoolFormatDiskTypeToString;
+	virStoragePoolFormatFileSystemTypeToString;
+	virStoragePoolFormatFileSystemNetTypeToString;
+	virStorageVolFormatFileSystemTypeToString;
+	virStoragePoolTypeFromString;
+
+
 	/* util.h */
 	virFileReadAll;
 	virStrToLong_i;
+	virStrToLong_ll;
 	virStrToLong_ull;
 	saferead;
 	safewrite;
 	virMacAddrCompare;
+	virEnumFromString;
+	virEnumToString;
+	virEventAddHandle;
+	virEventRemoveHandle;
+	virExec;
+	virFileDeletePid;
+	virFileExists;
+	virFileHasSuffix;
+	virFileLinkPointsTo;
+	virFileMakePath;
+	virFileOpenTty;
+	virFileReadLimFD;
+	virFileReadPid;
+	virParseNumber;
+	virRun;
+
+
+	/* uuid.h */
+	virUUIDFormat;
+
+
+	/* virterror_internal.h */
+	virReportErrorHelper;
+
+
+	/* xml.h */
+	virXPathString;
 
 
 	/* Finally everything else is totally private */

@@ -88,7 +88,26 @@ libvirtd_LDFLAGS = \
 	$(POLKIT_LIBS)
 
 libvirtd_DEPENDENCIES = ../src/libvirt.la
-libvirtd_LDADD = ../src/libvirt.la ../gnulib/lib/libgnu.la
+libvirtd_LDADD =					\
+		../gnulib/lib/libgnu.la
+
+if WITH_QEMU
+libvirtd_LDADD += ../src/libvirt_driver_qemu.la
+endif
+
+if WITH_LXC
+libvirtd_LDADD += ../src/libvirt_driver_lxc.la
+endif
+
+if WITH_STORAGE_DIR
+libvirtd_LDADD += ../src/libvirt_driver_storage.la
+endif
+
+if WITH_NETWORK
+libvirtd_LDADD += ../src/libvirt_driver_network.la
+endif
+
+libvirtd_LDADD += ../src/libvirt.la
 
 if HAVE_POLKIT
 policydir = $(datadir)/PolicyKit/policy

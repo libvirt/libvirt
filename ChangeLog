@@ -1,3 +1,19 @@
+Mon Nov 17 11:57:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
+
+	Push stateful driver code into daemon binary
+	* src/Makefile.am: Don't build QEMU, LXC, Network & Storage
+	drivers into libvirt.so
+	* src/libvirt.c: Don't call into QEMU, LXC, network & storage
+	driver register methods
+	* src/libvirt_sym.version.in: Export a bunch of internal
+	symbols to libvirtd for use by drivers
+	* tests/Makefile.am: Link to driver modules which are not
+	in libvirt.so
+	* qemud/Makefile.am: Directly link to QEMU, LXC, network
+	and storage drivers
+	* qemud/qemud.c: Initialize QEMU, LXC, network & storage
+	drivers at startup
+
 Mon Nov 17 11:40:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
 
 	Push URI probing down into individual drivers' open methods

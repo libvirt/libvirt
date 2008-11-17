@@ -196,7 +196,8 @@ endif
 
 if WITH_QEMU
 noinst_LTLIBRARIES += libvirt_driver_qemu.la
-libvirt_la_LIBADD += libvirt_driver_qemu.la
+# Stateful, so linked to daemon instead
+#libvirt_la_LIBADD += libvirt_driver_qemu.la
 libvirt_driver_qemu_la_CFLAGS = $(NUMACTL_CFLAGS)
 libvirt_driver_qemu_la_LDFLAGS = $(NUMACTL_LIBS)
 libvirt_driver_qemu_la_SOURCES = $(QEMU_DRIVER_SOURCES)
@@ -204,14 +205,16 @@ endif
 
 if WITH_LXC
 noinst_LTLIBRARIES += libvirt_driver_lxc.la
-libvirt_la_LIBADD += libvirt_driver_lxc.la
+# Stateful, so linked to daemon instead
+#libvirt_la_LIBADD += libvirt_driver_lxc.la
 libvirt_driver_lxc_la_SOURCES = $(LXC_DRIVER_SOURCES)
 endif
 
 
 if WITH_NETWORK
 noinst_LTLIBRARIES += libvirt_driver_network.la
-libvirt_la_LIBADD += libvirt_driver_network.la
+# Stateful, so linked to daemon instead
+#libvirt_la_LIBADD += libvirt_driver_network.la
 libvirt_driver_network_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
 endif
 
@@ -219,7 +222,8 @@ endif
 libvirt_driver_storage_la_SOURCES =
 if WITH_STORAGE_DIR
 noinst_LTLIBRARIES += libvirt_driver_storage.la
-libvirt_la_LIBADD += libvirt_driver_storage.la
+# Stateful, so linked to daemon instead
+#libvirt_la_LIBADD += libvirt_driver_storage.la
 libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
 libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_FS_SOURCES)
 endif
@@ -261,6 +265,7 @@ libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%) \
 		    @CYGWIN_EXTRA_LDFLAGS@ @MINGW_EXTRA_LDFLAGS@
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
+libvirt_la_DEPENDENCIES = $(libvirt_la_LIBADD) $(srcdir)/libvirt_sym.version
 
 # Create an automake "convenience library" version of libvirt_la,
 # just for testing, since the test harness requires access to internal

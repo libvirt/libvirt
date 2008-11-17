@@ -50,18 +50,8 @@
 #ifdef WITH_REMOTE
 #include "remote_internal.h"
 #endif
-#ifdef WITH_QEMU
-#include "qemu_driver.h"
-#endif
 #ifdef WITH_OPENVZ
 #include "openvz_driver.h"
-#endif
-#ifdef WITH_LXC
-#include "lxc_driver.h"
-#endif
-#include "storage_driver.h"
-#ifdef WITH_NETWORK
-#include "network_driver.h"
 #endif
 
 /*
@@ -286,20 +276,8 @@ virInitialize(void)
 #ifdef WITH_XEN
     if (xenUnifiedRegister () == -1) return -1;
 #endif
-#ifdef WITH_QEMU
-    if (qemudRegister() == -1) return -1;
-#endif
 #ifdef WITH_OPENVZ
     if (openvzRegister() == -1) return -1;
-#endif
-#ifdef WITH_LXC
-    if (lxcRegister() == -1) return -1;
-#endif
-#ifdef WITH_NETWORK
-    if (networkRegister() == -1) return -1;
-#endif
-#ifdef WITH_STORAGE_DIR
-    if (storageRegister() == -1) return -1;
 #endif
 #ifdef WITH_REMOTE
     if (remoteRegister () == -1) return -1;

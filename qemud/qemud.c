@@ -61,6 +61,20 @@
 #include "mdns.h"
 #endif
 
+#ifdef WITH_QEMU
+#include "qemu_driver.h"
+#endif
+#ifdef WITH_LXC
+#include "lxc_driver.h"
+#endif
+#ifdef WITH_NETWORK
+#include "network_driver.h"
+#endif
+#ifdef WITH_STORAGE_DIR
+#include "storage_driver.h"
+#endif
+
+
 static int godaemon = 0;        /* -d: Be a daemon */
 static int verbose = 0;         /* -v: Verbose mode */
 static int timeout = -1;        /* -t: Shutdown timeout */
@@ -727,6 +741,21 @@ static struct qemud_server *qemudInitialize(int sigread) {
     }
 
     server->sigread = sigread;
+
+    virInitialize();
+
+#ifdef WITH_QEMU
+    qemudRegister();
+#endif
+#ifdef WITH_LXC
+    lxcRegister();
+#endif
+#ifdef WITH_NETWORK
+    networkRegister();
+#endif
+#ifdef WITH_STORAGE_DIR
+    storageRegister();
+#endif
 
     virEventRegisterImpl(virEventAddHandleImpl,
                          virEventUpdateHandleImpl,
