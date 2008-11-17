@@ -39,15 +39,6 @@
 
 #define PV_BLANK_SECTOR_SIZE 512
 
-enum {
-    VIR_STORAGE_POOL_LOGICAL_UNKNOWN = 0,
-    VIR_STORAGE_POOL_LOGICAL_LVM2 = 1,
-    VIR_STORAGE_POOL_LOGICAL_LAST,
-};
-VIR_ENUM_DECL(virStorageBackendLogicalPool);
-VIR_ENUM_IMPL(virStorageBackendLogicalPool,
-              VIR_STORAGE_POOL_LOGICAL_LAST,
-              "unknown", "lvm2");
 
 static int
 virStorageBackendLogicalSetActive(virConnectPtr conn,
@@ -94,6 +85,8 @@ virStorageBackendLogicalMakeVol(virConnectPtr conn,
             virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
             return -1;
         }
+
+        vol->type = VIR_STORAGE_VOL_BLOCK;
 
         if ((vol->name = strdup(groups[0])) == NULL) {
             virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
@@ -577,6 +570,8 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     snprintf(size, sizeof(size)-1, "%lluK", vol->capacity/1024);
     size[sizeof(size)-1] = '\0';
 
+    vol->type = VIR_STORAGE_VOL_BLOCK;
+
     if (vol->target.path != NULL) {
         /* A target path passed to CreateVol has no meaning */
         VIR_FREE(vol->target.path);
@@ -669,14 +664,4 @@ virStorageBackend virStorageBackendLogical = {
     .deletePool = virStorageBackendLogicalDeletePool,
     .createVol = virStorageBackendLogicalCreateVol,
     .deleteVol = virStorageBackendLogicalDeleteVol,
-
-    .poolOptions = {
-        .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_NAME |
-                  VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE),
-        .defaultFormat = VIR_STORAGE_POOL_LOGICAL_LVM2,
-        .formatFromString = virStorageBackendLogicalPoolTypeFromString,
-        .formatToString = virStorageBackendLogicalPoolTypeToString,
-    },
-
-    .volType = VIR_STORAGE_VOL_BLOCK,
 };

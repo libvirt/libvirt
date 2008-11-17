@@ -403,7 +403,7 @@ storageFindPoolSources(virConnectPtr conn,
     int backend_type;
     virStorageBackendPtr backend;
 
-    backend_type = virStorageBackendFromString(type);
+    backend_type = virStoragePoolTypeFromString(type);
     if (backend_type < 0)
         return NULL;
 
@@ -968,33 +968,22 @@ storageVolumeLookupByPath(virConnectPtr conn,
     for (i = 0 ; i < driver->pools.count ; i++) {
         if (virStoragePoolObjIsActive(driver->pools.objs[i])) {
             virStorageVolDefPtr vol;
-            virStorageBackendPoolOptionsPtr options;
+            const char *stable_path;
 
-            options = virStorageBackendPoolOptionsForType(driver->pools.objs[i]->def->type);
-            if (options == NULL)
-                continue;
+            stable_path = virStorageBackendStablePath(conn,
+                                                      driver->pools.objs[i],
+                                                      path);
+            /*
+             * virStorageBackendStablePath already does
+             * virStorageReportError if it fails; we just need to keep
+             * propagating the return code
+             */
+            if (stable_path == NULL)
+                return NULL;
 
-            if (options->flags & VIR_STORAGE_BACKEND_POOL_STABLE_PATH) {
-                const char *stable_path;
-
-                stable_path = virStorageBackendStablePath(conn,
-                                                          driver->pools.objs[i],
-                                                          path);
-                /*
-                 * virStorageBackendStablePath already does
-                 * virStorageReportError if it fails; we just need to keep
-                 * propagating the return code
-                 */
-                if (stable_path == NULL)
-                    return NULL;
-
-                vol = virStorageVolDefFindByPath(driver->pools.objs[i],
-                                                 stable_path);
-                VIR_FREE(stable_path);
-            }
-            else
-                vol = virStorageVolDefFindByPath(driver->pools.objs[i], path);
-
+            vol = virStorageVolDefFindByPath(driver->pools.objs[i],
+                                             stable_path);
+            VIR_FREE(stable_path);
 
             if (vol)
                 return virGetStorageVol(conn,
@@ -1170,7 +1159,7 @@ storageVolumeGetInfo(virStorageVolPtr obj,
         return -1;
 
     memset(info, 0, sizeof(*info));
-    info->type = backend->volType;
+    info->type = vol->type;
     info->capacity = vol->capacity;
     info->allocation = vol->allocation;
 

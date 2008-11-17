@@ -24,40 +24,13 @@
 #include <config.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdio.h>
 
 #include "virterror_internal.h"
 #include "logging.h"
 #include "storage_backend_disk.h"
 #include "util.h"
 #include "memory.h"
-
-/*
- * XXX these are basically partition types.
- *
- * fdisk has a bazillion partition ID types
- * parted has practically none, and splits the
- * info across 3 different attributes.
- *
- * So this is a semi-generic set
- */
-enum {
-    VIR_STORAGE_VOL_DISK_NONE = 0,
-    VIR_STORAGE_VOL_DISK_LINUX,
-    VIR_STORAGE_VOL_DISK_FAT16,
-    VIR_STORAGE_VOL_DISK_FAT32,
-    VIR_STORAGE_VOL_DISK_LINUX_SWAP,
-    VIR_STORAGE_VOL_DISK_LINUX_LVM,
-    VIR_STORAGE_VOL_DISK_LINUX_RAID,
-    VIR_STORAGE_VOL_DISK_EXTENDED,
-    VIR_STORAGE_VOL_DISK_LAST,
-};
-VIR_ENUM_DECL(virStorageBackendDiskVol);
-VIR_ENUM_IMPL(virStorageBackendDiskVol,
-              VIR_STORAGE_VOL_DISK_LAST,
-              "none", "linux", "fat16",
-              "fat32", "linux-swap",
-              "linux-lvm", "linux-raid",
-              "extended");
 
 #define PARTHELPER BINDIR "/libvirt_parthelper"
 
@@ -153,6 +126,8 @@ virStorageBackendDiskMakeDataVol(virConnectPtr conn,
     /* Refresh allocation/capacity/perms */
     if (virStorageBackendUpdateVolInfo(conn, vol, 1) < 0)
         return -1;
+
+    vol->type = VIR_STORAGE_VOL_BLOCK;
 
     /* The above gets allocation wrong for
      * extended partitions, so overwrite it */
@@ -306,7 +281,7 @@ virStorageBackendDiskBuildPool(virConnectPtr conn,
         "mklabel",
         "--script",
         ((pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) ? "msdos" :
-          virStorageBackendPartTableTypeToString(pool->def->source.format)),
+          virStoragePoolFormatDiskTypeToString(pool->def->source.format)),
         NULL,
     };
 
@@ -445,18 +420,4 @@ virStorageBackend virStorageBackendDisk = {
 
     .createVol = virStorageBackendDiskCreateVol,
     .deleteVol = virStorageBackendDiskDeleteVol,
-
-    .poolOptions = {
-        .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE|
-                  VIR_STORAGE_BACKEND_POOL_STABLE_PATH),
-        .defaultFormat = VIR_STORAGE_POOL_DISK_UNKNOWN,
-        .formatFromString = virStorageBackendPartTableTypeFromString,
-        .formatToString = virStorageBackendPartTableTypeToString,
-    },
-    .volOptions = {
-        .formatFromString = virStorageBackendDiskVolTypeFromString,
-        .formatToString = virStorageBackendDiskVolTypeToString,
-    },
-
-    .volType = VIR_STORAGE_VOL_BLOCK,
 };

@@ -24,67 +24,8 @@
 #ifndef __VIR_STORAGE_BACKEND_H__
 #define __VIR_STORAGE_BACKEND_H__
 
-#include <libvirt/libvirt.h>
+#include "internal.h"
 #include "storage_conf.h"
-#include "util.h"
-
-
-typedef const char *(*virStorageVolFormatToString)(int format);
-typedef int (*virStorageVolFormatFromString)(const char *format);
-
-typedef const char *(*virStoragePoolFormatToString)(int format);
-typedef int (*virStoragePoolFormatFromString)(const char *format);
-
-typedef struct _virStorageBackendVolOptions virStorageBackendVolOptions;
-typedef virStorageBackendVolOptions *virStorageBackendVolOptionsPtr;
-struct _virStorageBackendVolOptions {
-    virStorageVolFormatToString formatToString;
-    virStorageVolFormatFromString formatFromString;
-};
-
-
-/* Flags to indicate mandatory components in the pool source */
-enum {
-    VIR_STORAGE_BACKEND_POOL_SOURCE_HOST    = (1<<0),
-    VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE  = (1<<1),
-    VIR_STORAGE_BACKEND_POOL_SOURCE_DIR     = (1<<2),
-    VIR_STORAGE_BACKEND_POOL_SOURCE_ADAPTER = (1<<3),
-    VIR_STORAGE_BACKEND_POOL_SOURCE_NAME    = (1<<4),
-    VIR_STORAGE_BACKEND_POOL_STABLE_PATH    = (1<<5),
-};
-
-enum partTableType {
-    VIR_STORAGE_POOL_DISK_UNKNOWN = 0,
-    VIR_STORAGE_POOL_DISK_DOS = 1,
-    VIR_STORAGE_POOL_DISK_DVH,
-    VIR_STORAGE_POOL_DISK_GPT,
-    VIR_STORAGE_POOL_DISK_MAC,
-    VIR_STORAGE_POOL_DISK_BSD,
-    VIR_STORAGE_POOL_DISK_PC98,
-    VIR_STORAGE_POOL_DISK_SUN,
-    VIR_STORAGE_POOL_DISK_LVM2,
-    VIR_STORAGE_POOL_DISK_LAST,
-};
-
-struct diskType {
-    enum partTableType part_table_type;
-    unsigned short offset;
-    unsigned short length;
-    unsigned long long magic;
-};
-VIR_ENUM_DECL(virStorageBackendPartTable);
-
-typedef struct _virStorageBackendPoolOptions virStorageBackendPoolOptions;
-typedef virStorageBackendPoolOptions *virStorageBackendPoolOptionsPtr;
-struct _virStorageBackendPoolOptions {
-    int flags;
-    int defaultFormat;
-    virStoragePoolFormatToString formatToString;
-    virStoragePoolFormatFromString formatFromString;
-};
-
-#define SOURCES_START_TAG "<sources>"
-#define SOURCES_END_TAG "</sources>"
 
 typedef char * (*virStorageBackendFindPoolSources)(virConnectPtr conn, const char *srcSpec, unsigned int flags);
 typedef int (*virStorageBackendStartPool)(virConnectPtr conn, virStoragePoolObjPtr pool);
@@ -114,19 +55,10 @@ struct _virStorageBackend {
     virStorageBackendCreateVol createVol;
     virStorageBackendRefreshVol refreshVol;
     virStorageBackendDeleteVol deleteVol;
-
-    virStorageBackendPoolOptions poolOptions;
-    virStorageBackendVolOptions volOptions;
-
-    int volType;
 };
 
-
 virStorageBackendPtr virStorageBackendForType(int type);
-virStorageBackendPoolOptionsPtr virStorageBackendPoolOptionsForType(int type);
-virStorageBackendVolOptionsPtr virStorageBackendVolOptionsForType(int type);
-int virStorageBackendFromString(const char *type);
-const char *virStorageBackendToString(int type);
+
 
 int virStorageBackendUpdateVolInfo(virConnectPtr conn,
                                    virStorageVolDefPtr vol,

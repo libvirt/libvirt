@@ -178,6 +178,8 @@ virStorageBackendISCSINewLun(virConnectPtr conn, virStoragePoolObjPtr pool,
         goto cleanup;
     }
 
+    vol->type = VIR_STORAGE_VOL_BLOCK;
+
     if (asprintf(&(vol->name), "lun-%d", lun) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("name"));
         goto cleanup;
@@ -641,15 +643,4 @@ virStorageBackend virStorageBackendISCSI = {
     .startPool = virStorageBackendISCSIStartPool,
     .refreshPool = virStorageBackendISCSIRefreshPool,
     .stopPool = virStorageBackendISCSIStopPool,
-
-    .poolOptions = {
-        .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_HOST |
-                  VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE |
-                  VIR_STORAGE_BACKEND_POOL_STABLE_PATH)
-    },
-
-    .volType = VIR_STORAGE_VOL_BLOCK,
-    .volOptions = {
-        .formatToString = virStorageBackendPartTableTypeToString,
-    }
 };

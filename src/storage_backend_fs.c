@@ -47,59 +47,6 @@
 #include "memory.h"
 #include "xml.h"
 
-enum {
-    VIR_STORAGE_POOL_FS_AUTO = 0,
-    VIR_STORAGE_POOL_FS_EXT2,
-    VIR_STORAGE_POOL_FS_EXT3,
-    VIR_STORAGE_POOL_FS_EXT4,
-    VIR_STORAGE_POOL_FS_UFS,
-    VIR_STORAGE_POOL_FS_ISO,
-    VIR_STORAGE_POOL_FS_UDF,
-    VIR_STORAGE_POOL_FS_GFS,
-    VIR_STORAGE_POOL_FS_GFS2,
-    VIR_STORAGE_POOL_FS_VFAT,
-    VIR_STORAGE_POOL_FS_HFSPLUS,
-    VIR_STORAGE_POOL_FS_XFS,
-    VIR_STORAGE_POOL_FS_LAST,
-};
-VIR_ENUM_DECL(virStorageBackendFileSystemPool);
-VIR_ENUM_IMPL(virStorageBackendFileSystemPool,
-              VIR_STORAGE_POOL_FS_LAST,
-              "auto", "ext2", "ext3",
-              "ext4", "ufs", "iso9660", "udf",
-              "gfs", "gfs2", "vfat", "hfs+", "xfs");
-
-enum {
-    VIR_STORAGE_POOL_NETFS_AUTO = 0,
-    VIR_STORAGE_POOL_NETFS_NFS,
-    VIR_STORAGE_POOL_NETFS_LAST,
-};
-VIR_ENUM_DECL(virStorageBackendFileSystemNetPool);
-VIR_ENUM_IMPL(virStorageBackendFileSystemNetPool,
-              VIR_STORAGE_POOL_NETFS_LAST,
-              "auto", "nfs");
-
-
-enum {
-    VIR_STORAGE_VOL_RAW = 0,
-    VIR_STORAGE_VOL_DIR,
-    VIR_STORAGE_VOL_BOCHS,
-    VIR_STORAGE_VOL_CLOOP,
-    VIR_STORAGE_VOL_COW,
-    VIR_STORAGE_VOL_DMG,
-    VIR_STORAGE_VOL_ISO,
-    VIR_STORAGE_VOL_QCOW,
-    VIR_STORAGE_VOL_QCOW2,
-    VIR_STORAGE_VOL_VMDK,
-    VIR_STORAGE_VOL_VPC,
-    VIR_STORAGE_VOL_LAST,
-};
-VIR_ENUM_DECL(virStorageBackendFileSystemVol);
-VIR_ENUM_IMPL(virStorageBackendFileSystemVol,
-              VIR_STORAGE_VOL_LAST,
-              "raw", "dir", "bochs",
-              "cloop", "cow", "dmg", "iso",
-              "qcow", "qcow2", "vmdk", "vpc");
 
 /* Either 'magic' or 'extension' *must* be provided */
 struct FileTypeInfo {
@@ -130,45 +77,45 @@ const struct FileTypeInfo const fileTypeInfo[] = {
       __LITTLE_ENDIAN, -1, 0,
       -1, 0, 0 }, */
     /* Cow */
-    { VIR_STORAGE_VOL_COW, "OOOM", NULL,
+    { VIR_STORAGE_VOL_FILE_COW, "OOOM", NULL,
       __BIG_ENDIAN, 4, 2,
       4+4+1024+4, 8, 1 },
     /* DMG */
     /* XXX QEMU says there's no magic for dmg, but we should check... */
-    { VIR_STORAGE_VOL_DMG, NULL, ".dmg",
+    { VIR_STORAGE_VOL_FILE_DMG, NULL, ".dmg",
       0, -1, 0,
       -1, 0, 0 },
     /* XXX there's probably some magic for iso we can validate too... */
-    { VIR_STORAGE_VOL_ISO, NULL, ".iso",
+    { VIR_STORAGE_VOL_FILE_ISO, NULL, ".iso",
       0, -1, 0,
       -1, 0, 0 },
     /* Parallels */
     /* XXX Untested
-    { VIR_STORAGE_VOL_PARALLELS, "WithoutFreeSpace", NULL,
+    { VIR_STORAGE_VOL_FILE_PARALLELS, "WithoutFreeSpace", NULL,
       __LITTLE_ENDIAN, 16, 2,
       16+4+4+4+4, 4, 512 },
     */
     /* QCow */
-    { VIR_STORAGE_VOL_QCOW, "QFI", NULL,
+    { VIR_STORAGE_VOL_FILE_QCOW, "QFI", NULL,
       __BIG_ENDIAN, 4, 1,
       4+4+8+4+4, 8, 1 },
     /* QCow 2 */
-    { VIR_STORAGE_VOL_QCOW2, "QFI", NULL,
+    { VIR_STORAGE_VOL_FILE_QCOW2, "QFI", NULL,
       __BIG_ENDIAN, 4, 2,
       4+4+8+4+4, 8, 1 },
     /* VMDK 3 */
     /* XXX Untested
-    { VIR_STORAGE_VOL_VMDK, "COWD", NULL,
+    { VIR_STORAGE_VOL_FILE_VMDK, "COWD", NULL,
       __LITTLE_ENDIAN, 4, 1,
       4+4+4, 4, 512 },
     */
     /* VMDK 4 */
-    { VIR_STORAGE_VOL_VMDK, "KDMV", NULL,
+    { VIR_STORAGE_VOL_FILE_VMDK, "KDMV", NULL,
       __LITTLE_ENDIAN, 4, 1,
       4+4+4, 8, 512 },
     /* Connectix / VirtualPC */
     /* XXX Untested
-    { VIR_STORAGE_VOL_VPC, "conectix", NULL,
+    { VIR_STORAGE_VOL_FILE_VPC, "conectix", NULL,
       __BIG_ENDIAN, -1, 0,
       -1, 0, 0},
     */
@@ -288,7 +235,7 @@ static int virStorageBackendProbeFile(virConnectPtr conn,
     }
 
     /* All fails, so call it a raw file */
-    def->target.format = VIR_STORAGE_VOL_RAW;
+    def->target.format = VIR_STORAGE_VOL_FILE_RAW;
     return 0;
 }
 
@@ -486,8 +433,8 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
         MOUNT,
         "-t",
         pool->def->type == VIR_STORAGE_POOL_FS ?
-        virStorageBackendFileSystemPoolTypeToString(pool->def->source.format) :
-        virStorageBackendFileSystemNetPoolTypeToString(pool->def->source.format),
+        virStoragePoolFormatFileSystemTypeToString(pool->def->source.format) :
+        virStoragePoolFormatFileSystemNetTypeToString(pool->def->source.format),
         NULL, /* Fill in shortly - careful not to add extra fields
                  before this */
         pool->def->target.path,
@@ -689,7 +636,8 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
         if ((vol->name = strdup(ent->d_name)) == NULL)
             goto no_memory;
 
-        vol->target.format = VIR_STORAGE_VOL_RAW; /* Real value is filled in during probe */
+        vol->type = VIR_STORAGE_VOL_FILE;
+        vol->target.format = VIR_STORAGE_VOL_FILE_RAW; /* Real value is filled in during probe */
         if (VIR_ALLOC_N(vol->target.path, strlen(pool->def->target.path) +
                         1 + strlen(vol->name) + 1) < 0)
             goto no_memory;
@@ -815,6 +763,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("target"));
         return -1;
     }
+    vol->type = VIR_STORAGE_VOL_FILE;
     strcpy(vol->target.path, pool->def->target.path);
     strcat(vol->target.path, "/");
     strcat(vol->target.path, vol->name);
@@ -825,7 +774,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         return -1;
     }
 
-    if (vol->target.format == VIR_STORAGE_VOL_RAW) {
+    if (vol->target.format == VIR_STORAGE_VOL_FILE_RAW) {
         if ((fd = open(vol->target.path, O_RDWR | O_CREAT | O_EXCL,
                        vol->target.perms.mode)) < 0) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -865,7 +814,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
             close(fd);
             return -1;
         }
-    } else if (vol->target.format == VIR_STORAGE_VOL_DIR) {
+    } else if (vol->target.format == VIR_STORAGE_VOL_FILE_DIR) {
         if (mkdir(vol->target.path, vol->target.perms.mode) < 0) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                   _("cannot create path '%s': %s"),
@@ -885,7 +834,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         char size[100];
         const char *imgargv[7];
 
-        if ((type = virStorageBackendFileSystemVolTypeToString(vol->target.format)) == NULL) {
+        if ((type = virStorageVolFormatFileSystemTypeToString(vol->target.format)) == NULL) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                   _("unknown storage vol type %d"),
                                   vol->target.format);
@@ -923,7 +872,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         char size[100];
         const char *imgargv[4];
 
-        if (vol->target.format != VIR_STORAGE_VOL_QCOW2) {
+        if (vol->target.format != VIR_STORAGE_VOL_FILE_QCOW2) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                   _("unsupported storage vol type %d"),
                                   vol->target.format);
@@ -1040,12 +989,6 @@ virStorageBackend virStorageBackendDirectory = {
     .createVol = virStorageBackendFileSystemVolCreate,
     .refreshVol = virStorageBackendFileSystemVolRefresh,
     .deleteVol = virStorageBackendFileSystemVolDelete,
-
-    .volOptions = {
-        .formatFromString = virStorageBackendFileSystemVolTypeFromString,
-        .formatToString = virStorageBackendFileSystemVolTypeToString,
-    },
-    .volType = VIR_STORAGE_VOL_FILE,
 };
 
 #if WITH_STORAGE_FS
@@ -1060,17 +1003,6 @@ virStorageBackend virStorageBackendFileSystem = {
     .createVol = virStorageBackendFileSystemVolCreate,
     .refreshVol = virStorageBackendFileSystemVolRefresh,
     .deleteVol = virStorageBackendFileSystemVolDelete,
-
-    .poolOptions = {
-        .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_DEVICE),
-        .formatFromString = virStorageBackendFileSystemPoolTypeFromString,
-        .formatToString = virStorageBackendFileSystemPoolTypeToString,
-    },
-    .volOptions = {
-        .formatFromString = virStorageBackendFileSystemVolTypeFromString,
-        .formatToString = virStorageBackendFileSystemVolTypeToString,
-    },
-    .volType = VIR_STORAGE_VOL_FILE,
 };
 virStorageBackend virStorageBackendNetFileSystem = {
     .type = VIR_STORAGE_POOL_NETFS,
@@ -1084,18 +1016,5 @@ virStorageBackend virStorageBackendNetFileSystem = {
     .createVol = virStorageBackendFileSystemVolCreate,
     .refreshVol = virStorageBackendFileSystemVolRefresh,
     .deleteVol = virStorageBackendFileSystemVolDelete,
-
-    .poolOptions = {
-        .flags = (VIR_STORAGE_BACKEND_POOL_SOURCE_HOST |
-                  VIR_STORAGE_BACKEND_POOL_SOURCE_DIR),
-        .defaultFormat = VIR_STORAGE_POOL_FS_AUTO,
-        .formatFromString = virStorageBackendFileSystemNetPoolTypeFromString,
-        .formatToString = virStorageBackendFileSystemNetPoolTypeToString,
-    },
-    .volOptions = {
-        .formatFromString = virStorageBackendFileSystemVolTypeFromString,
-        .formatToString = virStorageBackendFileSystemVolTypeToString,
-    },
-    .volType = VIR_STORAGE_VOL_FILE,
 };
 #endif /* WITH_STORAGE_FS */

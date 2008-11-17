@@ -24,6 +24,7 @@
 #include <config.h>
 
 #include <string.h>
+#include <stdio.h>
 #if HAVE_REGEX_H
 #include <regex.h>
 #endif
@@ -60,10 +61,6 @@
 #include "storage_backend_fs.h"
 #endif
 
-VIR_ENUM_IMPL(virStorageBackendPartTable,
-              VIR_STORAGE_POOL_DISK_LAST,
-              "unknown", "dos", "dvh", "gpt",
-              "mac", "bsd", "pc98", "sun", "lvm2");
 
 static virStorageBackendPtr backends[] = {
 #if WITH_STORAGE_DIR
@@ -98,81 +95,6 @@ virStorageBackendForType(int type) {
     return NULL;
 }
 
-virStorageBackendPoolOptionsPtr
-virStorageBackendPoolOptionsForType(int type) {
-    virStorageBackendPtr backend = virStorageBackendForType(type);
-    if (backend == NULL)
-        return NULL;
-    return &backend->poolOptions;
-}
-
-virStorageBackendVolOptionsPtr
-virStorageBackendVolOptionsForType(int type) {
-    virStorageBackendPtr backend = virStorageBackendForType(type);
-    if (backend == NULL)
-        return NULL;
-    return &backend->volOptions;
-}
-
-
-int
-virStorageBackendFromString(const char *type) {
-    if (STREQ(type, "dir"))
-        return VIR_STORAGE_POOL_DIR;
-#if WITH_STORAGE_FS
-    if (STREQ(type, "fs"))
-        return VIR_STORAGE_POOL_FS;
-    if (STREQ(type, "netfs"))
-        return VIR_STORAGE_POOL_NETFS;
-#endif
-#if WITH_STORAGE_LVM
-    if (STREQ(type, "logical"))
-        return VIR_STORAGE_POOL_LOGICAL;
-#endif
-#if WITH_STORAGE_ISCSI
-    if (STREQ(type, "iscsi"))
-        return VIR_STORAGE_POOL_ISCSI;
-#endif
-#if WITH_STORAGE_DISK
-    if (STREQ(type, "disk"))
-        return VIR_STORAGE_POOL_DISK;
-#endif
-
-    virStorageReportError(NULL, VIR_ERR_INTERNAL_ERROR,
-                          _("unknown storage backend type %s"), type);
-    return -1;
-}
-
-const char *
-virStorageBackendToString(int type) {
-    switch (type) {
-    case VIR_STORAGE_POOL_DIR:
-        return "dir";
-#if WITH_STORAGE_FS
-    case VIR_STORAGE_POOL_FS:
-        return "fs";
-    case VIR_STORAGE_POOL_NETFS:
-        return "netfs";
-#endif
-#if WITH_STORAGE_LVM
-    case VIR_STORAGE_POOL_LOGICAL:
-        return "logical";
-#endif
-#if WITH_STORAGE_ISCSI
-    case VIR_STORAGE_POOL_ISCSI:
-        return "iscsi";
-#endif
-#if WITH_STORAGE_DISK
-    case VIR_STORAGE_POOL_DISK:
-        return "disk";
-#endif
-    }
-
-    virStorageReportError(NULL, VIR_ERR_INTERNAL_ERROR,
-                          _("unknown storage backend type %d"), type);
-    return NULL;
-}
-
 
 int
 virStorageBackendUpdateVolInfo(virConnectPtr conn,
@@ -197,6 +119,13 @@ virStorageBackendUpdateVolInfo(virConnectPtr conn,
 
     return ret;
 }
+
+struct diskType {
+    int part_table_type;
+    unsigned short offset;
+    unsigned short length;
+    unsigned long long magic;
+};
 
 static struct diskType const disk_types[] = {
     { VIR_STORAGE_POOL_DISK_LVM2, 0x218, 8, 0x31303020324D564CULL },
@@ -367,6 +296,12 @@ virStorageBackendStablePath(virConnectPtr conn,
     if (pool->def->target.path == NULL ||
         STREQ(pool->def->target.path, "/dev") ||
         STREQ(pool->def->target.path, "/dev/"))
+        goto ret_strdup;
+
+    /* Skip whole thing for a pool which isn't in /dev
+     * so we don't mess will filesystem/dir based pools
+     */
+    if (!STRPREFIX(pool->def->target.path, "/dev"))
         goto ret_strdup;
 
     /* The pool is pointing somewhere like /dev/disk/by-path

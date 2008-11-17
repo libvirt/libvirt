@@ -69,8 +69,7 @@ NETWORK_CONF_SOURCES =						\
 
 # Storage driver generic impl APIs
 STORAGE_CONF_SOURCES =						\
-		storage_conf.h storage_conf.c			\
-		storage_backend.h storage_backend.c
+		storage_conf.h storage_conf.c
 
 
 # The remote RPC driver, covering domains, storage, networks, etc
@@ -123,7 +122,8 @@ NETWORK_DRIVER_SOURCES =					\
 
 # And finally storage backend specific impls
 STORAGE_DRIVER_SOURCES =					\
-		storage_driver.h storage_driver.c
+		storage_driver.h storage_driver.c		\
+		storage_backend.h storage_backend.c
 
 STORAGE_DRIVER_FS_SOURCES =					\
 		storage_backend_fs.h storage_backend_fs.c

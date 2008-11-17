@@ -1,3 +1,17 @@
+Mon Nov 17 11:19:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
+
+	Refactor storage backend to remove dependancy from
+	storage config parser.
+	* src/Makefile.am: Build storage_backend as part of storage
+	driver instead of general config
+	* src/storage_backend.c, src/storage_backend.h,
+	src/storage_backend_disk.c, src/storage_backend_fs.c,
+	src/storage_backend_iscsi.c, src/storage_backend_logical.c,
+	src/storage_conf.c, src/storage_conf.h, src/storage_driver.c:
+	Move per-pool type parser options & format enums into the
+	main storage_conf.c file, so parser is independant of the
+	backend impl code.
+
 Mon Nov 17 10:50:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
 
 	Switch to fully versioned linker script for exported ABI
