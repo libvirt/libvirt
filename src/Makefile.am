@@ -6,11 +6,7 @@ INCLUDES = \
 	   -I@top_srcdir@/include \
 	   -I@top_srcdir@/qemud \
 	   $(LIBXML_CFLAGS) \
-	   $(GNUTLS_CFLAGS) \
-	   $(SASL_CFLAGS) \
 	   $(SELINUX_CFLAGS) \
-	   $(NUMACTL_CFLAGS) \
-	   $(XEN_CFLAGS) \
 	   -DBINDIR=\""$(libexecdir)"\" \
 	   -DSBINDIR=\""$(sbindir)"\" \
 	   -DSYSCONF_DIR="\"$(sysconfdir)\"" \
@@ -18,10 +14,6 @@ INCLUDES = \
            -DLOCAL_STATE_DIR=\""$(localstatedir)"\" \
            -DGETTEXT_PACKAGE=\"$(PACKAGE)\" \
 	   $(WARN_CFLAGS)
-
-DEPS = libvirt.la
-LDADDS = @STATIC_BINARIES@ $(WARN_CFLAGS) libvirt.la ../gnulib/lib/libgnu.la
-VIRSH_LIBS = @VIRSH_LIBS@
 
 confdir = $(sysconfdir)/libvirt/
 conf_DATA = qemu.conf
@@ -40,7 +32,7 @@ lib_LTLIBRARIES = libvirt.la
 
 # These files are not related to driver APIs. Simply generic
 # helper APIs for various purposes
-GENERIC_LIB_SOURCES =						\
+UTIL_SOURCES =							\
 		bridge.c bridge.h				\
 		buf.c buf.h					\
 		conf.c conf.h					\
@@ -54,6 +46,16 @@ GENERIC_LIB_SOURCES =						\
 		virterror.c virterror_internal.h		\
 		logging.c logging.h				\
 		xml.c xml.h
+
+# Internal generic driver infrastructure
+DRIVER_SOURCES = 						\
+		driver.h					\
+		internal.h					\
+		datatypes.c datatypes.h				\
+		domain_event.c domain_event.h			\
+		stats_linux.c stats_linux.h			\
+		libvirt.c libvirt_internal.h
+
 
 # Domain driver generic impl APIs
 DOMAIN_CONF_SOURCES =						\
@@ -147,62 +149,91 @@ STORAGE_HELPER_DISK_SOURCES =					\
 #
 # First deal with sources usable in non-daemon context
 
-libvirt_la_SOURCES =						\
-		driver.h					\
-		internal.h					\
-		datatypes.c datatypes.h				\
-		domain_event.c domain_event.h			\
-		stats_linux.c stats_linux.h			\
-		libvirt.c libvirt_internal.h			\
-		$(GENERIC_LIB_SOURCES)				\
+noinst_LTLIBRARIES = libvirt_util.la
+libvirt_la_LIBADD = libvirt_util.la
+libvirt_util_la_SOURCES =					\
+		$(UTIL_SOURCES)
+
+noinst_LTLIBRARIES += libvirt_driver.la
+libvirt_la_LIBADD += libvirt_driver.la
+libvirt_driver_la_SOURCES =					\
+		$(DRIVER_SOURCES)				\
 		$(DOMAIN_CONF_SOURCES)				\
 		$(NETWORK_CONF_SOURCES)				\
 		$(STORAGE_CONF_SOURCES)
 
 if WITH_TEST
-libvirt_la_SOURCES += $(TEST_DRIVER_SOURCES)
+noinst_LTLIBRARIES += libvirt_driver_test.la
+libvirt_la_LIBADD += libvirt_driver_test.la
+libvirt_driver_test_la_SOURCES = $(TEST_DRIVER_SOURCES)
 endif
 
 if WITH_REMOTE
-libvirt_la_SOURCES += $(REMOTE_DRIVER_SOURCES)
+noinst_LTLIBRARIES += libvirt_driver_remote.la
+libvirt_la_LIBADD += libvirt_driver_remote.la
+libvirt_driver_remote_la_CFLAGS =				\
+		$(GNUTLS_CFLAGS)				\
+		$(SASL_CFLAGS)
+libvirt_driver_remote_la_LDFLAGS =				\
+		$(GNUTLS_LIBS)					\
+		$(SASL_LIBS)
+libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 endif
 
 if WITH_XEN
-libvirt_la_SOURCES += $(XEN_DRIVER_SOURCES)
+noinst_LTLIBRARIES += libvirt_driver_xen.la
+libvirt_la_LIBADD += libvirt_driver_xen.la
+libvirt_driver_xen_la_CFLAGS = $(XEN_CFLAGS)
+libvirt_driver_xen_la_LDFLAGS = $(XEN_LIBS)
+libvirt_driver_xen_la_SOURCES = $(XEN_DRIVER_SOURCES)
 endif
 
 if WITH_OPENVZ
-libvirt_la_SOURCES += $(OPENVZ_DRIVER_SOURCES)
+noinst_LTLIBRARIES += libvirt_driver_openvz.la
+libvirt_la_LIBADD += libvirt_driver_openvz.la
+libvirt_driver_openvz_la_SOURCES = $(OPENVZ_DRIVER_SOURCES)
 endif
 
 if WITH_QEMU
-libvirt_la_SOURCES += $(QEMU_DRIVER_SOURCES)
+noinst_LTLIBRARIES += libvirt_driver_qemu.la
+libvirt_la_LIBADD += libvirt_driver_qemu.la
+libvirt_driver_qemu_la_CFLAGS = $(NUMACTL_CFLAGS)
+libvirt_driver_qemu_la_LDFLAGS = $(NUMACTL_LIBS)
+libvirt_driver_qemu_la_SOURCES = $(QEMU_DRIVER_SOURCES)
 endif
 
 if WITH_LXC
-libvirt_la_SOURCES += $(LXC_DRIVER_SOURCES)
+noinst_LTLIBRARIES += libvirt_driver_lxc.la
+libvirt_la_LIBADD += libvirt_driver_lxc.la
+libvirt_driver_lxc_la_SOURCES = $(LXC_DRIVER_SOURCES)
 endif
 
 
 if WITH_NETWORK
-libvirt_la_SOURCES += $(NETWORK_DRIVER_SOURCES)
+noinst_LTLIBRARIES += libvirt_driver_network.la
+libvirt_la_LIBADD += libvirt_driver_network.la
+libvirt_driver_network_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
 endif
 
+# Needed to keep automake quiet about conditionals
+libvirt_driver_storage_la_SOURCES =
 if WITH_STORAGE_DIR
-libvirt_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
-libvirt_la_SOURCES += $(STORAGE_DRIVER_FS_SOURCES)
+noinst_LTLIBRARIES += libvirt_driver_storage.la
+libvirt_la_LIBADD += libvirt_driver_storage.la
+libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
+libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_FS_SOURCES)
 endif
 
 if WITH_STORAGE_LVM
-libvirt_la_SOURCES += $(STORAGE_DRIVER_LVM_SOURCES)
+libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_LVM_SOURCES)
 endif
 
 if WITH_STORAGE_ISCSI
-libvirt_la_SOURCES += $(STORAGE_DRIVER_ISCSI_SOURCES)
+libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_ISCSI_SOURCES)
 endif
 
 if WITH_STORAGE_DISK
-libvirt_la_SOURCES += $(STORAGE_DRIVER_DISK_SOURCES)
+libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_DISK_SOURCES)
 endif
 
 # Add all conditional sources just in case...
@@ -221,8 +252,9 @@ EXTRA_DIST +=							\
 		$(STORAGE_DRIVER_DISK_SOURCES)
 
 
-libvirt_la_LIBADD = $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS) $(SELINUX_LIBS) \
-                    $(NUMACTL_LIBS) $(XEN_LIBS) \
+# Empty source list - it merely links a bunch of convenience libs together
+libvirt_la_SOURCES =
+libvirt_la_LIBADD += $(LIBXML_LIBS) $(SELINUX_LIBS) \
 		    @CYGWIN_EXTRA_LIBADD@ ../gnulib/lib/libgnu.la
 libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
                      -version-info @LIBVIRT_VERSION_INFO@ \
@@ -233,7 +265,7 @@ libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
 # Create an automake "convenience library" version of libvirt_la,
 # just for testing, since the test harness requires access to internal
 # bits and pieces that we don't want to make publicly accessible.
-noinst_LTLIBRARIES = libvirt_test.la
+noinst_LTLIBRARIES += libvirt_test.la
 
 # Convert libvirt_sym.version
 #      to libvirt_test_sym.version, and
@@ -257,8 +289,12 @@ virsh_SOURCES =							\
 		virsh.c
 
 virsh_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDFLAGS)
-virsh_DEPENDENCIES = $(DEPS)
-virsh_LDADD = $(LDADDS) $(VIRSH_LIBS)
+virsh_LDADD = 							\
+		$(STATIC_BINARIES) 				\
+		$(WARN_CFLAGS)					\
+		libvirt.la					\
+		../gnulib/lib/libgnu.la				\
+		$(VIRSH_LIBS)
 virsh_CFLAGS = $(COVERAGE_CFLAGS) $(READLINE_CFLAGS)
 BUILT_SOURCES = virsh-net-edit.c virsh-pool-edit.c
 
@@ -295,7 +331,6 @@ virsh-pool-edit.c: virsh.c Makefile.am
 
 if WITH_WIN_ICON
 virsh_LDADD += virsh_win_icon.$(OBJEXT)
-virsh_DEPENDENCIES += virsh_win_icon.$(OBJEXT)
 
 # Before you edit virsh_win_icon.rc, please note the following
 # limitations of the resource file format:
@@ -341,7 +376,7 @@ libexec_PROGRAMS += libvirt_lxc
 
 libvirt_lxc_SOURCES =						\
 		$(LXC_CONTROLLER_SOURCES)			\
-		$(GENERIC_LIB_SOURCES) 				\
+		$(UTIL_SOURCES) 				\
 		$(DOMAIN_CONF_SOURCES)
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS)
 libvirt_lxc_LDADD = $(LIBXML_LIBS) ../gnulib/lib/libgnu.la
