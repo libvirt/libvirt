@@ -129,7 +129,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
 
 
 /* refactored ones */
-int xenDaemonOpen(virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int flags);
+int xenDaemonOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags);
 int xenDaemonClose(virConnectPtr conn);
 int xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer);
 int xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);

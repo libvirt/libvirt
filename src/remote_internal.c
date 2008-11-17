@@ -273,46 +273,51 @@ enum virDrvOpenRemoteFlags {
     VIR_DRV_OPEN_REMOTE_AUTOSTART = (1 << 3),
 };
 
+/* What transport? */
+enum {
+    trans_tls,
+    trans_unix,
+    trans_ssh,
+    trans_ext,
+    trans_tcp,
+} transport;
+
+
 static int
 doRemoteOpen (virConnectPtr conn,
               struct private_data *priv,
-              xmlURIPtr uri,
               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
               int flags)
 {
-    if (!uri || !uri->scheme)
-        return VIR_DRV_OPEN_DECLINED; /* Decline - not a URL. */
+    char *transport_str = NULL;
 
-    char *transport_str = get_transport_from_scheme (uri->scheme);
+    if (conn->uri) {
+        if (!conn->uri->scheme)
+            return VIR_DRV_OPEN_DECLINED;
 
-    /* What transport? */
-    enum {
-        trans_tls,
-        trans_unix,
-        trans_ssh,
-        trans_ext,
-        trans_tcp,
-    } transport;
+        transport_str = get_transport_from_scheme (conn->uri->scheme);
 
-    if (!transport_str || STRCASEEQ (transport_str, "tls"))
-        transport = trans_tls;
-    else if (STRCASEEQ (transport_str, "unix"))
-        transport = trans_unix;
-    else if (STRCASEEQ (transport_str, "ssh"))
-        transport = trans_ssh;
-    else if (STRCASEEQ (transport_str, "ext"))
-        transport = trans_ext;
-    else if (STRCASEEQ (transport_str, "tcp"))
-        transport = trans_tcp;
-    else {
-        error (conn, VIR_ERR_INVALID_ARG,
-               _("remote_open: transport in URL not recognised "
-                 "(should be tls|unix|ssh|ext|tcp)"));
-        return VIR_DRV_OPEN_ERROR;
+        if (!transport_str || STRCASEEQ (transport_str, "tls"))
+            transport = trans_tls;
+        else if (STRCASEEQ (transport_str, "unix"))
+            transport = trans_unix;
+        else if (STRCASEEQ (transport_str, "ssh"))
+            transport = trans_ssh;
+        else if (STRCASEEQ (transport_str, "ext"))
+            transport = trans_ext;
+        else if (STRCASEEQ (transport_str, "tcp"))
+            transport = trans_tcp;
+        else {
+            error (conn, VIR_ERR_INVALID_ARG,
+                   _("remote_open: transport in URL not recognised "
+                     "(should be tls|unix|ssh|ext|tcp)"));
+            return VIR_DRV_OPEN_ERROR;
+        }
     }
 
-    if (!uri->server && !transport_str) {
-        if (flags & VIR_DRV_OPEN_REMOTE_UNIX)
+    if (!transport_str) {
+        if ((!conn->uri || !conn->uri->server) &&
+            (flags & VIR_DRV_OPEN_REMOTE_UNIX))
             transport = trans_unix;
         else
             return VIR_DRV_OPEN_DECLINED; /* Decline - not a remote URL. */
@@ -330,8 +335,8 @@ doRemoteOpen (virConnectPtr conn,
     int retcode = VIR_DRV_OPEN_ERROR;
 
     /* Remote server defaults to "localhost" if not specified. */
-    if (uri->port != 0) {
-        if (asprintf (&port, "%d", uri->port) == -1) goto out_of_memory;
+    if (conn->uri && conn->uri->port != 0) {
+        if (asprintf (&port, "%d", conn->uri->port) == -1) goto out_of_memory;
     } else if (transport == trans_tls) {
         port = strdup (LIBVIRTD_TLS_PORT);
         if (!port) goto out_of_memory;
@@ -345,11 +350,12 @@ doRemoteOpen (virConnectPtr conn,
         port = NULL;           /* Port not used for unix, ext. */
 
 
-    priv->hostname = strdup (uri->server ? uri->server : "localhost");
+    priv->hostname = strdup (conn->uri && conn->uri->server ?
+                             conn->uri->server : "localhost");
     if (!priv->hostname)
         goto out_of_memory;
-    if (uri->user) {
-        username = strdup (uri->user);
+    if (conn->uri && conn->uri->user) {
+        username = strdup (conn->uri->user);
         if (!username)
             goto out_of_memory;
     }
@@ -363,67 +369,93 @@ doRemoteOpen (virConnectPtr conn,
     struct qparam *var;
     int i;
     char *query;
-#ifdef HAVE_XMLURI_QUERY_RAW
-    query = uri->query_raw;
-#else
-    query = uri->query;
-#endif
-    vars = qparam_query_parse (query);
-    if (vars == NULL) goto failed;
 
-    for (i = 0; i < vars->n; i++) {
-        var = &vars->p[i];
-        if (STRCASEEQ (var->name, "name")) {
-            name = strdup (var->value);
-            if (!name) goto out_of_memory;
-            var->ignore = 1;
-        } else if (STRCASEEQ (var->name, "command")) {
-            command = strdup (var->value);
-            if (!command) goto out_of_memory;
-            var->ignore = 1;
-        } else if (STRCASEEQ (var->name, "socket")) {
-            sockname = strdup (var->value);
-            if (!sockname) goto out_of_memory;
-            var->ignore = 1;
-        } else if (STRCASEEQ (var->name, "auth")) {
-            authtype = strdup (var->value);
-            if (!authtype) goto out_of_memory;
-            var->ignore = 1;
-        } else if (STRCASEEQ (var->name, "netcat")) {
-            netcat = strdup (var->value);
-            if (!netcat) goto out_of_memory;
-            var->ignore = 1;
-        } else if (STRCASEEQ (var->name, "no_verify")) {
-            no_verify = atoi (var->value);
-            var->ignore = 1;
-        } else if (STRCASEEQ (var->name, "no_tty")) {
-            no_tty = atoi (var->value);
-            var->ignore = 1;
-        } else if (STRCASEEQ (var->name, "debug")) {
-            if (var->value &&
-                STRCASEEQ (var->value, "stdout"))
-                priv->debugLog = stdout;
-            else
-                priv->debugLog = stderr;
-        } else
-            DEBUG("passing through variable '%s' ('%s') to remote end",
-                  var->name, var->value);
+    if (conn->uri) {
+#ifdef HAVE_XMLURI_QUERY_RAW
+        query = conn->uri->query_raw;
+#else
+        query = conn->uri->query;
+#endif
+        vars = qparam_query_parse (query);
+        if (vars == NULL) goto failed;
+
+        for (i = 0; i < vars->n; i++) {
+            var = &vars->p[i];
+            if (STRCASEEQ (var->name, "name")) {
+                name = strdup (var->value);
+                if (!name) goto out_of_memory;
+                var->ignore = 1;
+            } else if (STRCASEEQ (var->name, "command")) {
+                command = strdup (var->value);
+                if (!command) goto out_of_memory;
+                var->ignore = 1;
+            } else if (STRCASEEQ (var->name, "socket")) {
+                sockname = strdup (var->value);
+                if (!sockname) goto out_of_memory;
+                var->ignore = 1;
+            } else if (STRCASEEQ (var->name, "auth")) {
+                authtype = strdup (var->value);
+                if (!authtype) goto out_of_memory;
+                var->ignore = 1;
+            } else if (STRCASEEQ (var->name, "netcat")) {
+                netcat = strdup (var->value);
+                if (!netcat) goto out_of_memory;
+                var->ignore = 1;
+            } else if (STRCASEEQ (var->name, "no_verify")) {
+                no_verify = atoi (var->value);
+                var->ignore = 1;
+            } else if (STRCASEEQ (var->name, "no_tty")) {
+                no_tty = atoi (var->value);
+                var->ignore = 1;
+            } else if (STRCASEEQ (var->name, "debug")) {
+                if (var->value &&
+                    STRCASEEQ (var->value, "stdout"))
+                    priv->debugLog = stdout;
+                else
+                    priv->debugLog = stderr;
+            } else
+                DEBUG("passing through variable '%s' ('%s') to remote end",
+                      var->name, var->value);
+        }
+
+        /* Construct the original name. */
+        if (!name) {
+            xmlURI tmpuri = {
+                .scheme = conn->uri->scheme,
+#ifdef HAVE_XMLURI_QUERY_RAW
+                .query_raw = qparam_get_query (vars),
+#else
+                .query = qparam_get_query (vars),
+#endif
+                .path = conn->uri->path,
+                .fragment = conn->uri->fragment,
+            };
+
+            /* Evil, blank out transport scheme temporarily */
+            if (transport_str) {
+                assert (transport_str[-1] == '+');
+                transport_str[-1] = '\0';
+            }
+
+            name = (char *) xmlSaveUri (&tmpuri);
+
+            /* Restore transport scheme */
+            if (transport_str)
+                transport_str[-1] = '+';
+        }
+
+        free_qparam_set (vars);
+    } else {
+        /* Probe URI server side */
+        name = strdup("");
     }
 
-#ifdef HAVE_XMLURI_QUERY_RAW
-    xmlFree (uri->query_raw);
-#else
-    xmlFree (uri->query);
-#endif
+    if (!name) {
+        error(conn, VIR_ERR_NO_MEMORY, NULL);
+        goto failed;
+    }
 
-#ifdef HAVE_XMLURI_QUERY_RAW
-    uri->query_raw =
-#else
-    uri->query =
-#endif
-         qparam_get_query (vars);
-
-    free_qparam_set (vars);
+    DEBUG("proceeding with name = %s", name);
 
     /* For ext transport, command is required. */
     if (transport == trans_ext && !command) {
@@ -431,28 +463,6 @@ doRemoteOpen (virConnectPtr conn,
                _("remote_open: for 'ext' transport, command is required"));
         goto failed;
     }
-
-    /* Construct the original name. */
-    if (!name) {
-        /* Remove the transport (if any) from the scheme. */
-        if (transport_str) {
-            assert (transport_str[-1] == '+');
-            transport_str[-1] = '\0';
-        }
-        /* Remove the username, server name and port number. */
-        xmlFree (uri->user);
-        uri->user = 0;
-
-        xmlFree (uri->server);
-        uri->server = 0;
-
-        uri->port = 0;
-
-        name = (char *) xmlSaveUri (uri);
-    }
-
-    assert (name);
-    DEBUG("proceeding with name = %s", name);
 
     /* Connect to the remote service. */
     switch (transport) {
@@ -702,6 +712,38 @@ doRemoteOpen (virConnectPtr conn,
               (xdrproc_t) xdr_void, (char *) NULL) == -1)
         goto failed;
 
+    /* Now try and find out what URI the daemon used */
+    if (conn->uri == NULL) {
+        remote_get_uri_ret uriret;
+        int urierr;
+
+        memset (&uriret, 0, sizeof uriret);
+        urierr = call (conn, priv,
+                       REMOTE_CALL_IN_OPEN | REMOTE_CALL_QUIET_MISSING_RPC,
+                       REMOTE_PROC_GET_URI,
+                       (xdrproc_t) xdr_void, (char *) NULL,
+                       (xdrproc_t) xdr_remote_get_uri_ret, (char *) &uriret);
+        if (urierr == -2) {
+            /* Should not really happen, since we only probe local libvirtd's,
+               & the library should always match the daemon. Only case is post
+               RPM upgrade where an old daemon instance is still running with
+               new client. Too bad. It is not worth the hassle to fix this */
+            error (conn, VIR_ERR_INTERNAL_ERROR, _("unable to auto-detect URI"));
+            goto failed;
+        }
+        if (urierr == -1) {
+            goto failed;
+        }
+
+        DEBUG("Auto-probed URI is %s", uriret.uri);
+        conn->uri = xmlParseURI(uriret.uri);
+        VIR_FREE(uriret.uri);
+        if (!conn->uri) {
+            error (conn, VIR_ERR_NO_MEMORY, NULL);
+            goto failed;
+        }
+    }
+
     if(VIR_ALLOC(priv->callbackList)<0) {
         error(conn, VIR_ERR_INVALID_ARG, _("Error allocating callbacks list"));
         goto failed;
@@ -788,7 +830,6 @@ doRemoteOpen (virConnectPtr conn,
 
 static int
 remoteOpen (virConnectPtr conn,
-            xmlURIPtr uri,
             virConnectAuthPtr auth,
             int flags)
 {
@@ -806,40 +847,54 @@ remoteOpen (virConnectPtr conn,
     if (flags & VIR_CONNECT_RO)
         rflags |= VIR_DRV_OPEN_REMOTE_RO;
 
-#if WITH_QEMU
-    if (uri &&
-        uri->scheme && STREQ (uri->scheme, "qemu") &&
-        (!uri->server || STREQ (uri->server, "")) &&
-        uri->path) {
-        if (STREQ (uri->path, "/system")) {
-            rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
-        } else if (STREQ (uri->path, "/session")) {
-            rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
-            if (getuid() > 0) {
-                rflags |= VIR_DRV_OPEN_REMOTE_USER;
-                rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
-            }
+    /*
+     * If no servername is given, and no +XXX
+     * transport is listed, then force to a
+     * local UNIX socket connection
+     */
+    if (conn->uri &&
+        !conn->uri->server &&
+        !strchr(conn->uri->scheme, '+')) {
+        DEBUG0("Auto-remote UNIX socket");
+        rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
+    }
+
+    /*
+     * If no servername is given, and no +XXX
+     * transport is listed, or transport is unix,
+     * and path is /session, and uid is unprivileged
+     * then auto-spawn a daemon.
+     */
+    if (conn->uri &&
+        !conn->uri->server &&
+        conn->uri->path &&
+        ((strchr(conn->uri->scheme, '+') == 0)||
+         (strstr(conn->uri->scheme, "+unix") != NULL)) &&
+        STREQ(conn->uri->path, "/session") &&
+        getuid() > 0) {
+        DEBUG0("Auto-spawn user daemon instance");
+        rflags |= VIR_DRV_OPEN_REMOTE_USER;
+        rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
+    }
+
+    /*
+     * If URI is NULL, then do a UNIX connection
+     * possibly auto-spawning unprivileged server
+     * and probe remote server for URI
+     */
+    if (!conn->uri) {
+        DEBUG0("Auto-probe remote URI");
+        rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
+        if (getuid() > 0) {
+            DEBUG0("Auto-spawn user daemon instance");
+            rflags |= VIR_DRV_OPEN_REMOTE_USER;
+            rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
         }
     }
-#endif
-#if WITH_XEN
-    if (uri &&
-        uri->scheme && STREQ (uri->scheme, "xen") &&
-        (!uri->server || STREQ (uri->server, "")) &&
-        (!uri->path || STREQ(uri->path, "/"))) {
-        rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
-    }
-#endif
-#if WITH_LXC
-    if (uri &&
-        uri->scheme && STREQ (uri->scheme, "lxc")) {
-        rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
-    }
-#endif
 
     priv->magic = DEAD;
     priv->sock = -1;
-    ret = doRemoteOpen(conn, priv, uri, auth, rflags);
+    ret = doRemoteOpen(conn, priv, auth, rflags);
     if (ret != VIR_DRV_OPEN_SUCCESS) {
         conn->privateData = NULL;
         VIR_FREE(priv);
@@ -2553,7 +2608,6 @@ remoteDomainMemoryPeek (virDomainPtr domain,
 
 static int
 remoteNetworkOpen (virConnectPtr conn,
-                   xmlURIPtr uri,
                    virConnectAuthPtr auth,
                    int flags)
 {
@@ -2587,7 +2641,7 @@ remoteNetworkOpen (virConnectPtr conn,
 
         priv->magic = DEAD;
         priv->sock = -1;
-        ret = doRemoteOpen(conn, priv, uri, auth, rflags);
+        ret = doRemoteOpen(conn, priv, auth, rflags);
         if (ret != VIR_DRV_OPEN_SUCCESS) {
             conn->networkPrivateData = NULL;
             VIR_FREE(priv);
@@ -2954,7 +3008,6 @@ remoteNetworkSetAutostart (virNetworkPtr network, int autostart)
 
 static int
 remoteStorageOpen (virConnectPtr conn,
-                   xmlURIPtr uri,
                    virConnectAuthPtr auth,
                    int flags)
 {
@@ -2993,7 +3046,7 @@ remoteStorageOpen (virConnectPtr conn,
 
         priv->magic = DEAD;
         priv->sock = -1;
-        ret = doRemoteOpen(conn, priv, uri, auth, rflags);
+        ret = doRemoteOpen(conn, priv, auth, rflags);
         if (ret != VIR_DRV_OPEN_SUCCESS) {
             conn->storagePrivateData = NULL;
             VIR_FREE(priv);
@@ -5002,7 +5055,6 @@ static virDriver driver = {
     .no = VIR_DRV_REMOTE,
     .name = "remote",
     .ver = REMOTE_PROTOCOL_VERSION,
-    .probe = NULL,
     .open = remoteOpen,
     .close = remoteClose,
     .supports_feature = remoteSupportsFeature,

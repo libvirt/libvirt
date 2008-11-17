@@ -2033,7 +2033,6 @@ xenHypervisorInit(void)
  */
 int
 xenHypervisorOpen(virConnectPtr conn,
-                  xmlURIPtr uri ATTRIBUTE_UNUSED,
                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                   int flags ATTRIBUTE_UNUSED)
 {

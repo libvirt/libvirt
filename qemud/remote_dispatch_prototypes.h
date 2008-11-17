@@ -57,6 +57,7 @@ static int remoteDispatchGetCapabilities (struct qemud_server *server, struct qe
 static int remoteDispatchGetHostname (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_get_hostname_ret *ret);
 static int remoteDispatchGetMaxVcpus (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_get_max_vcpus_args *args, remote_get_max_vcpus_ret *ret);
 static int remoteDispatchGetType (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_get_type_ret *ret);
+static int remoteDispatchGetUri (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_get_uri_ret *ret);
 static int remoteDispatchGetVersion (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_get_version_ret *ret);
 static int remoteDispatchListDefinedDomains (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_list_defined_domains_args *args, remote_list_defined_domains_ret *ret);
 static int remoteDispatchListDefinedNetworks (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_list_defined_networks_args *args, remote_list_defined_networks_ret *ret);

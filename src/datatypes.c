@@ -174,7 +174,7 @@ failed:
  */
 static void
 virReleaseConnect(virConnectPtr conn) {
-    DEBUG("release connection %p %s", conn, conn->name);
+    DEBUG("release connection %p", conn);
     if (conn->domains != NULL)
         virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
     if (conn->networks != NULL)
@@ -188,7 +188,7 @@ virReleaseConnect(virConnectPtr conn) {
     if (virLastErr.conn == conn)
         virLastErr.conn = NULL;
 
-    VIR_FREE(conn->name);
+    xmlFreeURI(conn->uri);
 
     pthread_mutex_unlock(&conn->lock);
     pthread_mutex_destroy(&conn->lock);
@@ -213,7 +213,7 @@ virUnrefConnect(virConnectPtr conn) {
         return(-1);
     }
     pthread_mutex_lock(&conn->lock);
-    DEBUG("unref connection %p %s %d", conn, conn->name, conn->refs);
+    DEBUG("unref connection %p %d", conn, conn->refs);
     conn->refs--;
     refs = conn->refs;
     if (refs == 0) {
@@ -322,7 +322,7 @@ virReleaseDomain(virDomainPtr domain) {
     VIR_FREE(domain->name);
     VIR_FREE(domain);
 
-    DEBUG("unref connection %p %s %d", conn, conn->name, conn->refs);
+    DEBUG("unref connection %p %d", conn, conn->refs);
     conn->refs--;
     if (conn->refs == 0) {
         virReleaseConnect(conn);
@@ -458,7 +458,7 @@ virReleaseNetwork(virNetworkPtr network) {
     VIR_FREE(network->name);
     VIR_FREE(network);
 
-    DEBUG("unref connection %p %s %d", conn, conn->name, conn->refs);
+    DEBUG("unref connection %p %d", conn, conn->refs);
     conn->refs--;
     if (conn->refs == 0) {
         virReleaseConnect(conn);
@@ -591,7 +591,7 @@ virReleaseStoragePool(virStoragePoolPtr pool) {
     VIR_FREE(pool->name);
     VIR_FREE(pool);
 
-    DEBUG("unref connection %p %s %d", conn, conn->name, conn->refs);
+    DEBUG("unref connection %p %d", conn, conn->refs);
     conn->refs--;
     if (conn->refs == 0) {
         virReleaseConnect(conn);
@@ -729,7 +729,7 @@ virReleaseStorageVol(virStorageVolPtr vol) {
     VIR_FREE(vol->pool);
     VIR_FREE(vol);
 
-    DEBUG("unref connection %p %s %d", conn, conn->name, conn->refs);
+    DEBUG("unref connection %p %d", conn, conn->refs);
     conn->refs--;
     if (conn->refs == 0) {
         virReleaseConnect(conn);

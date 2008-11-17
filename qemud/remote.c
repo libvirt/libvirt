@@ -551,6 +551,23 @@ remoteDispatchGetHostname (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 static int
+remoteDispatchGetUri (struct qemud_server *server ATTRIBUTE_UNUSED,
+                      struct qemud_client *client,
+                      remote_message_header *req,
+                      void *args ATTRIBUTE_UNUSED,
+                      remote_get_uri_ret *ret)
+{
+    char *uri;
+    CHECK_CONN(client);
+
+    uri = virConnectGetURI (client->conn);
+    if (uri == NULL) return -1;
+
+    ret->uri = uri;
+    return 0;
+}
+
+static int
 remoteDispatchGetMaxVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
                            struct qemud_client *client,
                            remote_message_header *req,

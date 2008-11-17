@@ -1,3 +1,25 @@
+Mon Nov 17 11:40:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
+
+	Push URI probing down into individual drivers' open methods
+	* qemud/remote.c: Implement virConnectGetURI dispatcher
+	* qemud/remote_protocol.x: Add API definition for virConnectGetURI
+	* qemud/remote_dispatch_localvars.h, qemud/remote_dispatch_proc_switch.h,
+	qemud/remote_dispatch_prototypes.h, qemud/remote_protocol.c,
+	qemud/remote_protocol.h: Re-generate from protocol definition
+	* src/datatypes.c, src/datatypes.h: Store connection name as a
+	xmlURIPtr object instead of char *
+	* src/driver.h: Remove explicit URI parameter to open function
+	* src/libvirt.c: Delegrate URI probing into drivers
+	* src/lxc_driver.c, src/network_driver.c, src/openvz_driver.c,
+	src/proxy_internal.c, src/qemu_driver.c, src/remote_internal.c,
+	src/storage_driver.c, src/test.c, src/xen_internal.c,
+	src/xen_internal.h, src/xen_unified.c, src/xend_internal.c,
+	src/xend_internal.h, src/xm_internal.c, src/xm_internal.h,
+	src/xs_internal.c, src/xs_internal.h: Refactor open driver
+	methods to deal with automatic URI probing as required
+	* proxy/libvirt_proxy.c: Remove extra args to xs/xen driver
+	open calls
+
 Mon Nov 17 11:19:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
 
 	Refactor storage backend to remove dependancy from

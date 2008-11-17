@@ -154,6 +154,11 @@ struct remote_get_hostname_ret {
 };
 typedef struct remote_get_hostname_ret remote_get_hostname_ret;
 
+struct remote_get_uri_ret {
+        remote_nonnull_string uri;
+};
+typedef struct remote_get_uri_ret remote_get_uri_ret;
+
 struct remote_get_max_vcpus_args {
         remote_string type;
 };
@@ -1245,6 +1250,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT = 107,
         REMOTE_PROC_DOMAIN_MIGRATE_PREPARE2 = 108,
         REMOTE_PROC_DOMAIN_MIGRATE_FINISH2 = 109,
+        REMOTE_PROC_GET_URI = 110,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -1297,6 +1303,7 @@ extern  bool_t xdr_remote_supports_feature_ret (XDR *, remote_supports_feature_r
 extern  bool_t xdr_remote_get_type_ret (XDR *, remote_get_type_ret*);
 extern  bool_t xdr_remote_get_version_ret (XDR *, remote_get_version_ret*);
 extern  bool_t xdr_remote_get_hostname_ret (XDR *, remote_get_hostname_ret*);
+extern  bool_t xdr_remote_get_uri_ret (XDR *, remote_get_uri_ret*);
 extern  bool_t xdr_remote_get_max_vcpus_args (XDR *, remote_get_max_vcpus_args*);
 extern  bool_t xdr_remote_get_max_vcpus_ret (XDR *, remote_get_max_vcpus_ret*);
 extern  bool_t xdr_remote_node_get_info_ret (XDR *, remote_node_get_info_ret*);
@@ -1485,6 +1492,7 @@ extern bool_t xdr_remote_supports_feature_ret ();
 extern bool_t xdr_remote_get_type_ret ();
 extern bool_t xdr_remote_get_version_ret ();
 extern bool_t xdr_remote_get_hostname_ret ();
+extern bool_t xdr_remote_get_uri_ret ();
 extern bool_t xdr_remote_get_max_vcpus_args ();
 extern bool_t xdr_remote_get_max_vcpus_ret ();
 extern bool_t xdr_remote_node_get_info_ret ();

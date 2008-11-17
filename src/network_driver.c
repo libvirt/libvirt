@@ -836,7 +836,6 @@ static virNetworkPtr networkLookupByName(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static virDrvOpenStatus networkOpenNetwork(virConnectPtr conn,
-                                           xmlURIPtr uri ATTRIBUTE_UNUSED,
                                            virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                            int flags ATTRIBUTE_UNUSED) {
     if (!driverState)

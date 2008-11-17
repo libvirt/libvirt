@@ -245,6 +245,10 @@ struct remote_get_hostname_ret {
     remote_nonnull_string hostname;
 };
 
+struct remote_get_uri_ret {
+    remote_nonnull_string uri;
+};
+
 struct remote_get_max_vcpus_args {
     /* The only backend which supports this call is Xen HV, and
      * there the type is ignored so it could be NULL.
@@ -1128,16 +1132,14 @@ enum remote_procedure {
 
     REMOTE_PROC_NODE_GET_CELLS_FREE_MEMORY = 101,
     REMOTE_PROC_NODE_GET_FREE_MEMORY = 102,
-
     REMOTE_PROC_DOMAIN_BLOCK_PEEK = 103,
     REMOTE_PROC_DOMAIN_MEMORY_PEEK = 104,
-
     REMOTE_PROC_DOMAIN_EVENTS_REGISTER = 105,
     REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER = 106,
     REMOTE_PROC_DOMAIN_EVENT = 107,
-
     REMOTE_PROC_DOMAIN_MIGRATE_PREPARE2 = 108,
-    REMOTE_PROC_DOMAIN_MIGRATE_FINISH2 = 109
+    REMOTE_PROC_DOMAIN_MIGRATE_FINISH2 = 109,
+    REMOTE_PROC_GET_URI = 110
 };
 
 /* Custom RPC structure. */

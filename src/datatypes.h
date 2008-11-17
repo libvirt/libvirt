@@ -87,7 +87,7 @@
 struct _virConnect {
     unsigned int magic;     /* specific value to check */
     int flags;              /* a set of connection flags */
-    char *name;                 /* connection URI */
+    xmlURIPtr uri;          /* connection URI */
 
     /* The underlying hypervisor driver and network driver. */
     virDriverPtr      driver;

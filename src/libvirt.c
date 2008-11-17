@@ -685,8 +685,11 @@ do_open (const char *name,
          int flags)
 {
     int i, res;
-    virConnectPtr ret = NULL;
-    xmlURIPtr uri;
+    virConnectPtr ret;
+
+    ret = virGetConnect();
+    if (ret == NULL)
+        return NULL;
 
     /*
      *  If no URI is passed, then check for an environment string if not
@@ -699,74 +702,43 @@ do_open (const char *name,
             DEBUG("Using LIBVIRT_DEFAULT_URI %s", defname);
             name = defname;
         } else {
-            const char *use = NULL;
-            const char *latest;
-            int probes = 0;
-            for (i = 0; i < virDriverTabCount; i++) {
-                if ((virDriverTab[i]->probe != NULL) &&
-                    ((latest = virDriverTab[i]->probe()) != NULL)) {
-                    probes++;
-
-                    DEBUG("Probed %s", latest);
-                    /*
-                     * if running a xen kernel, give it priority over
-                     * QEmu emulation
-                     */
-                    if (STREQ(latest, "xen:///"))
-                        use = latest;
-                    else if (use == NULL)
-                        use = latest;
-                }
-            }
-            if (use == NULL) {
-                name = "xen:///";
-                DEBUG("Could not probe any hypervisor defaulting to %s",
-                      name);
-            } else {
-                name = use;
-                DEBUG("Using %s as default URI, %d hypervisor found",
-                      use, probes);
-            }
+            name = NULL;
         }
     }
 
-    /* Convert xen -> xen:/// for back compat */
-    if (STRCASEEQ(name, "xen"))
-        name = "xen:///";
+    if (name) {
+        /* Convert xen -> xen:/// for back compat */
+        if (STRCASEEQ(name, "xen"))
+            name = "xen:///";
 
-    /* Convert xen:// -> xen:/// because xmlParseURI cannot parse the
-     * former.  This allows URIs such as xen://localhost to work.
-     */
-    if (STREQ (name, "xen://"))
-        name = "xen:///";
+        /* Convert xen:// -> xen:/// because xmlParseURI cannot parse the
+         * former.  This allows URIs such as xen://localhost to work.
+         */
+        if (STREQ (name, "xen://"))
+            name = "xen:///";
 
-    ret = virGetConnect();
-    if (ret == NULL)
-        return NULL;
+        ret->uri = xmlParseURI (name);
+        if (!ret->uri) {
+            virLibConnError (ret, VIR_ERR_INVALID_ARG,
+                             _("could not parse connection URI"));
+            goto failed;
+        }
 
-    uri = xmlParseURI (name);
-    if (!uri) {
-        virLibConnError (ret, VIR_ERR_INVALID_ARG,
-                         _("could not parse connection URI"));
-        goto failed;
-    }
-
-    DEBUG("name \"%s\" to URI components:\n"
-          "  scheme %s\n"
-          "  opaque %s\n"
-          "  authority %s\n"
-          "  server %s\n"
-          "  user %s\n"
-          "  port %d\n"
-          "  path %s\n",
-          name,
-          uri->scheme, uri->opaque, uri->authority, uri->server,
-          uri->user, uri->port, uri->path);
-
-    ret->name = strdup (name);
-    if (!ret->name) {
-        virLibConnError (ret, VIR_ERR_NO_MEMORY, _("allocating conn->name"));
-        goto failed;
+        DEBUG("name \"%s\" to URI components:\n"
+              "  scheme %s\n"
+              "  opaque %s\n"
+              "  authority %s\n"
+              "  server %s\n"
+              "  user %s\n"
+              "  port %d\n"
+              "  path %s\n",
+              name,
+              ret->uri->scheme, ret->uri->opaque,
+              ret->uri->authority, ret->uri->server,
+              ret->uri->user, ret->uri->port,
+              ret->uri->path);
+    } else {
+        DEBUG0("no name, allowing driver auto-select");
     }
 
     /* Cleansing flags */
@@ -775,7 +747,7 @@ do_open (const char *name,
     for (i = 0; i < virDriverTabCount; i++) {
         DEBUG("trying driver %d (%s) ...",
               i, virDriverTab[i]->name);
-        res = virDriverTab[i]->open (ret, uri, auth, flags);
+        res = virDriverTab[i]->open (ret, auth, flags);
         DEBUG("driver %d %s returned %s",
               i, virDriverTab[i]->name,
               res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
@@ -795,7 +767,7 @@ do_open (const char *name,
     }
 
     for (i = 0; i < virNetworkDriverTabCount; i++) {
-        res = virNetworkDriverTab[i]->open (ret, uri, auth, flags);
+        res = virNetworkDriverTab[i]->open (ret, auth, flags);
         DEBUG("network driver %d %s returned %s",
               i, virNetworkDriverTab[i]->name,
               res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
@@ -816,7 +788,7 @@ do_open (const char *name,
 
     /* Secondary driver for storage. Optional */
     for (i = 0; i < virStorageDriverTabCount; i++) {
-        res = virStorageDriverTab[i]->open (ret, uri, auth, flags);
+        res = virStorageDriverTab[i]->open (ret, auth, flags);
 #ifdef ENABLE_DEBUG
         DEBUG("storage driver %d %s returned %s",
               i, virStorageDriverTab[i]->name,
@@ -836,13 +808,10 @@ do_open (const char *name,
         }
     }
 
-    xmlFreeURI (uri);
-
     return ret;
 
 failed:
     if (ret->driver) ret->driver->close (ret);
-    if (uri) xmlFreeURI(uri);
 
     /* If no global error was set, copy any error set
        in the connection object we're about to dispose of */
@@ -1103,7 +1072,7 @@ virConnectGetURI (virConnectPtr conn)
     if (conn->driver->getURI)
         return conn->driver->getURI (conn);
 
-    name = strdup (conn->name);
+    name = (char *)xmlSaveUri(conn->uri);
     if (!name) {
         virLibConnError (conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
         return NULL;

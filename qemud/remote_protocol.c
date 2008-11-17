@@ -276,6 +276,15 @@ xdr_remote_get_hostname_ret (XDR *xdrs, remote_get_hostname_ret *objp)
 }
 
 bool_t
+xdr_remote_get_uri_ret (XDR *xdrs, remote_get_uri_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->uri))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_get_max_vcpus_args (XDR *xdrs, remote_get_max_vcpus_args *objp)
 {
 

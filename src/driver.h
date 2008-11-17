@@ -68,11 +68,8 @@ typedef enum {
 #define VIR_DRV_SUPPORTS_FEATURE(drv,conn,feature)                      \
     ((drv)->supports_feature ? (drv)->supports_feature((conn),(feature)) : 0)
 
-typedef const char *
-        (*virDrvProbe)			(void);
 typedef virDrvOpenStatus
         (*virDrvOpen)			(virConnectPtr conn,
-                             xmlURIPtr uri,
                              virConnectAuthPtr auth,
                              int flags);
 typedef int
@@ -329,7 +326,6 @@ struct _virDriver {
     int	       no;	/* the number virDrvNo */
     const char * name;	/* the name of the driver */
     unsigned long ver;	/* the version of the backend */
-    virDrvProbe			probe;
     virDrvOpen			open;
     virDrvClose			close;
     virDrvDrvSupportsFeature   supports_feature;

@@ -55,36 +55,34 @@ static lxc_driver_t *lxc_driver = NULL;
 
 /* Functions */
 
-static const char *lxcProbe(void)
+static int lxcProbe(void)
 {
-    if (lxcContainerAvailable(0) < 0)
-        return NULL;
+    if (getuid() != 0 ||
+        lxcContainerAvailable(0) < 0)
+        return 0;
 
-    return("lxc:///");
+    return 1;
 }
 
 static virDrvOpenStatus lxcOpen(virConnectPtr conn,
-                                xmlURIPtr uri,
                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                 int flags ATTRIBUTE_UNUSED)
 {
-    uid_t uid = getuid();
-
-    /* Check that the user is root */
-    if (0 != uid) {
+    if (!lxcProbe())
         goto declineConnection;
-    }
 
     if (lxc_driver == NULL)
         goto declineConnection;
 
     /* Verify uri was specified */
-    if ((NULL == uri) || (NULL == uri->scheme)) {
-        goto declineConnection;
-    }
-
-    /* Check that the uri scheme is lxc */
-    if (STRNEQ(uri->scheme, "lxc")) {
+    if (conn->uri == NULL) {
+        conn->uri = xmlParseURI("lxc:///");
+        if (!conn->uri) {
+            lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
+            return VIR_DRV_OPEN_ERROR;
+        }
+    } else if (conn->uri->scheme == NULL ||
+               STRNEQ(conn->uri->scheme, "lxc")) {
         goto declineConnection;
     }
 
@@ -1226,7 +1224,6 @@ static virDriver lxcDriver = {
     VIR_DRV_LXC, /* the number virDrvNo */
     "LXC", /* the name of the driver */
     LIBVIR_VERSION_NUMBER, /* the version of the backend */
-    lxcProbe, /* probe */
     lxcOpen, /* open */
     lxcClose, /* close */
     NULL, /* supports_feature */

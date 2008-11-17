@@ -294,7 +294,6 @@ storagePoolLookupByVolume(virStorageVolPtr vol) {
 
 static virDrvOpenStatus
 storageOpen(virConnectPtr conn,
-            xmlURIPtr uri ATTRIBUTE_UNUSED,
             virConnectAuthPtr auth ATTRIBUTE_UNUSED,
             int flags ATTRIBUTE_UNUSED) {
     if (!driverState)

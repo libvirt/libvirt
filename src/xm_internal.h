@@ -32,7 +32,7 @@
 extern struct xenUnifiedDriver xenXMDriver;
 int xenXMInit (void);
 
-int xenXMOpen(virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int flags);
+int xenXMOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags);
 int xenXMClose(virConnectPtr conn);
 const char *xenXMGetType(virConnectPtr conn);
 int xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);

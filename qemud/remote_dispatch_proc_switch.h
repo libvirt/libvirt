@@ -407,6 +407,12 @@ case REMOTE_PROC_GET_TYPE:
         ret = (char *) &lv_remote_get_type_ret;
         memset (&lv_remote_get_type_ret, 0, sizeof lv_remote_get_type_ret);
         break;
+case REMOTE_PROC_GET_URI:
+        fn = (dispatch_fn) remoteDispatchGetUri;
+        ret_filter = (xdrproc_t) xdr_remote_get_uri_ret;
+        ret = (char *) &lv_remote_get_uri_ret;
+        memset (&lv_remote_get_uri_ret, 0, sizeof lv_remote_get_uri_ret);
+        break;
 case REMOTE_PROC_GET_VERSION:
         fn = (dispatch_fn) remoteDispatchGetVersion;
         ret_filter = (xdrproc_t) xdr_remote_get_version_ret;

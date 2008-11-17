@@ -1153,22 +1153,17 @@ qemudMonitorCommand (const struct qemud_driver *driver ATTRIBUTE_UNUSED,
  * Probe for the availability of the qemu driver, assume the
  * presence of QEmu emulation if the binaries are installed
  */
-static const char *qemudProbe(void)
+static int qemudProbe(void)
 {
     if ((virFileExists("/usr/bin/qemu")) ||
         (virFileExists("/usr/bin/qemu-kvm")) ||
-        (virFileExists("/usr/bin/xenner"))) {
-        if (getuid() == 0) {
-            return("qemu:///system");
-        } else {
-            return("qemu:///session");
-        }
-    }
-    return(NULL);
+        (virFileExists("/usr/bin/xenner")))
+        return 1;
+
+    return 0;
 }
 
 static virDrvOpenStatus qemudOpen(virConnectPtr conn,
-                                  xmlURIPtr uri,
                                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                   int flags ATTRIBUTE_UNUSED) {
     uid_t uid = getuid();
@@ -1176,18 +1171,28 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
     if (qemu_driver == NULL)
         goto decline;
 
-    if (uri == NULL || uri->scheme == NULL || uri->path == NULL)
+    if (!qemudProbe())
         goto decline;
 
-    if (STRNEQ (uri->scheme, "qemu"))
+    if (conn->uri == NULL) {
+        conn->uri = xmlParseURI(uid ? "qemu:///session" : "qemu:///system");
+        if (!conn->uri) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,NULL);
+            return VIR_DRV_OPEN_ERROR;
+        }
+    } else if (conn->uri->scheme == NULL ||
+               conn->uri->path == NULL)
+        goto decline;
+
+    if (STRNEQ (conn->uri->scheme, "qemu"))
         goto decline;
 
     if (uid != 0) {
-        if (STRNEQ (uri->path, "/session"))
+        if (STRNEQ (conn->uri->path, "/session"))
             goto decline;
     } else { /* root */
-        if (STRNEQ (uri->path, "/system") &&
-            STRNEQ (uri->path, "/session"))
+        if (STRNEQ (conn->uri->path, "/system") &&
+            STRNEQ (conn->uri->path, "/session"))
             goto decline;
     }
 
@@ -3625,7 +3630,6 @@ static virDriver qemuDriver = {
     VIR_DRV_QEMU,
     "QEMU",
     LIBVIR_VERSION_NUMBER,
-    qemudProbe, /* probe */
     qemudOpen, /* open */
     qemudClose, /* close */
     qemudSupportsFeature, /* supports_feature */

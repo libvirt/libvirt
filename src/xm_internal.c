@@ -529,7 +529,6 @@ static int xenXMConfigCacheRefresh (virConnectPtr conn) {
  */
 int
 xenXMOpen (virConnectPtr conn ATTRIBUTE_UNUSED,
-           xmlURIPtr uri ATTRIBUTE_UNUSED,
            virConnectAuthPtr auth ATTRIBUTE_UNUSED,
            int flags ATTRIBUTE_UNUSED)
 {

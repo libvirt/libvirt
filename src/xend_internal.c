@@ -2706,7 +2706,6 @@ error:
  */
 int
 xenDaemonOpen(virConnectPtr conn,
-              xmlURIPtr uri,
               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
               int flags ATTRIBUTE_UNUSED)
 {
@@ -2715,13 +2714,13 @@ xenDaemonOpen(virConnectPtr conn,
     /* Switch on the scheme, which we expect to be NULL (file),
      * "http" or "xen".
      */
-    if (uri->scheme == NULL) {
+    if (conn->uri->scheme == NULL) {
         /* It should be a file access */
-        if (uri->path == NULL) {
+        if (conn->uri->path == NULL) {
             virXendError(NULL, VIR_ERR_NO_CONNECT, __FUNCTION__);
             goto failed;
         }
-        ret = xenDaemonOpen_unix(conn, uri->path);
+        ret = xenDaemonOpen_unix(conn, conn->uri->path);
         if (ret < 0)
             goto failed;
 
@@ -2729,7 +2728,7 @@ xenDaemonOpen(virConnectPtr conn,
         if (ret == -1)
             goto failed;
     }
-    else if (STRCASEEQ (uri->scheme, "xen")) {
+    else if (STRCASEEQ (conn->uri->scheme, "xen")) {
         /*
          * try first to open the unix socket
          */
@@ -2750,8 +2749,8 @@ xenDaemonOpen(virConnectPtr conn,
         ret = xend_detect_config_version(conn);
         if (ret == -1)
             goto failed;
-    } else if (STRCASEEQ (uri->scheme, "http")) {
-        ret = xenDaemonOpen_tcp(conn, uri->server, uri->port);
+    } else if (STRCASEEQ (conn->uri->scheme, "http")) {
+        ret = xenDaemonOpen_tcp(conn, conn->uri->server, conn->uri->port);
         if (ret < 0)
             goto failed;
         ret = xend_detect_config_version(conn);

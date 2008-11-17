@@ -36,7 +36,7 @@
 static int debug = 0;
 
 static int xenProxyClose(virConnectPtr conn);
-static int xenProxyOpen(virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int flags);
+static int xenProxyOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags);
 static int xenProxyGetVersion(virConnectPtr conn, unsigned long *hvVer);
 static int xenProxyNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 static char *xenProxyGetCapabilities(virConnectPtr conn);
@@ -480,7 +480,6 @@ retry:
  */
 int
 xenProxyOpen(virConnectPtr conn,
-             xmlURIPtr uri ATTRIBUTE_UNUSED,
              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
              int flags)
 {

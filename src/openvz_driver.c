@@ -861,35 +861,33 @@ static int openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
     return 0;
 }
 
-static const char *openvzProbe(void)
+static int openvzProbe(void)
 {
-#ifdef __linux__
-    if ((geteuid() == 0) && (virFileExists("/proc/vz")))
-        return("openvz:///system");
-#endif
-    return(NULL);
+    if (geteuid() == 0 &&
+        virFileExists("/proc/vz"))
+        return 1;
+
+    return 0;
 }
 
 static virDrvOpenStatus openvzOpen(virConnectPtr conn,
-                                 xmlURIPtr uri,
-                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                 int flags ATTRIBUTE_UNUSED)
+                                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                   int flags ATTRIBUTE_UNUSED)
 {
     struct openvz_driver *driver;
-    /*Just check if the user is root. Nothing really to open for OpenVZ */
-    if (geteuid()) { // OpenVZ tools can only be used by r00t
+    if (!openvzProbe())
         return VIR_DRV_OPEN_DECLINED;
-    } else {
-        if (uri == NULL ||
-            uri->scheme == NULL ||
-            uri->path == NULL ||
-            STRNEQ (uri->scheme, "openvz") ||
-            STRNEQ (uri->path, "/system"))
-            return VIR_DRV_OPEN_DECLINED;
-    }
-    /* See if we are running an OpenVZ enabled kernel */
-    if(access("/proc/vz/veinfo", F_OK) == -1 ||
-       access("/proc/user_beancounters", F_OK) == -1) {
+
+    if (conn->uri == NULL) {
+        conn->uri = xmlParseURI("openvz:///system");
+        if (conn->uri == NULL) {
+            openvzError(conn, VIR_ERR_NO_DOMAIN, NULL);
+            return VIR_DRV_OPEN_ERROR;
+        }
+    } else if (conn->uri->scheme == NULL ||
+               conn->uri->path == NULL ||
+               STRNEQ (conn->uri->scheme, "openvz") ||
+               STRNEQ (conn->uri->path, "/system")) {
         return VIR_DRV_OPEN_DECLINED;
     }
 
@@ -1086,7 +1084,6 @@ static virDriver openvzDriver = {
     VIR_DRV_OPENVZ,
     "OPENVZ",
     LIBVIR_VERSION_NUMBER,
-    openvzProbe, /* probe */
     openvzOpen, /* open */
     openvzClose, /* close */
     NULL, /* supports_feature */

@@ -200,34 +200,45 @@ done:
  * in the low level drivers directly.
  */
 
-static const char *
+static int
 xenUnifiedProbe (void)
 {
 #ifdef __linux__
     if (virFileExists("/proc/xen"))
-        return("xen:///");
+        return 1;
 #endif
 #ifdef __sun__
     FILE *fh;
 
     if (fh = fopen("/dev/xen/domcaps", "r")) {
         fclose(fh);
-        return("xen:///");
+        return 1;
     }
 #endif
-    return(NULL);
+    return 0;
 }
 
 static int
-xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int flags)
+xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
 {
     int i, ret = VIR_DRV_OPEN_DECLINED;
     xenUnifiedPrivatePtr priv;
 
+    if (conn->uri == NULL) {
+        if (!xenUnifiedProbe())
+            return VIR_DRV_OPEN_DECLINED;
+
+        conn->uri = xmlParseURI("xen:///");
+        if (!conn->uri) {
+            xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, NULL);
+            return VIR_DRV_OPEN_ERROR;
+        }
+    }
+
     /* Refuse any scheme which isn't "xen://" or "http://". */
-    if (uri->scheme &&
-        STRCASENEQ(uri->scheme, "xen") &&
-        STRCASENEQ(uri->scheme, "http"))
+    if (conn->uri->scheme &&
+        STRCASENEQ(conn->uri->scheme, "xen") &&
+        STRCASENEQ(conn->uri->scheme, "http"))
         return VIR_DRV_OPEN_DECLINED;
 
     /* xmlParseURI will parse a naked string like "foo" as a URI with
@@ -235,11 +246,11 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int f
      * allow full pathnames (eg. ///var/lib/xen/xend-socket).  Decline
      * anything else.
      */
-    if (!uri->scheme && (!uri->path || uri->path[0] != '/'))
+    if (!conn->uri->scheme && (!conn->uri->path || conn->uri->path[0] != '/'))
         return VIR_DRV_OPEN_DECLINED;
 
     /* Refuse any xen:// URI with a server specified - allow remote to do it */
-    if (uri->scheme && STRCASEEQ(uri->scheme, "xen") && uri->server)
+    if (conn->uri->scheme && STRCASEEQ(conn->uri->scheme, "xen") && conn->uri->server)
         return VIR_DRV_OPEN_DECLINED;
 
     /* Allocate per-connection private data. */
@@ -261,7 +272,7 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int f
     /* Hypervisor is only run as root & required to succeed */
     if (getuid() == 0) {
         DEBUG0("Trying hypervisor sub-driver");
-        if (drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->open(conn, uri, auth, flags) ==
+        if (drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->open(conn, auth, flags) ==
             VIR_DRV_OPEN_SUCCESS) {
             DEBUG0("Activated hypervisor sub-driver");
             priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] = 1;
@@ -272,7 +283,7 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int f
      * If it fails as non-root, then the proxy driver may take over
      */
     DEBUG0("Trying XenD sub-driver");
-    if (drivers[XEN_UNIFIED_XEND_OFFSET]->open(conn, uri, auth, flags) ==
+    if (drivers[XEN_UNIFIED_XEND_OFFSET]->open(conn, auth, flags) ==
         VIR_DRV_OPEN_SUCCESS) {
         DEBUG0("Activated XenD sub-driver");
         priv->opened[XEN_UNIFIED_XEND_OFFSET] = 1;
@@ -281,14 +292,14 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int f
          * succeed if root, optional otherwise */
         if (priv->xendConfigVersion <= 2) {
             DEBUG0("Trying XM sub-driver");
-            if (drivers[XEN_UNIFIED_XM_OFFSET]->open(conn, uri, auth, flags) ==
+            if (drivers[XEN_UNIFIED_XM_OFFSET]->open(conn, auth, flags) ==
                 VIR_DRV_OPEN_SUCCESS) {
                 DEBUG0("Activated XM sub-driver");
                 priv->opened[XEN_UNIFIED_XM_OFFSET] = 1;
             }
         }
         DEBUG0("Trying XS sub-driver");
-        if (drivers[XEN_UNIFIED_XS_OFFSET]->open(conn, uri, auth, flags) ==
+        if (drivers[XEN_UNIFIED_XS_OFFSET]->open(conn, auth, flags) ==
             VIR_DRV_OPEN_SUCCESS) {
             DEBUG0("Activated XS sub-driver");
             priv->opened[XEN_UNIFIED_XS_OFFSET] = 1;
@@ -302,7 +313,7 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int f
         } else {
 #if WITH_PROXY
             DEBUG0("Trying proxy sub-driver");
-            if (drivers[XEN_UNIFIED_PROXY_OFFSET]->open(conn, uri, auth, flags) ==
+            if (drivers[XEN_UNIFIED_PROXY_OFFSET]->open(conn, auth, flags) ==
                 VIR_DRV_OPEN_SUCCESS) {
                 DEBUG0("Activated proxy sub-driver");
                 priv->opened[XEN_UNIFIED_PROXY_OFFSET] = 1;
@@ -1292,7 +1303,6 @@ static virDriver xenUnifiedDriver = {
     .no = VIR_DRV_XEN_UNIFIED,
     .name = "Xen",
     .ver = HV_VERSION,
-    .probe 			= xenUnifiedProbe,
     .open 			= xenUnifiedOpen,
     .close 			= xenUnifiedClose,
     .supports_feature   = xenUnifiedSupportsFeature,

@@ -635,39 +635,38 @@ static int testOpenFromFile(virConnectPtr conn,
 
 
 static int testOpen(virConnectPtr conn,
-                    xmlURIPtr uri,
                     virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                     int flags ATTRIBUTE_UNUSED)
 {
     int ret;
 
-    if (!uri)
+    if (!conn->uri)
         return VIR_DRV_OPEN_DECLINED;
 
-    if (!uri->scheme || STRNEQ(uri->scheme, "test"))
+    if (!conn->uri->scheme || STRNEQ(conn->uri->scheme, "test"))
         return VIR_DRV_OPEN_DECLINED;
 
     /* Remote driver should handle these. */
-    if (uri->server)
+    if (conn->uri->server)
         return VIR_DRV_OPEN_DECLINED;
 
-    if (uri->server)
+    if (conn->uri->server)
         return VIR_DRV_OPEN_DECLINED;
 
     /* From this point on, the connection is for us. */
-    if (!uri->path
-        || uri->path[0] == '\0'
-        || (uri->path[0] == '/' && uri->path[1] == '\0')) {
+    if (!conn->uri->path
+        || conn->uri->path[0] == '\0'
+        || (conn->uri->path[0] == '/' && conn->uri->path[1] == '\0')) {
         testError (NULL, VIR_ERR_INVALID_ARG,
                    "%s", _("testOpen: supply a path or use test:///default"));
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (STREQ(uri->path, "/default"))
+    if (STREQ(conn->uri->path, "/default"))
         ret = testOpenDefault(conn);
     else
         ret = testOpenFromFile(conn,
-                               uri->path);
+                               conn->uri->path);
 
     return (ret);
 }
@@ -711,19 +710,6 @@ static char *testGetHostname (virConnectPtr conn)
         return NULL;
     }
     return str;
-}
-
-static char * testGetURI (virConnectPtr conn)
-{
-    char *uri;
-    GET_CONNECTION(conn);
-
-    if (asprintf (&uri, "test://%s", privconn->path) == -1) {
-        testError (conn, VIR_ERR_SYSTEM_ERROR, "%s",
-                   strerror (errno));
-        return NULL;
-    }
-    return uri;
 }
 
 static int testGetMaxVCPUs(virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -1398,7 +1384,6 @@ static int testDomainSetSchedulerParams(virDomainPtr domain,
 }
 
 static virDrvOpenStatus testOpenNetwork(virConnectPtr conn,
-                                        xmlURIPtr uri ATTRIBUTE_UNUSED,
                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                         int flags ATTRIBUTE_UNUSED) {
     if (STRNEQ(conn->driver->name, "Test"))
@@ -1631,7 +1616,6 @@ static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr pool) {
 }
 
 static virDrvOpenStatus testStorageOpen(virConnectPtr conn,
-                                        xmlURIPtr uri ATTRIBUTE_UNUSED,
                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                         int flags ATTRIBUTE_UNUSED) {
     if (STRNEQ(conn->driver->name, "Test"))
@@ -2211,14 +2195,13 @@ static virDriver testDriver = {
     VIR_DRV_TEST,
     "Test",
     LIBVIR_VERSION_NUMBER,
-    NULL, /* probe */
     testOpen, /* open */
     testClose, /* close */
     NULL, /* supports_feature */
     NULL, /* type */
     testGetVersion, /* version */
     testGetHostname, /* hostname */
-    testGetURI, /* URI */
+    NULL, /* URI */
     testGetMaxVCPUs, /* getMaxVcpus */
     testNodeGetInfo, /* nodeGetInfo */
     testGetCapabilities, /* getCapabilities */
