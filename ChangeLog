@@ -1,3 +1,8 @@
+Mon Nov 17 09:55:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
+
+	* src/openvz_conf.c: Fix updating of config file params
+	(Evgeniy Sokolov)
+
 Fri Nov 14 09:40:00 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* src/storage_backend_logical.c: Use different separator for lvs

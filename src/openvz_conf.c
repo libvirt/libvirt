@@ -484,8 +484,7 @@ openvzWriteConfigParam(int vpsid, const char *param, const char *value)
         if (openvz_readline(fd, line, sizeof(line)) <= 0)
             break;
 
-        if (!STRPREFIX(line, param) &&
-            line[strlen(param)] == '=') {
+        if (!(STRPREFIX(line, param) && line[strlen(param)] == '=')) {
             if (safewrite(temp_fd, line, strlen(line)) !=
                 strlen(line))
                 goto error;
