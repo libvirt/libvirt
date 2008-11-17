@@ -429,14 +429,14 @@
     <enum name='VIR_CRED_USERNAME' file='libvirt' value='1' type='virConnectCredentialType' info='Identity to act as'/>
     <enum name='VIR_DOMAIN_BLOCKED' file='libvirt' value='2' type='virDomainState' info='the domain is blocked on resource'/>
     <enum name='VIR_DOMAIN_CRASHED' file='libvirt' value='6' type='virDomainState' info=' the domain is crashed'/>
-    <enum name='VIR_DOMAIN_EVENT_ADDED' file='libvirt' value='1' type='virDomainEventType'/>
-    <enum name='VIR_DOMAIN_EVENT_REMOVED' file='libvirt' value='2' type='virDomainEventType'/>
-    <enum name='VIR_DOMAIN_EVENT_RESTORED' file='libvirt' value='8' type='virDomainEventType'/>
-    <enum name='VIR_DOMAIN_EVENT_RESUMED' file='libvirt' value='5' type='virDomainEventType'/>
-    <enum name='VIR_DOMAIN_EVENT_SAVED' file='libvirt' value='7' type='virDomainEventType'/>
-    <enum name='VIR_DOMAIN_EVENT_STARTED' file='libvirt' value='3' type='virDomainEventType'/>
-    <enum name='VIR_DOMAIN_EVENT_STOPPED' file='libvirt' value='6' type='virDomainEventType'/>
-    <enum name='VIR_DOMAIN_EVENT_SUSPENDED' file='libvirt' value='4' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_ADDED' file='libvirt' value='0' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_REMOVED' file='libvirt' value='1' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_RESTORED' file='libvirt' value='7' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_RESUMED' file='libvirt' value='4' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_SAVED' file='libvirt' value='6' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_STARTED' file='libvirt' value='2' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_STOPPED' file='libvirt' value='5' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_SUSPENDED' file='libvirt' value='3' type='virDomainEventType'/>
     <enum name='VIR_DOMAIN_NONE' file='libvirt' value='0' type='virDomainCreateFlags'/>
     <enum name='VIR_DOMAIN_NOSTATE' file='libvirt' value='0' type='virDomainState' info='no state'/>
     <enum name='VIR_DOMAIN_PAUSED' file='libvirt' value='3' type='virDomainState' info='the domain is paused by user'/>

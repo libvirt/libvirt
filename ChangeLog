@@ -1,3 +1,11 @@
+Mon Nov 17 10:23:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
+
+	* docs/libvirt-api.xml: Re-generate
+	* include/libvirt/libvirt.h.in: Set explicit values for
+	domain events enums to avoid API generator bug
+	* python/libvir.c: Add missing python thread safety calls
+	to domain events APIs
+
 Mon Nov 17 09:55:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
 
 	* src/openvz_conf.c: Fix updating of config file params

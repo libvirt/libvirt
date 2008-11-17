@@ -1482,7 +1482,9 @@ getLibvirtModuleObject (void) {
     // PyImport_ImportModule returns a new reference
     libvirt_module = PyImport_ImportModule("libvirt");
     if(!libvirt_module) {
+#if DEBUG_ERROR
         printf("%s Error importing libvirt module\n", __FUNCTION__);
+#endif
         PyErr_Print();
         return NULL;
     }
@@ -1498,7 +1500,9 @@ getLibvirtDictObject (void) {
     // PyModule_GetDict returns a borrowed reference
     libvirt_dict = PyModule_GetDict(getLibvirtModuleObject());
     if(!libvirt_dict) {
+#if DEBUG_ERROR
         printf("%s Error importing libvirt dictionary\n", __FUNCTION__);
+#endif
         PyErr_Print();
         return NULL;
     }
@@ -1516,7 +1520,9 @@ getLibvirtDomainClassObject (void) {
     libvirt_dom_class = PyDict_GetItemString(getLibvirtDictObject(),
                                              "virDomain");
     if(!libvirt_dom_class) {
+#if DEBUG_ERROR
         printf("%s Error importing virDomain class\n", __FUNCTION__);
+#endif
         PyErr_Print();
         return NULL;
     }
@@ -1537,29 +1543,39 @@ libvirt_virConnectDomainEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     PyObject *pyobj_ret;
 
     PyObject *pyobj_conn_inst = (PyObject*)opaque;
-    PyObject *pyobj_dom = libvirt_virDomainPtrWrap(dom);
+    PyObject *pyobj_dom;
 
     PyObject *pyobj_dom_args;
     PyObject *pyobj_dom_inst;
 
     PyObject *dom_class;
+    int ret = -1;
+
+    LIBVIRT_ENSURE_THREAD_STATE;
 
     /* Create a python instance of this virDomainPtr */
+    pyobj_dom = libvirt_virDomainPtrWrap(dom);
     pyobj_dom_args = PyTuple_New(2);
     if(PyTuple_SetItem(pyobj_dom_args, 0, pyobj_conn_inst)!=0) {
+#if DEBUG_ERROR
         printf("%s error creating tuple",__FUNCTION__);
-        return -1;
+#endif
+        goto cleanup;
     }
     if(PyTuple_SetItem(pyobj_dom_args, 1, pyobj_dom)!=0) {
+#if DEBUG_ERROR
         printf("%s error creating tuple",__FUNCTION__);
-        return -1;
+#endif
+        goto cleanup;
     }
     Py_INCREF(pyobj_conn_inst);
 
     dom_class = getLibvirtDomainClassObject();
     if(!PyClass_Check(dom_class)) {
+#if DEBUG_ERROR
         printf("%s dom_class is not a class!\n", __FUNCTION__);
-        return -1;
+#endif
+        goto cleanup;
     }
 
     pyobj_dom_inst = PyInstance_New(dom_class,
@@ -1569,9 +1585,11 @@ libvirt_virConnectDomainEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     Py_DECREF(pyobj_dom_args);
 
     if(!pyobj_dom_inst) {
+#if DEBUG_ERROR
         printf("%s Error creating a python instance of virDomain\n", __FUNCTION__);
+#endif
         PyErr_Print();
-        return -1;
+        goto cleanup;
     }
 
     /* Call the Callback Dispatcher */
@@ -1584,14 +1602,19 @@ libvirt_virConnectDomainEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     Py_DECREF(pyobj_dom_inst);
 
     if(!pyobj_ret) {
+#if DEBUG_ERROR
         printf("%s - ret:%p\n", __FUNCTION__, pyobj_ret);
+#endif
         PyErr_Print();
-        return -1;
     } else {
         Py_DECREF(pyobj_ret);
-        return 0;
+        ret = 0;
     }
 
+
+cleanup:
+    LIBVIRT_RELEASE_THREAD_STATE;
+    return -1;
 }
 
 static PyObject *
@@ -1608,9 +1631,11 @@ libvirt_virConnectDomainEventRegister(ATTRIBUTE_UNUSED PyObject * self,
     if (!PyArg_ParseTuple
         (args, (char *) "OO:virConnectDomainEventRegister",
                         &pyobj_conn, &pyobj_conn_inst)) {
+#if DEBUG_ERROR
         printf("%s failed parsing tuple\n", __FUNCTION__);
+#endif
         return VIR_PY_INT_FAIL;
-        }
+    }
 
 #ifdef DEBUG_ERROR
     printf("libvirt_virConnectDomainEventRegister(%p %p) called\n",
@@ -1620,9 +1645,13 @@ libvirt_virConnectDomainEventRegister(ATTRIBUTE_UNUSED PyObject * self,
 
     Py_INCREF(pyobj_conn_inst);
 
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+
     ret = virConnectDomainEventRegister(conn,
                                         libvirt_virConnectDomainEventCallback,
                                         (void *)pyobj_conn_inst);
+
+    LIBVIRT_END_ALLOW_THREADS;
 
     py_retval = libvirt_intWrap(ret);
     return (py_retval);
@@ -1650,7 +1679,11 @@ libvirt_virConnectDomainEventDeregister(ATTRIBUTE_UNUSED PyObject * self,
 
     conn   = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
 
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+
     ret = virConnectDomainEventDeregister(conn, libvirt_virConnectDomainEventCallback);
+
+    LIBVIRT_END_ALLOW_THREADS;
 
     Py_DECREF(pyobj_conn_inst);
     py_retval = libvirt_intWrap(ret);
@@ -1679,13 +1712,17 @@ libvirt_virEventAddHandleFunc  (int fd ATTRIBUTE_UNUSED, int event ATTRIBUTE_UNU
     PyObject *cb_args;
     PyObject *pyobj_args;
 
+    LIBVIRT_ENSURE_THREAD_STATE;
+
     /* Lookup the python callback */
     python_cb = PyDict_GetItemString(getLibvirtDictObject(),
                                      "eventInvokeHandleCallback");
     if(!python_cb) {
+#if DEBUG_ERROR
         printf("%s Error finding eventInvokeHandleCallback\n", __FUNCTION__);
+#endif
         PyErr_Print();
-        return -1;
+        goto cleanup;
     }
     Py_INCREF(python_cb);
 
@@ -1708,6 +1745,10 @@ libvirt_virEventAddHandleFunc  (int fd ATTRIBUTE_UNUSED, int event ATTRIBUTE_UNU
 
     Py_XDECREF(result);
     Py_DECREF(pyobj_args);
+
+cleanup:
+    LIBVIRT_RELEASE_THREAD_STATE;
+
     return 0;
 }
 
@@ -1715,7 +1756,11 @@ static void
 libvirt_virEventUpdateHandleFunc(int fd, int event)
 {
     PyObject *result = NULL;
-    PyObject *pyobj_args = PyTuple_New(2);
+    PyObject *pyobj_args;
+
+    LIBVIRT_ENSURE_THREAD_STATE;
+
+    pyobj_args = PyTuple_New(2);
     PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(fd));
     PyTuple_SetItem(pyobj_args, 1, libvirt_intWrap(event));
 
@@ -1724,13 +1769,20 @@ libvirt_virEventUpdateHandleFunc(int fd, int event)
 
     Py_XDECREF(result);
     Py_DECREF(pyobj_args);
+
+    LIBVIRT_RELEASE_THREAD_STATE;
 }
+
 
 static int
 libvirt_virEventRemoveHandleFunc(int fd)
 {
     PyObject *result = NULL;
-    PyObject *pyobj_args = PyTuple_New(1);
+    PyObject *pyobj_args;
+
+    LIBVIRT_ENSURE_THREAD_STATE;
+
+    pyobj_args = PyTuple_New(1);
     PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(fd));
 
     if(removeHandleObj && PyCallable_Check(removeHandleObj))
@@ -1738,6 +1790,9 @@ libvirt_virEventRemoveHandleFunc(int fd)
 
     Py_XDECREF(result);
     Py_DECREF(pyobj_args);
+
+    LIBVIRT_RELEASE_THREAD_STATE;
+
     return 0;
 }
 
@@ -1754,13 +1809,17 @@ libvirt_virEventAddTimeoutFunc(int timeout, virEventTimeoutCallback cb,
     PyObject *cb_args;
     PyObject *pyobj_args;
 
+    LIBVIRT_ENSURE_THREAD_STATE;
+
     /* Lookup the python callback */
     python_cb = PyDict_GetItemString(getLibvirtDictObject(),
                                      "eventInvokeTimeoutCallback");
     if(!python_cb) {
+#if DEBUG_ERROR
         printf("%s Error finding eventInvokeTimeoutCallback\n", __FUNCTION__);
+#endif
         PyErr_Print();
-        return -1;
+        goto cleanup;
     }
     Py_INCREF(python_cb);
 
@@ -1783,6 +1842,9 @@ libvirt_virEventAddTimeoutFunc(int timeout, virEventTimeoutCallback cb,
 
     Py_XDECREF(result);
     Py_DECREF(pyobj_args);
+
+cleanup:
+    LIBVIRT_RELEASE_THREAD_STATE;
     return 0;
 }
 
@@ -1790,7 +1852,11 @@ static void
 libvirt_virEventUpdateTimeoutFunc(int timer, int timeout)
 {
     PyObject *result = NULL;
-    PyObject *pyobj_args = PyTuple_New(2);
+    PyObject *pyobj_args;
+
+    LIBVIRT_ENSURE_THREAD_STATE;
+
+    pyobj_args = PyTuple_New(2);
     PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(timer));
     PyTuple_SetItem(pyobj_args, 1, libvirt_intWrap(timeout));
 
@@ -1799,13 +1865,19 @@ libvirt_virEventUpdateTimeoutFunc(int timer, int timeout)
 
     Py_XDECREF(result);
     Py_DECREF(pyobj_args);
+
+    LIBVIRT_RELEASE_THREAD_STATE;
 }
 
 static int
 libvirt_virEventRemoveTimeoutFunc(int timer)
 {
     PyObject *result = NULL;
-    PyObject *pyobj_args = PyTuple_New(1);
+    PyObject *pyobj_args;
+
+    LIBVIRT_ENSURE_THREAD_STATE;
+
+    pyobj_args = PyTuple_New(1);
     PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(timer));
 
     if(updateTimeoutObj && PyCallable_Check(updateTimeoutObj))
@@ -1813,6 +1885,9 @@ libvirt_virEventRemoveTimeoutFunc(int timer)
 
     Py_XDECREF(result);
     Py_DECREF(pyobj_args);
+
+    LIBVIRT_RELEASE_THREAD_STATE;
+
     return 0;
 }
 
@@ -1845,12 +1920,16 @@ libvirt_virEventRegisterImpl(ATTRIBUTE_UNUSED PyObject * self,
     Py_INCREF(updateTimeoutObj);
     Py_INCREF(removeTimeoutObj);
 
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+
     virEventRegisterImpl(libvirt_virEventAddHandleFunc,
                          libvirt_virEventUpdateHandleFunc,
                          libvirt_virEventRemoveHandleFunc,
                          libvirt_virEventAddTimeoutFunc,
                          libvirt_virEventUpdateTimeoutFunc,
                          libvirt_virEventRemoveTimeoutFunc);
+
+    LIBVIRT_END_ALLOW_THREADS;
 
     return VIR_PY_INT_SUCCESS;
 }

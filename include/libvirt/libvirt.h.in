@@ -1004,14 +1004,14 @@ virDomainPtr            virDomainCreateLinux    (virConnectPtr conn,
  * a virDomainEventType is emitted during domain lifecycle events
  */
 typedef enum {
-      VIR_DOMAIN_EVENT_ADDED,
-      VIR_DOMAIN_EVENT_REMOVED,
-      VIR_DOMAIN_EVENT_STARTED,
-      VIR_DOMAIN_EVENT_SUSPENDED,
-      VIR_DOMAIN_EVENT_RESUMED,
-      VIR_DOMAIN_EVENT_STOPPED,
-      VIR_DOMAIN_EVENT_SAVED,
-      VIR_DOMAIN_EVENT_RESTORED,
+      VIR_DOMAIN_EVENT_ADDED = 0,
+      VIR_DOMAIN_EVENT_REMOVED = 1,
+      VIR_DOMAIN_EVENT_STARTED = 2,
+      VIR_DOMAIN_EVENT_SUSPENDED = 3,
+      VIR_DOMAIN_EVENT_RESUMED = 4,
+      VIR_DOMAIN_EVENT_STOPPED = 5,
+      VIR_DOMAIN_EVENT_SAVED = 6,
+      VIR_DOMAIN_EVENT_RESTORED = 7,
 } virDomainEventType;
 
 /**
