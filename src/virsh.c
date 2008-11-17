@@ -47,7 +47,6 @@
 #include "buf.h"
 #include "console.h"
 #include "util.h"
-#include "util-lib.h"
 
 static char *progname;
 

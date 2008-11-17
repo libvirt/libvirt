@@ -239,7 +239,7 @@ virUnrefConnect(virConnectPtr conn) {
  * Returns a pointer to the domain, or NULL in case of failure
  */
 virDomainPtr
-__virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
+virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     virDomainPtr ret = NULL;
 
     if ((!VIR_IS_CONNECT(conn)) || (name == NULL) || (uuid == NULL)) {
@@ -379,7 +379,7 @@ virUnrefDomain(virDomainPtr domain) {
  * Returns a pointer to the network, or NULL in case of failure
  */
 virNetworkPtr
-__virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
+virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     virNetworkPtr ret = NULL;
 
     if ((!VIR_IS_CONNECT(conn)) || (name == NULL) || (uuid == NULL)) {
@@ -516,7 +516,7 @@ virUnrefNetwork(virNetworkPtr network) {
  * Returns a pointer to the network, or NULL in case of failure
  */
 virStoragePoolPtr
-__virGetStoragePool(virConnectPtr conn, const char *name, const unsigned char *uuid) {
+virGetStoragePool(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     virStoragePoolPtr ret = NULL;
 
     if ((!VIR_IS_CONNECT(conn)) || (name == NULL) || (uuid == NULL)) {
@@ -650,7 +650,7 @@ virUnrefStoragePool(virStoragePoolPtr pool) {
  * Returns a pointer to the storage vol, or NULL in case of failure
  */
 virStorageVolPtr
-__virGetStorageVol(virConnectPtr conn, const char *pool, const char *name, const char *key) {
+virGetStorageVol(virConnectPtr conn, const char *pool, const char *name, const char *key) {
     virStorageVolPtr ret = NULL;
 
     if ((!VIR_IS_CONNECT(conn)) || (name == NULL) || (key == NULL)) {

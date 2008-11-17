@@ -88,7 +88,7 @@ static int virAllocTestFail(void)
  *
  * Returns -1 on failure to allocate, zero on success
  */
-int __virAlloc(void *ptrptr, size_t size)
+int virAlloc(void *ptrptr, size_t size)
 {
 #if TEST_OOM
     if (virAllocTestFail()) {
@@ -116,7 +116,7 @@ int __virAlloc(void *ptrptr, size_t size)
  *
  * Returns -1 on failure to allocate, zero on success
  */
-int __virAllocN(void *ptrptr, size_t size, size_t count)
+int virAllocN(void *ptrptr, size_t size, size_t count)
 {
 #if TEST_OOM
     if (virAllocTestFail()) {
@@ -145,7 +145,7 @@ int __virAllocN(void *ptrptr, size_t size, size_t count)
  *
  * Returns -1 on failure to allocate, zero on success
  */
-int __virReallocN(void *ptrptr, size_t size, size_t count)
+int virReallocN(void *ptrptr, size_t size, size_t count)
 {
     void *tmp;
 #if TEST_OOM
@@ -172,7 +172,7 @@ int __virReallocN(void *ptrptr, size_t size, size_t count)
  * the 'ptrptr' variable. After release, 'ptrptr' will be
  * updated to point to NULL.
  */
-void __virFree(void *ptrptr)
+void virFree(void *ptrptr)
 {
     free(*(void**)ptrptr);
     *(void**)ptrptr = NULL;

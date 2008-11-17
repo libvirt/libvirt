@@ -88,7 +88,7 @@ virBufferGrow(virBufferPtr buf, unsigned int len)
  *
  */
 void
-__virBufferAdd(const virBufferPtr buf, const char *str, int len)
+virBufferAdd(const virBufferPtr buf, const char *str, int len)
 {
     unsigned int needSize;
 
@@ -120,7 +120,7 @@ __virBufferAdd(const virBufferPtr buf, const char *str, int len)
  *
  */
 void
-__virBufferAddChar (virBufferPtr buf, char c)
+virBufferAddChar (virBufferPtr buf, char c)
 {
     unsigned int needSize;
 
@@ -150,7 +150,7 @@ __virBufferAddChar (virBufferPtr buf, char c)
  * Returns the buffer content or NULL in case of error.
  */
 char *
-__virBufferContentAndReset(const virBufferPtr buf)
+virBufferContentAndReset(const virBufferPtr buf)
 {
     char *str;
     if (buf == NULL)
@@ -176,7 +176,7 @@ __virBufferContentAndReset(const virBufferPtr buf)
  * Return true if in error, 0 if normal
  */
 int
-__virBufferError(const virBufferPtr buf)
+virBufferError(const virBufferPtr buf)
 {
     if (buf == NULL)
         return 1;
@@ -208,7 +208,7 @@ virBufferUse(const virBufferPtr buf)
  * Do a formatted print to an XML buffer.
  */
 void
-__virBufferVSprintf(const virBufferPtr buf, const char *format, ...)
+virBufferVSprintf(const virBufferPtr buf, const char *format, ...)
 {
     int size, count, grow_size;
     va_list locarg, argptr;

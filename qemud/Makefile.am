@@ -7,8 +7,7 @@ DAEMON_SOURCES =					\
 		remote_dispatch_prototypes.h		\
 		remote_dispatch_localvars.h		\
 		remote_dispatch_proc_switch.h		\
-		remote_protocol.h remote_protocol.c	\
-		$(srcdir)/../src/util-lib.c
+		remote_protocol.h remote_protocol.c
 
 AVAHI_SOURCES =						\
 		mdns.c mdns.h

@@ -579,7 +579,7 @@ virRegisterStateDriver(virStateDriverPtr driver)
     return virStateDriverTabCount++;
 }
 
-int __virStateInitialize(void) {
+int virStateInitialize(void) {
     int i, ret = 0;
 
     if (virInitialize() < 0)
@@ -593,7 +593,7 @@ int __virStateInitialize(void) {
     return ret;
 }
 
-int __virStateCleanup(void) {
+int virStateCleanup(void) {
     int i, ret = 0;
 
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
@@ -604,7 +604,7 @@ int __virStateCleanup(void) {
     return ret;
 }
 
-int __virStateReload(void) {
+int virStateReload(void) {
     int i, ret = 0;
 
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
@@ -615,7 +615,7 @@ int __virStateReload(void) {
     return ret;
 }
 
-int __virStateActive(void) {
+int virStateActive(void) {
     int i, ret = 0;
 
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
@@ -967,7 +967,7 @@ virConnectClose(virConnectPtr conn)
  * implementation of driver features in the remote case.
  */
 int
-__virDrvSupportsFeature (virConnectPtr conn, int feature)
+virDrvSupportsFeature (virConnectPtr conn, int feature)
 {
     DEBUG("conn=%p, feature=%d", conn, feature);
 
@@ -2305,7 +2305,7 @@ virDomainMigrate (virDomainPtr domain,
  * implementation of migration in the remote case.
  */
 int
-__virDomainMigratePrepare (virConnectPtr dconn,
+virDomainMigratePrepare (virConnectPtr dconn,
                            char **cookie,
                            int *cookielen,
                            const char *uri_in,
@@ -2334,7 +2334,7 @@ __virDomainMigratePrepare (virConnectPtr dconn,
  * implementation of migration in the remote case.
  */
 int
-__virDomainMigratePerform (virDomainPtr domain,
+virDomainMigratePerform (virDomainPtr domain,
                            const char *cookie,
                            int cookielen,
                            const char *uri,
@@ -2364,7 +2364,7 @@ __virDomainMigratePerform (virDomainPtr domain,
  * implementation of migration in the remote case.
  */
 virDomainPtr
-__virDomainMigrateFinish (virConnectPtr dconn,
+virDomainMigrateFinish (virConnectPtr dconn,
                           const char *dname,
                           const char *cookie,
                           int cookielen,
@@ -2392,15 +2392,15 @@ __virDomainMigrateFinish (virConnectPtr dconn,
  * implementation of migration in the remote case.
  */
 int
-__virDomainMigratePrepare2 (virConnectPtr dconn,
-                            char **cookie,
-                            int *cookielen,
-                            const char *uri_in,
-                            char **uri_out,
-                            unsigned long flags,
-                            const char *dname,
-                            unsigned long bandwidth,
-                            const char *dom_xml)
+virDomainMigratePrepare2 (virConnectPtr dconn,
+                          char **cookie,
+                          int *cookielen,
+                          const char *uri_in,
+                          char **uri_out,
+                          unsigned long flags,
+                          const char *dname,
+                          unsigned long bandwidth,
+                          const char *dom_xml)
 {
     DEBUG("dconn=%p, cookie=%p, cookielen=%p, uri_in=%s, uri_out=%p, flags=%lu, dname=%s, bandwidth=%lu, dom_xml=%s", dconn, cookie, cookielen, uri_in, uri_out, flags, dname, bandwidth, dom_xml);
 
@@ -2423,13 +2423,13 @@ __virDomainMigratePrepare2 (virConnectPtr dconn,
  * implementation of migration in the remote case.
  */
 virDomainPtr
-__virDomainMigrateFinish2 (virConnectPtr dconn,
-                           const char *dname,
-                           const char *cookie,
-                           int cookielen,
-                           const char *uri,
-                           unsigned long flags,
-                           int retcode)
+virDomainMigrateFinish2 (virConnectPtr dconn,
+                         const char *dname,
+                         const char *cookie,
+                         int cookielen,
+                         const char *uri,
+                         unsigned long flags,
+                         int retcode)
 {
     DEBUG("dconn=%p, dname=%s, cookie=%p, cookielen=%d, uri=%s, flags=%lu, retcode=%d", dconn, dname, cookie, cookielen, uri, flags, retcode);
 

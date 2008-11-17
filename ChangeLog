@@ -1,3 +1,21 @@
+Mon Nov 17 10:50:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
+
+	Switch to fully versioned linker script for exported ABI
+	* configure.in: Generate src/libvirt_sym.version
+	* qemud/Makefile.am: Remove use of util-lib.c
+	* qemud/remote.c: Remove underscore in migrate API calls
+	* src/.cvsignore: Ignore generated libvirt_sym.version
+	* src/Makefile.am: Remove util-lib.c and util-lib.h
+	* src/buf.c, src/buf.h, src/conf.c, src/conf.h, src/console.c,
+	src/datatypes.c, src/datatypes.h, src/driver.h, src/libvirt.c,
+	src/libvirt_internal.h, src/memory.c, src/memory.h, src/virsh.c:
+	Remove use of __ prefix on all exported methods
+	* src/util.c, src/util.h: Re-add saferead/write APIs
+	* src/util-lib.c, src/util-lib.h: Remove obsolete files
+	* src/libvirt_sym.version: Remove obsolete file
+	* src/libvirt_sym.version.in: Master template for symbol
+	versioning data
+
 Mon Nov 17 10:43:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
 
 	* src/Makefile.am: Build drivers as libtool convenience libs

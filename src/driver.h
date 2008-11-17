@@ -78,7 +78,7 @@ typedef virDrvOpenStatus
 typedef int
         (*virDrvClose)			(virConnectPtr conn);
 typedef int
-    (*virDrvSupportsFeature) (virConnectPtr conn, int feature);
+    (*virDrvDrvSupportsFeature) (virConnectPtr conn, int feature);
 typedef const char *
         (*virDrvGetType)		(virConnectPtr conn);
 typedef int
@@ -332,7 +332,7 @@ struct _virDriver {
     virDrvProbe			probe;
     virDrvOpen			open;
     virDrvClose			close;
-    virDrvSupportsFeature   supports_feature;
+    virDrvDrvSupportsFeature   supports_feature;
     virDrvGetType			type;
     virDrvGetVersion		version;
     virDrvGetHostname       getHostname;

@@ -37,7 +37,7 @@
 
 #include "console.h"
 #include "internal.h"
-#include "util-lib.h"
+#include "util.h"
 
 /* ie  Ctrl-]  as per telnet */
 #define CTRL_CLOSE_BRACKET '\35'

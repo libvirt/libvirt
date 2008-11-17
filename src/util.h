@@ -25,9 +25,11 @@
 #ifndef __VIR_UTIL_H__
 #define __VIR_UTIL_H__
 
-#include "util-lib.h"
 #include "verify.h"
 #include <sys/select.h>
+
+int saferead(int fd, void *buf, size_t count);
+ssize_t safewrite(int fd, const void *buf, size_t count);
 
 enum {
     VIR_EXEC_NONE   = 0,
@@ -46,11 +48,9 @@ int virExec(virConnectPtr conn,
             int flags);
 int virRun(virConnectPtr conn, const char *const*argv, int *status);
 
-int __virFileReadLimFD(int fd, int maxlen, char **buf);
-#define virFileReadLimFD(fd,m,b) __virFileReadLimFD((fd),(m),(b))
+int virFileReadLimFD(int fd, int maxlen, char **buf);
 
-int __virFileReadAll(const char *path, int maxlen, char **buf);
-#define virFileReadAll(p,m,b) __virFileReadAll((p),(m),(b))
+int virFileReadAll(const char *path, int maxlen, char **buf);
 
 int virFileMatchesNameSuffix(const char *file,
                              const char *name,
@@ -90,11 +90,10 @@ int virFileDeletePid(const char *dir,
 
 char *virArgvToString(const char *const *argv);
 
-int __virStrToLong_i(char const *s,
+int virStrToLong_i(char const *s,
                      char **end_ptr,
                      int base,
                      int *result);
-#define virStrToLong_i(s,e,b,r) __virStrToLong_i((s),(e),(b),(r))
 
 int virStrToLong_ui(char const *s,
                     char **end_ptr,
@@ -104,14 +103,12 @@ int virStrToLong_ll(char const *s,
                     char **end_ptr,
                     int base,
                     long long *result);
-int __virStrToLong_ull(char const *s,
-                       char **end_ptr,
-                       int base,
-                       unsigned long long *result);
-#define virStrToLong_ull(s,e,b,r) __virStrToLong_ull((s),(e),(b),(r))
+int virStrToLong_ull(char const *s,
+                     char **end_ptr,
+                     int base,
+                     unsigned long long *result);
 
-int __virMacAddrCompare (const char *mac1, const char *mac2);
-#define virMacAddrCompare(mac1,mac2) __virMacAddrCompare((mac1),(mac2))
+int virMacAddrCompare (const char *mac1, const char *mac2);
 
 void virSkipSpaces(const char **str);
 int virParseNumber(const char **str);

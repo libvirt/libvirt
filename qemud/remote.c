@@ -487,7 +487,7 @@ remoteDispatchSupportsFeature (struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     CHECK_CONN(client);
 
-    ret->supported = __virDrvSupportsFeature (client->conn, args->feature);
+    ret->supported = virDrvSupportsFeature (client->conn, args->feature);
     if (ret->supported == -1) return -1;
 
     return 0;
@@ -1396,9 +1396,9 @@ remoteDispatchDomainMigratePrepare (struct qemud_server *server ATTRIBUTE_UNUSED
         return -2;
     }
 
-    r = __virDomainMigratePrepare (client->conn, &cookie, &cookielen,
-                                   uri_in, uri_out,
-                                   args->flags, dname, args->resource);
+    r = virDomainMigratePrepare (client->conn, &cookie, &cookielen,
+                                 uri_in, uri_out,
+                                 args->flags, dname, args->resource);
     if (r == -1) {
         VIR_FREE(uri_out);
         return -1;
@@ -1439,11 +1439,11 @@ remoteDispatchDomainMigratePerform (struct qemud_server *server ATTRIBUTE_UNUSED
 
     dname = args->dname == NULL ? NULL : *args->dname;
 
-    r = __virDomainMigratePerform (dom,
-                                   args->cookie.cookie_val,
-                                   args->cookie.cookie_len,
-                                   args->uri,
-                                   args->flags, dname, args->resource);
+    r = virDomainMigratePerform (dom,
+                                 args->cookie.cookie_val,
+                                 args->cookie.cookie_len,
+                                 args->uri,
+                                 args->flags, dname, args->resource);
     virDomainFree (dom);
     if (r == -1) return -1;
 
@@ -1460,11 +1460,11 @@ remoteDispatchDomainMigrateFinish (struct qemud_server *server ATTRIBUTE_UNUSED,
     virDomainPtr ddom;
     CHECK_CONN (client);
 
-    ddom = __virDomainMigrateFinish (client->conn, args->dname,
-                                     args->cookie.cookie_val,
-                                     args->cookie.cookie_len,
-                                     args->uri,
-                                     args->flags);
+    ddom = virDomainMigrateFinish (client->conn, args->dname,
+                                   args->cookie.cookie_val,
+                                   args->cookie.cookie_len,
+                                   args->uri,
+                                   args->flags);
     if (ddom == NULL) return -1;
 
     make_nonnull_domain (&ret->ddom, ddom);
@@ -1496,10 +1496,10 @@ remoteDispatchDomainMigratePrepare2 (struct qemud_server *server ATTRIBUTE_UNUSE
         return -2;
     }
 
-    r = __virDomainMigratePrepare2 (client->conn, &cookie, &cookielen,
-                                    uri_in, uri_out,
-                                    args->flags, dname, args->resource,
-                                    args->dom_xml);
+    r = virDomainMigratePrepare2 (client->conn, &cookie, &cookielen,
+                                  uri_in, uri_out,
+                                  args->flags, dname, args->resource,
+                                  args->dom_xml);
     if (r == -1) return -1;
 
     /* remoteDispatchClientRequest will free cookie, uri_out and
@@ -1522,12 +1522,12 @@ remoteDispatchDomainMigrateFinish2 (struct qemud_server *server ATTRIBUTE_UNUSED
     virDomainPtr ddom;
     CHECK_CONN (client);
 
-    ddom = __virDomainMigrateFinish2 (client->conn, args->dname,
-                                      args->cookie.cookie_val,
-                                      args->cookie.cookie_len,
-                                      args->uri,
-                                      args->flags,
-                                      args->retcode);
+    ddom = virDomainMigrateFinish2 (client->conn, args->dname,
+                                    args->cookie.cookie_val,
+                                    args->cookie.cookie_len,
+                                    args->uri,
+                                    args->flags,
+                                    args->retcode);
     if (ddom == NULL) return -1;
 
     make_nonnull_domain (&ret->ddom, ddom);

@@ -285,7 +285,6 @@ bin_PROGRAMS = virsh
 
 virsh_SOURCES =							\
 		console.c console.h				\
-		util-lib.c util-lib.h				\
 		virsh.c
 
 virsh_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDFLAGS)

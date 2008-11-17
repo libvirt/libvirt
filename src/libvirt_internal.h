@@ -26,55 +26,51 @@
 
 
 #ifdef WITH_LIBVIRTD
-int __virStateInitialize(void);
-int __virStateCleanup(void);
-int __virStateReload(void);
-int __virStateActive(void);
-#define virStateInitialize() __virStateInitialize()
-#define virStateCleanup() __virStateCleanup()
-#define virStateReload() __virStateReload()
-#define virStateActive() __virStateActive()
+int virStateInitialize(void);
+int virStateCleanup(void);
+int virStateReload(void);
+int virStateActive(void);
 #endif
 
-int __virDrvSupportsFeature (virConnectPtr conn, int feature);
+int virDrvSupportsFeature (virConnectPtr conn, int feature);
 
-int __virDomainMigratePrepare (virConnectPtr dconn,
-                               char **cookie,
-                               int *cookielen,
-                               const char *uri_in,
-                               char **uri_out,
-                               unsigned long flags,
-                               const char *dname,
-                               unsigned long bandwidth);
-int __virDomainMigratePerform (virDomainPtr domain,
-                               const char *cookie,
-                               int cookielen,
-                               const char *uri,
-                               unsigned long flags,
-                               const char *dname,
-                               unsigned long bandwidth);
-virDomainPtr __virDomainMigrateFinish (virConnectPtr dconn,
-                                       const char *dname,
-                                       const char *cookie,
-                                       int cookielen,
-                                       const char *uri,
-                                       unsigned long flags);
-int __virDomainMigratePrepare2 (virConnectPtr dconn,
-                                char **cookie,
-                                int *cookielen,
-                                const char *uri_in,
-                                char **uri_out,
-                                unsigned long flags,
-                                const char *dname,
-                                unsigned long bandwidth,
-                                const char *dom_xml);
-virDomainPtr __virDomainMigrateFinish2 (virConnectPtr dconn,
-                                        const char *dname,
-                                        const char *cookie,
-                                        int cookielen,
-                                        const char *uri,
-                                        unsigned long flags,
-                                        int retcode);
+int virDomainMigratePrepare (virConnectPtr dconn,
+                             char **cookie,
+                             int *cookielen,
+                             const char *uri_in,
+                             char **uri_out,
+                             unsigned long flags,
+                             const char *dname,
+                             unsigned long bandwidth);
+int virDomainMigratePerform (virDomainPtr domain,
+                             const char *cookie,
+                             int cookielen,
+                             const char *uri,
+                             unsigned long flags,
+                             const char *dname,
+                             unsigned long bandwidth);
+virDomainPtr virDomainMigrateFinish (virConnectPtr dconn,
+                                     const char *dname,
+                                     const char *cookie,
+                                     int cookielen,
+                                     const char *uri,
+                                     unsigned long flags);
+int virDomainMigratePrepare2 (virConnectPtr dconn,
+                              char **cookie,
+                              int *cookielen,
+                              const char *uri_in,
+                              char **uri_out,
+                              unsigned long flags,
+                              const char *dname,
+                              unsigned long bandwidth,
+                              const char *dom_xml);
+virDomainPtr virDomainMigrateFinish2 (virConnectPtr dconn,
+                                      const char *dname,
+                                      const char *cookie,
+                                      int cookielen,
+                                      const char *uri,
+                                      unsigned long flags,
+                                      int retcode);
 
 
 #endif

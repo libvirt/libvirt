@@ -184,29 +184,23 @@ struct _virStorageVol {
 
 virConnectPtr virGetConnect(void);
 int virUnrefConnect(virConnectPtr conn);
-virDomainPtr __virGetDomain(virConnectPtr conn,
+virDomainPtr virGetDomain(virConnectPtr conn,
                             const char *name,
                             const unsigned char *uuid);
 int virUnrefDomain(virDomainPtr domain);
-virNetworkPtr __virGetNetwork(virConnectPtr conn,
+virNetworkPtr virGetNetwork(virConnectPtr conn,
                               const char *name,
                               const unsigned char *uuid);
 int virUnrefNetwork(virNetworkPtr network);
 
-virStoragePoolPtr __virGetStoragePool(virConnectPtr conn,
+virStoragePoolPtr virGetStoragePool(virConnectPtr conn,
                                       const char *name,
                                       const unsigned char *uuid);
 int virUnrefStoragePool(virStoragePoolPtr pool);
-virStorageVolPtr __virGetStorageVol(virConnectPtr conn,
+virStorageVolPtr virGetStorageVol(virConnectPtr conn,
                                      const char *pool,
                                     const char *name,
                                     const char *key);
 int virUnrefStorageVol(virStorageVolPtr vol);
-
-#define virGetDomain(c,n,u) __virGetDomain((c),(n),(u))
-#define virGetNetwork(c,n,u) __virGetNetwork((c),(n),(u))
-#define virGetStoragePool(c,n,u) __virGetStoragePool((c),(n),(u))
-#define virGetStorageVol(c,p,n,u) __virGetStorageVol((c),(p),(n),(u))
-
 
 #endif

@@ -34,25 +34,18 @@ struct _virBuffer {
 };
 #endif
 
-char *__virBufferContentAndReset(const virBufferPtr buf);
-int __virBufferError(const virBufferPtr buf);
+char *virBufferContentAndReset(const virBufferPtr buf);
+int virBufferError(const virBufferPtr buf);
 unsigned int virBufferUse(const virBufferPtr buf);
-void __virBufferAdd(const virBufferPtr buf, const char *str, int len);
-void __virBufferAddChar(const virBufferPtr buf, char c);
-void __virBufferVSprintf(const virBufferPtr buf, const char *format, ...)
+void virBufferAdd(const virBufferPtr buf, const char *str, int len);
+void virBufferAddChar(const virBufferPtr buf, char c);
+void virBufferVSprintf(const virBufferPtr buf, const char *format, ...)
   ATTRIBUTE_FORMAT(printf, 2, 3);
 void virBufferStrcat(const virBufferPtr buf, ...);
 void virBufferEscapeString(const virBufferPtr buf, const char *format, const char *str);
 void virBufferURIEncodeString (const virBufferPtr buf, const char *str);
 
 #define virBufferAddLit(buf_, literal_string_) \
-  __virBufferAdd (buf_, "" literal_string_ "", sizeof literal_string_ - 1)
-
-#define virBufferAdd(b,s,l) __virBufferAdd((b),(s),(l))
-#define virBufferAddChar(b,c) __virBufferAddChar((b),(c))
-#define virBufferVSprintf(b,f,...) __virBufferVSprintf((b),(f), __VA_ARGS__)
-
-#define virBufferContentAndReset(b) __virBufferContentAndReset((b))
-#define virBufferError(b) __virBufferError((b))
+  virBufferAdd (buf_, "" literal_string_ "", sizeof literal_string_ - 1)
 
 #endif /* __VIR_BUFFER_H__ */

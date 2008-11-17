@@ -54,7 +54,6 @@
 #include "buf.h"
 #include "util.h"
 #include "memory.h"
-#include "util-lib.c"
 
 #ifndef NSIG
 # define NSIG 32
@@ -66,11 +65,51 @@
 
 #define virLog(msg...) fprintf(stderr, msg)
 
-#ifndef PROXY
 
 #define ReportError(conn, code, fmt...)                                      \
         virReportErrorHelper(conn, VIR_FROM_NONE, code, __FILE__,          \
                                __FUNCTION__, __LINE__, fmt)
+
+/* Like read(), but restarts after EINTR */
+int saferead(int fd, void *buf, size_t count)
+{
+        size_t nread = 0;
+        while (count > 0) {
+                ssize_t r = read(fd, buf, count);
+                if (r < 0 && errno == EINTR)
+                        continue;
+                if (r < 0)
+                        return r;
+                if (r == 0)
+                        return nread;
+                buf = (char *)buf + r;
+                count -= r;
+                nread += r;
+        }
+        return nread;
+}
+
+/* Like write(), but restarts after EINTR */
+ssize_t safewrite(int fd, const void *buf, size_t count)
+{
+        size_t nwritten = 0;
+        while (count > 0) {
+                ssize_t r = write(fd, buf, count);
+
+                if (r < 0 && errno == EINTR)
+                        continue;
+                if (r < 0)
+                        return r;
+                if (r == 0)
+                        return nwritten;
+                buf = (const char *)buf + r;
+                count -= r;
+                nwritten += r;
+        }
+        return nwritten;
+}
+
+#ifndef PROXY
 
 int virFileStripSuffix(char *str,
                        const char *suffix)
@@ -675,7 +714,7 @@ static int virFileReadLimFP(FILE *fp, int maxlen, char **buf)
 }
 
 /* Like virFileReadLimFP, but use a file descriptor rather than a FILE*.  */
-int __virFileReadLimFD(int fd_arg, int maxlen, char **buf)
+int virFileReadLimFD(int fd_arg, int maxlen, char **buf)
 {
     int fd = dup (fd_arg);
     if (fd >= 0) {
@@ -695,7 +734,7 @@ int __virFileReadLimFD(int fd_arg, int maxlen, char **buf)
     return -1;
 }
 
-int __virFileReadAll(const char *path, int maxlen, char **buf)
+int virFileReadAll(const char *path, int maxlen, char **buf)
 {
     FILE *fh = fopen(path, "r");
     if (fh == NULL) {
@@ -985,7 +1024,7 @@ cleanup:
    validity.  This function is careful to return -1 when the string S
    represents a number that is not representable as an "int". */
 int
-__virStrToLong_i(char const *s, char **end_ptr, int base, int *result)
+virStrToLong_i(char const *s, char **end_ptr, int base, int *result)
 {
     long int val;
     char *p;
@@ -1042,7 +1081,7 @@ virStrToLong_ll(char const *s, char **end_ptr, int base, long long *result)
 
 /* Just like virStrToLong_i, above, but produce an "unsigned long long" value.  */
 int
-__virStrToLong_ull(char const *s, char **end_ptr, int base, unsigned long long *result)
+virStrToLong_ull(char const *s, char **end_ptr, int base, unsigned long long *result)
 {
     unsigned long long val;
     char *p;
@@ -1114,7 +1153,7 @@ virParseNumber(const char **str)
  * as well as leading zeros.
  */
 int
-__virMacAddrCompare (const char *p, const char *q)
+virMacAddrCompare (const char *p, const char *q)
 {
     unsigned char c, d;
     do {

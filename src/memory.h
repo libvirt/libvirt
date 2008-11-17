@@ -45,10 +45,10 @@
 
 
 /* Don't call these directly - use the macros below */
-int __virAlloc(void *ptrptr, size_t size) ATTRIBUTE_RETURN_CHECK;
-int __virAllocN(void *ptrptr, size_t size, size_t count) ATTRIBUTE_RETURN_CHECK;
-int __virReallocN(void *ptrptr, size_t size, size_t count) ATTRIBUTE_RETURN_CHECK;
-void __virFree(void *ptrptr);
+int virAlloc(void *ptrptr, size_t size) ATTRIBUTE_RETURN_CHECK;
+int virAllocN(void *ptrptr, size_t size, size_t count) ATTRIBUTE_RETURN_CHECK;
+int virReallocN(void *ptrptr, size_t size, size_t count) ATTRIBUTE_RETURN_CHECK;
+void virFree(void *ptrptr);
 
 /**
  * VIR_ALLOC:
@@ -60,7 +60,7 @@ void __virFree(void *ptrptr);
  *
  * Returns -1 on failure, 0 on success
  */
-#define VIR_ALLOC(ptr) __virAlloc(&(ptr), sizeof(*(ptr)))
+#define VIR_ALLOC(ptr) virAlloc(&(ptr), sizeof(*(ptr)))
 
 /**
  * VIR_ALLOC_N:
@@ -73,7 +73,7 @@ void __virFree(void *ptrptr);
  *
  * Returns -1 on failure, 0 on success
  */
-#define VIR_ALLOC_N(ptr, count) __virAllocN(&(ptr), sizeof(*(ptr)), (count))
+#define VIR_ALLOC_N(ptr, count) virAllocN(&(ptr), sizeof(*(ptr)), (count))
 
 /**
  * VIR_REALLOC_N:
@@ -86,7 +86,7 @@ void __virFree(void *ptrptr);
  *
  * Returns -1 on failure, 0 on success
  */
-#define VIR_REALLOC_N(ptr, count) __virReallocN(&(ptr), sizeof(*(ptr)), (count))
+#define VIR_REALLOC_N(ptr, count) virReallocN(&(ptr), sizeof(*(ptr)), (count))
 
 /**
  * VIR_FREE:
@@ -95,7 +95,7 @@ void __virFree(void *ptrptr);
  * Free the memory stored in 'ptr' and update to point
  * to NULL.
  */
-#define VIR_FREE(ptr) __virFree(&(ptr))
+#define VIR_FREE(ptr) virFree(&(ptr))
 
 
 #if TEST_OOM
