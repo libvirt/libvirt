@@ -16,69 +16,84 @@
      <exports symbol='VIR_UUID_STRING_BUFLEN' type='macro'/>
      <exports symbol='VIR_GET_CPUMAP' type='macro'/>
      <exports symbol='VIR_UNUSE_CPU' type='macro'/>
-     <exports symbol='VIR_STORAGE_POOL_BUILD_REPAIR' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_DEFINED' type='enum'/>
      <exports symbol='VIR_CRED_EXTERNAL' type='enum'/>
-     <exports symbol='VIR_DOMAIN_EVENT_ADDED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_STOPPED_CRASHED' type='enum'/>
      <exports symbol='VIR_EVENT_HANDLE_READABLE' type='enum'/>
      <exports symbol='VIR_DOMAIN_SHUTDOWN' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_UINT' type='enum'/>
      <exports symbol='VIR_STORAGE_POOL_BUILDING' type='enum'/>
-     <exports symbol='VIR_DOMAIN_EVENT_SAVED' type='enum'/>
      <exports symbol='VIR_CRED_CNONCE' type='enum'/>
      <exports symbol='VIR_CRED_ECHOPROMPT' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SCHED_FIELD_DOUBLE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_STARTED_BOOTED' type='enum'/>
      <exports symbol='VIR_DOMAIN_EVENT_RESUMED' type='enum'/>
      <exports symbol='VIR_VCPU_OFFLINE' type='enum'/>
+     <exports symbol='VIR_STORAGE_VOL_DELETE_NORMAL' type='enum'/>
      <exports symbol='VIR_STORAGE_POOL_RUNNING' type='enum'/>
      <exports symbol='VIR_STORAGE_POOL_BUILD_RESIZE' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SCHED_FIELD_LLONG' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_STOPPED_FAILED' type='enum'/>
      <exports symbol='VIR_CONNECT_RO' type='enum'/>
      <exports symbol='VIR_DOMAIN_EVENT_STOPPED' type='enum'/>
      <exports symbol='VIR_CRED_AUTHNAME' type='enum'/>
+     <exports symbol='VIR_STORAGE_POOL_BUILD_REPAIR' type='enum'/>
      <exports symbol='VIR_CRED_LANGUAGE' type='enum'/>
      <exports symbol='VIR_CRED_NOECHOPROMPT' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SCHED_FIELD_BOOLEAN' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_UNDEFINED' type='enum'/>
      <exports symbol='VIR_MIGRATE_LIVE' type='enum'/>
-     <exports symbol='VIR_STORAGE_POOL_INACTIVE' type='enum'/>
-     <exports symbol='VIR_CRED_USERNAME' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_STOPPED_DESTROYED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_DEFINED_ADDED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_STARTED_MIGRATED' type='enum'/>
      <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
      <exports symbol='VIR_MEMORY_VIRTUAL' type='enum'/>
-     <exports symbol='VIR_DOMAIN_EVENT_REMOVED' type='enum'/>
+     <exports symbol='VIR_CRED_USERNAME' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_RESUMED_UNPAUSED' type='enum'/>
      <exports symbol='VIR_DOMAIN_RUNNING' type='enum'/>
      <exports symbol='VIR_EVENT_HANDLE_ERROR' type='enum'/>
      <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
      <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
-     <exports symbol='VIR_STORAGE_POOL_BUILD_NEW' type='enum'/>
+     <exports symbol='VIR_STORAGE_POOL_DELETE_ZEROED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_STARTED_RESTORED' type='enum'/>
      <exports symbol='VIR_EVENT_HANDLE_WRITABLE' type='enum'/>
+     <exports symbol='VIR_STORAGE_POOL_BUILD_NEW' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_SUSPENDED_PAUSED' type='enum'/>
      <exports symbol='VIR_STORAGE_POOL_DELETE_NORMAL' type='enum'/>
      <exports symbol='VIR_STORAGE_VOL_DELETE_ZEROED' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_INT' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_ULLONG' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN' type='enum'/>
      <exports symbol='VIR_CRED_REALM' type='enum'/>
      <exports symbol='VIR_DOMAIN_EVENT_STARTED' type='enum'/>
      <exports symbol='VIR_STORAGE_VOL_FILE' type='enum'/>
      <exports symbol='VIR_EVENT_HANDLE_HANGUP' type='enum'/>
      <exports symbol='VIR_DOMAIN_PAUSED' type='enum'/>
      <exports symbol='VIR_STORAGE_POOL_DEGRADED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_DEFINED_UPDATED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED' type='enum'/>
      <exports symbol='VIR_DOMAIN_CRASHED' type='enum'/>
      <exports symbol='VIR_VCPU_RUNNING' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_DOUBLE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_LLONG' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_BOOLEAN' type='enum'/>
      <exports symbol='VIR_DOMAIN_XML_INACTIVE' type='enum'/>
      <exports symbol='VIR_STORAGE_VOL_BLOCK' type='enum'/>
      <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
-     <exports symbol='VIR_DOMAIN_EVENT_RESTORED' type='enum'/>
-     <exports symbol='VIR_CRED_PASSPHRASE' type='enum'/>
-     <exports symbol='VIR_STORAGE_VOL_DELETE_NORMAL' type='enum'/>
-     <exports symbol='VIR_STORAGE_POOL_DELETE_ZEROED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_UNDEFINED_REMOVED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_RESUMED_MIGRATED' type='enum'/>
      <exports symbol='VIR_DOMAIN_BLOCKED' type='enum'/>
+     <exports symbol='VIR_CRED_PASSPHRASE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_STOPPED_SAVED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_EVENT_STOPPED_MIGRATED' type='enum'/>
+     <exports symbol='VIR_STORAGE_POOL_INACTIVE' type='enum'/>
      <exports symbol='VIR_DOMAIN_XML_SECURE' type='enum'/>
      <exports symbol='VIR_DOMAIN_EVENT_SUSPENDED' type='enum'/>
      <exports symbol='virDomainBlockStatsStruct' type='typedef'/>
      <exports symbol='virDomainMigrateFlags' type='typedef'/>
      <exports symbol='virNodeInfo' type='typedef'/>
      <exports symbol='virNetwork' type='typedef'/>
+     <exports symbol='virDomainEventResumedDetailType' type='typedef'/>
      <exports symbol='virDomainBlockStatsPtr' type='typedef'/>
      <exports symbol='virConnect' type='typedef'/>
-     <exports symbol='virVcpuInfo' type='typedef'/>
+     <exports symbol='virDomainEventStartedDetailType' type='typedef'/>
      <exports symbol='virDomainInfo' type='typedef'/>
      <exports symbol='virStoragePoolDeleteFlags' type='typedef'/>
      <exports symbol='virEventHandleType' type='typedef'/>
@@ -102,17 +117,22 @@
      <exports symbol='virStorageVolInfoPtr' type='typedef'/>
      <exports symbol='virSchedParameter' type='typedef'/>
      <exports symbol='virConnectFlags' type='typedef'/>
+     <exports symbol='virDomainEventDefinedDetailType' type='typedef'/>
      <exports symbol='virDomainMemoryFlags' type='typedef'/>
+     <exports symbol='virDomainEventStoppedDetailType' type='typedef'/>
      <exports symbol='virStorageVolPtr' type='typedef'/>
      <exports symbol='virVcpuState' type='typedef'/>
      <exports symbol='virStorageVolDeleteFlags' type='typedef'/>
+     <exports symbol='virVcpuInfo' type='typedef'/>
      <exports symbol='virSchedParameterPtr' type='typedef'/>
      <exports symbol='virConnectAuth' type='typedef'/>
      <exports symbol='virConnectCredential' type='typedef'/>
+     <exports symbol='virDomainEventSuspendedDetailType' type='typedef'/>
      <exports symbol='virVcpuInfoPtr' type='typedef'/>
      <exports symbol='virStoragePoolBuildFlags' type='typedef'/>
      <exports symbol='virDomainXMLFlags' type='typedef'/>
      <exports symbol='virStorageVolType' type='typedef'/>
+     <exports symbol='virDomainEventUndefinedDetailType' type='typedef'/>
      <exports symbol='virDomainPtr' type='typedef'/>
      <exports symbol='virConnectCredentialType' type='typedef'/>
      <exports symbol='virStoragePoolState' type='typedef'/>
@@ -429,14 +449,28 @@
     <enum name='VIR_CRED_USERNAME' file='libvirt' value='1' type='virConnectCredentialType' info='Identity to act as'/>
     <enum name='VIR_DOMAIN_BLOCKED' file='libvirt' value='2' type='virDomainState' info='the domain is blocked on resource'/>
     <enum name='VIR_DOMAIN_CRASHED' file='libvirt' value='6' type='virDomainState' info=' the domain is crashed'/>
-    <enum name='VIR_DOMAIN_EVENT_ADDED' file='libvirt' value='0' type='virDomainEventType'/>
-    <enum name='VIR_DOMAIN_EVENT_REMOVED' file='libvirt' value='1' type='virDomainEventType'/>
-    <enum name='VIR_DOMAIN_EVENT_RESTORED' file='libvirt' value='7' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_DEFINED' file='libvirt' value='0' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_DEFINED_ADDED' file='libvirt' value='0' type='virDomainEventDefinedDetailType' info='Newly created config file'/>
+    <enum name='VIR_DOMAIN_EVENT_DEFINED_UPDATED' file='libvirt' value='1' type='virDomainEventDefinedDetailType' info=' Changed config file'/>
     <enum name='VIR_DOMAIN_EVENT_RESUMED' file='libvirt' value='4' type='virDomainEventType'/>
-    <enum name='VIR_DOMAIN_EVENT_SAVED' file='libvirt' value='6' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_RESUMED_MIGRATED' file='libvirt' value='1' type='virDomainEventResumedDetailType' info=' Resumed for completion of migration'/>
+    <enum name='VIR_DOMAIN_EVENT_RESUMED_UNPAUSED' file='libvirt' value='0' type='virDomainEventResumedDetailType' info='Normal resume due to admin unpause'/>
     <enum name='VIR_DOMAIN_EVENT_STARTED' file='libvirt' value='2' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_STARTED_BOOTED' file='libvirt' value='0' type='virDomainEventStartedDetailType' info='Normal startup from boot'/>
+    <enum name='VIR_DOMAIN_EVENT_STARTED_MIGRATED' file='libvirt' value='1' type='virDomainEventStartedDetailType' info='Incoming migration from another host'/>
+    <enum name='VIR_DOMAIN_EVENT_STARTED_RESTORED' file='libvirt' value='2' type='virDomainEventStartedDetailType' info=' Restored from a state file'/>
     <enum name='VIR_DOMAIN_EVENT_STOPPED' file='libvirt' value='5' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_STOPPED_CRASHED' file='libvirt' value='2' type='virDomainEventStoppedDetailType' info='Guest crashed'/>
+    <enum name='VIR_DOMAIN_EVENT_STOPPED_DESTROYED' file='libvirt' value='1' type='virDomainEventStoppedDetailType' info='Forced poweroff from host'/>
+    <enum name='VIR_DOMAIN_EVENT_STOPPED_FAILED' file='libvirt' value='5' type='virDomainEventStoppedDetailType' info=' Host emulator/mgmt failed'/>
+    <enum name='VIR_DOMAIN_EVENT_STOPPED_MIGRATED' file='libvirt' value='3' type='virDomainEventStoppedDetailType' info='Migrated off to another host'/>
+    <enum name='VIR_DOMAIN_EVENT_STOPPED_SAVED' file='libvirt' value='4' type='virDomainEventStoppedDetailType' info='Saved to a state file'/>
+    <enum name='VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN' file='libvirt' value='0' type='virDomainEventStoppedDetailType' info='Normal shutdown'/>
     <enum name='VIR_DOMAIN_EVENT_SUSPENDED' file='libvirt' value='3' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED' file='libvirt' value='1' type='virDomainEventSuspendedDetailType' info=' Suspended for offline migration'/>
+    <enum name='VIR_DOMAIN_EVENT_SUSPENDED_PAUSED' file='libvirt' value='0' type='virDomainEventSuspendedDetailType' info='Normal suspend due to admin pause'/>
+    <enum name='VIR_DOMAIN_EVENT_UNDEFINED' file='libvirt' value='1' type='virDomainEventType'/>
+    <enum name='VIR_DOMAIN_EVENT_UNDEFINED_REMOVED' file='libvirt' value='0' type='virDomainEventUndefinedDetailType' info=' Deleted the config file'/>
     <enum name='VIR_DOMAIN_NONE' file='libvirt' value='0' type='virDomainCreateFlags'/>
     <enum name='VIR_DOMAIN_NOSTATE' file='libvirt' value='0' type='virDomainState' info='no state'/>
     <enum name='VIR_DOMAIN_PAUSED' file='libvirt' value='3' type='virDomainState' info='the domain is paused by user'/>
@@ -582,7 +616,13 @@
       <field name='errs' type='long long' info=' In Xen this returns the mysterious &apos;oo_req&apos;.'/>
     </struct>
     <typedef name='virDomainCreateFlags' file='libvirt' type='enum'/>
+    <typedef name='virDomainEventDefinedDetailType' file='libvirt' type='enum'/>
+    <typedef name='virDomainEventResumedDetailType' file='libvirt' type='enum'/>
+    <typedef name='virDomainEventStartedDetailType' file='libvirt' type='enum'/>
+    <typedef name='virDomainEventStoppedDetailType' file='libvirt' type='enum'/>
+    <typedef name='virDomainEventSuspendedDetailType' file='libvirt' type='enum'/>
     <typedef name='virDomainEventType' file='libvirt' type='enum'/>
+    <typedef name='virDomainEventUndefinedDetailType' file='libvirt' type='enum'/>
     <struct name='virDomainInfo' file='libvirt' type='struct _virDomainInfo'>
       <field name='state' type='unsigned char' info=' the running state, one of virDomainState'/>
       <field name='maxMem' type='unsigned long' info=' the maximum memory in KBytes allowed'/>
@@ -736,6 +776,7 @@ see note above'/>
       <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
       <arg name='dom' type='virDomainPtr' info='The domain on which the event occured'/>
       <arg name='event' type='int' info='The specfic virDomainEventType which occured'/>
+      <arg name='detail' type='int' info='event specific detail information'/>
       <arg name='opaque' type='void *' info='opaque user data'/>
     </functype>
     <function name='virConnectDomainEventDeregister' file='libvirt' module='libvirt'>

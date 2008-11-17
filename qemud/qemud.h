@@ -190,6 +190,7 @@ int qemudGetSocketIdentity(int fd, uid_t *uid, pid_t *pid);
 int remoteRelayDomainEvent (virConnectPtr conn ATTRIBUTE_UNUSED,
                             virDomainPtr dom,
                             int event,
+                            int detail,
                             void *opaque);
 
 #endif

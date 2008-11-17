@@ -198,7 +198,8 @@ virDomainEventCallbackQueuePop(virDomainEventQueuePtr evtQueue)
 int
 virDomainEventCallbackQueuePush(virDomainEventQueuePtr evtQueue,
                                 virDomainPtr dom,
-                                virDomainEventType event)
+                                int event,
+                                int detail)
 {
     virDomainEventPtr domEvent;
 
@@ -214,6 +215,7 @@ virDomainEventCallbackQueuePush(virDomainEventQueuePtr evtQueue,
     }
     domEvent->dom = dom;
     domEvent->event = event;
+    domEvent->detail = detail;
 
     /* Make space on queue */
     if (VIR_REALLOC_N(evtQueue->events,

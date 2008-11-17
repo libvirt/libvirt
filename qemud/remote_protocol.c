@@ -2033,6 +2033,8 @@ xdr_remote_domain_event_ret (XDR *xdrs, remote_domain_event_ret *objp)
                  return FALSE;
          if (!xdr_int (xdrs, &objp->event))
                  return FALSE;
+         if (!xdr_int (xdrs, &objp->detail))
+                 return FALSE;
         return TRUE;
 }
 

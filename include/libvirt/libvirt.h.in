@@ -1004,21 +1004,85 @@ virDomainPtr            virDomainCreateLinux    (virConnectPtr conn,
  * a virDomainEventType is emitted during domain lifecycle events
  */
 typedef enum {
-      VIR_DOMAIN_EVENT_ADDED = 0,
-      VIR_DOMAIN_EVENT_REMOVED = 1,
+      VIR_DOMAIN_EVENT_DEFINED = 0,
+      VIR_DOMAIN_EVENT_UNDEFINED = 1,
       VIR_DOMAIN_EVENT_STARTED = 2,
       VIR_DOMAIN_EVENT_SUSPENDED = 3,
       VIR_DOMAIN_EVENT_RESUMED = 4,
       VIR_DOMAIN_EVENT_STOPPED = 5,
-      VIR_DOMAIN_EVENT_SAVED = 6,
-      VIR_DOMAIN_EVENT_RESTORED = 7,
 } virDomainEventType;
+
+/**
+ * virDomainEventDefinedDetailType:
+ *
+ * Details on the caused of the 'defined' lifecycle event
+ */
+typedef enum {
+    VIR_DOMAIN_EVENT_DEFINED_ADDED = 0,     /* Newly created config file */
+    VIR_DOMAIN_EVENT_DEFINED_UPDATED = 1,   /* Changed config file */
+} virDomainEventDefinedDetailType;
+
+/**
+ * virDomainEventUndefinedDetailType:
+ *
+ * Details on the caused of the 'undefined' lifecycle event
+ */
+typedef enum {
+    VIR_DOMAIN_EVENT_UNDEFINED_REMOVED = 0, /* Deleted the config file */
+} virDomainEventUndefinedDetailType;
+
+/**
+ * virDomainEventStartedDetailType:
+ *
+ * Details on the caused of the 'started' lifecycle event
+ */
+typedef enum {
+    VIR_DOMAIN_EVENT_STARTED_BOOTED = 0,   /* Normal startup from boot */
+    VIR_DOMAIN_EVENT_STARTED_MIGRATED = 1, /* Incoming migration from another host */
+    VIR_DOMAIN_EVENT_STARTED_RESTORED = 2, /* Restored from a state file */
+} virDomainEventStartedDetailType;
+
+/**
+ * virDomainEventSuspendedDetailType:
+ *
+ * Details on the caused of the 'suspended' lifecycle event
+ */
+typedef enum {
+    VIR_DOMAIN_EVENT_SUSPENDED_PAUSED = 0,   /* Normal suspend due to admin pause */
+    VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED = 1, /* Suspended for offline migration */
+} virDomainEventSuspendedDetailType;
+
+/**
+ * virDomainEventResumedDetailType:
+ *
+ * Details on the caused of the 'resumed' lifecycle event
+ */
+typedef enum {
+    VIR_DOMAIN_EVENT_RESUMED_UNPAUSED = 0,   /* Normal resume due to admin unpause */
+    VIR_DOMAIN_EVENT_RESUMED_MIGRATED = 1,   /* Resumed for completion of migration */
+} virDomainEventResumedDetailType;
+
+/**
+ * virDomainEventStoppedDetailType:
+ *
+ * Details on the caused of the 'stopped' lifecycle event
+ */
+typedef enum {
+    VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN = 0,  /* Normal shutdown */
+    VIR_DOMAIN_EVENT_STOPPED_DESTROYED = 1, /* Forced poweroff from host */
+    VIR_DOMAIN_EVENT_STOPPED_CRASHED = 2,   /* Guest crashed */
+    VIR_DOMAIN_EVENT_STOPPED_MIGRATED = 3,  /* Migrated off to another host */
+    VIR_DOMAIN_EVENT_STOPPED_SAVED = 4,     /* Saved to a state file */
+    VIR_DOMAIN_EVENT_STOPPED_FAILED = 5,    /* Host emulator/mgmt failed */
+} virDomainEventStoppedDetailType;
+
 
 /**
  * virConnectDomainEventCallback:
  * @conn: virConnect connection
  * @dom: The domain on which the event occured
  * @event: The specfic virDomainEventType which occured
+ * @detail: event specific detail information
  * @opaque: opaque user data
  *
  * A callback function to be registered, and called when a domain event occurs
@@ -1026,6 +1090,7 @@ typedef enum {
 typedef int (*virConnectDomainEventCallback)(virConnectPtr conn,
                                              virDomainPtr dom,
                                              int event,
+                                             int detail,
                                              void *opaque);
 
 int virConnectDomainEventRegister(virConnectPtr conn,

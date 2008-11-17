@@ -58,7 +58,8 @@ int virDomainEventCallbackListRemove(virConnectPtr conn,
  */
 struct _virDomainEvent {
     virDomainPtr dom;
-    virDomainEventType event;
+    int event;
+    int detail;
 };
 typedef struct _virDomainEvent virDomainEvent;
 typedef virDomainEvent *virDomainEventPtr;
@@ -72,7 +73,8 @@ typedef virDomainEventQueue *virDomainEventQueuePtr;
 
 int virDomainEventCallbackQueuePush(virDomainEventQueuePtr evtQueue,
                                     virDomainPtr dom,
-                                    virDomainEventType event);
+                                    int event,
+                                    int detail);
 
 virDomainEventPtr
 virDomainEventCallbackQueuePop(virDomainEventQueuePtr evtQueue);

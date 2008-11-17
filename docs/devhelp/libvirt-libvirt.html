@@ -53,9 +53,10 @@ typedef struct _virDomainBlockStats <a href="#virDomainBlockStatsStruct">virDoma
 typedef enum <a href="#virDomainMigrateFlags">virDomainMigrateFlags</a>;
 typedef struct _virNodeInfo <a href="#virNodeInfo">virNodeInfo</a>;
 typedef struct _virNetwork <a href="#virNetwork">virNetwork</a>;
+typedef enum <a href="#virDomainEventResumedDetailType">virDomainEventResumedDetailType</a>;
 typedef <a href="libvirt-libvirt.html#virDomainBlockStatsStruct">virDomainBlockStatsStruct</a> * <a href="#virDomainBlockStatsPtr">virDomainBlockStatsPtr</a>;
 typedef struct _virConnect <a href="#virConnect">virConnect</a>;
-typedef struct _virVcpuInfo <a href="#virVcpuInfo">virVcpuInfo</a>;
+typedef enum <a href="#virDomainEventStartedDetailType">virDomainEventStartedDetailType</a>;
 typedef struct _virDomainInfo <a href="#virDomainInfo">virDomainInfo</a>;
 typedef enum <a href="#virStoragePoolDeleteFlags">virStoragePoolDeleteFlags</a>;
 typedef enum <a href="#virEventHandleType">virEventHandleType</a>;
@@ -79,17 +80,22 @@ typedef struct _virStorageVol <a href="#virStorageVol">virStorageVol</a>;
 typedef <a href="libvirt-libvirt.html#virStorageVolInfo">virStorageVolInfo</a> * <a href="#virStorageVolInfoPtr">virStorageVolInfoPtr</a>;
 typedef struct _virSchedParameter <a href="#virSchedParameter">virSchedParameter</a>;
 typedef enum <a href="#virConnectFlags">virConnectFlags</a>;
+typedef enum <a href="#virDomainEventDefinedDetailType">virDomainEventDefinedDetailType</a>;
 typedef enum <a href="#virDomainMemoryFlags">virDomainMemoryFlags</a>;
+typedef enum <a href="#virDomainEventStoppedDetailType">virDomainEventStoppedDetailType</a>;
 typedef <a href="libvirt-libvirt.html#virStorageVol">virStorageVol</a> * <a href="#virStorageVolPtr">virStorageVolPtr</a>;
 typedef enum <a href="#virVcpuState">virVcpuState</a>;
 typedef enum <a href="#virStorageVolDeleteFlags">virStorageVolDeleteFlags</a>;
+typedef struct _virVcpuInfo <a href="#virVcpuInfo">virVcpuInfo</a>;
 typedef <a href="libvirt-libvirt.html#virSchedParameter">virSchedParameter</a> * <a href="#virSchedParameterPtr">virSchedParameterPtr</a>;
 typedef struct _virConnectAuth <a href="#virConnectAuth">virConnectAuth</a>;
 typedef struct _virConnectCredential <a href="#virConnectCredential">virConnectCredential</a>;
+typedef enum <a href="#virDomainEventSuspendedDetailType">virDomainEventSuspendedDetailType</a>;
 typedef <a href="libvirt-libvirt.html#virVcpuInfo">virVcpuInfo</a> * <a href="#virVcpuInfoPtr">virVcpuInfoPtr</a>;
 typedef enum <a href="#virStoragePoolBuildFlags">virStoragePoolBuildFlags</a>;
 typedef enum <a href="#virDomainXMLFlags">virDomainXMLFlags</a>;
 typedef enum <a href="#virStorageVolType">virStorageVolType</a>;
+typedef enum <a href="#virDomainEventUndefinedDetailType">virDomainEventUndefinedDetailType</a>;
 typedef <a href="libvirt-libvirt.html#virDomain">virDomain</a> * <a href="#virDomainPtr">virDomainPtr</a>;
 typedef enum <a href="#virConnectCredentialType">virConnectCredentialType</a>;
 typedef enum <a href="#virStoragePoolState">virStoragePoolState</a>;
@@ -175,7 +181,7 @@ int	<a href="#virDomainPinVcpu">virDomainPinVcpu</a>		(<a href="libvirt-libvirt.
 int	<a href="#virDomainRestore">virDomainRestore</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * from);
 char *	<a href="#virStorageVolGetPath">virStorageVolGetPath</a>		(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol);
 <a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a>	<a href="#virNetworkLookupByUUIDString">virNetworkLookupByUUIDString</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>						 const char * uuidstr);
-typedef int <a href="#virConnectDomainEventCallback">virConnectDomainEventCallback</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 int event, <br/>					 void * opaque);
+typedef int <a href="#virConnectDomainEventCallback">virConnectDomainEventCallback</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 int event, <br/>					 int detail, <br/>					 void * opaque);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainLookupByID">virDomainLookupByID</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 int id);
 int	<a href="#virStorageVolDelete">virStorageVolDelete</a>		(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol, <br/>					 unsigned int flags);
 int	<a href="#virStorageVolFree">virStorageVolFree</a>		(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol);
@@ -369,15 +375,59 @@ The content of this structure is not made public by the API.
 </pre><p/>
 </div>
         <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virDomainEventDefinedDetailType">Enum </a>virDomainEventDefinedDetailType</h3><pre class="programlisting">enum <a href="#virDomainEventDefinedDetailType">virDomainEventDefinedDetailType</a> {
+    <a name="VIR_DOMAIN_EVENT_DEFINED_ADDED">VIR_DOMAIN_EVENT_DEFINED_ADDED</a> = 0 /* Newly created config file */
+    <a name="VIR_DOMAIN_EVENT_DEFINED_UPDATED">VIR_DOMAIN_EVENT_DEFINED_UPDATED</a> = 1 /*  Changed config file */
+};
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virDomainEventResumedDetailType">Enum </a>virDomainEventResumedDetailType</h3><pre class="programlisting">enum <a href="#virDomainEventResumedDetailType">virDomainEventResumedDetailType</a> {
+    <a name="VIR_DOMAIN_EVENT_RESUMED_UNPAUSED">VIR_DOMAIN_EVENT_RESUMED_UNPAUSED</a> = 0 /* Normal resume due to admin unpause */
+    <a name="VIR_DOMAIN_EVENT_RESUMED_MIGRATED">VIR_DOMAIN_EVENT_RESUMED_MIGRATED</a> = 1 /*  Resumed for completion of migration */
+};
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virDomainEventStartedDetailType">Enum </a>virDomainEventStartedDetailType</h3><pre class="programlisting">enum <a href="#virDomainEventStartedDetailType">virDomainEventStartedDetailType</a> {
+    <a name="VIR_DOMAIN_EVENT_STARTED_BOOTED">VIR_DOMAIN_EVENT_STARTED_BOOTED</a> = 0 /* Normal startup from boot */
+    <a name="VIR_DOMAIN_EVENT_STARTED_MIGRATED">VIR_DOMAIN_EVENT_STARTED_MIGRATED</a> = 1 /* Incoming migration from another host */
+    <a name="VIR_DOMAIN_EVENT_STARTED_RESTORED">VIR_DOMAIN_EVENT_STARTED_RESTORED</a> = 2 /*  Restored from a state file */
+};
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virDomainEventStoppedDetailType">Enum </a>virDomainEventStoppedDetailType</h3><pre class="programlisting">enum <a href="#virDomainEventStoppedDetailType">virDomainEventStoppedDetailType</a> {
+    <a name="VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN">VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN</a> = 0 /* Normal shutdown */
+    <a name="VIR_DOMAIN_EVENT_STOPPED_DESTROYED">VIR_DOMAIN_EVENT_STOPPED_DESTROYED</a> = 1 /* Forced poweroff from host */
+    <a name="VIR_DOMAIN_EVENT_STOPPED_CRASHED">VIR_DOMAIN_EVENT_STOPPED_CRASHED</a> = 2 /* Guest crashed */
+    <a name="VIR_DOMAIN_EVENT_STOPPED_MIGRATED">VIR_DOMAIN_EVENT_STOPPED_MIGRATED</a> = 3 /* Migrated off to another host */
+    <a name="VIR_DOMAIN_EVENT_STOPPED_SAVED">VIR_DOMAIN_EVENT_STOPPED_SAVED</a> = 4 /* Saved to a state file */
+    <a name="VIR_DOMAIN_EVENT_STOPPED_FAILED">VIR_DOMAIN_EVENT_STOPPED_FAILED</a> = 5 /*  Host emulator/mgmt failed */
+};
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virDomainEventSuspendedDetailType">Enum </a>virDomainEventSuspendedDetailType</h3><pre class="programlisting">enum <a href="#virDomainEventSuspendedDetailType">virDomainEventSuspendedDetailType</a> {
+    <a name="VIR_DOMAIN_EVENT_SUSPENDED_PAUSED">VIR_DOMAIN_EVENT_SUSPENDED_PAUSED</a> = 0 /* Normal suspend due to admin pause */
+    <a name="VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED">VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED</a> = 1 /*  Suspended for offline migration */
+};
+</pre><p/>
+</div>
+        <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomainEventType">Enum </a>virDomainEventType</h3><pre class="programlisting">enum <a href="#virDomainEventType">virDomainEventType</a> {
-    <a name="VIR_DOMAIN_EVENT_ADDED">VIR_DOMAIN_EVENT_ADDED</a> = 0
-    <a name="VIR_DOMAIN_EVENT_REMOVED">VIR_DOMAIN_EVENT_REMOVED</a> = 1
+    <a name="VIR_DOMAIN_EVENT_DEFINED">VIR_DOMAIN_EVENT_DEFINED</a> = 0
+    <a name="VIR_DOMAIN_EVENT_UNDEFINED">VIR_DOMAIN_EVENT_UNDEFINED</a> = 1
     <a name="VIR_DOMAIN_EVENT_STARTED">VIR_DOMAIN_EVENT_STARTED</a> = 2
     <a name="VIR_DOMAIN_EVENT_SUSPENDED">VIR_DOMAIN_EVENT_SUSPENDED</a> = 3
     <a name="VIR_DOMAIN_EVENT_RESUMED">VIR_DOMAIN_EVENT_RESUMED</a> = 4
     <a name="VIR_DOMAIN_EVENT_STOPPED">VIR_DOMAIN_EVENT_STOPPED</a> = 5
-    <a name="VIR_DOMAIN_EVENT_SAVED">VIR_DOMAIN_EVENT_SAVED</a> = 6
-    <a name="VIR_DOMAIN_EVENT_RESTORED">VIR_DOMAIN_EVENT_RESTORED</a> = 7
+};
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virDomainEventUndefinedDetailType">Enum </a>virDomainEventUndefinedDetailType</h3><pre class="programlisting">enum <a href="#virDomainEventUndefinedDetailType">virDomainEventUndefinedDetailType</a> {
+    <a name="VIR_DOMAIN_EVENT_UNDEFINED_REMOVED">VIR_DOMAIN_EVENT_UNDEFINED_REMOVED</a> = 0 /*  Deleted the config file */
 };
 </pre><p/>
 </div>
@@ -614,9 +664,9 @@ The content of this structure is not made public by the API.
 </pre><p/>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cred</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>ncred</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>cbdata</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td/></tr></tbody></table></div></div>
         <hr/>
-        <div class="refsect2" lang="en"><h3><a name="virConnectDomainEventCallback"/>Function type virConnectDomainEventCallback</h3><pre class="programlisting">int	virConnectDomainEventCallback	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 int event, <br/>					 void * opaque)<br/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectDomainEventCallback"/>Function type virConnectDomainEventCallback</h3><pre class="programlisting">int	virConnectDomainEventCallback	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 int event, <br/>					 int detail, <br/>					 void * opaque)<br/>
 </pre><p>A callback function to be registered, and called when a domain event occurs</p>
-<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td><a href="libvirt-libvirt.html#virConnect">virConnect</a> connection</td></tr><tr><td><span class="term"><i><tt>dom</tt></i>:</span></td><td>The domain on which the event occured</td></tr><tr><td><span class="term"><i><tt>event</tt></i>:</span></td><td>The specfic <a href="libvirt-libvirt.html#virDomainEventType">virDomainEventType</a> which occured</td></tr><tr><td><span class="term"><i><tt>opaque</tt></i>:</span></td><td>opaque user data</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td/></tr></tbody></table></div></div>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td><a href="libvirt-libvirt.html#virConnect">virConnect</a> connection</td></tr><tr><td><span class="term"><i><tt>dom</tt></i>:</span></td><td>The domain on which the event occured</td></tr><tr><td><span class="term"><i><tt>event</tt></i>:</span></td><td>The specfic <a href="libvirt-libvirt.html#virDomainEventType">virDomainEventType</a> which occured</td></tr><tr><td><span class="term"><i><tt>detail</tt></i>:</span></td><td>event specific detail information</td></tr><tr><td><span class="term"><i><tt>opaque</tt></i>:</span></td><td>opaque user data</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td/></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virEventAddHandleFunc"/>Function type virEventAddHandleFunc</h3><pre class="programlisting">int	virEventAddHandleFunc		(int fd, <br/>					 int event, <br/>					 <a href="libvirt-libvirt.html#virEventHandleCallback">virEventHandleCallback</a> cb, <br/>					 void * opaque)<br/>
 </pre><p>Part of the EventImpl, this callback Adds a file handle callback to listen for specific events</p>

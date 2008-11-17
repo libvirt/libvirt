@@ -1135,6 +1135,7 @@ typedef struct remote_domain_events_deregister_ret remote_domain_events_deregist
 struct remote_domain_event_ret {
         remote_nonnull_domain dom;
         int event;
+        int detail;
 };
 typedef struct remote_domain_event_ret remote_domain_event_ret;
 #define REMOTE_PROGRAM 0x20008086

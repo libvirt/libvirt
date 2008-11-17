@@ -1,3 +1,26 @@
+Mon Nov 17 16:42:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
+
+	Include an event 'detail' field providing the cause of
+	each emitted domain event.
+	* docs/ Re-generate API refernece
+	* examples/domain-events/events-c/event-test.c: Print out
+	event detail info
+	* include/libvirt/libvirt.h.in: Rename ADDED/REMOVED events
+	to DEFINED/UNDEFINED. Remove SAVED/RESTORED events replaced
+	by event detail info. Add enums providing details for each
+	domain event type.
+	* python/libvir.c: Pass through event detail to python layer
+	* qemud/remote_protocol.x: Add event detail field for domain
+	events.
+	* qemud/remote_protocol.c, qemud/remote_protocol.h: Regenerate
+	* qemud/remote.c: Pass event detail value onto the wire
+	* src/domain_event.h, src/domain_event.c: Store event detail
+	* src/remote_internal.c: De-serialize event detail off the
+	wire
+	* src/qemu_driver.c: Generate event detail information, and
+	fix migration API to honour VIR_MIGRATE_LIVE flag, pausing
+	the VM if it isn't set
+
 Mon Nov 17 11:57:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
 
 	Push stateful driver code into daemon binary

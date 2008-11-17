@@ -1011,6 +1011,7 @@ struct remote_domain_events_deregister_ret {
 struct remote_domain_event_ret {
     remote_nonnull_domain dom;
     int event;
+    int detail;
 };
 
 /*----- Protocol. -----*/

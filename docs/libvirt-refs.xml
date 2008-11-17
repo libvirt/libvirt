@@ -17,14 +17,28 @@
     <reference name='VIR_CRED_USERNAME' href='html/libvirt-libvirt.html#VIR_CRED_USERNAME'/>
     <reference name='VIR_DOMAIN_BLOCKED' href='html/libvirt-libvirt.html#VIR_DOMAIN_BLOCKED'/>
     <reference name='VIR_DOMAIN_CRASHED' href='html/libvirt-libvirt.html#VIR_DOMAIN_CRASHED'/>
-    <reference name='VIR_DOMAIN_EVENT_ADDED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_ADDED'/>
-    <reference name='VIR_DOMAIN_EVENT_REMOVED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_REMOVED'/>
-    <reference name='VIR_DOMAIN_EVENT_RESTORED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_RESTORED'/>
+    <reference name='VIR_DOMAIN_EVENT_DEFINED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_DEFINED'/>
+    <reference name='VIR_DOMAIN_EVENT_DEFINED_ADDED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_DEFINED_ADDED'/>
+    <reference name='VIR_DOMAIN_EVENT_DEFINED_UPDATED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_DEFINED_UPDATED'/>
     <reference name='VIR_DOMAIN_EVENT_RESUMED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_RESUMED'/>
-    <reference name='VIR_DOMAIN_EVENT_SAVED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_SAVED'/>
+    <reference name='VIR_DOMAIN_EVENT_RESUMED_MIGRATED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_RESUMED_MIGRATED'/>
+    <reference name='VIR_DOMAIN_EVENT_RESUMED_UNPAUSED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_RESUMED_UNPAUSED'/>
     <reference name='VIR_DOMAIN_EVENT_STARTED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_STARTED'/>
+    <reference name='VIR_DOMAIN_EVENT_STARTED_BOOTED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_STARTED_BOOTED'/>
+    <reference name='VIR_DOMAIN_EVENT_STARTED_MIGRATED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_STARTED_MIGRATED'/>
+    <reference name='VIR_DOMAIN_EVENT_STARTED_RESTORED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_STARTED_RESTORED'/>
     <reference name='VIR_DOMAIN_EVENT_STOPPED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_STOPPED'/>
+    <reference name='VIR_DOMAIN_EVENT_STOPPED_CRASHED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_STOPPED_CRASHED'/>
+    <reference name='VIR_DOMAIN_EVENT_STOPPED_DESTROYED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_STOPPED_DESTROYED'/>
+    <reference name='VIR_DOMAIN_EVENT_STOPPED_FAILED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_STOPPED_FAILED'/>
+    <reference name='VIR_DOMAIN_EVENT_STOPPED_MIGRATED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_STOPPED_MIGRATED'/>
+    <reference name='VIR_DOMAIN_EVENT_STOPPED_SAVED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_STOPPED_SAVED'/>
+    <reference name='VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN'/>
     <reference name='VIR_DOMAIN_EVENT_SUSPENDED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_SUSPENDED'/>
+    <reference name='VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED'/>
+    <reference name='VIR_DOMAIN_EVENT_SUSPENDED_PAUSED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_SUSPENDED_PAUSED'/>
+    <reference name='VIR_DOMAIN_EVENT_UNDEFINED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_UNDEFINED'/>
+    <reference name='VIR_DOMAIN_EVENT_UNDEFINED_REMOVED' href='html/libvirt-libvirt.html#VIR_DOMAIN_EVENT_UNDEFINED_REMOVED'/>
     <reference name='VIR_DOMAIN_NONE' href='html/libvirt-libvirt.html#VIR_DOMAIN_NONE'/>
     <reference name='VIR_DOMAIN_NOSTATE' href='html/libvirt-libvirt.html#VIR_DOMAIN_NOSTATE'/>
     <reference name='VIR_DOMAIN_PAUSED' href='html/libvirt-libvirt.html#VIR_DOMAIN_PAUSED'/>
@@ -210,7 +224,13 @@
     <reference name='virDomainDefineXML' href='html/libvirt-libvirt.html#virDomainDefineXML'/>
     <reference name='virDomainDestroy' href='html/libvirt-libvirt.html#virDomainDestroy'/>
     <reference name='virDomainDetachDevice' href='html/libvirt-libvirt.html#virDomainDetachDevice'/>
+    <reference name='virDomainEventDefinedDetailType' href='html/libvirt-libvirt.html#virDomainEventDefinedDetailType'/>
+    <reference name='virDomainEventResumedDetailType' href='html/libvirt-libvirt.html#virDomainEventResumedDetailType'/>
+    <reference name='virDomainEventStartedDetailType' href='html/libvirt-libvirt.html#virDomainEventStartedDetailType'/>
+    <reference name='virDomainEventStoppedDetailType' href='html/libvirt-libvirt.html#virDomainEventStoppedDetailType'/>
+    <reference name='virDomainEventSuspendedDetailType' href='html/libvirt-libvirt.html#virDomainEventSuspendedDetailType'/>
     <reference name='virDomainEventType' href='html/libvirt-libvirt.html#virDomainEventType'/>
+    <reference name='virDomainEventUndefinedDetailType' href='html/libvirt-libvirt.html#virDomainEventUndefinedDetailType'/>
     <reference name='virDomainFree' href='html/libvirt-libvirt.html#virDomainFree'/>
     <reference name='virDomainGetAutostart' href='html/libvirt-libvirt.html#virDomainGetAutostart'/>
     <reference name='virDomainGetConnect' href='html/libvirt-libvirt.html#virDomainGetConnect'/>
@@ -376,14 +396,28 @@
       <ref name='VIR_CRED_USERNAME'/>
       <ref name='VIR_DOMAIN_BLOCKED'/>
       <ref name='VIR_DOMAIN_CRASHED'/>
-      <ref name='VIR_DOMAIN_EVENT_ADDED'/>
-      <ref name='VIR_DOMAIN_EVENT_REMOVED'/>
-      <ref name='VIR_DOMAIN_EVENT_RESTORED'/>
+      <ref name='VIR_DOMAIN_EVENT_DEFINED'/>
+      <ref name='VIR_DOMAIN_EVENT_DEFINED_ADDED'/>
+      <ref name='VIR_DOMAIN_EVENT_DEFINED_UPDATED'/>
       <ref name='VIR_DOMAIN_EVENT_RESUMED'/>
-      <ref name='VIR_DOMAIN_EVENT_SAVED'/>
+      <ref name='VIR_DOMAIN_EVENT_RESUMED_MIGRATED'/>
+      <ref name='VIR_DOMAIN_EVENT_RESUMED_UNPAUSED'/>
       <ref name='VIR_DOMAIN_EVENT_STARTED'/>
+      <ref name='VIR_DOMAIN_EVENT_STARTED_BOOTED'/>
+      <ref name='VIR_DOMAIN_EVENT_STARTED_MIGRATED'/>
+      <ref name='VIR_DOMAIN_EVENT_STARTED_RESTORED'/>
       <ref name='VIR_DOMAIN_EVENT_STOPPED'/>
+      <ref name='VIR_DOMAIN_EVENT_STOPPED_CRASHED'/>
+      <ref name='VIR_DOMAIN_EVENT_STOPPED_DESTROYED'/>
+      <ref name='VIR_DOMAIN_EVENT_STOPPED_FAILED'/>
+      <ref name='VIR_DOMAIN_EVENT_STOPPED_MIGRATED'/>
+      <ref name='VIR_DOMAIN_EVENT_STOPPED_SAVED'/>
+      <ref name='VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN'/>
       <ref name='VIR_DOMAIN_EVENT_SUSPENDED'/>
+      <ref name='VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED'/>
+      <ref name='VIR_DOMAIN_EVENT_SUSPENDED_PAUSED'/>
+      <ref name='VIR_DOMAIN_EVENT_UNDEFINED'/>
+      <ref name='VIR_DOMAIN_EVENT_UNDEFINED_REMOVED'/>
       <ref name='VIR_DOMAIN_NONE'/>
       <ref name='VIR_DOMAIN_NOSTATE'/>
       <ref name='VIR_DOMAIN_PAUSED'/>
@@ -573,7 +607,13 @@
       <ref name='virDomainDefineXML'/>
       <ref name='virDomainDestroy'/>
       <ref name='virDomainDetachDevice'/>
+      <ref name='virDomainEventDefinedDetailType'/>
+      <ref name='virDomainEventResumedDetailType'/>
+      <ref name='virDomainEventStartedDetailType'/>
+      <ref name='virDomainEventStoppedDetailType'/>
+      <ref name='virDomainEventSuspendedDetailType'/>
       <ref name='virDomainEventType'/>
+      <ref name='virDomainEventUndefinedDetailType'/>
       <ref name='virDomainFree'/>
       <ref name='virDomainGetAutostart'/>
       <ref name='virDomainGetConnect'/>
@@ -1089,14 +1129,28 @@
       <ref name='VIR_CRED_USERNAME'/>
       <ref name='VIR_DOMAIN_BLOCKED'/>
       <ref name='VIR_DOMAIN_CRASHED'/>
-      <ref name='VIR_DOMAIN_EVENT_ADDED'/>
-      <ref name='VIR_DOMAIN_EVENT_REMOVED'/>
-      <ref name='VIR_DOMAIN_EVENT_RESTORED'/>
+      <ref name='VIR_DOMAIN_EVENT_DEFINED'/>
+      <ref name='VIR_DOMAIN_EVENT_DEFINED_ADDED'/>
+      <ref name='VIR_DOMAIN_EVENT_DEFINED_UPDATED'/>
       <ref name='VIR_DOMAIN_EVENT_RESUMED'/>
-      <ref name='VIR_DOMAIN_EVENT_SAVED'/>
+      <ref name='VIR_DOMAIN_EVENT_RESUMED_MIGRATED'/>
+      <ref name='VIR_DOMAIN_EVENT_RESUMED_UNPAUSED'/>
       <ref name='VIR_DOMAIN_EVENT_STARTED'/>
+      <ref name='VIR_DOMAIN_EVENT_STARTED_BOOTED'/>
+      <ref name='VIR_DOMAIN_EVENT_STARTED_MIGRATED'/>
+      <ref name='VIR_DOMAIN_EVENT_STARTED_RESTORED'/>
       <ref name='VIR_DOMAIN_EVENT_STOPPED'/>
+      <ref name='VIR_DOMAIN_EVENT_STOPPED_CRASHED'/>
+      <ref name='VIR_DOMAIN_EVENT_STOPPED_DESTROYED'/>
+      <ref name='VIR_DOMAIN_EVENT_STOPPED_FAILED'/>
+      <ref name='VIR_DOMAIN_EVENT_STOPPED_MIGRATED'/>
+      <ref name='VIR_DOMAIN_EVENT_STOPPED_SAVED'/>
+      <ref name='VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN'/>
       <ref name='VIR_DOMAIN_EVENT_SUSPENDED'/>
+      <ref name='VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED'/>
+      <ref name='VIR_DOMAIN_EVENT_SUSPENDED_PAUSED'/>
+      <ref name='VIR_DOMAIN_EVENT_UNDEFINED'/>
+      <ref name='VIR_DOMAIN_EVENT_UNDEFINED_REMOVED'/>
       <ref name='VIR_DOMAIN_NONE'/>
       <ref name='VIR_DOMAIN_NOSTATE'/>
       <ref name='VIR_DOMAIN_PAUSED'/>
@@ -1200,7 +1254,13 @@
       <ref name='virDomainDefineXML'/>
       <ref name='virDomainDestroy'/>
       <ref name='virDomainDetachDevice'/>
+      <ref name='virDomainEventDefinedDetailType'/>
+      <ref name='virDomainEventResumedDetailType'/>
+      <ref name='virDomainEventStartedDetailType'/>
+      <ref name='virDomainEventStoppedDetailType'/>
+      <ref name='virDomainEventSuspendedDetailType'/>
       <ref name='virDomainEventType'/>
+      <ref name='virDomainEventUndefinedDetailType'/>
       <ref name='virDomainFree'/>
       <ref name='virDomainGetAutostart'/>
       <ref name='virDomainGetConnect'/>
@@ -2917,6 +2977,9 @@
           <ref name='virStoragePoolCreateXML'/>
           <ref name='virStoragePoolDestroy'/>
         </word>
+        <word name='detail'>
+          <ref name='virConnectDomainEventCallback'/>
+        </word>
         <word name='determine'>
           <ref name='virDomainBlockPeek'/>
         </word>
@@ -3578,6 +3641,7 @@
         </word>
         <word name='information'>
           <ref name='_virError'/>
+          <ref name='virConnectDomainEventCallback'/>
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainGetUUIDString'/>
           <ref name='virDomainGetVcpus'/>
@@ -4898,6 +4962,7 @@
           <ref name='virConnectDomainEventCallback'/>
         </word>
         <word name='specific'>
+          <ref name='virConnectDomainEventCallback'/>
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virEventAddHandleFunc'/>
         </word>

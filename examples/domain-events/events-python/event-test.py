@@ -32,11 +32,11 @@ def eventToString(event):
                      "Restored" );
     return eventStrings[event];
 
-def myDomainEventCallback1 (conn, dom, event, opaque):
-    print "myDomainEventCallback1 EVENT: Domain %s(%s) %s" % (dom.name(), dom.ID(), eventToString(event))
+def myDomainEventCallback1 (conn, dom, event, detail, opaque):
+    print "myDomainEventCallback1 EVENT: Domain %s(%s) %s %d" % (dom.name(), dom.ID(), eventToString(event), detail)
 
-def myDomainEventCallback2 (conn, dom, event, opaque):
-    print "myDomainEventCallback2 EVENT: Domain %s(%s) %s" % (dom.name(), dom.ID(), eventToString(event))
+def myDomainEventCallback2 (conn, dom, event, detail, opaque):
+    print "myDomainEventCallback2 EVENT: Domain %s(%s) %s %d" % (dom.name(), dom.ID(), eventToString(event), detail)
 
 #####################################################
 # EventImpl Functions

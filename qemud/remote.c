@@ -80,7 +80,8 @@ typedef int (*dispatch_fn) (struct qemud_server *server,
 static void
 remoteDispatchDomainEventSend (struct qemud_client *client,
                                virDomainPtr dom,
-                               virDomainEventType event);
+                               int event,
+                               int detail);
 
 /* This function gets called from qemud when it detects an incoming
  * remote protocol message.  At this point, client->buffer contains
@@ -413,15 +414,16 @@ remoteDispatchError (struct qemud_client *client,
 }
 
 int remoteRelayDomainEvent (virConnectPtr conn ATTRIBUTE_UNUSED,
-                                   virDomainPtr dom,
-                                   int event,
-                                   void *opaque)
+                            virDomainPtr dom,
+                            int event,
+                            int detail,
+                            void *opaque)
 {
     struct qemud_client *client = opaque;
-    REMOTE_DEBUG("Relaying domain event %d", event);
+    REMOTE_DEBUG("Relaying domain event %d %d", event, detail);
 
     if(client) {
-        remoteDispatchDomainEventSend (client, dom, event);
+        remoteDispatchDomainEventSend (client, dom, event, detail);
         qemudDispatchClientWrite(client->server,client);
     }
     return 0;
@@ -3779,8 +3781,9 @@ remoteDispatchDomainEventsDeregister (struct qemud_server *server ATTRIBUTE_UNUS
 
 static void
 remoteDispatchDomainEventSend (struct qemud_client *client,
-                         virDomainPtr dom,
-                         virDomainEventType event)
+                               virDomainPtr dom,
+                               int event,
+                               int detail)
 {
     remote_message_header rep;
     XDR xdr;
@@ -3816,7 +3819,8 @@ remoteDispatchDomainEventSend (struct qemud_client *client,
 
     /* build return data */
     make_nonnull_domain (&data.dom, dom);
-    data.event = (int) event;
+    data.event = event;
+    data.detail = detail;
 
     if (!xdr_remote_domain_event_ret(&xdr, &data)) {
         remoteDispatchError (client, NULL, "%s", _("serialise return struct"));

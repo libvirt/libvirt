@@ -5206,7 +5206,7 @@ remoteRegister (void)
  */
 static int
 remoteDomainReadEvent(virConnectPtr conn, XDR *xdr,
-                      virDomainPtr *dom, int *event)
+                      virDomainPtr *dom, int *event, int *detail)
 {
     remote_domain_event_ret ret;
     memset (&ret, 0, sizeof ret);
@@ -5220,6 +5220,7 @@ remoteDomainReadEvent(virConnectPtr conn, XDR *xdr,
 
     *dom = get_nonnull_domain(conn,ret.dom);
     *event = ret.event;
+    *detail = ret.detail;
 
     return 0;
 }
@@ -5228,15 +5229,16 @@ static void
 remoteDomainProcessEvent(virConnectPtr conn, XDR *xdr)
 {
     virDomainPtr dom;
-    int event,i;
+    int event, detail, i;
     struct private_data *priv = conn->privateData;
 
-    if(!remoteDomainReadEvent(conn, xdr, &dom, &event)) {
+    if(!remoteDomainReadEvent(conn, xdr, &dom, &event, &detail)) {
         DEBUG0("Calling domain event callbacks (no queue)");
         for(i=0 ; i < priv->callbackList->count ; i++) {
-           if( priv->callbackList->callbacks[i] )
-               priv->callbackList->callbacks[i]->cb(conn, dom, event,
-                                     priv->callbackList->callbacks[i]->opaque);
+            if (priv->callbackList->callbacks[i] )
+                priv->callbackList->callbacks[i]->cb(
+                    conn, dom, event, detail,
+                    priv->callbackList->callbacks[i]->opaque);
         }
     }
 }
@@ -5245,13 +5247,13 @@ static void
 remoteDomainQueueEvent(virConnectPtr conn, XDR *xdr)
 {
     virDomainPtr dom;
-    int event;
+    int event, detail;
     struct private_data *priv = conn->privateData;
 
-    if(!remoteDomainReadEvent(conn, xdr, &dom, &event))
+    if(!remoteDomainReadEvent(conn, xdr, &dom, &event, &detail))
     {
         if( virDomainEventCallbackQueuePush(priv->domainEvents,
-                                            dom, event) < 0 ) {
+                                            dom, event, detail) < 0 ) {
             DEBUG("%s", "Error adding event to queue");
         }
     }
@@ -5344,6 +5346,7 @@ remoteDomainEventQueueFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
                priv->callbackList->callbacks[i]->cb(domEvent->dom->conn,
                                                     domEvent->dom,
                                                     domEvent->event,
+                                                    domEvent->detail,
                                                     user_data);
            }
         }

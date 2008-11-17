@@ -1538,6 +1538,7 @@ static int
 libvirt_virConnectDomainEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
                                       virDomainPtr dom,
                                       int event,
+                                      int detail,
                                       void *opaque)
 {
     PyObject *pyobj_ret;
@@ -1595,9 +1596,10 @@ libvirt_virConnectDomainEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     /* Call the Callback Dispatcher */
     pyobj_ret = PyObject_CallMethod(pyobj_conn_inst,
                                     (char*)"dispatchDomainEventCallbacks",
-                                    (char*)"Oi",
+                                    (char*)"Oii",
                                     pyobj_dom_inst,
-                                    event);
+                                    event,
+                                    detail);
 
     Py_DECREF(pyobj_dom_inst);
 

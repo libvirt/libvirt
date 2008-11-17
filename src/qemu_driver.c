@@ -107,7 +107,8 @@ static int qemudSetNonBlock(int fd) {
 
 static void qemudDomainEventDispatch (struct qemud_driver *driver,
                                       virDomainObjPtr vm,
-                                      virDomainEventType evt);
+                                      int event,
+                                      int detail);
 
 static void qemudDispatchVMEvent(int fd,
                                  int events,
@@ -137,13 +138,19 @@ qemudAutostartConfigs(struct qemud_driver *driver) {
     unsigned int i;
 
     for (i = 0 ; i < driver->domains.count ; i++) {
-        if (driver->domains.objs[i]->autostart &&
-            !virDomainIsActive(driver->domains.objs[i]) &&
-            qemudStartVMDaemon(NULL, driver, driver->domains.objs[i], NULL) < 0) {
-            virErrorPtr err = virGetLastError();
-            qemudLog(QEMUD_ERR, _("Failed to autostart VM '%s': %s\n"),
-                     driver->domains.objs[i]->def->name,
-                     err ? err->message : NULL);
+        virDomainObjPtr vm = driver->domains.objs[i];
+        if (vm->autostart &&
+            !virDomainIsActive(vm)) {
+            int ret = qemudStartVMDaemon(NULL, driver, vm, NULL);
+            if (ret < 0) {
+                virErrorPtr err = virGetLastError();
+                qemudLog(QEMUD_ERR, _("Failed to autostart VM '%s': %s\n"),
+                         vm->def->name,
+                         err ? err->message : NULL);
+            } else {
+                qemudDomainEventDispatch(driver, vm, VIR_DOMAIN_EVENT_STARTED,
+                                         VIR_DOMAIN_EVENT_STARTED_BOOTED);
+            }
         }
     }
 }
@@ -945,7 +952,6 @@ static int qemudStartVMDaemon(virConnectPtr conn,
             qemudShutdownVMDaemon(conn, driver, vm);
             return -1;
         }
-        qemudDomainEventDispatch(driver, vm, VIR_DOMAIN_EVENT_STARTED);
     }
 
     return ret;
@@ -1030,6 +1036,9 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 static int qemudDispatchVMLog(struct qemud_driver *driver, virDomainObjPtr vm, int fd) {
     if (qemudVMData(driver, vm, fd) < 0) {
         qemudShutdownVMDaemon(NULL, driver, vm);
+        qemudDomainEventDispatch(driver, vm,
+                                 VIR_DOMAIN_EVENT_STOPPED,
+                                 VIR_DOMAIN_EVENT_STOPPED_FAILED);
         if (!vm->persistent)
             virDomainRemoveInactive(&driver->domains,
                                     vm);
@@ -1040,7 +1049,9 @@ static int qemudDispatchVMLog(struct qemud_driver *driver, virDomainObjPtr vm, i
 static int qemudDispatchVMFailure(struct qemud_driver *driver, virDomainObjPtr vm,
                                   int fd ATTRIBUTE_UNUSED) {
     qemudShutdownVMDaemon(NULL, driver, vm);
-    qemudDomainEventDispatch(driver, vm, VIR_DOMAIN_EVENT_STOPPED);
+    qemudDomainEventDispatch(driver, vm,
+                             VIR_DOMAIN_EVENT_STOPPED,
+                             VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
     if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains,
                                 vm);
@@ -1518,6 +1529,9 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
                                 vm);
         return NULL;
     }
+    qemudDomainEventDispatch(driver, vm,
+                             VIR_DOMAIN_EVENT_STARTED,
+                             VIR_DOMAIN_EVENT_STARTED_BOOTED);
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom) dom->id = vm->def->id;
@@ -1548,7 +1562,9 @@ static int qemudDomainSuspend(virDomainPtr dom) {
     }
     vm->state = VIR_DOMAIN_PAUSED;
     qemudDebug("Reply %s", info);
-    qemudDomainEventDispatch(driver, vm, VIR_DOMAIN_EVENT_SUSPENDED);
+    qemudDomainEventDispatch(driver, vm,
+                             VIR_DOMAIN_EVENT_SUSPENDED,
+                             VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
     VIR_FREE(info);
     return 0;
 }
@@ -1577,7 +1593,9 @@ static int qemudDomainResume(virDomainPtr dom) {
     }
     vm->state = VIR_DOMAIN_RUNNING;
     qemudDebug("Reply %s", info);
-    qemudDomainEventDispatch(driver, vm, VIR_DOMAIN_EVENT_RESUMED);
+    qemudDomainEventDispatch(driver, vm,
+                             VIR_DOMAIN_EVENT_RESUMED,
+                             VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
     VIR_FREE(info);
     return 0;
 }
@@ -1616,7 +1634,9 @@ static int qemudDomainDestroy(virDomainPtr dom) {
     }
 
     qemudShutdownVMDaemon(dom->conn, driver, vm);
-    qemudDomainEventDispatch(driver, vm, VIR_DOMAIN_EVENT_STOPPED);
+    qemudDomainEventDispatch(driver, vm,
+                             VIR_DOMAIN_EVENT_STOPPED,
+                             VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
     if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains,
                                 vm);
@@ -1947,10 +1967,12 @@ static int qemudDomainSave(virDomainPtr dom,
 
     /* Shut it down */
     qemudShutdownVMDaemon(dom->conn, driver, vm);
+    qemudDomainEventDispatch(driver, vm,
+                             VIR_DOMAIN_EVENT_STOPPED,
+                             VIR_DOMAIN_EVENT_STOPPED_SAVED);
     if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains,
                                 vm);
-    qemudDomainEventDispatch(driver, vm, VIR_DOMAIN_EVENT_SAVED);
     return 0;
 }
 
@@ -2245,6 +2267,10 @@ static int qemudDomainRestore(virConnectPtr conn,
         return -1;
     }
 
+    qemudDomainEventDispatch(driver, vm,
+                             VIR_DOMAIN_EVENT_STARTED,
+                             VIR_DOMAIN_EVENT_STARTED_RESTORED);
+
     /* If it was running before, resume it now. */
     if (header.was_running) {
         char *info;
@@ -2257,7 +2283,6 @@ static int qemudDomainRestore(virConnectPtr conn,
         vm->state = VIR_DOMAIN_RUNNING;
     }
 
-    qemudDomainEventDispatch(driver, vm, VIR_DOMAIN_EVENT_RESTORED);
     return 0;
 }
 
@@ -2317,6 +2342,7 @@ static int qemudNumDefinedDomains(virConnectPtr conn) {
 static int qemudDomainStart(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     virDomainObjPtr vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    int ret;
 
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -2324,7 +2350,13 @@ static int qemudDomainStart(virDomainPtr dom) {
         return -1;
     }
 
-    return qemudStartVMDaemon(dom->conn, driver, vm, NULL);
+    ret = qemudStartVMDaemon(dom->conn, driver, vm, NULL);
+    if (ret < 0)
+        return ret;
+    qemudDomainEventDispatch(driver, vm,
+                             VIR_DOMAIN_EVENT_STARTED,
+                             VIR_DOMAIN_EVENT_STARTED_BOOTED);
+    return 0;
 }
 
 
@@ -3345,7 +3377,8 @@ qemudDomainEventDeregister (virConnectPtr conn,
 
 static void qemudDomainEventDispatch (struct qemud_driver *driver,
                                       virDomainObjPtr vm,
-                                      virDomainEventType evt)
+                                      int event,
+                                      int detail)
 {
     int i;
     virDomainEventCallbackListPtr cbList;
@@ -3359,11 +3392,11 @@ static void qemudDomainEventDispatch (struct qemud_driver *driver,
                                             vm->def->uuid);
             if (dom) {
                 dom->id = virDomainIsActive(vm) ? vm->def->id : -1;
-                DEBUG("Dispatching callback %p %p event %d",
-                        cbList->callbacks[i],
-                        cbList->callbacks[i]->cb, evt);
+                DEBUG("Dispatching callback %p %p event %d detail %d",
+                      cbList->callbacks[i],
+                      cbList->callbacks[i]->cb, event, detail);
                 cbList->callbacks[i]->cb(cbList->callbacks[i]->conn,
-                                         dom, evt,
+                                         dom, event, detail,
                                          cbList->callbacks[i]->opaque);
                 virDomainFree(dom);
             }
@@ -3512,6 +3545,9 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
 
         return -1;
     }
+    qemudDomainEventDispatch(driver, vm,
+                             VIR_DOMAIN_EVENT_STARTED,
+                             VIR_DOMAIN_EVENT_STARTED_MIGRATED);
 
     return 0;
 }
@@ -3542,6 +3578,18 @@ qemudDomainMigratePerform (virDomainPtr dom,
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                           "%s", _("domain is not running"));
         return -1;
+    }
+
+    if (!(flags & VIR_MIGRATE_LIVE)) {
+        /* Pause domain for non-live migration */
+        snprintf(cmd, sizeof cmd, "%s", "stop");
+        qemudMonitorCommand (driver, vm, cmd, &info);
+        DEBUG ("stop reply: %s", info);
+        VIR_FREE(info);
+
+        qemudDomainEventDispatch(driver, vm,
+                                 VIR_DOMAIN_EVENT_SUSPENDED,
+                                 VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED);
     }
 
     if (resource > 0) {
@@ -3583,6 +3631,9 @@ qemudDomainMigratePerform (virDomainPtr dom,
 
     /* Clean up the source domain. */
     qemudShutdownVMDaemon (dom->conn, driver, vm);
+    qemudDomainEventDispatch(driver, vm,
+                             VIR_DOMAIN_EVENT_STOPPED,
+                             VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
     if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains, vm);
 
@@ -3617,9 +3668,15 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
         dom = virGetDomain (dconn, vm->def->name, vm->def->uuid);
         VIR_FREE(info);
         vm->state = VIR_DOMAIN_RUNNING;
+        qemudDomainEventDispatch(driver, vm,
+                                 VIR_DOMAIN_EVENT_RESUMED,
+                                 VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
         return dom;
     } else {
         qemudShutdownVMDaemon (dconn, driver, vm);
+        qemudDomainEventDispatch(driver, vm,
+                                 VIR_DOMAIN_EVENT_STOPPED,
+                                 VIR_DOMAIN_EVENT_STOPPED_FAILED);
         if (!vm->persistent)
             virDomainRemoveInactive(&driver->domains, vm);
         return NULL;
