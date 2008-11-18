@@ -1,3 +1,10 @@
+Mon Nov 18 12:24:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
+
+	* src/Makefile.am: Fix build on MinGW where linker flags
+	must be listed in LDFLAGS variable
+	* tests/Makefile.am: Fix build when QEMU is disabled, by
+	skipping QEMU tests
+
 Mon Nov 17 16:45:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
 
 	Generate domain events for QEMU driver config files

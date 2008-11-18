@@ -258,11 +258,12 @@ EXTRA_DIST +=							\
 
 # Empty source list - it merely links a bunch of convenience libs together
 libvirt_la_SOURCES =
-libvirt_la_LIBADD += $(LIBXML_LIBS) $(SELINUX_LIBS) \
+libvirt_la_LIBADD += \
 		    @CYGWIN_EXTRA_LIBADD@ ../gnulib/lib/libgnu.la
 libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
                      -version-info @LIBVIRT_VERSION_INFO@ \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%) \
+                    $(LIBXML_LIBS) $(SELINUX_LIBS) \
 		    @CYGWIN_EXTRA_LDFLAGS@ @MINGW_EXTRA_LDFLAGS@
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
 libvirt_la_DEPENDENCIES = $(libvirt_la_LIBADD) $(srcdir)/libvirt_sym.version
