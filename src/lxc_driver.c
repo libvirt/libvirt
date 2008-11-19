@@ -387,7 +387,7 @@ static int lxcVMCleanup(virConnectPtr conn,
         DEBUG("container exited with rc: %d", rc);
     }
 
-    virEventRemoveHandle(vm->monitor);
+    virEventRemoveHandle(vm->monitorWatch);
     close(vm->monitor);
 
     virFileDeletePid(driver->stateDir, vm->def->name);
@@ -582,7 +582,8 @@ static int lxcVmTerminate(virConnectPtr conn,
     return lxcVMCleanup(conn, driver, vm);
 }
 
-static void lxcMonitorEvent(int fd,
+static void lxcMonitorEvent(int watch,
+                            int fd,
                             int events ATTRIBUTE_UNUSED,
                             void *data)
 {
@@ -591,18 +592,23 @@ static void lxcMonitorEvent(int fd,
     unsigned int i;
 
     for (i = 0 ; i < driver->domains.count ; i++) {
-        if (driver->domains.objs[i]->monitor == fd) {
+        if (driver->domains.objs[i]->monitorWatch == watch) {
             vm = driver->domains.objs[i];
             break;
         }
     }
     if (!vm) {
-        virEventRemoveHandle(fd);
+        virEventRemoveHandle(watch);
+        return;
+    }
+
+    if (vm->monitor != fd) {
+        virEventRemoveHandle(watch);
         return;
     }
 
     if (lxcVmTerminate(NULL, driver, vm, SIGINT) < 0)
-        virEventRemoveHandle(fd);
+        virEventRemoveHandle(watch);
 }
 
 
@@ -810,10 +816,11 @@ static int lxcVmStart(virConnectPtr conn,
     vm->def->id = vm->pid;
     vm->state = VIR_DOMAIN_RUNNING;
 
-    if (virEventAddHandle(vm->monitor,
-                          VIR_EVENT_HANDLE_ERROR | VIR_EVENT_HANDLE_HANGUP,
-                          lxcMonitorEvent,
-                          driver) < 0) {
+    if ((vm->monitorWatch = virEventAddHandle(
+             vm->monitor,
+             VIR_EVENT_HANDLE_ERROR | VIR_EVENT_HANDLE_HANGUP,
+             lxcMonitorEvent,
+             driver)) < 0) {
         lxcVmTerminate(conn, driver, vm, 0);
         goto cleanup;
     }

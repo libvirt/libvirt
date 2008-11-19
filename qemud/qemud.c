@@ -142,8 +142,8 @@ static void sig_handler(int sig, siginfo_t * siginfo,
     errno = origerrno;
 }
 
-static void qemudDispatchClientEvent(int fd, int events, void *opaque);
-static void qemudDispatchServerEvent(int fd, int events, void *opaque);
+static void qemudDispatchClientEvent(int watch, int fd, int events, void *opaque);
+static void qemudDispatchServerEvent(int watch, int fd, int events, void *opaque);
 static int qemudRegisterClientEvent(struct qemud_server *server,
                                     struct qemud_client *client,
                                     int removeFirst);
@@ -245,7 +245,8 @@ remoteInitializeGnuTLS (void)
 }
 
 static void
-qemudDispatchSignalEvent(int fd ATTRIBUTE_UNUSED,
+qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
+                         int fd ATTRIBUTE_UNUSED,
                          int events ATTRIBUTE_UNUSED,
                          void *opaque) {
     struct qemud_server *server = (struct qemud_server *)opaque;
@@ -534,12 +535,12 @@ static int qemudListenUnix(struct qemud_server *server,
         goto cleanup;
     }
 
-    if (virEventAddHandleImpl(sock->fd,
-                              VIR_EVENT_HANDLE_READABLE |
-                                 VIR_EVENT_HANDLE_ERROR |
-                                 VIR_EVENT_HANDLE_HANGUP,
-                              qemudDispatchServerEvent,
-                              server) < 0) {
+    if ((sock->watch = virEventAddHandleImpl(sock->fd,
+                                             VIR_EVENT_HANDLE_READABLE |
+                                             VIR_EVENT_HANDLE_ERROR |
+                                             VIR_EVENT_HANDLE_HANGUP,
+                                             qemudDispatchServerEvent,
+                                             server)) < 0) {
         qemudLog(QEMUD_ERR, "%s",
                  _("Failed to add server event callback"));
         goto cleanup;
@@ -666,12 +667,12 @@ remoteListenTCP (struct qemud_server *server,
             goto cleanup;
         }
 
-        if (virEventAddHandleImpl(sock->fd,
-                                  VIR_EVENT_HANDLE_READABLE |
-                                      VIR_EVENT_HANDLE_ERROR |
-                                      VIR_EVENT_HANDLE_HANGUP,
-                                  qemudDispatchServerEvent,
-                                  server) < 0) {
+        if ((sock->watch = virEventAddHandleImpl(sock->fd,
+                                                 VIR_EVENT_HANDLE_READABLE |
+                                                 VIR_EVENT_HANDLE_ERROR |
+                                                 VIR_EVENT_HANDLE_HANGUP,
+                                                 qemudDispatchServerEvent,
+                                                 server)) < 0) {
             qemudLog(QEMUD_ERR, "%s", _("Failed to add server event callback"));
             goto cleanup;
         }
@@ -1232,7 +1233,7 @@ static void qemudDispatchClientFailure(struct qemud_server *server, struct qemud
         tmp = tmp->next;
     }
 
-    virEventRemoveHandleImpl(client->fd);
+    virEventRemoveHandleImpl(client->watch);
 
     /* Deregister event delivery callback */
     if(client->conn) {
@@ -1596,18 +1597,21 @@ qemudDispatchClientWrite(struct qemud_server *server,
 
 
 static void
-qemudDispatchClientEvent(int fd, int events, void *opaque) {
+qemudDispatchClientEvent(int watch, int fd, int events, void *opaque) {
     struct qemud_server *server = (struct qemud_server *)opaque;
     struct qemud_client *client = server->clients;
 
     while (client) {
-        if (client->fd == fd)
+        if (client->watch == watch)
             break;
 
         client = client->next;
     }
 
     if (!client)
+        return;
+
+    if (client->fd != fd)
         return;
 
     if (events == VIR_EVENT_HANDLE_WRITABLE)
@@ -1644,32 +1648,35 @@ static int qemudRegisterClientEvent(struct qemud_server *server,
     }
 
     if (removeFirst)
-        if (virEventRemoveHandleImpl(client->fd) < 0)
+        if (virEventRemoveHandleImpl(client->watch) < 0)
             return -1;
 
-    if (virEventAddHandleImpl(client->fd,
-                              mode | VIR_EVENT_HANDLE_ERROR |
-                                     VIR_EVENT_HANDLE_HANGUP,
-                              qemudDispatchClientEvent,
-                              server) < 0)
+    if ((client->watch = virEventAddHandleImpl(client->fd,
+                                               mode | VIR_EVENT_HANDLE_ERROR |
+                                               VIR_EVENT_HANDLE_HANGUP,
+                                               qemudDispatchClientEvent,
+                                               server)) < 0)
             return -1;
 
     return 0;
 }
 
 static void
-qemudDispatchServerEvent(int fd, int events, void *opaque) {
+qemudDispatchServerEvent(int watch, int fd, int events, void *opaque) {
     struct qemud_server *server = (struct qemud_server *)opaque;
     struct qemud_socket *sock = server->sockets;
 
     while (sock) {
-        if (sock->fd == fd)
+        if (sock->watch == watch)
             break;
 
         sock = sock->next;
     }
 
     if (!sock)
+        return;
+
+    if (sock->fd != fd)
         return;
 
     if (events)

@@ -42,8 +42,8 @@ int myDomainEventCallback2 (virConnectPtr conn, virDomainPtr dom,
                             int event, int detail, void *opaque);
 int myEventAddHandleFunc  (int fd, int event,
                            virEventHandleCallback cb, void *opaque);
-void myEventUpdateHandleFunc(int fd, int event);
-int  myEventRemoveHandleFunc(int fd);
+void myEventUpdateHandleFunc(int watch, int event);
+int  myEventRemoveHandleFunc(int watch);
 
 int myEventAddTimeoutFunc(int timeout, virEventTimeoutCallback cb,
                           void *opaque);
@@ -334,7 +334,8 @@ int main(int argc, char **argv)
         }
 
         if(h_cb) {
-            h_cb(h_fd,
+            h_cb(0,
+                 h_fd,
                  myPollEventToEventHandleType(pfd.revents & h_event),
                  h_opaque);
         }

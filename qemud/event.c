@@ -37,6 +37,7 @@
 
 /* State for a single file handle being monitored */
 struct virEventHandle {
+    int watch;
     int fd;
     int events;
     virEventHandleCallback cb;
@@ -71,6 +72,9 @@ struct virEventLoop {
 /* Only have one event loop */
 static struct virEventLoop eventLoop;
 
+/* Unique ID for the next FD watch to be registered */
+static int nextWatch = 0;
+
 /* Unique ID for the next timer to be registered */
 static int nextTimer = 0;
 
@@ -91,6 +95,7 @@ int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb,
         eventLoop.handlesAlloc += EVENT_ALLOC_EXTENT;
     }
 
+    eventLoop.handles[eventLoop.handlesCount].watch = nextWatch++;
     eventLoop.handles[eventLoop.handlesCount].fd = fd;
     eventLoop.handles[eventLoop.handlesCount].events =
                                          virEventHandleTypeToPollEvent(events);
@@ -100,13 +105,13 @@ int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb,
 
     eventLoop.handlesCount++;
 
-    return 0;
+    return nextWatch-1;
 }
 
-void virEventUpdateHandleImpl(int fd, int events) {
+void virEventUpdateHandleImpl(int watch, int events) {
     int i;
     for (i = 0 ; i < eventLoop.handlesCount ; i++) {
-        if (eventLoop.handles[i].fd == fd) {
+        if (eventLoop.handles[i].watch == watch) {
             eventLoop.handles[i].events =
                     virEventHandleTypeToPollEvent(events);
             break;
@@ -120,15 +125,15 @@ void virEventUpdateHandleImpl(int fd, int events) {
  * For this reason we only ever set a flag in the existing list.
  * Actual deletion will be done out-of-band
  */
-int virEventRemoveHandleImpl(int fd) {
+int virEventRemoveHandleImpl(int watch) {
     int i;
-    EVENT_DEBUG("Remove handle %d", fd);
+    EVENT_DEBUG("Remove handle %d", watch);
     for (i = 0 ; i < eventLoop.handlesCount ; i++) {
         if (eventLoop.handles[i].deleted)
             continue;
 
-        if (eventLoop.handles[i].fd == fd) {
-            EVENT_DEBUG("mark delete %d", i);
+        if (eventLoop.handles[i].watch == watch) {
+            EVENT_DEBUG("mark delete %d %d", i, eventLoop.handles[i].fd);
             eventLoop.handles[i].deleted = 1;
             return 0;
         }
@@ -356,9 +361,13 @@ static int virEventDispatchHandles(struct pollfd *fds) {
 
         if (fds[i].revents) {
             hEvents = virPollEventToEventHandleType(fds[i].revents);
-            EVENT_DEBUG("Dispatch %d %d %p", fds[i].fd, fds[i].revents,
+            EVENT_DEBUG("Dispatch %d %d %d %p",
+                        eventLoop.handles[i].watch,
+                        fds[i].fd, fds[i].revents,
                         eventLoop.handles[i].opaque);
-            (eventLoop.handles[i].cb)(fds[i].fd, hEvents,
+            (eventLoop.handles[i].cb)(eventLoop.handles[i].watch,
+                                      fds[i].fd,
+                                      hEvents,
                                       eventLoop.handles[i].opaque);
         }
     }

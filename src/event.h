@@ -40,21 +40,21 @@ int virEventAddHandle(int fd, int events, virEventHandleCallback cb,
 /**
  * virEventUpdateHandle: change event set for a monitored file handle
  *
- * @fd: file handle to monitor for events
+ * @watch: watch whose file handle to update
  * @events: bitset of events to watch from virEventHandleType constants
  *
  * Will not fail if fd exists
  */
-void virEventUpdateHandle(int fd, int events);
+void virEventUpdateHandle(int watch, int events);
 
 /**
  * virEventRemoveHandle: unregister a callback from a file handle
  *
- * @fd: file handle to stop monitoring for events
+ * @watch: watch whose file handle to remove
  *
  * returns -1 if the file handle was not registered, 0 upon success
  */
-int virEventRemoveHandle(int fd);
+int virEventRemoveHandle(int watch);
 
 /**
  * virEventAddTimeout: register a callback for a timer event

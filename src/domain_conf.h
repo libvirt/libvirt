@@ -455,8 +455,11 @@ typedef virDomainObj *virDomainObjPtr;
 struct _virDomainObj {
     int stdin_fd;
     int stdout_fd;
+    int stdout_watch;
     int stderr_fd;
+    int stderr_watch;
     int monitor;
+    int monitorWatch;
     int logfile;
     int pid;
     int state;

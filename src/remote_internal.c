@@ -95,6 +95,7 @@ static int inside_daemon = 0;
 struct private_data {
     int magic;                  /* Should be MAGIC or DEAD. */
     int sock;                   /* Socket. */
+    int watch;                  /* File handle watch */
     pid_t pid;                  /* PID of tunnel process */
     int uses_tls;               /* TLS enabled on socket? */
     gnutls_session_t session;   /* GnuTLS session (if uses_tls != 0). */
@@ -175,7 +176,7 @@ static void make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr do
 static void make_nonnull_network (remote_nonnull_network *net_dst, virNetworkPtr net_src);
 static void make_nonnull_storage_pool (remote_nonnull_storage_pool *pool_dst, virStoragePoolPtr vol_src);
 static void make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src);
-void remoteDomainEventFired(int fd, int event, void *data);
+void remoteDomainEventFired(int watch, int fd, int event, void *data);
 static void remoteDomainProcessEvent(virConnectPtr conn, XDR *xdr);
 static void remoteDomainQueueEvent(virConnectPtr conn, XDR *xdr);
 void remoteDomainEventQueueFlush(int timer, void *opaque);
@@ -756,12 +757,12 @@ doRemoteOpen (virConnectPtr conn,
 
     DEBUG0("Adding Handler for remote events");
     /* Set up a callback to listen on the socket data */
-    if (virEventAddHandle(priv->sock,
-                          VIR_EVENT_HANDLE_READABLE |
-                              VIR_EVENT_HANDLE_ERROR |
-                              VIR_EVENT_HANDLE_HANGUP,
-                          remoteDomainEventFired,
-                          conn) < 0) {
+    if ((priv->watch = virEventAddHandle(priv->sock,
+                                         VIR_EVENT_HANDLE_READABLE |
+                                         VIR_EVENT_HANDLE_ERROR |
+                                         VIR_EVENT_HANDLE_HANGUP,
+                                         remoteDomainEventFired,
+                                         conn)) < 0) {
         DEBUG0("virEventAddHandle failed: No addHandleImpl defined."
                " continuing without events.");
     } else {
@@ -5266,7 +5267,8 @@ remoteDomainQueueEvent(virConnectPtr conn, XDR *xdr)
  * for event data
  */
 void
-remoteDomainEventFired(int fd ATTRIBUTE_UNUSED,
+remoteDomainEventFired(int watch,
+                       int fd,
                        int event,
                        void *opaque)
 {
@@ -5279,13 +5281,18 @@ remoteDomainEventFired(int fd ATTRIBUTE_UNUSED,
     virConnectPtr        conn = opaque;
     struct private_data *priv = conn->privateData;
 
-    DEBUG("%s : Event fired %d %X", __FUNCTION__, event, event);
+    DEBUG("Event fired %d %d %d %X", watch, fd, event, event);
 
     if (event & (VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR)) {
          DEBUG("%s : VIR_EVENT_HANDLE_HANGUP or "
                "VIR_EVENT_HANDLE_ERROR encountered", __FUNCTION__);
-         virEventRemoveHandle(fd);
+         virEventRemoveHandle(watch);
          return;
+    }
+
+    if (fd != priv->sock) {
+        virEventRemoveHandle(watch);
+        return;
     }
 
     /* Read and deserialise length word. */

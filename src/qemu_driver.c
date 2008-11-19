@@ -110,7 +110,8 @@ static void qemudDomainEventDispatch (struct qemud_driver *driver,
                                       int event,
                                       int detail);
 
-static void qemudDispatchVMEvent(int fd,
+static void qemudDispatchVMEvent(int watch,
+                                 int fd,
                                  int events,
                                  void *opaque);
 
@@ -946,18 +947,18 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     }
 
     if (ret == 0) {
-        if ((virEventAddHandle(vm->stdout_fd,
-                               VIR_EVENT_HANDLE_READABLE |
-                                   VIR_EVENT_HANDLE_ERROR |
-                                   VIR_EVENT_HANDLE_HANGUP,
-                               qemudDispatchVMEvent,
-                               driver) < 0) ||
-            (virEventAddHandle(vm->stderr_fd,
-                               VIR_EVENT_HANDLE_READABLE |
-                                   VIR_EVENT_HANDLE_ERROR |
-                                   VIR_EVENT_HANDLE_HANGUP,
-                               qemudDispatchVMEvent,
-                               driver) < 0) ||
+        if (((vm->stdout_watch = virEventAddHandle(vm->stdout_fd,
+                                                  VIR_EVENT_HANDLE_READABLE |
+                                                  VIR_EVENT_HANDLE_ERROR |
+                                                  VIR_EVENT_HANDLE_HANGUP,
+                                                  qemudDispatchVMEvent,
+                                                  driver)) < 0) ||
+            ((vm->stderr_watch = virEventAddHandle(vm->stderr_fd,
+                                                   VIR_EVENT_HANDLE_READABLE |
+                                                   VIR_EVENT_HANDLE_ERROR |
+                                                   VIR_EVENT_HANDLE_HANGUP,
+                                                   qemudDispatchVMEvent,
+                                                   driver)) < 0) ||
             (qemudWaitForMonitor(conn, driver, vm) < 0) ||
             (qemudDetectVcpuPIDs(conn, driver, vm) < 0) ||
             (qemudInitCpus(conn, driver, vm, migrateFrom) < 0)) {
@@ -1008,8 +1009,8 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     qemudVMData(driver, vm, vm->stdout_fd);
     qemudVMData(driver, vm, vm->stderr_fd);
 
-    virEventRemoveHandle(vm->stdout_fd);
-    virEventRemoveHandle(vm->stderr_fd);
+    virEventRemoveHandle(vm->stdout_watch);
+    virEventRemoveHandle(vm->stderr_watch);
 
     if (close(vm->logfile) < 0)
         qemudLog(QEMUD_WARN, _("Unable to close logfile %d: %s\n"),
@@ -1072,15 +1073,15 @@ static int qemudDispatchVMFailure(struct qemud_driver *driver, virDomainObjPtr v
 
 
 static void
-qemudDispatchVMEvent(int fd, int events, void *opaque) {
+qemudDispatchVMEvent(int watch, int fd, int events, void *opaque) {
     struct qemud_driver *driver = (struct qemud_driver *)opaque;
     virDomainObjPtr vm = NULL;
     unsigned int i;
 
     for (i = 0 ; i < driver->domains.count ; i++) {
         if (virDomainIsActive(driver->domains.objs[i]) &&
-            (driver->domains.objs[i]->stdout_fd == fd ||
-             driver->domains.objs[i]->stderr_fd == fd)) {
+            (driver->domains.objs[i]->stdout_watch == watch ||
+             driver->domains.objs[i]->stderr_watch == watch)) {
             vm = driver->domains.objs[i];
             break;
         }
@@ -1088,6 +1089,12 @@ qemudDispatchVMEvent(int fd, int events, void *opaque) {
 
     if (!vm)
         return;
+
+    if (vm->stdout_fd != fd &&
+        vm->stderr_fd != fd) {
+        qemudDispatchVMFailure(driver, vm, fd);
+        return;
+    }
 
     if (events == VIR_EVENT_HANDLE_READABLE)
         qemudDispatchVMLog(driver, vm, fd);

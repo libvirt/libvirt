@@ -68,6 +68,7 @@ struct libvirtd_mdns {
 
 /* Avahi API requires this struct names in the app :-( */
 struct AvahiWatch {
+    int watch;
     int fd;
     int revents;
     AvahiWatchCallback callback;
@@ -228,17 +229,18 @@ static void libvirtd_mdns_client_callback(AvahiClient *c, AvahiClientState state
 }
 
 
-static void libvirtd_mdns_watch_dispatch(int fd, int events, void *opaque)
+static void libvirtd_mdns_watch_dispatch(int watch, int fd, int events, void *opaque)
 {
     AvahiWatch *w = (AvahiWatch*)opaque;
     int fd_events = virEventHandleTypeToPollEvent(events);
-    AVAHI_DEBUG("Dispatch watch FD %d Event %d", fd, fd_events);
+    AVAHI_DEBUG("Dispatch watch %d FD %d Event %d", watch, fd, fd_events);
     w->revents = fd_events;
     w->callback(w, fd, fd_events, w->userdata);
 }
 
 static AvahiWatch *libvirtd_mdns_watch_new(const AvahiPoll *api ATTRIBUTE_UNUSED,
-                                            int fd, AvahiWatchEvent event, AvahiWatchCallback cb, void *userdata) {
+                                           int fd, AvahiWatchEvent event,
+                                           AvahiWatchCallback cb, void *userdata) {
     AvahiWatch *w;
     virEventHandleType hEvents;
     if (VIR_ALLOC(w) < 0)
@@ -251,8 +253,8 @@ static AvahiWatch *libvirtd_mdns_watch_new(const AvahiPoll *api ATTRIBUTE_UNUSED
 
     AVAHI_DEBUG("New handle %p FD %d Event %d", w, w->fd, event);
     hEvents = virPollEventToEventHandleType(event);
-    if (virEventAddHandleImpl(fd, hEvents,
-                              libvirtd_mdns_watch_dispatch, w) < 0) {
+    if ((w->watch = virEventAddHandleImpl(fd, hEvents,
+                                          libvirtd_mdns_watch_dispatch, w)) < 0) {
         VIR_FREE(w);
         return NULL;
     }
@@ -263,7 +265,7 @@ static AvahiWatch *libvirtd_mdns_watch_new(const AvahiPoll *api ATTRIBUTE_UNUSED
 static void libvirtd_mdns_watch_update(AvahiWatch *w, AvahiWatchEvent event)
 {
     AVAHI_DEBUG("Update handle %p FD %d Event %d", w, w->fd, event);
-    virEventUpdateHandleImpl(w->fd, event);
+    virEventUpdateHandleImpl(w->watch, event);
 }
 
 static AvahiWatchEvent libvirtd_mdns_watch_get_events(AvahiWatch *w)
@@ -275,7 +277,7 @@ static AvahiWatchEvent libvirtd_mdns_watch_get_events(AvahiWatch *w)
 static void libvirtd_mdns_watch_free(AvahiWatch *w)
 {
     AVAHI_DEBUG("Free handle %p %d", w, w->fd);
-    virEventRemoveHandleImpl(w->fd);
+    virEventRemoveHandleImpl(w->watch);
     VIR_FREE(w);
 }
 

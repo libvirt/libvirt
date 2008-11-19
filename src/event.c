@@ -42,15 +42,15 @@ int virEventAddHandle(int fd, int events, virEventHandleCallback cb,
     return addHandleImpl(fd, events, cb, opaque);
 }
 
-void virEventUpdateHandle(int fd, int events) {
-    updateHandleImpl(fd, events);
+void virEventUpdateHandle(int watch, int events) {
+    updateHandleImpl(watch, events);
 }
 
-int virEventRemoveHandle(int fd) {
+int virEventRemoveHandle(int watch) {
     if (!removeHandleImpl)
         return -1;
 
-    return removeHandleImpl(fd);
+    return removeHandleImpl(watch);
 }
 
 int virEventAddTimeout(int timeout, virEventTimeoutCallback cb, void *opaque) {

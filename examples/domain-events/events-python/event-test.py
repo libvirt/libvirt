@@ -75,19 +75,19 @@ def myAddHandle(fd, events, cb, opaque):
 
     mypoll.register(fd, myEventHandleTypeToPollEvent(events))
 
-def myUpdateHandle(fd, event):
+def myUpdateHandle(watch, event):
     global h_fd, h_events
     #print "Updating Handle %s %s" % (str(fd), str(events))
     h_fd = fd
     h_events = event
-    mypoll.unregister(fd)
-    mypoll.register(fd, myEventHandleTypeToPollEvent(event))
+    mypoll.unregister(watch)
+    mypoll.register(watch, myEventHandleTypeToPollEvent(event))
 
-def myRemoveHandle(fd):
+def myRemoveHandle(watch):
     global h_fd
     #print "Removing Handle %s" % str(fd)
     h_fd = 0
-    mypoll.unregister(fd)
+    mypoll.unregister(watch)
 
 def myAddTimeout(timeout, cb, opaque):
     global t_active, t_timeout, t_cb, t_opaque
@@ -175,7 +175,7 @@ def main():
 
         if h_cb != None:
             #print "Invoking Handle CB"
-            h_cb(h_fd, myPollEventToEventHandleType(revents & h_events),
+            h_cb(0, h_fd, myPollEventToEventHandleType(revents & h_events),
                  h_opaque[0], h_opaque[1])
 
         #print "DEBUG EXIT"

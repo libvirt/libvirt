@@ -1,3 +1,14 @@
+Wed Nov 19 16:15:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
+
+	* include/libvirt/libvirt.h.in: Change semantics of AddHandle
+	to allow for same FD to be registered more than once with
+	varying flags.
+	* qemud/event.c, qemud/event.h, qemud/mdns.c, qemud/qemud.c,
+	qemud/qemud.h, src/domain_conf.h, src/event.c, src/event.h,
+	src/lxc_driver.c, src/qemu_driver.c, src/remote_internal.c:
+	Update to track file handle events via the watch number
+	as per new public API contract
+
 Wed Nov 19 15:25:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
 
 	Add a callback for freeing the user data for callbacks

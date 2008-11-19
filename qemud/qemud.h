@@ -96,6 +96,7 @@ struct qemud_client {
     int magic;
 
     int fd;
+    int watch;
     int readonly;
     enum qemud_mode mode;
 
@@ -141,6 +142,7 @@ struct qemud_client {
 
 struct qemud_socket {
     int fd;
+    int watch;
     int readonly;
     int type; /* qemud_sock_type */
     int auth;

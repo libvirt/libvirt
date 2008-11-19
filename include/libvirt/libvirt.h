@@ -1124,13 +1124,15 @@ typedef enum {
 /**
  * virEventHandleCallback:
  *
+ * @watch: watch on which the event occurred
  * @fd: file handle on which the event occurred
  * @events: bitset of events from virEventHandleType constants
  * @opaque: user data registered with handle
  *
- * callback for receiving file handle events
+ * Callback for receiving file handle events. The callback will
+ * be invoked once for each event which is pending.
  */
-typedef void (*virEventHandleCallback)(int fd, int events, void *opaque);
+typedef void (*virEventHandleCallback)(int watch, int fd, int events, void *opaque);
 
 /**
  * virEventAddHandleFunc:
@@ -1140,29 +1142,33 @@ typedef void (*virEventHandleCallback)(int fd, int events, void *opaque);
  * @opaque: user data to pass to the callback
  *
  * Part of the EventImpl, this callback Adds a file handle callback to
- *  listen for specific events
+ * listen for specific events. The same file handle can be registered
+ * multiple times provided the requested event sets are non-overlapping
+ *
+ * Returns a handle watch number to be used for updating
+ * and unregistering for events
  */
 typedef int (*virEventAddHandleFunc)(int fd, int event,
                                      virEventHandleCallback cb, void *opaque);
 
 /**
  * virEventUpdateHandleFunc:
- * @fd: file descriptor to modify
+ * @watch: file descriptor watch to modify
  * @event: new events to listen on
  *
  * Part of the EventImpl, this user-provided callback is notified when
  * events to listen on change
  */
-typedef void (*virEventUpdateHandleFunc)(int fd, int event);
+typedef void (*virEventUpdateHandleFunc)(int watch, int event);
 
 /**
  * virEventRemoveHandleFunc:
- * @fd: file descriptor to stop listening on
+ * @watch: file descriptor watch to stop listening on
  *
  * Part of the EventImpl, this user-provided callback is notified when
  * an fd is no longer being listened on
  */
-typedef int (*virEventRemoveHandleFunc)(int fd);
+typedef int (*virEventRemoveHandleFunc)(int watch);
 
 /**
  * virEventTimeoutCallback:

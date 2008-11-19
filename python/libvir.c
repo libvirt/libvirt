@@ -1940,15 +1940,15 @@ static PyObject *
 libvirt_virEventInvokeHandleCallback(PyObject *self ATTRIBUTE_UNUSED,
                                      PyObject *args)
 {
-    int fd, event;
+    int watch, fd, event;
     PyObject *py_f;
     PyObject *py_opaque;
     virEventHandleCallback cb;
     void *opaque;
 
     if (!PyArg_ParseTuple
-        (args, (char *) "iiOO:virEventInvokeHandleCallback",
-                        &fd, &event, &py_f, &py_opaque
+        (args, (char *) "iiiOO:virEventInvokeHandleCallback",
+         &watch, &fd, &event, &py_f, &py_opaque
         ))
         return VIR_PY_INT_FAIL;
 
@@ -1956,7 +1956,7 @@ libvirt_virEventInvokeHandleCallback(PyObject *self ATTRIBUTE_UNUSED,
     opaque = (void *) PyvirVoidPtr_Get(py_opaque);
 
     if(cb)
-        cb (fd, event, opaque);
+        cb (watch, fd, event, opaque);
 
     return VIR_PY_INT_SUCCESS;
 }

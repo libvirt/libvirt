@@ -24,7 +24,7 @@
 #ifndef __VIRTD_EVENT_H__
 #define __VIRTD_EVENT_H__
 
-#include "../src/event.h"
+#include "internal.h"
 
 /**
  * virEventAddHandleImpl: register a callback for monitoring file handle events
@@ -42,21 +42,21 @@ int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb,
 /**
  * virEventUpdateHandleImpl: change event set for a monitored file handle
  *
- * @fd: file handle to monitor for events
+ * @watch: watch whose handle to update
  * @events: bitset of events to watch from POLLnnn constants
  *
  * Will not fail if fd exists
  */
-void virEventUpdateHandleImpl(int fd, int events);
+void virEventUpdateHandleImpl(int watch, int events);
 
 /**
  * virEventRemoveHandleImpl: unregister a callback from a file handle
  *
- * @fd: file handle to stop monitoring for events
+ * @watch: watch whose handle to remove
  *
  * returns -1 if the file handle was not registered, 0 upon success
  */
-int virEventRemoveHandleImpl(int fd);
+int virEventRemoveHandleImpl(int watch);
 
 /**
  * virEventAddTimeoutImpl: register a callback for a timer event
