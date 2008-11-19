@@ -1,3 +1,16 @@
+Wed Nov 19 15:25:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
+
+	Add a callback for freeing the user data for callbacks
+	(patch from David Lively)
+	* include/libvirt/libvirt.h.in: Add a virFreeCallback type
+	and add it to virDomainEventRegister
+	* qemud/remote.c, src/domain_event.h, src/domain_event.c,
+	src/driver.h, src/qemu_driver.c, src/remote_internal.c,
+	python/libvirt.c: Update to call the virFreeCallback where
+	needed
+	* examples/domain-events/events-c/event-test.c: use the
+	virFreeCallback for releasing data
+
 Mon Nov 18 12:24:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
 
 	* src/Makefile.am: Fix build on MinGW where linker flags

@@ -4474,13 +4474,14 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
 /*----------------------------------------------------------------------*/
 
 static int remoteDomainEventRegister (virConnectPtr conn,
-                               void *callback ATTRIBUTE_UNUSED,
-                               void *opaque ATTRIBUTE_UNUSED)
+                                      void *callback ATTRIBUTE_UNUSED,
+                                      void *opaque ATTRIBUTE_UNUSED,
+                                      virFreeCallback freecb)
 {
     struct private_data *priv = conn->privateData;
 
     if (virDomainEventCallbackListAdd(conn, priv->callbackList,
-                                  callback, opaque) < 0) {
+                                      callback, opaque, freecb) < 0) {
          error (conn, VIR_ERR_RPC, _("adding cb to list"));
          return -1;
     }

@@ -5372,7 +5372,8 @@ virStorageVolGetPath(virStorageVolPtr vol)
 int
 virConnectDomainEventRegister(virConnectPtr conn,
                               virConnectDomainEventCallback cb,
-                              void *opaque)
+                              void *opaque,
+                              virFreeCallback freecb)
 {
 
     if (!VIR_IS_CONNECT(conn)) {
@@ -5385,7 +5386,7 @@ virConnectDomainEventRegister(virConnectPtr conn,
     }
 
     if ((conn->driver) && (conn->driver->domainEventRegister))
-        return conn->driver->domainEventRegister (conn, cb, opaque);
+        return conn->driver->domainEventRegister (conn, cb, opaque, freecb);
     return -1;
 }
 

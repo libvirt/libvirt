@@ -3384,12 +3384,13 @@ done:
 static int
 qemudDomainEventRegister (virConnectPtr conn,
                           void *callback,
-                          void *opaque)
+                          void *opaque,
+                          virFreeCallback freecb)
 {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
 
     return virDomainEventCallbackListAdd(conn, driver->domainEventCallbacks,
-                                         callback, opaque);
+                                         callback, opaque, freecb);
 }
 
 static int

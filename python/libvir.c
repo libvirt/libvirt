@@ -1651,7 +1651,7 @@ libvirt_virConnectDomainEventRegister(ATTRIBUTE_UNUSED PyObject * self,
 
     ret = virConnectDomainEventRegister(conn,
                                         libvirt_virConnectDomainEventCallback,
-                                        (void *)pyobj_conn_inst);
+                                        (void *)pyobj_conn_inst, NULL);
 
     LIBVIRT_END_ALLOW_THREADS;
 

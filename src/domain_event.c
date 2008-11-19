@@ -39,6 +39,9 @@ virDomainEventCallbackListFree(virDomainEventCallbackListPtr list)
 {
     int i;
     for (i=0; i<list->count; i++) {
+        virFreeCallback freecb = list->callbacks[i]->freecb;
+        if (freecb)
+            (*freecb)(list->callbacks[i]->opaque);
         VIR_FREE(list->callbacks[i]);
     }
     VIR_FREE(list);
@@ -60,6 +63,9 @@ virDomainEventCallbackListRemove(virConnectPtr conn,
     for (i = 0 ; i < cbList->count ; i++) {
         if(cbList->callbacks[i]->cb == callback &&
            cbList->callbacks[i]->conn == conn) {
+            virFreeCallback freecb = cbList->callbacks[i]->freecb;
+            if (freecb)
+                (*freecb)(cbList->callbacks[i]->opaque);
             virUnrefConnect(cbList->callbacks[i]->conn);
             VIR_FREE(cbList->callbacks[i]);
 
@@ -94,7 +100,8 @@ int
 virDomainEventCallbackListAdd(virConnectPtr conn,
                               virDomainEventCallbackListPtr cbList,
                               virConnectDomainEventCallback callback,
-                              void *opaque)
+                              void *opaque,
+                              virFreeCallback freecb)
 {
     virDomainEventCallbackPtr event;
     int n;
@@ -120,6 +127,7 @@ virDomainEventCallbackListAdd(virConnectPtr conn,
     event->conn = conn;
     event->cb = callback;
     event->opaque = opaque;
+    event->freecb = freecb;
 
     /* Make space on list */
     n = cbList->count;

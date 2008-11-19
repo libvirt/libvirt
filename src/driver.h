@@ -281,7 +281,8 @@ typedef int
     (*virDrvDomainEventRegister)
                     (virConnectPtr conn,
                      void *callback,
-                     void *opaque);
+                     void *opaque,
+                     virFreeCallback freecb);
 
 typedef int
     (*virDrvDomainEventDeregister)

@@ -30,6 +30,8 @@ struct _virDomainEventCallback {
     virConnectPtr conn;
     virConnectDomainEventCallback cb;
     void *opaque;
+    virFreeCallback freecb;
+
 };
 typedef struct _virDomainEventCallback virDomainEventCallback;
 typedef virDomainEventCallback *virDomainEventCallbackPtr;
@@ -46,7 +48,8 @@ void virDomainEventCallbackListFree(virDomainEventCallbackListPtr list);
 int virDomainEventCallbackListAdd(virConnectPtr conn,
                                   virDomainEventCallbackListPtr cbList,
                                   virConnectDomainEventCallback callback,
-                                  void *opaque);
+                                  void *opaque,
+                                  virFreeCallback freecb);
 
 int virDomainEventCallbackListRemove(virConnectPtr conn,
                                      virDomainEventCallbackListPtr cbList,

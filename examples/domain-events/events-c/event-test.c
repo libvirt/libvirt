@@ -1,7 +1,9 @@
 #include <config.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
 #if HAVE_SYS_POLL_H
 #include <sys/types.h>
@@ -168,6 +170,13 @@ int myDomainEventCallback2 (virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static void myFreeFunc(void *opaque)
+{
+    char *str = opaque;
+    printf("%s: Freeing [%s]\n", __FUNCTION__, str);
+    free(str);
+}
+
 
 /* EventImpl Functions */
 int myEventHandleTypeToPollEvent(virEventHandleType events)
@@ -254,15 +263,27 @@ void usage(const char *pname)
     printf("%s uri\n", pname);
 }
 
+int run = 1;
+
+static void stop(int sig)
+{
+    printf("Exiting on signal %d\n", sig);
+    run = 0;
+}
+
+
 int main(int argc, char **argv)
 {
-    int run=1;
     int sts;
+    struct sigaction action_stop = {
+        .sa_handler = stop
+    };
 
     if(argc > 1 && STREQ(argv[1],"--help")) {
         usage(argv[0]);
         return -1;
     }
+
     virEventRegisterImpl( myEventAddHandleFunc,
                           myEventUpdateHandleFunc,
                           myEventRemoveHandleFunc,
@@ -277,11 +298,16 @@ int main(int argc, char **argv)
         return -1;
     }
 
+    sigaction(SIGTERM, &action_stop, NULL);
+    sigaction(SIGINT, &action_stop, NULL);
+
     DEBUG0("Registering domain event cbs");
 
     /* Add 2 callbacks to prove this works with more than just one */
-    virConnectDomainEventRegister(dconn, myDomainEventCallback1, NULL);
-    virConnectDomainEventRegister(dconn, myDomainEventCallback2, NULL);
+    virConnectDomainEventRegister(dconn, myDomainEventCallback1,
+                                  strdup("callback 1"), myFreeFunc);
+    virConnectDomainEventRegister(dconn, myDomainEventCallback2,
+                                  strdup("callback 2"), myFreeFunc);
 
     while(run) {
         struct pollfd pfd = { .fd = h_fd,
@@ -315,9 +341,15 @@ int main(int argc, char **argv)
 
     }
 
+    DEBUG0("Deregistering event handlers");
+    virConnectDomainEventDeregister(dconn, myDomainEventCallback1);
+    virConnectDomainEventDeregister(dconn, myDomainEventCallback2);
+
+    DEBUG0("Closing connection");
     if( dconn && virConnectClose(dconn)<0 ) {
         printf("error closing\n");
     }
+
     printf("done\n");
     return 0;
 }

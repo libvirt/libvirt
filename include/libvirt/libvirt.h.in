@@ -1093,9 +1093,12 @@ typedef int (*virConnectDomainEventCallback)(virConnectPtr conn,
                                              int detail,
                                              void *opaque);
 
+typedef void (*virFreeCallback)(void *opaque);
+
 int virConnectDomainEventRegister(virConnectPtr conn,
                                   virConnectDomainEventCallback cb,
-                                  void *opaque);
+                                  void *opaque,
+                                  virFreeCallback freecb);
 
 int virConnectDomainEventDeregister(virConnectPtr conn,
                                     virConnectDomainEventCallback cb);

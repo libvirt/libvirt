@@ -3754,7 +3754,7 @@ remoteDispatchDomainEventsRegister (struct qemud_server *server ATTRIBUTE_UNUSED
 
     /* Register event delivery callback */
     REMOTE_DEBUG("%s","Registering to relay remote events");
-    virConnectDomainEventRegister(client->conn, remoteRelayDomainEvent, client);
+    virConnectDomainEventRegister(client->conn, remoteRelayDomainEvent, client, NULL);
 
     if(ret)
         ret->cb_registered = 1;
