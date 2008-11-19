@@ -1704,12 +1704,16 @@ static PyObject *removeTimeoutObj = NULL;
 
 
 static int
-libvirt_virEventAddHandleFunc  (int fd ATTRIBUTE_UNUSED, int event ATTRIBUTE_UNUSED,
-                                virEventHandleCallback cb, void *opaque)
+libvirt_virEventAddHandleFunc  (int fd,
+                                int event,
+                                virEventHandleCallback cb,
+                                void *opaque,
+                                virFreeCallback ff)
 {
     PyObject *result = NULL;
     PyObject *python_cb;
     PyObject *cb_obj;
+    PyObject *ff_obj;
     PyObject *opaque_obj;
     PyObject *cb_args;
     PyObject *pyobj_args;
@@ -1730,11 +1734,13 @@ libvirt_virEventAddHandleFunc  (int fd ATTRIBUTE_UNUSED, int event ATTRIBUTE_UNU
 
     /* create tuple for cb */
     cb_obj = libvirt_virEventHandleCallbackWrap(cb);
+    ff_obj = libvirt_virFreeCallbackWrap(ff);
     opaque_obj = libvirt_virVoidPtrWrap(opaque);
 
-    cb_args = PyTuple_New(2);
+    cb_args = PyTuple_New(3);
     PyTuple_SetItem(cb_args, 0, cb_obj);
     PyTuple_SetItem(cb_args, 1, opaque_obj);
+    PyTuple_SetItem(cb_args, 2, ff_obj);
 
     pyobj_args = PyTuple_New(4);
     PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(fd));
@@ -1799,14 +1805,17 @@ libvirt_virEventRemoveHandleFunc(int fd)
 }
 
 static int
-libvirt_virEventAddTimeoutFunc(int timeout, virEventTimeoutCallback cb,
-                               void *opaque)
+libvirt_virEventAddTimeoutFunc(int timeout,
+                               virEventTimeoutCallback cb,
+                               void *opaque,
+                               virFreeCallback ff)
 {
     PyObject *result = NULL;
 
     PyObject *python_cb;
 
     PyObject *cb_obj;
+    PyObject *ff_obj;
     PyObject *opaque_obj;
     PyObject *cb_args;
     PyObject *pyobj_args;
@@ -1827,11 +1836,13 @@ libvirt_virEventAddTimeoutFunc(int timeout, virEventTimeoutCallback cb,
 
     /* create tuple for cb */
     cb_obj = libvirt_virEventTimeoutCallbackWrap(cb);
+    ff_obj = libvirt_virFreeCallbackWrap(ff);
     opaque_obj = libvirt_virVoidPtrWrap(opaque);
 
-    cb_args = PyTuple_New(2);
+    cb_args = PyTuple_New(3);
     PyTuple_SetItem(cb_args, 0, cb_obj);
     PyTuple_SetItem(cb_args, 1, opaque_obj);
+    PyTuple_SetItem(cb_args, 2, ff_obj);
 
     pyobj_args = PyTuple_New(3);
 

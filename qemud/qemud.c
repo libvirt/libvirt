@@ -540,7 +540,7 @@ static int qemudListenUnix(struct qemud_server *server,
                                              VIR_EVENT_HANDLE_ERROR |
                                              VIR_EVENT_HANDLE_HANGUP,
                                              qemudDispatchServerEvent,
-                                             server)) < 0) {
+                                             server, NULL)) < 0) {
         qemudLog(QEMUD_ERR, "%s",
                  _("Failed to add server event callback"));
         goto cleanup;
@@ -672,7 +672,7 @@ remoteListenTCP (struct qemud_server *server,
                                                  VIR_EVENT_HANDLE_ERROR |
                                                  VIR_EVENT_HANDLE_HANGUP,
                                                  qemudDispatchServerEvent,
-                                                 server)) < 0) {
+                                                 server, NULL)) < 0) {
             qemudLog(QEMUD_ERR, "%s", _("Failed to add server event callback"));
             goto cleanup;
         }
@@ -1655,7 +1655,7 @@ static int qemudRegisterClientEvent(struct qemud_server *server,
                                                mode | VIR_EVENT_HANDLE_ERROR |
                                                VIR_EVENT_HANDLE_HANGUP,
                                                qemudDispatchClientEvent,
-                                               server)) < 0)
+                                               server, NULL)) < 0)
             return -1;
 
     return 0;
@@ -1721,7 +1721,9 @@ static int qemudRunLoop(struct qemud_server *server) {
          * shutdown after timeout seconds
          */
         if (timeout > 0 && !virStateActive() && !server->clients) {
-            timerid = virEventAddTimeoutImpl(timeout*1000, qemudInactiveTimer, server);
+            timerid = virEventAddTimeoutImpl(timeout*1000,
+                                             qemudInactiveTimer,
+                                             server, NULL);
             qemudDebug("Scheduling shutdown timer %d", timerid);
         }
 
@@ -2270,7 +2272,7 @@ int main(int argc, char **argv) {
     if (virEventAddHandleImpl(sigpipe[0],
                               VIR_EVENT_HANDLE_READABLE,
                               qemudDispatchSignalEvent,
-                              server) < 0) {
+                              server, NULL) < 0) {
         qemudLog(QEMUD_ERR,
                  "%s", _("Failed to register callback for signal pipe"));
         ret = 3;

@@ -762,15 +762,15 @@ doRemoteOpen (virConnectPtr conn,
                                          VIR_EVENT_HANDLE_ERROR |
                                          VIR_EVENT_HANDLE_HANGUP,
                                          remoteDomainEventFired,
-                                         conn)) < 0) {
+                                         conn, NULL)) < 0) {
         DEBUG0("virEventAddHandle failed: No addHandleImpl defined."
                " continuing without events.");
     } else {
 
         DEBUG0("Adding Timeout for remote event queue flushing");
         if ( (priv->eventFlushTimer = virEventAddTimeout(-1,
-                                               remoteDomainEventQueueFlush,
-                                               conn)) < 0) {
+                                                         remoteDomainEventQueueFlush,
+                                                         conn, NULL)) < 0) {
             DEBUG0("virEventAddTimeout failed: No addTimeoutImpl defined. "
                     "continuing without events.");
         }

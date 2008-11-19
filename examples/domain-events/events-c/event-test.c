@@ -24,6 +24,7 @@
 int h_fd = 0;
 virEventHandleType h_event = 0;
 virEventHandleCallback h_cb = NULL;
+virFreeCallback h_ff = NULL;
 void *h_opaque = NULL;
 
 /* timeout globals */
@@ -31,6 +32,7 @@ void *h_opaque = NULL;
 int t_active = 0;
 int t_timeout = -1;
 virEventTimeoutCallback t_cb = NULL;
+virFreeCallback t_ff = NULL;
 void *t_opaque = NULL;
 
 
@@ -41,12 +43,16 @@ int myDomainEventCallback1 (virConnectPtr conn, virDomainPtr dom,
 int myDomainEventCallback2 (virConnectPtr conn, virDomainPtr dom,
                             int event, int detail, void *opaque);
 int myEventAddHandleFunc  (int fd, int event,
-                           virEventHandleCallback cb, void *opaque);
+                           virEventHandleCallback cb,
+                           void *opaque,
+                           virFreeCallback ff);
 void myEventUpdateHandleFunc(int watch, int event);
 int  myEventRemoveHandleFunc(int watch);
 
-int myEventAddTimeoutFunc(int timeout, virEventTimeoutCallback cb,
-                          void *opaque);
+int myEventAddTimeoutFunc(int timeout,
+                          virEventTimeoutCallback cb,
+                          void *opaque,
+                          virFreeCallback ff);
 void myEventUpdateTimeoutFunc(int timer, int timout);
 int myEventRemoveTimeoutFunc(int timer);
 
@@ -208,12 +214,15 @@ virEventHandleType myPollEventToEventHandleType(int events)
 }
 
 int  myEventAddHandleFunc(int fd, int event,
-                          virEventHandleCallback cb, void *opaque)
+                          virEventHandleCallback cb,
+                          void *opaque,
+                          virFreeCallback ff)
 {
     DEBUG("Add handle %d %d %p %p", fd, event, cb, opaque);
     h_fd = fd;
     h_event = myEventHandleTypeToPollEvent(event);
     h_cb = cb;
+    h_ff = ff;
     h_opaque = opaque;
     return 0;
 }
@@ -229,16 +238,21 @@ int  myEventRemoveHandleFunc(int fd)
 {
     DEBUG("Removed Handle %d", fd);
     h_fd = 0;
+    if (h_ff)
+       (h_ff)(h_opaque);
     return 0;
 }
 
-int myEventAddTimeoutFunc(int timeout, virEventTimeoutCallback cb,
-                          void *opaque)
+int myEventAddTimeoutFunc(int timeout,
+                          virEventTimeoutCallback cb,
+                          void *opaque,
+                          virFreeCallback ff)
 {
     DEBUG("Adding Timeout %d %p %p", timeout, cb, opaque);
     t_active = 1;
     t_timeout = timeout;
     t_cb = cb;
+    t_ff = ff;
     t_opaque = opaque;
     return 0;
 }
@@ -253,6 +267,8 @@ int myEventRemoveTimeoutFunc(int timer)
 {
    DEBUG("Timeout removed %d", timer);
    t_active = 0;
+   if (t_ff)
+       (t_ff)(t_opaque);
    return 0;
 }
 

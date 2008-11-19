@@ -1,3 +1,15 @@
+Wed Nov 19 16:22:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
+
+	Add virFreeCallback to event loop APIs.
+	* include/libvirt/libvirt.h.in: Add a virFreeCallback arg
+	to the virEventAddHandle and virEventAddTimeout methods.
+	* qemud/event.c: Invoke the virFreeCallback when releasing
+	a handle/timer event
+	* qemud/event.h, qemud/qemud.c, qemud/mdns.c,
+	src/event.h, src/event.c, src/lxc_driver.c,
+	src/qemu_driver.c, src/remote_internal.c: Update to pass
+	around the virFreeCallback where needed
+
 Wed Nov 19 16:15:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
 
 	* include/libvirt/libvirt.h.in: Change semantics of AddHandle

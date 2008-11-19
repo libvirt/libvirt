@@ -103,6 +103,7 @@ PyObject * libvirt_virStoragePoolPtrWrap(virStoragePoolPtr node);
 PyObject * libvirt_virStorageVolPtrWrap(virStorageVolPtr node);
 PyObject * libvirt_virEventHandleCallbackWrap(virEventHandleCallback node);
 PyObject * libvirt_virEventTimeoutCallbackWrap(virEventTimeoutCallback node);
+PyObject * libvirt_virFreeCallbackWrap(virFreeCallback node);
 PyObject * libvirt_virVoidPtrWrap(void* node);
 
 /* Provide simple macro statement wrappers (adapted from GLib, in turn from Perl):

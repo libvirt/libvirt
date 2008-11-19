@@ -41,6 +41,7 @@ struct virEventHandle {
     int fd;
     int events;
     virEventHandleCallback cb;
+    virFreeCallback ff;
     void *opaque;
     int deleted;
 };
@@ -51,6 +52,7 @@ struct virEventTimeout {
     int frequency;
     unsigned long long expiresAt;
     virEventTimeoutCallback cb;
+    virFreeCallback ff;
     void *opaque;
     int deleted;
 };
@@ -83,8 +85,10 @@ static int nextTimer = 0;
  * NB, it *must* be safe to call this from within a callback
  * For this reason we only ever append to existing list.
  */
-int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb,
-                          void *opaque) {
+int virEventAddHandleImpl(int fd, int events,
+                          virEventHandleCallback cb,
+                          void *opaque,
+                          virFreeCallback ff) {
     EVENT_DEBUG("Add handle %d %d %p %p", fd, events, cb, opaque);
     if (eventLoop.handlesCount == eventLoop.handlesAlloc) {
         EVENT_DEBUG("Used %d handle slots, adding %d more",
@@ -100,6 +104,7 @@ int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb,
     eventLoop.handles[eventLoop.handlesCount].events =
                                          virEventHandleTypeToPollEvent(events);
     eventLoop.handles[eventLoop.handlesCount].cb = cb;
+    eventLoop.handles[eventLoop.handlesCount].ff = ff;
     eventLoop.handles[eventLoop.handlesCount].opaque = opaque;
     eventLoop.handles[eventLoop.handlesCount].deleted = 0;
 
@@ -147,7 +152,10 @@ int virEventRemoveHandleImpl(int watch) {
  * NB, it *must* be safe to call this from within a callback
  * For this reason we only ever append to existing list.
  */
-int virEventAddTimeoutImpl(int frequency, virEventTimeoutCallback cb, void *opaque) {
+int virEventAddTimeoutImpl(int frequency,
+                           virEventTimeoutCallback cb,
+                           void *opaque,
+                           virFreeCallback ff) {
     struct timeval now;
     EVENT_DEBUG("Adding timer %d with %d ms freq", nextTimer, frequency);
     if (gettimeofday(&now, NULL) < 0) {
@@ -166,6 +174,7 @@ int virEventAddTimeoutImpl(int frequency, virEventTimeoutCallback cb, void *opaq
     eventLoop.timeouts[eventLoop.timeoutsCount].timer = nextTimer++;
     eventLoop.timeouts[eventLoop.timeoutsCount].frequency = frequency;
     eventLoop.timeouts[eventLoop.timeoutsCount].cb = cb;
+    eventLoop.timeouts[eventLoop.timeoutsCount].ff = ff;
     eventLoop.timeouts[eventLoop.timeoutsCount].opaque = opaque;
     eventLoop.timeouts[eventLoop.timeoutsCount].deleted = 0;
     eventLoop.timeouts[eventLoop.timeoutsCount].expiresAt =
@@ -393,6 +402,9 @@ static int virEventCleanupTimeouts(void) {
         }
 
         EVENT_DEBUG("Purging timeout %d with id %d", i, eventLoop.timeouts[i].timer);
+        if (eventLoop.timeouts[i].ff)
+            (eventLoop.timeouts[i].ff)(eventLoop.timeouts[i].opaque);
+
         if ((i+1) < eventLoop.timeoutsCount) {
             memmove(eventLoop.timeouts+i,
                     eventLoop.timeouts+i+1,
@@ -428,6 +440,9 @@ static int virEventCleanupHandles(void) {
             i++;
             continue;
         }
+
+        if (eventLoop.handles[i].ff)
+            (eventLoop.handles[i].ff)(eventLoop.handles[i].opaque);
 
         if ((i+1) < eventLoop.handlesCount) {
             memmove(eventLoop.handles+i,

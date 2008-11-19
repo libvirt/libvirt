@@ -1138,18 +1138,25 @@ typedef void (*virEventHandleCallback)(int watch, int fd, int events, void *opaq
  * virEventAddHandleFunc:
  * @fd: file descriptor to listen on
  * @event: bitset of events on which to fire the callback
- * @cb: the callback to be called
+ * @cb: the callback to be called when an event occurrs
  * @opaque: user data to pass to the callback
+ * @ff: the callback invoked to free opaque data blob
  *
  * Part of the EventImpl, this callback Adds a file handle callback to
  * listen for specific events. The same file handle can be registered
  * multiple times provided the requested event sets are non-overlapping
  *
+ * If the opaque user data requires free'ing when the handle
+ * is unregistered, then a 2nd callback can be supplied for
+ * this purpose.
+ *
  * Returns a handle watch number to be used for updating
  * and unregistering for events
  */
 typedef int (*virEventAddHandleFunc)(int fd, int event,
-                                     virEventHandleCallback cb, void *opaque);
+                                     virEventHandleCallback cb,
+                                     void *opaque,
+                                     virFreeCallback ff);
 
 /**
  * virEventUpdateHandleFunc:
@@ -1166,7 +1173,11 @@ typedef void (*virEventUpdateHandleFunc)(int watch, int event);
  * @watch: file descriptor watch to stop listening on
  *
  * Part of the EventImpl, this user-provided callback is notified when
- * an fd is no longer being listened on
+ * an fd is no longer being listened on.
+ *
+ * If a virEventHandleFreeFunc was supplied when the handle was
+ * registered, it will be invoked some time during, or after this
+ * function call, when it is safe to release the user data.
  */
 typedef int (*virEventRemoveHandleFunc)(int watch);
 
@@ -1185,14 +1196,21 @@ typedef void (*virEventTimeoutCallback)(int timer, void *opaque);
  * @timeout: The timeout to monitor
  * @cb: the callback to call when timeout has expired
  * @opaque: user data to pass to the callback
+ * @ff: the callback invoked to free opaque data blob
  *
  * Part of the EventImpl, this user-defined callback handles adding an
  * event timeout.
  *
+ * If the opaque user data requires free'ing when the handle
+ * is unregistered, then a 2nd callback can be supplied for
+ * this purpose.
+ *
  * Returns a timer value
  */
-typedef int (*virEventAddTimeoutFunc)(int timeout, virEventTimeoutCallback cb,
-                                      void *opaque);
+typedef int (*virEventAddTimeoutFunc)(int timeout,
+                                      virEventTimeoutCallback cb,
+                                      void *opaque,
+                                      virFreeCallback ff);
 
 /**
  * virEventUpdateTimeoutFunc:
@@ -1209,6 +1227,10 @@ typedef void (*virEventUpdateTimeoutFunc)(int timer, int timeout);
  * @timer: the timer to remove
  *
  * Part of the EventImpl, this user-defined callback removes a timer
+ *
+ * If a virEventTimeoutFreeFunc was supplied when the handle was
+ * registered, it will be invoked some time during, or after this
+ * function call, when it is safe to release the user data.
  *
  * Returns 0 on success, -1 on failure
  */

@@ -820,7 +820,7 @@ static int lxcVmStart(virConnectPtr conn,
              vm->monitor,
              VIR_EVENT_HANDLE_ERROR | VIR_EVENT_HANDLE_HANGUP,
              lxcMonitorEvent,
-             driver)) < 0) {
+             driver, NULL)) < 0) {
         lxcVmTerminate(conn, driver, vm, 0);
         goto cleanup;
     }

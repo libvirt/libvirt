@@ -948,17 +948,17 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     if (ret == 0) {
         if (((vm->stdout_watch = virEventAddHandle(vm->stdout_fd,
-                                                  VIR_EVENT_HANDLE_READABLE |
-                                                  VIR_EVENT_HANDLE_ERROR |
-                                                  VIR_EVENT_HANDLE_HANGUP,
-                                                  qemudDispatchVMEvent,
-                                                  driver)) < 0) ||
+                                                   VIR_EVENT_HANDLE_READABLE |
+                                                   VIR_EVENT_HANDLE_ERROR |
+                                                   VIR_EVENT_HANDLE_HANGUP,
+                                                   qemudDispatchVMEvent,
+                                                   driver, NULL)) < 0) ||
             ((vm->stderr_watch = virEventAddHandle(vm->stderr_fd,
                                                    VIR_EVENT_HANDLE_READABLE |
                                                    VIR_EVENT_HANDLE_ERROR |
                                                    VIR_EVENT_HANDLE_HANGUP,
                                                    qemudDispatchVMEvent,
-                                                   driver)) < 0) ||
+                                                   driver, NULL)) < 0) ||
             (qemudWaitForMonitor(conn, driver, vm) < 0) ||
             (qemudDetectVcpuPIDs(conn, driver, vm) < 0) ||
             (qemudInitCpus(conn, driver, vm, migrateFrom) < 0)) {

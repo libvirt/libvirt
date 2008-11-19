@@ -238,6 +238,12 @@ static void libvirtd_mdns_watch_dispatch(int watch, int fd, int events, void *op
     w->callback(w, fd, fd_events, w->userdata);
 }
 
+static void libvirtd_mdns_watch_dofree(void *w)
+{
+    VIR_FREE(w);
+}
+
+
 static AvahiWatch *libvirtd_mdns_watch_new(const AvahiPoll *api ATTRIBUTE_UNUSED,
                                            int fd, AvahiWatchEvent event,
                                            AvahiWatchCallback cb, void *userdata) {
@@ -254,7 +260,9 @@ static AvahiWatch *libvirtd_mdns_watch_new(const AvahiPoll *api ATTRIBUTE_UNUSED
     AVAHI_DEBUG("New handle %p FD %d Event %d", w, w->fd, event);
     hEvents = virPollEventToEventHandleType(event);
     if ((w->watch = virEventAddHandleImpl(fd, hEvents,
-                                          libvirtd_mdns_watch_dispatch, w)) < 0) {
+                                          libvirtd_mdns_watch_dispatch,
+                                          w,
+                                          libvirtd_mdns_watch_dofree)) < 0) {
         VIR_FREE(w);
         return NULL;
     }
@@ -278,7 +286,6 @@ static void libvirtd_mdns_watch_free(AvahiWatch *w)
 {
     AVAHI_DEBUG("Free handle %p %d", w, w->fd);
     virEventRemoveHandleImpl(w->watch);
-    VIR_FREE(w);
 }
 
 static void libvirtd_mdns_timeout_dispatch(int timer ATTRIBUTE_UNUSED, void *opaque)
@@ -287,6 +294,11 @@ static void libvirtd_mdns_timeout_dispatch(int timer ATTRIBUTE_UNUSED, void *opa
     AVAHI_DEBUG("Dispatch timeout %p %d", t, timer);
     virEventUpdateTimeoutImpl(t->timer, -1);
     t->callback(t, t->userdata);
+}
+
+static void libvirtd_mdns_timeout_dofree(void *t)
+{
+    VIR_FREE(t);
 }
 
 static AvahiTimeout *libvirtd_mdns_timeout_new(const AvahiPoll *api ATTRIBUTE_UNUSED,
@@ -319,7 +331,10 @@ static AvahiTimeout *libvirtd_mdns_timeout_new(const AvahiPoll *api ATTRIBUTE_UN
         timeout = -1;
     }
 
-    t->timer = virEventAddTimeoutImpl(timeout, libvirtd_mdns_timeout_dispatch, t);
+    t->timer = virEventAddTimeoutImpl(timeout,
+                                      libvirtd_mdns_timeout_dispatch,
+                                      t,
+                                      libvirtd_mdns_timeout_dofree);
     t->callback = cb;
     t->userdata = userdata;
 
@@ -358,7 +373,6 @@ static void libvirtd_mdns_timeout_free(AvahiTimeout *t)
 {
     AVAHI_DEBUG("Free timeout %p", t);
     virEventRemoveTimeoutImpl(t->timer);
-    VIR_FREE(t);
 }
 
 
