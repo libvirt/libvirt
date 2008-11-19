@@ -310,7 +310,9 @@ virDefaultErrorFunc(virErrorPtr err)
         case VIR_FROM_DOMAIN:
             dom = "Domain Config ";
             break;
-
+        case VIR_FROM_UML:
+            dom = "UML ";
+            break;
     }
     if ((err->dom != NULL) && (err->code != VIR_ERR_INVALID_DOMAIN)) {
         domain = err->dom->name;

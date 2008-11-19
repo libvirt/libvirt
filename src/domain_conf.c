@@ -86,7 +86,8 @@ VIR_ENUM_IMPL(virDomainDiskBus, VIR_DOMAIN_DISK_BUS_LAST,
               "scsi",
               "virtio",
               "xen",
-              "usb")
+              "usb",
+              "uml")
 
 VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "mount",
@@ -610,7 +611,8 @@ virDomainDiskDefParseXML(virConnectPtr conn,
         !STRPREFIX((const char *)target, "hd") &&
         !STRPREFIX((const char *)target, "sd") &&
         !STRPREFIX((const char *)target, "vd") &&
-        !STRPREFIX((const char *)target, "xvd")) {
+        !STRPREFIX((const char *)target, "xvd") &&
+        !STRPREFIX((const char *)target, "ubd")) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              _("Invalid harddisk device name: %s"), target);
         goto error;
@@ -634,6 +636,8 @@ virDomainDiskDefParseXML(virConnectPtr conn,
                 def->bus = VIR_DOMAIN_DISK_BUS_VIRTIO;
             else if (STRPREFIX(target, "xvd"))
                 def->bus = VIR_DOMAIN_DISK_BUS_XEN;
+            else if (STRPREFIX(target, "ubd"))
+                def->bus = VIR_DOMAIN_DISK_BUS_UML;
             else
                 def->bus = VIR_DOMAIN_DISK_BUS_IDE;
         }
@@ -1879,13 +1883,16 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
 
     if (STREQ(def->os.type, "xen") ||
-        STREQ(def->os.type, "hvm")) {
+        STREQ(def->os.type, "hvm") ||
+        STREQ(def->os.type, "uml")) {
         def->os.kernel = virXPathString(conn, "string(./os/kernel[1])", ctxt);
         def->os.initrd = virXPathString(conn, "string(./os/initrd[1])", ctxt);
         def->os.cmdline = virXPathString(conn, "string(./os/cmdline[1])", ctxt);
         def->os.root = virXPathString(conn, "string(./os/root[1])", ctxt);
         def->os.loader = virXPathString(conn, "string(./os/loader[1])", ctxt);
+    }
 
+    if (STREQ(def->os.type, "hvm")) {
         /* analysis of the boot devices */
         if ((n = virXPathNodeSet(conn, "./os/boot", ctxt, &nodes)) < 0) {
             virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -2016,32 +2023,30 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
     VIR_FREE(nodes);
 
-    /*
-     * If no serial devices were listed, then look for console
-     * devices which is the legacy syntax for the same thing
-     */
-    if (def->nserials == 0) {
-        if ((node = virXPathNode(conn, "./devices/console[1]", ctxt)) != NULL) {
-            virDomainChrDefPtr chr = virDomainChrDefParseXML(conn,
-                                                             node);
-            if (!chr)
-                goto error;
+    if ((node = virXPathNode(conn, "./devices/console[1]", ctxt)) != NULL) {
+        virDomainChrDefPtr chr = virDomainChrDefParseXML(conn,
+                                                         node);
+        if (!chr)
+            goto error;
 
-            chr->dstPort = 0;
-            /*
-             * For HVM console actually created a serial device
-             * while for non-HVM it was a parvirt console
-             */
-            if (STREQ(def->os.type, "hvm")) {
+        chr->dstPort = 0;
+        /*
+         * For HVM console actually created a serial device
+         * while for non-HVM it was a parvirt console
+         */
+        if (STREQ(def->os.type, "hvm")) {
+            if (def->nserials != 0) {
+                virDomainChrDefFree(chr);
+            } else {
                 if (VIR_ALLOC_N(def->serials, 1) < 0) {
                     virDomainChrDefFree(chr);
                     goto no_memory;
                 }
                 def->nserials = 1;
                 def->serials[0] = chr;
-            } else {
-                def->console = chr;
             }
+        } else {
+            def->console = chr;
         }
     }
 

@@ -117,6 +117,10 @@ QEMU_DRIVER_SOURCES =						\
 		qemu_conf.c qemu_conf.h				\
 		qemu_driver.c qemu_driver.h
 
+UML_DRIVER_SOURCES =						\
+		uml_conf.c uml_conf.h				\
+		uml_driver.c uml_driver.h
+
 NETWORK_DRIVER_SOURCES =					\
 		network_driver.h network_driver.c
 
@@ -210,6 +214,12 @@ noinst_LTLIBRARIES += libvirt_driver_lxc.la
 libvirt_driver_lxc_la_SOURCES = $(LXC_DRIVER_SOURCES)
 endif
 
+if WITH_UML
+noinst_LTLIBRARIES += libvirt_driver_uml.la
+# Stateful, so linked to daemon instead
+#libvirt_la_LIBADD += libvirt_driver_uml.la
+libvirt_driver_uml_la_SOURCES = $(UML_DRIVER_SOURCES)
+endif
 
 if WITH_NETWORK
 noinst_LTLIBRARIES += libvirt_driver_network.la
@@ -247,6 +257,7 @@ EXTRA_DIST +=							\
 		$(XEN_DRIVER_SOURCES)				\
 		$(QEMU_DRIVER_SOURCES)				\
 		$(LXC_DRIVER_SOURCES)				\
+		$(UML_DRIVER_SOURCES)				\
 		$(OPENVZ_DRIVER_SOURCES)			\
 		$(NETWORK_DRIVER_SOURCES)			\
 		$(STORAGE_DRIVER_SOURCES)			\

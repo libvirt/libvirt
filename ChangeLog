@@ -1,3 +1,20 @@
+Wed Nov 19 16:51:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
+
+	Add User Mode Linux driver
+	* src/uml_driver.c, src/uml_driver.h, src/uml_conf.c,
+	src/uml_conf.h: Core UML driver code
+	* src/domain_conf.c, src/domain_conf.h: Add UML disk
+	bus type. Fix paravirt console handling for non-HVM domains
+	* src/driver.h: Add UML driver number
+	* src/virterror.h: Add error code for UML driver
+	* src/qemu_conf.c: Add disk bus enum entry for UML
+	* src/Makefile.am: Build UML driver
+	* qemud/qemud.c: Initialize UML driver
+	* qemud/Makefile.am: Link to UML driver library
+	* docs/drvuml.html.in: Basic docs for the UML driver
+	* configure.in: Flag for enabling UML driver
+	* include/libvirt/virterror.h: Add constant for UML driver
+
 Wed Nov 19 16:22:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
 
 	Add virFreeCallback to event loop APIs.

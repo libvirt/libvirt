@@ -58,6 +58,7 @@ typedef enum {
     VIR_FROM_STORAGE,   /* Error from storage driver */
     VIR_FROM_NETWORK,   /* Error from network config */
     VIR_FROM_DOMAIN,    /* Error from domain config */
+    VIR_FROM_UML,       /* Error at the UML driver */
 } virErrorDomain;
 
 

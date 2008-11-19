@@ -125,6 +125,10 @@
                 <span>Driver for the OpenVZ container technology</span>
               </li>
               <li>
+                <a href="drvuml.html">UML</a>
+                <span>Driver for the User Mode Linux technology</span>
+              </li>
+              <li>
                 <a href="storage.html">Storage</a>
                 <span>Driver for the storage management APIs</span>
               </li>

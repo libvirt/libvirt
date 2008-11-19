@@ -67,6 +67,9 @@
 #ifdef WITH_LXC
 #include "lxc_driver.h"
 #endif
+#ifdef WITH_UML
+#include "uml_driver.h"
+#endif
 #ifdef WITH_NETWORK
 #include "network_driver.h"
 #endif
@@ -750,6 +753,9 @@ static struct qemud_server *qemudInitialize(int sigread) {
 #endif
 #ifdef WITH_LXC
     lxcRegister();
+#endif
+#ifdef WITH_UML
+    umlRegister();
 #endif
 #ifdef WITH_NETWORK
     networkRegister();

@@ -56,7 +56,8 @@ VIR_ENUM_IMPL(virDomainDiskQEMUBus, VIR_DOMAIN_DISK_BUS_LAST,
               "scsi",
               "virtio",
               "xen",
-              "usb")
+              "usb",
+              "uml")
 
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
