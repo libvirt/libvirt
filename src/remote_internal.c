@@ -855,6 +855,7 @@ remoteOpen (virConnectPtr conn,
      */
     if (conn->uri &&
         !conn->uri->server &&
+        conn->uri->scheme &&
         !strchr(conn->uri->scheme, '+')) {
         DEBUG0("Auto-remote UNIX socket");
         rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
@@ -869,6 +870,7 @@ remoteOpen (virConnectPtr conn,
     if (conn->uri &&
         !conn->uri->server &&
         conn->uri->path &&
+        conn->uri->scheme &&
         ((strchr(conn->uri->scheme, '+') == 0)||
          (strstr(conn->uri->scheme, "+unix") != NULL)) &&
         STREQ(conn->uri->path, "/session") &&
