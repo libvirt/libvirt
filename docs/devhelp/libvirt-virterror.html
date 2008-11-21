@@ -100,7 +100,9 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_FROM_LXC">VIR_FROM_LXC</a> = 17 /* Error from Linux Container driver */
     <a name="VIR_FROM_STORAGE">VIR_FROM_STORAGE</a> = 18 /* Error from storage driver */
     <a name="VIR_FROM_NETWORK">VIR_FROM_NETWORK</a> = 19 /* Error from network config */
-    <a name="VIR_FROM_DOMAIN">VIR_FROM_DOMAIN</a> = 20 /*  Error from domain config */
+    <a name="VIR_FROM_DOMAIN">VIR_FROM_DOMAIN</a> = 20 /* Error from domain config */
+    <a name="VIR_FROM_UML">VIR_FROM_UML</a> = 21 /* Error at the UML driver */
+    <a name="VIR_FROM_NODEDEV">VIR_FROM_NODEDEV</a> = 22 /*  Error from node device monitor */
 };
 </pre><p/>
 </div>
@@ -164,7 +166,10 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_ERR_INVALID_STORAGE_VOL">VIR_ERR_INVALID_STORAGE_VOL</a> = 47 /* invalid storage vol object */
     <a name="VIR_WAR_NO_STORAGE">VIR_WAR_NO_STORAGE</a> = 48 /* failed to start storage */
     <a name="VIR_ERR_NO_STORAGE_POOL">VIR_ERR_NO_STORAGE_POOL</a> = 49 /* storage pool not found */
-    <a name="VIR_ERR_NO_STORAGE_VOL">VIR_ERR_NO_STORAGE_VOL</a> = 50 /*  storage pool not found */
+    <a name="VIR_ERR_NO_STORAGE_VOL">VIR_ERR_NO_STORAGE_VOL</a> = 50 /* storage pool not found */
+    <a name="VIR_WAR_NO_NODE">VIR_WAR_NO_NODE</a> = 51 /* failed to start node driver */
+    <a name="VIR_ERR_INVALID_NODE_DEVICE">VIR_ERR_INVALID_NODE_DEVICE</a> = 52 /* invalid node device object */
+    <a name="VIR_ERR_NO_NODE_DEVICE">VIR_ERR_NO_NODE_DEVICE</a> = 53 /*  node device not found */
 };
 </pre><p/>
 </div>

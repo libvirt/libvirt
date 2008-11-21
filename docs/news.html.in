@@ -24,7 +24,6 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
           case (Daniel Berrange), various strings and space cleanups (Daniel
           Berrange), structure initialization cleanup (Chris Lalancette)</li>
     </ul>
-    </li>
     <h3>0.4.5: Sep 8 2008</h3>
     <ul>
       <li>New features: NETNS support for Linux containers (Dan Smith),

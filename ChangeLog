@@ -1,3 +1,8 @@
+Fri Nov 21 12:54:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* docs/*.html: Re-generate website docs for sitemap change
+	with UML driver. Fix syntax error in HTML for news.html.in
+
 Fri Nov 21 12:51:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* libvirt-api.xml, libvirt-refs.xml, html/libvirt-libvirt.html,
