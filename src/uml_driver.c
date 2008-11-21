@@ -51,7 +51,6 @@
 
 #include "uml_driver.h"
 #include "uml_conf.h"
-#include "c-ctype.h"
 #include "event.h"
 #include "buf.h"
 #include "util.h"

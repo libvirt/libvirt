@@ -64,11 +64,11 @@ struct uml_driver {
 virCapsPtr  umlCapsInit               (void);
 
 int         umlBuildCommandLine       (virConnectPtr conn,
-				       struct uml_driver *driver,
-				       virDomainObjPtr dom,
-				       const char ***retargv,
-				       const char ***retenv,
-				       int **tapfds,
-				       int *ntapfds);
+                                       struct uml_driver *driver,
+                                       virDomainObjPtr dom,
+                                       const char ***retargv,
+                                       const char ***retenv,
+                                       int **tapfds,
+                                       int *ntapfds);
 
 #endif /* __UML_CONF_H */

@@ -28,6 +28,8 @@ src/storage_backend_logical.c
 src/storage_conf.c
 src/storage_driver.c
 src/test.c
+src/uml_conf.c
+src/uml_driver.c
 src/util.c
 src/uuid.c
 src/virsh.c

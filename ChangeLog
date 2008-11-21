@@ -1,3 +1,8 @@
+Fri Nov 21 11:05:14 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* po/POTFILES.in src/uml_conf.h src/uml_driver.c: fixes syntax
+	  check errors, reported by Ben Guthro
+
 Thu Nov 20 14:31:00 GMT 2008 Daniel Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Avoid crash on NULL URI scheme
