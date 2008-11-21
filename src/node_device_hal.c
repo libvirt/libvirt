@@ -211,14 +211,6 @@ static int gather_net_cap(LibHalContext *ctx, const char *udi,
 }
 
 
-static int gather_block_cap(LibHalContext *ctx, const char *udi,
-                            union _virNodeDevCapData *d)
-{
-    (void)get_str_prop(ctx, udi, "block.device", &d->block.device);
-    return 0;
-}
-
-
 static int gather_scsi_host_cap(LibHalContext *ctx, const char *udi,
                                 union _virNodeDevCapData *d)
 {
@@ -243,6 +235,7 @@ static int gather_storage_cap(LibHalContext *ctx, const char *udi,
                               union _virNodeDevCapData *d)
 {
     int val;
+    (void)get_str_prop(ctx, udi, "block.device", &d->storage.block);
     (void)get_str_prop(ctx, udi, "storage.bus", &d->storage.bus);
     (void)get_str_prop(ctx, udi, "storage.drive_type", &d->storage.drive_type);
     (void)get_str_prop(ctx, udi, "storage.model", &d->storage.model);
@@ -307,7 +300,6 @@ static caps_tbl_entry caps_tbl[] = {
     { "usb",        VIR_NODE_DEV_CAP_USB_INTERFACE, gather_usb_cap },
     { "usb_device", VIR_NODE_DEV_CAP_USB_DEV,       gather_usb_device_cap },
     { "net",        VIR_NODE_DEV_CAP_NET,           gather_net_cap },
-    { "block",      VIR_NODE_DEV_CAP_BLOCK,         gather_block_cap },
     { "scsi_host",  VIR_NODE_DEV_CAP_SCSI_HOST,     gather_scsi_host_cap },
     { "scsi",       VIR_NODE_DEV_CAP_SCSI,          gather_scsi_cap },
     { "storage",    VIR_NODE_DEV_CAP_STORAGE,       gather_storage_cap },
@@ -437,6 +429,13 @@ static void dev_create(char *udi)
 
     rv = gather_capabilities(ctx, udi, &dev->def->caps);
     if (rv != 0) goto failure;
+
+    if (dev->def->caps == NULL) {
+        virNodeDeviceDefFree(dev->def);
+        VIR_FREE(dev);
+        VIR_FREE(udi);
+        return;
+    }
 
     if (VIR_REALLOC_N(driverState->devs.objs, driverState->devs.count + 1) < 0)
         goto failure;

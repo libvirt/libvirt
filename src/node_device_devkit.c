@@ -31,6 +31,7 @@
 #include "event.h"
 #include "memory.h"
 #include "uuid.h"
+#include "logging.h"
 
 #include "node_device.h"
 
@@ -133,12 +134,12 @@ static int gather_net_cap(DevkitDevice *dkdev,
 }
 
 
-static int gather_block_cap(DevkitDevice *dkdev,
-                          union _virNodeDevCapData *d)
+static int gather_storage_cap(DevkitDevice *dkdev,
+                              union _virNodeDevCapData *d)
 {
     const char *device = devkit_device_get_device_file(dkdev);
 
-    if (device && ((d->block.device = strdup(device)) == NULL))
+    if (device && ((d->storage.block = strdup(device)) == NULL))
         return -1;
 
     return 0;
@@ -158,7 +159,7 @@ static caps_tbl_entry caps_tbl[] = {
     { "pci",        VIR_NODE_DEV_CAP_PCI_DEV,   gather_pci_cap },
     { "usb",        VIR_NODE_DEV_CAP_USB_DEV,   gather_usb_cap },
     { "net",        VIR_NODE_DEV_CAP_NET,       gather_net_cap },
-    { "block",      VIR_NODE_DEV_CAP_BLOCK,     gather_block_cap },
+    { "block",      VIR_NODE_DEV_CAP_STORAGE,   gather_storage_cap },
     // TODO: more caps!
 };
 

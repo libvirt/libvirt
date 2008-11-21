@@ -43,7 +43,6 @@ VIR_ENUM_IMPL(virNodeDevCap, VIR_NODE_DEV_CAP_LAST,
               "usb_device",
               "usb",
               "net",
-              "block",
               "scsi_host",
               "scsi",
               "storage");
@@ -221,14 +220,14 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
                               data->pci_dev.slot);
             virBufferVSprintf(&buf, "    <function>%d</function>\n",
                               data->pci_dev.function);
-            virBufferVSprintf(&buf, "    <product id='%d'",
+            virBufferVSprintf(&buf, "    <product id='0x%04x'",
                                   data->pci_dev.product);
             if (data->pci_dev.product_name)
                 virBufferEscapeString(&buf, ">%s</product>\n",
                                       data->pci_dev.product_name);
             else
                 virBufferAddLit(&buf, " />\n");
-            virBufferVSprintf(&buf, "    <vendor id='%d'",
+            virBufferVSprintf(&buf, "    <vendor id='0x%04x'",
                                   data->pci_dev.vendor);
             if (data->pci_dev.vendor_name)
                 virBufferEscapeString(&buf, ">%s</vendor>\n",
@@ -240,14 +239,14 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
             virBufferVSprintf(&buf, "    <bus>%d</bus>\n", data->usb_dev.bus);
             virBufferVSprintf(&buf, "    <device>%d</device>\n",
                               data->usb_dev.device);
-            virBufferVSprintf(&buf, "    <product id='%d'",
+            virBufferVSprintf(&buf, "    <product id='0x%04x'",
                                   data->usb_dev.product);
             if (data->usb_dev.product_name)
                 virBufferEscapeString(&buf, ">%s</product>\n",
                                       data->usb_dev.product_name);
             else
                 virBufferAddLit(&buf, " />\n");
-            virBufferVSprintf(&buf, "    <vendor id='%d'",
+            virBufferVSprintf(&buf, "    <vendor id='0x%04x'",
                                   data->usb_dev.vendor);
             if (data->usb_dev.vendor_name)
                 virBufferEscapeString(&buf, ">%s</vendor>\n",
@@ -280,10 +279,6 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
                 virBufferVSprintf(&buf, "    <capability type='%s'/>\n", subtyp);
             }
             break;
-        case VIR_NODE_DEV_CAP_BLOCK:
-            virBufferVSprintf(&buf, "    <device>%s</device>\n",
-                              data->block.device);
-            break;
         case VIR_NODE_DEV_CAP_SCSI_HOST:
             virBufferVSprintf(&buf, "    <host>%d</host>\n",
                               data->scsi_host.host);
@@ -299,6 +294,8 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
                                   data->scsi.type);
             break;
         case VIR_NODE_DEV_CAP_STORAGE:
+            virBufferVSprintf(&buf, "    <block>%s</block>\n",
+                              data->storage.block);
             if (data->storage.bus)
                 virBufferVSprintf(&buf, "    <bus>%s</bus>\n",
                                   data->storage.bus);
@@ -380,15 +377,13 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         VIR_FREE(data->net.interface);
         VIR_FREE(data->net.address);
         break;
-    case VIR_NODE_DEV_CAP_BLOCK:
-        VIR_FREE(data->block.device);
-        break;
     case VIR_NODE_DEV_CAP_SCSI_HOST:
         break;
     case VIR_NODE_DEV_CAP_SCSI:
         VIR_FREE(data->scsi.type);
         break;
     case VIR_NODE_DEV_CAP_STORAGE:
+        VIR_FREE(data->storage.block);
         VIR_FREE(data->storage.bus);
         VIR_FREE(data->storage.drive_type);
         VIR_FREE(data->storage.model);

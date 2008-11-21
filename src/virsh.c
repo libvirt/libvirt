@@ -4462,6 +4462,7 @@ cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         free(devices);
         return FALSE;
     }
+    qsort(&devices[0], num_devices, sizeof(char*), namesorter);
     for (i = 0; i < num_devices; i++) {
         vshPrint(ctl, "%s\n", devices[i]);
         free(devices[i]);

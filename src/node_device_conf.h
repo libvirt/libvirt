@@ -34,7 +34,6 @@ enum virNodeDevCapType {
     VIR_NODE_DEV_CAP_USB_DEV,		/* USB device */
     VIR_NODE_DEV_CAP_USB_INTERFACE,	/* USB interface */
     VIR_NODE_DEV_CAP_NET,		/* Network device */
-    VIR_NODE_DEV_CAP_BLOCK,		/* Block device */
     VIR_NODE_DEV_CAP_SCSI_HOST,		/* SCSI Host Bus Adapter */
     VIR_NODE_DEV_CAP_SCSI,		/* SCSI device */
     VIR_NODE_DEV_CAP_STORAGE,		/* Storage device */
@@ -107,9 +106,6 @@ struct _virNodeDevCapsDef {
             enum virNodeDevNetCapType subtype;  /* LAST -> no subtype */
         } net;
         struct {
-            char *device;
-        } block;
-        struct {
             unsigned host;
         } scsi_host;
         struct {
@@ -122,6 +118,7 @@ struct _virNodeDevCapsDef {
         struct {
             unsigned long long size;
             unsigned long long removable_media_size;
+            char *block;
             char *bus;
             char *drive_type;
             char *model;

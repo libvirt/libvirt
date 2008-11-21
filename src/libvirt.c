@@ -562,6 +562,9 @@ virRegisterDeviceMonitor(virDeviceMonitorPtr driver)
         return(-1);
     }
 
+    DEBUG ("registering %s as device driver %d",
+           driver->name, virDeviceMonitorTabCount);
+
     virDeviceMonitorTab[virDeviceMonitorTabCount] = driver;
     return virDeviceMonitorTabCount++;
 }

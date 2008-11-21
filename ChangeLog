@@ -1,3 +1,14 @@
+Fri Nov 21 12:46:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Misc tweaks to node device impl
+	* src/libvirt.c: Log registration of new node device driver impls
+	* src/node_device_conf.h, src/node_device.c: Merge block capability
+	into storage. Print vendor/product IDs in hex
+	* src/node_device_devkit.c: Change block to storage
+	* src/node_device_hal.c: Merge block cap into storage. Skip
+	devices without any capabilities listed
+	* src/virsh.c: Sort device list alphabetically
+
 Fri Nov 21 12:40:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Python binding for node device APIs (David Lively)
