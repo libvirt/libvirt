@@ -10,6 +10,7 @@
 %define with_polkit    0%{!?_without_polkit:0}
 %define with_python    0%{!?_without_python:1}
 %define with_libvirtd  0%{!?_without_libvirtd:1}
+%define with_uml       0%{!?_without_uml:1}
 
 # Xen is available only on i386 x86_64 ia64
 %ifnarch i386 i686 x86_64 ia64
@@ -197,6 +198,10 @@ of recent versions of Linux (and other OSes).
 %define _without_libvirtd --without-libvirtd
 %endif
 
+%if ! %{with_uml}
+%define _without_uml --without-uml
+%endif
+
 %configure %{?_without_xen} \
            %{?_without_qemu} \
            %{?_without_openvz} \
@@ -206,6 +211,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_polkit} \
            %{?_without_python} \
            %{?_without_libvirtd} \
+           %{?_without_uml} \
            --with-init-script=redhat \
            --with-qemud-pid-file=%{_localstatedir}/run/libvirt_qemud.pid \
            --with-remote-file=%{_localstatedir}/run/libvirtd.pid
