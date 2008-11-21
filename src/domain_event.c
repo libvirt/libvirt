@@ -88,6 +88,44 @@ virDomainEventCallbackListRemove(virConnectPtr conn,
 }
 
 /**
+ * virDomainEventCallbackListRemoveConn:
+ * @conn: pointer to the connection
+ * @cbList: the list
+ *
+ * Internal function to remove all of a given connection's callback
+ * from a virDomainEventCallbackListPtr
+ */
+int
+virDomainEventCallbackListRemoveConn(virConnectPtr conn,
+                                     virDomainEventCallbackListPtr cbList)
+{
+    int old_count = cbList->count;
+    int i;
+    for (i = 0 ; i < cbList->count ; i++) {
+        if(cbList->callbacks[i]->conn == conn) {
+            virFreeCallback freecb = cbList->callbacks[i]->freecb;
+            if (freecb)
+                (*freecb)(cbList->callbacks[i]->opaque);
+            virUnrefConnect(cbList->callbacks[i]->conn);
+            VIR_FREE(cbList->callbacks[i]);
+
+            if (i < (cbList->count - 1))
+                memmove(cbList->callbacks + i,
+                        cbList->callbacks + i + 1,
+                        sizeof(*(cbList->callbacks)) *
+                                (cbList->count - (i + 1)));
+            cbList->count--;
+            i--;
+        }
+    }
+    if (cbList->count < old_count &&
+        VIR_REALLOC_N(cbList->callbacks, cbList->count) < 0) {
+        ; /* Failure to reduce memory allocation isn't fatal */
+    }
+    return 0;
+}
+
+/**
  * virDomainEventCallbackListAdd:
  * @conn: pointer to the connection
  * @cbList: the list

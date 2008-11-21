@@ -1235,7 +1235,10 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
 }
 
 static int qemudClose(virConnectPtr conn) {
-    /*struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;*/
+    struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
+
+    /* Get rid of callbacks registered for this conn */
+    virDomainEventCallbackListRemoveConn(conn, driver->domainEventCallbacks);
 
     conn->privateData = NULL;
 

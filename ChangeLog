@@ -1,3 +1,11 @@
+Fri Nov 21 10:14:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix crash due to failure to unregister event callbacks on
+	connection close (David Lively)
+	* src/domain_event.c, src/domain_event.h: Helper for unregistering
+	all callbacks
+	* src/qemu_driver.c: Unregister all callbacks on connection close
+
 Fri Nov 21 10:10:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/Makefile.am: Include Xen compile flags for libvirt_driver.la

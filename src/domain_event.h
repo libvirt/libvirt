@@ -55,6 +55,9 @@ int virDomainEventCallbackListRemove(virConnectPtr conn,
                                      virDomainEventCallbackListPtr cbList,
                                      virConnectDomainEventCallback callback);
 
+int virDomainEventCallbackListRemoveConn(virConnectPtr conn,
+                                         virDomainEventCallbackListPtr cbList);
+
 /**
  * Dispatching domain events that come in while
  * in a call / response rpc
