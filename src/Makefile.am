@@ -157,6 +157,14 @@ STORAGE_HELPER_DISK_SOURCES =					\
 		parthelper.c
 
 
+NODE_DEVICE_DRIVER_SOURCES =					\
+		node_device.c node_device.h
+
+NODE_DEVICE_DRIVER_HAL_SOURCES =				\
+		node_device_hal.c
+NODE_DEVICE_DRIVER_DEVKIT_SOURCES =				\
+		node_device_devkit.c
+
 
 #########################
 #
@@ -330,6 +338,36 @@ if WITH_STORAGE_DISK
 libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_DISK_SOURCES)
 endif
 
+if WITH_NODE_DEVICES
+# Needed to keep automake quiet about conditionals
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_nodedev.la
+else
+noinst_LTLIBRARIES += libvirt_driver_nodedev.la
+# Stateful, so linked to daemon instead
+#libvirt_la_LIBADD += libvirt_driver_nodedev.la
+endif
+libvirt_driver_nodedev_la_SOURCES = $(NODE_DEVICE_DRIVER_SOURCES)
+
+libvirt_driver_nodedev_la_CFLAGS =
+libvirt_driver_nodedev_la_LDFLAGS =
+if HAVE_HAL
+libvirt_driver_nodedev_la_SOURCES += $(NODE_DEVICE_DRIVER_HAL_SOURCES)
+libvirt_driver_nodedev_la_CFLAGS += $(HAL_CFLAGS)
+libvirt_driver_nodedev_la_LDFLAGS += $(HAL_LIBS)
+endif
+if HAVE_DEVKIT
+libvirt_driver_nodedev_la_SOURCES += $(NODE_DEVICE_DRIVER_DEVKIT_SOURCES)
+libvirt_driver_nodedev_la_CFLAGS += $(DEVKIT_CFLAGS)
+libvirt_driver_nodedev_la_LDFLAGS += $(DEVKIT_LIBS)
+endif
+
+if WITH_DRIVER_MODULES
+libvirt_driver_nodedev_la_LDFLAGS += -module -avoid-version
+endif
+endif
+
+
 # Add all conditional sources just in case...
 EXTRA_DIST +=							\
 		$(TEST_DRIVER_SOURCES)				\
@@ -344,7 +382,10 @@ EXTRA_DIST +=							\
 		$(STORAGE_DRIVER_FS_SOURCES)			\
 		$(STORAGE_DRIVER_LVM_SOURCES)			\
 		$(STORAGE_DRIVER_ISCSI_SOURCES)			\
-		$(STORAGE_DRIVER_DISK_SOURCES)
+		$(STORAGE_DRIVER_DISK_SOURCES)			\
+		$(NODE_DEVICE_DRIVER_SOURCES)			\
+		$(NODE_DEVICE_DRIVER_HAL_SOURCES)		\
+		$(NODE_DEVICE_DRIVER_DEVKIT_SOURCES)
 
 
 # Empty source list - it merely links a bunch of convenience libs together

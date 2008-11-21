@@ -79,6 +79,9 @@
 #ifdef WITH_STORAGE_DIR
 #include "storage_driver.h"
 #endif
+#ifdef WITH_NODE_DEVICES
+#include "node_device.h"
+#endif
 #endif
 
 
@@ -763,6 +766,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
     virDriverLoadModule("uml");
     virDriverLoadModule("network");
     virDriverLoadModule("storage");
+    virDriverLoadModule("nodedev");
 #else
 #ifdef WITH_QEMU
     qemuRegister();
@@ -778,6 +782,9 @@ static struct qemud_server *qemudInitialize(int sigread) {
 #endif
 #ifdef WITH_STORAGE_DIR
     storageRegister();
+#endif
+#if defined(HAVE_HAL) || defined(HAVE_DEVKIT)
+    nodedevRegister();
 #endif
 #endif
 

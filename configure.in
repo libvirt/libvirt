@@ -1105,6 +1105,108 @@ test "$enable_shared" = no && lt_cv_objdir=.
 LV_LIBTOOL_OBJDIR=${lt_cv_objdir-.}
 AC_SUBST([LV_LIBTOOL_OBJDIR])
 
+dnl HAL or DeviceKit library for host device enumeration
+HAL_REQUIRED=0.0
+HAL_CFLAGS=
+HAL_LIBS=
+AC_ARG_WITH([hal],
+  [  --with-hal         use HAL for host device enumeration],
+  [],
+  [with_hal=check])
+
+if test "$with_libvirtd" = "no" ; then
+  with_hal=no
+fi
+if test "x$with_hal" = "xyes" -o "x$with_hal" = "xcheck"; then
+  PKG_CHECK_MODULES(HAL, hal >= $HAL_REQUIRED,
+    [with_hal=yes], [
+    if test "x$with_hal" = "xcheck" ; then
+       with_hal=no
+    else
+       AC_MSG_ERROR(
+         [You must install hal-devel >= $HAL_REQUIRED to compile libvirt])
+    fi
+  ])
+  if test "x$with_hal" = "xyes" ; then
+    AC_DEFINE_UNQUOTED([HAVE_HAL], 1,
+      [use HAL for host device enumeration])
+
+    old_CFLAGS=$CFLAGS
+    old_LDFLAGS=$LDFLAGS
+    CFLAGS="$CFLAGS $HAL_CFLAGS"
+    LDFLAGS="$LDFLAGS $HAL_LIBS"
+    AC_CHECK_FUNCS([libhal_get_all_devices],,[with_hal=no])
+    CFLAGS="$old_CFLAGS"
+    LDFLAGS="$old_LDFLAGS"
+  fi
+fi
+AM_CONDITIONAL([HAVE_HAL], [test "x$with_hal" = "xyes"])
+AC_SUBST([HAL_CFLAGS])
+AC_SUBST([HAL_LIBS])
+
+DEVKIT_REQUIRED=0.0
+DEVKIT_CFLAGS=
+DEVKIT_LIBS=
+AC_ARG_WITH([devkit],
+  [  --with-devkit      use DeviceKit for host device enumeration],
+  [],
+  [with_devkit=no])
+
+if test "$with_libvirtd" = "no" ; then
+  with_devkit=no
+fi
+
+dnl Extra check needed while devkit pkg-config info missing glib2 dependency
+PKG_CHECK_MODULES(GLIB2, glib-2.0 >= 0.0,,[
+  if test "x$with_devkit" = "xcheck"; then
+    with_devkit=no
+  elif test "x$with_devkit" = "xyes"; then
+    AC_MSG_ERROR([required package DeviceKit requires package glib-2.0])
+  fi])
+
+if test "x$with_devkit" = "xyes" -o "x$with_devkit" = "xcheck"; then
+  PKG_CHECK_MODULES(DEVKIT, devkit-gobject >= $DEVKIT_REQUIRED,
+    [with_devkit=yes], [
+    if test "x$with_devkit" = "xcheck" ; then
+       with_devkit=no
+    else
+       AC_MSG_ERROR(
+         [You must install DeviceKit-devel >= $DEVKIT_REQUIRED to compile libvirt])
+    fi
+  ])
+  if test "x$with_devkit" = "xyes" ; then
+    AC_DEFINE_UNQUOTED([HAVE_DEVKIT], 1,
+      [use DeviceKit for host device enumeration])
+
+    dnl Add glib2 flags explicitly while devkit pkg-config info missing glib2 dependency
+    DEVKIT_CFLAGS="$GLIB2_CFLAGS $DEVKIT_CFLAGS"
+    DEVKIT_LIBS="$GLIB2_LIBS $DEVKIT_LIBS"
+
+    dnl Add more flags apparently required for devkit to work properly
+    DEVKIT_CFLAGS="$DEVKIT_CFLAGS -D_POSIX_PTHREAD_SEMANTICS -D_REENTRANT"
+
+    old_CFLAGS=$CFLAGS
+    old_LDFLAGS=$LDFLAGS
+    CFLAGS="$CFLAGS $DEVKIT_CFLAGS"
+    LDFLAGS="$LDFLAGS $DEVKIT_LIBS"
+    AC_CHECK_FUNCS([devkit_client_connect],,[with_devkit=no])
+    CFLAGS="$old_CFLAGS"
+    LDFLAGS="$old_LDFLAGS"
+  fi
+fi
+AM_CONDITIONAL([HAVE_DEVKIT], [test "x$with_devkit" = "xyes"])
+AC_SUBST([DEVKIT_CFLAGS])
+AC_SUBST([DEVKIT_LIBS])
+
+with_nodedev=no;
+if test "$with_devkit" = "yes" -o "$with_hal" = "yes";
+then
+  with_nodedev=yes
+  AC_DEFINE_UNQUOTED([WITH_NODE_DEVICES], 1, [with node device driver])
+fi
+AM_CONDITIONAL([WITH_NODE_DEVICES], [test "$with_nodedev" = "yes"])
+
+
 # very annoying
 rm -f COPYING
 cp COPYING.LIB COPYING
@@ -1195,6 +1297,16 @@ if test "$with_xen" = "yes" ; then
 AC_MSG_NOTICE([  xen: $XEN_CFLAGS $XEN_LIBS])
 else
 AC_MSG_NOTICE([  xen: no])
+fi
+if test "$with_hal" = "yes" ; then
+AC_MSG_NOTICE([  hal: $HAL_CFLAGS $HAL_LIBS])
+else
+AC_MSG_NOTICE([  hal: no])
+fi
+if test "$with_devkit" = "yes" ; then
+AC_MSG_NOTICE([  devkit: $DEVKIT_CFLAGS $DEVKIT_LIBS])
+else
+AC_MSG_NOTICE([  devkit: no])
 fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])

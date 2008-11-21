@@ -1,3 +1,20 @@
+Fri Nov 21 12:23:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Primary internal driver for node devices with HAL (default)
+	and DeviceKit (optional, unfinished) (David Lively)
+	* configure.in: Probe for HAL & DeviceKit libraries
+	* po/POTFILES.in: Add new source files
+	* qemud/Makefile.am: Link to node device driver
+	* qemud/qemud.c: Load node device driver implementation
+	* src/Makefile.am: Buid node device drivers
+	* src/libvirt_sym.version.in: Export internal symbols needed
+	by node device driver
+	* src/node_device.c, src/node_device.h: Common driver
+	routines
+	* src/node_device_hal.c: HAL specific device routines
+	* src/node_device_devkit.c: DeviceKit specific routines
+	* src/node_device_conf.h: Add dbusWatch handle field
+
 Fri Nov 21 12:20:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/Makefile.am, src/node_device_conf.c, src/node_device_conf.h:

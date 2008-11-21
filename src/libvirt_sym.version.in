@@ -327,6 +327,7 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virGetNetwork;
 	virGetStoragePool;
 	virGetStorageVol;
+	virGetNodeDevice;
 	virUnrefDomain;
 
 
@@ -451,6 +452,7 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virRegisterNetworkDriver;
 	virRegisterStateDriver;
 	virRegisterStorageDriver;
+	virRegisterDeviceMonitor;
 
 
 	/* memory.h */
@@ -479,6 +481,16 @@ LIBVIRT_PRIVATE_@VERSION@ {
 
 	/* nodeinfo.h */
 	virNodeInfoPopulate;
+
+
+	/* node_device_conf.h */
+	virNodeDeviceObjRemove;
+	virNodeDevCapTypeToString;
+	virNodeDeviceFindByName;
+	virNodeDeviceObjListFree;
+	virNodeDeviceDefFree;
+	virNodeDevCapsDefFree;
+	virNodeDeviceDefFormat;
 
 
 	/* qparams.h */
@@ -539,6 +551,7 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virStrToLong_i;
 	virStrToLong_ll;
 	virStrToLong_ull;
+	virStrToLong_ui;
 	virFileLinkPointsTo;
 	saferead;
 	safewrite;
@@ -558,6 +571,7 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virFileOpenTty;
 	virFileReadLimFD;
 	virFileReadPid;
+	virFileLinkPointsTo;
 	virParseNumber;
 	virRun;
 	virSkipSpaces;
