@@ -324,9 +324,6 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virDomainDiskBusTypeToString;
 	virDomainDiskDeviceTypeToString;
 	virDomainDiskQSort;
-	virDomainEventCallbackListAdd;
-	virDomainEventCallbackListFree;
-	virDomainEventCallbackListRemove;
 	virDomainFindByID;
 	virDomainFindByName;
 	virDomainFindByUUID;
@@ -336,6 +333,13 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virDomainSaveConfig;
 	virDomainSoundModelTypeToString;
 	virDomainVirtTypeToString;
+
+
+	/* domain_event.h */
+	virDomainEventCallbackListAdd;
+	virDomainEventCallbackListFree;
+	virDomainEventCallbackListRemove;
+	virDomainEventCallbackListRemoveConn;
 
 
 	/* iptables.h */

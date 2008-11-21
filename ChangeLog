@@ -1,3 +1,9 @@
+Fri Nov 21 11:43:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt_sym.version.in: Add export of domain event
+	API virDomainEventCallbackListRemoveConn missed from earlier
+	commit
+
 Fri Nov 21 11:37:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/domain_conf.c: Fix two memory leaks in virDomainLoadConfig
