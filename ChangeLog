@@ -1,3 +1,8 @@
+Fri Nov 21 12:38:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Node device support in virsh (David Lively)
+	* src/virsh.c: Add nodedev-list and nodedev-dumpxml commands
+
 Fri Nov 21 12:30:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Remote protocol support for node devices (David Lively)

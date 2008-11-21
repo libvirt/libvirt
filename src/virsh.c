@@ -4419,6 +4419,94 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 }
 
 /*
+ * "nodedev-list" command
+ */
+static const vshCmdInfo info_node_list_devices[] = {
+    {"syntax", "nodedev-list [--cap <capability>]"},
+    {"help", gettext_noop("enumerate devices on this host")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_node_list_devices[] = {
+    {"cap", VSH_OT_STRING, VSH_OFLAG_NONE, gettext_noop("capability name")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    char *cap;
+    char **devices;
+    int found, num_devices, i;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    cap = vshCommandOptString(cmd, "cap", &found);
+    if (!found)
+        cap = NULL;
+
+    num_devices = virNodeNumOfDevices(ctl->conn, cap, 0);
+    if (num_devices < 0) {
+        vshError(ctl, FALSE, "%s", _("Failed to count node devices"));
+        return FALSE;
+    } else if (num_devices == 0) {
+        return TRUE;
+    }
+
+    devices = vshMalloc(ctl, sizeof(char *) * num_devices);
+    num_devices =
+        virNodeListDevices(ctl->conn, cap, devices, num_devices, 0);
+    if (num_devices < 0) {
+        vshError(ctl, FALSE, "%s", _("Failed to list node devices"));
+        free(devices);
+        return FALSE;
+    }
+    for (i = 0; i < num_devices; i++) {
+        vshPrint(ctl, "%s\n", devices[i]);
+        free(devices[i]);
+    }
+    free(devices);
+    return TRUE;
+}
+
+/*
+ * "nodedev-dumpxml" command
+ */
+static const vshCmdInfo info_node_device_dumpxml[] = {
+    {"syntax", "nodedev-dumpxml <device>"},
+    {"help", gettext_noop("node device details in XML")},
+    {"desc", gettext_noop("Output the node device details as an XML dump to stdout.")},
+    {NULL, NULL}
+};
+
+
+static const vshCmdOptDef opts_node_device_dumpxml[] = {
+    {"device", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("device key")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNodeDeviceDumpXML (vshControl *ctl, const vshCmd *cmd)
+{
+    const char *name;
+    virNodeDevicePtr device;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+    if (!(name = vshCommandOptString(cmd, "device", NULL)))
+        return FALSE;
+    if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
+        vshError(ctl, FALSE, "%s '%s'", _("Could not find matching device"), name);
+        return FALSE;
+    }
+
+    vshPrint(ctl, "%s\n", virNodeDeviceGetXMLDesc(device, 0));
+    virNodeDeviceFree(device);
+    return TRUE;
+}
+
+/*
  * "hostkey" command
  */
 static const vshCmdInfo info_hostname[] = {
@@ -5569,6 +5657,9 @@ static const vshCmdDef commands[] = {
     {"net-undefine", cmdNetworkUndefine, opts_network_undefine, info_network_undefine},
     {"net-uuid", cmdNetworkUuid, opts_network_uuid, info_network_uuid},
     {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo},
+
+    {"nodedev-list", cmdNodeListDevices, opts_node_list_devices, info_node_list_devices},
+    {"nodedev-dumpxml", cmdNodeDeviceDumpXML, opts_node_device_dumpxml, info_node_device_dumpxml},
 
     {"pool-autostart", cmdPoolAutostart, opts_pool_autostart, info_pool_autostart},
     {"pool-build", cmdPoolBuild, opts_pool_build, info_pool_build},
