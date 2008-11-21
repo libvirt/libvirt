@@ -136,6 +136,10 @@ STORAGE_DRIVER_SOURCES =					\
 		storage_driver.h storage_driver.c		\
 		storage_backend.h storage_backend.c
 
+# Network driver generic impl APIs
+NODE_DEVICE_CONF_SOURCES =					\
+		node_device_conf.c node_device_conf.h
+
 STORAGE_DRIVER_FS_SOURCES =					\
 		storage_backend_fs.h storage_backend_fs.c
 
@@ -171,7 +175,9 @@ libvirt_driver_la_SOURCES =					\
 		$(DRIVER_SOURCES)				\
 		$(DOMAIN_CONF_SOURCES)				\
 		$(NETWORK_CONF_SOURCES)				\
-		$(STORAGE_CONF_SOURCES)
+		$(STORAGE_CONF_SOURCES)				\
+		$(NODE_DEVICE_CONF_SOURCES)
+
 libvirt_driver_la_CFLAGS = $(XEN_CFLAGS)
 libvirt_driver_la_LDFLAGS = $(XEN_LIBS)
 

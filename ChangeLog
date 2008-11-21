@@ -1,6 +1,12 @@
+Fri Nov 21 12:20:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/Makefile.am, src/node_device_conf.c, src/node_device_conf.h:
+	Internal APIs for handling node device XML configuration
+	(David Lively)
+
 Fri Nov 21 12:19:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
-	Public API for node device enumeration
+	Public API for node device enumeration (David Lively)
 	* include/libvirt/libvirt.h.in, include/libvirt/virterror.h:
 	New public APIs for node device enumeration
 	* src/datatypes.c, src/datatypes.h: Internal impl of public
