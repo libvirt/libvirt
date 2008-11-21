@@ -160,5 +160,17 @@
       <return type='int *' info='the list of information or None in case of error'/>
       <arg name='vol' type='virStorageVolPtr' info='a storage vol object'/>
     </function>
+    <function name='virNodeListDevices' file='python'>
+      <info>list the node devices</info>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='cap' type='const unsigned char *' info='capability name'/>
+      <arg name='flags' type='unsigned int' info='flags (unused; pass 0)'/>
+      <return type='str *' info='the list of Names or None in case of error'/>
+    </function>
+    <function name='virNodeDeviceListCaps' file='python'>
+      <info>list the node device's capabilities</info>
+      <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
+      <return type='str *' info='the list of Names or None in case of error'/>
+    </function>
   </symbols>
 </api>

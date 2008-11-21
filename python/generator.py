@@ -260,6 +260,11 @@ py_types = {
     'const virConnectPtr':  ('O', "virConnect", "virConnectPtr", "virConnectPtr"),
     'virConnect *':  ('O', "virConnect", "virConnectPtr", "virConnectPtr"),
     'const virConnect *':  ('O', "virConnect", "virConnectPtr", "virConnectPtr"),
+
+    'virNodeDevicePtr':  ('O', "virNodeDevice", "virNodeDevicePtr", "virNodeDevicePtr"),
+    'const virNodeDevicePtr':  ('O', "virNodeDevice", "virNodeDevicePtr", "virNodeDevicePtr"),
+    'virNodeDevice *':  ('O', "virNodeDevice", "virNodeDevicePtr", "virNodeDevicePtr"),
+    'const virNodeDevice *':  ('O', "virNodeDevice", "virNodeDevicePtr", "virNodeDevicePtr"),
 }
 
 py_return_types = {
@@ -318,6 +323,8 @@ skip_impl = (
     'virDomainBlockPeek',
     'virDomainMemoryPeek',
     'virEventRegisterImpl',
+    'virNodeListDevices',
+    'virNodeDeviceListCaps',
 )
 
 
@@ -601,6 +608,8 @@ classes_type = {
     "virStoragePool *": ("._o", "virStoragePool(self, _obj=%s)", "virStoragePool"),
     "virStorageVolPtr": ("._o", "virStorageVol(self, _obj=%s)", "virStorageVol"),
     "virStorageVol *": ("._o", "virStorageVol(self, _obj=%s)", "virStorageVol"),
+    "virNodeDevicePtr": ("._o", "virNodeDevice(self, _obj=%s)", "virNodeDevice"),
+    "virNodeDevice *": ("._o", "virNodeDevice(self, _obj=%s)", "virNodeDevice"),
     "virConnectPtr": ("._o", "virConnect(_obj=%s)", "virConnect"),
     "virConnect *": ("._o", "virConnect(_obj=%s)", "virConnect"),
 }
@@ -608,7 +617,8 @@ classes_type = {
 converter_type = {
 }
 
-primary_classes = ["virDomain", "virNetwork", "virStoragePool", "virStorageVol", "virConnect"]
+primary_classes = ["virDomain", "virNetwork", "virStoragePool", "virStorageVol",
+                   "virConnect", "virNodeDevice" ]
 
 classes_ancestor = {
 }
@@ -617,6 +627,7 @@ classes_destructors = {
     "virNetwork": "virNetworkFree",
     "virStoragePool": "virStoragePoolFree",
     "virStorageVol": "virStorageVolFree",
+    "virNodeDevice" : "virNodeDeviceFree"
 }
 
 functions_noexcept = {
@@ -626,6 +637,8 @@ functions_noexcept = {
     'virStoragePoolGetName': True,
     'virStorageVolGetName': True,
     'virStorageVolGetkey': True,
+    'virNodeDeviceGetName': True,
+    'virNodeDeviceGetParent': True,
 }
 
 reference_keepers = {
@@ -706,6 +719,13 @@ def nameFixup(name, classe, type, file):
     elif name[0:13] == "virStorageVol":
         func = name[13:]
         func = string.lower(func[0:1]) + func[1:]
+    elif name[0:13] == "virNodeDevice":
+        if name[13:16] == "Get":
+            func = string.lower(name[16]) + name[17:]
+        elif name[13:19] == "Lookup" or name[13:] == "Create":
+            func = string.lower(name[3]) + name[4:]
+        else:
+            func = string.lower(name[13]) + name[14:]
     elif name[0:7] == "virNode":
         func = name[7:]
         func = string.lower(func[0:1]) + func[1:]
@@ -958,7 +978,7 @@ def buildWrappers():
 	    else:
 		txt.write("Class %s()\n" % (classname))
 		classes.write("class %s:\n" % (classname))
-                if classname in [ "virDomain", "virNetwork", "virStoragePool", "virStorageVol" ]:
+                if classname in [ "virDomain", "virNetwork", "virStoragePool", "virStorageVol", "virNodeDevice" ]:
                     classes.write("    def __init__(self, conn, _obj=None):\n")
                 else:
                     classes.write("    def __init__(self, _obj=None):\n")
@@ -966,7 +986,7 @@ def buildWrappers():
 		    list = reference_keepers[classname]
 		    for ref in list:
 		        classes.write("        self.%s = None\n" % ref[1])
-                if classname in [ "virDomain", "virNetwork" ]:
+                if classname in [ "virDomain", "virNetwork", "virNodeDevice" ]:
                     classes.write("        self._conn = conn\n")
                 elif classname in [ "virStorageVol", "virStoragePool" ]:
                     classes.write("        self._conn = conn\n" + \

@@ -164,6 +164,21 @@ libvirt_virConnectPtrWrap(virConnectPtr node)
 }
 
 PyObject *
+libvirt_virNodeDevicePtrWrap(virNodeDevicePtr node)
+{
+    PyObject *ret;
+
+    if (node == NULL) {
+        Py_INCREF(Py_None);
+        return (Py_None);
+    }
+    ret =
+        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virNodeDevicePtr",
+                                     NULL);
+    return (ret);
+}
+
+PyObject *
 libvirt_virEventHandleCallbackWrap(virEventHandleCallback node)
 {
     PyObject *ret;

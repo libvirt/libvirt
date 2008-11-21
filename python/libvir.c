@@ -1466,6 +1466,90 @@ libvirt_virStoragePoolLookupByUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *ar
     return(py_retval);
 }
 
+static PyObject *
+libvirt_virNodeListDevices(PyObject *self ATTRIBUTE_UNUSED,
+                           PyObject *args) {
+    PyObject *py_retval;
+    char **names = NULL;
+    int c_retval, i;
+    virConnectPtr conn;
+    PyObject *pyobj_conn;
+    char *cap;
+    unsigned int flags;
+
+    if (!PyArg_ParseTuple(args, (char *)"Ozi:virNodeListDevices",
+                          &pyobj_conn, &cap, &flags))
+        return(NULL);
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    c_retval = virNodeNumOfDevices(conn, cap, flags);
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if (c_retval) {
+        names = malloc(sizeof(*names) * c_retval);
+        if (!names)
+            return VIR_PY_NONE;
+        c_retval = virNodeListDevices(conn, cap, names, c_retval, flags);
+        if (c_retval < 0) {
+            free(names);
+            return VIR_PY_NONE;
+        }
+    }
+    py_retval = PyList_New(c_retval);
+
+    if (names) {
+        for (i = 0;i < c_retval;i++) {
+            PyList_SetItem(py_retval, i, libvirt_constcharPtrWrap(names[i]));
+            free(names[i]);
+        }
+        free(names);
+    }
+
+    return(py_retval);
+}
+
+static PyObject *
+libvirt_virNodeDeviceListCaps(PyObject *self ATTRIBUTE_UNUSED,
+                              PyObject *args) {
+    PyObject *py_retval;
+    char **names = NULL;
+    int c_retval, i;
+    virNodeDevicePtr dev;
+    PyObject *pyobj_dev;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virNodeDeviceListCaps", &pyobj_dev))
+        return(NULL);
+    dev = (virNodeDevicePtr) PyvirNodeDevice_Get(pyobj_dev);
+
+    c_retval = virNodeDeviceNumOfCaps(dev);
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if (c_retval) {
+        names = malloc(sizeof(*names) * c_retval);
+        if (!names)
+            return VIR_PY_NONE;
+        c_retval = virNodeDeviceListCaps(dev, names, c_retval);
+        if (c_retval < 0) {
+            free(names);
+            return VIR_PY_NONE;
+        }
+    }
+    py_retval = PyList_New(c_retval);
+
+    if (names) {
+        for (i = 0;i < c_retval;i++) {
+            PyList_SetItem(py_retval, i, libvirt_constcharPtrWrap(names[i]));
+            free(names[i]);
+        }
+        free(names);
+    }
+
+    return(py_retval);
+}
+
+
 /*******************************************
  * Helper functions to avoid importing modules
  * for every callback
@@ -2044,6 +2128,8 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virEventRegisterImpl", libvirt_virEventRegisterImpl, METH_VARARGS, NULL},
     {(char *) "virEventInvokeHandleCallback", libvirt_virEventInvokeHandleCallback, METH_VARARGS, NULL},
     {(char *) "virEventInvokeTimeoutCallback", libvirt_virEventInvokeTimeoutCallback, METH_VARARGS, NULL},
+    {(char *) "virNodeListDevices", libvirt_virNodeListDevices, METH_VARARGS, NULL},
+    {(char *) "virNodeDeviceListCaps", libvirt_virNodeDeviceListCaps, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 

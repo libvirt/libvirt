@@ -1,3 +1,9 @@
+Fri Nov 21 12:40:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Python binding for node device APIs (David Lively)
+	* python/generator.py, python/libvir.c, python/libvirt-python-api.xml,
+	python/libvirt_wrap.h, python/types.c: Bindings for node device APis
+
 Fri Nov 21 12:38:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Node device support in virsh (David Lively)
