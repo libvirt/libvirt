@@ -773,6 +773,7 @@ doRemoteOpen (virConnectPtr conn,
                                                          conn, NULL)) < 0) {
             DEBUG0("virEventAddTimeout failed: No addTimeoutImpl defined. "
                     "continuing without events.");
+            virEventRemoveHandle(priv->watch);
         }
     }
     /* Successful. */
@@ -1211,10 +1212,12 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
               (xdrproc_t) xdr_void, (char *) NULL) == -1)
         return -1;
 
-    /* Remove handle for remote events */
-    virEventRemoveHandle(priv->sock);
-    /* Remove timout */
-    virEventRemoveTimeout(priv->eventFlushTimer);
+    if (priv->eventFlushTimer >= 0) {
+        /* Remove timeout */
+        virEventRemoveTimeout(priv->eventFlushTimer);
+        /* Remove handle for remote events */
+        virEventRemoveHandle(priv->watch);
+    }
 
     /* Close socket. */
     if (priv->uses_tls && priv->session) {
@@ -4483,6 +4486,10 @@ static int remoteDomainEventRegister (virConnectPtr conn,
 {
     struct private_data *priv = conn->privateData;
 
+    if (priv->eventFlushTimer < 0) {
+         error (conn, VIR_ERR_NO_SUPPORT, _("no event support"));
+         return -1;
+    }
     if (virDomainEventCallbackListAdd(conn, priv->callbackList,
                                       callback, opaque, freecb) < 0) {
          error (conn, VIR_ERR_RPC, _("adding cb to list"));

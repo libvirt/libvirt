@@ -1,3 +1,10 @@
+Fri Nov 21 10:20:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Return VIR_NO_SUPPORT if requested
+	to register event callbacks when no eventloop is present.
+	Deal with failure to register handles/timers correctly.
+	(David Lively)
+
 Fri Nov 21 10:14:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix crash due to failure to unregister event callbacks on
