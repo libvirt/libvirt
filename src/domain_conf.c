@@ -3279,6 +3279,8 @@ virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
     if (notify)
         (*notify)(dom, newVM, opaque);
 
+    VIR_FREE(configFile);
+    VIR_FREE(autostartLink);
     return dom;
 
 error:

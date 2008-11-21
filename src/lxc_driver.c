@@ -1071,6 +1071,7 @@ static int lxcStartup(void)
 
 static void lxcFreeDriver(lxc_driver_t *driver)
 {
+    virCapabilitiesFree(driver->caps);
     VIR_FREE(driver->configDir);
     VIR_FREE(driver->autostartDir);
     VIR_FREE(driver->stateDir);
