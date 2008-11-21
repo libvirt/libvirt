@@ -3804,7 +3804,7 @@ static virStateDriver qemuStateDriver = {
     .active = qemudActive,
 };
 
-int qemudRegister(void) {
+int qemuRegister(void) {
     virRegisterDriver(&qemuDriver);
     virRegisterStateDriver(&qemuStateDriver);
     return 0;

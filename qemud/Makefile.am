@@ -91,6 +91,7 @@ libvirtd_DEPENDENCIES = ../src/libvirt.la
 libvirtd_LDADD =					\
 		../gnulib/lib/libgnu.la
 
+if ! WITH_DRIVER_MODULES
 if WITH_QEMU
 libvirtd_LDADD += ../src/libvirt_driver_qemu.la
 endif
@@ -109,6 +110,7 @@ endif
 
 if WITH_NETWORK
 libvirtd_LDADD += ../src/libvirt_driver_network.la
+endif
 endif
 
 libvirtd_LDADD += ../src/libvirt.la

@@ -61,6 +61,9 @@
 #include "mdns.h"
 #endif
 
+#ifdef WITH_DRIVER_MODULES
+#include "driver.h"
+#else
 #ifdef WITH_QEMU
 #include "qemu_driver.h"
 #endif
@@ -75,6 +78,7 @@
 #endif
 #ifdef WITH_STORAGE_DIR
 #include "storage_driver.h"
+#endif
 #endif
 
 
@@ -748,8 +752,20 @@ static struct qemud_server *qemudInitialize(int sigread) {
 
     virInitialize();
 
+#ifdef WITH_DRIVER_MODULES
+    /* We don't care if any of these fail, because the whole point
+     * is to allow users to only install modules they want to use.
+     * If they try to use a open a connection for a module that
+     * is not loaded they'll get a suitable error at that point
+     */
+    virDriverLoadModule("qemu");
+    virDriverLoadModule("lxc");
+    virDriverLoadModule("uml");
+    virDriverLoadModule("network");
+    virDriverLoadModule("storage");
+#else
 #ifdef WITH_QEMU
-    qemudRegister();
+    qemuRegister();
 #endif
 #ifdef WITH_LXC
     lxcRegister();
@@ -762,6 +778,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
 #endif
 #ifdef WITH_STORAGE_DIR
     storageRegister();
+#endif
 #endif
 
     virEventRegisterImpl(virEventAddHandleImpl,

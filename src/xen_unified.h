@@ -22,7 +22,7 @@
 #include <winsock2.h>
 #endif
 
-extern int xenUnifiedRegister (void);
+extern int xenRegister (void);
 
 #define XEN_UNIFIED_HYPERVISOR_OFFSET 0
 #define XEN_UNIFIED_PROXY_OFFSET 1

@@ -283,8 +283,12 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virCapabilitiesAddGuest;
 	virCapabilitiesAddGuestDomain;
 	virCapabilitiesAddGuestFeature;
+	virCapabilitiesAddHostMigrateTransport;
 	virCapabilitiesAddHostNUMACell;
+	virCapabilitiesAddHostFeature;
+	virCapabilitiesDefaultGuestArch;
 	virCapabilitiesDefaultGuestEmulator;
+	virCapabilitiesDefaultGuestMachine;
 	virCapabilitiesFormatXML;
 	virCapabilitiesFree;
 	virCapabilitiesNew;
@@ -296,6 +300,7 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virConfReadFile;
 	virConfReadMem;
 	virConfFree;
+	virConfFreeValue;
 	virConfGetValue;
 	virConfSetValue;
 	virConfWriteFile;
@@ -307,6 +312,7 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virGetNetwork;
 	virGetStoragePool;
 	virGetStorageVol;
+	virUnrefDomain;
 
 
 	/* domain_conf.h */
@@ -314,25 +320,43 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virDiskNameToIndex;
 	virDomainAssignDef;
 	virDomainConfigFile;
+	virDomainCpuSetFormat;
+	virDomainCpuSetParse;
+	virDomainChrDefFree;
+	virDomainChrTypeFromString;
+	virDomainChrTypeToString;
 	virDomainDefDefaultEmulator;
 	virDomainDefFormat;
 	virDomainDefFree;
 	virDomainDefParseFile;
+	virDomainDefParseNode;
 	virDomainDefParseString;
 	virDomainDeleteConfig;
+	virDomainDeviceDefFree;
 	virDomainDeviceDefParse;
 	virDomainDiskBusTypeToString;
+	virDomainDiskDefFree;
 	virDomainDiskDeviceTypeToString;
 	virDomainDiskQSort;
 	virDomainFindByID;
 	virDomainFindByName;
 	virDomainFindByUUID;
+	virDomainGraphicsTypeFromString;
+	virDomainGraphicsDefFree;
+	virDomainInputDefFree;
+	virDomainLifecycleTypeFromString;
+	virDomainLifecycleTypeToString;
 	virDomainLoadAllConfigs;
+	virDomainNetDefFree;
+	virDomainObjFree;
 	virDomainObjListFree;
 	virDomainRemoveInactive;
 	virDomainSaveConfig;
+	virDomainSoundDefFree;
+	virDomainSoundModelTypeFromString;
 	virDomainSoundModelTypeToString;
 	virDomainVirtTypeToString;
+	virDomainFSDefFree;
 
 
 	/* domain_event.h */
@@ -340,6 +364,34 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virDomainEventCallbackListFree;
 	virDomainEventCallbackListRemove;
 	virDomainEventCallbackListRemoveConn;
+	virDomainEventQueueFree;
+	virDomainEventCallbackQueuePop;
+	virDomainEventCallbackQueuePush;
+
+
+	/* driver.h */
+	virDriverLoadModule;
+
+
+	/* event.h */
+	virEventAddHandle;
+	virEventAddTimeout;
+	virEventRemoveHandle;
+	virEventRemoveTimeout;
+	virEventUpdateHandle;
+	virEventUpdateTimeout;
+
+
+	/* hash.h */
+	virHashAddEntry;
+	virHashCreate;
+	virHashForEach;
+	virHashFree;
+	virHashLookup;
+	virHashRemoveEntry;
+	virHashRemoveSet;
+	virHashSearch;
+	virHashSize;
 
 
 	/* iptables.h */
@@ -397,12 +449,15 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virNetworkAssignDef;
 	virNetworkDefFormat;
 	virNetworkDefFree;
+	virNetworkDefParseFile;
+	virNetworkDefParseNode;
 	virNetworkDefParseString;
 	virNetworkDeleteConfig;
 	virNetworkFindByName;
 	virNetworkFindByUUID;
 	virNetworkLoadAllConfigs;
 	virNetworkObjListFree;
+	virNetworkDefParseNode;
 	virNetworkRemoveInactive;
 	virNetworkSaveConfig;
 
@@ -411,8 +466,15 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virNodeInfoPopulate;
 
 
+	/* qparams.h */
+	qparam_get_query;
+	qparam_query_parse;
+	free_qparam_set;
+
+
 	/* stats_linux.h */
 	linuxDomainInterfaceStats;
+	xenLinuxDomainBlockStats;
 
 
 	/* storage_backend.h */
@@ -429,6 +491,7 @@ LIBVIRT_PRIVATE_@VERSION@ {
 
 
 	/* storage_conf.h */
+        virStorageBackendPoolOptionsForType;
 	virStoragePoolDefFormat;
 	virStoragePoolDefFree;
 	virStoragePoolDefParse;
@@ -461,6 +524,7 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virStrToLong_i;
 	virStrToLong_ll;
 	virStrToLong_ull;
+	virFileLinkPointsTo;
 	saferead;
 	safewrite;
 	virMacAddrCompare;
@@ -469,6 +533,8 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virEventAddHandle;
 	virEventRemoveHandle;
 	virExec;
+	virFormatMacAddr;
+	virParseMacAddr;
 	virFileDeletePid;
 	virFileExists;
 	virFileHasSuffix;
@@ -479,18 +545,26 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virFileReadPid;
 	virParseNumber;
 	virRun;
+	virSkipSpaces;
 
 
 	/* uuid.h */
 	virUUIDFormat;
+	virUUIDGenerate;
+	virUUIDParse;
 
 
 	/* virterror_internal.h */
 	virReportErrorHelper;
+	virErrorMsg;
+	virRaiseError;
 
 
 	/* xml.h */
+	virXPathLong;
+	virXPathNodeSet;
 	virXPathString;
+	virXMLPropString;
 
 
 	/* Finally everything else is totally private */

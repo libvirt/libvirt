@@ -41,6 +41,7 @@
 #include "util.h"
 #include "memory.h"
 
+#ifndef WITH_DRIVER_MODULES
 #ifdef WITH_TEST
 #include "test.h"
 #endif
@@ -52,6 +53,7 @@
 #endif
 #ifdef WITH_OPENVZ
 #include "openvz_driver.h"
+#endif
 #endif
 
 /*
@@ -270,17 +272,29 @@ virInitialize(void)
      * Note that the order is important: the first ones have a higher
      * priority when calling virConnectOpen.
      */
+#ifdef WITH_DRIVER_MODULES
+    /* We don't care if any of these fail, because the whole point
+     * is to allow users to only install modules they want to use.
+     * If they try to use a open a connection for a module that
+     * is not loaded they'll get a suitable error at that point
+     */
+    virDriverLoadModule("test");
+    virDriverLoadModule("xen");
+    virDriverLoadModule("openvz");
+    virDriverLoadModule("remote");
+#else
 #ifdef WITH_TEST
     if (testRegister() == -1) return -1;
 #endif
 #ifdef WITH_XEN
-    if (xenUnifiedRegister () == -1) return -1;
+    if (xenRegister () == -1) return -1;
 #endif
 #ifdef WITH_OPENVZ
     if (openvzRegister() == -1) return -1;
 #endif
 #ifdef WITH_REMOTE
     if (remoteRegister () == -1) return -1;
+#endif
 #endif
 
     return(0);
@@ -458,6 +472,9 @@ virRegisterNetworkDriver(virNetworkDriverPtr driver)
         return(-1);
     }
 
+    DEBUG ("registering %s as network driver %d",
+           driver->name, virNetworkDriverTabCount);
+
     virNetworkDriverTab[virNetworkDriverTabCount] = driver;
     return virNetworkDriverTabCount++;
 }
@@ -485,6 +502,9 @@ virRegisterStorageDriver(virStorageDriverPtr driver)
         virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
+
+    DEBUG ("registering %s as storage driver %d",
+           driver->name, virStorageDriverTabCount);
 
     virStorageDriverTab[virStorageDriverTabCount] = driver;
     return virStorageDriverTabCount++;

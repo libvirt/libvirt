@@ -1,3 +1,25 @@
+Fri Nov 21 12:03:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Optional (disabled by default) dlopen support
+	* configure.in: Probe for dlopen
+	* qemud/Makefile.am: Don't link to drivers when dlopen is used
+	* qemud/qemud.c: Load external driver modules at startup
+	* src/Makefile.am: Don't link to drivers when dlopen is used
+	* src/driver.c, src/driver.h: Add API for dlopen'ing modules
+	* src/libvirt.c: Load external driver modules at startup
+	* src/libvirt_sym.version.in: Export more internal symbols
+	needed for external driver modules
+	* src/qemud_driver.c, src/qemu_driver.h, src/xen_unified.c,
+	src/xen_unified.h: Sanitize driver registration methodname
+	to match module name
+	* tests/Makefile.am: Set LIBVIRT_DRIVER_DIR when running
+	tests with dlopen enabled. Link to driver modules in Xen
+	test cases
+	* tests/testutils.c: Set LIBVIRT_DRIVER_DIR when running
+	external programs
+	* tests/xmconfigtest.c: Don't open test driver during xen
+	tests.
+
 Fri Nov 21 11:43:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt_sym.version.in: Add export of domain event

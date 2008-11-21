@@ -1359,14 +1359,14 @@ static virDriver xenUnifiedDriver = {
 };
 
 /**
- * xenUnifiedRegister:
+ * xenRegister:
  *
  * Register xen related drivers
  *
  * Returns the driver priority or -1 in case of error.
  */
 int
-xenUnifiedRegister (void)
+xenRegister (void)
 {
     /* Ignore failures here. */
     (void) xenHypervisorInit ();

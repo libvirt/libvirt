@@ -1066,6 +1066,38 @@ dnl Look for windres to build a Windows icon resource.
 AC_CHECK_TOOL([WINDRES], [windres], [no])
 AM_CONDITIONAL([WITH_WIN_ICON], [test "$WINDRES" != "no"])
 
+
+
+dnl Driver-Modules library
+AC_ARG_WITH([driver-modules],
+  [  --with-driver-modules       build drivers as loadable modules],
+  [],
+  [with_driver_modules=no])
+
+DRIVER_MODULES_CFLAGS=
+DRIVER_MODULES_LIBS=
+if test "x$with_driver_modules" = "xyes" ; then
+  old_cflags="$CFLAGS"
+  old_libs="$LIBS"
+  fail=0
+  AC_CHECK_HEADER([dlfcn.h],[],[fail=1])
+  AC_CHECK_LIB([dl], [dlopen],[],[fail=1])
+  test $fail = 1 &&
+      AC_MSG_ERROR([You must have dlfcn.h / dlopen() support to build driver modules])
+
+  CFLAGS="$old_cflags"
+  LIBS="$old_libs"
+fi
+if test "$with_driver_modules" = "yes"; then
+  DRIVER_MODULES_CFLAGS="-export-dynamic"
+  DRIVER_MODULES_LIBS="-ldl"
+  AC_DEFINE_UNQUOTED([WITH_DRIVER_MODULES], 1, [whether to build drivers as modules])
+fi
+AM_CONDITIONAL([WITH_DRIVER_MODULES], [test "$with_driver_modules" != "no"])
+AC_SUBST([DRIVER_MODULES_CFLAGS])
+AC_SUBST([DRIVER_MODULES_LIBS])
+
+
 # Set LV_LIBTOOL_OBJDIR to "." or $lt_cv_objdir, depending on whether
 # we're building shared libraries.  This is the name of the directory
 # in which .o files will be created.
@@ -1121,6 +1153,14 @@ AC_MSG_NOTICE([   NetFS: $with_storage_fs])
 AC_MSG_NOTICE([     LVM: $with_storage_lvm])
 AC_MSG_NOTICE([   iSCSI: $with_storage_iscsi])
 AC_MSG_NOTICE([    Disk: $with_storage_disk])
+AC_MSG_NOTICE([])
+AC_MSG_NOTICE([Driver Loadable Modules])
+AC_MSG_NOTICE([])
+if test "$with_driver_modules" != "no" ; then
+AC_MSG_NOTICE([  dlopen: $DRIVER_MODULES_CFLAGS $DRIVER_MODULES_LIBS])
+else
+AC_MSG_NOTICE([  dlopen: no])
+fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])

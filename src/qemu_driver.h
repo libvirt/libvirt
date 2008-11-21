@@ -47,6 +47,6 @@
 #  define KVM_CAP_NR_VCPUS 9       /* returns max vcpus per vm */
 #endif
 
-int qemudRegister(void);
+int qemuRegister(void);
 
 #endif /* QEMUD_DRIVER_H */

@@ -19,6 +19,11 @@ INCLUDES = \
          $(COVERAGE_CFLAGS) \
          $(WARN_CFLAGS)
 
+if WITH_DRIVER_MODULES
+INCLUDES += \
+	-DTEST_DRIVER_DIR=\"$(top_builddir)/src/.libs\"
+endif
+
 LDADDS = \
 	@STATIC_BINARIES@ \
 	$(LIBXML_LIBS) \
@@ -83,6 +88,7 @@ TESTS_ENVIRONMENT =				\
   abs_srcdir=`cd '$(srcdir)'; pwd`		\
   PATH="$(path_add)$(PATH_SEPARATOR)$$PATH"	\
   SHELL="$(SHELL)"				\
+  LIBVIRT_DRIVER_DIR="$(abs_top_builddir)/src/.libs" \
   $(VG)
 
 valgrind:
@@ -100,17 +106,17 @@ xmlrpctest_LDADD = $(LDADDS)
 xml2sexprtest_SOURCES = \
 	xml2sexprtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
-xml2sexprtest_LDADD = $(LDADDS)
+xml2sexprtest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
 
 sexpr2xmltest_SOURCES = \
 	sexpr2xmltest.c \
 	testutils.c testutils.h
-sexpr2xmltest_LDADD = $(LDADDS)
+sexpr2xmltest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
 
 xmconfigtest_SOURCES = \
 	xmconfigtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
-xmconfigtest_LDADD = $(LDADDS)
+xmconfigtest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
 
 if WITH_QEMU
 qemuxml2argvtest_SOURCES = \
@@ -137,7 +143,7 @@ conftest_LDADD = $(LDADDS)
 
 xencapstest_SOURCES = \
 	xencapstest.c testutils.h testutils.c
-xencapstest_LDADD = $(LDADDS)
+xencapstest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
 
 nodeinfotest_SOURCES = \
 	nodeinfotest.c testutils.h testutils.c

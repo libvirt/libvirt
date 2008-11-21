@@ -8,6 +8,7 @@
 
 #include <libxml/uri.h>
 
+#include "internal.h"
 /*
  * List of registered drivers numbers
  */
@@ -645,5 +646,6 @@ int virRegisterStorageDriver(virStorageDriverPtr);
 #ifdef WITH_LIBVIRTD
 int virRegisterStateDriver(virStateDriverPtr);
 #endif
+void *virDriverLoadModule(const char *name);
 
 #endif /* __VIR_DRIVER_H__ */

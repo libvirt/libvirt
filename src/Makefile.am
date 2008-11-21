@@ -6,7 +6,10 @@ INCLUDES = \
 	   -I@top_srcdir@/include \
 	   -I@top_srcdir@/qemud \
 	   $(LIBXML_CFLAGS) \
+	   $(XEN_CFLAGS) \
 	   $(SELINUX_CFLAGS) \
+	   $(DRIVER_MODULE_CFLAGS) \
+	   -DLIBDIR=\""$(libdir)"\" \
 	   -DBINDIR=\""$(libexecdir)"\" \
 	   -DSBINDIR=\""$(sbindir)"\" \
 	   -DSYSCONF_DIR="\"$(sysconfdir)\"" \
@@ -30,6 +33,10 @@ EXTRA_DIST = libvirt_sym.version $(conf_DATA) $(ICON_FILES)
 
 lib_LTLIBRARIES = libvirt.la
 
+moddir = $(libdir)/libvirt/drivers
+mod_LTLIBRARIES =
+
+
 # These files are not related to driver APIs. Simply generic
 # helper APIs for various purposes
 UTIL_SOURCES =							\
@@ -49,7 +56,7 @@ UTIL_SOURCES =							\
 
 # Internal generic driver infrastructure
 DRIVER_SOURCES = 						\
-		driver.h					\
+		driver.c driver.h				\
 		internal.h					\
 		datatypes.c datatypes.h				\
 		domain_event.c domain_event.h			\
@@ -169,73 +176,138 @@ libvirt_driver_la_CFLAGS = $(XEN_CFLAGS)
 libvirt_driver_la_LDFLAGS = $(XEN_LIBS)
 
 if WITH_TEST
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_test.la
+else
 noinst_LTLIBRARIES += libvirt_driver_test.la
 libvirt_la_LIBADD += libvirt_driver_test.la
+endif
+if WITH_DRIVER_MODULES
+libvirt_driver_test_la_LDFLAGS = -module -avoid-version
+endif
 libvirt_driver_test_la_SOURCES = $(TEST_DRIVER_SOURCES)
 endif
 
 if WITH_REMOTE
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_remote.la
+else
 noinst_LTLIBRARIES += libvirt_driver_remote.la
 libvirt_la_LIBADD += libvirt_driver_remote.la
+endif
 libvirt_driver_remote_la_CFLAGS =				\
 		$(GNUTLS_CFLAGS)				\
 		$(SASL_CFLAGS)
 libvirt_driver_remote_la_LDFLAGS =				\
 		$(GNUTLS_LIBS)					\
 		$(SASL_LIBS)
+if WITH_DRIVER_MODULES
+libvirt_driver_remote_la_LDFLAGS += -module -avoid-version
+endif
 libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 endif
 
 if WITH_XEN
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_xen.la
+else
 noinst_LTLIBRARIES += libvirt_driver_xen.la
 libvirt_la_LIBADD += libvirt_driver_xen.la
+endif
 libvirt_driver_xen_la_CFLAGS = $(XEN_CFLAGS)
 libvirt_driver_xen_la_LDFLAGS = $(XEN_LIBS)
+if WITH_DRIVER_MODULES
+libvirt_driver_xen_la_LDFLAGS += -module -avoid-version
+endif
 libvirt_driver_xen_la_SOURCES = $(XEN_DRIVER_SOURCES)
 endif
 
 if WITH_OPENVZ
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_openvz.la
+else
 noinst_LTLIBRARIES += libvirt_driver_openvz.la
 libvirt_la_LIBADD += libvirt_driver_openvz.la
+endif
+if WITH_DRIVER_MODULES
+libvirt_driver_openvz_la_LDFLAGS = -module -avoid-version
+endif
 libvirt_driver_openvz_la_SOURCES = $(OPENVZ_DRIVER_SOURCES)
 endif
 
 if WITH_QEMU
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_qemu.la
+else
 noinst_LTLIBRARIES += libvirt_driver_qemu.la
 # Stateful, so linked to daemon instead
 #libvirt_la_LIBADD += libvirt_driver_qemu.la
+endif
 libvirt_driver_qemu_la_CFLAGS = $(NUMACTL_CFLAGS)
 libvirt_driver_qemu_la_LDFLAGS = $(NUMACTL_LIBS)
+if WITH_DRIVER_MODULES
+libvirt_driver_qemu_la_LDFLAGS += -module -avoid-version
+endif
 libvirt_driver_qemu_la_SOURCES = $(QEMU_DRIVER_SOURCES)
 endif
 
 if WITH_LXC
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_lxc.la
+else
 noinst_LTLIBRARIES += libvirt_driver_lxc.la
 # Stateful, so linked to daemon instead
 #libvirt_la_LIBADD += libvirt_driver_lxc.la
+endif
+if WITH_DRIVER_MODULES
+libvirt_driver_lxc_la_LDFLAGS = -module -avoid-version
+endif
 libvirt_driver_lxc_la_SOURCES = $(LXC_DRIVER_SOURCES)
 endif
 
 if WITH_UML
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_uml.la
+else
 noinst_LTLIBRARIES += libvirt_driver_uml.la
 # Stateful, so linked to daemon instead
 #libvirt_la_LIBADD += libvirt_driver_uml.la
+endif
+libvirt_driver_uml_la_CFLAGS = $(NUMACTL_CFLAGS)
+libvirt_driver_uml_la_LDFLAGS = $(NUMACTL_LIBS)
+if WITH_DRIVER_MODULES
+libvirt_driver_uml_la_LDFLAGS += -module -avoid-version
+endif
 libvirt_driver_uml_la_SOURCES = $(UML_DRIVER_SOURCES)
 endif
 
 if WITH_NETWORK
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_network.la
+else
 noinst_LTLIBRARIES += libvirt_driver_network.la
 # Stateful, so linked to daemon instead
 #libvirt_la_LIBADD += libvirt_driver_network.la
+endif
+if WITH_DRIVER_MODULES
+libvirt_driver_network_la_LDFLAGS = -module -avoid-version
+endif
 libvirt_driver_network_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
 endif
 
 # Needed to keep automake quiet about conditionals
 libvirt_driver_storage_la_SOURCES =
 if WITH_STORAGE_DIR
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_storage.la
+else
 noinst_LTLIBRARIES += libvirt_driver_storage.la
 # Stateful, so linked to daemon instead
 #libvirt_la_LIBADD += libvirt_driver_storage.la
+endif
+if WITH_DRIVER_MODULES
+libvirt_driver_storage_la_LDFLAGS = -module -avoid-version
+endif
 libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
 libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_FS_SOURCES)
 endif
@@ -277,6 +349,7 @@ libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
                      -version-info @LIBVIRT_VERSION_INFO@ \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%) \
                     $(LIBXML_LIBS) $(SELINUX_LIBS) \
+		    $(XEN_LIBS) $(DRIVER_MODULE_LIBS) \
 		    @CYGWIN_EXTRA_LDFLAGS@ @MINGW_EXTRA_LDFLAGS@
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
 libvirt_la_DEPENDENCIES = $(libvirt_la_LIBADD) $(srcdir)/libvirt_sym.version
