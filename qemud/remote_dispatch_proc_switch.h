@@ -560,6 +560,51 @@ case REMOTE_PROC_NETWORK_UNDEFINE:
         args = (char *) &lv_remote_network_undefine_args;
         memset (&lv_remote_network_undefine_args, 0, sizeof lv_remote_network_undefine_args);
         break;
+case REMOTE_PROC_NODE_DEVICE_DUMP_XML:
+        fn = (dispatch_fn) remoteDispatchNodeDeviceDumpXml;
+        args_filter = (xdrproc_t) xdr_remote_node_device_dump_xml_args;
+        args = (char *) &lv_remote_node_device_dump_xml_args;
+        memset (&lv_remote_node_device_dump_xml_args, 0, sizeof lv_remote_node_device_dump_xml_args);
+        ret_filter = (xdrproc_t) xdr_remote_node_device_dump_xml_ret;
+        ret = (char *) &lv_remote_node_device_dump_xml_ret;
+        memset (&lv_remote_node_device_dump_xml_ret, 0, sizeof lv_remote_node_device_dump_xml_ret);
+        break;
+case REMOTE_PROC_NODE_DEVICE_GET_PARENT:
+        fn = (dispatch_fn) remoteDispatchNodeDeviceGetParent;
+        args_filter = (xdrproc_t) xdr_remote_node_device_get_parent_args;
+        args = (char *) &lv_remote_node_device_get_parent_args;
+        memset (&lv_remote_node_device_get_parent_args, 0, sizeof lv_remote_node_device_get_parent_args);
+        ret_filter = (xdrproc_t) xdr_remote_node_device_get_parent_ret;
+        ret = (char *) &lv_remote_node_device_get_parent_ret;
+        memset (&lv_remote_node_device_get_parent_ret, 0, sizeof lv_remote_node_device_get_parent_ret);
+        break;
+case REMOTE_PROC_NODE_DEVICE_LIST_CAPS:
+        fn = (dispatch_fn) remoteDispatchNodeDeviceListCaps;
+        args_filter = (xdrproc_t) xdr_remote_node_device_list_caps_args;
+        args = (char *) &lv_remote_node_device_list_caps_args;
+        memset (&lv_remote_node_device_list_caps_args, 0, sizeof lv_remote_node_device_list_caps_args);
+        ret_filter = (xdrproc_t) xdr_remote_node_device_list_caps_ret;
+        ret = (char *) &lv_remote_node_device_list_caps_ret;
+        memset (&lv_remote_node_device_list_caps_ret, 0, sizeof lv_remote_node_device_list_caps_ret);
+        break;
+case REMOTE_PROC_NODE_DEVICE_LOOKUP_BY_NAME:
+        fn = (dispatch_fn) remoteDispatchNodeDeviceLookupByName;
+        args_filter = (xdrproc_t) xdr_remote_node_device_lookup_by_name_args;
+        args = (char *) &lv_remote_node_device_lookup_by_name_args;
+        memset (&lv_remote_node_device_lookup_by_name_args, 0, sizeof lv_remote_node_device_lookup_by_name_args);
+        ret_filter = (xdrproc_t) xdr_remote_node_device_lookup_by_name_ret;
+        ret = (char *) &lv_remote_node_device_lookup_by_name_ret;
+        memset (&lv_remote_node_device_lookup_by_name_ret, 0, sizeof lv_remote_node_device_lookup_by_name_ret);
+        break;
+case REMOTE_PROC_NODE_DEVICE_NUM_OF_CAPS:
+        fn = (dispatch_fn) remoteDispatchNodeDeviceNumOfCaps;
+        args_filter = (xdrproc_t) xdr_remote_node_device_num_of_caps_args;
+        args = (char *) &lv_remote_node_device_num_of_caps_args;
+        memset (&lv_remote_node_device_num_of_caps_args, 0, sizeof lv_remote_node_device_num_of_caps_args);
+        ret_filter = (xdrproc_t) xdr_remote_node_device_num_of_caps_ret;
+        ret = (char *) &lv_remote_node_device_num_of_caps_ret;
+        memset (&lv_remote_node_device_num_of_caps_ret, 0, sizeof lv_remote_node_device_num_of_caps_ret);
+        break;
 case REMOTE_PROC_NODE_GET_CELLS_FREE_MEMORY:
         fn = (dispatch_fn) remoteDispatchNodeGetCellsFreeMemory;
         args_filter = (xdrproc_t) xdr_remote_node_get_cells_free_memory_args;
@@ -580,6 +625,24 @@ case REMOTE_PROC_NODE_GET_INFO:
         ret_filter = (xdrproc_t) xdr_remote_node_get_info_ret;
         ret = (char *) &lv_remote_node_get_info_ret;
         memset (&lv_remote_node_get_info_ret, 0, sizeof lv_remote_node_get_info_ret);
+        break;
+case REMOTE_PROC_NODE_LIST_DEVICES:
+        fn = (dispatch_fn) remoteDispatchNodeListDevices;
+        args_filter = (xdrproc_t) xdr_remote_node_list_devices_args;
+        args = (char *) &lv_remote_node_list_devices_args;
+        memset (&lv_remote_node_list_devices_args, 0, sizeof lv_remote_node_list_devices_args);
+        ret_filter = (xdrproc_t) xdr_remote_node_list_devices_ret;
+        ret = (char *) &lv_remote_node_list_devices_ret;
+        memset (&lv_remote_node_list_devices_ret, 0, sizeof lv_remote_node_list_devices_ret);
+        break;
+case REMOTE_PROC_NODE_NUM_OF_DEVICES:
+        fn = (dispatch_fn) remoteDispatchNodeNumOfDevices;
+        args_filter = (xdrproc_t) xdr_remote_node_num_of_devices_args;
+        args = (char *) &lv_remote_node_num_of_devices_args;
+        memset (&lv_remote_node_num_of_devices_args, 0, sizeof lv_remote_node_num_of_devices_args);
+        ret_filter = (xdrproc_t) xdr_remote_node_num_of_devices_ret;
+        ret = (char *) &lv_remote_node_num_of_devices_ret;
+        memset (&lv_remote_node_num_of_devices_ret, 0, sizeof lv_remote_node_num_of_devices_ret);
         break;
 case REMOTE_PROC_NUM_OF_DEFINED_DOMAINS:
         fn = (dispatch_fn) remoteDispatchNumOfDefinedDomains;

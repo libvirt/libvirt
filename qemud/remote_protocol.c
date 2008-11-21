@@ -84,6 +84,15 @@ xdr_remote_nonnull_storage_vol (XDR *xdrs, remote_nonnull_storage_vol *objp)
 }
 
 bool_t
+xdr_remote_nonnull_node_device (XDR *xdrs, remote_nonnull_node_device *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_domain (XDR *xdrs, remote_domain *objp)
 {
 
@@ -115,6 +124,15 @@ xdr_remote_storage_vol (XDR *xdrs, remote_storage_vol *objp)
 {
 
          if (!xdr_pointer (xdrs, (char **)objp, sizeof (remote_nonnull_storage_vol), (xdrproc_t) xdr_remote_nonnull_storage_vol))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_device (XDR *xdrs, remote_node_device *objp)
+{
+
+         if (!xdr_pointer (xdrs, (char **)objp, sizeof (remote_nonnull_node_device), (xdrproc_t) xdr_remote_nonnull_node_device))
                  return FALSE;
         return TRUE;
 }
@@ -2003,6 +2021,146 @@ xdr_remote_storage_vol_get_path_ret (XDR *xdrs, remote_storage_vol_get_path_ret 
 {
 
          if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_num_of_devices_args (XDR *xdrs, remote_node_num_of_devices_args *objp)
+{
+
+         if (!xdr_remote_string (xdrs, &objp->cap))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_num_of_devices_ret (XDR *xdrs, remote_node_num_of_devices_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->num))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_list_devices_args (XDR *xdrs, remote_node_list_devices_args *objp)
+{
+
+         if (!xdr_remote_string (xdrs, &objp->cap))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->maxnames))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_list_devices_ret (XDR *xdrs, remote_node_list_devices_ret *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->names.names_val;
+
+         if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->names.names_len, REMOTE_NODE_DEVICE_NAME_LIST_MAX,
+                sizeof (remote_nonnull_string), (xdrproc_t) xdr_remote_nonnull_string))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_device_lookup_by_name_args (XDR *xdrs, remote_node_device_lookup_by_name_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_device_lookup_by_name_ret (XDR *xdrs, remote_node_device_lookup_by_name_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_node_device (xdrs, &objp->dev))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_device_dump_xml_args (XDR *xdrs, remote_node_device_dump_xml_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_device_dump_xml_ret (XDR *xdrs, remote_node_device_dump_xml_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->xml))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_device_get_parent_args (XDR *xdrs, remote_node_device_get_parent_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_device_get_parent_ret (XDR *xdrs, remote_node_device_get_parent_ret *objp)
+{
+
+         if (!xdr_remote_string (xdrs, &objp->parent))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_device_num_of_caps_args (XDR *xdrs, remote_node_device_num_of_caps_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_device_num_of_caps_ret (XDR *xdrs, remote_node_device_num_of_caps_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->num))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_device_list_caps_args (XDR *xdrs, remote_node_device_list_caps_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->maxnames))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_device_list_caps_ret (XDR *xdrs, remote_node_device_list_caps_ret *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->names.names_val;
+
+         if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->names.names_len, REMOTE_NODE_DEVICE_CAPS_LIST_MAX,
+                sizeof (remote_nonnull_string), (xdrproc_t) xdr_remote_nonnull_string))
                  return FALSE;
         return TRUE;
 }

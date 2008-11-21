@@ -67,6 +67,7 @@ static void make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr do
 static void make_nonnull_network (remote_nonnull_network *net_dst, virNetworkPtr net_src);
 static void make_nonnull_storage_pool (remote_nonnull_storage_pool *pool_dst, virStoragePoolPtr pool_src);
 static void make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src);
+static void make_nonnull_node_device (remote_nonnull_node_device *dev_dst, virNodeDevicePtr dev_src);
 
 #include "remote_dispatch_prototypes.h"
 
@@ -3723,6 +3724,213 @@ remoteDispatchStorageVolLookupByPath (struct qemud_server *server ATTRIBUTE_UNUS
 }
 
 
+/***************************************************************
+ *     NODE INFO APIS
+ **************************************************************/
+
+static int
+remoteDispatchNodeNumOfDevices (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                struct qemud_client *client,
+                                remote_message_header *req,
+                                remote_node_num_of_devices_args *args,
+                                remote_node_num_of_devices_ret *ret)
+{
+    CHECK_CONN(client);
+
+    ret->num = virNodeNumOfDevices (client->conn,
+                                    args->cap ? *args->cap : NULL,
+                                    args->flags);
+    if (ret->num == -1) return -1;
+
+    return 0;
+}
+
+
+static int
+remoteDispatchNodeListDevices (struct qemud_server *server ATTRIBUTE_UNUSED,
+                               struct qemud_client *client,
+                               remote_message_header *req,
+                               remote_node_list_devices_args *args,
+                               remote_node_list_devices_ret *ret)
+{
+    CHECK_CONN(client);
+
+    if (args->maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX) {
+        remoteDispatchError (client, req,
+                             "%s", _("maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX"));
+        return -2;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+        return -2;
+    }
+
+    ret->names.names_len =
+        virNodeListDevices (client->conn,
+                            args->cap ? *args->cap : NULL,
+                            ret->names.names_val, args->maxnames, args->flags);
+    if (ret->names.names_len == -1) {
+        VIR_FREE(ret->names.names_val);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+remoteDispatchNodeDeviceLookupByName (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                      struct qemud_client *client,
+                                      remote_message_header *req,
+                                      remote_node_device_lookup_by_name_args *args,
+                                      remote_node_device_lookup_by_name_ret *ret)
+{
+    virNodeDevicePtr dev;
+
+    CHECK_CONN(client);
+
+    dev = virNodeDeviceLookupByName (client->conn, args->name);
+    if (dev == NULL) return -1;
+
+    make_nonnull_node_device (&ret->dev, dev);
+    virNodeDeviceFree(dev);
+    return 0;
+}
+
+
+static int
+remoteDispatchNodeDeviceDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                 struct qemud_client *client,
+                                 remote_message_header *req,
+                                 remote_node_device_dump_xml_args *args,
+                                 remote_node_device_dump_xml_ret *ret)
+{
+    virNodeDevicePtr dev;
+    CHECK_CONN(client);
+
+    dev = virNodeDeviceLookupByName(client->conn, args->name);
+    if (dev == NULL) {
+        remoteDispatchError (client, req, "%s", _("node_device not found"));
+        return -2;
+    }
+
+    /* remoteDispatchClientRequest will free this. */
+    ret->xml = virNodeDeviceGetXMLDesc (dev, args->flags);
+    if (!ret->xml) {
+        virNodeDeviceFree(dev);
+        return -1;
+    }
+    virNodeDeviceFree(dev);
+    return 0;
+}
+
+
+static int
+remoteDispatchNodeDeviceGetParent (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                   struct qemud_client *client,
+                                   remote_message_header *req,
+                                   remote_node_device_get_parent_args *args,
+                                   remote_node_device_get_parent_ret *ret)
+{
+    virNodeDevicePtr dev;
+    const char *parent;
+    CHECK_CONN(client);
+
+    dev = virNodeDeviceLookupByName(client->conn, args->name);
+    if (dev == NULL) {
+        remoteDispatchError (client, req, "%s", _("node_device not found"));
+        return -2;
+    }
+
+    parent = virNodeDeviceGetParent(dev);
+
+    if (parent == NULL) {
+        ret->parent = NULL;
+    } else {
+        /* remoteDispatchClientRequest will free this. */
+        char **parent_p;
+        if (VIR_ALLOC(parent_p) < 0) {
+            remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+            return -2;
+        }
+        *parent_p = strdup(parent);
+        if (*parent_p == NULL) {
+            remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+            return -2;
+        }
+        ret->parent = parent_p;
+    }
+
+    virNodeDeviceFree(dev);
+    return 0;
+}
+
+
+static int
+remoteDispatchNodeDeviceNumOfCaps (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                   struct qemud_client *client,
+                                   remote_message_header *req,
+                                   remote_node_device_num_of_caps_args *args,
+                                   remote_node_device_num_of_caps_ret *ret)
+{
+    virNodeDevicePtr dev;
+    CHECK_CONN(client);
+
+    dev = virNodeDeviceLookupByName(client->conn, args->name);
+    if (dev == NULL) {
+        remoteDispatchError (client, req, "%s", _("node_device not found"));
+        return -2;
+    }
+
+    ret->num = virNodeDeviceNumOfCaps(dev);
+
+    virNodeDeviceFree(dev);
+    return 0;
+}
+
+
+static int
+remoteDispatchNodeDeviceListCaps (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                  struct qemud_client *client,
+                                  remote_message_header *req,
+                                  remote_node_device_list_caps_args *args,
+                                  remote_node_device_list_caps_ret *ret)
+{
+    virNodeDevicePtr dev;
+    CHECK_CONN(client);
+
+    dev = virNodeDeviceLookupByName(client->conn, args->name);
+    if (dev == NULL) {
+        remoteDispatchError (client, req, "%s", _("node_device not found"));
+        return -2;
+    }
+
+    if (args->maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX) {
+        remoteDispatchError (client, req,
+                             "%s", _("maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX"));
+        return -2;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, NULL);
+        return -2;
+    }
+
+    ret->names.names_len =
+        virNodeDeviceListCaps (dev, ret->names.names_val,
+                               args->maxnames);
+    if (ret->names.names_len == -1) {
+        VIR_FREE(ret->names.names_val);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /**************************
  * Async Events
  **************************/
@@ -3848,6 +4056,7 @@ remoteDispatchDomainEventSend (struct qemud_client *client,
     client->bufferLength = len;
     client->bufferOffset = 0;
 }
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
@@ -3917,4 +4126,10 @@ make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr 
     vol_dst->pool = strdup (vol_src->pool);
     vol_dst->name = strdup (vol_src->name);
     vol_dst->key = strdup (vol_src->key);
+}
+
+static void
+make_nonnull_node_device (remote_nonnull_node_device *dev_dst, virNodeDevicePtr dev_src)
+{
+    dev_dst->name = strdup(dev_src->name);
 }

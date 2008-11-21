@@ -76,9 +76,16 @@ static int remoteDispatchNetworkLookupByName (struct qemud_server *server, struc
 static int remoteDispatchNetworkLookupByUuid (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_network_lookup_by_uuid_args *args, remote_network_lookup_by_uuid_ret *ret);
 static int remoteDispatchNetworkSetAutostart (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_network_set_autostart_args *args, void *ret);
 static int remoteDispatchNetworkUndefine (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_network_undefine_args *args, void *ret);
+static int remoteDispatchNodeDeviceDumpXml (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_node_device_dump_xml_args *args, remote_node_device_dump_xml_ret *ret);
+static int remoteDispatchNodeDeviceGetParent (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_node_device_get_parent_args *args, remote_node_device_get_parent_ret *ret);
+static int remoteDispatchNodeDeviceListCaps (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_node_device_list_caps_args *args, remote_node_device_list_caps_ret *ret);
+static int remoteDispatchNodeDeviceLookupByName (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_node_device_lookup_by_name_args *args, remote_node_device_lookup_by_name_ret *ret);
+static int remoteDispatchNodeDeviceNumOfCaps (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_node_device_num_of_caps_args *args, remote_node_device_num_of_caps_ret *ret);
 static int remoteDispatchNodeGetCellsFreeMemory (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_node_get_cells_free_memory_args *args, remote_node_get_cells_free_memory_ret *ret);
 static int remoteDispatchNodeGetFreeMemory (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_node_get_free_memory_ret *ret);
 static int remoteDispatchNodeGetInfo (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_node_get_info_ret *ret);
+static int remoteDispatchNodeListDevices (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_node_list_devices_args *args, remote_node_list_devices_ret *ret);
+static int remoteDispatchNodeNumOfDevices (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_node_num_of_devices_args *args, remote_node_num_of_devices_ret *ret);
 static int remoteDispatchNumOfDefinedDomains (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_num_of_defined_domains_ret *ret);
 static int remoteDispatchNumOfDefinedNetworks (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_num_of_defined_networks_ret *ret);
 static int remoteDispatchNumOfDefinedStoragePools (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_num_of_defined_storage_pools_ret *ret);

@@ -143,6 +143,14 @@ struct private_data {
         return (retcode);                                               \
     }
 
+#define GET_DEVMON_PRIVATE(conn,retcode)                               \
+    struct private_data *priv = (struct private_data *) (conn)->devMonPrivateData; \
+    if (!priv || priv->magic != MAGIC) {                                \
+        error (conn, VIR_ERR_INVALID_ARG,                               \
+               _("tried to use a closed or uninitialised handle"));     \
+        return (retcode);                                               \
+    }
+
 
 enum {
     REMOTE_CALL_IN_OPEN = 1,
@@ -172,6 +180,7 @@ static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domai
 static virNetworkPtr get_nonnull_network (virConnectPtr conn, remote_nonnull_network network);
 static virStoragePoolPtr get_nonnull_storage_pool (virConnectPtr conn, remote_nonnull_storage_pool pool);
 static virStorageVolPtr get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol);
+static virNodeDevicePtr get_nonnull_node_device (virConnectPtr conn, remote_nonnull_node_device dev);
 static void make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src);
 static void make_nonnull_network (remote_nonnull_network *net_dst, virNetworkPtr net_src);
 static void make_nonnull_storage_pool (remote_nonnull_storage_pool *pool_dst, virStoragePoolPtr vol_src);
@@ -3769,6 +3778,229 @@ remoteStorageVolGetPath (virStorageVolPtr vol)
 
 /*----------------------------------------------------------------------*/
 
+static virDrvOpenStatus
+remoteDevMonOpen(virConnectPtr conn,
+                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                 int flags ATTRIBUTE_UNUSED)
+{
+    if (conn &&
+        conn->driver &&
+        STREQ (conn->driver->name, "remote")) {
+        /* If we're here, the remote driver is already
+         * in use due to a) a QEMU uri, or b) a remote
+         * URI. So we can re-use existing connection
+         */
+        conn->devMonPrivateData = conn->privateData;
+        return VIR_DRV_OPEN_SUCCESS;
+    }
+
+    /* Decline open.  Will fallback to appropriate local node driver. */
+    return VIR_DRV_OPEN_DECLINED;
+}
+
+static int remoteDevMonClose(virConnectPtr conn)
+{
+    int ret = 0;
+    GET_DEVMON_PRIVATE (conn, -1);
+    if (priv->localUses) {
+        priv->localUses--;
+        if (!priv->localUses) {
+            ret = doRemoteClose(conn, priv);
+            VIR_FREE(priv);
+            conn->devMonPrivateData = NULL;
+        }
+    }
+    return ret;
+}
+
+static int remoteNodeNumOfDevices(virConnectPtr conn,
+                                  const char *cap,
+                                  unsigned int flags)
+{
+    remote_node_num_of_devices_args args;
+    remote_node_num_of_devices_ret ret;
+    GET_STORAGE_PRIVATE (conn, -1);
+
+    args.cap = cap ? (char **)&cap : NULL;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_NODE_NUM_OF_DEVICES,
+              (xdrproc_t) xdr_remote_node_num_of_devices_args, (char *) &args,
+              (xdrproc_t) xdr_remote_node_num_of_devices_ret, (char *) &ret) == -1)
+        return -1;
+
+    return ret.num;
+}
+
+
+static int remoteNodeListDevices(virConnectPtr conn,
+                                 const char *cap,
+                                 char **const names,
+                                 int maxnames,
+                                 unsigned int flags)
+{
+    int i;
+    remote_node_list_devices_args args;
+    remote_node_list_devices_ret ret;
+    GET_STORAGE_PRIVATE (conn, -1);
+
+    if (maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX) {
+        error (conn, VIR_ERR_RPC, _("too many device names requested"));
+        return -1;
+    }
+    args.cap = cap ? (char **)&cap : NULL;
+    args.maxnames = maxnames;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_NODE_LIST_DEVICES,
+              (xdrproc_t) xdr_remote_node_list_devices_args, (char *) &args,
+              (xdrproc_t) xdr_remote_node_list_devices_ret, (char *) &ret) == -1)
+        return -1;
+
+    if (ret.names.names_len > maxnames) {
+        error (conn, VIR_ERR_RPC, _("too many device names received"));
+        xdr_free ((xdrproc_t) xdr_remote_node_list_devices_ret, (char *) &ret);
+        return -1;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here.
+     */
+    for (i = 0; i < ret.names.names_len; ++i)
+        names[i] = strdup (ret.names.names_val[i]);
+
+    xdr_free ((xdrproc_t) xdr_remote_node_list_devices_ret, (char *) &ret);
+
+    return ret.names.names_len;
+}
+
+
+static virNodeDevicePtr remoteNodeDeviceLookupByName(virConnectPtr conn,
+                                                     const char *name)
+{
+    remote_node_device_lookup_by_name_args args;
+    remote_node_device_lookup_by_name_ret ret;
+    virNodeDevicePtr dev;
+    GET_STORAGE_PRIVATE (conn, NULL);
+
+    args.name = (char *)name;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_NODE_DEVICE_LOOKUP_BY_NAME,
+              (xdrproc_t) xdr_remote_node_device_lookup_by_name_args, (char *) &args,
+              (xdrproc_t) xdr_remote_node_device_lookup_by_name_ret, (char *) &ret) == -1)
+        return NULL;
+
+    dev = get_nonnull_node_device(conn, ret.dev);
+
+    xdr_free ((xdrproc_t) xdr_remote_node_device_lookup_by_name_ret, (char *) &ret);
+
+    return dev;
+}
+
+static char *remoteNodeDeviceDumpXML(virNodeDevicePtr dev,
+                                     unsigned int flags)
+{
+    remote_node_device_dump_xml_args args;
+    remote_node_device_dump_xml_ret ret;
+    GET_STORAGE_PRIVATE (dev->conn, NULL);
+
+    args.name = dev->name;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (dev->conn, priv, 0, REMOTE_PROC_NODE_DEVICE_DUMP_XML,
+              (xdrproc_t) xdr_remote_node_device_dump_xml_args, (char *) &args,
+              (xdrproc_t) xdr_remote_node_device_dump_xml_ret, (char *) &ret) == -1)
+        return NULL;
+
+    /* Caller frees. */
+    return ret.xml;
+}
+
+static char *remoteNodeDeviceGetParent(virNodeDevicePtr dev)
+{
+    remote_node_device_get_parent_args args;
+    remote_node_device_get_parent_ret ret;
+    GET_STORAGE_PRIVATE (dev->conn, NULL);
+
+    args.name = dev->name;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (dev->conn, priv, 0, REMOTE_PROC_NODE_DEVICE_GET_PARENT,
+              (xdrproc_t) xdr_remote_node_device_get_parent_args, (char *) &args,
+              (xdrproc_t) xdr_remote_node_device_get_parent_ret, (char *) &ret) == -1)
+        return NULL;
+
+    /* Caller frees. */
+    return ret.parent ? *ret.parent : NULL;
+}
+
+static int remoteNodeDeviceNumOfCaps(virNodeDevicePtr dev)
+{
+    remote_node_device_num_of_caps_args args;
+    remote_node_device_num_of_caps_ret ret;
+    GET_STORAGE_PRIVATE (dev->conn, -1);
+
+    args.name = dev->name;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (dev->conn, priv, 0, REMOTE_PROC_NODE_DEVICE_NUM_OF_CAPS,
+              (xdrproc_t) xdr_remote_node_device_num_of_caps_args, (char *) &args,
+              (xdrproc_t) xdr_remote_node_device_num_of_caps_ret, (char *) &ret) == -1)
+        return -1;
+
+    return ret.num;
+}
+
+static int remoteNodeDeviceListCaps(virNodeDevicePtr dev,
+                                    char **const names,
+                                    int maxnames)
+{
+    int i;
+    remote_node_device_list_caps_args args;
+    remote_node_device_list_caps_ret ret;
+    GET_STORAGE_PRIVATE (dev->conn, -1);
+
+    if (maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX) {
+        error (dev->conn, VIR_ERR_RPC, _("too many capability names requested"));
+        return -1;
+    }
+    args.maxnames = maxnames;
+    args.name = dev->name;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (dev->conn, priv, 0, REMOTE_PROC_NODE_DEVICE_LIST_CAPS,
+              (xdrproc_t) xdr_remote_node_device_list_caps_args, (char *) &args,
+              (xdrproc_t) xdr_remote_node_device_list_caps_ret, (char *) &ret) == -1)
+        return -1;
+
+    if (ret.names.names_len > maxnames) {
+        error (dev->conn, VIR_ERR_RPC, _("too many capability names received"));
+        xdr_free ((xdrproc_t) xdr_remote_node_device_list_caps_ret, (char *) &ret);
+        return -1;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here.
+     */
+    for (i = 0; i < ret.names.names_len; ++i)
+        names[i] = strdup (ret.names.names_val[i]);
+
+    xdr_free ((xdrproc_t) xdr_remote_node_device_list_caps_ret, (char *) &ret);
+
+    return ret.names.names_len;
+}
+
+
+/*----------------------------------------------------------------------*/
+
 static int
 remoteAuthenticate (virConnectPtr conn, struct private_data *priv, int in_open,
                     virConnectAuthPtr auth
@@ -5029,6 +5261,12 @@ get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol)
     return virGetStorageVol (conn, vol.pool, vol.name, vol.key);
 }
 
+static virNodeDevicePtr
+get_nonnull_node_device (virConnectPtr conn, remote_nonnull_node_device dev)
+{
+    return virGetNodeDevice(conn, dev.name);
+}
+
 /* Make remote_nonnull_domain and remote_nonnull_network. */
 static void
 make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src)
@@ -5184,6 +5422,20 @@ static virStorageDriver storage_driver = {
     .volGetPath = remoteStorageVolGetPath,
 };
 
+static virDeviceMonitor dev_monitor = {
+    .name = "remote",
+    .open = remoteDevMonOpen,
+    .close = remoteDevMonClose,
+    .numOfDevices = remoteNodeNumOfDevices,
+    .listDevices = remoteNodeListDevices,
+    .deviceLookupByName = remoteNodeDeviceLookupByName,
+    .deviceDumpXML = remoteNodeDeviceDumpXML,
+    .deviceGetParent = remoteNodeDeviceGetParent,
+    .deviceNumOfCaps = remoteNodeDeviceNumOfCaps,
+    .deviceListCaps = remoteNodeDeviceListCaps,
+};
+
+
 #ifdef WITH_LIBVIRTD
 static virStateDriver state_driver = {
     .initialize = remoteStartup,
@@ -5203,6 +5455,7 @@ remoteRegister (void)
     if (virRegisterDriver (&driver) == -1) return -1;
     if (virRegisterNetworkDriver (&network_driver) == -1) return -1;
     if (virRegisterStorageDriver (&storage_driver) == -1) return -1;
+    if (virRegisterDeviceMonitor (&dev_monitor) == -1) return -1;
 #ifdef WITH_LIBVIRTD
     if (virRegisterStateDriver (&state_driver) == -1) return -1;
 #endif

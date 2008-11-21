@@ -86,6 +86,12 @@ const REMOTE_STORAGE_POOL_NAME_LIST_MAX = 256;
 /* Upper limit on lists of storage vol names. */
 const REMOTE_STORAGE_VOL_NAME_LIST_MAX = 1024;
 
+/* Upper limit on lists of node device names. */
+const REMOTE_NODE_DEVICE_NAME_LIST_MAX = 16384;
+
+/* Upper limit on lists of node device capabilities. */
+const REMOTE_NODE_DEVICE_CAPS_LIST_MAX = 16384;
+
 /* Upper limit on list of scheduler parameters. */
 const REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX = 16;
 
@@ -139,11 +145,17 @@ struct remote_nonnull_storage_vol {
     remote_nonnull_string key;
 };
 
+/* A node device which may not be NULL. */
+struct remote_nonnull_node_device {
+    remote_nonnull_string name;
+};
+
 /* A domain or network which may be NULL. */
 typedef remote_nonnull_domain *remote_domain;
 typedef remote_nonnull_network *remote_network;
 typedef remote_nonnull_storage_pool *remote_storage_pool;
 typedef remote_nonnull_storage_vol *remote_storage_vol;
+typedef remote_nonnull_node_device *remote_node_device;
 
 /* Error message. See <virterror.h> for explanation of fields. */
 
@@ -994,6 +1006,70 @@ struct remote_storage_vol_get_path_ret {
     remote_nonnull_string name;
 };
 
+/* Node driver calls: */
+
+struct remote_node_num_of_devices_args {
+    remote_string cap;
+    unsigned flags;
+};
+
+struct remote_node_num_of_devices_ret {
+    int num;
+};
+
+struct remote_node_list_devices_args {
+    remote_string cap;
+    int maxnames;
+    unsigned flags;
+};
+
+struct remote_node_list_devices_ret {
+    remote_nonnull_string names<REMOTE_NODE_DEVICE_NAME_LIST_MAX>;
+};
+
+struct remote_node_device_lookup_by_name_args {
+    remote_nonnull_string name;
+};
+
+struct remote_node_device_lookup_by_name_ret {
+    remote_nonnull_node_device dev;
+};
+
+struct remote_node_device_dump_xml_args {
+    remote_nonnull_string name;
+    unsigned flags;
+};
+
+struct remote_node_device_dump_xml_ret {
+    remote_nonnull_string xml;
+};
+
+struct remote_node_device_get_parent_args {
+    remote_nonnull_string name;
+};
+
+struct remote_node_device_get_parent_ret {
+    remote_string parent;
+};
+
+struct remote_node_device_num_of_caps_args {
+    remote_nonnull_string name;
+};
+
+struct remote_node_device_num_of_caps_ret {
+    int num;
+};
+
+struct remote_node_device_list_caps_args {
+    remote_nonnull_string name;
+    int maxnames;
+};
+
+struct remote_node_device_list_caps_ret {
+    remote_nonnull_string names<REMOTE_NODE_DEVICE_CAPS_LIST_MAX>;
+};
+
+
 /**
  * Events Register/Deregister:
  * It would seem rpcgen does not like both args, and ret
@@ -1140,7 +1216,15 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_EVENT = 107,
     REMOTE_PROC_DOMAIN_MIGRATE_PREPARE2 = 108,
     REMOTE_PROC_DOMAIN_MIGRATE_FINISH2 = 109,
-    REMOTE_PROC_GET_URI = 110
+    REMOTE_PROC_GET_URI = 110,
+
+    REMOTE_PROC_NODE_NUM_OF_DEVICES = 111,
+    REMOTE_PROC_NODE_LIST_DEVICES = 112,
+    REMOTE_PROC_NODE_DEVICE_LOOKUP_BY_NAME = 113,
+    REMOTE_PROC_NODE_DEVICE_DUMP_XML = 114,
+    REMOTE_PROC_NODE_DEVICE_GET_PARENT = 115,
+    REMOTE_PROC_NODE_DEVICE_NUM_OF_CAPS = 116,
+    REMOTE_PROC_NODE_DEVICE_LIST_CAPS = 117
 };
 
 /* Custom RPC structure. */

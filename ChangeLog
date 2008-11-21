@@ -1,3 +1,14 @@
+Fri Nov 21 12:30:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Remote protocol support for node devices (David Lively)
+	* src/remote_internal.c: driver impl for node device APIs
+	* qemud/remote_protocol.x: Define wire protocol for node device
+	APIs
+	* qemud/remote_dispatch*, qemud/remote_protocol.{c,h}: Update
+	for new APIs
+	* qemud/remote.c: server dispatch functions for node device
+	APIs
+
 Fri Nov 21 12:23:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Primary internal driver for node devices with HAL (default)
