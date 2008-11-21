@@ -1,3 +1,15 @@
+Fri Nov 21 12:19:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Public API for node device enumeration
+	* include/libvirt/libvirt.h.in, include/libvirt/virterror.h:
+	New public APIs for node device enumeration
+	* src/datatypes.c, src/datatypes.h: Internal impl of public
+	data types for node devices
+	* src/driver.h, src/libvirt.c: Stubs for node device APIs
+	* src/libvirt_sym.version.in: Export new node device API
+	symbols
+	* src/virterror.c: Error codes for node device drivers
+
 Fri Nov 21 12:03:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Optional (disabled by default) dlopen support

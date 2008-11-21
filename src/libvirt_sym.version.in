@@ -232,6 +232,21 @@ LIBVIRT_0.5.0 {
 	virEventRegisterImpl;
 	virConnectDomainEventRegister;
 	virConnectDomainEventDeregister;
+
+	virNodeNumOfDevices;
+	virNodeListDevices;
+	virNodeNumOfDevicesByCap;
+	virNodeListDevicesByCap;
+	virNodeDeviceLookupByName;
+	virNodeDeviceFree;
+	virNodeDeviceGetXMLDesc;
+	virNodeDeviceCreate;
+	virNodeDeviceDestroy;
+	virNodeDeviceGetName;
+	virNodeDeviceGetParent;
+	virNodeDeviceNumOfCaps;
+	virNodeDeviceListCaps;
+
 } LIBVIRT_0.4.5;
 
 /* .... define new API here using predicted next version number .... */

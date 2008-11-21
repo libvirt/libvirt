@@ -59,6 +59,7 @@ typedef enum {
     VIR_FROM_NETWORK,   /* Error from network config */
     VIR_FROM_DOMAIN,    /* Error from domain config */
     VIR_FROM_UML,       /* Error at the UML driver */
+    VIR_FROM_NODEDEV, /* Error from node device monitor */
 } virErrorDomain;
 
 
@@ -149,6 +150,9 @@ typedef enum {
     VIR_WAR_NO_STORAGE, /* failed to start storage */
     VIR_ERR_NO_STORAGE_POOL, /* storage pool not found */
     VIR_ERR_NO_STORAGE_VOL, /* storage pool not found */
+    VIR_WAR_NO_NODE, /* failed to start node driver */
+    VIR_ERR_INVALID_NODE_DEVICE,/* invalid node device object */
+    VIR_ERR_NO_NODE_DEVICE,/* node device not found */
 } virErrorNumber;
 
 /**

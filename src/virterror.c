@@ -310,6 +310,9 @@ virDefaultErrorFunc(virErrorPtr err)
         case VIR_FROM_DOMAIN:
             dom = "Domain Config ";
             break;
+        case VIR_FROM_NODEDEV:
+            dom = "Node Device ";
+            break;
         case VIR_FROM_UML:
             dom = "UML ";
             break;
@@ -720,6 +723,24 @@ virErrorMsg(virErrorNumber error, const char *info)
                         errmsg = _("Failed to find a storage driver");
                 else
                         errmsg = _("Failed to find a storage driver: %s");
+                break;
+        case VIR_WAR_NO_NODE:
+                if (info == NULL)
+                        errmsg = _("Failed to find a node driver");
+                else
+                        errmsg = _("Failed to find a node driver: %s");
+                break;
+        case VIR_ERR_INVALID_NODE_DEVICE:
+                if (info == NULL)
+                        errmsg = _("invalid node device pointer");
+                else
+                        errmsg = _("invalid node device pointer in %s");
+                break;
+        case VIR_ERR_NO_NODE_DEVICE:
+                if (info == NULL)
+                        errmsg = _("Node device not found");
+                else
+                        errmsg = _("Node device not found: %s");
                 break;
     }
     return (errmsg);

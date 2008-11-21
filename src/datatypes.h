@@ -78,6 +78,16 @@
 #define VIR_IS_STORAGE_VOL(obj)		((obj) && (obj)->magic==VIR_STORAGE_VOL_MAGIC)
 #define VIR_IS_CONNECTED_STORAGE_VOL(obj)	(VIR_IS_STORAGE_VOL(obj) && VIR_IS_CONNECT((obj)->conn))
 
+/**
+ * VIR_NODE_DEVICE_MAGIC:
+ *
+ * magic value used to protect the API when pointers to storage vol structures
+ * are passed down by the users.
+ */
+#define VIR_NODE_DEVICE_MAGIC                   0xDEAD5679
+#define VIR_IS_NODE_DEVICE(obj)                 ((obj) && (obj)->magic==VIR_NODE_DEVICE_MAGIC)
+#define VIR_IS_CONNECTED_NODE_DEVICE(obj)       (VIR_IS_NODE_DEVICE(obj) && VIR_IS_CONNECT((obj)->conn))
+
 
 /**
  * _virConnect:
@@ -93,6 +103,7 @@ struct _virConnect {
     virDriverPtr      driver;
     virNetworkDriverPtr networkDriver;
     virStorageDriverPtr storageDriver;
+    virDeviceMonitorPtr  deviceMonitor;
 
     /* Private data pointer which can be used by driver and
      * network driver as they wish.
@@ -101,6 +112,7 @@ struct _virConnect {
     void *            privateData;
     void *            networkPrivateData;
     void *            storagePrivateData;
+    void *            devMonPrivateData;
 
     /* Per-connection error. */
     virError err;           /* the last error */
@@ -118,6 +130,7 @@ struct _virConnect {
     virHashTablePtr networks; /* hash table for known domains */
     virHashTablePtr storagePools;/* hash table for known storage pools */
     virHashTablePtr storageVols;/* hash table for known storage vols */
+    virHashTablePtr nodeDevices; /* hash table for known node devices */
     int refs;                 /* reference count */
 };
 
@@ -176,6 +189,19 @@ struct _virStorageVol {
     char key[PATH_MAX];                  /* unique key for storage vol */
 };
 
+/**
+ * _virNodeDevice:
+ *
+ * Internal structure associated with a node device
+ */
+struct _virNodeDevice {
+    unsigned int magic;                 /* specific value to check */
+    int refs;                           /* reference count */
+    virConnectPtr conn;                 /* pointer back to the connection */
+    char *name;                         /* device name (unique on node) */
+};
+
+
 /************************************************************************
  *									*
  *	API for domain/connections (de)allocations and lookups		*
@@ -202,5 +228,9 @@ virStorageVolPtr virGetStorageVol(virConnectPtr conn,
                                     const char *name,
                                     const char *key);
 int virUnrefStorageVol(virStorageVolPtr vol);
+
+virNodeDevicePtr virGetNodeDevice(virConnectPtr conn,
+                                  const char *name);
+int virUnrefNodeDevice(virNodeDevicePtr dev);
 
 #endif

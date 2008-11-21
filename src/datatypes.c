@@ -140,6 +140,9 @@ virGetConnect(void) {
     ret->storageVols = virHashCreate(20);
     if (ret->storageVols == NULL)
         goto failed;
+    ret->nodeDevices = virHashCreate(256);
+    if (ret->nodeDevices == NULL)
+        goto failed;
 
     pthread_mutex_init(&ret->lock, NULL);
 
@@ -156,6 +159,8 @@ failed:
             virHashFree(ret->storagePools, (virHashDeallocator) virStoragePoolFreeName);
         if (ret->storageVols != NULL)
             virHashFree(ret->storageVols, (virHashDeallocator) virStorageVolFreeName);
+        if (ret->nodeDevices != NULL)
+            virHashFree(ret->nodeDevices, (virHashDeallocator) virNodeDeviceFree);
 
         pthread_mutex_destroy(&ret->lock);
         VIR_FREE(ret);
@@ -183,6 +188,8 @@ virReleaseConnect(virConnectPtr conn) {
         virHashFree(conn->storagePools, (virHashDeallocator) virStoragePoolFreeName);
     if (conn->storageVols != NULL)
         virHashFree(conn->storageVols, (virHashDeallocator) virStorageVolFreeName);
+    if (conn->nodeDevices != NULL)
+        virHashFree(conn->nodeDevices, (virHashDeallocator) virNodeDeviceFree);
 
     virResetError(&conn->err);
     if (virLastErr.conn == conn)
@@ -769,5 +776,128 @@ virUnrefStorageVol(virStorageVolPtr vol) {
     }
 
     pthread_mutex_unlock(&vol->conn->lock);
+    return (refs);
+}
+
+
+/**
+ * virGetNodeDevice:
+ * @conn: the hypervisor connection
+ * @name: device name (unique on node)
+ *
+ * Lookup if the device is already registered for that connection,
+ * if yes return a new pointer to it, if no allocate a new structure,
+ * and register it in the table. In any case a corresponding call to
+ * virFreeNodeDevice() is needed to not leak data.
+ *
+ * Returns a pointer to the node device, or NULL in case of failure
+ */
+virNodeDevicePtr
+virGetNodeDevice(virConnectPtr conn, const char *name)
+{
+    virNodeDevicePtr ret = NULL;
+
+    if ((!VIR_IS_CONNECT(conn)) || (name == NULL)) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(NULL);
+    }
+    pthread_mutex_lock(&conn->lock);
+
+    ret = (virNodeDevicePtr) virHashLookup(conn->nodeDevices, name);
+    if (ret == NULL) {
+       if (VIR_ALLOC(ret) < 0) {
+            virLibConnError(conn, VIR_ERR_NO_MEMORY, _("allocating node dev"));
+            goto error;
+        }
+        ret->magic = VIR_NODE_DEVICE_MAGIC;
+        ret->conn = conn;
+        ret->name = strdup(name);
+        if (ret->name == NULL) {
+            virLibConnError(conn, VIR_ERR_NO_MEMORY, _("copying node dev name"));
+            goto error;
+        }
+
+        if (virHashAddEntry(conn->nodeDevices, name, ret) < 0) {
+            virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
+                            _("failed to add node dev to conn hash table"));
+            goto error;
+        }
+        conn->refs++;
+    }
+    ret->refs++;
+    pthread_mutex_unlock(&conn->lock);
+    return(ret);
+
+error:
+    pthread_mutex_unlock(&conn->lock);
+    if (ret != NULL) {
+        VIR_FREE(ret->name);
+        VIR_FREE(ret);
+    }
+    return(NULL);
+}
+
+
+/**
+ * virReleaseNodeDevice:
+ * @dev: the dev to release
+ *
+ * Unconditionally release all memory associated with a dev.
+ * The conn.lock mutex must be held prior to calling this, and will
+ * be released prior to this returning. The dev obj must not
+ * be used once this method returns.
+ *
+ * It will also unreference the associated connection object,
+ * which may also be released if its ref count hits zero.
+ */
+static void
+virReleaseNodeDevice(virNodeDevicePtr dev) {
+    virConnectPtr conn = dev->conn;
+    DEBUG("release dev %p %s", dev, dev->name);
+
+    if (virHashRemoveEntry(conn->nodeDevices, dev->name, NULL) < 0)
+        virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("dev missing from connection hash table"));
+
+    dev->magic = -1;
+    VIR_FREE(dev->name);
+    VIR_FREE(dev);
+
+    DEBUG("unref connection %p %d", conn, conn->refs);
+    conn->refs--;
+    if (conn->refs == 0) {
+        virReleaseConnect(conn);
+        /* Already unlocked mutex */
+        return;
+    }
+
+    pthread_mutex_unlock(&conn->lock);
+}
+
+
+/**
+ * virUnrefNodeDevice:
+ * @dev: the dev to unreference
+ *
+ * Unreference the dev. If the use count drops to zero, the structure is
+ * actually freed.
+ *
+ * Returns the reference count or -1 in case of failure.
+ */
+int
+virUnrefNodeDevice(virNodeDevicePtr dev) {
+    int refs;
+
+    pthread_mutex_lock(&dev->conn->lock);
+    DEBUG("unref dev %p %s %d", dev, dev->name, dev->refs);
+    dev->refs--;
+    refs = dev->refs;
+    if (refs == 0) {
+        virReleaseNodeDevice(dev);
+        /* Already unlocked mutex */
+        return (0);
+    }
+
+    pthread_mutex_unlock(&dev->conn->lock);
     return (refs);
 }

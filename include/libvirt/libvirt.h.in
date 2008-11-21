@@ -995,6 +995,59 @@ virDomainPtr            virDomainCreateLinux    (virConnectPtr conn,
                                                  unsigned int flags);
 
 /*
+ * Host device enumeration
+ */
+
+/**
+ * virNodeDevice:
+ *
+ * A virNodeDevice contains a node (host) device details.
+ */
+
+typedef struct _virNodeDevice virNodeDevice;
+
+/**
+ * virNodeDevicePtr:
+ *
+ * A virNodeDevicePtr is a pointer to a virNodeDevice structure.  Get
+ * one via virNodeDeviceLookupByKey, virNodeDeviceLookupByName, or
+ * virNodeDeviceCreate.  Be sure to Call virNodeDeviceFree when done
+ * using a virNodeDevicePtr obtained from any of the above functions to
+ * avoid leaking memory.
+ */
+
+typedef virNodeDevice *virNodeDevicePtr;
+
+
+int                     virNodeNumOfDevices     (virConnectPtr conn,
+                                                 const char *cap,
+                                                 unsigned int flags);
+
+int                     virNodeListDevices      (virConnectPtr conn,
+                                                 const char *cap,
+                                                 char **const names,
+                                                 int maxnames,
+                                                 unsigned int flags);
+
+virNodeDevicePtr        virNodeDeviceLookupByName (virConnectPtr conn,
+                                                   const char *name);
+
+const char *            virNodeDeviceGetName     (virNodeDevicePtr dev);
+
+const char *            virNodeDeviceGetParent   (virNodeDevicePtr dev);
+
+int                     virNodeDeviceNumOfCaps   (virNodeDevicePtr dev);
+
+int                     virNodeDeviceListCaps    (virNodeDevicePtr dev,
+                                                  char **const names,
+                                                  int maxnames);
+
+char *                  virNodeDeviceGetXMLDesc (virNodeDevicePtr dev,
+                                                 unsigned int flags);
+
+int                     virNodeDeviceFree       (virNodeDevicePtr dev);
+
+/*
  * Domain Event Notification
  */
 

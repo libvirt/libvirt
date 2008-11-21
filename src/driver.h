@@ -635,6 +635,54 @@ struct _virStateDriver {
 };
 #endif
 
+
+typedef struct _virDeviceMonitor virDeviceMonitor;
+typedef virDeviceMonitor *virDeviceMonitorPtr;
+
+typedef int (*virDevMonNumOfDevices)(virConnectPtr conn,
+                                     const char *cap,
+                                     unsigned int flags);
+
+typedef int (*virDevMonListDevices)(virConnectPtr conn,
+                                    const char *cap,
+                                    char **const names,
+                                    int maxnames,
+                                    unsigned int flags);
+
+typedef virNodeDevicePtr (*virDevMonDeviceLookupByName)(virConnectPtr conn,
+                                                        const char *name);
+
+typedef char * (*virDevMonDeviceDumpXML)(virNodeDevicePtr dev,
+                                         unsigned int flags);
+
+typedef char * (*virDevMonDeviceGetParent)(virNodeDevicePtr dev);
+
+typedef int (*virDevMonDeviceNumOfCaps)(virNodeDevicePtr dev);
+
+typedef int (*virDevMonDeviceListCaps)(virNodeDevicePtr dev,
+                                       char **const names,
+                                       int maxnames);
+
+/**
+ * _virDeviceMonitor:
+ *
+ * Structure associated with monitoring the devices
+ * on a virtualized node.
+ *
+ */
+struct _virDeviceMonitor {
+    const char * name;    /* the name of the driver */
+    virDrvOpen open;
+    virDrvClose close;
+    virDevMonNumOfDevices numOfDevices;
+    virDevMonListDevices listDevices;
+    virDevMonDeviceLookupByName deviceLookupByName;
+    virDevMonDeviceDumpXML deviceDumpXML;
+    virDevMonDeviceGetParent deviceGetParent;
+    virDevMonDeviceNumOfCaps deviceNumOfCaps;
+    virDevMonDeviceListCaps deviceListCaps;
+};
+
 /*
  * Registration
  * TODO: also need ways to (des)activate a given driver
@@ -643,6 +691,7 @@ struct _virStateDriver {
 int virRegisterDriver(virDriverPtr);
 int virRegisterNetworkDriver(virNetworkDriverPtr);
 int virRegisterStorageDriver(virStorageDriverPtr);
+int virRegisterDeviceMonitor(virDeviceMonitorPtr);
 #ifdef WITH_LIBVIRTD
 int virRegisterStateDriver(virStateDriverPtr);
 #endif

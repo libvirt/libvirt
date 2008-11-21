@@ -70,6 +70,8 @@ static virNetworkDriverPtr virNetworkDriverTab[MAX_DRIVERS];
 static int virNetworkDriverTabCount = 0;
 static virStorageDriverPtr virStorageDriverTab[MAX_DRIVERS];
 static int virStorageDriverTabCount = 0;
+static virDeviceMonitorPtr virDeviceMonitorTab[MAX_DRIVERS];
+static int virDeviceMonitorTabCount = 0;
 #ifdef WITH_LIBVIRTD
 static virStateDriverPtr virStateDriverTab[MAX_DRIVERS];
 static int virStateDriverTabCount = 0;
@@ -449,6 +451,32 @@ virLibStorageVolError(virStorageVolPtr vol, virErrorNumber error,
 }
 
 /**
+ * virLibNodeDeviceError:
+ * @dev: the device if available
+ * @error: the error number
+ * @info: extra information string
+ *
+ * Handle an error at the node device level
+ */
+static void
+virLibNodeDeviceError(virNodeDevicePtr dev, virErrorNumber error,
+                      const char *info)
+{
+    virConnectPtr conn = NULL;
+    const char *errmsg;
+
+    if (error == VIR_ERR_OK)
+        return;
+
+    errmsg = virErrorMsg(error, info);
+    if (error != VIR_ERR_INVALID_NODE_DEVICE)
+        conn = dev->conn;
+
+    virRaiseError(conn, NULL, NULL, VIR_FROM_NODEDEV, error, VIR_ERR_ERROR,
+                    errmsg, info, NULL, 0, 0, errmsg, info);
+}
+
+/**
  * virRegisterNetworkDriver:
  * @driver: pointer to a network driver block
  *
@@ -508,6 +536,34 @@ virRegisterStorageDriver(virStorageDriverPtr driver)
 
     virStorageDriverTab[virStorageDriverTabCount] = driver;
     return virStorageDriverTabCount++;
+}
+
+/**
+ * virRegisterDeviceMonitor:
+ * @driver: pointer to a device monitor block
+ *
+ * Register a device monitor
+ *
+ * Returns the driver priority or -1 in case of error.
+ */
+int
+virRegisterDeviceMonitor(virDeviceMonitorPtr driver)
+{
+    if (virInitialize() < 0)
+      return -1;
+
+    if (driver == NULL) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+
+    if (virDeviceMonitorTabCount >= MAX_DRIVERS) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+
+    virDeviceMonitorTab[virDeviceMonitorTabCount] = driver;
+    return virDeviceMonitorTabCount++;
 }
 
 /**
@@ -806,6 +862,33 @@ do_open (const char *name,
         }
     }
 
+    /* Node driver (optional) */
+    for (i = 0; i < virDeviceMonitorTabCount; i++) {
+        res = virDeviceMonitorTab[i]->open (ret, auth, flags);
+        DEBUG("node driver %d %s returned %s",
+              i, virDeviceMonitorTab[i]->name,
+              res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
+              (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
+               (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
+        if (res == VIR_DRV_OPEN_ERROR) {
+            if (STREQ(virDeviceMonitorTab[i]->name, "remote")) {
+                virLibConnWarning (NULL, VIR_WAR_NO_NODE,
+                                   "Is the libvirtd daemon running ?");
+            } else {
+                char *msg;
+                if (asprintf(&msg, "Is the %s daemon running?",
+                             virDeviceMonitorTab[i]->name) > 0) {
+                    virLibConnWarning (NULL, VIR_WAR_NO_NODE, msg);
+                    VIR_FREE(msg);
+                }
+            }
+            break;
+        } else if (res == VIR_DRV_OPEN_SUCCESS) {
+            ret->deviceMonitor = virDeviceMonitorTab[i];
+            break;
+        }
+    }
+
     return ret;
 
 failed:
@@ -923,6 +1006,8 @@ virConnectClose(virConnectPtr conn)
         conn->networkDriver->close (conn);
     if (conn->storageDriver)
         conn->storageDriver->close (conn);
+    if (conn->deviceMonitor)
+        conn->deviceMonitor->close (conn);
     conn->driver->close (conn);
 
     if (virUnrefConnect(conn) < 0)
@@ -5372,6 +5457,257 @@ virStorageVolGetPath(virStorageVolPtr vol)
     return NULL;
 }
 
+
+
+
+/**
+ * virNodeNumOfDevices:
+ * @conn: pointer to the hypervisor connection
+ * @cap: capability name
+ * @flags: flags (unused, pass 0)
+ *
+ * Provides the number of node devices.
+ *
+ * If the optional 'cap'  argument is non-NULL, then the count
+ * will be restricted to devices with the specified capability
+ *
+ * Returns the number of node devices or -1 in case of error
+ */
+int
+virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
+{
+    DEBUG("conn=%p, cap=%s, flags=%d", conn, cap, flags);
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (flags != 0) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+
+    if (conn->deviceMonitor && conn->deviceMonitor->numOfDevices)
+        return conn->deviceMonitor->numOfDevices (conn, cap, flags);
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
+
+/**
+ * virNodeListDevices:
+ * @conn: pointer to the hypervisor connection
+ * @cap: capability name
+ * @names: array to collect the list of node device names
+ * @maxnames: size of @names
+ * @flags: flags (unused, pass 0)
+ *
+ * Collect the list of node devices, and store their names in @names
+ *
+ * If the optional 'cap'  argument is non-NULL, then the count
+ * will be restricted to devices with the specified capability
+ *
+ * Returns the number of node devices found or -1 in case of error
+ */
+int
+virNodeListDevices(virConnectPtr conn,
+                   const char *cap,
+                   char **const names, int maxnames,
+                   unsigned int flags)
+{
+    DEBUG("conn=%p, cap=%s, names=%p, maxnames=%d, flags=%d",
+          conn, cap, names, maxnames, flags);
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if ((flags != 0) || (names == NULL) || (maxnames < 0)) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+
+    if (conn->deviceMonitor && conn->deviceMonitor->listDevices)
+        return conn->deviceMonitor->listDevices (conn, cap, names, maxnames, flags);
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
+
+/**
+ * virNodeDeviceLookupByName:
+ * @conn: pointer to the hypervisor connection
+ * @name: unique device name
+ *
+ * Lookup a node device by its name.
+ *
+ * Returns a virNodeDevicePtr if found, NULL otherwise.
+ */
+virNodeDevicePtr virNodeDeviceLookupByName(virConnectPtr conn, const char *name)
+{
+    DEBUG("conn=%p, name=%p", conn, name);
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return NULL;
+    }
+
+    if (name == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return NULL;
+    }
+
+    if (conn->deviceMonitor && conn->deviceMonitor->deviceLookupByName)
+        return conn->deviceMonitor->deviceLookupByName (conn, name);
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return NULL;
+}
+
+
+/**
+ * virNodeDeviceGetXMLDesc:
+ * @dev: pointer to the node device
+ * @flags: flags for XML generation (unused, pass 0)
+ *
+ * Fetch an XML document describing all aspects of
+ * the device.
+ *
+ * Return the XML document, or NULL on error
+ */
+char *virNodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags)
+{
+    DEBUG("dev=%p, conn=%p", dev, dev ? dev->conn : NULL);
+
+    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
+        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        return NULL;
+    }
+
+    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->deviceDumpXML)
+        return dev->conn->deviceMonitor->deviceDumpXML (dev, flags);
+
+    virLibConnError (dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return NULL;
+}
+
+
+/**
+ * virNodeDeviceGetName:
+ * @dev: the device
+ *
+ * Returns the device name.
+ */
+const char *virNodeDeviceGetName(virNodeDevicePtr dev)
+{
+    DEBUG("dev=%p, conn=%p", dev, dev ? dev->conn : NULL);
+
+    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
+        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        return NULL;
+    }
+
+    return dev->name;
+}
+
+/**
+ * virNodeDeviceGetParent:
+ * @dev: the device
+ *
+ * Returns the name of the device's parent, or NULL if the
+ * device has no parent.
+ */
+const char *virNodeDeviceGetParent(virNodeDevicePtr dev)
+{
+    DEBUG("dev=%p, conn=%p", dev, dev ? dev->conn : NULL);
+
+    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
+        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        return NULL;
+    }
+
+    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->deviceGetParent)
+        return dev->conn->deviceMonitor->deviceGetParent (dev);
+
+    virLibConnError (dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return NULL;
+}
+
+/**
+ * virNodeDeviceNumOfCaps:
+ * @dev: the device
+ *
+ * Returns the number of capabilities supported by the device.
+ */
+int virNodeDeviceNumOfCaps(virNodeDevicePtr dev)
+{
+    DEBUG("dev=%p, conn=%p", dev, dev ? dev->conn : NULL);
+
+    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
+        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        return -1;
+    }
+
+    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->deviceNumOfCaps)
+        return dev->conn->deviceMonitor->deviceNumOfCaps (dev);
+
+    virLibConnError (dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
+/**
+ * virNodeDeviceListCaps:
+ * @dev: the device
+ * @names: array to collect the list of capability names
+ * @maxnames: size of @names
+ *
+ * Lists the names of the capabilities supported by the device.
+ *
+ * Returns the number of capability names listed in @names.
+ */
+int virNodeDeviceListCaps(virNodeDevicePtr dev,
+                          char **const names,
+                          int maxnames)
+{
+    DEBUG("dev=%p, conn=%p, names=%p, maxnames=%d",
+          dev, dev ? dev->conn : NULL, names, maxnames);
+
+    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
+        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        return -1;
+    }
+
+    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->deviceListCaps)
+        return dev->conn->deviceMonitor->deviceListCaps (dev, names, maxnames);
+
+    virLibConnError (dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
+
+/**
+ * virNodeDeviceFree:
+ * @dev: pointer to the node device
+ *
+ * Drops a reference to the node device, freeing it if
+ * this was the last reference.
+ *
+ * Returns the 0 for success, -1 for error.
+ */
+int virNodeDeviceFree(virNodeDevicePtr dev)
+{
+    DEBUG("dev=%p, conn=%p", dev, dev ? dev->conn : NULL);
+
+    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
+        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        return (-1);
+    }
+    if (virUnrefNodeDevice(dev) < 0)
+        return (-1);
+    return(0);
+}
 
 
 /*
