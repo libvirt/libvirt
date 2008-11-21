@@ -165,6 +165,8 @@ libvirt_driver_la_SOURCES =					\
 		$(DOMAIN_CONF_SOURCES)				\
 		$(NETWORK_CONF_SOURCES)				\
 		$(STORAGE_CONF_SOURCES)
+libvirt_driver_la_CFLAGS = $(XEN_CFLAGS)
+libvirt_driver_la_LDFLAGS = $(XEN_LIBS)
 
 if WITH_TEST
 noinst_LTLIBRARIES += libvirt_driver_test.la

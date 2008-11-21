@@ -1,7 +1,12 @@
+Fri Nov 21 10:10:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/Makefile.am: Include Xen compile flags for libvirt_driver.la
+	build for stats_linux.c code.
+
 Fri Nov 21 10:07:14 BST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* libvirt.spec.in: Add conditional to allow UML driver to be
-	disabled
+	disabled (Ben Guthro)
 
 Fri Nov 21 11:05:14 CET 2008 Daniel Veillard <veillard@redhat.com>
 
