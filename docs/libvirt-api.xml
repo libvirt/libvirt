@@ -107,14 +107,16 @@
      <exports symbol='virConnectAuthPtr' type='typedef'/>
      <exports symbol='virStorageVolInfo' type='typedef'/>
      <exports symbol='virSchedParameterType' type='typedef'/>
+     <exports symbol='virStorageVolInfoPtr' type='typedef'/>
      <exports symbol='virConnectCredentialPtr' type='typedef'/>
      <exports symbol='virStoragePoolPtr' type='typedef'/>
      <exports symbol='virNodeInfoPtr' type='typedef'/>
      <exports symbol='virNetworkPtr' type='typedef'/>
      <exports symbol='virDomainInfoPtr' type='typedef'/>
+     <exports symbol='virNodeDevice' type='typedef'/>
      <exports symbol='virConnectPtr' type='typedef'/>
      <exports symbol='virStorageVol' type='typedef'/>
-     <exports symbol='virStorageVolInfoPtr' type='typedef'/>
+     <exports symbol='virNodeDevicePtr' type='typedef'/>
      <exports symbol='virSchedParameter' type='typedef'/>
      <exports symbol='virConnectFlags' type='typedef'/>
      <exports symbol='virDomainEventDefinedDetailType' type='typedef'/>
@@ -159,6 +161,7 @@
      <exports symbol='virGetVersion' type='function'/>
      <exports symbol='virNodeGetCellsFreeMemory' type='function'/>
      <exports symbol='virInitialize' type='function'/>
+     <exports symbol='virNodeDeviceGetName' type='function'/>
      <exports symbol='virStoragePoolSetAutostart' type='function'/>
      <exports symbol='virStorageVolCreateXML' type='function'/>
      <exports symbol='virConnectDomainEventDeregister' type='function'/>
@@ -181,16 +184,19 @@
      <exports symbol='virDomainMigrate' type='function'/>
      <exports symbol='virDomainSuspend' type='function'/>
      <exports symbol='virNetworkCreate' type='function'/>
+     <exports symbol='virNodeDeviceGetXMLDesc' type='function'/>
      <exports symbol='virEventUpdateHandleFunc' type='function'/>
      <exports symbol='virDomainDestroy' type='function'/>
      <exports symbol='virConnectNumOfNetworks' type='function'/>
      <exports symbol='virStoragePoolLookupByUUIDString' type='function'/>
      <exports symbol='virDomainGetXMLDesc' type='function'/>
      <exports symbol='virStoragePoolGetUUID' type='function'/>
+     <exports symbol='virNodeDeviceFree' type='function'/>
      <exports symbol='virStorageVolGetInfo' type='function'/>
      <exports symbol='virDomainGetInfo' type='function'/>
      <exports symbol='virNetworkDestroy' type='function'/>
      <exports symbol='virStoragePoolLookupByName' type='function'/>
+     <exports symbol='virStoragePoolCreateXML' type='function'/>
      <exports symbol='virNetworkGetAutostart' type='function'/>
      <exports symbol='virNetworkGetBridgeName' type='function'/>
      <exports symbol='virStorageVolGetXMLDesc' type='function'/>
@@ -206,7 +212,9 @@
      <exports symbol='virNetworkSetAutostart' type='function'/>
      <exports symbol='virDomainGetMaxMemory' type='function'/>
      <exports symbol='virStoragePoolFree' type='function'/>
+     <exports symbol='virFreeCallback' type='function'/>
      <exports symbol='virNetworkDefineXML' type='function'/>
+     <exports symbol='virNodeDeviceListCaps' type='function'/>
      <exports symbol='virDomainBlockStats' type='function'/>
      <exports symbol='virConnectOpenAuth' type='function'/>
      <exports symbol='virStoragePoolDelete' type='function'/>
@@ -239,9 +247,10 @@
      <exports symbol='virDomainGetUUID' type='function'/>
      <exports symbol='virNetworkCreateXML' type='function'/>
      <exports symbol='virDomainGetVcpus' type='function'/>
-     <exports symbol='virStoragePoolCreateXML' type='function'/>
+     <exports symbol='virNodeDeviceLookupByName' type='function'/>
      <exports symbol='virStoragePoolGetInfo' type='function'/>
      <exports symbol='virDomainResume' type='function'/>
+     <exports symbol='virNodeListDevices' type='function'/>
      <exports symbol='virStoragePoolRefresh' type='function'/>
      <exports symbol='virConnectNumOfDefinedDomains' type='function'/>
      <exports symbol='virStorageVolLookupByKey' type='function'/>
@@ -266,9 +275,11 @@
      <exports symbol='virNetworkUndefine' type='function'/>
      <exports symbol='virConnectListDefinedStoragePools' type='function'/>
      <exports symbol='virEventTimeoutCallback' type='function'/>
+     <exports symbol='virNodeDeviceNumOfCaps' type='function'/>
      <exports symbol='virNetworkGetConnect' type='function'/>
      <exports symbol='virNodeGetFreeMemory' type='function'/>
      <exports symbol='virStorageVolGetConnect' type='function'/>
+     <exports symbol='virNodeNumOfDevices' type='function'/>
      <exports symbol='virStoragePoolDestroy' type='function'/>
      <exports symbol='virStoragePoolLookupByVolume' type='function'/>
      <exports symbol='virDomainLookupByUUID' type='function'/>
@@ -278,6 +289,7 @@
      <exports symbol='virDomainGetUUIDString' type='function'/>
      <exports symbol='virDomainGetConnect' type='function'/>
      <exports symbol='virConnectNumOfDefinedStoragePools' type='function'/>
+     <exports symbol='virNodeDeviceGetParent' type='function'/>
      <exports symbol='virConnectOpen' type='function'/>
      <exports symbol='virDomainCreateXML' type='function'/>
      <exports symbol='virDomainSetVcpus' type='function'/>
@@ -303,10 +315,13 @@
      <exports symbol='VIR_ERR_INVALID_ARG' type='enum'/>
      <exports symbol='VIR_ERR_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_NO_OS' type='enum'/>
+     <exports symbol='VIR_ERR_NO_NODE_DEVICE' type='enum'/>
      <exports symbol='VIR_ERR_NO_DEVICE' type='enum'/>
      <exports symbol='VIR_ERR_NO_MEMORY' type='enum'/>
      <exports symbol='VIR_FROM_SEXPR' type='enum'/>
+     <exports symbol='VIR_WAR_NO_NODE' type='enum'/>
      <exports symbol='VIR_FROM_RPC' type='enum'/>
+     <exports symbol='VIR_FROM_UML' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_MAC' type='enum'/>
      <exports symbol='VIR_ERR_NO_STORAGE_VOL' type='enum'/>
      <exports symbol='VIR_FROM_NONE' type='enum'/>
@@ -337,8 +352,10 @@
      <exports symbol='VIR_ERR_NO_ROOT' type='enum'/>
      <exports symbol='VIR_ERR_OPERATION_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_GET_FAILED' type='enum'/>
+     <exports symbol='VIR_FROM_NODEDEV' type='enum'/>
      <exports symbol='VIR_ERR_DRIVER_FULL' type='enum'/>
      <exports symbol='VIR_ERR_HTTP_ERROR' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_NODE_DEVICE' type='enum'/>
      <exports symbol='VIR_ERR_PARSE_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_NO_SOURCE' type='enum'/>
      <exports symbol='VIR_FROM_DOMAIN' type='enum'/>
@@ -500,6 +517,7 @@
     <enum name='VIR_ERR_INVALID_DOMAIN' file='virterror' value='7' type='virErrorNumber' info='invalid domain object'/>
     <enum name='VIR_ERR_INVALID_MAC' file='virterror' value='44' type='virErrorNumber' info='invalid MAC address'/>
     <enum name='VIR_ERR_INVALID_NETWORK' file='virterror' value='36' type='virErrorNumber' info='invalid network object'/>
+    <enum name='VIR_ERR_INVALID_NODE_DEVICE' file='virterror' value='52' type='virErrorNumber' info='invalid node device object'/>
     <enum name='VIR_ERR_INVALID_STORAGE_POOL' file='virterror' value='46' type='virErrorNumber' info='invalid storage pool object'/>
     <enum name='VIR_ERR_INVALID_STORAGE_VOL' file='virterror' value='47' type='virErrorNumber' info='invalid storage vol object'/>
     <enum name='VIR_ERR_NETWORK_EXIST' file='virterror' value='37' type='virErrorNumber' info='the network already exist'/>
@@ -511,11 +529,12 @@
     <enum name='VIR_ERR_NO_MEMORY' file='virterror' value='2' type='virErrorNumber' info='memory allocation failure'/>
     <enum name='VIR_ERR_NO_NAME' file='virterror' value='21' type='virErrorNumber' info='missing domain name information'/>
     <enum name='VIR_ERR_NO_NETWORK' file='virterror' value='43' type='virErrorNumber' info='network not found'/>
+    <enum name='VIR_ERR_NO_NODE_DEVICE' file='virterror' value='53' type='virErrorNumber' info=' node device not found'/>
     <enum name='VIR_ERR_NO_OS' file='virterror' value='22' type='virErrorNumber' info='missing domain OS information'/>
     <enum name='VIR_ERR_NO_ROOT' file='virterror' value='18' type='virErrorNumber' info='missing root device information'/>
     <enum name='VIR_ERR_NO_SOURCE' file='virterror' value='19' type='virErrorNumber' info='missing source device information'/>
     <enum name='VIR_ERR_NO_STORAGE_POOL' file='virterror' value='49' type='virErrorNumber' info='storage pool not found'/>
-    <enum name='VIR_ERR_NO_STORAGE_VOL' file='virterror' value='50' type='virErrorNumber' info=' storage pool not found'/>
+    <enum name='VIR_ERR_NO_STORAGE_VOL' file='virterror' value='50' type='virErrorNumber' info='storage pool not found'/>
     <enum name='VIR_ERR_NO_SUPPORT' file='virterror' value='3' type='virErrorNumber' info='no support for this function'/>
     <enum name='VIR_ERR_NO_TARGET' file='virterror' value='20' type='virErrorNumber' info='missing target device information'/>
     <enum name='VIR_ERR_NO_XEN' file='virterror' value='14' type='virErrorNumber' info='could not open Xen hypervisor control'/>
@@ -543,10 +562,11 @@
     <enum name='VIR_EVENT_HANDLE_WRITABLE' file='libvirt' value='2' type='virEventHandleType'/>
     <enum name='VIR_FROM_CONF' file='virterror' value='9' type='virErrorDomain' info='Error in the configuration file handling'/>
     <enum name='VIR_FROM_DOM' file='virterror' value='6' type='virErrorDomain' info='Error when operating on a domain'/>
-    <enum name='VIR_FROM_DOMAIN' file='virterror' value='20' type='virErrorDomain' info=' Error from domain config'/>
+    <enum name='VIR_FROM_DOMAIN' file='virterror' value='20' type='virErrorDomain' info='Error from domain config'/>
     <enum name='VIR_FROM_LXC' file='virterror' value='17' type='virErrorDomain' info='Error from Linux Container driver'/>
     <enum name='VIR_FROM_NET' file='virterror' value='11' type='virErrorDomain' info='Error when operating on a network'/>
     <enum name='VIR_FROM_NETWORK' file='virterror' value='19' type='virErrorDomain' info='Error from network config'/>
+    <enum name='VIR_FROM_NODEDEV' file='virterror' value='22' type='virErrorDomain' info=' Error from node device monitor'/>
     <enum name='VIR_FROM_NONE' file='virterror' value='0' type='virErrorDomain'/>
     <enum name='VIR_FROM_OPENVZ' file='virterror' value='14' type='virErrorDomain' info='Error from OpenVZ driver'/>
     <enum name='VIR_FROM_PROXY' file='virterror' value='8' type='virErrorDomain' info='Error in the proxy code'/>
@@ -557,6 +577,7 @@
     <enum name='VIR_FROM_STATS_LINUX' file='virterror' value='16' type='virErrorDomain' info='Error in the Linux Stats code'/>
     <enum name='VIR_FROM_STORAGE' file='virterror' value='18' type='virErrorDomain' info='Error from storage driver'/>
     <enum name='VIR_FROM_TEST' file='virterror' value='12' type='virErrorDomain' info='Error from test driver'/>
+    <enum name='VIR_FROM_UML' file='virterror' value='21' type='virErrorDomain' info='Error at the UML driver'/>
     <enum name='VIR_FROM_XEN' file='virterror' value='1' type='virErrorDomain' info='Error at Xen hypervisor layer'/>
     <enum name='VIR_FROM_XEND' file='virterror' value='2' type='virErrorDomain' info='Error at connection with xend daemon'/>
     <enum name='VIR_FROM_XENSTORE' file='virterror' value='3' type='virErrorDomain' info='Error at connection with xen store'/>
@@ -581,6 +602,7 @@
     <enum name='VIR_VCPU_OFFLINE' file='libvirt' value='0' type='virVcpuState' info='the virtual CPU is offline'/>
     <enum name='VIR_VCPU_RUNNING' file='libvirt' value='1' type='virVcpuState' info='the virtual CPU is running'/>
     <enum name='VIR_WAR_NO_NETWORK' file='virterror' value='41' type='virErrorNumber' info='failed to start network'/>
+    <enum name='VIR_WAR_NO_NODE' file='virterror' value='51' type='virErrorNumber' info='failed to start node driver'/>
     <enum name='VIR_WAR_NO_STORAGE' file='virterror' value='48' type='virErrorNumber' info='failed to start storage'/>
     <struct name='virConnect' file='libvirt' type='struct _virConnect'/>
     <struct name='virConnectAuth' file='libvirt' type='struct _virConnectAuth'>
@@ -678,6 +700,10 @@ see note above'/>
     <struct name='virNetwork' file='libvirt' type='struct _virNetwork'/>
     <typedef name='virNetworkPtr' file='libvirt' type='virNetwork *'>
       <info>a virNetworkPtr is pointer to a virNetwork private structure, this is the type used to reference a virtual network in the API.</info>
+    </typedef>
+    <struct name='virNodeDevice' file='libvirt' type='struct _virNodeDevice'/>
+    <typedef name='virNodeDevicePtr' file='libvirt' type='virNodeDevice *'>
+      <info>A virNodeDevicePtr is a pointer to a virNodeDevice structure.  Get one via virNodeDeviceLookupByKey, virNodeDeviceLookupByName, or virNodeDeviceCreate.  Be sure to Call virNodeDeviceFree when done using a virNodeDevicePtr obtained from any of the above functions to avoid leaking memory.</info>
     </typedef>
     <struct name='virNodeInfo' file='libvirt' type='struct _virNodeInfo'>
       <field name='model' type='charmodel[32]' info=' string indicating the CPU model'/>
@@ -791,6 +817,7 @@ see note above'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the connection'/>
       <arg name='cb' type='virConnectDomainEventCallback' info='callback to the function handling domain events'/>
       <arg name='opaque' type='void *' info='opaque data to pass on to the callback'/>
+      <arg name='freecb' type='virFreeCallback' info=''/>
     </function>
     <function name='virConnectFindStoragePoolSources' file='libvirt' module='libvirt'>
       <info>Talks to a storage backend and attempts to auto-discover the set of available storage pool sources. e.g. For iSCSI this would be a set of iSCSI targets. For NFS this would be a list of exported paths.  The srcSpec (optional for some storage pool types, e.g. local ones) is an instance of the storage pool&apos;s source element specifying where to look for the pools.  srcSpec is not required for some types (e.g., those querying local storage resources only)</info>
@@ -1220,23 +1247,26 @@ see note above'/>
       <arg name='error' type='virErrorPtr' info='the error being raised.'/>
     </functype>
     <functype name='virEventAddHandleFunc' file='libvirt' module='libvirt'>
-      <info>Part of the EventImpl, this callback Adds a file handle callback to listen for specific events</info>
-      <return type='int' info=''/>
+      <info>Part of the EventImpl, this callback Adds a file handle callback to listen for specific events. The same file handle can be registered multiple times provided the requested event sets are non-overlapping  If the opaque user data requires free&apos;ing when the handle is unregistered, then a 2nd callback can be supplied for this purpose.</info>
+      <return type='int' info='a handle watch number to be used for updating and unregistering for events'/>
       <arg name='fd' type='int' info='file descriptor to listen on'/>
       <arg name='event' type='int' info='bitset of events on which to fire the callback'/>
-      <arg name='cb' type='virEventHandleCallback' info='the callback to be called'/>
+      <arg name='cb' type='virEventHandleCallback' info='the callback to be called when an event occurrs'/>
       <arg name='opaque' type='void *' info='user data to pass to the callback'/>
+      <arg name='ff' type='virFreeCallback' info='the callback invoked to free opaque data blob'/>
     </functype>
     <functype name='virEventAddTimeoutFunc' file='libvirt' module='libvirt'>
-      <info>Part of the EventImpl, this user-defined callback handles adding an event timeout.</info>
+      <info>Part of the EventImpl, this user-defined callback handles adding an event timeout.  If the opaque user data requires free&apos;ing when the handle is unregistered, then a 2nd callback can be supplied for this purpose.</info>
       <return type='int' info='a timer value'/>
       <arg name='timeout' type='int' info='The timeout to monitor'/>
       <arg name='cb' type='virEventTimeoutCallback' info='the callback to call when timeout has expired'/>
       <arg name='opaque' type='void *' info='user data to pass to the callback'/>
+      <arg name='ff' type='virFreeCallback' info='the callback invoked to free opaque data blob'/>
     </functype>
     <functype name='virEventHandleCallback' file='libvirt' module='libvirt'>
-      <info>callback for receiving file handle events</info>
+      <info>Callback for receiving file handle events. The callback will be invoked once for each event which is pending.</info>
       <return type='void'/>
+      <arg name='watch' type='int' info='watch on which the event occurred'/>
       <arg name='fd' type='int' info='file handle on which the event occurred'/>
       <arg name='events' type='int' info='bitset of events from virEventHandleType constants'/>
       <arg name='opaque' type='void *' info='user data registered with handle'/>
@@ -1252,12 +1282,12 @@ see note above'/>
       <arg name='removeTimeout' type='virEventRemoveTimeoutFunc' info=''/>
     </function>
     <functype name='virEventRemoveHandleFunc' file='libvirt' module='libvirt'>
-      <info>Part of the EventImpl, this user-provided callback is notified when an fd is no longer being listened on</info>
+      <info>Part of the EventImpl, this user-provided callback is notified when an fd is no longer being listened on.  If a virEventHandleFreeFunc was supplied when the handle was registered, it will be invoked some time during, or after this function call, when it is safe to release the user data.</info>
       <return type='int' info=''/>
-      <arg name='fd' type='int' info='file descriptor to stop listening on'/>
+      <arg name='watch' type='int' info='file descriptor watch to stop listening on'/>
     </functype>
     <functype name='virEventRemoveTimeoutFunc' file='libvirt' module='libvirt'>
-      <info>Part of the EventImpl, this user-defined callback removes a timer</info>
+      <info>Part of the EventImpl, this user-defined callback removes a timer  If a virEventTimeoutFreeFunc was supplied when the handle was registered, it will be invoked some time during, or after this function call, when it is safe to release the user data.</info>
       <return type='int' info='0 on success, -1 on failure'/>
       <arg name='timer' type='int' info='the timer to remove'/>
     </functype>
@@ -1270,7 +1300,7 @@ see note above'/>
     <functype name='virEventUpdateHandleFunc' file='libvirt' module='libvirt'>
       <info>Part of the EventImpl, this user-provided callback is notified when events to listen on change</info>
       <return type='void'/>
-      <arg name='fd' type='int' info='file descriptor to modify'/>
+      <arg name='watch' type='int' info='file descriptor watch to modify'/>
       <arg name='event' type='int' info='new events to listen on'/>
     </functype>
     <functype name='virEventUpdateTimeoutFunc' file='libvirt' module='libvirt'>
@@ -1278,6 +1308,11 @@ see note above'/>
       <return type='void'/>
       <arg name='timer' type='int' info='the timer to modify'/>
       <arg name='timeout' type='int' info='the new timeout value'/>
+    </functype>
+    <functype name='virFreeCallback' file='libvirt' module='libvirt'>
+      <info></info>
+      <return type='void'/>
+      <arg name='opaque' type='void *' info=''/>
     </functype>
     <function name='virGetLastError' file='virterror' module='virterror'>
       <info>Provide a pointer to the last error caught at the library level Simpler but may not be suitable for multithreaded accesses, in which case use virCopyLastError()</info>
@@ -1389,6 +1424,45 @@ see note above'/>
       <return type='int' info='0 in case of success, -1 in case of error'/>
       <arg name='network' type='virNetworkPtr' info='pointer to a defined network'/>
     </function>
+    <function name='virNodeDeviceFree' file='libvirt' module='libvirt'>
+      <info>Drops a reference to the node device, freeing it if this was the last reference.</info>
+      <return type='int' info='the 0 for success, -1 for error.'/>
+      <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
+    </function>
+    <function name='virNodeDeviceGetName' file='libvirt' module='libvirt'>
+      <info></info>
+      <return type='const char *' info='the device name.'/>
+      <arg name='dev' type='virNodeDevicePtr' info='the device'/>
+    </function>
+    <function name='virNodeDeviceGetParent' file='libvirt' module='libvirt'>
+      <info></info>
+      <return type='const char *' info='the name of the device&apos;s parent, or NULL if the device has no parent.'/>
+      <arg name='dev' type='virNodeDevicePtr' info='the device'/>
+    </function>
+    <function name='virNodeDeviceGetXMLDesc' file='libvirt' module='libvirt'>
+      <info>Fetch an XML document describing all aspects of the device.</info>
+      <return type='char *' info='the XML document, or NULL on error'/>
+      <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
+      <arg name='flags' type='unsigned int' info='flags for XML generation (unused, pass 0)'/>
+    </function>
+    <function name='virNodeDeviceListCaps' file='libvirt' module='libvirt'>
+      <info>Lists the names of the capabilities supported by the device.</info>
+      <return type='int' info='the number of capability names listed in @names.'/>
+      <arg name='dev' type='virNodeDevicePtr' info='the device'/>
+      <arg name='names' type='char ** const' info='array to collect the list of capability names'/>
+      <arg name='maxnames' type='int' info='size of @names'/>
+    </function>
+    <function name='virNodeDeviceLookupByName' file='libvirt' module='libvirt'>
+      <info>Lookup a node device by its name.</info>
+      <return type='virNodeDevicePtr' info='a virNodeDevicePtr if found, NULL otherwise.'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='name' type='const char *' info='unique device name'/>
+    </function>
+    <function name='virNodeDeviceNumOfCaps' file='libvirt' module='libvirt'>
+      <info></info>
+      <return type='int' info='the number of capabilities supported by the device.'/>
+      <arg name='dev' type='virNodeDevicePtr' info='the device'/>
+    </function>
     <function name='virNodeGetCellsFreeMemory' file='libvirt' module='libvirt'>
       <info>This call returns the amount of free memory in one or more NUMA cells. The @freeMems array must be allocated by the caller and will be filled with the amount of free memory in kilobytes for each cell requested, starting with startCell (in freeMems[0]), up to either (startCell + maxCells), or the number of additional cells in the node, whichever is smaller.</info>
       <return type='int' info='the number of entries filled in freeMems, or -1 in case of error.'/>
@@ -1407,6 +1481,22 @@ see note above'/>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='info' type='virNodeInfoPtr' info='pointer to a virNodeInfo structure allocated by the user'/>
+    </function>
+    <function name='virNodeListDevices' file='libvirt' module='libvirt'>
+      <info>Collect the list of node devices, and store their names in @names  If the optional &apos;cap&apos;  argument is non-NULL, then the count will be restricted to devices with the specified capability</info>
+      <return type='int' info='the number of node devices found or -1 in case of error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='cap' type='const char *' info='capability name'/>
+      <arg name='names' type='char ** const' info='array to collect the list of node device names'/>
+      <arg name='maxnames' type='int' info='size of @names'/>
+      <arg name='flags' type='unsigned int' info='flags (unused, pass 0)'/>
+    </function>
+    <function name='virNodeNumOfDevices' file='libvirt' module='libvirt'>
+      <info>Provides the number of node devices.  If the optional &apos;cap&apos;  argument is non-NULL, then the count will be restricted to devices with the specified capability</info>
+      <return type='int' info='the number of node devices or -1 in case of error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='cap' type='const char *' info='capability name'/>
+      <arg name='flags' type='unsigned int' info='flags (unused, pass 0)'/>
     </function>
     <function name='virResetError' file='virterror' module='virterror'>
       <info>Reset the error being pointed to</info>
