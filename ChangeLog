@@ -1,3 +1,7 @@
+Mon Nov 24 16:49:40 GMT 2008 Dnaiel P. Berrange <berrange@redhat.com>
+
+	* autobuild.sh: Disable UML driver on mingw32 biuld
+
 Mon Nov 24 16:01:40 CET 2008 Guido Günther <agx@sigxcpu.org>
 
 	* src/Makefile.am: look for libvirt_sym.version in builddir

@@ -72,6 +72,7 @@ if [ -x /usr/bin/i686-pc-mingw32-gcc ]; then
     --without-xen \
     --without-qemu \
     --without-lxc \
+    --without-uml \
     --without-openvz \
     --without-libvirtd
 
