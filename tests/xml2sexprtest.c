@@ -8,8 +8,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#if WITH_XEN
-
 #include "internal.h"
 #include "xend_internal.h"
 #include "testutils.h"
@@ -155,8 +153,3 @@ mymain(int argc, char **argv)
 
 VIRT_TEST_MAIN(mymain)
 
-#else /* WITH_XEN */
-
-int main (void) { exit (77); /* means 'test skipped' for automake */ }
-
-#endif /* ! WITH_XEN */

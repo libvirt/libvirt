@@ -4,8 +4,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#ifdef WITH_XEN
-
 #include "internal.h"
 #include "xml.h"
 #include "xend_internal.h"
@@ -146,11 +144,3 @@ mymain(int argc, char **argv)
 
 VIRT_TEST_MAIN(mymain)
 
-#else /* WITHOUT_XEN */
-int
-main(void)
-{
-    fprintf(stderr, "libvirt compiled without Xen support\n");
-    return(0);
-}
-#endif /* WITH_XEN */

@@ -5,8 +5,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#ifdef WITH_XEN
-
 #include "internal.h"
 #include "xml.h"
 #include "testutils.h"
@@ -225,12 +223,3 @@ mymain(int argc, char **argv)
 
 VIRT_TEST_MAIN(mymain)
 
-#else /* !WITH_XEN */
-
-int
-main (void)
-{
-    exit (EXIT_SUCCESS);
-}
-
-#endif /* !WITH_XEN */

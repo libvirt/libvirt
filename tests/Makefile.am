@@ -43,10 +43,13 @@ EXTRA_DIST =		\
 	nodeinfodata     \
 	domainschematest
 
-noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
-	reconnect xmconfigtest xencapstest \
+noinst_PROGRAMS = xmlrpctest virshtest conftest \
         nodeinfotest statstest qparamtest
 
+if WITH_XEN
+noinst_PROGRAMS += xml2sexprtest sexpr2xmltest \
+	reconnect xmconfigtest xencapstest
+endif
 if WITH_QEMU
 noinst_PROGRAMS += qemuxml2argvtest qemuxml2xmltest
 endif
@@ -68,12 +71,22 @@ endif
 
 EXTRA_DIST += $(test_scripts)
 
-TESTS = xml2sexprtest sexpr2xmltest virshtest xmconfigtest \
-        xencapstest nodeinfotest \
-	statstest qparamtest $(test_scripts)
+TESTS = virshtest \
+        nodeinfotest \
+	statstest \
+	qparamtest \
+	$(test_scripts)
+
+if WITH_XEN
+TESTS += xml2sexprtest \
+	sexpr2xmltest \
+	xmconfigtest \
+	xencapstest
 if ENABLE_XEN_TESTS
-  TESTS += reconnect
+TESTS += reconnect
 endif
+endif
+
 if WITH_QEMU
 TESTS += qemuxml2argvtest qemuxml2xmltest
 endif
@@ -105,6 +118,7 @@ xmlrpctest_SOURCES = \
 
 xmlrpctest_LDADD = $(LDADDS)
 
+if WITH_XEN
 xml2sexprtest_SOURCES = \
 	xml2sexprtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
@@ -119,6 +133,20 @@ xmconfigtest_SOURCES = \
 	xmconfigtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
 xmconfigtest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
+
+xencapstest_SOURCES = \
+	xencapstest.c testutils.h testutils.c
+xencapstest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
+
+reconnect_SOURCES = \
+	reconnect.c
+reconnect_LDADD = $(LDADDS)
+
+else
+EXTRA_DIST += xml2sexprtest.c sexpr2xmltest.c xmconfigtest.c \
+	xencapstest.c reconnect.c \
+	testutilsxen.c testutilsxen.h
+endif
 
 if WITH_QEMU
 qemuxml2argvtest_SOURCES = \
@@ -143,10 +171,6 @@ conftest_SOURCES = \
 	conftest.c
 conftest_LDADD = $(LDADDS)
 
-xencapstest_SOURCES = \
-	xencapstest.c testutils.h testutils.c
-xencapstest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
-
 nodeinfotest_SOURCES = \
 	nodeinfotest.c testutils.h testutils.c
 nodeinfotest_LDADD = $(LDADDS)
@@ -158,9 +182,5 @@ statstest_LDADD = $(LDADDS)
 qparamtest_SOURCES = \
 	qparamtest.c testutils.h testutils.c
 qparamtest_LDADD = $(LDADDS)
-
-reconnect_SOURCES = \
-	reconnect.c
-reconnect_LDADD = $(LDADDS)
 
 CLEANFILES = *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
