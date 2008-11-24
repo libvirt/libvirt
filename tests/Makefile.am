@@ -63,6 +63,7 @@ test_scripts += \
 	undefine \
 	vcpupin
 	virsh-all
+	virsh-synopsis
 endif
 
 EXTRA_DIST += $(test_scripts)

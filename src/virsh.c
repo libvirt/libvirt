@@ -2365,7 +2365,7 @@ cmdNetworkAutostart(vshControl *ctl, const vshCmd *cmd)
  * "net-create" command
  */
 static const vshCmdInfo info_network_create[] = {
-    {"syntax", "create a network from an XML <file>"},
+    {"syntax", "net-create <file>"},
     {"help", gettext_noop("create a network from an XML file")},
     {"desc", gettext_noop("Create a network.")},
     {NULL, NULL}
@@ -2413,7 +2413,7 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
  * "net-define" command
  */
 static const vshCmdInfo info_network_define[] = {
-    {"syntax", "define a network from an XML <file>"},
+    {"syntax", "net-define <file>"},
     {"help", gettext_noop("define (but don't start) a network from an XML file")},
     {"desc", gettext_noop("Define a network.")},
     {NULL, NULL}
@@ -2697,7 +2697,7 @@ cmdNetworkName(vshControl *ctl, const vshCmd *cmd)
  * "net-start" command
  */
 static const vshCmdInfo info_network_start[] = {
-    {"syntax", "start <network>"},
+    {"syntax", "net-start <network>"},
     {"help", gettext_noop("start a (previously defined) inactive network")},
     {"desc", gettext_noop("Start a network.")},
     {NULL, NULL}
@@ -2862,14 +2862,15 @@ cmdPoolAutostart(vshControl *ctl, const vshCmd *cmd)
  * "pool-create" command
  */
 static const vshCmdInfo info_pool_create[] = {
-    {"syntax", "create a pool from an XML <file>"},
+    {"syntax", "pool-create <file>"},
     {"help", gettext_noop("create a pool from an XML file")},
     {"desc", gettext_noop("Create a pool.")},
     {NULL, NULL}
 };
 
 static const vshCmdOptDef opts_pool_create[] = {
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML pool description")},
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ,
+     gettext_noop("file containing an XML pool description")},
     {NULL, 0, 0, NULL}
 };
 
@@ -3000,7 +3001,7 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
  * "pool-define" command
  */
 static const vshCmdInfo info_pool_define[] = {
-    {"syntax", "define a pool from an XML <file>"},
+    {"syntax", "pool-define <file>"},
     {"help", gettext_noop("define (but don't start) a pool from an XML file")},
     {"desc", gettext_noop("Define a pool.")},
     {NULL, NULL}
@@ -3727,7 +3728,7 @@ cmdPoolName(vshControl *ctl, const vshCmd *cmd)
  * "pool-start" command
  */
 static const vshCmdInfo info_pool_start[] = {
-    {"syntax", "start <pool>"},
+    {"syntax", "pool-start <pool>"},
     {"help", gettext_noop("start a (previously defined) inactive pool")},
     {"desc", gettext_noop("Start a pool.")},
     {NULL, NULL}
@@ -3965,7 +3966,7 @@ cmdPoolUuid(vshControl *ctl, const vshCmd *cmd)
  * "vol-create" command
  */
 static const vshCmdInfo info_vol_create[] = {
-    {"syntax", "create <file>"},
+    {"syntax", "vol-create <file>"},
     {"help", gettext_noop("create a vol from an XML file")},
     {"desc", gettext_noop("Create a vol.")},
     {NULL, NULL}

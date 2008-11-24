@@ -1,5 +1,10 @@
 Mon Nov 24 08:10:49 +0100 2008 Jim Meyering <meyering@redhat.com>
 
+	tests: new test: virsh-synopsis
+	* tests/virsh-synopsis: new file
+	* tests/Makefile.am (test_scripts): Add virsh-synopsis.
+	* src/virsh.c: Correct help SYNOPSIS for each of seven commands.
+
 	tests: virsh-all: new script
 	* tests/virsh-all: New script.
 	* tests/Makefile.am (test_scripts): Add virsh-all.
