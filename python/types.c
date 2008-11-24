@@ -216,7 +216,6 @@ libvirt_virFreeCallbackWrap(virFreeCallback node)
     PyObject *ret;
 
     if (node == NULL) {
-        printf("%s: WARNING - Wrapping None\n", __FUNCTION__);
         Py_INCREF(Py_None);
         return (Py_None);
     }

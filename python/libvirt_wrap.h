@@ -91,6 +91,14 @@ typedef struct {
     virEventTimeoutCallback obj;
 } PyvirEventTimeoutCallback_Object;
 
+#define PyvirFreeCallback_Get(v) (((v) == Py_None) ? NULL : \
+        (((PyvirFreeCallback_Object *)(v))->obj))
+
+typedef struct {
+    PyObject_HEAD
+    virFreeCallback obj;
+} PyvirFreeCallback_Object;
+
 #define PyvirVoidPtr_Get(v) (((v) == Py_None) ? NULL : \
         (((PyvirVoidPtr_Object *)(v))->obj))
 

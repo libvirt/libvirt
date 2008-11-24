@@ -32,12 +32,12 @@
             ret = libvirtmod.virConnectDomainEventRegister(self._o, self)
             if ret == -1: raise libvirtError ('virConnectDomainEventRegister() failed', conn=self)
 
-    def dispatchDomainEventCallbacks(self, dom, event):
+    def dispatchDomainEventCallbacks(self, dom, event, detail):
         """Dispatches events to python user domain event callbacks
         """
         try:
             for cb,opaque in self.domainEventCallbacks.items():
-                cb(self,dom,event,opaque)
+                cb(self,dom,event,detail,opaque)
             return 0
         except AttributeError:
             pass

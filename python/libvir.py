@@ -126,11 +126,11 @@ def getVersion (name = None):
 #
 # Invoke an EventHandle callback
 #
-def eventInvokeHandleCallback (fd, event, callback, opaque):
+def eventInvokeHandleCallback (watch, fd, event, callback, opaque):
     """
     Invoke the Event Impl Handle Callback in C
     """
-    libvirtmod.virEventInvokeHandleCallback(fd, event, callback, opaque);
+    libvirtmod.virEventInvokeHandleCallback(watch, fd, event, callback, opaque);
 
 #
 # Invoke an EventTimeout callback

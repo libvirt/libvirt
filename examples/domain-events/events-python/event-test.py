@@ -72,22 +72,22 @@ def myAddHandle(fd, events, cb, opaque):
     h_events = events
     h_cb = cb
     h_opaque = opaque
-
     mypoll.register(fd, myEventHandleTypeToPollEvent(events))
+    return 0
 
 def myUpdateHandle(watch, event):
     global h_fd, h_events
-    #print "Updating Handle %s %s" % (str(fd), str(events))
-    h_fd = fd
+    #print "Updating Handle %s %s" % (str(h_fd), str(event))
     h_events = event
-    mypoll.unregister(watch)
-    mypoll.register(watch, myEventHandleTypeToPollEvent(event))
+    mypoll.unregister(h_fd)
+    mypoll.register(h_fd, myEventHandleTypeToPollEvent(event))
 
 def myRemoveHandle(watch):
     global h_fd
-    #print "Removing Handle %s" % str(fd)
+    #print "Removing Handle %s" % str(h_fd)
+    mypoll.unregister(h_fd)
     h_fd = 0
-    mypoll.unregister(watch)
+    return h_opaque
 
 def myAddTimeout(timeout, cb, opaque):
     global t_active, t_timeout, t_cb, t_opaque
@@ -96,16 +96,18 @@ def myAddTimeout(timeout, cb, opaque):
     t_timeout = timeout;
     t_cb = cb;
     t_opaque = opaque;
+    return 0
 
 def myUpdateTimeout(timer, timeout):
     global t_timeout
-    #print "Updating Timeout %s" % (str(timer), str(timeout))
+    #print "Updating Timeout %s %s" % (str(timer), str(timeout))
     t_timeout = timeout;
 
 def myRemoveTimeout(timer):
     global t_active
     #print "Removing Timeout %s" % str(timer)
     t_active = 0;
+    return t_opaque
 
 ##########################################
 # Main
@@ -142,6 +144,14 @@ def main():
                                myUpdateTimeout,
                                myRemoveTimeout );
     vc = libvirt.open(uri)
+
+    # Close connection on exit (to test cleanup paths)
+    old_exitfunc = getattr(sys, 'exitfunc', None)
+    def exit():
+        print "Closing " + str(vc)
+        vc.close()
+        if (old_exitfunc): old_exitfunc()
+    sys.exitfunc = exit
 
     #Add 2 callbacks to prove this works with more than just one
     vc.domainEventRegister(myDomainEventCallback1,None)

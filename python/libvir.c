@@ -35,6 +35,18 @@ extern void initcygvirtmod(void);
 #define VIR_PY_INT_FAIL (libvirt_intWrap(-1))
 #define VIR_PY_INT_SUCCESS (libvirt_intWrap(0))
 
+static char *py_str(PyObject *obj)
+{
+    PyObject *str = PyObject_Str(obj);
+    if (!str) {
+        PyErr_Print();
+        PyErr_Clear();
+        return NULL;
+    };
+    return PyString_AsString(str);
+}
+
+
 /************************************************************************
  *									*
  *		Statistics						*
@@ -484,7 +496,8 @@ libvirt_virErrorFuncHandler(ATTRIBUTE_UNUSED void *ctx, virErrorPtr err)
     PyObject *result;
 
 #ifdef DEBUG_ERROR
-    printf("libvirt_virErrorFuncHandler(%p, %s, ...) called\n", ctx, msg);
+    printf("libvirt_virErrorFuncHandler(%p, %s, ...) called\n", ctx,
+           err->message);
 #endif
 
     if ((err == NULL) || (err->code == VIR_ERR_OK))
@@ -1780,12 +1793,19 @@ libvirt_virConnectDomainEventDeregister(ATTRIBUTE_UNUSED PyObject * self,
  * Event Impl
  *******************************************/
 static PyObject *addHandleObj     = NULL;
+static char *addHandleName        = NULL;
 static PyObject *updateHandleObj  = NULL;
+static char *updateHandleName     = NULL;
 static PyObject *removeHandleObj  = NULL;
+static char *removeHandleName     = NULL;
 static PyObject *addTimeoutObj    = NULL;
+static char *addTimeoutName       = NULL;
 static PyObject *updateTimeoutObj = NULL;
+static char *updateTimeoutName    = NULL;
 static PyObject *removeTimeoutObj = NULL;
+static char *removeTimeoutName    = NULL;
 
+#define NAME(fn) ( fn ## Name ? fn ## Name : # fn )
 
 static int
 libvirt_virEventAddHandleFunc  (int fd,
@@ -1794,13 +1814,14 @@ libvirt_virEventAddHandleFunc  (int fd,
                                 void *opaque,
                                 virFreeCallback ff)
 {
-    PyObject *result = NULL;
+    PyObject *result;
     PyObject *python_cb;
     PyObject *cb_obj;
     PyObject *ff_obj;
     PyObject *opaque_obj;
     PyObject *cb_args;
     PyObject *pyobj_args;
+    int retval = -1;
 
     LIBVIRT_ENSURE_THREAD_STATE;
 
@@ -1809,9 +1830,19 @@ libvirt_virEventAddHandleFunc  (int fd,
                                      "eventInvokeHandleCallback");
     if(!python_cb) {
 #if DEBUG_ERROR
-        printf("%s Error finding eventInvokeHandleCallback\n", __FUNCTION__);
+        printf("%s: Error finding eventInvokeHandleCallback\n", __FUNCTION__);
 #endif
         PyErr_Print();
+        PyErr_Clear();
+        goto cleanup;
+    }
+    if (!PyCallable_Check(python_cb)) {
+#if DEBUG_ERROR
+        char *name = py_str(python_cb);
+        printf("%s: %s is not callable\n", __FUNCTION__,
+               name ? name : "libvirt.eventInvokeHandleCallback");
+        free(name);
+#endif
         goto cleanup;
     }
     Py_INCREF(python_cb);
@@ -1832,8 +1863,17 @@ libvirt_virEventAddHandleFunc  (int fd,
     PyTuple_SetItem(pyobj_args, 2, python_cb);
     PyTuple_SetItem(pyobj_args, 3, cb_args);
 
-    if(addHandleObj && PyCallable_Check(addHandleObj))
-        result = PyEval_CallObject(addHandleObj, pyobj_args);
+    result = PyEval_CallObject(addHandleObj, pyobj_args);
+    if (!result) {
+        PyErr_Print();
+        PyErr_Clear();
+    } else if (!PyInt_Check(result)) {
+#if DEBUG_ERROR
+        printf("%s: %s should return an int\n", __FUNCTION__, NAME(addHandle));
+#endif
+    } else {
+        retval = (int)PyInt_AsLong(result);
+    }
 
     Py_XDECREF(result);
     Py_DECREF(pyobj_args);
@@ -1841,23 +1881,26 @@ libvirt_virEventAddHandleFunc  (int fd,
 cleanup:
     LIBVIRT_RELEASE_THREAD_STATE;
 
-    return 0;
+    return retval;
 }
 
 static void
-libvirt_virEventUpdateHandleFunc(int fd, int event)
+libvirt_virEventUpdateHandleFunc(int watch, int event)
 {
-    PyObject *result = NULL;
+    PyObject *result;
     PyObject *pyobj_args;
 
     LIBVIRT_ENSURE_THREAD_STATE;
 
     pyobj_args = PyTuple_New(2);
-    PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(fd));
+    PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(watch));
     PyTuple_SetItem(pyobj_args, 1, libvirt_intWrap(event));
 
-    if(updateHandleObj && PyCallable_Check(updateHandleObj))
-        result = PyEval_CallObject(updateHandleObj, pyobj_args);
+    result = PyEval_CallObject(updateHandleObj, pyobj_args);
+    if (!result) {
+        PyErr_Print();
+        PyErr_Clear();
+    }
 
     Py_XDECREF(result);
     Py_DECREF(pyobj_args);
@@ -1867,25 +1910,45 @@ libvirt_virEventUpdateHandleFunc(int fd, int event)
 
 
 static int
-libvirt_virEventRemoveHandleFunc(int fd)
+libvirt_virEventRemoveHandleFunc(int watch)
 {
-    PyObject *result = NULL;
+    PyObject *result;
     PyObject *pyobj_args;
+    PyObject *opaque;
+    PyObject *ff;
+    int retval = -1;
+    virFreeCallback cff;
 
     LIBVIRT_ENSURE_THREAD_STATE;
 
     pyobj_args = PyTuple_New(1);
-    PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(fd));
+    PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(watch));
 
-    if(removeHandleObj && PyCallable_Check(removeHandleObj))
-        result = PyEval_CallObject(removeHandleObj, pyobj_args);
+    result = PyEval_CallObject(removeHandleObj, pyobj_args);
+    if (!result) {
+        PyErr_Print();
+        PyErr_Clear();
+    } else if (!PyTuple_Check(result) || PyTuple_Size(result) != 3) {
+#if DEBUG_ERROR
+        printf("%s: %s must return opaque obj registered with %s"
+               "to avoid leaking libvirt memory\n",
+               __FUNCTION__, NAME(removeHandle), NAME(addHandle));
+#endif
+    } else {
+        opaque = PyTuple_GetItem(result, 1);
+        ff = PyTuple_GetItem(result, 2);
+        cff = PyvirFreeCallback_Get(ff);
+        if (cff)
+            (*cff)(PyvirVoidPtr_Get(opaque));
+        retval = 0;
+    }
 
     Py_XDECREF(result);
     Py_DECREF(pyobj_args);
 
     LIBVIRT_RELEASE_THREAD_STATE;
 
-    return 0;
+    return retval;
 }
 
 static int
@@ -1894,7 +1957,7 @@ libvirt_virEventAddTimeoutFunc(int timeout,
                                void *opaque,
                                virFreeCallback ff)
 {
-    PyObject *result = NULL;
+    PyObject *result;
 
     PyObject *python_cb;
 
@@ -1903,6 +1966,7 @@ libvirt_virEventAddTimeoutFunc(int timeout,
     PyObject *opaque_obj;
     PyObject *cb_args;
     PyObject *pyobj_args;
+    int retval = -1;
 
     LIBVIRT_ENSURE_THREAD_STATE;
 
@@ -1911,9 +1975,19 @@ libvirt_virEventAddTimeoutFunc(int timeout,
                                      "eventInvokeTimeoutCallback");
     if(!python_cb) {
 #if DEBUG_ERROR
-        printf("%s Error finding eventInvokeTimeoutCallback\n", __FUNCTION__);
+        printf("%s: Error finding eventInvokeTimeoutCallback\n", __FUNCTION__);
 #endif
         PyErr_Print();
+        PyErr_Clear();
+        goto cleanup;
+    }
+    if (!PyCallable_Check(python_cb)) {
+#if DEBUG_ERROR
+        char *name = py_str(python_cb);
+        printf("%s: %s is not callable\n", __FUNCTION__,
+               name ? name : "libvirt.eventInvokeTimeoutCallback");
+        free(name);
+#endif
         goto cleanup;
     }
     Py_INCREF(python_cb);
@@ -1934,15 +2008,24 @@ libvirt_virEventAddTimeoutFunc(int timeout,
     PyTuple_SetItem(pyobj_args, 1, python_cb);
     PyTuple_SetItem(pyobj_args, 2, cb_args);
 
-    if(addTimeoutObj && PyCallable_Check(addTimeoutObj))
-        result = PyEval_CallObject(addTimeoutObj, pyobj_args);
+    result = PyEval_CallObject(addTimeoutObj, pyobj_args);
+    if (!result) {
+        PyErr_Print();
+        PyErr_Clear();
+    } else if (!PyInt_Check(result)) {
+#if DEBUG_ERROR
+        printf("%s: %s should return an int\n", __FUNCTION__, NAME(addTimeout));
+#endif
+    } else {
+        retval = (int)PyInt_AsLong(result);
+    }
 
     Py_XDECREF(result);
     Py_DECREF(pyobj_args);
 
 cleanup:
     LIBVIRT_RELEASE_THREAD_STATE;
-    return 0;
+    return retval;
 }
 
 static void
@@ -1957,8 +2040,11 @@ libvirt_virEventUpdateTimeoutFunc(int timer, int timeout)
     PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(timer));
     PyTuple_SetItem(pyobj_args, 1, libvirt_intWrap(timeout));
 
-    if(updateTimeoutObj && PyCallable_Check(updateTimeoutObj))
-        result = PyEval_CallObject(updateTimeoutObj, pyobj_args);
+    result = PyEval_CallObject(updateTimeoutObj, pyobj_args);
+    if (!result) {
+        PyErr_Print();
+        PyErr_Clear();
+    }
 
     Py_XDECREF(result);
     Py_DECREF(pyobj_args);
@@ -1971,45 +2057,85 @@ libvirt_virEventRemoveTimeoutFunc(int timer)
 {
     PyObject *result = NULL;
     PyObject *pyobj_args;
+    PyObject *opaque;
+    PyObject *ff;
+    int retval = -1;
+    virFreeCallback cff;
 
     LIBVIRT_ENSURE_THREAD_STATE;
 
     pyobj_args = PyTuple_New(1);
     PyTuple_SetItem(pyobj_args, 0, libvirt_intWrap(timer));
 
-    if(updateTimeoutObj && PyCallable_Check(updateTimeoutObj))
-        result = PyEval_CallObject(removeTimeoutObj, pyobj_args);
+    result = PyEval_CallObject(removeTimeoutObj, pyobj_args);
+    if (!result) {
+        PyErr_Print();
+        PyErr_Clear();
+    } else if (!PyTuple_Check(result) || PyTuple_Size(result) != 3) {
+#if DEBUG_ERROR
+        printf("%s: %s must return opaque obj registered with %s"
+               "to avoid leaking libvirt memory\n",
+               __FUNCTION__, NAME(removeTimeout), NAME(addTimeout));
+#endif
+    } else {
+        opaque = PyTuple_GetItem(result, 1);
+        ff = PyTuple_GetItem(result, 2);
+        cff = PyvirFreeCallback_Get(ff);
+        if (cff)
+            (*cff)(PyvirVoidPtr_Get(opaque));
+        retval = 0;
+    }
 
     Py_XDECREF(result);
     Py_DECREF(pyobj_args);
 
     LIBVIRT_RELEASE_THREAD_STATE;
 
-    return 0;
+    return retval;
 }
 
 static PyObject *
 libvirt_virEventRegisterImpl(ATTRIBUTE_UNUSED PyObject * self,
                              PyObject * args)
 {
+    /* Unref the previously-registered impl (if any) */
     Py_XDECREF(addHandleObj);
+    free(addHandleName);
     Py_XDECREF(updateHandleObj);
+    free(updateHandleName);
     Py_XDECREF(removeHandleObj);
+    free(removeHandleName);
     Py_XDECREF(addTimeoutObj);
+    free(addTimeoutName);
     Py_XDECREF(updateTimeoutObj);
+    free(updateTimeoutName);
     Py_XDECREF(removeTimeoutObj);
+    free(removeTimeoutName);
 
-    if (!PyArg_ParseTuple
-        (args, (char *) "OOOOOO:virEventRegisterImpl",
-                        &addHandleObj,
-                        &updateHandleObj,
-                        &removeHandleObj,
-                        &addTimeoutObj,
-                        &updateTimeoutObj,
-                        &removeTimeoutObj
-        ))
+    /* Parse and check arguments */
+    if (!PyArg_ParseTuple(args, (char *) "OOOOOO:virEventRegisterImpl",
+                          &addHandleObj, &updateHandleObj,
+                          &removeHandleObj, &addTimeoutObj,
+                          &updateTimeoutObj, &removeTimeoutObj) ||
+        !PyCallable_Check(addHandleObj) ||
+        !PyCallable_Check(updateHandleObj) ||
+        !PyCallable_Check(removeHandleObj) ||
+        !PyCallable_Check(addTimeoutObj) ||
+        !PyCallable_Check(updateTimeoutObj) ||
+        !PyCallable_Check(removeTimeoutObj))
         return VIR_PY_INT_FAIL;
 
+    /* Get argument string representations (for error reporting) */
+    addHandleName = py_str(addTimeoutObj);
+    updateHandleName = py_str(updateHandleObj);
+    removeHandleName = py_str(removeHandleObj);
+    addTimeoutName = py_str(addTimeoutObj);
+    updateTimeoutName = py_str(updateTimeoutObj);
+    removeTimeoutName = py_str(removeTimeoutObj);
+
+    /* Inc refs since we're holding onto these objects until
+     * the next call (if any) to this function.
+     */
     Py_INCREF(addHandleObj);
     Py_INCREF(updateHandleObj);
     Py_INCREF(removeHandleObj);
@@ -2019,6 +2145,9 @@ libvirt_virEventRegisterImpl(ATTRIBUTE_UNUSED PyObject * self,
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
 
+    /* Now register our C EventImpl, which will dispatch
+     * to the Python callbacks passed in as args.
+     */
     virEventRegisterImpl(libvirt_virEventAddHandleFunc,
                          libvirt_virEventUpdateHandleFunc,
                          libvirt_virEventRemoveHandleFunc,
