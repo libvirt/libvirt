@@ -68,5 +68,6 @@ int openvzLoadDomains(struct openvz_driver *driver);
 void openvzFreeDriver(struct openvz_driver *driver);
 int strtoI(const char *str);
 int openvzSetDefinedUUID(int vpsid, unsigned char *uuid);
+unsigned int openvzGetNodeCPUs(void);
 
 #endif /* OPENVZ_CONF_H */

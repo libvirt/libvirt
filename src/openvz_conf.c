@@ -49,6 +49,7 @@
 #include "buf.h"
 #include "memory.h"
 #include "util.h"
+#include "nodeinfo.h"
 
 static char *openvzLocateConfDir(void);
 static int openvzGetVPSUUID(int vpsid, char *uuidstr);
@@ -427,9 +428,10 @@ int openvzLoadDomains(struct openvz_driver *driver) {
             goto cleanup;
         } else if (ret > 0) {
             dom->def->vcpus = strtoI(temp);
-        } else {
-            dom->def->vcpus = 1;
         }
+
+        if (ret == 0 || dom->def->vcpus == 0)
+            dom->def->vcpus = openvzGetNodeCPUs();
 
         /* XXX load rest of VM config data .... */
 
@@ -457,6 +459,19 @@ int openvzLoadDomains(struct openvz_driver *driver) {
     return -1;
 }
 
+unsigned int
+openvzGetNodeCPUs(void)
+{
+    virNodeInfo nodeinfo;
+
+    if (virNodeInfoPopulate(NULL, &nodeinfo) < 0) {
+        openvzError(NULL, VIR_ERR_INTERNAL_ERROR,
+                      _("Cound not read nodeinfo"));
+        return 0;
+    }
+
+    return nodeinfo.cpus;
+}
 
 int
 openvzWriteConfigParam(int vpsid, const char *param, const char *value)

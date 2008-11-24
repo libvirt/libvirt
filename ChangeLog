@@ -1,3 +1,9 @@
+Mon Nov 24 19:32:40 GMT 2008 Dnaiel P. Berrange <berrange@redhat.com>
+
+	* src/openvz_conf.c, src/openvz_conf.h, src/openvz_driver.c:
+	Default vCPUs to equal host pCPU count if not set in config
+	(patch from Evgeniy Sokolov)
+
 Mon Nov 24 19:27:40 GMT 2008 Dnaiel P. Berrange <berrange@redhat.com>
 
 	* examples/domain-events/events-python/event-test.py,

@@ -834,7 +834,7 @@ static int openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
     char   str_vcpus[32];
     const char *prog[] = { VZCTL, "--quiet", "set", vm ? vm->def->name : NULL,
                            "--cpus", str_vcpus, "--save", NULL };
-
+    unsigned int pcpus;
 
     if (!vm) {
         openvzError(conn, VIR_ERR_INVALID_DOMAIN,
@@ -847,6 +847,10 @@ static int openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
                     "%s", _("VCPUs should be >= 1"));
         return -1;
     }
+
+    pcpus = openvzGetNodeCPUs();
+    if (pcpus > 0 && pcpus < nvcpus)
+        nvcpus = pcpus;
 
     snprintf(str_vcpus, 31, "%d", nvcpus);
     str_vcpus[31] = '\0';
