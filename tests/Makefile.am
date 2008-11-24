@@ -2,7 +2,7 @@
 
 SHELL = $(PREFERABLY_POSIX_SHELL)
 
-SUBDIRS = virshdata confdata sexpr2xmldata \
+SUBDIRS = confdata sexpr2xmldata \
   xml2sexprdata xmconfigdata xencapsdata
 
 INCLUDES = \

@@ -1,9 +1,0 @@
-CPU model:           i986
-CPU(s):              50
-CPU frequency:       6000 MHz
-CPU socket(s):       4
-Core(s) per socket:  4
-Thread(s) per core:  2
-NUMA cell(s):        4
-Memory size:         8192000 kB
-

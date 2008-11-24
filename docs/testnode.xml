@@ -1,6 +1,6 @@
 <node>
 <!-- This file gives an example config for the mock 'test' backend
-     driver to libvirt. This is intended to allow relible unit testing
+     driver to libvirt. This is intended to allow reliable unit testing
      of applications using libvirt. To use this with virsh, run something
      like:
 

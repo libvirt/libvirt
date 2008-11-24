@@ -1,3 +1,15 @@
+Mon Nov 24 08:10:49 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	Move the expected output data from virshdata/*.txt into virshtest.c.
+	* tests/virshtest.c: Embed literal, expected output here, rather than
+	using virshdata/*.txt file names.
+	Factor out some common constructs.
+	(testCompareOutputLit): New function.
+	(testCompareOutput): #ifdef-out, not that it's unused.
+	* tests/Makefile.am (SUBDIRS): Remove virshdata/ and all files in it.
+	* docs/testnode.xml: Fix typo in a comment.
+	* configure.in (AC_OUTPUT): Remove tests/virshdata/Makefile.
+
 Fri Nov 21 23:51:19 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	* gnulib/tests/test-EOVERFLOW: Remove.
