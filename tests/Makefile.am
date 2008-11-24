@@ -62,6 +62,7 @@ test_scripts += \
 	read-non-seekable \
 	undefine \
 	vcpupin
+	virsh-all
 endif
 
 EXTRA_DIST += $(test_scripts)
