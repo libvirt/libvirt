@@ -3,6 +3,7 @@
 Makefile
 Makefile.in
 sys
+test-EOVERFLOW
 test-alloca-opt
 test-arpa_inet
 test-c-ctype
