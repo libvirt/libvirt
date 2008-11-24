@@ -1,3 +1,7 @@
+Mon Nov 24 16:01:40 CET 2008 Guido Günther <agx@sigxcpu.org>
+
+	* src/Makefile.am: look for libvirt_sym.version in builddir
+
 Mon Nov 24 08:10:49 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	tests: new test: virsh-synopsis
