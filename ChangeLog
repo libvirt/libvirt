@@ -1,3 +1,24 @@
+Tue Nov 25 10:43:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Xen domain lifecycle events (Ben Guthro & Daniel Berrange)
+	* configure.in: Probe for inotify availability
+	* examples/domain-events/events-c/event-test.c: Default to NULL
+	connection URI to allow probing
+	* include/libvirt/virterror.h, src/virterror.c: Add error code
+	for xen inotify driver
+	* po/POTFILES.in: Add xen_inotify.c
+	* python/libvir.c: Add bogus const cast for python2.4 brokeness
+	* src/Makefile.am: Add xen_inotify.c
+	* src/util.c: Fix file descriptor leak in virRun
+	* src/xen_inotify.c, src/xen_inotify.h: Monitor /etc/xen and
+	/var/lib/xen/domains for new/old configs
+	* src/xen_unified.c, src/xen_unified.h: Wire in inotify driver
+	for events
+	* src/xm_internal.c, src/xm_internal.h: Refactor to allow inotify
+	monitoring of config files
+	* src/xs_internal.c, src/xs_internal.h: Use xenstore watch to
+	check for domain start/destroy events
+
 Tue Nov 25 10:36:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/node_device_conf.c, src/node_device_conf.h,

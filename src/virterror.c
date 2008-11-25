@@ -262,6 +262,9 @@ virDefaultErrorFunc(virErrorPtr err)
         case VIR_FROM_XENSTORE:
             dom = "Xen Store ";
             break;
+        case VIR_FROM_XEN_INOTIFY:
+            dom = "Xen Inotify ";
+            break;
         case VIR_FROM_DOM:
             dom = "Domain ";
             break;

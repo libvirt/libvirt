@@ -308,7 +308,7 @@ int main(int argc, char **argv)
                           myEventRemoveTimeoutFunc);
 
     virConnectPtr dconn = NULL;
-    dconn = virConnectOpen (argv[1] ? argv[1] : "qemu:///system");
+    dconn = virConnectOpen (argv[1] ? argv[1] : NULL);
     if (!dconn) {
         printf("error opening\n");
         return -1;

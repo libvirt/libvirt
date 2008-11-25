@@ -51,5 +51,57 @@ char *		xenStoreDomainGetDiskID(virConnectPtr conn,
                                          const char *dev);
 char *          xenStoreDomainGetName(virConnectPtr conn,
                                       int id);
+int             xenStoreDomainGetUUID(virConnectPtr conn,
+                                      int id,
+                                      unsigned char *uuid);
 
+typedef int (*xenStoreWatchCallback)(virConnectPtr conn,
+                                     const char *path,
+                                     const char *token,
+                                     void *opaque);
+
+struct _xenStoreWatch {
+    char *path;
+    char *token;
+    xenStoreWatchCallback cb;
+    void *opaque;
+};
+typedef struct _xenStoreWatch xenStoreWatch;
+typedef xenStoreWatch *xenStoreWatchPtr;
+
+struct _xenStoreWatchList {
+    unsigned int count;
+    xenStoreWatchPtr *watches;
+};
+typedef struct _xenStoreWatchList xenStoreWatchList;
+typedef xenStoreWatchList *xenStoreWatchListPtr;
+
+
+void            xenStoreWatchListFree(xenStoreWatchListPtr head);
+
+int             xenStoreAddWatch(virConnectPtr conn,
+                                 const char *path,
+                                 const char *token,
+                                 xenStoreWatchCallback cb,
+                                 void *opaque);
+int             xenStoreRemoveWatch(virConnectPtr conn,
+                                    const char *path,
+                                    const char *token);
+xenStoreWatchPtr xenStoreFindWatch(xenStoreWatchListPtr list,
+                                  const char *path,
+                                  const char *token);
+
+void xenStoreWatchEvent(int watch, int fd, int events, void *data);
+
+/* domain events */
+int xenStoreDomainIntroduced(virConnectPtr conn,
+                             const char *path,
+                             const char *token,
+                             void *opaque);
+int xenStoreDomainReleased(virConnectPtr conn,
+                            const char *path,
+                            const char *token,
+                            void *opaque);
+
+int xenStoreDomainEventEmitted(virDomainEventType evt);
 #endif /* __VIR_XS_INTERNAL_H__ */

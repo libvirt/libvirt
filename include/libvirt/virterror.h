@@ -60,6 +60,7 @@ typedef enum {
     VIR_FROM_DOMAIN,    /* Error from domain config */
     VIR_FROM_UML,       /* Error at the UML driver */
     VIR_FROM_NODEDEV, /* Error from node device monitor */
+    VIR_FROM_XEN_INOTIFY, /* Error from xen inotify layer */
 } virErrorDomain;
 
 

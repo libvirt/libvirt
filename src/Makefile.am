@@ -101,6 +101,9 @@ XEN_DRIVER_SOURCES =						\
 		xend_internal.c xend_internal.h			\
 		xm_internal.c xm_internal.h			\
 		xs_internal.c xs_internal.h
+if WITH_XEN_INOTIFY
+XEN_DRIVER_SOURCES += xen_inotify.c xen_inotify.h
+endif
 
 LXC_DRIVER_SOURCES =						\
 		lxc_conf.c lxc_conf.h				\
@@ -188,6 +191,8 @@ libvirt_driver_la_SOURCES =					\
 
 libvirt_driver_la_CFLAGS = $(XEN_CFLAGS)
 libvirt_driver_la_LDFLAGS = $(XEN_LIBS)
+
+libvirt_driver_la_CFLAGS = $(XEN_CFLAGS)
 
 if WITH_TEST
 if WITH_DRIVER_MODULES

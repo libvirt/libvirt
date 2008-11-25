@@ -613,6 +613,10 @@ virRun(virConnectPtr conn,
     VIR_FREE(outbuf);
     VIR_FREE(errbuf);
     VIR_FREE(argv_str);
+    if (outfd != -1)
+        close(outfd);
+    if (errfd != -1)
+        close(errfd);
     return ret;
 }
 

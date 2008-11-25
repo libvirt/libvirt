@@ -32,6 +32,12 @@
 extern struct xenUnifiedDriver xenXMDriver;
 int xenXMInit (void);
 
+virHashTablePtr xenXMGetConfigCache(void);
+char *xenXMGetConfigDir(void);
+int xenXMConfigCacheRefresh (virConnectPtr conn);
+int xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename);
+int xenXMConfigCacheRemoveFile(virConnectPtr conn, const char *filename);
+
 int xenXMOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags);
 int xenXMClose(virConnectPtr conn);
 const char *xenXMGetType(virConnectPtr conn);

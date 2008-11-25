@@ -14,6 +14,12 @@
 #include "internal.h"
 #include "capabilities.h"
 #include "driver.h"
+#include "domain_conf.h"
+#include "xs_internal.h"
+#if WITH_XEN_INOTIFY
+#include "xen_inotify.h"
+#endif
+#include "domain_event.h"
 
 #ifndef HAVE_WINSOCK2_H
 #include <sys/un.h>
@@ -29,7 +35,13 @@ extern int xenRegister (void);
 #define XEN_UNIFIED_XEND_OFFSET 2
 #define XEN_UNIFIED_XS_OFFSET 3
 #define XEN_UNIFIED_XM_OFFSET 4
+
+#if WITH_XEN_INOTIFY
+#define XEN_UNIFIED_INOTIFY_OFFSET 5
+#define XEN_UNIFIED_NR_DRIVERS 6
+#else
 #define XEN_UNIFIED_NR_DRIVERS 5
+#endif
 
 #define MIN_XEN_GUEST_SIZE 64  /* 64 megabytes */
 
@@ -85,6 +97,33 @@ struct xenUnifiedDriver {
         virDrvDomainSetSchedulerParameters domainSetSchedulerParameters;
 };
 
+typedef struct xenXMConfCache *xenXMConfCachePtr;
+typedef struct xenXMConfCache {
+    time_t refreshedAt;
+    char filename[PATH_MAX];
+    virDomainDefPtr def;
+} xenXMConfCache;
+
+/* xenUnifiedDomainInfoPtr:
+ * The minimal state we have about active domains
+ * This is the minmal info necessary to still get a
+ * virDomainPtr when the domain goes away
+ */
+struct _xenUnifiedDomainInfo {
+    int  id;
+    char *name;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+};
+typedef struct _xenUnifiedDomainInfo xenUnifiedDomainInfo;
+typedef xenUnifiedDomainInfo *xenUnifiedDomainInfoPtr;
+
+struct _xenUnifiedDomainInfoList {
+    unsigned int count;
+    xenUnifiedDomainInfoPtr *doms;
+};
+typedef struct _xenUnifiedDomainInfoList xenUnifiedDomainInfoList;
+typedef xenUnifiedDomainInfoList *xenUnifiedDomainInfoListPtr;
+
 /* xenUnifiedPrivatePtr:
  *
  * Per-connection private data, stored in conn->privateData.  All Xen
@@ -113,6 +152,19 @@ struct _xenUnifiedPrivate {
      * xen_unified.c.
      */
     int opened[XEN_UNIFIED_NR_DRIVERS];
+
+    /* A list of xenstore watches */
+    xenStoreWatchListPtr xsWatchList;
+    int xsWatch;
+
+    /* An list of callbacks */
+    virDomainEventCallbackListPtr domainEventCallbacks;
+
+#if WITH_XEN_INOTIFY
+    /* The inotify fd */
+    int inotifyFD;
+    int inotifyWatch;
+#endif
 };
 
 typedef struct _xenUnifiedPrivate *xenUnifiedPrivatePtr;
@@ -122,4 +174,15 @@ int xenNbCells(virConnectPtr conn);
 int xenNbCpus(virConnectPtr conn);
 char *xenDomainUsedCpus(virDomainPtr dom);
 
+void xenUnifiedDomainInfoListFree(xenUnifiedDomainInfoListPtr info);
+int  xenUnifiedAddDomainInfo(xenUnifiedDomainInfoListPtr info,
+                             int id, char *name,
+                             unsigned char *uuid);
+int  xenUnifiedRemoveDomainInfo(xenUnifiedDomainInfoListPtr info,
+                                int id, char *name,
+                                unsigned char *uuid);
+void xenUnifiedDomainEventDispatch (xenUnifiedPrivatePtr priv,
+                                    virDomainPtr dom,
+                                    int event,
+                                    int detail);
 #endif /* __VIR_XEN_UNIFIED_H__ */

@@ -29,6 +29,10 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "driver.h"
+#include "memory.h"
+#include "event.h"
+#include "logging.h"
+#include "uuid.h"
 #include "xen_unified.h"
 #include "xs_internal.h"
 #include "xen_internal.h" /* for xenHypervisorCheckID */
@@ -42,6 +46,9 @@
 #endif
 
 #ifndef PROXY
+/* A list of active domain name/uuids */
+static xenUnifiedDomainInfoListPtr activeDomainList = NULL;
+
 static char *xenStoreDomainGetOSType(virDomainPtr domain);
 
 struct xenUnifiedDriver xenStoreDriver = {
@@ -302,7 +309,52 @@ xenStoreOpen(virConnectPtr conn,
         }
         return (-1);
     }
-    return (0);
+
+#ifndef PROXY
+    /* Init activeDomainList */
+    if ( VIR_ALLOC(activeDomainList) < 0) {
+        virXenStoreError(NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("failed to allocate activeDomainList"));
+        return -1;
+    }
+
+    /* Init watch list before filling in domInfoList,
+       so we can know if it is the first time through
+       when the callback fires */
+    if ( VIR_ALLOC(priv->xsWatchList) < 0 ) {
+        virXenStoreError(NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("failed to allocate xsWatchList"));
+        return -1;
+    }
+
+    /* This will get called once at start */
+    if ( xenStoreAddWatch(conn, "@releaseDomain",
+                     "releaseDomain", xenStoreDomainReleased, priv) < 0 )
+    {
+        virXenStoreError(NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("adding watch @releaseDomain"));
+        return -1;
+    }
+
+    /* The initial call of this will fill domInfoList */
+    if( xenStoreAddWatch(conn, "@introduceDomain",
+                     "introduceDomain", xenStoreDomainIntroduced, priv) < 0 )
+    {
+        virXenStoreError(NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("adding watch @introduceDomain"));
+        return -1;
+    }
+
+    /* Add an event handle */
+    if ((priv->xsWatch = virEventAddHandle(xs_fileno(priv->xshandle),
+                                           VIR_EVENT_HANDLE_READABLE,
+                                           xenStoreWatchEvent,
+                                           conn,
+                                           NULL)) < 0)
+        DEBUG0("Failed to add event handle, disabling events\n");
+
+#endif //PROXY
+    return 0;
 }
 
 /**
@@ -324,10 +376,29 @@ xenStoreClose(virConnectPtr conn)
     }
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
+
+    if (xenStoreRemoveWatch(conn, "@introduceDomain", "introduceDomain") < 0) {
+        DEBUG0("Warning, could not remove @introduceDomain watch");
+        /* not fatal */
+    }
+
+    if (xenStoreRemoveWatch(conn, "@releaseDomain", "releaseDomain") < 0) {
+        DEBUG0("Warning, could not remove @releaseDomain watch");
+        /* not fatal */
+    }
+
+    xenStoreWatchListFree(priv->xsWatchList);
+#ifndef PROXY
+    xenUnifiedDomainInfoListFree(activeDomainList);
+#endif
     if (priv->xshandle == NULL)
         return(-1);
 
+    if (priv->xsWatch != -1)
+        virEventRemoveHandle(priv->xsWatch);
     xs_daemon_close(priv->xshandle);
+    priv->xshandle = NULL;
+
     return (0);
 }
 
@@ -920,3 +991,343 @@ char *xenStoreDomainGetName(virConnectPtr conn,
     return xs_read(priv->xshandle, 0, prop, &len);
 }
 
+#ifndef PROXY
+int xenStoreDomainGetUUID(virConnectPtr conn,
+                          int id,
+                          unsigned char *uuid) {
+    char prop[200];
+    xenUnifiedPrivatePtr priv;
+    unsigned int len;
+    char *uuidstr;
+    int ret = 0;
+
+    priv = (xenUnifiedPrivatePtr) conn->privateData;
+    if (priv->xshandle == NULL)
+        return -1;
+
+    snprintf(prop, 199, "/local/domain/%d/vm", id);
+    prop[199] = 0;
+    // This will return something like
+    // /vm/00000000-0000-0000-0000-000000000000
+    uuidstr = xs_read(priv->xshandle, 0, prop, &len);
+
+    // remove "/vm/"
+    ret = virUUIDParse(uuidstr + 4, uuid);
+
+    VIR_FREE(uuidstr);
+
+    return ret;
+}
+#endif //PROXY
+
+void xenStoreWatchListFree(xenStoreWatchListPtr list)
+{
+    int i;
+    for (i=0; i<list->count; i++) {
+        VIR_FREE(list->watches[i]->path);
+        VIR_FREE(list->watches[i]->token);
+        VIR_FREE(list->watches[i]);
+    }
+    VIR_FREE(list);
+}
+
+int xenStoreAddWatch(virConnectPtr conn,
+                     const char *path,
+                     const char *token,
+                     xenStoreWatchCallback cb,
+                     void *opaque)
+{
+    xenStoreWatchPtr watch;
+    int n;
+    xenStoreWatchListPtr list;
+    xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
+
+    if (priv->xshandle == NULL)
+        return -1;
+
+    list = priv->xsWatchList;
+    if(!list)
+        return -1;
+
+    /* check if we already have this callback on our list */
+    for (n=0; n < list->count; n++) {
+        if( STREQ(list->watches[n]->path, path) &&
+            STREQ(list->watches[n]->token, token)) {
+            virXenStoreError(NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("watch already tracked"));
+            return -1;
+        }
+    }
+
+    if (VIR_ALLOC(watch) < 0)
+        return -1;
+    watch->path   = strdup(path);
+    watch->token  = strdup(token);
+    watch->cb     = cb;
+    watch->opaque = opaque;
+
+    /* Make space on list */
+    n = list->count;
+    if (VIR_REALLOC_N(list->watches, n + 1) < 0) {
+        virXenStoreError(NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("reallocating list"));
+        VIR_FREE(watch);
+        return -1;
+    }
+
+    list->watches[n] = watch;
+    list->count++;
+
+    conn->refs++;
+
+    return xs_watch(priv->xshandle, watch->path, watch->token);
+}
+
+int xenStoreRemoveWatch(virConnectPtr conn,
+                        const char *path,
+                        const char *token)
+{
+    int i;
+    xenStoreWatchListPtr list;
+    xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
+
+    if (priv->xshandle == NULL)
+        return -1;
+
+    list = priv->xsWatchList;
+    if(!list)
+        return -1;
+
+    for (i = 0 ; i < list->count ; i++) {
+        if( STREQ(list->watches[i]->path, path) &&
+            STREQ(list->watches[i]->token, token)) {
+
+            if (!xs_unwatch(priv->xshandle,
+                       list->watches[i]->path,
+                       list->watches[i]->path))
+            {
+                DEBUG0("WARNING: Could not remove watch");
+                /* Not fatal, continue */
+            }
+
+            VIR_FREE(list->watches[i]->path);
+            VIR_FREE(list->watches[i]->token);
+            VIR_FREE(list->watches[i]);
+
+            if (i < (list->count - 1))
+                memmove(list->watches + i,
+                        list->watches + i + 1,
+                        sizeof(*(list->watches)) *
+                                (list->count - (i + 1)));
+
+            if (VIR_REALLOC_N(list->watches,
+                              list->count - 1) < 0) {
+                ; /* Failure to reduce memory allocation isn't fatal */
+            }
+            list->count--;
+#ifndef PROXY
+            virUnrefConnect(conn);
+#endif
+            return 0;
+        }
+    }
+    return -1;
+}
+
+xenStoreWatchPtr xenStoreFindWatch(xenStoreWatchListPtr list,
+                                   const char *path,
+                                   const char *token)
+{
+    int i;
+    for (i = 0 ; i < list->count ; i++)
+        if( STREQ(path, list->watches[i]->path) &&
+            STREQ(token, list->watches[i]->token) )
+            return list->watches[i];
+
+    return NULL;
+}
+
+void xenStoreWatchEvent(int watch ATTRIBUTE_UNUSED,
+                        int fd ATTRIBUTE_UNUSED,
+                        int events ATTRIBUTE_UNUSED,
+                        void *data)
+{
+    char		 **event;
+    char		 *path;
+    char		 *token;
+    unsigned int	 stringCount;
+    xenStoreWatchPtr     sw;
+
+    virConnectPtr        conn = data;
+    xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
+    if(!priv) return;
+    if(!priv->xshandle) return;
+
+    event = xs_read_watch(priv->xshandle, &stringCount);
+    if (!event)
+        return;
+
+    path  = event[XS_WATCH_PATH];
+    token = event[XS_WATCH_TOKEN];
+
+    sw = xenStoreFindWatch(priv->xsWatchList, path, token);
+    if( sw )
+        sw->cb(conn, path, token, sw->opaque);
+    VIR_FREE(event);
+}
+
+#ifndef PROXY
+/* The domain callback for the @introduceDomain watch */
+int xenStoreDomainIntroduced(virConnectPtr conn,
+                             const char *path ATTRIBUTE_UNUSED,
+                             const char *token ATTRIBUTE_UNUSED,
+                             void *opaque)
+{
+    int i, j, found, missing = 0, retries = 20;
+    int new_domain_cnt;
+    int *new_domids;
+    int nread;
+
+    xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) opaque;
+
+retry:
+    new_domain_cnt = xenStoreNumOfDomains(conn);
+    if( VIR_ALLOC_N(new_domids,new_domain_cnt) < 0 ) {
+        virXenStoreError(NULL, VIR_ERR_NO_MEMORY,
+                                 "%s", _("failed to allocate domids"));
+        return -1;
+    }
+    nread = xenStoreListDomains(conn, new_domids, new_domain_cnt);
+    if (nread != new_domain_cnt) {
+        // mismatch. retry this read
+        VIR_FREE(new_domids);
+        goto retry;
+    }
+
+    missing = 0;
+    for (i=0 ; i < new_domain_cnt ; i++) {
+        found = 0;
+        for (j = 0 ; j < activeDomainList->count ; j++) {
+            if (activeDomainList->doms[j]->id == new_domids[i]) {
+                found = 1;
+                break;
+            }
+        }
+
+        if (!found) {
+            virDomainPtr dom;
+            char *name;
+            unsigned char uuid[VIR_UUID_BUFLEN];
+
+            if (!(name = xenStoreDomainGetName(conn, new_domids[i]))) {
+                missing = 1;
+                continue;
+            }
+            if (xenStoreDomainGetUUID(conn, new_domids[i], uuid) < 0) {
+                missing = 1;
+                VIR_FREE(name);
+                continue;
+            }
+
+            dom = virGetDomain(conn, name, uuid);
+            if (dom) {
+                dom->id = new_domids[i];
+
+                /* This domain was not in the old list. Emit an event */
+                xenUnifiedDomainEventDispatch(priv, dom,
+                                              VIR_DOMAIN_EVENT_STARTED,
+                                              VIR_DOMAIN_EVENT_STARTED_BOOTED);
+
+                /* Add to the list */
+                xenUnifiedAddDomainInfo(activeDomainList,
+                                        new_domids[i], name, uuid);
+
+                virUnrefDomain(dom);
+            }
+
+            VIR_FREE(name);
+        }
+    }
+    VIR_FREE(new_domids);
+
+    if (missing && retries--) {
+        DEBUG0("Some domains were missing, trying again");
+        usleep(100 * 1000);
+        goto retry;
+    }
+    return 0;
+}
+
+/* The domain callback for the @destroyDomain watch */
+int xenStoreDomainReleased(virConnectPtr conn,
+                            const char *path  ATTRIBUTE_UNUSED,
+                            const char *token ATTRIBUTE_UNUSED,
+                            void *opaque)
+{
+    int i, j, found, removed, retries = 20;
+    int new_domain_cnt;
+    int *new_domids;
+    int nread;
+
+    xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) opaque;
+
+    if(!activeDomainList->count) return 0;
+
+retry:
+    new_domain_cnt = xenStoreNumOfDomains(conn);
+
+    if( VIR_ALLOC_N(new_domids,new_domain_cnt) < 0 ) {
+        virXenStoreError(NULL, VIR_ERR_NO_MEMORY,
+                                 "%s", _("failed to allocate domids"));
+        return -1;
+    }
+    nread = xenStoreListDomains(conn, new_domids, new_domain_cnt);
+    if (nread != new_domain_cnt) {
+        // mismatch. retry this read
+        VIR_FREE(new_domids);
+        goto retry;
+    }
+
+    removed = 0;
+    for (j=0 ; j < activeDomainList->count ; j++) {
+        found = 0;
+        for (i=0 ; i < new_domain_cnt ; i++) {
+            if (activeDomainList->doms[j]->id == new_domids[i]) {
+                found = 1;
+                break;
+            }
+        }
+
+        if (!found) {
+            virDomainPtr dom = virGetDomain(conn,
+                                            activeDomainList->doms[j]->name,
+                                            activeDomainList->doms[j]->uuid);
+            if(dom) {
+                dom->id = -1;
+                /* This domain was not in the new list. Emit an event */
+                xenUnifiedDomainEventDispatch(priv, dom,
+                                              VIR_DOMAIN_EVENT_STOPPED,
+                                              VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+                 /* Remove from the list */
+                xenUnifiedRemoveDomainInfo(activeDomainList,
+                                           activeDomainList->doms[j]->id,
+                                           activeDomainList->doms[j]->name,
+                                           activeDomainList->doms[j]->uuid);
+
+                virUnrefDomain(dom);
+                removed = 1;
+            }
+        }
+    }
+
+    VIR_FREE(new_domids);
+
+    if (!removed && retries--) {
+        DEBUG0("No domains removed, retrying");
+        usleep(100 * 1000);
+        goto retry;
+    }
+    return 0;
+}
+
+#endif //PROXY

@@ -1577,7 +1577,8 @@ getLibvirtModuleObject (void) {
         return libvirt_module;
 
     // PyImport_ImportModule returns a new reference
-    libvirt_module = PyImport_ImportModule("libvirt");
+    /* Bogus (char *) cast for RHEL-5 python API brokenness */
+    libvirt_module = PyImport_ImportModule((char *)"libvirt");
     if(!libvirt_module) {
 #if DEBUG_ERROR
         printf("%s Error importing libvirt module\n", __FUNCTION__);

@@ -35,6 +35,7 @@ src/util.c
 src/uuid.c
 src/virsh.c
 src/virterror.c
+src/xen_inotify.c
 src/xen_internal.c
 src/xend_internal.c
 src/xm_internal.c
