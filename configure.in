@@ -1222,10 +1222,12 @@ then
 fi
 AM_CONDITIONAL([WITH_NODE_DEVICES], [test "$with_nodedev" = "yes"])
 
-
-# very annoying
-rm -f COPYING
-cp COPYING.LIB COPYING
+# Only COPYING.LIB is under version control, yet COPYING
+# is included as part of the distribution tarball.
+# Copy one to the other, but only if this is a srcdir-build.
+# You are unlikely to be doing distribution-related things in a non-srcdir build
+test "x$srcdir" = x. && ! test -f COPYING &&
+cp -f COPYING.LIB COPYING
 
 AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           docs/examples/Makefile docs/devhelp/Makefile \

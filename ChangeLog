@@ -1,4 +1,7 @@
-Tue Nov 25 16:34:09 +0100 2008 Jim Meyering <meyering@redhat.com>
+Tue Nov 25 16:34:10 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	* configure.in: avoid the following diagnostic when running ../configure
+	cp: cannot stat `COPYING.LIB': No such file or directory
 
 	don't silently skip a test
 	* tests/Makefile.am (EXTRA_DIST): Distribute domainschemadata/.
