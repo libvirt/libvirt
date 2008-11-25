@@ -196,7 +196,7 @@ static int gather_net_cap(LibHalContext *ctx, const char *udi,
                           union _virNodeDevCapData *d)
 {
     unsigned long long dummy;
-    (void)get_str_prop(ctx, udi, "net.interface", &d->net.interface);
+    (void)get_str_prop(ctx, udi, "net.interface", &d->net.ifname);
     (void)get_str_prop(ctx, udi, "net.address", &d->net.address);
     if (get_uint64_prop(ctx, udi, "net.80203.mac_address",
                         &dummy) == 0)

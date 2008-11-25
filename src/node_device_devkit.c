@@ -118,14 +118,14 @@ static int gather_net_cap(DevkitDevice *dkdev,
                           union _virNodeDevCapData *d)
 {
     const char *sysfs_path = devkit_device_get_native_path(dkdev);
-    const char *interface;
+    const char *ifname;
 
     if (sysfs_path == NULL)
         return -1;
-    interface = strrchr(sysfs_path, '/');
-    if (!interface || !*interface || !*(++interface))
+    ifname = strrchr(sysfs_path, '/');
+    if (!ifname || !*ifname || !*(++ifname))
         return -1;
-    if ((d->net.interface = strdup(interface)) == NULL)
+    if ((d->net.ifname = strdup(ifname)) == NULL)
         return -1;
 
     d->net.subtype = VIR_NODE_DEV_CAP_NET_LAST;

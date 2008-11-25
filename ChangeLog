@@ -1,3 +1,10 @@
+Tue Nov 25 10:36:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/node_device_conf.c, src/node_device_conf.h,
+	src/node_device_devkit.c, src/node_device_hal.c: Change
+	'interface' to 'ifname' in struct to avoid clash with
+	symbols in MinGW/Win32 headers
+
 Tue Nov 25 11:29:19 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	* src/virterror.c (virReportErrorHelper): Sync doc to code.
@@ -6,20 +13,20 @@ Tue Nov 25 11:29:19 +0100 2008 Jim Meyering <meyering@redhat.com>
 	* src/libvirt.c (virStateActive, virStateCleanup, virStateReload):
 	(virStateActive): Add per-function comments.
 
-Mon Nov 24 19:32:40 GMT 2008 Dnaiel P. Berrange <berrange@redhat.com>
+Mon Nov 24 19:32:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/openvz_conf.c, src/openvz_conf.h, src/openvz_driver.c:
 	Default vCPUs to equal host pCPU count if not set in config
 	(patch from Evgeniy Sokolov)
 
-Mon Nov 24 19:27:40 GMT 2008 Dnaiel P. Berrange <berrange@redhat.com>
+Mon Nov 24 19:27:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* examples/domain-events/events-python/event-test.py,
 	python/libvir.c, python/libvir.py, python/libvirt_wrap.h,
 	python/types.c, python/virConnect.py: Fixes to python
 	bindings for changes in public event API (David Lively)
 
-Mon Nov 24 19:22:40 GMT 2008 Dnaiel P. Berrange <berrange@redhat.com>
+Mon Nov 24 19:22:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/Makefile.am, tests/sexpr2xmltest.c,
 	tests/testutilsxen.c, tests/xencapstest.c,
@@ -28,7 +35,7 @@ Mon Nov 24 19:22:40 GMT 2008 Dnaiel P. Berrange <berrange@redhat.com>
 	WITH_XEN conditionals from source, since the entire build
 	is disabled in Makefile.am
 
-Mon Nov 24 16:49:40 GMT 2008 Dnaiel P. Berrange <berrange@redhat.com>
+Mon Nov 24 16:49:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* autobuild.sh: Disable UML driver on mingw32 biuld
 

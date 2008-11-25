@@ -269,7 +269,7 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
             break;
         case VIR_NODE_DEV_CAP_NET:
             virBufferVSprintf(&buf, "    <interface>%s</interface>\n",
-                              data->net.interface);
+                              data->net.ifname);
             if (data->net.address)
                 virBufferVSprintf(&buf, "    <address>%s</address>\n",
                                   data->net.address);
@@ -374,7 +374,7 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         VIR_FREE(data->usb_if.description);
         break;
     case VIR_NODE_DEV_CAP_NET:
-        VIR_FREE(data->net.interface);
+        VIR_FREE(data->net.ifname);
         VIR_FREE(data->net.address);
         break;
     case VIR_NODE_DEV_CAP_SCSI_HOST:

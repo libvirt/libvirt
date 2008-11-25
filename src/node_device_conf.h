@@ -102,7 +102,7 @@ struct _virNodeDevCapsDef {
         } usb_if;
         struct {
             char *address;
-            char *interface;
+            char *ifname;
             enum virNodeDevNetCapType subtype;  /* LAST -> no subtype */
         } net;
         struct {
