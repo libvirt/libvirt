@@ -636,6 +636,13 @@ virRegisterStateDriver(virStateDriverPtr driver)
     return virStateDriverTabCount++;
 }
 
+/**
+ * virStateInitialize:
+ *
+ * Initialize all virtualization drivers.
+ *
+ * Return 0 if all succeed, -1 upon any failure.
+ */
 int virStateInitialize(void) {
     int i, ret = 0;
 
@@ -650,6 +657,13 @@ int virStateInitialize(void) {
     return ret;
 }
 
+/**
+ * virStateCleanup:
+ *
+ * Run each virtualization driver's cleanup method.
+ *
+ * Return 0 if all succeed, -1 upon any failure.
+ */
 int virStateCleanup(void) {
     int i, ret = 0;
 
@@ -661,6 +675,13 @@ int virStateCleanup(void) {
     return ret;
 }
 
+/**
+ * virStateReload:
+ *
+ * Run each virtualization driver's reload method.
+ *
+ * Return 0 if all succeed, -1 upon any failure.
+ */
 int virStateReload(void) {
     int i, ret = 0;
 
@@ -672,6 +693,13 @@ int virStateReload(void) {
     return ret;
 }
 
+/**
+ * virStateActive:
+ *
+ * Run each virtualization driver's "active" method.
+ *
+ * Return 0 if none are active, 1 if at least one is.
+ */
 int virStateActive(void) {
     int i, ret = 0;
 

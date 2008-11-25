@@ -1,3 +1,9 @@
+Tue Nov 25 11:29:18 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	libvirt.c: document the virState* functions
+	* src/libvirt.c (virStateActive, virStateCleanup, virStateReload):
+	(virStateActive): Add per-function comments.
+
 Mon Nov 24 19:32:40 GMT 2008 Dnaiel P. Berrange <berrange@redhat.com>
 
 	* src/openvz_conf.c, src/openvz_conf.h, src/openvz_driver.c:
