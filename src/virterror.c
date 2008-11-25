@@ -747,17 +747,15 @@ virErrorMsg(virErrorNumber error, const char *info)
 }
 
 /**
- * virReportErrorHelper
+ * virReportErrorHelper:
  *
  * @conn: the connection to the hypervisor if available
- * @dom: the domain if available
- * @net: the network if available
  * @domcode: the virErrorDomain indicating where it's coming from
  * @errcode: the virErrorNumber code for the error
  * @filename: Source file error is dispatched from
  * @funcname: Function error is dispatched from
  * @linenr: Line number error is dispatched from
- * @msg:  the message to display/transmit
+ * @fmt:  the format string
  * @...:  extra parameters for the message display
  *
  * Helper function to do most of the grunt work for individual driver
