@@ -406,7 +406,7 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
     /* Get modified time */
     if ((stat(filename, &st) < 0)) {
         xenXMError (conn, VIR_ERR_INTERNAL_ERROR,
-                    "cannot stat %s: %s", filename, strerror(errno));
+                    _("cannot stat %s: %s"), filename, strerror(errno));
         return -1;
     }
 
@@ -2729,7 +2729,7 @@ int xenXMDomainSetAutostart(virDomainPtr dom, int autostart)
         if (symlink(config, linkname) < 0 &&
             errno != EEXIST) {
             xenXMError(dom->conn, VIR_ERR_INTERNAL_ERROR,
-                       "failed to create link %s: %s",
+                       _("failed to create link %s: %s"),
                        linkname, strerror(errno));
             goto cleanup;
         }
@@ -2737,7 +2737,7 @@ int xenXMDomainSetAutostart(virDomainPtr dom, int autostart)
         if (unlink(linkname)  < 0 &&
             errno != ENOENT) {
             xenXMError(dom->conn, VIR_ERR_INTERNAL_ERROR,
-                       "failed to remove link %s: %s",
+                       _("failed to remove link %s: %s"),
                        linkname, strerror(errno));
             goto cleanup;
         }
