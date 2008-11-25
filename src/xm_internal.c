@@ -2669,3 +2669,84 @@ xenXMDomainBlockPeek (virDomainPtr dom,
     return -1;
 }
 
+
+static char *xenXMAutostartLinkName(virDomainPtr dom)
+{
+    char *ret;
+    if (asprintf(&ret, "/etc/xen/auto/%s", dom->name) < 0)
+        return NULL;
+    return ret;
+}
+
+static char *xenXMDomainConfigName(virDomainPtr dom)
+{
+    char *ret;
+    if (asprintf(&ret, "/etc/xen/%s", dom->name) < 0)
+        return NULL;
+    return ret;
+}
+
+int xenXMDomainGetAutostart(virDomainPtr dom, int *autostart)
+{
+    char *linkname = xenXMAutostartLinkName(dom);
+    char *config = xenXMDomainConfigName(dom);
+    int ret = -1;
+
+    if (!linkname || !config) {
+        xenXMError(dom->conn, VIR_ERR_NO_MEMORY, NULL);
+        goto cleanup;
+    }
+
+    *autostart = virFileLinkPointsTo(linkname, config);
+    if (*autostart < 0) {
+        xenXMError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                   _("failed to check autostart link %s: %s"),
+                   linkname, strerror(errno));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(linkname);
+    VIR_FREE(config);
+    return ret;
+}
+
+
+int xenXMDomainSetAutostart(virDomainPtr dom, int autostart)
+{
+    char *linkname = xenXMAutostartLinkName(dom);
+    char *config = xenXMDomainConfigName(dom);
+    int ret = -1;
+
+    if (!linkname || !config) {
+        xenXMError(dom->conn, VIR_ERR_NO_MEMORY, NULL);
+        goto cleanup;
+    }
+
+    if (autostart) {
+        if (symlink(config, linkname) < 0 &&
+            errno != EEXIST) {
+            xenXMError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                       "failed to create link %s: %s",
+                       linkname, strerror(errno));
+            goto cleanup;
+        }
+    } else {
+        if (unlink(linkname)  < 0 &&
+            errno != ENOENT) {
+            xenXMError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                       "failed to remove link %s: %s",
+                       linkname, strerror(errno));
+            goto cleanup;
+        }
+    }
+    ret = 0;
+
+cleanup:
+    VIR_FREE(linkname);
+    VIR_FREE(config);
+
+    return ret;
+}

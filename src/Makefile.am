@@ -192,8 +192,6 @@ libvirt_driver_la_SOURCES =					\
 libvirt_driver_la_CFLAGS = $(XEN_CFLAGS)
 libvirt_driver_la_LDFLAGS = $(XEN_LIBS)
 
-libvirt_driver_la_CFLAGS = $(XEN_CFLAGS)
-
 if WITH_TEST
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_test.la
@@ -397,14 +395,14 @@ EXTRA_DIST +=							\
 libvirt_la_SOURCES =
 libvirt_la_LIBADD += \
 		    @CYGWIN_EXTRA_LIBADD@ ../gnulib/lib/libgnu.la
-libvirt_la_LDFLAGS = -Wl,--version-script=$(builddir)/libvirt_sym.version \
+libvirt_la_LDFLAGS = -Wl,--version-script=libvirt_sym.version \
                      -version-info @LIBVIRT_VERSION_INFO@ \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%) \
                     $(LIBXML_LIBS) $(SELINUX_LIBS) \
 		    $(XEN_LIBS) $(DRIVER_MODULE_LIBS) \
 		    @CYGWIN_EXTRA_LDFLAGS@ @MINGW_EXTRA_LDFLAGS@
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
-libvirt_la_DEPENDENCIES = $(libvirt_la_LIBADD) $(builddir)/libvirt_sym.version
+libvirt_la_DEPENDENCIES = $(libvirt_la_LIBADD) libvirt_sym.version
 
 # Create an automake "convenience library" version of libvirt_la,
 # just for testing, since the test harness requires access to internal

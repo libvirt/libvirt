@@ -1,3 +1,12 @@
+Tue Nov 25 10:49:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/Makefile.am: Remove unneccessary $(builddir) usage which
+	breaks on older automake. Remove duplicate CFLAGS from merge
+	error
+	* src/xen_unified.c: Wire up XM driver for autostart
+	* src/xm_internal.h, src/xm_internal.c: Implement domain
+	autostart functions for /etc/xen/auto
+
 Tue Nov 25 10:43:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Xen domain lifecycle events (Ben Guthro & Daniel Berrange)

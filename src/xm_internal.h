@@ -65,4 +65,7 @@ virDomainDefPtr xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf);
 
 int xenXMDomainBlockPeek (virDomainPtr dom, const char *path, unsigned long long offset, size_t size, void *buffer);
 
+int xenXMDomainGetAutostart(virDomainPtr dom, int *autostart);
+int xenXMDomainSetAutostart(virDomainPtr dom, int autostart);
+
 #endif
