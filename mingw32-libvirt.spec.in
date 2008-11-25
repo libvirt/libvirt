@@ -49,6 +49,7 @@ MinGW Windows libvirt virtualization library.
   --without-xen \
   --without-qemu \
   --without-lxc \
+  --without-uml \
   --without-openvz \
   --without-libvirtd
 make
