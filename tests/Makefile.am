@@ -41,7 +41,8 @@ EXTRA_DIST =		\
 	xmlrpcserver.py	\
 	qemuxml2argvdata \
 	nodeinfodata     \
-	domainschematest
+	domainschematest \
+	domainschemadata
 
 noinst_PROGRAMS = xmlrpctest virshtest conftest \
         nodeinfotest statstest qparamtest

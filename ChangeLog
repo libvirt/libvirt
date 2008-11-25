@@ -1,3 +1,9 @@
+Tue Nov 25 16:34:09 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	don't silently skip a test
+	* tests/Makefile.am (EXTRA_DIST): Distribute domainschemadata/.
+	* tests/domainschematest: Fail the test if find invocation fails.
+
 Tue Nov 25 11:27:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* mingw32-libvirt.spec.in: Disable UML driver for mingw build
