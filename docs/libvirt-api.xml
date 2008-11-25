@@ -313,6 +313,7 @@
      <exports symbol='VIR_ERR_NO_XEN' type='enum'/>
      <exports symbol='VIR_FROM_STATS_LINUX' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_ARG' type='enum'/>
+     <exports symbol='VIR_FROM_XEN_INOTIFY' type='enum'/>
      <exports symbol='VIR_ERR_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_NO_OS' type='enum'/>
      <exports symbol='VIR_ERR_NO_NODE_DEVICE' type='enum'/>
@@ -566,7 +567,7 @@
     <enum name='VIR_FROM_LXC' file='virterror' value='17' type='virErrorDomain' info='Error from Linux Container driver'/>
     <enum name='VIR_FROM_NET' file='virterror' value='11' type='virErrorDomain' info='Error when operating on a network'/>
     <enum name='VIR_FROM_NETWORK' file='virterror' value='19' type='virErrorDomain' info='Error from network config'/>
-    <enum name='VIR_FROM_NODEDEV' file='virterror' value='22' type='virErrorDomain' info=' Error from node device monitor'/>
+    <enum name='VIR_FROM_NODEDEV' file='virterror' value='22' type='virErrorDomain' info='Error from node device monitor'/>
     <enum name='VIR_FROM_NONE' file='virterror' value='0' type='virErrorDomain'/>
     <enum name='VIR_FROM_OPENVZ' file='virterror' value='14' type='virErrorDomain' info='Error from OpenVZ driver'/>
     <enum name='VIR_FROM_PROXY' file='virterror' value='8' type='virErrorDomain' info='Error in the proxy code'/>
@@ -582,6 +583,7 @@
     <enum name='VIR_FROM_XEND' file='virterror' value='2' type='virErrorDomain' info='Error at connection with xend daemon'/>
     <enum name='VIR_FROM_XENSTORE' file='virterror' value='3' type='virErrorDomain' info='Error at connection with xen store'/>
     <enum name='VIR_FROM_XENXM' file='virterror' value='15' type='virErrorDomain' info='Error at Xen XM layer'/>
+    <enum name='VIR_FROM_XEN_INOTIFY' file='virterror' value='23' type='virErrorDomain' info=' Error from xen inotify layer'/>
     <enum name='VIR_FROM_XML' file='virterror' value='5' type='virErrorDomain' info='Error in the XML code'/>
     <enum name='VIR_MEMORY_VIRTUAL' file='libvirt' value='1' type='virDomainMemoryFlags' info=' addresses are virtual addresses'/>
     <enum name='VIR_MIGRATE_LIVE' file='libvirt' value='1' type='virDomainMigrateFlags' info=' live migration'/>
@@ -817,7 +819,7 @@ see note above'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the connection'/>
       <arg name='cb' type='virConnectDomainEventCallback' info='callback to the function handling domain events'/>
       <arg name='opaque' type='void *' info='opaque data to pass on to the callback'/>
-      <arg name='freecb' type='virFreeCallback' info=''/>
+      <arg name='freecb' type='virFreeCallback' info='optional function to deallocate opaque when not used anymore'/>
     </function>
     <function name='virConnectFindStoragePoolSources' file='libvirt' module='libvirt'>
       <info>Talks to a storage backend and attempts to auto-discover the set of available storage pool sources. e.g. For iSCSI this would be a set of iSCSI targets. For NFS this would be a list of exported paths.  The srcSpec (optional for some storage pool types, e.g. local ones) is an instance of the storage pool&apos;s source element specifying where to look for the pools.  srcSpec is not required for some types (e.g., those querying local storage resources only)</info>
@@ -1430,12 +1432,12 @@ see note above'/>
       <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
     </function>
     <function name='virNodeDeviceGetName' file='libvirt' module='libvirt'>
-      <info></info>
-      <return type='const char *' info='the device name.'/>
+      <info>Just return the device name</info>
+      <return type='const char *' info='the device name or NULL in case of error'/>
       <arg name='dev' type='virNodeDevicePtr' info='the device'/>
     </function>
     <function name='virNodeDeviceGetParent' file='libvirt' module='libvirt'>
-      <info></info>
+      <info>Accessor for the parent of the device</info>
       <return type='const char *' info='the name of the device&apos;s parent, or NULL if the device has no parent.'/>
       <arg name='dev' type='virNodeDevicePtr' info='the device'/>
     </function>
@@ -1459,7 +1461,7 @@ see note above'/>
       <arg name='name' type='const char *' info='unique device name'/>
     </function>
     <function name='virNodeDeviceNumOfCaps' file='libvirt' module='libvirt'>
-      <info></info>
+      <info>Accessor for the number of capabilities supported by the device.</info>
       <return type='int' info='the number of capabilities supported by the device.'/>
       <arg name='dev' type='virNodeDevicePtr' info='the device'/>
     </function>

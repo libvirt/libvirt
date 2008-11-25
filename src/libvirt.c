@@ -1046,7 +1046,8 @@ virConnectClose(virConnectPtr conn)
     return (0);
 }
 
-/* Not for public use.  This function is part of the internal
+/*
+ * Not for public use.  This function is part of the internal
  * implementation of driver features in the remote case.
  */
 int
@@ -2384,7 +2385,8 @@ virDomainMigrate (virDomainPtr domain,
     return ddomain;
 }
 
-/* Not for public use.  This function is part of the internal
+/*
+ * Not for public use.  This function is part of the internal
  * implementation of migration in the remote case.
  */
 int
@@ -2413,7 +2415,8 @@ virDomainMigratePrepare (virConnectPtr dconn,
     return -1;
 }
 
-/* Not for public use.  This function is part of the internal
+/*
+ * Not for public use.  This function is part of the internal
  * implementation of migration in the remote case.
  */
 int
@@ -2443,7 +2446,8 @@ virDomainMigratePerform (virDomainPtr domain,
     return -1;
 }
 
-/* Not for public use.  This function is part of the internal
+/*
+ * Not for public use.  This function is part of the internal
  * implementation of migration in the remote case.
  */
 virDomainPtr
@@ -2471,7 +2475,8 @@ virDomainMigrateFinish (virConnectPtr dconn,
 }
 
 
-/* Not for public use.  This function is part of the internal
+/*
+ * Not for public use.  This function is part of the internal
  * implementation of migration in the remote case.
  */
 int
@@ -2502,7 +2507,8 @@ virDomainMigratePrepare2 (virConnectPtr dconn,
     return -1;
 }
 
-/* Not for public use.  This function is part of the internal
+/*
+ * Not for public use.  This function is part of the internal
  * implementation of migration in the remote case.
  */
 virDomainPtr
@@ -5629,7 +5635,9 @@ char *virNodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags)
  * virNodeDeviceGetName:
  * @dev: the device
  *
- * Returns the device name.
+ * Just return the device name
+ *
+ * Returns the device name or NULL in case of error
  */
 const char *virNodeDeviceGetName(virNodeDevicePtr dev)
 {
@@ -5646,6 +5654,8 @@ const char *virNodeDeviceGetName(virNodeDevicePtr dev)
 /**
  * virNodeDeviceGetParent:
  * @dev: the device
+ *
+ * Accessor for the parent of the device
  *
  * Returns the name of the device's parent, or NULL if the
  * device has no parent.
@@ -5669,6 +5679,8 @@ const char *virNodeDeviceGetParent(virNodeDevicePtr dev)
 /**
  * virNodeDeviceNumOfCaps:
  * @dev: the device
+ *
+ * Accessor for the number of capabilities supported by the device.
  *
  * Returns the number of capabilities supported by the device.
  */
@@ -5750,6 +5762,7 @@ int virNodeDeviceFree(virNodeDevicePtr dev)
  * @conn: pointer to the connection
  * @cb: callback to the function handling domain events
  * @opaque: opaque data to pass on to the callback
+ * @freecb: optional function to deallocate opaque when not used anymore
  *
  * Adds a Domain Event Callback.
  * Registering for a domain callback will enable delivery of the events

@@ -29,6 +29,15 @@ ignored_words = {
   "VIR_DEPRECATED": (0, "macro keyword"),
 }
 
+ignored_functions = {
+  "virDomainMigrateFinish": "private function for migration",
+  "virDomainMigrateFinish2": "private function for migration",
+  "virDomainMigratePerform": "private function for migration",
+  "virDomainMigratePrepare": "private function for migration",
+  "virDomainMigratePrepare2": "private function for migration",
+  "virDrvSupportsFeature": "private function for remote access",
+}
+
 def escape(raw):
     raw = string.replace(raw, '&', '&amp;')
     raw = string.replace(raw, '<', '&lt;')
@@ -758,10 +767,14 @@ class CParser:
      # as possible
      #
     def mergeFunctionComment(self, name, description, quiet = 0):
+        global ignored_functions
+
         if name == 'main':
 	    quiet = 1
         if name[0:2] == '__':
 	    quiet = 1
+        if ignored_functions.has_key(name):
+            quiet = 1
 
 	(ret, args) = description
 	desc = ""

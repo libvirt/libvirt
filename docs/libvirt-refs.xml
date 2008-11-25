@@ -134,6 +134,7 @@
     <reference name='VIR_FROM_XEND' href='html/libvirt-virterror.html#VIR_FROM_XEND'/>
     <reference name='VIR_FROM_XENSTORE' href='html/libvirt-virterror.html#VIR_FROM_XENSTORE'/>
     <reference name='VIR_FROM_XENXM' href='html/libvirt-virterror.html#VIR_FROM_XENXM'/>
+    <reference name='VIR_FROM_XEN_INOTIFY' href='html/libvirt-virterror.html#VIR_FROM_XEN_INOTIFY'/>
     <reference name='VIR_FROM_XML' href='html/libvirt-virterror.html#VIR_FROM_XML'/>
     <reference name='VIR_GET_CPUMAP' href='html/libvirt-libvirt.html#VIR_GET_CPUMAP'/>
     <reference name='VIR_MEMORY_VIRTUAL' href='html/libvirt-libvirt.html#VIR_MEMORY_VIRTUAL'/>
@@ -530,6 +531,7 @@
       <ref name='VIR_FROM_XEND'/>
       <ref name='VIR_FROM_XENSTORE'/>
       <ref name='VIR_FROM_XENXM'/>
+      <ref name='VIR_FROM_XEN_INOTIFY'/>
       <ref name='VIR_FROM_XML'/>
       <ref name='VIR_GET_CPUMAP'/>
       <ref name='VIR_MEMORY_VIRTUAL'/>
@@ -1544,6 +1546,7 @@
       <ref name='VIR_FROM_XEND'/>
       <ref name='VIR_FROM_XENSTORE'/>
       <ref name='VIR_FROM_XENXM'/>
+      <ref name='VIR_FROM_XEN_INOTIFY'/>
       <ref name='VIR_FROM_XML'/>
       <ref name='VIR_WAR_NO_NETWORK'/>
       <ref name='VIR_WAR_NO_NODE'/>
@@ -1583,6 +1586,10 @@
           <ref name='VIR_COPY_CPUMAP'/>
           <ref name='VIR_GET_CPUMAP'/>
           <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='Accessor'>
+          <ref name='virNodeDeviceGetParent'/>
+          <ref name='virNodeDeviceNumOfCaps'/>
         </word>
         <word name='Additional'>
           <ref name='_virConnectCredential'/>
@@ -1854,6 +1861,11 @@
           <ref name='virNetworkGetConnect'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
+        </word>
+      </letter>
+      <letter name='J'>
+        <word name='Just'>
+          <ref name='virNodeDeviceGetName'/>
         </word>
       </letter>
       <letter name='K'>
@@ -2389,6 +2401,7 @@
           <ref name='virStoragePoolDestroy'/>
         </word>
         <word name='anymore'>
+          <ref name='virConnectDomainEventRegister'/>
           <ref name='virDomainSave'/>
         </word>
         <word name='application'>
@@ -3007,6 +3020,9 @@
         </word>
         <word name='deactivate'>
           <ref name='virStoragePoolDestroy'/>
+        </word>
+        <word name='deallocate'>
+          <ref name='virConnectDomainEventRegister'/>
         </word>
         <word name='deallocated'>
           <ref name='virDomainGetName'/>
@@ -4469,6 +4485,7 @@
           <ref name='virDomainShutdown'/>
         </word>
         <word name='optional'>
+          <ref name='virConnectDomainEventRegister'/>
           <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainMigrate'/>
           <ref name='virNodeListDevices'/>
@@ -4937,6 +4954,7 @@
           <ref name='virDomainMemoryPeek'/>
           <ref name='virDomainMigrate'/>
           <ref name='virGetVersion'/>
+          <ref name='virNodeDeviceGetName'/>
           <ref name='virNodeGetCellsFreeMemory'/>
         </word>
         <word name='returned'>
@@ -5627,6 +5645,7 @@
           <ref name='_virConnectAuth'/>
           <ref name='_virDomainInfo'/>
           <ref name='_virVcpuInfo'/>
+          <ref name='virConnectDomainEventRegister'/>
           <ref name='virConnectGetType'/>
           <ref name='virConnectGetURI'/>
           <ref name='virDomainDestroy'/>
@@ -5939,6 +5958,7 @@
         </word>
         <word name='when'>
           <ref name='virConnectDomainEventCallback'/>
+          <ref name='virConnectDomainEventRegister'/>
           <ref name='virDomainCreateXML'/>
           <ref name='virDomainGetAutostart'/>
           <ref name='virDomainSetAutostart'/>
