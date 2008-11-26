@@ -1,3 +1,7 @@
+Wed Nov 26 15:46:07 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.spec.in: cleanups and missing dep for hal
+
 Tue Nov 25 16:29:09 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in docs/* NEWS: release of 0.5.0
