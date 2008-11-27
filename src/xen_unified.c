@@ -819,8 +819,15 @@ xenUnifiedDomainSetMaxMemory (virDomainPtr dom, unsigned long memory)
     GET_PRIVATE(dom->conn);
     int i;
 
+    /* Prefer xend for setting max memory */
+    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
+        if (xenDaemonDomainSetMaxMemory (dom, memory) == 0)
+            return 0;
+    }
+
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] &&
+        if (i != XEN_UNIFIED_XEND_OFFSET &&
+            priv->opened[i] &&
             drivers[i]->domainSetMaxMemory &&
             drivers[i]->domainSetMaxMemory (dom, memory) == 0)
             return 0;

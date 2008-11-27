@@ -1,3 +1,8 @@
+Thu Nov 27 17:15:10 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_unified.c: use preferably xend method to update
+	  the maximum memory of a xen guest (Jim Fehlig)
+
 Wed Nov 26 15:46:07 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* libvirt.spec.in: cleanups and missing dep for hal
