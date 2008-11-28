@@ -546,6 +546,14 @@ virDomainDiskDefParseXML(virConnectPtr conn,
                     source = virXMLPropString(cur, "file");
                 else
                     source = virXMLPropString(cur, "dev");
+
+                /* People sometimes pass a bogus '' source path
+                   when they mean to omit the source element
+                   completely. eg CDROM without media. This is
+                   just a little compatability check to help
+                   those broken apps */
+                if (source && STREQ(source, ""))
+                    VIR_FREE(source);
             } else if ((target == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "target"))) {
                 target = virXMLPropString(cur, "dev");

@@ -229,6 +229,7 @@ mymain(int argc, char **argv)
     DO_TEST("fullvirt-sound", 2);
 
     DO_TEST("escape-paths", 2);
+    DO_TEST("no-source-cdrom", 2);
 
     virCapabilitiesFree(caps);
 

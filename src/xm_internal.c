@@ -828,7 +828,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
         while (list) {
             char *head;
             char *offset;
-            char *tmp, *tmp1;
+            char *tmp;
 
             if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
                 goto skipdisk;
@@ -850,10 +850,15 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                 goto skipdisk;
             if ((offset - head) >= (PATH_MAX-1))
                 goto skipdisk;
-            if (VIR_ALLOC_N(disk->src, (offset - head) + 1) < 0)
-                goto no_memory;
-            strncpy(disk->src, head, (offset - head));
-            disk->src[(offset-head)] = '\0';
+
+            if (offset == head) {
+                disk->src = NULL; /* No source file given, eg CDROM with no media */
+            } else {
+                if (VIR_ALLOC_N(disk->src, (offset - head) + 1) < 0)
+                    goto no_memory;
+                strncpy(disk->src, head, (offset - head));
+                disk->src[(offset-head)] = '\0';
+            }
             head = offset + 1;
 
             /* Remove legacy ioemu: junk */
@@ -871,31 +876,40 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
 
 
             /* Extract source driver type */
-            if (disk->src &&
-                (tmp = strchr(disk->src, ':')) != NULL) {
-                if (VIR_ALLOC_N(disk->driverName, (tmp - disk->src) + 1) < 0)
-                    goto no_memory;
-                strncpy(disk->driverName, disk->src, (tmp - disk->src));
-                disk->driverName[tmp - disk->src] = '\0';
-            } else {
-                if (!(disk->driverName = strdup("phy")))
-                    goto no_memory;
-                tmp = disk->src;
+            if (disk->src) {
+                /* The main type  phy:, file:, tap: ... */
+                if ((tmp = strchr(disk->src, ':')) != NULL) {
+                    if (VIR_ALLOC_N(disk->driverName, (tmp - disk->src) + 1) < 0)
+                        goto no_memory;
+                    strncpy(disk->driverName, disk->src, (tmp - disk->src));
+                    disk->driverName[tmp - disk->src] = '\0';
+
+                    /* Strip the prefix we found off the source file name */
+                    memmove(disk->src, disk->src+(tmp-disk->src)+1,
+                            strlen(disk->src)-(tmp-disk->src));
+                }
+
+                /* And the sub-type for tap:XXX: type */
+                if (disk->driverName &&
+                    STREQ(disk->driverName, "tap")) {
+                    if (!(tmp = strchr(disk->src, ':')))
+                        goto skipdisk;
+                    if (VIR_ALLOC_N(disk->driverType, (tmp - disk->src) + 1) < 0)
+                        goto no_memory;
+                    strncpy(disk->driverType, disk->src, (tmp - disk->src));
+                    disk->driverType[tmp - disk->src] = '\0';
+
+                    /* Strip the prefix we found off the source file name */
+                    memmove(disk->src, disk->src+(tmp-disk->src)+1,
+                            strlen(disk->src)-(tmp-disk->src));
+                }
             }
 
-            /* And the source driver sub-type */
-            if (STRPREFIX(disk->driverName, "tap")) {
-                if (!(tmp1 = strchr(tmp+1, ':')) || !tmp1[0])
-                    goto skipdisk;
-                if (VIR_ALLOC_N(disk->driverType, (tmp1-(tmp+1))) < 0)
-                    goto no_memory;
-                strncpy(disk->driverType, tmp+1, (tmp1-(tmp+1)));
-                memmove(disk->src, disk->src+(tmp1-disk->src)+1, strlen(disk->src)-(tmp1-disk->src));
-            } else {
-                disk->driverType = NULL;
-                if (disk->src[0] && tmp)
-                    memmove(disk->src, disk->src+(tmp-disk->src)+1, strlen(disk->src)-(tmp-disk->src));
-            }
+            /* No source, or driver name, so fix to phy: */
+            if (!disk->driverName &&
+                !(disk->driverName = strdup("phy")))
+                goto no_memory;
+
 
             /* phy: type indicates a block device */
             disk->type = STREQ(disk->driverName, "phy") ?
