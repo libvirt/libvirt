@@ -291,6 +291,7 @@ virStorageBackendStablePath(virConnectPtr conn,
     DIR *dh;
     struct dirent *dent;
     char *stablepath;
+    int opentries = 0;
 
     /* Short circuit if pool has no target, or if its /dev */
     if (pool->def->target.path == NULL ||
@@ -304,12 +305,17 @@ virStorageBackendStablePath(virConnectPtr conn,
     if (!STRPREFIX(pool->def->target.path, "/dev"))
         goto ret_strdup;
 
-    /* The pool is pointing somewhere like /dev/disk/by-path
-     * or /dev/disk/by-id, so we need to check all symlinks in
-     * the target directory and figure out which one points
-     * to this device node
+    /* We loop here because /dev/disk/by-{id,path} may not have existed
+     * before we started this operation, so we have to give it some time to
+     * get created.
      */
+ reopen:
     if ((dh = opendir(pool->def->target.path)) == NULL) {
+        opentries++;
+        if (errno == ENOENT && opentries < 50) {
+            usleep(100 * 1000);
+            goto reopen;
+        }
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               _("cannot read dir %s: %s"),
                               pool->def->target.path,
@@ -317,6 +323,11 @@ virStorageBackendStablePath(virConnectPtr conn,
         return NULL;
     }
 
+    /* The pool is pointing somewhere like /dev/disk/by-path
+     * or /dev/disk/by-id, so we need to check all symlinks in
+     * the target directory and figure out which one points
+     * to this device node
+     */
     while ((dent = readdir(dh)) != NULL) {
         if (dent->d_name[0] == '.')
             continue;

@@ -1,3 +1,7 @@
+Fri Nov 28 08:40:00 CET 2008 Chris Lalancette <clalance@redhat.com>
+	* src/storage_backend.c: Wait up to 5 seconds for
+	/dev/disk/by-{id,path} to exist in virStorageBackendStablePath
+
 Thu Nov 27 17:15:10 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_unified.c: use preferably xend method to update
