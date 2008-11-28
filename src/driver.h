@@ -328,7 +328,6 @@ typedef virDomainPtr
 struct _virDriver {
     int	       no;	/* the number virDrvNo */
     const char * name;	/* the name of the driver */
-    unsigned long ver;	/* the version of the backend */
     virDrvOpen			open;
     virDrvClose			close;
     virDrvDrvSupportsFeature   supports_feature;

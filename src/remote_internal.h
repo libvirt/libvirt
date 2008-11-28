@@ -28,6 +28,8 @@
 
 int remoteRegister (void);
 
+unsigned long remoteVersion(void);
+
 #define LIBVIRTD_LISTEN_ADDR NULL
 #define LIBVIRTD_TLS_PORT "16514"
 #define LIBVIRTD_TCP_PORT "16509"

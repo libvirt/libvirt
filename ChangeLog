@@ -1,3 +1,19 @@
+Fri Nov 28 11:58:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Allow generic remote://hostname/ URI for automatic probe
+	of hypervisor driver.
+	* docs/uri.html, docs/uri.html.in: Document remote://hostname/ style
+	URI syntax
+	* src/driver.h: Remove version field
+	* src/libvirt.c: Directly impl virGetVersion() instead of calling out
+	to individual drivers
+	* src/lxc_driver.c, src/openvz_driver.c, src/qemu_driver.c,
+	src/remote_internal.h, src/test.c, src/uml_driver.c,
+	src/xen_unified.c, src/xen_unified.h: Remove version from
+	driver tables.
+	* src/remote_internal.c: Allow 'remote' as a URI scheme for
+	automatically probing on remote server
+
 Fri Nov 28 11:21:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix XM driver disk parsing with no source CDROMs

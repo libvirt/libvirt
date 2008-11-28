@@ -2194,7 +2194,6 @@ testStorageVolumeGetPath(virStorageVolPtr obj) {
 static virDriver testDriver = {
     VIR_DRV_TEST,
     "Test",
-    LIBVIR_VERSION_NUMBER,
     testOpen, /* open */
     testClose, /* close */
     NULL, /* supports_feature */

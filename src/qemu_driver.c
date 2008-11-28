@@ -3725,7 +3725,6 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
 static virDriver qemuDriver = {
     VIR_DRV_QEMU,
     "QEMU",
-    LIBVIR_VERSION_NUMBER,
     qemudOpen, /* open */
     qemudClose, /* close */
     qemudSupportsFeature, /* supports_feature */

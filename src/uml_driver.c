@@ -1593,7 +1593,6 @@ found:
 static virDriver umlDriver = {
     VIR_DRV_UML,
     "UML",
-    LIBVIR_VERSION_NUMBER,
     umlOpen, /* open */
     umlClose, /* close */
     NULL, /* supports_feature */

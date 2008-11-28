@@ -734,7 +734,6 @@ int
 virGetVersion(unsigned long *libVer, const char *type,
               unsigned long *typeVer)
 {
-    int i;
     DEBUG("libVir=%p, type=%s, typeVer=%p", libVer, type, typeVer);
 
     if (!initialized)
@@ -748,15 +747,36 @@ virGetVersion(unsigned long *libVer, const char *type,
     if (typeVer != NULL) {
         if (type == NULL)
             type = "Xen";
-        for (i = 0;i < virDriverTabCount;i++) {
-            if ((virDriverTab[i] != NULL) &&
-                (STRCASEEQ(virDriverTab[i]->name, type))) {
-                *typeVer = virDriverTab[i]->ver;
-                break;
-            }
-        }
-        if (i >= virDriverTabCount) {
-            *typeVer = 0;
+        *typeVer = 0;
+#if WITH_XEN
+        if (STRCASEEQ(type, "Xen"))
+            *typeVer = xenUnifiedVersion();
+#endif
+#if WITH_TEST
+        if (STRCASEEQ(type, "Test"))
+            *typeVer = LIBVIR_VERSION_NUMBER;
+#endif
+#if WITH_QEMU
+        if (STRCASEEQ(type, "QEMU"))
+            *typeVer = LIBVIR_VERSION_NUMBER;
+#endif
+#if WITH_LXC
+        if (STRCASEEQ(type, "LXC"))
+            *typeVer = LIBVIR_VERSION_NUMBER;
+#endif
+#if WITH_OPENVZ
+        if (STRCASEEQ(type, "OpenVZ"))
+            *typeVer = LIBVIR_VERSION_NUMBER;
+#endif
+#if WITH_UML
+        if (STRCASEEQ(type, "UML"))
+            *typeVer = LIBVIR_VERSION_NUMBER;
+#endif
+#if WITH_REMOTE
+        if (STRCASEEQ(type, "Remote"))
+            *typeVer = remoteVersion();
+#endif
+        if (*typeVer == 0) {
             virLibConnError(NULL, VIR_ERR_NO_SUPPORT, type);
             return (-1);
         }

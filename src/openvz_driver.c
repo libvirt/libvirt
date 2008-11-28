@@ -1087,7 +1087,6 @@ static int openvzNumDefinedDomains(virConnectPtr conn) {
 static virDriver openvzDriver = {
     VIR_DRV_OPENVZ,
     "OPENVZ",
-    LIBVIR_VERSION_NUMBER,
     openvzOpen, /* open */
     openvzClose, /* close */
     NULL, /* supports_feature */

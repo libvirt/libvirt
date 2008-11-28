@@ -430,28 +430,40 @@ doRemoteOpen (virConnectPtr conn,
 
         /* Construct the original name. */
         if (!name) {
-            xmlURI tmpuri = {
-                .scheme = conn->uri->scheme,
+            if (STREQ(conn->uri->scheme, "remote") ||
+                STRPREFIX(conn->uri->scheme, "remote+")) {
+                /* Allow remote serve to probe */
+                name = strdup("");
+            } else {
+                xmlURI tmpuri = {
+                    .scheme = conn->uri->scheme,
 #ifdef HAVE_XMLURI_QUERY_RAW
-                .query_raw = qparam_get_query (vars),
+                    .query_raw = qparam_get_query (vars),
 #else
-                .query = qparam_get_query (vars),
+                    .query = qparam_get_query (vars),
 #endif
-                .path = conn->uri->path,
-                .fragment = conn->uri->fragment,
-            };
+                    .path = conn->uri->path,
+                    .fragment = conn->uri->fragment,
+                };
 
-            /* Evil, blank out transport scheme temporarily */
-            if (transport_str) {
-                assert (transport_str[-1] == '+');
-                transport_str[-1] = '\0';
+                /* Evil, blank out transport scheme temporarily */
+                if (transport_str) {
+                    assert (transport_str[-1] == '+');
+                    transport_str[-1] = '\0';
+                }
+
+                name = (char *) xmlSaveUri (&tmpuri);
+
+#ifdef HAVE_XMLURI_QUERY_RAW
+                VIR_FREE(tmpuri.query_raw);
+#else
+                VIR_FREE(tmpuri.query);
+#endif
+
+                /* Restore transport scheme */
+                if (transport_str)
+                    transport_str[-1] = '+';
             }
-
-            name = (char *) xmlSaveUri (&tmpuri);
-
-            /* Restore transport scheme */
-            if (transport_str)
-                transport_str[-1] = '+';
         }
 
         free_qparam_set (vars);
@@ -1330,7 +1342,7 @@ remoteType (virConnectPtr conn)
 }
 
 static int
-remoteVersion (virConnectPtr conn, unsigned long *hvVer)
+remoteGetVersion (virConnectPtr conn, unsigned long *hvVer)
 {
     remote_get_version_ret ret;
     GET_PRIVATE (conn, -1);
@@ -5300,15 +5312,19 @@ make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr 
 
 /*----------------------------------------------------------------------*/
 
+unsigned long remoteVersion(void)
+{
+    return REMOTE_PROTOCOL_VERSION;
+}
+
 static virDriver driver = {
     .no = VIR_DRV_REMOTE,
     .name = "remote",
-    .ver = REMOTE_PROTOCOL_VERSION,
     .open = remoteOpen,
     .close = remoteClose,
     .supports_feature = remoteSupportsFeature,
         .type = remoteType,
-        .version = remoteVersion,
+        .version = remoteGetVersion,
     .getHostname = remoteGetHostname,
         .getMaxVcpus = remoteGetMaxVcpus,
         .nodeGetInfo = remoteNodeGetInfo,

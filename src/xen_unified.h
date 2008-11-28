@@ -185,4 +185,6 @@ void xenUnifiedDomainEventDispatch (xenUnifiedPrivatePtr priv,
                                     virDomainPtr dom,
                                     int event,
                                     int detail);
+unsigned long xenUnifiedVersion(void);
+
 #endif /* __VIR_XEN_UNIFIED_H__ */

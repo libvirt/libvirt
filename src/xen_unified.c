@@ -392,6 +392,17 @@ xenUnifiedClose (virConnectPtr conn)
     return 0;
 }
 
+
+#define HV_VERSION ((DOM0_INTERFACE_VERSION >> 24) * 1000000 +         \
+                    ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +   \
+                    (DOM0_INTERFACE_VERSION & 0xFFFF))
+
+unsigned long xenUnifiedVersion(void)
+{
+    return HV_VERSION;
+}
+
+
 static const char *
 xenUnifiedType (virConnectPtr conn)
 {
@@ -416,7 +427,7 @@ xenUnifiedSupportsFeature (virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
 }
 
 static int
-xenUnifiedVersion (virConnectPtr conn, unsigned long *hvVer)
+xenUnifiedGetVersion (virConnectPtr conn, unsigned long *hvVer)
 {
     GET_PRIVATE(conn);
     int i;
@@ -1366,20 +1377,15 @@ xenUnifiedDomainEventDeregister (virConnectPtr conn,
 
 /*----- Register with libvirt.c, and initialise Xen drivers. -----*/
 
-#define HV_VERSION ((DOM0_INTERFACE_VERSION >> 24) * 1000000 +         \
-                    ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +   \
-                    (DOM0_INTERFACE_VERSION & 0xFFFF))
-
 /* The interface which we export upwards to libvirt.c. */
 static virDriver xenUnifiedDriver = {
     .no = VIR_DRV_XEN_UNIFIED,
     .name = "Xen",
-    .ver = HV_VERSION,
     .open 			= xenUnifiedOpen,
     .close 			= xenUnifiedClose,
     .supports_feature   = xenUnifiedSupportsFeature,
     .type 			= xenUnifiedType,
-    .version 			= xenUnifiedVersion,
+    .version 			= xenUnifiedGetVersion,
     .getHostname    = xenUnifiedGetHostname,
     .getMaxVcpus 			= xenUnifiedGetMaxVcpus,
     .nodeGetInfo 			= xenUnifiedNodeGetInfo,

@@ -221,13 +221,21 @@ here</a>.
     </h3>
         <p>
 Remote URIs are formed by taking ordinary local URIs and adding a
-hostname and/or transport name.  For example:
+hostname and/or transport name. As a special case, using a URI
+scheme of 'remote', will tell the remote libvirtd server to probe
+for the optimal hypervisor driver. This is equivalent to passing
+a NULL URI for a local connection. For example:
 </p>
         <table class="top_table"><tr><th> Local URI </th><th> Remote URI </th><th> Meaning </th></tr><tr><td>
           <code>xen:///</code>
         </td><td>
           <code>xen://oirase/</code>
         </td><td> Connect to the Xen hypervisor running on host <code>oirase</code>
+  using TLS. </td></tr><tr><td>
+          <code>NULL</code>
+        </td><td>
+          <code>remote://oirase/</code>
+        </td><td> Connect to the "default" hypervisor running on host <code>oirase</code>
   using TLS. </td></tr><tr><td>
           <code>xen:///</code>
         </td><td>
