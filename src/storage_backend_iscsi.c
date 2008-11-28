@@ -603,6 +603,8 @@ virStorageBackendISCSIRefreshPool(virConnectPtr conn,
 
     pool->def->allocation = pool->def->capacity = pool->def->available = 0;
 
+    virStorageBackendWaitForDevices(conn);
+
     if ((session = virStorageBackendISCSISession(conn, pool)) == NULL)
         goto cleanup;
     if (virStorageBackendISCSIRescanLUNs(conn, pool, session) < 0)

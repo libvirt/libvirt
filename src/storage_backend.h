@@ -69,6 +69,8 @@ int virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
                                      int fd,
                                      int withCapacity);
 
+void virStorageBackendWaitForDevices(virConnectPtr conn);
+
 char *virStorageBackendStablePath(virConnectPtr conn,
                                   virStoragePoolObjPtr pool,
                                   const char *devpath);

@@ -270,6 +270,27 @@ virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
     return 0;
 }
 
+#ifdef UDEVADM
+void virStorageBackendWaitForDevices(virConnectPtr conn)
+{
+    const char *const settleprog[] = { UDEVADM, "settle", NULL };
+    int exitstatus;
+
+    if (access(UDEVADM, X_OK) != 0)
+        return;
+
+    /*
+     * NOTE: we ignore errors here; this is just to make sure that any device
+     * nodes that are being created finish before we try to scan them.
+     * If this fails for any reason, we still have the backup of polling for
+     * 5 seconds for device nodes.
+     */
+    virRun(conn, settleprog, &exitstatus);
+}
+#else
+void virStorageBackendWaitForDevices(virConnectPtr conn ATTRIBUTE_UNUSED) {}
+#endif
+
 /*
  * Given a volume path directly in /dev/XXX, iterate over the
  * entries in the directory pool->def->target.path and find the

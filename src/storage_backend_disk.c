@@ -262,6 +262,8 @@ virStorageBackendDiskRefreshPool(virConnectPtr conn,
     VIR_FREE(pool->def->source.devices[0].freeExtents);
     pool->def->source.devices[0].nfreeExtent = 0;
 
+    virStorageBackendWaitForDevices(conn);
+
     return virStorageBackendDiskReadPartitions(conn, pool, NULL);
 }
 

@@ -470,6 +470,8 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn,
     };
     int exitstatus;
 
+    virStorageBackendWaitForDevices(conn);
+
     /* Get list of all logical volumes */
     if (virStorageBackendLogicalFindLVs(conn, pool, NULL) < 0) {
         virStoragePoolObjClearVols(pool);
