@@ -1,3 +1,14 @@
+Fri Nov 28 16:16:54 CET 2008 Guido Günther <agx@sigxcpu.org>
+
+	Prefer xenstore driver for listDomains, since xen HV reports ghost ids
+	of already shutdown domains in some xen versions
+	* src/proxy_internal.c, src/proxy_internal.h: declare
+	xenProxyListDomains non static
+	* src/xend_internal.c, src/xend_internal.h: declare
+	xenDaemonListDomains non static
+	* src/xen_unified.c: prefer xenStoreListDomains over
+	xenHypervisorListDomains for xenUnifiedListDomains
+
 Fri Nov 28 11:58:40 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Allow generic remote://hostname/ URI for automatic probe

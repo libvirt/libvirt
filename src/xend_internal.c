@@ -3411,7 +3411,7 @@ xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer)
  *
  * Returns the number of domain found or -1 in case of error
  */
-static int
+int
 xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids)
 {
     struct sexpr *root = NULL;

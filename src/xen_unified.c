@@ -516,14 +516,31 @@ static int
 xenUnifiedListDomains (virConnectPtr conn, int *ids, int maxids)
 {
     GET_PRIVATE(conn);
-    int i, ret;
+    int ret;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->listDomains) {
-            ret = drivers[i]->listDomains (conn, ids, maxids);
-            if (ret >= 0) return ret;
-        }
+    /* Try xenstore. */
+    if (priv->opened[XEN_UNIFIED_XS_OFFSET]) {
+        ret = xenStoreListDomains (conn, ids, maxids);
+        if (ret >= 0) return ret;
+    }
 
+    /* Try HV. */
+    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET]) {
+        ret = xenHypervisorListDomains (conn, ids, maxids);
+        if (ret >= 0) return ret;
+    }
+
+    /* Try xend. */
+    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
+        ret = xenDaemonListDomains (conn, ids, maxids);
+        if (ret >= 0) return ret;
+    }
+
+    /* Try proxy. */
+    if (priv->opened[XEN_UNIFIED_PROXY_OFFSET]) {
+        ret = xenProxyListDomains (conn, ids, maxids);
+        if (ret >= 0) return ret;
+    }
     return -1;
 }
 

@@ -94,4 +94,6 @@ extern virDomainPtr xenProxyLookupByName(virConnectPtr conn,
 
 extern char *       xenProxyDomainDumpXML(virDomainPtr domain,
                                           int flags);
+extern int          xenProxyListDomains(virConnectPtr conn, int *ids,
+                                        int maxids);
 #endif /* __LIBVIR_PROXY_H__ */
