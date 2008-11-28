@@ -46,6 +46,7 @@
 #include <sys/inotify.h>
 
 #if HAVE_NUMACTL
+#define NUMA_VERSION1_COMPATIBILITY 1
 #include <numa.h>
 #endif
 

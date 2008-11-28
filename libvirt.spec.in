@@ -124,6 +124,8 @@ BuildRequires: lvm2
 BuildRequires: iscsi-initiator-utils
 # For disk driver
 BuildRequires: parted-devel
+# For QEMU/LXC numa info
+BuildRequires: numactl-devel
 Obsoletes: libvir
 
 # Fedora build root suckage

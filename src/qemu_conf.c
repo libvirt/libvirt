@@ -37,6 +37,7 @@
 #include <sys/utsname.h>
 
 #if HAVE_NUMACTL
+#define NUMA_VERSION1_COMPATIBILITY 1
 #include <numa.h>
 #endif
 
@@ -300,11 +301,11 @@ qemudCapsInitGuest(virCapsPtr caps,
 #if HAVE_NUMACTL
 #define MAX_CPUS 4096
 #define MAX_CPUS_MASK_SIZE (sizeof(unsigned long))
-#define MAX_CPUS_MASK_LEN (MAX_CPUS / MAX_CPUS_MASK_SIZE)
-#define MAX_CPUS_MASK_BYTES (MAX_CPUS / 8)
+#define MAX_CPUS_MASK_BITS (MAX_CPUS_MASK_SIZE * 8)
+#define MAX_CPUS_MASK_LEN (MAX_CPUS / (MAX_CPUS_MASK_BITS))
 
 #define MASK_CPU_ISSET(mask, cpu) \
-    (((mask)[((cpu) / MAX_CPUS_MASK_SIZE)] >> ((cpu) % MAX_CPUS_MASK_SIZE)) & 1)
+    (((mask)[((cpu) / MAX_CPUS_MASK_BITS)] >> ((cpu) % MAX_CPUS_MASK_BITS)) & 1)
 
 static int
 qemudCapsInitNUMA(virCapsPtr caps)
@@ -322,7 +323,8 @@ qemudCapsInitNUMA(virCapsPtr caps)
         goto cleanup;
 
     for (n = 0 ; n <= numa_max_node() ; n++) {
-        if (numa_node_to_cpus(n, mask, MAX_CPUS_MASK_BYTES) < 0)
+
+        if (numa_node_to_cpus(n, mask, MAX_CPUS_MASK_LEN) < 0)
             goto cleanup;
 
         for (ncpus = 0, i = 0 ; i < MAX_CPUS ; i++)

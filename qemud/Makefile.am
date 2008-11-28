@@ -87,7 +87,6 @@ libvirtd_LDFLAGS = \
 	$(COVERAGE_LDFLAGS) \
 	$(POLKIT_LIBS)
 
-libvirtd_DEPENDENCIES = ../src/libvirt.la
 libvirtd_LDADD =					\
 		../gnulib/lib/libgnu.la
 
@@ -128,6 +127,9 @@ libvirtd_SOURCES += $(AVAHI_SOURCES)
 libvirtd_CFLAGS += $(AVAHI_CFLAGS)
 libvirtd_LDADD += $(AVAHI_LIBS)
 endif
+
+libvirtd_DEPENDENCIES = $(libvirtd_LDADD)
+
 
 default_xml_dest = libvirt/qemu/networks/default.xml
 install-data-local: install-init install-data-sasl install-data-polkit
