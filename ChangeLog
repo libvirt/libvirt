@@ -1,3 +1,8 @@
+Sun Nov 30 18:36:33 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xen_inotify.c: Close directory handle once done
+	processing files
+
 Fri Nov 28 16:16:54 CET 2008 Guido Günther <agx@sigxcpu.org>
 
 	Prefer xenstore driver for listDomains, since xen HV reports ghost ids

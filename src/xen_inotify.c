@@ -395,7 +395,7 @@ xenInotifyOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
                 return -1;
             }
         }
-
+        closedir(dh);
     }
 
     if ((priv->inotifyFD = inotify_init()) < 0) {
