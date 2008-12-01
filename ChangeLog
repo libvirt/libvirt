@@ -1,3 +1,21 @@
+Mon, 1 Dec 2008 16:01:54 +0100 Jim Meyering <meyering@redhat.com>
+
+	tests: daemon-conf: accommodate numeric-valued config params
+	This test would hang when failing to perturb the soon-to-be-
+	added numeric (and non-boolean) valued parameters, max_clients,
+	max_workers, min_workers.
+	* tests/daemon-conf: Require that all commented-out settings
+	in libvirtd.conf have the same form.  Before, two parameters
+	were not being tested, since a space had snuck between the
+	leading "#" and the "param = value" parts.
+	Apply each RHS-value-perturbing transformation
+	separately, not in series.
+	Let VERBOSE=yes turn on debugging.
+	Be more verbose by default, since this is a relatively
+	long-running test.
+	* qemud/libvirtd.conf: Normalize the spacing around each setting
+	that is to be perturbed by tests/daemon-conf.
+
 Mon, 1 Dec 2008 10:30:10 +0100 Jim Meyering <meyering@redhat.com>
 
 	uml: don't free an uninitialized variable

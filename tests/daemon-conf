@@ -1,6 +1,11 @@
 #!/bin/sh
 # Get coverage of libvirtd's config-parsing code.
 
+if test "$VERBOSE" = yes; then
+  set -x
+  libvirtd --version
+fi
+
 # Boilerplate code to set up a test directory, cd into it,
 # and to ensure we remove it upon completion.
 this_test_() { echo "./$0" | sed 's,.*/,,'; }
@@ -12,8 +17,14 @@ trap '(exit $?); exit $?' 1 2 13 15
 mkdir "$t_" || fail=1
 cd "$t_" || fail=1
 
+conf="$abs_top_srcdir/qemud/libvirtd.conf"
+
+# Ensure that each commented out PARAMETER = VALUE line has the expected form.
+grep '[a-z_]  *=  *[^ ]' "$conf" | grep -vE '^#[a-z_]+ = ' \
+  && { echo "$0: found unexpected lines (above) in $conf" 1>&2; exit 1; }
+
 # Start with the sample libvirtd.conf file, uncommenting all real directives.
-sed -n 's/^#\([^ #]\)/\1/p' $abs_top_srcdir/qemud/libvirtd.conf > tmp.conf
+sed -n 's/^#\([^ #]\)/\1/p' "$conf" > tmp.conf
 
 # Iterate through that list of directives, corrupting one RHS at a
 # time and running libvirtd with the resulting config.  Each libvirtd
@@ -22,16 +33,23 @@ n=$(wc -l < tmp.conf)
 i=1
 while :; do
   param_name=$(sed -n "$i"'s/ = .*//p' tmp.conf)
+  printf "testing with corrupted config: $param_name\n" 1>&2
   rhs=$(sed -n "$i"'s/.* = \(.*\)/\1/p' tmp.conf)
   f=in$i.conf
-  # Change an RHS that starts with '"' or '[' to "3".
-  # Change an RHS that starts with 0 or 1 to the string '"foo"'.
-  sed "$i"'s/ = [["].*/ = 3/;'"$i"'s/ = [01].*/ = "foo"/' tmp.conf > $f
+  case $rhs in
+    # Change an RHS that starts with '"' or '[' to "3".
+    [[\"]*) sed "$i"'s/ = [["].*/ = 3/' tmp.conf > $f;;
+    # Change an RHS that starts with a digit to the string '"foo"'.
+    [0-9]*) sed "$i"'s/ = [0-9].*/ = "foo"/' tmp.conf > $f;;
+  esac
+
+  # Run libvirtd, expecting it to fail.
   libvirtd --config=$f 2> err && fail=1
+
   case $rhs in
     # '"'*) msg='should be a string';;
     '"'*) msg='invalid type: got long; expected string';;
-    [01]*) msg='invalid type: got string; expected long';;
+    [0-9]*) msg='invalid type: got string; expected long';;
     '['*) msg='must be a string or list of strings';;
     *) echo "unexpected RHS: $rhs" 1>&2; fail=1;;
   esac
@@ -48,8 +66,10 @@ while :; do
 done
 
 # Run with the unmodified config file.
+sleep_secs=2
+printf "running libvirtd with a valid config file ($sleep_secs seconds)\n" 1>&2
 libvirtd --config=tmp.conf > log 2>&1 & pid=$!
-sleep 2
+sleep $sleep_secs
 kill $pid
 
 # Expect an orderly shut-down and successful exit.
