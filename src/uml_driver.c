@@ -1163,7 +1163,7 @@ static virDomainPtr umlDomainCreate(virConnectPtr conn, const char *xml,
 static int umlDomainShutdown(virDomainPtr dom) {
     struct uml_driver *driver = (struct uml_driver *)dom->conn->privateData;
     virDomainObjPtr vm = virDomainFindByID(&driver->domains, dom->id);
-    char* info;
+    char *info = NULL;
 
     if (!vm) {
         umlReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -1672,4 +1672,3 @@ int umlRegister(void) {
     virRegisterStateDriver(&umlStateDriver);
     return 0;
 }
-

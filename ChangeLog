@@ -1,3 +1,9 @@
+Mon, 1 Dec 2008 10:30:10 +0100 Jim Meyering <meyering@redhat.com>
+
+	uml: don't free an uninitialized variable
+	* src/uml_driver.c (umlDomainShutdown): Initialize "info".
+	Patch and bug report from Ron Yorston <rmy@tigress.co.uk>.
+
 Sun Nov 30 18:36:33 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xen_inotify.c: Close directory handle once done
