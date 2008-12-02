@@ -1,3 +1,9 @@
+Tue Dec 2 11:34:22 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c: Registering network, storage & nodedev drivers
+	before any domain drivers, so domain autostart can rely on
+	network/storage autostarted objects. Patch from Gerd von Egidy
+
 Tue Dec 2 11:21:22 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/uml_driver.c: Fix recording of watch number to make

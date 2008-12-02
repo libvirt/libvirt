@@ -755,28 +755,26 @@ static struct qemud_server *qemudInitialize(int sigread) {
 
     virInitialize();
 
+    /*
+     * Note that the order is important: the first ones have a higher
+     * priority when calling virStateInitialize. We must register
+     * the network, storage and nodedev drivers before any domain
+     * drivers, since their resources must be auto-started before
+     * any domains can be auto-started.
+     */
 #ifdef WITH_DRIVER_MODULES
     /* We don't care if any of these fail, because the whole point
      * is to allow users to only install modules they want to use.
      * If they try to use a open a connection for a module that
      * is not loaded they'll get a suitable error at that point
      */
-    virDriverLoadModule("qemu");
-    virDriverLoadModule("lxc");
-    virDriverLoadModule("uml");
     virDriverLoadModule("network");
     virDriverLoadModule("storage");
     virDriverLoadModule("nodedev");
+    virDriverLoadModule("qemu");
+    virDriverLoadModule("lxc");
+    virDriverLoadModule("uml");
 #else
-#ifdef WITH_QEMU
-    qemuRegister();
-#endif
-#ifdef WITH_LXC
-    lxcRegister();
-#endif
-#ifdef WITH_UML
-    umlRegister();
-#endif
 #ifdef WITH_NETWORK
     networkRegister();
 #endif
@@ -785,6 +783,15 @@ static struct qemud_server *qemudInitialize(int sigread) {
 #endif
 #if defined(HAVE_HAL) || defined(HAVE_DEVKIT)
     nodedevRegister();
+#endif
+#ifdef WITH_QEMU
+    qemuRegister();
+#endif
+#ifdef WITH_LXC
+    lxcRegister();
+#endif
+#ifdef WITH_UML
+    umlRegister();
 #endif
 #endif
 
