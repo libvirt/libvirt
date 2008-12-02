@@ -1,3 +1,9 @@
+Tue Dec 2 13:45:00 CET 2008 Chris Lalancette <clalance@redhat.com>
+	* configure.in, src/storage_backend.c: Older distributions (i.e.
+	RHEL-5) don't have udevadm at all, but they do have udevsettle.  So
+	change our tests to prefer udevadm if it exists, but to fall back to
+	udevsettle if it does not.
+
 Tue Dec 2 11:34:22 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c: Registering network, storage & nodedev drivers

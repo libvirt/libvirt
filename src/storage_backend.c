@@ -270,13 +270,17 @@ virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
     return 0;
 }
 
-#ifdef UDEVADM
+#if defined(UDEVADM) || defined(UDEVSETTLE)
 void virStorageBackendWaitForDevices(virConnectPtr conn)
 {
+#ifdef UDEVADM
     const char *const settleprog[] = { UDEVADM, "settle", NULL };
+#else
+    const char *const settleprog[] = { UDEVSETTLE, NULL };
+#endif
     int exitstatus;
 
-    if (access(UDEVADM, X_OK) != 0)
+    if (access(settleprog[0], X_OK) != 0)
         return;
 
     /*
