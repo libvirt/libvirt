@@ -347,7 +347,7 @@ storageListPools(virConnectPtr conn,
         free(names[i]);
         names[i] = NULL;
     }
-    memset(names, 0, nnames);
+    memset(names, 0, nnames * sizeof(*names));
     return -1;
 }
 
@@ -389,7 +389,7 @@ storageListDefinedPools(virConnectPtr conn,
         free(names[i]);
         names[i] = NULL;
     }
-    memset(names, 0, nnames);
+    memset(names, 0, nnames * sizeof(*names));
     return -1;
 }
 
@@ -880,7 +880,7 @@ storagePoolListVolumes(virStoragePoolPtr obj,
         return -1;
     }
 
-    memset(names, 0, maxnames);
+    memset(names, 0, maxnames * sizeof(*names));
     for (i = 0 ; i < pool->volumes.count && n < maxnames ; i++) {
         if ((names[n++] = strdup(pool->volumes.objs[i]->name)) == NULL) {
             virStorageReportError(obj->conn, VIR_ERR_NO_MEMORY,
@@ -895,7 +895,7 @@ storagePoolListVolumes(virStoragePoolPtr obj,
     for (n = 0 ; n < maxnames ; n++)
         VIR_FREE(names[i]);
 
-    memset(names, 0, maxnames);
+    memset(names, 0, maxnames * sizeof(*names));
     return -1;
 }
 

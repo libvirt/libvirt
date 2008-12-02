@@ -1,3 +1,10 @@
+Tue, 2 Dec 2008 16:58:16 +0100 Jim Meyering <meyering@redhat.com>
+
+	fix inadequate initialization in storage and test drivers
+	* src/storage_driver.c (storageListPools): Set all "names" entries to 0.
+	(storageListDefinedPools, storagePoolListVolumes): Likewise.
+	* src/test.c (testStoragePoolListVolumes): Likewise.
+
 Tue Dec 2 13:45:00 CET 2008 Chris Lalancette <clalance@redhat.com>
 	* configure.in, src/storage_backend.c: Older distributions (i.e.
 	RHEL-5) don't have udevadm at all, but they do have udevsettle.  So

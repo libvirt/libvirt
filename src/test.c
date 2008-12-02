@@ -1951,7 +1951,7 @@ testStoragePoolListVolumes(virStoragePoolPtr obj,
     POOL_IS_ACTIVE(privpool, -1);
     int i = 0, n = 0;
 
-    memset(names, 0, maxnames);
+    memset(names, 0, maxnames * sizeof(*names));
     for (i = 0 ; i < privpool->volumes.count && n < maxnames ; i++) {
         if ((names[n++] = strdup(privpool->volumes.objs[i]->name)) == NULL) {
             testError(obj->conn, VIR_ERR_NO_MEMORY, "%s", _("name"));
@@ -1965,7 +1965,7 @@ testStoragePoolListVolumes(virStoragePoolPtr obj,
     for (n = 0 ; n < maxnames ; n++)
         VIR_FREE(names[i]);
 
-    memset(names, 0, maxnames);
+    memset(names, 0, maxnames * sizeof(*names));
     return -1;
 }
 
