@@ -1,4 +1,9 @@
-Mon, 1 Dec 2008 16:01:54 +0100 Jim Meyering <meyering@redhat.com>
+Tue Dec 2 11:21:22 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/uml_driver.c: Fix recording of watch number to make
+	inotify actually work.
+
+Mon Dec 1 16:01:54 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	tests: daemon-conf: accommodate numeric-valued config params
 	This test would hang when failing to perturb the soon-to-be-
@@ -16,7 +21,7 @@ Mon, 1 Dec 2008 16:01:54 +0100 Jim Meyering <meyering@redhat.com>
 	* qemud/libvirtd.conf: Normalize the spacing around each setting
 	that is to be perturbed by tests/daemon-conf.
 
-Mon, 1 Dec 2008 10:30:10 +0100 Jim Meyering <meyering@redhat.com>
+Mon Dec 1 10:30:10 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	uml: don't free an uninitialized variable
 	* src/uml_driver.c (umlDomainShutdown): Initialize "info".

@@ -348,16 +348,16 @@ umlStartup(void) {
         return -1;
     }
 
-    if ((uml_driver->inotifyWatch =
-         inotify_add_watch(uml_driver->inotifyFD,
-                           uml_driver->monitorDir,
-                           IN_CREATE | IN_MODIFY | IN_DELETE)) < 0) {
+    if (inotify_add_watch(uml_driver->inotifyFD,
+                          uml_driver->monitorDir,
+                          IN_CREATE | IN_MODIFY | IN_DELETE) < 0) {
         umlShutdown();
         return -1;
     }
 
-    if (virEventAddHandle(uml_driver->inotifyFD, POLLIN,
-                          umlInotifyEvent, uml_driver, NULL) < 0) {
+    if ((uml_driver->inotifyWatch =
+         virEventAddHandle(uml_driver->inotifyFD, POLLIN,
+                           umlInotifyEvent, uml_driver, NULL)) < 0) {
         umlShutdown();
         return -1;
     }
