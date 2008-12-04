@@ -1,3 +1,8 @@
+Thu Dec  4 15:36:42 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/bridge.c: patch setting MTU on tap interface to be the same
+	  as the value for the bridge (Eduardo Habkost)
+
 Thu 4 Dec 2008 12:46:01 CET Guido Günther <agx@sigxcpu.org>
 
 	Differentiate between active and inactive configs by honoring the

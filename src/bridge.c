@@ -276,6 +276,96 @@ brDeleteInterface(brControl *ctl ATTRIBUTE_UNUSED,
 #endif
 
 /**
+ * ifGetMtu
+ * @ctl: bridge control pointer
+ * @ifname: interface name get MTU for
+ *
+ * This function gets the @mtu value set for a given interface @ifname.
+ *
+ * Returns the MTU value in case of success.
+ * On error, returns -1 and sets errno accordingly
+ */
+static int ifGetMtu(brControl *ctl, const char *ifname)
+{
+    struct ifreq ifr;
+    int len;
+
+    if (!ctl || !ifname) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    if ((len = strlen(ifname)) >=  BR_IFNAME_MAXLEN) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    memset(&ifr, 0, sizeof(struct ifreq));
+
+    strncpy(ifr.ifr_name, ifname, len);
+    ifr.ifr_name[len] = '\0';
+
+    if (ioctl(ctl->fd, SIOCGIFMTU, &ifr))
+        return -1;
+
+    return ifr.ifr_mtu;
+
+}
+
+/**
+ * ifSetMtu:
+ * @ctl: bridge control pointer
+ * @ifname: interface name to set MTU for
+ * @mtu: MTU value
+ *
+ * This function sets the @mtu for a given interface @ifname.  Typically
+ * used on a tap device to set up for Jumbo Frames.
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
+static int ifSetMtu(brControl *ctl, const char *ifname, int mtu)
+{
+    struct ifreq ifr;
+    int len;
+
+    if (!ctl || !ifname)
+        return EINVAL;
+
+    if ((len = strlen(ifname)) >=  BR_IFNAME_MAXLEN)
+        return EINVAL;
+
+    memset(&ifr, 0, sizeof(struct ifreq));
+
+    strncpy(ifr.ifr_name, ifname, len);
+    ifr.ifr_name[len] = '\0';
+    ifr.ifr_mtu = mtu;
+
+    return ioctl(ctl->fd, SIOCSIFMTU, &ifr) == 0 ? 0 : errno;
+}
+
+/**
+ * brSetInterfaceMtu
+ * @ctl: bridge control pointer
+ * @bridge: name of the bridge interface
+ * @ifname: name of the interface whose MTU we want to set
+ *
+ * Sets the interface mtu to the same MTU of the bridge
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
+static int brSetInterfaceMtu(brControl *ctl,
+                             const char *bridge,
+                             const char *ifname)
+{
+    int mtu = ifGetMtu(ctl, bridge);
+
+    if (mtu < 0)
+        return errno;
+
+    return ifSetMtu(ctl, ifname, mtu);
+}
+
+/**
  * brAddTap:
  * @ctl: bridge control pointer
  * @bridge: the bridge name
@@ -334,6 +424,12 @@ brAddTap(brControl *ctl,
         }
 
         if (ioctl(fd, TUNSETIFF, &try) == 0) {
+            /* We need to set the interface MTU before adding it
+             * to the bridge, because the bridge will have its
+             * MTU adjusted automatically when we add the new interface.
+             */
+            if ((errno = brSetInterfaceMtu(ctl, bridge, try.ifr_name)))
+                goto error;
             if ((errno = brAddInterface(ctl, bridge, try.ifr_name)))
                 goto error;
             if ((errno = brSetInterfaceUp(ctl, try.ifr_name, 1)))
