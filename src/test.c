@@ -3222,6 +3222,22 @@ cleanup:
 }
 
 
+static virDrvOpenStatus testDevMonOpen(virConnectPtr conn,
+                                       virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                       int flags ATTRIBUTE_UNUSED) {
+    if (STRNEQ(conn->driver->name, "Test"))
+        return VIR_DRV_OPEN_DECLINED;
+
+    conn->devMonPrivateData = conn->privateData;
+    return VIR_DRV_OPEN_SUCCESS;
+}
+
+static int testDevMonClose(virConnectPtr conn) {
+    conn->devMonPrivateData = NULL;
+    return 0;
+}
+
+
 static virDriver testDriver = {
     VIR_DRV_TEST,
     "Test",
@@ -3345,6 +3361,14 @@ static virStorageDriver testStorageDriver = {
     .volGetPath = testStorageVolumeGetPath,
 };
 
+static virDeviceMonitor testDevMonitor = {
+    .name = "Test",
+    .open = testDevMonOpen,
+    .close = testDevMonClose,
+};
+
+
+
 /**
  * testRegister:
  *
@@ -3359,5 +3383,8 @@ testRegister(void)
         return -1;
     if (virRegisterStorageDriver(&testStorageDriver) < 0)
         return -1;
+    if (virRegisterDeviceMonitor(&testDevMonitor) < 0)
+        return -1;
+
     return 0;
 }
