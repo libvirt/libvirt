@@ -1,4 +1,4 @@
-Thu, 4 Dec 2008 12:46:01 CET Guido Günther <agx@sigxcpu.org>
+Thu 4 Dec 2008 12:46:01 CET Guido Günther <agx@sigxcpu.org>
 
 	Differentiate between active and inactive configs by honoring the
 	VIR_DOMAIN_XML_INACTIVE flag.
@@ -16,11 +16,11 @@ Thu, 4 Dec 2008 12:46:01 CET Guido Günther <agx@sigxcpu.org>
 	* src/test.c: pass VIR_DOMAIN_XML_INACTIVE
 	* tests/qemuxml2argvtest.c: pass VIR_DOMAIN_XML_INACTIVE
 
-Thu, 4 Dec 2008 11:41:12 CET Guido Günther <agx@sigxcpu.org>
+Thu 4 Dec 2008 11:41:12 CET Guido Günther <agx@sigxcpu.org>
 
 	* src/qemu_driver.c: also look for /usr/bin/kvm
 
-Tue, 2 Dec 2008 16:58:16 +0100 Jim Meyering <meyering@redhat.com>
+Tue 2 Dec 2008 16:58:16 +0100 Jim Meyering <meyering@redhat.com>
 
 	fix inadequate initialization in storage and test drivers
 	* src/storage_driver.c (storageListPools): Set all "names" entries to 0.
