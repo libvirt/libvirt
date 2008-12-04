@@ -1188,6 +1188,7 @@ static int qemudProbe(void)
 {
     if ((virFileExists("/usr/bin/qemu")) ||
         (virFileExists("/usr/bin/qemu-kvm")) ||
+        (virFileExists("/usr/bin/kvm")) ||
         (virFileExists("/usr/bin/xenner")))
         return 1;
 
