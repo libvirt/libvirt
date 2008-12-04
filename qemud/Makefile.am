@@ -5,8 +5,9 @@ DAEMON_SOURCES =					\
 		qemud.c qemud.h				\
 		remote.c				\
 		remote_dispatch_prototypes.h		\
-		remote_dispatch_localvars.h		\
-		remote_dispatch_proc_switch.h		\
+		remote_dispatch_table.h			\
+		remote_dispatch_args.h			\
+		remote_dispatch_ret.h			\
 		remote_protocol.h remote_protocol.c
 
 AVAHI_SOURCES =						\
@@ -179,17 +180,22 @@ endif
 
 
 remote.c: remote_dispatch_prototypes.h \
-	  remote_dispatch_localvars.h \
-	  remote_dispatch_proc_switch.h
+	  remote_dispatch_table.h \
+	  remote_dispatch_args.h \
+	  remote_dispatch_ret.h
 
 remote_dispatch_prototypes.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
-	perl -w $(srcdir)/remote_generate_stubs.pl -i $(srcdir)/remote_protocol.x > $@
+	perl -w $(srcdir)/remote_generate_stubs.pl -p $(srcdir)/remote_protocol.x > $@
 
-remote_dispatch_localvars.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
-	perl -w $(srcdir)/remote_generate_stubs.pl -v $(srcdir)/remote_protocol.x > $@
+remote_dispatch_table.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
+	perl -w $(srcdir)/remote_generate_stubs.pl -t $(srcdir)/remote_protocol.x > $@
 
-remote_dispatch_proc_switch.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
-	perl -w $(srcdir)/remote_generate_stubs.pl -w $(srcdir)/remote_protocol.x > $@
+remote_dispatch_args.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
+	perl -w $(srcdir)/remote_generate_stubs.pl -a $(srcdir)/remote_protocol.x > $@
+
+remote_dispatch_ret.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
+	perl -w $(srcdir)/remote_generate_stubs.pl -r $(srcdir)/remote_protocol.x > $@
+
 
 if LIBVIRT_INIT_SCRIPTS_RED_HAT
 install-init: libvirtd.init

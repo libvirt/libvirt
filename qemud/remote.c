@@ -71,11 +71,30 @@ static void make_nonnull_node_device (remote_nonnull_node_device *dev_dst, virNo
 
 #include "remote_dispatch_prototypes.h"
 
+typedef union {
+#include "remote_dispatch_args.h"
+} dispatch_args;
+
+typedef union {
+#include "remote_dispatch_ret.h"
+} dispatch_ret;
+
+
 typedef int (*dispatch_fn) (struct qemud_server *server,
                             struct qemud_client *client,
                             remote_message_header *req,
-                            char *args,
-                            char *ret);
+                            dispatch_args *args,
+                            dispatch_ret *ret);
+
+typedef struct {
+    dispatch_fn fn;
+    xdrproc_t args_filter;
+    xdrproc_t ret_filter;
+} dispatch_data;
+
+static const dispatch_data const dispatch_table[] = {
+#include "remote_dispatch_table.h"
+};
 
 /* Prototypes */
 static void
@@ -94,13 +113,13 @@ remoteDispatchClientRequest (struct qemud_server *server,
 {
     XDR xdr;
     remote_message_header req, rep;
-    dispatch_fn fn;
-    xdrproc_t args_filter = (xdrproc_t) xdr_void;
-    xdrproc_t ret_filter = (xdrproc_t) xdr_void;
-    char *args = NULL, *ret = NULL;
+    dispatch_args args;
+    dispatch_ret ret;
+    const dispatch_data *data = NULL;
     int rv, len;
 
-#include "remote_dispatch_localvars.h"
+    memset(&args, 0, sizeof args);
+    memset(&ret, 0, sizeof ret);
 
     /* Parse the header. */
     xdrmem_create (&xdr, client->buffer, client->bufferLength, XDR_DECODE);
@@ -155,31 +174,27 @@ remoteDispatchClientRequest (struct qemud_server *server,
         }
     }
 
-    /* Based on the procedure number, dispatch.  In future we may base
-     * this on the version number as well.
-     */
-    switch (req.proc) {
-#include "remote_dispatch_proc_switch.h"
-
-    default:
+    if (req.proc >= ARRAY_CARDINALITY(dispatch_table) ||
+        dispatch_table[req.proc].fn == NULL) {
         remoteDispatchError (client, &req, _("unknown procedure: %d"),
                              req.proc);
         xdr_destroy (&xdr);
         return;
     }
 
-    /* Parse args. */
-    if (!(*args_filter) (&xdr, args)) {
+    data = &(dispatch_table[req.proc]);
+
+    /* De-serialize args off the wire */
+    if (!((data->args_filter)(&xdr, &args))) {
         remoteDispatchError (client, &req, "%s", _("parse args failed"));
         xdr_destroy (&xdr);
-        return;
     }
 
     xdr_destroy (&xdr);
 
     /* Call function. */
-    rv = fn (server, client, &req, args, ret);
-    xdr_free (args_filter, args);
+    rv = (data->fn)(server, client, &req, &args, &ret);
+    xdr_free (data->args_filter, (char*)&args);
 
     /* Dispatch function must return -2, -1 or 0.  Anything else is
      * an internal error.
@@ -210,25 +225,25 @@ remoteDispatchClientRequest (struct qemud_server *server,
     if (!xdr_int (&xdr, &len)) {
         remoteDispatchError (client, &req, "%s", _("dummy length"));
         xdr_destroy (&xdr);
-        if (rv == 0) xdr_free (ret_filter, ret);
+        if (rv == 0) xdr_free (data->ret_filter, (char*)&ret);
         return;
     }
 
     if (!xdr_remote_message_header (&xdr, &rep)) {
         remoteDispatchError (client, &req, "%s", _("serialise reply header"));
         xdr_destroy (&xdr);
-        if (rv == 0) xdr_free (ret_filter, ret);
+        if (rv == 0) xdr_free (data->ret_filter, (char*)&ret);
         return;
     }
 
     /* If OK, serialise return structure, if error serialise error. */
     if (rv == 0) {
-        if (!(*ret_filter) (&xdr, ret)) {
+        if (!((data->ret_filter) (&xdr, &ret))) {
             remoteDispatchError (client, &req, "%s", _("serialise return struct"));
             xdr_destroy (&xdr);
             return;
         }
-        xdr_free (ret_filter, ret);
+        xdr_free (data->ret_filter, (char*)&ret);
     } else /* error */ {
         virErrorPtr verr;
         remote_error error;

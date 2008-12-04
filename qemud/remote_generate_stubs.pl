@@ -12,8 +12,8 @@ use strict;
 use Getopt::Std;
 
 # Command line options.
-our ($opt_c, $opt_d, $opt_i, $opt_s, $opt_v, $opt_w);
-getopts ('cdisvw');
+our ($opt_p, $opt_t, $opt_a, $opt_r, $opt_d);
+getopts ('ptard');
 
 # Convert name_of_call to NameOfCall.
 sub name_to_ProcName {
@@ -25,7 +25,17 @@ sub name_to_ProcName {
 
 # Read the input file (usually remote_protocol.x) and form an
 # opinion about the name, args and return type of each RPC.
-my ($name, $ProcName, %calls);
+my ($name, $ProcName, $id, %calls, @calls);
+
+# REMOTE_PROC_CLOSE has no args or ret.
+$calls{close} = {
+    name => "close",
+    ProcName => "Close",
+    UC_NAME => "CLOSE",
+    args => "void",
+    ret => "void",
+};
+
 while (<>) {
     if (/^struct remote_(.*)_args/) {
 	$name = $1;
@@ -57,17 +67,14 @@ while (<>) {
 		ret => "remote_${name}_ret"
 	    }
 	}
+    } elsif (/^\s*REMOTE_PROC_(.*?)\s+=\s+(\d+),?$/) {
+	$name = lc $1;
+	$id = $2;
+	$ProcName = name_to_ProcName ($name);
+
+	$calls[$id] = $calls{$name};
     }
 }
-
-# REMOTE_PROC_CLOSE has no args or ret.
-$calls{close} = {
-    name => "close",
-    ProcName => "Close",
-    UC_NAME => "CLOSE",
-    args => "void",
-    ret => "void",
-};
 
 #----------------------------------------------------------------------
 # Output
@@ -90,135 +97,59 @@ if ($opt_d) {
 }
 
 # Prototypes for dispatch functions ("remote_dispatch_prototypes.h").
-elsif ($opt_i) {
+elsif ($opt_p) {
     my @keys = sort (keys %calls);
     foreach (@keys) {
 	print "static int remoteDispatch$calls{$_}->{ProcName} (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, $calls{$_}->{args} *args, $calls{$_}->{ret} *ret);\n";
     }
 }
 
-# Local variables used inside remoteDispatchClientRequest
-# ("remote_dispatch_localvars.h").
-elsif ($opt_v) {
-    my @values = values %calls;
-    foreach (@values) {
-	if ($_->{args} ne "void") {
-	    print "$_->{args} lv_$_->{args};\n";
+# Union of all arg types
+# ("remote_dispatch_args.h").
+elsif ($opt_a) {
+    for ($id = 0 ; $id <= $#calls ; $id++) {
+	if (defined $calls[$id] &&
+	    $calls[$id]->{args} ne "void") {
+	    print "    $calls[$id]->{args} val_$calls[$id]->{args};\n";
 	}
-	if ($_->{ret} ne "void") {
-	    print "$_->{ret} lv_$_->{ret};\n";
+    }
+}
+
+# Union of all arg types
+# ("remote_dispatch_ret.h").
+elsif ($opt_r) {
+    for ($id = 0 ; $id <= $#calls ; $id++) {
+	if (defined $calls[$id] &&
+	    $calls[$id]->{ret} ne "void") {
+	    print "    $calls[$id]->{ret} val_$calls[$id]->{ret};\n";
 	}
     }
 }
 
 # Inside the switch statement, prepare the 'fn', 'args_filter', etc
-# ("remote_dispatch_proc_switch.h").
-elsif ($opt_w) {
-    my @keys = sort (keys %calls);
-    foreach (@keys) {
-	print "case REMOTE_PROC_$calls{$_}->{UC_NAME}:\n";
-	print "        fn = (dispatch_fn) remoteDispatch$calls{$_}->{ProcName};\n";
-	if ($calls{$_}->{args} ne "void") {
-	    print "        args_filter = (xdrproc_t) xdr_$calls{$_}->{args};\n";
-	    print "        args = (char *) &lv_$calls{$_}->{args};\n";
-	    print "        memset (&lv_$calls{$_}->{args}, 0, sizeof lv_$calls{$_}->{args});\n"
-	}
-	if ($calls{$_}->{ret} ne "void") {
-	    print "        ret_filter = (xdrproc_t) xdr_$calls{$_}->{ret};\n";
-	    print "        ret = (char *) &lv_$calls{$_}->{ret};\n";
-	    print "        memset (&lv_$calls{$_}->{ret}, 0, sizeof lv_$calls{$_}->{ret});\n"
-	}
-	print "        break;\n";
-    }
-}
-
-# Generate client stubs - just used to generate the first
-# version of the stubs in remote_internal.c.  They need
-# hand-hacking afterwards.
-elsif ($opt_c) {
-    my @keys = sort (keys %calls);
-
-    foreach (@keys) {
-	my $args = $calls{$_}->{args};
-	my $argsvoid = $args eq "void";
-	my $ret = $calls{$_}->{ret};
-	my $retvoid = $ret eq "void";
-
-	print "static @@\n";
-	print "remote$calls{$_}->{ProcName} (@@)\n";
-	print "{\n";
-	if (!$argsvoid) {
-	    print "    $args args;\n";
-	}
-	if (!$retvoid) {
-	    print "    $ret ret;\n";
-	}
-	print "    GET_PRIVATE (conn, @@);\n";
-	print "\n";
-	if (!$argsvoid) {
-	    print "    @@\n";
-	    print "\n";
-	}
-	if (!$retvoid) {
-	    print "    memset (&ret, 0, sizeof ret);\n";
-	}
-	print "    if (call (conn, priv, 0, REMOTE_PROC_$calls{$_}->{UC_NAME},\n";
-	print "              (xdrproc_t) xdr_$args, (char *) ";
-	if ($argsvoid) {
-	    print "NULL";
+# ("remote_dispatch_table.h").
+elsif ($opt_t) {
+    for ($id = 0 ; $id <= $#calls ; $id++) {
+	if (defined $calls[$id]) {
+	    print "{   /* $calls[$id]->{ProcName} => $id */\n";
+	    print "    .fn = (dispatch_fn) remoteDispatch$calls[$id]->{ProcName},\n";
+	    if ($calls[$id]->{args} ne "void") {
+		print "    .args_filter = (xdrproc_t) xdr_$calls[$id]->{args},\n";
+	    } else {
+		print "    .args_filter = (xdrproc_t) xdr_void,\n";
+	    }
+	    if ($calls[$id]->{ret} ne "void") {
+		print "    .ret_filter = (xdrproc_t) xdr_$calls[$id]->{ret},\n";
+	    } else {
+		print "    .ret_filter = (xdrproc_t) xdr_void,\n";
+	    }
+	    print "},\n";
 	} else {
-	    print "&args";
+	    print "{   /* (unused) => $id */\n";
+	    print "    .fn = NULL,\n";
+	    print "    .args_filter = (xdrproc_t) xdr_void,\n";
+	    print "    .ret_filter = (xdrproc_t) xdr_void,\n";
+	    print "},\n";
 	}
-	print ",\n";
-	print "              (xdrproc_t) xdr_$ret, (char *) ";
-	if ($retvoid) {
-	    print "NULL";
-	} else {
-	    print "&ret";
-	}
-	print ") == -1)\n";
-	print "        return -1;\n";
-	print "\n    @@\n";
-	print "}\n\n";
-    }
-}
-
-# Generate server stubs - just used to generate the first
-# version of the stubs in remote.c.  They need hand-hacking
-# afterwards.
-elsif ($opt_s) {
-    my @keys = sort (keys %calls);
-
-    foreach (@keys) {
-	my $args = $calls{$_}->{args};
-	my $argsvoid = $args eq "void";
-	my $ret = $calls{$_}->{ret};
-	my $retvoid = $ret eq "void";
-
-	print "static int\n";
-	print "remoteDispatch$calls{$_}->{ProcName} (struct qemud_server *server,\n";
-	print "            struct qemud_client *client,\n";
-	print "            remote_message_header *req,\n";
-	print "            remote_get_max_vcpus_args *args,\n";
-	print "            remote_get_max_vcpus_ret *ret)\n";
-	print "{\n";
-	if (!$argsvoid || !$retvoid) {
-	    print "    @@\n";
-	}
-	print "    CHECK_CONN;\n";
-	print "\n";
-	if (!$argsvoid) {
-	    print "    @@\n";
-	    print "\n";
-	}
-	print "    @@ = vir$calls{$_}->{ProcName} (@@);\n";
-	print "    if (@@) return -1;\n";
-	print "\n";
-	if (!$retvoid) {
-	    print "    @@\n";
-	    print "\n";
-	}
-	print "    return 0;\n";
-	print "}\n\n";
     }
 }
