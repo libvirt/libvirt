@@ -82,6 +82,8 @@ struct _virNetworkDef {
 typedef struct _virNetworkObj virNetworkObj;
 typedef virNetworkObj *virNetworkObjPtr;
 struct _virNetworkObj {
+    PTHREAD_MUTEX_T(lock);
+
     pid_t dnsmasqPid;
     unsigned int active : 1;
     unsigned int autostart : 1;

@@ -310,8 +310,12 @@ virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
 {
     unsigned int i;
 
+    virStoragePoolObjUnlock(pool);
+
     for (i = 0 ; i < pools->count ; i++) {
+        virStoragePoolObjLock(pools->objs[i]);
         if (pools->objs[i] == pool) {
+            virStoragePoolObjUnlock(pools->objs[i]);
             virStoragePoolObjFree(pools->objs[i]);
 
             if (i < (pools->count - 1))
@@ -325,6 +329,7 @@ virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
 
             break;
         }
+        virStoragePoolObjUnlock(pools->objs[i]);
     }
 }
 
@@ -1153,9 +1158,12 @@ virStoragePoolObjFindByUUID(virStoragePoolObjListPtr pools,
                             const unsigned char *uuid) {
     unsigned int i;
 
-    for (i = 0 ; i < pools->count ; i++)
+    for (i = 0 ; i < pools->count ; i++) {
+        virStoragePoolObjLock(pools->objs[i]);
         if (!memcmp(pools->objs[i]->def->uuid, uuid, VIR_UUID_BUFLEN))
             return pools->objs[i];
+        virStoragePoolObjUnlock(pools->objs[i]);
+    }
 
     return NULL;
 }
@@ -1165,9 +1173,12 @@ virStoragePoolObjFindByName(virStoragePoolObjListPtr pools,
                             const char *name) {
     unsigned int i;
 
-    for (i = 0 ; i < pools->count ; i++)
+    for (i = 0 ; i < pools->count ; i++) {
+        virStoragePoolObjLock(pools->objs[i]);
         if (STREQ(pools->objs[i]->def->name, name))
             return pools->objs[i];
+        virStoragePoolObjUnlock(pools->objs[i]);
+    }
 
     return NULL;
 }
@@ -1243,6 +1254,8 @@ virStoragePoolObjAssignDef(virConnectPtr conn,
         return NULL;
     }
 
+    pthread_mutex_init(&pool->lock, NULL);
+    virStoragePoolObjLock(pool);
     pool->active = 0;
     pool->def = def;
 
@@ -1327,6 +1340,7 @@ virStoragePoolLoadAllConfigs(virConnectPtr conn,
         char *xml = NULL;
         char path[PATH_MAX];
         char autostartLink[PATH_MAX];
+        virStoragePoolObjPtr pool;
 
         if (entry->d_name[0] == '.')
             continue;
@@ -1351,7 +1365,9 @@ virStoragePoolLoadAllConfigs(virConnectPtr conn,
         if (virFileReadAll(path, 8192, &xml) < 0)
             continue;
 
-        virStoragePoolObjLoad(conn, pools, entry->d_name, path, xml, autostartLink);
+        pool = virStoragePoolObjLoad(conn, pools, entry->d_name, path, xml, autostartLink);
+        if (pool)
+            virStoragePoolObjUnlock(pool);
 
         VIR_FREE(xml);
     }
@@ -1509,6 +1525,18 @@ char *virStoragePoolSourceListFormat(virConnectPtr conn,
 }
 
 
+#ifdef HAVE_PTHREAD_H
+
+void virStoragePoolObjLock(virStoragePoolObjPtr obj)
+{
+    pthread_mutex_lock(&obj->lock);
+}
+
+void virStoragePoolObjUnlock(virStoragePoolObjPtr obj)
+{
+    pthread_mutex_unlock(&obj->lock);
+}
+#else
 void virStoragePoolObjLock(virStoragePoolObjPtr obj ATTRIBUTE_UNUSED)
 {
 }
@@ -1516,3 +1544,4 @@ void virStoragePoolObjLock(virStoragePoolObjPtr obj ATTRIBUTE_UNUSED)
 void virStoragePoolObjUnlock(virStoragePoolObjPtr obj ATTRIBUTE_UNUSED)
 {
 }
+#endif

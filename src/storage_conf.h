@@ -223,6 +223,8 @@ typedef struct _virStoragePoolObj virStoragePoolObj;
 typedef virStoragePoolObj *virStoragePoolObjPtr;
 
 struct _virStoragePoolObj {
+    PTHREAD_MUTEX_T(lock);
+
     char *configFile;
     char *autostartLink;
     int active;

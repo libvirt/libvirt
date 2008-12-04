@@ -454,6 +454,8 @@ struct _virDomainDef {
 typedef struct _virDomainObj virDomainObj;
 typedef virDomainObj *virDomainObjPtr;
 struct _virDomainObj {
+    PTHREAD_MUTEX_T(lock);
+
     int stdin_fd;
     int stdout_fd;
     int stdout_watch;

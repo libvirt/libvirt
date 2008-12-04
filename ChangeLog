@@ -1,3 +1,13 @@
+Thu Dec  4 21:49:41 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Per object locking implementation
+	* src/domain_conf.c, src/domain_conf.h, src/network_conf.c,
+	src/network_conf.h, src/node_device_conf.c,
+	src/node_device_conf.h, src/storage_conf.c
+	src/storage_conf.h: Add implementation of locking APIs,
+	and make object lookup / creation methods return locked
+	objects
+
 Thu Dec  4 21:48:41 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt_sym.version.in, src/node_device.c,

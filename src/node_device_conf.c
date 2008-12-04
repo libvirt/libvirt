@@ -59,9 +59,12 @@ virNodeDeviceObjPtr virNodeDeviceFindByName(const virNodeDeviceObjListPtr devs,
 {
     unsigned int i;
 
-    for (i = 0; i < devs->count; i++)
+    for (i = 0; i < devs->count; i++) {
+        virNodeDeviceObjLock(devs->objs[i]);
         if (STREQ(devs->objs[i]->def->name, name))
             return devs->objs[i];
+        virNodeDeviceObjUnlock(devs->objs[i]);
+    }
 
     return NULL;
 }
@@ -125,6 +128,8 @@ virNodeDeviceObjPtr virNodeDeviceAssignDef(virConnectPtr conn,
         return NULL;
     }
 
+    pthread_mutex_init(&device->lock, NULL);
+    virNodeDeviceObjLock(device);
     device->def = def;
 
     if (VIR_REALLOC_N(devs->objs, devs->count+1) < 0) {
@@ -144,8 +149,12 @@ void virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
 {
     unsigned int i;
 
+    virNodeDeviceObjUnlock(dev);
+
     for (i = 0; i < devs->count; i++) {
+        virNodeDeviceObjLock(dev);
         if (devs->objs[i] == dev) {
+            virNodeDeviceObjUnlock(dev);
             virNodeDeviceObjFree(devs->objs[i]);
 
             if (i < (devs->count - 1))
@@ -159,6 +168,7 @@ void virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
 
             break;
         }
+        virNodeDeviceObjUnlock(dev);
     }
 }
 
@@ -398,6 +408,20 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
 }
 
 
+#ifdef HAVE_PTHREAD_H
+
+void virNodeDeviceObjLock(virNodeDeviceObjPtr obj)
+{
+    pthread_mutex_lock(&obj->lock);
+}
+
+void virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj)
+{
+    pthread_mutex_unlock(&obj->lock);
+}
+
+#else
+
 void virNodeDeviceObjLock(virNodeDeviceObjPtr obj ATTRIBUTE_UNUSED)
 {
 }
@@ -405,3 +429,5 @@ void virNodeDeviceObjLock(virNodeDeviceObjPtr obj ATTRIBUTE_UNUSED)
 void virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj ATTRIBUTE_UNUSED)
 {
 }
+
+#endif

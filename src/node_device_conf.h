@@ -142,6 +142,8 @@ struct _virNodeDeviceDef {
 typedef struct _virNodeDeviceObj virNodeDeviceObj;
 typedef virNodeDeviceObj *virNodeDeviceObjPtr;
 struct _virNodeDeviceObj {
+    PTHREAD_MUTEX_T(lock);
+
     virNodeDeviceDefPtr def;		/* device definition */
     void *privateData;			/* driver-specific private data */
     void (*privateFree)(void *data);	/* destructor for private data */

@@ -151,10 +151,13 @@ virDomainObjPtr virDomainFindByID(const virDomainObjListPtr doms,
 {
     unsigned int i;
 
-    for (i = 0 ; i < doms->count ; i++)
+    for (i = 0 ; i < doms->count ; i++) {
+        virDomainObjLock(doms->objs[i]);
         if (virDomainIsActive(doms->objs[i]) &&
             doms->objs[i]->def->id == id)
             return doms->objs[i];
+        virDomainObjUnlock(doms->objs[i]);
+    }
 
     return NULL;
 }
@@ -165,9 +168,12 @@ virDomainObjPtr virDomainFindByUUID(const virDomainObjListPtr doms,
 {
     unsigned int i;
 
-    for (i = 0 ; i < doms->count ; i++)
+    for (i = 0 ; i < doms->count ; i++) {
+        virDomainObjLock(doms->objs[i]);
         if (!memcmp(doms->objs[i]->def->uuid, uuid, VIR_UUID_BUFLEN))
             return doms->objs[i];
+        virDomainObjUnlock(doms->objs[i]);
+    }
 
     return NULL;
 }
@@ -177,9 +183,12 @@ virDomainObjPtr virDomainFindByName(const virDomainObjListPtr doms,
 {
     unsigned int i;
 
-    for (i = 0 ; i < doms->count ; i++)
+    for (i = 0 ; i < doms->count ; i++) {
+        virDomainObjLock(doms->objs[i]);
         if (STREQ(doms->objs[i]->def->name, name))
             return doms->objs[i];
+        virDomainObjUnlock(doms->objs[i]);
+    }
 
     return NULL;
 }
@@ -455,6 +464,8 @@ virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
         return NULL;
     }
 
+    pthread_mutex_init(&domain->lock, NULL);
+    virDomainObjLock(domain);
     domain->state = VIR_DOMAIN_SHUTOFF;
     domain->def = def;
 
@@ -475,8 +486,12 @@ void virDomainRemoveInactive(virDomainObjListPtr doms,
 {
     unsigned int i;
 
+    virDomainObjUnlock(dom);
+
     for (i = 0 ; i < doms->count ; i++) {
+        virDomainObjLock(doms->objs[i]);
         if (doms->objs[i] == dom) {
+            virDomainObjUnlock(doms->objs[i]);
             virDomainObjFree(doms->objs[i]);
 
             if (i < (doms->count - 1))
@@ -490,6 +505,7 @@ void virDomainRemoveInactive(virDomainObjListPtr doms,
 
             break;
         }
+        virDomainObjUnlock(doms->objs[i]);
     }
 
 }
@@ -3348,8 +3364,10 @@ int virDomainLoadAllConfigs(virConnectPtr conn,
                                   entry->d_name,
                                   notify,
                                   opaque);
-        if (dom)
+        if (dom) {
+            virDomainObjUnlock(dom);
             dom->persistent = 1;
+        }
     }
 
     closedir(dir);
@@ -3470,6 +3488,19 @@ const char *virDomainDefDefaultEmulator(virConnectPtr conn,
 }
 
 
+#ifdef HAVE_PTHREAD_H
+
+void virDomainObjLock(virDomainObjPtr obj)
+{
+    pthread_mutex_lock(&obj->lock);
+}
+
+void virDomainObjUnlock(virDomainObjPtr obj)
+{
+    pthread_mutex_unlock(&obj->lock);
+}
+
+#else
 void virDomainObjLock(virDomainObjPtr obj ATTRIBUTE_UNUSED)
 {
 }
@@ -3477,5 +3508,6 @@ void virDomainObjLock(virDomainObjPtr obj ATTRIBUTE_UNUSED)
 void virDomainObjUnlock(virDomainObjPtr obj ATTRIBUTE_UNUSED)
 {
 }
+#endif
 
 #endif /* ! PROXY */

@@ -58,9 +58,12 @@ virNetworkObjPtr virNetworkFindByUUID(const virNetworkObjListPtr nets,
 {
     unsigned int i;
 
-    for (i = 0 ; i < nets->count ; i++)
+    for (i = 0 ; i < nets->count ; i++) {
+        virNetworkObjLock(nets->objs[i]);
         if (!memcmp(nets->objs[i]->def->uuid, uuid, VIR_UUID_BUFLEN))
             return nets->objs[i];
+        virNetworkObjUnlock(nets->objs[i]);
+    }
 
     return NULL;
 }
@@ -70,9 +73,12 @@ virNetworkObjPtr virNetworkFindByName(const virNetworkObjListPtr nets,
 {
     unsigned int i;
 
-    for (i = 0 ; i < nets->count ; i++)
+    for (i = 0 ; i < nets->count ; i++) {
+        virNetworkObjLock(nets->objs[i]);
         if (STREQ(nets->objs[i]->def->name, name))
             return nets->objs[i];
+        virNetworkObjUnlock(nets->objs[i]);
+    }
 
     return NULL;
 }
@@ -157,7 +163,8 @@ virNetworkObjPtr virNetworkAssignDef(virConnectPtr conn,
         virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
         return NULL;
     }
-
+    pthread_mutex_init(&network->lock, NULL);
+    virNetworkObjLock(network);
     network->def = def;
 
     if (VIR_REALLOC_N(nets->objs, nets->count + 1) < 0) {
@@ -178,8 +185,11 @@ void virNetworkRemoveInactive(virNetworkObjListPtr nets,
 {
     unsigned int i;
 
+    virNetworkObjUnlock(net);
     for (i = 0 ; i < nets->count ; i++) {
+        virNetworkObjLock(nets->objs[i]);
         if (nets->objs[i] == net) {
+            virNetworkObjUnlock(nets->objs[i]);
             virNetworkObjFree(nets->objs[i]);
 
             if (i < (nets->count - 1))
@@ -193,6 +203,7 @@ void virNetworkRemoveInactive(virNetworkObjListPtr nets,
 
             break;
         }
+        virNetworkObjUnlock(nets->objs[i]);
     }
 }
 
@@ -770,6 +781,8 @@ int virNetworkLoadAllConfigs(virConnectPtr conn,
     }
 
     while ((entry = readdir(dir))) {
+        virNetworkObjPtr net;
+
         if (entry->d_name[0] == '.')
             continue;
 
@@ -778,11 +791,13 @@ int virNetworkLoadAllConfigs(virConnectPtr conn,
 
         /* NB: ignoring errors, so one malformed config doesn't
            kill the whole process */
-        virNetworkLoadConfig(conn,
-                             nets,
-                             configDir,
-                             autostartDir,
-                             entry->d_name);
+        net = virNetworkLoadConfig(conn,
+                                   nets,
+                                   configDir,
+                                   autostartDir,
+                                   entry->d_name);
+        if (net)
+            virNetworkObjUnlock(net);
     }
 
     closedir(dir);
@@ -812,6 +827,19 @@ int virNetworkDeleteConfig(virConnectPtr conn,
     return 0;
 }
 
+#ifdef HAVE_PTHREAD_H
+
+void virNetworkObjLock(virNetworkObjPtr obj)
+{
+    pthread_mutex_lock(&obj->lock);
+}
+
+void virNetworkObjUnlock(virNetworkObjPtr obj)
+{
+    pthread_mutex_unlock(&obj->lock);
+}
+
+#else
 void virNetworkObjLock(virNetworkObjPtr obj ATTRIBUTE_UNUSED)
 {
 }
@@ -819,3 +847,5 @@ void virNetworkObjLock(virNetworkObjPtr obj ATTRIBUTE_UNUSED)
 void virNetworkObjUnlock(virNetworkObjPtr obj ATTRIBUTE_UNUSED)
 {
 }
+
+#endif
