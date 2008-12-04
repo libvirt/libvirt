@@ -343,12 +343,12 @@ libvirt.
 
     <h3>Valid pool format types</h3>
     <p>
-      The logical volume pool does not use the pool format type element.
+      The iSCSI volume pool does not use the pool format type element.
     </p>
 
     <h3>Valid volume format types</h3>
     <p>
-      The logical volume pool does not use the volume format type element.
+      The iSCSI volume pool does not use the volume format type element.
     </p>
   </body>
 </html>

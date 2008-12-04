@@ -245,17 +245,10 @@
 
     <dl>
       <dt><code>path</code></dt>
-      <dd>Provides the location at which the pool will be mapped into
-	the local filesystem namespace. For a filesystem/directory based
-	pool it will be the name of the directory in which volumes will
-	be created. For device based pools it will be the name of the directory in which
-	devices nodes exist. For the latter <code>/dev/</code> may seem
-	like the logical choice, however, devices nodes there are not
-	guaranteed stable across reboots, since they are allocated on
-	demand. It is preferable to use a stable location such as one
-	of the <code>/dev/disk/by-{path,id,uuid,label</code> locations.
-	<span class="since">Since 0.4.1</span>
-      </dd>
+      <dd>Provides the location at which the volume can be accessed on
+	the local filesystem, as an absolute path. This is a readonly
+	attribute, so shouldn't be specified when creating a volume.
+	<span class="since">Since 0.4.1</span></dd>
       <dt><code>format</code></dt>
       <dd>Provides information about the pool specific volume format.
 	For disk pools it will provide the partition type. For filesystem

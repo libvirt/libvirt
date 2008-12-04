@@ -3168,7 +3168,7 @@ cmdPoolBuild(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     if (virStoragePoolBuild(pool, 0) == 0) {
-        vshPrint(ctl, _("Pool %s builded\n"), name);
+        vshPrint(ctl, _("Pool %s built\n"), name);
     } else {
         vshError(ctl, FALSE, _("Failed to build pool %s"), name);
         ret = FALSE;
