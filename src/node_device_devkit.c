@@ -237,6 +237,7 @@ static void dev_create(void *_dkdev, void *_dkclient ATTRIBUTE_UNUSED)
     DevkitDevice *dkdev = _dkdev;
     const char *sysfs_path = devkit_device_get_native_path(dkdev);
     virNodeDeviceObjPtr dev = NULL;
+    virNodeDeviceDefPtr def = NULL;
     const char *name;
     int rv;
 
@@ -250,31 +251,39 @@ static void dev_create(void *_dkdev, void *_dkclient ATTRIBUTE_UNUSED)
     else
         ++name;
 
-    if (VIR_ALLOC(dev) < 0 || VIR_ALLOC(dev->def) < 0)
+    if (VIR_ALLOC(def) < 0)
         goto failure;
 
-    dev->privateData = dkdev;
-
-    if ((dev->def->name = strdup(name)) == NULL)
+    if ((def->name = strdup(name)) == NULL)
         goto failure;
 
     // TODO: Find device parent, if any
 
-    rv = gather_capabilities(dkdev, &dev->def->caps);
+    rv = gather_capabilities(dkdev, &def->caps);
     if (rv != 0) goto failure;
 
-    if (VIR_REALLOC_N(driverState->devs.objs, driverState->devs.count + 1) < 0)
-        goto failure;
+    nodeDeviceLock(driverState);
+    dev = virNodeDeviceAssignDef(NULL,
+                                 &driverState->devs,
+                                 def);
 
-    driverState->devs.objs[driverState->devs.count++] = dev;
+    if (!dev) {
+        nodeDeviceUnlock(driverState);
+        goto failure;
+    }
+
+    dev->privateData = dkdev;
+    dev->privateFree = NULL; /* XXX some free func needed ? */
+    virNodeDeviceObjUnlock(dev);
+
+    nodeDeviceUnlock(driverState);
 
     return;
 
  failure:
     DEBUG("FAILED TO ADD dev %s", name);
-    if (dev)
-        virNodeDeviceDefFree(dev->def);
-    VIR_FREE(dev);
+    if (def)
+        virNodeDeviceDefFree(def);
 }
 
 
@@ -292,8 +301,8 @@ static int devkitDeviceMonitorStartup(void)
     if (VIR_ALLOC(driverState) < 0)
         return -1;
 
-    // TODO: Is it really ok to call this multiple times??
-    //       Is there something analogous to call on close?
+    pthread_mutex_init(&driverState->lock, NULL);
+
     g_type_init();
 
     /* Get new devkit_client and connect to daemon */
@@ -362,10 +371,14 @@ static int devkitDeviceMonitorStartup(void)
 static int devkitDeviceMonitorShutdown(void)
 {
     if (driverState) {
-        DevkitClient *devkit_client = DRV_STATE_DKCLIENT(driverState);
+        DevkitClient *devkit_client;
+
+        nodeDeviceLock(driverState);
+        devkit_client = DRV_STATE_DKCLIENT(driverState);
         virNodeDeviceObjListFree(&driverState->devs);
         if (devkit_client)
             g_object_unref(devkit_client);
+        nodeDeviceLock(driverState);
         VIR_FREE(driverState);
         return 0;
     }
@@ -375,6 +388,8 @@ static int devkitDeviceMonitorShutdown(void)
 
 static int devkitDeviceMonitorReload(void)
 {
+    /* XXX This isn't thread safe because its free'ing the thing
+     * we're locking */
     (void)devkitDeviceMonitorShutdown();
     return devkitDeviceMonitorStartup();
 }

@@ -158,7 +158,8 @@ struct _virNodeDeviceObjList {
 typedef struct _virDeviceMonitorState virDeviceMonitorState;
 typedef virDeviceMonitorState *virDeviceMonitorStatePtr;
 struct _virDeviceMonitorState {
-    int dbusWatch;
+    PTHREAD_MUTEX_T(lock);
+
     virNodeDeviceObjList devs;		/* currently-known devices */
     void *privateData;			/* driver-specific private data */
 };

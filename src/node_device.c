@@ -29,7 +29,7 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "memory.h"
-
+#include "logging.h"
 #include "node_device_conf.h"
 #include "node_device.h"
 
@@ -44,6 +44,17 @@ static int dev_has_cap(const virNodeDeviceObjPtr dev, const char *cap)
     return 0;
 }
 
+
+void nodeDeviceLock(virDeviceMonitorStatePtr driver)
+{
+    DEBUG("LOCK node %p", driver);
+    pthread_mutex_lock(&driver->lock);
+}
+void nodeDeviceUnlock(virDeviceMonitorStatePtr driver)
+{
+    DEBUG("UNLOCK node %p", driver);
+    pthread_mutex_unlock(&driver->lock);
+}
 
 static int nodeNumOfDevices(virConnectPtr conn,
                             const char *cap,
@@ -71,15 +82,24 @@ nodeListDevices(virConnectPtr conn,
     int ndevs = 0;
     unsigned int i;
 
-    for (i = 0; i < driver->devs.count && ndevs < maxnames; i++)
+    nodeDeviceLock(driver);
+    for (i = 0; i < driver->devs.count && ndevs < maxnames; i++) {
+        virNodeDeviceObjLock(driver->devs.objs[i]);
         if (cap == NULL ||
-            dev_has_cap(driver->devs.objs[i], cap))
-            if ((names[ndevs++] = strdup(driver->devs.objs[i]->def->name)) == NULL)
+            dev_has_cap(driver->devs.objs[i], cap)) {
+            if ((names[ndevs++] = strdup(driver->devs.objs[i]->def->name)) == NULL) {
+                virNodeDeviceObjUnlock(driver->devs.objs[i]);
                 goto failure;
+            }
+        }
+        virNodeDeviceObjUnlock(driver->devs.objs[i]);
+    }
+    nodeDeviceUnlock(driver);
 
     return ndevs;
 
  failure:
+    nodeDeviceUnlock(driver);
     --ndevs;
     while (--ndevs >= 0)
         VIR_FREE(names[ndevs]);
@@ -94,7 +114,10 @@ static virNodeDevicePtr nodeDeviceLookupByName(virConnectPtr conn,
     virNodeDeviceObjPtr obj;
     virNodeDevicePtr ret = NULL;
 
+    nodeDeviceLock(driver);
     obj = virNodeDeviceFindByName(&driver->devs, name);
+    nodeDeviceUnlock(driver);
+
     if (!obj) {
         virNodeDeviceReportError(conn, VIR_ERR_INVALID_NODE_DEVICE,
                                  "%s", _("no node device with matching name"));
@@ -104,6 +127,8 @@ static virNodeDevicePtr nodeDeviceLookupByName(virConnectPtr conn,
     ret = virGetNodeDevice(conn, name);
 
 cleanup:
+    if (obj)
+        virNodeDeviceObjUnlock(obj);
     return ret;
 }
 
@@ -114,7 +139,10 @@ static char *nodeDeviceDumpXML(virNodeDevicePtr dev,
     virNodeDeviceObjPtr obj;
     char *ret = NULL;
 
+    nodeDeviceLock(driver);
     obj = virNodeDeviceFindByName(&driver->devs, dev->name);
+    nodeDeviceUnlock(driver);
+
     if (!obj) {
         virNodeDeviceReportError(dev->conn, VIR_ERR_INVALID_NODE_DEVICE,
                               "%s", _("no node device with matching name"));
@@ -124,6 +152,8 @@ static char *nodeDeviceDumpXML(virNodeDevicePtr dev,
     ret = virNodeDeviceDefFormat(dev->conn, obj->def);
 
 cleanup:
+    if (obj)
+        virNodeDeviceObjUnlock(obj);
     return ret;
 }
 
@@ -134,7 +164,10 @@ static char *nodeDeviceGetParent(virNodeDevicePtr dev)
     virNodeDeviceObjPtr obj;
     char *ret = NULL;
 
+    nodeDeviceLock(driver);
     obj = virNodeDeviceFindByName(&driver->devs, dev->name);
+    nodeDeviceUnlock(driver);
+
     if (!obj) {
         virNodeDeviceReportError(dev->conn, VIR_ERR_INVALID_NODE_DEVICE,
                               "%s", _("no node device with matching name"));
@@ -146,6 +179,8 @@ static char *nodeDeviceGetParent(virNodeDevicePtr dev)
         virNodeDeviceReportError(dev->conn, VIR_ERR_NO_MEMORY, NULL);
 
 cleanup:
+    if (obj)
+        virNodeDeviceObjUnlock(obj);
     return ret;
 }
 
@@ -158,7 +193,10 @@ static int nodeDeviceNumOfCaps(virNodeDevicePtr dev)
     int ncaps = 0;
     int ret = -1;
 
+    nodeDeviceLock(driver);
     obj = virNodeDeviceFindByName(&driver->devs, dev->name);
+    nodeDeviceUnlock(driver);
+
     if (!obj) {
         virNodeDeviceReportError(dev->conn, VIR_ERR_INVALID_NODE_DEVICE,
                               "%s", _("no node device with matching name"));
@@ -170,6 +208,8 @@ static int nodeDeviceNumOfCaps(virNodeDevicePtr dev)
     ret = ncaps;
 
 cleanup:
+    if (obj)
+        virNodeDeviceObjUnlock(obj);
     return ret;
 }
 
@@ -183,7 +223,10 @@ nodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
     int ncaps = 0;
     int ret = -1;
 
+    nodeDeviceLock(driver);
     obj = virNodeDeviceFindByName(&driver->devs, dev->name);
+    nodeDeviceUnlock(driver);
+
     if (!obj) {
         virNodeDeviceReportError(dev->conn, VIR_ERR_INVALID_NODE_DEVICE,
                               "%s", _("no node device with matching name"));
@@ -198,6 +241,8 @@ nodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
     ret = ncaps;
 
 cleanup:
+    if (obj)
+        virNodeDeviceObjUnlock(obj);
     if (ret == -1) {
         --ncaps;
         while (--ncaps >= 0)

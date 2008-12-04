@@ -510,6 +510,7 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virNodeDeviceDefFormat;
 	virNodeDeviceObjLock;
 	virNodeDeviceObjUnlock;
+	virNodeDeviceAssignDef;
 
 
 	/* qparams.h */
