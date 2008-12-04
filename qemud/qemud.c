@@ -296,7 +296,7 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
         server->shutdown = 1;
 }
 
-static int qemudSetCloseExec(int fd) {
+int qemudSetCloseExec(int fd) {
     int flags;
     if ((flags = fcntl(fd, F_GETFD)) < 0)
         goto error;
@@ -311,7 +311,7 @@ static int qemudSetCloseExec(int fd) {
 }
 
 
-static int qemudSetNonBlock(int fd) {
+int qemudSetNonBlock(int fd) {
     int flags;
     if ((flags = fcntl(fd, F_GETFL)) < 0)
         goto error;
@@ -752,6 +752,12 @@ static struct qemud_server *qemudInitialize(int sigread) {
     }
 
     server->sigread = sigread;
+
+    if (virEventInit() < 0) {
+        qemudLog(QEMUD_ERR, "%s", _("Failed to initialize event system"));
+        VIR_FREE(server);
+        return NULL;
+    }
 
     virInitialize();
 
