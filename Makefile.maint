@@ -355,6 +355,7 @@ msg_gen_function += openvzError
 msg_gen_function += virDomainReportError
 msg_gen_function += virReportErrorHelper
 msg_gen_function += lxcError
+msg_gen_function += umlError
 
 # Uncomment the following and run "make syntax-check" to see diagnostics
 # that are not yet marked for translation, but that need to be rewritten
