@@ -326,6 +326,9 @@ void virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
 char *virStoragePoolSourceListFormat(virConnectPtr conn,
                                      virStoragePoolSourceListPtr def);
 
+void virStoragePoolObjLock(virStoragePoolObjPtr obj);
+void virStoragePoolObjUnlock(virStoragePoolObjPtr obj);
+
 
 enum virStoragePoolFormatFileSystem {
     VIR_STORAGE_POOL_FS_AUTO = 0,

@@ -3470,4 +3470,12 @@ const char *virDomainDefDefaultEmulator(virConnectPtr conn,
 }
 
 
+void virDomainObjLock(virDomainObjPtr obj ATTRIBUTE_UNUSED)
+{
+}
+
+void virDomainObjUnlock(virDomainObjPtr obj ATTRIBUTE_UNUSED)
+{
+}
+
 #endif /* ! PROXY */

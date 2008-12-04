@@ -593,6 +593,8 @@ const char *virDomainDefDefaultEmulator(virConnectPtr conn,
                                         virDomainDefPtr def,
                                         virCapsPtr caps);
 
+void virDomainObjLock(virDomainObjPtr obj);
+void virDomainObjUnlock(virDomainObjPtr obj);
 
 VIR_ENUM_DECL(virDomainVirt)
 VIR_ENUM_DECL(virDomainBoot)

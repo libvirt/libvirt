@@ -397,3 +397,11 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
     VIR_FREE(caps);
 }
 
+
+void virNodeDeviceObjLock(virNodeDeviceObjPtr obj ATTRIBUTE_UNUSED)
+{
+}
+
+void virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj ATTRIBUTE_UNUSED)
+{
+}

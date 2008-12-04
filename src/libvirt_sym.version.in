@@ -374,6 +374,8 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virDomainSoundModelTypeToString;
 	virDomainVirtTypeToString;
 	virDomainFSDefFree;
+	virDomainObjLock;
+	virDomainObjUnlock;
 
 
 	/* domain_event.h */
@@ -478,6 +480,8 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virNetworkDefParseNode;
 	virNetworkRemoveInactive;
 	virNetworkSaveConfig;
+	virNetworkObjLock;
+	virNetworkObjUnlock;
 
 
 	/* nodeinfo.h */
@@ -492,6 +496,8 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virNodeDeviceDefFree;
 	virNodeDevCapsDefFree;
 	virNodeDeviceDefFormat;
+	virNodeDeviceObjLock;
+	virNodeDeviceObjUnlock;
 
 
 	/* qparams.h */
@@ -545,6 +551,8 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virStoragePoolFormatFileSystemNetTypeToString;
 	virStorageVolFormatFileSystemTypeToString;
 	virStoragePoolTypeFromString;
+	virStoragePoolObjLock;
+	virStoragePoolObjUnlock;
 
 
 	/* util.h */

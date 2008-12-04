@@ -1,3 +1,11 @@
+Thu Dec  4 20:47:41 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Thread locking API stubs
+	* src/domain_conf.c, src/domain_conf.h, src/libvirt_sym.version.in,
+	 src/network_conf.c, src/network_conf.h, src/node_device_conf.c,
+	 src/node_device_conf.h, src/storage_conf.c, src/storage_conf.h:
+	Define API stubs for locking and unlocking objects
+
 Thu Dec  4 16:51:41 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt_sym.version.in configure.in NEWS docs/*: release

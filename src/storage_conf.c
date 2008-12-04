@@ -1507,3 +1507,12 @@ char *virStoragePoolSourceListFormat(virConnectPtr conn,
     free(virBufferContentAndReset(&buf));
     return NULL;
 }
+
+
+void virStoragePoolObjLock(virStoragePoolObjPtr obj ATTRIBUTE_UNUSED)
+{
+}
+
+void virStoragePoolObjUnlock(virStoragePoolObjPtr obj ATTRIBUTE_UNUSED)
+{
+}

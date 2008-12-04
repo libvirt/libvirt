@@ -155,5 +155,8 @@ int virNetworkLoadAllConfigs(virConnectPtr conn,
 int virNetworkDeleteConfig(virConnectPtr conn,
                            virNetworkObjPtr net);
 
+void virNetworkObjLock(virNetworkObjPtr obj);
+void virNetworkObjUnlock(virNetworkObjPtr obj);
+
 #endif /* __NETWORK_CONF_H__ */
 

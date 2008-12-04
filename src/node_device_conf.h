@@ -190,4 +190,7 @@ void virNodeDeviceObjListFree(virNodeDeviceObjListPtr devs);
 
 void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps);
 
+void virNodeDeviceObjLock(virNodeDeviceObjPtr obj);
+void virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj);
+
 #endif /* __VIR_NODE_DEVICE_CONF_H__ */

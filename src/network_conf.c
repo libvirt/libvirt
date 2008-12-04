@@ -811,3 +811,11 @@ int virNetworkDeleteConfig(virConnectPtr conn,
 
     return 0;
 }
+
+void virNetworkObjLock(virNetworkObjPtr obj ATTRIBUTE_UNUSED)
+{
+}
+
+void virNetworkObjUnlock(virNetworkObjPtr obj ATTRIBUTE_UNUSED)
+{
+}
