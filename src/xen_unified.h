@@ -182,9 +182,7 @@ int  xenUnifiedRemoveDomainInfo(xenUnifiedDomainInfoListPtr info,
                                 int id, char *name,
                                 unsigned char *uuid);
 void xenUnifiedDomainEventDispatch (xenUnifiedPrivatePtr priv,
-                                    virDomainPtr dom,
-                                    int event,
-                                    int detail);
+                                    virDomainEventPtr event);
 unsigned long xenUnifiedVersion(void);
 
 #endif /* __VIR_XEN_UNIFIED_H__ */

@@ -71,6 +71,9 @@ struct qemud_driver {
 
     /* An array of callbacks */
     virDomainEventCallbackListPtr domainEventCallbacks;
+    virDomainEventQueuePtr domainEventQueue;
+    int domainEventTimer;
+    int domainEventDispatching;
 };
 
 /* Port numbers used for KVM migration. */

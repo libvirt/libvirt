@@ -1215,7 +1215,7 @@ retry:
         }
 
         if (!found) {
-            virDomainPtr dom;
+            virDomainEventPtr event;
             char *name;
             unsigned char uuid[VIR_UUID_BUFLEN];
 
@@ -1229,21 +1229,15 @@ retry:
                 continue;
             }
 
-            dom = virGetDomain(conn, name, uuid);
-            if (dom) {
-                dom->id = new_domids[i];
+            event = virDomainEventNew(new_domids[i], name, uuid,
+                                      VIR_DOMAIN_EVENT_STARTED,
+                                      VIR_DOMAIN_EVENT_STARTED_BOOTED);
+            if (event)
+                xenUnifiedDomainEventDispatch(priv, event);
 
-                /* This domain was not in the old list. Emit an event */
-                xenUnifiedDomainEventDispatch(priv, dom,
-                                              VIR_DOMAIN_EVENT_STARTED,
-                                              VIR_DOMAIN_EVENT_STARTED_BOOTED);
-
-                /* Add to the list */
-                xenUnifiedAddDomainInfo(activeDomainList,
-                                        new_domids[i], name, uuid);
-
-                virUnrefDomain(dom);
-            }
+            /* Add to the list */
+            xenUnifiedAddDomainInfo(activeDomainList,
+                                    new_domids[i], name, uuid);
 
             VIR_FREE(name);
         }
@@ -1299,24 +1293,22 @@ retry:
         }
 
         if (!found) {
-            virDomainPtr dom = virGetDomain(conn,
-                                            activeDomainList->doms[j]->name,
-                                            activeDomainList->doms[j]->uuid);
-            if(dom) {
-                dom->id = -1;
-                /* This domain was not in the new list. Emit an event */
-                xenUnifiedDomainEventDispatch(priv, dom,
-                                              VIR_DOMAIN_EVENT_STOPPED,
-                                              VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
-                 /* Remove from the list */
-                xenUnifiedRemoveDomainInfo(activeDomainList,
-                                           activeDomainList->doms[j]->id,
-                                           activeDomainList->doms[j]->name,
-                                           activeDomainList->doms[j]->uuid);
+            virDomainEventPtr event =
+                virDomainEventNew(-1,
+                                  activeDomainList->doms[j]->name,
+                                  activeDomainList->doms[j]->uuid,
+                                  VIR_DOMAIN_EVENT_STOPPED,
+                                  VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+            if (event)
+                xenUnifiedDomainEventDispatch(priv, event);
 
-                virUnrefDomain(dom);
-                removed = 1;
-            }
+            /* Remove from the list */
+            xenUnifiedRemoveDomainInfo(activeDomainList,
+                                       activeDomainList->doms[j]->id,
+                                       activeDomainList->doms[j]->name,
+                                       activeDomainList->doms[j]->uuid);
+
+            removed = 1;
         }
     }
 

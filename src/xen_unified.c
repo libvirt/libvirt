@@ -1583,28 +1583,14 @@ xenUnifiedRemoveDomainInfo(xenUnifiedDomainInfoListPtr list,
  *
  */
 void xenUnifiedDomainEventDispatch (xenUnifiedPrivatePtr priv,
-                                    virDomainPtr dom,
-                                    int event,
-                                    int detail)
+                                    virDomainEventPtr event)
 {
-    int i;
-    virDomainEventCallbackListPtr cbList;
+    if (!priv || !priv->domainEventCallbacks)
+        return;
 
-    if(!priv) return;
-
-    cbList = priv->domainEventCallbacks;
-    if(!cbList) return;
-
-    for(i=0 ; i < cbList->count ; i++) {
-        if(cbList->callbacks[i] && cbList->callbacks[i]->cb) {
-            if (dom) {
-                DEBUG("Dispatching callback %p %p event %d",
-                        cbList->callbacks[i],
-                        cbList->callbacks[i]->cb, event);
-                cbList->callbacks[i]->cb(cbList->callbacks[i]->conn,
-                                         dom, event, detail,
-                                         cbList->callbacks[i]->opaque);
-            }
-        }
-    }
+    virDomainEventDispatch(event,
+                           priv->domainEventCallbacks,
+                           virDomainEventDispatchDefaultFunc,
+                           NULL);
+    virDomainEventFree(event);
 }

@@ -5484,59 +5484,62 @@ remoteRegister (void)
  *
  * Read the event data off the wire
  */
-static int
-remoteDomainReadEvent(virConnectPtr conn, XDR *xdr,
-                      virDomainPtr *dom, int *event, int *detail)
+static virDomainEventPtr
+remoteDomainReadEvent(virConnectPtr conn, XDR *xdr)
 {
     remote_domain_event_ret ret;
+    virDomainPtr dom;
+    virDomainEventPtr event = NULL;
     memset (&ret, 0, sizeof ret);
 
     /* unmarshall parameters, and process it*/
     if (! xdr_remote_domain_event_ret(xdr, &ret) ) {
         error (conn, VIR_ERR_RPC,
                _("remoteDomainProcessEvent: unmarshalling ret"));
-        return -1;
+        return NULL;
     }
 
-    *dom = get_nonnull_domain(conn,ret.dom);
-    *event = ret.event;
-    *detail = ret.detail;
+    dom = get_nonnull_domain(conn,ret.dom);
+    if (!dom)
+        return NULL;
 
-    return 0;
+    event = virDomainEventNewFromDom(dom, ret.event, ret.detail);
+
+    virDomainFree(dom);
+    return event;
 }
 
 static void
 remoteDomainProcessEvent(virConnectPtr conn, XDR *xdr)
 {
-    virDomainPtr dom;
-    int event, detail, i;
     struct private_data *priv = conn->privateData;
+    virDomainEventPtr event;
 
-    if(!remoteDomainReadEvent(conn, xdr, &dom, &event, &detail)) {
-        DEBUG0("Calling domain event callbacks (no queue)");
-        for(i=0 ; i < priv->callbackList->count ; i++) {
-            if (priv->callbackList->callbacks[i] )
-                priv->callbackList->callbacks[i]->cb(
-                    conn, dom, event, detail,
-                    priv->callbackList->callbacks[i]->opaque);
-        }
-    }
+    event = remoteDomainReadEvent(conn, xdr);
+    if (!event)
+        return;
+
+    DEBUG0("Calling domain event callbacks (no queue)");
+    virDomainEventDispatch(event, priv->callbackList,
+                           virDomainEventDispatchDefaultFunc, NULL);
+    virDomainEventFree(event);
 }
 
 static void
 remoteDomainQueueEvent(virConnectPtr conn, XDR *xdr)
 {
-    virDomainPtr dom;
-    int event, detail;
     struct private_data *priv = conn->privateData;
+    virDomainEventPtr event;
 
-    if(!remoteDomainReadEvent(conn, xdr, &dom, &event, &detail))
-    {
-        if( virDomainEventCallbackQueuePush(priv->domainEvents,
-                                            dom, event, detail) < 0 ) {
-            DEBUG("%s", "Error adding event to queue");
-        }
-    }
+    event = remoteDomainReadEvent(conn, xdr);
+    if (!event)
+        return;
+
+    if (virDomainEventQueuePush(priv->domainEvents,
+                                event) < 0)
+        DEBUG0("Error adding event to queue");
+
+    virDomainEventFree(event);
 }
 
 /** remoteDomainEventFired:
@@ -5618,26 +5621,10 @@ remoteDomainEventFired(int watch,
 void
 remoteDomainEventQueueFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
 {
-    int i;
-    virDomainEventPtr domEvent;
-    void *user_data = NULL;
     virConnectPtr conn = opaque;
     struct private_data *priv = conn->privateData;
 
-    while( (domEvent = virDomainEventCallbackQueuePop(priv->domainEvents)) ) {
-        DEBUG("   Flushing %p", domEvent);
-        for (i=0 ; i < priv->callbackList->count ; i++) {
-           if( priv->callbackList->callbacks[i] ) {
-               user_data = priv->callbackList->callbacks[i]->opaque;
-               priv->callbackList->callbacks[i]->cb(domEvent->dom->conn,
-                                                    domEvent->dom,
-                                                    domEvent->event,
-                                                    domEvent->detail,
-                                                    user_data);
-           }
-        }
-        VIR_FREE(domEvent);
-    }
-
+    virDomainEventQueueDispatch(priv->domainEvents, priv->callbackList,
+                                virDomainEventDispatchDefaultFunc, NULL);
     virEventUpdateTimeout(priv->eventFlushTimer, -1);
 }

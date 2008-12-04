@@ -125,6 +125,49 @@ virDomainEventCallbackListRemoveConn(virConnectPtr conn,
     return 0;
 }
 
+int virDomainEventCallbackListMarkDelete(virConnectPtr conn,
+                                         virDomainEventCallbackListPtr cbList,
+                                         virConnectDomainEventCallback callback)
+{
+    int i;
+    for (i = 0 ; i < cbList->count ; i++) {
+        if (cbList->callbacks[i]->conn == conn &&
+            cbList->callbacks[i]->cb == callback) {
+            cbList->callbacks[i]->deleted = 1;
+            return 0;
+        }
+    }
+    return -1;
+}
+
+int virDomainEventCallbackListPurgeMarked(virDomainEventCallbackListPtr cbList)
+{
+    int old_count = cbList->count;
+    int i;
+    for (i = 0 ; i < cbList->count ; i++) {
+        if (cbList->callbacks[i]->deleted) {
+            virFreeCallback freecb = cbList->callbacks[i]->freecb;
+            if (freecb)
+                (*freecb)(cbList->callbacks[i]->opaque);
+            virUnrefConnect(cbList->callbacks[i]->conn);
+            VIR_FREE(cbList->callbacks[i]);
+
+            if (i < (cbList->count - 1))
+                memmove(cbList->callbacks + i,
+                        cbList->callbacks + i + 1,
+                        sizeof(*(cbList->callbacks)) *
+                                (cbList->count - (i + 1)));
+            cbList->count--;
+            i--;
+        }
+    }
+    if (cbList->count < old_count &&
+        VIR_REALLOC_N(cbList->callbacks, cbList->count) < 0) {
+        ; /* Failure to reduce memory allocation isn't fatal */
+    }
+    return 0;
+}
+
 /**
  * virDomainEventCallbackListAdd:
  * @conn: pointer to the connection
@@ -182,6 +225,62 @@ virDomainEventCallbackListAdd(virConnectPtr conn,
     return 0;
 }
 
+void virDomainEventFree(virDomainEventPtr event)
+{
+    if (!event)
+        return;
+
+    VIR_FREE(event->name);
+    VIR_FREE(event);
+}
+
+
+virDomainEventQueuePtr virDomainEventQueueNew(void)
+{
+    virDomainEventQueuePtr ret;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    return ret;
+}
+
+virDomainEventPtr virDomainEventNew(int id, const char *name,
+                                    const unsigned char *uuid,
+                                    int type, int detail)
+{
+    virDomainEventPtr event;
+
+    if (VIR_ALLOC(event) < 0)
+        return NULL;
+
+    event->type = type;
+    event->detail = detail;
+    if (!(event->name = strdup(name))) {
+        VIR_FREE(event);
+        return NULL;
+    }
+    event->id = id;
+    memcpy(event->uuid, uuid, VIR_UUID_BUFLEN);
+
+    return event;
+}
+
+virDomainEventPtr virDomainEventNewFromDom(virDomainPtr dom, int type, int detail)
+{
+    return virDomainEventNew(dom->id, dom->name, dom->uuid, type, detail);
+}
+
+virDomainEventPtr virDomainEventNewFromObj(virDomainObjPtr obj, int type, int detail)
+{
+    return virDomainEventNewFromDef(obj->def, type, detail);
+}
+
+virDomainEventPtr virDomainEventNewFromDef(virDomainDefPtr def, int type, int detail)
+{
+    return virDomainEventNew(def->id, def->name, def->uuid, type, detail);
+}
+
 /**
  * virDomainEventQueueFree:
  * @queue: pointer to the queue
@@ -192,14 +291,18 @@ void
 virDomainEventQueueFree(virDomainEventQueuePtr queue)
 {
     int i;
-    for ( i=0 ; i<queue->count ; i++ ) {
-        VIR_FREE(queue->events[i]);
+    if (!queue)
+        return;
+
+    for (i = 0; i < queue->count ; i++) {
+        virDomainEventFree(queue->events[i]);
     }
+    VIR_FREE(queue->events);
     VIR_FREE(queue);
 }
 
 /**
- * virDomainEventCallbackQueuePop:
+ * virDomainEventQueuePop:
  * @evtQueue: the queue of events
  *
  * Internal function to pop off, and return the front of the queue
@@ -208,7 +311,7 @@ virDomainEventQueueFree(virDomainEventQueuePtr queue)
  * Returns: virDomainEventPtr on success NULL on failure.
  */
 virDomainEventPtr
-virDomainEventCallbackQueuePop(virDomainEventQueuePtr evtQueue)
+virDomainEventQueuePop(virDomainEventQueuePtr evtQueue)
 {
     virDomainEventPtr ret;
 
@@ -232,9 +335,8 @@ virDomainEventCallbackQueuePop(virDomainEventQueuePtr evtQueue)
 }
 
 /**
- * virDomainEventCallbackQueuePush:
+ * virDomainEventQueuePush:
  * @evtQueue: the dom event queue
- * @dom: the domain to add
  * @event: the event to add
  *
  * Internal function to push onto the back of an virDomainEventQueue
@@ -242,37 +344,76 @@ virDomainEventCallbackQueuePop(virDomainEventQueuePtr evtQueue)
  * Returns: 0 on success, -1 on failure
  */
 int
-virDomainEventCallbackQueuePush(virDomainEventQueuePtr evtQueue,
-                                virDomainPtr dom,
-                                int event,
-                                int detail)
+virDomainEventQueuePush(virDomainEventQueuePtr evtQueue,
+                        virDomainEventPtr event)
 {
-    virDomainEventPtr domEvent;
-
-    /* Check incoming */
-    if ( !evtQueue ) {
+    if (!evtQueue) {
         return -1;
     }
-
-    /* Allocate new event */
-    if (VIR_ALLOC(domEvent) < 0) {
-        DEBUG0("Error allocating event");
-        return -1;
-    }
-    domEvent->dom = dom;
-    domEvent->event = event;
-    domEvent->detail = detail;
 
     /* Make space on queue */
     if (VIR_REALLOC_N(evtQueue->events,
                       evtQueue->count + 1) < 0) {
         DEBUG0("Error reallocating queue");
-        VIR_FREE(domEvent);
         return -1;
     }
 
-    evtQueue->events[evtQueue->count] = domEvent;
+    evtQueue->events[evtQueue->count] = event;
     evtQueue->count++;
     return 0;
 }
 
+
+void virDomainEventDispatchDefaultFunc(virConnectPtr conn,
+                                       virDomainEventPtr event,
+                                       virConnectDomainEventCallback cb,
+                                       void *cbopaque,
+                                       void *opaque ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom = virGetDomain(conn, event->name, event->uuid);
+    if (dom) {
+        dom->id = event->id;
+        (*cb)(conn, dom, event->type, event->detail, cbopaque);
+        virDomainFree(dom);
+    }
+}
+
+
+void virDomainEventDispatch(virDomainEventPtr event,
+                            virDomainEventCallbackListPtr callbacks,
+                            virDomainEventDispatchFunc dispatch,
+                            void *opaque)
+{
+    int i;
+    /* Cache this now, since we may be dropping the lock,
+       and have more callbacks added. We're guarenteed not
+       to have any removed */
+    int cbCount = callbacks->count;
+
+    for (i = 0 ; i < cbCount ; i++) {
+        if (callbacks->callbacks[i] &&
+            !callbacks->callbacks[i]->deleted) {
+            (*dispatch)(callbacks->callbacks[i]->conn,
+                        event,
+                        callbacks->callbacks[i]->cb,
+                        callbacks->callbacks[i]->opaque,
+                        opaque);
+        }
+    }
+}
+
+
+void virDomainEventQueueDispatch(virDomainEventQueuePtr queue,
+                                 virDomainEventCallbackListPtr callbacks,
+                                 virDomainEventDispatchFunc dispatch,
+                                 void *opaque)
+{
+    int i;
+
+    for (i = 0 ; i < queue->count ; i++) {
+        virDomainEventDispatch(queue->events[i], callbacks, dispatch, opaque);
+        virDomainEventFree(queue->events[i]);
+    }
+    VIR_FREE(queue->events);
+    queue->count = 0;
+}

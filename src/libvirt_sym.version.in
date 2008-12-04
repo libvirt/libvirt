@@ -383,9 +383,21 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virDomainEventCallbackListFree;
 	virDomainEventCallbackListRemove;
 	virDomainEventCallbackListRemoveConn;
+	virDomainEventCallbackListMarkDelete;
+	virDomainEventCallbackListPurgeMarked;
+	virDomainEventQueueNew;
 	virDomainEventQueueFree;
-	virDomainEventCallbackQueuePop;
-	virDomainEventCallbackQueuePush;
+	virDomainEventQueuePop;
+	virDomainEventQueuePush;
+	virDomainEventNew;
+	virDomainEventNewFromDom;
+	virDomainEventNewFromObj;
+	virDomainEventNewFromDef;
+	virDomainEventFree;
+	virDomainEventDispatchDefaultFunc;
+	virDomainEventDispatch;
+	virDomainEventQueueDispatch;
+
 
 
 	/* driver.h */

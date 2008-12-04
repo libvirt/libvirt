@@ -92,30 +92,33 @@ struct xenUnifiedDriver xenInotifyDriver = {
     NULL, /* domainSetSchedulerParameters */
 };
 
-static virDomainPtr
-xenInotifyXenCacheLookup(virConnectPtr conn, const char *filename) {
+static int
+xenInotifyXenCacheLookup(const char *filename,
+                         char **name, unsigned char *uuid) {
     xenXMConfCachePtr entry;
-    virDomainPtr dom;
 
     if (!(entry = virHashLookup(xenXMGetConfigCache(), filename))) {
         DEBUG("No config found for %s", filename);
-        return NULL;
+        return -1;
     }
 
-    if(!(dom = virGetDomain(conn, entry->def->name,
-                    (unsigned char*)entry->def->uuid))) {
+    *name = strdup(entry->def->name);
+    memcpy(uuid, entry->def->uuid, VIR_UUID_BUFLEN);
+
+    if (!*name) {
         DEBUG0("Error getting dom from def");
-        return NULL;
+        return -1;
     }
-    return dom;
+    return 0;
 }
 
-static virDomainPtr
-xenInotifyXendDomainsDirLookup(virConnectPtr conn, const char *filename) {
+static int
+xenInotifyXendDomainsDirLookup(virConnectPtr conn, const char *filename,
+                               char **name, unsigned char *uuid) {
     int i;
     virDomainPtr dom;
     const char *uuid_str;
-    unsigned char uuid[VIR_UUID_BUFLEN];
+    unsigned char rawuuid[VIR_UUID_BUFLEN];
 
     /* xend is managing domains. we will get
     * a filename in the manner:
@@ -123,57 +126,70 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn, const char *filename) {
     */
     uuid_str = filename + strlen(LIBVIRTD_DOMAINS_DIR) + 1;
 
-    if (virUUIDParse(uuid_str, uuid) < 0) {
+    if (virUUIDParse(uuid_str, rawuuid) < 0) {
         virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
                            "parsing uuid %s", uuid_str);
-        return (NULL);
+        return -1;
     }
     /* call directly into xend here, as driver may not yet
        be set during open while we are building our
        initial list of domains */
     DEBUG("Looking for dom with uuid: %s", uuid_str);
-    if(!(dom = xenDaemonLookupByUUID(conn, uuid))) {
+    /* XXX Should not have to go via a virDomainPtr obj instance */
+    if(!(dom = xenDaemonLookupByUUID(conn, rawuuid))) {
         /* If we are here, the domain has gone away.
            search for, and create a domain from the stored
            list info */
         for (i=0; i<configInfoList->count; i++) {
             if (!memcmp(uuid, configInfoList->doms[i]->uuid, VIR_UUID_BUFLEN)) {
-                if(!(dom = virGetDomain(conn, configInfoList->doms[i]->name,
-                                        configInfoList->doms[i]->uuid))) {
+                *name = strdup(configInfoList->doms[i]->name);
+                if (!*name) {
                     virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
                                        "finding dom for %s", uuid_str);
-                    return NULL;
+                    return -1;
                 }
+                memcpy(uuid, configInfoList->doms[i]->uuid, VIR_UUID_BUFLEN);
                 DEBUG0("Found dom on list");
-                return dom;
+                return 0;
             }
         }
         virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
-                                       "%s", _("finding dom on config list"));
-        return NULL;
+                           "%s", _("finding dom on config list"));
+        return -1;
     }
 
+    if (!(*name = strdup(dom->name)))
+        return -1;
+    memcpy(uuid, dom->uuid, VIR_UUID_BUFLEN);
+    virDomainFree(dom);
     /* succeeded too find domain by uuid */
-    return dom;
+    return 0;
 }
 
-static virDomainPtr
-xenInotifyDomainLookup(virConnectPtr conn, const char *filename) {
-    virDomainPtr dom;
-    virDomainInfo info;
+static int
+xenInotifyDomainLookup(virConnectPtr conn,
+                       const char *filename,
+                       char **name, unsigned char *uuid) {
+    if (useXenConfigCache)
+        return xenInotifyXenCacheLookup(filename, name, uuid);
+    else
+        return xenInotifyXendDomainsDirLookup(conn, filename, name, uuid);
+}
 
-    dom = useXenConfigCache ? xenInotifyXenCacheLookup(conn, filename) :
-                              xenInotifyXendDomainsDirLookup(conn, filename);
+static virDomainEventPtr
+xenInotifyDomainEventFromFile(virConnectPtr conn,
+                              const char *filename,
+                              int type, int detail) {
+    virDomainEventPtr event;
+    char *name = NULL;
+    unsigned char uuid[VIR_UUID_BUFLEN];
 
-    if(dom) {
-        if ( (useXenConfigCache ? xenXMDomainGetInfo(dom, &info) :
-                                  xenDaemonDomainGetInfo(dom, &info)) < 0)
-            dom->id = -1;
-        else
-            dom->id = (info.state == VIR_DOMAIN_SHUTOFF) ? -1 : dom->id;
-        return dom;
-    }
-    return NULL;
+    if (xenInotifyDomainLookup(conn, filename, &name, uuid) < 0)
+        return NULL;
+
+    event = virDomainEventNew(-1, name, uuid, type, detail);
+    VIR_FREE(name);
+    return event;
 }
 
 static int
@@ -215,21 +231,22 @@ xenInotifyXendDomainsDirRemoveEntry(virConnectPtr conn ATTRIBUTE_UNUSED,
 static int
 xenInotifyXendDomainsDirAddEntry(virConnectPtr conn,
                                  const char *fname) {
-    virDomainPtr dom = xenInotifyDomainLookup(conn, fname);
-    if(!dom) {
+    char *name = NULL;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    if (xenInotifyDomainLookup(conn, fname, &name, uuid) < 0) {
         virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("Error looking up domain"));
+                           "%s", _("Error looking up domain"));
         return -1;
     }
 
     if( xenUnifiedAddDomainInfo(configInfoList,
-                                dom->id, dom->name, dom->uuid) < 0) {
+                                -1, name, uuid) < 0) {
         virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
                         "%s", _("Error adding file to config cache"));
-        virUnrefDomain(dom);
+        VIR_FREE(name);
         return -1;
     }
-    virUnrefDomain(dom);
+    VIR_FREE(name);
     return 0;
 }
 
@@ -260,7 +277,6 @@ xenInotifyEvent(int watch ATTRIBUTE_UNUSED,
     char *tmp, *name;
     virConnectPtr conn = (virConnectPtr) data;
     xenUnifiedPrivatePtr priv = NULL;
-    virDomainPtr dom = NULL;
 
     DEBUG0("got inotify event");
 
@@ -300,16 +316,15 @@ reread:
         snprintf(fname, 1024, "%s/%s", configDir, name);
 
         if (e->mask & (IN_DELETE | IN_MOVED_FROM)) {
-            if (!(dom = xenInotifyDomainLookup(conn, fname))) {
+            virDomainEventPtr event =
+                xenInotifyDomainEventFromFile(conn, fname,
+                                              VIR_DOMAIN_EVENT_UNDEFINED,
+                                              VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
+            if (!event)
+                xenUnifiedDomainEventDispatch(conn->privateData, event);
+            else
                 virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("looking up dom"));
-                continue;
-            }
-
-            xenUnifiedDomainEventDispatch(conn->privateData, dom,
-                                          VIR_DOMAIN_EVENT_UNDEFINED,
-                                          VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
-
+                                   "%s", _("looking up dom"));
 
             if (xenInotifyRemoveDomainConfigInfo(conn, fname) < 0 ) {
                 virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
@@ -317,21 +332,23 @@ reread:
                 return;
             }
         } else if (e->mask & ( IN_CREATE | IN_CLOSE_WRITE | IN_MOVED_TO) ) {
+            virDomainEventPtr event;
             if (xenInotifyAddDomainConfigInfo(conn, fname) < 0 ) {
                 virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("Error adding file to config cache"));
                 return;
             }
 
-            if (!(dom = xenInotifyDomainLookup(conn, fname))) {
-                virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("looking up dom"));
-                continue;
-            }
+            event = xenInotifyDomainEventFromFile(conn, fname,
+                                                  VIR_DOMAIN_EVENT_DEFINED,
+                                                  VIR_DOMAIN_EVENT_DEFINED_ADDED);
 
-            xenUnifiedDomainEventDispatch(conn->privateData, dom,
-                                          VIR_DOMAIN_EVENT_DEFINED,
-                                          VIR_DOMAIN_EVENT_DEFINED_ADDED);
+            if (event)
+                xenUnifiedDomainEventDispatch(conn->privateData, event);
+            else
+                virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
+                                   "%s", _("looking up dom"));
+
         }
 
     }
