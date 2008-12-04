@@ -94,6 +94,7 @@ typedef int (*virStoragePoolFormatFromString)(const char *format);
 typedef struct _virStorageVolOptions virStorageVolOptions;
 typedef virStorageVolOptions *virStorageVolOptionsPtr;
 struct _virStorageVolOptions {
+    int defaultFormat;
     virStorageVolFormatToString formatToString;
     virStorageVolFormatFromString formatFromString;
 };
@@ -139,6 +140,7 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
     },
     { .poolType = VIR_STORAGE_POOL_DIR,
       .volOptions = {
+            .defaultFormat = VIR_STORAGE_VOL_FILE_RAW,
             .formatFromString = virStorageVolFormatFileSystemTypeFromString,
             .formatToString = virStorageVolFormatFileSystemTypeToString,
         },
@@ -150,6 +152,7 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
             .formatToString = virStoragePoolFormatFileSystemTypeToString,
         },
       .volOptions = {
+            .defaultFormat = VIR_STORAGE_VOL_FILE_RAW,
             .formatFromString = virStorageVolFormatFileSystemTypeFromString,
             .formatToString = virStorageVolFormatFileSystemTypeToString,
         },
@@ -163,6 +166,7 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
             .formatToString = virStoragePoolFormatFileSystemNetTypeToString,
         },
       .volOptions = {
+            .defaultFormat = VIR_STORAGE_VOL_FILE_RAW,
             .formatFromString = virStorageVolFormatFileSystemTypeFromString,
             .formatToString = virStorageVolFormatFileSystemTypeToString,
         },
@@ -184,6 +188,7 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
             .formatToString = virStoragePoolFormatDiskTypeToString,
         },
       .volOptions = {
+            .defaultFormat = VIR_STORAGE_VOL_DISK_NONE,
             .formatFromString = virStorageVolFormatDiskTypeFromString,
             .formatToString = virStorageVolFormatDiskTypeToString,
         },
@@ -961,7 +966,12 @@ virStorageVolDefParseDoc(virConnectPtr conn,
     ret->target.path = virXPathString(conn, "string(/volume/target/path)", ctxt);
     if (options->formatFromString) {
         char *format = virXPathString(conn, "string(/volume/target/format/@type)", ctxt);
-        if ((ret->target.format = (options->formatFromString)(format)) < 0) {
+        if (format == NULL)
+            ret->target.format = options->defaultFormat;
+        else
+            ret->target.format = (options->formatFromString)(format);
+
+        if (ret->target.format < 0) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   _("unknown volume format type %s"), format);
             VIR_FREE(format);
