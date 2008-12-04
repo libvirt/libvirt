@@ -51,6 +51,8 @@ enum qemud_cmd_flags {
 
 /* Main driver state */
 struct qemud_driver {
+    PTHREAD_MUTEX_T(lock);
+
     unsigned int qemuVersion;
     int nextvmid;
 
