@@ -1318,7 +1318,7 @@ error:
 /* Parse the XML definition for a graphics device */
 static virDomainGraphicsDefPtr
 virDomainGraphicsDefParseXML(virConnectPtr conn,
-                             xmlNodePtr node) {
+                             xmlNodePtr node, int flags) {
     virDomainGraphicsDefPtr def;
     char *type = NULL;
 
@@ -1355,7 +1355,8 @@ virDomainGraphicsDefParseXML(virConnectPtr conn,
             VIR_FREE(port);
             /* Legacy compat syntax, used -1 for auto-port */
             if (def->data.vnc.port == -1) {
-                def->data.vnc.port = 0;
+                if (flags & VIR_DOMAIN_XML_INACTIVE)
+                    def->data.vnc.port = 0;
                 def->data.vnc.autoport = 1;
             }
         } else {
@@ -1365,7 +1366,8 @@ virDomainGraphicsDefParseXML(virConnectPtr conn,
 
         if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
             if (STREQ(autoport, "yes")) {
-                def->data.vnc.port = 0;
+                if (flags & VIR_DOMAIN_XML_INACTIVE)
+                    def->data.vnc.port = 0;
                 def->data.vnc.autoport = 1;
             }
             VIR_FREE(autoport);
@@ -1699,11 +1701,12 @@ int virDomainDiskQSort(const void *a, const void *b)
 #ifndef PROXY
 static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                                             virCapsPtr caps,
-                                            xmlXPathContextPtr ctxt)
+                                            xmlXPathContextPtr ctxt, int flags)
 {
     xmlNodePtr *nodes = NULL, node = NULL;
     char *tmp = NULL;
     int i, n;
+    long id = -1;
     virDomainDefPtr def;
 
     if (VIR_ALLOC(def) < 0) {
@@ -1711,7 +1714,11 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                          "%s", _("failed to allocate space for xmlXPathContext"));
         return NULL;
     }
-    def->id = -1;
+
+    if (!(flags & VIR_DOMAIN_XML_INACTIVE))
+        if((virXPathLong(conn, "string(./@id)", ctxt, &id)) < 0)
+            id = -1;
+    def->id = (int)id;
 
     /* Find out what type of virtualization to use */
     if (!(tmp = virXPathString(conn, "string(./@type)", ctxt))) {
@@ -2101,7 +2108,8 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
     if (n > 0) {
         virDomainGraphicsDefPtr graphics = virDomainGraphicsDefParseXML(conn,
-                                                                        nodes[0]);
+                                                                        nodes[0],
+                                                                        flags);
         if (!graphics)
             goto error;
 
@@ -2247,7 +2255,8 @@ virDomainDefPtr virDomainDefParseString(virConnectPtr conn,
         goto cleanup;
     }
 
-    def = virDomainDefParseNode(conn, caps, xml, root);
+    def = virDomainDefParseNode(conn, caps, xml, root,
+                                VIR_DOMAIN_XML_INACTIVE);
 
 cleanup:
     xmlFreeParserCtxt (pctxt);
@@ -2257,7 +2266,7 @@ cleanup:
 
 virDomainDefPtr virDomainDefParseFile(virConnectPtr conn,
                                       virCapsPtr caps,
-                                      const char *filename)
+                                      const char *filename, int flags)
 {
     xmlParserCtxtPtr pctxt;
     xmlDocPtr xml = NULL;
@@ -2288,7 +2297,7 @@ virDomainDefPtr virDomainDefParseFile(virConnectPtr conn,
         goto cleanup;
     }
 
-    def = virDomainDefParseNode(conn, caps, xml, root);
+    def = virDomainDefParseNode(conn, caps, xml, root, flags);
 
 cleanup:
     xmlFreeParserCtxt (pctxt);
@@ -2300,7 +2309,8 @@ cleanup:
 virDomainDefPtr virDomainDefParseNode(virConnectPtr conn,
                                       virCapsPtr caps,
                                       xmlDocPtr xml,
-                                      xmlNodePtr root)
+                                      xmlNodePtr root,
+                                      int flags)
 {
     xmlXPathContextPtr ctxt = NULL;
     virDomainDefPtr def = NULL;
@@ -2318,7 +2328,7 @@ virDomainDefPtr virDomainDefParseNode(virConnectPtr conn,
     }
 
     ctxt->node = root;
-    def = virDomainDefParseXML(conn, caps, ctxt);
+    def = virDomainDefParseXML(conn, caps, ctxt, flags);
 
 cleanup:
     xmlXPathFreeContext(ctxt);
@@ -3273,7 +3283,8 @@ virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
         goto error;
 
-    if (!(def = virDomainDefParseFile(conn, caps, configFile)))
+    if (!(def = virDomainDefParseFile(conn, caps, configFile,
+                                      VIR_DOMAIN_XML_INACTIVE)))
         goto error;
 
     if (virDomainFindByName(doms, def->name))

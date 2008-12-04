@@ -526,11 +526,13 @@ virDomainDefPtr virDomainDefParseString(virConnectPtr conn,
                                         const char *xmlStr);
 virDomainDefPtr virDomainDefParseFile(virConnectPtr conn,
                                       virCapsPtr caps,
-                                      const char *filename);
+                                      const char *filename,
+                                      int flags);
 virDomainDefPtr virDomainDefParseNode(virConnectPtr conn,
                                       virCapsPtr caps,
                                       xmlDocPtr doc,
-                                      xmlNodePtr root);
+                                      xmlNodePtr root,
+                                      int flags);
 #endif
 char *virDomainDefFormat(virConnectPtr conn,
                          virDomainDefPtr def,

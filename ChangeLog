@@ -1,3 +1,21 @@
+Thu, 4 Dec 2008 12:46:01 CET Guido Günther <agx@sigxcpu.org>
+
+	Differentiate between active and inactive configs by honoring the
+	VIR_DOMAIN_XML_INACTIVE flag.
+	* src/domain_conf.c (virDomainDefParseXML): add and pass on flags arg
+	(virDomainDefParseFile): Likewise
+	(virDomainDefParseNode): Likewise
+	(virDomainGraphicsDefParseXML): Likewise
+	* src/domain_conf.c (virDomainDefParseXML): only restore domain id if
+	!VIR_DOMAIN_XML_INACTIVE
+	* src/domain_conf. (virDomainGraphicsDefParseXML): only restore vnc
+	port if !VIR_DOMAIN_XML_INACTIVE
+	* src/lxc_driver.c (lxcStartup): pass 0 flag since we restore life
+	config
+	* src/lxc_controller.c: pass VIR_DOMAIN_XML_INACTIVE
+	* src/test.c: pass VIR_DOMAIN_XML_INACTIVE
+	* tests/qemuxml2argvtest.c: pass VIR_DOMAIN_XML_INACTIVE
+
 Thu, 4 Dec 2008 11:41:12 CET Guido Günther <agx@sigxcpu.org>
 
 	* src/qemu_driver.c: also look for /usr/bin/kvm

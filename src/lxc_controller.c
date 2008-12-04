@@ -593,7 +593,8 @@ int main(int argc, char *argv[])
                                           name)) == NULL)
         goto cleanup;
 
-    if ((def = virDomainDefParseFile(NULL, caps, configFile)) == NULL)
+    if ((def = virDomainDefParseFile(NULL, caps, configFile,
+                                     VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
     if (def->nnets != nveths) {

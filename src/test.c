@@ -504,12 +504,14 @@ static int testOpenFromFile(virConnectPtr conn,
                 testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s", _("resolving domain filename"));
                 goto error;
             }
-            def = virDomainDefParseFile(conn, privconn->caps, absFile);
+            def = virDomainDefParseFile(conn, privconn->caps, absFile,
+                                        VIR_DOMAIN_XML_INACTIVE);
             VIR_FREE(absFile);
             if (!def)
                 goto error;
         } else {
-            if ((def = virDomainDefParseNode(conn, privconn->caps, xml, domains[i])) == NULL)
+            if ((def = virDomainDefParseNode(conn, privconn->caps, xml, domains[i],
+                                   VIR_DOMAIN_XML_INACTIVE)) == NULL)
                 goto error;
         }
 

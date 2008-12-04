@@ -38,7 +38,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (virtTestLoadFile(cmd, &expectargv, MAX_FILE) < 0)
         goto fail;
 
-    if (!(vmdef = virDomainDefParseFile(NULL, driver.caps, xml)))
+    if (!(vmdef = virDomainDefParseFile(NULL, driver.caps, xml,
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
 
     memset(&vm, 0, sizeof vm);
