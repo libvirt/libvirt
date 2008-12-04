@@ -861,6 +861,7 @@ virReleaseNodeDevice(virNodeDevicePtr dev) {
 
     dev->magic = -1;
     VIR_FREE(dev->name);
+    VIR_FREE(dev->parent);
     VIR_FREE(dev);
 
     DEBUG("unref connection %p %d", conn, conn->refs);

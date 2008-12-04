@@ -199,6 +199,7 @@ struct _virNodeDevice {
     int refs;                           /* reference count */
     virConnectPtr conn;                 /* pointer back to the connection */
     char *name;                         /* device name (unique on node) */
+    char *parent;                       /* parent device name */
 };
 
 

@@ -5689,11 +5689,15 @@ const char *virNodeDeviceGetParent(virNodeDevicePtr dev)
         return NULL;
     }
 
-    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->deviceGetParent)
-        return dev->conn->deviceMonitor->deviceGetParent (dev);
-
-    virLibConnError (dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return NULL;
+    if (!dev->parent) {
+        if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->deviceGetParent) {
+            dev->parent = dev->conn->deviceMonitor->deviceGetParent (dev);
+        } else {
+            virLibConnError (dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            return NULL;
+        }
+    }
+    return dev->parent;
 }
 
 /**

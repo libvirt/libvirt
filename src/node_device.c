@@ -91,66 +91,86 @@ static virNodeDevicePtr nodeDeviceLookupByName(virConnectPtr conn,
                                                const char *name)
 {
     virDeviceMonitorStatePtr driver = conn->devMonPrivateData;
-    virNodeDeviceObjPtr obj = virNodeDeviceFindByName(&driver->devs, name);
+    virNodeDeviceObjPtr obj;
+    virNodeDevicePtr ret = NULL;
 
+    obj = virNodeDeviceFindByName(&driver->devs, name);
     if (!obj) {
         virNodeDeviceReportError(conn, VIR_ERR_INVALID_NODE_DEVICE,
                                  "%s", _("no node device with matching name"));
-        return NULL;
+        goto cleanup;
     }
 
-    return virGetNodeDevice(conn, name);
+    ret = virGetNodeDevice(conn, name);
 
+cleanup:
+    return ret;
 }
 
 static char *nodeDeviceDumpXML(virNodeDevicePtr dev,
                                unsigned int flags ATTRIBUTE_UNUSED)
 {
     virDeviceMonitorStatePtr driver = dev->conn->devMonPrivateData;
-    virNodeDeviceObjPtr obj = virNodeDeviceFindByName(&driver->devs, dev->name);
+    virNodeDeviceObjPtr obj;
+    char *ret = NULL;
 
+    obj = virNodeDeviceFindByName(&driver->devs, dev->name);
     if (!obj) {
         virNodeDeviceReportError(dev->conn, VIR_ERR_INVALID_NODE_DEVICE,
                               "%s", _("no node device with matching name"));
-        return NULL;
+        goto cleanup;
     }
 
-    return virNodeDeviceDefFormat(dev->conn, obj->def);
+    ret = virNodeDeviceDefFormat(dev->conn, obj->def);
+
+cleanup:
+    return ret;
 }
 
 
 static char *nodeDeviceGetParent(virNodeDevicePtr dev)
 {
     virDeviceMonitorStatePtr driver = dev->conn->devMonPrivateData;
-    virNodeDeviceObjPtr obj = virNodeDeviceFindByName(&driver->devs, dev->name);
+    virNodeDeviceObjPtr obj;
+    char *ret = NULL;
 
+    obj = virNodeDeviceFindByName(&driver->devs, dev->name);
     if (!obj) {
         virNodeDeviceReportError(dev->conn, VIR_ERR_INVALID_NODE_DEVICE,
                               "%s", _("no node device with matching name"));
-        return NULL;
+        goto cleanup;
     }
 
-    return obj->def->parent;
+    ret = strdup(obj->def->parent);
+    if (!ret)
+        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_MEMORY, NULL);
+
+cleanup:
+    return ret;
 }
 
 
 static int nodeDeviceNumOfCaps(virNodeDevicePtr dev)
 {
     virDeviceMonitorStatePtr driver = dev->conn->devMonPrivateData;
-    virNodeDeviceObjPtr obj = virNodeDeviceFindByName(&driver->devs, dev->name);
+    virNodeDeviceObjPtr obj;
     virNodeDevCapsDefPtr caps;
     int ncaps = 0;
+    int ret = -1;
 
+    obj = virNodeDeviceFindByName(&driver->devs, dev->name);
     if (!obj) {
         virNodeDeviceReportError(dev->conn, VIR_ERR_INVALID_NODE_DEVICE,
                               "%s", _("no node device with matching name"));
-        return -1;
+        goto cleanup;
     }
 
     for (caps = obj->def->caps; caps; caps = caps->next)
         ++ncaps;
+    ret = ncaps;
 
-    return ncaps;
+cleanup:
+    return ret;
 }
 
 
@@ -158,29 +178,32 @@ static int
 nodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
 {
     virDeviceMonitorStatePtr driver = dev->conn->devMonPrivateData;
-    virNodeDeviceObjPtr obj = virNodeDeviceFindByName(&driver->devs, dev->name);
+    virNodeDeviceObjPtr obj;
     virNodeDevCapsDefPtr caps;
     int ncaps = 0;
+    int ret = -1;
 
+    obj = virNodeDeviceFindByName(&driver->devs, dev->name);
     if (!obj) {
         virNodeDeviceReportError(dev->conn, VIR_ERR_INVALID_NODE_DEVICE,
                               "%s", _("no node device with matching name"));
-        return -1;
+        goto cleanup;
     }
 
     for (caps = obj->def->caps; caps && ncaps < maxnames; caps = caps->next) {
         names[ncaps] = strdup(virNodeDevCapTypeToString(caps->type));
         if (names[ncaps++] == NULL)
-            goto failure;
+            goto cleanup;
     }
+    ret = ncaps;
 
-    return ncaps;
-
- failure:
-    --ncaps;
-    while (--ncaps >= 0)
-        VIR_FREE(names[ncaps]);
-    return -1;
+cleanup:
+    if (ret == -1) {
+        --ncaps;
+        while (--ncaps >= 0)
+            VIR_FREE(names[ncaps]);
+    }
+    return ret;
 }
 
 
