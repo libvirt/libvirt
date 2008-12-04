@@ -177,8 +177,9 @@ void qemudLog(int priority, const char *fmt, ...)
 #define qemudDebug(fmt, ...) do {} while(0)
 #endif
 
-void remoteDispatchClientRequest (struct qemud_server *server,
-                                  struct qemud_client *client);
+unsigned int
+remoteDispatchClientRequest (struct qemud_server *server,
+                             struct qemud_client *client);
 
 void qemudDispatchClientWrite(struct qemud_server *server,
                              struct qemud_client *client);

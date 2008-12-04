@@ -1403,13 +1403,12 @@ static int qemudClientRead(struct qemud_server *server,
 
 
 static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_client *client) {
-
+    unsigned int len;
     /*qemudDebug ("qemudDispatchClientRead: mode = %d", client->mode);*/
 
     switch (client->mode) {
     case QEMUD_MODE_RX_HEADER: {
         XDR x;
-        unsigned int len;
 
         if (qemudClientRead(server, client) < 0)
             return; /* Error, or blocking */
@@ -1460,7 +1459,14 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
         if (client->bufferOffset < client->bufferLength)
             return; /* Not read enough */
 
-        remoteDispatchClientRequest (server, client);
+        if ((len = remoteDispatchClientRequest (server, client)) == 0)
+            qemudDispatchClientFailure(server, client);
+
+        /* Set up the output buffer. */
+        client->mode = QEMUD_MODE_TX_PACKET;
+        client->bufferLength = len;
+        client->bufferOffset = 0;
+
         if (qemudRegisterClientEvent(server, client, 1) < 0)
             qemudDispatchClientFailure(server, client);
 

@@ -1,3 +1,12 @@
+Thu Dec  4 22:12:41 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c, qemud/qemud.h, qemud/remote.c: Make all
+	error reporting the responsibility of the RPC handler
+	methods
+	* qemud/remote_generate_stubs.pl: Add remote_error *
+	arg to all RPC handlers
+	* qemud/remote_dispatch_prototypes.h: Re-generated
+
 Thu Dec  4 22:09:41 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.h, qemud/qemud.c: Change client linked list into
