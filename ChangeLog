@@ -1,3 +1,8 @@
+Thu Dec  4 22:20:41 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: Remove unused driver argument from
+	all monitor handling APIs.
+
 Thu Dec  4 22:18:41 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c: Read number of threads for RPC dispatch

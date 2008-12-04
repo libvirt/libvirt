@@ -136,8 +136,7 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
 
 static int qemudDomainGetMaxVcpus(virDomainPtr dom);
 
-static int qemudMonitorCommand (const struct qemud_driver *driver,
-                                const virDomainObjPtr vm,
+static int qemudMonitorCommand (const virDomainObjPtr vm,
                                 const char *cmd,
                                 char **reply);
 
@@ -389,14 +388,12 @@ qemudShutdown(void) {
 
 /* Return -1 for error, 1 to continue reading and 0 for success */
 typedef int qemudHandlerMonitorOutput(virConnectPtr conn,
-                                      struct qemud_driver *driver,
                                       virDomainObjPtr vm,
                                       const char *output,
                                       int fd);
 
 static int
 qemudReadMonitorOutput(virConnectPtr conn,
-                       struct qemud_driver *driver,
                        virDomainObjPtr vm,
                        int fd,
                        char *buf,
@@ -455,7 +452,7 @@ qemudReadMonitorOutput(virConnectPtr conn,
         } else {
             got += ret;
             buf[got] = '\0';
-            if ((ret = func(conn, driver, vm, buf, fd)) != 1)
+            if ((ret = func(conn, vm, buf, fd)) != 1)
                 return ret;
         }
     }
@@ -468,7 +465,6 @@ qemudReadMonitorOutput(virConnectPtr conn,
 
 static int
 qemudCheckMonitorPrompt(virConnectPtr conn ATTRIBUTE_UNUSED,
-                        struct qemud_driver *driver ATTRIBUTE_UNUSED,
                         virDomainObjPtr vm,
                         const char *output,
                         int fd)
@@ -482,7 +478,6 @@ qemudCheckMonitorPrompt(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int qemudOpenMonitor(virConnectPtr conn,
-                            struct qemud_driver *driver,
                             virDomainObjPtr vm,
                             const char *monitor) {
     int monfd;
@@ -506,7 +501,7 @@ static int qemudOpenMonitor(virConnectPtr conn,
     }
 
     ret = qemudReadMonitorOutput(conn,
-                                 driver, vm, monfd,
+                                 vm, monfd,
                                  buf, sizeof(buf),
                                  qemudCheckMonitorPrompt,
                                  "monitor", 10000);
@@ -566,7 +561,6 @@ static int qemudExtractMonitorPath(virConnectPtr conn,
 
 static int
 qemudFindCharDevicePTYs(virConnectPtr conn,
-                        struct qemud_driver *driver,
                         virDomainObjPtr vm,
                         const char *output,
                         int fd ATTRIBUTE_UNUSED)
@@ -605,7 +599,7 @@ qemudFindCharDevicePTYs(virConnectPtr conn,
     }
 
     /* Got them all, so now open the monitor console */
-    ret = qemudOpenMonitor(conn, driver, vm, monitor);
+    ret = qemudOpenMonitor(conn, vm, monitor);
 
 cleanup:
     VIR_FREE(monitor);
@@ -613,11 +607,10 @@ cleanup:
 }
 
 static int qemudWaitForMonitor(virConnectPtr conn,
-                               struct qemud_driver *driver,
                                virDomainObjPtr vm) {
     char buf[1024]; /* Plenty of space to get startup greeting */
     int ret = qemudReadMonitorOutput(conn,
-                                     driver, vm, vm->stderr_fd,
+                                     vm, vm->stderr_fd,
                                      buf, sizeof(buf),
                                      qemudFindCharDevicePTYs,
                                      "console", 3000);
@@ -634,7 +627,6 @@ static int qemudWaitForMonitor(virConnectPtr conn,
 
 static int
 qemudDetectVcpuPIDs(virConnectPtr conn,
-                    struct qemud_driver *driver,
                     virDomainObjPtr vm) {
     char *qemucpus = NULL;
     char *line;
@@ -658,7 +650,7 @@ qemudDetectVcpuPIDs(virConnectPtr conn,
         return 0;
     }
 
-    if (qemudMonitorCommand(driver, vm, "info cpus", &qemucpus) < 0) {
+    if (qemudMonitorCommand(vm, "info cpus", &qemucpus) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("cannot run monitor command to fetch CPU thread info"));
         VIR_FREE(vm->vcpupids);
@@ -734,7 +726,6 @@ error:
 
 static int
 qemudInitCpus(virConnectPtr conn,
-              struct qemud_driver *driver,
               virDomainObjPtr vm,
               const char *migrateFrom) {
     char *info = NULL;
@@ -774,7 +765,7 @@ qemudInitCpus(virConnectPtr conn,
 
     if (migrateFrom == NULL) {
         /* Allow the CPUS to start executing */
-        if (qemudMonitorCommand(driver, vm, "cont", &info) < 0) {
+        if (qemudMonitorCommand(vm, "cont", &info) < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("resume operation failed"));
             return -1;
@@ -1001,9 +992,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                                                    VIR_EVENT_HANDLE_HANGUP,
                                                    qemudDispatchVMEvent,
                                                    driver, NULL)) < 0) ||
-            (qemudWaitForMonitor(conn, driver, vm) < 0) ||
-            (qemudDetectVcpuPIDs(conn, driver, vm) < 0) ||
-            (qemudInitCpus(conn, driver, vm, migrateFrom) < 0)) {
+            (qemudWaitForMonitor(conn, vm) < 0) ||
+            (qemudDetectVcpuPIDs(conn, vm) < 0) ||
+            (qemudInitCpus(conn, vm, migrateFrom) < 0)) {
             qemudShutdownVMDaemon(conn, driver, vm);
             return -1;
         }
@@ -1148,8 +1139,7 @@ cleanup:
 }
 
 static int
-qemudMonitorCommand (const struct qemud_driver *driver ATTRIBUTE_UNUSED,
-                     const virDomainObjPtr vm,
+qemudMonitorCommand (const virDomainObjPtr vm,
                      const char *cmd,
                      char **reply) {
     int size = 0;
@@ -1689,7 +1679,7 @@ static int qemudDomainSuspend(virDomainPtr dom) {
         goto cleanup;
     }
     if (vm->state != VIR_DOMAIN_PAUSED) {
-        if (qemudMonitorCommand(driver, vm, "stop", &info) < 0) {
+        if (qemudMonitorCommand(vm, "stop", &info) < 0) {
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                              "%s", _("suspend operation failed"));
             goto cleanup;
@@ -1738,7 +1728,7 @@ static int qemudDomainResume(virDomainPtr dom) {
         goto cleanup;
     }
     if (vm->state == VIR_DOMAIN_PAUSED) {
-        if (qemudMonitorCommand(driver, vm, "cont", &info) < 0) {
+        if (qemudMonitorCommand(vm, "cont", &info) < 0) {
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                              "%s", _("resume operation failed"));
             goto cleanup;
@@ -1780,7 +1770,7 @@ static int qemudDomainShutdown(virDomainPtr dom) {
         goto cleanup;
     }
 
-    if (qemudMonitorCommand(driver, vm, "system_powerdown", &info) < 0) {
+    if (qemudMonitorCommand(vm, "system_powerdown", &info) < 0) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("shutdown operation failed"));
         goto cleanup;
@@ -2177,7 +2167,7 @@ static int qemudDomainSave(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (qemudMonitorCommand(driver, vm, command, &info) < 0) {
+    if (qemudMonitorCommand(vm, command, &info) < 0) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("migrate operation failed"));
         goto cleanup;
@@ -2547,7 +2537,7 @@ static int qemudDomainRestore(virConnectPtr conn,
     /* If it was running before, resume it now. */
     if (header.was_running) {
         char *info;
-        if (qemudMonitorCommand(driver, vm, "cont", &info) < 0) {
+        if (qemudMonitorCommand(vm, "cont", &info) < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                              "%s", _("failed to resume domain"));
             goto cleanup;
@@ -2827,7 +2817,6 @@ static char *qemudDiskDeviceName(const virConnectPtr conn,
 }
 
 static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
-                                           struct qemud_driver *driver,
                                            virDomainObjPtr vm,
                                            virDomainDeviceDefPtr dev)
 {
@@ -2911,7 +2900,7 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
     }
     VIR_FREE(devname);
 
-    if (qemudMonitorCommand(driver, vm, cmd, &reply) < 0) {
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
         qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("cannot change cdrom media"));
         VIR_FREE(cmd);
@@ -2940,7 +2929,6 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
 }
 
 static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
-                                          struct qemud_driver *driver,
                                           virDomainObjPtr vm,
                                           virDomainDeviceDefPtr dev)
 {
@@ -2977,7 +2965,7 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
         return ret;
     }
 
-    if (qemudMonitorCommand(driver, vm, cmd, &reply) < 0) {
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
         qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          _("cannot attach %s disk"), type);
         VIR_FREE(cmd);
@@ -3012,7 +3000,6 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
 }
 
 static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
-                                                 struct qemud_driver *driver,
                                                  virDomainObjPtr vm,
                                                  virDomainDeviceDefPtr dev)
 {
@@ -3047,7 +3034,7 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
         return ret;
     }
 
-    if (qemudMonitorCommand(driver, vm, cmd, &reply) < 0) {
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
         qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("cannot attach usb disk"));
         VIR_FREE(cmd);
@@ -3076,7 +3063,6 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
 }
 
 static int qemudDomainAttachHostDevice(virConnectPtr conn,
-                                       struct qemud_driver *driver,
                                        virDomainObjPtr vm,
                                        virDomainDeviceDefPtr dev)
 {
@@ -3102,7 +3088,7 @@ static int qemudDomainAttachHostDevice(virConnectPtr conn,
         return -1;
     }
 
-    if (qemudMonitorCommand(driver, vm, cmd, &reply) < 0) {
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
         qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("cannot attach usb device"));
         VIR_FREE(cmd);
@@ -3138,12 +3124,14 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
+        qemuDriverUnlock(driver);
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
                          "%s", _("no domain with matching uuid"));
         goto cleanup;
     }
 
     if (!virDomainIsActive(vm)) {
+        qemuDriverUnlock(driver);
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("cannot attach device on inactive domain"));
         goto cleanup;
@@ -3152,6 +3140,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     dev = virDomainDeviceDefParse(dom->conn,
                                   driver->caps,
                                   vm->def, xml);
+    qemuDriverUnlock(driver);
     if (dev == NULL)
         goto cleanup;
 
@@ -3160,14 +3149,14 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         switch (dev->data.disk->device) {
         case VIR_DOMAIN_DISK_DEVICE_CDROM:
         case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-            ret = qemudDomainChangeEjectableMedia(dom->conn, driver, vm, dev);
+            ret = qemudDomainChangeEjectableMedia(dom->conn, vm, dev);
             break;
         case VIR_DOMAIN_DISK_DEVICE_DISK:
             if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
-                ret = qemudDomainAttachUsbMassstorageDevice(dom->conn, driver, vm, dev);
+                ret = qemudDomainAttachUsbMassstorageDevice(dom->conn, vm, dev);
             } else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
                        dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
-                ret = qemudDomainAttachPciDiskDevice(dom->conn, driver, vm, dev);
+                ret = qemudDomainAttachPciDiskDevice(dom->conn, vm, dev);
             }
             break;
         default:
@@ -3178,7 +3167,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
                dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
                dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-        ret = qemudDomainAttachHostDevice(dom->conn, driver, vm, dev);
+        ret = qemudDomainAttachHostDevice(dom->conn, vm, dev);
     } else {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          "%s", _("this device type cannot be attached"));
@@ -3189,12 +3178,10 @@ cleanup:
     virDomainDeviceDefFree(dev);
     if (vm)
         virDomainObjUnlock(vm);
-    qemuDriverUnlock(driver);
     return ret;
 }
 
 static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
-                                          struct qemud_driver *driver,
                                           virDomainObjPtr vm, virDomainDeviceDefPtr dev)
 {
     int i, ret = -1;
@@ -3228,7 +3215,7 @@ static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (qemudMonitorCommand(driver, vm, cmd, &reply) < 0) {
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                           _("failed to execute detach disk %s command"), detach->dst);
         goto cleanup;
@@ -3274,18 +3261,21 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
+        qemuDriverUnlock(driver);
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
                          "%s", _("no domain with matching uuid"));
         goto cleanup;
     }
 
     if (!virDomainIsActive(vm)) {
+        qemuDriverUnlock(driver);
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("cannot attach device on inactive domain"));
         goto cleanup;
     }
 
     dev = virDomainDeviceDefParse(dom->conn, driver->caps, vm->def, xml);
+    qemuDriverUnlock(driver);
     if (dev == NULL)
         goto cleanup;
 
@@ -3294,7 +3284,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
         dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
         (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
          dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO))
-        ret = qemudDomainDetachPciDiskDevice(dom->conn, driver, vm, dev);
+        ret = qemudDomainDetachPciDiskDevice(dom->conn, vm, dev);
     else
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          "%s", _("only SCSI or virtio disk device can be detached dynamically"));
@@ -3303,7 +3293,6 @@ cleanup:
     virDomainDeviceDefFree(dev);
     if (vm)
         virDomainObjUnlock(vm);
-    qemuDriverUnlock(driver);
     return ret;
 }
 
@@ -3450,7 +3439,7 @@ qemudDomainBlockStats (virDomainPtr dom,
         goto cleanup;
     len = strlen (qemu_dev_name);
 
-    if (qemudMonitorCommand (driver, vm, "info blockstats", &info) < 0) {
+    if (qemudMonitorCommand (vm, "info blockstats", &info) < 0) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                           "%s", _("'info blockstats' command failed"));
         goto cleanup;
@@ -3716,7 +3705,7 @@ qemudDomainMemoryPeek (virDomainPtr dom,
 
     /* Issue the memsave command. */
     snprintf (cmd, sizeof cmd, "memsave %llu %zi \"%s\"", offset, size, tmp);
-    if (qemudMonitorCommand (driver, vm, cmd, &info) < 0) {
+    if (qemudMonitorCommand (vm, cmd, &info) < 0) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                           "%s", _("'memsave' command failed"));
         goto cleanup;
@@ -4034,7 +4023,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
     if (!(flags & VIR_MIGRATE_LIVE)) {
         /* Pause domain for non-live migration */
         snprintf(cmd, sizeof cmd, "%s", "stop");
-        qemudMonitorCommand (driver, vm, cmd, &info);
+        qemudMonitorCommand (vm, cmd, &info);
         DEBUG ("stop reply: %s", info);
         VIR_FREE(info);
 
@@ -4049,7 +4038,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
     if (resource > 0) {
         /* Issue migrate_set_speed command.  Don't worry if it fails. */
         snprintf (cmd, sizeof cmd, "migrate_set_speed %lum", resource);
-        qemudMonitorCommand (driver, vm, cmd, &info);
+        qemudMonitorCommand (vm, cmd, &info);
 
         DEBUG ("migrate_set_speed reply: %s", info);
         VIR_FREE (info);
@@ -4065,7 +4054,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
     snprintf (cmd, sizeof cmd, "migrate \"%s\"", safe_uri);
     VIR_FREE (safe_uri);
 
-    if (qemudMonitorCommand (driver, vm, cmd, &info) < 0) {
+    if (qemudMonitorCommand (vm, cmd, &info) < 0) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                           "%s", _("migrate operation failed"));
         goto cleanup;
