@@ -248,6 +248,8 @@ typedef struct _virStorageDriverState virStorageDriverState;
 typedef virStorageDriverState *virStorageDriverStatePtr;
 
 struct _virStorageDriverState {
+    PTHREAD_MUTEX_T(lock);
+
     virStoragePoolObjList pools;
 
     char *configDir;
