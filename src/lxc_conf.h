@@ -36,6 +36,8 @@
 
 typedef struct __lxc_driver lxc_driver_t;
 struct __lxc_driver {
+    PTHREAD_MUTEX_T(lock);
+
     virCapsPtr caps;
 
     virDomainObjList domains;
