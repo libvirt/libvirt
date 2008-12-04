@@ -39,6 +39,8 @@
 
 /* Main driver state */
 struct uml_driver {
+    PTHREAD_MUTEX_T(lock);
+
     unsigned int umlVersion;
     int nextvmid;
 
