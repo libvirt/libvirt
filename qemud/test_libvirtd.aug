@@ -227,6 +227,25 @@ sasl_allowed_username_list = [
   \"joe@EXAMPLE.COM\",
   \"fred@EXAMPLE.COM\"
 ]
+
+
+#################################################################
+#
+# Processing controls
+#
+
+# The maximum number of concurrent client connections to allow
+# over all sockets combined.
+max_clients = 20
+
+
+# The minimum limit sets the number of workers to start up
+# initially. If the number of active clients exceeds this,
+# then more threads are spawned, upto max_workers limit.
+# Typically you'd want max_workers to equal maximum number
+# of clients allowed
+min_workers = 5
+max_workers = 20
 "
 
    test Libvirtd.lns get conf =
@@ -461,3 +480,22 @@ sasl_allowed_username_list = [
              { "1" = "joe@EXAMPLE.COM" }
              { "2" = "fred@EXAMPLE.COM" }
         }
+        { "#empty" }
+        { "#empty" }
+        { "#comment" = "################################################################"}
+        { "#comment" = ""}
+        { "#comment" = "Processing controls"}
+        { "#comment" = ""}
+        { "#empty" }
+        { "#comment" = "The maximum number of concurrent client connections to allow"}
+        { "#comment" = "over all sockets combined."}
+        { "max_clients" = "20" }
+        { "#empty" }
+        { "#empty" }
+        { "#comment" = "The minimum limit sets the number of workers to start up"}
+        { "#comment" = "initially. If the number of active clients exceeds this,"}
+        { "#comment" = "then more threads are spawned, upto max_workers limit."}
+        { "#comment" = "Typically you'd want max_workers to equal maximum number"}
+        { "#comment" = "of clients allowed"}
+        { "min_workers" = "5" }
+        { "max_workers" = "20" }

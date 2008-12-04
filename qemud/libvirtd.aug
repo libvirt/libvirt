@@ -13,11 +13,13 @@ module Libvirtd =
 
    let str_val = del /\"/ "\"" . store /[^\"]*/ . del /\"/ "\""
    let bool_val = store /0|1/
+   let int_val = store /[0-9]+/
    let str_array_element = [ seq "el" . str_val ] . del /[ \t\n]*/ ""
    let str_array_val = counter "el" . array_start . ( str_array_element . ( array_sep . str_array_element ) * ) ? . array_end
 
    let str_entry       (kw:string) = [ key kw . value_sep . str_val ]
    let bool_entry      (kw:string) = [ key kw . value_sep . bool_val ]
+   let int_entry      (kw:string) = [ key kw . value_sep . int_val ]
    let str_array_entry (kw:string) = [ key kw . value_sep . str_array_val ]
 
 
@@ -48,6 +50,9 @@ module Libvirtd =
                            | str_array_entry "tls_allowed_dn_list"
                            | str_array_entry "sasl_allowed_username_list"
 
+   let processing_entry = int_entry "min_workers"
+                        | int_entry "max_workers"
+                        | int_entry "max_clients"
 
    (* Each enty in the config is one of the following three ... *)
    let entry = network_entry
@@ -55,6 +60,7 @@ module Libvirtd =
              | authentication_entry
              | certificate_entry
              | authorization_entry
+             | processing_entry
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]
 

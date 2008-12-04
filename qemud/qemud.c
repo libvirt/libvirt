@@ -130,6 +130,10 @@ static char *crl_file = (char *) "";
 static gnutls_certificate_credentials_t x509_cred;
 static gnutls_dh_params_t dh_params;
 
+static int min_workers = 5;
+static int max_workers = 20;
+static int max_clients = 20;
+
 #define DH_BITS 1024
 
 static sig_atomic_t sig_errors = 0;
@@ -1174,6 +1178,12 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
         return -1;
     }
 
+    if (server->nclients >= max_clients) {
+        qemudLog(QEMUD_ERR, "%s", _("Too many active clients, dropping connection"));
+        close(fd);
+        return -1;
+    }
+
     if (VIR_REALLOC_N(server->clients, server->nclients+1) < 0) {
         qemudLog(QEMUD_ERR, "%s", _("Out of memory allocating clients"));
         close(fd);
@@ -1832,7 +1842,7 @@ static int qemudRunLoop(struct qemud_server *server) {
 
     pthread_mutex_lock(&server->lock);
 
-    server->nworkers = 10;
+    server->nworkers = min_workers;
     if (VIR_ALLOC_N(server->workers, server->nworkers) < 0) {
         qemudLog(QEMUD_ERR, "%s", _("Failed to allocate workers"));
         return -1;
@@ -2228,6 +2238,11 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
 
     if (remoteReadSaslAllowedUsernameList (conf, server, filename) < 0)
         goto free_and_fail;
+
+
+    GET_CONF_INT (conf, filename, min_workers);
+    GET_CONF_INT (conf, filename, max_workers);
+    GET_CONF_INT (conf, filename, max_clients);
 
     virConfFree (conf);
     return 0;
