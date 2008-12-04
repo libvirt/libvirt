@@ -79,8 +79,22 @@ typedef union {
 } dispatch_ret;
 
 
+/**
+ * When the RPC handler is called:
+ *
+ *  - Server object is unlocked
+ *  - Client object is unlocked
+ *
+ * Both must be locked before use. Server lock must
+ * be held before attempting to lock client.
+ *
+ * Without any locking, it is safe to use:
+ *
+ *   'conn', 'rerr', 'args and 'ret'
+ */
 typedef int (*dispatch_fn) (struct qemud_server *server,
                             struct qemud_client *client,
+                            virConnectPtr conn,
                             remote_error *err,
                             dispatch_args *args,
                             dispatch_ret *ret);
@@ -202,6 +216,9 @@ remoteDispatchConnError (remote_error *rerr,
 /* This function gets called from qemud when it detects an incoming
  * remote protocol message.  At this point, client->buffer contains
  * the full call message (including length word which we skip).
+ *
+ * Server object is unlocked
+ * Client object is locked
  */
 unsigned int
 remoteDispatchClientRequest (struct qemud_server *server,
@@ -214,6 +231,7 @@ remoteDispatchClientRequest (struct qemud_server *server,
     dispatch_ret ret;
     const dispatch_data *data = NULL;
     int rv = -1, len;
+    virConnectPtr conn = NULL;
 
     memset(&args, 0, sizeof args);
     memset(&ret, 0, sizeof ret);
@@ -283,7 +301,25 @@ remoteDispatchClientRequest (struct qemud_server *server,
     }
 
     /* Call function. */
-    rv = (data->fn)(server, client, &rerr, &args, &ret);
+    conn = client->conn;
+    pthread_mutex_unlock(&client->lock);
+
+    /*
+     * When the RPC handler is called:
+     *
+     *  - Server object is unlocked
+     *  - Client object is unlocked
+     *
+     * Without locking, it is safe to use:
+     *
+     *   'conn', 'rerr', 'args and 'ret'
+     */
+    rv = (data->fn)(server, client, conn, &rerr, &args, &ret);
+
+    pthread_mutex_lock(&server->lock);
+    pthread_mutex_lock(&client->lock);
+    pthread_mutex_unlock(&server->lock);
+
     xdr_free (data->args_filter, (char*)&args);
 
 rpc_error:
@@ -362,19 +398,24 @@ int remoteRelayDomainEvent (virConnectPtr conn ATTRIBUTE_UNUSED,
 /*----- Functions. -----*/
 
 static int
-remoteDispatchOpen (struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchOpen (struct qemud_server *server,
                     struct qemud_client *client,
+                    virConnectPtr conn,
                     remote_error *rerr,
                     struct remote_open_args *args, void *ret ATTRIBUTE_UNUSED)
 {
     const char *name;
-    int flags;
+    int flags, rc;
 
     /* Already opened? */
-    if (client->conn) {
+    if (conn) {
         remoteDispatchFormatError (rerr, "%s", _("connection already open"));
         return -1;
     }
+
+    pthread_mutex_lock(&server->lock);
+    pthread_mutex_lock(&client->lock);
+    pthread_mutex_unlock(&server->lock);
 
     name = args->name ? *args->name : NULL;
 
@@ -389,12 +430,12 @@ remoteDispatchOpen (struct qemud_server *server ATTRIBUTE_UNUSED,
         ? virConnectOpenReadOnly (name)
         : virConnectOpen (name);
 
-    if (client->conn == NULL) {
+    if (client->conn == NULL)
         remoteDispatchConnError(rerr, NULL);
-        return -1;
-    }
 
-    return 0;
+    rc = client->conn ? 0 : -1;
+    pthread_mutex_unlock(&client->lock);
+    return rc;
 }
 
 #define CHECK_CONN(client)                                              \
@@ -405,32 +446,32 @@ remoteDispatchOpen (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchClose (struct qemud_server *server ATTRIBUTE_UNUSED,
-                     struct qemud_client *client,
-                     remote_error *rerr,
+                     struct qemud_client *client ATTRIBUTE_UNUSED,
+                     virConnectPtr conn ATTRIBUTE_UNUSED,
+                     remote_error *rerr ATTRIBUTE_UNUSED,
                      void *args ATTRIBUTE_UNUSED, void *ret ATTRIBUTE_UNUSED)
 {
-    CHECK_CONN(client);
+    pthread_mutex_lock(&server->lock);
+    pthread_mutex_lock(&client->lock);
+    pthread_mutex_unlock(&server->lock);
 
-    if (virConnectClose (client->conn) < 0) {
-        remoteDispatchConnError(rerr, NULL);
-        return -1;
-    }
+    client->closing = 1;
 
+    pthread_mutex_unlock(&client->lock);
     return 0;
 }
 
 static int
 remoteDispatchSupportsFeature (struct qemud_server *server ATTRIBUTE_UNUSED,
-                               struct qemud_client *client,
+                               struct qemud_client *client ATTRIBUTE_UNUSED,
+                               virConnectPtr conn,
                                remote_error *rerr,
                                remote_supports_feature_args *args, remote_supports_feature_ret *ret)
 {
-    CHECK_CONN(client);
-
-    ret->supported = virDrvSupportsFeature (client->conn, args->feature);
+    ret->supported = virDrvSupportsFeature (conn, args->feature);
 
     if (ret->supported == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -439,16 +480,16 @@ remoteDispatchSupportsFeature (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchGetType (struct qemud_server *server ATTRIBUTE_UNUSED,
-                       struct qemud_client *client,
+                       struct qemud_client *client ATTRIBUTE_UNUSED,
+                       virConnectPtr conn,
                        remote_error *rerr,
                        void *args ATTRIBUTE_UNUSED, remote_get_type_ret *ret)
 {
     const char *type;
-    CHECK_CONN(client);
 
-    type = virConnectGetType (client->conn);
+    type = virConnectGetType (conn);
     if (type == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -466,16 +507,16 @@ remoteDispatchGetType (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchGetVersion (struct qemud_server *server ATTRIBUTE_UNUSED,
-                          struct qemud_client *client,
+                          struct qemud_client *client ATTRIBUTE_UNUSED,
+                          virConnectPtr conn,
                           remote_error *rerr,
                           void *args ATTRIBUTE_UNUSED,
                           remote_get_version_ret *ret)
 {
     unsigned long hvVer;
-    CHECK_CONN(client);
 
-    if (virConnectGetVersion (client->conn, &hvVer) == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+    if (virConnectGetVersion (conn, &hvVer) == -1) {
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -485,17 +526,17 @@ remoteDispatchGetVersion (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchGetHostname (struct qemud_server *server ATTRIBUTE_UNUSED,
-                           struct qemud_client *client,
+                           struct qemud_client *client ATTRIBUTE_UNUSED,
+                           virConnectPtr conn,
                            remote_error *rerr,
                            void *args ATTRIBUTE_UNUSED,
                            remote_get_hostname_ret *ret)
 {
     char *hostname;
-    CHECK_CONN(client);
 
-    hostname = virConnectGetHostname (client->conn);
+    hostname = virConnectGetHostname (conn);
     if (hostname == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -505,7 +546,8 @@ remoteDispatchGetHostname (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchGetUri (struct qemud_server *server ATTRIBUTE_UNUSED,
-                      struct qemud_client *client,
+                      struct qemud_client *client ATTRIBUTE_UNUSED,
+                      virConnectPtr conn,
                       remote_error *rerr,
                       void *args ATTRIBUTE_UNUSED,
                       remote_get_uri_ret *ret)
@@ -513,9 +555,9 @@ remoteDispatchGetUri (struct qemud_server *server ATTRIBUTE_UNUSED,
     char *uri;
     CHECK_CONN(client);
 
-    uri = virConnectGetURI (client->conn);
+    uri = virConnectGetURI (conn);
     if (uri == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -525,18 +567,18 @@ remoteDispatchGetUri (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchGetMaxVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
-                           struct qemud_client *client,
+                           struct qemud_client *client ATTRIBUTE_UNUSED,
+                           virConnectPtr conn,
                            remote_error *rerr,
                            remote_get_max_vcpus_args *args,
                            remote_get_max_vcpus_ret *ret)
 {
     char *type;
-    CHECK_CONN(client);
 
     type = args->type ? *args->type : NULL;
-    ret->max_vcpus = virConnectGetMaxVcpus (client->conn, type);
+    ret->max_vcpus = virConnectGetMaxVcpus (conn, type);
     if (ret->max_vcpus == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -545,16 +587,16 @@ remoteDispatchGetMaxVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNodeGetInfo (struct qemud_server *server ATTRIBUTE_UNUSED,
-                           struct qemud_client *client,
+                           struct qemud_client *client ATTRIBUTE_UNUSED,
+                           virConnectPtr conn,
                            remote_error *rerr,
                            void *args ATTRIBUTE_UNUSED,
                            remote_node_get_info_ret *ret)
 {
     virNodeInfo info;
-    CHECK_CONN(client);
 
-    if (virNodeGetInfo (client->conn, &info) == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+    if (virNodeGetInfo (conn, &info) == -1) {
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -572,17 +614,17 @@ remoteDispatchNodeGetInfo (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchGetCapabilities (struct qemud_server *server ATTRIBUTE_UNUSED,
-                               struct qemud_client *client,
+                               struct qemud_client *client ATTRIBUTE_UNUSED,
+                               virConnectPtr conn,
                                remote_error *rerr,
                                void *args ATTRIBUTE_UNUSED,
                                remote_get_capabilities_ret *ret)
 {
     char *caps;
-    CHECK_CONN(client);
 
-    caps = virConnectGetCapabilities (client->conn);
+    caps = virConnectGetCapabilities (conn);
     if (caps == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -592,12 +634,12 @@ remoteDispatchGetCapabilities (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNodeGetCellsFreeMemory (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                      struct qemud_client *client,
+                                      struct qemud_client *client ATTRIBUTE_UNUSED,
+                                      virConnectPtr conn,
                                       remote_error *rerr,
                                       remote_node_get_cells_free_memory_args *args,
                                       remote_node_get_cells_free_memory_ret *ret)
 {
-    CHECK_CONN(client);
 
     if (args->maxCells > REMOTE_NODE_MAX_CELLS) {
         remoteDispatchFormatError (rerr,
@@ -611,13 +653,13 @@ remoteDispatchNodeGetCellsFreeMemory (struct qemud_server *server ATTRIBUTE_UNUS
         return -1;
     }
 
-    ret->freeMems.freeMems_len = virNodeGetCellsFreeMemory(client->conn,
+    ret->freeMems.freeMems_len = virNodeGetCellsFreeMemory(conn,
                                                            (unsigned long long *)ret->freeMems.freeMems_val,
                                                            args->startCell,
                                                            args->maxCells);
     if (ret->freeMems.freeMems_len == 0) {
         VIR_FREE(ret->freeMems.freeMems_val);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -627,17 +669,17 @@ remoteDispatchNodeGetCellsFreeMemory (struct qemud_server *server ATTRIBUTE_UNUS
 
 static int
 remoteDispatchNodeGetFreeMemory (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                 struct qemud_client *client,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
                                  remote_error *rerr,
                                  void *args ATTRIBUTE_UNUSED,
                                  remote_node_get_free_memory_ret *ret)
 {
     unsigned long long freeMem;
-    CHECK_CONN(client);
 
-    freeMem = virNodeGetFreeMemory(client->conn);
+    freeMem = virNodeGetFreeMemory(conn);
     if (freeMem == 0) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     ret->freeMem = freeMem;
@@ -647,7 +689,8 @@ remoteDispatchNodeGetFreeMemory (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainGetSchedulerType (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                      struct qemud_client *client,
+                                      struct qemud_client *client ATTRIBUTE_UNUSED,
+                                      virConnectPtr conn,
                                       remote_error *rerr,
                                       remote_domain_get_scheduler_type_args *args,
                                       remote_domain_get_scheduler_type_ret *ret)
@@ -655,18 +698,17 @@ remoteDispatchDomainGetSchedulerType (struct qemud_server *server ATTRIBUTE_UNUS
     virDomainPtr dom;
     char *type;
     int nparams;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     type = virDomainGetSchedulerType (dom, &nparams);
     if (type == NULL) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -678,7 +720,8 @@ remoteDispatchDomainGetSchedulerType (struct qemud_server *server ATTRIBUTE_UNUS
 
 static int
 remoteDispatchDomainGetSchedulerParameters (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                            struct qemud_client *client,
+                                            struct qemud_client *client ATTRIBUTE_UNUSED,
+                                            virConnectPtr conn,
                                             remote_error *rerr,
                                             remote_domain_get_scheduler_parameters_args *args,
                                             remote_domain_get_scheduler_parameters_ret *ret)
@@ -686,7 +729,6 @@ remoteDispatchDomainGetSchedulerParameters (struct qemud_server *server ATTRIBUT
     virDomainPtr dom;
     virSchedParameterPtr params;
     int i, r, nparams;
-    CHECK_CONN(client);
 
     nparams = args->nparams;
 
@@ -699,10 +741,10 @@ remoteDispatchDomainGetSchedulerParameters (struct qemud_server *server ATTRIBUT
         return -1;
     }
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
         VIR_FREE(params);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -710,7 +752,7 @@ remoteDispatchDomainGetSchedulerParameters (struct qemud_server *server ATTRIBUT
     if (r == -1) {
         virDomainFree(dom);
         VIR_FREE(params);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -761,7 +803,8 @@ cleanup:
 
 static int
 remoteDispatchDomainSetSchedulerParameters (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                            struct qemud_client *client,
+                                            struct qemud_client *client ATTRIBUTE_UNUSED,
+                                            virConnectPtr conn,
                                             remote_error *rerr,
                                             remote_domain_set_scheduler_parameters_args *args,
                                             void *ret ATTRIBUTE_UNUSED)
@@ -769,7 +812,6 @@ remoteDispatchDomainSetSchedulerParameters (struct qemud_server *server ATTRIBUT
     virDomainPtr dom;
     int i, r, nparams;
     virSchedParameterPtr params;
-    CHECK_CONN(client);
 
     nparams = args->params.params_len;
 
@@ -804,10 +846,10 @@ remoteDispatchDomainSetSchedulerParameters (struct qemud_server *server ATTRIBUT
         }
     }
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
         VIR_FREE(params);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -815,7 +857,7 @@ remoteDispatchDomainSetSchedulerParameters (struct qemud_server *server ATTRIBUT
     virDomainFree(dom);
     VIR_FREE(params);
     if (r == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -824,7 +866,8 @@ remoteDispatchDomainSetSchedulerParameters (struct qemud_server *server ATTRIBUT
 
 static int
 remoteDispatchDomainBlockStats (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                struct qemud_client *client,
+                                struct qemud_client *client ATTRIBUTE_UNUSED,
+                                virConnectPtr conn,
                                 remote_error *rerr,
                                 remote_domain_block_stats_args *args,
                                 remote_domain_block_stats_ret *ret)
@@ -832,18 +875,17 @@ remoteDispatchDomainBlockStats (struct qemud_server *server ATTRIBUTE_UNUSED,
     virDomainPtr dom;
     char *path;
     struct _virDomainBlockStats stats;
-    CHECK_CONN (client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     path = args->path;
 
     if (virDomainBlockStats (dom, path, &stats, sizeof stats) == -1) {
         virDomainFree (dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree (dom);
@@ -859,7 +901,8 @@ remoteDispatchDomainBlockStats (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainInterfaceStats (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                    struct qemud_client *client,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
                                     remote_error *rerr,
                                     remote_domain_interface_stats_args *args,
                                     remote_domain_interface_stats_ret *ret)
@@ -867,18 +910,17 @@ remoteDispatchDomainInterfaceStats (struct qemud_server *server ATTRIBUTE_UNUSED
     virDomainPtr dom;
     char *path;
     struct _virDomainInterfaceStats stats;
-    CHECK_CONN (client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     path = args->path;
 
     if (virDomainInterfaceStats (dom, path, &stats, sizeof stats) == -1) {
         virDomainFree (dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree (dom);
@@ -897,7 +939,8 @@ remoteDispatchDomainInterfaceStats (struct qemud_server *server ATTRIBUTE_UNUSED
 
 static int
 remoteDispatchDomainBlockPeek (struct qemud_server *server ATTRIBUTE_UNUSED,
-                               struct qemud_client *client,
+                               struct qemud_client *client ATTRIBUTE_UNUSED,
+                               virConnectPtr conn,
                                remote_error *rerr,
                                remote_domain_block_peek_args *args,
                                remote_domain_block_peek_ret *ret)
@@ -907,11 +950,10 @@ remoteDispatchDomainBlockPeek (struct qemud_server *server ATTRIBUTE_UNUSED,
     unsigned long long offset;
     size_t size;
     unsigned int flags;
-    CHECK_CONN (client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     path = args->path;
@@ -937,7 +979,7 @@ remoteDispatchDomainBlockPeek (struct qemud_server *server ATTRIBUTE_UNUSED,
                             ret->buffer.buffer_val, flags) == -1) {
         /* free (ret->buffer.buffer_val); - caller frees */
         virDomainFree (dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree (dom);
@@ -947,7 +989,8 @@ remoteDispatchDomainBlockPeek (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainMemoryPeek (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                struct qemud_client *client,
+                                struct qemud_client *client ATTRIBUTE_UNUSED,
+                                virConnectPtr conn,
                                 remote_error *rerr,
                                 remote_domain_memory_peek_args *args,
                                 remote_domain_memory_peek_ret *ret)
@@ -956,11 +999,10 @@ remoteDispatchDomainMemoryPeek (struct qemud_server *server ATTRIBUTE_UNUSED,
     unsigned long long offset;
     size_t size;
     unsigned int flags;
-    CHECK_CONN (client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     offset = args->offset;
@@ -985,7 +1027,7 @@ remoteDispatchDomainMemoryPeek (struct qemud_server *server ATTRIBUTE_UNUSED,
                              ret->buffer.buffer_val, flags) == -1) {
         /* free (ret->buffer.buffer_val); - caller frees */
         virDomainFree (dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree (dom);
@@ -995,23 +1037,23 @@ remoteDispatchDomainMemoryPeek (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainAttachDevice (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                  struct qemud_client *client,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
                                   remote_error *rerr,
                                   remote_domain_attach_device_args *args,
                                   void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainAttachDevice (dom, args->xml) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1020,23 +1062,23 @@ remoteDispatchDomainAttachDevice (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainCreate (struct qemud_server *server ATTRIBUTE_UNUSED,
-                            struct qemud_client *client,
+                            struct qemud_client *client ATTRIBUTE_UNUSED,
+                            virConnectPtr conn,
                             remote_error *rerr,
                             remote_domain_create_args *args,
                             void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainCreate (dom) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1045,17 +1087,17 @@ remoteDispatchDomainCreate (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainCreateXml (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                 struct qemud_client *client,
-                                 remote_error *rerr,
-                                 remote_domain_create_xml_args *args,
-                                 remote_domain_create_xml_ret *ret)
+                               struct qemud_client *client ATTRIBUTE_UNUSED,
+                               virConnectPtr conn,
+                               remote_error *rerr,
+                               remote_domain_create_xml_args *args,
+                               remote_domain_create_xml_ret *ret)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = virDomainCreateXML (client->conn, args->xml_desc, args->flags);
+    dom = virDomainCreateXML (conn, args->xml_desc, args->flags);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1067,17 +1109,17 @@ remoteDispatchDomainCreateXml (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainDefineXml (struct qemud_server *server ATTRIBUTE_UNUSED,
-                               struct qemud_client *client,
+                               struct qemud_client *client ATTRIBUTE_UNUSED,
+                               virConnectPtr conn,
                                remote_error *rerr,
                                remote_domain_define_xml_args *args,
                                remote_domain_define_xml_ret *ret)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = virDomainDefineXML (client->conn, args->xml);
+    dom = virDomainDefineXML (conn, args->xml);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1089,23 +1131,23 @@ remoteDispatchDomainDefineXml (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainDestroy (struct qemud_server *server ATTRIBUTE_UNUSED,
-                             struct qemud_client *client,
+                             struct qemud_client *client ATTRIBUTE_UNUSED,
+                             virConnectPtr conn,
                              remote_error *rerr,
                              remote_domain_destroy_args *args,
                              void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainDestroy (dom) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1114,23 +1156,23 @@ remoteDispatchDomainDestroy (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainDetachDevice (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                  struct qemud_client *client,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
                                   remote_error *rerr,
                                   remote_domain_detach_device_args *args,
                                   void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainDetachDevice (dom, args->xml) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1140,17 +1182,17 @@ remoteDispatchDomainDetachDevice (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
-                             struct qemud_client *client,
+                             struct qemud_client *client ATTRIBUTE_UNUSED,
+                             virConnectPtr conn,
                              remote_error *rerr,
                              remote_domain_dump_xml_args *args,
                              remote_domain_dump_xml_ret *ret)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1158,7 +1200,7 @@ remoteDispatchDomainDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
     ret->xml = virDomainGetXMLDesc (dom, args->flags);
     if (!ret->xml) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1167,23 +1209,23 @@ remoteDispatchDomainDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainGetAutostart (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                  struct qemud_client *client,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
                                   remote_error *rerr,
                                   remote_domain_get_autostart_args *args,
                                   remote_domain_get_autostart_ret *ret)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainGetAutostart (dom, &ret->autostart) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1192,24 +1234,24 @@ remoteDispatchDomainGetAutostart (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainGetInfo (struct qemud_server *server ATTRIBUTE_UNUSED,
-                             struct qemud_client *client,
+                             struct qemud_client *client ATTRIBUTE_UNUSED,
+                             virConnectPtr conn,
                              remote_error *rerr,
                              remote_domain_get_info_args *args,
                              remote_domain_get_info_ret *ret)
 {
     virDomainPtr dom;
     virDomainInfo info;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainGetInfo (dom, &info) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1226,24 +1268,24 @@ remoteDispatchDomainGetInfo (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainGetMaxMemory (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                  struct qemud_client *client,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
                                   remote_error *rerr,
                                   remote_domain_get_max_memory_args *args,
                                   remote_domain_get_max_memory_ret *ret)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     ret->memory = virDomainGetMaxMemory (dom);
     if (ret->memory == 0) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1252,24 +1294,24 @@ remoteDispatchDomainGetMaxMemory (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainGetMaxVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                 struct qemud_client *client,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
                                  remote_error *rerr,
                                  remote_domain_get_max_vcpus_args *args,
                                  remote_domain_get_max_vcpus_ret *ret)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     ret->num = virDomainGetMaxVcpus (dom);
     if (ret->num == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1278,17 +1320,17 @@ remoteDispatchDomainGetMaxVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainGetOsType (struct qemud_server *server ATTRIBUTE_UNUSED,
-                               struct qemud_client *client,
+                               struct qemud_client *client ATTRIBUTE_UNUSED,
+                               virConnectPtr conn,
                                remote_error *rerr,
                                remote_domain_get_os_type_args *args,
                                remote_domain_get_os_type_ret *ret)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1296,7 +1338,7 @@ remoteDispatchDomainGetOsType (struct qemud_server *server ATTRIBUTE_UNUSED,
     ret->type = virDomainGetOSType (dom);
     if (ret->type == NULL) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1305,7 +1347,8 @@ remoteDispatchDomainGetOsType (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainGetVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
-                              struct qemud_client *client,
+                              struct qemud_client *client ATTRIBUTE_UNUSED,
+                              virConnectPtr conn,
                               remote_error *rerr,
                               remote_domain_get_vcpus_args *args,
                               remote_domain_get_vcpus_ret *ret)
@@ -1314,11 +1357,10 @@ remoteDispatchDomainGetVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
     virVcpuInfoPtr info = NULL;
     unsigned char *cpumaps = NULL;
     int info_len, i;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1347,7 +1389,7 @@ remoteDispatchDomainGetVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
         VIR_FREE(info);
         VIR_FREE(cpumaps);
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1384,7 +1426,8 @@ oom:
 
 static int
 remoteDispatchDomainMigratePrepare (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                    struct qemud_client *client,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
                                     remote_error *rerr,
                                     remote_domain_migrate_prepare_args *args,
                                     remote_domain_migrate_prepare_ret *ret)
@@ -1395,7 +1438,6 @@ remoteDispatchDomainMigratePrepare (struct qemud_server *server ATTRIBUTE_UNUSED
     char *uri_in;
     char **uri_out;
     char *dname;
-    CHECK_CONN (client);
 
     uri_in = args->uri_in == NULL ? NULL : *args->uri_in;
     dname = args->dname == NULL ? NULL : *args->dname;
@@ -1406,12 +1448,12 @@ remoteDispatchDomainMigratePrepare (struct qemud_server *server ATTRIBUTE_UNUSED
         return -1;
     }
 
-    r = virDomainMigratePrepare (client->conn, &cookie, &cookielen,
+    r = virDomainMigratePrepare (conn, &cookie, &cookielen,
                                  uri_in, uri_out,
                                  args->flags, dname, args->resource);
     if (r == -1) {
         VIR_FREE(uri_out);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1432,7 +1474,8 @@ remoteDispatchDomainMigratePrepare (struct qemud_server *server ATTRIBUTE_UNUSED
 
 static int
 remoteDispatchDomainMigratePerform (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                    struct qemud_client *client,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
                                     remote_error *rerr,
                                     remote_domain_migrate_perform_args *args,
                                     void *ret ATTRIBUTE_UNUSED)
@@ -1440,11 +1483,10 @@ remoteDispatchDomainMigratePerform (struct qemud_server *server ATTRIBUTE_UNUSED
     int r;
     virDomainPtr dom;
     char *dname;
-    CHECK_CONN (client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1457,7 +1499,7 @@ remoteDispatchDomainMigratePerform (struct qemud_server *server ATTRIBUTE_UNUSED
                                  args->flags, dname, args->resource);
     virDomainFree (dom);
     if (r == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1466,7 +1508,8 @@ remoteDispatchDomainMigratePerform (struct qemud_server *server ATTRIBUTE_UNUSED
 
 static int
 remoteDispatchDomainMigrateFinish (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                   struct qemud_client *client,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
                                    remote_error *rerr,
                                    remote_domain_migrate_finish_args *args,
                                    remote_domain_migrate_finish_ret *ret)
@@ -1474,13 +1517,13 @@ remoteDispatchDomainMigrateFinish (struct qemud_server *server ATTRIBUTE_UNUSED,
     virDomainPtr ddom;
     CHECK_CONN (client);
 
-    ddom = virDomainMigrateFinish (client->conn, args->dname,
+    ddom = virDomainMigrateFinish (conn, args->dname,
                                    args->cookie.cookie_val,
                                    args->cookie.cookie_len,
                                    args->uri,
                                    args->flags);
     if (ddom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1491,7 +1534,8 @@ remoteDispatchDomainMigrateFinish (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainMigratePrepare2 (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                     struct qemud_client *client,
+                                     struct qemud_client *client ATTRIBUTE_UNUSED,
+                                     virConnectPtr conn,
                                      remote_error *rerr,
                                      remote_domain_migrate_prepare2_args *args,
                                      remote_domain_migrate_prepare2_ret *ret)
@@ -1513,12 +1557,12 @@ remoteDispatchDomainMigratePrepare2 (struct qemud_server *server ATTRIBUTE_UNUSE
         return -1;
     }
 
-    r = virDomainMigratePrepare2 (client->conn, &cookie, &cookielen,
+    r = virDomainMigratePrepare2 (conn, &cookie, &cookielen,
                                   uri_in, uri_out,
                                   args->flags, dname, args->resource,
                                   args->dom_xml);
     if (r == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1534,7 +1578,8 @@ remoteDispatchDomainMigratePrepare2 (struct qemud_server *server ATTRIBUTE_UNUSE
 
 static int
 remoteDispatchDomainMigrateFinish2 (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                    struct qemud_client *client,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
                                     remote_error *rerr,
                                     remote_domain_migrate_finish2_args *args,
                                     remote_domain_migrate_finish2_ret *ret)
@@ -1542,14 +1587,14 @@ remoteDispatchDomainMigrateFinish2 (struct qemud_server *server ATTRIBUTE_UNUSED
     virDomainPtr ddom;
     CHECK_CONN (client);
 
-    ddom = virDomainMigrateFinish2 (client->conn, args->dname,
+    ddom = virDomainMigrateFinish2 (conn, args->dname,
                                     args->cookie.cookie_val,
                                     args->cookie.cookie_len,
                                     args->uri,
                                     args->flags,
                                     args->retcode);
     if (ddom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1560,12 +1605,12 @@ remoteDispatchDomainMigrateFinish2 (struct qemud_server *server ATTRIBUTE_UNUSED
 
 static int
 remoteDispatchListDefinedDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                  struct qemud_client *client,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
                                   remote_error *rerr,
                                   remote_list_defined_domains_args *args,
                                   remote_list_defined_domains_ret *ret)
 {
-    CHECK_CONN(client);
 
     if (args->maxnames > REMOTE_DOMAIN_NAME_LIST_MAX) {
         remoteDispatchFormatError (rerr,
@@ -1580,11 +1625,11 @@ remoteDispatchListDefinedDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     ret->names.names_len =
-        virConnectListDefinedDomains (client->conn,
+        virConnectListDefinedDomains (conn,
                                       ret->names.names_val, args->maxnames);
     if (ret->names.names_len == -1) {
         VIR_FREE(ret->names.names_val);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1593,17 +1638,17 @@ remoteDispatchListDefinedDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainLookupById (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                struct qemud_client *client,
+                                struct qemud_client *client ATTRIBUTE_UNUSED,
+                                virConnectPtr conn,
                                 remote_error *rerr,
                                 remote_domain_lookup_by_id_args *args,
                                 remote_domain_lookup_by_id_ret *ret)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = virDomainLookupByID (client->conn, args->id);
+    dom = virDomainLookupByID (conn, args->id);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1614,17 +1659,17 @@ remoteDispatchDomainLookupById (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainLookupByName (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                  struct qemud_client *client,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
                                   remote_error *rerr,
                                   remote_domain_lookup_by_name_args *args,
                                   remote_domain_lookup_by_name_ret *ret)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = virDomainLookupByName (client->conn, args->name);
+    dom = virDomainLookupByName (conn, args->name);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1635,17 +1680,17 @@ remoteDispatchDomainLookupByName (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainLookupByUuid (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                  struct qemud_client *client,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
                                   remote_error *rerr,
                                   remote_domain_lookup_by_uuid_args *args,
                                   remote_domain_lookup_by_uuid_ret *ret)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = virDomainLookupByUUID (client->conn, (unsigned char *) args->uuid);
+    dom = virDomainLookupByUUID (conn, (unsigned char *) args->uuid);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1656,16 +1701,16 @@ remoteDispatchDomainLookupByUuid (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNumOfDefinedDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                   struct qemud_client *client,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
                                    remote_error *rerr,
                                    void *args ATTRIBUTE_UNUSED,
                                    remote_num_of_defined_domains_ret *ret)
 {
-    CHECK_CONN(client);
 
-    ret->num = virConnectNumOfDefinedDomains (client->conn);
+    ret->num = virConnectNumOfDefinedDomains (conn);
     if (ret->num == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1674,18 +1719,18 @@ remoteDispatchNumOfDefinedDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainPinVcpu (struct qemud_server *server ATTRIBUTE_UNUSED,
-                             struct qemud_client *client,
+                             struct qemud_client *client ATTRIBUTE_UNUSED,
+                             virConnectPtr conn,
                              remote_error *rerr,
                              remote_domain_pin_vcpu_args *args,
                              void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
     int rv;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1700,7 +1745,7 @@ remoteDispatchDomainPinVcpu (struct qemud_server *server ATTRIBUTE_UNUSED,
                            args->cpumap.cpumap_len);
     if (rv == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1709,23 +1754,23 @@ remoteDispatchDomainPinVcpu (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainReboot (struct qemud_server *server ATTRIBUTE_UNUSED,
-                            struct qemud_client *client,
+                            struct qemud_client *client ATTRIBUTE_UNUSED,
+                            virConnectPtr conn,
                             remote_error *rerr,
                             remote_domain_reboot_args *args,
                             void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainReboot (dom, args->flags) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1734,15 +1779,15 @@ remoteDispatchDomainReboot (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainRestore (struct qemud_server *server ATTRIBUTE_UNUSED,
-                             struct qemud_client *client,
+                             struct qemud_client *client ATTRIBUTE_UNUSED,
+                             virConnectPtr conn,
                              remote_error *rerr,
                              remote_domain_restore_args *args,
                              void *ret ATTRIBUTE_UNUSED)
 {
-    CHECK_CONN(client);
 
-    if (virDomainRestore (client->conn, args->from) == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+    if (virDomainRestore (conn, args->from) == -1) {
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1751,23 +1796,23 @@ remoteDispatchDomainRestore (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainResume (struct qemud_server *server ATTRIBUTE_UNUSED,
-                            struct qemud_client *client,
+                            struct qemud_client *client ATTRIBUTE_UNUSED,
+                            virConnectPtr conn,
                             remote_error *rerr,
                             remote_domain_resume_args *args,
                             void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainResume (dom) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1776,23 +1821,23 @@ remoteDispatchDomainResume (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainSave (struct qemud_server *server ATTRIBUTE_UNUSED,
-                          struct qemud_client *client,
+                          struct qemud_client *client ATTRIBUTE_UNUSED,
+                          virConnectPtr conn,
                           remote_error *rerr,
                           remote_domain_save_args *args,
                           void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainSave (dom, args->to) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1801,23 +1846,23 @@ remoteDispatchDomainSave (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainCoreDump (struct qemud_server *server ATTRIBUTE_UNUSED,
-                              struct qemud_client *client,
+                              struct qemud_client *client ATTRIBUTE_UNUSED,
+                              virConnectPtr conn,
                               remote_error *rerr,
                               remote_domain_core_dump_args *args,
                               void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainCoreDump (dom, args->to, args->flags) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1826,23 +1871,23 @@ remoteDispatchDomainCoreDump (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainSetAutostart (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                  struct qemud_client *client,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
                                   remote_error *rerr,
                                   remote_domain_set_autostart_args *args,
                                   void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainSetAutostart (dom, args->autostart) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1851,23 +1896,23 @@ remoteDispatchDomainSetAutostart (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainSetMaxMemory (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                  struct qemud_client *client,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
                                   remote_error *rerr,
                                   remote_domain_set_max_memory_args *args,
                                   void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainSetMaxMemory (dom, args->memory) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1876,23 +1921,23 @@ remoteDispatchDomainSetMaxMemory (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainSetMemory (struct qemud_server *server ATTRIBUTE_UNUSED,
-                               struct qemud_client *client,
+                               struct qemud_client *client ATTRIBUTE_UNUSED,
+                               virConnectPtr conn,
                                remote_error *rerr,
                                remote_domain_set_memory_args *args,
                                void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainSetMemory (dom, args->memory) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1901,23 +1946,23 @@ remoteDispatchDomainSetMemory (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainSetVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
-                              struct qemud_client *client,
+                              struct qemud_client *client ATTRIBUTE_UNUSED,
+                              virConnectPtr conn,
                               remote_error *rerr,
                               remote_domain_set_vcpus_args *args,
                               void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainSetVcpus (dom, args->nvcpus) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1926,23 +1971,23 @@ remoteDispatchDomainSetVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainShutdown (struct qemud_server *server ATTRIBUTE_UNUSED,
-                              struct qemud_client *client,
+                              struct qemud_client *client ATTRIBUTE_UNUSED,
+                              virConnectPtr conn,
                               remote_error *rerr,
                               remote_domain_shutdown_args *args,
                               void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainShutdown (dom) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1951,23 +1996,23 @@ remoteDispatchDomainShutdown (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainSuspend (struct qemud_server *server ATTRIBUTE_UNUSED,
-                             struct qemud_client *client,
+                             struct qemud_client *client ATTRIBUTE_UNUSED,
+                             virConnectPtr conn,
                              remote_error *rerr,
                              remote_domain_suspend_args *args,
                              void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainSuspend (dom) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -1976,23 +2021,23 @@ remoteDispatchDomainSuspend (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchDomainUndefine (struct qemud_server *server ATTRIBUTE_UNUSED,
-                              struct qemud_client *client,
+                              struct qemud_client *client ATTRIBUTE_UNUSED,
+                              virConnectPtr conn,
                               remote_error *rerr,
                               remote_domain_undefine_args *args,
                               void *ret ATTRIBUTE_UNUSED)
 {
     virDomainPtr dom;
-    CHECK_CONN(client);
 
-    dom = get_nonnull_domain (client->conn, args->dom);
+    dom = get_nonnull_domain (conn, args->dom);
     if (dom == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virDomainUndefine (dom) == -1) {
         virDomainFree(dom);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virDomainFree(dom);
@@ -2001,12 +2046,12 @@ remoteDispatchDomainUndefine (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchListDefinedNetworks (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                   struct qemud_client *client,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
                                    remote_error *rerr,
                                    remote_list_defined_networks_args *args,
                                    remote_list_defined_networks_ret *ret)
 {
-    CHECK_CONN(client);
 
     if (args->maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
         remoteDispatchFormatError (rerr,
@@ -2021,11 +2066,11 @@ remoteDispatchListDefinedNetworks (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     ret->names.names_len =
-        virConnectListDefinedNetworks (client->conn,
+        virConnectListDefinedNetworks (conn,
                                        ret->names.names_val, args->maxnames);
     if (ret->names.names_len == -1) {
         VIR_FREE(ret->names.names_val);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -2034,12 +2079,12 @@ remoteDispatchListDefinedNetworks (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchListDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
-                           struct qemud_client *client,
+                           struct qemud_client *client ATTRIBUTE_UNUSED,
+                           virConnectPtr conn,
                            remote_error *rerr,
                            remote_list_domains_args *args,
                            remote_list_domains_ret *ret)
 {
-    CHECK_CONN(client);
 
     if (args->maxids > REMOTE_DOMAIN_ID_LIST_MAX) {
         remoteDispatchFormatError (rerr,
@@ -2053,11 +2098,11 @@ remoteDispatchListDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    ret->ids.ids_len = virConnectListDomains (client->conn,
+    ret->ids.ids_len = virConnectListDomains (conn,
                                               ret->ids.ids_val, args->maxids);
     if (ret->ids.ids_len == -1) {
         VIR_FREE(ret->ids.ids_val);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -2066,12 +2111,12 @@ remoteDispatchListDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchListNetworks (struct qemud_server *server ATTRIBUTE_UNUSED,
-                            struct qemud_client *client,
+                            struct qemud_client *client ATTRIBUTE_UNUSED,
+                            virConnectPtr conn,
                             remote_error *rerr,
                             remote_list_networks_args *args,
                             remote_list_networks_ret *ret)
 {
-    CHECK_CONN(client);
 
     if (args->maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
         remoteDispatchFormatError (rerr,
@@ -2086,11 +2131,11 @@ remoteDispatchListNetworks (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     ret->names.names_len =
-        virConnectListNetworks (client->conn,
+        virConnectListNetworks (conn,
                                 ret->names.names_val, args->maxnames);
     if (ret->names.names_len == -1) {
         VIR_FREE(ret->names.names_len);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -2099,23 +2144,23 @@ remoteDispatchListNetworks (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNetworkCreate (struct qemud_server *server ATTRIBUTE_UNUSED,
-                             struct qemud_client *client,
+                             struct qemud_client *client ATTRIBUTE_UNUSED,
+                             virConnectPtr conn,
                              remote_error *rerr,
                              remote_network_create_args *args,
                              void *ret ATTRIBUTE_UNUSED)
 {
     virNetworkPtr net;
-    CHECK_CONN(client);
 
-    net = get_nonnull_network (client->conn, args->net);
+    net = get_nonnull_network (conn, args->net);
     if (net == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virNetworkCreate (net) == -1) {
         virNetworkFree(net);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virNetworkFree(net);
@@ -2124,17 +2169,17 @@ remoteDispatchNetworkCreate (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNetworkCreateXml (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                struct qemud_client *client,
+                                struct qemud_client *client ATTRIBUTE_UNUSED,
+                                virConnectPtr conn,
                                 remote_error *rerr,
                                 remote_network_create_xml_args *args,
                                 remote_network_create_xml_ret *ret)
 {
     virNetworkPtr net;
-    CHECK_CONN(client);
 
-    net = virNetworkCreateXML (client->conn, args->xml);
+    net = virNetworkCreateXML (conn, args->xml);
     if (net == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -2145,17 +2190,17 @@ remoteDispatchNetworkCreateXml (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNetworkDefineXml (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                struct qemud_client *client,
+                                struct qemud_client *client ATTRIBUTE_UNUSED,
+                                virConnectPtr conn,
                                 remote_error *rerr,
                                 remote_network_define_xml_args *args,
                                 remote_network_define_xml_ret *ret)
 {
     virNetworkPtr net;
-    CHECK_CONN(client);
 
-    net = virNetworkDefineXML (client->conn, args->xml);
+    net = virNetworkDefineXML (conn, args->xml);
     if (net == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -2166,23 +2211,23 @@ remoteDispatchNetworkDefineXml (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNetworkDestroy (struct qemud_server *server ATTRIBUTE_UNUSED,
-                              struct qemud_client *client,
+                              struct qemud_client *client ATTRIBUTE_UNUSED,
+                              virConnectPtr conn,
                               remote_error *rerr,
                               remote_network_destroy_args *args,
                               void *ret ATTRIBUTE_UNUSED)
 {
     virNetworkPtr net;
-    CHECK_CONN(client);
 
-    net = get_nonnull_network (client->conn, args->net);
+    net = get_nonnull_network (conn, args->net);
     if (net == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virNetworkDestroy (net) == -1) {
         virNetworkFree(net);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virNetworkFree(net);
@@ -2191,17 +2236,17 @@ remoteDispatchNetworkDestroy (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNetworkDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
-                              struct qemud_client *client,
+                              struct qemud_client *client ATTRIBUTE_UNUSED,
+                              virConnectPtr conn,
                               remote_error *rerr,
                               remote_network_dump_xml_args *args,
                               remote_network_dump_xml_ret *ret)
 {
     virNetworkPtr net;
-    CHECK_CONN(client);
 
-    net = get_nonnull_network (client->conn, args->net);
+    net = get_nonnull_network (conn, args->net);
     if (net == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -2209,7 +2254,7 @@ remoteDispatchNetworkDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
     ret->xml = virNetworkGetXMLDesc (net, args->flags);
     if (!ret->xml) {
         virNetworkFree(net);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virNetworkFree(net);
@@ -2218,23 +2263,23 @@ remoteDispatchNetworkDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNetworkGetAutostart (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                   struct qemud_client *client,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
                                    remote_error *rerr,
                                    remote_network_get_autostart_args *args,
                                    remote_network_get_autostart_ret *ret)
 {
     virNetworkPtr net;
-    CHECK_CONN(client);
 
-    net = get_nonnull_network (client->conn, args->net);
+    net = get_nonnull_network (conn, args->net);
     if (net == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virNetworkGetAutostart (net, &ret->autostart) == -1) {
         virNetworkFree(net);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virNetworkFree(net);
@@ -2243,17 +2288,17 @@ remoteDispatchNetworkGetAutostart (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNetworkGetBridgeName (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                    struct qemud_client *client,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
                                     remote_error *rerr,
                                     remote_network_get_bridge_name_args *args,
                                     remote_network_get_bridge_name_ret *ret)
 {
     virNetworkPtr net;
-    CHECK_CONN(client);
 
-    net = get_nonnull_network (client->conn, args->net);
+    net = get_nonnull_network (conn, args->net);
     if (net == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -2261,7 +2306,7 @@ remoteDispatchNetworkGetBridgeName (struct qemud_server *server ATTRIBUTE_UNUSED
     ret->name = virNetworkGetBridgeName (net);
     if (!ret->name) {
         virNetworkFree(net);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virNetworkFree(net);
@@ -2270,17 +2315,17 @@ remoteDispatchNetworkGetBridgeName (struct qemud_server *server ATTRIBUTE_UNUSED
 
 static int
 remoteDispatchNetworkLookupByName (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                   struct qemud_client *client,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
                                    remote_error *rerr,
                                    remote_network_lookup_by_name_args *args,
                                    remote_network_lookup_by_name_ret *ret)
 {
     virNetworkPtr net;
-    CHECK_CONN(client);
 
-    net = virNetworkLookupByName (client->conn, args->name);
+    net = virNetworkLookupByName (conn, args->name);
     if (net == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -2291,17 +2336,17 @@ remoteDispatchNetworkLookupByName (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNetworkLookupByUuid (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                   struct qemud_client *client,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
                                    remote_error *rerr,
                                    remote_network_lookup_by_uuid_args *args,
                                    remote_network_lookup_by_uuid_ret *ret)
 {
     virNetworkPtr net;
-    CHECK_CONN(client);
 
-    net = virNetworkLookupByUUID (client->conn, (unsigned char *) args->uuid);
+    net = virNetworkLookupByUUID (conn, (unsigned char *) args->uuid);
     if (net == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -2312,23 +2357,23 @@ remoteDispatchNetworkLookupByUuid (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNetworkSetAutostart (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                   struct qemud_client *client,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
                                    remote_error *rerr,
                                    remote_network_set_autostart_args *args,
                                    void *ret ATTRIBUTE_UNUSED)
 {
     virNetworkPtr net;
-    CHECK_CONN(client);
 
-    net = get_nonnull_network (client->conn, args->net);
+    net = get_nonnull_network (conn, args->net);
     if (net == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virNetworkSetAutostart (net, args->autostart) == -1) {
         virNetworkFree(net);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virNetworkFree(net);
@@ -2337,23 +2382,23 @@ remoteDispatchNetworkSetAutostart (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNetworkUndefine (struct qemud_server *server ATTRIBUTE_UNUSED,
-                               struct qemud_client *client,
+                               struct qemud_client *client ATTRIBUTE_UNUSED,
+                               virConnectPtr conn,
                                remote_error *rerr,
                                remote_network_undefine_args *args,
                                void *ret ATTRIBUTE_UNUSED)
 {
     virNetworkPtr net;
-    CHECK_CONN(client);
 
-    net = get_nonnull_network (client->conn, args->net);
+    net = get_nonnull_network (conn, args->net);
     if (net == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virNetworkUndefine (net) == -1) {
         virNetworkFree(net);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virNetworkFree(net);
@@ -2362,16 +2407,16 @@ remoteDispatchNetworkUndefine (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNumOfDefinedNetworks (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                    struct qemud_client *client,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
                                     remote_error *rerr,
                                     void *args ATTRIBUTE_UNUSED,
                                     remote_num_of_defined_networks_ret *ret)
 {
-    CHECK_CONN(client);
 
-    ret->num = virConnectNumOfDefinedNetworks (client->conn);
+    ret->num = virConnectNumOfDefinedNetworks (conn);
     if (ret->num == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -2380,16 +2425,16 @@ remoteDispatchNumOfDefinedNetworks (struct qemud_server *server ATTRIBUTE_UNUSED
 
 static int
 remoteDispatchNumOfDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
-                            struct qemud_client *client,
+                            struct qemud_client *client ATTRIBUTE_UNUSED,
+                            virConnectPtr conn,
                             remote_error *rerr,
                             void *args ATTRIBUTE_UNUSED,
                             remote_num_of_domains_ret *ret)
 {
-    CHECK_CONN(client);
 
-    ret->num = virConnectNumOfDomains (client->conn);
+    ret->num = virConnectNumOfDomains (conn);
     if (ret->num == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -2398,16 +2443,16 @@ remoteDispatchNumOfDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNumOfNetworks (struct qemud_server *server ATTRIBUTE_UNUSED,
-                             struct qemud_client *client,
+                             struct qemud_client *client ATTRIBUTE_UNUSED,
+                             virConnectPtr conn,
                              remote_error *rerr,
                              void *args ATTRIBUTE_UNUSED,
                              remote_num_of_networks_ret *ret)
 {
-    CHECK_CONN(client);
 
-    ret->num = virConnectNumOfNetworks (client->conn);
+    ret->num = virConnectNumOfNetworks (conn);
     if (ret->num == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -2416,8 +2461,9 @@ remoteDispatchNumOfNetworks (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 
 static int
-remoteDispatchAuthList (struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchAuthList (struct qemud_server *server,
                         struct qemud_client *client,
+                        virConnectPtr conn ATTRIBUTE_UNUSED,
                         remote_error *rerr,
                         void *args ATTRIBUTE_UNUSED,
                         remote_auth_list_ret *ret)
@@ -2427,7 +2473,12 @@ remoteDispatchAuthList (struct qemud_server *server ATTRIBUTE_UNUSED,
         remoteDispatchOOMError(rerr);
         return -1;
     }
+    pthread_mutex_lock(&server->lock);
+    pthread_mutex_lock(&client->lock);
+    pthread_mutex_unlock(&server->lock);
     ret->types.types_val[0] = client->auth;
+    pthread_mutex_unlock(&client->lock);
+
     return 0;
 }
 
@@ -2471,8 +2522,9 @@ static char *addrToString(remote_error *rerr,
  * XXX callbacks for stuff like password verification ?
  */
 static int
-remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchAuthSaslInit (struct qemud_server *server,
                             struct qemud_client *client,
+                            virConnectPtr conn ATTRIBUTE_UNUSED,
                             remote_error *rerr,
                             void *args ATTRIBUTE_UNUSED,
                             remote_auth_sasl_init_ret *ret)
@@ -2484,12 +2536,15 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
     socklen_t salen;
     char *localAddr, *remoteAddr;
 
+    pthread_mutex_lock(&server->lock);
+    pthread_mutex_lock(&client->lock);
+    pthread_mutex_unlock(&server->lock);
+
     REMOTE_DEBUG("Initialize SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
         client->saslconn != NULL) {
         qemudLog(QEMUD_ERR, "%s", _("client tried invalid SASL init request"));
-        remoteDispatchAuthError(rerr);
-        return -1;
+        goto authfail;
     }
 
     /* Get local address in form  IPADDR:PORT */
@@ -2498,10 +2553,10 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
         remoteDispatchFormatError(rerr,
                                   _("failed to get sock address %d (%s)"),
                                   errno, strerror(errno));
-        return -1;
+        goto error;
     }
     if ((localAddr = addrToString(rerr, &sa, salen)) == NULL) {
-        return -1;
+        goto error;
     }
 
     /* Get remote address in form  IPADDR:PORT */
@@ -2510,11 +2565,11 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
         remoteDispatchFormatError(rerr, _("failed to get peer address %d (%s)"),
                                   errno, strerror(errno));
         VIR_FREE(localAddr);
-        return -1;
+        goto error;
     }
     if ((remoteAddr = addrToString(rerr, &sa, salen)) == NULL) {
         VIR_FREE(localAddr);
-        return -1;
+        goto error;
     }
 
     err = sasl_server_new("libvirt",
@@ -2530,9 +2585,8 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
     if (err != SASL_OK) {
         qemudLog(QEMUD_ERR, _("sasl context setup failed %d (%s)"),
                  err, sasl_errstring(err, NULL, NULL));
-        remoteDispatchAuthError(rerr);
         client->saslconn = NULL;
-        return -1;
+        goto authfail;
     }
 
     /* Inform SASL that we've got an external SSF layer from TLS */
@@ -2543,10 +2597,9 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
         cipher = gnutls_cipher_get(client->tlssession);
         if (!(ssf = (sasl_ssf_t)gnutls_cipher_get_key_size(cipher))) {
             qemudLog(QEMUD_ERR, "%s", _("cannot TLS get cipher size"));
-            remoteDispatchAuthError(rerr);
             sasl_dispose(&client->saslconn);
             client->saslconn = NULL;
-            return -1;
+            goto authfail;
         }
         ssf *= 8; /* tls key size is bytes, sasl wants bits */
 
@@ -2554,10 +2607,9 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
         if (err != SASL_OK) {
             qemudLog(QEMUD_ERR, _("cannot set SASL external SSF %d (%s)"),
                      err, sasl_errstring(err, NULL, NULL));
-            remoteDispatchAuthError(rerr);
             sasl_dispose(&client->saslconn);
             client->saslconn = NULL;
-            return -1;
+            goto authfail;
         }
     }
 
@@ -2583,10 +2635,9 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
     if (err != SASL_OK) {
         qemudLog(QEMUD_ERR, _("cannot set SASL security props %d (%s)"),
                  err, sasl_errstring(err, NULL, NULL));
-        remoteDispatchAuthError(rerr);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
-        return -1;
+        goto authfail;
     }
 
     err = sasl_listmech(client->saslconn,
@@ -2600,22 +2651,27 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
     if (err != SASL_OK) {
         qemudLog(QEMUD_ERR, _("cannot list SASL mechanisms %d (%s)"),
                  err, sasl_errdetail(client->saslconn));
-        remoteDispatchAuthError(rerr);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
-        return -1;
+        goto authfail;
     }
     REMOTE_DEBUG("Available mechanisms for client: '%s'", mechlist);
     ret->mechlist = strdup(mechlist);
     if (!ret->mechlist) {
         qemudLog(QEMUD_ERR, "%s", _("cannot allocate mechlist"));
-        remoteDispatchAuthError(rerr);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
-        return -1;
+        goto authfail;
     }
 
+    pthread_mutex_unlock(&client->lock);
     return 0;
+
+authfail:
+    remoteDispatchAuthError(rerr);
+error:
+    pthread_mutex_unlock(&client->lock);
+    return -1;
 }
 
 
@@ -2725,6 +2781,7 @@ remoteSASLCheckAccess (struct qemud_server *server,
 static int
 remoteDispatchAuthSaslStart (struct qemud_server *server,
                              struct qemud_client *client,
+                             virConnectPtr conn ATTRIBUTE_UNUSED,
                              remote_error *rerr,
                              remote_auth_sasl_start_args *args,
                              remote_auth_sasl_start_ret *ret)
@@ -2733,12 +2790,15 @@ remoteDispatchAuthSaslStart (struct qemud_server *server,
     unsigned int serveroutlen;
     int err;
 
+    pthread_mutex_lock(&server->lock);
+    pthread_mutex_lock(&client->lock);
+    pthread_mutex_unlock(&server->lock);
+
     REMOTE_DEBUG("Start SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
         client->saslconn == NULL) {
         qemudLog(QEMUD_ERR, "%s", _("client tried invalid SASL start request"));
-        remoteDispatchAuthError(rerr);
-        return -1;
+        goto authfail;
     }
 
     REMOTE_DEBUG("Using SASL mechanism %s. Data %d bytes, nil: %d",
@@ -2756,23 +2816,21 @@ remoteDispatchAuthSaslStart (struct qemud_server *server,
                  err, sasl_errdetail(client->saslconn));
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
-        remoteDispatchAuthError(rerr);
-        return -1;
+        goto authfail;
     }
     if (serveroutlen > REMOTE_AUTH_SASL_DATA_MAX) {
         qemudLog(QEMUD_ERR, _("sasl start reply data too long %d"),
                  serveroutlen);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
-        remoteDispatchAuthError(rerr);
-        return -1;
+        goto authfail;
     }
 
     /* NB, distinction of NULL vs "" is *critical* in SASL */
     if (serverout) {
         if (VIR_ALLOC_N(ret->data.data_val, serveroutlen) < 0) {
             remoteDispatchOOMError(rerr);
-            return -1;
+            goto error;
         }
         memcpy(ret->data.data_val, serverout, serveroutlen);
     } else {
@@ -2786,24 +2844,32 @@ remoteDispatchAuthSaslStart (struct qemud_server *server,
         ret->complete = 0;
     } else {
         if (remoteSASLCheckSSF(client, rerr) < 0)
-            return -1;
+            goto error;
 
         /* Check username whitelist ACL */
         if (remoteSASLCheckAccess(server, client, rerr) < 0)
-            return -1;
+            goto error;
 
         REMOTE_DEBUG("Authentication successful %d", client->fd);
         ret->complete = 1;
         client->auth = REMOTE_AUTH_NONE;
     }
 
+    pthread_mutex_unlock(&client->lock);
     return 0;
+
+authfail:
+    remoteDispatchAuthError(rerr);
+error:
+    pthread_mutex_unlock(&client->lock);
+    return -1;
 }
 
 
 static int
 remoteDispatchAuthSaslStep (struct qemud_server *server,
                             struct qemud_client *client,
+                            virConnectPtr conn ATTRIBUTE_UNUSED,
                             remote_error *rerr,
                             remote_auth_sasl_step_args *args,
                             remote_auth_sasl_step_ret *ret)
@@ -2812,12 +2878,15 @@ remoteDispatchAuthSaslStep (struct qemud_server *server,
     unsigned int serveroutlen;
     int err;
 
+    pthread_mutex_lock(&server->lock);
+    pthread_mutex_lock(&client->lock);
+    pthread_mutex_unlock(&server->lock);
+
     REMOTE_DEBUG("Step SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
         client->saslconn == NULL) {
         qemudLog(QEMUD_ERR, "%s", _("client tried invalid SASL start request"));
-        remoteDispatchAuthError(rerr);
-        return -1;
+        goto authfail;
     }
 
     REMOTE_DEBUG("Using SASL Data %d bytes, nil: %d",
@@ -2834,8 +2903,7 @@ remoteDispatchAuthSaslStep (struct qemud_server *server,
                  err, sasl_errdetail(client->saslconn));
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
-        remoteDispatchAuthError(rerr);
-        return -1;
+        goto authfail;
     }
 
     if (serveroutlen > REMOTE_AUTH_SASL_DATA_MAX) {
@@ -2843,15 +2911,14 @@ remoteDispatchAuthSaslStep (struct qemud_server *server,
                  serveroutlen);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
-        remoteDispatchAuthError(rerr);
-        return -1;
+        goto authfail;
     }
 
     /* NB, distinction of NULL vs "" is *critical* in SASL */
     if (serverout) {
         if (VIR_ALLOC_N(ret->data.data_val, serveroutlen) < 0) {
             remoteDispatchOOMError(rerr);
-            return -1;
+            goto error;
         }
         memcpy(ret->data.data_val, serverout, serveroutlen);
     } else {
@@ -2865,25 +2932,33 @@ remoteDispatchAuthSaslStep (struct qemud_server *server,
         ret->complete = 0;
     } else {
         if (remoteSASLCheckSSF(client, rerr) < 0)
-            return -1;
+            goto error;
 
         /* Check username whitelist ACL */
         if (remoteSASLCheckAccess(server, client, rerr) < 0)
-            return -1;
+            goto error;
 
         REMOTE_DEBUG("Authentication successful %d", client->fd);
         ret->complete = 1;
         client->auth = REMOTE_AUTH_NONE;
     }
 
+    pthread_mutex_unlock(&client->lock);
     return 0;
+
+authfail:
+    remoteDispatchAuthError(rerr);
+error:
+    pthread_mutex_unlock(&client->lock);
+    return -1;
 }
 
 
 #else /* HAVE_SASL */
 static int
 remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
-                            struct qemud_client *client,
+                            struct qemud_client *client ATTRIBUTE_UNUSED,
+                            virConnectPtr conn ATTRIBUTE_UNUSED,
                             remote_error *rerr,
                             void *args ATTRIBUTE_UNUSED,
                             remote_auth_sasl_init_ret *ret ATTRIBUTE_UNUSED)
@@ -2895,7 +2970,8 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchAuthSaslStart (struct qemud_server *server ATTRIBUTE_UNUSED,
-                             struct qemud_client *client,
+                             struct qemud_client *client ATTRIBUTE_UNUSED,
+                             virConnectPtr conn ATTRIBUTE_UNUSED,
                              remote_error *rerr,
                              remote_auth_sasl_start_args *args ATTRIBUTE_UNUSED,
                              remote_auth_sasl_start_ret *ret ATTRIBUTE_UNUSED)
@@ -2907,7 +2983,8 @@ remoteDispatchAuthSaslStart (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchAuthSaslStep (struct qemud_server *server ATTRIBUTE_UNUSED,
-                            struct qemud_client *client,
+                            struct qemud_client *client ATTRIBUTE_UNUSED,
+                            virConnectPtr conn ATTRIBUTE_UNUSED,
                             remote_error *rerr,
                             remote_auth_sasl_step_args *args ATTRIBUTE_UNUSED,
                             remote_auth_sasl_step_ret *ret ATTRIBUTE_UNUSED)
@@ -2921,8 +2998,9 @@ remoteDispatchAuthSaslStep (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 #if HAVE_POLKIT
 static int
-remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchAuthPolkit (struct qemud_server *server,
                           struct qemud_client *client,
+                          virConnectPtr conn ATTRIBUTE_UNUSED,
                           remote_error *rerr,
                           void *args ATTRIBUTE_UNUSED,
                           remote_auth_polkit_ret *ret)
@@ -2935,7 +3013,13 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
     PolKitError *pkerr = NULL;
     PolKitResult pkresult;
     DBusError err;
-    const char *action = client->readonly ?
+    const char *action;
+
+    pthread_mutex_lock(&server->lock);
+    pthread_mutex_lock(&client->lock);
+    pthread_mutex_unlock(&server->lock);
+
+    action = client->readonly ?
         "org.libvirt.unix.monitor" :
         "org.libvirt.unix.manage";
 
@@ -2943,14 +3027,12 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
     if (client->auth != REMOTE_AUTH_POLKIT) {
         qemudLog(QEMUD_ERR,
                  "%s", _("client tried invalid PolicyKit init request"));
-        remoteDispatchAuthError(rerr);
-        return -1;
+        goto authfail;
     }
 
     if (qemudGetSocketIdentity(client->fd, &callerUid, &callerPid) < 0) {
         qemudLog(QEMUD_ERR, "%s", _("cannot get peer socket identity"));
-        remoteDispatchAuthError(rerr);
-        return -1;
+        goto authfail;
     }
 
     qemudLog(QEMUD_INFO, _("Checking PID %d running as %d"),
@@ -2961,16 +3043,14 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
         qemudLog(QEMUD_ERR, _("Failed to lookup policy kit caller: %s"),
                  err.message);
         dbus_error_free(&err);
-        remoteDispatchAuthError(rerr);
-        return -1;
+        goto authfail;
     }
 
     if (!(pkaction = polkit_action_new())) {
         qemudLog(QEMUD_ERR, _("Failed to create polkit action %s\n"),
                  strerror(errno));
         polkit_caller_unref(pkcaller);
-        remoteDispatchAuthError(rerr);
-        return -1;
+        goto authfail;
     }
     polkit_action_set_action_id(pkaction, action);
 
@@ -2984,8 +3064,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
         polkit_caller_unref(pkcaller);
         polkit_action_unref(pkaction);
         dbus_error_free(&err);
-        remoteDispatchAuthError(rerr);
-        return -1;
+        goto authfail;
     }
 
 #if HAVE_POLKIT_CONTEXT_IS_CALLER_AUTHORIZED
@@ -2999,8 +3078,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
                  _("Policy kit failed to check authorization %d %s"),
                  polkit_error_get_error_code(pkerr),
                  polkit_error_get_error_message(pkerr));
-        remoteDispatchAuthError(rerr);
-        return -1;
+        goto authfail;
     }
 #else
     pkresult = polkit_context_can_caller_do_action(pkcontext,
@@ -3016,8 +3094,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
                    " result: %s\n"),
                  action, callerPid, callerUid,
                  polkit_result_to_string_representation(pkresult));
-        remoteDispatchAuthError(rerr);
-        return -1;
+        goto authfail;
     }
     qemudLog(QEMUD_INFO,
              _("Policy allowed action %s from pid %d, uid %d, result %s"),
@@ -3026,14 +3103,21 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
     ret->complete = 1;
     client->auth = REMOTE_AUTH_NONE;
 
+    pthread_mutex_unlock(&client->lock);
     return 0;
+
+authfail:
+    remoteDispatchAuthError(rerr);
+    pthread_mutex_unlock(&client->lock);
+    return -1;
 }
 
 #else /* HAVE_POLKIT */
 
 static int
 remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
-                          struct qemud_client *client,
+                          struct qemud_client *client ATTRIBUTE_UNUSED,
+                          virConnectPtr conn,
                           remote_error *rerr,
                           void *args ATTRIBUTE_UNUSED,
                           remote_auth_polkit_ret *ret ATTRIBUTE_UNUSED)
@@ -3053,12 +3137,12 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchListDefinedStoragePools (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                       struct qemud_client *client,
+                                       struct qemud_client *client ATTRIBUTE_UNUSED,
+                                       virConnectPtr conn,
                                        remote_error *rerr,
                                        remote_list_defined_storage_pools_args *args,
                                        remote_list_defined_storage_pools_ret *ret)
 {
-    CHECK_CONN(client);
 
     if (args->maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
         remoteDispatchFormatError (rerr,
@@ -3073,11 +3157,11 @@ remoteDispatchListDefinedStoragePools (struct qemud_server *server ATTRIBUTE_UNU
     }
 
     ret->names.names_len =
-        virConnectListDefinedStoragePools (client->conn,
+        virConnectListDefinedStoragePools (conn,
                                            ret->names.names_val, args->maxnames);
     if (ret->names.names_len == -1) {
         VIR_FREE(ret->names.names_val);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3086,12 +3170,12 @@ remoteDispatchListDefinedStoragePools (struct qemud_server *server ATTRIBUTE_UNU
 
 static int
 remoteDispatchListStoragePools (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                struct qemud_client *client,
+                                struct qemud_client *client ATTRIBUTE_UNUSED,
+                                virConnectPtr conn,
                                 remote_error *rerr,
                                 remote_list_storage_pools_args *args,
                                 remote_list_storage_pools_ret *ret)
 {
-    CHECK_CONN(client);
 
     if (args->maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX) {
         remoteDispatchFormatError (rerr,
@@ -3106,11 +3190,11 @@ remoteDispatchListStoragePools (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     ret->names.names_len =
-        virConnectListStoragePools (client->conn,
+        virConnectListStoragePools (conn,
                                 ret->names.names_val, args->maxnames);
     if (ret->names.names_len == -1) {
         VIR_FREE(ret->names.names_val);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3119,20 +3203,19 @@ remoteDispatchListStoragePools (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchFindStoragePoolSources (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                      struct qemud_client *client,
+                                      struct qemud_client *client ATTRIBUTE_UNUSED,
+                                      virConnectPtr conn,
                                       remote_error *rerr,
                                       remote_find_storage_pool_sources_args *args,
                                       remote_find_storage_pool_sources_ret *ret)
 {
-    CHECK_CONN(client);
-
     ret->xml =
-        virConnectFindStoragePoolSources (client->conn,
+        virConnectFindStoragePoolSources (conn,
                                           args->type,
                                           args->srcSpec ? *args->srcSpec : NULL,
                                           args->flags);
     if (ret->xml == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3142,23 +3225,23 @@ remoteDispatchFindStoragePoolSources (struct qemud_server *server ATTRIBUTE_UNUS
 
 static int
 remoteDispatchStoragePoolCreate (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                 struct qemud_client *client,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
                                  remote_error *rerr,
                                  remote_storage_pool_create_args *args,
                                  void *ret ATTRIBUTE_UNUSED)
 {
     virStoragePoolPtr pool;
-    CHECK_CONN(client);
 
-    pool = get_nonnull_storage_pool (client->conn, args->pool);
+    pool = get_nonnull_storage_pool (conn, args->pool);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virStoragePoolCreate (pool, args->flags) == -1) {
         virStoragePoolFree(pool);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virStoragePoolFree(pool);
@@ -3167,17 +3250,17 @@ remoteDispatchStoragePoolCreate (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchStoragePoolCreateXml (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                    struct qemud_client *client,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
                                     remote_error *rerr,
                                     remote_storage_pool_create_xml_args *args,
                                     remote_storage_pool_create_xml_ret *ret)
 {
     virStoragePoolPtr pool;
-    CHECK_CONN(client);
 
-    pool = virStoragePoolCreateXML (client->conn, args->xml, args->flags);
+    pool = virStoragePoolCreateXML (conn, args->xml, args->flags);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3188,17 +3271,17 @@ remoteDispatchStoragePoolCreateXml (struct qemud_server *server ATTRIBUTE_UNUSED
 
 static int
 remoteDispatchStoragePoolDefineXml (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                    struct qemud_client *client,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
                                     remote_error *rerr,
                                     remote_storage_pool_define_xml_args *args,
                                     remote_storage_pool_define_xml_ret *ret)
 {
     virStoragePoolPtr pool;
-    CHECK_CONN(client);
 
-    pool = virStoragePoolDefineXML (client->conn, args->xml, args->flags);
+    pool = virStoragePoolDefineXML (conn, args->xml, args->flags);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3209,23 +3292,23 @@ remoteDispatchStoragePoolDefineXml (struct qemud_server *server ATTRIBUTE_UNUSED
 
 static int
 remoteDispatchStoragePoolBuild (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                struct qemud_client *client,
+                                struct qemud_client *client ATTRIBUTE_UNUSED,
+                                virConnectPtr conn,
                                 remote_error *rerr,
                                 remote_storage_pool_build_args *args,
                                 void *ret ATTRIBUTE_UNUSED)
 {
     virStoragePoolPtr pool;
-    CHECK_CONN(client);
 
-    pool = get_nonnull_storage_pool (client->conn, args->pool);
+    pool = get_nonnull_storage_pool (conn, args->pool);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virStoragePoolBuild (pool, args->flags) == -1) {
         virStoragePoolFree(pool);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virStoragePoolFree(pool);
@@ -3235,23 +3318,23 @@ remoteDispatchStoragePoolBuild (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchStoragePoolDestroy (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                  struct qemud_client *client,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
                                   remote_error *rerr,
                                   remote_storage_pool_destroy_args *args,
                                   void *ret ATTRIBUTE_UNUSED)
 {
     virStoragePoolPtr pool;
-    CHECK_CONN(client);
 
-    pool = get_nonnull_storage_pool (client->conn, args->pool);
+    pool = get_nonnull_storage_pool (conn, args->pool);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virStoragePoolDestroy (pool) == -1) {
         virStoragePoolFree(pool);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virStoragePoolFree(pool);
@@ -3260,23 +3343,23 @@ remoteDispatchStoragePoolDestroy (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchStoragePoolDelete (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                 struct qemud_client *client,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
                                  remote_error *rerr,
                                  remote_storage_pool_delete_args *args,
                                  void *ret ATTRIBUTE_UNUSED)
 {
     virStoragePoolPtr pool;
-    CHECK_CONN(client);
 
-    pool = get_nonnull_storage_pool (client->conn, args->pool);
+    pool = get_nonnull_storage_pool (conn, args->pool);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virStoragePoolDelete (pool, args->flags) == -1) {
         virStoragePoolFree(pool);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virStoragePoolFree(pool);
@@ -3285,23 +3368,23 @@ remoteDispatchStoragePoolDelete (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchStoragePoolRefresh (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                  struct qemud_client *client,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
                                   remote_error *rerr,
                                   remote_storage_pool_refresh_args *args,
                                   void *ret ATTRIBUTE_UNUSED)
 {
     virStoragePoolPtr pool;
-    CHECK_CONN(client);
 
-    pool = get_nonnull_storage_pool (client->conn, args->pool);
+    pool = get_nonnull_storage_pool (conn, args->pool);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virStoragePoolRefresh (pool, args->flags) == -1) {
         virStoragePoolFree(pool);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virStoragePoolFree(pool);
@@ -3310,24 +3393,24 @@ remoteDispatchStoragePoolRefresh (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchStoragePoolGetInfo (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                  struct qemud_client *client,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
                                   remote_error *rerr,
                                   remote_storage_pool_get_info_args *args,
                                   remote_storage_pool_get_info_ret *ret)
 {
     virStoragePoolPtr pool;
     virStoragePoolInfo info;
-    CHECK_CONN(client);
 
-    pool = get_nonnull_storage_pool (client->conn, args->pool);
+    pool = get_nonnull_storage_pool (conn, args->pool);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virStoragePoolGetInfo (pool, &info) == -1) {
         virStoragePoolFree(pool);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3343,17 +3426,17 @@ remoteDispatchStoragePoolGetInfo (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchStoragePoolDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                  struct qemud_client *client,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
                                   remote_error *rerr,
                                   remote_storage_pool_dump_xml_args *args,
                                   remote_storage_pool_dump_xml_ret *ret)
 {
     virStoragePoolPtr pool;
-    CHECK_CONN(client);
 
-    pool = get_nonnull_storage_pool (client->conn, args->pool);
+    pool = get_nonnull_storage_pool (conn, args->pool);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3361,7 +3444,7 @@ remoteDispatchStoragePoolDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
     ret->xml = virStoragePoolGetXMLDesc (pool, args->flags);
     if (!ret->xml) {
         virStoragePoolFree(pool);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virStoragePoolFree(pool);
@@ -3370,23 +3453,23 @@ remoteDispatchStoragePoolDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchStoragePoolGetAutostart (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                       struct qemud_client *client,
+                                       struct qemud_client *client ATTRIBUTE_UNUSED,
+                                       virConnectPtr conn,
                                        remote_error *rerr,
                                        remote_storage_pool_get_autostart_args *args,
                                        remote_storage_pool_get_autostart_ret *ret)
 {
     virStoragePoolPtr pool;
-    CHECK_CONN(client);
 
-    pool = get_nonnull_storage_pool (client->conn, args->pool);
+    pool = get_nonnull_storage_pool (conn, args->pool);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virStoragePoolGetAutostart (pool, &ret->autostart) == -1) {
         virStoragePoolFree(pool);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virStoragePoolFree(pool);
@@ -3396,17 +3479,17 @@ remoteDispatchStoragePoolGetAutostart (struct qemud_server *server ATTRIBUTE_UNU
 
 static int
 remoteDispatchStoragePoolLookupByName (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                       struct qemud_client *client,
+                                       struct qemud_client *client ATTRIBUTE_UNUSED,
+                                       virConnectPtr conn,
                                        remote_error *rerr,
                                        remote_storage_pool_lookup_by_name_args *args,
                                        remote_storage_pool_lookup_by_name_ret *ret)
 {
     virStoragePoolPtr pool;
-    CHECK_CONN(client);
 
-    pool = virStoragePoolLookupByName (client->conn, args->name);
+    pool = virStoragePoolLookupByName (conn, args->name);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3417,17 +3500,17 @@ remoteDispatchStoragePoolLookupByName (struct qemud_server *server ATTRIBUTE_UNU
 
 static int
 remoteDispatchStoragePoolLookupByUuid (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                       struct qemud_client *client,
+                                       struct qemud_client *client ATTRIBUTE_UNUSED,
+                                       virConnectPtr conn,
                                        remote_error *rerr,
                                        remote_storage_pool_lookup_by_uuid_args *args,
                                        remote_storage_pool_lookup_by_uuid_ret *ret)
 {
     virStoragePoolPtr pool;
-    CHECK_CONN(client);
 
-    pool = virStoragePoolLookupByUUID (client->conn, (unsigned char *) args->uuid);
+    pool = virStoragePoolLookupByUUID (conn, (unsigned char *) args->uuid);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3438,25 +3521,25 @@ remoteDispatchStoragePoolLookupByUuid (struct qemud_server *server ATTRIBUTE_UNU
 
 static int
 remoteDispatchStoragePoolLookupByVolume (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                         struct qemud_client *client,
+                                         struct qemud_client *client ATTRIBUTE_UNUSED,
+                                         virConnectPtr conn,
                                          remote_error *rerr,
                                          remote_storage_pool_lookup_by_volume_args *args,
                                          remote_storage_pool_lookup_by_volume_ret *ret)
 {
     virStoragePoolPtr pool;
     virStorageVolPtr vol;
-    CHECK_CONN(client);
 
-    vol = get_nonnull_storage_vol (client->conn, args->vol);
+    vol = get_nonnull_storage_vol (conn, args->vol);
     if (vol == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     pool = virStoragePoolLookupByVolume (vol);
     virStorageVolFree(vol);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3467,23 +3550,23 @@ remoteDispatchStoragePoolLookupByVolume (struct qemud_server *server ATTRIBUTE_U
 
 static int
 remoteDispatchStoragePoolSetAutostart (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                       struct qemud_client *client,
+                                       struct qemud_client *client ATTRIBUTE_UNUSED,
+                                       virConnectPtr conn,
                                        remote_error *rerr,
                                        remote_storage_pool_set_autostart_args *args,
                                        void *ret ATTRIBUTE_UNUSED)
 {
     virStoragePoolPtr pool;
-    CHECK_CONN(client);
 
-    pool = get_nonnull_storage_pool (client->conn, args->pool);
+    pool = get_nonnull_storage_pool (conn, args->pool);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virStoragePoolSetAutostart (pool, args->autostart) == -1) {
         virStoragePoolFree(pool);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virStoragePoolFree(pool);
@@ -3492,23 +3575,23 @@ remoteDispatchStoragePoolSetAutostart (struct qemud_server *server ATTRIBUTE_UNU
 
 static int
 remoteDispatchStoragePoolUndefine (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                   struct qemud_client *client,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
                                    remote_error *rerr,
                                    remote_storage_pool_undefine_args *args,
                                    void *ret ATTRIBUTE_UNUSED)
 {
     virStoragePoolPtr pool;
-    CHECK_CONN(client);
 
-    pool = get_nonnull_storage_pool (client->conn, args->pool);
+    pool = get_nonnull_storage_pool (conn, args->pool);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virStoragePoolUndefine (pool) == -1) {
         virStoragePoolFree(pool);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virStoragePoolFree(pool);
@@ -3517,16 +3600,16 @@ remoteDispatchStoragePoolUndefine (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNumOfStoragePools (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                 struct qemud_client *client,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
                                  remote_error *rerr,
                                  void *args ATTRIBUTE_UNUSED,
                                  remote_num_of_storage_pools_ret *ret)
 {
-    CHECK_CONN(client);
 
-    ret->num = virConnectNumOfStoragePools (client->conn);
+    ret->num = virConnectNumOfStoragePools (conn);
     if (ret->num == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3535,16 +3618,16 @@ remoteDispatchNumOfStoragePools (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNumOfDefinedStoragePools (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                        struct qemud_client *client,
+                                        struct qemud_client *client ATTRIBUTE_UNUSED,
+                                        virConnectPtr conn,
                                         remote_error *rerr,
                                         void *args ATTRIBUTE_UNUSED,
                                         remote_num_of_defined_storage_pools_ret *ret)
 {
-    CHECK_CONN(client);
 
-    ret->num = virConnectNumOfDefinedStoragePools (client->conn);
+    ret->num = virConnectNumOfDefinedStoragePools (conn);
     if (ret->num == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3553,13 +3636,13 @@ remoteDispatchNumOfDefinedStoragePools (struct qemud_server *server ATTRIBUTE_UN
 
 static int
 remoteDispatchStoragePoolListVolumes (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                      struct qemud_client *client,
+                                      struct qemud_client *client ATTRIBUTE_UNUSED,
+                                      virConnectPtr conn,
                                       remote_error *rerr,
                                       remote_storage_pool_list_volumes_args *args,
                                       remote_storage_pool_list_volumes_ret *ret)
 {
     virStoragePoolPtr pool;
-    CHECK_CONN(client);
 
     if (args->maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX) {
         remoteDispatchFormatError (rerr,
@@ -3567,9 +3650,9 @@ remoteDispatchStoragePoolListVolumes (struct qemud_server *server ATTRIBUTE_UNUS
         return -1;
     }
 
-    pool = get_nonnull_storage_pool (client->conn, args->pool);
+    pool = get_nonnull_storage_pool (conn, args->pool);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3586,7 +3669,7 @@ remoteDispatchStoragePoolListVolumes (struct qemud_server *server ATTRIBUTE_UNUS
     virStoragePoolFree(pool);
     if (ret->names.names_len == -1) {
         VIR_FREE(ret->names.names_val);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3596,24 +3679,24 @@ remoteDispatchStoragePoolListVolumes (struct qemud_server *server ATTRIBUTE_UNUS
 
 static int
 remoteDispatchStoragePoolNumOfVolumes (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                       struct qemud_client *client,
+                                       struct qemud_client *client ATTRIBUTE_UNUSED,
+                                       virConnectPtr conn,
                                        remote_error *rerr,
                                        remote_storage_pool_num_of_volumes_args *args,
                                        remote_storage_pool_num_of_volumes_ret *ret)
 {
     virStoragePoolPtr pool;
-    CHECK_CONN(client);
 
-    pool = get_nonnull_storage_pool (client->conn, args->pool);
+    pool = get_nonnull_storage_pool (conn, args->pool);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     ret->num = virStoragePoolNumOfVolumes (pool);
     virStoragePoolFree(pool);
     if (ret->num == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3629,25 +3712,25 @@ remoteDispatchStoragePoolNumOfVolumes (struct qemud_server *server ATTRIBUTE_UNU
 
 static int
 remoteDispatchStorageVolCreateXml (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                   struct qemud_client *client,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
                                    remote_error *rerr,
                                    remote_storage_vol_create_xml_args *args,
                                    remote_storage_vol_create_xml_ret *ret)
 {
     virStoragePoolPtr pool;
     virStorageVolPtr vol;
-    CHECK_CONN(client);
 
-    pool = get_nonnull_storage_pool (client->conn, args->pool);
+    pool = get_nonnull_storage_pool (conn, args->pool);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     vol = virStorageVolCreateXML (pool, args->xml, args->flags);
     virStoragePoolFree(pool);
     if (vol == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3659,23 +3742,23 @@ remoteDispatchStorageVolCreateXml (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchStorageVolDelete (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                struct qemud_client *client,
+                                struct qemud_client *client ATTRIBUTE_UNUSED,
+                                virConnectPtr conn,
                                 remote_error *rerr,
                                 remote_storage_vol_delete_args *args,
                                 void *ret ATTRIBUTE_UNUSED)
 {
     virStorageVolPtr vol;
-    CHECK_CONN(client);
 
-    vol = get_nonnull_storage_vol (client->conn, args->vol);
+    vol = get_nonnull_storage_vol (conn, args->vol);
     if (vol == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virStorageVolDelete (vol, args->flags) == -1) {
         virStorageVolFree(vol);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virStorageVolFree(vol);
@@ -3684,24 +3767,24 @@ remoteDispatchStorageVolDelete (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchStorageVolGetInfo (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                 struct qemud_client *client,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
                                  remote_error *rerr,
                                  remote_storage_vol_get_info_args *args,
                                  remote_storage_vol_get_info_ret *ret)
 {
     virStorageVolPtr vol;
     virStorageVolInfo info;
-    CHECK_CONN(client);
 
-    vol = get_nonnull_storage_vol (client->conn, args->vol);
+    vol = get_nonnull_storage_vol (conn, args->vol);
     if (vol == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     if (virStorageVolGetInfo (vol, &info) == -1) {
         virStorageVolFree(vol);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3716,17 +3799,17 @@ remoteDispatchStorageVolGetInfo (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchStorageVolDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                 struct qemud_client *client,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
                                  remote_error *rerr,
                                  remote_storage_vol_dump_xml_args *args,
                                  remote_storage_vol_dump_xml_ret *ret)
 {
     virStorageVolPtr vol;
-    CHECK_CONN(client);
 
-    vol = get_nonnull_storage_vol (client->conn, args->vol);
+    vol = get_nonnull_storage_vol (conn, args->vol);
     if (vol == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3734,7 +3817,7 @@ remoteDispatchStorageVolDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
     ret->xml = virStorageVolGetXMLDesc (vol, args->flags);
     if (!ret->xml) {
         virStorageVolFree(vol);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virStorageVolFree(vol);
@@ -3744,17 +3827,17 @@ remoteDispatchStorageVolDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchStorageVolGetPath (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                 struct qemud_client *client,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
                                  remote_error *rerr,
                                  remote_storage_vol_get_path_args *args,
                                  remote_storage_vol_get_path_ret *ret)
 {
     virStorageVolPtr vol;
-    CHECK_CONN(client);
 
-    vol = get_nonnull_storage_vol (client->conn, args->vol);
+    vol = get_nonnull_storage_vol (conn, args->vol);
     if (vol == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3762,7 +3845,7 @@ remoteDispatchStorageVolGetPath (struct qemud_server *server ATTRIBUTE_UNUSED,
     ret->name = virStorageVolGetPath (vol);
     if (!ret->name) {
         virStorageVolFree(vol);
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
     virStorageVolFree(vol);
@@ -3772,25 +3855,25 @@ remoteDispatchStorageVolGetPath (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchStorageVolLookupByName (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                      struct qemud_client *client,
+                                      struct qemud_client *client ATTRIBUTE_UNUSED,
+                                      virConnectPtr conn,
                                       remote_error *rerr,
                                       remote_storage_vol_lookup_by_name_args *args,
                                       remote_storage_vol_lookup_by_name_ret *ret)
 {
     virStoragePoolPtr pool;
     virStorageVolPtr vol;
-    CHECK_CONN(client);
 
-    pool = get_nonnull_storage_pool (client->conn, args->pool);
+    pool = get_nonnull_storage_pool (conn, args->pool);
     if (pool == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     vol = virStorageVolLookupByName (pool, args->name);
     virStoragePoolFree(pool);
     if (vol == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3801,17 +3884,17 @@ remoteDispatchStorageVolLookupByName (struct qemud_server *server ATTRIBUTE_UNUS
 
 static int
 remoteDispatchStorageVolLookupByKey (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                     struct qemud_client *client,
+                                     struct qemud_client *client ATTRIBUTE_UNUSED,
+                                     virConnectPtr conn,
                                      remote_error *rerr,
                                      remote_storage_vol_lookup_by_key_args *args,
                                      remote_storage_vol_lookup_by_key_ret *ret)
 {
     virStorageVolPtr vol;
-    CHECK_CONN(client);
 
-    vol = virStorageVolLookupByKey (client->conn, args->key);
+    vol = virStorageVolLookupByKey (conn, args->key);
     if (vol == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3823,17 +3906,17 @@ remoteDispatchStorageVolLookupByKey (struct qemud_server *server ATTRIBUTE_UNUSE
 
 static int
 remoteDispatchStorageVolLookupByPath (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                      struct qemud_client *client,
+                                      struct qemud_client *client ATTRIBUTE_UNUSED,
+                                      virConnectPtr conn,
                                       remote_error *rerr,
                                       remote_storage_vol_lookup_by_path_args *args,
                                       remote_storage_vol_lookup_by_path_ret *ret)
 {
     virStorageVolPtr vol;
-    CHECK_CONN(client);
 
-    vol = virStorageVolLookupByPath (client->conn, args->path);
+    vol = virStorageVolLookupByPath (conn, args->path);
     if (vol == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3849,18 +3932,19 @@ remoteDispatchStorageVolLookupByPath (struct qemud_server *server ATTRIBUTE_UNUS
 
 static int
 remoteDispatchNodeNumOfDevices (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                struct qemud_client *client,
+                                struct qemud_client *client ATTRIBUTE_UNUSED,
+                                virConnectPtr conn,
                                 remote_error *rerr,
                                 remote_node_num_of_devices_args *args,
                                 remote_node_num_of_devices_ret *ret)
 {
     CHECK_CONN(client);
 
-    ret->num = virNodeNumOfDevices (client->conn,
+    ret->num = virNodeNumOfDevices (conn,
                                     args->cap ? *args->cap : NULL,
                                     args->flags);
     if (ret->num == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3870,7 +3954,8 @@ remoteDispatchNodeNumOfDevices (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNodeListDevices (struct qemud_server *server ATTRIBUTE_UNUSED,
-                               struct qemud_client *client,
+                               struct qemud_client *client ATTRIBUTE_UNUSED,
+                               virConnectPtr conn,
                                remote_error *rerr,
                                remote_node_list_devices_args *args,
                                remote_node_list_devices_ret *ret)
@@ -3890,11 +3975,11 @@ remoteDispatchNodeListDevices (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     ret->names.names_len =
-        virNodeListDevices (client->conn,
+        virNodeListDevices (conn,
                             args->cap ? *args->cap : NULL,
                             ret->names.names_val, args->maxnames, args->flags);
     if (ret->names.names_len == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         VIR_FREE(ret->names.names_val);
         return -1;
     }
@@ -3905,7 +3990,8 @@ remoteDispatchNodeListDevices (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNodeDeviceLookupByName (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                      struct qemud_client *client,
+                                      struct qemud_client *client ATTRIBUTE_UNUSED,
+                                      virConnectPtr conn,
                                       remote_error *rerr,
                                       remote_node_device_lookup_by_name_args *args,
                                       remote_node_device_lookup_by_name_ret *ret)
@@ -3914,9 +4000,9 @@ remoteDispatchNodeDeviceLookupByName (struct qemud_server *server ATTRIBUTE_UNUS
 
     CHECK_CONN(client);
 
-    dev = virNodeDeviceLookupByName (client->conn, args->name);
+    dev = virNodeDeviceLookupByName (conn, args->name);
     if (dev == NULL) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -3928,7 +4014,8 @@ remoteDispatchNodeDeviceLookupByName (struct qemud_server *server ATTRIBUTE_UNUS
 
 static int
 remoteDispatchNodeDeviceDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                 struct qemud_client *client,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
                                  remote_error *rerr,
                                  remote_node_device_dump_xml_args *args,
                                  remote_node_device_dump_xml_ret *ret)
@@ -3936,7 +4023,7 @@ remoteDispatchNodeDeviceDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
     virNodeDevicePtr dev;
     CHECK_CONN(client);
 
-    dev = virNodeDeviceLookupByName(client->conn, args->name);
+    dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
         remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
         return -1;
@@ -3945,7 +4032,7 @@ remoteDispatchNodeDeviceDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
     /* remoteDispatchClientRequest will free this. */
     ret->xml = virNodeDeviceGetXMLDesc (dev, args->flags);
     if (!ret->xml) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         virNodeDeviceFree(dev);
         return -1;
     }
@@ -3956,7 +4043,8 @@ remoteDispatchNodeDeviceDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNodeDeviceGetParent (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                   struct qemud_client *client,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
                                    remote_error *rerr,
                                    remote_node_device_get_parent_args *args,
                                    remote_node_device_get_parent_ret *ret)
@@ -3965,7 +4053,7 @@ remoteDispatchNodeDeviceGetParent (struct qemud_server *server ATTRIBUTE_UNUSED,
     const char *parent;
     CHECK_CONN(client);
 
-    dev = virNodeDeviceLookupByName(client->conn, args->name);
+    dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
         remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
         return -1;
@@ -3997,7 +4085,8 @@ remoteDispatchNodeDeviceGetParent (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNodeDeviceNumOfCaps (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                   struct qemud_client *client,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
                                    remote_error *rerr,
                                    remote_node_device_num_of_caps_args *args,
                                    remote_node_device_num_of_caps_ret *ret)
@@ -4005,7 +4094,7 @@ remoteDispatchNodeDeviceNumOfCaps (struct qemud_server *server ATTRIBUTE_UNUSED,
     virNodeDevicePtr dev;
     CHECK_CONN(client);
 
-    dev = virNodeDeviceLookupByName(client->conn, args->name);
+    dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
         remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
         return -1;
@@ -4013,7 +4102,7 @@ remoteDispatchNodeDeviceNumOfCaps (struct qemud_server *server ATTRIBUTE_UNUSED,
 
     ret->num = virNodeDeviceNumOfCaps(dev);
     if (ret->num < 0) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -4024,7 +4113,8 @@ remoteDispatchNodeDeviceNumOfCaps (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 static int
 remoteDispatchNodeDeviceListCaps (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                  struct qemud_client *client,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
                                   remote_error *rerr,
                                   remote_node_device_list_caps_args *args,
                                   remote_node_device_list_caps_ret *ret)
@@ -4032,7 +4122,7 @@ remoteDispatchNodeDeviceListCaps (struct qemud_server *server ATTRIBUTE_UNUSED,
     virNodeDevicePtr dev;
     CHECK_CONN(client);
 
-    dev = virNodeDeviceLookupByName(client->conn, args->name);
+    dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
         remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
         return -1;
@@ -4054,7 +4144,7 @@ remoteDispatchNodeDeviceListCaps (struct qemud_server *server ATTRIBUTE_UNUSED,
         virNodeDeviceListCaps (dev, ret->names.names_val,
                                args->maxnames);
     if (ret->names.names_len == -1) {
-        remoteDispatchConnError(rerr, client->conn);
+        remoteDispatchConnError(rerr, conn);
         VIR_FREE(ret->names.names_val);
         return -1;
     }
@@ -4069,6 +4159,7 @@ remoteDispatchNodeDeviceListCaps (struct qemud_server *server ATTRIBUTE_UNUSED,
 static int
 remoteDispatchDomainEvent (struct qemud_server *server ATTRIBUTE_UNUSED,
                            struct qemud_client *client ATTRIBUTE_UNUSED,
+                           virConnectPtr conn ATTRIBUTE_UNUSED,
                            remote_error *rerr ATTRIBUTE_UNUSED,
                            void *args ATTRIBUTE_UNUSED,
                            remote_domain_event_ret *ret ATTRIBUTE_UNUSED)
@@ -4086,7 +4177,8 @@ remoteDispatchDomainEvent (struct qemud_server *server ATTRIBUTE_UNUSED,
  ***************************/
 static int
 remoteDispatchDomainEventsRegister (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                    struct qemud_client *client,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
                                     remote_error *rerr ATTRIBUTE_UNUSED,
                                     void *args ATTRIBUTE_UNUSED,
                                     remote_domain_events_register_ret *ret ATTRIBUTE_UNUSED)
@@ -4095,7 +4187,7 @@ remoteDispatchDomainEventsRegister (struct qemud_server *server ATTRIBUTE_UNUSED
 
     /* Register event delivery callback */
     REMOTE_DEBUG("%s","Registering to relay remote events");
-    virConnectDomainEventRegister(client->conn, remoteRelayDomainEvent, client, NULL);
+    virConnectDomainEventRegister(conn, remoteRelayDomainEvent, client, NULL);
 
     if(ret)
         ret->cb_registered = 1;
@@ -4104,7 +4196,8 @@ remoteDispatchDomainEventsRegister (struct qemud_server *server ATTRIBUTE_UNUSED
 
 static int
 remoteDispatchDomainEventsDeregister (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                      struct qemud_client *client,
+                                      struct qemud_client *client ATTRIBUTE_UNUSED,
+                                      virConnectPtr conn,
                                       remote_error *rerr ATTRIBUTE_UNUSED,
                                       void *args ATTRIBUTE_UNUSED,
                                       remote_domain_events_deregister_ret *ret ATTRIBUTE_UNUSED)
@@ -4113,7 +4206,7 @@ remoteDispatchDomainEventsDeregister (struct qemud_server *server ATTRIBUTE_UNUS
 
     /* Deregister event delivery callback */
     REMOTE_DEBUG("%s","Deregistering to relay remote events");
-    virConnectDomainEventDeregister(client->conn, remoteRelayDomainEvent);
+    virConnectDomainEventDeregister(conn, remoteRelayDomainEvent);
 
     if(ret)
         ret->cb_registered = 0;

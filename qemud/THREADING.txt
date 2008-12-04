@@ -1,0 +1,63 @@
+
+     Threading: the RULES.
+     ====================
+
+If you don't understand this, don't touch the code. Ask for
+further advice / explanation on the mailing list first.
+
+ - the top level lock is on 'struct qemud_server'. This must be
+   held before acquiring any other lock
+
+ - Each 'struct qemud_client' object has a lock. The server lock
+   must be held before acquiring it. Once the client lock is acquired
+   the server lock can (optionally) be dropped.
+
+ - The event loop has its own self-contained lock. You can ignore
+   this as a caller of virEvent APIs.
+
+
+The server lock is only needed / used once the daemon has entered
+its main loop, which is the qemudRunLoop() . The initial thread
+acquires the lock upon entering this method.
+
+It immediatelty spawns 'n' worker threads, whose main loop is
+the qemudWorker() method. The workers will immediately try to
+acquire the server lock, and thus block since its held by the
+initial thread.
+
+When the initial thread enters the poll() call, it drops the
+server lock. The worker locks now each wakeup, acquire the
+server lock and go into a condition wait on the 'job' condition
+variable. The workers are now all 'primed' for incoming RPC
+calls.
+
+
+
+A file descriptor event now occurrs, causing the initial thread
+to exit poll(). It invokes the registered callback associated
+with the file descriptors on which the event occurrs. The callbacks
+are required to immediately acquire the server lock.
+
+If the callback is dealing with a client event, it will then
+acquire the client lock, and drop the server lock.
+
+The callback will now handle the I/O event, reading or writing
+a RPC message. Once a complete RPC message has been read the
+client is marked as being in state QEMUD_MODE_WAIT_DISPATCH,
+and the 'job' condition variable is signaled. The callback
+now drops the client lock and goes back into the poll() loop
+waiting for more I/O events.
+
+Meanwhile one of the worker threads wakes up from its condition
+variable sleep, holding the server lock. It now searches for a
+client in state QEMUD_MODE_WAIT_DISPATCH. If it doesn't find
+one, it goes back to sleep. If it does find one, then it calls
+into the remoteDispatchClientRequest() method de-serialize the
+incoming message into an XDR object and invoke the helper method
+for the associated RPC call.
+
+While the helper method is executing, no locks are held on either
+the client or server, but the ref count on the 'struct qemud_client'
+object is incremented to ensure its not deleted. The helper can
+now safely invoke the neccessary libvirt API call.
+

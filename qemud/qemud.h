@@ -72,10 +72,12 @@ typedef enum {
 
 
 enum qemud_mode {
-    QEMUD_MODE_RX_HEADER,
-    QEMUD_MODE_RX_PAYLOAD,
-    QEMUD_MODE_TX_PACKET,
-    QEMUD_MODE_TLS_HANDSHAKE,
+    QEMUD_MODE_RX_HEADER,       /* Receiving the fixed length RPC header data */
+    QEMUD_MODE_RX_PAYLOAD,      /* Receiving the variable length RPC payload data */
+    QEMUD_MODE_WAIT_DISPATCH,   /* Message received, waiting for worker to process */
+    QEMUD_MODE_IN_DISPATCH,     /* RPC call being processed */
+    QEMUD_MODE_TX_PACKET,       /* Transmitting reply to RPC call */
+    QEMUD_MODE_TLS_HANDSHAKE,   /* Performing TLS handshake */
 };
 
 /* Whether we're passing reads & writes through a sasl SSF */
@@ -93,11 +95,14 @@ enum qemud_sock_type {
 
 /* Stores the per-client connection state */
 struct qemud_client {
+    PTHREAD_MUTEX_T(lock);
+
     int magic;
 
     int fd;
     int watch;
-    int readonly;
+    int readonly:1;
+    int closing:1;
     enum qemud_mode mode;
 
     struct sockaddr_storage addr;
@@ -130,6 +135,7 @@ struct qemud_client {
      * called, it will be set back to NULL if that succeeds.
      */
     virConnectPtr conn;
+    int refs;
 
     /* back-pointer to our server */
     struct qemud_server *server;
@@ -150,10 +156,16 @@ struct qemud_socket {
 
 /* Main server state */
 struct qemud_server {
+    pthread_mutex_t lock;
+    pthread_cond_t job;
+
+    int nworkers;
+    pthread_t *workers;
     int nsockets;
     struct qemud_socket *sockets;
     int nclients;
     struct qemud_client **clients;
+
     int sigread;
     char logDir[PATH_MAX];
     unsigned int shutdown : 1;

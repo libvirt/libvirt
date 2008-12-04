@@ -100,7 +100,13 @@ if ($opt_d) {
 elsif ($opt_p) {
     my @keys = sort (keys %calls);
     foreach (@keys) {
-	print "static int remoteDispatch$calls{$_}->{ProcName} (struct qemud_server *server, struct qemud_client *client, remote_error *err, $calls{$_}->{args} *args, $calls{$_}->{ret} *ret);\n";
+	print "static int remoteDispatch$calls{$_}->{ProcName}(\n";
+	print "    struct qemud_server *server,\n";
+	print "    struct qemud_client *client,\n";
+	print "    virConnectPtr conn,\n";
+	print "    remote_error *err,\n";
+	print "    $calls{$_}->{args} *args,\n";
+	print "    $calls{$_}->{ret} *ret);\n";
     }
 }
 
