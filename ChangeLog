@@ -1,3 +1,7 @@
+Thu Dec  4 20:55:41 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/test.c: Remove macros for accessing internal state
+
 Thu Dec  4 20:47:41 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Thread locking API stubs
