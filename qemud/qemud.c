@@ -1158,6 +1158,12 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
         return -1;
     }
 
+    if (VIR_REALLOC_N(server->clients, server->nclients+1) < 0) {
+        qemudLog(QEMUD_ERR, "%s", _("Out of memory allocating clients"));
+        close(fd);
+        return -1;
+    }
+
     /* Disable Nagle.  Unix sockets will ignore this. */
     setsockopt (fd, IPPROTO_TCP, TCP_NODELAY, (void *)&no_slow_start,
                 sizeof no_slow_start);
@@ -1238,9 +1244,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
         }
     }
 
-    client->next = server->clients;
-    server->clients = client;
-    server->nclients++;
+    server->clients[server->nclients++] = client;
 
     return 0;
 
@@ -1255,19 +1259,19 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
 
 
 static void qemudDispatchClientFailure(struct qemud_server *server, struct qemud_client *client) {
-    struct qemud_client *tmp = server->clients;
-    struct qemud_client *prev = NULL;
-    while (tmp) {
-        if (tmp == client) {
-            if (prev == NULL)
-                server->clients = client->next;
-            else
-                prev->next = client->next;
-            server->nclients--;
+    int i, n = -1;
+    for (i = 0 ; i < server->nclients ; i++) {
+        if (server->clients[i] == client) {
+            n = i;
             break;
         }
-        prev = tmp;
-        tmp = tmp->next;
+    }
+    if (n != -1) {
+        if (n < (server->nclients-1))
+            memmove(server->clients + n,
+                    server->clients + n + 1,
+                    server->nclients - (n + 1));
+        server->nclients--;
     }
 
     virEventRemoveHandleImpl(client->watch);
@@ -1636,13 +1640,14 @@ qemudDispatchClientWrite(struct qemud_server *server,
 static void
 qemudDispatchClientEvent(int watch, int fd, int events, void *opaque) {
     struct qemud_server *server = (struct qemud_server *)opaque;
-    struct qemud_client *client = server->clients;
+    struct qemud_client *client = NULL;
+    int i;
 
-    while (client) {
-        if (client->watch == watch)
+    for (i = 0 ; i < server->nclients ; i++) {
+        if (server->clients[i]->watch == watch) {
+            client = server->clients[i];
             break;
-
-        client = client->next;
+        }
     }
 
     if (!client)

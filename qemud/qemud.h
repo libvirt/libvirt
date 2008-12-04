@@ -133,8 +133,6 @@ struct qemud_client {
 
     /* back-pointer to our server */
     struct qemud_server *server;
-
-    struct qemud_client *next;
 };
 
 #define QEMUD_CLIENT_MAGIC 0x7788aaee
@@ -155,7 +153,7 @@ struct qemud_server {
     int nsockets;
     struct qemud_socket *sockets;
     int nclients;
-    struct qemud_client *clients;
+    struct qemud_client **clients;
     int sigread;
     char logDir[PATH_MAX];
     unsigned int shutdown : 1;
