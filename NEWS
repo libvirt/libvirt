@@ -5,6 +5,30 @@
        http://libvirt.org/news.html
 
 
+0.5.1: Dec  4 2008:
+   - Portability: fix missing dep in spec file, fix compilation with new
+          NUMA libraries (Daniel Berrange), udev compatibility for RHEL (Chris
+          Lalancette), 
+   - Documentation: documentation copy and paste errors and typo (Cole
+          Robinson)
+   - Bug fixes: add a delay in storage backend for disks to show up
+          (Chris Lalancette), fix parsing for CDRom device with no source
+          (Daniel Berrange), use xenstore to list domains to avoid some
+          bugs (Guido Günther), remove a leak in xen inotify code (Daniel
+          Berrange), UML driver freeing of uninitialialized variable (Ron
+          Yorston), fix UML inotify code (Daniel Berrange), crash when
+          adding storage without a format (Cole Robinson)
+   - Improvements: use xend preferably to hypervisor call to set Xen
+          max memory (Jim Fehlig), allow remote://hostname/ URI for automatic
+          probe of hypervisors (Daniel Berrange), fix daemon configuration
+          regression testing (Jim Meyering ), check /usr/bin/kvm for QEmu
+          driver init (Guido Günther), proper active vs. inactive
+          differentiation (Guido Günther), improve MTU setting on tap
+          interfaces (Eduardo Habkost), increase timeout for initial QEmu
+          monitor poll (Cole Robinson)
+   - Cleanups:fix improper initialisations (Jim Meyering)
+
+
 0.5.0: Nov 25 2008:
    - New features: CPU and scheduler support for LXC (Dan Smith), SDL display configuration (Daniel Berrange), domain lifecycle event support for QEmu and Xen with python bindings (Ben Guthro and Daniel Berrange), KVM/QEmu migration support (Rich Jones and Chris Lalancette), User Mode Linux driver (Daniel Berrange), API for node device enumeration using HAL and DeviceKit with python bindings (David Lively), 
    - Portability: RHEL build fixes, VPATH build (Guido Gunther), many MinGW related cleanups and fixes (Richard Jones), compilation without libvirtd (Richard Jones), Add a Windows icon (Richard Jones), sys/poll.h portability fixes (Daniel Berrange), gnulib and mingw cleanups (Jim Meyering), 

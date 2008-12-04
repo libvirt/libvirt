@@ -5,6 +5,30 @@
     <p>Here is the list of official releases, however since it is early on in the
 development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
+    <h3>0.5.1: Dec  4 2008</h3>
+    <ul>
+      <li>Portability: fix missing dep in spec file, fix compilation with new
+          NUMA libraries (Daniel Berrange), udev compatibility for RHEL (Chris
+          Lalancette), </li>
+      <li>Documentation: documentation copy and paste errors and typo (Cole
+          Robinson)</li>
+      <li>Bug fixes: add a delay in storage backend for disks to show up
+          (Chris Lalancette), fix parsing for CDRom device with no source
+          (Daniel Berrange), use xenstore to list domains to avoid some
+          bugs (Guido Günther), remove a leak in xen inotify code (Daniel
+          Berrange), UML driver freeing of uninitialialized variable (Ron
+          Yorston), fix UML inotify code (Daniel Berrange), crash when
+          adding storage without a format (Cole Robinson)</li>
+      <li>Improvements: use xend preferably to hypervisor call to set Xen
+          max memory (Jim Fehlig), allow remote://hostname/ URI for automatic
+          probe of hypervisors (Daniel Berrange), fix daemon configuration
+          regression testing (Jim Meyering ), check /usr/bin/kvm for QEmu
+          driver init (Guido Günther), proper active vs. inactive
+          differentiation (Guido Günther), improve MTU setting on tap
+          interfaces (Eduardo Habkost), increase timeout for initial QEmu
+          monitor poll (Cole Robinson)</li>
+      <li>Cleanups:fix improper initialisations (Jim Meyering)</li>
+    </ul>
     <h3>0.5.0: Nov 25 2008</h3>
     <ul>
       <li>New features: CPU and scheduler support for LXC (Dan Smith), SDL display configuration (Daniel Berrange), domain lifecycle event support for QEmu and Xen with python bindings (Ben Guthro and Daniel Berrange), KVM/QEmu migration support (Rich Jones and Chris Lalancette), User Mode Linux driver (Daniel Berrange), API for node device enumeration using HAL and DeviceKit with python bindings (David Lively), </li>

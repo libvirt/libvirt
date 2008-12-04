@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.ta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-25 16:34+0100\n"
+"POT-Creation-Date: 2008-12-04 16:26+0100\n"
 "PO-Revision-Date: 2008-10-14 16:28+0530\n"
 "Last-Translator: I. Felix <ifelix@redhat.com>\n"
 "Language-Team: Tamil <fedora-trans-ta@redhat.com>\n"
@@ -112,7 +112,7 @@ msgstr "மதிப்புரு சரம் சரியாக குறி
 msgid "Unknown error"
 msgstr "தெரியாத பிழை"
 
-#: qemud/qemud.c:166 src/remote_internal.c:940
+#: qemud/qemud.c:166 src/remote_internal.c:952
 #, c-format
 msgid "Cannot access %s '%s': %s (%d)"
 msgstr "%s '%s': %sஐ அணுக முடியவில்லை (%d)"
@@ -264,75 +264,75 @@ msgstr "qemudInitPaths()இல் முடிவு பாதை நீளம�
 msgid "Failed to allocate struct qemud_server"
 msgstr "struct qemud_serverஐ ஒதுக்க முடியவில்லை"
 
-#: qemud/qemud.c:829
+#: qemud/qemud.c:836
 #, c-format
 msgid "Failed to initialize SASL authentication %s"
 msgstr "SASL அங்கீகாரத்த %s துவக்க முடியவில்லை"
 
-#: qemud/qemud.c:844
+#: qemud/qemud.c:851
 #, c-format
 msgid "Failed to connect to system bus for PolicyKit auth: %s"
 msgstr "PolicyKit authக்கு கணினி பஸ்ஸை இணைக்க முடியவில்லை: %s"
 
-#: qemud/qemud.c:955
+#: qemud/qemud.c:962
 #, c-format
 msgid "remoteInitializeTLSSession: %s"
 msgstr "remoteInitializeTLSSession: %s"
 
-#: qemud/qemud.c:972
+#: qemud/qemud.c:979
 #, c-format
 msgid "remoteCheckDN: gnutls_x509_cert_get_dn: %s"
 msgstr "remoteCheckDN: gnutls_x509_cert_get_dn: %s"
 
-#: qemud/qemud.c:991
+#: qemud/qemud.c:998
 #, c-format
 msgid "remoteCheckDN: failed: client DN is %s"
 msgstr "remoteCheckDN: தோல்வி: கிளையன் DN %s"
 
-#: qemud/qemud.c:1007
+#: qemud/qemud.c:1014
 #, c-format
 msgid "remoteCheckCertificate: verify failed: %s"
 msgstr "remoteCheckCertificate: சரி பார்க்க முடியவில்லை: %s"
 
-#: qemud/qemud.c:1015
+#: qemud/qemud.c:1022
 msgid "remoteCheckCertificate: the client certificate is not trusted."
 msgstr "remoteCheckCertificate: கிளையன் சான்றிதழ் நம்பகத்தன்மை இல்லை."
 
-#: qemud/qemud.c:1020
+#: qemud/qemud.c:1027
 msgid "remoteCheckCertificate: the client certificate has unknown issuer."
 msgstr "remoteCheckCertificate: கிளையன் சான்றிதழ் வழங்கியவர் தெரியவில்லை."
 
-#: qemud/qemud.c:1025
+#: qemud/qemud.c:1032
 msgid "remoteCheckCertificate: the client certificate has been revoked."
 msgstr "remoteCheckCertificate: கிளையன் சான்றிதழ் எடுக்கப்பட்டது."
 
-#: qemud/qemud.c:1031
+#: qemud/qemud.c:1038
 msgid ""
 "remoteCheckCertificate: the client certificate uses an insecure algorithm."
 msgstr ""
 "remoteCheckCertificate: கிளையன் சான்றிதழ் பாதுகாப்பில்லாத கணிமுறையை கொண்டுள்ளது."
 
-#: qemud/qemud.c:1040
+#: qemud/qemud.c:1047
 msgid "remoteCheckCertificate: certificate is not X.509"
 msgstr "remoteCheckCertificate: சான்றிதழ் X.509 இல்லை"
 
-#: qemud/qemud.c:1045
+#: qemud/qemud.c:1052
 msgid "remoteCheckCertificate: no peers"
 msgstr "remoteCheckCertificate: பியர்கள் இல்லை"
 
-#: qemud/qemud.c:1056
+#: qemud/qemud.c:1063
 msgid "remoteCheckCertificate: gnutls_x509_crt_init failed"
 msgstr "remoteCheckCertificate: gnutls_x509_crt_init தோல்வி"
 
-#: qemud/qemud.c:1066
+#: qemud/qemud.c:1073
 msgid "remoteCheckCertificate: the client certificate has expired"
 msgstr "remoteCheckCertificate: கிளையன் சான்றிதழ் முடிவுற்றது"
 
-#: qemud/qemud.c:1073
+#: qemud/qemud.c:1080
 msgid "remoteCheckCertificate: the client certificate is not yet activated"
 msgstr "remoteCheckCertificate: கிளையன் சான்றிதழ் இன்னும் செயல்படுத்தப்படவில்லை"
 
-#: qemud/qemud.c:1082
+#: qemud/qemud.c:1089
 msgid ""
 "remoteCheckCertificate: client's Distinguished Name is not on the list of "
 "allowed clients (tls_allowed_dn_list).  Use 'openssl x509 -in clientcert.pem "
@@ -344,11 +344,11 @@ msgstr ""
 "text' ஐ கிளையன் சான்றிதழில் வேறுபட்ட பெயர் புலத்தில் அல்லது இந்த டீமானை --verbose "
 "விருப்பத்துடன் இயக்கவும்."
 
-#: qemud/qemud.c:1099
+#: qemud/qemud.c:1106
 msgid "remoteCheckCertificate: failed to verify client's certificate"
 msgstr "remoteCheckCertificate: கிளையன் சான்றிதழை சரிபார்க்க முடியவில்லை"
 
-#: qemud/qemud.c:1103
+#: qemud/qemud.c:1110
 msgid ""
 "remoteCheckCertificate: tls_no_verify_certificate is set so the bad "
 "certificate is ignored"
@@ -356,112 +356,112 @@ msgstr ""
 "remoteCheckCertificate: tls_no_verify_certificate அமைக்கப்பட்டது எனவே தவறான "
 "சான்றிதழ் தவிர்க்கப்பட்டது"
 
-#: qemud/qemud.c:1125
+#: qemud/qemud.c:1132
 #, c-format
 msgid "Failed to verify client credentials: %s"
 msgstr "கிளையன் சரி பார்க்க முடியவில்லை: %s"
 
-#: qemud/qemud.c:1150
+#: qemud/qemud.c:1157
 #, c-format
 msgid "Failed to accept connection: %s"
 msgstr "இணைக்க ஏற்க முடியவில்லை: %s"
 
-#: qemud/qemud.c:1189
+#: qemud/qemud.c:1196
 #, c-format
 msgid "Turn off polkit auth for privileged client %d"
 msgstr "polkit auth ஐ முன்னிரிமையளிக்கப்பட்ட கிளையன் %dக்கு நிறுத்தப்பட்டது"
 
-#: qemud/qemud.c:1228 qemud/qemud.c:1471 qemud/qemud.c:1611
+#: qemud/qemud.c:1235 qemud/qemud.c:1478 qemud/qemud.c:1618
 #, c-format
 msgid "TLS handshake failed: %s"
 msgstr "TLS handshake தோல்வி: %s"
 
-#: qemud/qemud.c:1299
+#: qemud/qemud.c:1306
 #, c-format
 msgid "read: %s"
 msgstr "வாசி: %s"
 
-#: qemud/qemud.c:1312
+#: qemud/qemud.c:1319
 #, c-format
 msgid "gnutls_record_recv: %s"
 msgstr "gnutls_record_recv: %s"
 
-#: qemud/qemud.c:1495
+#: qemud/qemud.c:1502
 #, c-format
 msgid "write: %s"
 msgstr "write: %s"
 
-#: qemud/qemud.c:1505
+#: qemud/qemud.c:1512
 #, c-format
 msgid "gnutls_record_send: %s"
 msgstr "gnutls_record_send: %s"
 
-#: qemud/qemud.c:1728
+#: qemud/qemud.c:1735
 #, c-format
 msgid "Signal handler reported %d errors: last error: %s"
 msgstr "சிக்னல் கையாளி %d பிழைகளை அறிக்கையிட்டது: கடைசி பிழை: %s"
 
-#: qemud/qemud.c:1826 qemud/qemud.c:1847
+#: qemud/qemud.c:1833 qemud/qemud.c:1854
 #, c-format
 msgid "failed to allocate memory for %s config list"
 msgstr "%s config பட்டியலுக்கு நினைவகம் ஒதுக்க முடியவில்லை"
 
-#: qemud/qemud.c:1833 qemud/qemud.c:1864
+#: qemud/qemud.c:1840 qemud/qemud.c:1871
 #, c-format
 msgid "failed to allocate memory for %s config list value"
 msgstr "%s config பட்டியல் மதிப்புக்கு நினைவகம் ஒதுக்க முடியவில்லை"
 
-#: qemud/qemud.c:1852 qemud/qemud.c:1875
+#: qemud/qemud.c:1859 qemud/qemud.c:1882
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: must be a string or list of strings\n"
 msgstr "remoteReadConfigFile: %s: %s: ஒரு சரம் அல்லது சரங்களின் பட்டியல்\n"
 
-#: qemud/qemud.c:1892
+#: qemud/qemud.c:1899
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: invalid type: got %s; expected %s\n"
 msgstr ""
 "remoteReadConfigFile: %s: %s: தவறான வகை: %s பெறப்பட்டது; %sஎதிர்ப்பார்க்கப்பட்டது\n"
 
-#: qemud/qemud.c:1913
+#: qemud/qemud.c:1920
 #, c-format
 msgid "remoteReadConfigFile: %s\n"
 msgstr "remoteReadConfigFile: %s\n"
 
-#: qemud/qemud.c:1957
+#: qemud/qemud.c:1964
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: unsupported auth %s\n"
 msgstr "remoteReadConfigFile: %s: %s: துணைபுரியாத auth %s\n"
 
-#: qemud/qemud.c:2042
+#: qemud/qemud.c:2049
 msgid "Cannot set group when not running as root"
 msgstr "ரூட்டாக இயங்கும் போது குழுவை அமைக்க முடியாது"
 
-#: qemud/qemud.c:2046
+#: qemud/qemud.c:2053
 #, c-format
 msgid "Failed to lookup group '%s'"
 msgstr "குழு '%s'ஐ தேட முடியவில்லை"
 
-#: qemud/qemud.c:2059 qemud/qemud.c:2070
+#: qemud/qemud.c:2066 qemud/qemud.c:2077
 #, c-format
 msgid "Failed to parse mode '%s'"
 msgstr "முறைமை '%s'ஐ பகுக்க முடியவில்லை"
 
-#: qemud/qemud.c:2243
+#: qemud/qemud.c:2250
 #, c-format
 msgid "Failed to fork as daemon: %s"
 msgstr "டீமானாக பிடிக்க முடியவில்லை: %s"
 
-#: qemud/qemud.c:2265 src/util.c:250
+#: qemud/qemud.c:2272 src/util.c:250
 #, c-format
 msgid "Failed to create pipe: %s"
 msgstr "பைப் உருவாக்க முடியவில்லை: %s"
 
-#: qemud/qemud.c:2298
+#: qemud/qemud.c:2305
 #, c-format
 msgid "Failed to change group ownership of %s"
 msgstr "%sஇன் குழு உரிமையாளரை மாற்ற முடியவில்லை"
 
-#: qemud/qemud.c:2307
+#: qemud/qemud.c:2314
 msgid "Failed to register callback for signal pipe"
 msgstr "சிக்னல் பைப்புக்கு கால்பேக்கை பதிவு செய்ய முடியவில்லை"
 
@@ -602,7 +602,7 @@ msgstr "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 msgid "network not found"
 msgstr "பிணையம் காணப்படவில்லை"
 
-#: qemud/remote.c:2390 src/remote_internal.c:4123
+#: qemud/remote.c:2390 src/remote_internal.c:4135
 #, c-format
 msgid "Cannot resolve address %d: %s"
 msgstr "முகவரி %dஐ தீர்க்க முடியவில்லை: %s"
@@ -611,12 +611,12 @@ msgstr "முகவரி %dஐ தீர்க்க முடியவில�
 msgid "client tried invalid SASL init request"
 msgstr "தவறான SASL init கோரிக்கையை கிளையன் முயற்சித்தது"
 
-#: qemud/remote.c:2439 src/remote_internal.c:4351
+#: qemud/remote.c:2439 src/remote_internal.c:4363
 #, c-format
 msgid "failed to get sock address %d (%s)"
 msgstr "சாக் முகவரி %d (%s)ஐ பெற முடியவில்லை"
 
-#: qemud/remote.c:2450 src/remote_internal.c:4363
+#: qemud/remote.c:2450 src/remote_internal.c:4375
 #, c-format
 msgid "failed to get peer address %d (%s)"
 msgstr "பியர் முகவரி %dஐ பெற முடியவில்லை (%s)"
@@ -649,7 +649,7 @@ msgstr "SASL நுட்பங்கள் %d (%s)ஐ பட்டியலி�
 msgid "cannot allocate mechlist"
 msgstr "mechlistஐ ஒதுக்க முடியவில்லை"
 
-#: qemud/remote.c:2576 src/remote_internal.c:4628
+#: qemud/remote.c:2576 src/remote_internal.c:4640
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr "SASL ssf ஐ இணைப்பு %d (%s)இல் வினாயிட முடியவில்லை"
@@ -850,7 +850,7 @@ msgid "expecting an assignment"
 msgstr "திட்டம் எதிர்பார்க்கப்படுகிறது"
 
 #: src/conf.c:892 src/conf.c:948 src/xend_internal.c:535
-#: src/xend_internal.c:2623 src/xm_internal.c:1512 src/xm_internal.c:1519
+#: src/xend_internal.c:2623 src/xm_internal.c:1526 src/xm_internal.c:1533
 msgid "allocate buffer"
 msgstr "இடையக ஒதுக்கீடு"
 
@@ -969,448 +969,448 @@ msgstr "இணைப்பு hash அட்டவணையிலிருந்
 msgid "unknown disk type '%s'"
 msgstr "தெரியாத வகை '%s'"
 
-#: src/domain_conf.c:576
+#: src/domain_conf.c:584
 #, fuzzy, c-format
 msgid "unknown disk device '%s'"
 msgstr "தெரியாத பூட் சாதனம் '%s'"
 
-#: src/domain_conf.c:602
+#: src/domain_conf.c:610
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "தவறான நெகிழ் சாதன பெயர்: %s"
 
-#: src/domain_conf.c:617
+#: src/domain_conf.c:625
 #, c-format
 msgid "Invalid harddisk device name: %s"
 msgstr "தவறான நிலைவட்டு சாதன பெயர்: %s"
 
-#: src/domain_conf.c:624
+#: src/domain_conf.c:632
 #, fuzzy, c-format
 msgid "unknown disk bus type '%s'"
 msgstr "தெரியாத auth வகை '%s'"
 
-#: src/domain_conf.c:649
+#: src/domain_conf.c:657
 #, c-format
 msgid "Invalid bus type '%s' for floppy disk"
 msgstr "தவறான பஸ் வகை '%s' நெகிழ் வட்டுக்கு"
 
-#: src/domain_conf.c:655
+#: src/domain_conf.c:663
 #, fuzzy, c-format
 msgid "Invalid bus type '%s' for disk"
 msgstr "தவறான பஸ் வகை '%s' நெகிழ் வட்டுக்கு"
 
-#: src/domain_conf.c:707
+#: src/domain_conf.c:715
 #, fuzzy, c-format
 msgid "unknown filesystem type '%s'"
 msgstr "தெரியாத auth வகை '%s'"
 
-#: src/domain_conf.c:800
+#: src/domain_conf.c:808
 #, fuzzy, c-format
 msgid "unknown interface type '%s'"
 msgstr "தெரியாத auth வகை '%s'"
 
-#: src/domain_conf.c:864
+#: src/domain_conf.c:872
 msgid ""
 "No <source> 'network' attribute specified with <interface type='network'/>"
 msgstr ""
 "<source> 'பிணைய' அளவுரு <interface type='network'/>உடன் குறிப்பிடப்படவில்லை"
 
-#: src/domain_conf.c:890
+#: src/domain_conf.c:898
 msgid "No <source> 'dev' attribute specified with <interface type='bridge'/>"
 msgstr "<source> 'dev' அளவுரு <interface type='bridge'/>உடன் குறிப்பிடப்பட்டுள்ளது"
 
-#: src/domain_conf.c:902
+#: src/domain_conf.c:910
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr "<source> 'துறை' அளவுரு சாக்கெட் முகப்புடன் குறிப்பிடப்படவில்லை"
 
-#: src/domain_conf.c:907
+#: src/domain_conf.c:915
 msgid "Cannot parse <source> 'port' attribute with socket interface"
 msgstr "<source> 'துறை' மதிப்பை சாக்கெட் முகப்புடன் பகுக்க முடியாது"
 
-#: src/domain_conf.c:915
+#: src/domain_conf.c:923
 msgid "No <source> 'address' attribute specified with socket interface"
 msgstr "<source> 'முகவரி' மதிப்புரு சாக்கெட் முகப்புடன் இல்லை"
 
-#: src/domain_conf.c:940
+#: src/domain_conf.c:948
 msgid "Model name contains invalid characters"
 msgstr "மாதிரி பெயர் தவறான எழுத்துக்களை கொண்டுள்ளது"
 
-#: src/domain_conf.c:1113 src/domain_conf.c:1190
+#: src/domain_conf.c:1121 src/domain_conf.c:1198
 msgid "Missing source path attribute for char device"
 msgstr "விடுபட்ட மூல தகவல் எழுத்து சாதனத்திற்கு"
 
-#: src/domain_conf.c:1130 src/domain_conf.c:1147
+#: src/domain_conf.c:1138 src/domain_conf.c:1155
 msgid "Missing source host attribute for char device"
 msgstr "சாதனத்திற்கு விடுபட்ட மூல புரவலன் மதிப்பு எழுத்து சாதனத்திற்கு"
 
-#: src/domain_conf.c:1135 src/domain_conf.c:1152 src/domain_conf.c:1172
+#: src/domain_conf.c:1143 src/domain_conf.c:1160 src/domain_conf.c:1180
 msgid "Missing source service attribute for char device"
 msgstr "char சாதனத்திற்கான மூல சேவை மதிப்புருக்களை விடுபட்டுள்ளது"
 
-#: src/domain_conf.c:1242
+#: src/domain_conf.c:1250
 msgid "missing input device type"
 msgstr "விடுபட்ட உள்ளீடு சாதன வகை"
 
-#: src/domain_conf.c:1248
+#: src/domain_conf.c:1256
 #, fuzzy, c-format
 msgid "unknown input device type '%s'"
 msgstr "தெரியாத பூட் சாதனம் '%s'"
 
-#: src/domain_conf.c:1255
+#: src/domain_conf.c:1263
 #, fuzzy, c-format
 msgid "unknown input bus type '%s'"
 msgstr "தெரியாத auth வகை '%s'"
 
-#: src/domain_conf.c:1263
+#: src/domain_conf.c:1271
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr "ps2 %s உள்ளீடு சாதனத்திற்கு துணைபுரியவில்லை"
 
-#: src/domain_conf.c:1269 src/domain_conf.c:1276
+#: src/domain_conf.c:1277 src/domain_conf.c:1284
 #, c-format
 msgid "unsupported input bus %s"
 msgstr "துணைபுரியாத உள்ளீடு பஸ் %s"
 
-#: src/domain_conf.c:1281
+#: src/domain_conf.c:1289
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "xen பஸ் %s உள்ளீடு சாதனத்திற்கு துணைபுரியவில்லை"
 
-#: src/domain_conf.c:1326
+#: src/domain_conf.c:1334
 #, fuzzy
 msgid "missing graphics device type"
 msgstr "விடுபட்ட உள்ளீடு சாதன வகை"
 
-#: src/domain_conf.c:1332
+#: src/domain_conf.c:1340
 #, fuzzy, c-format
 msgid "unknown graphics device type '%s'"
 msgstr "தெரியாத சாதன வகை"
 
-#: src/domain_conf.c:1343
+#: src/domain_conf.c:1351
 #, fuzzy, c-format
 msgid "cannot parse vnc port %s"
 msgstr "%sக்கு கட்டமைப்பை நீக்க முடியவில்லை"
 
-#: src/domain_conf.c:1401
+#: src/domain_conf.c:1411
 #, fuzzy, c-format
 msgid "unknown sound model '%s'"
 msgstr "தெரியாத ஒலி மாதிரி வகை"
 
-#: src/domain_conf.c:1434
+#: src/domain_conf.c:1444
 #, fuzzy, c-format
 msgid "cannot parse vendor id %s"
 msgstr "dir %sஐ வாசிக்க முடியவில்லை: %s"
 
-#: src/domain_conf.c:1441
+#: src/domain_conf.c:1451
 msgid "usb vendor needs id"
 msgstr ""
 
-#: src/domain_conf.c:1451
+#: src/domain_conf.c:1461
 #, fuzzy, c-format
 msgid "cannot parse product %s"
 msgstr "%s சாதனத்தை திறக்க இயலவில்லை"
 
-#: src/domain_conf.c:1458
+#: src/domain_conf.c:1468
 msgid "usb product needs id"
 msgstr ""
 
-#: src/domain_conf.c:1469
+#: src/domain_conf.c:1479
 #, fuzzy, c-format
 msgid "cannot parse bus %s"
 msgstr "%sஐ வாசிக்க இயலவில்லை: %s"
 
-#: src/domain_conf.c:1476
+#: src/domain_conf.c:1486
 msgid "usb address needs bus id"
 msgstr ""
 
-#: src/domain_conf.c:1485
+#: src/domain_conf.c:1495
 #, fuzzy, c-format
 msgid "cannot parse device %s"
 msgstr "%s சாதனத்தை திறக்க இயலவில்லை"
 
-#: src/domain_conf.c:1493
+#: src/domain_conf.c:1503
 msgid "usb address needs device id"
 msgstr ""
 
-#: src/domain_conf.c:1498
+#: src/domain_conf.c:1508
 #, fuzzy, c-format
 msgid "unknown usb source type '%s'"
 msgstr "தெரியாத auth வகை '%s'"
 
-#: src/domain_conf.c:1508
+#: src/domain_conf.c:1518
 #, fuzzy
 msgid "missing vendor"
 msgstr "விடுபட்ட \""
 
-#: src/domain_conf.c:1514
+#: src/domain_conf.c:1524
 #, fuzzy
 msgid "missing product"
 msgstr "விடுபட்ட மூல புரவலன்"
 
-#: src/domain_conf.c:1542
+#: src/domain_conf.c:1552
 #, fuzzy, c-format
 msgid "unknown hostdev mode '%s'"
 msgstr "தெரியாத பூட் சாதனம் '%s'"
 
-#: src/domain_conf.c:1553
+#: src/domain_conf.c:1563
 #, fuzzy, c-format
 msgid "unknown host device type '%s'"
 msgstr "தெரியாத பூட் சாதனம் '%s'"
 
-#: src/domain_conf.c:1558
+#: src/domain_conf.c:1568
 #, fuzzy
 msgid "missing type in hostdev"
 msgstr "விடுபட்ட மூல புரவலன்"
 
-#: src/domain_conf.c:1573
+#: src/domain_conf.c:1583
 #, fuzzy, c-format
 msgid "unknown node %s"
 msgstr "தெரியாத புரவலன் %s"
 
-#: src/domain_conf.c:1604
+#: src/domain_conf.c:1614
 #, fuzzy, c-format
 msgid "unknown lifecycle action %s"
 msgstr "தெரியாத அங்கீகார வகை %s"
 
-#: src/domain_conf.c:1633 src/domain_conf.c:2238 src/domain_conf.c:2279
-#: src/network_conf.c:462 src/network_conf.c:502 src/storage_conf.c:631
-#: src/storage_conf.c:1027
+#: src/domain_conf.c:1643 src/domain_conf.c:2254 src/domain_conf.c:2296
+#: src/network_conf.c:462 src/network_conf.c:502 src/storage_conf.c:636
+#: src/storage_conf.c:1037
 msgid "missing root element"
 msgstr "விடுபட்ட ரூட் உருப்படி"
 
-#: src/domain_conf.c:1668
+#: src/domain_conf.c:1678
 msgid "unknown device type"
 msgstr "தெரியாத சாதன வகை"
 
-#: src/domain_conf.c:1703
+#: src/domain_conf.c:1714
 msgid "failed to allocate space for xmlXPathContext"
 msgstr "xmlXPathContextக்கு இடம் ஒதுக்க முடியவில்லை"
 
-#: src/domain_conf.c:1711
+#: src/domain_conf.c:1726
 msgid "missing domain type attribute"
 msgstr "விடுபட்ட செயற்கள வகை மதிப்பு"
 
-#: src/domain_conf.c:1717
+#: src/domain_conf.c:1732
 #, fuzzy, c-format
 msgid "invalid domain type %s"
 msgstr "தவறான செயற்கள வகை"
 
-#: src/domain_conf.c:1734 src/network_conf.c:317
+#: src/domain_conf.c:1749 src/network_conf.c:317
 #, c-format
 msgid "Failed to generate UUID: %s"
 msgstr "UUIDஐ உருவாக்க முடியவில்லை: %s"
 
-#: src/domain_conf.c:1741 src/network_conf.c:324 src/storage_conf.c:454
+#: src/domain_conf.c:1756 src/network_conf.c:324 src/storage_conf.c:459
 msgid "malformed uuid element"
 msgstr "தவறான uuid உருப்படி"
 
-#: src/domain_conf.c:1750
+#: src/domain_conf.c:1765
 msgid "missing memory element"
 msgstr "விடுபட்ட நினைவக உருப்படி"
 
-#: src/domain_conf.c:1780
+#: src/domain_conf.c:1795
 #, fuzzy, c-format
 msgid "unexpected feature %s"
 msgstr "எதிர்பாராத தரவு '%s'"
 
-#: src/domain_conf.c:1820
+#: src/domain_conf.c:1835
 msgid "no OS type"
 msgstr "OS வகை இல்லை"
 
-#: src/domain_conf.c:1849 src/xm_internal.c:698
+#: src/domain_conf.c:1864 src/xm_internal.c:698
 #, fuzzy, c-format
 msgid "no supported architecture for os type '%s'"
 msgstr "துணைபுரியாத வடிவமைப்பு"
 
-#: src/domain_conf.c:1899
+#: src/domain_conf.c:1914
 #, fuzzy
 msgid "cannot extract boot device"
 msgstr "மூல சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/domain_conf.c:1907
+#: src/domain_conf.c:1922
 #, fuzzy
 msgid "missing boot device"
 msgstr "விடுபட்ட மூல சாதனம்"
 
-#: src/domain_conf.c:1912
+#: src/domain_conf.c:1927
 #, c-format
 msgid "unknown boot device '%s'"
 msgstr "தெரியாத பூட் சாதனம் '%s'"
 
-#: src/domain_conf.c:1932
+#: src/domain_conf.c:1947
 #, fuzzy
 msgid "cannot extract disk devices"
 msgstr "மூல சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/domain_conf.c:1952
+#: src/domain_conf.c:1967
 #, fuzzy
 msgid "cannot extract filesystem devices"
 msgstr "மூல சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/domain_conf.c:1970
+#: src/domain_conf.c:1985
 #, fuzzy
 msgid "cannot extract network devices"
 msgstr "மூல சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/domain_conf.c:1990
+#: src/domain_conf.c:2005
 #, fuzzy
 msgid "cannot extract parallel devices"
 msgstr "மூல சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/domain_conf.c:2009
+#: src/domain_conf.c:2024
 #, fuzzy
 msgid "cannot extract serial devices"
 msgstr "மூல சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/domain_conf.c:2057
+#: src/domain_conf.c:2072
 #, fuzzy
 msgid "cannot extract input devices"
 msgstr "மூல சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/domain_conf.c:2091
+#: src/domain_conf.c:2106
 #, fuzzy
 msgid "cannot extract graphics devices"
 msgstr "மூல சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/domain_conf.c:2132
+#: src/domain_conf.c:2148
 #, fuzzy
 msgid "cannot extract sound devices"
 msgstr "மூல சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/domain_conf.c:2161
+#: src/domain_conf.c:2177
 #, fuzzy
 msgid "cannot extract host devices"
 msgstr "மூல சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/domain_conf.c:2202 src/network_conf.c:427 src/storage_conf.c:585
+#: src/domain_conf.c:2218 src/network_conf.c:427 src/storage_conf.c:590
 #, fuzzy, c-format
 msgid "at line %d: %s"
 msgstr "bind: %s"
 
-#: src/domain_conf.c:2232 src/domain_conf.c:2273 src/network_conf.c:456
-#: src/network_conf.c:496 src/storage_conf.c:617 src/storage_conf.c:1013
+#: src/domain_conf.c:2248 src/domain_conf.c:2290 src/network_conf.c:456
+#: src/network_conf.c:496 src/storage_conf.c:622 src/storage_conf.c:1023
 #, fuzzy
 msgid "failed to parse xml document"
 msgstr "செயற்களம் இடை நிறுத்த முடியவில்லை"
 
-#: src/domain_conf.c:2302 src/network_conf.c:524
+#: src/domain_conf.c:2320 src/network_conf.c:524
 msgid "incorrect root element"
 msgstr "தவறான ரூட் உருப்படி"
 
-#: src/domain_conf.c:2511
+#: src/domain_conf.c:2529
 msgid "topology cpuset syntax error"
 msgstr "topology cpuset இலக்கண பிழை"
 
-#: src/domain_conf.c:2525
+#: src/domain_conf.c:2543
 #, fuzzy, c-format
 msgid "unexpected lifecycle type %d"
 msgstr "எதிர்பார்க்காத செயற்கள வகை %d"
 
-#: src/domain_conf.c:2546
+#: src/domain_conf.c:2564
 #, fuzzy, c-format
 msgid "unexpected disk type %d"
 msgstr "எதிர்பார்க்காத செயற்கள வகை %d"
 
-#: src/domain_conf.c:2551
+#: src/domain_conf.c:2569
 #, fuzzy, c-format
 msgid "unexpected disk device %d"
 msgstr "எதிர்பார்க்காத செயற்கள வகை %d"
 
-#: src/domain_conf.c:2556
+#: src/domain_conf.c:2574
 #, fuzzy, c-format
 msgid "unexpected disk bus %d"
 msgstr "எதிர்பார்க்காத செயற்கள வகை %d"
 
-#: src/domain_conf.c:2606
+#: src/domain_conf.c:2624
 #, fuzzy, c-format
 msgid "unexpected filesystem type %d"
 msgstr "எதிர்பார்க்காத செயற்கள வகை %d"
 
-#: src/domain_conf.c:2657 src/domain_conf.c:2871
+#: src/domain_conf.c:2675 src/domain_conf.c:2889
 #, fuzzy, c-format
 msgid "unexpected net type %d"
 msgstr "எதிர்பார்க்காத செயற்கள வகை %d"
 
-#: src/domain_conf.c:2725
+#: src/domain_conf.c:2743
 #, fuzzy, c-format
 msgid "unexpected char type %d"
 msgstr "எதிர்பார்க்காத செயற்கள வகை %d"
 
-#: src/domain_conf.c:2824 src/xend_internal.c:5180
+#: src/domain_conf.c:2842 src/xend_internal.c:5180
 #, fuzzy, c-format
 msgid "unexpected sound model %d"
 msgstr "எதிர்பார்க்காத செயற்கள வகை %d"
 
-#: src/domain_conf.c:2844 src/xend_internal.c:5202
+#: src/domain_conf.c:2862 src/xend_internal.c:5202
 #, fuzzy, c-format
 msgid "unexpected input type %d"
 msgstr "எதிர்பார்க்காத செயற்கள வகை %d"
 
-#: src/domain_conf.c:2849
+#: src/domain_conf.c:2867
 #, fuzzy, c-format
 msgid "unexpected input bus type %d"
 msgstr "எதிர்பார்க்காத செயற்கள வகை %d"
 
-#: src/domain_conf.c:2931
+#: src/domain_conf.c:2949
 #, fuzzy, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "எதிர்பாராத dict முனை"
 
-#: src/domain_conf.c:2938
+#: src/domain_conf.c:2956
 #, fuzzy, c-format
 msgid "unexpected hostdev type %d"
 msgstr "எதிர்பார்க்காத செயற்கள வகை %d"
 
-#: src/domain_conf.c:2976
+#: src/domain_conf.c:2994
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "எதிர்பார்க்காத செயற்கள வகை %d"
 
-#: src/domain_conf.c:3061
+#: src/domain_conf.c:3079
 #, fuzzy, c-format
 msgid "unexpected boot device type %d"
 msgstr "எதிர்பார்க்காத செயற்கள வகை %d"
 
-#: src/domain_conf.c:3079
+#: src/domain_conf.c:3097
 #, fuzzy, c-format
 msgid "unexpected feature %d"
 msgstr "எதிர்பாராத மதிப்பு முனை"
 
-#: src/domain_conf.c:3205 src/network_conf.c:655 src/storage_conf.c:1369
+#: src/domain_conf.c:3223 src/network_conf.c:655 src/storage_conf.c:1379
 #, c-format
 msgid "cannot create config directory %s: %s"
 msgstr "கட்டமை அடைவை %sஐ உருவாக்க முடியவில்லை: %s"
 
-#: src/domain_conf.c:3214 src/network_conf.c:671 src/storage_conf.c:1412
+#: src/domain_conf.c:3232 src/network_conf.c:671 src/storage_conf.c:1422
 #, c-format
 msgid "cannot create config file %s: %s"
 msgstr "கட்டமைப்பு கோப்பு %sஐ உருவாக்க முடியவில்லை: %s"
 
-#: src/domain_conf.c:3222 src/network_conf.c:679 src/storage_conf.c:1420
+#: src/domain_conf.c:3240 src/network_conf.c:679 src/storage_conf.c:1430
 #, c-format
 msgid "cannot write config file %s: %s"
 msgstr "கட்டமைப்பு கோப்பு %sஐ எழுத முடியவில்லை: %s"
 
-#: src/domain_conf.c:3229 src/network_conf.c:686 src/storage_conf.c:1427
+#: src/domain_conf.c:3247 src/network_conf.c:686 src/storage_conf.c:1437
 #, c-format
 msgid "cannot save config file %s: %s"
 msgstr "கட்டமைப்பு கோப்பு %sஐ சேமிக்க முடியவில்லை: %s"
 
-#: src/domain_conf.c:3308 src/network_conf.c:767
+#: src/domain_conf.c:3327 src/network_conf.c:767
 #, c-format
 msgid "Failed to open dir '%s': %s"
 msgstr "dir '%s'ஐ திறக்க முடியவில்லை: %s"
 
-#: src/domain_conf.c:3360 src/network_conf.c:807
+#: src/domain_conf.c:3379 src/network_conf.c:807
 #, fuzzy, c-format
 msgid "cannot remove config for %s: %s"
 msgstr "%sக்கு கட்டமைப்பை நீக்க முடியவில்லை"
 
-#: src/domain_conf.c:3434
+#: src/domain_conf.c:3453
 msgid "unknown virt type"
 msgstr "தெரியாத virt வகை"
 
-#: src/domain_conf.c:3445
+#: src/domain_conf.c:3464
 #, c-format
 msgid "no emulator for domain %s os type %s on architecture %s"
 msgstr ""
@@ -1447,41 +1447,41 @@ msgstr "iptables விதி '%s' '%s'இலிருந்து அட்ட�
 msgid "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s"
 msgstr "iptables விதி '%s'ஐ சங்கிலி '%s'க்கு அட்டவணை '%s'இல் சேர்க்க முடியவில்லை: %s"
 
-#: src/libvirt.c:808
+#: src/libvirt.c:828
 msgid "could not parse connection URI"
 msgstr "இணைப்பு URIஐ பகுக்க முடியவில்லை"
 
-#: src/libvirt.c:938
+#: src/libvirt.c:958
 #, fuzzy
 msgid "unable to open connection"
 msgstr "இணைக்க ஏற்க முடியவில்லை: %s"
 
-#: src/libvirt.c:2316
+#: src/libvirt.c:2336
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare  uriஐ அமைக்க முடியவில்லை"
 
-#: src/libvirt.c:2345
+#: src/libvirt.c:2365
 #, fuzzy
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare  uriஐ அமைக்க முடியவில்லை"
 
-#: src/libvirt.c:2890
+#: src/libvirt.c:2910
 msgid "path is NULL"
 msgstr "பாதை வெறுமையாக உள்ளது"
 
-#: src/libvirt.c:2896
+#: src/libvirt.c:2916
 msgid "flags must be zero"
 msgstr "கொடிகள் பூஜ்ஜியம் ஆகும்"
 
-#: src/libvirt.c:2903
+#: src/libvirt.c:2923
 msgid "buffer is NULL"
 msgstr "இடையகம் வெறுமை"
 
-#: src/libvirt.c:2986
+#: src/libvirt.c:3006
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL"
 msgstr "கொடிகள் மதிப்பு VIR_MEMORY_VIRTUAL"
 
-#: src/libvirt.c:2993
+#: src/libvirt.c:3013
 msgid "buffer is NULL but size is non-zero"
 msgstr "இடையகம் வெறுமை ஆனால் அளவு பூஜ்ஜியமற்றது"
 
@@ -1670,28 +1670,28 @@ msgstr "unlockpt தோல்வி: %s"
 msgid "failed to allocate tty: %s"
 msgstr "ஒரு முனையை ஒதுக்க முடியவில்லை"
 
-#: src/lxc_controller.c:617
+#: src/lxc_controller.c:618
 #, fuzzy, c-format
 msgid "Unable to write pid file: %s\n"
 msgstr "pid கோப்பு '%s' ஐ எழுத முடியவில்லை: %s"
 
-#: src/lxc_controller.c:630
+#: src/lxc_controller.c:631
 #, fuzzy, c-format
 msgid "Unable to change to root dir: %s\n"
 msgstr "argvஐ logfile %dஇல் எழுத முடியவில்லை: %s"
 
-#: src/lxc_controller.c:636
+#: src/lxc_controller.c:637
 #, fuzzy, c-format
 msgid "Unable to become session leader: %s\n"
 msgstr "logfile %dஐ மூட முடியவில்லை: %s"
 
-#: src/lxc_controller.c:644
+#: src/lxc_controller.c:645
 #, fuzzy, c-format
 msgid "Failed connection from LXC driver: %s\n"
 msgstr "சேமிப்பக இயக்கியை தேட முடியவில்லை: %s"
 
 #: src/lxc_driver.c:193 src/network_driver.c:872 src/network_driver.c:905
-#: src/qemu_driver.c:2338 src/uml_driver.c:1347
+#: src/qemu_driver.c:2339 src/uml_driver.c:1348
 msgid "failed to allocate space for VM name string"
 msgstr "VM பெயர் சரத்திற்கு இட ஒதுக்கீடு செய்ய முடியவில்லை"
 
@@ -1703,23 +1703,23 @@ msgstr ""
 #: src/lxc_driver.c:342 src/openvz_driver.c:246 src/openvz_driver.c:275
 #: src/openvz_driver.c:291 src/openvz_driver.c:318 src/openvz_driver.c:748
 #: src/openvz_driver.c:779 src/openvz_driver.c:800 src/openvz_driver.c:841
-#: src/qemu_driver.c:1676 src/qemu_driver.c:1763 src/qemu_driver.c:2318
-#: src/qemu_driver.c:2371 src/qemu_driver.c:2432 src/qemu_driver.c:2523
-#: src/qemu_driver.c:2640 src/qemu_driver.c:2716 src/qemu_driver.c:2784
-#: src/qemu_driver.c:2841 src/qemu_driver.c:2903 src/qemu_driver.c:2980
-#: src/qemu_driver.c:3017 src/qemu_driver.c:3035 src/qemu_driver.c:3285
-#: src/uml_driver.c:1212 src/uml_driver.c:1299 src/uml_driver.c:1327
-#: src/uml_driver.c:1379 src/uml_driver.c:1423 src/uml_driver.c:1457
-#: src/uml_driver.c:1475 src/uml_driver.c:1544
+#: src/qemu_driver.c:1677 src/qemu_driver.c:1764 src/qemu_driver.c:2319
+#: src/qemu_driver.c:2372 src/qemu_driver.c:2433 src/qemu_driver.c:2524
+#: src/qemu_driver.c:2641 src/qemu_driver.c:2717 src/qemu_driver.c:2785
+#: src/qemu_driver.c:2842 src/qemu_driver.c:2904 src/qemu_driver.c:2981
+#: src/qemu_driver.c:3018 src/qemu_driver.c:3036 src/qemu_driver.c:3286
+#: src/uml_driver.c:1213 src/uml_driver.c:1300 src/uml_driver.c:1328
+#: src/uml_driver.c:1380 src/uml_driver.c:1424 src/uml_driver.c:1458
+#: src/uml_driver.c:1476 src/uml_driver.c:1545
 msgid "no domain with matching uuid"
 msgstr "ஒப்பிடும் uuidஉடன் செயற்களம் இல்லை"
 
-#: src/lxc_driver.c:272 src/openvz_driver.c:753 src/qemu_driver.c:2438
-#: src/uml_driver.c:1429
+#: src/lxc_driver.c:272 src/openvz_driver.c:753 src/qemu_driver.c:2439
+#: src/uml_driver.c:1430
 msgid "cannot delete active domain"
 msgstr "செயலிலுள்ள செயற்களத்தை அழிக்க முடியவில்லை"
 
-#: src/lxc_driver.c:278 src/qemu_driver.c:2444 src/uml_driver.c:1435
+#: src/lxc_driver.c:278 src/qemu_driver.c:2445 src/uml_driver.c:1436
 #, fuzzy
 msgid "cannot undefine transient domain"
 msgstr "செயலிலுள்ள செயற்களத்தை அழிக்க முடியவில்லை"
@@ -1863,8 +1863,8 @@ msgstr "முன்னனுப்புதல் கோரப்பட்ட�
 msgid "unknown forwarding type '%s'"
 msgstr "தெரியாத auth வகை '%s'"
 
-#: src/network_conf.c:662 src/network_driver.c:1095 src/qemu_driver.c:3060
-#: src/storage_driver.c:813 src/uml_driver.c:1500
+#: src/network_conf.c:662 src/network_driver.c:1095 src/qemu_driver.c:3061
+#: src/storage_driver.c:813 src/uml_driver.c:1501
 #, c-format
 msgid "cannot create autostart directory %s: %s"
 msgstr "%s அடைவிற்கு தானியக்கி துவக்கத்தை உருவாக்க முடியாது: %s"
@@ -1874,7 +1874,7 @@ msgstr "%s அடைவிற்கு தானியக்கி துவக�
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr "பிணைய கட்டமைப்பு கோப்பு பெயர் '%s' பிணைய பெயர் '%s'உடன் பொருந்தவில்லை"
 
-#: src/network_conf.c:798 src/storage_conf.c:1448
+#: src/network_conf.c:798 src/storage_conf.c:1458
 #, c-format
 msgid "no config file for %s"
 msgstr "%sக்கு கட்டமைப்பு கோப்பு இல்லை"
@@ -1884,7 +1884,7 @@ msgstr "%sக்கு கட்டமைப்பு கோப்பு இல�
 msgid "Failed to autostart network '%s': %s\n"
 msgstr "பிணையம் '%s'ஐ தானாக துவக்க முடியவில்லை: %s"
 
-#: src/network_driver.c:132 src/qemu_driver.c:190 src/uml_driver.c:294
+#: src/network_driver.c:132 src/qemu_driver.c:191 src/uml_driver.c:295
 #, fuzzy, c-format
 msgid "Failed to find user record for uid '%d': %s\n"
 msgstr "uid '%d'க்கு பயனர் பதிவை காண முடியவில்லை: %s"
@@ -1970,7 +1970,7 @@ msgstr "iptables விதியை '%s'இல் கிராஸ் ப்ர�
 msgid "network is already active"
 msgstr "பிணையம் ஏற்கனவே செயலில் உள்ளது"
 
-#: src/network_driver.c:676 src/qemu_conf.c:575
+#: src/network_driver.c:676 src/qemu_conf.c:577
 #, c-format
 msgid "cannot initialize bridge support: %s"
 msgstr "பாலம் துணையை துவக்க வில்லை: %s"
@@ -2048,8 +2048,8 @@ msgstr "network bridge சரத்திற்கு இட ஒதுக்க�
 msgid "Failed to create symlink '%s' to '%s': %s"
 msgstr "%s லிருந்து %s க்கு symlinkஐ உருவாக்க முடியவில்லை: %s"
 
-#: src/network_driver.c:1109 src/qemu_driver.c:3074 src/storage_driver.c:829
-#: src/uml_driver.c:1514
+#: src/network_driver.c:1109 src/qemu_driver.c:3075 src/storage_driver.c:829
+#: src/uml_driver.c:1515
 #, c-format
 msgid "Failed to delete symlink '%s': %s"
 msgstr "symlink '%s'ஐ அழிக்க முடியவில்லை: %s"
@@ -2215,7 +2215,7 @@ msgstr "செயற்களம் shutoff நிலையுடன் இல�
 msgid "Could not read container config"
 msgstr "இணைப்பு URIஐ பகுக்க முடியவில்லை"
 
-#: src/openvz_driver.c:821 src/qemu_driver.c:1299
+#: src/openvz_driver.c:821 src/qemu_driver.c:1300
 #, c-format
 msgid "unknown type '%s'"
 msgstr "தெரியாத வகை '%s'"
@@ -2229,142 +2229,142 @@ msgstr ""
 msgid "Could not parse VPS ID %s"
 msgstr "இணைப்பு URIஐ பகுக்க முடியவில்லை"
 
-#: src/proxy_internal.c:252
+#: src/proxy_internal.c:251
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "சாக்கெட் %dஐ மூட முடியவில்லை\n"
 
-#: src/proxy_internal.c:285
+#: src/proxy_internal.c:284
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "சாக்கெட் %dஐ வாசிக்க முடியவில்லை\n"
 
-#: src/proxy_internal.c:312
+#: src/proxy_internal.c:311
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "சாக்கெட் %dஐ எழுத முடியவில்லை\n"
 
-#: src/proxy_internal.c:404 src/proxy_internal.c:425 src/proxy_internal.c:445
+#: src/proxy_internal.c:403 src/proxy_internal.c:424 src/proxy_internal.c:444
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "பதிலாளுடன் தொடர்பு பிழை: %d பைட்டில் %d பெறப்பட்டது\n"
 
-#: src/proxy_internal.c:412
+#: src/proxy_internal.c:411
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "பதிலாளுடன் தொடர்பு பிழை: எதிர்பார்த்த %d பைட்டுகள் %dஐ பெற்றன\n"
 
-#: src/proxy_internal.c:434
+#: src/proxy_internal.c:433
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "பதிலாளுடன் தொடர்பு பிழை: %d பைட்டுகள் பாக்கெட் பெறப்பட்டது\n"
 
-#: src/proxy_internal.c:458
+#: src/proxy_internal.c:457
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "பதிலாளுடன் தொடர்பு பிழை: தவறான பாக்கெட்\n"
 
-#: src/proxy_internal.c:464
+#: src/proxy_internal.c:463
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "ஒருங்கிணைக்கப்படாத பாக்கெட் எண் %d பெறப்பட்டது\n"
 
-#: src/qemu_conf.c:73
+#: src/qemu_conf.c:74
 #, fuzzy
 msgid "failed to allocate vncListen"
 msgstr "ஒரு முனையை ஒதுக்க முடியவில்லை"
 
-#: src/qemu_conf.c:78 src/qemu_conf.c:113
+#: src/qemu_conf.c:79 src/qemu_conf.c:114
 msgid "failed to allocate vncTLSx509certdir"
 msgstr "vncTLSx509certdirஐ ஒதுக்க முடியவில்லை"
 
-#: src/qemu_conf.c:125
+#: src/qemu_conf.c:126
 #, fuzzy
 msgid "failed to allocate vnc_listen"
 msgstr "ஒரு முனையை ஒதுக்க முடியவில்லை"
 
-#: src/qemu_conf.c:477
+#: src/qemu_conf.c:479
 #, c-format
 msgid "Unexpected exit status from qemu %d pid %lu"
 msgstr "qemu %d pid %luஇலிலிருந்து எதிர்பாராத வெளியேறும் நிலை"
 
-#: src/qemu_conf.c:486
+#: src/qemu_conf.c:488
 #, c-format
 msgid "Unexpected exit status '%d', qemu probably failed"
 msgstr "எதிர்பாராத வெளியேறும் நிலை '%d', qemu தோல்வி"
 
-#: src/qemu_conf.c:509 src/qemu_driver.c:871
+#: src/qemu_conf.c:511 src/qemu_driver.c:871
 #, c-format
 msgid "Cannot find QEMU binary %s: %s"
 msgstr "QEMU இருமத்தை காண முடியவில்லை %s: %s"
 
-#: src/qemu_conf.c:541
+#: src/qemu_conf.c:543
 #, c-format
 msgid "Network '%s' not found"
 msgstr "பிணையம் '%s' காணப்படவில்லை"
 
-#: src/qemu_conf.c:551
+#: src/qemu_conf.c:553
 #, fuzzy, c-format
 msgid "Network '%s' is not active"
 msgstr "பிணைய %s செயலிலில்லை"
 
-#: src/qemu_conf.c:559
+#: src/qemu_conf.c:561
 #, c-format
 msgid "Network type %d is not supported"
 msgstr "பிணைய வகை %d துணைபுரியவில்லை"
 
-#: src/qemu_conf.c:585
+#: src/qemu_conf.c:587
 #, fuzzy, c-format
 msgid "Failed to add tap interface to bridge. %s is not a bridge device"
 msgstr "டேப் முகப்பு '%s'ஐ பாலம் '%s'க்கு சேர்க்க முடியவில்லை : %s"
 
-#: src/qemu_conf.c:589
+#: src/qemu_conf.c:591
 #, c-format
 msgid "Failed to add tap interface '%s' to bridge '%s' : %s"
 msgstr "டேப் முகப்பு '%s'ஐ பாலம் '%s'க்கு சேர்க்க முடியவில்லை : %s"
 
-#: src/qemu_conf.c:612
+#: src/qemu_conf.c:614
 msgid "failed to allocate space for tapfds string"
 msgstr "tapfds சரத்திற்கு இட ஒதுக்கீடு செய்ய முடியவில்லை"
 
-#: src/qemu_conf.c:956 src/qemu_conf.c:1008
+#: src/qemu_conf.c:958 src/qemu_conf.c:1010
 #, fuzzy, c-format
 msgid "unsupported usb disk type for '%s'"
 msgstr "துணைபுரியாத வட்டு வகை '%s'"
 
-#: src/qemu_conf.c:964 src/qemu_conf.c:1027 src/uml_conf.c:335
+#: src/qemu_conf.c:966 src/qemu_conf.c:1029 src/uml_conf.c:337
 #, c-format
 msgid "unsupported disk type '%s'"
 msgstr "துணைபுரியாத வட்டு வகை '%s'"
 
-#: src/qemu_conf.c:1245
+#: src/qemu_conf.c:1247
 msgid "invalid sound model"
 msgstr "தவறான ஒலி மாதிரி"
 
-#: src/qemu_conf.c:1299 src/uml_conf.c:375
+#: src/qemu_conf.c:1301 src/uml_conf.c:377
 msgid "failed to allocate space for argv string"
 msgstr "argv சரத்திற்கு இடம் ஒதுக்க முடியவில்லை"
 
-#: src/qemu_driver.c:88 src/uml_driver.c:94
+#: src/qemu_driver.c:89 src/uml_driver.c:95
 #, fuzzy
 msgid "Failed to set close-on-exec file descriptor flag\n"
 msgstr "close-on-exec கோப்பு விவரிப்பி கொடியை அமைக்க முடியவில்லை"
 
-#: src/qemu_driver.c:103
+#: src/qemu_driver.c:104
 #, fuzzy
 msgid "Failed to set non-blocking file descriptor flag\n"
 msgstr "non-blocking கோப்பு விவரிப்பி கொடியை அமைக்க முடியவில்லை"
 
-#: src/qemu_driver.c:148 src/uml_driver.c:125
+#: src/qemu_driver.c:149 src/uml_driver.c:126
 #, fuzzy, c-format
 msgid "Failed to autostart VM '%s': %s\n"
 msgstr "VM '%s'ஐ தானாக துவக்க முடியவில்லை: %s"
 
-#: src/qemu_driver.c:241
+#: src/qemu_driver.c:242
 #, fuzzy
 msgid "qemudStartup: out of memory\n"
 msgstr "qemudStartup: நினைவகம் போதவில்லை"
 
-#: src/qemu_driver.c:375
+#: src/qemu_driver.c:376
 #, c-format
 msgid ""
 "QEMU quit during %s startup\n"
@@ -2373,22 +2373,22 @@ msgstr ""
 "QEMU %s startupஇல் வெளியேறுகிறது\n"
 "%s"
 
-#: src/qemu_driver.c:385 src/qemu_driver.c:398
+#: src/qemu_driver.c:386 src/qemu_driver.c:399
 #, c-format
 msgid "Failure while reading %s startup output: %s"
 msgstr "%s startup வெளிப்பாட்டை வாசிக்கையில் பிழை: %s"
 
-#: src/qemu_driver.c:393
+#: src/qemu_driver.c:394
 #, c-format
 msgid "Timed out while reading %s startup output"
 msgstr "%s startup வெளிப்பாட்டை வாசிக்கையில் நேரம் முடிந்தது"
 
-#: src/qemu_driver.c:409
+#: src/qemu_driver.c:410
 #, c-format
 msgid "Failure while reading %s startup output"
 msgstr "%s startup வெளிப்பாட்டை வாசிக்க முடியவில்லை"
 
-#: src/qemu_driver.c:421
+#: src/qemu_driver.c:422
 #, c-format
 msgid "Out of space while reading %s startup output"
 msgstr "%s startup வெளிப்பாட்டை வாசிக்கையில் இடமில்லை"
@@ -2425,11 +2425,11 @@ msgstr "CPU த்ரட் விவரத்தை மானிட்டர்
 msgid "failed to set CPU affinity %s"
 msgstr "CPU affinity %sஐ அமைக்க முடியவில்லை"
 
-#: src/qemu_driver.c:737 src/qemu_driver.c:1613
+#: src/qemu_driver.c:737 src/qemu_driver.c:1614
 msgid "resume operation failed"
 msgstr "தொடர்ந்த செயற்பாடு செயலிழக்கப்பட்டது"
 
-#: src/qemu_driver.c:805 src/uml_driver.c:688
+#: src/qemu_driver.c:805 src/uml_driver.c:689
 msgid "VM is already active"
 msgstr "VM ஏற்கனவே செயலிலுள்ளது"
 
@@ -2442,29 +2442,29 @@ msgstr "பயன்படுத்தாத VNC துறையை தேட �
 msgid "config file path too long: %s/%s.log"
 msgstr "கட்டமைப்பு கோப்பு பாதை நீளமாக உள்ளது: %s/%s.log"
 
-#: src/qemu_driver.c:846 src/uml_driver.c:724
+#: src/qemu_driver.c:846 src/uml_driver.c:725
 #, c-format
 msgid "failed to create logfile %s: %s"
 msgstr "logfile %sஐ உருவாக்க முடியவில்லை: %s"
 
-#: src/qemu_driver.c:852 src/uml_driver.c:733
+#: src/qemu_driver.c:852 src/uml_driver.c:734
 #, c-format
 msgid "Unable to set VM logfile close-on-exec flag %s"
 msgstr "VM logfile close-on-exec கொடியை அமைக்க முடியவில்லை %s"
 
-#: src/qemu_driver.c:881 src/qemu_driver.c:2549
+#: src/qemu_driver.c:881 src/qemu_driver.c:2550
 #, fuzzy, c-format
 msgid "Cannot determine QEMU argv syntax %s"
 msgstr "QEMU இருமத்தை காண முடியவில்லை %s: %s"
 
-#: src/qemu_driver.c:899 src/qemu_driver.c:902 src/uml_driver.c:749
-#: src/uml_driver.c:752
+#: src/qemu_driver.c:899 src/qemu_driver.c:902 src/uml_driver.c:750
+#: src/uml_driver.c:753
 #, fuzzy, c-format
 msgid "Unable to write envv to logfile %d: %s\n"
 msgstr "argvஐ logfile %dஇல் எழுத முடியவில்லை: %s"
 
 #: src/qemu_driver.c:909 src/qemu_driver.c:912 src/qemu_driver.c:917
-#: src/uml_driver.c:759 src/uml_driver.c:762 src/uml_driver.c:767
+#: src/uml_driver.c:760 src/uml_driver.c:763 src/uml_driver.c:768
 #, fuzzy, c-format
 msgid "Unable to write argv to logfile %d: %s\n"
 msgstr "argvஐ logfile %dஇல் எழுத முடியவில்லை: %s"
@@ -2484,125 +2484,125 @@ msgstr "logfile %dஐ மூட முடியவில்லை: %s"
 msgid "Got unexpected pid, damn\n"
 msgstr "எதிர்பார்க்காத pid, damn பெறப்பட்டது"
 
-#: src/qemu_driver.c:1270
+#: src/qemu_driver.c:1271
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "tty %sஐ திறக்க முடியவில்லை: %s\n"
 
-#: src/qemu_driver.c:1315 src/uml_driver.c:908
+#: src/qemu_driver.c:1316 src/uml_driver.c:909
 msgid "failed to allocate space for capabilities support"
 msgstr "செயல்திறனை துணையில் இடம் ஒதுக்க முடியவில்லை"
 
-#: src/qemu_driver.c:1334 src/qemu_driver.c:1360 src/uml_driver.c:927
-#: src/uml_driver.c:953
+#: src/qemu_driver.c:1335 src/qemu_driver.c:1361 src/uml_driver.c:928
+#: src/uml_driver.c:954
 msgid "NUMA not supported on this host"
 msgstr "NUMA இந்த புரவலனில் துணைபுரியவில்லை"
 
-#: src/qemu_driver.c:1345 src/qemu_driver.c:1368 src/uml_driver.c:938
-#: src/uml_driver.c:961
+#: src/qemu_driver.c:1346 src/qemu_driver.c:1369 src/uml_driver.c:939
+#: src/uml_driver.c:962
 msgid "Failed to query NUMA free memory"
 msgstr "NUMA வெற்று நினைவகத்திற்கு வினாயிட முடியவில்லை"
 
-#: src/qemu_driver.c:1525 src/uml_driver.c:1126
+#: src/qemu_driver.c:1526 src/uml_driver.c:1127
 #, fuzzy, c-format
 msgid "domain '%s' is already defined"
 msgstr "செயற்களம் %s ஏற்கனவே உள்ளது"
 
-#: src/qemu_driver.c:1536 src/uml_driver.c:1137
+#: src/qemu_driver.c:1537 src/uml_driver.c:1138
 #, fuzzy, c-format
 msgid "domain with uuid '%s' is already defined"
 msgstr "செயற்களம் %s ஏற்கனவே உள்ளது"
 
-#: src/qemu_driver.c:1569 src/qemu_driver.c:1601 src/qemu_driver.c:1633
-#: src/qemu_driver.c:1654 src/qemu_driver.c:1894 src/qemu_driver.c:3111
-#: src/qemu_driver.c:3236 src/qemu_driver.c:3351 src/qemu_driver.c:3611
-#: src/uml_driver.c:1169 src/uml_driver.c:1192
+#: src/qemu_driver.c:1570 src/qemu_driver.c:1602 src/qemu_driver.c:1634
+#: src/qemu_driver.c:1655 src/qemu_driver.c:1895 src/qemu_driver.c:3112
+#: src/qemu_driver.c:3237 src/qemu_driver.c:3352 src/qemu_driver.c:3612
+#: src/uml_driver.c:1170 src/uml_driver.c:1193
 #, c-format
 msgid "no domain with matching id %d"
 msgstr "id %dஉடன் எந்த செயற்களமும் இல்லை"
 
-#: src/qemu_driver.c:1574 src/qemu_driver.c:1606 src/qemu_driver.c:1900
-#: src/qemu_driver.c:3116 src/qemu_driver.c:3242 src/qemu_driver.c:3357
-#: src/qemu_driver.c:3617
+#: src/qemu_driver.c:1575 src/qemu_driver.c:1607 src/qemu_driver.c:1901
+#: src/qemu_driver.c:3117 src/qemu_driver.c:3243 src/qemu_driver.c:3358
+#: src/qemu_driver.c:3618
 msgid "domain is not running"
 msgstr "செயற்களம் இயங்கவில்லை"
 
-#: src/qemu_driver.c:1582
+#: src/qemu_driver.c:1583
 msgid "suspend operation failed"
 msgstr "இடைநிறுத்த செயல்பாடு செயலிழக்கப்பட்டது"
 
-#: src/qemu_driver.c:1639 src/uml_driver.c:1176
+#: src/qemu_driver.c:1640 src/uml_driver.c:1177
 msgid "shutdown operation failed"
 msgstr "பணிநிறுத்த செயல்பாடு செயலிழக்கப்பட்டது"
 
-#: src/qemu_driver.c:1682 src/uml_driver.c:1218
+#: src/qemu_driver.c:1683 src/uml_driver.c:1219
 msgid "failed to allocate space for ostype"
 msgstr "ostypeக்கு இடம் ஒதுக்க முடியவில்லை"
 
-#: src/qemu_driver.c:1698 src/qemu_driver.c:1714 src/qemu_driver.c:1737
-#: src/qemu_driver.c:2012 src/qemu_driver.c:2174 src/uml_driver.c:1234
-#: src/uml_driver.c:1250 src/uml_driver.c:1273
+#: src/qemu_driver.c:1699 src/qemu_driver.c:1715 src/qemu_driver.c:1738
+#: src/qemu_driver.c:2013 src/qemu_driver.c:2175 src/uml_driver.c:1235
+#: src/uml_driver.c:1251 src/uml_driver.c:1274
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "பொருந்தும் uuid '%s'உடன் செயற்களம் இல்லை"
 
-#: src/qemu_driver.c:1720 src/uml_driver.c:1256
+#: src/qemu_driver.c:1721 src/uml_driver.c:1257
 msgid "cannot set max memory lower than current memory"
 msgstr "அதிகபட்ச நினைவக நடப்பு நினைவகத்துடன் அமைக்க முடியவில்லை"
 
-#: src/qemu_driver.c:1743 src/uml_driver.c:1279
+#: src/qemu_driver.c:1744 src/uml_driver.c:1280
 msgid "cannot set memory of an active domain"
 msgstr "ஒரு செயலிலுள்ள செயற்களத்திற்கு நினைவகம் அமைக்க முடியவில்லை"
 
-#: src/qemu_driver.c:1749 src/uml_driver.c:1285
+#: src/qemu_driver.c:1750 src/uml_driver.c:1286
 msgid "cannot set memory higher than max memory"
 msgstr "அதிகபட்ச நினைவகத்தை விட அதிக நினைவகம் அமைக்க முடியவில்லை"
 
-#: src/qemu_driver.c:1909
+#: src/qemu_driver.c:1910
 msgid "failed to pause domain"
 msgstr "செயற்களம் இடை நிறுத்த முடியவில்லை"
 
-#: src/qemu_driver.c:1918
+#: src/qemu_driver.c:1919
 msgid "failed to get domain xml"
 msgstr "செயற்களம் xml ஐ பெற முடியவில்லை"
 
-#: src/qemu_driver.c:1926
+#: src/qemu_driver.c:1927
 #, c-format
 msgid "failed to create '%s'"
 msgstr "'%s'ஐ உருவாக்க முடியவில்லை"
 
-#: src/qemu_driver.c:1933
+#: src/qemu_driver.c:1934
 msgid "failed to write save header"
 msgstr "பதிவு கோப்பினை எழுத முடியவில்லை"
 
-#: src/qemu_driver.c:1941
+#: src/qemu_driver.c:1942
 msgid "failed to write xml"
 msgstr "xmlஐ எழுத முடியவில்லை"
 
-#: src/qemu_driver.c:1954 src/qemu_driver.c:1961 src/qemu_driver.c:2234
-#: src/qemu_driver.c:2660 src/qemu_driver.c:2736 src/remote_internal.c:2438
+#: src/qemu_driver.c:1955 src/qemu_driver.c:1962 src/qemu_driver.c:2235
+#: src/qemu_driver.c:2661 src/qemu_driver.c:2737 src/remote_internal.c:2450
 #: src/virterror.c:449
 msgid "out of memory"
 msgstr "நினைவகம் போதவில்லை"
 
-#: src/qemu_driver.c:1969 src/qemu_driver.c:3654
+#: src/qemu_driver.c:1970 src/qemu_driver.c:3655
 msgid "migrate operation failed"
 msgstr "இடம்பெயர்வு செயற்பாடு செயலிழக்கப்பட்டது"
 
-#: src/qemu_driver.c:1981
+#: src/qemu_driver.c:1982
 #, fuzzy
 msgid "'migrate' not supported by this qemu"
 msgstr "'info blockstats' இந்த qemuவினால் துணைபுரிய முடியவில்லை"
 
-#: src/qemu_driver.c:2018
+#: src/qemu_driver.c:2019
 msgid "cannot change vcpu count of an active domain"
 msgstr "vcpu எண்ணிக்கையை செயல் செயற்களத்தில் மாற்ற முடியவில்லை"
 
-#: src/qemu_driver.c:2024
+#: src/qemu_driver.c:2025
 msgid "could not determine max vcpus for the domain"
 msgstr "அதிகபட்ச vcpus செயற்களத்திற்கு வரையறுக்க முடியவில்லை"
 
-#: src/qemu_driver.c:2030
+#: src/qemu_driver.c:2031
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
@@ -2610,268 +2610,268 @@ msgstr ""
 "கோரப்பட்ட vcpus அதிகமாக அனுமதிக்கூடிய vcpusஐ செயற்களத்திற்கு அனுமதிக்கூடியது: %d > %"
 "d"
 
-#: src/qemu_driver.c:2054 src/qemu_driver.c:2106
+#: src/qemu_driver.c:2055 src/qemu_driver.c:2107
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "செயலற்ற செயற்களத்தில் vcpusஐ பின் செய்ய முடியவில்லை"
 
-#: src/qemu_driver.c:2060
+#: src/qemu_driver.c:2061
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr "vcpu எண் வரையறையில் இல்லை %d > %d"
 
-#: src/qemu_driver.c:2081
+#: src/qemu_driver.c:2082
 #, c-format
 msgid "cannot set affinity: %s"
 msgstr "affinityஐ அமைக்க முடியவில்லை: %s"
 
-#: src/qemu_driver.c:2086
+#: src/qemu_driver.c:2087
 msgid "cpu affinity is not supported"
 msgstr "cpu affinity துணைபுரியவில்லை"
 
-#: src/qemu_driver.c:2143
+#: src/qemu_driver.c:2144
 #, c-format
 msgid "cannot get affinity: %s"
 msgstr "affinityஐ பெற முடியவில்லை: %s"
 
-#: src/qemu_driver.c:2153
+#: src/qemu_driver.c:2154
 msgid "cpu affinity is not available"
 msgstr "cpu affinity இல்லை"
 
-#: src/qemu_driver.c:2180
+#: src/qemu_driver.c:2181
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "தெரியாத virt வகை செயற்கள வரையறை '%d'இல்"
 
-#: src/qemu_driver.c:2206 src/test.c:1049
+#: src/qemu_driver.c:2207 src/test.c:1051
 msgid "cannot read domain image"
 msgstr "செயற்கள உருவை வாசிக்க முடியவில்லை"
 
-#: src/qemu_driver.c:2212
+#: src/qemu_driver.c:2213
 msgid "failed to read qemu header"
 msgstr "qemu தலைப்பை வாசிக்க முடியவில்லை"
 
-#: src/qemu_driver.c:2219
+#: src/qemu_driver.c:2220
 msgid "image magic is incorrect"
 msgstr "image magic தவறாக உள்ளது"
 
-#: src/qemu_driver.c:2226
+#: src/qemu_driver.c:2227
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "image version துணைபுரியவில்லை (%d > %d)"
 
-#: src/qemu_driver.c:2241
+#: src/qemu_driver.c:2242
 msgid "failed to read XML"
 msgstr "XMLஐ வாசிக்க முடியவில்லை"
 
-#: src/qemu_driver.c:2250 src/qemu_driver.c:3530
+#: src/qemu_driver.c:2251 src/qemu_driver.c:3531
 msgid "failed to parse XML"
 msgstr "XMLஐ பகுக்க முடியவில்லை"
 
-#: src/qemu_driver.c:2263
+#: src/qemu_driver.c:2264
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "செயற்களம் ஏற்கனவே '%s' செயலிலுள்ளது"
 
-#: src/qemu_driver.c:2272 src/qemu_driver.c:3566
+#: src/qemu_driver.c:2273 src/qemu_driver.c:3567
 msgid "failed to assign new VM"
 msgstr "புதிய VMஐ ஒதுக்க முடியவில்லை"
 
-#: src/qemu_driver.c:2285
+#: src/qemu_driver.c:2286
 msgid "failed to start VM"
 msgstr "VMஐ துவக்க முடியவில்லை"
 
-#: src/qemu_driver.c:2301
+#: src/qemu_driver.c:2302
 msgid "failed to resume domain"
 msgstr "செயற்களத்தை தொடர முடியவில்லை"
 
-#: src/qemu_driver.c:2471
+#: src/qemu_driver.c:2472
 #, c-format
 msgid "cannot convert disk '%s' to bus/device index"
 msgstr ""
 
-#: src/qemu_driver.c:2497
+#: src/qemu_driver.c:2498
 #, fuzzy, c-format
 msgid "Unsupported disk name mapping for bus '%s'"
 msgstr "துணைபுரியாத வட்டு வகை '%s'"
 
-#: src/qemu_driver.c:2539
+#: src/qemu_driver.c:2540
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:2566
+#: src/qemu_driver.c:2567
 #, c-format
 msgid ""
 "Emulator version does not support removable media for device '%s' and target "
 "'%s'"
 msgstr ""
 
-#: src/qemu_driver.c:2603
+#: src/qemu_driver.c:2604
 msgid "cannot change cdrom media"
 msgstr "குறுவட்டு rom ஊடகத்தை மாற்ற முடியாது"
 
-#: src/qemu_driver.c:2614
+#: src/qemu_driver.c:2615
 #, fuzzy
 msgid "changing cdrom media failed"
 msgstr "குறுவட்டு rom ஊடகத்தை மாற்ற முடியாது"
 
-#: src/qemu_driver.c:2647 src/qemu_driver.c:2723
+#: src/qemu_driver.c:2648 src/qemu_driver.c:2724
 #, fuzzy, c-format
 msgid "target %s already exists"
 msgstr "சேமிப்பக தொகுதி ஏற்கனவே உள்ளது"
 
-#: src/qemu_driver.c:2674
+#: src/qemu_driver.c:2675
 #, fuzzy, c-format
 msgid "cannot attach %s disk"
 msgstr "%sஐ வாசிக்க இயலவில்லை: %s"
 
-#: src/qemu_driver.c:2688
+#: src/qemu_driver.c:2689
 msgid "Unable to parse slot number\n"
 msgstr ""
 
-#: src/qemu_driver.c:2691
+#: src/qemu_driver.c:2692
 #, fuzzy, c-format
 msgid "adding %s disk failed"
 msgstr "செயற்களம் %s ஏற்கனவே உள்ளது"
 
-#: src/qemu_driver.c:2749
+#: src/qemu_driver.c:2750
 #, fuzzy
 msgid "cannot attach usb disk"
 msgstr "மூல சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/qemu_driver.c:2760
+#: src/qemu_driver.c:2761
 #, fuzzy
 msgid "adding usb disk failed"
 msgstr "புரவலன் விளக்க கோப்பு ஏற்றப்படுகிறது"
 
-#: src/qemu_driver.c:2808
+#: src/qemu_driver.c:2809
 #, fuzzy
 msgid "cannot attach usb device"
 msgstr "மூல சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/qemu_driver.c:2819
+#: src/qemu_driver.c:2820
 #, fuzzy
 msgid "adding usb device failed"
 msgstr "புரவலன் விளக்க கோப்பு ஏற்றப்படுகிறது"
 
-#: src/qemu_driver.c:2847 src/qemu_driver.c:2986
+#: src/qemu_driver.c:2848 src/qemu_driver.c:2987
 msgid "cannot attach device on inactive domain"
 msgstr "வரையறுக்கப்படாத ஒரு செயலற்ற செயற்களத்தை இணைக்க முடியவில்லை"
 
-#: src/qemu_driver.c:2885
+#: src/qemu_driver.c:2886
 #, fuzzy
 msgid "this device type cannot be attached"
 msgstr "குறுவட்டுROM மட்டும் வட்டு சாதனங்களுடன் இணைக்கப்படலாம்"
 
-#: src/qemu_driver.c:2916
+#: src/qemu_driver.c:2917
 #, fuzzy, c-format
 msgid "disk %s not found"
 msgstr "செயற்களம் இல்லை"
 
-#: src/qemu_driver.c:2922
+#: src/qemu_driver.c:2923
 #, c-format
 msgid "disk %s cannot be detached - invalid slot number %d"
 msgstr ""
 
-#: src/qemu_driver.c:2935
+#: src/qemu_driver.c:2936
 #, fuzzy, c-format
 msgid "failed to execute detach disk %s command"
 msgstr "செயற்களத்தை தொடர முடியவில்லை"
 
-#: src/qemu_driver.c:2945
+#: src/qemu_driver.c:2946
 #, fuzzy, c-format
 msgid "failed to detach disk %s: invalid slot %d"
 msgstr " %s லிருந்து சாதனத்தை நீக்க முடியவில்லை"
 
-#: src/qemu_driver.c:3002
+#: src/qemu_driver.c:3003
 #, fuzzy
 msgid "only SCSI or virtio disk device can be detached dynamically"
 msgstr "குறுவட்டுROM மட்டும் வட்டு சாதனங்களுடன் இணைக்கப்படலாம்"
 
-#: src/qemu_driver.c:3041 src/uml_driver.c:1481
+#: src/qemu_driver.c:3042 src/uml_driver.c:1482
 #, fuzzy
 msgid "cannot set autostart for transient domain"
 msgstr "ஒரு செயலிலுள்ள செயற்களத்திற்கு நினைவகம் அமைக்க முடியவில்லை"
 
-#: src/qemu_driver.c:3067 src/uml_driver.c:1507
+#: src/qemu_driver.c:3068 src/uml_driver.c:1508
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s to '%s': %s"
 msgstr "%s லிருந்து %s க்கு symlinkஐ உருவாக்க முடியவில்லை: %s"
 
-#: src/qemu_driver.c:3129
+#: src/qemu_driver.c:3130
 #, c-format
 msgid "invalid path: %s"
 msgstr "தவறான பாதை: %s"
 
-#: src/qemu_driver.c:3140
+#: src/qemu_driver.c:3141
 msgid "'info blockstats' command failed"
 msgstr "'info blockstats' கட்டளை தோல்வியுற்றது"
 
-#: src/qemu_driver.c:3153
+#: src/qemu_driver.c:3154
 msgid "'info blockstats' not supported by this qemu"
 msgstr "'info blockstats' இந்த qemuவினால் துணைபுரிய முடியவில்லை"
 
-#: src/qemu_driver.c:3217
+#: src/qemu_driver.c:3218
 #, c-format
 msgid "device not found: %s (%s)"
 msgstr "சாதனம் இல்லை: %s (%s)"
 
-#: src/qemu_driver.c:3248 src/qemu_driver.c:3291 src/uml_driver.c:1550
+#: src/qemu_driver.c:3249 src/qemu_driver.c:3292 src/uml_driver.c:1551
 msgid "NULL or empty path"
 msgstr "NULL அல்லது காலியான பாதை"
 
-#: src/qemu_driver.c:3260
+#: src/qemu_driver.c:3261
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "தவறான பாதை, '%s'க்கு தெரிந்த முகப்பு இல்லை"
 
-#: src/qemu_driver.c:3302 src/uml_driver.c:1561
+#: src/qemu_driver.c:3303 src/uml_driver.c:1562
 msgid "invalid path"
 msgstr "தவறான பாதை"
 
-#: src/qemu_driver.c:3345
+#: src/qemu_driver.c:3346
 msgid "QEMU driver only supports virtual memory addrs"
 msgstr "QEMU இயக்கி மெய்நிகர் நினைவு முகவரிக்கு மட்டும் துணைப்புரிகிறது"
 
-#: src/qemu_driver.c:3372
+#: src/qemu_driver.c:3373
 #, fuzzy
 msgid "'memsave' command failed"
 msgstr "lvs கட்டளை தோல்வியுற்றது"
 
-#: src/qemu_driver.c:3474
+#: src/qemu_driver.c:3475
 #, fuzzy
 msgid "no domain XML passed"
 msgstr "முனை செயற்களப் பட்டியல்"
 
-#: src/qemu_driver.c:3512
+#: src/qemu_driver.c:3513
 msgid "only tcp URIs are supported for KVM migrations"
 msgstr ""
 
-#: src/qemu_driver.c:3522
+#: src/qemu_driver.c:3523
 msgid "URI did not have ':port' at the end"
 msgstr ""
 
-#: src/qemu_driver.c:3547
+#: src/qemu_driver.c:3548
 #, fuzzy
 msgid "could not generate random UUID"
 msgstr "UUID ஐ உருவாக்க முடியவில்லை"
 
-#: src/qemu_driver.c:3555
+#: src/qemu_driver.c:3556
 #, fuzzy, c-format
 msgid "domain with the same name or UUID already exists as '%s'"
 msgstr "செயற்களம் ஏற்கனவே '%s' செயலிலுள்ளது"
 
-#: src/qemu_driver.c:3580
+#: src/qemu_driver.c:3581
 #, fuzzy
 msgid "failed to start listening VM"
 msgstr "VMஐ துவக்க முடியவில்லை"
 
-#: src/qemu_driver.c:3663
+#: src/qemu_driver.c:3664
 #, fuzzy, c-format
 msgid "migrate failed: %s"
 msgstr "செயற்பாடு செயலிழக்கப்பட்டது: %s"
 
-#: src/qemu_driver.c:3698
+#: src/qemu_driver.c:3699
 #, fuzzy, c-format
 msgid "no domain with matching name %s"
 msgstr "செயற்களத்துடன் பொருந்தும் பெயர் இல்லை"
@@ -2892,458 +2892,458 @@ msgstr ""
 "remote_open: URL போக்குவரத்து அங்கீகரிக்கப்படவில்லை (tls|unix|ssh|ext|tcp ஆக இருக்க "
 "வேண்டும்)"
 
-#: src/remote_internal.c:473
+#: src/remote_internal.c:485
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: 'ext' போக்குவரத்துக்கு, கட்டளை தேவைப்படுகிறது"
 
-#: src/remote_internal.c:495
+#: src/remote_internal.c:507
 #, fuzzy, c-format
 msgid "unable to resolve hostname '%s': %s"
 msgstr "tty %sஐ திறக்க முடியவில்லை: %s\n"
 
-#: src/remote_internal.c:546 src/remote_internal.c:626
+#: src/remote_internal.c:558 src/remote_internal.c:638
 #, fuzzy, c-format
 msgid "unable to connect to '%s': %s"
 msgstr "tty %sஐ திறக்க முடியவில்லை: %s\n"
 
-#: src/remote_internal.c:567
+#: src/remote_internal.c:579
 #, fuzzy, c-format
 msgid "unable to lookup user '%d': %s"
 msgstr "tty %sஐ திறக்க முடியவில்லை: %s\n"
 
-#: src/remote_internal.c:602
+#: src/remote_internal.c:614
 #, fuzzy, c-format
 msgid "unable to create socket %s"
 msgstr "சாக்கெட்டை உருவாக்க முடியவில்லை: %s"
 
-#: src/remote_internal.c:686
+#: src/remote_internal.c:698
 #, fuzzy, c-format
 msgid "unable to create socket pair %s"
 msgstr "சாக்கெட்டை உருவாக்க முடியவில்லை: %s"
 
-#: src/remote_internal.c:706
+#: src/remote_internal.c:718
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "போக்குவரத்து முறைகள் unix, ssh மற்றும் ext விண்டோஸில் துணைபுரியவில்லை"
 
-#: src/remote_internal.c:741
+#: src/remote_internal.c:753
 #, fuzzy
 msgid "unable to auto-detect URI"
 msgstr "URIஐ பெற முடியவில்லை"
 
-#: src/remote_internal.c:758
+#: src/remote_internal.c:770
 msgid "Error allocating callbacks list"
 msgstr ""
 
-#: src/remote_internal.c:763
+#: src/remote_internal.c:775
 #, fuzzy
 msgid "Error allocating domainEvents"
 msgstr "செயற்கள ஒதுக்கீடு"
 
-#: src/remote_internal.c:854 src/remote_internal.c:2650
-#: src/remote_internal.c:3055
+#: src/remote_internal.c:866 src/remote_internal.c:2662
+#: src/remote_internal.c:3067
 msgid "struct private_data"
 msgstr "struct private_data"
 
-#: src/remote_internal.c:962
+#: src/remote_internal.c:974
 #, fuzzy, c-format
 msgid "unable to allocate TLS credentials: %s"
 msgstr "கொள்கலன் ஸ்டேக்கை ஒதுக்க முடியவில்லை"
 
-#: src/remote_internal.c:982
+#: src/remote_internal.c:994
 #, fuzzy, c-format
 msgid "unable to load CA certificate: %s"
 msgstr "VM பணியக தரவை பதிவு செய்ய முடியவில்லை: %s"
 
-#: src/remote_internal.c:997
+#: src/remote_internal.c:1009
 #, c-format
 msgid "unable to load private key/certificate: %s"
 msgstr ""
 
-#: src/remote_internal.c:1026
+#: src/remote_internal.c:1038
 #, fuzzy, c-format
 msgid "unable to initialize TLS client: %s"
 msgstr "SASL நூலகத்தை துவக்க முடியவில்லை: %d (%s)"
 
-#: src/remote_internal.c:1035
+#: src/remote_internal.c:1047
 #, fuzzy, c-format
 msgid "unable to set TLS algorithm priority: %s"
 msgstr "tty மதிப்புருக்களை பெற முடியவில்லை: %s\n"
 
-#: src/remote_internal.c:1044
+#: src/remote_internal.c:1056
 #, fuzzy, c-format
 msgid "unable to set certificate priority: %s"
 msgstr "tty மதிப்புருக்களை பெற முடியவில்லை: %s\n"
 
-#: src/remote_internal.c:1054
+#: src/remote_internal.c:1066
 #, fuzzy, c-format
 msgid "unable to set session credentials: %s"
 msgstr "கிளையன் சரி பார்க்க முடியவில்லை: %s"
 
-#: src/remote_internal.c:1069
+#: src/remote_internal.c:1081
 #, fuzzy, c-format
 msgid "unable to complete TLS handshake: %s"
 msgstr "tty %sஐ திறக்க முடியவில்லை: %s\n"
 
-#: src/remote_internal.c:1091
+#: src/remote_internal.c:1103
 #, c-format
 msgid "unable to complete TLS initialization: %s"
 msgstr ""
 
-#: src/remote_internal.c:1097
+#: src/remote_internal.c:1109
 msgid "server verification (of our certificate or IP address) failed\n"
 msgstr "சேவையக சோதனை (நம் சான்றிதழ் அல்லது IP முகவரி) தோல்வி\n"
 
-#: src/remote_internal.c:1122
+#: src/remote_internal.c:1134
 #, fuzzy, c-format
 msgid "unable to verify server certificate: %s"
 msgstr "கிளையன் சரி பார்க்க முடியவில்லை: %s"
 
-#: src/remote_internal.c:1129
+#: src/remote_internal.c:1141
 #, fuzzy, c-format
 msgid "cannot get current time: %s"
 msgstr "பைப்பை உருவாக்க முடியவில்லை: %s"
 
-#: src/remote_internal.c:1135
+#: src/remote_internal.c:1147
 #, fuzzy
 msgid "Invalid certificate"
 msgstr "தவறான சாதன வகை: %s"
 
-#: src/remote_internal.c:1138
+#: src/remote_internal.c:1150
 #, fuzzy
 msgid "The certificate is not trusted."
 msgstr "சான்றிதழ் இன்னும் செயல்பாட்டிலில்லை"
 
-#: src/remote_internal.c:1141
+#: src/remote_internal.c:1153
 #, fuzzy
 msgid "The certificate hasn't got a known issuer."
 msgstr "remoteCheckCertificate: கிளையன் சான்றிதழ் வழங்கியவர் தெரியவில்லை."
 
-#: src/remote_internal.c:1144
+#: src/remote_internal.c:1156
 #, fuzzy
 msgid "The certificate has been revoked."
 msgstr "சான்றிதழ் முடிவுற்றது"
 
-#: src/remote_internal.c:1148
+#: src/remote_internal.c:1160
 #, fuzzy
 msgid "The certificate uses an insecure algorithm"
 msgstr ""
 "remoteCheckCertificate: கிளையன் சான்றிதழ் பாதுகாப்பில்லாத கணிமுறையை கொண்டுள்ளது."
 
-#: src/remote_internal.c:1152
+#: src/remote_internal.c:1164
 #, c-format
 msgid "server certificate failed validation: %s"
 msgstr ""
 
-#: src/remote_internal.c:1158
+#: src/remote_internal.c:1170
 msgid "Certificate type is not X.509"
 msgstr "சான்றிதழ் வகை X.509 இல்லை"
 
-#: src/remote_internal.c:1163
+#: src/remote_internal.c:1175
 msgid "gnutls_certificate_get_peers failed"
 msgstr "gnutls_certificate_get_peers failed"
 
-#: src/remote_internal.c:1173
+#: src/remote_internal.c:1185
 #, fuzzy, c-format
 msgid "unable to initialize certificate: %s"
 msgstr "SASL அங்கீகாரத்த %s துவக்க முடியவில்லை"
 
-#: src/remote_internal.c:1181
+#: src/remote_internal.c:1193
 #, fuzzy, c-format
 msgid "unable to import certificate: %s"
 msgstr "tty %sஐ திறக்க முடியவில்லை: %s\n"
 
-#: src/remote_internal.c:1188
+#: src/remote_internal.c:1200
 msgid "The certificate has expired"
 msgstr "சான்றிதழ் முடிவுற்றது"
 
-#: src/remote_internal.c:1194
+#: src/remote_internal.c:1206
 msgid "The certificate is not yet activated"
 msgstr "சான்றிதழ் இன்னும் செயல்பாட்டிலில்லை"
 
-#: src/remote_internal.c:1202
+#: src/remote_internal.c:1214
 #, c-format
 msgid "Certificate's owner does not match the hostname (%s)"
 msgstr "சான்றிதழ் உரிமையாளர் புரவலன் பெயருடன் பொருந்தவில்லை (%s)"
 
-#: src/remote_internal.c:1434
+#: src/remote_internal.c:1446
 #, c-format
 msgid "too many NUMA cells: %d > %d"
 msgstr "மிக அதிக NUMA அறைகள்: %d > %d"
 
-#: src/remote_internal.c:1483 src/remote_internal.c:1497
+#: src/remote_internal.c:1495 src/remote_internal.c:1509
 #, c-format
 msgid "too many remote domain IDs: %d > %d"
 msgstr "மிக அதிக தொலை செயற்கள IDகள்: %d > %d"
 
-#: src/remote_internal.c:1871
+#: src/remote_internal.c:1883
 #, c-format
 msgid "map length greater than maximum: %d > %d"
 msgstr "அதிகபட்சத்துக்கு மேல் மேப் நீளம்: %d > %d"
 
-#: src/remote_internal.c:1903
+#: src/remote_internal.c:1915
 #, c-format
 msgid "vCPU count exceeds maximum: %d > %d"
 msgstr "vCPU எண்ணிக்கை அதிகபட்சத்தை விட மிஞ்சியது: %d > %d"
 
-#: src/remote_internal.c:1909
+#: src/remote_internal.c:1921
 #, c-format
 msgid "vCPU map buffer length exceeds maximum: %d > %d"
 msgstr "vCPU மேபு இடையக நீளத்தை விட அதிகபட்சத்தை மிஞ்சியது: %d > %d"
 
-#: src/remote_internal.c:1926
+#: src/remote_internal.c:1938
 #, c-format
 msgid "host reports too many vCPUs: %d > %d"
 msgstr "புரவலன் அதிக vCPUsஐ அறிக்கையிடுகிறது: %d > %d"
 
-#: src/remote_internal.c:1933
+#: src/remote_internal.c:1945
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "புரவலன் அதிகபட்சத்தை விட அதிக நீளத்தை அறிக்கையிடுகிறது: %d > %d"
 
-#: src/remote_internal.c:2162 src/remote_internal.c:2176
+#: src/remote_internal.c:2174 src/remote_internal.c:2188
 #, c-format
 msgid "too many remote domain names: %d > %d"
 msgstr "மிக அதிக தொலை செயற்கள பெயர்கள்: %d > %d"
 
-#: src/remote_internal.c:2378
+#: src/remote_internal.c:2390
 msgid ""
 "remoteDomainGetSchedulerParameters: returned number of parameters exceeds "
 "limit"
 msgstr ""
 "remoteDomainGetSchedulerParameters: வரம்புக்கு அதிகமாக அளவுருக்களை கொடுக்கிறது"
 
-#: src/remote_internal.c:2406
+#: src/remote_internal.c:2418
 msgid "remoteDomainGetSchedulerParameters: unknown parameter type"
 msgstr "remoteDomainGetSchedulerParameters: தெரியாத அளவுரு வகை"
 
-#: src/remote_internal.c:2429
+#: src/remote_internal.c:2441
 msgid "out of memory allocating array"
 msgstr "நினைவக ஒதுக்கீட்டு வரிசை போதவில்லை"
 
-#: src/remote_internal.c:2456
+#: src/remote_internal.c:2468
 msgid "unknown parameter type"
 msgstr "தெரியாத அளவுரு வகை"
 
-#: src/remote_internal.c:2546
+#: src/remote_internal.c:2558
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr "தொலை நெறிமுறையில் நீளமாக உள்ளது, %zi > %d"
 
-#: src/remote_internal.c:2567 src/remote_internal.c:2611
+#: src/remote_internal.c:2579 src/remote_internal.c:2623
 msgid "returned buffer is not same size as requested"
 msgstr "கோரப்பட்டதை விட அதே அளவு அல்ல"
 
-#: src/remote_internal.c:2591
+#: src/remote_internal.c:2603
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"
 msgstr "தொலை நெறிமுறைக்கு நீளமாக உள்ளது, %zi > %d"
 
-#: src/remote_internal.c:2713 src/remote_internal.c:2727
-#: src/remote_internal.c:2772 src/remote_internal.c:2786
+#: src/remote_internal.c:2725 src/remote_internal.c:2739
+#: src/remote_internal.c:2784 src/remote_internal.c:2798
 #, c-format
 msgid "too many remote networks: %d > %d"
 msgstr "மிக அதிக தொலை பிணையங்கள்: %d > %d"
 
-#: src/remote_internal.c:3117 src/remote_internal.c:3172
+#: src/remote_internal.c:3129 src/remote_internal.c:3184
 msgid "too many storage pools requested"
 msgstr "சேமிப்பக பூல்கள் மிக அதிகமாக கோரப்பட்டது"
 
-#: src/remote_internal.c:3129 src/remote_internal.c:3184
+#: src/remote_internal.c:3141 src/remote_internal.c:3196
 msgid "too many storage pools received"
 msgstr "சேமிப்பக பூல்கள் அதிக அளவு பெறப்பட்டது"
 
-#: src/remote_internal.c:3570
+#: src/remote_internal.c:3582
 msgid "too many storage volumes requested"
 msgstr "பல சேமிப்பக தொகுதிகள் கோரப்பட்டுள்ளது"
 
-#: src/remote_internal.c:3583
+#: src/remote_internal.c:3595
 msgid "too many storage volumes received"
 msgstr "பல சேமிப்பக தொகுதிகள் பெறப்பட்டது"
 
-#: src/remote_internal.c:3849
+#: src/remote_internal.c:3861
 #, fuzzy
 msgid "too many device names requested"
 msgstr "பல சேமிப்பக தொகுதிகள் கோரப்பட்டுள்ளது"
 
-#: src/remote_internal.c:3863
+#: src/remote_internal.c:3875
 #, fuzzy
 msgid "too many device names received"
 msgstr "பல சேமிப்பக தொகுதிகள் பெறப்பட்டது"
 
-#: src/remote_internal.c:3970
+#: src/remote_internal.c:3982
 #, fuzzy
 msgid "too many capability names requested"
 msgstr "பல சேமிப்பக தொகுதிகள் கோரப்பட்டுள்ளது"
 
-#: src/remote_internal.c:3983
+#: src/remote_internal.c:3995
 #, fuzzy
 msgid "too many capability names received"
 msgstr "பல சேமிப்பக தொகுதிகள் பெறப்பட்டது"
 
-#: src/remote_internal.c:4042
+#: src/remote_internal.c:4054
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "தெரியாத அங்கீகார வகை %s"
 
-#: src/remote_internal.c:4052
+#: src/remote_internal.c:4064
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr "கோரப்பட்ட அங்கீகார வகை %s மறுக்கப்பட்டது"
 
-#: src/remote_internal.c:4093
+#: src/remote_internal.c:4105
 #, c-format
 msgid "unsupported authentication type %d"
 msgstr "துணைபுரியாத அங்கீகார வகை %d"
 
-#: src/remote_internal.c:4341
+#: src/remote_internal.c:4353
 #, c-format
 msgid "failed to initialize SASL library: %d (%s)"
 msgstr "SASL நூலகத்தை துவக்க முடியவில்லை: %d (%s)"
 
-#: src/remote_internal.c:4389
+#: src/remote_internal.c:4401
 #, c-format
 msgid "Failed to create SASL client context: %d (%s)"
 msgstr "SASL கிளையன் சூழலை உருவாக்க முடியவில்லை: %d (%s)"
 
-#: src/remote_internal.c:4402
+#: src/remote_internal.c:4414
 msgid "invalid cipher size for TLS session"
 msgstr "தவறான cipher அளவு TLS அமர்வுக்கு"
 
-#: src/remote_internal.c:4412
+#: src/remote_internal.c:4424
 #, c-format
 msgid "cannot set external SSF %d (%s)"
 msgstr "வெளிப்புற SSF %d (%s)அமைக்க முடியவில்லை"
 
-#: src/remote_internal.c:4431
+#: src/remote_internal.c:4443
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "பாதுகாப்பு props %d (%s)ஐ அமைக்க முடியவில்லை"
 
-#: src/remote_internal.c:4450
+#: src/remote_internal.c:4462
 #, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "SASL நுட்பம் %s சேவையகத்தால் துணைபுரியவில்லை"
 
-#: src/remote_internal.c:4469
+#: src/remote_internal.c:4481
 #, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
 msgstr "SASL ஐ துவக்க முடியவில்லை: %d (%s)"
 
-#: src/remote_internal.c:4487 src/remote_internal.c:4565
+#: src/remote_internal.c:4499 src/remote_internal.c:4577
 msgid "Failed to make auth credentials"
 msgstr "auth credentialsஐ உருவாக்க முடியவில்லை"
 
-#: src/remote_internal.c:4511
+#: src/remote_internal.c:4523
 #, c-format
 msgid "SASL negotiation data too long: %d bytes"
 msgstr "SASL தரவு நீளமாக உள்ளது: %d பைட்கள்"
 
-#: src/remote_internal.c:4551
+#: src/remote_internal.c:4563
 #, c-format
 msgid "Failed SASL step: %d (%s)"
 msgstr "SASL படிநிலை தோல்வி: %d (%s)"
 
-#: src/remote_internal.c:4637
+#: src/remote_internal.c:4649
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr "SSF %d போதிய பலமாக இல்லை"
 
-#: src/remote_internal.c:4691
+#: src/remote_internal.c:4703
 msgid "Failed to collect auth credentials"
 msgstr "auth நன்றிகளை சேகரிக்க முடியவில்லை"
 
-#: src/remote_internal.c:4722
+#: src/remote_internal.c:4734
 msgid "no event support"
 msgstr ""
 
-#: src/remote_internal.c:4727
+#: src/remote_internal.c:4739
 msgid "adding cb to list"
 msgstr ""
 
-#: src/remote_internal.c:4749
+#: src/remote_internal.c:4761
 msgid "removing cb fron list"
 msgstr ""
 
-#: src/remote_internal.c:4809
+#: src/remote_internal.c:4821
 msgid "xdr_remote_message_header failed"
 msgstr "xdr_remote_message_header தோல்வி"
 
-#: src/remote_internal.c:4815
+#: src/remote_internal.c:4827
 msgid "marshalling args"
 msgstr "marshalling args"
 
-#: src/remote_internal.c:4832
+#: src/remote_internal.c:4844
 msgid "xdr_int (length word)"
 msgstr "xdr_int (நீளம் சொல்)"
 
-#: src/remote_internal.c:4850 src/remote_internal.c:5566
+#: src/remote_internal.c:4862 src/remote_internal.c:5582
 msgid "xdr_int (length word, reply)"
 msgstr "xdr_int (நீள சொல், பதில்)"
 
-#: src/remote_internal.c:4860 src/remote_internal.c:5575
+#: src/remote_internal.c:4872 src/remote_internal.c:5591
 msgid "packet received from server too large"
 msgstr "சேவையகத்திலிருந்து வரும் பாக்கெட் அதிகமாக உள்ளது"
 
-#: src/remote_internal.c:4872
+#: src/remote_internal.c:4884
 msgid "invalid header in reply"
 msgstr "பதிலில் தவறான தலைப்பு"
 
-#: src/remote_internal.c:4881
+#: src/remote_internal.c:4893
 #, c-format
 msgid "unknown program (received %x, expected %x)"
 msgstr "தெரியாத நிரல் (பெறப்பட்டது %x, எதிர்பார்க்கப்பட்டது %x)"
 
-#: src/remote_internal.c:4889
+#: src/remote_internal.c:4901
 #, c-format
 msgid "unknown protocol version (received %x, expected %x)"
 msgstr "தெரியாத நெறிமுறை பதிப்பு (பெறப்பட்டது %x, எதிர்பார்க்கப்பட்டது %x)"
 
-#: src/remote_internal.c:4912
+#: src/remote_internal.c:4924
 #, c-format
 msgid "unknown procedure (received %x, expected %x)"
 msgstr "தெரியாத செயல்முறை (பெறப்பட்டது %x, எதிர்பார்க்கப்பட்டது %x)"
 
-#: src/remote_internal.c:4920
+#: src/remote_internal.c:4932
 #, c-format
 msgid "unknown direction (received %x, expected %x)"
 msgstr "தெரியாத திசை (பெறப்பட்டது %x, எதிர்பார்க்கப்பட்டது %x)"
 
-#: src/remote_internal.c:4927
+#: src/remote_internal.c:4939
 #, c-format
 msgid "unknown serial (received %x, expected %x)"
 msgstr "தெரியாத சீரியல் (பெறப்பட்டது %x, எதிர்பார்க்கப்பட்டது %x)"
 
-#: src/remote_internal.c:4940
+#: src/remote_internal.c:4952
 msgid "unmarshalling ret"
 msgstr "unmarshalling ret"
 
-#: src/remote_internal.c:4950
+#: src/remote_internal.c:4962
 msgid "unmarshalling remote_error"
 msgstr "unmarshalling remote_error"
 
-#: src/remote_internal.c:4970
+#: src/remote_internal.c:4982
 #, c-format
 msgid "unknown status (received %x)"
 msgstr "தெரியாத நிலை (பெறப்பட்டது %x)"
 
-#: src/remote_internal.c:5078 src/remote_internal.c:5094
+#: src/remote_internal.c:5090 src/remote_internal.c:5106
 msgid "socket closed unexpectedly"
 msgstr "சாக்கெட் எதிர்பாராமல் மூடப்பட்டது"
 
-#: src/remote_internal.c:5481
+#: src/remote_internal.c:5497
 msgid "remoteDomainProcessEvent: unmarshalling ret"
 msgstr ""
 
-#: src/remote_internal.c:5581
+#: src/remote_internal.c:5597
 msgid "error reading buffer from memory"
 msgstr ""
 
-#: src/remote_internal.c:5588
+#: src/remote_internal.c:5604
 #, fuzzy
 msgid "invalid header in event firing"
 msgstr "பதிலில் தவறான தலைப்பு"
 
-#: src/remote_internal.c:5598
+#: src/remote_internal.c:5614
 #, fuzzy
 msgid "invalid proc in event firing"
 msgstr "தவறான கள புள்ளி"
@@ -3356,7 +3356,7 @@ msgstr "ஒரு முனையை ஒதுக்க முடியவில
 msgid "failed to copy a string"
 msgstr "ஒரு சரத்தை நகலெடுக்க முடியவில்லை"
 
-#: src/storage_backend.c:94 src/storage_conf.c:202
+#: src/storage_backend.c:94 src/storage_conf.c:207
 #, c-format
 msgid "missing backend for pool type %d"
 msgstr "பூல் வகை %dக்கு பின்னனி விடுப்பட்டது"
@@ -3395,62 +3395,62 @@ msgstr "%s கோப்பின் சூழலை பெற முடியவ
 msgid "context"
 msgstr "சூழல்"
 
-#: src/storage_backend.c:314
+#: src/storage_backend.c:345
 #, c-format
 msgid "cannot read dir %s: %s"
 msgstr "dir %sஐ வாசிக்க முடியவில்லை: %s"
 
-#: src/storage_backend.c:326 src/storage_driver.c:1233 src/test.c:2187
+#: src/storage_backend.c:362 src/storage_driver.c:1233 src/test.c:2189
 msgid "path"
 msgstr "பாதை"
 
-#: src/storage_backend.c:353
+#: src/storage_backend.c:389
 #, fuzzy
 msgid "dup path"
 msgstr "பாதை"
 
-#: src/storage_backend.c:389
+#: src/storage_backend.c:425
 msgid "regex"
 msgstr "regex"
 
-#: src/storage_backend.c:399
+#: src/storage_backend.c:435
 #, c-format
 msgid "Failed to compile regex %s"
 msgstr "regex %sஐ மொழிபெயர்க்க முடியவில்லை"
 
-#: src/storage_backend.c:415 src/storage_backend.c:420
-#: src/storage_backend.c:457
+#: src/storage_backend.c:451 src/storage_backend.c:456
+#: src/storage_backend.c:493
 msgid "regex groups"
 msgstr "regex குழுக்கள்"
 
-#: src/storage_backend.c:433 src/storage_backend.c:568
+#: src/storage_backend.c:469 src/storage_backend.c:604
 msgid "cannot read fd"
 msgstr "fdஐ வாசிக்க முடியவில்லை"
 
-#: src/storage_backend.c:505 src/storage_backend.c:623
+#: src/storage_backend.c:541 src/storage_backend.c:659
 #, c-format
 msgid "failed to wait for command: %s"
 msgstr "கட்டளைக்கு காத்திருக்க முடியவில்லை: %s"
 
-#: src/storage_backend.c:514 src/storage_backend.c:636
+#: src/storage_backend.c:550 src/storage_backend.c:672
 msgid "command did not exit cleanly"
 msgstr "கட்டளை முழுவதும் வெளியேறவில்லை"
 
-#: src/storage_backend.c:554
+#: src/storage_backend.c:590
 msgid "n_columns too large"
 msgstr "n_columns மிக பெரியது"
 
-#: src/storage_backend.c:602
+#: src/storage_backend.c:638
 #, c-format
 msgid "read error: %s"
 msgstr "வாசித்தல் பிழை: %s"
 
-#: src/storage_backend.c:630
+#: src/storage_backend.c:666
 #, c-format
 msgid "non-zero exit status from command %d"
 msgstr "பூஜ்ஜியமில்லாத வெளியேற்ற நிலை கட்டளை %dக்கு"
 
-#: src/storage_backend.c:657 src/storage_backend.c:669
+#: src/storage_backend.c:693 src/storage_backend.c:705
 #, fuzzy, c-format
 msgid "%s not implemented on Win32"
 msgstr "%s: செயல்படுத்தப்படவில்லை\n"
@@ -3460,7 +3460,7 @@ msgstr "%s: செயல்படுத்தப்படவில்லை\n"
 #: src/storage_backend_disk.c:92 src/storage_backend_iscsi.c:177
 #: src/storage_backend_logical.c:85 src/storage_backend_logical.c:92
 #: src/storage_backend_logical.c:109 src/storage_backend_logical.c:119
-#: src/storage_backend_logical.c:581
+#: src/storage_backend_logical.c:583
 msgid "volume"
 msgstr "தொகுதி"
 
@@ -3481,21 +3481,21 @@ msgstr "சாதன இடத்தை பகுக்க முடியவி
 msgid "extents"
 msgstr "விரிவாக்கம்"
 
-#: src/storage_backend_disk.c:329
+#: src/storage_backend_disk.c:331
 msgid "no large enough free extent"
 msgstr "வெற்று விரிவாக்கம் போதிய பெரியதாக இல்லை"
 
-#: src/storage_backend_disk.c:369
+#: src/storage_backend_disk.c:371
 #, fuzzy, c-format
 msgid "Couldn't read volume target path '%s'. %s"
 msgstr "'%s' பாதையை உருவாக்க முடியவில்லை: %s"
 
-#: src/storage_backend_disk.c:384
+#: src/storage_backend_disk.c:386
 #, c-format
 msgid "Volume path '%s' did not start with parent pool source device name."
 msgstr ""
 
-#: src/storage_backend_disk.c:393
+#: src/storage_backend_disk.c:395
 #, c-format
 msgid "cannot parse partition number from target '%s'"
 msgstr ""
@@ -3581,11 +3581,11 @@ msgstr "statvfs பாதை '%s' செய்யப்படவில்லை:
 msgid "cannot unlink path '%s': %s"
 msgstr "பாதை '%s'ஐ துண்டிக்க முடியவில்லை: %s"
 
-#: src/storage_backend_fs.c:763 src/test.c:2080
+#: src/storage_backend_fs.c:763 src/test.c:2082
 msgid "target"
 msgstr "இலக்கு"
 
-#: src/storage_backend_fs.c:773 src/test.c:2091
+#: src/storage_backend_fs.c:773 src/test.c:2093
 msgid "storage vol key"
 msgstr "சேமிகப்பக தொகுதி விசை"
 
@@ -3600,7 +3600,7 @@ msgid "cannot extend file '%s': %s"
 msgstr "கோப்பு '%s'ஐ விரிவாக்க முடியவில்லை: %s"
 
 #: src/storage_backend_fs.c:827 src/storage_backend_fs.c:862
-#: src/storage_backend_fs.c:897 src/storage_backend_logical.c:593
+#: src/storage_backend_fs.c:897 src/storage_backend_logical.c:595
 #, c-format
 msgid "cannot read path '%s': %s"
 msgstr "பாதை '%s'ஐ வாசிக்க முடியவில்லை: %s"
@@ -3619,17 +3619,17 @@ msgstr "துணைபுரியாத சேமிப்பக தொகு�
 msgid "creation of non-raw images is not supported without qemu-img"
 msgstr "qemu-img இல்லாமல் ரா உருக்கள் உருவாக்கப்படுகிறது"
 
-#: src/storage_backend_fs.c:914 src/storage_backend_logical.c:602
+#: src/storage_backend_fs.c:914 src/storage_backend_logical.c:604
 #, c-format
 msgid "cannot set file owner '%s': %s"
 msgstr "கோப்பு உரிமையாளர் '%s'ஐ அமைக்க முடியவில்லை: %s"
 
-#: src/storage_backend_fs.c:923 src/storage_backend_logical.c:609
+#: src/storage_backend_fs.c:923 src/storage_backend_logical.c:611
 #, c-format
 msgid "cannot set file mode '%s': %s"
 msgstr "கோப்பு முறைமை '%s'ஐ அமைக்க முடியவில்லை: %s"
 
-#: src/storage_backend_fs.c:939 src/storage_backend_logical.c:616
+#: src/storage_backend_fs.c:939 src/storage_backend_logical.c:618
 #, c-format
 msgid "cannot close file '%s': %s"
 msgstr "கோப்பு '%s'ஐ மூட முடியவில்லை: %s"
@@ -3662,7 +3662,7 @@ msgstr "அமர்வு"
 msgid "cannot find session"
 msgstr "அமர்வை காண முடியவில்லை"
 
-#: src/storage_backend_iscsi.c:184 src/storage_driver.c:887 src/test.c:1957
+#: src/storage_backend_iscsi.c:184 src/storage_driver.c:887 src/test.c:1959
 msgid "name"
 msgstr "பெயர்"
 
@@ -3778,188 +3778,188 @@ msgstr "தலைப்பு%s சாதனத்தை சரிசெய்�
 msgid "cannot close device %s"
 msgstr "%s சாதனத்தை மூட முடியவில்லை"
 
-#: src/storage_backend_logical.c:540
+#: src/storage_backend_logical.c:542
 #, fuzzy, c-format
 msgid "cannot remove PV device %s: %s"
 msgstr "ttyPidFile %sஐ நீக்க முடியவில்லை: %s"
 
-#: src/storage_backend_logical.c:625
+#: src/storage_backend_logical.c:627
 #, c-format
 msgid "cannot find newly created volume '%s': %s"
 msgstr "புதிதாக உருவாக்கப்பட்ட தொகுதி '%s'ஐ காண முடியவில்லை: %s"
 
-#: src/storage_conf.c:334
+#: src/storage_conf.c:339
 msgid "missing auth host attribute"
 msgstr "விடுபட்ட auth புரவலன் மதிப்புரு"
 
-#: src/storage_conf.c:341
+#: src/storage_conf.c:346
 msgid "missing auth passwd attribute"
 msgstr "விடுபட்ட auth passwd மதிப்புரு"
 
-#: src/storage_conf.c:364 src/storage_conf.c:796
+#: src/storage_conf.c:369 src/storage_conf.c:801
 msgid "malformed octal mode"
 msgstr "தவறான எண்ம முறைமை"
 
-#: src/storage_conf.c:374
+#: src/storage_conf.c:379
 msgid "malformed owner element"
 msgstr "தவறான உரிமையாளர் உருப்படி"
 
-#: src/storage_conf.c:385
+#: src/storage_conf.c:390
 msgid "malformed group element"
 msgstr "தவறான குழு உருப்படி"
 
-#: src/storage_conf.c:410
+#: src/storage_conf.c:415
 msgid "cannot allocate storage pool"
 msgstr "சேமிப்பக பூலை ஒதுக்க முடியவில்லை"
 
-#: src/storage_conf.c:416
+#: src/storage_conf.c:421
 #, fuzzy
 msgid "unknown root element for storage pool"
 msgstr "தெரியாத ரூட் உருப்படி"
 
-#: src/storage_conf.c:423
+#: src/storage_conf.c:428
 #, fuzzy, c-format
 msgid "unknown storage pool type %s"
 msgstr "தெரியாத சேமிப்பக தொகுதி வகை %d"
 
-#: src/storage_conf.c:440
+#: src/storage_conf.c:445
 #, fuzzy
 msgid "missing pool source name element"
 msgstr "விடுபட்ட பெயர் உருப்படி"
 
-#: src/storage_conf.c:448
+#: src/storage_conf.c:453
 msgid "unable to generate uuid"
 msgstr "uuidஐ உருவாக்க முடியவில்லை"
 
-#: src/storage_conf.c:469
+#: src/storage_conf.c:474
 #, fuzzy, c-format
 msgid "unknown pool format type %s"
 msgstr "தெரியாத auth வகை '%s'"
 
-#: src/storage_conf.c:479
+#: src/storage_conf.c:484
 #, fuzzy
 msgid "missing storage pool source host name"
 msgstr "விடுபட்ட மூல புரவலன் பெயர்"
 
-#: src/storage_conf.c:489
+#: src/storage_conf.c:494
 #, fuzzy
 msgid "cannot extract storage pool source devices"
 msgstr "மூல சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/storage_conf.c:494
+#: src/storage_conf.c:499
 msgid "device"
 msgstr "சாதனம்"
 
-#: src/storage_conf.c:502
+#: src/storage_conf.c:507
 #, fuzzy
 msgid "missing storage pool source device path"
 msgstr "விடுபட்ட மூல சாதன பாதை"
 
-#: src/storage_conf.c:513
+#: src/storage_conf.c:518
 #, fuzzy
 msgid "missing storage pool source path"
 msgstr "விடுபட்ட மூல பாதை"
 
-#: src/storage_conf.c:525 src/virsh.c:3777 src/virsh.c:3937 src/virsh.c:3976
+#: src/storage_conf.c:530 src/virsh.c:3777 src/virsh.c:3937 src/virsh.c:3976
 msgid "pool name"
 msgstr "பூல் பெயர்"
 
-#: src/storage_conf.c:540
+#: src/storage_conf.c:545
 #, c-format
 msgid "unknown auth type '%s'"
 msgstr "தெரியாத auth வகை '%s'"
 
-#: src/storage_conf.c:555
+#: src/storage_conf.c:560
 #, fuzzy
 msgid "missing storage pool target path"
 msgstr "விடுபட்ட இலக்கு பாதை"
 
-#: src/storage_conf.c:624 src/storage_conf.c:1020
+#: src/storage_conf.c:629 src/storage_conf.c:1030
 msgid "xmlXPathContext"
 msgstr "xmlXPathContext"
 
-#: src/storage_conf.c:695
+#: src/storage_conf.c:700
 #, fuzzy, c-format
 msgid "unknown pool format number %d"
 msgstr "துணைபுரியாத பூல் வடிவம் %d"
 
-#: src/storage_conf.c:728 src/storage_conf.c:1477
+#: src/storage_conf.c:733 src/storage_conf.c:1487
 msgid "unexpected pool type"
 msgstr "எதிர்பாராத பூல் வகை"
 
-#: src/storage_conf.c:774 src/storage_conf.c:1133
+#: src/storage_conf.c:779 src/storage_conf.c:1143
 msgid "xml"
 msgstr "xml"
 
-#: src/storage_conf.c:806 src/storage_conf.c:816
+#: src/storage_conf.c:811 src/storage_conf.c:821
 msgid "missing owner element"
 msgstr "விடுபட்ட உரிமையாளர் உருப்படி"
 
-#: src/storage_conf.c:880
+#: src/storage_conf.c:885
 #, c-format
 msgid "unknown size units '%s'"
 msgstr "தெரியாத அளவு யுனிட்கள் '%s'"
 
-#: src/storage_conf.c:887
+#: src/storage_conf.c:892
 msgid "malformed capacity element"
 msgstr "தவறான கொள்ளளவு உருப்படி"
 
-#: src/storage_conf.c:892
+#: src/storage_conf.c:897
 msgid "capacity element value too large"
 msgstr "கொள்ளளவு உருப்படி மதிப்பு மிக நீளம்"
 
-#: src/storage_conf.c:918
+#: src/storage_conf.c:923
 msgid "cannot allocate storage vol"
 msgstr "சேமிப்பக தொகுதியை ஒதுக்க முடியவில்லை"
 
-#: src/storage_conf.c:924
+#: src/storage_conf.c:929
 msgid "unknown root element"
 msgstr "தெரியாத ரூட் உருப்படி"
 
-#: src/storage_conf.c:931
+#: src/storage_conf.c:936
 #, fuzzy
 msgid "missing volume name element"
 msgstr "விடுபட்ட பெயர் உருப்படி"
 
-#: src/storage_conf.c:942
+#: src/storage_conf.c:947
 msgid "missing capacity element"
 msgstr "விடுபட்ட கொள்ளளவு உருப்படி"
 
-#: src/storage_conf.c:966
+#: src/storage_conf.c:976
 #, fuzzy, c-format
 msgid "unknown volume format type %s"
 msgstr "தெரியாத auth வகை '%s'"
 
-#: src/storage_conf.c:1103
+#: src/storage_conf.c:1113
 #, fuzzy, c-format
 msgid "unknown volume format number %d"
 msgstr "துணைபுரியாத தொகுதி வடிவம் %d"
 
-#: src/storage_conf.c:1232
+#: src/storage_conf.c:1242
 msgid "pool"
 msgstr "பூல்"
 
-#: src/storage_conf.c:1377
+#: src/storage_conf.c:1387
 msgid "cannot construct config file path"
 msgstr "கட்டமைப்பு கோப்பு பாதையை உருவாக்க முடியவில்லை"
 
-#: src/storage_conf.c:1382
+#: src/storage_conf.c:1392
 msgid "configFile"
 msgstr "configFile"
 
-#: src/storage_conf.c:1389
+#: src/storage_conf.c:1399
 msgid "cannot construct autostart link path"
 msgstr "autostart இணைப்பு பாதை உருவாக்கப்படவில்லை"
 
-#: src/storage_conf.c:1396
+#: src/storage_conf.c:1406
 msgid "config file"
 msgstr "கட்டமைப்பு கோப்பு"
 
-#: src/storage_conf.c:1404
+#: src/storage_conf.c:1414
 msgid "failed to generate XML"
 msgstr "XMLஐ உருவாக்க முடியவில்லை"
 
-#: src/storage_conf.c:1454
+#: src/storage_conf.c:1464
 #, c-format
 msgid "cannot remove config for %s"
 msgstr "%sக்கு கட்டமைப்பை நீக்க முடியவில்லை"
@@ -3976,7 +3976,7 @@ msgstr "பூல் பொருத்தமான பெயரை பெற்
 msgid "names"
 msgstr "பெயர்கள்"
 
-#: src/storage_driver.c:437 src/test.c:1777
+#: src/storage_driver.c:437 src/test.c:1779
 msgid "storage pool already exists"
 msgstr "சேமிக்கப்பட்ட பூல் ஏற்கனவே உள்ளன"
 
@@ -4016,7 +4016,7 @@ msgstr "சேமிக்கப்பட்ட பூல் செயல்ப�
 msgid "pool does not support volume delete"
 msgstr "பூல் தொகுதி அழித்தலுக்கு துணைபுரிவதில்லை"
 
-#: src/storage_driver.c:799 src/test.c:1924
+#: src/storage_driver.c:799 src/test.c:1926
 msgid "pool has no config file"
 msgstr "பூல் கட்டமைப்பு கோப்பினை பெற்றிருக்கவில்லை"
 
@@ -4034,7 +4034,7 @@ msgstr "சேமிப்பக vol பொருந்தும் விசை
 msgid "no storage vol with matching path"
 msgstr "சேமிப்பக vol பொருந்தும் பாதை இல்லை"
 
-#: src/storage_driver.c:1031 src/test.c:2053
+#: src/storage_driver.c:1031 src/test.c:2055
 msgid "storage vol already exists"
 msgstr "சேமிப்பக தொகுதி ஏற்கனவே உள்ளது"
 
@@ -4046,7 +4046,7 @@ msgstr "சேமிப்பக பூல் தொகுதி உருவா
 msgid "storage pool does not support vol deletion"
 msgstr "சேமிப்பக பூல் தொகுதி அழித்தலுக்கு துணைபுரியவில்லை"
 
-#: src/test.c:140 src/test.c:1982
+#: src/test.c:140 src/test.c:1984
 #, fuzzy, c-format
 msgid "no storage vol with matching name '%s'"
 msgstr "சேமிப்பக vol பொருந்தும் பெயரில் இல்லை"
@@ -4061,7 +4061,7 @@ msgstr "சேமிக்கப்பட்ட பூல் செயல்ப�
 msgid "storage pool '%s' is already active"
 msgstr "சேமிப்பக பூல் ஏற்கனவே செயலில் உள்ளது"
 
-#: src/test.c:281 src/test.c:961
+#: src/test.c:281 src/test.c:963
 msgid "getting time of day"
 msgstr "நாளின் நேரத்தைப் பெறுகிறது"
 
@@ -4118,208 +4118,208 @@ msgstr "முனை செயற்களப் பட்டியல்"
 msgid "resolving domain filename"
 msgstr "செயற்கள கோப்புப்பெயர் முடிக்கப்பட்டது"
 
-#: src/test.c:530
+#: src/test.c:532
 #, fuzzy
 msgid "node network list"
 msgstr "முனை செயற்களப் பட்டியல்"
 
-#: src/test.c:540
+#: src/test.c:542
 msgid "resolving network filename"
 msgstr "பிணைய கோப்புப்பெயர் முடிக்கப்பட்டது"
 
-#: src/test.c:566
+#: src/test.c:568
 #, fuzzy
 msgid "node pool list"
 msgstr "முனை செயற்களப் பட்டியல்"
 
-#: src/test.c:578
+#: src/test.c:580
 #, fuzzy
 msgid "resolving pool filename"
 msgstr "செயற்கள கோப்புப்பெயர் முடிக்கப்பட்டது"
 
-#: src/test.c:661
+#: src/test.c:663
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: ஒரு பாதையை கொடுக்கவும் அல்லது test:///default ஐ பயன்படுத்தவும்"
 
-#: src/test.c:873
+#: src/test.c:875
 #, fuzzy, c-format
 msgid "domain '%s' not paused"
 msgstr "செயற்களம் இல்லை"
 
-#: src/test.c:889 src/test.c:904
+#: src/test.c:891 src/test.c:906
 #, fuzzy, c-format
 msgid "domain '%s' not running"
 msgstr "செயற்களம் இயங்கவில்லை"
 
-#: src/test.c:987
+#: src/test.c:989
 #, fuzzy, c-format
 msgid "saving domain '%s' failed to allocate space for metadata: %s"
 msgstr "மெட்டாதரவுக்கு இடம் இல்லை"
 
-#: src/test.c:994
+#: src/test.c:996
 #, c-format
 msgid "saving domain '%s' to '%s': open failed: %s"
 msgstr ""
 
-#: src/test.c:1001 src/test.c:1008 src/test.c:1015 src/test.c:1024
+#: src/test.c:1003 src/test.c:1010 src/test.c:1017 src/test.c:1026
 #, c-format
 msgid "saving domain '%s' to '%s': write failed: %s"
 msgstr ""
 
-#: src/test.c:1054
+#: src/test.c:1056
 msgid "incomplete save header"
 msgstr "முடிவில்லாத சேமி தலைப்பு"
 
-#: src/test.c:1060
+#: src/test.c:1062
 msgid "mismatched header magic"
 msgstr "பொருத்தமில்லாத தலைப்பு மேஜிக்"
 
-#: src/test.c:1066
+#: src/test.c:1068
 msgid "failed to read metadata length"
 msgstr "மெட்டா தரவு எண்ணிக்கையை வாசிக்க முடியவில்லை"
 
-#: src/test.c:1072
+#: src/test.c:1074
 msgid "length of metadata out of range"
 msgstr "மெட்டா தரவின் எண்ணிக்கை அதிகமாக உள்ளது"
 
-#: src/test.c:1083
+#: src/test.c:1085
 msgid "incomplete metdata"
 msgstr "முடியாத metdata"
 
-#: src/test.c:1114
+#: src/test.c:1116
 #, fuzzy, c-format
 msgid "domain '%s' coredump: failed to open %s: %s"
 msgstr "செயற்களம் %s %s இல் சேமிக்கப்பட்டது\n"
 
-#: src/test.c:1120
+#: src/test.c:1122
 #, fuzzy, c-format
 msgid "domain '%s' coredump: failed to write header to %s: %s"
 msgstr "%s: பதிவு கோப்பினை எழுத முடியவில்லை: %s"
 
-#: src/test.c:1127
+#: src/test.c:1129
 #, c-format
 msgid "domain '%s' coredump: write failed: %s: %s"
 msgstr ""
 
-#: src/test.c:1271
+#: src/test.c:1273
 msgid "Range exceeds available cells"
 msgstr "இருக்கும் அறைகளுக்கு வரம்பை மீறியது"
 
-#: src/test.c:1290
+#: src/test.c:1292
 #, fuzzy, c-format
 msgid "Domain '%s' is already running"
 msgstr "செயற்களம் ஏற்கனவே இயக்கத்தில் உள்ளது"
 
-#: src/test.c:1305
+#: src/test.c:1307
 #, fuzzy, c-format
 msgid "Domain '%s' is still running"
 msgstr "செயற்களம் இன்னும் இயங்குகிறது"
 
-#: src/test.c:1532
+#: src/test.c:1534
 #, fuzzy, c-format
 msgid "Network '%s' is still running"
 msgstr "பிணையம் இன்னும் இயங்குகிறது"
 
-#: src/test.c:1547
+#: src/test.c:1549
 #, fuzzy, c-format
 msgid "Network '%s' is already running"
 msgstr "பிணையம் ஏற்கனவே இயக்கத்தில் உள்ளது"
 
-#: src/test.c:2011
+#: src/test.c:2013
 #, fuzzy, c-format
 msgid "no storage vol with matching key '%s'"
 msgstr "சேமிப்பக vol பொருந்தும் விசையில் இல்லை"
 
-#: src/test.c:2035
+#: src/test.c:2037
 #, fuzzy, c-format
 msgid "no storage vol with matching path '%s'"
 msgstr "சேமிப்பக vol பொருந்தும் பாதை இல்லை"
 
-#: src/test.c:2062
+#: src/test.c:2064
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
 msgstr ""
 
-#: src/uml_conf.c:196
+#: src/uml_conf.c:198
 #, fuzzy
 msgid "only TCP listen is supported for chr device"
 msgstr "எழுத்து சாதனத்திற்கு இடத்தை ஒதுக்க முடியவில்லை"
 
-#: src/uml_conf.c:216
+#: src/uml_conf.c:218
 #, fuzzy, c-format
 msgid "unsupported chr device type %d"
 msgstr "துணைபுரியாத உள்ளீடு சாதன வகை %s"
 
-#: src/uml_driver.c:339
+#: src/uml_driver.c:340
 #, fuzzy
 msgid "cannot initialize inotify"
 msgstr "பாலம் துணையை துவக்க வில்லை: %s"
 
-#: src/uml_driver.c:344
+#: src/uml_driver.c:345
 #, fuzzy, c-format
 msgid "Failed to create monitor directory %s: %s"
 msgstr "அடைவு %sஐ உருவாக்க : %s"
 
-#: src/uml_driver.c:379
+#: src/uml_driver.c:380
 #, fuzzy
 msgid "umlStartup: out of memory\n"
 msgstr "qemudStartup: நினைவகம் போதவில்லை"
 
-#: src/uml_driver.c:513
+#: src/uml_driver.c:514
 #, fuzzy, c-format
 msgid "failed to read pid: %s: %s"
 msgstr "logfile %sஐ உருவாக்க முடியவில்லை: %s"
 
-#: src/uml_driver.c:561
+#: src/uml_driver.c:562
 #, fuzzy, c-format
 msgid "cannot open socket %s"
 msgstr "%sதிறக்க முடியவில்லை: %s"
 
-#: src/uml_driver.c:569
+#: src/uml_driver.c:570
 #, fuzzy, c-format
 msgid "cannot bind socket %s"
 msgstr "அமர்வை காண முடியவில்லை"
 
-#: src/uml_driver.c:622
+#: src/uml_driver.c:623
 #, fuzzy, c-format
 msgid "cannot send too long command %s: %s"
 msgstr "கோப்பு முறைமை '%s'ஐ அமைக்க முடியவில்லை: %s"
 
-#: src/uml_driver.c:632
+#: src/uml_driver.c:633
 #, fuzzy, c-format
 msgid "cannot send command %s: %s"
 msgstr "%sஐ வாசிக்க இயலவில்லை: %s"
 
-#: src/uml_driver.c:642
+#: src/uml_driver.c:643
 #, fuzzy, c-format
 msgid "cannot read reply %s: %s"
 msgstr "dir %sஐ வாசிக்க முடியவில்லை: %s"
 
-#: src/uml_driver.c:694
+#: src/uml_driver.c:695
 msgid "no kernel specified"
 msgstr ""
 
-#: src/uml_driver.c:703
+#: src/uml_driver.c:704
 #, fuzzy, c-format
 msgid "Cannot find UML kernel %s: %s"
 msgstr "QEMU இருமத்தை காண முடியவில்லை %s: %s"
 
-#: src/uml_driver.c:710
+#: src/uml_driver.c:711
 #, fuzzy, c-format
 msgid "cannot create log directory %s"
 msgstr "பதிவு அடைவு %sஐ உருவாக்க முடியவில்லை: %s"
 
-#: src/uml_driver.c:784
+#: src/uml_driver.c:785
 #, fuzzy, c-format
 msgid "failed to wait on process: %d: %s\n"
 msgstr "கட்டளைக்கு காத்திருக்க முடியவில்லை: %s"
 
-#: src/uml_driver.c:826
+#: src/uml_driver.c:827
 #, fuzzy, c-format
 msgid "Got unexpected pid %d != %d\n"
 msgstr "எதிர்பார்க்காத pid, damn பெறப்பட்டது"
 
-#: src/uml_driver.c:1063
+#: src/uml_driver.c:1064
 #, fuzzy, c-format
 msgid "cannot parse version %s"
 msgstr "%sஐ வாசிக்க இயலவில்லை: %s"
@@ -5568,8 +5568,8 @@ msgid "Build a given pool."
 msgstr "கொடுக்கபட்ட பூலை உருவாக்கு"
 
 #: src/virsh.c:3171
-#, c-format
-msgid "Pool %s builded\n"
+#, fuzzy, c-format
+msgid "Pool %s built\n"
 msgstr "பூல் %s உருவாக்கப்பட்டது\n"
 
 #: src/virsh.c:3173
@@ -7268,7 +7268,7 @@ msgstr "Xend செயற்கள தகவலை இலக்கணப்ப�
 msgid "xenDaemonDomainFetch failed to find this domain"
 msgstr "xenDaemonDomainDumpXMLByName இந்த செயற்களத்தை காண முடியவில்லை"
 
-#: src/xend_internal.c:3780 src/xend_internal.c:4259 src/xm_internal.c:1658
+#: src/xend_internal.c:3780 src/xend_internal.c:4259 src/xm_internal.c:1672
 #, fuzzy
 msgid "failed to build sexpr"
 msgstr "பூல் %sஐ உருவாக்க முடியவில்லை"
@@ -7418,7 +7418,7 @@ msgstr "எதிர்பார்க்காத செயற்கள வக�
 msgid "unexpected chr device type"
 msgstr "எதிர்பாராத mime வகை"
 
-#: src/xend_internal.c:5094 src/xm_internal.c:1820
+#: src/xend_internal.c:5094 src/xm_internal.c:1834
 #, fuzzy, c-format
 msgid "unsupported network type %d"
 msgstr "துணைபுரியாத சேமிப்பக தொகுதி வகை %d"
@@ -7477,70 +7477,70 @@ msgstr "on_xend_startஇலிருந்து எதிர்பாராத 
 msgid "unexpected value %s for on_crash"
 msgstr "on_xend_startஇலிருந்து எதிர்பாராத மதிப்பு"
 
-#: src/xm_internal.c:1479
+#: src/xm_internal.c:1493
 msgid "read only connection"
 msgstr "வாசிப்பு மட்டும் இணைப்பு"
 
-#: src/xm_internal.c:1484
+#: src/xm_internal.c:1498
 msgid "not inactive domain"
 msgstr "செயலிலில்லாத செயற்களம் இல்லை"
 
-#: src/xm_internal.c:1489
+#: src/xm_internal.c:1503
 msgid "virHashLookup"
 msgstr "virHashLookup"
 
-#: src/xm_internal.c:1494
+#: src/xm_internal.c:1508
 msgid "can't retrieve config file for domain"
 msgstr "செயற்களத்திற்கு கட்டமைப்பு கோப்பினை பெற முடியவில்லை"
 
-#: src/xm_internal.c:1992 src/xm_internal.c:2001 src/xm_internal.c:2010
+#: src/xm_internal.c:2006 src/xm_internal.c:2015 src/xm_internal.c:2024
 #, fuzzy, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "எதிர்பாராத dict முனை"
 
-#: src/xm_internal.c:2282
+#: src/xm_internal.c:2296
 msgid "can't retrieve config filename for domain to overwrite"
 msgstr "கட்டமைப்பு கோப்பு பெயரை செயற்களத்திற்கு எடுக்க முடியவில்லை"
 
-#: src/xm_internal.c:2288
+#: src/xm_internal.c:2302
 msgid "can't retrieve config entry for domain to overwrite"
 msgstr "செயற்களத்திற்கு மேலெழுத கட்டமை உள்ளீட்டை எடுக்க முடியவில்லை"
 
-#: src/xm_internal.c:2299 src/xm_internal.c:2306
+#: src/xm_internal.c:2313 src/xm_internal.c:2320
 msgid "failed to remove old domain from config map"
 msgstr "கட்டமைப்பு மேப்பிலிருந்து பழைய செயற்களத்தை நீக்க முடியவில்லை"
 
-#: src/xm_internal.c:2315
+#: src/xm_internal.c:2329
 msgid "config file name is too long"
 msgstr "கட்டமைப்பு கோப்பின் பெயர் மிக நீளமாக உள்ளது"
 
-#: src/xm_internal.c:2327
+#: src/xm_internal.c:2341
 msgid "config"
 msgstr "config"
 
-#: src/xm_internal.c:2333
+#: src/xm_internal.c:2347
 msgid "unable to get current time"
 msgstr "நடப்பு நேரத்தைப் பெற முடியவில்லை"
 
-#: src/xm_internal.c:2342 src/xm_internal.c:2349
+#: src/xm_internal.c:2356 src/xm_internal.c:2363
 msgid "unable to store config file handle"
 msgstr "கட்டமைப்பு கோப்பு கையாளுதலை சேமிக்க முடியவில்லை"
 
-#: src/xm_internal.c:2546 src/xm_internal.c:2644
+#: src/xm_internal.c:2560 src/xm_internal.c:2658
 msgid "unknown device"
 msgstr "தெரியாத சாதனம்"
 
-#: src/xm_internal.c:2703
+#: src/xm_internal.c:2717
 #, fuzzy, c-format
 msgid "failed to check autostart link %s: %s"
 msgstr "autostart இணைப்பு '%s'ஐ அழிக்க முடியவில்லை: %s"
 
-#: src/xm_internal.c:2732
+#: src/xm_internal.c:2746
 #, fuzzy, c-format
 msgid "failed to create link %s: %s"
 msgstr "logfile %sஐ உருவாக்க முடியவில்லை: %s"
 
-#: src/xm_internal.c:2740
+#: src/xm_internal.c:2754
 #, fuzzy, c-format
 msgid "failed to remove link %s: %s"
 msgstr "logfile %sஐ உருவாக்க முடியவில்லை: %s"
