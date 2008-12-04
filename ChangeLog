@@ -1,3 +1,8 @@
+Thu Dec  4 21:43:41 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/openvz_conf.h: Add driver lock
+	* src/openvz_driver.c: Add locking for thread safety
+
 Thu Dec  4 21:41:41 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/openvz_driver.c: Merge all return paths from openvz

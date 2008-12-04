@@ -53,6 +53,8 @@ enum { OPENVZ_WARN, OPENVZ_ERR };
 #define VZCTL_BRIDGE_MIN_VERSION ((3 * 1000 * 1000) + (0 * 1000) + 22 + 1)
 
 struct openvz_driver {
+    PTHREAD_MUTEX_T(lock);
+
     virCapsPtr caps;
     virDomainObjList domains;
     int version;
