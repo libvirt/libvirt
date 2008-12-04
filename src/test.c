@@ -87,24 +87,6 @@ static const virNodeInfo defaultNodeInfo = {
 };
 
 
-
-
-
-
-#define POOL_IS_ACTIVE(privpool, ret)                                   \
-    if (!virStoragePoolObjIsActive(privpool)) {                         \
-        testError(pool->conn, VIR_ERR_INTERNAL_ERROR,                   \
-                  _("storage pool '%s' is not active"), pool->name);    \
-        return (ret);                                                   \
-    }                                                                   \
-
-#define POOL_IS_NOT_ACTIVE(privpool, ret)                               \
-    if (virStoragePoolObjIsActive(privpool)) {                          \
-        testError(pool->conn, VIR_ERR_INTERNAL_ERROR,                   \
-                  _("storage pool '%s' is already active"), pool->name); \
-        return (ret);                                                   \
-    }                                                                   \
-
 #define testError(conn, code, fmt...)                               \
         virReportErrorHelper(conn, VIR_FROM_TEST, code, __FILE__, \
                                __FUNCTION__, __LINE__, fmt)
@@ -676,10 +658,8 @@ static char *testGetCapabilities (virConnectPtr conn)
     testConnPtr privconn = conn->privateData;
     char *xml;
 
-    if ((xml = virCapabilitiesFormatXML(privconn->caps)) == NULL) {
+    if ((xml = virCapabilitiesFormatXML(privconn->caps)) == NULL)
         testError(conn, VIR_ERR_NO_MEMORY, NULL);
-        return NULL;
-    }
 
     return xml;
 }
@@ -701,25 +681,26 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
                       unsigned int flags ATTRIBUTE_UNUSED)
 {
     testConnPtr privconn = conn->privateData;
-    virDomainPtr ret;
+    virDomainPtr ret = NULL;
     virDomainDefPtr def;
     virDomainObjPtr dom;
 
     if ((def = virDomainDefParseString(conn, privconn->caps, xml)) == NULL)
-        return NULL;
+        goto cleanup;
 
     if ((dom = virDomainAssignDef(conn, &privconn->domains,
                                   def)) == NULL) {
         virDomainDefFree(def);
-        return NULL;
+        goto cleanup;
     }
     dom->state = VIR_DOMAIN_RUNNING;
     dom->def->id = privconn->nextDomID++;
 
     ret = virGetDomain(conn, def->name, def->uuid);
-    if (!ret)
-        return NULL;
-    ret->id = def->id;
+    if (ret)
+        ret->id = def->id;
+
+cleanup:
     return ret;
 }
 
@@ -728,18 +709,19 @@ static virDomainPtr testLookupDomainByID(virConnectPtr conn,
                                          int id)
 {
     testConnPtr privconn = conn->privateData;
-    virDomainObjPtr dom = NULL;
-    virDomainPtr ret;
+    virDomainPtr ret = NULL;
+    virDomainObjPtr dom;
 
     if ((dom = virDomainFindByID(&privconn->domains, id)) == NULL) {
         testError (conn, VIR_ERR_NO_DOMAIN, NULL);
-        return NULL;
+        goto cleanup;
     }
 
     ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
-    if (!ret)
-        return NULL;
-    ret->id = dom->def->id;
+    if (ret)
+        ret->id = dom->def->id;
+
+cleanup:
     return ret;
 }
 
@@ -747,18 +729,19 @@ static virDomainPtr testLookupDomainByUUID(virConnectPtr conn,
                                            const unsigned char *uuid)
 {
     testConnPtr privconn = conn->privateData;
-    virDomainPtr ret;
-    virDomainObjPtr dom = NULL;
+    virDomainPtr ret = NULL;
+    virDomainObjPtr dom ;
 
     if ((dom = virDomainFindByUUID(&privconn->domains, uuid)) == NULL) {
         testError (conn, VIR_ERR_NO_DOMAIN, NULL);
-        return NULL;
+        goto cleanup;
     }
 
     ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
-    if (!ret)
-        return NULL;
-    ret->id = dom->def->id;
+    if (ret)
+        ret->id = dom->def->id;
+
+cleanup:
     return ret;
 }
 
@@ -766,18 +749,19 @@ static virDomainPtr testLookupDomainByName(virConnectPtr conn,
                                            const char *name)
 {
     testConnPtr privconn = conn->privateData;
-    virDomainPtr ret;
-    virDomainObjPtr dom = NULL;
+    virDomainPtr ret = NULL;
+    virDomainObjPtr dom;
 
     if ((dom = virDomainFindByName(&privconn->domains, name)) == NULL) {
         testError (conn, VIR_ERR_NO_DOMAIN, NULL);
-        return NULL;
+        goto cleanup;
     }
 
     ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
-    if (!ret)
-        return NULL;
-    ret->id = dom->def->id;
+    if (ret)
+        ret->id = dom->def->id;
+
+cleanup:
     return ret;
 }
 
@@ -799,13 +783,14 @@ static int testDestroyDomain (virDomainPtr domain)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     privdom->state = VIR_DOMAIN_SHUTOFF;
@@ -815,44 +800,52 @@ static int testDestroyDomain (virDomainPtr domain)
         virDomainRemoveInactive(&privconn->domains,
                                 privdom);
     }
-    return (0);
+
+    ret = 0;
+cleanup:
+    return ret;
 }
 
 static int testResumeDomain (virDomainPtr domain)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (privdom->state != VIR_DOMAIN_PAUSED) {
         testError(domain->conn,
                   VIR_ERR_INTERNAL_ERROR, _("domain '%s' not paused"),
                   domain->name);
-        return -1;
+        goto cleanup;
     }
 
     privdom->state = VIR_DOMAIN_RUNNING;
-    return (0);
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 static int testPauseDomain (virDomainPtr domain)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (privdom->state == VIR_DOMAIN_SHUTOFF ||
@@ -860,37 +853,43 @@ static int testPauseDomain (virDomainPtr domain)
         testError(domain->conn,
                   VIR_ERR_INTERNAL_ERROR, _("domain '%s' not running"),
                   domain->name);
-        return -1;
+        goto cleanup;
     }
 
     privdom->state = VIR_DOMAIN_PAUSED;
-    return (0);
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 static int testShutdownDomain (virDomainPtr domain)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (privdom->state == VIR_DOMAIN_SHUTOFF) {
         testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
                   _("domain '%s' not running"), domain->name);
-        return -1;
+        goto cleanup;
     }
 
     privdom->state = VIR_DOMAIN_SHUTOFF;
     domain->id = -1;
     privdom->def->id = -1;
+    ret = 0;
 
-    return (0);
+cleanup:
+    return ret;
 }
 
 /* Similar behaviour as shutdown */
@@ -899,13 +898,14 @@ static int testRebootDomain (virDomainPtr domain,
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     privdom->state = VIR_DOMAIN_SHUTDOWN;
@@ -937,7 +937,10 @@ static int testRebootDomain (virDomainPtr domain,
         break;
     }
 
-    return (0);
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 static int testGetDomainInfo (virDomainPtr domain,
@@ -946,19 +949,20 @@ static int testGetDomainInfo (virDomainPtr domain,
     testConnPtr privconn = domain->conn->privateData;
     struct timeval tv;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (gettimeofday(&tv, NULL) < 0) {
         testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
                   "%s", _("getting time of day"));
-        return (-1);
+        goto cleanup;
     }
 
     info->state = privdom->state;
@@ -966,7 +970,10 @@ static int testGetDomainInfo (virDomainPtr domain,
     info->maxMem = privdom->def->maxmem;
     info->nrVirtCpu = privdom->def->vcpus;
     info->cpuTime = ((tv.tv_sec * 1000ll * 1000ll  * 1000ll) + (tv.tv_usec * 1000ll));
-    return (0);
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 static char *testDomainDumpXML(virDomainPtr domain, int flags);
@@ -977,16 +984,18 @@ static int testDomainSave(virDomainPtr domain,
                           const char *path)
 {
     testConnPtr privconn = domain->conn->privateData;
-    char *xml;
-    int fd, len;
+    char *xml = NULL;
+    int fd = -1;
+    int len;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     xml = testDomainDumpXML(domain, 0);
@@ -994,120 +1003,132 @@ static int testDomainSave(virDomainPtr domain,
         testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
                   _("saving domain '%s' failed to allocate space for metadata: %s"),
                   domain->name, strerror(errno));
-        return (-1);
+        goto cleanup;
     }
 
     if ((fd = open(path, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
         testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
                   _("saving domain '%s' to '%s': open failed: %s"),
                   domain->name, path, strerror(errno));
-        return (-1);
+        goto cleanup;
     }
     len = strlen(xml);
     if (safewrite(fd, TEST_SAVE_MAGIC, sizeof(TEST_SAVE_MAGIC)) < 0) {
         testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
                   _("saving domain '%s' to '%s': write failed: %s"),
                   domain->name, path, strerror(errno));
-        close(fd);
-        return (-1);
+        goto cleanup;
     }
     if (safewrite(fd, (char*)&len, sizeof(len)) < 0) {
         testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
                   _("saving domain '%s' to '%s': write failed: %s"),
                   domain->name, path, strerror(errno));
-        close(fd);
-        return (-1);
+        goto cleanup;
     }
     if (safewrite(fd, xml, len) < 0) {
         testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
                   _("saving domain '%s' to '%s': write failed: %s"),
                   domain->name, path, strerror(errno));
-        VIR_FREE(xml);
-        close(fd);
-        return (-1);
+        goto cleanup;
     }
-    VIR_FREE(xml);
+
     if (close(fd) < 0) {
         testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
                   _("saving domain '%s' to '%s': write failed: %s"),
                   domain->name, path, strerror(errno));
-        close(fd);
-        return (-1);
+        goto cleanup;
     }
+    fd = -1;
+
     privdom->state = VIR_DOMAIN_SHUTOFF;
     if (!privdom->persistent) {
         virDomainRemoveInactive(&privconn->domains,
                                 privdom);
     }
-    return 0;
+    ret = 0;
+
+cleanup:
+    VIR_FREE(xml);
+
+    /* Don't report failure in close or unlink, because
+     * in either case we're already in a failure scenario
+     * and have reported a earlier error */
+    if (ret != 0) {
+        if (fd != -1)
+            close(fd);
+        unlink(path);
+    }
+
+    return ret;
 }
 
 static int testDomainRestore(virConnectPtr conn,
                              const char *path)
 {
     testConnPtr privconn = conn->privateData;
-    char *xml;
+    char *xml = NULL;
     char magic[15];
-    int fd, len;
-    virDomainDefPtr def;
+    int fd = -1;
+    int len;
+    virDomainDefPtr def = NULL;
     virDomainObjPtr dom;
+    int ret = -1;
 
     if ((fd = open(path, O_RDONLY)) < 0) {
         testError(conn, VIR_ERR_INTERNAL_ERROR,
                   "%s", _("cannot read domain image"));
-        return (-1);
+        goto cleanup;
     }
     if (read(fd, magic, sizeof(magic)) != sizeof(magic)) {
         testError(conn, VIR_ERR_INTERNAL_ERROR,
                   "%s", _("incomplete save header"));
-        close(fd);
-        return (-1);
+        goto cleanup;
     }
     if (memcmp(magic, TEST_SAVE_MAGIC, sizeof(magic))) {
         testError(conn, VIR_ERR_INTERNAL_ERROR,
                   "%s", _("mismatched header magic"));
-        close(fd);
-        return (-1);
+        goto cleanup;
     }
     if (read(fd, (char*)&len, sizeof(len)) != sizeof(len)) {
         testError(conn, VIR_ERR_INTERNAL_ERROR,
                   "%s", _("failed to read metadata length"));
-        close(fd);
-        return (-1);
+        goto cleanup;
     }
     if (len < 1 || len > 8192) {
         testError(conn, VIR_ERR_INTERNAL_ERROR,
                   "%s", _("length of metadata out of range"));
-        close(fd);
-        return (-1);
+        goto cleanup;
     }
     if (VIR_ALLOC_N(xml, len+1) < 0) {
         testError(conn, VIR_ERR_NO_MEMORY, "xml");
-        close(fd);
-        return (-1);
+        goto cleanup;
     }
     if (read(fd, xml, len) != len) {
         testError(conn, VIR_ERR_INTERNAL_ERROR,
                   "%s", _("incomplete metdata"));
-        close(fd);
-        return (-1);
+        goto cleanup;
     }
     xml[len] = '\0';
-    close(fd);
 
     def = virDomainDefParseString(conn, privconn->caps, xml);
-    VIR_FREE(xml);
     if (!def)
-        return -1;
+        goto cleanup;
 
     if ((dom = virDomainAssignDef(conn, &privconn->domains,
-                                  def)) == NULL) {
-        virDomainDefFree(def);
-        return -1;
-    }
+                                  def)) == NULL)
+        goto cleanup;
+
     dom->state = VIR_DOMAIN_RUNNING;
     dom->def->id = privconn->nextDomID++;
-    return dom->def->id;
+    def = NULL;
+    ret = dom->def->id;
+
+cleanup:
+    virDomainDefFree(def);
+    VIR_FREE(xml);
+    if (fd != -1)
+        close(fd);
+    return ret;
 }
 
 static int testDomainCoreDump(virDomainPtr domain,
@@ -1115,43 +1136,47 @@ static int testDomainCoreDump(virDomainPtr domain,
                               int flags ATTRIBUTE_UNUSED)
 {
     testConnPtr privconn = domain->conn->privateData;
-    int fd;
+    int fd = -1;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if ((fd = open(to, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
         testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
                   _("domain '%s' coredump: failed to open %s: %s"),
                   domain->name, to, strerror (errno));
-        return (-1);
+        goto cleanup;
     }
     if (safewrite(fd, TEST_SAVE_MAGIC, sizeof(TEST_SAVE_MAGIC)) < 0) {
         testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
                   _("domain '%s' coredump: failed to write header to %s: %s"),
                   domain->name, to, strerror (errno));
-        close(fd);
-        return (-1);
+        goto cleanup;
     }
     if (close(fd) < 0) {
         testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
                   _("domain '%s' coredump: write failed: %s: %s"),
                   domain->name, to, strerror (errno));
-        close(fd);
-        return (-1);
+        goto cleanup;
     }
     privdom->state = VIR_DOMAIN_SHUTOFF;
     if (!privdom->persistent) {
         virDomainRemoveInactive(&privconn->domains,
                                 privdom);
     }
-    return 0;
+    ret = 0;
+
+cleanup:
+    if (fd != -1)
+        close(fd);
+    return ret;
 }
 
 static char *testGetOSType(virDomainPtr dom) {
@@ -1164,16 +1189,20 @@ static char *testGetOSType(virDomainPtr dom) {
 static unsigned long testGetMaxMemory(virDomainPtr domain) {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    unsigned long ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
-    return privdom->def->maxmem;
+    ret = privdom->def->maxmem;
+
+cleanup:
+    return ret;
 }
 
 static int testSetMaxMemory(virDomainPtr domain,
@@ -1181,18 +1210,22 @@ static int testSetMaxMemory(virDomainPtr domain,
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     /* XXX validate not over host memory wrt to other domains */
     privdom->def->maxmem = memory;
-    return (0);
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 static int testSetMemory(virDomainPtr domain,
@@ -1200,43 +1233,52 @@ static int testSetMemory(virDomainPtr domain,
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (memory > privdom->def->maxmem) {
         testError(domain->conn,
                   VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
+        goto cleanup;
     }
 
     privdom->def->memory = memory;
-    return (0);
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 static int testSetVcpus(virDomainPtr domain,
                         unsigned int nrCpus) {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    int ret = -1;
+
     if ((privdom = virDomainFindByName(&privconn->domains,
                                        domain->name)) == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     /* We allow more cpus in guest than host */
     if (nrCpus > 32) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
+        goto cleanup;
     }
 
     privdom->def->vcpus = nrCpus;
-    return (0);
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 static char *testDomainDumpXML(virDomainPtr domain, int flags)
@@ -1244,18 +1286,23 @@ static char *testDomainDumpXML(virDomainPtr domain, int flags)
     testConnPtr privconn = domain->conn->privateData;
     virDomainDefPtr def;
     virDomainObjPtr privdom;
+    char *ret = NULL;
+
     if ((privdom = virDomainFindByName(&privconn->domains,
                                        domain->name)) == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return NULL;
+        goto cleanup;
     }
 
     def = (flags & VIR_DOMAIN_XML_INACTIVE) &&
         privdom->newDef ? privdom->newDef : privdom->def;
 
-    return virDomainDefFormat(domain->conn,
-                              def,
-                              flags);
+    ret = virDomainDefFormat(domain->conn,
+                             def,
+                             flags);
+
+cleanup:
+    return ret;
 }
 
 static int testNumOfDefinedDomains(virConnectPtr conn) {
@@ -1293,25 +1340,27 @@ no_memory:
 static virDomainPtr testDomainDefineXML(virConnectPtr conn,
                                         const char *xml) {
     testConnPtr privconn = conn->privateData;
-    virDomainPtr ret;
+    virDomainPtr ret = NULL;
     virDomainDefPtr def;
     virDomainObjPtr dom;
 
     if ((def = virDomainDefParseString(conn, privconn->caps, xml)) == NULL)
-        return NULL;
+        goto cleanup;
 
     if ((dom = virDomainAssignDef(conn, &privconn->domains,
                                   def)) == NULL) {
-        virDomainDefFree(def);
-        return NULL;
+        goto cleanup;
     }
     dom->persistent = 1;
     dom->def->id = -1;
 
     ret = virGetDomain(conn, def->name, def->uuid);
-    if (!ret)
-        return NULL;
-    ret->id = -1;
+    def = NULL;
+    if (ret)
+        ret->id = -1;
+
+cleanup:
+    virDomainDefFree(def);
     return ret;
 }
 
@@ -1320,11 +1369,12 @@ static int testNodeGetCellsFreeMemory(virConnectPtr conn,
                                       int startCell, int maxCells) {
     testConnPtr privconn = conn->privateData;
     int i, j;
+    int ret = -1;
 
     if (startCell > privconn->numCells) {
         testError(conn, VIR_ERR_INVALID_ARG,
                   "%s", _("Range exceeds available cells"));
-        return -1;
+        goto cleanup;
     }
 
     for (i = startCell, j = 0;
@@ -1332,58 +1382,66 @@ static int testNodeGetCellsFreeMemory(virConnectPtr conn,
          ++i, ++j) {
         freemems[j] = privconn->cells[i].mem;
     }
+    ret = j;
 
-    return j;
+cleanup:
+    return ret;
 }
 
 
 static int testDomainCreate(virDomainPtr domain) {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (privdom->state != VIR_DOMAIN_SHUTOFF) {
         testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
                   _("Domain '%s' is already running"), domain->name);
-        return (-1);
+        goto cleanup;
     }
 
     domain->id = privdom->def->id = privconn->nextDomID++;
     privdom->state = VIR_DOMAIN_RUNNING;
+    ret = 0;
 
-    return (0);
+cleanup:
+    return ret;
 }
 
 static int testDomainUndefine(virDomainPtr domain) {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (privdom->state != VIR_DOMAIN_SHUTOFF) {
         testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
                   _("Domain '%s' is still running"), domain->name);
-        return (-1);
+        goto cleanup;
     }
 
     privdom->state = VIR_DOMAIN_SHUTOFF;
     virDomainRemoveInactive(&privconn->domains,
                             privdom);
+    ret = 0;
 
-    return (0);
+cleanup:
+    return ret;
 }
 
 static int testDomainGetAutostart(virDomainPtr domain,
@@ -1391,17 +1449,21 @@ static int testDomainGetAutostart(virDomainPtr domain,
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     *autostart = privdom->autostart;
-    return (0);
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 
@@ -1410,29 +1472,33 @@ static int testDomainSetAutostart(virDomainPtr domain,
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     privdom->autostart = autostart ? 1 : 0;
-    return (0);
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 static char *testDomainGetSchedulerType(virDomainPtr domain,
                                         int *nparams)
 {
-    char *type;
+    char *type = NULL;
+
     *nparams = 1;
     type = strdup("fair");
-    if (!type) {
+    if (!type)
         testError(domain->conn, VIR_ERR_NO_MEMORY, "schedular");
-        return (NULL);
-    }
+
     return type;
 }
 
@@ -1442,25 +1508,29 @@ static int testDomainGetSchedulerParams(virDomainPtr domain,
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (*nparams != 1) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, "nparams");
-        return (-1);
+        goto cleanup;
     }
     strcpy(params[0].field, "weight");
     params[0].type = VIR_DOMAIN_SCHED_FIELD_UINT;
     /* XXX */
     /*params[0].value.ui = privdom->weight;*/
     params[0].value.ui = 50;
-    return 0;
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 
@@ -1470,30 +1540,34 @@ static int testDomainSetSchedulerParams(virDomainPtr domain,
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    int ret = -1;
 
     privdom = virDomainFindByName(&privconn->domains,
                                   domain->name);
 
     if (privdom == NULL) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (nparams != 1) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, "nparams");
-        return (-1);
+        goto cleanup;
     }
     if (STRNEQ(params[0].field, "weight")) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, "field");
-        return (-1);
+        goto cleanup;
     }
     if (params[0].type != VIR_DOMAIN_SCHED_FIELD_UINT) {
         testError(domain->conn, VIR_ERR_INVALID_ARG, "type");
-        return (-1);
+        goto cleanup;
     }
     /* XXX */
     /*privdom->weight = params[0].value.ui;*/
-    return 0;
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 static virDrvOpenStatus testOpenNetwork(virConnectPtr conn,
@@ -1517,27 +1591,35 @@ static virNetworkPtr testLookupNetworkByUUID(virConnectPtr conn,
 {
     testConnPtr privconn = conn->privateData;
     virNetworkObjPtr net;
+    virNetworkPtr ret = NULL;
 
     if ((net = virNetworkFindByUUID(&privconn->networks, uuid)) == NULL) {
         testError (conn, VIR_ERR_NO_NETWORK, NULL);
-        return NULL;
+        goto cleanup;
     }
 
-    return virGetNetwork(conn, net->def->name, net->def->uuid);
+    ret = virGetNetwork(conn, net->def->name, net->def->uuid);
+
+cleanup:
+    return ret;
 }
 
 static virNetworkPtr testLookupNetworkByName(virConnectPtr conn,
                                              const char *name)
 {
     testConnPtr privconn = conn->privateData;
-    virNetworkObjPtr net = NULL;
+    virNetworkObjPtr net;
+    virNetworkPtr ret = NULL;
 
     if ((net = virNetworkFindByName(&privconn->networks, name)) == NULL) {
         testError (conn, VIR_ERR_NO_NETWORK, NULL);
-        return NULL;
+        goto cleanup;
     }
 
-    return virGetNetwork(conn, net->def->name, net->def->uuid);
+    ret = virGetNetwork(conn, net->def->name, net->def->uuid);
+
+cleanup:
+    return ret;
 }
 
 
@@ -1568,7 +1650,7 @@ no_memory:
     testError(conn, VIR_ERR_NO_MEMORY, NULL);
     for (n = 0 ; n < nnames ; n++)
         VIR_FREE(names[n]);
-    return (-1);
+    return -1;
 }
 
 static int testNumDefinedNetworks(virConnectPtr conn) {
@@ -1598,102 +1680,119 @@ no_memory:
     testError(conn, VIR_ERR_NO_MEMORY, NULL);
     for (n = 0 ; n < nnames ; n++)
         VIR_FREE(names[n]);
-    return (-1);
+    return -1;
 }
 
 static virNetworkPtr testNetworkCreate(virConnectPtr conn, const char *xml) {
     testConnPtr privconn = conn->privateData;
     virNetworkDefPtr def;
     virNetworkObjPtr net;
+    virNetworkPtr ret = NULL;
 
     if ((def = virNetworkDefParseString(conn, xml)) == NULL)
-        return NULL;
+        goto cleanup;
 
     if ((net = virNetworkAssignDef(conn, &privconn->networks,
                                    def)) == NULL) {
-        virNetworkDefFree(def);
-        return NULL;
+        goto cleanup;
     }
     net->active = 1;
+    def = NULL;
 
-    return virGetNetwork(conn, def->name, def->uuid);
+    ret = virGetNetwork(conn, def->name, def->uuid);
+
+cleanup:
+    virNetworkDefFree(def);
+    return ret;
 }
 
 static virNetworkPtr testNetworkDefine(virConnectPtr conn, const char *xml) {
     testConnPtr privconn = conn->privateData;
     virNetworkDefPtr def;
     virNetworkObjPtr net;
+    virNetworkPtr ret = NULL;
 
     if ((def = virNetworkDefParseString(conn, xml)) == NULL)
-        return NULL;
+        goto cleanup;
 
     if ((net = virNetworkAssignDef(conn, &privconn->networks,
                                    def)) == NULL) {
-        virNetworkDefFree(def);
-        return NULL;
+        goto cleanup;
     }
     net->persistent = 1;
+    def = NULL;
 
-    return virGetNetwork(conn, def->name, def->uuid);
+    ret = virGetNetwork(conn, def->name, def->uuid);
+
+cleanup:
+    virNetworkDefFree(def);
+    return ret;
 }
 
 static int testNetworkUndefine(virNetworkPtr network) {
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
+    int ret = -1;
 
     privnet = virNetworkFindByName(&privconn->networks,
                                    network->name);
 
     if (privnet == NULL) {
         testError(network->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (virNetworkIsActive(privnet)) {
         testError(network->conn, VIR_ERR_INTERNAL_ERROR,
                   _("Network '%s' is still running"), network->name);
-        return (-1);
+        goto cleanup;
     }
 
     virNetworkRemoveInactive(&privconn->networks,
                              privnet);
+    ret = 0;
 
-    return (0);
+cleanup:
+    return ret;
 }
 
 static int testNetworkStart(virNetworkPtr network) {
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
+    int ret = -1;
 
     privnet = virNetworkFindByName(&privconn->networks,
                                    network->name);
 
     if (privnet == NULL) {
         testError(network->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (virNetworkIsActive(privnet)) {
         testError(network->conn, VIR_ERR_INTERNAL_ERROR,
                   _("Network '%s' is already running"), network->name);
-        return (-1);
+        goto cleanup;
     }
 
     privnet->active = 1;
+    ret = 0;
 
-    return (0);
+cleanup:
+    return ret;
 }
 
 static int testNetworkDestroy(virNetworkPtr network) {
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
+    int ret = -1;
 
     privnet = virNetworkFindByName(&privconn->networks,
                                    network->name);
 
     if (privnet == NULL) {
         testError(network->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     privnet->active = 0;
@@ -1701,22 +1800,29 @@ static int testNetworkDestroy(virNetworkPtr network) {
         virNetworkRemoveInactive(&privconn->networks,
                                  privnet);
     }
-    return (0);
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 static char *testNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSED) {
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
+    char *ret = NULL;
 
     privnet = virNetworkFindByName(&privconn->networks,
                                    network->name);
 
     if (privnet == NULL) {
         testError(network->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return NULL;
+        goto cleanup;
     }
 
-    return virNetworkDefFormat(network->conn, privnet->def);
+    ret = virNetworkDefFormat(network->conn, privnet->def);
+
+cleanup:
+    return ret;
 }
 
 static char *testNetworkGetBridgeName(virNetworkPtr network) {
@@ -1729,14 +1835,16 @@ static char *testNetworkGetBridgeName(virNetworkPtr network) {
 
     if (privnet == NULL) {
         testError(network->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return NULL;
+        goto cleanup;
     }
 
     if (privnet->def->bridge &&
         !(bridge = strdup(privnet->def->bridge))) {
         testError(network->conn, VIR_ERR_NO_MEMORY, "network");
-        return NULL;
+        goto cleanup;
     }
+
+cleanup:
     return bridge;
 }
 
@@ -1744,34 +1852,42 @@ static int testNetworkGetAutostart(virNetworkPtr network,
                                    int *autostart) {
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
+    int ret = -1;
 
     privnet = virNetworkFindByName(&privconn->networks,
                                    network->name);
 
     if (privnet == NULL) {
         testError(network->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     *autostart = privnet->autostart;
-    return (0);
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 static int testNetworkSetAutostart(virNetworkPtr network,
                                    int autostart) {
     testConnPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
+    int ret = -1;
 
     privnet = virNetworkFindByName(&privconn->networks,
                                    network->name);
 
     if (privnet == NULL) {
         testError(network->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     privnet->autostart = autostart ? 1 : 0;
-    return (0);
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 
@@ -1813,32 +1929,40 @@ static virStoragePoolPtr
 testStoragePoolLookupByUUID(virConnectPtr conn,
                             const unsigned char *uuid) {
     testConnPtr privconn = conn->privateData;
-    virStoragePoolObjPtr pool = NULL;
+    virStoragePoolObjPtr pool;
+    virStoragePoolPtr ret = NULL;
 
     pool = virStoragePoolObjFindByUUID(&privconn->pools, uuid);
 
     if (pool == NULL) {
         testError (conn, VIR_ERR_NO_STORAGE_POOL, NULL);
-        return NULL;
+        goto cleanup;
     }
 
-    return virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+
+cleanup:
+    return ret;
 }
 
 static virStoragePoolPtr
 testStoragePoolLookupByName(virConnectPtr conn,
                             const char *name) {
     testConnPtr privconn = conn->privateData;
-    virStoragePoolObjPtr pool = NULL;
+    virStoragePoolObjPtr pool;
+    virStoragePoolPtr ret = NULL;
 
     pool = virStoragePoolObjFindByName(&privconn->pools, name);
 
     if (pool == NULL) {
         testError (conn, VIR_ERR_NO_STORAGE_POOL, NULL);
-        return NULL;
+        goto cleanup;
     }
 
-    return virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+
+cleanup:
+    return ret;
 }
 
 static virStoragePoolPtr
@@ -1877,7 +2001,7 @@ no_memory:
     testError(conn, VIR_ERR_NO_MEMORY, NULL);
     for (n = 0 ; n < nnames ; n++)
         VIR_FREE(names[n]);
-    return (-1);
+    return -1;
 }
 
 static int
@@ -1911,7 +2035,7 @@ no_memory:
     testError(conn, VIR_ERR_NO_MEMORY, NULL);
     for (n = 0 ; n < nnames ; n++)
         VIR_FREE(names[n]);
-    return (-1);
+    return -1;
 }
 
 static int
@@ -1923,22 +2047,29 @@ testStoragePoolStart(virStoragePoolPtr pool,
                      unsigned int flags ATTRIBUTE_UNUSED) {
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
+    int ret = -1;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            pool->name);
 
     if (privpool == NULL) {
         testError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
-    POOL_IS_NOT_ACTIVE(privpool, -1);
+    if (virStoragePoolObjIsActive(privpool)) {
+        testError(pool->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("storage pool '%s' is already active"), pool->name);
+        goto cleanup;
+    }
 
     if (testStoragePoolRefresh(pool, 0) == 0)
-        return -1;
+        goto cleanup;
     privpool->active = 1;
+    ret = 0;
 
-    return 0;
+cleanup:
+    return ret;
 }
 
 static char *
@@ -1958,30 +2089,37 @@ testStoragePoolCreate(virConnectPtr conn,
     testConnPtr privconn = conn->privateData;
     virStoragePoolDefPtr def;
     virStoragePoolObjPtr pool;
+    virStoragePoolPtr ret = NULL;
 
     if (!(def = virStoragePoolDefParse(conn, xml, NULL)))
-        return NULL;
+        goto cleanup;
 
-    if (virStoragePoolObjFindByUUID(&privconn->pools, def->uuid) ||
-        virStoragePoolObjFindByName(&privconn->pools, def->name)) {
+    pool = virStoragePoolObjFindByUUID(&privconn->pools, def->uuid);
+    if (!pool)
+        pool = virStoragePoolObjFindByName(&privconn->pools, def->name);
+    if (pool) {
         testError(conn, VIR_ERR_INTERNAL_ERROR,
                   "%s", _("storage pool already exists"));
-        virStoragePoolDefFree(def);
-        return NULL;
+        goto cleanup;
     }
 
     if (!(pool = virStoragePoolObjAssignDef(conn, &privconn->pools, def))) {
-        virStoragePoolDefFree(def);
         return NULL;
     }
+    def = NULL;
 
     if (testStoragePoolObjSetDefaults(pool) == -1) {
         virStoragePoolObjRemove(&privconn->pools, pool);
-        return NULL;
+        pool = NULL;
+        goto cleanup;
     }
     pool->active = 1;
 
-    return virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+
+cleanup:
+    virStoragePoolDefFree(def);
+    return ret;
 }
 
 static virStoragePoolPtr
@@ -1991,45 +2129,58 @@ testStoragePoolDefine(virConnectPtr conn,
     testConnPtr privconn = conn->privateData;
     virStoragePoolDefPtr def;
     virStoragePoolObjPtr pool;
+    virStoragePoolPtr ret = NULL;
 
     if (!(def = virStoragePoolDefParse(conn, xml, NULL)))
-        return NULL;
+        goto cleanup;
 
     def->capacity = defaultPoolCap;
     def->allocation = defaultPoolAlloc;
     def->available = defaultPoolCap - defaultPoolAlloc;
 
     if (!(pool = virStoragePoolObjAssignDef(conn, &privconn->pools, def))) {
-        virStoragePoolDefFree(def);
-        return NULL;
+        goto cleanup;
     }
+    def = NULL;
 
     if (testStoragePoolObjSetDefaults(pool) == -1) {
         virStoragePoolObjRemove(&privconn->pools, pool);
-        return NULL;
+        pool = NULL;
+        goto cleanup;
     }
 
-    return virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+
+cleanup:
+    virStoragePoolDefFree(def);
+    return ret;
 }
 
 static int
 testStoragePoolUndefine(virStoragePoolPtr pool) {
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
+    int ret = -1;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            pool->name);
 
     if (privpool == NULL) {
         testError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
-    POOL_IS_NOT_ACTIVE(privpool, -1);
+    if (virStoragePoolObjIsActive(privpool)) {
+        testError(pool->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("storage pool '%s' is already active"), pool->name);
+        goto cleanup;
+    }
 
     virStoragePoolObjRemove(&privconn->pools, privpool);
+    ret = 0;
 
-    return 0;
+cleanup:
+    return ret;
 }
 
 static int
@@ -2037,18 +2188,24 @@ testStoragePoolBuild(virStoragePoolPtr pool,
                      unsigned int flags ATTRIBUTE_UNUSED) {
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
+    int ret = -1;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            pool->name);
 
     if (privpool == NULL) {
         testError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
-    POOL_IS_NOT_ACTIVE(privpool, -1);
+    if (virStoragePoolObjIsActive(privpool)) {
+        testError(pool->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("storage pool '%s' is already active"), pool->name);
+        goto cleanup;
+    }
 
-    return 0;
+cleanup:
+    return ret;
 }
 
 
@@ -2056,27 +2213,30 @@ static int
 testStoragePoolDestroy(virStoragePoolPtr pool) {
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
+    int ret = -1;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            pool->name);
 
     if (privpool == NULL) {
         testError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (!virStoragePoolObjIsActive(privpool)) {
         testError(pool->conn, VIR_ERR_INTERNAL_ERROR,
                   _("storage pool '%s' is not active"), pool->name);
-        return -1;
+        goto cleanup;
     }
 
     privpool->active = 0;
 
     if (privpool->configFile == NULL)
         virStoragePoolObjRemove(&privconn->pools, privpool);
+    ret = 0;
 
-    return 0;
+cleanup:
+    return ret;
 }
 
 
@@ -2085,18 +2245,26 @@ testStoragePoolDelete(virStoragePoolPtr pool,
                       unsigned int flags ATTRIBUTE_UNUSED) {
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
+    int ret = -1;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            pool->name);
 
     if (privpool == NULL) {
         testError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
-    POOL_IS_NOT_ACTIVE(privpool, -1);
+    if (virStoragePoolObjIsActive(privpool)) {
+        testError(pool->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("storage pool '%s' is already active"), pool->name);
+        goto cleanup;
+    }
 
-    return 0;
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 
@@ -2105,22 +2273,25 @@ testStoragePoolRefresh(virStoragePoolPtr pool,
                        unsigned int flags ATTRIBUTE_UNUSED) {
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
+    int ret = -1;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            pool->name);
 
     if (privpool == NULL) {
         testError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (!virStoragePoolObjIsActive(privpool)) {
         testError(pool->conn, VIR_ERR_INTERNAL_ERROR,
                   _("storage pool '%s' is not active"), pool->name);
-        return -1;
+        goto cleanup;
     }
+    ret = 0;
 
-    return 0;
+cleanup:
+    return ret;
 }
 
 
@@ -2129,13 +2300,14 @@ testStoragePoolGetInfo(virStoragePoolPtr pool,
                        virStoragePoolInfoPtr info) {
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
+    int ret = -1;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            pool->name);
 
     if (privpool == NULL) {
         testError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     memset(info, 0, sizeof(virStoragePoolInfo));
@@ -2146,8 +2318,10 @@ testStoragePoolGetInfo(virStoragePoolPtr pool,
     info->capacity = privpool->def->capacity;
     info->allocation = privpool->def->allocation;
     info->available = privpool->def->available;
+    ret = 0;
 
-    return 0;
+cleanup:
+    return ret;
 }
 
 static char *
@@ -2155,16 +2329,20 @@ testStoragePoolDumpXML(virStoragePoolPtr pool,
                        unsigned int flags ATTRIBUTE_UNUSED) {
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
+    char *ret = NULL;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            pool->name);
 
     if (privpool == NULL) {
         testError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return NULL;
+        goto cleanup;
     }
 
-    return virStoragePoolDefFormat(pool->conn, privpool->def);
+    ret = virStoragePoolDefFormat(pool->conn, privpool->def);
+
+cleanup:
+    return ret;
 }
 
 static int
@@ -2172,13 +2350,14 @@ testStoragePoolGetAutostart(virStoragePoolPtr pool,
                             int *autostart) {
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
+    int ret = -1;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            pool->name);
 
     if (privpool == NULL) {
         testError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (!privpool->configFile) {
@@ -2186,8 +2365,10 @@ testStoragePoolGetAutostart(virStoragePoolPtr pool,
     } else {
         *autostart = privpool->autostart;
     }
+    ret = 0;
 
-    return 0;
+cleanup:
+    return ret;
 }
 
 static int
@@ -2195,28 +2376,28 @@ testStoragePoolSetAutostart(virStoragePoolPtr pool,
                             int autostart) {
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
+    int ret = -1;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            pool->name);
 
     if (privpool == NULL) {
         testError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (!privpool->configFile) {
         testError(pool->conn, VIR_ERR_INVALID_ARG,
                   "%s", _("pool has no config file"));
-        return -1;
+        goto cleanup;
     }
 
     autostart = (autostart != 0);
-
-    if (privpool->autostart == autostart)
-        return 0;
-
     privpool->autostart = autostart;
-    return 0;
+    ret = 0;
+
+cleanup:
+    return ret;
 }
 
 
@@ -2224,22 +2405,26 @@ static int
 testStoragePoolNumVolumes(virStoragePoolPtr pool) {
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
+    int ret = -1;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            pool->name);
 
     if (privpool == NULL) {
         testError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if (!virStoragePoolObjIsActive(privpool)) {
         testError(pool->conn, VIR_ERR_INTERNAL_ERROR,
                   _("storage pool '%s' is not active"), pool->name);
-        return -1;
+        goto cleanup;
     }
 
-    return privpool->volumes.count;
+    ret = privpool->volumes.count;
+
+cleanup:
+    return ret;
 }
 
 static int
@@ -2250,22 +2435,22 @@ testStoragePoolListVolumes(virStoragePoolPtr pool,
     virStoragePoolObjPtr privpool;
     int i = 0, n = 0;
 
+    memset(names, 0, maxnames * sizeof(*names));
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            pool->name);
 
     if (privpool == NULL) {
         testError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
 
     if (!virStoragePoolObjIsActive(privpool)) {
         testError(pool->conn, VIR_ERR_INTERNAL_ERROR,
                   _("storage pool '%s' is not active"), pool->name);
-        return -1;
+        goto cleanup;
     }
 
-    memset(names, 0, maxnames * sizeof(*names));
     for (i = 0 ; i < privpool->volumes.count && n < maxnames ; i++) {
         if ((names[n++] = strdup(privpool->volumes.objs[i]->name)) == NULL) {
             testError(pool->conn, VIR_ERR_NO_MEMORY, "%s", _("name"));
@@ -2290,20 +2475,21 @@ testStorageVolumeLookupByName(virStoragePoolPtr pool,
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
+    virStorageVolPtr ret = NULL;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            pool->name);
 
     if (privpool == NULL) {
         testError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return NULL;
+        goto cleanup;
     }
 
 
     if (!virStoragePoolObjIsActive(privpool)) {
         testError(pool->conn, VIR_ERR_INTERNAL_ERROR,
                   _("storage pool '%s' is not active"), pool->name);
-        return NULL;
+        goto cleanup;
     }
 
     privvol = virStorageVolDefFindByName(privpool, name);
@@ -2311,11 +2497,14 @@ testStorageVolumeLookupByName(virStoragePoolPtr pool,
     if (!privvol) {
         testError(pool->conn, VIR_ERR_INVALID_STORAGE_VOL,
                   _("no storage vol with matching name '%s'"), name);
-        return NULL;
+        goto cleanup;
     }
 
-    return virGetStorageVol(pool->conn, privpool->def->name,
-                            privvol->name, privvol->key);
+    ret = virGetStorageVol(pool->conn, privpool->def->name,
+                           privvol->name, privvol->key);
+
+cleanup:
+    return ret;
 }
 
 
@@ -2324,23 +2513,28 @@ testStorageVolumeLookupByKey(virConnectPtr conn,
                              const char *key) {
     testConnPtr privconn = conn->privateData;
     unsigned int i;
+    virStorageVolPtr ret = NULL;
 
     for (i = 0 ; i < privconn->pools.count ; i++) {
         if (virStoragePoolObjIsActive(privconn->pools.objs[i])) {
             virStorageVolDefPtr privvol =
                 virStorageVolDefFindByKey(privconn->pools.objs[i], key);
 
-            if (privvol)
-                return virGetStorageVol(conn,
-                                        privconn->pools.objs[i]->def->name,
-                                        privvol->name,
-                                        privvol->key);
+            if (privvol) {
+                ret = virGetStorageVol(conn,
+                                       privconn->pools.objs[i]->def->name,
+                                       privvol->name,
+                                       privvol->key);
+                break;
+            }
         }
     }
 
-    testError(conn, VIR_ERR_INVALID_STORAGE_VOL,
-              _("no storage vol with matching key '%s'"), key);
-    return NULL;
+    if (!ret)
+        testError(conn, VIR_ERR_INVALID_STORAGE_VOL,
+                  _("no storage vol with matching key '%s'"), key);
+
+    return ret;
 }
 
 static virStorageVolPtr
@@ -2348,23 +2542,28 @@ testStorageVolumeLookupByPath(virConnectPtr conn,
                               const char *path) {
     testConnPtr privconn = conn->privateData;
     unsigned int i;
+    virStorageVolPtr ret = NULL;
 
     for (i = 0 ; i < privconn->pools.count ; i++) {
         if (virStoragePoolObjIsActive(privconn->pools.objs[i])) {
             virStorageVolDefPtr privvol =
                 virStorageVolDefFindByPath(privconn->pools.objs[i], path);
 
-            if (privvol)
-                return virGetStorageVol(conn,
-                                        privconn->pools.objs[i]->def->name,
-                                        privvol->name,
-                                        privvol->key);
+            if (privvol) {
+                ret = virGetStorageVol(conn,
+                                       privconn->pools.objs[i]->def->name,
+                                       privvol->name,
+                                       privvol->key);
+                break;
+            }
         }
     }
 
-    testError(conn, VIR_ERR_INVALID_STORAGE_VOL,
-              _("no storage vol with matching path '%s'"), path);
-    return NULL;
+    if (!ret)
+        testError(conn, VIR_ERR_INVALID_STORAGE_VOL,
+                  _("no storage vol with matching path '%s'"), path);
+
+    return ret;
 }
 
 static virStorageVolPtr
@@ -2373,33 +2572,33 @@ testStorageVolumeCreateXML(virStoragePoolPtr pool,
                            unsigned int flags ATTRIBUTE_UNUSED) {
     testConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
-    virStorageVolDefPtr privvol;
+    virStorageVolDefPtr privvol = NULL;
+    virStorageVolPtr ret = NULL;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            pool->name);
 
     if (privpool == NULL) {
         testError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return NULL;
+        goto cleanup;
     }
 
 
     if (!virStoragePoolObjIsActive(privpool)) {
         testError(pool->conn, VIR_ERR_INTERNAL_ERROR,
                   _("storage pool '%s' is not active"), pool->name);
-        return NULL;
+        goto cleanup;
     }
 
 
     privvol = virStorageVolDefParse(pool->conn, privpool->def, xmldesc, NULL);
     if (privvol == NULL)
-        return NULL;
+        goto cleanup;
 
     if (virStorageVolDefFindByName(privpool, privvol->name)) {
         testError(pool->conn, VIR_ERR_INVALID_STORAGE_POOL,
                   "%s", _("storage vol already exists"));
-        virStorageVolDefFree(privvol);
-        return NULL;
+        goto cleanup;
     }
 
     /* Make sure enough space */
@@ -2408,8 +2607,7 @@ testStorageVolumeCreateXML(virStoragePoolPtr pool,
         testError(pool->conn, VIR_ERR_INTERNAL_ERROR,
                   _("Not enough free space in pool for volume '%s'"),
                   privvol->name);
-        virStorageVolDefFree(privvol);
-        return NULL;
+        goto cleanup;
     }
     privpool->def->available = (privpool->def->capacity -
                                 privpool->def->allocation);
@@ -2417,16 +2615,14 @@ testStorageVolumeCreateXML(virStoragePoolPtr pool,
     if (VIR_REALLOC_N(privpool->volumes.objs,
                       privpool->volumes.count+1) < 0) {
         testError(pool->conn, VIR_ERR_NO_MEMORY, NULL);
-        virStorageVolDefFree(privvol);
-        return NULL;
+        goto cleanup;
     }
 
     if (VIR_ALLOC_N(privvol->target.path,
                     strlen(privpool->def->target.path) +
                     1 + strlen(privvol->name) + 1) < 0) {
-        virStorageVolDefFree(privvol);
         testError(pool->conn, VIR_ERR_NO_MEMORY, "%s", _("target"));
-        return NULL;
+        goto cleanup;
     }
 
     strcpy(privvol->target.path, privpool->def->target.path);
@@ -2434,10 +2630,9 @@ testStorageVolumeCreateXML(virStoragePoolPtr pool,
     strcat(privvol->target.path, privvol->name);
     privvol->key = strdup(privvol->target.path);
     if (privvol->key == NULL) {
-        virStorageVolDefFree(privvol);
         testError(pool->conn, VIR_ERR_INTERNAL_ERROR, "%s",
                   _("storage vol key"));
-        return NULL;
+        goto cleanup;
     }
 
     privpool->def->allocation += privvol->allocation;
@@ -2445,9 +2640,14 @@ testStorageVolumeCreateXML(virStoragePoolPtr pool,
                                 privpool->def->allocation);
 
     privpool->volumes.objs[privpool->volumes.count++] = privvol;
+    privvol = NULL;
 
-    return virGetStorageVol(pool->conn, privpool->def->name,
-                            privvol->name, privvol->key);
+    ret = virGetStorageVol(pool->conn, privpool->def->name,
+                           privvol->name, privvol->key);
+
+cleanup:
+    virStorageVolDefFree(privvol);
+    return ret;
 }
 
 static int
@@ -2457,13 +2657,14 @@ testStorageVolumeDelete(virStorageVolPtr vol,
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
     int i;
+    int ret = -1;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            vol->pool);
 
     if (privpool == NULL) {
         testError(vol->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
 
@@ -2473,13 +2674,13 @@ testStorageVolumeDelete(virStorageVolPtr vol,
         testError(vol->conn, VIR_ERR_INVALID_STORAGE_VOL,
                   _("no storage vol with matching name '%s'"),
                   vol->name);
-        return -1;
+        goto cleanup;
     }
 
     if (!virStoragePoolObjIsActive(privpool)) {
         testError(vol->conn, VIR_ERR_INTERNAL_ERROR,
                   _("storage pool '%s' is not active"), vol->pool);
-        return -1;
+        goto cleanup;
     }
 
 
@@ -2506,8 +2707,10 @@ testStorageVolumeDelete(virStorageVolPtr vol,
             break;
         }
     }
+    ret = 0;
 
-    return 0;
+cleanup:
+    return ret;
 }
 
 
@@ -2529,13 +2732,14 @@ testStorageVolumeGetInfo(virStorageVolPtr vol,
     testConnPtr privconn = vol->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
+    int ret = -1;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            vol->pool);
 
     if (privpool == NULL) {
         testError(vol->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     privvol = virStorageVolDefFindByName(privpool, vol->name);
@@ -2544,21 +2748,23 @@ testStorageVolumeGetInfo(virStorageVolPtr vol,
         testError(vol->conn, VIR_ERR_INVALID_STORAGE_VOL,
                   _("no storage vol with matching name '%s'"),
                   vol->name);
-        return -1;
+        goto cleanup;
     }
 
     if (!virStoragePoolObjIsActive(privpool)) {
         testError(vol->conn, VIR_ERR_INTERNAL_ERROR,
                   _("storage pool '%s' is not active"), vol->pool);
-        return -1;
+        goto cleanup;
     }
 
     memset(info, 0, sizeof(*info));
     info->type = testStorageVolumeTypeForPool(privpool->def->type);
     info->capacity = privvol->capacity;
     info->allocation = privvol->allocation;
+    ret = 0;
 
-    return 0;
+cleanup:
+    return ret;
 }
 
 static char *
@@ -2567,13 +2773,14 @@ testStorageVolumeGetXMLDesc(virStorageVolPtr vol,
     testConnPtr privconn = vol->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
+    char *ret = NULL;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            vol->pool);
 
     if (privpool == NULL) {
         testError(vol->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return NULL;
+        goto cleanup;
     }
 
     privvol = virStorageVolDefFindByName(privpool, vol->name);
@@ -2582,16 +2789,19 @@ testStorageVolumeGetXMLDesc(virStorageVolPtr vol,
         testError(vol->conn, VIR_ERR_INVALID_STORAGE_VOL,
                   _("no storage vol with matching name '%s'"),
                   vol->name);
-        return NULL;
+        goto cleanup;
     }
 
     if (!virStoragePoolObjIsActive(privpool)) {
         testError(vol->conn, VIR_ERR_INTERNAL_ERROR,
                   _("storage pool '%s' is not active"), vol->pool);
-        return NULL;
+        goto cleanup;
     }
 
-    return virStorageVolDefFormat(vol->conn, privpool->def, privvol);
+    ret = virStorageVolDefFormat(vol->conn, privpool->def, privvol);
+
+cleanup:
+    return ret;
 }
 
 static char *
@@ -2599,15 +2809,14 @@ testStorageVolumeGetPath(virStorageVolPtr vol) {
     testConnPtr privconn = vol->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
-    char *ret;
-
+    char *ret = NULL;
 
     privpool = virStoragePoolObjFindByName(&privconn->pools,
                                            vol->pool);
 
     if (privpool == NULL) {
         testError(vol->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return NULL;
+        goto cleanup;
     }
 
     privvol = virStorageVolDefFindByName(privpool, vol->name);
@@ -2616,20 +2825,20 @@ testStorageVolumeGetPath(virStorageVolPtr vol) {
         testError(vol->conn, VIR_ERR_INVALID_STORAGE_VOL,
                   _("no storage vol with matching name '%s'"),
                   vol->name);
-        return NULL;
+        goto cleanup;
     }
 
     if (!virStoragePoolObjIsActive(privpool)) {
         testError(vol->conn, VIR_ERR_INTERNAL_ERROR,
                   _("storage pool '%s' is not active"), vol->pool);
-        return NULL;
+        goto cleanup;
     }
 
     ret = strdup(privvol->target.path);
-    if (ret == NULL) {
+    if (ret == NULL)
         testError(vol->conn, VIR_ERR_NO_MEMORY, "%s", _("path"));
-        return NULL;
-    }
+
+cleanup:
     return ret;
 }
 
