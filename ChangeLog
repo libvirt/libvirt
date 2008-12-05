@@ -1,3 +1,8 @@
+Fri Dec  5 16:03:53 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/node_device_hal.c configure.in: fix a compilation problem
+	  with old dbus versions
+
 Thu Dec  5 10:10:41 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/domain_conf.c: Disable a few more functions for proxy

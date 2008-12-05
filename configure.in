@@ -1164,6 +1164,7 @@ if test "x$with_hal" = "xyes" -o "x$with_hal" = "xcheck"; then
     CFLAGS="$CFLAGS $HAL_CFLAGS"
     LDFLAGS="$LDFLAGS $HAL_LIBS"
     AC_CHECK_FUNCS([libhal_get_all_devices],,[with_hal=no])
+    AC_CHECK_FUNCS([dbus_watch_get_unix_fd])
     CFLAGS="$old_CFLAGS"
     LDFLAGS="$old_LDFLAGS"
   fi

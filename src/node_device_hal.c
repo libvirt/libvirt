@@ -611,6 +611,7 @@ static dbus_bool_t add_dbus_watch(DBusWatch *watch,
                                   void *data ATTRIBUTE_UNUSED)
 {
     int flags = 0;
+    int fd;
     struct nodeDeviceWatchInfo *info;
 
     if (VIR_ALLOC(info) < 0)
@@ -619,8 +620,13 @@ static dbus_bool_t add_dbus_watch(DBusWatch *watch,
     if (dbus_watch_get_enabled(watch))
         flags = xlate_dbus_watch_flags(dbus_watch_get_flags(watch));
 
-    info->watch = virEventAddHandle(dbus_watch_get_unix_fd(watch), flags,
-                                    dbus_watch_callback, watch, NULL);
+#if HAVE_DBUS_WATCH_GET_UNIX_FD
+    fd = dbus_watch_get_unix_fd(watch);
+#else
+    fd = dbus_watch_get_fd(watch);
+#endif
+    info->watch = virEventAddHandle(fd, flags, dbus_watch_callback,
+                                    watch, NULL);
     if (info->watch < 0) {
         VIR_FREE(info);
         return 0;
