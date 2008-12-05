@@ -146,6 +146,8 @@ VIR_ENUM_IMPL(virDomainHostdevSubsys, VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST,
         virReportErrorHelper(conn, VIR_FROM_DOMAIN, code, __FILE__,        \
                                __FUNCTION__, __LINE__, fmt)
 
+#ifndef PROXY
+
 virDomainObjPtr virDomainFindByID(const virDomainObjListPtr doms,
                                   int id)
 {
@@ -192,6 +194,8 @@ virDomainObjPtr virDomainFindByName(const virDomainObjListPtr doms,
 
     return NULL;
 }
+
+#endif /* !PROXY */
 
 void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
 {
@@ -416,6 +420,8 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def);
 }
 
+#ifndef PROXY
+
 void virDomainObjFree(virDomainObjPtr dom)
 {
     if (!dom)
@@ -509,6 +515,8 @@ void virDomainRemoveInactive(virDomainObjListPtr doms,
     }
 
 }
+#endif /* ! PROXY */
+
 
 int virDomainDiskCompare(virDomainDiskDefPtr a,
                          virDomainDiskDefPtr b) {
