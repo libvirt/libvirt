@@ -2506,6 +2506,7 @@ testStoragePoolBuild(virStoragePoolPtr pool,
                   _("storage pool '%s' is already active"), pool->name);
         goto cleanup;
     }
+    ret = 0;
 
 cleanup:
     if (privpool)
