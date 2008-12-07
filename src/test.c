@@ -2323,9 +2323,6 @@ no_memory:
     return -1;
 }
 
-static int
-testStoragePoolRefresh(virStoragePoolPtr obj,
-                       unsigned int flags ATTRIBUTE_UNUSED);
 
 static int
 testStoragePoolStart(virStoragePoolPtr pool,
@@ -2350,8 +2347,6 @@ testStoragePoolStart(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    if (testStoragePoolRefresh(pool, 0) == 0)
-        goto cleanup;
     privpool->active = 1;
     ret = 0;
 

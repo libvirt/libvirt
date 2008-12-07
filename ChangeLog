@@ -1,3 +1,7 @@
+Sun Dec  7 20:20:53 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/test.c: Remove bogus refresh call causing deadlock
+
 Sun Dec  7 14:03:53 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/test.c: Fix return value in testStoragePoolBuild
