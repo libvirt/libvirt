@@ -191,7 +191,7 @@ static const char *defaultPoolXML =
 "  </target>"
 "</pool>";
 
-static const unsigned long long defaultPoolCap = (100 * 1024 * 1024 * 1024ul);
+static const unsigned long long defaultPoolCap = (100 * 1024 * 1024 * 1024ull);
 static const unsigned long long defaultPoolAlloc = 0;
 
 static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr pool);
@@ -2997,10 +2997,10 @@ testStorageVolumeCreateXML(virStoragePoolPtr pool,
                                 privpool->def->allocation);
 
     privpool->volumes.objs[privpool->volumes.count++] = privvol;
-    privvol = NULL;
 
     ret = virGetStorageVol(pool->conn, privpool->def->name,
                            privvol->name, privvol->key);
+    privvol = NULL;
 
 cleanup:
     virStorageVolDefFree(privvol);
