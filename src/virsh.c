@@ -2148,6 +2148,7 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
 static const vshCmdInfo info_domname[] = {
     {"syntax", "domname <domain>"},
     {"help", gettext_noop("convert a domain id or UUID to domain name")},
+    {"desc", gettext_noop("")}, /* FIXME: describe */
     {NULL, NULL}
 };
 
@@ -2178,6 +2179,7 @@ cmdDomname(vshControl *ctl, const vshCmd *cmd)
 static const vshCmdInfo info_domid[] = {
     {"syntax", "domid <domain>"},
     {"help", gettext_noop("convert a domain name or UUID to domain id")},
+    {"desc", gettext_noop("")}, /* FIXME: describe */
     {NULL, NULL}
 };
 
@@ -2213,6 +2215,7 @@ cmdDomid(vshControl *ctl, const vshCmd *cmd)
 static const vshCmdInfo info_domuuid[] = {
     {"syntax", "domuuid <domain>"},
     {"help", gettext_noop("convert a domain name or id to domain UUID")},
+    {"desc", gettext_noop("")}, /* FIXME: describe */
     {NULL, NULL}
 };
 
@@ -2668,6 +2671,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 static const vshCmdInfo info_network_name[] = {
     {"syntax", "net-name <network>"},
     {"help", gettext_noop("convert a network UUID to network name")},
+    {"desc", gettext_noop("")}, /* FIXME: describe */
     {NULL, NULL}
 };
 
@@ -2777,6 +2781,7 @@ cmdNetworkUndefine(vshControl *ctl, const vshCmd *cmd)
 static const vshCmdInfo info_network_uuid[] = {
     {"syntax", "net-uuid <network>"},
     {"help", gettext_noop("convert a network name to network UUID")},
+    {"desc", gettext_noop("")}, /* FIXME: describe */
     {NULL, NULL}
 };
 
@@ -3699,6 +3704,7 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
 static const vshCmdInfo info_pool_name[] = {
     {"syntax", "pool-name <pool>"},
     {"help", gettext_noop("convert a pool UUID to pool name")},
+    {"desc", gettext_noop("")}, /* FIXME: describe */
     {NULL, NULL}
 };
 
@@ -3930,6 +3936,7 @@ cmdPoolUndefine(vshControl *ctl, const vshCmd *cmd)
 static const vshCmdInfo info_pool_uuid[] = {
     {"syntax", "pool-uuid <pool>"},
     {"help", gettext_noop("convert a pool name to pool UUID")},
+    {"desc", gettext_noop("")}, /* FIXME: describe */
     {NULL, NULL}
 };
 
@@ -4242,6 +4249,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 static const vshCmdInfo info_vol_name[] = {
     {"syntax", "vol-name <vol>"},
     {"help", gettext_noop("convert a vol UUID to vol name")},
+    {"desc", gettext_noop("")}, /* FIXME: describe */
     {NULL, NULL}
 };
 
@@ -4275,6 +4283,7 @@ cmdVolName(vshControl *ctl, const vshCmd *cmd)
 static const vshCmdInfo info_vol_key[] = {
     {"syntax", "vol-key <vol>"},
     {"help", gettext_noop("convert a vol UUID to vol key")},
+    {"desc", gettext_noop("")}, /* FIXME: describe */
     {NULL, NULL}
 };
 
@@ -4308,6 +4317,7 @@ cmdVolKey(vshControl *ctl, const vshCmd *cmd)
 static const vshCmdInfo info_vol_path[] = {
     {"syntax", "vol-path <pool> <vol>"},
     {"help", gettext_noop("convert a vol UUID to vol path")},
+    {"desc", gettext_noop("")}, /* FIXME: describe */
     {NULL, NULL}
 };
 
@@ -4425,6 +4435,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 static const vshCmdInfo info_node_list_devices[] = {
     {"syntax", "nodedev-list [--cap <capability>]"},
     {"help", gettext_noop("enumerate devices on this host")},
+    {"desc", gettext_noop("")}, /* FIXME: describe */
     {NULL, NULL}
 };
 
@@ -4514,6 +4525,7 @@ cmdNodeDeviceDumpXML (vshControl *ctl, const vshCmd *cmd)
 static const vshCmdInfo info_hostname[] = {
     {"syntax", "hostname"},
     {"help", gettext_noop("print the hypervisor hostname")},
+    {"desc", gettext_noop("")}, /* FIXME: describe */
     {NULL, NULL}
 };
 
@@ -4543,6 +4555,7 @@ cmdHostname (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 static const vshCmdInfo info_uri[] = {
     {"syntax", "uri"},
     {"help", gettext_noop("print the hypervisor canonical URI")},
+    {"desc", gettext_noop("")}, /* FIXME: describe */
     {NULL, NULL}
 };
 
@@ -5600,6 +5613,7 @@ static const vshCmdOptDef opts_pool_edit[] = {
 static const vshCmdInfo info_quit[] = {
     {"syntax", "quit"},
     {"help", gettext_noop("quit this interactive terminal")},
+    {"desc", gettext_noop("")}, /* FIXME: describe */
     {NULL, NULL}
 };
 

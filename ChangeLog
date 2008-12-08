@@ -1,4 +1,8 @@
-Mon 8 Dec 2008 13:22:06 +0100 Jim Meyering <meyering@redhat.com>
+Mon Dec  8 13:22:06 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	virsh.c: add missing (yet empty) "desc" strings
+	* src/virsh.c: Now, every command must have a "desc" string,
+	even if it has zero length.  Mark these, so they'll be filled in.
 
 	virsh.c: generate each "virsh help COMMAND"s synopsis
 	* src/virsh.c: Also, diagnose extra arguments after --help (-h).
