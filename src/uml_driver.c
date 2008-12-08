@@ -126,16 +126,27 @@ static struct uml_driver *uml_driver = NULL;
 static void
 umlAutostartConfigs(struct uml_driver *driver) {
     unsigned int i;
+    /* XXX: Figure out a better way todo this. The domain
+     * startup code needs a connection handle in order
+     * to lookup the bridge associated with a virtual
+     * network
+     */
+    virConnectPtr conn = virConnectOpen(getuid() ?
+                                        "uml:///session" :
+                                        "uml:///system");
+    /* Ignoring NULL conn which is mostly harmless here */
 
     for (i = 0 ; i < driver->domains.count ; i++) {
         if (driver->domains.objs[i]->autostart &&
             !virDomainIsActive(driver->domains.objs[i]) &&
-            umlStartVMDaemon(NULL, driver, driver->domains.objs[i]) < 0) {
+            umlStartVMDaemon(conn, driver, driver->domains.objs[i]) < 0) {
             virErrorPtr err = virGetLastError();
             umlLog(UML_ERR, _("Failed to autostart VM '%s': %s\n"),
                      driver->domains.objs[i]->def->name, err->message);
         }
     }
+
+    virConnectClose(conn);
 }
 
 

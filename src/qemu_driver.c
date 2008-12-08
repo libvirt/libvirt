@@ -146,13 +146,22 @@ static struct qemud_driver *qemu_driver = NULL;
 static void
 qemudAutostartConfigs(struct qemud_driver *driver) {
     unsigned int i;
+    /* XXX: Figure out a better way todo this. The domain
+     * startup code needs a connection handle in order
+     * to lookup the bridge associated with a virtual
+     * network
+     */
+    virConnectPtr conn = virConnectOpen(getuid() ?
+                                        "qemu:///session" :
+                                        "qemu:///system");
+    /* Ignoring NULL conn which is mostly harmless here */
 
     for (i = 0 ; i < driver->domains.count ; i++) {
         virDomainObjPtr vm = driver->domains.objs[i];
         virDomainObjLock(vm);
         if (vm->autostart &&
             !virDomainIsActive(vm)) {
-            int ret = qemudStartVMDaemon(NULL, driver, vm, NULL);
+            int ret = qemudStartVMDaemon(conn, driver, vm, NULL);
             if (ret < 0) {
                 virErrorPtr err = virGetLastError();
                 qemudLog(QEMUD_ERR, _("Failed to autostart VM '%s': %s\n"),
@@ -169,6 +178,8 @@ qemudAutostartConfigs(struct qemud_driver *driver) {
         }
         virDomainObjUnlock(vm);
     }
+
+    virConnectClose(conn);
 }
 
 /**

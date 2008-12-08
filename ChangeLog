@@ -1,3 +1,9 @@
+Mon Dec  8 11:17:53 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c, src/uml_driver.c: Fix guest autostart
+	to have a virConnect object available to allow query of
+	virtual networks
+
 Sun Dec  7 20:44:53 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/test.c: Fix integer long long overflow. Fix NULL defernce
