@@ -1,3 +1,8 @@
+Mon 8 Dec 2008 13:22:06 +0100 Jim Meyering <meyering@redhat.com>
+
+	virsh.c: generate each "virsh help COMMAND"s synopsis
+	* src/virsh.c: Also, diagnose extra arguments after --help (-h).
+
 Mon Dec  8 12:00:53 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/Makefile.am: Fix mixup between _LDFLAGS & _LDADD

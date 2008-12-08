@@ -224,7 +224,7 @@ static void vshError(vshControl *ctl, int doexit, const char *format, ...)
     ATTRIBUTE_FORMAT(printf, 3, 4);
 static int vshInit(vshControl *ctl);
 static int vshDeinit(vshControl *ctl);
-static void vshUsage(vshControl *ctl, const char *cmdname);
+static void vshUsage(void);
 static void vshOpenLogFile(vshControl *ctl);
 static void vshOutputLogFile(vshControl *ctl, int log_level, const char *format, va_list ap);
 static void vshCloseLogFile(vshControl *ctl);
@@ -233,7 +233,7 @@ static int vshParseArgv(vshControl *ctl, int argc, char **argv);
 
 static const char *vshCmddefGetInfo(const vshCmdDef *cmd, const char *info);
 static const vshCmdDef *vshCmddefSearch(const char *cmdname);
-static int vshCmddefHelp(vshControl *ctl, const char *name, int withprog);
+static int vshCmddefHelp(vshControl *ctl, const char *name);
 
 static vshCmdOpt *vshCommandOpt(const vshCmd *cmd, const char *name);
 static int vshCommandOptInt(const vshCmd *cmd, const char *name, int *found);
@@ -361,7 +361,7 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
                      N_(vshCmddefGetInfo(def, "help")));
         return TRUE;
     }
-    return vshCmddefHelp(ctl, cmdname, FALSE);
+    return vshCmddefHelp(ctl, cmdname);
 }
 
 /*
@@ -5803,7 +5803,7 @@ vshCmddefSearch(const char *cmdname)
 }
 
 static int
-vshCmddefHelp(vshControl *ctl, const char *cmdname, int withprog)
+vshCmddefHelp(vshControl *ctl, const char *cmdname)
 {
     const vshCmdDef *def = vshCmddefSearch(cmdname);
 
@@ -5811,30 +5811,46 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname, int withprog)
         vshError(ctl, FALSE, _("command '%s' doesn't exist"), cmdname);
         return FALSE;
     } else {
-        const vshCmdOptDef *opt;
         const char *desc = N_(vshCmddefGetInfo(def, "desc"));
         const char *help = N_(vshCmddefGetInfo(def, "help"));
-        const char *syntax = vshCmddefGetInfo(def, "syntax");
+        char buf[256];
 
         fputs(_("  NAME\n"), stdout);
         fprintf(stdout, "    %s - %s\n", def->name, help);
 
-        if (syntax) {
-            fputs(_("\n  SYNOPSIS\n"), stdout);
-            if (!withprog)
-                fprintf(stdout, "    %s\n", syntax);
-            else
-                fprintf(stdout, "    %s %s\n", progname, syntax);
+        fputs(_("\n  SYNOPSIS\n"), stdout);
+        fprintf(stdout, "    %s", def->name);
+        if (def->opts) {
+            const vshCmdOptDef *opt;
+            for (opt = def->opts; opt->name; opt++) {
+                const char *fmt;
+                if (opt->type == VSH_OT_BOOL)
+                    fmt = "[--%s]";
+                else if (opt->type == VSH_OT_INT)
+                    fmt = N_("[--%s <number>]");
+                else if (opt->type == VSH_OT_STRING)
+                    fmt = N_("[--%s <string>]");
+                else if (opt->type == VSH_OT_DATA)
+                    fmt = ((opt->flag & VSH_OFLAG_REQ) ? "<%s>" : "[<%s>]");
+                else
+                    assert(0);
+                fputc(' ', stdout);
+                fprintf(stdout, _(fmt), opt->name);
+            }
         }
-        if (desc) {
+        fputc('\n', stdout);
+
+        if (desc[0]) {
+            /* FIXME: remove this test once all of the empty descriptions
+               have been removed; see `FIXME: describe' lines.  */
             fputs(_("\n  DESCRIPTION\n"), stdout);
             fprintf(stdout, "    %s\n", desc);
         }
+
         if (def->opts) {
+            const vshCmdOptDef *opt;
             fputs(_("\n  OPTIONS\n"), stdout);
             for (opt = def->opts; opt->name; opt++) {
-                char buf[256];
-
                 if (opt->type == VSH_OT_BOOL)
                     snprintf(buf, sizeof(buf), "--%s", opt->name);
                 else if (opt->type == VSH_OT_INT)
@@ -6912,35 +6928,29 @@ vshDeinit(vshControl *ctl)
  * Print usage
  */
 static void
-vshUsage(vshControl *ctl, const char *cmdname)
+vshUsage(void)
 {
     const vshCmdDef *cmd;
+    fprintf(stdout, _("\n%s [options] [commands]\n\n"
+                      "  options:\n"
+                      "    -c | --connect <uri>    hypervisor connection URI\n"
+                      "    -r | --readonly         connect readonly\n"
+                      "    -d | --debug <num>      debug level [0-5]\n"
+                      "    -h | --help             this help\n"
+                      "    -q | --quiet            quiet mode\n"
+                      "    -t | --timing           print timing information\n"
+                      "    -l | --log <file>       output logging to file\n"
+                      "    -v | --version          program version\n\n"
+                      "  commands (non interactive mode):\n"), progname);
 
-    /* global help */
-    if (!cmdname) {
-        fprintf(stdout, _("\n%s [options] [commands]\n\n"
-                          "  options:\n"
-                          "    -c | --connect <uri>    hypervisor connection URI\n"
-                          "    -r | --readonly         connect readonly\n"
-                          "    -d | --debug <num>      debug level [0-5]\n"
-                          "    -h | --help             this help\n"
-                          "    -q | --quiet            quiet mode\n"
-                          "    -t | --timing           print timing information\n"
-                          "    -l | --log <file>       output logging to file\n"
-                          "    -v | --version          program version\n\n"
-                          "  commands (non interactive mode):\n"), progname);
+    for (cmd = commands; cmd->name; cmd++)
+        fprintf(stdout,
+                "    %-15s %s\n", cmd->name, N_(vshCmddefGetInfo(cmd,
+                                                                 "help")));
 
-        for (cmd = commands; cmd->name; cmd++)
-            fprintf(stdout,
-                    "    %-15s %s\n", cmd->name, N_(vshCmddefGetInfo(cmd,
-                                                                     "help")));
-
-        fprintf(stdout, "%s",
-                _("\n  (specify help <command> for details about the command)\n\n"));
-        return;
-    }
-    if (!vshCmddefHelp(ctl, cmdname, TRUE))
-        exit(EXIT_FAILURE);
+    fprintf(stdout, "%s",
+            _("\n  (specify help <command> for details about the command)\n\n"));
+    return;
 }
 
 /*
@@ -7038,8 +7048,12 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
     }
 
     if (help) {
-        /* global or command specific help */
-        vshUsage(ctl, argc > end ? argv[end] : NULL);
+        if (end < argc)
+            vshError(ctl, TRUE,
+                     _("extra argument '%s'. See --help."), argv[end]);
+
+        /* list all command */
+        vshUsage();
         exit(EXIT_SUCCESS);
     }
 
