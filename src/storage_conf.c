@@ -43,6 +43,11 @@
 #include "util.h"
 #include "memory.h"
 
+/* Work around broken limits.h on debian etch */
+#if defined __GNUC__ && defined _GCC_LIMITS_H_ && ! defined ULLONG_MAX
+# define ULLONG_MAX   ULONG_LONG_MAX
+#endif
+
 #define virStorageLog(msg...) fprintf(stderr, msg)
 
 VIR_ENUM_IMPL(virStoragePool,
