@@ -1,5 +1,8 @@
 Mon Dec  8 13:22:06 +0100 2008 Jim Meyering <meyering@redhat.com>
 
+	virsh.c: remove all "syntax" vshCmdInfo entries.
+	* src/virsh.c: ... now that info is generated.
+
 	virsh.c: add missing (yet empty) "desc" strings
 	* src/virsh.c: Now, every command must have a "desc" string,
 	even if it has zero length.  Mark these, so they'll be filled in.
