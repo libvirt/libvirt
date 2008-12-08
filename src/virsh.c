@@ -1008,7 +1008,7 @@ static const vshCmdInfo info_start[] = {
 };
 
 static const vshCmdOptDef opts_start[] = {
-    {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the inactive domain")},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the inactive domain")},
     {NULL, 0, 0, NULL}
 };
 
@@ -3680,7 +3680,7 @@ static const vshCmdInfo info_pool_start[] = {
 };
 
 static const vshCmdOptDef opts_pool_start[] = {
-    {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the inactive pool")},
+    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the inactive pool")},
     {NULL, 0, 0, NULL}
 };
 
@@ -3721,8 +3721,8 @@ static const vshCmdOptDef opts_vol_create_as[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool name")},
     {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the volume")},
     {"capacity", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("size of the vol with optional k,M,G,T suffix")},
-    {"allocation", VSH_OT_DATA, 0, gettext_noop("initial allocation size with optional k,M,G,T suffix")},
-    {"format", VSH_OT_DATA, 0, gettext_noop("file format type raw,bochs,qcow,qcow2,vmdk")},
+    {"allocation", VSH_OT_STRING, 0, gettext_noop("initial allocation size with optional k,M,G,T suffix")},
+    {"format", VSH_OT_STRING, 0, gettext_noop("file format type raw,bochs,qcow,qcow2,vmdk")},
     {NULL, 0, 0, NULL}
 };
 
@@ -4881,7 +4881,7 @@ static const vshCmdInfo info_detach_interface[] = {
 static const vshCmdOptDef opts_detach_interface[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"type",   VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network interface type")},
-    {"mac",    VSH_OT_DATA, 0, gettext_noop("MAC address")},
+    {"mac",    VSH_OT_STRING, 0, gettext_noop("MAC address")},
     {NULL, 0, 0, NULL}
 };
 
@@ -5002,10 +5002,10 @@ static const vshCmdOptDef opts_attach_disk[] = {
     {"domain",  VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"source",  VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("source of disk device")},
     {"target",  VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("target of disk device")},
-    {"driver",    VSH_OT_DATA, 0, gettext_noop("driver of disk device")},
-    {"subdriver", VSH_OT_DATA, 0, gettext_noop("subdriver of disk device")},
-    {"type",    VSH_OT_DATA, 0, gettext_noop("target device type")},
-    {"mode",    VSH_OT_DATA, 0, gettext_noop("mode of device reading and writing")},
+    {"driver",    VSH_OT_STRING, 0, gettext_noop("driver of disk device")},
+    {"subdriver", VSH_OT_STRING, 0, gettext_noop("subdriver of disk device")},
+    {"type",    VSH_OT_STRING, 0, gettext_noop("target device type")},
+    {"mode",    VSH_OT_STRING, 0, gettext_noop("mode of device reading and writing")},
     {NULL, 0, 0, NULL}
 };
 
