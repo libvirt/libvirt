@@ -83,13 +83,16 @@ libvirtd_CFLAGS = \
 	-DREMOTE_PID_FILE="\"$(REMOTE_PID_FILE)\"" \
 	-DGETTEXT_PACKAGE=\"$(PACKAGE)\"
 
-libvirtd_LDFLAGS = \
-	$(WARN_CFLAGS) $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS) \
-	$(COVERAGE_LDFLAGS) \
-	$(POLKIT_LIBS)
+libvirtd_LDFLAGS = 					\
+	$(WARN_CFLAGS) 					\
+	$(COVERAGE_LDFLAGS)
 
 libvirtd_LDADD =					\
-		../gnulib/lib/libgnu.la
+	$(LIBXML_LIBS)					\
+	$(GNUTLS_LIBS)					\
+	$(SASL_LIBS)					\
+	$(POLKIT_LIBS)					\
+	../gnulib/lib/libgnu.la
 
 if ! WITH_DRIVER_MODULES
 if WITH_QEMU
@@ -128,8 +131,6 @@ libvirtd_SOURCES += $(AVAHI_SOURCES)
 libvirtd_CFLAGS += $(AVAHI_CFLAGS)
 libvirtd_LDADD += $(AVAHI_LIBS)
 endif
-
-libvirtd_DEPENDENCIES = $(libvirtd_LDADD)
 
 
 default_xml_dest = libvirt/qemu/networks/default.xml

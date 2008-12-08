@@ -1,3 +1,8 @@
+Mon Dec  8 12:00:53 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/Makefile.am: Fix mixup between _LDFLAGS & _LDADD
+	variables to make compilation work in certain configs.
+
 Mon Dec  8 11:28:53 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/storage_conf.c: Workaround missing ULLONG_MAX in
