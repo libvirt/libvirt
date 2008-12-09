@@ -1,0 +1,42 @@
+#!/bin/sh
+# ensure that virsh start works properly
+
+# Copyright (C) 2008 Free Software Foundation, Inc.
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+if test "$VERBOSE" = yes; then
+  set -x
+  virsh --version
+fi
+
+test -z "$srcdir" && srcdir=$(pwd)
+test -z "$abs_top_srcdir" && abs_top_srcdir=$(pwd)/..
+. "$srcdir/test-lib.sh"
+
+fail=0
+
+test_url=test:///default
+
+# expect this to fail
+virsh -c $test_url start test > out 2> err && fail=1
+
+# stdout gets a newline
+echo > exp || fail=1
+compare out exp || fail=1
+
+echo 'error: Domain is already active' > exp || fail=1
+compare err exp || fail=1
+
+(exit $fail); exit $fail

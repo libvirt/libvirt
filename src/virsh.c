@@ -1021,7 +1021,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomainBy(ctl, cmd, "name", NULL, VSH_BYNAME)))
+    if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", NULL, VSH_BYNAME)))
         return FALSE;
 
     if (virDomainGetID(dom) != (unsigned int)-1) {
@@ -3693,7 +3693,7 @@ cmdPoolStart(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(pool = vshCommandOptPoolBy(ctl, cmd, "name", NULL, VSH_BYNAME)))
+    if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL, VSH_BYNAME)))
          return FALSE;
 
     if (virStoragePoolCreate(pool, 0) == 0) {

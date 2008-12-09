@@ -1,3 +1,15 @@
+Tue Dec  9 2008 22:35:43 +0100 Jim Meyering <meyering@redhat.com>
+
+	fix just-broken "virsh start" and "virsh pool-start" commands
+	* src/virsh.c (cmdPoolStart, cmdStart): Change hard-coded
+	vshCommandOptDomainBy string argument to match just-changed
+	option name.  Cole Robinson reported that "virsh start" was
+	broken and provided that part of the fix.
+	Bug introduced by yesterday's "virsh.c: tweak options to produce
+	more accurate help".
+	* tests/start: New file.  Test for the above fix.
+	* tests/Makefile.am (test_scripts): Add start.
+
 Tue 9 Dez 2008 21:08:43 CET Guido Günther <agx@sigxcpu.org>
 
 	logrotate qemu monitor logs
