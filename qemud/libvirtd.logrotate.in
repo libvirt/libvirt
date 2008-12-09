@@ -1,0 +1,8 @@
+@localstatedir@/log/libvirt/qemu/*.log {
+        daily
+        missingok
+        rotate 7
+        compress
+        delaycompress
+        copytruncate
+}

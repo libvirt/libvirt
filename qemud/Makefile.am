@@ -134,7 +134,8 @@ endif
 
 
 default_xml_dest = libvirt/qemu/networks/default.xml
-install-data-local: install-init install-data-sasl install-data-polkit
+install-data-local: install-init install-data-sasl install-data-polkit \
+                    install-logrotate
 	mkdir -p $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart
 	$(INSTALL_DATA) $(srcdir)/default-network.xml \
 	  $(DESTDIR)$(sysconfdir)/$(default_xml_dest)
@@ -197,6 +198,17 @@ remote_dispatch_args.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
 remote_dispatch_ret.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
 	perl -w $(srcdir)/remote_generate_stubs.pl -r $(srcdir)/remote_protocol.x > $@
 
+
+libvirtd.logrotate: libvirtd.logrotate.in
+	sed						\
+	    -e s!\@localstatedir\@!@localstatedir@!g	\
+	    < $< > $@-t
+	mv $@-t $@
+
+install-logrotate: libvirtd.logrotate
+	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt/qemu/
+	mkdir -p $(DESTDIR)$(sysconfdir)/logrotate.d/
+	$(INSTALL_DATA) $< $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd
 
 if LIBVIRT_INIT_SCRIPTS_RED_HAT
 install-init: libvirtd.init

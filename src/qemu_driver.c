@@ -841,6 +841,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     unsigned int qemuCmdFlags;
     fd_set keepfd;
     const char *emulator;
+    uid_t uid = geteuid();
+    mode_t logmode;
 
     FD_ZERO(&keepfd);
 
@@ -884,8 +886,12 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         return -1;
     }
 
-    if ((vm->logfile = open(logfile, O_CREAT | O_TRUNC | O_WRONLY,
-                            S_IRUSR | S_IWUSR)) < 0) {
+    logmode = O_CREAT | O_WRONLY;
+    if (uid != 0)
+        logmode |= O_TRUNC;
+    else
+        logmode |= O_APPEND;
+    if ((vm->logfile = open(logfile, logmode, S_IRUSR | S_IWUSR)) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("failed to create logfile %s: %s"),
                          logfile, strerror(errno));
