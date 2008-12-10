@@ -13,6 +13,7 @@ DAEMON_SOURCES =					\
 AVAHI_SOURCES =						\
 		mdns.c mdns.h
 
+DISTCLEANFILES =
 EXTRA_DIST =						\
 	default-network.xml				\
 	remote_generate_stubs.pl rpcgen_fix.pl		\
@@ -24,6 +25,7 @@ EXTRA_DIST =						\
 	libvirtd.sysconf				\
 	libvirtd.aug                                    \
 	libvirtd_qemu.aug                               \
+	libvirtd.logrotate.in                           \
 	test_libvirtd.aug                               \
 	test_libvirtd_qemu.aug                          \
 	$(AVAHI_SOURCES)				\
@@ -198,7 +200,7 @@ remote_dispatch_args.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
 remote_dispatch_ret.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
 	perl -w $(srcdir)/remote_generate_stubs.pl -r $(srcdir)/remote_protocol.x > $@
 
-
+DISTCLEANFILES += libvirtd.logrotate
 libvirtd.logrotate: libvirtd.logrotate.in
 	sed						\
 	    -e s!\@localstatedir\@!@localstatedir@!g	\
