@@ -1764,13 +1764,13 @@ umlDomainBlockPeek (virDomainPtr dom,
 
     if (!vm) {
         umlReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                          _("no domain with matching uuid"));
+                        "%s", _("no domain with matching uuid"));
         goto cleanup;
     }
 
     if (!path || path[0] == '\0') {
         umlReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
-                         _("NULL or empty path"));
+                       "%s", _("NULL or empty path"));
         goto cleanup;
     }
 
@@ -1807,7 +1807,7 @@ umlDomainBlockPeek (virDomainPtr dom,
         ret = 0;
     } else {
         umlReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
-                        _("invalid path"));
+                        "%s", _("invalid path"));
     }
 
 cleanup:

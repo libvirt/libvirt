@@ -466,7 +466,7 @@ openvzGetNodeCPUs(void)
 
     if (virNodeInfoPopulate(NULL, &nodeinfo) < 0) {
         openvzError(NULL, VIR_ERR_INTERNAL_ERROR,
-                      _("Cound not read nodeinfo"));
+                    "%s", _("Cound not read nodeinfo"));
         return 0;
     }
 

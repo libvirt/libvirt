@@ -1,3 +1,9 @@
+Wed Dec 10 17:33:49 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	avoid format string warnings
+	* src/openvz_conf.c (openvzGetNodeCPUs): Add "%s" arg before _(...).
+	* src/uml_driver.c (umlDomainBlockPeek): Likewise.
+
 Tue Dec  9 2008 22:35:43 +0100 Jim Meyering <meyering@redhat.com>
 
 	fix just-broken "virsh start" and "virsh pool-start" commands
