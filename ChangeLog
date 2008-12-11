@@ -1,3 +1,7 @@
+Thu Dec 11 10:00:54 EST 2008 Cole Robinson <crobinso@redhat.com>
+
+	* libvirt.spec.in: Fix rpm build by installing logrotate config
+
 Thu Dec 11 09:58:49 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* src/storage_driver.c : Fix a locking issue in PoolGetAutostart

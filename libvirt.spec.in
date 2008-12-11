@@ -320,6 +320,7 @@ fi
 %{_sysconfdir}/rc.d/init.d/libvirtd
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd
 %endif
 
 %if %{with_qemu}
