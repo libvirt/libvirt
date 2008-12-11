@@ -93,8 +93,7 @@ libvirtd_LDADD =					\
 	$(LIBXML_LIBS)					\
 	$(GNUTLS_LIBS)					\
 	$(SASL_LIBS)					\
-	$(POLKIT_LIBS)					\
-	../gnulib/lib/libgnu.la
+	$(POLKIT_LIBS)
 
 if ! WITH_DRIVER_MODULES
 if WITH_QEMU
@@ -243,6 +242,10 @@ install-init:
 uninstall-init:
 
 endif # DBUS_INIT_SCRIPTS_RED_HAT
+
+# This must be added last, since functions it provides/replaces
+# are used by nearly every other library.
+libvirtd_LDADD += ../gnulib/lib/libgnu.la
 
 endif # WITH_LIBVIRTD
 

@@ -1,3 +1,11 @@
+Thu Dec 11 19:10:46 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	build: avoid libvirtd link failure with CFLAGS=-g
+	* qemud/Makefile.am (libvirtd_LDADD): Add gnulib's libgnu.la last.
+	Otherwise, building with -g (no inlining) would fail due to a use
+	of c_isspace in libvirt_driver_qemu.a, which used to followed
+	libgnu.a in the link command.
+
 Thu Dec 11 16:13:08 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	syntax-check: prohibit all new uses of gethostby* functions
