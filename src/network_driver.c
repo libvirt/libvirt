@@ -1182,6 +1182,13 @@ static char *networkGetBridgeName(virNetworkPtr net) {
         goto cleanup;
     }
 
+    if (!(network->def->bridge)) {
+        networkReportError(net->conn, NULL, net, VIR_ERR_INTERNAL_ERROR,
+                           _("network '%s' does not have a bridge name."),
+                           network->def->name);
+        goto cleanup;
+    }
+
     bridge = strdup(network->def->bridge);
     if (!bridge)
         networkReportError(net->conn, NULL, net, VIR_ERR_NO_MEMORY,

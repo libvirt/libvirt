@@ -549,9 +549,6 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         virNetworkFree(network);
 
         if (brname == NULL) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("Network '%s' is not active"),
-                             net->data.network.name);
             goto error;
         }
     } else if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
