@@ -1401,6 +1401,22 @@ virDomainGraphicsDefParseXML(virConnectPtr conn,
         def->data.vnc.passwd = virXMLPropString(node, "passwd");
         def->data.vnc.keymap = virXMLPropString(node, "keymap");
     } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
+        char *fullscreen = virXMLPropString(node, "fullscreen");
+
+        if (fullscreen != NULL) {
+            if (STREQ(fullscreen, "yes")) {
+                def->data.sdl.fullscreen = 1;
+            } else if (STREQ(fullscreen, "no")) {
+                def->data.sdl.fullscreen = 0;
+            } else {
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unknown fullscreen value '%s'"), fullscreen);
+                VIR_FREE(fullscreen);
+                goto error;
+            }
+            VIR_FREE(fullscreen);
+        } else
+            def->data.sdl.fullscreen = 0;
         def->data.sdl.xauth = virXMLPropString(node, "xauth");
         def->data.sdl.display = virXMLPropString(node, "display");
     }
@@ -2951,6 +2967,9 @@ virDomainGraphicsDefFormat(virConnectPtr conn,
         if (def->data.sdl.xauth)
             virBufferEscapeString(buf, " xauth='%s'",
                                   def->data.sdl.xauth);
+        if (def->data.sdl.fullscreen)
+            virBufferAddLit(buf, " fullscreen='yes'");
+
         break;
     }
 

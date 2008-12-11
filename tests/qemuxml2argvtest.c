@@ -195,6 +195,7 @@ mymain(int argc, char **argv)
     DO_TEST("disk-usb", 0);
     DO_TEST("graphics-vnc", 0);
     DO_TEST("graphics-sdl", 0);
+    DO_TEST("graphics-sdl-fullscreen", 0);
     DO_TEST("input-usbmouse", 0);
     DO_TEST("input-usbtablet", 0);
     DO_TEST("input-xen", 0);

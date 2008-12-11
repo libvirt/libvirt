@@ -268,6 +268,7 @@ struct _virDomainGraphicsDef {
         struct {
             char *display;
             char *xauth;
+            int fullscreen;
         } sdl;
     } data;
 };

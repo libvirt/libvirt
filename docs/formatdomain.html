@@ -713,6 +713,10 @@ qemu-kvm -net nic,model=? /dev/null
         <dl><dt><code>graphics</code></dt><dd>The <code>graphics</code> element has a mandatory <code>type</code>
 	attribute which takes the value "sdl" or "vnc". The former displays
 	a window on the host desktop, while the latter activates a VNC server.
+        The former accepts 3 optional arguments: a <code>display</code>
+        attribute for the display to use, an <code>xauth</code> attribute for
+        the authentication identifier, and an optional <code>fullscreen</code>
+        attribute accepting values 'yes' or 'no'.
 	If the latter is used the <code>port</code> attribute specifies the TCP
 	port number (with -1 as legacy syntax indicating that it should be
 	auto-allocated). The <code>autoport</code> attribute is the new

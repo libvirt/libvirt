@@ -638,7 +638,7 @@
 
   <!--
       A graphic description, currently in Xen only 2 types are supported:
-        - sdl without arguments
+        - sdl with optional display, xauth and fullscreen
 	- vnc with a required port and optional listen IP address, password
           and keymap
     -->
@@ -657,6 +657,14 @@
 	  <optional>
 	    <attribute name='xauth'>
 	      <text/>
+	    </attribute>
+	  </optional>
+	  <optional>
+	    <attribute name='fullscreen'>
+	      <choice>
+		<value>yes</value>
+		<value>no</value>
+	      </choice>
 	    </attribute>
 	  </optional>
 	</group>

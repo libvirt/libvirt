@@ -1229,6 +1229,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
             ADD_ENV(xauth);
         if (display)
             ADD_ENV(display);
+        if (vm->def->graphics->data.sdl.fullscreen)
+            ADD_ARG_LIT("-full-screen");
     }
 
     /* Add sound hardware */
