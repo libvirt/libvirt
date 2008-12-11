@@ -390,6 +390,12 @@ sc_prohibit_virBufferAdd_with_string_literal:
 	  { echo '$(ME): use virBufferAddLit, not virBufferAdd,' \
 	      'with a string literal' 1>&2; exit 1; } || :
 
+# Not only do they fail to deal well with ipv6, but the gethostby*
+# functions are also not thread-safe.
+sc_prohibit_gethostby:
+	@grep -nE '\<gethostby(addr|name2?) *\(' $$($(VC_LIST_EXCEPT)) && \
+	  { echo '$(ME): use getaddrinfo, not gethostby*' 1>&2; exit 1; } || :
+
 # Avoid useless parentheses like those in this example:
 # #if defined (SYMBOL) || defined (SYM2)
 sc_useless_cpp_parens:

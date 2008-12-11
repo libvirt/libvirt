@@ -1,0 +1,3 @@
+gnulib/lib/getaddrinfo.c
+gnulib/m4/getaddrinfo.m4
+src/xend_internal.c

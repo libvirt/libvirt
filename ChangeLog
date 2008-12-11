@@ -1,3 +1,9 @@
+Thu Dec 11 16:13:08 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	syntax-check: prohibit all new uses of gethostby* functions
+	* Makefile.maint (sc_prohibit_gethostby): New rule.
+	* .x-sc_prohibit_gethostby: Exempt the few existing uses.
+
 Thu Dec 11 10:03:00 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* src/test.c: Fix locking issue in test driver VolLookupByPath
