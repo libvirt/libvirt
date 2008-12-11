@@ -2909,8 +2909,8 @@ testStorageVolumeLookupByPath(virConnectPtr conn,
                 virStoragePoolObjUnlock(privconn->pools.objs[i]);
                 break;
             }
-            virStoragePoolObjUnlock(privconn->pools.objs[i]);
         }
+        virStoragePoolObjUnlock(privconn->pools.objs[i]);
     }
     testDriverUnlock(privconn);
 
