@@ -911,8 +911,9 @@ storagePoolGetAutostart(virStoragePoolPtr obj,
     }
     ret = 0;
 
-    return 0;
 cleanup:
+    if (pool)
+        virStoragePoolObjUnlock(pool);
     return ret;
 }
 

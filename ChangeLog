@@ -1,6 +1,10 @@
+Thu Dec 11 09:58:49 EST 2008 Cole Robinson <crobinso@redhat.com>
+
+	* src/storage_driver.c : Fix a locking issue in PoolGetAutostart
+
 Thu Dec 11 09:55:23 EST 2008 Cole Robinson <crobinso@redhat.com>
 
-	* src/netork_driver.c src/qemu_conf.c: Fix segfault if virtual
+	* src/network_driver.c src/qemu_conf.c: Fix segfault if virtual
 	network does not have a bridge name.
 
 Thu Dec 11 12:39:20 CET 2008 Daniel Veillard <veillard@redhat.com>
