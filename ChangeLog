@@ -1,3 +1,8 @@
+Fri Dec 12 14:57:17 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* Makefile.maint: fix tabs in C source error message based on
+	  Dave Allan feedback
+
 Fri Dec 12 13:41:31 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	remove cvs $Id$ strings

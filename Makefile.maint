@@ -310,7 +310,7 @@ sc_TAB_in_indentation:
 	     $$($(VC_LIST_EXCEPT)					\
 	        | grep -E '\.[ch](\.in)?$$'				\
 	        | grep -v '^gnulib/') &&				\
-	  { echo '$(ME): found TAB(s) use for indentation; use spaces'	\
+   { echo '$(ME): found TAB(s) used for indentationi of C; use spaces'	\
 		1>&2; exit 1; } || :
 
 ctype_re = isalnum|isalpha|isascii|isblank|iscntrl|isdigit|isgraph|islower\
