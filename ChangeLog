@@ -1,3 +1,9 @@
+Fri Dec 12 11:37:16 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_conf.c src/uml_conf.c: fix a couple of places where
+	  we were requesting 8 times the required amount of memory,
+	  patch by Dave Allan
+
 Fri Dec 12 10:45:17 CET 2008 Guido Günther <agx@sigxcpu.org>
 
 	* docs/devhelp/Makefile.am: look for devhelp.xsl in $(srcdir)
