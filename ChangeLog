@@ -1,3 +1,7 @@
+Fri Dec 12 08:27:44 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/util.c: retry poll() in EINTR failures, patch by Dave Allan
+
 Thu Dec 11 19:10:46 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	build: avoid libvirtd link failure with CFLAGS=-g

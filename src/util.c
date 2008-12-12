@@ -473,7 +473,7 @@ virPipeReadUntilEOF(virConnectPtr conn, int outfd, int errfd,
     while(!(finished[0] && finished[1])) {
 
         if (poll(fds, ARRAY_CARDINALITY(fds), -1) < 0) {
-            if (errno == EAGAIN)
+            if ((errno == EAGAIN) || (errno == EINTR))
                 continue;
             goto pollerr;
         }
