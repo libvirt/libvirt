@@ -40,5 +40,4 @@ src/xen_internal.c
 src/xend_internal.c
 src/xm_internal.c
 src/xml.c
-src/xmlrpc.c
 src/xs_internal.c

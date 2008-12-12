@@ -38,13 +38,12 @@ LDADDS = \
 EXTRA_DIST =		\
         oomtrace.pl     \
 	test-lib.sh	\
-	xmlrpcserver.py	\
 	qemuxml2argvdata \
 	nodeinfodata     \
 	domainschematest \
 	domainschemadata
 
-noinst_PROGRAMS = xmlrpctest virshtest conftest \
+noinst_PROGRAMS = virshtest conftest \
         nodeinfotest statstest qparamtest
 
 if WITH_XEN
@@ -110,15 +109,6 @@ TESTS_ENVIRONMENT =				\
 
 valgrind:
 	$(MAKE) check VG="valgrind --quiet --leak-check=full --suppressions=$(srcdir)/.valgrind.supp"
-
-# Note: xmlrpc.[c|h] is not in libvirt yet
-xmlrpctest_SOURCES = \
-	xmlrpctest.c \
-	testutils.c testutils.h \
-	@top_srcdir@/src/xmlrpc.c \
-	@top_srcdir@/src/xmlrpc.h
-
-xmlrpctest_LDADD = $(LDADDS)
 
 if WITH_XEN
 xml2sexprtest_SOURCES = \
