@@ -1,3 +1,8 @@
+Fri Dec 12 08:34:47 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.spec.in: fix a conditional bug in spec file #460510,
+	  patch by Dave Allan
+
 Fri Dec 12 08:27:44 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/util.c: retry poll() in EINTR failures, patch by Dave Allan

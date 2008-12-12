@@ -21,7 +21,7 @@
 %define with_xen_proxy 0
 %endif
 
-%if "%{fedora}"
+%if 0%{?fedora}
 %ifarch ppc64
 %define with_qemu 0
 %endif
