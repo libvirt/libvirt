@@ -1,3 +1,14 @@
+Fri Dec 12 10:28:41 CET 2008 Guido Günther <agx@sigxcpu.org>
+
+	Fix serial/parallel virtual devices over tcp, unix and telnet
+	* src/qemu_conf.c (qemudBuildCommandLineChrDevStr): use
+	"server,nowait" instead of "listen" for tcp and unix sockets. Use
+	"nowait" for telnet too.
+	* tests/qemuxml2argvdata/qemuxml2argv-parallel-tcp.args: adjust
+	testcase accordingly.
+	* tests/qemuxml2argvdata/qemuxml2argv-serial-tcp-telnet.args:
+	likewise.
+
 Fri Dec 12 08:54:40 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/qemud.c: add --version support to libvirtd, patch by

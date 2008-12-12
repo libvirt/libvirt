@@ -673,13 +673,13 @@ static int qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
             if (snprintf(buf, buflen, "telnet:%s:%s%s",
                          dev->data.tcp.host,
                          dev->data.tcp.service,
-                         dev->data.tcp.listen ? ",server" : "") >= buflen)
+                         dev->data.tcp.listen ? ",server,nowait" : "") >= buflen)
                 return -1;
         } else {
             if (snprintf(buf, buflen, "tcp:%s:%s%s",
                          dev->data.tcp.host,
                          dev->data.tcp.service,
-                         dev->data.tcp.listen ? ",listen" : "") >= buflen)
+                         dev->data.tcp.listen ? ",server,nowait" : "") >= buflen)
                 return -1;
         }
         break;
@@ -687,7 +687,7 @@ static int qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (snprintf(buf, buflen, "unix:%s%s",
                      dev->data.nix.path,
-                     dev->data.nix.listen ? ",listen" : "") >= buflen)
+                     dev->data.nix.listen ? ",server,nowait" : "") >= buflen)
             return -1;
         break;
     }
