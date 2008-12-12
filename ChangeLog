@@ -1,3 +1,8 @@
+Fri Dec 12 13:16:05 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	libvirtd: plug a nominal leak
+	* qemud/qemud.c (qemudRunLoop): Free server->workers.
+
 Fri Dec 12 12:19:56 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	remove unused xmlrpc-related files

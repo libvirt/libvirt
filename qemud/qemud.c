@@ -1919,6 +1919,7 @@ static int qemudRunLoop(struct qemud_server *server) {
         pthread_mutex_lock(&server->lock);
     }
 
+    free(server->workers);
     pthread_mutex_unlock(&server->lock);
     return ret;
 }
