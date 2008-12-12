@@ -1,3 +1,7 @@
+Fri Dec 12 10:45:17 CET 2008 Guido Günther <agx@sigxcpu.org>
+
+	* docs/devhelp/Makefile.am: look for devhelp.xsl in $(srcdir)
+
 Fri Dec 12 10:28:41 CET 2008 Guido Günther <agx@sigxcpu.org>
 
 	Fix serial/parallel virtual devices over tcp, unix and telnet

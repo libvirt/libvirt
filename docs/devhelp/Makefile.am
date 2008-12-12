@@ -14,10 +14,10 @@ EXTRA_DIST=devhelp.xsl html.xsl libvirt.devhelp $(HTML_FILES) $(EXTRA_FORMAT)
 
 all: libvirt.devhelp $(HTML_FILES)
 
-libvirt.devhelp $(HTML_FILES): devhelp.xsl html.xsl $(top_srcdir)/docs/libvirt-api.xml
+libvirt.devhelp $(HTML_FILES): $(srcdir)/devhelp.xsl html.xsl $(top_srcdir)/docs/libvirt-api.xml
 	-@(echo Rebuilding devhelp files)
 	-@(if [ -x $(XSLTPROC) ] ; then \
-	  $(XSLTPROC) --nonet -o $(srcdir)/libvirt.devhelp devhelp.xsl $(top_srcdir)/docs/libvirt-api.xml ; fi );
+	  $(XSLTPROC) --nonet -o $(srcdir)/libvirt.devhelp $(srcdir)/devhelp.xsl $(top_srcdir)/docs/libvirt-api.xml ; fi );
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(DEVHELP_DIR)
