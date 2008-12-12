@@ -56,8 +56,11 @@ while :; do
 
   test $i = $n && break
 
-  # Filter out this diagnostic.
-  sed '/^Cannot set group when not running as root$/d' err > k && mv k err
+  # Filter out some ignorable diagnostics.
+  sed \
+      -e '/^Cannot set group when not running as root$/d' \
+      -e '/^libnuma: Warning: .sys not mounted or no numa system/d' \
+    err > k && mv k err
 
   printf '%s\n\n' "remoteReadConfigFile: $f: $param_name: $msg" > expected-err
   diff -u expected-err err || fail=1
