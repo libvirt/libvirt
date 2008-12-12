@@ -4,8 +4,6 @@
 # code for both ends of the remote connection.
 #
 # By Richard Jones <rjones@redhat.com>
-#
-# $Id$
 
 use strict;
 

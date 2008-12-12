@@ -8,9 +8,6 @@
  * Daniel Veillard <veillard@redhat.com>
  * Karel Zak <kzak@redhat.com>
  * Daniel P. Berrange <berrange@redhat.com>
- *
- *
- * $Id$
  */
 
 #include <config.h>

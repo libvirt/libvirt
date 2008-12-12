@@ -1,7 +1,6 @@
 # translation of libvirt to Bahasa Indonesia (id).
 # This file is distributed under the same license as the libvirt package.
 # Teguh DC <dheche@songolimo.net>, 2007.
-# $Id$
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"

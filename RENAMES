@@ -2,8 +2,6 @@
 #
 # File renames don't normally go into patches because they make
 # the patches much harder to read, so list them here instead.
-#
-# $Id$
 
 # Clearer naming scheme after Xen-unified patch went in.
 src/xen_internal.c	src/xen_internal_hv.c

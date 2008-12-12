@@ -1,13 +1,11 @@
 /*
  * testutils.c: basic test utils
  *
- * Copyright (C) 2005-2007 Red Hat, Inc.
+ * Copyright (C) 2005-2008 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
  * Karel Zak <kzak@redhat.com>
- *
- * $Id$
  */
 
 #include <config.h>

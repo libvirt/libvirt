@@ -1,3 +1,13 @@
+Fri Dec 12 13:41:31 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	remove cvs $Id$ strings
+	* po/id.po: Likewise.
+	* qemud/remote_generate_stubs.pl: Likewise.
+	* src/virsh.c: Likewise.
+	* tests/testutils.c: Likewise.
+	* tests/testutils.h: Likewise.
+	* RENAMES: Likewise.
+
 Fri Dec 12 13:16:05 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	libvirtd: plug a nominal leak
