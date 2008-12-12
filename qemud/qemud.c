@@ -2272,6 +2272,13 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     return -1;
 }
 
+/* Display version information. */
+static void
+version (const char *argv0)
+{
+    printf ("%s (%s) %s\n", argv0, PACKAGE_NAME, PACKAGE_VERSION);
+}
+
 /* Print command-line usage. */
 static void
 usage (const char *argv0)
@@ -2287,6 +2294,7 @@ Options:\n\
   -l | --listen          Listen for TCP/IP connections.\n\
   -t | --timeout <secs>  Exit after timeout period.\n\
   -f | --config <file>   Configuration file.\n\
+     | --version         Display version information.\n\
   -p | --pid-file <file> Change name of PID file.\n\
 \n\
 libvirt management daemon:\n\
@@ -2317,6 +2325,10 @@ libvirt management daemon:\n\
                : "(disabled in ./configure)");
 }
 
+enum {
+    OPT_VERSION = 129
+};
+
 #define MAX_LISTEN 5
 int main(int argc, char **argv) {
     struct qemud_server *server = NULL;
@@ -2333,6 +2345,7 @@ int main(int argc, char **argv) {
         { "config", required_argument, NULL, 'f'},
         { "timeout", required_argument, NULL, 't'},
         { "pid-file", required_argument, NULL, 'p'},
+        { "version", no_argument, NULL, OPT_VERSION },
         { "help", no_argument, NULL, '?' },
         {0, 0, 0, 0}
     };
@@ -2377,6 +2390,10 @@ int main(int argc, char **argv) {
         case 'f':
             remote_config_file = optarg;
             break;
+
+        case OPT_VERSION:
+            version (argv[0]);
+            return 0;
 
         case '?':
             usage (argv[0]);
