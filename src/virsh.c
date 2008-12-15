@@ -246,19 +246,18 @@ static int vshCommandOptBool(const vshCmd *cmd, const char *name);
 #define VSH_BYNAME   (1 << 3)
 
 static virDomainPtr vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
-                                          const char *optname, char **name, int flag);
+                                          char **name, int flag);
 
 /* default is lookup by Id, Name and UUID */
-#define vshCommandOptDomain(_ctl, _cmd, _optname, _name)            \
-    vshCommandOptDomainBy(_ctl, _cmd, _optname, _name,              \
-                          VSH_BYID|VSH_BYUUID|VSH_BYNAME)
+#define vshCommandOptDomain(_ctl, _cmd, _name)                      \
+    vshCommandOptDomainBy(_ctl, _cmd, _name, VSH_BYID|VSH_BYUUID|VSH_BYNAME)
 
 static virNetworkPtr vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
-                            const char *optname, char **name, int flag);
+                                            char **name, int flag);
 
 /* default is lookup by Name and UUID */
-#define vshCommandOptNetwork(_ctl, _cmd, _optname, _name)           \
-    vshCommandOptNetworkBy(_ctl, _cmd, _optname, _name,             \
+#define vshCommandOptNetwork(_ctl, _cmd, _name)                    \
+    vshCommandOptNetworkBy(_ctl, _cmd, _name,                      \
                            VSH_BYUUID|VSH_BYNAME)
 
 static virStoragePoolPtr vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd,
@@ -386,7 +385,7 @@ cmdAutostart(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return FALSE;
 
     autostart = !vshCommandOptBool(cmd, "disable");
@@ -488,7 +487,7 @@ cmdConsole(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
     doc = virDomainGetXMLDesc(dom, 0);
@@ -675,7 +674,7 @@ cmdDomstate(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
     if (virDomainGetInfo(dom, &info) == 0)
@@ -712,7 +711,7 @@ cmdDomblkstat (vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability (ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain (ctl, cmd, "domain", &name)))
+    if (!(dom = vshCommandOptDomain (ctl, cmd, &name)))
         return FALSE;
 
     if (!(device = vshCommandOptString (cmd, "device", NULL)))
@@ -768,7 +767,7 @@ cmdDomIfstat (vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability (ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain (ctl, cmd, "domain", &name)))
+    if (!(dom = vshCommandOptDomain (ctl, cmd, &name)))
         return FALSE;
 
     if (!(device = vshCommandOptString (cmd, "interface", NULL)))
@@ -833,7 +832,7 @@ cmdSuspend(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return FALSE;
 
     if (virDomainSuspend(dom) == 0) {
@@ -979,7 +978,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
         virDomainFree(dom);
         return FALSE;
     }
-    if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", &name,
+    if (!(dom = vshCommandOptDomainBy(ctl, cmd, &name,
                                       VSH_BYNAME|VSH_BYUUID)))
         return FALSE;
 
@@ -1018,7 +1017,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", NULL, VSH_BYNAME)))
+    if (!(dom = vshCommandOptDomainBy(ctl, cmd, NULL, VSH_BYNAME)))
         return FALSE;
 
     if (virDomainGetID(dom) != (unsigned int)-1) {
@@ -1068,7 +1067,7 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
     if (!(to = vshCommandOptString(cmd, "file", NULL)))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return FALSE;
 
     if (virDomainSave(dom, to) == 0) {
@@ -1124,7 +1123,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
     /* Deprecated Xen-only options */
@@ -1330,7 +1329,7 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
     if (!(to = vshCommandOptString(cmd, "file", NULL)))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return FALSE;
 
     if (virDomainCoreDump(dom, to, 0) == 0) {
@@ -1369,7 +1368,7 @@ cmdResume(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return FALSE;
 
     if (virDomainResume(dom) == 0) {
@@ -1407,7 +1406,7 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return FALSE;
 
     if (virDomainShutdown(dom) == 0) {
@@ -1445,7 +1444,7 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return FALSE;
 
     if (virDomainReboot(dom, 0) == 0) {
@@ -1483,7 +1482,7 @@ cmdDestroy(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return FALSE;
 
     if (virDomainDestroy(dom) == 0) {
@@ -1523,7 +1522,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
     id = virDomainGetID(dom);
@@ -1648,7 +1647,7 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
     if (virNodeGetInfo(ctl->conn, &nodeinfo) != 0) {
@@ -1739,7 +1738,7 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
     vcpu = vshCommandOptInt(cmd, "vcpu", &vcpufound);
@@ -1864,7 +1863,7 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
     count = vshCommandOptInt(cmd, "count", &count);
@@ -1920,7 +1919,7 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
     kilobytes = vshCommandOptInt(cmd, "kilobytes", &kilobytes);
@@ -1976,7 +1975,7 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
     kilobytes = vshCommandOptInt(cmd, "kilobytes", &kilobytes);
@@ -2093,7 +2092,7 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
     dump = virDomainGetXMLDesc(dom, 0);
@@ -2129,7 +2128,7 @@ cmdDomname(vshControl *ctl, const vshCmd *cmd)
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
-    if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", NULL,
+    if (!(dom = vshCommandOptDomainBy(ctl, cmd, NULL,
                                       VSH_BYID|VSH_BYUUID)))
         return FALSE;
 
@@ -2160,7 +2159,7 @@ cmdDomid(vshControl *ctl, const vshCmd *cmd)
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
-    if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", NULL,
+    if (!(dom = vshCommandOptDomainBy(ctl, cmd, NULL,
                                       VSH_BYNAME|VSH_BYUUID)))
         return FALSE;
 
@@ -2195,7 +2194,7 @@ cmdDomuuid(vshControl *ctl, const vshCmd *cmd)
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
-    if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", NULL,
+    if (!(dom = vshCommandOptDomainBy(ctl, cmd, NULL,
                                       VSH_BYNAME|VSH_BYID)))
         return FALSE;
 
@@ -2240,7 +2239,7 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability (ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain (ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain (ctl, cmd, NULL)))
         return FALSE;
 
     desturi = vshCommandOptString (cmd, "desturi", &found);
@@ -2301,7 +2300,7 @@ cmdNetworkAutostart(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(network = vshCommandOptNetwork(ctl, cmd, "network", &name)))
+    if (!(network = vshCommandOptNetwork(ctl, cmd, &name)))
         return FALSE;
 
     autostart = !vshCommandOptBool(cmd, "disable");
@@ -2443,7 +2442,7 @@ cmdNetworkDestroy(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(network = vshCommandOptNetwork(ctl, cmd, "network", &name)))
+    if (!(network = vshCommandOptNetwork(ctl, cmd, &name)))
         return FALSE;
 
     if (virNetworkDestroy(network) == 0) {
@@ -2482,7 +2481,7 @@ cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(network = vshCommandOptNetwork(ctl, cmd, "network", NULL)))
+    if (!(network = vshCommandOptNetwork(ctl, cmd, NULL)))
         return FALSE;
 
     dump = virNetworkGetXMLDesc(network, 0);
@@ -2642,7 +2641,7 @@ cmdNetworkName(vshControl *ctl, const vshCmd *cmd)
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
-    if (!(network = vshCommandOptNetworkBy(ctl, cmd, "network", NULL,
+    if (!(network = vshCommandOptNetworkBy(ctl, cmd, NULL,
                                            VSH_BYUUID)))
         return FALSE;
 
@@ -2662,7 +2661,7 @@ static const vshCmdInfo info_network_start[] = {
 };
 
 static const vshCmdOptDef opts_network_start[] = {
-    {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the inactive network")},
+    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the inactive network")},
     {NULL, 0, 0, NULL}
 };
 
@@ -2675,7 +2674,7 @@ cmdNetworkStart(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(network = vshCommandOptNetworkBy(ctl, cmd, "name", NULL, VSH_BYNAME)))
+    if (!(network = vshCommandOptNetworkBy(ctl, cmd, NULL, VSH_BYNAME)))
          return FALSE;
 
     if (virNetworkCreate(network) == 0) {
@@ -2714,7 +2713,7 @@ cmdNetworkUndefine(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(network = vshCommandOptNetwork(ctl, cmd, "network", &name)))
+    if (!(network = vshCommandOptNetwork(ctl, cmd, &name)))
         return FALSE;
 
     if (virNetworkUndefine(network) == 0) {
@@ -2751,7 +2750,7 @@ cmdNetworkUuid(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(network = vshCommandOptNetworkBy(ctl, cmd, "network", NULL,
+    if (!(network = vshCommandOptNetworkBy(ctl, cmd, NULL,
                                            VSH_BYNAME)))
         return FALSE;
 
@@ -4527,7 +4526,7 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
     doc = virDomainGetXMLDesc(dom, 0);
@@ -4601,7 +4600,7 @@ cmdTTYConsole(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
     doc = virDomainGetXMLDesc(dom, 0);
@@ -4661,7 +4660,7 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
     from = vshCommandOptString(cmd, "file", &found);
@@ -4719,7 +4718,7 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
     from = vshCommandOptString(cmd, "file", &found);
@@ -4780,7 +4779,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         goto cleanup;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
 
     if (!(type = vshCommandOptString(cmd, "type", NULL)))
@@ -4899,7 +4898,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         goto cleanup;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
 
     if (!(type = vshCommandOptString(cmd, "type", NULL)))
@@ -5017,7 +5016,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         goto cleanup;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
 
     if (!(source = vshCommandOptString(cmd, "source", NULL)))
@@ -5181,7 +5180,7 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         goto cleanup;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
 
     if (!(target = vshCommandOptString(cmd, "target", NULL)))
@@ -5410,7 +5409,7 @@ cmdEdit (vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         goto cleanup;
 
-    dom = vshCommandOptDomain (ctl, cmd, "domain", NULL);
+    dom = vshCommandOptDomain (ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
 
@@ -5912,14 +5911,40 @@ vshCommandOptBool(const vshCmd *cmd, const char *name)
     return vshCommandOpt(cmd, name) ? TRUE : FALSE;
 }
 
+/* Determine whether CMD->opts includes an option with name OPTNAME.
+   If not, give a diagnostic and return false.
+   If so, return true.  */
+static bool
+cmd_has_option (vshControl *ctl, const vshCmd *cmd, const char *optname)
+{
+    /* Iterate through cmd->opts, to ensure that there is an entry
+       with name OPTNAME and type VSH_OT_DATA. */
+    bool found = false;
+    const vshCmdOpt *opt;
+    for (opt = cmd->opts; opt; opt = opt->next) {
+        if (STREQ (opt->def->name, optname) && opt->def->type == VSH_OT_DATA) {
+            found = true;
+            break;
+        }
+    }
+
+    if (!found)
+        vshError(ctl, FALSE,
+                 _("internal error: virsh %s: no %s VSH_OT_DATA option"),
+                 cmd->def->name, optname);
+    return found;
+}
 
 static virDomainPtr
-vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
+vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
                       char **name, int flag)
 {
     virDomainPtr dom = NULL;
     char *n;
     int id;
+    const char *optname = "domain";
+    if (!cmd_has_option (ctl, cmd, optname))
+        return NULL;
 
     if (!(n = vshCommandOptString(cmd, optname, NULL))) {
         vshError(ctl, FALSE, "%s", _("undefined domain name or id"));
@@ -5960,11 +5985,14 @@ vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
 }
 
 static virNetworkPtr
-vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
+vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
                        char **name, int flag)
 {
     virNetworkPtr network = NULL;
     char *n;
+    const char *optname = "network";
+    if (!cmd_has_option (ctl, cmd, optname))
+        return NULL;
 
     if (!(n = vshCommandOptString(cmd, optname, NULL))) {
         vshError(ctl, FALSE, "%s", _("undefined network name"));

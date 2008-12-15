@@ -461,6 +461,7 @@ virsh-pool-edit.c: virsh.c Makefile.am
 	  | sed -e 's/domain/pool/g' \
 	      -e 's/vshCommandOptDomain/vshCommandOptPool/g' \
 	      -e 's/Domain %s/Pool %s/g' \
+	      -e 's/(ctl, cmd, NULL);/(ctl, cmd, "pool", NULL);/' \
 	      -e 's/Domain/StoragePool/g' \
 	      -e 's/cmdEdit/cmdPoolEdit/g' \
 	      -e 's/\(virStoragePoolDefineXML.*\));/\1, 0);/' \

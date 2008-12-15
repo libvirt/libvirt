@@ -1,3 +1,45 @@
+Fri Dec 12 17:41:19 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	remove redundant optname arguments
+	This is the second part of the change mentioned here:
+
+	  http://thread.gmane.org/gmane.comp.emulators.libvirt/10331
+
+	It removes the essentially redundant "optname" parameter
+	from each of the vshCommandOptNetworkBy and vshCommandOptDomainBy
+	functions as well as the correspond macros (without "By" suffix).
+	Now, instead of always passing the optname, "domain", to
+	vshCommandOptDomainBy, that function requires that its command
+	argument refer to an opts array containing a "domain" option.
+
+	This normalization makes one more help-related change:
+	it renames the net-start "name" argument to the more
+	sensible and consistent "network".
+	* src/virsh.c (VSH_BYNAME, vshCommandOptDomain)
+	(cmd_has_option): New function, used in vshCommandOptDomainBy
+	and vshCommandOptNetworkBy.
+	(vshCommandOptDomainBy, vshCommandOptNetworkBy): Remove the optname
+	parameter, it's always "domain" ("network").  Update all callers.
+	Call cmd_has_option.
+	(vshCommandOptNetwork, cmdAutostart, cmdConsole, cmdDomstate)
+	(cmdDomblkstat, cmdDomIfstat, cmdSuspend, cmdUndefine, cmdStart)
+	(cmdSave, cmdSchedinfo, cmdDump, cmdResume, cmdShutdown)
+	(cmdReboot, cmdDestroy, cmdDominfo, cmdVcpuinfo, cmdVcpupin)
+	(cmdSetvcpus, cmdSetmem, cmdSetmaxmem, cmdDumpXML, cmdDomname)
+	(cmdDomid, cmdDomuuid, cmdMigrate, cmdNetworkAutostart)
+	(cmdNetworkDestroy, cmdNetworkDumpXML, cmdNetworkName)
+	(opts_network_start, cmdNetworkStart, cmdNetworkUndefine)
+	(cmdNetworkUuid, cmdVNCDisplay, cmdTTYConsole, cmdAttachDevice)
+	(cmdDetachDevice, cmdAttachInterface, cmdDetachInterface)
+	(cmdAttachDisk, cmdDetachDisk, cmdEdit)
+	* src/Makefile.am (virsh-pool-edit.c): This code is generated
+	from cmdEdit, and cmdEdit uses the vshCommandOptDomain macro which
+	now, with the changes above, has only 3 (was 4) arguments, yet the
+	macro use is mapped to vshCommandOptPool, which still requires 4
+	arguments.  So this change adjusts the sed code to reinsert the
+	just-removed argument -- we're not changing pool-related code right
+	now, because it's not as straight-forward.
+
 Fri Dec 12 18:50:20 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	syntax-check: enforce the no-cvs-keywords prohibition
