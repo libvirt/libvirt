@@ -1235,9 +1235,9 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
     }
 
     pool->volumes.objs[pool->volumes.count++] = vol;
-    vol = NULL;
 
     ret = virGetStorageVol(obj->conn, pool->def->name, vol->name, vol->key);
+    vol = NULL;
 
 cleanup:
     virStorageVolDefFree(vol);
