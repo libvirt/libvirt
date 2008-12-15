@@ -3330,8 +3330,11 @@ virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
                                       VIR_DOMAIN_XML_INACTIVE)))
         goto error;
 
-    if (virDomainFindByName(doms, def->name))
+    if ((dom = virDomainFindByName(doms, def->name))) {
+        virDomainObjUnlock(dom);
+        dom = NULL;
         newVM = 0;
+    }
 
     if (!(dom = virDomainAssignDef(conn, doms, def)))
         goto error;

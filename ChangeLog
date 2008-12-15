@@ -1,3 +1,8 @@
+Mon Dec 15 10:59:19 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/domain_conf.c: Unlock domain object after fetching
+	it to avoid deadlock when re-loading configs
+
 Fri Dec 12 17:41:19 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	remove redundant optname arguments
