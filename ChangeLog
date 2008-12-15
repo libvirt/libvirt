@@ -1,3 +1,12 @@
+Fri Dec 12 18:50:20 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	syntax-check: enforce the no-cvs-keywords prohibition
+	* Makefile.maint (sc_prohibit_cvs_keyword): New rule.
+	Suggested by Daniel Veillard.
+	The new test exposed two uses of $\Date$.
+	* docs/Goals: Don't use $\Date$.
+	* python/TODO: Likewise.
+
 Fri Dec 12 17:08:08 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	avoid a spurious test failure on non-numa systems
@@ -11,7 +20,7 @@ Fri Dec 12 14:57:17 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 Fri Dec 12 13:41:31 +0100 2008 Jim Meyering <meyering@redhat.com>
 
-	remove cvs $Id$ strings
+	remove cvs $\Id$ strings
 	* po/id.po: Likewise.
 	* qemud/remote_generate_stubs.pl: Likewise.
 	* src/virsh.c: Likewise.

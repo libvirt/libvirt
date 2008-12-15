@@ -26,4 +26,3 @@ the underlying acual implementation of the hypervisor calls.
    releases of the library.
 
 Daniel Veillard <veillard@redhat.com>
-$Date$

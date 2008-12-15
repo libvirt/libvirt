@@ -81,6 +81,14 @@ sc_space_tab:
 	  { echo '$(ME): found SPACE-TAB sequence; remove the SPACE'	\
 		1>&2; exit 1; } || :
 
+cvs_keywords = \
+  Author|Date|Header|Id|Name|Locker|Log|RCSfile|Revision|Source|State
+
+sc_prohibit_cvs_keyword:
+	@grep -nE '\$$($(cvs_keywords))\$$' $$($(VC_LIST_EXCEPT)) &&	\
+	  { echo '$(ME): do not use CVS keyword expansion '		\
+		1>&2; exit 1; } || :
+
 # Don't use *scanf or the old ato* functions in `real' code.
 # They provide no error checking mechanism.
 # Instead, use strto* functions.
