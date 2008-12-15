@@ -595,6 +595,7 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virFileReadPid;
 	virFileLinkPointsTo;
 	virParseNumber;
+	virAsprintf;
 	virRun;
 	virSkipSpaces;
 

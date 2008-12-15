@@ -1,3 +1,9 @@
+Mon Dec 15 21:05:56 CET 2008 Guido Günther <agx@sigxcpu.org>
+
+	Add virAsprintf as safer asprintf helper
+	* src/util.c, src/util.h (virAsprintf): new function
+	* src/libvirt_symver.in: export symbol
+
 Mon Dec 15 16:33:25 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/storage_driver.c: fix a segfault, patch by Miloslav TrmaC
