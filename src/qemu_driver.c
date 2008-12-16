@@ -1198,7 +1198,23 @@ qemudMonitorCommand (const virDomainObjPtr vm,
 
         /* Look for QEMU prompt to indicate completion */
         if (buf && ((tmp = strstr(buf, "\n(qemu) ")) != NULL)) {
-            tmp[0] = '\0';
+            char *commptr = NULL, *nlptr = NULL;
+
+            /* Preserve the newline */
+            tmp[1] = '\0';
+
+            /* The monitor doesn't dump clean output after we have written to
+             * it. Every character we write dumps a bunch of useless stuff,
+             * so the result looks like "cXcoXcomXcommXcommaXcommanXcommand"
+             * Try to throw away everything before the first full command
+             * occurence, and inbetween the command and the newline starting
+             * the response
+             */
+            if ((commptr = strstr(buf, cmd)))
+                memmove(buf, commptr, strlen(commptr)+1);
+            if ((nlptr = strchr(buf, '\n')))
+                memmove(buf+strlen(cmd), nlptr, strlen(nlptr)+1);
+
             break;
         }
     pollagain:
@@ -2919,7 +2935,7 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
 
     if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
         qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("cannot change cdrom media"));
+                         "%s", _("could not change cdrom media"));
         VIR_FREE(cmd);
         return -1;
     }
@@ -2930,7 +2946,7 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
     DEBUG ("ejectable media change reply: %s", reply);
     if (strstr(reply, "\ndevice ")) {
         qemudReportError (conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                          "%s", _("changing cdrom media failed"));
+                          _("changing cdrom media failed: %s"), reply);
         VIR_FREE(reply);
         VIR_FREE(cmd);
         return -1;
@@ -3468,7 +3484,7 @@ qemudDomainBlockStats (virDomainPtr dom,
      * unlikely to be the name of a block device, we can use this
      * to detect if qemu supports the command.
      */
-    if (STRPREFIX (info, "info ")) {
+    if (strstr(info, "\ninfo ")) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                           "%s",
                           _("'info blockstats' not supported by this qemu"));
