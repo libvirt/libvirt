@@ -33,11 +33,15 @@ EXTRA_DIST =						\
 
 if RPCGEN
 SUFFIXES = .x
+# The subshell ensures that remote_protocol.c ends up
+# including <config.h> before "remote_protocol.h".
 .x.c:
-	rm -f $@ $@-t $@-t2
+	rm -f $@ $@-t $@-t1 $@-t2
 	rpcgen -c -o $@-t $<
+	(echo '#include <config.h>'; cat $@-t) > $@-t1
 if GLIBC_RPCGEN
-	perl -w rpcgen_fix.pl $@-t > $@-t2
+	perl -w rpcgen_fix.pl $@-t1 > $@-t2
+	rm $@-t1
 	chmod 444 $@-t2
 	mv $@-t2 $@
 endif

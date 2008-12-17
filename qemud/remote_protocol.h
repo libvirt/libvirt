@@ -13,7 +13,6 @@
 extern "C" {
 #endif
 
-#include <config.h>
 #include "internal.h"
 #include <arpa/inet.h>
 #define REMOTE_MESSAGE_MAX 262144

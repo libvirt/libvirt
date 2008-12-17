@@ -36,7 +36,6 @@
  * 'REMOTE_'.  This makes names quite long.
  */
 
-%#include <config.h>
 %#include "internal.h"
 %#include <arpa/inet.h>
 
