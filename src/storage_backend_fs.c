@@ -31,8 +31,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <endian.h>
-#include <byteswap.h>
 #include <mntent.h>
 #include <string.h>
 
@@ -47,6 +45,10 @@
 #include "memory.h"
 #include "xml.h"
 
+enum lv_endian {
+    LV_LITTLE_ENDIAN = 1, /* 1234 */
+    LV_BIG_ENDIAN         /* 4321 */
+};
 
 /* Either 'magic' or 'extension' *must* be provided */
 struct FileTypeInfo {
@@ -54,7 +56,7 @@ struct FileTypeInfo {
     const char *magic;  /* Optional string of file magic
                          * to check at head of file */
     const char *extension; /* Optional file extension to check */
-    int endian;           /* Endianness of file format */
+    enum lv_endian endian; /* Endianness of file format */
     int versionOffset;    /* Byte offset from start of file
                            * where we find version number,
                            * -1 to skip version test */
@@ -69,16 +71,16 @@ const struct FileTypeInfo const fileTypeInfo[] = {
     /* Bochs */
     /* XXX Untested
     { VIR_STORAGE_VOL_BOCHS, "Bochs Virtual HD Image", NULL,
-      __LITTLE_ENDIAN, 64, 0x20000,
+      LV_LITTLE_ENDIAN, 64, 0x20000,
       32+16+16+4+4+4+4+4, 8, 1 },*/
     /* CLoop */
     /* XXX Untested
     { VIR_STORAGE_VOL_CLOOP, "#!/bin/sh\n#V2.0 Format\nmodprobe cloop file=$0 && mount -r -t iso9660 /dev/cloop $1\n", NULL,
-      __LITTLE_ENDIAN, -1, 0,
+      LV_LITTLE_ENDIAN, -1, 0,
       -1, 0, 0 }, */
     /* Cow */
     { VIR_STORAGE_VOL_FILE_COW, "OOOM", NULL,
-      __BIG_ENDIAN, 4, 2,
+      LV_BIG_ENDIAN, 4, 2,
       4+4+1024+4, 8, 1 },
     /* DMG */
     /* XXX QEMU says there's no magic for dmg, but we should check... */
@@ -92,31 +94,31 @@ const struct FileTypeInfo const fileTypeInfo[] = {
     /* Parallels */
     /* XXX Untested
     { VIR_STORAGE_VOL_FILE_PARALLELS, "WithoutFreeSpace", NULL,
-      __LITTLE_ENDIAN, 16, 2,
+      LV_LITTLE_ENDIAN, 16, 2,
       16+4+4+4+4, 4, 512 },
     */
     /* QCow */
     { VIR_STORAGE_VOL_FILE_QCOW, "QFI", NULL,
-      __BIG_ENDIAN, 4, 1,
+      LV_BIG_ENDIAN, 4, 1,
       4+4+8+4+4, 8, 1 },
     /* QCow 2 */
     { VIR_STORAGE_VOL_FILE_QCOW2, "QFI", NULL,
-      __BIG_ENDIAN, 4, 2,
+      LV_BIG_ENDIAN, 4, 2,
       4+4+8+4+4, 8, 1 },
     /* VMDK 3 */
     /* XXX Untested
     { VIR_STORAGE_VOL_FILE_VMDK, "COWD", NULL,
-      __LITTLE_ENDIAN, 4, 1,
+      LV_LITTLE_ENDIAN, 4, 1,
       4+4+4, 4, 512 },
     */
     /* VMDK 4 */
     { VIR_STORAGE_VOL_FILE_VMDK, "KDMV", NULL,
-      __LITTLE_ENDIAN, 4, 1,
+      LV_LITTLE_ENDIAN, 4, 1,
       4+4+4, 8, 512 },
     /* Connectix / VirtualPC */
     /* XXX Untested
     { VIR_STORAGE_VOL_FILE_VPC, "conectix", NULL,
-      __BIG_ENDIAN, -1, 0,
+      LV_BIG_ENDIAN, -1, 0,
       -1, 0, 0},
     */
 };
@@ -173,7 +175,7 @@ static int virStorageBackendProbeFile(virConnectPtr conn,
         if (fileTypeInfo[i].versionNumber != -1) {
             int version;
 
-            if (fileTypeInfo[i].endian == __LITTLE_ENDIAN) {
+            if (fileTypeInfo[i].endian == LV_LITTLE_ENDIAN) {
                 version = (head[fileTypeInfo[i].versionOffset+3] << 24) |
                     (head[fileTypeInfo[i].versionOffset+2] << 16) |
                     (head[fileTypeInfo[i].versionOffset+1] << 8) |
@@ -190,7 +192,7 @@ static int virStorageBackendProbeFile(virConnectPtr conn,
 
         /* Optionally extract capacity from file */
         if (fileTypeInfo[i].sizeOffset != -1) {
-            if (fileTypeInfo[i].endian == __LITTLE_ENDIAN) {
+            if (fileTypeInfo[i].endian == LV_LITTLE_ENDIAN) {
                 def->capacity =
                     ((unsigned long long)head[fileTypeInfo[i].sizeOffset+7] << 56) |
                     ((unsigned long long)head[fileTypeInfo[i].sizeOffset+6] << 48) |
