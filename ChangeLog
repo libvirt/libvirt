@@ -1,3 +1,7 @@
+Wed Dec 17 17:07:39 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in: detect syslog.h
+
 Wed Dec 17 09:28:15 CET 2008 Guido Günther <agx@sigxcpu.org>
 
 	* Makefile.maint: use $(top_srcdir) for m4/ and $(VC_LIST)
