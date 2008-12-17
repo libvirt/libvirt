@@ -15,6 +15,7 @@
 
 #include "internal.h"
 #include "capabilities.h"
+#include "driver.h"
 
 extern struct xenUnifiedDriver xenHypervisorDriver;
 int	xenHypervisorInit		(void);
@@ -32,7 +33,8 @@ xenHypervisorLookupDomainByUUID(virConnectPtr conn,
 char *
         xenHypervisorDomainGetOSType (virDomainPtr dom);
 
-int	xenHypervisorOpen		(virConnectPtr conn,
+virDrvOpenStatus
+	xenHypervisorOpen		(virConnectPtr conn,
                                          virConnectAuthPtr auth,
                                          int flags);
 int	xenHypervisorClose		(virConnectPtr conn);

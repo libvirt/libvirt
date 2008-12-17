@@ -2031,7 +2031,7 @@ xenHypervisorInit(void)
  *
  * Returns 0 or -1 in case of error.
  */
-int
+virDrvOpenStatus
 xenHypervisorOpen(virConnectPtr conn,
                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                   int flags ATTRIBUTE_UNUSED)

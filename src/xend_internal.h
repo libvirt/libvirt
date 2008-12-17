@@ -24,6 +24,7 @@
 #include "internal.h"
 #include "capabilities.h"
 #include "domain_conf.h"
+#include "driver.h"
 #include "buf.h"
 
 int
@@ -129,7 +130,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
 
 
 /* refactored ones */
-int xenDaemonOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags);
+virDrvOpenStatus xenDaemonOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags);
 int xenDaemonClose(virConnectPtr conn);
 int xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer);
 int xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);

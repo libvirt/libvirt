@@ -364,7 +364,7 @@ reread:
  *
  * Returns 0 or -1 in case of error.
  */
-int
+virDrvOpenStatus
 xenInotifyOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
              int flags ATTRIBUTE_UNUSED)

@@ -590,7 +590,7 @@ static int testOpenFromFile(virConnectPtr conn,
 }
 
 
-static int testOpen(virConnectPtr conn,
+static virDrvOpenStatus testOpen(virConnectPtr conn,
                     virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                     int flags ATTRIBUTE_UNUSED)
 {

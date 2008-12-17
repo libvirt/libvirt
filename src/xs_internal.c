@@ -281,7 +281,7 @@ virDomainGetVMInfo(virDomainPtr domain, const char *vm, const char *name)
  *
  * Returns 0 or -1 in case of error.
  */
-int
+virDrvOpenStatus
 xenStoreOpen(virConnectPtr conn,
              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
              int flags ATTRIBUTE_UNUSED)

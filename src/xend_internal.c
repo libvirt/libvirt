@@ -2704,7 +2704,7 @@ error:
  *
  * Returns 0 in case of success, -1 in case of error.
  */
-int
+virDrvOpenStatus
 xenDaemonOpen(virConnectPtr conn,
               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
               int flags ATTRIBUTE_UNUSED)

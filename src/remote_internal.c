@@ -851,7 +851,7 @@ doRemoteOpen (virConnectPtr conn,
     goto cleanup;
 }
 
-static int
+static virDrvOpenStatus
 remoteOpen (virConnectPtr conn,
             virConnectAuthPtr auth,
             int flags)
@@ -2633,7 +2633,7 @@ remoteDomainMemoryPeek (virDomainPtr domain,
 
 /*----------------------------------------------------------------------*/
 
-static int
+static virDrvOpenStatus
 remoteNetworkOpen (virConnectPtr conn,
                    virConnectAuthPtr auth,
                    int flags)
@@ -3033,7 +3033,7 @@ remoteNetworkSetAutostart (virNetworkPtr network, int autostart)
 
 /*----------------------------------------------------------------------*/
 
-static int
+static virDrvOpenStatus
 remoteStorageOpen (virConnectPtr conn,
                    virConnectAuthPtr auth,
                    int flags)

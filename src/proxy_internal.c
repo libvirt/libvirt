@@ -36,7 +36,7 @@
 static int debug = 0;
 
 static int xenProxyClose(virConnectPtr conn);
-static int xenProxyOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags);
+static virDrvOpenStatus xenProxyOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags);
 static int xenProxyGetVersion(virConnectPtr conn, unsigned long *hvVer);
 static int xenProxyNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 static char *xenProxyGetCapabilities(virConnectPtr conn);
@@ -477,7 +477,7 @@ retry:
  *
  * Returns 0 in case of success, and -1 in case of failure
  */
-int
+virDrvOpenStatus
 xenProxyOpen(virConnectPtr conn,
              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
              int flags)

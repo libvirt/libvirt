@@ -12,11 +12,12 @@
 #define __VIR_XS_INTERNAL_H__
 
 #include "internal.h"
+#include "driver.h"
 
 extern struct xenUnifiedDriver xenStoreDriver;
 int xenStoreInit (void);
 
-int		xenStoreOpen		(virConnectPtr conn,
+virDrvOpenStatus	xenStoreOpen	(virConnectPtr conn,
                                          virConnectAuthPtr auth,
                                          int flags);
 int		xenStoreClose		(virConnectPtr conn);

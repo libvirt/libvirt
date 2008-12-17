@@ -224,7 +224,7 @@ xenUnifiedProbe (void)
     return 0;
 }
 
-static int
+static virDrvOpenStatus
 xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
 {
     int i, ret = VIR_DRV_OPEN_DECLINED;

@@ -581,7 +581,7 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
  * We only support a single directory, so repeated calls
  * to open all end up using the same cache of files
  */
-int
+virDrvOpenStatus
 xenXMOpen (virConnectPtr conn ATTRIBUTE_UNUSED,
            virConnectAuthPtr auth ATTRIBUTE_UNUSED,
            int flags ATTRIBUTE_UNUSED)

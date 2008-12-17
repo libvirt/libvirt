@@ -1,3 +1,12 @@
+Wed Dec 17 21:17:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix Xen sub-drivers' 'open' method return type (John Levon)
+	* src/proxy_internal.c, src/remote_internal.c, src/test.c,
+	src/xen_inotify.c, src/xen_inotify.h, src/xen_internal.c,
+	src/xen_internal.h, src/xen_unified.c, src/xend_internal.c,
+	src/xend_internal.h, src/xm_internal.c, src/xm_internal.h,
+	src/xs_internal.c, src/xs_internal.h: s/int/virDrvOpenStatus/
+
 Wed Dec 17 21:10:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Mutex / crash fixes to openvz driver (Anton Protopopov)
