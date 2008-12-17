@@ -1,3 +1,13 @@
+Wed Dec 17 08:02:01 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	fix numa-related (and kernel-dependent) test failures
+	This change is required on some kernels due to the way a change in
+	the kernel's CONFIG_NR_CPUS propagates through the numa library.
+	* src/qemu_conf.c (qemudCapsInitNUMA): Pass numa_all_cpus_ptr->size/8
+	as the buffer-length-in-bytes in the call to numa_node_to_cpus, since
+	that's what is required on second and subseqent calls.
+	* src/uml_conf.c (umlCapsInitNUMA): Likewise.
+
 Tue Dec 16 17:26:49 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* src/qemu_driver.c: Sanitize qemu monitor reads.

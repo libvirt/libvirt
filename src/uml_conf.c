@@ -79,8 +79,8 @@ umlCapsInitNUMA(virCapsPtr caps)
         goto cleanup;
 
     for (n = 0 ; n <= numa_max_node() ; n++) {
-
-        if (numa_node_to_cpus(n, mask, MAX_CPUS_MASK_LEN / 8) < 0)
+        int mask_n_bytes = numa_all_cpus_ptr->size / 8;
+        if (numa_node_to_cpus(n, mask, mask_n_bytes) < 0)
             goto cleanup;
 
         for (ncpus = 0, i = 0 ; i < MAX_CPUS ; i++)
