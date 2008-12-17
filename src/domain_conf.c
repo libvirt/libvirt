@@ -1479,7 +1479,7 @@ virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
 
                 if (vendor) {
                     if (virStrToLong_ui(vendor, NULL, 0,
-                                        &def->source.subsys.usb.vendor) < 0) {
+                                        &def->source.subsys.u.usb.vendor) < 0) {
                         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                  _("cannot parse vendor id %s"), vendor);
                         VIR_FREE(vendor);
@@ -1496,7 +1496,7 @@ virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
 
                 if (product) {
                     if (virStrToLong_ui(product, NULL, 0,
-                                        &def->source.subsys.usb.product) < 0) {
+                                        &def->source.subsys.u.usb.product) < 0) {
                         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                             _("cannot parse product %s"), product);
                         VIR_FREE(product);
@@ -1514,7 +1514,7 @@ virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
                 bus = virXMLPropString(cur, "bus");
                 if (bus) {
                     if (virStrToLong_ui(bus, NULL, 0,
-                                        &def->source.subsys.usb.bus) < 0) {
+                                        &def->source.subsys.u.usb.bus) < 0) {
                         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                              _("cannot parse bus %s"), bus);
                         VIR_FREE(bus);
@@ -1530,7 +1530,7 @@ virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
                 device = virXMLPropString(cur, "device");
                 if (device) {
                     if (virStrToLong_ui(device, NULL, 0,
-                                        &def->source.subsys.usb.device) < 0)  {
+                                        &def->source.subsys.u.usb.device) < 0)  {
                         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                              _("cannot parse device %s"),
                                              device);
@@ -1552,14 +1552,14 @@ virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
         cur = cur->next;
     }
 
-    if (def->source.subsys.usb.vendor == 0 &&
-        def->source.subsys.usb.product != 0) {
+    if (def->source.subsys.u.usb.vendor == 0 &&
+        def->source.subsys.u.usb.product != 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
             "%s", _("missing vendor"));
         goto out;
     }
-    if (def->source.subsys.usb.vendor != 0 &&
-        def->source.subsys.usb.product == 0) {
+    if (def->source.subsys.u.usb.vendor != 0 &&
+        def->source.subsys.u.usb.product == 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
             "%s", _("missing product"));
         goto out;
@@ -3004,15 +3004,15 @@ virDomainHostdevDefFormat(virConnectPtr conn,
     virBufferVSprintf(buf, "    <hostdev mode='%s' type='%s'>\n", mode, type);
     virBufferAddLit(buf, "      <source>\n");
 
-    if (def->source.subsys.usb.vendor) {
+    if (def->source.subsys.u.usb.vendor) {
         virBufferVSprintf(buf, "        <vendor id='0x%.4x'/>\n",
-                          def->source.subsys.usb.vendor);
+                          def->source.subsys.u.usb.vendor);
         virBufferVSprintf(buf, "        <product id='0x%.4x'/>\n",
-                          def->source.subsys.usb.product);
+                          def->source.subsys.u.usb.product);
     } else {
         virBufferVSprintf(buf, "        <address bus='%d' device='%d'/>\n",
-                          def->source.subsys.usb.bus,
-                          def->source.subsys.usb.device);
+                          def->source.subsys.u.usb.bus,
+                          def->source.subsys.u.usb.device);
     }
 
     virBufferAddLit(buf, "      </source>\n");

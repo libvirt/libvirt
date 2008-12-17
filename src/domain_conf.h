@@ -308,12 +308,13 @@ struct _virDomainHostdevDef {
                      unsigned slot;
                      unsigned function;
                 } pci;
-            };
+            } u;
         } subsys;
         struct {
             /* TBD: struct capabilities see:
              * https://www.redhat.com/archives/libvir-list/2008-July/msg00429.html
              */
+            int dummy;
         } caps;
     } source;
     char* target;

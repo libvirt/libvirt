@@ -3107,14 +3107,14 @@ static int qemudDomainAttachHostDevice(virConnectPtr conn,
         return -1;
     }
 
-    if (dev->data.hostdev->source.subsys.usb.vendor) {
+    if (dev->data.hostdev->source.subsys.u.usb.vendor) {
         ret = asprintf(&cmd, "usb_add host:%.4x:%.4x",
-                       dev->data.hostdev->source.subsys.usb.vendor,
-                       dev->data.hostdev->source.subsys.usb.product);
+                       dev->data.hostdev->source.subsys.u.usb.vendor,
+                       dev->data.hostdev->source.subsys.u.usb.product);
     } else {
         ret = asprintf(&cmd, "usb_add host:%.3d.%.3d",
-                       dev->data.hostdev->source.subsys.usb.bus,
-                       dev->data.hostdev->source.subsys.usb.device);
+                       dev->data.hostdev->source.subsys.u.usb.bus,
+                       dev->data.hostdev->source.subsys.u.usb.device);
     }
     if (ret == -1) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);

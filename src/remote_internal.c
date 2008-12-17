@@ -649,7 +649,7 @@ doRemoteOpen (virConnectPtr conn,
         if (username) nr_args += 2; /* For -l username */
         if (no_tty) nr_args += 5;   /* For -T -o BatchMode=yes -e none */
 
-        command = command ? : strdup ("ssh");
+        command = command ? command : strdup ("ssh");
         if (command == NULL)
             goto out_of_memory;
 

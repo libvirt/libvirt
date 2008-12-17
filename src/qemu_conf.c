@@ -1263,15 +1263,15 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-            if(hostdev->source.subsys.usb.vendor) {
+            if(hostdev->source.subsys.u.usb.vendor) {
                     ret = asprintf(&usbdev, "host:%.4x:%.4x",
-                               hostdev->source.subsys.usb.vendor,
-                               hostdev->source.subsys.usb.product);
+                               hostdev->source.subsys.u.usb.vendor,
+                               hostdev->source.subsys.u.usb.product);
 
             } else {
                     ret = asprintf(&usbdev, "host:%.3d.%.3d",
-                               hostdev->source.subsys.usb.bus,
-                               hostdev->source.subsys.usb.device);
+                               hostdev->source.subsys.u.usb.bus,
+                               hostdev->source.subsys.u.usb.device);
             }
             if (ret < 0) {
                 usbdev = NULL;
