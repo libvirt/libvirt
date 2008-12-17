@@ -62,7 +62,6 @@ LIBVIRT_0.1.0 {
 	virCopyLastError;
 	virConnSetErrorFunc;
 	virResetLastError;
-	virErrorFunc;
 	virResetError;
 	virConnGetLastError;
 	virGetLastError;
@@ -199,8 +198,6 @@ LIBVIRT_0.4.1 {
 	virStoragePoolNumOfVolumes;
 	virStoragePoolListVolumes;
 
-	virConnectNumOfStorageVolumes;
-	virConnectListStorageVolumes;
 	virStorageVolGetConnect;
 	virStorageVolLookupByName;
 	virStorageVolLookupByKey;
@@ -235,13 +232,9 @@ LIBVIRT_0.5.0 {
 
 	virNodeNumOfDevices;
 	virNodeListDevices;
-	virNodeNumOfDevicesByCap;
-	virNodeListDevicesByCap;
 	virNodeDeviceLookupByName;
 	virNodeDeviceFree;
 	virNodeDeviceGetXMLDesc;
-	virNodeDeviceCreate;
-	virNodeDeviceDestroy;
 	virNodeDeviceGetName;
 	virNodeDeviceGetParent;
 	virNodeDeviceNumOfCaps;
@@ -455,7 +448,6 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virStateCleanup;
 	virStateReload;
 	virStateActive;
-	virStateSigDispatcher;
 	virDrvSupportsFeature;
 	virDomainMigratePrepare;
 	virDomainMigratePerform;
@@ -525,10 +517,6 @@ LIBVIRT_PRIVATE_@VERSION@ {
 
 	# storage_backend.h
 	virStorageBackendForType;
-	virStorageBackendFromString;
-	virStorageBackendPartTableTypeFromString;
-	virStorageBackendPartTableTypeToString;
-	virStorageBackendRegister;
 	virStorageBackendRunProgNul;
 	virStorageBackendRunProgRegex;
 	virStorageBackendStablePath;
@@ -537,7 +525,6 @@ LIBVIRT_PRIVATE_@VERSION@ {
 
 
 	# storage_conf.h
-        virStorageBackendPoolOptionsForType;
 	virStoragePoolDefFormat;
 	virStoragePoolDefFree;
 	virStoragePoolDefParse;
