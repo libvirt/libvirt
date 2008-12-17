@@ -1,3 +1,10 @@
+Wed Dec 17 20:53:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* domain_conf.c, node_device_conf.c, node_device_conf.h,
+	storage_conf.c, storage_conf.h: Remove trailing semi-colon
+	causing empty statement compile warnings on solaris (John
+	Levon).
+
 Wed Dec 17 18:10:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Anonymous union fixes for non-GCC compilers (John Levon)

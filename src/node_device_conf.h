@@ -47,8 +47,8 @@ enum virNodeDevNetCapType {
     VIR_NODE_DEV_CAP_NET_LAST
 };
 
-VIR_ENUM_DECL(virNodeDevCap);
-VIR_ENUM_DECL(virNodeDevNetCap);
+VIR_ENUM_DECL(virNodeDevCap)
+VIR_ENUM_DECL(virNodeDevNetCap)
 
 enum virNodeDevStorageCapFlags {
     VIR_NODE_DEV_CAP_STORAGE_REMOVABLE			= (1 << 0),

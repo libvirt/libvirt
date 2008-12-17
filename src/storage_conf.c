@@ -54,26 +54,26 @@ VIR_ENUM_IMPL(virStoragePool,
               VIR_STORAGE_POOL_LAST,
               "dir", "fs", "netfs",
               "logical", "disk", "iscsi",
-              "scsi");
+              "scsi")
 
 VIR_ENUM_IMPL(virStoragePoolFormatFileSystem,
               VIR_STORAGE_POOL_FS_LAST,
               "auto", "ext2", "ext3",
               "ext4", "ufs", "iso9660", "udf",
-              "gfs", "gfs2", "vfat", "hfs+", "xfs");
+              "gfs", "gfs2", "vfat", "hfs+", "xfs")
 
 VIR_ENUM_IMPL(virStoragePoolFormatFileSystemNet,
               VIR_STORAGE_POOL_NETFS_LAST,
-              "auto", "nfs");
+              "auto", "nfs")
 
 VIR_ENUM_IMPL(virStoragePoolFormatDisk,
               VIR_STORAGE_POOL_DISK_LAST,
               "unknown", "dos", "dvh", "gpt",
-              "mac", "bsd", "pc98", "sun", "lvm2");
+              "mac", "bsd", "pc98", "sun", "lvm2")
 
 VIR_ENUM_IMPL(virStoragePoolFormatLogical,
               VIR_STORAGE_POOL_LOGICAL_LAST,
-              "unknown", "lvm2");
+              "unknown", "lvm2")
 
 
 VIR_ENUM_IMPL(virStorageVolFormatDisk,
@@ -81,13 +81,13 @@ VIR_ENUM_IMPL(virStorageVolFormatDisk,
               "none", "linux", "fat16",
               "fat32", "linux-swap",
               "linux-lvm", "linux-raid",
-              "extended");
+              "extended")
 
 VIR_ENUM_IMPL(virStorageVolFormatFileSystem,
               VIR_STORAGE_VOL_FILE_LAST,
               "raw", "dir", "bochs",
               "cloop", "cow", "dmg", "iso",
-              "qcow", "qcow2", "vmdk", "vpc");
+              "qcow", "qcow2", "vmdk", "vpc")
 
 
 typedef const char *(*virStorageVolFormatToString)(int format);

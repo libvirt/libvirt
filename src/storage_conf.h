@@ -113,7 +113,7 @@ enum virStoragePoolType {
     VIR_STORAGE_POOL_LAST,
 };
 
-VIR_ENUM_DECL(virStoragePool);
+VIR_ENUM_DECL(virStoragePool)
 
 
 enum virStoragePoolAuthType {
@@ -349,14 +349,14 @@ enum virStoragePoolFormatFileSystem {
     VIR_STORAGE_POOL_FS_XFS,
     VIR_STORAGE_POOL_FS_LAST,
 };
-VIR_ENUM_DECL(virStoragePoolFormatFileSystem);
+VIR_ENUM_DECL(virStoragePoolFormatFileSystem)
 
 enum virStoragePoolFormatFileSystemNet {
     VIR_STORAGE_POOL_NETFS_AUTO = 0,
     VIR_STORAGE_POOL_NETFS_NFS,
     VIR_STORAGE_POOL_NETFS_LAST,
 };
-VIR_ENUM_DECL(virStoragePoolFormatFileSystemNet);
+VIR_ENUM_DECL(virStoragePoolFormatFileSystemNet)
 
 enum virStoragePoolFormatDisk {
     VIR_STORAGE_POOL_DISK_UNKNOWN = 0,
@@ -371,14 +371,14 @@ enum virStoragePoolFormatDisk {
     VIR_STORAGE_POOL_DISK_LAST,
 };
 
-VIR_ENUM_DECL(virStoragePoolFormatDisk);
+VIR_ENUM_DECL(virStoragePoolFormatDisk)
 
 enum virStoragePoolFormatLogical {
     VIR_STORAGE_POOL_LOGICAL_UNKNOWN = 0,
     VIR_STORAGE_POOL_LOGICAL_LVM2 = 1,
     VIR_STORAGE_POOL_LOGICAL_LAST,
 };
-VIR_ENUM_DECL(virStoragePoolFormatLogical);
+VIR_ENUM_DECL(virStoragePoolFormatLogical)
 
 
 enum virStorageVolFormatFileSystem {
@@ -395,7 +395,7 @@ enum virStorageVolFormatFileSystem {
     VIR_STORAGE_VOL_FILE_VPC,
     VIR_STORAGE_VOL_FILE_LAST,
 };
-VIR_ENUM_DECL(virStorageVolFormatFileSystem);
+VIR_ENUM_DECL(virStorageVolFormatFileSystem)
 
 /*
  * XXX these are basically partition types.
@@ -417,7 +417,7 @@ enum virStorageVolFormatDisk {
     VIR_STORAGE_VOL_DISK_EXTENDED,
     VIR_STORAGE_VOL_DISK_LAST,
 };
-VIR_ENUM_DECL(virStorageVolFormatDisk);
+VIR_ENUM_DECL(virStorageVolFormatDisk)
 
 
 

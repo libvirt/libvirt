@@ -45,11 +45,11 @@ VIR_ENUM_IMPL(virNodeDevCap, VIR_NODE_DEV_CAP_LAST,
               "net",
               "scsi_host",
               "scsi",
-              "storage");
+              "storage")
 
 VIR_ENUM_IMPL(virNodeDevNetCap, VIR_NODE_DEV_CAP_NET_LAST,
               "80203",
-              "80211");
+              "80211")
 
 
 #define virNodeDeviceLog(msg...) fprintf(stderr, msg)
