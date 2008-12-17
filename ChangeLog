@@ -1,3 +1,7 @@
+Wed Dec 17 09:28:15 CET 2008 Guido Günther <agx@sigxcpu.org>
+
+	* Makefile.maint: use $(top_srcdir) for m4/ and $(VC_LIST)
+
 Wed Dec 17 08:02:01 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	fix numa-related (and kernel-dependent) test failures
