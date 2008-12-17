@@ -1,3 +1,8 @@
+Wed Dec 17 21:49:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Fix unreachable return statement
+	(John Levon)
+
 Wed Dec 17 21:45:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Use correct type for domain events callbacks args (John Levon)

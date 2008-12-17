@@ -5090,7 +5090,6 @@ really_read_buf (virConnectPtr conn, struct private_data *priv,
                    VIR_ERR_RPC, _("socket closed unexpectedly"));
             return -1;
         }
-        return err;
     } else {
     reread:
         err = recv (priv->sock, bytes, len, 0);
@@ -5106,10 +5105,9 @@ really_read_buf (virConnectPtr conn, struct private_data *priv,
                    VIR_ERR_RPC, _("socket closed unexpectedly"));
             return -1;
         }
-        return err;
     }
 
-    return 0;
+    return err;
 }
 
 static int
