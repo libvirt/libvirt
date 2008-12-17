@@ -35,10 +35,6 @@
 #include <paths.h>
 #endif
 
-#ifndef _PATH_DEVNULL
-#define	_PATH_DEVNULL	"/dev/null"
-#endif
-
 #define GETTIMEOFDAY(T) gettimeofday(T, NULL)
 #define DIFF_MSEC(T, U)                                 \
     ((((int) ((T)->tv_sec - (U)->tv_sec)) * 1000000.0 +	\
@@ -155,9 +151,9 @@ void virtTestCaptureProgramExecChild(const char *const argv[],
         NULL
     };
 
-    if ((stdinfd = open(_PATH_DEVNULL, O_RDONLY)) < 0)
+    if ((stdinfd = open("/dev/null", O_RDONLY)) < 0)
         goto cleanup;
-    if ((stderrfd = open(_PATH_DEVNULL, O_WRONLY)) < 0)
+    if ((stderrfd = open("/dev/null", O_WRONLY)) < 0)
         goto cleanup;
 
     open_max = sysconf (_SC_OPEN_MAX);

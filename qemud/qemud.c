@@ -406,9 +406,9 @@ static int qemudGoDaemon(void) {
             int stdoutfd = -1;
             int nextpid;
 
-            if ((stdinfd = open(_PATH_DEVNULL, O_RDONLY)) < 0)
+            if ((stdinfd = open("/dev/null", O_RDONLY)) < 0)
                 goto cleanup;
-            if ((stdoutfd = open(_PATH_DEVNULL, O_WRONLY)) < 0)
+            if ((stdoutfd = open("/dev/null", O_WRONLY)) < 0)
                 goto cleanup;
             if (dup2(stdinfd, STDIN_FILENO) != STDIN_FILENO)
                 goto cleanup;

@@ -205,10 +205,10 @@ __virExec(virConnectPtr conn,
         return -1;
     }
 
-    if ((null = open(_PATH_DEVNULL, O_RDONLY)) < 0) {
+    if ((null = open("/dev/null", O_RDONLY)) < 0) {
         ReportError(conn, VIR_ERR_INTERNAL_ERROR,
                     _("cannot open %s: %s"),
-                    _PATH_DEVNULL, strerror(errno));
+                    "/dev/null", strerror(errno));
         goto cleanup;
     }
 

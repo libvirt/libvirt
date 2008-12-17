@@ -1,3 +1,9 @@
+Wed Dec 17 18:03:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c, src/util.c, tests/testutils.c: Remove use
+	of _PATH_DEVNULL in favour of "/dev/null" for portability
+	(John Levon)
+
 Wed Dec 17 18:10:51 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	enforce the "include <config.h> first" rule
