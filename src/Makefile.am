@@ -395,7 +395,7 @@ EXTRA_DIST +=							\
 libvirt_la_SOURCES =
 libvirt_la_LIBADD += \
 		    @CYGWIN_EXTRA_LIBADD@ ../gnulib/lib/libgnu.la
-libvirt_la_LDFLAGS = -Wl,--version-script=libvirt_sym.version \
+libvirt_la_LDFLAGS = @VERSION_SCRIPT_FLAGS@libvirt_sym.version \
                      -version-info @LIBVIRT_VERSION_INFO@ \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%) \
                     $(LIBXML_LIBS) $(SELINUX_LIBS) \

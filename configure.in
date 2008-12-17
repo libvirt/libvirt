@@ -60,6 +60,11 @@ AM_PROG_LIBTOOL
 
 AM_PROG_CC_C_O
 
+VERSION_SCRIPT_FLAGS=-Wl,--version-script=
+`/usr/bin/ld --help 2>&1 | grep -- --version-script >/dev/null` || \
+    VERSION_SCRIPT_FLAGS="-Wl,-M -Wl,"
+AC_SUBST(VERSION_SCRIPT_FLAGS)
+
 LIBVIRT_COMPILE_WARNINGS([maximum])
 
 dnl Support large files / 64 bit seek offsets.

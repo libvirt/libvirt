@@ -1,3 +1,12 @@
+Wed Dec 17 21:35:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Portability of ELF version script to Solaris (John Levon)
+	* configure.ac: Check linker flag used to set versioning
+	script for ELF
+	* src/Makefile.am: Use platform specific linker flag for
+	version script as per configure test
+	* src/libvirt_sym.version.in: Switch to '#' for comments
+
 Wed Dec 17 21:30:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix conditional checks for Solaris platform (John Levon)
