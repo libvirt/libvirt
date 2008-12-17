@@ -213,7 +213,7 @@ xenUnifiedProbe (void)
     if (virFileExists("/proc/xen"))
         return 1;
 #endif
-#ifdef __sun__
+#ifdef __sun
     FILE *fh;
 
     if (fh = fopen("/dev/xen/domcaps", "r")) {

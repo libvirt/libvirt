@@ -39,7 +39,7 @@
 
 #ifdef __linux__
 #define XEN_HYPERVISOR_SOCKET "/proc/xen/privcmd"
-#elif defined(__sun__)
+#elif defined(__sun)
 #define XEN_HYPERVISOR_SOCKET "/dev/xen/privcmd"
 #else
 #error "unsupported platform"

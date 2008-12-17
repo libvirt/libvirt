@@ -1,3 +1,9 @@
+Wed Dec 17 21:30:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix conditional checks for Solaris platform (John Levon)
+	* src/xen_internal.c, src/xen_unified.c, src/xs_internal.c:
+	s/__sun__/__sun/
+
 Wed Dec 17 21:17:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix Xen sub-drivers' 'open' method return type (John Levon)
