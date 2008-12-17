@@ -1360,7 +1360,7 @@ xenUnifiedNodeGetFreeMemory (virConnectPtr conn)
 
 static int
 xenUnifiedDomainEventRegister (virConnectPtr conn,
-                               void *callback,
+                               virConnectDomainEventCallback callback,
                                void *opaque,
                                void (*freefunc)(void *))
 {
@@ -1377,7 +1377,7 @@ xenUnifiedDomainEventRegister (virConnectPtr conn,
 
 static int
 xenUnifiedDomainEventDeregister (virConnectPtr conn,
-                                 void *callback)
+                                 virConnectDomainEventCallback callback)
 {
     int ret;
     GET_PRIVATE (conn);

@@ -4724,8 +4724,8 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
 /*----------------------------------------------------------------------*/
 
 static int remoteDomainEventRegister (virConnectPtr conn,
-                                      void *callback ATTRIBUTE_UNUSED,
-                                      void *opaque ATTRIBUTE_UNUSED,
+                                      virConnectDomainEventCallback callback,
+                                      void *opaque,
                                       virFreeCallback freecb)
 {
     struct private_data *priv = conn->privateData;
@@ -4752,7 +4752,7 @@ static int remoteDomainEventRegister (virConnectPtr conn,
 }
 
 static int remoteDomainEventDeregister (virConnectPtr conn,
-                                 void *callback ATTRIBUTE_UNUSED)
+                                        virConnectDomainEventCallback callback)
 {
     struct private_data *priv = conn->privateData;
 

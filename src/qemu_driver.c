@@ -3767,7 +3767,7 @@ cleanup:
 
 static int
 qemudDomainEventRegister (virConnectPtr conn,
-                          void *callback,
+                          virConnectDomainEventCallback callback,
                           void *opaque,
                           virFreeCallback freecb)
 {
@@ -3784,7 +3784,7 @@ qemudDomainEventRegister (virConnectPtr conn,
 
 static int
 qemudDomainEventDeregister (virConnectPtr conn,
-                            void *callback)
+                            virConnectDomainEventCallback callback)
 {
     struct qemud_driver *driver = conn->privateData;
     int ret;

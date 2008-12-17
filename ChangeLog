@@ -1,3 +1,10 @@
+Wed Dec 17 21:45:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Use correct type for domain events callbacks args (John Levon)
+	* src/driver.h, src/qemu_driver.c, src/remote_internal.c,
+	src/xen_unified.c: s/void */virConnectDomainEventCallback/
+	for domain events callbacks
+
 Wed Dec 17 21:41:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt_sym.version.in: Remove non-existant symbols
