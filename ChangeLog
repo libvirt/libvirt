@@ -1,18 +1,26 @@
+Wed Dec 17 21:10:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Mutex / crash fixes to openvz driver (Anton Protopopov)
+	* src/openvz_driver.c: Fix crash with setting CPU value
+	during define
+	* src/openvz_conf.c: Initialize the domain mutex when
+	loading config files
+
 Wed Dec 17 20:53:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
-	* domain_conf.c, node_device_conf.c, node_device_conf.h,
-	storage_conf.c, storage_conf.h: Remove trailing semi-colon
+	* src/domain_conf.c, src/node_device_conf.c, src/node_device_conf.h,
+	src/storage_conf.c, src/storage_conf.h: Remove trailing semi-colon
 	causing empty statement compile warnings on solaris (John
 	Levon).
 
 Wed Dec 17 18:10:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Anonymous union fixes for non-GCC compilers (John Levon)
-	* domain_conf.c, qemu_conf.c, qemu_driver.c: Remove use
+	* src/domain_conf.c, src/qemu_conf.c, src/qemu_driver.c: Remove use
 	of anonymous union
-	* domain_conf.h: Give a name to the anonymous union for
+	* src/domain_conf.h: Give a name to the anonymous union for
 	host devices. Add 'dummy' field to avoid empty struct
-	* remote_internal.c: Remove gcc-ism in empty "x ? : y"
+	* src/remote_internal.c: Remove gcc-ism in empty "x ? : y"
 
 Wed Dec 17 19:06:53 +0100 2008 Jim Meyering <meyering@redhat.com>
 

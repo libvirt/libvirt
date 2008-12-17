@@ -66,6 +66,7 @@ static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid);
 static int openvzGetMaxVCPUs(virConnectPtr conn, const char *type);
 static int openvzDomainGetMaxVcpus(virDomainPtr dom);
 static int openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus);
+static int openvzDomainSetVcpusInternal(virConnectPtr conn, virDomainObjPtr vm, unsigned int nvcpus);
 
 static void openvzDriverLock(struct openvz_driver *driver)
 {
@@ -695,7 +696,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
 
     if (vm->def->vcpus > 0) {
-        if (openvzDomainSetVcpus(dom, vm->def->vcpus) < 0) {
+        if (openvzDomainSetVcpusInternal(conn, vm, vm->def->vcpus) < 0) {
             openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                      "%s", _("Could not set number of virtual cpu"));
              goto cleanup;
@@ -780,9 +781,9 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     vm->state = VIR_DOMAIN_RUNNING;
 
     if (vm->def->vcpus > 0) {
-        if (openvzDomainSetVcpus(dom, vm->def->vcpus) < 0) {
+        if (openvzDomainSetVcpusInternal(conn, vm, vm->def->vcpus) < 0) {
             openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("Could not set number of virtual cpu"));
+                    "%s", _("Could not set number of virtual cpu"));
             goto cleanup;
         }
     }
@@ -961,14 +962,36 @@ static int openvzDomainGetMaxVcpus(virDomainPtr dom) {
     return openvzGetMaxVCPUs(dom->conn, "openvz");
 }
 
-static int openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
-    struct openvz_driver *driver = dom->conn->privateData;
-    virDomainObjPtr vm;
-    char   str_vcpus[32];
+static int openvzDomainSetVcpusInternal(virConnectPtr conn, virDomainObjPtr vm,
+    unsigned int nvcpus)
+{
+    char        str_vcpus[32];
     const char *prog[] = { VZCTL, "--quiet", "set", PROGRAM_SENTINAL,
                            "--cpus", str_vcpus, "--save", NULL };
     unsigned int pcpus;
-    int ret = -1;
+    pcpus = openvzGetNodeCPUs();
+    if (pcpus > 0 && pcpus < nvcpus)
+        nvcpus = pcpus;
+
+    snprintf(str_vcpus, 31, "%d", nvcpus);
+    str_vcpus[31] = '\0';
+
+    openvzSetProgramSentinal(prog, vm->def->name);
+    if (virRun(conn, prog, NULL) < 0) {
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                _("Could not exec %s"), VZCTL);
+        return -1;
+    }
+
+    vm->def->vcpus = nvcpus;
+    return 0;
+}
+
+static int openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
+{
+    virDomainObjPtr         vm;
+    struct openvz_driver   *driver = dom->conn->privateData;
+    int                     ret = -1;
 
     openvzDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -986,21 +1009,7 @@ static int openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
         goto cleanup;
     }
 
-    pcpus = openvzGetNodeCPUs();
-    if (pcpus > 0 && pcpus < nvcpus)
-        nvcpus = pcpus;
-
-    snprintf(str_vcpus, 31, "%d", nvcpus);
-    str_vcpus[31] = '\0';
-
-    openvzSetProgramSentinal(prog, vm->def->name);
-    if (virRun(dom->conn, prog, NULL) < 0) {
-        openvzError(dom->conn, VIR_ERR_INTERNAL_ERROR,
-                    _("Could not exec %s"), VZCTL);
-        goto cleanup;
-    }
-
-    vm->def->vcpus = nvcpus;
+    openvzDomainSetVcpusInternal(dom->conn, vm, nvcpus);
     ret = 0;
 
 cleanup:

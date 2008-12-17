@@ -393,6 +393,8 @@ int openvzLoadDomains(struct openvz_driver *driver) {
             VIR_ALLOC(dom->def) < 0)
             goto no_memory;
 
+        pthread_mutex_init(&dom->lock, NULL);
+
         if (STREQ(status, "stopped"))
             dom->state = VIR_DOMAIN_SHUTOFF;
         else
