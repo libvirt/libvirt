@@ -1,3 +1,10 @@
+Wed Dec 17 18:10:51 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	let gcc's -Wformat do its job; avoid "make syntax-check" failure
+	* src/util.c (virAsprintf): Remove trailing space.
+	* src/util.h (virAsprintf): Use ATTRIBUTE_FORMAT.
+	* HACKING (Printf-style functions): New section.
+
 Wed Dec 17 16:43:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt.c: Add missing checks for read-only connection

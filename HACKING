@@ -247,6 +247,22 @@ are some special reasons why you cannot include these files
 explicitly.
 
 
+Printf-style functions
+======================
+
+Whenever you add a new printf-style function, i.e., one with a format
+string argument and following "..." in its prototype, be sure to use
+gcc's printf attribute directive in the prototype.  For example, here's
+the one for virAsprintf, in util.h:
+
+    int virAsprintf(char **strp, const char *fmt, ...)
+	ATTRIBUTE_FORMAT(printf, 2, 3);
+
+This makes it so gcc's -Wformat and -Wformat-security options can do
+their jobs and cross-check format strings with the number and types
+of arguments.
+
+
 
                 Libvirt commiters guidelines
                 ============================

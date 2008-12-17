@@ -1158,7 +1158,7 @@ virParseNumber(const char **str)
  *
  * like asprintf but makes sure *strp == NULL on failure
  */
-int 
+int
 virAsprintf(char **strp, const char *fmt, ...)
 {
     va_list ap;
