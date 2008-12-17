@@ -1,3 +1,8 @@
+Wed Dec 17 16:43:39 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt.c: Add missing checks for read-only connection
+	flag (CVE-2008-5086)
+
 Wed Dec 17 17:07:39 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in: detect syslog.h

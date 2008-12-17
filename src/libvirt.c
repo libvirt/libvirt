@@ -2299,6 +2299,16 @@ virDomainMigrate (virDomainPtr domain,
         return NULL;
     }
 
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        return NULL;
+    }
+    if (dconn->flags & VIR_CONNECT_RO) {
+        /* NB, delibrately report error against source object, not dest here */
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        return NULL;
+    }
+
     /* Check that migration is supported by both drivers. */
     if (VIR_DRV_SUPPORTS_FEATURE (conn->driver, conn,
                                   VIR_DRV_FEATURE_MIGRATION_V1) &&
@@ -2426,6 +2436,11 @@ virDomainMigratePrepare (virConnectPtr dconn,
         return -1;
     }
 
+    if (dconn->flags & VIR_CONNECT_RO) {
+        virLibConnError(dconn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        return -1;
+    }
+
     if (dconn->driver->domainMigratePrepare)
         return dconn->driver->domainMigratePrepare (dconn, cookie, cookielen,
                                                     uri_in, uri_out,
@@ -2457,6 +2472,11 @@ virDomainMigratePerform (virDomainPtr domain,
     }
     conn = domain->conn;
 
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        return -1;
+    }
+
     if (conn->driver->domainMigratePerform)
         return conn->driver->domainMigratePerform (domain, cookie, cookielen,
                                                    uri,
@@ -2482,6 +2502,11 @@ virDomainMigrateFinish (virConnectPtr dconn,
 
     if (!VIR_IS_CONNECT (dconn)) {
         virLibConnError (NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return NULL;
+    }
+
+    if (dconn->flags & VIR_CONNECT_RO) {
+        virLibConnError(dconn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         return NULL;
     }
 
@@ -2517,6 +2542,11 @@ virDomainMigratePrepare2 (virConnectPtr dconn,
         return -1;
     }
 
+    if (dconn->flags & VIR_CONNECT_RO) {
+        virLibConnError(dconn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        return -1;
+    }
+
     if (dconn->driver->domainMigratePrepare2)
         return dconn->driver->domainMigratePrepare2 (dconn, cookie, cookielen,
                                                      uri_in, uri_out,
@@ -2544,6 +2574,11 @@ virDomainMigrateFinish2 (virConnectPtr dconn,
 
     if (!VIR_IS_CONNECT (dconn)) {
         virLibConnError (NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return NULL;
+    }
+
+    if (dconn->flags & VIR_CONNECT_RO) {
+        virLibConnError(dconn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         return NULL;
     }
 
@@ -2905,6 +2940,11 @@ virDomainBlockPeek (virDomainPtr dom,
     }
     conn = dom->conn;
 
+    if (dom->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(dom, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        return (-1);
+    }
+
     if (!path) {
         virLibDomainError (dom, VIR_ERR_INVALID_ARG,
                            _("path is NULL"));
@@ -2979,6 +3019,11 @@ virDomainMemoryPeek (virDomainPtr dom,
         return -1;
     }
     conn = dom->conn;
+
+    if (dom->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(dom, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        return (-1);
+    }
 
     /* Flags must be VIR_MEMORY_VIRTUAL at the moment.
      *
@@ -3246,6 +3291,11 @@ virDomainSetAutostart(virDomainPtr domain,
     }
 
     conn = domain->conn;
+
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        return (-1);
+    }
 
     if (conn->driver->domainSetAutostart)
         return conn->driver->domainSetAutostart (domain, autostart);
@@ -4197,6 +4247,11 @@ virNetworkSetAutostart(virNetworkPtr network,
         return (-1);
     }
 
+    if (network->conn->flags & VIR_CONNECT_RO) {
+        virLibNetworkError(network, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        return (-1);
+    }
+
     conn = network->conn;
 
     if (conn->networkDriver && conn->networkDriver->networkSetAutostart)
@@ -4392,6 +4447,11 @@ virConnectFindStoragePoolSources(virConnectPtr conn,
     }
     if (type == NULL) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return NULL;
+    }
+
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         return NULL;
     }
 
@@ -5065,6 +5125,11 @@ virStoragePoolSetAutostart(virStoragePoolPtr pool,
 
     if (!VIR_IS_STORAGE_POOL(pool)) {
         virLibStoragePoolError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        return (-1);
+    }
+
+    if (pool->conn->flags & VIR_CONNECT_RO) {
+        virLibStoragePoolError(pool, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         return (-1);
     }
 
