@@ -1,5 +1,11 @@
 Thu Dec 18 12:18:58 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
+	* examples/domain-events/events-c/event-test.c,
+	python/types.c: Replace __FUNCTION__ with __func__ for
+	better portability (John Levon)
+
+Thu Dec 18 12:18:58 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
 	Fix gcc-ism in python build (John Levon)
 	* acinclude.m4: Add -Wno-redundant-decls check for compiler
 	* python/Makefile.am: Remove hardcoded -Wno-redundant-decls

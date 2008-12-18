@@ -185,7 +185,7 @@ libvirt_virEventHandleCallbackWrap(virEventHandleCallback node)
 
     if (node == NULL) {
         Py_INCREF(Py_None);
-        printf("%s: WARNING - Wrapping None\n", __FUNCTION__);
+        printf("%s: WARNING - Wrapping None\n", __func__);
         return (Py_None);
     }
     ret =
@@ -200,7 +200,7 @@ libvirt_virEventTimeoutCallbackWrap(virEventTimeoutCallback node)
     PyObject *ret;
 
     if (node == NULL) {
-        printf("%s: WARNING - Wrapping None\n", __FUNCTION__);
+        printf("%s: WARNING - Wrapping None\n", __func__);
         Py_INCREF(Py_None);
         return (Py_None);
     }

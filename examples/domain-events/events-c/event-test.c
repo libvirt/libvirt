@@ -11,9 +11,9 @@
 #include <libvirt/libvirt.h>
 
 #define DEBUG0(fmt) printf("%s:%d :: " fmt "\n", \
-        __FUNCTION__, __LINE__)
+        __func__, __LINE__)
 #define DEBUG(fmt, ...) printf("%s:%d: " fmt "\n", \
-        __FUNCTION__, __LINE__, __VA_ARGS__)
+        __func__, __LINE__, __VA_ARGS__)
 #define STREQ(a,b) (strcmp((a),(b)) == 0)
 
 #ifndef ATTRIBUTE_UNUSED
@@ -158,7 +158,7 @@ int myDomainEventCallback1 (virConnectPtr conn ATTRIBUTE_UNUSED,
                             int detail,
                             void *opaque ATTRIBUTE_UNUSED)
 {
-    printf("%s EVENT: Domain %s(%d) %s %s\n", __FUNCTION__, virDomainGetName(dom),
+    printf("%s EVENT: Domain %s(%d) %s %s\n", __func__, virDomainGetName(dom),
            virDomainGetID(dom), eventToString(event),
            eventDetailToString(event, detail));
     return 0;
@@ -170,7 +170,7 @@ int myDomainEventCallback2 (virConnectPtr conn ATTRIBUTE_UNUSED,
                             int detail,
                             void *opaque ATTRIBUTE_UNUSED)
 {
-    printf("%s EVENT: Domain %s(%d) %s %s\n", __FUNCTION__, virDomainGetName(dom),
+    printf("%s EVENT: Domain %s(%d) %s %s\n", __func__, virDomainGetName(dom),
            virDomainGetID(dom), eventToString(event),
            eventDetailToString(event, detail));
     return 0;
@@ -179,7 +179,7 @@ int myDomainEventCallback2 (virConnectPtr conn ATTRIBUTE_UNUSED,
 static void myFreeFunc(void *opaque)
 {
     char *str = opaque;
-    printf("%s: Freeing [%s]\n", __FUNCTION__, str);
+    printf("%s: Freeing [%s]\n", __func__, str);
     free(str);
 }
 
