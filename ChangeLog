@@ -1,3 +1,8 @@
+Thu Dec 18 17:46:06 CET 2008 Guido Günther <agx@sigxcpu.org>
+
+	* src/qemu_driver.c (qemudDomainAttachDevice): only
+	  free dev on failure
+
 Thu Dec 18 16:13:56 CET 2008 Guido Günther <agx@sigxcpu.org>
 
 	Let qemu/kvm instances write a pid file

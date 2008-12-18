@@ -3222,7 +3222,8 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     }
 
 cleanup:
-    virDomainDeviceDefFree(dev);
+    if (ret < 0)
+        virDomainDeviceDefFree(dev);
     if (vm)
         virDomainObjUnlock(vm);
     return ret;
