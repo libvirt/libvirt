@@ -1,3 +1,8 @@
+Thu Dec 18 12:11:58 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Don't free event after queueing it
+	unless error occurred (David Lively)
+
 Thu Dec 18 12:07:58 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/test.c: Fix error return value

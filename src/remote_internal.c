@@ -5535,10 +5535,10 @@ remoteDomainQueueEvent(virConnectPtr conn, XDR *xdr)
         return;
 
     if (virDomainEventQueuePush(priv->domainEvents,
-                                event) < 0)
+                                event) < 0) {
         DEBUG0("Error adding event to queue");
-
-    virDomainEventFree(event);
+        virDomainEventFree(event);
+    }
 }
 
 /** remoteDomainEventFired:
