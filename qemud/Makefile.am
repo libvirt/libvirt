@@ -60,7 +60,7 @@ remote_protocol.c: remote_protocol.h
 
 if WITH_LIBVIRTD
 
-UUID=$(shell uuidgen)
+UUID=$(shell uuidgen 2>/dev/null)
 
 sbin_PROGRAMS = libvirtd
 
@@ -144,8 +144,9 @@ install-data-local: install-init install-data-sasl install-data-polkit \
 	mkdir -p $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart
 	$(INSTALL_DATA) $(srcdir)/default-network.xml \
 	  $(DESTDIR)$(sysconfdir)/$(default_xml_dest)
-	sed -i -e "s,</name>,</name>\n  <uuid>$(UUID)</uuid>," \
-	  $(DESTDIR)$(sysconfdir)/$(default_xml_dest)
+	test -z "$(UUID)" || \
+	  sed -i -e "s,</name>,</name>\n  <uuid>$(UUID)</uuid>," \
+	    $(DESTDIR)$(sysconfdir)/$(default_xml_dest)
 	test -e $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml || \
            ln -s ../default.xml \
 	    $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml

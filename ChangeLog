@@ -1,3 +1,8 @@
+Thu Dec 18 11:54:58 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/Makefile.am: Don't munge default network XML if
+	uuidgen is not present (John Levon)
+
 Thu Dec 18 11:50:58 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Misc daemon bug fixes (John Levon)
