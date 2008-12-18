@@ -8,10 +8,10 @@ gzip_rsyncable := \
   $(shell gzip --help 2>/dev/null|grep rsyncable >/dev/null && echo --rsyncable)
 GZIP_ENV = '--no-name --best $(gzip_rsyncable)'
 
-VC_LIST = $(top_srcdir)/build-aux/vc-list-files
+VC_LIST = $(srcdir)/build-aux/vc-list-files
 
 VC_LIST_EXCEPT = \
-  $(VC_LIST) -C $(top_srcdir) | if test -f .x-$@; then grep -vEf .x-$@; else grep -v ChangeLog; fi
+  $(VC_LIST) | if test -f .x-$@; then grep -vEf .x-$@; else grep -v ChangeLog; fi
 
 # Prevent programs like 'sort' from considering distinct strings to be equal.
 # Doing it here saves us from having to set LC_ALL elsewhere in this file.
@@ -493,7 +493,7 @@ changelog-check:
 	fi
 
 m4-check:
-	@grep -n 'AC_DEFUN([^[]' $(top_srcdir)/m4/*.m4 \
+	@grep -n 'AC_DEFUN([^[]' $(srcdir)/m4/*.m4 \
 	  && { echo 'Makefile.maint: quote the first arg to AC_DEFUN' 1>&2; \
 	       exit 1; } || :
 
