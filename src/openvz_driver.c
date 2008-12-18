@@ -1102,7 +1102,8 @@ static char *openvzGetCapabilities(virConnectPtr conn) {
 
 static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
     int got = 0;
-    int veid, pid;
+    int veid;
+    pid_t pid;
     int outfd = -1;
     int errfd = -1;
     int ret;
@@ -1153,7 +1154,8 @@ static int openvzNumDomains(virConnectPtr conn) {
 static int openvzListDefinedDomains(virConnectPtr conn,
                                     char **const names, int nnames) {
     int got = 0;
-    int veid, pid, outfd = -1, errfd = -1, ret;
+    int veid, outfd = -1, errfd = -1, ret;
+    pid_t pid;
     char vpsname[32];
     char buf[32];
     char *endptr;

@@ -144,7 +144,8 @@ static int
 virProxyForkServer(void)
 {
     const char *proxyPath = virProxyFindServerPath();
-    int ret, pid, status;
+    int ret, status;
+    pid_t pid;
     const char *proxyarg[2];
 
     if (!proxyPath) {

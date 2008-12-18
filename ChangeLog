@@ -1,3 +1,10 @@
+Thu Dec 18 11:56:58 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Use pid_t for all PID tracking variables (John Levon)
+	* src/openvz_driver.c, src/proxy_internal.h, src/remote_internal.c,
+	src/storage_backend.c, src/uml_driver.c, src/util.c, src/util.h:
+	s/int/pid_t/
+
 Thu Dec 18 11:54:58 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/Makefile.am: Don't munge default network XML if

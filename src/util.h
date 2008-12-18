@@ -27,6 +27,7 @@
 
 #include "verify.h"
 #include <sys/select.h>
+#include <sys/types.h>
 
 int saferead(int fd, void *buf, size_t count);
 ssize_t safewrite(int fd, const void *buf, size_t count);
@@ -41,7 +42,7 @@ int virExec(virConnectPtr conn,
             const char *const*argv,
             const char *const*envp,
             const fd_set *keepfd,
-            int *retpid,
+            pid_t *retpid,
             int infd,
             int *outfd,
             int *errfd,

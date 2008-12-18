@@ -411,7 +411,8 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
                               void *data,
                               int *outexit)
 {
-    int child = 0, fd = -1, exitstatus, err, failed = 1;
+    int fd = -1, exitstatus, err, failed = 1;
+    pid_t child = 0;
     FILE *list = NULL;
     regex_t *reg;
     regmatch_t *vars = NULL;
@@ -575,7 +576,8 @@ virStorageBackendRunProgNul(virConnectPtr conn,
                             void *data)
 {
     size_t n_tok = 0;
-    int child = 0, fd = -1, exitstatus;
+    int fd = -1, exitstatus;
+    pid_t child = 0;
     FILE *fp = NULL;
     char **v;
     int err = -1;

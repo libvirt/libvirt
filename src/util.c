@@ -182,10 +182,11 @@ __virExec(virConnectPtr conn,
           const char *const*argv,
           const char *const*envp,
           const fd_set *keepfd,
-          int *retpid,
+          pid_t *retpid,
           int infd, int *outfd, int *errfd,
           int flags) {
-    int pid, null, i, openmax;
+    pid_t pid;
+    int null, i, openmax;
     int pipeout[2] = {-1,-1};
     int pipeerr[2] = {-1,-1};
     int childout = -1;
@@ -439,7 +440,7 @@ virExec(virConnectPtr conn,
         const char *const*argv,
         const char *const*envp,
         const fd_set *keepfd,
-        int *retpid,
+        pid_t *retpid,
         int infd, int *outfd, int *errfd,
         int flags) {
     char *argv_str;
@@ -554,7 +555,8 @@ int
 virRun(virConnectPtr conn,
        const char *const*argv,
        int *status) {
-    int childpid, exitstatus, execret, waitret;
+    pid_t childpid;
+    int exitstatus, execret, waitret;
     int ret = -1;
     int errfd = -1, outfd = -1;
     char *outbuf = NULL;

@@ -252,7 +252,8 @@ remoteForkDaemon(virConnectPtr conn)
 {
     const char *daemonPath = remoteFindDaemonPath();
     const char *const daemonargs[] = { daemonPath, "--timeout=30", NULL };
-    int ret, pid, status;
+    int ret, status;
+    pid_t pid;
 
     if (!daemonPath) {
         error(conn, VIR_ERR_INTERNAL_ERROR, _("failed to find libvirtd binary"));

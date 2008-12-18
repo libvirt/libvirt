@@ -711,7 +711,8 @@ static int umlStartVMDaemon(virConnectPtr conn,
                             virDomainObjPtr vm) {
     const char **argv = NULL, **tmp;
     const char **progenv = NULL;
-    int i, ret, pid;
+    int i, ret;
+    pid_t pid;
     char *logfile;
     int logfd = -1;
     struct stat sb;
