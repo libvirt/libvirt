@@ -1299,7 +1299,7 @@ static char *testGetOSType(virDomainPtr dom) {
 static unsigned long testGetMaxMemory(virDomainPtr domain) {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
-    unsigned long ret = -1;
+    unsigned long ret = 0;
 
     testDriverLock(privconn);
     privdom = virDomainFindByName(&privconn->domains,

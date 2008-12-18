@@ -10,6 +10,16 @@
 #include "nodeinfo.h"
 #include "util.h"
 
+#ifndef __linux__
+
+static int
+mymain(int argc, char **argv)
+{
+    exit (77); /* means 'test skipped' for automake */
+}
+
+#else
+
 static char *progname;
 static char *abs_srcdir;
 
@@ -78,9 +88,6 @@ mymain(int argc, char **argv)
         "nodeinfo-6",
     };
     char cwd[PATH_MAX];
-#ifndef __linux__
-    exit (77); /* means 'test skipped' for automake */
-#endif
 
     abs_srcdir = getenv("abs_srcdir");
     if (!abs_srcdir)
@@ -102,4 +109,7 @@ mymain(int argc, char **argv)
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
+#endif /* __linux__ */
+
 VIRT_TEST_MAIN(mymain)
+

@@ -1,3 +1,9 @@
+Thu Dec 18 12:07:58 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/test.c: Fix error return value
+	* tests/nodeinfotest.c: Disable code compile completely on
+	non-linux (John Levon)
+
 Thu Dec 18 11:59:58 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/remote.c: Fix unused variable compile warning when polkit
