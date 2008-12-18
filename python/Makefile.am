@@ -34,8 +34,9 @@ all-local: libvirt.py
 python_LTLIBRARIES = libvirtmod.la
 
 libvirtmod_la_SOURCES = libvir.c types.c libvirt-py.c libvirt-py.h
-# Python header files contain a redundant decl, hence:
-libvirtmod_la_CFLAGS = -Wno-redundant-decls
+# Python <= 2.4 header files contain a redundant decl, hence we
+# need extra flags here
+libvirtmod_la_CFLAGS = @WARN_PYTHON_CFLAGS@
 
 libvirtmod_la_LDFLAGS = -module -avoid-version -L$(top_builddir)/src/.libs \
 	@CYGWIN_EXTRA_LDFLAGS@

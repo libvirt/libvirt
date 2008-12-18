@@ -87,6 +87,12 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
 
     WARN_CFLAGS="$compiler_flags $complCFLAGS"
     AC_SUBST(WARN_CFLAGS)
+
+    dnl Needed to keep compile quiet on python 2.4
+    COMPILER_FLAGS=
+    gl_COMPILER_FLAGS(-Wno-redundant-decls)
+    WARN_PYTHON_CFLAGS=$COMPILER_FLAGS
+    AC_SUBST(WARN_PYTHON_CFLAGS)
 ])
 
 
