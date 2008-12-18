@@ -3116,7 +3116,7 @@ authfail:
 static int
 remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
                           struct qemud_client *client ATTRIBUTE_UNUSED,
-                          virConnectPtr conn,
+                          virConnectPtr conn ATTRIBUTE_UNUSED,
                           remote_error *rerr,
                           void *args ATTRIBUTE_UNUSED,
                           remote_auth_polkit_ret *ret ATTRIBUTE_UNUSED)

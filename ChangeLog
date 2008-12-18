@@ -1,3 +1,8 @@
+Thu Dec 18 11:59:58 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/remote.c: Fix unused variable compile warning when polkit
+	is disabled (John Levon)
+
 Thu Dec 18 11:56:58 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Use pid_t for all PID tracking variables (John Levon)
