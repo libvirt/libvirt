@@ -101,7 +101,7 @@ allow to connect locally as root to the daemon supervising QEmu and KVM domains
 
 =item qemu:///session
 
-allow to connect locally as a normal user to the his own set of QEmu and KVM domains
+allow to connect locally as a normal user to his own set of QEmu and KVM domains
 
 =back
 
