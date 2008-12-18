@@ -28,7 +28,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <paths.h>
 #include <limits.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -801,7 +800,8 @@ static struct qemud_server *qemudInitialize(int sigread) {
 #ifdef WITH_STORAGE_DIR
     storageRegister();
 #endif
-#if defined(HAVE_HAL) || defined(HAVE_DEVKIT)
+#if defined(WITH_NODE_DEVICES) && \
+    (defined(HAVE_HAL) || defined(HAVE_DEVKIT))
     nodedevRegister();
 #endif
 #ifdef WITH_QEMU

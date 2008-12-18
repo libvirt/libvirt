@@ -1,3 +1,9 @@
+Thu Dec 18 11:50:58 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	Misc daemon bug fixes (John Levon)
+	* qemud/qemud.c: Fix conditional for node devices
+	* qemud/remote.c: Remove unneccessary path.h include
+
 Thu Dec 18 07:47:58 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	docs/virsh.pod: typo fix

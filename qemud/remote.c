@@ -27,7 +27,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <paths.h>
 #include <limits.h>
 #include <sys/socket.h>
 #include <sys/un.h>
