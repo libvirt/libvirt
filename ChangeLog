@@ -1,3 +1,14 @@
+Thu Dec 18 16:13:56 CET 2008 Guido Günther <agx@sigxcpu.org>
+
+	Let qemu/kvm instances write a pid file
+	* src/utilc, src/util.h (virFilePid): declare and define
+	  (virFileWritePid, virFileReadPid, virFileDeletePid): use virFilePid
+	* src/libvirt_symver.in: export virFilePid symbol
+	* src/qemu_conf.c (qemudBuildCommandLine): pass -pidfile to qemu
+	  (qemudStartup): create stateDir
+	* tests/qemuxml2argvtest.c: initialize driver.stateDir
+	* tests/qemuxml2argvdata/qemuxml2argv-*.args: add -pidfile argument
+
 Thu Dec 18 12:18:58 GMT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* examples/domain-events/events-c/event-test.c,

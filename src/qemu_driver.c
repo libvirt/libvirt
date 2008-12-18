@@ -220,6 +220,10 @@ qemudStartup(void) {
 
         if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)
             goto out_of_memory;
+
+        if (virAsprintf(&qemu_driver->stateDir,
+                      "%s/run/libvirt/qemu/", LOCAL_STATE_DIR) == -1)
+            goto out_of_memory;
     } else {
         if (!(pw = getpwuid(uid))) {
             qemudLog(QEMUD_ERR, _("Failed to find user record for uid '%d': %s\n"),
@@ -233,6 +237,15 @@ qemudStartup(void) {
 
         if (asprintf (&base, "%s/.libvirt", pw->pw_dir) == -1)
             goto out_of_memory;
+
+        if (virAsprintf(&qemu_driver->stateDir, "%s/qemu/run", base) == -1)
+            goto out_of_memory;
+    }
+
+    if (virFileMakePath(qemu_driver->stateDir) < 0) {
+            qemudLog(QEMUD_ERR, _("Failed to create state dir '%s': %s\n"),
+                     qemu_driver->stateDir, strerror(errno));
+            goto error;
     }
 
     /* Configuration paths are either ~/.libvirt/qemu/... (session) or
@@ -378,6 +391,7 @@ qemudShutdown(void) {
     VIR_FREE(qemu_driver->logDir);
     VIR_FREE(qemu_driver->configDir);
     VIR_FREE(qemu_driver->autostartDir);
+    VIR_FREE(qemu_driver->stateDir);
     VIR_FREE(qemu_driver->vncTLSx509certdir);
     VIR_FREE(qemu_driver->vncListen);
 

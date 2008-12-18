@@ -721,6 +721,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     const char *emulator;
     char uuid[VIR_UUID_STRING_BUFLEN];
     char domid[50];
+    char *pidfile;
 
     uname(&ut);
 
@@ -813,6 +814,9 @@ int qemudBuildCommandLine(virConnectPtr conn,
     snprintf(memory, sizeof(memory), "%lu", vm->def->memory/1024);
     snprintf(vcpus, sizeof(vcpus), "%lu", vm->def->vcpus);
     snprintf(domid, sizeof(domid), "%d", vm->def->id);
+    pidfile = virFilePid(driver->stateDir, vm->def->name);
+    if (!pidfile)
+        goto error;
 
     ADD_ENV_LIT("LC_ALL=C");
 
@@ -866,6 +870,9 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     ADD_ARG_LIT("-monitor");
     ADD_ARG_LIT("pty");
+
+    ADD_ARG_LIT("-pidfile");
+    ADD_ARG(pidfile);
 
     if (vm->def->localtime)
         ADD_ARG_LIT("-localtime");

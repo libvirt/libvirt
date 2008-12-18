@@ -80,6 +80,8 @@ int virFileOpenTty(int *ttymaster,
                    char **ttyName,
                    int rawmode);
 
+char* virFilePid(const char *dir,
+                 const char *name);
 int virFileWritePid(const char *dir,
                     const char *name,
                     pid_t pid);

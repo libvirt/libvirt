@@ -578,6 +578,7 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virFileMakePath;
 	virFileOpenTty;
 	virFileReadLimFD;
+	virFilePid;
 	virFileReadPid;
 	virFileLinkPointsTo;
 	virParseNumber;

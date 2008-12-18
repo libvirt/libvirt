@@ -920,6 +920,17 @@ int virFileOpenTty(int *ttymaster ATTRIBUTE_UNUSED,
 #endif
 
 
+char* virFilePid(const char *dir, const char* name)
+{
+    char* pidfile;
+
+    if (asprintf(&pidfile, "%s/%s.pid", dir, name) < 0) {
+        pidfile = NULL;
+    }
+    return pidfile;
+}
+
+
 int virFileWritePid(const char *dir,
                     const char *name,
                     pid_t pid)
@@ -932,7 +943,7 @@ int virFileWritePid(const char *dir,
     if ((rc = virFileMakePath(dir)))
         goto cleanup;
 
-    if (asprintf(&pidfile, "%s/%s.pid", dir, name) < 0) {
+    if (!(pidfile = virFilePid(dir, name))) {
         rc = ENOMEM;
         goto cleanup;
     }
@@ -975,7 +986,8 @@ int virFileReadPid(const char *dir,
     FILE *file;
     char *pidfile = NULL;
     *pid = 0;
-    if (asprintf(&pidfile, "%s/%s.pid", dir, name) < 0) {
+
+    if (!(pidfile = virFilePid(dir, name))) {
         rc = ENOMEM;
         goto cleanup;
     }
@@ -1008,8 +1020,8 @@ int virFileDeletePid(const char *dir,
     int rc = 0;
     char *pidfile = NULL;
 
-    if (asprintf(&pidfile, "%s/%s.pid", dir, name) < 0) {
-        rc = errno;
+    if (!(pidfile = virFilePid(dir, name))) {
+        rc = ENOMEM;
         goto cleanup;
     }
 
