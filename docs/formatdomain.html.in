@@ -389,7 +389,7 @@
 	      &lt;vendor id='0x1234'/&gt;
 	      &lt;product id='0xbeef'/&gt;
 	    &lt;/source&gt;
-	  &lt;/disk&gt;
+	  &lt;/hostdev&gt;
 	  ...</pre>
 
     <dl>

@@ -1,3 +1,8 @@
+Fri Dec 19 10:41:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	* docs/formatdomain.html.in: Fix documentation typo
+	  (aozturk in #virt).
+
 Thu Dec 18 17:46:06 CET 2008 Guido Günther <agx@sigxcpu.org>
 
 	* src/qemu_driver.c (qemudDomainAttachDevice): only
