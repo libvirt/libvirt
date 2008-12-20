@@ -1,3 +1,8 @@
+Sun Dec 21 00:20:51 CET 2008 Guido Günther <agx@sigxcpu.org>
+
+	avoid "make check" failures due to localized error messages
+	* tests/Makefile.am (TESTS_ENVIRONMENT): set LC_ALL=C
+
 Sat Dec 20 14:10:09 CET 2008 Guido Günther <agx@sigxcpu.org>
 
 	save and remove kvm/qemu domain status
