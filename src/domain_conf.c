@@ -430,6 +430,7 @@ void virDomainObjFree(virDomainObjPtr dom)
     virDomainDefFree(dom->def);
     virDomainDefFree(dom->newDef);
 
+    VIR_FREE(dom->monitorpath);
     VIR_FREE(dom->vcpupids);
 
     VIR_FREE(dom);
@@ -3243,22 +3244,17 @@ char *virDomainDefFormat(virConnectPtr conn,
 
 #ifndef PROXY
 
-int virDomainSaveConfig(virConnectPtr conn,
-                        const char *configDir,
-                        virDomainDefPtr def)
+int virDomainSaveXML(virConnectPtr conn,
+                     const char *configDir,
+                     virDomainDefPtr def,
+                     const char *xml)
 {
-    char *xml;
     char *configFile = NULL;
     int fd = -1, ret = -1;
     size_t towrite;
     int err;
 
     if ((configFile = virDomainConfigFile(conn, configDir, def->name)) == NULL)
-        goto cleanup;
-
-    if (!(xml = virDomainDefFormat(conn,
-                                   def,
-                                   VIR_DOMAIN_XML_SECURE)))
         goto cleanup;
 
     if ((err = virFileMakePath(configDir))) {
@@ -3293,12 +3289,30 @@ int virDomainSaveConfig(virConnectPtr conn,
     }
 
     ret = 0;
-
  cleanup:
-    VIR_FREE(xml);
     if (fd != -1)
         close(fd);
+    return ret;
+}
 
+int virDomainSaveConfig(virConnectPtr conn,
+                        const char *configDir,
+                        virDomainDefPtr def)
+{
+    int ret = -1;
+    char *xml;
+
+    if (!(xml = virDomainDefFormat(conn,
+                                   def,
+                                   VIR_DOMAIN_XML_SECURE)))
+        goto cleanup;
+
+    if (virDomainSaveXML(conn, configDir, def, xml))
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    VIR_FREE(xml);
     return ret;
 }
 

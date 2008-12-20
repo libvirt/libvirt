@@ -1,3 +1,17 @@
+Sat Dec 20 13:53:14 CET 2008 Guido Günther <agx@sigxcpu.org>
+
+	add XML parsing for qemu/kvm status files
+	* src/domain_conf.c, src/domain_conf.h (virDomainSaveXML): new function
+	* src/domain_conf.c (virDomainSaveConfig): split out XML writing into
+	  virDomainSaveXML
+	* src/qemu_conf.c (qemudDomainStatusParseFile): new function to parse
+	  status XML
+	  (qemudDomainStatusFormat): new function to format status XML
+	  (qemudSaveDomainStatus): new function to write status XML, uses
+	  virDomainSaveXML
+	* src/libvirt_sym.version.in: add virBufferEscapeString, virDomainSaveXML,
+	  virXPathNode symbols
+
 Fri Dec 19 10:41:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	* docs/formatdomain.html.in: Fix documentation typo

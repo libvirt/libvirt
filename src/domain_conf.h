@@ -464,6 +464,7 @@ struct _virDomainObj {
     int stderr_fd;
     int stderr_watch;
     int monitor;
+    char *monitorpath;
     int monitorWatch;
     int logfile;
     int pid;
@@ -554,6 +555,11 @@ char *virDomainCpuSetFormat(virConnectPtr conn,
 int virDomainDiskQSort(const void *a, const void *b);
 int virDomainDiskCompare(virDomainDiskDefPtr a,
                          virDomainDiskDefPtr b);
+
+int virDomainSaveXML(virConnectPtr conn,
+                     const char *configDir,
+                     virDomainDefPtr def,
+                     const char *xml);
 
 int virDomainSaveConfig(virConnectPtr conn,
                         const char *configDir,

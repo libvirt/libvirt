@@ -49,6 +49,8 @@
 #include "util.h"
 #include "memory.h"
 #include "verify.h"
+#include "datatypes.h"
+#include "xml.h"
 
 VIR_ENUM_DECL(virDomainDiskQEMUBus)
 VIR_ENUM_IMPL(virDomainDiskQEMUBus, VIR_DOMAIN_DISK_BUS_LAST,
@@ -1334,3 +1336,192 @@ int qemudBuildCommandLine(virConnectPtr conn,
 #undef ADD_ENV_LIT
 #undef ADD_ENV_SPACE
 }
+
+
+/* Called from SAX on parsing errors in the XML. */
+static void
+catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
+{
+    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
+
+    if (ctxt) {
+        virConnectPtr conn = ctxt->_private;
+
+        if (ctxt->lastError.level == XML_ERR_FATAL &&
+            ctxt->lastError.message != NULL) {
+            qemudReportError (conn, NULL, NULL, VIR_ERR_XML_DETAIL,
+                                  _("at line %d: %s"),
+                                  ctxt->lastError.line,
+                                  ctxt->lastError.message);
+        }
+    }
+}
+
+
+/**
+ * qemudDomainStatusParseFile
+ *
+ * read the last known status of a domain
+ *
+ * Returns 0 on success
+ */
+qemudDomainStatusPtr
+qemudDomainStatusParseFile(virConnectPtr conn,
+                           virCapsPtr caps,
+                           const char *filename, int flags)
+{
+    xmlParserCtxtPtr pctxt = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlDocPtr xml = NULL;
+    xmlNodePtr root, config_root;
+    virDomainDefPtr def = NULL;
+    char *tmp = NULL;
+    long val;
+    qemudDomainStatusPtr status = NULL;
+
+    if (VIR_ALLOC(status) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                         "%s", _("failed to allocate space for vm status"));
+        goto error;
+    }
+
+    /* Set up a parser context so we can catch the details of XML errors. */
+    pctxt = xmlNewParserCtxt ();
+    if (!pctxt || !pctxt->sax)
+        goto error;
+    pctxt->sax->error = catchXMLError;
+    pctxt->_private = conn;
+
+    if (conn) virResetError (&conn->err);
+    xml = xmlCtxtReadFile (pctxt, filename, NULL,
+                           XML_PARSE_NOENT | XML_PARSE_NONET |
+                           XML_PARSE_NOWARNING);
+    if (!xml) {
+        if (conn && conn->err.code == VIR_ERR_NONE)
+              qemudReportError(conn, NULL, NULL, VIR_ERR_XML_ERROR,
+                                   "%s", _("failed to parse xml document"));
+        goto error;
+    }
+
+    if ((root = xmlDocGetRootElement(xml)) == NULL) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                              "%s", _("missing root element"));
+        goto error;
+    }
+
+    ctxt = xmlXPathNewContext(xml);
+    if (ctxt == NULL) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        goto error;
+    }
+
+    if (!xmlStrEqual(root->name, BAD_CAST "domstatus")) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("incorrect root element"));
+        goto error;
+    }
+
+    ctxt->node = root;
+    if((virXPathLong(conn, "string(./@state)", ctxt, &val)) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("invalid domain state"));
+        goto error;
+    } else
+        status->state = (int)val;
+
+    if((virXPathLong(conn, "string(./@pid)", ctxt, &val)) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("invalid pid"));
+        goto error;
+    } else
+        status->pid = (pid_t)val;
+
+    if(!(tmp = virXPathString(conn, "string(./monitor[1]/@path)", ctxt))) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("no monitor path"));
+        goto error;
+    } else
+        status->monitorpath = tmp;
+
+    if(!(config_root = virXPathNode(conn, "./domain", ctxt))) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("no domain config"));
+        goto error;
+    }
+    if(!(def = virDomainDefParseNode(conn, caps, xml, config_root, flags)))
+        goto error;
+    else
+        status->def = def;
+
+cleanup:
+    xmlFreeParserCtxt (pctxt);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc (xml);
+    return status;
+
+error:
+    VIR_FREE(tmp);
+    VIR_FREE(status);
+    goto cleanup;
+}
+
+
+/**
+ * qemudDomainStatusFormat
+ *
+ * Get the state of a running domain as XML
+ *
+ * Returns xml on success
+ */
+static char*
+qemudDomainStatusFormat(virConnectPtr conn,
+                        virDomainObjPtr vm)
+{
+    char *config_xml = NULL, *xml = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferVSprintf(&buf, "<domstatus state='%d' pid='%d'>\n", vm->state, vm->pid);
+    virBufferEscapeString(&buf, "  <monitor path='%s'/>\n", vm->monitorpath);
+
+    if (!(config_xml = virDomainDefFormat(conn,
+                                          vm->def,
+                                          VIR_DOMAIN_XML_SECURE)))
+        goto cleanup;
+
+    virBufferAdd(&buf, config_xml, strlen(config_xml));
+    virBufferAddLit(&buf, "</domstatus>\n");
+
+    xml = virBufferContentAndReset(&buf);
+cleanup:
+    VIR_FREE(config_xml);
+    return xml;
+}
+
+
+/**
+ * qemudSaveDomainStatus
+ *
+ * Save the current status of a running domain
+ *
+ * Returns 0 on success
+ */
+int
+qemudSaveDomainStatus(virConnectPtr conn,
+                      struct qemud_driver *driver,
+                      virDomainObjPtr vm)
+{
+    int ret = -1;
+    char *xml = NULL;
+
+    if (!(xml = qemudDomainStatusFormat(conn, vm)))
+        goto cleanup;
+
+    if ((ret = virDomainSaveXML(conn, driver->stateDir, vm->def, xml)))
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    VIR_FREE(xml);
+    return ret;
+}
+
