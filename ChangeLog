@@ -1,3 +1,12 @@
+Sat Dec 20 14:10:09 CET 2008 Guido Günther <agx@sigxcpu.org>
+
+	save and remove kvm/qemu domain status
+	* src/qemu_driver.c (qemdRemoveDomainStatus): new function
+	  (qemudOpenMonitor): save monitor path
+	  (qemudStartVMDaemon, qemudDomainSuspend, qemudDomainResume,
+	   qemudDomainAttachDevice, qemudDomainDetachDevice): save status
+	  (qemudShutdownVMDaemon): remove status
+
 Sat Dec 20 13:53:14 CET 2008 Guido Günther <agx@sigxcpu.org>
 
 	add XML parsing for qemu/kvm status files

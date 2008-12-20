@@ -182,6 +182,44 @@ qemudAutostartConfigs(struct qemud_driver *driver) {
     virConnectClose(conn);
 }
 
+
+/**
+ * qemudRemoveDomainStatus
+ *
+ * remove all state files of a domain from statedir
+ *
+ * Returns 0 on success
+ */
+static int
+qemudRemoveDomainStatus(virConnectPtr conn,
+                        struct qemud_driver *driver,
+                        virDomainObjPtr vm)
+{
+    int rc = -1;
+    char *file = NULL;
+
+    if (virAsprintf(&file, "%s/%s.xml", driver->stateDir, vm->def->name) < 0) {
+        qemudReportError(conn, vm, NULL, VIR_ERR_NO_MEMORY,
+                         "%s", _("failed to allocate space for status file"));
+        goto cleanup;
+    }
+
+    if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR) {
+        qemudReportError(conn, vm, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Failed to unlink status file %s"), file);
+        goto cleanup;
+    }
+
+    if(virFileDeletePid(driver->stateDir, vm->def->name))
+        goto cleanup;
+
+    rc = 0;
+cleanup:
+    VIR_FREE(file);
+    return rc;
+}
+
+
 /**
  * qemudStartup:
  *
@@ -530,6 +568,12 @@ static int qemudOpenMonitor(virConnectPtr conn,
                                  buf, sizeof(buf),
                                  qemudCheckMonitorPrompt,
                                  "monitor", 10000);
+
+    if (!(vm->monitorpath = strdup(monitor))) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                         "%s", _("failed to allocate space for monitor path"));
+        goto error;
+    }
 
     /* Keep monitor open upon success */
     if (ret == 0)
@@ -1030,6 +1074,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
             return -1;
         }
     }
+    qemudSaveDomainStatus(conn, qemu_driver, vm);
 
     return ret;
 }
@@ -1095,6 +1140,7 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
                      "%s", _("Got unexpected pid, damn\n"));
         }
     }
+    qemudRemoveDomainStatus(conn, driver, vm);
 
     vm->pid = -1;
     vm->def->id = -1;
@@ -1738,6 +1784,7 @@ static int qemudDomainSuspend(virDomainPtr dom) {
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
         VIR_FREE(info);
     }
+    qemudSaveDomainStatus(dom->conn, driver, vm);
     ret = 0;
 
 cleanup:
@@ -1787,6 +1834,7 @@ static int qemudDomainResume(virDomainPtr dom) {
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
         VIR_FREE(info);
     }
+    qemudSaveDomainStatus(dom->conn, driver, vm);
     ret = 0;
 
 cleanup:
@@ -3221,6 +3269,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         goto cleanup;
     }
 
+    qemudSaveDomainStatus(dom->conn, driver, vm);
 cleanup:
     if (ret < 0)
         virDomainDeviceDefFree(dev);
@@ -3337,6 +3386,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          "%s", _("only SCSI or virtio disk device can be detached dynamically"));
 
+    qemudSaveDomainStatus(dom->conn, driver, vm);
 cleanup:
     virDomainDeviceDefFree(dev);
     if (vm)
