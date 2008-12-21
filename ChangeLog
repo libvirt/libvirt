@@ -1,3 +1,7 @@
+Sun Dec 21 19:46:35 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	* src/node_device_hal.c: Include <config.h> before everything else.
+
 Sun Dec 21 00:20:51 CET 2008 Guido Günther <agx@sigxcpu.org>
 
 	avoid "make check" failures due to localized error messages

@@ -21,10 +21,10 @@
  * Author: David F. Lively <dlively@virtualiron.com>
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <config.h>
 #include <libhal.h>
 
 #include "node_device_conf.h"
