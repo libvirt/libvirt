@@ -1,7 +1,7 @@
 /*
  * nodeinfo.c: Helper routines for OS specific node information
  *
- * Copyright (C) 2006, 2007 Red Hat, Inc.
+ * Copyright (C) 2006-2008 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,9 @@
 #define __VIR_NODEINFO_H__
 
 #include "libvirt/libvirt.h"
+#include "capabilities.h"
 
 int virNodeInfoPopulate(virConnectPtr conn, virNodeInfoPtr nodeinfo);
+int virCapsInitNUMA(virCapsPtr caps);
 
 #endif /* __VIR_NODEINFO_H__*/

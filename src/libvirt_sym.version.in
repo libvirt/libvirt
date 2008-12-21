@@ -491,6 +491,7 @@ LIBVIRT_PRIVATE_@VERSION@ {
 
 	# nodeinfo.h
 	virNodeInfoPopulate;
+	virCapsInitNUMA;
 
 
 	# node_device_conf.h

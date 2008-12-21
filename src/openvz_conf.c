@@ -146,6 +146,9 @@ virCapsPtr openvzCapsInit(void)
                                    0, 0)) == NULL)
         goto no_memory;
 
+    if (virCapsInitNUMA(caps) < 0)
+        goto no_memory;
+
     virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x52, 0x54, 0x00 });
 
     if ((guest = virCapabilitiesAddGuest(caps,

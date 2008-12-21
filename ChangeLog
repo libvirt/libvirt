@@ -1,3 +1,39 @@
+Sun Dec 21 19:50:16 +0100 2008 Jim Meyering <meyering@redhat.com>
+
+	make NUMA-initialization code more portable and more robust
+	qemudCapsInitNUMA and umlCapsInitNUMA were identical, so this change
+	factors them into a new function, virCapsInitNUMA, and puts it in
+	nodeinfo.c.
+
+	In addition to factoring out the duplicates, this change also
+	adjusts that function definition (along with its macros) so
+	that it works with Fedora 9's numactl version 1, and makes it
+	so the code will work even if someone builds the kernel with
+	CONFIG_NR_CPUS > 4096.
+
+	Finally, also perform this NUMA initialization for the lxc
+	and openvz drivers.
+
+	* src/nodeinfo.c: Include <stdint.h>, <numa.h> and "memory.h".
+	(virCapsInitNUMA): Rename from qemudCapsInitNUMA and umlCapsInitNUMA.
+	(NUMA_MAX_N_CPUS): Define depending on NUMA API version.
+	(n_bits, MASK_CPU_ISSET): Define, adjust, use uint64 rather than long.
+	* src/nodeinfo.h: Include "capabilities.h".
+	(virCapsInitNUMA): Declare it.
+	* examples/domain-events/events-c/Makefile.am:
+	* src/Makefile.am: Add $(NUMACTL_CFLAGS) and $(NUMACTL_LIBS) to various
+	compile/link-related variables.
+	* src/qemu_conf.c: Include "nodeinfo.h".
+	(qemudCapsInitNUMA): Remove duplicate code.  Adjust caller.
+	* src/uml_conf.c (umlCapsInitNUMA): Likewise.
+	Include "nodeinfo.h".
+	* src/lxc_conf.c: Include "nodeinfo.h".
+	(lxcCapsInit): Perform NUMA initialization here, too.
+	* src/openvz_conf.c (openvzCapsInit): And here.
+	Include "nodeinfo.h".
+	* src/libvirt_sym.version.in: Add virCapsInitNUMA so that libvirtd
+	can link to this function.
+
 Sun Dec 21 19:46:35 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	* src/node_device_hal.c: Include <config.h> before everything else.

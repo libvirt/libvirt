@@ -55,7 +55,7 @@ UTIL_SOURCES =							\
 		xml.c xml.h
 
 # Internal generic driver infrastructure
-DRIVER_SOURCES = 						\
+DRIVER_SOURCES =						\
 		driver.c driver.h				\
 		internal.h					\
 		datatypes.c datatypes.h				\
@@ -147,7 +147,7 @@ STORAGE_DRIVER_FS_SOURCES =					\
 		storage_backend_fs.h storage_backend_fs.c
 
 STORAGE_DRIVER_LVM_SOURCES =					\
-		storage_backend_logical.h 			\
+		storage_backend_logical.h			\
 		storage_backend_logical.c
 
 STORAGE_DRIVER_ISCSI_SOURCES =					\
@@ -189,8 +189,8 @@ libvirt_driver_la_SOURCES =					\
 		$(STORAGE_CONF_SOURCES)				\
 		$(NODE_DEVICE_CONF_SOURCES)
 
-libvirt_driver_la_CFLAGS = $(XEN_CFLAGS)
-libvirt_driver_la_LDFLAGS = $(XEN_LIBS)
+libvirt_driver_la_CFLAGS = $(XEN_CFLAGS) $(NUMACTL_CFLAGS)
+libvirt_driver_la_LDFLAGS = $(XEN_LIBS) $(NUMACTL_LIBS)
 
 if WITH_TEST
 if WITH_DRIVER_MODULES
@@ -430,13 +430,14 @@ virsh_SOURCES =							\
 		virsh.c
 
 virsh_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDFLAGS)
-virsh_LDADD = 							\
-		$(STATIC_BINARIES) 				\
+virsh_LDADD =							\
+		$(STATIC_BINARIES)				\
 		$(WARN_CFLAGS)					\
+		$(NUMACTL_LIBS)					\
 		libvirt.la					\
 		../gnulib/lib/libgnu.la				\
 		$(VIRSH_LIBS)
-virsh_CFLAGS = $(COVERAGE_CFLAGS) $(READLINE_CFLAGS)
+virsh_CFLAGS = $(COVERAGE_CFLAGS) $(READLINE_CFLAGS) $(NUMACTL_CFLAGS)
 BUILT_SOURCES = virsh-net-edit.c virsh-pool-edit.c
 
 virsh-net-edit.c: virsh.c Makefile.am
@@ -518,11 +519,11 @@ libexec_PROGRAMS += libvirt_lxc
 
 libvirt_lxc_SOURCES =						\
 		$(LXC_CONTROLLER_SOURCES)			\
-		$(UTIL_SOURCES) 				\
+		$(UTIL_SOURCES)					\
 		$(DOMAIN_CONF_SOURCES)
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS)
-libvirt_lxc_LDADD = $(LIBXML_LIBS) ../gnulib/lib/libgnu.la
-libvirt_lxc_CFLAGS =  $(LIBPARTED_CFLAGS)
+libvirt_lxc_LDADD = $(LIBXML_LIBS) $(NUMACTL_LIBS) ../gnulib/lib/libgnu.la
+libvirt_lxc_CFLAGS =  $(LIBPARTED_CFLAGS) $(NUMACTL_CFLAGS)
 endif
 endif
 EXTRA_DIST += $(LXC_CONTROLLER_SOURCES)

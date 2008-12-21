@@ -26,17 +26,24 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <errno.h>
-#include "c-ctype.h"
+
+#if HAVE_NUMACTL
+# define NUMA_VERSION1_COMPATIBILITY 1
+# include <numa.h>
+#endif
 
 #ifdef HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
 #endif
 
-#include "virterror_internal.h"
+#include "c-ctype.h"
+#include "memory.h"
 #include "nodeinfo.h"
 #include "physmem.h"
 #include "util.h"
+#include "virterror_internal.h"
 
 #ifdef __linux__
 #define CPUINFO_PATH "/proc/cpuinfo"
@@ -171,3 +178,67 @@ int virNodeInfoPopulate(virConnectPtr conn,
     return -1;
 #endif
 }
+
+#if HAVE_NUMACTL
+# if LIBNUMA_API_VERSION <= 1
+#  define NUMA_MAX_N_CPUS 4096
+# else
+#  define NUMA_MAX_N_CPUS (numa_all_cpus_ptr->size)
+# endif
+
+# define n_bits(var) (8 * sizeof(var))
+# define MASK_CPU_ISSET(mask, cpu) \
+  (((mask)[((cpu) / n_bits(*(mask)))] >> ((cpu) % n_bits(*(mask)))) & 1)
+
+int
+virCapsInitNUMA(virCapsPtr caps)
+{
+    int n;
+    uint64_t *mask = NULL;
+    int *cpus = NULL;
+    int ret = -1;
+    int max_n_cpus = NUMA_MAX_N_CPUS;
+
+    if (numa_available() < 0)
+        return 0;
+
+    int mask_n_bytes = max_n_cpus / 8;
+    if (VIR_ALLOC_N(mask, mask_n_bytes / sizeof *mask) < 0)
+        goto cleanup;
+
+    for (n = 0 ; n <= numa_max_node() ; n++) {
+        int i;
+        int ncpus;
+        if (numa_node_to_cpus(n, mask, mask_n_bytes) < 0)
+            goto cleanup;
+
+        for (ncpus = 0, i = 0 ; i < max_n_cpus ; i++)
+            if (MASK_CPU_ISSET(mask, i))
+                ncpus++;
+
+        if (VIR_ALLOC_N(cpus, ncpus) < 0)
+            goto cleanup;
+
+        for (ncpus = 0, i = 0 ; i < max_n_cpus ; i++)
+            if (MASK_CPU_ISSET(mask, i))
+                cpus[ncpus++] = i;
+
+        if (virCapabilitiesAddHostNUMACell(caps,
+                                           n,
+                                           ncpus,
+                                           cpus) < 0)
+            goto cleanup;
+
+        VIR_FREE(cpus);
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cpus);
+    VIR_FREE(mask);
+    return ret;
+}
+#else
+int virCapsInitNUMA(virCapsPtr caps ATTRIBUTE_UNUSED) { return 0; }
+#endif
