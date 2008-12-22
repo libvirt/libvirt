@@ -46,7 +46,8 @@
 #include "verify.h"
 
 
-#define umlLog(level, msg...) fprintf(stderr, msg)
+#define umlLog(level, msg, ...)                                     \
+        virLogMessage(__FILE__, level, 0, msg, __VA_ARGS__)
 
 virCapsPtr umlCapsInit(void) {
     struct utsname utsname;

@@ -1,3 +1,7 @@
+Mon Dec 22 11:51:29 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/uml_conf.c: another logging conversion
+
 Mon Dec 22 11:47:44 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/node_device_devkit.c src/uml_driver.c src/virterror.c:
