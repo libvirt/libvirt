@@ -2042,12 +2042,30 @@ remoteReadSaslAllowedUsernameList (virConfPtr conf ATTRIBUTE_UNUSED,
  * is also saved onto the logfile libvird.log, but if verbose or error
  * debugging is asked for then output informations or debug.
  */
-static void
+static int
 qemudSetLogging(virConfPtr conf, const char *filename) {
+    char *debugEnv;
+    int ret = -1;
+
     virLogReset();
 
-    /* look for default logging level */
+    /*
+     * look for default logging level first from config file,
+     * then from environment variable and finally from command
+     * line options
+     */
     GET_CONF_INT (conf, filename, log_level);
+    debugEnv = getenv("LIBVIRT_DEBUG");
+    if (debugEnv && *debugEnv && *debugEnv != '0') {
+        if (STREQ(debugEnv, "2") || STREQ(debugEnv, "info"))
+            log_level = VIR_LOG_INFO;
+        else if (STREQ(debugEnv, "3") || STREQ(debugEnv, "warning"))
+            log_level = VIR_LOG_WARN;
+        else if (STREQ(debugEnv, "4") || STREQ(debugEnv, "error"))
+            log_level = VIR_LOG_ERROR;
+        else
+            log_level = VIR_LOG_DEBUG;
+    }
     if ((verbose) && (log_level >= VIR_LOG_WARN))
         log_level = VIR_LOG_INFO;
     virLogSetDefaultPriority(log_level);
@@ -2068,9 +2086,12 @@ qemudSetLogging(virConfPtr conf, const char *filename) {
             virLogParseOutputs("0:stderr:libvirtd");
     } else
         virLogParseOutputs(log_outputs);
+    ret = 0;
+
 free_and_fail:
     VIR_FREE(log_filters);
     VIR_FREE(log_outputs);
+    return(ret);
 }
 
 /* Read the config file if it exists.
@@ -2106,7 +2127,8 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     /*
      * First get all the logging settings and activate them
      */
-    qemudSetLogging(conf, filename);
+    if (qemudSetLogging(conf, filename) < 0)
+        goto free_and_fail;
 
     GET_CONF_INT (conf, filename, listen_tcp);
     GET_CONF_INT (conf, filename, listen_tls);

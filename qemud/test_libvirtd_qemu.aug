@@ -49,6 +49,15 @@ vnc_tls_x509_cert_dir = \"/etc/pki/libvirt-vnc\"
 # certificate signed by the CA in /etc/pki/libvirt-vnc/ca-cert.pem
 #
 vnc_tls_x509_verify = 1
+
+# Logging level:
+log_level = 4
+
+# Logging outputs:
+log_outputs="4:stderr"
+
+# Logging filters:
+log_filters=""
 "
 
    test Libvirtd_qemu.lns get conf =
@@ -101,3 +110,9 @@ vnc_tls_x509_verify = 1
 { "#comment" = "certificate signed by the CA in /etc/pki/libvirt-vnc/ca-cert.pem" }
 { "#comment" = "" }
 { "vnc_tls_x509_verify" = "1" }
+{ "#comment" = "Logging level:" }
+{ "log_level" = "4" }
+{ "#comment" = "Logging outputs:" }
+{ "log_outputs" = "4:stderr" }
+{ "#comment" = "Logging filters" }
+{ "log_filters" = "" }

@@ -1,3 +1,12 @@
+Mon Dec 22 17:13:42 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/qemud.c qemud/test_libvirtd_qemu.aug tests/Makefile.am
+	  tests/daemon-conf: fix make check with the new logging support
+	  the messages now carry a timestamp which need to be removed,
+	  the daemon needs to exit if the log configuration informations
+	  are wrong and we also look at the LIBVIRT_DEBUG environment
+	  variable
+
 Mon Dec 22 14:07:29 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/mdns.c: fix a compilation problem in the switch
