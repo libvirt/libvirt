@@ -1,3 +1,7 @@
+Mon Dec 22 11:33:16 EST 2008 Cole Robinson <crobinso@redhat.com>
+
+	* src/storage_driver.c: Fix storage driver null dereference.
+
 Mon Dec 22 11:27:52 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* src/virsh.c: Merge xml building for virsh pool-*-as

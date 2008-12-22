@@ -544,12 +544,13 @@ storagePoolDefine(virConnectPtr conn,
 
     if (!(pool = virStoragePoolObjAssignDef(conn, &driver->pools, def)))
         goto cleanup;
-    def = NULL;
 
     if (virStoragePoolObjSaveDef(conn, driver, pool, def) < 0) {
         virStoragePoolObjRemove(&driver->pools, pool);
+        def = NULL;
         goto cleanup;
     }
+    def = NULL;
 
     ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid);
 
