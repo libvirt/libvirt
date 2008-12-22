@@ -1,3 +1,7 @@
+Mon Dec 22 11:27:52 EST 2008 Cole Robinson <crobinso@redhat.com>
+
+	* src/virsh.c: Merge xml building for virsh pool-*-as
+
 Mon Dec 22 17:13:42 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/qemud.c qemud/test_libvirtd_qemu.aug tests/Makefile.am

@@ -2860,37 +2860,26 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
-/*
- * "pool-create-as" command
- */
-static const vshCmdInfo info_pool_create_as[] = {
-    {"help", gettext_noop("create a pool from a set of args")},
-    {"desc", gettext_noop("Create a pool.")},
-    {NULL, NULL}
-};
 
-static const vshCmdOptDef opts_pool_create_as[] = {
+/*
+ * XML Building helper for pool-define-as and pool-create-as
+ */
+static const vshCmdOptDef opts_pool_X_as[] = {
     {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the pool")},
     {"type", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("type of the pool")},
     {"source-host", VSH_OT_DATA, 0, gettext_noop("source-host for underlying storage")},
     {"source-path", VSH_OT_DATA, 0, gettext_noop("source path for underlying storage")},
     {"source-dev", VSH_OT_DATA, 0, gettext_noop("source device for underlying storage")},
+    {"source-name", VSH_OT_DATA, 0, gettext_noop("source name for underlying storage")},
     {"target", VSH_OT_DATA, 0, gettext_noop("target for underlying storage")},
     {NULL, 0, 0, NULL}
 };
 
+static int buildPoolXML(const vshCmd *cmd, char **retname, char **xml) {
 
-static int
-cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
-{
-    virStoragePoolPtr pool;
     int found;
-    char *xml;
-    char *name, *type, *srcHost, *srcPath, *srcDev, *target;
+    char *name, *type, *srcHost, *srcPath, *srcDev, *srcName, *target;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-
-    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
-        return FALSE;
 
     name = vshCommandOptString(cmd, "name", &found);
     if (!found)
@@ -2902,20 +2891,22 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
     srcHost = vshCommandOptString(cmd, "source-host", &found);
     srcPath = vshCommandOptString(cmd, "source-path", &found);
     srcDev = vshCommandOptString(cmd, "source-dev", &found);
+    srcName = vshCommandOptString(cmd, "source-name", &found);
     target = vshCommandOptString(cmd, "target", &found);
 
     virBufferVSprintf(&buf, "<pool type='%s'>\n", type);
     virBufferVSprintf(&buf, "  <name>%s</name>\n", name);
     if (srcHost || srcPath || srcDev) {
         virBufferAddLit(&buf, "  <source>\n");
-        if (srcHost)
-            virBufferVSprintf(&buf, "    <host name='%s'>\n", srcHost);
 
+        if (srcHost)
+            virBufferVSprintf(&buf, "    <host name='%s'/>\n", srcHost);
         if (srcPath)
             virBufferVSprintf(&buf, "    <dir path='%s'/>\n", srcPath);
-
         if (srcDev)
             virBufferVSprintf(&buf, "    <device path='%s'/>\n", srcDev);
+        if (srcName)
+            virBufferVSprintf(&buf, "    <name>%s</name>\n", srcName);
 
         virBufferAddLit(&buf, "  </source>\n");
     }
@@ -2930,7 +2921,36 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
         return FALSE;
     }
-    xml = virBufferContentAndReset(&buf);
+
+    *xml = virBufferContentAndReset(&buf);
+    *retname = name;
+    return TRUE;
+
+cleanup:
+    free(virBufferContentAndReset(&buf));
+    return FALSE;
+}
+
+/*
+ * "pool-create-as" command
+ */
+static const vshCmdInfo info_pool_create_as[] = {
+    {"help", gettext_noop("create a pool from a set of args")},
+    {"desc", gettext_noop("Create a pool.")},
+    {NULL, NULL}
+};
+
+static int
+cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
+{
+    virStoragePoolPtr pool;
+    char *xml, *name;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!buildPoolXML(cmd, &name, &xml))
+        return FALSE;
 
     pool = virStoragePoolCreateXML(ctl->conn, xml, 0);
     free (xml);
@@ -2941,11 +2961,8 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
         return TRUE;
     } else {
         vshError(ctl, FALSE, _("Failed to create pool %s"), name);
-        return FALSE;
     }
 
- cleanup:
-    free(virBufferContentAndReset(&buf));
     return FALSE;
 }
 
@@ -3006,71 +3023,17 @@ static const vshCmdInfo info_pool_define_as[] = {
     {NULL, NULL}
 };
 
-static const vshCmdOptDef opts_pool_define_as[] = {
-    {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the pool")},
-    {"type", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("type of the pool")},
-    {"source-host", VSH_OT_DATA, 0, gettext_noop("source-host for underlying storage")},
-    {"source-path", VSH_OT_DATA, 0, gettext_noop("source path for underlying storage")},
-    {"source-dev", VSH_OT_DATA, 0, gettext_noop("source device for underlying storage")},
-    {"source-name", VSH_OT_DATA, 0, gettext_noop("source name for underlying storage")},
-    {"target", VSH_OT_DATA, 0, gettext_noop("target for underlying storage")},
-    {NULL, 0, 0, NULL}
-};
-
-
 static int
 cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolPtr pool;
-    int found;
-    char *xml;
-    char *name, *type, *srcHost, *srcPath, *srcDev, *srcName, *target;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *xml, *name;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    name = vshCommandOptString(cmd, "name", &found);
-    if (!found)
-        goto cleanup;
-    type = vshCommandOptString(cmd, "type", &found);
-    if (!found)
-        goto cleanup;
-
-    srcHost = vshCommandOptString(cmd, "source-host", &found);
-    srcPath = vshCommandOptString(cmd, "source-path", &found);
-    srcDev = vshCommandOptString(cmd, "source-dev", &found);
-    srcName = vshCommandOptString(cmd, "source-name", &found);
-    target = vshCommandOptString(cmd, "target", &found);
-
-    virBufferVSprintf(&buf, "<pool type='%s'>\n", type);
-    virBufferVSprintf(&buf, "  <name>%s</name>\n", name);
-    if (srcHost || srcPath || srcDev || srcName) {
-        virBufferAddLit(&buf, "  <source>\n");
-        if (srcHost)
-            virBufferVSprintf(&buf, "    <host>%s</host>\n", srcHost);
-        if (srcPath)
-            virBufferVSprintf(&buf, "    <path>%s</path>\n", srcPath);
-        if (srcDev)
-            virBufferVSprintf(&buf, "    <device>%s</device>\n", srcDev);
-        if (srcName)
-            virBufferVSprintf(&buf, "    <name>%s</name>\n", srcName);
-
-        virBufferAddLit(&buf, "  </source>\n");
-    }
-    if (target) {
-        virBufferAddLit(&buf, "  <target>\n");
-        virBufferVSprintf(&buf, "    <path>%s</path>\n", target);
-        virBufferAddLit(&buf, "  </target>\n");
-    }
-    virBufferAddLit(&buf, "</pool>\n");
-
-
-    if (virBufferError(&buf)) {
-        vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
+    if (!buildPoolXML(cmd, &name, &xml))
         return FALSE;
-    }
-    xml = virBufferContentAndReset(&buf);
 
     pool = virStoragePoolDefineXML(ctl->conn, xml, 0);
     free (xml);
@@ -3081,11 +3044,8 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
         return TRUE;
     } else {
         vshError(ctl, FALSE, _("Failed to define pool %s"), name);
-        return FALSE;
     }
 
- cleanup:
-    free(virBufferContentAndReset(&buf));
     return FALSE;
 }
 
@@ -5587,9 +5547,9 @@ static const vshCmdDef commands[] = {
     {"pool-autostart", cmdPoolAutostart, opts_pool_autostart, info_pool_autostart},
     {"pool-build", cmdPoolBuild, opts_pool_build, info_pool_build},
     {"pool-create", cmdPoolCreate, opts_pool_create, info_pool_create},
-    {"pool-create-as", cmdPoolCreateAs, opts_pool_create_as, info_pool_create_as},
+    {"pool-create-as", cmdPoolCreateAs, opts_pool_X_as, info_pool_create_as},
     {"pool-define", cmdPoolDefine, opts_pool_define, info_pool_define},
-    {"pool-define-as", cmdPoolDefineAs, opts_pool_define_as, info_pool_define_as},
+    {"pool-define-as", cmdPoolDefineAs, opts_pool_X_as, info_pool_define_as},
     {"pool-destroy", cmdPoolDestroy, opts_pool_destroy, info_pool_destroy},
     {"pool-delete", cmdPoolDelete, opts_pool_delete, info_pool_delete},
     {"pool-dumpxml", cmdPoolDumpXML, opts_pool_dumpxml, info_pool_dumpxml},
