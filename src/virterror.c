@@ -17,6 +17,7 @@
 
 #include "virterror_internal.h"
 #include "datatypes.h"
+#include "logging.h"
 
 virError virLastErr =       /* the last error */
   { .code = 0, .domain = 0, .message = NULL, .level = VIR_ERR_NONE,
@@ -60,6 +61,97 @@ void *virUserData = NULL;        /* associated data */
         }							\
         str = larger;						\
     }}								\
+}
+
+static virLogPriority virErrorLevelPriority(virErrorLevel level) {
+    switch (level) {
+        case VIR_ERR_NONE:
+            return(VIR_LOG_INFO);
+        case VIR_ERR_WARNING:
+            return(VIR_LOG_WARN);
+        case VIR_ERR_ERROR:
+            return(VIR_LOG_ERROR);
+    }
+    return(VIR_LOG_ERROR);
+}
+
+static const char *virErrorDomainName(virErrorDomain domain) {
+    const char *dom = "unknown";
+    switch (domain) {
+        case VIR_FROM_NONE:
+            dom = "";
+            break;
+        case VIR_FROM_XEN:
+            dom = "Xen ";
+            break;
+        case VIR_FROM_XML:
+            dom = "XML ";
+            break;
+        case VIR_FROM_XEND:
+            dom = "Xen Daemon ";
+            break;
+        case VIR_FROM_XENSTORE:
+            dom = "Xen Store ";
+            break;
+        case VIR_FROM_XEN_INOTIFY:
+            dom = "Xen Inotify ";
+            break;
+        case VIR_FROM_DOM:
+            dom = "Domain ";
+            break;
+        case VIR_FROM_RPC:
+            dom = "XML-RPC ";
+            break;
+        case VIR_FROM_QEMU:
+            dom = "QEMU ";
+            break;
+        case VIR_FROM_NET:
+            dom = "Network ";
+            break;
+        case VIR_FROM_TEST:
+            dom = "Test ";
+            break;
+        case VIR_FROM_REMOTE:
+            dom = "Remote ";
+            break;
+        case VIR_FROM_SEXPR:
+            dom = "S-Expr ";
+            break;
+        case VIR_FROM_PROXY:
+            dom = "PROXY ";
+            break;
+        case VIR_FROM_CONF:
+            dom = "Config ";
+            break;
+        case VIR_FROM_OPENVZ:
+            dom = "OpenVZ ";
+            break;
+        case VIR_FROM_XENXM:
+            dom = "Xen XM ";
+            break;
+        case VIR_FROM_STATS_LINUX:
+            dom = "Linux Stats ";
+            break;
+        case VIR_FROM_LXC:
+            dom = "Linux Container ";
+            break;
+        case VIR_FROM_STORAGE:
+            dom = "Storage ";
+            break;
+        case VIR_FROM_NETWORK:
+            dom = "Network Config ";
+            break;
+        case VIR_FROM_DOMAIN:
+            dom = "Domain Config ";
+            break;
+        case VIR_FROM_NODEDEV:
+            dom = "Node Device ";
+            break;
+        case VIR_FROM_UML:
+            dom = "UML ";
+            break;
+    }
+    return(dom);
 }
 
 /*
@@ -246,80 +338,7 @@ virDefaultErrorFunc(virErrorPtr err)
             lvl = _("error");
             break;
     }
-    switch (err->domain) {
-        case VIR_FROM_NONE:
-            dom = "";
-            break;
-        case VIR_FROM_XEN:
-            dom = "Xen ";
-            break;
-        case VIR_FROM_XML:
-            dom = "XML ";
-            break;
-        case VIR_FROM_XEND:
-            dom = "Xen Daemon ";
-            break;
-        case VIR_FROM_XENSTORE:
-            dom = "Xen Store ";
-            break;
-        case VIR_FROM_XEN_INOTIFY:
-            dom = "Xen Inotify ";
-            break;
-        case VIR_FROM_DOM:
-            dom = "Domain ";
-            break;
-        case VIR_FROM_RPC:
-            dom = "XML-RPC ";
-            break;
-        case VIR_FROM_QEMU:
-            dom = "QEMU ";
-            break;
-        case VIR_FROM_NET:
-            dom = "Network ";
-            break;
-        case VIR_FROM_TEST:
-            dom = "Test ";
-            break;
-        case VIR_FROM_REMOTE:
-            dom = "Remote ";
-            break;
-        case VIR_FROM_SEXPR:
-            dom = "S-Expr ";
-            break;
-        case VIR_FROM_PROXY:
-            dom = "PROXY ";
-            break;
-        case VIR_FROM_CONF:
-            dom = "Config ";
-            break;
-        case VIR_FROM_OPENVZ:
-            dom = "OpenVZ ";
-            break;
-        case VIR_FROM_XENXM:
-            dom = "Xen XM ";
-            break;
-        case VIR_FROM_STATS_LINUX:
-            dom = "Linux Stats ";
-            break;
-        case VIR_FROM_LXC:
-            dom = "Linux Container ";
-            break;
-        case VIR_FROM_STORAGE:
-            dom = "Storage ";
-            break;
-        case VIR_FROM_NETWORK:
-            dom = "Network Config ";
-            break;
-        case VIR_FROM_DOMAIN:
-            dom = "Domain Config ";
-            break;
-        case VIR_FROM_NODEDEV:
-            dom = "Node Device ";
-            break;
-        case VIR_FROM_UML:
-            dom = "UML ";
-            break;
-    }
+    dom = virErrorDomainName(err->domain);
     if ((err->dom != NULL) && (err->code != VIR_ERR_INVALID_DOMAIN)) {
         domain = err->dom->name;
     } else if ((err->net != NULL) && (err->code != VIR_ERR_INVALID_NETWORK)) {
@@ -390,6 +409,13 @@ virRaiseError(virConnectPtr conn, virDomainPtr dom, virNetworkPtr net,
     } else {
         VIR_GET_VAR_STR(msg, str);
     }
+
+    /*
+     * Hook up the error or warning to the logging facility
+     * TODO: pass function name and lineno
+     */
+    virLogMessage(virErrorDomainName(domain), virErrorLevelPriority(level),
+                  NULL, 0, 1, "%s", str);
 
     /*
      * Save the information about the error

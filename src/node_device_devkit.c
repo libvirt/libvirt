@@ -41,9 +41,6 @@
 
 static virDeviceMonitorStatePtr driverState;
 
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
-
 #define CONN_DRV_STATE(conn) \
         ((virDeviceMonitorStatePtr)((conn)->devMonPrivateData))
 #define DRV_STATE_DKCLIENT(ds) ((DevkitClient *)((ds)->privateData))

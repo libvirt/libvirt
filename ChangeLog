@@ -1,3 +1,8 @@
+Mon Dec 22 11:47:44 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/node_device_devkit.c src/uml_driver.c src/virterror.c:
+	  convert old logging to the new API
+
 Mon Dec 22 11:45:07 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c: convert entry points to new logging
