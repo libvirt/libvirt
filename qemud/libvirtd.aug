@@ -54,6 +54,10 @@ module Libvirtd =
                         | int_entry "max_workers"
                         | int_entry "max_clients"
 
+   let logging_entry = int_entry "log_level"
+                     | str_entry "log_filters"
+                     | str_entry "log_outputs"
+
    (* Each enty in the config is one of the following three ... *)
    let entry = network_entry
              | sock_acl_entry
@@ -61,6 +65,7 @@ module Libvirtd =
              | certificate_entry
              | authorization_entry
              | processing_entry
+             | logging_entry
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]
 

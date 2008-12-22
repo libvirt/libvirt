@@ -1,3 +1,8 @@
+Mon Dec 22 13:56:13 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/libvirtd.aug qemud/libvirtd.conf: document the new
+	  options in the config file and augment the Augeas description
+
 Mon Dec 22 13:54:30 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/event.c qemud/mdns.c qemud/remote.c: switch other pieces
