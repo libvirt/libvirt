@@ -35,7 +35,7 @@
 #include "memory.h"
 #include "util.h"
 
-#define EVENT_DEBUG(fmt, ...) qemudDebug("EVENT: " fmt, __VA_ARGS__)
+#define EVENT_DEBUG(fmt, ...) DEBUG(fmt, __VA_ARGS__)
 
 static int virEventInterruptLocked(void);
 
