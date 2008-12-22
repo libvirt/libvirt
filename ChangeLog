@@ -1,3 +1,8 @@
+Mon Dec 22 11:31:08 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.h: remove tabs to fix make synatx-check
+	  and fix the indentation
+
 Sun Dec 21 19:50:16 +0100 2008 Jim Meyering <meyering@redhat.com>
 
 	make NUMA-initialization code more portable and more robust
