@@ -90,6 +90,11 @@ static int timeout = -1;        /* -t: Shutdown timeout */
 static int sigwrite = -1;       /* Signal handler pipe */
 static int ipsock = 0;          /* -l  Listen for TCP/IP */
 
+/* Defaults for logging */
+static int log_level = 3;
+static char *log_filters = NULL;
+static char *log_outputs = NULL;
+
 /* Defaults for configuration file elements */
 static int listen_tls = 1;
 static int listen_tcp = 0;
@@ -166,7 +171,7 @@ remoteCheckCertFile(const char *type, const char *file)
 {
     struct stat sb;
     if (stat(file, &sb) < 0) {
-        qemudLog (QEMUD_ERR, _("Cannot access %s '%s': %s (%d)"),
+        ERROR(_("Cannot access %s '%s': %s (%d)"),
                   type, file, strerror(errno), errno);
         return -1;
     }
@@ -183,7 +188,7 @@ remoteInitializeGnuTLS (void)
 
     err = gnutls_certificate_allocate_credentials (&x509_cred);
     if (err) {
-        qemudLog (QEMUD_ERR, _("gnutls_certificate_allocate_credentials: %s"),
+        ERROR(_("gnutls_certificate_allocate_credentials: %s"),
                   gnutls_strerror (err));
         return -1;
     }
@@ -196,7 +201,7 @@ remoteInitializeGnuTLS (void)
         err = gnutls_certificate_set_x509_trust_file (x509_cred, ca_file,
                                                       GNUTLS_X509_FMT_PEM);
         if (err < 0) {
-            qemudLog (QEMUD_ERR, _("gnutls_certificate_set_x509_trust_file: %s"),
+            ERROR(_("gnutls_certificate_set_x509_trust_file: %s"),
                       gnutls_strerror (err));
             return -1;
         }
@@ -206,11 +211,11 @@ remoteInitializeGnuTLS (void)
         if (remoteCheckCertFile("CA revocation list", crl_file) < 0)
             return -1;
 
-        qemudDebug ("loading CRL from %s", crl_file);
+        DEBUG("loading CRL from %s", crl_file);
         err = gnutls_certificate_set_x509_crl_file (x509_cred, crl_file,
                                                     GNUTLS_X509_FMT_PEM);
         if (err < 0) {
-            qemudLog (QEMUD_ERR, _("gnutls_certificate_set_x509_crl_file: %s"),
+            ERROR(_("gnutls_certificate_set_x509_crl_file: %s"),
                       gnutls_strerror (err));
             return -1;
         }
@@ -221,14 +226,13 @@ remoteInitializeGnuTLS (void)
             return -1;
         if (remoteCheckCertFile("server key", key_file) < 0)
             return -1;
-        qemudDebug ("loading cert and key from %s and %s",
-                    cert_file, key_file);
+        DEBUG("loading cert and key from %s and %s", cert_file, key_file);
         err =
             gnutls_certificate_set_x509_key_file (x509_cred,
                                                   cert_file, key_file,
                                                   GNUTLS_X509_FMT_PEM);
         if (err < 0) {
-            qemudLog (QEMUD_ERR, _("gnutls_certificate_set_x509_key_file: %s"),
+            ERROR(_("gnutls_certificate_set_x509_key_file: %s"),
                       gnutls_strerror (err));
             return -1;
         }
@@ -241,14 +245,12 @@ remoteInitializeGnuTLS (void)
      */
     err = gnutls_dh_params_init (&dh_params);
     if (err < 0) {
-        qemudLog (QEMUD_ERR, _("gnutls_dh_params_init: %s"),
-                  gnutls_strerror (err));
+        ERROR(_("gnutls_dh_params_init: %s"), gnutls_strerror (err));
         return -1;
     }
     err = gnutls_dh_params_generate2 (dh_params, DH_BITS);
     if (err < 0) {
-        qemudLog (QEMUD_ERR, _("gnutls_dh_params_generate2: %s"),
-                  gnutls_strerror (err));
+        ERROR(_("gnutls_dh_params_generate2: %s"), gnutls_strerror (err));
         return -1;
     }
 
@@ -269,8 +271,7 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
     pthread_mutex_lock(&server->lock);
 
     if (saferead(server->sigread, &siginfo, sizeof(siginfo)) != sizeof(siginfo)) {
-        qemudLog(QEMUD_ERR, _("Failed to read from signal pipe: %s"),
-                 strerror(errno));
+        ERROR(_("Failed to read from signal pipe: %s"), strerror(errno));
         pthread_mutex_unlock(&server->lock);
         return;
     }
@@ -279,22 +280,20 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
 
     switch (siginfo.si_signo) {
     case SIGHUP:
-        qemudLog(QEMUD_INFO, "%s", _("Reloading configuration on SIGHUP"));
+        INFO0(_("Reloading configuration on SIGHUP"));
         if (virStateReload() < 0)
-            qemudLog(QEMUD_WARN, "%s", _("Error while reloading drivers"));
+            WARN0(_("Error while reloading drivers"));
         break;
 
     case SIGINT:
     case SIGQUIT:
     case SIGTERM:
-        qemudLog(QEMUD_WARN, _("Shutting down on signal %d"),
-                 siginfo.si_signo);
+        WARN(_("Shutting down on signal %d"), siginfo.si_signo);
         server->shutdown = 1;
         break;
 
     default:
-        qemudLog(QEMUD_INFO, _("Received unexpected signal %d"),
-                 siginfo.si_signo);
+        INFO(_("Received unexpected signal %d"), siginfo.si_signo);
         break;
     }
 
@@ -313,8 +312,7 @@ int qemudSetCloseExec(int fd) {
         goto error;
     return 0;
  error:
-    qemudLog(QEMUD_ERR,
-             "%s", _("Failed to set close-on-exec file descriptor flag"));
+    ERROR0(_("Failed to set close-on-exec file descriptor flag"));
     return -1;
 }
 
@@ -328,72 +326,8 @@ int qemudSetNonBlock(int fd) {
         goto error;
     return 0;
  error:
-    qemudLog(QEMUD_ERR,
-             "%s", _("Failed to set non-blocking file descriptor flag"));
+    ERROR0(_("Failed to set non-blocking file descriptor flag"));
     return -1;
-}
-
-void qemudLog(int priority, const char *fmt, ...)
-{
-    va_list args;
-
-    va_start(args, fmt);
-
-    if (godaemon) {
-        int sysprio = -1;
-
-        switch(priority) {
-        case QEMUD_ERR:
-            sysprio = LOG_ERR;
-            break;
-        case QEMUD_WARN:
-            sysprio = LOG_WARNING;
-            break;
-        case QEMUD_INFO:
-            if (verbose)
-                sysprio = LOG_INFO;
-            break;
-#ifdef ENABLE_DEBUG
-        case QEMUD_DEBUG:
-            if (verbose)
-                sysprio = LOG_DEBUG;
-            break;
-#endif
-        default:
-            break;
-        }
-
-        if (sysprio != -1)
-            vsyslog(sysprio, fmt, args);
-    } else {
-        switch(priority) {
-        case QEMUD_ERR:
-        case QEMUD_WARN:
-            vfprintf(stderr, fmt, args);
-            fputc('\n', stderr);
-            break;
-
-        case QEMUD_INFO:
-            if (verbose) {
-                vprintf(fmt, args);
-                fputc('\n', stdout);
-            }
-            break;
-
-#ifdef ENABLE_DEBUG
-        case QEMUD_DEBUG:
-            if (verbose) {
-                vprintf(fmt, args);
-                fputc('\n', stdout);
-            }
-            break;
-#endif
-        default:
-            break;
-        }
-    }
-
-    va_end(args);
 }
 
 static int qemudGoDaemon(void) {
@@ -470,27 +404,27 @@ static int qemudWritePidFile(const char *pidFile) {
         return 0;
 
     if ((fd = open(pidFile, O_WRONLY|O_CREAT|O_EXCL, 0644)) < 0) {
-        qemudLog(QEMUD_ERR, _("Failed to open pid file '%s' : %s"),
+        ERROR(_("Failed to open pid file '%s' : %s"),
                  pidFile, strerror(errno));
         return -1;
     }
 
     if (!(fh = fdopen(fd, "w"))) {
-        qemudLog(QEMUD_ERR, _("Failed to fdopen pid file '%s' : %s"),
+        ERROR(_("Failed to fdopen pid file '%s' : %s"),
                  pidFile, strerror(errno));
         close(fd);
         return -1;
     }
 
     if (fprintf(fh, "%lu\n", (unsigned long)getpid()) < 0) {
-        qemudLog(QEMUD_ERR, _("Failed to write to pid file '%s' : %s"),
+        ERROR(_("Failed to write to pid file '%s' : %s"),
                  pidFile, strerror(errno));
         close(fd);
         return -1;
     }
 
     if (fclose(fh) == EOF) {
-        qemudLog(QEMUD_ERR, _("Failed to close pid file '%s' : %s"),
+        ERROR(_("Failed to close pid file '%s' : %s"),
                  pidFile, strerror(errno));
         return -1;
     }
@@ -506,8 +440,7 @@ static int qemudListenUnix(struct qemud_server *server,
     gid_t oldgrp;
 
     if (VIR_ALLOC(sock) < 0) {
-        qemudLog(QEMUD_ERR,
-                 "%s", _("Failed to allocate memory for struct qemud_socket"));
+        ERROR("%s", _("Failed to allocate memory for struct qemud_socket"));
         return -1;
     }
 
@@ -517,7 +450,7 @@ static int qemudListenUnix(struct qemud_server *server,
     sock->auth = auth;
 
     if ((sock->fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
-        qemudLog(QEMUD_ERR, _("Failed to create socket: %s"),
+        ERROR(_("Failed to create socket: %s"),
                  strerror(errno));
         goto cleanup;
     }
@@ -539,7 +472,7 @@ static int qemudListenUnix(struct qemud_server *server,
         setgid(unix_sock_gid);
 
     if (bind(sock->fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-        qemudLog(QEMUD_ERR, _("Failed to bind socket to '%s': %s"),
+        ERROR(_("Failed to bind socket to '%s': %s"),
                  path, strerror(errno));
         goto cleanup;
     }
@@ -548,7 +481,7 @@ static int qemudListenUnix(struct qemud_server *server,
         setgid(oldgrp);
 
     if (listen(sock->fd, 30) < 0) {
-        qemudLog(QEMUD_ERR, _("Failed to listen for connections on '%s': %s"),
+        ERROR(_("Failed to listen for connections on '%s': %s"),
                  path, strerror(errno));
         goto cleanup;
     }
@@ -559,8 +492,7 @@ static int qemudListenUnix(struct qemud_server *server,
                                              VIR_EVENT_HANDLE_HANGUP,
                                              qemudDispatchServerEvent,
                                              server, NULL)) < 0) {
-        qemudLog(QEMUD_ERR, "%s",
-                 _("Failed to add server event callback"));
+        ERROR0(_("Failed to add server event callback"));
         goto cleanup;
     }
 
@@ -589,7 +521,7 @@ remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *node, const c
 
     int e = getaddrinfo (node, service, &hints, &ai);
     if (e != 0) {
-        qemudLog (QEMUD_ERR, _("getaddrinfo: %s\n"), gai_strerror (e));
+        ERROR(_("getaddrinfo: %s\n"), gai_strerror (e));
         return -1;
     }
 
@@ -598,7 +530,7 @@ remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *node, const c
         fds[*nfds_r] = socket (runp->ai_family, runp->ai_socktype,
                                runp->ai_protocol);
         if (fds[*nfds_r] == -1) {
-            qemudLog (QEMUD_ERR, _("socket: %s"), strerror (errno));
+            ERROR(_("socket: %s"), strerror (errno));
             return -1;
         }
 
@@ -607,14 +539,14 @@ remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *node, const c
 
         if (bind (fds[*nfds_r], runp->ai_addr, runp->ai_addrlen) == -1) {
             if (errno != EADDRINUSE) {
-                qemudLog (QEMUD_ERR, _("bind: %s"), strerror (errno));
+                ERROR(_("bind: %s"), strerror (errno));
                 return -1;
             }
             close (fds[*nfds_r]);
         }
         else {
             if (listen (fds[*nfds_r], SOMAXCONN) == -1) {
-                qemudLog (QEMUD_ERR, _("listen: %s"), strerror (errno));
+                ERROR(_("listen: %s"), strerror (errno));
                 return -1;
             }
             ++*nfds_r;
@@ -649,8 +581,7 @@ remoteListenTCP (struct qemud_server *server,
         socklen_t salen = sizeof(sa);
 
         if (VIR_ALLOC(sock) < 0) {
-            qemudLog (QEMUD_ERR,
-                      _("remoteListenTCP: calloc: %s"), strerror (errno));
+            ERROR(_("remoteListenTCP: calloc: %s"), strerror (errno));
             goto cleanup;
         }
 
@@ -680,8 +611,7 @@ remoteListenTCP (struct qemud_server *server,
             goto cleanup;
 
         if (listen (sock->fd, 30) < 0) {
-            qemudLog (QEMUD_ERR,
-                      _("remoteListenTCP: listen: %s"), strerror (errno));
+            ERROR(_("remoteListenTCP: listen: %s"), strerror (errno));
             goto cleanup;
         }
 
@@ -691,7 +621,7 @@ remoteListenTCP (struct qemud_server *server,
                                                  VIR_EVENT_HANDLE_HANGUP,
                                                  qemudDispatchServerEvent,
                                                  server, NULL)) < 0) {
-            qemudLog(QEMUD_ERR, "%s", _("Failed to add server event callback"));
+            ERROR0(_("Failed to add server event callback"));
             goto cleanup;
         }
 
@@ -730,7 +660,7 @@ static int qemudInitPaths(struct qemud_server *server,
         struct passwd *pw;
 
         if (!(pw = getpwuid(uid))) {
-            qemudLog(QEMUD_ERR, _("Failed to find user record for uid '%d': %s"),
+            ERROR(_("Failed to find user record for uid '%d': %s"),
                      uid, strerror(errno));
             return -1;
         }
@@ -746,8 +676,7 @@ static int qemudInitPaths(struct qemud_server *server,
     return 0;
 
  snprintf_error:
-    qemudLog(QEMUD_ERR,
-             "%s", _("Resulting path too long for buffer in qemudInitPaths()"));
+    ERROR("%s", _("Resulting path too long for buffer in qemudInitPaths()"));
     return -1;
 }
 
@@ -755,7 +684,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
     struct qemud_server *server;
 
     if (VIR_ALLOC(server) < 0) {
-        qemudLog(QEMUD_ERR, "%s", _("Failed to allocate struct qemud_server"));
+        ERROR0(_("Failed to allocate struct qemud_server"));
         return NULL;
     }
 
@@ -767,7 +696,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
     server->sigread = sigread;
 
     if (virEventInit() < 0) {
-        qemudLog(QEMUD_ERR, "%s", _("Failed to initialize event system"));
+        ERROR0(_("Failed to initialize event system"));
         VIR_FREE(server);
         return NULL;
     }
@@ -852,8 +781,7 @@ static struct qemud_server *qemudNetworkInit(struct qemud_server *server) {
         auth_tcp == REMOTE_AUTH_SASL ||
         auth_tls == REMOTE_AUTH_SASL) {
         if ((err = sasl_server_init(NULL, "libvirt")) != SASL_OK) {
-            qemudLog(QEMUD_ERR,
-                     _("Failed to initialize SASL authentication %s"),
+            ERROR(_("Failed to initialize SASL authentication %s"),
                      sasl_errstring(err, NULL, NULL));
             goto cleanup;
         }
@@ -867,8 +795,7 @@ static struct qemud_server *qemudNetworkInit(struct qemud_server *server) {
         dbus_error_init(&derr);
         server->sysbus = dbus_bus_get(DBUS_BUS_SYSTEM, &derr);
         if (!(server->sysbus)) {
-            qemudLog(QEMUD_ERR,
-                     _("Failed to connect to system bus for PolicyKit auth: %s"),
+            ERROR(_("Failed to connect to system bus for PolicyKit auth: %s"),
                      derr.message);
             dbus_error_free(&derr);
             goto cleanup;
@@ -979,7 +906,7 @@ remoteInitializeTLSSession (void)
   return session;
 
  failed:
-  qemudLog (QEMUD_ERR, _("remoteInitializeTLSSession: %s"),
+  ERROR(_("remoteInitializeTLSSession: %s"),
             gnutls_strerror (err));
   return NULL;
 }
@@ -995,8 +922,7 @@ remoteCheckDN (gnutls_x509_crt_t cert)
 
     err = gnutls_x509_crt_get_dn (cert, name, &namesize);
     if (err != 0) {
-        qemudLog (QEMUD_ERR,
-                  _("remoteCheckDN: gnutls_x509_cert_get_dn: %s"),
+        ERROR(_("remoteCheckDN: gnutls_x509_cert_get_dn: %s"),
                   gnutls_strerror (err));
         return 0;
     }
@@ -1012,11 +938,8 @@ remoteCheckDN (gnutls_x509_crt_t cert)
         wildcards++;
     }
 
-#ifdef ENABLE_DEBUG
     /* Print the client's DN. */
-    qemudLog (QEMUD_DEBUG,
-              _("remoteCheckDN: failed: client DN is %s"), name);
-#endif
+    DEBUG(_("remoteCheckDN: failed: client DN is %s"), name);
 
     return 0; // Not found.
 }
@@ -1031,45 +954,40 @@ remoteCheckCertificate (gnutls_session_t session)
     time_t now;
 
     if ((ret = gnutls_certificate_verify_peers2 (session, &status)) < 0){
-        qemudLog (QEMUD_ERR, _("remoteCheckCertificate: verify failed: %s"),
+        ERROR(_("remoteCheckCertificate: verify failed: %s"),
                   gnutls_strerror (ret));
         return -1;
     }
 
     if (status != 0) {
         if (status & GNUTLS_CERT_INVALID)
-            qemudLog (QEMUD_ERR, "%s",
-                      _("remoteCheckCertificate: "
-                        "the client certificate is not trusted."));
+            ERROR0(_("remoteCheckCertificate: "
+                     "the client certificate is not trusted."));
 
         if (status & GNUTLS_CERT_SIGNER_NOT_FOUND)
-            qemudLog (QEMUD_ERR, "%s",
-                      _("remoteCheckCertificate: the client "
-                        "certificate has unknown issuer."));
+            ERROR0(_("remoteCheckCertificate: the client "
+                     "certificate has unknown issuer."));
 
         if (status & GNUTLS_CERT_REVOKED)
-            qemudLog (QEMUD_ERR, "%s",
-                      _("remoteCheckCertificate: "
-                        "the client certificate has been revoked."));
+            ERROR0(_("remoteCheckCertificate: "
+                     "the client certificate has been revoked."));
 
 #ifndef GNUTLS_1_0_COMPAT
         if (status & GNUTLS_CERT_INSECURE_ALGORITHM)
-            qemudLog (QEMUD_ERR, "%s",
-                      _("remoteCheckCertificate: the client certificate"
-                        " uses an insecure algorithm."));
+            ERROR0(_("remoteCheckCertificate: the client certificate"
+                     " uses an insecure algorithm."));
 #endif
 
         return -1;
     }
 
     if (gnutls_certificate_type_get (session) != GNUTLS_CRT_X509) {
-        qemudLog (QEMUD_ERR,
-                  "%s", _("remoteCheckCertificate: certificate is not X.509"));
+        ERROR0(_("remoteCheckCertificate: certificate is not X.509"));
         return -1;
     }
 
     if (!(certs = gnutls_certificate_get_peers(session, &nCerts))) {
-        qemudLog (QEMUD_ERR, "%s", _("remoteCheckCertificate: no peers"));
+        ERROR0(_("remoteCheckCertificate: no peers"));
         return -1;
     }
 
@@ -1079,8 +997,7 @@ remoteCheckCertificate (gnutls_session_t session)
         gnutls_x509_crt_t cert;
 
         if (gnutls_x509_crt_init (&cert) < 0) {
-            qemudLog (QEMUD_ERR, "%s",
-                      _("remoteCheckCertificate: gnutls_x509_crt_init failed"));
+            ERROR0(_("remoteCheckCertificate: gnutls_x509_crt_init failed"));
             return -1;
         }
 
@@ -1090,15 +1007,15 @@ remoteCheckCertificate (gnutls_session_t session)
         }
 
         if (gnutls_x509_crt_get_expiration_time (cert) < now) {
-            qemudLog (QEMUD_ERR, "%s", _("remoteCheckCertificate: "
-                                         "the client certificate has expired"));
+            ERROR0(_("remoteCheckCertificate: "
+                     "the client certificate has expired"));
             gnutls_x509_crt_deinit (cert);
             return -1;
         }
 
         if (gnutls_x509_crt_get_activation_time (cert) > now) {
-            qemudLog (QEMUD_ERR, "%s", _("remoteCheckCertificate: the client "
-                                         "certificate is not yet activated"));
+            ERROR0(_("remoteCheckCertificate: the client "
+                     "certificate is not yet activated"));
             gnutls_x509_crt_deinit (cert);
             return -1;
         }
@@ -1106,7 +1023,7 @@ remoteCheckCertificate (gnutls_session_t session)
         if (i == 0) {
             if (!remoteCheckDN (cert)) {
                 /* This is the most common error: make it informative. */
-                qemudLog (QEMUD_ERR, "%s", _("remoteCheckCertificate: client's Distinguished Name is not on the list of allowed clients (tls_allowed_dn_list).  Use 'openssl x509 -in clientcert.pem -text' to view the Distinguished Name field in the client certificate, or run this daemon with --verbose option."));
+                ERROR0(_("remoteCheckCertificate: client's Distinguished Name is not on the list of allowed clients (tls_allowed_dn_list).  Use 'openssl x509 -in clientcert.pem -text' to view the Distinguished Name field in the client certificate, or run this daemon with --verbose option."));
                 gnutls_x509_crt_deinit (cert);
                 return -1;
             }
@@ -1122,13 +1039,11 @@ remoteCheckAccess (struct qemud_client *client)
 {
     /* Verify client certificate. */
     if (remoteCheckCertificate (client->tlssession) == -1) {
-        qemudLog (QEMUD_ERR, "%s",
-                  _("remoteCheckCertificate: "
-                    "failed to verify client's certificate"));
+        ERROR0(_("remoteCheckCertificate: "
+                 "failed to verify client's certificate"));
         if (!tls_no_verify_certificate) return -1;
-        else qemudLog (QEMUD_INFO, "%s",
-                       _("remoteCheckCertificate: tls_no_verify_certificate "
-                         "is set so the bad certificate is ignored"));
+        else INFO0(_("remoteCheckCertificate: tls_no_verify_certificate "
+                     "is set so the bad certificate is ignored"));
     }
 
     /* Checks have succeeded.  Write a '\1' byte back to the client to
@@ -1149,7 +1064,7 @@ int qemudGetSocketIdentity(int fd, uid_t *uid, pid_t *pid) {
     unsigned int cr_len = sizeof (cr);
 
     if (getsockopt (fd, SOL_SOCKET, SO_PEERCRED, &cr, &cr_len) < 0) {
-        qemudLog(QEMUD_ERR, _("Failed to verify client credentials: %s"),
+        ERROR(_("Failed to verify client credentials: %s"),
                  strerror(errno));
         return -1;
     }
@@ -1174,18 +1089,18 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     if ((fd = accept(sock->fd, (struct sockaddr *)&addr, &addrlen)) < 0) {
         if (errno == EAGAIN)
             return 0;
-        qemudLog(QEMUD_ERR, _("Failed to accept connection: %s"), strerror(errno));
+        ERROR(_("Failed to accept connection: %s"), strerror(errno));
         return -1;
     }
 
     if (server->nclients >= max_clients) {
-        qemudLog(QEMUD_ERR, "%s", _("Too many active clients, dropping connection"));
+        ERROR0(_("Too many active clients, dropping connection"));
         close(fd);
         return -1;
     }
 
     if (VIR_REALLOC_N(server->clients, server->nclients+1) < 0) {
-        qemudLog(QEMUD_ERR, "%s", _("Out of memory allocating clients"));
+        ERROR0(_("Out of memory allocating clients"));
         close(fd);
         return -1;
     }
@@ -1228,7 +1143,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
 
         /* Client is running as root, so disable auth */
         if (uid == 0) {
-            qemudLog(QEMUD_INFO, _("Turn off polkit auth for privileged client %d"), pid);
+            INFO(_("Turn off polkit auth for privileged client %d"), pid);
             client->auth = REMOTE_AUTH_NONE;
         }
     }
@@ -1267,7 +1182,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
             if (qemudRegisterClientEvent (server, client, 0) < 0)
                 goto cleanup;
         } else {
-            qemudLog (QEMUD_ERR, _("TLS handshake failed: %s"),
+            ERROR(_("TLS handshake failed: %s"),
                       gnutls_strerror (ret));
             goto cleanup;
         }
@@ -1299,7 +1214,7 @@ static void qemudDispatchClientFailure(struct qemud_server *server ATTRIBUTE_UNU
 
     /* Deregister event delivery callback */
     if(client->conn) {
-        qemudDebug("Deregistering to relay remote events");
+        DEBUG0("Deregistering to relay remote events");
         virConnectDomainEventDeregister(client->conn, remoteRelayDomainEvent);
     }
 
@@ -1373,7 +1288,7 @@ static int qemudClientReadBuf(struct qemud_server *server,
         if ((ret = read (client->fd, data, len)) <= 0) {
             if (ret == 0 || errno != EAGAIN) {
                 if (ret != 0)
-                    qemudLog (QEMUD_ERR, _("read: %s"), strerror (errno));
+                    ERROR(_("read: %s"), strerror (errno));
                 qemudDispatchClientFailure(server, client);
             }
             return -1;
@@ -1386,7 +1301,7 @@ static int qemudClientReadBuf(struct qemud_server *server,
             if (ret == 0 || (ret != GNUTLS_E_AGAIN &&
                              ret != GNUTLS_E_INTERRUPTED)) {
                 if (ret != 0)
-                    qemudLog (QEMUD_ERR, _("gnutls_record_recv: %s"),
+                    ERROR(_("gnutls_record_recv: %s"),
                               gnutls_strerror (ret));
                 qemudDispatchClientFailure (server, client);
             }
@@ -1486,14 +1401,14 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
 
         if (!xdr_u_int(&x, &len)) {
             xdr_destroy (&x);
-            qemudDebug("Failed to decode packet length");
+            DEBUG0("Failed to decode packet length");
             qemudDispatchClientFailure(server, client);
             return;
         }
         xdr_destroy (&x);
 
         if (len > REMOTE_MESSAGE_MAX) {
-            qemudDebug("Packet length %u too large", len);
+            DEBUG("Packet length %u too large", len);
             qemudDispatchClientFailure(server, client);
             return;
         }
@@ -1501,7 +1416,7 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
         /* Length include length of the length field itself, so
          * check minimum size requirements */
         if (len <= REMOTE_MESSAGE_HEADER_XDR_LEN) {
-            qemudDebug("Packet length %u too small", len);
+            DEBUG("Packet length %u too small", len);
             qemudDispatchClientFailure(server, client);
             return;
         }
@@ -1546,7 +1461,7 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
             else if (qemudRegisterClientEvent (server, client, 1) < 0)
                 qemudDispatchClientFailure (server, client);
         } else if (ret != GNUTLS_E_AGAIN && ret != GNUTLS_E_INTERRUPTED) {
-            qemudLog (QEMUD_ERR, _("TLS handshake failed: %s"),
+            ERROR(_("TLS handshake failed: %s"),
                       gnutls_strerror (ret));
             qemudDispatchClientFailure (server, client);
         } else {
@@ -1558,7 +1473,7 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
     }
 
     default:
-        qemudDebug("Got unexpected data read while in %d mode", client->mode);
+        DEBUG("Got unexpected data read while in %d mode", client->mode);
         qemudDispatchClientFailure(server, client);
     }
 }
@@ -1570,7 +1485,7 @@ static int qemudClientWriteBuf(struct qemud_server *server,
     int ret;
     if (!client->tlssession) {
         if ((ret = safewrite(client->fd, data, len)) == -1) {
-            qemudLog (QEMUD_ERR, _("write: %s"), strerror (errno));
+            ERROR(_("write: %s"), strerror (errno));
             qemudDispatchClientFailure(server, client);
             return -1;
         }
@@ -1580,8 +1495,7 @@ static int qemudClientWriteBuf(struct qemud_server *server,
             qemudDispatchClientFailure (server, client);
         else if (ret < 0) {
             if (ret != GNUTLS_E_INTERRUPTED && ret != GNUTLS_E_AGAIN) {
-                qemudLog (QEMUD_ERR, _("gnutls_record_send: %s"),
-                          gnutls_strerror (ret));
+                ERROR(_("gnutls_record_send: %s"), gnutls_strerror (ret));
                 qemudDispatchClientFailure (server, client);
             }
             return -1;
@@ -1690,8 +1604,7 @@ qemudDispatchClientWrite(struct qemud_server *server,
             else if (qemudRegisterClientEvent (server, client, 1))
                 qemudDispatchClientFailure (server, client);
         } else if (ret != GNUTLS_E_AGAIN && ret != GNUTLS_E_INTERRUPTED) {
-            qemudLog (QEMUD_ERR, _("TLS handshake failed: %s"),
-                      gnutls_strerror (ret));
+            ERROR(_("TLS handshake failed: %s"), gnutls_strerror (ret));
             qemudDispatchClientFailure (server, client);
         } else {
             if (qemudRegisterClientEvent (server, client, 1))
@@ -1702,7 +1615,7 @@ qemudDispatchClientWrite(struct qemud_server *server,
     }
 
     default:
-        qemudDebug("Got unexpected data write while in %d mode", client->mode);
+        DEBUG("Got unexpected data write while in %d mode", client->mode);
         qemudDispatchClientFailure(server, client);
     }
 }
@@ -1818,8 +1731,7 @@ static int qemudOneLoop(void) {
     errors = sig_errors;
     if (errors) {
         sig_errors -= errors;
-        qemudLog (QEMUD_ERR,
-                  _("Signal handler reported %d errors: last error: %s"),
+        ERROR(_("Signal handler reported %d errors: last error: %s"),
                   errors, strerror (sig_lasterrno));
         return -1;
     }
@@ -1829,9 +1741,9 @@ static int qemudOneLoop(void) {
 
 static void qemudInactiveTimer(int timer ATTRIBUTE_UNUSED, void *data) {
     struct qemud_server *server = (struct qemud_server *)data;
-    qemudDebug("Got inactive timer expiry");
+    DEBUG0("Got inactive timer expiry");
     if (!virStateActive()) {
-        qemudDebug("No state active, shutting down");
+        DEBUG0("No state active, shutting down");
         server->shutdown = 1;
     }
 }
@@ -1844,7 +1756,7 @@ static int qemudRunLoop(struct qemud_server *server) {
 
     server->nworkers = min_workers;
     if (VIR_ALLOC_N(server->workers, server->nworkers) < 0) {
-        qemudLog(QEMUD_ERR, "%s", _("Failed to allocate workers"));
+        ERROR0(_("Failed to allocate workers"));
         return -1;
     }
 
@@ -1868,7 +1780,7 @@ static int qemudRunLoop(struct qemud_server *server) {
             timerid = virEventAddTimeoutImpl(timeout*1000,
                                              qemudInactiveTimer,
                                              server, NULL);
-            qemudDebug("Scheduling shutdown timer %d", timerid);
+            DEBUG("Scheduling shutdown timer %d", timerid);
         }
 
         pthread_mutex_unlock(&server->lock);
@@ -1901,7 +1813,7 @@ static int qemudRunLoop(struct qemud_server *server) {
          * just had an event processed
          */
         if (timerid != -1) {
-            qemudDebug("Removing shutdown timer %d", timerid);
+            DEBUG("Removing shutdown timer %d", timerid);
             virEventRemoveTimeoutImpl(timerid);
             timerid = -1;
         }
@@ -1970,15 +1882,13 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
     switch (p->type) {
     case VIR_CONF_STRING:
         if (VIR_ALLOC_N(list, 2) < 0) {
-            qemudLog (QEMUD_ERR,
-                      _("failed to allocate memory for %s config list"), key);
+            ERROR(_("failed to allocate memory for %s config list"), key);
             return -1;
         }
         list[0] = strdup (p->str);
         list[1] = NULL;
         if (list[0] == NULL) {
-            qemudLog (QEMUD_ERR,
-                      _("failed to allocate memory for %s config list value"),
+            ERROR(_("failed to allocate memory for %s config list value"),
                       key);
             VIR_FREE(list);
             return -1;
@@ -1991,13 +1901,12 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
         for (pp = p->list; pp; pp = pp->next)
             len++;
         if (VIR_ALLOC_N(list, 1+len) < 0) {
-            qemudLog (QEMUD_ERR,
-                      _("failed to allocate memory for %s config list"), key);
+            ERROR(_("failed to allocate memory for %s config list"), key);
             return -1;
         }
         for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
             if (pp->type != VIR_CONF_STRING) {
-                qemudLog (QEMUD_ERR, _("remoteReadConfigFile: %s: %s:"
+                ERROR(_("remoteReadConfigFile: %s: %s:"
                           " must be a string or list of strings\n"),
                           filename, key);
                 VIR_FREE(list);
@@ -2009,8 +1918,8 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
                 for (j = 0 ; j < i ; j++)
                     VIR_FREE(list[j]);
                 VIR_FREE(list);
-                qemudLog (QEMUD_ERR, _("failed to allocate memory"
-                                       " for %s config list value"), key);
+                ERROR(_("failed to allocate memory for %s config list value"),
+                        key);
                 return -1;
             }
 
@@ -2020,8 +1929,8 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
     }
 
     default:
-        qemudLog (QEMUD_ERR, _("remoteReadConfigFile: %s: %s:"
-                               " must be a string or list of strings\n"),
+        ERROR(_("remoteReadConfigFile: %s: %s:"
+                " must be a string or list of strings\n"),
                   filename, key);
         return -1;
     }
@@ -2036,8 +1945,7 @@ checkType (virConfValuePtr p, const char *filename,
            const char *key, virConfType required_type)
 {
     if (p->type != required_type) {
-        qemudLog (QEMUD_ERR,
-                  _("remoteReadConfigFile: %s: %s: invalid type:"
+        ERROR(_("remoteReadConfigFile: %s: %s: invalid type:"
                     " got %s; expected %s\n"), filename, key,
                   virConfTypeName (p->type),
                   virConfTypeName (required_type));
@@ -2058,8 +1966,7 @@ checkType (virConfValuePtr p, const char *filename,
                 goto free_and_fail;                                     \
             (var_name) = strdup (p->str);                               \
             if ((var_name) == NULL) {                                   \
-                qemudLog (QEMUD_ERR, _("remoteReadConfigFile: %s\n"),   \
-                          strerror (errno));                            \
+                ERROR(_("remoteReadConfigFile: %s\n"),strerror (errno));\
                 goto free_and_fail;                                     \
             }                                                           \
         }                                                               \
@@ -2101,8 +2008,7 @@ static int remoteConfigGetAuth(virConfPtr conf, const char *key, int *auth, cons
         *auth = REMOTE_AUTH_POLKIT;
 #endif
     } else {
-        qemudLog (QEMUD_ERR,
-                  _("remoteReadConfigFile: %s: %s: unsupported auth %s\n"),
+        ERROR(_("remoteReadConfigFile: %s: %s: unsupported auth %s\n"),
                   filename, key, p->str);
         return -1;
     }
@@ -2130,6 +2036,42 @@ remoteReadSaslAllowedUsernameList (virConfPtr conf ATTRIBUTE_UNUSED,
 }
 #endif
 
+/*
+ * Set up the logging environment
+ * By default if daemonized all errors go to syslog and the logging
+ * is also saved onto the logfile libvird.log, but if verbose or error
+ * debugging is asked for then output informations or debug.
+ */
+static void
+qemudSetLogging(virConfPtr conf, const char *filename) {
+    virLogReset();
+
+    /* look for default logging level */
+    GET_CONF_INT (conf, filename, log_level);
+    if ((verbose) && (log_level >= VIR_LOG_WARN))
+        log_level = VIR_LOG_INFO;
+    virLogSetDefaultPriority(log_level);
+
+    /* there is no default filters */
+    GET_CONF_STR (conf, filename, log_filters);
+    virLogParseFilters(log_filters);
+
+    /*
+     * by default save all warning and errors to syslog or
+     * all logs to stderr if not running as daemon
+     */
+    GET_CONF_STR (conf, filename, log_outputs);
+    if (log_outputs == NULL) {
+        if (godaemon)
+            virLogParseOutputs("3:syslog:libvirtd");
+        else
+            virLogParseOutputs("0:stderr:libvirtd");
+    } else
+        virLogParseOutputs(log_outputs);
+free_and_fail:
+    VIR_FREE(log_filters);
+    VIR_FREE(log_outputs);
+}
 
 /* Read the config file if it exists.
  * Only used in the remote case, hence the name.
@@ -2161,6 +2103,11 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     conf = virConfReadFile (filename);
     if (!conf) return 0;
 
+    /*
+     * First get all the logging settings and activate them
+     */
+    qemudSetLogging(conf, filename);
+
     GET_CONF_INT (conf, filename, listen_tcp);
     GET_CONF_INT (conf, filename, listen_tls);
     GET_CONF_STR (conf, filename, tls_port);
@@ -2186,13 +2133,11 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     GET_CONF_STR (conf, filename, unix_sock_group);
     if (unix_sock_group) {
         if (getuid() != 0) {
-            qemudLog (QEMUD_WARN,
-                      "%s", _("Cannot set group when not running as root"));
+            WARN0(_("Cannot set group when not running as root"));
         } else {
             struct group *grp = getgrnam(unix_sock_group);
             if (!grp) {
-                qemudLog (QEMUD_ERR, _("Failed to lookup group '%s'"),
-                          unix_sock_group);
+                ERROR(_("Failed to lookup group '%s'"), unix_sock_group);
                 goto free_and_fail;
             }
             unix_sock_gid = grp->gr_gid;
@@ -2204,8 +2149,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     GET_CONF_STR (conf, filename, unix_sock_ro_perms);
     if (unix_sock_ro_perms) {
         if (virStrToLong_i (unix_sock_ro_perms, NULL, 8, &unix_sock_ro_mask) != 0) {
-            qemudLog (QEMUD_ERR, _("Failed to parse mode '%s'"),
-                      unix_sock_ro_perms);
+            ERROR(_("Failed to parse mode '%s'"), unix_sock_ro_perms);
             goto free_and_fail;
         }
         free (unix_sock_ro_perms);
@@ -2215,8 +2159,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     GET_CONF_STR (conf, filename, unix_sock_rw_perms);
     if (unix_sock_rw_perms) {
         if (virStrToLong_i (unix_sock_rw_perms, NULL, 8, &unix_sock_rw_mask) != 0) {
-            qemudLog (QEMUD_ERR, _("Failed to parse mode '%s'"),
-                      unix_sock_rw_perms);
+            ERROR(_("Failed to parse mode '%s'"), unix_sock_rw_perms);
             goto free_and_fail;
         }
         free (unix_sock_rw_perms);
@@ -2408,10 +2351,8 @@ int main(int argc, char **argv) {
     }
 
     if (godaemon) {
-        openlog("libvirtd", 0, 0);
         if (qemudGoDaemon() < 0) {
-            qemudLog(QEMUD_ERR, _("Failed to fork as daemon: %s"),
-                     strerror(errno));
+            ERROR(_("Failed to fork as daemon: %s"), strerror(errno));
             goto error1;
         }
     }
@@ -2432,8 +2373,7 @@ int main(int argc, char **argv) {
         qemudSetNonBlock(sigpipe[1]) < 0 ||
         qemudSetCloseExec(sigpipe[0]) < 0 ||
         qemudSetCloseExec(sigpipe[1]) < 0) {
-        qemudLog(QEMUD_ERR, _("Failed to create pipe: %s"),
-                 strerror(errno));
+        ERROR(_("Failed to create pipe: %s"), strerror(errno));
         goto error2;
     }
     sigwrite = sigpipe[1];
@@ -2465,16 +2405,14 @@ int main(int argc, char **argv) {
         const char *sockdirname = LOCAL_STATE_DIR "/run/libvirt";
 
         if (chown(sockdirname, -1, unix_sock_gid) < 0)
-            qemudLog(QEMUD_ERR, _("Failed to change group ownership of %s"),
-                     sockdirname);
+            ERROR(_("Failed to change group ownership of %s"), sockdirname);
     }
 
     if (virEventAddHandleImpl(sigpipe[0],
                               VIR_EVENT_HANDLE_READABLE,
                               qemudDispatchSignalEvent,
                               server, NULL) < 0) {
-        qemudLog(QEMUD_ERR,
-                 "%s", _("Failed to register callback for signal pipe"));
+        ERROR0(_("Failed to register callback for signal pipe"));
         ret = 3;
         goto error2;
     }
@@ -2496,7 +2434,6 @@ error2:
     close(sigwrite);
 
 error1:
-    if (godaemon)
-        closelog();
+    virLogShutdown();
     return ret;
 }

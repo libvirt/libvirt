@@ -1,3 +1,8 @@
+Mon Dec 22 13:51:48 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/qemud.c qemud/qemud.h: replace the daemon old logging
+	  infrastructure with the new one and parse configuration options
+
 Mon Dec 22 11:51:29 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/uml_conf.c: another logging conversion

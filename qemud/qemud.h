@@ -45,6 +45,7 @@
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 #include "remote_protocol.h"
+#include "logging.h"
 
 #ifdef __GNUC__
 #ifdef HAVE_ANSIDECL_H
@@ -61,15 +62,7 @@
 #define ATTRIBUTE_FORMAT(...)
 #endif
 
-typedef enum {
-    QEMUD_ERR,
-    QEMUD_WARN,
-    QEMUD_INFO,
-#ifdef ENABLE_DEBUG
-    QEMUD_DEBUG
-#endif
-} qemudLogPriority;
-
+#define qemudDebug DEBUG
 
 enum qemud_mode {
     QEMUD_MODE_RX_HEADER,       /* Receiving the fixed length RPC header data */
@@ -183,11 +176,6 @@ struct qemud_server {
 void qemudLog(int priority, const char *fmt, ...)
     ATTRIBUTE_FORMAT(printf,2,3);
 
-#ifdef ENABLE_DEBUG
-#define qemudDebug(...) qemudLog(QEMUD_DEBUG, __VA_ARGS__)
-#else
-#define qemudDebug(fmt, ...) do {} while(0)
-#endif
 
 int qemudSetCloseExec(int fd);
 int qemudSetNonBlock(int fd);
