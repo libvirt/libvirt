@@ -1,3 +1,7 @@
+Mon Dec 22 14:07:29 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/mdns.c: fix a compilation problem in the switch
+
 Mon Dec 22 13:56:13 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/libvirtd.aug qemud/libvirtd.conf: document the new
