@@ -462,6 +462,16 @@ LIBVIRT_PRIVATE_@VERSION@ {
 	virRegisterStorageDriver;
 	virRegisterDeviceMonitor;
 
+	/* logging.h */
+        virLogSetDefaultPriority;
+        virLogDefineFilter;
+        virLogDefineOutput;
+        virLogParseFilters;
+        virLogParseOutputs;
+        virLogStartup;
+        virLogShutdown;
+        virLogReset;
+        virLogMessage;
 
 	# memory.h
 	virAlloc;

@@ -1,3 +1,9 @@
+Mon Dec 22 11:33:07 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/logging.h src/logging.c: add the infrastructure and internal
+	  APIs for logging, some of those APIs should be made public later
+	* src/libvirt_sym.version.in: flag the internal APIs as such
+
 Mon Dec 22 11:31:08 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.h: remove tabs to fix make synatx-check
