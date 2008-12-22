@@ -1,3 +1,7 @@
+Mon Dec 22 11:45:07 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c: convert entry points to new logging
+
 Mon Dec 22 11:43:04 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/logging.h src/logging.c: commited the more recent version
