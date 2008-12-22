@@ -469,6 +469,8 @@ cleanup:
  * virLogMessage:
  * @category: where is that message coming from
  * @priority: the priority level
+ * @funcname: the function emitting the (debug) message
+ * @linenr: line where the message was emitted
  * @flags: extra flags, 1 if coming from the error handler
  * @fmt: the string format
  * @...: the arguments
@@ -476,13 +478,13 @@ cleanup:
  * Call the libvirt logger with some informations. Based on the configuration
  * the message may be stored, sent to output or just discarded
  */
-void virLogMessage(const char *category, int priority, int flags,
-                   const char *fmt, ...) {
+void virLogMessage(const char *category, int priority, const char *funcname,
+                   long long linenr, int flags, const char *fmt, ...) {
     char *str = NULL;
     char *msg;
     struct timeval cur_time;
     struct tm time_info;
-    int len, fprio, i;
+    int len, fprio, i, ret;
 
     if (!virLogInitialized)
         virLogStartup();
@@ -509,15 +511,22 @@ void virLogMessage(const char *category, int priority, int flags,
     gettimeofday(&cur_time, NULL);
     localtime_r(&cur_time.tv_sec, &time_info);
 
-    if (asprintf(&msg, "%02d:%02d:%02d.%03d: %s : %s\n",
-                 time_info.tm_hour, time_info.tm_min,
-                 time_info.tm_sec, (int) cur_time.tv_usec / 1000,
-                 virLogPriorityString(priority), str) < 0) {
-        /* apparently we're running out of memory */
-        VIR_FREE(str);
-        return;
+    if ((funcname != NULL) && (priority == VIR_LOG_DEBUG)) {
+        ret = asprintf(&msg, "%02d:%02d:%02d.%03d: %s : %s:%lld : %s\n",
+                       time_info.tm_hour, time_info.tm_min,
+                       time_info.tm_sec, (int) cur_time.tv_usec / 1000,
+                       virLogPriorityString(priority), funcname, linenr, str);
+    } else {
+        ret = asprintf(&msg, "%02d:%02d:%02d.%03d: %s : %s\n",
+                       time_info.tm_hour, time_info.tm_min,
+                       time_info.tm_sec, (int) cur_time.tv_usec / 1000,
+                       virLogPriorityString(priority), str);
     }
     VIR_FREE(str);
+    if (ret < 0) {
+        /* apparently we're running out of memory */
+        return;
+    }
 
     /*
      * Log based on defaults, first store in the history buffer
@@ -532,8 +541,8 @@ void virLogMessage(const char *category, int priority, int flags,
     virLogLock();
     for (i = 0; i < virLogNbOutputs;i++) {
         if (priority >= virLogOutputs[i].priority)
-            virLogOutputs[i].f(virLogOutputs[i].data, category, priority,
-                               msg, len);
+            virLogOutputs[i].f(category, priority, funcname, linenr,
+                               msg, len, virLogOutputs[i].data);
     }
     if ((virLogNbOutputs == 0) && (flags != 1))
         safewrite(2, msg, len);
@@ -542,9 +551,11 @@ void virLogMessage(const char *category, int priority, int flags,
     VIR_FREE(msg);
 }
 
-static int virLogOutputToFd(void *data, const char *category ATTRIBUTE_UNUSED,
+static int virLogOutputToFd(const char *category ATTRIBUTE_UNUSED,
                             int priority ATTRIBUTE_UNUSED,
-                            const char *str, int len) {
+                            const char *funcname ATTRIBUTE_UNUSED,
+                            long long linenr ATTRIBUTE_UNUSED,
+                            const char *str, int len, void *data) {
     int fd = (long) data;
     int ret;
 
@@ -582,10 +593,12 @@ static int virLogAddOutputToFile(int priority, const char *file) {
 }
 
 #if HAVE_SYSLOG_H
-static int virLogOutputToSyslog(void *data ATTRIBUTE_UNUSED,
-                                const char *category ATTRIBUTE_UNUSED,
-                                int priority, const char *str,
-                                int len ATTRIBUTE_UNUSED) {
+static int virLogOutputToSyslog(const char *category ATTRIBUTE_UNUSED,
+                                int priority,
+                                const char *funcname ATTRIBUTE_UNUSED,
+                                long long linenr ATTRIBUTE_UNUSED,
+                                const char *str, int len ATTRIBUTE_UNUSED,
+                                void *data ATTRIBUTE_UNUSED) {
     int prio;
 
     switch (priority) {

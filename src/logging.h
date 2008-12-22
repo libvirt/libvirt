@@ -30,16 +30,22 @@
  * defined at runtime of from the libvirt daemon configuration file
  */
 #ifdef ENABLE_DEBUG
-#define VIR_DEBUG(category, fmt,...)                                    \
-    virLogMessage(category, VIR_LOG_DEBUG, 0, fmt, __VA_ARGS__)
-#define VIR_INFO(category, fmt,...)                                    \
-    virLogMessage(category, VIR_LOG_INFO, 0, fmt, __VA_ARGS__)
-#define VIR_WARN(category, fmt,...)                                    \
-    virLogMessage(category, VIR_LOG_WARN, 0, fmt, __VA_ARGS__)
-#define VIR_ERROR(category, fmt,...)                                    \
-    virLogMessage(category, VIR_LOG_ERROR, 0, fmt, __VA_ARGS__)
+#define VIR_DEBUG(category, f, l, fmt,...)                             \
+    virLogMessage(category, VIR_LOG_DEBUG, f, l, 0, fmt, __VA_ARGS__)
+#define VIR_INFO(category, f, l, fmt,...)                              \
+    virLogMessage(category, VIR_LOG_INFO, f, l, 0, fmt, __VA_ARGS__)
+#define VIR_WARN(category, f, l, fmt,...)                              \
+    virLogMessage(category, VIR_LOG_WARN, f, l, 0, fmt, __VA_ARGS__)
+#define VIR_ERROR(category, f, l, fmt,...)                             \
+    virLogMessage(category, VIR_LOG_ERROR, f, l, 0, fmt, __VA_ARGS__)
 #else
-#define VIR_DEBUG(category, fmt,...) \
+#define VIR_DEBUG(category, f, l, fmt,...) \
+    do { } while (0)
+#define VIR_INFO(category, f, l, fmt,...) \
+    do { } while (0)
+#define VIR_WARN(category, f, l, fmt,...) \
+    do { } while (0)
+#define VIR_ERROR(category, f, l, fmt,...) \
     do { } while (0)
 #define VIR_INFO(category, fmt,...) \
     do { } while (0)
@@ -49,14 +55,22 @@
     do { } while (0)
 #endif /* !ENABLE_DEBUG */
 
-#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
-#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
-#define INFO(fmt,...) VIR_INFO(__FILE__, fmt, __VA_ARGS__)
-#define INFO0(msg) VIR_INFO(__FILE__, "%s", msg)
-#define WARN(fmt,...) VIR_WARN(__FILE__, fmt, __VA_ARGS__)
-#define WARN0(msg) VIR_WARN(__FILE__, "%s", msg)
-#define ERROR(fmt,...) VIR_ERROR(__FILE__, fmt, __VA_ARGS__)
-#define ERROR0(msg) VIR_ERROR(__FILE__, "%s", msg)
+#define DEBUG(fmt,...)                                                  \
+        VIR_DEBUG("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
+#define DEBUG0(msg)                                                     \
+        VIR_DEBUG("file." __FILE__, __func__, __LINE__, "%s", msg)
+#define INFO(fmt,...)                                                   \
+        VIR_INFO("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
+#define INFO0(msg)                                                      \
+        VIR_INFO("file." __FILE__, __func__, __LINE__, "%s", msg)
+#define WARN(fmt,...)                                                   \
+        VIR_WARN("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
+#define WARN0(msg)                                                      \
+        VIR_WARN("file." __FILE__, __func__, __LINE__, "%s", msg)
+#define ERROR(fmt,...)                                                  \
+        VIR_ERROR("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
+#define ERROR0(msg)                                                     \
+        VIR_ERROR("file." __FILE__, __func__, __LINE__, "%s", msg)
 
 
 /*
@@ -71,18 +85,21 @@ typedef enum {
 
 /**
  * virLogOutputFunc:
- * @data: extra output logging data
  * @category: the category for the message
  * @priority: the priority for the message
+ * @funcname: the function emitting the message
+ * @linenr: line where the message was emitted
  * @msg: the message to log, preformatted and zero terminated
  * @len: the lenght of the message in bytes without the terminating zero
+ * @data: extra output logging data
  *
  * Callback function used to output messages
  *
  * Returns the number of bytes written or -1 in case of error
  */
-typedef int (*virLogOutputFunc) (void *data, const char *category,
-                                 int priority, const char *str, int len);
+typedef int (*virLogOutputFunc) (const char *category, int priority,
+                                 const char *funcname, long long lineno,
+                                 const char *str, int len, void *data);
 
 /**
  * virLogCloseFunc:
@@ -110,7 +127,8 @@ extern int virLogReset(void);
 extern void virLogShutdown(void);
 extern int virLogParseFilters(const char *filters);
 extern int virLogParseOutputs(const char *output);
-extern void virLogMessage(const char *category, int priority, int flags,
-                          const char *fmt, ...) ATTRIBUTE_FORMAT(printf, 4, 5);
+extern void virLogMessage(const char *category, int priority,
+                          const char *funcname, long long linenr, int flags,
+                          const char *fmt, ...) ATTRIBUTE_FORMAT(printf, 6, 7);
 
 #endif

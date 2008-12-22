@@ -1,3 +1,8 @@
+Mon Dec 22 11:43:04 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/logging.h src/logging.c: commited the more recent version
+	  with function name and line number
+
 Mon Dec 22 11:33:07 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/logging.h src/logging.c: add the infrastructure and internal
