@@ -1,3 +1,7 @@
+Tue Dec 23 14:38:30 CET 2008 Guido Günther <agx@sigxcpu.org>
+
+	* .x-sc_prohibit_asprintf: new file
+
 Tue Dec 23 13:39:48 CET 2008 Guido Günther <agx@sigxcpu.org>
 
 	use virAsprintf instead of asprintf
