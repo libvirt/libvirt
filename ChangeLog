@@ -1,3 +1,11 @@
+Tue Dec 23 14:44:41 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/logging.html docs/logging.html.in: new page documenting
+	  the logging system
+	* docs/auth.html docs/deployment.html docs/remote.html
+	  docs/sitemap.html docs/sitemap.html.in docs/uri.html
+	  docs/windows.html: integration in the existing set
+
 Tue Dec 23 14:38:30 CET 2008 Guido Günther <agx@sigxcpu.org>
 
 	* .x-sc_prohibit_asprintf: new file

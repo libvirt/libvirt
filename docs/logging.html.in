@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<html>
+  <body>
+    <h1 >Logging in the library and the daemon</h1>
+    <p>Libvirt includes logging facilities starting from version 0.6.0,
+       this complements the <a href="errors.html">error handling</a>
+       mechanism and APIs to allow tracing though the execution of the
+       library as well as in the libvirtd daemon.</p>
+    <p>The logging functionalities in libvirt are based on 3 key concepts,
+       similar to the one present in other generic logging facilities like
+       log4j:</p>
+    <ul>
+      <li>log messages: they are information generated at runtime by
+          the libvirt code, it includes a priority level (DEBUG = 1,
+          INFO = 2, WARNING = 3, ERROR = 4), a category, function name and
+          line number, indicating where it originated from, and finally
+          a formatted message, in addition the library adds a timestamp
+          at the begining of the message</li>
+      <li>log filters: it's a set of patter and priorities allowing to acept
+          or reject a log message, if the message category matches a filter,
+          the message priority is compared to the filter priority, if lower
+          the message is discarded, if higher the message is output. If
+          no filter matches, then a general priority level is applied to
+          all remaining messages. This allows to capture for example all
+          debug messages for the QEmu driver, but otherwise only allow
+          errors to show up from other parts</li>
+      <li>log outputs: once a message has gone though filtering a set of
+          output defines where to send the message, they can also filter
+          based on the priority, for example it may be useful to output
+          all messages to a debugging file but only allow errors to be
+          logged though syslog.</li>
+    </ul>
+    <p>The library configuration of logging is though 3 environment variables
+    allowing to control the logging behaviour:</p>
+    <ul>
+      <li>LIBVIRT_DEBUG: it can take the four following values:
+      <ul>
+        <li>1 or "debug": asking the library to log every message emitted,
+            though the filters can be used to avoid filling up the output</li>
+        <li>2 or "info": log all non-debugging informations</li>
+        <li>3 or "warn": log warnings and errors, that's the default value</li>
+        <li>4 or "error": log only error messages</li>
+      </ul></li>
+      <li>LIBVIRT_LOG_FILTERS: allow to define logging filters</li>
+      <li>LIBVIRT_LOG_OUTPUTS: allow to define logging outputs</li>
+    </ul>
+    <p>Similary the daemon logging behaviour can be tuned using 3 config
+    variables, stored in the configuration file:
+    <ul>
+      <li>log_level: accepts the following values:
+      <ul>
+        <li>0: no logging at all</li>
+        <li>4: only errors</li>
+        <li>3: warnings and errors</li>
+        <li>2: informations, warnings and errors</li>
+        <li>1: debug and everything</li>
+      </ul></li>
+      <li>log_filters: allow to define logging filters</li>
+      <li>log_outputs: allow to define logging outputs</li>
+    </ul>
+    <p>In both case the syntax for filters and outputs is similar.</p>
+    <p>The format for a filter is:</p>
+    <pre>x:name</pre>
+    <p>where <code>name</code> is a match string e.g. <code>remote</code> or
+    <code>qemu</code> and the x is the minimal level where matching messages
+    should be logged:</p>
+    <ul>
+      <li>1: DEBUG</li>
+      <li>2: INFO</li>
+      <li>3: WARNING</li>
+      <li>4: ERROR</li>
+    </ul>
+    <p>Multiple filter can be defined in a single string, they just need to be
+    separated by spaces, e.g: <code>"3:remote 4:event"</code> to only get
+    warning or errors from the remote layer and only errors from the event
+    layer.<p>
+    <p>The format for an output can be one of those 3 forms:</p>
+    <ul>
+      <li><code>x:stderr</code> output goes to stderr</li>
+      <li><code>x:syslog:name</code> use syslog for the output and use the
+      given <code>name</code> as the ident</li>
+      <li><code>x:file:file_path</code>output to a file, with the given
+      filepath</li>
+    </ul>
+    <p>In all cases the x prefix is the minimal level, acting as a filter:</p>
+    <ul>
+      <li>0: everything</li>
+      <li>1: DEBUG</li>
+      <li>2: INFO</li>
+      <li>3: WARNING</li>
+      <li>4: ERROR</li>
+    </ul>
+    <p>Multiple output can be defined , they just need to be separated by
+       spaces, e.g.: <code>"3:syslog:libvirtd 0:file:/tmp/libvirt.log"</code>
+       will log all warnings and errors to syslog under the libvirtd ident
+       but also log everything debugging and informations included in the
+       file <code>/tmp/libvirt.log</code></p>
+    <p>For example setting up the following:</p>
+    <pre>export LIBVIRT_DEBUG=1
+export LIBVIRT_LOG_OUTPUTS="0:file:virsh.log"</pre>
+    <p>and then running virsh will accumulate the logs in the
+    <code>virsh.log</code> file in a way similar to:</p>
+    <pre>14:29:04.771: debug : virInitialize:278 : register drivers
+14:29:04.771: debug : virRegisterDriver:618 : registering Test as driver 0</pre>
+    <p>the messages are timestamped, there is also the level recorded,
+    if debug the name of the function is also printed and then the formatted
+    message. This should be sufficient to at least get a precise idea of
+    what is happening and where things are going wrong, allowing to then
+    put the correct breakpoints when running under a debugger.</p>
+  </body>
+</html>

@@ -46,6 +46,10 @@
                 <a href="windows.html">Windows port</a>
                 <span>Access the libvirt daemon from a native Windows client</span>
               </li>
+              <li>
+                <a href="logging.html">Logging</a>
+                <span>The library and the daemon logging support</span>
+              </li>
             </ul>
           </li>
           <li>
