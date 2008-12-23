@@ -2687,16 +2687,14 @@ xenXMDomainBlockPeek (virDomainPtr dom,
 static char *xenXMAutostartLinkName(virDomainPtr dom)
 {
     char *ret;
-    if (asprintf(&ret, "/etc/xen/auto/%s", dom->name) < 0)
-        return NULL;
+    virAsprintf(&ret, "/etc/xen/auto/%s", dom->name);
     return ret;
 }
 
 static char *xenXMDomainConfigName(virDomainPtr dom)
 {
     char *ret;
-    if (asprintf(&ret, "/etc/xen/%s", dom->name) < 0)
-        return NULL;
+    virAsprintf(&ret, "/etc/xen/%s", dom->name);
     return ret;
 }
 

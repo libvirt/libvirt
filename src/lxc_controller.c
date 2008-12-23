@@ -122,11 +122,10 @@ out:
 static char*lxcMonitorPath(virDomainDefPtr def)
 {
     char *sockpath;
-    if (asprintf(&sockpath, "%s/%s.sock",
-                 LXC_STATE_DIR, def->name) < 0) {
+
+    if (virAsprintf(&sockpath, "%s/%s.sock",
+                    LXC_STATE_DIR, def->name) < 0)
         lxcError(NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
-        return NULL;
-    }
     return sockpath;
 }
 

@@ -3457,7 +3457,7 @@ char *virDomainConfigFile(virConnectPtr conn,
 {
     char *ret = NULL;
 
-    if (asprintf(&ret, "%s/%s.xml", dir, name) < 0) {
+    if (virAsprintf(&ret, "%s/%s.xml", dir, name) < 0) {
         virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
         return NULL;
     }

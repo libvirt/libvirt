@@ -922,11 +922,8 @@ int virFileOpenTty(int *ttymaster ATTRIBUTE_UNUSED,
 
 char* virFilePid(const char *dir, const char* name)
 {
-    char* pidfile;
-
-    if (asprintf(&pidfile, "%s/%s.pid", dir, name) < 0) {
-        pidfile = NULL;
-    }
+    char *pidfile;
+    virAsprintf(&pidfile, "%s/%s.pid", dir, name);
     return pidfile;
 }
 
@@ -1170,7 +1167,7 @@ virParseNumber(const char **str)
 /**
  * virAsprintf
  *
- * like asprintf but makes sure *strp == NULL on failure
+ * like glibc's_asprintf but makes sure *strp == NULL on failure
  */
 int
 virAsprintf(char **strp, const char *fmt, ...)

@@ -99,29 +99,29 @@ umlBuildCommandLineChr(virConnectPtr conn,
 
     switch (def->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
-        if (asprintf(&ret, "%s%d=null", dev, def->dstPort) < 0) {
+        if (virAsprintf(&ret, "%s%d=null", dev, def->dstPort) < 0) {
             umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
             return NULL;
         }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        if (asprintf(&ret, "%s%d=pts", dev, def->dstPort) < 0) {
+        if (virAsprintf(&ret, "%s%d=pts", dev, def->dstPort) < 0) {
             umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
             return NULL;
         }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        if (asprintf(&ret, "%s%d=tty:%s", dev, def->dstPort,
-                     def->data.file.path) < 0) {
+        if (virAsprintf(&ret, "%s%d=tty:%s", dev, def->dstPort,
+                        def->data.file.path) < 0) {
             umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
             return NULL;
         }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_STDIO:
-        if (asprintf(&ret, "%s%d=fd:0,fd:1", dev, def->dstPort) < 0) {
+        if (virAsprintf(&ret, "%s%d=fd:0,fd:1", dev, def->dstPort) < 0) {
             umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
             return NULL;
         }
@@ -134,8 +134,8 @@ umlBuildCommandLineChr(virConnectPtr conn,
             return NULL;
         }
 
-        if (asprintf(&ret, "%s%d=port:%s", dev, def->dstPort,
-                     def->data.tcp.service) < 0) {
+        if (virAsprintf(&ret, "%s%d=port:%s", dev, def->dstPort,
+                        def->data.tcp.service) < 0) {
             umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
             return NULL;
         }
@@ -204,9 +204,9 @@ int umlBuildCommandLine(virConnectPtr conn,
     do {                                                                \
         char *arg;                                                      \
         ADD_ARG_SPACE;                                                  \
-        if (asprintf(&arg, "%s=%s", key, val) < 0)                      \
+        if (virAsprintf(&arg, "%s=%s", key, val) < 0)                   \
             goto no_memory;                                             \
-        qargv[qargc++] = arg;                                            \
+        qargv[qargc++] = arg;                                           \
     } while (0)
 
 
@@ -238,7 +238,7 @@ int umlBuildCommandLine(virConnectPtr conn,
         char *envval;                                                   \
         ADD_ENV_SPACE;                                                  \
         if (val != NULL) {                                              \
-            if (asprintf(&envval, "%s=%s", envname, val) < 0)           \
+            if (virAsprintf(&envval, "%s=%s", envname, val) < 0)        \
                 goto no_memory;                                         \
             qenv[qenvc++] = envval;                                     \
         }                                                               \
@@ -281,7 +281,7 @@ int umlBuildCommandLine(virConnectPtr conn,
         if (i == 0 && vm->def->console)
             ret = umlBuildCommandLineChr(conn, vm->def->console, "con");
         else
-            if (asprintf(&ret, "con%d=none", i) < 0)
+            if (virAsprintf(&ret, "con%d=none", i) < 0)
                 goto no_memory;
         ADD_ARG(ret);
     }
@@ -295,7 +295,7 @@ int umlBuildCommandLine(virConnectPtr conn,
         if (chr)
             ret = umlBuildCommandLineChr(conn, chr, "ssl");
         else
-            if (asprintf(&ret, "ssl%d=none", i) < 0)
+            if (virAsprintf(&ret, "ssl%d=none", i) < 0)
                 goto no_memory;
         ADD_ARG(ret);
     }

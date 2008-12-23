@@ -1,3 +1,17 @@
+Tue Dec 23 13:39:48 CET 2008 Guido Günther <agx@sigxcpu.org>
+
+	use virAsprintf instead of asprintf
+	* .x-sc_prohibit_asprintf, Makefile.maint (sc_prohibit_asprintf): new
+	rule
+	* src/cgroup.c, src/domain_conf.c, src/driver.c, src/libvirt.c,
+	src/logging.c, src/lxc_container.c, src/lxc_controller.c,
+	src/lxc_driver.c, src/network_conf.c, src/network_driver.c,
+	src/openvz_conf.c, src/qemu_conf.c, src/qemu_driver.c,
+	src/remote_internal.c, src/stats_linux.c, src/storage_backend_iscsi.c,
+	src/storage_driver.c, src/uml_conf.c, src/uml_driver.c, src/util.c,
+	src/veth.c, src/virsh.c, src/xm_internal.c: use virAsprintf instead of
+	asprintf
+
 Mon Dec 22 11:33:16 EST 2008 Cole Robinson <crobinso@redhat.com>
 
 	* src/storage_driver.c: Fix storage driver null dereference.

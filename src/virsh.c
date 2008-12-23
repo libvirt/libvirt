@@ -3417,19 +3417,19 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
             }
         }
         ret = port ?
-            asprintf(&srcSpec,
-                     "<source><host name='%.*s' port='%s'/></source>",
-                     (int)hostlen, host, port) :
-            asprintf(&srcSpec,
-                     "<source><host name='%.*s'/></source>",
-                     (int)hostlen, host);
+            virAsprintf(&srcSpec,
+                        "<source><host name='%.*s' port='%s'/></source>",
+                        (int)hostlen, host, port) :
+            virAsprintf(&srcSpec,
+                        "<source><host name='%.*s'/></source>",
+                        (int)hostlen, host);
         if (ret < 0) {
             switch (errno) {
             case ENOMEM:
                 vshError(ctl, FALSE, "%s", _("Out of memory"));
                 break;
             default:
-                vshError(ctl, FALSE, _("asprintf failed (errno %d)"), errno);
+                vshError(ctl, FALSE, _("virAsprintf failed (errno %d)"), errno);
             }
             return FALSE;
         }
@@ -5301,9 +5301,9 @@ editFile (vshControl *ctl, const char *filename)
         return -1;
     }
 
-    if (asprintf (&command, "%s %s", editor, filename) == -1) {
+    if (virAsprintf(&command, "%s %s", editor, filename) == -1) {
         vshError(ctl, FALSE,
-                 _("asprintf: could not create editing command: %s"),
+                 _("virAsprintf: could not create editing command: %s"),
                  strerror (errno));
         return -1;
     }

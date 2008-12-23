@@ -126,8 +126,8 @@ storageDriverStartup(void) {
             goto out_of_memory;
         }
 
-        if (asprintf (&base, "%s/.libvirt", pw->pw_dir) == -1) {
-            storageLog("out of memory in asprintf");
+        if (virAsprintf(&base, "%s/.libvirt", pw->pw_dir) == -1) {
+            storageLog("out of memory in virAsprintf");
             goto out_of_memory;
         }
     }
@@ -140,12 +140,12 @@ storageDriverStartup(void) {
         goto out_of_memory;
     driverConf[sizeof(driverConf)-1] = '\0';
 
-    if (asprintf (&driverState->configDir,
-                  "%s/storage", base) == -1)
+    if (virAsprintf(&driverState->configDir,
+                    "%s/storage", base) == -1)
         goto out_of_memory;
 
-    if (asprintf (&driverState->autostartDir,
-                  "%s/storage/autostart", base) == -1)
+    if (virAsprintf(&driverState->autostartDir,
+                    "%s/storage/autostart", base) == -1)
         goto out_of_memory;
 
     VIR_FREE(base);

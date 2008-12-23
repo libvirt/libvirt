@@ -292,9 +292,9 @@ xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
      */
 
     if (strlen(path) >= 5 && STRPREFIX(path, "/dev/"))
-        retval = asprintf(&mod_path, "%s", path);
+        retval = virAsprintf(&mod_path, "%s", path);
     else
-        retval = asprintf(&mod_path, "/dev/%s", path);
+        retval = virAsprintf(&mod_path, "/dev/%s", path);
 
     if (retval < 0) {
         statsErrorFunc (conn, VIR_ERR_NO_MEMORY, __FUNCTION__,

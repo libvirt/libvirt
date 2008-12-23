@@ -610,8 +610,8 @@ static int lxcMonitorClient(virConnectPtr conn,
     int fd;
     struct sockaddr_un addr;
 
-    if (asprintf(&sockpath, "%s/%s.sock",
-                 driver->stateDir, vm->def->name) < 0) {
+    if (virAsprintf(&sockpath, "%s/%s.sock",
+                    driver->stateDir, vm->def->name) < 0) {
         lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
         return -1;
     }
@@ -854,8 +854,8 @@ static int lxcVmStart(virConnectPtr conn,
         return -1;
     }
 
-    if (asprintf(&logfile, "%s/%s.log",
-                 driver->logDir, vm->def->name) < 0) {
+    if (virAsprintf(&logfile, "%s/%s.log",
+                    driver->logDir, vm->def->name) < 0) {
         lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
         return -1;
     }

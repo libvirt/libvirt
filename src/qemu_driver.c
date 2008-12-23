@@ -252,8 +252,8 @@ qemudStartup(void) {
         goto error;
 
     if (!uid) {
-        if (asprintf(&qemu_driver->logDir,
-                     "%s/log/libvirt/qemu", LOCAL_STATE_DIR) == -1)
+        if (virAsprintf(&qemu_driver->logDir,
+                        "%s/log/libvirt/qemu", LOCAL_STATE_DIR) == -1)
             goto out_of_memory;
 
         if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)
@@ -269,11 +269,11 @@ qemudStartup(void) {
             goto error;
         }
 
-        if (asprintf(&qemu_driver->logDir,
-                     "%s/.libvirt/qemu/log", pw->pw_dir) == -1)
+        if (virAsprintf(&qemu_driver->logDir,
+                        "%s/.libvirt/qemu/log", pw->pw_dir) == -1)
             goto out_of_memory;
 
-        if (asprintf (&base, "%s/.libvirt", pw->pw_dir) == -1)
+        if (virAsprintf(&base, "%s/.libvirt", pw->pw_dir) == -1)
             goto out_of_memory;
 
         if (virAsprintf(&qemu_driver->stateDir, "%s/qemu/run", base) == -1)
@@ -293,10 +293,10 @@ qemudStartup(void) {
         goto out_of_memory;
     driverConf[sizeof(driverConf)-1] = '\0';
 
-    if (asprintf (&qemu_driver->configDir, "%s/qemu", base) == -1)
+    if (virAsprintf(&qemu_driver->configDir, "%s/qemu", base) == -1)
         goto out_of_memory;
 
-    if (asprintf (&qemu_driver->autostartDir, "%s/qemu/autostart", base) == -1)
+    if (virAsprintf(&qemu_driver->autostartDir, "%s/qemu/autostart", base) == -1)
         goto out_of_memory;
 
     VIR_FREE(base);
@@ -2253,7 +2253,7 @@ static int qemudDomainSave(virDomainPtr dom,
                          "%s", _("out of memory"));
         goto cleanup;
     }
-    if (asprintf (&command, "migrate \"exec:"
+    if (virAsprintf(&command, "migrate \"exec:"
                   "dd of='%s' oflag=append conv=notrunc 2>/dev/null"
                   "\"", safe_path) == -1) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
@@ -2880,21 +2880,21 @@ static char *qemudDiskDeviceName(const virConnectPtr conn,
     switch (disk->bus) {
         case VIR_DOMAIN_DISK_BUS_IDE:
             if (disk->device== VIR_DOMAIN_DISK_DEVICE_DISK)
-                ret = asprintf(&devname, "ide%d-hd%d", busid, devid);
+                ret = virAsprintf(&devname, "ide%d-hd%d", busid, devid);
             else
-                ret = asprintf(&devname, "ide%d-cd%d", busid, devid);
+                ret = virAsprintf(&devname, "ide%d-cd%d", busid, devid);
             break;
         case VIR_DOMAIN_DISK_BUS_SCSI:
             if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
-                ret = asprintf(&devname, "scsi%d-hd%d", busid, devid);
+                ret = virAsprintf(&devname, "scsi%d-hd%d", busid, devid);
             else
-                ret = asprintf(&devname, "scsi%d-cd%d", busid, devid);
+                ret = virAsprintf(&devname, "scsi%d-cd%d", busid, devid);
             break;
         case VIR_DOMAIN_DISK_BUS_FDC:
-            ret = asprintf(&devname, "floppy%d", devid);
+            ret = virAsprintf(&devname, "floppy%d", devid);
             break;
         case VIR_DOMAIN_DISK_BUS_VIRTIO:
-            ret = asprintf(&devname, "virtio%d", devid);
+            ret = virAsprintf(&devname, "virtio%d", devid);
             break;
         default:
             qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
@@ -2980,7 +2980,7 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
             VIR_FREE(devname);
             return -1;
         }
-        if (asprintf (&cmd, "change %s \"%s\"", devname, safe_path) == -1) {
+        if (virAsprintf(&cmd, "change %s \"%s\"", devname, safe_path) == -1) {
             qemudReportError(conn, dom, NULL, VIR_ERR_NO_MEMORY, NULL);
             VIR_FREE(safe_path);
             VIR_FREE(devname);
@@ -2988,7 +2988,7 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
         }
         VIR_FREE(safe_path);
 
-    } else if (asprintf(&cmd, "eject %s", devname) == -1) {
+    } else if (virAsprintf(&cmd, "eject %s", devname) == -1) {
         qemudReportError(conn, dom, NULL, VIR_ERR_NO_MEMORY, NULL);
         VIR_FREE(devname);
         return -1;
@@ -3052,8 +3052,8 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
         return -1;
     }
 
-    ret = asprintf(&cmd, "pci_add 0 storage file=%s,if=%s",
-                         safe_path, type);
+    ret = virAsprintf(&cmd, "pci_add 0 storage file=%s,if=%s",
+                      safe_path, type);
     VIR_FREE(safe_path);
     if (ret == -1) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
@@ -3122,7 +3122,7 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
         return -1;
     }
 
-    ret = asprintf(&cmd, "usb_add disk:%s", safe_path);
+    ret = virAsprintf(&cmd, "usb_add disk:%s", safe_path);
     VIR_FREE(safe_path);
     if (ret == -1) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
@@ -3170,13 +3170,13 @@ static int qemudDomainAttachHostDevice(virConnectPtr conn,
     }
 
     if (dev->data.hostdev->source.subsys.u.usb.vendor) {
-        ret = asprintf(&cmd, "usb_add host:%.4x:%.4x",
-                       dev->data.hostdev->source.subsys.u.usb.vendor,
-                       dev->data.hostdev->source.subsys.u.usb.product);
+        ret = virAsprintf(&cmd, "usb_add host:%.4x:%.4x",
+                          dev->data.hostdev->source.subsys.u.usb.vendor,
+                          dev->data.hostdev->source.subsys.u.usb.product);
     } else {
-        ret = asprintf(&cmd, "usb_add host:%.3d.%.3d",
-                       dev->data.hostdev->source.subsys.u.usb.bus,
-                       dev->data.hostdev->source.subsys.u.usb.device);
+        ret = virAsprintf(&cmd, "usb_add host:%.3d.%.3d",
+                          dev->data.hostdev->source.subsys.u.usb.bus,
+                          dev->data.hostdev->source.subsys.u.usb.device);
     }
     if (ret == -1) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
@@ -3306,9 +3306,8 @@ static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (asprintf(&cmd, "pci_del 0 %d", detach->slotnum) < 0) {
+    if (virAsprintf(&cmd, "pci_del 0 %d", detach->slotnum) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
-        cmd = NULL;
         goto cleanup;
     }
 
@@ -3979,10 +3978,9 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
         }
 
         /* Caller frees */
-        if (asprintf(uri_out, "tcp:%s:%d", hostname, this_port) < 0) {
+        if (virAsprintf(uri_out, "tcp:%s:%d", hostname, this_port) < 0) {
             qemudReportError (dconn, NULL, NULL, VIR_ERR_NO_MEMORY,
                               "%s", strerror (errno));
-            *uri_out = NULL;
             goto cleanup;
         }
     } else {

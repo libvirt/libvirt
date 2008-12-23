@@ -347,7 +347,7 @@ doRemoteOpen (virConnectPtr conn,
 
     /* Remote server defaults to "localhost" if not specified. */
     if (conn->uri && conn->uri->port != 0) {
-        if (asprintf (&port, "%d", conn->uri->port) == -1) goto out_of_memory;
+        if (virAsprintf(&port, "%d", conn->uri->port) == -1) goto out_of_memory;
     } else if (transport == trans_tls) {
         port = strdup (LIBVIRTD_TLS_PORT);
         if (!port) goto out_of_memory;
@@ -582,10 +582,9 @@ doRemoteOpen (virConnectPtr conn,
                     goto failed;
                 }
 
-                if (asprintf (&sockname, "@%s" LIBVIRTD_USER_UNIX_SOCKET, pw->pw_dir) < 0) {
-                    sockname = NULL;
+                if (virAsprintf(&sockname, "@%s" LIBVIRTD_USER_UNIX_SOCKET, pw->pw_dir) < 0)
                     goto out_of_memory;
-                }
+
             } else {
                 if (flags & VIR_DRV_OPEN_REMOTE_RO)
                     sockname = strdup (LIBVIRTD_PRIV_UNIX_SOCKET_RO);

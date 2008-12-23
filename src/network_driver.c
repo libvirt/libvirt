@@ -138,8 +138,8 @@ networkStartup(void) {
     networkDriverLock(driverState);
 
     if (!uid) {
-        if (asprintf(&driverState->logDir,
-                     "%s/log/libvirt/qemu", LOCAL_STATE_DIR) == -1)
+        if (virAsprintf(&driverState->logDir,
+                        "%s/log/libvirt/qemu", LOCAL_STATE_DIR) == -1)
             goto out_of_memory;
 
         if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)
@@ -151,13 +151,11 @@ networkStartup(void) {
             goto out_of_memory;
         }
 
-        if (asprintf(&driverState->logDir,
-                     "%s/.libvirt/qemu/log", pw->pw_dir) == -1)
+        if (virAsprintf(&driverState->logDir,
+                        "%s/.libvirt/qemu/log", pw->pw_dir) == -1)
             goto out_of_memory;
 
-        if (asprintf (&base, "%s/.libvirt", pw->pw_dir) == -1) {
-            networkLog (NETWORK_ERR,
-                      "%s", _("out of memory in asprintf\n"));
+        if (virAsprintf(&base, "%s/.libvirt", pw->pw_dir) == -1) {
             goto out_of_memory;
         }
     }
@@ -165,11 +163,11 @@ networkStartup(void) {
     /* Configuration paths are either ~/.libvirt/qemu/... (session) or
      * /etc/libvirt/qemu/... (system).
      */
-    if (asprintf (&driverState->networkConfigDir, "%s/qemu/networks", base) == -1)
+    if (virAsprintf(&driverState->networkConfigDir, "%s/qemu/networks", base) == -1)
         goto out_of_memory;
 
-    if (asprintf (&driverState->networkAutostartDir, "%s/qemu/networks/autostart",
-                  base) == -1)
+    if (virAsprintf(&driverState->networkAutostartDir, "%s/qemu/networks/autostart",
+                    base) == -1)
         goto out_of_memory;
 
     VIR_FREE(base);

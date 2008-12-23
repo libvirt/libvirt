@@ -158,7 +158,7 @@ umlIdentifyOneChrPTY(virConnectPtr conn,
     char *cmd;
     char *res = NULL;
     int retries = 0;
-    if (asprintf(&cmd, "config %s%d", dev, def->dstPort) < 0) {
+    if (virAsprintf(&cmd, "config %s%d", dev, def->dstPort) < 0) {
         umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
         return -1;
     }
@@ -327,23 +327,23 @@ umlStartup(void) {
     }
 
     if (!uid) {
-        if (asprintf(&uml_driver->logDir,
-                     "%s/log/libvirt/uml", LOCAL_STATE_DIR) == -1)
+        if (virAsprintf(&uml_driver->logDir,
+                        "%s/log/libvirt/uml", LOCAL_STATE_DIR) == -1)
             goto out_of_memory;
 
         if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)
             goto out_of_memory;
     } else {
-        if (asprintf(&uml_driver->logDir,
-                     "%s/.libvirt/uml/log", pw->pw_dir) == -1)
+        if (virAsprintf(&uml_driver->logDir,
+                        "%s/.libvirt/uml/log", pw->pw_dir) == -1)
             goto out_of_memory;
 
-        if (asprintf (&base, "%s/.libvirt", pw->pw_dir) == -1)
+        if (virAsprintf(&base, "%s/.libvirt", pw->pw_dir) == -1)
             goto out_of_memory;
     }
 
-    if (asprintf (&uml_driver->monitorDir,
-                  "%s/.uml", pw->pw_dir) == -1)
+    if (virAsprintf(&uml_driver->monitorDir,
+                    "%s/.uml", pw->pw_dir) == -1)
         goto out_of_memory;
 
     /* Configuration paths are either ~/.libvirt/uml/... (session) or
@@ -353,10 +353,10 @@ umlStartup(void) {
         goto out_of_memory;
     driverConf[sizeof(driverConf)-1] = '\0';
 
-    if (asprintf (&uml_driver->configDir, "%s/uml", base) == -1)
+    if (virAsprintf(&uml_driver->configDir, "%s/uml", base) == -1)
         goto out_of_memory;
 
-    if (asprintf (&uml_driver->autostartDir, "%s/uml/autostart", base) == -1)
+    if (virAsprintf(&uml_driver->autostartDir, "%s/uml/autostart", base) == -1)
         goto out_of_memory;
 
     VIR_FREE(base);
@@ -517,8 +517,8 @@ static int umlReadPidFile(virConnectPtr conn,
     int retries = 0;
 
     vm->pid = -1;
-    if (asprintf(&pidfile, "%s/%s/pid",
-                 driver->monitorDir, vm->def->name) < 0) {
+    if (virAsprintf(&pidfile, "%s/%s/pid",
+                    driver->monitorDir, vm->def->name) < 0) {
         umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
         return -1;
     }
@@ -558,8 +558,8 @@ static int umlMonitorAddress(virConnectPtr conn,
                              struct sockaddr_un *addr) {
     char *sockname;
 
-    if (asprintf(&sockname, "%s/%s/mconsole",
-                 driver->monitorDir, vm->def->name) < 0) {
+    if (virAsprintf(&sockname, "%s/%s/mconsole",
+                    driver->monitorDir, vm->def->name) < 0) {
         umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
         return -1;
     }
@@ -749,8 +749,8 @@ static int umlStartVMDaemon(virConnectPtr conn,
         return -1;
     }
 
-    if (asprintf(&logfile, "%s/%s.log",
-                 driver->logDir, vm->def->name) < 0) {
+    if (virAsprintf(&logfile, "%s/%s.log",
+                    driver->logDir, vm->def->name) < 0) {
         umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
         return -1;
     }

@@ -375,7 +375,7 @@ virNetworkDefParseXML(virConnectPtr conn,
         inaddress.s_addr &= innetmask.s_addr;
         netaddr = inet_ntoa(inaddress);
 
-        if (asprintf(&def->network, "%s/%s", netaddr, def->netmask) < 0) {
+        if (virAsprintf(&def->network, "%s/%s", netaddr, def->netmask) < 0) {
             virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
             goto error;
         }
@@ -643,16 +643,14 @@ int virNetworkSaveConfig(virConnectPtr conn,
     int err;
 
     if (!net->configFile &&
-        asprintf(&net->configFile, "%s/%s.xml",
-                 configDir, net->def->name) < 0) {
-        net->configFile = NULL;
+        virAsprintf(&net->configFile, "%s/%s.xml",
+                    configDir, net->def->name) < 0) {
         virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
         goto cleanup;
     }
     if (!net->autostartLink &&
-        asprintf(&net->autostartLink, "%s/%s.xml",
-                 autostartDir, net->def->name) < 0) {
-        net->autostartLink = NULL;
+        virAsprintf(&net->autostartLink, "%s/%s.xml",
+                    autostartDir, net->def->name) < 0) {
         virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
         goto cleanup;
     }
@@ -720,15 +718,13 @@ virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
     virNetworkObjPtr net;
     int autostart;
 
-    if (asprintf(&configFile, "%s/%s",
-                 configDir, file) < 0) {
-        configFile = NULL;
+    if (virAsprintf(&configFile, "%s/%s",
+                    configDir, file) < 0) {
         virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
         goto error;
     }
-    if (asprintf(&autostartLink, "%s/%s",
-                 autostartDir, file) < 0) {
-        autostartLink = NULL;
+    if (virAsprintf(&autostartLink, "%s/%s",
+                    autostartDir, file) < 0) {
         virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
         goto error;
     }

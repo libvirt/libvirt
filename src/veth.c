@@ -203,7 +203,7 @@ int moveInterfaceToNetNs(const char* interface, int pidInNs)
         goto error_out;
     }
 
-    if (asprintf(&pid, "%d", pidInNs) == -1)
+    if (virAsprintf(&pid, "%d", pidInNs) == -1)
         goto error_out;
 
     argv[5] = pid;

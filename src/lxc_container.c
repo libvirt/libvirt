@@ -277,8 +277,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
         return -1;
     }
 
-    if (asprintf(&oldroot, "%s/.oldroot", root->src) < 0) {
-        oldroot = NULL;
+    if (virAsprintf(&oldroot, "%s/.oldroot", root->src) < 0) {
         lxcError(NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
         return -1;
     }
@@ -378,7 +377,7 @@ static int lxcContainerMountNewFS(virDomainDefPtr vmDef)
         if (vmDef->fss[i]->type != VIR_DOMAIN_FS_TYPE_MOUNT)
             continue;
 
-        if (asprintf(&src, "/.oldroot/%s", vmDef->fss[i]->src) < 0) {
+        if (virAsprintf(&src, "/.oldroot/%s", vmDef->fss[i]->src) < 0) {
             lxcError(NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
             return -1;
         }

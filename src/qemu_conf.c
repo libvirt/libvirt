@@ -708,9 +708,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
     do {                                                                \
         ADD_ARG_LIT("-usbdevice");                                      \
         ADD_ARG_SPACE;                                                  \
-        if ((asprintf((char **)&(qargv[qargc++]),                       \
-                      "disk:%s", thisarg)) == -1) {                     \
-            qargv[qargc-1] = NULL;                                      \
+        if ((virAsprintf((char **)&(qargv[qargc++]),                    \
+                         "disk:%s", thisarg)) == -1) {                  \
             goto no_memory;                                             \
         }                                                               \
     } while (0)
@@ -743,7 +742,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         char *envval;                                                   \
         ADD_ENV_SPACE;                                                  \
         if (val != NULL) {                                              \
-            if (asprintf(&envval, "%s=%s", envname, val) < 0)           \
+            if (virAsprintf(&envval, "%s=%s", envname, val) < 0)        \
                 goto no_memory;                                         \
             qenv[qenvc++] = envval;                                     \
         }                                                               \
@@ -1157,12 +1156,12 @@ int qemudBuildCommandLine(virConnectPtr conn,
         char *display = NULL;
 
         if (vm->def->graphics->data.sdl.xauth &&
-            asprintf(&xauth, "XAUTHORITY=%s",
-                     vm->def->graphics->data.sdl.xauth) < 0)
+            virAsprintf(&xauth, "XAUTHORITY=%s",
+                        vm->def->graphics->data.sdl.xauth) < 0)
             goto no_memory;
         if (vm->def->graphics->data.sdl.display &&
-            asprintf(&display, "DISPLAY=%s",
-                     vm->def->graphics->data.sdl.display) < 0) {
+            virAsprintf(&display, "DISPLAY=%s",
+                        vm->def->graphics->data.sdl.display) < 0) {
             VIR_FREE(xauth);
             goto no_memory;
         }
@@ -1209,19 +1208,18 @@ int qemudBuildCommandLine(virConnectPtr conn,
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
             if(hostdev->source.subsys.u.usb.vendor) {
-                    ret = asprintf(&usbdev, "host:%.4x:%.4x",
+                    ret = virAsprintf(&usbdev, "host:%.4x:%.4x",
                                hostdev->source.subsys.u.usb.vendor,
                                hostdev->source.subsys.u.usb.product);
 
             } else {
-                    ret = asprintf(&usbdev, "host:%.3d.%.3d",
+                    ret = virAsprintf(&usbdev, "host:%.3d.%.3d",
                                hostdev->source.subsys.u.usb.bus,
                                hostdev->source.subsys.u.usb.device);
             }
-            if (ret < 0) {
-                usbdev = NULL;
+            if (ret < 0)
                 goto error;
-            }
+
             ADD_ARG_LIT("-usbdevice");
             ADD_ARG_LIT(usbdev);
             VIR_FREE(usbdev);

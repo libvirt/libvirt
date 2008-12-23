@@ -128,7 +128,7 @@ static int virCgroupPathOfGroup(const char *group,
         goto out;
     }
 
-    if (asprintf(path, "%s/%s", root->path, group) == -1)
+    if (virAsprintf(path, "%s/%s", root->path, group) == -1)
         rc = -ENOMEM;
 out:
     virCgroupFree(&root);
@@ -156,7 +156,7 @@ static int virCgroupPathOf(const char *grppath,
         goto out;
     }
 
-    if (asprintf(path, "%s/%s/%s", root->path, grppath, key) == -1)
+    if (virAsprintf(path, "%s/%s/%s", root->path, grppath, key) == -1)
         rc = -ENOMEM;
 out:
     virCgroupFree(&root);
@@ -212,7 +212,7 @@ static int virCgroupSetValueU64(virCgroupPtr group,
     char *strval = NULL;
     int rc;
 
-    if (asprintf(&strval, "%" PRIu64, value) == -1)
+    if (virAsprintf(&strval, "%" PRIu64, value) == -1)
         return -ENOMEM;
 
     rc = virCgroupSetValueStr(group, key, strval);
@@ -281,7 +281,7 @@ static int virCgroupSetValueI64(virCgroupPtr group,
     char *strval = NULL;
     int rc;
 
-    if (asprintf(&strval, "%" PRIi64, value) == -1)
+    if (virAsprintf(&strval, "%" PRIi64, value) == -1)
         return -ENOMEM;
 
     rc = virCgroupSetValueStr(group, key, strval);
@@ -341,7 +341,7 @@ static int _virCgroupInherit(const char *path,
 
     memset(buf, 0, sizeof(buf));
 
-    if (asprintf(&keypath, "%s/%s", path, key) == -1) {
+    if (virAsprintf(&keypath, "%s/%s", path, key) == -1) {
         rc = -ENOMEM;
         goto out;
     }
@@ -351,7 +351,7 @@ static int _virCgroupInherit(const char *path,
         goto out;
     }
 
-    if (asprintf(&pkeypath, "%s/../%s", path, key) == -1) {
+    if (virAsprintf(&pkeypath, "%s/../%s", path, key) == -1) {
         rc = -ENOMEM;
         VIR_FREE(keypath);
         goto out;
@@ -493,10 +493,10 @@ static int virCgroupNew(virCgroupPtr *parent,
         goto err;
     }
 
-    rc = asprintf(&((*newgroup)->path),
-                  "%s/%s",
-                  (*parent)->path,
-                  group);
+    rc = virAsprintf(&((*newgroup)->path),
+                     "%s/%s",
+                     (*parent)->path,
+                     group);
     if (rc == -1) {
         rc = -ENOMEM;
         goto err;
@@ -631,7 +631,7 @@ int virCgroupAddTask(virCgroupPtr group, pid_t pid)
         if (rc != 0)
             goto done;
 
-        if (asprintf(&taskpath, "%s/tasks", grppath) == -1) {
+        if (virAsprintf(&taskpath, "%s/tasks", grppath) == -1) {
             rc = -ENOMEM;
             goto done;
         }
@@ -642,7 +642,7 @@ int virCgroupAddTask(virCgroupPtr group, pid_t pid)
             goto done;
         }
 
-        if (asprintf(&pidstr, "%lu", (unsigned long)pid) == -1) {
+        if (virAsprintf(&pidstr, "%lu", (unsigned long)pid) == -1) {
             rc = -ENOMEM;
             goto done;
         }
@@ -745,7 +745,7 @@ int virCgroupAllowDevice(virCgroupPtr group,
     int rc;
     char *devstr = NULL;
 
-    if (asprintf(&devstr, "%c %i:%i rwm", type, major, minor) == -1) {
+    if (virAsprintf(&devstr, "%c %i:%i rwm", type, major, minor) == -1) {
         rc = -ENOMEM;
         goto out;
     }
@@ -775,7 +775,7 @@ int virCgroupAllowDeviceMajor(virCgroupPtr group,
     int rc;
     char *devstr = NULL;
 
-    if (asprintf(&devstr, "%c %i:* rwm", type, major) == -1) {
+    if (virAsprintf(&devstr, "%c %i:* rwm", type, major) == -1) {
         rc = -ENOMEM;
         goto out;
     }

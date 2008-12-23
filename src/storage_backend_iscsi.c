@@ -180,12 +180,12 @@ virStorageBackendISCSINewLun(virConnectPtr conn, virStoragePoolObjPtr pool,
 
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
-    if (asprintf(&(vol->name), "lun-%d", lun) < 0) {
+    if (virAsprintf(&(vol->name), "lun-%d", lun) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("name"));
         goto cleanup;
     }
 
-    if (asprintf(&devpath, "/dev/%s", dev) < 0) {
+    if (virAsprintf(&devpath, "/dev/%s", dev) < 0) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("devpath"));
         goto cleanup;
     }

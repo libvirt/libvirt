@@ -105,6 +105,11 @@ sc_prohibit_strcmp:
 	  { echo '$(ME): use STREQ in place of the above uses of str''cmp' \
 		1>&2; exit 1; } || :
 
+# Use virAsprintf rather than a'sprintf since *strp is undefined on error.
+sc_prohibit_asprintf:
+	@grep -nE '\<[a]sprintf\>' $$($(VC_LIST_EXCEPT)) && \
+	  { echo '$(ME): use virAsprintf, not a'sprintf 1>&2; exit 1; } || :
+
 # Using EXIT_SUCCESS as the first argument to error is misleading,
 # since when that parameter is 0, error does not exit.  Use `0' instead.
 sc_error_exit_success:

@@ -406,10 +406,8 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         dom->pid = veid;
         dom->def->id = dom->state == VIR_DOMAIN_SHUTOFF ? -1 : veid;
 
-        if (asprintf(&dom->def->name, "%i", veid) < 0) {
-            dom->def->name = NULL;
+        if (virAsprintf(&dom->def->name, "%i", veid) < 0)
             goto no_memory;
-        }
 
         openvzGetVPSUUID(veid, uuidstr);
         ret = virUUIDParse(uuidstr, dom->def->uuid);

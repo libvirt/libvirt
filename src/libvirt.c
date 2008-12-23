@@ -941,8 +941,8 @@ do_open (const char *name,
                                    "Is the libvirtd daemon running ?");
             } else {
                 char *msg;
-                if (asprintf(&msg, "Is the %s daemon running?",
-                             virDeviceMonitorTab[i]->name) > 0) {
+                if (virAsprintf(&msg, "Is the %s daemon running?",
+                                virDeviceMonitorTab[i]->name) > 0) {
                     virLibConnWarning (NULL, VIR_WAR_NO_NODE, msg);
                     VIR_FREE(msg);
                 }
