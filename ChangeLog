@@ -1,3 +1,9 @@
+Fri Dec 26 14:22:04 CET 2008 Guido Günther <agx@sigxcpu.org>
+
+	document vnc's keymap attribute
+	* docs/formatdomain.html.in: document keymap attribute
+	* docs/drvqemu.html.in: add keymap attribute to example
+
 Tue Dec 23 14:44:41 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/logging.html docs/logging.html.in: new page documenting
