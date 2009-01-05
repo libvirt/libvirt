@@ -15,4 +15,4 @@ libvirt_parthelper
 libvirt_lxc
 virsh-net-edit.c
 virsh-pool-edit.c
-libvirt_sym.version
+libvirt.syms

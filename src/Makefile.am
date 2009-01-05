@@ -192,6 +192,8 @@ libvirt_driver_la_SOURCES =					\
 libvirt_driver_la_CFLAGS = $(XEN_CFLAGS) $(NUMACTL_CFLAGS)
 libvirt_driver_la_LDFLAGS = $(XEN_LIBS) $(NUMACTL_LIBS)
 
+PRIVSYMFILES = libvirt_private.syms
+
 if WITH_TEST
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_test.la
@@ -390,31 +392,67 @@ EXTRA_DIST +=							\
 		$(NODE_DEVICE_DRIVER_HAL_SOURCES)		\
 		$(NODE_DEVICE_DRIVER_DEVKIT_SOURCES)
 
+#
+# Build our version script.  This is composed of three parts:
+#
+# 1. libvirt_public.syms - public API.  These functions are always
+# present in the library and should never change incompatibly.
+#
+# 2. libvirt_private.syms - private API.  These symbols are private and
+# semantics may change on every release, hence the version number is
+# spliced in at build time. This ensures that if libvirtd, virsh, or a
+# driver module was built against one libvirt release, it will refuse to
+# load with another where symbols may have same names but different
+# semantics. Such symbols should never be visible in an (installed)
+# public header file.
+#
+# 3. libvirt_*.syms - dynamic private API.  Like libvirt_private.syms,
+# except that build options (such as --enable-debug) can mean these
+# symbols aren't present at all.
+#
+
+if ENABLE_DEBUG
+PRIVSYMFILES += libvirt_debug.syms
+endif
+
+EXTRA_DIST += libvirt_public.syms $(PRIVSYMFILES)
+
+libvirt.syms: libvirt_public.syms $(PRIVSYMFILES)
+	rm -f $@-tmp $@
+	printf '# WARNING: generated from the following:\n# $^\n\n' >$@-tmp
+	cat $(srcdir)/libvirt_public.syms >>$@-tmp
+	printf '\n\n# Private symbols\n\n' >>$@-tmp
+	printf 'LIBVIRT_PRIVATE_$(VERSION) {\n\n'  >>$@-tmp
+	printf 'global:\n\n' >>$@-tmp
+	for file in $(PRIVSYMFILES); do \
+	    cat $(srcdir)/$$file >>$@-tmp; \
+	done
+	printf '\n\nlocal:\n*;\n\n};' >>$@-tmp
+	chmod a-w $@-tmp
+	mv $@-tmp libvirt.syms
 
 # Empty source list - it merely links a bunch of convenience libs together
 libvirt_la_SOURCES =
 libvirt_la_LIBADD += \
 		    @CYGWIN_EXTRA_LIBADD@ ../gnulib/lib/libgnu.la
-libvirt_la_LDFLAGS = @VERSION_SCRIPT_FLAGS@libvirt_sym.version \
+libvirt_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)libvirt.syms \
                      -version-info @LIBVIRT_VERSION_INFO@ \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%) \
                     $(LIBXML_LIBS) $(SELINUX_LIBS) \
 		    $(XEN_LIBS) $(DRIVER_MODULE_LIBS) \
 		    @CYGWIN_EXTRA_LDFLAGS@ @MINGW_EXTRA_LDFLAGS@
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
-libvirt_la_DEPENDENCIES = $(libvirt_la_LIBADD) libvirt_sym.version
+libvirt_la_DEPENDENCIES = $(libvirt_la_LIBADD) libvirt.syms
 
 # Create an automake "convenience library" version of libvirt_la,
 # just for testing, since the test harness requires access to internal
 # bits and pieces that we don't want to make publicly accessible.
 noinst_LTLIBRARIES += libvirt_test.la
 
-# Convert libvirt_sym.version
-#      to libvirt_test_sym.version, and
-# remove -version-info X.Y.Z (not needed since this is a convenience library.
+# Remove version script from convenience library
 test_LDFLAGS =						\
   $$(echo '$(libvirt_la_LDFLAGS)'			\
-     |sed 's!-Wl,--v.*_sym\.version!!'			\
+     |sed 's!@VERSION_SCRIPT_FLAGS@libvirt.syms!!'	\
      |sed 's!-version-info @LIBVIRT_VERSION_INFO@!!')
 
 # Just like the above, but with a slightly different set of public symbols.
@@ -438,7 +476,7 @@ virsh_LDADD =							\
 		../gnulib/lib/libgnu.la				\
 		$(VIRSH_LIBS)
 virsh_CFLAGS = $(COVERAGE_CFLAGS) $(READLINE_CFLAGS) $(NUMACTL_CFLAGS)
-BUILT_SOURCES = virsh-net-edit.c virsh-pool-edit.c
+BUILT_SOURCES = virsh-net-edit.c virsh-pool-edit.c libvirt.syms
 
 virsh-net-edit.c: virsh.c Makefile.am
 	rm -f $@-tmp

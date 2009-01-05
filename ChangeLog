@@ -1,3 +1,23 @@
+Mon Jan  5 2009 14:53:48 CET John Levon <john.levon@sun.com>
+
+	split up linker script, as described below and in
+	  http://thread.gmane.org/gmane.comp.emulators.libvirt/10728
+
+	split version script into multiple files
+	* src/Makefile.am (PRIVSYMFILES): Define.
+	(EXTRA_DIST): Append $(PRIVSYMFILES).
+	(libvirt.syms): New rule.
+	Reflect renaming: s/libvirt_sym.version/libvirt.syms/.
+	(BUILT_SOURCES): Depend on libvirt.syms.
+	* configure.in: Define ENABLE_DEBUG as an automake conditional.
+	(AC_OUTPUT): Remove src/libvirt_sym.version.
+	* src/.cvsignore: s/libvirt_sym.version/libvirt.syms/.
+	* src/.gitignore: Regenerate.
+	* src/libvirt_public.syms: Renamed from src/libvirt_sym.version.in.
+	* src/libvirt_debug.syms: New file.
+	* src/libvirt_private.syms: New file.
+	Author: John Levon
+
 Mon Jan  5 14:22:06 CET 2009 Jim Meyering <meyering@redhat.com>
 
 	avoid xgettext warning aboug bug-reporting address

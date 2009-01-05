@@ -195,6 +195,7 @@ dnl --enable-debug=(yes|no)
 AC_ARG_ENABLE([debug],
               [AC_HELP_STRING([--enable-debug=no/yes],
                              [enable debugging output])],[],[enable_debug=yes])
+AM_CONDITIONAL([ENABLE_DEBUG], test x"$enable_debug" = x"yes")
 if test x"$enable_debug" = x"yes"; then
    AC_DEFINE([ENABLE_DEBUG], [], [whether debugging is enabled])
 fi
@@ -1253,7 +1254,6 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
 	  gnulib/lib/Makefile \
 	  gnulib/tests/Makefile \
           libvirt.pc libvirt.spec mingw32-libvirt.spec \
-          src/libvirt_sym.version \
           po/Makefile.in \
 	  include/libvirt/Makefile include/libvirt/libvirt.h \
 	  python/Makefile python/tests/Makefile \

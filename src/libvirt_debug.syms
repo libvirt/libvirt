@@ -1,0 +1,19 @@
+#
+# These symbols are dependent upon --enable-debug.
+#
+
+
+# libvirt_internal.h
+debugFlag;
+
+
+# logging.h
+virLogMessage;
+virLogSetDefaultPriority;
+virLogDefineFilter;
+virLogDefineOutput;
+virLogParseFilters;
+virLogParseOutputs;
+virLogStartup;
+virLogShutdown;
+virLogReset;

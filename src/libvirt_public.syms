@@ -1,0 +1,240 @@
+#
+# Officially exported symbols, for which header
+# file definitions are installed in /usr/include/libvirt
+# either from libvirt.h and virterror.h
+#
+# Versions here are *fixed* to match the libvirt version
+# at which the symbol was introduced. This ensures that
+# a new client app requiring symbol foo() can't accidentally
+# run with old libvirt.so not providing foo() - the global
+# soname version info can't enforce this since we never
+# change the soname
+#
+LIBVIRT_0.0.3 {
+    global:
+	virConnectClose;
+	virConnectGetType;
+	virConnectGetVersion;
+	virConnectListDomains;
+	virConnectNumOfDomains;
+	virConnectOpen;
+	virConnectOpenReadOnly;
+
+	virDomainCreateLinux;
+	virDomainDestroy;
+	virDomainFree;
+	virDomainGetID;
+	virDomainGetInfo;
+	virDomainGetMaxMemory;
+	virDomainGetName;
+	virDomainGetOSType;
+	virDomainGetXMLDesc;
+	virDomainLookupByID;
+	virDomainLookupByName;
+	virDomainRestore;
+	virDomainResume;
+	virDomainSave;
+	virDomainSetMaxMemory;
+	virDomainShutdown;
+	virDomainSuspend;
+
+	virGetVersion;
+};
+
+LIBVIRT_0.0.5 {
+    global:
+	virDomainLookupByUUID;
+	virDomainGetUUID;
+} LIBVIRT_0.0.3;
+
+LIBVIRT_0.1.0 {
+    global:
+	virInitialize;
+	virNodeGetInfo;
+	virDomainReboot;
+
+	virCopyLastError;
+	virConnSetErrorFunc;
+	virResetLastError;
+	virResetError;
+	virConnGetLastError;
+	virGetLastError;
+	virSetErrorFunc;
+	virConnCopyLastError;
+	virConnResetLastError;
+	virDefaultErrorFunc;
+} LIBVIRT_0.0.5;
+
+LIBVIRT_0.1.1 {
+    global:
+	virDomainLookupByUUIDString;
+	virDomainGetUUIDString;
+	virDomainSetMemory;
+	virDomainDefineXML;
+	virDomainCreate;
+	virDomainUndefine;
+	virConnectListDefinedDomains;
+} LIBVIRT_0.1.0;
+
+LIBVIRT_0.1.4 {
+    global:
+	virDomainSetVcpus;
+	virDomainPinVcpu;
+	virDomainGetVcpus;
+} LIBVIRT_0.1.1;
+
+LIBVIRT_0.1.5 {
+    global:
+	virConnectNumOfDefinedDomains;
+} LIBVIRT_0.1.4;
+
+LIBVIRT_0.1.9 {
+    global:
+	virDomainCoreDump;
+	virDomainAttachDevice;
+	virDomainDetachDevice;
+} LIBVIRT_0.1.5;
+
+LIBVIRT_0.2.0 {
+    global:
+	virConnectNumOfNetworks;
+	virConnectListNetworks;
+	virConnectNumOfDefinedNetworks;
+	virConnectListDefinedNetworks;
+	virNetworkLookupByName;
+	virNetworkLookupByUUID;
+	virNetworkLookupByUUIDString;
+	virNetworkCreateXML;
+	virNetworkDefineXML;
+	virNetworkUndefine;
+	virNetworkCreate;
+	virNetworkDestroy;
+	virNetworkFree;
+	virNetworkGetName;
+	virNetworkGetUUID;
+	virNetworkGetUUIDString;
+	virNetworkGetXMLDesc;
+	virNetworkGetBridgeName;
+} LIBVIRT_0.1.9;
+
+LIBVIRT_0.2.1 {
+    global:
+	virConnectGetCapabilities;
+	virConnectGetMaxVcpus;
+	virDomainGetMaxVcpus;
+	virDomainGetAutostart;
+	virDomainSetAutostart;
+	virNetworkGetAutostart;
+	virNetworkSetAutostart;
+} LIBVIRT_0.2.0;
+
+LIBVIRT_0.2.3 {
+    global:
+	virDomainGetSchedulerType;
+	virDomainGetSchedulerParameters;
+	virDomainSetSchedulerParameters;
+} LIBVIRT_0.2.1;
+
+LIBVIRT_0.3.0 {
+    global:
+	virConnectGetHostname;
+	virConnectGetURI;
+	virDomainGetConnect;
+	virNetworkGetConnect;
+} LIBVIRT_0.2.3;
+
+LIBVIRT_0.3.2 {
+    global:
+	virDomainMigrate;
+	virDomainBlockStats;
+	virDomainInterfaceStats;
+} LIBVIRT_0.3.0;
+
+LIBVIRT_0.3.3 {
+    global:
+	virNodeGetCellsFreeMemory;
+	virNodeGetFreeMemory;
+} LIBVIRT_0.3.2;
+
+LIBVIRT_0.4.0 {
+    global:
+	virConnectOpenAuth;
+	virConnectAuthPtrDefault;
+} LIBVIRT_0.3.3;
+
+LIBVIRT_0.4.1 {
+    global:
+	virStoragePoolGetConnect;
+	virConnectNumOfStoragePools;
+	virConnectNumOfDefinedStoragePools;
+	virConnectListStoragePools;
+	virConnectListDefinedStoragePools;
+	virStoragePoolLookupByName;
+	virStoragePoolLookupByUUID;
+	virStoragePoolLookupByUUIDString;
+	virStoragePoolLookupByVolume;
+	virStoragePoolCreateXML;
+	virStoragePoolDefineXML;
+	virStoragePoolUndefine;
+	virStoragePoolCreate;
+	virStoragePoolBuild;
+	virStoragePoolDestroy;
+	virStoragePoolDelete;
+	virStoragePoolRefresh;
+	virStoragePoolFree;
+	virStoragePoolGetName;
+	virStoragePoolGetUUID;
+	virStoragePoolGetUUIDString;
+	virStoragePoolGetInfo;
+	virStoragePoolGetXMLDesc;
+	virStoragePoolSetAutostart;
+	virStoragePoolGetAutostart;
+	virStoragePoolNumOfVolumes;
+	virStoragePoolListVolumes;
+
+	virStorageVolGetConnect;
+	virStorageVolLookupByName;
+	virStorageVolLookupByKey;
+	virStorageVolLookupByPath;
+	virStorageVolCreateXML;
+	virStorageVolDelete;
+	virStorageVolFree;
+	virStorageVolGetName;
+	virStorageVolGetKey;
+	virStorageVolGetInfo;
+	virStorageVolGetXMLDesc;
+	virStorageVolGetPath;
+} LIBVIRT_0.4.0;
+
+LIBVIRT_0.4.2 {
+    global:
+	virDomainBlockPeek;
+	virDomainMemoryPeek;
+} LIBVIRT_0.4.1;
+
+LIBVIRT_0.4.5 {
+    global:
+	virConnectFindStoragePoolSources;
+} LIBVIRT_0.4.2;
+
+LIBVIRT_0.5.0 {
+    global:
+	virDomainCreateXML;
+	virEventRegisterImpl;
+	virConnectDomainEventRegister;
+	virConnectDomainEventDeregister;
+
+	virNodeNumOfDevices;
+	virNodeListDevices;
+	virNodeDeviceLookupByName;
+	virNodeDeviceFree;
+	virNodeDeviceGetXMLDesc;
+	virNodeDeviceGetName;
+	virNodeDeviceGetParent;
+	virNodeDeviceNumOfCaps;
+	virNodeDeviceListCaps;
+
+} LIBVIRT_0.4.5;
+
+# no new entry point in 0.5.1
+# .... define new API here using predicted next version number ....
