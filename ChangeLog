@@ -1,4 +1,8 @@
-Mon Jan  5 14:15:41 CET 2009 Jim Meyering <meyering@redhat.com>
+Mon Jan  5 14:22:06 CET 2009 Jim Meyering <meyering@redhat.com>
+
+	avoid xgettext warning aboug bug-reporting address
+	* po/Makevars (MSGID_BUGS_ADDRESS): Set, to avoid xgettext warning.
+	* po/libvirt.pot: Set bug-reporting address.
 
 	avoid bogus descriptions due to use of gettext with the empty string
 	* src/virsh.c: Use `""', not `gettext_noop("")', in numerous
