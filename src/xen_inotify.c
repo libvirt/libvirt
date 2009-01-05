@@ -128,7 +128,7 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn, const char *filename,
 
     if (virUUIDParse(uuid_str, rawuuid) < 0) {
         virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
-                           "parsing uuid %s", uuid_str);
+                           _("parsing uuid %s"), uuid_str);
         return -1;
     }
     /* call directly into xend here, as driver may not yet
@@ -145,7 +145,7 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn, const char *filename,
                 *name = strdup(configInfoList->doms[i]->name);
                 if (!*name) {
                     virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
-                                       "finding dom for %s", uuid_str);
+                                       _("finding dom for %s"), uuid_str);
                     return -1;
                 }
                 memcpy(uuid, configInfoList->doms[i]->uuid, VIR_UUID_BUFLEN);
@@ -201,7 +201,7 @@ xenInotifyXendDomainsDirRemoveEntry(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
         virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
-                           "parsing uuid %s", uuidstr);
+                           _("parsing uuid %s"), uuidstr);
         return -1;
     }
 
@@ -428,7 +428,7 @@ xenInotifyOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
                           IN_CLOSE_WRITE | IN_DELETE |
                           IN_MOVED_TO | IN_MOVED_FROM) < 0) {
         virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
-                           "adding watch on %s", _(configDir));
+                           _("adding watch on %s"), _(configDir));
         return -1;
     }
 
