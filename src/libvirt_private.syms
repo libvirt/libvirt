@@ -231,15 +231,6 @@ qparam_query_parse;
 free_qparam_set;
 
 
-# storage_backend.h
-virStorageBackendForType;
-virStorageBackendRunProgNul;
-virStorageBackendRunProgRegex;
-virStorageBackendStablePath;
-virStorageBackendUpdateVolInfo;
-virStorageBackendUpdateVolInfoFD;
-
-
 # storage_conf.h
 virStoragePoolDefFormat;
 virStoragePoolDefFree;

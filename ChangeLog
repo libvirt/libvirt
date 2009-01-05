@@ -35,6 +35,10 @@ Mon Jan  5 2009 14:53:48 CET John Levon <john.levon@sun.com>
 	* src/Makefile.am (PRIVSYMFILES) [WITH_LINUX]: Append libvirt_linux.syms.
 	* src/libvirt_private.syms: Move two symbol names into...
 	* src/libvirt_linux.syms: ...this new file.
+
+	Remove storage backend symbols from version script
+	* src/libvirt_private.syms: Remove virStorageBackend* symbol names.
+	They're linked into qemud, not libvirt.
 	Author: John Levon
 
 Mon Jan  5 14:22:06 CET 2009 Jim Meyering <meyering@redhat.com>
