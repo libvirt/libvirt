@@ -361,36 +361,66 @@ sc_two_space_separator_in_usage:
 	    echo "$(ME): an option and its description"; \
 		1>&2; exit 1; } || :
 
+# Many of the function names below came from this filter:
+# git grep -B2 '\<_('|grep -E '\.c- *[[:alpha:]_][[:alnum:]_]* ?\(.*[,;]$' \
+# |sed 's/.*\.c-  *//'|perl -pe 's/ ?\(.*//'|sort -u \
+# |grep -vE '^(qsort|if|close|assert|fputc|free|N_|vir.*GetName|.*Unlock|virNodeListDevices|virHashRemoveEntry|freeaddrinfo|.*[fF]ree|xdrmem_create|xmlXPathFreeObject|virUUIDFormat|openvzSetProgramSentinal|polkit_action_unref)$'
+
 msg_gen_function =
+msg_gen_function += DEBUG0
 msg_gen_function += DISABLE_fprintf
-msg_gen_function += virXendError
-msg_gen_function += virXMLError
-msg_gen_function += virHashError
-msg_gen_function += virConfError
-msg_gen_function += virTestError
-msg_gen_function += virLibConnError
-msg_gen_function += virStorageReportError
-msg_gen_function += virxmlRpcError
-msg_gen_function += virLog
-msg_gen_function += qemudLog
-msg_gen_function += remoteDispatchError
-msg_gen_function += virStorageLog
-msg_gen_function += xenXMError
+msg_gen_function += ERROR
+msg_gen_function += ERROR0
+msg_gen_function += REMOTE_DEBUG
 msg_gen_function += ReportError
-msg_gen_function += qemudReportError
-msg_gen_function += openvzLog
-msg_gen_function += openvzError
-msg_gen_function += virDomainReportError
-msg_gen_function += virReportErrorHelper
+msg_gen_function += VIR_FREE
+msg_gen_function += VIR_USE_CPU
+msg_gen_function += errorf
 msg_gen_function += lxcError
+msg_gen_function += networkLog
+msg_gen_function += networkReportError
+msg_gen_function += openvzError
+msg_gen_function += openvzLog
+msg_gen_function += qemudDispatchClientFailure
+msg_gen_function += qemudLog
+msg_gen_function += qemudReportError
+msg_gen_function += regerror
+msg_gen_function += remoteDispatchError
+msg_gen_function += remoteDispatchFormatError
 msg_gen_function += umlError
+msg_gen_function += umlLog
+msg_gen_function += umlReportError
+msg_gen_function += virConfError
+msg_gen_function += virDomainReportError
+msg_gen_function += virHashError
+msg_gen_function += virLibConnError
+msg_gen_function += virLibDomainError
+msg_gen_function += virLog
+msg_gen_function += virNetworkReportError
+msg_gen_function += virNodeDeviceReportError
+msg_gen_function += virRaiseError
+msg_gen_function += virReportErrorHelper
+msg_gen_function += virSexprError
+msg_gen_function += virStorageLog
+msg_gen_function += virStorageReportError
+msg_gen_function += virTestError
+msg_gen_function += virXMLError
+msg_gen_function += virXenInotifyError
+msg_gen_function += virXenStoreError
+msg_gen_function += virXendError
+msg_gen_function += virxmlRpcError
+msg_gen_function += vshCloseLogFile
+msg_gen_function += xenXMError
 
 # Uncomment the following and run "make syntax-check" to see diagnostics
 # that are not yet marked for translation, but that need to be rewritten
 # so that they are translatable.
 # msg_gen_function += error
-# msg_gen_function += virXenError
+# msg_gen_function += fprintf
 # msg_gen_function += testError
+# msg_gen_function += virXenError
+# msg_gen_function += vshPrint
+# msg_gen_function += vshError
 
 func_or := $(shell printf '$(msg_gen_function)'|tr -s '[[:space:]]' '|')
 func_re := ($(func_or))

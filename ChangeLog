@@ -1,5 +1,7 @@
 Mon Jan  5 09:11:21 CET 2009 Jim Meyering <meyering@redhat.com>
 
+	* Makefile.maint (msg_gen_function): Add to the list.
+
 	mark a few diagnostics for translation
 	* src/xen_inotify.c (xenInotifyXendDomainsDirLookup): Mark a diagnostic.
 	(xenInotifyXendDomainsDirRemoveEntry, xenInotifyOpen): Likewise.
