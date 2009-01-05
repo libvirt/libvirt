@@ -1,0 +1,7 @@
+#
+# These symbols are dependent upon --with-driver-modules.
+#
+
+
+# driver.h
+virDriverLoadModule;

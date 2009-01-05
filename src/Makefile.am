@@ -415,6 +415,10 @@ if ENABLE_DEBUG
 PRIVSYMFILES += libvirt_debug.syms
 endif
 
+if WITH_DRIVER_MODULES
+PRIVSYMFILES += libvirt_driver_modules.syms
+endif
+
 EXTRA_DIST += libvirt_public.syms $(PRIVSYMFILES)
 
 libvirt.syms: libvirt_public.syms $(PRIVSYMFILES)

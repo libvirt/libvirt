@@ -16,6 +16,11 @@ Mon Jan  5 2009 14:53:48 CET John Levon <john.levon@sun.com>
 	* src/libvirt_public.syms: Renamed from src/libvirt_sym.version.in.
 	* src/libvirt_debug.syms: New file.
 	* src/libvirt_private.syms: New file.
+
+	Move --with-driver-modules symbols into a separate sym file
+	* src/Makefile.am (PRIVSYMFILES): Append libvirt_driver_modules.syms.
+	* src/libvirt_private.syms: Move virDriverLoadModule into...
+	* src/libvirt_driver_modules.syms: ... this new file.
 	Author: John Levon
 
 Mon Jan  5 14:22:06 CET 2009 Jim Meyering <meyering@redhat.com>

@@ -131,10 +131,6 @@ virDomainEventDispatch;
 virDomainEventQueueDispatch;
 
 
-# driver.h
-virDriverLoadModule;
-
-
 # event.h
 virEventAddHandle;
 virEventAddTimeout;
