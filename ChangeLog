@@ -1,5 +1,9 @@
 Mon Jan  5 14:15:41 CET 2009 Jim Meyering <meyering@redhat.com>
 
+	avoid bogus descriptions due to use of gettext with the empty string
+	* src/virsh.c: Use `""', not `gettext_noop("")', in numerous
+	vshCmdInfo definitions.  The latter provokes a warning from gettext.
+
 	Makefile.maint: sync from coreutils
 
 Mon Jan  5 12:54:21 GMT 2009 Daniel P. Berrange <berrange@redhat.com>

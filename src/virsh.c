@@ -1,7 +1,7 @@
 /*
  * virsh.c: a Xen shell used to exercise the libvirt API
  *
- * Copyright (C) 2005, 2007-2008 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2009 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -2112,7 +2112,7 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_domname[] = {
     {"help", gettext_noop("convert a domain id or UUID to domain name")},
-    {"desc", gettext_noop("")}, /* FIXME: describe */
+    {"desc", ""},
     {NULL, NULL}
 };
 
@@ -2142,7 +2142,7 @@ cmdDomname(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_domid[] = {
     {"help", gettext_noop("convert a domain name or UUID to domain id")},
-    {"desc", gettext_noop("")}, /* FIXME: describe */
+    {"desc", ""},
     {NULL, NULL}
 };
 
@@ -2177,7 +2177,7 @@ cmdDomid(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_domuuid[] = {
     {"help", gettext_noop("convert a domain name or id to domain UUID")},
-    {"desc", gettext_noop("")}, /* FIXME: describe */
+    {"desc", ""},
     {NULL, NULL}
 };
 
@@ -2625,7 +2625,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
  */
 static const vshCmdInfo info_network_name[] = {
     {"help", gettext_noop("convert a network UUID to network name")},
-    {"desc", gettext_noop("")}, /* FIXME: describe */
+    {"desc", ""},
     {NULL, NULL}
 };
 
@@ -2732,7 +2732,7 @@ cmdNetworkUndefine(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_network_uuid[] = {
     {"help", gettext_noop("convert a network name to network UUID")},
-    {"desc", gettext_noop("")}, /* FIXME: describe */
+    {"desc", ""},
     {NULL, NULL}
 };
 
@@ -3600,7 +3600,7 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_pool_name[] = {
     {"help", gettext_noop("convert a pool UUID to pool name")},
-    {"desc", gettext_noop("")}, /* FIXME: describe */
+    {"desc", ""},
     {NULL, NULL}
 };
 
@@ -3828,7 +3828,7 @@ cmdPoolUndefine(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_pool_uuid[] = {
     {"help", gettext_noop("convert a pool name to pool UUID")},
-    {"desc", gettext_noop("")}, /* FIXME: describe */
+    {"desc", ""},
     {NULL, NULL}
 };
 
@@ -4135,7 +4135,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
  */
 static const vshCmdInfo info_vol_name[] = {
     {"help", gettext_noop("convert a vol UUID to vol name")},
-    {"desc", gettext_noop("")}, /* FIXME: describe */
+    {"desc", ""},
     {NULL, NULL}
 };
 
@@ -4168,7 +4168,7 @@ cmdVolName(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_vol_key[] = {
     {"help", gettext_noop("convert a vol UUID to vol key")},
-    {"desc", gettext_noop("")}, /* FIXME: describe */
+    {"desc", ""},
     {NULL, NULL}
 };
 
@@ -4201,7 +4201,7 @@ cmdVolKey(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_vol_path[] = {
     {"help", gettext_noop("convert a vol UUID to vol path")},
-    {"desc", gettext_noop("")}, /* FIXME: describe */
+    {"desc", ""},
     {NULL, NULL}
 };
 
@@ -4317,7 +4317,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
  */
 static const vshCmdInfo info_node_list_devices[] = {
     {"help", gettext_noop("enumerate devices on this host")},
-    {"desc", gettext_noop("")}, /* FIXME: describe */
+    {"desc", ""},
     {NULL, NULL}
 };
 
@@ -4405,7 +4405,7 @@ cmdNodeDeviceDumpXML (vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_hostname[] = {
     {"help", gettext_noop("print the hypervisor hostname")},
-    {"desc", gettext_noop("")}, /* FIXME: describe */
+    {"desc", ""},
     {NULL, NULL}
 };
 
@@ -4434,7 +4434,7 @@ cmdHostname (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
  */
 static const vshCmdInfo info_uri[] = {
     {"help", gettext_noop("print the hypervisor canonical URI")},
-    {"desc", gettext_noop("")}, /* FIXME: describe */
+    {"desc", ""},
     {NULL, NULL}
 };
 
@@ -5480,7 +5480,7 @@ static const vshCmdOptDef opts_pool_edit[] = {
  */
 static const vshCmdInfo info_quit[] = {
     {"help", gettext_noop("quit this interactive terminal")},
-    {"desc", gettext_noop("")}, /* FIXME: describe */
+    {"desc", ""},
     {NULL, NULL}
 };
 
@@ -5722,8 +5722,7 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
         fputc('\n', stdout);
 
         if (desc[0]) {
-            /* FIXME: remove this test once all of the empty descriptions
-               have been removed; see `FIXME: describe' lines.  */
+            /* Print the description only if it's not empty.  */
             fputs(_("\n  DESCRIPTION\n"), stdout);
             fprintf(stdout, "    %s\n", desc);
         }
