@@ -419,6 +419,10 @@ if WITH_DRIVER_MODULES
 PRIVSYMFILES += libvirt_driver_modules.syms
 endif
 
+if WITH_BRIDGE
+PRIVSYMFILES += libvirt_bridge.syms
+endif
+
 EXTRA_DIST += libvirt_public.syms $(PRIVSYMFILES)
 
 libvirt.syms: libvirt_public.syms $(PRIVSYMFILES)

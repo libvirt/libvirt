@@ -3,20 +3,6 @@
 #
 
 
-# bridge.h
-brAddBridge;
-brAddInterface;
-brAddTap;
-brDeleteBridge;
-brInit;
-brSetEnableSTP;
-brSetForwardDelay;
-brSetInetAddress;
-brSetInetNetmask;
-brSetInterfaceUp;
-brShutdown;
-
-
 # buf.h
 virBufferVSprintf;
 virBufferEscapeString;

@@ -1,0 +1,18 @@
+#
+# These symbols are dependent upon --with-qemu or --with-lxc via
+# WITH_BRIDGE.
+#
+
+
+# bridge.h
+brAddBridge;
+brAddInterface;
+brAddTap;
+brDeleteBridge;
+brInit;
+brSetEnableSTP;
+brSetForwardDelay;
+brSetInetAddress;
+brSetInetNetmask;
+brSetInterfaceUp;
+brShutdown;

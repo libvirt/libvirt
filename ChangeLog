@@ -21,6 +21,14 @@ Mon Jan  5 2009 14:53:48 CET John Levon <john.levon@sun.com>
 	* src/Makefile.am (PRIVSYMFILES): Append libvirt_driver_modules.syms.
 	* src/libvirt_private.syms: Move virDriverLoadModule into...
 	* src/libvirt_driver_modules.syms: ... this new file.
+
+	Move bridge symbols into a separate syms file
+	* configure.in: Provide a new --with-bridge option.
+	* src/Makefile.am (PRIVSYMFILES) [WITH_BRIDGE]: Append
+	libvirt_bridge.syms.
+	* src/bridge.c: Test WITH_BRIDGE rather than particular drivers.
+	* src/libvirt_private.syms: Move bridge-related symbols into...
+	* src/libvirt_bridge.syms: ...this new file.
 	Author: John Levon
 
 Mon Jan  5 14:22:06 CET 2009 Jim Meyering <meyering@redhat.com>
