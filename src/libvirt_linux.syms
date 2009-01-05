@@ -1,0 +1,8 @@
+#
+# Linux-specific private symbols.
+#
+
+
+# stats_linux.h
+linuxDomainInterfaceStats;
+xenLinuxDomainBlockStats;

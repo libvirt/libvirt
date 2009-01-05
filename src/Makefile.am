@@ -423,6 +423,10 @@ if WITH_BRIDGE
 PRIVSYMFILES += libvirt_bridge.syms
 endif
 
+if WITH_LINUX
+PRIVSYMFILES += libvirt_linux.syms
+endif
+
 EXTRA_DIST += libvirt_public.syms $(PRIVSYMFILES)
 
 libvirt.syms: libvirt_public.syms $(PRIVSYMFILES)

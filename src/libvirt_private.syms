@@ -231,11 +231,6 @@ qparam_query_parse;
 free_qparam_set;
 
 
-# stats_linux.h
-linuxDomainInterfaceStats;
-xenLinuxDomainBlockStats;
-
-
 # storage_backend.h
 virStorageBackendForType;
 virStorageBackendRunProgNul;

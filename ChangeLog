@@ -29,6 +29,12 @@ Mon Jan  5 2009 14:53:48 CET John Levon <john.levon@sun.com>
 	* src/bridge.c: Test WITH_BRIDGE rather than particular drivers.
 	* src/libvirt_private.syms: Move bridge-related symbols into...
 	* src/libvirt_bridge.syms: ...this new file.
+
+	migrate linux-specific symbol names into their own sym file
+	* configure.in (WITH_LINUX): New automake conditional.
+	* src/Makefile.am (PRIVSYMFILES) [WITH_LINUX]: Append libvirt_linux.syms.
+	* src/libvirt_private.syms: Move two symbol names into...
+	* src/libvirt_linux.syms: ...this new file.
 	Author: John Levon
 
 Mon Jan  5 14:22:06 CET 2009 Jim Meyering <meyering@redhat.com>
