@@ -1,3 +1,8 @@
+Mon Jan  5 12:54:21 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/nodeinfo.c: s/uint64_t/unsigned long/ for the
+	numa_node_to_cpus() API call.
+
 Mon Jan  5 09:11:21 CET 2009 Jim Meyering <meyering@redhat.com>
 
 	* Makefile.maint (msg_gen_function): Add to the list.

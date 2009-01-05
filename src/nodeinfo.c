@@ -194,7 +194,7 @@ int
 virCapsInitNUMA(virCapsPtr caps)
 {
     int n;
-    uint64_t *mask = NULL;
+    unsigned long *mask = NULL;
     int *cpus = NULL;
     int ret = -1;
     int max_n_cpus = NUMA_MAX_N_CPUS;
