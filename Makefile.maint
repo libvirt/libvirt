@@ -62,7 +62,7 @@ sc_avoid_write:
 	fi
 
 sc_cast_of_argument_to_free:
-	@grep -nE '\<free \(\(' $$($(VC_LIST_EXCEPT)) &&		\
+	@grep -nE '\<free *\( *\(' $$($(VC_LIST_EXCEPT)) &&		\
 	  { echo '$(ME): don'\''t cast free argument' 1>&2;		\
 	    exit 1; } || :
 
@@ -100,9 +100,10 @@ sc_prohibit_atoi_atof:
 # Use STREQ rather than comparing strcmp == 0, or != 0.
 # Similarly, use STREQLEN or STRPREFIX rather than strncmp.
 sc_prohibit_strcmp:
-	@grep -nE '! *str''n?cmp *\(|\<str''n?cmp *\([^)]+\) *=='	\
-	    $$($(VC_LIST_EXCEPT)) &&					\
-	  { echo '$(ME): use STREQ in place of the above uses of str''cmp' \
+	@grep -nE '! *strn?cmp *\(|\<strn?cmp *\([^)]+\) *=='		\
+	    $$($(VC_LIST_EXCEPT))					\
+	  | grep -vE ':# *define STREQ(LEN)?\(' &&			\
+	  { echo '$(ME): use STREQ(LEN) in place of the above uses of strcmp(strncmp)' \
 		1>&2; exit 1; } || :
 
 # Use virAsprintf rather than a'sprintf since *strp is undefined on error.
@@ -124,6 +125,7 @@ sc_file_system:
 	    'rewrite to use "file system"' 1>&2;			\
 	    exit 1; } || :
 
+# Don't use cpp tests of this symbol.  All code assumes config.h is included.
 sc_no_have_config_h:
 	@grep -n '^# *if.*HAVE''_CONFIG_H' $$($(VC_LIST_EXCEPT)) &&	\
 	  { echo '$(ME): found use of HAVE''_CONFIG_H; remove'		\
@@ -235,19 +237,22 @@ endif
 # On 2004-04-13, they were all changed to start with gl_ instead.
 # Make sure that none are inadvertently reintroduced.
 sc_prohibit_jm_in_m4:
-	@grep -nE 'jm_[A-Z]'					\
-		$$($(VC_LIST) m4 |grep '\.m4$$'; echo /dev/null) && \
-	    { echo '$(ME): do not use jm_ in m4 macro names'	\
+	@grep -nE 'jm_[A-Z]'						\
+		$$($(VC_LIST) m4 |grep '\.m4$$'; echo /dev/null) &&	\
+	    { echo '$(ME): do not use jm_ in m4 macro names'		\
 	      1>&2; exit 1; } || :
 
+# Ensure that each root-requiring test is run via the "check-root" rule.
 sc_root_tests:
 	@if test -d tests \
 	      && grep check-root tests/Makefile.am>/dev/null 2>&1; then \
 	t1=sc-root.expected; t2=sc-root.actual;				\
 	grep -nl '^require_root_$$'					\
-	  $$($(VC_LIST) tests) |sed s,tests,., |sort > $$t1;		\
-	sed -n 's,	cd \([^ ]*\) .*MAKE..check TESTS=\(.*\),./\1/\2,p' \
-	  $(srcdir)/tests/Makefile.am |sort > $$t2;			\
+	  $$($(VC_LIST) tests) |sed s,tests/,, |sort > $$t1;		\
+	sed -n '/^root_tests =[	 ]*\\$$/,/[^\]$$/p'			\
+	  $(srcdir)/tests/Makefile.am					\
+	    | sed 's/^  *//;/^root_tests =/d'				\
+	    | tr -s '\012\\' '  ' | fmt -1 | sort > $$t2;		\
 	diff -u $$t1 $$t2 || diff=1;					\
 	rm -f $$t1 $$t2;						\
 	test "$$diff"							\
@@ -469,12 +474,20 @@ sc_GPL_version:
 # Ensure that the c99-to-c89 patch applies cleanly.
 patch-check:
 	rm -rf src-c89 $@.1 $@.2
-	cp -a src src-c89
-	(cd src-c89; patch -p1 -V never --fuzz=0) < src/c99-to-c89.diff \
+	cp -a $(srcdir)/src src-c89
+	if test "x$(srcdir)" != x.; then \
+	  cp -a src/* src-c89; \
+	  dotfiles=`ls src/.[!.]* 2>/dev/null`; \
+	  test -z "$$dotfiles" || cp -a src/.[!.]* src-c89; \
+	fi
+	(cd src-c89; patch -p1 -V never --fuzz=0) < $(srcdir)/src/c99-to-c89.diff \
 	  > $@.1 2>&1
-	if test "$$REGEN_PATCH" = yes; then \
-	  diff -upr src src-c89 | sed 's,src-c89/,src/,' \
-	    | grep -v '^Only in' > new-diff || : ; fi
+	if test "$(REGEN_PATCH)" = yes; then			\
+	  diff -upr $(srcdir)/src src-c89 | sed 's,$(srcdir)/src-c89/,src/,'	\
+	    | grep -vE '^(Only in|File )'			\
+	    | perl -pe 's/^((?:\+\+\+|---) \S+\t).*/$${1}$(epoch_date)/;' \
+	       -e 's/^ $$//'					\
+	    > new-diff || : ; fi
 	grep -v '^patching file ' $@.1 > $@.2 || :
 	msg=ok; test -s $@.2 && msg='fuzzy patch' || : ;	\
 	rm -f src-c89/*.o || msg='rm failed';			\
@@ -529,7 +542,7 @@ changelog-check:
 
 m4-check:
 	@grep -n 'AC_DEFUN([^[]' $(srcdir)/m4/*.m4 \
-	  && { echo 'Makefile.maint: quote the first arg to AC_DEFUN' 1>&2; \
+	  && { echo '$(ME): quote the first arg to AC_DEFUN' 1>&2; \
 	       exit 1; } || :
 
 fix_po_file_diag = \
@@ -539,20 +552,19 @@ apply the above patch\n'
 # Verify that all source files using _() are listed in po/POTFILES.in.
 po_file = po/POTFILES.in
 po-check:
-	@if test -f po/POTFILES.in; then					\
-	  grep -E -v '^(#|$$)' po/POTFILES.in				\
+	@if test -f $(po_file); then					\
+	  grep -E -v '^(#|$$)' $(po_file)				\
 	    | grep -v '^src/false\.c$$' | sort > $@-1;			\
 	  files=;							\
 	  for file in $$($(VC_LIST_EXCEPT)); do				\
 	    case $$file in						\
-	    djgpp/* | man/*) continue;;					\
-	    */c99-to-c89.diff) continue;;				\
+	      *.?|*.??) ;;						\
+	      *) continue;;						\
 	    esac;							\
 	    case $$file in						\
 	    *.[ch])							\
 	      base=`expr " $$file" : ' \(.*\)\..'`;			\
 	      { test -f $$base.l || test -f $$base.y; } && continue;;	\
-	    *) continue;;						\
 	    esac;							\
 	    files="$$files $$file";					\
 	  done;								\
@@ -568,7 +580,7 @@ po-check:
 # gettext recognizes it as a string requiring translation.
 author_mark_check:
 	@grep -n '^# *define AUTHORS "[^"]* and ' src/*.c |grep -v ' N_ (' && \
-	  { echo 'Makefile.maint: enclose the above strings in N_ (...)' 1>&2; \
+	  { echo '$(ME): enclose the above strings in N_ (...)' 1>&2; \
 	    exit 1; } || :
 
 # Sometimes it is useful to change the PATH environment variable
@@ -577,7 +589,7 @@ author_mark_check:
 # It'd be better to use `find -print0 ...|xargs -0 ...', but less portable,
 # and there probably aren't many projects with so many Makefile.am files
 # that we'd have to worry about limits on command line length.
-msg = 'Makefile.maint: Do not use `:'\'' above; use @PATH_SEPARATOR@ instead'
+msg = '$(ME): Do not use `:'\'' above; use @PATH_SEPARATOR@ instead'
 makefile_path_separator_check:
 	@grep -n 'PATH=.*:' `find $(srcdir) -name Makefile.am` \
 	  && { echo $(msg) 1>&2; exit 1; } || :
@@ -591,7 +603,7 @@ writable-files:
 	    test -w $$file						\
 	      || { echo ERROR: $$file is not writable; fail=1; };	\
 	  done;								\
-	  test "$$fail" && exit 1 || :
+	  test "$$fail" && exit 1 || : ;				\
 	fi
 
 v_etc_file = lib/version-etc.c
@@ -640,16 +652,18 @@ maintainer-distcheck:
 # arithmetic problems with -Wpointer-arith.
 # These CFLAGS are pretty strict.  If you build this target, you probably
 # have to have a recent version of gcc and glibc headers.
-# The for-loop below ensures that there is a bin/ directory full of all
-# of the programs under test (except the few that are required for basic
-# Makefile rules), all symlinked to the just-built "false" program.
+# The hard-linking for-loop below ensures that there is a bin/ directory
+# full of all of the programs under test (except the ones that are required
+# for basic Makefile rules), all symlinked to the just-built "false" program.
 # This is to ensure that if ever a test neglects to make PATH include
 # the build srcdir, these always-failing programs will run.
 # Otherwise, it is too easy to test the wrong programs.
 # Note that "false" itself is a symlink to true, so it too will malfunction.
 TMPDIR ?= /tmp
 t=$(TMPDIR)/$(PACKAGE)/test
-my-distcheck: $(local-check) check
+my-distcheck: $(DIST_ARCHIVES) $(local-check)
+	$(MAKE) syntax-check
+	$(MAKE) check
 	-rm -rf $(t)
 	mkdir -p $(t)
 	GZIP=$(GZIP_ENV) $(AMTAR) -C $(t) -zxf $(distdir).tar.gz
@@ -662,13 +676,6 @@ my-distcheck: $(local-check) check
 	(cd $(t) && mv $(distdir) $(distdir).old	\
 	  && $(AMTAR) -zxf - ) < $(distdir).tar.gz
 	diff -ur $(t)/$(distdir).old $(t)/$(distdir)
-	if test -f $(srcdir)/src/c99-to-c89.diff; then			\
-	  cd $(t)/$(distdir)						\
-	    && (cd src && patch -V never --fuzz=0 <c99-to-c89.diff)	\
-	    && ./configure --disable-largefile				\
-	         CFLAGS='-Werror -ansi -Wno-long-long'			\
-	    && $(MAKE);							\
-	fi
 	-rm -rf $(t)
 	@echo "========================"; \
 	echo "$(distdir).tar.gz is ready for distribution"; \

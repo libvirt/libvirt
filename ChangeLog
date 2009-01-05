@@ -1,3 +1,7 @@
+Mon Jan  5 14:15:41 CET 2009 Jim Meyering <meyering@redhat.com>
+
+	Makefile.maint: sync from coreutils
+
 Mon Jan  5 12:54:21 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/nodeinfo.c: s/uint64_t/unsigned long/ for the
