@@ -1,3 +1,7 @@
+Tue Jan  6 17:18:10 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* AUTHORS: John Levon is now a commiter
+
 Tue Jan  6 16:21:24 CET 2009 Jim Meyering <meyering@redhat.com>
 
 	fix "make dist" (from scratch) failure
