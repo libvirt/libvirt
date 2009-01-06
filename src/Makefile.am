@@ -192,7 +192,7 @@ libvirt_driver_la_SOURCES =					\
 libvirt_driver_la_CFLAGS = $(XEN_CFLAGS) $(NUMACTL_CFLAGS)
 libvirt_driver_la_LDFLAGS = $(XEN_LIBS) $(NUMACTL_LIBS)
 
-PRIVSYMFILES = libvirt_private.syms
+USED_SYM_FILES = libvirt_private.syms
 
 if WITH_TEST
 if WITH_DRIVER_MODULES
@@ -412,31 +412,37 @@ EXTRA_DIST +=							\
 #
 
 if ENABLE_DEBUG
-PRIVSYMFILES += libvirt_debug.syms
+USED_SYM_FILES += libvirt_debug.syms
 endif
 
 if WITH_DRIVER_MODULES
-PRIVSYMFILES += libvirt_driver_modules.syms
+USED_SYM_FILES += libvirt_driver_modules.syms
 endif
 
 if WITH_BRIDGE
-PRIVSYMFILES += libvirt_bridge.syms
+USED_SYM_FILES += libvirt_bridge.syms
 endif
 
 if WITH_LINUX
-PRIVSYMFILES += libvirt_linux.syms
+USED_SYM_FILES += libvirt_linux.syms
 endif
 
-EXTRA_DIST += libvirt_public.syms $(PRIVSYMFILES)
+EXTRA_DIST += \
+  libvirt_public.syms		\
+  libvirt_private.syms		\
+  libvirt_debug.syms		\
+  libvirt_driver_modules.syms	\
+  libvirt_bridge.syms		\
+  libvirt_linux.syms
 
-libvirt.syms: libvirt_public.syms $(PRIVSYMFILES)
+libvirt.syms: libvirt_public.syms $(USED_SYM_FILES)
 	rm -f $@-tmp $@
 	printf '# WARNING: generated from the following:\n# $^\n\n' >$@-tmp
 	cat $(srcdir)/libvirt_public.syms >>$@-tmp
 	printf '\n\n# Private symbols\n\n' >>$@-tmp
 	printf 'LIBVIRT_PRIVATE_$(VERSION) {\n\n'  >>$@-tmp
 	printf 'global:\n\n' >>$@-tmp
-	for file in $(PRIVSYMFILES); do \
+	for file in $(USED_SYM_FILES); do \
 	    cat $(srcdir)/$$file >>$@-tmp; \
 	done
 	printf '\n\nlocal:\n*;\n\n};' >>$@-tmp
