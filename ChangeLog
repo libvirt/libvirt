@@ -1,3 +1,7 @@
+Tue Jan  6 18:12:38 CET 2009 Guido Günther <agx@sigxcpu.org>
+
+	* .gitignore: ignore generated TAGS files
+
 Tue Jan  6 17:18:10 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* AUTHORS: John Levon is now a commiter
