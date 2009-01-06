@@ -28,7 +28,7 @@ ICON_FILES = \
 	libvirt_win_icon_64x64.ico \
 	virsh_win_icon.rc
 
-EXTRA_DIST = libvirt_sym.version $(conf_DATA) $(ICON_FILES)
+EXTRA_DIST = $(conf_DATA) $(ICON_FILES)
 
 
 lib_LTLIBRARIES = libvirt.la

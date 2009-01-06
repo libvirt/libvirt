@@ -1,4 +1,8 @@
-Tue Jan  6 12:09:47 CET 2009 Jim Meyering <meyering@redhat.com>
+Tue Jan  6 16:21:24 CET 2009 Jim Meyering <meyering@redhat.com>
+
+	fix "make dist" (from scratch) failure
+	* src/Makefile.am (EXTRA_DIST): Don't distribute libvirt_sym.version,
+	now that it's been removed.  Spotted by Daniel Veillard.
 
 	dist: distribute all libvirt_*.syms files, ...
 	* src/Makefile.am (EXTRA_DIST): Distribute all libvirt_*.syms files,
