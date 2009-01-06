@@ -1,3 +1,9 @@
+Tue Jan  6 18:44:34 CET 2009 Guido Günther <agx@sigxcpu.org>
+
+	add virKillProcess
+	* src/util.[ch] (virKillProcess): new function
+	* src/libvirt_private.syms: add symbol
+
 Tue Jan  6 18:14:31 CET 2009 Guido Günther <agx@sigxcpu.org>
 
 	trivial cleanups

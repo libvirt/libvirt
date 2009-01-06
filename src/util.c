@@ -1337,3 +1337,14 @@ int virDiskNameToIndex(const char *name) {
 
     return idx;
 }
+
+/* send signal to a single process */
+int virKillProcess(pid_t pid, int sig)
+{
+    if (pid < 1) {
+        errno = ESRCH;
+        return -1;
+    }
+
+    return kill(pid, sig);
+}

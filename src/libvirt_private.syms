@@ -292,6 +292,7 @@ virParseNumber;
 virAsprintf;
 virRun;
 virSkipSpaces;
+virKillProcess;
 
 
 # uuid.h
