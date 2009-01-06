@@ -107,7 +107,7 @@
     <dl>
       <dt><a href="http://honk.sigxcpu.org/projects/libvirt/#munin">for munin</a></dt>
       <dd>
-	The plugins provided by Guido Günther allows to monitor various things
+	The plugins provided by Guido Günther allow to monitor various things
         like network and block I/O with
         <a href="http://munin.projects.linpro.no/">Munin</a>.
       </dd>

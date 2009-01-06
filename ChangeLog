@@ -1,3 +1,12 @@
+Tue Jan  6 18:14:31 CET 2009 Guido Günther <agx@sigxcpu.org>
+
+	trivial cleanups
+	* src/qemu_driver.c (qemudGetMaxVCPUs): we have kvmGetMaxVCPUs(), so
+	  the comment can go
+	* src/qemu_driver.c (qemudDomainDetachDevice): fix error message
+	* AUTHORS: fix spelling and suggest UTF-8 encoding
+	* docs/apps.html.in: minor typo
+
 Tue Jan  6 18:12:38 CET 2009 Guido Günther <agx@sigxcpu.org>
 
 	* .gitignore: ignore generated TAGS files

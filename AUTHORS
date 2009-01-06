@@ -20,7 +20,7 @@ The primary maintainers and people with commit access rights:
   Dave Leskovec        <dlesko@linux.vnet.ibm.com>
   Cole Robinson        <crobinso@redhat.com>
   Dan Smith            <danms@us.ibm.com>
-  Guido Guenther       <agx@sigxcpu.org>
+  Guido Günther        <agx@sigxcpu.org>
   John Levon           <john.levon@sun.com>
 
 Patches have also been contributed by:
@@ -64,3 +64,6 @@ Patches have also been contributed by:
 The libvirt Logo was designed by Diana Fong
 
 -- End
+;; Local Variables:
+;; coding: utf-8
+;; End:

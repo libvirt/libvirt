@@ -1416,8 +1416,6 @@ static int qemudGetMaxVCPUs(virConnectPtr conn, const char *type) {
     if (STRCASEEQ(type, "qemu"))
         return 16;
 
-    /* XXX future KVM will support SMP. Need to probe
-       kernel to figure out KVM module version i guess */
     if (STRCASEEQ(type, "kvm"))
         return kvmGetMaxVCPUs();
 
@@ -3366,7 +3364,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
     if (!virDomainIsActive(vm)) {
         qemuDriverUnlock(driver);
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "%s", _("cannot attach device on inactive domain"));
+                         "%s", _("cannot detach device on inactive domain"));
         goto cleanup;
     }
 
