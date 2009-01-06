@@ -1,3 +1,8 @@
+Tue Jan  6 10:47:33 CET 2009 Jim Meyering <meyering@redhat.com>
+
+	avoid syntax-check (po-check) failure due to FP match on gettext.m4
+	* Makefile.maint (po-check): Exclude .m4 files.
+
 Tue Jan  6 10:45:04 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/remote.c: fix compilation without SASL, patch by John Levon

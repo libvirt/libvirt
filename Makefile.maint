@@ -558,6 +558,7 @@ po-check:
 	  files=;							\
 	  for file in $$($(VC_LIST_EXCEPT)); do				\
 	    case $$file in						\
+	      *.m4) continue;;						\
 	      *.?|*.??) ;;						\
 	      *) continue;;						\
 	    esac;							\
