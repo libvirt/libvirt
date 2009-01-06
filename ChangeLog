@@ -1,3 +1,7 @@
+Tue Jan  6 10:45:04 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/remote.c: fix compilation without SASL, patch by John Levon
+
 Tue Jan  6 09:46:43 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* po/*: updated polish and brazilian translations, regenerated

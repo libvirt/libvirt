@@ -2959,7 +2959,7 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
                             void *args ATTRIBUTE_UNUSED,
                             remote_auth_sasl_init_ret *ret ATTRIBUTE_UNUSED)
 {
-    qemudLog(QEMUD_ERR, "%s", _("client tried unsupported SASL init request"));
+    ERROR0(_("client tried unsupported SASL init request"));
     remoteDispatchAuthError(rerr);
     return -1;
 }
@@ -2972,7 +2972,7 @@ remoteDispatchAuthSaslStart (struct qemud_server *server ATTRIBUTE_UNUSED,
                              remote_auth_sasl_start_args *args ATTRIBUTE_UNUSED,
                              remote_auth_sasl_start_ret *ret ATTRIBUTE_UNUSED)
 {
-    qemudLog(QEMUD_ERR, "%s", _("client tried unsupported SASL start request"));
+    ERROR0(_("client tried unsupported SASL start request"));
     remoteDispatchAuthError(rerr);
     return -1;
 }
@@ -2985,7 +2985,7 @@ remoteDispatchAuthSaslStep (struct qemud_server *server ATTRIBUTE_UNUSED,
                             remote_auth_sasl_step_args *args ATTRIBUTE_UNUSED,
                             remote_auth_sasl_step_ret *ret ATTRIBUTE_UNUSED)
 {
-    qemudLog(QEMUD_ERR, "%s", _("client tried unsupported SASL step request"));
+    ERROR0(_("client tried unsupported SASL step request"));
     remoteDispatchAuthError(rerr);
     return -1;
 }
