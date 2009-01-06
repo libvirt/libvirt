@@ -31,7 +31,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <mntent.h>
 #include <string.h>
 
 #include <libxml/parser.h>
@@ -242,6 +241,9 @@ static int virStorageBackendProbeFile(virConnectPtr conn,
 }
 
 #if WITH_STORAGE_FS
+
+#include <mntent.h>
+
 struct _virNetfsDiscoverState {
     const char *host;
     virStoragePoolSourceList list;
