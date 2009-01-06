@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: cs\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-12-04 16:26+0100\n"
+"Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
+"POT-Creation-Date: 2009-01-06 09:44+0100\n"
 "PO-Revision-Date: 2008-02-04 01:43+0100\n"
 "Last-Translator: Miloslav Trmač <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -96,230 +96,235 @@ msgstr ""
 msgid "Unknown error"
 msgstr "Neznámý"
 
-#: qemud/qemud.c:166 src/remote_internal.c:952
+#: qemud/qemud.c:174 src/remote_internal.c:952
 #, c-format
 msgid "Cannot access %s '%s': %s (%d)"
 msgstr ""
 
-#: qemud/qemud.c:183
+#: qemud/qemud.c:191
 #, c-format
 msgid "gnutls_certificate_allocate_credentials: %s"
 msgstr ""
 
-#: qemud/qemud.c:196
+#: qemud/qemud.c:204
 #, c-format
 msgid "gnutls_certificate_set_x509_trust_file: %s"
 msgstr ""
 
-#: qemud/qemud.c:210
+#: qemud/qemud.c:218
 #, c-format
 msgid "gnutls_certificate_set_x509_crl_file: %s"
 msgstr ""
 
-#: qemud/qemud.c:228
+#: qemud/qemud.c:235
 #, c-format
 msgid "gnutls_certificate_set_x509_key_file: %s"
 msgstr ""
 
-#: qemud/qemud.c:241
+#: qemud/qemud.c:248
 #, c-format
 msgid "gnutls_dh_params_init: %s"
 msgstr ""
 
-#: qemud/qemud.c:247
+#: qemud/qemud.c:253
 #, c-format
 msgid "gnutls_dh_params_generate2: %s"
 msgstr ""
 
-#: qemud/qemud.c:267
+#: qemud/qemud.c:274
 #, fuzzy, c-format
 msgid "Failed to read from signal pipe: %s"
 msgstr "nepodařilo se číst z démona Xen"
 
-#: qemud/qemud.c:276
+#: qemud/qemud.c:283
 #, fuzzy
 msgid "Reloading configuration on SIGHUP"
 msgstr "alokuji nastavení"
 
-#: qemud/qemud.c:278
+#: qemud/qemud.c:285
 #, fuzzy
 msgid "Error while reloading drivers"
 msgstr "Chyba při alokaci paměti: %s"
 
-#: qemud/qemud.c:284
+#: qemud/qemud.c:291
 #, c-format
 msgid "Shutting down on signal %d"
 msgstr ""
 
-#: qemud/qemud.c:290
+#: qemud/qemud.c:296
 #, fuzzy, c-format
 msgid "Received unexpected signal %d"
 msgstr "neočekávaná hodnota uzlu"
 
-#: qemud/qemud.c:309 src/util.c:232 src/util.c:263
+#: qemud/qemud.c:315 src/util.c:233 src/util.c:264
 msgid "Failed to set close-on-exec file descriptor flag"
 msgstr ""
 
-#: qemud/qemud.c:324 src/util.c:226 src/util.c:257
+#: qemud/qemud.c:329 src/util.c:227 src/util.c:258
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr ""
 
-#: qemud/qemud.c:465
+#: qemud/qemud.c:407
 #, fuzzy, c-format
 msgid "Failed to open pid file '%s' : %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: qemud/qemud.c:471
+#: qemud/qemud.c:413
 #, fuzzy, c-format
 msgid "Failed to fdopen pid file '%s' : %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: qemud/qemud.c:478
+#: qemud/qemud.c:420
 #, fuzzy, c-format
 msgid "Failed to write to pid file '%s' : %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: qemud/qemud.c:485
+#: qemud/qemud.c:427
 #, fuzzy, c-format
 msgid "Failed to close pid file '%s' : %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: qemud/qemud.c:502
+#: qemud/qemud.c:443
 #, fuzzy
 msgid "Failed to allocate memory for struct qemud_socket"
 msgstr "Nepodařilo se alokovat paměť"
 
-#: qemud/qemud.c:512
+#: qemud/qemud.c:453
 #, fuzzy, c-format
 msgid "Failed to create socket: %s"
 msgstr "Nepodařilo se číst ze soketu %d\n"
 
-#: qemud/qemud.c:534
+#: qemud/qemud.c:475
 #, fuzzy, c-format
 msgid "Failed to bind socket to '%s': %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: qemud/qemud.c:543
+#: qemud/qemud.c:484
 #, fuzzy, c-format
 msgid "Failed to listen for connections on '%s': %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: qemud/qemud.c:555 qemud/qemud.c:686
+#: qemud/qemud.c:495 qemud/qemud.c:624
 msgid "Failed to add server event callback"
 msgstr ""
 
-#: qemud/qemud.c:584
+#: qemud/qemud.c:524
 #, c-format
 msgid "getaddrinfo: %s\n"
 msgstr ""
 
-#: qemud/qemud.c:593
+#: qemud/qemud.c:533
 #, c-format
 msgid "socket: %s"
 msgstr ""
 
-#: qemud/qemud.c:602
+#: qemud/qemud.c:542
 #, c-format
 msgid "bind: %s"
 msgstr ""
 
-#: qemud/qemud.c:609
+#: qemud/qemud.c:549
 #, c-format
 msgid "listen: %s"
 msgstr ""
 
-#: qemud/qemud.c:645
+#: qemud/qemud.c:584
 #, c-format
 msgid "remoteListenTCP: calloc: %s"
 msgstr ""
 
-#: qemud/qemud.c:676
+#: qemud/qemud.c:614
 #, c-format
 msgid "remoteListenTCP: listen: %s"
 msgstr ""
 
-#: qemud/qemud.c:725
+#: qemud/qemud.c:663
 #, fuzzy, c-format
 msgid "Failed to find user record for uid '%d': %s"
 msgstr "Nepodařilo se najít síť: %s"
 
-#: qemud/qemud.c:742
+#: qemud/qemud.c:679
 msgid "Resulting path too long for buffer in qemudInitPaths()"
 msgstr ""
 
-#: qemud/qemud.c:750
+#: qemud/qemud.c:687
 #, fuzzy
 msgid "Failed to allocate struct qemud_server"
 msgstr "Nepodařilo se alokovat paměť"
 
-#: qemud/qemud.c:836
+#: qemud/qemud.c:699
+#, fuzzy
+msgid "Failed to initialize event system"
+msgstr "Nepodařilo se najít síť: %s"
+
+#: qemud/qemud.c:784
 #, fuzzy, c-format
 msgid "Failed to initialize SASL authentication %s"
 msgstr "Nepodařilo se najít síť: %s"
 
-#: qemud/qemud.c:851
+#: qemud/qemud.c:798
 #, fuzzy, c-format
 msgid "Failed to connect to system bus for PolicyKit auth: %s"
 msgstr "Nepodařilo se připojit se k hypervizoru"
 
-#: qemud/qemud.c:962
+#: qemud/qemud.c:909
 #, c-format
 msgid "remoteInitializeTLSSession: %s"
 msgstr ""
 
-#: qemud/qemud.c:979
+#: qemud/qemud.c:925
 #, c-format
 msgid "remoteCheckDN: gnutls_x509_cert_get_dn: %s"
 msgstr ""
 
-#: qemud/qemud.c:998
+#: qemud/qemud.c:942
 #, c-format
 msgid "remoteCheckDN: failed: client DN is %s"
 msgstr ""
 
-#: qemud/qemud.c:1014
+#: qemud/qemud.c:957
 #, fuzzy, c-format
 msgid "remoteCheckCertificate: verify failed: %s"
 msgstr "autentizace selhala: %s"
 
-#: qemud/qemud.c:1022
+#: qemud/qemud.c:964
 msgid "remoteCheckCertificate: the client certificate is not trusted."
 msgstr ""
 
-#: qemud/qemud.c:1027
+#: qemud/qemud.c:968
 msgid "remoteCheckCertificate: the client certificate has unknown issuer."
 msgstr ""
 
-#: qemud/qemud.c:1032
+#: qemud/qemud.c:972
 msgid "remoteCheckCertificate: the client certificate has been revoked."
 msgstr ""
 
-#: qemud/qemud.c:1038
+#: qemud/qemud.c:977
 msgid ""
 "remoteCheckCertificate: the client certificate uses an insecure algorithm."
 msgstr ""
 
-#: qemud/qemud.c:1047
+#: qemud/qemud.c:985
 msgid "remoteCheckCertificate: certificate is not X.509"
 msgstr ""
 
-#: qemud/qemud.c:1052
+#: qemud/qemud.c:990
 msgid "remoteCheckCertificate: no peers"
 msgstr ""
 
-#: qemud/qemud.c:1063
+#: qemud/qemud.c:1000
 msgid "remoteCheckCertificate: gnutls_x509_crt_init failed"
 msgstr ""
 
-#: qemud/qemud.c:1073
+#: qemud/qemud.c:1010
 msgid "remoteCheckCertificate: the client certificate has expired"
 msgstr ""
 
-#: qemud/qemud.c:1080
+#: qemud/qemud.c:1017
 msgid "remoteCheckCertificate: the client certificate is not yet activated"
 msgstr ""
 
-#: qemud/qemud.c:1089
+#: qemud/qemud.c:1026
 msgid ""
 "remoteCheckCertificate: client's Distinguished Name is not on the list of "
 "allowed clients (tls_allowed_dn_list).  Use 'openssl x509 -in clientcert.pem "
@@ -327,477 +332,409 @@ msgid ""
 "run this daemon with --verbose option."
 msgstr ""
 
-#: qemud/qemud.c:1106
+#: qemud/qemud.c:1042
 msgid "remoteCheckCertificate: failed to verify client's certificate"
 msgstr ""
 
-#: qemud/qemud.c:1110
+#: qemud/qemud.c:1045
 msgid ""
 "remoteCheckCertificate: tls_no_verify_certificate is set so the bad "
 "certificate is ignored"
 msgstr ""
 
-#: qemud/qemud.c:1132
+#: qemud/qemud.c:1067
 #, fuzzy, c-format
 msgid "Failed to verify client credentials: %s"
 msgstr "Nepodařilo se získat stav rozhraní %s %s"
 
-#: qemud/qemud.c:1157
+#: qemud/qemud.c:1092
 #, fuzzy, c-format
 msgid "Failed to accept connection: %s"
 msgstr "Selhalo spuštění sítě %s"
 
-#: qemud/qemud.c:1196
+#: qemud/qemud.c:1097
+msgid "Too many active clients, dropping connection"
+msgstr ""
+
+#: qemud/qemud.c:1103
+#, fuzzy
+msgid "Out of memory allocating clients"
+msgstr "změnit paměťovou alokaci"
+
+#: qemud/qemud.c:1146
 #, c-format
 msgid "Turn off polkit auth for privileged client %d"
 msgstr ""
 
-#: qemud/qemud.c:1235 qemud/qemud.c:1478 qemud/qemud.c:1618
+#: qemud/qemud.c:1185 qemud/qemud.c:1464 qemud/qemud.c:1607
 #, fuzzy, c-format
 msgid "TLS handshake failed: %s"
 msgstr "operace GET selhala: %s"
 
-#: qemud/qemud.c:1306
+#: qemud/qemud.c:1291
 #, c-format
 msgid "read: %s"
 msgstr ""
 
-#: qemud/qemud.c:1319
+#: qemud/qemud.c:1304
 #, c-format
 msgid "gnutls_record_recv: %s"
 msgstr ""
 
-#: qemud/qemud.c:1502
+#: qemud/qemud.c:1488
 #, c-format
 msgid "write: %s"
 msgstr ""
 
-#: qemud/qemud.c:1512
+#: qemud/qemud.c:1498
 #, c-format
 msgid "gnutls_record_send: %s"
 msgstr ""
 
-#: qemud/qemud.c:1735
+#: qemud/qemud.c:1734
 #, c-format
 msgid "Signal handler reported %d errors: last error: %s"
 msgstr ""
 
-#: qemud/qemud.c:1833 qemud/qemud.c:1854
+#: qemud/qemud.c:1759
+#, fuzzy
+msgid "Failed to allocate workers"
+msgstr "Nepodařilo se alokovat paměť"
+
+#: qemud/qemud.c:1885 qemud/qemud.c:1904
 #, fuzzy, c-format
 msgid "failed to allocate memory for %s config list"
 msgstr "Nepodařilo se alokovat paměť"
 
-#: qemud/qemud.c:1840 qemud/qemud.c:1871
+#: qemud/qemud.c:1891 qemud/qemud.c:1921
 #, fuzzy, c-format
 msgid "failed to allocate memory for %s config list value"
 msgstr "Nepodařilo se alokovat paměť"
 
-#: qemud/qemud.c:1859 qemud/qemud.c:1882
+#: qemud/qemud.c:1909 qemud/qemud.c:1932
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: must be a string or list of strings\n"
 msgstr ""
 
-#: qemud/qemud.c:1899
+#: qemud/qemud.c:1948
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: invalid type: got %s; expected %s\n"
 msgstr ""
 
-#: qemud/qemud.c:1920
+#: qemud/qemud.c:1969
 #, c-format
 msgid "remoteReadConfigFile: %s\n"
 msgstr ""
 
-#: qemud/qemud.c:1964
+#: qemud/qemud.c:2011
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: unsupported auth %s\n"
 msgstr ""
 
-#: qemud/qemud.c:2049
+#: qemud/qemud.c:2158
 msgid "Cannot set group when not running as root"
 msgstr ""
 
-#: qemud/qemud.c:2053
+#: qemud/qemud.c:2162
 #, fuzzy, c-format
 msgid "Failed to lookup group '%s'"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: qemud/qemud.c:2066 qemud/qemud.c:2077
+#: qemud/qemud.c:2174 qemud/qemud.c:2184
 #, fuzzy, c-format
 msgid "Failed to parse mode '%s'"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: qemud/qemud.c:2250
+#: qemud/qemud.c:2377
 #, fuzzy, c-format
 msgid "Failed to fork as daemon: %s"
 msgstr "Nepodařilo se probudit doménu %s"
 
-#: qemud/qemud.c:2272 src/util.c:250
+#: qemud/qemud.c:2398 src/util.c:251
 #, fuzzy, c-format
 msgid "Failed to create pipe: %s"
 msgstr "Nepodařilo se vytvořit XML"
 
-#: qemud/qemud.c:2305
+#: qemud/qemud.c:2430
 #, fuzzy, c-format
 msgid "Failed to change group ownership of %s"
 msgstr "Nepodařilo se uložit paměť domény %s do %s"
 
-#: qemud/qemud.c:2314
+#: qemud/qemud.c:2437
 msgid "Failed to register callback for signal pipe"
 msgstr ""
 
-#: qemud/remote.c:109
-msgid "xdr_remote_message_header"
-msgstr ""
-
-#: qemud/remote.c:117
+#: qemud/remote.c:248
 #, c-format
 msgid "program mismatch (actual %x, expected %x)"
 msgstr ""
 
-#: qemud/remote.c:124
+#: qemud/remote.c:254
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
 msgstr ""
 
-#: qemud/remote.c:130
+#: qemud/remote.c:259
 #, c-format
 msgid "direction (%d) != REMOTE_CALL"
 msgstr ""
 
-#: qemud/remote.c:136
+#: qemud/remote.c:264
 #, c-format
 msgid "status (%d) != REMOTE_OK"
 msgstr ""
 
-#: qemud/remote.c:152
+#: qemud/remote.c:282
 #, fuzzy
 msgid "authentication required"
 msgstr "autentizace selhala"
 
-#: qemud/remote.c:165
+#: qemud/remote.c:289
 #, fuzzy, c-format
 msgid "unknown procedure: %d"
 msgstr "obdržel jsem neznámý chybový kód HTTP %d"
 
-#: qemud/remote.c:173
+#: qemud/remote.c:298
 #, fuzzy
 msgid "parse args failed"
 msgstr "selhalo parsování odpovědi serveru"
 
-#: qemud/remote.c:189
-#, c-format
-msgid "internal error - dispatch function returned invalid code %d"
-msgstr ""
-
-#: qemud/remote.c:211
-msgid "dummy length"
-msgstr ""
-
-#: qemud/remote.c:218
-msgid "serialise reply header"
-msgstr ""
-
-#: qemud/remote.c:227 qemud/remote.c:4034
-msgid "serialise return struct"
-msgstr ""
-
-#: qemud/remote.c:282
-msgid "serialise return error"
-msgstr ""
-
-#: qemud/remote.c:291
-msgid "xdr_setpos"
-msgstr ""
-
-#: qemud/remote.c:297
-msgid "serialise return length"
-msgstr ""
-
-#: qemud/remote.c:446
+#: qemud/remote.c:411
 msgid "connection already open"
 msgstr ""
 
-#: qemud/remote.c:468
+#: qemud/remote.c:442
 #, fuzzy
 msgid "connection not open"
 msgstr "neplatný ukazatel spojení v"
 
-#: qemud/remote.c:515
+#: qemud/remote.c:500
 #, fuzzy
 msgid "out of memory in strdup"
 msgstr "nedostatek paměti"
 
-#: qemud/remote.c:643
+#: qemud/remote.c:645
 msgid "maxCells > REMOTE_NODE_MAX_CELLS"
 msgstr ""
 
-#: qemud/remote.c:698 qemud/remote.c:740 qemud/remote.c:844 qemud/remote.c:870
-#: qemud/remote.c:904 qemud/remote.c:943 qemud/remote.c:991
-#: qemud/remote.c:1035 qemud/remote.c:1059 qemud/remote.c:1121
-#: qemud/remote.c:1145 qemud/remote.c:1170 qemud/remote.c:1196
-#: qemud/remote.c:1221 qemud/remote.c:1253 qemud/remote.c:1278
-#: qemud/remote.c:1303 qemud/remote.c:1332 qemud/remote.c:1456
-#: qemud/remote.c:1672 qemud/remote.c:1705 qemud/remote.c:1744
-#: qemud/remote.c:1768 qemud/remote.c:1792 qemud/remote.c:1816
-#: qemud/remote.c:1840 qemud/remote.c:1864 qemud/remote.c:1888
-#: qemud/remote.c:1912 qemud/remote.c:1936 qemud/remote.c:1960
-#, fuzzy
-msgid "domain not found"
-msgstr "Doména nebyla nalezena"
-
-#: qemud/remote.c:729 qemud/remote.c:811
+#: qemud/remote.c:735 qemud/remote.c:818
 msgid "nparams too large"
 msgstr ""
 
-#: qemud/remote.c:777
+#: qemud/remote.c:784
 #, fuzzy
 msgid "unknown type"
 msgstr "neznámý druh OS"
 
-#: qemud/remote.c:954 qemud/remote.c:1000
+#: qemud/remote.c:966 qemud/remote.c:1013
 msgid "size > maximum buffer size"
 msgstr ""
 
-#: qemud/remote.c:1338
+#: qemud/remote.c:1368
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr ""
 
-#: qemud/remote.c:1344
+#: qemud/remote.c:1374
 msgid "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgstr ""
 
-#: qemud/remote.c:1569
+#: qemud/remote.c:1616
 msgid "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"
 msgstr ""
 
-#: qemud/remote.c:1678
+#: qemud/remote.c:1738
 msgid "cpumap_len > REMOTE_CPUMAP_MAX"
 msgstr ""
 
-#: qemud/remote.c:1983 qemud/remote.c:2046 qemud/remote.c:3005
+#: qemud/remote.c:2057 qemud/remote.c:2122 qemud/remote.c:3136
 msgid "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
 msgstr ""
 
-#: qemud/remote.c:2015
+#: qemud/remote.c:2090
 msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 msgstr ""
 
-#: qemud/remote.c:2079 qemud/remote.c:2139 qemud/remote.c:2163
-#: qemud/remote.c:2189 qemud/remote.c:2213 qemud/remote.c:2275
-#: qemud/remote.c:2299
-#, fuzzy
-msgid "network not found"
-msgstr "Síť nebyla nalezena"
-
-#: qemud/remote.c:2390 src/remote_internal.c:4135
+#: qemud/remote.c:2500 src/remote_internal.c:4135
 #, c-format
 msgid "Cannot resolve address %d: %s"
 msgstr ""
 
-#: qemud/remote.c:2430
+#: qemud/remote.c:2545
 msgid "client tried invalid SASL init request"
 msgstr ""
 
-#: qemud/remote.c:2439 src/remote_internal.c:4363
+#: qemud/remote.c:2553 src/remote_internal.c:4363
 #, fuzzy, c-format
 msgid "failed to get sock address %d (%s)"
 msgstr "Nepodařilo se získat stav bloků %s %s"
 
-#: qemud/remote.c:2450 src/remote_internal.c:4375
+#: qemud/remote.c:2564 src/remote_internal.c:4375
 #, fuzzy, c-format
 msgid "failed to get peer address %d (%s)"
 msgstr "Nepodařilo se získat stav rozhraní %s %s"
 
-#: qemud/remote.c:2471
+#: qemud/remote.c:2585
 #, c-format
 msgid "sasl context setup failed %d (%s)"
 msgstr ""
 
-#: qemud/remote.c:2485
+#: qemud/remote.c:2598
 msgid "cannot TLS get cipher size"
 msgstr ""
 
-#: qemud/remote.c:2495
+#: qemud/remote.c:2607
 #, c-format
 msgid "cannot set SASL external SSF %d (%s)"
 msgstr ""
 
-#: qemud/remote.c:2524
+#: qemud/remote.c:2635
 #, c-format
 msgid "cannot set SASL security props %d (%s)"
 msgstr ""
 
-#: qemud/remote.c:2541
+#: qemud/remote.c:2651
 #, c-format
 msgid "cannot list SASL mechanisms %d (%s)"
 msgstr ""
 
-#: qemud/remote.c:2551
+#: qemud/remote.c:2660
 msgid "cannot allocate mechlist"
 msgstr ""
 
-#: qemud/remote.c:2576 src/remote_internal.c:4640
+#: qemud/remote.c:2691 src/remote_internal.c:4640
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr ""
 
-#: qemud/remote.c:2586
+#: qemud/remote.c:2701
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr ""
 
-#: qemud/remote.c:2616
+#: qemud/remote.c:2730
 #, c-format
 msgid "cannot query SASL username on connection %d (%s)"
 msgstr ""
 
-#: qemud/remote.c:2624
+#: qemud/remote.c:2738
 msgid "no client username was found"
 msgstr ""
 
-#: qemud/remote.c:2634
+#: qemud/remote.c:2748
 #, fuzzy
 msgid "out of memory copying username"
 msgstr "nedostatek paměti"
 
-#: qemud/remote.c:2653
+#: qemud/remote.c:2767
 #, c-format
 msgid "SASL client %s not allowed in whitelist"
 msgstr ""
 
-#: qemud/remote.c:2679 qemud/remote.c:2758
+#: qemud/remote.c:2797 qemud/remote.c:2884
 msgid "client tried invalid SASL start request"
 msgstr ""
 
-#: qemud/remote.c:2695
+#: qemud/remote.c:2812
 #, c-format
 msgid "sasl start failed %d (%s)"
 msgstr ""
 
-#: qemud/remote.c:2703
+#: qemud/remote.c:2819
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr ""
 
-#: qemud/remote.c:2773
+#: qemud/remote.c:2898
 #, c-format
 msgid "sasl step failed %d (%s)"
 msgstr ""
 
-#: qemud/remote.c:2782
+#: qemud/remote.c:2906
 #, c-format
 msgid "sasl step reply data too long %d"
 msgstr ""
 
-#: qemud/remote.c:2831
+#: qemud/remote.c:2962
 msgid "client tried unsupported SASL init request"
 msgstr ""
 
-#: qemud/remote.c:2843
+#: qemud/remote.c:2975
 msgid "client tried unsupported SASL start request"
 msgstr ""
 
-#: qemud/remote.c:2855
+#: qemud/remote.c:2988
 msgid "client tried unsupported SASL step request"
 msgstr ""
 
-#: qemud/remote.c:2885
+#: qemud/remote.c:3024
 msgid "client tried invalid PolicyKit init request"
 msgstr ""
 
-#: qemud/remote.c:2891
+#: qemud/remote.c:3029
 msgid "cannot get peer socket identity"
 msgstr ""
 
-#: qemud/remote.c:2896
+#: qemud/remote.c:3033
 #, c-format
 msgid "Checking PID %d running as %d"
 msgstr ""
 
-#: qemud/remote.c:2901
+#: qemud/remote.c:3037
 #, c-format
 msgid "Failed to lookup policy kit caller: %s"
 msgstr ""
 
-#: qemud/remote.c:2909
+#: qemud/remote.c:3043
 #, fuzzy, c-format
 msgid "Failed to create polkit action %s\n"
 msgstr "Nepodařilo se vytvořit neaktivní doménu %s\n"
 
-#: qemud/remote.c:2919
+#: qemud/remote.c:3051
 #, fuzzy, c-format
 msgid "Failed to create polkit context %s\n"
 msgstr "Nepodařilo se vytvořit neaktivní doménu %s\n"
 
-#: qemud/remote.c:2939
+#: qemud/remote.c:3069
 #, c-format
 msgid "Policy kit failed to check authorization %d %s"
 msgstr ""
 
-#: qemud/remote.c:2955
+#: qemud/remote.c:3083
 #, c-format
 msgid "Policy kit denied action %s from pid %d, uid %d, result: %s\n"
 msgstr ""
 
-#: qemud/remote.c:2963
+#: qemud/remote.c:3088
 #, c-format
 msgid "Policy allowed action %s from pid %d, uid %d, result %s"
 msgstr ""
 
-#: qemud/remote.c:2982
+#: qemud/remote.c:3113
 msgid "client tried unsupported PolicyKit init request"
 msgstr ""
 
-#: qemud/remote.c:3037
+#: qemud/remote.c:3169
 msgid "maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX"
 msgstr ""
 
-#: qemud/remote.c:3091 qemud/remote.c:3151 qemud/remote.c:3176
-#: qemud/remote.c:3200 qemud/remote.c:3224 qemud/remote.c:3249
-#: qemud/remote.c:3280 qemud/remote.c:3306 qemud/remote.c:3389
-#: qemud/remote.c:3413 qemud/remote.c:3473 qemud/remote.c:3509
-#: qemud/remote.c:3540 qemud/remote.c:3676
-#, fuzzy
-msgid "storage_pool not found"
-msgstr "Síť nebyla nalezena"
-
-#: qemud/remote.c:3467
+#: qemud/remote.c:3636
 msgid "maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX"
 msgstr ""
 
-#: qemud/remote.c:3566 qemud/remote.c:3591 qemud/remote.c:3621
-#: qemud/remote.c:3648
-#, fuzzy
-msgid "storage_vol not found"
-msgstr "Síť nebyla nalezena"
-
-#: qemud/remote.c:3760 qemud/remote.c:3912
+#: qemud/remote.c:3954 qemud/remote.c:4120
 msgid "maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX"
 msgstr ""
 
-#: qemud/remote.c:3815 qemud/remote.c:3843 qemud/remote.c:3883
-#: qemud/remote.c:3906
+#: qemud/remote.c:4015 qemud/remote.c:4045 qemud/remote.c:4086
+#: qemud/remote.c:4114
 #, fuzzy
 msgid "node_device not found"
 msgstr "Doména nebyla nalezena"
 
-#: qemud/remote.c:4002
+#: qemud/remote.c:4158
 #, fuzzy
-msgid "Invalid Client"
-msgstr "neplatný parametr v"
-
-#: qemud/remote.c:4018
-msgid "xdr_int failed (1)"
-msgstr ""
-
-#: qemud/remote.c:4041
-#, fuzzy
-msgid "xdr_setpos failed"
-msgstr "selhala operace"
-
-#: qemud/remote.c:4047
-msgid "xdr_int failed (2)"
-msgstr ""
+msgid "unexpected async event method call"
+msgstr "neočekávaný příkazový (dict) uzel"
 
 #: src/conf.c:164 src/conf.c:212 src/conf.c:491 src/conf.c:528 src/conf.c:555
 #: src/conf.c:630
@@ -958,460 +895,467 @@ msgstr "nepodařilo se přidat síť do tabulky spojení"
 msgid "dev missing from connection hash table"
 msgstr "doména chybí v tabulce spojení"
 
-#: src/domain_conf.c:532
+#: src/domain_conf.c:557
 #, fuzzy, c-format
 msgid "unknown disk type '%s'"
 msgstr "neznámý druh OS %s"
 
-#: src/domain_conf.c:584
+#: src/domain_conf.c:609
 #, fuzzy, c-format
 msgid "unknown disk device '%s'"
 msgstr "zdroj diskového zařízení"
 
-#: src/domain_conf.c:610
+#: src/domain_conf.c:635
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr ""
 
-#: src/domain_conf.c:625
+#: src/domain_conf.c:650
 #, c-format
 msgid "Invalid harddisk device name: %s"
 msgstr ""
 
-#: src/domain_conf.c:632
+#: src/domain_conf.c:657
 #, fuzzy, c-format
 msgid "unknown disk bus type '%s'"
 msgstr "neznámý druh OS %s"
 
-#: src/domain_conf.c:657
+#: src/domain_conf.c:682
 #, c-format
 msgid "Invalid bus type '%s' for floppy disk"
 msgstr ""
 
-#: src/domain_conf.c:663
+#: src/domain_conf.c:688
 #, c-format
 msgid "Invalid bus type '%s' for disk"
 msgstr ""
 
-#: src/domain_conf.c:715
+#: src/domain_conf.c:740
 #, fuzzy, c-format
 msgid "unknown filesystem type '%s'"
 msgstr "neznámý druh OS %s"
 
-#: src/domain_conf.c:808
+#: src/domain_conf.c:833
 #, fuzzy, c-format
 msgid "unknown interface type '%s'"
 msgstr "neznámý druh OS %s"
 
-#: src/domain_conf.c:872
+#: src/domain_conf.c:897
 msgid ""
 "No <source> 'network' attribute specified with <interface type='network'/>"
 msgstr ""
 
-#: src/domain_conf.c:898
+#: src/domain_conf.c:923
 msgid "No <source> 'dev' attribute specified with <interface type='bridge'/>"
 msgstr ""
 
-#: src/domain_conf.c:910
+#: src/domain_conf.c:935
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr ""
 
-#: src/domain_conf.c:915
+#: src/domain_conf.c:940
 msgid "Cannot parse <source> 'port' attribute with socket interface"
 msgstr ""
 
-#: src/domain_conf.c:923
+#: src/domain_conf.c:948
 msgid "No <source> 'address' attribute specified with socket interface"
 msgstr ""
 
-#: src/domain_conf.c:948
+#: src/domain_conf.c:973
 msgid "Model name contains invalid characters"
 msgstr ""
 
-#: src/domain_conf.c:1121 src/domain_conf.c:1198
+#: src/domain_conf.c:1146 src/domain_conf.c:1223
 #, fuzzy
 msgid "Missing source path attribute for char device"
 msgstr "chybí zdrojové informace pro zařízení"
 
-#: src/domain_conf.c:1138 src/domain_conf.c:1155
+#: src/domain_conf.c:1163 src/domain_conf.c:1180
 #, fuzzy
 msgid "Missing source host attribute for char device"
 msgstr "chybí zdrojové informace pro zařízení"
 
-#: src/domain_conf.c:1143 src/domain_conf.c:1160 src/domain_conf.c:1180
+#: src/domain_conf.c:1168 src/domain_conf.c:1185 src/domain_conf.c:1205
 #, fuzzy
 msgid "Missing source service attribute for char device"
 msgstr "chybí zdrojové informace pro zařízení"
 
-#: src/domain_conf.c:1250
+#: src/domain_conf.c:1275
 #, fuzzy
 msgid "missing input device type"
 msgstr "druh cílového zařízení"
 
-#: src/domain_conf.c:1256
+#: src/domain_conf.c:1281
 #, fuzzy, c-format
 msgid "unknown input device type '%s'"
 msgstr "neznámý druh OS %s"
 
-#: src/domain_conf.c:1263
+#: src/domain_conf.c:1288
 #, fuzzy, c-format
 msgid "unknown input bus type '%s'"
 msgstr "neznámý druh OS %s"
 
-#: src/domain_conf.c:1271
+#: src/domain_conf.c:1296
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr ""
 
-#: src/domain_conf.c:1277 src/domain_conf.c:1284
+#: src/domain_conf.c:1302 src/domain_conf.c:1309
 #, c-format
 msgid "unsupported input bus %s"
 msgstr ""
 
-#: src/domain_conf.c:1289
+#: src/domain_conf.c:1314
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr ""
 
-#: src/domain_conf.c:1334
+#: src/domain_conf.c:1359
 #, fuzzy
 msgid "missing graphics device type"
 msgstr "chybí informace o kořenovém zařízení"
 
-#: src/domain_conf.c:1340
+#: src/domain_conf.c:1365
 #, fuzzy, c-format
 msgid "unknown graphics device type '%s'"
 msgstr "neznámý druh OS %s"
 
-#: src/domain_conf.c:1351
+#: src/domain_conf.c:1376
 #, c-format
 msgid "cannot parse vnc port %s"
 msgstr ""
 
-#: src/domain_conf.c:1411
+#: src/domain_conf.c:1414
+#, fuzzy, c-format
+msgid "unknown fullscreen value '%s'"
+msgstr "neznámý druh OS %s"
+
+#: src/domain_conf.c:1452
 #, fuzzy, c-format
 msgid "unknown sound model '%s'"
 msgstr "neznámý příkaz '%s'"
 
-#: src/domain_conf.c:1444
+#: src/domain_conf.c:1485
 #, c-format
 msgid "cannot parse vendor id %s"
 msgstr ""
 
-#: src/domain_conf.c:1451
+#: src/domain_conf.c:1492
 msgid "usb vendor needs id"
 msgstr ""
 
-#: src/domain_conf.c:1461
+#: src/domain_conf.c:1502
 #, c-format
 msgid "cannot parse product %s"
 msgstr ""
 
-#: src/domain_conf.c:1468
+#: src/domain_conf.c:1509
 msgid "usb product needs id"
 msgstr ""
 
-#: src/domain_conf.c:1479
+#: src/domain_conf.c:1520
 #, c-format
 msgid "cannot parse bus %s"
 msgstr ""
 
-#: src/domain_conf.c:1486
+#: src/domain_conf.c:1527
 msgid "usb address needs bus id"
 msgstr ""
 
-#: src/domain_conf.c:1495
+#: src/domain_conf.c:1536
 #, fuzzy, c-format
 msgid "cannot parse device %s"
 msgstr "druh cílového zařízení"
 
-#: src/domain_conf.c:1503
+#: src/domain_conf.c:1544
 msgid "usb address needs device id"
 msgstr ""
 
-#: src/domain_conf.c:1508
+#: src/domain_conf.c:1549
 #, fuzzy, c-format
 msgid "unknown usb source type '%s'"
 msgstr "neznámý druh OS %s"
 
-#: src/domain_conf.c:1518
+#: src/domain_conf.c:1559
 #, fuzzy
 msgid "missing vendor"
 msgstr "chybí \""
 
-#: src/domain_conf.c:1524
+#: src/domain_conf.c:1565
 #, fuzzy
 msgid "missing product"
 msgstr "chybí \""
 
-#: src/domain_conf.c:1552
+#: src/domain_conf.c:1593
 #, fuzzy, c-format
 msgid "unknown hostdev mode '%s'"
 msgstr "neznámý hostitel %s"
 
-#: src/domain_conf.c:1563
+#: src/domain_conf.c:1604
 #, fuzzy, c-format
 msgid "unknown host device type '%s'"
 msgstr "neznámý hostitel %s"
 
-#: src/domain_conf.c:1568
+#: src/domain_conf.c:1609
 #, fuzzy
 msgid "missing type in hostdev"
 msgstr "chybí cílové informace pro zařízení"
 
-#: src/domain_conf.c:1583
+#: src/domain_conf.c:1624
 #, fuzzy, c-format
 msgid "unknown node %s"
 msgstr "neznámý hostitel %s"
 
-#: src/domain_conf.c:1614
+#: src/domain_conf.c:1655
 #, c-format
 msgid "unknown lifecycle action %s"
 msgstr ""
 
-#: src/domain_conf.c:1643 src/domain_conf.c:2254 src/domain_conf.c:2296
-#: src/network_conf.c:462 src/network_conf.c:502 src/storage_conf.c:636
-#: src/storage_conf.c:1037
+#: src/domain_conf.c:1684 src/domain_conf.c:2295 src/domain_conf.c:2337
+#: src/network_conf.c:473 src/network_conf.c:513 src/qemu_conf.c:1342
+#: src/storage_conf.c:646 src/storage_conf.c:1047
 #, fuzzy
 msgid "missing root element"
 msgstr "chybí informace o kořenovém zařízení"
 
-#: src/domain_conf.c:1678
+#: src/domain_conf.c:1719
 #, fuzzy
 msgid "unknown device type"
 msgstr "neznámý druh OS"
 
-#: src/domain_conf.c:1714
+#: src/domain_conf.c:1755
 #, fuzzy
 msgid "failed to allocate space for xmlXPathContext"
 msgstr "nepodařilo se alokovat uzel"
 
-#: src/domain_conf.c:1726
+#: src/domain_conf.c:1767
 #, fuzzy
 msgid "missing domain type attribute"
 msgstr "chybí informace o doménovém jménu"
 
-#: src/domain_conf.c:1732
+#: src/domain_conf.c:1773
 #, fuzzy, c-format
 msgid "invalid domain type %s"
 msgstr "neplatný doménový ukazatel v %s"
 
-#: src/domain_conf.c:1749 src/network_conf.c:317
+#: src/domain_conf.c:1790 src/network_conf.c:328
 #, fuzzy, c-format
 msgid "Failed to generate UUID: %s"
 msgstr "nepodařilo se získat UUID sítě"
 
-#: src/domain_conf.c:1756 src/network_conf.c:324 src/storage_conf.c:459
+#: src/domain_conf.c:1797 src/network_conf.c:335 src/storage_conf.c:469
 msgid "malformed uuid element"
 msgstr ""
 
-#: src/domain_conf.c:1765
+#: src/domain_conf.c:1806
 msgid "missing memory element"
 msgstr ""
 
-#: src/domain_conf.c:1795
+#: src/domain_conf.c:1836
 #, fuzzy, c-format
 msgid "unexpected feature %s"
 msgstr "neočekávaná data '%s'"
 
-#: src/domain_conf.c:1835
+#: src/domain_conf.c:1876
 #, fuzzy
 msgid "no OS type"
 msgstr "neznámý druh OS"
 
-#: src/domain_conf.c:1864 src/xm_internal.c:698
+#: src/domain_conf.c:1905 src/xm_internal.c:698
 #, c-format
 msgid "no supported architecture for os type '%s'"
 msgstr ""
 
-#: src/domain_conf.c:1914
+#: src/domain_conf.c:1955
 #, fuzzy
 msgid "cannot extract boot device"
 msgstr "rozhraní zařízení"
 
-#: src/domain_conf.c:1922
+#: src/domain_conf.c:1963
 #, fuzzy
 msgid "missing boot device"
 msgstr "chybí informace o kořenovém zařízení"
 
-#: src/domain_conf.c:1927
+#: src/domain_conf.c:1968
 #, fuzzy, c-format
 msgid "unknown boot device '%s'"
 msgstr "neznámý hostitel %s"
 
-#: src/domain_conf.c:1947
+#: src/domain_conf.c:1988
 #, fuzzy
 msgid "cannot extract disk devices"
 msgstr "připojit diskové zařízení"
 
-#: src/domain_conf.c:1967
+#: src/domain_conf.c:2008
 msgid "cannot extract filesystem devices"
 msgstr ""
 
-#: src/domain_conf.c:1985
+#: src/domain_conf.c:2026
 #, fuzzy
 msgid "cannot extract network devices"
 msgstr "připojit síťové rozhraní"
 
-#: src/domain_conf.c:2005
+#: src/domain_conf.c:2046
 msgid "cannot extract parallel devices"
 msgstr ""
 
-#: src/domain_conf.c:2024
+#: src/domain_conf.c:2065
 #, fuzzy
 msgid "cannot extract serial devices"
 msgstr "rozhraní zařízení"
 
-#: src/domain_conf.c:2072
+#: src/domain_conf.c:2113
 #, fuzzy
 msgid "cannot extract input devices"
 msgstr "připojit diskové zařízení"
 
-#: src/domain_conf.c:2106
+#: src/domain_conf.c:2147
 #, fuzzy
 msgid "cannot extract graphics devices"
 msgstr "připojit diskové zařízení"
 
-#: src/domain_conf.c:2148
+#: src/domain_conf.c:2189
 #, fuzzy
 msgid "cannot extract sound devices"
 msgstr "připojit diskové zařízení"
 
-#: src/domain_conf.c:2177
+#: src/domain_conf.c:2218
 #, fuzzy
 msgid "cannot extract host devices"
 msgstr "připojit diskové zařízení"
 
-#: src/domain_conf.c:2218 src/network_conf.c:427 src/storage_conf.c:590
+#: src/domain_conf.c:2259 src/network_conf.c:438 src/qemu_conf.c:1287
+#: src/storage_conf.c:600
 #, c-format
 msgid "at line %d: %s"
 msgstr ""
 
-#: src/domain_conf.c:2248 src/domain_conf.c:2290 src/network_conf.c:456
-#: src/network_conf.c:496 src/storage_conf.c:622 src/storage_conf.c:1023
+#: src/domain_conf.c:2289 src/domain_conf.c:2331 src/network_conf.c:467
+#: src/network_conf.c:507 src/qemu_conf.c:1336 src/storage_conf.c:632
+#: src/storage_conf.c:1033
 #, fuzzy
 msgid "failed to parse xml document"
 msgstr "nepodařilo se uložit obsah"
 
-#: src/domain_conf.c:2320 src/network_conf.c:524
+#: src/domain_conf.c:2361 src/network_conf.c:535 src/qemu_conf.c:1354
 msgid "incorrect root element"
 msgstr ""
 
-#: src/domain_conf.c:2529
+#: src/domain_conf.c:2570
 msgid "topology cpuset syntax error"
 msgstr "chyba syntaxe topologie cpuset"
 
-#: src/domain_conf.c:2543
+#: src/domain_conf.c:2584
 #, fuzzy, c-format
 msgid "unexpected lifecycle type %d"
 msgstr "neočekávaný typ MIME"
 
-#: src/domain_conf.c:2564
+#: src/domain_conf.c:2605
 #, fuzzy, c-format
 msgid "unexpected disk type %d"
 msgstr "neočekávaný typ MIME"
 
-#: src/domain_conf.c:2569
+#: src/domain_conf.c:2610
 #, fuzzy, c-format
 msgid "unexpected disk device %d"
 msgstr "neočekávaný příkazový (dict) uzel"
 
-#: src/domain_conf.c:2574
+#: src/domain_conf.c:2615
 #, fuzzy, c-format
 msgid "unexpected disk bus %d"
 msgstr "neočekávaný příkazový (dict) uzel"
 
-#: src/domain_conf.c:2624
+#: src/domain_conf.c:2665
 #, fuzzy, c-format
 msgid "unexpected filesystem type %d"
 msgstr "neočekávaný typ MIME"
 
-#: src/domain_conf.c:2675 src/domain_conf.c:2889
+#: src/domain_conf.c:2716 src/domain_conf.c:2930
 #, fuzzy, c-format
 msgid "unexpected net type %d"
 msgstr "neočekávaný typ MIME"
 
-#: src/domain_conf.c:2743
+#: src/domain_conf.c:2784
 #, fuzzy, c-format
 msgid "unexpected char type %d"
 msgstr "neočekávaný typ MIME"
 
-#: src/domain_conf.c:2842 src/xend_internal.c:5180
+#: src/domain_conf.c:2883 src/xend_internal.c:5180
 #, fuzzy, c-format
 msgid "unexpected sound model %d"
 msgstr "neočekávaný příkazový (dict) uzel"
 
-#: src/domain_conf.c:2862 src/xend_internal.c:5202
+#: src/domain_conf.c:2903 src/xend_internal.c:5202
 #, fuzzy, c-format
 msgid "unexpected input type %d"
 msgstr "neočekávaný typ MIME"
 
-#: src/domain_conf.c:2867
+#: src/domain_conf.c:2908
 #, fuzzy, c-format
 msgid "unexpected input bus type %d"
 msgstr "neočekávaný typ MIME"
 
-#: src/domain_conf.c:2949
+#: src/domain_conf.c:2993
 #, fuzzy, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "neočekávaný příkazový (dict) uzel"
 
-#: src/domain_conf.c:2956
+#: src/domain_conf.c:3000
 #, fuzzy, c-format
 msgid "unexpected hostdev type %d"
 msgstr "neočekávaný typ MIME"
 
-#: src/domain_conf.c:2994
+#: src/domain_conf.c:3038
 #, fuzzy, c-format
 msgid "unexpected domain type %d"
 msgstr "neočekávaný typ MIME"
 
-#: src/domain_conf.c:3079
+#: src/domain_conf.c:3123
 #, fuzzy, c-format
 msgid "unexpected boot device type %d"
 msgstr "neočekávaný typ MIME"
 
-#: src/domain_conf.c:3097
+#: src/domain_conf.c:3141
 #, fuzzy, c-format
 msgid "unexpected feature %d"
 msgstr "neočekávaná hodnota uzlu"
 
-#: src/domain_conf.c:3223 src/network_conf.c:655 src/storage_conf.c:1379
+#: src/domain_conf.c:3262 src/network_conf.c:664 src/storage_conf.c:1400
 #, c-format
 msgid "cannot create config directory %s: %s"
 msgstr ""
 
-#: src/domain_conf.c:3232 src/network_conf.c:671 src/storage_conf.c:1422
+#: src/domain_conf.c:3271 src/network_conf.c:680 src/storage_conf.c:1443
 #, fuzzy, c-format
 msgid "cannot create config file %s: %s"
 msgstr "nepodařilo se zapsat konfigurační soubor: %s"
 
-#: src/domain_conf.c:3240 src/network_conf.c:679 src/storage_conf.c:1430
+#: src/domain_conf.c:3279 src/network_conf.c:688 src/storage_conf.c:1451
 #, fuzzy, c-format
 msgid "cannot write config file %s: %s"
 msgstr "nepodařilo se zapsat konfigurační soubor: %s"
 
-#: src/domain_conf.c:3247 src/network_conf.c:686 src/storage_conf.c:1437
+#: src/domain_conf.c:3286 src/network_conf.c:695 src/storage_conf.c:1458
 #, c-format
 msgid "cannot save config file %s: %s"
 msgstr ""
 
-#: src/domain_conf.c:3327 src/network_conf.c:767
+#: src/domain_conf.c:3387 src/network_conf.c:774
 #, fuzzy, c-format
 msgid "Failed to open dir '%s': %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/domain_conf.c:3379 src/network_conf.c:807
+#: src/domain_conf.c:3441 src/network_conf.c:818
 #, c-format
 msgid "cannot remove config for %s: %s"
 msgstr ""
 
-#: src/domain_conf.c:3453
+#: src/domain_conf.c:3515
 #, fuzzy
 msgid "unknown virt type"
 msgstr "neznámý druh OS"
 
-#: src/domain_conf.c:3464
+#: src/domain_conf.c:3526
 #, c-format
 msgid "no emulator for domain %s os type %s on architecture %s"
 msgstr ""
@@ -1451,46 +1395,46 @@ msgstr ""
 msgid "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s"
 msgstr ""
 
-#: src/libvirt.c:828
+#: src/libvirt.c:842
 msgid "could not parse connection URI"
 msgstr "nepodařilo zpracovat URI spojení"
 
-#: src/libvirt.c:958
+#: src/libvirt.c:972
 #, fuzzy
 msgid "unable to open connection"
 msgstr "nepodařilo zpracovat URI spojení"
 
-#: src/libvirt.c:2336
+#: src/libvirt.c:2360
 #, fuzzy
 msgid "domainMigratePrepare did not set uri"
 msgstr "nesprávná informace o doméně, domid není číslo"
 
-#: src/libvirt.c:2365
+#: src/libvirt.c:2389
 #, fuzzy
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "nesprávná informace o doméně, domid není číslo"
 
-#: src/libvirt.c:2910
+#: src/libvirt.c:2964
 msgid "path is NULL"
 msgstr ""
 
-#: src/libvirt.c:2916
+#: src/libvirt.c:2970
 msgid "flags must be zero"
 msgstr ""
 
-#: src/libvirt.c:2923
+#: src/libvirt.c:2977
 msgid "buffer is NULL"
 msgstr ""
 
-#: src/libvirt.c:3006
+#: src/libvirt.c:3065
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL"
 msgstr ""
 
-#: src/libvirt.c:3013
+#: src/libvirt.c:3072
 msgid "buffer is NULL but size is non-zero"
 msgstr ""
 
-#: src/lxc_conf.c:87
+#: src/lxc_conf.c:91
 msgid "while loading LXC driver config"
 msgstr ""
 
@@ -1534,61 +1478,61 @@ msgstr "Nepodařilo se vytvořit neaktivní doménu %s\n"
 msgid "failed to bind new root %s: %s"
 msgstr "Nepodařilo se najít síť: %s"
 
-#: src/lxc_container.c:289
+#: src/lxc_container.c:288
 #, fuzzy, c-format
 msgid "failed to create %s: %s"
 msgstr "Nepodařilo se vytvořit XML"
 
-#: src/lxc_container.c:299
+#: src/lxc_container.c:298
 #, fuzzy, c-format
 msgid "failed to pivot root %s to %s: %s"
 msgstr "Nepodařilo se uložit doménu %s do %s"
 
-#: src/lxc_container.c:333
+#: src/lxc_container.c:332
 #, fuzzy, c-format
 msgid "failed to mount /dev tmpfs for container: %s"
 msgstr "Nepodařilo se oddefinovat doménu %s"
 
-#: src/lxc_container.c:347
+#: src/lxc_container.c:346
 #, fuzzy, c-format
 msgid "failed to move /dev/pts into container: %s"
 msgstr "Nepodařilo se zničit doménu %s"
 
-#: src/lxc_container.c:358
+#: src/lxc_container.c:357
 #, fuzzy, c-format
 msgid "failed to make device %s: %s"
 msgstr "Nepodařilo se připojit zařízení z %s"
 
-#: src/lxc_container.c:390 src/lxc_container.c:497
+#: src/lxc_container.c:389 src/lxc_container.c:496
 #, fuzzy, c-format
 msgid "failed to mount %s at %s for container: %s"
 msgstr "nepodařilo se otevřít %s pro čtení"
 
-#: src/lxc_container.c:411
+#: src/lxc_container.c:410
 #, fuzzy, c-format
 msgid "failed to read /proc/mounts: %s"
 msgstr "Nepodařilo se číst ze soketu %d\n"
 
-#: src/lxc_container.c:438
+#: src/lxc_container.c:437
 #, fuzzy, c-format
 msgid "failed to unmount %s: %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/lxc_container.c:463 src/lxc_container.c:506
+#: src/lxc_container.c:462 src/lxc_container.c:505
 #, fuzzy, c-format
 msgid "failed to mount /proc for container: %s"
 msgstr "nepodařilo se otevřít %s pro čtení"
 
-#: src/lxc_container.c:552
+#: src/lxc_container.c:551
 msgid "lxcChild() passed invalid vm definition"
 msgstr ""
 
-#: src/lxc_container.c:562
+#: src/lxc_container.c:561
 #, fuzzy, c-format
 msgid "open(%s) failed: %s"
 msgstr "selhala operace %s"
 
-#: src/lxc_container.c:623
+#: src/lxc_container.c:622
 #, fuzzy, c-format
 msgid "clone() failed, %s"
 msgstr "selhala operace %s"
@@ -1603,469 +1547,468 @@ msgstr "Nepodařilo se vytvořit doménu z %s"
 msgid "Failed to set lxc resources: %s\n"
 msgstr "Nepodařilo se zavřít soket %d\n"
 
-#: src/lxc_controller.c:140
+#: src/lxc_controller.c:139
 #, fuzzy, c-format
 msgid "failed to create server socket %s: %s"
 msgstr "Nepodařilo se číst ze soketu %d\n"
 
-#: src/lxc_controller.c:152
+#: src/lxc_controller.c:151
 #, fuzzy, c-format
 msgid "failed to bind server socket %s: %s"
 msgstr "Nepodařilo se číst ze soketu %d\n"
 
-#: src/lxc_controller.c:158
+#: src/lxc_controller.c:157
 #, fuzzy, c-format
 msgid "failed to listen server socket %s: %s"
 msgstr "Nepodařilo se zavřít soket %d\n"
 
-#: src/lxc_controller.c:192
+#: src/lxc_controller.c:191
 #, fuzzy, c-format
 msgid "read of fd %d failed: %s"
 msgstr "selhala operace %s"
 
-#: src/lxc_controller.c:198
+#: src/lxc_controller.c:197
 #, fuzzy, c-format
 msgid "write to fd %d failed: %s"
 msgstr "selhala operace %s"
 
-#: src/lxc_controller.c:249
+#: src/lxc_controller.c:248
 #, fuzzy, c-format
 msgid "epoll_create(2) failed: %s"
 msgstr "selhala operace %s"
 
-#: src/lxc_controller.c:259
+#: src/lxc_controller.c:258
 #, c-format
 msgid "epoll_ctl(appPty) failed: %s"
 msgstr ""
 
-#: src/lxc_controller.c:265 src/lxc_controller.c:273 src/lxc_controller.c:281
-#: src/lxc_controller.c:301 src/lxc_controller.c:307
+#: src/lxc_controller.c:264 src/lxc_controller.c:272 src/lxc_controller.c:280
+#: src/lxc_controller.c:300 src/lxc_controller.c:306
 #, fuzzy, c-format
 msgid "epoll_ctl(contPty) failed: %s"
 msgstr "selhala operace %s"
 
-#: src/lxc_controller.c:324
+#: src/lxc_controller.c:323
 #, c-format
 msgid "error event %d"
 msgstr ""
 
-#: src/lxc_controller.c:345
+#: src/lxc_controller.c:344
 #, fuzzy, c-format
 msgid "epoll_wait() failed: %s"
 msgstr "selhala operace %s"
 
-#: src/lxc_controller.c:395
+#: src/lxc_controller.c:394
 #, fuzzy, c-format
 msgid "failed to move interface %s to ns %d"
 msgstr "Nepodařilo se získat stav rozhraní %s %s"
 
-#: src/lxc_controller.c:420
+#: src/lxc_controller.c:419
 #, fuzzy, c-format
 msgid "failed to delete veth: %s"
 msgstr "nepodařilo se získat síť '%s'"
 
-#: src/lxc_controller.c:443
+#: src/lxc_controller.c:442
 #, fuzzy, c-format
 msgid "sockpair failed: %s"
 msgstr "selhala operace %s"
 
-#: src/lxc_controller.c:451 src/lxc_driver.c:766
+#: src/lxc_controller.c:450 src/lxc_driver.c:866
 #, fuzzy, c-format
 msgid "failed to allocate tty: %s"
 msgstr "nepodařilo se alokovat uzel"
 
-#: src/lxc_controller.c:618
+#: src/lxc_controller.c:617
 #, fuzzy, c-format
 msgid "Unable to write pid file: %s\n"
 msgstr "%s: nepodařilo se zapisovat do souboru záznamu: %s"
 
-#: src/lxc_controller.c:631
+#: src/lxc_controller.c:630
 #, fuzzy, c-format
 msgid "Unable to change to root dir: %s\n"
 msgstr "Nemohu změnit maximální velikost paměti"
 
-#: src/lxc_controller.c:637
+#: src/lxc_controller.c:636
 #, c-format
 msgid "Unable to become session leader: %s\n"
 msgstr ""
 
-#: src/lxc_controller.c:645
+#: src/lxc_controller.c:644
 #, fuzzy, c-format
 msgid "Failed connection from LXC driver: %s\n"
 msgstr "neplatný ukazatel spojení v %s"
 
-#: src/lxc_driver.c:193 src/network_driver.c:872 src/network_driver.c:905
-#: src/qemu_driver.c:2339 src/uml_driver.c:1348
+#: src/lxc_driver.c:233 src/network_driver.c:926 src/network_driver.c:971
+#: src/qemu_driver.c:2698 src/uml_driver.c:1517
 #, fuzzy
 msgid "failed to allocate space for VM name string"
 msgstr "nepodařilo se alokovat uzel"
 
-#: src/lxc_driver.c:233 src/lxc_driver.c:871 src/lxc_driver.c:906
+#: src/lxc_driver.c:283 src/lxc_driver.c:972 src/lxc_driver.c:1010
 msgid "System lacks NETNS support"
 msgstr ""
 
-#: src/lxc_driver.c:266 src/lxc_driver.c:301 src/lxc_driver.c:327
-#: src/lxc_driver.c:342 src/openvz_driver.c:246 src/openvz_driver.c:275
-#: src/openvz_driver.c:291 src/openvz_driver.c:318 src/openvz_driver.c:748
-#: src/openvz_driver.c:779 src/openvz_driver.c:800 src/openvz_driver.c:841
-#: src/qemu_driver.c:1677 src/qemu_driver.c:1764 src/qemu_driver.c:2319
-#: src/qemu_driver.c:2372 src/qemu_driver.c:2433 src/qemu_driver.c:2524
-#: src/qemu_driver.c:2641 src/qemu_driver.c:2717 src/qemu_driver.c:2785
-#: src/qemu_driver.c:2842 src/qemu_driver.c:2904 src/qemu_driver.c:2981
-#: src/qemu_driver.c:3018 src/qemu_driver.c:3036 src/qemu_driver.c:3286
-#: src/uml_driver.c:1213 src/uml_driver.c:1300 src/uml_driver.c:1328
-#: src/uml_driver.c:1380 src/uml_driver.c:1424 src/uml_driver.c:1458
-#: src/uml_driver.c:1476 src/uml_driver.c:1545
+#: src/lxc_driver.c:322 src/lxc_driver.c:368 src/lxc_driver.c:403
+#: src/lxc_driver.c:428 src/openvz_driver.c:287 src/openvz_driver.c:326
+#: src/openvz_driver.c:370 src/openvz_driver.c:407 src/openvz_driver.c:857
+#: src/openvz_driver.c:899 src/openvz_driver.c:930 src/openvz_driver.c:1002
+#: src/qemu_driver.c:1928 src/qemu_driver.c:2051 src/qemu_driver.c:2671
+#: src/qemu_driver.c:2742 src/qemu_driver.c:2828 src/qemu_driver.c:3224
+#: src/qemu_driver.c:3362 src/qemu_driver.c:3408 src/qemu_driver.c:3434
+#: src/qemu_driver.c:3708 src/uml_driver.c:1326 src/uml_driver.c:1450
+#: src/uml_driver.c:1490 src/uml_driver.c:1563 src/uml_driver.c:1623
+#: src/uml_driver.c:1667 src/uml_driver.c:1693 src/uml_driver.c:1766
 #, fuzzy
 msgid "no domain with matching uuid"
 msgstr "ID nebo UUID domény"
 
-#: src/lxc_driver.c:272 src/openvz_driver.c:753 src/qemu_driver.c:2439
-#: src/uml_driver.c:1430
+#: src/lxc_driver.c:328 src/openvz_driver.c:862 src/qemu_driver.c:2834
+#: src/uml_driver.c:1629
 #, fuzzy
 msgid "cannot delete active domain"
 msgstr "Jméno neaktivní domény"
 
-#: src/lxc_driver.c:278 src/qemu_driver.c:2445 src/uml_driver.c:1436
+#: src/lxc_driver.c:334 src/qemu_driver.c:2840 src/uml_driver.c:1635
 #, fuzzy
 msgid "cannot undefine transient domain"
 msgstr "oddefinovat neaktivní doménu"
 
-#: src/lxc_driver.c:379
+#: src/lxc_driver.c:470
 #, c-format
 msgid "waitpid failed to wait for container %d: %d %s"
 msgstr ""
 
-#: src/lxc_driver.c:461
+#: src/lxc_driver.c:552
 #, fuzzy
 msgid "failed to get bridge for interface"
 msgstr "skript použitý k přemostění síťového rozhraní"
 
-#: src/lxc_driver.c:472
+#: src/lxc_driver.c:563
 #, fuzzy, c-format
 msgid "failed to create veth device pair: %d"
 msgstr "Nepodařilo se připojit zařízení z %s"
 
-#: src/lxc_driver.c:485
+#: src/lxc_driver.c:576
 #, fuzzy
 msgid "failed to allocate veth names"
 msgstr "nepodařilo se alokovat uzel"
 
-#: src/lxc_driver.c:491
+#: src/lxc_driver.c:582
 #, fuzzy, c-format
 msgid "failed to add %s device to %s: %s"
 msgstr "Nepodařilo se připojit zařízení z %s"
 
-#: src/lxc_driver.c:500
+#: src/lxc_driver.c:591
 #, fuzzy, c-format
 msgid "failed to enable parent ns veth device: %d"
 msgstr "Nepodařilo se připojit zařízení z %s"
 
-#: src/lxc_driver.c:530
+#: src/lxc_driver.c:621
 #, fuzzy, c-format
 msgid "failed to create client socket: %s"
 msgstr "Nepodařilo se zapsat do soketu %d\n"
 
-#: src/lxc_driver.c:541
+#: src/lxc_driver.c:632
 #, fuzzy, c-format
 msgid "failed to connect to client socket: %s"
 msgstr "nepodařilo se připojit ke Xen Store"
 
-#: src/lxc_driver.c:567
+#: src/lxc_driver.c:658
 #, fuzzy, c-format
 msgid "invalid PID %d for container"
 msgstr "neplatný doménový ukazatel v"
 
-#: src/lxc_driver.c:574
+#: src/lxc_driver.c:665
 #, fuzzy, c-format
 msgid "failed to kill pid %d: %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/lxc_driver.c:697 src/util.c:589
+#: src/lxc_driver.c:797 src/util.c:591
 #, c-format
 msgid "cannot wait for '%s': %s"
 msgstr ""
 
-#: src/lxc_driver.c:704
+#: src/lxc_driver.c:804
 #, c-format
 msgid "container '%s' unexpectedly shutdown during startup"
 msgstr ""
 
-#: src/lxc_driver.c:752 src/qemu_driver.c:838
+#: src/lxc_driver.c:852 src/qemu_driver.c:942
 #, c-format
 msgid "cannot create log directory %s: %s"
 msgstr ""
 
-#: src/lxc_driver.c:790
+#: src/lxc_driver.c:890
 #, fuzzy, c-format
 msgid "failed to open %s: %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/lxc_driver.c:810
+#: src/lxc_driver.c:910
 #, fuzzy, c-format
 msgid "Failed to read pid file %s/%s.pid: %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/lxc_driver.c:865
+#: src/lxc_driver.c:966
 #, fuzzy, c-format
 msgid "no domain named %s"
 msgstr "doménové jméno"
 
-#: src/lxc_driver.c:945 src/lxc_driver.c:968
+#: src/lxc_driver.c:1055 src/lxc_driver.c:1091
 #, fuzzy, c-format
 msgid "no domain with id %d"
 msgstr "uzel seznamu domén"
 
-#: src/lxc_driver.c:1125
+#: src/lxc_driver.c:1271
 #, c-format
 msgid "uname(): %s"
 msgstr ""
 
-#: src/lxc_driver.c:1131
+#: src/lxc_driver.c:1277
 #, fuzzy, c-format
 msgid "Unknown release: %s"
 msgstr "neznámý hostitel %s"
 
-#: src/lxc_driver.c:1164 src/lxc_driver.c:1213
+#: src/lxc_driver.c:1314 src/lxc_driver.c:1367
 #, fuzzy, c-format
 msgid "No such domain %s"
 msgstr "Nepodařilo se probudit doménu %s"
 
-#: src/lxc_driver.c:1179
+#: src/lxc_driver.c:1329
 #, fuzzy, c-format
 msgid "Invalid parameter `%s'"
 msgstr "neplatný parametr v %s"
 
-#: src/lxc_driver.c:1206
+#: src/lxc_driver.c:1357
 #, fuzzy
 msgid "Invalid parameter count"
 msgstr "neplatný parametr v"
 
-#: src/network_conf.c:242
+#: src/network_conf.c:253
 #, fuzzy, c-format
 msgid "cannot parse MAC address '%s'"
 msgstr "neplatná MAC adresa: %s"
 
-#: src/network_conf.c:249
+#: src/network_conf.c:260
 #, c-format
 msgid "cannot use name address '%s'"
 msgstr ""
 
-#: src/network_conf.c:265 src/network_conf.c:353
+#: src/network_conf.c:276 src/network_conf.c:364
 #, c-format
 msgid "cannot parse IP address '%s'"
 msgstr ""
 
-#: src/network_conf.c:359
+#: src/network_conf.c:370
 #, c-format
 msgid "cannot parse netmask '%s'"
 msgstr ""
 
-#: src/network_conf.c:383
+#: src/network_conf.c:394
 msgid "Forwarding requested, but no IPv4 address/netmask provided"
 msgstr ""
 
-#: src/network_conf.c:391
+#: src/network_conf.c:402
 #, fuzzy, c-format
 msgid "unknown forwarding type '%s'"
 msgstr "neznámý druh OS %s"
 
-#: src/network_conf.c:662 src/network_driver.c:1095 src/qemu_driver.c:3061
-#: src/storage_driver.c:813 src/uml_driver.c:1501
+#: src/network_conf.c:671 src/network_driver.c:1249 src/qemu_driver.c:3457
+#: src/storage_driver.c:952 src/uml_driver.c:1716
 #, c-format
 msgid "cannot create autostart directory %s: %s"
 msgstr ""
 
-#: src/network_conf.c:733
+#: src/network_conf.c:740
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr ""
 
-#: src/network_conf.c:798 src/storage_conf.c:1458
+#: src/network_conf.c:809 src/storage_conf.c:1479
 #, fuzzy, c-format
 msgid "no config file for %s"
 msgstr "chybná syntaxe konfiguračního souboru: %s"
 
-#: src/network_driver.c:102
+#: src/network_driver.c:115
 #, fuzzy, c-format
 msgid "Failed to autostart network '%s': %s\n"
 msgstr "Selhalo spuštění sítě %s"
 
-#: src/network_driver.c:132 src/qemu_driver.c:191 src/uml_driver.c:295
+#: src/network_driver.c:149 src/qemu_driver.c:267 src/uml_driver.c:324
 #, fuzzy, c-format
 msgid "Failed to find user record for uid '%d': %s\n"
 msgstr "Nepodařilo se najít síť: %s"
 
-#: src/network_driver.c:143
-#, fuzzy
-msgid "out of memory in asprintf\n"
-msgstr "nedostatek paměti"
-
-#: src/network_driver.c:173
+#: src/network_driver.c:189
 #, fuzzy
 msgid "networkStartup: out of memory\n"
 msgstr "nedostatek paměti"
 
-#: src/network_driver.c:197
+#: src/network_driver.c:219
 msgid "Reloading iptables rules\n"
 msgstr ""
 
-#: src/network_driver.c:382
+#: src/network_driver.c:417
 #, fuzzy
 msgid "failed to allocate space for dnsmasq argv"
 msgstr "nepodařilo se alokovat uzel"
 
-#: src/network_driver.c:396
+#: src/network_driver.c:431
 msgid "cannot start dhcp daemon without IP address for server"
 msgstr ""
 
-#: src/network_driver.c:425
+#: src/network_driver.c:460
 #, c-format
 msgid "failed to add iptables rule to allow forwarding from '%s' : %s\n"
 msgstr ""
 
-#: src/network_driver.c:436
+#: src/network_driver.c:471
 #, c-format
 msgid "failed to add iptables rule to allow forwarding to '%s' : %s\n"
 msgstr ""
 
-#: src/network_driver.c:446
+#: src/network_driver.c:481
 #, c-format
 msgid "failed to add iptables rule to enable masquerading : %s\n"
 msgstr ""
 
-#: src/network_driver.c:478
+#: src/network_driver.c:513
 #, c-format
 msgid "failed to add iptables rule to allow routing from '%s' : %s\n"
 msgstr ""
 
-#: src/network_driver.c:489
+#: src/network_driver.c:524
 #, c-format
 msgid "failed to add iptables rule to allow routing to '%s' : %s\n"
 msgstr ""
 
-#: src/network_driver.c:514
+#: src/network_driver.c:549
 #, fuzzy
 msgid "failed to allocate space for IP tables support"
 msgstr "nepodařilo se alokovat uzel"
 
-#: src/network_driver.c:522 src/network_driver.c:529
+#: src/network_driver.c:557 src/network_driver.c:564
 #, c-format
 msgid "failed to add iptables rule to allow DHCP requests from '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:537 src/network_driver.c:544
+#: src/network_driver.c:572 src/network_driver.c:579
 #, c-format
 msgid "failed to add iptables rule to allow DNS requests from '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:554
+#: src/network_driver.c:589
 #, c-format
 msgid "failed to add iptables rule to block outbound traffic from '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:561
+#: src/network_driver.c:596
 #, c-format
 msgid "failed to add iptables rule to block inbound traffic to '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:569
+#: src/network_driver.c:604
 #, c-format
 msgid "failed to add iptables rule to allow cross bridge traffic on '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:670
+#: src/network_driver.c:705
 #, fuzzy
 msgid "network is already active"
 msgstr "Doména je již aktivní"
 
-#: src/network_driver.c:676 src/qemu_conf.c:577
+#: src/network_driver.c:711 src/qemu_conf.c:512
 #, c-format
 msgid "cannot initialize bridge support: %s"
 msgstr ""
 
-#: src/network_driver.c:682
+#: src/network_driver.c:717
 #, c-format
 msgid "cannot create bridge '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:697
+#: src/network_driver.c:732
 #, c-format
 msgid "cannot set IP address on bridge '%s' to '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:705
+#: src/network_driver.c:740
 #, c-format
 msgid "cannot set netmask on bridge '%s' to '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:713
+#: src/network_driver.c:748
 #, fuzzy, c-format
 msgid "failed to bring the bridge '%s' up : %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/network_driver.c:724
+#: src/network_driver.c:759
 #, fuzzy, c-format
 msgid "failed to enable IP forwarding : %s"
 msgstr "nepodařilo se otevřít %s pro čtení"
 
-#: src/network_driver.c:742 src/network_driver.c:773
+#: src/network_driver.c:777 src/network_driver.c:808
 #, fuzzy, c-format
 msgid "Failed to bring down bridge '%s' : %s\n"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/network_driver.c:748 src/network_driver.c:778
+#: src/network_driver.c:783 src/network_driver.c:813
 #, fuzzy, c-format
 msgid "Failed to delete bridge '%s' : %s\n"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/network_driver.c:761
+#: src/network_driver.c:796
 #, fuzzy, c-format
 msgid "Shutting down network '%s'\n"
 msgstr "nepodařilo se získat síť '%s'"
 
-#: src/network_driver.c:787
+#: src/network_driver.c:822
 msgid "Got unexpected pid for dnsmasq\n"
 msgstr ""
 
-#: src/network_driver.c:815 src/network_driver.c:978 src/network_driver.c:1003
-#: src/network_driver.c:1017 src/network_driver.c:1032
-#: src/network_driver.c:1065 src/network_driver.c:1081
+#: src/network_driver.c:849 src/network_driver.c:1069
+#: src/network_driver.c:1105 src/network_driver.c:1128
+#: src/network_driver.c:1156 src/network_driver.c:1212
+#: src/network_driver.c:1237
 msgid "no network with matching uuid"
 msgstr ""
 
-#: src/network_driver.c:830
+#: src/network_driver.c:872
 msgid "no network with matching name"
 msgstr ""
 
-#: src/network_driver.c:984
+#: src/network_driver.c:1075
 #, fuzzy
 msgid "network is still active"
 msgstr "Síť stále běží"
 
-#: src/network_driver.c:1045
+#: src/network_driver.c:1179
 #, fuzzy
 msgid "no network with matching id"
 msgstr "informace o síti v XML"
 
-#: src/network_driver.c:1052
+#: src/network_driver.c:1185
+#, fuzzy, c-format
+msgid "network '%s' does not have a bridge name."
+msgstr "Spuštěna síť %s\n"
+
+#: src/network_driver.c:1193
 #, fuzzy
 msgid "failed to allocate space for network bridge string"
 msgstr "nepodařilo se alokovat uzel"
 
-#: src/network_driver.c:1102 src/storage_driver.c:820
+#: src/network_driver.c:1256 src/storage_driver.c:959
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s' to '%s': %s"
 msgstr "Nepodařilo se uložit doménu %s do %s"
 
-#: src/network_driver.c:1109 src/qemu_driver.c:3075 src/storage_driver.c:829
-#: src/uml_driver.c:1515
+#: src/network_driver.c:1263 src/qemu_driver.c:3471 src/storage_driver.c:968
+#: src/uml_driver.c:1730
 #, fuzzy, c-format
 msgid "Failed to delete symlink '%s': %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/node_device.c:98 src/node_device.c:114 src/node_device.c:129
-#: src/node_device.c:146 src/node_device.c:167
+#: src/node_device.c:123 src/node_device.c:148 src/node_device.c:173
+#: src/node_device.c:202 src/node_device.c:232
 msgid "no node device with matching name"
 msgstr ""
 
@@ -2074,830 +2017,880 @@ msgstr ""
 msgid "Cound not extract vzctl version"
 msgstr "Nelze získat verzi běžícího %s hypervizora\n"
 
-#: src/openvz_conf.c:193
+#: src/openvz_conf.c:196
 #, c-format
 msgid "Cound not read 'IP_ADDRESS' from config for container %d"
 msgstr ""
 
-#: src/openvz_conf.c:225
+#: src/openvz_conf.c:228
 #, c-format
 msgid "Cound not read 'NETIF' from config for container %d"
 msgstr ""
 
-#: src/openvz_conf.c:252
+#: src/openvz_conf.c:255
 #, fuzzy
 msgid "Too long network device name"
 msgstr "zjišťuji název soubor sítě"
 
-#: src/openvz_conf.c:266
+#: src/openvz_conf.c:269
 msgid "Too long bridge device name"
 msgstr ""
 
-#: src/openvz_conf.c:280
+#: src/openvz_conf.c:283
 #, fuzzy
 msgid "Wrong length MAC address"
 msgstr "neplatná MAC adresa"
 
-#: src/openvz_conf.c:287
+#: src/openvz_conf.c:290
 #, fuzzy
 msgid "Wrong MAC address"
 msgstr "MAC adresar"
 
-#: src/openvz_conf.c:323
+#: src/openvz_conf.c:326
 #, c-format
 msgid "Cound not read 'OSTEMPLATE' from config for container %d"
 msgstr ""
 
-#: src/openvz_conf.c:378
+#: src/openvz_conf.c:381
 #, fuzzy
 msgid "popen failed"
 msgstr "selhala operace"
 
-#: src/openvz_conf.c:388
+#: src/openvz_conf.c:391
 msgid "Failed to parse vzlist output"
 msgstr ""
 
-#: src/openvz_conf.c:414
+#: src/openvz_conf.c:417
 msgid "UUID in config file malformed"
 msgstr ""
 
-#: src/openvz_conf.c:426
+#: src/openvz_conf.c:429
 #, c-format
 msgid "Cound not read config for container %d"
 msgstr ""
 
-#: src/openvz_conf.c:469
+#: src/openvz_conf.c:472
 msgid "Cound not read nodeinfo"
 msgstr ""
 
-#: src/openvz_driver.c:97
+#: src/openvz_driver.c:108
 #, fuzzy
 msgid "Container is not defined"
 msgstr "Doména %s byla oddefinována\n"
 
-#: src/openvz_driver.c:125
+#: src/openvz_driver.c:136
 msgid "only filesystem templates are supported"
 msgstr ""
 
-#: src/openvz_driver.c:131
+#: src/openvz_driver.c:142
 msgid "only one filesystem supported"
 msgstr ""
 
-#: src/openvz_driver.c:149 src/openvz_driver.c:495
+#: src/openvz_driver.c:160 src/openvz_driver.c:589
 #, fuzzy, c-format
 msgid "Could not put argument to %s"
 msgstr "nepodařilo se připojit k %s"
 
-#: src/openvz_driver.c:257
+#: src/openvz_driver.c:298
 #, c-format
 msgid "cannot read cputime for domain %d"
 msgstr ""
 
-#: src/openvz_driver.c:297 src/openvz_driver.c:324
+#: src/openvz_driver.c:377 src/openvz_driver.c:414
 #, fuzzy
 msgid "domain is not in running state"
 msgstr "Doména stále běží"
 
-#: src/openvz_driver.c:398
+#: src/openvz_driver.c:492
 msgid "Container ID is not specified"
 msgstr ""
 
-#: src/openvz_driver.c:429
+#: src/openvz_driver.c:523
 msgid "Could not generate eth name for container"
 msgstr ""
 
-#: src/openvz_driver.c:440
+#: src/openvz_driver.c:534
 msgid "Could not generate veth name"
 msgstr ""
 
-#: src/openvz_driver.c:482 src/openvz_driver.c:593 src/openvz_driver.c:665
-#: src/openvz_driver.c:682 src/openvz_driver.c:728 src/openvz_driver.c:759
-#: src/openvz_driver.c:784 src/openvz_driver.c:860 src/openvz_driver.c:959
-#: src/openvz_driver.c:1004
+#: src/openvz_driver.c:576 src/openvz_driver.c:685 src/openvz_driver.c:758
+#: src/openvz_driver.c:775 src/openvz_driver.c:831 src/openvz_driver.c:869
+#: src/openvz_driver.c:905 src/openvz_driver.c:982 src/openvz_driver.c:1118
+#: src/openvz_driver.c:1169
 #, fuzzy, c-format
 msgid "Could not exec %s"
 msgstr "nepodařilo se připojit k %s"
 
-#: src/openvz_driver.c:524
+#: src/openvz_driver.c:618
 #, fuzzy
 msgid "Could not configure network"
 msgstr "nepodařilo se připojit k %s"
 
-#: src/openvz_driver.c:535
+#: src/openvz_driver.c:629
 msgid "cannot replace NETIF config"
 msgstr ""
 
-#: src/openvz_driver.c:573
+#: src/openvz_driver.c:667
 #, c-format
 msgid "Already an OPENVZ VM active with the id '%s'"
 msgstr ""
 
-#: src/openvz_driver.c:585 src/openvz_driver.c:659
+#: src/openvz_driver.c:677 src/openvz_driver.c:752
 msgid "Error creating command for container"
 msgstr ""
 
-#: src/openvz_driver.c:599 src/openvz_driver.c:671
+#: src/openvz_driver.c:691 src/openvz_driver.c:764
 #, fuzzy
 msgid "Could not set UUID"
 msgstr "nepodařilo zpracovat URI spojení"
 
-#: src/openvz_driver.c:613 src/openvz_driver.c:697
+#: src/openvz_driver.c:701 src/openvz_driver.c:786
 #, fuzzy
 msgid "Could not set number of virtual cpu"
 msgstr "změnit počet virtuálních CPU"
 
-#: src/openvz_driver.c:647
+#: src/openvz_driver.c:742
 #, c-format
 msgid "Already an OPENVZ VM defined with the id '%s'"
 msgstr ""
 
-#: src/openvz_driver.c:716
+#: src/openvz_driver.c:818
 msgid "no domain with matching id"
 msgstr ""
 
-#: src/openvz_driver.c:722
+#: src/openvz_driver.c:824
 msgid "domain is not in shutoff state"
 msgstr ""
 
-#: src/openvz_driver.c:805
+#: src/openvz_driver.c:936
 #, fuzzy
 msgid "Could not read container config"
 msgstr "nepodařilo zpracovat URI spojení"
 
-#: src/openvz_driver.c:821 src/qemu_driver.c:1300
+#: src/openvz_driver.c:956 src/qemu_driver.c:1428
 #, fuzzy, c-format
 msgid "unknown type '%s'"
 msgstr "neznámý druh OS %s"
 
-#: src/openvz_driver.c:847
+#: src/openvz_driver.c:1008
 msgid "VCPUs should be >= 1"
 msgstr ""
 
-#: src/openvz_driver.c:968 src/openvz_driver.c:1013
+#: src/openvz_driver.c:1127 src/openvz_driver.c:1178
 #, fuzzy, c-format
 msgid "Could not parse VPS ID %s"
 msgstr "nepodařilo zpracovat URI spojení"
 
-#: src/proxy_internal.c:251
+#: src/proxy_internal.c:252
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "Nepodařilo se zavřít soket %d\n"
 
-#: src/proxy_internal.c:284
+#: src/proxy_internal.c:285
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "Nepodařilo se číst ze soketu %d\n"
 
-#: src/proxy_internal.c:311
+#: src/proxy_internal.c:312
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "Nepodařilo se zapsat do soketu %d\n"
 
-#: src/proxy_internal.c:403 src/proxy_internal.c:424 src/proxy_internal.c:444
+#: src/proxy_internal.c:404 src/proxy_internal.c:425 src/proxy_internal.c:445
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "Chyba při komunikací s proxy: získal jsem %d bajtů z %d\n"
 
-#: src/proxy_internal.c:411
+#: src/proxy_internal.c:412
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "Chyba při komunikací s proxy: očekáváno %d bajtů, získáno %d\n"
 
-#: src/proxy_internal.c:433
+#: src/proxy_internal.c:434
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "Chyba při komunikací s proxy: získal jsem %d bajtů z paketu\n"
 
-#: src/proxy_internal.c:457
+#: src/proxy_internal.c:458
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "Chyba při komunikací s proxy: poškozený paket\n"
 
-#: src/proxy_internal.c:463
+#: src/proxy_internal.c:464
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "získal jsem asynchronní číslo paketu %d\n"
 
-#: src/qemu_conf.c:74
+#: src/qemu_conf.c:72
 #, fuzzy
 msgid "failed to allocate vncListen"
 msgstr "nepodařilo se alokovat uzel"
 
-#: src/qemu_conf.c:79 src/qemu_conf.c:114
+#: src/qemu_conf.c:77 src/qemu_conf.c:112
 #, fuzzy
 msgid "failed to allocate vncTLSx509certdir"
 msgstr "nepodařilo se alokovat uzel"
 
-#: src/qemu_conf.c:126
+#: src/qemu_conf.c:124
 #, fuzzy
 msgid "failed to allocate vnc_listen"
 msgstr "nepodařilo se alokovat uzel"
 
-#: src/qemu_conf.c:479
+#: src/qemu_conf.c:417
 #, c-format
 msgid "Unexpected exit status from qemu %d pid %lu"
 msgstr ""
 
-#: src/qemu_conf.c:488
+#: src/qemu_conf.c:426
 #, c-format
 msgid "Unexpected exit status '%d', qemu probably failed"
 msgstr ""
 
-#: src/qemu_conf.c:511 src/qemu_driver.c:871
+#: src/qemu_conf.c:449 src/qemu_driver.c:979
 #, c-format
 msgid "Cannot find QEMU binary %s: %s"
 msgstr ""
 
-#: src/qemu_conf.c:543
+#: src/qemu_conf.c:481
 #, fuzzy, c-format
 msgid "Network '%s' not found"
 msgstr "Síť nebyla nalezena"
 
-#: src/qemu_conf.c:553
-#, fuzzy, c-format
-msgid "Network '%s' is not active"
-msgstr "Spuštěna síť %s\n"
-
-#: src/qemu_conf.c:561
+#: src/qemu_conf.c:496
 #, fuzzy, c-format
 msgid "Network type %d is not supported"
 msgstr "Spuštěna síť %s\n"
 
-#: src/qemu_conf.c:587
+#: src/qemu_conf.c:522
 #, c-format
 msgid "Failed to add tap interface to bridge. %s is not a bridge device"
 msgstr ""
 
-#: src/qemu_conf.c:591
+#: src/qemu_conf.c:526
 #, fuzzy, c-format
 msgid "Failed to add tap interface '%s' to bridge '%s' : %s"
 msgstr "Nepodařilo se získat stav rozhraní %s %s"
 
-#: src/qemu_conf.c:614
+#: src/qemu_conf.c:549
 #, fuzzy
 msgid "failed to allocate space for tapfds string"
 msgstr "nepodařilo se alokovat uzel"
 
-#: src/qemu_conf.c:958 src/qemu_conf.c:1010
+#: src/qemu_conf.c:899 src/qemu_conf.c:951
 #, c-format
 msgid "unsupported usb disk type for '%s'"
 msgstr ""
 
-#: src/qemu_conf.c:966 src/qemu_conf.c:1029 src/uml_conf.c:337
+#: src/qemu_conf.c:907 src/qemu_conf.c:970 src/uml_conf.c:272
 #, fuzzy, c-format
 msgid "unsupported disk type '%s'"
 msgstr "neočekávaná data '%s'"
 
-#: src/qemu_conf.c:1247
+#: src/qemu_conf.c:1190
 msgid "invalid sound model"
 msgstr ""
 
-#: src/qemu_conf.c:1301 src/uml_conf.c:377
+#: src/qemu_conf.c:1243 src/uml_conf.c:312
 #, fuzzy
 msgid "failed to allocate space for argv string"
 msgstr "nepodařilo se alokovat uzel"
 
-#: src/qemu_driver.c:89 src/uml_driver.c:95
+#: src/qemu_conf.c:1318
+#, fuzzy
+msgid "failed to allocate space for vm status"
+msgstr "nepodařilo se alokovat uzel"
+
+#: src/qemu_conf.c:1361
+#, fuzzy
+msgid "invalid domain state"
+msgstr "neplatný doménový ukazatel v %s"
+
+#: src/qemu_conf.c:1368
+#, fuzzy
+msgid "invalid pid"
+msgstr "neplatný parametr v"
+
+#: src/qemu_conf.c:1375
+msgid "no monitor path"
+msgstr ""
+
+#: src/qemu_conf.c:1382
+#, fuzzy
+msgid "no domain config"
+msgstr "uzel seznamu domén"
+
+#: src/qemu_driver.c:98 src/uml_driver.c:102
 msgid "Failed to set close-on-exec file descriptor flag\n"
 msgstr ""
 
-#: src/qemu_driver.c:104
+#: src/qemu_driver.c:113
 msgid "Failed to set non-blocking file descriptor flag\n"
 msgstr ""
 
-#: src/qemu_driver.c:149 src/uml_driver.c:126
+#: src/qemu_driver.c:167 src/uml_driver.c:142
 #, fuzzy, c-format
 msgid "Failed to autostart VM '%s': %s\n"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/qemu_driver.c:242
+#: src/qemu_driver.c:203
+#, fuzzy
+msgid "failed to allocate space for status file"
+msgstr "nepodařilo se alokovat uzel"
+
+#: src/qemu_driver.c:209
+#, fuzzy, c-format
+msgid "Failed to unlink status file %s"
+msgstr "Nepodařilo se získat stav bloků %s %s"
+
+#: src/qemu_driver.c:284
+#, fuzzy, c-format
+msgid "Failed to create state dir '%s': %s\n"
+msgstr "Nepodařilo se otevřít '%s': %s"
+
+#: src/qemu_driver.c:326
 #, fuzzy
 msgid "qemudStartup: out of memory\n"
 msgstr "nedostatek paměti"
 
-#: src/qemu_driver.c:376
+#: src/qemu_driver.c:478
 #, c-format
 msgid ""
 "QEMU quit during %s startup\n"
 "%s"
 msgstr ""
 
-#: src/qemu_driver.c:386 src/qemu_driver.c:399
+#: src/qemu_driver.c:488 src/qemu_driver.c:501
 #, c-format
 msgid "Failure while reading %s startup output: %s"
 msgstr ""
 
-#: src/qemu_driver.c:394
+#: src/qemu_driver.c:496
 #, c-format
 msgid "Timed out while reading %s startup output"
 msgstr ""
 
-#: src/qemu_driver.c:410
+#: src/qemu_driver.c:512
 #, c-format
 msgid "Failure while reading %s startup output"
 msgstr ""
 
-#: src/qemu_driver.c:422
+#: src/qemu_driver.c:524
 #, c-format
 msgid "Out of space while reading %s startup output"
 msgstr ""
 
-#: src/qemu_driver.c:452
+#: src/qemu_driver.c:552
 #, c-format
 msgid "Unable to open monitor path %s"
 msgstr ""
 
-#: src/qemu_driver.c:457
+#: src/qemu_driver.c:557
 msgid "Unable to set monitor close-on-exec flag"
 msgstr ""
 
-#: src/qemu_driver.c:462
+#: src/qemu_driver.c:562
 msgid "Unable to put monitor into non-blocking mode"
 msgstr ""
 
-#: src/qemu_driver.c:587 src/qemu_driver.c:993 src/qemu_driver.c:1163
-#: src/qemu_driver.c:1173
+#: src/qemu_driver.c:574
+#, fuzzy
+msgid "failed to allocate space for monitor path"
+msgstr "nepodařilo se alokovat uzel"
+
+#: src/qemu_driver.c:691 src/qemu_driver.c:1102 src/qemu_driver.c:1291
+#: src/qemu_driver.c:1301
 #, c-format
 msgid "Unable to log VM console data: %s\n"
 msgstr ""
 
-#: src/qemu_driver.c:610
+#: src/qemu_driver.c:713
 #, fuzzy
 msgid "allocate cpumap"
 msgstr "alokovat buffer"
 
-#: src/qemu_driver.c:621
+#: src/qemu_driver.c:724
 msgid "cannot run monitor command to fetch CPU thread info"
 msgstr ""
 
-#: src/qemu_driver.c:726
+#: src/qemu_driver.c:828
 #, fuzzy, c-format
 msgid "failed to set CPU affinity %s"
 msgstr "nepodařilo se získat doménu '%s'"
 
-#: src/qemu_driver.c:737 src/qemu_driver.c:1614
+#: src/qemu_driver.c:839 src/qemu_driver.c:1827
 #, fuzzy
 msgid "resume operation failed"
 msgstr "selhala operace"
 
-#: src/qemu_driver.c:805 src/uml_driver.c:689
+#: src/qemu_driver.c:909 src/uml_driver.c:725
 #, fuzzy
 msgid "VM is already active"
 msgstr "Doména je již aktivní"
 
-#: src/qemu_driver.c:815
+#: src/qemu_driver.c:919
 msgid "Unable to find an unused VNC port"
 msgstr ""
 
-#: src/qemu_driver.c:827
+#: src/qemu_driver.c:931
 #, c-format
 msgid "config file path too long: %s/%s.log"
 msgstr ""
 
-#: src/qemu_driver.c:846 src/uml_driver.c:725
+#: src/qemu_driver.c:954 src/uml_driver.c:761
 #, fuzzy, c-format
 msgid "failed to create logfile %s: %s"
 msgstr "%s: nepodařilo se zapisovat do souboru záznamu: %s"
 
-#: src/qemu_driver.c:852 src/uml_driver.c:734
+#: src/qemu_driver.c:960 src/uml_driver.c:770
 #, c-format
 msgid "Unable to set VM logfile close-on-exec flag %s"
 msgstr ""
 
-#: src/qemu_driver.c:881 src/qemu_driver.c:2550
+#: src/qemu_driver.c:989 src/qemu_driver.c:2946
 #, c-format
 msgid "Cannot determine QEMU argv syntax %s"
 msgstr ""
 
-#: src/qemu_driver.c:899 src/qemu_driver.c:902 src/uml_driver.c:750
-#: src/uml_driver.c:753
+#: src/qemu_driver.c:1007 src/qemu_driver.c:1010 src/uml_driver.c:786
+#: src/uml_driver.c:789
 #, fuzzy, c-format
 msgid "Unable to write envv to logfile %d: %s\n"
 msgstr "%s: nepodařilo se zapisovat do souboru záznamu: %s"
 
-#: src/qemu_driver.c:909 src/qemu_driver.c:912 src/qemu_driver.c:917
-#: src/uml_driver.c:760 src/uml_driver.c:763 src/uml_driver.c:768
+#: src/qemu_driver.c:1017 src/qemu_driver.c:1020 src/qemu_driver.c:1025
+#: src/uml_driver.c:796 src/uml_driver.c:799 src/uml_driver.c:804
 #, fuzzy, c-format
 msgid "Unable to write argv to logfile %d: %s\n"
 msgstr "%s: nepodařilo se zapisovat do souboru záznamu: %s"
 
-#: src/qemu_driver.c:1005
+#: src/qemu_driver.c:1114
 #, c-format
 msgid "Shutting down VM '%s'\n"
 msgstr ""
 
-#: src/qemu_driver.c:1016
+#: src/qemu_driver.c:1125
 #, fuzzy, c-format
 msgid "Unable to close logfile %d: %s\n"
 msgstr "Nepodařilo se zavřít soket %d\n"
 
-#: src/qemu_driver.c:1031
+#: src/qemu_driver.c:1140
 #, fuzzy
 msgid "Got unexpected pid, damn\n"
 msgstr "neočekávaný příkazový (dict) uzel"
 
-#: src/qemu_driver.c:1271
+#: src/qemu_driver.c:1399
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/qemu_driver.c:1316 src/uml_driver.c:909
+#: src/qemu_driver.c:1445 src/uml_driver.c:946
 #, fuzzy
 msgid "failed to allocate space for capabilities support"
 msgstr "nepodařilo se zjistit schopnosti"
 
-#: src/qemu_driver.c:1335 src/qemu_driver.c:1361 src/uml_driver.c:928
-#: src/uml_driver.c:954
+#: src/qemu_driver.c:1464 src/qemu_driver.c:1494 src/uml_driver.c:965
+#: src/uml_driver.c:996
 msgid "NUMA not supported on this host"
 msgstr ""
 
-#: src/qemu_driver.c:1346 src/qemu_driver.c:1369 src/uml_driver.c:939
-#: src/uml_driver.c:962
+#: src/qemu_driver.c:1475 src/qemu_driver.c:1502 src/uml_driver.c:976
+#: src/uml_driver.c:1004
 #, fuzzy
 msgid "Failed to query NUMA free memory"
 msgstr "Volná paměť NUMA"
 
-#: src/qemu_driver.c:1526 src/uml_driver.c:1127
+#: src/qemu_driver.c:1707 src/uml_driver.c:1215
 #, fuzzy, c-format
 msgid "domain '%s' is already defined"
 msgstr "doména %s již existuje"
 
-#: src/qemu_driver.c:1537 src/uml_driver.c:1138
+#: src/qemu_driver.c:1717 src/uml_driver.c:1225
 #, fuzzy, c-format
 msgid "domain with uuid '%s' is already defined"
 msgstr "doména %s již existuje"
 
-#: src/qemu_driver.c:1570 src/qemu_driver.c:1602 src/qemu_driver.c:1634
-#: src/qemu_driver.c:1655 src/qemu_driver.c:1895 src/qemu_driver.c:3112
-#: src/qemu_driver.c:3237 src/qemu_driver.c:3352 src/qemu_driver.c:3612
-#: src/uml_driver.c:1170 src/uml_driver.c:1193
+#: src/qemu_driver.c:1766 src/qemu_driver.c:1816 src/qemu_driver.c:1864
+#: src/qemu_driver.c:1893 src/qemu_driver.c:2193 src/qemu_driver.c:3512
+#: src/qemu_driver.c:3644 src/qemu_driver.c:3780 src/qemu_driver.c:4109
+#: src/uml_driver.c:1266 src/uml_driver.c:1296
 #, c-format
 msgid "no domain with matching id %d"
 msgstr ""
 
-#: src/qemu_driver.c:1575 src/qemu_driver.c:1607 src/qemu_driver.c:1901
-#: src/qemu_driver.c:3117 src/qemu_driver.c:3243 src/qemu_driver.c:3358
-#: src/qemu_driver.c:3618
+#: src/qemu_driver.c:1771 src/qemu_driver.c:1821 src/qemu_driver.c:2199
+#: src/qemu_driver.c:3517 src/qemu_driver.c:3650 src/qemu_driver.c:3792
+#: src/qemu_driver.c:4115
 #, fuzzy
 msgid "domain is not running"
 msgstr "Doména stále běží"
 
-#: src/qemu_driver.c:1583
+#: src/qemu_driver.c:1777
 #, fuzzy
 msgid "suspend operation failed"
 msgstr "selhala operace"
 
-#: src/qemu_driver.c:1640 src/uml_driver.c:1177
+#: src/qemu_driver.c:1870 src/uml_driver.c:1273
 #, fuzzy
 msgid "shutdown operation failed"
 msgstr "selhala operace"
 
-#: src/qemu_driver.c:1683 src/uml_driver.c:1219
+#: src/qemu_driver.c:1934 src/uml_driver.c:1332
 #, fuzzy
 msgid "failed to allocate space for ostype"
 msgstr "nepodařilo se alokovat uzel"
 
-#: src/qemu_driver.c:1699 src/qemu_driver.c:1715 src/qemu_driver.c:1738
-#: src/qemu_driver.c:2013 src/qemu_driver.c:2175 src/uml_driver.c:1235
-#: src/uml_driver.c:1251 src/uml_driver.c:1274
+#: src/qemu_driver.c:1957 src/qemu_driver.c:1983 src/qemu_driver.c:2015
+#: src/qemu_driver.c:2327 src/qemu_driver.c:2515 src/uml_driver.c:1355
+#: src/uml_driver.c:1380 src/uml_driver.c:1413
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:1721 src/uml_driver.c:1257
+#: src/qemu_driver.c:1989 src/uml_driver.c:1386
 msgid "cannot set max memory lower than current memory"
 msgstr ""
 
-#: src/qemu_driver.c:1744 src/uml_driver.c:1280
+#: src/qemu_driver.c:2021 src/uml_driver.c:1419
 #, fuzzy
 msgid "cannot set memory of an active domain"
 msgstr "Jméno neaktivní domény"
 
-#: src/qemu_driver.c:1750 src/uml_driver.c:1286
+#: src/qemu_driver.c:2027 src/uml_driver.c:1425
 msgid "cannot set memory higher than max memory"
 msgstr ""
 
-#: src/qemu_driver.c:1910
+#: src/qemu_driver.c:2208
 #, fuzzy
 msgid "failed to pause domain"
 msgstr "Nepodařilo se uspat doménu %s"
 
-#: src/qemu_driver.c:1919
+#: src/qemu_driver.c:2217
 #, fuzzy
 msgid "failed to get domain xml"
 msgstr "nepodařilo se získat UUID domény"
 
-#: src/qemu_driver.c:1927
+#: src/qemu_driver.c:2225
 #, fuzzy, c-format
 msgid "failed to create '%s'"
 msgstr "Nepodařilo se vytvořit XML"
 
-#: src/qemu_driver.c:1934
+#: src/qemu_driver.c:2231
 #, fuzzy
 msgid "failed to write save header"
 msgstr "nepodařilo se zapsat do log souboru"
 
-#: src/qemu_driver.c:1942
+#: src/qemu_driver.c:2237
 #, fuzzy
 msgid "failed to write xml"
 msgstr "nepodařilo se zapsat do log souboru"
 
-#: src/qemu_driver.c:1955 src/qemu_driver.c:1962 src/qemu_driver.c:2235
-#: src/qemu_driver.c:2661 src/qemu_driver.c:2737 src/remote_internal.c:2450
-#: src/virterror.c:449
+#: src/qemu_driver.c:2243
+#, fuzzy, c-format
+msgid "unable to save file %s %s"
+msgstr "Nepodařilo se zavřít soket %d\n"
+
+#: src/qemu_driver.c:2253 src/qemu_driver.c:2260 src/qemu_driver.c:2575
+#: src/qemu_driver.c:3051 src/qemu_driver.c:3121 src/remote_internal.c:2450
+#: src/virterror.c:475
 msgid "out of memory"
 msgstr "nedostatek paměti"
 
-#: src/qemu_driver.c:1970 src/qemu_driver.c:3655
+#: src/qemu_driver.c:2267 src/qemu_driver.c:4155
 #, fuzzy
 msgid "migrate operation failed"
 msgstr "selhala operace"
 
-#: src/qemu_driver.c:1982
+#: src/qemu_driver.c:2278
 msgid "'migrate' not supported by this qemu"
 msgstr ""
 
-#: src/qemu_driver.c:2019
+#: src/qemu_driver.c:2333
 #, fuzzy
 msgid "cannot change vcpu count of an active domain"
 msgstr "Oddefinovat nastavení neaktivní domény."
 
-#: src/qemu_driver.c:2025
+#: src/qemu_driver.c:2339
 msgid "could not determine max vcpus for the domain"
 msgstr ""
 
-#: src/qemu_driver.c:2031
+#: src/qemu_driver.c:2345
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
 msgstr ""
 
-#: src/qemu_driver.c:2055 src/qemu_driver.c:2107
+#: src/qemu_driver.c:2379 src/qemu_driver.c:2440
 #, fuzzy
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "oddefinovat neaktivní doménu"
 
-#: src/qemu_driver.c:2061
+#: src/qemu_driver.c:2385
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr ""
 
-#: src/qemu_driver.c:2082
+#: src/qemu_driver.c:2406
 #, c-format
 msgid "cannot set affinity: %s"
 msgstr ""
 
-#: src/qemu_driver.c:2087
+#: src/qemu_driver.c:2411
 msgid "cpu affinity is not supported"
 msgstr ""
 
-#: src/qemu_driver.c:2144
+#: src/qemu_driver.c:2475
 #, c-format
 msgid "cannot get affinity: %s"
 msgstr ""
 
-#: src/qemu_driver.c:2154
+#: src/qemu_driver.c:2485
 msgid "cpu affinity is not available"
 msgstr ""
 
-#: src/qemu_driver.c:2181
+#: src/qemu_driver.c:2521
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr ""
 
-#: src/qemu_driver.c:2207 src/test.c:1051
+#: src/qemu_driver.c:2550 src/test.c:1180
 #, fuzzy
 msgid "cannot read domain image"
 msgstr "uzel seznamu domén"
 
-#: src/qemu_driver.c:2213
+#: src/qemu_driver.c:2556
 #, fuzzy
 msgid "failed to read qemu header"
 msgstr "nepodařilo se číst z démona Xen"
 
-#: src/qemu_driver.c:2220
+#: src/qemu_driver.c:2562
 msgid "image magic is incorrect"
 msgstr ""
 
-#: src/qemu_driver.c:2227
+#: src/qemu_driver.c:2568
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr ""
 
-#: src/qemu_driver.c:2242
+#: src/qemu_driver.c:2581
 #, fuzzy
 msgid "failed to read XML"
 msgstr "Nepodařilo se vytvořit XML"
 
-#: src/qemu_driver.c:2251 src/qemu_driver.c:3531
+#: src/qemu_driver.c:2588 src/qemu_driver.c:4011
 #, fuzzy
 msgid "failed to parse XML"
 msgstr "Nepodařilo se vytvořit XML"
 
-#: src/qemu_driver.c:2264
+#: src/qemu_driver.c:2598
 #, fuzzy, c-format
 msgid "domain is already active as '%s'"
 msgstr "Doména je již aktivní"
 
-#: src/qemu_driver.c:2273 src/qemu_driver.c:3567
+#: src/qemu_driver.c:2606 src/qemu_driver.c:4047
 #, fuzzy
 msgid "failed to assign new VM"
 msgstr "nepodařilo se získat UUID sítě"
 
-#: src/qemu_driver.c:2286
+#: src/qemu_driver.c:2619
 #, fuzzy
 msgid "failed to start VM"
 msgstr "Nepodařilo se spustit doménu %s"
 
-#: src/qemu_driver.c:2302
+#: src/qemu_driver.c:2637
 #, fuzzy
 msgid "failed to resume domain"
 msgstr "Nepodařilo se probudit doménu %s"
 
-#: src/qemu_driver.c:2472
+#: src/qemu_driver.c:2875
 #, c-format
 msgid "cannot convert disk '%s' to bus/device index"
 msgstr ""
 
-#: src/qemu_driver.c:2498
+#: src/qemu_driver.c:2901
 #, c-format
 msgid "Unsupported disk name mapping for bus '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:2540
+#: src/qemu_driver.c:2936
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:2567
+#: src/qemu_driver.c:2963
 #, c-format
 msgid ""
 "Emulator version does not support removable media for device '%s' and target "
 "'%s'"
 msgstr ""
 
-#: src/qemu_driver.c:2604
-msgid "cannot change cdrom media"
-msgstr ""
+#: src/qemu_driver.c:3000
+#, fuzzy
+msgid "could not change cdrom media"
+msgstr "nepodařilo se připojit k %s"
 
-#: src/qemu_driver.c:2615
-msgid "changing cdrom media failed"
-msgstr ""
+#: src/qemu_driver.c:3011
+#, fuzzy, c-format
+msgid "changing cdrom media failed: %s"
+msgstr "%s: nepodařilo se zapisovat do souboru záznamu: %s"
 
-#: src/qemu_driver.c:2648 src/qemu_driver.c:2724
+#: src/qemu_driver.c:3038 src/qemu_driver.c:3108
 #, c-format
 msgid "target %s already exists"
 msgstr ""
 
-#: src/qemu_driver.c:2675
+#: src/qemu_driver.c:3065
 #, c-format
 msgid "cannot attach %s disk"
 msgstr ""
 
-#: src/qemu_driver.c:2689
+#: src/qemu_driver.c:3079
 msgid "Unable to parse slot number\n"
 msgstr ""
 
-#: src/qemu_driver.c:2692
+#: src/qemu_driver.c:3082
 #, fuzzy, c-format
 msgid "adding %s disk failed"
 msgstr "doména %s již existuje"
 
-#: src/qemu_driver.c:2750
+#: src/qemu_driver.c:3134
 msgid "cannot attach usb disk"
 msgstr ""
 
-#: src/qemu_driver.c:2761
+#: src/qemu_driver.c:3145
 #, fuzzy
 msgid "adding usb disk failed"
 msgstr "načíst definiční soubor hostitele"
 
-#: src/qemu_driver.c:2809
+#: src/qemu_driver.c:3188
 #, fuzzy
 msgid "cannot attach usb device"
 msgstr "připojit diskové zařízení"
 
-#: src/qemu_driver.c:2820
+#: src/qemu_driver.c:3199
 #, fuzzy
 msgid "adding usb device failed"
 msgstr "načíst definiční soubor hostitele"
 
-#: src/qemu_driver.c:2848 src/qemu_driver.c:2987
+#: src/qemu_driver.c:3231 src/qemu_driver.c:3369
 #, fuzzy
 msgid "cannot attach device on inactive domain"
 msgstr "oddefinovat neaktivní doménu"
 
-#: src/qemu_driver.c:2886
+#: src/qemu_driver.c:3259
+msgid "this disk device type cannot be attached"
+msgstr ""
+
+#: src/qemu_driver.c:3268
 msgid "this device type cannot be attached"
 msgstr ""
 
-#: src/qemu_driver.c:2917
+#: src/qemu_driver.c:3298
 #, fuzzy, c-format
 msgid "disk %s not found"
 msgstr "Doména nebyla nalezena"
 
-#: src/qemu_driver.c:2923
+#: src/qemu_driver.c:3304
 #, c-format
 msgid "disk %s cannot be detached - invalid slot number %d"
 msgstr ""
 
-#: src/qemu_driver.c:2936
+#: src/qemu_driver.c:3316
 #, fuzzy, c-format
 msgid "failed to execute detach disk %s command"
 msgstr "nepodařilo se získat informace o uzlu"
 
-#: src/qemu_driver.c:2946
+#: src/qemu_driver.c:3325
 #, fuzzy, c-format
 msgid "failed to detach disk %s: invalid slot %d"
 msgstr "Nepodařilo se odpojit zařízení z %s"
 
-#: src/qemu_driver.c:3003
+#: src/qemu_driver.c:3386
 msgid "only SCSI or virtio disk device can be detached dynamically"
 msgstr ""
 
-#: src/qemu_driver.c:3042 src/uml_driver.c:1482
+#: src/qemu_driver.c:3440 src/uml_driver.c:1699
 #, fuzzy
 msgid "cannot set autostart for transient domain"
 msgstr "automaticky spustit doménu"
 
-#: src/qemu_driver.c:3068 src/uml_driver.c:1508
+#: src/qemu_driver.c:3464 src/uml_driver.c:1723
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s to '%s': %s"
 msgstr "Nepodařilo se uložit doménu %s do %s"
 
-#: src/qemu_driver.c:3130
+#: src/qemu_driver.c:3530
 #, fuzzy, c-format
 msgid "invalid path: %s"
 msgstr "neplatný parametr v %s"
 
-#: src/qemu_driver.c:3141
+#: src/qemu_driver.c:3541
 msgid "'info blockstats' command failed"
 msgstr ""
 
-#: src/qemu_driver.c:3154
+#: src/qemu_driver.c:3554
 msgid "'info blockstats' not supported by this qemu"
 msgstr ""
 
-#: src/qemu_driver.c:3218
+#: src/qemu_driver.c:3618
 #, fuzzy, c-format
 msgid "device not found: %s (%s)"
 msgstr "Doména nebyla nalezena: %s"
 
-#: src/qemu_driver.c:3249 src/qemu_driver.c:3292 src/uml_driver.c:1551
+#: src/qemu_driver.c:3656 src/qemu_driver.c:3714 src/uml_driver.c:1772
 msgid "NULL or empty path"
 msgstr ""
 
-#: src/qemu_driver.c:3261
+#: src/qemu_driver.c:3673
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr ""
 
-#: src/qemu_driver.c:3303 src/uml_driver.c:1562
+#: src/qemu_driver.c:3751 src/uml_driver.c:1809
 #, fuzzy
 msgid "invalid path"
 msgstr "neplatný parametr v"
 
-#: src/qemu_driver.c:3346
+#: src/qemu_driver.c:3786
 msgid "QEMU driver only supports virtual memory addrs"
 msgstr ""
 
-#: src/qemu_driver.c:3373
+#: src/qemu_driver.c:3807
 msgid "'memsave' command failed"
 msgstr ""
 
-#: src/qemu_driver.c:3475
+#: src/qemu_driver.c:3955
 #, fuzzy
 msgid "no domain XML passed"
 msgstr "uzel seznamu domén"
 
-#: src/qemu_driver.c:3513
+#: src/qemu_driver.c:3993
 msgid "only tcp URIs are supported for KVM migrations"
 msgstr ""
 
-#: src/qemu_driver.c:3523
+#: src/qemu_driver.c:4003
 msgid "URI did not have ':port' at the end"
 msgstr ""
 
-#: src/qemu_driver.c:3548
+#: src/qemu_driver.c:4028
 #, fuzzy
 msgid "could not generate random UUID"
 msgstr "nepodařilo se získat UUID domény"
 
-#: src/qemu_driver.c:3556
+#: src/qemu_driver.c:4037
 #, c-format
 msgid "domain with the same name or UUID already exists as '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3581
+#: src/qemu_driver.c:4061
 #, fuzzy
 msgid "failed to start listening VM"
 msgstr "Nepodařilo se spustit doménu %s"
 
-#: src/qemu_driver.c:3664
+#: src/qemu_driver.c:4164
 #, fuzzy, c-format
 msgid "migrate failed: %s"
 msgstr "selhala operace %s"
 
-#: src/qemu_driver.c:3699
+#: src/qemu_driver.c:4210
 #, c-format
 msgid "no domain with matching name %s"
 msgstr ""
@@ -2907,31 +2900,31 @@ msgstr ""
 msgid "tried to use a closed or uninitialised handle"
 msgstr ""
 
-#: src/remote_internal.c:258
+#: src/remote_internal.c:259
 #, fuzzy
 msgid "failed to find libvirtd binary"
 msgstr "Nepodařilo se najít síť"
 
-#: src/remote_internal.c:322
+#: src/remote_internal.c:323
 msgid ""
 "remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp)"
 msgstr ""
 
-#: src/remote_internal.c:485
+#: src/remote_internal.c:486
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr ""
 
-#: src/remote_internal.c:507
+#: src/remote_internal.c:508
 #, fuzzy, c-format
 msgid "unable to resolve hostname '%s': %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/remote_internal.c:558 src/remote_internal.c:638
+#: src/remote_internal.c:559 src/remote_internal.c:638
 #, fuzzy, c-format
 msgid "unable to connect to '%s': %s"
 msgstr "nepodařilo se připojit k %s"
 
-#: src/remote_internal.c:579
+#: src/remote_internal.c:580
 #, fuzzy, c-format
 msgid "unable to lookup user '%d': %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
@@ -3303,11 +3296,11 @@ msgstr ""
 msgid "xdr_int (length word)"
 msgstr ""
 
-#: src/remote_internal.c:4862 src/remote_internal.c:5582
+#: src/remote_internal.c:4862 src/remote_internal.c:5583
 msgid "xdr_int (length word, reply)"
 msgstr ""
 
-#: src/remote_internal.c:4872 src/remote_internal.c:5591
+#: src/remote_internal.c:4872 src/remote_internal.c:5592
 msgid "packet received from server too large"
 msgstr ""
 
@@ -3354,24 +3347,24 @@ msgstr ""
 msgid "unknown status (received %x)"
 msgstr ""
 
-#: src/remote_internal.c:5090 src/remote_internal.c:5106
+#: src/remote_internal.c:5090 src/remote_internal.c:5105
 msgid "socket closed unexpectedly"
 msgstr ""
 
-#: src/remote_internal.c:5497
+#: src/remote_internal.c:5496
 msgid "remoteDomainProcessEvent: unmarshalling ret"
 msgstr ""
 
-#: src/remote_internal.c:5597
+#: src/remote_internal.c:5598
 msgid "error reading buffer from memory"
 msgstr ""
 
-#: src/remote_internal.c:5604
+#: src/remote_internal.c:5605
 #, fuzzy
 msgid "invalid header in event firing"
 msgstr "neplatný parametr v"
 
-#: src/remote_internal.c:5614
+#: src/remote_internal.c:5615
 #, fuzzy
 msgid "invalid proc in event firing"
 msgstr "neplatný doménový ukazatel v"
@@ -3384,12 +3377,12 @@ msgstr "nepodařilo se alokovat uzel"
 msgid "failed to copy a string"
 msgstr "nepodařilo se zkopírovat řetězec"
 
-#: src/storage_backend.c:94 src/storage_conf.c:207
+#: src/storage_backend.c:94 src/storage_conf.c:212
 #, c-format
 msgid "missing backend for pool type %d"
 msgstr ""
 
-#: src/storage_backend.c:108 src/storage_backend_fs.c:139
+#: src/storage_backend.c:108 src/storage_backend_fs.c:140
 #, fuzzy, c-format
 msgid "cannot open volume '%s': %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
@@ -3428,7 +3421,7 @@ msgstr ""
 msgid "cannot read dir %s: %s"
 msgstr ""
 
-#: src/storage_backend.c:362 src/storage_driver.c:1233 src/test.c:2189
+#: src/storage_backend.c:362 src/storage_driver.c:1452 src/test.c:3212
 msgid "path"
 msgstr ""
 
@@ -3436,48 +3429,48 @@ msgstr ""
 msgid "dup path"
 msgstr ""
 
-#: src/storage_backend.c:425
+#: src/storage_backend.c:426
 msgid "regex"
 msgstr ""
 
-#: src/storage_backend.c:435
+#: src/storage_backend.c:436
 #, fuzzy, c-format
 msgid "Failed to compile regex %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/storage_backend.c:451 src/storage_backend.c:456
-#: src/storage_backend.c:493
+#: src/storage_backend.c:452 src/storage_backend.c:457
+#: src/storage_backend.c:494
 msgid "regex groups"
 msgstr ""
 
-#: src/storage_backend.c:469 src/storage_backend.c:604
+#: src/storage_backend.c:470 src/storage_backend.c:606
 msgid "cannot read fd"
 msgstr ""
 
-#: src/storage_backend.c:541 src/storage_backend.c:659
+#: src/storage_backend.c:542 src/storage_backend.c:661
 #, fuzzy, c-format
 msgid "failed to wait for command: %s"
 msgstr "Nepodařilo se spustit doménu %s"
 
-#: src/storage_backend.c:550 src/storage_backend.c:672
+#: src/storage_backend.c:551 src/storage_backend.c:674
 msgid "command did not exit cleanly"
 msgstr ""
 
-#: src/storage_backend.c:590
+#: src/storage_backend.c:592
 msgid "n_columns too large"
 msgstr ""
 
-#: src/storage_backend.c:638
+#: src/storage_backend.c:640
 #, fuzzy, c-format
 msgid "read error: %s"
 msgstr "vnitřní chyba %s"
 
-#: src/storage_backend.c:666
+#: src/storage_backend.c:668
 #, c-format
 msgid "non-zero exit status from command %d"
 msgstr ""
 
-#: src/storage_backend.c:693 src/storage_backend.c:705
+#: src/storage_backend.c:695 src/storage_backend.c:707
 #, fuzzy, c-format
 msgid "%s not implemented on Win32"
 msgstr "konzola na této platformě není implementována"
@@ -3527,143 +3520,143 @@ msgstr ""
 msgid "cannot parse partition number from target '%s'"
 msgstr ""
 
-#: src/storage_backend_fs.c:151
+#: src/storage_backend_fs.c:152
 #, c-format
 msgid "cannot read header '%s': %s"
 msgstr ""
 
-#: src/storage_backend_fs.c:265
+#: src/storage_backend_fs.c:269
 #, fuzzy, c-format
 msgid "invalid netfs path (no /): %s"
 msgstr "neplatný síťový ukazatel v %s"
 
-#: src/storage_backend_fs.c:271
+#: src/storage_backend_fs.c:275
 #, fuzzy, c-format
 msgid "invalid netfs path (ends in /): %s"
 msgstr "neplatný síťový ukazatel v %s"
 
-#: src/storage_backend_fs.c:328
+#: src/storage_backend_fs.c:332
 msgid "bad <source> spec"
 msgstr ""
 
-#: src/storage_backend_fs.c:334
+#: src/storage_backend_fs.c:338
 msgid "xpath_ctxt"
 msgstr ""
 
-#: src/storage_backend_fs.c:341
+#: src/storage_backend_fs.c:345
 msgid "missing <host> in <source> spec"
 msgstr ""
 
-#: src/storage_backend_fs.c:353
+#: src/storage_backend_fs.c:357
 msgid "retval"
 msgstr ""
 
-#: src/storage_backend_fs.c:387
+#: src/storage_backend_fs.c:391
 #, c-format
 msgid "cannot read %s: %s"
 msgstr ""
 
-#: src/storage_backend_fs.c:457 src/storage_backend_fs.c:524
+#: src/storage_backend_fs.c:461 src/storage_backend_fs.c:528
 #: src/storage_backend_iscsi.c:577
 #, fuzzy
 msgid "missing source host"
 msgstr "chybí zdrojové informace pro zařízení"
 
-#: src/storage_backend_fs.c:462
+#: src/storage_backend_fs.c:466
 #, fuzzy
 msgid "missing source path"
 msgstr "chybí zdrojové informace pro zařízení"
 
-#: src/storage_backend_fs.c:468 src/storage_backend_fs.c:535
+#: src/storage_backend_fs.c:472 src/storage_backend_fs.c:539
 #: src/storage_backend_iscsi.c:584
 #, fuzzy
 msgid "missing source device"
 msgstr "chybí zdrojové informace pro zařízení"
 
-#: src/storage_backend_fs.c:484 src/storage_backend_fs.c:492
+#: src/storage_backend_fs.c:488 src/storage_backend_fs.c:496
 msgid "source"
 msgstr ""
 
-#: src/storage_backend_fs.c:529
+#: src/storage_backend_fs.c:533
 #, fuzzy
 msgid "missing source dir"
 msgstr "chybí zdrojové informace pro zařízení"
 
-#: src/storage_backend_fs.c:601 src/storage_backend_fs.c:781
-#: src/storage_backend_fs.c:820
+#: src/storage_backend_fs.c:605 src/storage_backend_fs.c:785
+#: src/storage_backend_fs.c:824
 #, c-format
 msgid "cannot create path '%s': %s"
 msgstr ""
 
-#: src/storage_backend_fs.c:625
+#: src/storage_backend_fs.c:629
 #, fuzzy, c-format
 msgid "cannot open path '%s': %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/storage_backend_fs.c:674
+#: src/storage_backend_fs.c:678
 #, c-format
 msgid "cannot statvfs path '%s': %s"
 msgstr ""
 
-#: src/storage_backend_fs.c:740
+#: src/storage_backend_fs.c:744
 #, c-format
 msgid "cannot unlink path '%s': %s"
 msgstr ""
 
-#: src/storage_backend_fs.c:763 src/test.c:2082
+#: src/storage_backend_fs.c:767 src/test.c:2981
 msgid "target"
 msgstr ""
 
-#: src/storage_backend_fs.c:773 src/test.c:2093
+#: src/storage_backend_fs.c:777 src/test.c:2991
 msgid "storage vol key"
 msgstr ""
 
-#: src/storage_backend_fs.c:798
+#: src/storage_backend_fs.c:802
 #, c-format
 msgid "cannot fill file '%s': %s"
 msgstr ""
 
-#: src/storage_backend_fs.c:811
+#: src/storage_backend_fs.c:815
 #, c-format
 msgid "cannot extend file '%s': %s"
 msgstr ""
 
-#: src/storage_backend_fs.c:827 src/storage_backend_fs.c:862
-#: src/storage_backend_fs.c:897 src/storage_backend_logical.c:595
+#: src/storage_backend_fs.c:831 src/storage_backend_fs.c:866
+#: src/storage_backend_fs.c:901 src/storage_backend_logical.c:595
 #, c-format
 msgid "cannot read path '%s': %s"
 msgstr ""
 
-#: src/storage_backend_fs.c:839
+#: src/storage_backend_fs.c:843
 #, fuzzy, c-format
 msgid "unknown storage vol type %d"
 msgstr "neznámý druh OS %s"
 
-#: src/storage_backend_fs.c:877
+#: src/storage_backend_fs.c:881
 #, c-format
 msgid "unsupported storage vol type %d"
 msgstr ""
 
-#: src/storage_backend_fs.c:904
+#: src/storage_backend_fs.c:908
 msgid "creation of non-raw images is not supported without qemu-img"
 msgstr ""
 
-#: src/storage_backend_fs.c:914 src/storage_backend_logical.c:604
+#: src/storage_backend_fs.c:918 src/storage_backend_logical.c:604
 #, fuzzy, c-format
 msgid "cannot set file owner '%s': %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/storage_backend_fs.c:923 src/storage_backend_logical.c:611
+#: src/storage_backend_fs.c:927 src/storage_backend_logical.c:611
 #, fuzzy, c-format
 msgid "cannot set file mode '%s': %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/storage_backend_fs.c:939 src/storage_backend_logical.c:618
+#: src/storage_backend_fs.c:943 src/storage_backend_logical.c:618
 #, c-format
 msgid "cannot close file '%s': %s"
 msgstr ""
 
-#: src/storage_backend_fs.c:962
+#: src/storage_backend_fs.c:966
 #, c-format
 msgid "cannot unlink file '%s': %s"
 msgstr ""
@@ -3692,7 +3685,7 @@ msgstr "ukázat verzi"
 msgid "cannot find session"
 msgstr ""
 
-#: src/storage_backend_iscsi.c:184 src/storage_driver.c:887 src/test.c:1959
+#: src/storage_backend_iscsi.c:184 src/storage_driver.c:1042 src/test.c:2794
 #, fuzzy
 msgid "name"
 msgstr "Jméno"
@@ -3701,7 +3694,7 @@ msgstr "Jméno"
 msgid "devpath"
 msgstr ""
 
-#: src/storage_backend_iscsi.c:208 src/util.c:210
+#: src/storage_backend_iscsi.c:208 src/util.c:211
 #, fuzzy, c-format
 msgid "cannot open %s: %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
@@ -3822,609 +3815,619 @@ msgstr ""
 msgid "cannot find newly created volume '%s': %s"
 msgstr ""
 
-#: src/storage_conf.c:339
+#: src/storage_conf.c:349
 msgid "missing auth host attribute"
 msgstr ""
 
-#: src/storage_conf.c:346
+#: src/storage_conf.c:356
 msgid "missing auth passwd attribute"
 msgstr ""
 
-#: src/storage_conf.c:369 src/storage_conf.c:801
+#: src/storage_conf.c:379 src/storage_conf.c:811
 msgid "malformed octal mode"
 msgstr ""
 
-#: src/storage_conf.c:379
+#: src/storage_conf.c:389
 msgid "malformed owner element"
 msgstr ""
 
-#: src/storage_conf.c:390
+#: src/storage_conf.c:400
 msgid "malformed group element"
 msgstr ""
 
-#: src/storage_conf.c:415
+#: src/storage_conf.c:425
 msgid "cannot allocate storage pool"
 msgstr ""
 
-#: src/storage_conf.c:421
+#: src/storage_conf.c:431
 msgid "unknown root element for storage pool"
 msgstr ""
 
-#: src/storage_conf.c:428
+#: src/storage_conf.c:438
 #, fuzzy, c-format
 msgid "unknown storage pool type %s"
 msgstr "neznámý druh OS %s"
 
-#: src/storage_conf.c:445
+#: src/storage_conf.c:455
 msgid "missing pool source name element"
 msgstr ""
 
-#: src/storage_conf.c:453
+#: src/storage_conf.c:463
 #, fuzzy
 msgid "unable to generate uuid"
 msgstr "název nebo UUID sítě"
 
-#: src/storage_conf.c:474
+#: src/storage_conf.c:484
 #, fuzzy, c-format
 msgid "unknown pool format type %s"
 msgstr "neznámý druh OS %s"
 
-#: src/storage_conf.c:484
+#: src/storage_conf.c:494
 msgid "missing storage pool source host name"
 msgstr ""
 
-#: src/storage_conf.c:494
+#: src/storage_conf.c:504
 msgid "cannot extract storage pool source devices"
 msgstr ""
 
-#: src/storage_conf.c:499
+#: src/storage_conf.c:509
 #, fuzzy
 msgid "device"
 msgstr "blokové zařízení"
 
-#: src/storage_conf.c:507
+#: src/storage_conf.c:517
 #, fuzzy
 msgid "missing storage pool source device path"
 msgstr "chybí zdrojové informace pro zařízení %s"
 
-#: src/storage_conf.c:518
+#: src/storage_conf.c:528
 msgid "missing storage pool source path"
 msgstr ""
 
-#: src/storage_conf.c:530 src/virsh.c:3777 src/virsh.c:3937 src/virsh.c:3976
+#: src/storage_conf.c:540 src/virsh.c:3677 src/virsh.c:3836 src/virsh.c:3874
 #, fuzzy
 msgid "pool name"
 msgstr "doménové jméno"
 
-#: src/storage_conf.c:545
+#: src/storage_conf.c:555
 #, fuzzy, c-format
 msgid "unknown auth type '%s'"
 msgstr "neznámý druh OS %s"
 
-#: src/storage_conf.c:560
+#: src/storage_conf.c:570
 msgid "missing storage pool target path"
 msgstr ""
 
-#: src/storage_conf.c:629 src/storage_conf.c:1030
+#: src/storage_conf.c:639 src/storage_conf.c:1040
 msgid "xmlXPathContext"
 msgstr ""
 
-#: src/storage_conf.c:700
+#: src/storage_conf.c:710
 #, c-format
 msgid "unknown pool format number %d"
 msgstr ""
 
-#: src/storage_conf.c:733 src/storage_conf.c:1487
+#: src/storage_conf.c:743 src/storage_conf.c:1508
 #, fuzzy
 msgid "unexpected pool type"
 msgstr "neočekávaný typ MIME"
 
-#: src/storage_conf.c:779 src/storage_conf.c:1143
+#: src/storage_conf.c:789 src/storage_conf.c:1153
 msgid "xml"
 msgstr ""
 
-#: src/storage_conf.c:811 src/storage_conf.c:821
+#: src/storage_conf.c:821 src/storage_conf.c:831
 msgid "missing owner element"
 msgstr ""
 
-#: src/storage_conf.c:885
+#: src/storage_conf.c:895
 #, fuzzy, c-format
 msgid "unknown size units '%s'"
 msgstr "neznámý hostitel %s"
 
-#: src/storage_conf.c:892
+#: src/storage_conf.c:902
 msgid "malformed capacity element"
 msgstr ""
 
-#: src/storage_conf.c:897
+#: src/storage_conf.c:907
 msgid "capacity element value too large"
 msgstr ""
 
-#: src/storage_conf.c:923
+#: src/storage_conf.c:933
 msgid "cannot allocate storage vol"
 msgstr ""
 
-#: src/storage_conf.c:929
+#: src/storage_conf.c:939
 #, fuzzy
 msgid "unknown root element"
 msgstr "neznámý hostitel %s"
 
-#: src/storage_conf.c:936
+#: src/storage_conf.c:946
 #, fuzzy
 msgid "missing volume name element"
 msgstr "chybí informace o doménovém jménu"
 
-#: src/storage_conf.c:947
+#: src/storage_conf.c:957
 msgid "missing capacity element"
 msgstr ""
 
-#: src/storage_conf.c:976
+#: src/storage_conf.c:986
 #, fuzzy, c-format
 msgid "unknown volume format type %s"
 msgstr "neznámý druh OS %s"
 
-#: src/storage_conf.c:1113
+#: src/storage_conf.c:1123
 #, c-format
 msgid "unknown volume format number %d"
 msgstr ""
 
-#: src/storage_conf.c:1242
+#: src/storage_conf.c:1258
 msgid "pool"
 msgstr ""
 
-#: src/storage_conf.c:1387
+#: src/storage_conf.c:1408
 msgid "cannot construct config file path"
 msgstr ""
 
-#: src/storage_conf.c:1392
+#: src/storage_conf.c:1413
 msgid "configFile"
 msgstr ""
 
-#: src/storage_conf.c:1399
+#: src/storage_conf.c:1420
 msgid "cannot construct autostart link path"
 msgstr ""
 
-#: src/storage_conf.c:1406
+#: src/storage_conf.c:1427
 msgid "config file"
 msgstr ""
 
-#: src/storage_conf.c:1414
+#: src/storage_conf.c:1435
 #, fuzzy
 msgid "failed to generate XML"
 msgstr "Nepodařilo se vytvořit XML"
 
-#: src/storage_conf.c:1464
+#: src/storage_conf.c:1485
 #, c-format
 msgid "cannot remove config for %s"
 msgstr ""
 
-#: src/storage_driver.c:264 src/storage_driver.c:771 src/storage_driver.c:793
+#: src/storage_driver.c:289 src/storage_driver.c:904 src/storage_driver.c:934
 msgid "no pool with matching uuid"
 msgstr ""
 
-#: src/storage_driver.c:282
+#: src/storage_driver.c:314
 msgid "no pool with matching name"
 msgstr ""
 
-#: src/storage_driver.c:337 src/storage_driver.c:379
+#: src/storage_driver.c:379 src/storage_driver.c:428
 #, fuzzy
 msgid "names"
 msgstr "Jméno"
 
-#: src/storage_driver.c:437 src/test.c:1779
+#: src/storage_driver.c:496 src/test.c:2387
 msgid "storage pool already exists"
 msgstr ""
 
-#: src/storage_driver.c:508 src/storage_driver.c:543 src/storage_driver.c:580
-#: src/storage_driver.c:611 src/storage_driver.c:650 src/storage_driver.c:687
-#: src/storage_driver.c:726 src/storage_driver.c:755 src/storage_driver.c:849
-#: src/storage_driver.c:873 src/storage_driver.c:913 src/storage_driver.c:1012
-#: src/storage_driver.c:1072 src/storage_driver.c:1135
-#: src/storage_driver.c:1179 src/storage_driver.c:1213
+#: src/storage_driver.c:575 src/storage_driver.c:620 src/storage_driver.c:665
+#: src/storage_driver.c:702 src/storage_driver.c:751 src/storage_driver.c:794
+#: src/storage_driver.c:843 src/storage_driver.c:879 src/storage_driver.c:996
+#: src/storage_driver.c:1029 src/storage_driver.c:1075
+#: src/storage_driver.c:1198 src/storage_driver.c:1266
+#: src/storage_driver.c:1338 src/storage_driver.c:1390
+#: src/storage_driver.c:1432
 msgid "no storage pool with matching uuid"
 msgstr ""
 
-#: src/storage_driver.c:514
+#: src/storage_driver.c:581
 msgid "pool is still active"
 msgstr ""
 
-#: src/storage_driver.c:553
+#: src/storage_driver.c:629
 #, fuzzy
 msgid "pool already active"
 msgstr "Doména je již aktivní"
 
-#: src/storage_driver.c:590
+#: src/storage_driver.c:674
 #, fuzzy
 msgid "storage pool is already active"
 msgstr "Doména je již aktivní"
 
-#: src/storage_driver.c:621 src/storage_driver.c:697 src/storage_driver.c:855
-#: src/storage_driver.c:879 src/storage_driver.c:919 src/storage_driver.c:1018
-#: src/storage_driver.c:1078 src/storage_driver.c:1141
-#: src/storage_driver.c:1185 src/storage_driver.c:1219
+#: src/storage_driver.c:711 src/storage_driver.c:803 src/storage_driver.c:1002
+#: src/storage_driver.c:1035 src/storage_driver.c:1081
+#: src/storage_driver.c:1204 src/storage_driver.c:1272
+#: src/storage_driver.c:1344 src/storage_driver.c:1396
+#: src/storage_driver.c:1438
 #, fuzzy
 msgid "storage pool is not active"
 msgstr "cesta k log souboru není souborem"
 
-#: src/storage_driver.c:660
+#: src/storage_driver.c:760
 msgid "storage pool is still active"
 msgstr ""
 
-#: src/storage_driver.c:666
+#: src/storage_driver.c:766
 msgid "pool does not support volume delete"
 msgstr ""
 
-#: src/storage_driver.c:799 src/test.c:1926
+#: src/storage_driver.c:940 src/test.c:2720
 msgid "pool has no config file"
 msgstr ""
 
-#: src/storage_driver.c:927 src/storage_driver.c:1089
-#: src/storage_driver.c:1149 src/storage_driver.c:1193
-#: src/storage_driver.c:1227
+#: src/storage_driver.c:1089 src/storage_driver.c:1283
+#: src/storage_driver.c:1352 src/storage_driver.c:1404
+#: src/storage_driver.c:1446
 msgid "no storage vol with matching name"
 msgstr ""
 
-#: src/storage_driver.c:956
+#: src/storage_driver.c:1128
 msgid "no storage vol with matching key"
 msgstr ""
 
-#: src/storage_driver.c:996
+#: src/storage_driver.c:1175
 msgid "no storage vol with matching path"
 msgstr ""
 
-#: src/storage_driver.c:1031 src/test.c:2055
+#: src/storage_driver.c:1217 src/test.c:2957
 msgid "storage vol already exists"
 msgstr ""
 
-#: src/storage_driver.c:1045
+#: src/storage_driver.c:1229
 msgid "storage pool does not support volume creation"
 msgstr ""
 
-#: src/storage_driver.c:1095
+#: src/storage_driver.c:1289
 msgid "storage pool does not support vol deletion"
 msgstr ""
 
-#: src/test.c:140 src/test.c:1984
-#, c-format
-msgid "no storage vol with matching name '%s'"
-msgstr ""
-
-#: src/test.c:155
-#, c-format
-msgid "storage pool '%s' is not active"
-msgstr ""
-
-#: src/test.c:162
-#, fuzzy, c-format
-msgid "storage pool '%s' is already active"
-msgstr "Doména je již aktivní"
-
-#: src/test.c:281 src/test.c:963
+#: src/test.c:219 src/test.c:1059
 msgid "getting time of day"
 msgstr "zjišťuji čas"
 
-#: src/test.c:392
+#: src/test.c:340
 #, fuzzy, c-format
 msgid "loading host definition file '%s': %s"
 msgstr "načíst definiční soubor hostitele"
 
-#: src/test.c:400
+#: src/test.c:348
 msgid "host"
 msgstr "hostitel"
 
-#: src/test.c:408
+#: src/test.c:356
 msgid "node"
 msgstr "uzel"
 
-#: src/test.c:415
+#: src/test.c:363
 msgid "creating xpath context"
 msgstr "vytvářím kontext XPath"
 
-#: src/test.c:430
+#: src/test.c:378
 msgid "node cpu numa nodes"
 msgstr "uzly CPU NUMA"
 
-#: src/test.c:438
+#: src/test.c:386
 msgid "node cpu sockets"
 msgstr "uzel soketů CPU"
 
-#: src/test.c:446
+#: src/test.c:394
 msgid "node cpu cores"
 msgstr "uzel jader CPU"
 
-#: src/test.c:454
+#: src/test.c:402
 msgid "node cpu threads"
 msgstr "uzel vláken CPU"
 
-#: src/test.c:465
+#: src/test.c:413
 msgid "node active cpu"
 msgstr "uzel aktivních CPU"
 
-#: src/test.c:472
+#: src/test.c:420
 msgid "node cpu mhz"
 msgstr "uzel CPU mhz"
 
-#: src/test.c:487
+#: src/test.c:435
 msgid "node memory"
 msgstr "uzel paměti"
 
-#: src/test.c:493
+#: src/test.c:441
 msgid "node domain list"
 msgstr "uzel seznamu domén"
 
-#: src/test.c:504
+#: src/test.c:452
 msgid "resolving domain filename"
 msgstr "zjišťuji název soubor domény"
 
-#: src/test.c:532
+#: src/test.c:481
 #, fuzzy
 msgid "node network list"
 msgstr "uzel seznamu domén"
 
-#: src/test.c:542
+#: src/test.c:491
 msgid "resolving network filename"
 msgstr "zjišťuji název soubor sítě"
 
-#: src/test.c:568
+#: src/test.c:517
 #, fuzzy
 msgid "node pool list"
 msgstr "uzel seznamu domén"
 
-#: src/test.c:580
+#: src/test.c:529
 #, fuzzy
 msgid "resolving pool filename"
 msgstr "zjišťuji název soubor domény"
 
-#: src/test.c:663
+#: src/test.c:617
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: zadejte cestu nebo test:///default"
 
-#: src/test.c:875
+#: src/test.c:893
 #, fuzzy, c-format
 msgid "domain '%s' not paused"
 msgstr "doména %s již existuje"
 
-#: src/test.c:891 src/test.c:906
+#: src/test.c:926 src/test.c:957
 #, fuzzy, c-format
 msgid "domain '%s' not running"
 msgstr "Doména stále běží"
 
-#: src/test.c:989
+#: src/test.c:1102
 #, c-format
 msgid "saving domain '%s' failed to allocate space for metadata: %s"
 msgstr ""
 
-#: src/test.c:996
+#: src/test.c:1109
 #, c-format
 msgid "saving domain '%s' to '%s': open failed: %s"
 msgstr ""
 
-#: src/test.c:1003 src/test.c:1010 src/test.c:1017 src/test.c:1026
+#: src/test.c:1116 src/test.c:1122 src/test.c:1128 src/test.c:1135
 #, c-format
 msgid "saving domain '%s' to '%s': write failed: %s"
 msgstr ""
 
-#: src/test.c:1056
+#: src/test.c:1185
 msgid "incomplete save header"
 msgstr ""
 
-#: src/test.c:1062
+#: src/test.c:1190
 msgid "mismatched header magic"
 msgstr ""
 
-#: src/test.c:1068
+#: src/test.c:1195
 #, fuzzy
 msgid "failed to read metadata length"
 msgstr "nepodařilo se číst z démona Xen"
 
-#: src/test.c:1074
+#: src/test.c:1200
 msgid "length of metadata out of range"
 msgstr ""
 
-#: src/test.c:1085
+#: src/test.c:1209
 msgid "incomplete metdata"
 msgstr ""
 
-#: src/test.c:1116
+#: src/test.c:1259
 #, fuzzy, c-format
 msgid "domain '%s' coredump: failed to open %s: %s"
 msgstr "Paměť domény %s uložena do %s\n"
 
-#: src/test.c:1122
+#: src/test.c:1265
 #, fuzzy, c-format
 msgid "domain '%s' coredump: failed to write header to %s: %s"
 msgstr "%s: nepodařilo se zapisovat do souboru záznamu: %s"
 
-#: src/test.c:1129
+#: src/test.c:1271
 #, c-format
 msgid "domain '%s' coredump: write failed: %s: %s"
 msgstr ""
 
-#: src/test.c:1273
+#: src/test.c:1528
 msgid "Range exceeds available cells"
 msgstr ""
 
-#: src/test.c:1292
+#: src/test.c:1561
 #, fuzzy, c-format
 msgid "Domain '%s' is already running"
 msgstr "Doména již běží"
 
-#: src/test.c:1307
+#: src/test.c:1592
 #, fuzzy, c-format
 msgid "Domain '%s' is still running"
 msgstr "Doména stále běží"
 
-#: src/test.c:1534
+#: src/test.c:1972
 #, fuzzy, c-format
 msgid "Network '%s' is still running"
 msgstr "Síť stále běží"
 
-#: src/test.c:1549
+#: src/test.c:2005
 #, fuzzy, c-format
 msgid "Network '%s' is already running"
 msgstr "Síť již běží"
 
-#: src/test.c:2013
+#: src/test.c:2346 src/test.c:2468 src/test.c:2501 src/test.c:2569
+#, fuzzy, c-format
+msgid "storage pool '%s' is already active"
+msgstr "Doména je již aktivní"
+
+#: src/test.c:2530 src/test.c:2601 src/test.c:2753 src/test.c:2788
+#: src/test.c:2834 src/test.c:2946 src/test.c:3043 src/test.c:3121
+#: src/test.c:3166 src/test.c:3206
+#, c-format
+msgid "storage pool '%s' is not active"
+msgstr ""
+
+#: src/test.c:2842 src/test.c:3036 src/test.c:3114 src/test.c:3159
+#: src/test.c:3199
+#, c-format
+msgid "no storage vol with matching name '%s'"
+msgstr ""
+
+#: src/test.c:2885
 #, c-format
 msgid "no storage vol with matching key '%s'"
 msgstr ""
 
-#: src/test.c:2037
+#: src/test.c:2919
 #, c-format
 msgid "no storage vol with matching path '%s'"
 msgstr ""
 
-#: src/test.c:2064
+#: src/test.c:2965
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
 msgstr ""
 
-#: src/uml_conf.c:198
+#: src/uml_conf.c:133
 msgid "only TCP listen is supported for chr device"
 msgstr ""
 
-#: src/uml_conf.c:218
+#: src/uml_conf.c:153
 #, c-format
 msgid "unsupported chr device type %d"
 msgstr ""
 
-#: src/uml_driver.c:340
+#: src/uml_driver.c:369
 msgid "cannot initialize inotify"
 msgstr ""
 
-#: src/uml_driver.c:345
+#: src/uml_driver.c:374
 #, fuzzy, c-format
 msgid "Failed to create monitor directory %s: %s"
 msgstr "Nepodařilo se vytvořit síť z %s"
 
-#: src/uml_driver.c:380
+#: src/uml_driver.c:405
 #, fuzzy
 msgid "umlStartup: out of memory\n"
 msgstr "nedostatek paměti"
 
-#: src/uml_driver.c:514
+#: src/uml_driver.c:549
 #, fuzzy, c-format
 msgid "failed to read pid: %s: %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
 
-#: src/uml_driver.c:562
+#: src/uml_driver.c:597
 #, fuzzy, c-format
 msgid "cannot open socket %s"
 msgstr "uzel soketů CPU"
 
-#: src/uml_driver.c:570
+#: src/uml_driver.c:605
 #, c-format
 msgid "cannot bind socket %s"
 msgstr ""
 
-#: src/uml_driver.c:623
+#: src/uml_driver.c:658
 #, c-format
 msgid "cannot send too long command %s: %s"
 msgstr ""
 
-#: src/uml_driver.c:633
+#: src/uml_driver.c:668
 #, fuzzy, c-format
 msgid "cannot send command %s: %s"
 msgstr "neznámý příkaz '%s'"
 
-#: src/uml_driver.c:643
+#: src/uml_driver.c:678
 #, c-format
 msgid "cannot read reply %s: %s"
 msgstr ""
 
-#: src/uml_driver.c:695
+#: src/uml_driver.c:731
 msgid "no kernel specified"
 msgstr ""
 
-#: src/uml_driver.c:704
+#: src/uml_driver.c:740
 #, c-format
 msgid "Cannot find UML kernel %s: %s"
 msgstr ""
 
-#: src/uml_driver.c:711
+#: src/uml_driver.c:747
 #, c-format
 msgid "cannot create log directory %s"
 msgstr ""
 
-#: src/uml_driver.c:785
+#: src/uml_driver.c:821
 #, fuzzy, c-format
 msgid "failed to wait on process: %d: %s\n"
 msgstr "Nepodařilo se zapsat do soketu %d\n"
 
-#: src/uml_driver.c:827
+#: src/uml_driver.c:863
 #, c-format
 msgid "Got unexpected pid %d != %d\n"
 msgstr ""
 
-#: src/uml_driver.c:1064
+#: src/uml_driver.c:1137
 #, fuzzy, c-format
 msgid "cannot parse version %s"
 msgstr "nepodařilo zpracovat URI spojení"
 
-#: src/util.c:203
+#: src/uml_driver.c:1461
+#, fuzzy
+msgid "cannot read cputime for domain"
+msgstr "Jméno neaktivní domény"
+
+#: src/util.c:204
 #, c-format
 msgid "cannot block signals: %s"
 msgstr ""
 
-#: src/util.c:219
+#: src/util.c:220
 #, c-format
 msgid "cannot create pipe: %s"
 msgstr ""
 
-#: src/util.c:279 src/util.c:369
+#: src/util.c:280 src/util.c:370
 #, c-format
 msgid "cannot fork child process: %s"
 msgstr ""
 
-#: src/util.c:298 src/util.c:336
+#: src/util.c:299 src/util.c:337
 #, c-format
 msgid "cannot unblock signals: %s"
 msgstr ""
 
-#: src/util.c:354
+#: src/util.c:355
 #, c-format
 msgid "cannot become session leader: %s"
 msgstr ""
 
-#: src/util.c:361
+#: src/util.c:362
 #, c-format
 msgid "cannot change to root directory: %s"
 msgstr ""
 
-#: src/util.c:381
+#: src/util.c:382
 #, fuzzy, c-format
 msgid "failed to setup stdin file handle: %s"
 msgstr "chyba při parsování konfigurační souboru %s"
 
-#: src/util.c:387
+#: src/util.c:388
 #, fuzzy, c-format
 msgid "failed to setup stdout file handle: %s"
 msgstr "chyba při parsování konfigurační souboru %s"
 
-#: src/util.c:393
+#: src/util.c:394
 #, fuzzy, c-format
 msgid "failed to setup stderr file handle: %s"
 msgstr "Nepodařilo se oddefinovat doménu %s"
 
-#: src/util.c:410
+#: src/util.c:411
 #, c-format
 msgid "cannot execute binary '%s': %s"
 msgstr ""
 
-#: src/util.c:448 src/util.c:565
+#: src/util.c:449 src/util.c:567
 msgid "command debug string"
 msgstr ""
 
-#: src/util.c:495
+#: src/util.c:496
 msgid "Unknown poll response."
 msgstr ""
 
-#: src/util.c:526
+#: src/util.c:527
 #, fuzzy, c-format
 msgid "poll error: %s"
 msgstr "chyba:"
 
-#: src/util.c:599
+#: src/util.c:601
 #, c-format
 msgid "'%s' exited with non-zero status %d and signal %d: %s"
 msgstr ""
@@ -4434,19 +4437,19 @@ msgstr ""
 msgid "Falling back to pseudorandom UUID, failed to generate random bytes: %s"
 msgstr ""
 
-#: src/virsh.c:339
+#: src/virsh.c:334
 msgid "print help"
 msgstr "vypsat nápovědu"
 
-#: src/virsh.c:340
+#: src/virsh.c:335
 msgid "Prints global help or command specific help."
 msgstr "Vypíše souhrnnou nápovědu nebo nápovědu k určenému příkazu."
 
-#: src/virsh.c:346
+#: src/virsh.c:341
 msgid "name of command"
 msgstr "název příkazu"
 
-#: src/virsh.c:358
+#: src/virsh.c:353
 msgid ""
 "Commands:\n"
 "\n"
@@ -4454,618 +4457,618 @@ msgstr ""
 "Příkazy:\n"
 "\n"
 
-#: src/virsh.c:372
+#: src/virsh.c:366
 msgid "autostart a domain"
 msgstr "automaticky spustit doménu"
 
-#: src/virsh.c:374
+#: src/virsh.c:368
 msgid "Configure a domain to be automatically started at boot."
 msgstr "Nastaví doménu, aby byla automaticky spuštěna při startu."
 
-#: src/virsh.c:379 src/virsh.c:479 src/virsh.c:673 src/virsh.c:710
-#: src/virsh.c:767 src/virsh.c:834 src/virsh.c:1069 src/virsh.c:1113
-#: src/virsh.c:1334 src/virsh.c:1379 src/virsh.c:1418 src/virsh.c:1457
-#: src/virsh.c:1496 src/virsh.c:1535 src/virsh.c:1659 src/virsh.c:1746
-#: src/virsh.c:1880 src/virsh.c:1937 src/virsh.c:1994 src/virsh.c:2116
-#: src/virsh.c:2257 src/virsh.c:4580 src/virsh.c:4656 src/virsh.c:4717
-#: src/virsh.c:4776 src/virsh.c:4835 src/virsh.c:4952 src/virsh.c:5073
-#: src/virsh.c:5238 src/virsh.c:5469
+#: src/virsh.c:373 src/virsh.c:471 src/virsh.c:663 src/virsh.c:699
+#: src/virsh.c:755 src/virsh.c:821 src/virsh.c:1051 src/virsh.c:1094
+#: src/virsh.c:1313 src/virsh.c:1357 src/virsh.c:1395 src/virsh.c:1433
+#: src/virsh.c:1471 src/virsh.c:1509 src/virsh.c:1631 src/virsh.c:1717
+#: src/virsh.c:1850 src/virsh.c:1906 src/virsh.c:1962 src/virsh.c:2081
+#: src/virsh.c:2221 src/virsh.c:4471 src/virsh.c:4546 src/virsh.c:4606
+#: src/virsh.c:4664 src/virsh.c:4722 src/virsh.c:4838 src/virsh.c:4958
+#: src/virsh.c:5122 src/virsh.c:5352
 msgid "domain name, id or uuid"
 msgstr "jméno, id nebo uuid domény"
 
-#: src/virsh.c:380 src/virsh.c:2326 src/virsh.c:2823
+#: src/virsh.c:374 src/virsh.c:2289 src/virsh.c:2778
 msgid "disable autostarting"
 msgstr "zakázat automatické spuštění"
 
-#: src/virsh.c:401
+#: src/virsh.c:395
 #, c-format
 msgid "Failed to mark domain %s as autostarted"
 msgstr "Nepodařilo se označit doménu %s jako automaticky spouštěnou"
 
-#: src/virsh.c:404
+#: src/virsh.c:398
 #, c-format
 msgid "Failed to unmark domain %s as autostarted"
 msgstr "Nepodařilo se odoznačit doménu %s jako automaticky spouštěnou"
 
-#: src/virsh.c:411
+#: src/virsh.c:405
 #, c-format
 msgid "Domain %s marked as autostarted\n"
 msgstr "Doména %s označena jako automaticky spouštěná\n"
 
-#: src/virsh.c:413
+#: src/virsh.c:407
 #, c-format
 msgid "Domain %s unmarked as autostarted\n"
 msgstr "Doména %s odoznačena jako automaticky spouštěná\n"
 
-#: src/virsh.c:424
+#: src/virsh.c:417
 msgid "(re)connect to hypervisor"
 msgstr "(znovu)připojit se k hypervizoru"
 
-#: src/virsh.c:426
+#: src/virsh.c:419
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
 "Připojit se k místnímu hypervizoru. Toto je zabudovaný příkaz po spuštění "
 "shellu."
 
-#: src/virsh.c:431
+#: src/virsh.c:424
 msgid "hypervisor connection URI"
 msgstr "URI spojení hypervizoru"
 
-#: src/virsh.c:432
+#: src/virsh.c:425
 msgid "read-only connection"
 msgstr "spojení pouze pro čtení"
 
-#: src/virsh.c:444
+#: src/virsh.c:437
 msgid "Failed to disconnect from the hypervisor"
 msgstr "Nepodařilo se odpojit od hypervizora"
 
-#: src/virsh.c:462
+#: src/virsh.c:455
 msgid "Failed to connect to the hypervisor"
 msgstr "Nepodařilo se připojit se k hypervizoru"
 
-#: src/virsh.c:472
+#: src/virsh.c:464
 msgid "connect to the guest console"
 msgstr "připojit se k hostované konzoli"
 
-#: src/virsh.c:474
+#: src/virsh.c:466
 msgid "Connect the virtual serial console for the guest"
 msgstr "Připojit virtuální sériovou konzoli pro hosta"
 
-#: src/virsh.c:521
+#: src/virsh.c:513
 msgid "No console available for domain\n"
 msgstr "Žádná konzole není pro doménu dostupná\n"
 
-#: src/virsh.c:538
+#: src/virsh.c:530
 msgid "console not implemented on this platform"
 msgstr "konzola na této platformě není implementována"
 
-#: src/virsh.c:549
+#: src/virsh.c:540
 msgid "list domains"
 msgstr "vypsat domény"
 
-#: src/virsh.c:550
+#: src/virsh.c:541
 msgid "Returns list of domains."
 msgstr "Vrátí seznam domén."
 
-#: src/virsh.c:555
+#: src/virsh.c:546
 msgid "list inactive domains"
 msgstr "vypsat neaktivní domény"
 
-#: src/virsh.c:556
+#: src/virsh.c:547
 msgid "list inactive & active domains"
 msgstr "vypsat neaktivní a aktivní domény"
 
-#: src/virsh.c:578 src/virsh.c:585
+#: src/virsh.c:569 src/virsh.c:576
 msgid "Failed to list active domains"
 msgstr "Nepodařilo se vypsat aktivní domény"
 
-#: src/virsh.c:596 src/virsh.c:604
+#: src/virsh.c:587 src/virsh.c:595
 msgid "Failed to list inactive domains"
 msgstr "Nepodařilo se vypsat neaktivní domény"
 
-#: src/virsh.c:613
+#: src/virsh.c:604
 msgid "Id"
 msgstr "Id"
 
-#: src/virsh.c:613 src/virsh.c:2609 src/virsh.c:3411 src/virsh.c:4207
+#: src/virsh.c:604 src/virsh.c:2567 src/virsh.c:3316 src/virsh.c:4101
 msgid "Name"
 msgstr "Jméno"
 
-#: src/virsh.c:613 src/virsh.c:2609 src/virsh.c:3411
+#: src/virsh.c:604 src/virsh.c:2567 src/virsh.c:3316
 msgid "State"
 msgstr "Stav"
 
-#: src/virsh.c:626 src/virsh.c:648 src/virsh.c:6433 src/virsh.c:6449
+#: src/virsh.c:617 src/virsh.c:639 src/virsh.c:6358 src/virsh.c:6374
 msgid "no state"
 msgstr "bez stavu"
 
-#: src/virsh.c:667
+#: src/virsh.c:657
 msgid "domain state"
 msgstr "stav domény"
 
-#: src/virsh.c:668
+#: src/virsh.c:658
 #, fuzzy
 msgid "Returns state about a domain."
 msgstr "Vrátí stav běžící domény"
 
-#: src/virsh.c:704
+#: src/virsh.c:693
 msgid "get device block stats for a domain"
 msgstr "získat stav bloku zařízení domény"
 
-#: src/virsh.c:705
+#: src/virsh.c:694
 msgid "Get device block stats for a running domain."
 msgstr "Získat stav bloku zařízení běžící domény."
 
-#: src/virsh.c:711
+#: src/virsh.c:700
 msgid "block device"
 msgstr "blokové zařízení"
 
-#: src/virsh.c:732
+#: src/virsh.c:721
 #, c-format
 msgid "Failed to get block stats %s %s"
 msgstr "Nepodařilo se získat stav bloků %s %s"
 
-#: src/virsh.c:761
+#: src/virsh.c:749
 msgid "get network interface stats for a domain"
 msgstr "získat stav síťového rozhraní pro doménu"
 
-#: src/virsh.c:762
+#: src/virsh.c:750
 msgid "Get network interface stats for a running domain."
 msgstr "Získat stav síťového rozhraní pro běžící doménu."
 
-#: src/virsh.c:768
+#: src/virsh.c:756
 msgid "interface device"
 msgstr "rozhraní zařízení"
 
-#: src/virsh.c:789
+#: src/virsh.c:777
 #, c-format
 msgid "Failed to get interface stats %s %s"
 msgstr "Nepodařilo se získat stav rozhraní %s %s"
 
-#: src/virsh.c:828
+#: src/virsh.c:815
 msgid "suspend a domain"
 msgstr "uspat doménu"
 
-#: src/virsh.c:829
+#: src/virsh.c:816
 msgid "Suspend a running domain."
 msgstr "Uspat běžící doménu."
 
-#: src/virsh.c:852
+#: src/virsh.c:839
 #, c-format
 msgid "Domain %s suspended\n"
 msgstr "Doména %s uspána\n"
 
-#: src/virsh.c:854
+#: src/virsh.c:841
 #, c-format
 msgid "Failed to suspend domain %s"
 msgstr "Nepodařilo se uspat doménu %s"
 
-#: src/virsh.c:867
+#: src/virsh.c:853
 msgid "create a domain from an XML file"
 msgstr "vytvořit doménu z XML souboru"
 
-#: src/virsh.c:868
+#: src/virsh.c:854
 msgid "Create a domain."
 msgstr "Vytvořit doménu."
 
-#: src/virsh.c:873 src/virsh.c:921
+#: src/virsh.c:859 src/virsh.c:906
 msgid "file containing an XML domain description"
 msgstr "soubor obsahující XML popis domény"
 
-#: src/virsh.c:900
+#: src/virsh.c:886
 #, c-format
 msgid "Domain %s created from %s\n"
 msgstr "Doména %s vytvořena z %s\n"
 
-#: src/virsh.c:904
+#: src/virsh.c:890
 #, c-format
 msgid "Failed to create domain from %s"
 msgstr "Nepodařilo se vytvořit doménu z %s"
 
-#: src/virsh.c:915
+#: src/virsh.c:900
 msgid "define (but don't start) a domain from an XML file"
 msgstr "definovat (ale nespouštět) doménu ze souboru XML"
 
-#: src/virsh.c:916
+#: src/virsh.c:901
 msgid "Define a domain."
 msgstr "Definovat doménu."
 
-#: src/virsh.c:948
+#: src/virsh.c:933
 #, c-format
 msgid "Domain %s defined from %s\n"
 msgstr "Doména %s definována z %s\n"
 
-#: src/virsh.c:952
+#: src/virsh.c:937
 #, c-format
 msgid "Failed to define domain from %s"
 msgstr "Nepodařilo se definovat doménu z %s "
 
-#: src/virsh.c:963
+#: src/virsh.c:947
 msgid "undefine an inactive domain"
 msgstr "oddefinovat neaktivní doménu"
 
-#: src/virsh.c:964
+#: src/virsh.c:948
 msgid "Undefine the configuration for an inactive domain."
 msgstr "Oddefinovat nastavení neaktivní domény."
 
-#: src/virsh.c:969 src/virsh.c:2185
+#: src/virsh.c:953 src/virsh.c:2150
 msgid "domain name or uuid"
 msgstr "uuid nebo jméno domény"
 
-#: src/virsh.c:991
+#: src/virsh.c:975
 #, c-format
 msgid ""
 "a running domain like %s cannot be undefined;\n"
 "to undefine, first shutdown then undefine using its name or UUID"
 msgstr ""
 
-#: src/virsh.c:1002
+#: src/virsh.c:986
 #, c-format
 msgid "Domain %s has been undefined\n"
 msgstr "Doména %s byla oddefinována\n"
 
-#: src/virsh.c:1004
+#: src/virsh.c:988
 #, c-format
 msgid "Failed to undefine domain %s"
 msgstr "Nepodařilo se oddefinovat doménu %s"
 
-#: src/virsh.c:1018
+#: src/virsh.c:1001
 msgid "start a (previously defined) inactive domain"
 msgstr "spustit (dříve definovanou) neaktivní doménu"
 
-#: src/virsh.c:1019
+#: src/virsh.c:1002
 msgid "Start a domain."
 msgstr "Spustit doménu."
 
-#: src/virsh.c:1024
+#: src/virsh.c:1007
 msgid "name of the inactive domain"
 msgstr "Jméno neaktivní domény"
 
-#: src/virsh.c:1041
+#: src/virsh.c:1024
 msgid "Domain is already active"
 msgstr "Doména je již aktivní"
 
-#: src/virsh.c:1047
+#: src/virsh.c:1030
 #, c-format
 msgid "Domain %s started\n"
 msgstr "Doména %s spuštěna\n"
 
-#: src/virsh.c:1050
+#: src/virsh.c:1033
 #, c-format
 msgid "Failed to start domain %s"
 msgstr "Nepodařilo se spustit doménu %s"
 
-#: src/virsh.c:1063
+#: src/virsh.c:1045
 msgid "save a domain state to a file"
 msgstr "uložit stav domény do souboru"
 
-#: src/virsh.c:1064
+#: src/virsh.c:1046
 msgid "Save a running domain."
 msgstr "Uložit běžící doménu."
 
-#: src/virsh.c:1070
+#: src/virsh.c:1052
 msgid "where to save the data"
 msgstr "kam uložit data"
 
-#: src/virsh.c:1092
+#: src/virsh.c:1074
 #, c-format
 msgid "Domain %s saved to %s\n"
 msgstr "Doména %s uložena do %s\n"
 
-#: src/virsh.c:1094
+#: src/virsh.c:1076
 #, c-format
 msgid "Failed to save domain %s to %s"
 msgstr "Nepodařilo se uložit doménu %s do %s"
 
-#: src/virsh.c:1107
+#: src/virsh.c:1088
 msgid "show/set scheduler parameters"
 msgstr "zobrazit/nastavit parametry plánovače"
 
-#: src/virsh.c:1108
+#: src/virsh.c:1089
 msgid "Show/Set scheduler parameters."
 msgstr "Zobrazit/Nastavit parametry plánovače"
 
-#: src/virsh.c:1114
+#: src/virsh.c:1095
 msgid "parameter=value"
 msgstr ""
 
-#: src/virsh.c:1115
+#: src/virsh.c:1096
 msgid "weight for XEN_CREDIT"
 msgstr "váha pro XEN_CREDIT"
 
-#: src/virsh.c:1116
+#: src/virsh.c:1097
 msgid "cap for XEN_CREDIT"
 msgstr "hlavička (cap) XEN_CREDIT"
 
-#: src/virsh.c:1152
+#: src/virsh.c:1133
 msgid "Invalid value of weight"
 msgstr "Neplatná hodnota váhy"
 
-#: src/virsh.c:1162
+#: src/virsh.c:1143
 msgid "Invalid value of cap"
 msgstr "Neplatná hodnota omezení"
 
-#: src/virsh.c:1172
+#: src/virsh.c:1153
 msgid "Error getting param"
 msgstr ""
 
-#: src/virsh.c:1181
+#: src/virsh.c:1162
 #, fuzzy
 msgid "Invalid value of param"
 msgstr "Neplatná hodnota omezení"
 
-#: src/virsh.c:1230 src/virsh.c:1234
+#: src/virsh.c:1211 src/virsh.c:1215
 msgid "Scheduler"
 msgstr "Plánovač"
 
-#: src/virsh.c:1234
+#: src/virsh.c:1215
 msgid "Unknown"
 msgstr "Neznámý"
 
-#: src/virsh.c:1290
+#: src/virsh.c:1270
 msgid "restore a domain from a saved state in a file"
 msgstr "obnovit doménu z uloženého stavu v souboru"
 
-#: src/virsh.c:1291
+#: src/virsh.c:1271
 msgid "Restore a domain."
 msgstr "Obnovit doménu."
 
-#: src/virsh.c:1296
+#: src/virsh.c:1276
 msgid "the state to restore"
 msgstr "stav k obnovení"
 
-#: src/virsh.c:1315
+#: src/virsh.c:1295
 #, c-format
 msgid "Domain restored from %s\n"
 msgstr "Doména obnovena z %s\n"
 
-#: src/virsh.c:1317
+#: src/virsh.c:1297
 #, c-format
 msgid "Failed to restore domain from %s"
 msgstr "Nepodařilo se obnovit doménu z %s"
 
-#: src/virsh.c:1328
+#: src/virsh.c:1307
 msgid "dump the core of a domain to a file for analysis"
 msgstr "uložit obraz paměti domény do souboru pro analýzu"
 
-#: src/virsh.c:1329
+#: src/virsh.c:1308
 msgid "Core dump a domain."
 msgstr "Uložil jsem obraz paměti (core-dump) domény."
 
-#: src/virsh.c:1335
+#: src/virsh.c:1314
 msgid "where to dump the core"
 msgstr "kam uložit obraz paměti"
 
-#: src/virsh.c:1357
+#: src/virsh.c:1336
 #, fuzzy, c-format
 msgid "Domain %s dumped to %s\n"
 msgstr "Paměť domény %s uložena do %s\n"
 
-#: src/virsh.c:1359
+#: src/virsh.c:1338
 #, c-format
 msgid "Failed to core dump domain %s to %s"
 msgstr "Nepodařilo se uložit paměť domény %s do %s"
 
-#: src/virsh.c:1373
+#: src/virsh.c:1351
 msgid "resume a domain"
 msgstr "probudit doménu"
 
-#: src/virsh.c:1374
+#: src/virsh.c:1352
 msgid "Resume a previously suspended domain."
 msgstr "Probudit dříve uspanou doménu."
 
-#: src/virsh.c:1397
+#: src/virsh.c:1375
 #, c-format
 msgid "Domain %s resumed\n"
 msgstr "Doména %s probuzena\n"
 
-#: src/virsh.c:1399
+#: src/virsh.c:1377
 #, c-format
 msgid "Failed to resume domain %s"
 msgstr "Nepodařilo se probudit doménu %s"
 
-#: src/virsh.c:1412
+#: src/virsh.c:1389
 msgid "gracefully shutdown a domain"
 msgstr "elegantně vypnout doménu"
 
-#: src/virsh.c:1413
+#: src/virsh.c:1390
 msgid "Run shutdown in the target domain."
 msgstr "Vypnout v cílové doméně."
 
-#: src/virsh.c:1436
+#: src/virsh.c:1413
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "Doména %s je právě vypínána\n"
 
-#: src/virsh.c:1438
+#: src/virsh.c:1415
 #, c-format
 msgid "Failed to shutdown domain %s"
 msgstr "Nepodařilo se vypnout doménu %s"
 
-#: src/virsh.c:1451
+#: src/virsh.c:1427
 msgid "reboot a domain"
 msgstr "restartovat doménu"
 
-#: src/virsh.c:1452
+#: src/virsh.c:1428
 msgid "Run a reboot command in the target domain."
 msgstr "Restartovat v cílové doméně."
 
-#: src/virsh.c:1475
+#: src/virsh.c:1451
 #, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "Doména %s se restartuje\n"
 
-#: src/virsh.c:1477
+#: src/virsh.c:1453
 #, c-format
 msgid "Failed to reboot domain %s"
 msgstr "Nepodařilo se restartovat doménu %s"
 
-#: src/virsh.c:1490
+#: src/virsh.c:1465
 msgid "destroy a domain"
 msgstr "zničit doménu"
 
-#: src/virsh.c:1491
+#: src/virsh.c:1466
 msgid "Destroy a given domain."
 msgstr "Zničit danou doménu."
 
-#: src/virsh.c:1514
+#: src/virsh.c:1489
 #, c-format
 msgid "Domain %s destroyed\n"
 msgstr "Doména %s zničena\n"
 
-#: src/virsh.c:1516
+#: src/virsh.c:1491
 #, c-format
 msgid "Failed to destroy domain %s"
 msgstr "Nepodařilo se zničit doménu %s"
 
-#: src/virsh.c:1529
+#: src/virsh.c:1503
 msgid "domain information"
 msgstr "informace o doméně"
 
-#: src/virsh.c:1530
+#: src/virsh.c:1504
 msgid "Returns basic information about the domain."
 msgstr "Vypíše základní informace o doméně."
 
-#: src/virsh.c:1556 src/virsh.c:1558
+#: src/virsh.c:1530 src/virsh.c:1532
 msgid "Id:"
 msgstr "Id:"
 
-#: src/virsh.c:1559 src/virsh.c:3649 src/virsh.c:4095
+#: src/virsh.c:1533 src/virsh.c:3551 src/virsh.c:3991
 msgid "Name:"
 msgstr "Jméno:"
 
-#: src/virsh.c:1562 src/virsh.c:3652
+#: src/virsh.c:1536 src/virsh.c:3554
 msgid "UUID:"
 msgstr "UUID:"
 
-#: src/virsh.c:1565
+#: src/virsh.c:1539
 msgid "OS Type:"
 msgstr "Druh OS:"
 
-#: src/virsh.c:1570 src/virsh.c:1703 src/virsh.c:3659 src/virsh.c:3663
-#: src/virsh.c:3667 src/virsh.c:3671
+#: src/virsh.c:1544 src/virsh.c:1675 src/virsh.c:3561 src/virsh.c:3565
+#: src/virsh.c:3569 src/virsh.c:3573
 msgid "State:"
 msgstr "Stav:"
 
-#: src/virsh.c:1573 src/virsh.c:2066
+#: src/virsh.c:1547 src/virsh.c:2033
 msgid "CPU(s):"
 msgstr "CPU:"
 
-#: src/virsh.c:1580 src/virsh.c:1710
+#: src/virsh.c:1554 src/virsh.c:1682
 msgid "CPU time:"
 msgstr "CPU čas:"
 
-#: src/virsh.c:1584 src/virsh.c:1587
+#: src/virsh.c:1558 src/virsh.c:1561
 msgid "Max memory:"
 msgstr "Max. paměti:"
 
-#: src/virsh.c:1588
+#: src/virsh.c:1562
 msgid "no limit"
 msgstr "bez limitu"
 
-#: src/virsh.c:1590
+#: src/virsh.c:1564
 msgid "Used memory:"
 msgstr "Použité paměti:"
 
-#: src/virsh.c:1598
+#: src/virsh.c:1572
 #, fuzzy
 msgid "Autostart:"
 msgstr "Automatické spuštění"
 
-#: src/virsh.c:1599
+#: src/virsh.c:1573
 msgid "enable"
 msgstr ""
 
-#: src/virsh.c:1599
+#: src/virsh.c:1573
 msgid "disable"
 msgstr ""
 
-#: src/virsh.c:1611
+#: src/virsh.c:1584
 msgid "NUMA free memory"
 msgstr "Volná paměť NUMA"
 
-#: src/virsh.c:1612
+#: src/virsh.c:1585
 msgid "display available free memory for the NUMA cell."
 msgstr "zobrazit dostupnou volnou paměť pro tuto buňku NUMA."
 
-#: src/virsh.c:1617
+#: src/virsh.c:1590
 msgid "NUMA cell number"
 msgstr "Číslo buňky NUMA"
 
-#: src/virsh.c:1641
+#: src/virsh.c:1614
 msgid "Total"
 msgstr "Celkem"
 
-#: src/virsh.c:1653
+#: src/virsh.c:1625
 msgid "domain vcpu information"
 msgstr "informace o VCPU domény"
 
-#: src/virsh.c:1654
+#: src/virsh.c:1626
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "Vypíše základní informace o virtuálních CPU domény."
 
-#: src/virsh.c:1701
+#: src/virsh.c:1673
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#: src/virsh.c:1702
+#: src/virsh.c:1674
 msgid "CPU:"
 msgstr "CPU:"
 
-#: src/virsh.c:1712
+#: src/virsh.c:1684
 msgid "CPU Affinity:"
 msgstr "Afinita CPU:"
 
-#: src/virsh.c:1724
+#: src/virsh.c:1696
 msgid "Domain shut off, virtual CPUs not present."
 msgstr "Doména vypnuta, nejsou přítomna žádná virtuální CPU."
 
-#: src/virsh.c:1740
+#: src/virsh.c:1711
 msgid "control domain vcpu affinity"
 msgstr "řídit afinitu VCPU domény"
 
-#: src/virsh.c:1741
+#: src/virsh.c:1712
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "Spřáhnout virtuální CPU domény k fyzickým CPU hostitele."
 
-#: src/virsh.c:1747
+#: src/virsh.c:1718
 msgid "vcpu number"
 msgstr "počet VCPU"
 
-#: src/virsh.c:1748
+#: src/virsh.c:1719
 msgid "host cpu number(s) (comma separated)"
 msgstr "počet CPU hostitele (oddělené čárkami)"
 
-#: src/virsh.c:1776
+#: src/virsh.c:1747
 msgid "vcpupin: Invalid or missing vCPU number."
 msgstr ""
 
-#: src/virsh.c:1782
+#: src/virsh.c:1753
 msgid "vcpupin: Missing cpulist"
 msgstr ""
 
-#: src/virsh.c:1794
+#: src/virsh.c:1765
 #, fuzzy
 msgid "vcpupin: failed to get domain informations."
 msgstr "nepodařilo se získat informace o uzlu"
 
-#: src/virsh.c:1800
+#: src/virsh.c:1771
 msgid "vcpupin: Invalid vCPU number."
 msgstr ""
 
-#: src/virsh.c:1809
+#: src/virsh.c:1780
 msgid "cpulist: Invalid format. Empty string."
 msgstr "cpu-seznam: Neplatný formát. Prázdný řetězec."
 
-#: src/virsh.c:1819
+#: src/virsh.c:1790
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
 "cpu-seznam: %s: Neplatný formát. Očekávám číslici na pozici %d (poblíž '%c')."
 
-#: src/virsh.c:1829
+#: src/virsh.c:1800
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
@@ -5074,1388 +5077,1388 @@ msgstr ""
 "cpu-seznam: %s: Neplatný formát. Očekávám číslici nebo čárku na pozici %d "
 "(poblíž '%c')."
 
-#: src/virsh.c:1836
+#: src/virsh.c:1807
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
 msgstr "cpu-seznam: %s: Neplatný formát. Koncová čárka na pozici %d."
 
-#: src/virsh.c:1850
+#: src/virsh.c:1821
 #, c-format
 msgid "Physical CPU %d doesn't exist."
 msgstr "Fyzické CPU %d neexistuje."
 
-#: src/virsh.c:1874
+#: src/virsh.c:1844
 msgid "change number of virtual CPUs"
 msgstr "změnit počet virtuálních CPU"
 
-#: src/virsh.c:1875
+#: src/virsh.c:1845
 #, fuzzy
 msgid "Change the number of virtual CPUs in the guest domain."
 msgstr "Změnit počet aktivních virtuálních CPU v hostované doméně."
 
-#: src/virsh.c:1881
+#: src/virsh.c:1851
 msgid "number of virtual CPUs"
 msgstr "počet virtuálních CPU"
 
-#: src/virsh.c:1901
+#: src/virsh.c:1871
 msgid "Invalid number of virtual CPUs."
 msgstr "Neplatný počet virtuálních CPU."
 
-#: src/virsh.c:1913
+#: src/virsh.c:1883
 msgid "Too many virtual CPUs."
 msgstr "Příliš mnoho virtuálních CPU."
 
-#: src/virsh.c:1931
+#: src/virsh.c:1900
 msgid "change memory allocation"
 msgstr "změnit paměťovou alokaci"
 
-#: src/virsh.c:1932
+#: src/virsh.c:1901
 msgid "Change the current memory allocation in the guest domain."
 msgstr "Změnit současnou paměťovou alokaci v hostované doméně."
 
-#: src/virsh.c:1938
+#: src/virsh.c:1907
 msgid "number of kilobytes of memory"
 msgstr "počet kilobajtů paměti"
 
-#: src/virsh.c:1959 src/virsh.c:1971 src/virsh.c:2016
+#: src/virsh.c:1928 src/virsh.c:1940 src/virsh.c:1984
 #, c-format
 msgid "Invalid value of %d for memory size"
 msgstr "neplatná hodnota %d pro velikost paměti"
 
-#: src/virsh.c:1965
+#: src/virsh.c:1934
 msgid "Unable to verify MaxMemorySize"
 msgstr "Nemohu ověřit maximální velikost paměti"
 
-#: src/virsh.c:1988
+#: src/virsh.c:1956
 msgid "change maximum memory limit"
 msgstr "změní limit maximální velikosti paměti"
 
-#: src/virsh.c:1989
+#: src/virsh.c:1957
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr ""
 "Změnit limit maximální velikosti alokovatelné paměti v hostované doméně."
 
-#: src/virsh.c:1995
+#: src/virsh.c:1963
 msgid "maximum memory limit in kilobytes"
 msgstr "maximální velikost paměti v kilobajtech"
 
-#: src/virsh.c:2022
+#: src/virsh.c:1990
 msgid "Unable to verify current MemorySize"
 msgstr "Nemohu ověřit současnou velikost paměti"
 
-#: src/virsh.c:2029
+#: src/virsh.c:1997
 msgid "Unable to shrink current MemorySize"
 msgstr "Nemohu zmenšit současnou velikost paměti"
 
-#: src/virsh.c:2035
+#: src/virsh.c:2003
 msgid "Unable to change MaxMemorySize"
 msgstr "Nemohu změnit maximální velikost paměti"
 
-#: src/virsh.c:2048
+#: src/virsh.c:2015
 msgid "node information"
 msgstr "informace o uzlu"
 
-#: src/virsh.c:2049
+#: src/virsh.c:2016
 msgid "Returns basic information about the node."
 msgstr "Vypíše základní informace o uzlu"
 
-#: src/virsh.c:2062
+#: src/virsh.c:2029
 msgid "failed to get node information"
 msgstr "nepodařilo se získat informace o uzlu"
 
-#: src/virsh.c:2065
+#: src/virsh.c:2032
 msgid "CPU model:"
 msgstr "CPU model:"
 
-#: src/virsh.c:2067
+#: src/virsh.c:2034
 msgid "CPU frequency:"
 msgstr "Frekvence CPU:"
 
-#: src/virsh.c:2068
+#: src/virsh.c:2035
 msgid "CPU socket(s):"
 msgstr "CPU soket(y):"
 
-#: src/virsh.c:2069
+#: src/virsh.c:2036
 msgid "Core(s) per socket:"
 msgstr "Jader na soket:"
 
-#: src/virsh.c:2070
+#: src/virsh.c:2037
 msgid "Thread(s) per core:"
 msgstr "Vláken na jádro:"
 
-#: src/virsh.c:2071
+#: src/virsh.c:2038
 msgid "NUMA cell(s):"
 msgstr "Buňky NUMA:"
 
-#: src/virsh.c:2072
+#: src/virsh.c:2039
 msgid "Memory size:"
 msgstr "Velikost paměti:"
 
-#: src/virsh.c:2082
+#: src/virsh.c:2048
 msgid "capabilities"
 msgstr "schopnosti"
 
-#: src/virsh.c:2083
+#: src/virsh.c:2049
 msgid "Returns capabilities of hypervisor/driver."
 msgstr "Vypíše schopnosti hypervizoru/ovladače."
 
-#: src/virsh.c:2096
+#: src/virsh.c:2062
 msgid "failed to get capabilities"
 msgstr "nepodařilo se zjistit schopnosti"
 
-#: src/virsh.c:2110
+#: src/virsh.c:2075
 msgid "domain information in XML"
 msgstr "informace o doméně v XML"
 
-#: src/virsh.c:2111
+#: src/virsh.c:2076
 msgid "Output the domain information as an XML dump to stdout."
 msgstr "Vypsat informace o doméně jako XML na standardní výstup."
 
-#: src/virsh.c:2150
+#: src/virsh.c:2114
 msgid "convert a domain id or UUID to domain name"
 msgstr "převést ID nebo UUID doména na jméno domény"
 
-#: src/virsh.c:2155
+#: src/virsh.c:2120
 msgid "domain id or uuid"
 msgstr "ID nebo UUID domény"
 
-#: src/virsh.c:2180
+#: src/virsh.c:2144
 msgid "convert a domain name or UUID to domain id"
 msgstr "převést jméno nebo UUID domény na ID domény"
 
-#: src/virsh.c:2215
+#: src/virsh.c:2179
 msgid "convert a domain name or id to domain UUID"
 msgstr "převést jméno nebo ID domény na UUID domény"
 
-#: src/virsh.c:2220
+#: src/virsh.c:2185
 msgid "domain id or name"
 msgstr "ID nebo jméno domény"
 
-#: src/virsh.c:2239
+#: src/virsh.c:2204
 msgid "failed to get domain UUID"
 msgstr "nepodařilo se získat UUID domény"
 
-#: src/virsh.c:2250
+#: src/virsh.c:2214
 msgid "migrate domain to another host"
 msgstr "přenést doménu na jiného hostitele"
 
-#: src/virsh.c:2251
+#: src/virsh.c:2215
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr "Přenést doménu na jiného hostitele. Přidejte --live pro živý přenos."
 
-#: src/virsh.c:2256
+#: src/virsh.c:2220
 msgid "live migration"
 msgstr "živý přenos"
 
-#: src/virsh.c:2258
+#: src/virsh.c:2222
 msgid "connection URI of the destination host"
 msgstr "URI spojení cílového hostitele"
 
-#: src/virsh.c:2259
+#: src/virsh.c:2223
 msgid "migration URI, usually can be omitted"
 msgstr "URI přenosu, obvykle může být vynecháno"
 
-#: src/virsh.c:2260
+#: src/virsh.c:2224
 msgid "rename to new name during migration (if supported)"
 msgstr ""
 
-#: src/virsh.c:2283
+#: src/virsh.c:2247
 msgid "migrate: Missing desturi"
 msgstr "přenos: Chybí cílové URI"
 
-#: src/virsh.c:2318
+#: src/virsh.c:2281
 msgid "autostart a network"
 msgstr "automaticky spustit síť "
 
-#: src/virsh.c:2320
+#: src/virsh.c:2283
 msgid "Configure a network to be automatically started at boot."
 msgstr "Nastavit síť, aby byla automaticky spuštěna při startu."
 
-#: src/virsh.c:2325 src/virsh.c:2746
+#: src/virsh.c:2288 src/virsh.c:2702
 msgid "network name or uuid"
 msgstr "název nebo UUID sítě"
 
-#: src/virsh.c:2347
+#: src/virsh.c:2310
 #, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "Nepodařilo se označit síť %s jako automaticky spouštěnou"
 
-#: src/virsh.c:2350
+#: src/virsh.c:2313
 #, c-format
 msgid "failed to unmark network %s as autostarted"
 msgstr "Nepodařilo se odoznačit síť %s jako automaticky spouštěnou"
 
-#: src/virsh.c:2357
+#: src/virsh.c:2320
 #, c-format
 msgid "Network %s marked as autostarted\n"
 msgstr "Síť %s označena jako automaticky spouštěná\n"
 
-#: src/virsh.c:2359
+#: src/virsh.c:2322
 #, c-format
 msgid "Network %s unmarked as autostarted\n"
 msgstr "Síť %s odznačena jako automaticky spuštěná\n"
 
-#: src/virsh.c:2369
+#: src/virsh.c:2331
 msgid "create a network from an XML file"
 msgstr "vytvořit síť z XML souboru"
 
-#: src/virsh.c:2370
+#: src/virsh.c:2332
 msgid "Create a network."
 msgstr "Vytvořit síť."
 
-#: src/virsh.c:2375 src/virsh.c:2423
+#: src/virsh.c:2337 src/virsh.c:2384
 msgid "file containing an XML network description"
 msgstr "soubor obsahující XML popis sítě"
 
-#: src/virsh.c:2402
+#: src/virsh.c:2364
 #, c-format
 msgid "Network %s created from %s\n"
 msgstr "Síť %s vytvořena z %s\n"
 
-#: src/virsh.c:2405
+#: src/virsh.c:2367
 #, c-format
 msgid "Failed to create network from %s"
 msgstr "Nepodařilo se vytvořit síť z %s"
 
-#: src/virsh.c:2417
+#: src/virsh.c:2378
 msgid "define (but don't start) a network from an XML file"
 msgstr "definovat (ale nespouštět) síť z XML souboru"
 
-#: src/virsh.c:2418
+#: src/virsh.c:2379
 msgid "Define a network."
 msgstr "Definovat síť."
 
-#: src/virsh.c:2450
+#: src/virsh.c:2411
 #, c-format
 msgid "Network %s defined from %s\n"
 msgstr "Síť %s definována z %s\n"
 
-#: src/virsh.c:2453
+#: src/virsh.c:2414
 #, c-format
 msgid "Failed to define network from %s"
 msgstr "Nepodařilo se definovat síť z %s"
 
-#: src/virsh.c:2465
+#: src/virsh.c:2425
 msgid "destroy a network"
 msgstr "zničit síť"
 
-#: src/virsh.c:2466
+#: src/virsh.c:2426
 msgid "Destroy a given network."
 msgstr "Zničit zadanou síť."
 
-#: src/virsh.c:2471 src/virsh.c:2511 src/virsh.c:5572
+#: src/virsh.c:2431 src/virsh.c:2470 src/virsh.c:5454
 msgid "network name, id or uuid"
 msgstr "název, ID nebo UUID sítě"
 
-#: src/virsh.c:2489
+#: src/virsh.c:2449
 #, c-format
 msgid "Network %s destroyed\n"
 msgstr "Síť %s zničena\n"
 
-#: src/virsh.c:2491
+#: src/virsh.c:2451
 #, c-format
 msgid "Failed to destroy network %s"
 msgstr "Nepodařilo se zničit síť %s"
 
-#: src/virsh.c:2505
+#: src/virsh.c:2464
 msgid "network information in XML"
 msgstr "informace o síti v XML"
 
-#: src/virsh.c:2506
+#: src/virsh.c:2465
 msgid "Output the network information as an XML dump to stdout."
 msgstr "Vypsat informace o síti jako XML na standardní výstup."
 
-#: src/virsh.c:2546
+#: src/virsh.c:2504
 msgid "list networks"
 msgstr "vypsat sítě"
 
-#: src/virsh.c:2547
+#: src/virsh.c:2505
 msgid "Returns list of networks."
 msgstr "Vypíše seznam sítí."
 
-#: src/virsh.c:2552
+#: src/virsh.c:2510
 msgid "list inactive networks"
 msgstr "vypsat neaktivní sítě"
 
-#: src/virsh.c:2553
+#: src/virsh.c:2511
 msgid "list inactive & active networks"
 msgstr "vypsat neaktivní a aktivní sítě"
 
-#: src/virsh.c:2573 src/virsh.c:2581
+#: src/virsh.c:2531 src/virsh.c:2539
 msgid "Failed to list active networks"
 msgstr "Nepodařilo se vypsat aktivní sítě"
 
-#: src/virsh.c:2592 src/virsh.c:2600
+#: src/virsh.c:2550 src/virsh.c:2558
 msgid "Failed to list inactive networks"
 msgstr "Nepodařilo se vypsat neaktivní sítě"
 
-#: src/virsh.c:2609 src/virsh.c:3411
+#: src/virsh.c:2567 src/virsh.c:3316
 msgid "Autostart"
 msgstr "Automatické spuštění"
 
-#: src/virsh.c:2624 src/virsh.c:2647 src/virsh.c:3426 src/virsh.c:3449
+#: src/virsh.c:2582 src/virsh.c:2605 src/virsh.c:3331 src/virsh.c:3354
 msgid "no autostart"
 msgstr "bez automatického spuštění"
 
-#: src/virsh.c:2630 src/virsh.c:3432
+#: src/virsh.c:2588 src/virsh.c:3337
 msgid "active"
 msgstr "aktivní"
 
-#: src/virsh.c:2653 src/virsh.c:3455 src/virsh.c:3660
+#: src/virsh.c:2611 src/virsh.c:3360 src/virsh.c:3562
 msgid "inactive"
 msgstr "neaktivní"
 
-#: src/virsh.c:2670
+#: src/virsh.c:2627
 msgid "convert a network UUID to network name"
 msgstr "převést UUID sítě na název sítě"
 
-#: src/virsh.c:2675
+#: src/virsh.c:2633
 msgid "network uuid"
 msgstr "UUID sítě"
 
-#: src/virsh.c:2701
+#: src/virsh.c:2658
 msgid "start a (previously defined) inactive network"
 msgstr "spustit (dříve definovanou) neaktivní síť"
 
-#: src/virsh.c:2702
+#: src/virsh.c:2659
 msgid "Start a network."
 msgstr "Spustit síť."
 
-#: src/virsh.c:2707
+#: src/virsh.c:2664
 msgid "name of the inactive network"
 msgstr "název neaktivní sítě"
 
-#: src/virsh.c:2724
+#: src/virsh.c:2681
 #, c-format
 msgid "Network %s started\n"
 msgstr "Spuštěna síť %s\n"
 
-#: src/virsh.c:2727
+#: src/virsh.c:2684
 #, c-format
 msgid "Failed to start network %s"
 msgstr "Selhalo spuštění sítě %s"
 
-#: src/virsh.c:2740
+#: src/virsh.c:2696
 msgid "undefine an inactive network"
 msgstr "oddefinovat neaktivní síť"
 
-#: src/virsh.c:2741
+#: src/virsh.c:2697
 msgid "Undefine the configuration for an inactive network."
 msgstr "Oddefinovat nastavení neaktivní sítě."
 
-#: src/virsh.c:2764
+#: src/virsh.c:2720
 #, c-format
 msgid "Network %s has been undefined\n"
 msgstr "Síť %s byla oddefinována\n"
 
-#: src/virsh.c:2766
+#: src/virsh.c:2722
 #, c-format
 msgid "Failed to undefine network %s"
 msgstr "Nepodařilo se oddefinovat síť %s"
 
-#: src/virsh.c:2779
+#: src/virsh.c:2734
 msgid "convert a network name to network UUID"
 msgstr "převést název sítě na UUID sítě"
 
-#: src/virsh.c:2784
+#: src/virsh.c:2740
 msgid "network name"
 msgstr "název sítě"
 
-#: src/virsh.c:2804
+#: src/virsh.c:2760
 msgid "failed to get network UUID"
 msgstr "nepodařilo se získat UUID sítě"
 
-#: src/virsh.c:2815
+#: src/virsh.c:2770
 #, fuzzy
 msgid "autostart a pool"
 msgstr "automaticky spustit doménu"
 
-#: src/virsh.c:2817
+#: src/virsh.c:2772
 #, fuzzy
 msgid "Configure a pool to be automatically started at boot."
 msgstr "Nastaví doménu, aby byla automaticky spuštěna při startu."
 
-#: src/virsh.c:2822 src/virsh.c:3153 src/virsh.c:3193 src/virsh.c:3233
-#: src/virsh.c:3273 src/virsh.c:3313 src/virsh.c:3631 src/virsh.c:3899
-#: src/virsh.c:4035 src/virsh.c:4077 src/virsh.c:4129 src/virsh.c:4171
-#: src/virsh.c:4315 src/virsh.c:5590
+#: src/virsh.c:2777 src/virsh.c:3063 src/virsh.c:3102 src/virsh.c:3141
+#: src/virsh.c:3180 src/virsh.c:3219 src/virsh.c:3533 src/virsh.c:3798
+#: src/virsh.c:3932 src/virsh.c:3973 src/virsh.c:4024 src/virsh.c:4065
+#: src/virsh.c:4209 src/virsh.c:5471
 #, fuzzy
 msgid "pool name or uuid"
 msgstr "uuid nebo jméno domény"
 
-#: src/virsh.c:2844
+#: src/virsh.c:2799
 #, fuzzy, c-format
 msgid "failed to mark pool %s as autostarted"
 msgstr "Nepodařilo se označit síť %s jako automaticky spouštěnou"
 
-#: src/virsh.c:2847
+#: src/virsh.c:2802
 #, fuzzy, c-format
 msgid "failed to unmark pool %s as autostarted"
 msgstr "Nepodařilo se odoznačit síť %s jako automaticky spouštěnou"
 
-#: src/virsh.c:2854
+#: src/virsh.c:2809
 #, fuzzy, c-format
 msgid "Pool %s marked as autostarted\n"
 msgstr "Doména %s označena jako automaticky spouštěná\n"
 
-#: src/virsh.c:2856
+#: src/virsh.c:2811
 #, fuzzy, c-format
 msgid "Pool %s unmarked as autostarted\n"
 msgstr "Doména %s odoznačena jako automaticky spouštěná\n"
 
-#: src/virsh.c:2866
+#: src/virsh.c:2820
 #, fuzzy
 msgid "create a pool from an XML file"
 msgstr "vytvořit doménu z XML souboru"
 
-#: src/virsh.c:2867 src/virsh.c:2915
+#: src/virsh.c:2821 src/virsh.c:2939
 #, fuzzy
 msgid "Create a pool."
 msgstr "Vytvořit doménu."
 
-#: src/virsh.c:2873 src/virsh.c:3011
+#: src/virsh.c:2827 src/virsh.c:2980
 #, fuzzy
 msgid "file containing an XML pool description"
 msgstr "soubor obsahující XML popis domény"
 
-#: src/virsh.c:2900
+#: src/virsh.c:2854
 #, fuzzy, c-format
 msgid "Pool %s created from %s\n"
 msgstr "Doména %s vytvořena z %s\n"
 
-#: src/virsh.c:2903
+#: src/virsh.c:2857
 #, fuzzy, c-format
 msgid "Failed to create pool from %s"
 msgstr "Nepodařilo se vytvořit doménu z %s"
 
-#: src/virsh.c:2914
-#, fuzzy
-msgid "create a pool from a set of args"
-msgstr "vytvořit doménu z XML souboru"
-
-#: src/virsh.c:2920 src/virsh.c:3059
+#: src/virsh.c:2868
 #, fuzzy
 msgid "name of the pool"
 msgstr "Jméno neaktivní domény"
 
-#: src/virsh.c:2921 src/virsh.c:3060
+#: src/virsh.c:2869
 msgid "type of the pool"
 msgstr ""
 
-#: src/virsh.c:2922 src/virsh.c:3061
+#: src/virsh.c:2870
 msgid "source-host for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2923 src/virsh.c:3062
+#: src/virsh.c:2871
 msgid "source path for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2924 src/virsh.c:3063
+#: src/virsh.c:2872
 msgid "source device for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2925 src/virsh.c:3065
+#: src/virsh.c:2873
+msgid "source name for underlying storage"
+msgstr ""
+
+#: src/virsh.c:2874
 msgid "target for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2977 src/virsh.c:3119 src/virsh.c:3864
+#: src/virsh.c:2921 src/virsh.c:3764
 #, fuzzy
 msgid "Failed to allocate XML buffer"
 msgstr "nepodařilo se alokovat buffer"
 
-#: src/virsh.c:2986
+#: src/virsh.c:2938
+#, fuzzy
+msgid "create a pool from a set of args"
+msgstr "vytvořit doménu z XML souboru"
+
+#: src/virsh.c:2959
 #, fuzzy, c-format
 msgid "Pool %s created\n"
 msgstr "Doména %s vytvořena z %s\n"
 
-#: src/virsh.c:2990
+#: src/virsh.c:2963
 #, fuzzy, c-format
 msgid "Failed to create pool %s"
 msgstr "Nepodařilo se vytvořit doménu z %s"
 
-#: src/virsh.c:3005
+#: src/virsh.c:2974
 #, fuzzy
 msgid "define (but don't start) a pool from an XML file"
 msgstr "definovat (ale nespouštět) doménu ze souboru XML"
 
-#: src/virsh.c:3006 src/virsh.c:3054
+#: src/virsh.c:2975 src/virsh.c:3022
 #, fuzzy
 msgid "Define a pool."
 msgstr "Definovat doménu."
 
-#: src/virsh.c:3038
+#: src/virsh.c:3007
 #, fuzzy, c-format
 msgid "Pool %s defined from %s\n"
 msgstr "Doména %s definována z %s\n"
 
-#: src/virsh.c:3041
+#: src/virsh.c:3010
 #, fuzzy, c-format
 msgid "Failed to define pool from %s"
 msgstr "Nepodařilo se definovat doménu z %s "
 
-#: src/virsh.c:3053
+#: src/virsh.c:3021
 msgid "define a pool from a set of args"
 msgstr ""
 
-#: src/virsh.c:3064
-msgid "source name for underlying storage"
-msgstr ""
-
-#: src/virsh.c:3128
+#: src/virsh.c:3042
 #, fuzzy, c-format
 msgid "Pool %s defined\n"
 msgstr "Doména %s definována z %s\n"
 
-#: src/virsh.c:3132
+#: src/virsh.c:3046
 #, fuzzy, c-format
 msgid "Failed to define pool %s"
 msgstr "Nepodařilo se oddefinovat doménu %s"
 
-#: src/virsh.c:3147
+#: src/virsh.c:3057
 msgid "build a pool"
 msgstr ""
 
-#: src/virsh.c:3148
+#: src/virsh.c:3058
 msgid "Build a given pool."
 msgstr ""
 
-#: src/virsh.c:3171
+#: src/virsh.c:3081
 #, fuzzy, c-format
 msgid "Pool %s built\n"
 msgstr "Doména %s zničena\n"
 
-#: src/virsh.c:3173
+#: src/virsh.c:3083
 #, fuzzy, c-format
 msgid "Failed to build pool %s"
 msgstr "Nepodařilo se uspat doménu %s"
 
-#: src/virsh.c:3187
+#: src/virsh.c:3096
 #, fuzzy
 msgid "destroy a pool"
 msgstr "zničit doménu"
 
-#: src/virsh.c:3188
+#: src/virsh.c:3097
 #, fuzzy
 msgid "Destroy a given pool."
 msgstr "Zničit danou doménu."
 
-#: src/virsh.c:3211
+#: src/virsh.c:3120
 #, fuzzy, c-format
 msgid "Pool %s destroyed\n"
 msgstr "Doména %s zničena\n"
 
-#: src/virsh.c:3213
+#: src/virsh.c:3122
 #, fuzzy, c-format
 msgid "Failed to destroy pool %s"
 msgstr "Nepodařilo se zničit doménu %s"
 
-#: src/virsh.c:3227
+#: src/virsh.c:3135
 msgid "delete a pool"
 msgstr ""
 
-#: src/virsh.c:3228
+#: src/virsh.c:3136
 #, fuzzy
 msgid "Delete a given pool."
 msgstr "Zničit danou doménu."
 
-#: src/virsh.c:3251
+#: src/virsh.c:3159
 #, fuzzy, c-format
 msgid "Pool %s deleted\n"
 msgstr "Doména %s zničena\n"
 
-#: src/virsh.c:3253
+#: src/virsh.c:3161
 #, fuzzy, c-format
 msgid "Failed to delete pool %s"
 msgstr "Nepodařilo se zničit doménu %s"
 
-#: src/virsh.c:3267
+#: src/virsh.c:3174
 msgid "refresh a pool"
 msgstr ""
 
-#: src/virsh.c:3268
+#: src/virsh.c:3175
 msgid "Refresh a given pool."
 msgstr ""
 
-#: src/virsh.c:3291
+#: src/virsh.c:3198
 #, fuzzy, c-format
 msgid "Pool %s refreshed\n"
 msgstr "Doména %s probuzena\n"
 
-#: src/virsh.c:3293
+#: src/virsh.c:3200
 #, fuzzy, c-format
 msgid "Failed to refresh pool %s"
 msgstr "Nepodařilo se probudit doménu %s"
 
-#: src/virsh.c:3307
+#: src/virsh.c:3213
 #, fuzzy
 msgid "pool information in XML"
 msgstr "informace o doméně v XML"
 
-#: src/virsh.c:3308
+#: src/virsh.c:3214
 #, fuzzy
 msgid "Output the pool information as an XML dump to stdout."
 msgstr "Vypsat informace o doméně jako XML na standardní výstup."
 
-#: src/virsh.c:3348
+#: src/virsh.c:3253
 #, fuzzy
 msgid "list pools"
 msgstr "vypsat domény"
 
-#: src/virsh.c:3349
+#: src/virsh.c:3254
 #, fuzzy
 msgid "Returns list of pools."
 msgstr "Vrátí seznam domén."
 
-#: src/virsh.c:3354
+#: src/virsh.c:3259
 #, fuzzy
 msgid "list inactive pools"
 msgstr "vypsat neaktivní domény"
 
-#: src/virsh.c:3355
+#: src/virsh.c:3260
 #, fuzzy
 msgid "list inactive & active pools"
 msgstr "vypsat neaktivní a aktivní domény"
 
-#: src/virsh.c:3375 src/virsh.c:3383
+#: src/virsh.c:3280 src/virsh.c:3288
 #, fuzzy
 msgid "Failed to list active pools"
 msgstr "Nepodařilo se vypsat aktivní domény"
 
-#: src/virsh.c:3394 src/virsh.c:3402
+#: src/virsh.c:3299 src/virsh.c:3307
 #, fuzzy
 msgid "Failed to list inactive pools"
 msgstr "Nepodařilo se vypsat neaktivní domény"
 
-#: src/virsh.c:3471
+#: src/virsh.c:3375
 msgid "find potential storage pool sources"
 msgstr ""
 
-#: src/virsh.c:3472 src/virsh.c:3553
+#: src/virsh.c:3376 src/virsh.c:3456
 msgid "Returns XML <sources> document."
 msgstr ""
 
-#: src/virsh.c:3478
+#: src/virsh.c:3382
 msgid "type of storage pool sources to find"
 msgstr ""
 
-#: src/virsh.c:3479
+#: src/virsh.c:3383
 msgid "optional host to query"
 msgstr ""
 
-#: src/virsh.c:3480
+#: src/virsh.c:3384
 msgid "optional port to query"
 msgstr ""
 
-#: src/virsh.c:3525
+#: src/virsh.c:3429
 #, fuzzy
 msgid "Out of memory"
 msgstr "nedostatek paměti"
 
-#: src/virsh.c:3528
+#: src/virsh.c:3432
 #, c-format
-msgid "asprintf failed (errno %d)"
+msgid "virAsprintf failed (errno %d)"
 msgstr ""
 
-#: src/virsh.c:3537 src/virsh.c:3589
+#: src/virsh.c:3441 src/virsh.c:3492
 #, fuzzy, c-format
 msgid "Failed to find any %s pool sources"
 msgstr "Nepodařilo se uložit doménu %s do %s"
 
-#: src/virsh.c:3552
+#: src/virsh.c:3455
 msgid "discover potential storage pool sources"
 msgstr ""
 
-#: src/virsh.c:3559
+#: src/virsh.c:3462
 msgid "type of storage pool sources to discover"
 msgstr ""
 
-#: src/virsh.c:3561
+#: src/virsh.c:3464
 msgid "optional file of source xml to query for pools"
 msgstr ""
 
-#: src/virsh.c:3625
+#: src/virsh.c:3527
 #, fuzzy
 msgid "storage pool information"
 msgstr "informace o uzlu"
 
-#: src/virsh.c:3626
+#: src/virsh.c:3528
 #, fuzzy
 msgid "Returns basic information about the storage pool."
 msgstr "Vypíše základní informace o uzlu"
 
-#: src/virsh.c:3664
+#: src/virsh.c:3566
 msgid "building"
 msgstr ""
 
-#: src/virsh.c:3668 src/virsh.c:6419 src/virsh.c:6445
+#: src/virsh.c:3570 src/virsh.c:6344 src/virsh.c:6370
 msgid "running"
 msgstr "běží"
 
-#: src/virsh.c:3672
+#: src/virsh.c:3574
 msgid "degraded"
 msgstr ""
 
-#: src/virsh.c:3679 src/virsh.c:4105
+#: src/virsh.c:3581 src/virsh.c:4001
 msgid "Capacity:"
 msgstr ""
 
-#: src/virsh.c:3682 src/virsh.c:4108
+#: src/virsh.c:3584 src/virsh.c:4004
 #, fuzzy
 msgid "Allocation:"
 msgstr "alokuji doménu"
 
-#: src/virsh.c:3685
+#: src/virsh.c:3587
 msgid "Available:"
 msgstr ""
 
-#: src/virsh.c:3701
+#: src/virsh.c:3602
 #, fuzzy
 msgid "convert a pool UUID to pool name"
 msgstr "převést UUID sítě na název sítě"
 
-#: src/virsh.c:3706
+#: src/virsh.c:3608
 #, fuzzy
 msgid "pool uuid"
 msgstr "UUID domény"
 
-#: src/virsh.c:3732
+#: src/virsh.c:3633
 #, fuzzy
 msgid "start a (previously defined) inactive pool"
 msgstr "spustit (dříve definovanou) neaktivní doménu"
 
-#: src/virsh.c:3733
+#: src/virsh.c:3634
 #, fuzzy
 msgid "Start a pool."
 msgstr "Spustit doménu."
 
-#: src/virsh.c:3738
+#: src/virsh.c:3639
 #, fuzzy
 msgid "name of the inactive pool"
 msgstr "Jméno neaktivní domény"
 
-#: src/virsh.c:3755
+#: src/virsh.c:3656
 #, fuzzy, c-format
 msgid "Pool %s started\n"
 msgstr "Doména %s spuštěna\n"
 
-#: src/virsh.c:3758
+#: src/virsh.c:3659
 #, fuzzy, c-format
 msgid "Failed to start pool %s"
 msgstr "Nepodařilo se spustit doménu %s"
 
-#: src/virsh.c:3771
+#: src/virsh.c:3671
 #, fuzzy
 msgid "create a volume from a set of args"
 msgstr "vytvořit doménu z XML souboru"
 
-#: src/virsh.c:3772 src/virsh.c:3971
+#: src/virsh.c:3672 src/virsh.c:3869
 #, fuzzy
 msgid "Create a vol."
 msgstr "Vytvořit doménu."
 
-#: src/virsh.c:3778
+#: src/virsh.c:3678
 #, fuzzy
 msgid "name of the volume"
 msgstr "Jméno neaktivní domény"
 
-#: src/virsh.c:3779
+#: src/virsh.c:3679
 msgid "size of the vol with optional k,M,G,T suffix"
 msgstr ""
 
-#: src/virsh.c:3780
+#: src/virsh.c:3680
 msgid "initial allocation size with optional k,M,G,T suffix"
 msgstr ""
 
-#: src/virsh.c:3781
+#: src/virsh.c:3681
 msgid "file format type raw,bochs,qcow,qcow2,vmdk"
 msgstr ""
 
-#: src/virsh.c:3839 src/virsh.c:3844
+#: src/virsh.c:3739 src/virsh.c:3744
 #, c-format
 msgid "Malformed size %s"
 msgstr ""
 
-#: src/virsh.c:3873
+#: src/virsh.c:3773
 #, fuzzy, c-format
 msgid "Vol %s created\n"
 msgstr "Doména %s vytvořena z %s\n"
 
-#: src/virsh.c:3877
+#: src/virsh.c:3777
 #, fuzzy, c-format
 msgid "Failed to create vol %s"
 msgstr "Nepodařilo se vytvořit XML"
 
-#: src/virsh.c:3893
+#: src/virsh.c:3792
 #, fuzzy
 msgid "undefine an inactive pool"
 msgstr "oddefinovat neaktivní doménu"
 
-#: src/virsh.c:3894
+#: src/virsh.c:3793
 #, fuzzy
 msgid "Undefine the configuration for an inactive pool."
 msgstr "Oddefinovat nastavení neaktivní domény."
 
-#: src/virsh.c:3917
+#: src/virsh.c:3816
 #, fuzzy, c-format
 msgid "Pool %s has been undefined\n"
 msgstr "Doména %s byla oddefinována\n"
 
-#: src/virsh.c:3919
+#: src/virsh.c:3818
 #, fuzzy, c-format
 msgid "Failed to undefine pool %s"
 msgstr "Nepodařilo se oddefinovat doménu %s"
 
-#: src/virsh.c:3932
+#: src/virsh.c:3830
 #, fuzzy
 msgid "convert a pool name to pool UUID"
 msgstr "převést název sítě na UUID sítě"
 
-#: src/virsh.c:3957
+#: src/virsh.c:3856
 #, fuzzy
 msgid "failed to get pool UUID"
 msgstr "nepodařilo se získat UUID domény"
 
-#: src/virsh.c:3970
+#: src/virsh.c:3868
 #, fuzzy
 msgid "create a vol from an XML file"
 msgstr "vytvořit doménu z XML souboru"
 
-#: src/virsh.c:3977
+#: src/virsh.c:3875
 #, fuzzy
 msgid "file containing an XML vol description"
 msgstr "soubor obsahující XML popis domény"
 
-#: src/virsh.c:4014
+#: src/virsh.c:3912
 #, fuzzy, c-format
 msgid "Vol %s created from %s\n"
 msgstr "Doména %s vytvořena z %s\n"
 
-#: src/virsh.c:4018
+#: src/virsh.c:3916
 #, fuzzy, c-format
 msgid "Failed to create vol from %s"
 msgstr "Nepodařilo se vytvořit doménu z %s"
 
-#: src/virsh.c:4029
+#: src/virsh.c:3926
 msgid "delete a vol"
 msgstr ""
 
-#: src/virsh.c:4030
+#: src/virsh.c:3927
 #, fuzzy
 msgid "Delete a given vol."
 msgstr "Zničit danou doménu."
 
-#: src/virsh.c:4036 src/virsh.c:4078 src/virsh.c:4130
+#: src/virsh.c:3933 src/virsh.c:3974 src/virsh.c:4025
 msgid "vol name, key or path"
 msgstr ""
 
-#: src/virsh.c:4055
+#: src/virsh.c:3952
 #, fuzzy, c-format
 msgid "Vol %s deleted\n"
 msgstr "Doména %s zničena\n"
 
-#: src/virsh.c:4057
+#: src/virsh.c:3954
 #, fuzzy, c-format
 msgid "Failed to delete vol %s"
 msgstr "Nepodařilo se zničit doménu %s"
 
-#: src/virsh.c:4071
+#: src/virsh.c:3967
 #, fuzzy
 msgid "storage vol information"
 msgstr "informace o uzlu"
 
-#: src/virsh.c:4072
+#: src/virsh.c:3968
 #, fuzzy
 msgid "Returns basic information about the storage vol."
 msgstr "Vypíše základní informace o uzlu"
 
-#: src/virsh.c:4100
+#: src/virsh.c:3996
 #, fuzzy
 msgid "Type:"
 msgstr "Druh OS:"
 
-#: src/virsh.c:4102
+#: src/virsh.c:3998
 #, fuzzy
 msgid "file"
 msgstr "XML soubor"
 
-#: src/virsh.c:4102
+#: src/virsh.c:3998
 #, fuzzy
 msgid "block"
 msgstr "blokováno"
 
-#: src/virsh.c:4123
+#: src/virsh.c:4018
 #, fuzzy
 msgid "vol information in XML"
 msgstr "informace o doméně v XML"
 
-#: src/virsh.c:4124
+#: src/virsh.c:4019
 #, fuzzy
 msgid "Output the vol information as an XML dump to stdout."
 msgstr "Vypsat informace o doméně jako XML na standardní výstup."
 
-#: src/virsh.c:4165
+#: src/virsh.c:4059
 #, fuzzy
 msgid "list vols"
 msgstr "vypsat domény"
 
-#: src/virsh.c:4166
+#: src/virsh.c:4060
 #, fuzzy
 msgid "Returns list of vols by pool."
 msgstr "Vrátí seznam domén."
 
-#: src/virsh.c:4191 src/virsh.c:4199
+#: src/virsh.c:4085 src/virsh.c:4093
 #, fuzzy
 msgid "Failed to list active vols"
 msgstr "Nepodařilo se vypsat aktivní domény"
 
-#: src/virsh.c:4207
+#: src/virsh.c:4101
 msgid "Path"
 msgstr ""
 
-#: src/virsh.c:4244
+#: src/virsh.c:4137
 #, fuzzy
 msgid "convert a vol UUID to vol name"
 msgstr "převést UUID sítě na název sítě"
 
-#: src/virsh.c:4249
+#: src/virsh.c:4143
 msgid "vol key or path"
 msgstr ""
 
-#: src/virsh.c:4277
+#: src/virsh.c:4170
 #, fuzzy
 msgid "convert a vol UUID to vol key"
 msgstr "převést UUID sítě na název sítě"
 
-#: src/virsh.c:4282
+#: src/virsh.c:4176
 #, fuzzy
 msgid "vol uuid"
 msgstr "UUID domény"
 
-#: src/virsh.c:4310
+#: src/virsh.c:4203
 #, fuzzy
 msgid "convert a vol UUID to vol path"
 msgstr "převést UUID sítě na název sítě"
 
-#: src/virsh.c:4316
+#: src/virsh.c:4210
 msgid "vol name or key"
 msgstr ""
 
-#: src/virsh.c:4347
+#: src/virsh.c:4240
 msgid "show version"
 msgstr "ukázat verzi"
 
-#: src/virsh.c:4348
+#: src/virsh.c:4241
 msgid "Display the system version information."
 msgstr "Zobrazit informace o verzi systému."
 
-#: src/virsh.c:4371
+#: src/virsh.c:4264
 msgid "failed to get hypervisor type"
 msgstr "nepodařilo se získat druh hypervizoru"
 
-#: src/virsh.c:4380
+#: src/virsh.c:4273
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "Kompilováno s knihovnou: libvir %d.%d.%d\n"
 
-#: src/virsh.c:4385
+#: src/virsh.c:4278
 msgid "failed to get the library version"
 msgstr "nepodařilo se zjistit verzi knihovny"
 
-#: src/virsh.c:4392
+#: src/virsh.c:4285
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "Používám knihovnu: libvir %d.%d.%d\n"
 
-#: src/virsh.c:4399
+#: src/virsh.c:4292
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "Používám API: %s %d.%d.%d\n"
 
-#: src/virsh.c:4404
+#: src/virsh.c:4297
 msgid "failed to get the hypervisor version"
 msgstr "nepodařilo se získat verzi hypervizora"
 
-#: src/virsh.c:4409
+#: src/virsh.c:4302
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "Nelze získat verzi běžícího %s hypervizora\n"
 
-#: src/virsh.c:4416
+#: src/virsh.c:4309
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Běžící hypervizor: %s %d.%d.%d\n"
 
-#: src/virsh.c:4427
+#: src/virsh.c:4319
 #, fuzzy
 msgid "enumerate devices on this host"
 msgstr "přenést doménu na jiného hostitele"
 
-#: src/virsh.c:4432
+#: src/virsh.c:4325
 #, fuzzy
 msgid "capability name"
 msgstr "schopnosti"
 
-#: src/virsh.c:4452
+#: src/virsh.c:4345
 #, fuzzy
 msgid "Failed to count node devices"
 msgstr "Nepodařilo se připojit se k hypervizoru"
 
-#: src/virsh.c:4462
+#: src/virsh.c:4355
 #, fuzzy
 msgid "Failed to list node devices"
 msgstr "Nepodařilo se vypsat neaktivní domény"
 
-#: src/virsh.c:4480
+#: src/virsh.c:4372
 msgid "node device details in XML"
 msgstr ""
 
-#: src/virsh.c:4481
+#: src/virsh.c:4373
 #, fuzzy
 msgid "Output the node device details as an XML dump to stdout."
 msgstr "Vypsat informace o síti jako XML na standardní výstup."
 
-#: src/virsh.c:4487
+#: src/virsh.c:4379
 msgid "device key"
 msgstr ""
 
-#: src/virsh.c:4502
+#: src/virsh.c:4394
 msgid "Could not find matching device"
 msgstr ""
 
-#: src/virsh.c:4516
+#: src/virsh.c:4407
 msgid "print the hypervisor hostname"
 msgstr "vypsat hostitelské jméno hypervizora"
 
-#: src/virsh.c:4530
+#: src/virsh.c:4422
 msgid "failed to get hostname"
 msgstr "nepodařilo se získat hostitelské jméno"
 
-#: src/virsh.c:4545
+#: src/virsh.c:4436
 msgid "print the hypervisor canonical URI"
 msgstr "vypsat kanonické URI hypervizora"
 
-#: src/virsh.c:4559
+#: src/virsh.c:4451
 msgid "failed to get URI"
 msgstr "nepodařilo se získat URI"
 
-#: src/virsh.c:4574
+#: src/virsh.c:4465
 msgid "vnc display"
 msgstr "VNC display"
 
-#: src/virsh.c:4575
+#: src/virsh.c:4466
 msgid "Output the IP address and port number for the VNC display."
 msgstr "Vypíše IP adresu a číslo portu pro VNC display."
 
-#: src/virsh.c:4650
+#: src/virsh.c:4540
 msgid "tty console"
 msgstr "TTY konzole"
 
-#: src/virsh.c:4651
+#: src/virsh.c:4541
 msgid "Output the device for the TTY console."
 msgstr "Vypsat zařízení pro TTY konzolu."
 
-#: src/virsh.c:4711
+#: src/virsh.c:4600
 msgid "attach device from an XML file"
 msgstr "připojit zařízení z XML souboru"
 
-#: src/virsh.c:4712
+#: src/virsh.c:4601
 msgid "Attach device from an XML <file>."
 msgstr "Připojit zařízení z XML <souboru>."
 
-#: src/virsh.c:4718 src/virsh.c:4777
+#: src/virsh.c:4607 src/virsh.c:4665
 msgid "XML file"
 msgstr "XML soubor"
 
-#: src/virsh.c:4739
+#: src/virsh.c:4628
 msgid "attach-device: Missing <file> option"
 msgstr ""
 
-#: src/virsh.c:4753
+#: src/virsh.c:4642
 #, c-format
 msgid "Failed to attach device from %s"
 msgstr "Nepodařilo se připojit zařízení z %s"
 
-#: src/virsh.c:4757
+#: src/virsh.c:4646
 msgid "Device attached successfully\n"
 msgstr ""
 
-#: src/virsh.c:4770
+#: src/virsh.c:4658
 msgid "detach device from an XML file"
 msgstr "odpojit zařízení z XML souboru"
 
-#: src/virsh.c:4771
+#: src/virsh.c:4659
 msgid "Detach device from an XML <file>"
 msgstr "Odpojit zařízení z XML <souboru>."
 
-#: src/virsh.c:4798
+#: src/virsh.c:4686
 msgid "detach-device: Missing <file> option"
 msgstr ""
 
-#: src/virsh.c:4812
+#: src/virsh.c:4700
 #, c-format
 msgid "Failed to detach device from %s"
 msgstr "Nepodařilo se odpojit zařízení z %s"
 
-#: src/virsh.c:4816
+#: src/virsh.c:4704
 msgid "Device detached successfully\n"
 msgstr ""
 
-#: src/virsh.c:4829
+#: src/virsh.c:4716
 msgid "attach network interface"
 msgstr "připojit síťové rozhraní"
 
-#: src/virsh.c:4830
+#: src/virsh.c:4717
 msgid "Attach new network interface."
 msgstr "Připojit nové síťové rozhraní."
 
-#: src/virsh.c:4836 src/virsh.c:4953
+#: src/virsh.c:4723 src/virsh.c:4839
 msgid "network interface type"
 msgstr "Druh síťového rozhraní"
 
-#: src/virsh.c:4837
+#: src/virsh.c:4724
 msgid "source of network interface"
 msgstr "zdroj síťového rozhraní"
 
-#: src/virsh.c:4838
+#: src/virsh.c:4725
 msgid "target network name"
 msgstr "název cílové sítě"
 
-#: src/virsh.c:4839 src/virsh.c:4954
+#: src/virsh.c:4726 src/virsh.c:4840
 #, fuzzy
 msgid "MAC address"
 msgstr "MAC adresar"
 
-#: src/virsh.c:4840
+#: src/virsh.c:4727
 msgid "script used to bridge network interface"
 msgstr "skript použitý k přemostění síťového rozhraní"
 
-#: src/virsh.c:4872
+#: src/virsh.c:4759
 #, c-format
 msgid "No support %s in command 'attach-interface'"
 msgstr "Nepodporovaný %s v příkazu 'attach-interface'"
 
-#: src/virsh.c:4928
+#: src/virsh.c:4815
 msgid "Interface attached successfully\n"
 msgstr ""
 
-#: src/virsh.c:4946
+#: src/virsh.c:4832
 msgid "detach network interface"
 msgstr "odpojit síťové rozhraní"
 
-#: src/virsh.c:4947
+#: src/virsh.c:4833
 msgid "Detach network interface."
 msgstr "Odpojit síťové rozhraní."
 
-#: src/virsh.c:4992 src/virsh.c:4997
+#: src/virsh.c:4878 src/virsh.c:4883
 msgid "Failed to get interface information"
 msgstr "Nepodařilo se získat informace o rozhraní"
 
-#: src/virsh.c:5005
+#: src/virsh.c:4891
 #, c-format
 msgid "No found interface whose type is %s"
 msgstr "Nenalezeno žádné rozhraní typu %s"
 
-#: src/virsh.c:5027
+#: src/virsh.c:4913
 #, c-format
 msgid "No found interface whose MAC address is %s"
 msgstr "Nenalezeno žádné rozhraní s MAC adresou %s"
 
-#: src/virsh.c:5033 src/virsh.c:5311
+#: src/virsh.c:4919 src/virsh.c:5195
 msgid "Failed to allocate memory"
 msgstr "Nepodařilo se alokovat paměť"
 
-#: src/virsh.c:5038 src/virsh.c:5316
+#: src/virsh.c:4924 src/virsh.c:5200
 msgid "Failed to create XML"
 msgstr "Nepodařilo se vytvořit XML"
 
-#: src/virsh.c:5046
+#: src/virsh.c:4932
 msgid "Interface detached successfully\n"
 msgstr ""
 
-#: src/virsh.c:5067
+#: src/virsh.c:4952
 msgid "attach disk device"
 msgstr "připojit diskové zařízení"
 
-#: src/virsh.c:5068
+#: src/virsh.c:4953
 msgid "Attach new disk device."
 msgstr "Připojit nové diskové zařízení"
 
-#: src/virsh.c:5074
+#: src/virsh.c:4959
 msgid "source of disk device"
 msgstr "zdroj diskového zařízení"
 
-#: src/virsh.c:5075 src/virsh.c:5239
+#: src/virsh.c:4960 src/virsh.c:5123
 msgid "target of disk device"
 msgstr "cíl diskového zařízení"
 
-#: src/virsh.c:5076
+#: src/virsh.c:4961
 msgid "driver of disk device"
 msgstr "ovladač diskového zařízení"
 
-#: src/virsh.c:5077
+#: src/virsh.c:4962
 msgid "subdriver of disk device"
 msgstr "sub-ovladač diskového zařízení"
 
-#: src/virsh.c:5078
+#: src/virsh.c:4963
 msgid "target device type"
 msgstr "druh cílového zařízení"
 
-#: src/virsh.c:5079
+#: src/virsh.c:4964
 msgid "mode of device reading and writing"
 msgstr "režim čtení a zápisu na zařízení"
 
-#: src/virsh.c:5110 src/virsh.c:5119 src/virsh.c:5126
+#: src/virsh.c:4995 src/virsh.c:5004 src/virsh.c:5011
 #, c-format
 msgid "No support %s in command 'attach-disk'"
 msgstr "Nepodporovaný %s v příkazu 'attach-disk'"
 
-#: src/virsh.c:5215
+#: src/virsh.c:5100
 msgid "Disk attached successfully\n"
 msgstr ""
 
-#: src/virsh.c:5232
+#: src/virsh.c:5116
 msgid "detach disk device"
 msgstr "odpojit diskové zařízení"
 
-#: src/virsh.c:5233
+#: src/virsh.c:5117
 msgid "Detach disk device."
 msgstr "Odpojit diskové zařízení."
 
-#: src/virsh.c:5274 src/virsh.c:5279 src/virsh.c:5286
+#: src/virsh.c:5158 src/virsh.c:5163 src/virsh.c:5170
 msgid "Failed to get disk information"
 msgstr "Nepodařilo se získat informace o disku"
 
-#: src/virsh.c:5305
+#: src/virsh.c:5189
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr "Nenalezen disk s cílem %s"
 
-#: src/virsh.c:5324
+#: src/virsh.c:5208
 msgid "Disk detached successfully\n"
 msgstr ""
 
-#: src/virsh.c:5351
+#: src/virsh.c:5235
 #, fuzzy, c-format
 msgid "malloc: failed to allocate temporary file name: %s"
 msgstr "nepodařilo se alokovat uzel"
 
-#: src/virsh.c:5362
+#: src/virsh.c:5246
 #, fuzzy, c-format
 msgid "mkstemp: failed to create temporary file: %s"
 msgstr "%s: nepodařilo se zapisovat do souboru záznamu: %s"
 
-#: src/virsh.c:5369
+#: src/virsh.c:5253
 #, fuzzy, c-format
 msgid "write: %s: failed to write to temporary file: %s"
 msgstr "%s: nepodařilo se zapisovat do souboru záznamu: %s"
 
-#: src/virsh.c:5378
+#: src/virsh.c:5262
 #, fuzzy, c-format
 msgid "close: %s: failed to write or close temporary file: %s"
 msgstr "%s: nepodařilo se zapisovat do souboru záznamu: %s"
 
-#: src/virsh.c:5408
+#: src/virsh.c:5292
 #, c-format
 msgid ""
 "%s: $EDITOR environment variable contains shell meta or other unacceptable "
 "characters"
 msgstr ""
 
-#: src/virsh.c:5415
+#: src/virsh.c:5299
 #, c-format
 msgid ""
 "%s: temporary filename contains shell meta or other unacceptable characters "
 "(is $TMPDIR wrong?)"
 msgstr ""
 
-#: src/virsh.c:5422
+#: src/virsh.c:5306
 #, fuzzy, c-format
-msgid "asprintf: could not create editing command: %s"
+msgid "virAsprintf: could not create editing command: %s"
 msgstr "Nepodařilo se vytvořit neaktivní doménu %s\n"
 
-#: src/virsh.c:5430
+#: src/virsh.c:5314
 #, fuzzy, c-format
 msgid "%s: edit command failed: %s"
 msgstr "%s: nepodařilo se zapisovat do souboru záznamu: %s"
 
-#: src/virsh.c:5436
+#: src/virsh.c:5320
 #, c-format
 msgid "%s: command exited with non-zero status"
 msgstr ""
 
-#: src/virsh.c:5451
+#: src/virsh.c:5335
 #, fuzzy, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "%s: nepodařilo se zapisovat do souboru záznamu: %s"
 
-#: src/virsh.c:5463
+#: src/virsh.c:5346
 #, fuzzy
 msgid "edit XML configuration for a domain"
 msgstr "Oddefinovat nastavení neaktivní domény."
 
-#: src/virsh.c:5464
+#: src/virsh.c:5347
 #, fuzzy
 msgid "Edit the XML configuration for a domain."
 msgstr "Oddefinovat nastavení neaktivní domény."
 
-#: src/virsh.c:5514
+#: src/virsh.c:5397
 #, c-format
 msgid "Domain %s XML configuration not changed.\n"
 msgstr ""
 
-#: src/virsh.c:5530
+#: src/virsh.c:5413
 msgid "ERROR: the XML configuration was changed by another user"
 msgstr ""
 
-#: src/virsh.c:5540
+#: src/virsh.c:5423
 #, fuzzy, c-format
 msgid "Domain %s XML configuration edited.\n"
 msgstr "nepodařilo se načíst konfigurační soubor"
 
-#: src/virsh.c:5566
+#: src/virsh.c:5448
 #, fuzzy
 msgid "edit XML configuration for a network"
 msgstr "Oddefinovat nastavení neaktivní sítě."
 
-#: src/virsh.c:5567
+#: src/virsh.c:5449
 #, fuzzy
 msgid "Edit the XML configuration for a network."
 msgstr "Oddefinovat nastavení neaktivní sítě."
 
-#: src/virsh.c:5584
+#: src/virsh.c:5465
 #, fuzzy
 msgid "edit XML configuration for a storage pool"
 msgstr "Oddefinovat nastavení neaktivní domény."
 
-#: src/virsh.c:5585
+#: src/virsh.c:5466
 #, fuzzy
 msgid "Edit the XML configuration for a storage pool."
 msgstr "Oddefinovat nastavení neaktivní domény."
 
-#: src/virsh.c:5602
+#: src/virsh.c:5482
 msgid "quit this interactive terminal"
 msgstr "ukončit tento interaktivní terminál"
 
-#: src/virsh.c:5783
+#: src/virsh.c:5664
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "příkaz '%s' vyžaduje volbu <%s>"
 
-#: src/virsh.c:5784
+#: src/virsh.c:5665
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "příkaz '%s' vyžaduje volbu --%s"
 
-#: src/virsh.c:5811
+#: src/virsh.c:5692
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "příkaz '%s' neexistuje"
 
-#: src/virsh.c:5819
+#: src/virsh.c:5699
 msgid "  NAME\n"
 msgstr "  JMÉNO\n"
 
-#: src/virsh.c:5823
+#: src/virsh.c:5702
 msgid ""
 "\n"
 "  SYNOPSIS\n"
@@ -6463,7 +6466,17 @@ msgstr ""
 "\n"
 "  SOUHRN\n"
 
-#: src/virsh.c:5830
+#: src/virsh.c:5711
+#, fuzzy, c-format
+msgid "[--%s <number>]"
+msgstr "--%s <číslo>"
+
+#: src/virsh.c:5713
+#, fuzzy, c-format
+msgid "[--%s <string>]"
+msgstr "--%s <řetězec>"
+
+#: src/virsh.c:5726
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -6471,7 +6484,7 @@ msgstr ""
 "\n"
 "  POPIS\n"
 
-#: src/virsh.c:5834
+#: src/virsh.c:5732
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -6479,55 +6492,60 @@ msgstr ""
 "\n"
 "  VOLBY\n"
 
-#: src/virsh.c:5841
+#: src/virsh.c:5737
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <číslo>"
 
-#: src/virsh.c:5843
+#: src/virsh.c:5739
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <řetězec>"
 
-#: src/virsh.c:5987
+#: src/virsh.c:5892
+#, c-format
+msgid "internal error: virsh %s: no %s VSH_OT_DATA option"
+msgstr ""
+
+#: src/virsh.c:5909
 msgid "undefined domain name or id"
 msgstr "nedefinované jméno nebo id domény"
 
-#: src/virsh.c:6019
+#: src/virsh.c:5941
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "nepodařilo se získat doménu '%s'"
 
-#: src/virsh.c:6032
+#: src/virsh.c:5957
 msgid "undefined network name"
 msgstr "nedefinovaný název sítě"
 
-#: src/virsh.c:6056
+#: src/virsh.c:5981
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "nepodařilo se získat síť '%s'"
 
-#: src/virsh.c:6069 src/virsh.c:6115
+#: src/virsh.c:5994 src/virsh.c:6040
 #, fuzzy
 msgid "undefined pool name"
 msgstr "nedefinovaný název sítě"
 
-#: src/virsh.c:6093
+#: src/virsh.c:6018
 #, fuzzy, c-format
 msgid "failed to get pool '%s'"
 msgstr "nepodařilo se získat doménu '%s'"
 
-#: src/virsh.c:6110
+#: src/virsh.c:6035
 #, fuzzy
 msgid "undefined vol name"
 msgstr "nedefinovaný název sítě"
 
-#: src/virsh.c:6146
+#: src/virsh.c:6071
 #, fuzzy, c-format
 msgid "failed to get vol '%s'"
 msgstr "nepodařilo se získat doménu '%s'"
 
-#: src/virsh.c:6177
+#: src/virsh.c:6102
 #, c-format
 msgid ""
 "\n"
@@ -6538,130 +6556,130 @@ msgstr ""
 "(Čas: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:6251
+#: src/virsh.c:6176
 msgid "missing \""
 msgstr "chybí \""
 
-#: src/virsh.c:6312
+#: src/virsh.c:6237
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "neočekávaný symbol (příkaz): '%s'"
 
-#: src/virsh.c:6317
+#: src/virsh.c:6242
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "neznámý příkaz '%s'"
 
-#: src/virsh.c:6324
+#: src/virsh.c:6249
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "příkaz '%s' nepodporuje volbu --%s"
 
-#: src/virsh.c:6339
+#: src/virsh.c:6264
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "očekávaná syntaxe: --%s <%s>"
 
-#: src/virsh.c:6342
+#: src/virsh.c:6267
 msgid "number"
 msgstr "číslo"
 
-#: src/virsh.c:6342
+#: src/virsh.c:6267
 msgid "string"
 msgstr "řetězec"
 
-#: src/virsh.c:6348
+#: src/virsh.c:6273
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "neočekávaná data '%s'"
 
-#: src/virsh.c:6370
+#: src/virsh.c:6295
 msgid "OPTION"
 msgstr "VOLBA"
 
-#: src/virsh.c:6370
+#: src/virsh.c:6295
 msgid "DATA"
 msgstr "DATA"
 
-#: src/virsh.c:6421 src/virsh.c:6443
+#: src/virsh.c:6346 src/virsh.c:6368
 msgid "idle"
 msgstr ""
 
-#: src/virsh.c:6423
+#: src/virsh.c:6348
 msgid "paused"
 msgstr "pozastaveno"
 
-#: src/virsh.c:6425
+#: src/virsh.c:6350
 msgid "in shutdown"
 msgstr "vypíná se"
 
-#: src/virsh.c:6427
+#: src/virsh.c:6352
 msgid "shut off"
 msgstr "vypnuto"
 
-#: src/virsh.c:6429
+#: src/virsh.c:6354
 msgid "crashed"
 msgstr "pád"
 
-#: src/virsh.c:6441
+#: src/virsh.c:6366
 msgid "offline"
 msgstr "offline"
 
-#: src/virsh.c:6460
+#: src/virsh.c:6385
 msgid "no valid connection"
 msgstr "žádné platné spojení"
 
-#: src/virsh.c:6507
+#: src/virsh.c:6432
 #, c-format
 msgid "%s: error: "
 msgstr "%s: chyba:"
 
-#: src/virsh.c:6509
+#: src/virsh.c:6434
 msgid "error: "
 msgstr "chyba:"
 
-#: src/virsh.c:6531 src/virsh.c:6543 src/virsh.c:6556
+#: src/virsh.c:6456 src/virsh.c:6468 src/virsh.c:6481
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: nepodařilo se alokovat %d bajtů"
 
-#: src/virsh.c:6570
+#: src/virsh.c:6495
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: nepodařilo se alokovat %lu bajtů"
 
-#: src/virsh.c:6599
+#: src/virsh.c:6524
 msgid "failed to connect to the hypervisor"
 msgstr "nepodařilo se připojit se k hypervizoru"
 
-#: src/virsh.c:6631
+#: src/virsh.c:6556
 msgid "failed to get the log file information"
 msgstr "nepodařilo se získat informace z log souboru"
 
-#: src/virsh.c:6636
+#: src/virsh.c:6561
 msgid "the log path is not a file"
 msgstr "cesta k log souboru není souborem"
 
-#: src/virsh.c:6643
+#: src/virsh.c:6568
 msgid "failed to open the log file. check the log file path"
 msgstr ""
 "Nepodařilo se otevřít logovací soubor. Zkontrolujte cestu k log souboru"
 
-#: src/virsh.c:6711
+#: src/virsh.c:6636
 msgid "failed to write the log file"
 msgstr "nepodařilo se zapsat do log souboru"
 
-#: src/virsh.c:6726
+#: src/virsh.c:6651
 #, c-format
 msgid "%s: failed to write log file: %s"
 msgstr "%s: nepodařilo se zapisovat do souboru záznamu: %s"
 
-#: src/virsh.c:6903
+#: src/virsh.c:6828
 #, fuzzy
 msgid "failed to disconnect from the hypervisor"
 msgstr "Nepodařilo se odpojit od hypervizora"
 
-#: src/virsh.c:6921
+#: src/virsh.c:6843
 #, c-format
 msgid ""
 "\n"
@@ -6694,7 +6712,7 @@ msgstr ""
 "\n"
 "  příkazy (neinteraktivní režim):\n"
 
-#: src/virsh.c:6939
+#: src/virsh.c:6861
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
@@ -6704,12 +6722,17 @@ msgstr ""
 "  (napište help <příkaz> pro detaily o daném příkazu)\n"
 "\n"
 
-#: src/virsh.c:7035
+#: src/virsh.c:6954
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "neznámá volba '-%c'. Podívejte se na --help."
 
-#: src/virsh.c:7121
+#: src/virsh.c:6962
+#, c-format
+msgid "extra argument '%s'. See --help."
+msgstr ""
+
+#: src/virsh.c:7044
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -6718,7 +6741,7 @@ msgstr ""
 "Vítejte na %s, interaktivním virtualizačním terminálu.\n"
 "\n"
 
-#: src/virsh.c:7124
+#: src/virsh.c:7047
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -6728,494 +6751,509 @@ msgstr ""
 "       'quit' pro skončení\n"
 "\n"
 
-#: src/virterror.c:243
+#: src/virterror.c:335
 msgid "warning"
 msgstr "varování"
 
-#: src/virterror.c:246
+#: src/virterror.c:338
 msgid "error"
 msgstr "chyba"
 
-#: src/virterror.c:389
+#: src/virterror.c:408
 msgid "No error message provided"
 msgstr "Chybová zpráva nebyla zadána"
 
-#: src/virterror.c:444
+#: src/virterror.c:470
 #, c-format
 msgid "internal error %s"
 msgstr "vnitřní chyba %s"
 
-#: src/virterror.c:446
+#: src/virterror.c:472
 msgid "internal error"
 msgstr "vnitřní chyba"
 
-#: src/virterror.c:453
+#: src/virterror.c:479
 msgid "this function is not supported by the hypervisor"
 msgstr "tato funkce není hypervizorem podporována"
 
-#: src/virterror.c:455
+#: src/virterror.c:481
 #, c-format
 msgid "this function is not supported by the hypervisor: %s"
 msgstr "tato funkce - %s - není hypervizorem podporována"
 
-#: src/virterror.c:459
+#: src/virterror.c:485
 msgid "could not connect to hypervisor"
 msgstr "nepodařilo se spojit s hypervizorem"
 
-#: src/virterror.c:461
+#: src/virterror.c:487
 #, c-format
 msgid "could not connect to %s"
 msgstr "nepodařilo se připojit k %s"
 
-#: src/virterror.c:465
+#: src/virterror.c:491
 msgid "invalid connection pointer in"
 msgstr "neplatný ukazatel spojení v"
 
-#: src/virterror.c:467
+#: src/virterror.c:493
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "neplatný ukazatel spojení v %s"
 
-#: src/virterror.c:471
+#: src/virterror.c:497
 msgid "invalid domain pointer in"
 msgstr "neplatný doménový ukazatel v"
 
-#: src/virterror.c:473
+#: src/virterror.c:499
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "neplatný doménový ukazatel v %s"
 
-#: src/virterror.c:477
+#: src/virterror.c:503
 msgid "invalid argument in"
 msgstr "neplatný parametr v"
 
-#: src/virterror.c:479
+#: src/virterror.c:505
 #, c-format
 msgid "invalid argument in %s"
 msgstr "neplatný parametr v %s"
 
-#: src/virterror.c:483
+#: src/virterror.c:509
 #, c-format
 msgid "operation failed: %s"
 msgstr "selhala operace %s"
 
-#: src/virterror.c:485
+#: src/virterror.c:511
 msgid "operation failed"
 msgstr "selhala operace"
 
-#: src/virterror.c:489
+#: src/virterror.c:515
 #, c-format
 msgid "GET operation failed: %s"
 msgstr "operace GET selhala: %s"
 
-#: src/virterror.c:491
+#: src/virterror.c:517
 msgid "GET operation failed"
 msgstr "operace GET selhala"
 
-#: src/virterror.c:495
+#: src/virterror.c:521
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "operace POST selhala: %s"
 
-#: src/virterror.c:497
+#: src/virterror.c:523
 msgid "POST operation failed"
 msgstr "operace POST selhala"
 
-#: src/virterror.c:500
+#: src/virterror.c:526
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr "obdržel jsem neznámý chybový kód HTTP %d"
 
-#: src/virterror.c:504
+#: src/virterror.c:530
 #, c-format
 msgid "unknown host %s"
 msgstr "neznámý hostitel %s"
 
-#: src/virterror.c:506
+#: src/virterror.c:532
 msgid "unknown host"
 msgstr "neznámý hostitel"
 
-#: src/virterror.c:510
+#: src/virterror.c:536
 #, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr "selhala serializace S-Expr: %s"
 
-#: src/virterror.c:512
+#: src/virterror.c:538
 msgid "failed to serialize S-Expr"
 msgstr "selhala serializace S-Expr"
 
-#: src/virterror.c:516
+#: src/virterror.c:542
 msgid "could not use Xen hypervisor entry"
 msgstr "nelze použít položku Xen hypervizoru"
 
-#: src/virterror.c:518
+#: src/virterror.c:544
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "nelze použít položku Xen hypervizoru %s"
 
-#: src/virterror.c:522
+#: src/virterror.c:548
 msgid "could not connect to Xen Store"
 msgstr "nelze se připojit ke Xen Store"
 
-#: src/virterror.c:524
+#: src/virterror.c:550
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr "nelze se připojit ke Xen Store %s"
 
-#: src/virterror.c:527
+#: src/virterror.c:553
 #, fuzzy, c-format
 msgid "failed Xen syscall %s"
 msgstr "selhalo systémové volání Xenu %s %d"
 
-#: src/virterror.c:531
+#: src/virterror.c:557
 msgid "unknown OS type"
 msgstr "neznámý druh OS"
 
-#: src/virterror.c:533
+#: src/virterror.c:559
 #, c-format
 msgid "unknown OS type %s"
 msgstr "neznámý druh OS %s"
 
-#: src/virterror.c:536
+#: src/virterror.c:562
 msgid "missing kernel information"
 msgstr "schází informace o kernelu"
 
-#: src/virterror.c:540
+#: src/virterror.c:566
 msgid "missing root device information"
 msgstr "chybí informace o kořenovém zařízení"
 
-#: src/virterror.c:542
+#: src/virterror.c:568
 #, c-format
 msgid "missing root device information in %s"
 msgstr "chybí informace o kořenovém zařízení v %s"
 
-#: src/virterror.c:546
+#: src/virterror.c:572
 msgid "missing source information for device"
 msgstr "chybí zdrojové informace pro zařízení"
 
-#: src/virterror.c:548
+#: src/virterror.c:574
 #, c-format
 msgid "missing source information for device %s"
 msgstr "chybí zdrojové informace pro zařízení %s"
 
-#: src/virterror.c:552
+#: src/virterror.c:578
 msgid "missing target information for device"
 msgstr "chybí cílové informace pro zařízení"
 
-#: src/virterror.c:554
+#: src/virterror.c:580
 #, c-format
 msgid "missing target information for device %s"
 msgstr "chybí cílové informace pro zařízení %s"
 
-#: src/virterror.c:558
+#: src/virterror.c:584
 msgid "missing domain name information"
 msgstr "chybí informace o doménovém jménu"
 
-#: src/virterror.c:560
+#: src/virterror.c:586
 #, c-format
 msgid "missing domain name information in %s"
 msgstr "chybí informace o doménovém jménu v %s"
 
-#: src/virterror.c:564
+#: src/virterror.c:590
 msgid "missing operating system information"
 msgstr "chybí informace o operačním systému"
 
-#: src/virterror.c:566
+#: src/virterror.c:592
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "chybí informace o operačním systému pro %s"
 
-#: src/virterror.c:570
+#: src/virterror.c:596
 msgid "missing devices information"
 msgstr "chybí informace o zařízení"
 
-#: src/virterror.c:572
+#: src/virterror.c:598
 #, c-format
 msgid "missing devices information for %s"
 msgstr "chybí informace o zařízení pro %s"
 
-#: src/virterror.c:576
+#: src/virterror.c:602
 msgid "too many drivers registered"
 msgstr "registrováno příliš mnoho ovladačů"
 
-#: src/virterror.c:578
+#: src/virterror.c:604
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "registrováno příliš mnoho ovladačů v %s"
 
-#: src/virterror.c:582
+#: src/virterror.c:608
 msgid "library call failed, possibly not supported"
 msgstr "volání knihovny selhalo, pravděpodobně není podporováno"
 
-#: src/virterror.c:584
+#: src/virterror.c:610
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr "volání knihovny %s selhalo, pravděpodobně není podporováno"
 
-#: src/virterror.c:588
+#: src/virterror.c:614
 msgid "XML description not well formed or invalid"
 msgstr "XML popis není správně strukturován nebo je  neplatný"
 
-#: src/virterror.c:590
+#: src/virterror.c:616
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
 msgstr "XML popis pro %s není správně strukturován nebo je neplatný"
 
-#: src/virterror.c:594
+#: src/virterror.c:620
 msgid "this domain exists already"
 msgstr "tato doména již existuje"
 
-#: src/virterror.c:596
+#: src/virterror.c:622
 #, c-format
 msgid "domain %s exists already"
 msgstr "doména %s již existuje"
 
-#: src/virterror.c:600
+#: src/virterror.c:626
 msgid "operation forbidden for read only access"
 msgstr "operace není v režimu pouze pro čtení povolena"
 
-#: src/virterror.c:602
+#: src/virterror.c:628
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr "operace %s není v režimu pouze pro čtení povolena"
 
-#: src/virterror.c:606
+#: src/virterror.c:632
 msgid "failed to open configuration file for reading"
 msgstr "nepodařilo se otevřít konfigurační soubor pro čtení"
 
-#: src/virterror.c:608
+#: src/virterror.c:634
 #, c-format
 msgid "failed to open %s for reading"
 msgstr "nepodařilo se otevřít %s pro čtení"
 
-#: src/virterror.c:612
+#: src/virterror.c:638
 msgid "failed to read configuration file"
 msgstr "nepodařilo se načíst konfigurační soubor"
 
-#: src/virterror.c:614
+#: src/virterror.c:640
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "nepodařilo se načíst konfigurační soubor %s"
 
-#: src/virterror.c:618
+#: src/virterror.c:644
 msgid "failed to parse configuration file"
 msgstr "chyba při parsování konfigurační souboru"
 
-#: src/virterror.c:620
+#: src/virterror.c:646
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "chyba při parsování konfigurační souboru %s"
 
-#: src/virterror.c:624
+#: src/virterror.c:650
 msgid "configuration file syntax error"
 msgstr "chybná syntaxe konfiguračního souboru"
 
-#: src/virterror.c:626
+#: src/virterror.c:652
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "chybná syntaxe konfiguračního souboru: %s"
 
-#: src/virterror.c:630
+#: src/virterror.c:656
 msgid "failed to write configuration file"
 msgstr "nepodařilo se zapsat konfigurační soubor"
 
-#: src/virterror.c:632
+#: src/virterror.c:658
 #, c-format
 msgid "failed to write configuration file: %s"
 msgstr "nepodařilo se zapsat konfigurační soubor: %s"
 
-#: src/virterror.c:636
+#: src/virterror.c:662
 msgid "parser error"
 msgstr "chyba parseru"
 
-#: src/virterror.c:642
+#: src/virterror.c:668
 msgid "invalid network pointer in"
 msgstr "neplatný síťový ukazatel v"
 
-#: src/virterror.c:644
+#: src/virterror.c:670
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "neplatný síťový ukazatel v %s"
 
-#: src/virterror.c:648
+#: src/virterror.c:674
 msgid "this network exists already"
 msgstr "tato síť již existuje"
 
-#: src/virterror.c:650
+#: src/virterror.c:676
 #, c-format
 msgid "network %s exists already"
 msgstr "síť %s již existuje"
 
-#: src/virterror.c:654
+#: src/virterror.c:680
 msgid "system call error"
 msgstr "chyba systémového volání"
 
-#: src/virterror.c:660
+#: src/virterror.c:686
 msgid "RPC error"
 msgstr "chyba RPC"
 
-#: src/virterror.c:666
+#: src/virterror.c:692
 msgid "GNUTLS call error"
 msgstr "chyba volání GNUTLS"
 
-#: src/virterror.c:672
+#: src/virterror.c:698
 msgid "Failed to find the network"
 msgstr "Nepodařilo se najít síť"
 
-#: src/virterror.c:674
+#: src/virterror.c:700
 #, c-format
 msgid "Failed to find the network: %s"
 msgstr "Nepodařilo se najít síť: %s"
 
-#: src/virterror.c:678
+#: src/virterror.c:704
 msgid "Domain not found"
 msgstr "Doména nebyla nalezena"
 
-#: src/virterror.c:680
+#: src/virterror.c:706
 #, c-format
 msgid "Domain not found: %s"
 msgstr "Doména nebyla nalezena: %s"
 
-#: src/virterror.c:684
+#: src/virterror.c:710
 msgid "Network not found"
 msgstr "Síť nebyla nalezena"
 
-#: src/virterror.c:686
+#: src/virterror.c:712
 #, c-format
 msgid "Network not found: %s"
 msgstr "Síť nebyla nalezena: %s"
 
-#: src/virterror.c:690
+#: src/virterror.c:716
 #, fuzzy
 msgid "invalid MAC address"
 msgstr "neplatná MAC adresa"
 
-#: src/virterror.c:692
+#: src/virterror.c:718
 #, fuzzy, c-format
 msgid "invalid MAC address: %s"
 msgstr "neplatná MAC adresa: %s"
 
-#: src/virterror.c:696
+#: src/virterror.c:722
 msgid "authentication failed"
 msgstr "autentizace selhala"
 
-#: src/virterror.c:698
+#: src/virterror.c:724
 #, c-format
 msgid "authentication failed: %s"
 msgstr "autentizace selhala: %s"
 
-#: src/virterror.c:702
+#: src/virterror.c:728
 #, fuzzy
 msgid "Storage pool not found"
 msgstr "Síť nebyla nalezena"
 
-#: src/virterror.c:704
+#: src/virterror.c:730
 #, fuzzy, c-format
 msgid "Storage pool not found: %s"
 msgstr "Síť nebyla nalezena: %s"
 
-#: src/virterror.c:708
+#: src/virterror.c:734
 #, fuzzy
 msgid "Storage volume not found"
 msgstr "Síť nebyla nalezena"
 
-#: src/virterror.c:710
+#: src/virterror.c:736
 #, fuzzy, c-format
 msgid "Storage volume not found: %s"
 msgstr "Síť nebyla nalezena: %s"
 
-#: src/virterror.c:714
+#: src/virterror.c:740
 #, fuzzy
 msgid "invalid storage pool pointer in"
 msgstr "neplatný síťový ukazatel v"
 
-#: src/virterror.c:716
+#: src/virterror.c:742
 #, fuzzy, c-format
 msgid "invalid storage pool pointer in %s"
 msgstr "neplatný síťový ukazatel v %s"
 
-#: src/virterror.c:720
+#: src/virterror.c:746
 #, fuzzy
 msgid "invalid storage volume pointer in"
 msgstr "neplatný síťový ukazatel v"
 
-#: src/virterror.c:722
+#: src/virterror.c:748
 #, fuzzy, c-format
 msgid "invalid storage volume pointer in %s"
 msgstr "neplatný síťový ukazatel v %s"
 
-#: src/virterror.c:726
+#: src/virterror.c:752
 #, fuzzy
 msgid "Failed to find a storage driver"
 msgstr "Nepodařilo se najít síť"
 
-#: src/virterror.c:728
+#: src/virterror.c:754
 #, fuzzy, c-format
 msgid "Failed to find a storage driver: %s"
 msgstr "Nepodařilo se najít síť: %s"
 
-#: src/virterror.c:732
+#: src/virterror.c:758
 #, fuzzy
 msgid "Failed to find a node driver"
 msgstr "Nepodařilo se najít síť"
 
-#: src/virterror.c:734
+#: src/virterror.c:760
 #, fuzzy, c-format
 msgid "Failed to find a node driver: %s"
 msgstr "Nepodařilo se najít síť: %s"
 
-#: src/virterror.c:738
+#: src/virterror.c:764
 #, fuzzy
 msgid "invalid node device pointer"
 msgstr "neplatný doménový ukazatel v"
 
-#: src/virterror.c:740
+#: src/virterror.c:766
 #, fuzzy, c-format
 msgid "invalid node device pointer in %s"
 msgstr "neplatný doménový ukazatel v %s"
 
-#: src/virterror.c:744
+#: src/virterror.c:770
 #, fuzzy
 msgid "Node device not found"
 msgstr "Doména nebyla nalezena"
 
-#: src/virterror.c:746
+#: src/virterror.c:772
 #, fuzzy, c-format
 msgid "Node device not found: %s"
 msgstr "Doména nebyla nalezena: %s"
 
-#: src/xen_inotify.c:152
+#: src/xen_inotify.c:131 src/xen_inotify.c:204
+#, c-format
+msgid "parsing uuid %s"
+msgstr ""
+
+#: src/xen_inotify.c:148
+#, c-format
+msgid "finding dom for %s"
+msgstr ""
+
+#: src/xen_inotify.c:157
 msgid "finding dom on config list"
 msgstr ""
 
-#: src/xen_inotify.c:221
+#: src/xen_inotify.c:238
 #, fuzzy
 msgid "Error looking up domain"
 msgstr "alokuji doménu"
 
-#: src/xen_inotify.c:228 src/xen_inotify.c:316 src/xen_inotify.c:322
+#: src/xen_inotify.c:245 src/xen_inotify.c:331 src/xen_inotify.c:338
 msgid "Error adding file to config cache"
 msgstr ""
 
-#: src/xen_inotify.c:271
+#: src/xen_inotify.c:287
 msgid "conn, or private data is NULL"
 msgstr ""
 
-#: src/xen_inotify.c:305 src/xen_inotify.c:328
+#: src/xen_inotify.c:327 src/xen_inotify.c:350
 msgid "looking up dom"
 msgstr ""
 
-#: src/xen_inotify.c:371
+#: src/xen_inotify.c:388
 #, fuzzy
 msgid "failed to allocate configInfoList"
 msgstr "nepodařilo se alokovat uzel"
 
-#: src/xen_inotify.c:394
+#: src/xen_inotify.c:411
 msgid "Error adding file to config list"
 msgstr ""
 
-#: src/xen_inotify.c:403
+#: src/xen_inotify.c:420
 msgid "initializing inotify"
+msgstr ""
+
+#: src/xen_inotify.c:431
+#, c-format
+msgid "adding watch on %s"
 msgstr ""
 
 #: src/xen_internal.c:1284
@@ -7645,17 +7683,17 @@ msgstr "nepodařilo se načíst konfigurační soubor %s"
 msgid "unknown device"
 msgstr "neznámý druh OS"
 
-#: src/xm_internal.c:2717
+#: src/xm_internal.c:2715
 #, fuzzy, c-format
 msgid "failed to check autostart link %s: %s"
 msgstr "Nepodařilo se získat stav bloků %s %s"
 
-#: src/xm_internal.c:2746
+#: src/xm_internal.c:2744
 #, fuzzy, c-format
 msgid "failed to create link %s: %s"
 msgstr "Nepodařilo se vytvořit doménu z %s"
 
-#: src/xm_internal.c:2754
+#: src/xm_internal.c:2752
 #, fuzzy, c-format
 msgid "failed to remove link %s: %s"
 msgstr "Nepodařilo se otevřít '%s': %s"
@@ -7684,60 +7722,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "allocate string array size %lu"
 msgstr "alokovat pole řetězců"
-
-#: src/xmlrpc.c:53
-#, fuzzy
-msgid "allocate value"
-msgstr "alokuji pole hodnot"
-
-#: src/xmlrpc.c:65
-msgid "copying node content"
-msgstr "kopíruji obsah uzlu"
-
-#: src/xmlrpc.c:162
-msgid "allocate value array"
-msgstr "alokuji pole hodnot"
-
-#: src/xmlrpc.c:185
-#, fuzzy
-msgid "allocate dict"
-msgstr "alokovat nový kontext"
-
-#: src/xmlrpc.c:196
-msgid "unexpected dict node"
-msgstr "neočekávaný příkazový (dict) uzel"
-
-#: src/xmlrpc.c:267
-msgid "unexpected value node"
-msgstr "neočekávaná hodnota uzlu"
-
-#: src/xmlrpc.c:427
-msgid "send request"
-msgstr "odeslat žádost"
-
-#: src/xmlrpc.c:433
-msgid "unexpected mime type"
-msgstr "neočekávaný typ MIME"
-
-#: src/xmlrpc.c:439
-msgid "allocate response"
-msgstr "alokovat odpověď"
-
-#: src/xmlrpc.c:446 src/xmlrpc.c:508
-msgid "read response"
-msgstr "načíst odpověď"
-
-#: src/xmlrpc.c:478
-msgid "allocate string array"
-msgstr "alokovat pole řetězců"
-
-#: src/xmlrpc.c:601
-msgid "parse server response failed"
-msgstr "selhalo parsování odpovědi serveru"
-
-#: src/xmlrpc.c:662
-msgid "allocate new context"
-msgstr "alokovat nový kontext"
 
 #: src/xs_internal.c:308
 msgid "failed to connect to Xen Store"
@@ -7770,10 +7754,79 @@ msgstr ""
 msgid "reallocating list"
 msgstr "alokuji doménu"
 
-#: src/xs_internal.c:1197 src/xs_internal.c:1281
+#: src/xs_internal.c:1197 src/xs_internal.c:1275
 #, fuzzy
 msgid "failed to allocate domids"
 msgstr "nepodařilo se alokovat uzel"
+
+#, fuzzy
+#~ msgid "domain not found"
+#~ msgstr "Doména nebyla nalezena"
+
+#, fuzzy
+#~ msgid "network not found"
+#~ msgstr "Síť nebyla nalezena"
+
+#, fuzzy
+#~ msgid "storage_pool not found"
+#~ msgstr "Síť nebyla nalezena"
+
+#, fuzzy
+#~ msgid "storage_vol not found"
+#~ msgstr "Síť nebyla nalezena"
+
+#, fuzzy
+#~ msgid "Invalid Client"
+#~ msgstr "neplatný parametr v"
+
+#, fuzzy
+#~ msgid "xdr_setpos failed"
+#~ msgstr "selhala operace"
+
+#, fuzzy
+#~ msgid "out of memory in asprintf\n"
+#~ msgstr "nedostatek paměti"
+
+#, fuzzy
+#~ msgid "allocate value"
+#~ msgstr "alokuji pole hodnot"
+
+#~ msgid "copying node content"
+#~ msgstr "kopíruji obsah uzlu"
+
+#~ msgid "allocate value array"
+#~ msgstr "alokuji pole hodnot"
+
+#, fuzzy
+#~ msgid "allocate dict"
+#~ msgstr "alokovat nový kontext"
+
+#~ msgid "unexpected dict node"
+#~ msgstr "neočekávaný příkazový (dict) uzel"
+
+#~ msgid "unexpected value node"
+#~ msgstr "neočekávaná hodnota uzlu"
+
+#~ msgid "send request"
+#~ msgstr "odeslat žádost"
+
+#~ msgid "unexpected mime type"
+#~ msgstr "neočekávaný typ MIME"
+
+#~ msgid "allocate response"
+#~ msgstr "alokovat odpověď"
+
+#~ msgid "read response"
+#~ msgstr "načíst odpověď"
+
+#~ msgid "allocate string array"
+#~ msgstr "alokovat pole řetězců"
+
+#~ msgid "parse server response failed"
+#~ msgstr "selhalo parsování odpovědi serveru"
+
+#~ msgid "allocate new context"
+#~ msgstr "alokovat nový kontext"
 
 #~ msgid "domain"
 #~ msgstr "doména"

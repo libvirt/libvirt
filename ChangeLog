@@ -1,3 +1,8 @@
+Tue Jan  6 09:46:43 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* po/*: updated polish and brazilian translations, regenerated
+	  files, pushed new pot to translators
+
 Tue Jan  6 09:42:34 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/storage_backend_fs.c: Make mntent.h specific to the FS storage
