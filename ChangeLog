@@ -1,3 +1,17 @@
+Tue Jan  6 17:52:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Misc windows / mingw portability fixes
+	* src/logging.c: Add include of unistd.h for close() prototype
+	* src/logging.h: Add a VIR_ prefix on logging macros to
+	avoid clash with Windows.h symbols for ERROR()
+	* tests/nodeinfotest.c: Annotate unused attribute
+	* src/test.c: Annotate unused attributes when missing
+	pthreads
+	* qemud/remote.c, qemud/qemud.c: Use VIR_ prefix on
+	logging macro calls
+	* qemud/remote_protocol.c, qemud/rpcgen_fix.pl: Add cast
+	to workaround odd portablexdr XDR_INLINE return type
+
 Tue Jan  6 18:44:34 CET 2009 Guido Günther <agx@sigxcpu.org>
 
 	add virKillProcess

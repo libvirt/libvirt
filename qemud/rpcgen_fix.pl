@@ -68,6 +68,7 @@ while (<>) {
 	# be ignored.  Correct both these mistakes.
 	@function =
 	    map { s/\bIXDR_PUT_((U_)?)LONG\b/(void)IXDR_PUT_$1INT32/; $_ }
+	    map { s/\bXDR_INLINE\b/(int32_t*)XDR_INLINE/; $_ }
 	    @function;
 
 	print (join ("", @function));

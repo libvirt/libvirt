@@ -30,48 +30,53 @@
  * defined at runtime of from the libvirt daemon configuration file
  */
 #ifdef ENABLE_DEBUG
-#define VIR_DEBUG(category, f, l, fmt,...)                             \
+#define VIR_DEBUG_INT(category, f, l, fmt,...)                             \
     virLogMessage(category, VIR_LOG_DEBUG, f, l, 0, fmt, __VA_ARGS__)
-#define VIR_INFO(category, f, l, fmt,...)                              \
+#define VIR_INFO_INT(category, f, l, fmt,...)                              \
     virLogMessage(category, VIR_LOG_INFO, f, l, 0, fmt, __VA_ARGS__)
-#define VIR_WARN(category, f, l, fmt,...)                              \
+#define VIR_WARN_INT(category, f, l, fmt,...)                              \
     virLogMessage(category, VIR_LOG_WARN, f, l, 0, fmt, __VA_ARGS__)
-#define VIR_ERROR(category, f, l, fmt,...)                             \
+#define VIR_ERROR_INT(category, f, l, fmt,...)                             \
     virLogMessage(category, VIR_LOG_ERROR, f, l, 0, fmt, __VA_ARGS__)
 #else
-#define VIR_DEBUG(category, f, l, fmt,...) \
+#define VIR_DEBUG_INT(category, f, l, fmt,...) \
     do { } while (0)
-#define VIR_INFO(category, f, l, fmt,...) \
+#define VIR_INFO_INT(category, f, l, fmt,...) \
     do { } while (0)
-#define VIR_WARN(category, f, l, fmt,...) \
+#define VIR_WARN_INT(category, f, l, fmt,...) \
     do { } while (0)
-#define VIR_ERROR(category, f, l, fmt,...) \
+#define VIR_ERROR_INT(category, f, l, fmt,...) \
     do { } while (0)
-#define VIR_INFO(category, fmt,...) \
+#define VIR_INFO_INT(category, fmt,...) \
     do { } while (0)
-#define VIR_WARN(category, fmt,...) \
+#define VIR_WARN_INT(category, fmt,...) \
     do { } while (0)
-#define VIR_ERROR(category, fmt,...) \
+#define VIR_ERROR_INT(category, fmt,...) \
     do { } while (0)
 #endif /* !ENABLE_DEBUG */
 
-#define DEBUG(fmt,...)                                                  \
-        VIR_DEBUG("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
-#define DEBUG0(msg)                                                     \
-        VIR_DEBUG("file." __FILE__, __func__, __LINE__, "%s", msg)
-#define INFO(fmt,...)                                                   \
-        VIR_INFO("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
-#define INFO0(msg)                                                      \
-        VIR_INFO("file." __FILE__, __func__, __LINE__, "%s", msg)
-#define WARN(fmt,...)                                                   \
-        VIR_WARN("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
-#define WARN0(msg)                                                      \
-        VIR_WARN("file." __FILE__, __func__, __LINE__, "%s", msg)
-#define ERROR(fmt,...)                                                  \
-        VIR_ERROR("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
-#define ERROR0(msg)                                                     \
-        VIR_ERROR("file." __FILE__, __func__, __LINE__, "%s", msg)
+#define VIR_DEBUG(fmt,...)                                                  \
+        VIR_DEBUG_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
+#define VIR_DEBUG0(msg)                                                     \
+        VIR_DEBUG_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
+#define VIR_INFO(fmt,...)                                                   \
+        VIR_INFO_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
+#define VIR_INFO0(msg)                                                      \
+        VIR_INFO_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
+#define VIR_WARN(fmt,...)                                                   \
+        VIR_WARN_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
+#define VIR_WARN0(msg)                                                      \
+        VIR_WARN_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
+#define VIR_ERROR(fmt,...)                                                  \
+        VIR_ERROR_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
+#define VIR_ERROR0(msg)                                                     \
+        VIR_ERROR_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
 
+/* Legacy compat */
+#define DEBUG(fmt,...)                                                  \
+        VIR_DEBUG_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
+#define DEBUG0(msg)                                                     \
+        VIR_DEBUG_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
 
 /*
  * To be made public

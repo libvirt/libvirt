@@ -332,7 +332,7 @@ xdr_remote_node_get_info_ret (XDR *xdrs, remote_node_get_info_ret *objp)
                          return FALSE;
                  if (!xdr_quad_t (xdrs, &objp->memory))
                          return FALSE;
-                buf = XDR_INLINE (xdrs, 6 * BYTES_PER_XDR_UNIT);
+                buf = (int32_t*)XDR_INLINE (xdrs, 6 * BYTES_PER_XDR_UNIT);
                 if (buf == NULL) {
                          if (!xdr_int (xdrs, &objp->cpus))
                                  return FALSE;
@@ -361,7 +361,7 @@ xdr_remote_node_get_info_ret (XDR *xdrs, remote_node_get_info_ret *objp)
                          return FALSE;
                  if (!xdr_quad_t (xdrs, &objp->memory))
                          return FALSE;
-                buf = XDR_INLINE (xdrs, 6 * BYTES_PER_XDR_UNIT);
+                buf = (int32_t*)XDR_INLINE (xdrs, 6 * BYTES_PER_XDR_UNIT);
                 if (buf == NULL) {
                          if (!xdr_int (xdrs, &objp->cpus))
                                  return FALSE;

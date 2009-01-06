@@ -2542,7 +2542,7 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
     REMOTE_DEBUG("Initialize SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
         client->saslconn != NULL) {
-        ERROR0(_("client tried invalid SASL init request"));
+        VIR_ERROR0(_("client tried invalid SASL init request"));
         goto authfail;
     }
 
@@ -2582,8 +2582,8 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
     VIR_FREE(localAddr);
     VIR_FREE(remoteAddr);
     if (err != SASL_OK) {
-        ERROR(_("sasl context setup failed %d (%s)"),
-                 err, sasl_errstring(err, NULL, NULL));
+        VIR_ERROR(_("sasl context setup failed %d (%s)"),
+                  err, sasl_errstring(err, NULL, NULL));
         client->saslconn = NULL;
         goto authfail;
     }
@@ -2595,7 +2595,7 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
 
         cipher = gnutls_cipher_get(client->tlssession);
         if (!(ssf = (sasl_ssf_t)gnutls_cipher_get_key_size(cipher))) {
-            ERROR0(_("cannot TLS get cipher size"));
+            VIR_ERROR0(_("cannot TLS get cipher size"));
             sasl_dispose(&client->saslconn);
             client->saslconn = NULL;
             goto authfail;
@@ -2604,8 +2604,8 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
 
         err = sasl_setprop(client->saslconn, SASL_SSF_EXTERNAL, &ssf);
         if (err != SASL_OK) {
-            ERROR(_("cannot set SASL external SSF %d (%s)"),
-                     err, sasl_errstring(err, NULL, NULL));
+            VIR_ERROR(_("cannot set SASL external SSF %d (%s)"),
+                      err, sasl_errstring(err, NULL, NULL));
             sasl_dispose(&client->saslconn);
             client->saslconn = NULL;
             goto authfail;
@@ -2632,8 +2632,8 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
 
     err = sasl_setprop(client->saslconn, SASL_SEC_PROPS, &secprops);
     if (err != SASL_OK) {
-        ERROR(_("cannot set SASL security props %d (%s)"),
-                 err, sasl_errstring(err, NULL, NULL));
+        VIR_ERROR(_("cannot set SASL security props %d (%s)"),
+                  err, sasl_errstring(err, NULL, NULL));
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
         goto authfail;
@@ -2648,8 +2648,8 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
                         NULL,
                         NULL);
     if (err != SASL_OK) {
-        ERROR(_("cannot list SASL mechanisms %d (%s)"),
-                 err, sasl_errdetail(client->saslconn));
+        VIR_ERROR(_("cannot list SASL mechanisms %d (%s)"),
+                  err, sasl_errdetail(client->saslconn));
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
         goto authfail;
@@ -2657,7 +2657,7 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
     REMOTE_DEBUG("Available mechanisms for client: '%s'", mechlist);
     ret->mechlist = strdup(mechlist);
     if (!ret->mechlist) {
-        ERROR0(_("cannot allocate mechlist"));
+        VIR_ERROR0(_("cannot allocate mechlist"));
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
         goto authfail;
@@ -2688,8 +2688,8 @@ remoteSASLCheckSSF (struct qemud_client *client,
 
     err = sasl_getprop(client->saslconn, SASL_SSF, &val);
     if (err != SASL_OK) {
-        ERROR(_("cannot query SASL ssf on connection %d (%s)"),
-                 err, sasl_errstring(err, NULL, NULL));
+        VIR_ERROR(_("cannot query SASL ssf on connection %d (%s)"),
+                  err, sasl_errstring(err, NULL, NULL));
         remoteDispatchAuthError(rerr);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
@@ -2698,7 +2698,7 @@ remoteSASLCheckSSF (struct qemud_client *client,
     ssf = *(const int *)val;
     REMOTE_DEBUG("negotiated an SSF of %d", ssf);
     if (ssf < 56) { /* 56 is good for Kerberos */
-        ERROR(_("negotiated SSF %d was not strong enough"), ssf);
+        VIR_ERROR(_("negotiated SSF %d was not strong enough"), ssf);
         remoteDispatchAuthError(rerr);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
@@ -2727,15 +2727,15 @@ remoteSASLCheckAccess (struct qemud_server *server,
 
     err = sasl_getprop(client->saslconn, SASL_USERNAME, &val);
     if (err != SASL_OK) {
-        ERROR(_("cannot query SASL username on connection %d (%s)"),
-                 err, sasl_errstring(err, NULL, NULL));
+        VIR_ERROR(_("cannot query SASL username on connection %d (%s)"),
+                  err, sasl_errstring(err, NULL, NULL));
         remoteDispatchAuthError(rerr);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
         return -1;
     }
     if (val == NULL) {
-        ERROR0(_("no client username was found"));
+        VIR_ERROR0(_("no client username was found"));
         remoteDispatchAuthError(rerr);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
@@ -2745,7 +2745,7 @@ remoteSASLCheckAccess (struct qemud_server *server,
 
     client->saslUsername = strdup((const char*)val);
     if (client->saslUsername == NULL) {
-        ERROR0(_("out of memory copying username"));
+        VIR_ERROR0(_("out of memory copying username"));
         remoteDispatchAuthError(rerr);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
@@ -2764,7 +2764,7 @@ remoteSASLCheckAccess (struct qemud_server *server,
     }
 
     /* Denied */
-    ERROR(_("SASL client %s not allowed in whitelist"), client->saslUsername);
+    VIR_ERROR(_("SASL client %s not allowed in whitelist"), client->saslUsername);
     remoteDispatchAuthError(rerr);
     sasl_dispose(&client->saslconn);
     client->saslconn = NULL;
@@ -2794,7 +2794,7 @@ remoteDispatchAuthSaslStart (struct qemud_server *server,
     REMOTE_DEBUG("Start SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
         client->saslconn == NULL) {
-        ERROR0(_("client tried invalid SASL start request"));
+        VIR_ERROR0(_("client tried invalid SASL start request"));
         goto authfail;
     }
 
@@ -2809,14 +2809,14 @@ remoteDispatchAuthSaslStart (struct qemud_server *server,
                             &serveroutlen);
     if (err != SASL_OK &&
         err != SASL_CONTINUE) {
-        ERROR(_("sasl start failed %d (%s)"),
-                 err, sasl_errdetail(client->saslconn));
+        VIR_ERROR(_("sasl start failed %d (%s)"),
+                  err, sasl_errdetail(client->saslconn));
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
         goto authfail;
     }
     if (serveroutlen > REMOTE_AUTH_SASL_DATA_MAX) {
-        ERROR(_("sasl start reply data too long %d"), serveroutlen);
+        VIR_ERROR(_("sasl start reply data too long %d"), serveroutlen);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
         goto authfail;
@@ -2881,7 +2881,7 @@ remoteDispatchAuthSaslStep (struct qemud_server *server,
     REMOTE_DEBUG("Step SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
         client->saslconn == NULL) {
-        ERROR0(_("client tried invalid SASL start request"));
+        VIR_ERROR0(_("client tried invalid SASL start request"));
         goto authfail;
     }
 
@@ -2895,16 +2895,16 @@ remoteDispatchAuthSaslStep (struct qemud_server *server,
                            &serveroutlen);
     if (err != SASL_OK &&
         err != SASL_CONTINUE) {
-        ERROR(_("sasl step failed %d (%s)"),
-                 err, sasl_errdetail(client->saslconn));
+        VIR_ERROR(_("sasl step failed %d (%s)"),
+                  err, sasl_errdetail(client->saslconn));
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
         goto authfail;
     }
 
     if (serveroutlen > REMOTE_AUTH_SASL_DATA_MAX) {
-        ERROR(_("sasl step reply data too long %d"),
-                 serveroutlen);
+        VIR_ERROR(_("sasl step reply data too long %d"),
+                  serveroutlen);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
         goto authfail;
@@ -2959,7 +2959,7 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
                             void *args ATTRIBUTE_UNUSED,
                             remote_auth_sasl_init_ret *ret ATTRIBUTE_UNUSED)
 {
-    ERROR0(_("client tried unsupported SASL init request"));
+    VIR_ERROR0(_("client tried unsupported SASL init request"));
     remoteDispatchAuthError(rerr);
     return -1;
 }
@@ -2972,7 +2972,7 @@ remoteDispatchAuthSaslStart (struct qemud_server *server ATTRIBUTE_UNUSED,
                              remote_auth_sasl_start_args *args ATTRIBUTE_UNUSED,
                              remote_auth_sasl_start_ret *ret ATTRIBUTE_UNUSED)
 {
-    ERROR0(_("client tried unsupported SASL start request"));
+    VIR_ERROR0(_("client tried unsupported SASL start request"));
     remoteDispatchAuthError(rerr);
     return -1;
 }
@@ -2985,7 +2985,7 @@ remoteDispatchAuthSaslStep (struct qemud_server *server ATTRIBUTE_UNUSED,
                             remote_auth_sasl_step_args *args ATTRIBUTE_UNUSED,
                             remote_auth_sasl_step_ret *ret ATTRIBUTE_UNUSED)
 {
-    ERROR0(_("client tried unsupported SASL step request"));
+    VIR_ERROR0(_("client tried unsupported SASL step request"));
     remoteDispatchAuthError(rerr);
     return -1;
 }
@@ -3021,26 +3021,26 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
 
     REMOTE_DEBUG("Start PolicyKit auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_POLKIT) {
-        ERROR0(_("client tried invalid PolicyKit init request"));
+        VIR_ERROR0(_("client tried invalid PolicyKit init request"));
         goto authfail;
     }
 
     if (qemudGetSocketIdentity(client->fd, &callerUid, &callerPid) < 0) {
-        ERROR0(_("cannot get peer socket identity"));
+        VIR_ERROR0(_("cannot get peer socket identity"));
         goto authfail;
     }
 
-    INFO(_("Checking PID %d running as %d"), callerPid, callerUid);
+    VIR_INFO(_("Checking PID %d running as %d"), callerPid, callerUid);
     dbus_error_init(&err);
     if (!(pkcaller = polkit_caller_new_from_pid(server->sysbus,
                                                 callerPid, &err))) {
-        ERROR(_("Failed to lookup policy kit caller: %s"), err.message);
+        VIR_ERROR(_("Failed to lookup policy kit caller: %s"), err.message);
         dbus_error_free(&err);
         goto authfail;
     }
 
     if (!(pkaction = polkit_action_new())) {
-        ERROR(_("Failed to create polkit action %s\n"), strerror(errno));
+        VIR_ERROR(_("Failed to create polkit action %s\n"), strerror(errno));
         polkit_caller_unref(pkcaller);
         goto authfail;
     }
@@ -3048,9 +3048,9 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
 
     if (!(pkcontext = polkit_context_new()) ||
         !polkit_context_init(pkcontext, &pkerr)) {
-        ERROR(_("Failed to create polkit context %s\n"),
-                 (pkerr ? polkit_error_get_error_message(pkerr)
-                  : strerror(errno)));
+        VIR_ERROR(_("Failed to create polkit context %s\n"),
+                  (pkerr ? polkit_error_get_error_message(pkerr)
+                   : strerror(errno)));
         if (pkerr)
             polkit_error_free(pkerr);
         polkit_caller_unref(pkcaller);
@@ -3066,9 +3066,9 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
                                                    0,
                                                    &pkerr);
     if (pkerr && polkit_error_is_set(pkerr)) {
-        ERROR(_("Policy kit failed to check authorization %d %s"),
-                 polkit_error_get_error_code(pkerr),
-                 polkit_error_get_error_message(pkerr));
+        VIR_ERROR(_("Policy kit failed to check authorization %d %s"),
+                  polkit_error_get_error_code(pkerr),
+                  polkit_error_get_error_message(pkerr));
         goto authfail;
     }
 #else
@@ -3080,12 +3080,12 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
     polkit_caller_unref(pkcaller);
     polkit_action_unref(pkaction);
     if (pkresult != POLKIT_RESULT_YES) {
-        ERROR(_("Policy kit denied action %s from pid %d, uid %d, result: %s\n"),
-                 action, callerPid, callerUid,
-                 polkit_result_to_string_representation(pkresult));
+        VIR_ERROR(_("Policy kit denied action %s from pid %d, uid %d, result: %s\n"),
+                  action, callerPid, callerUid,
+                  polkit_result_to_string_representation(pkresult));
         goto authfail;
     }
-    INFO(_("Policy allowed action %s from pid %d, uid %d, result %s"),
+    VIR_INFO(_("Policy allowed action %s from pid %d, uid %d, result %s"),
              action, callerPid, callerUid,
              polkit_result_to_string_representation(pkresult));
     ret->complete = 1;
@@ -3110,7 +3110,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
                           void *args ATTRIBUTE_UNUSED,
                           remote_auth_polkit_ret *ret ATTRIBUTE_UNUSED)
 {
-    ERROR0(_("client tried unsupported PolicyKit init request"));
+    VIR_ERROR0(_("client tried unsupported PolicyKit init request"));
     remoteDispatchAuthError(rerr);
     return -1;
 }

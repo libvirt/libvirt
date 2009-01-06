@@ -13,7 +13,7 @@
 #ifndef __linux__
 
 static int
-mymain(int argc, char **argv)
+mymain(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
 {
     exit (77); /* means 'test skipped' for automake */
 }

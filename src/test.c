@@ -93,6 +93,7 @@ static const virNodeInfo defaultNodeInfo = {
         virReportErrorHelper(conn, VIR_FROM_TEST, code, __FILE__, \
                                __FUNCTION__, __LINE__, fmt)
 
+#ifdef HAVE_THREAD_H
 static void testDriverLock(testConnPtr driver)
 {
     pthread_mutex_lock(&driver->lock);
@@ -102,6 +103,10 @@ static void testDriverUnlock(testConnPtr driver)
 {
     pthread_mutex_unlock(&driver->lock);
 }
+#else
+static void testDriverLock(testConnPtr driver ATTRIBUTE_UNUSED) {}
+static void testDriverUnlock(testConnPtr driver ATTRIBUTE_UNUSED) {}
+#endif
 
 static virCapsPtr
 testBuildCapabilities(virConnectPtr conn) {
