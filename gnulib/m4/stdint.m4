@@ -1,4 +1,4 @@
-# stdint.m4 serial 31
+# stdint.m4 serial 32
 dnl Copyright (C) 2001-2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -373,13 +373,22 @@ dnl Compute HAVE_SIGNED_t, BITSIZEOF_t and t_SUFFIX, for all the types t
 dnl of interest to stdint.in.h.
 AC_DEFUN([gl_STDINT_TYPE_PROPERTIES],
 [
-  gl_STDINT_BITSIZEOF([ptrdiff_t sig_atomic_t size_t wchar_t wint_t],
+  AC_REQUIRE([gl_MULTIARCH])
+  if test $APPLE_UNIVERSAL_BUILD = 0; then
+    gl_STDINT_BITSIZEOF([ptrdiff_t size_t],
+      [gl_STDINT_INCLUDES])
+  fi
+  gl_STDINT_BITSIZEOF([sig_atomic_t wchar_t wint_t],
     [gl_STDINT_INCLUDES])
   gl_CHECK_TYPES_SIGNED([sig_atomic_t wchar_t wint_t],
     [gl_STDINT_INCLUDES])
   gl_cv_type_ptrdiff_t_signed=yes
   gl_cv_type_size_t_signed=no
-  gl_INTEGER_TYPE_SUFFIX([ptrdiff_t sig_atomic_t size_t wchar_t wint_t],
+  if test $APPLE_UNIVERSAL_BUILD = 0; then
+    gl_INTEGER_TYPE_SUFFIX([ptrdiff_t size_t],
+      [gl_STDINT_INCLUDES])
+  fi
+  gl_INTEGER_TYPE_SUFFIX([sig_atomic_t wchar_t wint_t],
     [gl_STDINT_INCLUDES])
 ])
 

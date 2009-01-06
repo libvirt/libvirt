@@ -1,4 +1,4 @@
-# serial 5  -*- Autoconf -*-
+# serial 6  -*- Autoconf -*-
 # Enable extensions on systems that normally disable them.
 
 # Copyright (C) 2003, 2006-2008 Free Software Foundation, Inc.
@@ -24,6 +24,8 @@ AC_DEFUN([AC_USE_SYSTEM_EXTENSIONS],
 [AC_BEFORE([$0], [AC_COMPILE_IFELSE])dnl
 AC_BEFORE([$0], [AC_RUN_IFELSE])dnl
 
+  AC_REQUIRE([AC_CANONICAL_HOST])
+
   AC_CHECK_HEADER([minix/config.h], [MINIX=yes], [MINIX=])
   if test "$MINIX" = yes; then
     AC_DEFINE([_POSIX_SOURCE], [1],
@@ -35,6 +37,16 @@ AC_BEFORE([$0], [AC_RUN_IFELSE])dnl
     AC_DEFINE([_MINIX], [1],
       [Define to 1 if on MINIX.])
   fi
+
+  dnl HP-UX 11.11 defines mbstate_t only if _XOPEN_SOURCE is defined to 500,
+  dnl regardless of whether the flags -Ae or _D_HPUX_SOURCE=1 are already
+  dnl provided.
+  case "$host_os" in
+    hpux*)
+      AC_DEFINE([_XOPEN_SOURCE], [500],
+        [Define to 500 only on HP-UX.])
+      ;;
+  esac
 
   AH_VERBATIM([__EXTENSIONS__],
 [/* Enable extensions on AIX 3, Interix.  */

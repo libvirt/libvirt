@@ -1,4 +1,3 @@
-*.exe
 .memdump
 Makefile.in
 Makefile

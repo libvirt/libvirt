@@ -20,5 +20,6 @@ sys_select.h
 sys_socket.h
 sys_stat.h
 sys_time.h
+time.h
 unistd.h
 wchar.h

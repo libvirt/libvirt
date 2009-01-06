@@ -275,6 +275,12 @@
 # define S_IRWXUGO (S_IRWXU | S_IRWXG | S_IRWXO)
 #endif
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #if @GNULIB_LSTAT@
 # if ! @HAVE_LSTAT@
 /* mingw does not support symlinks, therefore it does not have lstat.  But
@@ -340,6 +346,12 @@ extern int lchmod (const char *filename, mode_t mode);
                       "use gnulib module lchmod for portability"), \
      lchmod (f, m))
 #endif
+
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif /* _GL_SYS_STAT_H */
 #endif /* _GL_SYS_STAT_H */

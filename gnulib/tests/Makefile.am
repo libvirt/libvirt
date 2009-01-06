@@ -1,6 +1,6 @@
 ## DO NOT EDIT! GENERATED AUTOMATICALLY!
 ## Process this file with automake to produce Makefile.in.
-# Copyright (C) 2002-2008 Free Software Foundation, Inc.
+# Copyright (C) 2002-2009 Free Software Foundation, Inc.
 #
 # This file is free software, distributed under the terms of the GNU
 # General Public License.  As a special exception to the GNU General
@@ -109,7 +109,7 @@ EXTRA_DIST += test-fseeko.c test-fseeko.sh
 
 TESTS += test-getaddrinfo
 check_PROGRAMS += test-getaddrinfo
-test_getaddrinfo_LDADD = $(LDADD) @LIBINTL@
+test_getaddrinfo_LDADD = $(LDADD) @GETADDRINFO_LIB@ @LIBINTL@
 
 EXTRA_DIST += test-getaddrinfo.c
 
@@ -360,6 +360,15 @@ check_PROGRAMS += test-sys_time
 EXTRA_DIST += test-sys_time.c
 
 ## end   gnulib module sys_time-tests
+
+## begin gnulib module time-tests
+
+TESTS += test-time
+check_PROGRAMS += test-time
+
+EXTRA_DIST += test-time.c
+
+## end   gnulib module time-tests
 
 ## begin gnulib module unistd-tests
 

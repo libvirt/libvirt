@@ -36,3 +36,4 @@ test-unistd
 test-vasnprintf
 test-vasprintf
 test-wchar
+test-time

@@ -1,5 +1,5 @@
-# glibc21.m4 serial 3
-dnl Copyright (C) 2000-2002, 2004 Free Software Foundation, Inc.
+# glibc21.m4 serial 4
+dnl Copyright (C) 2000-2002, 2004, 2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -9,8 +9,8 @@ dnl with or without modifications, as long as this notice is preserved.
 
 AC_DEFUN([gl_GLIBC21],
   [
-    AC_CACHE_CHECK(whether we are using the GNU C Library 2.1 or newer,
-      ac_cv_gnu_library_2_1,
+    AC_CACHE_CHECK([whether we are using the GNU C Library 2.1 or newer],
+      [ac_cv_gnu_library_2_1],
       [AC_EGREP_CPP([Lucky GNU user],
 	[
 #include <features.h>
@@ -20,11 +20,11 @@ AC_DEFUN([gl_GLIBC21],
  #endif
 #endif
 	],
-	ac_cv_gnu_library_2_1=yes,
-	ac_cv_gnu_library_2_1=no)
+	[ac_cv_gnu_library_2_1=yes],
+	[ac_cv_gnu_library_2_1=no])
       ]
     )
-    AC_SUBST(GLIBC21)
+    AC_SUBST([GLIBC21])
     GLIBC21="$ac_cv_gnu_library_2_1"
   ]
 )

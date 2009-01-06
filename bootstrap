@@ -87,6 +87,7 @@ strndup
 strerror
 strsep
 sys_stat
+time_r
 useless-if-before-free
 vasprintf
 verify

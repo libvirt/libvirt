@@ -1,4 +1,4 @@
-# sockets.m4 serial 2
+# sockets.m4 serial 3
 dnl Copyright (C) 2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -32,8 +32,10 @@ AC_DEFUN([gl_SOCKETS],
   else
     dnl Unix API.
     dnl Solaris has most socket functions in libsocket.
-    AC_CACHE_CHECK([whether setsockopt requires -lsocket], [gl_cv_lib_socket], [
-      gl_cv_lib_socket=no
+    dnl Haiku has most socket functions in libnetwork.
+    dnl BeOS has most socket functions in libnet.
+    AC_CACHE_CHECK([for library containing setsockopt], [gl_cv_lib_socket], [
+      gl_cv_lib_socket=
       AC_TRY_LINK([extern
 #ifdef __cplusplus
 "C"
@@ -41,18 +43,39 @@ AC_DEFUN([gl_SOCKETS],
 char setsockopt();], [setsockopt();],
         [],
         [gl_save_LIBS="$LIBS"
-         LIBS="$LIBS -lsocket"
+         LIBS="$gl_save_LIBS -lsocket"
          AC_TRY_LINK([extern
 #ifdef __cplusplus
 "C"
 #endif
 char setsockopt();], [setsockopt();],
-           [gl_cv_lib_socket=yes])
+           [gl_cv_lib_socket="-lsocket"])
+         if test -z "$gl_cv_lib_socket"; then
+           LIBS="$gl_save_LIBS -lnetwork"
+           AC_TRY_LINK([extern
+#ifdef __cplusplus
+"C"
+#endif
+char setsockopt();], [setsockopt();],
+             [gl_cv_lib_socket="-lnetwork"])
+           if test -z "$gl_cv_lib_socket"; then
+             LIBS="$gl_save_LIBS -lnet"
+             AC_TRY_LINK([extern
+#ifdef __cplusplus
+"C"
+#endif
+char setsockopt();], [setsockopt();],
+               [gl_cv_lib_socket="-lnet"])
+           fi
+         fi
          LIBS="$gl_save_LIBS"
         ])
+      if test -z "$gl_cv_lib_socket"; then
+        gl_cv_lib_socket="none needed"
+      fi
     ])
-    if test $gl_cv_lib_socket = yes; then
-      LIBSOCKET='-lsocket'
+    if test "$gl_cv_lib_socket" != "none needed"; then
+      LIBSOCKET="$gl_cv_lib_socket"
     fi
   fi
   AC_SUBST([LIBSOCKET])

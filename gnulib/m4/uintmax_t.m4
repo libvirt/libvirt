@@ -1,5 +1,5 @@
-# uintmax_t.m4 serial 10
-dnl Copyright (C) 1997-2004, 2007 Free Software Foundation, Inc.
+# uintmax_t.m4 serial 11
+dnl Copyright (C) 1997-2004, 2007-2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -20,11 +20,11 @@ AC_DEFUN([gl_AC_TYPE_UINTMAX_T],
     test $ac_cv_type_unsigned_long_long_int = yes \
       && ac_type='unsigned long long' \
       || ac_type='unsigned long'
-    AC_DEFINE_UNQUOTED(uintmax_t, $ac_type,
+    AC_DEFINE_UNQUOTED([uintmax_t], [$ac_type],
       [Define to unsigned long or unsigned long long
        if <stdint.h> and <inttypes.h> don't define.])
   else
-    AC_DEFINE(HAVE_UINTMAX_T, 1,
+    AC_DEFINE([HAVE_UINTMAX_T], 1,
       [Define if you have the 'uintmax_t' type in <stdint.h> or <inttypes.h>.])
   fi
 ])

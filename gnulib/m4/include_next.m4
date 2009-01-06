@@ -1,4 +1,4 @@
-# include_next.m4 serial 8
+# include_next.m4 serial 10
 dnl Copyright (C) 2006-2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -10,6 +10,10 @@ dnl Sets INCLUDE_NEXT and PRAGMA_SYSTEM_HEADER.
 dnl
 dnl INCLUDE_NEXT expands to 'include_next' if the compiler supports it, or to
 dnl 'include' otherwise.
+dnl
+dnl INCLUDE_NEXT_AS_FIRST_DIRECTIVE expands to 'include_next' if the compiler
+dnl supports it in the special case that it is the first include directive in
+dnl the given file, or to 'include' otherwise.
 dnl
 dnl PRAGMA_SYSTEM_HEADER can be used in files that contain #include_next,
 dnl so as to avoid GCC warnings when the gcc option -pedantic is used.
@@ -26,12 +30,26 @@ AC_DEFUN([gl_INCLUDE_NEXT],
   AC_LANG_PREPROC_REQUIRE()
   AC_CACHE_CHECK([whether the preprocessor supports include_next],
     [gl_cv_have_include_next],
-    [rm -rf conftestd1 conftestd2
-     mkdir conftestd1 conftestd2
+    [rm -rf conftestd1a conftestd1b conftestd2
+     mkdir conftestd1a conftestd1b conftestd2
      dnl The include of <stdio.h> is because IBM C 9.0 on AIX 6.1 supports
      dnl include_next when used as first preprocessor directive in a file,
-     dnl but not when preceded by another include directive.
-     cat <<EOF > conftestd1/conftest.h
+     dnl but not when preceded by another include directive. Additionally,
+     dnl with this same compiler, include_next is a no-op when used in a
+     dnl header file that was included by specifying its absolute file name.
+     dnl Despite these two bugs, include_next is used in the compiler's
+     dnl <math.h>. By virtue of the second bug, we need to use include_next
+     dnl as well in this case.
+     cat <<EOF > conftestd1a/conftest.h
+#define DEFINED_IN_CONFTESTD1
+#include_next <conftest.h>
+#ifdef DEFINED_IN_CONFTESTD2
+int foo;
+#else
+#error "include_next doesn't work"
+#endif
+EOF
+     cat <<EOF > conftestd1b/conftest.h
 #define DEFINED_IN_CONFTESTD1
 #include <stdio.h>
 #include_next <conftest.h>
@@ -47,24 +65,36 @@ EOF
 #endif
 #define DEFINED_IN_CONFTESTD2
 EOF
-     save_CPPFLAGS="$CPPFLAGS"
-     CPPFLAGS="$CPPFLAGS -Iconftestd1 -Iconftestd2"
+     gl_save_CPPFLAGS="$CPPFLAGS"
+     CPPFLAGS="$gl_save_CPPFLAGS -Iconftestd1b -Iconftestd2"
      AC_COMPILE_IFELSE([#include <conftest.h>],
        [gl_cv_have_include_next=yes],
-       [gl_cv_have_include_next=no])
-     CPPFLAGS="$save_CPPFLAGS"
-     rm -rf conftestd1 conftestd2
+       [CPPFLAGS="$gl_save_CPPFLAGS -Iconftestd1a -Iconftestd2"
+        AC_COMPILE_IFELSE([#include <conftest.h>],
+          [gl_cv_have_include_next=buggy],
+          [gl_cv_have_include_next=no])
+       ])
+     CPPFLAGS="$gl_save_CPPFLAGS"
+     rm -rf conftestd1a conftestd1b conftestd2
     ])
   PRAGMA_SYSTEM_HEADER=
   if test $gl_cv_have_include_next = yes; then
     INCLUDE_NEXT=include_next
+    INCLUDE_NEXT_AS_FIRST_DIRECTIVE=include_next
     if test -n "$GCC"; then
       PRAGMA_SYSTEM_HEADER='#pragma GCC system_header'
     fi
   else
-    INCLUDE_NEXT=include
+    if test $gl_cv_have_include_next = buggy; then
+      INCLUDE_NEXT=include
+      INCLUDE_NEXT_AS_FIRST_DIRECTIVE=include_next
+    else
+      INCLUDE_NEXT=include
+      INCLUDE_NEXT_AS_FIRST_DIRECTIVE=include
+    fi
   fi
   AC_SUBST([INCLUDE_NEXT])
+  AC_SUBST([INCLUDE_NEXT_AS_FIRST_DIRECTIVE])
   AC_SUBST([PRAGMA_SYSTEM_HEADER])
 ])
 
@@ -87,6 +117,7 @@ EOF
 AC_DEFUN([gl_CHECK_NEXT_HEADERS],
 [
   AC_REQUIRE([gl_INCLUDE_NEXT])
+  AC_REQUIRE([AC_CANONICAL_HOST])
   AC_CHECK_HEADERS_ONCE([$1])
 
   m4_foreach_w([gl_HEADER_NAME], [$1],
@@ -105,11 +136,22 @@ AC_DEFUN([gl_CHECK_NEXT_HEADERS],
 	      [AC_LANG_SOURCE(
 		 [[#include <]]m4_dquote(m4_defn([gl_HEADER_NAME]))[[>]]
 	       )])
-	    dnl eval is necessary to expand ac_cpp.
+	    dnl AIX "xlc -E" and "cc -E" omit #line directives for header files
+	    dnl that contain only a #include of other header files and no
+	    dnl non-comment tokens of their own. This leads to a failure to
+	    dnl detect the absolute name of <dirent.h>, <signal.h>, <poll.h>
+	    dnl and others. The workaround is to force preservation of comments
+	    dnl through option -C. This ensures all necessary #line directives
+	    dnl are present. GCC supports option -C as well.
+	    case "$host_os" in
+	      aix*) gl_absname_cpp="$ac_cpp -C" ;;
+	      *)    gl_absname_cpp="$ac_cpp" ;;
+	    esac
+	    dnl eval is necessary to expand gl_absname_cpp.
 	    dnl Ultrix and Pyramid sh refuse to redirect output of eval,
 	    dnl so use subshell.
 	    AS_VAR_SET([gl_next_header],
-	      ['"'`(eval "$ac_cpp conftest.$ac_ext") 2>&AS_MESSAGE_LOG_FD |
+	      ['"'`(eval "$gl_absname_cpp conftest.$ac_ext") 2>&AS_MESSAGE_LOG_FD |
 	       sed -n '\#/]m4_quote(m4_defn([gl_HEADER_NAME]))[#{
 		 s#.*"\(.*/]m4_quote(m4_defn([gl_HEADER_NAME]))[\)".*#\1#
 		 s#^/[^/]#//&#

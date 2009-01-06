@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2008 Free Software Foundation, Inc.
+# Copyright (C) 2002-2009 Free Software Foundation, Inc.
 #
 # This file is free software, distributed under the terms of the GNU
 # General Public License.  As a special exception to the GNU General
@@ -77,6 +77,7 @@ AC_SUBST([LTALLOCA])
   AC_SUBST([LIBINTL])
   AC_SUBST([LTLIBINTL])
   gl_FUNC_GETTIMEOFDAY
+  gl_HOSTENT
   gl_INET_NTOP
   gl_ARPA_INET_MODULE_INDICATOR([inet_ntop])
   gl_INET_PTON
@@ -89,6 +90,7 @@ AC_SUBST([LTALLOCA])
   gl_STDLIB_MODULE_INDICATOR([malloc-posix])
   gl_FUNC_MKSTEMP
   gl_STDLIB_MODULE_INDICATOR([mkstemp])
+  gl_MULTIARCH
   gl_HEADER_NETDB
   gl_HEADER_NETINET_IN
   AC_PROG_MKDIR_P
@@ -109,6 +111,7 @@ AC_SUBST([LTALLOCA])
     AC_LIBOBJ([send])
   fi
   gl_SYS_SOCKET_MODULE_INDICATOR([send])
+  gl_SERVENT
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
   if test "$ac_cv_header_winsock2_h" = yes; then
     AC_LIBOBJ([setsockopt])
@@ -136,8 +139,6 @@ AC_SUBST([LTALLOCA])
   gl_STRING_MODULE_INDICATOR([strndup])
   gl_FUNC_STRNLEN
   gl_STRING_MODULE_INDICATOR([strnlen])
-  gl_FUNC_STRPBRK
-  gl_STRING_MODULE_INDICATOR([strpbrk])
   gl_FUNC_STRSEP
   gl_STRING_MODULE_INDICATOR([strsep])
   gl_HEADER_SYS_SELECT
@@ -150,6 +151,8 @@ AC_SUBST([LTALLOCA])
   gl_HEADER_SYS_TIME_H
   AC_PROG_MKDIR_P
   gl_FUNC_GEN_TEMPNAME
+  gl_HEADER_TIME_H
+  gl_TIME_R
   gl_UNISTD_H
   gl_FUNC_VASNPRINTF
   gl_FUNC_VASPRINTF
@@ -384,7 +387,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/string.in.h
   lib/strndup.c
   lib/strnlen.c
-  lib/strpbrk.c
   lib/strsep.c
   lib/sys_select.in.h
   lib/sys_socket.in.h
@@ -392,6 +394,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/sys_time.in.h
   lib/tempname.c
   lib/tempname.h
+  lib/time.in.h
+  lib/time_r.c
   lib/unistd.in.h
   lib/vasnprintf.c
   lib/vasnprintf.h
@@ -419,6 +423,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/glibc2.m4
   m4/glibc21.m4
   m4/gnulib-common.m4
+  m4/hostent.m4
   m4/iconv.m4
   m4/include_next.m4
   m4/inet_ntop.m4
@@ -441,6 +446,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/lstat.m4
   m4/malloc.m4
   m4/mkstemp.m4
+  m4/multiarch.m4
   m4/netdb_h.m4
   m4/netinet_in_h.m4
   m4/nls.m4
@@ -454,6 +460,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/printf.m4
   m4/progtest.m4
   m4/realloc.m4
+  m4/servent.m4
   m4/size_max.m4
   m4/snprintf.m4
   m4/sockets.m4
@@ -469,7 +476,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/string_h.m4
   m4/strndup.m4
   m4/strnlen.m4
-  m4/strpbrk.m4
   m4/strsep.m4
   m4/sys_ioctl_h.m4
   m4/sys_select_h.m4
@@ -478,6 +484,8 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/sys_time_h.m4
   m4/tempname.m4
   m4/threadlib.m4
+  m4/time_h.m4
+  m4/time_r.m4
   m4/uintmax_t.m4
   m4/unistd_h.m4
   m4/vasnprintf.m4
@@ -518,6 +526,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-sys_socket.c
   tests/test-sys_stat.c
   tests/test-sys_time.c
+  tests/test-time.c
   tests/test-unistd.c
   tests/test-vasnprintf.c
   tests/test-vasprintf.c

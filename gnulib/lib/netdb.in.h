@@ -36,12 +36,6 @@
 #ifndef _GL_NETDB_H
 #define _GL_NETDB_H
 
-#if @HAVE_NETDB_H@ && HAVE_STRUCT_ADDRINFO
-
-/* Declarations for a platform that has <netdb.h>.  */
-
-#else
-
 /* Get netdb.h definitions such as struct hostent for MinGW.  */
 #include <sys/socket.h>
 
@@ -50,7 +44,7 @@
 
 #if @GNULIB_GETADDRINFO@
 
-# ifndef HAVE_STRUCT_ADDRINFO
+# if !@HAVE_STRUCT_ADDRINFO@
 
 /* Structure to contain information about address of a service provider.  */
 struct addrinfo
@@ -112,7 +106,7 @@ struct addrinfo
 # endif
 
 # ifndef EAI_OVERFLOW
-/* Not defined on mingw32. */
+/* Not defined on mingw32 and Haiku. */
 #  define EAI_OVERFLOW	  -12	/* Argument buffer overflow.  */
 # endif
 # ifndef EAI_ADDRFAMILY
@@ -139,7 +133,7 @@ struct addrinfo
 #  endif
 # endif
 
-# if !HAVE_DECL_GETADDRINFO
+# if !@HAVE_DECL_GETADDRINFO@
 /* Translate name of a service location and/or a service name to set of
    socket addresses.
    For more details, see the POSIX:2001 specification
@@ -150,21 +144,21 @@ extern int getaddrinfo (const char *restrict nodename,
 			struct addrinfo **restrict res);
 # endif
 
-# if !HAVE_DECL_FREEADDRINFO
+# if !@HAVE_DECL_FREEADDRINFO@
 /* Free `addrinfo' structure AI including associated storage.
    For more details, see the POSIX:2001 specification
    <http://www.opengroup.org/susv3xsh/getaddrinfo.html>.  */
 extern void freeaddrinfo (struct addrinfo *ai);
 # endif
 
-# if !HAVE_DECL_GAI_STRERROR
+# if !@HAVE_DECL_GAI_STRERROR@
 /* Convert error return from getaddrinfo() to a string.
    For more details, see the POSIX:2001 specification
    <http://www.opengroup.org/susv3xsh/gai_strerror.html>.  */
 extern const char *gai_strerror (int ecode);
 # endif
 
-# if !HAVE_DECL_GETNAMEINFO
+# if !@HAVE_DECL_GETNAMEINFO@
 /* Convert socket address to printable node and service names.
    For more details, see the POSIX:2001 specification
    <http://www.opengroup.org/susv3xsh/getnameinfo.html>.  */
@@ -183,8 +177,6 @@ extern int getnameinfo(const struct sockaddr *restrict sa, socklen_t salen,
 # endif
 
 #endif /* @GNULIB_GETADDRINFO@ */
-
-#endif /* HAVE_NETDB_H */
 
 #endif /* _GL_NETDB_H */
 #endif /* _GL_NETDB_H */

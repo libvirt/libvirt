@@ -1,3 +1,73 @@
+Tue Jan  6 20:38:23 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	update from gnulib; use its time_r module for localtime_r on mingw
+	* bootstrap (modules): Add time_r.
+	* gnulib/m4/time_h.m4: New file.
+	* gnulib/m4/time_r.m4: New file.
+	* gnulib/lib/time_r.c: New file.
+	* gnulib/tests/test-time.c: New file.
+	* gnulib/lib/time.in.h: New file.
+	* gnulib/lib/Makefile.am: Update.
+	* gnulib/lib/fseeko.c: Likewise.
+	* gnulib/lib/lstat.c: Likewise.
+	* gnulib/lib/netdb.in.h: Likewise.
+	* gnulib/lib/stdint.in.h: Likewise.
+	* gnulib/lib/stdlib.in.h: Likewise.
+	* gnulib/lib/sys_select.in.h: Likewise.
+	* gnulib/lib/sys_stat.in.h: Likewise.
+	* gnulib/lib/sys_time.in.h: Likewise.
+	* gnulib/lib/unistd.in.h: Likewise.
+	* gnulib/lib/wchar.in.h: Likewise.
+	* gnulib/m4/codeset.m4: Likewise.
+	* gnulib/m4/errno_h.m4: Likewise.
+	* gnulib/m4/extensions.m4: Likewise.
+	* gnulib/m4/getaddrinfo.m4: Likewise.
+	* gnulib/m4/gettext.m4: Likewise.
+	* gnulib/m4/glibc2.m4: Likewise.
+	* gnulib/m4/glibc21.m4: Likewise.
+	* gnulib/m4/gnulib-cache.m4: Likewise.
+	* gnulib/m4/gnulib-comp.m4: Likewise.
+	* gnulib/m4/iconv.m4: Likewise.
+	* gnulib/m4/include_next.m4: Likewise.
+	* gnulib/m4/intdiv0.m4: Likewise.
+	* gnulib/m4/intlmacosx.m4: Likewise.
+	* gnulib/m4/intmax.m4: Likewise.
+	* gnulib/m4/inttypes-pri.m4: Likewise.
+	* gnulib/m4/inttypes_h.m4: Likewise.
+	* gnulib/m4/lcmessage.m4: Likewise.
+	* gnulib/m4/lib-link.m4: Likewise.
+	* gnulib/m4/lstat.m4: Likewise.
+	* gnulib/m4/netdb_h.m4: Likewise.
+	* gnulib/m4/nls.m4: Likewise.
+	* gnulib/m4/po.m4: Likewise.
+	* gnulib/m4/printf-posix.m4: Likewise.
+	* gnulib/m4/printf.m4: Likewise.
+	* gnulib/m4/progtest.m4: Likewise.
+	* gnulib/m4/size_max.m4: Likewise.
+	* gnulib/m4/sockets.m4: Likewise.
+	* gnulib/m4/stdint.m4: Likewise.
+	* gnulib/m4/stdint_h.m4: Likewise.
+	* gnulib/m4/sys_ioctl_h.m4: Likewise.
+	* gnulib/m4/threadlib.m4: Likewise.
+	* gnulib/m4/uintmax_t.m4: Likewise.
+	* gnulib/m4/visibility.m4: Likewise.
+	* gnulib/m4/wchar.m4: Likewise.
+	* gnulib/m4/wchar_t.m4: Likewise.
+	* gnulib/m4/wint_t.m4: Likewise.
+	* gnulib/m4/xsize.m4: Likewise.
+	* gnulib/tests/Makefile.am: Likewise.
+	* gnulib/tests/sockets.h: Likewise.
+	* gnulib/tests/.cvsignore: Likewise.
+	* gnulib/tests/.gitignore: Likewise.
+	* tests/.gitignore: Likewise.
+	* docs/examples/.gitignore: Likewise.
+	* gnulib/lib/.cvsignore: Likewise.
+	* gnulib/lib/.gitignore: Likewise.
+
+	remove files associated with obsolete strpbrk module
+	* gnulib/lib/strpbrk.c: Remove file.
+	* gnulib/m4/strpbrk.m4: Remove file.
+
 Tue Jan  6 17:52:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Misc windows / mingw portability fixes

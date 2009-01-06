@@ -35,6 +35,7 @@
 #endif
 
 /* mingw fails to declare _exit in <unistd.h>.  */
+/* mingw, BeOS, Haiku declare environ in <stdlib.h>, not in <unistd.h>.  */
 #include <stdlib.h>
 
 #if @GNULIB_WRITE@ && @REPLACE_WRITE@ && @GNULIB_UNISTD_H_SIGPIPE@

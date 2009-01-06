@@ -1,5 +1,5 @@
-# visibility.m4 serial 1 (gettext-0.15)
-dnl Copyright (C) 2005 Free Software Foundation, Inc.
+# visibility.m4 serial 2 (gettext-0.18)
+dnl Copyright (C) 2005, 2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -27,7 +27,7 @@ AC_DEFUN([gl_VISIBILITY],
   HAVE_VISIBILITY=0
   if test -n "$GCC"; then
     AC_MSG_CHECKING([for simple visibility declarations])
-    AC_CACHE_VAL(gl_cv_cc_visibility, [
+    AC_CACHE_VAL([gl_cv_cc_visibility], [
       gl_save_CFLAGS="$CFLAGS"
       CFLAGS="$CFLAGS -fvisibility=hidden"
       AC_TRY_COMPILE(
@@ -36,8 +36,8 @@ AC_DEFUN([gl_VISIBILITY],
          extern __attribute__((__visibility__("hidden"))) int hiddenfunc (void);
          extern __attribute__((__visibility__("default"))) int exportedfunc (void);],
         [],
-        gl_cv_cc_visibility=yes,
-        gl_cv_cc_visibility=no)
+        [gl_cv_cc_visibility=yes],
+        [gl_cv_cc_visibility=no])
       CFLAGS="$gl_save_CFLAGS"])
     AC_MSG_RESULT([$gl_cv_cc_visibility])
     if test $gl_cv_cc_visibility = yes; then

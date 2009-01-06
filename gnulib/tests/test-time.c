@@ -1,6 +1,5 @@
-/* sockets.h - wrappers for Windows socket functions
-
-   Copyright (C) 2008 Free Software Foundation, Inc.
+/* Test of <time.h> substitute.
+   Copyright (C) 2007 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,18 +14,16 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-/* Written by Simon Josefsson */
+/* Written by Bruno Haible <bruno@clisp.org>, 2007.  */
 
-#ifndef SOCKETS_H
-# define SOCKETS_H 1
+#include <config.h>
 
-#define SOCKETS_1_0 0x100  /* don't use - does not work on Windows XP */
-#define SOCKETS_1_1 0x101
-#define SOCKETS_2_0 0x200  /* don't use - does not work on Windows XP */
-#define SOCKETS_2_1 0x201
-#define SOCKETS_2_2 0x202
+#include <time.h>
 
-int gl_sockets_startup (int version);
-int gl_sockets_cleanup (void);
+struct timespec a;
 
-#endif
+int
+main ()
+{
+  return 0;
+}

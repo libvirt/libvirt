@@ -1,5 +1,5 @@
-# nls.m4 serial 3 (gettext-0.15)
-dnl Copyright (C) 1995-2003, 2005-2006 Free Software Foundation, Inc.
+# nls.m4 serial 4 (gettext-0.18)
+dnl Copyright (C) 1995-2003, 2005-2006, 2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -27,5 +27,5 @@ AC_DEFUN([AM_NLS],
     [  --disable-nls           do not use Native Language Support],
     USE_NLS=$enableval, USE_NLS=yes)
   AC_MSG_RESULT($USE_NLS)
-  AC_SUBST(USE_NLS)
+  AC_SUBST([USE_NLS])
 ])

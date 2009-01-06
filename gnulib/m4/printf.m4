@@ -1,4 +1,4 @@
-# printf.m4 serial 23
+# printf.m4 serial 25
 dnl Copyright (C) 2003, 2007-2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -811,12 +811,15 @@ dnl Result is gl_cv_func_printf_enomem.
 AC_DEFUN([gl_PRINTF_ENOMEM],
 [
   AC_REQUIRE([AC_PROG_CC])
+  AC_REQUIRE([gl_MULTIARCH])
   AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
   AC_CACHE_CHECK([whether printf survives out-of-memory conditions],
     [gl_cv_func_printf_enomem],
     [
+      gl_cv_func_printf_enomem="guessing no"
       if test "$cross_compiling" = no; then
-        AC_LANG_CONFTEST([AC_LANG_SOURCE([
+        if test $APPLE_UNIVERSAL_BUILD = 0; then
+          AC_LANG_CONFTEST([AC_LANG_SOURCE([
 ]GL_NOCRASH[
 changequote(,)dnl
 #include <stdio.h>
@@ -865,22 +868,29 @@ int main()
 }
 changequote([,])dnl
           ])])
-        if AC_TRY_EVAL([ac_link]) && test -s conftest$ac_exeext; then
-          (./conftest
-           result=$?
-           if test $result != 0 && test $result != 77; then result=1; fi
-           exit $result
-          ) >/dev/null 2>/dev/null
-          case $? in
-            0) gl_cv_func_printf_enomem="yes" ;;
-            77) gl_cv_func_printf_enomem="guessing no" ;;
-            *) gl_cv_func_printf_enomem="no" ;;
-          esac
+          if AC_TRY_EVAL([ac_link]) && test -s conftest$ac_exeext; then
+            (./conftest
+             result=$?
+             if test $result != 0 && test $result != 77; then result=1; fi
+             exit $result
+            ) >/dev/null 2>/dev/null
+            case $? in
+              0) gl_cv_func_printf_enomem="yes" ;;
+              77) gl_cv_func_printf_enomem="guessing no" ;;
+              *) gl_cv_func_printf_enomem="no" ;;
+            esac
+          else
+            gl_cv_func_printf_enomem="guessing no"
+          fi
+          rm -fr conftest*
         else
+          dnl A universal build on Apple MacOS X platforms.
+          dnl The result would be 'no' in 32-bit mode and 'yes' in 64-bit mode.
+          dnl But we need a configuration result that is valid in both modes.
           gl_cv_func_printf_enomem="guessing no"
         fi
-        rm -fr conftest*
-      else
+      fi
+      if test "$gl_cv_func_printf_enomem" = "guessing no"; then
 changequote(,)dnl
         case "$host_os" in
                     # Guess yes on glibc systems.
@@ -901,6 +911,8 @@ changequote(,)dnl
           osf*)     gl_cv_func_printf_enomem="guessing yes";;
                     # Guess yes on BeOS.
           beos*)    gl_cv_func_printf_enomem="guessing yes";;
+                    # Guess yes on Haiku.
+          haiku*)   gl_cv_func_printf_enomem="guessing yes";;
                     # If we don't know, assume the worst.
           *)        gl_cv_func_printf_enomem="guessing no";;
         esac
@@ -1305,5 +1317,6 @@ dnl   OSF/1 5.1                      #  .  #  #  #  #  .  .  .  .  #  .  .  .  .
 dnl   OSF/1 4.0d                     #  .  #  #  #  #  .  .  .  .  #  .  .  #  #  #  #  #  #
 dnl   NetBSD 4.0                     .  ?  ?  ?  ?  ?  .  .  ?  ?  ?  ?  ?  .  .  .  ?  ?  ?
 dnl   NetBSD 3.0                     .  .  .  .  #  #  .  #  #  ?  #  .  #  .  .  .  .  .  .
+dnl   Haiku                          .  .  .  #  #  #  .  .  .  .  .  .  ?  .  .  .  .  .  .
 dnl   BeOS                           #  #  .  #  #  #  .  #  .  ?  .  #  ?  .  .  .  .  .  .
 dnl   mingw                          #  #  #  #  #  #  .  #  #  .  #  #  ?  .  #  #  #  .  .

@@ -68,6 +68,197 @@ extern "C" {
 /* Define wint_t.  (Also done in wctype.in.h.)  */
 #if !@HAVE_WINT_T@ && !defined wint_t
 # define wint_t int
+# ifndef WEOF
+#  define WEOF -1
+# endif
+#endif
+
+
+/* Override mbstate_t if it is too small.
+   On IRIX 6.5, sizeof (mbstate_t) == 1, which is not sufficient for
+   implementing mbrtowc for encodings like UTF-8.  */
+#if !(@HAVE_MBSINIT@ && @HAVE_MBRTOWC@) || @REPLACE_MBSTATE_T@
+typedef int rpl_mbstate_t;
+# undef mbstate_t
+# define mbstate_t rpl_mbstate_t
+# define GNULIB_defined_mbstate_t 1
+#endif
+
+
+/* Convert a single-byte character to a wide character.  */
+#if @GNULIB_BTOWC@
+# if @REPLACE_BTOWC@
+#  undef btowc
+#  define btowc rpl_btowc
+# endif
+# if !@HAVE_BTOWC@ || @REPLACE_BTOWC@
+extern wint_t btowc (int c);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef btowc
+# define btowc(c) \
+    (GL_LINK_WARNING ("btowc is unportable - " \
+                      "use gnulib module btowc for portability"), \
+     btowc (c))
+#endif
+
+
+/* Convert a wide character to a single-byte character.  */
+#if @GNULIB_WCTOB@
+# if @REPLACE_WCTOB@
+#  undef wctob
+#  define wctob rpl_wctob
+# endif
+# if (!defined wctob && !@HAVE_DECL_WCTOB@) || @REPLACE_WCTOB@
+/* wctob is provided by gnulib, or wctob exists but is not declared.  */
+extern int wctob (wint_t wc);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef wctob
+# define wctob(w) \
+    (GL_LINK_WARNING ("wctob is unportable - " \
+                      "use gnulib module wctob for portability"), \
+     wctob (w))
+#endif
+
+
+/* Test whether *PS is in the initial state.  */
+#if @GNULIB_MBSINIT@
+# if @REPLACE_MBSINIT@
+#  undef mbsinit
+#  define mbsinit rpl_mbsinit
+# endif
+# if !@HAVE_MBSINIT@ || @REPLACE_MBSINIT@
+extern int mbsinit (const mbstate_t *ps);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef mbsinit
+# define mbsinit(p) \
+    (GL_LINK_WARNING ("mbsinit is unportable - " \
+                      "use gnulib module mbsinit for portability"), \
+     mbsinit (p))
+#endif
+
+
+/* Convert a multibyte character to a wide character.  */
+#if @GNULIB_MBRTOWC@
+# if @REPLACE_MBRTOWC@
+#  undef mbrtowc
+#  define mbrtowc rpl_mbrtowc
+# endif
+# if !@HAVE_MBRTOWC@ || @REPLACE_MBRTOWC@
+extern size_t mbrtowc (wchar_t *pwc, const char *s, size_t n, mbstate_t *ps);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef mbrtowc
+# define mbrtowc(w,s,n,p) \
+    (GL_LINK_WARNING ("mbrtowc is unportable - " \
+                      "use gnulib module mbrtowc for portability"), \
+     mbrtowc (w, s, n, p))
+#endif
+
+
+/* Recognize a multibyte character.  */
+#if @GNULIB_MBRLEN@
+# if @REPLACE_MBRLEN@
+#  undef mbrlen
+#  define mbrlen rpl_mbrlen
+# endif
+# if !@HAVE_MBRLEN@ || @REPLACE_MBRLEN@
+extern size_t mbrlen (const char *s, size_t n, mbstate_t *ps);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef mbrlen
+# define mbrlen(s,n,p) \
+    (GL_LINK_WARNING ("mbrlen is unportable - " \
+                      "use gnulib module mbrlen for portability"), \
+     mbrlen (s, n, p))
+#endif
+
+
+/* Convert a string to a wide string.  */
+#if @GNULIB_MBSRTOWCS@
+# if @REPLACE_MBSRTOWCS@
+#  undef mbsrtowcs
+#  define mbsrtowcs rpl_mbsrtowcs
+# endif
+# if !@HAVE_MBSRTOWCS@ || @REPLACE_MBSRTOWCS@
+extern size_t mbsrtowcs (wchar_t *dest, const char **srcp, size_t len, mbstate_t *ps);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef mbsrtowcs
+# define mbsrtowcs(d,s,l,p) \
+    (GL_LINK_WARNING ("mbsrtowcs is unportable - " \
+                      "use gnulib module mbsrtowcs for portability"), \
+     mbsrtowcs (d, s, l, p))
+#endif
+
+
+/* Convert a string to a wide string.  */
+#if @GNULIB_MBSNRTOWCS@
+# if @REPLACE_MBSNRTOWCS@
+#  undef mbsnrtowcs
+#  define mbsnrtowcs rpl_mbsnrtowcs
+# endif
+# if !@HAVE_MBSNRTOWCS@ || @REPLACE_MBSNRTOWCS@
+extern size_t mbsnrtowcs (wchar_t *dest, const char **srcp, size_t srclen, size_t len, mbstate_t *ps);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef mbsnrtowcs
+# define mbsnrtowcs(d,s,n,l,p) \
+    (GL_LINK_WARNING ("mbsnrtowcs is unportable - " \
+                      "use gnulib module mbsnrtowcs for portability"), \
+     mbsnrtowcs (d, s, n, l, p))
+#endif
+
+
+/* Convert a wide character to a multibyte character.  */
+#if @GNULIB_WCRTOMB@
+# if @REPLACE_WCRTOMB@
+#  undef wcrtomb
+#  define wcrtomb rpl_wcrtomb
+# endif
+# if !@HAVE_WCRTOMB@ || @REPLACE_WCRTOMB@
+extern size_t wcrtomb (char *s, wchar_t wc, mbstate_t *ps);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef wcrtomb
+# define wcrtomb(s,w,p) \
+    (GL_LINK_WARNING ("wcrtomb is unportable - " \
+                      "use gnulib module wcrtomb for portability"), \
+     wcrtomb (s, w, p))
+#endif
+
+
+/* Convert a wide string to a string.  */
+#if @GNULIB_WCSRTOMBS@
+# if @REPLACE_WCSRTOMBS@
+#  undef wcsrtombs
+#  define wcsrtombs rpl_wcsrtombs
+# endif
+# if !@HAVE_WCSRTOMBS@ || @REPLACE_WCSRTOMBS@
+extern size_t wcsrtombs (char *dest, const wchar_t **srcp, size_t len, mbstate_t *ps);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef wcsrtombs
+# define wcsrtombs(d,s,l,p) \
+    (GL_LINK_WARNING ("wcsrtombs is unportable - " \
+                      "use gnulib module wcsrtombs for portability"), \
+     wcsrtombs (d, s, l, p))
+#endif
+
+
+/* Convert a wide string to a string.  */
+#if @GNULIB_WCSNRTOMBS@
+# if !@HAVE_WCSNRTOMBS@
+extern size_t wcsnrtombs (char *dest, const wchar_t **srcp, size_t srclen, size_t len, mbstate_t *ps);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef wcsnrtombs
+# define wcsnrtombs(d,s,n,l,p) \
+    (GL_LINK_WARNING ("wcsnrtombs is unportable - " \
+                      "use gnulib module wcsnrtombs for portability"), \
+     wcsnrtombs (d, s, n, l, p))
 #endif
 
 

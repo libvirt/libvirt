@@ -15,13 +15,27 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-#ifndef _GL_SYS_SELECT_H
-
-#if @HAVE_SYS_SELECT_H@
-
 # if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 # endif
+
+/* On OSF/1, <sys/types.h> and <sys/time.h> include <sys/select.h>.
+   Simply delegate to the system's header in this case.  */
+#if @HAVE_SYS_SELECT_H@ && defined __osf__ && (defined _SYS_TYPES_H_ && !defined _GL_SYS_SELECT_H_REDIRECT_FROM_SYS_TYPES_H) && defined _OSF_SOURCE
+
+# define _GL_SYS_SELECT_H_REDIRECT_FROM_SYS_TYPES_H
+# @INCLUDE_NEXT@ @NEXT_SYS_SELECT_H@
+
+#elif @HAVE_SYS_SELECT_H@ && defined __osf__ && (defined _SYS_TIME_H_ && !defined _GL_SYS_SELECT_H_REDIRECT_FROM_SYS_TIME_H) && defined _OSF_SOURCE
+
+# define _GL_SYS_SELECT_H_REDIRECT_FROM_SYS_TIME_H
+# @INCLUDE_NEXT@ @NEXT_SYS_SELECT_H@
+
+#else
+
+#ifndef _GL_SYS_SELECT_H
+
+#if @HAVE_SYS_SELECT_H@
 
 /* On many platforms, <sys/select.h> assumes prior inclusion of
    <sys/types.h>.  */
@@ -76,3 +90,4 @@ extern int rpl_select (int, fd_set *, fd_set *, fd_set *, struct timeval *);
 
 #endif /* _GL_SYS_SELECT_H */
 #endif /* _GL_SYS_SELECT_H */
+#endif /* OSF/1 */
