@@ -473,6 +473,8 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
     int rc = 0, narg;
     const char *prog[OPENVZ_MAX_ARG];
     char macaddr[VIR_MAC_STRING_BUFLEN];
+    unsigned char host_mac[VIR_MAC_BUFLEN];
+    char host_macaddr[VIR_MAC_STRING_BUFLEN];
     struct openvz_driver *driver =  conn->privateData;
     char *opt = NULL;
 
@@ -507,6 +509,8 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
     }
 
     virFormatMacAddr(net->mac, macaddr);
+    virCapabilitiesGenerateMac(driver->caps, host_mac);
+    virFormatMacAddr(host_mac, host_macaddr);
 
     if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -541,7 +545,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         virBufferAdd(&buf, dev_name_ve, -1); /* Guest dev */
         virBufferVSprintf(&buf, ",%s", macaddr); /* Guest dev mac */
         virBufferVSprintf(&buf, ",%s", net->ifname); /* Host dev */
-        virBufferVSprintf(&buf, ",%s", macaddr); /* Host dev mac */
+        virBufferVSprintf(&buf, ",%s", host_macaddr); /* Host dev mac */
 
         if (driver->version >= VZCTL_BRIDGE_MIN_VERSION) {
             virBufferVSprintf(&buf, ",%s", net->data.bridge.brname); /* Host bridge */
@@ -549,7 +553,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
             virBufferVSprintf(configBuf, "ifname=%s", dev_name_ve);
             virBufferVSprintf(configBuf, ",mac=%s", macaddr); /* Guest dev mac */
             virBufferVSprintf(configBuf, ",host_ifname=%s", net->ifname); /* Host dev */
-            virBufferVSprintf(configBuf, ",host_mac=%s", macaddr); /* Host dev mac */
+            virBufferVSprintf(configBuf, ",host_mac=%s", host_macaddr); /* Host dev mac */
             virBufferVSprintf(configBuf, ",bridge=%s", net->data.bridge.brname); /* Host bridge */
         }
 
