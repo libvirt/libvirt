@@ -16,6 +16,7 @@ stdint.h
 stdio.h
 stdlib.h
 string.h
+sys_ioctl.h
 sys_select.h
 sys_socket.h
 sys_stat.h

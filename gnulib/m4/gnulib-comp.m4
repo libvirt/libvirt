@@ -82,6 +82,13 @@ AC_SUBST([LTALLOCA])
   gl_ARPA_INET_MODULE_INDICATOR([inet_ntop])
   gl_INET_PTON
   gl_ARPA_INET_MODULE_INDICATOR([inet_pton])
+  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+  if test "$ac_cv_header_winsock2_h" = yes; then
+    AC_LIBOBJ([ioctl])
+    gl_REPLACE_SYS_IOCTL_H
+  fi
+  gl_SYS_IOCTL_MODULE_INDICATOR([ioctl])
+  gl_MODULE_INDICATOR([ioctl])
   gl_FUNC_LSEEK
   gl_UNISTD_MODULE_INDICATOR([lseek])
   gl_FUNC_LSTAT
@@ -141,6 +148,8 @@ AC_SUBST([LTALLOCA])
   gl_STRING_MODULE_INDICATOR([strnlen])
   gl_FUNC_STRSEP
   gl_STRING_MODULE_INDICATOR([strsep])
+  gl_SYS_IOCTL_H
+  AC_PROG_MKDIR_P
   gl_HEADER_SYS_SELECT
   AC_PROG_MKDIR_P
   gl_HEADER_SYS_SOCKET
@@ -213,13 +222,6 @@ AC_SUBST([LTALLOCA])
   gl_SYS_SOCKET_MODULE_INDICATOR([bind])
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
   if test "$ac_cv_header_winsock2_h" = yes; then
-    AC_LIBOBJ([ioctl])
-    gl_REPLACE_SYS_IOCTL_H
-  fi
-  gl_SYS_IOCTL_MODULE_INDICATOR([ioctl])
-  gl_MODULE_INDICATOR([ioctl])
-  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
-  if test "$ac_cv_header_winsock2_h" = yes; then
     AC_LIBOBJ([listen])
   fi
   gl_SYS_SOCKET_MODULE_INDICATOR([listen])
@@ -227,8 +229,6 @@ AC_SUBST([LTALLOCA])
   gl_SOCKETS
   gt_TYPE_WCHAR_T
   gt_TYPE_WINT_T
-  gl_SYS_IOCTL_H
-  AC_PROG_MKDIR_P
   AC_CHECK_FUNCS([shutdown])
   abs_aux_dir=`cd "$ac_aux_dir"; pwd`
   AC_SUBST([abs_aux_dir])
@@ -354,6 +354,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/inet_ntop.c
   lib/inet_pton.c
   lib/intprops.h
+  lib/ioctl.c
   lib/lseek.c
   lib/lstat.c
   lib/malloc.c
@@ -388,6 +389,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/strndup.c
   lib/strnlen.c
   lib/strsep.c
+  lib/sys_ioctl.in.h
   lib/sys_select.in.h
   lib/sys_socket.in.h
   lib/sys_stat.in.h
@@ -535,10 +537,8 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-wchar.c
   tests=lib/accept.c
   tests=lib/bind.c
-  tests=lib/ioctl.c
   tests=lib/listen.c
   tests=lib/sockets.c
   tests=lib/sockets.h
-  tests=lib/sys_ioctl.in.h
   tests=lib/w32sock.h
 ])

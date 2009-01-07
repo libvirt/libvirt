@@ -73,6 +73,7 @@ gethostname
 getpass
 gettext
 inet_pton
+ioctl
 mkstemp
 mktempd
 perror
@@ -100,6 +101,7 @@ vc-list-files
 #   put *.[ch] files in new gnulib/lib/ dir.
 
 $gnulib_tool			\
+  --no-vc-files			\
   --lgpl=2			\
   --with-tests			\
   --m4-base=gnulib/m4		\

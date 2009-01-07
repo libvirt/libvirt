@@ -1,5 +1,21 @@
 Wed Jan  7 17:12:33 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	bootstrap: pull in gnulib's ioctl module
+	* bootstrap: Invoke gnulib-tool with its --no-vc-files
+	option, since we version-control the files it imports.
+	This tells it not to mark imported files as cvs-ignored.
+	(modules): Add ioctl.
+	* gnulib/lib/ioctl.c: New file.
+	* gnulib/lib/sys_ioctl.in.h: New file.
+	* gnulib/tests/sys_ioctl.in.h: Removed.
+	* gnulib/tests/ioctl.c: Removed.
+	* gnulib/lib/Makefile.am: Update.
+	* gnulib/m4/gnulib-cache.m4: Likewise.
+	* gnulib/m4/gnulib-comp.m4: Likewise.
+	* gnulib/tests/Makefile.am: Likewise.
+	* gnulib/lib/.cvsignore: Ignore sys_ioctl.h.
+	* gnulib/lib/.gitignore: Regenerate.
+
 	ignore generated libvirtd.logrotate.
 	* qemud/.cvsignore: Add libvirtd.logrotate.
 	* qemud/.gitignore: Regenerate.
