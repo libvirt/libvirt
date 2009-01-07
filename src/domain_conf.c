@@ -142,7 +142,7 @@ VIR_ENUM_IMPL(virDomainHostdevSubsys, VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST,
               "usb",
               "pci")
 
-#define virDomainReportError(conn, code, fmt...)                             \
+#define virDomainReportError(conn, code, fmt...)                           \
         virReportErrorHelper(conn, VIR_FROM_DOMAIN, code, __FILE__,        \
                                __FUNCTION__, __LINE__, fmt)
 
@@ -893,8 +893,8 @@ virDomainNetDefParseXML(virConnectPtr conn,
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
         if (network == NULL) {
-            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("No <source> 'network' attribute specified with <interface type='network'/>"));
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+    _("No <source> 'network' attribute specified with <interface type='network'/>"));
             goto error;
         }
         def->data.network.name = network;
@@ -919,8 +919,8 @@ virDomainNetDefParseXML(virConnectPtr conn,
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         if (bridge == NULL) {
-            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("No <source> 'dev' attribute specified with <interface type='bridge'/>"));
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+    _("No <source> 'dev' attribute specified with <interface type='bridge'/>"));
             goto error;
         }
         def->data.bridge.brname = bridge;
@@ -931,21 +931,21 @@ virDomainNetDefParseXML(virConnectPtr conn,
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_MCAST:
         if (port == NULL) {
-            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("No <source> 'port' attribute specified with socket interface"));
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+            _("No <source> 'port' attribute specified with socket interface"));
             goto error;
         }
         if (virStrToLong_i(port, NULL, 10, &def->data.socket.port) < 0) {
-            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("Cannot parse <source> 'port' attribute with socket interface"));
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+            _("Cannot parse <source> 'port' attribute with socket interface"));
             goto error;
         }
 
         if (address == NULL) {
             if (def->type == VIR_DOMAIN_NET_TYPE_CLIENT ||
                 def->type == VIR_DOMAIN_NET_TYPE_MCAST) {
-                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("No <source> 'address' attribute specified with socket interface"));
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+        _("No <source> 'address' attribute specified with socket interface"));
                 goto error;
             }
         } else {
@@ -970,7 +970,7 @@ virDomainNetDefParseXML(virConnectPtr conn,
             int char_ok = c_isalnum(model[i]) || model[i] == '_';
             if (!char_ok) {
                 virDomainReportError (conn, VIR_ERR_INVALID_ARG, "%s",
-                                      _("Model name contains invalid characters"));
+                              _("Model name contains invalid characters"));
                 goto error;
             }
         }
@@ -1142,8 +1142,8 @@ virDomainChrDefParseXML(virConnectPtr conn,
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         if (path == NULL &&
             def->type != VIR_DOMAIN_CHR_TYPE_PTY) {
-            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("Missing source path attribute for char device"));
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing source path attribute for char device"));
             goto error;
         }
 
@@ -1159,13 +1159,13 @@ virDomainChrDefParseXML(virConnectPtr conn,
         if (mode == NULL ||
             STREQ(mode, "connect")) {
             if (connectHost == NULL) {
-                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                     "%s", _("Missing source host attribute for char device"));
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Missing source host attribute for char device"));
                 goto error;
             }
             if (connectService == NULL) {
-                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                     "%s", _("Missing source service attribute for char device"));
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Missing source service attribute for char device"));
                 goto error;
             }
 
@@ -1176,13 +1176,13 @@ virDomainChrDefParseXML(virConnectPtr conn,
             def->data.tcp.listen = 0;
         } else {
             if (bindHost == NULL) {
-                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                     "%s", _("Missing source host attribute for char device"));
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Missing source host attribute for char device"));
                 goto error;
             }
             if (bindService == NULL) {
-                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                     "%s", _("Missing source service attribute for char device"));
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Missing source service attribute for char device"));
                 goto error;
             }
 
@@ -1201,8 +1201,8 @@ virDomainChrDefParseXML(virConnectPtr conn,
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
         if (connectService == NULL) {
-            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("Missing source service attribute for char device"));
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("Missing source service attribute for char device"));
             goto error;
         }
 
@@ -1219,8 +1219,8 @@ virDomainChrDefParseXML(virConnectPtr conn,
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (path == NULL) {
-            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("Missing source path attribute for char device"));
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("Missing source path attribute for char device"));
             goto error;
         }
 
@@ -1293,7 +1293,7 @@ virDomainInputDefParseXML(virConnectPtr conn,
             if (def->bus == VIR_DOMAIN_INPUT_BUS_PS2 && /* Only allow mouse for ps2 */
                 def->type != VIR_DOMAIN_INPUT_TYPE_MOUSE) {
                 virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                     _("ps2 bus does not support %s input device"),
+                                 _("ps2 bus does not support %s input device"),
                                      type);
                 goto error;
             }
@@ -1311,7 +1311,7 @@ virDomainInputDefParseXML(virConnectPtr conn,
             }
             if (def->type != VIR_DOMAIN_INPUT_TYPE_MOUSE) {
                 virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                     _("xen bus does not support %s input device"),
+                                 _("xen bus does not support %s input device"),
                                      type);
                 goto error;
             }
@@ -1480,7 +1480,7 @@ virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
 
                 if (vendor) {
                     if (virStrToLong_ui(vendor, NULL, 0,
-                                        &def->source.subsys.u.usb.vendor) < 0) {
+                                    &def->source.subsys.u.usb.vendor) < 0) {
                         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                  _("cannot parse vendor id %s"), vendor);
                         VIR_FREE(vendor);
@@ -1499,7 +1499,8 @@ virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
                     if (virStrToLong_ui(product, NULL, 0,
                                         &def->source.subsys.u.usb.product) < 0) {
                         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                            _("cannot parse product %s"), product);
+                                             _("cannot parse product %s"),
+                                             product);
                         VIR_FREE(product);
                         goto out;
                     }
@@ -1540,13 +1541,14 @@ virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
                     }
                     VIR_FREE(device);
                 } else {
-                    virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                         "%s", _("usb address needs device id"));
+                    virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                                         _("usb address needs device id"));
                     goto out;
                 }
             } else {
                 virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                     _("unknown usb source type '%s'"), cur->name);
+                                     _("unknown usb source type '%s'"),
+                                     cur->name);
                 goto out;
             }
         }
@@ -1564,6 +1566,97 @@ virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
             "%s", _("missing product"));
         goto out;
+    }
+
+    ret = 0;
+out:
+    return ret;
+}
+
+
+static int
+virDomainHostdevSubsysPciDefParseXML(virConnectPtr conn,
+                                     const xmlNodePtr node,
+                                     virDomainHostdevDefPtr def) {
+
+    int ret = -1;
+    xmlNodePtr cur;
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(cur->name, BAD_CAST "address")) {
+
+                char *domain = virXMLPropString(cur, "domain");
+                if (domain) {
+                    if (virStrToLong_ui(domain, NULL, 0,
+                                    &def->source.subsys.u.pci.domain) < 0) {
+                        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                             _("cannot parse domain %s"),
+                                             domain);
+                        VIR_FREE(domain);
+                        goto out;
+                    }
+                    VIR_FREE(domain);
+                }
+
+                char *bus = virXMLPropString(cur, "bus");
+                if (bus) {
+                    if (virStrToLong_ui(bus, NULL, 0,
+                                        &def->source.subsys.u.pci.bus) < 0) {
+                        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                             _("cannot parse bus %s"), bus);
+                        VIR_FREE(bus);
+                        goto out;
+                    }
+                    VIR_FREE(bus);
+                } else {
+                    virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                         "%s", _("pci address needs bus id"));
+                    goto out;
+                }
+
+                char *slot = virXMLPropString(cur, "slot");
+                if (slot) {
+                    if (virStrToLong_ui(slot, NULL, 0,
+                                        &def->source.subsys.u.pci.slot) < 0)  {
+                        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                             _("cannot parse slot %s"),
+                                             slot);
+                        VIR_FREE(slot);
+                        goto out;
+                    }
+                    VIR_FREE(slot);
+                } else {
+                    virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                         "%s", _("pci address needs slot id"));
+                    goto out;
+                }
+
+                char *function = virXMLPropString(cur, "function");
+                if (function) {
+                    if (virStrToLong_ui(function, NULL, 0,
+                                    &def->source.subsys.u.pci.function) < 0)  {
+                        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                             _("cannot parse function %s"),
+                                             function);
+                        VIR_FREE(function);
+                        goto out;
+                    }
+                    VIR_FREE(function);
+                } else {
+                    virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                                         _("pci address needs function id"));
+                    goto out;
+                }
+            } else {
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                     _("unknown pci source type '%s'"),
+                                     cur->name);
+                goto out;
+            }
+        }
+        cur = cur->next;
     }
 
     ret = 0;
@@ -1617,6 +1710,11 @@ virDomainHostdevDefParseXML(virConnectPtr conn,
                 if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
                     def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
                         if (virDomainHostdevSubsysUsbDefParseXML(conn, cur, def) < 0)
+                            goto error;
+                }
+                if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+                    def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+                        if (virDomainHostdevSubsysPciDefParseXML(conn, cur, def) < 0)
                             goto error;
                 }
             } else {
@@ -2378,9 +2476,9 @@ cleanup:
 #endif /* ! PROXY */
 
 /************************************************************************
- *									*
- * Parser and converter for the CPUset strings used in libvirt		*
- *									*
+ *                                                                        *
+ * Parser and converter for the CPUset strings used in libvirt                *
+ *                                                                        *
  ************************************************************************/
 /**
  * virDomainCpuNumberParse
@@ -2995,7 +3093,7 @@ virDomainHostdevDefFormat(virConnectPtr conn,
     }
 
     type = virDomainHostdevSubsysTypeToString(def->source.subsys.type);
-    if (!type || def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+    if (!type || (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB && def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) ) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              _("unexpected hostdev type %d"),
                              def->source.subsys.type);
@@ -3005,15 +3103,24 @@ virDomainHostdevDefFormat(virConnectPtr conn,
     virBufferVSprintf(buf, "    <hostdev mode='%s' type='%s'>\n", mode, type);
     virBufferAddLit(buf, "      <source>\n");
 
-    if (def->source.subsys.u.usb.vendor) {
-        virBufferVSprintf(buf, "        <vendor id='0x%.4x'/>\n",
-                          def->source.subsys.u.usb.vendor);
-        virBufferVSprintf(buf, "        <product id='0x%.4x'/>\n",
-                          def->source.subsys.u.usb.product);
-    } else {
-        virBufferVSprintf(buf, "        <address bus='%d' device='%d'/>\n",
-                          def->source.subsys.u.usb.bus,
-                          def->source.subsys.u.usb.device);
+    if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+        if (def->source.subsys.u.usb.vendor) {
+            virBufferVSprintf(buf, "        <vendor id='0x%.4x'/>\n",
+                              def->source.subsys.u.usb.vendor);
+            virBufferVSprintf(buf, "        <product id='0x%.4x'/>\n",
+                              def->source.subsys.u.usb.product);
+        } else {
+            virBufferVSprintf(buf, "        <address bus='%d' device='%d'/>\n",
+                              def->source.subsys.u.usb.bus,
+                              def->source.subsys.u.usb.device);
+        }
+    }
+    if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+        virBufferVSprintf(buf, "        <address domain='0x%.4x' bus='0x%.2x' slot='0x%.2x' function='0x%.1x'/>\n",
+                          def->source.subsys.u.pci.domain,
+                          def->source.subsys.u.pci.bus,
+                          def->source.subsys.u.pci.slot,
+                          def->source.subsys.u.pci.function);
     }
 
     virBufferAddLit(buf, "      </source>\n");

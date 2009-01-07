@@ -1,3 +1,9 @@
+Wed Jan  7 13:54:05 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/domain_conf.c src/qemu_conf.c: implement PCI passthrough
+	  for recent KVM versions in a similar way to USB, patch by
+	  Jason Krieg. Some cleanups and reformating too.
+
 Wed Jan  7 11:54:06 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_driver.c: fix the mac addresses generation for 

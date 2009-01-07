@@ -1203,8 +1203,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
     for (i = 0 ; i < vm->def->nhostdevs ; i++) {
         int ret;
         char* usbdev;
+        char* pcidev;
         virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
 
+        /* USB */
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
             if(hostdev->source.subsys.u.usb.vendor) {
@@ -1224,6 +1226,23 @@ int qemudBuildCommandLine(virConnectPtr conn,
             ADD_ARG_LIT(usbdev);
             VIR_FREE(usbdev);
         }
+
+        /* PCI */
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+            ret = virAsprintf(&pcidev, "host=%.2x:%.2x.%.1x",
+                           hostdev->source.subsys.u.pci.bus,
+                           hostdev->source.subsys.u.pci.slot,
+                           hostdev->source.subsys.u.pci.function);
+            if (ret < 0) {
+                pcidev = NULL;
+                goto error;
+            }
+            ADD_ARG_LIT("-pcidevice");
+            ADD_ARG_LIT(pcidev);
+            VIR_FREE(pcidev);
+        }
+
     }
 
     if (migrateFrom) {
