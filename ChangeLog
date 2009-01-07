@@ -1,5 +1,13 @@
 Wed Jan  7 17:12:33 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	add more files pulled in via yesterday's gnulib upgrade
+	* gnulib/m4/multiarch.m4: New file.
+	* gnulib/m4/hostent.m4: New file.
+	* gnulib/m4/servent.m4: New file.
+	* .x-sc_prohibit_gethostby: Exempt all gnulib/m4/* files, so
+	hostent.m4's uses of gethostbyname and gethostbyaddr do not
+	trigger a "make syntax-check" failure.
+
 	bootstrap: pull in gnulib's ioctl module
 	* bootstrap: Invoke gnulib-tool with its --no-vc-files
 	option, since we version-control the files it imports.
