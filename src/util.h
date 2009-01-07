@@ -166,6 +166,8 @@ static inline int getuid (void) { return 0; }
 static inline int getgid (void) { return 0; }
 #endif
 
+char *virGetHostname(void);
+
 int virKillProcess(pid_t pid, int sig);
 
 #endif /* __VIR_UTIL_H__ */

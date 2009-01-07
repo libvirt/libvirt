@@ -47,6 +47,7 @@
 #ifdef HAVE_PATHS_H
 #include <paths.h>
 #endif
+#include <netdb.h>
 
 #include "virterror_internal.h"
 #include "logging.h"
@@ -1336,6 +1337,38 @@ int virDiskNameToIndex(const char *name) {
     }
 
     return idx;
+}
+
+#ifndef AI_CANONIDN
+#define AI_CANONIDN 0
+#endif
+
+char *virGetHostname(void)
+{
+    int r;
+    char hostname[HOST_NAME_MAX+1], *result;
+    struct addrinfo hints, *info;
+
+    r = gethostname (hostname, sizeof(hostname));
+    if (r == -1)
+        return NULL;
+    NUL_TERMINATE(hostname);
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_flags = AI_CANONNAME|AI_CANONIDN;
+    hints.ai_family = AF_UNSPEC;
+    r = getaddrinfo(hostname, NULL, &hints, &info);
+    if (r != 0)
+        return NULL;
+    if (info->ai_canonname == NULL) {
+        freeaddrinfo(info);
+        return NULL;
+    }
+
+    /* Caller frees this string. */
+    result = strdup (info->ai_canonname);
+    freeaddrinfo(info);
+    return result;
 }
 
 /* send signal to a single process */

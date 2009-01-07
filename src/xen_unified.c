@@ -447,20 +447,15 @@ xenUnifiedGetVersion (virConnectPtr conn, unsigned long *hvVer)
 static char *
 xenUnifiedGetHostname (virConnectPtr conn)
 {
-    int r;
-    char hostname [HOST_NAME_MAX+1], *str;
+    char *result;
 
-    r = gethostname (hostname, HOST_NAME_MAX+1);
-    if (r == -1) {
+    result = virGetHostname();
+    if (result == NULL) {
         xenUnifiedError (conn, VIR_ERR_SYSTEM_ERROR, "%s", strerror(errno));
         return NULL;
     }
-    str = strdup (hostname);
-    if (str == NULL) {
-        xenUnifiedError (conn, VIR_ERR_SYSTEM_ERROR, "%s", strerror(errno));
-        return NULL;
-    }
-    return str;
+    /* Caller frees this string. */
+    return result;
 }
 
 static int

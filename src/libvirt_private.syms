@@ -277,6 +277,7 @@ virEventAddHandle;
 virEventRemoveHandle;
 virExec;
 virFormatMacAddr;
+virGetHostname;
 virParseMacAddr;
 virFileDeletePid;
 virFileExists;

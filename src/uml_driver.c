@@ -1149,23 +1149,16 @@ cleanup:
 static char *
 umlGetHostname (virConnectPtr conn)
 {
-    int r;
-    char hostname[HOST_NAME_MAX+1], *str;
+    char *result;
 
-    r = gethostname (hostname, HOST_NAME_MAX+1);
-    if (r == -1) {
+    result = virGetHostname();
+    if (result == NULL) {
         umlReportError (conn, NULL, NULL, VIR_ERR_SYSTEM_ERROR,
                           "%s", strerror (errno));
         return NULL;
     }
     /* Caller frees this string. */
-    str = strdup (hostname);
-    if (str == NULL) {
-        umlReportError (conn, NULL, NULL, VIR_ERR_SYSTEM_ERROR,
-                         "%s", strerror (errno));
-        return NULL;
-    }
-    return str;
+    return result;
 }
 
 static int umlListDomains(virConnectPtr conn, int *ids, int nids) {

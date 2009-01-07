@@ -1,3 +1,10 @@
+Wed Jan  7 11:38:04 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt_private.syms src/qemu_driver.c src/test.c
+	  src/uml_driver.c src/util.c src/util.h src/xen_unified.c:
+	  unify hostname lookup using virGetHostname convenience function,
+	  patch by David Lutterkort
+
 Tue Jan  6 20:38:23 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	update from gnulib; use its time_r module for localtime_r on mingw
