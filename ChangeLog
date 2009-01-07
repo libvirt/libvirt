@@ -1,3 +1,9 @@
+Wed Jan  7 17:12:33 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	ignore generated libvirtd.logrotate.
+	* qemud/.cvsignore: Add libvirtd.logrotate.
+	* qemud/.gitignore: Regenerate.
+
 Wed Jan  7 13:54:05 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/domain_conf.c src/qemu_conf.c: implement PCI passthrough
@@ -6,7 +12,7 @@ Wed Jan  7 13:54:05 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 Wed Jan  7 11:54:06 CET 2009 Daniel Veillard <veillard@redhat.com>
 
-	* src/openvz_driver.c: fix the mac addresses generation for 
+	* src/openvz_driver.c: fix the mac addresses generation for
 	  OpenVZ veth devices, patch by Evgeniy Sokolov
 
 Wed Jan  7 11:38:04 CET 2009 Daniel Veillard <veillard@redhat.com>
