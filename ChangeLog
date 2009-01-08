@@ -1,3 +1,9 @@
+Thu Jan  8 09:48:04 CET 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	poll: don't return uninitialized
+	* gnulib/lib/poll.c (poll) [WIN32_NATIVE]: Initialize "rc".
+	[sync from gnulib also adjusts cpp indentation to reflect nesting.]
+
 Wed Jan  7 17:12:33 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	add more files pulled in via yesterday's gnulib upgrade

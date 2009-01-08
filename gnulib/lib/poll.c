@@ -1,7 +1,7 @@
 /* Emulation for poll(2)
    Contributed by Paolo Bonzini.
 
-   Copyright 2001, 2002, 2003, 2006, 2007, 2008 Free Software Foundation, Inc.
+   Copyright 2001-2003, 2006-2009 Free Software Foundation, Inc.
 
    This file is part of gnulib.
 
@@ -29,35 +29,35 @@
 #include <assert.h>
 
 #if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
-#define WIN32_NATIVE
-#include <winsock2.h>
-#include <windows.h>
-#include <io.h>
-#include <stdio.h>
-#include <conio.h>
+# define WIN32_NATIVE
+# include <winsock2.h>
+# include <windows.h>
+# include <io.h>
+# include <stdio.h>
+# include <conio.h>
 #else
-#include <sys/time.h>
-#include <sys/socket.h>
-#include <sys/select.h>
-#include <unistd.h>
+# include <sys/time.h>
+# include <sys/socket.h>
+# include <sys/select.h>
+# include <unistd.h>
 #endif
 
 #ifdef HAVE_SYS_IOCTL_H
-#include <sys/ioctl.h>
+# include <sys/ioctl.h>
 #endif
 #ifdef HAVE_SYS_FILIO_H
-#include <sys/filio.h>
+# include <sys/filio.h>
 #endif
 
 #include <time.h>
 
 #ifndef INFTIM
-#define INFTIM (-1)
+# define INFTIM (-1)
 #endif
 
 /* BeOS does not have MSG_PEEK.  */
 #ifndef MSG_PEEK
-#define MSG_PEEK 0
+# define MSG_PEEK 0
 #endif
 
 #ifdef WIN32_NATIVE
@@ -92,9 +92,9 @@ typedef enum _FILE_INFORMATION_CLASS {
 typedef DWORD (WINAPI *PNtQueryInformationFile)
 	 (HANDLE, IO_STATUS_BLOCK *, VOID *, ULONG, FILE_INFORMATION_CLASS);
 
-#ifndef PIPE_BUF
-#define PIPE_BUF	512
-#endif
+# ifndef PIPE_BUF
+#  define PIPE_BUF	512
+# endif
 
 /* Compute revents values for file handle H.  */
 
@@ -234,7 +234,7 @@ compute_revents (int fd, int sought, fd_set *rfds, fd_set *wfds, fd_set *efds)
       int r;
       int socket_errno;
 
-#if defined __MACH__ && defined __APPLE__
+# if defined __MACH__ && defined __APPLE__
       /* There is a bug in Mac OS X that causes it to ignore MSG_PEEK
          for some kinds of descriptors.  Detect if this descriptor is a
          connected socket, a server socket, or something else using a
@@ -243,11 +243,11 @@ compute_revents (int fd, int sought, fd_set *rfds, fd_set *wfds, fd_set *efds)
       socket_errno = (r < 0) ? errno : 0;
       if (r == 0 || socket_errno == ENOTSOCK)
 	ioctl (fd, FIONREAD, &r);
-#else
+# else
       char data[64];
       r = recv (fd, data, sizeof (data), MSG_PEEK);
       socket_errno = (r < 0) ? errno : 0;
-#endif
+# endif
       if (r == 0)
 	happened |= POLLHUP;
 
@@ -288,7 +288,7 @@ poll (pfd, nfd, timeout)
   int maxfd, rc;
   nfds_t i;
 
-#ifdef _SC_OPEN_MAX
+# ifdef _SC_OPEN_MAX
   static int sc_open_max = -1;
 
   if (nfd < 0
@@ -299,15 +299,15 @@ poll (pfd, nfd, timeout)
       errno = EINVAL;
       return -1;
     }
-#else /* !_SC_OPEN_MAX */
-#ifdef OPEN_MAX
+# else /* !_SC_OPEN_MAX */
+#  ifdef OPEN_MAX
   if (nfd < 0 || nfd > OPEN_MAX)
     {
       errno = EINVAL;
       return -1;
     }
-#endif /* OPEN_MAX -- else, no check is needed */
-#endif /* !_SC_OPEN_MAX */
+#  endif /* OPEN_MAX -- else, no check is needed */
+# endif /* !_SC_OPEN_MAX */
 
   /* EFAULT is not necessary to implement, but let's do it in the
      simplest case. */
@@ -405,7 +405,7 @@ poll (pfd, nfd, timeout)
   BOOL poll_again;
   MSG msg;
   char sockbuf[256];
-  int rc;
+  int rc = 0;
   nfds_t i;
 
   if (nfd < 0 || timeout < -1)
