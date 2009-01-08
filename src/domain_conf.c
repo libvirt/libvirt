@@ -534,7 +534,8 @@ int virDomainDiskCompare(virDomainDiskDefPtr a,
  */
 static virDomainDiskDefPtr
 virDomainDiskDefParseXML(virConnectPtr conn,
-                         xmlNodePtr node) {
+                         xmlNodePtr node,
+                         int flags ATTRIBUTE_UNUSED) {
     virDomainDiskDefPtr def;
     xmlNodePtr cur;
     char *type = NULL;
@@ -721,7 +722,8 @@ cleanup:
  */
 static virDomainFSDefPtr
 virDomainFSDefParseXML(virConnectPtr conn,
-                       xmlNodePtr node) {
+                       xmlNodePtr node,
+                       int flags ATTRIBUTE_UNUSED) {
     virDomainFSDefPtr def;
     xmlNodePtr cur;
     char *type = NULL;
@@ -807,7 +809,8 @@ cleanup:
 static virDomainNetDefPtr
 virDomainNetDefParseXML(virConnectPtr conn,
                         virCapsPtr caps,
-                        xmlNodePtr node) {
+                        xmlNodePtr node,
+                        int flags ATTRIBUTE_UNUSED) {
     virDomainNetDefPtr def;
     xmlNodePtr cur;
     char *macaddr = NULL;
@@ -1038,7 +1041,8 @@ error:
  */
 static virDomainChrDefPtr
 virDomainChrDefParseXML(virConnectPtr conn,
-                        xmlNodePtr node) {
+                        xmlNodePtr node,
+                        int flags ATTRIBUTE_UNUSED) {
     xmlNodePtr cur;
     char *type = NULL;
     char *bindHost = NULL;
@@ -1257,7 +1261,8 @@ error:
 static virDomainInputDefPtr
 virDomainInputDefParseXML(virConnectPtr conn,
                           const char *ostype,
-                          xmlNodePtr node) {
+                          xmlNodePtr node,
+                          int flags ATTRIBUTE_UNUSED) {
     virDomainInputDefPtr def;
     char *type = NULL;
     char *bus = NULL;
@@ -1436,7 +1441,8 @@ error:
 
 static virDomainSoundDefPtr
 virDomainSoundDefParseXML(virConnectPtr conn,
-                          const xmlNodePtr node) {
+                          const xmlNodePtr node,
+                          int flags ATTRIBUTE_UNUSED) {
 
     char *model;
     virDomainSoundDefPtr def;
@@ -1467,7 +1473,8 @@ error:
 static int
 virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
                                      const xmlNodePtr node,
-                                     virDomainHostdevDefPtr def) {
+                                     virDomainHostdevDefPtr def,
+                                     int flags ATTRIBUTE_UNUSED) {
 
     int ret = -1;
     xmlNodePtr cur;
@@ -1667,7 +1674,8 @@ out:
 
 static virDomainHostdevDefPtr
 virDomainHostdevDefParseXML(virConnectPtr conn,
-                            const xmlNodePtr node) {
+                            const xmlNodePtr node,
+                            int flags) {
 
     xmlNodePtr cur;
     virDomainHostdevDefPtr def;
@@ -1709,7 +1717,8 @@ virDomainHostdevDefParseXML(virConnectPtr conn,
             if (xmlStrEqual(cur->name, BAD_CAST "source")) {
                 if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
                     def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-                        if (virDomainHostdevSubsysUsbDefParseXML(conn, cur, def) < 0)
+                        if (virDomainHostdevSubsysUsbDefParseXML(conn, cur,
+                                                                 def, flags) < 0)
                             goto error;
                 }
                 if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
@@ -1763,7 +1772,8 @@ static int virDomainLifecycleParseXML(virConnectPtr conn,
 virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
                                               virCapsPtr caps,
                                               const virDomainDefPtr def,
-                                              const char *xmlStr)
+                                              const char *xmlStr,
+                                              int flags)
 {
     xmlDocPtr xml;
     xmlNodePtr node;
@@ -1790,27 +1800,28 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
 
     if (xmlStrEqual(node->name, BAD_CAST "disk")) {
         dev->type = VIR_DOMAIN_DEVICE_DISK;
-        if (!(dev->data.disk = virDomainDiskDefParseXML(conn, node)))
+        if (!(dev->data.disk = virDomainDiskDefParseXML(conn, node, flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "filesystem")) {
         dev->type = VIR_DOMAIN_DEVICE_FS;
-        if (!(dev->data.fs = virDomainFSDefParseXML(conn, node)))
+        if (!(dev->data.fs = virDomainFSDefParseXML(conn, node, flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
         dev->type = VIR_DOMAIN_DEVICE_NET;
-        if (!(dev->data.net = virDomainNetDefParseXML(conn, caps, node)))
+        if (!(dev->data.net = virDomainNetDefParseXML(conn, caps, node, flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "input")) {
         dev->type = VIR_DOMAIN_DEVICE_INPUT;
-        if (!(dev->data.input = virDomainInputDefParseXML(conn, def->os.type, node)))
+        if (!(dev->data.input = virDomainInputDefParseXML(conn, def->os.type,
+                                                          node, flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "sound")) {
         dev->type = VIR_DOMAIN_DEVICE_SOUND;
-        if (!(dev->data.sound = virDomainSoundDefParseXML(conn, node)))
+        if (!(dev->data.sound = virDomainSoundDefParseXML(conn, node, flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "hostdev")) {
         dev->type = VIR_DOMAIN_DEVICE_HOSTDEV;
-        if (!(dev->data.hostdev = virDomainHostdevDefParseXML(conn, node)))
+        if (!(dev->data.hostdev = virDomainHostdevDefParseXML(conn, node, flags)))
             goto error;
     } else {
         virDomainReportError(conn, VIR_ERR_XML_ERROR,
@@ -2090,7 +2101,8 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
         virDomainDiskDefPtr disk = virDomainDiskDefParseXML(conn,
-                                                            nodes[i]);
+                                                            nodes[i],
+                                                            flags);
         if (!disk)
             goto error;
 
@@ -2110,7 +2122,8 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
         virDomainFSDefPtr fs = virDomainFSDefParseXML(conn,
-                                                      nodes[i]);
+                                                      nodes[i],
+                                                      flags);
         if (!fs)
             goto error;
 
@@ -2129,7 +2142,8 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     for (i = 0 ; i < n ; i++) {
         virDomainNetDefPtr net = virDomainNetDefParseXML(conn,
                                                          caps,
-                                                         nodes[i]);
+                                                         nodes[i],
+                                                         flags);
         if (!net)
             goto error;
 
@@ -2149,7 +2163,8 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
 
     for (i = 0 ; i < n ; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(conn,
-                                                         nodes[i]);
+                                                         nodes[i],
+                                                         flags);
         if (!chr)
             goto error;
 
@@ -2168,7 +2183,8 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
 
     for (i = 0 ; i < n ; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(conn,
-                                                         nodes[i]);
+                                                         nodes[i],
+                                                         flags);
         if (!chr)
             goto error;
 
@@ -2179,7 +2195,8 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
 
     if ((node = virXPathNode(conn, "./devices/console[1]", ctxt)) != NULL) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(conn,
-                                                         node);
+                                                         node,
+                                                         flags);
         if (!chr)
             goto error;
 
@@ -2217,7 +2234,8 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     for (i = 0 ; i < n ; i++) {
         virDomainInputDefPtr input = virDomainInputDefParseXML(conn,
                                                                def->os.type,
-                                                               nodes[i]);
+                                                               nodes[i],
+                                                               flags);
         if (!input)
             goto error;
 
@@ -2292,7 +2310,8 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     for (i = 0 ; i < n ; i++) {
         int collision = 0, j;
         virDomainSoundDefPtr sound = virDomainSoundDefParseXML(conn,
-                                                               nodes[i]);
+                                                               nodes[i],
+                                                               flags);
         if (!sound)
             goto error;
 
@@ -2319,7 +2338,9 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     if (n && VIR_ALLOC_N(def->hostdevs, n) < 0)
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
-        virDomainHostdevDefPtr hostdev = virDomainHostdevDefParseXML(conn, nodes[i]);
+        virDomainHostdevDefPtr hostdev = virDomainHostdevDefParseXML(conn,
+                                                                     nodes[i],
+                                                                     flags);
         if (!hostdev)
             goto error;
 
@@ -2363,7 +2384,8 @@ catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 
 virDomainDefPtr virDomainDefParseString(virConnectPtr conn,
                                         virCapsPtr caps,
-                                        const char *xmlStr)
+                                        const char *xmlStr,
+                                        int flags)
 {
     xmlParserCtxtPtr pctxt;
     xmlDocPtr xml = NULL;
@@ -2394,8 +2416,7 @@ virDomainDefPtr virDomainDefParseString(virConnectPtr conn,
         goto cleanup;
     }
 
-    def = virDomainDefParseNode(conn, caps, xml, root,
-                                VIR_DOMAIN_XML_INACTIVE);
+    def = virDomainDefParseNode(conn, caps, xml, root, flags);
 
 cleanup:
     xmlFreeParserCtxt (pctxt);

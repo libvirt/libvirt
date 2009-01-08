@@ -275,7 +275,8 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
     virDomainPtr dom = NULL;
 
     lxcDriverLock(driver);
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml)))
+    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     if ((def->nets != NULL) && !(driver->have_netns)) {
@@ -1002,7 +1003,8 @@ lxcDomainCreateAndStart(virConnectPtr conn,
     virDomainPtr dom = NULL;
 
     lxcDriverLock(driver);
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml)))
+    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     if ((def->nets != NULL) && !(driver->have_netns)) {

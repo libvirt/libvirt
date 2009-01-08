@@ -1199,7 +1199,8 @@ static virDomainPtr umlDomainCreate(virConnectPtr conn, const char *xml,
     virDomainPtr dom = NULL;
 
     umlDriverLock(driver);
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml)))
+    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     vm = virDomainFindByName(&driver->domains, def->name);
@@ -1574,7 +1575,8 @@ static virDomainPtr umlDomainDefine(virConnectPtr conn, const char *xml) {
     virDomainPtr dom = NULL;
 
     umlDriverLock(driver);
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml)))
+    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     if (!(vm = virDomainAssignDef(conn,

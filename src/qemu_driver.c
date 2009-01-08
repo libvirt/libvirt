@@ -1689,7 +1689,8 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     virDomainEventPtr event = NULL;
 
     qemuDriverLock(driver);
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml)))
+    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     vm = virDomainFindByName(&driver->domains, def->name);
@@ -2574,7 +2575,8 @@ static int qemudDomainRestore(virConnectPtr conn,
     }
 
     /* Create a domain from this XML */
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml))) {
+    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+                                        VIR_DOMAIN_XML_INACTIVE))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("failed to parse XML"));
         goto cleanup;
@@ -2761,7 +2763,8 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     int newVM = 1;
 
     qemuDriverLock(driver);
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml)))
+    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     vm = virDomainFindByName(&driver->domains, def->name);
@@ -3223,9 +3226,8 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         goto cleanup;
     }
 
-    dev = virDomainDeviceDefParse(dom->conn,
-                                  driver->caps,
-                                  vm->def, xml);
+    dev = virDomainDeviceDefParse(dom->conn, driver->caps, vm->def, xml,
+                                  VIR_DOMAIN_XML_INACTIVE);
     qemuDriverUnlock(driver);
     if (dev == NULL)
         goto cleanup;
@@ -3361,7 +3363,8 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
         goto cleanup;
     }
 
-    dev = virDomainDeviceDefParse(dom->conn, driver->caps, vm->def, xml);
+    dev = virDomainDeviceDefParse(dom->conn, driver->caps, vm->def, xml,
+                                  VIR_DOMAIN_XML_INACTIVE);
     qemuDriverUnlock(driver);
     if (dev == NULL)
         goto cleanup;
@@ -3997,7 +4000,8 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
     }
 
     /* Parse the domain XML. */
-    if (!(def = virDomainDefParseString(dconn, driver->caps, dom_xml))) {
+    if (!(def = virDomainDefParseString(dconn, driver->caps, dom_xml,
+                                        VIR_DOMAIN_XML_INACTIVE))) {
         qemudReportError (dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                           "%s", _("failed to parse XML"));
         goto cleanup;

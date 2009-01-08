@@ -525,10 +525,12 @@ void virDomainRemoveInactive(virDomainObjListPtr doms,
 virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
                                               virCapsPtr caps,
                                               const virDomainDefPtr def,
-                                              const char *xmlStr);
+                                              const char *xmlStr,
+                                              int flags);
 virDomainDefPtr virDomainDefParseString(virConnectPtr conn,
                                         virCapsPtr caps,
-                                        const char *xmlStr);
+                                        const char *xmlStr,
+                                        int flags);
 virDomainDefPtr virDomainDefParseFile(virConnectPtr conn,
                                       virCapsPtr caps,
                                       const char *filename,

@@ -1,3 +1,24 @@
+Thu Jan  8 14:41:55 CET 2009 Guido Günther <agx@sigxcpu.org>
+
+	pass flags argument to all virDomain*DefParse* functions
+	* src/domain_conf.c (virDomainDiskDefParseXML,
+	  virDomainFSDefParseXML, virDomainNetDefParseXML,
+	  virDomainChrDefParseXML, virDomainSoundDefParseXML,
+	  virDomainHostdevSubsysUsbDefParseXML, virDomainHostdevDefParseXML,
+	  virDomainDefParseString): Add and pass on flags argument
+	* src/domain_conf.h (virDomainDeviceDefParse,
+	  virDomainDefParseString): Add flags argument
+	* src/lxc_driver.c (lxcDomainDefine): Pass VIR_DOMAIN_XML_INACTIVE
+	* src/openvz_driver.c (openvzDomainDefineXML): Likewise
+	* src/qemu_driver.c (qemudDomainCreate, qemudDomainRestore,
+	  qemudDomainDefine, qemudDomainAttachDevice): Likewise
+	* src/test.c (testOpenDefault, testDomainCreateXML, testDomainRestore,
+	  testDomainDefineXML): Likewise
+	* src/uml_driver.c (umlDomainCreate, umlDomainDefine): Likewise
+	* src/xend_internal.c (xenDaemonCreateXML, xenDaemonDomainCreateXML):
+	  Likewise
+	* tests/qemuxml2xmltest.c (testCompareXMLToXMLFiles): Likewise
+
 Thu Jan  8 09:48:04 CET 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	poll: don't return uninitialized

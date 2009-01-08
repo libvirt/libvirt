@@ -3772,7 +3772,8 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc,
 
     if (!(def = virDomainDefParseString(conn,
                                         priv->caps,
-                                        xmlDesc)))
+                                        xmlDesc,
+                                        VIR_DOMAIN_XML_INACTIVE)))
         return (NULL);
 
     if (!(sexpr = xenDaemonFormatSxpr(conn, def, priv->xendConfigVersion))) {
@@ -4248,7 +4249,8 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
     if (priv->xendConfigVersion < 3)
         return(NULL);
 
-    if (!(def = virDomainDefParseString(conn, priv->caps, xmlDesc))) {
+    if (!(def = virDomainDefParseString(conn, priv->caps, xmlDesc,
+                                        VIR_DOMAIN_XML_INACTIVE))) {
         virXendError(conn, VIR_ERR_XML_ERROR,
                      "%s", _("failed to parse domain description"));
         return (NULL);
