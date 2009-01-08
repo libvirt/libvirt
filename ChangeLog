@@ -1,3 +1,13 @@
+Thu Jan  8 20:47:26 CET 2009 Guido Günther <agx@sigxcpu.org>
+
+	add missing flags argument
+	* src/xend_internal.c (xenDaemonAttachDevice, xenDaemonDetachDevice):
+	  Add missing flags argument
+	* src/xm_internal.c (xenXMDomainDefineXML, xenXMDomainAttachDevice,
+	  xenXMDomainDetachDevice): Likewise
+	* tests/xmconfigtest.c (testCompareParseXML): Likewise
+	* tests/xml2sexprtest.c (testCompareFiles): Likewise
+
 Thu Jan  8 14:41:55 CET 2009 Guido Günther <agx@sigxcpu.org>
 
 	pass flags argument to all virDomain*DefParse* functions

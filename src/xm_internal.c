@@ -2285,7 +2285,8 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
         return (NULL);
 #endif
 
-    if (!(def = virDomainDefParseString(conn, priv->caps, xml)))
+    if (!(def = virDomainDefParseString(conn, priv->caps, xml,
+                                        VIR_DOMAIN_XML_INACTIVE)))
         return (NULL);
 
     if (virHashLookup(nameConfigMap, def->name)) {
@@ -2527,7 +2528,7 @@ xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
     if (!(dev = virDomainDeviceDefParse(domain->conn,
                                         priv->caps,
                                         entry->def,
-                                        xml)))
+                                        xml, VIR_DOMAIN_XML_INACTIVE)))
         return -1;
 
     switch (dev->type) {
@@ -2616,7 +2617,7 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
     if (!(dev = virDomainDeviceDefParse(domain->conn,
                                         priv->caps,
                                         entry->def,
-                                        xml)))
+                                        xml, VIR_DOMAIN_XML_INACTIVE)))
         return -1;
 
     switch (dev->type) {

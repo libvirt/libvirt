@@ -3857,7 +3857,7 @@ xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
 
     if (!(dev = virDomainDeviceDefParse(domain->conn,
                                         priv->caps,
-                                        def, xml)))
+                                        def, xml, VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
 
@@ -3947,7 +3947,7 @@ xenDaemonDetachDevice(virDomainPtr domain, const char *xml)
 
     if (!(dev = virDomainDeviceDefParse(domain->conn,
                                         priv->caps,
-                                        def, xml)))
+                                        def, xml, VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     if (virDomainXMLDevID(domain, dev, class, ref, sizeof(ref)))
