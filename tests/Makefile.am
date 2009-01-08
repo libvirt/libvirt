@@ -33,6 +33,7 @@ LDADDS = \
         $(WARN_CFLAGS) \
 	../src/libvirt_test.la \
 	../gnulib/lib/libgnu.la \
+	$(LIBSOCKET) \
         $(COVERAGE_LDFLAGS)
 
 EXTRA_DIST =		\

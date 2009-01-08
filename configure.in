@@ -79,9 +79,10 @@ AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/syslimits.h sys/utsname.h sys/wait.h
 
 dnl Where are the XDR functions?
 dnl If portablexdr is installed, prefer that.
-dnl Otherwise try -lrpc (Cygwin) -lxdr (some MinGW) or none (most Unix)
+dnl Otherwise try -lrpc (Cygwin) -lxdr (some MinGW), -lnsl (Solaris)
+dnl or none (most Unix)
 AC_CHECK_LIB([portablexdr],[xdrmem_create],[],[
-	AC_SEARCH_LIBS([xdrmem_create],[rpc xdr])
+	AC_SEARCH_LIBS([xdrmem_create],[rpc xdr nsl])
 	])
 
 AC_CHECK_LIB([intl],[gettext],[])

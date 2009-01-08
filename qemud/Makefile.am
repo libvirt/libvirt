@@ -250,7 +250,7 @@ endif # DBUS_INIT_SCRIPTS_RED_HAT
 
 # This must be added last, since functions it provides/replaces
 # are used by nearly every other library.
-libvirtd_LDADD += ../gnulib/lib/libgnu.la
+libvirtd_LDADD += ../gnulib/lib/libgnu.la $(LIBSOCKET)
 
 endif # WITH_LIBVIRTD
 

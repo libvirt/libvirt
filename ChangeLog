@@ -1,3 +1,10 @@
+Thu Jan  8 20:28:06 GMT 2009  John Levon  <levon@movementarian.org>
+
+	Fixups after gnulib refresh
+	* configure.in: search -lnsl for xdr functions
+	* qemud/Makefile.am: link in $(LIBSOCKET)
+	* tests/Makefile.am: link in $(LIBSOCKET)
+
 Thu Jan  8 20:47:26 CET 2009 Guido Günther <agx@sigxcpu.org>
 
 	add missing flags argument
