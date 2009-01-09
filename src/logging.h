@@ -47,12 +47,6 @@
     do { } while (0)
 #define VIR_ERROR_INT(category, f, l, fmt,...) \
     do { } while (0)
-#define VIR_INFO_INT(category, fmt,...) \
-    do { } while (0)
-#define VIR_WARN_INT(category, fmt,...) \
-    do { } while (0)
-#define VIR_ERROR_INT(category, fmt,...) \
-    do { } while (0)
 #endif /* !ENABLE_DEBUG */
 
 #define VIR_DEBUG(fmt,...)                                                  \
@@ -114,14 +108,12 @@ typedef int (*virLogOutputFunc) (const char *category, int priority,
  */
 typedef void (*virLogCloseFunc) (void *data);
 
+#ifdef ENABLE_DEBUG
+
 extern int virLogSetDefaultPriority(int priority);
 extern int virLogDefineFilter(const char *match, int priority, int flags);
 extern int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c,
                               void *data, int priority, int flags);
-
-#if 0
-extern char *virLogGetDump(int flags);
-#endif
 
 /*
  * Internal logging API
@@ -135,5 +127,19 @@ extern int virLogParseOutputs(const char *output);
 extern void virLogMessage(const char *category, int priority,
                           const char *funcname, long long linenr, int flags,
                           const char *fmt, ...) ATTRIBUTE_FORMAT(printf, 6, 7);
+
+#else /* ENABLE_DEBUG */
+
+#define virLogSetDefaultPriority(p)
+#define virLogDefineFilter(m, p, f)
+#define virLogDefineOutput(func, c, d, p, f)
+#define virLogStartup()
+#define virLogReset()
+#define virLogShutdown()
+#define virLogParseFilters(f)
+#define virLogParseOutputs(o)
+#define virLogMessage(c, p, func, l, f, fmt, __VA_ARGS__)
+
+#endif /* ENABLE_DEBUG */
 
 #endif

@@ -1,3 +1,7 @@
+Fri Jan  9 18:29:11 GMT 2009  John Levon  <levon@movementarian.org>
+
+	* src/logging.h: fix non-debug compile
+
 Thu Jan  8 20:28:06 GMT 2009  John Levon  <levon@movementarian.org>
 
 	Fixups after gnulib refresh
