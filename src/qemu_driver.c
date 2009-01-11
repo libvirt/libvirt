@@ -143,6 +143,52 @@ static int qemudMonitorCommand (const virDomainObjPtr vm,
 static struct qemud_driver *qemu_driver = NULL;
 
 
+static int
+qemudLogFD(virConnectPtr conn, const char* logDir, const char* name)
+{
+    char logfile[PATH_MAX];
+    mode_t logmode;
+    uid_t uid = geteuid();
+    int fd = -1;
+
+    if ((strlen(logDir) + /* path */
+         1 + /* Separator */
+         strlen(name) + /* basename */
+         4 + /* suffix .log */
+         1 /* NULL */) > PATH_MAX) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("config file path too long: %s/%s.log"),
+                         logDir, name);
+        return -1;
+    }
+
+    strcpy(logfile, logDir);
+    strcat(logfile, "/");
+    strcat(logfile, name);
+    strcat(logfile, ".log");
+
+    logmode = O_CREAT | O_WRONLY;
+    if (uid != 0)
+        logmode |= O_TRUNC;
+    else
+        logmode |= O_APPEND;
+    if ((fd = open(logfile, logmode, S_IRUSR | S_IWUSR)) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("failed to create logfile %s: %s"),
+                         logfile, strerror(errno));
+        return -1;
+    }
+    if (qemudSetCloseExec(fd) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Unable to set VM logfile close-on-exec flag %s"),
+                         strerror(errno));
+        close(fd);
+        return -1;
+    }
+    return fd;
+}
+
+
 static void
 qemudAutostartConfigs(struct qemud_driver *driver) {
     unsigned int i;
@@ -892,15 +938,12 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     const char **argv = NULL, **tmp;
     const char **progenv = NULL;
     int i, ret;
-    char logfile[PATH_MAX];
     struct stat sb;
     int *tapfds = NULL;
     int ntapfds = 0;
     unsigned int qemuCmdFlags;
     fd_set keepfd;
     const char *emulator;
-    uid_t uid = geteuid();
-    mode_t logmode;
 
     FD_ZERO(&keepfd);
 
@@ -922,21 +965,6 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         vm->def->graphics->data.vnc.port = port;
     }
 
-    if ((strlen(driver->logDir) + /* path */
-         1 + /* Separator */
-         strlen(vm->def->name) + /* basename */
-         4 + /* suffix .log */
-         1 /* NULL */) > PATH_MAX) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("config file path too long: %s/%s.log"),
-                         driver->logDir, vm->def->name);
-        return -1;
-    }
-    strcpy(logfile, driver->logDir);
-    strcat(logfile, "/");
-    strcat(logfile, vm->def->name);
-    strcat(logfile, ".log");
-
     if (virFileMakePath(driver->logDir) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("cannot create log directory %s: %s"),
@@ -944,25 +972,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         return -1;
     }
 
-    logmode = O_CREAT | O_WRONLY;
-    if (uid != 0)
-        logmode |= O_TRUNC;
-    else
-        logmode |= O_APPEND;
-    if ((vm->logfile = open(logfile, logmode, S_IRUSR | S_IWUSR)) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to create logfile %s: %s"),
-                         logfile, strerror(errno));
+    if((vm->logfile = qemudLogFD(conn, driver->logDir, vm->def->name)) < 0)
         return -1;
-    }
-    if (qemudSetCloseExec(vm->logfile) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Unable to set VM logfile close-on-exec flag %s"),
-                         strerror(errno));
-        close(vm->logfile);
-        vm->logfile = -1;
-        return -1;
-    }
 
     emulator = vm->def->emulator;
     if (!emulator)

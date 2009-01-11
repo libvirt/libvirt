@@ -1,3 +1,9 @@
+Sun Jan 11 12:16:44 CET 2009 Guido Günther <agx@sigxcpu.org>
+
+	split out opening of the qemu logfile
+	* src/qemu_driver.c (qemudLogFD): new function
+	  (qemudStartVMDaemon): call qemudLogFD
+
 Fri Jan  9 18:29:11 GMT 2009  John Levon  <levon@movementarian.org>
 
 	* src/logging.h: fix non-debug compile
