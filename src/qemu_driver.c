@@ -149,23 +149,15 @@ qemudLogFD(virConnectPtr conn, const char* logDir, const char* name)
     char logfile[PATH_MAX];
     mode_t logmode;
     uid_t uid = geteuid();
-    int fd = -1;
+    int ret, fd = -1;
 
-    if ((strlen(logDir) + /* path */
-         1 + /* Separator */
-         strlen(name) + /* basename */
-         4 + /* suffix .log */
-         1 /* NULL */) > PATH_MAX) {
+    if ((ret = snprintf(logfile, sizeof(logfile), "%s/%s.log", logDir, name))
+        < 0 || ret >= sizeof(logfile)) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("config file path too long: %s/%s.log"),
+                         _("failed to build logfile name %s/%s.log"),
                          logDir, name);
         return -1;
     }
-
-    strcpy(logfile, logDir);
-    strcat(logfile, "/");
-    strcat(logfile, name);
-    strcat(logfile, ".log");
 
     logmode = O_CREAT | O_WRONLY;
     if (uid != 0)

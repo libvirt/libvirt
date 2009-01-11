@@ -1,3 +1,7 @@
+Sun Jan 11 12:18:38 CET 2009 Guido Günther<agx@sigxcpu.org>
+
+	* src/qemu_driver.c (qemudLogFD): use snprintf instead of emulating it
+
 Sun Jan 11 12:16:44 CET 2009 Guido Günther <agx@sigxcpu.org>
 
 	split out opening of the qemu logfile
