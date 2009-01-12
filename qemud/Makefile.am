@@ -1,5 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
+RPCGEN = $(RPCGEN)
+
 DAEMON_SOURCES =					\
 		event.c event.h				\
 		qemud.c qemud.h				\
@@ -37,23 +39,26 @@ SUFFIXES = .x
 # including <config.h> before "remote_protocol.h".
 .x.c:
 	rm -f $@ $@-t $@-t1 $@-t2
-	rpcgen -c -o $@-t $<
+	$(RPCGEN) -c -o $@-t $<
 	(echo '#include <config.h>'; cat $@-t) > $@-t1
 if GLIBC_RPCGEN
 	perl -w rpcgen_fix.pl $@-t1 > $@-t2
 	rm $@-t1
 	chmod 444 $@-t2
 	mv $@-t2 $@
+else
+	chmod 444 $@-t1
+	mv $@-t1 $@
 endif
 
 .x.h:
 	rm -f $@ $@-t
-	rpcgen -h -o $@-t $<
+	$(RPCGEN) -h -o $@-t $<
 if GLIBC_RPCGEN
 	perl -pi -e 's/\t/        /g' $@-t
+endif
 	chmod 444 $@-t
 	mv $@-t $@
-endif
 endif
 
 remote_protocol.c: remote_protocol.h

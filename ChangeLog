@@ -1,3 +1,9 @@
+Mon Jan 12 19:16:00 +0000 2009 Richard W.M. Jones <rjones@redhat.com>
+
+	Fix invocation of rpcgen.
+	* qemud/Makefile.am: Fix invocation of rpcgen, and make sure
+	we run the right one.
+
 Mon Jan 12 18:55:16 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	tests: quiet virsh-all
