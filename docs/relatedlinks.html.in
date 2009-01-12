@@ -25,7 +25,7 @@
 	The <a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen</a> hypervisor
       </li>
       <li>
-	The <a href="http://fabrice.bellard.free.fr/qemu/">QEMU</a> emulator
+	The <a href="http://bellard.org/qemu/">QEMU</a> emulator
       </li>
       <li>
 	The <a href="http://kvm.qumranet.com/kvmwiki">KVM</a> Linux hypervisor
