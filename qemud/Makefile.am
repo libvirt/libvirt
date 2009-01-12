@@ -239,7 +239,8 @@ libvirtd.init: libvirtd.init.in
 	mv $@-t $@
 
 check-local:
-	if [ -x $(AUGPARSE) ]; then $(AUGPARSE) -I $(srcdir) test_libvirtd.aug ; fi
+	test -x '$(AUGPARSE)' \
+	  && '$(AUGPARSE)' -I $(srcdir) $(srcdir)/test_libvirtd.aug || :
 
 else
 

@@ -1,3 +1,10 @@
+Mon Jan 12 18:55:15 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	fix non-srcdir build failure
+	* qemud/Makefile.am (check-local): Prefix use of test_libvirtd.aug
+	with $(srcdir)/.  Add quotes around $(AUGPARSE), in case it expands
+	to something unusual.
+
 Mon Jan 12 16:07:32 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/formatdomain.html.in docs/libvirt.rng docs/formatdomain.html:
