@@ -1,5 +1,11 @@
 Mon Jan 12 18:55:16 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	tests: quiet virsh-all
+	* tests/virsh-all: For now, ignore diagnostics and exit status,
+	when running all virsh commands.
+
+Mon Jan 12 18:55:16 +0100 2009 Jim Meyering <meyering@redhat.com>
+
 	diagnose "libvirtd --config=no-such-file"
 	* qemud/qemud.c (remoteReadConfigFile): Don't return 0 (success)
 	when the config file is unreadable or nonexistent
