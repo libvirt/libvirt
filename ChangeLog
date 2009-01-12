@@ -1,3 +1,15 @@
+Mon Jan 12 18:55:16 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	diagnose "libvirtd --config=no-such-file"
+	* qemud/qemud.c (remoteReadConfigFile): Don't return 0 (success)
+	when the config file is unreadable or nonexistent
+	Return -1, not 0, upon virConfReadFile failure.
+	(main): If remote_config_file is not specified via --config(-f),
+	use the default config file only if it exists.  Otherwise,
+	use /dev/null.
+	* src/conf.c (virConfReadFile): Don't diagnose virFileReadAll
+	failure, since it already does that.
+
 Mon Jan 12 18:55:15 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	fix non-srcdir build failure

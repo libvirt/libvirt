@@ -1,7 +1,7 @@
 /**
  * conf.c: parser for a subset of the Python encoded Xen configuration files
  *
- * Copyright (C) 2006, 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -712,7 +712,6 @@ virConfReadFile(const char *filename)
     }
 
     if ((len = virFileReadAll(filename, MAX_CONFIG_FILE_SIZE, &content)) < 0) {
-        virConfError(NULL, VIR_ERR_OPEN_FAILED, filename);
         return NULL;
     }
 

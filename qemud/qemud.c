@@ -1,7 +1,7 @@
 /*
  * qemud.c: daemon start of day, guest process & i/o management
  *
- * Copyright (C) 2006, 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -2116,13 +2116,8 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
         auth_unix_ro = REMOTE_AUTH_NONE;
 #endif
 
-    /* Just check the file is readable before opening it, otherwise
-     * libvirt emits an error.
-     */
-    if (access (filename, R_OK) == -1) return 0;
-
     conf = virConfReadFile (filename);
-    if (!conf) return 0;
+    if (!conf) return -1;
 
     /*
      * First get all the logging settings and activate them
@@ -2301,7 +2296,7 @@ int main(int argc, char **argv) {
     struct sigaction sig_action;
     int sigpipe[2];
     const char *pid_file = NULL;
-    const char *remote_config_file = SYSCONF_DIR "/libvirt/libvirtd.conf";
+    const char *remote_config_file = NULL;
     int ret = 1;
 
     struct option opts[] = {
@@ -2370,6 +2365,15 @@ int main(int argc, char **argv) {
                      c);
             exit (1);
         }
+    }
+
+    if (remote_config_file == NULL) {
+        static const char *default_config_file
+            = SYSCONF_DIR "/libvirt/libvirtd.conf";
+        remote_config_file =
+            (access(default_config_file, X_OK) == 0
+             ? default_config_file
+             : "/dev/null");
     }
 
     if (godaemon) {
