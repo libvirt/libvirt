@@ -1,3 +1,12 @@
+Mon Jan 12 16:07:32 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/formatdomain.html.in docs/libvirt.rng docs/formatdomain.html:
+	  document the new PCI passthrough format
+	* tests/qemuxml2argvtest.c tests/qemuxml2xmltest.c
+	  tests/qemuxml2argvdata/qemuxml2argv-hostdev-pci-address.args
+	  tests/qemuxml2argvdata/qemuxml2argv-hostdev-pci-address.xml:
+	  and add a regression test for it.
+
 Sun Jan 11 12:18:38 CET 2009 Guido Günther<agx@sigxcpu.org>
 
 	* src/qemu_driver.c (qemudLogFD): use snprintf instead of emulating it

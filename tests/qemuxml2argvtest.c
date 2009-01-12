@@ -224,6 +224,8 @@ mymain(int argc, char **argv)
     DO_TEST("hostdev-usb-product", 0);
     DO_TEST("hostdev-usb-address", 0);
 
+    DO_TEST("hostdev-pci-address", 0);
+
     virCapabilitiesFree(driver.caps);
 
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

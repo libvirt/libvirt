@@ -890,6 +890,7 @@
             <choice>
               <ref name="usbproduct"/>
               <ref name="usbaddress"/>
+              <ref name="pciaddress"/>
             </choice>
           </element>
       </group>
@@ -920,6 +921,24 @@
     </element>
   </define>
 
+  <define name="pciaddress">
+    <element name="address">
+      <optional>
+        <attribute name="domain">
+          <ref name="pciDomain"/>
+        </attribute>
+      </optional>
+      <attribute name="bus">
+        <ref name="pciBus"/>
+      </attribute>
+      <attribute name="slot">
+        <ref name="pciSlot"/>
+      </attribute>
+      <attribute name="function">
+        <ref name="pciFunc"/>
+      </attribute>
+    </element>
+  </define>
   <!--
       Devices attached to a domain.
     -->
@@ -1067,6 +1086,26 @@
   <define name='usbAddr'>
     <data type='string'>
       <param name="pattern">(0x)?[0-9a-fA-F]{1,3}</param>
+    </data>
+  </define>
+  <define name='pciDomain'>
+    <data type='string'>
+      <param name="pattern">(0x)?[0-9a-fA-F]{1,4}</param>
+    </data>
+  </define>
+  <define name='pciBus'>
+    <data type='string'>
+      <param name="pattern">(0x)?[0-9a-fA-F]{1,2}</param>
+    </data>
+  </define>
+  <define name='pciSlot'>
+    <data type='string'>
+      <param name="pattern">(0x)?[0-1]?[0-9a-fA-F]</param>
+    </data>
+  </define>
+  <define name='pciFunc'>
+    <data type='string'>
+      <param name="pattern">(0x)?[0-7]</param>
     </data>
   </define>
 </grammar>

@@ -123,6 +123,7 @@ mymain(int argc, char **argv)
 
     DO_TEST("hostdev-usb-product");
     DO_TEST("hostdev-usb-address");
+    DO_TEST("hostdev-pci-address");
 
     virCapabilitiesFree(driver.caps);
 

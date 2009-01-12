@@ -375,11 +375,12 @@
       </dd>
     </dl>
 
-    <h4><a name="elementsUSB">USB devices</a></h4>
+    <h4><a name="elementsUSB">USB and PCI devices</a></h4>
 
     <p>
-      USB devices attached to the host can be passed through to the guest using
-      the <code>hostdev</code> element. <span class="since">since after 0.4.4</span>
+      USB and PCI devices attached to the host can be passed through to the guest using
+      the <code>hostdev</code> element. <span class="since">since after
+      0.4.4 for USB and 0.6.0 for PCI (KVM only)</span>:
     </p>
 
     <pre>
@@ -391,28 +392,49 @@
 	    &lt;/source&gt;
 	  &lt;/hostdev&gt;
 	  ...</pre>
+    <p>or:</p>
+    <pre>
+          ...
+	  &lt;hostdev mode='subsystem' type='pci'&gt;
+	    &lt;source&gt;
+	      &lt;address&gt;bus='0x06' slot='0x02' function='0x0'&lt;/address&gt;
+	    &lt;/source&gt;
+	  &lt;/hostdev&gt;
+	  ...</pre>
 
     <dl>
       <dt><code>hostdev</code></dt>
       <dd>The <code>hostdev</code> element is the main container for describing
       host devices. For usb device passthrough <code>mode</code> is always
-      "subsystem" and <code>type</code> is "usb".
+      "subsystem" and <code>type</code> is "usb" for an USB device and "pci"
+      for a PCI device..
       <dt><code>source</code></dt>
       <dd>The source element describes the device as seen from the host.
       The USB device can either be addressed by vendor / product id using the
       <code>vendor</code> and <code>product</code> elements or by the device's
-      address on the hosts using the <code>address</code> element.</dd>
+      address on the hosts using the <code>address</code> element.
+      PCI devices on the other hand can only be described by their
+      <code>address</code></dd>
       <dt><code>vendor</code>, <code>product</code></dt>
       <dd>The <code>vendor</code> and <code>product</code> elements each have an
       <code>id</code> attribute that specifies the USB vendor and product id.
       The ids can be given in decimal, hexadecimal (starting with 0x) or
       octal (starting with 0) form.</dd>
       <dt><code>address</code></dt>
-      <dd>The <code>address</code> element has a <code>bus</code> and
-      <code>device</code> attribute to specify the USB bus and device number
-      the device appears at on the host. The values of these attributes can
-      be given in decimal, hexadecimal (starting with 0x) or octal (starting
-      with 0) form.</dd>
+      <dd>The <code>address</code> element for USB devices has a
+      <code>bus</code> and <code>device</code> attribute to specify the
+      USB bus and device number the device appears at on the host.
+      The values of these attributes can be given in decimal, hexadecimal
+      (starting with 0x) or octal (starting with 0) form.
+      For PCI devices the element carries 3 attributes allowing to designate
+      the device as can be found with the <code>lspci</code> or
+      with <code>virsh nodedev-list</code>. The
+      <code>bus</code> attribute allows the hexadecimal values 0 to ff, the
+      <code>slot</code> attribute allows the hexadecimal values 0 to 1f, and
+      the <code>function</code> attribute allows the hexadecimal values 0 to
+      7. There is also an optional <code>domain</code> attribute for the
+      PCI domain, with hexadecimal values 0 to ffff, but it is currently
+      not used by qemu.</dd>
     </dl>
 
     <h4><a name="elementsNICS">Network interfaces</a></h4>
