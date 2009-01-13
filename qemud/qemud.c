@@ -2371,7 +2371,7 @@ int main(int argc, char **argv) {
         static const char *default_config_file
             = SYSCONF_DIR "/libvirt/libvirtd.conf";
         remote_config_file =
-            (access(default_config_file, X_OK) == 0
+            (access(default_config_file, R_OK) == 0
              ? default_config_file
              : "/dev/null");
     }

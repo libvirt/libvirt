@@ -1,3 +1,9 @@
+Tue Jan 13 13:21:13 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	qemud.c: fix error in yesterday's change: s/X_OK/R_OK/
+	* qemud/qemud.c (main): Fix error s/X_OK/R_OK/ reported by
+	Daniel Berrange.
+
 Tue Jan 13 11:44:32 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	* HACKING: Clarify "bool" vs. XDR/wire-format.
