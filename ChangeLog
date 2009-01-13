@@ -1,3 +1,7 @@
+Tue Jan 13 11:44:32 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	* HACKING: Clarify "bool" vs. XDR/wire-format.
+
 Mon Jan 12 22:07:57 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/index.html docs/index.html.in docs/relatedlinks.html

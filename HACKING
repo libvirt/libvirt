@@ -115,7 +115,10 @@ standard type like int32_t, uint32_t, uint64_t, etc.
 
 While using "bool" is good for readability, it comes with minor caveats:
  - Don't use "bool" in places where the type size must be constant across
-   all systems, like public interfaces and on-the-wire protocols.
+   all systems, like public interfaces and on-the-wire protocols.  Note
+   that it would be possible (albeit wasteful) to use "bool" in libvirt's
+   logical wire protocol, since XDR maps that to its lower-level bool_t
+   type, which *is* fixed-size.
  - Don't compare a bool variable against the literal, "true",
    since a value with a logical non-false value need not be "1".
    I.e., don't write "if (seen == true) ...".  Rather, write "if (seen)...".
