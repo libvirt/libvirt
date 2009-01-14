@@ -130,9 +130,8 @@ rebuild: api all
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)
-	-@INSTALL@ -m 0644 $(srcdir)/libvir.html $(srcdir)/FAQ.html \
-	    $(srcdir)/redhat.gif $(srcdir)/Libxml2-Logo-90x34.gif \
-	  $(DESTDIR)$(HTML_DIR)
+	-@INSTALL@ -m 0644 $(srcdir)/FAQ.html \
+	    $(srcdir)/Libxml2-Logo-90x34.gif $(DESTDIR)$(HTML_DIR)
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/html
 	for h in $(apihtml); do \
 	  $(INSTALL) -m 0644 $(srcdir)/$$h $(DESTDIR)$(HTML_DIR)/html; done

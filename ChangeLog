@@ -1,3 +1,10 @@
+Wed Jan 14 16:21:47 GMT 2009  John Levon  <levon@movementarian.org>
+
+	* docs/Makefile.am:
+	* docs/examples/Makefile.am:
+	* docs/examples/index.py: remove references to non-existent
+	files
+
 Wed Jan 14 16:17:20 GMT 2009  John Levon  <levon@movementarian.org>
 
 	* src/xend_internal.c: Add a ':cdrom' marker for PV as well as
