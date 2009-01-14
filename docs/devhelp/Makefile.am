@@ -1,7 +1,8 @@
 DEVHELP_DIR=$(datadir)/gtk-doc/html/libvirt
 HTML_FILES=index.html general.html $(HTML_MODULES)
 HTML_MODULES=				\
-	libvirt-libvirt.html
+	libvirt-libvirt.html		\
+	libvirt-virterror.html
 
 EXTRA_FORMAT=				\
 	home.png			\
@@ -17,11 +18,12 @@ all: libvirt.devhelp $(HTML_FILES)
 libvirt.devhelp $(HTML_FILES): $(srcdir)/devhelp.xsl html.xsl $(top_srcdir)/docs/libvirt-api.xml
 	-@(echo Rebuilding devhelp files)
 	-@(if [ -x $(XSLTPROC) ] ; then \
-	  $(XSLTPROC) --nonet -o $(srcdir)/libvirt.devhelp $(srcdir)/devhelp.xsl $(top_srcdir)/docs/libvirt-api.xml ; fi );
+	  $(XSLTPROC) --nonet -o libvirt.devhelp $(srcdir)/devhelp.xsl $(top_srcdir)/docs/libvirt-api.xml ; fi );
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(DEVHELP_DIR)
 	-@INSTALL@ -m 0644 libvirt.devhelp $(DESTDIR)$(DEVHELP_DIR)
-	-@INSTALL@ -m 0644 $(EXTRA_FORMAT) $(DESTDIR)$(DEVHELP_DIR)
 	-@INSTALL@ -m 0644 $(HTML_FILES) $(DESTDIR)$(DEVHELP_DIR)
-
+	-for file in $(EXTRA_FORMAT); do \
+	    @INSTALL@ -m 0644 $(srcdir)/$${file} $(DESTDIR)$(DEVHELP_DIR) ; \
+	done
