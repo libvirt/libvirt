@@ -5024,6 +5024,8 @@ xenDaemonFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
             virBufferVSprintf(buf, "(dev '%s:%s')", def->dst,
                               def->device == VIR_DOMAIN_DISK_DEVICE_CDROM ?
                               "cdrom" : "disk");
+    } else if (def->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
+        virBufferVSprintf(buf, "(dev '%s:cdrom')", def->dst);
     } else {
         virBufferVSprintf(buf, "(dev '%s')", def->dst);
     }
