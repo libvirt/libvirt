@@ -1,3 +1,7 @@
+Wed Jan 14 17:30:54 GMT 2009  John Levon  <levon@movementarian.org>
+
+	* docs/devhelp/Makefile.am: Fix devhelp build dependencies
+
 Wed Jan 14 17:25:38 GMT 2009  John Levon  <levon@movementarian.org>
 
 	* docs/devhelp/Makefile.am: Let devhelp build in a separate objdir.

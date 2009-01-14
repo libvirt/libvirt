@@ -20,7 +20,7 @@ libvirt.devhelp $(HTML_FILES): $(srcdir)/devhelp.xsl html.xsl $(top_srcdir)/docs
 	-@(if [ -x $(XSLTPROC) ] ; then \
 	  $(XSLTPROC) --nonet -o libvirt.devhelp $(srcdir)/devhelp.xsl $(top_srcdir)/docs/libvirt-api.xml ; fi );
 
-install-data-local:
+install-data-local: libvirt.devhelp $(HTML_FILES)
 	$(mkinstalldirs) $(DESTDIR)$(DEVHELP_DIR)
 	-@INSTALL@ -m 0644 libvirt.devhelp $(DESTDIR)$(DEVHELP_DIR)
 	-@INSTALL@ -m 0644 $(HTML_FILES) $(DESTDIR)$(DEVHELP_DIR)
