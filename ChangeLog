@@ -1,3 +1,10 @@
+Wed Jan 14 15:13:17 GMT 2009  John Levon  <levon@movementarian.org>
+
+	* acinclude.m4:
+	* m4/compiler-flags.m4: Some compilers (including GCC) don't set
+	the return value consistently if an erroneous option is passed on
+	the command line. Account for that.
+
 Tue Jan 13 13:21:13 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	qemud.c: fix error in yesterday's change: s/X_OK/R_OK/

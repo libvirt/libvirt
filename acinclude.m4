@@ -45,21 +45,9 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
 	;;
     esac
 
-    compiler_flags=
+    COMPILER_FLAGS=
     for option in $try_compiler_flags; do
-	SAVE_CFLAGS="$CFLAGS"
-	CFLAGS="$CFLAGS $option"
-	AC_MSG_CHECKING([whether gcc understands $option])
-	AC_TRY_LINK([], [],
-		has_option=yes,
-		has_option=no,)
-	CFLAGS="$SAVE_CFLAGS"
-	AC_MSG_RESULT($has_option)
-	if test $has_option = yes; then
-	  compiler_flags="$compiler_flags $option"
-	fi
-	unset has_option
-	unset SAVE_CFLAGS
+        gl_COMPILER_FLAGS($option)
     done
     unset option
     unset try_compiler_flags
@@ -85,7 +73,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     fi
     AC_MSG_RESULT($complCFLAGS)
 
-    WARN_CFLAGS="$compiler_flags $complCFLAGS"
+    WARN_CFLAGS="$COMPILER_FLAGS $complCFLAGS"
     AC_SUBST(WARN_CFLAGS)
 
     dnl Needed to keep compile quiet on python 2.4

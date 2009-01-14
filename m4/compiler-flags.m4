@@ -25,10 +25,16 @@ AC_DEFUN([gl_COMPILER_FLAGS],
    AC_SUBST(COMPILER_FLAGS)
    ac_save_CFLAGS="$CFLAGS"
    CFLAGS="$CFLAGS $1"
-   AC_TRY_COMPILE(,
-    [int x;],
-    COMPILER_FLAGS="$COMPILER_FLAGS $1"
-    AC_MSG_RESULT(yes),
-    AC_MSG_RESULT(no))
-  CFLAGS="$ac_save_CFLAGS"
+   AC_TRY_LINK([], [], has_option=yes, has_option=no,)
+   echo 'int x;' >conftest.c
+   $CC $CFLAGS -c conftest.c 2>conftest.err
+   ret=$?
+   if test $ret != 0 -o -s conftest.err -o $has_option = "no"; then
+       AC_MSG_RESULT(no)
+   else
+       AC_MSG_RESULT(yes)
+       COMPILER_FLAGS="$COMPILER_FLAGS $1"
+   fi
+   CFLAGS="$ac_save_CFLAGS"
+   rm -f conftest*
  ])
