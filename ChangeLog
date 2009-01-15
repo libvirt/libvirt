@@ -1,3 +1,8 @@
+Thu Jan 15 01:22:32 GMT 2009  John Levon  <levon@movementarian.org>
+
+	* src/xs_internal.c: Fix xs_unwatch() to correctly pass the
+	token
+
 Thu Jan 15 01:19:02 GMT 2009  John Levon  <levon@movementarian.org>
 
 	* src/xen_unified.c:

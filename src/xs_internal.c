@@ -1106,7 +1106,7 @@ int xenStoreRemoveWatch(virConnectPtr conn,
 
             if (!xs_unwatch(priv->xshandle,
                        list->watches[i]->path,
-                       list->watches[i]->path))
+                       list->watches[i]->token))
             {
                 DEBUG0("WARNING: Could not remove watch");
                 /* Not fatal, continue */
