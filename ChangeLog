@@ -1,3 +1,7 @@
+Thu Jan 15 20:06:19 GMT 2009  Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Reduce number of exit paths in APIs
+
 Thu Jan 15 20:03:19 GMT 2009  Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Remove use of macros for accessing
