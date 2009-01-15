@@ -393,7 +393,8 @@ xend_get(virConnectPtr xend, const char *path,
     if (((ret < 0) || (ret >= 300)) &&
         ((ret != 404) || (!STRPREFIX(path, "/xend/domain/")))) {
         virXendError(xend, VIR_ERR_GET_FAILED,
-                     _("xend_get: error from xen daemon: %s"), content);
+                     _("%d status from xen daemon: %s:%s"),
+                     ret, path, content);
     }
 
     return ret;
