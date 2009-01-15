@@ -1,3 +1,7 @@
+Thu Jan 15 19:39:19 GMT 2009  Daniel P. Berrange <berrange@redhat.com>
+
+	* src/util.c: Implement virKill() for Win32 platform
+
 Thu Jan 15 17:29:19 GMT 2009  John Levon  <levon@movementarian.org>
 
 	* src/internal.h:
