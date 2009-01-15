@@ -1,3 +1,7 @@
+Thu Jan 15 20:12:19 GMT 2009  Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Fix bug when fork isn't available (Win32)
+
 Thu Jan 15 20:06:19 GMT 2009  Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Reduce number of exit paths in APIs

@@ -678,6 +678,7 @@ doRemoteOpen (virConnectPtr conn,
     case trans_ext:
         error (conn, VIR_ERR_INVALID_ARG,
                _("transport methods unix, ssh and ext are not supported under Windows"));
+        goto failed;
 
 #endif /* WIN32 */
 
