@@ -1359,15 +1359,21 @@ xenUnifiedDomainEventRegister (virConnectPtr conn,
                                void *opaque,
                                void (*freefunc)(void *))
 {
+    int ret;
+
     GET_PRIVATE (conn);
     if (priv->xsWatch == -1) {
         xenUnifiedError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
         return -1;
     }
 
-    conn->refs++;
-    return virDomainEventCallbackListAdd(conn, priv->domainEventCallbacks,
-                                         callback, opaque, freefunc);
+    ret = virDomainEventCallbackListAdd(conn, priv->domainEventCallbacks,
+                                        callback, opaque, freefunc);
+
+    if (ret == 0)
+        conn->refs++;
+
+    return (ret);
 }
 
 static int
@@ -1382,8 +1388,10 @@ xenUnifiedDomainEventDeregister (virConnectPtr conn,
     }
 
     ret = virDomainEventCallbackListRemove(conn, priv->domainEventCallbacks,
-                                            callback);
-    virUnrefConnect(conn);
+                                           callback);
+
+    if (ret == 0)
+        virUnrefConnect(conn);
     return ret;
 }
 

@@ -1,3 +1,8 @@
+Thu Jan 15 01:16:05 GMT 2009  John Levon  <levon@movementarian.org>
+
+	* src/xen_unified.c: Fix ref-counting for Xen driver event
+	registration
+
 Wed Jan 14 17:30:54 GMT 2009  John Levon  <levon@movementarian.org>
 
 	* docs/devhelp/Makefile.am: Fix devhelp build dependencies
