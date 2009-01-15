@@ -3773,7 +3773,7 @@ remoteStorageVolGetPath (virStorageVolPtr vol)
 {
     remote_storage_vol_get_path_args args;
     remote_storage_vol_get_path_ret ret;
-    GET_NETWORK_PRIVATE (vol->conn, NULL);
+    GET_STORAGE_PRIVATE (vol->conn, NULL);
 
     make_nonnull_storage_vol (&args.vol, vol);
 
@@ -3831,7 +3831,7 @@ static int remoteNodeNumOfDevices(virConnectPtr conn,
 {
     remote_node_num_of_devices_args args;
     remote_node_num_of_devices_ret ret;
-    GET_STORAGE_PRIVATE (conn, -1);
+    GET_DEVMON_PRIVATE (conn, -1);
 
     args.cap = cap ? (char **)&cap : NULL;
     args.flags = flags;
@@ -3855,7 +3855,7 @@ static int remoteNodeListDevices(virConnectPtr conn,
     int i;
     remote_node_list_devices_args args;
     remote_node_list_devices_ret ret;
-    GET_STORAGE_PRIVATE (conn, -1);
+    GET_DEVMON_PRIVATE (conn, -1);
 
     if (maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX) {
         error (conn, VIR_ERR_RPC, _("too many device names requested"));
@@ -3897,7 +3897,7 @@ static virNodeDevicePtr remoteNodeDeviceLookupByName(virConnectPtr conn,
     remote_node_device_lookup_by_name_args args;
     remote_node_device_lookup_by_name_ret ret;
     virNodeDevicePtr dev;
-    GET_STORAGE_PRIVATE (conn, NULL);
+    GET_DEVMON_PRIVATE (conn, NULL);
 
     args.name = (char *)name;
 
@@ -3919,7 +3919,7 @@ static char *remoteNodeDeviceDumpXML(virNodeDevicePtr dev,
 {
     remote_node_device_dump_xml_args args;
     remote_node_device_dump_xml_ret ret;
-    GET_STORAGE_PRIVATE (dev->conn, NULL);
+    GET_DEVMON_PRIVATE (dev->conn, NULL);
 
     args.name = dev->name;
     args.flags = flags;
@@ -3938,7 +3938,7 @@ static char *remoteNodeDeviceGetParent(virNodeDevicePtr dev)
 {
     remote_node_device_get_parent_args args;
     remote_node_device_get_parent_ret ret;
-    GET_STORAGE_PRIVATE (dev->conn, NULL);
+    GET_DEVMON_PRIVATE (dev->conn, NULL);
 
     args.name = dev->name;
 
@@ -3956,7 +3956,7 @@ static int remoteNodeDeviceNumOfCaps(virNodeDevicePtr dev)
 {
     remote_node_device_num_of_caps_args args;
     remote_node_device_num_of_caps_ret ret;
-    GET_STORAGE_PRIVATE (dev->conn, -1);
+    GET_DEVMON_PRIVATE (dev->conn, -1);
 
     args.name = dev->name;
 
@@ -3976,7 +3976,7 @@ static int remoteNodeDeviceListCaps(virNodeDevicePtr dev,
     int i;
     remote_node_device_list_caps_args args;
     remote_node_device_list_caps_ret ret;
-    GET_STORAGE_PRIVATE (dev->conn, -1);
+    GET_DEVMON_PRIVATE (dev->conn, -1);
 
     if (maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX) {
         error (dev->conn, VIR_ERR_RPC, _("too many capability names requested"));
