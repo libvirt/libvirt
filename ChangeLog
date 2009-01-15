@@ -1,3 +1,8 @@
+Thu Jan 15 17:29:19 GMT 2009  John Levon  <levon@movementarian.org>
+
+	* src/internal.h:
+	* src/libvirt.c: Avoid passing NULL to printf %s specifier
+
 Thu Jan 15 15:11:35 GMT 2009  John Levon  <levon@movementarian.org>
 
 	* src/xend_internal.c: Improve xend_get error message

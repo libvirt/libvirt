@@ -7,6 +7,7 @@
 
 #include <errno.h>
 #include <limits.h>
+#include <verify.h>
 
 #ifdef HAVE_SYS_SYSLIMITS_H
 #include <sys/syslimits.h>
@@ -114,6 +115,13 @@
 #define ATTRIBUTE_FORMAT(...)
 #define ATTRIBUTE_RETURN_CHECK
 #endif				/* __GNUC__ */
+
+/*
+ * Use this when passing possibly-NULL strings to printf-a-likes.
+ */
+#define NULLSTR(s) \
+    ((void)verify_true(sizeof *(s) == sizeof (char)), \
+     (s) ? (s) : "(null)")
 
 /**
  * TODO:

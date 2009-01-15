@@ -852,10 +852,10 @@ do_open (const char *name,
               "  port %d\n"
               "  path %s\n",
               name,
-              ret->uri->scheme, ret->uri->opaque,
-              ret->uri->authority, ret->uri->server,
-              ret->uri->user, ret->uri->port,
-              ret->uri->path);
+              NULLSTR(ret->uri->scheme), NULLSTR(ret->uri->opaque),
+              NULLSTR(ret->uri->authority), NULLSTR(ret->uri->server),
+              NULLSTR(ret->uri->user), ret->uri->port,
+              NULLSTR(ret->uri->path));
     } else {
         DEBUG0("no name, allowing driver auto-select");
     }
@@ -1044,7 +1044,7 @@ virConnectOpenAuth(const char *name,
         if (virInitialize() < 0)
             return NULL;
 
-    DEBUG("name=%s, auth=%p, flags=%d", name, auth, flags);
+    DEBUG("name=%s, auth=%p, flags=%d", NULLSTR(name), auth, flags);
     return do_open (name, auth, flags);
 }
 
