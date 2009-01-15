@@ -388,8 +388,10 @@ xenStoreClose(virConnectPtr conn)
     }
 
     xenStoreWatchListFree(priv->xsWatchList);
+    priv->xsWatchList = NULL;
 #ifndef PROXY
     xenUnifiedDomainInfoListFree(activeDomainList);
+    activeDomainList = NULL;
 #endif
     if (priv->xshandle == NULL)
         return(-1);

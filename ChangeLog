@@ -1,3 +1,8 @@
+Thu Jan 15 01:19:02 GMT 2009  John Levon  <levon@movementarian.org>
+
+	* src/xen_unified.c:
+	* src/xs_internal.c: Fix activeDomainList handling
+
 Thu Jan 15 01:16:05 GMT 2009  John Levon  <levon@movementarian.org>
 
 	* src/xen_unified.c: Fix ref-counting for Xen driver event

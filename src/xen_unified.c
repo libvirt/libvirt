@@ -1484,6 +1484,10 @@ void
 xenUnifiedDomainInfoListFree(xenUnifiedDomainInfoListPtr list)
 {
     int i;
+
+    if (list == NULL)
+        return;
+
     for (i=0; i<list->count; i++) {
         VIR_FREE(list->doms[i]->name);
         VIR_FREE(list->doms[i]);
