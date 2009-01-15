@@ -46,13 +46,18 @@ UTIL_SOURCES =							\
 		event.c event.h					\
 		hash.c hash.h					\
 		iptables.c iptables.h				\
+		logging.c logging.h				\
 		memory.c memory.h				\
 		qparams.c qparams.h				\
+		threads.c threads.h				\
+		threads-pthread.h				\
+		threads-win32.h					\
 		uuid.c uuid.h					\
 		util.c util.h					\
 		virterror.c virterror_internal.h		\
-		logging.c logging.h				\
 		xml.c xml.h
+
+EXTRA_DIST += threads-pthread.c threads-win32.c
 
 # Internal generic driver infrastructure
 DRIVER_SOURCES =						\

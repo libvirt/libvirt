@@ -1,3 +1,27 @@
+Thu Jan 15 19:54:19 GMT 2009  Daniel P. Berrange <berrange@redhat.com>
+
+	Provide a generic internal API for threads support
+	* src/Makefile.am, src/threads.c, src/threads.h: Generic internal API for threads
+	* src/threads-pthread.c, src/threads-pthread.h: UNIX pthreads impl
+	* src/threads-win32.c, src/threads-win32.h: Win32 threads impl
+	* src/internal.h: Remove unnneccessary pthreads macros
+	* src/libvirt_private.syms: Add symbols for internal threads API
+	* po/POTFILES.in: Add node_device_conf.c
+	* proxy/Makefile.am: Add threads.c to build
+	* qemud/qemud.c, qemud/qemud.h, qemud/remote.c, src/datatypes.c,
+	src/datatypes.h, src/domain_conf.c, src/domain_conf.h,
+	src/libvirt.c, src/logging.c, src/lxc_conf.h, src/lxc_driver.c,
+	src/network_conf.c, src/network_conf.h, src/network_driver.c,
+	src/node_device.c, src/node_device_conf.c, src/node_device_conf.h,
+	src/node_device_devkit.c, src/node_device_hal.c, src/openvz_conf.c,
+	src/openvz_conf.h, src/openvz_driver.c, src/qemu_conf.h,
+	src/qemu_driver.c, src/storage_conf.c, src/storage_conf.h,
+	src/storage_driver.c, src/test.c, src/uml_conf.h, src/uml_driver.c:
+	Switch over to internal threads API instead of pthreads
+
+
+
+
 Thu Jan 15 19:39:19 GMT 2009  Daniel P. Berrange <berrange@redhat.com>
 
 	* src/util.c: Implement virKill() for Win32 platform

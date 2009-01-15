@@ -29,6 +29,7 @@
 #include <libxml/xpath.h>
 
 #include "internal.h"
+#include "threads.h"
 
 /* 2 possible types of forwarding */
 enum virNetworkForwardType {
@@ -82,7 +83,7 @@ struct _virNetworkDef {
 typedef struct _virNetworkObj virNetworkObj;
 typedef virNetworkObj *virNetworkObjPtr;
 struct _virNetworkObj {
-    PTHREAD_MUTEX_T(lock);
+    virMutex lock;
 
     pid_t dnsmasqPid;
     unsigned int active : 1;

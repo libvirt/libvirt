@@ -32,6 +32,7 @@
 #include "network_conf.h"
 #include "domain_conf.h"
 #include "domain_event.h"
+#include "threads.h"
 
 #define qemudDebug(fmt, ...) do {} while(0)
 
@@ -51,7 +52,7 @@ enum qemud_cmd_flags {
 
 /* Main driver state */
 struct qemud_driver {
-    PTHREAD_MUTEX_T(lock);
+    virMutex lock;
 
     unsigned int qemuVersion;
     int nextvmid;

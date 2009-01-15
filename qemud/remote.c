@@ -301,7 +301,7 @@ remoteDispatchClientRequest (struct qemud_server *server,
 
     /* Call function. */
     conn = client->conn;
-    pthread_mutex_unlock(&client->lock);
+    virMutexUnlock(&client->lock);
 
     /*
      * When the RPC handler is called:
@@ -315,9 +315,9 @@ remoteDispatchClientRequest (struct qemud_server *server,
      */
     rv = (data->fn)(server, client, conn, &rerr, &args, &ret);
 
-    pthread_mutex_lock(&server->lock);
-    pthread_mutex_lock(&client->lock);
-    pthread_mutex_unlock(&server->lock);
+    virMutexLock(&server->lock);
+    virMutexLock(&client->lock);
+    virMutexUnlock(&server->lock);
 
     xdr_free (data->args_filter, (char*)&args);
 
@@ -412,9 +412,9 @@ remoteDispatchOpen (struct qemud_server *server,
         return -1;
     }
 
-    pthread_mutex_lock(&server->lock);
-    pthread_mutex_lock(&client->lock);
-    pthread_mutex_unlock(&server->lock);
+    virMutexLock(&server->lock);
+    virMutexLock(&client->lock);
+    virMutexUnlock(&server->lock);
 
     name = args->name ? *args->name : NULL;
 
@@ -433,7 +433,7 @@ remoteDispatchOpen (struct qemud_server *server,
         remoteDispatchConnError(rerr, NULL);
 
     rc = client->conn ? 0 : -1;
-    pthread_mutex_unlock(&client->lock);
+    virMutexUnlock(&client->lock);
     return rc;
 }
 
@@ -450,13 +450,13 @@ remoteDispatchClose (struct qemud_server *server ATTRIBUTE_UNUSED,
                      remote_error *rerr ATTRIBUTE_UNUSED,
                      void *args ATTRIBUTE_UNUSED, void *ret ATTRIBUTE_UNUSED)
 {
-    pthread_mutex_lock(&server->lock);
-    pthread_mutex_lock(&client->lock);
-    pthread_mutex_unlock(&server->lock);
+    virMutexLock(&server->lock);
+    virMutexLock(&client->lock);
+    virMutexUnlock(&server->lock);
 
     client->closing = 1;
 
-    pthread_mutex_unlock(&client->lock);
+    virMutexUnlock(&client->lock);
     return 0;
 }
 
@@ -2472,11 +2472,11 @@ remoteDispatchAuthList (struct qemud_server *server,
         remoteDispatchOOMError(rerr);
         return -1;
     }
-    pthread_mutex_lock(&server->lock);
-    pthread_mutex_lock(&client->lock);
-    pthread_mutex_unlock(&server->lock);
+    virMutexLock(&server->lock);
+    virMutexLock(&client->lock);
+    virMutexUnlock(&server->lock);
     ret->types.types_val[0] = client->auth;
-    pthread_mutex_unlock(&client->lock);
+    virMutexUnlock(&client->lock);
 
     return 0;
 }
@@ -2535,9 +2535,9 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
     socklen_t salen;
     char *localAddr, *remoteAddr;
 
-    pthread_mutex_lock(&server->lock);
-    pthread_mutex_lock(&client->lock);
-    pthread_mutex_unlock(&server->lock);
+    virMutexLock(&server->lock);
+    virMutexLock(&client->lock);
+    virMutexUnlock(&server->lock);
 
     REMOTE_DEBUG("Initialize SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
@@ -2663,13 +2663,13 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
         goto authfail;
     }
 
-    pthread_mutex_unlock(&client->lock);
+    virMutexUnlock(&client->lock);
     return 0;
 
 authfail:
     remoteDispatchAuthError(rerr);
 error:
-    pthread_mutex_unlock(&client->lock);
+    virMutexUnlock(&client->lock);
     return -1;
 }
 
@@ -2787,9 +2787,9 @@ remoteDispatchAuthSaslStart (struct qemud_server *server,
     unsigned int serveroutlen;
     int err;
 
-    pthread_mutex_lock(&server->lock);
-    pthread_mutex_lock(&client->lock);
-    pthread_mutex_unlock(&server->lock);
+    virMutexLock(&server->lock);
+    virMutexLock(&client->lock);
+    virMutexUnlock(&server->lock);
 
     REMOTE_DEBUG("Start SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
@@ -2851,13 +2851,13 @@ remoteDispatchAuthSaslStart (struct qemud_server *server,
         client->auth = REMOTE_AUTH_NONE;
     }
 
-    pthread_mutex_unlock(&client->lock);
+    virMutexUnlock(&client->lock);
     return 0;
 
 authfail:
     remoteDispatchAuthError(rerr);
 error:
-    pthread_mutex_unlock(&client->lock);
+    virMutexUnlock(&client->lock);
     return -1;
 }
 
@@ -2874,9 +2874,9 @@ remoteDispatchAuthSaslStep (struct qemud_server *server,
     unsigned int serveroutlen;
     int err;
 
-    pthread_mutex_lock(&server->lock);
-    pthread_mutex_lock(&client->lock);
-    pthread_mutex_unlock(&server->lock);
+    virMutexLock(&server->lock);
+    virMutexLock(&client->lock);
+    virMutexUnlock(&server->lock);
 
     REMOTE_DEBUG("Step SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
@@ -2939,13 +2939,13 @@ remoteDispatchAuthSaslStep (struct qemud_server *server,
         client->auth = REMOTE_AUTH_NONE;
     }
 
-    pthread_mutex_unlock(&client->lock);
+    virMutexUnlock(&client->lock);
     return 0;
 
 authfail:
     remoteDispatchAuthError(rerr);
 error:
-    pthread_mutex_unlock(&client->lock);
+    virMutexUnlock(&client->lock);
     return -1;
 }
 
@@ -3011,9 +3011,9 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
     DBusError err;
     const char *action;
 
-    pthread_mutex_lock(&server->lock);
-    pthread_mutex_lock(&client->lock);
-    pthread_mutex_unlock(&server->lock);
+    virMutexLock(&server->lock);
+    virMutexLock(&client->lock);
+    virMutexUnlock(&server->lock);
 
     action = client->readonly ?
         "org.libvirt.unix.monitor" :
@@ -3091,12 +3091,12 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
     ret->complete = 1;
     client->auth = REMOTE_AUTH_NONE;
 
-    pthread_mutex_unlock(&client->lock);
+    virMutexUnlock(&client->lock);
     return 0;
 
 authfail:
     remoteDispatchAuthError(rerr);
-    pthread_mutex_unlock(&client->lock);
+    virMutexUnlock(&client->lock);
     return -1;
 }
 

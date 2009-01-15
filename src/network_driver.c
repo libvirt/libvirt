@@ -59,7 +59,7 @@
 
 /* Main driver state */
 struct network_driver {
-    PTHREAD_MUTEX_T(lock);
+    virMutex lock;
 
     virNetworkObjList networks;
 
@@ -73,11 +73,11 @@ struct network_driver {
 
 static void networkDriverLock(struct network_driver *driver)
 {
-    pthread_mutex_lock(&driver->lock);
+    virMutexLock(&driver->lock);
 }
 static void networkDriverUnlock(struct network_driver *driver)
 {
-    pthread_mutex_unlock(&driver->lock);
+    virMutexUnlock(&driver->lock);
 }
 
 static int networkShutdown(void);
@@ -134,7 +134,10 @@ networkStartup(void) {
     if (VIR_ALLOC(driverState) < 0)
         goto error;
 
-    pthread_mutex_init(&driverState->lock, NULL);
+    if (virMutexInit(&driverState->lock) < 0) {
+        VIR_FREE(driverState);
+        goto error;
+    }
     networkDriverLock(driverState);
 
     if (!uid) {
@@ -290,6 +293,7 @@ networkShutdown(void) {
         iptablesContextFree(driverState->iptables);
 
     networkDriverUnlock(driverState);
+    virMutexDestroy(&driverState->lock);
 
     VIR_FREE(driverState);
 

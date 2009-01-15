@@ -31,6 +31,7 @@
 #include "internal.h"
 #include "capabilities.h"
 #include "util.h"
+#include "threads.h"
 
 /* Different types of hypervisor */
 /* NB: Keep in sync with virDomainVirtTypeToString impl */
@@ -456,7 +457,7 @@ struct _virDomainDef {
 typedef struct _virDomainObj virDomainObj;
 typedef virDomainObj *virDomainObjPtr;
 struct _virDomainObj {
-    PTHREAD_MUTEX_T(lock);
+    virMutex lock;
 
     int stdin_fd;
     int stdout_fd;

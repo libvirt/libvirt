@@ -298,7 +298,10 @@ static int devkitDeviceMonitorStartup(void)
     if (VIR_ALLOC(driverState) < 0)
         return -1;
 
-    pthread_mutex_init(&driverState->lock, NULL);
+    if (virMutexInit(&driverState->lock) < 0) {
+        VIR_FREE(driverState);
+        return -1;
+    }
 
     g_type_init();
 
@@ -375,7 +378,8 @@ static int devkitDeviceMonitorShutdown(void)
         virNodeDeviceObjListFree(&driverState->devs);
         if (devkit_client)
             g_object_unref(devkit_client);
-        nodeDeviceLock(driverState);
+        nodeDeviceUnlock(driverState);
+        virMutexDestroy(&driveState->lock);
         VIR_FREE(driverState);
         return 0;
     }

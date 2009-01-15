@@ -13,19 +13,6 @@
 #include <sys/syslimits.h>
 #endif
 
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-#define PTHREAD_MUTEX_T(v) pthread_mutex_t v
-#else
-/* Mutex functions disappear if we don't have pthread. */
-#define PTHREAD_MUTEX_T(v) /*empty*/
-#define pthread_mutex_init(lk,p) /*empty*/
-#define pthread_mutex_destroy(lk) /*empty*/
-#define pthread_mutex_lock(lk) /*empty*/
-#define pthread_mutex_unlock(lk) /*empty*/
-#define pthread_sigmask(h, s, o) sigprocmask((h), (s), (o))
-#endif
-
 /* The library itself is allowed to use deprecated functions /
  * variables, so effectively undefine the deprecated attribute
  * which would otherwise be defined in libvirt.h.

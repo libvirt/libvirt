@@ -268,11 +268,11 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
     siginfo_t siginfo;
     int ret;
 
-    pthread_mutex_lock(&server->lock);
+    virMutexLock(&server->lock);
 
     if (saferead(server->sigread, &siginfo, sizeof(siginfo)) != sizeof(siginfo)) {
         VIR_ERROR(_("Failed to read from signal pipe: %s"), strerror(errno));
-        pthread_mutex_unlock(&server->lock);
+        virMutexUnlock(&server->lock);
         return;
     }
 
@@ -300,7 +300,7 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
     if (ret != 0)
         server->shutdown = 1;
 
-    pthread_mutex_unlock(&server->lock);
+    virMutexUnlock(&server->lock);
 }
 
 int qemudSetCloseExec(int fd) {
@@ -688,9 +688,14 @@ static struct qemud_server *qemudInitialize(int sigread) {
         return NULL;
     }
 
-    if (pthread_mutex_init(&server->lock, NULL) != 0) {
+    if (virMutexInit(&server->lock) < 0) {
+        VIR_ERROR("%s", _("cannot initialize mutex"));
         VIR_FREE(server);
-        return NULL;
+    }
+    if (virCondInit(&server->job) < 0) {
+        VIR_ERROR("%s", _("cannot initialize condition variable"));
+        virMutexDestroy(&server->lock);
+        VIR_FREE(server);
     }
 
     server->sigread = sigread;
@@ -1117,8 +1122,11 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
 
     if (VIR_ALLOC(client) < 0)
         goto cleanup;
-    if (pthread_mutex_init(&client->lock, NULL) != 0)
+    if (virMutexInit(&client->lock) < 0) {
+        VIR_ERROR("%s", _("cannot initialize mutex"));
+        VIR_FREE(client);
         goto cleanup;
+    }
 
     client->magic = QEMUD_CLIENT_MAGIC;
     client->fd = fd;
@@ -1233,12 +1241,12 @@ static struct qemud_client *qemudPendingJob(struct qemud_server *server)
 {
     int i;
     for (i = 0 ; i < server->nclients ; i++) {
-        pthread_mutex_lock(&server->clients[i]->lock);
+        virMutexLock(&server->clients[i]->lock);
         if (server->clients[i]->mode == QEMUD_MODE_WAIT_DISPATCH) {
             /* Delibrately don't unlock client - caller wants the lock */
             return server->clients[i];
         }
-        pthread_mutex_unlock(&server->clients[i]->lock);
+        virMutexUnlock(&server->clients[i]->lock);
     }
     return NULL;
 }
@@ -1250,10 +1258,14 @@ static void *qemudWorker(void *data)
     while (1) {
         struct qemud_client *client;
         int len;
-        pthread_mutex_lock(&server->lock);
-        while ((client = qemudPendingJob(server)) == NULL)
-            pthread_cond_wait(&server->job, &server->lock);
-        pthread_mutex_unlock(&server->lock);
+        virMutexLock(&server->lock);
+        while ((client = qemudPendingJob(server)) == NULL) {
+            if (virCondWait(&server->job, &server->lock) < 0) {
+                virMutexUnlock(&server->lock);
+                return NULL;
+            }
+        }
+        virMutexUnlock(&server->lock);
 
         /* We own a locked client now... */
         client->mode = QEMUD_MODE_IN_DISPATCH;
@@ -1271,8 +1283,8 @@ static void *qemudWorker(void *data)
             qemudDispatchClientFailure(server, client);
 
         client->refs--;
-        pthread_mutex_unlock(&client->lock);
-        pthread_mutex_unlock(&server->lock);
+        virMutexUnlock(&client->lock);
+        virMutexUnlock(&server->lock);
     }
 }
 
@@ -1444,7 +1456,7 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
         if (qemudRegisterClientEvent(server, client, 1) < 0)
             qemudDispatchClientFailure(server, client);
 
-        pthread_cond_signal(&server->job);
+        virCondSignal(&server->job);
 
         break;
     }
@@ -1627,7 +1639,7 @@ qemudDispatchClientEvent(int watch, int fd, int events, void *opaque) {
     struct qemud_client *client = NULL;
     int i;
 
-    pthread_mutex_lock(&server->lock);
+    virMutexLock(&server->lock);
 
     for (i = 0 ; i < server->nclients ; i++) {
         if (server->clients[i]->watch == watch) {
@@ -1637,12 +1649,12 @@ qemudDispatchClientEvent(int watch, int fd, int events, void *opaque) {
     }
 
     if (!client) {
-        pthread_mutex_unlock(&server->lock);
+        virMutexUnlock(&server->lock);
         return;
     }
 
-    pthread_mutex_lock(&client->lock);
-    pthread_mutex_unlock(&server->lock);
+    virMutexLock(&client->lock);
+    virMutexUnlock(&server->lock);
 
     if (client->fd != fd)
         return;
@@ -1653,7 +1665,7 @@ qemudDispatchClientEvent(int watch, int fd, int events, void *opaque) {
         qemudDispatchClientRead(server, client);
     else
         qemudDispatchClientFailure(server, client);
-    pthread_mutex_unlock(&client->lock);
+    virMutexUnlock(&client->lock);
 }
 
 static int qemudRegisterClientEvent(struct qemud_server *server,
@@ -1703,7 +1715,7 @@ qemudDispatchServerEvent(int watch, int fd, int events, void *opaque) {
     struct qemud_server *server = (struct qemud_server *)opaque;
     struct qemud_socket *sock;
 
-    pthread_mutex_lock(&server->lock);
+    virMutexLock(&server->lock);
 
     sock = server->sockets;
 
@@ -1717,7 +1729,7 @@ qemudDispatchServerEvent(int watch, int fd, int events, void *opaque) {
     if (sock && sock->fd == fd && events)
         qemudDispatchServer(server, sock);
 
-    pthread_mutex_unlock(&server->lock);
+    virMutexUnlock(&server->lock);
 }
 
 
@@ -1752,7 +1764,7 @@ static int qemudRunLoop(struct qemud_server *server) {
     int timerid = -1;
     int ret = -1, i;
 
-    pthread_mutex_lock(&server->lock);
+    virMutexLock(&server->lock);
 
     server->nworkers = min_workers;
     if (VIR_ALLOC_N(server->workers, server->nworkers) < 0) {
@@ -1783,21 +1795,22 @@ static int qemudRunLoop(struct qemud_server *server) {
             DEBUG("Scheduling shutdown timer %d", timerid);
         }
 
-        pthread_mutex_unlock(&server->lock);
+        virMutexUnlock(&server->lock);
         if (qemudOneLoop() < 0)
             break;
-        pthread_mutex_lock(&server->lock);
+        virMutexLock(&server->lock);
 
     reprocess:
         for (i = 0 ; i < server->nclients ; i++) {
             int inactive;
-            pthread_mutex_lock(&server->clients[i]->lock);
+            virMutexLock(&server->clients[i]->lock);
             inactive = server->clients[i]->fd == -1
                 && server->clients[i]->refs == 0;
-            pthread_mutex_unlock(&server->clients[i]->lock);
+            virMutexUnlock(&server->clients[i]->lock);
             if (inactive) {
                 if (server->clients[i]->conn)
                     virConnectClose(server->clients[i]->conn);
+                virMutexDestroy(&server->clients[i]->lock);
                 VIR_FREE(server->clients[i]);
                 server->nclients--;
                 if (i < server->nclients) {
@@ -1826,13 +1839,13 @@ static int qemudRunLoop(struct qemud_server *server) {
 
     for (i = 0 ; i < server->nworkers ; i++) {
         pthread_t thread = server->workers[i];
-        pthread_mutex_unlock(&server->lock);
+        virMutexUnlock(&server->lock);
         pthread_join(thread, NULL);
-        pthread_mutex_lock(&server->lock);
+        virMutexLock(&server->lock);
     }
 
     free(server->workers);
-    pthread_mutex_unlock(&server->lock);
+    virMutexUnlock(&server->lock);
     return ret;
 }
 
@@ -1862,7 +1875,12 @@ static void qemudCleanup(struct qemud_server *server) {
 
     virStateCleanup();
 
-    free(server);
+    if (virCondDestroy(&server->job) < 0) {
+        ;
+    }
+    virMutexDestroy(&server->lock);
+
+    VIR_FREE(server);
 }
 
 /* Allocate an array of malloc'd strings from the config file, filename

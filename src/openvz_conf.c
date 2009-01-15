@@ -392,11 +392,18 @@ int openvzLoadDomains(struct openvz_driver *driver) {
             goto cleanup;
         }
 
-        if (VIR_ALLOC(dom) < 0 ||
-            VIR_ALLOC(dom->def) < 0)
+        if (VIR_ALLOC(dom) < 0)
             goto no_memory;
 
-        pthread_mutex_init(&dom->lock, NULL);
+        if (virMutexInit(&dom->lock) < 0) {
+            openvzError(NULL, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("cannot initialize mutex"));
+            VIR_FREE(dom);
+            goto cleanup;
+        }
+
+        if (VIR_ALLOC(dom->def) < 0)
+            goto no_memory;
 
         if (STREQ(status, "stopped"))
             dom->state = VIR_DOMAIN_SHUTOFF;

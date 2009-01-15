@@ -678,7 +678,10 @@ static int halDeviceMonitorStartup(void)
     if (VIR_ALLOC(driverState) < 0)
         return -1;
 
-    pthread_mutex_init(&driverState->lock, NULL);
+    if (virMutexInit(&driverState->lock) < 0) {
+        VIR_FREE(driverState);
+        return -1;
+    }
     nodeDeviceLock(driverState);
 
     /* Allocate and initialize a new HAL context */
@@ -770,6 +773,7 @@ static int halDeviceMonitorShutdown(void)
         (void)libhal_ctx_shutdown(hal_ctx, NULL);
         (void)libhal_ctx_free(hal_ctx);
         nodeDeviceUnlock(driverState);
+        virMutexDestroy(&driverState->lock);
         VIR_FREE(driverState);
         return 0;
     }

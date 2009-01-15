@@ -26,7 +26,7 @@
 
 #include "hash.h"
 #include "driver.h"
-
+#include "threads.h"
 
 /**
  * VIR_CONNECT_MAGIC:
@@ -125,7 +125,7 @@ struct _virConnect {
      * count of any virDomain/virNetwork object associated with
      * this connection
      */
-    PTHREAD_MUTEX_T (lock);
+    virMutex lock;
     virHashTablePtr domains;  /* hash table for known domains */
     virHashTablePtr networks; /* hash table for known domains */
     virHashTablePtr storagePools;/* hash table for known storage pools */

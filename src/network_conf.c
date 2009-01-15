@@ -126,6 +126,8 @@ void virNetworkObjFree(virNetworkObjPtr net)
     VIR_FREE(net->configFile);
     VIR_FREE(net->autostartLink);
 
+    virMutexDestroy(&net->lock);
+
     VIR_FREE(net);
 }
 
@@ -163,7 +165,12 @@ virNetworkObjPtr virNetworkAssignDef(virConnectPtr conn,
         virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
         return NULL;
     }
-    pthread_mutex_init(&network->lock, NULL);
+    if (virMutexInit(&network->lock) < 0) {
+        virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              "%s", _("cannot initialize mutex"));
+        VIR_FREE(network);
+        return NULL;
+    }
     virNetworkObjLock(network);
     network->def = def;
 
@@ -823,25 +830,13 @@ int virNetworkDeleteConfig(virConnectPtr conn,
     return 0;
 }
 
-#ifdef HAVE_PTHREAD_H
-
 void virNetworkObjLock(virNetworkObjPtr obj)
 {
-    pthread_mutex_lock(&obj->lock);
+    virMutexLock(&obj->lock);
 }
 
 void virNetworkObjUnlock(virNetworkObjPtr obj)
 {
-    pthread_mutex_unlock(&obj->lock);
+    virMutexUnlock(&obj->lock);
 }
 
-#else
-void virNetworkObjLock(virNetworkObjPtr obj ATTRIBUTE_UNUSED)
-{
-}
-
-void virNetworkObjUnlock(virNetworkObjPtr obj ATTRIBUTE_UNUSED)
-{
-}
-
-#endif

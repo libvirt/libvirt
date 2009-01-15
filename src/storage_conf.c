@@ -297,6 +297,9 @@ virStoragePoolObjFree(virStoragePoolObjPtr obj) {
 
     VIR_FREE(obj->configFile);
     VIR_FREE(obj->autostartLink);
+
+    virMutexDestroy(&obj->lock);
+
     VIR_FREE(obj);
 }
 
@@ -1259,13 +1262,19 @@ virStoragePoolObjAssignDef(virConnectPtr conn,
         return NULL;
     }
 
-    pthread_mutex_init(&pool->lock, NULL);
+    if (virMutexInit(&pool->lock) < 0) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              "%s", _("cannot initialize mutex"));
+        VIR_FREE(pool);
+        return NULL;
+    }
     virStoragePoolObjLock(pool);
     pool->active = 0;
     pool->def = def;
 
     if (VIR_REALLOC_N(pools->objs, pools->count+1) < 0) {
         pool->def = NULL;
+        virStoragePoolObjUnlock(pool);
         virStoragePoolObjFree(pool);
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, NULL);
         return NULL;
@@ -1530,23 +1539,12 @@ char *virStoragePoolSourceListFormat(virConnectPtr conn,
 }
 
 
-#ifdef HAVE_PTHREAD_H
-
 void virStoragePoolObjLock(virStoragePoolObjPtr obj)
 {
-    pthread_mutex_lock(&obj->lock);
+    virMutexLock(&obj->lock);
 }
 
 void virStoragePoolObjUnlock(virStoragePoolObjPtr obj)
 {
-    pthread_mutex_unlock(&obj->lock);
+    virMutexUnlock(&obj->lock);
 }
-#else
-void virStoragePoolObjLock(virStoragePoolObjPtr obj ATTRIBUTE_UNUSED)
-{
-}
-
-void virStoragePoolObjUnlock(virStoragePoolObjPtr obj ATTRIBUTE_UNUSED)
-{
-}
-#endif

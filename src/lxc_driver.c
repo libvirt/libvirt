@@ -57,11 +57,11 @@ static lxc_driver_t *lxc_driver = NULL;
 
 static void lxcDriverLock(lxc_driver_t *driver)
 {
-    pthread_mutex_lock(&driver->lock);
+    virMutexLock(&driver->lock);
 }
 static void lxcDriverUnlock(lxc_driver_t *driver)
 {
-    pthread_mutex_unlock(&driver->lock);
+    virMutexUnlock(&driver->lock);
 }
 
 
@@ -1135,7 +1135,10 @@ static int lxcStartup(void)
     if (VIR_ALLOC(lxc_driver) < 0) {
         return -1;
     }
-    pthread_mutex_init(&lxc_driver->lock, NULL);
+    if (virMutexInit(&lxc_driver->lock) < 0) {
+        VIR_FREE(lxc_driver);
+        return -1;
+    }
     lxcDriverLock(lxc_driver);
 
     /* Check that this is a container enabled kernel */
@@ -1228,6 +1231,7 @@ static int lxcShutdown(void)
     VIR_FREE(lxc_driver->stateDir);
     VIR_FREE(lxc_driver->logDir);
     lxcDriverUnlock(lxc_driver);
+    virMutexDestroy(&lxc_driver->lock);
     VIR_FREE(lxc_driver);
     lxc_driver = NULL;
 

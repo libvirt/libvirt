@@ -30,6 +30,7 @@
 #include "network_conf.h"
 #include "domain_conf.h"
 #include "virterror_internal.h"
+#include "threads.h"
 
 #define umlDebug(fmt, ...) do {} while(0)
 
@@ -39,7 +40,7 @@
 
 /* Main driver state */
 struct uml_driver {
-    PTHREAD_MUTEX_T(lock);
+    virMutex lock;
 
     unsigned int umlVersion;
     int nextvmid;

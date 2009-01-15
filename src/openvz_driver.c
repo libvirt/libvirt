@@ -70,12 +70,12 @@ static int openvzDomainSetVcpusInternal(virConnectPtr conn, virDomainObjPtr vm, 
 
 static void openvzDriverLock(struct openvz_driver *driver)
 {
-    pthread_mutex_lock(&driver->lock);
+    virMutexLock(&driver->lock);
 }
 
 static void openvzDriverUnlock(struct openvz_driver *driver)
 {
-    pthread_mutex_unlock(&driver->lock);
+    virMutexUnlock(&driver->lock);
 }
 
 struct openvz_driver ovz_driver;

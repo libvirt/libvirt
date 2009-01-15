@@ -26,6 +26,7 @@
 
 #include "internal.h"
 #include "util.h"
+#include "threads.h"
 
 /* Shared structs */
 
@@ -223,7 +224,7 @@ typedef struct _virStoragePoolObj virStoragePoolObj;
 typedef virStoragePoolObj *virStoragePoolObjPtr;
 
 struct _virStoragePoolObj {
-    PTHREAD_MUTEX_T(lock);
+    virMutex lock;
 
     char *configFile;
     char *autostartLink;
@@ -250,7 +251,7 @@ typedef struct _virStorageDriverState virStorageDriverState;
 typedef virStorageDriverState *virStorageDriverStatePtr;
 
 struct _virStorageDriverState {
-    PTHREAD_MUTEX_T(lock);
+    virMutex lock;
 
     virStoragePoolObjList pools;
 

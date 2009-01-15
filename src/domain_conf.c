@@ -433,6 +433,8 @@ void virDomainObjFree(virDomainObjPtr dom)
     VIR_FREE(dom->monitorpath);
     VIR_FREE(dom->vcpupids);
 
+    virMutexDestroy(&dom->lock);
+
     VIR_FREE(dom);
 }
 
@@ -471,7 +473,13 @@ virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
         return NULL;
     }
 
-    pthread_mutex_init(&domain->lock, NULL);
+    if (virMutexInit(&domain->lock) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("cannot initialize mutex"));
+        VIR_FREE(domain);
+        return NULL;
+    }
+
     virDomainObjLock(domain);
     domain->state = VIR_DOMAIN_SHUTOFF;
     domain->def = def;
@@ -3660,26 +3668,14 @@ const char *virDomainDefDefaultEmulator(virConnectPtr conn,
 }
 
 
-#ifdef HAVE_PTHREAD_H
-
 void virDomainObjLock(virDomainObjPtr obj)
 {
-    pthread_mutex_lock(&obj->lock);
+    virMutexLock(&obj->lock);
 }
 
 void virDomainObjUnlock(virDomainObjPtr obj)
 {
-    pthread_mutex_unlock(&obj->lock);
+    virMutexUnlock(&obj->lock);
 }
-
-#else
-void virDomainObjLock(virDomainObjPtr obj ATTRIBUTE_UNUSED)
-{
-}
-
-void virDomainObjUnlock(virDomainObjPtr obj ATTRIBUTE_UNUSED)
-{
-}
-#endif
 
 #endif /* ! PROXY */

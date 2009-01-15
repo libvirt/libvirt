@@ -49,11 +49,11 @@ static int storageDriverShutdown(void);
 
 static void storageDriverLock(virStorageDriverStatePtr driver)
 {
-    pthread_mutex_lock(&driver->lock);
+    virMutexLock(&driver->lock);
 }
 static void storageDriverUnlock(virStorageDriverStatePtr driver)
 {
-    pthread_mutex_unlock(&driver->lock);
+    virMutexUnlock(&driver->lock);
 }
 
 static void
@@ -113,7 +113,10 @@ storageDriverStartup(void) {
     if (VIR_ALLOC(driverState) < 0)
         return -1;
 
-    pthread_mutex_init(&driverState->lock, NULL);
+    if (virMutexInit(&driverState->lock) < 0) {
+        VIR_FREE(driverState);
+        return -1;
+    }
     storageDriverLock(driverState);
 
     if (!uid) {
@@ -266,6 +269,7 @@ storageDriverShutdown(void) {
     VIR_FREE(driverState->configDir);
     VIR_FREE(driverState->autostartDir);
     storageDriverUnlock(driverState);
+    virMutexDestroy(&driverState->lock);
     VIR_FREE(driverState);
 
     return 0;

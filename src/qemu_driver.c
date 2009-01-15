@@ -78,11 +78,11 @@ static int qemudShutdown(void);
 
 static void qemuDriverLock(struct qemud_driver *driver)
 {
-    pthread_mutex_lock(&driver->lock);
+    virMutexLock(&driver->lock);
 }
 static void qemuDriverUnlock(struct qemud_driver *driver)
 {
-    pthread_mutex_unlock(&driver->lock);
+    virMutexUnlock(&driver->lock);
 }
 
 static int qemudSetCloseExec(int fd) {
@@ -273,7 +273,11 @@ qemudStartup(void) {
     if (VIR_ALLOC(qemu_driver) < 0)
         return -1;
 
-    pthread_mutex_init(&qemu_driver->lock, NULL);
+    if (virMutexInit(&qemu_driver->lock) < 0) {
+        qemudLog(QEMUD_ERROR, "%s", _("cannot initialize mutex"));
+        VIR_FREE(qemu_driver);
+        return -1;
+    }
     qemuDriverLock(qemu_driver);
 
     /* Don't have a dom0 so start from 1 */
@@ -482,6 +486,7 @@ qemudShutdown(void) {
         brShutdown(qemu_driver->brctl);
 
     qemuDriverUnlock(qemu_driver);
+    virMutexDestroy(&qemu_driver->lock);
     VIR_FREE(qemu_driver);
 
     return 0;

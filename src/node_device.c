@@ -48,12 +48,12 @@ static int dev_has_cap(const virNodeDeviceObjPtr dev, const char *cap)
 void nodeDeviceLock(virDeviceMonitorStatePtr driver)
 {
     DEBUG("LOCK node %p", driver);
-    pthread_mutex_lock(&driver->lock);
+    virMutexLock(&driver->lock);
 }
 void nodeDeviceUnlock(virDeviceMonitorStatePtr driver)
 {
     DEBUG("UNLOCK node %p", driver);
-    pthread_mutex_unlock(&driver->lock);
+    virMutexUnlock(&driver->lock);
 }
 
 static int nodeNumOfDevices(virConnectPtr conn,

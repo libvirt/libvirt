@@ -44,6 +44,7 @@
 #include "domain_conf.h"
 #include "storage_conf.h"
 #include "xml.h"
+#include "threads.h"
 
 #define MAX_CPUS 128
 
@@ -58,7 +59,7 @@ typedef struct _testCell *testCellPtr;
 #define MAX_CELLS 128
 
 struct _testConn {
-    PTHREAD_MUTEX_T(lock);
+    virMutex lock;
 
     char path[PATH_MAX];
     int nextDomID;
@@ -93,20 +94,15 @@ static const virNodeInfo defaultNodeInfo = {
         virReportErrorHelper(conn, VIR_FROM_TEST, code, __FILE__, \
                                __FUNCTION__, __LINE__, fmt)
 
-#ifdef HAVE_THREAD_H
 static void testDriverLock(testConnPtr driver)
 {
-    pthread_mutex_lock(&driver->lock);
+    virMutexLock(&driver->lock);
 }
 
 static void testDriverUnlock(testConnPtr driver)
 {
-    pthread_mutex_unlock(&driver->lock);
+    virMutexUnlock(&driver->lock);
 }
-#else
-static void testDriverLock(testConnPtr driver ATTRIBUTE_UNUSED) {}
-static void testDriverUnlock(testConnPtr driver ATTRIBUTE_UNUSED) {}
-#endif
 
 static virCapsPtr
 testBuildCapabilities(virConnectPtr conn) {
@@ -216,9 +212,15 @@ static int testOpenDefault(virConnectPtr conn) {
         testError(conn, VIR_ERR_NO_MEMORY, "testConn");
         return VIR_DRV_OPEN_ERROR;
     }
-    conn->privateData = privconn;
-    pthread_mutex_init(&privconn->lock, NULL);
+    if (virMutexInit(&privconn->lock) < 0) {
+        testError(conn, VIR_ERR_INTERNAL_ERROR,
+                  "%s", _("cannot initialize mutex"));
+        VIR_FREE(privconn);
+        return VIR_DRV_OPEN_ERROR;
+    }
+
     testDriverLock(privconn);
+    conn->privateData = privconn;
 
     if (gettimeofday(&tv, NULL) < 0) {
         testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s", _("getting time of day"));
@@ -282,6 +284,7 @@ static int testOpenDefault(virConnectPtr conn) {
     virStoragePoolObjUnlock(poolobj);
 
     testDriverUnlock(privconn);
+
     return VIR_DRV_OPEN_SUCCESS;
 
 error:
@@ -290,6 +293,7 @@ error:
     virStoragePoolObjListFree(&privconn->pools);
     virCapabilitiesFree(privconn->caps);
     testDriverUnlock(privconn);
+    conn->privateData = NULL;
     VIR_FREE(privconn);
     return VIR_DRV_OPEN_ERROR;
 }
@@ -335,9 +339,15 @@ static int testOpenFromFile(virConnectPtr conn,
         testError(NULL, VIR_ERR_NO_MEMORY, "testConn");
         return VIR_DRV_OPEN_ERROR;
     }
-    conn->privateData = privconn;
-    pthread_mutex_init(&privconn->lock, NULL);
+    if (virMutexInit(&privconn->lock) < 0) {
+        testError(conn, VIR_ERR_INTERNAL_ERROR,
+                  "%s", _("cannot initialize mutex"));
+        VIR_FREE(privconn);
+        return VIR_DRV_OPEN_ERROR;
+    }
+
     testDriverLock(privconn);
+    conn->privateData = privconn;
 
     if (!(privconn->caps = testBuildCapabilities(conn)))
         goto error;
@@ -643,6 +653,7 @@ static int testClose(virConnectPtr conn)
     virNetworkObjListFree(&privconn->networks);
     virStoragePoolObjListFree(&privconn->pools);
     testDriverUnlock(privconn);
+    virMutexDestroy(&privconn->lock);
 
     VIR_FREE (privconn);
     conn->privateData = NULL;

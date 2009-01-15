@@ -46,6 +46,7 @@
 #include <rpc/xdr.h>
 #include "remote_protocol.h"
 #include "logging.h"
+#include "threads.h"
 
 #ifdef __GNUC__
 #ifdef HAVE_ANSIDECL_H
@@ -88,7 +89,7 @@ enum qemud_sock_type {
 
 /* Stores the per-client connection state */
 struct qemud_client {
-    PTHREAD_MUTEX_T(lock);
+    virMutex lock;
 
     int magic;
 
@@ -149,8 +150,8 @@ struct qemud_socket {
 
 /* Main server state */
 struct qemud_server {
-    pthread_mutex_t lock;
-    pthread_cond_t job;
+    virMutex lock;
+    virCond job;
 
     int nworkers;
     pthread_t *workers;

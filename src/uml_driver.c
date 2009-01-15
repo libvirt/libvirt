@@ -74,11 +74,11 @@ static int umlShutdown(void);
 
 static void umlDriverLock(struct uml_driver *driver)
 {
-    pthread_mutex_lock(&driver->lock);
+    virMutexLock(&driver->lock);
 }
 static void umlDriverUnlock(struct uml_driver *driver)
 {
-    pthread_mutex_unlock(&driver->lock);
+    virMutexUnlock(&driver->lock);
 }
 
 
@@ -314,7 +314,10 @@ umlStartup(void) {
     if (VIR_ALLOC(uml_driver) < 0)
         return -1;
 
-    pthread_mutex_init(&uml_driver->lock, NULL);
+    if (virMutexInit(&uml_driver->lock) < 0) {
+        VIR_FREE(uml_driver);
+        return -1;
+    }
     umlDriverLock(uml_driver);
 
     /* Don't have a dom0 so start from 1 */
@@ -501,6 +504,7 @@ umlShutdown(void) {
         brShutdown(uml_driver->brctl);
 
     umlDriverUnlock(uml_driver);
+    virMutexDestroy(&uml_driver->lock);
     VIR_FREE(uml_driver);
 
     return 0;

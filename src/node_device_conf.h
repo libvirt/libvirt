@@ -26,6 +26,7 @@
 
 #include "internal.h"
 #include "util.h"
+#include "threads.h"
 
 enum virNodeDevCapType {
     /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
@@ -142,7 +143,7 @@ struct _virNodeDeviceDef {
 typedef struct _virNodeDeviceObj virNodeDeviceObj;
 typedef virNodeDeviceObj *virNodeDeviceObjPtr;
 struct _virNodeDeviceObj {
-    PTHREAD_MUTEX_T(lock);
+    virMutex lock;
 
     virNodeDeviceDefPtr def;		/* device definition */
     void *privateData;			/* driver-specific private data */
@@ -160,7 +161,7 @@ struct _virNodeDeviceObjList {
 typedef struct _virDeviceMonitorState virDeviceMonitorState;
 typedef virDeviceMonitorState *virDeviceMonitorStatePtr;
 struct _virDeviceMonitorState {
-    PTHREAD_MUTEX_T(lock);
+    virMutex lock;
 
     virNodeDeviceObjList devs;		/* currently-known devices */
     void *privateData;			/* driver-specific private data */

@@ -14,6 +14,7 @@ src/lxc_driver.c
 src/network_conf.c
 src/network_driver.c
 src/node_device.c
+src/node_device_conf.c
 src/openvz_conf.c
 src/openvz_driver.c
 src/proxy_internal.c

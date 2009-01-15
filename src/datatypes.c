@@ -123,6 +123,11 @@ virGetConnect(void) {
         virLibConnError(NULL, VIR_ERR_NO_MEMORY, _("allocating connection"));
         goto failed;
     }
+    if (virMutexInit(&ret->lock) < 0) {
+        VIR_FREE(ret);
+        goto failed;
+    }
+
     ret->magic = VIR_CONNECT_MAGIC;
     ret->driver = NULL;
     ret->networkDriver = NULL;
@@ -144,8 +149,6 @@ virGetConnect(void) {
     if (ret->nodeDevices == NULL)
         goto failed;
 
-    pthread_mutex_init(&ret->lock, NULL);
-
     ret->refs = 1;
     return(ret);
 
@@ -162,7 +165,7 @@ failed:
         if (ret->nodeDevices != NULL)
             virHashFree(ret->nodeDevices, (virHashDeallocator) virNodeDeviceFree);
 
-        pthread_mutex_destroy(&ret->lock);
+        virMutexDestroy(&ret->lock);
         VIR_FREE(ret);
     }
     return(NULL);
@@ -197,8 +200,8 @@ virReleaseConnect(virConnectPtr conn) {
 
     xmlFreeURI(conn->uri);
 
-    pthread_mutex_unlock(&conn->lock);
-    pthread_mutex_destroy(&conn->lock);
+    virMutexUnlock(&conn->lock);
+    virMutexDestroy(&conn->lock);
     VIR_FREE(conn);
 }
 
@@ -219,7 +222,7 @@ virUnrefConnect(virConnectPtr conn) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
-    pthread_mutex_lock(&conn->lock);
+    virMutexLock(&conn->lock);
     DEBUG("unref connection %p %d", conn, conn->refs);
     conn->refs--;
     refs = conn->refs;
@@ -228,7 +231,7 @@ virUnrefConnect(virConnectPtr conn) {
         /* Already unlocked mutex */
         return (0);
     }
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
     return (refs);
 }
 
@@ -253,7 +256,7 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
-    pthread_mutex_lock(&conn->lock);
+    virMutexLock(&conn->lock);
 
     /* TODO search by UUID first as they are better differenciators */
 
@@ -286,11 +289,11 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
         DEBUG("Existing hash entry %p: refs now %d", ret, ret->refs+1);
     }
     ret->refs++;
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
     return(ret);
 
  error:
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
     if (ret != NULL) {
         VIR_FREE(ret->name);
         VIR_FREE(ret);
@@ -337,7 +340,7 @@ virReleaseDomain(virDomainPtr domain) {
         return;
     }
 
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
 }
 
 
@@ -358,7 +361,7 @@ virUnrefDomain(virDomainPtr domain) {
         virLibConnError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
-    pthread_mutex_lock(&domain->conn->lock);
+    virMutexLock(&domain->conn->lock);
     DEBUG("unref domain %p %s %d", domain, domain->name, domain->refs);
     domain->refs--;
     refs = domain->refs;
@@ -368,7 +371,7 @@ virUnrefDomain(virDomainPtr domain) {
         return (0);
     }
 
-    pthread_mutex_unlock(&domain->conn->lock);
+    virMutexUnlock(&domain->conn->lock);
     return (refs);
 }
 
@@ -393,7 +396,7 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
-    pthread_mutex_lock(&conn->lock);
+    virMutexLock(&conn->lock);
 
     /* TODO search by UUID first as they are better differenciators */
 
@@ -422,11 +425,11 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
         conn->refs++;
     }
     ret->refs++;
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
     return(ret);
 
  error:
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
     if (ret != NULL) {
         VIR_FREE(ret->name);
         VIR_FREE(ret);
@@ -473,7 +476,7 @@ virReleaseNetwork(virNetworkPtr network) {
         return;
     }
 
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
 }
 
 
@@ -494,7 +497,7 @@ virUnrefNetwork(virNetworkPtr network) {
         virLibConnError(network->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
-    pthread_mutex_lock(&network->conn->lock);
+    virMutexLock(&network->conn->lock);
     DEBUG("unref network %p %s %d", network, network->name, network->refs);
     network->refs--;
     refs = network->refs;
@@ -504,7 +507,7 @@ virUnrefNetwork(virNetworkPtr network) {
         return (0);
     }
 
-    pthread_mutex_unlock(&network->conn->lock);
+    virMutexUnlock(&network->conn->lock);
     return (refs);
 }
 
@@ -530,7 +533,7 @@ virGetStoragePool(virConnectPtr conn, const char *name, const unsigned char *uui
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
-    pthread_mutex_lock(&conn->lock);
+    virMutexLock(&conn->lock);
 
     /* TODO search by UUID first as they are better differenciators */
 
@@ -559,11 +562,11 @@ virGetStoragePool(virConnectPtr conn, const char *name, const unsigned char *uui
         conn->refs++;
     }
     ret->refs++;
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
     return(ret);
 
 error:
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
     if (ret != NULL) {
         VIR_FREE(ret->name);
         VIR_FREE(ret);
@@ -606,7 +609,7 @@ virReleaseStoragePool(virStoragePoolPtr pool) {
         return;
     }
 
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
 }
 
 
@@ -627,7 +630,7 @@ virUnrefStoragePool(virStoragePoolPtr pool) {
         virLibConnError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
-    pthread_mutex_lock(&pool->conn->lock);
+    virMutexLock(&pool->conn->lock);
     DEBUG("unref pool %p %s %d", pool, pool->name, pool->refs);
     pool->refs--;
     refs = pool->refs;
@@ -637,7 +640,7 @@ virUnrefStoragePool(virStoragePoolPtr pool) {
         return (0);
     }
 
-    pthread_mutex_unlock(&pool->conn->lock);
+    virMutexUnlock(&pool->conn->lock);
     return (refs);
 }
 
@@ -664,7 +667,7 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name, const c
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
-    pthread_mutex_lock(&conn->lock);
+    virMutexLock(&conn->lock);
 
     ret = (virStorageVolPtr) virHashLookup(conn->storageVols, key);
     if (ret == NULL) {
@@ -695,11 +698,11 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name, const c
         conn->refs++;
     }
     ret->refs++;
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
     return(ret);
 
 error:
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
     if (ret != NULL) {
         VIR_FREE(ret->name);
         VIR_FREE(ret->pool);
@@ -744,7 +747,7 @@ virReleaseStorageVol(virStorageVolPtr vol) {
         return;
     }
 
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
 }
 
 
@@ -765,7 +768,7 @@ virUnrefStorageVol(virStorageVolPtr vol) {
         virLibConnError(vol->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
-    pthread_mutex_lock(&vol->conn->lock);
+    virMutexLock(&vol->conn->lock);
     DEBUG("unref vol %p %s %d", vol, vol->name, vol->refs);
     vol->refs--;
     refs = vol->refs;
@@ -775,7 +778,7 @@ virUnrefStorageVol(virStorageVolPtr vol) {
         return (0);
     }
 
-    pthread_mutex_unlock(&vol->conn->lock);
+    virMutexUnlock(&vol->conn->lock);
     return (refs);
 }
 
@@ -801,7 +804,7 @@ virGetNodeDevice(virConnectPtr conn, const char *name)
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
-    pthread_mutex_lock(&conn->lock);
+    virMutexLock(&conn->lock);
 
     ret = (virNodeDevicePtr) virHashLookup(conn->nodeDevices, name);
     if (ret == NULL) {
@@ -825,11 +828,11 @@ virGetNodeDevice(virConnectPtr conn, const char *name)
         conn->refs++;
     }
     ret->refs++;
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
     return(ret);
 
 error:
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
     if (ret != NULL) {
         VIR_FREE(ret->name);
         VIR_FREE(ret);
@@ -872,7 +875,7 @@ virReleaseNodeDevice(virNodeDevicePtr dev) {
         return;
     }
 
-    pthread_mutex_unlock(&conn->lock);
+    virMutexUnlock(&conn->lock);
 }
 
 
@@ -889,7 +892,7 @@ int
 virUnrefNodeDevice(virNodeDevicePtr dev) {
     int refs;
 
-    pthread_mutex_lock(&dev->conn->lock);
+    virMutexLock(&dev->conn->lock);
     DEBUG("unref dev %p %s %d", dev, dev->name, dev->refs);
     dev->refs--;
     refs = dev->refs;
@@ -899,6 +902,6 @@ virUnrefNodeDevice(virNodeDevicePtr dev) {
         return (0);
     }
 
-    pthread_mutex_unlock(&dev->conn->lock);
+    virMutexUnlock(&dev->conn->lock);
     return (refs);
 }

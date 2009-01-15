@@ -37,6 +37,7 @@
 #include "logging.h"
 #include "memory.h"
 #include "util.h"
+#include "threads.h"
 
 #ifdef ENABLE_DEBUG
 int debugFlag = 0;
@@ -129,15 +130,15 @@ static int virLogResetOutputs(void);
 /*
  * Logs accesses must be serialized though a mutex
  */
-PTHREAD_MUTEX_T(virLogMutex);
+virMutex virLogMutex;
 
 static void virLogLock(void)
 {
-    pthread_mutex_lock(&virLogMutex);
+    virMutexLock(&virLogMutex);
 }
 static void virLogUnlock(void)
 {
-    pthread_mutex_unlock(&virLogMutex);
+    virMutexUnlock(&virLogMutex);
 }
 
 
@@ -167,8 +168,11 @@ static int virLogInitialized = 0;
 int virLogStartup(void) {
     if (virLogInitialized)
         return(-1);
+
+    if (virMutexInit(&virLogMutex) < 0)
+        return -1;
+
     virLogInitialized = 1;
-    pthread_mutex_init(&virLogMutex, NULL);
     virLogLock();
     virLogLen = 0;
     virLogStart = 0;
@@ -214,7 +218,7 @@ void virLogShutdown(void) {
     virLogStart = 0;
     virLogEnd = 0;
     virLogUnlock();
-    pthread_mutex_destroy(&virLogMutex);
+    virMutexDestroy(&virLogMutex);
     virLogInitialized = 0;
 }
 

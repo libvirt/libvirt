@@ -99,6 +99,8 @@ void virNodeDeviceObjFree(virNodeDeviceObjPtr dev)
     if (dev->privateFree)
         (*dev->privateFree)(dev->privateData);
 
+    virMutexDestroy(&dev->lock);
+
     VIR_FREE(dev);
 }
 
@@ -128,12 +130,18 @@ virNodeDeviceObjPtr virNodeDeviceAssignDef(virConnectPtr conn,
         return NULL;
     }
 
-    pthread_mutex_init(&device->lock, NULL);
+    if (virMutexInit(&device->lock) < 0) {
+        virNodeDeviceReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("cannot initialize mutex"));
+        VIR_FREE(device);
+        return NULL;
+    }
     virNodeDeviceObjLock(device);
     device->def = def;
 
     if (VIR_REALLOC_N(devs->objs, devs->count+1) < 0) {
         device->def = NULL;
+        virNodeDeviceObjUnlock(device);
         virNodeDeviceObjFree(device);
         virNodeDeviceReportError(conn, VIR_ERR_NO_MEMORY, NULL);
         return NULL;
@@ -408,26 +416,13 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
 }
 
 
-#ifdef HAVE_PTHREAD_H
-
 void virNodeDeviceObjLock(virNodeDeviceObjPtr obj)
 {
-    pthread_mutex_lock(&obj->lock);
+    virMutexLock(&obj->lock);
 }
 
 void virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj)
 {
-    pthread_mutex_unlock(&obj->lock);
+    virMutexUnlock(&obj->lock);
 }
 
-#else
-
-void virNodeDeviceObjLock(virNodeDeviceObjPtr obj ATTRIBUTE_UNUSED)
-{
-}
-
-void virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj ATTRIBUTE_UNUSED)
-{
-}
-
-#endif

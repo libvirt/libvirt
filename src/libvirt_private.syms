@@ -261,6 +261,18 @@ virStoragePoolObjLock;
 virStoragePoolObjUnlock;
 
 
+# threads.h
+virMutexInit;
+virMutexDestroy;
+virMutexLock;
+virMutexUnlock;
+
+virCondInit;
+virCondDestroy;
+virCondWait;
+virCondSignal;
+virCondBroadcast;
+
 # util.h
 virFileReadAll;
 virStrToLong_i;
