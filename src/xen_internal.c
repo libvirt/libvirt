@@ -37,6 +37,10 @@
 #endif
 #endif
 
+#ifdef __sun
+#include <sys/systeminfo.h>
+#endif
+
 /* required for shutdown flags */
 #include <xen/sched.h>
 
@@ -662,11 +666,8 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 #ifdef __linux__
 #define XEN_HYPERVISOR_SOCKET	"/proc/xen/privcmd"
 #define HYPERVISOR_CAPABILITIES	"/sys/hypervisor/properties/capabilities"
-#define CPUINFO			"/proc/cpuinfo"
 #elif defined(__sun)
 #define XEN_HYPERVISOR_SOCKET	"/dev/xen/privcmd"
-#define HYPERVISOR_CAPABILITIES	""
-#define CPUINFO			"/dev/cpu/self/cpuid"
 #else
 #error "unsupported platform"
 #endif
@@ -2123,7 +2124,7 @@ static virCapsPtr
 xenHypervisorBuildCapabilities(virConnectPtr conn,
                                const char *hostmachine,
                                int host_pae,
-                               char *hvm_type,
+                               const char *hvm_type,
                                struct guest_arch *guest_archs,
                                int nr_guest_archs) {
     virCapsPtr caps;
@@ -2227,8 +2228,126 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
     return NULL;
 }
 
+#ifdef __sun
+
+static int
+get_cpu_flags(virConnectPtr conn, const char **hvm, int *pae, int *longmode)
+{
+    struct {
+        uint32_t r_eax, r_ebx, r_ecx, r_edx;
+    } regs;
+
+    char tmpbuf[20];
+    int ret = 0;
+    int fd;
+
+    /* returns -1, errno 22 if in 32-bit mode */
+    *longmode = (sysinfo(SI_ARCHITECTURE_64, tmpbuf, sizeof(tmpbuf)) != -1);
+
+    if ((fd = open("/dev/cpu/self/cpuid", O_RDONLY)) == -1 ||
+        pread(fd, &regs, sizeof(regs), 0) != sizeof(regs)) {
+        virXenError(conn, VIR_ERR_SYSTEM_ERROR,
+            "couldn't read CPU flags: %s", strerror(errno));
+        goto out;
+    }
+
+    *pae = 0;
+    *hvm = "";
+
+    if (STREQLEN((const char *)&regs.r_ebx, "AuthcAMDenti", 12)) {
+        if (pread(fd, &regs, sizeof (regs), 0x80000001) == sizeof (regs)) {
+            /* Read secure virtual machine bit (bit 2 of ECX feature ID) */
+            if ((regs.r_ecx >> 2) & 1) {
+                *hvm = "svm";
+            }
+            if ((regs.r_edx >> 6) & 1)
+                *pae = 1;
+        }
+    } else if (STREQLEN((const char *)&regs.r_ebx, "GenuntelineI", 12)) {
+        if (pread(fd, &regs, sizeof (regs), 0x00000001) == sizeof (regs)) {
+            /* Read VMXE feature bit (bit 5 of ECX feature ID) */
+            if ((regs.r_ecx >> 5) & 1)
+                *hvm = "vmx";
+            if ((regs.r_edx >> 6) & 1)
+                *pae = 1;
+        }
+    }
+
+    ret = 1;
+
+out:
+    if (fd != -1)
+        close(fd);
+    return ret;
+}
+
+static virCapsPtr
+xenHypervisorMakeCapabilitiesSunOS(virConnectPtr conn)
+{
+    struct guest_arch guest_arches[32];
+    int i = 0;
+    virCapsPtr caps = NULL;
+    struct utsname utsname;
+    int pae, longmode;
+    const char *hvm;
+
+    if (!get_cpu_flags(conn, &hvm, &pae, &longmode))
+        return NULL;
+
+    /* Really, this never fails - look at the man-page. */
+    uname (&utsname);
+
+    guest_arches[i].model = "i686";
+    guest_arches[i].bits = 32;
+    guest_arches[i].hvm = 0;
+    guest_arches[i].pae = pae;
+    guest_arches[i].nonpae = !pae;
+    guest_arches[i].ia64_be = 0;
+    i++;
+
+    if (longmode) {
+        guest_arches[i].model = "x86_64";
+        guest_arches[i].bits = 64;
+        guest_arches[i].hvm = 0;
+        guest_arches[i].pae = 0;
+        guest_arches[i].nonpae = 0;
+        guest_arches[i].ia64_be = 0;
+        i++;
+    }
+
+    if (hvm[0] != '\0') {
+        guest_arches[i].model = "i686";
+        guest_arches[i].bits = 32;
+        guest_arches[i].hvm = 1;
+        guest_arches[i].pae = pae;
+        guest_arches[i].nonpae = 1;
+        guest_arches[i].ia64_be = 0;
+        i++;
+
+        if (longmode) {
+            guest_arches[i].model = "x86_64";
+            guest_arches[i].bits = 64;
+            guest_arches[i].hvm = 1;
+            guest_arches[i].pae = 0;
+            guest_arches[i].nonpae = 0;
+            guest_arches[i].ia64_be = 0;
+            i++;
+        }
+    }
+
+    if ((caps = xenHypervisorBuildCapabilities(conn,
+                                               utsname.machine,
+                                               pae, hvm,
+                                               guest_arches, i)) == NULL)
+        virXenError(NULL, VIR_ERR_NO_MEMORY, NULL);
+
+    return caps;
+}
+
+#endif /* __sun */
+
 /**
- * xenHypervisorGetCapabilities:
+ * xenHypervisorMakeCapabilitiesInternal:
  * @conn: pointer to the connection block
  * @cpuinfo: file handle containing /proc/cpuinfo data, or NULL
  * @capabilities: file handle containing /sys/hypervisor/properties/capabilities data, or NULL
@@ -2394,6 +2513,9 @@ xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
 virCapsPtr
 xenHypervisorMakeCapabilities(virConnectPtr conn)
 {
+#ifdef __sun
+    return xenHypervisorMakeCapabilitiesSunOS(conn);
+#else
     virCapsPtr caps;
     FILE *cpuinfo, *capabilities;
     struct utsname utsname;
@@ -2432,6 +2554,7 @@ xenHypervisorMakeCapabilities(virConnectPtr conn)
         fclose(capabilities);
 
     return caps;
+#endif /* __sun */
 }
 
 

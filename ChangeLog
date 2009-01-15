@@ -1,3 +1,7 @@
+Thu Jan 15 01:31:45 GMT 2009  John Levon  <levon@movementarian.org>
+
+	* src/xen_internal.c: implement capabilities parsing for Solaris
+
 Thu Jan 15 01:22:32 GMT 2009  John Levon  <levon@movementarian.org>
 
 	* src/xs_internal.c: Fix xs_unwatch() to correctly pass the
