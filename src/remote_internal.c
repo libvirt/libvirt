@@ -86,14 +86,9 @@
 #include "util.h"
 #include "event.h"
 
-/* Per-connection private data. */
-#define MAGIC 999               /* private_data->magic if OK */
-#define DEAD 998                /* private_data->magic if dead/closed */
-
 static int inside_daemon = 0;
 
 struct private_data {
-    int magic;                  /* Should be MAGIC or DEAD. */
     int sock;                   /* Socket. */
     int watch;                  /* File handle watch */
     pid_t pid;                  /* PID of tunnel process */
@@ -118,39 +113,6 @@ struct private_data {
     /* Timer for flushing domainEvents queue */
     int eventFlushTimer;
 };
-
-#define GET_PRIVATE(conn,retcode)                                       \
-    struct private_data *priv = (struct private_data *) (conn)->privateData; \
-    if (!priv || priv->magic != MAGIC) {                                \
-        error (conn, VIR_ERR_INVALID_ARG,                               \
-               _("tried to use a closed or uninitialised handle"));     \
-        return (retcode);                                               \
-    }
-
-#define GET_NETWORK_PRIVATE(conn,retcode)                               \
-    struct private_data *priv = (struct private_data *) (conn)->networkPrivateData; \
-    if (!priv || priv->magic != MAGIC) {                                \
-        error (conn, VIR_ERR_INVALID_ARG,                               \
-               _("tried to use a closed or uninitialised handle"));     \
-        return (retcode);                                               \
-    }
-
-#define GET_STORAGE_PRIVATE(conn,retcode)                               \
-    struct private_data *priv = (struct private_data *) (conn)->storagePrivateData; \
-    if (!priv || priv->magic != MAGIC) {                                \
-        error (conn, VIR_ERR_INVALID_ARG,                               \
-               "tried to use a closed or uninitialised handle");        \
-        return (retcode);                                               \
-    }
-
-#define GET_DEVMON_PRIVATE(conn,retcode)                               \
-    struct private_data *priv = (struct private_data *) (conn)->devMonPrivateData; \
-    if (!priv || priv->magic != MAGIC) {                                \
-        error (conn, VIR_ERR_INVALID_ARG,                               \
-               _("tried to use a closed or uninitialised handle"));     \
-        return (retcode);                                               \
-    }
-
 
 enum {
     REMOTE_CALL_IN_OPEN = 1,
@@ -917,14 +879,12 @@ remoteOpen (virConnectPtr conn,
         }
     }
 
-    priv->magic = DEAD;
     priv->sock = -1;
     ret = doRemoteOpen(conn, priv, auth, rflags);
     if (ret != VIR_DRV_OPEN_SUCCESS) {
         conn->privateData = NULL;
         VIR_FREE(priv);
     } else {
-        priv->magic = MAGIC;
         conn->privateData = priv;
     }
     return ret;
@@ -1268,9 +1228,6 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
     /* See comment for remoteType. */
     free (priv->type);
 
-    /* Free private data. */
-    priv->magic = DEAD;
-
     /* Free callback list */
     virDomainEventCallbackListFree(priv->callbackList);
 
@@ -1284,10 +1241,10 @@ static int
 remoteClose (virConnectPtr conn)
 {
     int ret;
-    GET_PRIVATE (conn, -1);
+    struct private_data *priv = conn->privateData;
 
     ret = doRemoteClose(conn, priv);
-    free (priv);
+    VIR_FREE (priv);
     conn->privateData = NULL;
 
     return ret;
@@ -1298,7 +1255,7 @@ remoteSupportsFeature (virConnectPtr conn, int feature)
 {
     remote_supports_feature_args args;
     remote_supports_feature_ret ret;
-    GET_PRIVATE (conn, -1);
+    struct private_data *priv = conn->privateData;
 
     /* VIR_DRV_FEATURE_REMOTE* features are handled directly. */
     if (feature == VIR_DRV_FEATURE_REMOTE) return 1;
@@ -1326,7 +1283,7 @@ static const char *
 remoteType (virConnectPtr conn)
 {
     remote_get_type_ret ret;
-    GET_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->privateData;
 
     /* Cached? */
     if (priv->type) return priv->type;
@@ -1345,7 +1302,7 @@ static int
 remoteGetVersion (virConnectPtr conn, unsigned long *hvVer)
 {
     remote_get_version_ret ret;
-    GET_PRIVATE (conn, -1);
+    struct private_data *priv = conn->privateData;
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, 0, REMOTE_PROC_GET_VERSION,
@@ -1361,7 +1318,7 @@ static char *
 remoteGetHostname (virConnectPtr conn)
 {
     remote_get_hostname_ret ret;
-    GET_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->privateData;
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, 0, REMOTE_PROC_GET_HOSTNAME,
@@ -1378,7 +1335,7 @@ remoteGetMaxVcpus (virConnectPtr conn, const char *type)
 {
     remote_get_max_vcpus_args args;
     remote_get_max_vcpus_ret ret;
-    GET_PRIVATE (conn, -1);
+    struct private_data *priv = conn->privateData;
 
     memset (&ret, 0, sizeof ret);
     args.type = type == NULL ? NULL : (char **) &type;
@@ -1394,7 +1351,7 @@ static int
 remoteNodeGetInfo (virConnectPtr conn, virNodeInfoPtr info)
 {
     remote_node_get_info_ret ret;
-    GET_PRIVATE (conn, -1);
+    struct private_data *priv = conn->privateData;
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, 0, REMOTE_PROC_NODE_GET_INFO,
@@ -1418,7 +1375,7 @@ static char *
 remoteGetCapabilities (virConnectPtr conn)
 {
     remote_get_capabilities_ret ret;
-    GET_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->privateData;
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, 0, REMOTE_PROC_GET_CAPABILITIES,
@@ -1439,7 +1396,7 @@ remoteNodeGetCellsFreeMemory(virConnectPtr conn,
     remote_node_get_cells_free_memory_args args;
     remote_node_get_cells_free_memory_ret ret;
     int i;
-    GET_PRIVATE (conn, -1);
+    struct private_data *priv = conn->privateData;
 
     if (maxCells > REMOTE_NODE_MAX_CELLS) {
         errorf (conn, VIR_ERR_RPC,
@@ -1470,7 +1427,7 @@ static unsigned long long
 remoteNodeGetFreeMemory (virConnectPtr conn)
 {
     remote_node_get_free_memory_ret ret;
-    GET_PRIVATE (conn, -1);
+    struct private_data *priv = conn->privateData;
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, 0, REMOTE_PROC_NODE_GET_FREE_MEMORY,
@@ -1488,7 +1445,7 @@ remoteListDomains (virConnectPtr conn, int *ids, int maxids)
     int i;
     remote_list_domains_args args;
     remote_list_domains_ret ret;
-    GET_PRIVATE (conn, -1);
+    struct private_data *priv = conn->privateData;
 
     if (maxids > REMOTE_DOMAIN_ID_LIST_MAX) {
         errorf (conn, VIR_ERR_RPC,
@@ -1524,7 +1481,7 @@ static int
 remoteNumOfDomains (virConnectPtr conn)
 {
     remote_num_of_domains_ret ret;
-    GET_PRIVATE (conn, -1);
+    struct private_data *priv = conn->privateData;
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, 0, REMOTE_PROC_NUM_OF_DOMAINS,
@@ -1543,7 +1500,7 @@ remoteDomainCreateXML (virConnectPtr conn,
     virDomainPtr dom;
     remote_domain_create_xml_args args;
     remote_domain_create_xml_ret ret;
-    GET_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->privateData;
 
     args.xml_desc = (char *) xmlDesc;
     args.flags = flags;
@@ -1566,7 +1523,7 @@ remoteDomainLookupByID (virConnectPtr conn, int id)
     virDomainPtr dom;
     remote_domain_lookup_by_id_args args;
     remote_domain_lookup_by_id_ret ret;
-    GET_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->privateData;
 
     args.id = id;
 
@@ -1588,7 +1545,7 @@ remoteDomainLookupByUUID (virConnectPtr conn, const unsigned char *uuid)
     virDomainPtr dom;
     remote_domain_lookup_by_uuid_args args;
     remote_domain_lookup_by_uuid_ret ret;
-    GET_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->privateData;
 
     memcpy (args.uuid, uuid, VIR_UUID_BUFLEN);
 
@@ -1609,7 +1566,7 @@ remoteDomainLookupByName (virConnectPtr conn, const char *name)
     virDomainPtr dom;
     remote_domain_lookup_by_name_args args;
     remote_domain_lookup_by_name_ret ret;
-    GET_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->privateData;
 
     args.name = (char *) name;
 
@@ -1629,7 +1586,7 @@ static int
 remoteDomainSuspend (virDomainPtr domain)
 {
     remote_domain_suspend_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
 
@@ -1645,7 +1602,7 @@ static int
 remoteDomainResume (virDomainPtr domain)
 {
     remote_domain_resume_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
 
@@ -1661,7 +1618,7 @@ static int
 remoteDomainShutdown (virDomainPtr domain)
 {
     remote_domain_shutdown_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
 
@@ -1677,7 +1634,7 @@ static int
 remoteDomainReboot (virDomainPtr domain, unsigned int flags)
 {
     remote_domain_reboot_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
     args.flags = flags;
@@ -1694,7 +1651,7 @@ static int
 remoteDomainDestroy (virDomainPtr domain)
 {
     remote_domain_destroy_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
 
@@ -1711,7 +1668,7 @@ remoteDomainGetOSType (virDomainPtr domain)
 {
     remote_domain_get_os_type_args args;
     remote_domain_get_os_type_ret ret;
-    GET_PRIVATE (domain->conn, NULL);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
 
@@ -1730,7 +1687,7 @@ remoteDomainGetMaxMemory (virDomainPtr domain)
 {
     remote_domain_get_max_memory_args args;
     remote_domain_get_max_memory_ret ret;
-    GET_PRIVATE (domain->conn, 0);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
 
@@ -1747,7 +1704,7 @@ static int
 remoteDomainSetMaxMemory (virDomainPtr domain, unsigned long memory)
 {
     remote_domain_set_max_memory_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
     args.memory = memory;
@@ -1764,7 +1721,7 @@ static int
 remoteDomainSetMemory (virDomainPtr domain, unsigned long memory)
 {
     remote_domain_set_memory_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
     args.memory = memory;
@@ -1782,7 +1739,7 @@ remoteDomainGetInfo (virDomainPtr domain, virDomainInfoPtr info)
 {
     remote_domain_get_info_args args;
     remote_domain_get_info_ret ret;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
 
@@ -1805,7 +1762,7 @@ static int
 remoteDomainSave (virDomainPtr domain, const char *to)
 {
     remote_domain_save_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
     args.to = (char *) to;
@@ -1822,7 +1779,7 @@ static int
 remoteDomainRestore (virConnectPtr conn, const char *from)
 {
     remote_domain_restore_args args;
-    GET_PRIVATE (conn, -1);
+    struct private_data *priv = conn->privateData;
 
     args.from = (char *) from;
 
@@ -1838,7 +1795,7 @@ static int
 remoteDomainCoreDump (virDomainPtr domain, const char *to, int flags)
 {
     remote_domain_core_dump_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
     args.to = (char *) to;
@@ -1856,7 +1813,7 @@ static int
 remoteDomainSetVcpus (virDomainPtr domain, unsigned int nvcpus)
 {
     remote_domain_set_vcpus_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
     args.nvcpus = nvcpus;
@@ -1876,7 +1833,7 @@ remoteDomainPinVcpu (virDomainPtr domain,
                      int maplen)
 {
     remote_domain_pin_vcpu_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     if (maplen > REMOTE_CPUMAP_MAX) {
         errorf (domain->conn, VIR_ERR_RPC,
@@ -1908,7 +1865,7 @@ remoteDomainGetVcpus (virDomainPtr domain,
     int i;
     remote_domain_get_vcpus_args args;
     remote_domain_get_vcpus_ret ret;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     if (maxinfo > REMOTE_VCPUINFO_MAX) {
         errorf (domain->conn, VIR_ERR_RPC,
@@ -1970,7 +1927,7 @@ remoteDomainGetMaxVcpus (virDomainPtr domain)
 {
     remote_domain_get_max_vcpus_args args;
     remote_domain_get_max_vcpus_ret ret;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
 
@@ -1988,7 +1945,7 @@ remoteDomainDumpXML (virDomainPtr domain, int flags)
 {
     remote_domain_dump_xml_args args;
     remote_domain_dump_xml_ret ret;
-    GET_PRIVATE (domain->conn, NULL);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
     args.flags = flags;
@@ -2012,7 +1969,7 @@ remoteDomainMigratePrepare (virConnectPtr dconn,
 {
     remote_domain_migrate_prepare_args args;
     remote_domain_migrate_prepare_ret ret;
-    GET_PRIVATE (dconn, -1);
+    struct private_data *priv = dconn->privateData;
 
     args.uri_in = uri_in == NULL ? NULL : (char **) &uri_in;
     args.flags = flags;
@@ -2045,7 +2002,7 @@ remoteDomainMigratePerform (virDomainPtr domain,
                             unsigned long resource)
 {
     remote_domain_migrate_perform_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
     args.cookie.cookie_len = cookielen;
@@ -2074,7 +2031,7 @@ remoteDomainMigrateFinish (virConnectPtr dconn,
     virDomainPtr ddom;
     remote_domain_migrate_finish_args args;
     remote_domain_migrate_finish_ret ret;
-    GET_PRIVATE (dconn, NULL);
+    struct private_data *priv = dconn->privateData;
 
     args.dname = (char *) dname;
     args.cookie.cookie_len = cookielen;
@@ -2104,7 +2061,7 @@ remoteDomainMigratePrepare2 (virConnectPtr dconn,
 {
     remote_domain_migrate_prepare2_args args;
     remote_domain_migrate_prepare2_ret ret;
-    GET_PRIVATE (dconn, -1);
+    struct private_data *priv = dconn->privateData;
 
     args.uri_in = uri_in == NULL ? NULL : (char **) &uri_in;
     args.flags = flags;
@@ -2140,7 +2097,7 @@ remoteDomainMigrateFinish2 (virConnectPtr dconn,
     virDomainPtr ddom;
     remote_domain_migrate_finish2_args args;
     remote_domain_migrate_finish2_ret ret;
-    GET_PRIVATE (dconn, NULL);
+    struct private_data *priv = dconn->privateData;
 
     args.dname = (char *) dname;
     args.cookie.cookie_len = cookielen;
@@ -2167,7 +2124,7 @@ remoteListDefinedDomains (virConnectPtr conn, char **const names, int maxnames)
     int i;
     remote_list_defined_domains_args args;
     remote_list_defined_domains_ret ret;
-    GET_PRIVATE (conn, -1);
+    struct private_data *priv = conn->privateData;
 
     if (maxnames > REMOTE_DOMAIN_NAME_LIST_MAX) {
         errorf (conn, VIR_ERR_RPC,
@@ -2208,7 +2165,7 @@ static int
 remoteNumOfDefinedDomains (virConnectPtr conn)
 {
     remote_num_of_defined_domains_ret ret;
-    GET_PRIVATE (conn, -1);
+    struct private_data *priv = conn->privateData;
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, 0, REMOTE_PROC_NUM_OF_DEFINED_DOMAINS,
@@ -2223,7 +2180,7 @@ static int
 remoteDomainCreate (virDomainPtr domain)
 {
     remote_domain_create_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
 
@@ -2241,7 +2198,7 @@ remoteDomainDefineXML (virConnectPtr conn, const char *xml)
     virDomainPtr dom;
     remote_domain_define_xml_args args;
     remote_domain_define_xml_ret ret;
-    GET_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->privateData;
 
     args.xml = (char *) xml;
 
@@ -2261,7 +2218,7 @@ static int
 remoteDomainUndefine (virDomainPtr domain)
 {
     remote_domain_undefine_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
 
@@ -2277,7 +2234,7 @@ static int
 remoteDomainAttachDevice (virDomainPtr domain, const char *xml)
 {
     remote_domain_attach_device_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
     args.xml = (char *) xml;
@@ -2294,7 +2251,7 @@ static int
 remoteDomainDetachDevice (virDomainPtr domain, const char *xml)
 {
     remote_domain_detach_device_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
     args.xml = (char *) xml;
@@ -2312,7 +2269,7 @@ remoteDomainGetAutostart (virDomainPtr domain, int *autostart)
 {
     remote_domain_get_autostart_args args;
     remote_domain_get_autostart_ret ret;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
 
@@ -2330,7 +2287,7 @@ static int
 remoteDomainSetAutostart (virDomainPtr domain, int autostart)
 {
     remote_domain_set_autostart_args args;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
     args.autostart = autostart;
@@ -2348,7 +2305,7 @@ remoteDomainGetSchedulerType (virDomainPtr domain, int *nparams)
 {
     remote_domain_get_scheduler_type_args args;
     remote_domain_get_scheduler_type_ret ret;
-    GET_PRIVATE (domain->conn, NULL);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
 
@@ -2371,7 +2328,7 @@ remoteDomainGetSchedulerParameters (virDomainPtr domain,
     remote_domain_get_scheduler_parameters_args args;
     remote_domain_get_scheduler_parameters_ret ret;
     int i;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
     args.nparams = *nparams;
@@ -2431,7 +2388,7 @@ remoteDomainSetSchedulerParameters (virDomainPtr domain,
 {
     remote_domain_set_scheduler_parameters_args args;
     int i, do_error;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
 
@@ -2489,7 +2446,7 @@ remoteDomainBlockStats (virDomainPtr domain, const char *path,
 {
     remote_domain_block_stats_args args;
     remote_domain_block_stats_ret ret;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
     args.path = (char *) path;
@@ -2516,7 +2473,7 @@ remoteDomainInterfaceStats (virDomainPtr domain, const char *path,
 {
     remote_domain_interface_stats_args args;
     remote_domain_interface_stats_ret ret;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     make_nonnull_domain (&args.dom, domain);
     args.path = (char *) path;
@@ -2551,7 +2508,7 @@ remoteDomainBlockPeek (virDomainPtr domain,
 {
     remote_domain_block_peek_args args;
     remote_domain_block_peek_ret ret;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     if (size > REMOTE_DOMAIN_BLOCK_PEEK_BUFFER_MAX) {
         errorf (domain->conn, VIR_ERR_RPC,
@@ -2596,7 +2553,7 @@ remoteDomainMemoryPeek (virDomainPtr domain,
 {
     remote_domain_memory_peek_args args;
     remote_domain_memory_peek_ret ret;
-    GET_PRIVATE (domain->conn, -1);
+    struct private_data *priv = domain->conn->privateData;
 
     if (size > REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX) {
         errorf (domain->conn, VIR_ERR_RPC,
@@ -2666,14 +2623,12 @@ remoteNetworkOpen (virConnectPtr conn,
             rflags |= VIR_DRV_OPEN_REMOTE_RO;
         rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
 
-        priv->magic = DEAD;
         priv->sock = -1;
         ret = doRemoteOpen(conn, priv, auth, rflags);
         if (ret != VIR_DRV_OPEN_SUCCESS) {
             conn->networkPrivateData = NULL;
             VIR_FREE(priv);
         } else {
-            priv->magic = MAGIC;
             priv->localUses = 1;
             conn->networkPrivateData = priv;
         }
@@ -2685,7 +2640,8 @@ static int
 remoteNetworkClose (virConnectPtr conn)
 {
     int ret = 0;
-    GET_NETWORK_PRIVATE (conn, -1);
+    struct private_data *priv = conn->networkPrivateData;
+
     if (priv->localUses) {
         priv->localUses--;
         if (!priv->localUses) {
@@ -2701,7 +2657,7 @@ static int
 remoteNumOfNetworks (virConnectPtr conn)
 {
     remote_num_of_networks_ret ret;
-    GET_NETWORK_PRIVATE (conn, -1);
+    struct private_data *priv = conn->networkPrivateData;
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, 0, REMOTE_PROC_NUM_OF_NETWORKS,
@@ -2718,7 +2674,7 @@ remoteListNetworks (virConnectPtr conn, char **const names, int maxnames)
     int i;
     remote_list_networks_args args;
     remote_list_networks_ret ret;
-    GET_NETWORK_PRIVATE (conn, -1);
+    struct private_data *priv = conn->networkPrivateData;
 
     if (maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
         errorf (conn, VIR_ERR_RPC,
@@ -2759,7 +2715,7 @@ static int
 remoteNumOfDefinedNetworks (virConnectPtr conn)
 {
     remote_num_of_defined_networks_ret ret;
-    GET_NETWORK_PRIVATE (conn, -1);
+    struct private_data *priv = conn->networkPrivateData;
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, 0, REMOTE_PROC_NUM_OF_DEFINED_NETWORKS,
@@ -2777,7 +2733,7 @@ remoteListDefinedNetworks (virConnectPtr conn,
     int i;
     remote_list_defined_networks_args args;
     remote_list_defined_networks_ret ret;
-    GET_NETWORK_PRIVATE (conn, -1);
+    struct private_data *priv = conn->networkPrivateData;
 
     if (maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
         errorf (conn, VIR_ERR_RPC,
@@ -2821,7 +2777,7 @@ remoteNetworkLookupByUUID (virConnectPtr conn,
     virNetworkPtr net;
     remote_network_lookup_by_uuid_args args;
     remote_network_lookup_by_uuid_ret ret;
-    GET_NETWORK_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->networkPrivateData;
 
     memcpy (args.uuid, uuid, VIR_UUID_BUFLEN);
 
@@ -2844,7 +2800,7 @@ remoteNetworkLookupByName (virConnectPtr conn,
     virNetworkPtr net;
     remote_network_lookup_by_name_args args;
     remote_network_lookup_by_name_ret ret;
-    GET_NETWORK_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->networkPrivateData;
 
     args.name = (char *) name;
 
@@ -2866,7 +2822,7 @@ remoteNetworkCreateXML (virConnectPtr conn, const char *xmlDesc)
     virNetworkPtr net;
     remote_network_create_xml_args args;
     remote_network_create_xml_ret ret;
-    GET_NETWORK_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->networkPrivateData;
 
     args.xml = (char *) xmlDesc;
 
@@ -2888,7 +2844,7 @@ remoteNetworkDefineXML (virConnectPtr conn, const char *xml)
     virNetworkPtr net;
     remote_network_define_xml_args args;
     remote_network_define_xml_ret ret;
-    GET_NETWORK_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->networkPrivateData;
 
     args.xml = (char *) xml;
 
@@ -2908,7 +2864,7 @@ static int
 remoteNetworkUndefine (virNetworkPtr network)
 {
     remote_network_undefine_args args;
-    GET_NETWORK_PRIVATE (network->conn, -1);
+    struct private_data *priv = network->conn->networkPrivateData;
 
     make_nonnull_network (&args.net, network);
 
@@ -2924,7 +2880,7 @@ static int
 remoteNetworkCreate (virNetworkPtr network)
 {
     remote_network_create_args args;
-    GET_NETWORK_PRIVATE (network->conn, -1);
+    struct private_data *priv = network->conn->networkPrivateData;
 
     make_nonnull_network (&args.net, network);
 
@@ -2940,7 +2896,7 @@ static int
 remoteNetworkDestroy (virNetworkPtr network)
 {
     remote_network_destroy_args args;
-    GET_NETWORK_PRIVATE (network->conn, -1);
+    struct private_data *priv = network->conn->networkPrivateData;
 
     make_nonnull_network (&args.net, network);
 
@@ -2957,7 +2913,7 @@ remoteNetworkDumpXML (virNetworkPtr network, int flags)
 {
     remote_network_dump_xml_args args;
     remote_network_dump_xml_ret ret;
-    GET_NETWORK_PRIVATE (network->conn, NULL);
+    struct private_data *priv = network->conn->networkPrivateData;
 
     make_nonnull_network (&args.net, network);
     args.flags = flags;
@@ -2977,7 +2933,7 @@ remoteNetworkGetBridgeName (virNetworkPtr network)
 {
     remote_network_get_bridge_name_args args;
     remote_network_get_bridge_name_ret ret;
-    GET_NETWORK_PRIVATE (network->conn, NULL);
+    struct private_data *priv = network->conn->networkPrivateData;
 
     make_nonnull_network (&args.net, network);
 
@@ -2996,7 +2952,7 @@ remoteNetworkGetAutostart (virNetworkPtr network, int *autostart)
 {
     remote_network_get_autostart_args args;
     remote_network_get_autostart_ret ret;
-    GET_NETWORK_PRIVATE (network->conn, -1);
+    struct private_data *priv = network->conn->networkPrivateData;
 
     make_nonnull_network (&args.net, network);
 
@@ -3015,7 +2971,7 @@ static int
 remoteNetworkSetAutostart (virNetworkPtr network, int autostart)
 {
     remote_network_set_autostart_args args;
-    GET_NETWORK_PRIVATE (network->conn, -1);
+    struct private_data *priv = network->conn->networkPrivateData;
 
     make_nonnull_network (&args.net, network);
     args.autostart = autostart;
@@ -3071,14 +3027,12 @@ remoteStorageOpen (virConnectPtr conn,
             rflags |= VIR_DRV_OPEN_REMOTE_RO;
         rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
 
-        priv->magic = DEAD;
         priv->sock = -1;
         ret = doRemoteOpen(conn, priv, auth, rflags);
         if (ret != VIR_DRV_OPEN_SUCCESS) {
             conn->storagePrivateData = NULL;
             VIR_FREE(priv);
         } else {
-            priv->magic = MAGIC;
             priv->localUses = 1;
             conn->storagePrivateData = priv;
         }
@@ -3090,7 +3044,8 @@ static int
 remoteStorageClose (virConnectPtr conn)
 {
     int ret = 0;
-    GET_STORAGE_PRIVATE (conn, -1);
+    struct private_data *priv = conn->storagePrivateData;
+
     if (priv->localUses) {
         priv->localUses--;
         if (!priv->localUses) {
@@ -3106,7 +3061,7 @@ static int
 remoteNumOfStoragePools (virConnectPtr conn)
 {
     remote_num_of_storage_pools_ret ret;
-    GET_STORAGE_PRIVATE (conn, -1);
+    struct private_data *priv = conn->storagePrivateData;
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, 0, REMOTE_PROC_NUM_OF_STORAGE_POOLS,
@@ -3123,7 +3078,7 @@ remoteListStoragePools (virConnectPtr conn, char **const names, int maxnames)
     int i;
     remote_list_storage_pools_args args;
     remote_list_storage_pools_ret ret;
-    GET_STORAGE_PRIVATE (conn, -1);
+    struct private_data *priv = conn->storagePrivateData;
 
     if (maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX) {
         error (conn, VIR_ERR_RPC, _("too many storage pools requested"));
@@ -3160,7 +3115,7 @@ static int
 remoteNumOfDefinedStoragePools (virConnectPtr conn)
 {
     remote_num_of_defined_storage_pools_ret ret;
-    GET_STORAGE_PRIVATE (conn, -1);
+    struct private_data *priv = conn->storagePrivateData;
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, 0, REMOTE_PROC_NUM_OF_DEFINED_STORAGE_POOLS,
@@ -3178,7 +3133,7 @@ remoteListDefinedStoragePools (virConnectPtr conn,
     int i;
     remote_list_defined_storage_pools_args args;
     remote_list_defined_storage_pools_ret ret;
-    GET_STORAGE_PRIVATE (conn, -1);
+    struct private_data *priv = conn->storagePrivateData;
 
     if (maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX) {
         error (conn, VIR_ERR_RPC, _("too many storage pools requested"));
@@ -3219,7 +3174,7 @@ remoteFindStoragePoolSources (virConnectPtr conn,
 {
     remote_find_storage_pool_sources_args args;
     remote_find_storage_pool_sources_ret ret;
-    GET_STORAGE_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->storagePrivateData;
     const char *emptyString = "";
     char *retval;
 
@@ -3259,7 +3214,7 @@ remoteStoragePoolLookupByUUID (virConnectPtr conn,
     virStoragePoolPtr pool;
     remote_storage_pool_lookup_by_uuid_args args;
     remote_storage_pool_lookup_by_uuid_ret ret;
-    GET_STORAGE_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->storagePrivateData;
 
     memcpy (args.uuid, uuid, VIR_UUID_BUFLEN);
 
@@ -3282,7 +3237,7 @@ remoteStoragePoolLookupByName (virConnectPtr conn,
     virStoragePoolPtr pool;
     remote_storage_pool_lookup_by_name_args args;
     remote_storage_pool_lookup_by_name_ret ret;
-    GET_STORAGE_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->storagePrivateData;
 
     args.name = (char *) name;
 
@@ -3304,7 +3259,7 @@ remoteStoragePoolLookupByVolume (virStorageVolPtr vol)
     virStoragePoolPtr pool;
     remote_storage_pool_lookup_by_volume_args args;
     remote_storage_pool_lookup_by_volume_ret ret;
-    GET_STORAGE_PRIVATE (vol->conn, NULL);
+    struct private_data *priv = vol->conn->storagePrivateData;
 
     make_nonnull_storage_vol (&args.vol, vol);
 
@@ -3327,7 +3282,7 @@ remoteStoragePoolCreateXML (virConnectPtr conn, const char *xmlDesc, unsigned in
     virStoragePoolPtr pool;
     remote_storage_pool_create_xml_args args;
     remote_storage_pool_create_xml_ret ret;
-    GET_STORAGE_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->storagePrivateData;
 
     args.xml = (char *) xmlDesc;
     args.flags = flags;
@@ -3350,7 +3305,7 @@ remoteStoragePoolDefineXML (virConnectPtr conn, const char *xml, unsigned int fl
     virStoragePoolPtr pool;
     remote_storage_pool_define_xml_args args;
     remote_storage_pool_define_xml_ret ret;
-    GET_STORAGE_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->storagePrivateData;
 
     args.xml = (char *) xml;
     args.flags = flags;
@@ -3371,7 +3326,7 @@ static int
 remoteStoragePoolUndefine (virStoragePoolPtr pool)
 {
     remote_storage_pool_undefine_args args;
-    GET_STORAGE_PRIVATE (pool->conn, -1);
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     make_nonnull_storage_pool (&args.pool, pool);
 
@@ -3387,7 +3342,7 @@ static int
 remoteStoragePoolCreate (virStoragePoolPtr pool, unsigned int flags)
 {
     remote_storage_pool_create_args args;
-    GET_STORAGE_PRIVATE (pool->conn, -1);
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     make_nonnull_storage_pool (&args.pool, pool);
     args.flags = flags;
@@ -3405,7 +3360,7 @@ remoteStoragePoolBuild (virStoragePoolPtr pool,
                         unsigned int flags)
 {
     remote_storage_pool_build_args args;
-    GET_STORAGE_PRIVATE (pool->conn, -1);
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     make_nonnull_storage_pool (&args.pool, pool);
     args.flags = flags;
@@ -3422,7 +3377,7 @@ static int
 remoteStoragePoolDestroy (virStoragePoolPtr pool)
 {
     remote_storage_pool_destroy_args args;
-    GET_STORAGE_PRIVATE (pool->conn, -1);
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     make_nonnull_storage_pool (&args.pool, pool);
 
@@ -3439,7 +3394,7 @@ remoteStoragePoolDelete (virStoragePoolPtr pool,
                          unsigned int flags)
 {
     remote_storage_pool_delete_args args;
-    GET_STORAGE_PRIVATE (pool->conn, -1);
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     make_nonnull_storage_pool (&args.pool, pool);
     args.flags = flags;
@@ -3457,7 +3412,7 @@ remoteStoragePoolRefresh (virStoragePoolPtr pool,
                           unsigned int flags)
 {
     remote_storage_pool_refresh_args args;
-    GET_STORAGE_PRIVATE (pool->conn, -1);
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     make_nonnull_storage_pool (&args.pool, pool);
     args.flags = flags;
@@ -3475,7 +3430,7 @@ remoteStoragePoolGetInfo (virStoragePoolPtr pool, virStoragePoolInfoPtr info)
 {
     remote_storage_pool_get_info_args args;
     remote_storage_pool_get_info_ret ret;
-    GET_STORAGE_PRIVATE (pool->conn, -1);
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     make_nonnull_storage_pool (&args.pool, pool);
 
@@ -3499,7 +3454,7 @@ remoteStoragePoolDumpXML (virStoragePoolPtr pool,
 {
     remote_storage_pool_dump_xml_args args;
     remote_storage_pool_dump_xml_ret ret;
-    GET_STORAGE_PRIVATE (pool->conn, NULL);
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     make_nonnull_storage_pool (&args.pool, pool);
     args.flags = flags;
@@ -3519,7 +3474,7 @@ remoteStoragePoolGetAutostart (virStoragePoolPtr pool, int *autostart)
 {
     remote_storage_pool_get_autostart_args args;
     remote_storage_pool_get_autostart_ret ret;
-    GET_STORAGE_PRIVATE (pool->conn, -1);
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     make_nonnull_storage_pool (&args.pool, pool);
 
@@ -3538,7 +3493,7 @@ static int
 remoteStoragePoolSetAutostart (virStoragePoolPtr pool, int autostart)
 {
     remote_storage_pool_set_autostart_args args;
-    GET_STORAGE_PRIVATE (pool->conn, -1);
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     make_nonnull_storage_pool (&args.pool, pool);
     args.autostart = autostart;
@@ -3557,7 +3512,7 @@ remoteStoragePoolNumOfVolumes (virStoragePoolPtr pool)
 {
     remote_storage_pool_num_of_volumes_args args;
     remote_storage_pool_num_of_volumes_ret ret;
-    GET_STORAGE_PRIVATE (pool->conn, -1);
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     make_nonnull_storage_pool(&args.pool, pool);
 
@@ -3576,7 +3531,7 @@ remoteStoragePoolListVolumes (virStoragePoolPtr pool, char **const names, int ma
     int i;
     remote_storage_pool_list_volumes_args args;
     remote_storage_pool_list_volumes_ret ret;
-    GET_STORAGE_PRIVATE (pool->conn, -1);
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     if (maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX) {
         error (pool->conn, VIR_ERR_RPC, _("too many storage volumes requested"));
@@ -3619,7 +3574,7 @@ remoteStorageVolLookupByName (virStoragePoolPtr pool,
     virStorageVolPtr vol;
     remote_storage_vol_lookup_by_name_args args;
     remote_storage_vol_lookup_by_name_ret ret;
-    GET_STORAGE_PRIVATE (pool->conn, NULL);
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     make_nonnull_storage_pool(&args.pool, pool);
     args.name = (char *) name;
@@ -3643,7 +3598,7 @@ remoteStorageVolLookupByKey (virConnectPtr conn,
     virStorageVolPtr vol;
     remote_storage_vol_lookup_by_key_args args;
     remote_storage_vol_lookup_by_key_ret ret;
-    GET_STORAGE_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->storagePrivateData;
 
     args.key = (char *) key;
 
@@ -3666,7 +3621,7 @@ remoteStorageVolLookupByPath (virConnectPtr conn,
     virStorageVolPtr vol;
     remote_storage_vol_lookup_by_path_args args;
     remote_storage_vol_lookup_by_path_ret ret;
-    GET_STORAGE_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->storagePrivateData;
 
     args.path = (char *) path;
 
@@ -3689,7 +3644,7 @@ remoteStorageVolCreateXML (virStoragePoolPtr pool, const char *xmlDesc,
     virStorageVolPtr vol;
     remote_storage_vol_create_xml_args args;
     remote_storage_vol_create_xml_ret ret;
-    GET_STORAGE_PRIVATE (pool->conn, NULL);
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     make_nonnull_storage_pool (&args.pool, pool);
     args.xml = (char *) xmlDesc;
@@ -3712,7 +3667,7 @@ remoteStorageVolDelete (virStorageVolPtr vol,
                         unsigned int flags)
 {
     remote_storage_vol_delete_args args;
-    GET_STORAGE_PRIVATE (vol->conn, -1);
+    struct private_data *priv = vol->conn->storagePrivateData;
 
     make_nonnull_storage_vol (&args.vol, vol);
     args.flags = flags;
@@ -3730,7 +3685,7 @@ remoteStorageVolGetInfo (virStorageVolPtr vol, virStorageVolInfoPtr info)
 {
     remote_storage_vol_get_info_args args;
     remote_storage_vol_get_info_ret ret;
-    GET_STORAGE_PRIVATE (vol->conn, -1);
+    struct private_data *priv = vol->conn->storagePrivateData;
 
     make_nonnull_storage_vol (&args.vol, vol);
 
@@ -3753,7 +3708,7 @@ remoteStorageVolDumpXML (virStorageVolPtr vol,
 {
     remote_storage_vol_dump_xml_args args;
     remote_storage_vol_dump_xml_ret ret;
-    GET_STORAGE_PRIVATE (vol->conn, NULL);
+    struct private_data *priv = vol->conn->storagePrivateData;
 
     make_nonnull_storage_vol (&args.vol, vol);
     args.flags = flags;
@@ -3773,7 +3728,7 @@ remoteStorageVolGetPath (virStorageVolPtr vol)
 {
     remote_storage_vol_get_path_args args;
     remote_storage_vol_get_path_ret ret;
-    GET_STORAGE_PRIVATE (vol->conn, NULL);
+    struct private_data *priv = vol->conn->storagePrivateData;
 
     make_nonnull_storage_vol (&args.vol, vol);
 
@@ -3813,7 +3768,8 @@ remoteDevMonOpen(virConnectPtr conn,
 static int remoteDevMonClose(virConnectPtr conn)
 {
     int ret = 0;
-    GET_DEVMON_PRIVATE (conn, -1);
+    struct private_data *priv = conn->devMonPrivateData;
+
     if (priv->localUses) {
         priv->localUses--;
         if (!priv->localUses) {
@@ -3831,7 +3787,7 @@ static int remoteNodeNumOfDevices(virConnectPtr conn,
 {
     remote_node_num_of_devices_args args;
     remote_node_num_of_devices_ret ret;
-    GET_DEVMON_PRIVATE (conn, -1);
+    struct private_data *priv = conn->devMonPrivateData;
 
     args.cap = cap ? (char **)&cap : NULL;
     args.flags = flags;
@@ -3855,7 +3811,7 @@ static int remoteNodeListDevices(virConnectPtr conn,
     int i;
     remote_node_list_devices_args args;
     remote_node_list_devices_ret ret;
-    GET_DEVMON_PRIVATE (conn, -1);
+    struct private_data *priv = conn->devMonPrivateData;
 
     if (maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX) {
         error (conn, VIR_ERR_RPC, _("too many device names requested"));
@@ -3897,7 +3853,7 @@ static virNodeDevicePtr remoteNodeDeviceLookupByName(virConnectPtr conn,
     remote_node_device_lookup_by_name_args args;
     remote_node_device_lookup_by_name_ret ret;
     virNodeDevicePtr dev;
-    GET_DEVMON_PRIVATE (conn, NULL);
+    struct private_data *priv = conn->devMonPrivateData;
 
     args.name = (char *)name;
 
@@ -3919,7 +3875,7 @@ static char *remoteNodeDeviceDumpXML(virNodeDevicePtr dev,
 {
     remote_node_device_dump_xml_args args;
     remote_node_device_dump_xml_ret ret;
-    GET_DEVMON_PRIVATE (dev->conn, NULL);
+    struct private_data *priv = dev->conn->devMonPrivateData;
 
     args.name = dev->name;
     args.flags = flags;
@@ -3938,7 +3894,7 @@ static char *remoteNodeDeviceGetParent(virNodeDevicePtr dev)
 {
     remote_node_device_get_parent_args args;
     remote_node_device_get_parent_ret ret;
-    GET_DEVMON_PRIVATE (dev->conn, NULL);
+    struct private_data *priv = dev->conn->devMonPrivateData;
 
     args.name = dev->name;
 
@@ -3956,7 +3912,7 @@ static int remoteNodeDeviceNumOfCaps(virNodeDevicePtr dev)
 {
     remote_node_device_num_of_caps_args args;
     remote_node_device_num_of_caps_ret ret;
-    GET_DEVMON_PRIVATE (dev->conn, -1);
+    struct private_data *priv = dev->conn->devMonPrivateData;
 
     args.name = dev->name;
 
@@ -3976,7 +3932,7 @@ static int remoteNodeDeviceListCaps(virNodeDevicePtr dev,
     int i;
     remote_node_device_list_caps_args args;
     remote_node_device_list_caps_ret ret;
-    GET_DEVMON_PRIVATE (dev->conn, -1);
+    struct private_data *priv = dev->conn->devMonPrivateData;
 
     if (maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX) {
         error (dev->conn, VIR_ERR_RPC, _("too many capability names requested"));

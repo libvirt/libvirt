@@ -1,3 +1,8 @@
+Thu Jan 15 20:03:19 GMT 2009  Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Remove use of macros for accessing
+	private data fields
+
 Thu Jan 15 20:02:19 GMT 2009  Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Fix private data field access in
