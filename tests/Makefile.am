@@ -61,6 +61,7 @@ test_scripts += \
 	test_conf.sh \
 	cpuset \
 	daemon-conf \
+	define-dev-segfault \
 	int-overflow \
 	read-bufsiz \
 	read-non-seekable \

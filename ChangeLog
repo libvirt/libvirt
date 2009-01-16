@@ -1,3 +1,9 @@
+Fri Jan 16 18:41:40 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	tests: exercise a bug that could make virsh and libvirtd segfault
+	* tests/define-dev-segfault: New file.
+	* tests/Makefile.am (test_scripts): Add define-dev-segfault.
+
 Fri Jan 16 11:48:41 EST 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/domain_conf.c: Fix segfault with console device back compat.
