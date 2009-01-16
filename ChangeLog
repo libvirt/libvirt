@@ -1,4 +1,7 @@
-Fri Jan 16 18:41:40 +0100 2009 Jim Meyering <meyering@redhat.com>
+Fri Jan 16 18:44:08 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	tests: virsh-all and virsh-synopsis were not being run
+	* tests/Makefile.am (test_scripts): Add two missing backslashes.
 
 	tests: exercise a bug that could make virsh and libvirtd segfault
 	* tests/define-dev-segfault: New file.
