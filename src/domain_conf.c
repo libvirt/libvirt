@@ -3328,8 +3328,9 @@ char *virDomainDefFormat(virConnectPtr conn,
         if (virDomainChrDefFormat(conn, &buf, def->console, "console") < 0)
             goto cleanup;
     } else if (def->nserials != 0) {
-        /* ..else for legacy compat duplicate the serial device as a console */
-        if (virDomainChrDefFormat(conn, &buf, def->serials[n], "console") < 0)
+        /* ..else for legacy compat duplicate the first serial device as a
+         * console */
+        if (virDomainChrDefFormat(conn, &buf, def->serials[0], "console") < 0)
             goto cleanup;
     }
 
