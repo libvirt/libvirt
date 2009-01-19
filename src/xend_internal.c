@@ -59,6 +59,12 @@
 
 #endif /* PROXY */
 
+#ifdef WITH_RHEL5_API
+#define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 0
+#else
+#define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 3
+#endif
+
 /**
  * xend_connection_type:
  *
@@ -5160,7 +5166,7 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
      * apparently (type ioemu) breaks paravirt drivers on HVM so skip this
      * from Xen 3.1.0
      */
-    if ((hvm) && (xendConfigVersion < 4))
+    if (hvm && xendConfigVersion <= XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU)
         virBufferAddLit(buf, "(type ioemu)");
 
     if (!isAttach)

@@ -1,3 +1,8 @@
+Mon Jan 19 19:10:08 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c src/xm_internal.c: fix fully virt network
+	  device configuration for Xen on RHEL-5, patch by Markus Armbruster
+
 Mon Jan 19 18:31:56 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in: add a --with-rhel5-api configure option

@@ -48,6 +48,12 @@
 #include "logging.h"
 
 
+#ifdef WITH_RHEL5_API
+#define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 0
+#else
+#define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 3
+#endif
+
 /* The true Xen limit varies but so far is always way
    less than 1024, which is the Linux kernel limit according
    to sched.h, so we'll match that for now */
@@ -1837,7 +1843,7 @@ static int xenXMDomainConfigFormatNet(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (hvm && priv->xendConfigVersion < 4)
+    if (hvm && priv->xendConfigVersion <= XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU)
         virBufferAddLit(&buf, ",type=ioemu");
 
     if (net->model)
