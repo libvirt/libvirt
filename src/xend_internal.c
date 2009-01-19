@@ -61,8 +61,10 @@
 
 #ifdef WITH_RHEL5_API
 #define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 0
+#define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 2
 #else
 #define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 3
+#define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 3
 #endif
 
 /**
@@ -5411,7 +5413,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
 
 
         /* PV graphics for xen <= 3.0.4, or HVM graphics for xen <= 3.1.0 */
-        if ((!hvm && xendConfigVersion < 3) ||
+        if ((!hvm && xendConfigVersion < XEND_CONFIG_MIN_VERS_PVFB_NEWCONF) ||
             (hvm && xendConfigVersion < 4)) {
             if (def->graphics &&
                 xenDaemonFormatSxprGraphicsOld(conn, def->graphics, &buf, xendConfigVersion) < 0)
@@ -5433,7 +5435,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
 
     /* New style PV graphics config xen >= 3.0.4,
      * or HVM graphics config xen >= 3.0.5 */
-    if ((xendConfigVersion >= 3 && !hvm) ||
+    if ((xendConfigVersion >= XEND_CONFIG_MIN_VERS_PVFB_NEWCONF && !hvm) ||
         (xendConfigVersion >= 4 && hvm)) {
         if (def->graphics &&
             xenDaemonFormatSxprGraphicsNew(conn, def->graphics, &buf) < 0)

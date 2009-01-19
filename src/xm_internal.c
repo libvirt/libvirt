@@ -50,8 +50,10 @@
 
 #ifdef WITH_RHEL5_API
 #define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 0
+#define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 2
 #else
 #define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 3
+#define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 3
 #endif
 
 /* The true Xen limit varies but so far is always way
@@ -2055,7 +2057,7 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
     }
 
     if (def->graphics) {
-        if (priv->xendConfigVersion < (hvm ? 4 : 3)) {
+        if (priv->xendConfigVersion < (hvm ? 4 : XEND_CONFIG_MIN_VERS_PVFB_NEWCONF)) {
             if (def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
                 if (xenXMConfigSetInt(conf, "sdl", 1) < 0)
                     goto no_memory;
