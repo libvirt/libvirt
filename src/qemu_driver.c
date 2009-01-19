@@ -941,6 +941,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     unsigned int qemuCmdFlags;
     fd_set keepfd;
     const char *emulator;
+    pid_t child;
 
     FD_ZERO(&keepfd);
 
@@ -1039,12 +1040,26 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     for (i = 0 ; i < ntapfds ; i++)
         FD_SET(tapfds[i], &keepfd);
 
-    ret = virExec(conn, argv, progenv, &keepfd, &vm->pid,
+    ret = virExec(conn, argv, progenv, &keepfd, &child,
                   vm->stdin_fd, &vm->stdout_fd, &vm->stderr_fd,
-                  VIR_EXEC_NONBLOCK);
-    if (ret == 0)
+                  VIR_EXEC_NONBLOCK | VIR_EXEC_DAEMON);
+
+    /* wait for qemu process to to show up */
+    if (ret == 0) {
+        int retries = 100;
+        while (retries) {
+            if ((ret = virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) == 0)
+                break;
+            usleep(100*1000);
+            retries--;
+        }
+        if (ret)
+            qemudLog(QEMUD_WARN, _("Domain %s didn't show up\n"), vm->def->name);
+    }
+
+    if (ret == 0) {
         vm->state = migrateFrom ? VIR_DOMAIN_PAUSED : VIR_DOMAIN_RUNNING;
-    else
+    } else
         vm->def->id = -1;
 
     for (i = 0 ; argv[i] ; i++)
@@ -1121,7 +1136,10 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     qemudLog(QEMUD_INFO, _("Shutting down VM '%s'\n"), vm->def->name);
 
-    kill(vm->pid, SIGTERM);
+    if (virKillProcess(vm->pid, 0) == 0 &&
+        virKillProcess(vm->pid, SIGTERM) < 0)
+        qemudLog(QEMUD_ERROR, _("Failed to send SIGTERM to %s (%d): %s\n"),
+                 vm->def->name, vm->pid, strerror(errno));
 
     qemudVMData(driver, vm, vm->stdout_fd);
     qemudVMData(driver, vm, vm->stderr_fd);
@@ -1141,15 +1159,10 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     vm->stderr_fd = -1;
     vm->monitor = -1;
 
-    if (waitpid(vm->pid, NULL, WNOHANG) != vm->pid) {
-        kill(vm->pid, SIGKILL);
-        if (waitpid(vm->pid, NULL, 0) != vm->pid) {
-            qemudLog(QEMUD_WARN,
-                     "%s", _("Got unexpected pid, damn\n"));
-        }
-    }
-    qemudRemoveDomainStatus(conn, driver, vm);
+    /* shut it off for sure */
+    virKillProcess(vm->pid, SIGKILL);
 
+    qemudRemoveDomainStatus(conn, driver, vm);
     vm->pid = -1;
     vm->def->id = -1;
     vm->state = VIR_DOMAIN_SHUTOFF;

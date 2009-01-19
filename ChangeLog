@@ -1,3 +1,10 @@
+Mon Jan 19 22:50:53 CET 2009 Guido Günther <agx@sigxcpu.org>
+
+	daemonize qemu processes
+	* src/qemu_driver.c (qemudStartVMDaemon): virExec qemu/kvm via
+	  VIR_EXEC_DAEMON
+	  (qemudShutdownVMDaemon): use virKillProcess, don't waitpid
+
 Mon Jan 19 21:54:25 CET 2009 Guido Günther <agx@sigxcpu.org>
 
 	save domstate as string in status file
