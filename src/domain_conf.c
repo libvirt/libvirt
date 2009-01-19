@@ -142,6 +142,15 @@ VIR_ENUM_IMPL(virDomainHostdevSubsys, VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST,
               "usb",
               "pci")
 
+VIR_ENUM_IMPL(virDomainState, VIR_DOMAIN_CRASHED+1,
+              "nostate",
+              "running",
+              "blocked",
+              "paused",
+              "shutdown",
+              "shutoff",
+              "crashed")
+
 #define virDomainReportError(conn, code, fmt...)                           \
         virReportErrorHelper(conn, VIR_FROM_DOMAIN, code, __FILE__,        \
                                __FUNCTION__, __LINE__, fmt)

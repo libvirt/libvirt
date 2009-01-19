@@ -94,6 +94,8 @@ virDomainVirtTypeToString;
 virDomainFSDefFree;
 virDomainObjLock;
 virDomainObjUnlock;
+virDomainStateTypeToString;
+virDomainStateTypeFromString;
 
 
 # domain_event.h

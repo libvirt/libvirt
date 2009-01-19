@@ -1375,12 +1375,14 @@ qemudDomainStatusParseFile(virConnectPtr conn,
     }
 
     ctxt->node = root;
-    if((virXPathLong(conn, "string(./@state)", ctxt, &val)) < 0) {
+    if(!(tmp = virXPathString(conn, "string(./@state)", ctxt))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("invalid domain state"));
         goto error;
-    } else
-        status->state = (int)val;
+    } else {
+        status->state = virDomainStateTypeFromString(tmp);
+        VIR_FREE(tmp);
+    }
 
     if((virXPathLong(conn, "string(./@pid)", ctxt, &val)) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -1433,7 +1435,9 @@ qemudDomainStatusFormat(virConnectPtr conn,
     char *config_xml = NULL, *xml = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferVSprintf(&buf, "<domstatus state='%d' pid='%d'>\n", vm->state, vm->pid);
+    virBufferVSprintf(&buf, "<domstatus state='%s' pid='%d'>\n",
+                      virDomainStateTypeToString(vm->state),
+                      vm->pid);
     virBufferEscapeString(&buf, "  <monitor path='%s'/>\n", vm->monitorpath);
 
     if (!(config_xml = virDomainDefFormat(conn,

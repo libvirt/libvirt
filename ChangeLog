@@ -1,3 +1,13 @@
+Mon Jan 19 21:54:25 CET 2009 Guido Günther <agx@sigxcpu.org>
+
+	save domstate as string in status file
+	* src/domain_conf.c (virDomainState): add VIR_ENUM_IMPL
+	* src/domain_conf.h (virDomainState): add VIR_ENUM_DECL
+	* src/qemu_conf.c (qemudDomainStatusParseFile): parse state as string
+	  (qemudDomainStatusFormat): write as string
+	* src/libvirt_private.syms (virDomainStateTypeToString,
+	  virDomainStateTypeFromString): add sympbols
+
 Mon Jan 19 20:58:34 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c src/xend_internal.c: Relax NUMA checking

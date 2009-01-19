@@ -625,5 +625,7 @@ VIR_ENUM_DECL(virDomainHostdevSubsys)
 VIR_ENUM_DECL(virDomainInput)
 VIR_ENUM_DECL(virDomainInputBus)
 VIR_ENUM_DECL(virDomainGraphics)
+/* from libvirt.h */
+VIR_ENUM_DECL(virDomainState)
 
 #endif /* __DOMAIN_CONF_H */
