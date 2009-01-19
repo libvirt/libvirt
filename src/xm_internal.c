@@ -1808,6 +1808,7 @@ static int xenXMDomainConfigFormatNet(virConnectPtr conn,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virConfValuePtr val, tmp;
     char *str;
+    xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
 
     virBufferVSprintf(&buf, "mac=%02x:%02x:%02x:%02x:%02x:%02x",
                       net->mac[0], net->mac[1],
@@ -1836,7 +1837,7 @@ static int xenXMDomainConfigFormatNet(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (hvm)
+    if (hvm && priv->xendConfigVersion < 4)
         virBufferAddLit(&buf, ",type=ioemu");
 
     if (net->model)
@@ -2048,7 +2049,7 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
     }
 
     if (def->graphics) {
-        if (hvm || priv->xendConfigVersion < 3) {
+        if (priv->xendConfigVersion < (hvm ? 4 : 3)) {
             if (def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
                 if (xenXMConfigSetInt(conf, "sdl", 1) < 0)
                     goto no_memory;
