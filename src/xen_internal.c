@@ -93,6 +93,12 @@ typedef privcmd_hypercall_t hypercall_t;
 #define __HYPERVISOR_domctl 36
 #endif
 
+#ifdef WITH_RHEL5_API
+#define SYS_IFACE_MIN_VERS_NUMA 3
+#else
+#define SYS_IFACE_MIN_VERS_NUMA 4
+#endif
+
 static int xen_ioctl_hypercall_cmd = 0;
 static int initialized = 0;
 static int in_init = 0;
@@ -2150,7 +2156,7 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
         goto no_memory;
 
 
-    if (sys_interface_version >= 4) {
+    if (sys_interface_version >= SYS_IFACE_MIN_VERS_NUMA) {
         if (xenDaemonNodeGetTopology(conn, caps) != 0) {
             virCapabilitiesFree(caps);
             return NULL;
@@ -3072,7 +3078,7 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *free
     /*
      * Support only sys_interface_version >=4
      */
-    if (sys_interface_version < 4) {
+    if (sys_interface_version < SYS_IFACE_MIN_VERS_NUMA) {
         virXenErrorFunc (conn, VIR_ERR_XEN_CALL, __FUNCTION__,
                         "unsupported in sys interface < 4", 0);
         return -1;

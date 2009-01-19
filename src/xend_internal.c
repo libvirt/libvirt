@@ -2547,6 +2547,8 @@ sexpr_to_xend_node_info(const struct sexpr *root, virNodeInfoPtr info)
  * Internal routine populating capability info with
  * NUMA node mapping details
  *
+ * Does nothing when the system doesn't support NUMA (not an error).
+ *
  * Returns 0 in case of success, -1 in case of error
  */
 static int
@@ -2563,11 +2565,8 @@ sexpr_to_xend_topology(virConnectPtr conn,
     int numCpus;
 
     nodeToCpu = sexpr_node(root, "node/node_to_cpu");
-    if (nodeToCpu == NULL) {
-        virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-                     "%s", _("failed to parse topology information"));
-        return -1;
-    }
+    if (nodeToCpu == NULL)
+        return 0;               /* no NUMA support */
 
     numCpus = sexpr_int(root, "node/nr_cpus");
 

@@ -1,3 +1,9 @@
+Mon Jan 19 20:58:34 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c src/xend_internal.c: Relax NUMA checking
+	  for RHEL-5 and change the detection stategy for default Xen
+	  accesses, patch by Markus Armbruster
+
 Mon Jan 19 20:47:18 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c src/xm_internal.c: fix paravirt framebuffer
