@@ -231,6 +231,14 @@ fi
 AM_CONDITIONAL([LIBVIRT_INIT_SCRIPTS_RED_HAT], test x$with_init_scripts = xredhat)
 AC_MSG_RESULT($with_init_scripts)
 
+dnl RHEL-5 has a peculiar version of Xen, which requires some special casing
+AC_ARG_WITH([rhel5-api],
+	[AC_HELP_STRING([--with-rhel5-api=[ARG]],
+		[build for the RHEL-5 API [default=no]])])
+if test x"$with_rhel5_api" = x"yes"; then
+   AC_DEFINE([WITH_RHEL5_API], [1], [whether building for the RHEL-5 API])
+fi
+
 dnl
 dnl ensure that Fedora's system-config-firewall knows
 dnl about libvirt's iptables rules

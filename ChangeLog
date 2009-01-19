@@ -1,3 +1,8 @@
+Mon Jan 19 18:31:56 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in: add a --with-rhel5-api configure option
+	  for the Xen specific version of RHEL-5, patch by Markus Armbruster
+
 Mon Jan 19 16:18:46 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/xm_internal.c: two bug fixes coming from RHEL package
