@@ -1,5 +1,5 @@
-# getpass.m4 serial 10
-dnl Copyright (C) 2002-2003, 2005-2006 Free Software Foundation, Inc.
+# getpass.m4 serial 11
+dnl Copyright (C) 2002-2003, 2005-2006, 2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -7,8 +7,8 @@ dnl with or without modifications, as long as this notice is preserved.
 # Provide a getpass() function if the system doesn't have it.
 AC_DEFUN([gl_FUNC_GETPASS],
 [
-  AC_REPLACE_FUNCS(getpass)
-  AC_CHECK_DECLS_ONCE(getpass)
+  AC_REPLACE_FUNCS([getpass])
+  AC_CHECK_DECLS_ONCE([getpass])
   if test $ac_cv_func_getpass = no; then
     gl_PREREQ_GETPASS
   fi
@@ -18,9 +18,9 @@ AC_DEFUN([gl_FUNC_GETPASS],
 # arbitrary length (not just 8 bytes as on HP-UX).
 AC_DEFUN([gl_FUNC_GETPASS_GNU],
 [
-  AC_CHECK_DECLS_ONCE(getpass)
+  AC_CHECK_DECLS_ONCE([getpass])
   dnl TODO: Detect when GNU getpass() is already found in glibc.
-  AC_LIBOBJ(getpass)
+  AC_LIBOBJ([getpass])
   gl_PREREQ_GETPASS
   dnl We must choose a different name for our function, since on ELF systems
   dnl an unusable getpass() in libc.so would override our getpass() if it is
@@ -31,8 +31,8 @@ AC_DEFUN([gl_FUNC_GETPASS_GNU],
 
 # Prerequisites of lib/getpass.c.
 AC_DEFUN([gl_PREREQ_GETPASS], [
-  AC_CHECK_HEADERS_ONCE(stdio_ext.h termios.h)
-  AC_CHECK_FUNCS_ONCE(__fsetlocking tcgetattr tcsetattr)
+  AC_CHECK_HEADERS_ONCE([stdio_ext.h termios.h])
+  AC_CHECK_FUNCS_ONCE([__fsetlocking tcgetattr tcsetattr])
   AC_CHECK_DECLS([__fsetlocking],,,
     [#include <stdio.h>
      #if HAVE_STDIO_EXT_H

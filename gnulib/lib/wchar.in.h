@@ -1,6 +1,6 @@
 /* A substitute for ISO C99 <wchar.h>, for platforms that have issues.
 
-   Copyright (C) 2007-2008 Free Software Foundation, Inc.
+   Copyright (C) 2007-2009 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as published by
@@ -30,8 +30,18 @@
 @PRAGMA_SYSTEM_HEADER@
 #endif
 
-#ifdef __need_mbstate_t
-/* Special invocation convention inside uClibc header files.  */
+#if defined __need_mbstate_t || (defined __hpux && ((defined _INTTYPES_INCLUDED && !defined strtoimax) || defined _GL_JUST_INCLUDE_SYSTEM_WCHAR_H)) || defined _GL_ALREADY_INCLUDING_WCHAR_H
+/* Special invocation convention:
+   - Inside uClibc header files.
+   - On HP-UX 11.00 we have a sequence of nested includes
+     <wchar.h> -> <stdlib.h> -> <stdint.h>, and the latter includes <wchar.h>,
+     once indirectly <stdint.h> -> <sys/types.h> -> <inttypes.h> -> <wchar.h>
+     and once directly.  In both situations 'wint_t' is not yet defined,
+     therefore we cannot provide the function overrides; instead include only
+     the system's <wchar.h>.
+   - On IRIX 6.5, similarly, we have an include <wchar.h> -> <wctype.h>, and
+     the latter includes <wchar.h>.  But here, we have no way to detect whether
+     <wctype.h> is completely included or is still being included.  */
 
 #@INCLUDE_NEXT@ @NEXT_WCHAR_H@
 
@@ -39,6 +49,8 @@
 /* Normal invocation convention.  */
 
 #ifndef _GL_WCHAR_H
+
+#define _GL_ALREADY_INCLUDING_WCHAR_H
 
 /* Tru64 with Desktop Toolkit C has a bug: <stdio.h> must be included before
    <wchar.h>.
@@ -54,6 +66,8 @@
 #if @HAVE_WCHAR_H@
 # @INCLUDE_NEXT@ @NEXT_WCHAR_H@
 #endif
+
+#undef _GL_ALREADY_INCLUDING_WCHAR_H
 
 #ifndef _GL_WCHAR_H
 #define _GL_WCHAR_H

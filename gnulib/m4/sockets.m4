@@ -1,5 +1,5 @@
-# sockets.m4 serial 3
-dnl Copyright (C) 2008 Free Software Foundation, Inc.
+# sockets.m4 serial 4
+dnl Copyright (C) 2008, 2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -26,7 +26,7 @@ AC_DEFUN([gl_SOCKETS],
       LIBS="$gl_save_LIBS"
     ])
     if test "$gl_cv_func_wsastartup" = "yes"; then
-      AC_DEFINE([WINDOWS_SOCKETS], 1, [Define if WSAStartup is needed.])
+      AC_DEFINE([WINDOWS_SOCKETS], [1], [Define if WSAStartup is needed.])
       LIBSOCKET='-lws2_32'
     fi
   else

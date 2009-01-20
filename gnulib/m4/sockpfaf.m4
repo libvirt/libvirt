@@ -1,5 +1,5 @@
-# sockpfaf.m4 serial 5
-dnl Copyright (C) 2004, 2006 Free Software Foundation, Inc.
+# sockpfaf.m4 serial 6
+dnl Copyright (C) 2004, 2006, 2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -16,8 +16,8 @@ AC_DEFUN([gl_SOCKET_FAMILIES],
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
   AC_CHECK_HEADERS_ONCE([netinet/in.h])
 
-  AC_MSG_CHECKING(for IPv4 sockets)
-  AC_CACHE_VAL(gl_cv_socket_ipv4,
+  AC_MSG_CHECKING([for IPv4 sockets])
+  AC_CACHE_VAL([gl_cv_socket_ipv4],
     [AC_TRY_COMPILE([#include <sys/types.h>
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
@@ -31,13 +31,13 @@ AC_DEFUN([gl_SOCKET_FAMILIES],
 [int x = AF_INET; struct in_addr y; struct sockaddr_in z;
  if (&x && &y && &z) return 0;],
        gl_cv_socket_ipv4=yes, gl_cv_socket_ipv4=no)])
-  AC_MSG_RESULT($gl_cv_socket_ipv4)
+  AC_MSG_RESULT([$gl_cv_socket_ipv4])
   if test $gl_cv_socket_ipv4 = yes; then
-    AC_DEFINE(HAVE_IPV4, 1, [Define to 1 if <sys/socket.h> defines AF_INET.])
+    AC_DEFINE([HAVE_IPV4], [1], [Define to 1 if <sys/socket.h> defines AF_INET.])
   fi
 
-  AC_MSG_CHECKING(for IPv6 sockets)
-  AC_CACHE_VAL(gl_cv_socket_ipv6,
+  AC_MSG_CHECKING([for IPv6 sockets])
+  AC_CACHE_VAL([gl_cv_socket_ipv6],
     [AC_TRY_COMPILE([#include <sys/types.h>
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
@@ -51,8 +51,8 @@ AC_DEFUN([gl_SOCKET_FAMILIES],
 [int x = AF_INET6; struct in6_addr y; struct sockaddr_in6 z;
  if (&x && &y && &z) return 0;],
        gl_cv_socket_ipv6=yes, gl_cv_socket_ipv6=no)])
-  AC_MSG_RESULT($gl_cv_socket_ipv6)
+  AC_MSG_RESULT([$gl_cv_socket_ipv6])
   if test $gl_cv_socket_ipv6 = yes; then
-    AC_DEFINE(HAVE_IPV6, 1, [Define to 1 if <sys/socket.h> defines AF_INET6.])
+    AC_DEFINE([HAVE_IPV6], [1], [Define to 1 if <sys/socket.h> defines AF_INET6.])
   fi
 ])

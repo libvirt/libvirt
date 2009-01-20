@@ -1,5 +1,5 @@
-# progtest.m4 serial 5 (gettext-0.18)
-dnl Copyright (C) 1996-2003, 2005, 2008 Free Software Foundation, Inc.
+# progtest.m4 serial 6 (gettext-0.18)
+dnl Copyright (C) 1996-2003, 2005, 2008, 2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -16,7 +16,7 @@ dnl They are *not* in the public domain.
 dnl Authors:
 dnl   Ulrich Drepper <drepper@cygnus.com>, 1996.
 
-AC_PREREQ(2.50)
+AC_PREREQ([2.50])
 
 # Search path for a program which passes the given test.
 
@@ -88,5 +88,5 @@ if test ifelse([$4], , [-n "[$]$1"], ["[$]$1" != "$4"]); then
 else
   AC_MSG_RESULT([no])
 fi
-AC_SUBST($1)dnl
+AC_SUBST([$1])dnl
 ])

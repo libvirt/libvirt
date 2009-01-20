@@ -1,7 +1,6 @@
-#serial 18
+# serial 19
 
-# Copyright (C) 1997, 1998, 1999, 2000, 2001, 2003, 2004, 2005, 2006, 2007, 2008
-# Free Software Foundation, Inc.
+# Copyright (C) 1997-2001, 2003-2009 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -17,7 +16,7 @@ AC_DEFUN([gl_FUNC_LSTAT],
   AC_CHECK_FUNCS_ONCE([lstat])
   if test $ac_cv_func_lstat = yes; then
     AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
-    dnl Note: AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK does AC_LIBOBJ(lstat).
+    dnl Note: AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK does AC_LIBOBJ([lstat]).
     if test $ac_cv_func_lstat_dereferences_slashed_symlink = no; then
       REPLACE_LSTAT=1
     fi

@@ -1,5 +1,5 @@
-# stdio_h.m4 serial 14
-dnl Copyright (C) 2007-2008 Free Software Foundation, Inc.
+# stdio_h.m4 serial 15
+dnl Copyright (C) 2007-2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -53,6 +53,8 @@ AC_DEFUN([gl_STDIO_H_DEFAULTS],
   GNULIB_VPRINTF_POSIX=0;        AC_SUBST([GNULIB_VPRINTF_POSIX])
   GNULIB_VSNPRINTF=0;            AC_SUBST([GNULIB_VSNPRINTF])
   GNULIB_VSPRINTF_POSIX=0;       AC_SUBST([GNULIB_VSPRINTF_POSIX])
+  GNULIB_DPRINTF=0;              AC_SUBST([GNULIB_DPRINTF])
+  GNULIB_VDPRINTF=0;             AC_SUBST([GNULIB_VDPRINTF])
   GNULIB_VASPRINTF=0;            AC_SUBST([GNULIB_VASPRINTF])
   GNULIB_OBSTACK_PRINTF=0;       AC_SUBST([GNULIB_OBSTACK_PRINTF])
   GNULIB_OBSTACK_PRINTF_POSIX=0; AC_SUBST([GNULIB_OBSTACK_PRINTF_POSIX])
@@ -86,6 +88,10 @@ AC_DEFUN([gl_STDIO_H_DEFAULTS],
   HAVE_DECL_VSNPRINTF=1;         AC_SUBST([HAVE_DECL_VSNPRINTF])
   REPLACE_SPRINTF=0;             AC_SUBST([REPLACE_SPRINTF])
   REPLACE_VSPRINTF=0;            AC_SUBST([REPLACE_VSPRINTF])
+  HAVE_DPRINTF=1;                AC_SUBST([HAVE_DPRINTF])
+  REPLACE_DPRINTF=0;             AC_SUBST([REPLACE_DPRINTF])
+  HAVE_VDPRINTF=1;               AC_SUBST([HAVE_VDPRINTF])
+  REPLACE_VDPRINTF=0;            AC_SUBST([REPLACE_VDPRINTF])
   HAVE_VASPRINTF=1;              AC_SUBST([HAVE_VASPRINTF])
   REPLACE_VASPRINTF=0;           AC_SUBST([REPLACE_VASPRINTF])
   HAVE_DECL_OBSTACK_PRINTF=1;    AC_SUBST([HAVE_DECL_OBSTACK_PRINTF])

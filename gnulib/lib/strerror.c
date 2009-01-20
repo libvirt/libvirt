@@ -1,6 +1,6 @@
 /* strerror.c --- POSIX compatible system error routine
 
-   Copyright (C) 2007-2008 Free Software Foundation, Inc.
+   Copyright (C) 2007-2009 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as published by
@@ -40,94 +40,133 @@
 char *
 rpl_strerror (int n)
 {
+  char const *msg = NULL;
   /* These error messages are taken from glibc/sysdeps/gnu/errlist.c.  */
   switch (n)
     {
 # if GNULIB_defined_ETXTBSY
     case ETXTBSY:
-      return "Text file busy";
+      msg = "Text file busy";
+      break;
 # endif
 
 # if GNULIB_defined_ESOCK /* native Windows platforms */
     /* EWOULDBLOCK is the same as EAGAIN.  */
     case EINPROGRESS:
-      return "Operation now in progress";
+      msg = "Operation now in progress";
+      break;
     case EALREADY:
-      return "Operation already in progress";
+      msg = "Operation already in progress";
+      break;
     case ENOTSOCK:
-      return "Socket operation on non-socket";
+      msg = "Socket operation on non-socket";
+      break;
     case EDESTADDRREQ:
-      return "Destination address required";
+      msg = "Destination address required";
+      break;
     case EMSGSIZE:
-      return "Message too long";
+      msg = "Message too long";
+      break;
     case EPROTOTYPE:
-      return "Protocol wrong type for socket";
+      msg = "Protocol wrong type for socket";
+      break;
     case ENOPROTOOPT:
-      return "Protocol not available";
+      msg = "Protocol not available";
+      break;
     case EPROTONOSUPPORT:
-      return "Protocol not supported";
+      msg = "Protocol not supported";
+      break;
     case ESOCKTNOSUPPORT:
-      return "Socket type not supported";
+      msg = "Socket type not supported";
+      break;
     case EOPNOTSUPP:
-      return "Operation not supported";
+      msg = "Operation not supported";
+      break;
     case EPFNOSUPPORT:
-      return "Protocol family not supported";
+      msg = "Protocol family not supported";
+      break;
     case EAFNOSUPPORT:
-      return "Address family not supported by protocol";
+      msg = "Address family not supported by protocol";
+      break;
     case EADDRINUSE:
-      return "Address already in use";
+      msg = "Address already in use";
+      break;
     case EADDRNOTAVAIL:
-      return "Cannot assign requested address";
+      msg = "Cannot assign requested address";
+      break;
     case ENETDOWN:
-      return "Network is down";
+      msg = "Network is down";
+      break;
     case ENETUNREACH:
-      return "Network is unreachable";
+      msg = "Network is unreachable";
+      break;
     case ENETRESET:
-      return "Network dropped connection on reset";
+      msg = "Network dropped connection on reset";
+      break;
     case ECONNABORTED:
-      return "Software caused connection abort";
+      msg = "Software caused connection abort";
+      break;
     case ECONNRESET:
-      return "Connection reset by peer";
+      msg = "Connection reset by peer";
+      break;
     case ENOBUFS:
-      return "No buffer space available";
+      msg = "No buffer space available";
+      break;
     case EISCONN:
-      return "Transport endpoint is already connected";
+      msg = "Transport endpoint is already connected";
+      break;
     case ENOTCONN:
-      return "Transport endpoint is not connected";
+      msg = "Transport endpoint is not connected";
+      break;
     case ESHUTDOWN:
-      return "Cannot send after transport endpoint shutdown";
+      msg = "Cannot send after transport endpoint shutdown";
+      break;
     case ETOOMANYREFS:
-      return "Too many references: cannot splice";
+      msg = "Too many references: cannot splice";
+      break;
     case ETIMEDOUT:
-      return "Connection timed out";
+      msg = "Connection timed out";
+      break;
     case ECONNREFUSED:
-      return "Connection refused";
+      msg = "Connection refused";
+      break;
     case ELOOP:
-      return "Too many levels of symbolic links";
+      msg = "Too many levels of symbolic links";
+      break;
     case EHOSTDOWN:
-      return "Host is down";
+      msg = "Host is down";
+      break;
     case EHOSTUNREACH:
-      return "No route to host";
+      msg = "No route to host";
+      break;
     case EPROCLIM:
-      return "Too many processes";
+      msg = "Too many processes";
+      break;
     case EUSERS:
-      return "Too many users";
+      msg = "Too many users";
+      break;
     case EDQUOT:
-      return "Disk quota exceeded";
+      msg = "Disk quota exceeded";
+      break;
     case ESTALE:
-      return "Stale NFS file handle";
+      msg = "Stale NFS file handle";
+      break;
     case EREMOTE:
-      return "Object is remote";
+      msg = "Object is remote";
+      break;
 #  if HAVE_WINSOCK2_H
     /* WSA_INVALID_HANDLE maps to EBADF */
     /* WSA_NOT_ENOUGH_MEMORY maps to ENOMEM */
     /* WSA_INVALID_PARAMETER maps to EINVAL */
     case WSA_OPERATION_ABORTED:
-      return "Overlapped operation aborted";
+      msg = "Overlapped operation aborted";
+      break;
     case WSA_IO_INCOMPLETE:
-      return "Overlapped I/O event object not in signaled state";
+      msg = "Overlapped I/O event object not in signaled state";
+      break;
     case WSA_IO_PENDING:
-      return "Overlapped operations will complete later";
+      msg = "Overlapped operations will complete later";
+      break;
     /* WSAEINTR maps to EINTR */
     /* WSAEBADF maps to EBADF */
     /* WSAEACCES maps to EACCES */
@@ -172,88 +211,117 @@ rpl_strerror (int n)
     /* WSAESTALE is ESTALE */
     /* WSAEREMOTE is EREMOTE */
     case WSASYSNOTREADY:
-      return "Network subsystem is unavailable";
+      msg = "Network subsystem is unavailable";
+      break;
     case WSAVERNOTSUPPORTED:
-      return "Winsock.dll version out of range";
+      msg = "Winsock.dll version out of range";
+      break;
     case WSANOTINITIALISED:
-      return "Successful WSAStartup not yet performed";
+      msg = "Successful WSAStartup not yet performed";
+      break;
     case WSAEDISCON:
-      return "Graceful shutdown in progress";
+      msg = "Graceful shutdown in progress";
+      break;
     case WSAENOMORE: case WSA_E_NO_MORE:
-      return "No more results";
+      msg = "No more results";
+      break;
     case WSAECANCELLED: case WSA_E_CANCELLED:
-      return "Call was canceled";
+      msg = "Call was canceled";
+      break;
     case WSAEINVALIDPROCTABLE:
-      return "Procedure call table is invalid";
+      msg = "Procedure call table is invalid";
+      break;
     case WSAEINVALIDPROVIDER:
-      return "Service provider is invalid";
+      msg = "Service provider is invalid";
+      break;
     case WSAEPROVIDERFAILEDINIT:
-      return "Service provider failed to initialize";
+      msg = "Service provider failed to initialize";
+      break;
     case WSASYSCALLFAILURE:
-      return "System call failure";
+      msg = "System call failure";
+      break;
     case WSASERVICE_NOT_FOUND:
-      return "Service not found";
+      msg = "Service not found";
+      break;
     case WSATYPE_NOT_FOUND:
-      return "Class type not found";
+      msg = "Class type not found";
+      break;
     case WSAEREFUSED:
-      return "Database query was refused";
+      msg = "Database query was refused";
+      break;
     case WSAHOST_NOT_FOUND:
-      return "Host not found";
+      msg = "Host not found";
+      break;
     case WSATRY_AGAIN:
-      return "Nonauthoritative host not found";
+      msg = "Nonauthoritative host not found";
+      break;
     case WSANO_RECOVERY:
-      return "Nonrecoverable error";
+      msg = "Nonrecoverable error";
+      break;
     case WSANO_DATA:
-      return "Valid name, no data record of requested type";
+      msg = "Valid name, no data record of requested type";
+      break;
     /* WSA_QOS_* omitted */
 #  endif
 # endif
 
 # if GNULIB_defined_ENOMSG
     case ENOMSG:
-      return "No message of desired type";
+      msg = "No message of desired type";
+      break;
 # endif
 
 # if GNULIB_defined_EIDRM
     case EIDRM:
-      return "Identifier removed";
+      msg = "Identifier removed";
+      break;
 # endif
 
 # if GNULIB_defined_ENOLINK
     case ENOLINK:
-      return "Link has been severed";
+      msg = "Link has been severed";
+      break;
 # endif
 
 # if GNULIB_defined_EPROTO
     case EPROTO:
-      return "Protocol error";
+      msg = "Protocol error";
+      break;
 # endif
 
 # if GNULIB_defined_EMULTIHOP
     case EMULTIHOP:
-      return "Multihop attempted";
+      msg = "Multihop attempted";
+      break;
 # endif
 
 # if GNULIB_defined_EBADMSG
     case EBADMSG:
-      return "Bad message";
+      msg = "Bad message";
+      break;
 # endif
 
 # if GNULIB_defined_EOVERFLOW
     case EOVERFLOW:
-      return "Value too large for defined data type";
+      msg = "Value too large for defined data type";
+      break;
 # endif
 
 # if GNULIB_defined_ENOTSUP
     case ENOTSUP:
-      return "Not supported";
+      msg = "Not supported";
+      break;
 # endif
 
 # if GNULIB_defined_
     case ECANCELED:
-      return "Operation canceled";
+      msg = "Operation canceled";
+      break;
 # endif
     }
+
+  if (msg)
+    return (char *) msg;
 
   {
     char *result = strerror (n);
@@ -261,9 +329,9 @@ rpl_strerror (int n)
     if (result == NULL || result[0] == '\0')
       {
 	static char const fmt[] = "Unknown error (%d)";
-	static char mesg[sizeof fmt + INT_STRLEN_BOUND (n)];
-	sprintf (mesg, fmt, n);
-	return mesg;
+	static char msg_buf[sizeof fmt + INT_STRLEN_BOUND (n)];
+	sprintf (msg_buf, fmt, n);
+	return msg_buf;
       }
 
     return result;

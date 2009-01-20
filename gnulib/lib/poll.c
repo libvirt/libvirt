@@ -19,6 +19,11 @@
    with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
+/* Tell gcc not to warn about the (nfd < 0) tests, below.  */
+#if (__GNUC__ == 4 && 3 <= __GNUC_MINOR__) || 4 < __GNUC__
+# pragma GCC diagnostic ignored "-Wtype-limits"
+#endif
+
 #include <config.h>
 #include <alloca.h>
 
@@ -404,7 +409,6 @@ poll (pfd, nfd, timeout)
   fd_set rfds, wfds, xfds;
   BOOL poll_again;
   MSG msg;
-  char sockbuf[256];
   int rc = 0;
   nfds_t i;
 
@@ -426,7 +430,6 @@ poll (pfd, nfd, timeout)
   /* Classify socket handles and create fd sets. */
   for (i = 0; i < nfd; i++)
     {
-      size_t optlen = sizeof(sockbuf);
       pfd[i].revents = 0;
       if (pfd[i].fd < 0)
         continue;

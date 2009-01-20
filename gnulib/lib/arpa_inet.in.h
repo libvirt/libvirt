@@ -38,6 +38,10 @@
 
 /* The definition of GL_LINK_WARNING is copied here.  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if @GNULIB_INET_NTOP@
 # if !@HAVE_DECL_INET_NTOP@
 /* Converts an internet address from internal format to a printable,
@@ -76,6 +80,10 @@ extern int inet_pton (int af, const char *restrict src, void *restrict dst);
   (GL_LINK_WARNING ("inet_pton is unportable - " \
 		    "use gnulib module inet_pton for portability"), \
    inet_pton (af, src, dst))
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif /* _GL_ARPA_INET_H */

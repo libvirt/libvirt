@@ -1,5 +1,5 @@
-# iconv.m4 serial AM6 (gettext-0.18)
-dnl Copyright (C) 2000-2002, 2007-2008 Free Software Foundation, Inc.
+# iconv.m4 serial AM7 (gettext-0.18)
+dnl Copyright (C) 2000-2002, 2007-2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -134,7 +134,7 @@ int main ()
     am_func_iconv=no am_cv_lib_iconv=no
   fi
   if test "$am_func_iconv" = yes; then
-    AC_DEFINE([HAVE_ICONV], 1,
+    AC_DEFINE([HAVE_ICONV], [1],
       [Define if you have the iconv() function and it works.])
   fi
   if test "$am_cv_lib_iconv" = yes; then

@@ -1,5 +1,5 @@
-# printf.m4 serial 25
-dnl Copyright (C) 2003, 2007-2008 Free Software Foundation, Inc.
+# printf.m4 serial 28
+dnl Copyright (C) 2003, 2007-2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -225,12 +225,12 @@ AC_DEFUN([gl_PRINTF_INFINITE_LONG_DOUBLE],
 [
   AC_REQUIRE([gl_PRINTF_LONG_DOUBLE])
   AC_REQUIRE([AC_PROG_CC])
-  AC_REQUIRE([AC_C_BIGENDIAN])
+  AC_REQUIRE([gl_BIGENDIAN])
   AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
   dnl The user can set or unset the variable gl_printf_safe to indicate
   dnl that he wishes a safe handling of non-IEEE-754 'long double' values.
   if test -n "$gl_printf_safe"; then
-    AC_DEFINE([CHECK_PRINTF_SAFE], 1,
+    AC_DEFINE([CHECK_PRINTF_SAFE], [1],
       [Define if you wish *printf() functions that have a safe handling of
        non-IEEE-754 'long double' values.])
   fi
@@ -1142,7 +1142,7 @@ AC_DEFUN([gl_SNPRINTF_SIZE1],
 #include <stdio.h>
 int main()
 {
-  static char buf[8] = "DEADBEEF";
+  static char buf[8] = { 'D', 'E', 'A', 'D', 'B', 'E', 'E', 'F' };
   snprintf (buf, 1, "%d", 12345);
   return buf[1] != 'E';
 }],
@@ -1160,7 +1160,7 @@ dnl     ---------------------------------------------------------------------
 dnl     #include <stdio.h>
 dnl     int main()
 dnl     {
-dnl       static char buf[8] = "DEADBEEF";
+dnl       static char buf[8] = { 'D', 'E', 'A', 'D', 'B', 'E', 'E', 'F' };
 dnl       snprintf (buf, 0, "%d", 12345);
 dnl       return buf[0] != 'D';
 dnl     }
@@ -1181,7 +1181,7 @@ dnl       return ret;
 dnl     }
 dnl     int main()
 dnl     {
-dnl       static char buf[8] = "DEADBEEF";
+dnl       static char buf[8] = { 'D', 'E', 'A', 'D', 'B', 'E', 'E', 'F' };
 dnl       my_snprintf (buf, 0, "%d", 12345);
 dnl       return buf[0] != 'D';
 dnl     }
@@ -1209,7 +1209,7 @@ static int my_snprintf (char *buf, int size, const char *format, ...)
 }
 int main()
 {
-  static char buf[8] = "DEADBEEF";
+  static char buf[8] = { 'D', 'E', 'A', 'D', 'B', 'E', 'E', 'F' };
   my_snprintf (buf, 0, "%d", 12345);
   return buf[0] != 'D';
 }],

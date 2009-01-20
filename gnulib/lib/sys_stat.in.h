@@ -1,5 +1,5 @@
 /* Provide a more complete sys/stat header file.
-   Copyright (C) 2005-2008 Free Software Foundation, Inc.
+   Copyright (C) 2005-2009 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as published by
@@ -34,6 +34,9 @@
 /* Normal invocation convention.  */
 
 #ifndef _GL_SYS_STAT_H
+
+/* Get nlink_t.  */
+#include <sys/types.h>
 
 /* The include_next requires a split double-inclusion guard.  */
 #@INCLUDE_NEXT@ @NEXT_SYS_STAT_H@

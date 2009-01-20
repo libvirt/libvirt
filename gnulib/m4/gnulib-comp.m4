@@ -106,6 +106,8 @@ AC_SUBST([LTALLOCA])
   gl_PHYSMEM
   gl_FUNC_POLL
   gl_POSIX_SHELL
+  gl_FUNC_RANDOM_R
+  gl_STDLIB_MODULE_INDICATOR([random_r])
   gl_FUNC_REALLOC_POSIX
   gl_STDLIB_MODULE_INDICATOR([realloc-posix])
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
@@ -370,6 +372,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/printf-args.h
   lib/printf-parse.c
   lib/printf-parse.h
+  lib/random_r.c
   lib/realloc.c
   lib/recv.c
   lib/send.c
@@ -461,6 +464,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/printf-posix.m4
   m4/printf.m4
   m4/progtest.m4
+  m4/random_r.m4
   m4/realloc.m4
   m4/servent.m4
   m4/size_max.m4
@@ -516,6 +520,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-perror.c
   tests/test-perror.sh
   tests/test-poll.c
+  tests/test-random_r.c
   tests/test-snprintf.c
   tests/test-sockets.c
   tests/test-stdbool.c

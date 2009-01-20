@@ -1,6 +1,6 @@
-#serial 11
+# serial 12
 
-# Copyright (C) 2001, 2002, 2003, 2005, 2007 Free Software Foundation, Inc.
+# Copyright (C) 2001-2003, 2005, 2007, 2009 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -34,7 +34,7 @@ AC_DEFUN([gl_FUNC_GETTIMEOFDAY],
     REPLACE_GETTIMEOFDAY=1
     SYS_TIME_H=sys/time.h
     if test $gl_cv_func_gettimeofday_clobber != yes; then
-      AC_LIBOBJ(gettimeofday)
+      AC_LIBOBJ([gettimeofday])
       gl_PREREQ_GETTIMEOFDAY
     fi
   fi
@@ -80,13 +80,13 @@ AC_DEFUN([gl_FUNC_GETTIMEOFDAY_CLOBBER],
    REPLACE_GETTIMEOFDAY=1
    SYS_TIME_H=sys/time.h
    gl_GETTIMEOFDAY_REPLACE_LOCALTIME
-   AC_DEFINE([GETTIMEOFDAY_CLOBBERS_LOCALTIME], 1,
+   AC_DEFINE([GETTIMEOFDAY_CLOBBERS_LOCALTIME], [1],
      [Define if gettimeofday clobbers the localtime buffer.])
  fi
 ])
 
 AC_DEFUN([gl_GETTIMEOFDAY_REPLACE_LOCALTIME], [
-  AC_LIBOBJ(gettimeofday)
+  AC_LIBOBJ([gettimeofday])
   gl_PREREQ_GETTIMEOFDAY
   AC_DEFINE([gmtime], [rpl_gmtime],
     [Define to rpl_gmtime if the replacement function should be used.])

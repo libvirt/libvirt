@@ -1,5 +1,5 @@
-# getaddrinfo.m4 serial 19
-dnl Copyright (C) 2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
+# getaddrinfo.m4 serial 20
+dnl Copyright (C) 2004-2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -18,7 +18,7 @@ AC_DEFUN([gl_GETADDRINFO],
   dnl - On BeOS, it is in libnet.
   dnl - On native Windows, it is in ws2_32.dll.
   dnl - Otherwise it is in libc.
-  AC_SEARCH_LIBS(getaddrinfo, [socket network net],
+  AC_SEARCH_LIBS([getaddrinfo], [socket network net],
     [if test "$ac_cv_search_getaddrinfo" != "none required"; then
        GETADDRINFO_LIB="$ac_cv_search_getaddrinfo"
      fi])
@@ -38,7 +38,7 @@ AC_DEFUN([gl_GETADDRINFO],
       [gl_cv_func_getaddrinfo=yes],
       [gl_cv_func_getaddrinfo=no])])
   if test $gl_cv_func_getaddrinfo = no; then
-    AC_CACHE_CHECK(for getaddrinfo in ws2tcpip.h and -lws2_32,
+    AC_CACHE_CHECK([for getaddrinfo in ws2tcpip.h and -lws2_32],
 		   gl_cv_w32_getaddrinfo, [
       gl_cv_w32_getaddrinfo=no
       am_save_LIBS="$LIBS"
@@ -55,7 +55,7 @@ AC_DEFUN([gl_GETADDRINFO],
       GETADDRINFO_LIB="-lws2_32"
       LIBS="$gai_saved_LIBS $GETADDRINFO_LIB"
     else
-      AC_LIBOBJ(getaddrinfo)
+      AC_LIBOBJ([getaddrinfo])
     fi
   fi
 
@@ -80,7 +80,7 @@ AC_DEFUN([gl_GETADDRINFO],
         [gl_cv_func_gai_strerror=yes],
         [gl_cv_func_gai_strerror=no])])
   if test $gl_cv_func_gai_strerror = no; then
-    AC_LIBOBJ(gai_strerror)
+    AC_LIBOBJ([gai_strerror])
   fi
 
   LIBS="$gai_saved_LIBS"
@@ -106,7 +106,7 @@ AC_DEFUN([gl_PREREQ_GETADDRINFO], [
   dnl have sa_len so the result is correct anyway.
   AC_CHECK_MEMBERS([struct sockaddr.sa_len], , , [#include <sys/socket.h>])
 
-  AC_CHECK_HEADERS_ONCE(netinet/in.h)
+  AC_CHECK_HEADERS_ONCE([netinet/in.h])
 
   AC_CHECK_DECLS([getaddrinfo, freeaddrinfo, gai_strerror, getnameinfo],,,[
   /* sys/types.h is not needed according to POSIX, but the

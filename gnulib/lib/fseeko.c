@@ -1,5 +1,5 @@
 /* An fseeko() function that, together with fflush(), is POSIX compliant.
-   Copyright (C) 2007-2008 Free Software Foundation, Inc.
+   Copyright (C) 2007-2009 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as published by
@@ -86,7 +86,14 @@ rpl_fseeko (FILE *fp, off_t offset, int whence)
   #error "Please port gnulib fseeko.c to your platform! Look at the code in fpurge.c, then report this to bug-gnulib."
 #endif
     {
-      off_t pos = lseek (fileno (fp), offset, whence);
+      /* We get here when an fflush() call immediately preceded this one.  We
+	 know there are no buffers.
+	 POSIX requires us to modify the file descriptor's position.
+	 But we cannot position beyond end of file here.  */
+      off_t pos =
+	lseek (fileno (fp),
+	       whence == SEEK_END && offset > 0 ? 0 : offset,
+	       whence);
       if (pos == -1)
 	{
 #if defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, MacOS X, Cygwin */
@@ -94,20 +101,22 @@ rpl_fseeko (FILE *fp, off_t offset, int whence)
 #endif
 	  return -1;
 	}
-      else
-	{
-#if defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, MacOS X, Cygwin */
-	  fp_->_offset = pos;
-	  fp_->_flags |= __SOFF;
-	  fp_->_flags &= ~__SEOF;
+
+#if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
+      fp->_flags &= ~_IO_EOF_SEEN;
+#elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, MacOS X, Cygwin */
+      fp_->_offset = pos;
+      fp_->_flags |= __SOFF;
+      fp_->_flags &= ~__SEOF;
 #elif defined __EMX__               /* emx+gcc */
-          fp->_flags &= ~_IOEOF;
+      fp->_flags &= ~_IOEOF;
 #elif defined _IOERR                /* AIX, HP-UX, IRIX, OSF/1, Solaris, OpenServer, mingw */
-          fp->_flag &= ~_IOEOF;
+      fp->_flag &= ~_IOEOF;
 #endif
-	  return 0;
-	}
+      /* If we were not requested to position beyond end of file, we're
+	 done.  */
+      if (!(whence == SEEK_END && offset > 0))
+	return 0;
     }
-  else
-    return fseeko (fp, offset, whence);
+  return fseeko (fp, offset, whence);
 }

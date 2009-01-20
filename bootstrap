@@ -81,6 +81,7 @@ physmem
 poll
 posix-shell
 recv
+random_r
 send
 setsockopt
 socket

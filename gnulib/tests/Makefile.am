@@ -212,6 +212,15 @@ EXTRA_DIST += test-poll.c
 
 ## end   gnulib module poll-tests
 
+## begin gnulib module random_r-tests
+
+TESTS += test-random_r
+check_PROGRAMS += test-random_r
+
+EXTRA_DIST += test-random_r.c
+
+## end   gnulib module random_r-tests
+
 ## begin gnulib module snprintf-tests
 
 TESTS += test-snprintf

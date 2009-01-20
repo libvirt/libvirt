@@ -41,6 +41,12 @@
 static struct tm tm_zero_buffer;
 static struct tm *localtime_buffer_addr = &tm_zero_buffer;
 
+#undef localtime
+extern struct tm *localtime (time_t const *);
+
+#undef gmtime
+extern struct tm *gmtime (time_t const *);
+
 /* This is a wrapper for localtime.  It is used only on systems for which
    gettimeofday clobbers the static buffer used for localtime's result.
 
@@ -50,8 +56,6 @@ static struct tm *localtime_buffer_addr = &tm_zero_buffer;
 struct tm *
 rpl_localtime (time_t const *timep)
 {
-#undef localtime
-  extern struct tm *localtime (time_t const *);
   struct tm *tm = localtime (timep);
 
   if (localtime_buffer_addr == &tm_zero_buffer)
@@ -64,8 +68,6 @@ rpl_localtime (time_t const *timep)
 struct tm *
 rpl_gmtime (time_t const *timep)
 {
-#undef gmtime
-  extern struct tm *gmtime (time_t const *);
   struct tm *tm = gmtime (timep);
 
   if (localtime_buffer_addr == &tm_zero_buffer)
@@ -77,14 +79,15 @@ rpl_gmtime (time_t const *timep)
 #endif /* GETTIMEOFDAY_CLOBBERS_LOCALTIME || TZSET_CLOBBERS_LOCALTIME */
 
 #if TZSET_CLOBBERS_LOCALTIME
+
+#undef tzset
+extern void tzset (void);
+
 /* This is a wrapper for tzset, for systems on which tzset may clobber
    the static buffer used for localtime's result.  */
 void
 rpl_tzset (void)
 {
-#undef tzset
-  extern void tzset (void);
-
   /* Save and restore the contents of the buffer used for localtime's
      result around the call to tzset.  */
   struct tm save = *localtime_buffer_addr;

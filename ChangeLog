@@ -1,3 +1,34 @@
+Tue Jan 20 21:02:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Refresh GNULIB, adding new random_r module
+	* bootstrap: Add random_r module
+	* gnulib/lib/random_r.c, gnulib/m4/random_r.m4,
+	gnulib/tests/test-random_r.c: New random_r module
+	* gnulib/lib/.cvsignore, gnulib/lib/.gitignore, gnulib/lib/Makefile.am,
+	gnulib/lib/arpa_inet.in.h, gnulib/lib/fseeko.c, gnulib/lib/gettimeofday.c,
+	gnulib/lib/ioctl.c, gnulib/lib/poll.c, gnulib/lib/stdint.in.h,
+	gnulib/lib/stdio.in.h, gnulib/lib/strerror.c, gnulib/lib/sys_stat.in.h,
+	gnulib/lib/unistd.in.h, gnulib/lib/wchar.in.h: Refresh source
+	* gnulib/m4/alloca.m4, gnulib/m4/codeset.m4, gnulib/m4/errno_h.m4,
+	gnulib/m4/getaddrinfo.m4, gnulib/m4/gethostname.m4, gnulib/m4/getline.m4,
+	gnulib/m4/getpass.m4, gnulib/m4/gettext.m4, gnulib/m4/gettimeofday.m4,
+	gnulib/m4/gnulib-cache.m4, gnulib/m4/gnulib-common.m4,
+	gnulib/m4/gnulib-comp.m4, gnulib/m4/iconv.m4, gnulib/m4/inet_ntop.m4,
+	gnulib/m4/inet_pton.m4,	 gnulib/m4/intldir.m4, gnulib/m4/intlmacosx.m4,
+	gnulib/m4/intmax.m4, gnulib/m4/intmax_t.m4, gnulib/m4/inttypes-pri.m4,
+	gnulib/m4/inttypes_h.m4, gnulib/m4/lcmessage.m4, gnulib/m4/lib-ld.m4,
+	gnulib/m4/lib-link.m4, gnulib/m4/lock.m4, gnulib/m4/longlong.m4,
+	gnulib/m4/lstat.m4, gnulib/m4/malloc.m4, gnulib/m4/nls.m4,
+	gnulib/m4/physmem.m4, gnulib/m4/po.m4, gnulib/m4/poll.m4,
+	gnulib/m4/printf-posix.m4, gnulib/m4/printf.m4, gnulib/m4/progtest.m4,
+	gnulib/m4/realloc.m4, gnulib/m4/sockets.m4, gnulib/m4/sockpfaf.m4,
+	gnulib/m4/stdbool.m4, gnulib/m4/stdint.m4, gnulib/m4/stdint_h.m4,
+	gnulib/m4/stdio_h.m4, gnulib/m4/strdup.m4, gnulib/m4/strndup.m4,
+	gnulib/m4/strnlen.m4, gnulib/m4/strsep.m4, gnulib/m4/threadlib.m4,
+	gnulib/m4/uintmax_t.m4, gnulib/m4/unistd_h.m4, gnulib/m4/vasnprintf.m4,
+	gnulib/m4/wchar_t.m4, gnulib/m4/wint_t.m4, gnulib/tests/Makefile.am,
+	 gnulib/tests/test-unistd.c: Refresh macros
+
 Tue Jan 20 20:22:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/test.c: Support domain events in test driver

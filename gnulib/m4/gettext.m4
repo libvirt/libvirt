@@ -1,5 +1,5 @@
-# gettext.m4 serial 61 (gettext-0.18)
-dnl Copyright (C) 1995-2008 Free Software Foundation, Inc.
+# gettext.m4 serial 62 (gettext-0.18)
+dnl Copyright (C) 1995-2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -123,7 +123,7 @@ AC_DEFUN([AM_GNU_GETTEXT],
     gt_use_preinstalled_gnugettext=no
     ifelse(gt_included_intl, yes, [
       AC_MSG_CHECKING([whether included gettext is requested])
-      AC_ARG_WITH(included-gettext,
+      AC_ARG_WITH([included-gettext],
         [  --with-included-gettext use the GNU gettext library included here],
         nls_cv_force_use_gnu_gettext=$withval,
         nls_cv_force_use_gnu_gettext=no)
@@ -267,7 +267,7 @@ return * gettext ("")$gt_expression_test_code + _nl_msg_cat_cntr + *_nl_expand_a
 
     if test "$gt_use_preinstalled_gnugettext" = "yes" \
        || test "$nls_cv_use_gnu_gettext" = "yes"; then
-      AC_DEFINE([ENABLE_NLS], 1,
+      AC_DEFINE([ENABLE_NLS], [1],
         [Define to 1 if translation of program messages to the user's native language
    is requested.])
     else
@@ -301,9 +301,9 @@ return * gettext ("")$gt_expression_test_code + _nl_msg_cat_cntr + *_nl_expand_a
       fi
 
       dnl For backward compatibility. Some packages may be using this.
-      AC_DEFINE([HAVE_GETTEXT], 1,
+      AC_DEFINE([HAVE_GETTEXT], [1],
        [Define if the GNU gettext() function is already present or preinstalled.])
-      AC_DEFINE([HAVE_DCGETTEXT], 1,
+      AC_DEFINE([HAVE_DCGETTEXT], [1],
        [Define if the GNU dcgettext() function is already present or preinstalled.])
     fi
 
