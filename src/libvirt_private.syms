@@ -290,6 +290,7 @@ virEnumToString;
 virEventAddHandle;
 virEventRemoveHandle;
 virExec;
+virSetNonBlock;
 virFormatMacAddr;
 virGetHostname;
 virParseMacAddr;

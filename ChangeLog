@@ -1,3 +1,12 @@
+Tue Jan 20 16:36:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Make RPC call dispatch threaded
+	* src/libvirt_private.syms, src/util.h, src/util.c: Add
+	a general virSetNonBlock() helper with portability to
+	Win32
+	* src/remote_internal.c: Re-factor I/O to allow RPC calls
+	from multiple threads to be handled concurrently.
+
 Tue Jan 20 17:08:20 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/domain_conf.h src/lxc_driver.c src/uml_driver.c: virDomainObj

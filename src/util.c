@@ -34,6 +34,7 @@
 #include <poll.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
 #if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif
@@ -155,8 +156,28 @@ virArgvToString(const char *const *argv)
     return ret;
 }
 
+int virSetNonBlock(int fd) {
+#ifndef WIN32
+    int flags;
+    if ((flags = fcntl(fd, F_GETFL)) < 0)
+        return -1;
+    flags |= O_NONBLOCK;
+    if ((fcntl(fd, F_SETFL, flags)) < 0)
+        return -1;
+#else
+    unsigned long flag = 1;
 
-#ifndef __MINGW32__
+    /* This is actually Gnulib's replacement rpl_ioctl function.
+     * We can't call ioctlsocket directly in any case.
+     */
+    if (ioctl (fd, FIONBIO, (void *) &flag) == -1)
+        return -1;
+#endif
+    return 0;
+}
+
+
+#ifndef WIN32
 
 static int virSetCloseExec(int fd) {
     int flags;
@@ -164,16 +185,6 @@ static int virSetCloseExec(int fd) {
         return -1;
     flags |= FD_CLOEXEC;
     if ((fcntl(fd, F_SETFD, flags)) < 0)
-        return -1;
-    return 0;
-}
-
-static int virSetNonBlock(int fd) {
-    int flags;
-    if ((flags = fcntl(fd, F_GETFL)) < 0)
-        return -1;
-    flags |= O_NONBLOCK;
-    if ((fcntl(fd, F_SETFL, flags)) < 0)
         return -1;
     return 0;
 }

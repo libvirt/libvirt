@@ -38,6 +38,8 @@ enum {
     VIR_EXEC_DAEMON = (1 << 1),
 };
 
+int virSetNonBlock(int fd);
+
 int virExec(virConnectPtr conn,
             const char *const*argv,
             const char *const*envp,
