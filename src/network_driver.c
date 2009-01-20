@@ -1,7 +1,7 @@
 /*
  * driver.c: core driver methods for managing qemu guests
  *
- * Copyright (C) 2006, 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2006-2009 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -682,20 +682,29 @@ networkRemoveIptablesRules(struct network_driver *driver,
     iptablesSaveRules(driver->iptables);
 }
 
+/* Enable IP Forwarding.
+   Return 0 for success, nonzero for failure.
+   Be careful to preserve any errno value upon failure. */
 static int
 networkEnableIpForwarding(void)
 {
 #define PROC_IP_FORWARD "/proc/sys/net/ipv4/ip_forward"
 
-    int fd, ret;
+    int fd;
 
     if ((fd = open(PROC_IP_FORWARD, O_WRONLY|O_TRUNC)) == -1)
         return 0;
 
-    if (safewrite(fd, "1\n", 2) < 0)
-        ret = 0;
+    if (safewrite(fd, "1\n", 2) < 0) {
+        int saved_errno = errno;
+        close (fd);
+        errno = saved_errno;
+        return 0;
+    }
 
-    close (fd);
+    /* Use errno from failed close only if there was no write error.  */
+    if (close (fd) != 0)
+        return 0;
 
     return 1;
 
@@ -1317,4 +1326,3 @@ int networkRegister(void) {
     virRegisterStateDriver(&networkStateDriver);
     return 0;
 }
-

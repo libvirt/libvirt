@@ -1,3 +1,11 @@
+Tue Jan 20 20:28:07 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	don't ignore write failure
+	* src/network_driver.c (networkEnableIpForwarding): This function
+	would always return 1 (success).  Now it returns 0 upon write or
+	close failure, being careful to preserve any errno from a write failure.
+	Add comments.
+
 Tue Jan 20 19:26:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c, qemud/qemud.h: Dynamic spawn/cleanup threads
