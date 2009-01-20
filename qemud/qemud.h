@@ -157,13 +157,24 @@ struct qemud_socket {
     struct qemud_socket *next;
 };
 
+struct qemud_worker {
+    pthread_t thread;
+    int hasThread :1;
+    int processingCall :1;
+    int quitRequest : 1;
+
+    /* back-pointer to our server */
+    struct qemud_server *server;
+};
+
 /* Main server state */
 struct qemud_server {
     virMutex lock;
     virCond job;
 
     int nworkers;
-    pthread_t *workers;
+    int nactiveworkers;
+    struct qemud_worker *workers;
     int nsockets;
     struct qemud_socket *sockets;
     int nclients;

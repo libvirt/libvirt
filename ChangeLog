@@ -1,3 +1,8 @@
+Tue Jan 20 19:26:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c, qemud/qemud.h: Dynamic spawn/cleanup threads
+	for processing RPC calls as number of clients changes
+
 Tue Jan 20 19:24:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c, qemud/qemud.h, qemud/remote.c: Allow the
