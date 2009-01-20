@@ -65,15 +65,6 @@
 
 #define qemudDebug DEBUG
 
-enum qemud_mode {
-    QEMUD_MODE_RX_HEADER,       /* Receiving the fixed length RPC header data */
-    QEMUD_MODE_RX_PAYLOAD,      /* Receiving the variable length RPC payload data */
-    QEMUD_MODE_WAIT_DISPATCH,   /* Message received, waiting for worker to process */
-    QEMUD_MODE_IN_DISPATCH,     /* RPC call being processed */
-    QEMUD_MODE_TX_PACKET,       /* Transmitting reply to RPC call */
-    QEMUD_MODE_TLS_HANDSHAKE,   /* Performing TLS handshake */
-};
-
 /* Whether we're passing reads & writes through a sasl SSF */
 enum qemud_sasl_ssf {
     QEMUD_SASL_SSF_NONE = 0,
@@ -87,6 +78,16 @@ enum qemud_sock_type {
     QEMUD_SOCK_TYPE_TLS = 2,
 };
 
+struct qemud_client_message {
+    char buffer [REMOTE_MESSAGE_MAX + REMOTE_MESSAGE_HEADER_XDR_LEN];
+    unsigned int bufferLength;
+    unsigned int bufferOffset;
+
+    int async : 1;
+
+    struct qemud_client_message *next;
+};
+
 /* Stores the per-client connection state */
 struct qemud_client {
     virMutex lock;
@@ -97,7 +98,6 @@ struct qemud_client {
     int watch;
     int readonly:1;
     int closing:1;
-    enum qemud_mode mode;
 
     struct sockaddr_storage addr;
     socklen_t addrlen;
@@ -105,6 +105,7 @@ struct qemud_client {
     int type; /* qemud_sock_type */
     gnutls_session_t tlssession;
     int auth;
+    int handshake : 1; /* If we're in progress for TLS handshake */
 #if HAVE_SASL
     sasl_conn_t *saslconn;
     int saslSSF;
@@ -117,12 +118,20 @@ struct qemud_client {
     char *saslUsername;
 #endif
 
-    unsigned int incomingSerial;
-    unsigned int outgoingSerial;
-
-    char buffer [REMOTE_MESSAGE_MAX];
-    unsigned int bufferLength;
-    unsigned int bufferOffset;
+    /* Count of meages in 'dx' or 'tx' queue
+     * ie RPC calls in progress. Does not count
+     * async events which are not used for
+     * throttling calculations */
+    int nrequests;
+    /* Zero or one messages being received. Zero if
+     * nrequests >= max_clients and throttling */
+    struct qemud_client_message *rx;
+    /* Zero or many messages waiting for a worker
+     * to process them */
+    struct qemud_client_message *dx;
+    /* Zero or many messages waiting for transmit
+     * back to client, including async events */
+    struct qemud_client_message *tx;
 
     /* This is only valid if a remote open call has been made on this
      * connection, otherwise it will be NULL.  Also if remote close is
@@ -181,21 +190,30 @@ void qemudLog(int priority, const char *fmt, ...)
 int qemudSetCloseExec(int fd);
 int qemudSetNonBlock(int fd);
 
-unsigned int
+int
 remoteDispatchClientRequest (struct qemud_server *server,
-                             struct qemud_client *client);
+                             struct qemud_client *client,
+                             struct qemud_client_message *req);
 
-void qemudDispatchClientWrite(struct qemud_server *server,
-                             struct qemud_client *client);
+int qemudRegisterClientEvent(struct qemud_server *server,
+                             struct qemud_client *client,
+                             int update);
 
-#if HAVE_POLKIT
-int qemudGetSocketIdentity(int fd, uid_t *uid, pid_t *pid);
-#endif
+void qemudDispatchClientFailure(struct qemud_client *client);
+
+void
+qemudClientMessageQueuePush(struct qemud_client_message **queue,
+                            struct qemud_client_message *msg);
 
 int remoteRelayDomainEvent (virConnectPtr conn ATTRIBUTE_UNUSED,
                             virDomainPtr dom,
                             int event,
                             int detail,
                             void *opaque);
+
+
+#if HAVE_POLKIT
+int qemudGetSocketIdentity(int fd, uid_t *uid, pid_t *pid);
+#endif
 
 #endif

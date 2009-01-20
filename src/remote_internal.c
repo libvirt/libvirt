@@ -5663,13 +5663,13 @@ prepareCall(virConnectPtr conn,
     /* Length must include the length word itself (always encoded in
      * 4 bytes as per RFC 4506).
      */
-    rv->bufferLength += 4;
+    rv->bufferLength += REMOTE_MESSAGE_HEADER_XDR_LEN;
 
     /* Encode the length word. */
-    xdrmem_create (&xdr, rv->buffer, 4, XDR_ENCODE);
-    if (!xdr_int (&xdr, (int *)&rv->bufferLength)) {
+    xdrmem_create (&xdr, rv->buffer, REMOTE_MESSAGE_HEADER_XDR_LEN, XDR_ENCODE);
+    if (!xdr_u_int (&xdr, &rv->bufferLength)) {
         error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, VIR_ERR_RPC,
-               _("xdr_int (length word)"));
+               _("xdr_u_int (length word)"));
         goto error;
     }
     xdr_destroy (&xdr);
@@ -5965,20 +5965,26 @@ static int
 processCallRecvLen(virConnectPtr conn, struct private_data *priv,
                    int in_open) {
     XDR xdr;
-    int len;
+    unsigned int len;
 
     xdrmem_create (&xdr, priv->buffer, priv->bufferLength, XDR_DECODE);
-    if (!xdr_int (&xdr, &len)) {
+    if (!xdr_u_int (&xdr, &len)) {
         error (in_open ? NULL : conn,
-               VIR_ERR_RPC, _("xdr_int (length word, reply)"));
+               VIR_ERR_RPC, _("xdr_u_int (length word, reply)"));
         return -1;
     }
     xdr_destroy (&xdr);
 
-    /* Length includes length word - adjust to real length to read. */
-    len -= 4;
+    if (len < REMOTE_MESSAGE_HEADER_XDR_LEN) {
+        error (in_open ? NULL : conn,
+               VIR_ERR_RPC, _("packet received from server too small"));
+        return -1;
+    }
 
-    if (len < 0 || len > REMOTE_MESSAGE_MAX) {
+    /* Length includes length word - adjust to real length to read. */
+    len -= REMOTE_MESSAGE_HEADER_XDR_LEN;
+
+    if (len > REMOTE_MESSAGE_MAX) {
         error (in_open ? NULL : conn,
                VIR_ERR_RPC, _("packet received from server too large"));
         return -1;

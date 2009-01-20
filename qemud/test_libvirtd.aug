@@ -246,6 +246,19 @@ max_clients = 20
 # of clients allowed
 min_workers = 5
 max_workers = 20
+
+# Total global limit on concurrent RPC calls. Should be
+# at least as large as max_workers. Beyond this, RPC requests
+# will be read into memory and queued. This directly impact
+# memory usage, currently each request requires 256 KB of
+# memory. So by default upto 5 MB of memory is used
+max_requests = 20
+
+# Limit on concurrent requests from a single client
+# connection. To avoid one client monopolizing the server
+# this should be a small fraction of the global max_requests
+# and max_workers parameter
+max_client_requests = 5
 "
 
    test Libvirtd.lns get conf =
@@ -499,3 +512,16 @@ max_workers = 20
         { "#comment" = "of clients allowed"}
         { "min_workers" = "5" }
         { "max_workers" = "20" }
+	{ "#empty" }
+        { "#comment" = "Total global limit on concurrent RPC calls. Should be" }
+        { "#comment" = "at least as large as max_workers. Beyond this, RPC requests" }
+        { "#comment" = "will be read into memory and queued. This directly impact" }
+        { "#comment" = "memory usage, currently each request requires 256 KB of" }
+        { "#comment" = "memory. So by default upto 5 MB of memory is used" }
+        { "max_requests" = "20" }
+	{ "#empty" }
+        { "#comment" = "Limit on concurrent requests from a single client" }
+        { "#comment" = "connection. To avoid one client monopolizing the server" }
+        { "#comment" = "this should be a small fraction of the global max_requests" }
+        { "#comment" = "and max_workers parameter" }
+        { "max_client_requests" = "5" }

@@ -111,6 +111,7 @@ static const dispatch_data const dispatch_table[] = {
 /* Prototypes */
 static void
 remoteDispatchDomainEventSend (struct qemud_client *client,
+                               struct qemud_client_message *msg,
                                virDomainPtr dom,
                                int event,
                                int detail);
@@ -219,9 +220,10 @@ remoteDispatchConnError (remote_error *rerr,
  * Server object is unlocked
  * Client object is locked
  */
-unsigned int
+int
 remoteDispatchClientRequest (struct qemud_server *server,
-                             struct qemud_client *client)
+                             struct qemud_client *client,
+                             struct qemud_client_message *msg)
 {
     XDR xdr;
     remote_message_header req, rep;
@@ -229,7 +231,8 @@ remoteDispatchClientRequest (struct qemud_server *server,
     dispatch_args args;
     dispatch_ret ret;
     const dispatch_data *data = NULL;
-    int rv = -1, len;
+    int rv = -1;
+    unsigned int len;
     virConnectPtr conn = NULL;
 
     memset(&args, 0, sizeof args);
@@ -237,7 +240,10 @@ remoteDispatchClientRequest (struct qemud_server *server,
     memset(&rerr, 0, sizeof rerr);
 
     /* Parse the header. */
-    xdrmem_create (&xdr, client->buffer, client->bufferLength, XDR_DECODE);
+    xdrmem_create (&xdr,
+                   msg->buffer + REMOTE_MESSAGE_HEADER_XDR_LEN,
+                   msg->bufferLength - REMOTE_MESSAGE_HEADER_XDR_LEN,
+                   XDR_DECODE);
 
     if (!xdr_remote_message_header (&xdr, &req))
         goto fatal_error;
@@ -333,10 +339,10 @@ rpc_error:
     rep.status = rv < 0 ? REMOTE_ERROR : REMOTE_OK;
 
     /* Serialise the return header. */
-    xdrmem_create (&xdr, client->buffer, sizeof client->buffer, XDR_ENCODE);
+    xdrmem_create (&xdr, msg->buffer, sizeof msg->buffer, XDR_ENCODE);
 
     len = 0; /* We'll come back and write this later. */
-    if (!xdr_int (&xdr, &len)) {
+    if (!xdr_u_int (&xdr, &len)) {
         if (rv == 0) xdr_free (data->ret_filter, (char*)&ret);
         goto fatal_error;
     }
@@ -364,17 +370,21 @@ rpc_error:
     if (xdr_setpos (&xdr, 0) == 0)
         goto fatal_error;
 
-    if (!xdr_int (&xdr, &len))
+    if (!xdr_u_int (&xdr, &len))
         goto fatal_error;
 
     xdr_destroy (&xdr);
-    return len;
+
+    msg->bufferLength = len;
+    msg->bufferOffset = 0;
+
+    return 0;
 
 fatal_error:
     /* Seriously bad stuff happened, so we'll kill off this client
        and not send back any RPC error */
     xdr_destroy (&xdr);
-    return 0;
+    return -1;
 }
 
 int remoteRelayDomainEvent (virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -386,9 +396,20 @@ int remoteRelayDomainEvent (virConnectPtr conn ATTRIBUTE_UNUSED,
     struct qemud_client *client = opaque;
     REMOTE_DEBUG("Relaying domain event %d %d", event, detail);
 
-    if(client) {
-        remoteDispatchDomainEventSend (client, dom, event, detail);
-        qemudDispatchClientWrite(client->server,client);
+    if (client) {
+        struct qemud_client_message *ev;
+
+        if (VIR_ALLOC(ev) < 0)
+            return -1;
+
+        virMutexLock(&client->lock);
+
+        remoteDispatchDomainEventSend (client, ev, dom, event, detail);
+
+        if (qemudRegisterClientEvent(client->server, client, 1) < 0)
+            qemudDispatchClientFailure(client);
+
+        virMutexUnlock(&client->lock);
     }
     return 0;
 }
@@ -4202,13 +4223,14 @@ remoteDispatchDomainEventsDeregister (struct qemud_server *server ATTRIBUTE_UNUS
 
 static void
 remoteDispatchDomainEventSend (struct qemud_client *client,
+                               struct qemud_client_message *msg,
                                virDomainPtr dom,
                                int event,
                                int detail)
 {
     remote_message_header rep;
     XDR xdr;
-    int len;
+    unsigned int len;
     remote_domain_event_ret data;
 
     if (!client)
@@ -4222,11 +4244,11 @@ remoteDispatchDomainEventSend (struct qemud_client *client,
     rep.status = REMOTE_OK;
 
     /* Serialise the return header and event. */
-    xdrmem_create (&xdr, client->buffer, sizeof client->buffer, XDR_ENCODE);
+    xdrmem_create (&xdr, msg->buffer, sizeof msg->buffer, XDR_ENCODE);
 
     len = 0; /* We'll come back and write this later. */
-    if (!xdr_int (&xdr, &len)) {
-        /*remoteDispatchError (client, NULL, "%s", _("xdr_int failed (1)"));*/
+    if (!xdr_u_int (&xdr, &len)) {
+        /*remoteDispatchError (client, NULL, "%s", _("xdr_u_int failed (1)"));*/
         xdr_destroy (&xdr);
         return;
     }
@@ -4254,8 +4276,8 @@ remoteDispatchDomainEventSend (struct qemud_client *client,
         return;
     }
 
-    if (!xdr_int (&xdr, &len)) {
-        /*remoteDispatchError (client, NULL, "%s", _("xdr_int failed (2)"));*/
+    if (!xdr_u_int (&xdr, &len)) {
+        /*remoteDispatchError (client, NULL, "%s", _("xdr_u_int failed (2)"));*/
         xdr_destroy (&xdr);
         return;
     }
@@ -4263,9 +4285,10 @@ remoteDispatchDomainEventSend (struct qemud_client *client,
     xdr_destroy (&xdr);
 
     /* Send it. */
-    client->mode = QEMUD_MODE_TX_PACKET;
-    client->bufferLength = len;
-    client->bufferOffset = 0;
+    msg->async = 1;
+    msg->bufferLength = len;
+    msg->bufferOffset = 0;
+    qemudClientMessageQueuePush(&client->tx, msg);
 }
 
 /*----- Helpers. -----*/

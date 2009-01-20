@@ -1,3 +1,12 @@
+Tue Jan 20 19:24:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c, qemud/qemud.h, qemud/remote.c: Allow the
+	processing of multiple concurrent RPC calls per client
+	connection.
+	* qemud/libvirtd.conf, qemud/libvirtd.aug,
+	qemud/test_libvirtd.aug: Add config param for controlling
+	number of requests per client.
+
 Tue Jan 20 18:16:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xm_internal.c: Fix 2 misleading comments & potential
