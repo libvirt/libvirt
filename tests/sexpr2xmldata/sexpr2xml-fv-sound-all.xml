@@ -38,6 +38,5 @@
     <graphics type='vnc' port='5903' autoport='no' keymap='ja'/>
     <sound model='sb16'/>
     <sound model='es1370'/>
-    <sound model='pcspk'/>
   </devices>
 </domain>

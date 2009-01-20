@@ -746,52 +746,6 @@ urlencode(const char *string)
 }
 #endif /* ! PROXY */
 
-/* Applicable sound models */
-static const char *const sound_models[] = { "sb16", "es1370" };
-
-/**
- * is_sound_model_valid:
- * @model : model string to check against whitelist
- *
- * checks passed model string against whitelist of acceptable models
- *
- * Returns 0 if invalid, 1 otherwise
- */
-int is_sound_model_valid(const char *model) {
-    int i;
-
-    for (i = 0; i < sizeof(sound_models)/sizeof(*sound_models); ++i) {
-        if (STREQ(model, sound_models[i])) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
-/**
- * is_sound_model_conflict:
- * @model : model string to look for duplicates of
- * @soundstr : soundhw string for the form m1,m2,m3 ...
- *
- * Returns 0 if no conflict, 1 otherwise
- */
-int is_sound_model_conflict(const char *model, const char *soundstr) {
-
-    char *dupe;
-    char *cur = (char *) soundstr;
-    while ((dupe = strstr(cur, model))) {
-        if (( (dupe == cur) ||                     // (Start of line |
-              (*(dupe - 1) == ',') ) &&            //  Preceded by comma) &
-            ( (dupe[strlen(model)] == ',') ||      // (Ends with comma |
-               (dupe[strlen(model)] == '\0') ))    //  Ends whole string)
-            return 1;
-        else
-            cur = dupe + strlen(model);
-    }
-    return 0;
-}
-
-
 /* PUBLIC FUNCTIONS */
 
 /**
@@ -1866,11 +1820,25 @@ xenDaemonParseSxprSound(virConnectPtr conn,
     if (STREQ(str, "all")) {
         int i;
 
+        /*
+         * Special compatability code for Xen with a bogus
+         * sound=all in config.
+         *
+         * NB delibrately, don't include all possible
+         * sound models anymore, just the 2 that were
+         * historically present in Xen's QEMU.
+         *
+         * ie just es1370 + sb16.
+         *
+         * Hence use of MODEL_ES1370 + 1, instead of MODEL_LAST
+         */
+
         if (VIR_ALLOC_N(def->sounds,
-                        VIR_DOMAIN_SOUND_MODEL_LAST) < 0)
+                        VIR_DOMAIN_SOUND_MODEL_ES1370 + 1) < 0)
             goto no_memory;
 
-        for (i = 0 ; i < VIR_DOMAIN_SOUND_MODEL_LAST ; i++) {
+
+        for (i = 0 ; i < (VIR_DOMAIN_SOUND_MODEL_ES1370 + 1) ; i++) {
             virDomainSoundDefPtr sound;
             if (VIR_ALLOC(sound) < 0)
                 goto no_memory;

@@ -1,3 +1,12 @@
+Tue Jan 20 22:12:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/domain_conf.c, src/domain_conf.h: Support ac97 soundcard
+	model
+	* src/xend_internal.c: Remove unused APis and restrict the
+	'all' device conversion to just sb16 + es1370
+	* tests/sexpr2xmldata/sexpr2xml-fv-sound-all.xml: Revert earlier
+	mistaken change which added pcspk device
+
 Tue Jan 20 22:06:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* python/libvir.c, python/libvir.py: Use global thread
