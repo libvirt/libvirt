@@ -67,6 +67,7 @@
 
 #define virLog(msg...) fprintf(stderr, msg)
 
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 #define ReportError(conn, code, fmt...)                                      \
         virReportErrorHelper(conn, VIR_FROM_NONE, code, __FILE__,          \
@@ -212,37 +213,36 @@ __virExec(virConnectPtr conn,
      */
     sigfillset(&newmask);
     if (pthread_sigmask(SIG_SETMASK, &newmask, &oldmask) != 0) {
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("cannot block signals: %s"),
-                    strerror(errno));
+        virReportSystemError(conn, errno,
+                             "%s", _("cannot block signals"));
         return -1;
     }
 
     if ((null = open("/dev/null", O_RDONLY)) < 0) {
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("cannot open %s: %s"),
-                    "/dev/null", strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot open %s"),
+                             "/dev/null");
         goto cleanup;
     }
 
     if (outfd != NULL) {
         if (*outfd == -1) {
             if (pipe(pipeout) < 0) {
-                ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                            _("cannot create pipe: %s"), strerror(errno));
+                virReportSystemError(conn, errno,
+                                     "%s", _("cannot create pipe"));
                 goto cleanup;
             }
 
             if ((flags & VIR_EXEC_NONBLOCK) &&
                 virSetNonBlock(pipeout[0]) == -1) {
-                ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("Failed to set non-blocking file descriptor flag"));
+                virReportSystemError(conn, errno,
+                                     "%s", _("Failed to set non-blocking file descriptor flag"));
                 goto cleanup;
             }
 
             if (virSetCloseExec(pipeout[0]) == -1) {
-                ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("Failed to set close-on-exec file descriptor flag"));
+                virReportSystemError(conn, errno,
+                                     "%s", _("Failed to set close-on-exec file descriptor flag"));
                 goto cleanup;
             }
 
@@ -259,21 +259,21 @@ __virExec(virConnectPtr conn,
     if (errfd != NULL) {
         if (*errfd == -1) {
             if (pipe(pipeerr) < 0) {
-                ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                            _("Failed to create pipe: %s"), strerror(errno));
+                virReportSystemError(conn, errno,
+                                     "%s", _("Failed to create pipe"));
                 goto cleanup;
             }
 
             if ((flags & VIR_EXEC_NONBLOCK) &&
                 virSetNonBlock(pipeerr[0]) == -1) {
-                ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("Failed to set non-blocking file descriptor flag"));
+                virReportSystemError(conn, errno,
+                                     "%s", _("Failed to set non-blocking file descriptor flag"));
                 goto cleanup;
             }
 
             if (virSetCloseExec(pipeerr[0]) == -1) {
-                ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("Failed to set close-on-exec file descriptor flag"));
+                virReportSystemError(conn, errno,
+                                     "%s", _("Failed to set close-on-exec file descriptor flag"));
                 goto cleanup;
             }
 
@@ -288,8 +288,8 @@ __virExec(virConnectPtr conn,
     }
 
     if ((pid = fork()) < 0) {
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("cannot fork child process: %s"), strerror(errno));
+        virReportSystemError(conn, errno,
+                             "%s", _("cannot fork child process"));
         goto cleanup;
     }
 
@@ -307,9 +307,8 @@ __virExec(virConnectPtr conn,
         /* Restore our original signal mask now child is safely
            running */
         if (pthread_sigmask(SIG_SETMASK, &oldmask, NULL) != 0) {
-            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("cannot unblock signals: %s"),
-                        strerror(errno));
+            virReportSystemError(conn, errno,
+                                 "%s", _("cannot unblock signals"));
             return -1;
         }
 
@@ -345,9 +344,8 @@ __virExec(virConnectPtr conn,
        and don't want to propagate that to children */
     sigemptyset(&newmask);
     if (pthread_sigmask(SIG_SETMASK, &newmask, NULL) != 0) {
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("cannot unblock signals: %s"),
-                    strerror(errno));
+        virReportSystemError(conn, errno,
+                             "%s", _("cannot unblock signals"));
         return -1;
     }
 
@@ -363,24 +361,21 @@ __virExec(virConnectPtr conn,
 
     if (flags & VIR_EXEC_DAEMON) {
         if (setsid() < 0) {
-            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("cannot become session leader: %s"),
-                        strerror(errno));
+            virReportSystemError(conn, errno,
+                                 "%s", _("cannot become session leader"));
             _exit(1);
         }
 
         if (chdir("/") < 0) {
-            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("cannot change to root directory: %s"),
-                        strerror(errno));
+            virReportSystemError(conn, errno,
+                                 "%s", _("cannot change to root directory: %s"));
             _exit(1);
         }
 
         pid = fork();
         if (pid < 0) {
-            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("cannot fork child process: %s"),
-                        strerror(errno));
+            virReportSystemError(conn, errno,
+                                 "%s", _("cannot fork child process"));
             _exit(1);
         }
 
@@ -390,20 +385,20 @@ __virExec(virConnectPtr conn,
 
 
     if (dup2(infd >= 0 ? infd : null, STDIN_FILENO) < 0) {
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("failed to setup stdin file handle: %s"), strerror(errno));
+        virReportSystemError(conn, errno,
+                             "%s", _("failed to setup stdin file handle"));
         _exit(1);
     }
     if (childout > 0 &&
         dup2(childout, STDOUT_FILENO) < 0) {
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("failed to setup stdout file handle: %s"), strerror(errno));
+        virReportSystemError(conn, errno,
+                             "%s", _("failed to setup stdout file handle"));
         _exit(1);
     }
     if (childerr > 0 &&
         dup2(childerr, STDERR_FILENO) < 0) {
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("failed to setup stderr file handle: %s"), strerror(errno));
+        virReportSystemError(conn, errno,
+                             "%s", _("failed to setup stderr file handle"));
         _exit(1);
     }
 
@@ -419,9 +414,9 @@ __virExec(virConnectPtr conn,
     else
         execvp(argv[0], (char **) argv);
 
-    ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                _("cannot execute binary '%s': %s"),
-                argv[0], strerror(errno));
+    virReportSystemError(conn, errno,
+                         _("cannot execute binary %s"),
+                         argv[0]);
 
     _exit(1);
 
@@ -535,8 +530,8 @@ virPipeReadUntilEOF(virConnectPtr conn, int outfd, int errfd,
         continue;
 
     pollerr:
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("poll error: %s"), strerror(errno));
+        virReportSystemError(conn, errno,
+                             "%s", _("poll error"));
         goto error;
     }
 
@@ -599,16 +594,15 @@ virRun(virConnectPtr conn,
     while ((waitret = waitpid(childpid, &exitstatus, 0) == -1) &&
             errno == EINTR);
     if (waitret == -1) {
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("cannot wait for '%s': %s"),
-                    argv[0], strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot wait for '%s'"),
+                             argv[0]);
         goto error;
     }
 
     if (status == NULL) {
         errno = EINVAL;
         if (WIFEXITED(exitstatus) && WEXITSTATUS(exitstatus) != 0) {
-
             ReportError(conn, VIR_ERR_INTERNAL_ERROR,
                         _("'%s' exited with non-zero status %d and "
                           "signal %d: %s"), argv_str,

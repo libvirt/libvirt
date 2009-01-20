@@ -122,6 +122,7 @@ const struct FileTypeInfo const fileTypeInfo[] = {
     */
 };
 
+#define VIR_FROM_THIS VIR_FROM_STORAGE
 
 
 
@@ -136,9 +137,9 @@ static int virStorageBackendProbeFile(virConnectPtr conn,
     int len, i, ret;
 
     if ((fd = open(def->target.path, O_RDONLY)) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot open volume '%s': %s"),
-                              def->target.path, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot open volume '%s'"),
+                             def->target.path);
         return -1;
     }
 
@@ -148,9 +149,9 @@ static int virStorageBackendProbeFile(virConnectPtr conn,
     }
 
     if ((len = read(fd, head, sizeof(head))) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot read header '%s': %s"),
-                              def->target.path, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot read header '%s'"),
+                             def->target.path);
         close(fd);
         return -1;
     }
@@ -277,7 +278,7 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(virConnectPtr conn ATTRIBUTE_U
     }
 
     if (VIR_REALLOC_N(state->list.sources, state->list.nsources+1) < 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return -1;
     }
     memset(state->list.sources + state->list.nsources, 0, sizeof(*state->list.sources));
@@ -335,7 +336,7 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn,
 
     xpath_ctxt = xmlXPathNewContext(doc);
     if (xpath_ctxt == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("xpath_ctxt"));
+        virReportOOMError(conn);
         goto cleanup;
     }
 
@@ -354,7 +355,7 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn,
 
     retval = virStoragePoolSourceListFormat(conn, &state.list);
     if (retval == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("retval"));
+        virReportOOMError(conn);
         goto cleanup;
     }
 
@@ -387,9 +388,9 @@ virStorageBackendFileSystemIsMounted(virConnectPtr conn,
     struct mntent *ent;
 
     if ((mtab = fopen(_PATH_MOUNTED, "r")) == NULL) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot read %s: %s"),
-                              _PATH_MOUNTED, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot read mount list '%s'"),
+                             _PATH_MOUNTED);
         return -1;
     }
 
@@ -485,7 +486,7 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
         if (VIR_ALLOC_N(src, strlen(pool->def->source.host.name) +
                         1 + strlen(pool->def->source.dir) + 1) < 0) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("source"));
+            virReportOOMError(conn);
             return -1;
         }
         strcpy(src, pool->def->source.host.name);
@@ -493,7 +494,7 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
         strcat(src, pool->def->source.dir);
     } else {
         if ((src = strdup(pool->def->source.devices[0].path)) == NULL) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("source"));
+            virReportOOMError(conn);
             return -1;
         }
     }
@@ -600,10 +601,11 @@ virStorageBackendFileSystemBuild(virConnectPtr conn,
                                  virStoragePoolObjPtr pool,
                                  unsigned int flags ATTRIBUTE_UNUSED)
 {
-    if (virFileMakePath(pool->def->target.path) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot create path '%s': %s"),
-                              pool->def->target.path, strerror(errno));
+    int err;
+    if ((err = virFileMakePath(pool->def->target.path)) < 0) {
+        virReportSystemError(conn, err,
+                             _("cannot create path '%s'"),
+                             pool->def->target.path);
         return -1;
     }
 
@@ -625,9 +627,9 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
     virStorageVolDefPtr vol = NULL;
 
     if (!(dir = opendir(pool->def->target.path))) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot open path '%s': %s"),
-                              pool->def->target.path, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot open path '%s'"),
+                             pool->def->target.path);
         goto cleanup;
     }
 
@@ -674,9 +676,9 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
 
 
     if (statvfs(pool->def->target.path, &sb) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot statvfs path '%s': %s"),
-                              pool->def->target.path, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot statvfs path '%s'"),
+                             pool->def->target.path);
         return -1;
     }
     pool->def->capacity = ((unsigned long long)sb.f_frsize *
@@ -688,7 +690,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virStorageReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
     /* fallthrough */
 
  cleanup:
@@ -740,9 +742,9 @@ virStorageBackendFileSystemDelete(virConnectPtr conn,
     /* XXX delete all vols first ? */
 
     if (unlink(pool->def->target.path) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot unlink path '%s': %s"),
-                              pool->def->target.path, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot unlink path '%s'"),
+                             pool->def->target.path);
         return -1;
     }
 
@@ -764,7 +766,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
 
     if (VIR_ALLOC_N(vol->target.path, strlen(pool->def->target.path) +
                     1 + strlen(vol->name) + 1) < 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("target"));
+        virReportOOMError(conn);
         return -1;
     }
     vol->type = VIR_STORAGE_VOL_FILE;
@@ -773,17 +775,16 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
     strcat(vol->target.path, vol->name);
     vol->key = strdup(vol->target.path);
     if (vol->key == NULL) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("storage vol key"));
+        virReportOOMError(conn);
         return -1;
     }
 
     if (vol->target.format == VIR_STORAGE_VOL_FILE_RAW) {
         if ((fd = open(vol->target.path, O_RDWR | O_CREAT | O_EXCL,
                        vol->target.perms.mode)) < 0) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot create path '%s': %s"),
-                                  vol->target.path, strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot create path '%s'"),
+                                 vol->target.path);
             return -1;
         }
 
@@ -798,9 +799,9 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
                 if (bytes > remain)
                     bytes = remain;
                 if ((bytes = safewrite(fd, zeros, bytes)) < 0) {
-                    virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                          _("cannot fill file '%s': %s"),
-                                          vol->target.path, strerror(errno));
+                    virReportSystemError(conn, errno,
+                                         _("cannot fill file '%s'"),
+                                         vol->target.path);
                     unlink(vol->target.path);
                     close(fd);
                     return -1;
@@ -811,25 +812,25 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
 
         /* Now seek to final size, possibly making the file sparse */
         if (ftruncate(fd, vol->capacity) < 0) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot extend file '%s': %s"),
-                                  vol->target.path, strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot extend file '%s'"),
+                                 vol->target.path);
             unlink(vol->target.path);
             close(fd);
             return -1;
         }
     } else if (vol->target.format == VIR_STORAGE_VOL_FILE_DIR) {
         if (mkdir(vol->target.path, vol->target.perms.mode) < 0) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot create path '%s': %s"),
-                                  vol->target.path, strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot create path '%s'"),
+                                 vol->target.path);
             return -1;
         }
 
         if ((fd = open(vol->target.path, O_RDWR)) < 0) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot read path '%s': %s"),
-                                  vol->target.path, strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot read path '%s'"),
+                                 vol->target.path);
             return -1;
         }
     } else {
@@ -862,9 +863,9 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         }
 
         if ((fd = open(vol->target.path, O_RDONLY)) < 0) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot read path '%s': %s"),
-                                  vol->target.path, strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot read path '%s'"),
+                                 vol->target.path);
             unlink(vol->target.path);
             return -1;
         }
@@ -897,9 +898,9 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         }
 
         if ((fd = open(vol->target.path, O_RDONLY)) < 0) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot read path '%s': %s"),
-                                  vol->target.path, strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot read path '%s'"),
+                                 vol->target.path);
             unlink(vol->target.path);
             return -1;
         }
@@ -914,18 +915,18 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
     /* We can only chown/grp if root */
     if (getuid() == 0) {
         if (fchown(fd, vol->target.perms.uid, vol->target.perms.gid) < 0) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot set file owner '%s': %s"),
-                                  vol->target.path, strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot set file owner '%s'"),
+                                 vol->target.path);
             unlink(vol->target.path);
             close(fd);
             return -1;
         }
     }
     if (fchmod(fd, vol->target.perms.mode) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot set file mode '%s': %s"),
-                              vol->target.path, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot set file mode '%s'"),
+                             vol->target.path);
         unlink(vol->target.path);
         close(fd);
         return -1;
@@ -939,9 +940,9 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
     }
 
     if (close(fd) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot close file '%s': %s"),
-                              vol->target.path, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot close file '%s'"),
+                             vol->target.path);
         unlink(vol->target.path);
         return -1;
     }
@@ -962,9 +963,9 @@ virStorageBackendFileSystemVolDelete(virConnectPtr conn,
     if (unlink(vol->target.path) < 0) {
         /* Silently ignore failures where the vol has already gone away */
         if (errno != ENOENT) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot unlink file '%s': %s"),
-                                  vol->target.path, strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot unlink file '%s'"),
+                                 vol->target.path);
             return -1;
         }
     }

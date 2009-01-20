@@ -1,3 +1,24 @@
+Tue Jan 20 16:59:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Make error reporting threadsafe by avoiding strerror()
+	* autobuild.sh: Set mingw compile warnings to fail compile
+	* configure.in: Check for strerror_r
+	* po/POTFILES.in: Add src/xen_unified.c
+	* src/virterror.c, src/virterror_internal.h,
+	src/libvirt_private.syms: Add virReportSystemErrorFull and
+	virReportOOMErrorFull convenience functions
+	* src/domain_conf.c, src/lxc_container.c, src/lxc_controller.c,
+	src/lxc_driver.c, src/network_conf.c, src/network_driver.c,
+	src/nodeinfo.c, src/qemu_driver.c, src/remote_internal.c,
+	src/storage_backend.c, src/storage_backend_disk.c,
+	src/storage_backend_fs.c, src/storage_backend_iscsi.c,
+	src/storage_backend_logical.c, src/storage_conf.c,
+	src/storage_driver.c, src/test.c, src/uml_driver.c,
+	src/util.c, src/xen_inotify.c, src/xen_internal.c,
+	src/xen_unified.c, src/xend_internal.c, src/xm_internal.c:
+	Remove use of strerror when reporting errors, in favour
+	of virReportSystemError() and virReportOOMError()
+
 Tue Jan 20 17:17:11 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: remove a warning when printing a file offset

@@ -43,6 +43,8 @@
 #include "util.h"
 #include "memory.h"
 
+#define VIR_FROM_THIS VIR_FROM_STORAGE
+
 /* Work around broken limits.h on debian etch */
 #if defined __GNUC__ && defined _GCC_LIMITS_H_ && ! defined ULLONG_MAX
 # define ULLONG_MAX   ULONG_LONG_MAX
@@ -1405,9 +1407,9 @@ virStoragePoolObjSaveDef(virConnectPtr conn,
         char path[PATH_MAX];
 
         if ((err = virFileMakePath(driver->configDir))) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot create config directory %s: %s"),
-                                  driver->configDir, strerror(err));
+            virStorageReportError(conn, err,
+                                  _("cannot create config directory %s"),
+                                  driver->configDir);
             return -1;
         }
 
@@ -1448,24 +1450,24 @@ virStoragePoolObjSaveDef(virConnectPtr conn,
     if ((fd = open(pool->configFile,
                    O_WRONLY | O_CREAT | O_TRUNC,
                    S_IRUSR | S_IWUSR )) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot create config file %s: %s"),
-                              pool->configFile, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot create config file %s"),
+                             pool->configFile);
         goto cleanup;
     }
 
     towrite = strlen(xml);
     if (safewrite(fd, xml, towrite) != towrite) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot write config file %s: %s"),
-                              pool->configFile, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot write config file %s"),
+                             pool->configFile);
         goto cleanup;
     }
 
     if (close(fd) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot save config file %s: %s"),
-                              pool->configFile, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot save config file %s"),
+                             pool->configFile);
         goto cleanup;
     }
 

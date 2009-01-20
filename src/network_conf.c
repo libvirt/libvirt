@@ -43,6 +43,8 @@
 #include "buf.h"
 #include "c-ctype.h"
 
+#define VIR_FROM_THIS VIR_FROM_NETWORK
+
 VIR_ENUM_DECL(virNetworkForward)
 
 VIR_ENUM_IMPL(virNetworkForward,
@@ -332,7 +334,7 @@ virNetworkDefParseXML(virConnectPtr conn,
         int err;
         if ((err = virUUIDGenerate(def->uuid))) {
             virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("Failed to generate UUID: %s"), strerror(err));
+                                  "%s", _("Failed to generate UUID"));
             goto error;
         }
     } else {
@@ -667,40 +669,40 @@ int virNetworkSaveConfig(virConnectPtr conn,
         goto cleanup;
 
     if ((err = virFileMakePath(configDir))) {
-        virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot create config directory %s: %s"),
-                              configDir, strerror(err));
+        virReportSystemError(conn, err,
+                             _("cannot create config directory '%s'"),
+                             configDir);
         goto cleanup;
     }
 
     if ((err = virFileMakePath(autostartDir))) {
-        virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot create autostart directory %s: %s"),
-                              autostartDir, strerror(err));
+        virReportSystemError(conn, err,
+                             _("cannot create autostart directory '%s'"),
+                             autostartDir);
         goto cleanup;
     }
 
     if ((fd = open(net->configFile,
                    O_WRONLY | O_CREAT | O_TRUNC,
                    S_IRUSR | S_IWUSR )) < 0) {
-        virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot create config file %s: %s"),
-                              net->configFile, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot create config file '%s'"),
+                             net->configFile);
         goto cleanup;
     }
 
     towrite = strlen(xml);
     if (safewrite(fd, xml, towrite) < 0) {
-        virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot write config file %s: %s"),
-                              net->configFile, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot write config file '%s'"),
+                             net->configFile);
         goto cleanup;
     }
 
     if (close(fd) < 0) {
-        virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot save config file %s: %s"),
-                              net->configFile, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot save config file '%s'"),
+                             net->configFile);
         goto cleanup;
     }
 
@@ -777,9 +779,9 @@ int virNetworkLoadAllConfigs(virConnectPtr conn,
     if (!(dir = opendir(configDir))) {
         if (errno == ENOENT)
             return 0;
-        virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to open dir '%s': %s"),
-                              configDir, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("Failed to open dir '%s'"),
+                             configDir);
         return -1;
     }
 
@@ -821,9 +823,9 @@ int virNetworkDeleteConfig(virConnectPtr conn,
     unlink(net->autostartLink);
 
     if (unlink(net->configFile) < 0) {
-        virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot remove config for %s: %s"),
-                              net->def->name, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot remove config file '%s'"),
+                             net->configFile);
         return -1;
     }
 

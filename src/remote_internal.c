@@ -88,6 +88,8 @@
 #include "util.h"
 #include "event.h"
 
+#define VIR_FROM_THIS VIR_FROM_REMOTE
+
 #ifdef WIN32
 #define pipe(fds) _pipe(fds,4096, _O_BINARY)
 #endif
@@ -586,9 +588,9 @@ doRemoteOpen (virConnectPtr conn,
         }
 
         freeaddrinfo (res);
-        errorf (conn, VIR_ERR_SYSTEM_ERROR,
-                _("unable to connect to '%s': %s"),
-                priv->hostname, strerror (saved_errno));
+        virReportSystemError(conn, saved_errno,
+                             _("unable to connect to '%s'"),
+                             priv->hostname);
         goto failed;
 
        tcp_connected:
@@ -607,9 +609,9 @@ doRemoteOpen (virConnectPtr conn,
                 uid_t uid = getuid();
 
                 if (!(pw = getpwuid(uid))) {
-                    errorf (conn, VIR_ERR_SYSTEM_ERROR,
-                            _("unable to lookup user '%d': %s"),
-                            uid, strerror (errno));
+                    virReportSystemError(conn, errno,
+                                         _("unable to lookup user '%d'"),
+                                         uid);
                     goto failed;
                 }
 
@@ -641,9 +643,8 @@ doRemoteOpen (virConnectPtr conn,
       autostart_retry:
         priv->sock = socket (AF_UNIX, SOCK_STREAM, 0);
         if (priv->sock == -1) {
-            errorf (conn, VIR_ERR_SYSTEM_ERROR,
-                    _("unable to create socket %s"),
-                    strerror (errno));
+            virReportSystemError(conn, errno, "%s",
+                                 _("unable to create socket"));
             goto failed;
         }
         if (connect (priv->sock, (struct sockaddr *) &addr, sizeof addr) == -1) {
@@ -665,9 +666,9 @@ doRemoteOpen (virConnectPtr conn,
                     goto autostart_retry;
                 }
             }
-            errorf (conn, VIR_ERR_SYSTEM_ERROR,
-                    _("unable to connect to '%s': %s"),
-                    sockname, strerror (errno));
+            virReportSystemError(conn, errno,
+                                 _("unable to connect to '%s'"),
+                                 sockname);
             goto failed;
         }
 
@@ -725,9 +726,8 @@ doRemoteOpen (virConnectPtr conn,
          * to faff around with two file descriptors (a la 'pipe(2)').
          */
         if (socketpair (PF_UNIX, SOCK_STREAM, 0, sv) == -1) {
-            errorf (conn, VIR_ERR_SYSTEM_ERROR,
-                    _("unable to create socket pair %s"),
-                    strerror (errno));
+            virReportSystemError(conn, errno, "%s",
+                                 _("unable to create socket pair"));
             goto failed;
         }
 
@@ -754,16 +754,14 @@ doRemoteOpen (virConnectPtr conn,
     } /* switch (transport) */
 
     if (virSetNonBlock(priv->sock) < 0) {
-        errorf (conn, VIR_ERR_SYSTEM_ERROR,
-                _("unable to make socket non-blocking %s"),
-                strerror(errno));
+        virReportSystemError(conn, errno, "%s",
+                             _("unable to make socket non-blocking"));
         goto failed;
     }
 
     if (pipe(wakeupFD) < 0) {
-        errorf (conn, VIR_ERR_SYSTEM_ERROR,
-                _("unable to make pipe %s"),
-                strerror(errno));
+        virReportSystemError(conn, errno, "%s",
+                             _("unable to make pipe"));
         goto failed;
     }
     priv->wakeupReadFD = wakeupFD[0];
@@ -1004,9 +1002,9 @@ check_cert_file (virConnectPtr conn, const char *type, const char *file)
 {
     struct stat sb;
     if (stat(file, &sb) < 0) {
-        errorf(conn, VIR_ERR_RPC,
-               _("Cannot access %s '%s': %s (%d)"),
-               type, file, strerror(errno), errno);
+        virReportSystemError(conn, errno,
+                             _("Cannot access %s '%s'"),
+                             type, file);
         return -1;
     }
     return 0;
@@ -1193,9 +1191,8 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     if ((now = time(NULL)) == ((time_t)-1)) {
-        errorf (conn, VIR_ERR_SYSTEM_ERROR,
-                _("cannot get current time: %s"),
-                strerror (errno));
+        virReportSystemError(conn, errno, "%s",
+                             _("cannot get current time"));
         return -1;
     }
 
@@ -5180,10 +5177,8 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     /* Get local address in form  IPADDR:PORT */
     salen = sizeof(sa);
     if (getsockname(priv->sock, (struct sockaddr*)&sa, &salen) < 0) {
-        virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
-                         VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                         _("failed to get sock address %d (%s)"),
-                         errno, strerror(errno));
+        virReportSystemError(in_open ? NULL : conn, errno, "%s",
+                             _("failed to get sock address"));
         goto cleanup;
     }
     if ((localAddr = addrToString(&sa, salen)) == NULL)
@@ -5192,10 +5187,8 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     /* Get remote address in form  IPADDR:PORT */
     salen = sizeof(sa);
     if (getpeername(priv->sock, (struct sockaddr*)&sa, &salen) < 0) {
-        virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
-                         VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                         _("failed to get peer address %d (%s)"),
-                         errno, strerror(errno));
+        virReportSystemError(in_open ? NULL : conn, errno, "%s",
+                             _("failed to get peer address"));
         goto cleanup;
     }
     if ((remoteAddr = addrToString(&sa, salen)) == NULL)
@@ -5721,8 +5714,8 @@ processCallWrite(virConnectPtr conn,
             if (errno == EWOULDBLOCK)
                 return 0;
 
-            error (in_open ? NULL : conn,
-                   VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            virReportSystemError(in_open ? NULL : conn, errno,
+                                 "%s", _("cannot send data"));
             return -1;
 
         }
@@ -5771,10 +5764,8 @@ processCallRead(virConnectPtr conn,
                 if (errno == EWOULDBLOCK)
                     return 0;
 
-                errorf (in_open ? NULL : conn,
-                        VIR_ERR_SYSTEM_ERROR,
-                        _("failed to read from socket %s"),
-                        strerror (errno));
+                virReportSystemError(in_open ? NULL : conn, errno,
+                                     "%s", _("cannot recv data"));
             } else {
                 errorf (in_open ? NULL : conn,
                         VIR_ERR_SYSTEM_ERROR,

@@ -69,6 +69,8 @@
 #include "uuid.h"
 #include "domain_conf.h"
 
+#define VIR_FROM_THIS VIR_FROM_QEMU
+
 /* For storing short-lived temporary files. */
 #define TEMPDIR LOCAL_STATE_DIR "/cache/libvirt"
 
@@ -153,9 +155,7 @@ qemudLogFD(virConnectPtr conn, const char* logDir, const char* name)
 
     if ((ret = snprintf(logfile, sizeof(logfile), "%s/%s.log", logDir, name))
         < 0 || ret >= sizeof(logfile)) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to build logfile name %s/%s.log"),
-                         logDir, name);
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -165,15 +165,14 @@ qemudLogFD(virConnectPtr conn, const char* logDir, const char* name)
     else
         logmode |= O_APPEND;
     if ((fd = open(logfile, logmode, S_IRUSR | S_IWUSR)) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to create logfile %s: %s"),
-                         logfile, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("failed to create logfile %s"),
+                             logfile);
         return -1;
     }
     if (qemudSetCloseExec(fd) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Unable to set VM logfile close-on-exec flag %s"),
-                         strerror(errno));
+        virReportSystemError(conn, errno, "%s",
+                             _("Unable to set VM logfile close-on-exec flag"));
         close(fd);
         return -1;
     }
@@ -631,9 +630,9 @@ qemudReadMonitorOutput(virConnectPtr conn,
                 continue;
 
             if (errno != EAGAIN) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("Failure while reading %s startup output: %s"),
-                                 what, strerror(errno));
+                virReportSystemError(conn, errno,
+                                     _("Failure while reading %s startup output"),
+                                     what);
                 return -1;
             }
 
@@ -644,9 +643,9 @@ qemudReadMonitorOutput(virConnectPtr conn,
                 return -1;
             } else if (ret == -1) {
                 if (errno != EINTR) {
-                    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                     _("Failure while reading %s startup output: %s"),
-                                     what, strerror(errno));
+                    virReportSystemError(conn, errno,
+                                         _("Failure while reading %s startup output"),
+                                         what);
                     return -1;
                 }
             } else {
@@ -990,9 +989,8 @@ qemudInitCpus(virConnectPtr conn,
     for (i = 0 ; i < vm->nvcpupids ; i++) {
         if (sched_setaffinity(vm->vcpupids[i],
                               sizeof(mask), &mask) < 0) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("failed to set CPU affinity %s"),
-                             strerror(errno));
+            virReportSystemError(conn, errno, "%s",
+                                 _("failed to set CPU affinity"));
             return -1;
         }
     }
@@ -1088,9 +1086,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     }
 
     if (virFileMakePath(driver->logDir) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot create log directory %s: %s"),
-                         driver->logDir, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot create log directory %s"),
+                             driver->logDir);
         return -1;
     }
 
@@ -1108,10 +1106,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
      * in a sub-process so its hard to feed back a useful error
      */
     if (stat(emulator, &sb) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Cannot find QEMU binary %s: %s"),
-                         emulator,
-                         strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("Cannot find QEMU binary %s"),
+                             emulator);
         return -1;
     }
 
@@ -2330,9 +2327,9 @@ static int qemudDomainSave(virDomainPtr dom,
     }
 
     if (close(fd) < 0) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("unable to save file %s %s"),
-                         path, strerror(errno));
+        virReportSystemError(dom->conn, errno,
+                             _("unable to save file %s"),
+                             path);
         goto cleanup;
     }
     fd = -1;
@@ -2493,8 +2490,8 @@ qemudDomainPinVcpu(virDomainPtr dom,
 
     if (vm->vcpupids != NULL) {
         if (sched_setaffinity(vm->vcpupids[vcpu], sizeof(mask), &mask) < 0) {
-            qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
-                             _("cannot set affinity: %s"), strerror(errno));
+            virReportSystemError(dom->conn, errno, "%s",
+                                 _("cannot set affinity"));
             goto cleanup;
         }
     } else {
@@ -2562,8 +2559,8 @@ qemudDomainGetVcpus(virDomainPtr dom,
                     CPU_ZERO(&mask);
 
                     if (sched_getaffinity(vm->vcpupids[v], sizeof(mask), &mask) < 0) {
-                        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
-                                         _("cannot get affinity: %s"), strerror(errno));
+                        virReportSystemError(dom->conn, errno, "%s",
+                                             _("cannot get affinity"));
                         goto cleanup;
                     }
 
@@ -3546,23 +3543,23 @@ static int qemudDomainSetAutostart(virDomainPtr dom,
             int err;
 
             if ((err = virFileMakePath(driver->autostartDir))) {
-                qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("cannot create autostart directory %s: %s"),
-                                 driver->autostartDir, strerror(err));
+                virReportSystemError(dom->conn, err,
+                                     _("cannot create autostart directory %s"),
+                                     driver->autostartDir);
                 goto cleanup;
             }
 
             if (symlink(configFile, autostartLink) < 0) {
-                qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("Failed to create symlink '%s to '%s': %s"),
-                                 autostartLink, configFile, strerror(errno));
+                virReportSystemError(dom->conn, errno,
+                                     _("Failed to create symlink '%s to '%s'"),
+                                     autostartLink, configFile);
                 goto cleanup;
             }
         } else {
             if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
-                qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("Failed to delete symlink '%s': %s"),
-                                 autostartLink, strerror(errno));
+                virReportSystemError(dom->conn, errno,
+                                     _("Failed to delete symlink '%s'"),
+                                     autostartLink);
                 goto cleanup;
             }
         }

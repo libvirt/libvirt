@@ -65,6 +65,7 @@ if [ -x /usr/bin/i686-pc-mingw32-gcc ]; then
     --build=$(uname -m)-pc-linux \
     --host=i686-pc-mingw32 \
     --prefix="$AUTOBUILD_INSTALL_ROOT/i686-pc-mingw32/sys-root/mingw" \
+    --enable-compile-warnings=error \
     --without-sasl \
     --without-avahi \
     --without-polkit \

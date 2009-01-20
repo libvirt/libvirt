@@ -49,6 +49,8 @@
 /* required for cpumap_t */
 #include <xen/dom0_ops.h>
 
+#define VIR_FROM_THIS VIR_FROM_XEND
+
 #ifndef PROXY
 
 /*
@@ -4101,14 +4103,13 @@ xenDaemonDomainMigratePrepare (virConnectPtr dconn,
     if (uri_in == NULL) {
         r = gethostname (hostname, HOST_NAME_MAX+1);
         if (r == -1) {
-            virXendError (dconn, VIR_ERR_SYSTEM_ERROR,
-                          _("gethostname failed: %s"), strerror (errno));
+            virReportSystemError(dconn, errno,
+                                 _("unable to resolve name %s"), hostname);
             return -1;
         }
         *uri_out = strdup (hostname);
         if (*uri_out == NULL) {
-            virXendError (dconn, VIR_ERR_SYSTEM_ERROR,
-                          _("failed to strdup hostname: %s"), strerror (errno));
+            virReportOOMError(dconn);
             return -1;
         }
     }
@@ -4742,9 +4743,9 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
     /* The path is correct, now try to open it and get its size. */
     fd = open (path, O_RDONLY);
     if (fd == -1) {
-        virXendError (domain->conn, VIR_ERR_SYSTEM_ERROR,
-                      _("failed to open for reading: %s: %s"),
-                      path, strerror (errno));
+        virReportSystemError(domain->conn, errno,
+                             _("failed to open for reading: %s"),
+                             path);
         goto cleanup;
     }
 
@@ -4754,9 +4755,9 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
      */
     if (lseek (fd, offset, SEEK_SET) == (off_t) -1 ||
         saferead (fd, buffer, size) == (ssize_t) -1) {
-        virXendError (domain->conn, VIR_ERR_SYSTEM_ERROR,
-                      _("failed to lseek or read from file: %s: %s"),
-                      path, strerror (errno));
+        virReportSystemError(domain->conn, errno,
+                             _("failed to lseek or read from file: %s"),
+                             path);
         goto cleanup;
     }
 

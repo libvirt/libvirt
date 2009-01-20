@@ -41,6 +41,8 @@
 
 #include "xm_internal.h" /* for xenXMDomainConfigParse */
 
+#define VIR_FROM_THIS VIR_FROM_XEN_INOTIFY
+
 #define virXenInotifyError(conn, code, fmt...)                                 \
         virReportErrorHelper(NULL, VIR_FROM_XEN_INOTIFY, code, __FILE__,      \
                                __FUNCTION__, __LINE__, fmt)
@@ -390,9 +392,10 @@ xenInotifyOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
 
         /* populate initial list */
-         if (!(dh = opendir(configDir))) {
-            virXenInotifyError (NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", strerror(errno));
+        if (!(dh = opendir(configDir))) {
+            virReportSystemError(NULL, errno,
+                                 _("cannot open directory: %s"),
+                                 configDir);
             return -1;
         }
         while ((ent = readdir(dh))) {

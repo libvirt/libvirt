@@ -44,6 +44,8 @@
 #include "util.h"
 #include "memory.h"
 
+#define VIR_FROM_THIS VIR_FROM_XEN
+
 static int
 xenUnifiedNodeGetInfo (virConnectPtr conn, virNodeInfoPtr info);
 static int
@@ -451,7 +453,8 @@ xenUnifiedGetHostname (virConnectPtr conn)
 
     result = virGetHostname();
     if (result == NULL) {
-        xenUnifiedError (conn, VIR_ERR_SYSTEM_ERROR, "%s", strerror(errno));
+        virReportSystemError(conn, errno,
+                             "%s", _("cannot lookup hostname"));
         return NULL;
     }
     /* Caller frees this string. */

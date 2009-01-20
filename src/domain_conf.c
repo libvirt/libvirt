@@ -40,6 +40,8 @@
 #include "buf.h"
 #include "c-ctype.h"
 
+#define VIR_FROM_THIS VIR_FROM_DOMAIN
+
 VIR_ENUM_IMPL(virDomainVirt, VIR_DOMAIN_VIRT_LAST,
               "qemu",
               "kqemu",
@@ -1913,8 +1915,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         int err;
         if ((err = virUUIDGenerate(def->uuid))) {
             virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 _("Failed to generate UUID: %s"),
-                                 strerror(err));
+                                 "%s", _("Failed to generate UUID"));
             goto error;
         }
     } else {
@@ -3404,33 +3405,33 @@ int virDomainSaveXML(virConnectPtr conn,
         goto cleanup;
 
     if ((err = virFileMakePath(configDir))) {
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot create config directory %s: %s"),
-                             configDir, strerror(err));
+        virReportSystemError(conn, errno,
+                             _("cannot create config directory '%s'"),
+                             configDir);
         goto cleanup;
     }
 
     if ((fd = open(configFile,
                    O_WRONLY | O_CREAT | O_TRUNC,
                    S_IRUSR | S_IWUSR )) < 0) {
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("cannot create config file %s: %s"),
-                             configFile, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot create config file '%s'"),
+                             configFile);
         goto cleanup;
     }
 
     towrite = strlen(xml);
     if (safewrite(fd, xml, towrite) < 0) {
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("cannot write config file %s: %s"),
-                             configFile, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot write config file '%s'"),
+                             configFile);
         goto cleanup;
     }
 
     if (close(fd) < 0) {
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("cannot save config file %s: %s"),
-                             configFile, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot save config file '%s'"),
+                             configFile);
         goto cleanup;
     }
 
@@ -3529,9 +3530,9 @@ int virDomainLoadAllConfigs(virConnectPtr conn,
     if (!(dir = opendir(configDir))) {
         if (errno == ENOENT)
             return 0;
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to open dir '%s': %s"),
-                              configDir, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("Failed to open dir '%s'"),
+                             configDir);
         return -1;
     }
 
@@ -3583,9 +3584,9 @@ int virDomainDeleteConfig(virConnectPtr conn,
 
     if (unlink(configFile) < 0 &&
         errno != ENOENT) {
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("cannot remove config for %s: %s"),
-                             dom->def->name, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot remove config %s"),
+                             configFile);
         goto cleanup;
     }
 

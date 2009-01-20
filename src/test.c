@@ -46,6 +46,8 @@
 #include "xml.h"
 #include "threads.h"
 
+#define VIR_FROM_THIS VIR_FROM_TEST
+
 #define MAX_CPUS 128
 
 struct _testCell {
@@ -154,7 +156,7 @@ testBuildCapabilities(virConnectPtr conn) {
     return caps;
 
 no_memory:
-    testError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
     virCapabilitiesFree(caps);
     return NULL;
 }
@@ -195,7 +197,7 @@ static const char *defaultPoolXML =
 static const unsigned long long defaultPoolCap = (100 * 1024 * 1024 * 1024ull);
 static const unsigned long long defaultPoolAlloc = 0;
 
-static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr pool);
+static int testStoragePoolObjSetDefaults(virConnectPtr conn, virStoragePoolObjPtr pool);
 
 static int testOpenDefault(virConnectPtr conn) {
     int u;
@@ -209,7 +211,7 @@ static int testOpenDefault(virConnectPtr conn) {
     virStoragePoolObjPtr poolobj = NULL;
 
     if (VIR_ALLOC(privconn) < 0) {
-        testError(conn, VIR_ERR_NO_MEMORY, "testConn");
+        virReportOOMError(conn);
         return VIR_DRV_OPEN_ERROR;
     }
     if (virMutexInit(&privconn->lock) < 0) {
@@ -223,7 +225,8 @@ static int testOpenDefault(virConnectPtr conn) {
     conn->privateData = privconn;
 
     if (gettimeofday(&tv, NULL) < 0) {
-        testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s", _("getting time of day"));
+        virReportSystemError(conn, errno,
+                             "%s", _("getting time of day"));
         goto error;
     }
 
@@ -276,7 +279,7 @@ static int testOpenDefault(virConnectPtr conn) {
         goto error;
     }
 
-    if (testStoragePoolObjSetDefaults(poolobj) == -1) {
+    if (testStoragePoolObjSetDefaults(conn, poolobj) == -1) {
         virStoragePoolObjUnlock(poolobj);
         goto error;
     }
@@ -336,7 +339,7 @@ static int testOpenFromFile(virConnectPtr conn,
     virDomainObjPtr dom;
     testConnPtr privconn;
     if (VIR_ALLOC(privconn) < 0) {
-        testError(NULL, VIR_ERR_NO_MEMORY, "testConn");
+        virReportOOMError(conn);
         return VIR_DRV_OPEN_ERROR;
     }
     if (virMutexInit(&privconn->lock) < 0) {
@@ -353,9 +356,9 @@ static int testOpenFromFile(virConnectPtr conn,
         goto error;
 
     if ((fd = open(file, O_RDONLY)) < 0) {
-        testError(NULL, VIR_ERR_INTERNAL_ERROR,
-                  _("loading host definition file '%s': %s"),
-                  file, strerror(errno));
+        virReportSystemError(NULL, errno,
+                             _("loading host definition file '%s'"),
+                             file);
         goto error;
     }
 
@@ -573,7 +576,7 @@ static int testOpenFromFile(virConnectPtr conn,
             goto error;
         }
 
-        if (testStoragePoolObjSetDefaults(pool) == -1) {
+        if (testStoragePoolObjSetDefaults(conn, pool) == -1) {
             virStoragePoolObjUnlock(pool);
             goto error;
         }
@@ -673,8 +676,8 @@ static char *testGetHostname (virConnectPtr conn)
 
     result = virGetHostname();
     if (result == NULL) {
-        testError (conn, VIR_ERR_SYSTEM_ERROR, "%s",
-                   strerror (errno));
+        virReportSystemError(conn, errno,
+                             "%s", _("cannot lookup hostname"));
         return NULL;
     }
     /* Caller frees this string. */
@@ -703,7 +706,7 @@ static char *testGetCapabilities (virConnectPtr conn)
     char *xml;
     testDriverLock(privconn);
     if ((xml = virCapabilitiesFormatXML(privconn->caps)) == NULL)
-        testError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
     testDriverUnlock(privconn);
     return xml;
 }
@@ -1111,42 +1114,42 @@ static int testDomainSave(virDomainPtr domain,
 
     xml = testDomainDumpXML(domain, 0);
     if (xml == NULL) {
-        testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                  _("saving domain '%s' failed to allocate space for metadata: %s"),
-                  domain->name, strerror(errno));
+        virReportSystemError(domain->conn, errno,
+                             _("saving domain '%s' failed to allocate space for metadata"),
+                             domain->name);
         goto cleanup;
     }
 
     if ((fd = open(path, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
-        testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                  _("saving domain '%s' to '%s': open failed: %s"),
-                  domain->name, path, strerror(errno));
+        virReportSystemError(domain->conn, errno,
+                             _("saving domain '%s' to '%s': open failed"),
+                             domain->name, path);
         goto cleanup;
     }
     len = strlen(xml);
     if (safewrite(fd, TEST_SAVE_MAGIC, sizeof(TEST_SAVE_MAGIC)) < 0) {
-        testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                  _("saving domain '%s' to '%s': write failed: %s"),
-                  domain->name, path, strerror(errno));
+        virReportSystemError(domain->conn, errno,
+                             _("saving domain '%s' to '%s': write failed"),
+                             domain->name, path);
         goto cleanup;
     }
     if (safewrite(fd, (char*)&len, sizeof(len)) < 0) {
-        testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                  _("saving domain '%s' to '%s': write failed: %s"),
-                  domain->name, path, strerror(errno));
+        virReportSystemError(domain->conn, errno,
+                             _("saving domain '%s' to '%s': write failed"),
+                             domain->name, path);
         goto cleanup;
     }
     if (safewrite(fd, xml, len) < 0) {
-        testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                  _("saving domain '%s' to '%s': write failed: %s"),
-                  domain->name, path, strerror(errno));
+        virReportSystemError(domain->conn, errno,
+                             _("saving domain '%s' to '%s': write failed"),
+                             domain->name, path);
         goto cleanup;
     }
 
     if (close(fd) < 0) {
-        testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                  _("saving domain '%s' to '%s': write failed: %s"),
-                  domain->name, path, strerror(errno));
+        virReportSystemError(domain->conn, errno,
+                             _("saving domain '%s' to '%s': write failed"),
+                             domain->name, path);
         goto cleanup;
     }
     fd = -1;
@@ -1189,13 +1192,15 @@ static int testDomainRestore(virConnectPtr conn,
     int ret = -1;
 
     if ((fd = open(path, O_RDONLY)) < 0) {
-        testError(conn, VIR_ERR_INTERNAL_ERROR,
-                  "%s", _("cannot read domain image"));
+        virReportSystemError(conn, errno,
+                             _("cannot read domain image '%s'"),
+                             path);
         goto cleanup;
     }
-    if (read(fd, magic, sizeof(magic)) != sizeof(magic)) {
-        testError(conn, VIR_ERR_INTERNAL_ERROR,
-                  "%s", _("incomplete save header"));
+    if (saferead(fd, magic, sizeof(magic)) != sizeof(magic)) {
+        virReportSystemError(conn, errno,
+                             _("incomplete save header in '%s'"),
+                             path);
         goto cleanup;
     }
     if (memcmp(magic, TEST_SAVE_MAGIC, sizeof(magic))) {
@@ -1203,9 +1208,10 @@ static int testDomainRestore(virConnectPtr conn,
                   "%s", _("mismatched header magic"));
         goto cleanup;
     }
-    if (read(fd, (char*)&len, sizeof(len)) != sizeof(len)) {
-        testError(conn, VIR_ERR_INTERNAL_ERROR,
-                  "%s", _("failed to read metadata length"));
+    if (saferead(fd, (char*)&len, sizeof(len)) != sizeof(len)) {
+        virReportSystemError(conn, errno,
+                             _("failed to read metadata length in '%s'"),
+                             path);
         goto cleanup;
     }
     if (len < 1 || len > 8192) {
@@ -1214,12 +1220,12 @@ static int testDomainRestore(virConnectPtr conn,
         goto cleanup;
     }
     if (VIR_ALLOC_N(xml, len+1) < 0) {
-        testError(conn, VIR_ERR_NO_MEMORY, "xml");
+        virReportOOMError(conn);
         goto cleanup;
     }
-    if (read(fd, xml, len) != len) {
-        testError(conn, VIR_ERR_INTERNAL_ERROR,
-                  "%s", _("incomplete metdata"));
+    if (saferead(fd, xml, len) != len) {
+        virReportSystemError(conn, errno,
+                             _("incomplete metdata in '%s'"), path);
         goto cleanup;
     }
     xml[len] = '\0';
@@ -1269,21 +1275,21 @@ static int testDomainCoreDump(virDomainPtr domain,
     }
 
     if ((fd = open(to, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
-        testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                  _("domain '%s' coredump: failed to open %s: %s"),
-                  domain->name, to, strerror (errno));
+        virReportSystemError(domain->conn, errno,
+                             _("domain '%s' coredump: failed to open %s"),
+                             domain->name, to);
         goto cleanup;
     }
     if (safewrite(fd, TEST_SAVE_MAGIC, sizeof(TEST_SAVE_MAGIC)) < 0) {
-        testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                  _("domain '%s' coredump: failed to write header to %s: %s"),
-                  domain->name, to, strerror (errno));
+        virReportSystemError(domain->conn, errno,
+                             _("domain '%s' coredump: failed to write header to %s"),
+                             domain->name, to);
         goto cleanup;
     }
     if (close(fd) < 0) {
-        testError(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                  _("domain '%s' coredump: write failed: %s: %s"),
-                  domain->name, to, strerror (errno));
+        virReportSystemError(domain->conn, errno,
+                             _("domain '%s' coredump: write failed: %s"),
+                             domain->name, to);
         goto cleanup;
     }
     privdom->state = VIR_DOMAIN_SHUTOFF;
@@ -1306,7 +1312,7 @@ cleanup:
 static char *testGetOSType(virDomainPtr dom) {
     char *ret = strdup("linux");
     if (!ret)
-        testError(dom->conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(dom->conn);
     return ret;
 }
 
@@ -1491,7 +1497,7 @@ static int testListDefinedDomains(virConnectPtr conn,
     return n;
 
 no_memory:
-    testError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
     for (n = 0 ; n < maxnames ; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -1682,7 +1688,7 @@ static char *testDomainGetSchedulerType(virDomainPtr domain,
     *nparams = 1;
     type = strdup("fair");
     if (!type)
-        testError(domain->conn, VIR_ERR_NO_MEMORY, "schedular");
+        virReportOOMError(domain->conn);
 
     return type;
 }
@@ -1864,7 +1870,7 @@ static int testListNetworks(virConnectPtr conn, char **const names, int nnames) 
     return n;
 
 no_memory:
-    testError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
     for (n = 0 ; n < nnames ; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -1907,7 +1913,7 @@ static int testListDefinedNetworks(virConnectPtr conn, char **const names, int n
     return n;
 
 no_memory:
-    testError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
     for (n = 0 ; n < nnames ; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -2099,7 +2105,7 @@ static char *testNetworkGetBridgeName(virNetworkPtr network) {
 
     if (privnet->def->bridge &&
         !(bridge = strdup(privnet->def->bridge))) {
-        testError(network->conn, VIR_ERR_NO_MEMORY, "network");
+        virReportOOMError(network->conn);
         goto cleanup;
     }
 
@@ -2164,7 +2170,8 @@ cleanup:
  * Storage Driver routines
  */
 
-static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr pool) {
+static int testStoragePoolObjSetDefaults(virConnectPtr conn,
+                                         virStoragePoolObjPtr pool) {
 
     pool->def->capacity = defaultPoolCap;
     pool->def->allocation = defaultPoolAlloc;
@@ -2172,7 +2179,7 @@ static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr pool) {
 
     pool->configFile = strdup("\0");
     if (!pool->configFile) {
-        testError(NULL, VIR_ERR_NO_MEMORY, "configFile");
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -2284,7 +2291,7 @@ testStorageListPools(virConnectPtr conn,
     return n;
 
 no_memory:
-    testError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
     for (n = 0 ; n < nnames ; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -2331,7 +2338,7 @@ testStorageListDefinedPools(virConnectPtr conn,
     return n;
 
 no_memory:
-    testError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
     for (n = 0 ; n < nnames ; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -2408,7 +2415,7 @@ testStoragePoolCreate(virConnectPtr conn,
     }
     def = NULL;
 
-    if (testStoragePoolObjSetDefaults(pool) == -1) {
+    if (testStoragePoolObjSetDefaults(conn, pool) == -1) {
         virStoragePoolObjRemove(&privconn->pools, pool);
         pool = NULL;
         goto cleanup;
@@ -2447,7 +2454,7 @@ testStoragePoolDefine(virConnectPtr conn,
     }
     def = NULL;
 
-    if (testStoragePoolObjSetDefaults(pool) == -1) {
+    if (testStoragePoolObjSetDefaults(conn, pool) == -1) {
         virStoragePoolObjRemove(&privconn->pools, pool);
         pool = NULL;
         goto cleanup;
@@ -2806,7 +2813,7 @@ testStoragePoolListVolumes(virStoragePoolPtr pool,
 
     for (i = 0 ; i < privpool->volumes.count && n < maxnames ; i++) {
         if ((names[n++] = strdup(privpool->volumes.objs[i]->name)) == NULL) {
-            testError(pool->conn, VIR_ERR_NO_MEMORY, "%s", _("name"));
+            virReportOOMError(pool->conn);
             goto cleanup;
         }
     }
@@ -2986,14 +2993,14 @@ testStorageVolumeCreateXML(virStoragePoolPtr pool,
 
     if (VIR_REALLOC_N(privpool->volumes.objs,
                       privpool->volumes.count+1) < 0) {
-        testError(pool->conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(pool->conn);
         goto cleanup;
     }
 
     if (VIR_ALLOC_N(privvol->target.path,
                     strlen(privpool->def->target.path) +
                     1 + strlen(privvol->name) + 1) < 0) {
-        testError(pool->conn, VIR_ERR_NO_MEMORY, "%s", _("target"));
+        virReportOOMError(pool->conn);
         goto cleanup;
     }
 
@@ -3002,8 +3009,7 @@ testStorageVolumeCreateXML(virStoragePoolPtr pool,
     strcat(privvol->target.path, privvol->name);
     privvol->key = strdup(privvol->target.path);
     if (privvol->key == NULL) {
-        testError(pool->conn, VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("storage vol key"));
+        virReportOOMError(pool->conn);
         goto cleanup;
     }
 
@@ -3224,7 +3230,7 @@ testStorageVolumeGetPath(virStorageVolPtr vol) {
 
     ret = strdup(privvol->target.path);
     if (ret == NULL)
-        testError(vol->conn, VIR_ERR_NO_MEMORY, "%s", _("path"));
+        virReportOOMError(vol->conn);
 
 cleanup:
     if (privpool)

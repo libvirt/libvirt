@@ -41,6 +41,8 @@
 #include "memory.h"
 #include "storage_backend.h"
 
+#define VIR_FROM_THIS VIR_FROM_STORAGE
+
 #define storageLog(msg...) fprintf(stderr, msg)
 
 static virStorageDriverStatePtr driverState;
@@ -379,8 +381,7 @@ storageListPools(virConnectPtr conn,
         if (virStoragePoolObjIsActive(driver->pools.objs[i])) {
             if (!(names[got] = strdup(driver->pools.objs[i]->def->name))) {
                 virStoragePoolObjUnlock(driver->pools.objs[i]);
-                virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                                      "%s", _("names"));
+                virReportOOMError(conn);
                 goto cleanup;
             }
             got++;
@@ -428,8 +429,7 @@ storageListDefinedPools(virConnectPtr conn,
         if (!virStoragePoolObjIsActive(driver->pools.objs[i])) {
             if (!(names[got] = strdup(driver->pools.objs[i]->def->name))) {
                 virStoragePoolObjUnlock(driver->pools.objs[i]);
-                virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                                      "%s", _("names"));
+                virReportOOMError(conn);
                 goto cleanup;
             }
             got++;
@@ -952,25 +952,24 @@ storagePoolSetAutostart(virStoragePoolPtr obj,
             int err;
 
             if ((err = virFileMakePath(driver->autostartDir))) {
-                virStorageReportError(obj->conn, VIR_ERR_INTERNAL_ERROR,
-                                      _("cannot create autostart directory %s: %s"),
-                                      driver->autostartDir, strerror(err));
+                virReportSystemError(obj->conn, err,
+                                     _("cannot create autostart directory %s"),
+                                     driver->autostartDir);
                 goto cleanup;
             }
 
             if (symlink(pool->configFile, pool->autostartLink) < 0) {
-                virStorageReportError(obj->conn, VIR_ERR_INTERNAL_ERROR,
-                                      _("Failed to create symlink '%s' to '%s': %s"),
-                                      pool->autostartLink, pool->configFile,
-                                      strerror(errno));
+                virReportSystemError(obj->conn, errno,
+                                     _("Failed to create symlink '%s' to '%s'"),
+                                     pool->autostartLink, pool->configFile);
                 goto cleanup;
             }
         } else {
             if (unlink(pool->autostartLink) < 0 &&
                 errno != ENOENT && errno != ENOTDIR) {
-                virStorageReportError(obj->conn, VIR_ERR_INTERNAL_ERROR,
-                                      _("Failed to delete symlink '%s': %s"),
-                                      pool->autostartLink, strerror(errno));
+                virReportSystemError(obj->conn, errno,
+                                     _("Failed to delete symlink '%s'"),
+                                     pool->autostartLink);
                 goto cleanup;
             }
         }
@@ -1042,8 +1041,7 @@ storagePoolListVolumes(virStoragePoolPtr obj,
 
     for (i = 0 ; i < pool->volumes.count && n < maxnames ; i++) {
         if ((names[n++] = strdup(pool->volumes.objs[i]->name)) == NULL) {
-            virStorageReportError(obj->conn, VIR_ERR_NO_MEMORY,
-                                  "%s", _("name"));
+            virReportOOMError(obj->conn);
             goto cleanup;
         }
     }
@@ -1224,7 +1222,7 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
 
     if (VIR_REALLOC_N(pool->volumes.objs,
                       pool->volumes.count+1) < 0) {
-        virStorageReportError(obj->conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(obj->conn);
         goto cleanup;
     }
 
@@ -1453,7 +1451,7 @@ storageVolumeGetPath(virStorageVolPtr obj) {
 
     ret = strdup(vol->target.path);
     if (ret == NULL)
-        virStorageReportError(obj->conn, VIR_ERR_NO_MEMORY, "%s", _("path"));
+        virReportOOMError(obj->conn);
 
 cleanup:
     if (pool)

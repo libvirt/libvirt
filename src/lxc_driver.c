@@ -49,6 +49,8 @@
 #include "cgroup.h"
 
 
+#define VIR_FROM_THIS VIR_FROM_LXC
+
 static int lxcStartup(void);
 static int lxcShutdown(void);
 static lxc_driver_t *lxc_driver = NULL;
@@ -467,9 +469,9 @@ static int lxcVMCleanup(virConnectPtr conn,
         ; /* empty */
 
     if ((waitRc != vm->pid) && (errno != ECHILD)) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("waitpid failed to wait for container %d: %d %s"),
-                 vm->pid, waitRc, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("waitpid failed to wait for container %d: %d"),
+                             vm->pid, waitRc);
     }
 
     rc = 0;
@@ -579,17 +581,15 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         }
 
         if (0 != (rc = brAddInterface(brctl, bridge, parentVeth))) {
-            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("failed to add %s device to %s: %s"),
-                     parentVeth,
-                     bridge,
-                     strerror(rc));
+            virReportSystemError(conn, rc,
+                                 _("failed to add %s device to %s"),
+                                 parentVeth, bridge);
             goto error_exit;
         }
 
         if (0 != (rc = vethInterfaceUpOrDown(parentVeth, 1))) {
-            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("failed to enable parent ns veth device: %d"), rc);
+            virReportSystemError(conn, rc, "%s",
+                                 _("failed to enable parent ns veth device"));
             goto error_exit;
         }
 
@@ -618,9 +618,8 @@ static int lxcMonitorClient(virConnectPtr conn,
     }
 
     if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("failed to create client socket: %s"),
-                 strerror(errno));
+        virReportSystemError(conn, errno, "%s",
+                             _("failed to create client socket"));
         goto error;
     }
 
@@ -629,9 +628,8 @@ static int lxcMonitorClient(virConnectPtr conn,
     strncpy(addr.sun_path, sockpath, sizeof(addr.sun_path));
 
     if (connect(fd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("failed to connect to client socket: %s"),
-                 strerror(errno));
+        virReportSystemError(conn, errno, "%s",
+                             _("failed to connect to client socket"));
         goto error;
     }
 
@@ -662,9 +660,9 @@ static int lxcVmTerminate(virConnectPtr conn,
 
     if (kill(vm->pid, signum) < 0) {
         if (errno != ESRCH) {
-            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("failed to kill pid %d: %s"),
-                     vm->pid, strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("failed to kill pid %d"),
+                                 vm->pid);
             return -1;
         }
     }
@@ -792,9 +790,9 @@ static int lxcControllerStart(virConnectPtr conn,
      */
     while ((rc = waitpid(child, &status, 0) == -1) && errno == EINTR);
     if (rc == -1) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("cannot wait for '%s': %s"),
-                 largv[0], strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot wait for '%s'"),
+                             largv[0]);
         goto cleanup;
     }
 
@@ -846,10 +844,10 @@ static int lxcVmStart(virConnectPtr conn,
     unsigned int nveths = 0;
     char **veths = NULL;
 
-    if (virFileMakePath(driver->logDir) < 0) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("cannot create log directory %s: %s"),
-                 driver->logDir, strerror(rc));
+    if ((rc = virFileMakePath(driver->logDir)) < 0) {
+        virReportSystemError(conn, rc,
+                             _("cannot create log directory '%s'"),
+                             driver->logDir);
         return -1;
     }
 
@@ -861,9 +859,8 @@ static int lxcVmStart(virConnectPtr conn,
 
     /* open parent tty */
     if (virFileOpenTty(&parentTty, &parentTtyPath, 1) < 0) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("failed to allocate tty: %s"),
-                 strerror(errno));
+        virReportSystemError(conn, errno, "%s",
+                             _("failed to allocate tty"));
         goto cleanup;
     }
     if (vm->def->console &&
@@ -885,9 +882,9 @@ static int lxcVmStart(virConnectPtr conn,
 
     if ((logfd = open(logfile, O_WRONLY | O_TRUNC | O_CREAT,
              S_IRUSR|S_IWUSR)) < 0) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("failed to open %s: %s"), logfile,
-                 strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("failed to open '%s'"),
+                             logfile);
         goto cleanup;
     }
 
@@ -905,9 +902,9 @@ static int lxcVmStart(virConnectPtr conn,
 
     /* And get its pid */
     if ((rc = virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) != 0) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("Failed to read pid file %s/%s.pid: %s"),
-                 driver->stateDir, vm->def->name, strerror(rc));
+        virReportSystemError(conn, rc,
+                             _("Failed to read pid file %s/%s.pid"),
+                             driver->stateDir, vm->def->name);
         rc = -1;
         goto cleanup;
     }
@@ -1270,11 +1267,7 @@ static int lxcVersion(virConnectPtr conn, unsigned long *version)
     int min;
     int rev;
 
-    if (uname(&ver) != 0) {
-        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("uname(): %s"), strerror(errno));
-        return -1;
-    }
+    uname(&ver);
 
     if (sscanf(ver.release, "%i.%i.%i", &maj, &min, &rev) != 3) {
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,

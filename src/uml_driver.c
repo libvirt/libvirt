@@ -64,6 +64,8 @@
 #include "datatypes.h"
 #include "logging.h"
 
+#define VIR_FROM_THIS VIR_FROM_UML
+
 /* For storing short-lived temporary files. */
 #define TEMPDIR LOCAL_STATE_DIR "/cache/libvirt"
 
@@ -159,7 +161,7 @@ umlIdentifyOneChrPTY(virConnectPtr conn,
     char *res = NULL;
     int retries = 0;
     if (virAsprintf(&cmd, "config %s%d", dev, def->dstPort) < 0) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return -1;
     }
 requery:
@@ -168,7 +170,7 @@ requery:
     if (STRPREFIX(res, "pts:")) {
         VIR_FREE(def->data.file.path);
         if ((def->data.file.path = strdup(res + 4)) == NULL) {
-            umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             VIR_FREE(res);
             VIR_FREE(cmd);
             return -1;
@@ -523,7 +525,7 @@ static int umlReadPidFile(virConnectPtr conn,
     vm->pid = -1;
     if (virAsprintf(&pidfile, "%s/%s/pid",
                     driver->monitorDir, vm->def->name) < 0) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -549,9 +551,9 @@ reopen:
 
  cleanup:
     if (rc != 0)
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                       _("failed to read pid: %s: %s"),
-                       pidfile, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("failed to read pid: %s"),
+                             pidfile);
     VIR_FREE(pidfile);
     return rc;
 }
@@ -564,7 +566,7 @@ static int umlMonitorAddress(virConnectPtr conn,
 
     if (virAsprintf(&sockname, "%s/%s/mconsole",
                     driver->monitorDir, vm->def->name) < 0) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -597,16 +599,16 @@ restat:
     }
 
     if ((vm->monitor = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                       _("cannot open socket %s"), strerror(errno));
+        virReportSystemError(conn, errno,
+                             "%s", _("cannot open socket"));
         return -1;
     }
 
     memset(addr.sun_path, 0, sizeof addr.sun_path);
     sprintf(addr.sun_path + 1, "%u", getpid());
     if (bind(vm->monitor, (struct sockaddr *)&addr, sizeof addr) < 0) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                       _("cannot bind socket %s"), strerror(errno));
+        virReportSystemError(conn, errno,
+                             "%s", _("cannot bind socket"));
         close(vm->monitor);
         vm->monitor = -1;
         return -1;
@@ -658,9 +660,9 @@ static int umlMonitorCommand(virConnectPtr conn,
     req.version = MONITOR_VERSION;
     req.length = strlen(cmd);
     if (req.length > (MONITOR_BUFLEN-1)) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                       _("cannot send too long command %s: %s"),
-                       cmd, strerror(EINVAL));
+        virReportSystemError(conn, EINVAL,
+                             _("cannot send too long command %s (%d bytes)"),
+                             cmd, req.length);
         return -1;
     }
     strncpy(req.data, cmd, req.length);
@@ -668,9 +670,9 @@ static int umlMonitorCommand(virConnectPtr conn,
 
     if (sendto(vm->monitor, &req, sizeof req, 0,
                (struct sockaddr *)&addr, sizeof addr) != (sizeof req)) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                       _("cannot send command %s: %s"),
-                       cmd, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot send command %s"),
+                             cmd);
         return -1;
     }
 
@@ -678,15 +680,14 @@ static int umlMonitorCommand(virConnectPtr conn,
         addrlen = sizeof(addr);
         if (recvfrom(vm->monitor, &res, sizeof res, 0,
                      (struct sockaddr *)&addr, &addrlen) < 0) {
-            umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                           _("cannot read reply %s: %s"),
-                           cmd, strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot read reply %s"),
+                                 cmd);
             goto error;
         }
 
         if (VIR_REALLOC_N(retdata, retlen + res.length) < 0) {
-            umlReportError(conn, NULL, NULL,
-                           VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             goto error;
         }
         memcpy(retdata + retlen, res.data, res.length);
@@ -740,39 +741,38 @@ static int umlStartVMDaemon(virConnectPtr conn,
      * in a sub-process so its hard to feed back a useful error
      */
     if (stat(vm->def->os.kernel, &sb) < 0) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot find UML kernel %s: %s"),
-                       vm->def->os.kernel, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("Cannot find UML kernel %s"),
+                             vm->def->os.kernel);
         return -1;
     }
 
     if (virFileMakePath(driver->logDir) < 0) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                       _("cannot create log directory %s"),
-                       driver->logDir);
+        virReportSystemError(conn, errno,
+                             _("cannot create log directory %s"),
+                             driver->logDir);
         return -1;
     }
 
     if (virAsprintf(&logfile, "%s/%s.log",
                     driver->logDir, vm->def->name) < 0) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return -1;
     }
 
     if ((logfd = open(logfile, O_CREAT | O_TRUNC | O_WRONLY,
                       S_IRUSR | S_IWUSR)) < 0) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                       _("failed to create logfile %s: %s"),
-                       logfile, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("failed to create logfile %s"),
+                             logfile);
         VIR_FREE(logfile);
         return -1;
     }
     VIR_FREE(logfile);
 
     if (umlSetCloseExec(logfd) < 0) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to set VM logfile close-on-exec flag %s"),
-                       strerror(errno));
+        virReportSystemError(conn, errno,
+                             "%s", _("Unable to set VM logfile close-on-exec flag"));
         close(logfd);
         return -1;
     }
@@ -908,7 +908,7 @@ static virDrvOpenStatus umlOpen(virConnectPtr conn,
     } else {
         conn->uri = xmlParseURI(uid ? "uml:///session" : "uml:///system");
         if (!conn->uri) {
-            umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,NULL);
+            virReportOOMError(conn);
             return VIR_DRV_OPEN_ERROR;
         }
     }
@@ -945,8 +945,7 @@ static char *umlGetCapabilities(virConnectPtr conn) {
 
     umlDriverLock(driver);
     if ((xml = virCapabilitiesFormatXML(driver->caps)) == NULL)
-        umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                 "%s", _("failed to allocate space for capabilities support"));
+        virReportOOMError(conn);
     umlDriverUnlock(driver);
 
     return xml;
@@ -1156,8 +1155,8 @@ umlGetHostname (virConnectPtr conn)
 
     result = virGetHostname();
     if (result == NULL) {
-        umlReportError (conn, NULL, NULL, VIR_ERR_SYSTEM_ERROR,
-                          "%s", strerror (errno));
+        virReportSystemError(conn, errno,
+                             "%s", _("cannot lookup hostname"));
         return NULL;
     }
     /* Caller frees this string. */
@@ -1325,8 +1324,7 @@ static char *umlDomainGetOSType(virDomainPtr dom) {
     }
 
     if (!(type = strdup(vm->def->os.type)))
-        umlReportError(dom->conn, dom, NULL, VIR_ERR_NO_MEMORY,
-                         "%s", _("failed to allocate space for ostype"));
+        virReportOOMError(dom->conn);
 
 cleanup:
     if (vm)
@@ -1510,8 +1508,7 @@ static int umlListDefinedDomains(virConnectPtr conn,
         virDomainObjLock(driver->domains.objs[i]);
         if (!virDomainIsActive(driver->domains.objs[i])) {
             if (!(names[got++] = strdup(driver->domains.objs[i]->def->name))) {
-                umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                                 "%s", _("failed to allocate space for VM name string"));
+                virReportOOMError(conn);
                 virDomainObjUnlock(driver->domains.objs[i]);
                 goto cleanup;
             }
@@ -1710,23 +1707,23 @@ static int umlDomainSetAutostart(virDomainPtr dom,
             int err;
 
             if ((err = virFileMakePath(driver->autostartDir))) {
-                umlReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                               _("cannot create autostart directory %s: %s"),
-                               driver->autostartDir, strerror(err));
+                virReportSystemError(dom->conn, err,
+                                     _("cannot create autostart directory %s"),
+                                     driver->autostartDir);
                 goto cleanup;
             }
 
             if (symlink(configFile, autostartLink) < 0) {
-                umlReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                               _("Failed to create symlink '%s to '%s': %s"),
-                               autostartLink, configFile, strerror(errno));
+                virReportSystemError(dom->conn, errno,
+                                     _("Failed to create symlink '%s to '%s'"),
+                                     autostartLink, configFile);
                 goto cleanup;
             }
         } else {
             if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
-                umlReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                               _("Failed to delete symlink '%s': %s"),
-                               autostartLink, strerror(errno));
+                virReportSystemError(dom->conn, errno,
+                                     _("Failed to delete symlink '%s'"),
+                                     autostartLink);
                 goto cleanup;
             }
         }
@@ -1785,8 +1782,8 @@ umlDomainBlockPeek (virDomainPtr dom,
         /* The path is correct, now try to open it and get its size. */
         fd = open (path, O_RDONLY);
         if (fd == -1) {
-            umlReportError (dom->conn, dom, NULL, VIR_ERR_SYSTEM_ERROR,
-                            "%s", strerror (errno));
+            virReportSystemError(dom->conn, errno,
+                                 _("cannot open %s"), path);
             goto cleanup;
         }
 
@@ -1796,8 +1793,8 @@ umlDomainBlockPeek (virDomainPtr dom,
          */
         if (lseek (fd, offset, SEEK_SET) == (off_t) -1 ||
             saferead (fd, buffer, size) == (ssize_t) -1) {
-            umlReportError (dom->conn, dom, NULL, VIR_ERR_SYSTEM_ERROR,
-                            "%s", strerror (errno));
+            virReportSystemError(dom->conn, errno,
+                                 _("cannot read %s"), path);
             goto cleanup;
         }
 

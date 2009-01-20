@@ -37,6 +37,8 @@
 #include "util.h"
 #include "memory.h"
 
+#define VIR_FROM_THIS VIR_FROM_STORAGE
+
 #define PV_BLANK_SECTOR_SIZE 512
 
 
@@ -400,22 +402,22 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn,
          * rather than trying to figure out if we're a disk or partition
          */
         if ((fd = open(pool->def->source.devices[i].path, O_WRONLY)) < 0) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot open device %s"),
-                                  strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot open device '%s'"),
+                                 pool->def->source.devices[i].path);
             goto cleanup;
         }
         if (safewrite(fd, zeros, sizeof(zeros)) < 0) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot clear device header %s"),
-                                  strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot clear device header of '%s'"),
+                                 pool->def->source.devices[i].path);
             close(fd);
             goto cleanup;
         }
         if (close(fd) < 0) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot close device %s"),
-                                  strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot close device '%s'"),
+                                 pool->def->source.devices[i].path);
             goto cleanup;
         }
 
@@ -538,10 +540,9 @@ virStorageBackendLogicalDeletePool(virConnectPtr conn,
         pvargv[1] = pool->def->source.devices[i].path;
         if (virRun(conn, pvargv, NULL) < 0) {
             error = -1;
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot remove PV device %s: %s"),
-                                  pool->def->source.devices[i].path,
-                                  strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot remove PV device '%s'"),
+                                 pool->def->source.devices[i].path);
             break;
         }
     }
@@ -591,41 +592,41 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
         return -1;
 
     if ((fd = open(vol->target.path, O_RDONLY)) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot read path '%s': %s"),
-                              vol->target.path, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot read path '%s'"),
+                             vol->target.path);
         goto cleanup;
     }
 
     /* We can only chown/grp if root */
     if (getuid() == 0) {
         if (fchown(fd, vol->target.perms.uid, vol->target.perms.gid) < 0) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("cannot set file owner '%s': %s"),
-                                  vol->target.path, strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot set file owner '%s'"),
+                                 vol->target.path);
             goto cleanup;
         }
     }
     if (fchmod(fd, vol->target.perms.mode) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot set file mode '%s': %s"),
-                              vol->target.path, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot set file mode '%s'"),
+                             vol->target.path);
         goto cleanup;
     }
 
     if (close(fd) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot close file '%s': %s"),
-                              vol->target.path, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot close file '%s'"),
+                             vol->target.path);
         goto cleanup;
     }
     fd = -1;
 
     /* Fill in data about this new vol */
     if (virStorageBackendLogicalFindLVs(conn, pool, vol) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot find newly created volume '%s': %s"),
-                              vol->target.path, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot find newly created volume '%s'"),
+                             vol->target.path);
         goto cleanup;
     }
 

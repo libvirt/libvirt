@@ -48,9 +48,35 @@ const char *virErrorMsg(virErrorNumber error, const char *info);
 void virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
                           const char *filename ATTRIBUTE_UNUSED,
                           const char *funcname ATTRIBUTE_UNUSED,
-                          long long linenr ATTRIBUTE_UNUSED,
+                          size_t linenr ATTRIBUTE_UNUSED,
                           const char *fmt, ...)
   ATTRIBUTE_FORMAT(printf, 7, 8);
+
+void virReportSystemErrorFull(virConnectPtr conn,
+                              int domcode,
+                              int theerrno,
+                              const char *filename,
+                              const char *funcname,
+                              size_t linenr,
+                              const char *fmt, ...)
+    ATTRIBUTE_FORMAT(printf, 7, 8);
+
+#define virReportSystemError(conn, theerrno, fmt,...)             \
+    virReportSystemErrorFull((conn),                              \
+                             VIR_FROM_THIS,                       \
+                             (theerrno),                          \
+                             __FILE__, __FUNCTION__, __LINE__,    \
+                             (fmt), __VA_ARGS__)
+
+void virReportOOMErrorFull(virConnectPtr conn,
+                           int domcode,
+                           const char *filename,
+                           const char *funcname,
+                           size_t linenr);
+
+#define virReportOOMError(conn)                         \
+    virReportOOMErrorFull((conn), VIR_FROM_THIS,        \
+                     __FILE__, __FUNCTION__, __LINE__)
 
 
 void virSetGlobalError(void);

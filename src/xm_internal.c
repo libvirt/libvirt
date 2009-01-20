@@ -47,6 +47,7 @@
 #include "memory.h"
 #include "logging.h"
 
+#define VIR_FROM_THIS VIR_FROM_XENXM
 
 #ifdef WITH_RHEL5_API
 #define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 0
@@ -284,7 +285,7 @@ static int xenXMConfigCopyStringInternal(virConnectPtr conn,
     }
 
     if (!(*value = strdup(val->str))) {
-        xenXMError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -413,8 +414,9 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
 
     /* Get modified time */
     if ((stat(filename, &st) < 0)) {
-        xenXMError (conn, VIR_ERR_INTERNAL_ERROR,
-                    _("cannot stat %s: %s"), filename, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot stat: %s"),
+                             filename);
         return -1;
     }
 
@@ -449,7 +451,7 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
     } else { /* Completely new entry */
         newborn = 1;
         if (VIR_ALLOC(entry) < 0) {
-            xenXMError (conn, VIR_ERR_NO_MEMORY, "%s", strerror(errno));
+            virReportOOMError(conn);
             return -1;
         }
         memcpy(entry->filename, filename, PATH_MAX);
@@ -503,7 +505,8 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
     int ret = -1;
 
     if (now == ((time_t)-1)) {
-        xenXMError (conn, VIR_ERR_SYSTEM_ERROR, "%s", strerror(errno));
+        virReportSystemError(conn, errno,
+                             "%s", _("cannot get time of day"));
         return (-1);
     }
 
@@ -515,7 +518,9 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
 
     /* Process the files in the config dir */
     if (!(dh = opendir(configDir))) {
-        xenXMError (conn, VIR_ERR_SYSTEM_ERROR, "%s", strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot read directory %s"),
+                             configDir);
         return (-1);
     }
 
@@ -1297,7 +1302,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
     return def;
 
 no_memory:
-    xenXMError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
     /* fallthrough */
   cleanup:
     virDomainGraphicsDefFree(graphics);
@@ -1531,14 +1536,14 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
             }
 
     if (virBufferError(&mapbuf)) {
-        xenXMError(domain->conn, VIR_ERR_NO_MEMORY, "%s", _("allocate buffer"));
+        virReportOOMError(domain->conn);
         return -1;
     }
 
     mapstr = virBufferContentAndReset(&mapbuf);
 
     if (VIR_ALLOC_N(cpuset, maxcpu) < 0) {
-        xenXMError(domain->conn, VIR_ERR_NO_MEMORY, "%s", _("allocate buffer"));
+        virReportOOMError(domain->conn);
         goto cleanup;
     }
     if (virDomainCpuSetParse(domain->conn,
@@ -1781,12 +1786,12 @@ static int xenXMDomainConfigFormatDisk(virConnectPtr conn,
         virBufferAddLit(&buf, ",w");
 
     if (virBufferError(&buf)) {
-        xenXMError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return -1;
     }
 
     if (VIR_ALLOC(val) < 0) {
-        xenXMError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         goto cleanup;
     }
 
@@ -1853,7 +1858,7 @@ static int xenXMDomainConfigFormatNet(virConnectPtr conn,
                           net->model);
 
     if (VIR_ALLOC(val) < 0) {
-        xenXMError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         goto cleanup;
     }
 
@@ -2254,7 +2259,7 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
     return conf;
 
 no_memory:
-    xenXMError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
 
 cleanup:
     virConfFreeValue(diskVal);
@@ -2348,7 +2353,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
         goto error;
 
     if (VIR_ALLOC(entry) < 0) {
-        xenXMError(conn, VIR_ERR_NO_MEMORY, "%s", _("config"));
+        virReportOOMError(conn);
         goto error;
     }
 
@@ -2544,7 +2549,7 @@ xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
     case VIR_DOMAIN_DEVICE_DISK:
     {
         if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
-            xenXMError(domain->conn, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(domain->conn);
             goto cleanup;
         }
         def->disks[def->ndisks++] = dev->data.disk;
@@ -2557,7 +2562,7 @@ xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
     case VIR_DOMAIN_DEVICE_NET:
     {
         if (VIR_REALLOC_N(def->nets, def->nnets+1) < 0) {
-            xenXMError(domain->conn, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(domain->conn);
             goto cleanup;
         }
         def->nets[def->nnets++] = dev->data.net;
@@ -2715,15 +2720,15 @@ int xenXMDomainGetAutostart(virDomainPtr dom, int *autostart)
     int ret = -1;
 
     if (!linkname || !config) {
-        xenXMError(dom->conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(dom->conn);
         goto cleanup;
     }
 
     *autostart = virFileLinkPointsTo(linkname, config);
     if (*autostart < 0) {
-        xenXMError(dom->conn, VIR_ERR_INTERNAL_ERROR,
-                   _("failed to check autostart link %s: %s"),
-                   linkname, strerror(errno));
+        virReportSystemError(dom->conn, errno,
+                             _("cannot check link %s points to config %s"),
+                             linkname, config);
         goto cleanup;
     }
 
@@ -2743,24 +2748,24 @@ int xenXMDomainSetAutostart(virDomainPtr dom, int autostart)
     int ret = -1;
 
     if (!linkname || !config) {
-        xenXMError(dom->conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(dom->conn);
         goto cleanup;
     }
 
     if (autostart) {
         if (symlink(config, linkname) < 0 &&
             errno != EEXIST) {
-            xenXMError(dom->conn, VIR_ERR_INTERNAL_ERROR,
-                       _("failed to create link %s: %s"),
-                       linkname, strerror(errno));
+            virReportSystemError(dom->conn, errno,
+                                 _("failed to create link %s to %s"),
+                                 config, linkname);
             goto cleanup;
         }
     } else {
         if (unlink(linkname)  < 0 &&
             errno != ENOENT) {
-            xenXMError(dom->conn, VIR_ERR_INTERNAL_ERROR,
-                       _("failed to remove link %s: %s"),
-                       linkname, strerror(errno));
+            virReportSystemError(dom->conn, errno,
+                                 _("failed to remove link %s"),
+                                 linkname);
             goto cleanup;
         }
     }

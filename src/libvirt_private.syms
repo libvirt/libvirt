@@ -321,6 +321,8 @@ virUUIDParse;
 virReportErrorHelper;
 virErrorMsg;
 virRaiseError;
+virReportSystemErrorFull;
+virReportOOMErrorFull;
 
 
 # xml.h

@@ -45,6 +45,9 @@
 #include "util.h"
 #include "virterror_internal.h"
 
+
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 #ifdef __linux__
 #define CPUINFO_PATH "/proc/cpuinfo"
 
@@ -135,12 +138,8 @@ int virNodeInfoPopulate(virConnectPtr conn,
 #ifdef HAVE_UNAME
     struct utsname info;
 
-    if (uname(&info) < 0) {
-        virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
-                        VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                        "cannot extract machine type %s", strerror(errno));
-        return -1;
-    }
+    uname(&info);
+
     strncpy(nodeinfo->model, info.machine, sizeof(nodeinfo->model)-1);
     nodeinfo->model[sizeof(nodeinfo->model)-1] = '\0';
 
@@ -155,9 +154,8 @@ int virNodeInfoPopulate(virConnectPtr conn,
     int ret;
     FILE *cpuinfo = fopen(CPUINFO_PATH, "r");
     if (!cpuinfo) {
-        virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
-                        VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                        "cannot open %s %s", CPUINFO_PATH, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot open %s"), CPUINFO_PATH);
         return -1;
     }
     ret = linuxNodeInfoCPUPopulate(conn, cpuinfo, nodeinfo);

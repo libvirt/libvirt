@@ -39,6 +39,9 @@
 #include "util.h"
 #include "memory.h"
 
+#define VIR_FROM_THIS VIR_FROM_STORAGE
+
+
 static int
 virStorageBackendISCSITargetIP(virConnectPtr conn,
                                const char *hostname,
@@ -204,9 +207,9 @@ virStorageBackendISCSINewLun(virConnectPtr conn, virStoragePoolObjPtr pool,
             usleep(100 * 1000);
             goto reopen;
         }
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot open %s: %s"),
-                              devpath, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("cannot open '%s'"),
+                             devpath);
         goto cleanup;
     }
 
@@ -322,9 +325,9 @@ virStorageBackendISCSIFindLUNs(virConnectPtr conn,
 
     sysdir = opendir(sysfs_path);
     if (sysdir == NULL) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to opendir sysfs path %s: %s"),
-                              sysfs_path, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("Failed to opendir sysfs path '%s'"),
+                             sysfs_path);
         return -1;
     }
     while ((sys_dirent = readdir(sysdir))) {
@@ -354,10 +357,9 @@ virStorageBackendISCSIFindLUNs(virConnectPtr conn,
     n = scandir(sysfs_path, &namelist, notdotdir, versionsort);
     if (n <= 0) {
         /* we didn't find any reasonable entries; return failure */
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to find any LUNs for session %s: %s"),
-                              session, strerror(errno));
-
+        virReportSystemError(conn, errno,
+                             _("Failed to find any LUNs for session '%s'"),
+                             session);
         return -1;
     }
 
@@ -407,9 +409,9 @@ virStorageBackendISCSIFindLUNs(virConnectPtr conn,
 
             sysdir = opendir(sysfs_path);
             if (sysdir == NULL) {
-                virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                      _("Failed to opendir sysfs path %s: %s"),
-                                      sysfs_path, strerror(errno));
+                virReportSystemError(conn, errno,
+                                     _("Failed to opendir sysfs path '%s'"),
+                                     sysfs_path);
                 retval = -1;
                 goto namelist_cleanup;
             }
@@ -443,9 +445,9 @@ virStorageBackendISCSIFindLUNs(virConnectPtr conn,
                      host, bus, target, lun);
             sysdir = opendir(sysfs_path);
             if (sysdir == NULL) {
-                virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                      _("Failed to opendir sysfs path %s: %s"),
-                                      sysfs_path, strerror(errno));
+                virReportSystemError(conn, errno,
+                                     _("Failed to opendir sysfs path '%s'"),
+                                     sysfs_path);
                 retval = -1;
                 goto namelist_cleanup;
             }

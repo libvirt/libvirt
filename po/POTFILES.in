@@ -15,6 +15,7 @@ src/network_conf.c
 src/network_driver.c
 src/node_device.c
 src/node_device_conf.c
+src/nodeinfo.c
 src/openvz_conf.c
 src/openvz_driver.c
 src/proxy_internal.c
@@ -38,6 +39,7 @@ src/virsh.c
 src/virterror.c
 src/xen_inotify.c
 src/xen_internal.c
+src/xen_unified.c
 src/xend_internal.c
 src/xm_internal.c
 src/xml.c

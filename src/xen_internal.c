@@ -58,6 +58,8 @@
 #include "capabilities.h"
 #include "memory.h"
 
+#define VIR_FROM_THIS VIR_FROM_XEN
+
 /*
  * so far there is 2 versions of the structures usable for doing
  * hypervisor calls.
@@ -2532,8 +2534,9 @@ xenHypervisorMakeCapabilities(virConnectPtr conn)
     cpuinfo = fopen ("/proc/cpuinfo", "r");
     if (cpuinfo == NULL) {
         if (errno != ENOENT) {
-            virXenError (conn, VIR_ERR_SYSTEM_ERROR,
-                         "/proc/cpuinfo: %s", strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot read file %s"),
+                                 "/proc/cpuinfo");
             return NULL;
         }
     }
@@ -2542,9 +2545,9 @@ xenHypervisorMakeCapabilities(virConnectPtr conn)
     if (capabilities == NULL) {
         if (errno != ENOENT) {
             fclose(cpuinfo);
-            virXenError (conn, VIR_ERR_SYSTEM_ERROR,
-                         "/sys/hypervisor/properties/capabilities: %s",
-                         strerror(errno));
+            virReportSystemError(conn, errno,
+                                 _("cannot read file %s"),
+                                 "/sys/hypervisor/properties/capabilities");
             return NULL;
         }
     }

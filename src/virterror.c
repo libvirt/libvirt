@@ -20,6 +20,7 @@
 #include "logging.h"
 #include "memory.h"
 #include "threads.h"
+#include "util.h"
 
 virThreadLocal virLastErr;
 
@@ -983,7 +984,7 @@ virErrorMsg(virErrorNumber error, const char *info)
 void virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
                           const char *filename ATTRIBUTE_UNUSED,
                           const char *funcname ATTRIBUTE_UNUSED,
-                          long long linenr ATTRIBUTE_UNUSED,
+                          size_t linenr ATTRIBUTE_UNUSED,
                           const char *fmt, ...)
 {
     va_list args;
@@ -1002,4 +1003,68 @@ void virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
     virRaiseError(conn, NULL, NULL, domcode, errcode, VIR_ERR_ERROR,
                   virerr, errorMessage, NULL, -1, -1, virerr, errorMessage);
 
+}
+
+
+void virReportSystemErrorFull(virConnectPtr conn,
+                              int domcode,
+                              int theerrno,
+                              const char *filename ATTRIBUTE_UNUSED,
+                              const char *funcname ATTRIBUTE_UNUSED,
+                              size_t linenr ATTRIBUTE_UNUSED,
+                              const char *fmt, ...)
+{
+    va_list args;
+    char errorMessage[1024];
+    char systemError[1024];
+    char *theerrnostr;
+    const char *virerr;
+    char *combined = NULL;
+
+#ifdef HAVE_STRERROR_R
+#ifdef __USE_GNU
+    /* Annoying linux specific API contract */
+    theerrnostr = strerror_r(theerrno, systemError, sizeof(systemError));
+#else
+    strerror_r(theerrno, systemError, sizeof(systemError));
+    theerrnostr = systemError;
+#endif
+#else
+    /* Mingw lacks strerror_r() and its strerror() is definitely not
+     * threadsafe, so safest option is to just print the raw errno
+     * value - we can at least reliably & safely look it up in the
+     * header files for debug purposes
+     */
+    snprintf(systemError, sizeof(systemError), "errno=%d", theerrno);
+    theerrnostr = systemError;
+#endif
+
+    if (fmt) {
+        va_start(args, fmt);
+        vsnprintf(errorMessage, sizeof(errorMessage)-1, fmt, args);
+        va_end(args);
+    } else {
+        errorMessage[0] = '\0';
+    }
+
+    if (virAsprintf(&combined, "%s: %s", errorMessage, theerrnostr) < 0)
+        combined = theerrnostr; /* OOM, so lets just pass the strerror info as best effort */
+
+    virerr = virErrorMsg(VIR_ERR_SYSTEM_ERROR, (errorMessage[0] ? errorMessage : NULL));
+    virRaiseError(conn, NULL, NULL, domcode, VIR_ERR_SYSTEM_ERROR, VIR_ERR_ERROR,
+                  virerr, errorMessage, NULL, -1, -1, virerr, errorMessage);
+}
+
+
+void virReportOOMErrorFull(virConnectPtr conn,
+                           int domcode,
+                           const char *filename ATTRIBUTE_UNUSED,
+                           const char *funcname ATTRIBUTE_UNUSED,
+                           size_t linenr ATTRIBUTE_UNUSED)
+{
+    const char *virerr;
+
+    virerr = virErrorMsg(VIR_ERR_NO_MEMORY, NULL);
+    virRaiseError(conn, NULL, NULL, domcode, VIR_ERR_NO_MEMORY, VIR_ERR_ERROR,
+                  virerr, NULL, NULL, -1, -1, virerr, NULL);
 }
