@@ -42,9 +42,12 @@
 #include "memory.h"
 #include "network_conf.h"
 #include "domain_conf.h"
+#include "domain_event.h"
+#include "event.h"
 #include "storage_conf.h"
 #include "xml.h"
 #include "threads.h"
+#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 
@@ -72,6 +75,13 @@ struct _testConn {
     virStoragePoolObjList pools;
     int numCells;
     testCell cells[MAX_CELLS];
+
+
+    /* An array of callbacks */
+    virDomainEventCallbackListPtr domainEventCallbacks;
+    virDomainEventQueuePtr domainEventQueue;
+    int domainEventTimer;
+    int domainEventDispatching;
 };
 typedef struct _testConn testConn;
 typedef struct _testConn *testConnPtr;
@@ -95,6 +105,12 @@ static const virNodeInfo defaultNodeInfo = {
 #define testError(conn, code, fmt...)                               \
         virReportErrorHelper(conn, VIR_FROM_TEST, code, __FILE__, \
                                __FUNCTION__, __LINE__, fmt)
+
+static int testClose(virConnectPtr conn);
+static void testDomainEventFlush(int timer, void *opaque);
+static void testDomainEventQueue(testConnPtr driver,
+                                 virDomainEventPtr event);
+
 
 static void testDriverLock(testConnPtr driver)
 {
@@ -644,6 +660,22 @@ static virDrvOpenStatus testOpen(virConnectPtr conn,
         ret = testOpenFromFile(conn,
                                conn->uri->path);
 
+    if (ret == VIR_DRV_OPEN_SUCCESS) {
+        testConnPtr privconn = conn->privateData;
+        /* Init callback list */
+        if (VIR_ALLOC(privconn->domainEventCallbacks) < 0 ||
+            !(privconn->domainEventQueue = virDomainEventQueueNew())) {
+            virReportOOMError(NULL);
+            testClose(conn);
+            return VIR_DRV_OPEN_ERROR;
+        }
+
+        if ((privconn->domainEventTimer =
+             virEventAddTimeout(-1, testDomainEventFlush, privconn, NULL)) < 0)
+            DEBUG0("virEventAddTimeout failed: No addTimeoutImpl defined. "
+                   "continuing without events.");
+    }
+
     return (ret);
 }
 
@@ -655,6 +687,13 @@ static int testClose(virConnectPtr conn)
     virDomainObjListFree(&privconn->domains);
     virNetworkObjListFree(&privconn->networks);
     virStoragePoolObjListFree(&privconn->pools);
+
+    virDomainEventCallbackListFree(privconn->domainEventCallbacks);
+    virDomainEventQueueFree(privconn->domainEventQueue);
+
+    if (privconn->domainEventTimer != -1)
+        virEventRemoveTimeout(privconn->domainEventTimer);
+
     testDriverUnlock(privconn);
     virMutexDestroy(&privconn->lock);
 
@@ -733,6 +772,7 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
     virDomainPtr ret = NULL;
     virDomainDefPtr def;
     virDomainObjPtr dom = NULL;
+    virDomainEventPtr event = NULL;
 
     testDriverLock(privconn);
     if ((def = virDomainDefParseString(conn, privconn->caps, xml,
@@ -747,6 +787,10 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
     dom->state = VIR_DOMAIN_RUNNING;
     dom->def->id = privconn->nextDomID++;
 
+    event = virDomainEventNewFromObj(dom,
+                                     VIR_DOMAIN_EVENT_STARTED,
+                                     VIR_DOMAIN_EVENT_STARTED_BOOTED);
+
     ret = virGetDomain(conn, def->name, def->uuid);
     if (ret)
         ret->id = def->id;
@@ -754,6 +798,8 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
 cleanup:
     if (dom)
         virDomainObjUnlock(dom);
+    if (event)
+        testDomainEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -860,6 +906,7 @@ static int testDestroyDomain (virDomainPtr domain)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    virDomainEventPtr event = NULL;
     int ret = -1;
 
     testDriverLock(privconn);
@@ -874,16 +921,22 @@ static int testDestroyDomain (virDomainPtr domain)
     privdom->state = VIR_DOMAIN_SHUTOFF;
     privdom->def->id = -1;
     domain->id = -1;
+    event = virDomainEventNewFromObj(privdom,
+                                     VIR_DOMAIN_EVENT_STOPPED,
+                                     VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
     if (!privdom->persistent) {
         virDomainRemoveInactive(&privconn->domains,
                                 privdom);
         privdom = NULL;
     }
 
+
     ret = 0;
 cleanup:
     if (privdom)
         virDomainObjUnlock(privdom);
+    if (event)
+        testDomainEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -892,6 +945,7 @@ static int testResumeDomain (virDomainPtr domain)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    virDomainEventPtr event = NULL;
     int ret = -1;
 
     testDriverLock(privconn);
@@ -912,11 +966,19 @@ static int testResumeDomain (virDomainPtr domain)
     }
 
     privdom->state = VIR_DOMAIN_RUNNING;
+    event = virDomainEventNewFromObj(privdom,
+                                     VIR_DOMAIN_EVENT_RESUMED,
+                                     VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
     ret = 0;
 
 cleanup:
     if (privdom)
         virDomainObjUnlock(privdom);
+    if (event) {
+        testDriverLock(privconn);
+        testDomainEventQueue(privconn, event);
+        testDriverUnlock(privconn);
+    }
     return ret;
 }
 
@@ -924,6 +986,7 @@ static int testPauseDomain (virDomainPtr domain)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    virDomainEventPtr event = NULL;
     int ret = -1;
 
     testDriverLock(privconn);
@@ -945,11 +1008,20 @@ static int testPauseDomain (virDomainPtr domain)
     }
 
     privdom->state = VIR_DOMAIN_PAUSED;
+    event = virDomainEventNewFromObj(privdom,
+                                     VIR_DOMAIN_EVENT_SUSPENDED,
+                                     VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
     ret = 0;
 
 cleanup:
     if (privdom)
         virDomainObjUnlock(privdom);
+
+    if (event) {
+        testDriverLock(privconn);
+        testDomainEventQueue(privconn, event);
+        testDriverUnlock(privconn);
+    }
     return ret;
 }
 
@@ -957,6 +1029,7 @@ static int testShutdownDomain (virDomainPtr domain)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    virDomainEventPtr event = NULL;
     int ret = -1;
 
     testDriverLock(privconn);
@@ -977,6 +1050,9 @@ static int testShutdownDomain (virDomainPtr domain)
     privdom->state = VIR_DOMAIN_SHUTOFF;
     domain->id = -1;
     privdom->def->id = -1;
+    event = virDomainEventNewFromObj(privdom,
+                                     VIR_DOMAIN_EVENT_STOPPED,
+                                     VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
     if (!privdom->persistent) {
         virDomainRemoveInactive(&privconn->domains,
                                 privdom);
@@ -987,6 +1063,8 @@ static int testShutdownDomain (virDomainPtr domain)
 cleanup:
     if (privdom)
         virDomainObjUnlock(privdom);
+    if (event)
+        testDomainEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -997,6 +1075,7 @@ static int testRebootDomain (virDomainPtr domain,
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    virDomainEventPtr event = NULL;
     int ret = -1;
 
     testDriverLock(privconn);
@@ -1037,10 +1116,15 @@ static int testRebootDomain (virDomainPtr domain,
         break;
     }
 
-    if (privdom->state == VIR_DOMAIN_SHUTOFF && !privdom->persistent) {
-        virDomainRemoveInactive(&privconn->domains,
-                                privdom);
-        privdom = NULL;
+    if (privdom->state == VIR_DOMAIN_SHUTOFF) {
+        event = virDomainEventNewFromObj(privdom,
+                                         VIR_DOMAIN_EVENT_STOPPED,
+                                         VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+        if (!privdom->persistent) {
+            virDomainRemoveInactive(&privconn->domains,
+                                    privdom);
+            privdom = NULL;
+        }
     }
 
     ret = 0;
@@ -1048,6 +1132,8 @@ static int testRebootDomain (virDomainPtr domain,
 cleanup:
     if (privdom)
         virDomainObjUnlock(privdom);
+    if (event)
+        testDomainEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -1101,6 +1187,7 @@ static int testDomainSave(virDomainPtr domain,
     int fd = -1;
     int len;
     virDomainObjPtr privdom;
+    virDomainEventPtr event = NULL;
     int ret = -1;
 
     testDriverLock(privconn);
@@ -1155,6 +1242,9 @@ static int testDomainSave(virDomainPtr domain,
     fd = -1;
 
     privdom->state = VIR_DOMAIN_SHUTOFF;
+    event = virDomainEventNewFromObj(privdom,
+                                     VIR_DOMAIN_EVENT_STOPPED,
+                                     VIR_DOMAIN_EVENT_STOPPED_SAVED);
     if (!privdom->persistent) {
         virDomainRemoveInactive(&privconn->domains,
                                 privdom);
@@ -1175,6 +1265,8 @@ cleanup:
     }
     if (privdom)
         virDomainObjUnlock(privdom);
+    if (event)
+        testDomainEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -1189,6 +1281,7 @@ static int testDomainRestore(virConnectPtr conn,
     int len;
     virDomainDefPtr def = NULL;
     virDomainObjPtr dom = NULL;
+    virDomainEventPtr event = NULL;
     int ret = -1;
 
     if ((fd = open(path, O_RDONLY)) < 0) {
@@ -1243,6 +1336,9 @@ static int testDomainRestore(virConnectPtr conn,
     dom->state = VIR_DOMAIN_RUNNING;
     dom->def->id = privconn->nextDomID++;
     def = NULL;
+    event = virDomainEventNewFromObj(dom,
+                                     VIR_DOMAIN_EVENT_STARTED,
+                                     VIR_DOMAIN_EVENT_STARTED_RESTORED);
     ret = dom->def->id;
 
 cleanup:
@@ -1252,6 +1348,8 @@ cleanup:
         close(fd);
     if (dom)
         virDomainObjUnlock(dom);
+    if (event)
+        testDomainEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -1263,6 +1361,7 @@ static int testDomainCoreDump(virDomainPtr domain,
     testConnPtr privconn = domain->conn->privateData;
     int fd = -1;
     virDomainObjPtr privdom;
+    virDomainEventPtr event = NULL;
     int ret = -1;
 
     testDriverLock(privconn);
@@ -1293,6 +1392,9 @@ static int testDomainCoreDump(virDomainPtr domain,
         goto cleanup;
     }
     privdom->state = VIR_DOMAIN_SHUTOFF;
+    event = virDomainEventNewFromObj(privdom,
+                                     VIR_DOMAIN_EVENT_STOPPED,
+                                     VIR_DOMAIN_EVENT_STOPPED_CRASHED);
     if (!privdom->persistent) {
         virDomainRemoveInactive(&privconn->domains,
                                 privdom);
@@ -1305,6 +1407,8 @@ cleanup:
         close(fd);
     if (privdom)
         virDomainObjUnlock(privdom);
+    if (event)
+        testDomainEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -1510,6 +1614,7 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
     virDomainPtr ret = NULL;
     virDomainDefPtr def;
     virDomainObjPtr dom = NULL;
+    virDomainEventPtr event = NULL;
 
     testDriverLock(privconn);
     if ((def = virDomainDefParseString(conn, privconn->caps, xml,
@@ -1522,6 +1627,9 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
     }
     dom->persistent = 1;
     dom->def->id = -1;
+    event = virDomainEventNewFromObj(dom,
+                                     VIR_DOMAIN_EVENT_DEFINED,
+                                     VIR_DOMAIN_EVENT_DEFINED_ADDED);
 
     ret = virGetDomain(conn, def->name, def->uuid);
     def = NULL;
@@ -1532,6 +1640,8 @@ cleanup:
     virDomainDefFree(def);
     if (dom)
         virDomainObjUnlock(dom);
+    if (event)
+        testDomainEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -1566,6 +1676,7 @@ cleanup:
 static int testDomainCreate(virDomainPtr domain) {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    virDomainEventPtr event = NULL;
     int ret = -1;
 
     testDriverLock(privconn);
@@ -1585,11 +1696,16 @@ static int testDomainCreate(virDomainPtr domain) {
 
     domain->id = privdom->def->id = privconn->nextDomID++;
     privdom->state = VIR_DOMAIN_RUNNING;
+    event = virDomainEventNewFromObj(privdom,
+                                     VIR_DOMAIN_EVENT_STARTED,
+                                     VIR_DOMAIN_EVENT_STARTED_BOOTED);
     ret = 0;
 
 cleanup:
     if (privdom)
         virDomainObjUnlock(privdom);
+    if (event)
+        testDomainEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -1597,6 +1713,7 @@ cleanup:
 static int testDomainUndefine(virDomainPtr domain) {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
+    virDomainEventPtr event = NULL;
     int ret = -1;
 
     testDriverLock(privconn);
@@ -1615,6 +1732,9 @@ static int testDomainUndefine(virDomainPtr domain) {
     }
 
     privdom->state = VIR_DOMAIN_SHUTOFF;
+    event = virDomainEventNewFromObj(privdom,
+                                     VIR_DOMAIN_EVENT_UNDEFINED,
+                                     VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
     virDomainRemoveInactive(&privconn->domains,
                             privdom);
     privdom = NULL;
@@ -1623,6 +1743,8 @@ static int testDomainUndefine(virDomainPtr domain) {
 cleanup:
     if (privdom)
         virDomainObjUnlock(privdom);
+    if (event)
+        testDomainEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -3255,6 +3377,103 @@ static int testDevMonClose(virConnectPtr conn) {
 }
 
 
+static int
+testDomainEventRegister (virConnectPtr conn,
+                         virConnectDomainEventCallback callback,
+                         void *opaque,
+                         virFreeCallback freecb)
+{
+    testConnPtr driver = conn->privateData;
+    int ret;
+
+    testDriverLock(driver);
+    ret = virDomainEventCallbackListAdd(conn, driver->domainEventCallbacks,
+                                        callback, opaque, freecb);
+    testDriverUnlock(driver);
+
+    return ret;
+}
+
+static int
+testDomainEventDeregister (virConnectPtr conn,
+                           virConnectDomainEventCallback callback)
+{
+    testConnPtr driver = conn->privateData;
+    int ret;
+
+    testDriverLock(driver);
+    if (driver->domainEventDispatching)
+        ret = virDomainEventCallbackListMarkDelete(conn, driver->domainEventCallbacks,
+                                                   callback);
+    else
+        ret = virDomainEventCallbackListRemove(conn, driver->domainEventCallbacks,
+                                               callback);
+    testDriverUnlock(driver);
+
+    return ret;
+}
+
+static void testDomainEventDispatchFunc(virConnectPtr conn,
+                                        virDomainEventPtr event,
+                                        virConnectDomainEventCallback cb,
+                                        void *cbopaque,
+                                        void *opaque)
+{
+    testConnPtr driver = opaque;
+
+    /* Drop the lock whle dispatching, for sake of re-entrancy */
+    testDriverUnlock(driver);
+    virDomainEventDispatchDefaultFunc(conn, event, cb, cbopaque, NULL);
+    testDriverLock(driver);
+}
+
+static void testDomainEventFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
+{
+    testConnPtr driver = opaque;
+    virDomainEventQueue tempQueue;
+
+    testDriverLock(driver);
+
+    driver->domainEventDispatching = 1;
+
+    /* Copy the queue, so we're reentrant safe */
+    tempQueue.count = driver->domainEventQueue->count;
+    tempQueue.events = driver->domainEventQueue->events;
+    driver->domainEventQueue->count = 0;
+    driver->domainEventQueue->events = NULL;
+
+    virEventUpdateTimeout(driver->domainEventTimer, -1);
+    virDomainEventQueueDispatch(&tempQueue,
+                                driver->domainEventCallbacks,
+                                testDomainEventDispatchFunc,
+                                driver);
+
+    /* Purge any deleted callbacks */
+    virDomainEventCallbackListPurgeMarked(driver->domainEventCallbacks);
+
+    driver->domainEventDispatching = 0;
+    testDriverUnlock(driver);
+}
+
+
+/* driver must be locked before calling */
+static void testDomainEventQueue(testConnPtr driver,
+                                 virDomainEventPtr event)
+{
+    if (driver->domainEventTimer < 0) {
+        virDomainEventFree(event);
+        return;
+    }
+
+    if (virDomainEventQueuePush(driver->domainEventQueue,
+                                event) < 0)
+        virDomainEventFree(event);
+
+    if (driver->domainEventQueue->count == 1)
+        virEventUpdateTimeout(driver->domainEventTimer, 0);
+}
+
+
 static virDriver testDriver = {
     VIR_DRV_TEST,
     "Test",
@@ -3313,8 +3532,8 @@ static virDriver testDriver = {
     NULL, /* domainMemoryPeek */
     testNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
     NULL, /* getFreeMemory */
-    NULL, /* domainEventRegister */
-    NULL, /* domainEventDeregister */
+    testDomainEventRegister, /* domainEventRegister */
+    testDomainEventDeregister, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */
     NULL, /* domainMigrateFinish2 */
 };

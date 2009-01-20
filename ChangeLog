@@ -1,3 +1,9 @@
+Tue Jan 20 20:22:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/test.c: Support domain events in test driver
+	* tests/read-bufsiz: Set $srcdir & $abs_srcdir if running
+	standalone
+
 Tue Jan 20 19:49:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* .x-sc_prohibit_nonreentrant: Blacklist some places where

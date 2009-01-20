@@ -21,6 +21,9 @@ if test "$VERBOSE" = yes; then
   virsh --version
 fi
 
+test -z "$srcdir" && srcdir=`pwd`
+test -z "$abs_top_srcdir" && abs_top_srcdir=`pwd`/..
+
 . $srcdir/test-lib.sh
 
 fail=0
