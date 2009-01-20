@@ -1,3 +1,9 @@
+Tue Jan 20 11:43:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Disable event watch when doing an
+	RPC call to avoid bogus event loop wakeups which would
+	block on a lock
+
 Tue Jan 20 11:28:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Add locking to all public API entry

@@ -754,9 +754,7 @@ doRemoteOpen (virConnectPtr conn,
     DEBUG0("Adding Handler for remote events");
     /* Set up a callback to listen on the socket data */
     if ((priv->watch = virEventAddHandle(priv->sock,
-                                         VIR_EVENT_HANDLE_READABLE |
-                                         VIR_EVENT_HANDLE_ERROR |
-                                         VIR_EVENT_HANDLE_HANGUP,
+                                         VIR_EVENT_HANDLE_READABLE,
                                          remoteDomainEventFired,
                                          conn, NULL)) < 0) {
         DEBUG0("virEventAddHandle failed: No addHandleImpl defined."
@@ -5555,11 +5553,11 @@ static int really_read (virConnectPtr conn, struct private_data *priv,
  * else Bad Things will happen in the XDR code.
  */
 static int
-call (virConnectPtr conn, struct private_data *priv,
-      int flags /* if we are in virConnectOpen */,
-      int proc_nr,
-      xdrproc_t args_filter, char *args,
-      xdrproc_t ret_filter, char *ret)
+doCall (virConnectPtr conn, struct private_data *priv,
+        int flags /* if we are in virConnectOpen */,
+        int proc_nr,
+        xdrproc_t args_filter, char *args,
+        xdrproc_t ret_filter, char *ret)
 {
     char buffer[REMOTE_MESSAGE_MAX];
     char buffer2[4];
@@ -5748,6 +5746,34 @@ retry_read:
         xdr_destroy (&xdr);
         return -1;
     }
+}
+
+
+static int
+call (virConnectPtr conn, struct private_data *priv,
+      int flags /* if we are in virConnectOpen */,
+      int proc_nr,
+      xdrproc_t args_filter, char *args,
+      xdrproc_t ret_filter, char *ret)
+{
+    int rv;
+    /*
+     * Avoid needless wake-ups of the event loop in the
+     * case where this call is being made from a different
+     * thread than the event loop. These wake-ups would
+     * cause the event loop thread to be blocked on the
+     * mutex for the duration of the call
+     */
+    if (priv->watch >= 0)
+        virEventUpdateHandle(priv->watch, 0);
+
+    rv = doCall(conn, priv,flags, proc_nr,
+                args_filter, args,
+                ret_filter, ret);
+
+    if (priv->watch >= 0)
+        virEventUpdateHandle(priv->watch, VIR_EVENT_HANDLE_READABLE);
+    return rv;
 }
 
 static int
