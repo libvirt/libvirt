@@ -46,9 +46,6 @@
 #endif
 
 #ifndef PROXY
-/* A list of active domain name/uuids */
-static xenUnifiedDomainInfoListPtr activeDomainList = NULL;
-
 static char *xenStoreDomainGetOSType(virDomainPtr domain);
 
 struct xenUnifiedDriver xenStoreDriver = {
@@ -312,7 +309,7 @@ xenStoreOpen(virConnectPtr conn,
 
 #ifndef PROXY
     /* Init activeDomainList */
-    if ( VIR_ALLOC(activeDomainList) < 0) {
+    if (VIR_ALLOC(priv->activeDomainList) < 0) {
         virXenStoreError(NULL, VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("failed to allocate activeDomainList"));
         return -1;
@@ -390,8 +387,8 @@ xenStoreClose(virConnectPtr conn)
     xenStoreWatchListFree(priv->xsWatchList);
     priv->xsWatchList = NULL;
 #ifndef PROXY
-    xenUnifiedDomainInfoListFree(activeDomainList);
-    activeDomainList = NULL;
+    xenUnifiedDomainInfoListFree(priv->activeDomainList);
+    priv->activeDomainList = NULL;
 #endif
     if (priv->xshandle == NULL)
         return(-1);
@@ -1190,7 +1187,7 @@ int xenStoreDomainIntroduced(virConnectPtr conn,
     int *new_domids;
     int nread;
 
-    xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) opaque;
+    xenUnifiedPrivatePtr priv = opaque;
 
 retry:
     new_domain_cnt = xenStoreNumOfDomains(conn);
@@ -1209,8 +1206,8 @@ retry:
     missing = 0;
     for (i=0 ; i < new_domain_cnt ; i++) {
         found = 0;
-        for (j = 0 ; j < activeDomainList->count ; j++) {
-            if (activeDomainList->doms[j]->id == new_domids[i]) {
+        for (j = 0 ; j < priv->activeDomainList->count ; j++) {
+            if (priv->activeDomainList->doms[j]->id == new_domids[i]) {
                 found = 1;
                 break;
             }
@@ -1238,7 +1235,7 @@ retry:
                 xenUnifiedDomainEventDispatch(priv, event);
 
             /* Add to the list */
-            xenUnifiedAddDomainInfo(activeDomainList,
+            xenUnifiedAddDomainInfo(priv->activeDomainList,
                                     new_domids[i], name, uuid);
 
             VIR_FREE(name);
@@ -1267,7 +1264,7 @@ int xenStoreDomainReleased(virConnectPtr conn,
 
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) opaque;
 
-    if(!activeDomainList->count) return 0;
+    if(!priv->activeDomainList->count) return 0;
 
 retry:
     new_domain_cnt = xenStoreNumOfDomains(conn);
@@ -1285,10 +1282,10 @@ retry:
     }
 
     removed = 0;
-    for (j=0 ; j < activeDomainList->count ; j++) {
+    for (j=0 ; j < priv->activeDomainList->count ; j++) {
         found = 0;
         for (i=0 ; i < new_domain_cnt ; i++) {
-            if (activeDomainList->doms[j]->id == new_domids[i]) {
+            if (priv->activeDomainList->doms[j]->id == new_domids[i]) {
                 found = 1;
                 break;
             }
@@ -1297,18 +1294,18 @@ retry:
         if (!found) {
             virDomainEventPtr event =
                 virDomainEventNew(-1,
-                                  activeDomainList->doms[j]->name,
-                                  activeDomainList->doms[j]->uuid,
+                                  priv->activeDomainList->doms[j]->name,
+                                  priv->activeDomainList->doms[j]->uuid,
                                   VIR_DOMAIN_EVENT_STOPPED,
                                   VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
             if (event)
                 xenUnifiedDomainEventDispatch(priv, event);
 
             /* Remove from the list */
-            xenUnifiedRemoveDomainInfo(activeDomainList,
-                                       activeDomainList->doms[j]->id,
-                                       activeDomainList->doms[j]->name,
-                                       activeDomainList->doms[j]->uuid);
+            xenUnifiedRemoveDomainInfo(priv->activeDomainList,
+                                       priv->activeDomainList->doms[j]->id,
+                                       priv->activeDomainList->doms[j]->name,
+                                       priv->activeDomainList->doms[j]->uuid);
 
             removed = 1;
         }

@@ -1,3 +1,9 @@
+Tue Jan 20 17:15:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xen_inotify.c, src/xen_unified.h, src/xs_internal.c:
+	Move statically declared data into xenUnifiedPrivatePtr
+	struct
+
 Tue Jan 20 16:59:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Make error reporting threadsafe by avoiding strerror()

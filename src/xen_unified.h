@@ -156,6 +156,9 @@ struct _xenUnifiedPrivate {
     /* A list of xenstore watches */
     xenStoreWatchListPtr xsWatchList;
     int xsWatch;
+    /* A list of active domain name/uuids */
+    xenUnifiedDomainInfoListPtr activeDomainList;
+
 
     /* An list of callbacks */
     virDomainEventCallbackListPtr domainEventCallbacks;
@@ -164,6 +167,10 @@ struct _xenUnifiedPrivate {
     /* The inotify fd */
     int inotifyFD;
     int inotifyWatch;
+
+    const char *configDir;
+    int  useXenConfigCache ;
+    xenUnifiedDomainInfoListPtr configInfoList;
 #endif
 };
 
