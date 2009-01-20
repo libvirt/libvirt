@@ -24,7 +24,6 @@
 
 #include "internal.h"
 
-extern virError virLastErr;
 extern virErrorFunc virErrorHandler;
 extern void *virUserData;
 
@@ -33,6 +32,7 @@ extern void *virUserData;
  *		API for error handling					*
  *									*
  ************************************************************************/
+int virErrorInitialize(void);
 void virRaiseError(virConnectPtr conn,
                    virDomainPtr dom,
                    virNetworkPtr net,
@@ -52,5 +52,8 @@ void virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
                           const char *fmt, ...)
   ATTRIBUTE_FORMAT(printf, 7, 8);
 
+
+void virSetGlobalError(void);
+void virSetConnError(virConnectPtr conn);
 
 #endif

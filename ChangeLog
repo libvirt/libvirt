@@ -1,3 +1,20 @@
+Tue Jan 20 12:01:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Thread local error handling
+	* src/datatypes.c: Don't reference global error object directly
+	now that it is thread-local. Avoid passing 'conn' arg to error
+	routines if we just determined that the pointer is invalid
+	* src/datatypes.h: Add note about rules for locking when using
+	virConnectPtr members
+	* src/libvirt.c: Initialize error handling routines at startup.
+	Adapt driver API methods to reset last error upon entry, and
+	copy the global thread local error to the per-connection error
+	upon exit
+	* src/virterror.c, src/virterror_internal.h: Store the global
+	error object in a thread local variable. Provide a API to copy
+	the global error into a per-connection error object. Add an
+	initialization routine to setup the thread local
+
 Tue Jan 20 11:43:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Disable event watch when doing an

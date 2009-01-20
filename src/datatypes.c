@@ -195,8 +195,6 @@ virReleaseConnect(virConnectPtr conn) {
         virHashFree(conn->nodeDevices, (virHashDeallocator) virNodeDeviceFree);
 
     virResetError(&conn->err);
-    if (virLastErr.conn == conn)
-        virLastErr.conn = NULL;
 
     xmlFreeURI(conn->uri);
 
@@ -219,7 +217,7 @@ virUnrefConnect(virConnectPtr conn) {
     int refs;
 
     if ((!VIR_IS_CONNECT(conn))) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
     virMutexLock(&conn->lock);
@@ -253,7 +251,7 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     virDomainPtr ret = NULL;
 
     if ((!VIR_IS_CONNECT(conn)) || (name == NULL) || (uuid == NULL)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
     virMutexLock(&conn->lock);
@@ -323,10 +321,6 @@ virReleaseDomain(virDomainPtr domain) {
         virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
                         _("domain missing from connection hash table"));
 
-    if (conn->err.dom == domain)
-        conn->err.dom = NULL;
-    if (virLastErr.dom == domain)
-        virLastErr.dom = NULL;
     domain->magic = -1;
     domain->id = -1;
     VIR_FREE(domain->name);
@@ -358,7 +352,7 @@ virUnrefDomain(virDomainPtr domain) {
     int refs;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibConnError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
     virMutexLock(&domain->conn->lock);
@@ -393,7 +387,7 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     virNetworkPtr ret = NULL;
 
     if ((!VIR_IS_CONNECT(conn)) || (name == NULL) || (uuid == NULL)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
     virMutexLock(&conn->lock);
@@ -459,11 +453,6 @@ virReleaseNetwork(virNetworkPtr network) {
         virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
                         _("network missing from connection hash table"));
 
-    if (conn->err.net == network)
-        conn->err.net = NULL;
-    if (virLastErr.net == network)
-        virLastErr.net = NULL;
-
     network->magic = -1;
     VIR_FREE(network->name);
     VIR_FREE(network);
@@ -494,7 +483,7 @@ virUnrefNetwork(virNetworkPtr network) {
     int refs;
 
     if (!VIR_IS_CONNECTED_NETWORK(network)) {
-        virLibConnError(network->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
     virMutexLock(&network->conn->lock);
@@ -530,7 +519,7 @@ virGetStoragePool(virConnectPtr conn, const char *name, const unsigned char *uui
     virStoragePoolPtr ret = NULL;
 
     if ((!VIR_IS_CONNECT(conn)) || (name == NULL) || (uuid == NULL)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
     virMutexLock(&conn->lock);
@@ -627,7 +616,7 @@ virUnrefStoragePool(virStoragePoolPtr pool) {
     int refs;
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
-        virLibConnError(pool->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
     virMutexLock(&pool->conn->lock);
@@ -664,7 +653,7 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name, const c
     virStorageVolPtr ret = NULL;
 
     if ((!VIR_IS_CONNECT(conn)) || (name == NULL) || (key == NULL)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
     virMutexLock(&conn->lock);
@@ -765,7 +754,7 @@ virUnrefStorageVol(virStorageVolPtr vol) {
     int refs;
 
     if (!VIR_IS_CONNECTED_STORAGE_VOL(vol)) {
-        virLibConnError(vol->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
     virMutexLock(&vol->conn->lock);
@@ -801,7 +790,7 @@ virGetNodeDevice(virConnectPtr conn, const char *name)
     virNodeDevicePtr ret = NULL;
 
     if ((!VIR_IS_CONNECT(conn)) || (name == NULL)) {
-        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
     virMutexLock(&conn->lock);

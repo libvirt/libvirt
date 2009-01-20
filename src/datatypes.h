@@ -95,6 +95,10 @@
  * Internal structure associated to a connection
  */
 struct _virConnect {
+    /* All the variables from here, until the 'lock' declaration
+     * are setup at time of connection open, and never changed
+     * since. Thus no need to lock when accessing them
+     */
     unsigned int magic;     /* specific value to check */
     int flags;              /* a set of connection flags */
     xmlURIPtr uri;          /* connection URI */
@@ -114,11 +118,6 @@ struct _virConnect {
     void *            storagePrivateData;
     void *            devMonPrivateData;
 
-    /* Per-connection error. */
-    virError err;           /* the last error */
-    virErrorFunc handler;   /* associated handlet */
-    void *userData;         /* the user data */
-
     /*
      * The lock mutex must be acquired before accessing/changing
      * any of members following this point, or changing the ref
@@ -126,6 +125,12 @@ struct _virConnect {
      * this connection
      */
     virMutex lock;
+
+    /* Per-connection error. */
+    virError err;           /* the last error */
+    virErrorFunc handler;   /* associated handlet */
+    void *userData;         /* the user data */
+
     virHashTablePtr domains;  /* hash table for known domains */
     virHashTablePtr networks; /* hash table for known domains */
     virHashTablePtr storagePools;/* hash table for known storage pools */
