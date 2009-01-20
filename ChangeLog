@@ -1,3 +1,9 @@
+Tue Jan 20 14:50:58 CET 2009 Jim Meyering <meyering@redhat.com>
+
+	fix "make syntax-check" failures
+	* ChangeLog: Start with TAB, not 8 spaces.
+	* src/virterror.c: Remove trailing spaces.
+
 Tue Jan 20 12:25:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.ac: Fix alignment of configuration summary output
@@ -7,8 +13,8 @@ Tue Jan 20 12:08:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 	* include/libvirt/libvirt.h, include/libvirt/libvirt.h.in,
 	src/libvirt.c, src/libvirt_public.syms: Add new ref counting
 	APIs for public objects: virConnectRef, virDomainRef,
-        virNetworkRef, virStoragePoolRef, virStorageVolRef,
-        virNodeDeviceRef
+	virNetworkRef, virStoragePoolRef, virStorageVolRef,
+	virNodeDeviceRef
 
 Tue Jan 20 12:03:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 

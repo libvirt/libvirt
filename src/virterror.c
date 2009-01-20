@@ -1,7 +1,7 @@
 /*
  * virterror.c: implements error handling and reporting code for libvirt
  *
- * Copy:  Copyright (C) 2006, 2008 Red Hat, Inc.
+ * Copy:  Copyright (C) 2006, 2008, 2009 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -334,7 +334,7 @@ virResetLastError(void)
  * If the connection object was discovered to be invalid by
  * an API call, then the error will be reported against the
  * global error object.
- * 
+ *
  * Since 0.6.0, all errors reported in the per-connection object
  * are also duplicated in the global error object. As such an
  * application can always use virGetLastError(). This method
@@ -365,7 +365,7 @@ virConnGetLastError(virConnectPtr conn)
  * If the connection object was discovered to be invalid by
  * an API call, then the error will be reported against the
  * global error object.
- * 
+ *
  * Since 0.6.0, all errors reported in the per-connection object
  * are also duplicated in the global error object. As such an
  * application can always use virGetLastError(). This method
@@ -1003,5 +1003,3 @@ void virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
                   virerr, errorMessage, NULL, -1, -1, virerr, errorMessage);
 
 }
-
-
