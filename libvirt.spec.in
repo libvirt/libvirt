@@ -11,6 +11,7 @@
 %define with_python    0%{!?_without_python:1}
 %define with_libvirtd  0%{!?_without_libvirtd:1}
 %define with_uml       0%{!?_without_uml:1}
+%define with_network   0%{!?_without_network:1}
 
 # Xen is available only on i386 x86_64 ia64
 %ifnarch i386 i686 x86_64 ia64
@@ -222,6 +223,10 @@ of recent versions of Linux (and other OSes).
 %define _with_rhel5_api --with-rhel5-api
 %endif
 
+%if ! %{with_network}
+%define _without_network --without-network
+%endif
+
 %configure %{?_without_xen} \
            %{?_without_qemu} \
            %{?_without_openvz} \
@@ -232,6 +237,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_python} \
            %{?_without_libvirtd} \
            %{?_without_uml} \
+           %{?_without_network} \
            %{?_with_rhel5_api} \
            --with-init-script=redhat \
            --with-qemud-pid-file=%{_localstatedir}/run/libvirt_qemud.pid \
@@ -248,11 +254,6 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.a
-install -d -m 0755 $RPM_BUILD_ROOT%{_localstatedir}/run/libvirt/
-# Default dir for disk images defined in SELinux policy
-install -d -m 0755 $RPM_BUILD_ROOT%{_localstatedir}/lib/libvirt/images/
-# Default dir for kernel+initrd images defnied in SELinux policy
-install -d -m 0755 $RPM_BUILD_ROOT%{_localstatedir}/lib/libvirt/boot/
 
 %if %{with_qemu}
 # We don't want to install /etc/libvirt/qemu/networks in the main %files list
@@ -354,9 +355,29 @@ fi
 %endif
 
 %dir %{_localstatedir}/run/libvirt/
+
 %dir %{_localstatedir}/lib/libvirt/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/images/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/boot/
+
+%if %{with_qemu}
+%dir %{_localstatedir}/run/libvirt/qemu/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/qemu/
+%endif
+%if %{with_lxc}
+%dir %{_localstatedir}/run/libvirt/lxc/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/lxc/
+%endif
+%if %{with_uml}
+%dir %{_localstatedir}/run/libvirt/uml/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/uml/
+%endif
+%if %{with_network}
+%dir %{_localstatedir}/run/libvirt/network/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/network/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/iptables/filter/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/iptables/nat/
+%endif
 
 %if %{with_qemu}
 %{_datadir}/augeas/lenses/libvirtd_qemu.aug

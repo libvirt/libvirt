@@ -57,6 +57,8 @@
 #include "iptables.h"
 #include "bridge.h"
 
+#define NETWORK_PID_DIR LOCAL_STATE_DIR "/run/libvirt/network"
+#define NETWORK_STATE_DIR LOCAL_STATE_DIR "/lib/libvirt/network"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 
@@ -106,6 +108,68 @@ static struct network_driver *driverState = NULL;
 
 
 static void
+networkFindActiveConfigs(struct network_driver *driver) {
+    unsigned int i;
+
+    for (i = 0 ; i < driver->networks.count ; i++) {
+        virNetworkObjPtr obj = driver->networks.objs[i];
+        virNetworkDefPtr tmp;
+        char *config;
+
+        virNetworkObjLock(obj);
+
+        if ((config = virNetworkConfigFile(NULL,
+                                           NETWORK_STATE_DIR,
+                                           obj->def->name)) == NULL) {
+            virNetworkObjUnlock(obj);
+            continue;
+        }
+
+        if (access(config, R_OK) < 0) {
+            VIR_FREE(config);
+            virNetworkObjUnlock(obj);
+            continue;
+        }
+
+        /* Try and load the live config */
+        tmp = virNetworkDefParseFile(NULL, config);
+        VIR_FREE(config);
+        if (tmp) {
+            obj->newDef = obj->def;
+            obj->def = tmp;
+        }
+
+        /* If bridge exists, then mark it active */
+        if (obj->def->bridge &&
+            brHasBridge(driver->brctl, obj->def->bridge) == 0) {
+            obj->active = 1;
+
+            /* Finally try and read dnsmasq pid if any DHCP ranges are set */
+            if (obj->def->nranges &&
+                virFileReadPid(NETWORK_PID_DIR, obj->def->name,
+                               &obj->dnsmasqPid) == 0) {
+
+                /* Check its still alive */
+                if (kill(obj->dnsmasqPid, 0) != 0)
+                    obj->dnsmasqPid = -1;
+
+#ifdef __linux__
+                char *pidpath;
+
+                virAsprintf(&pidpath, "/proc/%d/exe", obj->dnsmasqPid);
+                if (virFileLinkPointsTo(pidpath, DNSMASQ) == 0)
+                    obj->dnsmasqPid = -1;
+                VIR_FREE(pidpath);
+#endif
+            }
+        }
+
+        virNetworkObjUnlock(obj);
+    }
+}
+
+
+static void
 networkAutostartConfigs(struct network_driver *driver) {
     unsigned int i;
 
@@ -133,6 +197,7 @@ networkStartup(void) {
     uid_t uid = geteuid();
     struct passwd *pw;
     char *base = NULL;
+    int err;
 
     if (VIR_ALLOC(driverState) < 0)
         goto error;
@@ -178,12 +243,26 @@ networkStartup(void) {
 
     VIR_FREE(base);
 
+    if ((err = brInit(&driverState->brctl))) {
+        virReportSystemError(NULL, err, "%s",
+                             _("cannot initialize bridge support"));
+        goto error;
+    }
+
+    if (!(driverState->iptables = iptablesContextNew())) {
+        networkReportError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY,
+                           "%s", _("failed to allocate space for IP tables support"));
+        goto error;
+    }
+
+
     if (virNetworkLoadAllConfigs(NULL,
                                  &driverState->networks,
                                  driverState->networkConfigDir,
                                  driverState->networkAutostartDir) < 0)
         goto error;
 
+    networkFindActiveConfigs(driverState);
     networkAutostartConfigs(driverState);
 
     networkDriverUnlock(driverState);
@@ -266,22 +345,10 @@ networkActive(void) {
  */
 static int
 networkShutdown(void) {
-    unsigned int i;
-
     if (!driverState)
         return -1;
 
     networkDriverLock(driverState);
-
-    /* shutdown active networks */
-    for (i = 0 ; i < driverState->networks.count ; i++) {
-        virNetworkObjPtr net = driverState->networks.objs[i];
-        virNetworkObjLock(net);
-        if (virNetworkIsActive(net))
-            networkShutdownNetworkDaemon(NULL, driverState,
-                                         driverState->networks.objs[i]);
-        virNetworkObjUnlock(net);
-    }
 
     /* free inactive networks */
     virNetworkObjListFree(&driverState->networks);
@@ -306,23 +373,42 @@ networkShutdown(void) {
 
 static int
 networkBuildDnsmasqArgv(virConnectPtr conn,
-                      virNetworkObjPtr network,
-                      const char ***argv) {
+                        virNetworkObjPtr network,
+                        const char *pidfile,
+                        const char ***argv) {
     int i, len, r;
-    char buf[PATH_MAX];
+    char *pidfileArg;
+    char buf[1024];
+
+    /*
+     * NB, be careful about syntax for dnsmasq options in long format
+     *
+     * If the flag has a mandatory argument, it can be given using
+     * either syntax:
+     *
+     *     --foo bar
+     *     --foo=bar
+     *
+     * If the flag has a optional argument, it *must* be given using
+     * the syntax:
+     *
+     *     --foo=bar
+     *
+     * It is hard to determine whether a flag is optional or not,
+     * without reading the dnsmasq source :-( The manpages is not
+     * very explicit on this
+     */
 
     len =
         1 + /* dnsmasq */
-        1 + /* --keep-in-foreground */
         1 + /* --strict-order */
         1 + /* --bind-interfaces */
         (network->def->domain?2:0) + /* --domain name */
-        2 + /* --pid-file "" */
+        2 + /* --pid-file /var/run/libvirt/network/$NAME.pid */
         2 + /* --conf-file "" */
         /*2 + *//* --interface virbr0 */
         2 + /* --except-interface lo */
         2 + /* --listen-address 10.0.0.1 */
-        1 + /* --dhcp-leasefile=path */
         (2 * network->def->nranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
         /*  --dhcp-host 01:23:45:67:89:0a,hostname,10.0.0.3 */
         (2 * network->def->nhosts) +
@@ -336,11 +422,13 @@ networkBuildDnsmasqArgv(virConnectPtr conn,
             goto no_memory;          \
     } while (0)
 
+#define APPEND_ARG_LIT(v, n, s) \
+        (v)[(n)] = s
+
     i = 0;
 
     APPEND_ARG(*argv, i++, DNSMASQ);
 
-    APPEND_ARG(*argv, i++, "--keep-in-foreground");
     /*
      * Needed to ensure dnsmasq uses same algorithm for processing
      * multiple namedriver entries in /etc/resolv.conf as GLibC.
@@ -353,10 +441,11 @@ networkBuildDnsmasqArgv(virConnectPtr conn,
        APPEND_ARG(*argv, i++, network->def->domain);
     }
 
-    APPEND_ARG(*argv, i++, "--pid-file");
-    APPEND_ARG(*argv, i++, "");
+    if (virAsprintf(&pidfileArg, "--pid-file=%s", pidfile) < 0)
+        goto no_memory;
+    APPEND_ARG_LIT(*argv, i++, pidfileArg);
 
-    APPEND_ARG(*argv, i++, "--conf-file");
+    APPEND_ARG(*argv, i++, "--conf-file=");
     APPEND_ARG(*argv, i++, "");
 
     /*
@@ -373,15 +462,6 @@ networkBuildDnsmasqArgv(virConnectPtr conn,
 
     APPEND_ARG(*argv, i++, "--except-interface");
     APPEND_ARG(*argv, i++, "lo");
-
-    /*
-     * NB, dnsmasq command line arg bug means we need to
-     * use a single arg '--dhcp-leasefile=path' rather than
-     * two separate args in '--dhcp-leasefile path' style
-     */
-    snprintf(buf, sizeof(buf), "--dhcp-leasefile=%s/lib/libvirt/dhcp-%s.leases",
-             LOCAL_STATE_DIR, network->def->name);
-    APPEND_ARG(*argv, i++, buf);
 
     for (r = 0 ; r < network->def->nranges ; r++) {
         snprintf(buf, sizeof(buf), "%s,%s",
@@ -431,7 +511,10 @@ dhcpStartDhcpDaemon(virConnectPtr conn,
                     virNetworkObjPtr network)
 {
     const char **argv;
-    int ret, i;
+    char *pidfile;
+    int ret = -1, i, err;
+
+    network->dnsmasqPid = -1;
 
     if (network->def->ipAddress == NULL) {
         networkReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -439,13 +522,49 @@ dhcpStartDhcpDaemon(virConnectPtr conn,
         return -1;
     }
 
-    argv = NULL;
-    if (networkBuildDnsmasqArgv(conn, network, &argv) < 0)
+    if ((err = virFileMakePath(NETWORK_PID_DIR)) < 0) {
+        virReportSystemError(conn, err,
+                             _("cannot create directory %s"),
+                             NETWORK_PID_DIR);
         return -1;
+    }
+    if ((err = virFileMakePath(NETWORK_STATE_DIR)) < 0) {
+        virReportSystemError(conn, err,
+                             _("cannot create directory %s"),
+                             NETWORK_STATE_DIR);
+        return -1;
+    }
 
-    ret = virExec(conn, argv, NULL, NULL,
-                  &network->dnsmasqPid, -1, NULL, NULL, VIR_EXEC_NONBLOCK);
+    if (!(pidfile = virFilePid(NETWORK_PID_DIR, network->def->name))) {
+        virReportOOMError(conn);
+        return -1;
+    }
 
+    argv = NULL;
+    if (networkBuildDnsmasqArgv(conn, network, pidfile, &argv) < 0) {
+        VIR_FREE(pidfile);
+        return -1;
+    }
+
+    if (virRun(conn, argv, NULL) < 0)
+        goto cleanup;
+
+    /*
+     * There really is no race here - when dnsmasq daemonizes,
+     * its leader process stays around until its child has
+     * actually written its pidfile. So by time virRun exits
+     * it has waitpid'd and guaranteed the proess has started
+     * and written a pid
+     */
+
+    if (virFileReadPid(NETWORK_PID_DIR, network->def->name,
+                       &network->dnsmasqPid) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(pidfile);
     for (i = 0; argv[i]; i++)
         VIR_FREE(argv[i]);
     VIR_FREE(argv);
@@ -550,13 +669,6 @@ networkAddIptablesRules(virConnectPtr conn,
                       struct network_driver *driver,
                       virNetworkObjPtr network) {
     int err;
-
-    if (!driver->iptables && !(driver->iptables = iptablesContextNew())) {
-        networkReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                     "%s", _("failed to allocate space for IP tables support"));
-        return 0;
-    }
-
 
     /* allow DHCP requests through to dnsmasq */
     if ((err = iptablesAddTcpInput(driver->iptables, network->def->bridge, 67))) {
@@ -722,19 +834,12 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
         return -1;
     }
 
-    if (!driver->brctl && (err = brInit(&driver->brctl))) {
-        virReportSystemError(conn, err, "%s",
-                             _("cannot initialize bridge support"));
-        return -1;
-    }
-
     if ((err = brAddBridge(driver->brctl, &network->def->bridge))) {
         virReportSystemError(conn, err,
                              _("cannot create bridge '%s'"),
                              network->def->bridge);
         return -1;
     }
-
 
     if (brSetForwardDelay(driver->brctl, network->def->bridge, network->def->delay) < 0)
         goto err_delbr;
@@ -780,9 +885,21 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
         dhcpStartDhcpDaemon(conn, network) < 0)
         goto err_delbr2;
 
+
+    /* Persist the live configuration now we have bridge info  */
+    if (virNetworkSaveConfig(conn, NETWORK_STATE_DIR, network->def) < 0) {
+        goto err_kill;
+    }
+
     network->active = 1;
 
     return 0;
+
+ err_kill:
+    if (network->dnsmasqPid > 0) {
+        kill(network->dnsmasqPid, SIGTERM);
+        network->dnsmasqPid = -1;
+    }
 
  err_delbr2:
     networkRemoveIptablesRules(driver, network);
@@ -804,15 +921,23 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
 }
 
 
-static int networkShutdownNetworkDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                      struct network_driver *driver,
-                                      virNetworkObjPtr network) {
+static int networkShutdownNetworkDaemon(virConnectPtr conn,
+                                        struct network_driver *driver,
+                                        virNetworkObjPtr network) {
     int err;
+    char *stateFile;
 
     networkLog(NETWORK_INFO, _("Shutting down network '%s'\n"), network->def->name);
 
     if (!virNetworkIsActive(network))
         return 0;
+
+    stateFile = virNetworkConfigFile(conn, NETWORK_STATE_DIR, network->def->name);
+    if (!stateFile)
+        return -1;
+
+    unlink(stateFile);
+    VIR_FREE(stateFile);
 
     if (network->dnsmasqPid > 0)
         kill(network->dnsmasqPid, SIGTERM);
@@ -830,13 +955,10 @@ static int networkShutdownNetworkDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
                  network->def->bridge, strerror(err));
     }
 
+    /* See if its still alive and really really kill it */
     if (network->dnsmasqPid > 0 &&
-        waitpid(network->dnsmasqPid, NULL, WNOHANG) != network->dnsmasqPid) {
+        (kill(network->dnsmasqPid, 0) == 0))
         kill(network->dnsmasqPid, SIGKILL);
-        if (waitpid(network->dnsmasqPid, NULL, 0) != network->dnsmasqPid)
-            networkLog(NETWORK_WARN,
-                     "%s", _("Got unexpected pid for dnsmasq\n"));
-    }
 
     network->dnsmasqPid = -1;
     network->active = 0;
@@ -1054,8 +1176,7 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
 
     if (virNetworkSaveConfig(conn,
                              driver->networkConfigDir,
-                             driver->networkAutostartDir,
-                             network) < 0) {
+                             network->newDef ? network->newDef : network->def) < 0) {
         virNetworkRemoveInactive(&driver->networks,
                                  network);
         network = NULL;
@@ -1092,7 +1213,10 @@ static int networkUndefine(virNetworkPtr net) {
         goto cleanup;
     }
 
-    if (virNetworkDeleteConfig(net->conn, network) < 0)
+    if (virNetworkDeleteConfig(net->conn,
+                               driver->networkConfigDir,
+                               driver->networkAutostartDir,
+                               network) < 0)
         goto cleanup;
 
     virNetworkRemoveInactive(&driver->networks,
@@ -1146,7 +1270,7 @@ static int networkDestroy(virNetworkPtr net) {
     }
 
     ret = networkShutdownNetworkDaemon(net->conn, driver, network);
-    if (!network->configFile) {
+    if (!network->persistent) {
         virNetworkRemoveInactive(&driver->networks,
                                  network);
         network = NULL;
@@ -1239,9 +1363,10 @@ cleanup:
 }
 
 static int networkSetAutostart(virNetworkPtr net,
-                             int autostart) {
+                               int autostart) {
     struct network_driver *driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
+    char *configFile = NULL, *autostartLink = NULL;
     int ret = -1;
 
     networkDriverLock(driver);
@@ -1257,6 +1382,11 @@ static int networkSetAutostart(virNetworkPtr net,
     autostart = (autostart != 0);
 
     if (network->autostart != autostart) {
+        if ((configFile = virNetworkConfigFile(net->conn, driver->networkConfigDir, network->def->name)) == NULL)
+            goto cleanup;
+        if ((autostartLink = virNetworkConfigFile(net->conn, driver->networkAutostartDir, network->def->name)) == NULL)
+            goto cleanup;
+
         if (autostart) {
             int err;
 
@@ -1267,17 +1397,17 @@ static int networkSetAutostart(virNetworkPtr net,
                 goto cleanup;
             }
 
-            if (symlink(network->configFile, network->autostartLink) < 0) {
+            if (symlink(configFile, autostartLink) < 0) {
                 virReportSystemError(net->conn, errno,
                                      _("Failed to create symlink '%s' to '%s'"),
-                                     network->autostartLink, network->configFile);
+                                     autostartLink, configFile);
                 goto cleanup;
             }
         } else {
-            if (unlink(network->autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
+            if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
                 virReportSystemError(net->conn, errno,
                                      _("Failed to delete symlink '%s'"),
-                                     network->autostartLink);
+                                     autostartLink);
                 goto cleanup;
             }
         }
@@ -1287,6 +1417,8 @@ static int networkSetAutostart(virNetworkPtr net,
     ret = 0;
 
 cleanup:
+    VIR_FREE(configFile);
+    VIR_FREE(autostartLink);
     if (network)
         virNetworkObjUnlock(network);
     return ret;

@@ -125,9 +125,6 @@ void virNetworkObjFree(virNetworkObjPtr net)
     virNetworkDefFree(net->def);
     virNetworkDefFree(net->newDef);
 
-    VIR_FREE(net->configFile);
-    VIR_FREE(net->autostartLink);
-
     virMutexDestroy(&net->lock);
 
     VIR_FREE(net);
@@ -641,31 +638,17 @@ char *virNetworkDefFormat(virConnectPtr conn,
     return NULL;
 }
 
-int virNetworkSaveConfig(virConnectPtr conn,
-                         const char *configDir,
-                         const char *autostartDir,
-                         virNetworkObjPtr net)
+int virNetworkSaveXML(virConnectPtr conn,
+                      const char *configDir,
+                      virNetworkDefPtr def,
+                      const char *xml)
 {
-    char *xml;
+    char *configFile = NULL;
     int fd = -1, ret = -1;
     size_t towrite;
     int err;
 
-    if (!net->configFile &&
-        virAsprintf(&net->configFile, "%s/%s.xml",
-                    configDir, net->def->name) < 0) {
-        virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
-        goto cleanup;
-    }
-    if (!net->autostartLink &&
-        virAsprintf(&net->autostartLink, "%s/%s.xml",
-                    autostartDir, net->def->name) < 0) {
-        virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
-        goto cleanup;
-    }
-
-    if (!(xml = virNetworkDefFormat(conn,
-                                    net->newDef ? net->newDef : net->def)))
+    if ((configFile = virNetworkConfigFile(conn, configDir, def->name)) == NULL)
         goto cleanup;
 
     if ((err = virFileMakePath(configDir))) {
@@ -675,19 +658,12 @@ int virNetworkSaveConfig(virConnectPtr conn,
         goto cleanup;
     }
 
-    if ((err = virFileMakePath(autostartDir))) {
-        virReportSystemError(conn, err,
-                             _("cannot create autostart directory '%s'"),
-                             autostartDir);
-        goto cleanup;
-    }
-
-    if ((fd = open(net->configFile,
+    if ((fd = open(configFile,
                    O_WRONLY | O_CREAT | O_TRUNC,
                    S_IRUSR | S_IWUSR )) < 0) {
         virReportSystemError(conn, errno,
                              _("cannot create config file '%s'"),
-                             net->configFile);
+                             configFile);
         goto cleanup;
     }
 
@@ -695,48 +671,63 @@ int virNetworkSaveConfig(virConnectPtr conn,
     if (safewrite(fd, xml, towrite) < 0) {
         virReportSystemError(conn, errno,
                              _("cannot write config file '%s'"),
-                             net->configFile);
+                             configFile);
         goto cleanup;
     }
 
     if (close(fd) < 0) {
         virReportSystemError(conn, errno,
                              _("cannot save config file '%s'"),
-                             net->configFile);
+                             configFile);
         goto cleanup;
     }
 
     ret = 0;
 
  cleanup:
-    VIR_FREE(xml);
     if (fd != -1)
         close(fd);
 
+    VIR_FREE(configFile);
+
     return ret;
 }
+
+int virNetworkSaveConfig(virConnectPtr conn,
+                         const char *configDir,
+                         virNetworkDefPtr def)
+{
+    int ret = -1;
+    char *xml;
+
+    if (!(xml = virNetworkDefFormat(conn, def)))
+        goto cleanup;
+
+    if (virNetworkSaveXML(conn, configDir, def, xml))
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    VIR_FREE(xml);
+    return ret;
+}
+
 
 virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
                                       virNetworkObjListPtr nets,
                                       const char *configDir,
                                       const char *autostartDir,
-                                      const char *file)
+                                      const char *name)
 {
     char *configFile = NULL, *autostartLink = NULL;
     virNetworkDefPtr def = NULL;
     virNetworkObjPtr net;
     int autostart;
 
-    if (virAsprintf(&configFile, "%s/%s",
-                    configDir, file) < 0) {
-        virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+    if ((configFile = virNetworkConfigFile(conn, configDir, name)) == NULL)
         goto error;
-    }
-    if (virAsprintf(&autostartLink, "%s/%s",
-                    autostartDir, file) < 0) {
-        virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+    if ((autostartLink = virNetworkConfigFile(conn, autostartDir, name)) == NULL)
         goto error;
-    }
 
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
         goto error;
@@ -744,7 +735,7 @@ virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
     if (!(def = virNetworkDefParseFile(conn, configFile)))
         goto error;
 
-    if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
+    if (!STREQ(name, def->name)) {
         virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               _("Network config filename '%s'"
                                 " does not match network name '%s'"),
@@ -755,9 +746,10 @@ virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
     if (!(net = virNetworkAssignDef(conn, nets, def)))
         goto error;
 
-    net->configFile = configFile;
-    net->autostartLink = autostartLink;
     net->autostart = autostart;
+
+    VIR_FREE(configFile);
+    VIR_FREE(autostartLink);
 
     return net;
 
@@ -791,7 +783,7 @@ int virNetworkLoadAllConfigs(virConnectPtr conn,
         if (entry->d_name[0] == '.')
             continue;
 
-        if (!virFileHasSuffix(entry->d_name, ".xml"))
+        if (!virFileStripSuffix(entry->d_name, ".xml"))
             continue;
 
         /* NB: ignoring errors, so one malformed config doesn't
@@ -811,26 +803,50 @@ int virNetworkLoadAllConfigs(virConnectPtr conn,
 }
 
 int virNetworkDeleteConfig(virConnectPtr conn,
+                           const char *configDir,
+                           const char *autostartDir,
                            virNetworkObjPtr net)
 {
-    if (!net->configFile || !net->autostartLink) {
-        virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("no config file for %s"), net->def->name);
-        return -1;
-    }
+    char *configFile = NULL;
+    char *autostartLink = NULL;
+
+    if ((configFile = virNetworkConfigFile(conn, configDir, net->def->name)) == NULL)
+        goto error;
+    if ((autostartLink = virNetworkConfigFile(conn, autostartDir, net->def->name)) == NULL)
+        goto error;
 
     /* Not fatal if this doesn't work */
-    unlink(net->autostartLink);
+    unlink(autostartLink);
 
-    if (unlink(net->configFile) < 0) {
+    if (unlink(configFile) < 0) {
         virReportSystemError(conn, errno,
                              _("cannot remove config file '%s'"),
-                             net->configFile);
-        return -1;
+                             configFile);
+        goto error;
     }
 
     return 0;
+
+error:
+    VIR_FREE(configFile);
+    VIR_FREE(autostartLink);
+    return -1;
 }
+
+char *virNetworkConfigFile(virConnectPtr conn,
+                           const char *dir,
+                           const char *name)
+{
+    char *ret = NULL;
+
+    if (virAsprintf(&ret, "%s/%s.xml", dir, name) < 0) {
+        virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        return NULL;
+    }
+
+    return ret;
+}
+
 
 void virNetworkObjLock(virNetworkObjPtr obj)
 {

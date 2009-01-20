@@ -192,6 +192,7 @@ virFree;
 
 # network_conf.h
 virNetworkAssignDef;
+virNetworkConfigFile;
 virNetworkDefFormat;
 virNetworkDefFree;
 virNetworkDefParseFile;
@@ -204,6 +205,7 @@ virNetworkLoadAllConfigs;
 virNetworkObjListFree;
 virNetworkDefParseNode;
 virNetworkRemoveInactive;
+virNetworkSaveConfigXML;
 virNetworkSaveConfig;
 virNetworkObjLock;
 virNetworkObjUnlock;

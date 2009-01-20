@@ -9,6 +9,7 @@ brAddBridge;
 brAddInterface;
 brAddTap;
 brDeleteBridge;
+brHasBridge;
 brInit;
 brSetEnableSTP;
 brSetForwardDelay;

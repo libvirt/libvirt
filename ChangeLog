@@ -1,3 +1,18 @@
+Tue Jan 20 22:25:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Allow virtual networks to survive a daemon restart
+	* libvirt.spec.in: Add conditional to allow disabling of network
+	and remove mkdir of state directories now created in Makefile.am
+	rules
+	* src/bridge.c, src/bridge.h: Add a brHasBridge() method
+	* src/libvirt_bridge.syms: Add brHasBridge
+	* src/libvirt_private.syms: Add virNetworkConfigFile and
+	virNetworkSaveConfigXML
+	* src/network_conf.c, src/network_conf.h, src/network_driver.c:
+	Write out state file containing live XML. Allow dnsmasq to
+	store a PID file. Put dnsmasq in background. Remove obsolete
+	dhcp-leasefile option which was a no-op
+
 Tue Jan 20 22:12:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/domain_conf.c, src/domain_conf.h: Support ac97 soundcard

@@ -589,9 +589,29 @@ endif
 endif
 EXTRA_DIST += $(LXC_CONTROLLER_SOURCES)
 
-# Create the /var/cache/libvirt directory when installing.
 install-exec-local:
-	$(MKDIR_P) $(DESTDIR)$(localstatedir)/cache/libvirt
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/cache/libvirt"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/images"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/boot"
+if WITH_QEMU
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/qemu"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/qemu"
+endif
+if WITH_LXC
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lxc"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/lxc"
+endif
+if WITH_UML
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/uml"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/uml"
+endif
+if WITH_NETWORK
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/iptables/filter"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/iptables/nat"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/network"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/network"
+endif
+
 
 CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
 DISTCLEANFILES = $(BUILT_SOURCES)

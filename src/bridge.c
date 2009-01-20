@@ -163,6 +163,43 @@ int brAddBridge (brControl *ctl ATTRIBUTE_UNUSED,
 }
 #endif
 
+#ifdef SIOCBRDELBR
+int
+brHasBridge(brControl *ctl,
+            const char *name)
+{
+    struct ifreq ifr;
+    int len;
+
+    if (!ctl || !name) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    if ((len = strlen(name)) >= BR_IFNAME_MAXLEN) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    memset(&ifr, 0, sizeof(struct ifreq));
+
+    strncpy(ifr.ifr_name, name, len);
+    ifr.ifr_name[len] = '\0';
+
+    if (ioctl(ctl->fd, SIOCGIFFLAGS, &ifr))
+        return -1;
+
+    return 0;
+}
+#else
+int
+brHasBridge(brControl *ctl,
+            const char *name)
+{
+    return EINVAL;
+}
+#endif
+
 /**
  * brDeleteBridge:
  * @ctl: bridge control pointer
