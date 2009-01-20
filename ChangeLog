@@ -1,3 +1,8 @@
+Tue Jan 20 11:28:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Add locking to all public API entry
+	points
+
 Mon Jan 19 22:50:53 CET 2009 Guido Günther <agx@sigxcpu.org>
 
 	daemonize qemu processes
