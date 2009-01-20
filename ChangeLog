@@ -1,3 +1,8 @@
+Tue Jan 20 17:46:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Remove a use of strerror() in error
+	reporting missed earlier
+
 Tue Jan 20 17:33:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xen_inotify.c, src/xen_unified.c, src/xen_unified.h,

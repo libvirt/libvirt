@@ -6192,8 +6192,8 @@ processCalls(virConnectPtr conn,
         if (ret < 0) {
             if (errno == EWOULDBLOCK)
                 continue;
-            errorf (in_open ? NULL : conn, VIR_ERR_INTERNAL_ERROR,
-                    _("poll on socket failed %s"), strerror(errno));
+            virReportSystemError(in_open ? NULL : conn, errno,
+                                 "%s", _("poll on socket failed"));
             return -1;
         }
 
