@@ -107,7 +107,8 @@ virStorageBackendISCSIExtractSession(virConnectPtr conn,
 
 static char *
 virStorageBackendISCSISession(virConnectPtr conn,
-                              virStoragePoolObjPtr pool)
+                              virStoragePoolObjPtr pool,
+                              int probe)
 {
     /*
      * # iscsiadm --mode session
@@ -141,7 +142,8 @@ virStorageBackendISCSISession(virConnectPtr conn,
                                       NULL) < 0)
         return NULL;
 
-    if (session == NULL) {
+    if (session == NULL &&
+        !probe) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("cannot find session"));
         return NULL;
@@ -573,6 +575,7 @@ virStorageBackendISCSIStartPool(virConnectPtr conn,
                                 virStoragePoolObjPtr pool)
 {
     char *portal = NULL;
+    char *session;
 
     if (pool->def->source.host.name == NULL) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -587,13 +590,17 @@ virStorageBackendISCSIStartPool(virConnectPtr conn,
         return -1;
     }
 
-    if ((portal = virStorageBackendISCSIPortal(conn, pool)) == NULL)
-        return -1;
-    if (virStorageBackendISCSILogin(conn, pool, portal) < 0) {
+    if ((session = virStorageBackendISCSISession(conn, pool, 1)) == NULL) {
+        if ((portal = virStorageBackendISCSIPortal(conn, pool)) == NULL)
+            return -1;
+        if (virStorageBackendISCSILogin(conn, pool, portal) < 0) {
+            VIR_FREE(portal);
+            return -1;
+        }
         VIR_FREE(portal);
-        return -1;
+    } else {
+        VIR_FREE(session);
     }
-    VIR_FREE(portal);
     return 0;
 }
 
@@ -607,7 +614,7 @@ virStorageBackendISCSIRefreshPool(virConnectPtr conn,
 
     virStorageBackendWaitForDevices(conn);
 
-    if ((session = virStorageBackendISCSISession(conn, pool)) == NULL)
+    if ((session = virStorageBackendISCSISession(conn, pool, 0)) == NULL)
         goto cleanup;
     if (virStorageBackendISCSIRescanLUNs(conn, pool, session) < 0)
         goto cleanup;

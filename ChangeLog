@@ -1,3 +1,11 @@
+Tue Jan 20 22:39:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Properly handle daemon restarts with storage driver
+	* src/storage_backend_iscsi.c: Detect if already logged into
+	an iSCSI target
+	* src/storage_driver.c: Don't shutdown storage when daemon
+	shuts down
+
 Tue Jan 20 22:25:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Allow virtual networks to survive a daemon restart

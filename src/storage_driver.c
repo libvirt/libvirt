@@ -238,32 +238,10 @@ storageDriverActive(void) {
  */
 static int
 storageDriverShutdown(void) {
-    unsigned int i;
-
     if (!driverState)
         return -1;
 
     storageDriverLock(driverState);
-    /* shutdown active pools */
-    for (i = 0 ; i < driverState->pools.count ; i++) {
-        virStoragePoolObjPtr pool = driverState->pools.objs[i];
-
-        if (virStoragePoolObjIsActive(pool)) {
-            virStorageBackendPtr backend;
-            if ((backend = virStorageBackendForType(pool->def->type)) == NULL) {
-                storageLog("Missing backend");
-                continue;
-            }
-
-            if (backend->stopPool &&
-                backend->stopPool(NULL, pool) < 0) {
-                virErrorPtr err = virGetLastError();
-                storageLog("Failed to stop storage pool '%s': %s",
-                           pool->def->name, err ? err->message : NULL);
-            }
-            virStoragePoolObjClearVols(pool);
-        }
-    }
 
     /* free inactive pools */
     virStoragePoolObjListFree(&driverState->pools);
