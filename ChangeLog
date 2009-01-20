@@ -1,3 +1,8 @@
+Tue Jan 20 18:16:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xm_internal.c: Fix 2 misleading comments & potential
+	NULL deference
+
 Tue Jan 20 17:46:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Remove a use of strerror() in error

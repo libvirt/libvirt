@@ -559,10 +559,10 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
 
 
 /*
- * Open a 'connection' to the config file directory ;-)
- * We just create a hash table to store config files in.
- * We only support a single directory, so repeated calls
- * to open all end up using the same cache of files
+ * The XM driver keeps a cache of config files as virDomainDefPtr
+ * objects in the xenUnifiedPrivatePtr. Optionally inotify lets
+ * us watch for changes (see separate driver), otherwise we poll
+ * every few seconds
  */
 virDrvOpenStatus
 xenXMOpen (virConnectPtr conn,
@@ -591,8 +591,8 @@ xenXMOpen (virConnectPtr conn,
 }
 
 /*
- * Free the config files in the cache if this is the
- * last connection
+ * Free the cached config files associated with this
+ * connection
  */
 int xenXMClose(virConnectPtr conn) {
     xenUnifiedPrivatePtr priv = conn->privateData;
@@ -1290,7 +1290,7 @@ no_memory:
  * domain, suitable for later feeding for virDomainCreateXML
  */
 char *xenXMDomainDumpXML(virDomainPtr domain, int flags) {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv;
     const char *filename;
     xenXMConfCachePtr entry;
 
