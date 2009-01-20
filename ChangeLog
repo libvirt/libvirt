@@ -1,3 +1,10 @@
+Tue Jan 20 16:48:00 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/domain_conf.h src/qemu_driver.c: use monitor fd for QEmu/KVM
+	  domain shutdown and read saved vm status on libvirtd startup,
+	  last 2 patches from Guido Günther finishing up the surviving the
+	  libvirt daemon restart
+
 Tue Jan 20 16:35:24 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/apibuild.py: fix the parser with another Win32 keyword

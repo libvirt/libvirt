@@ -465,6 +465,7 @@ struct _virDomainObj {
     int stderr_fd;
     int stderr_watch;
     int monitor;
+    int monitor_watch;
     char *monitorpath;
     int monitorWatch;
     int logfile;
