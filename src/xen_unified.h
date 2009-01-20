@@ -20,6 +20,7 @@
 #include "xen_inotify.h"
 #endif
 #include "domain_event.h"
+#include "hash.h"
 
 #ifndef HAVE_WINSOCK2_H
 #include <sys/un.h>
@@ -163,15 +164,26 @@ struct _xenUnifiedPrivate {
     /* An list of callbacks */
     virDomainEventCallbackListPtr domainEventCallbacks;
 
+    /* Location of config files, either /etc
+     * or /var/lib/xen */
+    const char *configDir;
+
 #if WITH_XEN_INOTIFY
     /* The inotify fd */
     int inotifyFD;
     int inotifyWatch;
 
-    const char *configDir;
     int  useXenConfigCache ;
     xenUnifiedDomainInfoListPtr configInfoList;
 #endif
+
+    /* For the 'xm' driver */
+    /* Primary config file name -> virDomainDef map */
+    virHashTablePtr configCache;
+    /* Domain name to config file name */
+    virHashTablePtr nameConfigMap;
+    /* So we don't refresh too often */
+    time_t lastRefresh;
 };
 
 typedef struct _xenUnifiedPrivate *xenUnifiedPrivatePtr;

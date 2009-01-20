@@ -92,11 +92,13 @@ struct xenUnifiedDriver xenInotifyDriver = {
 };
 
 static int
-xenInotifyXenCacheLookup(const char *filename,
+xenInotifyXenCacheLookup(virConnectPtr conn,
+                         const char *filename,
                          char **name, unsigned char *uuid) {
+    xenUnifiedPrivatePtr priv = conn->privateData;
     xenXMConfCachePtr entry;
 
-    if (!(entry = virHashLookup(xenXMGetConfigCache(), filename))) {
+    if (!(entry = virHashLookup(priv->configCache, filename))) {
         DEBUG("No config found for %s", filename);
         return -1;
     }
@@ -172,7 +174,7 @@ xenInotifyDomainLookup(virConnectPtr conn,
                        char **name, unsigned char *uuid) {
     xenUnifiedPrivatePtr priv = conn->privateData;
     if (priv->useXenConfigCache)
-        return xenInotifyXenCacheLookup(filename, name, uuid);
+        return xenInotifyXenCacheLookup(conn, filename, name, uuid);
     else
         return xenInotifyXendDomainsDirLookup(conn, filename, name, uuid);
 }
@@ -383,9 +385,7 @@ xenInotifyOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
     char path[PATH_MAX];
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
 
-    if(priv->xendConfigVersion <= 2) {
-        /* /etc/xen */
-        priv->configDir = xenXMGetConfigDir();
+    if (priv->configDir) {
         priv->useXenConfigCache = 1;
     } else {
         /* /var/lib/xend/domains/<uuid>/config.sxp */

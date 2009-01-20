@@ -31,10 +31,7 @@
 #include "domain_conf.h"
 
 extern struct xenUnifiedDriver xenXMDriver;
-int xenXMInit (void);
 
-virHashTablePtr xenXMGetConfigCache(void);
-char *xenXMGetConfigDir(void);
 int xenXMConfigCacheRefresh (virConnectPtr conn);
 int xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename);
 int xenXMConfigCacheRemoveFile(virConnectPtr conn, const char *filename);

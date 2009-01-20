@@ -1473,7 +1473,6 @@ xenRegister (void)
 {
     /* Ignore failures here. */
     (void) xenHypervisorInit ();
-    (void) xenXMInit ();
 
     return virRegisterDriver (&xenUnifiedDriver);
 }

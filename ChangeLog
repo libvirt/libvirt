@@ -1,3 +1,9 @@
+Tue Jan 20 17:33:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xen_inotify.c, src/xen_unified.c, src/xen_unified.h,
+	src/xm_internal.c, src/xm_internal.h: Move statically
+	declared data from XM driver into xenUnifiedPrivatePtr
+
 Tue Jan 20 18:26:24 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* libvirt.spec.in: try to autodetect when rhel5 option should be
