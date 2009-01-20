@@ -1338,24 +1338,24 @@ else
 AC_MSG_NOTICE([  polkit: no])
 fi
 if test "$with_selinux" = "yes" ; then
-AC_MSG_NOTICE([  selinux: $SELINUX_CFLAGS $SELINUX_LIBS])
+AC_MSG_NOTICE([ selinux: $SELINUX_CFLAGS $SELINUX_LIBS])
 else
-AC_MSG_NOTICE([  selinux: no])
+AC_MSG_NOTICE([ selinux: no])
 fi
 if test "$with_numactl" = "yes" ; then
-AC_MSG_NOTICE([  numactl: $NUMACTL_CFLAGS $NUMACTL_LIBS])
+AC_MSG_NOTICE([ numactl: $NUMACTL_CFLAGS $NUMACTL_LIBS])
 else
-AC_MSG_NOTICE([  numactl: no])
+AC_MSG_NOTICE([ numactl: no])
 fi
 if test "$with_xen" = "yes" ; then
-AC_MSG_NOTICE([  xen: $XEN_CFLAGS $XEN_LIBS])
+AC_MSG_NOTICE([     xen: $XEN_CFLAGS $XEN_LIBS])
 else
-AC_MSG_NOTICE([  xen: no])
+AC_MSG_NOTICE([     xen: no])
 fi
 if test "$with_hal" = "yes" ; then
-AC_MSG_NOTICE([  hal: $HAL_CFLAGS $HAL_LIBS])
+AC_MSG_NOTICE([     hal: $HAL_CFLAGS $HAL_LIBS])
 else
-AC_MSG_NOTICE([  hal: no])
+AC_MSG_NOTICE([     hal: no])
 fi
 if test "$with_devkit" = "yes" ; then
 AC_MSG_NOTICE([  devkit: $DEVKIT_CFLAGS $DEVKIT_LIBS])
@@ -1365,12 +1365,12 @@ fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])
 AC_MSG_NOTICE([])
-AC_MSG_NOTICE([  Coverage: $enable_coverage])
+AC_MSG_NOTICE([   Coverage: $enable_coverage])
 AC_MSG_NOTICE([  Alloc OOM: $enable_oom])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])
 AC_MSG_NOTICE([])
-AC_MSG_NOTICE([  Debug: $enable_debug])
+AC_MSG_NOTICE([     Debug: $enable_debug])
 AC_MSG_NOTICE([  Warnings: $enable_compile_warnings])
 AC_MSG_NOTICE([  Readline: $lv_use_readline])
 AC_MSG_NOTICE([])

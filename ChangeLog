@@ -1,3 +1,7 @@
+Tue Jan 20 12:25:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.ac: Fix alignment of configuration summary output
+
 Tue Jan 20 12:08:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* include/libvirt/libvirt.h, include/libvirt/libvirt.h.in,
