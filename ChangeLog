@@ -1,3 +1,9 @@
+Tue Jan 20 17:08:20 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/domain_conf.h src/lxc_driver.c src/uml_driver.c: virDomainObj
+	  doesn't need stdout and stderr fields anymore, patch from
+	  Guido Günther
+
 Tue Jan 20 16:48:00 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/domain_conf.h src/qemu_driver.c: use monitor fd for QEmu/KVM

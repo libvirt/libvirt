@@ -460,10 +460,6 @@ struct _virDomainObj {
     virMutex lock;
 
     int stdin_fd;
-    int stdout_fd;
-    int stdout_watch;
-    int stderr_fd;
-    int stderr_watch;
     int monitor;
     int monitor_watch;
     char *monitorpath;

@@ -810,13 +810,12 @@ static int umlStartVMDaemon(virConnectPtr conn,
 
     vm->monitor = -1;
     vm->stdin_fd = -1;
-    vm->stdout_fd = vm->stderr_fd = logfd;
 
     for (i = 0 ; i < ntapfds ; i++)
         FD_SET(tapfds[i], &keepfd);
 
     ret = virExec(conn, argv, progenv, &keepfd, &pid,
-                  vm->stdin_fd, &vm->stdout_fd, &vm->stderr_fd,
+                  vm->stdin_fd, &logfd, &logfd,
                   VIR_EXEC_DAEMON);
     close(logfd);
 
