@@ -396,6 +396,7 @@ virConnectPtr           virConnectOpenReadOnly  (const char *name);
 virConnectPtr           virConnectOpenAuth      (const char *name,
                                                  virConnectAuthPtr auth,
                                                  int flags);
+int                     virConnectRef           (virConnectPtr conn);
 int                     virConnectClose         (virConnectPtr conn);
 const char *            virConnectGetType       (virConnectPtr conn);
 int                     virConnectGetVersion    (virConnectPtr conn,
@@ -453,6 +454,7 @@ int                     virDomainShutdown       (virDomainPtr domain);
 int                     virDomainReboot         (virDomainPtr domain,
                                                  unsigned int flags);
 int                     virDomainDestroy        (virDomainPtr domain);
+int                     virDomainRef            (virDomainPtr domain);
 int                     virDomainFree           (virDomainPtr domain);
 
 /*
@@ -765,6 +767,7 @@ int                     virNetworkCreate        (virNetworkPtr network);
  * Network destroy/free
  */
 int                     virNetworkDestroy       (virNetworkPtr network);
+int                     virNetworkRef           (virNetworkPtr network);
 int                     virNetworkFree          (virNetworkPtr network);
 
 /*
@@ -925,6 +928,7 @@ int                     virStoragePoolCreate            (virStoragePoolPtr pool,
 int                     virStoragePoolDestroy           (virStoragePoolPtr pool);
 int                     virStoragePoolDelete            (virStoragePoolPtr pool,
                                                          unsigned int flags);
+int                     virStoragePoolRef               (virStoragePoolPtr pool);
 int                     virStoragePoolFree              (virStoragePoolPtr pool);
 int                     virStoragePoolRefresh           (virStoragePoolPtr pool,
                                                          unsigned int flags);
@@ -978,6 +982,7 @@ virStorageVolPtr        virStorageVolCreateXML          (virStoragePoolPtr pool,
                                                          unsigned int flags);
 int                     virStorageVolDelete             (virStorageVolPtr vol,
                                                          unsigned int flags);
+int                     virStorageVolRef                (virStorageVolPtr vol);
 int                     virStorageVolFree               (virStorageVolPtr vol);
 
 int                     virStorageVolGetInfo            (virStorageVolPtr vol,
@@ -1045,6 +1050,7 @@ int                     virNodeDeviceListCaps    (virNodeDevicePtr dev,
 char *                  virNodeDeviceGetXMLDesc (virNodeDevicePtr dev,
                                                  unsigned int flags);
 
+int                     virNodeDeviceRef        (virNodeDevicePtr dev);
 int                     virNodeDeviceFree       (virNodeDevicePtr dev);
 
 /*

@@ -1119,6 +1119,35 @@ virConnectClose(virConnectPtr conn)
     return (0);
 }
 
+/**
+ * virConnectRef:
+ * @conn: the connection to hold a reference on
+ *
+ * Increment the reference count on the connection. For each
+ * additional call to this method, there shall be a corresponding
+ * call to virConnectClose to release the reference count, once
+ * the caller no longer needs the reference to this object.
+ *
+ * This method is typically useful for applications where multiple
+ * threads are using a connection, and it is required that the
+ * connection remain open until all threads have finished using
+ * it. ie, each new thread using a connection would increment
+ * the reference count.
+ */
+int
+virConnectRef(virConnectPtr conn)
+{
+    if ((!VIR_IS_CONNECT(conn))) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+    virMutexLock(&conn->lock);
+    DEBUG("conn=%p refs=%d", conn, conn->refs);
+    conn->refs++;
+    virMutexUnlock(&conn->lock);
+    return 0;
+}
+
 /*
  * Not for public use.  This function is part of the internal
  * implementation of driver features in the remote case.
@@ -1775,6 +1804,36 @@ virDomainFree(virDomainPtr domain)
         return -1;
     return(0);
 }
+
+/**
+ * virDomainRef:
+ * @conn: the domain to hold a reference on
+ *
+ * Increment the reference count on the domain. For each
+ * additional call to this method, there shall be a corresponding
+ * call to virDomainFree to release the reference count, once
+ * the caller no longer needs the reference to this object.
+ *
+ * This method is typically useful for applications where multiple
+ * threads are using a connection, and it is required that the
+ * connection remain open until all threads have finished using
+ * it. ie, each new thread using a domain would increment
+ * the reference count.
+ */
+int
+virDomainRef(virDomainPtr domain)
+{
+    if ((!VIR_IS_CONNECTED_DOMAIN(domain))) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+    virMutexLock(&domain->conn->lock);
+    DEBUG("domain=%p refs=%d", domain, domain->refs);
+    domain->refs++;
+    virMutexUnlock(&domain->conn->lock);
+    return 0;
+}
+
 
 /**
  * virDomainSuspend:
@@ -4814,6 +4873,35 @@ virNetworkFree(virNetworkPtr network)
 }
 
 /**
+ * virNetworkRef:
+ * @conn: the network to hold a reference on
+ *
+ * Increment the reference count on the network. For each
+ * additional call to this method, there shall be a corresponding
+ * call to virNetworkFree to release the reference count, once
+ * the caller no longer needs the reference to this object.
+ *
+ * This method is typically useful for applications where multiple
+ * threads are using a connection, and it is required that the
+ * connection remain open until all threads have finished using
+ * it. ie, each new thread using a network would increment
+ * the reference count.
+ */
+int
+virNetworkRef(virNetworkPtr network)
+{
+    if ((!VIR_IS_CONNECTED_NETWORK(network))) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+    virMutexLock(&network->conn->lock);
+    DEBUG("network=%p refs=%d", network, network->refs);
+    network->refs++;
+    virMutexUnlock(&network->conn->lock);
+    return 0;
+}
+
+/**
  * virNetworkGetName:
  * @network: a network object
  *
@@ -5869,6 +5957,35 @@ virStoragePoolFree(virStoragePoolPtr pool)
 
 
 /**
+ * virStoragePoolRef:
+ * @conn: the pool to hold a reference on
+ *
+ * Increment the reference count on the pool. For each
+ * additional call to this method, there shall be a corresponding
+ * call to virStoragePoolFree to release the reference count, once
+ * the caller no longer needs the reference to this object.
+ *
+ * This method is typically useful for applications where multiple
+ * threads are using a connection, and it is required that the
+ * connection remain open until all threads have finished using
+ * it. ie, each new thread using a pool would increment
+ * the reference count.
+ */
+int
+virStoragePoolRef(virStoragePoolPtr pool)
+{
+    if ((!VIR_IS_CONNECTED_STORAGE_POOL(pool))) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+    virMutexLock(&pool->conn->lock);
+    DEBUG("pool=%p refs=%d", pool, pool->refs);
+    pool->refs++;
+    virMutexUnlock(&pool->conn->lock);
+    return 0;
+}
+
+/**
  * virStoragePoolRefresh:
  * @pool: pointer to storage pool
  * @flags: flags to control refresh behaviour (currently unused, use 0)
@@ -6621,6 +6738,35 @@ virStorageVolFree(virStorageVolPtr vol)
 
 
 /**
+ * virStorageVolRef:
+ * @conn: the vol to hold a reference on
+ *
+ * Increment the reference count on the vol. For each
+ * additional call to this method, there shall be a corresponding
+ * call to virStorageVolFree to release the reference count, once
+ * the caller no longer needs the reference to this object.
+ *
+ * This method is typically useful for applications where multiple
+ * threads are using a connection, and it is required that the
+ * connection remain open until all threads have finished using
+ * it. ie, each new thread using a vol would increment
+ * the reference count.
+ */
+int
+virStorageVolRef(virStorageVolPtr vol)
+{
+    if ((!VIR_IS_CONNECTED_STORAGE_VOL(vol))) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+    virMutexLock(&vol->conn->lock);
+    DEBUG("vol=%p refs=%d", vol, vol->refs);
+    vol->refs++;
+    virMutexUnlock(&vol->conn->lock);
+    return 0;
+}
+
+/**
  * virStorageVolGetInfo:
  * @vol: pointer to storage volume
  * @info: pointer at which to store info
@@ -7093,6 +7239,36 @@ int virNodeDeviceFree(virNodeDevicePtr dev)
 }
 
 
+/**
+ * virNodeDeviceRef:
+ * @conn: the dev to hold a reference on
+ *
+ * Increment the reference count on the dev. For each
+ * additional call to this method, there shall be a corresponding
+ * call to virNodeDeviceFree to release the reference count, once
+ * the caller no longer needs the reference to this object.
+ *
+ * This method is typically useful for applications where multiple
+ * threads are using a connection, and it is required that the
+ * connection remain open until all threads have finished using
+ * it. ie, each new thread using a dev would increment
+ * the reference count.
+ */
+int
+virNodeDeviceRef(virNodeDevicePtr dev)
+{
+    if ((!VIR_IS_CONNECTED_NODE_DEVICE(dev))) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+    virMutexLock(&dev->conn->lock);
+    DEBUG("dev=%p refs=%d", dev, dev->refs);
+    dev->refs++;
+    virMutexUnlock(&dev->conn->lock);
+    return 0;
+}
+
+
 /*
  * Domain Event Notification
  */
@@ -7106,6 +7282,13 @@ int virNodeDeviceFree(virNodeDevicePtr dev)
  *
  * Adds a Domain Event Callback.
  * Registering for a domain callback will enable delivery of the events
+ *
+ * The virDomainPtr object handle passed into the callback upon delivery
+ * of an event is only valid for the duration of execution of the callback.
+ * If the callback wishes to keep the domain object after the callback
+ * returns, it shall take a reference to it, by calling virDomainRef.
+ * The reference can be released once the object is no longer required
+ * by calling virDomainFree.
  *
  * Returns 0 on success, -1 on failure
  */
