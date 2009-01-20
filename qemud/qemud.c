@@ -2356,10 +2356,15 @@ qemudSetLogging(virConfPtr conf, const char *filename) {
      */
     GET_CONF_STR (conf, filename, log_outputs);
     if (log_outputs == NULL) {
-        if (godaemon)
-            virLogParseOutputs("3:syslog:libvirtd");
-        else
+        if (godaemon) {
+            char *tmp = NULL;
+            if (virAsprintf (&tmp, "%d:syslog:libvirtd", log_level) < 0)
+                goto free_and_fail;
+            virLogParseOutputs (tmp);
+            VIR_FREE (tmp);
+        } else {
             virLogParseOutputs("0:stderr:libvirtd");
+        }
     } else
         virLogParseOutputs(log_outputs);
     ret = 0;

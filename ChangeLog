@@ -1,3 +1,7 @@
+Tue Jan 20 13:35:36 PST 2009 John Levon <john.levon@sun.com>
+
+	* qemud/qemud.c: respect LIBVIRT_DEBUG when logging to syslog
+
 Tue Jan 20 22:32:44 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/logging.c: fix openlog() ident lifetime for Solaris
