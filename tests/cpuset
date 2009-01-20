@@ -40,6 +40,6 @@ libvir: Domain Config error : failed Xen syscall topology cpuset syntax error
 error: Failed to define domain from xml-invalid
 
 EOF
-compare out exp || fail=1
+compare exp out || fail=1
 
 (exit $fail); exit $fail

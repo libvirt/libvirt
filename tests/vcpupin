@@ -32,7 +32,7 @@ cat <<\EOF > exp || fail=1
 error: vcpupin: Invalid or missing vCPU number.
 
 EOF
-compare out exp || fail=1
+compare exp out || fail=1
 
 # An out-of-range vCPU number deserves a diagnostic, too.
 virsh --connect test:///default vcpupin test 100 0,1 > out 2>&1
@@ -41,6 +41,6 @@ cat <<\EOF > exp || fail=1
 error: vcpupin: Invalid vCPU number.
 
 EOF
-compare out exp || fail=1
+compare exp out || fail=1
 
 (exit $fail); exit $fail

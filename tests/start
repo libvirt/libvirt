@@ -34,9 +34,9 @@ virsh -c $test_url start test > out 2> err && fail=1
 
 # stdout gets a newline
 echo > exp || fail=1
-compare out exp || fail=1
+compare exp out || fail=1
 
 echo 'error: Domain is already active' > exp || fail=1
-compare err exp || fail=1
+compare exp err || fail=1
 
 (exit $fail); exit $fail

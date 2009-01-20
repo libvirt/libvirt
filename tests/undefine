@@ -9,7 +9,7 @@
 # (at your option) any later version.
 
 # This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# but WITHEXP ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
@@ -32,7 +32,7 @@ cat <<\EOF > exp || fail=1
 libvir: Test error : internal error Domain 'test' is still running
 error: Failed to undefine domain test
 EOF
-compare out exp || fail=1
+compare exp out || fail=1
 
 # A different diagnostic when specifying a domain ID
 virsh -q -c test:///default undefine 1 > out 2>&1
@@ -41,7 +41,7 @@ cat <<\EOF > exp || fail=1
 error: a running domain like 1 cannot be undefined;
 to undefine, first shutdown then undefine using its name or UUID
 EOF
-compare out exp || fail=1
+compare exp out || fail=1
 
 # Succeed, now: first shut down, then undefine, both via name.
 virsh -q -c test:///default 'shutdown test; undefine test' > out 2>&1
@@ -50,6 +50,6 @@ cat <<\EOF > exp || fail=1
 Domain test is being shutdown
 Domain test has been undefined
 EOF
-compare out exp || fail=1
+compare exp out || fail=1
 
 (exit $fail); exit $fail

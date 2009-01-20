@@ -1,3 +1,9 @@
+Tue Jan 20 12:03:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* tests/cpuset, tests/read-bufsiz, tests/start, tests/undefine,
+	tests/vcpupin: Switch order of expected vs actual data in diff
+	comparison, so output on failure makes sense.
+
 Tue Jan 20 12:01:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Thread local error handling

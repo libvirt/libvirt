@@ -37,7 +37,7 @@ for i in before after; do
 
   virsh --connect test:///default define $in > out || fail=1
   printf "Domain test defined from $in\n\n" > exp || fail=1
-  compare out exp || fail=1
+  compare exp out || fail=1
 done
 
 (exit $fail); exit $fail
