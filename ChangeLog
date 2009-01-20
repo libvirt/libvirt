@@ -1,3 +1,11 @@
+Tue Jan 20 19:49:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* .x-sc_prohibit_nonreentrant: Blacklist some places where
+	use of non-threadsafe APIs are not neccessary to check
+	* Makefile.am, Makefile.maint, Makefile.nonreentrant: Add
+	check for non-reentrant safe API calls
+	* Makefile.cfg: Temporarily disable non-reentrant check
+
 Tue Jan 20 20:28:07 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	don't ignore write failure

@@ -13,6 +13,8 @@ VC_LIST = $(srcdir)/build-aux/vc-list-files
 VC_LIST_EXCEPT = \
   $(VC_LIST) | if test -f .x-$@; then grep -vEf .x-$@; else grep -v ChangeLog; fi
 
+include Makefile.nonreentrant
+
 # Prevent programs like 'sort' from considering distinct strings to be equal.
 # Doing it here saves us from having to set LC_ALL elsewhere in this file.
 export LC_ALL = C
@@ -110,6 +112,15 @@ sc_prohibit_strcmp:
 sc_prohibit_asprintf:
 	@grep -nE '\<[a]sprintf\>' $$($(VC_LIST_EXCEPT)) && \
 	  { echo '$(ME): use virAsprintf, not a'sprintf 1>&2; exit 1; } || :
+
+sc_prohibit_nonreentrant:
+	@fail=0 ; \
+	for i in $(NON_REENTRANT) ; \
+	do \
+	   grep -nE "\<$$i\>[:space:]*\(" $$($(VC_LIST_EXCEPT)) && \
+	     fail=1 && echo "$(ME): use $${i}_r, not $${i}" || : ; \
+	done ; \
+	exit $$fail
 
 # Using EXIT_SUCCESS as the first argument to error is misleading,
 # since when that parameter is 0, error does not exit.  Use `0' instead.
