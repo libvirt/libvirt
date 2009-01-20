@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.hi\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-01-06 09:44+0100\n"
+"POT-Creation-Date: 2009-01-20 11:06+0100\n"
 "PO-Revision-Date: 2008-10-20 15:29+0530\n"
 "Last-Translator: Rajesh Ranjan <rranjan@redhat.com>\n"
 "Language-Team: Hindi <hindi.sf.net>\n"
@@ -134,7 +134,7 @@ msgstr "पैरामीटर स्ट्रिंग अभी एनको
 msgid "Unknown error"
 msgstr "अज्ञात त्रुटि"
 
-#: qemud/qemud.c:174 src/remote_internal.c:952
+#: qemud/qemud.c:174 src/remote_internal.c:913
 #, c-format
 msgid "Cannot access %s '%s': %s (%d)"
 msgstr "पहुंच नहीं %s '%s': %s (%d)"
@@ -192,11 +192,11 @@ msgstr "संकेत %d पर बंद कर रहा है"
 msgid "Received unexpected signal %d"
 msgstr "अप्रत्याशित मान नोड"
 
-#: qemud/qemud.c:315 src/util.c:233 src/util.c:264
+#: qemud/qemud.c:315 src/util.c:234 src/util.c:265
 msgid "Failed to set close-on-exec file descriptor flag"
 msgstr "close-on-exec फाइल विवरणकर्ता फ्लैग सेट करने में विफल"
 
-#: qemud/qemud.c:329 src/util.c:227 src/util.c:258
+#: qemud/qemud.c:329 src/util.c:228 src/util.c:259
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr "गैर ब्लॉकिंग फाइल विवरणकर्ता फ्लैग सेट करने में विफल"
 
@@ -287,82 +287,94 @@ msgstr "qemudInitPaths() में बफर के लिए परिणाम
 msgid "Failed to allocate struct qemud_server"
 msgstr "struct qemud_server के आबंटन में विफल"
 
+#: qemud/qemud.c:692 qemud/qemud.c:1126 src/domain_conf.c:478
+#: src/network_conf.c:170 src/node_device_conf.c:135 src/openvz_conf.c:400
+#: src/qemu_driver.c:277 src/storage_conf.c:1267 src/test.c:217 src/test.c:344
+#, fuzzy
+msgid "cannot initialize mutex"
+msgstr "ब्रिज समर्थन आरंभ करने में विफल: %s"
+
+#: qemud/qemud.c:696
+#, fuzzy
+msgid "cannot initialize condition variable"
+msgstr "ब्रिज समर्थन आरंभ करने में विफल: %s"
+
 # done by Ravi
-#: qemud/qemud.c:699
+#: qemud/qemud.c:704
 #, fuzzy
 msgid "Failed to initialize event system"
 msgstr "SASL सत्यापन %s आरंभ करने में विफल"
 
 # done by Ravi
-#: qemud/qemud.c:784
+#: qemud/qemud.c:789
 #, c-format
 msgid "Failed to initialize SASL authentication %s"
 msgstr "SASL सत्यापन %s आरंभ करने में विफल"
 
-#: qemud/qemud.c:798
+#: qemud/qemud.c:803
 #, c-format
 msgid "Failed to connect to system bus for PolicyKit auth: %s"
 msgstr "PolicyKit auth के लिए सिस्टम बस में जुड़ने में विफल: %s"
 
-#: qemud/qemud.c:909
+#: qemud/qemud.c:914
 #, c-format
 msgid "remoteInitializeTLSSession: %s"
 msgstr "remoteInitializeTLSSession: %s"
 
-#: qemud/qemud.c:925
+#: qemud/qemud.c:930
 #, c-format
 msgid "remoteCheckDN: gnutls_x509_cert_get_dn: %s"
 msgstr "remoteCheckDN: gnutls_x509_cert_get_dn: %s"
 
-#: qemud/qemud.c:942
+#: qemud/qemud.c:947
 #, c-format
 msgid "remoteCheckDN: failed: client DN is %s"
 msgstr "remoteCheckDN: failed: client DN is %s"
 
-#: qemud/qemud.c:957
+#: qemud/qemud.c:962
 #, c-format
 msgid "remoteCheckCertificate: verify failed: %s"
 msgstr "remoteCheckCertificate: जाँच विफल: %s"
 
-#: qemud/qemud.c:964
+#: qemud/qemud.c:969
 msgid "remoteCheckCertificate: the client certificate is not trusted."
 msgstr "remoteCheckCertificate: क्लाइंट प्रमाणपत्र भरोसेमंद नहीं है."
 
-#: qemud/qemud.c:968
+#: qemud/qemud.c:973
 msgid "remoteCheckCertificate: the client certificate has unknown issuer."
 msgstr "remoteCheckCertificate: क्लाइंट प्रमाणपत्र के पास अज्ञात निर्गतकर्ता है."
 
-#: qemud/qemud.c:972
+#: qemud/qemud.c:977
 msgid "remoteCheckCertificate: the client certificate has been revoked."
 msgstr "remoteCheckCertificate: क्लाइंट प्रमाणपत्र वापस कर लिया गया है."
 
-#: qemud/qemud.c:977
+#: qemud/qemud.c:982
 msgid ""
 "remoteCheckCertificate: the client certificate uses an insecure algorithm."
 msgstr ""
 "remoteCheckCertificate: क्लाइंट प्रमाणपत्र एक असुरक्षित अलगोरिथम का प्रयोग करता है."
 
-#: qemud/qemud.c:985
+#: qemud/qemud.c:990
 msgid "remoteCheckCertificate: certificate is not X.509"
 msgstr "remoteCheckCertificate: प्रमाणपत्र X.509 नहीं है"
 
-#: qemud/qemud.c:990
+#: qemud/qemud.c:995
 msgid "remoteCheckCertificate: no peers"
 msgstr "remoteCheckCertificate: कोई साथी नहीं"
 
-#: qemud/qemud.c:1000
+#: qemud/qemud.c:1005
 msgid "remoteCheckCertificate: gnutls_x509_crt_init failed"
 msgstr "remoteCheckCertificate: gnutls_x509_crt_init failed"
 
-#: qemud/qemud.c:1010
+#: qemud/qemud.c:1015
 msgid "remoteCheckCertificate: the client certificate has expired"
 msgstr "remoteCheckCertificate: क्लाइंट प्रमाणपत्र की मियाद खत्म हो गई"
 
-#: qemud/qemud.c:1017
+#: qemud/qemud.c:1022
 msgid "remoteCheckCertificate: the client certificate is not yet activated"
 msgstr "remoteCheckCertificate: क्लाइंट प्रमाणपत्र अभी तक सक्रिय नहीं"
 
-#: qemud/qemud.c:1026
+#: qemud/qemud.c:1031
 msgid ""
 "remoteCheckCertificate: client's Distinguished Name is not on the list of "
 "allowed clients (tls_allowed_dn_list).  Use 'openssl x509 -in clientcert.pem "
@@ -374,11 +386,11 @@ msgstr ""
 "विशेष नाम क्षेत्र को देखने के लिए क्लाइंट प्रमाणपत्र में, डेमान को --verbose विकल्प के साथ "
 "चलाएँ."
 
-#: qemud/qemud.c:1042
+#: qemud/qemud.c:1047
 msgid "remoteCheckCertificate: failed to verify client's certificate"
 msgstr "remoteCheckCertificate: क्लाइंट प्रमाणपत्र जाँचने में विफल"
 
-#: qemud/qemud.c:1045
+#: qemud/qemud.c:1050
 msgid ""
 "remoteCheckCertificate: tls_no_verify_certificate is set so the bad "
 "certificate is ignored"
@@ -386,126 +398,126 @@ msgstr ""
 "remoteCheckCertificate: tls_no_verify_certificate सेट किया है ताकि खराब "
 "प्रमाणपत्र अनदेखा किया गया है"
 
-#: qemud/qemud.c:1067
+#: qemud/qemud.c:1072
 #, c-format
 msgid "Failed to verify client credentials: %s"
 msgstr "क्लाइंट श्रेय जाँचने में विफल: %s"
 
-#: qemud/qemud.c:1092
+#: qemud/qemud.c:1097
 #, c-format
 msgid "Failed to accept connection: %s"
 msgstr "कनेक्शन स्वीकार करने में विफल: %s"
 
-#: qemud/qemud.c:1097
+#: qemud/qemud.c:1102
 msgid "Too many active clients, dropping connection"
 msgstr ""
 
-#: qemud/qemud.c:1103
+#: qemud/qemud.c:1108
 #, fuzzy
 msgid "Out of memory allocating clients"
 msgstr "सरणी संभाजन में स्मृति कम"
 
-#: qemud/qemud.c:1146
+#: qemud/qemud.c:1154
 #, c-format
 msgid "Turn off polkit auth for privileged client %d"
 msgstr "polkit auth को विशेष क्लाइंट %d के लिए बंद करें"
 
-#: qemud/qemud.c:1185 qemud/qemud.c:1464 qemud/qemud.c:1607
+#: qemud/qemud.c:1193 qemud/qemud.c:1476 qemud/qemud.c:1619
 #, c-format
 msgid "TLS handshake failed: %s"
 msgstr "TLS हैंडशेक विफल: %s"
 
-#: qemud/qemud.c:1291
+#: qemud/qemud.c:1303
 #, c-format
 msgid "read: %s"
 msgstr "read: %s"
 
-#: qemud/qemud.c:1304
+#: qemud/qemud.c:1316
 #, c-format
 msgid "gnutls_record_recv: %s"
 msgstr "gnutls_record_recv: %s"
 
-#: qemud/qemud.c:1488
+#: qemud/qemud.c:1500
 #, c-format
 msgid "write: %s"
 msgstr "write: %s"
 
-#: qemud/qemud.c:1498
+#: qemud/qemud.c:1510
 #, c-format
 msgid "gnutls_record_send: %s"
 msgstr "gnutls_record_send: %s"
 
-#: qemud/qemud.c:1734
+#: qemud/qemud.c:1746
 #, c-format
 msgid "Signal handler reported %d errors: last error: %s"
 msgstr "संकेत नियंत्रक ने %d त्रुटि रिपोर्ट किया : अंतिम त्रुटि: %s"
 
-#: qemud/qemud.c:1759
+#: qemud/qemud.c:1771
 #, fuzzy
 msgid "Failed to allocate workers"
 msgstr "स्मृति संभाजित करने में विफल"
 
-#: qemud/qemud.c:1885 qemud/qemud.c:1904
+#: qemud/qemud.c:1903 qemud/qemud.c:1922
 #, c-format
 msgid "failed to allocate memory for %s config list"
 msgstr "%s config सूची के लिए स्मृति आबंटन में विफल"
 
-#: qemud/qemud.c:1891 qemud/qemud.c:1921
+#: qemud/qemud.c:1909 qemud/qemud.c:1939
 #, c-format
 msgid "failed to allocate memory for %s config list value"
 msgstr "%s config सूची मान के लिए स्मृति आबंटन में विफल"
 
-#: qemud/qemud.c:1909 qemud/qemud.c:1932
+#: qemud/qemud.c:1927 qemud/qemud.c:1950
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: must be a string or list of strings\n"
 msgstr ""
 "remoteReadConfigFile: %s: %s: जरूर एक स्ट्रिंग या स्ट्रिंगों की सूची होनी चाहिए\n"
 
-#: qemud/qemud.c:1948
+#: qemud/qemud.c:1966
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: invalid type: got %s; expected %s\n"
 msgstr "remoteReadConfigFile: %s: %s: अवैध प्रकार: got %s; प्रत्याशित %s\n"
 
-#: qemud/qemud.c:1969
+#: qemud/qemud.c:1987
 #, c-format
 msgid "remoteReadConfigFile: %s\n"
 msgstr "remoteReadConfigFile: %s\n"
 
-#: qemud/qemud.c:2011
+#: qemud/qemud.c:2029
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: unsupported auth %s\n"
 msgstr "remoteReadConfigFile: %s: %s: unsupported auth %s\n"
 
-#: qemud/qemud.c:2158
+#: qemud/qemud.c:2171
 msgid "Cannot set group when not running as root"
 msgstr "बतौर रूट चलाने के दौरान समूह सेट नहीं कर सकता है"
 
-#: qemud/qemud.c:2162
+#: qemud/qemud.c:2175
 #, c-format
 msgid "Failed to lookup group '%s'"
 msgstr "समूह '%s' खोलने में विफल"
 
-#: qemud/qemud.c:2174 qemud/qemud.c:2184
+#: qemud/qemud.c:2187 qemud/qemud.c:2197
 #, c-format
 msgid "Failed to parse mode '%s'"
 msgstr "मोड '%s' विश्लेषण में विफल"
 
-#: qemud/qemud.c:2377
+#: qemud/qemud.c:2399
 #, c-format
 msgid "Failed to fork as daemon: %s"
 msgstr "डेमान के रूप में बांटने में विफल: %s"
 
-#: qemud/qemud.c:2398 src/util.c:251
+#: qemud/qemud.c:2420 src/util.c:252
 #, c-format
 msgid "Failed to create pipe: %s"
 msgstr "पाइप बनाने में विफल: %s"
 
-#: qemud/qemud.c:2430
+#: qemud/qemud.c:2452
 #, c-format
 msgid "Failed to change group ownership of %s"
 msgstr "%s के समूह स्वामित्व बदलने में विफल"
 
-#: qemud/qemud.c:2437
+#: qemud/qemud.c:2459
 msgid "Failed to register callback for signal pipe"
 msgstr "संकेत पाइप के लिए कालबैक पंजीकृत करने में विफल"
 
@@ -594,7 +606,7 @@ msgstr "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
 msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 
-#: qemud/remote.c:2500 src/remote_internal.c:4135
+#: qemud/remote.c:2500 src/remote_internal.c:4457
 #, c-format
 msgid "Cannot resolve address %d: %s"
 msgstr "पता %d का समाधान नहीं कर सकता है: %s"
@@ -603,12 +615,12 @@ msgstr "पता %d का समाधान नहीं कर सकता 
 msgid "client tried invalid SASL init request"
 msgstr "अवैध SASL init आग्रह को क्लाइंट ने कोशिश किया"
 
-#: qemud/remote.c:2553 src/remote_internal.c:4363
+#: qemud/remote.c:2553 src/remote_internal.c:4685
 #, c-format
 msgid "failed to get sock address %d (%s)"
 msgstr "सॉक पता %d (%s) पाने में विफल"
 
-#: qemud/remote.c:2564 src/remote_internal.c:4375
+#: qemud/remote.c:2564 src/remote_internal.c:4697
 #, c-format
 msgid "failed to get peer address %d (%s)"
 msgstr "पीयर पता %d (%s) पाने में विफल"
@@ -641,7 +653,7 @@ msgstr "SASL यांत्रिकी %d (%s) को सूचीबद्ध
 msgid "cannot allocate mechlist"
 msgstr "मेकलिस्ट आबंटित नहीं कर सकता है"
 
-#: qemud/remote.c:2691 src/remote_internal.c:4640
+#: qemud/remote.c:2691 src/remote_internal.c:4962
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr "SASL ssf को कनेक्शन %d (%s) पर प्रश्न नहीं कर सकता है"
@@ -814,16 +826,16 @@ msgstr "एक पृथक्कारक प्रत्याशित"
 msgid "expecting an assignment"
 msgstr "एक कार्य प्रत्याशित"
 
-#: src/conf.c:892 src/conf.c:948 src/xend_internal.c:535
-#: src/xend_internal.c:2623 src/xm_internal.c:1526 src/xm_internal.c:1533
+#: src/conf.c:891 src/conf.c:947 src/xend_internal.c:544
+#: src/xend_internal.c:2631 src/xm_internal.c:1534 src/xm_internal.c:1541
 msgid "allocate buffer"
 msgstr "बफर संभाजित करें"
 
-#: src/conf.c:899
+#: src/conf.c:898
 msgid "failed to open file"
 msgstr "फाइल खोलने में विफल"
 
-#: src/conf.c:910
+#: src/conf.c:909
 msgid "failed to save content"
 msgstr "सामग्री सहेजने में विफल"
 
@@ -861,528 +873,560 @@ msgstr "आउटपुट लिखने में विफलता: %s\n"
 msgid "allocating connection"
 msgstr "संबंधन दे रहा है"
 
-#: src/datatypes.c:264 src/datatypes.c:269
+#: src/datatypes.c:267 src/datatypes.c:272
 msgid "allocating domain"
 msgstr "डोमेन संभाजित कर रहा है"
 
-#: src/datatypes.c:280
+#: src/datatypes.c:283
 msgid "failed to add domain to connection hash table"
 msgstr "संबंधन हैश तालिका में डोमेन जोड़ने में विफल"
 
-#: src/datatypes.c:321
+#: src/datatypes.c:324
 msgid "domain missing from connection hash table"
 msgstr "संबंधन हैश तालिका से डोमेन गुम"
 
-#: src/datatypes.c:404 src/datatypes.c:409
+#: src/datatypes.c:407 src/datatypes.c:412
 msgid "allocating network"
 msgstr "संजाल संभाजित कर रहा है"
 
-#: src/datatypes.c:419
+#: src/datatypes.c:422
 msgid "failed to add network to connection hash table"
 msgstr "संबंधन हैश तालिका में संजाल जोड़ने में विफल"
 
-#: src/datatypes.c:457
+#: src/datatypes.c:460
 msgid "network missing from connection hash table"
 msgstr "संबंधन हैश तालिका से संजाल गुम"
 
-#: src/datatypes.c:541 src/datatypes.c:546
+#: src/datatypes.c:544 src/datatypes.c:549
 msgid "allocating storage pool"
 msgstr "स्टोरेज पूल संभाजित कर रहा है"
 
-#: src/datatypes.c:556
+#: src/datatypes.c:559
 msgid "failed to add storage pool to connection hash table"
 msgstr "संबंधन हैश तालिका में स्टोरेज पूल जोड़ने में विफल"
 
-#: src/datatypes.c:595
+#: src/datatypes.c:598
 msgid "pool missing from connection hash table"
 msgstr "संबंधन हैश तालिका से पुल गुम"
 
-#: src/datatypes.c:672 src/datatypes.c:677 src/datatypes.c:682
+#: src/datatypes.c:675 src/datatypes.c:680 src/datatypes.c:685
 msgid "allocating storage vol"
 msgstr "स्टोरेज आयतन संभाजित कर रहा है"
 
-#: src/datatypes.c:692
+#: src/datatypes.c:695
 msgid "failed to add storage vol to connection hash table"
 msgstr "संबंधन हैश तालिका में स्टोरेज आयतन जोड़ने में विफल"
 
-#: src/datatypes.c:732
+#: src/datatypes.c:735
 msgid "vol missing from connection hash table"
 msgstr "संबंधन हैश तालिका से आयतन गुम"
 
-#: src/datatypes.c:809
+#: src/datatypes.c:812
 #, fuzzy
 msgid "allocating node dev"
 msgstr "स्टोरेज आयतन संभाजित कर रहा है"
 
-#: src/datatypes.c:816
+#: src/datatypes.c:819
 #, fuzzy
 msgid "copying node dev name"
 msgstr "नोड सामग्री कॉपी कर रहा है"
 
-#: src/datatypes.c:822
+#: src/datatypes.c:825
 #, fuzzy
 msgid "failed to add node dev to conn hash table"
 msgstr "संबंधन हैश तालिका में स्टोरेज आयतन जोड़ने में विफल"
 
-#: src/datatypes.c:860
+#: src/datatypes.c:863
 #, fuzzy
 msgid "dev missing from connection hash table"
 msgstr "संबंधन हैश तालिका से आयतन गुम"
 
-#: src/domain_conf.c:557
+#: src/domain_conf.c:566
 #, fuzzy, c-format
 msgid "unknown disk type '%s'"
 msgstr "अज्ञात प्रकार '%s'"
 
-#: src/domain_conf.c:609
+#: src/domain_conf.c:618
 #, fuzzy, c-format
 msgid "unknown disk device '%s'"
 msgstr "अज्ञात बूट युक्ति '%s'"
 
-#: src/domain_conf.c:635
+#: src/domain_conf.c:644
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "अवैध फ्लॉपी युक्ति नाम: %s"
 
-#: src/domain_conf.c:650
+#: src/domain_conf.c:659
 #, c-format
 msgid "Invalid harddisk device name: %s"
 msgstr "अवैध हार्डडिस्क युक्ति नाम: %s"
 
-#: src/domain_conf.c:657
+#: src/domain_conf.c:666
 #, fuzzy, c-format
 msgid "unknown disk bus type '%s'"
 msgstr "अज्ञात सत्यापन प्रकार '%s'"
 
-#: src/domain_conf.c:682
+#: src/domain_conf.c:691
 #, c-format
 msgid "Invalid bus type '%s' for floppy disk"
 msgstr "फ्लॉपी डिस्क के लिए '%s' अवैध बस प्रकार"
 
-#: src/domain_conf.c:688
+#: src/domain_conf.c:697
 #, fuzzy, c-format
 msgid "Invalid bus type '%s' for disk"
 msgstr "फ्लॉपी डिस्क के लिए '%s' अवैध बस प्रकार"
 
-#: src/domain_conf.c:740
+#: src/domain_conf.c:750
 #, fuzzy, c-format
 msgid "unknown filesystem type '%s'"
 msgstr "अज्ञात सत्यापन प्रकार '%s'"
 
-#: src/domain_conf.c:833
+#: src/domain_conf.c:844
 #, fuzzy, c-format
 msgid "unknown interface type '%s'"
 msgstr "अज्ञात सत्यापन प्रकार '%s'"
 
-#: src/domain_conf.c:897
+#: src/domain_conf.c:908
 msgid ""
 "No <source> 'network' attribute specified with <interface type='network'/>"
 msgstr ""
 "कोई <source> 'network' गुण <interface type='network'/> के साथ निर्दिष्ट नहीं"
 
-#: src/domain_conf.c:923
+#: src/domain_conf.c:934
 msgid "No <source> 'dev' attribute specified with <interface type='bridge'/>"
 msgstr "कोई <source> 'dev' गुण <interface type='bridge'/> के साथ निर्दिष्ट नहीं"
 
-#: src/domain_conf.c:935
+#: src/domain_conf.c:946
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr "कोई <source> 'port' गुण सॉकेट अंतरफलक के साथ निर्दिष्ट नहीं"
 
-#: src/domain_conf.c:940
+#: src/domain_conf.c:951
 msgid "Cannot parse <source> 'port' attribute with socket interface"
 msgstr "<source> 'port' गुण को सॉकेट अंतरफलक के साथ विश्लेषित नहीं कर सकता है"
 
-#: src/domain_conf.c:948
+#: src/domain_conf.c:959
 msgid "No <source> 'address' attribute specified with socket interface"
 msgstr "कोई <source> 'address' गुण सॉकेट अंतरफलक के साथ निर्दिष्ट नहीं"
 
-#: src/domain_conf.c:973
+#: src/domain_conf.c:984
 msgid "Model name contains invalid characters"
 msgstr "मॉडेल नाम में अवैध वर्ण समाहित हैं"
 
-#: src/domain_conf.c:1146 src/domain_conf.c:1223
+#: src/domain_conf.c:1158 src/domain_conf.c:1235
 msgid "Missing source path attribute for char device"
 msgstr "चार युक्ति के लिए गुम स्रोत पथ गुण"
 
-#: src/domain_conf.c:1163 src/domain_conf.c:1180
+#: src/domain_conf.c:1175 src/domain_conf.c:1192
 msgid "Missing source host attribute for char device"
 msgstr "चार युक्ति के लिए गुम मेजबान पथ गुण"
 
-#: src/domain_conf.c:1168 src/domain_conf.c:1185 src/domain_conf.c:1205
+#: src/domain_conf.c:1180 src/domain_conf.c:1197 src/domain_conf.c:1217
 msgid "Missing source service attribute for char device"
 msgstr "चार युक्ति के लिए गुम स्रोत सेवा गुण"
 
-#: src/domain_conf.c:1275
+#: src/domain_conf.c:1288
 msgid "missing input device type"
 msgstr "गुम इनपुट युक्ति प्रकार"
 
-#: src/domain_conf.c:1281
+#: src/domain_conf.c:1294
 #, fuzzy, c-format
 msgid "unknown input device type '%s'"
 msgstr "अज्ञात बूट युक्ति '%s'"
 
-#: src/domain_conf.c:1288
+#: src/domain_conf.c:1301
 #, fuzzy, c-format
 msgid "unknown input bus type '%s'"
 msgstr "अज्ञात सत्यापन प्रकार '%s'"
 
-#: src/domain_conf.c:1296
+#: src/domain_conf.c:1309
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr "ps2 बस %s इनपुट युक्ति का समर्थन नहीं करता है"
 
-#: src/domain_conf.c:1302 src/domain_conf.c:1309
+#: src/domain_conf.c:1315 src/domain_conf.c:1322
 #, c-format
 msgid "unsupported input bus %s"
 msgstr "असमर्थित इनपुट बस %s"
 
-#: src/domain_conf.c:1314
+#: src/domain_conf.c:1327
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "xen बस %s इनपुट युक्ति का समर्थन नहीं करता है"
 
-#: src/domain_conf.c:1359
+#: src/domain_conf.c:1372
 #, fuzzy
 msgid "missing graphics device type"
 msgstr "गुम इनपुट युक्ति प्रकार"
 
-#: src/domain_conf.c:1365
+#: src/domain_conf.c:1378
 #, fuzzy, c-format
 msgid "unknown graphics device type '%s'"
 msgstr "अज्ञात युक्ति प्रकार"
 
-#: src/domain_conf.c:1376
+#: src/domain_conf.c:1389
 #, fuzzy, c-format
 msgid "cannot parse vnc port %s"
 msgstr "%s के लिए विन्यास हटा नहीं सकता है"
 
-#: src/domain_conf.c:1414
+#: src/domain_conf.c:1427
 #, fuzzy, c-format
 msgid "unknown fullscreen value '%s'"
 msgstr "अज्ञात सत्यापन प्रकार '%s'"
 
-#: src/domain_conf.c:1452
+#: src/domain_conf.c:1466
 #, fuzzy, c-format
 msgid "unknown sound model '%s'"
 msgstr "अज्ञात ध्वनि माडल प्रकार"
 
-#: src/domain_conf.c:1485
+#: src/domain_conf.c:1500
 #, fuzzy, c-format
 msgid "cannot parse vendor id %s"
 msgstr "निर्देशिका %s नहीं पढ़ सकता है: %s"
 
-#: src/domain_conf.c:1492
+#: src/domain_conf.c:1507
 msgid "usb vendor needs id"
 msgstr ""
 
-#: src/domain_conf.c:1502
+#: src/domain_conf.c:1517
 #, fuzzy, c-format
 msgid "cannot parse product %s"
 msgstr "युक्ति %s नहीं खोल सकता है"
 
-#: src/domain_conf.c:1509
+#: src/domain_conf.c:1525
 msgid "usb product needs id"
 msgstr ""
 
-#: src/domain_conf.c:1520
+#: src/domain_conf.c:1536 src/domain_conf.c:1623
 #, fuzzy, c-format
 msgid "cannot parse bus %s"
 msgstr "पढ़ %s नहीं सकता है: %s"
 
-#: src/domain_conf.c:1527
+#: src/domain_conf.c:1543
 msgid "usb address needs bus id"
 msgstr ""
 
-#: src/domain_conf.c:1536
+#: src/domain_conf.c:1552
 #, fuzzy, c-format
 msgid "cannot parse device %s"
 msgstr "युक्ति %s नहीं खोल सकता है"
 
-#: src/domain_conf.c:1544
+#: src/domain_conf.c:1560
 msgid "usb address needs device id"
 msgstr ""
 
-#: src/domain_conf.c:1549
+#: src/domain_conf.c:1565
 #, fuzzy, c-format
 msgid "unknown usb source type '%s'"
 msgstr "अज्ञात सत्यापन प्रकार '%s'"
 
-#: src/domain_conf.c:1559
+#: src/domain_conf.c:1576
 #, fuzzy
 msgid "missing vendor"
 msgstr "गुम \""
 
-#: src/domain_conf.c:1565
+#: src/domain_conf.c:1582
 #, fuzzy
 msgid "missing product"
 msgstr "गुम श्रोत मेजबान"
 
-#: src/domain_conf.c:1593
+#: src/domain_conf.c:1610
+#, fuzzy, c-format
+msgid "cannot parse domain %s"
+msgstr "युक्ति %s नहीं खोल सकता है"
+
+#: src/domain_conf.c:1630
+msgid "pci address needs bus id"
+msgstr ""
+
+#: src/domain_conf.c:1639
+#, fuzzy, c-format
+msgid "cannot parse slot %s"
+msgstr "पढ़ %s नहीं सकता है: %s"
+
+#: src/domain_conf.c:1647
+msgid "pci address needs slot id"
+msgstr ""
+
+#: src/domain_conf.c:1656
+#, fuzzy, c-format
+msgid "cannot parse function %s"
+msgstr "युक्ति %s नहीं खोल सकता है"
+
+#: src/domain_conf.c:1664
+msgid "pci address needs function id"
+msgstr ""
+
+#: src/domain_conf.c:1669
+#, fuzzy, c-format
+msgid "unknown pci source type '%s'"
+msgstr "अज्ञात सत्यापन प्रकार '%s'"
+
+#: src/domain_conf.c:1702
 #, fuzzy, c-format
 msgid "unknown hostdev mode '%s'"
 msgstr "अज्ञात बूट युक्ति '%s'"
 
-#: src/domain_conf.c:1604
+#: src/domain_conf.c:1713
 #, fuzzy, c-format
 msgid "unknown host device type '%s'"
 msgstr "अज्ञात बूट युक्ति '%s'"
 
-#: src/domain_conf.c:1609
+#: src/domain_conf.c:1718
 #, fuzzy
 msgid "missing type in hostdev"
 msgstr "गुम श्रोत मेजबान"
 
-#: src/domain_conf.c:1624
+#: src/domain_conf.c:1739
 #, fuzzy, c-format
 msgid "unknown node %s"
 msgstr "अज्ञात मेजबान %s"
 
-#: src/domain_conf.c:1655
+#: src/domain_conf.c:1770
 #, fuzzy, c-format
 msgid "unknown lifecycle action %s"
 msgstr "अज्ञात सत्यापन प्रकार %s"
 
-#: src/domain_conf.c:1684 src/domain_conf.c:2295 src/domain_conf.c:2337
-#: src/network_conf.c:473 src/network_conf.c:513 src/qemu_conf.c:1342
-#: src/storage_conf.c:646 src/storage_conf.c:1047
+#: src/domain_conf.c:1800 src/domain_conf.c:2423 src/domain_conf.c:2464
+#: src/network_conf.c:480 src/network_conf.c:520 src/qemu_conf.c:1361
+#: src/storage_conf.c:649 src/storage_conf.c:1050
 msgid "missing root element"
 msgstr "गुम रूट तत्व"
 
-#: src/domain_conf.c:1719
+#: src/domain_conf.c:1836
 msgid "unknown device type"
 msgstr "अज्ञात युक्ति प्रकार"
 
-#: src/domain_conf.c:1755
+#: src/domain_conf.c:1872
 msgid "failed to allocate space for xmlXPathContext"
 msgstr "xmlXPathContext के लिए स्थान आबंटित करने में विफल"
 
-#: src/domain_conf.c:1767
+#: src/domain_conf.c:1884
 msgid "missing domain type attribute"
 msgstr "गुम डोमेन प्रकार गुण"
 
-#: src/domain_conf.c:1773
+#: src/domain_conf.c:1890
 #, fuzzy, c-format
 msgid "invalid domain type %s"
 msgstr "अवैध डोमेन प्रकार"
 
-#: src/domain_conf.c:1790 src/network_conf.c:328
+#: src/domain_conf.c:1907 src/network_conf.c:335
 #, c-format
 msgid "Failed to generate UUID: %s"
 msgstr "UUID के जनन में विफल: %s"
 
-#: src/domain_conf.c:1797 src/network_conf.c:335 src/storage_conf.c:469
+#: src/domain_conf.c:1914 src/network_conf.c:342 src/storage_conf.c:472
 msgid "malformed uuid element"
 msgstr "विरूपित uuid तत्व"
 
-#: src/domain_conf.c:1806
+#: src/domain_conf.c:1923
 msgid "missing memory element"
 msgstr "गुम स्मृति तत्व"
 
-#: src/domain_conf.c:1836
+#: src/domain_conf.c:1953
 #, fuzzy, c-format
 msgid "unexpected feature %s"
 msgstr "अप्रत्याशित आंकड़ा '%s'"
 
-#: src/domain_conf.c:1876
+#: src/domain_conf.c:1993
 msgid "no OS type"
 msgstr "कोई OS प्रकार नहीं"
 
-#: src/domain_conf.c:1905 src/xm_internal.c:698
+#: src/domain_conf.c:2022 src/xm_internal.c:706
 #, fuzzy, c-format
 msgid "no supported architecture for os type '%s'"
 msgstr "असमर्थि आर्किटेक्चर"
 
-#: src/domain_conf.c:1955
+#: src/domain_conf.c:2072
 #, fuzzy
 msgid "cannot extract boot device"
 msgstr "स्रोत युक्ति निकाल नहीं सकता है"
 
-#: src/domain_conf.c:1963
+#: src/domain_conf.c:2080
 #, fuzzy
 msgid "missing boot device"
 msgstr "गुम श्रोत युक्ति"
 
-#: src/domain_conf.c:1968
+#: src/domain_conf.c:2085
 #, c-format
 msgid "unknown boot device '%s'"
 msgstr "अज्ञात बूट युक्ति '%s'"
 
-#: src/domain_conf.c:1988
+#: src/domain_conf.c:2105
 #, fuzzy
 msgid "cannot extract disk devices"
 msgstr "स्रोत युक्ति निकाल नहीं सकता है"
 
-#: src/domain_conf.c:2008
+#: src/domain_conf.c:2126
 #, fuzzy
 msgid "cannot extract filesystem devices"
 msgstr "स्रोत युक्ति निकाल नहीं सकता है"
 
-#: src/domain_conf.c:2026
+#: src/domain_conf.c:2145
 #, fuzzy
 msgid "cannot extract network devices"
 msgstr "स्रोत युक्ति निकाल नहीं सकता है"
 
-#: src/domain_conf.c:2046
+#: src/domain_conf.c:2166
 #, fuzzy
 msgid "cannot extract parallel devices"
 msgstr "स्रोत युक्ति निकाल नहीं सकता है"
 
-#: src/domain_conf.c:2065
+#: src/domain_conf.c:2186
 #, fuzzy
 msgid "cannot extract serial devices"
 msgstr "स्रोत युक्ति निकाल नहीं सकता है"
 
-#: src/domain_conf.c:2113
+#: src/domain_conf.c:2236
 #, fuzzy
 msgid "cannot extract input devices"
 msgstr "स्रोत युक्ति निकाल नहीं सकता है"
 
-#: src/domain_conf.c:2147
+#: src/domain_conf.c:2271
 #, fuzzy
 msgid "cannot extract graphics devices"
 msgstr "स्रोत युक्ति निकाल नहीं सकता है"
 
-#: src/domain_conf.c:2189
+#: src/domain_conf.c:2313
 #, fuzzy
 msgid "cannot extract sound devices"
 msgstr "स्रोत युक्ति निकाल नहीं सकता है"
 
-#: src/domain_conf.c:2218
+#: src/domain_conf.c:2343
 #, fuzzy
 msgid "cannot extract host devices"
 msgstr "स्रोत युक्ति निकाल नहीं सकता है"
 
-#: src/domain_conf.c:2259 src/network_conf.c:438 src/qemu_conf.c:1287
-#: src/storage_conf.c:600
+#: src/domain_conf.c:2386 src/network_conf.c:445 src/qemu_conf.c:1306
+#: src/storage_conf.c:603
 #, fuzzy, c-format
 msgid "at line %d: %s"
 msgstr "bind: %s"
 
-#: src/domain_conf.c:2289 src/domain_conf.c:2331 src/network_conf.c:467
-#: src/network_conf.c:507 src/qemu_conf.c:1336 src/storage_conf.c:632
-#: src/storage_conf.c:1033
+#: src/domain_conf.c:2417 src/domain_conf.c:2458 src/network_conf.c:474
+#: src/network_conf.c:514 src/qemu_conf.c:1355 src/storage_conf.c:635
+#: src/storage_conf.c:1036
 #, fuzzy
 msgid "failed to parse xml document"
 msgstr "डोमेन स्थिर करने में विफल"
 
-#: src/domain_conf.c:2361 src/network_conf.c:535 src/qemu_conf.c:1354
+#: src/domain_conf.c:2488 src/network_conf.c:542 src/qemu_conf.c:1373
 msgid "incorrect root element"
 msgstr "गलत रूट तत्व"
 
-#: src/domain_conf.c:2570
+#: src/domain_conf.c:2697
 msgid "topology cpuset syntax error"
 msgstr "टोपोलाजी cpuset वाक्य रचना त्रुटि"
 
-#: src/domain_conf.c:2584
+#: src/domain_conf.c:2711
 #, fuzzy, c-format
 msgid "unexpected lifecycle type %d"
 msgstr "अप्रत्याशित डोमेन प्रकार %d"
 
-#: src/domain_conf.c:2605
+#: src/domain_conf.c:2732
 #, fuzzy, c-format
 msgid "unexpected disk type %d"
 msgstr "अप्रत्याशित डोमेन प्रकार %d"
 
-#: src/domain_conf.c:2610
+#: src/domain_conf.c:2737
 #, fuzzy, c-format
 msgid "unexpected disk device %d"
 msgstr "अप्रत्याशित डोमेन प्रकार %d"
 
-#: src/domain_conf.c:2615
+#: src/domain_conf.c:2742
 #, fuzzy, c-format
 msgid "unexpected disk bus %d"
 msgstr "अप्रत्याशित डोमेन प्रकार %d"
 
-#: src/domain_conf.c:2665
+#: src/domain_conf.c:2792
 #, fuzzy, c-format
 msgid "unexpected filesystem type %d"
 msgstr "अप्रत्याशित डोमेन प्रकार %d"
 
-#: src/domain_conf.c:2716 src/domain_conf.c:2930
+#: src/domain_conf.c:2843 src/domain_conf.c:3057
 #, fuzzy, c-format
 msgid "unexpected net type %d"
 msgstr "अप्रत्याशित डोमेन प्रकार %d"
 
-#: src/domain_conf.c:2784
+#: src/domain_conf.c:2911
 #, fuzzy, c-format
 msgid "unexpected char type %d"
 msgstr "अप्रत्याशित डोमेन प्रकार %d"
 
-#: src/domain_conf.c:2883 src/xend_internal.c:5180
+#: src/domain_conf.c:3010 src/xend_internal.c:5192
 #, fuzzy, c-format
 msgid "unexpected sound model %d"
 msgstr "अप्रत्याशित डोमेन प्रकार %d"
 
-#: src/domain_conf.c:2903 src/xend_internal.c:5202
+#: src/domain_conf.c:3030 src/xend_internal.c:5214
 #, fuzzy, c-format
 msgid "unexpected input type %d"
 msgstr "अप्रत्याशित डोमेन प्रकार %d"
 
-#: src/domain_conf.c:2908
+#: src/domain_conf.c:3035
 #, fuzzy, c-format
 msgid "unexpected input bus type %d"
 msgstr "अप्रत्याशित डोमेन प्रकार %d"
 
-#: src/domain_conf.c:2993
+#: src/domain_conf.c:3120
 #, fuzzy, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "अप्रत्याशित डिक्ट नोड"
 
-#: src/domain_conf.c:3000
+#: src/domain_conf.c:3127
 #, fuzzy, c-format
 msgid "unexpected hostdev type %d"
 msgstr "अप्रत्याशित डोमेन प्रकार %d"
 
-#: src/domain_conf.c:3038
+#: src/domain_conf.c:3174
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "अप्रत्याशित डोमेन प्रकार %d"
 
-#: src/domain_conf.c:3123
+#: src/domain_conf.c:3259
 #, fuzzy, c-format
 msgid "unexpected boot device type %d"
 msgstr "अप्रत्याशित डोमेन प्रकार %d"
 
-#: src/domain_conf.c:3141
+#: src/domain_conf.c:3277
 #, fuzzy, c-format
 msgid "unexpected feature %d"
 msgstr "अप्रत्याशित मान नोड"
 
-#: src/domain_conf.c:3262 src/network_conf.c:664 src/storage_conf.c:1400
+#: src/domain_conf.c:3399 src/network_conf.c:671 src/storage_conf.c:1409
 #, c-format
 msgid "cannot create config directory %s: %s"
 msgstr "विन्यास निर्देशिका %s बना नहीं सकता है: %s"
 
-#: src/domain_conf.c:3271 src/network_conf.c:680 src/storage_conf.c:1443
+#: src/domain_conf.c:3408 src/network_conf.c:687 src/storage_conf.c:1452
 #, c-format
 msgid "cannot create config file %s: %s"
 msgstr "विन्यास फाइल %s बना सकता है: %s"
 
-#: src/domain_conf.c:3279 src/network_conf.c:688 src/storage_conf.c:1451
+#: src/domain_conf.c:3416 src/network_conf.c:695 src/storage_conf.c:1460
 #, c-format
 msgid "cannot write config file %s: %s"
 msgstr "विन्यास फाइल %s लिखने में विफल: %s"
 
-#: src/domain_conf.c:3286 src/network_conf.c:695 src/storage_conf.c:1458
+#: src/domain_conf.c:3423 src/network_conf.c:702 src/storage_conf.c:1467
 #, c-format
 msgid "cannot save config file %s: %s"
 msgstr "विन्यास फाइल %s सहेजने में विफल: %s"
 
-#: src/domain_conf.c:3387 src/network_conf.c:774
+#: src/domain_conf.c:3524 src/network_conf.c:781
 #, c-format
 msgid "Failed to open dir '%s': %s"
 msgstr "निर्देशिका '%s' खोलने में विफल: %s"
 
-#: src/domain_conf.c:3441 src/network_conf.c:818
+#: src/domain_conf.c:3578 src/network_conf.c:825
 #, fuzzy, c-format
 msgid "cannot remove config for %s: %s"
 msgstr "%s के लिए विन्यास हटा नहीं सकता है"
 
-#: src/domain_conf.c:3515
+#: src/domain_conf.c:3652
 msgid "unknown virt type"
 msgstr "अज्ञात virt प्रकार"
 
-#: src/domain_conf.c:3526
+#: src/domain_conf.c:3663
 #, c-format
 msgid "no emulator for domain %s os type %s on architecture %s"
 msgstr ""
@@ -1419,41 +1463,41 @@ msgstr "iptables नियम '%s' को '%s' श्रृंखला से '
 msgid "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s"
 msgstr "iptables नियम '%s' को '%s' श्रृंखला के '%s' सारणी में जोड़ने में विफल: %s"
 
-#: src/libvirt.c:842
+#: src/libvirt.c:883
 msgid "could not parse connection URI"
 msgstr "कनेक्शन URI का विश्लेषण नहीं कर सका"
 
-#: src/libvirt.c:972
+#: src/libvirt.c:1013
 #, fuzzy
 msgid "unable to open connection"
 msgstr "कनेक्शन स्वीकार करने में विफल: %s"
 
-#: src/libvirt.c:2360
+#: src/libvirt.c:2401
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare ने uri सेट नहीं किया"
 
-#: src/libvirt.c:2389
+#: src/libvirt.c:2430
 #, fuzzy
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare ने uri सेट नहीं किया"
 
-#: src/libvirt.c:2964
+#: src/libvirt.c:3005
 msgid "path is NULL"
 msgstr "पथ रिक्त है"
 
-#: src/libvirt.c:2970
+#: src/libvirt.c:3011
 msgid "flags must be zero"
 msgstr "फ्लैग को जरूर शून्य होना चाहिए"
 
-#: src/libvirt.c:2977
+#: src/libvirt.c:3018
 msgid "buffer is NULL"
 msgstr "बफर रिक्त है"
 
-#: src/libvirt.c:3065
+#: src/libvirt.c:3106
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL"
 msgstr "फ्लैग पैरामीट को VIR_MEMORY_VIRTUAL जरूर होना चाहिए"
 
-#: src/libvirt.c:3072
+#: src/libvirt.c:3113
 msgid "buffer is NULL but size is non-zero"
 msgstr "बफर रिक्त है लेकिन आकार शून्येतर है"
 
@@ -1637,7 +1681,7 @@ msgstr "%s आयतन मिटाने में विफल"
 msgid "sockpair failed: %s"
 msgstr "unlockpt विफल: %s"
 
-#: src/lxc_controller.c:450 src/lxc_driver.c:866
+#: src/lxc_controller.c:450 src/lxc_driver.c:867
 #, fuzzy, c-format
 msgid "failed to allocate tty: %s"
 msgstr "एक नोड संभाजित करने में विफल"
@@ -1663,189 +1707,189 @@ msgstr "लॉग फाइल %d बंद करने में असमर�
 msgid "Failed connection from LXC driver: %s\n"
 msgstr "भंडारण ड्राइवर पाने में विफल: %s"
 
-#: src/lxc_driver.c:233 src/network_driver.c:926 src/network_driver.c:971
-#: src/qemu_driver.c:2698 src/uml_driver.c:1517
+#: src/lxc_driver.c:233 src/network_driver.c:930 src/network_driver.c:975
+#: src/qemu_driver.c:2699 src/uml_driver.c:1515
 msgid "failed to allocate space for VM name string"
 msgstr "VM नाम स्ट्रिंग के लिए स्थान आबंटित करने में विफल"
 
-#: src/lxc_driver.c:283 src/lxc_driver.c:972 src/lxc_driver.c:1010
+#: src/lxc_driver.c:284 src/lxc_driver.c:973 src/lxc_driver.c:1012
 msgid "System lacks NETNS support"
 msgstr ""
 
-#: src/lxc_driver.c:322 src/lxc_driver.c:368 src/lxc_driver.c:403
-#: src/lxc_driver.c:428 src/openvz_driver.c:287 src/openvz_driver.c:326
-#: src/openvz_driver.c:370 src/openvz_driver.c:407 src/openvz_driver.c:857
-#: src/openvz_driver.c:899 src/openvz_driver.c:930 src/openvz_driver.c:1002
-#: src/qemu_driver.c:1928 src/qemu_driver.c:2051 src/qemu_driver.c:2671
-#: src/qemu_driver.c:2742 src/qemu_driver.c:2828 src/qemu_driver.c:3224
-#: src/qemu_driver.c:3362 src/qemu_driver.c:3408 src/qemu_driver.c:3434
-#: src/qemu_driver.c:3708 src/uml_driver.c:1326 src/uml_driver.c:1450
-#: src/uml_driver.c:1490 src/uml_driver.c:1563 src/uml_driver.c:1623
-#: src/uml_driver.c:1667 src/uml_driver.c:1693 src/uml_driver.c:1766
+#: src/lxc_driver.c:323 src/lxc_driver.c:369 src/lxc_driver.c:404
+#: src/lxc_driver.c:429 src/openvz_driver.c:287 src/openvz_driver.c:326
+#: src/openvz_driver.c:370 src/openvz_driver.c:407 src/openvz_driver.c:863
+#: src/openvz_driver.c:905 src/openvz_driver.c:936 src/openvz_driver.c:1008
+#: src/qemu_driver.c:1928 src/qemu_driver.c:2051 src/qemu_driver.c:2672
+#: src/qemu_driver.c:2743 src/qemu_driver.c:2830 src/qemu_driver.c:3226
+#: src/qemu_driver.c:3363 src/qemu_driver.c:3410 src/qemu_driver.c:3436
+#: src/qemu_driver.c:3710 src/uml_driver.c:1324 src/uml_driver.c:1448
+#: src/uml_driver.c:1488 src/uml_driver.c:1561 src/uml_driver.c:1622
+#: src/uml_driver.c:1666 src/uml_driver.c:1692 src/uml_driver.c:1765
 msgid "no domain with matching uuid"
 msgstr "मेल खाते uuid के साथ कोई डोमेन नहीं"
 
-#: src/lxc_driver.c:328 src/openvz_driver.c:862 src/qemu_driver.c:2834
-#: src/uml_driver.c:1629
+#: src/lxc_driver.c:329 src/openvz_driver.c:868 src/qemu_driver.c:2836
+#: src/uml_driver.c:1628
 msgid "cannot delete active domain"
 msgstr "सक्रिय डोमेन मिटा नहीं सकता है"
 
-#: src/lxc_driver.c:334 src/qemu_driver.c:2840 src/uml_driver.c:1635
+#: src/lxc_driver.c:335 src/qemu_driver.c:2842 src/uml_driver.c:1634
 #, fuzzy
 msgid "cannot undefine transient domain"
 msgstr "सक्रिय डोमेन मिटा नहीं सकता है"
 
-#: src/lxc_driver.c:470
+#: src/lxc_driver.c:471
 #, c-format
 msgid "waitpid failed to wait for container %d: %d %s"
 msgstr "waitpid विफल %d कंटेनर के लिए प्रतीक्षा करने के लिए: %d %s"
 
-#: src/lxc_driver.c:552
+#: src/lxc_driver.c:553
 #, fuzzy
 msgid "failed to get bridge for interface"
 msgstr "संजाल अंतरफलक ब्रिज करने में प्रयुक्ति स्क्रिप्ट"
 
-#: src/lxc_driver.c:563
+#: src/lxc_driver.c:564
 #, fuzzy, c-format
 msgid "failed to create veth device pair: %d"
 msgstr "%s से युक्ति जोड़ने में विफल"
 
-#: src/lxc_driver.c:576
+#: src/lxc_driver.c:577
 #, fuzzy
 msgid "failed to allocate veth names"
 msgstr "एक नोड संभाजित करने में विफल"
 
-#: src/lxc_driver.c:582
+#: src/lxc_driver.c:583
 #, fuzzy, c-format
 msgid "failed to add %s device to %s: %s"
 msgstr "सॉकेट को '%s' में बांधने में विफल: %s"
 
-#: src/lxc_driver.c:591
+#: src/lxc_driver.c:592
 #, fuzzy, c-format
 msgid "failed to enable parent ns veth device: %d"
 msgstr "चार युक्ति के लिए स्थान आबंटित करने में विफल"
 
-#: src/lxc_driver.c:621
+#: src/lxc_driver.c:622
 #, fuzzy, c-format
 msgid "failed to create client socket: %s"
 msgstr "सॉकेट बनाने में विफल: %s"
 
-#: src/lxc_driver.c:632
+#: src/lxc_driver.c:633
 #, fuzzy, c-format
 msgid "failed to connect to client socket: %s"
 msgstr "Xen भंडार में जुड़ने में विफल"
 
-#: src/lxc_driver.c:658
+#: src/lxc_driver.c:659
 #, fuzzy, c-format
 msgid "invalid PID %d for container"
 msgstr "इसमें अवैध डोमेन संकेतक"
 
-#: src/lxc_driver.c:665
+#: src/lxc_driver.c:666
 #, fuzzy, c-format
 msgid "failed to kill pid %d: %s"
 msgstr "tty pid फाइल %s बंद करने में विफल: %s"
 
-#: src/lxc_driver.c:797 src/util.c:591
+#: src/lxc_driver.c:798 src/util.c:592
 #, fuzzy, c-format
 msgid "cannot wait for '%s': %s"
 msgstr "फाइल stat नहीं कर सकता '%s': %s"
 
-#: src/lxc_driver.c:804
+#: src/lxc_driver.c:805
 #, c-format
 msgid "container '%s' unexpectedly shutdown during startup"
 msgstr ""
 
-#: src/lxc_driver.c:852 src/qemu_driver.c:942
+#: src/lxc_driver.c:853 src/qemu_driver.c:967
 #, c-format
 msgid "cannot create log directory %s: %s"
 msgstr "लॉग निर्देशिका %s बना नहीं सकता है: %s"
 
-#: src/lxc_driver.c:890
+#: src/lxc_driver.c:891
 #, fuzzy, c-format
 msgid "failed to open %s: %s"
 msgstr "निर्देशिका '%s' खोलने में विफल: %s"
 
-#: src/lxc_driver.c:910
+#: src/lxc_driver.c:911
 #, fuzzy, c-format
 msgid "Failed to read pid file %s/%s.pid: %s"
 msgstr "pid फाइल '%s' खोलने में विफल: %s"
 
-#: src/lxc_driver.c:966
+#: src/lxc_driver.c:967
 #, fuzzy, c-format
 msgid "no domain named %s"
 msgstr "डोमेन नाम"
 
-#: src/lxc_driver.c:1055 src/lxc_driver.c:1091
+#: src/lxc_driver.c:1057 src/lxc_driver.c:1093
 #, c-format
 msgid "no domain with id %d"
 msgstr "id %d के साथ कोई डोमेन नहीं"
 
-#: src/lxc_driver.c:1271
+#: src/lxc_driver.c:1277
 #, fuzzy, c-format
 msgid "uname(): %s"
 msgstr "नाम"
 
-#: src/lxc_driver.c:1277
+#: src/lxc_driver.c:1283
 #, fuzzy, c-format
 msgid "Unknown release: %s"
 msgstr "अज्ञात प्रक्रिया: %d"
 
-#: src/lxc_driver.c:1314 src/lxc_driver.c:1367
+#: src/lxc_driver.c:1320 src/lxc_driver.c:1373
 #, fuzzy, c-format
 msgid "No such domain %s"
 msgstr "%s डोमेन फिर बहाल करने में विफल"
 
-#: src/lxc_driver.c:1329
+#: src/lxc_driver.c:1335
 #, fuzzy, c-format
 msgid "Invalid parameter `%s'"
 msgstr "अवैध पथ: %s"
 
-#: src/lxc_driver.c:1357
+#: src/lxc_driver.c:1363
 #, fuzzy
 msgid "Invalid parameter count"
 msgstr "virXPathNode() में अवैध पैरामीटर"
 
-#: src/network_conf.c:253
+#: src/network_conf.c:260
 #, fuzzy, c-format
 msgid "cannot parse MAC address '%s'"
 msgstr "पता %d का समाधान नहीं कर सकता है: %s"
 
-#: src/network_conf.c:260
+#: src/network_conf.c:267
 #, fuzzy, c-format
 msgid "cannot use name address '%s'"
 msgstr "पता %d का समाधान नहीं कर सकता है: %s"
 
-#: src/network_conf.c:276 src/network_conf.c:364
+#: src/network_conf.c:283 src/network_conf.c:371
 #, fuzzy, c-format
 msgid "cannot parse IP address '%s'"
 msgstr "पता %d का समाधान नहीं कर सकता है: %s"
 
-#: src/network_conf.c:370
+#: src/network_conf.c:377
 #, fuzzy, c-format
 msgid "cannot parse netmask '%s'"
 msgstr "हेडर '%s' नहीं पढ़ सकता है: %s"
 
-#: src/network_conf.c:394
+#: src/network_conf.c:401
 msgid "Forwarding requested, but no IPv4 address/netmask provided"
 msgstr "आग्रह अग्रसारित कर रहा है, लेकिन कोई IPv4 पता/नेटमास्क दिया गया नहीं है"
 
-#: src/network_conf.c:402
+#: src/network_conf.c:409
 #, fuzzy, c-format
 msgid "unknown forwarding type '%s'"
 msgstr "अज्ञात सत्यापन प्रकार '%s'"
 
-#: src/network_conf.c:671 src/network_driver.c:1249 src/qemu_driver.c:3457
-#: src/storage_driver.c:952 src/uml_driver.c:1716
+#: src/network_conf.c:678 src/network_driver.c:1253 src/qemu_driver.c:3459
+#: src/storage_driver.c:956 src/uml_driver.c:1715
 #, c-format
 msgid "cannot create autostart directory %s: %s"
 msgstr "ऑटोस्टार्ट निर्देशिका %s नहीं बना सकता है: %s"
 
-#: src/network_conf.c:740
+#: src/network_conf.c:747
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr "संजाल विन्यास फाइलनाम '%s' संजाल नाम '%s' के साथ मेल नहीं खाता है"
 
-#: src/network_conf.c:809 src/storage_conf.c:1479
+#: src/network_conf.c:816 src/storage_conf.c:1488
 #, c-format
 msgid "no config file for %s"
 msgstr "%s के लिए कोई विन्यास फाइल नहीं"
@@ -1856,173 +1900,173 @@ msgid "Failed to autostart network '%s': %s\n"
 msgstr "संजाल '%s' फिर पुनः आरंभ करने में विफल: %s"
 
 # done by Ravi
-#: src/network_driver.c:149 src/qemu_driver.c:267 src/uml_driver.c:324
+#: src/network_driver.c:152 src/qemu_driver.c:309 src/uml_driver.c:327
 #, fuzzy, c-format
 msgid "Failed to find user record for uid '%d': %s\n"
 msgstr "uid '%d' के लिए उपयोक्ता रिकार्ड ढूँढ़ने में विफल: %s"
 
-#: src/network_driver.c:189
+#: src/network_driver.c:192
 #, fuzzy
 msgid "networkStartup: out of memory\n"
 msgstr "qemudStartup: स्मृति कम"
 
-#: src/network_driver.c:219
+#: src/network_driver.c:222
 #, fuzzy
 msgid "Reloading iptables rules\n"
 msgstr "iptables नियम फिर लोड कर रहा है"
 
-#: src/network_driver.c:417
+#: src/network_driver.c:421
 msgid "failed to allocate space for dnsmasq argv"
 msgstr "dnsmasq argv के लिए स्थान आबंटित करने में विफल"
 
-#: src/network_driver.c:431
+#: src/network_driver.c:435
 msgid "cannot start dhcp daemon without IP address for server"
 msgstr "dhcp डेमान को बिना IP पता के सर्वर के लिए आरंभ नहीं कर सकता है"
 
-#: src/network_driver.c:460
+#: src/network_driver.c:464
 #, c-format
 msgid "failed to add iptables rule to allow forwarding from '%s' : %s\n"
 msgstr "iptables नियम को '%s' से अग्रसारण करने की लिए अनुमति देने में विफल : %s\n"
 
-#: src/network_driver.c:471
+#: src/network_driver.c:475
 #, c-format
 msgid "failed to add iptables rule to allow forwarding to '%s' : %s\n"
 msgstr "iptables नियम को '%s' में अग्रसारण करने की लिए अनुमति देने में विफल : %s\n"
 
-#: src/network_driver.c:481
+#: src/network_driver.c:485
 #, c-format
 msgid "failed to add iptables rule to enable masquerading : %s\n"
 msgstr "iptables नियम को masquerading सक्रिय करने में विफल : %s\n"
 
-#: src/network_driver.c:513
+#: src/network_driver.c:517
 #, c-format
 msgid "failed to add iptables rule to allow routing from '%s' : %s\n"
 msgstr "iptables नियम को '%s' से रॉटिंग स्वीकार करने में विफल : %s\n"
 
-#: src/network_driver.c:524
+#: src/network_driver.c:528
 #, c-format
 msgid "failed to add iptables rule to allow routing to '%s' : %s\n"
 msgstr "iptables नियम को '%s' में रॉटिंग स्वीकार करने में विफल : %s\n"
 
-#: src/network_driver.c:549
+#: src/network_driver.c:553
 msgid "failed to allocate space for IP tables support"
 msgstr "IP सारणी समर्थन के लिए स्थान आबंटित करने में विफल"
 
-#: src/network_driver.c:557 src/network_driver.c:564
+#: src/network_driver.c:561 src/network_driver.c:568
 #, c-format
 msgid "failed to add iptables rule to allow DHCP requests from '%s' : %s"
 msgstr "iptables नियम को DHCP आग्रह को '%s' में जोड़ने में विफल : %s"
 
-#: src/network_driver.c:572 src/network_driver.c:579
+#: src/network_driver.c:576 src/network_driver.c:583
 #, c-format
 msgid "failed to add iptables rule to allow DNS requests from '%s' : %s"
 msgstr "iptables नियम को DNS आग्रह को '%s' में जोड़ने में विफल : %s"
 
-#: src/network_driver.c:589
+#: src/network_driver.c:593
 #, c-format
 msgid "failed to add iptables rule to block outbound traffic from '%s' : %s"
 msgstr "iptables नियम को आने वाले ट्रैफिक को '%s' से जोड़ने में विफल : %s"
 
-#: src/network_driver.c:596
+#: src/network_driver.c:600
 #, c-format
 msgid "failed to add iptables rule to block inbound traffic to '%s' : %s"
 msgstr "iptables नियम को इनबाउंड ट्रैफिक को '%s' से जोड़ने में विफल : %s"
 
-#: src/network_driver.c:604
+#: src/network_driver.c:608
 #, c-format
 msgid "failed to add iptables rule to allow cross bridge traffic on '%s' : %s"
 msgstr "iptables नियम को क्रास ब्रिंज ट्रैफिक को '%s' से जोड़ने में विफल : %s"
 
-#: src/network_driver.c:705
+#: src/network_driver.c:709
 msgid "network is already active"
 msgstr "संजाल पहले से सक्रिय"
 
-#: src/network_driver.c:711 src/qemu_conf.c:512
+#: src/network_driver.c:715 src/qemu_conf.c:512
 #, c-format
 msgid "cannot initialize bridge support: %s"
 msgstr "ब्रिज समर्थन आरंभ करने में विफल: %s"
 
-#: src/network_driver.c:717
+#: src/network_driver.c:721
 #, c-format
 msgid "cannot create bridge '%s' : %s"
 msgstr "ब्रिज '%s' नहीं बना सकता है : %s"
 
-#: src/network_driver.c:732
+#: src/network_driver.c:736
 #, c-format
 msgid "cannot set IP address on bridge '%s' to '%s' : %s"
 msgstr "IP पता को '%s' ब्रिज पर '%s' में सेट करने में विफल : %s"
 
-#: src/network_driver.c:740
+#: src/network_driver.c:744
 #, c-format
 msgid "cannot set netmask on bridge '%s' to '%s' : %s"
 msgstr "ब्रिज '%s' पर '%s' में नेटमास्क सेट नहीं कर सकता है: %s"
 
-#: src/network_driver.c:748
+#: src/network_driver.c:752
 #, c-format
 msgid "failed to bring the bridge '%s' up : %s"
 msgstr "ब्रिज को '%s' चालू करने में विफल: %s"
 
-#: src/network_driver.c:759
+#: src/network_driver.c:763
 #, c-format
 msgid "failed to enable IP forwarding : %s"
 msgstr "IP अग्रसारण सक्रिय करने में विफल: %s"
 
-#: src/network_driver.c:777 src/network_driver.c:808
+#: src/network_driver.c:781 src/network_driver.c:812
 #, fuzzy, c-format
 msgid "Failed to bring down bridge '%s' : %s\n"
 msgstr "ब्रिज '%s' लाने में विफल : %s"
 
-#: src/network_driver.c:783 src/network_driver.c:813
+#: src/network_driver.c:787 src/network_driver.c:817
 #, fuzzy, c-format
 msgid "Failed to delete bridge '%s' : %s\n"
 msgstr "ब्रिज '%s' मिटाने में विफल : %s"
 
-#: src/network_driver.c:796
+#: src/network_driver.c:800
 #, fuzzy, c-format
 msgid "Shutting down network '%s'\n"
 msgstr "संजाल '%s' बंद करने में विफल"
 
-#: src/network_driver.c:822
+#: src/network_driver.c:826
 #, fuzzy
 msgid "Got unexpected pid for dnsmasq\n"
 msgstr "dnsmasq के लिए अप्रत्यासित pid पाया"
 
-#: src/network_driver.c:849 src/network_driver.c:1069
-#: src/network_driver.c:1105 src/network_driver.c:1128
-#: src/network_driver.c:1156 src/network_driver.c:1212
-#: src/network_driver.c:1237
+#: src/network_driver.c:853 src/network_driver.c:1073
+#: src/network_driver.c:1109 src/network_driver.c:1132
+#: src/network_driver.c:1160 src/network_driver.c:1216
+#: src/network_driver.c:1241
 msgid "no network with matching uuid"
 msgstr "मेल खाते uuid के साथ कोई संजाल नहीं"
 
-#: src/network_driver.c:872
+#: src/network_driver.c:876
 msgid "no network with matching name"
 msgstr "मेल खाते नाम के साथ कोई संजाल नहीं"
 
-#: src/network_driver.c:1075
+#: src/network_driver.c:1079
 #, fuzzy
 msgid "network is still active"
 msgstr "संजाल पहले से सक्रिय"
 
-#: src/network_driver.c:1179
+#: src/network_driver.c:1183
 msgid "no network with matching id"
 msgstr "मिलान id के साथ कोई संजाल नहीं"
 
-#: src/network_driver.c:1185
+#: src/network_driver.c:1189
 #, fuzzy, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "संजाल '%s' सक्रिय नहीं"
 
-#: src/network_driver.c:1193
+#: src/network_driver.c:1197
 msgid "failed to allocate space for network bridge string"
 msgstr "संजाल ब्रिज स्ट्रिंग के लिए स्थान आबंटित करने में विफल"
 
-#: src/network_driver.c:1256 src/storage_driver.c:959
+#: src/network_driver.c:1260 src/storage_driver.c:963
 #, c-format
 msgid "Failed to create symlink '%s' to '%s': %s"
 msgstr "सांकेतिक लिंक '%s' को '%s' में बनाने में विफल: %s"
 
-#: src/network_driver.c:1263 src/qemu_driver.c:3471 src/storage_driver.c:968
-#: src/uml_driver.c:1730
+#: src/network_driver.c:1267 src/qemu_driver.c:3473 src/storage_driver.c:972
+#: src/uml_driver.c:1729
 #, c-format
 msgid "Failed to delete symlink '%s': %s"
 msgstr "सिमलिंक '%s' मिटाने में विफल: %s"
@@ -2080,16 +2124,16 @@ msgstr "popen विफल"
 msgid "Failed to parse vzlist output"
 msgstr "vzlist आउटपुट के विश्लेषण में विफल"
 
-#: src/openvz_conf.c:417
+#: src/openvz_conf.c:424
 msgid "UUID in config file malformed"
 msgstr "कॉन्फिग फाइल में UUID विरूपित है"
 
-#: src/openvz_conf.c:429
+#: src/openvz_conf.c:436
 #, fuzzy, c-format
 msgid "Cound not read config for container %d"
 msgstr "%s के लिए विन्यास हटा नहीं सकता है"
 
-#: src/openvz_conf.c:472
+#: src/openvz_conf.c:479
 msgid "Cound not read nodeinfo"
 msgstr ""
 
@@ -2107,7 +2151,7 @@ msgstr ""
 msgid "only one filesystem supported"
 msgstr "अवैध फाइलसिस्टम प्रकार"
 
-#: src/openvz_driver.c:160 src/openvz_driver.c:589
+#: src/openvz_driver.c:160 src/openvz_driver.c:593
 #, fuzzy, c-format
 msgid "Could not put argument to %s"
 msgstr "%s से जुड़ नहीं सका"
@@ -2121,83 +2165,83 @@ msgstr "सक्रिय डोमेन मिटा नहीं सकत�
 msgid "domain is not in running state"
 msgstr "डोमेन कार्यशील स्थिति में नहीं है"
 
-#: src/openvz_driver.c:492
+#: src/openvz_driver.c:494
 msgid "Container ID is not specified"
 msgstr ""
 
-#: src/openvz_driver.c:523
+#: src/openvz_driver.c:527
 msgid "Could not generate eth name for container"
 msgstr ""
 
-#: src/openvz_driver.c:534
+#: src/openvz_driver.c:538
 msgid "Could not generate veth name"
 msgstr ""
 
-#: src/openvz_driver.c:576 src/openvz_driver.c:685 src/openvz_driver.c:758
-#: src/openvz_driver.c:775 src/openvz_driver.c:831 src/openvz_driver.c:869
-#: src/openvz_driver.c:905 src/openvz_driver.c:982 src/openvz_driver.c:1118
-#: src/openvz_driver.c:1169
+#: src/openvz_driver.c:580 src/openvz_driver.c:690 src/openvz_driver.c:764
+#: src/openvz_driver.c:781 src/openvz_driver.c:837 src/openvz_driver.c:875
+#: src/openvz_driver.c:911 src/openvz_driver.c:988 src/openvz_driver.c:1124
+#: src/openvz_driver.c:1175
 #, fuzzy, c-format
 msgid "Could not exec %s"
 msgstr "%s से जुड़ नहीं सका"
 
-#: src/openvz_driver.c:618
+#: src/openvz_driver.c:622
 #, fuzzy
 msgid "Could not configure network"
 msgstr "%s से जुड़ नहीं सका"
 
-#: src/openvz_driver.c:629
+#: src/openvz_driver.c:633
 #, fuzzy
 msgid "cannot replace NETIF config"
 msgstr "%s के लिए विन्यास हटा नहीं सकता है"
 
-#: src/openvz_driver.c:667
+#: src/openvz_driver.c:672
 #, c-format
 msgid "Already an OPENVZ VM active with the id '%s'"
 msgstr "पहले से OPENVZ VM सक्रिय है '%s' id के साथ"
 
-#: src/openvz_driver.c:677 src/openvz_driver.c:752
+#: src/openvz_driver.c:682 src/openvz_driver.c:758
 msgid "Error creating command for container"
 msgstr ""
 
-#: src/openvz_driver.c:691 src/openvz_driver.c:764
+#: src/openvz_driver.c:696 src/openvz_driver.c:770
 #, fuzzy
 msgid "Could not set UUID"
 msgstr "कनेक्शन URI का विश्लेषण नहीं कर सका"
 
-#: src/openvz_driver.c:701 src/openvz_driver.c:786
+#: src/openvz_driver.c:706 src/openvz_driver.c:792
 #, fuzzy
 msgid "Could not set number of virtual cpu"
 msgstr "वर्चुअल सीपीयू की संख्या बदलें"
 
-#: src/openvz_driver.c:742
+#: src/openvz_driver.c:748
 #, fuzzy, c-format
 msgid "Already an OPENVZ VM defined with the id '%s'"
 msgstr "पहले से OPENVZ VM परिभाषित '%d' आईडी के साथ"
 
-#: src/openvz_driver.c:818
+#: src/openvz_driver.c:824
 msgid "no domain with matching id"
 msgstr "मिलान id के साथ कोई डोमेन नहीं"
 
-#: src/openvz_driver.c:824
+#: src/openvz_driver.c:830
 msgid "domain is not in shutoff state"
 msgstr "डोमेन शटऑफ स्थिति में नहीं है"
 
-#: src/openvz_driver.c:936
+#: src/openvz_driver.c:942
 #, fuzzy
 msgid "Could not read container config"
 msgstr "कनेक्शन URI का विश्लेषण नहीं कर सका"
 
-#: src/openvz_driver.c:956 src/qemu_driver.c:1428
+#: src/openvz_driver.c:962 src/qemu_driver.c:1434
 #, c-format
 msgid "unknown type '%s'"
 msgstr "अज्ञात प्रकार '%s'"
 
-#: src/openvz_driver.c:1008
+#: src/openvz_driver.c:1014
 msgid "VCPUs should be >= 1"
 msgstr ""
 
-#: src/openvz_driver.c:1127 src/openvz_driver.c:1178
+#: src/openvz_driver.c:1133 src/openvz_driver.c:1184
 #, fuzzy, c-format
 msgid "Could not parse VPS ID %s"
 msgstr "कनेक्शन URI का विश्लेषण नहीं कर सका"
@@ -2265,7 +2309,7 @@ msgstr "qemu %d pid %lu से अप्रत्याशित निकास
 msgid "Unexpected exit status '%d', qemu probably failed"
 msgstr "अप्रत्याशित निकास स्थिति '%d', qemu संभवतः विफल रहा"
 
-#: src/qemu_conf.c:449 src/qemu_driver.c:979
+#: src/qemu_conf.c:449 src/qemu_driver.c:987
 #, c-format
 msgid "Cannot find QEMU binary %s: %s"
 msgstr "QEMU द्विपदीय %s नहीं पा सकता है: %s"
@@ -2309,31 +2353,31 @@ msgstr "अप्रत्याशित डिस्क प्रकार '%s
 msgid "invalid sound model"
 msgstr "अवैध ध्वनि माडल"
 
-#: src/qemu_conf.c:1243 src/uml_conf.c:312
+#: src/qemu_conf.c:1262 src/uml_conf.c:312
 msgid "failed to allocate space for argv string"
 msgstr "argv स्ट्रिंग के लिए स्थान आबंटित करने में विफल"
 
-#: src/qemu_conf.c:1318
+#: src/qemu_conf.c:1337
 #, fuzzy
 msgid "failed to allocate space for vm status"
 msgstr "vm स्ट्रिंग के लिए स्थान आबंटित करने में विफल"
 
-#: src/qemu_conf.c:1361
+#: src/qemu_conf.c:1380
 #, fuzzy
 msgid "invalid domain state"
 msgstr "अवैध डोमेन नाम"
 
-#: src/qemu_conf.c:1368
+#: src/qemu_conf.c:1387
 #, fuzzy
 msgid "invalid pid"
 msgstr "अवैध तर्क"
 
-#: src/qemu_conf.c:1375
+#: src/qemu_conf.c:1394
 #, fuzzy
 msgid "no monitor path"
 msgstr "मॉनिटर पथ %s खोलने में असमर्थ"
 
-#: src/qemu_conf.c:1382
+#: src/qemu_conf.c:1401
 #, fuzzy
 msgid "no domain config"
 msgstr "नोड डोमेन सूची"
@@ -2348,32 +2392,47 @@ msgstr "close-on-exec फाइल विवरणकर्ता फ्लै�
 msgid "Failed to set non-blocking file descriptor flag\n"
 msgstr "गैर ब्लॉकिंग फाइल विवरणकर्ता फ्लैग सेट करने में विफल"
 
-#: src/qemu_driver.c:167 src/uml_driver.c:142
+#: src/qemu_driver.c:157
+#, fuzzy, c-format
+msgid "failed to build logfile name %s/%s.log"
+msgstr "लॉग फाइल %s बनाने में विफल: %s"
+
+#: src/qemu_driver.c:169 src/uml_driver.c:765
+#, c-format
+msgid "failed to create logfile %s: %s"
+msgstr "लॉग फाइल %s बनाने में विफल: %s"
+
+#: src/qemu_driver.c:175 src/uml_driver.c:774
+#, c-format
+msgid "Unable to set VM logfile close-on-exec flag %s"
+msgstr "VM लॉगफाइल को close-on-exec फ्लैग %s सेट करने में असमर्थ"
+
+#: src/qemu_driver.c:205 src/uml_driver.c:142
 #, fuzzy, c-format
 msgid "Failed to autostart VM '%s': %s\n"
 msgstr "VM '%s' फिर स्वयं आरंभ करने में विफल: %s"
 
-#: src/qemu_driver.c:203
+#: src/qemu_driver.c:241
 #, fuzzy
 msgid "failed to allocate space for status file"
 msgstr "ostype के लिए स्थान आबंटन में विफल"
 
-#: src/qemu_driver.c:209
+#: src/qemu_driver.c:247
 #, fuzzy, c-format
 msgid "Failed to unlink status file %s"
 msgstr "%s %s ब्लॉक स्थिति पाने में विफल"
 
-#: src/qemu_driver.c:284
+#: src/qemu_driver.c:326
 #, fuzzy, c-format
 msgid "Failed to create state dir '%s': %s\n"
 msgstr "VM '%s' फिर स्वयं आरंभ करने में विफल: %s"
 
-#: src/qemu_driver.c:326
+#: src/qemu_driver.c:368
 #, fuzzy
 msgid "qemudStartup: out of memory\n"
 msgstr "qemudStartup: स्मृति कम"
 
-#: src/qemu_driver.c:478
+#: src/qemu_driver.c:521
 #, c-format
 msgid ""
 "QEMU quit during %s startup\n"
@@ -2382,162 +2441,147 @@ msgstr ""
 "QEMU ने %s आरंभन के दौरान छोड़ा\n"
 "%s"
 
-#: src/qemu_driver.c:488 src/qemu_driver.c:501
+#: src/qemu_driver.c:531 src/qemu_driver.c:544
 #, c-format
 msgid "Failure while reading %s startup output: %s"
 msgstr "%s आरंभन आउटपुट पढ़ने के दौरान विफलता: %s"
 
-#: src/qemu_driver.c:496
+#: src/qemu_driver.c:539
 #, c-format
 msgid "Timed out while reading %s startup output"
 msgstr "%s आरंभन आउटपुट के दौरान समय समाप्त"
 
-#: src/qemu_driver.c:512
+#: src/qemu_driver.c:555
 #, c-format
 msgid "Failure while reading %s startup output"
 msgstr "%s आरंभन आउटपुट को पढ़ने के दौरान विफलता"
 
-#: src/qemu_driver.c:524
+#: src/qemu_driver.c:567
 #, c-format
 msgid "Out of space while reading %s startup output"
 msgstr "%s आरंभन आउटपुट पढ़ने के दौरान स्थान की कमी"
 
-#: src/qemu_driver.c:552
+#: src/qemu_driver.c:595
 #, c-format
 msgid "Unable to open monitor path %s"
 msgstr "मॉनिटर पथ %s खोलने में असमर्थ"
 
-#: src/qemu_driver.c:557
+#: src/qemu_driver.c:600
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "close-on-exec फ्लैग के लिए मॉनिटर सेट करने में असमर्थ"
 
-#: src/qemu_driver.c:562
+#: src/qemu_driver.c:605
 msgid "Unable to put monitor into non-blocking mode"
 msgstr "मॉनिटर को non-blocking मोड में रखने में असमर्थ"
 
-#: src/qemu_driver.c:574
+#: src/qemu_driver.c:617
 #, fuzzy
 msgid "failed to allocate space for monitor path"
 msgstr "ostype के लिए स्थान आबंटन में विफल"
 
-#: src/qemu_driver.c:691 src/qemu_driver.c:1102 src/qemu_driver.c:1291
-#: src/qemu_driver.c:1301
+#: src/qemu_driver.c:734 src/qemu_driver.c:1110 src/qemu_driver.c:1299
+#: src/qemu_driver.c:1309
 #, fuzzy, c-format
 msgid "Unable to log VM console data: %s\n"
 msgstr "VM कंसोल डेटा लॉग करने में असमर्थ: %s"
 
-#: src/qemu_driver.c:713
+#: src/qemu_driver.c:756
 msgid "allocate cpumap"
 msgstr "cpumap आबंटित करें"
 
-#: src/qemu_driver.c:724
+#: src/qemu_driver.c:767
 msgid "cannot run monitor command to fetch CPU thread info"
 msgstr "CPU लड़ी सूचना लाने के लिए monitor कमांड नहीं चला सकता है"
 
-#: src/qemu_driver.c:828
+#: src/qemu_driver.c:871
 #, c-format
 msgid "failed to set CPU affinity %s"
 msgstr "CPU लगाव %s सेट करने में विफल"
 
-#: src/qemu_driver.c:839 src/qemu_driver.c:1827
+#: src/qemu_driver.c:882 src/qemu_driver.c:1827
 msgid "resume operation failed"
 msgstr "विफल ऑपरेशन फिर बहाल करें"
 
-#: src/qemu_driver.c:909 src/uml_driver.c:725
+#: src/qemu_driver.c:949 src/uml_driver.c:729
 msgid "VM is already active"
 msgstr "VM पहले से सक्रिय है"
 
-#: src/qemu_driver.c:919
+#: src/qemu_driver.c:959
 msgid "Unable to find an unused VNC port"
 msgstr "किसी अप्रयुक्त VNC पोर्ट ढ़ूँढ़ने में असमर्थ"
 
-#: src/qemu_driver.c:931
-#, c-format
-msgid "config file path too long: %s/%s.log"
-msgstr "विन्यास फाइल पथ काफी लंबी है: %s/%s.log"
-
-#: src/qemu_driver.c:954 src/uml_driver.c:761
-#, c-format
-msgid "failed to create logfile %s: %s"
-msgstr "लॉग फाइल %s बनाने में विफल: %s"
-
-#: src/qemu_driver.c:960 src/uml_driver.c:770
-#, c-format
-msgid "Unable to set VM logfile close-on-exec flag %s"
-msgstr "VM लॉगफाइल को close-on-exec फ्लैग %s सेट करने में असमर्थ"
-
-#: src/qemu_driver.c:989 src/qemu_driver.c:2946
+#: src/qemu_driver.c:997 src/qemu_driver.c:2948
 #, fuzzy, c-format
 msgid "Cannot determine QEMU argv syntax %s"
 msgstr "QEMU द्विपदीय %s नहीं पा सकता है: %s"
 
-#: src/qemu_driver.c:1007 src/qemu_driver.c:1010 src/uml_driver.c:786
-#: src/uml_driver.c:789
+#: src/qemu_driver.c:1015 src/qemu_driver.c:1018 src/uml_driver.c:790
+#: src/uml_driver.c:793
 #, fuzzy, c-format
 msgid "Unable to write envv to logfile %d: %s\n"
 msgstr "argv को logfile %d में लिखने में असमर्थ: %s"
 
-#: src/qemu_driver.c:1017 src/qemu_driver.c:1020 src/qemu_driver.c:1025
-#: src/uml_driver.c:796 src/uml_driver.c:799 src/uml_driver.c:804
+#: src/qemu_driver.c:1025 src/qemu_driver.c:1028 src/qemu_driver.c:1033
+#: src/uml_driver.c:800 src/uml_driver.c:803 src/uml_driver.c:808
 #, fuzzy, c-format
 msgid "Unable to write argv to logfile %d: %s\n"
 msgstr "argv को logfile %d में लिखने में असमर्थ: %s"
 
-#: src/qemu_driver.c:1114
+#: src/qemu_driver.c:1122
 #, fuzzy, c-format
 msgid "Shutting down VM '%s'\n"
 msgstr "VM '%s' बंद कर रहा है"
 
-#: src/qemu_driver.c:1125
+#: src/qemu_driver.c:1133
 #, fuzzy, c-format
 msgid "Unable to close logfile %d: %s\n"
 msgstr "लॉग फाइल %d बंद करने में असमर्थ: %s"
 
-#: src/qemu_driver.c:1140
+#: src/qemu_driver.c:1148
 #, fuzzy
 msgid "Got unexpected pid, damn\n"
 msgstr "अप्रत्याशित pid पाया, damn"
 
-#: src/qemu_driver.c:1399
+#: src/qemu_driver.c:1407
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "tty %s खोलने में विफल: %s\n"
 
-#: src/qemu_driver.c:1445 src/uml_driver.c:946
+#: src/qemu_driver.c:1451 src/uml_driver.c:950
 msgid "failed to allocate space for capabilities support"
 msgstr "क्षमता समर्थन के लिए स्थान आबंटित करने में विफल"
 
-#: src/qemu_driver.c:1464 src/qemu_driver.c:1494 src/uml_driver.c:965
-#: src/uml_driver.c:996
+#: src/qemu_driver.c:1470 src/qemu_driver.c:1500 src/uml_driver.c:969
+#: src/uml_driver.c:1000
 msgid "NUMA not supported on this host"
 msgstr "NUMA इस मेजबान पर समर्थित नहीं"
 
-#: src/qemu_driver.c:1475 src/qemu_driver.c:1502 src/uml_driver.c:976
-#: src/uml_driver.c:1004
+#: src/qemu_driver.c:1481 src/qemu_driver.c:1508 src/uml_driver.c:980
+#: src/uml_driver.c:1008
 msgid "Failed to query NUMA free memory"
 msgstr "NUMA मुक्त स्मृति प्रश्न करने में विफल"
 
-#: src/qemu_driver.c:1707 src/uml_driver.c:1215
+#: src/qemu_driver.c:1707 src/uml_driver.c:1213
 #, fuzzy, c-format
 msgid "domain '%s' is already defined"
 msgstr "%s डोमेन पहले से मौजूद है"
 
-#: src/qemu_driver.c:1717 src/uml_driver.c:1225
+#: src/qemu_driver.c:1717 src/uml_driver.c:1223
 #, fuzzy, c-format
 msgid "domain with uuid '%s' is already defined"
 msgstr "%s डोमेन पहले से मौजूद है"
 
 #: src/qemu_driver.c:1766 src/qemu_driver.c:1816 src/qemu_driver.c:1864
-#: src/qemu_driver.c:1893 src/qemu_driver.c:2193 src/qemu_driver.c:3512
-#: src/qemu_driver.c:3644 src/qemu_driver.c:3780 src/qemu_driver.c:4109
-#: src/uml_driver.c:1266 src/uml_driver.c:1296
+#: src/qemu_driver.c:1893 src/qemu_driver.c:2193 src/qemu_driver.c:3514
+#: src/qemu_driver.c:3646 src/qemu_driver.c:3782 src/qemu_driver.c:4112
+#: src/uml_driver.c:1264 src/uml_driver.c:1294
 #, c-format
 msgid "no domain with matching id %d"
 msgstr "मिलान id %d के साथ कोई डोमेन नहीं"
 
 #: src/qemu_driver.c:1771 src/qemu_driver.c:1821 src/qemu_driver.c:2199
-#: src/qemu_driver.c:3517 src/qemu_driver.c:3650 src/qemu_driver.c:3792
-#: src/qemu_driver.c:4115
+#: src/qemu_driver.c:3519 src/qemu_driver.c:3652 src/qemu_driver.c:3794
+#: src/qemu_driver.c:4118
 msgid "domain is not running"
 msgstr "डोमेन नहीं चल रहा है"
 
@@ -2545,30 +2589,30 @@ msgstr "डोमेन नहीं चल रहा है"
 msgid "suspend operation failed"
 msgstr "स्थगन ऑपरेशन विफल"
 
-#: src/qemu_driver.c:1870 src/uml_driver.c:1273
+#: src/qemu_driver.c:1870 src/uml_driver.c:1271
 msgid "shutdown operation failed"
 msgstr "शटडाउन ऑपरेशन विफल"
 
-#: src/qemu_driver.c:1934 src/uml_driver.c:1332
+#: src/qemu_driver.c:1934 src/uml_driver.c:1330
 msgid "failed to allocate space for ostype"
 msgstr "ostype के लिए स्थान आबंटन में विफल"
 
 #: src/qemu_driver.c:1957 src/qemu_driver.c:1983 src/qemu_driver.c:2015
-#: src/qemu_driver.c:2327 src/qemu_driver.c:2515 src/uml_driver.c:1355
-#: src/uml_driver.c:1380 src/uml_driver.c:1413
+#: src/qemu_driver.c:2327 src/qemu_driver.c:2515 src/uml_driver.c:1353
+#: src/uml_driver.c:1378 src/uml_driver.c:1411
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "मेल खाते uuid '%s' के साथ कोई डोमेन नहीं"
 
-#: src/qemu_driver.c:1989 src/uml_driver.c:1386
+#: src/qemu_driver.c:1989 src/uml_driver.c:1384
 msgid "cannot set max memory lower than current memory"
 msgstr "मौजूदा स्मृति के साथ अधिकतम स्मृति नहीं सेट कर सकता है"
 
-#: src/qemu_driver.c:2021 src/uml_driver.c:1419
+#: src/qemu_driver.c:2021 src/uml_driver.c:1417
 msgid "cannot set memory of an active domain"
 msgstr "एक सक्रिय डोमेन की स्मृति सेट नहीं कर सकता है"
 
-#: src/qemu_driver.c:2027 src/uml_driver.c:1425
+#: src/qemu_driver.c:2027 src/uml_driver.c:1423
 msgid "cannot set memory higher than max memory"
 msgstr "अधिकतम स्मृति से अधिक स्मृति सेट नहीं कर सकता है"
 
@@ -2599,12 +2643,12 @@ msgid "unable to save file %s %s"
 msgstr "लॉग फाइल %d बंद करने में असमर्थ: %s"
 
 #: src/qemu_driver.c:2253 src/qemu_driver.c:2260 src/qemu_driver.c:2575
-#: src/qemu_driver.c:3051 src/qemu_driver.c:3121 src/remote_internal.c:2450
+#: src/qemu_driver.c:3053 src/qemu_driver.c:3123 src/remote_internal.c:2590
 #: src/virterror.c:475
 msgid "out of memory"
 msgstr "स्मृति के बाहर"
 
-#: src/qemu_driver.c:2267 src/qemu_driver.c:4155
+#: src/qemu_driver.c:2267 src/qemu_driver.c:4158
 msgid "migrate operation failed"
 msgstr "विफल ऑपरेशन के उत्प्रवासन में विफल"
 
@@ -2659,7 +2703,7 @@ msgstr "cpu लगाव उपलब्ध नहीं है"
 msgid "unknown virt type in domain definition '%d'"
 msgstr "डोमेन परिभाषा '%d' में अज्ञात virt प्रकार"
 
-#: src/qemu_driver.c:2550 src/test.c:1180
+#: src/qemu_driver.c:2550 src/test.c:1193
 msgid "cannot read domain image"
 msgstr "डोमेन चित्र नहीं पढ़ सकता है"
 
@@ -2680,697 +2724,697 @@ msgstr "चित्र संस्करण समर्थित नहीं
 msgid "failed to read XML"
 msgstr "XML पढ़ने में विफल"
 
-#: src/qemu_driver.c:2588 src/qemu_driver.c:4011
+#: src/qemu_driver.c:2589 src/qemu_driver.c:4014
 msgid "failed to parse XML"
 msgstr "XML के विश्लेषण में विफल"
 
-#: src/qemu_driver.c:2598
+#: src/qemu_driver.c:2599
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "डोमेन '%s' के रूप में पहले से सक्रिय है"
 
-#: src/qemu_driver.c:2606 src/qemu_driver.c:4047
+#: src/qemu_driver.c:2607 src/qemu_driver.c:4050
 msgid "failed to assign new VM"
 msgstr "नए VM को नियत करने में विफल"
 
-#: src/qemu_driver.c:2619
+#: src/qemu_driver.c:2620
 msgid "failed to start VM"
 msgstr "VM आरंभ करने में विफल"
 
-#: src/qemu_driver.c:2637
+#: src/qemu_driver.c:2638
 msgid "failed to resume domain"
 msgstr "डोमेन वापस करने में विफल"
 
-#: src/qemu_driver.c:2875
+#: src/qemu_driver.c:2877
 #, c-format
 msgid "cannot convert disk '%s' to bus/device index"
 msgstr ""
 
-#: src/qemu_driver.c:2901
+#: src/qemu_driver.c:2903
 #, fuzzy, c-format
 msgid "Unsupported disk name mapping for bus '%s'"
 msgstr "अप्रत्याशित डिस्क प्रकार '%s'"
 
-#: src/qemu_driver.c:2936
+#: src/qemu_driver.c:2938
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:2963
+#: src/qemu_driver.c:2965
 #, c-format
 msgid ""
 "Emulator version does not support removable media for device '%s' and target "
 "'%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3000
+#: src/qemu_driver.c:3002
 #, fuzzy
 msgid "could not change cdrom media"
 msgstr "cdrom मीडिया नहीं बदल सकता है"
 
-#: src/qemu_driver.c:3011
+#: src/qemu_driver.c:3013
 #, fuzzy, c-format
 msgid "changing cdrom media failed: %s"
 msgstr "cdrom मीडिया नहीं बदल सकता है"
 
-#: src/qemu_driver.c:3038 src/qemu_driver.c:3108
+#: src/qemu_driver.c:3040 src/qemu_driver.c:3110
 #, fuzzy, c-format
 msgid "target %s already exists"
 msgstr "भंडारण आयतन पहले से मौजूद है"
 
-#: src/qemu_driver.c:3065
+#: src/qemu_driver.c:3067
 #, fuzzy, c-format
 msgid "cannot attach %s disk"
 msgstr "पढ़ %s नहीं सकता है: %s"
 
-#: src/qemu_driver.c:3079
+#: src/qemu_driver.c:3081
 msgid "Unable to parse slot number\n"
 msgstr ""
 
-#: src/qemu_driver.c:3082
+#: src/qemu_driver.c:3084
 #, fuzzy, c-format
 msgid "adding %s disk failed"
 msgstr "%s डोमेन पहले से मौजूद है"
 
-#: src/qemu_driver.c:3134
+#: src/qemu_driver.c:3136
 #, fuzzy
 msgid "cannot attach usb disk"
 msgstr "स्रोत युक्ति निकाल नहीं सकता है"
 
-#: src/qemu_driver.c:3145
+#: src/qemu_driver.c:3147
 #, fuzzy
 msgid "adding usb disk failed"
 msgstr "मेजबान परिभाषा फाइल लोड करें"
 
-#: src/qemu_driver.c:3188
+#: src/qemu_driver.c:3190
 #, fuzzy
 msgid "cannot attach usb device"
 msgstr "स्रोत युक्ति निकाल नहीं सकता है"
 
-#: src/qemu_driver.c:3199
+#: src/qemu_driver.c:3201
 #, fuzzy
 msgid "adding usb device failed"
 msgstr "मेजबान परिभाषा फाइल लोड करें"
 
-#: src/qemu_driver.c:3231 src/qemu_driver.c:3369
+#: src/qemu_driver.c:3233
 msgid "cannot attach device on inactive domain"
 msgstr "निष्क्रिय डोमेन पर युक्ति संलग्न नहीं कर सकता है"
 
-#: src/qemu_driver.c:3259
+#: src/qemu_driver.c:3260
 #, fuzzy
 msgid "this disk device type cannot be attached"
 msgstr "सिर्फ CDROM डिस्क युक्ति को संलग्न किया जा सकता है"
 
-#: src/qemu_driver.c:3268
+#: src/qemu_driver.c:3269
 #, fuzzy
 msgid "this device type cannot be attached"
 msgstr "सिर्फ CDROM डिस्क युक्ति को संलग्न किया जा सकता है"
 
 # done by Ravi
-#: src/qemu_driver.c:3298
+#: src/qemu_driver.c:3299
 #, fuzzy, c-format
 msgid "disk %s not found"
 msgstr "डोमेन नही मिला"
 
-#: src/qemu_driver.c:3304
+#: src/qemu_driver.c:3305
 #, c-format
 msgid "disk %s cannot be detached - invalid slot number %d"
 msgstr ""
 
-#: src/qemu_driver.c:3316
+#: src/qemu_driver.c:3317
 #, fuzzy, c-format
 msgid "failed to execute detach disk %s command"
 msgstr "डोमेन वापस करने में विफल"
 
-#: src/qemu_driver.c:3325
+#: src/qemu_driver.c:3326
 #, fuzzy, c-format
 msgid "failed to detach disk %s: invalid slot %d"
 msgstr "%s से युक्ति अलग करने में विफल"
 
-#: src/qemu_driver.c:3386
+#: src/qemu_driver.c:3370
+#, fuzzy
+msgid "cannot detach device on inactive domain"
+msgstr "निष्क्रिय डोमेन पर युक्ति संलग्न नहीं कर सकता है"
+
+#: src/qemu_driver.c:3388
 #, fuzzy
 msgid "only SCSI or virtio disk device can be detached dynamically"
 msgstr "सिर्फ CDROM डिस्क युक्ति को संलग्न किया जा सकता है"
 
-#: src/qemu_driver.c:3440 src/uml_driver.c:1699
+#: src/qemu_driver.c:3442 src/uml_driver.c:1698
 #, fuzzy
 msgid "cannot set autostart for transient domain"
 msgstr "एक सक्रिय डोमेन की स्मृति सेट नहीं कर सकता है"
 
-#: src/qemu_driver.c:3464 src/uml_driver.c:1723
+#: src/qemu_driver.c:3466 src/uml_driver.c:1722
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s to '%s': %s"
 msgstr "सांकेतिक लिंक '%s' को '%s' में बनाने में विफल: %s"
 
-#: src/qemu_driver.c:3530
+#: src/qemu_driver.c:3532
 #, c-format
 msgid "invalid path: %s"
 msgstr "अवैध पथ: %s"
 
-#: src/qemu_driver.c:3541
+#: src/qemu_driver.c:3543
 msgid "'info blockstats' command failed"
 msgstr "'info blockstats' कमांड विफल"
 
-#: src/qemu_driver.c:3554
+#: src/qemu_driver.c:3556
 msgid "'info blockstats' not supported by this qemu"
 msgstr "'info blockstats' इस qemu के द्वारा समर्थित नहीं"
 
 # done by Ravi
-#: src/qemu_driver.c:3618
+#: src/qemu_driver.c:3620
 #, c-format
 msgid "device not found: %s (%s)"
 msgstr "युक्ति नहीं मिला: %s (%s)"
 
-#: src/qemu_driver.c:3656 src/qemu_driver.c:3714 src/uml_driver.c:1772
+#: src/qemu_driver.c:3658 src/qemu_driver.c:3716 src/uml_driver.c:1771
 msgid "NULL or empty path"
 msgstr "रिक्त या खाली पथ"
 
-#: src/qemu_driver.c:3673
+#: src/qemu_driver.c:3675
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "अवैध पथ, '%s' एक ज्ञात अंतरफलक नहीं है"
 
-#: src/qemu_driver.c:3751 src/uml_driver.c:1809
+#: src/qemu_driver.c:3753 src/uml_driver.c:1808
 msgid "invalid path"
 msgstr "अवैध तर्क"
 
-#: src/qemu_driver.c:3786
+#: src/qemu_driver.c:3788
 msgid "QEMU driver only supports virtual memory addrs"
 msgstr "QEMU ड्राइवर सिर्फ आभासी स्मृति addrs का समर्थन करता है"
 
-#: src/qemu_driver.c:3807
+#: src/qemu_driver.c:3809
 #, fuzzy
 msgid "'memsave' command failed"
 msgstr "lvs कमांड विफल"
 
-#: src/qemu_driver.c:3955
+#: src/qemu_driver.c:3957
 #, fuzzy
 msgid "no domain XML passed"
 msgstr "नोड डोमेन सूची"
 
-#: src/qemu_driver.c:3993
+#: src/qemu_driver.c:3995
 msgid "only tcp URIs are supported for KVM migrations"
 msgstr ""
 
-#: src/qemu_driver.c:4003
+#: src/qemu_driver.c:4005
 msgid "URI did not have ':port' at the end"
 msgstr ""
 
-#: src/qemu_driver.c:4028
+#: src/qemu_driver.c:4031
 #, fuzzy
 msgid "could not generate random UUID"
 msgstr "UUID उत्पन्न करने में विफल"
 
-#: src/qemu_driver.c:4037
+#: src/qemu_driver.c:4040
 #, fuzzy, c-format
 msgid "domain with the same name or UUID already exists as '%s'"
 msgstr "डोमेन '%s' के रूप में पहले से सक्रिय है"
 
-#: src/qemu_driver.c:4061
+#: src/qemu_driver.c:4064
 #, fuzzy
 msgid "failed to start listening VM"
 msgstr "VM आरंभ करने में विफल"
 
-#: src/qemu_driver.c:4164
+#: src/qemu_driver.c:4167
 #, fuzzy, c-format
 msgid "migrate failed: %s"
 msgstr "ऑपरेशन विफल: %s"
 
-#: src/qemu_driver.c:4210
+#: src/qemu_driver.c:4213
 #, fuzzy, c-format
 msgid "no domain with matching name %s"
 msgstr "मिलान नाम के साथ कोई डोमेन नाम नहीं"
 
-#: src/remote_internal.c:126 src/remote_internal.c:134
-#: src/remote_internal.c:150
-msgid "tried to use a closed or uninitialised handle"
-msgstr "एक बंद गैर आरंभीकृत नियंत्रण बंद करने के लिए कोशिश किया"
-
 # done by Ravi
-#: src/remote_internal.c:259
+#: src/remote_internal.c:221
 msgid "failed to find libvirtd binary"
 msgstr "libvirtd द्विपदीय पाने में विफल"
 
-#: src/remote_internal.c:323
+#: src/remote_internal.c:285
 msgid ""
 "remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp)"
 msgstr ""
 "remote_open: URL में परिवहन परिचित नहीं है (should be tls|unix|ssh|ext|tcp)"
 
-#: src/remote_internal.c:486
+#: src/remote_internal.c:448
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: 'ext' transport के लिए, कमांड जरूरी है"
 
-#: src/remote_internal.c:508
+#: src/remote_internal.c:470
 #, fuzzy, c-format
 msgid "unable to resolve hostname '%s': %s"
 msgstr "tty %s खोलने में विफल: %s\n"
 
-#: src/remote_internal.c:559 src/remote_internal.c:638
+#: src/remote_internal.c:521 src/remote_internal.c:600
 #, fuzzy, c-format
 msgid "unable to connect to '%s': %s"
 msgstr "tty %s खोलने में विफल: %s\n"
 
-#: src/remote_internal.c:580
+#: src/remote_internal.c:542
 #, fuzzy, c-format
 msgid "unable to lookup user '%d': %s"
 msgstr "tty %s खोलने में विफल: %s\n"
 
-#: src/remote_internal.c:614
+#: src/remote_internal.c:576
 #, fuzzy, c-format
 msgid "unable to create socket %s"
 msgstr "सॉकेट बनाने में विफल: %s"
 
-#: src/remote_internal.c:698
+#: src/remote_internal.c:660
 #, fuzzy, c-format
 msgid "unable to create socket pair %s"
 msgstr "सॉकेट बनाने में विफल: %s"
 
-#: src/remote_internal.c:718
+#: src/remote_internal.c:680
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "परिवहन विधि unix, ssh और ext को विंडो के अंदर समर्थन नहीं दिया जाता है"
 
-#: src/remote_internal.c:753
+#: src/remote_internal.c:716
 #, fuzzy
 msgid "unable to auto-detect URI"
 msgstr "URI पाने में विफल"
 
-#: src/remote_internal.c:770
+#: src/remote_internal.c:733
 msgid "Error allocating callbacks list"
 msgstr ""
 
-#: src/remote_internal.c:775
+#: src/remote_internal.c:738
 #, fuzzy
 msgid "Error allocating domainEvents"
 msgstr "डोमेन संभाजित कर रहा है"
 
-#: src/remote_internal.c:866 src/remote_internal.c:2662
-#: src/remote_internal.c:3067
+#: src/remote_internal.c:829 src/remote_internal.c:2821
+#: src/remote_internal.c:3273
 msgid "struct private_data"
 msgstr "struct private_data"
 
-#: src/remote_internal.c:974
+#: src/remote_internal.c:935
 #, fuzzy, c-format
 msgid "unable to allocate TLS credentials: %s"
 msgstr "कंटेनर स्टैक आबंटित करने में असमर्थ"
 
-#: src/remote_internal.c:994
+#: src/remote_internal.c:955
 #, fuzzy, c-format
 msgid "unable to load CA certificate: %s"
 msgstr "VM कंसोल डेटा लॉग करने में असमर्थ: %s"
 
-#: src/remote_internal.c:1009
+#: src/remote_internal.c:970
 #, c-format
 msgid "unable to load private key/certificate: %s"
 msgstr ""
 
-#: src/remote_internal.c:1038
+#: src/remote_internal.c:999
 #, fuzzy, c-format
 msgid "unable to initialize TLS client: %s"
 msgstr "SASL लाइब्रेरी को आरंभ करने में विफल: %d (%s)"
 
-#: src/remote_internal.c:1047
+#: src/remote_internal.c:1008
 #, fuzzy, c-format
 msgid "unable to set TLS algorithm priority: %s"
 msgstr "tty गुण सेट करने में असमर्थ: %s\n"
 
-#: src/remote_internal.c:1056
+#: src/remote_internal.c:1017
 #, fuzzy, c-format
 msgid "unable to set certificate priority: %s"
 msgstr "tty गुण सेट करने में असमर्थ: %s\n"
 
-#: src/remote_internal.c:1066
+#: src/remote_internal.c:1027
 #, fuzzy, c-format
 msgid "unable to set session credentials: %s"
 msgstr "क्लाइंट श्रेय जाँचने में विफल: %s"
 
-#: src/remote_internal.c:1081
+#: src/remote_internal.c:1042
 #, fuzzy, c-format
 msgid "unable to complete TLS handshake: %s"
 msgstr "tty %s खोलने में विफल: %s\n"
 
-#: src/remote_internal.c:1103
+#: src/remote_internal.c:1064
 #, c-format
 msgid "unable to complete TLS initialization: %s"
 msgstr ""
 
-#: src/remote_internal.c:1109
+#: src/remote_internal.c:1070
 msgid "server verification (of our certificate or IP address) failed\n"
 msgstr "सर्वर सत्यापन (हमारे प्रमाणपत्र का या IP पता) विफल\n"
 
-#: src/remote_internal.c:1134
+#: src/remote_internal.c:1095
 #, fuzzy, c-format
 msgid "unable to verify server certificate: %s"
 msgstr "क्लाइंट श्रेय जाँचने में विफल: %s"
 
-#: src/remote_internal.c:1141
+#: src/remote_internal.c:1102
 #, fuzzy, c-format
 msgid "cannot get current time: %s"
 msgstr "पाइप नहीं बना सकता है: %s"
 
-#: src/remote_internal.c:1147
+#: src/remote_internal.c:1108
 #, fuzzy
 msgid "Invalid certificate"
 msgstr "अवैध युक्ति प्रकार: %s"
 
-#: src/remote_internal.c:1150
+#: src/remote_internal.c:1111
 #, fuzzy
 msgid "The certificate is not trusted."
 msgstr "प्रमाणपत्र अब तक सक्रिय नहीं हुआ है"
 
-#: src/remote_internal.c:1153
+#: src/remote_internal.c:1114
 #, fuzzy
 msgid "The certificate hasn't got a known issuer."
 msgstr "remoteCheckCertificate: क्लाइंट प्रमाणपत्र के पास अज्ञात निर्गतकर्ता है."
 
-#: src/remote_internal.c:1156
+#: src/remote_internal.c:1117
 #, fuzzy
 msgid "The certificate has been revoked."
 msgstr "प्रमाणपत्र की मियाद पूरी हो गई है"
 
-#: src/remote_internal.c:1160
+#: src/remote_internal.c:1121
 #, fuzzy
 msgid "The certificate uses an insecure algorithm"
 msgstr ""
 "remoteCheckCertificate: क्लाइंट प्रमाणपत्र एक असुरक्षित अलगोरिथम का प्रयोग करता है."
 
-#: src/remote_internal.c:1164
+#: src/remote_internal.c:1125
 #, c-format
 msgid "server certificate failed validation: %s"
 msgstr ""
 
-#: src/remote_internal.c:1170
+#: src/remote_internal.c:1131
 msgid "Certificate type is not X.509"
 msgstr "प्रमाणपत्र प्रकार X.509 नहीं है"
 
-#: src/remote_internal.c:1175
+#: src/remote_internal.c:1136
 msgid "gnutls_certificate_get_peers failed"
 msgstr "gnutls_certificate_get_peers failed"
 
 # done by Ravi
-#: src/remote_internal.c:1185
+#: src/remote_internal.c:1146
 #, fuzzy, c-format
 msgid "unable to initialize certificate: %s"
 msgstr "SASL सत्यापन %s आरंभ करने में विफल"
 
-#: src/remote_internal.c:1193
+#: src/remote_internal.c:1154
 #, fuzzy, c-format
 msgid "unable to import certificate: %s"
 msgstr "tty %s खोलने में विफल: %s\n"
 
-#: src/remote_internal.c:1200
+#: src/remote_internal.c:1161
 msgid "The certificate has expired"
 msgstr "प्रमाणपत्र की मियाद पूरी हो गई है"
 
-#: src/remote_internal.c:1206
+#: src/remote_internal.c:1167
 msgid "The certificate is not yet activated"
 msgstr "प्रमाणपत्र अब तक सक्रिय नहीं हुआ है"
 
-#: src/remote_internal.c:1214
+#: src/remote_internal.c:1175
 #, c-format
 msgid "Certificate's owner does not match the hostname (%s)"
 msgstr "प्रमाणपत्र का मालिक होस्टनेम से मेल नहीं खाता है (%s)"
 
-#: src/remote_internal.c:1446
+#: src/remote_internal.c:1439
 #, c-format
 msgid "too many NUMA cells: %d > %d"
 msgstr "कई NUMA सेल: %d > %d"
 
-#: src/remote_internal.c:1495 src/remote_internal.c:1509
+#: src/remote_internal.c:1496 src/remote_internal.c:1510
 #, c-format
 msgid "too many remote domain IDs: %d > %d"
 msgstr "कई दूरस्थ डोमेन ID: %d > %d"
 
-#: src/remote_internal.c:1883
+#: src/remote_internal.c:1953
 #, c-format
 msgid "map length greater than maximum: %d > %d"
 msgstr "नक्शा लंबाई अधिकतम से अधिक है: %d > %d"
 
-#: src/remote_internal.c:1915
+#: src/remote_internal.c:1989
 #, c-format
 msgid "vCPU count exceeds maximum: %d > %d"
 msgstr "vCPU गिनती अधिकतम से अधिक है: %d > %d"
 
-#: src/remote_internal.c:1921
+#: src/remote_internal.c:1995
 #, c-format
 msgid "vCPU map buffer length exceeds maximum: %d > %d"
 msgstr "vCPU नक्शा लंबाई अधिकतम से अधिक है: %d > %d"
 
-#: src/remote_internal.c:1938
+#: src/remote_internal.c:2012
 #, c-format
 msgid "host reports too many vCPUs: %d > %d"
 msgstr "मेजबान ने कई vCPUs रिपोर्ट  किया: %d > %d"
 
-#: src/remote_internal.c:1945
+#: src/remote_internal.c:2018
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "मेजबान ने नक्शा बफर को रिपोर्ट किया जो अधिकतम से अधिक है: %d > %d"
 
-#: src/remote_internal.c:2174 src/remote_internal.c:2188
+#: src/remote_internal.c:2274 src/remote_internal.c:2288
 #, c-format
 msgid "too many remote domain names: %d > %d"
 msgstr "कई दूरस्थ डोमेन नाम: %d > %d"
 
-#: src/remote_internal.c:2390
+#: src/remote_internal.c:2526
 msgid ""
 "remoteDomainGetSchedulerParameters: returned number of parameters exceeds "
 "limit"
 msgstr ""
 "remoteDomainGetSchedulerParameters: पैरामीटर का वापस की संख्या सीमा से अधिक है"
 
-#: src/remote_internal.c:2418
+#: src/remote_internal.c:2553
 msgid "remoteDomainGetSchedulerParameters: unknown parameter type"
 msgstr "remoteDomainGetSchedulerParameters: अज्ञात पैरामीटर प्रकार"
 
-#: src/remote_internal.c:2441
+#: src/remote_internal.c:2581
 msgid "out of memory allocating array"
 msgstr "सरणी संभाजन में स्मृति कम"
 
-#: src/remote_internal.c:2468
+#: src/remote_internal.c:2608
 msgid "unknown parameter type"
 msgstr "अज्ञात पैरामीटर प्रकार"
 
-#: src/remote_internal.c:2558
+#: src/remote_internal.c:2710
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr "दूरस्थ प्रोटोकॉल के लिए ब्लॉक पीक आग्रह काफी बड़ी है, %zi > %d"
 
-#: src/remote_internal.c:2579 src/remote_internal.c:2623
+#: src/remote_internal.c:2731 src/remote_internal.c:2779
 msgid "returned buffer is not same size as requested"
 msgstr "वापस बफर आग्रहित आकार के समान नहीं है"
 
-#: src/remote_internal.c:2603
+#: src/remote_internal.c:2759
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"
 msgstr "स्मृति पीक आग्रह दूरस्थ प्रोटोकॉल के लिए काफी बड़ी है, %zi > %d"
 
-#: src/remote_internal.c:2725 src/remote_internal.c:2739
-#: src/remote_internal.c:2784 src/remote_internal.c:2798
+#: src/remote_internal.c:2888 src/remote_internal.c:2902
+#: src/remote_internal.c:2955 src/remote_internal.c:2969
 #, c-format
 msgid "too many remote networks: %d > %d"
 msgstr "कई दूरस्थ संजाल: %d > %d"
 
-#: src/remote_internal.c:3129 src/remote_internal.c:3184
+#: src/remote_internal.c:3340 src/remote_internal.c:3403
 msgid "too many storage pools requested"
 msgstr "कई भंडार पूल आग्रहित"
 
-#: src/remote_internal.c:3141 src/remote_internal.c:3196
+#: src/remote_internal.c:3352 src/remote_internal.c:3415
 msgid "too many storage pools received"
 msgstr "कई भंडार पूल प्राप्त"
 
-#: src/remote_internal.c:3582
+#: src/remote_internal.c:3855
 msgid "too many storage volumes requested"
 msgstr "कई भंडार आयतन आग्रहित"
 
-#: src/remote_internal.c:3595
+#: src/remote_internal.c:3868
 msgid "too many storage volumes received"
 msgstr "कई भंडार आयतन प्राप्त"
 
-#: src/remote_internal.c:3861
+#: src/remote_internal.c:4163
 #, fuzzy
 msgid "too many device names requested"
 msgstr "कई भंडार आयतन आग्रहित"
 
-#: src/remote_internal.c:3875
+#: src/remote_internal.c:4177
 #, fuzzy
 msgid "too many device names received"
 msgstr "कई भंडार आयतन प्राप्त"
 
-#: src/remote_internal.c:3982
+#: src/remote_internal.c:4301
 #, fuzzy
 msgid "too many capability names requested"
 msgstr "कई भंडार आयतन आग्रहित"
 
-#: src/remote_internal.c:3995
+#: src/remote_internal.c:4314
 #, fuzzy
 msgid "too many capability names received"
 msgstr "कई भंडार आयतन प्राप्त"
 
-#: src/remote_internal.c:4054
+#: src/remote_internal.c:4376
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "अज्ञात सत्यापन प्रकार %s"
 
-#: src/remote_internal.c:4064
+#: src/remote_internal.c:4386
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr "आग्रहित सत्यापन प्रकार %s अस्वीकृत"
 
-#: src/remote_internal.c:4105
+#: src/remote_internal.c:4427
 #, c-format
 msgid "unsupported authentication type %d"
 msgstr "असमर्थित सत्यापन प्रकार %d"
 
-#: src/remote_internal.c:4353
+#: src/remote_internal.c:4675
 #, c-format
 msgid "failed to initialize SASL library: %d (%s)"
 msgstr "SASL लाइब्रेरी को आरंभ करने में विफल: %d (%s)"
 
-#: src/remote_internal.c:4401
+#: src/remote_internal.c:4723
 #, c-format
 msgid "Failed to create SASL client context: %d (%s)"
 msgstr "SASL क्लाइंट संदर्भ बनाने में विफल: %d (%s)"
 
-#: src/remote_internal.c:4414
+#: src/remote_internal.c:4736
 msgid "invalid cipher size for TLS session"
 msgstr "TLS सत्र के लिए अवैध साइफर आकार"
 
-#: src/remote_internal.c:4424
+#: src/remote_internal.c:4746
 #, c-format
 msgid "cannot set external SSF %d (%s)"
 msgstr "बाहरी SSF %d (%s) नहीं सेट कर सकता है"
 
-#: src/remote_internal.c:4443
+#: src/remote_internal.c:4765
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "सुरक्षा प्रस्ताव %d (%s) सेट नहीं कर सकता है"
 
 # done by Ravi
-#: src/remote_internal.c:4462
+#: src/remote_internal.c:4784
 #, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "SASL यांत्रिकी %s सर्वर के द्वारा समर्थित नहीं है"
 
-#: src/remote_internal.c:4481
+#: src/remote_internal.c:4803
 #, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
 msgstr "SASL समझौता आरंभ करने में विफल: %d (%s)"
 
-#: src/remote_internal.c:4499 src/remote_internal.c:4577
+#: src/remote_internal.c:4821 src/remote_internal.c:4899
 msgid "Failed to make auth credentials"
 msgstr "सत्यापन श्रेय बनाने में विफल"
 
-#: src/remote_internal.c:4523
+#: src/remote_internal.c:4845
 #, c-format
 msgid "SASL negotiation data too long: %d bytes"
 msgstr "SASLL समझौता आँकड़ा काफी लंबी है: %dबाइट बाइ"
 
-#: src/remote_internal.c:4563
+#: src/remote_internal.c:4885
 #, c-format
 msgid "Failed SASL step: %d (%s)"
 msgstr "SASL चरण विफल: %d (%s)"
 
-#: src/remote_internal.c:4649
+#: src/remote_internal.c:4971
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr "समझौता SSF %d काफी मजबूत नहीं थी"
 
-#: src/remote_internal.c:4703
+#: src/remote_internal.c:5026
 msgid "Failed to collect auth credentials"
 msgstr "सत्यापन श्रेय जमा करने में विफल"
 
-#: src/remote_internal.c:4734
+#: src/remote_internal.c:5058
 msgid "no event support"
 msgstr ""
 
-#: src/remote_internal.c:4739
+#: src/remote_internal.c:5063
 msgid "adding cb to list"
 msgstr ""
 
-#: src/remote_internal.c:4761
+#: src/remote_internal.c:5089
 msgid "removing cb fron list"
 msgstr ""
 
-#: src/remote_internal.c:4821
+#: src/remote_internal.c:5152
 msgid "xdr_remote_message_header failed"
 msgstr "xdr_remote_message_header विफल"
 
-#: src/remote_internal.c:4827
+#: src/remote_internal.c:5158
 msgid "marshalling args"
 msgstr "तर्क मार्शलिंग कर रहा है"
 
-#: src/remote_internal.c:4844
+#: src/remote_internal.c:5175
 msgid "xdr_int (length word)"
 msgstr "xdr_int (length word)"
 
-#: src/remote_internal.c:4862 src/remote_internal.c:5583
+#: src/remote_internal.c:5193 src/remote_internal.c:5914
 msgid "xdr_int (length word, reply)"
 msgstr "xdr_int (length word, reply)"
 
-#: src/remote_internal.c:4872 src/remote_internal.c:5592
+#: src/remote_internal.c:5203 src/remote_internal.c:5923
 msgid "packet received from server too large"
 msgstr "सर्वर से प्राप्त पैकेट काफी बड़ी है"
 
-#: src/remote_internal.c:4884
+#: src/remote_internal.c:5215
 msgid "invalid header in reply"
 msgstr "उत्तर में अवैध हेडर"
 
-#: src/remote_internal.c:4893
+#: src/remote_internal.c:5224
 #, c-format
 msgid "unknown program (received %x, expected %x)"
 msgstr "अज्ञात प्रोग्राम (received %x, expected %x)"
 
-#: src/remote_internal.c:4901
+#: src/remote_internal.c:5232
 #, c-format
 msgid "unknown protocol version (received %x, expected %x)"
 msgstr "अज्ञात प्रोटोकॉल संस्करण (received %x, expected %x)"
 
-#: src/remote_internal.c:4924
+#: src/remote_internal.c:5255
 #, c-format
 msgid "unknown procedure (received %x, expected %x)"
 msgstr "अज्ञात प्रक्रिया (received %x, expected %x)"
 
-#: src/remote_internal.c:4932
+#: src/remote_internal.c:5263
 #, c-format
 msgid "unknown direction (received %x, expected %x)"
 msgstr "अज्ञात दिशा (received %x, expected %x)"
 
-#: src/remote_internal.c:4939
+#: src/remote_internal.c:5270
 #, c-format
 msgid "unknown serial (received %x, expected %x)"
 msgstr "अज्ञात शृंखला (received %x, expected %x)"
 
-#: src/remote_internal.c:4952
+#: src/remote_internal.c:5283
 msgid "unmarshalling ret"
 msgstr "unmarshalling ret"
 
-#: src/remote_internal.c:4962
+#: src/remote_internal.c:5293
 msgid "unmarshalling remote_error"
 msgstr "unmarshalling remote_error"
 
-#: src/remote_internal.c:4982
+#: src/remote_internal.c:5313
 #, c-format
 msgid "unknown status (received %x)"
 msgstr "अज्ञात स्थिति (received %x)"
 
-#: src/remote_internal.c:5090 src/remote_internal.c:5105
+#: src/remote_internal.c:5421 src/remote_internal.c:5436
 msgid "socket closed unexpectedly"
 msgstr "सॉकेट अप्रत्याशित रूप से बंद"
 
-#: src/remote_internal.c:5496
+#: src/remote_internal.c:5827
 msgid "remoteDomainProcessEvent: unmarshalling ret"
 msgstr ""
 
-#: src/remote_internal.c:5598
+#: src/remote_internal.c:5929
 msgid "error reading buffer from memory"
 msgstr ""
 
-#: src/remote_internal.c:5605
+#: src/remote_internal.c:5936
 #, fuzzy
 msgid "invalid header in event firing"
 msgstr "उत्तर में अवैध हेडर"
 
-#: src/remote_internal.c:5615
+#: src/remote_internal.c:5946
 #, fuzzy
 msgid "invalid proc in event firing"
 msgstr "इसमें अवैध डोमेन संकेतक"
@@ -3427,7 +3471,7 @@ msgstr "संदर्भ"
 msgid "cannot read dir %s: %s"
 msgstr "निर्देशिका %s नहीं पढ़ सकता है: %s"
 
-#: src/storage_backend.c:362 src/storage_driver.c:1452 src/test.c:3212
+#: src/storage_backend.c:362 src/storage_driver.c:1456 src/test.c:3227
 msgid "path"
 msgstr "पथ"
 
@@ -3608,11 +3652,11 @@ msgstr "statvfs पथ '%s' नहीं कर सकता है: %s"
 msgid "cannot unlink path '%s': %s"
 msgstr "पथ '%s' अनलिंक नहीं कर सकता है: %s"
 
-#: src/storage_backend_fs.c:767 src/test.c:2981
+#: src/storage_backend_fs.c:767 src/test.c:2996
 msgid "target"
 msgstr "लक्ष्य"
 
-#: src/storage_backend_fs.c:777 src/test.c:2991
+#: src/storage_backend_fs.c:777 src/test.c:3006
 msgid "storage vol key"
 msgstr "भंडार आवाज कुंजी"
 
@@ -3689,7 +3733,7 @@ msgstr "सत्र"
 msgid "cannot find session"
 msgstr "सत्र नहीं पा सकता है"
 
-#: src/storage_backend_iscsi.c:184 src/storage_driver.c:1042 src/test.c:2794
+#: src/storage_backend_iscsi.c:184 src/storage_driver.c:1046 src/test.c:2809
 msgid "name"
 msgstr "नाम"
 
@@ -3697,7 +3741,7 @@ msgstr "नाम"
 msgid "devpath"
 msgstr "devpath"
 
-#: src/storage_backend_iscsi.c:208 src/util.c:211
+#: src/storage_backend_iscsi.c:208 src/util.c:212
 #, c-format
 msgid "cannot open %s: %s"
 msgstr "%s खोल नहीं सकता है: %s"
@@ -3815,461 +3859,461 @@ msgstr "ttyPidFile %s हटा नहीं सकता है: %s"
 msgid "cannot find newly created volume '%s': %s"
 msgstr "नवनिर्मित आयतन '%s' नहीं पता कर सकता है: %s"
 
-#: src/storage_conf.c:349
+#: src/storage_conf.c:352
 msgid "missing auth host attribute"
 msgstr "गुम सत्यापन मेजबान गुण"
 
-#: src/storage_conf.c:356
+#: src/storage_conf.c:359
 msgid "missing auth passwd attribute"
 msgstr "गुम सत्यापन कूटशब्द गुण"
 
-#: src/storage_conf.c:379 src/storage_conf.c:811
+#: src/storage_conf.c:382 src/storage_conf.c:814
 msgid "malformed octal mode"
 msgstr "विरूपित ओक्टल मोड"
 
-#: src/storage_conf.c:389
+#: src/storage_conf.c:392
 msgid "malformed owner element"
 msgstr "विरूपित स्वामी तत्व"
 
-#: src/storage_conf.c:400
+#: src/storage_conf.c:403
 msgid "malformed group element"
 msgstr "विरूपित समूह तत्व"
 
-#: src/storage_conf.c:425
+#: src/storage_conf.c:428
 msgid "cannot allocate storage pool"
 msgstr "भंडार पूल नहीं आबंटित कर सकता है"
 
-#: src/storage_conf.c:431
+#: src/storage_conf.c:434
 #, fuzzy
 msgid "unknown root element for storage pool"
 msgstr "अज्ञात रूट तत्व"
 
-#: src/storage_conf.c:438
+#: src/storage_conf.c:441
 #, fuzzy, c-format
 msgid "unknown storage pool type %s"
 msgstr "अज्ञात भंडार आयतन प्रकार %d"
 
-#: src/storage_conf.c:455
+#: src/storage_conf.c:458
 #, fuzzy
 msgid "missing pool source name element"
 msgstr "गुम नाम तत्व"
 
-#: src/storage_conf.c:463
+#: src/storage_conf.c:466
 msgid "unable to generate uuid"
 msgstr "uuid उत्पन्न करने में असमर्थ"
 
-#: src/storage_conf.c:484
+#: src/storage_conf.c:487
 #, fuzzy, c-format
 msgid "unknown pool format type %s"
 msgstr "अज्ञात सत्यापन प्रकार '%s'"
 
-#: src/storage_conf.c:494
+#: src/storage_conf.c:497
 #, fuzzy
 msgid "missing storage pool source host name"
 msgstr "गुम श्रोत होस्ट नाम"
 
-#: src/storage_conf.c:504
+#: src/storage_conf.c:507
 #, fuzzy
 msgid "cannot extract storage pool source devices"
 msgstr "स्रोत युक्ति निकाल नहीं सकता है"
 
-#: src/storage_conf.c:509
+#: src/storage_conf.c:512
 msgid "device"
 msgstr "युक्ति"
 
-#: src/storage_conf.c:517
+#: src/storage_conf.c:520
 #, fuzzy
 msgid "missing storage pool source device path"
 msgstr "गुम श्रोत युक्ति पथ"
 
-#: src/storage_conf.c:528
+#: src/storage_conf.c:531
 #, fuzzy
 msgid "missing storage pool source path"
 msgstr "गुम श्रोत पथ"
 
-#: src/storage_conf.c:540 src/virsh.c:3677 src/virsh.c:3836 src/virsh.c:3874
+#: src/storage_conf.c:543 src/virsh.c:3677 src/virsh.c:3836 src/virsh.c:3874
 msgid "pool name"
 msgstr "पुल नाम"
 
-#: src/storage_conf.c:555
+#: src/storage_conf.c:558
 #, c-format
 msgid "unknown auth type '%s'"
 msgstr "अज्ञात सत्यापन प्रकार '%s'"
 
-#: src/storage_conf.c:570
+#: src/storage_conf.c:573
 #, fuzzy
 msgid "missing storage pool target path"
 msgstr "गुम लक्ष्य पथ"
 
-#: src/storage_conf.c:639 src/storage_conf.c:1040
+#: src/storage_conf.c:642 src/storage_conf.c:1043
 msgid "xmlXPathContext"
 msgstr "xmlXPathContext"
 
-#: src/storage_conf.c:710
+#: src/storage_conf.c:713
 #, fuzzy, c-format
 msgid "unknown pool format number %d"
 msgstr "असमर्थित पूल प्रारूप %d"
 
-#: src/storage_conf.c:743 src/storage_conf.c:1508
+#: src/storage_conf.c:746 src/storage_conf.c:1517
 msgid "unexpected pool type"
 msgstr "अप्रत्याशित पूल प्रकार"
 
-#: src/storage_conf.c:789 src/storage_conf.c:1153
+#: src/storage_conf.c:792 src/storage_conf.c:1156
 msgid "xml"
 msgstr "xml"
 
-#: src/storage_conf.c:821 src/storage_conf.c:831
+#: src/storage_conf.c:824 src/storage_conf.c:834
 msgid "missing owner element"
 msgstr "गुम स्वामी तत्व"
 
-#: src/storage_conf.c:895
+#: src/storage_conf.c:898
 #, c-format
 msgid "unknown size units '%s'"
 msgstr "अज्ञात आकार ईकाई '%s'"
 
-#: src/storage_conf.c:902
+#: src/storage_conf.c:905
 msgid "malformed capacity element"
 msgstr "विरूपित क्षमता तत्व"
 
-#: src/storage_conf.c:907
+#: src/storage_conf.c:910
 msgid "capacity element value too large"
 msgstr "क्षमता तत्व मान काफी बड़ी है"
 
-#: src/storage_conf.c:933
+#: src/storage_conf.c:936
 msgid "cannot allocate storage vol"
 msgstr "भंडारण आयतन संभाजित नहीं कर सकता है"
 
-#: src/storage_conf.c:939
+#: src/storage_conf.c:942
 msgid "unknown root element"
 msgstr "अज्ञात रूट तत्व"
 
-#: src/storage_conf.c:946
+#: src/storage_conf.c:949
 #, fuzzy
 msgid "missing volume name element"
 msgstr "गुम नाम तत्व"
 
-#: src/storage_conf.c:957
+#: src/storage_conf.c:960
 msgid "missing capacity element"
 msgstr "गुम क्षमता तत्व"
 
-#: src/storage_conf.c:986
+#: src/storage_conf.c:989
 #, fuzzy, c-format
 msgid "unknown volume format type %s"
 msgstr "अज्ञात सत्यापन प्रकार '%s'"
 
-#: src/storage_conf.c:1123
+#: src/storage_conf.c:1126
 #, fuzzy, c-format
 msgid "unknown volume format number %d"
 msgstr "असमर्थित आयतन प्रारूप %d"
 
-#: src/storage_conf.c:1258
+#: src/storage_conf.c:1261
 msgid "pool"
 msgstr "पूल"
 
-#: src/storage_conf.c:1408
+#: src/storage_conf.c:1417
 msgid "cannot construct config file path"
 msgstr "विन्यास फाइल पथ निर्मित नहीं कर सकता है"
 
-#: src/storage_conf.c:1413
+#: src/storage_conf.c:1422
 msgid "configFile"
 msgstr "configFile"
 
-#: src/storage_conf.c:1420
+#: src/storage_conf.c:1429
 msgid "cannot construct autostart link path"
 msgstr "ऑटोस्टार्ट लिंक पथ बना नहीं सकता है"
 
-#: src/storage_conf.c:1427
+#: src/storage_conf.c:1436
 msgid "config file"
 msgstr "विन्यास फाइल"
 
-#: src/storage_conf.c:1435
+#: src/storage_conf.c:1444
 msgid "failed to generate XML"
 msgstr "XML बनाने में विफल"
 
-#: src/storage_conf.c:1485
+#: src/storage_conf.c:1494
 #, c-format
 msgid "cannot remove config for %s"
 msgstr "%s के लिए विन्यास हटा नहीं सकता है"
 
-#: src/storage_driver.c:289 src/storage_driver.c:904 src/storage_driver.c:934
+#: src/storage_driver.c:293 src/storage_driver.c:908 src/storage_driver.c:938
 msgid "no pool with matching uuid"
 msgstr "मेल खाते uuid के साथ कोई पुल नहीं"
 
-#: src/storage_driver.c:314
+#: src/storage_driver.c:318
 msgid "no pool with matching name"
 msgstr "मेल खाते नाम के साथ कोई पुल नहीं"
 
-#: src/storage_driver.c:379 src/storage_driver.c:428
+#: src/storage_driver.c:383 src/storage_driver.c:432
 msgid "names"
 msgstr "नाम"
 
-#: src/storage_driver.c:496 src/test.c:2387
+#: src/storage_driver.c:500 src/test.c:2402
 msgid "storage pool already exists"
 msgstr "भंडारण पुल पहले से मौजूद"
 
-#: src/storage_driver.c:575 src/storage_driver.c:620 src/storage_driver.c:665
-#: src/storage_driver.c:702 src/storage_driver.c:751 src/storage_driver.c:794
-#: src/storage_driver.c:843 src/storage_driver.c:879 src/storage_driver.c:996
-#: src/storage_driver.c:1029 src/storage_driver.c:1075
-#: src/storage_driver.c:1198 src/storage_driver.c:1266
-#: src/storage_driver.c:1338 src/storage_driver.c:1390
-#: src/storage_driver.c:1432
+#: src/storage_driver.c:579 src/storage_driver.c:624 src/storage_driver.c:669
+#: src/storage_driver.c:706 src/storage_driver.c:755 src/storage_driver.c:798
+#: src/storage_driver.c:847 src/storage_driver.c:883 src/storage_driver.c:1000
+#: src/storage_driver.c:1033 src/storage_driver.c:1079
+#: src/storage_driver.c:1202 src/storage_driver.c:1270
+#: src/storage_driver.c:1342 src/storage_driver.c:1394
+#: src/storage_driver.c:1436
 msgid "no storage pool with matching uuid"
 msgstr "मेल खाते uuid के साथ कोई भंडारण पुल नहीं"
 
-#: src/storage_driver.c:581
+#: src/storage_driver.c:585
 msgid "pool is still active"
 msgstr "पुल अभी भी सक्रिय है"
 
-#: src/storage_driver.c:629
+#: src/storage_driver.c:633
 msgid "pool already active"
 msgstr "पुल पहले से सक्रिय"
 
-#: src/storage_driver.c:674
+#: src/storage_driver.c:678
 msgid "storage pool is already active"
 msgstr "भंडारण पुल पहले से सक्रिय"
 
-#: src/storage_driver.c:711 src/storage_driver.c:803 src/storage_driver.c:1002
-#: src/storage_driver.c:1035 src/storage_driver.c:1081
-#: src/storage_driver.c:1204 src/storage_driver.c:1272
-#: src/storage_driver.c:1344 src/storage_driver.c:1396
-#: src/storage_driver.c:1438
+#: src/storage_driver.c:715 src/storage_driver.c:807 src/storage_driver.c:1006
+#: src/storage_driver.c:1039 src/storage_driver.c:1085
+#: src/storage_driver.c:1208 src/storage_driver.c:1276
+#: src/storage_driver.c:1348 src/storage_driver.c:1400
+#: src/storage_driver.c:1442
 msgid "storage pool is not active"
 msgstr "भंडारण पुल सक्रिय नहीं है"
 
-#: src/storage_driver.c:760
+#: src/storage_driver.c:764
 msgid "storage pool is still active"
 msgstr "भंडारण पुल अभी भी सक्रिय"
 
-#: src/storage_driver.c:766
+#: src/storage_driver.c:770
 msgid "pool does not support volume delete"
 msgstr "पुल आयतन विलोपन का समर्थन नहीं करता है"
 
-#: src/storage_driver.c:940 src/test.c:2720
+#: src/storage_driver.c:944 src/test.c:2735
 msgid "pool has no config file"
 msgstr "पुल के पास कोई विन्यास फाइल नहीं है"
 
-#: src/storage_driver.c:1089 src/storage_driver.c:1283
-#: src/storage_driver.c:1352 src/storage_driver.c:1404
-#: src/storage_driver.c:1446
+#: src/storage_driver.c:1093 src/storage_driver.c:1287
+#: src/storage_driver.c:1356 src/storage_driver.c:1408
+#: src/storage_driver.c:1450
 msgid "no storage vol with matching name"
 msgstr "मेल खाते नाम के साथ कोई भंडारण आयतन नहीं"
 
-#: src/storage_driver.c:1128
+#: src/storage_driver.c:1132
 msgid "no storage vol with matching key"
 msgstr "मेल खाते कुंजी के साथ कोई भंडारण आयतन नहीं"
 
-#: src/storage_driver.c:1175
+#: src/storage_driver.c:1179
 msgid "no storage vol with matching path"
 msgstr "मेल खाते पथ के साथ कोई भंडारण आयतन नहीं"
 
-#: src/storage_driver.c:1217 src/test.c:2957
+#: src/storage_driver.c:1221 src/test.c:2972
 msgid "storage vol already exists"
 msgstr "भंडारण आयतन पहले से मौजूद है"
 
-#: src/storage_driver.c:1229
+#: src/storage_driver.c:1233
 msgid "storage pool does not support volume creation"
 msgstr "भंडारण पुल आयतन निर्माण का समर्थन नहीं करता है"
 
-#: src/storage_driver.c:1289
+#: src/storage_driver.c:1293
 msgid "storage pool does not support vol deletion"
 msgstr "भंडारण पुल आयतन विलोपन का समर्थन नहीं करता है"
 
-#: src/test.c:219 src/test.c:1059
+#: src/test.c:226 src/test.c:1072
 msgid "getting time of day"
 msgstr "दिन का समय ले रहा है"
 
-#: src/test.c:340
+#: src/test.c:357
 #, fuzzy, c-format
 msgid "loading host definition file '%s': %s"
 msgstr "मेजबान परिभाषा फाइल लोड करें"
 
-#: src/test.c:348
+#: src/test.c:365
 msgid "host"
 msgstr "मेजबान"
 
-#: src/test.c:356
+#: src/test.c:373
 msgid "node"
 msgstr "नोड"
 
-#: src/test.c:363
+#: src/test.c:380
 msgid "creating xpath context"
 msgstr "xpath संदर्भ बना रहा है"
 
-#: src/test.c:378
+#: src/test.c:395
 msgid "node cpu numa nodes"
 msgstr "नोड cpu न्यूमा नोड"
 
-#: src/test.c:386
+#: src/test.c:403
 msgid "node cpu sockets"
 msgstr "नोड cpu सॉकेट"
 
-#: src/test.c:394
+#: src/test.c:411
 msgid "node cpu cores"
 msgstr "नोड cpu कोर"
 
-#: src/test.c:402
+#: src/test.c:419
 msgid "node cpu threads"
 msgstr "नोड cpu थ्रेड"
 
-#: src/test.c:413
+#: src/test.c:430
 msgid "node active cpu"
 msgstr "नोड सक्रिय cpu"
 
-#: src/test.c:420
+#: src/test.c:437
 msgid "node cpu mhz"
 msgstr "नोड cpu mhz"
 
-#: src/test.c:435
+#: src/test.c:452
 msgid "node memory"
 msgstr "नोड स्मृति"
 
-#: src/test.c:441
+#: src/test.c:458
 msgid "node domain list"
 msgstr "नोड डोमेन सूची"
 
-#: src/test.c:452
+#: src/test.c:469
 msgid "resolving domain filename"
 msgstr "डोमेन फाइलनाम हल कर रहा है"
 
-#: src/test.c:481
+#: src/test.c:498
 #, fuzzy
 msgid "node network list"
 msgstr "नोड डोमेन सूची"
 
-#: src/test.c:491
+#: src/test.c:508
 msgid "resolving network filename"
 msgstr "संजाल फाइलनाम हल कर रहा है"
 
-#: src/test.c:517
+#: src/test.c:534
 #, fuzzy
 msgid "node pool list"
 msgstr "नोड डोमेन सूची"
 
-#: src/test.c:529
+#: src/test.c:546
 #, fuzzy
 msgid "resolving pool filename"
 msgstr "डोमेन फाइलनाम हल कर रहा है"
 
 # done by Ravi
-#: src/test.c:617
+#: src/test.c:634
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: पाथ दीजिये या फिर इस्तेमाल करें test:///default"
 
 # done by Ravi
-#: src/test.c:893
+#: src/test.c:906
 #, fuzzy, c-format
 msgid "domain '%s' not paused"
 msgstr "डोमेन नही मिला"
 
-#: src/test.c:926 src/test.c:957
+#: src/test.c:939 src/test.c:970
 #, fuzzy, c-format
 msgid "domain '%s' not running"
 msgstr "डोमेन नहीं चल रहा है"
 
-#: src/test.c:1102
+#: src/test.c:1115
 #, fuzzy, c-format
 msgid "saving domain '%s' failed to allocate space for metadata: %s"
 msgstr "मेटाडेटा के लिए स्थान आबंटित कर रहा है"
 
-#: src/test.c:1109
+#: src/test.c:1122
 #, c-format
 msgid "saving domain '%s' to '%s': open failed: %s"
 msgstr ""
 
-#: src/test.c:1116 src/test.c:1122 src/test.c:1128 src/test.c:1135
+#: src/test.c:1129 src/test.c:1135 src/test.c:1141 src/test.c:1148
 #, c-format
 msgid "saving domain '%s' to '%s': write failed: %s"
 msgstr ""
 
-#: src/test.c:1185
+#: src/test.c:1198
 msgid "incomplete save header"
 msgstr "अपूर्ण सहेज हेडर"
 
-#: src/test.c:1190
+#: src/test.c:1203
 msgid "mismatched header magic"
 msgstr "बेमेल हेडर जादू"
 
-#: src/test.c:1195
+#: src/test.c:1208
 msgid "failed to read metadata length"
 msgstr "मेटाडेटा लंबाई पढ़ने में विफल"
 
-#: src/test.c:1200
+#: src/test.c:1213
 msgid "length of metadata out of range"
 msgstr "मेटाडेटा की लंबाई परिसर से बाहर"
 
-#: src/test.c:1209
+#: src/test.c:1222
 msgid "incomplete metdata"
 msgstr "अपूर्ण मेटाडेटा"
 
-#: src/test.c:1259
+#: src/test.c:1273
 #, fuzzy, c-format
 msgid "domain '%s' coredump: failed to open %s: %s"
 msgstr "डोमेन %s को %s में डंप किया गया\n"
 
-#: src/test.c:1265
+#: src/test.c:1279
 #, fuzzy, c-format
 msgid "domain '%s' coredump: failed to write header to %s: %s"
 msgstr "%s: लॉग फाइल लिखने में विफल: %s"
 
-#: src/test.c:1271
+#: src/test.c:1285
 #, c-format
 msgid "domain '%s' coredump: write failed: %s: %s"
 msgstr ""
 
-#: src/test.c:1528
+#: src/test.c:1543
 msgid "Range exceeds available cells"
 msgstr "उपलब्ध सेल से परिसर अधिक"
 
-#: src/test.c:1561
+#: src/test.c:1576
 #, fuzzy, c-format
 msgid "Domain '%s' is already running"
 msgstr "डोमेन पहले से चल रहा है"
 
-#: src/test.c:1592
+#: src/test.c:1607
 #, fuzzy, c-format
 msgid "Domain '%s' is still running"
 msgstr "डोमेन अभी भी चल रहा है"
 
-#: src/test.c:1972
+#: src/test.c:1987
 #, fuzzy, c-format
 msgid "Network '%s' is still running"
 msgstr "संजाल अभी भी चल रहा है"
 
-#: src/test.c:2005
+#: src/test.c:2020
 #, fuzzy, c-format
 msgid "Network '%s' is already running"
 msgstr "संजाल पहले से चल रहा है"
 
-#: src/test.c:2346 src/test.c:2468 src/test.c:2501 src/test.c:2569
+#: src/test.c:2361 src/test.c:2483 src/test.c:2516 src/test.c:2584
 #, fuzzy, c-format
 msgid "storage pool '%s' is already active"
 msgstr "भंडारण पुल पहले से सक्रिय"
 
-#: src/test.c:2530 src/test.c:2601 src/test.c:2753 src/test.c:2788
-#: src/test.c:2834 src/test.c:2946 src/test.c:3043 src/test.c:3121
-#: src/test.c:3166 src/test.c:3206
+#: src/test.c:2545 src/test.c:2616 src/test.c:2768 src/test.c:2803
+#: src/test.c:2849 src/test.c:2961 src/test.c:3058 src/test.c:3136
+#: src/test.c:3181 src/test.c:3221
 #, fuzzy, c-format
 msgid "storage pool '%s' is not active"
 msgstr "भंडारण पुल सक्रिय नहीं है"
 
-#: src/test.c:2842 src/test.c:3036 src/test.c:3114 src/test.c:3159
-#: src/test.c:3199
+#: src/test.c:2857 src/test.c:3051 src/test.c:3129 src/test.c:3174
+#: src/test.c:3214
 #, fuzzy, c-format
 msgid "no storage vol with matching name '%s'"
 msgstr "मेल खाते नाम के साथ कोई भंडारण आयतन नहीं"
 
-#: src/test.c:2885
+#: src/test.c:2900
 #, fuzzy, c-format
 msgid "no storage vol with matching key '%s'"
 msgstr "मेल खाते कुंजी के साथ कोई भंडारण आयतन नहीं"
 
-#: src/test.c:2919
+#: src/test.c:2934
 #, fuzzy, c-format
 msgid "no storage vol with matching path '%s'"
 msgstr "मेल खाते पथ के साथ कोई भंडारण आयतन नहीं"
 
-#: src/test.c:2965
+#: src/test.c:2980
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
 msgstr ""
@@ -4284,150 +4328,150 @@ msgstr "चार युक्ति के लिए स्थान आबं�
 msgid "unsupported chr device type %d"
 msgstr "असमर्थित इनपुट युक्ति प्रकार %s"
 
-#: src/uml_driver.c:369
+#: src/uml_driver.c:372
 #, fuzzy
 msgid "cannot initialize inotify"
 msgstr "ब्रिज समर्थन आरंभ करने में विफल: %s"
 
-#: src/uml_driver.c:374
+#: src/uml_driver.c:377
 #, fuzzy, c-format
 msgid "Failed to create monitor directory %s: %s"
 msgstr "%s निर्देशिका बनाने में विफल : %s"
 
-#: src/uml_driver.c:405
+#: src/uml_driver.c:408
 #, fuzzy
 msgid "umlStartup: out of memory\n"
 msgstr "qemudStartup: स्मृति कम"
 
-#: src/uml_driver.c:549
+#: src/uml_driver.c:553
 #, fuzzy, c-format
 msgid "failed to read pid: %s: %s"
 msgstr "लॉग फाइल %s बनाने में विफल: %s"
 
-#: src/uml_driver.c:597
+#: src/uml_driver.c:601
 #, fuzzy, c-format
 msgid "cannot open socket %s"
 msgstr "%s खोल नहीं सकता है: %s"
 
-#: src/uml_driver.c:605
+#: src/uml_driver.c:609
 #, fuzzy, c-format
 msgid "cannot bind socket %s"
 msgstr "सत्र नहीं पा सकता है"
 
-#: src/uml_driver.c:658
+#: src/uml_driver.c:662
 #, fuzzy, c-format
 msgid "cannot send too long command %s: %s"
 msgstr "फाइल मोड '%s' सेट नहीं कर सकता है: %s"
 
-#: src/uml_driver.c:668
+#: src/uml_driver.c:672
 #, fuzzy, c-format
 msgid "cannot send command %s: %s"
 msgstr "पढ़ %s नहीं सकता है: %s"
 
-#: src/uml_driver.c:678
+#: src/uml_driver.c:682
 #, fuzzy, c-format
 msgid "cannot read reply %s: %s"
 msgstr "निर्देशिका %s नहीं पढ़ सकता है: %s"
 
-#: src/uml_driver.c:731
+#: src/uml_driver.c:735
 msgid "no kernel specified"
 msgstr ""
 
-#: src/uml_driver.c:740
+#: src/uml_driver.c:744
 #, fuzzy, c-format
 msgid "Cannot find UML kernel %s: %s"
 msgstr "QEMU द्विपदीय %s नहीं पा सकता है: %s"
 
-#: src/uml_driver.c:747
+#: src/uml_driver.c:751
 #, fuzzy, c-format
 msgid "cannot create log directory %s"
 msgstr "लॉग निर्देशिका %s बना नहीं सकता है: %s"
 
-#: src/uml_driver.c:821
+#: src/uml_driver.c:825
 #, fuzzy, c-format
 msgid "failed to wait on process: %d: %s\n"
 msgstr "कमांड के लिए प्रतीक्षा करने में विफल: %s"
 
-#: src/uml_driver.c:863
+#: src/uml_driver.c:867
 #, fuzzy, c-format
 msgid "Got unexpected pid %d != %d\n"
 msgstr "अप्रत्याशित pid पाया, damn"
 
-#: src/uml_driver.c:1137
+#: src/uml_driver.c:1141
 #, fuzzy, c-format
 msgid "cannot parse version %s"
 msgstr "पढ़ %s नहीं सकता है: %s"
 
-#: src/uml_driver.c:1461
+#: src/uml_driver.c:1459
 #, fuzzy
 msgid "cannot read cputime for domain"
 msgstr "सक्रिय डोमेन मिटा नहीं सकता है"
 
-#: src/util.c:204
+#: src/util.c:205
 #, fuzzy, c-format
 msgid "cannot block signals: %s"
 msgstr "फाइल '%s' बंद नहीं कर सकता है: %s"
 
-#: src/util.c:220
+#: src/util.c:221
 #, c-format
 msgid "cannot create pipe: %s"
 msgstr "पाइप नहीं बना सकता है: %s"
 
-#: src/util.c:280 src/util.c:370
+#: src/util.c:281 src/util.c:371
 #, c-format
 msgid "cannot fork child process: %s"
 msgstr "संतति प्रक्रिया को बांट नहीं सकता है: %s"
 
-#: src/util.c:299 src/util.c:337
+#: src/util.c:300 src/util.c:338
 #, fuzzy, c-format
 msgid "cannot unblock signals: %s"
 msgstr "फाइल '%s' अनलिंक नहीं कर सकता है: %s"
 
-#: src/util.c:355
+#: src/util.c:356
 #, fuzzy, c-format
 msgid "cannot become session leader: %s"
 msgstr "युक्ति हेडर %s साफ नहीं कर सकता है"
 
-#: src/util.c:362
+#: src/util.c:363
 #, fuzzy, c-format
 msgid "cannot change to root directory: %s"
 msgstr "ऑटोस्टार्ट निर्देशिका %s नहीं बना सकता है: %s"
 
-#: src/util.c:382
+#: src/util.c:383
 #, fuzzy, c-format
 msgid "failed to setup stdin file handle: %s"
 msgstr "strdup होस्टनेम में विफल: %s"
 
-#: src/util.c:388
+#: src/util.c:389
 #, fuzzy, c-format
 msgid "failed to setup stdout file handle: %s"
 msgstr "strdup होस्टनेम में विफल: %s"
 
-#: src/util.c:394
+#: src/util.c:395
 #, fuzzy, c-format
 msgid "failed to setup stderr file handle: %s"
 msgstr "strdup होस्टनेम में विफल: %s"
 
-#: src/util.c:411
+#: src/util.c:412
 #, fuzzy, c-format
 msgid "cannot execute binary '%s': %s"
 msgstr "फाइल '%s' फैला नहीं सकता है: %s"
 
-#: src/util.c:449 src/util.c:567
+#: src/util.c:450 src/util.c:568
 #, fuzzy
 msgid "command debug string"
 msgstr "कमांड लाइऩ"
 
-#: src/util.c:496
+#: src/util.c:497
 msgid "Unknown poll response."
 msgstr ""
 
-#: src/util.c:527
+#: src/util.c:528
 #, fuzzy, c-format
 msgid "poll error: %s"
 msgstr "पठन त्रुटि: %s"
 
-#: src/util.c:601
+#: src/util.c:602
 #, c-format
 msgid "'%s' exited with non-zero status %d and signal %d: %s"
 msgstr ""
@@ -7211,430 +7255,426 @@ msgstr ""
 msgid "adding watch on %s"
 msgstr ""
 
-#: src/xen_internal.c:1284
+#: src/xen_internal.c:1291
 #, c-format
 msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
 msgstr "क्रेडिट नियोजक भार पैरामीटर (%d) परिसर से बाहर है (1-65535)"
 
-#: src/xen_internal.c:1294
+#: src/xen_internal.c:1301
 #, c-format
 msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
 msgstr "क्रेडिट नियोजक कैप पैरामीटर (%d) परिसर से बाहर है (0-65535)"
 
-#: src/xen_internal.c:2485
+#: src/xen_internal.c:2614
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d डोमेन सूचना दे रहा है"
 
-#: src/xend_internal.c:136
+#: src/xend_internal.c:144
 msgid "failed to create a socket"
 msgstr "एक सॉकेट बनाने में विफल"
 
-#: src/xend_internal.c:158
+#: src/xend_internal.c:166
 msgid "failed to connect to xend"
 msgstr "xend से जुड़ने में विफल"
 
-#: src/xend_internal.c:205 src/xend_internal.c:208
+#: src/xend_internal.c:213 src/xend_internal.c:216
 msgid "failed to read from Xen Daemon"
 msgstr "Xen डेमॉन से पढ़ने में विफल"
 
-#: src/xend_internal.c:396
-#, c-format
-msgid "xend_get: error from xen daemon: %s"
-msgstr "xend_get: xen डेमान से त्रुटि: %s"
+#: src/xend_internal.c:404
+#, fuzzy, c-format
+msgid "%d status from xen daemon: %s:%s"
+msgstr "xend_post: xen डेमान से त्रुटि: %s"
 
-#: src/xend_internal.c:446 src/xend_internal.c:449 src/xend_internal.c:457
+#: src/xend_internal.c:455 src/xend_internal.c:458 src/xend_internal.c:466
 #, c-format
 msgid "xend_post: error from xen daemon: %s"
 msgstr "xend_post: xen डेमान से त्रुटि: %s"
 
-#: src/xend_internal.c:715
+#: src/xend_internal.c:724
 msgid "allocate new buffer"
 msgstr "नया बफर संभाजित करें"
 
-#: src/xend_internal.c:848
+#: src/xend_internal.c:857
 #, c-format
 msgid "gethostbyname failed: %s"
 msgstr "gethostbyname विफल: %s"
 
-#: src/xend_internal.c:969
+#: src/xend_internal.c:978
 msgid "failed to urlencode the create S-Expr"
 msgstr "failed to urlencode the create S-Expr"
 
-#: src/xend_internal.c:1010
+#: src/xend_internal.c:1019
 msgid "domain information incomplete, missing domid"
 msgstr "डोमेन सूचना अपूर्ण, गुम domid"
 
-#: src/xend_internal.c:1016
+#: src/xend_internal.c:1025
 msgid "domain information incorrect domid not numeric"
 msgstr "डोमेन सूचना गलत domid सांख्यिक नहीं"
 
-#: src/xend_internal.c:1021 src/xend_internal.c:1068
+#: src/xend_internal.c:1030 src/xend_internal.c:1077
 msgid "domain information incomplete, missing uuid"
 msgstr "डोमेन सूचना अपूर्ण, गुम uuid"
 
-#: src/xend_internal.c:1060 src/xend_internal.c:2162 src/xend_internal.c:2169
+#: src/xend_internal.c:1069 src/xend_internal.c:2171 src/xend_internal.c:2178
 msgid "domain information incomplete, missing name"
 msgstr "डोमेन सूचना अपूर्ण, गुम नाम"
 
-#: src/xend_internal.c:1149
+#: src/xend_internal.c:1158
 msgid "domain information incomplete, missing HVM loader"
 msgstr "डोमेन सूचना अपूर्ण, गुम HVM लोडर"
 
-#: src/xend_internal.c:1203
+#: src/xend_internal.c:1212
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "डोमेन सूचना अपूर्ण, गुम कर्नेल और बूटलोडर"
 
-#: src/xend_internal.c:1267
+#: src/xend_internal.c:1276
 msgid "Unknown char device type"
 msgstr "अज्ञात चार युक्ति प्रकार"
 
-#: src/xend_internal.c:1301 src/xend_internal.c:1341 src/xend_internal.c:1357
-#: src/xend_internal.c:1496 src/xend_internal.c:1524 src/xend_internal.c:1540
+#: src/xend_internal.c:1310 src/xend_internal.c:1350 src/xend_internal.c:1366
+#: src/xend_internal.c:1505 src/xend_internal.c:1533 src/xend_internal.c:1549
 msgid "malformed char device string"
 msgstr "विरूपित चार युक्ति स्ट्रिंग"
 
-#: src/xend_internal.c:1424
+#: src/xend_internal.c:1433
 msgid "no memory for char device config"
 msgstr "चार युक्ति विन्यास के लिए कोई स्मृति नहीं"
 
-#: src/xend_internal.c:1469
+#: src/xend_internal.c:1478
 #, fuzzy, c-format
 msgid "unknown chr device type '%s'"
 msgstr "अज्ञात चार युक्ति प्रकार"
 
-#: src/xend_internal.c:1631
+#: src/xend_internal.c:1640
 msgid "domain information incomplete, vbd has no dev"
 msgstr "डोमेन सूचना अपूर्ण, vbd के पास कोई dev नहीं"
 
-#: src/xend_internal.c:1642
+#: src/xend_internal.c:1651
 msgid "domain information incomplete, vbd has no src"
 msgstr "डोमेन सूचना अपूर्ण, vbd के पास कोई src नहीं"
 
-#: src/xend_internal.c:1651
+#: src/xend_internal.c:1660
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd फाइलनाम विश्लेषित नहीं कर सकता है, ड्राइवर नाम नहीं मिल रहा है"
 
-#: src/xend_internal.c:1666
+#: src/xend_internal.c:1675
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd फाइलनाम विश्लेषित नहीं कर सकता है, ड्राइवर प्रकार नहीं मिल रहा है"
 
-#: src/xend_internal.c:1806
+#: src/xend_internal.c:1815
 #, fuzzy, c-format
 msgid "malformed mac address '%s'"
 msgstr "अमान्य MAC पता: %s"
 
-#: src/xend_internal.c:1883
+#: src/xend_internal.c:1892
 #, fuzzy, c-format
 msgid "unexpected sound model %s"
 msgstr "अप्रत्याशित डिक्ट नोड"
 
-#: src/xend_internal.c:2058
+#: src/xend_internal.c:2067
 #, fuzzy, c-format
 msgid "unknown graphics type '%s'"
 msgstr "अज्ञात सत्यापन प्रकार '%s'"
 
-#: src/xend_internal.c:2149
+#: src/xend_internal.c:2158
 msgid "domain information incomplete, missing id"
 msgstr "डोमेन सूचना अपूर्ण, गुम id"
 
-#: src/xend_internal.c:2218 src/xend_internal.c:2228 src/xend_internal.c:2238
+#: src/xend_internal.c:2227 src/xend_internal.c:2237 src/xend_internal.c:2247
 #, fuzzy, c-format
 msgid "unknown lifecycle type %s"
 msgstr "अज्ञात OS प्रकार %s"
 
-#: src/xend_internal.c:2559
-msgid "failed to parse topology information"
-msgstr "टोपोलॉजी सूचना के विश्लेषण में विफल"
-
-#: src/xend_internal.c:2613
+#: src/xend_internal.c:2621
 msgid "topology syntax error"
 msgstr "टोपोलॉजी वाक्य रचना त्रुटि"
 
-#: src/xend_internal.c:2677
+#: src/xend_internal.c:2685
 msgid "failed to parse Xend domain information"
 msgstr "Xend डोमेन सूचना विश्लेषण में विफल"
 
-#: src/xend_internal.c:3158
+#: src/xend_internal.c:3166
 #, fuzzy
 msgid "xenDaemonDomainFetch failed to find this domain"
 msgstr "xenDaemonDomainDumpXMLByName इस डोमेन को पाने में विफल"
 
-#: src/xend_internal.c:3780 src/xend_internal.c:4259 src/xm_internal.c:1672
+#: src/xend_internal.c:3789 src/xend_internal.c:4269 src/xm_internal.c:1680
 #, fuzzy
 msgid "failed to build sexpr"
 msgstr "%s पुल बनाने में विफल"
 
-#: src/xend_internal.c:3884
+#: src/xend_internal.c:3893
 #, fuzzy
 msgid "unsupported device type"
 msgstr "असमर्थित इनपुट युक्ति प्रकार %s"
 
-#: src/xend_internal.c:3989
+#: src/xend_internal.c:3998
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr "xenDaemonGetAutostart इस डोमेन को पाने में विफल"
 
-#: src/xend_internal.c:4030
+#: src/xend_internal.c:4039
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr "xenDaemonSetAutostart इस डोमेन को पाने में विफल"
 
-#: src/xend_internal.c:4038
+#: src/xend_internal.c:4047
 msgid "unexpected value from on_xend_start"
 msgstr "on_xend_start से अप्रत्याशित मान"
 
-#: src/xend_internal.c:4049
+#: src/xend_internal.c:4058
 msgid "no memory"
 msgstr "कोई स्मृति नहीं"
 
-#: src/xend_internal.c:4055
+#: src/xend_internal.c:4064
 msgid "sexpr2string failed"
 msgstr "sexpr2string विफल"
 
-#: src/xend_internal.c:4060
+#: src/xend_internal.c:4069
 msgid "Failed to redefine sexpr"
 msgstr "sexpr फिर परिभाषित करने में विफल"
 
-#: src/xend_internal.c:4065
+#: src/xend_internal.c:4074
 msgid "on_xend_start not present in sexpr"
 msgstr "on_xend_start sexpr में मौजूद नहीं"
 
-#: src/xend_internal.c:4096
+#: src/xend_internal.c:4105
 #, c-format
 msgid "gethostname failed: %s"
 msgstr "gethostname विफल: %s"
 
-#: src/xend_internal.c:4102
+#: src/xend_internal.c:4111
 #, c-format
 msgid "failed to strdup hostname: %s"
 msgstr "strdup होस्टनेम में विफल: %s"
 
-#: src/xend_internal.c:4133
+#: src/xend_internal.c:4142
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
 "xenDaemonDomainMigrate: Xen बचे डोमेन को उत्प्रवासन के दौरान समर्थन नहीं करता है"
 
-#: src/xend_internal.c:4143
+#: src/xend_internal.c:4152
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
 "xenDaemonDomainMigrate: Xen बैंडविड्थ सीमा को उत्प्रवासन के दौरान समर्थन नहीं करता है"
 
-#: src/xend_internal.c:4155
+#: src/xend_internal.c:4164
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr "xenDaemonDomainMigrate: असमर्थित झंडा"
 
-#: src/xend_internal.c:4168
+#: src/xend_internal.c:4177
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr "xenDaemonDomainMigrate: अवैध URI"
 
-#: src/xend_internal.c:4173
+#: src/xend_internal.c:4182
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
 "xenDaemonDomainMigrate: सिर्फ xenmigr:// migrations को Xen के द्वारा समर्थित "
 "किया जाता है"
 
-#: src/xend_internal.c:4180
+#: src/xend_internal.c:4189
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr ""
 "xenDaemonDomainMigrate: एक होस्टनेम को जरूर URI में जरूर निर्दिष्ट किया जाना चाहिए"
 
-#: src/xend_internal.c:4187 src/xend_internal.c:4209 src/xend_internal.c:4217
-#: src/xend_internal.c:4443 src/xend_internal.c:4450 src/xml.c:71
+#: src/xend_internal.c:4196 src/xend_internal.c:4218 src/xend_internal.c:4226
+#: src/xend_internal.c:4453 src/xend_internal.c:4460 src/xml.c:71
 msgid "strdup failed"
 msgstr "strdup विफल"
 
-#: src/xend_internal.c:4200
+#: src/xend_internal.c:4209
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr "xenDaemonDomainMigrate: अवैध पोर्ट संख्या"
 
-#: src/xend_internal.c:4253
+#: src/xend_internal.c:4263
 msgid "failed to parse domain description"
 msgstr "डोमेन विवरण के विश्लेषण में विफल"
 
-#: src/xend_internal.c:4269
+#: src/xend_internal.c:4279
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "निष्क्रिय डोमेन %s बनाने में विफल\n"
 
-#: src/xend_internal.c:4425 src/xend_internal.c:4501 src/xend_internal.c:4591
+#: src/xend_internal.c:4435 src/xend_internal.c:4511 src/xend_internal.c:4601
 msgid "unsupported in xendConfigVersion < 4"
 msgstr "xendConfigVersion < 4 में असमर्थित"
 
-#: src/xend_internal.c:4437
+#: src/xend_internal.c:4447
 msgid "node information incomplete, missing scheduler name"
 msgstr "नोड सूचना अपूर्ण, गुम अनुसूचक नाम"
 
-#: src/xend_internal.c:4455 src/xend_internal.c:4549 src/xend_internal.c:4661
+#: src/xend_internal.c:4465 src/xend_internal.c:4559 src/xend_internal.c:4671
 msgid "Unknown scheduler"
 msgstr "अज्ञात नियोजक"
 
-#: src/xend_internal.c:4514 src/xend_internal.c:4604
+#: src/xend_internal.c:4524 src/xend_internal.c:4614
 msgid "Failed to get a scheduler name"
 msgstr "निजोयक नाम पाने में विफल"
 
-#: src/xend_internal.c:4527 src/xend_internal.c:4640
+#: src/xend_internal.c:4537 src/xend_internal.c:4650
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "डोमेन सूचना अपूर्ण, गुम cpu_weight"
 
-#: src/xend_internal.c:4532 src/xend_internal.c:4649
+#: src/xend_internal.c:4542 src/xend_internal.c:4659
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "डोमेन सूचना अपूर्ण, गुम cpu_cap"
 
-#: src/xend_internal.c:4707
+#: src/xend_internal.c:4717
 msgid "domainBlockPeek is not supported for dom0"
 msgstr "domainBlockPeek को dom0 के लिए समर्थन नहीं दिया जाता है"
 
-#: src/xend_internal.c:4728
+#: src/xend_internal.c:4738
 #, c-format
 msgid "%s: invalid path"
 msgstr "%s: अवैध पथ"
 
-#: src/xend_internal.c:4736
+#: src/xend_internal.c:4746
 #, c-format
 msgid "failed to open for reading: %s: %s"
 msgstr "पढ़ने के लिए खोलने में विफल: %s: %s"
 
-#: src/xend_internal.c:4748
+#: src/xend_internal.c:4758
 #, c-format
 msgid "failed to lseek or read from file: %s: %s"
 msgstr "फाइल से lseek पढ़ने में विफल: %s: %s"
 
-#: src/xend_internal.c:4831 src/xend_internal.c:4877
+#: src/xend_internal.c:4841 src/xend_internal.c:4887
 #, fuzzy, c-format
 msgid "unexpected graphics type %d"
 msgstr "अप्रत्याशित डोमेन प्रकार %d"
 
-#: src/xend_internal.c:4920
+#: src/xend_internal.c:4930
 #, fuzzy
 msgid "unexpected chr device type"
 msgstr "अप्रत्याशित mime प्रकार"
 
-#: src/xend_internal.c:5094 src/xm_internal.c:1834
+#: src/xend_internal.c:5106 src/xm_internal.c:1843
 #, fuzzy, c-format
 msgid "unsupported network type %d"
 msgstr "असमर्थित भंडार आयतन प्रकार %d"
 
-#: src/xend_internal.c:5264 src/xend_internal.c:5271 src/xend_internal.c:5278
+#: src/xend_internal.c:5276 src/xend_internal.c:5283 src/xend_internal.c:5290
 #, fuzzy, c-format
 msgid "unexpected lifecycle value %d"
 msgstr "अप्रत्याशित मान नोड"
 
-#: src/xend_internal.c:5295
+#: src/xend_internal.c:5307
 msgid "no HVM domain loader"
 msgstr "कोई HVM डोमेन लोडर नहीं"
 
-#: src/xend_internal.c:5497
+#: src/xend_internal.c:5509
 #, fuzzy
 msgid "hotplug of device type not supported"
 msgstr "ai_socktype समर्थित नहीं"
 
-#: src/xm_internal.c:180 src/xm_internal.c:211 src/xm_internal.c:216
-#: src/xm_internal.c:239
+#: src/xm_internal.c:188 src/xm_internal.c:219 src/xm_internal.c:224
+#: src/xm_internal.c:247
 #, fuzzy, c-format
 msgid "config value %s was malformed"
 msgstr "कॉन्फिग फाइल में UUID विरूपित है"
 
-#: src/xm_internal.c:261 src/xm_internal.c:274
+#: src/xm_internal.c:269 src/xm_internal.c:282
 #, fuzzy, c-format
 msgid "config value %s was missing"
 msgstr "नाम विन्यास पैरामीटर गुम है"
 
-#: src/xm_internal.c:267
+#: src/xm_internal.c:275
 #, c-format
 msgid "config value %s was not a string"
 msgstr ""
 
-#: src/xm_internal.c:409
+#: src/xm_internal.c:417
 #, fuzzy, c-format
 msgid "cannot stat %s: %s"
 msgstr "फाइल stat नहीं कर सकता '%s': %s"
 
-#: src/xm_internal.c:466
+#: src/xm_internal.c:474
 msgid "xenXMConfigCacheRefresh: virHashAddEntry"
 msgstr "xenXMConfigCacheRefresh: virHashAddEntry"
 
-#: src/xm_internal.c:783
+#: src/xm_internal.c:791
 #, fuzzy, c-format
 msgid "unexpected value %s for on_poweroff"
 msgstr "on_xend_start से अप्रत्याशित मान"
 
-#: src/xm_internal.c:791
+#: src/xm_internal.c:799
 #, fuzzy, c-format
 msgid "unexpected value %s for on_reboot"
 msgstr "on_xend_start से अप्रत्याशित मान"
 
-#: src/xm_internal.c:799
+#: src/xm_internal.c:807
 #, fuzzy, c-format
 msgid "unexpected value %s for on_crash"
 msgstr "on_xend_start से अप्रत्याशित मान"
 
-#: src/xm_internal.c:1493
+#: src/xm_internal.c:1501
 msgid "read only connection"
 msgstr "सिर्फ पठन के लिये संबंधन"
 
-#: src/xm_internal.c:1498
+#: src/xm_internal.c:1506
 msgid "not inactive domain"
 msgstr "निष्क्रिय डोमेन नहीं"
 
-#: src/xm_internal.c:1503
+#: src/xm_internal.c:1511
 msgid "virHashLookup"
 msgstr "virHashLookup"
 
-#: src/xm_internal.c:1508
+#: src/xm_internal.c:1516
 msgid "can't retrieve config file for domain"
 msgstr "डोमेन के लिए विन्यास फाइल प्राप्त नहीं कर सकता है"
 
-#: src/xm_internal.c:2006 src/xm_internal.c:2015 src/xm_internal.c:2024
+#: src/xm_internal.c:2015 src/xm_internal.c:2024 src/xm_internal.c:2033
 #, fuzzy, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "अप्रत्याशित डिक्ट नोड"
 
-#: src/xm_internal.c:2296
+#: src/xm_internal.c:2306
 msgid "can't retrieve config filename for domain to overwrite"
 msgstr "डोमेन के लिए विन्यास फाइलनाम अधिलिखित करने के लिए नहीं पा सकता है"
 
-#: src/xm_internal.c:2302
+#: src/xm_internal.c:2312
 msgid "can't retrieve config entry for domain to overwrite"
 msgstr "डोमेन के लिए विन्यास प्रविष्टि अधिलिखित करने के लिए नहीं पा सकता है"
 
-#: src/xm_internal.c:2313 src/xm_internal.c:2320
+#: src/xm_internal.c:2323 src/xm_internal.c:2330
 msgid "failed to remove old domain from config map"
 msgstr "विन्यास मैन से पुराने डोमेन को हटाने में विफल"
 
-#: src/xm_internal.c:2329
+#: src/xm_internal.c:2339
 msgid "config file name is too long"
 msgstr "विन्यास फाइलनाम बहुत बड़ा है"
 
-#: src/xm_internal.c:2341
+#: src/xm_internal.c:2351
 msgid "config"
 msgstr "config"
 
-#: src/xm_internal.c:2347
+#: src/xm_internal.c:2357
 msgid "unable to get current time"
 msgstr "मौजूदा नाम पाने में असमर्थ"
 
-#: src/xm_internal.c:2356 src/xm_internal.c:2363
+#: src/xm_internal.c:2366 src/xm_internal.c:2373
 msgid "unable to store config file handle"
 msgstr "विन्यास फाइल नियंत्रण जमा करने में असमर्थ"
 
-#: src/xm_internal.c:2560 src/xm_internal.c:2658
+#: src/xm_internal.c:2570 src/xm_internal.c:2668
 msgid "unknown device"
 msgstr "अज्ञात युक्ति"
 
-#: src/xm_internal.c:2715
+#: src/xm_internal.c:2725
 #, fuzzy, c-format
 msgid "failed to check autostart link %s: %s"
 msgstr "ऑटोस्टार्ट लिंक '%s' मिटाने में विफल: %s"
 
-#: src/xm_internal.c:2744
+#: src/xm_internal.c:2754
 #, fuzzy, c-format
 msgid "failed to create link %s: %s"
 msgstr "लॉग फाइल %s बनाने में विफल: %s"
 
-#: src/xm_internal.c:2752
+#: src/xm_internal.c:2762
 #, fuzzy, c-format
 msgid "failed to remove link %s: %s"
 msgstr "लॉग फाइल %s बनाने में विफल: %s"
@@ -7686,20 +7726,32 @@ msgstr ""
 msgid "adding watch @introduceDomain"
 msgstr ""
 
-#: src/xs_internal.c:1057
+#: src/xs_internal.c:1059
 #, fuzzy
 msgid "watch already tracked"
 msgstr "पुल पहले से सक्रिय"
 
-#: src/xs_internal.c:1073
+#: src/xs_internal.c:1075
 #, fuzzy
 msgid "reallocating list"
 msgstr "डोमेन संभाजित कर रहा है"
 
-#: src/xs_internal.c:1197 src/xs_internal.c:1275
+#: src/xs_internal.c:1199 src/xs_internal.c:1277
 #, fuzzy
 msgid "failed to allocate domids"
 msgstr "एक नोड संभाजित करने में विफल"
+
+#~ msgid "config file path too long: %s/%s.log"
+#~ msgstr "विन्यास फाइल पथ काफी लंबी है: %s/%s.log"
+
+#~ msgid "tried to use a closed or uninitialised handle"
+#~ msgstr "एक बंद गैर आरंभीकृत नियंत्रण बंद करने के लिए कोशिश किया"
+
+#~ msgid "xend_get: error from xen daemon: %s"
+#~ msgstr "xend_get: xen डेमान से त्रुटि: %s"
+
+#~ msgid "failed to parse topology information"
+#~ msgstr "टोपोलॉजी सूचना के विश्लेषण में विफल"
 
 #~ msgid "xdr_remote_message_header"
 #~ msgstr "xdr_remote_message_header"

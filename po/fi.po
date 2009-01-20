@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-01-06 09:44+0100\n"
+"POT-Creation-Date: 2009-01-20 11:06+0100\n"
 "PO-Revision-Date: 2007-12-27 00:03+0200\n"
 "Last-Translator: Ville-Pekka Vainio <vpivaini@cs.helsinki.fi>\n"
 "Language-Team: Finnish <laatu@lokalisointi.org>\n"
@@ -96,7 +96,7 @@ msgstr ""
 msgid "Unknown error"
 msgstr "Tuntematon"
 
-#: qemud/qemud.c:174 src/remote_internal.c:952
+#: qemud/qemud.c:174 src/remote_internal.c:913
 #, c-format
 msgid "Cannot access %s '%s': %s (%d)"
 msgstr ""
@@ -156,11 +156,11 @@ msgstr ""
 msgid "Received unexpected signal %d"
 msgstr "odottamaton arvosolmu"
 
-#: qemud/qemud.c:315 src/util.c:233 src/util.c:264
+#: qemud/qemud.c:315 src/util.c:234 src/util.c:265
 msgid "Failed to set close-on-exec file descriptor flag"
 msgstr ""
 
-#: qemud/qemud.c:329 src/util.c:227 src/util.c:258
+#: qemud/qemud.c:329 src/util.c:228 src/util.c:259
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr ""
 
@@ -252,79 +252,89 @@ msgstr ""
 msgid "Failed to allocate struct qemud_server"
 msgstr "Muistin varaus epäonnistui."
 
-#: qemud/qemud.c:699
+#: qemud/qemud.c:692 qemud/qemud.c:1126 src/domain_conf.c:478
+#: src/network_conf.c:170 src/node_device_conf.c:135 src/openvz_conf.c:400
+#: src/qemu_driver.c:277 src/storage_conf.c:1267 src/test.c:217 src/test.c:344
+msgid "cannot initialize mutex"
+msgstr ""
+
+#: qemud/qemud.c:696
+msgid "cannot initialize condition variable"
+msgstr ""
+
+#: qemud/qemud.c:704
 #, fuzzy
 msgid "Failed to initialize event system"
 msgstr "Verkkoa ei löytynyt: %s"
 
-#: qemud/qemud.c:784
+#: qemud/qemud.c:789
 #, fuzzy, c-format
 msgid "Failed to initialize SASL authentication %s"
 msgstr "Verkkoa ei löytynyt: %s"
 
-#: qemud/qemud.c:798
+#: qemud/qemud.c:803
 #, fuzzy, c-format
 msgid "Failed to connect to system bus for PolicyKit auth: %s"
 msgstr "Hypervisoriin yhdistäminen epäonnistui"
 
-#: qemud/qemud.c:909
+#: qemud/qemud.c:914
 #, c-format
 msgid "remoteInitializeTLSSession: %s"
 msgstr ""
 
-#: qemud/qemud.c:925
+#: qemud/qemud.c:930
 #, c-format
 msgid "remoteCheckDN: gnutls_x509_cert_get_dn: %s"
 msgstr ""
 
-#: qemud/qemud.c:942
+#: qemud/qemud.c:947
 #, c-format
 msgid "remoteCheckDN: failed: client DN is %s"
 msgstr ""
 
-#: qemud/qemud.c:957
+#: qemud/qemud.c:962
 #, fuzzy, c-format
 msgid "remoteCheckCertificate: verify failed: %s"
 msgstr "todennus epäonnistui: %s"
 
-#: qemud/qemud.c:964
+#: qemud/qemud.c:969
 msgid "remoteCheckCertificate: the client certificate is not trusted."
 msgstr ""
 
-#: qemud/qemud.c:968
+#: qemud/qemud.c:973
 msgid "remoteCheckCertificate: the client certificate has unknown issuer."
 msgstr ""
 
-#: qemud/qemud.c:972
+#: qemud/qemud.c:977
 msgid "remoteCheckCertificate: the client certificate has been revoked."
 msgstr ""
 
-#: qemud/qemud.c:977
+#: qemud/qemud.c:982
 msgid ""
 "remoteCheckCertificate: the client certificate uses an insecure algorithm."
 msgstr ""
 
-#: qemud/qemud.c:985
+#: qemud/qemud.c:990
 msgid "remoteCheckCertificate: certificate is not X.509"
 msgstr ""
 
-#: qemud/qemud.c:990
+#: qemud/qemud.c:995
 msgid "remoteCheckCertificate: no peers"
 msgstr ""
 
-#: qemud/qemud.c:1000
+#: qemud/qemud.c:1005
 msgid "remoteCheckCertificate: gnutls_x509_crt_init failed"
 msgstr ""
 
-#: qemud/qemud.c:1010
+#: qemud/qemud.c:1015
 msgid "remoteCheckCertificate: the client certificate has expired"
 msgstr ""
 
-#: qemud/qemud.c:1017
+#: qemud/qemud.c:1022
 msgid "remoteCheckCertificate: the client certificate is not yet activated"
 msgstr ""
 
-#: qemud/qemud.c:1026
+#: qemud/qemud.c:1031
 msgid ""
 "remoteCheckCertificate: client's Distinguished Name is not on the list of "
 "allowed clients (tls_allowed_dn_list).  Use 'openssl x509 -in clientcert.pem "
@@ -332,135 +342,135 @@ msgid ""
 "run this daemon with --verbose option."
 msgstr ""
 
-#: qemud/qemud.c:1042
+#: qemud/qemud.c:1047
 msgid "remoteCheckCertificate: failed to verify client's certificate"
 msgstr ""
 
-#: qemud/qemud.c:1045
+#: qemud/qemud.c:1050
 msgid ""
 "remoteCheckCertificate: tls_no_verify_certificate is set so the bad "
 "certificate is ignored"
 msgstr ""
 
-#: qemud/qemud.c:1067
+#: qemud/qemud.c:1072
 #, fuzzy, c-format
 msgid "Failed to verify client credentials: %s"
 msgstr "Liitäntätilastojen haku epäonnistui %s %s"
 
-#: qemud/qemud.c:1092
+#: qemud/qemud.c:1097
 #, fuzzy, c-format
 msgid "Failed to accept connection: %s"
 msgstr "Verkon %s käynnistäminen epäonnistui"
 
-#: qemud/qemud.c:1097
+#: qemud/qemud.c:1102
 msgid "Too many active clients, dropping connection"
 msgstr ""
 
-#: qemud/qemud.c:1103
+#: qemud/qemud.c:1108
 #, fuzzy
 msgid "Out of memory allocating clients"
 msgstr "muuta muistinvarausta"
 
-#: qemud/qemud.c:1146
+#: qemud/qemud.c:1154
 #, c-format
 msgid "Turn off polkit auth for privileged client %d"
 msgstr ""
 
-#: qemud/qemud.c:1185 qemud/qemud.c:1464 qemud/qemud.c:1607
+#: qemud/qemud.c:1193 qemud/qemud.c:1476 qemud/qemud.c:1619
 #, fuzzy, c-format
 msgid "TLS handshake failed: %s"
 msgstr "GET-toimenpide epäonnistui: %s"
 
-#: qemud/qemud.c:1291
+#: qemud/qemud.c:1303
 #, c-format
 msgid "read: %s"
 msgstr ""
 
-#: qemud/qemud.c:1304
+#: qemud/qemud.c:1316
 #, c-format
 msgid "gnutls_record_recv: %s"
 msgstr ""
 
-#: qemud/qemud.c:1488
+#: qemud/qemud.c:1500
 #, c-format
 msgid "write: %s"
 msgstr ""
 
-#: qemud/qemud.c:1498
+#: qemud/qemud.c:1510
 #, c-format
 msgid "gnutls_record_send: %s"
 msgstr ""
 
-#: qemud/qemud.c:1734
+#: qemud/qemud.c:1746
 #, c-format
 msgid "Signal handler reported %d errors: last error: %s"
 msgstr ""
 
-#: qemud/qemud.c:1759
+#: qemud/qemud.c:1771
 #, fuzzy
 msgid "Failed to allocate workers"
 msgstr "Muistin varaus epäonnistui."
 
-#: qemud/qemud.c:1885 qemud/qemud.c:1904
+#: qemud/qemud.c:1903 qemud/qemud.c:1922
 #, fuzzy, c-format
 msgid "failed to allocate memory for %s config list"
 msgstr "Muistin varaus epäonnistui."
 
-#: qemud/qemud.c:1891 qemud/qemud.c:1921
+#: qemud/qemud.c:1909 qemud/qemud.c:1939
 #, fuzzy, c-format
 msgid "failed to allocate memory for %s config list value"
 msgstr "Muistin varaus epäonnistui."
 
-#: qemud/qemud.c:1909 qemud/qemud.c:1932
+#: qemud/qemud.c:1927 qemud/qemud.c:1950
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: must be a string or list of strings\n"
 msgstr ""
 
-#: qemud/qemud.c:1948
+#: qemud/qemud.c:1966
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: invalid type: got %s; expected %s\n"
 msgstr ""
 
-#: qemud/qemud.c:1969
+#: qemud/qemud.c:1987
 #, c-format
 msgid "remoteReadConfigFile: %s\n"
 msgstr ""
 
-#: qemud/qemud.c:2011
+#: qemud/qemud.c:2029
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: unsupported auth %s\n"
 msgstr ""
 
-#: qemud/qemud.c:2158
+#: qemud/qemud.c:2171
 msgid "Cannot set group when not running as root"
 msgstr ""
 
-#: qemud/qemud.c:2162
+#: qemud/qemud.c:2175
 #, fuzzy, c-format
 msgid "Failed to lookup group '%s'"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 
-#: qemud/qemud.c:2174 qemud/qemud.c:2184
+#: qemud/qemud.c:2187 qemud/qemud.c:2197
 #, fuzzy, c-format
 msgid "Failed to parse mode '%s'"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 
-#: qemud/qemud.c:2377
+#: qemud/qemud.c:2399
 #, fuzzy, c-format
 msgid "Failed to fork as daemon: %s"
 msgstr "Toimialueen %s palautus epäonnistui"
 
-#: qemud/qemud.c:2398 src/util.c:251
+#: qemud/qemud.c:2420 src/util.c:252
 #, fuzzy, c-format
 msgid "Failed to create pipe: %s"
 msgstr "XML:n luonti epäonnistui"
 
-#: qemud/qemud.c:2430
+#: qemud/qemud.c:2452
 #, fuzzy, c-format
 msgid "Failed to change group ownership of %s"
 msgstr "Toimialueen %s muistivedoksen tallentaminen tiedostoon %s epäonnistui"
 
-#: qemud/qemud.c:2437
+#: qemud/qemud.c:2459
 msgid "Failed to register callback for signal pipe"
 msgstr ""
 
@@ -554,7 +564,7 @@ msgstr ""
 msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 msgstr ""
 
-#: qemud/remote.c:2500 src/remote_internal.c:4135
+#: qemud/remote.c:2500 src/remote_internal.c:4457
 #, c-format
 msgid "Cannot resolve address %d: %s"
 msgstr ""
@@ -563,12 +573,12 @@ msgstr ""
 msgid "client tried invalid SASL init request"
 msgstr ""
 
-#: qemud/remote.c:2553 src/remote_internal.c:4363
+#: qemud/remote.c:2553 src/remote_internal.c:4685
 #, fuzzy, c-format
 msgid "failed to get sock address %d (%s)"
 msgstr "Lohkotilastojen haku epäonnistui %s %s"
 
-#: qemud/remote.c:2564 src/remote_internal.c:4375
+#: qemud/remote.c:2564 src/remote_internal.c:4697
 #, fuzzy, c-format
 msgid "failed to get peer address %d (%s)"
 msgstr "Liitäntätilastojen haku epäonnistui %s %s"
@@ -601,7 +611,7 @@ msgstr ""
 msgid "cannot allocate mechlist"
 msgstr ""
 
-#: qemud/remote.c:2691 src/remote_internal.c:4640
+#: qemud/remote.c:2691 src/remote_internal.c:4962
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr ""
@@ -774,16 +784,16 @@ msgstr "odotetaan erotinta"
 msgid "expecting an assignment"
 msgstr "odotetaan sijoitusta"
 
-#: src/conf.c:892 src/conf.c:948 src/xend_internal.c:535
-#: src/xend_internal.c:2623 src/xm_internal.c:1526 src/xm_internal.c:1533
+#: src/conf.c:891 src/conf.c:947 src/xend_internal.c:544
+#: src/xend_internal.c:2631 src/xm_internal.c:1534 src/xm_internal.c:1541
 msgid "allocate buffer"
 msgstr "varaa puskuri"
 
-#: src/conf.c:899
+#: src/conf.c:898
 msgid "failed to open file"
 msgstr "ei voitu avata tiedostoa"
 
-#: src/conf.c:910
+#: src/conf.c:909
 msgid "failed to save content"
 msgstr "sisältöä ei voitu tallentaa"
 
@@ -821,541 +831,573 @@ msgstr ""
 msgid "allocating connection"
 msgstr "varataan yhteyttä"
 
-#: src/datatypes.c:264 src/datatypes.c:269
+#: src/datatypes.c:267 src/datatypes.c:272
 msgid "allocating domain"
 msgstr "varataan toimialue"
 
-#: src/datatypes.c:280
+#: src/datatypes.c:283
 msgid "failed to add domain to connection hash table"
 msgstr "toimialueen lisääminen yhteyksien hajautustauluun epäonnistui"
 
-#: src/datatypes.c:321
+#: src/datatypes.c:324
 msgid "domain missing from connection hash table"
 msgstr "toimialue puuttuu yhteyksien hajautustaulusta"
 
-#: src/datatypes.c:404 src/datatypes.c:409
+#: src/datatypes.c:407 src/datatypes.c:412
 msgid "allocating network"
 msgstr "varataan verkkoa"
 
-#: src/datatypes.c:419
+#: src/datatypes.c:422
 msgid "failed to add network to connection hash table"
 msgstr "verkon lisääminen yhteyksien hajautustauluun epäonnistui"
 
-#: src/datatypes.c:457
+#: src/datatypes.c:460
 msgid "network missing from connection hash table"
 msgstr "verkko puuttuu yhteyksien hajautustaulusta"
 
-#: src/datatypes.c:541 src/datatypes.c:546
+#: src/datatypes.c:544 src/datatypes.c:549
 #, fuzzy
 msgid "allocating storage pool"
 msgstr "varataan solmua"
 
-#: src/datatypes.c:556
+#: src/datatypes.c:559
 #, fuzzy
 msgid "failed to add storage pool to connection hash table"
 msgstr "verkon lisääminen yhteyksien hajautustauluun epäonnistui"
 
-#: src/datatypes.c:595
+#: src/datatypes.c:598
 #, fuzzy
 msgid "pool missing from connection hash table"
 msgstr "toimialue puuttuu yhteyksien hajautustaulusta"
 
-#: src/datatypes.c:672 src/datatypes.c:677 src/datatypes.c:682
+#: src/datatypes.c:675 src/datatypes.c:680 src/datatypes.c:685
 #, fuzzy
 msgid "allocating storage vol"
 msgstr "varataan solmua"
 
-#: src/datatypes.c:692
+#: src/datatypes.c:695
 #, fuzzy
 msgid "failed to add storage vol to connection hash table"
 msgstr "verkon lisääminen yhteyksien hajautustauluun epäonnistui"
 
-#: src/datatypes.c:732
+#: src/datatypes.c:735
 #, fuzzy
 msgid "vol missing from connection hash table"
 msgstr "toimialue puuttuu yhteyksien hajautustaulusta"
 
-#: src/datatypes.c:809
+#: src/datatypes.c:812
 #, fuzzy
 msgid "allocating node dev"
 msgstr "varataan solmua"
 
-#: src/datatypes.c:816
+#: src/datatypes.c:819
 #, fuzzy
 msgid "copying node dev name"
 msgstr "kopioidaan solmun sisältöä"
 
-#: src/datatypes.c:822
+#: src/datatypes.c:825
 #, fuzzy
 msgid "failed to add node dev to conn hash table"
 msgstr "verkon lisääminen yhteyksien hajautustauluun epäonnistui"
 
-#: src/datatypes.c:860
+#: src/datatypes.c:863
 #, fuzzy
 msgid "dev missing from connection hash table"
 msgstr "toimialue puuttuu yhteyksien hajautustaulusta"
 
-#: src/domain_conf.c:557
+#: src/domain_conf.c:566
 #, fuzzy, c-format
 msgid "unknown disk type '%s'"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/domain_conf.c:609
+#: src/domain_conf.c:618
 #, fuzzy, c-format
 msgid "unknown disk device '%s'"
 msgstr "levylaitteen lähde"
 
-#: src/domain_conf.c:635
+#: src/domain_conf.c:644
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr ""
 
-#: src/domain_conf.c:650
+#: src/domain_conf.c:659
 #, c-format
 msgid "Invalid harddisk device name: %s"
 msgstr ""
 
-#: src/domain_conf.c:657
+#: src/domain_conf.c:666
 #, fuzzy, c-format
 msgid "unknown disk bus type '%s'"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/domain_conf.c:682
+#: src/domain_conf.c:691
 #, c-format
 msgid "Invalid bus type '%s' for floppy disk"
 msgstr ""
 
-#: src/domain_conf.c:688
+#: src/domain_conf.c:697
 #, c-format
 msgid "Invalid bus type '%s' for disk"
 msgstr ""
 
-#: src/domain_conf.c:740
+#: src/domain_conf.c:750
 #, fuzzy, c-format
 msgid "unknown filesystem type '%s'"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/domain_conf.c:833
+#: src/domain_conf.c:844
 #, fuzzy, c-format
 msgid "unknown interface type '%s'"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/domain_conf.c:897
+#: src/domain_conf.c:908
 msgid ""
 "No <source> 'network' attribute specified with <interface type='network'/>"
 msgstr ""
 
-#: src/domain_conf.c:923
+#: src/domain_conf.c:934
 msgid "No <source> 'dev' attribute specified with <interface type='bridge'/>"
 msgstr ""
 
-#: src/domain_conf.c:935
+#: src/domain_conf.c:946
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr ""
 
-#: src/domain_conf.c:940
+#: src/domain_conf.c:951
 msgid "Cannot parse <source> 'port' attribute with socket interface"
 msgstr ""
 
-#: src/domain_conf.c:948
+#: src/domain_conf.c:959
 msgid "No <source> 'address' attribute specified with socket interface"
 msgstr ""
 
-#: src/domain_conf.c:973
+#: src/domain_conf.c:984
 msgid "Model name contains invalid characters"
 msgstr ""
 
-#: src/domain_conf.c:1146 src/domain_conf.c:1223
+#: src/domain_conf.c:1158 src/domain_conf.c:1235
 #, fuzzy
 msgid "Missing source path attribute for char device"
 msgstr "lähdetietoja puuttuu laitteelle"
 
-#: src/domain_conf.c:1163 src/domain_conf.c:1180
+#: src/domain_conf.c:1175 src/domain_conf.c:1192
 #, fuzzy
 msgid "Missing source host attribute for char device"
 msgstr "lähdetietoja puuttuu laitteelle"
 
-#: src/domain_conf.c:1168 src/domain_conf.c:1185 src/domain_conf.c:1205
+#: src/domain_conf.c:1180 src/domain_conf.c:1197 src/domain_conf.c:1217
 #, fuzzy
 msgid "Missing source service attribute for char device"
 msgstr "lähdetietoja puuttuu laitteelle"
 
-#: src/domain_conf.c:1275
+#: src/domain_conf.c:1288
 #, fuzzy
 msgid "missing input device type"
 msgstr "kohdelaitetyyppi"
 
-#: src/domain_conf.c:1281
+#: src/domain_conf.c:1294
 #, fuzzy, c-format
 msgid "unknown input device type '%s'"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/domain_conf.c:1288
+#: src/domain_conf.c:1301
 #, fuzzy, c-format
 msgid "unknown input bus type '%s'"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/domain_conf.c:1296
+#: src/domain_conf.c:1309
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr ""
 
-#: src/domain_conf.c:1302 src/domain_conf.c:1309
+#: src/domain_conf.c:1315 src/domain_conf.c:1322
 #, c-format
 msgid "unsupported input bus %s"
 msgstr ""
 
-#: src/domain_conf.c:1314
+#: src/domain_conf.c:1327
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr ""
 
-#: src/domain_conf.c:1359
+#: src/domain_conf.c:1372
 #, fuzzy
 msgid "missing graphics device type"
 msgstr "juurilaitteen tietoja puuttuu"
 
-#: src/domain_conf.c:1365
+#: src/domain_conf.c:1378
 #, fuzzy, c-format
 msgid "unknown graphics device type '%s'"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/domain_conf.c:1376
+#: src/domain_conf.c:1389
 #, c-format
 msgid "cannot parse vnc port %s"
 msgstr ""
 
-#: src/domain_conf.c:1414
+#: src/domain_conf.c:1427
 #, fuzzy, c-format
 msgid "unknown fullscreen value '%s'"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/domain_conf.c:1452
+#: src/domain_conf.c:1466
 #, fuzzy, c-format
 msgid "unknown sound model '%s'"
 msgstr "tuntematon komento: ”%s”"
 
-#: src/domain_conf.c:1485
+#: src/domain_conf.c:1500
 #, c-format
 msgid "cannot parse vendor id %s"
 msgstr ""
 
-#: src/domain_conf.c:1492
+#: src/domain_conf.c:1507
 msgid "usb vendor needs id"
 msgstr ""
 
-#: src/domain_conf.c:1502
+#: src/domain_conf.c:1517
 #, c-format
 msgid "cannot parse product %s"
 msgstr ""
 
-#: src/domain_conf.c:1509
+#: src/domain_conf.c:1525
 msgid "usb product needs id"
 msgstr ""
 
-#: src/domain_conf.c:1520
+#: src/domain_conf.c:1536 src/domain_conf.c:1623
 #, c-format
 msgid "cannot parse bus %s"
 msgstr ""
 
-#: src/domain_conf.c:1527
+#: src/domain_conf.c:1543
 msgid "usb address needs bus id"
 msgstr ""
 
-#: src/domain_conf.c:1536
+#: src/domain_conf.c:1552
 #, fuzzy, c-format
 msgid "cannot parse device %s"
 msgstr "kohdelaitetyyppi"
 
-#: src/domain_conf.c:1544
+#: src/domain_conf.c:1560
 msgid "usb address needs device id"
 msgstr ""
 
-#: src/domain_conf.c:1549
+#: src/domain_conf.c:1565
 #, fuzzy, c-format
 msgid "unknown usb source type '%s'"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/domain_conf.c:1559
+#: src/domain_conf.c:1576
 #, fuzzy
 msgid "missing vendor"
 msgstr "\" puuttuu"
 
-#: src/domain_conf.c:1565
+#: src/domain_conf.c:1582
 #, fuzzy
 msgid "missing product"
 msgstr "\" puuttuu"
 
-#: src/domain_conf.c:1593
+#: src/domain_conf.c:1610
+#, fuzzy, c-format
+msgid "cannot parse domain %s"
+msgstr "kohdelaitetyyppi"
+
+#: src/domain_conf.c:1630
+msgid "pci address needs bus id"
+msgstr ""
+
+#: src/domain_conf.c:1639
+#, fuzzy, c-format
+msgid "cannot parse slot %s"
+msgstr "ei voitu jäsentää yhteys-URIa"
+
+#: src/domain_conf.c:1647
+msgid "pci address needs slot id"
+msgstr ""
+
+#: src/domain_conf.c:1656
+#, fuzzy, c-format
+msgid "cannot parse function %s"
+msgstr "ei voitu jäsentää yhteys-URIa"
+
+#: src/domain_conf.c:1664
+msgid "pci address needs function id"
+msgstr ""
+
+#: src/domain_conf.c:1669
+#, fuzzy, c-format
+msgid "unknown pci source type '%s'"
+msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
+
+#: src/domain_conf.c:1702
 #, fuzzy, c-format
 msgid "unknown hostdev mode '%s'"
 msgstr "tuntematon kone %s"
 
-#: src/domain_conf.c:1604
+#: src/domain_conf.c:1713
 #, fuzzy, c-format
 msgid "unknown host device type '%s'"
 msgstr "tuntematon kone %s"
 
-#: src/domain_conf.c:1609
+#: src/domain_conf.c:1718
 #, fuzzy
 msgid "missing type in hostdev"
 msgstr "kohdetietoja puuttuu laitteelle"
 
-#: src/domain_conf.c:1624
+#: src/domain_conf.c:1739
 #, fuzzy, c-format
 msgid "unknown node %s"
 msgstr "tuntematon kone %s"
 
-#: src/domain_conf.c:1655
+#: src/domain_conf.c:1770
 #, c-format
 msgid "unknown lifecycle action %s"
 msgstr ""
 
-#: src/domain_conf.c:1684 src/domain_conf.c:2295 src/domain_conf.c:2337
-#: src/network_conf.c:473 src/network_conf.c:513 src/qemu_conf.c:1342
-#: src/storage_conf.c:646 src/storage_conf.c:1047
+#: src/domain_conf.c:1800 src/domain_conf.c:2423 src/domain_conf.c:2464
+#: src/network_conf.c:480 src/network_conf.c:520 src/qemu_conf.c:1361
+#: src/storage_conf.c:649 src/storage_conf.c:1050
 #, fuzzy
 msgid "missing root element"
 msgstr "juurilaitteen tietoja puuttuu"
 
-#: src/domain_conf.c:1719
+#: src/domain_conf.c:1836
 #, fuzzy
 msgid "unknown device type"
 msgstr "tuntematon käyttöjärjestelmän tyyppi"
 
-#: src/domain_conf.c:1755
+#: src/domain_conf.c:1872
 #, fuzzy
 msgid "failed to allocate space for xmlXPathContext"
 msgstr "solmun varaus epäonnistui"
 
-#: src/domain_conf.c:1767
+#: src/domain_conf.c:1884
 #, fuzzy
 msgid "missing domain type attribute"
 msgstr "verkkoalueen nimi puuttuu"
 
-#: src/domain_conf.c:1773
+#: src/domain_conf.c:1890
 #, fuzzy, c-format
 msgid "invalid domain type %s"
 msgstr "virheellinen toimialueosoitin kohteessa %s"
 
-#: src/domain_conf.c:1790 src/network_conf.c:328
+#: src/domain_conf.c:1907 src/network_conf.c:335
 #, fuzzy, c-format
 msgid "Failed to generate UUID: %s"
 msgstr "verkon UUID:n hakeminen epäonnistui"
 
-#: src/domain_conf.c:1797 src/network_conf.c:335 src/storage_conf.c:469
+#: src/domain_conf.c:1914 src/network_conf.c:342 src/storage_conf.c:472
 msgid "malformed uuid element"
 msgstr ""
 
-#: src/domain_conf.c:1806
+#: src/domain_conf.c:1923
 msgid "missing memory element"
 msgstr ""
 
-#: src/domain_conf.c:1836
+#: src/domain_conf.c:1953
 #, fuzzy, c-format
 msgid "unexpected feature %s"
 msgstr "odottamatonta dataa ”%s”"
 
-#: src/domain_conf.c:1876
+#: src/domain_conf.c:1993
 #, fuzzy
 msgid "no OS type"
 msgstr "tuntematon käyttöjärjestelmän tyyppi"
 
-#: src/domain_conf.c:1905 src/xm_internal.c:698
+#: src/domain_conf.c:2022 src/xm_internal.c:706
 #, c-format
 msgid "no supported architecture for os type '%s'"
 msgstr ""
 
-#: src/domain_conf.c:1955
+#: src/domain_conf.c:2072
 #, fuzzy
 msgid "cannot extract boot device"
 msgstr "liitäntälaite"
 
-#: src/domain_conf.c:1963
+#: src/domain_conf.c:2080
 #, fuzzy
 msgid "missing boot device"
 msgstr "juurilaitteen tietoja puuttuu"
 
-#: src/domain_conf.c:1968
+#: src/domain_conf.c:2085
 #, fuzzy, c-format
 msgid "unknown boot device '%s'"
 msgstr "tuntematon kone %s"
 
-#: src/domain_conf.c:1988
+#: src/domain_conf.c:2105
 #, fuzzy
 msgid "cannot extract disk devices"
 msgstr "liitä levylaite"
 
-#: src/domain_conf.c:2008
+#: src/domain_conf.c:2126
 msgid "cannot extract filesystem devices"
 msgstr ""
 
-#: src/domain_conf.c:2026
+#: src/domain_conf.c:2145
 #, fuzzy
 msgid "cannot extract network devices"
 msgstr "liitä verkkoliitäntä"
 
-#: src/domain_conf.c:2046
+#: src/domain_conf.c:2166
 msgid "cannot extract parallel devices"
 msgstr ""
 
-#: src/domain_conf.c:2065
+#: src/domain_conf.c:2186
 #, fuzzy
 msgid "cannot extract serial devices"
 msgstr "liitäntälaite"
 
-#: src/domain_conf.c:2113
+#: src/domain_conf.c:2236
 #, fuzzy
 msgid "cannot extract input devices"
 msgstr "liitä levylaite"
 
-#: src/domain_conf.c:2147
+#: src/domain_conf.c:2271
 #, fuzzy
 msgid "cannot extract graphics devices"
 msgstr "liitä levylaite"
 
-#: src/domain_conf.c:2189
+#: src/domain_conf.c:2313
 #, fuzzy
 msgid "cannot extract sound devices"
 msgstr "liitä levylaite"
 
-#: src/domain_conf.c:2218
+#: src/domain_conf.c:2343
 #, fuzzy
 msgid "cannot extract host devices"
 msgstr "liitä levylaite"
 
-#: src/domain_conf.c:2259 src/network_conf.c:438 src/qemu_conf.c:1287
-#: src/storage_conf.c:600
+#: src/domain_conf.c:2386 src/network_conf.c:445 src/qemu_conf.c:1306
+#: src/storage_conf.c:603
 #, c-format
 msgid "at line %d: %s"
 msgstr ""
 
-#: src/domain_conf.c:2289 src/domain_conf.c:2331 src/network_conf.c:467
-#: src/network_conf.c:507 src/qemu_conf.c:1336 src/storage_conf.c:632
-#: src/storage_conf.c:1033
+#: src/domain_conf.c:2417 src/domain_conf.c:2458 src/network_conf.c:474
+#: src/network_conf.c:514 src/qemu_conf.c:1355 src/storage_conf.c:635
+#: src/storage_conf.c:1036
 #, fuzzy
 msgid "failed to parse xml document"
 msgstr "sisältöä ei voitu tallentaa"
 
-#: src/domain_conf.c:2361 src/network_conf.c:535 src/qemu_conf.c:1354
+#: src/domain_conf.c:2488 src/network_conf.c:542 src/qemu_conf.c:1373
 msgid "incorrect root element"
 msgstr ""
 
-#: src/domain_conf.c:2570
+#: src/domain_conf.c:2697
 msgid "topology cpuset syntax error"
 msgstr ""
 
-#: src/domain_conf.c:2584
+#: src/domain_conf.c:2711
 #, fuzzy, c-format
 msgid "unexpected lifecycle type %d"
 msgstr "odottamaton MIME-tyyppi"
 
-#: src/domain_conf.c:2605
+#: src/domain_conf.c:2732
 #, fuzzy, c-format
 msgid "unexpected disk type %d"
 msgstr "odottamaton MIME-tyyppi"
 
-#: src/domain_conf.c:2610
+#: src/domain_conf.c:2737
 #, fuzzy, c-format
 msgid "unexpected disk device %d"
 msgstr "Sama kuin solmu"
 
-#: src/domain_conf.c:2615
+#: src/domain_conf.c:2742
 #, fuzzy, c-format
 msgid "unexpected disk bus %d"
 msgstr "Sama kuin solmu"
 
-#: src/domain_conf.c:2665
+#: src/domain_conf.c:2792
 #, fuzzy, c-format
 msgid "unexpected filesystem type %d"
 msgstr "odottamaton MIME-tyyppi"
 
-#: src/domain_conf.c:2716 src/domain_conf.c:2930
+#: src/domain_conf.c:2843 src/domain_conf.c:3057
 #, fuzzy, c-format
 msgid "unexpected net type %d"
 msgstr "odottamaton MIME-tyyppi"
 
-#: src/domain_conf.c:2784
+#: src/domain_conf.c:2911
 #, fuzzy, c-format
 msgid "unexpected char type %d"
 msgstr "odottamaton MIME-tyyppi"
 
-#: src/domain_conf.c:2883 src/xend_internal.c:5180
+#: src/domain_conf.c:3010 src/xend_internal.c:5192
 #, fuzzy, c-format
 msgid "unexpected sound model %d"
 msgstr "Sama kuin solmu"
 
-#: src/domain_conf.c:2903 src/xend_internal.c:5202
+#: src/domain_conf.c:3030 src/xend_internal.c:5214
 #, fuzzy, c-format
 msgid "unexpected input type %d"
 msgstr "odottamaton MIME-tyyppi"
 
-#: src/domain_conf.c:2908
+#: src/domain_conf.c:3035
 #, fuzzy, c-format
 msgid "unexpected input bus type %d"
 msgstr "odottamaton MIME-tyyppi"
 
-#: src/domain_conf.c:2993
+#: src/domain_conf.c:3120
 #, fuzzy, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "Sama kuin solmu"
 
-#: src/domain_conf.c:3000
+#: src/domain_conf.c:3127
 #, fuzzy, c-format
 msgid "unexpected hostdev type %d"
 msgstr "odottamaton MIME-tyyppi"
 
-#: src/domain_conf.c:3038
+#: src/domain_conf.c:3174
 #, fuzzy, c-format
 msgid "unexpected domain type %d"
 msgstr "odottamaton MIME-tyyppi"
 
-#: src/domain_conf.c:3123
+#: src/domain_conf.c:3259
 #, fuzzy, c-format
 msgid "unexpected boot device type %d"
 msgstr "odottamaton MIME-tyyppi"
 
-#: src/domain_conf.c:3141
+#: src/domain_conf.c:3277
 #, fuzzy, c-format
 msgid "unexpected feature %d"
 msgstr "odottamaton arvosolmu"
 
-#: src/domain_conf.c:3262 src/network_conf.c:664 src/storage_conf.c:1400
+#: src/domain_conf.c:3399 src/network_conf.c:671 src/storage_conf.c:1409
 #, c-format
 msgid "cannot create config directory %s: %s"
 msgstr ""
 
-#: src/domain_conf.c:3271 src/network_conf.c:680 src/storage_conf.c:1443
+#: src/domain_conf.c:3408 src/network_conf.c:687 src/storage_conf.c:1452
 #, fuzzy, c-format
 msgid "cannot create config file %s: %s"
 msgstr "asetustiedoston kirjoitus epäonnistui: %s"
 
-#: src/domain_conf.c:3279 src/network_conf.c:688 src/storage_conf.c:1451
+#: src/domain_conf.c:3416 src/network_conf.c:695 src/storage_conf.c:1460
 #, fuzzy, c-format
 msgid "cannot write config file %s: %s"
 msgstr "asetustiedoston kirjoitus epäonnistui: %s"
 
-#: src/domain_conf.c:3286 src/network_conf.c:695 src/storage_conf.c:1458
+#: src/domain_conf.c:3423 src/network_conf.c:702 src/storage_conf.c:1467
 #, c-format
 msgid "cannot save config file %s: %s"
 msgstr ""
 
-#: src/domain_conf.c:3387 src/network_conf.c:774
+#: src/domain_conf.c:3524 src/network_conf.c:781
 #, fuzzy, c-format
 msgid "Failed to open dir '%s': %s"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 
-#: src/domain_conf.c:3441 src/network_conf.c:818
+#: src/domain_conf.c:3578 src/network_conf.c:825
 #, c-format
 msgid "cannot remove config for %s: %s"
 msgstr ""
 
-#: src/domain_conf.c:3515
+#: src/domain_conf.c:3652
 #, fuzzy
 msgid "unknown virt type"
 msgstr "tuntematon käyttöjärjestelmän tyyppi"
 
-#: src/domain_conf.c:3526
+#: src/domain_conf.c:3663
 #, c-format
 msgid "no emulator for domain %s os type %s on architecture %s"
 msgstr ""
@@ -1395,42 +1437,42 @@ msgstr ""
 msgid "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s"
 msgstr ""
 
-#: src/libvirt.c:842
+#: src/libvirt.c:883
 msgid "could not parse connection URI"
 msgstr "ei voitu jäsentää yhteys-URIa"
 
-#: src/libvirt.c:972
+#: src/libvirt.c:1013
 #, fuzzy
 msgid "unable to open connection"
 msgstr "ei voitu jäsentää yhteys-URIa"
 
-#: src/libvirt.c:2360
+#: src/libvirt.c:2401
 #, fuzzy
 msgid "domainMigratePrepare did not set uri"
 msgstr "toimialuetieto on virheellistä, domid ei ole numeerinen"
 
-#: src/libvirt.c:2389
+#: src/libvirt.c:2430
 #, fuzzy
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "toimialuetieto on virheellistä, domid ei ole numeerinen"
 
-#: src/libvirt.c:2964
+#: src/libvirt.c:3005
 msgid "path is NULL"
 msgstr ""
 
-#: src/libvirt.c:2970
+#: src/libvirt.c:3011
 msgid "flags must be zero"
 msgstr ""
 
-#: src/libvirt.c:2977
+#: src/libvirt.c:3018
 msgid "buffer is NULL"
 msgstr ""
 
-#: src/libvirt.c:3065
+#: src/libvirt.c:3106
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL"
 msgstr ""
 
-#: src/libvirt.c:3072
+#: src/libvirt.c:3113
 msgid "buffer is NULL but size is non-zero"
 msgstr ""
 
@@ -1613,7 +1655,7 @@ msgstr "verkon ”%s” hakeminen epäonnistui"
 msgid "sockpair failed: %s"
 msgstr "toimenpide epäonnistui: %s"
 
-#: src/lxc_controller.c:450 src/lxc_driver.c:866
+#: src/lxc_controller.c:450 src/lxc_driver.c:867
 #, fuzzy, c-format
 msgid "failed to allocate tty: %s"
 msgstr "solmun varaus epäonnistui"
@@ -1638,192 +1680,192 @@ msgstr ""
 msgid "Failed connection from LXC driver: %s\n"
 msgstr "virheellinen yhteysosoitin kohteessa %s"
 
-#: src/lxc_driver.c:233 src/network_driver.c:926 src/network_driver.c:971
-#: src/qemu_driver.c:2698 src/uml_driver.c:1517
+#: src/lxc_driver.c:233 src/network_driver.c:930 src/network_driver.c:975
+#: src/qemu_driver.c:2699 src/uml_driver.c:1515
 #, fuzzy
 msgid "failed to allocate space for VM name string"
 msgstr "solmun varaus epäonnistui"
 
-#: src/lxc_driver.c:283 src/lxc_driver.c:972 src/lxc_driver.c:1010
+#: src/lxc_driver.c:284 src/lxc_driver.c:973 src/lxc_driver.c:1012
 msgid "System lacks NETNS support"
 msgstr ""
 
-#: src/lxc_driver.c:322 src/lxc_driver.c:368 src/lxc_driver.c:403
-#: src/lxc_driver.c:428 src/openvz_driver.c:287 src/openvz_driver.c:326
-#: src/openvz_driver.c:370 src/openvz_driver.c:407 src/openvz_driver.c:857
-#: src/openvz_driver.c:899 src/openvz_driver.c:930 src/openvz_driver.c:1002
-#: src/qemu_driver.c:1928 src/qemu_driver.c:2051 src/qemu_driver.c:2671
-#: src/qemu_driver.c:2742 src/qemu_driver.c:2828 src/qemu_driver.c:3224
-#: src/qemu_driver.c:3362 src/qemu_driver.c:3408 src/qemu_driver.c:3434
-#: src/qemu_driver.c:3708 src/uml_driver.c:1326 src/uml_driver.c:1450
-#: src/uml_driver.c:1490 src/uml_driver.c:1563 src/uml_driver.c:1623
-#: src/uml_driver.c:1667 src/uml_driver.c:1693 src/uml_driver.c:1766
+#: src/lxc_driver.c:323 src/lxc_driver.c:369 src/lxc_driver.c:404
+#: src/lxc_driver.c:429 src/openvz_driver.c:287 src/openvz_driver.c:326
+#: src/openvz_driver.c:370 src/openvz_driver.c:407 src/openvz_driver.c:863
+#: src/openvz_driver.c:905 src/openvz_driver.c:936 src/openvz_driver.c:1008
+#: src/qemu_driver.c:1928 src/qemu_driver.c:2051 src/qemu_driver.c:2672
+#: src/qemu_driver.c:2743 src/qemu_driver.c:2830 src/qemu_driver.c:3226
+#: src/qemu_driver.c:3363 src/qemu_driver.c:3410 src/qemu_driver.c:3436
+#: src/qemu_driver.c:3710 src/uml_driver.c:1324 src/uml_driver.c:1448
+#: src/uml_driver.c:1488 src/uml_driver.c:1561 src/uml_driver.c:1622
+#: src/uml_driver.c:1666 src/uml_driver.c:1692 src/uml_driver.c:1765
 #, fuzzy
 msgid "no domain with matching uuid"
 msgstr "toimialueen id tai uuid"
 
-#: src/lxc_driver.c:328 src/openvz_driver.c:862 src/qemu_driver.c:2834
-#: src/uml_driver.c:1629
+#: src/lxc_driver.c:329 src/openvz_driver.c:868 src/qemu_driver.c:2836
+#: src/uml_driver.c:1628
 #, fuzzy
 msgid "cannot delete active domain"
 msgstr "Epäaktiivisen toimialueen nimi"
 
-#: src/lxc_driver.c:334 src/qemu_driver.c:2840 src/uml_driver.c:1635
+#: src/lxc_driver.c:335 src/qemu_driver.c:2842 src/uml_driver.c:1634
 #, fuzzy
 msgid "cannot undefine transient domain"
 msgstr "poista epäaktiivisen toimialueen määritys"
 
-#: src/lxc_driver.c:470
+#: src/lxc_driver.c:471
 #, c-format
 msgid "waitpid failed to wait for container %d: %d %s"
 msgstr ""
 
-#: src/lxc_driver.c:552
+#: src/lxc_driver.c:553
 #, fuzzy
 msgid "failed to get bridge for interface"
 msgstr "komentosarja verkkoliitännän siltaamiseen"
 
-#: src/lxc_driver.c:563
+#: src/lxc_driver.c:564
 #, fuzzy, c-format
 msgid "failed to create veth device pair: %d"
 msgstr "Laitteen liittäminen tiedostosta %s epäonnistui"
 
-#: src/lxc_driver.c:576
+#: src/lxc_driver.c:577
 #, fuzzy
 msgid "failed to allocate veth names"
 msgstr "solmun varaus epäonnistui"
 
-#: src/lxc_driver.c:582
+#: src/lxc_driver.c:583
 #, fuzzy, c-format
 msgid "failed to add %s device to %s: %s"
 msgstr "Laitteen liittäminen tiedostosta %s epäonnistui"
 
-#: src/lxc_driver.c:591
+#: src/lxc_driver.c:592
 #, fuzzy, c-format
 msgid "failed to enable parent ns veth device: %d"
 msgstr "Laitteen liittäminen tiedostosta %s epäonnistui"
 
-#: src/lxc_driver.c:621
+#: src/lxc_driver.c:622
 #, fuzzy, c-format
 msgid "failed to create client socket: %s"
 msgstr "Ei pystytty kirjoittamaan pistokkeeseen %d\n"
 
-#: src/lxc_driver.c:632
+#: src/lxc_driver.c:633
 #, fuzzy, c-format
 msgid "failed to connect to client socket: %s"
 msgstr "yhteydenotto Xen Storeen ei onnistunut"
 
-#: src/lxc_driver.c:658
+#: src/lxc_driver.c:659
 #, fuzzy, c-format
 msgid "invalid PID %d for container"
 msgstr "virheellinen toimialueosoitin kohteessa"
 
-#: src/lxc_driver.c:665
+#: src/lxc_driver.c:666
 #, fuzzy, c-format
 msgid "failed to kill pid %d: %s"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 
-#: src/lxc_driver.c:797 src/util.c:591
+#: src/lxc_driver.c:798 src/util.c:592
 #, c-format
 msgid "cannot wait for '%s': %s"
 msgstr ""
 
-#: src/lxc_driver.c:804
+#: src/lxc_driver.c:805
 #, c-format
 msgid "container '%s' unexpectedly shutdown during startup"
 msgstr ""
 
-#: src/lxc_driver.c:852 src/qemu_driver.c:942
+#: src/lxc_driver.c:853 src/qemu_driver.c:967
 #, c-format
 msgid "cannot create log directory %s: %s"
 msgstr ""
 
-#: src/lxc_driver.c:890
+#: src/lxc_driver.c:891
 #, fuzzy, c-format
 msgid "failed to open %s: %s"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 
-#: src/lxc_driver.c:910
+#: src/lxc_driver.c:911
 #, fuzzy, c-format
 msgid "Failed to read pid file %s/%s.pid: %s"
 msgstr "Kuvaustiedoston %s lukeminen epäonnistui"
 
-#: src/lxc_driver.c:966
+#: src/lxc_driver.c:967
 #, fuzzy, c-format
 msgid "no domain named %s"
 msgstr "toimialueen nimi"
 
-#: src/lxc_driver.c:1055 src/lxc_driver.c:1091
+#: src/lxc_driver.c:1057 src/lxc_driver.c:1093
 #, fuzzy, c-format
 msgid "no domain with id %d"
 msgstr "solmun toimialueluettelo"
 
-#: src/lxc_driver.c:1271
+#: src/lxc_driver.c:1277
 #, c-format
 msgid "uname(): %s"
 msgstr ""
 
-#: src/lxc_driver.c:1277
+#: src/lxc_driver.c:1283
 #, fuzzy, c-format
 msgid "Unknown release: %s"
 msgstr "tuntematon kone %s"
 
-#: src/lxc_driver.c:1314 src/lxc_driver.c:1367
+#: src/lxc_driver.c:1320 src/lxc_driver.c:1373
 #, fuzzy, c-format
 msgid "No such domain %s"
 msgstr "Toimialueen %s palautus epäonnistui"
 
-#: src/lxc_driver.c:1329
+#: src/lxc_driver.c:1335
 #, fuzzy, c-format
 msgid "Invalid parameter `%s'"
 msgstr "virheellinen argumentti kohteessa %s"
 
-#: src/lxc_driver.c:1357
+#: src/lxc_driver.c:1363
 #, fuzzy
 msgid "Invalid parameter count"
 msgstr "virheellinen argumentti kohteessa"
 
-#: src/network_conf.c:253
+#: src/network_conf.c:260
 #, fuzzy, c-format
 msgid "cannot parse MAC address '%s'"
 msgstr "virheellinen MAC-osoite: %s"
 
-#: src/network_conf.c:260
+#: src/network_conf.c:267
 #, c-format
 msgid "cannot use name address '%s'"
 msgstr ""
 
-#: src/network_conf.c:276 src/network_conf.c:364
+#: src/network_conf.c:283 src/network_conf.c:371
 #, c-format
 msgid "cannot parse IP address '%s'"
 msgstr ""
 
-#: src/network_conf.c:370
+#: src/network_conf.c:377
 #, c-format
 msgid "cannot parse netmask '%s'"
 msgstr ""
 
-#: src/network_conf.c:394
+#: src/network_conf.c:401
 msgid "Forwarding requested, but no IPv4 address/netmask provided"
 msgstr ""
 
-#: src/network_conf.c:402
+#: src/network_conf.c:409
 #, fuzzy, c-format
 msgid "unknown forwarding type '%s'"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/network_conf.c:671 src/network_driver.c:1249 src/qemu_driver.c:3457
-#: src/storage_driver.c:952 src/uml_driver.c:1716
+#: src/network_conf.c:678 src/network_driver.c:1253 src/qemu_driver.c:3459
+#: src/storage_driver.c:956 src/uml_driver.c:1715
 #, c-format
 msgid "cannot create autostart directory %s: %s"
 msgstr ""
 
-#: src/network_conf.c:740
+#: src/network_conf.c:747
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr ""
 
-#: src/network_conf.c:809 src/storage_conf.c:1479
+#: src/network_conf.c:816 src/storage_conf.c:1488
 #, fuzzy, c-format
 msgid "no config file for %s"
 msgstr "asetustiedoston syntaksivirhe: %s"
@@ -1833,176 +1875,176 @@ msgstr "asetustiedoston syntaksivirhe: %s"
 msgid "Failed to autostart network '%s': %s\n"
 msgstr "Verkon %s käynnistäminen epäonnistui"
 
-#: src/network_driver.c:149 src/qemu_driver.c:267 src/uml_driver.c:324
+#: src/network_driver.c:152 src/qemu_driver.c:309 src/uml_driver.c:327
 #, fuzzy, c-format
 msgid "Failed to find user record for uid '%d': %s\n"
 msgstr "Verkkoa ei löytynyt: %s"
 
-#: src/network_driver.c:189
+#: src/network_driver.c:192
 #, fuzzy
 msgid "networkStartup: out of memory\n"
 msgstr "muisti lopussa"
 
-#: src/network_driver.c:219
+#: src/network_driver.c:222
 msgid "Reloading iptables rules\n"
 msgstr ""
 
-#: src/network_driver.c:417
+#: src/network_driver.c:421
 #, fuzzy
 msgid "failed to allocate space for dnsmasq argv"
 msgstr "solmun varaus epäonnistui"
 
-#: src/network_driver.c:431
+#: src/network_driver.c:435
 msgid "cannot start dhcp daemon without IP address for server"
 msgstr ""
 
-#: src/network_driver.c:460
+#: src/network_driver.c:464
 #, c-format
 msgid "failed to add iptables rule to allow forwarding from '%s' : %s\n"
 msgstr ""
 
-#: src/network_driver.c:471
+#: src/network_driver.c:475
 #, c-format
 msgid "failed to add iptables rule to allow forwarding to '%s' : %s\n"
 msgstr ""
 
-#: src/network_driver.c:481
+#: src/network_driver.c:485
 #, c-format
 msgid "failed to add iptables rule to enable masquerading : %s\n"
 msgstr ""
 
-#: src/network_driver.c:513
+#: src/network_driver.c:517
 #, c-format
 msgid "failed to add iptables rule to allow routing from '%s' : %s\n"
 msgstr ""
 
-#: src/network_driver.c:524
+#: src/network_driver.c:528
 #, c-format
 msgid "failed to add iptables rule to allow routing to '%s' : %s\n"
 msgstr ""
 
-#: src/network_driver.c:549
+#: src/network_driver.c:553
 #, fuzzy
 msgid "failed to allocate space for IP tables support"
 msgstr "solmun varaus epäonnistui"
 
-#: src/network_driver.c:557 src/network_driver.c:564
+#: src/network_driver.c:561 src/network_driver.c:568
 #, c-format
 msgid "failed to add iptables rule to allow DHCP requests from '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:572 src/network_driver.c:579
+#: src/network_driver.c:576 src/network_driver.c:583
 #, c-format
 msgid "failed to add iptables rule to allow DNS requests from '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:589
+#: src/network_driver.c:593
 #, c-format
 msgid "failed to add iptables rule to block outbound traffic from '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:596
+#: src/network_driver.c:600
 #, c-format
 msgid "failed to add iptables rule to block inbound traffic to '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:604
+#: src/network_driver.c:608
 #, c-format
 msgid "failed to add iptables rule to allow cross bridge traffic on '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:705
+#: src/network_driver.c:709
 #, fuzzy
 msgid "network is already active"
 msgstr "Toimialue on jo aktiivinen"
 
-#: src/network_driver.c:711 src/qemu_conf.c:512
+#: src/network_driver.c:715 src/qemu_conf.c:512
 #, c-format
 msgid "cannot initialize bridge support: %s"
 msgstr ""
 
-#: src/network_driver.c:717
+#: src/network_driver.c:721
 #, c-format
 msgid "cannot create bridge '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:732
+#: src/network_driver.c:736
 #, c-format
 msgid "cannot set IP address on bridge '%s' to '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:740
+#: src/network_driver.c:744
 #, c-format
 msgid "cannot set netmask on bridge '%s' to '%s' : %s"
 msgstr ""
 
-#: src/network_driver.c:748
+#: src/network_driver.c:752
 #, fuzzy, c-format
 msgid "failed to bring the bridge '%s' up : %s"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 
-#: src/network_driver.c:759
+#: src/network_driver.c:763
 #, fuzzy, c-format
 msgid "failed to enable IP forwarding : %s"
 msgstr "tiedoston %s avaaminen luettavaksi epäonnistui"
 
-#: src/network_driver.c:777 src/network_driver.c:808
+#: src/network_driver.c:781 src/network_driver.c:812
 #, fuzzy, c-format
 msgid "Failed to bring down bridge '%s' : %s\n"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 
-#: src/network_driver.c:783 src/network_driver.c:813
+#: src/network_driver.c:787 src/network_driver.c:817
 #, fuzzy, c-format
 msgid "Failed to delete bridge '%s' : %s\n"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 
-#: src/network_driver.c:796
+#: src/network_driver.c:800
 #, fuzzy, c-format
 msgid "Shutting down network '%s'\n"
 msgstr "verkon ”%s” hakeminen epäonnistui"
 
-#: src/network_driver.c:822
+#: src/network_driver.c:826
 msgid "Got unexpected pid for dnsmasq\n"
 msgstr ""
 
-#: src/network_driver.c:849 src/network_driver.c:1069
-#: src/network_driver.c:1105 src/network_driver.c:1128
-#: src/network_driver.c:1156 src/network_driver.c:1212
-#: src/network_driver.c:1237
+#: src/network_driver.c:853 src/network_driver.c:1073
+#: src/network_driver.c:1109 src/network_driver.c:1132
+#: src/network_driver.c:1160 src/network_driver.c:1216
+#: src/network_driver.c:1241
 msgid "no network with matching uuid"
 msgstr ""
 
-#: src/network_driver.c:872
+#: src/network_driver.c:876
 msgid "no network with matching name"
 msgstr ""
 
-#: src/network_driver.c:1075
+#: src/network_driver.c:1079
 #, fuzzy
 msgid "network is still active"
 msgstr "Verkko on edelleen käynnissä"
 
-#: src/network_driver.c:1179
+#: src/network_driver.c:1183
 #, fuzzy
 msgid "no network with matching id"
 msgstr "verkkotiedot XML-muodossa"
 
-#: src/network_driver.c:1185
+#: src/network_driver.c:1189
 #, fuzzy, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "Verkko %s käynnistetty\n"
 
-#: src/network_driver.c:1193
+#: src/network_driver.c:1197
 #, fuzzy
 msgid "failed to allocate space for network bridge string"
 msgstr "solmun varaus epäonnistui"
 
-#: src/network_driver.c:1256 src/storage_driver.c:959
+#: src/network_driver.c:1260 src/storage_driver.c:963
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s' to '%s': %s"
 msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
 
-#: src/network_driver.c:1263 src/qemu_driver.c:3471 src/storage_driver.c:968
-#: src/uml_driver.c:1730
+#: src/network_driver.c:1267 src/qemu_driver.c:3473 src/storage_driver.c:972
+#: src/uml_driver.c:1729
 #, fuzzy, c-format
 msgid "Failed to delete symlink '%s': %s"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
@@ -2060,16 +2102,16 @@ msgstr "toimenpide epäonnistui"
 msgid "Failed to parse vzlist output"
 msgstr ""
 
-#: src/openvz_conf.c:417
+#: src/openvz_conf.c:424
 msgid "UUID in config file malformed"
 msgstr ""
 
-#: src/openvz_conf.c:429
+#: src/openvz_conf.c:436
 #, c-format
 msgid "Cound not read config for container %d"
 msgstr ""
 
-#: src/openvz_conf.c:472
+#: src/openvz_conf.c:479
 msgid "Cound not read nodeinfo"
 msgstr ""
 
@@ -2086,7 +2128,7 @@ msgstr ""
 msgid "only one filesystem supported"
 msgstr ""
 
-#: src/openvz_driver.c:160 src/openvz_driver.c:589
+#: src/openvz_driver.c:160 src/openvz_driver.c:593
 #, fuzzy, c-format
 msgid "Could not put argument to %s"
 msgstr "ei voitu yhdistää kohteeseen %s"
@@ -2101,82 +2143,82 @@ msgstr ""
 msgid "domain is not in running state"
 msgstr "toimialue on edelleen käynnissä"
 
-#: src/openvz_driver.c:492
+#: src/openvz_driver.c:494
 msgid "Container ID is not specified"
 msgstr ""
 
-#: src/openvz_driver.c:523
+#: src/openvz_driver.c:527
 msgid "Could not generate eth name for container"
 msgstr ""
 
-#: src/openvz_driver.c:534
+#: src/openvz_driver.c:538
 msgid "Could not generate veth name"
 msgstr ""
 
-#: src/openvz_driver.c:576 src/openvz_driver.c:685 src/openvz_driver.c:758
-#: src/openvz_driver.c:775 src/openvz_driver.c:831 src/openvz_driver.c:869
-#: src/openvz_driver.c:905 src/openvz_driver.c:982 src/openvz_driver.c:1118
-#: src/openvz_driver.c:1169
+#: src/openvz_driver.c:580 src/openvz_driver.c:690 src/openvz_driver.c:764
+#: src/openvz_driver.c:781 src/openvz_driver.c:837 src/openvz_driver.c:875
+#: src/openvz_driver.c:911 src/openvz_driver.c:988 src/openvz_driver.c:1124
+#: src/openvz_driver.c:1175
 #, fuzzy, c-format
 msgid "Could not exec %s"
 msgstr "ei voitu yhdistää kohteeseen %s"
 
-#: src/openvz_driver.c:618
+#: src/openvz_driver.c:622
 #, fuzzy
 msgid "Could not configure network"
 msgstr "ei voitu yhdistää kohteeseen %s"
 
-#: src/openvz_driver.c:629
+#: src/openvz_driver.c:633
 msgid "cannot replace NETIF config"
 msgstr ""
 
-#: src/openvz_driver.c:667
+#: src/openvz_driver.c:672
 #, c-format
 msgid "Already an OPENVZ VM active with the id '%s'"
 msgstr ""
 
-#: src/openvz_driver.c:677 src/openvz_driver.c:752
+#: src/openvz_driver.c:682 src/openvz_driver.c:758
 msgid "Error creating command for container"
 msgstr ""
 
-#: src/openvz_driver.c:691 src/openvz_driver.c:764
+#: src/openvz_driver.c:696 src/openvz_driver.c:770
 #, fuzzy
 msgid "Could not set UUID"
 msgstr "ei voitu jäsentää yhteys-URIa"
 
-#: src/openvz_driver.c:701 src/openvz_driver.c:786
+#: src/openvz_driver.c:706 src/openvz_driver.c:792
 #, fuzzy
 msgid "Could not set number of virtual cpu"
 msgstr "muuta virtuaaliprosessorien määrää"
 
-#: src/openvz_driver.c:742
+#: src/openvz_driver.c:748
 #, c-format
 msgid "Already an OPENVZ VM defined with the id '%s'"
 msgstr ""
 
-#: src/openvz_driver.c:818
+#: src/openvz_driver.c:824
 msgid "no domain with matching id"
 msgstr ""
 
-#: src/openvz_driver.c:824
+#: src/openvz_driver.c:830
 msgid "domain is not in shutoff state"
 msgstr ""
 
-#: src/openvz_driver.c:936
+#: src/openvz_driver.c:942
 #, fuzzy
 msgid "Could not read container config"
 msgstr "ei voitu jäsentää yhteys-URIa"
 
-#: src/openvz_driver.c:956 src/qemu_driver.c:1428
+#: src/openvz_driver.c:962 src/qemu_driver.c:1434
 #, fuzzy, c-format
 msgid "unknown type '%s'"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/openvz_driver.c:1008
+#: src/openvz_driver.c:1014
 msgid "VCPUs should be >= 1"
 msgstr ""
 
-#: src/openvz_driver.c:1127 src/openvz_driver.c:1178
+#: src/openvz_driver.c:1133 src/openvz_driver.c:1184
 #, fuzzy, c-format
 msgid "Could not parse VPS ID %s"
 msgstr "ei voitu jäsentää yhteys-URIa"
@@ -2246,7 +2288,7 @@ msgstr ""
 msgid "Unexpected exit status '%d', qemu probably failed"
 msgstr ""
 
-#: src/qemu_conf.c:449 src/qemu_driver.c:979
+#: src/qemu_conf.c:449 src/qemu_driver.c:987
 #, c-format
 msgid "Cannot find QEMU binary %s: %s"
 msgstr ""
@@ -2290,31 +2332,31 @@ msgstr "odottamatonta dataa ”%s”"
 msgid "invalid sound model"
 msgstr ""
 
-#: src/qemu_conf.c:1243 src/uml_conf.c:312
+#: src/qemu_conf.c:1262 src/uml_conf.c:312
 #, fuzzy
 msgid "failed to allocate space for argv string"
 msgstr "solmun varaus epäonnistui"
 
-#: src/qemu_conf.c:1318
+#: src/qemu_conf.c:1337
 #, fuzzy
 msgid "failed to allocate space for vm status"
 msgstr "solmun varaus epäonnistui"
 
-#: src/qemu_conf.c:1361
+#: src/qemu_conf.c:1380
 #, fuzzy
 msgid "invalid domain state"
 msgstr "virheellinen toimialueosoitin kohteessa %s"
 
-#: src/qemu_conf.c:1368
+#: src/qemu_conf.c:1387
 #, fuzzy
 msgid "invalid pid"
 msgstr "virheellinen argumentti kohteessa"
 
-#: src/qemu_conf.c:1375
+#: src/qemu_conf.c:1394
 msgid "no monitor path"
 msgstr ""
 
-#: src/qemu_conf.c:1382
+#: src/qemu_conf.c:1401
 #, fuzzy
 msgid "no domain config"
 msgstr "solmun toimialueluettelo"
@@ -2327,199 +2369,199 @@ msgstr ""
 msgid "Failed to set non-blocking file descriptor flag\n"
 msgstr ""
 
-#: src/qemu_driver.c:167 src/uml_driver.c:142
+#: src/qemu_driver.c:157
+#, fuzzy, c-format
+msgid "failed to build logfile name %s/%s.log"
+msgstr "%s: lokitiedostoon kirjoitus epäonnistui: %s"
+
+#: src/qemu_driver.c:169 src/uml_driver.c:765
+#, fuzzy, c-format
+msgid "failed to create logfile %s: %s"
+msgstr "%s: lokitiedostoon kirjoitus epäonnistui: %s"
+
+#: src/qemu_driver.c:175 src/uml_driver.c:774
+#, c-format
+msgid "Unable to set VM logfile close-on-exec flag %s"
+msgstr ""
+
+#: src/qemu_driver.c:205 src/uml_driver.c:142
 #, fuzzy, c-format
 msgid "Failed to autostart VM '%s': %s\n"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 
-#: src/qemu_driver.c:203
+#: src/qemu_driver.c:241
 #, fuzzy
 msgid "failed to allocate space for status file"
 msgstr "solmun varaus epäonnistui"
 
-#: src/qemu_driver.c:209
+#: src/qemu_driver.c:247
 #, fuzzy, c-format
 msgid "Failed to unlink status file %s"
 msgstr "Lohkotilastojen haku epäonnistui %s %s"
 
-#: src/qemu_driver.c:284
+#: src/qemu_driver.c:326
 #, fuzzy, c-format
 msgid "Failed to create state dir '%s': %s\n"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 
-#: src/qemu_driver.c:326
+#: src/qemu_driver.c:368
 #, fuzzy
 msgid "qemudStartup: out of memory\n"
 msgstr "muisti lopussa"
 
-#: src/qemu_driver.c:478
+#: src/qemu_driver.c:521
 #, c-format
 msgid ""
 "QEMU quit during %s startup\n"
 "%s"
 msgstr ""
 
-#: src/qemu_driver.c:488 src/qemu_driver.c:501
+#: src/qemu_driver.c:531 src/qemu_driver.c:544
 #, c-format
 msgid "Failure while reading %s startup output: %s"
 msgstr ""
 
-#: src/qemu_driver.c:496
+#: src/qemu_driver.c:539
 #, c-format
 msgid "Timed out while reading %s startup output"
 msgstr ""
 
-#: src/qemu_driver.c:512
+#: src/qemu_driver.c:555
 #, c-format
 msgid "Failure while reading %s startup output"
 msgstr ""
 
-#: src/qemu_driver.c:524
+#: src/qemu_driver.c:567
 #, c-format
 msgid "Out of space while reading %s startup output"
 msgstr ""
 
-#: src/qemu_driver.c:552
+#: src/qemu_driver.c:595
 #, c-format
 msgid "Unable to open monitor path %s"
 msgstr ""
 
-#: src/qemu_driver.c:557
+#: src/qemu_driver.c:600
 msgid "Unable to set monitor close-on-exec flag"
 msgstr ""
 
-#: src/qemu_driver.c:562
+#: src/qemu_driver.c:605
 msgid "Unable to put monitor into non-blocking mode"
 msgstr ""
 
-#: src/qemu_driver.c:574
+#: src/qemu_driver.c:617
 #, fuzzy
 msgid "failed to allocate space for monitor path"
 msgstr "solmun varaus epäonnistui"
 
-#: src/qemu_driver.c:691 src/qemu_driver.c:1102 src/qemu_driver.c:1291
-#: src/qemu_driver.c:1301
+#: src/qemu_driver.c:734 src/qemu_driver.c:1110 src/qemu_driver.c:1299
+#: src/qemu_driver.c:1309
 #, c-format
 msgid "Unable to log VM console data: %s\n"
 msgstr ""
 
-#: src/qemu_driver.c:713
+#: src/qemu_driver.c:756
 #, fuzzy
 msgid "allocate cpumap"
 msgstr "varaa puskuri"
 
-#: src/qemu_driver.c:724
+#: src/qemu_driver.c:767
 msgid "cannot run monitor command to fetch CPU thread info"
 msgstr ""
 
-#: src/qemu_driver.c:828
+#: src/qemu_driver.c:871
 #, fuzzy, c-format
 msgid "failed to set CPU affinity %s"
 msgstr "toimialueen ”%s” hakeminen epäonnistui"
 
-#: src/qemu_driver.c:839 src/qemu_driver.c:1827
+#: src/qemu_driver.c:882 src/qemu_driver.c:1827
 #, fuzzy
 msgid "resume operation failed"
 msgstr "toimenpide epäonnistui"
 
-#: src/qemu_driver.c:909 src/uml_driver.c:725
+#: src/qemu_driver.c:949 src/uml_driver.c:729
 #, fuzzy
 msgid "VM is already active"
 msgstr "Toimialue on jo aktiivinen"
 
-#: src/qemu_driver.c:919
+#: src/qemu_driver.c:959
 msgid "Unable to find an unused VNC port"
 msgstr ""
 
-#: src/qemu_driver.c:931
-#, c-format
-msgid "config file path too long: %s/%s.log"
-msgstr ""
-
-#: src/qemu_driver.c:954 src/uml_driver.c:761
-#, fuzzy, c-format
-msgid "failed to create logfile %s: %s"
-msgstr "%s: lokitiedostoon kirjoitus epäonnistui: %s"
-
-#: src/qemu_driver.c:960 src/uml_driver.c:770
-#, c-format
-msgid "Unable to set VM logfile close-on-exec flag %s"
-msgstr ""
-
-#: src/qemu_driver.c:989 src/qemu_driver.c:2946
+#: src/qemu_driver.c:997 src/qemu_driver.c:2948
 #, c-format
 msgid "Cannot determine QEMU argv syntax %s"
 msgstr ""
 
-#: src/qemu_driver.c:1007 src/qemu_driver.c:1010 src/uml_driver.c:786
-#: src/uml_driver.c:789
+#: src/qemu_driver.c:1015 src/qemu_driver.c:1018 src/uml_driver.c:790
+#: src/uml_driver.c:793
 #, fuzzy, c-format
 msgid "Unable to write envv to logfile %d: %s\n"
 msgstr "%s: lokitiedostoon kirjoitus epäonnistui: %s"
 
-#: src/qemu_driver.c:1017 src/qemu_driver.c:1020 src/qemu_driver.c:1025
-#: src/uml_driver.c:796 src/uml_driver.c:799 src/uml_driver.c:804
+#: src/qemu_driver.c:1025 src/qemu_driver.c:1028 src/qemu_driver.c:1033
+#: src/uml_driver.c:800 src/uml_driver.c:803 src/uml_driver.c:808
 #, fuzzy, c-format
 msgid "Unable to write argv to logfile %d: %s\n"
 msgstr "%s: lokitiedostoon kirjoitus epäonnistui: %s"
 
-#: src/qemu_driver.c:1114
+#: src/qemu_driver.c:1122
 #, c-format
 msgid "Shutting down VM '%s'\n"
 msgstr ""
 
-#: src/qemu_driver.c:1125
+#: src/qemu_driver.c:1133
 #, fuzzy, c-format
 msgid "Unable to close logfile %d: %s\n"
 msgstr "Pistokkeen %d sulkeminen epäonnistui\n"
 
-#: src/qemu_driver.c:1140
+#: src/qemu_driver.c:1148
 #, fuzzy
 msgid "Got unexpected pid, damn\n"
 msgstr "Sama kuin solmu"
 
-#: src/qemu_driver.c:1399
+#: src/qemu_driver.c:1407
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 
-#: src/qemu_driver.c:1445 src/uml_driver.c:946
+#: src/qemu_driver.c:1451 src/uml_driver.c:950
 #, fuzzy
 msgid "failed to allocate space for capabilities support"
 msgstr "ominaisuuksien hakeminen epäonnistui"
 
-#: src/qemu_driver.c:1464 src/qemu_driver.c:1494 src/uml_driver.c:965
-#: src/uml_driver.c:996
+#: src/qemu_driver.c:1470 src/qemu_driver.c:1500 src/uml_driver.c:969
+#: src/uml_driver.c:1000
 msgid "NUMA not supported on this host"
 msgstr ""
 
-#: src/qemu_driver.c:1475 src/qemu_driver.c:1502 src/uml_driver.c:976
-#: src/uml_driver.c:1004
+#: src/qemu_driver.c:1481 src/qemu_driver.c:1508 src/uml_driver.c:980
+#: src/uml_driver.c:1008
 #, fuzzy
 msgid "Failed to query NUMA free memory"
 msgstr "Muisti: %1 %2 käytetty, %3 %4 vapaana"
 
-#: src/qemu_driver.c:1707 src/uml_driver.c:1215
+#: src/qemu_driver.c:1707 src/uml_driver.c:1213
 #, fuzzy, c-format
 msgid "domain '%s' is already defined"
 msgstr "toimialue %s on jo olemassa"
 
-#: src/qemu_driver.c:1717 src/uml_driver.c:1225
+#: src/qemu_driver.c:1717 src/uml_driver.c:1223
 #, fuzzy, c-format
 msgid "domain with uuid '%s' is already defined"
 msgstr "toimialue %s on jo olemassa"
 
 #: src/qemu_driver.c:1766 src/qemu_driver.c:1816 src/qemu_driver.c:1864
-#: src/qemu_driver.c:1893 src/qemu_driver.c:2193 src/qemu_driver.c:3512
-#: src/qemu_driver.c:3644 src/qemu_driver.c:3780 src/qemu_driver.c:4109
-#: src/uml_driver.c:1266 src/uml_driver.c:1296
+#: src/qemu_driver.c:1893 src/qemu_driver.c:2193 src/qemu_driver.c:3514
+#: src/qemu_driver.c:3646 src/qemu_driver.c:3782 src/qemu_driver.c:4112
+#: src/uml_driver.c:1264 src/uml_driver.c:1294
 #, c-format
 msgid "no domain with matching id %d"
 msgstr ""
 
 #: src/qemu_driver.c:1771 src/qemu_driver.c:1821 src/qemu_driver.c:2199
-#: src/qemu_driver.c:3517 src/qemu_driver.c:3650 src/qemu_driver.c:3792
-#: src/qemu_driver.c:4115
+#: src/qemu_driver.c:3519 src/qemu_driver.c:3652 src/qemu_driver.c:3794
+#: src/qemu_driver.c:4118
 #, fuzzy
 msgid "domain is not running"
 msgstr "toimialue on edelleen käynnissä"
@@ -2529,33 +2571,33 @@ msgstr "toimialue on edelleen käynnissä"
 msgid "suspend operation failed"
 msgstr "toimenpide epäonnistui"
 
-#: src/qemu_driver.c:1870 src/uml_driver.c:1273
+#: src/qemu_driver.c:1870 src/uml_driver.c:1271
 #, fuzzy
 msgid "shutdown operation failed"
 msgstr "toimenpide epäonnistui"
 
-#: src/qemu_driver.c:1934 src/uml_driver.c:1332
+#: src/qemu_driver.c:1934 src/uml_driver.c:1330
 #, fuzzy
 msgid "failed to allocate space for ostype"
 msgstr "solmun varaus epäonnistui"
 
 #: src/qemu_driver.c:1957 src/qemu_driver.c:1983 src/qemu_driver.c:2015
-#: src/qemu_driver.c:2327 src/qemu_driver.c:2515 src/uml_driver.c:1355
-#: src/uml_driver.c:1380 src/uml_driver.c:1413
+#: src/qemu_driver.c:2327 src/qemu_driver.c:2515 src/uml_driver.c:1353
+#: src/uml_driver.c:1378 src/uml_driver.c:1411
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:1989 src/uml_driver.c:1386
+#: src/qemu_driver.c:1989 src/uml_driver.c:1384
 msgid "cannot set max memory lower than current memory"
 msgstr ""
 
-#: src/qemu_driver.c:2021 src/uml_driver.c:1419
+#: src/qemu_driver.c:2021 src/uml_driver.c:1417
 #, fuzzy
 msgid "cannot set memory of an active domain"
 msgstr "Epäaktiivisen toimialueen nimi"
 
-#: src/qemu_driver.c:2027 src/uml_driver.c:1425
+#: src/qemu_driver.c:2027 src/uml_driver.c:1423
 msgid "cannot set memory higher than max memory"
 msgstr ""
 
@@ -2590,12 +2632,12 @@ msgid "unable to save file %s %s"
 msgstr "Pistokkeen %d sulkeminen epäonnistui\n"
 
 #: src/qemu_driver.c:2253 src/qemu_driver.c:2260 src/qemu_driver.c:2575
-#: src/qemu_driver.c:3051 src/qemu_driver.c:3121 src/remote_internal.c:2450
+#: src/qemu_driver.c:3053 src/qemu_driver.c:3123 src/remote_internal.c:2590
 #: src/virterror.c:475
 msgid "out of memory"
 msgstr "muisti lopussa"
 
-#: src/qemu_driver.c:2267 src/qemu_driver.c:4155
+#: src/qemu_driver.c:2267 src/qemu_driver.c:4158
 #, fuzzy
 msgid "migrate operation failed"
 msgstr "toimenpide epäonnistui"
@@ -2652,7 +2694,7 @@ msgstr ""
 msgid "unknown virt type in domain definition '%d'"
 msgstr ""
 
-#: src/qemu_driver.c:2550 src/test.c:1180
+#: src/qemu_driver.c:2550 src/test.c:1193
 #, fuzzy
 msgid "cannot read domain image"
 msgstr "solmun toimialueluettelo"
@@ -2676,697 +2718,697 @@ msgstr ""
 msgid "failed to read XML"
 msgstr "XML:n luonti epäonnistui"
 
-#: src/qemu_driver.c:2588 src/qemu_driver.c:4011
+#: src/qemu_driver.c:2589 src/qemu_driver.c:4014
 #, fuzzy
 msgid "failed to parse XML"
 msgstr "XML:n luonti epäonnistui"
 
-#: src/qemu_driver.c:2598
+#: src/qemu_driver.c:2599
 #, fuzzy, c-format
 msgid "domain is already active as '%s'"
 msgstr "Toimialue on jo aktiivinen"
 
-#: src/qemu_driver.c:2606 src/qemu_driver.c:4047
+#: src/qemu_driver.c:2607 src/qemu_driver.c:4050
 #, fuzzy
 msgid "failed to assign new VM"
 msgstr "verkon UUID:n hakeminen epäonnistui"
 
-#: src/qemu_driver.c:2619
+#: src/qemu_driver.c:2620
 #, fuzzy
 msgid "failed to start VM"
 msgstr "Toimialueen %s käynnistys epäonnistui"
 
-#: src/qemu_driver.c:2637
+#: src/qemu_driver.c:2638
 #, fuzzy
 msgid "failed to resume domain"
 msgstr "Toimialueen %s palautus epäonnistui"
 
-#: src/qemu_driver.c:2875
+#: src/qemu_driver.c:2877
 #, c-format
 msgid "cannot convert disk '%s' to bus/device index"
 msgstr ""
 
-#: src/qemu_driver.c:2901
+#: src/qemu_driver.c:2903
 #, c-format
 msgid "Unsupported disk name mapping for bus '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:2936
+#: src/qemu_driver.c:2938
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:2963
+#: src/qemu_driver.c:2965
 #, c-format
 msgid ""
 "Emulator version does not support removable media for device '%s' and target "
 "'%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3000
+#: src/qemu_driver.c:3002
 #, fuzzy
 msgid "could not change cdrom media"
 msgstr "ei voitu yhdistää kohteeseen %s"
 
-#: src/qemu_driver.c:3011
+#: src/qemu_driver.c:3013
 #, fuzzy, c-format
 msgid "changing cdrom media failed: %s"
 msgstr "%s: lokitiedostoon kirjoitus epäonnistui: %s"
 
-#: src/qemu_driver.c:3038 src/qemu_driver.c:3108
+#: src/qemu_driver.c:3040 src/qemu_driver.c:3110
 #, c-format
 msgid "target %s already exists"
 msgstr ""
 
-#: src/qemu_driver.c:3065
+#: src/qemu_driver.c:3067
 #, c-format
 msgid "cannot attach %s disk"
 msgstr ""
 
-#: src/qemu_driver.c:3079
+#: src/qemu_driver.c:3081
 msgid "Unable to parse slot number\n"
 msgstr ""
 
-#: src/qemu_driver.c:3082
+#: src/qemu_driver.c:3084
 #, fuzzy, c-format
 msgid "adding %s disk failed"
 msgstr "toimialue %s on jo olemassa"
 
-#: src/qemu_driver.c:3134
+#: src/qemu_driver.c:3136
 msgid "cannot attach usb disk"
 msgstr ""
 
-#: src/qemu_driver.c:3145
+#: src/qemu_driver.c:3147
 #, fuzzy
 msgid "adding usb disk failed"
 msgstr "lataa koneen määritystiedostoa"
 
-#: src/qemu_driver.c:3188
+#: src/qemu_driver.c:3190
 #, fuzzy
 msgid "cannot attach usb device"
 msgstr "liitä levylaite"
 
-#: src/qemu_driver.c:3199
+#: src/qemu_driver.c:3201
 #, fuzzy
 msgid "adding usb device failed"
 msgstr "lataa koneen määritystiedostoa"
 
-#: src/qemu_driver.c:3231 src/qemu_driver.c:3369
+#: src/qemu_driver.c:3233
 #, fuzzy
 msgid "cannot attach device on inactive domain"
 msgstr "poista epäaktiivisen toimialueen määritys"
 
-#: src/qemu_driver.c:3259
+#: src/qemu_driver.c:3260
 msgid "this disk device type cannot be attached"
 msgstr ""
 
-#: src/qemu_driver.c:3268
+#: src/qemu_driver.c:3269
 msgid "this device type cannot be attached"
 msgstr ""
 
-#: src/qemu_driver.c:3298
+#: src/qemu_driver.c:3299
 #, fuzzy, c-format
 msgid "disk %s not found"
 msgstr "Toimialuetta ei löytynyt"
 
-#: src/qemu_driver.c:3304
+#: src/qemu_driver.c:3305
 #, c-format
 msgid "disk %s cannot be detached - invalid slot number %d"
 msgstr ""
 
-#: src/qemu_driver.c:3316
+#: src/qemu_driver.c:3317
 #, fuzzy, c-format
 msgid "failed to execute detach disk %s command"
 msgstr "solmun tietojen saanti epäonnistui"
 
-#: src/qemu_driver.c:3325
+#: src/qemu_driver.c:3326
 #, fuzzy, c-format
 msgid "failed to detach disk %s: invalid slot %d"
 msgstr "Laitteen irrottaminen tiedostosta %s epäonnistui"
 
-#: src/qemu_driver.c:3386
+#: src/qemu_driver.c:3370
+#, fuzzy
+msgid "cannot detach device on inactive domain"
+msgstr "poista epäaktiivisen toimialueen määritys"
+
+#: src/qemu_driver.c:3388
 msgid "only SCSI or virtio disk device can be detached dynamically"
 msgstr ""
 
-#: src/qemu_driver.c:3440 src/uml_driver.c:1699
+#: src/qemu_driver.c:3442 src/uml_driver.c:1698
 #, fuzzy
 msgid "cannot set autostart for transient domain"
 msgstr "käynnistä toimialue automaattisesti"
 
-#: src/qemu_driver.c:3464 src/uml_driver.c:1723
+#: src/qemu_driver.c:3466 src/uml_driver.c:1722
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s to '%s': %s"
 msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
 
-#: src/qemu_driver.c:3530
+#: src/qemu_driver.c:3532
 #, fuzzy, c-format
 msgid "invalid path: %s"
 msgstr "virheellinen argumentti kohteessa %s"
 
-#: src/qemu_driver.c:3541
+#: src/qemu_driver.c:3543
 msgid "'info blockstats' command failed"
 msgstr ""
 
-#: src/qemu_driver.c:3554
+#: src/qemu_driver.c:3556
 msgid "'info blockstats' not supported by this qemu"
 msgstr ""
 
-#: src/qemu_driver.c:3618
+#: src/qemu_driver.c:3620
 #, fuzzy, c-format
 msgid "device not found: %s (%s)"
 msgstr "Toimialuetta ei löytynyt: %s"
 
-#: src/qemu_driver.c:3656 src/qemu_driver.c:3714 src/uml_driver.c:1772
+#: src/qemu_driver.c:3658 src/qemu_driver.c:3716 src/uml_driver.c:1771
 msgid "NULL or empty path"
 msgstr ""
 
-#: src/qemu_driver.c:3673
+#: src/qemu_driver.c:3675
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr ""
 
-#: src/qemu_driver.c:3751 src/uml_driver.c:1809
+#: src/qemu_driver.c:3753 src/uml_driver.c:1808
 #, fuzzy
 msgid "invalid path"
 msgstr "virheellinen argumentti kohteessa"
 
-#: src/qemu_driver.c:3786
+#: src/qemu_driver.c:3788
 msgid "QEMU driver only supports virtual memory addrs"
 msgstr ""
 
-#: src/qemu_driver.c:3807
+#: src/qemu_driver.c:3809
 msgid "'memsave' command failed"
 msgstr ""
 
-#: src/qemu_driver.c:3955
+#: src/qemu_driver.c:3957
 #, fuzzy
 msgid "no domain XML passed"
 msgstr "solmun toimialueluettelo"
 
-#: src/qemu_driver.c:3993
+#: src/qemu_driver.c:3995
 msgid "only tcp URIs are supported for KVM migrations"
 msgstr ""
 
-#: src/qemu_driver.c:4003
+#: src/qemu_driver.c:4005
 msgid "URI did not have ':port' at the end"
 msgstr ""
 
-#: src/qemu_driver.c:4028
+#: src/qemu_driver.c:4031
 #, fuzzy
 msgid "could not generate random UUID"
 msgstr "toimialueen UUID:n saanti epäonnistui"
 
-#: src/qemu_driver.c:4037
+#: src/qemu_driver.c:4040
 #, c-format
 msgid "domain with the same name or UUID already exists as '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:4061
+#: src/qemu_driver.c:4064
 #, fuzzy
 msgid "failed to start listening VM"
 msgstr "Toimialueen %s käynnistys epäonnistui"
 
-#: src/qemu_driver.c:4164
+#: src/qemu_driver.c:4167
 #, fuzzy, c-format
 msgid "migrate failed: %s"
 msgstr "toimenpide epäonnistui: %s"
 
-#: src/qemu_driver.c:4210
+#: src/qemu_driver.c:4213
 #, c-format
 msgid "no domain with matching name %s"
 msgstr ""
 
-#: src/remote_internal.c:126 src/remote_internal.c:134
-#: src/remote_internal.c:150
-msgid "tried to use a closed or uninitialised handle"
-msgstr ""
-
-#: src/remote_internal.c:259
+#: src/remote_internal.c:221
 #, fuzzy
 msgid "failed to find libvirtd binary"
 msgstr "Verkkoa ei löytynyt"
 
-#: src/remote_internal.c:323
+#: src/remote_internal.c:285
 msgid ""
 "remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp)"
 msgstr ""
 
-#: src/remote_internal.c:486
+#: src/remote_internal.c:448
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr ""
 
-#: src/remote_internal.c:508
+#: src/remote_internal.c:470
 #, fuzzy, c-format
 msgid "unable to resolve hostname '%s': %s"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 
-#: src/remote_internal.c:559 src/remote_internal.c:638
+#: src/remote_internal.c:521 src/remote_internal.c:600
 #, fuzzy, c-format
 msgid "unable to connect to '%s': %s"
 msgstr "ei voitu yhdistää kohteeseen %s"
 
-#: src/remote_internal.c:580
+#: src/remote_internal.c:542
 #, fuzzy, c-format
 msgid "unable to lookup user '%d': %s"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 
-#: src/remote_internal.c:614
+#: src/remote_internal.c:576
 #, fuzzy, c-format
 msgid "unable to create socket %s"
 msgstr "Ei pystytty lukemaan pistoketta %d\n"
 
-#: src/remote_internal.c:698
+#: src/remote_internal.c:660
 #, fuzzy, c-format
 msgid "unable to create socket pair %s"
 msgstr "Ei pystytty lukemaan pistoketta %d\n"
 
-#: src/remote_internal.c:718
+#: src/remote_internal.c:680
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr ""
 
-#: src/remote_internal.c:753
+#: src/remote_internal.c:716
 #, fuzzy
 msgid "unable to auto-detect URI"
 msgstr "URIn haku epäonnistui"
 
-#: src/remote_internal.c:770
+#: src/remote_internal.c:733
 #, fuzzy
 msgid "Error allocating callbacks list"
 msgstr "Virhe varattaessa muistia: %s"
 
-#: src/remote_internal.c:775
+#: src/remote_internal.c:738
 #, fuzzy
 msgid "Error allocating domainEvents"
 msgstr "varataan toimialue"
 
-#: src/remote_internal.c:866 src/remote_internal.c:2662
-#: src/remote_internal.c:3067
+#: src/remote_internal.c:829 src/remote_internal.c:2821
+#: src/remote_internal.c:3273
 #, fuzzy
 msgid "struct private_data"
 msgstr "varataan yksityistä dataa"
 
-#: src/remote_internal.c:974
+#: src/remote_internal.c:935
 #, fuzzy, c-format
 msgid "unable to allocate TLS credentials: %s"
 msgstr "solmun varaus epäonnistui"
 
-#: src/remote_internal.c:994
+#: src/remote_internal.c:955
 #, c-format
 msgid "unable to load CA certificate: %s"
 msgstr ""
 
-#: src/remote_internal.c:1009
+#: src/remote_internal.c:970
 #, c-format
 msgid "unable to load private key/certificate: %s"
 msgstr ""
 
-#: src/remote_internal.c:1038
+#: src/remote_internal.c:999
 #, c-format
 msgid "unable to initialize TLS client: %s"
 msgstr ""
 
-#: src/remote_internal.c:1047
+#: src/remote_internal.c:1008
 #, c-format
 msgid "unable to set TLS algorithm priority: %s"
 msgstr ""
 
-#: src/remote_internal.c:1056
+#: src/remote_internal.c:1017
 #, c-format
 msgid "unable to set certificate priority: %s"
 msgstr ""
 
-#: src/remote_internal.c:1066
+#: src/remote_internal.c:1027
 #, c-format
 msgid "unable to set session credentials: %s"
 msgstr ""
 
-#: src/remote_internal.c:1081
+#: src/remote_internal.c:1042
 #, c-format
 msgid "unable to complete TLS handshake: %s"
 msgstr ""
 
-#: src/remote_internal.c:1103
+#: src/remote_internal.c:1064
 #, c-format
 msgid "unable to complete TLS initialization: %s"
 msgstr ""
 
-#: src/remote_internal.c:1109
+#: src/remote_internal.c:1070
 msgid "server verification (of our certificate or IP address) failed\n"
 msgstr ""
 
-#: src/remote_internal.c:1134
+#: src/remote_internal.c:1095
 #, fuzzy, c-format
 msgid "unable to verify server certificate: %s"
 msgstr "Ei voi tarkistaa nykyistä MaxMemorySizeä"
 
-#: src/remote_internal.c:1141
+#: src/remote_internal.c:1102
 #, c-format
 msgid "cannot get current time: %s"
 msgstr ""
 
-#: src/remote_internal.c:1147
+#: src/remote_internal.c:1108
 #, fuzzy
 msgid "Invalid certificate"
 msgstr "%d on virheellinen arvo muistin kooksi"
 
-#: src/remote_internal.c:1150
+#: src/remote_internal.c:1111
 msgid "The certificate is not trusted."
 msgstr ""
 
-#: src/remote_internal.c:1153
+#: src/remote_internal.c:1114
 msgid "The certificate hasn't got a known issuer."
 msgstr ""
 
-#: src/remote_internal.c:1156
+#: src/remote_internal.c:1117
 msgid "The certificate has been revoked."
 msgstr ""
 
-#: src/remote_internal.c:1160
+#: src/remote_internal.c:1121
 msgid "The certificate uses an insecure algorithm"
 msgstr ""
 
-#: src/remote_internal.c:1164
+#: src/remote_internal.c:1125
 #, c-format
 msgid "server certificate failed validation: %s"
 msgstr ""
 
-#: src/remote_internal.c:1170
+#: src/remote_internal.c:1131
 msgid "Certificate type is not X.509"
 msgstr ""
 
-#: src/remote_internal.c:1175
+#: src/remote_internal.c:1136
 msgid "gnutls_certificate_get_peers failed"
 msgstr ""
 
-#: src/remote_internal.c:1185
+#: src/remote_internal.c:1146
 #, c-format
 msgid "unable to initialize certificate: %s"
 msgstr ""
 
-#: src/remote_internal.c:1193
+#: src/remote_internal.c:1154
 #, fuzzy, c-format
 msgid "unable to import certificate: %s"
 msgstr "asetustiedoston kirjoitus epäonnistui: %s"
 
-#: src/remote_internal.c:1200
+#: src/remote_internal.c:1161
 msgid "The certificate has expired"
 msgstr ""
 
-#: src/remote_internal.c:1206
+#: src/remote_internal.c:1167
 msgid "The certificate is not yet activated"
 msgstr ""
 
-#: src/remote_internal.c:1214
+#: src/remote_internal.c:1175
 #, c-format
 msgid "Certificate's owner does not match the hostname (%s)"
 msgstr ""
 
-#: src/remote_internal.c:1446
+#: src/remote_internal.c:1439
 #, c-format
 msgid "too many NUMA cells: %d > %d"
 msgstr ""
 
-#: src/remote_internal.c:1495 src/remote_internal.c:1509
+#: src/remote_internal.c:1496 src/remote_internal.c:1510
 #, fuzzy, c-format
 msgid "too many remote domain IDs: %d > %d"
 msgstr "liian monta toimialuetta"
 
-#: src/remote_internal.c:1883
+#: src/remote_internal.c:1953
 #, c-format
 msgid "map length greater than maximum: %d > %d"
 msgstr ""
 
-#: src/remote_internal.c:1915
+#: src/remote_internal.c:1989
 #, c-format
 msgid "vCPU count exceeds maximum: %d > %d"
 msgstr ""
 
-#: src/remote_internal.c:1921
+#: src/remote_internal.c:1995
 #, c-format
 msgid "vCPU map buffer length exceeds maximum: %d > %d"
 msgstr ""
 
-#: src/remote_internal.c:1938
+#: src/remote_internal.c:2012
 #, c-format
 msgid "host reports too many vCPUs: %d > %d"
 msgstr ""
 
-#: src/remote_internal.c:1945
+#: src/remote_internal.c:2018
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr ""
 
-#: src/remote_internal.c:2174 src/remote_internal.c:2188
+#: src/remote_internal.c:2274 src/remote_internal.c:2288
 #, fuzzy, c-format
 msgid "too many remote domain names: %d > %d"
 msgstr "liian monta toimialuetta"
 
-#: src/remote_internal.c:2390
+#: src/remote_internal.c:2526
 msgid ""
 "remoteDomainGetSchedulerParameters: returned number of parameters exceeds "
 "limit"
 msgstr ""
 
-#: src/remote_internal.c:2418
+#: src/remote_internal.c:2553
 msgid "remoteDomainGetSchedulerParameters: unknown parameter type"
 msgstr ""
 
-#: src/remote_internal.c:2441
+#: src/remote_internal.c:2581
 #, fuzzy
 msgid "out of memory allocating array"
 msgstr "muuta muistinvarausta"
 
-#: src/remote_internal.c:2468
+#: src/remote_internal.c:2608
 #, fuzzy
 msgid "unknown parameter type"
 msgstr "tuntematon käyttöjärjestelmän tyyppi"
 
-#: src/remote_internal.c:2558
+#: src/remote_internal.c:2710
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr ""
 
-#: src/remote_internal.c:2579 src/remote_internal.c:2623
+#: src/remote_internal.c:2731 src/remote_internal.c:2779
 msgid "returned buffer is not same size as requested"
 msgstr ""
 
-#: src/remote_internal.c:2603
+#: src/remote_internal.c:2759
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"
 msgstr ""
 
-#: src/remote_internal.c:2725 src/remote_internal.c:2739
-#: src/remote_internal.c:2784 src/remote_internal.c:2798
+#: src/remote_internal.c:2888 src/remote_internal.c:2902
+#: src/remote_internal.c:2955 src/remote_internal.c:2969
 #, fuzzy, c-format
 msgid "too many remote networks: %d > %d"
 msgstr "liian monta verkkoa"
 
-#: src/remote_internal.c:3129 src/remote_internal.c:3184
+#: src/remote_internal.c:3340 src/remote_internal.c:3403
 #, fuzzy
 msgid "too many storage pools requested"
 msgstr "liian monta rekisteröityä ajuria"
 
-#: src/remote_internal.c:3141 src/remote_internal.c:3196
+#: src/remote_internal.c:3352 src/remote_internal.c:3415
 #, fuzzy
 msgid "too many storage pools received"
 msgstr "liian monta rekisteröityä ajuria"
 
-#: src/remote_internal.c:3582
+#: src/remote_internal.c:3855
 #, fuzzy
 msgid "too many storage volumes requested"
 msgstr "liian monta rekisteröityä ajuria"
 
-#: src/remote_internal.c:3595
+#: src/remote_internal.c:3868
 #, fuzzy
 msgid "too many storage volumes received"
 msgstr "liian monta rekisteröityä ajuria"
 
-#: src/remote_internal.c:3861
+#: src/remote_internal.c:4163
 #, fuzzy
 msgid "too many device names requested"
 msgstr "liian monta rekisteröityä ajuria"
 
-#: src/remote_internal.c:3875
+#: src/remote_internal.c:4177
 #, fuzzy
 msgid "too many device names received"
 msgstr "liian monta rekisteröityä ajuria"
 
-#: src/remote_internal.c:3982
+#: src/remote_internal.c:4301
 #, fuzzy
 msgid "too many capability names requested"
 msgstr "liian monta rekisteröityä ajuria"
 
-#: src/remote_internal.c:3995
+#: src/remote_internal.c:4314
 msgid "too many capability names received"
 msgstr ""
 
-#: src/remote_internal.c:4054
+#: src/remote_internal.c:4376
 #, fuzzy, c-format
 msgid "unknown authentication type %s"
 msgstr "todennus epäonnistui: %s"
 
-#: src/remote_internal.c:4064
+#: src/remote_internal.c:4386
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr ""
 
-#: src/remote_internal.c:4105
+#: src/remote_internal.c:4427
 #, fuzzy, c-format
 msgid "unsupported authentication type %d"
 msgstr "todennus epäonnistui"
 
-#: src/remote_internal.c:4353
+#: src/remote_internal.c:4675
 #, fuzzy, c-format
 msgid "failed to initialize SASL library: %d (%s)"
 msgstr "Komennon ”%s” ajaminen epäonnistui: %s\n"
 
-#: src/remote_internal.c:4401
+#: src/remote_internal.c:4723
 #, fuzzy, c-format
 msgid "Failed to create SASL client context: %d (%s)"
 msgstr "Epäaktiivisen toimialueen %s luominen epäonnistui\n"
 
-#: src/remote_internal.c:4414
+#: src/remote_internal.c:4736
 msgid "invalid cipher size for TLS session"
 msgstr ""
 
-#: src/remote_internal.c:4424
+#: src/remote_internal.c:4746
 #, c-format
 msgid "cannot set external SSF %d (%s)"
 msgstr ""
 
-#: src/remote_internal.c:4443
+#: src/remote_internal.c:4765
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr ""
 
-#: src/remote_internal.c:4462
+#: src/remote_internal.c:4784
 #, fuzzy, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "hypervisor ei tue tätä toimintoa"
 
-#: src/remote_internal.c:4481
+#: src/remote_internal.c:4803
 #, fuzzy, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
 msgstr "Toimialueen %s käynnistys epäonnistui"
 
-#: src/remote_internal.c:4499 src/remote_internal.c:4577
+#: src/remote_internal.c:4821 src/remote_internal.c:4899
 #, fuzzy
 msgid "Failed to make auth credentials"
 msgstr "sisältöä ei voitu tallentaa"
 
-#: src/remote_internal.c:4523
+#: src/remote_internal.c:4845
 #, c-format
 msgid "SASL negotiation data too long: %d bytes"
 msgstr ""
 
-#: src/remote_internal.c:4563
+#: src/remote_internal.c:4885
 #, fuzzy, c-format
 msgid "Failed SASL step: %d (%s)"
 msgstr "Toimialueen %s käynnistys epäonnistui"
 
-#: src/remote_internal.c:4649
+#: src/remote_internal.c:4971
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr ""
 
-#: src/remote_internal.c:4703
+#: src/remote_internal.c:5026
 #, fuzzy
 msgid "Failed to collect auth credentials"
 msgstr "Hypervisoriin yhdistäminen epäonnistui"
 
-#: src/remote_internal.c:4734
+#: src/remote_internal.c:5058
 msgid "no event support"
 msgstr ""
 
-#: src/remote_internal.c:4739
+#: src/remote_internal.c:5063
 msgid "adding cb to list"
 msgstr ""
 
-#: src/remote_internal.c:4761
+#: src/remote_internal.c:5089
 msgid "removing cb fron list"
 msgstr ""
 
-#: src/remote_internal.c:4821
+#: src/remote_internal.c:5152
 msgid "xdr_remote_message_header failed"
 msgstr ""
 
-#: src/remote_internal.c:4827
+#: src/remote_internal.c:5158
 msgid "marshalling args"
 msgstr ""
 
-#: src/remote_internal.c:4844
+#: src/remote_internal.c:5175
 msgid "xdr_int (length word)"
 msgstr ""
 
-#: src/remote_internal.c:4862 src/remote_internal.c:5583
+#: src/remote_internal.c:5193 src/remote_internal.c:5914
 msgid "xdr_int (length word, reply)"
 msgstr ""
 
-#: src/remote_internal.c:4872 src/remote_internal.c:5592
+#: src/remote_internal.c:5203 src/remote_internal.c:5923
 msgid "packet received from server too large"
 msgstr ""
 
-#: src/remote_internal.c:4884
+#: src/remote_internal.c:5215
 #, fuzzy
 msgid "invalid header in reply"
 msgstr "virheellinen argumentti kohteessa %s"
 
-#: src/remote_internal.c:4893
+#: src/remote_internal.c:5224
 #, c-format
 msgid "unknown program (received %x, expected %x)"
 msgstr ""
 
-#: src/remote_internal.c:4901
+#: src/remote_internal.c:5232
 #, c-format
 msgid "unknown protocol version (received %x, expected %x)"
 msgstr ""
 
-#: src/remote_internal.c:4924
+#: src/remote_internal.c:5255
 #, c-format
 msgid "unknown procedure (received %x, expected %x)"
 msgstr ""
 
-#: src/remote_internal.c:4932
+#: src/remote_internal.c:5263
 #, c-format
 msgid "unknown direction (received %x, expected %x)"
 msgstr ""
 
-#: src/remote_internal.c:4939
+#: src/remote_internal.c:5270
 #, c-format
 msgid "unknown serial (received %x, expected %x)"
 msgstr ""
 
-#: src/remote_internal.c:4952
+#: src/remote_internal.c:5283
 msgid "unmarshalling ret"
 msgstr ""
 
-#: src/remote_internal.c:4962
+#: src/remote_internal.c:5293
 msgid "unmarshalling remote_error"
 msgstr ""
 
-#: src/remote_internal.c:4982
+#: src/remote_internal.c:5313
 #, c-format
 msgid "unknown status (received %x)"
 msgstr ""
 
-#: src/remote_internal.c:5090 src/remote_internal.c:5105
+#: src/remote_internal.c:5421 src/remote_internal.c:5436
 msgid "socket closed unexpectedly"
 msgstr ""
 
-#: src/remote_internal.c:5496
+#: src/remote_internal.c:5827
 msgid "remoteDomainProcessEvent: unmarshalling ret"
 msgstr ""
 
-#: src/remote_internal.c:5598
+#: src/remote_internal.c:5929
 msgid "error reading buffer from memory"
 msgstr ""
 
-#: src/remote_internal.c:5605
+#: src/remote_internal.c:5936
 #, fuzzy
 msgid "invalid header in event firing"
 msgstr "virheellinen argumentti kohteessa"
 
-#: src/remote_internal.c:5615
+#: src/remote_internal.c:5946
 #, fuzzy
 msgid "invalid proc in event firing"
 msgstr "virheellinen toimialueosoitin kohteessa"
@@ -3423,7 +3465,7 @@ msgstr ""
 msgid "cannot read dir %s: %s"
 msgstr ""
 
-#: src/storage_backend.c:362 src/storage_driver.c:1452 src/test.c:3212
+#: src/storage_backend.c:362 src/storage_driver.c:1456 src/test.c:3227
 msgid "path"
 msgstr ""
 
@@ -3605,11 +3647,11 @@ msgstr ""
 msgid "cannot unlink path '%s': %s"
 msgstr ""
 
-#: src/storage_backend_fs.c:767 src/test.c:2981
+#: src/storage_backend_fs.c:767 src/test.c:2996
 msgid "target"
 msgstr ""
 
-#: src/storage_backend_fs.c:777 src/test.c:2991
+#: src/storage_backend_fs.c:777 src/test.c:3006
 msgid "storage vol key"
 msgstr ""
 
@@ -3687,7 +3729,7 @@ msgstr "näytä versio"
 msgid "cannot find session"
 msgstr ""
 
-#: src/storage_backend_iscsi.c:184 src/storage_driver.c:1042 src/test.c:2794
+#: src/storage_backend_iscsi.c:184 src/storage_driver.c:1046 src/test.c:2809
 #, fuzzy
 msgid "name"
 msgstr "Nimi"
@@ -3696,7 +3738,7 @@ msgstr "Nimi"
 msgid "devpath"
 msgstr ""
 
-#: src/storage_backend_iscsi.c:208 src/util.c:211
+#: src/storage_backend_iscsi.c:208 src/util.c:212
 #, fuzzy, c-format
 msgid "cannot open %s: %s"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
@@ -3817,464 +3859,464 @@ msgstr ""
 msgid "cannot find newly created volume '%s': %s"
 msgstr ""
 
-#: src/storage_conf.c:349
+#: src/storage_conf.c:352
 msgid "missing auth host attribute"
 msgstr ""
 
-#: src/storage_conf.c:356
+#: src/storage_conf.c:359
 msgid "missing auth passwd attribute"
 msgstr ""
 
-#: src/storage_conf.c:379 src/storage_conf.c:811
+#: src/storage_conf.c:382 src/storage_conf.c:814
 msgid "malformed octal mode"
 msgstr ""
 
-#: src/storage_conf.c:389
+#: src/storage_conf.c:392
 msgid "malformed owner element"
 msgstr ""
 
-#: src/storage_conf.c:400
+#: src/storage_conf.c:403
 msgid "malformed group element"
 msgstr ""
 
-#: src/storage_conf.c:425
+#: src/storage_conf.c:428
 msgid "cannot allocate storage pool"
 msgstr ""
 
-#: src/storage_conf.c:431
+#: src/storage_conf.c:434
 msgid "unknown root element for storage pool"
 msgstr ""
 
-#: src/storage_conf.c:438
+#: src/storage_conf.c:441
 #, fuzzy, c-format
 msgid "unknown storage pool type %s"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/storage_conf.c:455
+#: src/storage_conf.c:458
 msgid "missing pool source name element"
 msgstr ""
 
-#: src/storage_conf.c:463
+#: src/storage_conf.c:466
 #, fuzzy
 msgid "unable to generate uuid"
 msgstr "verkon nimi tai uuid"
 
-#: src/storage_conf.c:484
+#: src/storage_conf.c:487
 #, fuzzy, c-format
 msgid "unknown pool format type %s"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/storage_conf.c:494
+#: src/storage_conf.c:497
 msgid "missing storage pool source host name"
 msgstr ""
 
-#: src/storage_conf.c:504
+#: src/storage_conf.c:507
 msgid "cannot extract storage pool source devices"
 msgstr ""
 
-#: src/storage_conf.c:509
+#: src/storage_conf.c:512
 #, fuzzy
 msgid "device"
 msgstr "lohkolaite "
 
-#: src/storage_conf.c:517
+#: src/storage_conf.c:520
 #, fuzzy
 msgid "missing storage pool source device path"
 msgstr "lähdetietoja puuttuu laitteelle %s"
 
-#: src/storage_conf.c:528
+#: src/storage_conf.c:531
 msgid "missing storage pool source path"
 msgstr ""
 
-#: src/storage_conf.c:540 src/virsh.c:3677 src/virsh.c:3836 src/virsh.c:3874
+#: src/storage_conf.c:543 src/virsh.c:3677 src/virsh.c:3836 src/virsh.c:3874
 #, fuzzy
 msgid "pool name"
 msgstr "toimialueen nimi"
 
-#: src/storage_conf.c:555
+#: src/storage_conf.c:558
 #, fuzzy, c-format
 msgid "unknown auth type '%s'"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/storage_conf.c:570
+#: src/storage_conf.c:573
 msgid "missing storage pool target path"
 msgstr ""
 
-#: src/storage_conf.c:639 src/storage_conf.c:1040
+#: src/storage_conf.c:642 src/storage_conf.c:1043
 msgid "xmlXPathContext"
 msgstr ""
 
-#: src/storage_conf.c:710
+#: src/storage_conf.c:713
 #, c-format
 msgid "unknown pool format number %d"
 msgstr ""
 
-#: src/storage_conf.c:743 src/storage_conf.c:1508
+#: src/storage_conf.c:746 src/storage_conf.c:1517
 #, fuzzy
 msgid "unexpected pool type"
 msgstr "odottamaton MIME-tyyppi"
 
-#: src/storage_conf.c:789 src/storage_conf.c:1153
+#: src/storage_conf.c:792 src/storage_conf.c:1156
 msgid "xml"
 msgstr ""
 
-#: src/storage_conf.c:821 src/storage_conf.c:831
+#: src/storage_conf.c:824 src/storage_conf.c:834
 msgid "missing owner element"
 msgstr ""
 
-#: src/storage_conf.c:895
+#: src/storage_conf.c:898
 #, fuzzy, c-format
 msgid "unknown size units '%s'"
 msgstr "tuntematon kone %s"
 
-#: src/storage_conf.c:902
+#: src/storage_conf.c:905
 msgid "malformed capacity element"
 msgstr ""
 
-#: src/storage_conf.c:907
+#: src/storage_conf.c:910
 msgid "capacity element value too large"
 msgstr ""
 
-#: src/storage_conf.c:933
+#: src/storage_conf.c:936
 msgid "cannot allocate storage vol"
 msgstr ""
 
-#: src/storage_conf.c:939
+#: src/storage_conf.c:942
 #, fuzzy
 msgid "unknown root element"
 msgstr "tuntematon kone %s"
 
-#: src/storage_conf.c:946
+#: src/storage_conf.c:949
 #, fuzzy
 msgid "missing volume name element"
 msgstr "verkkoalueen nimi puuttuu"
 
-#: src/storage_conf.c:957
+#: src/storage_conf.c:960
 msgid "missing capacity element"
 msgstr ""
 
-#: src/storage_conf.c:986
+#: src/storage_conf.c:989
 #, fuzzy, c-format
 msgid "unknown volume format type %s"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/storage_conf.c:1123
+#: src/storage_conf.c:1126
 #, c-format
 msgid "unknown volume format number %d"
 msgstr ""
 
-#: src/storage_conf.c:1258
+#: src/storage_conf.c:1261
 msgid "pool"
 msgstr ""
 
-#: src/storage_conf.c:1408
+#: src/storage_conf.c:1417
 msgid "cannot construct config file path"
 msgstr ""
 
-#: src/storage_conf.c:1413
+#: src/storage_conf.c:1422
 msgid "configFile"
 msgstr ""
 
-#: src/storage_conf.c:1420
+#: src/storage_conf.c:1429
 msgid "cannot construct autostart link path"
 msgstr ""
 
-#: src/storage_conf.c:1427
+#: src/storage_conf.c:1436
 msgid "config file"
 msgstr ""
 
-#: src/storage_conf.c:1435
+#: src/storage_conf.c:1444
 #, fuzzy
 msgid "failed to generate XML"
 msgstr "XML:n luonti epäonnistui"
 
-#: src/storage_conf.c:1485
+#: src/storage_conf.c:1494
 #, c-format
 msgid "cannot remove config for %s"
 msgstr ""
 
-#: src/storage_driver.c:289 src/storage_driver.c:904 src/storage_driver.c:934
+#: src/storage_driver.c:293 src/storage_driver.c:908 src/storage_driver.c:938
 msgid "no pool with matching uuid"
 msgstr ""
 
-#: src/storage_driver.c:314
+#: src/storage_driver.c:318
 msgid "no pool with matching name"
 msgstr ""
 
-#: src/storage_driver.c:379 src/storage_driver.c:428
+#: src/storage_driver.c:383 src/storage_driver.c:432
 #, fuzzy
 msgid "names"
 msgstr "Nimi"
 
-#: src/storage_driver.c:496 src/test.c:2387
+#: src/storage_driver.c:500 src/test.c:2402
 msgid "storage pool already exists"
 msgstr ""
 
-#: src/storage_driver.c:575 src/storage_driver.c:620 src/storage_driver.c:665
-#: src/storage_driver.c:702 src/storage_driver.c:751 src/storage_driver.c:794
-#: src/storage_driver.c:843 src/storage_driver.c:879 src/storage_driver.c:996
-#: src/storage_driver.c:1029 src/storage_driver.c:1075
-#: src/storage_driver.c:1198 src/storage_driver.c:1266
-#: src/storage_driver.c:1338 src/storage_driver.c:1390
-#: src/storage_driver.c:1432
+#: src/storage_driver.c:579 src/storage_driver.c:624 src/storage_driver.c:669
+#: src/storage_driver.c:706 src/storage_driver.c:755 src/storage_driver.c:798
+#: src/storage_driver.c:847 src/storage_driver.c:883 src/storage_driver.c:1000
+#: src/storage_driver.c:1033 src/storage_driver.c:1079
+#: src/storage_driver.c:1202 src/storage_driver.c:1270
+#: src/storage_driver.c:1342 src/storage_driver.c:1394
+#: src/storage_driver.c:1436
 msgid "no storage pool with matching uuid"
 msgstr ""
 
-#: src/storage_driver.c:581
+#: src/storage_driver.c:585
 msgid "pool is still active"
 msgstr ""
 
-#: src/storage_driver.c:629
+#: src/storage_driver.c:633
 #, fuzzy
 msgid "pool already active"
 msgstr "Toimialue on jo aktiivinen"
 
-#: src/storage_driver.c:674
+#: src/storage_driver.c:678
 #, fuzzy
 msgid "storage pool is already active"
 msgstr "Toimialue on jo aktiivinen"
 
-#: src/storage_driver.c:711 src/storage_driver.c:803 src/storage_driver.c:1002
-#: src/storage_driver.c:1035 src/storage_driver.c:1081
-#: src/storage_driver.c:1204 src/storage_driver.c:1272
-#: src/storage_driver.c:1344 src/storage_driver.c:1396
-#: src/storage_driver.c:1438
+#: src/storage_driver.c:715 src/storage_driver.c:807 src/storage_driver.c:1006
+#: src/storage_driver.c:1039 src/storage_driver.c:1085
+#: src/storage_driver.c:1208 src/storage_driver.c:1276
+#: src/storage_driver.c:1348 src/storage_driver.c:1400
+#: src/storage_driver.c:1442
 #, fuzzy
 msgid "storage pool is not active"
 msgstr "lokin polku ei ole tiedosto"
 
-#: src/storage_driver.c:760
+#: src/storage_driver.c:764
 msgid "storage pool is still active"
 msgstr ""
 
-#: src/storage_driver.c:766
+#: src/storage_driver.c:770
 msgid "pool does not support volume delete"
 msgstr ""
 
-#: src/storage_driver.c:940 src/test.c:2720
+#: src/storage_driver.c:944 src/test.c:2735
 msgid "pool has no config file"
 msgstr ""
 
-#: src/storage_driver.c:1089 src/storage_driver.c:1283
-#: src/storage_driver.c:1352 src/storage_driver.c:1404
-#: src/storage_driver.c:1446
+#: src/storage_driver.c:1093 src/storage_driver.c:1287
+#: src/storage_driver.c:1356 src/storage_driver.c:1408
+#: src/storage_driver.c:1450
 msgid "no storage vol with matching name"
 msgstr ""
 
-#: src/storage_driver.c:1128
+#: src/storage_driver.c:1132
 msgid "no storage vol with matching key"
 msgstr ""
 
-#: src/storage_driver.c:1175
+#: src/storage_driver.c:1179
 msgid "no storage vol with matching path"
 msgstr ""
 
-#: src/storage_driver.c:1217 src/test.c:2957
+#: src/storage_driver.c:1221 src/test.c:2972
 msgid "storage vol already exists"
 msgstr ""
 
-#: src/storage_driver.c:1229
+#: src/storage_driver.c:1233
 msgid "storage pool does not support volume creation"
 msgstr ""
 
-#: src/storage_driver.c:1289
+#: src/storage_driver.c:1293
 msgid "storage pool does not support vol deletion"
 msgstr ""
 
-#: src/test.c:219 src/test.c:1059
+#: src/test.c:226 src/test.c:1072
 msgid "getting time of day"
 msgstr "haetaan kellonaika"
 
-#: src/test.c:340
+#: src/test.c:357
 #, fuzzy, c-format
 msgid "loading host definition file '%s': %s"
 msgstr "lataa koneen määritystiedostoa"
 
-#: src/test.c:348
+#: src/test.c:365
 msgid "host"
 msgstr "kone"
 
-#: src/test.c:356
+#: src/test.c:373
 msgid "node"
 msgstr "solmu"
 
-#: src/test.c:363
+#: src/test.c:380
 msgid "creating xpath context"
 msgstr "luodaan xpath-konteksti"
 
-#: src/test.c:378
+#: src/test.c:395
 msgid "node cpu numa nodes"
 msgstr ""
 
-#: src/test.c:386
+#: src/test.c:403
 msgid "node cpu sockets"
 msgstr "solmun prosessoripaikat"
 
-#: src/test.c:394
+#: src/test.c:411
 msgid "node cpu cores"
 msgstr "solmun prosessoriytimet"
 
-#: src/test.c:402
+#: src/test.c:419
 msgid "node cpu threads"
 msgstr "solmun prosessorisäikeet"
 
-#: src/test.c:413
+#: src/test.c:430
 msgid "node active cpu"
 msgstr "solmun aktiivinen prosessori"
 
-#: src/test.c:420
+#: src/test.c:437
 msgid "node cpu mhz"
 msgstr "solmun prosessorin kellotaajuus"
 
-#: src/test.c:435
+#: src/test.c:452
 msgid "node memory"
 msgstr "solmun muisti"
 
-#: src/test.c:441
+#: src/test.c:458
 msgid "node domain list"
 msgstr "solmun toimialueluettelo"
 
-#: src/test.c:452
+#: src/test.c:469
 msgid "resolving domain filename"
 msgstr "selvitetään toimialueen tiedostonimeä"
 
-#: src/test.c:481
+#: src/test.c:498
 #, fuzzy
 msgid "node network list"
 msgstr "solmun toimialueluettelo"
 
-#: src/test.c:491
+#: src/test.c:508
 msgid "resolving network filename"
 msgstr "selvitetään verkkotiedostonimeä"
 
-#: src/test.c:517
+#: src/test.c:534
 #, fuzzy
 msgid "node pool list"
 msgstr "solmun toimialueluettelo"
 
-#: src/test.c:529
+#: src/test.c:546
 #, fuzzy
 msgid "resolving pool filename"
 msgstr "selvitetään toimialueen tiedostonimeä"
 
-#: src/test.c:617
+#: src/test.c:634
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: anna polku tai käytä test:///default"
 
-#: src/test.c:893
+#: src/test.c:906
 #, fuzzy, c-format
 msgid "domain '%s' not paused"
 msgstr "toimialue %s on jo olemassa"
 
-#: src/test.c:926 src/test.c:957
+#: src/test.c:939 src/test.c:970
 #, fuzzy, c-format
 msgid "domain '%s' not running"
 msgstr "toimialue on edelleen käynnissä"
 
-#: src/test.c:1102
+#: src/test.c:1115
 #, c-format
 msgid "saving domain '%s' failed to allocate space for metadata: %s"
 msgstr ""
 
-#: src/test.c:1109
+#: src/test.c:1122
 #, c-format
 msgid "saving domain '%s' to '%s': open failed: %s"
 msgstr ""
 
-#: src/test.c:1116 src/test.c:1122 src/test.c:1128 src/test.c:1135
+#: src/test.c:1129 src/test.c:1135 src/test.c:1141 src/test.c:1148
 #, c-format
 msgid "saving domain '%s' to '%s': write failed: %s"
 msgstr ""
 
-#: src/test.c:1185
+#: src/test.c:1198
 msgid "incomplete save header"
 msgstr ""
 
-#: src/test.c:1190
+#: src/test.c:1203
 msgid "mismatched header magic"
 msgstr ""
 
-#: src/test.c:1195
+#: src/test.c:1208
 #, fuzzy
 msgid "failed to read metadata length"
 msgstr "Luku Xen Daemonista epäonnistui"
 
-#: src/test.c:1200
+#: src/test.c:1213
 msgid "length of metadata out of range"
 msgstr ""
 
-#: src/test.c:1209
+#: src/test.c:1222
 msgid "incomplete metdata"
 msgstr ""
 
-#: src/test.c:1259
+#: src/test.c:1273
 #, fuzzy, c-format
 msgid "domain '%s' coredump: failed to open %s: %s"
 msgstr "Toimialueen %s muistivedos tallennettu tiedostoon %s\n"
 
-#: src/test.c:1265
+#: src/test.c:1279
 #, fuzzy, c-format
 msgid "domain '%s' coredump: failed to write header to %s: %s"
 msgstr "%s: lokitiedostoon kirjoitus epäonnistui: %s"
 
-#: src/test.c:1271
+#: src/test.c:1285
 #, c-format
 msgid "domain '%s' coredump: write failed: %s: %s"
 msgstr ""
 
-#: src/test.c:1528
+#: src/test.c:1543
 msgid "Range exceeds available cells"
 msgstr ""
 
-#: src/test.c:1561
+#: src/test.c:1576
 #, fuzzy, c-format
 msgid "Domain '%s' is already running"
 msgstr "toimialue on jo käynnissä"
 
-#: src/test.c:1592
+#: src/test.c:1607
 #, fuzzy, c-format
 msgid "Domain '%s' is still running"
 msgstr "toimialue on edelleen käynnissä"
 
-#: src/test.c:1972
+#: src/test.c:1987
 #, fuzzy, c-format
 msgid "Network '%s' is still running"
 msgstr "Verkko on edelleen käynnissä"
 
-#: src/test.c:2005
+#: src/test.c:2020
 #, fuzzy, c-format
 msgid "Network '%s' is already running"
 msgstr "Verkko on jo käynnissä"
 
-#: src/test.c:2346 src/test.c:2468 src/test.c:2501 src/test.c:2569
+#: src/test.c:2361 src/test.c:2483 src/test.c:2516 src/test.c:2584
 #, fuzzy, c-format
 msgid "storage pool '%s' is already active"
 msgstr "Toimialue on jo aktiivinen"
 
-#: src/test.c:2530 src/test.c:2601 src/test.c:2753 src/test.c:2788
-#: src/test.c:2834 src/test.c:2946 src/test.c:3043 src/test.c:3121
-#: src/test.c:3166 src/test.c:3206
+#: src/test.c:2545 src/test.c:2616 src/test.c:2768 src/test.c:2803
+#: src/test.c:2849 src/test.c:2961 src/test.c:3058 src/test.c:3136
+#: src/test.c:3181 src/test.c:3221
 #, c-format
 msgid "storage pool '%s' is not active"
 msgstr ""
 
-#: src/test.c:2842 src/test.c:3036 src/test.c:3114 src/test.c:3159
-#: src/test.c:3199
+#: src/test.c:2857 src/test.c:3051 src/test.c:3129 src/test.c:3174
+#: src/test.c:3214
 #, c-format
 msgid "no storage vol with matching name '%s'"
 msgstr ""
 
-#: src/test.c:2885
+#: src/test.c:2900
 #, c-format
 msgid "no storage vol with matching key '%s'"
 msgstr ""
 
-#: src/test.c:2919
+#: src/test.c:2934
 #, c-format
 msgid "no storage vol with matching path '%s'"
 msgstr ""
 
-#: src/test.c:2965
+#: src/test.c:2980
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
 msgstr ""
@@ -4288,148 +4330,148 @@ msgstr ""
 msgid "unsupported chr device type %d"
 msgstr ""
 
-#: src/uml_driver.c:369
+#: src/uml_driver.c:372
 msgid "cannot initialize inotify"
 msgstr ""
 
-#: src/uml_driver.c:374
+#: src/uml_driver.c:377
 #, fuzzy, c-format
 msgid "Failed to create monitor directory %s: %s"
 msgstr "Verkon luominen tiedostosta %s epäonnistui"
 
-#: src/uml_driver.c:405
+#: src/uml_driver.c:408
 #, fuzzy
 msgid "umlStartup: out of memory\n"
 msgstr "muisti lopussa"
 
-#: src/uml_driver.c:549
+#: src/uml_driver.c:553
 #, fuzzy, c-format
 msgid "failed to read pid: %s: %s"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 
-#: src/uml_driver.c:597
+#: src/uml_driver.c:601
 #, fuzzy, c-format
 msgid "cannot open socket %s"
 msgstr "solmun prosessoripaikat"
 
-#: src/uml_driver.c:605
+#: src/uml_driver.c:609
 #, c-format
 msgid "cannot bind socket %s"
 msgstr ""
 
-#: src/uml_driver.c:658
+#: src/uml_driver.c:662
 #, c-format
 msgid "cannot send too long command %s: %s"
 msgstr ""
 
-#: src/uml_driver.c:668
+#: src/uml_driver.c:672
 #, fuzzy, c-format
 msgid "cannot send command %s: %s"
 msgstr "tuntematon komento: ”%s”"
 
-#: src/uml_driver.c:678
+#: src/uml_driver.c:682
 #, c-format
 msgid "cannot read reply %s: %s"
 msgstr ""
 
-#: src/uml_driver.c:731
+#: src/uml_driver.c:735
 msgid "no kernel specified"
 msgstr ""
 
-#: src/uml_driver.c:740
+#: src/uml_driver.c:744
 #, c-format
 msgid "Cannot find UML kernel %s: %s"
 msgstr ""
 
-#: src/uml_driver.c:747
+#: src/uml_driver.c:751
 #, c-format
 msgid "cannot create log directory %s"
 msgstr ""
 
-#: src/uml_driver.c:821
+#: src/uml_driver.c:825
 #, fuzzy, c-format
 msgid "failed to wait on process: %d: %s\n"
 msgstr "Ei pystytty kirjoittamaan pistokkeeseen %d\n"
 
-#: src/uml_driver.c:863
+#: src/uml_driver.c:867
 #, c-format
 msgid "Got unexpected pid %d != %d\n"
 msgstr ""
 
-#: src/uml_driver.c:1137
+#: src/uml_driver.c:1141
 #, fuzzy, c-format
 msgid "cannot parse version %s"
 msgstr "ei voitu jäsentää yhteys-URIa"
 
-#: src/uml_driver.c:1461
+#: src/uml_driver.c:1459
 #, fuzzy
 msgid "cannot read cputime for domain"
 msgstr "Epäaktiivisen toimialueen nimi"
 
-#: src/util.c:204
+#: src/util.c:205
 #, c-format
 msgid "cannot block signals: %s"
 msgstr ""
 
-#: src/util.c:220
+#: src/util.c:221
 #, c-format
 msgid "cannot create pipe: %s"
 msgstr ""
 
-#: src/util.c:280 src/util.c:370
+#: src/util.c:281 src/util.c:371
 #, c-format
 msgid "cannot fork child process: %s"
 msgstr ""
 
-#: src/util.c:299 src/util.c:337
+#: src/util.c:300 src/util.c:338
 #, c-format
 msgid "cannot unblock signals: %s"
 msgstr ""
 
-#: src/util.c:355
+#: src/util.c:356
 #, c-format
 msgid "cannot become session leader: %s"
 msgstr ""
 
-#: src/util.c:362
+#: src/util.c:363
 #, c-format
 msgid "cannot change to root directory: %s"
 msgstr ""
 
-#: src/util.c:382
+#: src/util.c:383
 #, fuzzy, c-format
 msgid "failed to setup stdin file handle: %s"
 msgstr "asetustiedoston %s jäsentäminen epäonnistui"
 
-#: src/util.c:388
+#: src/util.c:389
 #, fuzzy, c-format
 msgid "failed to setup stdout file handle: %s"
 msgstr "asetustiedoston %s jäsentäminen epäonnistui"
 
-#: src/util.c:394
+#: src/util.c:395
 #, fuzzy, c-format
 msgid "failed to setup stderr file handle: %s"
 msgstr "Toimialueen %s määrityksen poistaminen epäonnistui"
 
-#: src/util.c:411
+#: src/util.c:412
 #, c-format
 msgid "cannot execute binary '%s': %s"
 msgstr ""
 
-#: src/util.c:449 src/util.c:567
+#: src/util.c:450 src/util.c:568
 msgid "command debug string"
 msgstr ""
 
-#: src/util.c:496
+#: src/util.c:497
 msgid "Unknown poll response."
 msgstr ""
 
-#: src/util.c:527
+#: src/util.c:528
 #, fuzzy, c-format
 msgid "poll error: %s"
 msgstr "virhe: "
 
-#: src/util.c:601
+#: src/util.c:602
 #, c-format
 msgid "'%s' exited with non-zero status %d and signal %d: %s"
 msgstr ""
@@ -7278,445 +7320,441 @@ msgstr ""
 msgid "adding watch on %s"
 msgstr ""
 
-#: src/xen_internal.c:1284
+#: src/xen_internal.c:1291
 #, c-format
 msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
 msgstr ""
 
-#: src/xen_internal.c:1294
+#: src/xen_internal.c:1301
 #, c-format
 msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
 msgstr ""
 
-#: src/xen_internal.c:2485
+#: src/xen_internal.c:2614
 #, c-format
 msgid "allocating %d domain info"
 msgstr "varataan %d toimialuetietoja"
 
-#: src/xend_internal.c:136
+#: src/xend_internal.c:144
 #, fuzzy
 msgid "failed to create a socket"
 msgstr "solmun varaus epäonnistui"
 
-#: src/xend_internal.c:158
+#: src/xend_internal.c:166
 #, fuzzy
 msgid "failed to connect to xend"
 msgstr "yhteydenotto Xen Storeen ei onnistunut"
 
-#: src/xend_internal.c:205 src/xend_internal.c:208
+#: src/xend_internal.c:213 src/xend_internal.c:216
 msgid "failed to read from Xen Daemon"
 msgstr "Luku Xen Daemonista epäonnistui"
 
-#: src/xend_internal.c:396
-#, c-format
-msgid "xend_get: error from xen daemon: %s"
-msgstr ""
+#: src/xend_internal.c:404
+#, fuzzy, c-format
+msgid "%d status from xen daemon: %s:%s"
+msgstr "Toimialueen %s palautus epäonnistui"
 
-#: src/xend_internal.c:446 src/xend_internal.c:449 src/xend_internal.c:457
+#: src/xend_internal.c:455 src/xend_internal.c:458 src/xend_internal.c:466
 #, c-format
 msgid "xend_post: error from xen daemon: %s"
 msgstr ""
 
-#: src/xend_internal.c:715
+#: src/xend_internal.c:724
 msgid "allocate new buffer"
 msgstr "varaa uusi puskuri"
 
-#: src/xend_internal.c:848
+#: src/xend_internal.c:857
 #, fuzzy, c-format
 msgid "gethostbyname failed: %s"
 msgstr "toimenpide epäonnistui: %s"
 
-#: src/xend_internal.c:969
+#: src/xend_internal.c:978
 #, fuzzy
 msgid "failed to urlencode the create S-Expr"
 msgstr "<qt>Kansiota <b>%1</b> ei voida luoda.</qt>"
 
-#: src/xend_internal.c:1010
+#: src/xend_internal.c:1019
 msgid "domain information incomplete, missing domid"
 msgstr "toimialuetieto on epätäydellistä, domid puuttuu"
 
-#: src/xend_internal.c:1016
+#: src/xend_internal.c:1025
 msgid "domain information incorrect domid not numeric"
 msgstr "toimialuetieto on virheellistä, domid ei ole numeerinen"
 
-#: src/xend_internal.c:1021 src/xend_internal.c:1068
+#: src/xend_internal.c:1030 src/xend_internal.c:1077
 msgid "domain information incomplete, missing uuid"
 msgstr "toimialuetieto on epätäydellistä, uuid puuttuu"
 
-#: src/xend_internal.c:1060 src/xend_internal.c:2162 src/xend_internal.c:2169
+#: src/xend_internal.c:1069 src/xend_internal.c:2171 src/xend_internal.c:2178
 msgid "domain information incomplete, missing name"
 msgstr "toimialuetiedot ovat epätäydellisiä, nimi puuttuu"
 
-#: src/xend_internal.c:1149
+#: src/xend_internal.c:1158
 #, fuzzy
 msgid "domain information incomplete, missing HVM loader"
 msgstr "toimialuetiedot ovat epätäydellisiä, nimi puuttuu"
 
-#: src/xend_internal.c:1203
+#: src/xend_internal.c:1212
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "toimialuetieto on epätäydellistä, ydin ja käynnistyslatain puuttuu"
 
-#: src/xend_internal.c:1267
+#: src/xend_internal.c:1276
 #, fuzzy
 msgid "Unknown char device type"
 msgstr "kohdelaitetyyppi"
 
-#: src/xend_internal.c:1301 src/xend_internal.c:1341 src/xend_internal.c:1357
-#: src/xend_internal.c:1496 src/xend_internal.c:1524 src/xend_internal.c:1540
+#: src/xend_internal.c:1310 src/xend_internal.c:1350 src/xend_internal.c:1366
+#: src/xend_internal.c:1505 src/xend_internal.c:1533 src/xend_internal.c:1549
 msgid "malformed char device string"
 msgstr ""
 
-#: src/xend_internal.c:1424
+#: src/xend_internal.c:1433
 msgid "no memory for char device config"
 msgstr ""
 
-#: src/xend_internal.c:1469
+#: src/xend_internal.c:1478
 #, fuzzy, c-format
 msgid "unknown chr device type '%s'"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/xend_internal.c:1631
+#: src/xend_internal.c:1640
 msgid "domain information incomplete, vbd has no dev"
 msgstr ""
 
-#: src/xend_internal.c:1642
+#: src/xend_internal.c:1651
 msgid "domain information incomplete, vbd has no src"
 msgstr ""
 
-#: src/xend_internal.c:1651
+#: src/xend_internal.c:1660
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
 
-#: src/xend_internal.c:1666
+#: src/xend_internal.c:1675
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1806
+#: src/xend_internal.c:1815
 #, c-format
 msgid "malformed mac address '%s'"
 msgstr ""
 
-#: src/xend_internal.c:1883
+#: src/xend_internal.c:1892
 #, fuzzy, c-format
 msgid "unexpected sound model %s"
 msgstr "Sama kuin solmu"
 
-#: src/xend_internal.c:2058
+#: src/xend_internal.c:2067
 #, fuzzy, c-format
 msgid "unknown graphics type '%s'"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/xend_internal.c:2149
+#: src/xend_internal.c:2158
 msgid "domain information incomplete, missing id"
 msgstr "toimialuetieto on epätäydellistä, id puuttuu"
 
-#: src/xend_internal.c:2218 src/xend_internal.c:2228 src/xend_internal.c:2238
+#: src/xend_internal.c:2227 src/xend_internal.c:2237 src/xend_internal.c:2247
 #, fuzzy, c-format
 msgid "unknown lifecycle type %s"
 msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
-#: src/xend_internal.c:2559
-msgid "failed to parse topology information"
-msgstr "topologiatiedon jäsentäminen epäonnistui"
-
-#: src/xend_internal.c:2613
+#: src/xend_internal.c:2621
 msgid "topology syntax error"
 msgstr "topologiasyntaksivirhe"
 
-#: src/xend_internal.c:2677
+#: src/xend_internal.c:2685
 msgid "failed to parse Xend domain information"
 msgstr "Xend-toimialueen tietojen jäsentäminen epäonnistui"
 
-#: src/xend_internal.c:3158
+#: src/xend_internal.c:3166
 msgid "xenDaemonDomainFetch failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:3780 src/xend_internal.c:4259 src/xm_internal.c:1672
+#: src/xend_internal.c:3789 src/xend_internal.c:4269 src/xm_internal.c:1680
 #, fuzzy
 msgid "failed to build sexpr"
 msgstr "Komennon ”%s” ajaminen epäonnistui: %s\n"
 
-#: src/xend_internal.c:3884
+#: src/xend_internal.c:3893
 #, fuzzy
 msgid "unsupported device type"
 msgstr "kohdelaitetyyppi"
 
-#: src/xend_internal.c:3989
+#: src/xend_internal.c:3998
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4030
+#: src/xend_internal.c:4039
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4038
+#: src/xend_internal.c:4047
 #, fuzzy
 msgid "unexpected value from on_xend_start"
 msgstr "odottamaton arvosolmu"
 
-#: src/xend_internal.c:4049
+#: src/xend_internal.c:4058
 #, fuzzy
 msgid "no memory"
 msgstr "solmun muisti"
 
-#: src/xend_internal.c:4055
+#: src/xend_internal.c:4064
 #, fuzzy
 msgid "sexpr2string failed"
 msgstr "toimenpide epäonnistui"
 
-#: src/xend_internal.c:4060
+#: src/xend_internal.c:4069
 #, fuzzy
 msgid "Failed to redefine sexpr"
 msgstr "Verkon %s määritysten poistaminen epäonnistui."
 
-#: src/xend_internal.c:4065
+#: src/xend_internal.c:4074
 msgid "on_xend_start not present in sexpr"
 msgstr ""
 
-#: src/xend_internal.c:4096
+#: src/xend_internal.c:4105
 #, fuzzy, c-format
 msgid "gethostname failed: %s"
 msgstr "toimenpide epäonnistui: %s"
 
-#: src/xend_internal.c:4102
+#: src/xend_internal.c:4111
 #, fuzzy, c-format
 msgid "failed to strdup hostname: %s"
 msgstr "konenimen haku epäonnistui"
 
-#: src/xend_internal.c:4133
+#: src/xend_internal.c:4142
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:4143
+#: src/xend_internal.c:4152
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:4155
+#: src/xend_internal.c:4164
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr ""
 
-#: src/xend_internal.c:4168
+#: src/xend_internal.c:4177
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr ""
 
-#: src/xend_internal.c:4173
+#: src/xend_internal.c:4182
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
 
-#: src/xend_internal.c:4180
+#: src/xend_internal.c:4189
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr ""
 
-#: src/xend_internal.c:4187 src/xend_internal.c:4209 src/xend_internal.c:4217
-#: src/xend_internal.c:4443 src/xend_internal.c:4450 src/xml.c:71
+#: src/xend_internal.c:4196 src/xend_internal.c:4218 src/xend_internal.c:4226
+#: src/xend_internal.c:4453 src/xend_internal.c:4460 src/xml.c:71
 msgid "strdup failed"
 msgstr ""
 
-#: src/xend_internal.c:4200
+#: src/xend_internal.c:4209
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr ""
 
-#: src/xend_internal.c:4253
+#: src/xend_internal.c:4263
 #, fuzzy
 msgid "failed to parse domain description"
 msgstr "Xend-toimialueen tietojen jäsentäminen epäonnistui"
 
-#: src/xend_internal.c:4269
+#: src/xend_internal.c:4279
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Epäaktiivisen toimialueen %s luominen epäonnistui\n"
 
-#: src/xend_internal.c:4425 src/xend_internal.c:4501 src/xend_internal.c:4591
+#: src/xend_internal.c:4435 src/xend_internal.c:4511 src/xend_internal.c:4601
 msgid "unsupported in xendConfigVersion < 4"
 msgstr ""
 
-#: src/xend_internal.c:4437
+#: src/xend_internal.c:4447
 #, fuzzy
 msgid "node information incomplete, missing scheduler name"
 msgstr "toimialuetiedot ovat epätäydellisiä, nimi puuttuu"
 
-#: src/xend_internal.c:4455 src/xend_internal.c:4549 src/xend_internal.c:4661
+#: src/xend_internal.c:4465 src/xend_internal.c:4559 src/xend_internal.c:4671
 #, fuzzy
 msgid "Unknown scheduler"
 msgstr "Skeduloija"
 
-#: src/xend_internal.c:4514 src/xend_internal.c:4604
+#: src/xend_internal.c:4524 src/xend_internal.c:4614
 #, fuzzy
 msgid "Failed to get a scheduler name"
 msgstr "konenimen haku epäonnistui"
 
-#: src/xend_internal.c:4527 src/xend_internal.c:4640
+#: src/xend_internal.c:4537 src/xend_internal.c:4650
 #, fuzzy
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "toimialuetieto on epätäydellistä, uuid puuttuu"
 
-#: src/xend_internal.c:4532 src/xend_internal.c:4649
+#: src/xend_internal.c:4542 src/xend_internal.c:4659
 #, fuzzy
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "toimialuetieto on epätäydellistä, uuid puuttuu"
 
-#: src/xend_internal.c:4707
+#: src/xend_internal.c:4717
 msgid "domainBlockPeek is not supported for dom0"
 msgstr ""
 
-#: src/xend_internal.c:4728
+#: src/xend_internal.c:4738
 #, c-format
 msgid "%s: invalid path"
 msgstr ""
 
-#: src/xend_internal.c:4736
+#: src/xend_internal.c:4746
 #, fuzzy, c-format
 msgid "failed to open for reading: %s: %s"
 msgstr "tiedoston %s avaaminen luettavaksi epäonnistui"
 
-#: src/xend_internal.c:4748
+#: src/xend_internal.c:4758
 #, fuzzy, c-format
 msgid "failed to lseek or read from file: %s: %s"
 msgstr "asetustiedoston %s lukeminen epäonnistui"
 
-#: src/xend_internal.c:4831 src/xend_internal.c:4877
+#: src/xend_internal.c:4841 src/xend_internal.c:4887
 #, fuzzy, c-format
 msgid "unexpected graphics type %d"
 msgstr "odottamaton MIME-tyyppi"
 
-#: src/xend_internal.c:4920
+#: src/xend_internal.c:4930
 #, fuzzy
 msgid "unexpected chr device type"
 msgstr "odottamaton MIME-tyyppi"
 
-#: src/xend_internal.c:5094 src/xm_internal.c:1834
+#: src/xend_internal.c:5106 src/xm_internal.c:1843
 #, c-format
 msgid "unsupported network type %d"
 msgstr ""
 
-#: src/xend_internal.c:5264 src/xend_internal.c:5271 src/xend_internal.c:5278
+#: src/xend_internal.c:5276 src/xend_internal.c:5283 src/xend_internal.c:5290
 #, fuzzy, c-format
 msgid "unexpected lifecycle value %d"
 msgstr "odottamaton arvosolmu"
 
-#: src/xend_internal.c:5295
+#: src/xend_internal.c:5307
 #, fuzzy
 msgid "no HVM domain loader"
 msgstr "solmun toimialueluettelo"
 
-#: src/xend_internal.c:5497
+#: src/xend_internal.c:5509
 msgid "hotplug of device type not supported"
 msgstr ""
 
-#: src/xm_internal.c:180 src/xm_internal.c:211 src/xm_internal.c:216
-#: src/xm_internal.c:239
+#: src/xm_internal.c:188 src/xm_internal.c:219 src/xm_internal.c:224
+#: src/xm_internal.c:247
 #, c-format
 msgid "config value %s was malformed"
 msgstr ""
 
-#: src/xm_internal.c:261 src/xm_internal.c:274
+#: src/xm_internal.c:269 src/xm_internal.c:282
 #, c-format
 msgid "config value %s was missing"
 msgstr ""
 
-#: src/xm_internal.c:267
+#: src/xm_internal.c:275
 #, c-format
 msgid "config value %s was not a string"
 msgstr ""
 
-#: src/xm_internal.c:409
+#: src/xm_internal.c:417
 #, c-format
 msgid "cannot stat %s: %s"
 msgstr ""
 
-#: src/xm_internal.c:466
+#: src/xm_internal.c:474
 msgid "xenXMConfigCacheRefresh: virHashAddEntry"
 msgstr ""
 
-#: src/xm_internal.c:783
+#: src/xm_internal.c:791
 #, fuzzy, c-format
 msgid "unexpected value %s for on_poweroff"
 msgstr "odottamaton arvosolmu"
 
-#: src/xm_internal.c:791
+#: src/xm_internal.c:799
 #, fuzzy, c-format
 msgid "unexpected value %s for on_reboot"
 msgstr "odottamaton arvosolmu"
 
-#: src/xm_internal.c:799
+#: src/xm_internal.c:807
 #, fuzzy, c-format
 msgid "unexpected value %s for on_crash"
 msgstr "odottamaton arvosolmu"
 
-#: src/xm_internal.c:1493
+#: src/xm_internal.c:1501
 #, fuzzy
 msgid "read only connection"
 msgstr "vain luku -yhteys"
 
-#: src/xm_internal.c:1498
+#: src/xm_internal.c:1506
 #, fuzzy
 msgid "not inactive domain"
 msgstr "luetteloi epäaktiiviset toimialueet"
 
-#: src/xm_internal.c:1503
+#: src/xm_internal.c:1511
 msgid "virHashLookup"
 msgstr ""
 
-#: src/xm_internal.c:1508
+#: src/xm_internal.c:1516
 msgid "can't retrieve config file for domain"
 msgstr ""
 
-#: src/xm_internal.c:2006 src/xm_internal.c:2015 src/xm_internal.c:2024
+#: src/xm_internal.c:2015 src/xm_internal.c:2024 src/xm_internal.c:2033
 #, fuzzy, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "Sama kuin solmu"
 
-#: src/xm_internal.c:2296
+#: src/xm_internal.c:2306
 msgid "can't retrieve config filename for domain to overwrite"
 msgstr ""
 
-#: src/xm_internal.c:2302
+#: src/xm_internal.c:2312
 msgid "can't retrieve config entry for domain to overwrite"
 msgstr ""
 
-#: src/xm_internal.c:2313 src/xm_internal.c:2320
+#: src/xm_internal.c:2323 src/xm_internal.c:2330
 #, fuzzy
 msgid "failed to remove old domain from config map"
 msgstr "Toimialueen palautetus tiedostosta %s epäonnistui"
 
-#: src/xm_internal.c:2329
+#: src/xm_internal.c:2339
 msgid "config file name is too long"
 msgstr ""
 
-#: src/xm_internal.c:2341
+#: src/xm_internal.c:2351
 msgid "config"
 msgstr ""
 
-#: src/xm_internal.c:2347
+#: src/xm_internal.c:2357
 #, fuzzy
 msgid "unable to get current time"
 msgstr "Ei voi tarkistaa nykyistä MaxMemorySizeä"
 
-#: src/xm_internal.c:2356 src/xm_internal.c:2363
+#: src/xm_internal.c:2366 src/xm_internal.c:2373
 #, fuzzy
 msgid "unable to store config file handle"
 msgstr "asetustiedoston %s lukeminen epäonnistui"
 
-#: src/xm_internal.c:2560 src/xm_internal.c:2658
+#: src/xm_internal.c:2570 src/xm_internal.c:2668
 #, fuzzy
 msgid "unknown device"
 msgstr "tuntematon käyttöjärjestelmän tyyppi"
 
-#: src/xm_internal.c:2715
+#: src/xm_internal.c:2725
 #, fuzzy, c-format
 msgid "failed to check autostart link %s: %s"
 msgstr "Lohkotilastojen haku epäonnistui %s %s"
 
-#: src/xm_internal.c:2744
+#: src/xm_internal.c:2754
 #, fuzzy, c-format
 msgid "failed to create link %s: %s"
 msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
 
-#: src/xm_internal.c:2752
+#: src/xm_internal.c:2762
 #, fuzzy, c-format
 msgid "failed to remove link %s: %s"
 msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
@@ -7768,19 +7806,22 @@ msgstr ""
 msgid "adding watch @introduceDomain"
 msgstr ""
 
-#: src/xs_internal.c:1057
+#: src/xs_internal.c:1059
 msgid "watch already tracked"
 msgstr ""
 
-#: src/xs_internal.c:1073
+#: src/xs_internal.c:1075
 #, fuzzy
 msgid "reallocating list"
 msgstr "varataan toimialue"
 
-#: src/xs_internal.c:1197 src/xs_internal.c:1275
+#: src/xs_internal.c:1199 src/xs_internal.c:1277
 #, fuzzy
 msgid "failed to allocate domids"
 msgstr "solmun varaus epäonnistui"
+
+#~ msgid "failed to parse topology information"
+#~ msgstr "topologiatiedon jäsentäminen epäonnistui"
 
 #, fuzzy
 #~ msgid "domain not found"

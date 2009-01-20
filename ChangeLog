@@ -1,3 +1,8 @@
+Tue Jan 20 16:35:24 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/apibuild.py: fix the parser with another Win32 keyword
+	* po/*: updated a couple of translations and regenerated
+
 Tue Jan 20 14:50:58 CET 2009 Jim Meyering <meyering@redhat.com>
 
 	fix "make syntax-check" failures

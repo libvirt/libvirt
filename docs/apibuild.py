@@ -27,6 +27,9 @@ included_files = {
 ignored_words = {
   "ATTRIBUTE_UNUSED": (0, "macro keyword"),
   "VIR_DEPRECATED": (0, "macro keyword"),
+  "WINAPI": (0, "Windows keyword"),
+  "__declspec": (3, "Windows keyword"),
+  "__stdcall": (0, "Windows keyword"),
 }
 
 ignored_functions = {
