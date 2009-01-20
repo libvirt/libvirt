@@ -1,3 +1,8 @@
+Tue Jan 20 18:26:24 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.spec.in: try to autodetect when rhel5 option should be
+	  passed to configure
+
 Tue Jan 20 17:15:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xen_inotify.c, src/xen_unified.h, src/xs_internal.c:
