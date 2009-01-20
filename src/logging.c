@@ -626,15 +626,27 @@ static int virLogOutputToSyslog(const char *category ATTRIBUTE_UNUSED,
     return(len);
 }
 
+static char *current_ident = NULL;
+
 static void virLogCloseSyslog(void *data ATTRIBUTE_UNUSED) {
     closelog();
+    VIR_FREE(current_ident);
 }
 
 static int virLogAddOutputToSyslog(int priority, const char *ident) {
-    openlog(ident, 0, 0);
+    /*
+     * ident needs to be kept around on Solaris
+     */
+    VIR_FREE(current_ident);
+    current_ident = strdup(ident);
+    if (current_ident == NULL)
+        return(-1);
+
+    openlog(current_ident, 0, 0);
     if (virLogDefineOutput(virLogOutputToSyslog, virLogCloseSyslog, NULL,
                            priority, 0) < 0) {
         closelog();
+        VIR_FREE(current_ident);
         return(-1);
     }
     return(0);

@@ -1,3 +1,7 @@
+Tue Jan 20 22:32:44 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/logging.c: fix openlog() ident lifetime for Solaris
+
 Tue Jan 20 21:02:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Refresh GNULIB, adding new random_r module
