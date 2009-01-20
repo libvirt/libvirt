@@ -1,3 +1,7 @@
+Tue Jan 20 17:17:11 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: remove a warning when printing a file offset
+
 Tue Jan 20 16:36:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Make RPC call dispatch threaded

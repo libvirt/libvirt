@@ -213,7 +213,7 @@ qemudLogReadFD(virConnectPtr conn, const char* logDir, const char* name, off_t p
     if (lseek(fd, pos, SEEK_SET) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Unable to seek to %lld in %s: %s"),
-                         pos, logfile, strerror(errno));
+                         (long long) pos, logfile, strerror(errno));
         close(fd);
     }
     return fd;
