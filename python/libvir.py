@@ -26,10 +26,9 @@ class libvirtError(Exception):
         elif vol is not None:
             conn = vol._conn
 
-        if conn is None:
-            err = virGetLastError()
-        else:
-            err = conn.virConnGetLastError()
+        # Never call virConnGetLastError().
+        # virGetLastError() is now thread local
+        err = virGetLastError()
         if err is None:
             msg = defmsg
         else:

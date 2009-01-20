@@ -1,3 +1,8 @@
+Tue Jan 20 22:06:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* python/libvir.c, python/libvir.py: Use global thread
+	local error variable for all exceptions.
+
 Tue Jan 20 13:35:36 PST 2009 John Levon <john.levon@sun.com>
 
 	* qemud/qemud.c: respect LIBVIRT_DEBUG when logging to syslog

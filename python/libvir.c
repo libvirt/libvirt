@@ -438,23 +438,23 @@ static PyObject *libvirt_virPythonErrorFuncCtxt = NULL;
 static PyObject *
 libvirt_virGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args ATTRIBUTE_UNUSED)
 {
-    virError err;
+    virError *err;
     PyObject *info;
 
-    if (virCopyLastError(&err) <= 0)
+    if ((err = virGetLastError()) == NULL)
         return VIR_PY_NONE;
 
     if ((info = PyTuple_New(9)) == NULL)
         return VIR_PY_NONE;
-    PyTuple_SetItem(info, 0, PyInt_FromLong((long) err.code));
-    PyTuple_SetItem(info, 1, PyInt_FromLong((long) err.domain));
-    PyTuple_SetItem(info, 2, libvirt_constcharPtrWrap(err.message));
-    PyTuple_SetItem(info, 3, PyInt_FromLong((long) err.level));
-    PyTuple_SetItem(info, 4, libvirt_constcharPtrWrap(err.str1));
-    PyTuple_SetItem(info, 5, libvirt_constcharPtrWrap(err.str2));
-    PyTuple_SetItem(info, 6, libvirt_constcharPtrWrap(err.str3));
-    PyTuple_SetItem(info, 7, PyInt_FromLong((long) err.int1));
-    PyTuple_SetItem(info, 8, PyInt_FromLong((long) err.int2));
+    PyTuple_SetItem(info, 0, PyInt_FromLong((long) err->code));
+    PyTuple_SetItem(info, 1, PyInt_FromLong((long) err->domain));
+    PyTuple_SetItem(info, 2, libvirt_constcharPtrWrap(err->message));
+    PyTuple_SetItem(info, 3, PyInt_FromLong((long) err->level));
+    PyTuple_SetItem(info, 4, libvirt_constcharPtrWrap(err->str1));
+    PyTuple_SetItem(info, 5, libvirt_constcharPtrWrap(err->str2));
+    PyTuple_SetItem(info, 6, libvirt_constcharPtrWrap(err->str3));
+    PyTuple_SetItem(info, 7, PyInt_FromLong((long) err->int1));
+    PyTuple_SetItem(info, 8, PyInt_FromLong((long) err->int2));
 
     return info;
 }
@@ -462,7 +462,7 @@ libvirt_virGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args ATTRIBUT
 static PyObject *
 libvirt_virConnGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
 {
-    virError err;
+    virError *err;
     PyObject *info;
     virConnectPtr conn;
     PyObject *pyobj_conn;
@@ -471,20 +471,20 @@ libvirt_virConnGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
         return(NULL);
     conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
 
-    if (virConnCopyLastError(conn, &err) <= 0)
+    if ((err = virConnGetLastError(conn)) == NULL)
         return VIR_PY_NONE;
 
     if ((info = PyTuple_New(9)) == NULL)
         return VIR_PY_NONE;
-    PyTuple_SetItem(info, 0, PyInt_FromLong((long) err.code));
-    PyTuple_SetItem(info, 1, PyInt_FromLong((long) err.domain));
-    PyTuple_SetItem(info, 2, libvirt_constcharPtrWrap(err.message));
-    PyTuple_SetItem(info, 3, PyInt_FromLong((long) err.level));
-    PyTuple_SetItem(info, 4, libvirt_constcharPtrWrap(err.str1));
-    PyTuple_SetItem(info, 5, libvirt_constcharPtrWrap(err.str2));
-    PyTuple_SetItem(info, 6, libvirt_constcharPtrWrap(err.str3));
-    PyTuple_SetItem(info, 7, PyInt_FromLong((long) err.int1));
-    PyTuple_SetItem(info, 8, PyInt_FromLong((long) err.int2));
+    PyTuple_SetItem(info, 0, PyInt_FromLong((long) err->code));
+    PyTuple_SetItem(info, 1, PyInt_FromLong((long) err->domain));
+    PyTuple_SetItem(info, 2, libvirt_constcharPtrWrap(err->message));
+    PyTuple_SetItem(info, 3, PyInt_FromLong((long) err->level));
+    PyTuple_SetItem(info, 4, libvirt_constcharPtrWrap(err->str1));
+    PyTuple_SetItem(info, 5, libvirt_constcharPtrWrap(err->str2));
+    PyTuple_SetItem(info, 6, libvirt_constcharPtrWrap(err->str3));
+    PyTuple_SetItem(info, 7, PyInt_FromLong((long) err->int1));
+    PyTuple_SetItem(info, 8, PyInt_FromLong((long) err->int2));
 
     return info;
 }
