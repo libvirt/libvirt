@@ -1,3 +1,16 @@
+Wed Jan 21 10:48:12 IST 2009 Mark McLoughlin <markmc@redhat.com>
+
+	If you un-install libvirt and re-install it, you get a warning
+	from the post-install script:
+
+	  Installing     : libvirt
+	  ln: creating symbolic link `/etc/libvirt/qemu/networks/autostart/default.xml': File exists
+
+	See https://bugzilla.redhat.com/462011
+
+	* libvirt.spec.in: don't create networks/default.xml if it
+	already exists.
+
 Tue Jan 20 22:39:53 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Properly handle daemon restarts with storage driver

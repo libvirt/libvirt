@@ -294,7 +294,7 @@ rm -fr %{buildroot}
 # or on the first upgrade from a non-network aware libvirt only.
 # We check this by looking to see if the daemon is already installed
 /sbin/chkconfig --list libvirtd 1>/dev/null 2>&1
-if [ $? != 0 ]
+if [ $? != 0 -a ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ]
 then
     UUID=`/usr/bin/uuidgen`
     sed -e "s,</name>,</name>\n  <uuid>$UUID</uuid>," \
