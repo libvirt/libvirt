@@ -1337,9 +1337,14 @@ xenHypervisorDomainBlockStats (virDomainPtr dom,
 {
 #ifdef __linux__
     xenUnifiedPrivatePtr priv;
+    int ret;
 
     priv = (xenUnifiedPrivatePtr) dom->conn->privateData;
-    return xenLinuxDomainBlockStats (priv, dom, path, stats);
+    xenUnifiedLock(priv);
+    /* Need to lock because it hits the xenstore handle :-( */
+    ret = xenLinuxDomainBlockStats (priv, dom, path, stats);
+    xenUnifiedUnlock(priv);
+    return ret;
 #else
     virXenErrorFunc (dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__,
                      "block statistics not supported on this platform",
@@ -2756,8 +2761,10 @@ xenHypervisorLookupDomainByID(virConnectPtr conn,
     if (XEN_GETDOMAININFO_DOMAIN(dominfo) != id)
         return (NULL);
 
-
-    if (!(name = xenStoreDomainGetName(conn, id)))
+    xenUnifiedLock(priv);
+    name = xenStoreDomainGetName(conn, id);
+    xenUnifiedUnlock(priv);
+    if (!name)
         return (NULL);
 
     ret = virGetDomain(conn, name, XEN_GETDOMAININFO_UUID(dominfo));
@@ -2824,7 +2831,10 @@ xenHypervisorLookupDomainByUUID(virConnectPtr conn,
     if (id == -1)
         return (NULL);
 
-    if (!(name = xenStoreDomainGetName(conn, id)))
+    xenUnifiedLock(priv);
+    name = xenStoreDomainGetName(conn, id);
+    xenUnifiedUnlock(priv);
+    if (!name)
         return (NULL);
 
     ret = virGetDomain(conn, name, uuid);
@@ -3057,7 +3067,6 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *free
     xen_op_v2_sys op_sys;
     int i, j, ret;
     xenUnifiedPrivatePtr priv;
-    int nbNodeCells;
 
     if (conn == NULL) {
         virXenErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
@@ -3065,14 +3074,15 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *free
         return -1;
     }
 
-    nbNodeCells = xenNbCells(conn);
-    if (nbNodeCells < 0) {
+    priv = conn->privateData;
+
+    if (priv->nbNodeCells < 0) {
         virXenErrorFunc (conn, VIR_ERR_XEN_CALL, __FUNCTION__,
                          "cannot determine actual number of cells",0);
         return(-1);
     }
 
-    if ((maxCells < 1) || (startCell >= nbNodeCells)) {
+    if ((maxCells < 1) || (startCell >= priv->nbNodeCells)) {
         virXenErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
                         "invalid argument", 0);
         return -1;
@@ -3087,7 +3097,6 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *free
         return -1;
     }
 
-    priv = (xenUnifiedPrivatePtr) conn->privateData;
     if (priv->handle < 0) {
         virXenErrorFunc (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
                         "priv->handle invalid", 0);
@@ -3097,7 +3106,7 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *free
     memset(&op_sys, 0, sizeof(op_sys));
     op_sys.cmd = XEN_V2_OP_GETAVAILHEAP;
 
-    for (i = startCell, j = 0;(i < nbNodeCells) && (j < maxCells);i++,j++) {
+    for (i = startCell, j = 0;(i < priv->nbNodeCells) && (j < maxCells);i++,j++) {
         op_sys.u.availheap.node = i;
         ret = xenHypervisorDoV2Sys(priv->handle, &op_sys);
         if (ret < 0) {

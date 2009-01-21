@@ -131,6 +131,12 @@ typedef xenUnifiedDomainInfoList *xenUnifiedDomainInfoListPtr;
  * low-level drivers access parts of this structure.
  */
 struct _xenUnifiedPrivate {
+    virMutex lock;
+
+    /* These initial vars are initialized in Open method
+     * and readonly thereafter, so can be used without
+     * holding the lock
+     */
     virCapsPtr caps;
     int handle;			/* Xen hypervisor handle */
 
@@ -144,15 +150,22 @@ struct _xenUnifiedPrivate {
     struct sockaddr_un addr_un; /* the unix address */
     struct sockaddr_in addr_in; /* the inet address */
 
-    struct xs_handle *xshandle; /* handle to talk to the xenstore */
-
-    int proxy;                  /* fd of proxy. */
-
     /* Keep track of the drivers which opened.  We keep a yes/no flag
      * here for each driver, corresponding to the array drivers in
      * xen_unified.c.
      */
     int opened[XEN_UNIFIED_NR_DRIVERS];
+
+
+    /*
+     * Everything from this point onwards must be protected
+     * by the lock when used
+     */
+
+    struct xs_handle *xshandle; /* handle to talk to the xenstore */
+
+    int proxy;                  /* fd of proxy. */
+
 
     /* A list of xenstore watches */
     xenStoreWatchListPtr xsWatchList;
@@ -160,9 +173,13 @@ struct _xenUnifiedPrivate {
     /* A list of active domain name/uuids */
     xenUnifiedDomainInfoListPtr activeDomainList;
 
+    /* NUMA topology info cache */
+    int nbNodeCells;
+    int nbNodeCpus;
 
     /* An list of callbacks */
     virDomainEventCallbackListPtr domainEventCallbacks;
+    int domainEventDispatching;
 
     /* Location of config files, either /etc
      * or /var/lib/xen */
@@ -188,9 +205,6 @@ struct _xenUnifiedPrivate {
 
 typedef struct _xenUnifiedPrivate *xenUnifiedPrivatePtr;
 
-
-int xenNbCells(virConnectPtr conn);
-int xenNbCpus(virConnectPtr conn);
 char *xenDomainUsedCpus(virDomainPtr dom);
 
 void xenUnifiedDomainInfoListFree(xenUnifiedDomainInfoListPtr info);
@@ -203,5 +217,13 @@ int  xenUnifiedRemoveDomainInfo(xenUnifiedDomainInfoListPtr info,
 void xenUnifiedDomainEventDispatch (xenUnifiedPrivatePtr priv,
                                     virDomainEventPtr event);
 unsigned long xenUnifiedVersion(void);
+
+#ifndef PROXY
+void xenUnifiedLock(xenUnifiedPrivatePtr priv);
+void xenUnifiedUnlock(xenUnifiedPrivatePtr priv);
+#else
+#define xenUnifiedLock(p) do {} while(0)
+#define xenUnifiedUnlock(p) do {} while(0)
+#endif
 
 #endif /* __VIR_XEN_UNIFIED_H__ */

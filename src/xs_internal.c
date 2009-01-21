@@ -37,16 +37,10 @@
 #include "xs_internal.h"
 #include "xen_internal.h" /* for xenHypervisorCheckID */
 
-#ifdef __linux__
-#define XEN_HYPERVISOR_SOCKET "/proc/xen/privcmd"
-#elif defined(__sun)
-#define XEN_HYPERVISOR_SOCKET "/dev/xen/privcmd"
-#else
-#error "unsupported platform"
-#endif
-
 #ifndef PROXY
 static char *xenStoreDomainGetOSType(virDomainPtr domain);
+static void xenStoreWatchEvent(int watch, int fd, int events, void *data);
+static void xenStoreWatchListFree(xenStoreWatchListPtr list);
 
 struct xenUnifiedDriver xenStoreDriver = {
     xenStoreOpen, /* open */
@@ -374,6 +368,7 @@ xenStoreClose(virConnectPtr conn)
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
+#ifndef PROXY
     if (xenStoreRemoveWatch(conn, "@introduceDomain", "introduceDomain") < 0) {
         DEBUG0("Warning, could not remove @introduceDomain watch");
         /* not fatal */
@@ -386,7 +381,6 @@ xenStoreClose(virConnectPtr conn)
 
     xenStoreWatchListFree(priv->xsWatchList);
     priv->xsWatchList = NULL;
-#ifndef PROXY
     xenUnifiedDomainInfoListFree(priv->activeDomainList);
     priv->activeDomainList = NULL;
 #endif
@@ -518,17 +512,21 @@ xenStoreDomainGetMaxMemory(virDomainPtr domain)
 {
     char *tmp;
     unsigned long ret = 0;
+    xenUnifiedPrivatePtr priv;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
         return (ret);
     if (domain->id == -1)
         return(-1);
 
+    priv = domain->conn->privateData;
+    xenUnifiedLock(priv);
     tmp = virDomainDoStoreQuery(domain->conn, domain->id, "memory/target");
     if (tmp != NULL) {
         ret = (unsigned long) atol(tmp);
-        free(tmp);
+        VIR_FREE(tmp);
     }
+    xenUnifiedUnlock(priv);
     return(ret);
 }
 
@@ -591,12 +589,14 @@ xenStoreListDomains(virConnectPtr conn, int *ids, int maxids)
     }
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
+
+    xenUnifiedLock(priv);
     if (priv->xshandle == NULL)
-        return(-1);
+        goto error;
 
     idlist = xs_directory (priv->xshandle, 0, "/local/domain", &num);
     if (idlist == NULL)
-        return(-1);
+        goto error;
 
     for (ret = 0, i = 0; (i < num) && (ret < maxids); i++) {
         id = strtol(idlist[i], &endptr, 10);
@@ -611,7 +611,12 @@ xenStoreListDomains(virConnectPtr conn, int *ids, int maxids)
         ids[ret++] = (int) id;
     }
     free(idlist);
+    xenUnifiedUnlock(priv);
     return(ret);
+
+error:
+    xenUnifiedUnlock(priv);
+    return -1;
 }
 
 /**
@@ -696,6 +701,9 @@ done:
 int
 xenStoreDomainShutdown(virDomainPtr domain)
 {
+    int ret;
+    xenUnifiedPrivatePtr priv;
+
     if ((domain == NULL) || (domain->conn == NULL)) {
         virXenStoreError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
                          __FUNCTION__);
@@ -707,7 +715,11 @@ xenStoreDomainShutdown(virDomainPtr domain)
      * this is very hackish, the domU kernel probes for a special
      * node in the xenstore and launch the shutdown command if found.
      */
-    return(virDomainDoStoreWrite(domain, "control/shutdown", "poweroff"));
+    priv = domain->conn->privateData;
+    xenUnifiedLock(priv);
+    ret = virDomainDoStoreWrite(domain, "control/shutdown", "poweroff");
+    xenUnifiedUnlock(priv);
+    return ret;
 }
 
 /**
@@ -724,6 +736,9 @@ xenStoreDomainShutdown(virDomainPtr domain)
 int
 xenStoreDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
 {
+    int ret;
+    xenUnifiedPrivatePtr priv;
+
     if ((domain == NULL) || (domain->conn == NULL)) {
         virXenStoreError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
                          __FUNCTION__);
@@ -735,7 +750,11 @@ xenStoreDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
      * this is very hackish, the domU kernel probes for a special
      * node in the xenstore and launch the shutdown command if found.
      */
-    return(virDomainDoStoreWrite(domain, "control/shutdown", "reboot"));
+    priv = domain->conn->privateData;
+    xenUnifiedLock(priv);
+    ret = virDomainDoStoreWrite(domain, "control/shutdown", "reboot");
+    xenUnifiedUnlock(priv);
+    return ret;
 }
 
 /*
@@ -759,8 +778,11 @@ xenStoreDomainGetOSType(virDomainPtr domain) {
 
     vm = virDomainGetVM(domain);
     if (vm) {
+        xenUnifiedPrivatePtr priv = domain->conn->privateData;
+        xenUnifiedLock(priv);
         str = virDomainGetVMInfo(domain, vm, "image/ostype");
-        free(vm);
+        xenUnifiedUnlock(priv);
+        VIR_FREE(vm);
     }
 
     return (str);
@@ -774,6 +796,9 @@ xenStoreDomainGetOSType(virDomainPtr domain) {
  *
  * Return the port number on which the domain is listening for VNC
  * connections.
+ *
+ * The caller must hold the lock on the privateData
+ * associated with the 'conn' parameter.
  *
  * Returns the port number, -1 in case of error
  */
@@ -803,6 +828,9 @@ int             xenStoreDomainGetVNCPort(virConnectPtr conn, int domid) {
  * Returns the path to the serial console. It is the callers
  * responsibilty to free() the return string. Returns NULL
  * on error
+ *
+ * The caller must hold the lock on the privateData
+ * associated with the 'conn' parameter.
  */
 char *          xenStoreDomainGetConsolePath(virConnectPtr conn, int domid) {
   return virDomainDoStoreQuery(conn, domid, "console/tty");
@@ -815,6 +843,9 @@ char *          xenStoreDomainGetConsolePath(virConnectPtr conn, int domid) {
  * @id: the domain id
  *
  * Get the type of domain operation system.
+ *
+ * The caller must hold the lock on the privateData
+ * associated with the 'conn' parameter.
  *
  * Returns the new string or NULL in case of error, the string must be
  *         freed by the caller.
@@ -859,6 +890,9 @@ xenStoreDomainGetOSTypeID(virConnectPtr conn, int id) {
  *
  * Get the reference (i.e. the string number) for the device on that domain
  * which uses the given mac address
+ *
+ * The caller must hold the lock on the privateData
+ * associated with the 'conn' parameter.
  *
  * Returns the new string or NULL in case of error, the string must be
  *         freed by the caller.
@@ -911,6 +945,9 @@ xenStoreDomainGetNetworkID(virConnectPtr conn, int id, const char *mac) {
  *
  * Get the reference (i.e. the string number) for the device on that domain
  * which uses the given virtual block device name
+ *
+ * The caller must hold the lock on the privateData
+ * associated with the 'conn' parameter.
  *
  * Returns the new string or NULL in case of error, the string must be
  *         freed by the caller.
@@ -975,6 +1012,10 @@ xenStoreDomainGetDiskID(virConnectPtr conn, int id, const char *dev) {
     return (NULL);
 }
 
+/*
+ * The caller must hold the lock on the privateData
+ * associated with the 'conn' parameter.
+ */
 char *xenStoreDomainGetName(virConnectPtr conn,
                             int id) {
     char prop[200];
@@ -991,6 +1032,10 @@ char *xenStoreDomainGetName(virConnectPtr conn,
 }
 
 #ifndef PROXY
+/*
+ * The caller must hold the lock on the privateData
+ * associated with the 'conn' parameter.
+ */
 int xenStoreDomainGetUUID(virConnectPtr conn,
                           int id,
                           unsigned char *uuid) {
@@ -1017,9 +1062,9 @@ int xenStoreDomainGetUUID(virConnectPtr conn,
 
     return ret;
 }
-#endif //PROXY
 
-void xenStoreWatchListFree(xenStoreWatchListPtr list)
+static void
+xenStoreWatchListFree(xenStoreWatchListPtr list)
 {
     int i;
     for (i=0; i<list->count; i++) {
@@ -1030,6 +1075,10 @@ void xenStoreWatchListFree(xenStoreWatchListPtr list)
     VIR_FREE(list);
 }
 
+/*
+ * The caller must hold the lock on the privateData
+ * associated with the 'conn' parameter.
+ */
 int xenStoreAddWatch(virConnectPtr conn,
                      const char *path,
                      const char *token,
@@ -1082,6 +1131,10 @@ int xenStoreAddWatch(virConnectPtr conn,
     return xs_watch(priv->xshandle, watch->path, watch->token);
 }
 
+/*
+ * The caller must hold the lock on the privateData
+ * associated with the 'conn' parameter.
+ */
 int xenStoreRemoveWatch(virConnectPtr conn,
                         const char *path,
                         const char *token)
@@ -1124,18 +1177,17 @@ int xenStoreRemoveWatch(virConnectPtr conn,
                 ; /* Failure to reduce memory allocation isn't fatal */
             }
             list->count--;
-#ifndef PROXY
             virUnrefConnect(conn);
-#endif
             return 0;
         }
     }
     return -1;
 }
 
-xenStoreWatchPtr xenStoreFindWatch(xenStoreWatchListPtr list,
-                                   const char *path,
-                                   const char *token)
+static xenStoreWatchPtr
+xenStoreFindWatch(xenStoreWatchListPtr list,
+                  const char *path,
+                  const char *token)
 {
     int i;
     for (i = 0 ; i < list->count ; i++)
@@ -1146,10 +1198,11 @@ xenStoreWatchPtr xenStoreFindWatch(xenStoreWatchListPtr list,
     return NULL;
 }
 
-void xenStoreWatchEvent(int watch ATTRIBUTE_UNUSED,
-                        int fd ATTRIBUTE_UNUSED,
-                        int events ATTRIBUTE_UNUSED,
-                        void *data)
+static void
+xenStoreWatchEvent(int watch ATTRIBUTE_UNUSED,
+                   int fd ATTRIBUTE_UNUSED,
+                   int events ATTRIBUTE_UNUSED,
+                   void *data)
 {
     char		 **event;
     char		 *path;
@@ -1160,11 +1213,15 @@ void xenStoreWatchEvent(int watch ATTRIBUTE_UNUSED,
     virConnectPtr        conn = data;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
     if(!priv) return;
-    if(!priv->xshandle) return;
+
+    xenUnifiedLock(priv);
+
+    if(!priv->xshandle)
+        goto cleanup;
 
     event = xs_read_watch(priv->xshandle, &stringCount);
     if (!event)
-        return;
+        goto cleanup;
 
     path  = event[XS_WATCH_PATH];
     token = event[XS_WATCH_TOKEN];
@@ -1173,10 +1230,17 @@ void xenStoreWatchEvent(int watch ATTRIBUTE_UNUSED,
     if( sw )
         sw->cb(conn, path, token, sw->opaque);
     VIR_FREE(event);
+
+cleanup:
+    xenUnifiedUnlock(priv);
 }
 
-#ifndef PROXY
-/* The domain callback for the @introduceDomain watch */
+
+/*
+ * The domain callback for the @introduceDomain watch
+ *
+ * The lock on 'priv' is held when calling this
+ */
 int xenStoreDomainIntroduced(virConnectPtr conn,
                              const char *path ATTRIBUTE_UNUSED,
                              const char *token ATTRIBUTE_UNUSED,
@@ -1251,7 +1315,11 @@ retry:
     return 0;
 }
 
-/* The domain callback for the @destroyDomain watch */
+/*
+ * The domain callback for the @destroyDomain watch
+ *
+ * The lock on 'priv' is held when calling this
+ */
 int xenStoreDomainReleased(virConnectPtr conn,
                             const char *path  ATTRIBUTE_UNUSED,
                             const char *token ATTRIBUTE_UNUSED,

@@ -298,25 +298,27 @@ xenInotifyEvent(int watch ATTRIBUTE_UNUSED,
         return;
     }
 
+    xenUnifiedLock(priv);
+
 reread:
     got = read(fd, buf, sizeof(buf));
     if (got == -1) {
         if (errno == EINTR)
             goto reread;
-        return;
+        goto cleanup;
     }
 
     tmp = buf;
     while (got) {
         if (got < sizeof(struct inotify_event))
-            return; /* bad */
+            goto cleanup; /* bad */
 
         e = (struct inotify_event *)tmp;
         tmp += sizeof(struct inotify_event);
         got -= sizeof(struct inotify_event);
 
         if (got < e->len)
-            return;
+            goto cleanup;
 
         tmp += e->len;
         got -= e->len;
@@ -340,14 +342,14 @@ reread:
             if (xenInotifyRemoveDomainConfigInfo(conn, fname) < 0 ) {
                 virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("Error adding file to config cache"));
-                return;
+                goto cleanup;
             }
         } else if (e->mask & ( IN_CREATE | IN_CLOSE_WRITE | IN_MOVED_TO) ) {
             virDomainEventPtr event;
             if (xenInotifyAddDomainConfigInfo(conn, fname) < 0 ) {
                 virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("Error adding file to config cache"));
-                return;
+                goto cleanup;
             }
 
             event = xenInotifyDomainEventFromFile(conn, fname,
@@ -363,6 +365,9 @@ reread:
         }
 
     }
+
+cleanup:
+    xenUnifiedUnlock(priv);
 }
 
 /**
@@ -458,7 +463,7 @@ xenInotifyOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
         DEBUG0("Failed to add inotify handle, disabling events");
     }
 
-    conn->refs++;
+    virConnectRef(conn);
     return 0;
 }
 

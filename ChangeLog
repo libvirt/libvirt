@@ -1,3 +1,11 @@
+Wed Jan 21 18:10:12 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Make Xen driver threadsafe
+	* src/proxy_internal.c, src/xen_inotify.c, src/xen_internal.c,
+	src/xen_unified.c, src/xen_unified.h, src/xend_internal.c,
+	src/xm_internal.c, src/xs_internal.c, src/xs_internal.h: Add
+	mutex locking of shared state
+
 Wed Jan 21 10:48:12 IST 2009 Mark McLoughlin <markmc@redhat.com>
 
 	If you un-install libvirt and re-install it, you get a warning

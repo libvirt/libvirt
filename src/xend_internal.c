@@ -1941,17 +1941,24 @@ xenDaemonParseSxprGraphicsOld(virConnectPtr conn,
                               int hvm,
                               int xendConfigVersion)
 {
+#ifndef PROXY
+    xenUnifiedPrivatePtr priv = conn->privateData;
+#endif
     const char *tmp;
     virDomainGraphicsDefPtr graphics = NULL;
 
     if ((tmp = sexpr_fmt_node(root, "domain/image/%s/vnc", hvm ? "hvm" : "linux")) &&
         tmp[0] == '1') {
         /* Graphics device (HVM, or old (pre-3.0.4) style PV VNC config) */
-        int port = xenStoreDomainGetVNCPort(conn, def->id);
+        int port;
         const char *listenAddr = sexpr_fmt_node(root, "domain/image/%s/vnclisten", hvm ? "hvm" : "linux");
         const char *vncPasswd = sexpr_fmt_node(root, "domain/image/%s/vncpasswd", hvm ? "hvm" : "linux");
         const char *keymap = sexpr_fmt_node(root, "domain/image/%s/keymap", hvm ? "hvm" : "linux");
         const char *unused = sexpr_fmt_node(root, "domain/image/%s/vncunused", hvm ? "hvm" : "linux");
+
+        xenUnifiedLock(priv);
+        port = xenStoreDomainGetVNCPort(conn, def->id);
+        xenUnifiedUnlock(priv);
 
         if (VIR_ALLOC(graphics) < 0)
             goto no_memory;
@@ -2017,6 +2024,9 @@ xenDaemonParseSxprGraphicsNew(virConnectPtr conn,
                               virDomainDefPtr def,
                               const struct sexpr *root)
 {
+#ifndef PROXY
+    xenUnifiedPrivatePtr priv = conn->privateData;
+#endif
     virDomainGraphicsDefPtr graphics = NULL;
     const struct sexpr *cur, *node;
     const char *tmp;
@@ -2048,15 +2058,20 @@ xenDaemonParseSxprGraphicsNew(virConnectPtr conn,
                     !(graphics->data.sdl.xauth = strdup(xauth)))
                     goto no_memory;
             } else {
-                int port = xenStoreDomainGetVNCPort(conn, def->id);
-                if (port == -1) {
-                    // Didn't find port entry in xenstore
-                    port = sexpr_int(node, "device/vfb/vncdisplay");
-                }
+                int port;
                 const char *listenAddr = sexpr_node(node, "device/vfb/vnclisten");
                 const char *vncPasswd = sexpr_node(node, "device/vfb/vncpasswd");;
                 const char *keymap = sexpr_node(node, "device/vfb/keymap");
                 const char *unused = sexpr_node(node, "device/vfb/vncunused");
+
+                xenUnifiedLock(priv);
+                port = xenStoreDomainGetVNCPort(conn, def->id);
+                xenUnifiedUnlock(priv);
+
+                if (port == -1) {
+                    // Didn't find port entry in xenstore
+                    port = sexpr_int(node, "device/vfb/vncdisplay");
+                }
 
                 if ((unused && STREQ(unused, "1")) || port == -1) {
                     graphics->data.vnc.autoport = 1;
@@ -2114,6 +2129,9 @@ xenDaemonParseSxpr(virConnectPtr conn,
                    int xendConfigVersion,
                    const char *cpus)
 {
+#ifndef PROXY
+    xenUnifiedPrivatePtr priv = conn->privateData;
+#endif
     const char *tmp;
     virDomainDefPtr def;
     int hvm = 0;
@@ -2333,7 +2351,9 @@ xenDaemonParseSxpr(virConnectPtr conn,
         goto error;
 
     /* Character device config */
+    xenUnifiedLock(priv);
     tty = xenStoreDomainGetConsolePath(conn, def->id);
+    xenUnifiedUnlock(priv);
     if (hvm) {
         tmp = sexpr_node(root, "domain/image/hvm/serial");
         if (tmp && STRNEQ(tmp, "none")) {
@@ -5442,14 +5462,17 @@ virDomainXMLDevID(virDomainPtr domain,
                   char *ref,
                   int ref_len)
 {
+    xenUnifiedPrivatePtr priv = domain->conn->privateData;
     char *xref;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
         strcpy(class, "vbd");
         if (dev->data.disk->dst == NULL)
             return -1;
+        xenUnifiedLock(priv);
         xref = xenStoreDomainGetDiskID(domain->conn, domain->id,
                                        dev->data.disk->dst);
+        xenUnifiedUnlock(priv);
         if (xref == NULL)
             return -1;
 
@@ -5465,8 +5488,10 @@ virDomainXMLDevID(virDomainPtr domain,
 
         strcpy(class, "vif");
 
+        xenUnifiedLock(priv);
         xref = xenStoreDomainGetNetworkID(domain->conn, domain->id,
                                           mac);
+        xenUnifiedUnlock(priv);
         if (xref == NULL)
             return -1;
 
