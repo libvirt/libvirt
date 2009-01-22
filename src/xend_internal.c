@@ -75,30 +75,6 @@
 #define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 3
 #endif
 
-/**
- * xend_connection_type:
- *
- * The connection to the Xen Daemon can be done either though a normal TCP
- * socket or a local domain direct connection.
- */
-enum xend_connection_type {
-    XEND_DOMAIN,
-    XEND_TCP,
-};
-
-/**
- * xend:
- *
- * Structure associated to a connection to a Xen daemon
- */
-struct xend {
-    int len;
-    int type;
-    struct sockaddr *addr;
-    struct sockaddr_un addr_un;
-    struct sockaddr_in addr_in;
-};
-
 
 #ifndef PROXY
 static int
@@ -146,7 +122,7 @@ do_connect(virConnectPtr xend)
     int no_slow_start = 1;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) xend->privateData;
 
-    s = socket(priv->type, SOCK_STREAM, 0);
+    s = socket(priv->addrfamily, SOCK_STREAM, priv->addrprotocol);
     if (s == -1) {
         virXendError(xend, VIR_ERR_INTERNAL_ERROR,
                      "%s", _("failed to create a socket"));
@@ -160,7 +136,7 @@ do_connect(virConnectPtr xend)
                sizeof(no_slow_start));
 
 
-    if (connect(s, priv->addr, priv->len) == -1) {
+    if (connect(s, (struct sockaddr *)&priv->addr, priv->addrlen) == -1) {
         serrno = errno;
         close(s);
         errno = serrno;
@@ -774,17 +750,15 @@ xenDaemonOpen_unix(virConnectPtr conn, const char *path)
     if ((conn == NULL) || (path == NULL))
         return (-1);
 
-    addr = &priv->addr_un;
+    memset(&priv->addr, 0, sizeof(priv->addr));
+    priv->addrfamily = AF_UNIX;
+    priv->addrprotocol = PF_UNIX;
+    priv->addrlen = sizeof(struct sockaddr_un);
+
+    addr = (struct sockaddr_un *)&priv->addr;
     addr->sun_family = AF_UNIX;
     memset(addr->sun_path, 0, sizeof(addr->sun_path));
     strncpy(addr->sun_path, path, sizeof(addr->sun_path));
-
-    priv->len = sizeof(addr->sun_family) + strlen(addr->sun_path);
-    if ((unsigned int) priv->len > sizeof(addr->sun_path))
-        priv->len = sizeof(addr->sun_path);
-
-    priv->addr = (struct sockaddr *) addr;
-    priv->type = PF_UNIX;
 
     return (0);
 }
@@ -802,38 +776,71 @@ xenDaemonOpen_unix(virConnectPtr conn, const char *path)
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-xenDaemonOpen_tcp(virConnectPtr conn, const char *host, int port)
+xenDaemonOpen_tcp(virConnectPtr conn, const char *host, const char *port)
 {
-    struct in_addr ip;
-    struct hostent *pent;
     xenUnifiedPrivatePtr priv;
+    struct addrinfo *res, *r;
+    struct addrinfo hints;
+    int saved_errno = EINVAL;
+    int ret;
 
-    if ((conn == NULL) || (host == NULL) || (port <= 0))
+    if ((conn == NULL) || (host == NULL) || (port == NULL))
         return (-1);
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
-    pent = gethostbyname(host);
-    if (pent == NULL) {
-        if (inet_aton(host, &ip) == 0) {
-            virXendError(NULL, VIR_ERR_UNKNOWN_HOST,
-                         _("gethostbyname failed: %s"), host);
-            errno = ESRCH;
-            return (-1);
-        }
-    } else {
-        memcpy(&ip, pent->h_addr_list[0], sizeof(ip));
+    priv->addrlen = 0;
+    memset(&priv->addr, 0, sizeof(priv->addr));
+
+    // http://people.redhat.com/drepper/userapi-ipv6.html
+    memset (&hints, 0, sizeof hints);
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_ADDRCONFIG;
+
+    ret = getaddrinfo (host, port, &hints, &res);
+    if (ret != 0) {
+        virXendError(NULL, VIR_ERR_UNKNOWN_HOST,
+                     _("unable to resolve hostname '%s': %s"),
+                     host, gai_strerror (ret));
+        return -1;
     }
 
-    priv->len = sizeof(struct sockaddr_in);
-    priv->addr = (struct sockaddr *) &priv->addr_in;
-    priv->type = PF_INET;
+    /* Try to connect to each returned address in turn. */
+    for (r = res; r; r = r->ai_next) {
+        int sock;
 
-    priv->addr_in.sin_family = AF_INET;
-    priv->addr_in.sin_port = htons(port);
-    memcpy(&priv->addr_in.sin_addr, &ip, sizeof(ip));
+        sock = socket (r->ai_family, SOCK_STREAM, r->ai_protocol);
+        if (sock == -1) {
+            saved_errno = errno;
+            continue;
+        }
 
-    return (0);
+        if (connect (sock, r->ai_addr, r->ai_addrlen) == -1) {
+            saved_errno = errno;
+            close (sock);
+            continue;
+        }
+
+        priv->addrlen = r->ai_addrlen;
+        priv->addrfamily = r->ai_family;
+        priv->addrprotocol = r->ai_protocol;
+        memcpy(&priv->addr,
+               r->ai_addr,
+               r->ai_addrlen);
+        close(sock);
+        break;
+    }
+
+    freeaddrinfo (res);
+
+    if (!priv->addrlen) {
+        virReportSystemError(conn, saved_errno,
+                             _("unable to connect to '%s:%s'"),
+                             host, port);
+        return -1;
+    }
+
+    return 0;
 }
 
 
@@ -2750,14 +2757,18 @@ xenDaemonOpen(virConnectPtr conn,
         /*
          * try though http on port 8000
          */
-        ret = xenDaemonOpen_tcp(conn, "localhost", 8000);
+        ret = xenDaemonOpen_tcp(conn, "localhost", "8000");
         if (ret < 0)
             goto failed;
         ret = xend_detect_config_version(conn);
         if (ret == -1)
             goto failed;
     } else if (STRCASEEQ (conn->uri->scheme, "http")) {
-        ret = xenDaemonOpen_tcp(conn, conn->uri->server, conn->uri->port);
+        char *port;
+        if (virAsprintf(&port, "%d", conn->uri->port) == -1)
+            goto failed;
+        ret = xenDaemonOpen_tcp(conn, conn->uri->server, port);
+        VIR_FREE(port);
         if (ret < 0)
             goto failed;
         ret = xend_detect_config_version(conn);

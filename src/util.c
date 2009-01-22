@@ -49,6 +49,9 @@
 #include <paths.h>
 #endif
 #include <netdb.h>
+#ifdef HAVE_GETPWUID_R
+#include <pwd.h>
+#endif
 
 #include "virterror_internal.h"
 #include "logging.h"
@@ -1431,3 +1434,37 @@ int virKillProcess(pid_t pid, int sig)
     return kill(pid, sig);
 #endif
 }
+
+
+#ifdef HAVE_GETPWUID_R
+char *virGetUserDirectory(virConnectPtr conn,
+                          uid_t uid)
+{
+    char *strbuf;
+    char *ret;
+    struct passwd pwbuf;
+    struct passwd *pw;
+    size_t strbuflen = sysconf(_SC_GETPW_R_SIZE_MAX);
+
+    if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
+        virReportOOMError(conn);
+        return NULL;
+    }
+
+    if (getpwuid_r(uid, &pwbuf, strbuf, strbuflen, &pw) != 0) {
+        virReportSystemError(conn, errno,
+                             _("Failed to find user record for uid '%d'"),
+                             uid);
+        VIR_FREE(strbuf);
+        return NULL;
+    }
+
+    ret = strdup(pw->pw_dir);
+
+    VIR_FREE(strbuf);
+    if (!ret)
+        virReportOOMError(conn);
+
+    return ret;
+}
+#endif

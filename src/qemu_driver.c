@@ -382,7 +382,6 @@ next:
 static int
 qemudStartup(void) {
     uid_t uid = geteuid();
-    struct passwd *pw;
     char *base = NULL;
     char driverConf[PATH_MAX];
 
@@ -421,27 +420,30 @@ qemudStartup(void) {
                       "%s/run/libvirt/qemu/", LOCAL_STATE_DIR) == -1)
             goto out_of_memory;
     } else {
-        if (!(pw = getpwuid(uid))) {
-            qemudLog(QEMUD_ERR, _("Failed to find user record for uid '%d': %s\n"),
-                     uid, strerror(errno));
+        char *userdir = virGetUserDirectory(NULL, uid);
+        if (!userdir)
             goto error;
-        }
 
         if (virAsprintf(&qemu_driver->logDir,
-                        "%s/.libvirt/qemu/log", pw->pw_dir) == -1)
+                        "%s/.libvirt/qemu/log", userdir) == -1) {
+            VIR_FREE(userdir);
             goto out_of_memory;
+        }
 
-        if (virAsprintf(&base, "%s/.libvirt", pw->pw_dir) == -1)
+        if (virAsprintf(&base, "%s/.libvirt", userdir) == -1) {
+            VIR_FREE(userdir);
             goto out_of_memory;
+        }
+        VIR_FREE(userdir);
 
         if (virAsprintf(&qemu_driver->stateDir, "%s/qemu/run", base) == -1)
             goto out_of_memory;
     }
 
     if (virFileMakePath(qemu_driver->stateDir) < 0) {
-            qemudLog(QEMUD_ERR, _("Failed to create state dir '%s': %s\n"),
-                     qemu_driver->stateDir, strerror(errno));
-            goto error;
+        qemudLog(QEMUD_ERR, _("Failed to create state dir '%s': %s\n"),
+                 qemu_driver->stateDir, strerror(errno));
+        goto error;
     }
 
     /* Configuration paths are either ~/.libvirt/qemu/... (session) or

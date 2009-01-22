@@ -142,13 +142,11 @@ struct _xenUnifiedPrivate {
 
     int xendConfigVersion;      /* XenD config version */
 
-    /* XXX This code is not IPv6 aware. */
     /* connection to xend */
-    int type;                   /* PF_UNIX or PF_INET */
-    int len;                    /* length of addr */
-    struct sockaddr *addr;      /* type of address used */
-    struct sockaddr_un addr_un; /* the unix address */
-    struct sockaddr_in addr_in; /* the inet address */
+    struct sockaddr_storage addr;
+    socklen_t addrlen;
+    int addrfamily;
+    int addrprotocol;
 
     /* Keep track of the drivers which opened.  We keep a yes/no flag
      * here for each driver, corresponding to the array drivers in

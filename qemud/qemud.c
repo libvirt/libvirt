@@ -718,20 +718,18 @@ static int qemudInitPaths(struct qemud_server *server,
         if (snprintf(server->logDir, PATH_MAX, "%s/log/libvirt/", LOCAL_STATE_DIR) >= PATH_MAX)
             goto snprintf_error;
     } else {
-        struct passwd *pw;
+        char *userdir = virGetUserDirectory(NULL, uid);
 
-        if (!(pw = getpwuid(uid))) {
-            VIR_ERROR(_("Failed to find user record for uid '%d': %s"),
-                     uid, strerror(errno));
-            return -1;
+        if (snprintf(sockname, maxlen, "@%s/.libvirt/libvirt-sock", userdir) >= maxlen) {
+            VIR_FREE(userdir);
+            goto snprintf_error;
         }
 
-        if (snprintf(sockname, maxlen, "@%s/.libvirt/libvirt-sock", pw->pw_dir) >= maxlen)
+        if (snprintf(server->logDir, PATH_MAX, "%s/.libvirt/log", userdir) >= PATH_MAX) {
+            VIR_FREE(userdir);
             goto snprintf_error;
-
-        if (snprintf(server->logDir, PATH_MAX, "%s/.libvirt/log", pw->pw_dir) >= PATH_MAX)
-            goto snprintf_error;
-
+        }
+        VIR_FREE(userdir);
     } /* !remote */
 
     return 0;
@@ -2486,8 +2484,9 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
         if (getuid() != 0) {
             VIR_WARN0(_("Cannot set group when not running as root"));
         } else {
-            struct group *grp = getgrnam(unix_sock_group);
-            if (!grp) {
+            char buf[1024];
+            struct group grpdata, *grp;
+            if (getgrnam_r(unix_sock_group, &grpdata, buf, sizeof(buf), &grp) != 0 || !grp) {
                 VIR_ERROR(_("Failed to lookup group '%s'"), unix_sock_group);
                 goto free_and_fail;
             }

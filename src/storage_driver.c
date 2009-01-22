@@ -108,7 +108,6 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
 static int
 storageDriverStartup(void) {
     uid_t uid = geteuid();
-    struct passwd *pw;
     char *base = NULL;
     char driverConf[PATH_MAX];
 
@@ -125,16 +124,17 @@ storageDriverStartup(void) {
         if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)
             goto out_of_memory;
     } else {
-        if (!(pw = getpwuid(uid))) {
-            storageLog("Failed to find user record for uid '%d': %s",
-                       uid, strerror(errno));
-            goto out_of_memory;
-        }
+        char *userdir = virGetUserDirectory(NULL, uid);
 
-        if (virAsprintf(&base, "%s/.libvirt", pw->pw_dir) == -1) {
+        if (!userdir)
+            goto error;
+
+        if (virAsprintf(&base, "%s/.libvirt", userdir) == -1) {
             storageLog("out of memory in virAsprintf");
+            VIR_FREE(userdir);
             goto out_of_memory;
         }
+        VIR_FREE(userdir);
     }
 
     /* Configuration paths are either ~/.libvirt/storage/... (session) or

@@ -284,9 +284,6 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
 
     priv->handle = -1;
     priv->xendConfigVersion = -1;
-    priv->type = -1;
-    priv->len = -1;
-    priv->addr = NULL;
     priv->xshandle = NULL;
     priv->proxy = -1;
 

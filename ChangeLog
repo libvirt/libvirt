@@ -1,3 +1,18 @@
+Thu Jan 21 19:04:12 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Remove use of non-reentrant POSIX api calls
+	* configure.in: Check for  strtok_r getmntent_r getgrnam_r getpwuid_r
+	* proxy/libvirt_proxy.c: Remove initialize of obsolete fields
+	* qemud/qemud.c: Use virGetUserDirectory instead of getpwuid()
+	* src/libvirt_private.syms, src/util.c, src/util.h: Add a generic
+	virGetUserDirectory call around getpwuid()
+	* src/lxc_container.c, src/storage_backend_fs.c: Use getmntent_r()
+	* src/network_driver.c, src/qemu_driver.c, src/storage_driver.c,
+	src/remote_internal.c, src/uml_driver.c: Use virGetUserDirectory()
+	* src/openvz_driver.c: Use strtok_r()
+	* src/xen_unified.c, src/xen_unified.h, src/xend_internal.c:
+	Replace gethostname() with getaddrinfo()
+
 Thu Jan 22 20:17:35 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	xm_internal.c: fix locking bug: s/Lock/Unlock/
@@ -44,7 +59,7 @@ Thu Jan 22 09:51:29 PST 2009 John Levon <john.levon@sun.com>
 	tests/sexpr2xmldata/sexpr2xml-net-bridged.xml,
 	tests/sexpr2xmldata/sexpr2xml-net-e1000.xml: update tests
 
-Wed Jan 21 18:18:12 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+Thu Jan 22 18:18:12 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Missing test case fix up from Xen threadsafety changes
 	* tests/sexpr2xmltest.c, tests/Makefile.am: Pass a real

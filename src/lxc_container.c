@@ -414,19 +414,20 @@ static int lxcContainerMountNewFS(virDomainDefPtr vmDef)
 
 static int lxcContainerUnmountOldFS(void)
 {
-    struct mntent *mntent;
+    struct mntent mntent;
     char **mounts = NULL;
     int nmounts = 0;
     FILE *procmnt;
     int i;
+    char mntbuf[1024];
 
     if (!(procmnt = setmntent("/proc/mounts", "r"))) {
         virReportSystemError(NULL, errno, "%s",
                              _("failed to read /proc/mounts"));
         return -1;
     }
-    while ((mntent = getmntent(procmnt)) != NULL) {
-        if (!STRPREFIX(mntent->mnt_dir, "/.oldroot"))
+    while (getmntent_r(procmnt, &mntent, mntbuf, sizeof(mntbuf)) != NULL) {
+        if (!STRPREFIX(mntent.mnt_dir, "/.oldroot"))
             continue;
 
         if (VIR_REALLOC_N(mounts, nmounts+1) < 0) {
@@ -434,7 +435,7 @@ static int lxcContainerUnmountOldFS(void)
             lxcError(NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
             return -1;
         }
-        if (!(mounts[nmounts++] = strdup(mntent->mnt_dir))) {
+        if (!(mounts[nmounts++] = strdup(mntent.mnt_dir))) {
             endmntent(procmnt);
             lxcError(NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
             return -1;

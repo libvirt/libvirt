@@ -195,7 +195,6 @@ networkAutostartConfigs(struct network_driver *driver) {
 static int
 networkStartup(void) {
     uid_t uid = geteuid();
-    struct passwd *pw;
     char *base = NULL;
     int err;
 
@@ -216,19 +215,22 @@ networkStartup(void) {
         if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)
             goto out_of_memory;
     } else {
-        if (!(pw = getpwuid(uid))) {
-            networkLog(NETWORK_ERR, _("Failed to find user record for uid '%d': %s\n"),
-                     uid, strerror(errno));
-            goto out_of_memory;
-        }
+        char *userdir = virGetUserDirectory(NULL, uid);
+
+        if (!userdir)
+            goto error;
 
         if (virAsprintf(&driverState->logDir,
-                        "%s/.libvirt/qemu/log", pw->pw_dir) == -1)
-            goto out_of_memory;
-
-        if (virAsprintf(&base, "%s/.libvirt", pw->pw_dir) == -1) {
+                        "%s/.libvirt/qemu/log", userdir) == -1) {
+            VIR_FREE(userdir);
             goto out_of_memory;
         }
+
+        if (virAsprintf(&base, "%s/.libvirt", userdir) == -1) {
+            VIR_FREE(userdir);
+            goto out_of_memory;
+        }
+        VIR_FREE(userdir);
     }
 
     /* Configuration paths are either ~/.libvirt/qemu/... (session) or

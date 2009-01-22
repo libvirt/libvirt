@@ -310,6 +310,7 @@ virAsprintf;
 virRun;
 virSkipSpaces;
 virKillProcess;
+virGetUserDirectory;
 
 
 # uuid.h

@@ -172,4 +172,9 @@ char *virGetHostname(void);
 
 int virKillProcess(pid_t pid, int sig);
 
+#ifdef HAVE_GETPWUID_R
+char *virGetUserDirectory(virConnectPtr conn,
+                          uid_t uid);
+#endif
+
 #endif /* __VIR_UTIL_H__ */

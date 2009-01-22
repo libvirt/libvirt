@@ -385,7 +385,8 @@ static int
 virStorageBackendFileSystemIsMounted(virConnectPtr conn,
                                      virStoragePoolObjPtr pool) {
     FILE *mtab;
-    struct mntent *ent;
+    struct mntent ent;
+    char buf[1024];
 
     if ((mtab = fopen(_PATH_MOUNTED, "r")) == NULL) {
         virReportSystemError(conn, errno,
@@ -394,8 +395,8 @@ virStorageBackendFileSystemIsMounted(virConnectPtr conn,
         return -1;
     }
 
-    while ((ent = getmntent(mtab)) != NULL) {
-        if (STREQ(ent->mnt_dir, pool->def->target.path)) {
+    while ((getmntent_r(mtab, &ent, buf, sizeof(buf))) != NULL) {
+        if (STREQ(ent.mnt_dir, pool->def->target.path)) {
             fclose(mtab);
             return 1;
         }

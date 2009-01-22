@@ -448,11 +448,12 @@ openvzGenerateContainerVethName(int veid)
     if ( (ret = openvzReadConfigParam(veid, "NETIF", temp, sizeof(temp))) <= 0) {
         snprintf(temp, sizeof(temp), "eth0");
     } else {
+        char *saveptr;
         char   *s;
         int     max = 0;
 
         /* get maximum interface number (actually, it is the last one) */
-        for (s=strtok(temp, ";"); s; s=strtok(NULL, ";")) {
+        for (s=strtok_r(temp, ";", &saveptr); s; s=strtok_r(NULL, ";", &saveptr)) {
             int x;
 
             if (sscanf(s, "ifname=eth%d", &x) != 1) return NULL;

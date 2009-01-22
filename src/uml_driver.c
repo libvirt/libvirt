@@ -309,9 +309,9 @@ cleanup:
 static int
 umlStartup(void) {
     uid_t uid = geteuid();
-    struct passwd *pw;
     char *base = NULL;
     char driverConf[PATH_MAX];
+    char *userdir = NULL;
 
     if (VIR_ALLOC(uml_driver) < 0)
         return -1;
@@ -325,11 +325,9 @@ umlStartup(void) {
     /* Don't have a dom0 so start from 1 */
     uml_driver->nextvmid = 1;
 
-    if (!(pw = getpwuid(uid))) {
-        umlLog(VIR_LOG_ERROR, _("Failed to find user record for uid '%d': %s\n"),
-               uid, strerror(errno));
+    userdir = virGetUserDirectory(NULL, uid);
+    if (!userdir)
         goto error;
-    }
 
     if (!uid) {
         if (virAsprintf(&uml_driver->logDir,
@@ -339,16 +337,17 @@ umlStartup(void) {
         if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)
             goto out_of_memory;
     } else {
+
         if (virAsprintf(&uml_driver->logDir,
-                        "%s/.libvirt/uml/log", pw->pw_dir) == -1)
+                        "%s/.libvirt/uml/log", userdir) == -1)
             goto out_of_memory;
 
-        if (virAsprintf(&base, "%s/.libvirt", pw->pw_dir) == -1)
+        if (virAsprintf(&base, "%s/.libvirt", userdir) == -1)
             goto out_of_memory;
     }
 
     if (virAsprintf(&uml_driver->monitorDir,
-                    "%s/.uml", pw->pw_dir) == -1)
+                    "%s/.uml", userdir) == -1)
         goto out_of_memory;
 
     /* Configuration paths are either ~/.libvirt/uml/... (session) or
@@ -403,6 +402,8 @@ umlStartup(void) {
     umlAutostartConfigs(uml_driver);
 
     umlDriverUnlock(uml_driver);
+    VIR_FREE(userdir);
+
     return 0;
 
 out_of_memory:
@@ -410,6 +411,7 @@ out_of_memory:
               "%s", _("umlStartup: out of memory\n"));
 
 error:
+    VIR_FREE(userdir);
     VIR_FREE(base);
     umlDriverUnlock(uml_driver);
     umlShutdown();

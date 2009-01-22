@@ -605,19 +605,16 @@ doRemoteOpen (virConnectPtr conn,
     case trans_unix: {
         if (!sockname) {
             if (flags & VIR_DRV_OPEN_REMOTE_USER) {
-                struct passwd *pw;
-                uid_t uid = getuid();
+                char *userdir = virGetUserDirectory(conn, getuid());
 
-                if (!(pw = getpwuid(uid))) {
-                    virReportSystemError(conn, errno,
-                                         _("unable to lookup user '%d'"),
-                                         uid);
+                if (!userdir)
                     goto failed;
-                }
 
-                if (virAsprintf(&sockname, "@%s" LIBVIRTD_USER_UNIX_SOCKET, pw->pw_dir) < 0)
+                if (virAsprintf(&sockname, "@%s" LIBVIRTD_USER_UNIX_SOCKET, userdir) < 0) {
+                    VIR_FREE(userdir);
                     goto out_of_memory;
-
+                }
+                VIR_FREE(userdir);
             } else {
                 if (flags & VIR_DRV_OPEN_REMOTE_RO)
                     sockname = strdup (LIBVIRTD_PRIV_UNIX_SOCKET_RO);
