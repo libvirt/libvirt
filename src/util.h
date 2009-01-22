@@ -177,4 +177,7 @@ char *virGetUserDirectory(virConnectPtr conn,
                           uid_t uid);
 #endif
 
+int virRandomInitialize(unsigned int seed);
+int virRandom(int max);
+
 #endif /* __VIR_UTIL_H__ */

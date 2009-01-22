@@ -21,6 +21,7 @@
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif
+#include <time.h>
 
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
@@ -257,7 +258,8 @@ virInitialize(void)
     initialized = 1;
 
     if (virThreadInitialize() < 0 ||
-        virErrorInitialize() < 0)
+        virErrorInitialize() < 0 ||
+        virRandomInitialize(time(NULL) ^ getpid()))
         return -1;
 
 #ifdef ENABLE_DEBUG
@@ -332,23 +334,19 @@ DllMain (HINSTANCE instance ATTRIBUTE_UNUSED,
 {
     switch (reason) {
     case DLL_PROCESS_ATTACH:
-        fprintf(stderr, "Initializing DLL\n");
         virInitialize();
         break;
 
     case DLL_THREAD_ATTACH:
-        fprintf(stderr, "Thread start\n");
         /* Nothing todo in libvirt yet */
         break;
 
     case DLL_THREAD_DETACH:
-        fprintf(stderr, "Thread exit\n");
         /* Release per-thread local data */
         virThreadOnExit();
         break;
 
     case DLL_PROCESS_DETACH:
-        fprintf(stderr, "Process exit\n");
         /* Don't bother releasing per-thread data
            since (hopefully) windows cleans up
            everything on process exit */

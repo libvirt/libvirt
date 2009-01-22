@@ -117,7 +117,7 @@ sc_prohibit_nonreentrant:
 	@fail=0 ; \
 	for i in $(NON_REENTRANT) ; \
 	do \
-	   grep -nE "\<$$i\>[:space:]*\(" $$($(VC_LIST_EXCEPT)) && \
+	   grep --before 2 --after 1 -nE "\<$$i\>[:space:]*\(" $$($(VC_LIST_EXCEPT)) && \
 	     fail=1 && echo "$(ME): use $${i}_r, not $${i}" || : ; \
 	done ; \
 	exit $$fail

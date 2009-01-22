@@ -35,6 +35,7 @@
 
 #include "c-ctype.h"
 #include "internal.h"
+#include "util.h"
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 
@@ -74,9 +75,8 @@ static int
 virUUIDGeneratePseudoRandomBytes(unsigned char *buf,
                                  int buflen)
 {
-    srand(time(NULL));
     while (buflen > 0) {
-        *buf = (int) (255.0 * (rand() / (double) RAND_MAX));
+        *buf = virRandom(256);
         buflen--;
     }
 

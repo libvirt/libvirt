@@ -1,4 +1,13 @@
-Thu Jan 21 19:04:12 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+Thu Jan 21 19:44:12 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Use the GNULIB random_r function
+	* Makefile.maint: print 4 lines of context when complaining
+	about prohibited POSIX apis
+	* src/libvirt.c: Initialize random number generator
+	* src/util.c, src/util.h: Generate API for random number gen
+	* src/uuid.: Use generic random number generator API
+
+Thu Jan 21 19:41:12 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Remove use of non-reentrant POSIX api calls
 	* configure.in: Check for  strtok_r getmntent_r getgrnam_r getpwuid_r

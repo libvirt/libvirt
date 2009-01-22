@@ -32,6 +32,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <poll.h>
+#include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
@@ -59,6 +60,7 @@
 #include "buf.h"
 #include "util.h"
 #include "memory.h"
+#include "threads.h"
 
 #ifndef NSIG
 # define NSIG 32
@@ -1285,9 +1287,9 @@ void virGenerateMacAddr(const unsigned char *prefix,
     addr[0] = prefix[0];
     addr[1] = prefix[1];
     addr[2] = prefix[2];
-    addr[3] = (int)(256*(rand()/(RAND_MAX+1.0)));
-    addr[4] = (int)(256*(rand()/(RAND_MAX+1.0)));
-    addr[5] = (int)(256*(rand()/(RAND_MAX+1.0)));
+    addr[3] = virRandom(256);
+    addr[4] = virRandom(256);
+    addr[5] = virRandom(256);
 }
 
 
@@ -1433,6 +1435,36 @@ int virKillProcess(pid_t pid, int sig)
 #else
     return kill(pid, sig);
 #endif
+}
+
+
+static char randomState[128];
+static struct random_data randomData;
+static virMutex randomLock;
+
+int virRandomInitialize(unsigned int seed)
+{
+    if (virMutexInit(&randomLock) < 0)
+        return -1;
+
+    if (initstate_r(seed,
+                    randomState,
+                    sizeof(randomState),
+                    &randomData) < 0)
+        return -1;
+
+    return 0;
+}
+
+int virRandom(int max)
+{
+    int32_t ret;
+
+    virMutexLock(&randomLock);
+    random_r(&randomData, &ret);
+    virMutexUnlock(&randomLock);
+
+    return (int) ((double)max * ((double)ret / (double)RAND_MAX));
 }
 
 
