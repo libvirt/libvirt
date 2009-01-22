@@ -1,3 +1,10 @@
+Wed Jan 21 18:18:12 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Missing test case fix up from Xen threadsafety changes
+	* tests/sexpr2xmltest.c, tests/Makefile.am: Pass a real
+	connection object into the xenDaemonParseSxprString()
+	method, since it needs to use the priv object.
+
 Thu Jan 22 09:23:53 PST 2009 John Levon <john.levon@sun.com>
 
 	Least privilege support for Solaris

@@ -121,7 +121,7 @@ xml2sexprtest_SOURCES = \
 xml2sexprtest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
 
 sexpr2xmltest_SOURCES = \
-	sexpr2xmltest.c \
+	sexpr2xmltest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
 sexpr2xmltest_LDADD = ../src/libvirt_driver_xen.la $(LDADDS)
 

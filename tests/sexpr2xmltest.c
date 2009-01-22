@@ -6,11 +6,15 @@
 
 #include "internal.h"
 #include "xml.h"
+#include "datatypes.h"
+#include "xen_unified.h"
 #include "xend_internal.h"
 #include "testutils.h"
+#include "testutilsxen.h"
 
 static char *progname;
 static char *abs_srcdir;
+static virCapsPtr caps;
 
 #define MAX_FILE 4096
 
@@ -23,6 +27,12 @@ static int testCompareFiles(const char *xml, const char *sexpr,
   char *sexprPtr = &(sexprData[0]);
   int ret = -1;
   virDomainDefPtr def = NULL;
+  virConnectPtr conn;
+  struct _xenUnifiedPrivate priv;
+
+
+  conn = virGetConnect();
+  if (!conn) goto fail;
 
   if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
       goto fail;
@@ -30,7 +40,15 @@ static int testCompareFiles(const char *xml, const char *sexpr,
   if (virtTestLoadFile(sexpr, &sexprPtr, MAX_FILE) < 0)
       goto fail;
 
-  if (!(def = xenDaemonParseSxprString(NULL, sexprData, xendConfigVersion)))
+  memset(&priv, 0, sizeof priv);
+  /* Many puppies died to bring you this code. */
+  priv.xendConfigVersion = xendConfigVersion;
+  priv.caps = caps;
+  conn->privateData = &priv;
+  if (virMutexInit(&priv.lock) < 0)
+      goto fail;
+
+  if (!(def = xenDaemonParseSxprString(conn, sexprData, xendConfigVersion)))
       goto fail;
 
   if (!(gotxml = virDomainDefFormat(NULL, def, 0)))
@@ -46,6 +64,7 @@ static int testCompareFiles(const char *xml, const char *sexpr,
  fail:
   free(gotxml);
   virDomainDefFree(def);
+  virUnrefConnect(conn);
 
   return ret;
 }
@@ -89,6 +108,9 @@ mymain(int argc, char **argv)
         fprintf(stderr, "Usage: %s\n", progname);
         return(EXIT_FAILURE);
     }
+
+    if (!(caps = testXenCapsInit()))
+        return(EXIT_FAILURE);
 
 #define DO_TEST(in, out, version)                                      \
     do {                                                               \
