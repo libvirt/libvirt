@@ -23,6 +23,7 @@
     <interface type='bridge'>
       <mac address='00:11:22:33:44:55'/>
       <source bridge='xenbr2'/>
+      <script path='vif-bridge'/>
       <target dev='vif6.0'/>
     </interface>
     <console type='pty'>

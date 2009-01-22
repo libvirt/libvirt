@@ -288,6 +288,7 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         VIR_FREE(def->data.bridge.brname);
+        VIR_FREE(def->data.bridge.script);
         break;
     }
 
@@ -897,7 +898,8 @@ virDomainNetDefParseXML(virConnectPtr conn,
                     VIR_FREE(ifname);
                 }
             } else if ((script == NULL) &&
-                       (def->type == VIR_DOMAIN_NET_TYPE_ETHERNET) &&
+                       (def->type == VIR_DOMAIN_NET_TYPE_ETHERNET ||
+                        def->type == VIR_DOMAIN_NET_TYPE_BRIDGE) &&
                        xmlStrEqual(cur->name, BAD_CAST "script")) {
                 script = virXMLPropString(cur, "path");
             } else if (xmlStrEqual (cur->name, BAD_CAST "model")) {
@@ -948,6 +950,10 @@ virDomainNetDefParseXML(virConnectPtr conn,
         }
         def->data.bridge.brname = bridge;
         bridge = NULL;
+        if (script != NULL) {
+            def->data.bridge.script = script;
+            script = NULL;
+        }
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
@@ -2883,6 +2889,9 @@ virDomainNetDefFormat(virConnectPtr conn,
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         virBufferEscapeString(buf, "      <source bridge='%s'/>\n",
                               def->data.bridge.brname);
+        if (def->data.bridge.script)
+            virBufferEscapeString(buf, "      <script path='%s'/>\n",
+                                  def->data.bridge.script);
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:

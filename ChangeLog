@@ -1,3 +1,31 @@
+Thu Jan 22 09:51:29 PST 2009 John Levon <john.levon@sun.com>
+
+	* src/domain_conf.h, src/domain_conf.c, src/xend_internal.c,
+	src/xm_internal.c: Support script for bridge interface type
+
+	* tests/sexpr2xmldata/sexpr2xml-curmem.xml,
+	tests/sexpr2xmldata/sexpr2xml-disk-block-shareable.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-localtime.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-parallel-tcp.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-serial-file.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-serial-null.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-serial-pipe.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-serial-pty.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-serial-stdio.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-serial-tcp-telnet.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-serial-tcp.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-serial-udp.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-serial-unix.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-sound-all.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-sound.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-usbmouse.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-usbtablet.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-utc.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv-v2.xml,
+	tests/sexpr2xmldata/sexpr2xml-fv.xml,
+	tests/sexpr2xmldata/sexpr2xml-net-bridged.xml,
+	tests/sexpr2xmldata/sexpr2xml-net-e1000.xml: update tests
+
 Wed Jan 21 18:18:12 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Missing test case fix up from Xen threadsafety changes

@@ -61,6 +61,12 @@
 
 #endif /* PROXY */
 
+#ifdef __sun
+#define DEFAULT_VIF_SCRIPT "vif-vnic"
+#else
+#define DEFAULT_VIF_SCRIPT "vif-bridge"
+#endif
+
 #ifdef WITH_RHEL5_API
 #define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 0
 #define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 2
@@ -1739,15 +1745,22 @@ xenDaemonParseSxprNets(virConnectPtr conn,
             if (VIR_ALLOC(net) < 0)
                 goto no_memory;
 
-            if ((tmp2 && strstr(tmp2, "bridge")) || tmp) {
+            if (tmp != NULL || (STREQ(tmp2, DEFAULT_VIF_SCRIPT))) {
                 net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
                 /* XXX virtual network reverse resolve */
 
                 if (tmp &&
                     !(net->data.bridge.brname = strdup(tmp)))
                     goto no_memory;
+                if (tmp2 &&
+                    net->type == VIR_DOMAIN_NET_TYPE_BRIDGE &&
+                    !(net->data.bridge.script = strdup(tmp2)))
+                    goto no_memory;
             } else {
                 net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+                if (tmp2 &&
+                    !(net->data.ethernet.script = strdup(tmp2)))
+                    goto no_memory;
             }
 
             tmp = sexpr_node(node, "device/vif/vifname");
@@ -1784,11 +1797,6 @@ xenDaemonParseSxprNets(virConnectPtr conn,
             tmp = sexpr_node(node, "device/vif/ip");
             if (tmp &&
                 !(net->data.ethernet.ipaddr = strdup(tmp)))
-                goto no_memory;
-
-            if (tmp2 &&
-                net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
-                !(net->data.ethernet.script = strdup(tmp2)))
                 goto no_memory;
 
             if (model &&
@@ -5089,6 +5097,8 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
                        int xendConfigVersion,
                        int isAttach)
 {
+    const char *script = DEFAULT_VIF_SCRIPT;
+
     if (def->type != VIR_DOMAIN_NET_TYPE_BRIDGE &&
         def->type != VIR_DOMAIN_NET_TYPE_NETWORK &&
         def->type != VIR_DOMAIN_NET_TYPE_ETHERNET) {
@@ -5110,7 +5120,10 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         virBufferVSprintf(buf, "(bridge '%s')", def->data.bridge.brname);
-        virBufferAddLit(buf, "(script 'vif-bridge')");
+        if (def->data.bridge.script)
+            script = def->data.bridge.script;
+
+        virBufferVSprintf(buf, "(script '%s')", script);
         break;
 
     case VIR_DOMAIN_NET_TYPE_NETWORK:
@@ -5133,7 +5146,7 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
             return -1;
         }
         virBufferVSprintf(buf, "(bridge '%s')", bridge);
-        virBufferAddLit(buf, "(script 'vif-bridge')");
+        virBufferVSprintf(buf, "(script '%s')", script);
         VIR_FREE(bridge);
     }
     break;

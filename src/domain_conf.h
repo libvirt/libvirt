@@ -154,6 +154,7 @@ struct _virDomainNetDef {
         } network;
         struct {
             char *brname;
+            char *script;
         } bridge;
     } data;
     char *ifname;

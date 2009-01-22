@@ -1075,14 +1075,19 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                 net->mac[5] = rawmac[5];
             }
 
-            if (bridge[0] || STREQ(script, "vif-bridge"))
+            if (bridge[0] || STREQ(script, "vif-bridge") ||
+                STREQ(script, "vif-vnic")) {
                 net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
-            else
+            } else {
                 net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+            }
 
             if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
                 if (bridge[0] &&
                     !(net->data.bridge.brname = strdup(bridge)))
+                    goto no_memory;
+                if (script[0] &&
+                    !(net->data.bridge.script = strdup(script)))
                     goto no_memory;
             } else {
                 if (script[0] &&

@@ -32,6 +32,7 @@
     <interface type='bridge'>
       <mac address='00:16:3e:1b:b1:47'/>
       <source bridge='xenbr0'/>
+      <script path='vif-bridge'/>
       <target dev='vif3.0'/>
     </interface>
     <input type='mouse' bus='ps2'/>
