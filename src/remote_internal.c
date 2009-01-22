@@ -957,18 +957,21 @@ remoteOpen (virConnectPtr conn,
     }
 
     /*
-     * If URI is NULL, then do a UNIX connection
-     * possibly auto-spawning unprivileged server
-     * and probe remote server for URI
+     * If URI is NULL, then do a UNIX connection possibly auto-spawning
+     * unprivileged server and probe remote server for URI. On Solaris,
+     * this isn't supported, but we may be privileged enough to connect
+     * to the UNIX socket anyway.
      */
     if (!conn->uri) {
         DEBUG0("Auto-probe remote URI");
         rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
+#ifndef __sun
         if (getuid() > 0) {
             DEBUG0("Auto-spawn user daemon instance");
             rflags |= VIR_DRV_OPEN_REMOTE_USER;
             rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
         }
+#endif
     }
 
     priv->sock = -1;

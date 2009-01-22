@@ -42,7 +42,7 @@
 #include "buf.h"
 #include "uuid.h"
 #include "xen_unified.h"
-#include "xen_internal.h" /* for DOM0_INTERFACE_VERSION */
+#include "xen_internal.h"
 #include "xs_internal.h" /* To extract VNC port & Serial console TTY */
 #include "memory.h"
 
@@ -161,9 +161,10 @@ do_connect(virConnectPtr xend)
         s = -1;
 
         /*
-         * Connecting to XenD as root is mandatory, so log this error
+         * Connecting to XenD when privileged is mandatory, so log this
+         * error
          */
-        if (getuid() == 0) {
+        if (xenHavePrivilege()) {
             virXendError(xend, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("failed to connect to xend"));
         }

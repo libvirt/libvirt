@@ -84,6 +84,39 @@
 #endif
 
 
+#ifdef __sun
+#include <ucred.h>
+#include <priv.h>
+
+#ifndef PRIV_VIRT_MANAGE
+#define PRIV_VIRT_MANAGE ((const char *)"virt_manage")
+#endif
+
+#ifndef PRIV_XVM_CONTROL
+#define PRIV_XVM_CONTROL ((const char *)"xvm_control")
+#endif
+
+#define PU_RESETGROUPS          0x0001  /* Remove supplemental groups */
+#define PU_CLEARLIMITSET        0x0008  /* L=0 */
+
+extern int __init_daemon_priv(int, uid_t, gid_t, ...);
+
+#define SYSTEM_UID 60
+
+static gid_t unix_sock_gid = 60; /* Not used */
+static int unix_sock_rw_mask = 0666;
+static int unix_sock_ro_mask = 0666;
+
+#else
+
+#define SYSTEM_UID 0
+
+static gid_t unix_sock_gid = 0; /* Only root by default */
+static int unix_sock_rw_mask = 0700; /* Allow user only */
+static int unix_sock_ro_mask = 0777; /* Allow world */
+
+#endif /* __sun */
+
 static int godaemon = 0;        /* -d: Be a daemon */
 static int verbose = 0;         /* -v: Verbose mode */
 static int timeout = -1;        /* -t: Shutdown timeout */
@@ -101,10 +134,6 @@ static int listen_tcp = 0;
 static char *listen_addr  = (char *) LIBVIRTD_LISTEN_ADDR;
 static char *tls_port = (char *) LIBVIRTD_TLS_PORT;
 static char *tcp_port = (char *) LIBVIRTD_TCP_PORT;
-
-static gid_t unix_sock_gid = 0; /* Only root by default */
-static int unix_sock_rw_mask = 0700; /* Allow user only */
-static int unix_sock_ro_mask = 0777; /* Allow world */
 
 #if HAVE_POLKIT
 static int auth_unix_rw = REMOTE_AUTH_POLKIT;
@@ -669,10 +698,11 @@ cleanup:
 static int qemudInitPaths(struct qemud_server *server,
                           char *sockname,
                           char *roSockname,
-                          int maxlen) {
+                          int maxlen)
+{
     uid_t uid = geteuid();
 
-    if (!uid) {
+    if (uid == SYSTEM_UID) {
         if (snprintf (sockname, maxlen, "%s/run/libvirt/libvirt-sock",
                       LOCAL_STATE_DIR) >= maxlen)
             goto snprintf_error;
@@ -1154,6 +1184,29 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
         close(fd);
         return -1;
     }
+
+#ifdef __sun
+    {
+        ucred_t *ucred = NULL;
+        const priv_set_t *privs;
+
+        if (getpeerucred (fd, &ucred) == -1 ||
+            (privs = ucred_getprivset (ucred, PRIV_EFFECTIVE)) == NULL) {
+            if (ucred != NULL)
+                ucred_free (ucred);
+            close (fd);
+            return -1;
+        }
+
+        if (!priv_ismember (privs, PRIV_VIRT_MANAGE)) {
+            ucred_free (ucred);
+            close (fd);
+            return -1;
+        }
+
+        ucred_free (ucred);
+    }
+#endif /* __sun */
 
     /* Disable Nagle.  Unix sockets will ignore this. */
     setsockopt (fd, IPPROTO_TCP, TCP_NODELAY, (void *)&no_slow_start,
@@ -2524,6 +2577,30 @@ version (const char *argv0)
     printf ("%s (%s) %s\n", argv0, PACKAGE_NAME, PACKAGE_VERSION);
 }
 
+#ifdef __sun
+static int
+qemudSetupPrivs (void)
+{
+    chown ("/var/run/libvirt", SYSTEM_UID, SYSTEM_UID);
+
+    if (__init_daemon_priv (PU_RESETGROUPS | PU_CLEARLIMITSET,
+        SYSTEM_UID, SYSTEM_UID, PRIV_XVM_CONTROL, NULL)) {
+        fprintf (stderr, "additional privileges are required\n");
+        return -1;
+    }
+
+    if (priv_set (PRIV_OFF, PRIV_ALLSETS, PRIV_FILE_LINK_ANY, PRIV_PROC_INFO,
+        PRIV_PROC_SESSION, PRIV_PROC_EXEC, PRIV_PROC_FORK, NULL)) {
+        fprintf (stderr, "failed to set reduced privileges\n");
+        return -1;
+    }
+
+    return 0;
+}
+#else
+#define qemudSetupPrivs() 0
+#endif
+
 /* Print command-line usage. */
 static void
 usage (const char *argv0)
@@ -2700,6 +2777,21 @@ int main(int argc, char **argv) {
 
     sig_action.sa_handler = SIG_IGN;
     sigaction(SIGPIPE, &sig_action, NULL);
+
+    /* Ensure the rundir exists (on tmpfs on some systems) */
+    if (geteuid () == 0) {
+        const char *rundir = LOCAL_STATE_DIR "/run/libvirt";
+
+        if (mkdir (rundir, 0755)) {
+            if (errno != EEXIST) {
+                VIR_ERROR0 (_("unable to create rundir"));
+                return -1;
+            }
+        }
+    }
+
+    if (qemudSetupPrivs() < 0)
+        goto error2;
 
     if (!(server = qemudInitialize(sigpipe[0]))) {
         ret = 2;

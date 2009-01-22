@@ -67,6 +67,8 @@ static struct xenUnifiedDriver const * const drivers[XEN_UNIFIED_NR_DRIVERS] = {
 #endif
 };
 
+static int inside_daemon;
+
 #define xenUnifiedError(conn, code, fmt...)                                  \
         virReportErrorHelper(conn, VIR_FROM_XEN, code, __FILE__,           \
                                __FUNCTION__, __LINE__, fmt)
@@ -168,6 +170,21 @@ done:
     return(res);
 }
 
+#ifdef WITH_LIBVIRTD
+
+static int
+xenInitialize (void)
+{
+    inside_daemon = 1;
+    return 0;
+}
+
+static virStateDriver state_driver = {
+    .initialize = xenInitialize,
+};
+
+#endif
+
 /*----- Dispatch functions. -----*/
 
 /* These dispatch functions follow the model used historically
@@ -203,6 +220,15 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
     int i, ret = VIR_DRV_OPEN_DECLINED;
     xenUnifiedPrivatePtr priv;
     virDomainEventCallbackListPtr cbList;
+
+#ifdef __sun
+    /*
+     * Only the libvirtd instance can open this driver.
+     * Everything else falls back to the remote driver.
+     */
+    if (!inside_daemon)
+        return VIR_DRV_OPEN_DECLINED;
+#endif
 
     if (conn->uri == NULL) {
         if (!xenUnifiedProbe())
@@ -265,8 +291,8 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
     priv->proxy = -1;
 
 
-    /* Hypervisor is only run as root & required to succeed */
-    if (getuid() == 0) {
+    /* Hypervisor is only run with privilege & required to succeed */
+    if (xenHavePrivilege()) {
         DEBUG0("Trying hypervisor sub-driver");
         if (drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->open(conn, auth, flags) ==
             VIR_DRV_OPEN_SUCCESS) {
@@ -275,7 +301,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
         }
     }
 
-    /* XenD is required to suceed if root.
+    /* XenD is required to succeed if privileged.
      * If it fails as non-root, then the proxy driver may take over
      */
     DEBUG0("Trying XenD sub-driver");
@@ -300,12 +326,12 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
             DEBUG0("Activated XS sub-driver");
             priv->opened[XEN_UNIFIED_XS_OFFSET] = 1;
         } else {
-            if (getuid() == 0)
-                goto fail; /* XS is mandatory as root */
+            if (xenHavePrivilege())
+                goto fail; /* XS is mandatory when privileged */
         }
     } else {
-        if (getuid() == 0) {
-            goto fail; /* XenD is mandatory as root */
+        if (xenHavePrivilege()) {
+            goto fail; /* XenD is mandatory when privileged */
         } else {
 #if WITH_PROXY
             DEBUG0("Trying proxy sub-driver");
@@ -1471,6 +1497,10 @@ xenRegister (void)
 {
     /* Ignore failures here. */
     (void) xenHypervisorInit ();
+
+#ifdef WITH_LIBVIRTD
+    if (virRegisterStateDriver (&state_driver) == -1) return -1;
+#endif
 
     return virRegisterDriver (&xenUnifiedDriver);
 }

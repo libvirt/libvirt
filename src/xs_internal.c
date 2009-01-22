@@ -35,7 +35,7 @@
 #include "uuid.h"
 #include "xen_unified.h"
 #include "xs_internal.h"
-#include "xen_internal.h" /* for xenHypervisorCheckID */
+#include "xen_internal.h"
 
 #ifndef PROXY
 static char *xenStoreDomainGetOSType(virDomainPtr domain);
@@ -290,11 +290,11 @@ xenStoreOpen(virConnectPtr conn,
 
     if (priv->xshandle == NULL) {
         /*
-         * not being able to connect via the socket as a normal user
-         * is rather normal, this should fallback to the proxy (or
+         * not being able to connect via the socket as an unprivileged
+         * user is rather normal, this should fallback to the proxy (or
          * remote) mechanism.
          */
-        if (getuid() == 0) {
+        if (xenHavePrivilege()) {
             virXenStoreError(NULL, VIR_ERR_NO_XEN,
                                  "%s", _("failed to connect to Xen Store"));
         }

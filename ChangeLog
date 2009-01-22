@@ -1,3 +1,15 @@
+Thu Jan 22 09:23:53 PST 2009 John Levon <john.levon@sun.com>
+
+	Least privilege support for Solaris
+	* qemud/qemud.c: init privs and refuse non-privileged
+	connections
+	* src/remote_internal.c: don't attempt user daemon instance on
+	Solaris
+	* src/xen_internal.c, src/xen_internal.h, src/xen_unified.c,
+	src/xend_internal.c, src/xs_internal.c: replace UID checks
+	with privilege checks. Refuse to load the Xen driver unless
+	we're libvirtd
+
 Wed Jan 21 18:10:12 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Make Xen driver threadsafe

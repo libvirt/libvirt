@@ -104,4 +104,6 @@ int     xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn,
                                           int startCell,
                                           int maxCells);
 
+int	xenHavePrivilege(void);
+
 #endif                          /* __VIR_XEN_INTERNAL_H__ */

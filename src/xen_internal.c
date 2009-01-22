@@ -26,6 +26,17 @@
 #include <errno.h>
 #include <sys/utsname.h>
 
+#ifdef __sun
+#include <sys/systeminfo.h>
+
+#include <priv.h>
+
+#ifndef PRIV_XVM_CONTROL
+#define PRIV_XVM_CONTROL ((const char *)"xvm_control")
+#endif
+
+#endif /* __sun */
+
 /* required for dom0_getdomaininfo_t */
 #include <xen/dom0_ops.h>
 #include <xen/version.h>
@@ -35,10 +46,6 @@
 #ifdef HAVE_XEN_SYS_PRIVCMD_H
 #include <xen/sys/privcmd.h>
 #endif
-#endif
-
-#ifdef __sun
-#include <sys/systeminfo.h>
 #endif
 
 /* required for shutdown flags */
@@ -3405,3 +3412,17 @@ xenHypervisorGetVcpuMax(virDomainPtr domain)
     return maxcpu;
 }
 
+/**
+ * xenHavePrivilege()
+ *
+ * Return true if the current process should be able to connect to Xen.
+ */
+int
+xenHavePrivilege()
+{
+#ifdef __sun
+    return priv_ineffect (PRIV_XVM_CONTROL);
+#else
+    return getuid () == 0;
+#endif
+}
