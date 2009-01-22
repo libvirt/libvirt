@@ -1,3 +1,10 @@
+Thu Jan 22 10:35:03 PST 2009 John Levon <john.levon@sun.com>
+
+	* gnulib/tests/.cvsignore: add test-random_r 
+	* Makefile.maint: generate .hgignore
+
+	* gnulib/tests/.gitignore, .hgignore, m4/.gitignore: regenerate
+
 Thu Jan 22 10:30:21 PST 2009 John Levon <john.levon@sun.com>
 
 	* src/libvirt_private.syms: Remove non-existent

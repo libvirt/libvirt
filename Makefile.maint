@@ -717,3 +717,10 @@ sync-vcs-ignore-files:
 	mv $(c2g)-t $(c2g)
 	perl $(c2g)
 	rm -f $(c2g)
+	echo "syntax: glob" > .hgignore
+	for ignore in `find $(srcdir) -name .gitignore`; do \
+	    dir=`dirname $$ignore`; \
+	    for rule in `cat $$ignore`; do \
+	        echo "$$dir/$$rule" >> .hgignore; \
+	    done ; \
+	done

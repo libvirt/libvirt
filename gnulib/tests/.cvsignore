@@ -20,6 +20,7 @@ test-netdb
 test-netinet_in
 test-perror
 test-poll
+test-random_r
 test-snprintf
 test-sockets
 test-stdbool
