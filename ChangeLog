@@ -1,3 +1,9 @@
+Thu Jan 22 20:17:35 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	xm_internal.c: fix locking bug: s/Lock/Unlock/
+	* src/xm_internal.c (xenXMDomainDefineXML): Release lock, (don't
+	try to acquire it) upon failure, just before returning.
+
 Thu Jan 22 10:35:03 PST 2009 John Levon <john.levon@sun.com>
 
 	* gnulib/tests/.cvsignore: add test-random_r 
