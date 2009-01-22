@@ -205,7 +205,6 @@ virNetworkLoadAllConfigs;
 virNetworkObjListFree;
 virNetworkDefParseNode;
 virNetworkRemoveInactive;
-virNetworkSaveConfigXML;
 virNetworkSaveConfig;
 virNetworkObjLock;
 virNetworkObjUnlock;

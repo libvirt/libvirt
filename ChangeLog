@@ -1,3 +1,8 @@
+Thu Jan 22 10:30:21 PST 2009 John Levon <john.levon@sun.com>
+
+	* src/libvirt_private.syms: Remove non-existent
+	virNetworkSaveConfigXML from linker script
+
 Thu Jan 22 09:51:29 PST 2009 John Levon <john.levon@sun.com>
 
 	* src/domain_conf.h, src/domain_conf.c, src/xend_internal.c,
