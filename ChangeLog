@@ -1,3 +1,14 @@
+Thu Jan 22 17:42:37 PST 2009 John Levon <john.levon@sun.com>
+
+	* src/domain_conf.c, src/domain_conf.h, src/xend_internal.c,
+	src/xm_internal.c: parse IP address for bridge interfaces
+
+	* tests/sexpr2xmltest.c, tests/xml2sexprtest.c,
+	tests/sexpr2xmldata/sexpr2xml-bridge-ipaddr.sexpr,
+	tests/sexpr2xmldata/sexpr2xml-bridge-ipaddr.xml,
+	tests/xml2sexprdata/xml2sexpr-bridge-ipaddr.sexpr,
+	tests/xml2sexprdata/xml2sexpr-bridge-ipaddr.xml: add tests
+
 Thu Jan 21 19:44:12 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Use the GNULIB random_r function

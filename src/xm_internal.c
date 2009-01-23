@@ -1089,6 +1089,9 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                 if (script[0] &&
                     !(net->data.bridge.script = strdup(script)))
                     goto no_memory;
+                if (ip[0] &&
+                    !(net->data.bridge.ipaddr = strdup(ip)))
+                    goto no_memory;
             } else {
                 if (script[0] &&
                     !(net->data.ethernet.script = strdup(script)))
@@ -1883,6 +1886,8 @@ static int xenXMDomainConfigFormatNet(virConnectPtr conn,
     switch (net->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         virBufferVSprintf(&buf, ",bridge=%s", net->data.bridge.brname);
+        if (net->data.bridge.ipaddr)
+            virBufferVSprintf(&buf, ",ip=%s", net->data.bridge.ipaddr);
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:

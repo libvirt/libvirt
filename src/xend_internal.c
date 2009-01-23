@@ -1763,10 +1763,18 @@ xenDaemonParseSxprNets(virConnectPtr conn,
                     net->type == VIR_DOMAIN_NET_TYPE_BRIDGE &&
                     !(net->data.bridge.script = strdup(tmp2)))
                     goto no_memory;
+                tmp = sexpr_node(node, "device/vif/ip");
+                if (tmp &&
+                    !(net->data.bridge.ipaddr = strdup(tmp)))
+                    goto no_memory;
             } else {
                 net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
                 if (tmp2 &&
                     !(net->data.ethernet.script = strdup(tmp2)))
+                    goto no_memory;
+                tmp = sexpr_node(node, "device/vif/ip");
+                if (tmp &&
+                    !(net->data.ethernet.ipaddr = strdup(tmp)))
                     goto no_memory;
             }
 
@@ -1800,11 +1808,6 @@ xenDaemonParseSxprNets(virConnectPtr conn,
                 net->mac[4] = mac[4];
                 net->mac[5] = mac[5];
             }
-
-            tmp = sexpr_node(node, "device/vif/ip");
-            if (tmp &&
-                !(net->data.ethernet.ipaddr = strdup(tmp)))
-                goto no_memory;
 
             if (model &&
                 !(net->model = strdup(model)))
@@ -5135,6 +5138,8 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
             script = def->data.bridge.script;
 
         virBufferVSprintf(buf, "(script '%s')", script);
+        if (def->data.bridge.ipaddr != NULL)
+            virBufferVSprintf(buf, "(ip '%s')", def->data.bridge.ipaddr);
         break;
 
     case VIR_DOMAIN_NET_TYPE_NETWORK:

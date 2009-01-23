@@ -155,6 +155,7 @@ struct _virDomainNetDef {
         struct {
             char *brname;
             char *script;
+            char *ipaddr;
         } bridge;
     } data;
     char *ifname;

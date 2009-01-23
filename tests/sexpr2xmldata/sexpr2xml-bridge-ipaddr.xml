@@ -1,0 +1,34 @@
+<domain type='xen' id='6'>
+  <name>pvtest</name>
+  <uuid>596a5d21-71f4-8fb2-e068-e2386a5c413e</uuid>
+  <memory>430080</memory>
+  <currentMemory>430080</currentMemory>
+  <vcpu>2</vcpu>
+  <os>
+    <type>linux</type>
+    <kernel>/var/lib/xen/vmlinuz.2Dn2YT</kernel>
+    <initrd>/var/lib/xen/initrd.img.0u-Vhq</initrd>
+    <cmdline> method=http://download.fedora.devel.redhat.com/pub/fedora/linux/core/test/5.91/x86_64/os  </cmdline>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>destroy</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <driver name='file'/>
+      <source file='/root/some.img'/>
+      <target dev='xvda' bus='xen'/>
+    </disk>
+    <interface type='bridge'>
+      <mac address='00:11:22:33:44:55'/>
+      <source bridge='xenbr2'/>
+      <ip address='192.0.2.1'/>
+      <script path='vif-bridge'/>
+      <target dev='vif6.0'/>
+    </interface>
+    <console type='pty'>
+      <target port='0'/>
+    </console>
+  </devices>
+</domain>

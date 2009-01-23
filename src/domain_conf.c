@@ -289,6 +289,7 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         VIR_FREE(def->data.bridge.brname);
         VIR_FREE(def->data.bridge.script);
+        VIR_FREE(def->data.bridge.ipaddr);
         break;
     }
 
@@ -887,7 +888,8 @@ virDomainNetDefParseXML(virConnectPtr conn,
                 address = virXMLPropString(cur, "address");
                 port = virXMLPropString(cur, "port");
             } else if ((address == NULL) &&
-                       (def->type == VIR_DOMAIN_NET_TYPE_ETHERNET) &&
+                       (def->type == VIR_DOMAIN_NET_TYPE_ETHERNET ||
+                        def->type == VIR_DOMAIN_NET_TYPE_BRIDGE) &&
                        (xmlStrEqual(cur->name, BAD_CAST "ip"))) {
                 address = virXMLPropString(cur, "address");
             } else if ((ifname == NULL) &&
@@ -953,6 +955,10 @@ virDomainNetDefParseXML(virConnectPtr conn,
         if (script != NULL) {
             def->data.bridge.script = script;
             script = NULL;
+        }
+        if (address != NULL) {
+            def->data.bridge.ipaddr = address;
+            address = NULL;
         }
         break;
 
@@ -2889,6 +2895,9 @@ virDomainNetDefFormat(virConnectPtr conn,
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         virBufferEscapeString(buf, "      <source bridge='%s'/>\n",
                               def->data.bridge.brname);
+        if (def->data.bridge.ipaddr)
+            virBufferVSprintf(buf, "      <ip address='%s'/>\n",
+                              def->data.bridge.ipaddr);
         if (def->data.bridge.script)
             virBufferEscapeString(buf, "      <script path='%s'/>\n",
                                   def->data.bridge.script);
