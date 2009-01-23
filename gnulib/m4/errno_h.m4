@@ -1,17 +1,11 @@
-# errno_h.m4 serial 3
+# errno_h.m4 serial 4
 dnl Copyright (C) 2004, 2006, 2008, 2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
-AC_DEFUN([gl_HEADER_ERRNO_H],
-[
-  dnl Use AC_REQUIRE here, so that the default behavior below is expanded
-  dnl once only, before all statements that occur in other macros.
-  AC_REQUIRE([gl_HEADER_ERRNO_H_BODY])
-])
-
-AC_DEFUN([gl_HEADER_ERRNO_H_BODY],
+dnl This macro must pass through AC_REQUIRE (never directly invoke it).
+AC_DEFUN_ONCE([gl_HEADER_ERRNO_H],
 [
   AC_REQUIRE([AC_PROG_CC])
   AC_CACHE_CHECK([for complete errno.h], [gl_cv_header_errno_h_complete], [

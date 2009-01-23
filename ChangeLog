@@ -1,5 +1,12 @@
 Fri Jan 23 14:30:59 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	m4: update from gnulib to avoid warnings from cutting-edge autoconf
+	* gnulib/m4/errno_h.m4
+	* gnulib/m4/gnulib-comp.m4
+	* gnulib/m4/multiarch.m4
+
+Fri Jan 23 14:30:59 +0100 2009 Jim Meyering <meyering@redhat.com>
+
 	correct and tighten up .*ignore files
 	* .cvsignore: Don't ignore *.orig or *.rej.  They're not build products.
 	Don't ignore the entire m4 directory.
