@@ -97,6 +97,7 @@ mymain(int argc, char **argv)
     DO_TEST("disk-many");
     DO_TEST("disk-xenvbd");
     DO_TEST("disk-usb");
+    DO_TEST("disk-drive-fmt-qcow");
     DO_TEST("graphics-vnc");
     DO_TEST("graphics-sdl");
     DO_TEST("graphics-sdl-fullscreen");

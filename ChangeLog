@@ -1,3 +1,12 @@
+Fri Jan 23 16:20:03 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c: Support driver format for setting disk
+	file types
+	* tests/qemuxml2argvtest.c, tests/qemuxml2xmltest.c,
+	tests/qemuxml2argvdata/qemuxml2argv-disk-drive-fmt-qcow.args,
+	tests/qemuxml2argvdata/qemuxml2argv-disk-drive-fmt-qcow.xml:
+	Add tests for <driver name='qemu' type='qcow2'/>
+
 Fri Jan 23 17:13:47 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	.cvsignore: Add explicit list of generated files.

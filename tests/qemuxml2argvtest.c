@@ -194,6 +194,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_DRIVE_BOOT);
     DO_TEST("disk-drive-boot-cdrom", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_BOOT);
+    DO_TEST("disk-drive-fmt-qcow", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_BOOT);
     DO_TEST("disk-usb", 0);
     DO_TEST("graphics-vnc", 0);
     DO_TEST("graphics-sdl", 0);

@@ -48,6 +48,8 @@
 #include "xml.h"
 #include "nodeinfo.h"
 
+#define VIR_FROM_THIS VIR_FROM_QEMU
+
 VIR_ENUM_DECL(virDomainDiskQEMUBus)
 VIR_ENUM_IMPL(virDomainDiskQEMUBus, VIR_DOMAIN_DISK_BUS_LAST,
               "ide",
@@ -862,6 +864,18 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT(vm->def->os.bootloader);
     }
 
+    for (i = 0 ; i < vm->def->ndisks ; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+
+        if (disk->driverName != NULL &&
+            !STREQ(disk->driverName, "qemu")) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("unsupported driver name '%s' for disk '%s'"),
+                             disk->driverName, disk->src);
+            goto error;
+        }
+    }
+
     /* If QEMU supports -drive param instead of old -hda, -hdb, -cdrom .. */
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE) {
         int bootCD = 0, bootFloppy = 0, bootDisk = 0;
@@ -884,8 +898,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
 
         for (i = 0 ; i < vm->def->ndisks ; i++) {
-            char opt[PATH_MAX];
-            const char *media = NULL;
+            virBuffer opt = VIR_BUFFER_INITIALIZER;
+            char *optstr;
             int bootable = 0;
             virDomainDiskDefPtr disk = vm->def->disks[i];
             int idx = virDiskNameToIndex(disk->dst);
@@ -912,7 +926,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
             case VIR_DOMAIN_DISK_DEVICE_CDROM:
                 bootable = bootCD;
                 bootCD = 0;
-                media = "media=cdrom,";
                 break;
             case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
                 bootable = bootFloppy;
@@ -924,18 +937,28 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 break;
             }
 
-            snprintf(opt, PATH_MAX, "file=%s,if=%s,%sindex=%d%s%s",
-                     disk->src ? disk->src : "", bus,
-                     media ? media : "",
-                     idx,
-                     bootable &&
-                     disk->device == VIR_DOMAIN_DISK_DEVICE_DISK
-                     ? ",boot=on" : "",
-                     disk->shared && ! disk->readonly
-                     ? ",cache=off" : "");
+            virBufferVSprintf(&opt, "file=%s", disk->src ? disk->src : "");
+            virBufferVSprintf(&opt, ",if=%s", bus);
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+                virBufferAddLit(&opt, ",media=cdrom");
+            virBufferVSprintf(&opt, ",index=%d", idx);
+            if (bootable &&
+                disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
+                virBufferAddLit(&opt, ",boot=on");
+            if (disk->shared && !disk->readonly)
+                virBufferAddLit(&opt, ",cache=off");
+            if (disk->driverType)
+                virBufferVSprintf(&opt, ",fmt=%s", disk->driverType);
+
+            if (virBufferError(&opt)) {
+                virReportOOMError(conn);
+                goto error;
+            }
+
+            optstr = virBufferContentAndReset(&opt);
 
             ADD_ARG_LIT("-drive");
-            ADD_ARG_LIT(opt);
+            ADD_ARG(optstr);
         }
     } else {
         for (i = 0 ; i < vm->def->ndisks ; i++) {
