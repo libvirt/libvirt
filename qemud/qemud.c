@@ -719,6 +719,10 @@ static int qemudInitPaths(struct qemud_server *server,
             goto snprintf_error;
     } else {
         char *userdir = virGetUserDirectory(NULL, uid);
+        if (userdir == NULL) {
+            /* Do not diagnose here; virGetUserDirectory does that.  */
+            return -1;
+        }
 
         if (snprintf(sockname, maxlen, "@%s/.libvirt/libvirt-sock", userdir) >= maxlen) {
             VIR_FREE(userdir);

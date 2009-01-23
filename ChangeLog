@@ -1,3 +1,9 @@
+Fri Jan 23 14:22:03 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	qemud: don't dereference NULL on failed virGetUserDirectory
+	* qemud/qemud.c (qemudInitPaths): Return right away,
+	upon virGetUserDirectory failure.
+
 Fri Jan 23 14:30:59 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	m4: update from gnulib to avoid warnings from cutting-edge autoconf
@@ -72,7 +78,7 @@ Thu Jan 22 20:17:35 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 Thu Jan 22 10:35:03 PST 2009 John Levon <john.levon@sun.com>
 
-	* gnulib/tests/.cvsignore: add test-random_r 
+	* gnulib/tests/.cvsignore: add test-random_r
 	* Makefile.maint: generate .hgignore
 
 	* gnulib/tests/.gitignore, .hgignore, m4/.gitignore: regenerate
