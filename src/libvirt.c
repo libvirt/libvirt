@@ -2,7 +2,7 @@
  * libvirt.c: Main interfaces for the libvirt library to handle virtualization
  *           domains from a process running in domain 0
  *
- * Copyright (C) 2005,2006,2008 Red Hat, Inc.
+ * Copyright (C) 2005,2006,2008,2009 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -6714,7 +6714,7 @@ error:
  * @vol: pointer to storage volume
  *
  * Release the storage volume handle. The underlying
- * storage volume contains to exist
+ * storage volume continues to exist.
  *
  * Return 0 on success, or -1 on error
  */
@@ -7364,5 +7364,3 @@ error:
     virSetConnError(conn);
     return -1;
 }
-
-

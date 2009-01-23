@@ -1,5 +1,8 @@
 Fri Jan 23 14:22:03 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	fix comment typo: s/contains/continues/
+	* src/libvirt.c (virStorageVolFree): Correct typo in comment.
+
 	qemud: don't dereference NULL on failed virGetUserDirectory
 	* qemud/qemud.c (qemudInitPaths): Return right away,
 	upon virGetUserDirectory failure.
