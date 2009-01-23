@@ -718,9 +718,9 @@ sync-vcs-ignore-files:
 	perl $(c2g)
 	rm -f $(c2g)
 	echo "syntax: glob" > .hgignore
-	for ignore in `find $(srcdir) -name .gitignore`; do \
-	    dir=`dirname $$ignore`; \
-	    for rule in `cat $$ignore`; do \
-	        echo "$$dir/$$rule" >> .hgignore; \
-	    done ; \
-	done
+	( for ignore in $$($(VC_LIST)				\
+	                   | grep -E '(^|/)\.gitignore$$'); do	\
+	    dir=$$(dirname "$$ignore");				\
+	    test "$$dir" = . && pfx= || pfx=$$dir/;		\
+	    sed "s!^!$$pfx!" "$$ignore";			\
+	  done ) | sort -u >> .hgignore

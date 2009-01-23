@@ -1,7 +1,5 @@
 *.a
 *.o
-*.orig
-*.rej
 *~
 .git
 ABOUT-NLS
@@ -27,7 +25,6 @@ libvirt.pc
 libvirt.spec
 ltconfig
 ltmain.sh
-m4
 mingw32-libvirt.spec
 mkinstalldirs
 results.log

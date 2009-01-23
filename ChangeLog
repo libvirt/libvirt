@@ -1,3 +1,18 @@
+Fri Jan 23 14:30:59 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	correct and tighten up .*ignore files
+	* .cvsignore: Don't ignore *.orig or *.rej.  They're not build products.
+	Don't ignore the entire m4 directory.
+	* Makefile.maint (sync-vcs-ignore-files): Correct quoting.
+	Use sed rather than a for loop.
+	Search only version-controled files (for reproducibility)
+	* gnulib/lib/netinet/.cvsignore: Append missing newline-at-EOF,
+	so that the use of sed doesn't mistakenly concatenate lines.
+	* gnulib/lib/sys/.cvsignore: Likewise.
+	* m4/.cvsignore: Ignore acinclude.m4 and aclocal.m4, not *.m4.
+	* .hgignore: Regenerate.
+	* all .gitignore files: Regenerate.
+
 Fri Jan 23 12:44:44 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	maint: update list of error function names and adapt
