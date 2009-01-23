@@ -565,6 +565,46 @@ xenStoreNumOfDomains(virConnectPtr conn)
 }
 
 /**
+ * xenStoreDoListDomains:
+ * @conn: pointer to the hypervisor connection
+ * @ids: array to collect the list of IDs of active domains
+ * @maxids: size of @ids
+ *
+ * Internal API: collect the list of active domains, and store
+ * their ID in @maxids. The driver lock must be held.
+ *
+ * Returns the number of domain found or -1 in case of error
+ */
+static int
+xenStoreDoListDomains(xenUnifiedPrivatePtr priv, int *ids, int maxids)
+{
+    char **idlist = NULL, *endptr;
+    unsigned int num, i;
+    int ret = -1;
+    long id;
+
+    if (priv->xshandle == NULL)
+        goto out;
+
+    idlist = xs_directory (priv->xshandle, 0, "/local/domain", &num);
+    if (idlist == NULL)
+        goto out;
+
+    for (ret = 0, i = 0; (i < num) && (ret < maxids); i++) {
+        id = strtol(idlist[i], &endptr, 10);
+        if ((endptr == idlist[i]) || (*endptr != 0))
+            goto out;
+        ids[ret++] = (int) id;
+    }
+
+    free(idlist);
+
+out:
+    VIR_FREE (idlist);
+    return ret;
+}
+
+/**
  * xenStoreListDomains:
  * @conn: pointer to the hypervisor connection
  * @ids: array to collect the list of IDs of active domains
@@ -577,11 +617,8 @@ xenStoreNumOfDomains(virConnectPtr conn)
 int
 xenStoreListDomains(virConnectPtr conn, int *ids, int maxids)
 {
-    char **idlist = NULL, *endptr;
-    unsigned int num, i;
-    int ret;
-    long id;
     xenUnifiedPrivatePtr priv;
+    int ret;
 
     if ((conn == NULL) || (ids == NULL)) {
         virXenStoreError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
@@ -591,32 +628,10 @@ xenStoreListDomains(virConnectPtr conn, int *ids, int maxids)
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
     xenUnifiedLock(priv);
-    if (priv->xshandle == NULL)
-        goto error;
-
-    idlist = xs_directory (priv->xshandle, 0, "/local/domain", &num);
-    if (idlist == NULL)
-        goto error;
-
-    for (ret = 0, i = 0; (i < num) && (ret < maxids); i++) {
-        id = strtol(idlist[i], &endptr, 10);
-        if ((endptr == idlist[i]) || (*endptr != 0)) {
-            ret = -1;
-            break;
-        }
-#if 0
-        if (virConnectCheckStoreID(conn, (int) id) < 0)
-            continue;
-#endif
-        ids[ret++] = (int) id;
-    }
-    free(idlist);
+    ret = xenStoreDoListDomains(priv, ids, maxids);
     xenUnifiedUnlock(priv);
+
     return(ret);
-
-error:
-    xenUnifiedUnlock(priv);
-    return -1;
 }
 
 /**
@@ -1260,7 +1275,7 @@ retry:
                                  "%s", _("failed to allocate domids"));
         return -1;
     }
-    nread = xenStoreListDomains(conn, new_domids, new_domain_cnt);
+    nread = xenStoreDoListDomains(priv, new_domids, new_domain_cnt);
     if (nread != new_domain_cnt) {
         // mismatch. retry this read
         VIR_FREE(new_domids);
@@ -1342,7 +1357,7 @@ retry:
                                  "%s", _("failed to allocate domids"));
         return -1;
     }
-    nread = xenStoreListDomains(conn, new_domids, new_domain_cnt);
+    nread = xenStoreDoListDomains(priv, new_domids, new_domain_cnt);
     if (nread != new_domain_cnt) {
         // mismatch. retry this read
         VIR_FREE(new_domids);

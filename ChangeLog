@@ -1,3 +1,7 @@
+Fri Jan 23 11:07:42 PST 2009 John Levon <john.levon@sun.com>
+
+	* src/xs_internal.c: fix recursive lock hang
+
 Fri Jan 23 16:20:03 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c: Support driver format for setting disk
