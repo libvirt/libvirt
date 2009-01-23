@@ -32,10 +32,6 @@
 
 /* #define DEBUG_GROW */
 
-#define virHashError(conn, code, fmt...)                                   \
-        virReportErrorHelper(conn, VIR_FROM_NONE, code, __FILE__,        \
-                               __FUNCTION__, __LINE__, fmt)
-
 /*
  * A single entry in the hash table
  */
@@ -593,4 +589,3 @@ void *virHashSearch(virHashTablePtr table, virHashSearcher iter, const void *dat
     }
     return (NULL);
 }
-

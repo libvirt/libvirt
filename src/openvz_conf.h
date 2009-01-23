@@ -34,14 +34,6 @@
 
 enum { OPENVZ_WARN, OPENVZ_ERR };
 
-#define openvzLog(level, msg...) { if(level == OPENVZ_WARN) \
-                                        fprintf(stderr, "\nWARNING: ");\
-                                else \
-                                        fprintf(stderr, "\nERROR: ");\
-                                fprintf(stderr, "\n\t");\
-                                fprintf(stderr, msg);\
-                                fprintf(stderr, "\n"); }
-
 #define openvzError(conn, code, fmt...)                                      \
         virReportErrorHelper(conn, VIR_FROM_OPENVZ, code, __FILE__,        \
                                __FUNCTION__, __LINE__, fmt)

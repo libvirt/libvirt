@@ -1,3 +1,12 @@
+Fri Jan 23 12:44:44 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	maint: update list of error function names and adapt
+	* Makefile.maint (msg_gen_function): Update list.
+	Remove some now-unused names, add some new ones.
+	* src/hash.c (virHashError): Remove unused definition.
+	* src/openvz_conf.h (openvzLog): Likewise.
+	* src/xen_unified.c: Mark newly-exposed diagnostics for translation.
+
 Thu Jan 22 17:42:37 PST 2009 John Levon <john.levon@sun.com>
 
 	* src/domain_conf.c, src/domain_conf.h, src/xend_internal.c,

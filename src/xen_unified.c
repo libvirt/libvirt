@@ -1,7 +1,7 @@
 /*
  * xen_unified.c: Unified Xen driver.
  *
- * Copyright (C) 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2007, 2008, 2009 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -261,7 +261,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
 
     /* Allocate per-connection private data. */
     if (VIR_ALLOC(priv) < 0) {
-        xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, "allocating private data");
+        xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, _("allocating private data"));
         return VIR_DRV_OPEN_ERROR;
     }
     if (virMutexInit(&priv->lock) < 0) {
@@ -273,7 +273,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
 
     /* Allocate callback list */
     if (VIR_ALLOC(cbList) < 0) {
-        xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, "allocating callback list");
+        xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, _("allocating callback list"));
         virMutexDestroy(&priv->lock);
         VIR_FREE(priv);
         return VIR_DRV_OPEN_ERROR;
@@ -1564,7 +1564,7 @@ xenUnifiedAddDomainInfo(xenUnifiedDomainInfoListPtr list,
     list->count++;
     return 0;
 memory_error:
-    xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, "allocating domain info");
+    xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, _("allocating domain info"));
     if (info)
         VIR_FREE(info->name);
     VIR_FREE(info);
