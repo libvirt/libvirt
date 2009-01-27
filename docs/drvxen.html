@@ -159,6 +159,19 @@
 	the <code>/etc/xen</code> directory. It is important not to place
 	any other non-config files in this directory.
       </li></ul>
+        <h2>Connections to Xen driver</h2>
+        <p>
+    The libvirt Xen driver is a single-instance privileged driver,
+    with a driver name of 'xen'. Some example conection URIs for
+    the libvirt driver are:
+    </p>
+        <pre>
+    xen:///                        (local access, direct)
+    xen+unix:///                   (local access, via daemon)
+    xen://example.com/             (remote access, TLS/x509)
+    xen+tcp://example.com/         (remote access, SASl/Kerberos)
+    xen+ssh://root@example.com/    (remote access, SSH tunnelled)
+    </pre>
         <h2>
           <a name="xmlconfig" id="xmlconfig">Example domain XML config</a>
         </h2>

@@ -149,6 +149,23 @@
 	node. If both are found, then Xen paravirtualized guests can be run using
 	the KVM hardware acceleration.
       </li></ul>
+        <h2>Connections to QEMU driver</h2>
+        <p>
+    The libvirt QEMU driver is a multi-instance driver, providing a single
+    system wide privileged driver (the "system" instance), and per-user
+    unprivileged drivers (the "session" instance). The of the driver protocol
+    is "qemu". Some example conection URIs for the libvirt driver are:
+    </p>
+        <pre>
+    qemu:///session                      (local access to per-user instance)
+    qemu+unix:///session                 (local access to per-user instance)
+
+    qemu:///system                       (local access to system instance)
+    qemu+unix:///system                  (local access to system instance)
+    qemu://example.com/system            (remote access, TLS/x509)
+    qemu+tcp://example.com/system        (remote access, SASl/Kerberos)
+    qemu+ssh://root@example.com/system   (remote access, SSH tunnelled)
+    </pre>
         <h2>
           <a name="xmlconfig" id="xmlconfig">Example domain XML config</a>
         </h2>

@@ -1,3 +1,10 @@
+Tue Jan 27 14:28:16 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* docs/index.html.in: Add link to libvirt-qpid & UML driver info
+	* docs/drvopenvz.html.in, docs/drvqemu.html.in, docs/drvtest.html.in,
+	docs/drvuml.html.in docs/drvxen.html.in: Add examples of local and
+	remote URI formats. Also re-generate equiv .html files
+
 Tue Jan 27 13:25:16 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	virterror.c: don't read beyond end of buffer upon OOM

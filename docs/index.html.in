@@ -25,6 +25,9 @@
       <li>
 	A <a href="CIM/">CIM provider</a> for the DMTF virtualization schema
       </li>
+      <li>
+	A <a href="/qpid/">QMF agent</a> for the AMQP/QPid messaging system
+      </li>
     </ul>
 
     <h2>libvirt supports:</h2>
@@ -47,6 +50,9 @@
 	The <a href="http://openvz.org/">OpenVZ</a> Linux container system
       </li>
       <li>
+	The <a href="http://user-mode-linux.sourceforge.net/">User Mode Linux</a> paravirtualized kernel
+      </li>
+      <li>
 	Storage on IDE/SCSI/USB disks, FibreChannel, LVM, iSCSI, NFS and filesystems
       </li>
     </ul>
@@ -59,6 +65,7 @@
       <li>Local access control using PolicyKit</li>
       <li>Zero-conf discovery using Avahi multicast-DNS</li>
       <li>Management of virtual machines, virtual networks and storage</li>
+      <li>Portable client API for Linux, Solaris and Windows</li>
     </ul>
 
     <p class="image">

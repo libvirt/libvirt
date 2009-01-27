@@ -146,8 +146,11 @@
     URIs are
     </p>
         <pre>
-    uml:///system                        (local access, system instance)
-    uml:///session                       (local access, session instance)
+    uml:///session                       (local access to per-user instance)
+    uml+unix:///session                  (local access to per-user instance)
+
+    uml:///system                        (local access to system instance)
+    uml+unix:///system                   (local access to system instance)
     uml://example.com/system             (remote access, TLS/x509)
     uml+tcp://example.com/system         (remote access, SASl/Kerberos)
     uml+ssh://root@example.com/system    (remote access, SSH tunnelled)
