@@ -1,3 +1,12 @@
+Tue Jan 27 11:53:32 +0100 2009 Jim Meyering <meyering@redhat.com>
+	and Daniel P. Berrange <berrange@redhat.com>
+
+	fix errors in virReportSystemErrorFull
+	* src/virterror.c (virStrerror): New function.
+	(virReportSystemErrorFull): Don't leak "combined".
+	In fact, don't even attempt allocation.
+	Do include the result of formatted print in final diagnostic.
+
 Tue Jan 27 10:38:09 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	use gnulib's stpcpy module

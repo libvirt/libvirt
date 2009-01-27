@@ -1005,6 +1005,27 @@ void virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
 
 }
 
+static const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen)
+{
+#ifdef HAVE_STRERROR_R
+# ifdef __USE_GNU
+    /* Annoying linux specific API contract */
+    return strerror_r(theerrno, errBuf, errBufLen);
+# else
+    strerror_r(theerrno, errBuf, errBufLen);
+    return errBuf;
+# endif
+#else
+    /* Mingw lacks strerror_r() and its strerror() is definitely not
+     * threadsafe, so safest option is to just print the raw errno
+     * value - we can at least reliably & safely look it up in the
+     * header files for debug purposes
+     */
+    int n = snprintf(errBuf, errBufLen, "errno=%d", theerrno);
+    return (0 < n && n < errBufLen
+            ? errBuf : _("internal error: buffer too small"));
+#endif
+}
 
 void virReportSystemErrorFull(virConnectPtr conn,
                               int domcode,
@@ -1014,47 +1035,36 @@ void virReportSystemErrorFull(virConnectPtr conn,
                               size_t linenr ATTRIBUTE_UNUSED,
                               const char *fmt, ...)
 {
-    va_list args;
-    char errorMessage[1024];
-    char systemError[1024];
-    char *theerrnostr;
-    const char *virerr;
-    char *combined = NULL;
+    char strerror_buf[1024];
+    char msgDetailBuf[1024];
 
-#ifdef HAVE_STRERROR_R
-#ifdef __USE_GNU
-    /* Annoying linux specific API contract */
-    theerrnostr = strerror_r(theerrno, systemError, sizeof(systemError));
-#else
-    strerror_r(theerrno, systemError, sizeof(systemError));
-    theerrnostr = systemError;
-#endif
-#else
-    /* Mingw lacks strerror_r() and its strerror() is definitely not
-     * threadsafe, so safest option is to just print the raw errno
-     * value - we can at least reliably & safely look it up in the
-     * header files for debug purposes
-     */
-    snprintf(systemError, sizeof(systemError), "errno=%d", theerrno);
-    theerrnostr = systemError;
-#endif
+    const char *errnoDetail = virStrerror(theerrno, strerror_buf,
+                                          sizeof(strerror_buf));
+    const char *msg = virErrorMsg(VIR_ERR_SYSTEM_ERROR, fmt);
+    const char *msgDetail = NULL;
 
     if (fmt) {
+        va_list args;
+        int n;
+
         va_start(args, fmt);
-        vsnprintf(errorMessage, sizeof(errorMessage)-1, fmt, args);
+        n = vsnprintf(msgDetailBuf, sizeof(msgDetailBuf), fmt, args);
         va_end(args);
-    } else {
-        errorMessage[0] = '\0';
+
+        size_t len = strlen (msgDetailBuf);
+        if (0 <= n && n + 2 + len < sizeof (msgDetailBuf)) {
+          char *p = msgDetailBuf + n;
+          stpcpy (stpcpy (p, ": "), errnoDetail);
+          msgDetail = msgDetailBuf;
+        }
     }
 
-    if (virAsprintf(&combined, "%s: %s", errorMessage, theerrnostr) < 0)
-        combined = theerrnostr; /* OOM, so lets just pass the strerror info as best effort */
+    if (!msgDetailBuf)
+        msgDetail = errnoDetail;
 
-    virerr = virErrorMsg(VIR_ERR_SYSTEM_ERROR, (errorMessage[0] ? errorMessage : NULL));
     virRaiseError(conn, NULL, NULL, domcode, VIR_ERR_SYSTEM_ERROR, VIR_ERR_ERROR,
-                  virerr, errorMessage, NULL, -1, -1, virerr, errorMessage);
+                  msg, msgDetail, NULL, -1, -1, msg, msgDetail);
 }
-
 
 void virReportOOMErrorFull(virConnectPtr conn,
                            int domcode,
