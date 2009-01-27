@@ -234,14 +234,14 @@
         ...
 	&lt;target&gt;
           &lt;path&gt;/var/lib/virt/images/sparse.img&lt;/path&gt;
+          &lt;format&gt;qcow2&lt;/format&gt;
           &lt;permissions&gt;
             &lt;owner&gt;0744&lt;/owner&gt;
             &lt;group&gt;0744&lt;/group&gt;
             &lt;mode&gt;0744&lt;/mode&gt;
             &lt;label&gt;virt_image_t&lt;/label&gt;
           &lt;/permissions&gt;
-	&lt;/target&gt;
-      &lt;/volume&gt;</pre>
+	&lt;/target&gt;</pre>
 
     <dl>
       <dt><code>path</code></dt>
@@ -268,6 +268,54 @@
 	element contains the numeric group ID. The <code>label</code> element
 	contains the MAC (eg SELinux) label string.
 	<span class="since">Since 0.4.1</span>
+      </dd>
+    </dl>
+
+    <h3><a name="StorageVolBacking">Backing store elements</a></h3>
+
+    <p>
+      A single <code>backingStore</code> element is contained within the top level
+      <code>volume</code> element. This tag is used to describe the optional copy
+      on write, backing store for the storage volume. It can contain the following
+      child elements:
+    </p>
+
+    <pre>
+        ...
+        &lt;backingStore&gt;
+          &lt;path&gt;/var/lib/virt/images/master.img&lt;/path&gt;
+          &lt;format&gt;raw&lt;/format&gt;
+          &lt;permissions&gt;
+            &lt;owner&gt;0744&lt;/owner&gt;
+            &lt;group&gt;0744&lt;/group&gt;
+            &lt;mode&gt;0744&lt;/mode&gt;
+            &lt;label&gt;virt_image_t&lt;/label&gt;
+          &lt;/permissions&gt;
+        &lt;/backingStore&gt;
+      &lt;/volume&gt;</pre>
+
+    <dl>
+      <dt><code>path</code></dt>
+      <dd>Provides the location at which the backing store can be accessed on
+	the local filesystem, as an absolute path. If omitted, there is no
+        backing store for this volume.
+	<span class="since">Since 0.6.0</span></dd>
+      <dt><code>format</code></dt>
+      <dd>Provides information about the pool specific backing store format.
+	For disk pools it will provide the partition type. For filesystem
+	or directory pools it will provide the file format type, eg cow,
+	qcow, vmdk, raw. Consult the pool-specific docs for the list of valid
+        values. Most file formats require a backing store of the same format,
+        however, the qcow2 format allows a different backing store format.
+        <span class="since">Since 0.6.0</span></dd>
+      <dt><code>permissions</code></dt>
+      <dd>Provides information about the permissions of the backing file.
+        It contains 4 child elements. The
+	<code>mode</code> element contains the octal permission set. The
+	<code>owner</code> element contains the numeric user ID. The <code>group</code>
+	element contains the numeric group ID. The <code>label</code> element
+	contains the MAC (eg SELinux) label string.
+	<span class="since">Since 0.6.0</span>
       </dd>
     </dl>
 

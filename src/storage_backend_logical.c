@@ -106,18 +106,27 @@ virStorageBackendLogicalMakeVol(virConnectPtr conn,
     }
 
     if (vol->target.path == NULL) {
-        if (VIR_ALLOC_N(vol->target.path, strlen(pool->def->target.path) +
-                        1 + strlen(vol->name) + 1) < 0) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
+        if (virAsprintf(&vol->target.path, "%s/%s",
+                        pool->def->target.path, vol->name) < 0) {
+            virReportOOMError(conn);
+            virStorageVolDefFree(vol);
             return -1;
         }
-        strcpy(vol->target.path, pool->def->target.path);
-        strcat(vol->target.path, "/");
-        strcat(vol->target.path, vol->name);
+    }
+
+    if (groups[1] && !STREQ(groups[1], "")) {
+        if (virAsprintf(&vol->backingStore.path, "%s/%s",
+                        pool->def->target.path, groups[1]) < 0) {
+            virReportOOMError(conn);
+            virStorageVolDefFree(vol);
+            return -1;
+        }
+
+        vol->backingStore.format = VIR_STORAGE_POOL_LOGICAL_LVM2;
     }
 
     if (vol->key == NULL &&
-        (vol->key = strdup(groups[1])) == NULL) {
+        (vol->key = strdup(groups[2])) == NULL) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
         return -1;
     }
@@ -134,22 +143,22 @@ virStorageBackendLogicalMakeVol(virConnectPtr conn,
     }
 
     if ((vol->source.extents[vol->source.nextent].path =
-         strdup(groups[2])) == NULL) {
+         strdup(groups[3])) == NULL) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("extents"));
         return -1;
     }
 
-    if (virStrToLong_ull(groups[3], NULL, 10, &offset) < 0) {
+    if (virStrToLong_ull(groups[4], NULL, 10, &offset) < 0) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("malformed volume extent offset value"));
         return -1;
     }
-    if (virStrToLong_ull(groups[4], NULL, 10, &length) < 0) {
+    if (virStrToLong_ull(groups[5], NULL, 10, &length) < 0) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("malformed volume extent length value"));
         return -1;
     }
-    if (virStrToLong_ull(groups[5], NULL, 10, &size) < 0) {
+    if (virStrToLong_ull(groups[6], NULL, 10, &size) < 0) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("malformed volume extent size value"));
         return -1;
@@ -168,14 +177,14 @@ virStorageBackendLogicalFindLVs(virConnectPtr conn,
                                 virStorageVolDefPtr vol)
 {
     /*
-     *  # lvs --separator , --noheadings --units b --unbuffered --nosuffix --options "lv_name,uuid,devices,seg_size,vg_extent_size" VGNAME
-     *  RootLV,06UgP5-2rhb-w3Bo-3mdR-WeoL-pytO-SAa2ky,/dev/hda2(0),5234491392,33554432
-     *  SwapLV,oHviCK-8Ik0-paqS-V20c-nkhY-Bm1e-zgzU0M,/dev/hda2(156),1040187392,33554432
-     *  Test2,3pg3he-mQsA-5Sui-h0i6-HNmc-Cz7W-QSndcR,/dev/hda2(219),1073741824,33554432
-     *  Test3,UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht,/dev/hda2(251),2181038080,33554432
-     *  Test3,UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht,/dev/hda2(187),1040187392,33554432
+     *  # lvs --separator , --noheadings --units b --unbuffered --nosuffix --options "lv_name,origin,uuid,devices,seg_size,vg_extent_size" VGNAME
+     *  RootLV,,06UgP5-2rhb-w3Bo-3mdR-WeoL-pytO-SAa2ky,/dev/hda2(0),5234491392,33554432
+     *  SwapLV,,oHviCK-8Ik0-paqS-V20c-nkhY-Bm1e-zgzU0M,/dev/hda2(156),1040187392,33554432
+     *  Test2,,3pg3he-mQsA-5Sui-h0i6-HNmc-Cz7W-QSndcR,/dev/hda2(219),1073741824,33554432
+     *  Test3,,UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht,/dev/hda2(251),2181038080,33554432
+     *  Test3,Test2,UB5hFw-kmlm-LSoX-EI1t-ioVd-h7GL-M0W8Ht,/dev/hda2(187),1040187392,33554432
      *
-     * Pull out name & uuid, device, device extent start #, segment size, extent size.
+     * Pull out name, origin, & uuid, device, device extent start #, segment size, extent size.
      *
      * NB can be multiple rows per volume if they have many extents
      *
@@ -185,15 +194,15 @@ virStorageBackendLogicalFindLVs(virConnectPtr conn,
      *    not a suitable separator (rhbz 470693).
      */
     const char *regexes[] = {
-        "^\\s*(\\S+),(\\S+),(\\S+)\\((\\S+)\\),(\\S+),([0-9]+),?\\s*$"
+        "^\\s*(\\S+),(\\S*),(\\S+),(\\S+)\\((\\S+)\\),(\\S+),([0-9]+),?\\s*$"
     };
     int vars[] = {
-        6
+        7
     };
     const char *prog[] = {
         LVS, "--separator", ",", "--noheadings", "--units", "b",
         "--unbuffered", "--nosuffix", "--options",
-        "lv_name,uuid,devices,seg_size,vg_extent_size",
+        "lv_name,origin,uuid,devices,seg_size,vg_extent_size",
         pool->def->source.name, NULL
     };
 
@@ -565,10 +574,25 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
 {
     int fd = -1;
     char size[100];
-    const char *cmdargv[] = {
+    const char *cmdargvnew[] = {
         LVCREATE, "--name", vol->name, "-L", size,
         pool->def->target.path, NULL
     };
+    const char *cmdargvsnap[] = {
+        LVCREATE, "--name", vol->name, "-L", size,
+        "-s", vol->backingStore.path, NULL
+    };
+    const char **cmdargv = cmdargvnew;
+
+    if (vol->backingStore.path) {
+        if (vol->backingStore.format !=
+            VIR_STORAGE_POOL_LOGICAL_LVM2) {
+            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                                  _("LVM snapshots must be backed by another LVM volume"));
+            return -1;
+        }
+        cmdargv = cmdargvsnap;
+    }
 
     snprintf(size, sizeof(size)-1, "%lluK", vol->capacity/1024);
     size[sizeof(size)-1] = '\0';

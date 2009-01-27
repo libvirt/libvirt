@@ -89,6 +89,7 @@ struct _virStorageVolDef {
 
     virStorageVolSource source;
     virStorageVolTarget target;
+    virStorageVolTarget backingStore;
 };
 
 typedef struct _virStorageVolDefList virStorageVolDefList;

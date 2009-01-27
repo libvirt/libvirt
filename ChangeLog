@@ -1,3 +1,22 @@
+Tue Jan 27 18:17:07 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Support Copy-on-Write storage volumes
+	* docs/formatstorage.html.in: Add notes about backingStore
+	XML for storage volumes wanting copy-on-write (eg qcow,
+	LVM snapshots).
+	* src/libvirt_private.syms: Add virStorageVolFormatFileSystemTypeFromString
+	* src/storage_backend.c, src/storage_backend.h: Refactor the
+	virStorageBackendUpdateVolInfo* methods to allow re-use for
+	backingStore files
+	* src/storage_backend_fs.c: Extract backing store data out of
+	Cow, QCow, QCow2, and VMDK file formats. Allow creation of volumes
+	with a backing store
+	* src/storage_backend_logical.c: Extract information about master
+	volume for snapshots, and allow creation of snapshots.
+	* src/storage_backend_iscsi.c: Adapt to storage_backend.h changes
+	* src/storage_conf.h, src/storage_conf.c: Support new backingStore
+	XML element for COW file data
+
 Tue Jan 27 16:27:07 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	* POTFILES.in: update: remove src/lxc_conf.c; Add src/bridge.c.

@@ -228,7 +228,11 @@ virStorageBackendISCSINewLun(virConnectPtr conn, virStoragePoolObjPtr pool,
 
     VIR_FREE(devpath);
 
-    if (virStorageBackendUpdateVolInfoFD(conn, vol, fd, 1) < 0)
+    if (virStorageBackendUpdateVolTargetInfoFD(conn,
+                                               &vol->target,
+                                               fd,
+                                               &vol->allocation,
+                                               &vol->capacity) < 0)
         goto cleanup;
 
     /* XXX use unique iSCSI id instead */

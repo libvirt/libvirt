@@ -249,6 +249,8 @@ virStorageVolDefFree(virStorageVolDefPtr def) {
 
     VIR_FREE(def->target.path);
     VIR_FREE(def->target.perms.label);
+    VIR_FREE(def->backingStore.path);
+    VIR_FREE(def->backingStore.perms.label);
     VIR_FREE(def);
 }
 
@@ -998,6 +1000,28 @@ virStorageVolDefParseDoc(virConnectPtr conn,
     if (virStorageVolDefParsePerms(conn, ctxt, &ret->target.perms) < 0)
         goto cleanup;
 
+
+
+    ret->backingStore.path = virXPathString(conn, "string(/volume/backingStore/path)", ctxt);
+    if (options->formatFromString) {
+        char *format = virXPathString(conn, "string(/volume/backingStore/format/@type)", ctxt);
+        if (format == NULL)
+            ret->backingStore.format = options->defaultFormat;
+        else
+            ret->backingStore.format = (options->formatFromString)(format);
+
+        if (ret->backingStore.format < 0) {
+            virStorageReportError(conn, VIR_ERR_XML_ERROR,
+                                  _("unknown volume format type %s"), format);
+            VIR_FREE(format);
+            goto cleanup;
+        }
+        VIR_FREE(format);
+    }
+
+    if (virStorageVolDefParsePerms(conn, ctxt, &ret->backingStore.perms) < 0)
+        goto cleanup;
+
     return ret;
 
  cleanup:
@@ -1069,6 +1093,47 @@ virStorageVolDefParse(virConnectPtr conn,
 }
 
 
+static int
+virStorageVolTargetDefFormat(virConnectPtr conn,
+                             virStorageVolOptionsPtr options,
+                             virBufferPtr buf,
+                             virStorageVolTargetPtr def,
+                             const char *type) {
+    virBufferVSprintf(buf, "  <%s>\n", type);
+
+    if (def->path)
+        virBufferVSprintf(buf,"    <path>%s</path>\n", def->path);
+
+    if (options->formatToString) {
+        const char *format = (options->formatToString)(def->format);
+        if (!format) {
+            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("unknown volume format number %d"),
+                                  def->format);
+            return -1;
+        }
+        virBufferVSprintf(buf,"    <format type='%s'/>\n", format);
+    }
+
+    virBufferAddLit(buf,"    <permissions>\n");
+    virBufferVSprintf(buf,"      <mode>0%o</mode>\n",
+                      def->perms.mode);
+    virBufferVSprintf(buf,"      <owner>%d</owner>\n",
+                      def->perms.uid);
+    virBufferVSprintf(buf,"      <group>%d</group>\n",
+                      def->perms.gid);
+
+
+    if (def->perms.label)
+        virBufferVSprintf(buf,"      <label>%s</label>\n",
+                          def->perms.label);
+
+    virBufferAddLit(buf,"    </permissions>\n");
+
+    virBufferVSprintf(buf, "  </%s>\n", type);
+
+    return 0;
+}
 
 char *
 virStorageVolDefFormat(virConnectPtr conn,
@@ -1116,37 +1181,15 @@ virStorageVolDefFormat(virConnectPtr conn,
     virBufferVSprintf(&buf,"  <allocation>%llu</allocation>\n",
                       def->allocation);
 
-    virBufferAddLit(&buf, "  <target>\n");
+    if (virStorageVolTargetDefFormat(conn, options, &buf,
+                                     &def->target, "target") < 0)
+        goto cleanup;
 
-    if (def->target.path)
-        virBufferVSprintf(&buf,"    <path>%s</path>\n", def->target.path);
+    if (def->backingStore.path &&
+        virStorageVolTargetDefFormat(conn, options, &buf,
+                                     &def->backingStore, "backingStore") < 0)
+        goto cleanup;
 
-    if (options->formatToString) {
-        const char *format = (options->formatToString)(def->target.format);
-        if (!format) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("unknown volume format number %d"),
-                                  def->target.format);
-            goto cleanup;
-        }
-        virBufferVSprintf(&buf,"    <format type='%s'/>\n", format);
-    }
-
-    virBufferAddLit(&buf,"    <permissions>\n");
-    virBufferVSprintf(&buf,"      <mode>0%o</mode>\n",
-                      def->target.perms.mode);
-    virBufferVSprintf(&buf,"      <owner>%d</owner>\n",
-                      def->target.perms.uid);
-    virBufferVSprintf(&buf,"      <group>%d</group>\n",
-                      def->target.perms.gid);
-
-
-    if (def->target.perms.label)
-        virBufferVSprintf(&buf,"      <label>%s</label>\n",
-                          def->target.perms.label);
-
-    virBufferAddLit(&buf,"    </permissions>\n");
-    virBufferAddLit(&buf, "  </target>\n");
     virBufferAddLit(&buf,"</volume>\n");
 
     if (virBufferError(&buf))

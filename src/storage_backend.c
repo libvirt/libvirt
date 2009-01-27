@@ -99,27 +99,51 @@ virStorageBackendForType(int type) {
 
 
 int
-virStorageBackendUpdateVolInfo(virConnectPtr conn,
-                               virStorageVolDefPtr vol,
-                               int withCapacity)
+virStorageBackendUpdateVolTargetInfo(virConnectPtr conn,
+                                     virStorageVolTargetPtr target,
+                                     unsigned long long *allocation,
+                                     unsigned long long *capacity)
 {
     int ret, fd;
 
-    if ((fd = open(vol->target.path, O_RDONLY)) < 0) {
+    if ((fd = open(target->path, O_RDONLY)) < 0) {
         virReportSystemError(conn, errno,
                              _("cannot open volume '%s'"),
-                             vol->target.path);
+                             target->path);
         return -1;
     }
 
-    ret = virStorageBackendUpdateVolInfoFD(conn,
-                                           vol,
-                                           fd,
-                                           withCapacity);
+    ret = virStorageBackendUpdateVolTargetInfoFD(conn,
+                                                 target,
+                                                 fd,
+                                                 allocation,
+                                                 capacity);
 
     close(fd);
 
     return ret;
+}
+
+int
+virStorageBackendUpdateVolInfo(virConnectPtr conn,
+                               virStorageVolDefPtr vol,
+                               int withCapacity)
+{
+    int ret;
+
+    if ((ret = virStorageBackendUpdateVolTargetInfo(conn,
+                                                    &vol->target,
+                                                    &vol->allocation,
+                                                    withCapacity ? &vol->capacity : NULL)) < 0)
+        return ret;
+
+    if (vol->backingStore.path &&
+        (ret = virStorageBackendUpdateVolTargetInfo(conn,
+                                                    &vol->backingStore,
+                                                    NULL, NULL)) < 0)
+        return ret;
+
+    return 0;
 }
 
 struct diskType {
@@ -154,10 +178,11 @@ static struct diskType const disk_types[] = {
 };
 
 int
-virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
-                                 virStorageVolDefPtr vol,
-                                 int fd,
-                                 int withCapacity)
+virStorageBackendUpdateVolTargetInfoFD(virConnectPtr conn,
+                                       virStorageVolTargetPtr target,
+                                       int fd,
+                                       unsigned long long *allocation,
+                                       unsigned long long *capacity)
 {
     struct stat sb;
 #if HAVE_SELINUX
@@ -167,7 +192,7 @@ virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
     if (fstat(fd, &sb) < 0) {
         virReportSystemError(conn, errno,
                              _("cannot stat file '%s'"),
-                             vol->target.path);
+                             target->path);
         return -1;
     }
 
@@ -176,38 +201,41 @@ virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
         !S_ISBLK(sb.st_mode))
         return -2;
 
-    if (S_ISREG(sb.st_mode)) {
+    if (allocation) {
+        if (S_ISREG(sb.st_mode)) {
 #ifndef __MINGW32__
-        vol->allocation = (unsigned long long)sb.st_blocks *
-            (unsigned long long)sb.st_blksize;
+            *allocation = (unsigned long long)sb.st_blocks *
+                (unsigned long long)sb.st_blksize;
 #else
-        vol->allocation = sb.st_size;
+            *allocation = sb.st_size;
 #endif
-        /* Regular files may be sparse, so logical size (capacity) is not same
-         * as actual allocation above
-         */
-        if (withCapacity)
-            vol->capacity = sb.st_size;
-    } else {
-        off_t end;
-        /* XXX this is POSIX compliant, but doesn't work for for CHAR files,
-         * only BLOCK. There is a Linux specific ioctl() for getting
-         * size of both CHAR / BLOCK devices we should check for in
-         * configure
-         */
-        end = lseek(fd, 0, SEEK_END);
-        if (end == (off_t)-1) {
-            virReportSystemError(conn, errno,
-                                 _("cannot seek to end of file '%s'"),
-                                 vol->target.path);
-            return -1;
+            /* Regular files may be sparse, so logical size (capacity) is not same
+             * as actual allocation above
+             */
+            if (capacity)
+                *capacity = sb.st_size;
+        } else {
+            off_t end;
+            /* XXX this is POSIX compliant, but doesn't work for for CHAR files,
+             * only BLOCK. There is a Linux specific ioctl() for getting
+             * size of both CHAR / BLOCK devices we should check for in
+             * configure
+             */
+            end = lseek(fd, 0, SEEK_END);
+            if (end == (off_t)-1) {
+                virReportSystemError(conn, errno,
+                                     _("cannot seek to end of file '%s'"),
+                                     target->path);
+                return -1;
+            }
+            *allocation = end;
+            if (capacity)
+                *capacity = end;
         }
-        vol->allocation = end;
-        if (withCapacity) vol->capacity = end;
     }
 
     /* make sure to set the target format "unknown" to begin with */
-    vol->target.format = VIR_STORAGE_POOL_DISK_UNKNOWN;
+    target->format = VIR_STORAGE_POOL_DISK_UNKNOWN;
 
     if (S_ISBLK(sb.st_mode)) {
         off_t start;
@@ -219,14 +247,14 @@ virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
         if (start < 0) {
             virReportSystemError(conn, errno,
                                  _("cannot seek to beginning of file '%s'"),
-                                 vol->target.path);
+                                 target->path);
             return -1;
         }
         bytes = saferead(fd, buffer, sizeof(buffer));
         if (bytes < 0) {
             virReportSystemError(conn, errno,
                                  _("cannot read beginning of file '%s'"),
-                                 vol->target.path);
+                                 target->path);
             return -1;
         }
 
@@ -235,38 +263,38 @@ virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
                 continue;
             if (memcmp(buffer+disk_types[i].offset, &disk_types[i].magic,
                 disk_types[i].length) == 0) {
-                vol->target.format = disk_types[i].part_table_type;
+                target->format = disk_types[i].part_table_type;
                 break;
             }
         }
     }
 
-    vol->target.perms.mode = sb.st_mode;
-    vol->target.perms.uid = sb.st_uid;
-    vol->target.perms.gid = sb.st_gid;
+    target->perms.mode = sb.st_mode & S_IRWXUGO;
+    target->perms.uid = sb.st_uid;
+    target->perms.gid = sb.st_gid;
 
-    VIR_FREE(vol->target.perms.label);
+    VIR_FREE(target->perms.label);
 
 #if HAVE_SELINUX
     if (fgetfilecon(fd, &filecon) == -1) {
         if (errno != ENODATA && errno != ENOTSUP) {
             virReportSystemError(conn, errno,
                                  _("cannot get file context of '%s'"),
-                                 vol->target.path);
+                                 target->path);
             return -1;
         } else {
-            vol->target.perms.label = NULL;
+            target->perms.label = NULL;
         }
     } else {
-        vol->target.perms.label = strdup(filecon);
-        if (vol->target.perms.label == NULL) {
+        target->perms.label = strdup(filecon);
+        if (target->perms.label == NULL) {
             virReportOOMError(conn);
             return -1;
         }
         freecon(filecon);
     }
 #else
-    vol->target.perms.label = NULL;
+    target->perms.label = NULL;
 #endif
 
     return 0;
