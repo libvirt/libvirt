@@ -63,6 +63,7 @@ int     brDeleteInterface       (brControl *ctl,
 int     brAddTap                (brControl *ctl,
                                  const char *bridge,
                                  char **ifname,
+                                 int vnet_hdr,
                                  int *tapfd);
 
 int     brSetInterfaceUp        (brControl *ctl,

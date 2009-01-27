@@ -48,6 +48,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_NAME           = (1 << 5),
     QEMUD_CMD_FLAG_UUID           = (1 << 6),
     QEMUD_CMD_FLAG_DOMID          = (1 << 7), /* Xenner only */
+    QEMUD_CMD_FLAG_VNET_HDR       = (1 << 8),
 };
 
 /* Main driver state */

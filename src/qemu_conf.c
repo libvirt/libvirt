@@ -353,7 +353,7 @@ int qemudExtractVersionInfo(const char *qemu,
     int newstdout = -1;
     int ret = -1, status;
     unsigned int major, minor, micro;
-    unsigned int version;
+    unsigned int version, kvm_version;
     unsigned int flags = 0;
 
     if (retflags)
@@ -371,10 +371,13 @@ int qemudExtractVersionInfo(const char *qemu,
     if (len < 0)
         goto cleanup2;
 
-    if (sscanf(help, "QEMU PC emulator version %u.%u.%u",
-               &major, &minor, &micro) != 3) {
+    if (sscanf(help, "QEMU PC emulator version %u.%u.%u (kvm-%u)",
+               &major, &minor, &micro, &kvm_version) != 4)
+        kvm_version = 0;
+
+    if (!kvm_version && sscanf(help, "QEMU PC emulator version %u.%u.%u",
+               &major, &minor, &micro) != 3)
         goto cleanup2;
-    }
 
     version = (major * 1000 * 1000) + (minor * 1000) + micro;
 
@@ -394,6 +397,8 @@ int qemudExtractVersionInfo(const char *qemu,
         flags |= QEMUD_CMD_FLAG_DRIVE_BOOT;
     if (version >= 9000)
         flags |= QEMUD_CMD_FLAG_VNC_COLON;
+    if (kvm_version >= 74)
+        flags |= QEMUD_CMD_FLAG_VNET_HDR;
 
     if (retversion)
         *retversion = version;
@@ -404,6 +409,8 @@ int qemudExtractVersionInfo(const char *qemu,
 
     qemudDebug("Version %d %d %d  Cooked version: %d, with flags ? %d",
                major, minor, micro, version, flags);
+    if (kvm_version)
+        qemudDebug("KVM version %d detected", kvm_version);
 
 cleanup2:
     VIR_FREE(help);
@@ -467,7 +474,8 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
                          int **tapfds,
                          int *ntapfds,
                          virDomainNetDefPtr net,
-                         int vlan)
+                         int vlan,
+                         int vnet_hdr)
 {
     char *brname;
     char tapfdstr[4+3+32+7];
@@ -517,7 +525,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     }
 
     if ((err = brAddTap(driver->brctl, brname,
-                        &net->ifname, &tapfd))) {
+                        &net->ifname, vnet_hdr, &tapfd))) {
         if (errno == ENOTSUP) {
             /* In this particular case, give a better diagnostic. */
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -1029,9 +1037,16 @@ int qemudBuildCommandLine(virConnectPtr conn,
             case VIR_DOMAIN_NET_TYPE_NETWORK:
             case VIR_DOMAIN_NET_TYPE_BRIDGE:
                 {
-                    char *tap = qemudNetworkIfaceConnect(conn, driver,
-                                                         tapfds, ntapfds,
-                                                         net, vlan);
+                    char *tap;
+                    int vnet_hdr = 0;
+
+                    if (qemuCmdFlags & QEMUD_CMD_FLAG_VNET_HDR &&
+                        net->model && STREQ(net->model, "virtio"))
+                        vnet_hdr = 1;
+
+                    tap = qemudNetworkIfaceConnect(conn, driver,
+                                                   tapfds, ntapfds,
+                                                   net, vlan, vnet_hdr);
                     if (tap == NULL)
                         goto error;
                     ADD_ARG(tap);

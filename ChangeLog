@@ -1,3 +1,35 @@
+Tue Jan 27 10:48:12 IST 2009 Mark McLoughlin <markmc@redhat.com>
+
+	kvm/virtio: Set IFF_VNET_HDR when setting up tap fds
+
+	IFF_VNET_HDR is a tun/tap flag that allows you to send and receive
+	large (i.e. GSO) packets and packets with partial checksums. Setting
+	the flag means that every packet is proceeded by the same header which
+	virtio uses to communicate GSO/csum metadata.
+
+	By enabling this flag on the tap fds we create, we greatly increase
+	the achievable throughput with virtio_net.
+
+	However, we need to be careful to only set the flag when a) QEMU has
+	support for this ABI and b) the value of the flag is queryable using
+	the TUNGETIFF ioctl.
+
+	It's nearly five months since kvm-74 - the first KVM release with this
+	feature - was released. Up until now, we've not added libvirt support
+	because there is no clean way to detect support for this in QEMU at
+	runtime. A brief attempt to add a "info capabilities" monitor command
+	to QEMU floundered. Perfect is the enemy of good enough. Probing the
+	KVM version will suffice for now.
+
+	* src/qemu_conf.[ch] (qemudExtractVersionInfo): detect the KVM version,
+	set QEMUD_CMD_FLAG_VNET_HDR if we have kvm-74 or newer
+	(qemudBuildCommandLine): if qemu support VNET_HDR and this is a
+	virtio interface, then use it
+
+	* src/bridge.[ch] (brProbeVnetHdr): only enable IFF_VNET_HDR if
+	the kernel bits are available
+	(brAddTap): add a @vnet_hdr arg, set IFF_VNET_HDR
+
 Tue Jan 27 11:53:32 +0100 2009 Jim Meyering <meyering@redhat.com>
 	and Daniel P. Berrange <berrange@redhat.com>
 
