@@ -85,6 +85,7 @@ random_r
 send
 setsockopt
 socket
+stpcpy
 strndup
 strerror
 strsep

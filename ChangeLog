@@ -1,5 +1,15 @@
 Tue Jan 27 10:38:09 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	use gnulib's stpcpy module
+	* bootstrap (modules): Add stpcpy, and pull in gnulib bits:
+	* gnulib/lib/stpcpy.c: New file.
+	* gnulib/m4/stpcpy.m4: New file.
+	* gnulib/lib/Makefile.am: Update.
+	* gnulib/m4/gnulib-cache.m4: Update.
+	* gnulib/m4/gnulib-comp.m4: Update.
+
+Tue Jan 27 10:38:09 +0100 2009 Jim Meyering <meyering@redhat.com>
+
 	update from gnulib
 
 Mon Jan 26 20:40:35 +0100 2009 Jim Meyering <meyering@redhat.com>

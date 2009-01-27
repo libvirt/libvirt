@@ -15,7 +15,7 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib/lib --m4-base=gnulib/m4 --doc-base=doc --tests-base=gnulib/tests --aux-dir=build-aux --with-tests --lgpl=2 --libtool --macro-prefix=gl --no-vc-files c-ctype close connect getaddrinfo gethostname getpass gettext inet_pton ioctl mkstemp mktempd perror physmem poll posix-shell random_r recv send setsockopt socket strerror strndup strsep sys_stat time_r useless-if-before-free vasprintf vc-list-files verify
+#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib/lib --m4-base=gnulib/m4 --doc-base=doc --tests-base=gnulib/tests --aux-dir=build-aux --with-tests --lgpl=2 --libtool --macro-prefix=gl --no-vc-files c-ctype close connect getaddrinfo gethostname getpass gettext inet_pton ioctl mkstemp mktempd perror physmem poll posix-shell random_r recv send setsockopt socket stpcpy strerror strndup strsep sys_stat time_r useless-if-before-free vasprintf vc-list-files verify
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
@@ -40,6 +40,7 @@ gl_MODULES([
   send
   setsockopt
   socket
+  stpcpy
   strerror
   strndup
   strsep

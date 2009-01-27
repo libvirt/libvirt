@@ -138,6 +138,8 @@ AC_SUBST([LTALLOCA])
   gl_STDINT_H
   gl_STDIO_H
   gl_STDLIB_H
+  gl_FUNC_STPCPY
+  gl_STRING_MODULE_INDICATOR([stpcpy])
   gl_FUNC_STRDUP_POSIX
   gl_STRING_MODULE_INDICATOR([strdup])
   gl_FUNC_STRERROR
@@ -385,6 +387,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stdio-write.c
   lib/stdio.in.h
   lib/stdlib.in.h
+  lib/stpcpy.c
   lib/strdup.c
   lib/strerror.c
   lib/string.in.h
@@ -477,6 +480,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/stdint_h.m4
   m4/stdio_h.m4
   m4/stdlib_h.m4
+  m4/stpcpy.m4
   m4/strdup.m4
   m4/strerror.m4
   m4/string_h.m4
