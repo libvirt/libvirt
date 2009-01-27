@@ -1,3 +1,9 @@
+Tue Jan 27 13:25:16 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	virterror.c: don't read beyond end of buffer upon OOM
+	* src/virterror.c (virReportSystemErrorFull): Fix typo in
+	my previous change.  Patch by Daniel P. Berrange.
+
 Tue Jan 27 10:48:12 IST 2009 Mark McLoughlin <markmc@redhat.com>
 
 	kvm/virtio: Set IFF_VNET_HDR when setting up tap fds

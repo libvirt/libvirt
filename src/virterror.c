@@ -1059,7 +1059,7 @@ void virReportSystemErrorFull(virConnectPtr conn,
         }
     }
 
-    if (!msgDetailBuf)
+    if (!msgDetail)
         msgDetail = errnoDetail;
 
     virRaiseError(conn, NULL, NULL, domcode, VIR_ERR_SYSTEM_ERROR, VIR_ERR_ERROR,
