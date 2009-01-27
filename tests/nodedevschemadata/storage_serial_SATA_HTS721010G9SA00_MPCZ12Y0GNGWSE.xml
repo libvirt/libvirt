@@ -1,0 +1,14 @@
+<device>
+  <name>storage_serial_SATA_HTS721010G9SA00_MPCZ12Y0GNGWSE</name>
+  <parent>pci_8086_27c5_scsi_host_scsi_device_lun0</parent>
+  <capability type='storage'>
+    <block>/dev/sda</block>
+    <bus>scsi</bus>
+    <drive_type>disk</drive_type>
+    <model>HTS721010G9SA00</model>
+    <vendor>ATA</vendor>
+    <size>100030242816</size>
+  </capability>
+</device>
+
+

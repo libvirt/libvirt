@@ -1,0 +1,111 @@
+<capabilities>
+
+  <host>
+    <cpu>
+      <arch>i686</arch>
+    </cpu>
+  </host>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='i686'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu</emulator>
+      <machine>pc</machine>
+      <machine>isapc</machine>
+      <domain type='qemu'>
+      </domain>
+      <domain type='kvm'>
+        <emulator>/usr/bin/qemu-kvm</emulator>
+      </domain>
+    </arch>
+    <features>
+      <pae/>
+      <nonpae/>
+      <acpi default='on' toggle='yes'/>
+      <apic default='on' toggle='no'/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='x86_64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-x86_64</emulator>
+      <machine>pc</machine>
+      <machine>isapc</machine>
+      <domain type='qemu'>
+      </domain>
+    </arch>
+    <features>
+      <acpi default='on' toggle='yes'/>
+      <apic default='on' toggle='no'/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='mips'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-mips</emulator>
+      <machine>mips</machine>
+      <domain type='qemu'>
+      </domain>
+    </arch>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='mipsel'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-mipsel</emulator>
+      <machine>mips</machine>
+      <domain type='qemu'>
+      </domain>
+    </arch>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='sparc'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-sparc</emulator>
+      <machine>sun4m</machine>
+      <domain type='qemu'>
+      </domain>
+    </arch>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='ppc'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-ppc</emulator>
+      <machine>g3bw</machine>
+      <machine>mac99</machine>
+      <machine>prep</machine>
+      <domain type='qemu'>
+      </domain>
+    </arch>
+  </guest>
+
+  <guest>
+    <os_type>xen</os_type>
+    <arch name='i686'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/xenner</emulator>
+      <machine>xenner</machine>
+      <domain type='kvm'>
+      </domain>
+    </arch>
+    <features>
+      <pae/>
+      <nonpae/>
+      <acpi default='on' toggle='yes'/>
+      <apic default='on' toggle='no'/>
+    </features>
+  </guest>
+
+</capabilities>
+
+

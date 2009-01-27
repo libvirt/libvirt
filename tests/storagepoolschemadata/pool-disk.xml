@@ -1,0 +1,22 @@
+<pool type='disk'>
+  <name>sda</name>
+  <uuid>e3509a62-1b4c-e20b-94bd-9168963f9b97</uuid>
+  <capacity>100027630080</capacity>
+  <allocation>100027597824</allocation>
+  <available>0</available>
+  <source>
+    <device path='/dev/sda'>
+      <freeExtent start='370137600' end='567544320'/>
+      <freeExtent start='987033600' end='1044610560'/>
+    </device>
+    <format type='dos'/>
+  </source>
+  <target>
+    <path>/dev</path>
+    <permissions>
+      <mode>0700</mode>
+      <owner>0</owner>
+      <group>0</group>
+    </permissions>
+  </target>
+</pool>

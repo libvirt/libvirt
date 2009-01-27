@@ -1,0 +1,12 @@
+<device>
+  <name>usb_device_1d6b_1_0000_00_1d_0_if0</name>
+  <parent>usb_device_1d6b_1_0000_00_1d_0</parent>
+  <capability type='usb'>
+    <number>0</number>
+    <class>9</class>
+    <subclass>0</subclass>
+    <protocol>0</protocol>
+  </capability>
+</device>
+
+

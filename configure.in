@@ -1272,6 +1272,7 @@ cp -f COPYING.LIB COPYING
 AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           docs/examples/Makefile docs/devhelp/Makefile \
 	  docs/examples/python/Makefile \
+	  docs/schemas/Makefile \
 	  gnulib/lib/Makefile \
 	  gnulib/tests/Makefile \
           libvirt.pc libvirt.spec mingw32-libvirt.spec \

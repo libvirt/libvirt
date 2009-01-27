@@ -1,0 +1,12 @@
+<device>
+  <name>usb_device_1d6b_1_0000_00_1d_0</name>
+  <parent>pci_8086_27c8</parent>
+  <capability type='usb_device'>
+    <bus>2</bus>
+    <device>1</device>
+    <product id='0x0001'>1.1 root hub</product>
+    <vendor id='0x1d6b'>Linux Foundation</vendor>
+  </capability>
+</device>
+
+

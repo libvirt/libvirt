@@ -1,0 +1,287 @@
+<!-- A Relax NG schema for the libvirt node device XML format -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <!-- We handle only document defining a domain -->
+  <start>
+    <ref name='capabilities'/>
+  </start>
+
+
+  <define name='capabilities'>
+    <element name='capabilities'>
+      <ref name='hostcaps'/>
+
+      <zeroOrMore>
+	<ref name='guestcaps'/>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name='hostcaps'>
+    <element name='host'>
+      <element name='cpu'>
+	<element name='arch'>
+	  <ref name='archnames'/>
+	</element>
+	<optional>
+	  <ref name='cpufeatures'/>
+	</optional>
+      </element>
+      <optional>
+	<ref name='migration'/>
+      </optional>
+      <optional>
+	<ref name='topology'/>
+      </optional>
+    </element>
+  </define>
+
+  <define name='cpufeatures'>
+    <element name='features'>
+      <optional>
+	<element name='pae'><empty/></element>
+      </optional>
+      <optional>
+	<element name='nonpae'><empty/></element>
+      </optional>
+      <optional>
+	<element name='vmx'><empty/></element>
+      </optional>
+      <optional>
+	<element name='svm'><empty/></element>
+      </optional>
+    </element>
+  </define>
+
+  <define name='migration'>
+    <element name='migration_features'>
+      <optional>
+	<element name='live'>
+	  <empty/>
+	</element>
+      </optional>
+      <optional>
+	<element name='uri_transports'>
+	  <oneOrMore>
+	    <element name='uri_transport'>
+	      <choice>
+		<value>xenmigr</value>
+	      </choice>
+	    </element>
+	  </oneOrMore>
+	</element>
+      </optional>
+    </element>
+  </define>
+
+  <define name='topology'>
+    <element name='topology'>
+      <element name='cells'>
+	<attribute name='num'>
+	  <ref name='uint'/>
+	</attribute>
+	<oneOrMore>
+	  <ref name='cell'/>
+	</oneOrMore>
+      </element>
+    </element>
+  </define>
+
+  <define name='cell'>
+    <element name='cell'>
+      <attribute name='id'>
+	<ref name='uint'/>
+      </attribute>
+
+      <optional>
+	<element name='cpus'>
+	  <attribute name='num'>
+	    <ref name='uint'/>
+	  </attribute>
+	  <oneOrMore>
+	    <ref name='cpu'/>
+	  </oneOrMore>
+	</element>
+      </optional>
+    </element>
+  </define>
+
+  <define name='cpu'>
+    <element name='cpu'>
+      <attribute name='id'>
+	<ref name='uint'/>
+      </attribute>
+    </element>
+  </define>
+
+  <define name='guestcaps'>
+    <element name='guest'>
+      <ref name='ostype'/>
+      <ref name='arch'/>
+      <optional>
+	<ref name='features'/>
+      </optional>
+    </element>
+  </define>
+
+  <define name='ostype'>
+    <element name='os_type'>
+      <choice>
+	<value>xen</value> <!-- Xen 3.0 pv -->
+	<value>linux</value> <!-- same as 'xen' - legacy -->
+	<value>hvm</value> <!-- unmodified OS -->
+	<value>exe</value> <!-- For container based virt -->
+	<value>uml</value> <!-- user mode linux -->
+      </choice>
+    </element>
+  </define>
+
+  <define name='arch'>
+    <element name='arch'>
+      <attribute name='name'>
+	<ref name='archnames'/>
+      </attribute>
+      <ref name='wordsize'/>
+      <optional>
+	<ref name='emulator'/>
+      </optional>
+      <optional>
+	<ref name='loader'/>
+      </optional>
+      <zeroOrMore>
+	<ref name='machine'/>
+      </zeroOrMore>
+      <oneOrMore>
+	<ref name='domain'/>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name='emulator'>
+    <element name='emulator'>
+      <ref name='path'/>
+    </element>
+  </define>
+
+  <define name='loader'>
+    <element name='loader'>
+      <ref name='path'/>
+    </element>
+  </define>
+
+  <define name='wordsize'>
+    <element name='wordsize'>
+      <choice>
+	<value>31</value>
+	<value>32</value>
+	<value>64</value>
+      </choice>
+    </element>
+  </define>
+
+  <define name='machine'>
+    <element name='machine'>
+      <text/>
+    </element>
+  </define>
+
+  <define name='domain'>
+    <element name='domain'>
+      <attribute name='type'>
+	<choice>
+	  <value>qemu</value>
+	  <value>kqemu</value>
+	  <value>kvm</value>
+	  <value>xen</value>
+	  <value>uml</value>
+	  <value>lxc</value>
+	  <value>openvz</value>
+	  <value>test</value>
+	</choice>
+      </attribute>
+
+      <optional>
+	<ref name='emulator'/>
+      </optional>
+      <optional>
+	<ref name='machine'/>
+      </optional>
+    </element>
+  </define>
+
+  <define name='features'>
+    <element name='features'>
+      <optional>
+	<element name='pae'>
+	  <empty/>
+	</element>
+      </optional>
+      <optional>
+	<element name='nonpae'>
+	  <empty/>
+	</element>
+      </optional>
+      <optional>
+	<element name='ia64_be'>
+	  <empty/>
+	</element>
+      </optional>
+      <optional>
+	<element name='acpi'>
+	  <ref name='featuretoggle'/>
+	  <empty/>
+	</element>
+      </optional>
+      <optional>
+	<element name='apic'>
+	  <ref name='featuretoggle'/>
+	  <empty/>
+	</element>
+      </optional>
+    </element>
+  </define>
+
+  <define name='featuretoggle'>
+    <attribute name='toggle'>
+      <choice>
+	<value>yes</value>
+	<value>no</value>
+      </choice>
+    </attribute>
+    <attribute name='default'>
+      <choice>
+	<value>on</value>
+	<value>off</value>
+      </choice>
+    </attribute>
+  </define>
+
+  <define name='archnames'>
+    <choice>
+      <value>i686</value>
+      <value>x86_64</value>
+      <value>ppc</value>
+      <value>ppc64</value>
+      <value>ia64</value>
+      <value>s390</value>
+      <value>mips</value>
+      <value>mipsel</value>
+      <value>sparc</value>
+    </choice>
+  </define>
+
+
+  <define name='uint'>
+    <data type='string'>
+      <param name="pattern">[0-9]+</param>
+    </data>
+  </define>
+
+  <define name='path'>
+    <data type='string'>
+      <param name="pattern">/[a-zA-Z0-9_\+\-/%]+</param>
+    </data>
+  </define>
+
+</grammar>
+

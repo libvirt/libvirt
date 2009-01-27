@@ -1,0 +1,360 @@
+<!-- A Relax NG schema for the libvirt node device XML format -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <!-- We handle only document defining a domain -->
+  <start>
+    <ref name='device'/>
+  </start>
+
+  <!--
+      We handle only document defining a domain
+    -->
+  <define name='device'>
+    <element name="device">
+      <!-- The name of the network, used to refer to it through the API
+         and in virsh -->
+      <element name="name"><text/></element>
+      <optional>
+        <element name="parent"><text/></element>
+      </optional>
+
+      <zeroOrMore>
+	<ref name="capability"/>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name='capability'>
+    <element name="capability">
+      <choice>
+	<ref name="capsystem"/>
+	<ref name="cappcidev"/>
+	<ref name="capusbdev"/>
+	<ref name="capusbinterface"/>
+	<ref name="capnet"/>
+	<ref name="capscsihost"/>
+	<ref name="capscsi"/>
+	<ref name="capstorage"/>
+      </choice>
+    </element>
+  </define>
+
+  <define name='capsystem'>
+    <attribute name='type'>
+      <value>system</value>
+    </attribute>
+
+    <optional>
+      <element name='product'><text/></element>
+    </optional>
+
+    <element name='hardware'>
+      <optional>
+	<element name='vendor'><text/></element>
+      </optional>
+      <optional>
+	<element name='version'><text/></element>
+      </optional>
+      <optional>
+	<element name='serial'><text/></element>
+      </optional>
+
+      <element name='uuid'>
+	<ref name='uuid'/>
+      </element>
+    </element>
+
+
+    <element name='firmware'>
+      <optional>
+	<element name='vendor'><text/></element>
+      </optional>
+      <optional>
+	<element name='version'><text/></element>
+      </optional>
+      <optional>
+	<element name='release_date'><text/></element>
+      </optional>
+    </element>
+  </define>
+
+  <define name='cappcidev'>
+    <attribute name='type'>
+      <value>pci</value>
+    </attribute>
+
+    <element name='domain'>
+      <ref name='uint'/>
+    </element>
+    <element name='bus'>
+      <ref name='uint'/>
+    </element>
+    <element name='slot'>
+      <ref name='uint'/>
+    </element>
+    <element name='function'>
+      <ref name='uint'/>
+    </element>
+
+    <element name='product'>
+      <attribute name='id'>
+	<ref name='hexuint'/>
+      </attribute>
+
+      <choice>
+	<text/>
+	<empty/>
+      </choice>
+    </element>
+
+    <element name='vendor'>
+      <attribute name='id'>
+	<ref name='hexuint'/>
+      </attribute>
+
+      <choice>
+	<text/>
+	<empty/>
+      </choice>
+    </element>
+
+  </define>
+
+  <define name='capusbdev'>
+    <attribute name='type'>
+      <value>usb_device</value>
+    </attribute>
+
+    <element name='bus'>
+      <ref name='uint'/>
+    </element>
+    <element name='device'>
+      <ref name='uint'/>
+    </element>
+
+    <element name='product'>
+      <attribute name='id'>
+	<ref name='hexuint'/>
+      </attribute>
+
+      <choice>
+	<text/>
+	<empty/>
+      </choice>
+    </element>
+
+    <element name='vendor'>
+      <attribute name='id'>
+	<ref name='hexuint'/>
+      </attribute>
+
+      <choice>
+	<text/>
+	<empty/>
+      </choice>
+    </element>
+  </define>
+
+  <define name='capusbinterface'>
+    <attribute name='type'>
+      <value>usb</value>
+    </attribute>
+
+    <element name='number'>
+      <ref name='uint'/>
+    </element>
+    <element name='class'>
+      <ref name='uint'/>
+    </element>
+    <element name='subclass'>
+      <ref name='uint'/>
+    </element>
+    <element name='protocol'>
+      <ref name='uint'/>
+    </element>
+
+    <optional>
+      <element name='description'>
+	<text/>
+      </element>
+    </optional>
+  </define>
+
+  <define name='capnet'>
+    <attribute name='type'>
+      <value>net</value>
+    </attribute>
+
+    <element name='interface'>
+      <text/>
+    </element>
+    <optional>
+      <element name='address'>
+	<ref name='mac'/>
+      </element>
+    </optional>
+
+    <zeroOrMore>
+      <ref name='subcapnet'/>
+    </zeroOrMore>
+  </define>
+
+  <define name='subcapnet'>
+    <element name='capability'>
+      <choice>
+	<ref name='subcapnet80203'/>
+	<ref name='subcapnet80211'/>
+      </choice>
+    </element>
+  </define>
+
+  <define name='subcapnet80203'>
+    <attribute name='type'>
+      <value>80203</value>
+    </attribute>
+  </define>
+
+  <define name='subcapnet80211'>
+    <attribute name='type'>
+      <value>80211</value>
+    </attribute>
+  </define>
+
+
+  <define name='capscsihost'>
+    <attribute name='type'>
+      <value>scsi_host</value>
+    </attribute>
+
+    <element name='host'>
+      <ref name='uint'/>
+    </element>
+  </define>
+
+  <define name='capscsi'>
+    <attribute name='type'>
+      <value>scsi</value>
+    </attribute>
+
+    <element name='host'>
+      <ref name='uint'/>
+    </element>
+    <element name='bus'>
+      <ref name='uint'/>
+    </element>
+    <element name='target'>
+      <ref name='uint'/>
+    </element>
+    <element name='lun'>
+      <ref name='uint'/>
+    </element>
+
+    <element name='type'>
+      <text/>
+    </element>
+  </define>
+
+  <define name='capstorage'>
+    <attribute name='type'>
+      <value>storage</value>
+    </attribute>
+
+    <element name='block'>
+      <ref name='path'/>
+    </element>
+
+    <optional>
+      <element name='bus'>
+	<text/>
+      </element>
+    </optional>
+    <optional>
+      <element name='drive_type'>
+	<text/>
+      </element>
+    </optional>
+    <optional>
+      <element name='model'>
+	<text/>
+	</element>
+    </optional>
+    <optional>
+      <element name='vendor'>
+	<text/>
+      </element>
+    </optional>
+
+    <choice>
+      <ref name='capstorageremoveable'/>
+      <ref name='capstoragefixed'/>
+    </choice>
+
+    <optional>
+      <element name='capability'>
+	<attribute name='type'>
+	  <value>hotpluggable</value>
+	</attribute>
+      </element>
+    </optional>
+  </define>
+
+  <define name='capstorageremoveable'>
+    <element name='capability'>
+      <attribute name='type'>
+	<value>removable</value>
+      </attribute>
+      <element name='media_available'>
+	<choice>
+	  <value>1</value>
+	  <value>0</value>
+	</choice>
+      </element>
+
+      <element name='media_size'>
+	<ref name='uint'/>
+      </element>
+    </element>
+  </define>
+
+  <define name='capstoragefixed'>
+    <element name='size'>
+      <ref name='uint'/>
+    </element>
+  </define>
+
+  <define name='uuid'>
+    <choice>
+      <data type='string'>
+        <param name="pattern">[a-fA-F0-9]{32}</param>
+      </data>
+      <data type='string'>
+        <param name="pattern">[a-fA-F0-9]{8}\-([a-fA-F0-9]{4}\-){3}[a-fA-F0-9]{12}</param>
+      </data>
+    </choice>
+  </define>
+
+  <define name='uint'>
+    <data type='string'>
+      <param name="pattern">[0-9]+</param>
+    </data>
+  </define>
+
+  <define name='hexuint'>
+    <data type='string'>
+      <param name="pattern">(0x)?[0-9a-f]+</param>
+    </data>
+  </define>
+
+  <define name='mac'>
+    <data type='string'>
+      <param name="pattern">([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}</param>
+    </data>
+  </define>
+
+  <define name='path'>
+    <data type='string'>
+      <param name="pattern">/[a-zA-Z0-9_\+\-/%]+</param>
+    </data>
+  </define>
+
+</grammar>

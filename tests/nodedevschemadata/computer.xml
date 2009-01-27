@@ -1,0 +1,18 @@
+<device>
+  <name>computer</name>
+  <capability type='system'>
+    <hardware>
+      <vendor>LENOVO</vendor>
+      <version>ThinkPad T60p</version>
+      <serial>123123</serial>
+      <uuid>12345678-1234-1234-9596-a088b277d677</uuid>
+    </hardware>
+    <firmware>
+      <vendor>LENOVO</vendor>
+      <version>79ETE1WW (2.21 )</version>
+      <release_date>02/05/2008</release_date>
+    </firmware>
+  </capability>
+</device>
+
+

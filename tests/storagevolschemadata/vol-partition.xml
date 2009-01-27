@@ -1,0 +1,21 @@
+<volume>
+  <name>sda1</name>
+  <key>/dev/sda1</key>
+  <source>
+    <device path='/dev/sda'>
+      <extent start='32256' end='106928640'/>
+    </device>
+  </source>
+  <capacity>106896384</capacity>
+  <allocation>106896384</allocation>
+  <target>
+    <path>/dev/sda1</path>
+    <format type='none'/>
+    <permissions>
+      <mode>060660</mode>
+      <owner>0</owner>
+      <group>6</group>
+      <label>system_u:object_r:fixed_disk_device_t:s0</label>
+    </permissions>
+  </target>
+</volume>

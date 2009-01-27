@@ -1,0 +1,14 @@
+<device>
+  <name>pci_1002_71c4</name>
+  <parent>pci_8086_27a1</parent>
+  <capability type='pci'>
+    <domain>0</domain>
+    <bus>1</bus>
+    <slot>0</slot>
+    <function>0</function>
+    <product id='0x71c4'>M56GL [Mobility FireGL V5200]</product>
+    <vendor id='0x1002'>ATI Technologies Inc</vendor>
+  </capability>
+</device>
+
+

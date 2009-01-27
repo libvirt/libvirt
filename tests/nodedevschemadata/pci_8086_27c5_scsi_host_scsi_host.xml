@@ -1,0 +1,9 @@
+<device>
+  <name>pci_8086_27c5_scsi_host_scsi_host</name>
+  <parent>pci_8086_27c5_scsi_host</parent>
+  <capability type='scsi_host'>
+    <host>0</host>
+  </capability>
+</device>
+
+

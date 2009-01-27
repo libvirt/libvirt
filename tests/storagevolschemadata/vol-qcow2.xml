@@ -1,0 +1,28 @@
+<volume>
+  <name>OtherDemo.img</name>
+  <key>/var/lib/libvirt/images/OtherDemo.img</key>
+  <source>
+  </source>
+  <capacity>5242880000</capacity>
+  <allocation>294912</allocation>
+  <target>
+    <path>/var/lib/libvirt/images/OtherDemo.img</path>
+    <format type='qcow2'/>
+    <permissions>
+      <mode>0100644</mode>
+      <owner>0</owner>
+      <group>0</group>
+      <label>unconfined_u:object_r:virt_image_t:s0</label>
+    </permissions>
+  </target>
+  <backingStore>
+    <path>/var/lib/libvirt/images/BaseDemo.img</path>
+    <format type='raw'/>
+    <permissions>
+      <mode>0100644</mode>
+      <owner>0</owner>
+      <group>0</group>
+      <label>unconfined_u:object_r:virt_image_t:s0</label>
+    </permissions>
+  </backingStore>
+</volume>

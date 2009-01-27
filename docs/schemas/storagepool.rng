@@ -1,0 +1,371 @@
+<!-- A Relax NG schema for the libvirt node device XML format -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <!-- We handle only document defining a domain -->
+  <start>
+    <ref name='pool'/>
+  </start>
+
+
+  <define name='pool'>
+    <element name='pool'>
+      <choice>
+	<ref name='pooldir'/>
+	<ref name='poolfs'/>
+	<ref name='poolnetfs'/>
+	<ref name='poollogical'/>
+	<ref name='pooldisk'/>
+	<ref name='pooliscsi'/>
+	<ref name='poolscsi'/>
+      </choice>
+    </element>
+  </define>
+
+  <define name='pooldir'>
+    <attribute name='type'>
+      <value>dir</value>
+    </attribute>
+    <ref name='commonmetadata'/>
+    <ref name='sizing'/>
+    <ref name='sourcedir'/>
+    <ref name='target'/>
+  </define>
+
+  <define name='poolfs'>
+    <attribute name='type'>
+      <value>fs</value>
+    </attribute>
+    <ref name='commonmetadata'/>
+    <ref name='sizing'/>
+    <ref name='sourcefs'/>
+    <ref name='target'/>
+  </define>
+
+  <define name='poolnetfs'>
+    <attribute name='type'>
+      <value>netfs</value>
+    </attribute>
+    <ref name='commonmetadata'/>
+    <ref name='sizing'/>
+    <ref name='sourcenetfs'/>
+    <ref name='target'/>
+  </define>
+
+  <define name='poollogical'>
+    <attribute name='type'>
+      <value>logical</value>
+    </attribute>
+    <ref name='commonmetadata'/>
+    <ref name='sizing'/>
+    <ref name='sourcelogical'/>
+    <ref name='target'/>
+  </define>
+
+  <define name='pooldisk'>
+    <attribute name='type'>
+      <value>disk</value>
+    </attribute>
+    <ref name='commonmetadata'/>
+    <ref name='sizing'/>
+    <ref name='sourcedisk'/>
+    <ref name='target'/>
+  </define>
+
+  <define name='pooliscsi'>
+    <attribute name='type'>
+      <value>iscsi</value>
+    </attribute>
+    <ref name='commonmetadata'/>
+    <ref name='sizing'/>
+    <ref name='sourceiscsi'/>
+    <ref name='target'/>
+  </define>
+
+  <define name='poolscsi'>
+    <attribute name='type'>
+      <value>scsi</value>
+    </attribute>
+    <ref name='commonmetadata'/>
+    <ref name='sizing'/>
+    <ref name='sourcescsi'/>
+    <ref name='target'/>
+  </define>
+
+  <define name='commonmetadata'>
+    <element name='name'>
+      <ref name='name'/>
+    </element>
+    <optional>
+      <element name='uuid'>
+	<ref name='uuid'/>
+      </element>
+    </optional>
+  </define>
+
+  <define name='sizing'>
+    <optional>
+      <element name='capacity'>
+	<ref name='uint'/>
+      </element>
+    </optional>
+    <optional>
+      <element name='allocation'>
+	<ref name='uint'/>
+      </element>
+    </optional>
+    <optional>
+      <element name='available'>
+	<ref name='uint'/>
+      </element>
+    </optional>
+  </define>
+
+  <define name='permissions'>
+    <optional>
+      <element name='permissions'>
+	<element name='mode'>
+	  <ref name='uint'/>
+	</element>
+	<element name='owner'>
+	  <ref name='uint'/>
+	</element>
+	<element name='group'>
+	  <ref name='uint'/>
+	</element>
+	<optional>
+	  <element name='label'>
+	    <text/>
+	</element>
+	</optional>
+      </element>
+    </optional>
+  </define>
+
+  <define name='target'>
+    <element name='target'>
+      <optional>
+	<element name='path'>
+	  <ref name='path'/>
+	</element>
+      </optional>
+      <ref name='permissions'/>
+    </element>
+  </define>
+
+  <define name='sourceinfohost'>
+    <element name='host'>
+      <attribute name='name'>
+	<text/>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
+
+  <define name='sourceinfodev'>
+    <element name='device'>
+      <attribute name='path'>
+	<choice>
+	  <ref name='path'/>
+	  <ref name='name'/>
+	</choice>
+      </attribute>
+      <choice>
+	<empty/>
+	<ref name='devextents'/>
+      </choice>
+    </element>
+  </define>
+
+  <define name='devextents'>
+    <oneOrMore>
+      <element name='freeExtent'>
+	<attribute name='start'>
+	  <ref name='uint'/>
+	</attribute>
+	<attribute name='end'>
+	  <ref name='uint'/>
+	</attribute>
+      </element>
+    </oneOrMore>
+  </define>
+
+  <define name='sourceinfodir'>
+    <element name='dir'>
+      <attribute name='path'>
+	<ref name='path'/>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
+
+  <define name='sourceinfoadapter'>
+    <element name='adapter'>
+      <attribute name='name'>
+	<text/>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
+
+  <define name='sourceinfoname'>
+    <element name='name'>
+      <text/>
+    </element>
+  </define>
+
+  <define name='sourcefmtfs'>
+    <optional>
+      <element name='format'>
+	<attribute name='type'>
+	  <choice>
+	    <value>auto</value>
+	    <value>ext2</value>
+	    <value>ext3</value>
+            <value>ext4</value>
+	    <value>ufs</value>
+	    <value>iso9660</value>
+	    <value>udf</value>
+            <value>gfs</value>
+	    <value>gfs2</value>
+	    <value>vfat</value>
+	    <value>hfs+</value>
+	    <value>xfs</value>
+	  </choice>
+	</attribute>
+      </element>
+    </optional>
+  </define>
+
+
+  <define name='sourcefmtnetfs'>
+    <optional>
+      <element name='format'>
+	<attribute name='type'>
+	  <choice>
+	    <value>auto</value>
+	    <value>nfs</value>
+	  </choice>
+	</attribute>
+      </element>
+    </optional>
+  </define>
+
+
+  <define name='sourcefmtdisk'>
+    <optional>
+      <element name='format'>
+	<attribute name='type'>
+	  <choice>
+	    <value>none</value>
+	    <value>dos</value>
+	    <value>dvh</value>
+	    <value>gpt</value>
+	    <value>mac</value>
+	    <value>bsd</value>
+	    <value>pc98</value>
+	    <value>sun</value>
+	    <value>lvm2</value>
+	  </choice>
+	</attribute>
+      </element>
+    </optional>
+  </define>
+
+
+  <define name='sourcefmtlogical'>
+    <optional>
+      <element name='format'>
+	<attribute name='type'>
+	  <choice>
+	    <value>auto</value>
+	    <value>lvm2</value>
+	  </choice>
+	</attribute>
+      </element>
+    </optional>
+  </define>
+
+
+  <define name='sourcedir'>
+    <optional>
+      <element name='source'>
+	<empty/>
+      </element>
+    </optional>
+  </define>
+  <define name='sourcefs'>
+    <element name='source'>
+      <ref name='sourceinfodev'/>
+      <ref name='sourcefmtfs'/>
+    </element>
+  </define>
+
+  <define name='sourcenetfs'>
+    <element name='source'>
+      <ref name='sourceinfohost'/>
+      <ref name='sourceinfodir'/>
+      <ref name='sourcefmtnetfs'/>
+    </element>
+  </define>
+
+  <define name='sourcelogical'>
+    <element name='source'>
+      <ref name='sourceinfoname'/>
+      <optional>
+	<ref name='sourceinfodev'/>
+      </optional>
+      <ref name='sourcefmtlogical'/>
+    </element>
+  </define>
+
+  <define name='sourcedisk'>
+    <element name='source'>
+      <ref name='sourceinfodev'/>
+      <ref name='sourcefmtdisk'/>
+    </element>
+  </define>
+
+  <define name='sourceiscsi'>
+    <element name='source'>
+      <ref name='sourceinfohost'/>
+      <ref name='sourceinfodev'/>
+    </element>
+  </define>
+
+  <define name='sourcescsi'>
+    <element name='source'>
+      <ref name='sourceinfoname'/>
+    </element>
+  </define>
+
+
+  <define name='name'>
+    <data type='string'>
+      <param name="pattern">[a-zA-Z0-9_\+\-]+</param>
+    </data>
+  </define>
+  <define name='uuid'>
+    <choice>
+      <data type='string'>
+        <param name="pattern">[a-fA-F0-9]{32}</param>
+      </data>
+      <data type='string'>
+        <param name="pattern">[a-fA-F0-9]{8}\-([a-fA-F0-9]{4}\-){3}[a-fA-F0-9]{12}</param>
+      </data>
+    </choice>
+  </define>
+
+  <define name='uint'>
+    <data type='string'>
+      <param name="pattern">[0-9]+</param>
+    </data>
+  </define>
+
+  <define name='path'>
+    <data type='string'>
+      <param name="pattern">/[a-zA-Z0-9_\+\-/%]+</param>
+    </data>
+  </define>
+
+
+</grammar>

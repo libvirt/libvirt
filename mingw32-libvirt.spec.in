@@ -80,6 +80,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_mingw32_libdir}/libvirt.la
 %{_mingw32_libdir}/pkgconfig/libvirt.pc
 
+%dir %{_mingw32_datadir}/libvirt/
+%dir %{_mingw32_datadir}/libvirt/schemas/
+%{_mingw32_datadir}/libvirt/schemas/domain.rng
+%{_mingw32_datadir}/libvirt/schemas/network.rng
+%{_mingw32_datadir}/libvirt/schemas/storagepool.rng
+%{_mingw32_datadir}/libvirt/schemas/storagevol.rng
+%{_mingw32_datadir}/libvirt/schemas/nodedev.rng
+%{_mingw32_datadir}/libvirt/schemas/capability.rng
+
 %{_mingw32_datadir}/locale/*/LC_MESSAGES/libvirt.mo
 
 %dir %{_mingw32_includedir}/libvirt

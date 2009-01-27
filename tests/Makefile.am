@@ -41,8 +41,17 @@ EXTRA_DIST =		\
 	test-lib.sh	\
 	qemuxml2argvdata \
 	nodeinfodata     \
+	capabilityschematest \
+	capabilityschemadata \
+	networkschematest \
 	domainschematest \
-	domainschemadata
+	domainschemadata \
+	storagepoolschematest \
+	storagepoolschemadata \
+	storagevolschematest \
+	storagevolschemadata \
+	nodedevschematest \
+	nodedevschemadata
 
 noinst_PROGRAMS = virshtest conftest \
         nodeinfotest statstest qparamtest
@@ -55,7 +64,14 @@ if WITH_QEMU
 noinst_PROGRAMS += qemuxml2argvtest qemuxml2xmltest
 endif
 
-test_scripts = domainschematest
+test_scripts = \
+	capabilityschematest \
+	networkschematest \
+	storagepoolschematest \
+	storagevolschematest \
+	domainschematest \
+	nodedevschematest
+
 if WITH_LIBVIRTD
 test_scripts +=				\
 	test_conf.sh			\

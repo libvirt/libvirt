@@ -28,6 +28,21 @@
     </element>
   </optional>
   <optional>
+    <!-- The device through which the bridge is connected to the
+         rest of the network -->
+    <element name="forward">
+      <optional><attribute name="dev"><text/></attribute></optional>
+      <optional>
+        <attribute name="mode">
+          <choice>
+            <value>nat</value>
+            <value>routed</value>
+          </choice>
+        </attribute>
+      </optional>
+    </element>
+  </optional>
+  <optional>
     <!-- The IP element sets up NAT'ing and an optional DHCP server
          local to the host. -->
     <!-- FIXME: address, netmask and the start and end of the ranges
@@ -49,21 +64,6 @@
           </element>
         </zeroOrMore>
       </element>
-    </element>
-  </optional>
-  <optional>
-    <!-- The device through which the bridge is connected to the
-         rest of the network -->
-    <element name="forward">
-      <optional><attribute name="dev"><text/></attribute></optional>
-      <optional>
-        <attribute name="mode">
-          <choice>
-            <value>nat</value>
-            <value>routed</value>
-          </choice>
-        </attribute>
-      </optional>
     </element>
   </optional>
 </element>

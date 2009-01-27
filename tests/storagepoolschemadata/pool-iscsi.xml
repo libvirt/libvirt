@@ -1,0 +1,10 @@
+<pool type='iscsi'>
+  <name>virtimages</name>
+  <source>
+    <host name="iscsi.example.com"/>
+    <device path="demo-target"/>
+  </source>
+  <target>
+    <path>/dev/disk/by-path</path>
+  </target>
+</pool>

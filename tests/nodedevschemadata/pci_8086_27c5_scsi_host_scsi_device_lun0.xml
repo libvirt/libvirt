@@ -1,0 +1,13 @@
+<device>
+  <name>pci_8086_27c5_scsi_host_scsi_device_lun0</name>
+  <parent>pci_8086_27c5_scsi_host</parent>
+  <capability type='scsi'>
+    <host>0</host>
+    <bus>0</bus>
+    <target>0</target>
+    <lun>0</lun>
+    <type>disk</type>
+  </capability>
+</device>
+
+

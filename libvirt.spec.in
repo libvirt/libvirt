@@ -354,6 +354,16 @@ fi
 %{_datadir}/libvirt/networks/default.xml
 %endif
 
+%dir %{_datadir}/libvirt/
+%dir %{_datadir}/libvirt/schemas/
+
+%{_datadir}/libvirt/schemas/domain.rng
+%{_datadir}/libvirt/schemas/network.rng
+%{_datadir}/libvirt/schemas/storagepool.rng
+%{_datadir}/libvirt/schemas/storagevol.rng
+%{_datadir}/libvirt/schemas/nodedev.rng
+%{_datadir}/libvirt/schemas/capability.rng
+
 %dir %{_localstatedir}/run/libvirt/
 
 %dir %{_localstatedir}/lib/libvirt/
@@ -410,7 +420,6 @@ fi
 %attr(0755, root, root) %{_sbindir}/libvirtd
 %endif
 
-%doc docs/*.rng
 %doc docs/*.xml
 
 %files devel

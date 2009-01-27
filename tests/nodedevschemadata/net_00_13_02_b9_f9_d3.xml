@@ -1,0 +1,11 @@
+<device>
+  <name>net_00_13_02_b9_f9_d3</name>
+  <parent>pci_8086_4227</parent>
+  <capability type='net'>
+    <interface>eth0</interface>
+    <address>00:13:02:b9:f9:d3</address>
+    <capability type='80211'/>
+  </capability>
+</device>
+
+

@@ -1,3 +1,25 @@
+Tue Jan 27 15:18:16 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Add RNG schemas for all XML file formats used in API.
+	* configure.in: Add docs/schema/Makefile.in to output files
+	* libvirt.spec.in, mingw32-libvirt.spec.in: Package RNG schemas
+	from $datadir/libvirt/schemas
+	* docs/Makefile.am, docs/libvirt.rng, docs/network.rng: Remove
+	RNGs schemas
+	* docs/schemas/Makefile.am: Install RNG schemas to $datadir/libvirt
+	* docs/schemas/capability.rng: Schema for host capability XML
+	* docs/schemas/domain.rng: Schema for host capability XML
+	* docs/schemas/network.rng: Schema for guest domain XML
+	* docs/schemas/nodedev.rng: Schema for virtual network XML
+	* docs/schemas/storagepool.rng: Schema for storage pool XML
+	* docs/schemas/storagevol.rng: Schema for storage volume XML
+	* tests/Makefile.am, capabilityschematest, networkschematest,
+	nodedevschematest, storagepoolschematest, storagevolschematest:
+	New test cases to validate example XML files against schemeas.
+	* tests/capabilityschemadata/*.xml, tests/nodedevschemadata/*.xml,
+	tests/storagepoolschemadata/*.xml, tests/storagevolschemadata/*.xml:
+	New datafiles for schema validation tests.
+
 Tue Jan 27 14:28:16 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* docs/index.html.in: Add link to libvirt-qpid & UML driver info

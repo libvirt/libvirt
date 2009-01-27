@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-SUBDIRS= . examples devhelp
+SUBDIRS= schemas examples devhelp
 
 # The directory containing the source code (if it contains documentation).
 DOC_SOURCE_DIR=../src
@@ -52,10 +52,6 @@ xml = \
   testnetpriv.xml \
   testnode.xml
 
-rng = \
-  libvirt.rng \
-  network.rng
-
 fig = \
   libvirt-net-logical.fig \
   libvirt-net-physical.fig
@@ -64,7 +60,7 @@ EXTRA_DIST=					\
   libvirt-api.xml libvirt-refs.xml apibuild.py	\
   site.xsl newapi.xsl news.xsl page.xsl	ChangeLog.xsl	\
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
-  $(xml) $(rng) $(fig) $(png) \
+  $(xml) $(fig) $(png) \
   virsh.pod ChangeLog.awk
 
 all: web $(top_builddir)/NEWS $(man_MANS)

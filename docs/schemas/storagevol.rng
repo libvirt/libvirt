@@ -1,0 +1,187 @@
+<!-- A Relax NG schema for the libvirt node device XML format -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <!-- We handle only document defining a domain -->
+  <start>
+    <ref name='vol'/>
+  </start>
+
+
+  <define name='vol'>
+    <element name='volume'>
+      <element name='name'>
+	<ref name='name'/>
+      </element>
+      <optional>
+	<element name='key'>
+	  <text/>
+	</element>
+      </optional>
+      <ref name='source'/>
+      <ref name='sizing'/>
+      <ref name='target'/>
+      <optional>
+	<ref name='backingStore'/>
+      </optional>
+    </element>
+  </define>
+
+  <define name='sizing'>
+    <optional>
+      <element name='capacity'>
+	<ref name='uint'/>
+      </element>
+    </optional>
+    <optional>
+      <element name='allocation'>
+	<ref name='uint'/>
+      </element>
+    </optional>
+  </define>
+
+  <define name='permissions'>
+    <optional>
+      <element name='permissions'>
+	<element name='mode'>
+	  <ref name='uint'/>
+	</element>
+	<element name='owner'>
+	  <ref name='uint'/>
+	</element>
+	<element name='group'>
+	  <ref name='uint'/>
+	</element>
+	<optional>
+	  <element name='label'>
+	    <text/>
+	</element>
+	</optional>
+      </element>
+    </optional>
+  </define>
+
+  <define name='target'>
+    <element name='target'>
+      <optional>
+	<element name='path'>
+	  <ref name='path'/>
+	</element>
+      </optional>
+      <ref name='format'/>
+      <ref name='permissions'/>
+    </element>
+  </define>
+
+  <define name='backingStore'>
+    <element name='backingStore'>
+      <element name='path'>
+	<ref name='path'/>
+      </element>
+      <ref name='format'/>
+      <ref name='permissions'/>
+    </element>
+  </define>
+
+
+  <define name='source'>
+    <element name='source'>
+      <zeroOrMore>
+	<ref name='sourcedev'/>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name='sourcedev'>
+    <element name='device'>
+      <attribute name='path'>
+	<ref name='path'/>
+      </attribute>
+      <choice>
+	<empty/>
+	<ref name='devextents'/>
+      </choice>
+    </element>
+  </define>
+
+  <define name='devextents'>
+    <oneOrMore>
+      <element name='extent'>
+	<attribute name='start'>
+	  <ref name='uint'/>
+	</attribute>
+	<attribute name='end'>
+	  <ref name='uint'/>
+	</attribute>
+      </element>
+    </oneOrMore>
+  </define>
+
+  <define name='formatdev'>
+    <choice>
+      <value>none</value>
+      <value>auto</value>
+      <value>ext2</value>
+      <value>ext3</value>
+      <value>ext4</value>
+      <value>ufs</value>
+      <value>iso9660</value>
+      <value>udf</value>
+      <value>gfs</value>
+      <value>gfs2</value>
+      <value>vfat</value>
+      <value>hfs+</value>
+      <value>xfs</value>
+    </choice>
+
+  </define>
+
+
+  <define name='formatfile'>
+    <choice>
+      <value>raw</value>
+      <value>dir</value>
+      <value>bochs</value>
+      <value>cloop</value>
+      <value>cow</value>
+      <value>dmg</value>
+      <value>iso</value>
+      <value>qcow</value>
+      <value>qcow2</value>
+      <value>vmdk</value>
+      <value>vpc</value>
+    </choice>
+  </define>
+
+  <define name='format'>
+    <optional>
+      <element name='format'>
+	<attribute name='type'>
+	  <choice>
+	    <ref name='formatfile'/>
+	    <ref name='formatdev'/>
+	  </choice>
+	</attribute>
+      </element>
+    </optional>
+  </define>
+
+  <define name='name'>
+    <data type='string'>
+      <param name="pattern">[a-zA-Z0-9_\+\-\.]+</param>
+    </data>
+  </define>
+
+  <define name='uint'>
+    <data type='string'>
+      <param name="pattern">[0-9]+</param>
+    </data>
+  </define>
+
+  <define name='path'>
+    <data type='string'>
+      <param name="pattern">/[a-zA-Z0-9_\+\-\./%]+</param>
+    </data>
+  </define>
+
+
+</grammar>

@@ -3,11 +3,11 @@
 test -z "$srcdir" && srcdir=`pwd`
 test -z "$abs_srcdir" && abs_srcdir=`pwd`
 
-DOMAINDIRS="domainschemadata qemuxml2argvdata sexpr2xmldata xmconfigdata xml2sexprdata"
+DIRS="../qemud"
 
 n=0
 f=0
-for dir in $DOMAINDIRS
+for dir in $DIRS
 do
   XML=`find $abs_srcdir/$dir -name '*.xml'` || exit 1
 
@@ -15,7 +15,7 @@ do
   do
     n=`expr $n + 1`
     printf "%4d) %.60s  " $n $(basename $(dirname $xml))"/"$(basename $xml)
-    result=`xmllint --relaxng $srcdir/../docs/schemas/domain.rng --noout $xml 2>&1`
+    result=`xmllint --relaxng $srcdir/../docs/schemas/network.rng --noout $xml 2>&1`
     ret=$?
     if test $ret = 0; then
         echo "OK"
