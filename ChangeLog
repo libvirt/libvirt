@@ -1,3 +1,12 @@
+Mon Jan 26 20:40:35 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	build: avoid format warnings
+	* src/proxy_internal.c (xenProxyCommand): Mark a diagnostic.
+	* src/xen_unified.c (xenUnifiedOpen, xenUnifiedAddDomainInfo):
+	Fix unmarked diagnostics by removing the diagnostic altogether:
+	replace each xenUnifiedError(...,VIR_ERR_NO_MEMORY call with a
+	call to virReportOOMError.
+
 Mon Jan 26 14:44:22 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	* src/virterror.c (virErrorMsg): Correct indentation.

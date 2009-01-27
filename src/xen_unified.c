@@ -236,7 +236,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
 
         conn->uri = xmlParseURI("xen:///");
         if (!conn->uri) {
-            xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError (NULL);
             return VIR_DRV_OPEN_ERROR;
         }
     }
@@ -261,19 +261,19 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
 
     /* Allocate per-connection private data. */
     if (VIR_ALLOC(priv) < 0) {
-        xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, _("allocating private data"));
+        virReportOOMError (NULL);
         return VIR_DRV_OPEN_ERROR;
     }
     if (virMutexInit(&priv->lock) < 0) {
         xenUnifiedError (NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot initialise mutex"));
+                         "%s", _("cannot initialise mutex"));
         VIR_FREE(priv);
         return VIR_DRV_OPEN_ERROR;
     }
 
     /* Allocate callback list */
     if (VIR_ALLOC(cbList) < 0) {
-        xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, _("allocating callback list"));
+        virReportOOMError (NULL);
         virMutexDestroy(&priv->lock);
         VIR_FREE(priv);
         return VIR_DRV_OPEN_ERROR;
@@ -1564,7 +1564,7 @@ xenUnifiedAddDomainInfo(xenUnifiedDomainInfoListPtr list,
     list->count++;
     return 0;
 memory_error:
-    xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, _("allocating domain info"));
+    virReportOOMError (NULL);
     if (info)
         VIR_FREE(info->name);
     VIR_FREE(info);
