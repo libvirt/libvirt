@@ -1,7 +1,7 @@
-# serial 6  -*- Autoconf -*-
+# serial 8  -*- Autoconf -*-
 # Enable extensions on systems that normally disable them.
 
-# Copyright (C) 2003, 2006-2008 Free Software Foundation, Inc.
+# Copyright (C) 2003, 2006-2009 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -20,7 +20,7 @@
 # AC_DEFINE.  The goal here is to define all known feature-enabling
 # macros, then, if reports of conflicts are made, disable macros that
 # cause problems on some platforms (such as __EXTENSIONS__).
-AC_DEFUN([AC_USE_SYSTEM_EXTENSIONS],
+AC_DEFUN_ONCE([AC_USE_SYSTEM_EXTENSIONS],
 [AC_BEFORE([$0], [AC_COMPILE_IFELSE])dnl
 AC_BEFORE([$0], [AC_RUN_IFELSE])dnl
 
@@ -90,5 +90,15 @@ AC_BEFORE([$0], [AC_RUN_IFELSE])dnl
 # ------------------------
 # Enable extensions on systems that normally disable them,
 # typically due to standards-conformance issues.
-AC_DEFUN([gl_USE_SYSTEM_EXTENSIONS],
-  [AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])])
+AC_DEFUN_ONCE([gl_USE_SYSTEM_EXTENSIONS],
+[
+  dnl Require this macro before AC_USE_SYSTEM_EXTENSIONS.
+  dnl gnulib does not need it. But if it gets required by third-party macros
+  dnl after AC_USE_SYSTEM_EXTENSIONS is required, autoconf 2.62..2.63 emit a
+  dnl warning: "AC_COMPILE_IFELSE was called before AC_USE_SYSTEM_EXTENSIONS".
+  dnl Note: We can do this only for one of the macros AC_AIX, AC_GNU_SOURCE,
+  dnl AC_MINIX. If people still use AC_AIX or AC_MINIX, they are out of luck.
+  AC_REQUIRE([AC_GNU_SOURCE])
+
+  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])
+])

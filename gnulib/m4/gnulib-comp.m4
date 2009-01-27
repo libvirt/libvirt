@@ -408,6 +408,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/w32sock.h
   lib/wchar.in.h
   lib/xsize.h
+  m4/00gnulib.m4
   m4/alloca.m4
   m4/arpa_inet_h.m4
   m4/close.m4

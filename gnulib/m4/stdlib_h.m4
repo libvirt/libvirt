@@ -1,5 +1,5 @@
-# stdlib_h.m4 serial 13
-dnl Copyright (C) 2007, 2008 Free Software Foundation, Inc.
+# stdlib_h.m4 serial 14
+dnl Copyright (C) 2007-2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -8,9 +8,20 @@ AC_DEFUN([gl_STDLIB_H],
 [
   AC_REQUIRE([gl_STDLIB_H_DEFAULTS])
   gl_CHECK_NEXT_HEADERS([stdlib.h])
+  AC_CHECK_HEADERS([random.h])
+  if test $ac_cv_header_random_h = yes; then
+    HAVE_RANDOM_H=1
+  else
+    HAVE_RANDOM_H=0
+  fi
+  AC_SUBST([HAVE_RANDOM_H])
   AC_CHECK_TYPES([struct random_data],
     [], [HAVE_STRUCT_RANDOM_DATA=0],
-    [[#include <stdlib.h>]])
+    [[#include <stdlib.h>
+      #if HAVE_RANDOM_H
+      # include <random.h>
+      #endif
+    ]])
 ])
 
 AC_DEFUN([gl_STDLIB_MODULE_INDICATOR],

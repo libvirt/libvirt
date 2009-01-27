@@ -1,4 +1,4 @@
-# gnulib-common.m4 serial 8
+# gnulib-common.m4 serial 9
 dnl Copyright (C) 2007-2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -8,6 +8,7 @@ dnl with or without modifications, as long as this notice is preserved.
 # is expanded unconditionally through gnulib-tool magic.
 AC_DEFUN([gl_COMMON], [
   dnl Use AC_REQUIRE here, so that the code is expanded once only.
+  AC_REQUIRE([gl_00GNULIB])
   AC_REQUIRE([gl_COMMON_BODY])
 ])
 AC_DEFUN([gl_COMMON_BODY], [

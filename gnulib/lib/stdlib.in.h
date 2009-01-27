@@ -1,6 +1,6 @@
 /* A GNU-like <stdlib.h>.
 
-   Copyright (C) 1995, 2001-2004, 2006-2008 Free Software Foundation, Inc.
+   Copyright (C) 1995, 2001-2004, 2006-2009 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as published by
@@ -39,6 +39,12 @@
 /* Solaris declares getloadavg() in <sys/loadavg.h>.  */
 #if @GNULIB_GETLOADAVG@ && @HAVE_SYS_LOADAVG_H@
 # include <sys/loadavg.h>
+#endif
+
+/* OSF/1 5.1 declares 'struct random_data' in <random.h>, which is included
+   from <stdlib.h> if _REENTRANT is defined.  Include it always.  */
+#if @HAVE_RANDOM_H@
+# include <random.h>
 #endif
 
 #if @GNULIB_RANDOM_R@ || !@HAVE_STRUCT_RANDOM_DATA@
