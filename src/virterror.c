@@ -902,66 +902,66 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("Network not found: %s");
             break;
-    case VIR_ERR_INVALID_MAC:
+        case VIR_ERR_INVALID_MAC:
             if (info == NULL)
                 errmsg = _("invalid MAC address");
             else
                 errmsg = _("invalid MAC address: %s");
             break;
-    case VIR_ERR_AUTH_FAILED:
+        case VIR_ERR_AUTH_FAILED:
             if (info == NULL)
                 errmsg = _("authentication failed");
             else
                 errmsg = _("authentication failed: %s");
             break;
         case VIR_ERR_NO_STORAGE_POOL:
-                if (info == NULL)
-                        errmsg = _("Storage pool not found");
-                else
-                        errmsg = _("Storage pool not found: %s");
-                break;
+            if (info == NULL)
+                    errmsg = _("Storage pool not found");
+            else
+                    errmsg = _("Storage pool not found: %s");
+            break;
         case VIR_ERR_NO_STORAGE_VOL:
-                if (info == NULL)
-                        errmsg = _("Storage volume not found");
-                else
-                        errmsg = _("Storage volume not found: %s");
-                break;
+            if (info == NULL)
+                    errmsg = _("Storage volume not found");
+            else
+                    errmsg = _("Storage volume not found: %s");
+            break;
         case VIR_ERR_INVALID_STORAGE_POOL:
-                if (info == NULL)
-                        errmsg = _("invalid storage pool pointer in");
-                else
-                        errmsg = _("invalid storage pool pointer in %s");
-                break;
+            if (info == NULL)
+                    errmsg = _("invalid storage pool pointer in");
+            else
+                    errmsg = _("invalid storage pool pointer in %s");
+            break;
         case VIR_ERR_INVALID_STORAGE_VOL:
-                if (info == NULL)
-                        errmsg = _("invalid storage volume pointer in");
-                else
-                        errmsg = _("invalid storage volume pointer in %s");
-                break;
+            if (info == NULL)
+                    errmsg = _("invalid storage volume pointer in");
+            else
+                    errmsg = _("invalid storage volume pointer in %s");
+            break;
         case VIR_WAR_NO_STORAGE:
-                if (info == NULL)
-                        errmsg = _("Failed to find a storage driver");
-                else
-                        errmsg = _("Failed to find a storage driver: %s");
-                break;
+            if (info == NULL)
+                    errmsg = _("Failed to find a storage driver");
+            else
+                    errmsg = _("Failed to find a storage driver: %s");
+            break;
         case VIR_WAR_NO_NODE:
-                if (info == NULL)
-                        errmsg = _("Failed to find a node driver");
-                else
-                        errmsg = _("Failed to find a node driver: %s");
-                break;
+            if (info == NULL)
+                    errmsg = _("Failed to find a node driver");
+            else
+                    errmsg = _("Failed to find a node driver: %s");
+            break;
         case VIR_ERR_INVALID_NODE_DEVICE:
-                if (info == NULL)
-                        errmsg = _("invalid node device pointer");
-                else
-                        errmsg = _("invalid node device pointer in %s");
-                break;
+            if (info == NULL)
+                    errmsg = _("invalid node device pointer");
+            else
+                    errmsg = _("invalid node device pointer in %s");
+            break;
         case VIR_ERR_NO_NODE_DEVICE:
-                if (info == NULL)
-                        errmsg = _("Node device not found");
-                else
-                        errmsg = _("Node device not found: %s");
-                break;
+            if (info == NULL)
+                    errmsg = _("Node device not found");
+            else
+                    errmsg = _("Node device not found: %s");
+            break;
     }
     return (errmsg);
 }

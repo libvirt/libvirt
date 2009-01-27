@@ -1,3 +1,7 @@
+Mon Jan 26 14:44:22 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	* src/virterror.c (virErrorMsg): Correct indentation.
+
 Fri Jan 23 11:07:42 PST 2009 John Levon <john.levon@sun.com>
 
 	* src/xs_internal.c: fix recursive lock hang
