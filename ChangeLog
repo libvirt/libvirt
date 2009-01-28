@@ -1,3 +1,9 @@
+Wed Jan 28 12:08:26 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	avoid printf format-mismatch warnings
+	* qemud/qemud.c (qemudClientReadBuf, qemudClientWriteBuf):
+	Use %lld and a (long long int) cast to print a ssize_t value.
+
 Tue Jan 27 18:17:07 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Support Copy-on-Write storage volumes

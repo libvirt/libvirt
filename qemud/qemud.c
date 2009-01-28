@@ -1467,7 +1467,8 @@ static ssize_t qemudClientReadBuf(struct qemud_client *client,
     ssize_t ret;
 
     if (len < 0) {
-        VIR_ERROR(_("unexpected negative length request %d"), len);
+        VIR_ERROR(_("unexpected negative length request %lld"),
+                  (long long int) len);
         qemudDispatchClientFailure(client);
         return -1;
     }
@@ -1692,7 +1693,8 @@ static ssize_t qemudClientWriteBuf(struct qemud_client *client,
     ssize_t ret;
 
     if (len < 0) {
-        VIR_ERROR(_("unexpected negative length request %d"), len);
+        VIR_ERROR(_("unexpected negative length request %lld"),
+                  (long long int) len);
         qemudDispatchClientFailure(client);
         return -1;
     }
