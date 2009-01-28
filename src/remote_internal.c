@@ -6117,14 +6117,13 @@ processCallRecvMsg(virConnectPtr conn, struct private_data *priv,
 
 static int
 processCallRecv(virConnectPtr conn, struct private_data *priv,
-                int in_open) {
-    int ret;
-
+                int in_open)
+{
     /* Read as much data as is available, until we get
-     * EGAIN
+     * EAGAIN
      */
     for (;;) {
-        ret = processCallRecvSome(conn, priv, in_open);
+        int ret = processCallRecvSome(conn, priv, in_open);
 
         if (ret < 0)
             return -1;
