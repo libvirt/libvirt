@@ -238,3 +238,18 @@
    fun:virtTestRun
    fun:mymain
 }
+{
+   ignoreThreadLocalErrorObject
+   Memcheck:Leak
+   fun:calloc
+   fun:virAlloc
+   fun:virLastErrorObject
+   fun:virRaiseError
+   fun:statsErrorFunc
+   fun:xenLinuxDomainDeviceID
+   fun:testDeviceHelper
+   fun:virtTestRun
+   fun:mymain
+   fun:virtTestMain
+   fun:main
+}

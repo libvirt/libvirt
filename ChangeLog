@@ -1,4 +1,11 @@
-Wed Jan 28 21:33:11 GMT 2009 Daniel P.Berrange <berrange@redhat.com
+Wed Jan 28 21:53:11 GMT 2009 Daniel P.Berrange <berrange@redhat.com>
+
+	Fix bogus valgrind memory leak warnings
+	* tests/testutils.c: Clear global error upon exit
+	* tests/.valgrind.supp: Ignore memory from thread local
+	error storage
+
+Wed Jan 28 21:33:11 GMT 2009 Daniel P.Berrange <berrange@redhat.com>
 
 	Fix RPC portability to Solaris
 	* configure.in: s/RPCGEN/HAVE_RPCGEN/ for automake
