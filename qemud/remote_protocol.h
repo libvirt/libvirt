@@ -3,8 +3,8 @@
  * It was generated using rpcgen.
  */
 
-#ifndef _REMOTE_PROTOCOL_H_RPCGEN
-#define _REMOTE_PROTOCOL_H_RPCGEN
+#ifndef _RP_H_RPCGEN
+#define _RP_H_RPCGEN
 
 #include <rpc/rpc.h>
 
@@ -107,7 +107,7 @@ typedef enum remote_auth_type remote_auth_type;
 struct remote_vcpu_info {
         u_int number;
         int state;
-        u_quad_t cpu_time;
+        uint64_t cpu_time;
         int cpu;
 };
 typedef struct remote_vcpu_info remote_vcpu_info;
@@ -117,8 +117,8 @@ struct remote_sched_param_value {
         union {
                 int i;
                 u_int ui;
-                quad_t l;
-                u_quad_t ul;
+                int64_t l;
+                uint64_t ul;
                 double d;
                 int b;
         } remote_sched_param_value_u;
@@ -153,7 +153,7 @@ struct remote_get_type_ret {
 typedef struct remote_get_type_ret remote_get_type_ret;
 
 struct remote_get_version_ret {
-        quad_t hv_ver;
+        int64_t hv_ver;
 };
 typedef struct remote_get_version_ret remote_get_version_ret;
 
@@ -179,7 +179,7 @@ typedef struct remote_get_max_vcpus_ret remote_get_max_vcpus_ret;
 
 struct remote_node_get_info_ret {
         char model[32];
-        quad_t memory;
+        int64_t memory;
         int cpus;
         int mhz;
         int nodes;
@@ -203,13 +203,13 @@ typedef struct remote_node_get_cells_free_memory_args remote_node_get_cells_free
 struct remote_node_get_cells_free_memory_ret {
         struct {
                 u_int freeMems_len;
-                quad_t *freeMems_val;
+                int64_t *freeMems_val;
         } freeMems;
 };
 typedef struct remote_node_get_cells_free_memory_ret remote_node_get_cells_free_memory_ret;
 
 struct remote_node_get_free_memory_ret {
-        quad_t freeMem;
+        int64_t freeMem;
 };
 typedef struct remote_node_get_free_memory_ret remote_node_get_free_memory_ret;
 
@@ -254,11 +254,11 @@ struct remote_domain_block_stats_args {
 typedef struct remote_domain_block_stats_args remote_domain_block_stats_args;
 
 struct remote_domain_block_stats_ret {
-        quad_t rd_req;
-        quad_t rd_bytes;
-        quad_t wr_req;
-        quad_t wr_bytes;
-        quad_t errs;
+        int64_t rd_req;
+        int64_t rd_bytes;
+        int64_t wr_req;
+        int64_t wr_bytes;
+        int64_t errs;
 };
 typedef struct remote_domain_block_stats_ret remote_domain_block_stats_ret;
 
@@ -269,21 +269,21 @@ struct remote_domain_interface_stats_args {
 typedef struct remote_domain_interface_stats_args remote_domain_interface_stats_args;
 
 struct remote_domain_interface_stats_ret {
-        quad_t rx_bytes;
-        quad_t rx_packets;
-        quad_t rx_errs;
-        quad_t rx_drop;
-        quad_t tx_bytes;
-        quad_t tx_packets;
-        quad_t tx_errs;
-        quad_t tx_drop;
+        int64_t rx_bytes;
+        int64_t rx_packets;
+        int64_t rx_errs;
+        int64_t rx_drop;
+        int64_t tx_bytes;
+        int64_t tx_packets;
+        int64_t tx_errs;
+        int64_t tx_drop;
 };
 typedef struct remote_domain_interface_stats_ret remote_domain_interface_stats_ret;
 
 struct remote_domain_block_peek_args {
         remote_nonnull_domain dom;
         remote_nonnull_string path;
-        u_quad_t offset;
+        uint64_t offset;
         u_int size;
         u_int flags;
 };
@@ -299,7 +299,7 @@ typedef struct remote_domain_block_peek_ret remote_domain_block_peek_ret;
 
 struct remote_domain_memory_peek_args {
         remote_nonnull_domain dom;
-        u_quad_t offset;
+        uint64_t offset;
         u_int size;
         u_int flags;
 };
@@ -414,19 +414,19 @@ struct remote_domain_get_max_memory_args {
 typedef struct remote_domain_get_max_memory_args remote_domain_get_max_memory_args;
 
 struct remote_domain_get_max_memory_ret {
-        u_quad_t memory;
+        uint64_t memory;
 };
 typedef struct remote_domain_get_max_memory_ret remote_domain_get_max_memory_ret;
 
 struct remote_domain_set_max_memory_args {
         remote_nonnull_domain dom;
-        u_quad_t memory;
+        uint64_t memory;
 };
 typedef struct remote_domain_set_max_memory_args remote_domain_set_max_memory_args;
 
 struct remote_domain_set_memory_args {
         remote_nonnull_domain dom;
-        u_quad_t memory;
+        uint64_t memory;
 };
 typedef struct remote_domain_set_memory_args remote_domain_set_memory_args;
 
@@ -437,10 +437,10 @@ typedef struct remote_domain_get_info_args remote_domain_get_info_args;
 
 struct remote_domain_get_info_ret {
         u_char state;
-        u_quad_t max_mem;
-        u_quad_t memory;
+        uint64_t max_mem;
+        uint64_t memory;
         u_short nr_virt_cpu;
-        u_quad_t cpu_time;
+        uint64_t cpu_time;
 };
 typedef struct remote_domain_get_info_ret remote_domain_get_info_ret;
 
@@ -475,9 +475,9 @@ typedef struct remote_domain_dump_xml_ret remote_domain_dump_xml_ret;
 
 struct remote_domain_migrate_prepare_args {
         remote_string uri_in;
-        u_quad_t flags;
+        uint64_t flags;
         remote_string dname;
-        u_quad_t resource;
+        uint64_t resource;
 };
 typedef struct remote_domain_migrate_prepare_args remote_domain_migrate_prepare_args;
 
@@ -497,9 +497,9 @@ struct remote_domain_migrate_perform_args {
                 char *cookie_val;
         } cookie;
         remote_nonnull_string uri;
-        u_quad_t flags;
+        uint64_t flags;
         remote_string dname;
-        u_quad_t resource;
+        uint64_t resource;
 };
 typedef struct remote_domain_migrate_perform_args remote_domain_migrate_perform_args;
 
@@ -510,7 +510,7 @@ struct remote_domain_migrate_finish_args {
                 char *cookie_val;
         } cookie;
         remote_nonnull_string uri;
-        u_quad_t flags;
+        uint64_t flags;
 };
 typedef struct remote_domain_migrate_finish_args remote_domain_migrate_finish_args;
 
@@ -521,9 +521,9 @@ typedef struct remote_domain_migrate_finish_ret remote_domain_migrate_finish_ret
 
 struct remote_domain_migrate_prepare2_args {
         remote_string uri_in;
-        u_quad_t flags;
+        uint64_t flags;
         remote_string dname;
-        u_quad_t resource;
+        uint64_t resource;
         remote_nonnull_string dom_xml;
 };
 typedef struct remote_domain_migrate_prepare2_args remote_domain_migrate_prepare2_args;
@@ -544,7 +544,7 @@ struct remote_domain_migrate_finish2_args {
                 char *cookie_val;
         } cookie;
         remote_nonnull_string uri;
-        u_quad_t flags;
+        uint64_t flags;
         int retcode;
 };
 typedef struct remote_domain_migrate_finish2_args remote_domain_migrate_finish2_args;
@@ -1002,9 +1002,9 @@ typedef struct remote_storage_pool_get_info_args remote_storage_pool_get_info_ar
 
 struct remote_storage_pool_get_info_ret {
         u_char state;
-        u_quad_t capacity;
-        u_quad_t allocation;
-        u_quad_t available;
+        uint64_t capacity;
+        uint64_t allocation;
+        uint64_t available;
 };
 typedef struct remote_storage_pool_get_info_ret remote_storage_pool_get_info_ret;
 
@@ -1115,8 +1115,8 @@ typedef struct remote_storage_vol_get_info_args remote_storage_vol_get_info_args
 
 struct remote_storage_vol_get_info_ret {
         char type;
-        u_quad_t capacity;
-        u_quad_t allocation;
+        uint64_t capacity;
+        uint64_t allocation;
 };
 typedef struct remote_storage_vol_get_info_ret remote_storage_vol_get_info_ret;
 
@@ -1793,4 +1793,4 @@ extern bool_t xdr_remote_message_header ();
 }
 #endif
 
-#endif /* !_REMOTE_PROTOCOL_H_RPCGEN */
+#endif /* !_RP_H_RPCGEN */

@@ -1,3 +1,15 @@
+Wed Jan 28 21:33:11 GMT 2009 Daniel P.Berrange <berrange@redhat.com
+
+	Fix RPC portability to Solaris
+	* configure.in: s/RPCGEN/HAVE_RPCGEN/ for automake
+	conditional
+	* qemud/Makefile.am: Move rpcgen rules into explicit
+	rpcgen target to be manually invoked
+	* qemud/remote_protocol.c, qemud/remote_protocol.h: Update
+	with portability fixes
+	* qemud/rpcgen_fix.pl: Replace quad_t types / functions
+	with uint64_t ones and avoid GET_LONG in favour of GET_INT32
+
 Wed Jan 28 15:45:11 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	remote_internal.c: fix typo that would mistakenly report OOM

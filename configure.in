@@ -92,9 +92,9 @@ AC_CHECK_LIB([intl],[gettext],[])
 
 dnl Do we have rpcgen?
 AC_PATH_PROG([RPCGEN], [rpcgen], [no])
-AM_CONDITIONAL([RPCGEN], [test "x$ac_cv_path_RPCGEN" != "xno"])
+AM_CONDITIONAL([HAVE_RPCGEN], [test "x$ac_cv_path_RPCGEN" != "xno"])
 dnl Is this GLIBC's buggy rpcgen?
-AM_CONDITIONAL([GLIBC_RPCGEN],
+AM_CONDITIONAL([HAVE_GLIBC_RPCGEN],
 	       [test "x$ac_cv_path_RPCGEN" != "xno" &&
 	        $ac_cv_path_RPCGEN -t </dev/null >/dev/null 2>&1])
 

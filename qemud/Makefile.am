@@ -1,7 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-RPCGEN = $(RPCGEN)
-
 DAEMON_SOURCES =					\
 		event.c event.h				\
 		qemud.c qemud.h				\
@@ -33,32 +31,34 @@ EXTRA_DIST =						\
 	$(AVAHI_SOURCES)				\
 	$(DAEMON_SOURCES)
 
-if RPCGEN
-SUFFIXES = .x
-# The subshell ensures that remote_protocol.c ends up
-# including <config.h> before "remote_protocol.h".
-.x.c:
-	rm -f $@ $@-t $@-t1 $@-t2
-	$(RPCGEN) -c -o $@-t $<
-	(echo '#include <config.h>'; cat $@-t) > $@-t1
-if GLIBC_RPCGEN
-	perl -w rpcgen_fix.pl $@-t1 > $@-t2
-	rm $@-t1
-	chmod 444 $@-t2
-	mv $@-t2 $@
+if HAVE_RPCGEN
+#
+# Maintainer-only target for re-generating the derived .c/.h source
+# files, which are actually derived from the .x file.
+#
+# For committing protocol changes to CVS, the GLIBC rpcgen *must*
+# be used.
+#
+# Support for non-GLIB rpcgen is here as a convenience for
+# non-Linux people needing to test changes during dev.
+#
+rpcgen:
+	rm -f rp.c-t rp.h-t rp.c-t1 rp.c-t2 rp.h-t1
+	$(RPCGEN) -h -o rp.h-t $(srcdir)/remote_protocol.x
+	$(RPCGEN) -c -o rp.c-t $(srcdir)/remote_protocol.x
+if HAVE_GLIBC_RPCGEN
+	perl -w $(srcdir)/rpcgen_fix.pl rp.h-t > rp.h-t1
+	perl -w $(srcdir)/rpcgen_fix.pl rp.c-t > rp.c-t1
+	(echo '#include <config.h>'; cat rp.c-t1) > rp.c-t2
+	chmod 0444 rp.c-t2 rp.h-t1
+	mv -f rp.h-t1 $(srcdir)/remote_protocol.h
+	mv -f rp.c-t2 $(srcdir)/remote_protocol.c
+	rm -f rp.c-t rp.h-t rp.c-t1
 else
-	chmod 444 $@-t1
-	mv $@-t1 $@
+	chmod 0444 rp.c-t rp.h-t
+	mv -f rp.h-t $(srcdir)/remote_protocol.h
+	mv -f rp.c-t $(srcdir)/remote_protocol.c
 endif
-
-.x.h:
-	rm -f $@ $@-t
-	$(RPCGEN) -h -o $@-t $<
-if GLIBC_RPCGEN
-	perl -pi -e 's/\t/        /g' $@-t
-endif
-	chmod 444 $@-t
-	mv $@-t $@
 endif
 
 remote_protocol.c: remote_protocol.h
