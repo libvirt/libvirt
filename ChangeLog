@@ -1,3 +1,8 @@
+Wed Jan 28 13:31:12 GMT 2009 John Levon <john.levon@sun.com>
+
+	* docs/examples/index.py: remove reference to non-existent *.res
+	* docs/examples/Makefile.am: regenerate
+
 Wed Jan 28 12:08:26 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	avoid printf format-mismatch warnings
