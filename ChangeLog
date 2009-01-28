@@ -1,3 +1,8 @@
+Wed Jan 28 21:55:11 GMT 2009 Daniel P.Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Stop reading data off wire once
+	a single complete message is available.
+
 Wed Jan 28 21:53:11 GMT 2009 Daniel P.Berrange <berrange@redhat.com>
 
 	Fix bogus valgrind memory leak warnings

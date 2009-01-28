@@ -6135,12 +6135,27 @@ processCallRecv(virConnectPtr conn, struct private_data *priv,
         if (priv->bufferOffset == priv->bufferLength) {
             if (priv->bufferOffset == 4) {
                 ret = processCallRecvLen(conn, priv, in_open);
+                if (ret < 0)
+                    return -1;
+
+                /*
+                 * We'll carry on around the loop to immediately
+                 * process the message body, because it has probably
+                 * already arrived. Worst case, we'll get EAGAIN on
+                 * next iteration.
+                 */
             } else {
                 ret = processCallRecvMsg(conn, priv, in_open);
                 priv->bufferOffset = priv->bufferLength = 0;
+                /*
+                 * We've completed one call, so return even
+                 * though there might still be more data on
+                 * the wire. We need to actually let the caller
+                 * deal with this arrived message to keep good
+                 * response, and also to correctly handle EOF.
+                 */
+                return ret;
             }
-            if (ret < 0)
-                return -1;
         }
     }
 }
