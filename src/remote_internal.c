@@ -2,7 +2,7 @@
  * remote_internal.c: driver to provide access to libvirtd running
  *   on a remote machine
  *
- * Copyright (C) 2007-2008 Red Hat, Inc.
+ * Copyright (C) 2007-2009 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -4949,10 +4949,10 @@ static char *addrToString(struct sockaddr_storage *sa, socklen_t salen)
                            port, sizeof(port),
                            NI_NUMERICHOST | NI_NUMERICSERV)) != 0) {
         virRaiseError (NULL, NULL, NULL, VIR_FROM_REMOTE,
-                         VIR_ERR_NO_MEMORY, VIR_ERR_ERROR,
-                         NULL, NULL, NULL, 0, 0,
-                         _("Cannot resolve address %d: %s"),
-                         err, gai_strerror(err));
+                       VIR_ERR_UNKNOWN_HOST, VIR_ERR_ERROR,
+                       NULL, NULL, NULL, 0, 0,
+                       _("Cannot resolve address %d: %s"),
+                       err, gai_strerror(err));
         return NULL;
     }
 
@@ -6836,4 +6836,3 @@ remoteRegister (void)
 
     return 0;
 }
-
