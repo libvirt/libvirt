@@ -1,3 +1,7 @@
+Wed Jan 28 14:53:37 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	* po/POTFILES.in: Add src/lxc_conf.c
+
 Wed Jan 28 13:31:12 GMT 2009 John Levon <john.levon@sun.com>
 
 	* docs/examples/index.py: remove reference to non-existent *.res
