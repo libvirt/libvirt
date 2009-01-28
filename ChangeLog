@@ -1,3 +1,10 @@
+Wed Jan 28 15:45:11 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	qparams.c: Use virReportOOMError(NULL), not qparam_report_oom()
+	* src/qparams.c (VIR_FROM_THIS): Define to VIR_FROM_NONE.
+	(qparam_report_oom): Remove definition.
+	Replace all uses.
+
 Wed Jan 28 14:24:45 GMT 2009 John Levon <john.levon@sun.com>
 
 	* src/xend_internal.c: fix mis-use of PF_UNIX as a protocol

@@ -1,4 +1,4 @@
-/* Copyright (C) 2007 Red Hat, Inc.
+/* Copyright (C) 2007, 2009 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,9 +33,7 @@
 #include "memory.h"
 #include "qparams.h"
 
-#define qparam_report_oom(void)                                              \
-        virReportErrorHelper(NULL, VIR_FROM_NONE, VIR_ERR_NO_MEMORY,       \
-                               __FILE__, __FUNCTION__, __LINE__, NULL)
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 struct qparam_set *
 new_qparam_set (int init_alloc, ...)
@@ -47,14 +45,14 @@ new_qparam_set (int init_alloc, ...)
     if (init_alloc <= 0) init_alloc = 1;
 
     if (VIR_ALLOC(ps) < 0) {
-        qparam_report_oom();
+        virReportOOMError(NULL);
         return NULL;
     }
     ps->n = 0;
     ps->alloc = init_alloc;
     if (VIR_ALLOC_N(ps->p, ps->alloc) < 0) {
         VIR_FREE (ps);
-        qparam_report_oom();
+        virReportOOMError(NULL);
         return NULL;
     }
 
@@ -98,7 +96,7 @@ grow_qparam_set (struct qparam_set *ps)
 {
     if (ps->n >= ps->alloc) {
         if (VIR_REALLOC_N(ps->p, ps->alloc * 2) < 0) {
-            qparam_report_oom();
+            virReportOOMError(NULL);
             return -1;
         }
         ps->alloc *= 2;
@@ -115,14 +113,14 @@ append_qparam (struct qparam_set *ps,
 
     pname = strdup (name);
     if (!pname) {
-        qparam_report_oom();
+        virReportOOMError(NULL);
         return -1;
     }
 
     pvalue = strdup (value);
     if (!pvalue) {
         VIR_FREE (pname);
-        qparam_report_oom();
+        virReportOOMError(NULL);
         return -1;
     }
 
@@ -156,7 +154,7 @@ qparam_get_query (const struct qparam_set *ps)
     }
 
     if (virBufferError(&buf)) {
-        qparam_report_oom();
+        virReportOOMError(NULL);
         return NULL;
     }
 
@@ -184,7 +182,7 @@ qparam_query_parse (const char *query)
 
     ps = new_qparam_set (0, NULL);
     if (!ps) {
-        qparam_report_oom();
+        virReportOOMError(NULL);
         return NULL;
     }
 
@@ -257,7 +255,7 @@ qparam_query_parse (const char *query)
     return ps;
 
  out_of_memory:
-    qparam_report_oom();
+    virReportOOMError(NULL);
     free_qparam_set (ps);
     return NULL;
 }
