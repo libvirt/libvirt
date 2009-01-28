@@ -1,3 +1,11 @@
+Wed Jan 28 14:27:11 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	libvirt_proxy: avoid potential buffer overflow
+	* proxy/libvirt_proxy.c (proxyReadClientSocket): Ensure that
+	we've read an entire virProxyPacket before dereferencing "req".
+	Analysis and patch by "Rasputin" <rasputin@email.ru>.  Details in
+	<http://thread.gmane.org/gmane.comp.emulators.libvirt/11459>.
+
 Wed Jan 28 14:53:37 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	* po/POTFILES.in: Add src/lxc_conf.c

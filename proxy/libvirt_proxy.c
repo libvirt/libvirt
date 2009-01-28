@@ -2,7 +2,7 @@
  * proxy_svr.c: root suid proxy server for Xen access to APIs with no
  *              side effects from unauthenticated clients.
  *
- * Copyright (C) 2006, 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -382,7 +382,8 @@ retry:
         fprintf(stderr, "read %d bytes from client %d on socket %d\n",
                 ret, nr, pollInfos[nr].fd);
 
-    if ((req->version != PROXY_PROTO_VERSION) ||
+    if ((ret != sizeof(virProxyPacket)) ||
+        (req->version != PROXY_PROTO_VERSION) ||
         (req->len < sizeof(virProxyPacket)) ||
         (req->len > sizeof(virProxyFullPacket)))
         goto comm_error;
