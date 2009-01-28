@@ -1,3 +1,7 @@
+Wed Jan 28 14:24:45 GMT 2009 John Levon <john.levon@sun.com>
+
+	* src/xend_internal.c: fix mis-use of PF_UNIX as a protocol
+
 Wed Jan 28 14:27:11 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	libvirt_proxy: avoid potential buffer overflow

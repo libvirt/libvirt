@@ -752,7 +752,11 @@ xenDaemonOpen_unix(virConnectPtr conn, const char *path)
 
     memset(&priv->addr, 0, sizeof(priv->addr));
     priv->addrfamily = AF_UNIX;
-    priv->addrprotocol = PF_UNIX;
+    /*
+     * This must be zero on Solaris at least for AF_UNIX (which should
+     * really be PF_UNIX, but doesn't matter).
+     */
+    priv->addrprotocol = 0;
     priv->addrlen = sizeof(struct sockaddr_un);
 
     addr = (struct sockaddr_un *)&priv->addr;
