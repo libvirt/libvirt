@@ -7001,7 +7001,7 @@ main(int argc, char **argv)
 
     if (!setlocale(LC_ALL, "")) {
         perror("setlocale");
-        return -1;
+        /* failure to setup locale is not fatal */
     }
     if (!bindtextdomain(GETTEXT_PACKAGE, LOCALEBASEDIR)) {
         perror("bindtextdomain");

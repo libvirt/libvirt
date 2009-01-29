@@ -1,3 +1,7 @@
+Thu Jan 29 12:44:15 CET 2009 Guido Günther <agx@sigxcpu.org>
+
+	* src/virsh.c (main): don't abort when setlocale() fails
+
 Wed Jan 28 22:05:11 GMT 2009 Daniel P.Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Fix typo, and tweak variable decl
