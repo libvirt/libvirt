@@ -1,3 +1,14 @@
+Thu Jan 29 16:41:07 GMT 2009 John Levon <john.levon@sun.com>
+
+	* src/util.c: allow strtol replacements for libvirt proxy
+
+	* src/xend_internal.c: fix VNC port reporting when vncunused
+	is set
+
+	* tests/sexpr2xmldata/sexpr2xml-fv-autoport.sexpr:
+	* tests/sexpr2xmldata/sexpr2xml-fv-autoport.xml:
+	* tests/sexpr2xmltest.c: add a test
+
 Thu Jan 29 13:07:05 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	* Makefile.cfg: disable some new checks

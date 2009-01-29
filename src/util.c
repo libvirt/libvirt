@@ -1041,6 +1041,7 @@ cleanup:
     return rc;
 }
 
+#endif /* PROXY */
 
 
 /* Like strtol, but produce an "int" result, and check more carefully.
@@ -1123,7 +1124,6 @@ virStrToLong_ull(char const *s, char **end_ptr, int base, unsigned long long *re
     *result = val;
     return 0;
 }
-#endif /* PROXY */
 
 /**
  * virSkipSpaces:

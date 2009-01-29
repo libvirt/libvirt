@@ -612,7 +612,9 @@ sexpr_get(virConnectPtr xend, const char *fmt, ...)
  *
  * convenience function to lookup an int value in the S-Expression
  *
- * Returns the value found or 0 if not found (but may not be an error)
+ * Returns the value found or 0 if not found (but may not be an error).
+ * This function suffers from the flaw that zero is both a correct
+ * return value and an error indicator: careful!
  */
 static int
 sexpr_int(const struct sexpr *sexpr, const char *name)
@@ -2090,15 +2092,16 @@ xenDaemonParseSxprGraphicsNew(virConnectPtr conn,
                 port = xenStoreDomainGetVNCPort(conn, def->id);
                 xenUnifiedUnlock(priv);
 
+                // Didn't find port entry in xenstore
                 if (port == -1) {
-                    // Didn't find port entry in xenstore
-                    port = sexpr_int(node, "device/vfb/vncdisplay");
+                    const char *str = sexpr_node(node, "device/vfb/vncdisplay");
+                    int val;
+                    if (str != NULL && virStrToLong_i(str, NULL, 0, &val) == 0)
+                        port = val;
                 }
 
-                if ((unused && STREQ(unused, "1")) || port == -1) {
+                if ((unused && STREQ(unused, "1")) || port == -1)
                     graphics->data.vnc.autoport = 1;
-                    port = -1;
-                }
 
                 if (port >= 0 && port < 5900)
                     port += 5900;
