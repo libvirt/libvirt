@@ -2226,11 +2226,21 @@ xenDaemonParseSxpr(virConnectPtr conn,
         def->maxmem = def->memory;
 
     if (cpus != NULL) {
+        def->cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
+        if (VIR_ALLOC_N(def->cpumask, def->cpumasklen) < 0) {
+            virReportOOMError(conn);
+            goto error;
+        }
+
         if (virDomainCpuSetParse(conn, &cpus,
                                  0, def->cpumask,
-                                 def->cpumasklen) < 0)
+                                 def->cpumasklen) < 0) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         _("invalid CPU mask %s"), cpus);
             goto error;
+        }
     }
+
     def->vcpus = sexpr_int(root, "domain/vcpus");
 
     tmp = sexpr_node(root, "domain/on_poweroff");

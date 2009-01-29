@@ -1,3 +1,8 @@
+Thu Jan 29 17:22:53 GMT 2009 John Levon <john.levon@sun.com>
+
+	* src/xend_internal.c: Fix xend XML generation when CPU pinning
+	is used
+
 Thu Jan 29 19:05:00 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	maint: sync from coreutils
