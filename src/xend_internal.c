@@ -5020,14 +5020,26 @@ xenDaemonFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
      * under the hvm (image (os)) block
      */
     if (hvm &&
-        def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+        def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
+        if (isAttach) {
+            virXendError(conn, VIR_ERR_INVALID_ARG,
+                     _("Cannot directly attach floppy %s"), def->src);
+            return -1;
+        }
         return 0;
+    }
 
     /* Xend <= 3.0.2 doesn't include cdrom config here */
     if (hvm &&
         def->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-        xendConfigVersion == 1)
+        xendConfigVersion == 1) {
+        if (isAttach) {
+            virXendError(conn, VIR_ERR_INVALID_ARG,
+                     _("Cannot directly attach CDROM %s"), def->src);
+            return -1;
+        }
         return 0;
+    }
 
     if (!isAttach)
         virBufferAddLit(buf, "(device ");
@@ -5376,17 +5388,29 @@ xenDaemonFormatSxpr(virConnectPtr conn,
             }
             virBufferVSprintf(&buf, "(boot %s)", bootorder);
 
-            /* get the cdrom device file */
-            /* Only XenD <= 3.0.2 wants cdrom config here */
-            if (xendConfigVersion == 1) {
-                for (i = 0 ; i < def->ndisks ; i++) {
-                    if (def->disks[i]->type == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-                        STREQ(def->disks[i]->dst, "hdc") &&
-                        def->disks[i]->src) {
-                        virBufferVSprintf(&buf, "(cdrom '%s')",
-                                          def->disks[i]->src);
+            /* some disk devices are defined here */
+            for (i = 0 ; i < def->ndisks ; i++) {
+                switch (def->disks[i]->device) {
+                case VIR_DOMAIN_DISK_DEVICE_CDROM:
+                    /* Only xend <= 3.0.2 wants cdrom config here */
+                    if (xendConfigVersion != 1)
                         break;
-                    }
+                    if (!STREQ(def->disks[i]->dst, "hdc") ||
+                        def->disks[i]->src == NULL)
+                        break;
+
+                    virBufferVSprintf(&buf, "(cdrom '%s')",
+                                      def->disks[i]->src);
+                    break;
+
+                case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
+                    /* all xend versions define floppies here */
+                    virBufferVSprintf(&buf, "(%s '%s')", def->disks[i]->dst,
+                        def->disks[i]->src);
+                    break;
+
+                default:
+                    break;
                 }
             }
 
