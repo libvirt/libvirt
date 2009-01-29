@@ -113,6 +113,11 @@ sc_prohibit_asprintf:
 	@grep -nE '\<[a]sprintf\>' $$($(VC_LIST_EXCEPT)) && \
 	  { echo '$(ME): use virAsprintf, not a'sprintf 1>&2; exit 1; } || :
 
+sc_prohibit_VIR_ERR_NO_MEMORY:
+	@re='\<V''IR_ERR_NO_MEMORY\>'					\
+	msg='use virReportOOMError, not V'IR_ERR_NO_MEMORY		\
+	  $(_prohibit_regexp)
+
 sc_prohibit_nonreentrant:
 	@fail=0 ; \
 	for i in $(NON_REENTRANT) ; \

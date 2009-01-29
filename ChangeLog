@@ -1,3 +1,9 @@
+Thu Jan 29 13:07:05 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	prohibit new uses of VIR_ERR_NO_MEMORY
+	* Makefile.maint (sc_prohibit_VIR_ERR_NO_MEMORY): New rule.
+	* .x-sc_prohibit_VIR_ERR_NO_MEMORY: New file: exceptions.
+
 Thu Jan 29 13:06:51 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	error-reporting calls using VIR_ERR_NO_MEMORY: use virReportOOMError instead
