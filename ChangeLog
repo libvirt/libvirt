@@ -1,5 +1,9 @@
 Thu Jan 29 13:07:05 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	* Makefile.cfg: disable some new checks
+
+Thu Jan 29 13:07:05 +0100 2009 Jim Meyering <meyering@redhat.com>
+
 	* Makefile.maint: sync from coreutils
 
 Thu Jan 29 13:07:05 +0100 2009 Jim Meyering <meyering@redhat.com>
