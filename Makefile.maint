@@ -29,6 +29,11 @@ local-checks-available = \
   makefile-check check-AUTHORS
 .PHONY: $(local-checks-available)
 
+# Arrange to print the name of each syntax-checking rule just before running it.
+$(syntax-check-rules): %: %.m
+$(patsubst %, %.m, $(syntax-check-rules)):
+	@echo $(patsubst sc_%.m, %, $@)
+
 local-check := $(filter-out $(local-checks-to-skip), $(local-checks-available))
 
 syntax-check: $(local-check)
@@ -43,6 +48,10 @@ syntax-check: $(local-check)
 #	    exit 1; } || :
 # FIXME: don't allow `#include .strings\.h' anywhere
 
+# By default, _prohibit_regexp does not ignore case.
+export ignore_case =
+_ignore_case = $$(test -n "$$ignore_case" && echo -i || :)
+
 # There are many rules below that prohibit constructs in this package.
 # If the offending construct can be matched with a grep-E-style regexp,
 # use this macro.  The shell variables "re" and "msg" must be defined.
@@ -50,7 +59,7 @@ define _prohibit_regexp
   dummy=; : so we do not need a semicolon before each use		\
   test "x$$re" != x || { echo '$(ME): re not defined' 1>&2; exit 1; };	\
   test "x$$msg" != x || { echo '$(ME): msg not defined' 1>&2; exit 1; };\
-  grep -nE "$$re" $$($(VC_LIST_EXCEPT)) &&				\
+  grep $(_ignore_case) -nE "$$re" $$($(VC_LIST_EXCEPT)) &&		\
     { echo '$(ME): '"$$msg" 1>&2; exit 1; } || :
 endef
 
@@ -135,13 +144,12 @@ sc_error_exit_success:
 	    exit 1; } || :
 
 sc_file_system:
-	@grep -ni 'file''system' $$($(VC_LIST_EXCEPT)) &&		\
-	  { echo '$(ME): found use of "file''system";'			\
-	    'rewrite to use "file system"' 1>&2;			\
-	    exit 1; } || :
+	@re=file''system ignore_case=1					\
+	msg='found use of "file''system"; spell it "file system"'	\
+	  $(_prohibit_regexp)
 
 # Don't use cpp tests of this symbol.  All code assumes config.h is included.
-sc_no_have_config_h:
+sc_prohibit_have_config_h:
 	@grep -n '^# *if.*HAVE''_CONFIG_H' $$($(VC_LIST_EXCEPT)) &&	\
 	  { echo '$(ME): found use of HAVE''_CONFIG_H; remove'		\
 		1>&2; exit 1; } || :
@@ -171,6 +179,10 @@ sc_require_config_h_first:
 		'before <config.h>' 1>&2; exit 1; } || :;		\
 	else :;								\
 	fi
+
+sc_prohibit_HAVE_MBRTOWC:
+	@re='\bHAVE_MBRTOWC\b' msg="do not use $$re; it is always defined" \
+	  $(_prohibit_regexp)
 
 # To use this "command" macro, you must first define two shell variables:
 # h: the header, enclosed in <> or ""
@@ -203,6 +215,36 @@ sc_prohibit_quotearg_without_use:
 sc_prohibit_quote_without_use:
 	@h='"quote.h"' re='\<quote(_n)? *\(' $(_header_without_use)
 
+# Don't include this header unless you use one of its functions.
+sc_prohibit_long_options_without_use:
+	@h='"long-options.h"' re='\<parse_long_options *\(' \
+	  $(_header_without_use)
+
+# Don't include this header unless you use one of its functions.
+sc_prohibit_inttostr_without_use:
+	@h='"inttostr.h"' re='\<(off|[iu]max|uint)tostr *\(' \
+	  $(_header_without_use)
+
+# Don't include this header unless you use one of its functions.
+sc_prohibit_error_without_use:
+	@h='"error.h"' \
+	re='\<error(_at_line|_print_progname|_one_per_line|_message_count)? *\('\
+	  $(_header_without_use)
+
+sc_prohibit_safe_read_without_use:
+	@h='"safe-read.h"' re='(\<SAFE_READ_ERROR\>|\<safe_read *\()' \
+	  $(_header_without_use)
+
+sc_prohibit_argmatch_without_use:
+	@h='"argmatch.h"' \
+	re='(\<(ARRAY_CARDINALITY|X?ARGMATCH(|_TO_ARGUMENT|_VERIFY))\>|\<argmatch(_exit_fn|_(in)?valid) *\()' \
+	  $(_header_without_use)
+
+sc_prohibit_root_dev_ino_without_use:
+	@h='"root-dev-ino.h"' \
+	re='(\<ROOT_DEV_INO_(CHECK|WARN)\>|\<get_root_dev_ino *\()' \
+	  $(_header_without_use)
+
 # Prohibit the inclusion of c-ctype.h without an actual use.
 sc_prohibit_c_ctype_without_use:
 	@h='[<"]c-ctype.h[">]' re='\<c_($(ctype_re)) *\(' $(_header_without_use)
@@ -214,10 +256,9 @@ sc_prohibit_ctype_h:
 		1>&2; exit 1; } || :
 
 sc_obsolete_symbols:
-	@grep -nE '\<(HAVE''_FCNTL_H|O''_NDELAY)\>'			\
-	     $$($(VC_LIST_EXCEPT)) &&					\
-	  { echo '$(ME): do not use HAVE''_FCNTL_H or O''_NDELAY'	\
-		1>&2; exit 1; } || :
+	@re='\<(HAVE''_FCNTL_H|O''_NDELAY)\>'				\
+	msg='do not use HAVE''_FCNTL_H or O'_NDELAY			\
+	  $(_prohibit_regexp)
 
 # FIXME: warn about definitions of EXIT_FAILURE, EXIT_SUCCESS, STREQ
 
@@ -232,14 +273,14 @@ sc_changelog:
 	    exit 1; } || :
 
 sc_the_the:
-	@grep -ni '\<the ''the\>' $$($(VC_LIST_EXCEPT)) &&		\
-	  { echo '$(ME): found use of "the ''the";' 1>&2;		\
-	    exit 1; } || :
+	@re='\<the ''the\>'						\
+	ignore_case=1 msg='found use of "the ''the";'			\
+	  $(_prohibit_regexp)
 
 sc_trailing_blank:
-	@grep -n '[	 ]$$' $$($(VC_LIST_EXCEPT)) &&			\
-	  { echo '$(ME): found trailing blank(s)'			\
-		1>&2; exit 1; } || :
+	@re='[	 ]$$'							\
+	ignore_case=1 msg='found trailing blank(s)'			\
+	  $(_prohibit_regexp)
 
 # Ensure that no C source file uses TABs for indentation.
 # Also match *.h.in files, to get libvirt.h.in.
@@ -375,8 +416,8 @@ sc_useless_cpp_parens:
 
 # Require the latest GPL.
 sc_GPL_version:
-	@grep -n 'either ''version [^3]' $$($(VC_LIST_EXCEPT)) &&	\
-	  { echo '$(ME): GPL vN, N!=3' 1>&2; exit 1; } || :
+	@re='either ''version [^3]' msg='GPL vN, N!=3'			\
+	  $(_prohibit_regexp)
 
 cvs_keywords = \
   Author|Date|Header|Id|Name|Locker|Log|RCSfile|Revision|Source|State
