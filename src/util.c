@@ -407,6 +407,8 @@ __virExec(virConnectPtr conn,
         _exit(1);
     }
 
+    if (infd > 0)
+        close(infd);
     close(null);
     if (childout > 0)
         close(childout);

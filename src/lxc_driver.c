@@ -775,11 +775,10 @@ static int lxcControllerStart(virConnectPtr conn,
 
     ADD_ARG(NULL);
 
-    vm->stdin_fd = -1;
     FD_SET(appPty, &keepfd);
 
     if (virExec(conn, largv, NULL, &keepfd, &child,
-                vm->stdin_fd, &logfd, &logfd,
+                -1, &logfd, &logfd,
                 VIR_EXEC_NONE) < 0)
         goto cleanup;
 

@@ -396,6 +396,27 @@ int qemudExtractVersionInfo(const char *qemu,
     if (kvm_version >= 74)
         flags |= QEMUD_CMD_FLAG_VNET_HDR;
 
+    /*
+     * Handling of -incoming arg with varying features
+     *  -incoming tcp    (kvm >= 79)
+     *  -incoming exec   (kvm >= 80)
+     *  -incoming stdio  (all earlier kvm)
+     *
+     * NB, there was a pre-kvm-79 'tcp' support, but it
+     * was broken, because it blocked the monitor console
+     * while waiting for data, so pretend it doesn't exist
+     *
+     * XXX when next QEMU release after 0.9.1 arrives,
+     * we'll need to add MIGRATE_QEMU_TCP/EXEC here too
+     */
+    if (kvm_version >= 79) {
+        flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP;
+        if (kvm_version >= 80)
+            flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC;
+    } else if (kvm_version > 0) {
+        flags |= QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO;
+    }
+
     if (retversion)
         *retversion = version;
     if (retflags)
@@ -676,6 +697,33 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ut.machine[1] = '6';
 
     virUUIDFormat(vm->def->uuid, uuid);
+
+    /* Migration is very annoying due to wildly varying syntax & capabilities
+     * over time of KVM / QEMU codebases
+     */
+    if (migrateFrom) {
+        if (STRPREFIX(migrateFrom, "tcp")) {
+            if (!(qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP)) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
+                                 "%s", _("TCP migration is not supported with this QEMU binary"));
+                return -1;
+            }
+        } else if (STREQ(migrateFrom, "stdio")) {
+            if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC) {
+                migrateFrom = "exec:cat";
+            } else if (!(qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO)) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
+                                 "%s", _("STDIO migration is not supported with this QEMU binary"));
+                return -1;
+            }
+        } else if (STRPREFIX(migrateFrom, "exec")) {
+            if (!(qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC)) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
+                                 "%s", _("STDIO migration is not supported with this QEMU binary"));
+                return -1;
+            }
+        }
+    }
 
     /* Need to explicitly disable KQEMU if
      * 1. Arch matches host arch

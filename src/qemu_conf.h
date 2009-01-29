@@ -40,15 +40,19 @@
 
 /* Internal flags to keep track of qemu command line capabilities */
 enum qemud_cmd_flags {
-    QEMUD_CMD_FLAG_KQEMU          = (1 << 0),
-    QEMUD_CMD_FLAG_VNC_COLON      = (1 << 1),
-    QEMUD_CMD_FLAG_NO_REBOOT      = (1 << 2),
-    QEMUD_CMD_FLAG_DRIVE          = (1 << 3),
-    QEMUD_CMD_FLAG_DRIVE_BOOT     = (1 << 4),
-    QEMUD_CMD_FLAG_NAME           = (1 << 5),
-    QEMUD_CMD_FLAG_UUID           = (1 << 6),
-    QEMUD_CMD_FLAG_DOMID          = (1 << 7), /* Xenner only */
-    QEMUD_CMD_FLAG_VNET_HDR       = (1 << 8),
+    QEMUD_CMD_FLAG_KQEMU          = (1 << 0), /* Whether KQEMU is compiled in */
+    QEMUD_CMD_FLAG_VNC_COLON      = (1 << 1), /* Does the VNC take just port, or address + display */
+    QEMUD_CMD_FLAG_NO_REBOOT      = (1 << 2), /* Is the -no-reboot flag available */
+    QEMUD_CMD_FLAG_DRIVE          = (1 << 3), /* Is the new -drive arg available */
+    QEMUD_CMD_FLAG_DRIVE_BOOT     = (1 << 4), /* Does -drive support boot=on */
+    QEMUD_CMD_FLAG_NAME           = (1 << 5), /* Is the -name flag available */
+    QEMUD_CMD_FLAG_UUID           = (1 << 6), /* Is the -uuid flag available */
+    QEMUD_CMD_FLAG_DOMID          = (1 << 7), /* Xenner only, special -domid flag available */
+    QEMUD_CMD_FLAG_VNET_HDR        = (1 << 8),
+    QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO = (1 << 9),  /* Original migration code from KVM. Also had tcp, but we can't use that
+                                                   * since it had a design bug blocking the entire monitor console */
+    QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP  = (1 << 10), /* New migration syntax after merge to QEMU with TCP transport */
+    QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC = (1 << 11), /* New migration syntax after merge to QEMU with EXEC transport */
 };
 
 /* Main driver state */

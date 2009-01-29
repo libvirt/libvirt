@@ -130,7 +130,8 @@ static void qemudDispatchVMEvent(int watch,
 static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
                               virDomainObjPtr vm,
-                              const char *migrateFrom);
+                              const char *migrateFrom,
+                              int stdin_fd);
 
 static void qemudShutdownVMDaemon(virConnectPtr conn,
                                   struct qemud_driver *driver,
@@ -237,7 +238,7 @@ qemudAutostartConfigs(struct qemud_driver *driver) {
         virDomainObjLock(vm);
         if (vm->autostart &&
             !virDomainIsActive(vm)) {
-            int ret = qemudStartVMDaemon(conn, driver, vm, NULL);
+            int ret = qemudStartVMDaemon(conn, driver, vm, NULL, -1);
             if (ret < 0) {
                 virErrorPtr err = virGetLastError();
                 qemudLog(QEMUD_ERR, _("Failed to autostart VM '%s': %s\n"),
@@ -1050,7 +1051,8 @@ static virDomainPtr qemudDomainLookupByName(virConnectPtr conn,
 static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
                               virDomainObjPtr vm,
-                              const char *migrateFrom) {
+                              const char *migrateFrom,
+                              int stdin_fd) {
     const char **argv = NULL, **tmp;
     const char **progenv = NULL;
     int i, ret;
@@ -1161,7 +1163,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         FD_SET(tapfds[i], &keepfd);
 
     ret = virExec(conn, argv, progenv, &keepfd, &child,
-                  vm->stdin_fd, &vm->logfile, &vm->logfile,
+                  stdin_fd, &vm->logfile, &vm->logfile,
                   VIR_EXEC_NONBLOCK | VIR_EXEC_DAEMON);
 
     /* wait for qemu process to to show up */
@@ -1811,7 +1813,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
 
     def = NULL;
 
-    if (qemudStartVMDaemon(conn, driver, vm, NULL) < 0) {
+    if (qemudStartVMDaemon(conn, driver, vm, NULL, -1) < 0) {
         virDomainRemoveInactive(&driver->domains,
                                 vm);
         vm = NULL;
@@ -2287,11 +2289,14 @@ static int qemudDomainSave(virDomainPtr dom,
     /* Pause */
     if (vm->state == VIR_DOMAIN_RUNNING) {
         header.was_running = 1;
-        if (qemudDomainSuspend(dom) != 0) {
+        if (qemudMonitorCommand(vm, "stop", &info) < 0) {
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                             "%s", _("failed to pause domain"));
+                             "%s", _("suspend operation failed"));
             goto cleanup;
         }
+        vm->state = VIR_DOMAIN_PAUSED;
+        qemudDebug("Reply %s", info);
+        VIR_FREE(info);
     }
 
     /* Get XML for the domain */
@@ -2678,10 +2683,14 @@ static int qemudDomainRestore(virConnectPtr conn,
     vm = virDomainFindByUUID(&driver->domains, def->uuid);
     if (!vm)
         vm = virDomainFindByName(&driver->domains, def->name);
-    if (vm && virDomainIsActive(vm)) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("domain is already active as '%s'"), vm->def->name);
-        goto cleanup;
+    if (vm) {
+        if (virDomainIsActive(vm)) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                             _("domain is already active as '%s'"), vm->def->name);
+            goto cleanup;
+        } else {
+            virDomainObjUnlock(vm);
+        }
     }
 
     if (!(vm = virDomainAssignDef(conn,
@@ -2694,11 +2703,9 @@ static int qemudDomainRestore(virConnectPtr conn,
     def = NULL;
 
     /* Set the migration source and start it up. */
-    vm->stdin_fd = fd;
-    ret = qemudStartVMDaemon(conn, driver, vm, "stdio");
+    ret = qemudStartVMDaemon(conn, driver, vm, "stdio", fd);
     close(fd);
     fd = -1;
-    vm->stdin_fd = -1;
     if (ret < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("failed to start VM"));
@@ -2827,7 +2834,7 @@ static int qemudDomainStart(virDomainPtr dom) {
         goto cleanup;
     }
 
-    ret = qemudStartVMDaemon(dom->conn, driver, vm, NULL);
+    ret = qemudStartVMDaemon(dom->conn, driver, vm, NULL, -1);
     if (ret != -1)
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STARTED,
@@ -4141,7 +4148,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
      * -incoming tcp:0.0.0.0:port
      */
     snprintf (migrateFrom, sizeof (migrateFrom), "tcp:0.0.0.0:%d", this_port);
-    if (qemudStartVMDaemon (dconn, driver, vm, migrateFrom) < 0) {
+    if (qemudStartVMDaemon (dconn, driver, vm, migrateFrom, -1) < 0) {
         qemudReportError (dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                           "%s", _("failed to start listening VM"));
         if (!vm->persistent) {

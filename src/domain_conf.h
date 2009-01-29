@@ -462,7 +462,6 @@ typedef virDomainObj *virDomainObjPtr;
 struct _virDomainObj {
     virMutex lock;
 
-    int stdin_fd;
     int monitor;
     int monitor_watch;
     char *monitorpath;

@@ -24,7 +24,8 @@ static struct qemud_driver driver;
 
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmd,
-                                     int extraFlags) {
+                                     int extraFlags,
+                                     const char *migrateFrom) {
     char argvData[MAX_FILE];
     char *expectargv = &(argvData[0]);
     char *actualargv = NULL;
@@ -56,7 +57,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     if (qemudBuildCommandLine(NULL, &driver,
                               &vm, flags, &argv, &qenv,
-                              NULL, NULL, NULL) < 0)
+                              NULL, NULL, migrateFrom) < 0)
         goto fail;
 
     len = 1; /* for trailing newline */
@@ -122,6 +123,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 struct testInfo {
     const char *name;
     int extraFlags;
+    const char *migrateFrom;
 };
 
 static int testCompareXMLToArgvHelper(const void *data) {
@@ -132,7 +134,7 @@ static int testCompareXMLToArgvHelper(const void *data) {
              abs_srcdir, info->name);
     snprintf(args, PATH_MAX, "%s/qemuxml2argvdata/qemuxml2argv-%s.args",
              abs_srcdir, info->name);
-    return testCompareXMLToArgvFiles(xml, args, info->extraFlags);
+    return testCompareXMLToArgvFiles(xml, args, info->extraFlags, info->migrateFrom);
 }
 
 
@@ -159,13 +161,16 @@ mymain(int argc, char **argv)
     if((driver.stateDir = strdup("/nowhere")) == NULL)
         return EXIT_FAILURE;
 
-#define DO_TEST(name, extraFlags)                                       \
+#define DO_TEST_FULL(name, extraFlags, migrateFrom)                     \
     do {                                                                \
-        struct testInfo info = { name, extraFlags };                    \
+        const struct testInfo info = { name, extraFlags, migrateFrom }; \
         if (virtTestRun("QEMU XML-2-ARGV " name,                        \
                         1, testCompareXMLToArgvHelper, &info) < 0)      \
             ret = -1;                                                   \
     } while (0)
+
+#define DO_TEST(name, extraFlags)                       \
+        DO_TEST_FULL(name, extraFlags, NULL)
 
     setenv("PATH", "/bin", 1);
     setenv("USER", "test", 1);
@@ -227,6 +232,11 @@ mymain(int argc, char **argv)
     DO_TEST("hostdev-usb-address", 0);
 
     DO_TEST("hostdev-pci-address", 0);
+
+    DO_TEST_FULL("restore-v1", QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO, "stdio");
+    DO_TEST_FULL("restore-v2", QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC, "stdio");
+    DO_TEST_FULL("restore-v2", QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC, "exec:cat");
+    DO_TEST_FULL("migrate", QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP, "tcp:10.0.0.1:5000");
 
     virCapabilitiesFree(driver.caps);
 

@@ -1,3 +1,25 @@
+Thu Jan 29 17:24:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix save/restore for new KVM releases
+	* src/domain_conf.h, src/lxc_driver.c, src/uml_driver.c:
+	Remove unused stdin_fd field from virDomainObjPtr
+	* src/qemu_conf.c, src/qemu_driver.c: Support new
+	migration options for save & restore, and fix deadlock
+	in save code.
+	* src/qemu_conf.h: Add more QEMU argv flags to various
+	migration options & describe existing flags
+	* src/util.c: Close original stdin file handle after
+	duping it onto STDIN_FILENO
+	* tests/qemuxml2argvtest.c: Test for various migrate
+	syntax options
+	* tests/qemuxml2argvdata/qemuxml2argv-migrate.args,
+	tests/qemuxml2argvdata/qemuxml2argv-migrate.xml,
+	tests/qemuxml2argvdata/qemuxml2argv-restore-v1.args,
+	tests/qemuxml2argvdata/qemuxml2argv-restore-v1.xml,
+	tests/qemuxml2argvdata/qemuxml2argv-restore-v2.args,
+	tests/qemuxml2argvdata/qemuxml2argv-restore-v2.xml: Data
+	files for testing migrate syntax options
+
 Thu Jan 29 17:15:18 GMT 2009 John Levon <john.levon@sun.com>
 
 	* src/libvirt.c: fix another printf("%s", NULL) case
