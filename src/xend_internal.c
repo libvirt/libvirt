@@ -840,9 +840,11 @@ xenDaemonOpen_tcp(virConnectPtr conn, const char *host, const char *port)
     freeaddrinfo (res);
 
     if (!priv->addrlen) {
-        virReportSystemError(conn, saved_errno,
-                             _("unable to connect to '%s:%s'"),
-                             host, port);
+        /* Don't raise error when unprivileged, since proxy takes over */
+        if (xenHavePrivilege())
+            virReportSystemError(conn, saved_errno,
+                                 _("unable to connect to '%s:%s'"),
+                                 host, port);
         return -1;
     }
 
@@ -2733,7 +2735,6 @@ error:
  * @flags: combination of virDrvOpenFlag(s)
  *
  * Creates a localhost Xen Daemon connection
- * Note: this doesn't try to check if the connection actually works
  *
  * Returns 0 in case of success, -1 in case of error.
  */
@@ -2742,7 +2743,8 @@ xenDaemonOpen(virConnectPtr conn,
               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
               int flags ATTRIBUTE_UNUSED)
 {
-    int ret;
+    char *port = NULL;
+    int ret = VIR_DRV_OPEN_ERROR;
 
     /* Switch on the scheme, which we expect to be NULL (file),
      * "http" or "xen".
@@ -2753,45 +2755,30 @@ xenDaemonOpen(virConnectPtr conn,
             virXendError(NULL, VIR_ERR_NO_CONNECT, __FUNCTION__);
             goto failed;
         }
-        ret = xenDaemonOpen_unix(conn, conn->uri->path);
-        if (ret < 0)
-            goto failed;
-
-        ret = xend_detect_config_version(conn);
-        if (ret == -1)
+        if (xenDaemonOpen_unix(conn, conn->uri->path) < 0 ||
+            xend_detect_config_version(conn) == -1)
             goto failed;
     }
     else if (STRCASEEQ (conn->uri->scheme, "xen")) {
         /*
          * try first to open the unix socket
          */
-        ret = xenDaemonOpen_unix(conn, "/var/lib/xend/xend-socket");
-        if (ret < 0)
-            goto try_http;
-        ret = xend_detect_config_version(conn);
-        if (ret != -1)
+        if (xenDaemonOpen_unix(conn, "/var/lib/xend/xend-socket") == 0 &&
+            xend_detect_config_version(conn) != -1)
             goto done;
 
-    try_http:
         /*
          * try though http on port 8000
          */
-        ret = xenDaemonOpen_tcp(conn, "localhost", "8000");
-        if (ret < 0)
-            goto failed;
-        ret = xend_detect_config_version(conn);
-        if (ret == -1)
+        if (xenDaemonOpen_tcp(conn, "localhost", "8000") < 0 ||
+            xend_detect_config_version(conn) == -1)
             goto failed;
     } else if (STRCASEEQ (conn->uri->scheme, "http")) {
-        char *port;
         if (virAsprintf(&port, "%d", conn->uri->port) == -1)
             goto failed;
-        ret = xenDaemonOpen_tcp(conn, conn->uri->server, port);
-        VIR_FREE(port);
-        if (ret < 0)
-            goto failed;
-        ret = xend_detect_config_version(conn);
-        if (ret == -1)
+
+        if (xenDaemonOpen_tcp(conn, conn->uri->server, port) < 0 ||
+            xend_detect_config_version(conn) == -1)
             goto failed;
     } else {
         virXendError(NULL, VIR_ERR_NO_CONNECT, __FUNCTION__);
@@ -2799,10 +2786,11 @@ xenDaemonOpen(virConnectPtr conn,
     }
 
  done:
-    return(ret);
+    ret = VIR_DRV_OPEN_SUCCESS;
 
 failed:
-    return(-1);
+    VIR_FREE(port);
+    return ret;
 }
 
 

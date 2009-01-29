@@ -1,3 +1,15 @@
+Thu Jan 29 23:01:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Misc Xen driver crash/bug fixes
+	* src/remote_internal.c: Re-factor startup of secondary driver
+	activation to fix missing initialization & crash.  Fix memory
+	leak in error reporting
+	* src/xen_unified.c: Don't activate inotify driver if non-root
+	* src/xend_internal.c: Don't report errors when probing for
+	XenD TCP port if unprivileged, allow caller to do it. Fix bad
+	return values in open method
+	* src/xs_internal.c: Fix double free
+
 Thu Jan 29 17:22:53 GMT 2009 John Levon <john.levon@sun.com>
 
 	* src/xend_internal.c: Fix xend XML generation when CPU pinning

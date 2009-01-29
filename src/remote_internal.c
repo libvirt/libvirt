@@ -892,6 +892,57 @@ doRemoteOpen (virConnectPtr conn,
     goto cleanup;
 }
 
+static struct private_data *
+remoteAllocPrivateData(virConnectPtr conn)
+{
+    struct private_data *priv;
+    if (VIR_ALLOC(priv) < 0) {
+        virReportOOMError(conn);
+        return NULL;
+    }
+
+    if (virMutexInit(&priv->lock) < 0) {
+        error(conn, VIR_ERR_INTERNAL_ERROR,
+              _("cannot initialize mutex"));
+        VIR_FREE(priv);
+        return NULL;
+    }
+    remoteDriverLock(priv);
+    priv->localUses = 1;
+    priv->watch = -1;
+    priv->sock = -1;
+
+    return priv;
+}
+
+static int
+remoteOpenSecondaryDriver(virConnectPtr conn,
+                          virConnectAuthPtr auth,
+                          int flags,
+                          struct private_data **priv)
+{
+    int ret;
+    int rflags = 0;
+
+    if (!((*priv) = remoteAllocPrivateData(conn)))
+        return VIR_DRV_OPEN_ERROR;
+
+    if (flags & VIR_CONNECT_RO)
+        rflags |= VIR_DRV_OPEN_REMOTE_RO;
+    rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
+
+    ret = doRemoteOpen(conn, *priv, auth, rflags);
+    if (ret != VIR_DRV_OPEN_SUCCESS) {
+        remoteDriverUnlock(*priv);
+        VIR_FREE(*priv);
+    } else {
+        (*priv)->localUses = 1;
+        remoteDriverUnlock(*priv);
+    }
+
+    return ret;
+}
+
 static virDrvOpenStatus
 remoteOpen (virConnectPtr conn,
             virConnectAuthPtr auth,
@@ -903,20 +954,8 @@ remoteOpen (virConnectPtr conn,
     if (inside_daemon)
         return VIR_DRV_OPEN_DECLINED;
 
-    if (VIR_ALLOC(priv) < 0) {
-        virReportOOMError (conn);
+    if (!(priv = remoteAllocPrivateData(conn)))
         return VIR_DRV_OPEN_ERROR;
-    }
-
-    if (virMutexInit(&priv->lock) < 0) {
-        error(conn, VIR_ERR_INTERNAL_ERROR,
-              _("cannot initialize mutex"));
-        VIR_FREE(priv);
-        return VIR_DRV_OPEN_ERROR;
-    }
-    remoteDriverLock(priv);
-    priv->localUses = 1;
-    priv->watch = -1;
 
     if (flags & VIR_CONNECT_RO)
         rflags |= VIR_DRV_OPEN_REMOTE_RO;
@@ -971,7 +1010,6 @@ remoteOpen (virConnectPtr conn,
 #endif
     }
 
-    priv->sock = -1;
     ret = doRemoteOpen(conn, priv, auth, rflags);
     if (ret != VIR_DRV_OPEN_SUCCESS) {
         conn->privateData = NULL;
@@ -3085,30 +3123,13 @@ remoteNetworkOpen (virConnectPtr conn,
          * which doesn't have its own impl of the network APIs.
          */
         struct private_data *priv;
-        int ret, rflags = 0;
-        if (VIR_ALLOC(priv) < 0) {
-            virReportOOMError (conn);
-            return VIR_DRV_OPEN_ERROR;
-        }
-        if (virMutexInit(&priv->lock) < 0) {
-            error(conn, VIR_ERR_INTERNAL_ERROR,
-                  _("cannot initialize mutex"));
-            VIR_FREE(priv);
-            return VIR_DRV_OPEN_ERROR;
-        }
-        if (flags & VIR_CONNECT_RO)
-            rflags |= VIR_DRV_OPEN_REMOTE_RO;
-        rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
-
-        priv->sock = -1;
-        ret = doRemoteOpen(conn, priv, auth, rflags);
-        if (ret != VIR_DRV_OPEN_SUCCESS) {
-            conn->networkPrivateData = NULL;
-            VIR_FREE(priv);
-        } else {
-            priv->localUses = 1;
+        int ret;
+        ret = remoteOpenSecondaryDriver(conn,
+                                        auth,
+                                        flags,
+                                        &priv);
+        if (ret == VIR_DRV_OPEN_SUCCESS)
             conn->networkPrivateData = priv;
-        }
         return ret;
     }
 }
@@ -3598,30 +3619,13 @@ remoteStorageOpen (virConnectPtr conn,
          * which doesn't have its own impl of the network APIs.
          */
         struct private_data *priv;
-        int ret, rflags = 0;
-        if (VIR_ALLOC(priv) < 0) {
-            virReportOOMError (NULL);
-            return VIR_DRV_OPEN_ERROR;
-        }
-        if (virMutexInit(&priv->lock) < 0) {
-            error(conn, VIR_ERR_INTERNAL_ERROR,
-                  _("cannot initialize mutex"));
-            VIR_FREE(priv);
-            return VIR_DRV_OPEN_ERROR;
-        }
-        if (flags & VIR_CONNECT_RO)
-            rflags |= VIR_DRV_OPEN_REMOTE_RO;
-        rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
-
-        priv->sock = -1;
-        ret = doRemoteOpen(conn, priv, auth, rflags);
-        if (ret != VIR_DRV_OPEN_SUCCESS) {
-            conn->storagePrivateData = NULL;
-            VIR_FREE(priv);
-        } else {
-            priv->localUses = 1;
+        int ret;
+        ret = remoteOpenSecondaryDriver(conn,
+                                        auth,
+                                        flags,
+                                        &priv);
+        if (ret == VIR_DRV_OPEN_SUCCESS)
             conn->storagePrivateData = priv;
-        }
         return ret;
     }
 }
@@ -4551,30 +4555,13 @@ remoteDevMonOpen(virConnectPtr conn,
          * which doesn't have its own impl of the network APIs.
          */
         struct private_data *priv;
-        int ret, rflags = 0;
-        if (VIR_ALLOC(priv) < 0) {
-            virReportOOMError (NULL);
-            return VIR_DRV_OPEN_ERROR;
-        }
-        if (virMutexInit(&priv->lock) < 0) {
-            error(conn, VIR_ERR_INTERNAL_ERROR,
-                  _("cannot initialize mutex"));
-            VIR_FREE(priv);
-            return VIR_DRV_OPEN_ERROR;
-        }
-        if (flags & VIR_CONNECT_RO)
-            rflags |= VIR_DRV_OPEN_REMOTE_RO;
-        rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
-
-        priv->sock = -1;
-        ret = doRemoteOpen(conn, priv, auth, rflags);
-        if (ret != VIR_DRV_OPEN_SUCCESS) {
-            conn->devMonPrivateData = NULL;
-            VIR_FREE(priv);
-        } else {
-            priv->localUses = 1;
+        int ret;
+        ret = remoteOpenSecondaryDriver(conn,
+                                        auth,
+                                        flags,
+                                        &priv);
+        if (ret == VIR_DRV_OPEN_SUCCESS)
             conn->devMonPrivateData = priv;
-        }
         return ret;
     }
 }
@@ -6429,6 +6416,7 @@ cleanup:
             thiscall->err.domain == VIR_FROM_REMOTE &&
             thiscall->err.code == VIR_ERR_RPC &&
             thiscall->err.level == VIR_ERR_ERROR &&
+            thiscall->err.message &&
             STRPREFIX(*thiscall->err.message, "unknown procedure")) {
             rv = -2;
         } else {
@@ -6436,6 +6424,7 @@ cleanup:
                           &thiscall->err);
             rv = -1;
         }
+        xdr_free((xdrproc_t)xdr_remote_error,  (char *)&thiscall->err);
     } else {
         rv = 0;
     }

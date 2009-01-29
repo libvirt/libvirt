@@ -599,8 +599,6 @@ xenStoreDoListDomains(xenUnifiedPrivatePtr priv, int *ids, int maxids)
         ids[ret++] = (int) id;
     }
 
-    free(idlist);
-
 out:
     VIR_FREE (idlist);
     return ret;

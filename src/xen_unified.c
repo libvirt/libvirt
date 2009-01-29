@@ -355,11 +355,13 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
     }
 
 #if WITH_XEN_INOTIFY
-    DEBUG0("Trying Xen inotify sub-driver");
-    if (drivers[XEN_UNIFIED_INOTIFY_OFFSET]->open(conn, auth, flags) ==
-        VIR_DRV_OPEN_SUCCESS) {
-        DEBUG0("Activated Xen inotify sub-driver");
-        priv->opened[XEN_UNIFIED_INOTIFY_OFFSET] = 1;
+    if (xenHavePrivilege()) {
+        DEBUG0("Trying Xen inotify sub-driver");
+        if (drivers[XEN_UNIFIED_INOTIFY_OFFSET]->open(conn, auth, flags) ==
+            VIR_DRV_OPEN_SUCCESS) {
+            DEBUG0("Activated Xen inotify sub-driver");
+            priv->opened[XEN_UNIFIED_INOTIFY_OFFSET] = 1;
+        }
     }
 #endif
 
