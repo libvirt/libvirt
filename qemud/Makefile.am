@@ -246,6 +246,8 @@ libvirtd.init: libvirtd.init.in
 check-local:
 	test -x '$(AUGPARSE)' \
 	  && '$(AUGPARSE)' -I $(srcdir) $(srcdir)/test_libvirtd.aug || :
+	test -x '$(AUGPARSE)' \
+	  && '$(AUGPARSE)' -I $(srcdir) $(srcdir)/test_libvirtd_qemu.aug || :
 
 else
 

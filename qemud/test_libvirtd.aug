@@ -259,6 +259,15 @@ max_requests = 20
 # this should be a small fraction of the global max_requests
 # and max_workers parameter
 max_client_requests = 5
+
+# Logging level:
+log_level = 4
+
+# Logging outputs:
+log_outputs=\"4:stderr\"
+
+# Logging filters:
+log_filters=\"a\"
 "
 
    test Libvirtd.lns get conf =
@@ -525,3 +534,12 @@ max_client_requests = 5
         { "#comment" = "this should be a small fraction of the global max_requests" }
         { "#comment" = "and max_workers parameter" }
         { "max_client_requests" = "5" }
+	{ "#empty" }
+        { "#comment" = "Logging level:" }
+        { "log_level" = "4" }
+	{ "#empty" }
+        { "#comment" = "Logging outputs:" }
+        { "log_outputs" = "4:stderr" }
+	{ "#empty" }
+        { "#comment" = "Logging filters:" }
+        { "log_filters" = "a" }

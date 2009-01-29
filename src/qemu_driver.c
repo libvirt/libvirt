@@ -74,6 +74,10 @@
 /* For storing short-lived temporary files. */
 #define TEMPDIR LOCAL_STATE_DIR "/cache/libvirt"
 
+#define QEMU_CMD_PROMPT "\n(qemu) "
+#define QEMU_PASSWD_PROMPT "Password: "
+
+
 static int qemudShutdown(void);
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
@@ -139,9 +143,14 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
 
 static int qemudDomainGetMaxVcpus(virDomainPtr dom);
 
-static int qemudMonitorCommand (const virDomainObjPtr vm,
-                                const char *cmd,
-                                char **reply);
+static int qemudMonitorCommand(const virDomainObjPtr vm,
+                               const char *cmd,
+                               char **reply);
+static int qemudMonitorCommandExtra(const virDomainObjPtr vm,
+                                    const char *cmd,
+                                    const char *extra,
+                                    const char *extraPrompt,
+                                    char **reply);
 
 static struct qemud_driver *qemu_driver = NULL;
 
@@ -583,6 +592,7 @@ qemudShutdown(void) {
     VIR_FREE(qemu_driver->stateDir);
     VIR_FREE(qemu_driver->vncTLSx509certdir);
     VIR_FREE(qemu_driver->vncListen);
+    VIR_FREE(qemu_driver->vncPassword);
 
     /* Free domain callback list */
     virDomainEventCallbackListFree(qemu_driver->domainEventCallbacks);
@@ -1009,6 +1019,39 @@ qemudInitCpus(virConnectPtr conn,
 }
 
 
+static int
+qemudInitPasswords(virConnectPtr conn,
+                   struct qemud_driver *driver,
+                   virDomainObjPtr vm) {
+    char *info = NULL;
+
+    /*
+     * NB: Might have more passwords to set in the future. eg a qcow
+     * disk decryption password, but there's no monitor command
+     * for that yet...
+     */
+
+    if (vm->def->graphics &&
+        vm->def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+        vm->def->graphics->data.vnc.passwd) {
+
+        if (qemudMonitorCommandExtra(vm, "change vnc password",
+                                     vm->def->graphics->data.vnc.passwd ?
+                                     vm->def->graphics->data.vnc.passwd :
+                                     driver->vncPassword,
+                                     QEMU_PASSWD_PROMPT,
+                                     &info) < 0) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("setting VNC password failed"));
+            return -1;
+        }
+        VIR_FREE(info);
+    }
+
+    return 0;
+}
+
+
 static int qemudNextFreeVNCPort(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
     int i;
 
@@ -1202,7 +1245,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (ret == 0) {
         if ((qemudWaitForMonitor(conn, driver, vm, pos) < 0) ||
             (qemudDetectVcpuPIDs(conn, vm) < 0) ||
-            (qemudInitCpus(conn, vm, migrateFrom) < 0)) {
+            (qemudInitCpus(conn, vm, migrateFrom) < 0) ||
+            (qemudInitPasswords(conn, driver, vm) < 0)) {
             qemudShutdownVMDaemon(conn, driver, vm);
             return -1;
         }
@@ -1312,12 +1356,15 @@ cleanup:
 }
 
 static int
-qemudMonitorCommand (const virDomainObjPtr vm,
-                     const char *cmd,
-                     char **reply) {
+qemudMonitorCommandExtra(const virDomainObjPtr vm,
+                         const char *cmd,
+                         const char *extra,
+                         const char *extraPrompt,
+                         char **reply) {
     int size = 0;
     char *buf = NULL;
     size_t cmdlen = strlen(cmd);
+    size_t extralen = extra ? strlen(extra) : 0;
 
     if (safewrite(vm->monitor, cmd, cmdlen) != cmdlen)
         return -1;
@@ -1353,25 +1400,34 @@ qemudMonitorCommand (const virDomainObjPtr vm,
         }
 
         /* Look for QEMU prompt to indicate completion */
-        if (buf && ((tmp = strstr(buf, "\n(qemu) ")) != NULL)) {
-            char *commptr = NULL, *nlptr = NULL;
+        if (buf) {
+            if (extra) {
+                if (strstr(buf, extraPrompt) != NULL) {
+                    if (safewrite(vm->monitor, extra, extralen) != extralen)
+                        return -1;
+                    if (safewrite(vm->monitor, "\r", 1) != 1)
+                        return -1;
+                    extra = NULL;
+                }
+            } else if ((tmp = strstr(buf, QEMU_CMD_PROMPT)) != NULL) {
+                char *commptr = NULL, *nlptr = NULL;
+                /* Preserve the newline */
+                tmp[1] = '\0';
 
-            /* Preserve the newline */
-            tmp[1] = '\0';
+                /* The monitor doesn't dump clean output after we have written to
+                 * it. Every character we write dumps a bunch of useless stuff,
+                 * so the result looks like "cXcoXcomXcommXcommaXcommanXcommand"
+                 * Try to throw away everything before the first full command
+                 * occurence, and inbetween the command and the newline starting
+                 * the response
+                 */
+                if ((commptr = strstr(buf, cmd)))
+                    memmove(buf, commptr, strlen(commptr)+1);
+                if ((nlptr = strchr(buf, '\n')))
+                    memmove(buf+strlen(cmd), nlptr, strlen(nlptr)+1);
 
-            /* The monitor doesn't dump clean output after we have written to
-             * it. Every character we write dumps a bunch of useless stuff,
-             * so the result looks like "cXcoXcomXcommXcommaXcommanXcommand"
-             * Try to throw away everything before the first full command
-             * occurence, and inbetween the command and the newline starting
-             * the response
-             */
-            if ((commptr = strstr(buf, cmd)))
-                memmove(buf, commptr, strlen(commptr)+1);
-            if ((nlptr = strchr(buf, '\n')))
-                memmove(buf+strlen(cmd), nlptr, strlen(nlptr)+1);
-
-            break;
+                break;
+            }
         }
     pollagain:
         /* Need to wait for more data */
@@ -1400,6 +1456,14 @@ qemudMonitorCommand (const virDomainObjPtr vm,
     }
     return -1;
 }
+
+static int
+qemudMonitorCommand(const virDomainObjPtr vm,
+                    const char *cmd,
+                    char **reply) {
+    return qemudMonitorCommandExtra(vm, cmd, NULL, NULL, reply);
+}
+
 
 /**
  * qemudProbe:

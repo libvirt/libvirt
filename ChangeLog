@@ -1,3 +1,22 @@
+Thu Jan 29 17:40:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Support VNC password setting for QEMU driver
+	* qemud/Makefile.am: Add missing test of libvirt_qemud.aug file
+	* qemud/libvirtd_qemu.aug: Add suport for VNC password config
+	* qemud/test_libvirtd.aug: Add logging params test
+	* qemud/test_libvirtd_qemu.aug: Remove bogus logging params,
+	and add VNC password test
+	* src/qemu.conf: Include example VNC password config
+	* src/qemu_conf.c, src/qemu_conf.h, src/qemu_driver.c: Support
+	setting a VNC password on a per-VM basis, or from QEMU driver
+	global config file.
+	* src/uml_driver.c: Fix initialization of inotifyWatch param
+	to avoid bogus watch unregister later
+	* src/virsh.c: Add --security-info and --inative flags to
+	dumpxml command. Ensure edit command uses SECURE & INACTIVE
+	flags when changing config
+
+
 Thu Jan 29 17:24:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix save/restore for new KVM releases

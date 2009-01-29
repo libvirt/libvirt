@@ -324,6 +324,7 @@ umlStartup(void) {
 
     /* Don't have a dom0 so start from 1 */
     uml_driver->nextvmid = 1;
+    uml_driver->inotifyWatch = -1;
 
     userdir = virGetUserDirectory(NULL, uid);
     if (!userdir)
@@ -484,7 +485,8 @@ umlShutdown(void) {
         return -1;
 
     umlDriverLock(uml_driver);
-    virEventRemoveHandle(uml_driver->inotifyWatch);
+    if (uml_driver->inotifyWatch != -1)
+        virEventRemoveHandle(uml_driver->inotifyWatch);
     close(uml_driver->inotifyFD);
     virCapabilitiesFree(uml_driver->caps);
 

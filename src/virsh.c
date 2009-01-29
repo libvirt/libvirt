@@ -2079,6 +2079,8 @@ static const vshCmdInfo info_dumpxml[] = {
 
 static const vshCmdOptDef opts_dumpxml[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"inactive", VSH_OT_BOOL, 0, gettext_noop("show inactive defined XML")},
+    {"security-info", VSH_OT_BOOL, 0, gettext_noop("include security sensitive information in XML dump")},
     {NULL, 0, 0, NULL}
 };
 
@@ -2088,6 +2090,14 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     int ret = TRUE;
     char *dump;
+    int flags = 0;
+    int inactive = vshCommandOptBool(cmd, "inactive");
+    int secure = vshCommandOptBool(cmd, "security-info");
+
+    if (inactive)
+        flags |= VIR_DOMAIN_XML_INACTIVE;
+    if (secure)
+        flags |= VIR_DOMAIN_XML_SECURE;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -2095,7 +2105,7 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
-    dump = virDomainGetXMLDesc(dom, 0);
+    dump = virDomainGetXMLDesc(dom, flags);
     if (dump != NULL) {
         printf("%s", dump);
         free(dump);
@@ -5374,7 +5384,7 @@ cmdEdit (vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     /* Get the XML configuration of the domain. */
-    doc = virDomainGetXMLDesc (dom, 0);
+    doc = virDomainGetXMLDesc (dom, VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_INACTIVE);
     if (!doc)
         goto cleanup;
 
@@ -5404,7 +5414,7 @@ cmdEdit (vshControl *ctl, const vshCmd *cmd)
      * it was being edited?  This also catches problems such as us
      * losing a connection or the domain going away.
      */
-    doc_reread = virDomainGetXMLDesc (dom, 0);
+    doc_reread = virDomainGetXMLDesc (dom, VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_INACTIVE);
     if (!doc_reread)
         goto cleanup;
 

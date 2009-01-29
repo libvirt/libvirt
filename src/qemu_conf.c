@@ -125,6 +125,17 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
+    p = virConfGetValue (conf, "vnc_password");
+    CHECK_TYPE ("vnc_password", VIR_CONF_STRING);
+    if (p && p->str) {
+        VIR_FREE(driver->vncPassword);
+        if (!(driver->vncPassword = strdup(p->str))) {
+            virReportOOMError(NULL);
+            virConfFree(conf);
+            return -1;
+        }
+    }
+
     virConfFree (conf);
     return 0;
 }
@@ -1196,37 +1207,43 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     if (vm->def->graphics &&
         vm->def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-        char vncdisplay[PATH_MAX];
-        int ret;
+        virBuffer opt = VIR_BUFFER_INITIALIZER;
+        char *optstr;
 
         if (qemuCmdFlags & QEMUD_CMD_FLAG_VNC_COLON) {
-            char options[PATH_MAX] = "";
+            if (vm->def->graphics->data.vnc.listenAddr)
+                virBufferAdd(&opt, vm->def->graphics->data.vnc.listenAddr, -1);
+            else if (driver->vncListen)
+                virBufferAdd(&opt, driver->vncListen, -1);
+
+            virBufferVSprintf(&opt, ":%d",
+                              vm->def->graphics->data.vnc.port - 5900);
+
+            if (vm->def->graphics->data.vnc.passwd ||
+                driver->vncPassword)
+                virBufferAddLit(&opt, ",password");
+
             if (driver->vncTLS) {
-                strcat(options, ",tls");
+                virBufferAddLit(&opt, ",tls");
                 if (driver->vncTLSx509verify) {
-                    strcat(options, ",x509verify=");
+                    virBufferVSprintf(&opt, ",x509verify=%s",
+                                      driver->vncTLSx509certdir);
                 } else {
-                    strcat(options, ",x509=");
+                    virBufferVSprintf(&opt, ",x509=%s",
+                                      driver->vncTLSx509certdir);
                 }
-                strncat(options, driver->vncTLSx509certdir,
-                        sizeof(options) - (strlen(driver->vncTLSx509certdir)-1));
-                options[sizeof(options)-1] = '\0';
             }
-            ret = snprintf(vncdisplay, sizeof(vncdisplay), "%s:%d%s",
-                           (vm->def->graphics->data.vnc.listenAddr ?
-                            vm->def->graphics->data.vnc.listenAddr :
-                            (driver->vncListen ? driver->vncListen : "")),
-                           vm->def->graphics->data.vnc.port - 5900,
-                           options);
         } else {
-            ret = snprintf(vncdisplay, sizeof(vncdisplay), "%d",
-                           vm->def->graphics->data.vnc.port - 5900);
+            virBufferVSprintf(&opt, "%d",
+                              vm->def->graphics->data.vnc.port - 5900);
         }
-        if (ret < 0 || ret >= (int)sizeof(vncdisplay))
-            goto error;
+        if (virBufferError(&opt))
+            goto no_memory;
+
+        optstr = virBufferContentAndReset(&opt);
 
         ADD_ARG_LIT("-vnc");
-        ADD_ARG_LIT(vncdisplay);
+        ADD_ARG(optstr);
         if (vm->def->graphics->data.vnc.keymap) {
             ADD_ARG_LIT("-k");
             ADD_ARG_LIT(vm->def->graphics->data.vnc.keymap);

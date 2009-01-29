@@ -50,14 +50,16 @@ vnc_tls_x509_cert_dir = \"/etc/pki/libvirt-vnc\"
 #
 vnc_tls_x509_verify = 1
 
-# Logging level:
-log_level = 4
 
-# Logging outputs:
-log_outputs="4:stderr"
-
-# Logging filters:
-log_filters=""
+# The default VNC password. Only 8 letters are significant for
+# VNC passwords. This parameter is only used if the per-domain
+# XML config does not already provide a password. To allow
+# access without passwords, leave this commented out. An empty
+# string will still enable passwords, but be rejected by QEMU
+# effectively preventing any use of VNC. Obviously change this
+# example here before you set this
+#
+vnc_password = \"XYZ12345\"
 "
 
    test Libvirtd_qemu.lns get conf =
@@ -110,9 +112,14 @@ log_filters=""
 { "#comment" = "certificate signed by the CA in /etc/pki/libvirt-vnc/ca-cert.pem" }
 { "#comment" = "" }
 { "vnc_tls_x509_verify" = "1" }
-{ "#comment" = "Logging level:" }
-{ "log_level" = "4" }
-{ "#comment" = "Logging outputs:" }
-{ "log_outputs" = "4:stderr" }
-{ "#comment" = "Logging filters" }
-{ "log_filters" = "" }
+{ "#empty" }
+{ "#empty" }
+{ "#comment" = "The default VNC password. Only 8 letters are significant for" }
+{ "#comment" = "VNC passwords. This parameter is only used if the per-domain" }
+{ "#comment" = "XML config does not already provide a password. To allow" }
+{ "#comment" = "access without passwords, leave this commented out. An empty" }
+{ "#comment" = "string will still enable passwords, but be rejected by QEMU" }
+{ "#comment" = "effectively preventing any use of VNC. Obviously change this" }
+{ "#comment" = "example here before you set this" }
+{ "#comment" = "" }
+{ "vnc_password" = "XYZ12345" }
