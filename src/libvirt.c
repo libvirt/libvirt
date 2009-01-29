@@ -6924,7 +6924,7 @@ error:
 int
 virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
 {
-    DEBUG("conn=%p, cap=%s, flags=%d", conn, cap, flags);
+    DEBUG("conn=%p, cap=%s, flags=%d", conn, NULLSTR(cap), flags);
 
     virResetLastError();
 

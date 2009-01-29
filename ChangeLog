@@ -1,3 +1,7 @@
+Thu Jan 29 17:15:18 GMT 2009 John Levon <john.levon@sun.com>
+
+	* src/libvirt.c: fix another printf("%s", NULL) case
+
 Thu Jan 29 09:03:17 PST 2009 John Levon <john.levon@sun.com>
 
 	* src/xend_internal.c: correctly enable floppies for HVM guests.
