@@ -1639,8 +1639,7 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
          * for Xen, and also nr_cpus must be 'sizeof(uint64_t) * 8'       */
         if (maplen < 8) {
             if (VIR_ALLOC_N(new, sizeof(uint64_t)) < 0) {
-                virXenErrorFunc(NULL, VIR_ERR_NO_MEMORY, __FUNCTION__,
-                                "allocating private data", 0);
+                virReportOOMError(NULL);
                 return (-1);
             }
             memcpy(new, cpumap, maplen);
@@ -1965,7 +1964,7 @@ xenHypervisorInit(void)
     hypervisor_version = 2;
 
     if (VIR_ALLOC(ipt) < 0) {
-        virXenError(NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(NULL);
         return(-1);
     }
     /* Currently consider RHEL5.0 Fedora7, xen-3.1, and xen-unstable */
@@ -2359,7 +2358,7 @@ xenHypervisorMakeCapabilitiesSunOS(virConnectPtr conn)
                                                utsname.machine,
                                                pae, hvm,
                                                guest_arches, i)) == NULL)
-        virXenError(NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(NULL);
 
     return caps;
 }
@@ -2520,7 +2519,7 @@ xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
     return caps;
 
  no_memory:
-    virXenError(NULL, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(NULL);
     virCapabilitiesFree(caps);
     return NULL;
 }
@@ -2593,7 +2592,7 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
     char *xml;
 
     if (!(xml = virCapabilitiesFormatXML(priv->caps))) {
-        virXenError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -2626,8 +2625,7 @@ xenHypervisorNumOfDomains(virConnectPtr conn)
 
  retry:
     if (!(XEN_GETDOMAININFOLIST_ALLOC(dominfos, maxids))) {
-        virXenError(conn, VIR_ERR_NO_MEMORY, _("allocating %d domain info"),
-                    maxids);
+        virReportOOMError(conn);
         return(-1);
     }
 
@@ -2688,8 +2686,7 @@ xenHypervisorListDomains(virConnectPtr conn, int *ids, int maxids)
         return(0);
 
     if (!(XEN_GETDOMAININFOLIST_ALLOC(dominfos, maxids))) {
-        virXenError(conn, VIR_ERR_NO_MEMORY, "allocating %d domain info",
-                    maxids);
+        virReportOOMError(conn);
         return(-1);
     }
 
@@ -2798,8 +2795,7 @@ xenHypervisorLookupDomainByUUID(virConnectPtr conn,
 
  retry:
     if (!(XEN_GETDOMAININFOLIST_ALLOC(dominfos, maxids))) {
-        virXenError(conn, VIR_ERR_NO_MEMORY, "allocating %d domain info",
-                    maxids);
+        virReportOOMError(conn);
         return(NULL);
     }
 

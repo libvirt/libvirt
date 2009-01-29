@@ -428,8 +428,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
     char *authType = NULL;
 
     if (VIR_ALLOC(ret) < 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                              "%s", _("cannot allocate storage pool"));
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -513,7 +512,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
         }
         if (VIR_ALLOC_N(ret->source.devices, nsource) < 0) {
             VIR_FREE(nodeset);
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("device"));
+            virReportOOMError(conn);
             goto cleanup;
         }
         for (i = 0 ; i < nsource ; i++) {
@@ -543,8 +542,7 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
             /* source name defaults to pool name */
             ret->source.name = strdup(ret->name);
             if (ret->source.name == NULL) {
-                virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s",
-                                      _("pool name"));
+                virReportOOMError(conn);
                 goto cleanup;
             }
         }
@@ -642,8 +640,7 @@ virStoragePoolDefParse(virConnectPtr conn,
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                              "%s", _("xmlXPathContext"));
+        virReportOOMError(conn);
         goto cleanup;
     }
 
@@ -793,7 +790,7 @@ virStoragePoolDefFormat(virConnectPtr conn,
     return virBufferContentAndReset(&buf);
 
  no_memory:
-    virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("xml"));
+    virReportOOMError(conn);
  cleanup:
     free(virBufferContentAndReset(&buf));
     return NULL;
@@ -936,8 +933,7 @@ virStorageVolDefParseDoc(virConnectPtr conn,
         return NULL;
 
     if (VIR_ALLOC(ret) < 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                              "%s", _("cannot allocate storage vol"));
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -1065,8 +1061,7 @@ virStorageVolDefParse(virConnectPtr conn,
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                              "%s", _("xmlXPathContext"));
+        virReportOOMError(conn);
         goto cleanup;
     }
 
@@ -1198,7 +1193,7 @@ virStorageVolDefFormat(virConnectPtr conn,
     return virBufferContentAndReset(&buf);
 
  no_memory:
-    virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("xml"));
+    virReportOOMError(conn);
  cleanup:
     tmp = virBufferContentAndReset(&buf);
     VIR_FREE(tmp);
@@ -1302,8 +1297,7 @@ virStoragePoolObjAssignDef(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(pool) < 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                              "%s", _("pool"));
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -1321,7 +1315,7 @@ virStoragePoolObjAssignDef(virConnectPtr conn,
         pool->def = NULL;
         virStoragePoolObjUnlock(pool);
         virStoragePoolObjFree(pool);
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
     pools->objs[pools->count++] = pool;
@@ -1463,8 +1457,7 @@ virStoragePoolObjSaveDef(virConnectPtr conn,
             return -1;
         }
         if (!(pool->configFile = strdup(path))) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                                  "%s", _("configFile"));
+            virReportOOMError(conn);
             return -1;
         }
 
@@ -1477,8 +1470,7 @@ virStoragePoolObjSaveDef(virConnectPtr conn,
             return -1;
         }
         if (!(pool->autostartLink = strdup(path))) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                                  "%s", _("config file"));
+            virReportOOMError(conn);
             VIR_FREE(pool->configFile);
             return -1;
         }
@@ -1577,7 +1569,7 @@ char *virStoragePoolSourceListFormat(virConnectPtr conn,
     return virBufferContentAndReset(&buf);
 
  no_memory:
-    virStorageReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
  cleanup:
     free(virBufferContentAndReset(&buf));
     return NULL;

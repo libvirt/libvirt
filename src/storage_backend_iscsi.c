@@ -97,7 +97,7 @@ virStorageBackendISCSIExtractSession(virConnectPtr conn,
 
     if (STREQ(groups[1], pool->def->source.devices[0].path)) {
         if ((*session = strdup(groups[0])) == NULL) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("session"));
+            virReportOOMError(conn);
             return -1;
         }
     }
@@ -179,19 +179,19 @@ virStorageBackendISCSINewLun(virConnectPtr conn, virStoragePoolObjPtr pool,
     int opentries = 0;
 
     if (VIR_ALLOC(vol) < 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
+        virReportOOMError(conn);
         goto cleanup;
     }
 
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
     if (virAsprintf(&(vol->name), "lun-%d", lun) < 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("name"));
+        virReportOOMError(conn);
         goto cleanup;
     }
 
     if (virAsprintf(&devpath, "/dev/%s", dev) < 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("devpath"));
+        virReportOOMError(conn);
         goto cleanup;
     }
 
@@ -238,7 +238,7 @@ virStorageBackendISCSINewLun(virConnectPtr conn, virStoragePoolObjPtr pool,
     /* XXX use unique iSCSI id instead */
     vol->key = strdup(vol->target.path);
     if (vol->key == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("key"));
+        virReportOOMError(conn);
         goto cleanup;
     }
 
@@ -248,7 +248,7 @@ virStorageBackendISCSINewLun(virConnectPtr conn, virStoragePoolObjPtr pool,
 
     if (VIR_REALLOC_N(pool->volumes.objs,
                       pool->volumes.count+1) < 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         goto cleanup;
     }
     pool->volumes.objs[pool->volumes.count++] = vol;
@@ -481,8 +481,7 @@ virStorageBackendISCSIFindLUNs(virConnectPtr conn,
             scsidev = strdup(block2);
         }
         if (scsidev == NULL) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s",
-                                  _("Failed allocating memory for scsidev"));
+            virReportOOMError(conn);
             retval = -1;
             goto namelist_cleanup;
         }
@@ -563,7 +562,7 @@ virStorageBackendISCSIPortal(virConnectPtr conn,
         return NULL;
 
     if (VIR_ALLOC_N(portal, strlen(ipaddr) + 1 + 4 + 2 + 1) < 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("portal"));
+        virReportOOMError(conn);
         return NULL;
     }
 

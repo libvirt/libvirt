@@ -1,7 +1,7 @@
 /*
  * xs_internal.c: access to Xen Store
  *
- * Copyright (C) 2006 Red Hat, Inc.
+ * Copyright (C) 2006, 2009 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -36,6 +36,8 @@
 #include "xen_unified.h"
 #include "xs_internal.h"
 #include "xen_internal.h"
+
+#define VIR_FROM_THIS VIR_FROM_XEN
 
 #ifndef PROXY
 static char *xenStoreDomainGetOSType(virDomainPtr domain);
@@ -1271,8 +1273,7 @@ int xenStoreDomainIntroduced(virConnectPtr conn,
 retry:
     new_domain_cnt = xenStoreNumOfDomains(conn);
     if( VIR_ALLOC_N(new_domids,new_domain_cnt) < 0 ) {
-        virXenStoreError(NULL, VIR_ERR_NO_MEMORY,
-                                 "%s", _("failed to allocate domids"));
+        virReportOOMError(NULL);
         return -1;
     }
     nread = xenStoreDoListDomains(priv, new_domids, new_domain_cnt);
@@ -1353,8 +1354,7 @@ retry:
     new_domain_cnt = xenStoreNumOfDomains(conn);
 
     if( VIR_ALLOC_N(new_domids,new_domain_cnt) < 0 ) {
-        virXenStoreError(NULL, VIR_ERR_NO_MEMORY,
-                                 "%s", _("failed to allocate domids"));
+        virReportOOMError(NULL);
         return -1;
     }
     nread = xenStoreDoListDomains(priv, new_domids, new_domain_cnt);

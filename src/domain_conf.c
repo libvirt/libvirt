@@ -483,7 +483,7 @@ virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(domain) < 0) {
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -499,7 +499,7 @@ virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
     domain->def = def;
 
     if (VIR_REALLOC_N(doms->objs, doms->count + 1) < 0) {
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         VIR_FREE(domain);
         return NULL;
     }
@@ -569,7 +569,7 @@ virDomainDiskDefParseXML(virConnectPtr conn,
     char *bus = NULL;
 
     if (VIR_ALLOC(def) < 0) {
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -753,7 +753,7 @@ virDomainFSDefParseXML(virConnectPtr conn,
     char *target = NULL;
 
     if (VIR_ALLOC(def) < 0) {
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -847,7 +847,7 @@ virDomainNetDefParseXML(virConnectPtr conn,
     char *model = NULL;
 
     if (VIR_ALLOC(def) < 0) {
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -1087,7 +1087,7 @@ virDomainChrDefParseXML(virConnectPtr conn,
     virDomainChrDefPtr def;
 
     if (VIR_ALLOC(def) < 0) {
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -1300,7 +1300,7 @@ virDomainInputDefParseXML(virConnectPtr conn,
     char *bus = NULL;
 
     if (VIR_ALLOC(def) < 0) {
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -1385,7 +1385,7 @@ virDomainGraphicsDefParseXML(virConnectPtr conn,
     char *type = NULL;
 
     if (VIR_ALLOC(def) < 0) {
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -1480,7 +1480,7 @@ virDomainSoundDefParseXML(virConnectPtr conn,
     virDomainSoundDefPtr def;
 
     if (VIR_ALLOC(def) < 0) {
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -1714,7 +1714,7 @@ virDomainHostdevDefParseXML(virConnectPtr conn,
     char *mode, *type = NULL;
 
     if (VIR_ALLOC(def) < 0) {
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
     def->target = NULL;
@@ -1826,7 +1826,7 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(dev) < 0) {
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         goto error;
     }
 
@@ -1892,8 +1892,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     virDomainDefPtr def;
 
     if (VIR_ALLOC(def) < 0) {
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY,
-                         "%s", _("failed to allocate space for xmlXPathContext"));
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -1958,7 +1957,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         char *set = tmp;
         def->cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
         if (VIR_ALLOC_N(def->cpumask, def->cpumasklen) < 0) {
-            virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             goto error;
         }
         if (virDomainCpuSetParse(conn, (const char **)&set,
@@ -2008,7 +2007,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         if (def->os.bootloader) {
             def->os.type = strdup("xen");
             if (!def->os.type) {
-                virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+                virReportOOMError(conn);
                 goto error;
             }
         } else {
@@ -2026,7 +2025,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         def->virtType == VIR_DOMAIN_VIRT_XEN) {
         VIR_FREE(def->os.type);
         if (!(def->os.type = strdup("xen"))) {
-            virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             goto error;
         }
     }
@@ -2047,7 +2046,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
             goto error;
         }
         if (!(def->os.arch = strdup(defaultArch))) {
-            virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             goto error;
         }
     }
@@ -2059,7 +2058,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                                                                         def->os.arch);
         if (defaultMachine != NULL) {
             if (!(def->os.machine = strdup(defaultMachine))) {
-                virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+                virReportOOMError(conn);
                 goto error;
             }
         }
@@ -2310,7 +2309,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         virDomainInputDefPtr input;
 
         if (VIR_ALLOC(input) < 0) {
-            virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             goto error;
         }
         if (STREQ(def->os.type, "hvm")) {
@@ -2382,7 +2381,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     return def;
 
 no_memory:
-    virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
     /* fallthrough */
 
  error:
@@ -2514,7 +2513,7 @@ virDomainDefPtr virDomainDefParseNode(virConnectPtr conn,
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         goto cleanup;
     }
 
@@ -2611,7 +2610,7 @@ virDomainCpuSetFormat(virConnectPtr conn, char *cpuset, int maxcpu)
     }
 
     if (virBufferError(&buf)) {
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -3400,7 +3399,7 @@ char *virDomainDefFormat(virConnectPtr conn,
     return virBufferContentAndReset(&buf);
 
  no_memory:
-    virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
  cleanup:
     tmp = virBufferContentAndReset(&buf);
     VIR_FREE(tmp);
@@ -3624,7 +3623,7 @@ char *virDomainConfigFile(virConnectPtr conn,
     char *ret = NULL;
 
     if (virAsprintf(&ret, "%s/%s.xml", dir, name) < 0) {
-        virDomainReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 

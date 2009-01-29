@@ -25,6 +25,8 @@
 #include "c-ctype.h"
 #include "memory.h"
 
+#define VIR_FROM_THIS VIR_FROM_CONF
+
 /************************************************************************
  *									*
  *	Structures and macros used by the mini parser			*
@@ -161,7 +163,7 @@ virConfNew(void)
     virConfPtr ret;
 
     if (VIR_ALLOC(ret) < 0) {
-        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"));
+        virReportOOMError(NULL);
         return(NULL);
     }
     ret->filename = NULL;
@@ -209,7 +211,7 @@ virConfAddEntry(virConfPtr conf, char *name, virConfValuePtr value, char *comm)
         return(NULL);
 
     if (VIR_ALLOC(ret) < 0) {
-        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"));
+        virReportOOMError(NULL);
         return(NULL);
     }
 
@@ -488,7 +490,7 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
         return(NULL);
     }
     if (VIR_ALLOC(ret) < 0) {
-        virConfError(ctxt, VIR_ERR_NO_MEMORY, _("allocating configuration"));
+        virReportOOMError(NULL);
         virConfFreeList(lst);
         VIR_FREE(str);
         return(NULL);
@@ -525,7 +527,7 @@ virConfParseName(virConfParserCtxtPtr ctxt)
         NEXT;
     ret = strndup(base, ctxt->cur - base);
     if (ret == NULL) {
-        virConfError(ctxt, VIR_ERR_NO_MEMORY, _("allocating configuration"));
+        virReportOOMError(NULL);
         return(NULL);
     }
     return(ret);
@@ -552,7 +554,7 @@ virConfParseComment(virConfParserCtxtPtr ctxt)
     while ((ctxt->cur < ctxt->end) && (!IS_EOL(CUR))) NEXT;
     comm = strndup(base, ctxt->cur - base);
     if (comm == NULL) {
-        virConfError(ctxt, VIR_ERR_NO_MEMORY, _("allocating configuration"));
+        virReportOOMError(NULL);
         return(-1);
     }
     virConfAddEntry(ctxt->conf, NULL, NULL, comm);
@@ -627,7 +629,7 @@ virConfParseStatement(virConfParserCtxtPtr ctxt)
         while ((ctxt->cur < ctxt->end) && (!IS_EOL(CUR))) NEXT;
         comm = strndup(base, ctxt->cur - base);
         if (comm == NULL) {
-            virConfError(ctxt, VIR_ERR_NO_MEMORY, _("allocating configuration"));
+            virReportOOMError(NULL);
             VIR_FREE(name);
             virConfFreeValue(value);
             return(-1);
@@ -888,7 +890,7 @@ virConfWriteFile(const char *filename, virConfPtr conf)
     }
 
     if (virBufferError(&buf)) {
-        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocate buffer"));
+        virReportOOMError(NULL);
         return -1;
     }
 
@@ -944,7 +946,7 @@ virConfWriteMem(char *memory, int *len, virConfPtr conf)
     }
 
     if (virBufferError(&buf)) {
-        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocate buffer"));
+        virReportOOMError(NULL);
         return -1;
     }
 

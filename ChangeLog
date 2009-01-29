@@ -1,3 +1,23 @@
+Thu Jan 29 13:06:51 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	error-reporting calls using VIR_ERR_NO_MEMORY: use virReportOOMError instead
+	* src/uml_conf.c (VIR_FROM_THIS): Define to VIR_FROM_UML.
+	* src/xs_internal.c (VIR_FROM_THIS): Define to VIR_FROM_XEN.
+	* src/xml.c (VIR_FROM_THIS): Define to VIR_FROM_XML.
+	* src/stats_linux.c (VIR_FROM_THIS): Define to VIR_FROM_STATS_LINUX.
+	* src/datatypes.c (VIR_FROM_THIS): Define to VIR_FROM_NONE.
+	* src/lxc_conf.c (VIR_FROM_THIS): Define to VIR_FROM_LXC.
+	* src/libvirt.c (VIR_FROM_THIS): Define to VIR_FROM_NONE.
+	* src/node_device_conf.c (VIR_FROM_THIS): Define to VIR_FROM_NODEDEV.
+	* src/openvz_conf.c (VIR_FROM_THIS): Define to VIR_FROM_OPENVZ.
+	* src/openvz_driver.c (VIR_FROM_THIS): Define to VIR_FROM_OPENVZ.
+	* src/conf.c (VIR_FROM_THIS): Define to VIR_FROM_CONF.
+	Note: this loses config_filename:config_lineno diagnostics,
+	but that's ok.
+	* src/node_device.c (VIR_FROM_THIS): Define to VIR_FROM_NODEDEV.
+	* src/sexpr.c (VIR_FROM_THIS): Define to VIR_FROM_SEXPR.
+	* po/POTFILES.in: remove src/sexpr.c and src/lxc_conf.c
+
 Thu Jan 29 12:44:15 CET 2009 Guido Günther <agx@sigxcpu.org>
 
 	* src/virsh.c (main): don't abort when setlocale() fails

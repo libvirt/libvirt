@@ -58,6 +58,8 @@
 #include "memory.h"
 #include "bridge.h"
 
+#define VIR_FROM_THIS VIR_FROM_OPENVZ
+
 #define OPENVZ_MAX_ARG 28
 #define CMDBUF_LEN 1488
 #define CMDOP_LEN 288
@@ -213,7 +215,7 @@ static char *openvzGetOSType(virDomainPtr dom)
     }
 
     if (!(ret = strdup(vm->def->os.type)))
-        openvzError(dom->conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(dom->conn);
 
 cleanup:
     if (vm)
@@ -1056,7 +1058,7 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(driver) < 0) {
-        openvzError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return VIR_DRV_OPEN_ERROR;
     }
 
@@ -1194,7 +1196,7 @@ static int openvzListDefinedDomains(virConnectPtr conn,
     return got;
 
 no_memory:
-    openvzError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
     for ( ; got >= 0 ; got--)
         VIR_FREE(names[got]);
     return -1;
@@ -1329,4 +1331,3 @@ int openvzRegister(void) {
     virRegisterDriver(&openvzDriver);
     return 0;
 }
-

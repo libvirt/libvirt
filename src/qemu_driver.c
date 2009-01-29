@@ -1,7 +1,7 @@
 /*
  * driver.c: core driver methods for managing qemu guests
  *
- * Copyright (C) 2006, 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -275,8 +275,7 @@ qemudRemoveDomainStatus(virConnectPtr conn,
     char *file = NULL;
 
     if (virAsprintf(&file, "%s/%s.xml", driver->stateDir, vm->def->name) < 0) {
-        qemudReportError(conn, vm, NULL, VIR_ERR_NO_MEMORY,
-                         "%s", _("failed to allocate space for status file"));
+        virReportOOMError(conn);
         goto cleanup;
     }
 
@@ -728,8 +727,7 @@ static int qemudOpenMonitor(virConnectPtr conn,
          goto error;
 
     if (!(vm->monitorpath = strdup(monitor))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                         "%s", _("failed to allocate space for monitor path"));
+        virReportOOMError(conn);
         goto error;
     }
 
@@ -770,8 +768,7 @@ static int qemudExtractMonitorPath(virConnectPtr conn,
     while (*tmp) {
         if (c_isspace(*tmp)) {
             if (VIR_ALLOC_N(*path, (tmp-dev)+1) < 0) {
-                qemudReportError(conn, NULL, NULL,
-                                 VIR_ERR_NO_MEMORY, NULL);
+                virReportOOMError(conn);
                 return -1;
             }
             strncpy(*path, dev, (tmp-dev));
@@ -876,8 +873,7 @@ qemudDetectVcpuPIDs(virConnectPtr conn,
         vm->nvcpupids = vm->def->vcpus;
 
     if (VIR_ALLOC_N(vm->vcpupids, vm->nvcpupids) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                         "%s", _("allocate cpumap"));
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -1434,7 +1430,7 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
     if (conn->uri == NULL) {
         conn->uri = xmlParseURI(uid ? "qemu:///session" : "qemu:///system");
         if (!conn->uri) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,NULL);
+            virReportOOMError(conn);
             return VIR_DRV_OPEN_ERROR;
         }
     } else if (conn->uri->scheme == NULL ||
@@ -1537,8 +1533,7 @@ static char *qemudGetCapabilities(virConnectPtr conn) {
 
     qemuDriverLock(driver);
     if ((xml = virCapabilitiesFormatXML(driver->caps)) == NULL)
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                 "%s", _("failed to allocate space for capabilities support"));
+        virReportOOMError(conn);
     qemuDriverUnlock(driver);
 
     return xml;
@@ -2020,8 +2015,7 @@ static char *qemudDomainGetOSType(virDomainPtr dom) {
     }
 
     if (!(type = strdup(vm->def->os.type)))
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_MEMORY,
-                         "%s", _("failed to allocate space for ostype"));
+        virReportOOMError(dom->conn);
 
 cleanup:
     if (vm)
@@ -2785,8 +2779,7 @@ static int qemudListDefinedDomains(virConnectPtr conn,
         virDomainObjLock(driver->domains.objs[i]);
         if (!virDomainIsActive(driver->domains.objs[i])) {
             if (!(names[got++] = strdup(driver->domains.objs[i]->def->name))) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                                 "%s", _("failed to allocate space for VM name string"));
+                virReportOOMError(conn);
                 virDomainObjUnlock(driver->domains.objs[i]);
                 goto cleanup;
             }
@@ -2996,7 +2989,7 @@ static char *qemudDiskDeviceName(const virConnectPtr conn,
     }
 
     if (ret == -1) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -3060,7 +3053,7 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
         }
 
         if (!devname) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             return -1;
         }
     }
@@ -3068,12 +3061,12 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
     if (newdisk->src) {
         safe_path = qemudEscapeMonitorArg(newdisk->src);
         if (!safe_path) {
-            qemudReportError(conn, dom, NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             VIR_FREE(devname);
             return -1;
         }
         if (virAsprintf(&cmd, "change %s \"%s\"", devname, safe_path) == -1) {
-            qemudReportError(conn, dom, NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             VIR_FREE(safe_path);
             VIR_FREE(devname);
             return -1;
@@ -3081,7 +3074,7 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
         VIR_FREE(safe_path);
 
     } else if (virAsprintf(&cmd, "eject %s", devname) == -1) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         VIR_FREE(devname);
         return -1;
     }
@@ -3133,7 +3126,7 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
     }
 
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -3148,7 +3141,7 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
                       safe_path, type);
     VIR_FREE(safe_path);
     if (ret == -1) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return ret;
     }
 
@@ -3203,7 +3196,7 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
     }
 
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -3217,7 +3210,7 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
     ret = virAsprintf(&cmd, "usb_add disk:%s", safe_path);
     VIR_FREE(safe_path);
     if (ret == -1) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return ret;
     }
 
@@ -3257,7 +3250,7 @@ static int qemudDomainAttachHostDevice(virConnectPtr conn,
     char *cmd, *reply;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -3271,7 +3264,7 @@ static int qemudDomainAttachHostDevice(virConnectPtr conn,
                           dev->data.hostdev->source.subsys.u.usb.device);
     }
     if (ret == -1) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -3398,7 +3391,7 @@ static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
     }
 
     if (virAsprintf(&cmd, "pci_del 0 %d", detach->slotnum) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         goto cleanup;
     }
 
@@ -3421,7 +3414,7 @@ static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
     if (vm->def->ndisks > 1) {
         vm->def->disks[i] = vm->def->disks[--vm->def->ndisks];
         if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks) < 0) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             goto cleanup;
         }
         qsort(vm->def->disks, vm->def->ndisks, sizeof(*vm->def->disks),
@@ -4071,8 +4064,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
 
         /* Caller frees */
         if (virAsprintf(uri_out, "tcp:%s:%d", hostname, this_port) < 0) {
-            qemudReportError (dconn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                              "%s", strerror (errno));
+            virReportOOMError (dconn);
             goto cleanup;
         }
     } else {

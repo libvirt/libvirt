@@ -1,7 +1,7 @@
 /*
  * uml_conf.c: UML driver configuration
  *
- * Copyright (C) 2006, 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2006-2009 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -45,6 +45,7 @@
 #include "nodeinfo.h"
 #include "verify.h"
 
+#define VIR_FROM_THIS VIR_FROM_UML
 
 #define umlLog(level, msg, ...)                                     \
         virLogMessage(__FILE__, level, 0, msg, __VA_ARGS__)
@@ -100,14 +101,14 @@ umlBuildCommandLineChr(virConnectPtr conn,
     switch (def->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
         if (virAsprintf(&ret, "%s%d=null", dev, def->dstPort) < 0) {
-            umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             return NULL;
         }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
         if (virAsprintf(&ret, "%s%d=pts", dev, def->dstPort) < 0) {
-            umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             return NULL;
         }
         break;
@@ -115,14 +116,14 @@ umlBuildCommandLineChr(virConnectPtr conn,
     case VIR_DOMAIN_CHR_TYPE_DEV:
         if (virAsprintf(&ret, "%s%d=tty:%s", dev, def->dstPort,
                         def->data.file.path) < 0) {
-            umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             return NULL;
         }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_STDIO:
         if (virAsprintf(&ret, "%s%d=fd:0,fd:1", dev, def->dstPort) < 0) {
-            umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             return NULL;
         }
         break;
@@ -136,7 +137,7 @@ umlBuildCommandLineChr(virConnectPtr conn,
 
         if (virAsprintf(&ret, "%s%d=port:%s", dev, def->dstPort,
                         def->data.tcp.service) < 0) {
-            umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             return NULL;
         }
         break;
@@ -308,8 +309,7 @@ int umlBuildCommandLine(virConnectPtr conn,
     return 0;
 
  no_memory:
-    umlReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                     "%s", _("failed to allocate space for argv string"));
+    virReportOOMError(conn);
  error:
     if (tapfds &&
         *tapfds) {

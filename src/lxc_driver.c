@@ -90,7 +90,7 @@ static virDrvOpenStatus lxcOpen(virConnectPtr conn,
     if (conn->uri == NULL) {
         conn->uri = xmlParseURI("lxc:///");
         if (!conn->uri) {
-            lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             return VIR_DRV_OPEN_ERROR;
         }
     } else if (conn->uri->scheme == NULL ||
@@ -231,8 +231,7 @@ static int lxcListDefinedDomains(virConnectPtr conn,
         virDomainObjLock(driver->domains.objs[i]);
         if (!virDomainIsActive(driver->domains.objs[i])) {
             if (!(names[got++] = strdup(driver->domains.objs[i]->def->name))) {
-                lxcError(conn, NULL, VIR_ERR_NO_MEMORY,
-                         "%s", _("failed to allocate space for VM name string"));
+                virReportOOMError(conn);
                 virDomainObjUnlock(driver->domains.objs[i]);
                 goto cleanup;
             }
@@ -613,7 +612,7 @@ static int lxcMonitorClient(virConnectPtr conn,
 
     if (virAsprintf(&sockpath, "%s/%s.sock",
                     driver->stateDir, vm->def->name) < 0) {
-        lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -816,7 +815,7 @@ cleanup:
     return ret;
 
 no_memory:
-    lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
     goto cleanup;
 }
 
@@ -853,7 +852,7 @@ static int lxcVmStart(virConnectPtr conn,
 
     if (virAsprintf(&logfile, "%s/%s.log",
                     driver->logDir, vm->def->name) < 0) {
-        lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return -1;
     }
 

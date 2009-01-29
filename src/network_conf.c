@@ -161,7 +161,7 @@ virNetworkObjPtr virNetworkAssignDef(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(network) < 0) {
-        virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
     if (virMutexInit(&network->lock) < 0) {
@@ -174,7 +174,7 @@ virNetworkObjPtr virNetworkAssignDef(virConnectPtr conn,
     network->def = def;
 
     if (VIR_REALLOC_N(nets->objs, nets->count + 1) < 0) {
-        virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         VIR_FREE(network);
         return NULL;
     }
@@ -240,7 +240,7 @@ virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
             if (VIR_REALLOC_N(def->ranges, def->nranges + 1) < 0) {
                 xmlFree(start);
                 xmlFree(end);
-                virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+                virReportOOMError(conn);
                 return -1;
             }
             def->ranges[def->nranges].start = (char *)start;
@@ -291,7 +291,7 @@ virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
                 VIR_FREE(ip);
                 VIR_FREE(mac);
                 VIR_FREE(name);
-                virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+                virReportOOMError(conn);
                 return -1;
             }
             def->hosts[def->nhosts].mac = (char *)mac;
@@ -314,7 +314,7 @@ virNetworkDefParseXML(virConnectPtr conn,
     char *tmp;
 
     if (VIR_ALLOC(def) < 0) {
-        virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -382,7 +382,7 @@ virNetworkDefParseXML(virConnectPtr conn,
         netaddr = inet_ntoa(inaddress);
 
         if (virAsprintf(&def->network, "%s/%s", netaddr, def->netmask) < 0) {
-            virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             goto error;
         }
 
@@ -544,7 +544,7 @@ virNetworkDefPtr virNetworkDefParseNode(virConnectPtr conn,
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         goto cleanup;
     }
 
@@ -632,7 +632,7 @@ char *virNetworkDefFormat(virConnectPtr conn,
     return virBufferContentAndReset(&buf);
 
  no_memory:
-    virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
     tmp = virBufferContentAndReset(&buf);
     VIR_FREE(tmp);
     return NULL;
@@ -840,7 +840,7 @@ char *virNetworkConfigFile(virConnectPtr conn,
     char *ret = NULL;
 
     if (virAsprintf(&ret, "%s/%s.xml", dir, name) < 0) {
-        virNetworkReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 

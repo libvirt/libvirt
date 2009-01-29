@@ -1,7 +1,7 @@
 /*
  * storage_backend_logvol.c: storage backend for logical volume handling
  *
- * Copyright (C) 2007-2008 Red Hat, Inc.
+ * Copyright (C) 2007-2009 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -84,21 +84,21 @@ virStorageBackendLogicalMakeVol(virConnectPtr conn,
     /* Or a completely new volume */
     if (vol == NULL) {
         if (VIR_ALLOC(vol) < 0) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
+            virReportOOMError(conn);
             return -1;
         }
 
         vol->type = VIR_STORAGE_VOL_BLOCK;
 
         if ((vol->name = strdup(groups[0])) == NULL) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
+            virReportOOMError(conn);
             virStorageVolDefFree(vol);
             return -1;
         }
 
         if (VIR_REALLOC_N(pool->volumes.objs,
                           pool->volumes.count + 1)) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             virStorageVolDefFree(vol);
             return -1;
         }
@@ -127,7 +127,7 @@ virStorageBackendLogicalMakeVol(virConnectPtr conn,
 
     if (vol->key == NULL &&
         (vol->key = strdup(groups[2])) == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -138,13 +138,13 @@ virStorageBackendLogicalMakeVol(virConnectPtr conn,
     /* Finally fill in extents information */
     if (VIR_REALLOC_N(vol->source.extents,
                       vol->source.nextent + 1) < 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("extents"));
+        virReportOOMError(conn);
         return -1;
     }
 
     if ((vol->source.extents[vol->source.nextent].path =
          strdup(groups[3])) == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("extents"));
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -265,8 +265,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(virConnectPtr conn,
     vgname = strdup(groups[1]);
 
     if (pvname == NULL || vgname == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s",
-                              _("allocating pvname or vgname"));
+        virReportOOMError(conn);
         goto err_no_memory;
     }
 
@@ -280,8 +279,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(virConnectPtr conn,
 
     if (thisSource == NULL) {
         if (VIR_REALLOC_N(sourceList->sources, sourceList->nsources + 1) != 0) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s",
-                                  _("allocating new source"));
+            virReportOOMError(conn);
             goto err_no_memory;
         }
 
@@ -295,8 +293,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(virConnectPtr conn,
         VIR_FREE(vgname);
 
     if (VIR_REALLOC_N(thisSource->devices, thisSource->ndevice + 1) != 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s",
-                              _("allocating new device"));
+        virReportOOMError(conn);
         goto err_no_memory;
     }
 
@@ -395,7 +392,7 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn,
     memset(zeros, 0, sizeof(zeros));
 
     if (VIR_ALLOC_N(vgargv, 3 + pool->def->source.ndevice) < 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("command line"));
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -605,7 +602,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     }
     if (VIR_ALLOC_N(vol->target.path, strlen(pool->def->target.path) +
                     1 + strlen(vol->name) + 1) < 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
+        virReportOOMError(conn);
         return -1;
     }
     strcpy(vol->target.path, pool->def->target.path);

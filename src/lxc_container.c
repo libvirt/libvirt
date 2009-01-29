@@ -386,7 +386,7 @@ static int lxcContainerMountNewFS(virDomainDefPtr vmDef)
             continue;
 
         if (virAsprintf(&src, "/.oldroot/%s", vmDef->fss[i]->src) < 0) {
-            lxcError(NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(NULL);
             return -1;
         }
 
@@ -432,12 +432,12 @@ static int lxcContainerUnmountOldFS(void)
 
         if (VIR_REALLOC_N(mounts, nmounts+1) < 0) {
             endmntent(procmnt);
-            lxcError(NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(NULL);
             return -1;
         }
         if (!(mounts[nmounts++] = strdup(mntent.mnt_dir))) {
             endmntent(procmnt);
-            lxcError(NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(NULL);
             return -1;
         }
     }
@@ -618,7 +618,7 @@ int lxcContainerStart(virDomainDefPtr def,
 
     /* allocate a stack for the container */
     if (VIR_ALLOC_N(stack, stacksize) < 0) {
-        lxcError(NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(NULL);
         return -1;
     }
     stacktop = stack + stacksize;

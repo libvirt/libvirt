@@ -1,7 +1,7 @@
 /*
  * datatypes.h: management of structs for public data types
  *
- * Copyright (C) 2006-2008 Red Hat, Inc.
+ * Copyright (C) 2006-2009 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,8 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "memory.h"
+
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 /************************************************************************
  *									*
@@ -120,7 +122,7 @@ virGetConnect(void) {
     virConnectPtr ret;
 
     if (VIR_ALLOC(ret) < 0) {
-        virLibConnError(NULL, VIR_ERR_NO_MEMORY, _("allocating connection"));
+        virReportOOMError(NULL);
         goto failed;
     }
     if (virMutexInit(&ret->lock) < 0) {
@@ -262,12 +264,12 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     /* TODO check the UUID */
     if (ret == NULL) {
         if (VIR_ALLOC(ret) < 0) {
-            virLibConnError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
+            virReportOOMError(conn);
             goto error;
         }
         ret->name = strdup(name);
         if (ret->name == NULL) {
-            virLibConnError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
+            virReportOOMError(conn);
             goto error;
         }
         ret->magic = VIR_DOMAIN_MAGIC;
@@ -398,12 +400,12 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     /* TODO check the UUID */
     if (ret == NULL) {
         if (VIR_ALLOC(ret) < 0) {
-            virLibConnError(conn, VIR_ERR_NO_MEMORY, _("allocating network"));
+            virReportOOMError(conn);
             goto error;
         }
         ret->name = strdup(name);
         if (ret->name == NULL) {
-            virLibConnError(conn, VIR_ERR_NO_MEMORY, _("allocating network"));
+            virReportOOMError(conn);
             goto error;
         }
         ret->magic = VIR_NETWORK_MAGIC;
@@ -530,12 +532,12 @@ virGetStoragePool(virConnectPtr conn, const char *name, const unsigned char *uui
     /* TODO check the UUID */
     if (ret == NULL) {
         if (VIR_ALLOC(ret) < 0) {
-            virLibConnError(conn, VIR_ERR_NO_MEMORY, _("allocating storage pool"));
+            virReportOOMError(conn);
             goto error;
         }
         ret->name = strdup(name);
         if (ret->name == NULL) {
-            virLibConnError(conn, VIR_ERR_NO_MEMORY, _("allocating storage pool"));
+            virReportOOMError(conn);
             goto error;
         }
         ret->magic = VIR_STORAGE_POOL_MAGIC;
@@ -661,17 +663,17 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name, const c
     ret = (virStorageVolPtr) virHashLookup(conn->storageVols, key);
     if (ret == NULL) {
         if (VIR_ALLOC(ret) < 0) {
-            virLibConnError(conn, VIR_ERR_NO_MEMORY, _("allocating storage vol"));
+            virReportOOMError(conn);
             goto error;
         }
         ret->pool = strdup(pool);
         if (ret->pool == NULL) {
-            virLibConnError(conn, VIR_ERR_NO_MEMORY, _("allocating storage vol"));
+            virReportOOMError(conn);
             goto error;
         }
         ret->name = strdup(name);
         if (ret->name == NULL) {
-            virLibConnError(conn, VIR_ERR_NO_MEMORY, _("allocating storage vol"));
+            virReportOOMError(conn);
             goto error;
         }
         strncpy(ret->key, key, sizeof(ret->key)-1);
@@ -798,14 +800,14 @@ virGetNodeDevice(virConnectPtr conn, const char *name)
     ret = (virNodeDevicePtr) virHashLookup(conn->nodeDevices, name);
     if (ret == NULL) {
        if (VIR_ALLOC(ret) < 0) {
-            virLibConnError(conn, VIR_ERR_NO_MEMORY, _("allocating node dev"));
+            virReportOOMError(conn);
             goto error;
         }
         ret->magic = VIR_NODE_DEVICE_MAGIC;
         ret->conn = conn;
         ret->name = strdup(name);
         if (ret->name == NULL) {
-            virLibConnError(conn, VIR_ERR_NO_MEMORY, _("copying node dev name"));
+            virReportOOMError(conn);
             goto error;
         }
 

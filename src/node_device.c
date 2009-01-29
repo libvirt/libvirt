@@ -33,6 +33,8 @@
 #include "node_device_conf.h"
 #include "node_device.h"
 
+#define VIR_FROM_THIS VIR_FROM_NODEDEV
+
 static int dev_has_cap(const virNodeDeviceObjPtr dev, const char *cap)
 {
     virNodeDevCapsDefPtr caps = dev->def->caps;
@@ -176,7 +178,7 @@ static char *nodeDeviceGetParent(virNodeDevicePtr dev)
 
     ret = strdup(obj->def->parent);
     if (!ret)
-        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(dev->conn);
 
 cleanup:
     if (obj)

@@ -1,7 +1,7 @@
 /*
  * xml.c: XML based interfaces for the libvir library
  *
- * Copyright (C) 2005, 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2009 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -22,6 +22,8 @@
 #include "buf.h"
 #include "util.h"
 #include "memory.h"
+
+#define VIR_FROM_THIS VIR_FROM_XML
 
 #define virXMLError(conn, code, fmt...)                                      \
         virReportErrorHelper(conn, VIR_FROM_XML, code, __FILE__,           \
@@ -68,7 +70,7 @@ virXPathString(virConnectPtr conn,
     ret = strdup((char *) obj->stringval);
     xmlXPathFreeObject(obj);
     if (ret == NULL) {
-        virXMLError(conn, VIR_ERR_NO_MEMORY, "%s", _("strdup failed"));
+        virReportOOMError(conn);
     }
     ctxt->node = relnode;
     return (ret);
@@ -350,9 +352,7 @@ virXPathNodeSet(virConnectPtr conn,
     ret = obj->nodesetval->nodeNr;
     if (list != NULL && ret) {
         if (VIR_ALLOC_N(*list, ret) < 0) {
-            virXMLError(conn, VIR_ERR_NO_MEMORY,
-                        _("allocate string array size %lu"),
-                        (unsigned long)ret * sizeof(**list));
+            virReportOOMError(conn);
             ret = -1;
         } else {
             memcpy(*list, obj->nodesetval->nodeTab,
@@ -363,4 +363,3 @@ virXPathNodeSet(virConnectPtr conn,
     ctxt->node = relnode;
     return (ret);
 }
-

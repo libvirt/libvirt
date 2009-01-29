@@ -57,6 +57,8 @@
 #endif
 #endif
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 /*
  * TODO:
  * - use lock to protect against concurrent accesses ?
@@ -1323,7 +1325,7 @@ virConnectGetURI (virConnectPtr conn)
 
     name = (char *)xmlSaveUri(conn->uri);
     if (!name) {
-        virLibConnError (conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
+        virReportOOMError (conn);
         goto error;
     }
     return name;

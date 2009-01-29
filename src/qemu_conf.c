@@ -70,13 +70,11 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
 
     /* Setup 2 critical defaults */
     if (!(driver->vncListen = strdup("127.0.0.1"))) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY,
-                         "%s", _("failed to allocate vncListen"));
+        virReportOOMError(NULL);
         return -1;
     }
     if (!(driver->vncTLSx509certdir = strdup(SYSCONF_DIR "/pki/libvirt-vnc"))) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY,
-                         "%s", _("failed to allocate vncTLSx509certdir"));
+        virReportOOMError(NULL);
         return -1;
     }
 
@@ -110,8 +108,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     if (p && p->str) {
         VIR_FREE(driver->vncTLSx509certdir);
         if (!(driver->vncTLSx509certdir = strdup(p->str))) {
-            qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY,
-                             "%s", _("failed to allocate vncTLSx509certdir"));
+            virReportOOMError(NULL);
             virConfFree(conf);
             return -1;
         }
@@ -122,8 +119,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     if (p && p->str) {
         VIR_FREE(driver->vncListen);
         if (!(driver->vncListen = strdup(p->str))) {
-            qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY,
-                             "%s", _("failed to allocate vnc_listen"));
+            virReportOOMError(NULL);
             virConfFree(conf);
             return -1;
         }
@@ -512,7 +508,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         strchr(net->ifname, '%')) {
         VIR_FREE(net->ifname);
         if (!(net->ifname = strdup("vnet%d"))) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError(conn);
             goto error;
         }
     }
@@ -555,8 +551,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     return retval;
 
  no_memory:
-    qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                     "%s", _("failed to allocate space for tapfds string"));
+    virReportOOMError(conn);
  error:
     VIR_FREE(retval);
     if (tapfd != -1)
@@ -1296,8 +1291,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     return 0;
 
  no_memory:
-    qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                     "%s", _("failed to allocate space for argv string"));
+    virReportOOMError(conn);
  error:
     if (tapfds &&
         *tapfds) {
@@ -1371,8 +1365,7 @@ qemudDomainStatusParseFile(virConnectPtr conn,
     qemudDomainStatusPtr status = NULL;
 
     if (VIR_ALLOC(status) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                         "%s", _("failed to allocate space for vm status"));
+        virReportOOMError(conn);
         goto error;
     }
 
@@ -1402,7 +1395,7 @@ qemudDomainStatusParseFile(virConnectPtr conn,
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         goto error;
     }
 

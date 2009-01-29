@@ -196,7 +196,7 @@ qcowXGetBackingStore(virConnectPtr conn,
     if (size + 1 == 0)
         return BACKING_STORE_INVALID;
     if (VIR_ALLOC_N(*res, size + 1) < 0) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("backing store path"));
+        virReportOOMError(conn);
         return BACKING_STORE_ERROR;
     }
     memcpy(*res, buf + offset, size);
@@ -237,7 +237,7 @@ vmdk4GetBackingStore(virConnectPtr conn,
     *end = '\0';
     *res = strdup(start);
     if (*res == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("backing store path"));
+        virReportOOMError(conn);
         return BACKING_STORE_ERROR;
     }
     return BACKING_STORE_OK;
@@ -395,8 +395,7 @@ static int virStorageBackendProbeTarget(virConnectPtr conn,
                     = absolutePathFromBaseFile(target->path, base);
                 VIR_FREE(base);
                 if (*backingStore == NULL) {
-                    virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                                          _("backing store path"));
+                    virReportOOMError(conn);
                     return -1;
                 }
             }

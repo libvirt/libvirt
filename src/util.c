@@ -458,7 +458,7 @@ virExec(virConnectPtr conn,
     char *argv_str;
 
     if ((argv_str = virArgvToString(argv)) == NULL) {
-        ReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("command debug string"));
+        virReportOOMError(conn);
         return -1;
     }
     DEBUG0(argv_str);
@@ -526,7 +526,7 @@ virPipeReadUntilEOF(virConnectPtr conn, int outfd, int errfd,
             buf = ((fds[i].fd == outfd) ? outbuf : errbuf);
             size = (*buf ? strlen(*buf) : 0);
             if (VIR_REALLOC_N(*buf, size+got+1) < 0) {
-                ReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+                virReportOOMError(conn);
                 goto error;
             }
             memmove(*buf+size, data, got);
@@ -576,7 +576,7 @@ virRun(virConnectPtr conn,
     char *argv_str = NULL;
 
     if ((argv_str = virArgvToString(argv)) == NULL) {
-        ReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("command debug string"));
+        virReportOOMError(conn);
         goto error;
     }
     DEBUG0(argv_str);

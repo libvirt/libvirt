@@ -252,8 +252,7 @@ networkStartup(void) {
     }
 
     if (!(driverState->iptables = iptablesContextNew())) {
-        networkReportError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY,
-                           "%s", _("failed to allocate space for IP tables support"));
+        virReportOOMError(NULL);
         goto error;
     }
 
@@ -502,8 +501,7 @@ networkBuildDnsmasqArgv(virConnectPtr conn,
             VIR_FREE((*argv)[i]);
         VIR_FREE(*argv);
     }
-    networkReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                     "%s", _("failed to allocate space for dnsmasq argv"));
+    virReportOOMError(conn);
     return -1;
 }
 
@@ -1062,8 +1060,7 @@ static int networkListNetworks(virConnectPtr conn, char **const names, int nname
         if (virNetworkIsActive(driver->networks.objs[i])) {
             if (!(names[got] = strdup(driver->networks.objs[i]->def->name))) {
                 virNetworkObjUnlock(driver->networks.objs[i]);
-                networkReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                                   "%s", _("failed to allocate space for VM name string"));
+                virReportOOMError(conn);
                 goto cleanup;
             }
             got++;
@@ -1107,8 +1104,7 @@ static int networkListDefinedNetworks(virConnectPtr conn, char **const names, in
         if (!virNetworkIsActive(driver->networks.objs[i])) {
             if (!(names[got] = strdup(driver->networks.objs[i]->def->name))) {
                 virNetworkObjUnlock(driver->networks.objs[i]);
-                networkReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
-                                   "%s", _("failed to allocate space for VM name string"));
+                virReportOOMError(conn);
                 goto cleanup;
             }
             got++;
@@ -1331,8 +1327,7 @@ static char *networkGetBridgeName(virNetworkPtr net) {
 
     bridge = strdup(network->def->bridge);
     if (!bridge)
-        networkReportError(net->conn, NULL, net, VIR_ERR_NO_MEMORY,
-                           "%s", _("failed to allocate space for network bridge string"));
+        virReportOOMError(net->conn);
 
 cleanup:
     if (network)

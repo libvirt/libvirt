@@ -507,7 +507,7 @@ doRemoteOpen (virConnectPtr conn,
     }
 
     if (!name) {
-        error(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         goto failed;
     }
 
@@ -803,7 +803,7 @@ doRemoteOpen (virConnectPtr conn,
         conn->uri = xmlParseURI(uriret.uri);
         VIR_FREE(uriret.uri);
         if (!conn->uri) {
-            error (conn, VIR_ERR_NO_MEMORY, NULL);
+            virReportOOMError (conn);
             goto failed;
         }
     }
@@ -862,7 +862,7 @@ doRemoteOpen (virConnectPtr conn,
     return retcode;
 
  out_of_memory:
-    error (conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError (conn);
 
  failed:
     /* Close the socket if we failed. */
@@ -904,7 +904,7 @@ remoteOpen (virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
 
     if (VIR_ALLOC(priv) < 0) {
-        error (conn, VIR_ERR_NO_MEMORY, _("struct private_data"));
+        virReportOOMError (conn);
         return VIR_DRV_OPEN_ERROR;
     }
 
@@ -2837,7 +2837,7 @@ remoteDomainSetSchedulerParameters (virDomainPtr domain,
         // call() will free this:
         args.params.params_val[i].field = strdup (params[i].field);
         if (args.params.params_val[i].field == NULL) {
-            error (domain->conn, VIR_ERR_NO_MEMORY, _("out of memory"));
+            virReportOOMError (domain->conn);
             do_error = 1;
         }
         args.params.params_val[i].value.type = params[i].type;
@@ -3087,7 +3087,7 @@ remoteNetworkOpen (virConnectPtr conn,
         struct private_data *priv;
         int ret, rflags = 0;
         if (VIR_ALLOC(priv) < 0) {
-            error (conn, VIR_ERR_NO_MEMORY, _("struct private_data"));
+            virReportOOMError (conn);
             return VIR_DRV_OPEN_ERROR;
         }
         if (virMutexInit(&priv->lock) < 0) {
@@ -3600,7 +3600,7 @@ remoteStorageOpen (virConnectPtr conn,
         struct private_data *priv;
         int ret, rflags = 0;
         if (VIR_ALLOC(priv) < 0) {
-            error (NULL, VIR_ERR_NO_MEMORY, _("struct private_data"));
+            virReportOOMError (NULL);
             return VIR_DRV_OPEN_ERROR;
         }
         if (virMutexInit(&priv->lock) < 0) {
@@ -4553,7 +4553,7 @@ remoteDevMonOpen(virConnectPtr conn,
         struct private_data *priv;
         int ret, rflags = 0;
         if (VIR_ALLOC(priv) < 0) {
-            error (NULL, VIR_ERR_NO_MEMORY, _("struct private_data"));
+            virReportOOMError (NULL);
             return VIR_DRV_OPEN_ERROR;
         }
         if (virMutexInit(&priv->lock) < 0) {
@@ -4957,10 +4957,7 @@ static char *addrToString(struct sockaddr_storage *sa, socklen_t salen)
     }
 
     if (VIR_ALLOC_N(addr, strlen(host) + 1 + strlen(port) + 1) < 0) {
-        virRaiseError (NULL, NULL, NULL, VIR_FROM_REMOTE,
-                         VIR_ERR_NO_MEMORY, VIR_ERR_ERROR,
-                         NULL, NULL, NULL, 0, 0,
-                         "address");
+        virReportOOMError (NULL);
         return NULL;
     }
 
@@ -6329,8 +6326,7 @@ call (virConnectPtr conn, struct private_data *priv,
                            ret_filter, ret);
 
     if (!thiscall) {
-        error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn,
-               VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError (flags & REMOTE_CALL_IN_OPEN ? NULL : conn);
         return -1;
     }
 

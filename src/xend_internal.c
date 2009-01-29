@@ -526,7 +526,7 @@ xend_op_ext(virConnectPtr xend, const char *path, char *error,
     }
 
     if (virBufferError(&buf)) {
-        virXendError(NULL, VIR_ERR_NO_MEMORY, "%s", _("allocate buffer"));
+        virReportOOMError(NULL);
         return -1;
     }
 
@@ -706,7 +706,7 @@ urlencode(const char *string)
     size_t i;
 
     if (VIR_ALLOC_N(buffer, len * 3 + 1) < 0) {
-        virXendError(NULL, VIR_ERR_NO_MEMORY, "%s", _("allocate new buffer"));
+        virReportOOMError(NULL);
         return (NULL);
     }
     ptr = buffer;
@@ -1190,7 +1190,7 @@ xenDaemonParseSxprOS(virConnectPtr xend,
     return 0;
 
 no_memory:
-    virXendError(xend, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(xend);
     return -1;
 }
 
@@ -1403,8 +1403,7 @@ xend_parse_sexp_desc_char(virConnectPtr conn,
 
     if (ret == -1) {
 no_memory:
-        virXendError(conn, VIR_ERR_NO_MEMORY,
-                     "%s", _("no memory for char device config"));
+        virReportOOMError(conn);
     }
 
 error:
@@ -1428,7 +1427,7 @@ xenDaemonParseSxprChar(virConnectPtr conn,
     virDomainChrDefPtr def;
 
     if (VIR_ALLOC(def) < 0) {
-        virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -1557,7 +1556,7 @@ xenDaemonParseSxprChar(virConnectPtr conn,
     return def;
 
 no_memory:
-    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
 error:
     virDomainChrDefFree(def);
     return NULL;
@@ -1726,7 +1725,7 @@ xenDaemonParseSxprDisks(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
 
 error:
     virDomainDiskDefFree(disk);
@@ -1828,7 +1827,7 @@ xenDaemonParseSxprNets(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
 cleanup:
     virDomainNetDefFree(net);
     return -1;
@@ -1909,7 +1908,7 @@ xenDaemonParseSxprSound(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
 error:
     return -1;
 }
@@ -1953,7 +1952,7 @@ xenDaemonParseSxprUSB(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
     return -1;
 }
 
@@ -2036,7 +2035,7 @@ xenDaemonParseSxprGraphicsOld(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
     virDomainGraphicsDefFree(graphics);
     return -1;
 }
@@ -2126,7 +2125,7 @@ xenDaemonParseSxprGraphicsNew(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
 error:
     virDomainGraphicsDefFree(graphics);
     return -1;
@@ -2420,7 +2419,7 @@ xenDaemonParseSxpr(virConnectPtr conn,
     return def;
 
 no_memory:
-    virXendError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
 error:
     VIR_FREE(tty);
     virDomainDefFree(def);
@@ -2641,7 +2640,7 @@ sexpr_to_xend_topology(virConnectPtr conn,
   memory_error:
     VIR_FREE(cpuNums);
     VIR_FREE(cpuset);
-    virXendError(conn, VIR_ERR_NO_MEMORY, "%s", _("allocate buffer"));
+    virReportOOMError(conn);
     return (-1);
 }
 
@@ -4209,7 +4208,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
         }
         hostname = strdup (uriptr->server);
         if (!hostname) {
-            virXendError (conn, VIR_ERR_NO_MEMORY, "%s", _("strdup failed"));
+            virReportOOMError (conn);
             xmlFreeURI (uriptr);
             return -1;
         }
@@ -4231,7 +4230,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
         n = p - uri; /* n = Length of hostname in bytes. */
         hostname = strdup (uri);
         if (!hostname) {
-            virXendError (conn, VIR_ERR_NO_MEMORY, "%s", _("strdup failed"));
+            virReportOOMError (conn);
             return -1;
         }
         hostname[n] = '\0';
@@ -4239,7 +4238,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
     else {                      /* "hostname" (or IP address) */
         hostname = strdup (uri);
         if (!hostname) {
-            virXendError (conn, VIR_ERR_NO_MEMORY, "%s", _("strdup failed"));
+            virReportOOMError (conn);
             return -1;
         }
     }

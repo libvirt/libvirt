@@ -31,6 +31,8 @@
 #include "nodeinfo.h"
 #include "virterror_internal.h"
 
+#define VIR_FROM_THIS VIR_FROM_LXC
+
 /* Functions */
 virCapsPtr lxcCapsInit(void)
 {
@@ -87,7 +89,6 @@ int lxcLoadDriverConfig(lxc_driver_t *driver)
     return 0;
 
 no_memory:
-    lxcError(NULL, NULL, VIR_ERR_NO_MEMORY,
-             "%s", _("while loading LXC driver config"));
+    virReportOOMError(NULL);
     return -1;
 }

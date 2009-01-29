@@ -51,6 +51,8 @@
 #include "util.h"
 #include "nodeinfo.h"
 
+#define VIR_FROM_THIS VIR_FROM_OPENVZ
+
 static char *openvzLocateConfDir(void);
 static int openvzGetVPSUUID(int vpsid, char *uuidstr);
 static int openvzLocateConfFile(int vpsid, char *conffile, int maxlen, const char *ext);
@@ -305,7 +307,7 @@ openvzReadNetworkConf(virConnectPtr conn,
 
     return 0;
 no_memory:
-    openvzError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
 error:
     virDomainNetDefFree(net);
     return -1;
@@ -346,7 +348,7 @@ openvzReadFSConf(virConnectPtr conn,
 
     return 0;
 no_memory:
-    openvzError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
 error:
     virDomainFSDefFree(fs);
     return -1;
@@ -461,7 +463,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
     return 0;
 
  no_memory:
-    openvzError(NULL, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(NULL);
 
  cleanup:
     fclose(fp);

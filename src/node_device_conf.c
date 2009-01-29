@@ -36,6 +36,7 @@
 #include "buf.h"
 #include "uuid.h"
 
+#define VIR_FROM_THIS VIR_FROM_NODEDEV
 
 VIR_ENUM_IMPL(virNodeDevCap, VIR_NODE_DEV_CAP_LAST,
               "system",
@@ -126,7 +127,7 @@ virNodeDeviceObjPtr virNodeDeviceAssignDef(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(device) < 0) {
-        virNodeDeviceReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
 
@@ -143,7 +144,7 @@ virNodeDeviceObjPtr virNodeDeviceAssignDef(virConnectPtr conn,
         device->def = NULL;
         virNodeDeviceObjUnlock(device);
         virNodeDeviceObjFree(device);
-        virNodeDeviceReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+        virReportOOMError(conn);
         return NULL;
     }
     devs->objs[devs->count++] = device;
@@ -360,7 +361,7 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
     return virBufferContentAndReset(&buf);
 
  no_memory:
-    virNodeDeviceReportError(conn, VIR_ERR_NO_MEMORY, NULL);
+    virReportOOMError(conn);
     tmp = virBufferContentAndReset(&buf);
     VIR_FREE(tmp);
     return NULL;
@@ -425,4 +426,3 @@ void virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj)
 {
     virMutexUnlock(&obj->lock);
 }
-
