@@ -1,3 +1,9 @@
+Fri Jan 30 21:44:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* tests/qemuxml2argvdata/qemuxml2argv-disk-drive-shared.args,
+	tests/qemuxml2argvdata/qemuxml2argv-disk-drive-shared.xml: Added
+	two missing test data files from previous commit
+
 Fri Jan 30 20:55:57 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	fix qemud version reporting when qemu is not installed
