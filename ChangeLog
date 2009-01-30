@@ -1,3 +1,10 @@
+Fri Jan 30 20:55:57 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	fix qemud version reporting when qemu is not installed
+	* src/qemu_conf.c (uname_normalize): New function, factored out of...
+	(qemudBuildCommandLine): ...here.  Use the new function.
+	(qemudExtractVersion): Use it here, rather than hard-coding "i686".
+
 Fri Jan 30 17:16:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c: Fix ifname= handling for type=ethernet

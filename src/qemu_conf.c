@@ -486,17 +486,33 @@ rewait:
     return ret;
 }
 
+static void
+uname_normalize (struct utsname *ut)
+{
+    uname(ut);
+
+    /* Map i386, i486, i586 to i686.  */
+    if (ut->machine[0] == 'i' &&
+        ut->machine[1] != '\0' &&
+        ut->machine[2] == '8' &&
+        ut->machine[3] == '6' &&
+        ut->machine[4] == '\0')
+        ut->machine[1] = '6';
+}
+
 int qemudExtractVersion(virConnectPtr conn,
                         struct qemud_driver *driver) {
     const char *binary;
     struct stat sb;
+    struct utsname ut;
 
     if (driver->qemuVersion > 0)
         return 0;
 
+    uname_normalize(&ut);
     if ((binary = virCapabilitiesDefaultGuestEmulator(driver->caps,
                                                       "hvm",
-                                                      "i686",
+                                                      ut.machine,
                                                       "qemu")) == NULL)
         return -1;
 
@@ -718,14 +734,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     char domid[50];
     char *pidfile;
 
-    uname(&ut);
-
-    /* Nasty hack make i?86 look like i686 to simplify next comparison */
-    if (ut.machine[0] == 'i' &&
-        ut.machine[2] == '8' &&
-        ut.machine[3] == '6' &&
-        !ut.machine[4])
-        ut.machine[1] = '6';
+    uname_normalize(&ut);
 
     virUUIDFormat(vm->def->uuid, uuid);
 
