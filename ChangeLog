@@ -1,3 +1,13 @@
+Fri Jan 30 16:12:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix crash when using bogus arch type
+	* src/capabilities.c, src/capabilities.h: Add method to query
+	for supported arch+ostype combo
+	* src/domain_conf.c: Validate requested arch+ostype against
+	supported capabilities
+	* src/qemu_conf.c: Sanity check to avoid deferencing NULL
+	machine type
+
 Fri Jan 30 16:58:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Misc QEMU driver startup fixes

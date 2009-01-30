@@ -162,6 +162,12 @@ virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
 extern int
 virCapabilitiesSupportsGuestOSType(virCapsPtr caps,
                                    const char *ostype);
+extern int
+virCapabilitiesSupportsGuestArch(virCapsPtr caps,
+                                 const char *ostype,
+                                 const char *arch);
+
+
 extern const char *
 virCapabilitiesDefaultGuestArch(virCapsPtr caps,
                                 const char *ostype);

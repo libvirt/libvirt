@@ -2038,7 +2038,14 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
 
     def->os.arch = virXPathString(conn, "string(./os/type[1]/@arch)", ctxt);
-    if (!def->os.arch) {
+    if (def->os.arch) {
+        if (!virCapabilitiesSupportsGuestArch(caps, def->os.type, def->os.arch)) {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("os type '%s' & arch '%s' combination is not supported"),
+                                 def->os.type, def->os.arch);
+            goto error;
+        }
+    } else {
         const char *defaultArch = virCapabilitiesDefaultGuestArch(caps, def->os.type);
         if (defaultArch == NULL) {
             virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,

@@ -433,6 +433,30 @@ virCapabilitiesSupportsGuestOSType(virCapsPtr caps,
 
 
 /**
+ * virCapabilitiesSupportsGuestOSType:
+ * @caps: capabilities to query
+ * @ostype: OS type to search for (eg 'hvm', 'xen')
+ * @arch: Architecture to search for (eg, 'i686', 'x86_64')
+ *
+ * Returns non-zero if the capabilities support the
+ * requested operating system type
+ */
+extern int
+virCapabilitiesSupportsGuestArch(virCapsPtr caps,
+                                 const char *ostype,
+                                 const char *arch)
+{
+    int i;
+    for (i = 0 ; i < caps->nguests ; i++) {
+        if (STREQ(caps->guests[i]->ostype, ostype) &&
+            STREQ(caps->guests[i]->arch.name, arch))
+            return 1;
+    }
+    return 0;
+}
+
+
+/**
  * virCapabilitiesDefaultGuestArch:
  * @caps: capabilities to query
  * @ostype: OS type to search for

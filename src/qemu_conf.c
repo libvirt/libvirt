@@ -837,8 +837,16 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     ADD_ARG_LIT(emulator);
     ADD_ARG_LIT("-S");
-    ADD_ARG_LIT("-M");
-    ADD_ARG_LIT(vm->def->os.machine);
+
+    /* This should *never* be NULL, since we always provide
+     * a machine in the capabilities data for QEMU. So this
+     * check is just here as a safety in case the unexpected
+     * happens */
+    if (vm->def->os.machine) {
+        ADD_ARG_LIT("-M");
+        ADD_ARG_LIT(vm->def->os.machine);
+    }
+
     if (disableKQEMU)
         ADD_ARG_LIT("-no-kqemu");
     ADD_ARG_LIT("-m");
