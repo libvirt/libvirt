@@ -36,8 +36,10 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virDomainDefPtr vmdef = NULL;
     virDomainObj vm;
 
-    if (virtTestLoadFile(cmd, &expectargv, MAX_FILE) < 0)
+    if (virtTestLoadFile(cmd, &expectargv, MAX_FILE) < 0) {
+        fprintf(stderr, "failed to open %s: %s\n", cmd, strerror (errno));
         goto fail;
+    }
 
     if (!(vmdef = virDomainDefParseFile(NULL, driver.caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE)))

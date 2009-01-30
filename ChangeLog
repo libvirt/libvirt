@@ -1,3 +1,9 @@
+Fri Jan 30 22:57:34 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	tests: diagnose open failure
+	* tests/qemuxml2argvtest.c (testCompareXMLToArgvFiles): Diagnose
+	failure to open an input file.
+
 Fri Jan 30 21:50:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/domain_conf.c: Fix empty decl in enum declaration
