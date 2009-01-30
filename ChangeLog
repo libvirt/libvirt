@@ -1,3 +1,12 @@
+Fri Jan 30 16:58:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Misc QEMU driver startup fixes
+	* src/domain_conf.c: Add initialization of monitor_watch
+	* src/qemud_driver.c: Fix infinite loop when QEMU quits on
+	startup. Fix watch removal if watch isn't added. Fix use
+	of VNC password from global driver config. Avoid zombies
+	from daemonizing QEMU. Fix memory leak in monitorpath
+
 Fri Jan 30 16:51:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/lxc_driver.c: Avoid probing for LXC until we know we're

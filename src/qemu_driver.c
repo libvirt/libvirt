@@ -355,10 +355,9 @@ qemudReconnectVMs(struct qemud_driver *driver)
             qemudLog(QEMUD_ERR, _("Failed to reconnect monitor for %s: %d\n"),
                      vm->def->name, rc);
             goto next_error;
-        } else
-            vm->monitorpath = status->monitorpath;
+        }
 
-        if((vm->logfile = qemudLogFD(NULL, driver->logDir, vm->def->name)) < 0)
+        if ((vm->logfile = qemudLogFD(NULL, driver->logDir, vm->def->name)) < 0)
             return -1;
 
         if (vm->def->id >= driver->nextvmid)
@@ -376,6 +375,8 @@ next_error:
         vm->newDef = NULL;
 next:
         virDomainObjUnlock(vm);
+        if (status)
+            VIR_FREE(status->monitorpath);
         VIR_FREE(status);
         VIR_FREE(config);
     }
@@ -617,6 +618,9 @@ typedef int qemudHandlerMonitorOutput(virConnectPtr conn,
                                       const char *output,
                                       int fd);
 
+/*
+ * Returns -1 for error, 0 on end-of-file, 1 for success
+ */
 static int
 qemudReadMonitorOutput(virConnectPtr conn,
                        virDomainObjPtr vm,
@@ -630,7 +634,7 @@ qemudReadMonitorOutput(virConnectPtr conn,
     int got = 0;
     buf[0] = '\0';
 
-   /* Consume & discard the initial greeting */
+    /* Consume & discard the initial greeting */
     while (got < (buflen-1)) {
         int ret;
 
@@ -670,11 +674,17 @@ qemudReadMonitorOutput(virConnectPtr conn,
                                  _("Failure while reading %s startup output"), what);
                 return -1;
             }
+        } else if (ret == 0) {
+            return 0;
         } else {
             got += ret;
             buf[got] = '\0';
-            if ((ret = func(conn, vm, buf, fd)) != 1)
-                return ret;
+            ret = func(conn, vm, buf, fd);
+            if (ret == -1)
+                return -1;
+            if (ret == 1)
+                continue;
+            return 1;
         }
     }
 
@@ -724,11 +734,14 @@ static int qemudOpenMonitor(virConnectPtr conn,
     }
 
     if (!reconnect) {
-        ret = qemudReadMonitorOutput(conn,
-                                     vm, monfd,
-                                     buf, sizeof(buf),
-                                     qemudCheckMonitorPrompt,
-                                     "monitor", 10000);
+        if (qemudReadMonitorOutput(conn,
+                                   vm, monfd,
+                                   buf, sizeof(buf),
+                                   qemudCheckMonitorPrompt,
+                                   "monitor", 10000) <= 0)
+            ret = -1;
+        else
+            ret = 0;
     } else {
         vm->monitor = monfd;
         ret = 0;
@@ -858,7 +871,7 @@ static int qemudWaitForMonitor(virConnectPtr conn,
 
     if ((logfd = qemudLogReadFD(conn, driver->logDir, vm->def->name, pos))
         < 0)
-        return logfd;
+        return -1;
 
     ret = qemudReadMonitorOutput(conn, vm, logfd, buf, sizeof(buf),
                                  qemudFindCharDevicePTYs,
@@ -866,7 +879,17 @@ static int qemudWaitForMonitor(virConnectPtr conn,
     if (close(logfd) < 0)
         qemudLog(QEMUD_WARN, _("Unable to close logfile: %s\n"),
                  strerror(errno));
-    return ret;
+
+    if (ret == 1) /* Success */
+        return 0;
+
+    if (ret == -1)
+        return -1;
+
+    /* Unexpected end of file - inform user of QEMU log data */
+    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("unable to start guest: %s"), buf);
+    return -1;
 }
 
 static int
@@ -1033,7 +1056,7 @@ qemudInitPasswords(virConnectPtr conn,
 
     if (vm->def->graphics &&
         vm->def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-        vm->def->graphics->data.vnc.passwd) {
+        (vm->def->graphics->data.vnc.passwd || driver->vncPassword)) {
 
         if (qemudMonitorCommandExtra(vm, "change vnc password",
                                      vm->def->graphics->data.vnc.passwd ?
@@ -1212,14 +1235,25 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     /* wait for qemu process to to show up */
     if (ret == 0) {
         int retries = 100;
-        while (retries) {
-            if ((ret = virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) == 0)
-                break;
-            usleep(100*1000);
-            retries--;
+        int childstat;
+
+        while (waitpid(child, &childstat, 0) == -1 &&
+               errno == EINTR);
+
+        if (childstat == 0) {
+            while (retries) {
+                if ((ret = virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) == 0)
+                    break;
+                usleep(100*1000);
+                retries--;
+            }
+            if (ret)
+                qemudLog(QEMUD_WARN, _("Domain %s didn't show up\n"), vm->def->name);
+        } else {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("Unable to daemonize QEMU process"));
+            ret = -1;
         }
-        if (ret)
-            qemudLog(QEMUD_WARN, _("Domain %s didn't show up\n"), vm->def->name);
     }
 
     if (ret == 0) {
@@ -1262,14 +1296,17 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!virDomainIsActive(vm))
         return;
 
-    qemudLog(QEMUD_INFO, _("Shutting down VM '%s'\n"), vm->def->name);
+    qemudLog(QEMUD_DEBUG, _("Shutting down VM '%s'\n"), vm->def->name);
 
     if (virKillProcess(vm->pid, 0) == 0 &&
         virKillProcess(vm->pid, SIGTERM) < 0)
         qemudLog(QEMUD_ERROR, _("Failed to send SIGTERM to %s (%d): %s\n"),
                  vm->def->name, vm->pid, strerror(errno));
 
-    virEventRemoveHandle(vm->monitor_watch);
+    if (vm->monitor_watch != -1) {
+        virEventRemoveHandle(vm->monitor_watch);
+        vm->monitor_watch = -1;
+    }
 
     if (close(vm->logfile) < 0)
         qemudLog(QEMUD_WARN, _("Unable to close logfile %d: %s\n"),
