@@ -363,6 +363,7 @@ rpc_error:
             remoteDispatchGenericError(&rerr);
         if (!xdr_remote_error (&xdr, &rerr))
             goto fatal_error;
+        xdr_free((xdrproc_t)xdr_remote_error,  (char *)&rerr);
     }
 
     /* Write the length word. */

@@ -1,3 +1,8 @@
+Fri Jan 30 16:46:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/remote.c: Fix memory leak after sending a libvirt
+	error message back to client
+
 Fri Jan 30 15:34:42 GMT 2009 John Levon <john.levon@sun.com>
 
 	* src/libvirt.c: Fix yet another printf("%s", NULL) case
