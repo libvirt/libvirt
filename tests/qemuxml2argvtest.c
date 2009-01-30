@@ -224,6 +224,8 @@ mymain(int argc, char **argv)
         QEMUD_CMD_FLAG_UUID | QEMUD_CMD_FLAG_DOMID);
     DO_TEST("net-user", 0);
     DO_TEST("net-virtio", 0);
+    DO_TEST("net-eth", 0);
+    DO_TEST("net-eth-ifname", 0);
 
     DO_TEST("serial-vc", 0);
     DO_TEST("serial-pty", 0);

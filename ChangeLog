@@ -1,3 +1,11 @@
+Fri Jan 30 17:16:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c: Fix ifname= handling for type=ethernet
+	networking config to avoid literal (null)
+	* tests/qemuxml2argvtest.c, tests/qemuxml2xmltest.c,
+	tests/qemuxml2argvdata/: Add test case for ethernet
+	interface config
+
 Fri Jan 30 17:12:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Support <driver cache='none|writeback|writethrough'/> cache

@@ -111,6 +111,8 @@ mymain(int argc, char **argv)
     DO_TEST("misc-no-reboot");
     DO_TEST("net-user");
     DO_TEST("net-virtio");
+    DO_TEST("net-eth");
+    DO_TEST("net-eth-ifname");
     DO_TEST("sound");
 
     DO_TEST("serial-vc");
