@@ -81,6 +81,15 @@ enum virDomainDiskBus {
     VIR_DOMAIN_DISK_BUS_LAST
 };
 
+enum  virDomainDiskCache {
+    VIR_DOMAIN_DISK_CACHE_DEFAULT,
+    VIR_DOMAIN_DISK_CACHE_DISABLE,
+    VIR_DOMAIN_DISK_CACHE_WRITETHRU,
+    VIR_DOMAIN_DISK_CACHE_WRITEBACK,
+
+    VIR_DOMAIN_DISK_CACHE_LAST
+};
+
 /* Stores the virtual disk configuration */
 typedef struct _virDomainDiskDef virDomainDiskDef;
 typedef virDomainDiskDef *virDomainDiskDefPtr;
@@ -92,6 +101,7 @@ struct _virDomainDiskDef {
     char *dst;
     char *driverName;
     char *driverType;
+    int cachemode;
     unsigned int readonly : 1;
     unsigned int shared : 1;
     int slotnum; /* pci slot number for unattach */
@@ -615,6 +625,7 @@ VIR_ENUM_DECL(virDomainLifecycle)
 VIR_ENUM_DECL(virDomainDisk)
 VIR_ENUM_DECL(virDomainDiskDevice)
 VIR_ENUM_DECL(virDomainDiskBus)
+VIR_ENUM_DECL(virDomainDiskCache)
 VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainNet)
 VIR_ENUM_DECL(virDomainChr)

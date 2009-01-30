@@ -1,7 +1,7 @@
 /*
  * config.c: VM configuration management
  *
- * Copyright (C) 2006, 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -59,6 +59,22 @@ VIR_ENUM_IMPL(virDomainDiskQEMUBus, VIR_DOMAIN_DISK_BUS_LAST,
               "xen",
               "usb",
               "uml")
+
+
+VIR_ENUM_DECL(qemuDiskCacheV1)
+VIR_ENUM_DECL(qemuDiskCacheV2)
+
+VIR_ENUM_IMPL(qemuDiskCacheV1, VIR_DOMAIN_DISK_CACHE_LAST,
+              "default",
+              "off",
+              "off", /* writethrough not supported, so for safety, disable */
+              "on"); /* Old 'on' was equivalent to 'writeback' */
+
+VIR_ENUM_IMPL(qemuDiskCacheV2, VIR_DOMAIN_DISK_CACHE_LAST,
+              "default",
+              "none",
+              "writethrough",
+              "writeback");
 
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
@@ -398,8 +414,11 @@ int qemudExtractVersionInfo(const char *qemu,
         flags |= QEMUD_CMD_FLAG_UUID;
     if (strstr(help, "-domid"))
         flags |= QEMUD_CMD_FLAG_DOMID;
-    if (strstr(help, "-drive"))
+    if (strstr(help, "-drive")) {
         flags |= QEMUD_CMD_FLAG_DRIVE;
+        if (strstr(help, "cache=writethrough|writeback|none"))
+            flags |= QEMUD_CMD_FLAG_DRIVE_CACHE_V2;
+    }
     if (strstr(help, "boot=on"))
         flags |= QEMUD_CMD_FLAG_DRIVE_BOOT;
     if (version >= 9000)
@@ -590,6 +609,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         close(tapfd);
     return NULL;
 }
+
 
 static int qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
                                           char *buf,
@@ -1015,10 +1035,19 @@ int qemudBuildCommandLine(virConnectPtr conn,
             if (bootable &&
                 disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
                 virBufferAddLit(&opt, ",boot=on");
-            if (disk->shared && !disk->readonly)
-                virBufferAddLit(&opt, ",cache=off");
             if (disk->driverType)
                 virBufferVSprintf(&opt, ",fmt=%s", disk->driverType);
+
+            if (disk->cachemode) {
+                const char *mode =
+                    (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_CACHE_V2) ?
+                    qemuDiskCacheV2TypeToString(disk->cachemode) :
+                    qemuDiskCacheV1TypeToString(disk->cachemode);
+
+                virBufferVSprintf(&opt, ",cache=%s", mode);
+            } else if (disk->shared && !disk->readonly) {
+                virBufferAddLit(&opt, ",cache=off");
+            }
 
             if (virBufferError(&opt)) {
                 virReportOOMError(conn);
@@ -1585,4 +1614,3 @@ cleanup:
     VIR_FREE(xml);
     return ret;
 }
-

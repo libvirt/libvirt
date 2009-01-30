@@ -426,16 +426,43 @@
     -->
   <define name='driver'>
     <element name='driver'>
-      <attribute name='name'>
-	<ref name='genericName'/>
-      </attribute>
-      <optional>
-        <attribute name='type'>
-	  <ref name='genericName'/>
-	</attribute>
-      </optional>
+      <choice>
+	<group>
+	  <ref name='driverFormat'/>
+	  <optional>
+	    <ref name='driverCache'/>
+	  </optional>
+	</group>
+	<group>
+	  <optional>
+	    <ref name='driverFormat'/>
+	  </optional>
+	  <ref name='driverCache'/>
+	</group>
+      </choice>
       <empty/>
     </element>
+  </define>
+
+  <define name='driverFormat'>
+    <attribute name='name'>
+      <ref name='genericName'/>
+    </attribute>
+    <optional>
+      <attribute name='type'>
+	<ref name='genericName'/>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name='driverCache'>
+    <attribute name='cache'>
+      <choice>
+	<value>none</value>
+	<value>writeback</value>
+	<value>writethrough</value>
+      </choice>
+    </attribute>
   </define>
 
   <define name='filesystem'>

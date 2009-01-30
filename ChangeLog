@@ -1,4 +1,16 @@
-Fri Jan 30 16:12:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+Fri Jan 30 17:12:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Support <driver cache='none|writeback|writethrough'/> cache
+	control options
+	* src/domain_conf.c, src/domain_conf.h: Add supported for
+	disk caching mode options
+	* src/qemu_conf.c, src/qemu_conf.h: Detect supported cache
+	mode options for -drive and use them when launching QEMU
+	* docs/schemas/domain.rng: Document cache mode options
+	* tests/qemuxml2argvtest.c: Validate cache mode processing
+	* tests/qemuxml2argvdata/: Data files for cache mode options
+
+Fri Jan 30 17:12:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix crash when using bogus arch type
 	* src/capabilities.c, src/capabilities.h: Add method to query

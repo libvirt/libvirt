@@ -1,7 +1,7 @@
 /*
  * domain_conf.c: domain XML processing
  *
- * Copyright (C) 2006-2008 Red Hat, Inc.
+ * Copyright (C) 2006-2009 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -90,6 +90,12 @@ VIR_ENUM_IMPL(virDomainDiskBus, VIR_DOMAIN_DISK_BUS_LAST,
               "xen",
               "usb",
               "uml")
+
+VIR_ENUM_IMPL(virDomainDiskCache, VIR_DOMAIN_DISK_CACHE_LAST,
+              "default",
+              "none",
+              "writethrough",
+              "writeback");
 
 VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "mount",
@@ -568,6 +574,7 @@ virDomainDiskDefParseXML(virConnectPtr conn,
     char *source = NULL;
     char *target = NULL;
     char *bus = NULL;
+    char *cachetag = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError(conn);
@@ -617,6 +624,7 @@ virDomainDiskDefParseXML(virConnectPtr conn,
                        (xmlStrEqual(cur->name, BAD_CAST "driver"))) {
                 driverName = virXMLPropString(cur, "name");
                 driverType = virXMLPropString(cur, "type");
+                cachetag = virXMLPropString(cur, "cache");
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
                 def->readonly = 1;
             } else if (xmlStrEqual(cur->name, BAD_CAST "shareable")) {
@@ -713,6 +721,13 @@ virDomainDiskDefParseXML(virConnectPtr conn,
         goto error;
     }
 
+    if (cachetag &&
+        (def->cachemode = virDomainDiskCacheTypeFromString(cachetag)) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unknown disk cache mode '%s'"), cachetag);
+        goto error;
+    }
+
     def->src = source;
     source = NULL;
     def->dst = target;
@@ -730,6 +745,7 @@ cleanup:
     VIR_FREE(device);
     VIR_FREE(driverType);
     VIR_FREE(driverName);
+    VIR_FREE(cachetag);
 
     return def;
 
@@ -2756,6 +2772,7 @@ virDomainDiskDefFormat(virConnectPtr conn,
     const char *type = virDomainDiskTypeToString(def->type);
     const char *device = virDomainDiskDeviceTypeToString(def->device);
     const char *bus = virDomainDiskBusTypeToString(def->bus);
+    const char *cachemode = virDomainDiskCacheTypeToString(def->cachemode);
 
     if (!type) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -2772,20 +2789,23 @@ virDomainDiskDefFormat(virConnectPtr conn,
                              _("unexpected disk bus %d"), def->bus);
         return -1;
     }
+    if (!cachemode) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected disk cache mode %d"), def->cachemode);
+        return -1;
+    }
 
     virBufferVSprintf(buf,
                       "    <disk type='%s' device='%s'>\n",
                       type, device);
 
     if (def->driverName) {
+        virBufferVSprintf(buf, "      <driver name='%s'", def->driverName);
         if (def->driverType)
-            virBufferVSprintf(buf,
-                              "      <driver name='%s' type='%s'/>\n",
-                              def->driverName, def->driverType);
-        else
-            virBufferVSprintf(buf,
-                              "      <driver name='%s'/>\n",
-                              def->driverName);
+            virBufferVSprintf(buf, " type='%s'", def->driverType);
+        if (def->cachemode)
+            virBufferVSprintf(buf, " cache='%s'", cachemode);
+        virBufferVSprintf(buf, "/>\n");
     }
 
     if (def->src) {
