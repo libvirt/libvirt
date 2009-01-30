@@ -2691,7 +2691,7 @@ virDomainMigrate (virDomainPtr domain,
     char *dom_xml = NULL;
     int cookielen = 0, ret, version = 0;
     DEBUG("domain=%p, dconn=%p, flags=%lu, dname=%s, uri=%s, bandwidth=%lu",
-          domain, dconn, flags, dname, uri, bandwidth);
+          domain, dconn, flags, NULLSTR(dname), NULLSTR(uri), bandwidth);
 
     virResetLastError();
 

@@ -1477,7 +1477,7 @@ char *virGetUserDirectory(virConnectPtr conn,
     char *strbuf;
     char *ret;
     struct passwd pwbuf;
-    struct passwd *pw;
+    struct passwd *pw = NULL;
     size_t strbuflen = sysconf(_SC_GETPW_R_SIZE_MAX);
 
     if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
@@ -1485,7 +1485,14 @@ char *virGetUserDirectory(virConnectPtr conn,
         return NULL;
     }
 
-    if (getpwuid_r(uid, &pwbuf, strbuf, strbuflen, &pw) != 0) {
+    /*
+     * From the manpage (terrifying but true):
+     *
+     * ERRORS
+     *  0 or ENOENT or ESRCH or EBADF or EPERM or ...
+     *        The given name or uid was not found.
+     */
+    if (getpwuid_r(uid, &pwbuf, strbuf, strbuflen, &pw) != 0 || pw == NULL) {
         virReportSystemError(conn, errno,
                              _("Failed to find user record for uid '%d'"),
                              uid);

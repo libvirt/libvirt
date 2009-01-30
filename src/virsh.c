@@ -2258,11 +2258,9 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
         goto done;
     }
 
-    migrateuri = vshCommandOptString (cmd, "migrateuri", &found);
-    if (!found) migrateuri = NULL;
+    migrateuri = vshCommandOptString (cmd, "migrateuri", NULL);
 
-    dname = vshCommandOptString (cmd, "dname", &found);
-    if (!found) migrateuri = dname;
+    dname = vshCommandOptString (cmd, "dname", NULL);
 
     if (vshCommandOptBool (cmd, "live"))
         flags |= VIR_MIGRATE_LIVE;
