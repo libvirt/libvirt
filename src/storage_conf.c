@@ -296,6 +296,8 @@ virStoragePoolObjFree(virStoragePoolObjPtr obj) {
     if (!obj)
         return;
 
+    virStoragePoolObjClearVols(obj);
+
     virStoragePoolDefFree(obj->def);
     virStoragePoolDefFree(obj->newDef);
 
