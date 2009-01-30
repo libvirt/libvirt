@@ -1,3 +1,8 @@
+Fri Jan 30 16:51:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/lxc_driver.c: Avoid probing for LXC until we know we're
+	going to try opening the connection. Disable when using valgrind
+
 Fri Jan 30 16:48:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/storage_conf.c: Fix leak of volume objects when free'ing

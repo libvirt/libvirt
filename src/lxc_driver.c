@@ -80,14 +80,14 @@ static virDrvOpenStatus lxcOpen(virConnectPtr conn,
                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                 int flags ATTRIBUTE_UNUSED)
 {
-    if (!lxcProbe())
-        goto declineConnection;
-
     if (lxc_driver == NULL)
         goto declineConnection;
 
     /* Verify uri was specified */
     if (conn->uri == NULL) {
+        if (!lxcProbe())
+            goto declineConnection;
+
         conn->uri = xmlParseURI("lxc:///");
         if (!conn->uri) {
             virReportOOMError(conn);
@@ -96,7 +96,10 @@ static virDrvOpenStatus lxcOpen(virConnectPtr conn,
     } else if (conn->uri->scheme == NULL ||
                STRNEQ(conn->uri->scheme, "lxc")) {
         goto declineConnection;
+    } else if (!lxcProbe()) {
+        goto declineConnection;
     }
+
 
     conn->privateData = lxc_driver;
 
@@ -1119,6 +1122,15 @@ static int lxcStartup(void)
 {
     uid_t uid = getuid();
     unsigned int i;
+    char *ld;
+
+    /* Valgrind gets very annoyed when we clone containers, so
+     * disable LXC when under valgrind
+     * XXX remove this when valgrind is fixed
+     */
+    ld = getenv("LD_PRELOAD");
+    if (ld && strstr(ld, "vgpreload"))
+        return -1;
 
     /* Check that the user is root */
     if (0 != uid) {
