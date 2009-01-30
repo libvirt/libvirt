@@ -1,3 +1,7 @@
+Fri Jan 30 21:50:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/domain_conf.c: Fix empty decl in enum declaration
+
 Fri Jan 30 21:44:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/qemuxml2argvdata/qemuxml2argv-disk-drive-shared.args,
