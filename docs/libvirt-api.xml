@@ -173,17 +173,18 @@
      <exports symbol='virStoragePoolGetConnect' type='function'/>
      <exports symbol='virConnectGetVersion' type='function'/>
      <exports symbol='virDomainFree' type='function'/>
+     <exports symbol='virStorageVolRef' type='function'/>
      <exports symbol='virStoragePoolGetName' type='function'/>
      <exports symbol='virDomainSetAutostart' type='function'/>
      <exports symbol='virStoragePoolDefineXML' type='function'/>
      <exports symbol='virStorageVolLookupByPath' type='function'/>
      <exports symbol='virStorageVolLookupByName' type='function'/>
-     <exports symbol='virDomainCreateLinux' type='function'/>
+     <exports symbol='virNetworkCreate' type='function'/>
      <exports symbol='virDomainSetMaxMemory' type='function'/>
      <exports symbol='virEventRegisterImpl' type='function'/>
      <exports symbol='virDomainMigrate' type='function'/>
      <exports symbol='virDomainSuspend' type='function'/>
-     <exports symbol='virNetworkCreate' type='function'/>
+     <exports symbol='virDomainCreateLinux' type='function'/>
      <exports symbol='virNodeDeviceGetXMLDesc' type='function'/>
      <exports symbol='virEventUpdateHandleFunc' type='function'/>
      <exports symbol='virDomainDestroy' type='function'/>
@@ -226,6 +227,7 @@
      <exports symbol='virConnectGetHostname' type='function'/>
      <exports symbol='virEventRemoveTimeoutFunc' type='function'/>
      <exports symbol='virDomainGetName' type='function'/>
+     <exports symbol='virStoragePoolRef' type='function'/>
      <exports symbol='virNetworkGetXMLDesc' type='function'/>
      <exports symbol='virConnectNumOfStoragePools' type='function'/>
      <exports symbol='virNetworkGetName' type='function'/>
@@ -244,6 +246,7 @@
      <exports symbol='virDomainMemoryPeek' type='function'/>
      <exports symbol='virNetworkLookupByUUID' type='function'/>
      <exports symbol='virConnectListDefinedNetworks' type='function'/>
+     <exports symbol='virConnectRef' type='function'/>
      <exports symbol='virDomainGetUUID' type='function'/>
      <exports symbol='virNetworkCreateXML' type='function'/>
      <exports symbol='virDomainGetVcpus' type='function'/>
@@ -251,6 +254,7 @@
      <exports symbol='virStoragePoolGetInfo' type='function'/>
      <exports symbol='virDomainResume' type='function'/>
      <exports symbol='virNodeListDevices' type='function'/>
+     <exports symbol='virNetworkRef' type='function'/>
      <exports symbol='virStoragePoolRefresh' type='function'/>
      <exports symbol='virConnectNumOfDefinedDomains' type='function'/>
      <exports symbol='virStorageVolLookupByKey' type='function'/>
@@ -292,7 +296,9 @@
      <exports symbol='virNodeDeviceGetParent' type='function'/>
      <exports symbol='virConnectOpen' type='function'/>
      <exports symbol='virDomainCreateXML' type='function'/>
+     <exports symbol='virNodeDeviceRef' type='function'/>
      <exports symbol='virDomainSetVcpus' type='function'/>
+     <exports symbol='virDomainRef' type='function'/>
      <exports symbol='virConnectDomainEventRegister' type='function'/>
      <exports symbol='virDomainGetID' type='function'/>
      <exports symbol='virDomainBlockPeek' type='function'/>
@@ -764,18 +770,18 @@ see note above'/>
     <typedef name='virVcpuState' file='libvirt' type='enum'/>
     <variable name='virConnectAuthPtrDefault' file='libvirt' type='virConnectAuthPtr'/>
     <function name='virConnCopyLastError' file='virterror' module='virterror'>
-      <info>Copy the content of the last error caught on that connection One will need to free the result with virResetError()</info>
+      <info>Copy the content of the last error caught on that connection  This method is not protected against access from multiple threads. In a multi-threaded application, always use the global virGetLastError() API which is backed by thread local storage.  If the connection object was discovered to be invalid by an API call, then the error will be reported against the global error object.  Since 0.6.0, all errors reported in the per-connection object are also duplicated in the global error object. As such an application can always use virGetLastError(). This method remains for backwards compatability.  One will need to free the result with virResetError()</info>
       <return type='int' info='0 if no error was found and the error code otherwise and -1 in case of parameter error.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='to' type='virErrorPtr' info='target to receive the copy'/>
     </function>
     <function name='virConnGetLastError' file='virterror' module='virterror'>
-      <info>Provide a pointer to the last error caught on that connection Simpler but may not be suitable for multithreaded accesses, in which case use virConnCopyLastError()</info>
+      <info>Provide a pointer to the last error caught on that connection  This method is not protected against access from multiple threads. In a multi-threaded application, always use the global virGetLastError() API which is backed by thread local storage.  If the connection object was discovered to be invalid by an API call, then the error will be reported against the global error object.  Since 0.6.0, all errors reported in the per-connection object are also duplicated in the global error object. As such an application can always use virGetLastError(). This method remains for backwards compatability.</info>
       <return type='virErrorPtr' info='a pointer to the last error or NULL if none occurred.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnResetLastError' file='virterror' module='virterror'>
-      <info>Reset the last error caught on that connection</info>
+      <info>The error object is kept in thread local storage, so separate threads can safely access this concurrently.  Reset the last error caught on that connection</info>
       <return type='void'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
@@ -814,8 +820,8 @@ see note above'/>
       <arg name='cb' type='virConnectDomainEventCallback' info='callback to the function handling domain events'/>
     </function>
     <function name='virConnectDomainEventRegister' file='libvirt' module='libvirt'>
-      <info>Adds a Domain Event Callback. Registering for a domain callback will enable delivery of the events</info>
-      <return type='int' info='0 on success, -1 on failure'/>
+      <info>Adds a Domain Event Callback. Registering for a domain callback will enable delivery of the events  The virDomainPtr object handle passed into the callback upon delivery of an event is only valid for the duration of execution of the callback. If the callback wishes to keep the domain object after the callback</info>
+      <return type='int' info='it shall take a reference to it, by calling virDomainRef. The reference can be released once the object is no longer required by calling virDomainFree.  Returns 0 on success, -1 on failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the connection'/>
       <arg name='cb' type='virConnectDomainEventCallback' info='callback to the function handling domain events'/>
       <arg name='opaque' type='void *' info='opaque data to pass on to the callback'/>
@@ -950,8 +956,13 @@ see note above'/>
       <return type='virConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error  URIs are documented at http://libvirt.org/uri.html'/>
       <arg name='name' type='const char *' info='URI of the hypervisor'/>
     </function>
+    <function name='virConnectRef' file='libvirt' module='libvirt'>
+      <info>Increment the reference count on the connection. For each additional call to this method, there shall be a corresponding call to virConnectClose to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a connection would increment the reference count.</info>
+      <return type='int' info=''/>
+      <arg name='conn' type='virConnectPtr' info='the connection to hold a reference on'/>
+    </function>
     <function name='virCopyLastError' file='virterror' module='virterror'>
-      <info>Copy the content of the last error caught at the library level One will need to free the result with virResetError()</info>
+      <info>Copy the content of the last error caught at the library level  The error object is kept in thread local storage, so separate threads can safely access this concurrently.  One will need to free the result with virResetError()</info>
       <return type='int' info='0 if no error was found and the error code otherwise and -1 in case of parameter error.'/>
       <arg name='to' type='virErrorPtr' info='target to receive the copy'/>
     </function>
@@ -1179,6 +1190,11 @@ see note above'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='flags' type='unsigned int' info='extra flags for the reboot operation, not used yet'/>
     </function>
+    <function name='virDomainRef' file='libvirt' module='libvirt'>
+      <info>Increment the reference count on the domain. For each additional call to this method, there shall be a corresponding call to virDomainFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a domain would increment the reference count.</info>
+      <return type='int' info=''/>
+      <arg name='domain' type='virDomainPtr' info=''/>
+    </function>
     <function name='virDomainRestore' file='libvirt' module='libvirt'>
       <info>This method will restore a domain saved to disk by virDomainSave().</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
@@ -1317,7 +1333,7 @@ see note above'/>
       <arg name='opaque' type='void *' info=''/>
     </functype>
     <function name='virGetLastError' file='virterror' module='virterror'>
-      <info>Provide a pointer to the last error caught at the library level Simpler but may not be suitable for multithreaded accesses, in which case use virCopyLastError()</info>
+      <info>Provide a pointer to the last error caught at the library level  The error object is kept in thread local storage, so separate threads can safely access this concurrently.</info>
       <return type='virErrorPtr' info='a pointer to the last error or NULL if none occurred.'/>
     </function>
     <function name='virGetVersion' file='libvirt' module='libvirt'>
@@ -1415,6 +1431,11 @@ see note above'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuidstr' type='const char *' info='the string UUID for the network'/>
     </function>
+    <function name='virNetworkRef' file='libvirt' module='libvirt'>
+      <info>Increment the reference count on the network. For each additional call to this method, there shall be a corresponding call to virNetworkFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a network would increment the reference count.</info>
+      <return type='int' info=''/>
+      <arg name='network' type='virNetworkPtr' info=''/>
+    </function>
     <function name='virNetworkSetAutostart' file='libvirt' module='libvirt'>
       <info>Configure the network to be automatically started when the host machine boots.</info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
@@ -1465,6 +1486,11 @@ see note above'/>
       <return type='int' info='the number of capabilities supported by the device.'/>
       <arg name='dev' type='virNodeDevicePtr' info='the device'/>
     </function>
+    <function name='virNodeDeviceRef' file='libvirt' module='libvirt'>
+      <info>Increment the reference count on the dev. For each additional call to this method, there shall be a corresponding call to virNodeDeviceFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a dev would increment the reference count.</info>
+      <return type='int' info=''/>
+      <arg name='dev' type='virNodeDevicePtr' info=''/>
+    </function>
     <function name='virNodeGetCellsFreeMemory' file='libvirt' module='libvirt'>
       <info>This call returns the amount of free memory in one or more NUMA cells. The @freeMems array must be allocated by the caller and will be filled with the amount of free memory in kilobytes for each cell requested, starting with startCell (in freeMems[0]), up to either (startCell + maxCells), or the number of additional cells in the node, whichever is smaller.</info>
       <return type='int' info='the number of entries filled in freeMems, or -1 in case of error.'/>
@@ -1506,7 +1532,7 @@ see note above'/>
       <arg name='err' type='virErrorPtr' info='pointer to the virError to clean up'/>
     </function>
     <function name='virResetLastError' file='virterror' module='virterror'>
-      <info>Reset the last error caught at the library level.</info>
+      <info>Reset the last error caught at the library level.  The error object is kept in thread local storage, so separate threads can safely access this concurrently, only resetting their own error object.</info>
       <return type='void'/>
     </function>
     <function name='virSetErrorFunc' file='virterror' module='virterror'>
@@ -1632,6 +1658,11 @@ see note above'/>
       <return type='int' info='the number of storage pools, or -1 on failure'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
     </function>
+    <function name='virStoragePoolRef' file='libvirt' module='libvirt'>
+      <info>Increment the reference count on the pool. For each additional call to this method, there shall be a corresponding call to virStoragePoolFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a pool would increment the reference count.</info>
+      <return type='int' info=''/>
+      <arg name='pool' type='virStoragePoolPtr' info=''/>
+    </function>
     <function name='virStoragePoolRefresh' file='libvirt' module='libvirt'>
       <info>Request that the pool refresh its list of volumes. This may involve communicating with a remote server, and/or initializing new devices at the OS layer</info>
       <return type='int' info='0 if the volume list was refreshed, -1 on failure'/>
@@ -1716,6 +1747,11 @@ see note above'/>
       <return type='virStorageVolPtr' info='a storage volume, or NULL if not found / error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
       <arg name='path' type='const char *' info='locally unique path'/>
+    </function>
+    <function name='virStorageVolRef' file='libvirt' module='libvirt'>
+      <info>Increment the reference count on the vol. For each additional call to this method, there shall be a corresponding call to virStorageVolFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a vol would increment the reference count.</info>
+      <return type='int' info=''/>
+      <arg name='vol' type='virStorageVolPtr' info=''/>
     </function>
   </symbols>
 </api>

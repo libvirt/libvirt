@@ -1,3 +1,8 @@
+Sat Jan 31 10:09:08 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/news.html*: update with infos for 0.6.0
+	* docs/*: regenerated some data too
+
 Fri Jan 30 22:57:34 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	tests: diagnose open failure

@@ -184,15 +184,15 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>userData</tt></i>:</span></td><td>user provided data for the error callback</td></tr><tr><td><span class="term"><i><tt>error</tt></i>:</span></td><td>the error being raised.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnCopyLastError"/>virConnCopyLastError ()</h3><pre class="programlisting">int	virConnCopyLastError		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 <a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> to)<br/>
-</pre><p>Copy the content of the last error caught on that connection One will need to free the result with virResetError()</p>
+</pre><p>Copy the content of the last error caught on that connection This method is not protected against access from multiple threads. In a multi-threaded application, always use the global virGetLastError() API which is backed by thread local storage. If the connection object was discovered to be invalid by an API call, then the error will be reported against the global error object. Since 0.6.0, all errors reported in the per-connection object are also duplicated in the global error object. As such an application can always use virGetLastError(). This method remains for backwards compatability. One will need to free the result with virResetError()</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>to</tt></i>:</span></td><td>target to receive the copy</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 if no error was found and the error code otherwise and -1 in case of parameter error.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnGetLastError"/>virConnGetLastError ()</h3><pre class="programlisting"><a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a>	virConnGetLastError	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br/>
-</pre><p>Provide a pointer to the last error caught on that connection Simpler but may not be suitable for multithreaded accesses, in which case use virConnCopyLastError()</p>
+</pre><p>Provide a pointer to the last error caught on that connection This method is not protected against access from multiple threads. In a multi-threaded application, always use the global virGetLastError() API which is backed by thread local storage. If the connection object was discovered to be invalid by an API call, then the error will be reported against the global error object. Since 0.6.0, all errors reported in the per-connection object are also duplicated in the global error object. As such an application can always use virGetLastError(). This method remains for backwards compatability.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the last error or NULL if none occurred.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnResetLastError"/>virConnResetLastError ()</h3><pre class="programlisting">void	virConnResetLastError		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br/>
-</pre><p>Reset the last error caught on that connection</p>
+</pre><p>The error object is kept in thread local storage, so separate threads can safely access this concurrently. Reset the last error caught on that connection</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnSetErrorFunc"/>virConnSetErrorFunc ()</h3><pre class="programlisting">void	virConnSetErrorFunc		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 void * userData, <br/>					 <a href="libvirt-virterror.html#virErrorFunc">virErrorFunc</a> handler)<br/>
@@ -200,7 +200,7 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>userData</tt></i>:</span></td><td>pointer to the user data provided in the handler callback</td></tr><tr><td><span class="term"><i><tt>handler</tt></i>:</span></td><td>the function to get called in case of error or NULL</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virCopyLastError"/>virCopyLastError ()</h3><pre class="programlisting">int	virCopyLastError		(<a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> to)<br/>
-</pre><p>Copy the content of the last error caught at the library level One will need to free the result with virResetError()</p>
+</pre><p>Copy the content of the last error caught at the library level The error object is kept in thread local storage, so separate threads can safely access this concurrently. One will need to free the result with virResetError()</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>to</tt></i>:</span></td><td>target to receive the copy</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 if no error was found and the error code otherwise and -1 in case of parameter error.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDefaultErrorFunc"/>virDefaultErrorFunc ()</h3><pre class="programlisting">void	virDefaultErrorFunc		(<a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> err)<br/>
@@ -208,7 +208,7 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>err</tt></i>:</span></td><td>pointer to the error.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virGetLastError"/>virGetLastError ()</h3><pre class="programlisting"><a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a>	virGetLastError		(void)<br/>
-</pre><p>Provide a pointer to the last error caught at the library level Simpler but may not be suitable for multithreaded accesses, in which case use virCopyLastError()</p>
+</pre><p>Provide a pointer to the last error caught at the library level The error object is kept in thread local storage, so separate threads can safely access this concurrently.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the last error or NULL if none occurred.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virResetError"/>virResetError ()</h3><pre class="programlisting">void	virResetError			(<a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> err)<br/>
@@ -216,7 +216,7 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>err</tt></i>:</span></td><td>pointer to the <a href="libvirt-virterror.html#virError">virError</a> to clean up</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virResetLastError"/>virResetLastError ()</h3><pre class="programlisting">void	virResetLastError		(void)<br/>
-</pre><p>Reset the last error caught at the library level.</p>
+</pre><p>Reset the last error caught at the library level. The error object is kept in thread local storage, so separate threads can safely access this concurrently, only resetting their own error object.</p>
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virSetErrorFunc"/>virSetErrorFunc ()</h3><pre class="programlisting">void	virSetErrorFunc			(void * userData, <br/>					 <a href="libvirt-virterror.html#virErrorFunc">virErrorFunc</a> handler)<br/>

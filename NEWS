@@ -5,6 +5,83 @@
        http://libvirt.org/news.html
 
 
+0.6.0: Jan 31 2009:
+   - New features: thread safety of the API and event handling (Daniel
+          Berrange), allow QEmu domains to survive daemon restart (Guido
+          Günther), extended logging capabilities, support copy-on-write
+          storage volumes (Daniel Berrange), support of storage cache
+          control options for QEmu/KVM (Daniel Berrange)
+   - Portability: fix old DBus API problem, Debian portability fix
+          (Daniel Berrange), fix distcheck (Jim Meyering), build in
+          debug mode (Jim Meyering), libnuma API portability (Jim Meyering),
+          many portability fixes pointed by Solaris (John Levon), non-gcc
+          portability fixes (John Levon), various include fixes (Jim Meyering),
+          various Windows and Mingw portability fixes (Daniel Berrange),
+          solaris Xen fixes (John Levon), RPC portability to Solaris (Daniel
+          Berrange)
+   - Documentation: typo fixes (Richard Jones), logging support,
+          vnc keymap attributes (Guido Günther), HACKING file updates
+         (Jim Meyering), new PCI passthrough format, libvirt-qpid and
+         UML driver documentation (Daniel Berrange), provide RNG schemas
+         for all XML formats used in libvirt APIs (Daniel Berrange), 
+   - Bug fixes: segfault on virtual network without bridge name (Cole
+          Robinson), various locking fixes (Cole Robinson), fix serial
+          and parallel devices on tcp/unix/telnet (Guido Günther), leak
+          in daemon (Jim Meyering), storage driver segfault (Miloslav TrmaC),
+          missing check in read-only connections (Daniel Berrange),
+          OpenVZ crash and mutex fixes (Anton Protopopov), couple of
+          daemon bug fixes (John Levon), OpenVZ MAC addresses generation
+          (Evgeniy Sokolov), poll call initialization fix (Daniel Berrange),
+          various Xen driver fixes (John Levon), segfault on device
+          back compat (Cole Robinson), couple Xen bug fixes coming from
+          RHEL (Markus Armbruster), buffer overflow in libvirt proxy
+          (rasputin@email.ru), vnc port report (John Levon), repair save
+          and restore on recent KVM versions (Daniel Berrange), Xen
+          cpu pinning XML fix (John Levon), various xen driver fixes
+          (Daniel Berrange), some memory leak fixes (Daniel Berrange)
+   - Improvements: driver infrastructure and locking (Daniel Berrange),
+          Test driver infrastructure (Daniel Berrange), parallelism in the
+          daemon and associated config (Daniel Berrange), virsh help cleanups
+          (Jim Meyering), logrotate daemon logs (Guido Günther), more
+          regression tests (Jim Meyering), QEmu SDL graphics (Itamar Heim),
+          add --version flag to daemon (Dave Allan), memory consumption
+          cleanup (Dave Allan), QEmu pid file and XML states for daemon
+          restart (Guido Günther), gnulib updates (Jim Meyering and
+          Dan Berrange), PCI passthrough for KVM (Jason Krieg), generic
+          internal thread API (Daniel Berrange), RHEL-5 specific Xen
+          configure option and code (Markus Armbruster), save domain
+          state as string in status file (Guido Günther), add locking
+          to all API entry points (Daniel Berrange), new ref counting APIs
+          (Daniel Berrange), IP address for Xen bridges (John Levon),
+          driver format for disk file types (Daniel Berrange), improve
+          QEmu/KVM tun/tap performances (Mark McLoughlin), enable floppies
+          for Xen fully virt (John Levon), support VNC password settings
+          for QEmu/KVM (Daniel Berrange), qemu driver version reporting
+          (Daniel Berrange) 
+   - Cleanups: converting linked lists to arrays (Daniel Berrange),
+          daemon RPC handling refactoring (Daniel Berrange), strings cleanups
+          (Jim Meyering), gethostby* cleanup and test (Jim Meyering), some
+           code fixes (Dave Allan), various code cleanup (Jim Meyering),
+           virsh argument handling cleanup (Jim Meyering), virAsprintf
+           cleanup replacement (Guido Günther), QEmu monitor reads (Cole
+           Robinson), Makefile cleanups (Guido Günther), Xen code cleanups
+           (John Levon), revamp of ELF export scripts (John Levon), domain
+           event callback args (John Levon), enforce use of pid_t (John Levon),
+           virsh pool-*-as XML code merge (Cole Robinson), xgettext warnings
+           (Jim Meyering), add virKillProcess (Guido Günther), add
+           virGetHostname (David Lutterkort), add flags argument to the full
+           XML parsing stack (Guido Günther), various daemon code cleanups
+           (Guido Günther), handling of daemon missing config file (Jim
+           Meyering), rpcgen invocation cleanup (Richard Jones), devhelp
+           builkd makefile cleanups (John Levon), update error handling for
+           threading (Daniel Berrange), remove all non-rentrant POSIX calls
+           usage (Daniel Berrange), many small cleanups (Jim Meyering and
+           Daniel Berrange), examples Makefile generator (John Levon),
+           mis-use of PF_UNIX as a protocol (John Levon), cleanup OOM
+           error paths (Jim Meyering), temporary fix fro valgrind on lxc
+           (Daniel Berrange), QEmu driver init cleanups (Daniel Berrange)
+
+
 0.5.1: Dec  4 2008:
    - Portability: fix missing dep in spec file, fix compilation with new
           NUMA libraries (Daniel Berrange), udev compatibility for RHEL (Chris
