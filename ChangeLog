@@ -1,3 +1,8 @@
+Sat Jan 31 14:45:58 CET 2009 Guido Günther<agx@sigxcpu.org>
+
+	* src/remote_internal.c (doRemoteOpen): Don't hardcode ssh port 22,
+	use VIR_FREE, initialize pointers to NULL not 0.
+
 Sat Jan 31 11:43:21 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in docs/* NEWS: release of 0.6.0

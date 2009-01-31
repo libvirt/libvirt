@@ -370,8 +370,8 @@ doRemoteOpen (virConnectPtr conn,
     /* Local variables which we will initialise. These can
      * get freed in the failed: path.
      */
-    char *name = 0, *command = 0, *sockname = 0, *netcat = 0, *username = 0;
-    char *port = 0, *authtype = 0;
+    char *name = NULL, *command = NULL, *sockname = NULL, *netcat = NULL;
+    char *port = NULL, *authtype = NULL, *username = NULL;
     int no_verify = 0, no_tty = 0;
     char **cmd_argv = NULL;
 
@@ -387,11 +387,8 @@ doRemoteOpen (virConnectPtr conn,
     } else if (transport == trans_tcp) {
         port = strdup (LIBVIRTD_TCP_PORT);
         if (!port) goto out_of_memory;
-    } else if (transport == trans_ssh) {
-        port = strdup ("22");
-        if (!port) goto out_of_memory;
     } else
-        port = NULL;           /* Port not used for unix, ext. */
+        port = NULL; /* Port not used for unix, ext., default for ssh */
 
 
     priv->hostname = strdup (conn->uri && conn->uri->server ?
@@ -673,24 +670,27 @@ doRemoteOpen (virConnectPtr conn,
     }
 
     case trans_ssh: {
-        int j, nr_args = 8;
+        int j, nr_args = 6;
 
         if (username) nr_args += 2; /* For -l username */
         if (no_tty) nr_args += 5;   /* For -T -o BatchMode=yes -e none */
+        if (port) nr_args += 2;     /* For -p port */
 
         command = command ? command : strdup ("ssh");
         if (command == NULL)
             goto out_of_memory;
 
         // Generate the final command argv[] array.
-        //   ssh -p $port [-l $username] $hostname $netcat -U $sockname [NULL]
+        //   ssh [-p $port] [-l $username] $hostname $netcat -U $sockname [NULL]
         if (VIR_ALLOC_N(cmd_argv, nr_args) < 0)
             goto out_of_memory;
 
         j = 0;
         cmd_argv[j++] = strdup (command);
-        cmd_argv[j++] = strdup ("-p");
-        cmd_argv[j++] = strdup (port);
+        if (port) {
+            cmd_argv[j++] = strdup ("-p");
+            cmd_argv[j++] = strdup (port);
+        }
         if (username) {
             cmd_argv[j++] = strdup ("-l");
             cmd_argv[j++] = strdup (username);
@@ -843,20 +843,20 @@ doRemoteOpen (virConnectPtr conn,
 
  cleanup:
     /* Free up the URL and strings. */
-    free (name);
-    free (command);
-    free (sockname);
-    free (authtype);
-    free (netcat);
-    free (username);
-    free (port);
+    VIR_FREE(name);
+    VIR_FREE(command);
+    VIR_FREE(sockname);
+    VIR_FREE(authtype);
+    VIR_FREE(netcat);
+    VIR_FREE(username);
+    VIR_FREE(port);
     if (cmd_argv) {
         char **cmd_argv_ptr = cmd_argv;
         while (*cmd_argv_ptr) {
-            free (*cmd_argv_ptr);
+            VIR_FREE(*cmd_argv_ptr);
             cmd_argv_ptr++;
         }
-        free (cmd_argv);
+        VIR_FREE(cmd_argv);
     }
 
     return retcode;
@@ -884,11 +884,7 @@ doRemoteOpen (virConnectPtr conn,
 #endif
     }
 
-    if (priv->hostname) {
-        free (priv->hostname);
-        priv->hostname = NULL;
-    }
-
+    VIR_FREE(priv->hostname);
     goto cleanup;
 }
 
