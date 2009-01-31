@@ -1265,7 +1265,7 @@ The content of this structure is not made public by the API.
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>vol</tt></i>:</span></td><td>pointer to storage volume</td></tr><tr><td><span class="term"><i><tt>flags</tt></i>:</span></td><td>future flags, use 0 for now</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 on success, or -1 on error</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virStorageVolFree"/>virStorageVolFree ()</h3><pre class="programlisting">int	virStorageVolFree		(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol)<br/>
-</pre><p>Release the storage volume handle. The underlying storage volume contains to exist</p>
+</pre><p>Release the storage volume handle. The underlying storage volume continues to exist.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>vol</tt></i>:</span></td><td>pointer to storage volume</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 on success, or -1 on error</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virStorageVolGetConnect"/>virStorageVolGetConnect ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virStorageVolGetConnect	(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol)<br/>

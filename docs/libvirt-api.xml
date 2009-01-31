@@ -1694,7 +1694,7 @@ see note above'/>
       <arg name='flags' type='unsigned int' info='future flags, use 0 for now'/>
     </function>
     <function name='virStorageVolFree' file='libvirt' module='libvirt'>
-      <info>Release the storage volume handle. The underlying storage volume contains to exist</info>
+      <info>Release the storage volume handle. The underlying storage volume continues to exist.</info>
       <return type='int' info='0 on success, or -1 on error'/>
       <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
     </function>

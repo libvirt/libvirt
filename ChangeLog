@@ -1,3 +1,8 @@
+Sat Jan 31 11:43:21 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in docs/* NEWS: release of 0.6.0
+	* po/*: regenerated and updated brazilian and polish localizations
+
 Sat Jan 31 10:09:08 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/news.html*: update with infos for 0.6.0

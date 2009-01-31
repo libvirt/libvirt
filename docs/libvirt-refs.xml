@@ -2973,7 +2973,6 @@
         </word>
         <word name='contains'>
           <ref name='virStoragePoolLookupByVolume'/>
-          <ref name='virStorageVolFree'/>
         </word>
         <word name='content'>
           <ref name='virConnCopyLastError'/>
@@ -2983,6 +2982,9 @@
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainMemoryPeek'/>
           <ref name='virDomainSave'/>
+        </word>
+        <word name='continues'>
+          <ref name='virStorageVolFree'/>
         </word>
         <word name='control'>
           <ref name='virConnectOpenReadOnly'/>
