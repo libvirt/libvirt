@@ -2840,7 +2840,9 @@ virDomainMigratePrepare (virConnectPtr dconn,
                            const char *dname,
                            unsigned long bandwidth)
 {
-    DEBUG("dconn=%p, cookie=%p, cookielen=%p, uri_in=%s, uri_out=%p, flags=%lu, dname=%s, bandwidth=%lu", dconn, cookie, cookielen, uri_in, uri_out, flags, dname, bandwidth);
+    VIR_DEBUG("dconn=%p, cookie=%p, cookielen=%p, uri_in=%s, uri_out=%p, "
+              "flags=%lu, dname=%s, bandwidth=%lu", dconn, cookie, cookielen,
+              NULLSTR(uri_in), uri_out, flags, NULLSTR(dname), bandwidth);
 
     virResetLastError();
 
@@ -2886,7 +2888,9 @@ virDomainMigratePerform (virDomainPtr domain,
                            unsigned long bandwidth)
 {
     virConnectPtr conn;
-    DEBUG("domain=%p, cookie=%p, cookielen=%d, uri=%s, flags=%lu, dname=%s, bandwidth=%lu", domain, cookie, cookielen, uri, flags, dname, bandwidth);
+    VIR_DEBUG("domain=%p, cookie=%p, cookielen=%d, uri=%s, flags=%lu, "
+              "dname=%s, bandwidth=%lu", domain, cookie, cookielen, uri, flags,
+              NULLSTR(dname), bandwidth);
 
     virResetLastError();
 
@@ -2931,7 +2935,9 @@ virDomainMigrateFinish (virConnectPtr dconn,
                           const char *uri,
                           unsigned long flags)
 {
-    DEBUG("dconn=%p, dname=%s, cookie=%p, cookielen=%d, uri=%s, flags=%lu", dconn, dname, cookie, cookielen, uri, flags);
+    VIR_DEBUG("dconn=%p, dname=%s, cookie=%p, cookielen=%d, uri=%s, "
+              "flags=%lu", dconn, NULLSTR(dname), cookie, cookielen,
+              uri, flags);
 
     virResetLastError();
 
@@ -2979,7 +2985,10 @@ virDomainMigratePrepare2 (virConnectPtr dconn,
                           unsigned long bandwidth,
                           const char *dom_xml)
 {
-    DEBUG("dconn=%p, cookie=%p, cookielen=%p, uri_in=%s, uri_out=%p, flags=%lu, dname=%s, bandwidth=%lu, dom_xml=%s", dconn, cookie, cookielen, uri_in, uri_out, flags, dname, bandwidth, dom_xml);
+    VIR_DEBUG("dconn=%p, cookie=%p, cookielen=%p, uri_in=%s, uri_out=%p,"
+              "flags=%lu, dname=%s, bandwidth=%lu, dom_xml=%s", dconn,
+              cookie, cookielen, uri_in, uri_out, flags, NULLSTR(dname),
+              bandwidth, dom_xml);
 
     virResetLastError();
 
@@ -3025,7 +3034,9 @@ virDomainMigrateFinish2 (virConnectPtr dconn,
                          unsigned long flags,
                          int retcode)
 {
-    DEBUG("dconn=%p, dname=%s, cookie=%p, cookielen=%d, uri=%s, flags=%lu, retcode=%d", dconn, dname, cookie, cookielen, uri, flags, retcode);
+    VIR_DEBUG("dconn=%p, dname=%s, cookie=%p, cookielen=%d, uri=%s, "
+              "flags=%lu, retcode=%d", dconn, NULLSTR(dname), cookie,
+              cookielen, uri, flags, retcode);
 
     virResetLastError();
 

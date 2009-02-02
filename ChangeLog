@@ -1,3 +1,7 @@
+Mon Feb  2 18:33:19 GMT 2009 John Levon <john.levon@sun.com>
+
+	* src/libvirt.c: fix more printf("%s", NULL) cases
+
 Sat Jan 31 14:45:58 CET 2009 Guido Günther<agx@sigxcpu.org>
 
 	* src/remote_internal.c (doRemoteOpen): Don't hardcode ssh port 22,
