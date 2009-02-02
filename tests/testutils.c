@@ -1,7 +1,7 @@
 /*
  * testutils.c: basic test utils
  *
- * Copyright (C) 2005-2008 Red Hat, Inc.
+ * Copyright (C) 2005-2009 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -106,27 +106,36 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
     return ret;
 }
 
-int virtTestLoadFile(const char *name,
+/* Read FILE into buffer BUF of length BUFLEN.
+   Upon any failure, or if FILE appears to contain more than BUFLEN bytes,
+   diagnose it and return -1, but don't bother trying to preserve errno.
+   Otherwise, return the number of bytes read (and copied into BUF).  */
+int virtTestLoadFile(const char *file,
                      char **buf,
                      int buflen) {
-    FILE *fp = fopen(name, "r");
+    FILE *fp = fopen(file, "r");
     struct stat st;
 
-    if (!fp)
+    if (!fp) {
+        fprintf (stderr, "%s: failed to open: %s\n", file, strerror(errno));
         return -1;
+    }
 
     if (fstat(fileno(fp), &st) < 0) {
+        fprintf (stderr, "%s: failed to fstat: %s\n", file, strerror(errno));
         fclose(fp);
         return -1;
     }
 
     if (st.st_size > (buflen-1)) {
+        fprintf (stderr, "%s: larger than buffer (> %d)\n", file, buflen-1);
         fclose(fp);
         return -1;
     }
 
     if (st.st_size) {
         if (fread(*buf, st.st_size, 1, fp) != 1) {
+            fprintf (stderr, "%s: read failed: %s\n", file, strerror(errno));
             fclose(fp);
             return -1;
         }

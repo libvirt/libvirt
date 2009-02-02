@@ -1,3 +1,10 @@
+Mon, 2 Feb 2009 21:33:57 +0100 Jim Meyering <meyering@redhat.com>
+
+	tests: diagnose more open failures
+	* tests/qemuxml2argvtest.c: Revert the change,
+	"tests: diagnose open failure" of 2009-01-30.
+	* tests/testutils.c (virtTestLoadFile): Diagnose failure here.
+
 Mon Feb  2 18:33:19 GMT 2009 John Levon <john.levon@sun.com>
 
 	* src/libvirt.c: fix more printf("%s", NULL) cases
