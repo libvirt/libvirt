@@ -1,9 +1,9 @@
-Tue, 3 Feb 2009 14:06:06 +0100 Jim Meyering <meyering@redhat.com>
+Tue Feb  3 14:06:06 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	avoid a format-related warning
 	* src/qemu_driver.c (qemudStartVMDaemon): Use "%s".
 
-Tue, 3 Feb 2009 14:06:06 +0100 Jim Meyering <meyering@redhat.com>
+Tue Feb  3 14:06:06 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	build: enable redundant-const check
 	* Makefile.cfg (local-checks-to-skip): Remove sc_redundant_const.
@@ -13,7 +13,7 @@ Tue, 3 Feb 2009 14:06:06 +0100 Jim Meyering <meyering@redhat.com>
 	* src/xen_internal.c: Likewise.
 	* tests/qparamtest.c: Likewise.
 
-Tue, 3 Feb 2009 14:06:06 +0100 Jim Meyering <meyering@redhat.com>
+Tue Feb  3 14:06:06 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	syntax-check: enable more checks
 	* Makefile.cfg (local-checks-to-skip): Don't skip sc_m4_quote_check.
@@ -21,7 +21,7 @@ Tue, 3 Feb 2009 14:06:06 +0100 Jim Meyering <meyering@redhat.com>
 	* Makefile.nonreentrant (NON_REENTRANT): Comment out until we've
 	remove all remaining uses of strerror.
 
-Tue, 3 Feb 2009 14:06:05 +0100 Jim Meyering <meyering@redhat.com>
+Tue Feb  3 14:06:05 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	cleanup: remove useless if-before-VIR_FREE
 	* Makefile.cfg (useless_free_options): Also check for VIR_FREE.
@@ -29,7 +29,7 @@ Tue, 3 Feb 2009 14:06:05 +0100 Jim Meyering <meyering@redhat.com>
 	* src/remote_internal.c (remoteAuthSASL): Likewise.
 	* src/test.c (testOpenFromFile): Likewise.
 
-Mon, 2 Feb 2009 21:33:57 +0100 Jim Meyering <meyering@redhat.com>
+Mon Feb  2 21:33:57 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	tests: diagnose more open failures
 	* tests/qemuxml2argvtest.c: Revert the change,
