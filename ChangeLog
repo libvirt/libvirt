@@ -1,3 +1,11 @@
+Tue, 3 Feb 2009 14:06:05 +0100 Jim Meyering <meyering@redhat.com>
+
+	cleanup: remove useless if-before-VIR_FREE
+	* Makefile.cfg (useless_free_options): Also check for VIR_FREE.
+	* src/iptables.c (iptRulesFree): Remove useless if-before-VIR_FREE.
+	* src/remote_internal.c (remoteAuthSASL): Likewise.
+	* src/test.c (testOpenFromFile): Likewise.
+
 Mon, 2 Feb 2009 21:33:57 +0100 Jim Meyering <meyering@redhat.com>
 
 	tests: diagnose more open failures

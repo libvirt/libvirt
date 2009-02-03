@@ -1,7 +1,7 @@
 /*
  * test.c: A "mock" hypervisor for use by application unit tests
  *
- * Copyright (C) 2006-2008 Red Hat, Inc.
+ * Copyright (C) 2006-2009 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -509,8 +509,7 @@ static int testOpenFromFile(virConnectPtr conn,
         dom->persistent = 1;
         virDomainObjUnlock(dom);
     }
-    if (domains != NULL)
-        VIR_FREE(domains);
+    VIR_FREE(domains);
 
     ret = virXPathNodeSet(conn, "/node/network", ctxt, &networks);
     if (ret < 0) {
@@ -544,8 +543,7 @@ static int testOpenFromFile(virConnectPtr conn,
         net->persistent = 1;
         virNetworkObjUnlock(net);
     }
-    if (networks != NULL)
-        VIR_FREE(networks);
+    VIR_FREE(networks);
 
     /* Parse Storage Pool list */
     ret = virXPathNodeSet(conn, "/node/pool", ctxt, &pools);
@@ -599,8 +597,7 @@ static int testOpenFromFile(virConnectPtr conn,
         pool->active = 1;
         virStoragePoolObjUnlock(pool);
     }
-    if (pools != NULL)
-        VIR_FREE(pools);
+    VIR_FREE(pools);
 
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);

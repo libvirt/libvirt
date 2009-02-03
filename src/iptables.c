@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2007-2009 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -325,11 +325,8 @@ iptRulesFree(iptRules *rules)
 {
     int i;
 
-    if (rules->table)
-        VIR_FREE(rules->table);
-
-    if (rules->chain)
-        VIR_FREE(rules->chain);
+    VIR_FREE(rules->table);
+    VIR_FREE(rules->chain);
 
     if (rules->rules) {
         for (i = 0; i < rules->nrules; i++)

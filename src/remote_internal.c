@@ -5388,9 +5388,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
             goto cleanup;
         }
 
-        if (serverin) {
-            VIR_FREE(serverin);
-        }
+        VIR_FREE(serverin);
         DEBUG("Client step result %d. Data %d bytes %p", err, clientoutlen, clientout);
 
         /* Previous server call showed completion & we're now locally complete too */
