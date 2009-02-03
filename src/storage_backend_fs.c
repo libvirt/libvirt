@@ -1,7 +1,7 @@
 /*
  * storage_backend_fs.c: storage backend for FS and directory handling
  *
- * Copyright (C) 2007-2008 Red Hat, Inc.
+ * Copyright (C) 2007-2009 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -84,7 +84,7 @@ struct FileTypeInfo {
     int (*getBackingStore)(virConnectPtr conn, char **res,
                            const unsigned char *buf, size_t buf_size);
 };
-const struct FileTypeInfo const fileTypeInfo[] = {
+struct FileTypeInfo const fileTypeInfo[] = {
     /* Bochs */
     /* XXX Untested
     { VIR_STORAGE_VOL_BOCHS, "Bochs Virtual HD Image", NULL,
@@ -1020,7 +1020,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
          * Need to add in progress bars & bg thread somehow */
         if (vol->allocation) {
             unsigned long long remain = vol->allocation;
-            static const char const zeros[4096];
+            static char const zeros[4096];
             while (remain) {
                 int bytes = sizeof(zeros);
                 if (bytes > remain)

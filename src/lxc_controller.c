@@ -507,7 +507,7 @@ int main(int argc, char *argv[])
     virDomainDefPtr def = NULL;
     char *configFile = NULL;
     char *sockpath = NULL;
-    const struct option const options[] = {
+    const struct option options[] = {
         { "background", 0, NULL, 'b' },
         { "name",   1, NULL, 'n' },
         { "veth",   1, NULL, 'v' },
@@ -662,4 +662,3 @@ cleanup:
 
     return rc;
 }
-

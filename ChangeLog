@@ -1,5 +1,15 @@
 Tue, 3 Feb 2009 14:06:06 +0100 Jim Meyering <meyering@redhat.com>
 
+	build: enable redundant-const check
+	* Makefile.cfg (local-checks-to-skip): Remove sc_redundant_const.
+	* src/lxc_controller.c: Remove redundant "const"(s).
+	* src/storage_backend_fs.c: Likewise.
+	* src/util.h: Likewise.
+	* src/xen_internal.c: Likewise.
+	* tests/qparamtest.c: Likewise.
+
+Tue, 3 Feb 2009 14:06:06 +0100 Jim Meyering <meyering@redhat.com>
+
 	syntax-check: enable more checks
 	* Makefile.cfg (local-checks-to-skip): Don't skip sc_m4_quote_check.
 	Don't skip sc_prohibit_nonreentrant.

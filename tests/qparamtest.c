@@ -175,12 +175,12 @@ fail:
     return ret;
 }
 
-static const struct qparamParseDataEntry const params1[] = { { "foo", "one" }, { "bar", "two" } };
-static const struct qparamParseDataEntry const params2[] = { { "foo", "one" }, { "foo", "two" } };
-static const struct qparamParseDataEntry const params3[] = { { "foo", "&one" }, { "bar", "&two" } };
-static const struct qparamParseDataEntry const params4[] = { { "foo", "" } };
-static const struct qparamParseDataEntry const params5[] = { { "foo", "one two" } };
-static const struct qparamParseDataEntry const params6[] = { { "foo", "one" } };
+static const struct qparamParseDataEntry params1[] = { { "foo", "one" }, { "bar", "two" } };
+static const struct qparamParseDataEntry params2[] = { { "foo", "one" }, { "foo", "two" } };
+static const struct qparamParseDataEntry params3[] = { { "foo", "&one" }, { "bar", "&two" } };
+static const struct qparamParseDataEntry params4[] = { { "foo", "" } };
+static const struct qparamParseDataEntry params5[] = { { "foo", "one two" } };
+static const struct qparamParseDataEntry params6[] = { { "foo", "one" } };
 
 static int
 mymain(int argc ATTRIBUTE_UNUSED,

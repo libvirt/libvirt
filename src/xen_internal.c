@@ -1,7 +1,7 @@
 /*
  * xen_internal.c: direct access to Xen hypervisor level
  *
- * Copyright (C) 2005, 2006, 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -2178,7 +2178,7 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
 
     for (i = 0; i < nr_guest_archs; ++i) {
         virCapsGuestPtr guest;
-        const char const *machines[] = { guest_archs[i].hvm ? "xenfv" : "xenpv" };
+        char const *const machines[] = {guest_archs[i].hvm ? "xenfv" : "xenpv"};
 
         if ((guest = virCapabilitiesAddGuest(caps,
                                              guest_archs[i].hvm ? "hvm" : "xen",
