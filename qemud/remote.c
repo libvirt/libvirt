@@ -1,7 +1,7 @@
 /*
  * remote.c: code handling remote requests (from remote_internal.c)
  *
- * Copyright (C) 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2007, 2008, 2009 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2572,8 +2572,8 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
     salen = sizeof(sa);
     if (getsockname(client->fd, (struct sockaddr*)&sa, &salen) < 0) {
         remoteDispatchFormatError(rerr,
-                                  _("failed to get sock address %d (%s)"),
-                                  errno, strerror(errno));
+                                  _("failed to get sock address: %s"),
+                                  strerror(errno));
         goto error;
     }
     if ((localAddr = addrToString(rerr, &sa, salen)) == NULL) {
@@ -2583,8 +2583,8 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
     /* Get remote address in form  IPADDR:PORT */
     salen = sizeof(sa);
     if (getpeername(client->fd, (struct sockaddr*)&sa, &salen) < 0) {
-        remoteDispatchFormatError(rerr, _("failed to get peer address %d (%s)"),
-                                  errno, strerror(errno));
+        remoteDispatchFormatError(rerr, _("failed to get peer address: %s"),
+                                  strerror(errno));
         VIR_FREE(localAddr);
         goto error;
     }

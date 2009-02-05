@@ -1,7 +1,7 @@
 /*
  * uml_driver.c: core driver methods for managing UML guests
  *
- * Copyright (C) 2006, 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -791,26 +791,26 @@ static int umlStartVMDaemon(virConnectPtr conn,
     tmp = progenv;
     while (*tmp) {
         if (safewrite(logfd, *tmp, strlen(*tmp)) < 0)
-            umlLog(VIR_LOG_WARN, _("Unable to write envv to logfile %d: %s\n"),
-                   errno, strerror(errno));
+            umlLog(VIR_LOG_WARN, _("Unable to write envv to logfile: %s\n"),
+                   strerror(errno));
         if (safewrite(logfd, " ", 1) < 0)
-            umlLog(VIR_LOG_WARN, _("Unable to write envv to logfile %d: %s\n"),
-                   errno, strerror(errno));
+            umlLog(VIR_LOG_WARN, _("Unable to write envv to logfile: %s\n"),
+                   strerror(errno));
         tmp++;
     }
     tmp = argv;
     while (*tmp) {
         if (safewrite(logfd, *tmp, strlen(*tmp)) < 0)
-            umlLog(VIR_LOG_WARN, _("Unable to write argv to logfile %d: %s\n"),
-                   errno, strerror(errno));
+            umlLog(VIR_LOG_WARN, _("Unable to write argv to logfile: %s\n"),
+                   strerror(errno));
         if (safewrite(logfd, " ", 1) < 0)
-            umlLog(VIR_LOG_WARN, _("Unable to write argv to logfile %d: %s\n"),
-                   errno, strerror(errno));
+            umlLog(VIR_LOG_WARN, _("Unable to write argv to logfile: %s\n"),
+                   strerror(errno));
         tmp++;
     }
     if (safewrite(logfd, "\n", 1) < 0)
-        umlLog(VIR_LOG_WARN, _("Unable to write argv to logfile %d: %s\n"),
-                 errno, strerror(errno));
+        umlLog(VIR_LOG_WARN, _("Unable to write argv to logfile: %s\n"),
+                 strerror(errno));
 
     vm->monitor = -1;
 

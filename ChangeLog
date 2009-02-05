@@ -1,5 +1,11 @@
 Thu Feb 5 17:03:35 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	don't include raw errno in diagnostics
+	* src/uml_driver.c (umlStartVMDaemon): Don't print raw errno value.
+	* qemud/remote.c (remoteDispatchAuthSaslInit): Likewise.
+
+Thu Feb 5 17:03:35 +0100 2009 Jim Meyering <meyering@redhat.com>
+
 	qemud.c: use virStrerror, not strerror
 
 Thu Feb 5 17:03:35 +0100 2009 Jim Meyering <meyering@redhat.com>
