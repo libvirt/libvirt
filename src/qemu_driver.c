@@ -462,8 +462,7 @@ qemudStartup(void) {
     return 0;
 
 out_of_memory:
-    qemudLog (QEMUD_ERROR,
-              "%s", _("qemudStartup: out of memory\n"));
+    virReportOOMError(NULL);
 error:
     if (qemu_driver)
         qemuDriverUnlock(qemu_driver);
@@ -2419,15 +2418,13 @@ static int qemudDomainSave(virDomainPtr dom,
     /* Migrate to file */
     safe_path = qemudEscapeShellArg(path);
     if (!safe_path) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("out of memory"));
+        virReportOOMError(dom->conn);
         goto cleanup;
     }
     if (virAsprintf(&command, "migrate \"exec:"
                   "dd of='%s' oflag=append conv=notrunc 2>/dev/null"
                   "\"", safe_path) == -1) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("out of memory"));
+        virReportOOMError(dom->conn);
         command = NULL;
         goto cleanup;
     }
@@ -2741,8 +2738,7 @@ static int qemudDomainRestore(virConnectPtr conn,
     }
 
     if (VIR_ALLOC_N(xml, header.xml_len) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("out of memory"));
+        virReportOOMError(conn);
         goto cleanup;
     }
 
@@ -3220,8 +3216,7 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
 
     safe_path = qemudEscapeMonitorArg(dev->data.disk->src);
     if (!safe_path) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("out of memory"));
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -3290,8 +3285,7 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
 
     safe_path = qemudEscapeMonitorArg(dev->data.disk->src);
     if (!safe_path) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("out of memory"));
+        virReportOOMError(conn);
         return -1;
     }
 
