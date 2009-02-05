@@ -2265,8 +2265,9 @@ get_cpu_flags(virConnectPtr conn, const char **hvm, int *pae, int *longmode)
 
     if ((fd = open("/dev/cpu/self/cpuid", O_RDONLY)) == -1 ||
         pread(fd, &regs, sizeof(regs), 0) != sizeof(regs)) {
+        char ebuf[1024];
         virXenError(conn, VIR_ERR_SYSTEM_ERROR,
-            "couldn't read CPU flags: %s", strerror(errno));
+            "couldn't read CPU flags: %s", virStrerror(errno, ebuf, sizeof ebuf));
         goto out;
     }
 

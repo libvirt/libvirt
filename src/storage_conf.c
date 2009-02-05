@@ -1,7 +1,7 @@
 /*
  * storage_conf.c: config handling for storage driver
  *
- * Copyright (C) 2006-2008 Red Hat, Inc.
+ * Copyright (C) 2006-2009 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1384,10 +1384,11 @@ virStoragePoolLoadAllConfigs(virConnectPtr conn,
     struct dirent *entry;
 
     if (!(dir = opendir(configDir))) {
+        char ebuf[1024];
         if (errno == ENOENT)
             return 0;
         virStorageLog("Failed to open dir '%s': %s",
-                      configDir, strerror(errno));
+                      configDir, virStrerror(errno, ebuf, sizeof ebuf));
         return -1;
     }
 

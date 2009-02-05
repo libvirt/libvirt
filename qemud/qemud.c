@@ -49,6 +49,7 @@
 #include <netdb.h>
 
 #include "libvirt_internal.h"
+#include "virterror_internal.h"
 
 #include "qemud.h"
 #include "util.h"
@@ -2316,7 +2317,9 @@ checkType (virConfValuePtr p, const char *filename,
                 goto free_and_fail;                                     \
             (var_name) = strdup (p->str);                               \
             if ((var_name) == NULL) {                                   \
-                VIR_ERROR(_("remoteReadConfigFile: %s\n"),strerror (errno)); \
+                char ebuf[1024];                                        \
+                VIR_ERROR(_("remoteReadConfigFile: %s\n"),		\
+                          virStrerror(errno, ebuf, sizeof ebuf));       \
                 goto free_and_fail;                                     \
             }                                                           \
         }                                                               \

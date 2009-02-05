@@ -376,8 +376,9 @@ umlStartup(void) {
     }
 
     if (virFileMakePath(uml_driver->monitorDir) < 0) {
+        char ebuf[1024];
         umlLog(VIR_LOG_ERROR, _("Failed to create monitor directory %s: %s"),
-               uml_driver->monitorDir, strerror(errno));
+               uml_driver->monitorDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
 
@@ -726,6 +727,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
     int *tapfds = NULL;
     int ntapfds = 0;
     fd_set keepfd;
+    char ebuf[1024];
 
     FD_ZERO(&keepfd);
 
@@ -792,25 +794,25 @@ static int umlStartVMDaemon(virConnectPtr conn,
     while (*tmp) {
         if (safewrite(logfd, *tmp, strlen(*tmp)) < 0)
             umlLog(VIR_LOG_WARN, _("Unable to write envv to logfile: %s\n"),
-                   strerror(errno));
+                   virStrerror(errno, ebuf, sizeof ebuf));
         if (safewrite(logfd, " ", 1) < 0)
             umlLog(VIR_LOG_WARN, _("Unable to write envv to logfile: %s\n"),
-                   strerror(errno));
+                   virStrerror(errno, ebuf, sizeof ebuf));
         tmp++;
     }
     tmp = argv;
     while (*tmp) {
         if (safewrite(logfd, *tmp, strlen(*tmp)) < 0)
             umlLog(VIR_LOG_WARN, _("Unable to write argv to logfile: %s\n"),
-                   strerror(errno));
+                   virStrerror(errno, ebuf, sizeof ebuf));
         if (safewrite(logfd, " ", 1) < 0)
             umlLog(VIR_LOG_WARN, _("Unable to write argv to logfile: %s\n"),
-                   strerror(errno));
+                   virStrerror(errno, ebuf, sizeof ebuf));
         tmp++;
     }
     if (safewrite(logfd, "\n", 1) < 0)
         umlLog(VIR_LOG_WARN, _("Unable to write argv to logfile: %s\n"),
-                 strerror(errno));
+                 virStrerror(errno, ebuf, sizeof ebuf));
 
     vm->monitor = -1;
 
@@ -825,7 +827,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
     /* Cleanup intermediate proces */
     if (waitpid(pid, NULL, 0) != pid)
         umlLog(VIR_LOG_WARN, _("failed to wait on process: %d: %s\n"),
-               pid, strerror(errno));
+               pid, virStrerror(errno, ebuf, sizeof ebuf));
 
     for (i = 0 ; argv[i] ; i++)
         VIR_FREE(argv[i]);

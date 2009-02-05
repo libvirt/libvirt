@@ -907,14 +907,16 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
  err_delbr1:
     if (network->def->ipAddress &&
         (err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
+        char ebuf[1024];
         networkLog(NETWORK_WARN, _("Failed to bring down bridge '%s' : %s\n"),
-                 network->def->bridge, strerror(err));
+                 network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 
  err_delbr:
     if ((err = brDeleteBridge(driver->brctl, network->def->bridge))) {
+        char ebuf[1024];
         networkLog(NETWORK_WARN, _("Failed to delete bridge '%s' : %s\n"),
-                 network->def->bridge, strerror(err));
+                 network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 
     return -1;
@@ -944,15 +946,16 @@ static int networkShutdownNetworkDaemon(virConnectPtr conn,
 
     networkRemoveIptablesRules(driver, network);
 
+    char ebuf[1024];
     if (network->def->ipAddress &&
         (err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
         networkLog(NETWORK_WARN, _("Failed to bring down bridge '%s' : %s\n"),
-                 network->def->bridge, strerror(err));
+                 network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 
     if ((err = brDeleteBridge(driver->brctl, network->def->bridge))) {
         networkLog(NETWORK_WARN, _("Failed to delete bridge '%s' : %s\n"),
-                 network->def->bridge, strerror(err));
+                 network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 
     /* See if its still alive and really really kill it */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2007, 2008, 2009 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,6 +36,7 @@
 #include "c-ctype.h"
 #include "internal.h"
 #include "util.h"
+#include "virterror_internal.h"
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 
@@ -99,10 +100,13 @@ virUUIDGenerate(unsigned char *uuid)
     if (uuid == NULL)
         return(-1);
 
-    if ((err = virUUIDGenerateRandomBytes(uuid, VIR_UUID_BUFLEN)))
+    if ((err = virUUIDGenerateRandomBytes(uuid, VIR_UUID_BUFLEN))) {
+        char ebuf[1024];
         qemudLog(QEMUD_WARN,
                  _("Falling back to pseudorandom UUID,"
-                   " failed to generate random bytes: %s"), strerror(err));
+                   " failed to generate random bytes: %s"),
+                 virStrerror(err, ebuf, sizeof ebuf));
+    }
 
     return virUUIDGeneratePseudoRandomBytes(uuid, VIR_UUID_BUFLEN);
 }

@@ -1,5 +1,23 @@
 Thu Feb 5 17:03:35 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	remove remainder of offending strerror uses
+	* qemud/qemud.c (GET_CONF_STR): Use virStrerror, not strerror.
+	* qemud/remote.c (remoteDispatchDomainBlockPeek): Likewise.
+	(remoteDispatchDomainMemoryPeek, remoteDispatchAuthSaslInit): Likewise.
+	(remoteDispatchAuthPolkit): Likewise.
+	* src/lxc_container.c (lxcContainerAvailable): Likewise.
+	* src/network_driver.c (networkStartNetworkDaemon): Likewise.
+	(networkShutdownNetworkDaemon): Likewise.
+	* src/qemu_conf.c (qemudExtractVersion, qemudNetworkIfaceConnect):
+	* src/storage_conf.c (virStoragePoolLoadAllConfigs): Likewise.
+	* src/storage_driver.c (storagePoolUndefine): Likewise.
+	* src/uml_driver.c (umlStartup, umlStartVMDaemon): Likewise.
+	* src/util.c (virFileReadAll): Likewise.
+	* src/uuid.c (virUUIDGenerate): Likewise.
+	* src/xen_internal.c (get_cpu_flags): Likewise.
+
+Thu Feb 5 17:03:35 +0100 2009 Jim Meyering <meyering@redhat.com>
+
 	don't include raw errno in diagnostics
 	* src/uml_driver.c (umlStartVMDaemon): Don't print raw errno value.
 	* qemud/remote.c (remoteDispatchAuthSaslInit): Likewise.

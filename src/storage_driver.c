@@ -1,7 +1,7 @@
 /*
  * storage_driver.c: core driver for storage APIs
  *
- * Copyright (C) 2006-2008 Red Hat, Inc.
+ * Copyright (C) 2006-2009 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -567,9 +567,11 @@ storagePoolUndefine(virStoragePoolPtr obj) {
     if (virStoragePoolObjDeleteDef(obj->conn, pool) < 0)
         goto cleanup;
 
-    if (unlink(pool->autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR)
+    if (unlink(pool->autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
+        char ebuf[1024];
         storageLog("Failed to delete autostart link '%s': %s",
-                   pool->autostartLink, strerror(errno));
+                   pool->autostartLink, virStrerror(errno, ebuf, sizeof ebuf));
+    }
 
     VIR_FREE(pool->configFile);
     VIR_FREE(pool->autostartLink);

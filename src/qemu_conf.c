@@ -517,9 +517,10 @@ int qemudExtractVersion(virConnectPtr conn,
         return -1;
 
     if (stat(binary, &sb) < 0) {
+        char ebuf[1024];
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Cannot find QEMU binary %s: %s"), binary,
-                         strerror(errno));
+                         virStrerror(errno, ebuf, sizeof ebuf));
         return -1;
     }
 
@@ -580,10 +581,11 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         }
     }
 
+    char ebuf[1024];
     if (!driver->brctl && (err = brInit(&driver->brctl))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("cannot initialize bridge support: %s"),
-                         strerror(err));
+                         virStrerror(err, ebuf, sizeof ebuf));
         goto error;
     }
 
@@ -598,7 +600,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              _("Failed to add tap interface '%s' "
                                "to bridge '%s' : %s"),
-                             net->ifname, brname, strerror(err));
+                             net->ifname, brname, virStrerror(err, ebuf, sizeof ebuf));
         }
         goto error;
     }

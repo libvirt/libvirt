@@ -41,6 +41,7 @@
 #include <string.h>
 #include <errno.h>
 #include <fnmatch.h>
+#include "virterror_internal.h"
 
 #ifdef HAVE_POLKIT
 #include <polkit/polkit.h>
@@ -990,9 +991,11 @@ remoteDispatchDomainBlockPeek (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     ret->buffer.buffer_len = size;
-    if (VIR_ALLOC_N(ret->buffer.buffer_val, size) < 0) {
+    if (VIR_ALLOC_N (ret->buffer.buffer_val, size) < 0) {
+        char ebuf[1024];
         virDomainFree (dom);
-        remoteDispatchFormatError (rerr, "%s", strerror (errno));
+        remoteDispatchFormatError (rerr, "%s",
+                                   virStrerror(errno, ebuf, sizeof ebuf));
         return -1;
     }
 
@@ -1031,16 +1034,18 @@ remoteDispatchDomainMemoryPeek (struct qemud_server *server ATTRIBUTE_UNUSED,
     flags = args->flags;
 
     if (size > REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX) {
+        virDomainFree (dom);
         remoteDispatchFormatError (rerr,
                                    "%s", _("size > maximum buffer size"));
-        virDomainFree (dom);
         return -1;
     }
 
     ret->buffer.buffer_len = size;
     if (VIR_ALLOC_N (ret->buffer.buffer_val, size) < 0) {
-        remoteDispatchFormatError (rerr, "%s", strerror (errno));
+        char ebuf[1024];
         virDomainFree (dom);
+        remoteDispatchFormatError (rerr, "%s",
+                                   virStrerror(errno, ebuf, sizeof ebuf));
         return -1;
     }
 
@@ -2571,9 +2576,10 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
     /* Get local address in form  IPADDR:PORT */
     salen = sizeof(sa);
     if (getsockname(client->fd, (struct sockaddr*)&sa, &salen) < 0) {
+        char ebuf[1024];
         remoteDispatchFormatError(rerr,
                                   _("failed to get sock address: %s"),
-                                  strerror(errno));
+                                  virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
     if ((localAddr = addrToString(rerr, &sa, salen)) == NULL) {
@@ -2583,8 +2589,9 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
     /* Get remote address in form  IPADDR:PORT */
     salen = sizeof(sa);
     if (getpeername(client->fd, (struct sockaddr*)&sa, &salen) < 0) {
+        char ebuf[1024];
         remoteDispatchFormatError(rerr, _("failed to get peer address: %s"),
-                                  strerror(errno));
+                                  virStrerror(errno, ebuf, sizeof ebuf));
         VIR_FREE(localAddr);
         goto error;
     }
@@ -3062,7 +3069,9 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
     }
 
     if (!(pkaction = polkit_action_new())) {
-        VIR_ERROR(_("Failed to create polkit action %s\n"), strerror(errno));
+        char ebuf[1024];
+        VIR_ERROR(_("Failed to create polkit action %s\n"),
+                  virStrerror(errno, ebuf, sizeof ebuf));
         polkit_caller_unref(pkcaller);
         goto authfail;
     }
@@ -3070,9 +3079,10 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
 
     if (!(pkcontext = polkit_context_new()) ||
         !polkit_context_init(pkcontext, &pkerr)) {
+        char ebuf[1024];
         VIR_ERROR(_("Failed to create polkit context %s\n"),
                   (pkerr ? polkit_error_get_error_message(pkerr)
-                   : strerror(errno)));
+                   : virStrerror(errno, ebuf, sizeof ebuf)));
         if (pkerr)
             polkit_error_free(pkerr);
         polkit_caller_unref(pkcaller);
