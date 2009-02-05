@@ -1,3 +1,8 @@
+Thu Feb  5 19:28:10 GMT 2009 John Levon <john.levon@sun.com>
+
+	* src/domain_conf.c: Check the last error, not the last
+	connection error, which may not have been set.
+
 Thu Feb  5 18:08:39 GMT 2009 John Levon <john.levon@sun.com>
 
 	* src/xs_internal.c: Use virMacAddrCompare() for

@@ -2424,8 +2424,7 @@ catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
     if (ctxt) {
         virConnectPtr conn = ctxt->_private;
 
-        if (conn &&
-            conn->err.code == VIR_ERR_NONE &&
+        if (virGetLastError() == NULL &&
             ctxt->lastError.level == XML_ERR_FATAL &&
             ctxt->lastError.message != NULL) {
             virDomainReportError (conn, VIR_ERR_XML_DETAIL,
@@ -2458,7 +2457,7 @@ virDomainDefPtr virDomainDefParseString(virConnectPtr conn,
                           XML_PARSE_NOENT | XML_PARSE_NONET |
                           XML_PARSE_NOWARNING);
     if (!xml) {
-        if (conn && conn->err.code == VIR_ERR_NONE)
+        if (virGetLastError() == NULL)
               virDomainReportError(conn, VIR_ERR_XML_ERROR,
                                    "%s", _("failed to parse xml document"));
         goto cleanup;
@@ -2499,7 +2498,7 @@ virDomainDefPtr virDomainDefParseFile(virConnectPtr conn,
                            XML_PARSE_NOENT | XML_PARSE_NONET |
                            XML_PARSE_NOWARNING);
     if (!xml) {
-        if (conn && conn->err.code == VIR_ERR_NONE)
+        if (virGetLastError() == NULL)
               virDomainReportError(conn, VIR_ERR_XML_ERROR,
                                    "%s", _("failed to parse xml document"));
         goto cleanup;
