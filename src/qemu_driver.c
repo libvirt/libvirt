@@ -207,22 +207,21 @@ qemudLogReadFD(virConnectPtr conn, const char* logDir, const char* name, off_t p
 
 
     if ((fd = open(logfile, logmode)) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to create logfile %s: %s"),
-                         logfile, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("failed to create logfile %s"),
+                             logfile);
         return -1;
     }
     if (qemudSetCloseExec(fd) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Unable to set VM logfile close-on-exec flag: %s"),
-                         strerror(errno));
+        virReportSystemError(conn, errno, "%s",
+                             _("Unable to set VM logfile close-on-exec flag"));
         close(fd);
         return -1;
     }
     if (lseek(fd, pos, SEEK_SET) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Unable to seek to %lld in %s: %s"),
-                         (long long) pos, logfile, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("Unable to seek to %lld in %s"),
+                             (long long) pos, logfile);
         close(fd);
     }
     return fd;
@@ -250,7 +249,7 @@ qemudAutostartConfigs(struct qemud_driver *driver) {
             int ret = qemudStartVMDaemon(conn, driver, vm, NULL, -1);
             if (ret < 0) {
                 virErrorPtr err = virGetLastError();
-                qemudLog(QEMUD_ERR, _("Failed to autostart VM '%s': %s\n"),
+                qemudLog(QEMUD_ERROR, _("Failed to autostart VM '%s': %s\n"),
                          vm->def->name,
                          err ? err->message : NULL);
             } else {
@@ -336,7 +335,7 @@ qemudReconnectVMs(struct qemud_driver *driver)
         if ((config = virDomainConfigFile(NULL,
                                           driver->stateDir,
                                           vm->def->name)) == NULL) {
-            qemudLog(QEMUD_ERR, _("Failed to read domain status for %s\n"),
+            qemudLog(QEMUD_ERROR, _("Failed to read domain status for %s\n"),
                      vm->def->name);
             goto next_error;
         }
@@ -346,13 +345,13 @@ qemudReconnectVMs(struct qemud_driver *driver)
             vm->newDef = vm->def;
             vm->def = status->def;
         } else {
-            qemudLog(QEMUD_ERR, _("Failed to parse domain status for %s\n"),
+            qemudLog(QEMUD_ERROR, _("Failed to parse domain status for %s\n"),
                      vm->def->name);
             goto next_error;
         }
 
         if ((rc = qemudOpenMonitor(NULL, driver, vm, status->monitorpath, 1)) != 0) {
-            qemudLog(QEMUD_ERR, _("Failed to reconnect monitor for %s: %d\n"),
+            qemudLog(QEMUD_ERROR, _("Failed to reconnect monitor for %s: %d\n"),
                      vm->def->name, rc);
             goto next_error;
         }
@@ -451,7 +450,7 @@ qemudStartup(void) {
     }
 
     if (virFileMakePath(qemu_driver->stateDir) < 0) {
-        qemudLog(QEMUD_ERR, _("Failed to create state dir '%s': %s\n"),
+        qemudLog(QEMUD_ERROR, _("Failed to create state dir '%s': %s\n"),
                  qemu_driver->stateDir, strerror(errno));
         goto error;
     }
@@ -493,7 +492,7 @@ qemudStartup(void) {
     return 0;
 
 out_of_memory:
-    qemudLog (QEMUD_ERR,
+    qemudLog (QEMUD_ERROR,
               "%s", _("qemudStartup: out of memory\n"));
 error:
     if (qemu_driver)
@@ -1200,30 +1199,30 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     tmp = progenv;
     while (*tmp) {
         if (safewrite(vm->logfile, *tmp, strlen(*tmp)) < 0)
-            qemudLog(QEMUD_WARN, _("Unable to write envv to logfile %d: %s\n"),
-                     errno, strerror(errno));
+            qemudLog(QEMUD_WARN, _("Unable to write envv to logfile: %s\n"),
+                     strerror(errno));
         if (safewrite(vm->logfile, " ", 1) < 0)
-            qemudLog(QEMUD_WARN, _("Unable to write envv to logfile %d: %s\n"),
-                     errno, strerror(errno));
+            qemudLog(QEMUD_WARN, _("Unable to write envv to logfile: %s\n"),
+                     strerror(errno));
         tmp++;
     }
     tmp = argv;
     while (*tmp) {
         if (safewrite(vm->logfile, *tmp, strlen(*tmp)) < 0)
-            qemudLog(QEMUD_WARN, _("Unable to write argv to logfile %d: %s\n"),
-                     errno, strerror(errno));
+            qemudLog(QEMUD_WARN, _("Unable to write argv to logfile: %s\n"),
+                     strerror(errno));
         if (safewrite(vm->logfile, " ", 1) < 0)
-            qemudLog(QEMUD_WARN, _("Unable to write argv to logfile %d: %s\n"),
-                     errno, strerror(errno));
+            qemudLog(QEMUD_WARN, _("Unable to write argv to logfile: %s\n"),
+                     strerror(errno));
         tmp++;
     }
     if (safewrite(vm->logfile, "\n", 1) < 0)
-        qemudLog(QEMUD_WARN, _("Unable to write argv to logfile %d: %s\n"),
-                 errno, strerror(errno));
+        qemudLog(QEMUD_WARN, _("Unable to write argv to logfile: %s\n"),
+                 strerror(errno));
 
     if ((pos = lseek(vm->logfile, 0, SEEK_END)) < 0)
-        qemudLog(QEMUD_WARN, _("Unable to seek to end of logfile %d: %s\n"),
-                 errno, strerror(errno));
+        qemudLog(QEMUD_WARN, _("Unable to seek to end of logfile: %s\n"),
+                 strerror(errno));
 
     for (i = 0 ; i < ntapfds ; i++)
         FD_SET(tapfds[i], &keepfd);
@@ -1292,7 +1291,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
 
 static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                  struct qemud_driver *driver, virDomainObjPtr vm) {
+                                  struct qemud_driver *driver,
+                                  virDomainObjPtr vm) {
     if (!virDomainIsActive(vm))
         return;
 
@@ -1300,8 +1300,9 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (virKillProcess(vm->pid, 0) == 0 &&
         virKillProcess(vm->pid, SIGTERM) < 0)
-        qemudLog(QEMUD_ERROR, _("Failed to send SIGTERM to %s (%d): %s\n"),
-                 vm->def->name, vm->pid, strerror(errno));
+        virReportSystemError(conn, errno,
+                             _("Failed to send SIGTERM to %s (%d)"),
+                             vm->def->name, vm->pid);
 
     if (vm->monitor_watch != -1) {
         virEventRemoveHandle(vm->monitor_watch);
@@ -1309,8 +1310,8 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     if (close(vm->logfile) < 0)
-        qemudLog(QEMUD_WARN, _("Unable to close logfile %d: %s\n"),
-                 errno, strerror(errno));
+        qemudLog(QEMUD_WARN, _("Unable to close logfile: %s\n"),
+                 strerror(errno));
     if (vm->monitor != -1)
         close(vm->monitor);
     vm->logfile = -1;
@@ -1593,8 +1594,8 @@ static int kvmGetMaxVCPUs(void) {
 
     fd = open(KVM_DEVICE, O_RDONLY);
     if (fd < 0) {
-        qemudLog(QEMUD_WARN, _("Unable to open %s: %s\n"), KVM_DEVICE, strerror(errno));
-        return maxvcpus;
+        virReportSystemError(NULL, errno, _("Unable to open %s"), KVM_DEVICE);
+        return -1;
     }
 
     r = ioctl(fd, KVM_CHECK_EXTENSION, KVM_CAP_NR_VCPUS);
@@ -1836,8 +1837,8 @@ qemudGetHostname (virConnectPtr conn)
 
     result = virGetHostname();
     if (result == NULL) {
-        qemudReportError (conn, NULL, NULL, VIR_ERR_SYSTEM_ERROR,
-                          "%s", strerror (errno));
+        virReportSystemError (conn, errno,
+                              "%s", _("failed to determine host name"));
         return NULL;
     }
     /* Caller frees this string. */
@@ -3922,8 +3923,8 @@ qemudDomainBlockPeek (virDomainPtr dom,
         /* The path is correct, now try to open it and get its size. */
         fd = open (path, O_RDONLY);
         if (fd == -1) {
-            qemudReportError (dom->conn, dom, NULL, VIR_ERR_SYSTEM_ERROR,
-                              "%s", strerror (errno));
+            virReportSystemError (dom->conn, errno,
+                                  _("%s: failed to open"), path);
             goto cleanup;
         }
 
@@ -3933,8 +3934,8 @@ qemudDomainBlockPeek (virDomainPtr dom,
          */
         if (lseek (fd, offset, SEEK_SET) == (off_t) -1 ||
             saferead (fd, buffer, size) == (ssize_t) -1) {
-            qemudReportError (dom->conn, dom, NULL, VIR_ERR_SYSTEM_ERROR,
-                              "%s", strerror (errno));
+            virReportSystemError (dom->conn, errno,
+                                  _("%s: failed to seek or read"), path);
             goto cleanup;
         }
 
@@ -3988,8 +3989,8 @@ qemudDomainMemoryPeek (virDomainPtr dom,
 
     /* Create a temporary filename. */
     if ((fd = mkstemp (tmp)) == -1) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_SYSTEM_ERROR,
-                          "%s", strerror (errno));
+        virReportSystemError (dom->conn, errno,
+                              _("mkstemp(\"%s\") failed"), tmp);
         goto cleanup;
     }
 
@@ -4005,8 +4006,9 @@ qemudDomainMemoryPeek (virDomainPtr dom,
 
     /* Read the memory file into buffer. */
     if (saferead (fd, buffer, size) == (ssize_t) -1) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_SYSTEM_ERROR,
-                          "%s", strerror (errno));
+        virReportSystemError (dom->conn, errno,
+                              _("failed to read temporary file "
+                                "created with template %s"), tmp);
         goto cleanup;
     }
 
@@ -4165,8 +4167,8 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
 
         /* Get hostname */
         if (gethostname (hostname, HOST_NAME_MAX+1) == -1) {
-            qemudReportError (dconn, NULL, NULL, VIR_ERR_SYSTEM_ERROR,
-                              "%s", strerror (errno));
+            virReportSystemError (dconn, errno,
+                                  "%s", _("failed to determine host name"));
             goto cleanup;
         }
 
@@ -4336,8 +4338,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
     /* Issue the migrate command. */
     safe_uri = qemudEscapeMonitorArg (uri);
     if (!safe_uri) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_SYSTEM_ERROR,
-                          "%s", strerror (errno));
+        virReportOOMError (dom->conn);
         goto cleanup;
     }
     snprintf (cmd, sizeof cmd, "migrate \"%s\"", safe_uri);

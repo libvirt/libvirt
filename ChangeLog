@@ -1,3 +1,11 @@
+Thu, 5 Feb 2009 17:03:35 +0100 Jim Meyering <meyering@redhat.com>
+
+	qemu_driver.c: use virReportSystemError in place of some qemudLog uses
+	...thus eliminating many uses of strerror.
+	(kvmGetMaxVCPUs): Rather than merely warning, diagnose an error
+	and return -1 upon failure to open KVM_DEVICE.  Suggested by
+	Daniel P. Berrange.
+
 Thu, 5 Feb 2009 17:03:34 +0100 Jim Meyering <meyering@redhat.com>
 
 	publicize virStrerror
