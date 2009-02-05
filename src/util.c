@@ -1,7 +1,7 @@
 /*
  * utils.c: common, generic utility functions
  *
- * Copyright (C) 2006, 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
@@ -185,7 +185,7 @@ int virSetNonBlock(int fd) {
 
 #ifndef WIN32
 
-static int virSetCloseExec(int fd) {
+int virSetCloseExec(int fd) {
     int flags;
     if ((flags = fcntl(fd, F_GETFD)) < 0)
         return -1;

@@ -39,6 +39,7 @@ enum {
 };
 
 int virSetNonBlock(int fd);
+int virSetCloseExec(int fd);
 
 int virExec(virConnectPtr conn,
             const char *const*argv,

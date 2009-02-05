@@ -91,37 +91,6 @@ static void qemuDriverUnlock(struct qemud_driver *driver)
     virMutexUnlock(&driver->lock);
 }
 
-static int qemudSetCloseExec(int fd) {
-    int flags;
-    if ((flags = fcntl(fd, F_GETFD)) < 0)
-        goto error;
-    flags |= FD_CLOEXEC;
-    if ((fcntl(fd, F_SETFD, flags)) < 0)
-        goto error;
-    return 0;
- error:
-    qemudLog(QEMUD_ERR,
-             "%s", _("Failed to set close-on-exec file descriptor flag\n"));
-    return -1;
-}
-
-
-static int qemudSetNonBlock(int fd) {
-    int flags;
-    if ((flags = fcntl(fd, F_GETFL)) < 0)
-        goto error;
-    flags |= O_NONBLOCK;
-    if ((fcntl(fd, F_SETFL, flags)) < 0)
-        goto error;
-    return 0;
- error:
-    qemudLog(QEMUD_ERR,
-             "%s", _("Failed to set non-blocking file descriptor flag\n"));
-    return -1;
-}
-
-
-
 static void qemuDomainEventFlush(int timer, void *opaque);
 static void qemuDomainEventQueue(struct qemud_driver *driver,
                                  virDomainEventPtr event);
@@ -180,7 +149,7 @@ qemudLogFD(virConnectPtr conn, const char* logDir, const char* name)
                              logfile);
         return -1;
     }
-    if (qemudSetCloseExec(fd) < 0) {
+    if (virSetCloseExec(fd) < 0) {
         virReportSystemError(conn, errno, "%s",
                              _("Unable to set VM logfile close-on-exec flag"));
         close(fd);
@@ -212,7 +181,7 @@ qemudLogReadFD(virConnectPtr conn, const char* logDir, const char* name, off_t p
                              logfile);
         return -1;
     }
-    if (qemudSetCloseExec(fd) < 0) {
+    if (virSetCloseExec(fd) < 0) {
         virReportSystemError(conn, errno, "%s",
                              _("Unable to set VM logfile close-on-exec flag"));
         close(fd);
@@ -721,12 +690,12 @@ static int qemudOpenMonitor(virConnectPtr conn,
                          _("Unable to open monitor path %s"), monitor);
         return -1;
     }
-    if (qemudSetCloseExec(monfd) < 0) {
+    if (virSetCloseExec(monfd) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("Unable to set monitor close-on-exec flag"));
         goto error;
     }
-    if (qemudSetNonBlock(monfd) < 0) {
+    if (virSetNonBlock(monfd) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("Unable to put monitor into non-blocking mode"));
         goto error;

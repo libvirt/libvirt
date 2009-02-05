@@ -292,6 +292,7 @@ virEnumToString;
 virEventAddHandle;
 virEventRemoveHandle;
 virExec;
+virSetCloseExec;
 virSetNonBlock;
 virFormatMacAddr;
 virGetHostname;

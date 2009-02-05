@@ -1,5 +1,14 @@
 Thu Feb 5 17:03:35 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	remove duplicate *SetCloseExec and *SetNonBlock functions
+	* src/qemu_driver.c: Use virSetCloseExec and virSetNonBlock,
+	rather than qemuSet* functions.  Suggested by Daniel P. Berrange.
+	* src/util.c (virSetCloseExec): Publicize.
+	* src/util.h (virSetCloseExec): Declare
+	* src/libvirt_private.syms: Add virSetCloseExec.
+
+Thu Feb 5 17:03:35 +0100 2009 Jim Meyering <meyering@redhat.com>
+
 	qemu_driver.c: use virReportSystemError in place of some qemudLog uses
 	...thus eliminating many uses of strerror.
 	(kvmGetMaxVCPUs): Rather than merely warning, diagnose an error
