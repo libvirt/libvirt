@@ -1,3 +1,15 @@
+Thu Feb 5 17:00:17 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	remove useless code
+	* src/bridge.c (brAddTap): Remove redundant errno=ENOMEM assignment
+	after failed strdup.
+	* src/cgroup.c (virCgroupFree): Remove redundant *group=NULL assignment
+	after VIR_FREE(*group).
+	* src/lxc_driver.c (lxcShutdown): Likewise.
+	* src/xen_unified.c (xenUnifiedClose): Likewise.
+	* src/xm_internal.c (xenXMDomainConfigFormat): Rewrite disk-
+	and net-config-setting code to be clearer.
+
 Wed Feb 4 22:22:34 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	lxc_container: Don't dereference NULL upon failure

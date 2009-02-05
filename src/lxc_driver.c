@@ -1238,7 +1238,6 @@ static int lxcShutdown(void)
     lxcDriverUnlock(lxc_driver);
     virMutexDestroy(&lxc_driver->lock);
     VIR_FREE(lxc_driver);
-    lxc_driver = NULL;
 
     return 0;
 }

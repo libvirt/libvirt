@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007 Red Hat, Inc.
+ * Copyright (C) 2007, 2009 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -539,10 +539,8 @@ brAddTap(brControl *ctl,
             if ((errno = brSetInterfaceUp(ctl, try.ifr_name, 1)))
                 goto error;
             VIR_FREE(*ifname);
-            if (!(*ifname = strdup(try.ifr_name))) {
-                errno = ENOMEM;
+            if (!(*ifname = strdup(try.ifr_name)))
                 goto error;
-            }
             *tapfd = fd;
             return 0;
         }

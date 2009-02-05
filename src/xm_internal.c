@@ -2233,14 +2233,13 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
                                         hvm, priv->xendConfigVersion) < 0)
             goto cleanup;
     }
-    if (diskVal->list == NULL)
-        VIR_FREE(diskVal);
-    else if (virConfSetValue(conf, "disk", diskVal) < 0) {
+    if (diskVal->list != NULL) {
+        int ret = virConfSetValue(conf, "disk", diskVal);
         diskVal = NULL;
-        goto no_memory;
+        if (ret < 0)
+            goto no_memory;
     }
-    diskVal = NULL;
-
+    VIR_FREE(diskVal);
 
     if (VIR_ALLOC(netVal) < 0)
         goto no_memory;
@@ -2253,13 +2252,13 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
                                        hvm) < 0)
             goto cleanup;
     }
-    if (netVal->list == NULL)
-        VIR_FREE(netVal);
-    else if (virConfSetValue(conf, "vif", netVal) < 0) {
+    if (netVal->list != NULL) {
+        int ret = virConfSetValue(conf, "vif", netVal);
         netVal = NULL;
-        goto no_memory;
+        if (ret < 0)
+            goto no_memory;
     }
-    netVal = NULL;
+    VIR_FREE(netVal);
 
     if (hvm) {
         if (def->nparallels) {

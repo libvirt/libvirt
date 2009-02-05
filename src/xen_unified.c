@@ -399,7 +399,6 @@ xenUnifiedClose (virConnectPtr conn)
 
     virMutexDestroy(&priv->lock);
     VIR_FREE(conn->privateData);
-    conn->privateData = NULL;
 
     return 0;
 }

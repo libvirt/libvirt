@@ -51,7 +51,6 @@ void virCgroupFree(virCgroupPtr *group)
     if (*group != NULL) {
         VIR_FREE((*group)->path);
         VIR_FREE(*group);
-        *group = NULL;
     }
 }
 
