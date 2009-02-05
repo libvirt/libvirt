@@ -231,8 +231,9 @@ remoteCheckCertFile(const char *type, const char *file)
 {
     struct stat sb;
     if (stat(file, &sb) < 0) {
-        VIR_ERROR(_("Cannot access %s '%s': %s (%d)"),
-                  type, file, strerror(errno), errno);
+        char ebuf[1024];
+        VIR_ERROR(_("Cannot access %s '%s': %s"),
+                  type, file, virStrerror(errno, ebuf, sizeof ebuf));
         return -1;
     }
     return 0;
@@ -331,7 +332,9 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
     virMutexLock(&server->lock);
 
     if (saferead(server->sigread, &siginfo, sizeof(siginfo)) != sizeof(siginfo)) {
-        VIR_ERROR(_("Failed to read from signal pipe: %s"), strerror(errno));
+        char ebuf[1024];
+        VIR_ERROR(_("Failed to read from signal pipe: %s"),
+                  virStrerror(errno, ebuf, sizeof ebuf));
         virMutexUnlock(&server->lock);
         return;
     }
@@ -459,33 +462,34 @@ static int qemudGoDaemon(void) {
 static int qemudWritePidFile(const char *pidFile) {
     int fd;
     FILE *fh;
+    char ebuf[1024];
 
     if (pidFile[0] == '\0')
         return 0;
 
     if ((fd = open(pidFile, O_WRONLY|O_CREAT|O_EXCL, 0644)) < 0) {
         VIR_ERROR(_("Failed to open pid file '%s' : %s"),
-                  pidFile, strerror(errno));
+                  pidFile, virStrerror(errno, ebuf, sizeof ebuf));
         return -1;
     }
 
     if (!(fh = fdopen(fd, "w"))) {
         VIR_ERROR(_("Failed to fdopen pid file '%s' : %s"),
-                  pidFile, strerror(errno));
+                  pidFile, virStrerror(errno, ebuf, sizeof ebuf));
         close(fd);
         return -1;
     }
 
     if (fprintf(fh, "%lu\n", (unsigned long)getpid()) < 0) {
         VIR_ERROR(_("Failed to write to pid file '%s' : %s"),
-                  pidFile, strerror(errno));
+                  pidFile, virStrerror(errno, ebuf, sizeof ebuf));
         close(fd);
         return -1;
     }
 
     if (fclose(fh) == EOF) {
         VIR_ERROR(_("Failed to close pid file '%s' : %s"),
-                  pidFile, strerror(errno));
+                  pidFile, virStrerror(errno, ebuf, sizeof ebuf));
         return -1;
     }
 
@@ -498,6 +502,7 @@ static int qemudListenUnix(struct qemud_server *server,
     struct sockaddr_un addr;
     mode_t oldmask;
     gid_t oldgrp;
+    char ebuf[1024];
 
     if (VIR_ALLOC(sock) < 0) {
         VIR_ERROR("%s", _("Failed to allocate memory for struct qemud_socket"));
@@ -511,7 +516,7 @@ static int qemudListenUnix(struct qemud_server *server,
 
     if ((sock->fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
         VIR_ERROR(_("Failed to create socket: %s"),
-                  strerror(errno));
+                  virStrerror(errno, ebuf, sizeof ebuf));
         goto cleanup;
     }
 
@@ -533,7 +538,7 @@ static int qemudListenUnix(struct qemud_server *server,
 
     if (bind(sock->fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         VIR_ERROR(_("Failed to bind socket to '%s': %s"),
-                  path, strerror(errno));
+                  path, virStrerror(errno, ebuf, sizeof ebuf));
         goto cleanup;
     }
     umask(oldmask);
@@ -542,7 +547,7 @@ static int qemudListenUnix(struct qemud_server *server,
 
     if (listen(sock->fd, 30) < 0) {
         VIR_ERROR(_("Failed to listen for connections on '%s': %s"),
-                  path, strerror(errno));
+                  path, virStrerror(errno, ebuf, sizeof ebuf));
         goto cleanup;
     }
 
@@ -587,10 +592,11 @@ remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *node, const c
 
     struct addrinfo *runp = ai;
     while (runp && *nfds_r < max_fds) {
+        char ebuf[1024];
         fds[*nfds_r] = socket (runp->ai_family, runp->ai_socktype,
                                runp->ai_protocol);
         if (fds[*nfds_r] == -1) {
-            VIR_ERROR(_("socket: %s"), strerror (errno));
+            VIR_ERROR(_("socket: %s"), virStrerror (errno, ebuf, sizeof ebuf));
             return -1;
         }
 
@@ -599,14 +605,15 @@ remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *node, const c
 
         if (bind (fds[*nfds_r], runp->ai_addr, runp->ai_addrlen) == -1) {
             if (errno != EADDRINUSE) {
-                VIR_ERROR(_("bind: %s"), strerror (errno));
+                VIR_ERROR(_("bind: %s"), virStrerror (errno, ebuf, sizeof ebuf));
                 return -1;
             }
             close (fds[*nfds_r]);
         }
         else {
             if (listen (fds[*nfds_r], SOMAXCONN) == -1) {
-                VIR_ERROR(_("listen: %s"), strerror (errno));
+                VIR_ERROR(_("listen: %s"),
+                          virStrerror (errno, ebuf, sizeof ebuf));
                 return -1;
             }
             ++*nfds_r;
@@ -638,10 +645,12 @@ remoteListenTCP (struct qemud_server *server,
 
     for (i = 0; i < nfds; ++i) {
         struct sockaddr_storage sa;
+        char ebuf[1024];
         socklen_t salen = sizeof(sa);
 
         if (VIR_ALLOC(sock) < 0) {
-            VIR_ERROR(_("remoteListenTCP: calloc: %s"), strerror (errno));
+            VIR_ERROR(_("remoteListenTCP: calloc: %s"),
+                      virStrerror (errno, ebuf, sizeof ebuf));
             goto cleanup;
         }
 
@@ -671,7 +680,8 @@ remoteListenTCP (struct qemud_server *server,
             goto cleanup;
 
         if (listen (sock->fd, 30) < 0) {
-            VIR_ERROR(_("remoteListenTCP: listen: %s"), strerror (errno));
+            VIR_ERROR(_("remoteListenTCP: listen: %s"),
+                      virStrerror (errno, ebuf, sizeof ebuf));
             goto cleanup;
         }
 
@@ -1145,8 +1155,9 @@ int qemudGetSocketIdentity(int fd, uid_t *uid, pid_t *pid) {
     unsigned int cr_len = sizeof (cr);
 
     if (getsockopt (fd, SOL_SOCKET, SO_PEERCRED, &cr, &cr_len) < 0) {
+        char ebuf[1024];
         VIR_ERROR(_("Failed to verify client credentials: %s"),
-                  strerror(errno));
+                  virStrerror(errno, ebuf, sizeof ebuf));
         return -1;
     }
 
@@ -1169,9 +1180,11 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     int no_slow_start = 1;
 
     if ((fd = accept(sock->fd, (struct sockaddr *)&addr, &addrlen)) < 0) {
+        char ebuf[1024];
         if (errno == EAGAIN)
             return 0;
-        VIR_ERROR(_("Failed to accept connection: %s"), strerror(errno));
+        VIR_ERROR(_("Failed to accept connection: %s"),
+                  virStrerror(errno, ebuf, sizeof ebuf));
         return -1;
     }
 
@@ -1476,13 +1489,15 @@ static ssize_t qemudClientReadBuf(struct qemud_client *client,
     /*qemudDebug ("qemudClientRead: len = %d", len);*/
 
     if (!client->tlssession) {
+        char ebuf[1024];
         ret = read (client->fd, data, len);
         if (ret == -1 && (errno == EAGAIN ||
                           errno == EINTR))
             return 0;
         if (ret <= 0) {
             if (ret != 0)
-                VIR_ERROR(_("read: %s"), strerror (errno));
+                VIR_ERROR(_("read: %s"),
+                          virStrerror (errno, ebuf, sizeof ebuf));
             qemudDispatchClientFailure(client);
             return -1;
         }
@@ -1700,10 +1715,11 @@ static ssize_t qemudClientWriteBuf(struct qemud_client *client,
     }
 
     if (!client->tlssession) {
+        char ebuf[1024];
         if ((ret = write(client->fd, data, len)) == -1) {
             if (errno == EAGAIN || errno == EINTR)
                 return 0;
-            VIR_ERROR(_("write: %s"), strerror (errno));
+            VIR_ERROR(_("write: %s"), virStrerror (errno, ebuf, sizeof ebuf));
             qemudDispatchClientFailure(client);
             return -1;
         }
@@ -2004,9 +2020,10 @@ static int qemudOneLoop(void) {
     /* Check for any signal handling errors and log them. */
     errors = sig_errors;
     if (errors) {
+        char ebuf[1024];
         sig_errors -= errors;
         VIR_ERROR(_("Signal handler reported %d errors: last error: %s"),
-                  errors, strerror (sig_lasterrno));
+                  errors, virStrerror (sig_lasterrno, ebuf, sizeof ebuf));
         return -1;
     }
 
@@ -2743,8 +2760,10 @@ int main(int argc, char **argv) {
     }
 
     if (godaemon) {
+        char ebuf[1024];
         if (qemudGoDaemon() < 0) {
-            VIR_ERROR(_("Failed to fork as daemon: %s"), strerror(errno));
+            VIR_ERROR(_("Failed to fork as daemon: %s"),
+                      virStrerror(errno, ebuf, sizeof ebuf));
             goto error1;
         }
     }
@@ -2765,7 +2784,9 @@ int main(int argc, char **argv) {
         qemudSetNonBlock(sigpipe[1]) < 0 ||
         qemudSetCloseExec(sigpipe[0]) < 0 ||
         qemudSetCloseExec(sigpipe[1]) < 0) {
-        VIR_ERROR(_("Failed to create pipe: %s"), strerror(errno));
+        char ebuf[1024];
+        VIR_ERROR(_("Failed to create pipe: %s"),
+                  virStrerror(errno, ebuf, sizeof ebuf));
         goto error2;
     }
     sigwrite = sigpipe[1];
