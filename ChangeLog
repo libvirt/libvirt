@@ -1,3 +1,8 @@
+Thu Feb  5 18:08:39 GMT 2009 John Levon <john.levon@sun.com>
+
+	* src/xs_internal.c: Use virMacAddrCompare() for
+	case-insensitive comparison
+
 Thu Feb  5 17:19:24 GMT 2009 John Levon <john.levon@sun.com>
 
 	* src/xend_internal.c: report error for some xend operations on

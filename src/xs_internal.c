@@ -915,7 +915,7 @@ xenStoreDomainGetOSTypeID(virConnectPtr conn, int id) {
 char *
 xenStoreDomainGetNetworkID(virConnectPtr conn, int id, const char *mac) {
     char dir[80], path[128], **list = NULL, *val = NULL;
-    unsigned int maclen, len, i, num;
+    unsigned int len, i, num;
     char *ret = NULL;
     xenUnifiedPrivatePtr priv;
 
@@ -927,9 +927,6 @@ xenStoreDomainGetNetworkID(virConnectPtr conn, int id, const char *mac) {
         return (NULL);
     if (mac == NULL)
         return (NULL);
-    maclen = strlen(mac);
-    if (maclen <= 0)
-        return (NULL);
 
     snprintf(dir, sizeof(dir), "/local/domain/0/backend/vif/%d", id);
     list = xs_directory(priv->xshandle, 0, dir, &num);
@@ -937,18 +934,20 @@ xenStoreDomainGetNetworkID(virConnectPtr conn, int id, const char *mac) {
         return(NULL);
     for (i = 0; i < num; i++) {
         snprintf(path, sizeof(path), "%s/%s/%s", dir, list[i], "mac");
-        val = xs_read(priv->xshandle, 0, path, &len);
-        if (val == NULL)
+        if ((val = xs_read(priv->xshandle, 0, path, &len)) == NULL)
             break;
-        if ((maclen != len) || memcmp(val, mac, len)) {
-            free(val);
-        } else {
+
+        bool match = (virMacAddrCompare(val, mac) == 0);
+
+        VIR_FREE(val);
+
+        if (match) {
             ret = strdup(list[i]);
-            free(val);
             break;
         }
     }
-    free(list);
+
+    VIR_FREE(list);
     return(ret);
 }
 
