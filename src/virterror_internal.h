@@ -1,7 +1,7 @@
 /*
  * virterror.h: internal error handling
  *
- * Copyright (C) 2006-2008 Red Hat, Inc.
+ * Copyright (C) 2006-2009 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -81,5 +81,6 @@ void virReportOOMErrorFull(virConnectPtr conn,
 
 void virSetGlobalError(void);
 void virSetConnError(virConnectPtr conn);
+const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen);
 
 #endif

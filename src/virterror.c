@@ -1005,7 +1005,7 @@ void virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
 
 }
 
-static const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen)
+const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen)
 {
 #ifdef HAVE_STRERROR_R
 # ifdef __USE_GNU

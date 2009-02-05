@@ -1,3 +1,10 @@
+Thu, 5 Feb 2009 17:03:34 +0100 Jim Meyering <meyering@redhat.com>
+
+	publicize virStrerror
+	* src/virterror.c (virStrerror): Remove "static".
+	* src/virterror_internal.h (virStrerror): Declare it.
+	* src/libvirt_private.syms: Add virStrerror;
+
 Thu Feb 5 17:00:17 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	remove useless code

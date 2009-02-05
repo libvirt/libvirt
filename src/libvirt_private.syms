@@ -326,6 +326,7 @@ virErrorMsg;
 virRaiseError;
 virReportSystemErrorFull;
 virReportOOMErrorFull;
+virStrerror;
 
 
 # xml.h
