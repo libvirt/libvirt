@@ -419,8 +419,9 @@ qemudStartup(void) {
     }
 
     if (virFileMakePath(qemu_driver->stateDir) < 0) {
+        char ebuf[1024];
         qemudLog(QEMUD_ERROR, _("Failed to create state dir '%s': %s\n"),
-                 qemu_driver->stateDir, strerror(errno));
+                 qemu_driver->stateDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
 
@@ -844,9 +845,11 @@ static int qemudWaitForMonitor(virConnectPtr conn,
     ret = qemudReadMonitorOutput(conn, vm, logfd, buf, sizeof(buf),
                                  qemudFindCharDevicePTYs,
                                  "console", 3000);
-    if (close(logfd) < 0)
+    if (close(logfd) < 0) {
+        char ebuf[1024];
         qemudLog(QEMUD_WARN, _("Unable to close logfile: %s\n"),
-                 strerror(errno));
+                 virStrerror(errno, ebuf, sizeof ebuf));
+    }
 
     if (ret == 1) /* Success */
         return 0;
@@ -1098,6 +1101,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     const char *emulator;
     pid_t child;
     int pos = -1;
+    char ebuf[1024];
 
     FD_ZERO(&keepfd);
 
@@ -1169,29 +1173,29 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     while (*tmp) {
         if (safewrite(vm->logfile, *tmp, strlen(*tmp)) < 0)
             qemudLog(QEMUD_WARN, _("Unable to write envv to logfile: %s\n"),
-                     strerror(errno));
+                     virStrerror(errno, ebuf, sizeof ebuf));
         if (safewrite(vm->logfile, " ", 1) < 0)
             qemudLog(QEMUD_WARN, _("Unable to write envv to logfile: %s\n"),
-                     strerror(errno));
+                     virStrerror(errno, ebuf, sizeof ebuf));
         tmp++;
     }
     tmp = argv;
     while (*tmp) {
         if (safewrite(vm->logfile, *tmp, strlen(*tmp)) < 0)
             qemudLog(QEMUD_WARN, _("Unable to write argv to logfile: %s\n"),
-                     strerror(errno));
+                     virStrerror(errno, ebuf, sizeof ebuf));
         if (safewrite(vm->logfile, " ", 1) < 0)
             qemudLog(QEMUD_WARN, _("Unable to write argv to logfile: %s\n"),
-                     strerror(errno));
+                     virStrerror(errno, ebuf, sizeof ebuf));
         tmp++;
     }
     if (safewrite(vm->logfile, "\n", 1) < 0)
         qemudLog(QEMUD_WARN, _("Unable to write argv to logfile: %s\n"),
-                 strerror(errno));
+                 virStrerror(errno, ebuf, sizeof ebuf));
 
     if ((pos = lseek(vm->logfile, 0, SEEK_END)) < 0)
         qemudLog(QEMUD_WARN, _("Unable to seek to end of logfile: %s\n"),
-                 strerror(errno));
+                 virStrerror(errno, ebuf, sizeof ebuf));
 
     for (i = 0 ; i < ntapfds ; i++)
         FD_SET(tapfds[i], &keepfd);
@@ -1278,9 +1282,11 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
         vm->monitor_watch = -1;
     }
 
-    if (close(vm->logfile) < 0)
+    if (close(vm->logfile) < 0) {
+        char ebuf[1024];
         qemudLog(QEMUD_WARN, _("Unable to close logfile: %s\n"),
-                 strerror(errno));
+                 virStrerror(errno, ebuf, sizeof ebuf));
+    }
     if (vm->monitor != -1)
         close(vm->monitor);
     vm->logfile = -1;
@@ -1446,9 +1452,11 @@ qemudMonitorCommandExtra(const virDomainObjPtr vm,
     }
 
     /* Log, but ignore failures to write logfile for VM */
-    if (safewrite(vm->logfile, buf, strlen(buf)) < 0)
+    if (safewrite(vm->logfile, buf, strlen(buf)) < 0) {
+        char ebuf[1024];
         qemudLog(QEMUD_WARN, _("Unable to log VM console data: %s\n"),
-                 strerror(errno));
+                 virStrerror(errno, ebuf, sizeof ebuf));
+    }
 
     *reply = buf;
     return 0;
@@ -1456,9 +1464,11 @@ qemudMonitorCommandExtra(const virDomainObjPtr vm,
  error:
     if (buf) {
         /* Log, but ignore failures to write logfile for VM */
-        if (safewrite(vm->logfile, buf, strlen(buf)) < 0)
+        if (safewrite(vm->logfile, buf, strlen(buf)) < 0) {
+            char ebuf[1024];
             qemudLog(QEMUD_WARN, _("Unable to log VM console data: %s\n"),
-                     strerror(errno));
+                     virStrerror(errno, ebuf, sizeof ebuf));
+        }
         VIR_FREE(buf);
     }
     return -1;

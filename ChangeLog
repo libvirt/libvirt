@@ -1,5 +1,12 @@
 Thu Feb 5 17:03:35 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	qemu_driver.c: s/strerror/virStrerror.../
+	Perform most changs automatically, with this:
+	perl -pi -e 's/\bstrerror *\((.+?)\)/virStrerror($1, ebuf, sizeof ebuf)/'
+	Then, declare ebuf, as needed
+
+Thu Feb 5 17:03:35 +0100 2009 Jim Meyering <meyering@redhat.com>
+
 	remove duplicate *SetCloseExec and *SetNonBlock functions
 	* src/qemu_driver.c: Use virSetCloseExec and virSetNonBlock,
 	rather than qemuSet* functions.  Suggested by Daniel P. Berrange.
