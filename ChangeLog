@@ -1,3 +1,10 @@
+Wed Feb 4 22:22:34 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	lxc_container: Don't dereference NULL upon failure
+	* src/lxc_container.c (lxcContainerPivotRoot): Free and zero
+	oldroot *after* printing the diagnostic, both for virFileMakePath
+	and pivot_root failure.
+
 Tue Feb  3 14:06:06 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	avoid a format-related warning
