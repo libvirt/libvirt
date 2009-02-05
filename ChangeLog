@@ -1,5 +1,13 @@
 Thu Feb 5 17:03:35 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	syntax-check: enable prohibit_nonreentrant
+	* .x-sc_prohibit_nonreentrant: Add src/console.c and virterror.c.
+	* Makefile.cfg (local-checks-to-skip): Don't exempt
+	sc_prohibit_nonreentrant.
+	* Makefile.nonreentrant: Don't exempt strerror.
+
+Thu Feb 5 17:03:35 +0100 2009 Jim Meyering <meyering@redhat.com>
+
 	remove remainder of offending strerror uses
 	* qemud/qemud.c (GET_CONF_STR): Use virStrerror, not strerror.
 	* qemud/remote.c (remoteDispatchDomainBlockPeek): Likewise.
