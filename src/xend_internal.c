@@ -2828,8 +2828,13 @@ xenDaemonDomainSuspend(virDomainPtr domain)
                      __FUNCTION__);
         return(-1);
     }
-    if (domain->id < 0)
+
+    if (domain->id < 0) {
+        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
+                     _("Domain %s isn't running."), domain->name);
         return(-1);
+    }
+
     return xend_op(domain->conn, domain->name, "op", "pause", NULL);
 }
 
@@ -2850,8 +2855,13 @@ xenDaemonDomainResume(virDomainPtr domain)
                      __FUNCTION__);
         return(-1);
     }
-    if (domain->id < 0)
+
+    if (domain->id < 0) {
+        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
+                     _("Domain %s isn't running."), domain->name);
         return(-1);
+    }
+
     return xend_op(domain->conn, domain->name, "op", "unpause", NULL);
 }
 
@@ -2873,8 +2883,13 @@ xenDaemonDomainShutdown(virDomainPtr domain)
                      __FUNCTION__);
         return(-1);
     }
-    if (domain->id < 0)
+
+    if (domain->id < 0) {
+        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
+                     _("Domain %s isn't running."), domain->name);
         return(-1);
+    }
+
     return xend_op(domain->conn, domain->name, "op", "shutdown", "reason", "poweroff", NULL);
 }
 
@@ -2897,8 +2912,13 @@ xenDaemonDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
                      __FUNCTION__);
         return(-1);
     }
-    if (domain->id < 0)
+
+    if (domain->id < 0) {
+        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
+                     _("Domain %s isn't running."), domain->name);
         return(-1);
+    }
+
     return xend_op(domain->conn, domain->name, "op", "shutdown", "reason", "reboot", NULL);
 }
 
@@ -2923,8 +2943,13 @@ xenDaemonDomainDestroy(virDomainPtr domain)
                      __FUNCTION__);
         return(-1);
     }
-    if (domain->id < 0)
+
+    if (domain->id < 0) {
+        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
+                     _("Domain %s isn't running."), domain->name);
         return(-1);
+    }
+
     return xend_op(domain->conn, domain->name, "op", "destroy", NULL);
 }
 
@@ -2988,12 +3013,17 @@ int
 xenDaemonDomainSave(virDomainPtr domain, const char *filename)
 {
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
-        (filename == NULL) || (domain->id < 0)) {
+        (filename == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
                      __FUNCTION__);
         return(-1);
     }
 
+    if (domain->id < 0) {
+        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
+                     _("Domain %s isn't running."), domain->name);
+        return(-1);
+    }
 
     /* We can't save the state of Domain-0, that would mean stopping it too */
     if (domain->id == 0) {
@@ -3025,8 +3055,13 @@ xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
                      __FUNCTION__);
         return(-1);
     }
-    if (domain->id < 0)
+
+    if (domain->id < 0) {
+        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
+                     _("Domain %s isn't running."), domain->name);
         return(-1);
+    }
+
     return xend_op(domain->conn, domain->name, "op", "dump", "file", filename,
                    "live", "0", "crash", "0", NULL);
 }
@@ -3594,8 +3629,12 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
                      __FUNCTION__);
         return (-1);
     }
-    if (domain->id < 0)
+
+    if (domain->id < 0) {
+        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
+                     _("Domain %s isn't running."), domain->name);
         return(-1);
+    }
 
     /* from bit map, build character string of mapped CPU numbers */
     for (i = 0; i < maplen; i++) for (j = 0; j < 8; j++)
