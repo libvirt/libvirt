@@ -1759,7 +1759,8 @@ xenDaemonParseSxprNets(virConnectPtr conn,
             if (VIR_ALLOC(net) < 0)
                 goto no_memory;
 
-            if (tmp != NULL || (STREQ(tmp2, DEFAULT_VIF_SCRIPT))) {
+            if (tmp != NULL ||
+                (tmp2 != NULL && STREQ(tmp2, DEFAULT_VIF_SCRIPT))) {
                 net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
                 /* XXX virtual network reverse resolve */
 

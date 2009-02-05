@@ -1,3 +1,7 @@
+Thu Feb  5 16:53:37 GMT 2009 John Levon <john.levon@sun.com>
+
+	* src/xend_internal.c: robustify sexpr parser for NICs
+
 Thu Feb 5 17:03:35 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	syntax-check: enable prohibit_nonreentrant
