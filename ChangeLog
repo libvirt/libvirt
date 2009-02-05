@@ -1,5 +1,14 @@
 Thu Feb 5 17:03:35 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	iptables.c: Use virStrerror, not strerror.
+	* src/iptables.c: Include "virterror_internal.h".
+	Use virStrerror, not strerror.
+	* src/iptables.c (notifyRulesUpdated): Use %s rather than
+	string-concatenation that made sc_unmarked_diagnostics report
+	a false-positive.
+
+Thu Feb 5 17:03:35 +0100 2009 Jim Meyering <meyering@redhat.com>
+
 	use virReportOOMError rather than more verbose equivalent
 	* src/qemu_driver.c (qemudDomainSave, qemudDomainRestore)
 	(qemudDomainAttachPciDiskDevice)
