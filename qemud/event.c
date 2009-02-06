@@ -68,6 +68,7 @@ struct virEventTimeout {
 /* State for the main event loop */
 struct virEventLoop {
     pthread_mutex_t lock;
+    int running;
     pthread_t leader;
     int wakeupfd[2];
     int handlesCount;
@@ -521,6 +522,7 @@ int virEventRunOnce(void) {
     int ret, timeout, nfds;
 
     virEventLock();
+    eventLoop.running = 1;
     eventLoop.leader = pthread_self();
     if ((nfds = virEventMakePollFDs(&fds)) < 0) {
         virEventUnlock();
@@ -572,7 +574,7 @@ int virEventRunOnce(void) {
         return -1;
     }
 
-    eventLoop.leader = 0;
+    eventLoop.running = 0;
     virEventUnlock();
     return 0;
 }
@@ -611,7 +613,9 @@ int virEventInit(void)
 static int virEventInterruptLocked(void)
 {
     char c = '\0';
-    if (pthread_self() == eventLoop.leader)
+
+    if (!eventLoop.running ||
+        pthread_self() == eventLoop.leader)
         return 0;
 
     if (safewrite(eventLoop.wakeupfd[1], &c, sizeof(c)) != sizeof(c))

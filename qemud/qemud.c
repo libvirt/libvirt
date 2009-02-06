@@ -2031,11 +2031,15 @@ static int qemudOneLoop(void) {
     return 0;
 }
 
-static void qemudInactiveTimer(int timer ATTRIBUTE_UNUSED, void *data) {
+static void qemudInactiveTimer(int timerid, void *data) {
     struct qemud_server *server = (struct qemud_server *)data;
-    DEBUG0("Got inactive timer expiry");
-    if (!virStateActive()) {
-        DEBUG0("No state active, shutting down");
+
+    if (virStateActive() ||
+        server->clients) {
+        DEBUG0("Timer expired but still active, not shutting down");
+        virEventUpdateTimeoutImpl(timerid, -1);
+    } else {
+        DEBUG0("Timer expired and inactive, shutting down");
         server->shutdown = 1;
     }
 }
@@ -2066,8 +2070,17 @@ static void qemudFreeClient(struct qemud_client *client) {
 static int qemudRunLoop(struct qemud_server *server) {
     int timerid = -1;
     int ret = -1, i;
+    int timerActive = 0;
 
     virMutexLock(&server->lock);
+
+    if (timeout > 0 &&
+        (timerid = virEventAddTimeoutImpl(-1,
+                                          qemudInactiveTimer,
+                                          server, NULL)) < 0) {
+        VIR_ERROR0(_("Failed to register shutdown timeout"));
+        return -1;
+    }
 
     if (min_workers > max_workers)
         max_workers = min_workers;
@@ -2089,11 +2102,21 @@ static int qemudRunLoop(struct qemud_server *server) {
          * if any drivers have active state, if not
          * shutdown after timeout seconds
          */
-        if (timeout > 0 && !virStateActive() && !server->clients) {
-            timerid = virEventAddTimeoutImpl(timeout*1000,
-                                             qemudInactiveTimer,
-                                             server, NULL);
-            DEBUG("Scheduling shutdown timer %d", timerid);
+        if (timeout > 0) {
+            if (timerActive) {
+                if (server->clients) {
+                    DEBUG("Deactivating shutdown timer %d", timerid);
+                    virEventUpdateTimeoutImpl(timerid, -1);
+                    timerActive = 0;
+                }
+            } else {
+                if (!virStateActive() &&
+                    !server->clients) {
+                    DEBUG("Activating shutdown timer %d", timerid);
+                    virEventUpdateTimeoutImpl(timerid, timeout * 1000);
+                    timerActive = 1;
+                }
+            }
         }
 
         virMutexUnlock(&server->lock);
@@ -2145,15 +2168,6 @@ static int qemudRunLoop(struct qemud_server *server) {
                 server->workers[i].hasThread = 0;
                 server->nactiveworkers--;
             }
-        }
-
-        /* Unregister any timeout that's active, since we
-         * just had an event processed
-         */
-        if (timerid != -1) {
-            DEBUG("Removing shutdown timer %d", timerid);
-            virEventRemoveTimeoutImpl(timerid);
-            timerid = -1;
         }
 
         if (server->shutdown) {

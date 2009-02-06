@@ -1,3 +1,13 @@
+Fri Feb  6 14:43:10 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix 100% CPU bound loop when libvirtd --timeout is used
+	* qemud/event.c: Don't assume pthread_t is equivalent to an
+	int, explicitly track whether event loop is active with a
+	flag independantly of the threadLeader variable
+	* qemud/qemud.c: Don't register/unregister shutdown timer
+	on each loop. Register once, and activate/deactivate when
+	required
+
 Thu Feb  5 19:28:10 GMT 2009 John Levon <john.levon@sun.com>
 
 	* src/domain_conf.c: Check the last error, not the last
