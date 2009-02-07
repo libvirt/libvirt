@@ -1,3 +1,10 @@
+Sat Feb  7 21:46:06 CET 2009 Guido Günther <agx@sigxcpu.org>
+
+	* src/qemu_driver.c (qemudStartVMDaemon, qemudDomainSuspend,
+	qemudDomainResume, qemudDomainAttachDevice, qemudDomainDetachDevice):
+	Don't ignore errors to save domain status.
+	(qemudShutdownVMDaemon): Warn if we fail to remove the status file.
+
 Fri Feb  6 14:43:10 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix 100% CPU bound loop when libvirtd --timeout is used

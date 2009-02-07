@@ -1251,12 +1251,12 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         if ((qemudWaitForMonitor(conn, driver, vm, pos) < 0) ||
             (qemudDetectVcpuPIDs(conn, vm) < 0) ||
             (qemudInitCpus(conn, vm, migrateFrom) < 0) ||
-            (qemudInitPasswords(conn, driver, vm) < 0)) {
+            (qemudInitPasswords(conn, driver, vm) < 0) ||
+            (qemudSaveDomainStatus(conn, qemu_driver, vm) < 0)) {
             qemudShutdownVMDaemon(conn, driver, vm);
             return -1;
         }
     }
-    qemudSaveDomainStatus(conn, qemu_driver, vm);
 
     return ret;
 }
@@ -1294,7 +1294,10 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     /* shut it off for sure */
     virKillProcess(vm->pid, SIGKILL);
 
-    qemudRemoveDomainStatus(conn, driver, vm);
+    if (qemudRemoveDomainStatus(conn, driver, vm) < 0) {
+        qemudLog(QEMUD_WARN, _("Failed to remove domain status for %s"),
+                 vm->def->name);
+    }
     vm->pid = -1;
     vm->def->id = -1;
     vm->state = VIR_DOMAIN_SHUTOFF;
@@ -1951,7 +1954,8 @@ static int qemudDomainSuspend(virDomainPtr dom) {
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
         VIR_FREE(info);
     }
-    qemudSaveDomainStatus(dom->conn, driver, vm);
+    if (qemudSaveDomainStatus(dom->conn, driver, vm) < 0)
+        goto cleanup;
     ret = 0;
 
 cleanup:
@@ -2001,7 +2005,8 @@ static int qemudDomainResume(virDomainPtr dom) {
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
         VIR_FREE(info);
     }
-    qemudSaveDomainStatus(dom->conn, driver, vm);
+    if (qemudSaveDomainStatus(dom->conn, driver, vm) < 0)
+        goto cleanup;
     ret = 0;
 
 cleanup:
@@ -3435,7 +3440,9 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         goto cleanup;
     }
 
-    qemudSaveDomainStatus(dom->conn, driver, vm);
+    if (!ret && qemudSaveDomainStatus(dom->conn, driver, vm) < 0)
+        ret = -1;
+
 cleanup:
     if (ret < 0)
         virDomainDeviceDefFree(dev);
@@ -3552,7 +3559,9 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          "%s", _("only SCSI or virtio disk device can be detached dynamically"));
 
-    qemudSaveDomainStatus(dom->conn, driver, vm);
+    if (!ret && qemudSaveDomainStatus(dom->conn, driver, vm) < 0)
+        ret = -1;
+
 cleanup:
     virDomainDeviceDefFree(dev);
     if (vm)
