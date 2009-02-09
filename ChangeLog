@@ -1,3 +1,9 @@
+Mon Feb 9 10:13:28 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	don't print uninitialized in debug diagnostic
+	* qemud/mdns.c (libvirtd_mdns_timeout_new): Don't use local, t,
+	uninitialized.
+
 Mon Feb 9 16:25:52 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	avoid two test failures induced by today's error-reporting changes

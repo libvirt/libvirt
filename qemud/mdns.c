@@ -309,7 +309,7 @@ static AvahiTimeout *libvirtd_mdns_timeout_new(const AvahiPoll *api ATTRIBUTE_UN
     AvahiTimeout *t;
     struct timeval now;
     long long nowms, thenms, timeout;
-    AVAHI_DEBUG("Add timeout %p TV %p", t, tv);
+    AVAHI_DEBUG("Add timeout TV %p", tv);
     if (VIR_ALLOC(t) < 0)
         return NULL;
 
