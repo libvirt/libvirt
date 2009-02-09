@@ -1,3 +1,9 @@
+Mon Feb 9 16:25:52 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	avoid two test failures induced by today's error-reporting changes
+	* tests/cpuset: Adjust expected diagnostic to match new behavior.
+	* tests/undefine: Likewise.
+
 Mon Feb  9 14:19:02 GMT 2009 John Levon <john.levon@sun.com>
 
 	* src/virsh.c: rather than verbosely printing every error, save
