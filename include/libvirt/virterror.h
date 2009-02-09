@@ -172,8 +172,10 @@ typedef void (*virErrorFunc) (void *userData, virErrorPtr error);
  */
 
 virErrorPtr		virGetLastError		(void);
+virErrorPtr		virSaveLastError	(void);
 void			virResetLastError	(void);
 void			virResetError		(virErrorPtr err);
+void			virFreeError		(virErrorPtr err);
 
 virErrorPtr		virConnGetLastError	(virConnectPtr conn);
 void			virConnResetLastError	(virConnectPtr conn);

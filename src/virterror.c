@@ -286,6 +286,27 @@ virCopyLastError(virErrorPtr to)
 }
 
 /**
+ * virSaveLastError:
+ *
+ * Save the last error into a new error object.
+ *
+ * Returns a pointer to the copied error or NULL if allocation failed.
+ * It is the caller's responsibility to free the error with
+ * virFreeError().
+ */
+virErrorPtr
+virSaveLastError(void)
+{
+    virErrorPtr to;
+
+    if (VIR_ALLOC(to) < 0)
+        return NULL;
+
+    virCopyLastError(to);
+    return to;
+}
+
+/**
  * virResetError:
  * @err: pointer to the virError to clean up
  *
@@ -303,6 +324,18 @@ virResetError(virErrorPtr err)
     memset(err, 0, sizeof(virError));
 }
 
+/**
+ * virFreeError:
+ * @err: error to free
+ *
+ * Resets and frees the given error.
+ */
+void
+virFreeError(virErrorPtr err)
+{
+    virResetError(err);
+    VIR_FREE(err);
+}
 
 /**
  * virResetLastError:

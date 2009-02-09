@@ -247,4 +247,10 @@ LIBVIRT_0.6.0 {
 
 } LIBVIRT_0.5.0;
 
+LIBVIRT_0.6.1 {
+    global:
+	virFreeError;
+	virSaveLastError;
+} LIBVIRT_0.6.0;
+
 # .... define new API here using predicted next version number ....

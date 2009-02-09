@@ -1,3 +1,9 @@
+Mon Feb  9 14:07:51 GMT 2009 John Levon <john.levon@sun.com>
+
+	* include/libvirt/virterror.h:
+	* src/libvirt_public.syms:
+	* src/virterror.c: introduce virSaveLastError(), virFreeError()
+
 Mon Feb  9 10:21:33 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/virsh.c: Limit readonly history to 500 to avoid unbounded
