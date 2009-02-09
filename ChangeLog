@@ -1,3 +1,8 @@
+Mon Feb  9 10:21:33 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/virsh.c: Limit readonly history to 500 to avoid unbounded
+	growth in memory usage (Jim Paris)
+
 Sat Feb  7 21:46:06 CET 2009 Guido Günther <agx@sigxcpu.org>
 
 	* src/qemu_driver.c (qemudStartVMDaemon, qemudDomainSuspend,

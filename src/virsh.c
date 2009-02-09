@@ -6784,6 +6784,9 @@ vshReadlineInit(void)
 
     /* Tell the completer that we want a crack first. */
     rl_attempted_completion_function = vshReadlineCompletion;
+
+    /* Limit the total size of the history buffer */
+    stifle_history(500);
 }
 
 static char *
