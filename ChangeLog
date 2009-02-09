@@ -1,3 +1,8 @@
+Mon Feb  9 14:19:02 GMT 2009 John Levon <john.levon@sun.com>
+
+	* src/virsh.c: rather than verbosely printing every error, save
+	the last error and report that only if the entire command fails.
+
 Mon Feb  9 14:07:51 GMT 2009 John Levon <john.levon@sun.com>
 
 	* include/libvirt/virterror.h:

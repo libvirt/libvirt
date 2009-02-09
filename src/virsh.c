@@ -93,22 +93,6 @@ typedef enum {
 } vshErrorLevel;
 
 /*
- * The error handler for virsh
- */
-static void
-virshErrorHandler(void *unused, virErrorPtr error)
-{
-    if ((unused != NULL) || (error == NULL))
-        return;
-
-    /* Suppress the VIR_ERR_NO_XEN error which fails as non-root */
-    if ((error->code == VIR_ERR_NO_XEN) || (error->code == VIR_ERR_OK))
-        return;
-
-    virDefaultErrorFunc(error);
-}
-
-/*
  * virsh command line grammar:
  *
  *    command_line    =     <command>\n | <command>; <command>; ...
@@ -319,6 +303,46 @@ static int namesorter(const void *a, const void *b) {
   const char **sb = (const char**)b;
 
   return strcasecmp(*sa, *sb);
+}
+
+static virErrorPtr last_error;
+
+/*
+ * Quieten libvirt until we're done with the command.
+ */
+static void
+virshErrorHandler(void *unused ATTRIBUTE_UNUSED, virErrorPtr error)
+{
+    virFreeError(last_error);
+    last_error = virSaveLastError();
+    if (getenv("VIRSH_DEBUG") != NULL)
+        virDefaultErrorFunc(error);
+}
+
+/*
+ * Report an error when a command finishes.  This is better than before
+ * (when correct operation would report errors), but it has some
+ * problems: we lose the smarter formatting of virDefaultErrorFunc(),
+ * and it can become harder to debug problems, if errors get reported
+ * twice during one command.  This case shouldn't really happen anyway,
+ * and it's IMHO a bug that libvirt does that sometimes.
+ */
+static void
+virshReportError(vshControl *ctl)
+{
+    if (last_error == NULL)
+        return;
+
+    if (last_error->code == VIR_ERR_OK) {
+        vshError(ctl, FALSE, "%s", _("unknown error"));
+        goto out;
+    }
+
+    vshError(ctl, FALSE, "%s", last_error->message);
+
+out:
+    virFreeError(last_error);
+    last_error = NULL;
 }
 
 
@@ -6102,6 +6126,9 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
 
         if (ctl->timing)
             GETTIMEOFDAY(&after);
+
+        if (ret == FALSE)
+            virshReportError(ctl);
 
         if (STREQ(cmd->def->name, "quit"))        /* hack ... */
             return ret;
