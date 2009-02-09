@@ -1,3 +1,24 @@
+Mon Feb 9 17:26:07 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	libvirtd: new config-file option: unix_sock_dir
+	Before this change, the unix socket directory was hard-coded
+	to be e.g., /var/run/libvirt for euid==0 and ~/.libvirt otherwise.
+	With this change, you may now specify that directory in libvirtd's
+	config file via a line like this: unix_sock_dir = "/var/run/libvirt".
+	This is essential for running tests that do not impinge on any
+	existing libvirtd process, and in running tests in parallel.
+	* qemud/libvirtd.conf (unix_sock_dir): Add comment and example.
+	* qemud/qemud.h (struct qemud_server) [logDir]: Change type
+	from char[PATH_MAX] to char*.
+	* qemud/qemud.c (unix_sock_dir): New global
+	(remoteReadConfigFile): Set the global.
+	(qemudInitPaths): Use the global, unix_sock_dir, if non-NULL.
+	One minor improvement: unlink both sockets or none, never
+	just one of them.
+	(qemudCleanup): Free logDir.
+	(main): Use the new global rather than hard-coding "/run/libvirt".
+	* qemud/libvirtd.aug (sock_acl_entry): Add "unix_sock_dir".
+
 Mon Feb 9 10:13:28 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	don't print uninitialized in debug diagnostic

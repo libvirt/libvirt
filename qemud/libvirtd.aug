@@ -35,6 +35,7 @@ module Libvirtd =
    let sock_acl_entry = str_entry "unix_sock_group"
                       | str_entry "unix_sock_ro_perms"
                       | str_entry "unix_sock_rw_perms"
+                      | str_entry "unix_sock_dir"
 
    let authentication_entry = str_entry "auth_unix_ro"
                             | str_entry "auth_unix_rw"
@@ -79,4 +80,3 @@ module Libvirtd =
               . Util.stdexcl
 
    let xfm = transform lns filter
-

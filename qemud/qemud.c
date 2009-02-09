@@ -51,6 +51,8 @@
 #include "libvirt_internal.h"
 #include "virterror_internal.h"
 
+#define VIR_FROM_THIS VIR_FROM_QEMU
+
 #include "qemud.h"
 #include "util.h"
 #include "remote_internal.h"
@@ -135,6 +137,8 @@ static int listen_tcp = 0;
 static char *listen_addr  = (char *) LIBVIRTD_LISTEN_ADDR;
 static char *tls_port = (char *) LIBVIRTD_TLS_PORT;
 static char *tcp_port = (char *) LIBVIRTD_TCP_PORT;
+
+static char *unix_sock_dir = NULL;
 
 #if HAVE_POLKIT
 static int auth_unix_rw = REMOTE_AUTH_POLKIT;
@@ -712,46 +716,75 @@ static int qemudInitPaths(struct qemud_server *server,
                           int maxlen)
 {
     uid_t uid = geteuid();
+    char *sock_dir;
+    char *dir_prefix = NULL;
+    int ret = -1;
+    char *sock_dir_prefix = NULL;
+
+    if (unix_sock_dir)
+        sock_dir = unix_sock_dir;
+    else {
+        sock_dir = sockname;
+        if (uid == SYSTEM_UID) {
+            dir_prefix = strdup (LOCAL_STATE_DIR);
+            if (dir_prefix == NULL) {
+                virReportOOMError(NULL);
+                goto cleanup;
+            }
+            if (snprintf (sock_dir, maxlen, "%s/run/libvirt",
+                          dir_prefix) >= maxlen)
+                goto snprintf_error;
+        } else {
+            dir_prefix = virGetUserDirectory(NULL, uid);
+            if (dir_prefix == NULL) {
+                /* Do not diagnose here; virGetUserDirectory does that.  */
+                goto snprintf_error;
+            }
+
+            if (snprintf(sock_dir, maxlen, "%s/.libvirt", dir_prefix) >= maxlen)
+                goto snprintf_error;
+        }
+    }
+
+    sock_dir_prefix = strdup (sock_dir);
+    if (!sock_dir_prefix) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
 
     if (uid == SYSTEM_UID) {
-        if (snprintf (sockname, maxlen, "%s/run/libvirt/libvirt-sock",
-                      LOCAL_STATE_DIR) >= maxlen)
+        if (snprintf (sockname, maxlen, "%s/libvirt-sock",
+                      sock_dir_prefix) >= maxlen
+            || (snprintf (roSockname, maxlen, "%s/libvirt-sock-ro",
+                          sock_dir_prefix) >= maxlen))
             goto snprintf_error;
-
         unlink(sockname);
-
-        if (snprintf (roSockname, maxlen, "%s/run/libvirt/libvirt-sock-ro",
-                      LOCAL_STATE_DIR) >= maxlen)
-            goto snprintf_error;
-
         unlink(roSockname);
-
-        if (snprintf(server->logDir, PATH_MAX, "%s/log/libvirt/", LOCAL_STATE_DIR) >= PATH_MAX)
-            goto snprintf_error;
     } else {
-        char *userdir = virGetUserDirectory(NULL, uid);
-        if (userdir == NULL) {
-            /* Do not diagnose here; virGetUserDirectory does that.  */
-            return -1;
-        }
-
-        if (snprintf(sockname, maxlen, "@%s/.libvirt/libvirt-sock", userdir) >= maxlen) {
-            VIR_FREE(userdir);
+        if (snprintf(sockname, maxlen, "@%s/libvirt-sock",
+                     sock_dir_prefix) >= maxlen)
             goto snprintf_error;
-        }
+    }
 
-        if (snprintf(server->logDir, PATH_MAX, "%s/.libvirt/log", userdir) >= PATH_MAX) {
-            VIR_FREE(userdir);
-            goto snprintf_error;
-        }
-        VIR_FREE(userdir);
-    } /* !remote */
+    if (uid == SYSTEM_UID)
+      server->logDir = strdup (LOCAL_STATE_DIR "/log/libvirt");
+    else
+      virAsprintf(&server->logDir, "%s/.libvirt/log", dir_prefix);
 
-    return 0;
+    if (server->logDir == NULL)
+        virReportOOMError(NULL);
+
+    ret = 0;
 
  snprintf_error:
-    VIR_ERROR("%s", _("Resulting path too long for buffer in qemudInitPaths()"));
-    return -1;
+    if (ret)
+        VIR_ERROR("%s",
+                  _("Resulting path too long for buffer in qemudInitPaths()"));
+
+ cleanup:
+    free (dir_prefix);
+    free (sock_dir_prefix);
+    return ret;
 }
 
 static struct qemud_server *qemudInitialize(int sigread) {
@@ -2208,6 +2241,7 @@ static void qemudCleanup(struct qemud_server *server) {
         free(sock);
         sock = next;
     }
+    free(server->logDir);
 
 #ifdef HAVE_SASL
     if (server->saslUsernameWhitelist) {
@@ -2556,6 +2590,8 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
         unix_sock_rw_perms = NULL;
     }
 
+    GET_CONF_STR (conf, filename, unix_sock_dir);
+
     GET_CONF_INT (conf, filename, mdns_adv);
     GET_CONF_STR (conf, filename, mdns_name);
 
@@ -2846,11 +2882,10 @@ int main(int argc, char **argv) {
         goto error2;
 
     /* Change the group ownership of /var/run/libvirt to unix_sock_gid */
-    if (getuid() == 0) {
-        const char *sockdirname = LOCAL_STATE_DIR "/run/libvirt";
-
-        if (chown(sockdirname, -1, unix_sock_gid) < 0)
-            VIR_ERROR(_("Failed to change group ownership of %s"), sockdirname);
+    if (unix_sock_dir && geteuid() == 0) {
+        if (chown(unix_sock_dir, -1, unix_sock_gid) < 0)
+            VIR_ERROR(_("Failed to change group ownership of %s"),
+                      unix_sock_dir);
     }
 
     if (virEventAddHandleImpl(sigpipe[0],

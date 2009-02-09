@@ -1,7 +1,7 @@
 /*
  * qemud.h: daemon data structure definitions
  *
- * Copyright (C) 2006-2008 Red Hat, Inc.
+ * Copyright (C) 2006-2009 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -181,7 +181,7 @@ struct qemud_server {
     struct qemud_client **clients;
 
     int sigread;
-    char logDir[PATH_MAX];
+    char *logDir;
     unsigned int shutdown : 1;
 #ifdef HAVE_AVAHI
     struct libvirtd_mdns *mdns;
