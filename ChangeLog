@@ -1,3 +1,8 @@
+Wed Feb 11 21:30:47 CET 2009 Guido Günther <agx@sigxcpu.org>
+
+	* src/qemu_driver.c (qemudStartVMDaemon): fix return status when
+	domain didn't show up
+
 Mon Feb 9 17:26:07 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	libvirtd: new config-file option: unix_sock_dir

@@ -1218,8 +1218,11 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                 usleep(100*1000);
                 retries--;
             }
-            if (ret)
-                qemudLog(QEMUD_WARN, _("Domain %s didn't show up\n"), vm->def->name);
+            if (ret) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("Domain %s didn't show up\n"), vm->def->name);
+                ret = -1;
+            }
         } else {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("Unable to daemonize QEMU process"));
