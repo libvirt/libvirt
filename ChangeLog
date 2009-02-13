@@ -1,3 +1,12 @@
+Fri Feb 13 12:31:03 CET 2009 Guido Günther <agx@sigxcpu.org>
+
+	usleep to wait for domain logfile to fill up
+	* src/qemu_driver.c (qemudReadLogOutput): New function to read from
+	domain log file.
+	(qemudWaitForMonitor): Use it.
+	(qemudOpenMonitor): Pass timout in seconds.
+	(qemudReadMonitorOutput): Convert timout to milliseconds.
+
 Wed Feb 11 21:30:47 CET 2009 Guido Günther <agx@sigxcpu.org>
 
 	* src/qemu_driver.c (qemudStartVMDaemon): fix return status when

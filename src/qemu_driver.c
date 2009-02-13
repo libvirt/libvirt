@@ -601,6 +601,7 @@ qemudReadMonitorOutput(virConnectPtr conn,
 {
     int got = 0;
     buf[0] = '\0';
+    timeout *= 1000; /* poll wants milli seconds */
 
     /* Consume & discard the initial greeting */
     while (got < (buflen-1)) {
@@ -662,6 +663,56 @@ qemudReadMonitorOutput(virConnectPtr conn,
 
 }
 
+
+/*
+ * Returns -1 for error, 0 on success
+ */
+static int
+qemudReadLogOutput(virConnectPtr conn,
+                   virDomainObjPtr vm,
+                   int fd,
+                   char *buf,
+                   int buflen,
+                   qemudHandlerMonitorOutput func,
+                   const char *what,
+                   int timeout)
+{
+    int got = 0;
+    int ret;
+    int retries = timeout*10;
+    buf[0] = '\0';
+
+    while (retries) {
+        while((ret = read(fd, buf+got, buflen-got-1)) > 0) {
+            got += ret;
+            buf[got] = '\0';
+            if ((buflen-got-1) == 0) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("Out of space while reading %s log output"), what);
+                return -1;
+            }
+        }
+
+        if (ret < 0 && errno != EINTR) {
+            virReportSystemError(conn, errno,
+                                 _("Failure while reading %s log output"),
+                                 what);
+            return -1;
+        }
+
+        ret = func(conn, vm, buf, fd);
+        if (ret <= 0)
+            return ret;
+
+        usleep(100*1000);
+        retries--;
+    }
+    if (retries == 0)
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Timed out while reading %s log output"), what);
+    return -1;
+}
+
 static int
 qemudCheckMonitorPrompt(virConnectPtr conn ATTRIBUTE_UNUSED,
                         virDomainObjPtr vm,
@@ -706,7 +757,7 @@ static int qemudOpenMonitor(virConnectPtr conn,
                                    vm, monfd,
                                    buf, sizeof(buf),
                                    qemudCheckMonitorPrompt,
-                                   "monitor", 10000) <= 0)
+                                   "monitor", 10) <= 0)
             ret = -1;
         else
             ret = 0;
@@ -738,6 +789,7 @@ static int qemudOpenMonitor(virConnectPtr conn,
     return ret;
 }
 
+/* Returns -1 for error, 0 success, 1 continue reading */
 static int qemudExtractMonitorPath(virConnectPtr conn,
                                    const char *haystack,
                                    size_t *offset,
@@ -841,20 +893,17 @@ static int qemudWaitForMonitor(virConnectPtr conn,
         < 0)
         return -1;
 
-    ret = qemudReadMonitorOutput(conn, vm, logfd, buf, sizeof(buf),
-                                 qemudFindCharDevicePTYs,
-                                 "console", 3000);
+    ret = qemudReadLogOutput(conn, vm, logfd, buf, sizeof(buf),
+                             qemudFindCharDevicePTYs,
+                             "console", 3);
     if (close(logfd) < 0) {
         char ebuf[1024];
         qemudLog(QEMUD_WARN, _("Unable to close logfile: %s\n"),
                  virStrerror(errno, ebuf, sizeof ebuf));
     }
 
-    if (ret == 1) /* Success */
+    if (ret == 0) /* success */
         return 0;
-
-    if (ret == -1)
-        return -1;
 
     /* Unexpected end of file - inform user of QEMU log data */
     qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
