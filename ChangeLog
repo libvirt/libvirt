@@ -1,3 +1,7 @@
+Fri Feb 13 19:04:22 IST 2009 Mark McLoughlin <markmc@redhat.com>
+
+	* src/xml.h: kill some non-existent functions
+
 Fri Feb 13 19:03:58 IST 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* docs/virsh.pod: update bugzilla link

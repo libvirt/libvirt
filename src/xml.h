@@ -21,14 +21,6 @@ int		virXPathNumber	(virConnectPtr conn,
                                  const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  double *value);
-int		virXPathInt	(virConnectPtr conn,
-                                 const char *xpath,
-                                 xmlXPathContextPtr ctxt,
-                                 int *value);
-int		virXPathUInt	(virConnectPtr conn,
-                                 const char *xpath,
-                                 xmlXPathContextPtr ctxt,
-                                 unsigned int *value);
 int		virXPathLong	(virConnectPtr conn,
                                  const char *xpath,
                                  xmlXPathContextPtr ctxt,
