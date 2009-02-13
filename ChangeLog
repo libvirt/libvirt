@@ -1,3 +1,11 @@
+Fri Feb 13 19:09:54 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	test:///default driver: don't dereference NULL "def"
+	* src/test.c (testNetworkCreate, testNetworkDefine): Since "def" is
+	set to NULL immediately after any vir*AssignDef call (to indicate we
+	no longer own it and to ensure no clean-up path mistakenly frees it),
+	dereference via net->def->, not def->.
+
 Fri Feb 13 12:31:03 CET 2009 Guido Günther <agx@sigxcpu.org>
 
 	usleep to wait for domain logfile to fill up

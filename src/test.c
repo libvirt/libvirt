@@ -2049,14 +2049,12 @@ static virNetworkPtr testNetworkCreate(virConnectPtr conn, const char *xml) {
     if ((def = virNetworkDefParseString(conn, xml)) == NULL)
         goto cleanup;
 
-    if ((net = virNetworkAssignDef(conn, &privconn->networks,
-                                   def)) == NULL) {
+    if ((net = virNetworkAssignDef(conn, &privconn->networks, def)) == NULL)
         goto cleanup;
-    }
-    net->active = 1;
     def = NULL;
+    net->active = 1;
 
-    ret = virGetNetwork(conn, def->name, def->uuid);
+    ret = virGetNetwork(conn, net->def->name, net->def->uuid);
 
 cleanup:
     virNetworkDefFree(def);
@@ -2076,14 +2074,12 @@ static virNetworkPtr testNetworkDefine(virConnectPtr conn, const char *xml) {
     if ((def = virNetworkDefParseString(conn, xml)) == NULL)
         goto cleanup;
 
-    if ((net = virNetworkAssignDef(conn, &privconn->networks,
-                                   def)) == NULL) {
+    if ((net = virNetworkAssignDef(conn, &privconn->networks, def)) == NULL)
         goto cleanup;
-    }
-    net->persistent = 1;
     def = NULL;
+    net->persistent = 1;
 
-    ret = virGetNetwork(conn, def->name, def->uuid);
+    ret = virGetNetwork(conn, net->def->name, net->def->uuid);
 
 cleanup:
     virNetworkDefFree(def);
@@ -2529,9 +2525,8 @@ testStoragePoolCreate(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!(pool = virStoragePoolObjAssignDef(conn, &privconn->pools, def))) {
+    if (!(pool = virStoragePoolObjAssignDef(conn, &privconn->pools, def)))
         goto cleanup;
-    }
     def = NULL;
 
     if (testStoragePoolObjSetDefaults(conn, pool) == -1) {
@@ -2568,9 +2563,8 @@ testStoragePoolDefine(virConnectPtr conn,
     def->allocation = defaultPoolAlloc;
     def->available = defaultPoolCap - defaultPoolAlloc;
 
-    if (!(pool = virStoragePoolObjAssignDef(conn, &privconn->pools, def))) {
+    if (!(pool = virStoragePoolObjAssignDef(conn, &privconn->pools, def)))
         goto cleanup;
-    }
     def = NULL;
 
     if (testStoragePoolObjSetDefaults(conn, pool) == -1) {
