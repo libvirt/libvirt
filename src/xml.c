@@ -140,7 +140,7 @@ virXPathLong(virConnectPtr conn,
 
     if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
         virXMLError(conn, VIR_ERR_INTERNAL_ERROR,
-                    "%s", _("Invalid parameter to virXPathNumber()"));
+                    "%s", _("Invalid parameter to virXPathLong()"));
         return (-1);
     }
     relnode = ctxt->node;
@@ -195,7 +195,7 @@ virXPathULong(virConnectPtr conn,
 
     if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
         virXMLError(conn, VIR_ERR_INTERNAL_ERROR,
-                    "%s", _("Invalid parameter to virXPathNumber()"));
+                    "%s", _("Invalid parameter to virXPathULong()"));
         return (-1);
     }
     relnode = ctxt->node;
