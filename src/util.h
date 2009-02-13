@@ -56,6 +56,8 @@ int virFileReadLimFD(int fd, int maxlen, char **buf);
 
 int virFileReadAll(const char *path, int maxlen, char **buf);
 
+int virFileWriteStr(const char *path, const char *str);
+
 int virFileMatchesNameSuffix(const char *file,
                              const char *name,
                              const char *suffix);

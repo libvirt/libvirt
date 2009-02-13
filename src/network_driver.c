@@ -794,33 +794,11 @@ networkRemoveIptablesRules(struct network_driver *driver,
     iptablesSaveRules(driver->iptables);
 }
 
-/* Enable IP Forwarding.
-   Return 0 for success, nonzero for failure.
-   Be careful to preserve any errno value upon failure. */
+/* Enable IP Forwarding. Return 0 for success, nonzero for failure. */
 static int
 networkEnableIpForwarding(void)
 {
-#define PROC_IP_FORWARD "/proc/sys/net/ipv4/ip_forward"
-
-    int fd;
-
-    if ((fd = open(PROC_IP_FORWARD, O_WRONLY|O_TRUNC)) == -1)
-        return 0;
-
-    if (safewrite(fd, "1\n", 2) < 0) {
-        int saved_errno = errno;
-        close (fd);
-        errno = saved_errno;
-        return 0;
-    }
-
-    /* Use errno from failed close only if there was no write error.  */
-    if (close (fd) != 0)
-        return 0;
-
-    return 1;
-
-#undef PROC_IP_FORWARD
+    return virFileWriteStr("/proc/sys/net/ipv4/ip_forward", "1\n");
 }
 
 static int networkStartNetworkDaemon(virConnectPtr conn,

@@ -279,6 +279,7 @@ virCondBroadcast;
 
 # util.h
 virFileReadAll;
+virFileWriteStr;
 virStrToLong_i;
 virStrToLong_ll;
 virStrToLong_ull;

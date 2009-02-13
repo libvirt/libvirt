@@ -774,6 +774,30 @@ int virFileReadAll(const char *path, int maxlen, char **buf)
     return len;
 }
 
+/* Truncate @path and write @str to it.
+   Return 0 for success, nonzero for failure.
+   Be careful to preserve any errno value upon failure. */
+int virFileWriteStr(const char *path, const char *str)
+{
+    int fd;
+
+    if ((fd = open(path, O_WRONLY|O_TRUNC)) == -1)
+        return -1;
+
+    if (safewrite(fd, str, strlen(str)) < 0) {
+        int saved_errno = errno;
+        close (fd);
+        errno = saved_errno;
+        return -1;
+    }
+
+    /* Use errno from failed close only if there was no write error.  */
+    if (close (fd) != 0)
+        return -1;
+
+    return 0;
+}
+
 int virFileMatchesNameSuffix(const char *file,
                              const char *name,
                              const char *suffix)
