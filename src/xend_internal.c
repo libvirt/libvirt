@@ -4292,6 +4292,8 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
                    "destination", hostname,
                    "live", live,
                    "port", port,
+                   "node", "-1",
+                   "ssl", "0",
                    "resource", "0", /* required, xend ignores it */
                    NULL);
     VIR_FREE (hostname);

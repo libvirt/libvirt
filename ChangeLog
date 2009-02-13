@@ -1,3 +1,9 @@
+Fri Feb 13 16:50:35 GMT 2009 John Levon <john.levon@sun.com>
+
+	* src/xend_internal.c: xend in 3.3 grew a couple of new options
+	for the migration method. As they're ignored on older xend
+	versions, always pass them.
+
 Fri Feb 13 19:09:54 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	test:///default driver: don't dereference NULL "def"
