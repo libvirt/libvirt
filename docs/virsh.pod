@@ -540,9 +540,9 @@ L<virt-install(1)>, L<xm(1)>, L<virt-top(1)>, L<virt-mem(1)>, L<virt-df(1)>, L<h
 
 =head1 BUGS
 
-Bugs can be view on the RedHat bugzilla page under the libvirt
+Bugs can be filed in Red Hat bugzilla under the Virtualization Tools/libvirt
 L<https://bugzilla.redhat.com/>
 
-L<https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&component=libvirt&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&bug_status=MODIFIED&short_desc_type=allwordssubstr&short_desc=&long_desc_type=allwordssubstr>
+L<https://bugzilla.redhat.com/buglist.cgi?product=Virtualization+Tools&component=libvirt&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED>
 
 =end
