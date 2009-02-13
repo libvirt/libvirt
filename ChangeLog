@@ -1,3 +1,7 @@
+Fri Feb 13 19:03:42 IST 2009 Mark McLoughlin <markmc@redhat.com>
+
+	* proxy/libvirt_proxy.c: fix gcc-4.4 warnings
+
 Fri Feb 13 19:03:30 IST 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/qemud.c: fix gcc-4.4 warnings

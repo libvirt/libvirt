@@ -351,8 +351,11 @@ proxyWriteClientSocket(int nr, virProxyPacketPtr req) {
 static int
 proxyReadClientSocket(int nr) {
     virDomainDefPtr def;
-    virProxyFullPacket request;
-    virProxyPacketPtr req = (virProxyPacketPtr) &request;
+    union {
+        virProxyFullPacket full_request;
+        virProxyPacket request;
+    } r;
+    virProxyPacketPtr req = &r.request;
     int ret;
     char *xml, *ostype;
 
@@ -398,7 +401,7 @@ retry:
      */
     if (req->len > ret) {
         int total, extra;
-        char *base = (char *) &request;
+        char *base = (char *) &r;
 
         total = ret;
         while (total < req->len) {
@@ -444,8 +447,8 @@ retry2:
 
             if (req->len != sizeof(virProxyPacket))
                 goto comm_error;
-            maxids = sizeof(request.extra.arg) / sizeof(int);
-            ret = xenHypervisorListDomains(conn, &request.extra.arg[0],
+            maxids = sizeof(r.full_request.extra.arg) / sizeof(int);
+            ret = xenHypervisorListDomains(conn, &r.full_request.extra.arg[0],
                                            maxids);
             if (ret < 0) {
                 req->len = sizeof(virProxyPacket);
@@ -469,9 +472,9 @@ retry2:
         case VIR_PROXY_DOMAIN_INFO:
             if (req->len != sizeof(virProxyPacket))
                 goto comm_error;
-            memset(&request.extra.dinfo, 0, sizeof(virDomainInfo));
+            memset(&r.full_request.extra.dinfo, 0, sizeof(virDomainInfo));
             ret = xenHypervisorGetDomInfo(conn, req->data.arg,
-                                          &request.extra.dinfo);
+                                          &r.full_request.extra.dinfo);
             if (ret < 0) {
                 req->data.arg = -1;
             } else {
@@ -495,8 +498,8 @@ retry2:
                     name[1000] = 0;
                 }
                 req->len += VIR_UUID_BUFLEN + len + 1;
-                memcpy(&request.extra.str[0], uuid, VIR_UUID_BUFLEN);
-                strcpy(&request.extra.str[VIR_UUID_BUFLEN], name);
+                memcpy(&r.full_request.extra.str[0], uuid, VIR_UUID_BUFLEN);
+                strcpy(&r.full_request.extra.str[VIR_UUID_BUFLEN], name);
             }
         free(name);
             break;
@@ -521,7 +524,7 @@ retry2:
             if (names != NULL) {
                while (*tmp != NULL) {
                   ident = xenDaemonDomainLookupByName_ids(conn, *tmp, &uuid[0]);
-                  if (!memcmp(uuid, &request.extra.str[0], VIR_UUID_BUFLEN)) {
+                  if (!memcmp(uuid, &r.full_request.extra.str[0], VIR_UUID_BUFLEN)) {
                      name = *tmp;
                      break;
                   }
@@ -539,7 +542,7 @@ retry2:
                     name[1000] = 0;
                 }
                 req->len = sizeof(virProxyPacket) + len + 1;
-                strcpy(&request.extra.str[0], name);
+                strcpy(&r.full_request.extra.str[0], name);
                 req->data.arg = ident;
             }
             free(names);
@@ -553,14 +556,14 @@ retry2:
                 goto comm_error;
 
             ident = xenDaemonDomainLookupByName_ids(conn,
-                                            &request.extra.str[0], &uuid[0]);
+                                            &r.full_request.extra.str[0], &uuid[0]);
             if (ident < 0) {
                 /* not found */
                 req->data.arg = -1;
                 req->len = sizeof(virProxyPacket);
             } else {
                 req->len = sizeof(virProxyPacket) + VIR_UUID_BUFLEN;
-                memcpy(&request.extra.str[0], uuid, VIR_UUID_BUFLEN);
+                memcpy(&r.full_request.extra.str[0], uuid, VIR_UUID_BUFLEN);
                 req->data.arg = ident;
             }
             break;
@@ -574,7 +577,7 @@ retry2:
              * cache them ? Since it's probably an unfrequent call better
              * not make assumption and do the xend RPC each call.
              */
-            ret = xenDaemonNodeGetInfo(conn, &request.extra.ninfo);
+            ret = xenDaemonNodeGetInfo(conn, &r.full_request.extra.ninfo);
             if (ret < 0) {
                 req->data.arg = -1;
                 req->len = sizeof(virProxyPacket);
@@ -594,12 +597,12 @@ retry2:
             req->len = sizeof (virProxyPacket);
         } else {
             int xmllen = strlen (xml);
-            if (xmllen > (int) sizeof (request.extra.str)) {
+            if (xmllen > (int) sizeof (r.full_request.extra.str)) {
                 req->data.arg = -2;
                 req->len = sizeof (virProxyPacket);
             } else {
                 req->data.arg = 0;
-                memmove (request.extra.str, xml, xmllen);
+                memmove (r.full_request.extra.str, xml, xmllen);
                 req->len = sizeof (virProxyPacket) + xmllen;
             }
             free (xml);
@@ -616,7 +619,7 @@ retry2:
              * rather hard to get from that code path. So proxy
              * users won't see CPU pinning (last NULL arg)
              */
-            def = xenDaemonDomainFetch(conn, request.data.arg, NULL, NULL);
+            def = xenDaemonDomainFetch(conn, r.full_request.data.arg, NULL, NULL);
             if (!def) {
                 req->data.arg = -1;
                 req->len = sizeof(virProxyPacket);
@@ -627,12 +630,12 @@ retry2:
                     req->len = sizeof(virProxyPacket);
                 } else {
                     int xmllen = strlen(xml);
-                    if (xmllen > (int) sizeof(request.extra.str)) {
+                    if (xmllen > (int) sizeof(r.full_request.extra.str)) {
                         req->data.arg = -2;
                         req->len = sizeof(virProxyPacket);
                     } else {
                         req->data.arg = 0;
-                        memmove(&request.extra.str[0], xml, xmllen);
+                        memmove(&r.full_request.extra.str[0], xml, xmllen);
                         req->len = sizeof(virProxyPacket) + xmllen;
                     }
                     free(xml);
@@ -644,18 +647,18 @@ retry2:
             if (req->len != sizeof(virProxyPacket))
                 goto comm_error;
 
-            ostype = xenStoreDomainGetOSTypeID(conn, request.data.arg);
+            ostype = xenStoreDomainGetOSTypeID(conn, r.full_request.data.arg);
             if (!ostype) {
                 req->data.arg = -1;
                 req->len = sizeof(virProxyPacket);
             } else {
                 int ostypelen = strlen(ostype);
-                if (ostypelen > (int) sizeof(request.extra.str)) {
+                if (ostypelen > (int) sizeof(r.full_request.extra.str)) {
                     req->data.arg = -2;
                     req->len = sizeof(virProxyPacket);
                 } else {
                     req->data.arg = 0;
-                    memmove(&request.extra.str[0], ostype, ostypelen);
+                    memmove(&r.full_request.extra.str[0], ostype, ostypelen);
                     req->len = sizeof(virProxyPacket) + ostypelen;
                 }
                 free(ostype);
