@@ -642,6 +642,10 @@ brSetInetAddr(brControl *ctl,
               int cmd,
               const char *addr)
 {
+    union {
+        struct sockaddr sa;
+        struct sockaddr_in sa_in;
+    } s;
     struct ifreq ifr;
     struct in_addr inaddr;
     int len, ret;
@@ -662,8 +666,10 @@ brSetInetAddr(brControl *ctl,
     else if (ret == 0)
         return EINVAL;
 
-    ((struct sockaddr_in *)&ifr.ifr_data)->sin_family = AF_INET;
-    ((struct sockaddr_in *)&ifr.ifr_data)->sin_addr   = inaddr;
+    s.sa_in.sin_family = AF_INET;
+    s.sa_in.sin_addr   = inaddr;
+
+    ifr.ifr_addr = s.sa;
 
     if (ioctl(ctl->fd, cmd, &ifr) < 0)
         return errno;

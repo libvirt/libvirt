@@ -649,9 +649,16 @@ remoteListenTCP (struct qemud_server *server,
         return -1;
 
     for (i = 0; i < nfds; ++i) {
-        struct sockaddr_storage sa;
+        union {
+            struct sockaddr_storage sa_stor;
+            struct sockaddr sa;
+            struct sockaddr_in sa_in;
+#ifdef AF_INET6
+            struct sockaddr_in6 sa_in6;
+#endif
+        } s;
         char ebuf[1024];
-        socklen_t salen = sizeof(sa);
+        socklen_t salen = sizeof(s);
 
         if (VIR_ALLOC(sock) < 0) {
             VIR_ERROR(_("remoteListenTCP: calloc: %s"),
@@ -668,14 +675,14 @@ remoteListenTCP (struct qemud_server *server,
         sock->type = type;
         sock->auth = auth;
 
-        if (getsockname(sock->fd, (struct sockaddr *)(&sa), &salen) < 0)
+        if (getsockname(sock->fd, &s.sa, &salen) < 0)
             goto cleanup;
 
-        if (sa.ss_family == AF_INET)
-            sock->port = htons(((struct sockaddr_in*)&sa)->sin_port);
+        if (s.sa.sa_family == AF_INET) {
+            sock->port = htons(s.sa_in.sin_port);
 #ifdef AF_INET6
-        else if (sa.ss_family == AF_INET6)
-            sock->port = htons(((struct sockaddr_in6*)&sa)->sin6_port);
+        } else if (s.sa.sa_family == AF_INET6)
+            sock->port = htons(s.sa_in6.sin6_port);
 #endif
         else
             sock->port = -1;
