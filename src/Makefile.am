@@ -510,6 +510,7 @@ virsh-net-edit.c: virsh.c Makefile.am
 	      -e 's/Domain/Network/g' \
 	      -e 's/cmdEdit/cmdNetworkEdit/g' \
 	      -e 's/dom/network/g' \
+	      -e 's/int flags.*/int flags = 0;/g' \
 	>> $@-tmp
 	chmod a-w $@-tmp
 	rm -f $@
@@ -528,6 +529,7 @@ virsh-pool-edit.c: virsh.c Makefile.am
 	      -e 's/cmdEdit/cmdPoolEdit/g' \
 	      -e 's/\(virStoragePoolDefineXML.*\));/\1, 0);/' \
 	      -e 's/dom/pool/g' \
+	      -e 's/int flags.*/int flags = 0;/g' \
 	>> $@-tmp
 	chmod a-w $@-tmp
 	rm -f $@

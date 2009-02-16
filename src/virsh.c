@@ -5397,6 +5397,7 @@ cmdEdit (vshControl *ctl, const vshCmd *cmd)
     char *doc = NULL;
     char *doc_edited = NULL;
     char *doc_reread = NULL;
+    int flags = VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_INACTIVE;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         goto cleanup;
@@ -5406,7 +5407,7 @@ cmdEdit (vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     /* Get the XML configuration of the domain. */
-    doc = virDomainGetXMLDesc (dom, VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_INACTIVE);
+    doc = virDomainGetXMLDesc (dom, flags);
     if (!doc)
         goto cleanup;
 
@@ -5436,7 +5437,7 @@ cmdEdit (vshControl *ctl, const vshCmd *cmd)
      * it was being edited?  This also catches problems such as us
      * losing a connection or the domain going away.
      */
-    doc_reread = virDomainGetXMLDesc (dom, VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_INACTIVE);
+    doc_reread = virDomainGetXMLDesc (dom, flags);
     if (!doc_reread)
         goto cleanup;
 

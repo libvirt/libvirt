@@ -1,3 +1,8 @@
+Mon Feb 16 17:59:04 EST 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/virsh.c, src/Makefile.am: Don't pass flags to DumpXML
+	in *-edit virsh commands
+
 Mon Feb 16 17:55:50 EST 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/storage_backend_logical.c: Remove erroneous lvm volume
