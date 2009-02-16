@@ -1,3 +1,8 @@
+Mon Feb 16 17:53:24 EST 2009 Cole Robinson <crobinso@redhat.com>
+
+	* python/generate.py: Skip bindings for virSaveLastError and
+	virFreeError
+
 Fri Feb 13 19:04:57 IST 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* src/libvirt_private.syms, src/util.[ch]: add

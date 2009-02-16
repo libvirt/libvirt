@@ -344,6 +344,8 @@ skip_function = (
     'virDefaultErrorFunc', # Python virErrorFuncHandler impl calls this from C
     'virConnectDomainEventRegister',   # overridden in virConnect.py
     'virConnectDomainEventDeregister', # overridden in virConnect.py
+    'virSaveLastError', # We have our own python error wrapper
+    'virFreeError', # Only needed if we use virSaveLastError
 )
 
 
