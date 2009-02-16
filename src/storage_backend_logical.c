@@ -582,12 +582,6 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     const char **cmdargv = cmdargvnew;
 
     if (vol->backingStore.path) {
-        if (vol->backingStore.format !=
-            VIR_STORAGE_POOL_LOGICAL_LVM2) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
-                                  _("LVM snapshots must be backed by another LVM volume"));
-            return -1;
-        }
         cmdargv = cmdargvsnap;
     }
 
