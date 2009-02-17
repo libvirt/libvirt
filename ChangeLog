@@ -1,3 +1,9 @@
+Tue Feb 17 11:18:39 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	doc: fix typo in formatdomain's clock offset specification
+	* docs/formatdomain.html.in: s/clock sync/clock offset/
+	Patch by Jesse Lauren Farinacci <jieryn@gmail.com>.
+
 Tue Feb 10 11:14:07 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix I/O errors in libvirtd daemon, and hang/crash in remote
