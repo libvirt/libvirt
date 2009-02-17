@@ -803,7 +803,13 @@ virGetVersion(unsigned long *libVer, const char *type,
     if (typeVer != NULL) {
         if (type == NULL)
             type = "Xen";
+
+/* FIXME: Add _proper_ type version handling for loadable driver modules... */
+#ifdef WITH_DRIVER_MODULES
+        *typeVer = LIBVIR_VERSION_NUMBER;
+#else
         *typeVer = 0;
+
 #if WITH_XEN
         if (STRCASEEQ(type, "Xen"))
             *typeVer = xenUnifiedVersion();
@@ -836,6 +842,7 @@ virGetVersion(unsigned long *libVer, const char *type,
             virLibConnError(NULL, VIR_ERR_NO_SUPPORT, type);
             return (-1);
         }
+#endif /* WITH_DRIVER_MODULES */
     }
     return (0);
 }

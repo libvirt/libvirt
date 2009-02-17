@@ -1,3 +1,10 @@
+Tue Feb 17 11:30:23 +0100 2009 Maximilian Wilhelm <max@rfc2324.org>
+
+	Work around 'virGetVersion' build problem
+	The 'getVer' fix introducted in 02a72b42 [Allow remote://hostname/
+	style URIs for automatic driver probe...] breaks compiling libvirt
+	with loadable module support.  Work around this to get it building again.
+
 Tue Feb 17 11:25:22 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	avoid compiler warning about unused parameter
