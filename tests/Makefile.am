@@ -120,6 +120,7 @@ TESTS_ENVIRONMENT =				\
   abs_top_srcdir=`cd '$(top_srcdir)'; pwd`	\
   abs_builddir=`cd '$(builddir)'; pwd`		\
   abs_srcdir=`cd '$(srcdir)'; pwd`		\
+  CONFIG_HEADER='$(abs_top_builddir)/lib/config.h' \
   PATH="$(path_add)$(PATH_SEPARATOR)$$PATH"	\
   SHELL="$(SHELL)"				\
   LIBVIRT_DRIVER_DIR="$(abs_top_builddir)/src/.libs" \

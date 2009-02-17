@@ -1,5 +1,12 @@
 Tue Feb 17 11:21:00 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	don't fail daemon-conf test when configured --without-qemu
+	* tests/Makefile.am (TESTS_ENVIRONMENT): Define CONFIG_HEADER.
+	* tests/daemon-conf: Use test-lib.sh.
+	Skip this test when configured --without-qemu.
+
+Tue Feb 17 11:21:00 +0100 2009 Jim Meyering <meyering@redhat.com>
+
 	accommodate configuring --without-lxc --without-qemu
 	* configure.in: Enable internal WITH_BRIDGE support not just for LXC or
 	QEMU, but also for --with-network.  Russell Haering reported that
