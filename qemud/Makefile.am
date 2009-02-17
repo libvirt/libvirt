@@ -104,30 +104,33 @@ libvirtd_LDADD =					\
 	$(SASL_LIBS)					\
 	$(POLKIT_LIBS)
 
-if ! WITH_DRIVER_MODULES
-if WITH_QEMU
-libvirtd_LDADD += ../src/libvirt_driver_qemu.la
-endif
+if WITH_DRIVER_MODULES
+  libvirtd_LDADD += ../src/libvirt_driver.la
+  libvirtd_LDADD += ../src/libvirt_util.la
+else
+  if WITH_QEMU
+    libvirtd_LDADD += ../src/libvirt_driver_qemu.la
+  endif
 
-if WITH_LXC
-libvirtd_LDADD += ../src/libvirt_driver_lxc.la
-endif
+  if WITH_LXC
+    libvirtd_LDADD += ../src/libvirt_driver_lxc.la
+  endif
 
-if WITH_UML
-libvirtd_LDADD += ../src/libvirt_driver_uml.la
-endif
+  if WITH_UML
+    libvirtd_LDADD += ../src/libvirt_driver_uml.la
+  endif
 
-if WITH_STORAGE_DIR
-libvirtd_LDADD += ../src/libvirt_driver_storage.la
-endif
+  if WITH_STORAGE_DIR
+    libvirtd_LDADD += ../src/libvirt_driver_storage.la
+  endif
 
-if WITH_NETWORK
-libvirtd_LDADD += ../src/libvirt_driver_network.la
-endif
+  if WITH_NETWORK
+    libvirtd_LDADD += ../src/libvirt_driver_network.la
+  endif
 
-if WITH_NODE_DEVICES
-libvirtd_LDADD += ../src/libvirt_driver_nodedev.la
-endif
+  if WITH_NODE_DEVICES
+    libvirtd_LDADD += ../src/libvirt_driver_nodedev.la
+  endif
 endif
 
 libvirtd_LDADD += ../src/libvirt.la

@@ -1,3 +1,9 @@
+Tue Feb 17 11:32:01 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	Avoid link failure when configured --with-driver-modules
+	* qemud/Makefile.am (WITH_DRIVER_MODULES): Link with libvirt_driver.la
+	and libvirt_util.la.  Indent for readability.
+
 Tue Feb 17 11:30:23 +0100 2009 Maximilian Wilhelm <max@rfc2324.org>
 
 	Work around 'virGetVersion' build problem
