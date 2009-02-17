@@ -1,3 +1,13 @@
+Tue Feb 17 11:21:00 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	accommodate configuring --without-lxc --without-qemu
+	* configure.in: Enable internal WITH_BRIDGE support not just for LXC or
+	QEMU, but also for --with-network.  Russell Haering reported that
+	compilation failed when configured with --without-lxc --without-qemu.
+	Details: http://thread.gmane.org/gmane.comp.emulators.libvirt/11928
+	* src/bridge.h: Use #if WITH_BRIDGE, rather than currently-equivalent
+	"#if defined(WITH_QEMU) || defined(WITH_LXC)"
+
 Tue Feb 17 11:18:39 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	doc: fix typo in formatdomain's clock offset specification
