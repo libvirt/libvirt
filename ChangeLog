@@ -1,3 +1,12 @@
+Tue Feb 17 11:41:10 +0100 2009 Maximilian Wilhelm <max@rfc2324.org>
+
+	Build fix for 'driver.c' when building with loadable modules
+	The 'asprintf' -> 'virAsprintf' transition made in
+	[9e5d9950] "use virAsprintf instead of asprintf" introducted
+	a build error for 'driver.c' as 'util.h' has to be included.
+
+	Signed-off-by: Maximilian Wilhelm <max@rfc2324.org>
+
 Tue Feb 17 11:32:01 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	Avoid link failure when configured --with-driver-modules
