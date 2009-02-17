@@ -1,3 +1,9 @@
+Tue Feb 17 15:44:38 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	fix build failure due to invalid generated Makefile
+	* qemud/Makefile.am (libvirtd_LDADD): Unindent "if HAVE_*" directives.
+	Reported by Daniel Schwager.
+
 Tue Feb 17 09:49:49 EST 2009 Cole Robinson <crobinso@redhat.com>
 
 	* qemud/qemud.c : Fix daemon TCP listen cleanup
