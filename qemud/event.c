@@ -657,6 +657,8 @@ virPollEventToEventHandleType(int events)
         ret |= VIR_EVENT_HANDLE_WRITABLE;
     if(events & POLLERR)
         ret |= VIR_EVENT_HANDLE_ERROR;
+    if(events & POLLNVAL) /* Treat NVAL as error, since libvirt doesn't distinguish */
+        ret |= VIR_EVENT_HANDLE_ERROR;
     if(events & POLLHUP)
         ret |= VIR_EVENT_HANDLE_HANGUP;
     return ret;

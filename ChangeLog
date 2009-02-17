@@ -1,3 +1,12 @@
+Tue Feb 10 11:14:07 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix I/O errors in libvirtd daemon, and hang/crash in remote
+	client upon I/O error.
+	* qemud/event.c: Treat POLLNVAL as VIR_EVENT_HANDLE_ERROR
+	* src/domain_conf.c: Initialize monitor FD to -1
+	* src/remote_internal.c: Remove call object from waitDispatch
+	queue upon I/O failure, since call is about to free it.
+
 Mon Feb 16 17:59:04 EST 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/virsh.c, src/Makefile.am: Don't pass flags to DumpXML

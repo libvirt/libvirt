@@ -6192,17 +6192,17 @@ processCalls(virConnectPtr conn,
                 continue;
             virReportSystemError(in_open ? NULL : conn, errno,
                                  "%s", _("poll on socket failed"));
-            return -1;
+            goto error;
         }
 
         if (fds[0].revents & POLLOUT) {
             if (processCallSend(conn, priv, in_open) < 0)
-                return -1;
+                goto error;
         }
 
         if (fds[0].revents & POLLIN) {
             if (processCallRecv(conn, priv, in_open) < 0)
-                return -1;
+                goto error;
         }
 
         /* Iterate through waiting threads and if
@@ -6253,9 +6253,21 @@ processCalls(virConnectPtr conn,
         if (fds[0].revents & (POLLHUP | POLLERR)) {
             errorf(in_open ? NULL : conn, VIR_ERR_INTERNAL_ERROR,
                    "%s", _("received hangup / error event on socket"));
-            return -1;
+            goto error;
         }
     }
+
+
+error:
+    priv->waitDispatch = thiscall->next;
+    DEBUG("Giving up the buck due to I/O error %d %p %p", thiscall->proc_nr, thiscall, priv->waitDispatch);
+    /* See if someone else is still waiting
+     * and if so, then pass the buck ! */
+    if (priv->waitDispatch) {
+        DEBUG("Passing the buck to %d %p", priv->waitDispatch->proc_nr, priv->waitDispatch);
+        virCondSignal(&priv->waitDispatch->cond);
+    }
+    return -1;
 }
 
 /*
