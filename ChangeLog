@@ -1,3 +1,7 @@
+Tue Feb 17 09:47:05 EST 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/qemu_driver.c : Remove incorrect ATTRIBUTE_UNUSED usage.
+
 Tue Feb 17 11:41:10 +0100 2009 Maximilian Wilhelm <max@rfc2324.org>
 
 	Build fix for 'driver.c' when building with loadable modules
