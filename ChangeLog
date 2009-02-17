@@ -1,3 +1,11 @@
+Tue Feb 17 11:25:22 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	avoid compiler warning about unused parameter
+	* src/bridge.c (brProbeVnetHdr)
+	[IFF_VNET_HDR && TUNGETFEATURES && TUNGETIFF]: Use a "(void)" case
+	to mark the parameter as unused.  Reported by Maximilian Wilhelm in
+	http://thread.gmane.org/gmane.comp.emulators.libvirt/11918/focus=11917
+
 Tue Feb 17 11:21:00 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	don't fail daemon-conf test when configured --without-qemu
