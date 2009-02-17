@@ -713,7 +713,7 @@ remoteListenTCP (struct qemud_server *server,
 
 cleanup:
     for (i = 0; i < nfds; ++i)
-        close(fds[0]);
+        close(fds[i]);
     return -1;
 }
 
