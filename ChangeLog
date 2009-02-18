@@ -1,3 +1,8 @@
+Tue Feb 17 20:40:51 EST 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/qemu_driver.c: Remove the _actually_ incorrect
+	ATTRIBUTE_UNUSED (Patch by Maximilian Wilhelm)
+
 Tue Feb 17 15:44:38 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	fix build failure due to invalid generated Makefile

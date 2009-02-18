@@ -1911,7 +1911,7 @@ static int qemudNumDomains(virConnectPtr conn) {
 }
 
 static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
-                                      unsigned int flags) {
+                                      unsigned int flags ATTRIBUTE_UNUSED) {
     struct qemud_driver *driver = conn->privateData;
     virDomainDefPtr def;
     virDomainObjPtr vm = NULL;
@@ -2883,7 +2883,7 @@ cleanup:
 
 
 static char *qemudDomainDumpXML(virDomainPtr dom,
-                                int flags ATTRIBUTE_UNUSED) {
+                                int flags) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *ret = NULL;
