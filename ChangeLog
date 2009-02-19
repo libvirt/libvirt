@@ -1,3 +1,8 @@
+Thu Feb 19 09:14:56 CET 2009 Guido Günther <agx@sigxcpu.org>
+
+	* src/qemu_driver.c (qemudReadMonitorOutput, qemudReadLogOutput):
+	(s)size_t type cleanup
+
 Tue Feb 17 20:40:51 EST 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/qemu_driver.c: Remove the _actually_ incorrect

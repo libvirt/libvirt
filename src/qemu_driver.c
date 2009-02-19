@@ -594,18 +594,18 @@ qemudReadMonitorOutput(virConnectPtr conn,
                        virDomainObjPtr vm,
                        int fd,
                        char *buf,
-                       int buflen,
+                       size_t buflen,
                        qemudHandlerMonitorOutput func,
                        const char *what,
                        int timeout)
 {
-    int got = 0;
+    size_t got = 0;
     buf[0] = '\0';
     timeout *= 1000; /* poll wants milli seconds */
 
     /* Consume & discard the initial greeting */
     while (got < (buflen-1)) {
-        int ret;
+        ssize_t ret;
 
         ret = read(fd, buf+got, buflen-got-1);
 
@@ -672,17 +672,18 @@ qemudReadLogOutput(virConnectPtr conn,
                    virDomainObjPtr vm,
                    int fd,
                    char *buf,
-                   int buflen,
+                   size_t buflen,
                    qemudHandlerMonitorOutput func,
                    const char *what,
                    int timeout)
 {
-    int got = 0;
-    int ret;
     int retries = timeout*10;
     buf[0] = '\0';
 
     while (retries) {
+        ssize_t ret;
+        size_t got = 0;
+
         while((ret = read(fd, buf+got, buflen-got-1)) > 0) {
             got += ret;
             buf[got] = '\0';
