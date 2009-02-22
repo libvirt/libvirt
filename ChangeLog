@@ -1,3 +1,8 @@
+Sun Feb 22 11:06:39 GMT 2009 Mark McLoughlin <markmc@redhat.com>
+
+	* docs/formatdomain.html: commit auto-generated change as
+	a result of earlier s/clock sync/clock offset/
+
 Thu Feb 19 09:14:56 CET 2009 Guido Günther <agx@sigxcpu.org>
 
 	* src/qemu_driver.c (qemudReadMonitorOutput, qemudReadLogOutput):
@@ -99,30 +104,30 @@ Mon Feb 16 17:53:24 EST 2009 Cole Robinson <crobinso@redhat.com>
 	* python/generator.py: Skip bindings for virSaveLastError and
 	virFreeError
 
-Fri Feb 13 19:04:57 IST 2009 Mark McLoughlin <markmc@redhat.com>
+Fri Feb 13 19:04:57 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* src/libvirt_private.syms, src/util.[ch]: add
 	virFileWriteStr()
 
 	* src/network_driver.c: use it here
 
-Fri Feb 13 19:04:45 IST 2009 Mark McLoughlin <markmc@redhat.com>
+Fri Feb 13 19:04:45 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* src/xml.c: fix some error strings
 
-Fri Feb 13 19:04:22 IST 2009 Mark McLoughlin <markmc@redhat.com>
+Fri Feb 13 19:04:22 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* src/xml.h: kill some non-existent functions
 
-Fri Feb 13 19:03:58 IST 2009 Mark McLoughlin <markmc@redhat.com>
+Fri Feb 13 19:03:58 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* docs/virsh.pod: update bugzilla link
 
-Fri Feb 13 19:03:30 IST 2009 Mark McLoughlin <markmc@redhat.com>
+Fri Feb 13 19:03:30 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/qemud.c: fix gcc-4.4 warnings
 
-Fri Feb 13 19:03:25 IST 2009 Mark McLoughlin <markmc@redhat.com>
+Fri Feb 13 19:03:25 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* src/bridge.c: fix gcc-4.4 warnings
 
