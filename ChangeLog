@@ -1,3 +1,8 @@
+Sun Feb 22 11:18:20 GMT 2009 Mark McLoughlin <markmc@redhat.com>
+
+	* src/network_driver.c: networkEnableIpForwarding() now
+	returns zero for success
+
 Sun Feb 22 11:06:39 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* docs/formatdomain.html: commit auto-generated change as

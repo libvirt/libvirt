@@ -794,7 +794,7 @@ networkRemoveIptablesRules(struct network_driver *driver,
     iptablesSaveRules(driver->iptables);
 }
 
-/* Enable IP Forwarding. Return 0 for success, nonzero for failure. */
+/* Enable IP Forwarding. Return 0 for success, -1 for failure. */
 static int
 networkEnableIpForwarding(void)
 {
@@ -853,7 +853,7 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
         goto err_delbr1;
 
     if (network->def->forwardType != VIR_NETWORK_FORWARD_NONE &&
-        !networkEnableIpForwarding()) {
+        networkEnableIpForwarding() < 0) {
         virReportSystemError(conn, errno, "%s",
                              _("failed to enable IP forwarding"));
         goto err_delbr2;
