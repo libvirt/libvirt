@@ -223,6 +223,7 @@ virNodeDeviceObjListFree;
 virNodeDeviceDefFree;
 virNodeDevCapsDefFree;
 virNodeDeviceDefFormat;
+virNodeDeviceDefParseString;
 virNodeDeviceObjLock;
 virNodeDeviceObjUnlock;
 virNodeDeviceAssignDef;

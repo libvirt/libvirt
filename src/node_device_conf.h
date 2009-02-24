@@ -184,7 +184,8 @@ void virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
 char *virNodeDeviceDefFormat(virConnectPtr conn,
                              const virNodeDeviceDefPtr def);
 
-// TODO: virNodeDeviceDefParseString/File/Node for virNodeDeviceCreate
+virNodeDeviceDefPtr virNodeDeviceDefParseString(virConnectPtr conn,
+                                                const char *str);
 
 void virNodeDeviceDefFree(virNodeDeviceDefPtr def);
 

@@ -1,3 +1,9 @@
+Tue Feb 24 14:54:05 GMT 2009 Mark McLoughlin <markmc@redhat.com>
+
+	*  src/libvirt_private.syms, src/node_device_conf.[ch]:
+	Add virNodeDeviceDefParseString(), a function for
+	parsing node device XML descriptions.
+
 Tue Feb 24 14:52:58 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* src/xml.[ch]: Add virXPathULongLong()
