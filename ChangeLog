@@ -1,3 +1,7 @@
+Tue Feb 24 14:52:58 GMT 2009 Mark McLoughlin <markmc@redhat.com>
+
+	* src/xml.[ch]: Add virXPathULongLong()
+
 Tue Feb 24 14:52:44 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* src/xml.[ch]: Add virXPathLongHex() and virXPathULongHex()
