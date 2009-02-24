@@ -1,3 +1,14 @@
+Tue Feb 24 14:55:28 GMT 2009 Mark McLoughlin <markmc@redhat.com>
+
+	* tests/nodedevxml2xmltest.c: Add a test to check node
+	device XML parsing by first parsing the XML, then
+	re-formatting as XML and finally comparing the resulting
+	XML to the original XML.
+
+	* tests/nodedevschemadata/*.xml: strip trailing newlines.
+
+	* tests/Makefile.am, tests/.*ignore: adminstrivia
+
 Tue Feb 24 14:54:05 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	*  src/libvirt_private.syms, src/node_device_conf.[ch]:

@@ -11,6 +11,7 @@ xmconfigtest
 xencapstest
 qemuxml2xmltest
 qemuxml2argvtest
+nodedevxml2xmltest
 nodeinfotest
 statstest
 qparamtest

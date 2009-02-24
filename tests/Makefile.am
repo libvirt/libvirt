@@ -64,6 +64,8 @@ if WITH_QEMU
 noinst_PROGRAMS += qemuxml2argvtest qemuxml2xmltest
 endif
 
+noinst_PROGRAMS += nodedevxml2xmltest
+
 test_scripts = \
 	capabilityschematest \
 	networkschematest \
@@ -109,6 +111,8 @@ endif
 if WITH_QEMU
 TESTS += qemuxml2argvtest qemuxml2xmltest
 endif
+
+TESTS += nodedevxml2xmltest
 
 path_add = $$abs_top_builddir/src$(PATH_SEPARATOR)$$abs_top_builddir/qemud
 
@@ -174,6 +178,11 @@ qemuxml2xmltest_LDADD = ../src/libvirt_driver_qemu.la $(LDADDS)
 else
 EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c testutilsqemu.c testutilsqemu.h
 endif
+
+nodedevxml2xmltest_SOURCES = \
+	nodedevxml2xmltest.c \
+	testutils.c testutils.h
+nodedevxml2xmltest_LDADD = ../src/libvirt_driver_qemu.la $(LDADDS)
 
 virshtest_SOURCES = \
 	virshtest.c \
