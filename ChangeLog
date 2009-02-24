@@ -1,3 +1,7 @@
+Tue Feb 24 14:51:32 GMT 2009 Mark McLoughlin <markmc@redhat.com>
+
+	* docs/formatdomain.html: fix a typo in hostdev docs
+
 Sun Feb 22 11:18:20 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* src/network_driver.c: networkEnableIpForwarding() now
