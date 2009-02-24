@@ -29,6 +29,14 @@ int		virXPathULong	(virConnectPtr conn,
                                  const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  unsigned long *value);
+int		virXPathLongHex	(virConnectPtr conn,
+                                 const char *xpath,
+                                 xmlXPathContextPtr ctxt,
+                                 long *value);
+int		virXPathULongHex(virConnectPtr conn,
+                                 const char *xpath,
+                                 xmlXPathContextPtr ctxt,
+                                 unsigned long *value);
 xmlNodePtr	virXPathNode	(virConnectPtr conn,
                                  const char *xpath,
                                  xmlXPathContextPtr ctxt);
