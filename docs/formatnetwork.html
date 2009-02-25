@@ -211,7 +211,9 @@
         ...
 	&lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
 	  &lt;dhcp&gt;
-	    &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
+	    &lt;range start="192.168.122.100" end="192.168.122.254" /&gt;
+	    &lt;host mac="00:16:3e:77:e2:ed" name="foo.example.com" ip="192.168.122.10" /&gt;
+	    &lt;host mac="00:16:3e:3e:a9:1a" name="bar.example.com" ip="192.168.122.11" /&gt;
 	  &lt;/dhcp&gt;
 	&lt;/ip&gt;
       &lt;/network&gt;</pre>
@@ -231,6 +233,14 @@
 	IPv4 addresses to be provided to DHCP clients. These two addresses
 	must lie within the scope of the network defined on the parent
 	<code>ip</code> element.  <span class="since">Since 0.3.0</span>
+      </dd><dt><code>host</code></dt><dd>Within the <code>dhcp</code> element there may be zero or more
+	<code>host</code> elements; these specify hosts which will be given
+        names and predefined IP addresses by the built-in DHCP server. Any
+        such element must specify the MAC address of the host to be assigned
+	a given name (via the <code>mac</code> attribute), the IP to be
+        assigned to that host (via the <code>ip</code> attribute), and the
+	name to be given that host by the DHCP server (via the
+        <code>name</code> attribute).  <span class="since">Since 0.4.5</span>
       </dd></dl>
         <h2>
           <a name="examples" id="examples">Example configuration</a>

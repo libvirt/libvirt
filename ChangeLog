@@ -1,3 +1,8 @@
+Wed Feb 25 21:00:46 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/formatnetwork.html docs/formatnetwork.html.in: patch from
+	  Charles Duffy documenting static host IP assignments.
+
 Tue Feb 24 14:55:28 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* tests/nodedevxml2xmltest.c: Add a test to check node
