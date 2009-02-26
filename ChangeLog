@@ -1,3 +1,9 @@
+Thu Feb 26 17:13:09 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* Makefile.am configure.in examples/hellolibvirt/Makefile.am
+	  examples/hellolibvirt/hellolibvirt.c: new trivial example program
+	  by David Allan
+
 Thu Feb 26 16:05:04 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/remote_internal.c: fix autostart of session daemon, patch
