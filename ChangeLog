@@ -1,3 +1,8 @@
+Thu Feb 26 15:35:40 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/storage_backend_fs.c: fix compile-error when configured without
+	qemu-img
+
 Thu Feb 26 14:43:48 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* python/Makefile.am: avoid a parallel make issue #472702

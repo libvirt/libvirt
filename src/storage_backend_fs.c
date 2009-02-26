@@ -1130,7 +1130,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
                                   vol->target.format);
             return -1;
         }
-        if (vol->target.backingStore != NULL) {
+        if (vol->backingStore.path != NULL) {
             virStorageReportError(conn, VIR_ERR_NO_SUPPORT,
                                   _("copy-on-write image not supported with "
                                     "qcow-create"));
