@@ -202,7 +202,10 @@ __virExec(virConnectPtr conn,
           const fd_set *keepfd,
           pid_t *retpid,
           int infd, int *outfd, int *errfd,
-          int flags) {
+          int flags,
+          virExecHook hook,
+          void *data)
+{
     pid_t pid;
     int null, i, openmax;
     int pipeout[2] = {-1,-1};
@@ -416,6 +419,9 @@ __virExec(virConnectPtr conn,
         childerr != childout)
         close(childerr);
 
+    if (hook)
+        (hook)(data);
+
     if (envp)
         execve(argv[0], (char **) argv, (char**)envp);
     else
@@ -450,13 +456,16 @@ __virExec(virConnectPtr conn,
 }
 
 int
-virExec(virConnectPtr conn,
-        const char *const*argv,
-        const char *const*envp,
-        const fd_set *keepfd,
-        pid_t *retpid,
-        int infd, int *outfd, int *errfd,
-        int flags) {
+virExecWithHook(virConnectPtr conn,
+                const char *const*argv,
+                const char *const*envp,
+                const fd_set *keepfd,
+                pid_t *retpid,
+                int infd, int *outfd, int *errfd,
+                int flags,
+                virExecHook hook,
+                void *data)
+{
     char *argv_str;
 
     if ((argv_str = virArgvToString(argv)) == NULL) {
@@ -467,7 +476,21 @@ virExec(virConnectPtr conn,
     VIR_FREE(argv_str);
 
     return __virExec(conn, argv, envp, keepfd, retpid, infd, outfd, errfd,
-                     flags);
+                     flags, hook, data);
+}
+
+int
+virExec(virConnectPtr conn,
+        const char *const*argv,
+        const char *const*envp,
+        const fd_set *keepfd,
+        pid_t *retpid,
+        int infd, int *outfd, int *errfd,
+        int flags)
+{
+    return virExecWithHook(conn, argv, envp, keepfd, retpid,
+                           infd, outfd, errfd,
+                           flags, NULL, NULL);
 }
 
 static int
@@ -585,7 +608,7 @@ virRun(virConnectPtr conn,
 
     if ((execret = __virExec(conn, argv, NULL, NULL,
                              &childpid, -1, &outfd, &errfd,
-                             VIR_EXEC_NONE)) < 0) {
+                             VIR_EXEC_NONE, NULL, NULL)) < 0) {
         ret = execret;
         goto error;
     }

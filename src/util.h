@@ -41,6 +41,21 @@ enum {
 int virSetNonBlock(int fd);
 int virSetCloseExec(int fd);
 
+/* This will execute in the context of the first child
+ * after fork() but before execve() */
+typedef int (*virExecHook)(void *data);
+
+int virExecWithHook(virConnectPtr conn,
+                    const char *const*argv,
+                    const char *const*envp,
+                    const fd_set *keepfd,
+                    int *retpid,
+                    int infd,
+                    int *outfd,
+                    int *errfd,
+                    int flags,
+                    virExecHook hook,
+                    void *data);
 int virExec(virConnectPtr conn,
             const char *const*argv,
             const char *const*envp,
