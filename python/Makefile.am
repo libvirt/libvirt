@@ -51,8 +51,11 @@ GENERATED= libvirt-export.c \
 	   libvirt-py.h \
 	   libvirtclass.py
 
-$(GENERATED): $(srcdir)/$(GENERATE) $(API_DESC)
+generated.stamp: $(srcdir)/$(GENERATE) $(API_DESC)
 	$(PYTHON) $(srcdir)/$(GENERATE) $(srcdir)
+	touch $@
+
+$(GENERATED): generated.stamp
 
 libvirt.py: $(srcdir)/libvir.py $(GENERATED) $(CLASSES_EXTRA)
 	cat $(srcdir)/libvir.py libvirtclass.py > $@-t
@@ -70,7 +73,7 @@ install-data-local:
 uninstall-local:
 	rm -f $(DESTDIR)$(pythondir)/libvirt.py
 
-CLEANFILES= $(GENERATED) libvirt.py
+CLEANFILES= $(GENERATED) generated.stamp libvirt.py
 
 else
 all:

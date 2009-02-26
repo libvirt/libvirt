@@ -1,3 +1,8 @@
+Thu Feb 26 14:43:48 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* python/Makefile.am: avoid a parallel make issue #472702
+	  provided by Michael Marineau
+
 Wed Feb 25 21:00:46 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/formatnetwork.html docs/formatnetwork.html.in: patch from
