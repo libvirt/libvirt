@@ -651,12 +651,13 @@ doRemoteOpen (virConnectPtr conn,
              */
             if (errno == ECONNREFUSED &&
                 flags & VIR_DRV_OPEN_REMOTE_AUTOSTART &&
-                trials < 5) {
+                trials < 20) {
                 close(priv->sock);
                 priv->sock = -1;
-                if (remoteForkDaemon(conn) == 0) {
+                if (trials > 0 ||
+                    remoteForkDaemon(conn) == 0) {
                     trials++;
-                    usleep(5000 * trials * trials);
+                    usleep(1000 * 100 * trials);
                     goto autostart_retry;
                 }
             }
