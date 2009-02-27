@@ -1,3 +1,8 @@
+Fri Feb 27 17:15:00 CET 2009 Chris Lalancette <clalance@redhat.com>
+
+	* src/qemu_driver.c: If there is a failure during offline migrate,
+	make sure to resume the guest.
+
 Fri Feb 27 15:27:31 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/libvirt-api.xml docs/libvirt-refs.xml

@@ -4331,6 +4331,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
     char cmd[HOST_NAME_MAX+50];
     char *info = NULL;
     int ret = -1;
+    int paused = 0;
 
     qemuDriverLock(driver);
     vm = virDomainFindByID(&driver->domains, dom->id);
@@ -4348,10 +4349,14 @@ qemudDomainMigratePerform (virDomainPtr dom,
 
     if (!(flags & VIR_MIGRATE_LIVE)) {
         /* Pause domain for non-live migration */
-        snprintf(cmd, sizeof cmd, "%s", "stop");
-        qemudMonitorCommand (vm, cmd, &info);
+        if (qemudMonitorCommand (vm, "stop", &info) < 0) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                             "%s", _("off-line migration specified, but suspend operation failed"));
+            goto cleanup;
+        }
         DEBUG ("stop reply: %s", info);
         VIR_FREE(info);
+        paused = 1;
 
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
@@ -4396,6 +4401,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
 
     /* Clean up the source domain. */
     qemudShutdownVMDaemon (dom->conn, driver, vm);
+    paused = 0;
 
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
@@ -4407,7 +4413,31 @@ qemudDomainMigratePerform (virDomainPtr dom,
     ret = 0;
 
 cleanup:
+    /* Note that we have to free info *first*, since we are re-using the
+     * variable below (and otherwise might cause a memory leak)
+     */
     VIR_FREE(info);
+
+    if (paused) {
+        /* we got here through some sort of failure; start the domain again */
+        if (qemudMonitorCommand (vm, "cont", &info) < 0) {
+            /* Hm, we already know we are in error here.  We don't want to
+             * overwrite the previous error, though, so we just throw something
+             * to the logs and hope for the best
+             */
+            qemudLog(QEMUD_ERROR, _("Failed to resume guest %s after failure\n"),
+                     vm->def->name);
+        }
+        else {
+            DEBUG ("cont reply: %s", info);
+            VIR_FREE(info);
+        }
+
+        event = virDomainEventNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_RESUMED,
+                                         VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
+    }
+
     if (vm)
         virDomainObjUnlock(vm);
     if (event)
