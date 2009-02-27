@@ -1,3 +1,10 @@
+Fri Feb 27 15:27:31 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/libvirt-api.xml docs/libvirt-refs.xml
+	  docs/devhelp/libvirt-virterror.html docs/html/libvirt-virterror.html:
+	  regenerated the APIs and documentation.
+	* po/*: updated the polish translation, regenerated.
+
 Thu Feb 26 16:01:04 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt_private.syms, src/util.c, src/util.h: Add new

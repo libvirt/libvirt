@@ -397,6 +397,7 @@
      <exports symbol='virErrorNumber' type='typedef'/>
      <exports symbol='virError' type='typedef'/>
      <exports symbol='_virError' type='struct'/>
+     <exports symbol='virFreeError' type='function'/>
      <exports symbol='virCopyLastError' type='function'/>
      <exports symbol='virConnSetErrorFunc' type='function'/>
      <exports symbol='virResetLastError' type='function'/>
@@ -408,6 +409,7 @@
      <exports symbol='virSetErrorFunc' type='function'/>
      <exports symbol='virConnCopyLastError' type='function'/>
      <exports symbol='virConnResetLastError' type='function'/>
+     <exports symbol='virSaveLastError' type='function'/>
     </file>
   </files>
   <symbols>
@@ -1332,6 +1334,11 @@ see note above'/>
       <return type='void'/>
       <arg name='opaque' type='void *' info=''/>
     </functype>
+    <function name='virFreeError' file='virterror' module='virterror'>
+      <info>Resets and frees the given error.</info>
+      <return type='void'/>
+      <arg name='err' type='virErrorPtr' info='error to free'/>
+    </function>
     <function name='virGetLastError' file='virterror' module='virterror'>
       <info>Provide a pointer to the last error caught at the library level  The error object is kept in thread local storage, so separate threads can safely access this concurrently.</info>
       <return type='virErrorPtr' info='a pointer to the last error or NULL if none occurred.'/>
@@ -1534,6 +1541,10 @@ see note above'/>
     <function name='virResetLastError' file='virterror' module='virterror'>
       <info>Reset the last error caught at the library level.  The error object is kept in thread local storage, so separate threads can safely access this concurrently, only resetting their own error object.</info>
       <return type='void'/>
+    </function>
+    <function name='virSaveLastError' file='virterror' module='virterror'>
+      <info>Save the last error into a new error object.</info>
+      <return type='virErrorPtr' info='a pointer to the copied error or NULL if allocation failed. It is the caller&apos;s responsibility to free the error with virFreeError().'/>
     </function>
     <function name='virSetErrorFunc' file='virterror' module='virterror'>
       <info>Set a library global error handling function, if @handler is NULL, it will reset to default printing on stderr. The error raised there are those for which no handler at the connection level could caught.</info>

@@ -300,6 +300,7 @@
     <reference name='virEventUpdateHandleFunc' href='html/libvirt-libvirt.html#virEventUpdateHandleFunc'/>
     <reference name='virEventUpdateTimeoutFunc' href='html/libvirt-libvirt.html#virEventUpdateTimeoutFunc'/>
     <reference name='virFreeCallback' href='html/libvirt-libvirt.html#virFreeCallback'/>
+    <reference name='virFreeError' href='html/libvirt-virterror.html#virFreeError'/>
     <reference name='virGetLastError' href='html/libvirt-virterror.html#virGetLastError'/>
     <reference name='virGetVersion' href='html/libvirt-libvirt.html#virGetVersion'/>
     <reference name='virInitialize' href='html/libvirt-libvirt.html#virInitialize'/>
@@ -342,6 +343,7 @@
     <reference name='virNodeNumOfDevices' href='html/libvirt-libvirt.html#virNodeNumOfDevices'/>
     <reference name='virResetError' href='html/libvirt-virterror.html#virResetError'/>
     <reference name='virResetLastError' href='html/libvirt-virterror.html#virResetLastError'/>
+    <reference name='virSaveLastError' href='html/libvirt-virterror.html#virSaveLastError'/>
     <reference name='virSchedParameter' href='html/libvirt-libvirt.html#virSchedParameter'/>
     <reference name='virSchedParameterPtr' href='html/libvirt-libvirt.html#virSchedParameterPtr'/>
     <reference name='virSchedParameterType' href='html/libvirt-libvirt.html#virSchedParameterType'/>
@@ -707,6 +709,7 @@
       <ref name='virEventUpdateHandleFunc'/>
       <ref name='virEventUpdateTimeoutFunc'/>
       <ref name='virFreeCallback'/>
+      <ref name='virFreeError'/>
       <ref name='virGetLastError'/>
       <ref name='virGetVersion'/>
       <ref name='virInitialize'/>
@@ -749,6 +752,7 @@
       <ref name='virNodeNumOfDevices'/>
       <ref name='virResetError'/>
       <ref name='virResetLastError'/>
+      <ref name='virSaveLastError'/>
       <ref name='virSchedParameter'/>
       <ref name='virSchedParameterPtr'/>
       <ref name='virSchedParameterType'/>
@@ -840,6 +844,7 @@
     <type name='virErrorPtr'>
       <ref name='virConnGetLastError'/>
       <ref name='virGetLastError'/>
+      <ref name='virSaveLastError'/>
     </type>
     <type name='virNetworkPtr'>
       <ref name='virNetworkCreateXML'/>
@@ -1069,6 +1074,7 @@
       <ref name='virCopyLastError'/>
       <ref name='virDefaultErrorFunc'/>
       <ref name='virErrorFunc'/>
+      <ref name='virFreeError'/>
       <ref name='virResetError'/>
     </type>
     <type name='virEventAddHandleFunc'>
@@ -1588,9 +1594,11 @@
       <ref name='virErrorLevel'/>
       <ref name='virErrorNumber'/>
       <ref name='virErrorPtr'/>
+      <ref name='virFreeError'/>
       <ref name='virGetLastError'/>
       <ref name='virResetError'/>
       <ref name='virResetLastError'/>
+      <ref name='virSaveLastError'/>
       <ref name='virSetErrorFunc'/>
     </file>
   </files>
@@ -2089,6 +2097,9 @@
           <ref name='virResetError'/>
           <ref name='virResetLastError'/>
         </word>
+        <word name='Resets'>
+          <ref name='virFreeError'/>
+        </word>
         <word name='Result'>
           <ref name='_virConnectCredential'/>
         </word>
@@ -2103,6 +2114,9 @@
         </word>
       </letter>
       <letter name='S'>
+        <word name='Save'>
+          <ref name='virSaveLastError'/>
+        </word>
         <word name='See'>
           <ref name='virConnectGetType'/>
         </word>
@@ -2424,6 +2438,7 @@
         <word name='allocation'>
           <ref name='_virStoragePoolInfo'/>
           <ref name='_virStorageVolInfo'/>
+          <ref name='virSaveLastError'/>
           <ref name='virStorageVolGetInfo'/>
         </word>
         <word name='allowed'>
@@ -2776,6 +2791,7 @@
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
           <ref name='virNodeGetCellsFreeMemory'/>
+          <ref name='virSaveLastError'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -2992,6 +3008,9 @@
         </word>
         <word name='controlled'>
           <ref name='virDomainMemoryPeek'/>
+        </word>
+        <word name='copied'>
+          <ref name='virSaveLastError'/>
         </word>
         <word name='copy'>
           <ref name='VIR_COPY_CPUMAP'/>
@@ -3450,6 +3469,7 @@
           <ref name='virDomainSetVcpus'/>
         </word>
         <word name='failed'>
+          <ref name='virSaveLastError'/>
           <ref name='virStoragePoolCreateXML'/>
           <ref name='virStoragePoolDefineXML'/>
           <ref name='virStoragePoolUndefine'/>
@@ -3604,11 +3624,13 @@
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virEventAddHandleFunc'/>
           <ref name='virEventAddTimeoutFunc'/>
+          <ref name='virFreeError'/>
           <ref name='virNetworkDestroy'/>
           <ref name='virNetworkGetBridgeName'/>
           <ref name='virNetworkGetXMLDesc'/>
           <ref name='virNodeGetCellsFreeMemory'/>
           <ref name='virNodeGetFreeMemory'/>
+          <ref name='virSaveLastError'/>
           <ref name='virStoragePoolDelete'/>
           <ref name='virStoragePoolDestroy'/>
           <ref name='virStoragePoolFree'/>
@@ -3626,6 +3648,9 @@
         </word>
         <word name='freeing'>
           <ref name='virNodeDeviceFree'/>
+        </word>
+        <word name='frees'>
+          <ref name='virFreeError'/>
         </word>
         <word name='frequency'>
           <ref name='_virNodeInfo'/>
@@ -3705,6 +3730,7 @@
           <ref name='virDomainLookupByUUID'/>
           <ref name='virDomainLookupByUUIDString'/>
           <ref name='virDomainMigrate'/>
+          <ref name='virFreeError'/>
           <ref name='virNetworkDestroy'/>
           <ref name='virNetworkLookupByName'/>
           <ref name='virNetworkLookupByUUID'/>
@@ -3984,6 +4010,7 @@
         <word name='into'>
           <ref name='VIR_COPY_CPUMAP'/>
           <ref name='virConnectDomainEventRegister'/>
+          <ref name='virSaveLastError'/>
           <ref name='virStoragePoolGetXMLDesc'/>
         </word>
         <word name='invalid'>
@@ -4095,6 +4122,7 @@
           <ref name='virGetLastError'/>
           <ref name='virNodeDeviceFree'/>
           <ref name='virResetLastError'/>
+          <ref name='virSaveLastError'/>
         </word>
         <word name='later'>
           <ref name='VIR_COPY_CPUMAP'/>
@@ -5168,6 +5196,9 @@
         <word name='response'>
           <ref name='_virConnectCredential'/>
         </word>
+        <word name='responsibility'>
+          <ref name='virSaveLastError'/>
+        </word>
         <word name='restart'>
           <ref name='virDomainReboot'/>
         </word>
@@ -6191,6 +6222,9 @@
         </word>
         <word name='virEventTimeoutFreeFunc'>
           <ref name='virEventRemoveTimeoutFunc'/>
+        </word>
+        <word name='virFreeError'>
+          <ref name='virSaveLastError'/>
         </word>
         <word name='virGetLastError'>
           <ref name='virConnCopyLastError'/>
