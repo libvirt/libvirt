@@ -895,7 +895,7 @@ char *virNetworkAllocateBridge(virConnectPtr conn,
         }
 
         id++;
-    } while (id < MAX_BRIDGE_ID);
+    } while (id <= MAX_BRIDGE_ID);
 
     virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
                           _("Bridge generation exceeded max id %d"),

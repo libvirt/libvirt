@@ -1,3 +1,11 @@
+Mon Mar 2 12:52:16 EST 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/network_conf.c: Fix bridge generation loop counter.
+
+Mon Mar 2 12:38:08 EST 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/node_device_hal.c: Recognize ejectable media in hostdev hal driver.
+
 Mon Mar 2 12:37:04 EST 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/domain_conf.c src/domain_conf.h src/libvirt_private.syms
