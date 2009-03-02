@@ -836,7 +836,7 @@ virStorageVolDefParsePerms(virConnectPtr conn,
     } else {
         if (virXPathLong(conn, "number(/volume/permissions/group)", ctxt, &v) < 0) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                                  "%s", _("missing owner element"));
+                                  "%s", _("missing group element"));
             return -1;
         }
         perms->gid = (int)v;

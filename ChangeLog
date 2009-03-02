@@ -1,5 +1,9 @@
 Mon Mar 2 10:16:04 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	correct a typo in a diagnostic
+	* src/storage_conf.c (virStorageVolDefParsePerms): Correct a typo:
+	s/owner/group/.  Patch by Ryota Ozaki.
+
 	plug two config-parsing leaks
 	* src/storage_conf.c (virStoragePoolDefParsePerms): Free mode string.
 	(virStorageVolDefParsePerms): Likewise.
