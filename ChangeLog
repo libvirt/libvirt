@@ -1,3 +1,8 @@
+Mon Mar  2 17:26:48 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: add 3 new commands for node device detach,
+	  reattach and reset, patch by Mark McLoughlin.
+
 Mon Mar  2 17:19:23 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in
@@ -5,7 +10,8 @@ Mon Mar  2 17:19:23 CET 2009 Daniel Veillard <veillard@redhat.com>
 	  src/lxc_driver.c src/openvz_driver.c src/qemu_driver.c
 	  src/test.c src/uml_driver.c: add the public APIs for
 	  virNodeDeviceDettach virNodeDeviceReAttach and virNodeDeviceReset
-	  and extends the driver structure accordingly.
+	  and extends the driver structure accordingly, patch by Mark
+	  McLoughlin.
 
 Mon Mar  2 17:07:44 CET 2009 Daniel Veillard <veillard@redhat.com>
 

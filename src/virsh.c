@@ -4433,6 +4433,129 @@ cmdNodeDeviceDumpXML (vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "nodedev-dettach" command
+ */
+static const vshCmdInfo info_node_device_dettach[] = {
+    {"help", gettext_noop("dettach node device its device driver")},
+    {"desc", gettext_noop("Dettach node device its device driver before assigning to a domain.")},
+    {NULL, NULL}
+};
+
+
+static const vshCmdOptDef opts_node_device_dettach[] = {
+    {"device", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("device key")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNodeDeviceDettach (vshControl *ctl, const vshCmd *cmd)
+{
+    const char *name;
+    virNodeDevicePtr device;
+    int ret = TRUE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+    if (!(name = vshCommandOptString(cmd, "device", NULL)))
+        return FALSE;
+    if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
+        vshError(ctl, FALSE, "%s '%s'", _("Could not find matching device"), name);
+        return FALSE;
+    }
+
+    if (virNodeDeviceDettach(device) == 0) {
+        vshPrint(ctl, _("Device %s dettached\n"), name);
+    } else {
+        vshError(ctl, FALSE, _("Failed to dettach device %s"), name);
+        ret = FALSE;
+    }
+    virNodeDeviceFree(device);
+    return ret;
+}
+
+/*
+ * "nodedev-reattach" command
+ */
+static const vshCmdInfo info_node_device_reattach[] = {
+    {"help", gettext_noop("reattach node device its device driver")},
+    {"desc", gettext_noop("Dettach node device its device driver before assigning to a domain.")},
+    {NULL, NULL}
+};
+
+
+static const vshCmdOptDef opts_node_device_reattach[] = {
+    {"device", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("device key")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNodeDeviceReAttach (vshControl *ctl, const vshCmd *cmd)
+{
+    const char *name;
+    virNodeDevicePtr device;
+    int ret = TRUE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+    if (!(name = vshCommandOptString(cmd, "device", NULL)))
+        return FALSE;
+    if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
+        vshError(ctl, FALSE, "%s '%s'", _("Could not find matching device"), name);
+        return FALSE;
+    }
+
+    if (virNodeDeviceReAttach(device) == 0) {
+        vshPrint(ctl, _("Device %s re-attached\n"), name);
+    } else {
+        vshError(ctl, FALSE, _("Failed to re-attach device %s"), name);
+        ret = FALSE;
+    }
+    virNodeDeviceFree(device);
+    return ret;
+}
+
+/*
+ * "nodedev-reset" command
+ */
+static const vshCmdInfo info_node_device_reset[] = {
+    {"help", gettext_noop("reset node device")},
+    {"desc", gettext_noop("Reset node device before or after assigning to a domain.")},
+    {NULL, NULL}
+};
+
+
+static const vshCmdOptDef opts_node_device_reset[] = {
+    {"device", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("device key")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNodeDeviceReset (vshControl *ctl, const vshCmd *cmd)
+{
+    const char *name;
+    virNodeDevicePtr device;
+    int ret = TRUE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+    if (!(name = vshCommandOptString(cmd, "device", NULL)))
+        return FALSE;
+    if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
+        vshError(ctl, FALSE, "%s '%s'", _("Could not find matching device"), name);
+        return FALSE;
+    }
+
+    if (virNodeDeviceReset(device) == 0) {
+        vshPrint(ctl, _("Device %s reset\n"), name);
+    } else {
+        vshError(ctl, FALSE, _("Failed to reset device %s"), name);
+        ret = FALSE;
+    }
+    virNodeDeviceFree(device);
+    return ret;
+}
+
+/*
  * "hostkey" command
  */
 static const vshCmdInfo info_hostname[] = {
@@ -5576,6 +5699,9 @@ static const vshCmdDef commands[] = {
 
     {"nodedev-list", cmdNodeListDevices, opts_node_list_devices, info_node_list_devices},
     {"nodedev-dumpxml", cmdNodeDeviceDumpXML, opts_node_device_dumpxml, info_node_device_dumpxml},
+    {"nodedev-dettach", cmdNodeDeviceDettach, opts_node_device_dettach, info_node_device_dettach},
+    {"nodedev-reattach", cmdNodeDeviceReAttach, opts_node_device_reattach, info_node_device_reattach},
+    {"nodedev-reset", cmdNodeDeviceReset, opts_node_device_reset, info_node_device_reset},
 
     {"pool-autostart", cmdPoolAutostart, opts_pool_autostart, info_pool_autostart},
     {"pool-build", cmdPoolBuild, opts_pool_build, info_pool_build},
