@@ -747,6 +747,7 @@ virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
         goto error;
 
     net->autostart = autostart;
+    net->persistent = 1;
 
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);

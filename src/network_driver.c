@@ -1153,6 +1153,8 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
         goto cleanup;
     def = NULL;
 
+    network->persistent = 1;
+
     if (virNetworkSaveConfig(conn,
                              driver->networkConfigDir,
                              network->newDef ? network->newDef : network->def) < 0) {

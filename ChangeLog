@@ -1,3 +1,8 @@
+Mon Mar 2 12:25:58 EST 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/network_driver.c src/network_conf.c: Mark 'defined' networks
+	  as persistent.
+
 Mon Mar  2 17:35:09 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/schemas/domain.rng src/domain_conf.c src/domain_conf.h
