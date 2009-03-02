@@ -1,5 +1,12 @@
 Mon Mar 2 19:32:18 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	tests: test for a recent fix
+	* tests/libvirtd-net-persist: New file.  Test for today's
+	"Mark 'defined' networks as persistent" fix.
+	* tests/Makefile.am (test_scripts): Add it.
+
+Mon Mar 2 19:32:18 +0100 2009 Jim Meyering <meyering@redhat.com>
+
 	virsh: tweak a format string to avoid emitting trailing space
 	* src/virsh.c (cmdNetworkList): Change format not to right-pad
 	with spaces, as that would have required a trailing blank in
