@@ -43,6 +43,7 @@
 #include "buf.h"
 #include "c-ctype.h"
 
+#define MAX_BRIDGE_ID 256
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 
 VIR_ENUM_DECL(virNetworkForward)
@@ -743,6 +744,12 @@ virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
         goto error;
     }
 
+    /* Generate a bridge if none is found, but don't check for collisions
+     * if a bridge is hardcoded, so the network is at least defined
+     */
+    if (!def->bridge && !(def->bridge = virNetworkAllocateBridge(conn, nets)))
+        goto error;
+
     if (!(net = virNetworkAssignDef(conn, nets, def)))
         goto error;
 
@@ -848,6 +855,77 @@ char *virNetworkConfigFile(virConnectPtr conn,
     return ret;
 }
 
+int virNetworkBridgeInUse(const virNetworkObjListPtr nets,
+                          const char *bridge,
+                          const char *skipname)
+{
+    unsigned int i;
+    unsigned int ret = 0;
+
+    for (i = 0 ; i < nets->count ; i++) {
+        virNetworkObjLock(nets->objs[i]);
+        if (nets->objs[i]->def->bridge &&
+            STREQ(nets->objs[i]->def->bridge, bridge) &&
+            !(skipname && STREQ(nets->objs[i]->def->name, skipname)))
+                ret = 1;
+        virNetworkObjUnlock(nets->objs[i]);
+    }
+
+    return ret;
+}
+
+char *virNetworkAllocateBridge(virConnectPtr conn,
+                               const virNetworkObjListPtr nets)
+{
+
+    int id = 0;
+    char *newname;
+
+    do {
+        char try[50];
+
+        snprintf(try, sizeof(try), "virbr%d", id);
+
+        if (!virNetworkBridgeInUse(nets, try, NULL)) {
+            if (!(newname = strdup(try))) {
+                virReportOOMError(conn);
+                return NULL;
+            }
+            return newname;
+        }
+
+        id++;
+    } while (id < MAX_BRIDGE_ID);
+
+    virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                          _("Bridge generation exceeded max id %d"),
+                          MAX_BRIDGE_ID);
+    return NULL;
+}
+
+int virNetworkSetBridgeName(virConnectPtr conn,
+                            const virNetworkObjListPtr nets,
+                            virNetworkDefPtr def) {
+
+    int ret = -1;
+
+    if (def->bridge) {
+        if (virNetworkBridgeInUse(nets, def->bridge, def->name)) {
+            networkReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                               _("bridge name '%s' already in use."),
+                               def->bridge);
+            goto error;
+        }
+    } else {
+        /* Allocate a bridge name */
+        if (!(def->bridge = virNetworkAllocateBridge(conn, nets)))
+            goto error;
+    }
+
+    ret = 0;
+error:
+    return ret;
+}
 
 void virNetworkObjLock(virNetworkObjPtr obj)
 {

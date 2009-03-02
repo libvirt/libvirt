@@ -107,6 +107,10 @@ virNetworkIsActive(const virNetworkObjPtr net)
     return net->active;
 }
 
+#define networkReportError(conn, dom, net, code, fmt...)                \
+    virReportErrorHelper(conn, VIR_FROM_QEMU, code, __FILE__,         \
+                           __FUNCTION__, __LINE__, fmt)
+
 
 virNetworkObjPtr virNetworkFindByUUID(const virNetworkObjListPtr nets,
                                       const unsigned char *uuid);
@@ -165,6 +169,16 @@ char *virNetworkConfigFile(virConnectPtr conn,
                            const char *dir,
                            const char *name);
 
+int virNetworkBridgeInUse(const virNetworkObjListPtr nets,
+                          const char *bridge,
+                          const char *skipname);
+
+char *virNetworkAllocateBridge(virConnectPtr conn,
+                               const virNetworkObjListPtr nets);
+
+int virNetworkSetBridgeName(virConnectPtr conn,
+                            const virNetworkObjListPtr nets,
+                            virNetworkDefPtr def);
 
 void virNetworkObjLock(virNetworkObjPtr obj);
 void virNetworkObjUnlock(virNetworkObjPtr obj);

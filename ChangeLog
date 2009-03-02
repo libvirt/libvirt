@@ -1,3 +1,9 @@
+Mon Mar 2 12:34:25 EST 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/bridge.c src/bridge.h src/libvirt_private.syms src/network_conf.c
+	  src/network_conf.h src/network_driver.c:
+	  Generate network bridge names if none passed at define/create time.
+
 Mon Mar 2 12:30:08 EST 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/domain_conf.c src/domain_conf.h src/qemu_driver.c:

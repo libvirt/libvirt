@@ -49,7 +49,7 @@
 #include "util.h"
 #include "logging.h"
 
-#define MAX_BRIDGE_ID 256
+#define MAX_TAP_ID 256
 
 #define JIFFIES_TO_MS(j) (((j)*1000)/HZ)
 #define MS_TO_JIFFIES(ms) (((ms)*HZ)/1000)
@@ -127,32 +127,13 @@ brShutdown(brControl *ctl)
 #ifdef SIOCBRADDBR
 int
 brAddBridge(brControl *ctl,
-            char **name)
+            const char *name)
 {
     if (!ctl || !ctl->fd || !name)
         return EINVAL;
 
-    if (*name) {
-        if (ioctl(ctl->fd, SIOCBRADDBR, *name) == 0)
-            return 0;
-    } else {
-        int id = 0;
-        do {
-            char try[50];
-
-            snprintf(try, sizeof(try), "virbr%d", id);
-
-            if (ioctl(ctl->fd, SIOCBRADDBR, try) == 0) {
-                if (!(*name = strdup(try))) {
-                    ioctl(ctl->fd, SIOCBRDELBR, name);
-                    return ENOMEM;
-                }
-                return 0;
-            }
-
-            id++;
-        } while (id < MAX_BRIDGE_ID);
-    }
+    if (ioctl(ctl->fd, SIOCBRADDBR, name) == 0)
+        return 0;
 
     return errno;
 }
@@ -547,7 +528,7 @@ brAddTap(brControl *ctl,
         }
 
         id++;
-    } while (subst && id <= MAX_BRIDGE_ID);
+    } while (subst && id <= MAX_TAP_ID);
 
  error:
     close(fd);

@@ -91,11 +91,6 @@ static int networkShutdown(void);
 
 #define networkLog(level, msg...) fprintf(stderr, msg)
 
-#define networkReportError(conn, dom, net, code, fmt...)                \
-    virReportErrorHelper(conn, VIR_FROM_QEMU, code, __FILE__,         \
-                           __FUNCTION__, __LINE__, fmt)
-
-
 static int networkStartNetworkDaemon(virConnectPtr conn,
                                    struct network_driver *driver,
                                    virNetworkObjPtr network);
@@ -812,7 +807,7 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
         return -1;
     }
 
-    if ((err = brAddBridge(driver->brctl, &network->def->bridge))) {
+    if ((err = brAddBridge(driver->brctl, network->def->bridge))) {
         virReportSystemError(conn, err,
                              _("cannot create bridge '%s'"),
                              network->def->bridge);
@@ -1113,6 +1108,9 @@ static virNetworkPtr networkCreate(virConnectPtr conn, const char *xml) {
     if (!(def = virNetworkDefParseString(conn, xml)))
         goto cleanup;
 
+    if (virNetworkSetBridgeName(conn, &driver->networks, def))
+        goto cleanup;
+
     if (!(network = virNetworkAssignDef(conn,
                                         &driver->networks,
                                         def)))
@@ -1145,6 +1143,9 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
     networkDriverLock(driver);
 
     if (!(def = virNetworkDefParseString(conn, xml)))
+        goto cleanup;
+
+    if (virNetworkSetBridgeName(conn, &driver->networks, def))
         goto cleanup;
 
     if (!(network = virNetworkAssignDef(conn,
