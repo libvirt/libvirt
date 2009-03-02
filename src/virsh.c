@@ -2596,7 +2596,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             qsort(&inactiveNames[0], maxinactive, sizeof(char*), namesorter);
         }
     }
-    vshPrintExtra(ctl, "%-20s %-10s %-10s\n", _("Name"), _("State"), _("Autostart"));
+    vshPrintExtra(ctl, "%-20s %-10s %s\n", _("Name"), _("State"), _("Autostart"));
     vshPrintExtra(ctl, "-----------------------------------------\n");
 
     for (i = 0; i < maxactive; i++) {
