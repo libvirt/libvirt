@@ -1729,7 +1729,7 @@ virDomainHostdevDefParseXML(virConnectPtr conn,
 
     xmlNodePtr cur;
     virDomainHostdevDefPtr def;
-    char *mode, *type = NULL;
+    char *mode, *type = NULL, *managed = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError(conn);
@@ -1759,6 +1759,13 @@ virDomainHostdevDefParseXML(virConnectPtr conn,
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("missing type in hostdev"));
         goto error;
+    }
+
+    managed = virXMLPropString(node, "managed");
+    if (managed != NULL) {
+        if (STREQ(managed, "yes"))
+            def->managed = 1;
+        VIR_FREE(managed);
     }
 
     cur = node->children;
@@ -3185,7 +3192,8 @@ virDomainHostdevDefFormat(virConnectPtr conn,
         return -1;
     }
 
-    virBufferVSprintf(buf, "    <hostdev mode='%s' type='%s'>\n", mode, type);
+    virBufferVSprintf(buf, "    <hostdev mode='%s' type='%s' managed='%s'>\n",
+                      mode, type, def->managed ? "yes" : "no");
     virBufferAddLit(buf, "      <source>\n");
 
     if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {

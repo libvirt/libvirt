@@ -1,3 +1,14 @@
+Mon Mar  2 17:35:09 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/schemas/domain.rng src/domain_conf.c src/domain_conf.h
+	  src/qemu_conf.c
+	  tests/qemuxml2argvdata/qemuxml2argv-hostdev-pci-address.xml
+	  tests/qemuxml2argvdata/qemuxml2argv-hostdev-usb-address.xml
+	  tests/qemuxml2argvdata/qemuxml2argv-hostdev-usb-product.xml:
+	  adds a new <hostdev managed='(yes|no)'> property
+	  to host devices indicating whether or not we should
+	  automatically dettach/reset, patch by Mark McLoughlin
+
 Mon Mar  2 17:31:48 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: add qemu dettach/reattach/reset implementation

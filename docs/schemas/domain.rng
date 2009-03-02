@@ -911,6 +911,12 @@
 	    <value>pci</value>
           </choice>
         </attribute>
+	<attribute name='managed'>
+	  <choice>
+	    <value>yes</value>
+	    <value>no</value>
+	  </choice>
+	</attribute>
       </optional>
       <group>
           <element name='source'>

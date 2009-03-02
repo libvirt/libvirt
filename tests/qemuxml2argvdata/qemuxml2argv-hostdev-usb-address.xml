@@ -18,7 +18,7 @@
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
     </disk>
-    <hostdev mode='subsystem' type='usb'>
+    <hostdev mode='subsystem' type='usb' managed='no'>
       <source>
         <address bus='14' device='6'/>
       </source>

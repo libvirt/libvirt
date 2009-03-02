@@ -305,6 +305,7 @@ typedef struct _virDomainHostdevDef virDomainHostdevDef;
 typedef virDomainHostdevDef *virDomainHostdevDefPtr;
 struct _virDomainHostdevDef {
     int mode; /* enum virDomainHostdevMode */
+    unsigned int managed : 1;
     union {
         struct {
             int type; /* enum virDomainHostdevBusType */
