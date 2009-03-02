@@ -81,7 +81,9 @@ test_scripts +=				\
 	daemon-conf			\
 	define-dev-segfault		\
 	int-overflow			\
+	libvirtd-fail			\
 	libvirtd-net-persist		\
+	libvirtd-pool			\
 	read-bufsiz			\
 	read-non-seekable		\
 	start				\

@@ -1,0 +1,21 @@
+#!/bin/sh
+# Ensure that libvirt fails when given nonexistent --config=FILE
+
+if test "$VERBOSE" = yes; then
+  set -x
+  libvirtd --version
+fi
+
+test -z "$srcdir" && srcdir=$(pwd)
+test -z "$abs_top_srcdir" && abs_top_srcdir=$(pwd)/..
+. "$srcdir/test-lib.sh"
+
+fail=0
+
+libvirtd --config=no-such-file > log 2>&1 && fail=1
+cat <<\EOF > exp
+Failed to open file 'no-such-file': No such file or directory
+EOF
+
+compare exp log || fail=1
+exit $fail

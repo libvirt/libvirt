@@ -1,3 +1,11 @@
+Mon Mar 2 21:00:00 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	add two tests
+	* tests/libvirtd-pool: New file.
+	Exercise the new unix_sock_dir option
+	* tests/libvirtd-fail: New file.
+	* tests/Makefile.am (test_scripts): Add libvirtd-fail and libvirtd-pool.
+
 Mon Mar 2 20:01:55 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	tests: fix an error that made us skip the daemon-conf test
