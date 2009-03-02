@@ -1,3 +1,9 @@
+Mon Mar 2 10:16:04 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	don't dereference uninitialized pointer
+	* src/storage_conf.c (virStoragePoolDefParsePerms): Initialize
+	"ptr" to NULL.
+
 Fri Feb 27 17:15:00 CET 2009 Chris Lalancette <clalance@redhat.com>
 
 	* src/qemu_driver.c: If there is a failure during offline migrate,

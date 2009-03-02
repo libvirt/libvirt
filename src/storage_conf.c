@@ -381,7 +381,7 @@ virStoragePoolDefParsePerms(virConnectPtr conn,
     if (!mode) {
         perms->mode = 0700;
     } else {
-        char *end;
+        char *end = NULL;
         perms->mode = strtol(mode, &end, 8);
         if (*end || perms->mode < 0 || perms->mode > 0777) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
