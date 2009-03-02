@@ -1,3 +1,8 @@
+Mon Mar 2 20:21:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c: Always reset PCI devices before starting guests.
+	Add todo item for non-managed PCI devs
+
 Mon Mar 2 20:18:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt_private.syms: Export virUnrefConnect and

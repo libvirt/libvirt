@@ -1411,7 +1411,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 }
 
                 pciFreeDevice(conn, dev);
-            }
+            } /* else {
+                XXX validate that non-managed device isn't in use, eg
+                by checking that device is either un-bound, or bound
+                to pci-stub.ko
+            } */
         }
 
     }
@@ -1421,8 +1425,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
         pciDevice *dev;
 
-        if (!hostdev->managed ||
-            hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
             hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
