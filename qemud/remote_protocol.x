@@ -1068,6 +1068,18 @@ struct remote_node_device_list_caps_ret {
     remote_nonnull_string names<REMOTE_NODE_DEVICE_CAPS_LIST_MAX>;
 };
 
+struct remote_node_device_dettach_args {
+    remote_nonnull_string name;
+};
+
+struct remote_node_device_re_attach_args {
+    remote_nonnull_string name;
+};
+
+struct remote_node_device_reset_args {
+    remote_nonnull_string name;
+};
+
 
 /**
  * Events Register/Deregister:
@@ -1223,7 +1235,10 @@ enum remote_procedure {
     REMOTE_PROC_NODE_DEVICE_DUMP_XML = 114,
     REMOTE_PROC_NODE_DEVICE_GET_PARENT = 115,
     REMOTE_PROC_NODE_DEVICE_NUM_OF_CAPS = 116,
-    REMOTE_PROC_NODE_DEVICE_LIST_CAPS = 117
+    REMOTE_PROC_NODE_DEVICE_LIST_CAPS = 117,
+    REMOTE_PROC_NODE_DEVICE_DETTACH = 118,
+    REMOTE_PROC_NODE_DEVICE_RE_ATTACH = 119,
+    REMOTE_PROC_NODE_DEVICE_RESET = 120
 };
 
 /* Custom RPC structure. */

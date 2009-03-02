@@ -99,3 +99,6 @@
     remote_node_device_get_parent_args val_remote_node_device_get_parent_args;
     remote_node_device_num_of_caps_args val_remote_node_device_num_of_caps_args;
     remote_node_device_list_caps_args val_remote_node_device_list_caps_args;
+    remote_node_device_dettach_args val_remote_node_device_dettach_args;
+    remote_node_device_re_attach_args val_remote_node_device_re_attach_args;
+    remote_node_device_reset_args val_remote_node_device_reset_args;

@@ -1211,6 +1211,21 @@ struct remote_node_device_list_caps_ret {
 };
 typedef struct remote_node_device_list_caps_ret remote_node_device_list_caps_ret;
 
+struct remote_node_device_dettach_args {
+        remote_nonnull_string name;
+};
+typedef struct remote_node_device_dettach_args remote_node_device_dettach_args;
+
+struct remote_node_device_re_attach_args {
+        remote_nonnull_string name;
+};
+typedef struct remote_node_device_re_attach_args remote_node_device_re_attach_args;
+
+struct remote_node_device_reset_args {
+        remote_nonnull_string name;
+};
+typedef struct remote_node_device_reset_args remote_node_device_reset_args;
+
 struct remote_domain_events_register_ret {
         int cb_registered;
 };
@@ -1348,6 +1363,9 @@ enum remote_procedure {
         REMOTE_PROC_NODE_DEVICE_GET_PARENT = 115,
         REMOTE_PROC_NODE_DEVICE_NUM_OF_CAPS = 116,
         REMOTE_PROC_NODE_DEVICE_LIST_CAPS = 117,
+        REMOTE_PROC_NODE_DEVICE_DETTACH = 118,
+        REMOTE_PROC_NODE_DEVICE_RE_ATTACH = 119,
+        REMOTE_PROC_NODE_DEVICE_RESET = 120,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -1574,6 +1592,9 @@ extern  bool_t xdr_remote_node_device_num_of_caps_args (XDR *, remote_node_devic
 extern  bool_t xdr_remote_node_device_num_of_caps_ret (XDR *, remote_node_device_num_of_caps_ret*);
 extern  bool_t xdr_remote_node_device_list_caps_args (XDR *, remote_node_device_list_caps_args*);
 extern  bool_t xdr_remote_node_device_list_caps_ret (XDR *, remote_node_device_list_caps_ret*);
+extern  bool_t xdr_remote_node_device_dettach_args (XDR *, remote_node_device_dettach_args*);
+extern  bool_t xdr_remote_node_device_re_attach_args (XDR *, remote_node_device_re_attach_args*);
+extern  bool_t xdr_remote_node_device_reset_args (XDR *, remote_node_device_reset_args*);
 extern  bool_t xdr_remote_domain_events_register_ret (XDR *, remote_domain_events_register_ret*);
 extern  bool_t xdr_remote_domain_events_deregister_ret (XDR *, remote_domain_events_deregister_ret*);
 extern  bool_t xdr_remote_domain_event_ret (XDR *, remote_domain_event_ret*);
@@ -1779,6 +1800,9 @@ extern bool_t xdr_remote_node_device_num_of_caps_args ();
 extern bool_t xdr_remote_node_device_num_of_caps_ret ();
 extern bool_t xdr_remote_node_device_list_caps_args ();
 extern bool_t xdr_remote_node_device_list_caps_ret ();
+extern bool_t xdr_remote_node_device_dettach_args ();
+extern bool_t xdr_remote_node_device_re_attach_args ();
+extern bool_t xdr_remote_node_device_reset_args ();
 extern bool_t xdr_remote_domain_events_register_ret ();
 extern bool_t xdr_remote_domain_events_deregister_ret ();
 extern bool_t xdr_remote_domain_event_ret ();

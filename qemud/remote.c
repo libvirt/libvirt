@@ -4172,6 +4172,84 @@ remoteDispatchNodeDeviceListCaps (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 
+static int
+remoteDispatchNodeDeviceDettach (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
+                                 remote_error *rerr,
+                                 remote_node_device_dettach_args *args,
+                                 void *ret ATTRIBUTE_UNUSED)
+{
+    virNodeDevicePtr dev;
+    CHECK_CONN(client);
+
+    dev = virNodeDeviceLookupByName(conn, args->name);
+    if (dev == NULL) {
+        remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
+        return -1;
+    }
+
+    if (virNodeDeviceDettach(dev) == -1) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+remoteDispatchNodeDeviceReAttach (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
+                                  remote_error *rerr,
+                                  remote_node_device_re_attach_args *args,
+                                  void *ret ATTRIBUTE_UNUSED)
+{
+    virNodeDevicePtr dev;
+    CHECK_CONN(client);
+
+    dev = virNodeDeviceLookupByName(conn, args->name);
+    if (dev == NULL) {
+        remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
+        return -1;
+    }
+
+    if (virNodeDeviceReAttach(dev) == -1) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+remoteDispatchNodeDeviceReset (struct qemud_server *server ATTRIBUTE_UNUSED,
+                               struct qemud_client *client ATTRIBUTE_UNUSED,
+                               virConnectPtr conn,
+                               remote_error *rerr,
+                               remote_node_device_reset_args *args,
+                               void *ret ATTRIBUTE_UNUSED)
+{
+    virNodeDevicePtr dev;
+    CHECK_CONN(client);
+
+    dev = virNodeDeviceLookupByName(conn, args->name);
+    if (dev == NULL) {
+        remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
+        return -1;
+    }
+
+    if (virNodeDeviceReset(dev) == -1) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /**************************
  * Async Events
  **************************/

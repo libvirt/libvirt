@@ -2166,6 +2166,33 @@ xdr_remote_node_device_list_caps_ret (XDR *xdrs, remote_node_device_list_caps_re
 }
 
 bool_t
+xdr_remote_node_device_dettach_args (XDR *xdrs, remote_node_device_dettach_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_device_re_attach_args (XDR *xdrs, remote_node_device_re_attach_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_device_reset_args (XDR *xdrs, remote_node_device_reset_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_domain_events_register_ret (XDR *xdrs, remote_domain_events_register_ret *objp)
 {
 

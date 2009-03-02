@@ -4813,6 +4813,75 @@ done:
     return rv;
 }
 
+static int
+remoteNodeDeviceDettach (virNodeDevicePtr dev)
+{
+    int rv = -1;
+    remote_node_device_dettach_args args;
+    struct private_data *priv = dev->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.name = dev->name;
+
+    if (call (dev->conn, priv, 0, REMOTE_PROC_NODE_DEVICE_DETTACH,
+              (xdrproc_t) xdr_remote_node_device_dettach_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteNodeDeviceReAttach (virNodeDevicePtr dev)
+{
+    int rv = -1;
+    remote_node_device_re_attach_args args;
+    struct private_data *priv = dev->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.name = dev->name;
+
+    if (call (dev->conn, priv, 0, REMOTE_PROC_NODE_DEVICE_RE_ATTACH,
+              (xdrproc_t) xdr_remote_node_device_re_attach_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteNodeDeviceReset (virNodeDevicePtr dev)
+{
+    int rv = -1;
+    remote_node_device_reset_args args;
+    struct private_data *priv = dev->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.name = dev->name;
+
+    if (call (dev->conn, priv, 0, REMOTE_PROC_NODE_DEVICE_RESET,
+              (xdrproc_t) xdr_remote_node_device_reset_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 
 /*----------------------------------------------------------------------*/
 
@@ -6742,6 +6811,9 @@ static virDriver driver = {
     .domainEventDeregister = remoteDomainEventDeregister,
     .domainMigratePrepare2 = remoteDomainMigratePrepare2,
     .domainMigrateFinish2 = remoteDomainMigrateFinish2,
+    .nodeDeviceDettach = remoteNodeDeviceDettach,
+    .nodeDeviceReAttach = remoteNodeDeviceReAttach,
+    .nodeDeviceReset = remoteNodeDeviceReset,
 };
 
 static virNetworkDriver network_driver = {

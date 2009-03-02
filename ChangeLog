@@ -1,3 +1,12 @@
+Mon Mar  2 17:28:42 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/remote.c qemud/remote_dispatch_args.h
+	  qemud/remote_dispatch_prototypes.h qemud/remote_dispatch_table.h
+	  qemud/remote_protocol.c qemud/remote_protocol.h
+	  qemud/remote_protocol.x src/remote_internal.c: Implement
+	  attach/reattach/reset in the remote driver, patch by Mark
+	  McLoughlin.
+
 Mon Mar  2 17:26:48 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: add 3 new commands for node device detach,

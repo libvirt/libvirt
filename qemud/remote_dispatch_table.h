@@ -592,3 +592,18 @@
     .args_filter = (xdrproc_t) xdr_remote_node_device_list_caps_args,
     .ret_filter = (xdrproc_t) xdr_remote_node_device_list_caps_ret,
 },
+{   /* NodeDeviceDettach => 118 */
+    .fn = (dispatch_fn) remoteDispatchNodeDeviceDettach,
+    .args_filter = (xdrproc_t) xdr_remote_node_device_dettach_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
+{   /* NodeDeviceReAttach => 119 */
+    .fn = (dispatch_fn) remoteDispatchNodeDeviceReAttach,
+    .args_filter = (xdrproc_t) xdr_remote_node_device_re_attach_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
+{   /* NodeDeviceReset => 120 */
+    .fn = (dispatch_fn) remoteDispatchNodeDeviceReset,
+    .args_filter = (xdrproc_t) xdr_remote_node_device_reset_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
