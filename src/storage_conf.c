@@ -383,6 +383,7 @@ virStoragePoolDefParsePerms(virConnectPtr conn,
     } else {
         char *end = NULL;
         perms->mode = strtol(mode, &end, 8);
+        VIR_FREE(mode);
         if (*end || perms->mode < 0 || perms->mode > 0777) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   "%s", _("malformed octal mode"));
@@ -812,6 +813,7 @@ virStorageVolDefParsePerms(virConnectPtr conn,
     } else {
         char *end = NULL;
         perms->mode = strtol(mode, &end, 8);
+        VIR_FREE(mode);
         if (*end || perms->mode < 0 || perms->mode > 0777) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   "%s", _("malformed octal mode"));

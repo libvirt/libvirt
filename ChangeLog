@@ -1,5 +1,11 @@
 Mon Mar 2 10:16:04 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	plug two config-parsing leaks
+	* src/storage_conf.c (virStoragePoolDefParsePerms): Free mode string.
+	(virStorageVolDefParsePerms): Likewise.
+	Patch by Ryota Ozaki.
+	* AUTHORS: Update.
+
 	don't dereference uninitialized pointer
 	* src/storage_conf.c (virStoragePoolDefParsePerms): Initialize
 	"ptr" to NULL.
