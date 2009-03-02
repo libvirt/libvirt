@@ -3527,6 +3527,9 @@ static virDriver testDriver = {
     testDomainEventDeregister, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */
     NULL, /* domainMigrateFinish2 */
+    NULL, /* nodeDeviceAttach */
+    NULL, /* nodeDeviceReAttach */
+    NULL, /* nodeDeviceReset */
 };
 
 static virNetworkDriver testNetworkDriver = {

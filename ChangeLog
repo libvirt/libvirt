@@ -1,3 +1,12 @@
+Mon Mar  2 17:19:23 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in
+	  src/driver.h src/libvirt.c src/libvirt_public.syms
+	  src/lxc_driver.c src/openvz_driver.c src/qemu_driver.c
+	  src/test.c src/uml_driver.c: add the public APIs for
+	  virNodeDeviceDettach virNodeDeviceReAttach and virNodeDeviceReset
+	  and extends the driver structure accordingly.
+
 Mon Mar  2 17:07:44 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in po/POTFILES.in src/Makefile.am src/libvirt_private.syms

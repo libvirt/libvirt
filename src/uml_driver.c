@@ -1885,6 +1885,9 @@ static virDriver umlDriver = {
     NULL, /* domainEventUnregister */
     NULL, /* domainMigratePrepare2 */
     NULL, /* domainMigrateFinish2 */
+    NULL, /* nodeDeviceAttach */
+    NULL, /* nodeDeviceReAttach */
+    NULL, /* nodeDeviceReset */
 };
 
 

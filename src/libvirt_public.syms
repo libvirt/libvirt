@@ -251,6 +251,9 @@ LIBVIRT_0.6.1 {
     global:
 	virFreeError;
 	virSaveLastError;
+	virNodeDeviceDettach;
+	virNodeDeviceReAttach;
+	virNodeDeviceReset;
 } LIBVIRT_0.6.0;
 
 # .... define new API here using predicted next version number ....

@@ -1053,6 +1053,10 @@ char *                  virNodeDeviceGetXMLDesc (virNodeDevicePtr dev,
 int                     virNodeDeviceRef        (virNodeDevicePtr dev);
 int                     virNodeDeviceFree       (virNodeDevicePtr dev);
 
+int                     virNodeDeviceDettach    (virNodeDevicePtr dev);
+int                     virNodeDeviceReAttach   (virNodeDevicePtr dev);
+int                     virNodeDeviceReset      (virNodeDevicePtr dev);
+
 /*
  * Domain Event Notification
  */

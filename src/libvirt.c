@@ -7286,6 +7286,135 @@ virNodeDeviceRef(virNodeDevicePtr dev)
     return 0;
 }
 
+/**
+ * virNodeDeviceAttach:
+ * @dev: pointer to the node device
+ *
+ * Dettach the node device from the node itself so that it may be
+ * assigned to a guest domain.
+ *
+ * Depending on the hypervisor, this may involve operations such
+ * as unbinding any device drivers from the device, binding the
+ * device to a dummy device driver and resetting the device.
+ *
+ * If the device is currently in use by the node, this method may
+ * fail.
+ *
+ * Once the device is not assigned to any guest, it may be re-attached
+ * to the node using the virNodeDeviceReattach() method.
+ */
+int
+virNodeDeviceDettach(virNodeDevicePtr dev)
+{
+    DEBUG("dev=%p, conn=%p", dev, dev ? dev->conn : NULL);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
+        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        return (-1);
+    }
+
+    if (dev->conn->driver->nodeDeviceDettach) {
+        int ret;
+        ret = dev->conn->driver->nodeDeviceDettach (dev);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(dev->conn);
+    return (-1);
+}
+
+/**
+ * virNodeDeviceReAttach:
+ * @dev: pointer to the node device
+ *
+ * Re-attach a previously dettached node device to the node so that it
+ * may be used by the node again.
+ *
+ * Depending on the hypervisor, this may involve operations such
+ * as resetting the device, unbinding it from a dummy device driver
+ * and binding it to its appropriate driver.
+ *
+ * If the device is currently in use by a guest, this method may fail.
+ */
+int
+virNodeDeviceReAttach(virNodeDevicePtr dev)
+{
+    DEBUG("dev=%p, conn=%p", dev, dev ? dev->conn : NULL);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
+        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        return (-1);
+    }
+
+    if (dev->conn->driver->nodeDeviceReAttach) {
+        int ret;
+        ret = dev->conn->driver->nodeDeviceReAttach (dev);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(dev->conn);
+    return (-1);
+}
+
+/**
+ * virNodeDeviceReset:
+ * @dev: pointer to the node device
+ *
+ * Reset a previously dettached node device to the node before or
+ * after assigning it to a guest.
+ *
+ * The exact reset semantics depends on the hypervisor and device
+ * type but, for example, KVM will attempt to reset PCI devices with
+ * a Function Level Reset, Secondary Bus Reset or a Power Management
+ * D-State reset.
+ *
+ * If the reset will affect other devices which are currently in use,
+ * this function may fail.
+ */
+int
+virNodeDeviceReset(virNodeDevicePtr dev)
+{
+    DEBUG("dev=%p, conn=%p", dev, dev ? dev->conn : NULL);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
+        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        return (-1);
+    }
+
+    if (dev->conn->driver->nodeDeviceReset) {
+        int ret;
+        ret = dev->conn->driver->nodeDeviceReset (dev);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(dev->conn);
+    return (-1);
+}
+
 
 /*
  * Domain Event Notification
