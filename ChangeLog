@@ -1,3 +1,8 @@
+Mon Mar 2 20:18:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt_private.syms: Export virUnrefConnect and
+	virCapabilitiesGenerateMac to drivers
+
 Mon Mar 2 21:00:00 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	tests: further isolate a test that runs libvirtd

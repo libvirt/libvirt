@@ -26,6 +26,7 @@ virCapabilitiesFormatXML;
 virCapabilitiesFree;
 virCapabilitiesNew;
 virCapabilitiesSetMacPrefix;
+virCapabilitiesGenerateMac;
 
 
 # conf.h
@@ -47,6 +48,7 @@ virGetStoragePool;
 virGetStorageVol;
 virGetNodeDevice;
 virUnrefDomain;
+virUnrefConnect;
 
 
 # domain_conf.h
