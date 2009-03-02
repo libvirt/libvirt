@@ -68,6 +68,7 @@ virDomainDefParseString;
 virDomainDeleteConfig;
 virDomainDeviceDefFree;
 virDomainDeviceDefParse;
+virDomainDeviceTypeToString;
 virDomainDiskBusTypeToString;
 virDomainDiskDefFree;
 virDomainDiskDeviceTypeToString;

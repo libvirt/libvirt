@@ -3472,17 +3472,25 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
             ret = qemudDomainChangeEjectableMedia(dom->conn, vm, dev);
             break;
+
         case VIR_DOMAIN_DISK_DEVICE_DISK:
             if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
                 ret = qemudDomainAttachUsbMassstorageDevice(dom->conn, vm, dev);
             } else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
                        dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
                 ret = qemudDomainAttachPciDiskDevice(dom->conn, vm, dev);
+            } else {
+                qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                                 _("disk bus '%s' cannot be hotplugged."),
+                                 virDomainDiskBusTypeToString(dev->data.disk->bus));
+                goto cleanup;
             }
             break;
+
         default:
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
-                             "%s", _("this disk device type cannot be attached"));
+                             _("disk device type '%s' cannot be hotplugged"),
+                             virDomainDiskDeviceTypeToString(dev->data.disk->device));
             goto cleanup;
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
@@ -3491,7 +3499,8 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         ret = qemudDomainAttachHostDevice(dom->conn, vm, dev);
     } else {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
-                         "%s", _("this device type cannot be attached"));
+                         _("device type '%s' cannot be attached"),
+                         virDomainDeviceTypeToString(dev->type));
         goto cleanup;
     }
 

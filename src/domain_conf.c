@@ -73,6 +73,14 @@ VIR_ENUM_IMPL(virDomainLifecycle, VIR_DOMAIN_LIFECYCLE_LAST,
               "rename-restart",
               "preserve")
 
+VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
+              "disk",
+              "filesystem",
+              "interface",
+              "input",
+              "sound",
+              "hostdev")
+
 VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
               "block",
               "file")

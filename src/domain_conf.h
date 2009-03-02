@@ -343,6 +343,8 @@ enum virDomainDeviceType {
     VIR_DOMAIN_DEVICE_INPUT,
     VIR_DOMAIN_DEVICE_SOUND,
     VIR_DOMAIN_DEVICE_HOSTDEV,
+
+    VIR_DOMAIN_DEVICE_LAST,
 };
 
 typedef struct _virDomainDeviceDef virDomainDeviceDef;
@@ -622,6 +624,7 @@ VIR_ENUM_DECL(virDomainVirt)
 VIR_ENUM_DECL(virDomainBoot)
 VIR_ENUM_DECL(virDomainFeature)
 VIR_ENUM_DECL(virDomainLifecycle)
+VIR_ENUM_DECL(virDomainDevice)
 VIR_ENUM_DECL(virDomainDisk)
 VIR_ENUM_DECL(virDomainDiskDevice)
 VIR_ENUM_DECL(virDomainDiskBus)
