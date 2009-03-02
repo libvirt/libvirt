@@ -1,5 +1,11 @@
 Mon Mar 2 21:00:00 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	tests: further isolate a test that runs libvirtd
+	* tests/daemon-conf: Specify a non-default socket directory.
+	Specify test-specific log directory and pid file, too.
+
+Mon Mar 2 21:00:00 +0100 2009 Jim Meyering <meyering@redhat.com>
+
 	add two tests
 	* tests/libvirtd-pool: New file.
 	Exercise the new unix_sock_dir option
