@@ -68,6 +68,8 @@
 #include "memory.h"
 #include "uuid.h"
 #include "domain_conf.h"
+#include "node_device_conf.h"
+#include "pci.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -4500,6 +4502,121 @@ cleanup:
     return dom;
 }
 
+static int
+qemudNodeDeviceGetPciInfo (virNodeDevicePtr dev,
+                           unsigned *domain,
+                           unsigned *bus,
+                           unsigned *slot,
+                           unsigned *function)
+{
+    virNodeDeviceDefPtr def = NULL;
+    virNodeDevCapsDefPtr cap;
+    char *xml = NULL;
+    int ret = -1;
+
+    xml = virNodeDeviceGetXMLDesc(dev, 0);
+    if (!xml)
+        goto out;
+
+    def = virNodeDeviceDefParseString(dev->conn, xml);
+    if (!def)
+        goto out;
+
+    cap = def->caps;
+    while (cap) {
+        if (cap->type == VIR_NODE_DEV_CAP_PCI_DEV) {
+            *domain   = cap->data.pci_dev.domain;
+            *bus      = cap->data.pci_dev.bus;
+            *slot     = cap->data.pci_dev.slot;
+            *function = cap->data.pci_dev.function;
+            break;
+        }
+
+        cap = cap->next;
+    }
+
+    if (!cap) {
+        qemudReportError(dev->conn, NULL, NULL, VIR_ERR_INVALID_ARG,
+                         _("device %s is not a PCI device"), dev->name);
+        goto out;
+    }
+
+    ret = 0;
+out:
+    virNodeDeviceDefFree(def);
+    VIR_FREE(xml);
+    return ret;
+}
+
+static int
+qemudNodeDeviceDettach (virNodeDevicePtr dev)
+{
+    pciDevice *pci;
+    unsigned domain, bus, slot, function;
+    int ret = -1;
+
+    if (qemudNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
+        return -1;
+
+    pci = pciGetDevice(dev->conn, domain, bus, slot, function);
+    if (!pci)
+        return -1;
+
+    if (pciDettachDevice(dev->conn, pci) < 0)
+        goto out;
+
+    ret = 0;
+out:
+    pciFreeDevice(dev->conn, pci);
+    return ret;
+}
+
+static int
+qemudNodeDeviceReAttach (virNodeDevicePtr dev)
+{
+    pciDevice *pci;
+    unsigned domain, bus, slot, function;
+    int ret = -1;
+
+    if (qemudNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
+        return -1;
+
+    pci = pciGetDevice(dev->conn, domain, bus, slot, function);
+    if (!pci)
+        return -1;
+
+    if (pciReAttachDevice(dev->conn, pci) < 0)
+        goto out;
+
+    ret = 0;
+out:
+    pciFreeDevice(dev->conn, pci);
+    return ret;
+}
+
+static int
+qemudNodeDeviceReset (virNodeDevicePtr dev)
+{
+    pciDevice *pci;
+    unsigned domain, bus, slot, function;
+    int ret = -1;
+
+    if (qemudNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
+        return -1;
+
+    pci = pciGetDevice(dev->conn, domain, bus, slot, function);
+    if (!pci)
+        return -1;
+
+    if (pciResetDevice(dev->conn, pci) < 0)
+        goto out;
+
+    ret = 0;
+out:
+    pciFreeDevice(dev->conn, pci);
+    return ret;
+}
+
 static virDriver qemuDriver = {
     VIR_DRV_QEMU,
     "QEMU",
@@ -4572,9 +4689,9 @@ static virDriver qemuDriver = {
     qemudDomainEventDeregister, /* domainEventDeregister */
     qemudDomainMigratePrepare2, /* domainMigratePrepare2 */
     qemudDomainMigrateFinish2, /* domainMigrateFinish2 */
-    NULL, /* nodeDeviceDettach */
-    NULL, /* nodeDeviceReAttach */
-    NULL, /* nodeDeviceReset */
+    qemudNodeDeviceDettach, /* nodeDeviceDettach */
+    qemudNodeDeviceReAttach, /* nodeDeviceReAttach */
+    qemudNodeDeviceReset, /* nodeDeviceReset */
 };
 
 
