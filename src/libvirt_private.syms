@@ -229,6 +229,14 @@ virNodeDeviceObjUnlock;
 virNodeDeviceAssignDef;
 
 
+# pci.h
+pciGetDevice;
+pciFreeDevice;
+pciDettachDevice;
+pciReAttachDevice;
+pciResetDevice;
+
+
 # qparams.h
 qparam_get_query;
 qparam_query_parse;

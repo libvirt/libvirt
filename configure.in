@@ -128,6 +128,8 @@ AC_PATH_PROG([UDEVADM], [udevadm], [],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([UDEVSETTLE], [udevsettle], [],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+AC_PATH_PROG([MODPROBE], [modprobe], [],
+	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 
 AC_DEFINE_UNQUOTED([DNSMASQ],["$DNSMASQ"],
         [Location or name of the dnsmasq program])
@@ -140,6 +142,10 @@ fi
 if test -n "$UDEVSETTLE"; then
   AC_DEFINE_UNQUOTED([UDEVSETTLE],["$UDEVSETTLE"],
         [Location or name of the udevsettle program])
+fi
+if test -n "$MODPROBE"; then
+  AC_DEFINE_UNQUOTED([MODPROBE],["$MODPROBE"],
+        [Location or name of the modprobe program])
 fi
 
 dnl Specific dir for HTML output ?

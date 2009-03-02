@@ -48,6 +48,7 @@ UTIL_SOURCES =							\
 		iptables.c iptables.h				\
 		logging.c logging.h				\
 		memory.c memory.h				\
+		pci.c pci.h					\
 		qparams.c qparams.h				\
 		threads.c threads.h				\
 		threads-pthread.h				\

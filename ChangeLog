@@ -1,3 +1,9 @@
+Mon Mar  2 17:07:44 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in po/POTFILES.in src/Makefile.am src/libvirt_private.syms
+	  src/pci.c src/pci.h: Add implementations of dettach, reattach and
+	  reset for PCI devices, patch by Mark McLoughlin
+
 Mon Mar  2 12:12:11 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/qemud.c src/node_device_hal.c: activate DBus multithreading
