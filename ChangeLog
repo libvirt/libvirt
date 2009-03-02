@@ -1,3 +1,8 @@
+Mon Mar 2 20:01:55 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	tests: fix an error that made us skip the daemon-conf test
+	* tests/Makefile.am (CONFIG_HEADER): Correct definition.
+
 Mon Mar 2 19:32:18 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	tests: test for a recent fix
