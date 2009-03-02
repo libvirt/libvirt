@@ -1,3 +1,8 @@
+Mon Mar 2 12:30:08 EST 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/domain_conf.c src/domain_conf.h src/qemu_driver.c:
+	Remove redundant monitor watch variable (s/monitor_watch/monitorWatch/)
+
 Mon Mar 2 12:25:58 EST 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/network_driver.c src/network_conf.c: Mark 'defined' networks

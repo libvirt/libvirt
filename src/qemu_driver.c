@@ -777,9 +777,9 @@ static int qemudOpenMonitor(virConnectPtr conn,
         goto error;
     }
 
-    if ((vm->monitor_watch = virEventAddHandle(vm->monitor, 0,
-                                               qemudDispatchVMEvent,
-                                               driver, NULL)) < 0)
+    if ((vm->monitorWatch = virEventAddHandle(vm->monitor, 0,
+                                              qemudDispatchVMEvent,
+                                              driver, NULL)) < 0)
         goto error;
 
 
@@ -1331,9 +1331,9 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
                              _("Failed to send SIGTERM to %s (%d)"),
                              vm->def->name, vm->pid);
 
-    if (vm->monitor_watch != -1) {
-        virEventRemoveHandle(vm->monitor_watch);
-        vm->monitor_watch = -1;
+    if (vm->monitorWatch != -1) {
+        virEventRemoveHandle(vm->monitorWatch);
+        vm->monitorWatch = -1;
     }
 
     if (close(vm->logfile) < 0) {
@@ -1381,7 +1381,7 @@ qemudDispatchVMEvent(int watch, int fd, int events, void *opaque) {
         virDomainObjPtr tmpvm = driver->domains.objs[i];
         virDomainObjLock(tmpvm);
         if (virDomainIsActive(tmpvm) &&
-            tmpvm->monitor_watch == watch) {
+            tmpvm->monitorWatch == watch) {
             vm = tmpvm;
             break;
         }

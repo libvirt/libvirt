@@ -474,7 +474,6 @@ struct _virDomainObj {
     virMutex lock;
 
     int monitor;
-    int monitor_watch;
     char *monitorpath;
     int monitorWatch;
     int logfile;

@@ -503,7 +503,7 @@ virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
     virDomainObjLock(domain);
     domain->state = VIR_DOMAIN_SHUTOFF;
     domain->def = def;
-    domain->monitor_watch = -1;
+    domain->monitorWatch = -1;
     domain->monitor = -1;
 
     if (VIR_REALLOC_N(doms->objs, doms->count + 1) < 0) {
