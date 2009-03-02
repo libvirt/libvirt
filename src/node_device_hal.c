@@ -242,8 +242,8 @@ static int gather_storage_cap(LibHalContext *ctx, const char *udi,
     (void)get_str_prop(ctx, udi, "storage.vendor", &d->storage.vendor);
     if (get_bool_prop(ctx, udi, "storage.removable", &val) == 0 && val) {
         d->storage.flags |= VIR_NODE_DEV_CAP_STORAGE_REMOVABLE;
-        if (get_bool_prop(ctx, udi,
-                          "storage.removable.media_available", &val) && val) {
+        if (get_bool_prop(ctx, udi, "storage.removable.media_available",
+                          &val) == 0 && val) {
             d->storage.flags |=
                 VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE;
             (void)get_uint64_prop(ctx, udi, "storage.removable.media_size",
