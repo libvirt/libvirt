@@ -685,6 +685,9 @@ static int halDeviceMonitorStartup(void)
     nodeDeviceLock(driverState);
 
     /* Allocate and initialize a new HAL context */
+    dbus_connection_set_change_sigpipe(FALSE);
+    dbus_threads_init_default();
+
     dbus_error_init(&err);
     hal_ctx = libhal_ctx_new();
     if (hal_ctx == NULL) {
@@ -696,6 +699,8 @@ static int halDeviceMonitorStartup(void)
         fprintf(stderr, "%s: dbus_bus_get failed\n", __FUNCTION__);
         goto failure;
     }
+    dbus_connection_set_exit_on_disconnect(dbus_conn, FALSE);
+
     if (!libhal_ctx_set_dbus_connection(hal_ctx, dbus_conn)) {
         fprintf(stderr, "%s: libhal_ctx_set_dbus_connection failed\n",
                 __FUNCTION__);

@@ -911,6 +911,10 @@ static struct qemud_server *qemudNetworkInit(struct qemud_server *server) {
     if (auth_unix_rw == REMOTE_AUTH_POLKIT ||
         auth_unix_ro == REMOTE_AUTH_POLKIT) {
         DBusError derr;
+
+        dbus_connection_set_change_sigpipe(FALSE);
+        dbus_threads_init_default();
+
         dbus_error_init(&derr);
         server->sysbus = dbus_bus_get(DBUS_BUS_SYSTEM, &derr);
         if (!(server->sysbus)) {
@@ -919,6 +923,7 @@ static struct qemud_server *qemudNetworkInit(struct qemud_server *server) {
             dbus_error_free(&derr);
             goto cleanup;
         }
+        dbus_connection_set_exit_on_disconnect(server->sysbus, FALSE);
     }
 #endif
 
