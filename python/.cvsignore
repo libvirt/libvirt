@@ -12,3 +12,4 @@ libvirt-py.[ch]
 libvirtclass.py
 gen_prog
 *.pyc
+generated.stamp
