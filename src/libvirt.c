@@ -4174,6 +4174,70 @@ error:
     return -1;
 }
 
+/**
+ * virDomainGetSecurityLabel:
+ * @domain: a domain object
+ * @seclabel: pointer to a virSecurityLabel structure
+ *
+ * Extract security label of an active domain.
+ *
+ * Returns 0 in case of success, -1 in case of failure, and -2
+ * if the operation is not supported (caller decides if that's
+ * an error).
+ */
+int
+virDomainGetSecurityLabel(virDomainPtr domain, virSecurityLabelPtr seclabel)
+{
+    virConnectPtr conn;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return -1;
+    }
+
+    if (seclabel == NULL) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return -1;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainGetSecurityLabel)
+        return conn->driver->domainGetSecurityLabel(domain, seclabel);
+
+    virLibConnWarning(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -2;
+}
+
+/**
+ * virNodeGetSecurityModel:
+ * @conn: a connection object
+ * @secmodel: pointer to a virSecurityModel structure
+ *
+ * Extract the security model of a hypervisor.
+ *
+ * Returns 0 in case of success, -1 in case of failure, and -2 if the
+ * operation is not supported (caller decides if that's an error).
+ */
+int
+virNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
+{
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return -1;
+    }
+
+    if (secmodel == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return -1;
+    }
+
+    if (conn->driver->nodeGetSecurityModel)
+        return conn->driver->nodeGetSecurityModel(conn, secmodel);
+
+    virLibConnWarning(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -2;
+}
 
 /**
  * virDomainAttachDevice:

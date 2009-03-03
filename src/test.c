@@ -3501,6 +3501,8 @@ static virDriver testDriver = {
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
     NULL, /* domainGetMaxVcpus */
+    NULL, /* domainGetSecurityLabel */
+    NULL, /* nodeGetSecurityModel */
     testDomainDumpXML, /* domainDumpXML */
     testListDefinedDomains, /* listDefinedDomains */
     testNumOfDefinedDomains, /* numOfDefinedDomains */

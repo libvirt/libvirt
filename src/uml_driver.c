@@ -1854,6 +1854,8 @@ static virDriver umlDriver = {
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
     NULL, /* domainGetMaxVcpus */
+    NULL, /* domainGetSecurityLabel */
+    NULL, /* nodeGetSecurityModel */
     umlDomainDumpXML, /* domainDumpXML */
     umlListDefinedDomains, /* listDomains */
     umlNumDefinedDomains, /* numOfDomains */

@@ -1,3 +1,16 @@
+Tue Mar  3 09:12:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Internal driver API for sVirt support (James Morris & Dan Walsh)
+	* src/driver.h: Internal typedefs for virNodeGetSecurityModel()
+	and virDomainGetSecurityLabel() driver entry points
+	* src/libvirt.c: Implement entry point for new public APIs
+	virNodeGetSecurityModel() and virDomainGetSecurityLabel()
+	* src/lxc_driver.c, src/openvz_driver.c, src/qemu_driver.c,
+	src/test.c, src/uml_driver.c: Update for new driver entry
+	points
+	* python/generator.py: temporarily blacklist non-generated
+	virNodeGetSecurityModel() and virDomainGetSecurityLabel()
+
 Tue Mar  3 09:10:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Public API for sVirt support (James Morris & Dan Walsh)

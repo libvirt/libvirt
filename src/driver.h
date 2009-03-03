@@ -180,6 +180,13 @@ typedef int
                                          int maplen);
 typedef int
         (*virDrvDomainGetMaxVcpus)	(virDomainPtr domain);
+
+typedef int
+        (*virDrvDomainGetSecurityLabel)	(virDomainPtr domain,
+                                         virSecurityLabelPtr seclabel);
+typedef int
+        (*virDrvNodeGetSecurityModel)	(virConnectPtr conn,
+                                         virSecurityModelPtr secmodel);
 typedef int
         (*virDrvDomainAttachDevice)	(virDomainPtr domain,
                                          const char *xml);
@@ -371,6 +378,8 @@ struct _virDriver {
     virDrvDomainPinVcpu		domainPinVcpu;
     virDrvDomainGetVcpus		domainGetVcpus;
     virDrvDomainGetMaxVcpus		domainGetMaxVcpus;
+    virDrvDomainGetSecurityLabel     domainGetSecurityLabel;
+    virDrvNodeGetSecurityModel  nodeGetSecurityModel;
     virDrvDomainDumpXML		domainDumpXML;
     virDrvListDefinedDomains	listDefinedDomains;
     virDrvNumOfDefinedDomains	numOfDefinedDomains;

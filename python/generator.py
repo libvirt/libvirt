@@ -342,6 +342,8 @@ skip_function = (
     'virCopyLastError', # Python API is called virGetLastError instead
     'virConnectOpenAuth', # Python C code is manually written
     'virDefaultErrorFunc', # Python virErrorFuncHandler impl calls this from C
+    'virDomainGetSecurityLabel', # Needs investigation...
+    'virNodeGetSecurityModel', # Needs investigation...
     'virConnectDomainEventRegister',   # overridden in virConnect.py
     'virConnectDomainEventDeregister', # overridden in virConnect.py
     'virSaveLastError', # We have our own python error wrapper

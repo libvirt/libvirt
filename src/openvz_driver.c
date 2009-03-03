@@ -1299,6 +1299,8 @@ static virDriver openvzDriver = {
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
     openvzDomainGetMaxVcpus, /* domainGetMaxVcpus */
+    NULL, /* domainGetSecurityLabel */
+    NULL, /* nodeGetSecurityModel */
     openvzDomainDumpXML, /* domainDumpXML */
     openvzListDefinedDomains, /* listDomains */
     openvzNumDefinedDomains, /* numOfDomains */

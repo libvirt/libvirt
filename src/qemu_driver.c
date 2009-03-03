@@ -4743,6 +4743,8 @@ static virDriver qemuDriver = {
     NULL, /* domainGetVcpus */
 #endif
     qemudDomainGetMaxVcpus, /* domainGetMaxVcpus */
+    NULL, /* domainGetSecurityLabel */
+    NULL, /* nodeGetSecurityModel */
     qemudDomainDumpXML, /* domainDumpXML */
     qemudListDefinedDomains, /* listDomains */
     qemudNumDefinedDomains, /* numOfDomains */
