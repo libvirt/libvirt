@@ -202,6 +202,7 @@ python/.libs
 python/Makefile
 python/Makefile.in
 python/gen_prog
+python/generated.stamp
 python/libvirt-export.c
 python/libvirt-py.[ch]
 python/libvirt.py
@@ -253,6 +254,7 @@ tests/Makefile.in
 tests/confdata/Makefile
 tests/confdata/Makefile.in
 tests/conftest
+tests/nodedevxml2xmltest
 tests/nodeinfotest
 tests/qemuxml2argvtest
 tests/qemuxml2xmltest
