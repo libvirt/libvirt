@@ -1316,13 +1316,11 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
    /* If you are using a SecurityDriver and there was no security label in
       database, then generate a security label for isolation */
-    if (vm->def->seclabel.label == NULL && driver->securityDriver) {
-        if (driver->securityDriver->domainGenSecurityLabel(vm) < 0) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("Unable to generate Security Label"));
-            return -1;
-        }
-    }
+    if (vm->def->seclabel.label == NULL &&
+        driver->securityDriver &&
+        driver->securityDriver->domainGenSecurityLabel &&
+        driver->securityDriver->domainGenSecurityLabel(conn, vm) < 0)
+        return -1;
 
     FD_ZERO(&keepfd);
 

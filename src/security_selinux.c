@@ -24,6 +24,9 @@
 #include "util.h"
 #include "memory.h"
 
+
+#define VIR_FROM_THIS VIR_FROM_SECURITY
+
 static char default_domain_context[1024];
 static char default_image_context[1024];
 #define SECURITY_SELINUX_VOID_DOI       "0"
@@ -45,10 +48,11 @@ mcsAdd(const char *mcs)
     struct MCS *ptr;
 
     for (ptr = mcsList; ptr; ptr = ptr->next) {
-        if (STREQ(ptr->mcs, mcs) == 0)
+        if (STREQ(ptr->mcs, mcs))
             return -1;
     }
-    ptr = malloc(sizeof(struct MCS));
+    if (VIR_ALLOC(ptr) < 0)
+        return -1;
     ptr->mcs = strdup(mcs);
     ptr->next = mcsList;
     mcsList = ptr;
@@ -62,7 +66,7 @@ mcsRemove(const char *mcs)
     struct MCS *ptr = NULL;
 
     for (ptr = mcsList; ptr; ptr = ptr->next) {
-        if (STREQ(ptr->mcs, mcs) == 0) {
+        if (STREQ(ptr->mcs, mcs)) {
             if (prevptr)
                 prevptr->next = ptr->next;
             else {
@@ -112,7 +116,7 @@ SELinuxInitialize(virConnectPtr conn)
     }
 
     if (saferead(fd, default_domain_context, sizeof(default_domain_context)) < 0) {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
+       virSecurityReportError(conn, VIR_ERR_ERROR,
                                _("%s: cannot read SELinux virtual domain context file %s: %s"),
                                __func__,selinux_virtual_domain_context_path(),
                                virStrerror(errno, ebuf, sizeof ebuf));
@@ -149,7 +153,8 @@ SELinuxInitialize(virConnectPtr conn)
 }
 
 static int
-SELinuxGenSecurityLabel(virDomainObjPtr vm)
+SELinuxGenSecurityLabel(virConnectPtr conn,
+                        virDomainObjPtr vm)
 {
     int rc = -1;
     char mcs[1024];
@@ -158,8 +163,11 @@ SELinuxGenSecurityLabel(virDomainObjPtr vm)
     int c2 = 0;
     if ( ( vm->def->seclabel.label ) ||
          ( vm->def->seclabel.model ) ||
-         ( vm->def->seclabel.imagelabel ))
+         ( vm->def->seclabel.imagelabel )) {
+        virSecurityReportError(conn, VIR_ERR_ERROR,
+                               "%s", _("security labellin already defined for VM"));
         return rc;
+    }
 
     do {
         c1 = virRandom(1024);
@@ -168,7 +176,7 @@ SELinuxGenSecurityLabel(virDomainObjPtr vm)
         if ( c1 == c2 ) {
             sprintf(mcs, "s0:c%d", c1);
         } else {
-            if ( c1 == c2 )
+            if ( c1 < c2 )
                 sprintf(mcs, "s0:c%d,c%d", c1, c2);
             else
                 sprintf(mcs, "s0:c%d,c%d", c2, c1);
@@ -176,20 +184,32 @@ SELinuxGenSecurityLabel(virDomainObjPtr vm)
     } while(mcsAdd(mcs) == -1);
 
     vm->def->seclabel.label = SELinuxGenNewContext(default_domain_context, mcs);
-    if (! vm->def->seclabel.label)  goto err;
+    if (! vm->def->seclabel.label)  {
+        virSecurityReportError(conn, VIR_ERR_ERROR,
+                               _("cannot generate selinux context for %s"), mcs);
+        goto err;
+    }
     vm->def->seclabel.imagelabel = SELinuxGenNewContext(default_image_context, mcs);
-    if (! vm->def->seclabel.imagelabel)  goto err;
+    if (! vm->def->seclabel.imagelabel)  {
+        virSecurityReportError(conn, VIR_ERR_ERROR,
+                               _("cannot generate selinux context for %s"), mcs);
+        goto err;
+    }
     vm->def->seclabel.model = strdup(SECURITY_SELINUX_NAME);
-    if (! vm->def->seclabel.model) goto err;
+    if (! vm->def->seclabel.model) {
+        virReportOOMError(conn);
+        goto err;
+    }
+
 
     rc = 0;
     goto done;
 err:
-    free(vm->def->seclabel.label); vm->def->seclabel.label = NULL;
-    free(vm->def->seclabel.imagelabel); vm->def->seclabel.imagelabel = NULL;
-    free(vm->def->seclabel.model); vm->def->seclabel.model = NULL;
+    VIR_FREE(vm->def->seclabel.label);
+    VIR_FREE(vm->def->seclabel.imagelabel);
+    VIR_FREE(vm->def->seclabel.model);
 done:
-    free(scontext);
+    VIR_FREE(scontext);
     return rc;
 }
 

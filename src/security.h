@@ -37,7 +37,8 @@ typedef int (*virSecurityDomainRestoreImageLabel) (virConnectPtr conn,
 typedef int (*virSecurityDomainSetImageLabel) (virConnectPtr conn,
                                                virDomainObjPtr vm,
                                                virDomainDeviceDefPtr dev);
-typedef int (*virSecurityDomainGenLabel) (virDomainObjPtr sec);
+typedef int (*virSecurityDomainGenLabel) (virConnectPtr conn,
+                                          virDomainObjPtr sec);
 typedef int (*virSecurityDomainGetLabel) (virConnectPtr conn,
                                           virDomainObjPtr vm,
                                           virSecurityLabelPtr sec);

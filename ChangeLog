@@ -1,3 +1,11 @@
+Tue Mar  3 14:58:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Misc sVirt bug fixes
+	* src/qemu_driver.c: Don't raise error - let callee do it
+	* src/security.h: Pass virCOnnectPtr when generating label
+	* src/security_selinux.c: Fix STREQ logic bugs, and use
+	VIR_ALLOC, and report detailed errors.
+
 Tue Mar 3 15:58:55 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	config: fix a typo
