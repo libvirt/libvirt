@@ -1,3 +1,9 @@
+Tue Mar 3 15:58:55 +0100 2009 Jim Meyering <meyering@redhat.com>
+
+	config: fix a typo
+	* src/qemu_conf.c (CHECK_TYPE): Fix typo:
+	s/security_river/security_driver/
+
 Tue Mar  3 15:35:02 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* po/*: update italian, polish and brazilian translations, regenerate
