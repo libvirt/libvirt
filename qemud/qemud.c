@@ -1339,6 +1339,8 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
         /* Begin the TLS handshake. */
         ret = gnutls_handshake (client->tlssession);
         if (ret == 0) {
+            client->handshake = 0;
+
             /* Unlikely, but ...  Next step is to check the certificate. */
             if (remoteCheckAccess (client) == -1)
                 goto cleanup;
@@ -1930,6 +1932,8 @@ qemudDispatchClientHandshake(struct qemud_server *server,
     /* Continue the handshake. */
     ret = gnutls_handshake (client->tlssession);
     if (ret == 0) {
+        client->handshake = 0;
+
         /* Finished.  Next step is to check the certificate. */
         if (remoteCheckAccess (client) == -1)
             qemudDispatchClientFailure(client);
