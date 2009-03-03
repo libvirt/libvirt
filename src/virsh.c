@@ -1539,6 +1539,8 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainInfo info;
     virDomainPtr dom;
+    virSecurityModel secmodel;
+    virSecurityLabel seclabel;
     int ret = TRUE, autostart;
     unsigned int id;
     char *str, uuid[VIR_UUID_STRING_BUFLEN];
@@ -1597,6 +1599,29 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
                  autostart ? _("enable") : _("disable") );
     }
 
+    /* Security model and label information */
+    memset(&secmodel, 0, sizeof secmodel);
+    if (virNodeGetSecurityModel(ctl->conn, &secmodel) == -1) {
+        virDomainFree(dom);
+        return FALSE;
+    } else {
+        /* Only print something if a security model is active */
+        if (secmodel.model[0] != '\0') {
+            vshPrint(ctl, "%-15s %s\n", _("Security model:"), secmodel.model);
+            vshPrint(ctl, "%-15s %s\n", _("Security DOI:"), secmodel.doi);
+
+            /* Security labels are only valid for active domains */
+            memset(&seclabel, 0, sizeof seclabel);
+            if (virDomainGetSecurityLabel(dom, &seclabel) == -1) {
+                virDomainFree(dom);
+                return FALSE;
+            } else {
+                if (seclabel.label[0] != '\0')
+                    vshPrint(ctl, "%-15s %s (%s)\n", _("Security label:"),
+                             seclabel.label, seclabel.enforcing ? "enforcing" : "permissive");
+            }
+        }
+    }
     virDomainFree(dom);
     return ret;
 }
