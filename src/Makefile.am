@@ -170,6 +170,9 @@ STORAGE_HELPER_DISK_SOURCES =					\
 SECURITY_DRIVER_SOURCES =                                      \
 		security.h security.c
 
+SECURITY_DRIVER_SELINUX_SOURCES =				\
+		security_selinux.h security_selinux.c
+
 
 NODE_DEVICE_DRIVER_SOURCES =					\
 		node_device.c node_device.h
@@ -387,6 +390,9 @@ endif
 libvirt_driver_security_la_SOURCES = $(SECURITY_DRIVER_SOURCES)
 noinst_LTLIBRARIES += libvirt_driver_security.la
 libvirt_la_LIBADD += libvirt_driver_security.la
+if WITH_SECDRIVER_SELINUX
+libvirt_driver_security_la_SOURCES += $(SECURITY_DRIVER_SELINUX_SOURCES)
+endif
 
 # Add all conditional sources just in case...
 EXTRA_DIST +=							\

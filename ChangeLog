@@ -1,3 +1,13 @@
+Tue Mar  3 10:01:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	SELinux security driver for sVirt support (James Morris, Dan Walsh & Daniel
+	Berrange)
+	* configure.in: Check for selinux_virtual_domain_context_path() and
+	selinux_virtual_image_context_path() methods in libselinux.so
+	* po/POTFILES.in: add src/security_selinux.c
+	* src/Makefile.am, src/security.c, src/security_selinux.c,
+	src/security_selinux.h: Add SELinux impl of security driver API
+
 Tue Mar  3 09:55:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	virsh additions for sVirt support (James Morris & Dan Walsh)

@@ -16,8 +16,14 @@
 #include "virterror_internal.h"
 
 #include "security.h"
+#ifdef WITH_SECDRIVER_SELINUX
+#include "security_selinux.h"
+#endif
 
 static virSecurityDriverPtr security_drivers[] = {
+#ifdef WITH_SECDRIVER_SELINUX
+    &virSELinuxSecurityDriver,
+#endif
     NULL
 };
 
