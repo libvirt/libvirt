@@ -410,6 +410,13 @@ struct _virDomainOSDef {
     char *bootloaderArgs;
 };
 
+enum virDomainSeclabelType {
+    VIR_DOMAIN_SECLABEL_DYNAMIC,
+    VIR_DOMAIN_SECLABEL_STATIC,
+
+    VIR_DOMAIN_SECLABEL_LAST,
+};
+
 /* Security configuration for domain */
 typedef struct _virSecurityLabelDef virSecurityLabelDef;
 typedef virSecurityLabelDef *virSecurityLabelDefPtr;
@@ -417,6 +424,7 @@ struct _virSecurityLabelDef {
     char *model;        /* name of security model */
     char *label;        /* security label string */
     char *imagelabel;   /* security image label string */
+    int type;
 };
 
 #define VIR_DOMAIN_CPUMASK_LEN 1024
@@ -650,5 +658,6 @@ VIR_ENUM_DECL(virDomainInputBus)
 VIR_ENUM_DECL(virDomainGraphics)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
+VIR_ENUM_DECL(virDomainSeclabel)
 
 #endif /* __DOMAIN_CONF_H */

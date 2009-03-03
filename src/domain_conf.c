@@ -168,6 +168,10 @@ VIR_ENUM_IMPL(virDomainState, VIR_DOMAIN_CRASHED+1,
               "shutoff",
               "crashed")
 
+VIR_ENUM_IMPL(virDomainSeclabel, VIR_DOMAIN_SECLABEL_LAST,
+              "dynamic",
+              "static")
+
 #define virDomainReportError(conn, code, fmt...)                           \
         virReportErrorHelper(conn, VIR_FROM_DOMAIN, code, __FILE__,        \
                                __FUNCTION__, __LINE__, fmt)
@@ -1847,24 +1851,49 @@ static int virDomainLifecycleParseXML(virConnectPtr conn,
 static int
 virSecurityLabelDefParseXML(virConnectPtr conn,
                             const virDomainDefPtr def,
-                            xmlXPathContextPtr ctxt)
+                            xmlXPathContextPtr ctxt,
+                            int flags)
 {
     char *p;
 
     if (virXPathNode(conn, "./seclabel", ctxt) == NULL)
         return 0;
 
-    p = virXPathStringLimit(conn, "string(./seclabel/label[1])",
+    p = virXPathStringLimit(conn, "string(./seclabel/@type)",
                             VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
     if (p == NULL)
         goto error;
-    def->seclabel.label = p;
-
-    p = virXPathStringLimit(conn, "string(./seclabel/@model)",
-                            VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
-    if (p == NULL)
+    if ((def->seclabel.type = virDomainSeclabelTypeFromString(p)) < 0)
         goto error;
-    def->seclabel.model = p;
+    VIR_FREE(p);
+
+    /* Only parse details, if using static labels, or
+     * if the 'live' VM XML is requested
+     */
+    if (def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC ||
+        !(flags & VIR_DOMAIN_XML_INACTIVE)) {
+        p = virXPathStringLimit(conn, "string(./seclabel/@model)",
+                                VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
+        if (p == NULL)
+            goto error;
+        def->seclabel.model = p;
+
+        p = virXPathStringLimit(conn, "string(./seclabel/label[1])",
+                                VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
+        if (p == NULL)
+            goto error;
+        def->seclabel.label = p;
+    }
+
+    /* Only parse imagelabel, if requested live XML for dynamic label */
+    if (def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
+        !(flags & VIR_DOMAIN_XML_INACTIVE)) {
+        p = virXPathStringLimit(conn, "string(./seclabel/imagelabel[1])",
+                                VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
+        if (p == NULL)
+            goto error;
+        def->seclabel.imagelabel = p;
+    }
 
     return 0;
 
@@ -2458,7 +2487,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     VIR_FREE(nodes);
 
     /* analysis of security label */
-    if (virSecurityLabelDefParseXML(conn, def, ctxt) == -1)
+    if (virSecurityLabelDefParseXML(conn, def, ctxt, flags) == -1)
         goto error;
 
     return def;
@@ -3480,9 +3509,25 @@ char *virDomainDefFormat(virConnectPtr conn,
     virBufferAddLit(&buf, "  </devices>\n");
 
     if (def->seclabel.model) {
-        virBufferEscapeString(&buf, "  <seclabel model='%s'>\n", def->seclabel.model);
-        virBufferEscapeString(&buf, "    <label>%s</label>\n", def->seclabel.label);
-        virBufferAddLit(&buf, "  </seclabel>\n");
+        const char *sectype = virDomainSeclabelTypeToString(def->seclabel.type);
+        if (!sectype)
+            goto cleanup;
+        if (!def->seclabel.label ||
+            (def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
+             (flags & VIR_DOMAIN_XML_INACTIVE))) {
+            virBufferVSprintf(&buf, "  <seclabel type='%s' model='%s'/>\n",
+                              sectype, def->seclabel.model);
+        } else {
+            virBufferVSprintf(&buf, "  <seclabel type='%s' model='%s'>\n",
+                                  sectype, def->seclabel.model);
+            virBufferEscapeString(&buf, "    <label>%s</label>\n",
+                                  def->seclabel.label);
+            if (def->seclabel.imagelabel &&
+                def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC)
+                virBufferEscapeString(&buf, "    <imagelabel>%s</imagelabel>\n",
+                                      def->seclabel.imagelabel);
+            virBufferAddLit(&buf, "  </seclabel>\n");
+        }
     }
 
     virBufferAddLit(&buf, "</domain>\n");

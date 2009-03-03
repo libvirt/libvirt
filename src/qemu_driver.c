@@ -1314,9 +1314,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     hookData.vm = vm;
     hookData.driver = driver;
 
-   /* If you are using a SecurityDriver and there was no security label in
-      database, then generate a security label for isolation */
-    if (vm->def->seclabel.label == NULL &&
+   /* If you are using a SecurityDriver with dynamic labelling,
+      then generate a security label for isolation */
+    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
         driver->securityDriver &&
         driver->securityDriver->domainGenSecurityLabel &&
         driver->securityDriver->domainGenSecurityLabel(conn, vm) < 0)
@@ -1524,6 +1524,13 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     /* Reset Security Labels */
     if (driver->securityDriver)
         driver->securityDriver->domainRestoreSecurityLabel(conn, vm);
+
+    /* Clear out dynamically assigned labels */
+    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
+        VIR_FREE(vm->def->seclabel.model);
+        VIR_FREE(vm->def->seclabel.label);
+        VIR_FREE(vm->def->seclabel.imagelabel);
+    }
 
     if (qemudRemoveDomainStatus(conn, driver, vm) < 0) {
         VIR_WARN(_("Failed to remove domain status for %s"),

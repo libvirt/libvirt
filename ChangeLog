@@ -1,3 +1,11 @@
+Tue Mar  3 16:43:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Explicitly track static declared vs dynamically generated
+	security labels for VMs
+	* src/domain_conf.c, src/domain_conf.h: Add type='static|dynamic'
+	for <seclabel> to determine whether to auto-generate labels
+	* src/qemu_driver.c: Only generate security labels for type=dynamic
+
 Tue Mar  3 14:58:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Misc sVirt bug fixes
