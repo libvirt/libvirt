@@ -47,7 +47,6 @@
 #include "datatypes.h"
 #include "xml.h"
 #include "nodeinfo.h"
-#include "pci.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -1395,52 +1394,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
             ADD_ARG_LIT("-pcidevice");
             ADD_ARG_LIT(pcidev);
             VIR_FREE(pcidev);
-
-            if (hostdev->managed) {
-                pciDevice *dev = pciGetDevice(conn,
-                                              hostdev->source.subsys.u.pci.domain,
-                                              hostdev->source.subsys.u.pci.bus,
-                                              hostdev->source.subsys.u.pci.slot,
-                                              hostdev->source.subsys.u.pci.function);
-                if (!dev)
-                    goto error;
-
-                if (pciDettachDevice(conn, dev) < 0) {
-                    pciFreeDevice(conn, dev);
-                    goto error;
-                }
-
-                pciFreeDevice(conn, dev);
-            } /* else {
-                XXX validate that non-managed device isn't in use, eg
-                by checking that device is either un-bound, or bound
-                to pci-stub.ko
-            } */
         }
-
-    }
-
-    /* Now that all the PCI hostdevs have be dettached, we can reset them */
-    for (i = 0 ; i < vm->def->nhostdevs ; i++) {
-        virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
-        pciDevice *dev;
-
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
-            continue;
-
-        dev = pciGetDevice(conn,
-                           hostdev->source.subsys.u.pci.domain,
-                           hostdev->source.subsys.u.pci.bus,
-                           hostdev->source.subsys.u.pci.slot,
-                           hostdev->source.subsys.u.pci.function);
-        if (!dev)
-            goto error;
-
-        if (pciResetDevice(conn, dev) < 0)
-            goto error;
-
-        pciFreeDevice(conn, dev);
     }
 
     if (migrateFrom) {

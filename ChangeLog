@@ -1,3 +1,12 @@
+Tue Mar  3 08:55:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Don't try to detach & reset PCI devices while running test
+	suite for XML-> ARGV conversion.
+	* src/qemu_driver.c: Add qemuPrepareHostDevices() helper to
+	detach and reset PCI devices.
+	* src/qemu_conf.c: Don't detach & reset PCI devices while
+	building the command line argv
+
 Tue Mar  3 09:24:13 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/qemud.c: fix qemu+tls handshake negotiation, patch by

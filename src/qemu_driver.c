@@ -1133,6 +1133,79 @@ static int qemudNextFreeVNCPort(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
     return -1;
 }
 
+static int qemuPrepareHostDevices(virConnectPtr conn,
+                                  virDomainDefPtr def) {
+    int i;
+
+    /* We have to use 2 loops here. *All* devices must
+     * be detached before we reset any of them, because
+     * in some cases you have to reset the whole PCI,
+     * which impacts all devices on it
+     */
+
+    for (i = 0 ; i < def->nhostdevs ; i++) {
+        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            continue;
+
+        if (!hostdev->managed) {
+            pciDevice *dev = pciGetDevice(conn,
+                                          hostdev->source.subsys.u.pci.domain,
+                                          hostdev->source.subsys.u.pci.bus,
+                                          hostdev->source.subsys.u.pci.slot,
+                                          hostdev->source.subsys.u.pci.function);
+            if (!dev)
+                goto error;
+
+            if (pciDettachDevice(conn, dev) < 0) {
+                pciFreeDevice(conn, dev);
+                goto error;
+            }
+
+            pciFreeDevice(conn, dev);
+        } /* else {
+             XXX validate that non-managed device isn't in use, eg
+             by checking that device is either un-bound, or bound
+             to pci-stub.ko
+        } */
+    }
+
+    /* Now that all the PCI hostdevs have be dettached, we can safely
+     * reset them */
+    for (i = 0 ; i < def->nhostdevs ; i++) {
+        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+        pciDevice *dev;
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            continue;
+
+        dev = pciGetDevice(conn,
+                           hostdev->source.subsys.u.pci.domain,
+                           hostdev->source.subsys.u.pci.bus,
+                           hostdev->source.subsys.u.pci.slot,
+                           hostdev->source.subsys.u.pci.function);
+        if (!dev)
+            goto error;
+
+        if (pciResetDevice(conn, dev) < 0) {
+            pciFreeDevice(conn, dev);
+            goto error;
+        }
+
+        pciFreeDevice(conn, dev);
+    }
+
+    return 0;
+
+error:
+    return -1;
+}
+
 static virDomainPtr qemudDomainLookupByName(virConnectPtr conn,
                                             const char *name);
 
@@ -1209,6 +1282,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                          emulator);
         return -1;
     }
+
+    if (qemuPrepareHostDevices(conn, vm->def) < 0)
+        return -1;
 
     vm->def->id = driver->nextvmid++;
     if (qemudBuildCommandLine(conn, driver, vm,
