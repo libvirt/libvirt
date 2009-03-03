@@ -1,5 +1,10 @@
 Tue Mar 3 12:22:51 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	don't leak a file descriptor on failed pciGetDevice call
+	* src/pci.c (pciIterDevices): Always close dir handle.
+
+Tue Mar 3 12:22:51 +0100 2009 Jim Meyering <meyering@redhat.com>
+
 	update .gitignore and .hgignore files
 
 Tue Mar  3 10:01:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>

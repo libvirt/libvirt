@@ -233,6 +233,7 @@ pciIterDevices(virConnectPtr conn,
 {
     DIR *dir;
     struct dirent *entry;
+    int ret = 0;
 
     *matched = NULL;
 
@@ -252,14 +253,17 @@ pciIterDevices(virConnectPtr conn,
         if (entry->d_name[0] == '.')
             continue;
 
-        if (sscanf(entry->d_name, "%x:%x:%x.%x", &domain, &bus, &slot, &function) < 4) {
+        if (sscanf(entry->d_name, "%x:%x:%x.%x",
+                   &domain, &bus, &slot, &function) < 4) {
             VIR_WARN("Unusual entry in " PCI_SYSFS "devices: %s", entry->d_name);
             continue;
         }
 
         try = pciGetDevice(conn, domain, bus, slot, function);
-        if (!try)
-            return -1;
+        if (!try) {
+            ret = -1;
+            break;
+        }
 
         if (predicate(try, dev)) {
             VIR_DEBUG("%s %s: iter matched on %s", dev->id, dev->name, try->name);
@@ -269,7 +273,7 @@ pciIterDevices(virConnectPtr conn,
         pciFreeDevice(conn, try);
     }
     closedir(dir);
-    return 0;
+    return ret;
 }
 
 static uint8_t
