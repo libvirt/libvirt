@@ -1,3 +1,25 @@
+Tue Mar  3 09:40:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Core internal driver stub for sVirt support (Jams Morris & Dan Walsh)
+	* Makefile.maint: Add virSecurityReportError as a msggen
+	function
+	* docs/schemas/capability.rng: Add <secmodel> element
+	* docs/schemas/domain.rng: Add <seclabel> element
+	* include/libvirt/virterror.h, src/virterror.c: Add
+	VIR_FROM_SECURITY and VIR_ERR_NO_SECURITY_MODEL
+	* po/POTFILES.in: Add src/security.c
+	* src/Makefile.am: Build security driver into libvirt.so
+	* src/capabilities.c, src/capabilities.h: Handling of
+	<secmodel> element / data
+	* src/domain_conf.c, src/domain_conf.h: Handling of
+	<seclabel> element / data
+	* src/libvirt_private.syms: Add virXPathStringLimit and
+	virSecurity* methods
+	* src/security.c, src/security.h: Add internal driver
+	stub impl
+	* src/storage_backend.c: TODO item about seclabel
+	* src/xml.c, src/xml.h: Add virXPathStringLimit
+
 Tue Mar  3 09:25:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Remote protocol / RPC API for sVirt support (James Morris & Dan Walsh)

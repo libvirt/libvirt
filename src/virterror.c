@@ -151,6 +151,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_UML:
             dom = "UML ";
             break;
+        case VIR_FROM_SECURITY:
+            dom = "Security Labeling ";
+            break;
     }
     return(dom);
 }
@@ -994,6 +997,12 @@ virErrorMsg(virErrorNumber error, const char *info)
                     errmsg = _("Node device not found");
             else
                     errmsg = _("Node device not found: %s");
+            break;
+        case VIR_ERR_NO_SECURITY_MODEL:
+            if (info == NULL)
+                    errmsg = _("Security model not found");
+            else
+                    errmsg = _("Security model not found: %s");
             break;
     }
     return (errmsg);

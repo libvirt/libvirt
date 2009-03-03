@@ -61,6 +61,7 @@ typedef enum {
     VIR_FROM_UML,       /* Error at the UML driver */
     VIR_FROM_NODEDEV, /* Error from node device monitor */
     VIR_FROM_XEN_INOTIFY, /* Error from xen inotify layer */
+    VIR_FROM_SECURITY,  /* Error from security framework */
 } virErrorDomain;
 
 
@@ -154,6 +155,7 @@ typedef enum {
     VIR_WAR_NO_NODE, /* failed to start node driver */
     VIR_ERR_INVALID_NODE_DEVICE,/* invalid node device object */
     VIR_ERR_NO_NODE_DEVICE,/* node device not found */
+    VIR_ERR_NO_SECURITY_MODEL, /* security model not found */
 } virErrorNumber;
 
 /**

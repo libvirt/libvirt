@@ -78,6 +78,12 @@ struct _virCapsHostNUMACell {
     int *cpus;
 };
 
+typedef struct _virCapsHostSecModel virCapsHostSecModel;
+struct _virCapsHostSecModel {
+    char *model;
+    char *doi;
+};
+
 typedef struct _virCapsHost virCapsHost;
 typedef virCapsHost *virCapsHostPtr;
 struct _virCapsHost {
@@ -90,6 +96,7 @@ struct _virCapsHost {
     char **migrateTrans;
     int nnumaCell;
     virCapsHostNUMACellPtr *numaCell;
+    virCapsHostSecModel secModel;
 };
 
 typedef struct _virCaps virCaps;

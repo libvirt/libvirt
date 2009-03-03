@@ -247,6 +247,14 @@ qparam_query_parse;
 free_qparam_set;
 
 
+# security.h
+virSecurityDriverStartup;
+virSecurityDriverInit;
+virSecurityDriverSetDOI;
+virSecurityDriverGetDOI;
+virSecurityDriverGetModel;
+
+
 # storage_conf.h
 virStoragePoolDefFormat;
 virStoragePoolDefFree;
@@ -351,3 +359,4 @@ virXPathNode;
 virXPathNodeSet;
 virXPathString;
 virXMLPropString;
+virXPathStringLimit;

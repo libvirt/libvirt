@@ -410,6 +410,15 @@ struct _virDomainOSDef {
     char *bootloaderArgs;
 };
 
+/* Security configuration for domain */
+typedef struct _virSecurityLabelDef virSecurityLabelDef;
+typedef virSecurityLabelDef *virSecurityLabelDefPtr;
+struct _virSecurityLabelDef {
+    char *model;        /* name of security model */
+    char *label;        /* security label string */
+    char *imagelabel;   /* security image label string */
+};
+
 #define VIR_DOMAIN_CPUMASK_LEN 1024
 
 /* Guest VM main configuration */
@@ -467,6 +476,7 @@ struct _virDomainDef {
 
     /* Only 1 */
     virDomainChrDefPtr console;
+    virSecurityLabelDef seclabel;
 };
 
 /* Guest VM runtime state */

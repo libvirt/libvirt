@@ -22,9 +22,24 @@
 	<optional>
           <ref name='devices'/>
 	</optional>
+	<optional>
+          <ref name='seclabel'/>
+	</optional>
       </interleave>
     </element>
   </define>
+
+  <define name='seclabel'>
+    <element name='seclabel'>
+      <attribute name='model'>
+	<text/>
+      </attribute>
+      <element name='label'>
+	<text/>
+      </element>
+    </element>
+  </define>
+
 
   <define name='hvs'>
     <attribute name='type'>

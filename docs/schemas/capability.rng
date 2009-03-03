@@ -33,8 +33,23 @@
       <optional>
 	<ref name='topology'/>
       </optional>
+      <optional>
+	<ref name='secmodel'/>
+      </optional>
     </element>
   </define>
+
+  <define name='secmodel'>
+    <element name='secmodel'>
+      <element name='model'>
+        <text/>
+      </element>
+      <element name='doi'>
+        <text/>
+      </element>
+    </element>
+  </define>
+
 
   <define name='cpufeatures'>
     <element name='features'>

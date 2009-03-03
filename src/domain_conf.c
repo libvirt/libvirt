@@ -387,6 +387,15 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
     VIR_FREE(def);
 }
 
+void virSecurityLabelDefFree(virDomainDefPtr def);
+
+void virSecurityLabelDefFree(virDomainDefPtr def)
+{
+    VIR_FREE(def->seclabel.model);
+    VIR_FREE(def->seclabel.label);
+    VIR_FREE(def->seclabel.imagelabel);
+}
+
 void virDomainDefFree(virDomainDefPtr def)
 {
     unsigned int i;
@@ -444,6 +453,8 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->name);
     VIR_FREE(def->cpumask);
     VIR_FREE(def->emulator);
+
+    virSecurityLabelDefFree(def);
 
     VIR_FREE(def);
 }
@@ -1833,6 +1844,34 @@ static int virDomainLifecycleParseXML(virConnectPtr conn,
     return 0;
 }
 
+static int
+virSecurityLabelDefParseXML(virConnectPtr conn,
+                            const virDomainDefPtr def,
+                            xmlXPathContextPtr ctxt)
+{
+    char *p;
+
+    if (virXPathNode(conn, "./seclabel", ctxt) == NULL)
+        return 0;
+
+    p = virXPathStringLimit(conn, "string(./seclabel/label[1])",
+                            VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
+    if (p == NULL)
+        goto error;
+    def->seclabel.label = p;
+
+    p = virXPathStringLimit(conn, "string(./seclabel/@model)",
+                            VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
+    if (p == NULL)
+        goto error;
+    def->seclabel.model = p;
+
+    return 0;
+
+error:
+    virSecurityLabelDefFree(def);
+    return -1;
+}
 
 virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
                                               virCapsPtr caps,
@@ -2417,6 +2456,10 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         def->hostdevs[def->nhostdevs++] = hostdev;
     }
     VIR_FREE(nodes);
+
+    /* analysis of security label */
+    if (virSecurityLabelDefParseXML(conn, def, ctxt) == -1)
+        goto error;
 
     return def;
 
@@ -3435,6 +3478,13 @@ char *virDomainDefFormat(virConnectPtr conn,
             goto cleanup;
 
     virBufferAddLit(&buf, "  </devices>\n");
+
+    if (def->seclabel.model) {
+        virBufferEscapeString(&buf, "  <seclabel model='%s'>\n", def->seclabel.model);
+        virBufferEscapeString(&buf, "    <label>%s</label>\n", def->seclabel.label);
+        virBufferAddLit(&buf, "  </seclabel>\n");
+    }
+
     virBufferAddLit(&buf, "</domain>\n");
 
     if (virBufferError(&buf))

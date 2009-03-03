@@ -276,6 +276,7 @@ virStorageBackendUpdateVolTargetInfoFD(virConnectPtr conn,
     VIR_FREE(target->perms.label);
 
 #if HAVE_SELINUX
+    /* XXX: make this a security driver call */
     if (fgetfilecon(fd, &filecon) == -1) {
         if (errno != ENODATA && errno != ENOTSUP) {
             virReportSystemError(conn, errno,

@@ -77,6 +77,36 @@ virXPathString(virConnectPtr conn,
 }
 
 /**
+ * virXPathStringLimit:
+ * @xpath: the XPath string to evaluate
+ * @maxlen: maximum length permittred string
+ * @ctxt: an XPath context
+ *
+ * Wrapper for virXPathString, which validates the length of the returned
+ * string.
+ *
+ * Returns a new string which must be deallocated by the caller or NULL if
+ * the evaluation failed.
+ */
+char *
+virXPathStringLimit(virConnectPtr conn,
+                    const char *xpath,
+                    size_t maxlen,
+                    xmlXPathContextPtr ctxt)
+{
+    char *tmp = virXPathString(conn, xpath, ctxt);
+
+    if (tmp != NULL && strlen(tmp) >= maxlen) {
+        virXMLError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("\'%s\' value longer than %Zd bytes in virXPathStringLimit()"),
+                    xpath, maxlen);
+            return NULL;
+    }
+
+    return tmp;
+}
+
+/**
  * virXPathNumber:
  * @xpath: the XPath string to evaluate
  * @ctxt: an XPath context

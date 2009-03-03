@@ -17,6 +17,10 @@ int		virXPathBoolean	(virConnectPtr conn,
 char *		virXPathString	(virConnectPtr conn,
                                  const char *xpath,
                                  xmlXPathContextPtr ctxt);
+char *          virXPathStringLimit(virConnectPtr conn,
+                                    const char *xpath,
+                                    size_t maxlen,
+                                    xmlXPathContextPtr ctxt);
 int		virXPathNumber	(virConnectPtr conn,
                                  const char *xpath,
                                  xmlXPathContextPtr ctxt,
