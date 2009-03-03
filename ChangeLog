@@ -1,3 +1,7 @@
+Tue Mar  3 15:35:02 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* po/*: update italian, polish and brazilian translations, regenerate
+
 Tue Mar  3 12:01:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	QEMU security driver usage for sVirt support (James Morris, Dan Walsh
