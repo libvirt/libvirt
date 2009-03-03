@@ -70,6 +70,8 @@
 #include "domain_conf.h"
 #include "node_device_conf.h"
 #include "pci.h"
+#include "security.h"
+
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -351,6 +353,57 @@ next:
     return 0;
 }
 
+static int
+qemudSecurityInit(struct qemud_driver *qemud_drv)
+{
+    int ret;
+    const char *doi, *model;
+    virCapsPtr caps;
+    virSecurityDriverPtr security_drv;
+
+    ret = virSecurityDriverStartup(&security_drv,
+                                   qemud_drv->securityDriverName);
+    if (ret == -1) {
+        VIR_ERROR0(_("Failed to start security driver"));
+        return -1;
+    }
+    /* No security driver wanted to be enabled: just return */
+    if (ret == -2) {
+        VIR_INFO0(_("No security driver available"));
+        return 0;
+    }
+
+    qemud_drv->securityDriver = security_drv;
+    doi = virSecurityDriverGetDOI(security_drv);
+    model = virSecurityDriverGetModel(security_drv);
+
+    VIR_DEBUG("Initialized security driver \"%s\" with "
+              "DOI \"%s\"", model, doi);
+
+    /*
+     * Add security policy host caps now that the security driver is
+     * initialized.
+     */
+    caps = qemud_drv->caps;
+
+    caps->host.secModel.model = strdup(model);
+    if (!caps->host.secModel.model) {
+        char ebuf[1024];
+        VIR_ERROR(_("Failed to copy secModel model: %s"),
+                  virStrerror(errno, ebuf, sizeof ebuf));
+        return -1;
+    }
+
+    caps->host.secModel.doi = strdup(doi);
+    if (!caps->host.secModel.doi) {
+        char ebuf[1024];
+        VIR_ERROR(_("Failed to copy secModel DOI: %s"),
+                  virStrerror(errno, ebuf, sizeof ebuf));
+        return -1;
+    }
+
+    return 0;
+}
 
 /**
  * qemudStartup:
@@ -442,6 +495,10 @@ qemudStartup(void) {
 
     if ((qemu_driver->caps = qemudCapsInit()) == NULL)
         goto out_of_memory;
+
+    if (qemudSecurityInit(qemu_driver) < 0) {
+        goto error;
+    }
 
     if (qemudLoadDriverConfig(qemu_driver, driverConf) < 0) {
         goto error;
@@ -555,6 +612,7 @@ qemudShutdown(void) {
 
     virDomainObjListFree(&qemu_driver->domains);
 
+    VIR_FREE(qemu_driver->securityDriverName);
     VIR_FREE(qemu_driver->logDir);
     VIR_FREE(qemu_driver->configDir);
     VIR_FREE(qemu_driver->autostartDir);
@@ -1204,8 +1262,34 @@ error:
     return -1;
 }
 
+static int qemudDomainSetSecurityLabel(virConnectPtr conn, struct qemud_driver *driver, virDomainObjPtr vm)
+{
+    if (vm->def->seclabel.label != NULL)
+        if (driver->securityDriver && driver->securityDriver->domainSetSecurityLabel)
+            return driver->securityDriver->domainSetSecurityLabel(conn, driver->securityDriver,
+                                                                 vm);
+    return 0;
+}
+
 static virDomainPtr qemudDomainLookupByName(virConnectPtr conn,
                                             const char *name);
+
+struct gemudHookData {
+        virConnectPtr conn;
+        virDomainObjPtr vm;
+        struct qemud_driver *driver;
+};
+
+static int qemudSecurityHook(void *data) {
+        struct gemudHookData *h = (struct gemudHookData *) data;
+
+        if (qemudDomainSetSecurityLabel(h->conn, h->driver, h->vm) < 0) {
+                qemudReportError(h->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("Failed to set security label"));
+                return -1;
+        }
+        return 0;
+}
 
 static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
@@ -1224,6 +1308,21 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     pid_t child;
     int pos = -1;
     char ebuf[1024];
+
+    struct gemudHookData hookData;
+    hookData.conn = conn;
+    hookData.vm = vm;
+    hookData.driver = driver;
+
+   /* If you are using a SecurityDriver and there was no security label in
+      database, then generate a security label for isolation */
+    if (vm->def->seclabel.label == NULL && driver->securityDriver) {
+        if (driver->securityDriver->domainGenSecurityLabel(vm) < 0) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("Unable to generate Security Label"));
+            return -1;
+        }
+    }
 
     FD_ZERO(&keepfd);
 
@@ -1325,9 +1424,10 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     for (i = 0 ; i < ntapfds ; i++)
         FD_SET(tapfds[i], &keepfd);
 
-    ret = virExec(conn, argv, progenv, &keepfd, &child,
-                  stdin_fd, &vm->logfile, &vm->logfile,
-                  VIR_EXEC_NONBLOCK | VIR_EXEC_DAEMON);
+    ret = virExecWithHook(conn, argv, progenv, &keepfd, &child,
+                          stdin_fd, &vm->logfile, &vm->logfile,
+                          VIR_EXEC_NONBLOCK | VIR_EXEC_DAEMON,
+                          qemudSecurityHook, &hookData);
 
     /* wait for qemu process to to show up */
     if (ret == 0) {
@@ -1422,6 +1522,10 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* shut it off for sure */
     virKillProcess(vm->pid, SIGKILL);
+
+    /* Reset Security Labels */
+    if (driver->securityDriver)
+        driver->securityDriver->domainRestoreSecurityLabel(conn, vm);
 
     if (qemudRemoveDomainStatus(conn, driver, vm) < 0) {
         VIR_WARN(_("Failed to remove domain status for %s"),
@@ -2832,7 +2936,94 @@ cleanup:
     return ret;
 }
 
+static int qemudDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr seclabel)
+{
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    virDomainObjPtr vm;
+    const char *type;
+    int ret = -1;
 
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!(type = virDomainVirtTypeToString(vm->def->virtType))) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unknown virt type in domain definition '%d'"),
+                         vm->def->virtType);
+        goto cleanup;
+    }
+
+    /*
+     * Theoretically, the pid can be replaced during this operation and
+     * return the label of a different process.  If atomicity is needed,
+     * further validation will be required.
+     *
+     * Comment from Dan Berrange:
+     *
+     *   Well the PID as stored in the virDomainObjPtr can't be changed
+     *   because you've got a locked object.  The OS level PID could have
+     *   exited, though and in extreme circumstances have cycled through all
+     *   PIDs back to ours. We could sanity check that our PID still exists
+     *   after reading the label, by checking that our FD connecting to the
+     *   QEMU monitor hasn't seen SIGHUP/ERR on poll().
+     */
+    if (virDomainIsActive(vm)) {
+        if (driver->securityDriver && driver->securityDriver->domainGetSecurityLabel) {
+            if (driver->securityDriver->domainGetSecurityLabel(dom->conn, vm, seclabel) == -1) {
+                qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("Failed to get security label"));
+                goto cleanup;
+            }
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int qemudNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
+{
+    struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
+    char *p;
+
+    if (!driver->securityDriver)
+        return -2;
+
+    p = driver->caps->host.secModel.model;
+    if (strlen(p) >= VIR_SECURITY_MODEL_BUFLEN-1) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("security model string exceeds max %d bytes"),
+                         VIR_SECURITY_MODEL_BUFLEN-1);
+        return -1;
+    }
+    strcpy(secmodel->model, p);
+
+    p = driver->caps->host.secModel.doi;
+    if (strlen(p) >= VIR_SECURITY_DOI_BUFLEN-1) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("security DOI string exceeds max %d bytes"),
+                         VIR_SECURITY_DOI_BUFLEN-1);
+        return -1;
+    }
+    strcpy(secmodel->doi, p);
+    return 0;
+}
+
+/* TODO: check seclabel restore */
 static int qemudDomainRestore(virConnectPtr conn,
                               const char *path) {
     struct qemud_driver *driver = conn->privateData;
@@ -3559,6 +3750,8 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                                  virDomainDiskBusTypeToString(dev->data.disk->bus));
                 goto cleanup;
             }
+            if (driver->securityDriver)
+                driver->securityDriver->domainSetSecurityImageLabel(dom->conn, vm, dev);
             break;
 
         default:
@@ -3691,8 +3884,11 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
     if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
         dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
         (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
-         dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO))
+         dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)) {
         ret = qemudDomainDetachPciDiskDevice(dom->conn, vm, dev);
+        if (driver->securityDriver)
+            driver->securityDriver->domainRestoreSecurityImageLabel(dom->conn, vm, dev);
+    }
     else
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          "%s", _("only SCSI or virtio disk device can be detached dynamically"));
@@ -4741,8 +4937,8 @@ static virDriver qemuDriver = {
     NULL, /* domainGetVcpus */
 #endif
     qemudDomainGetMaxVcpus, /* domainGetMaxVcpus */
-    NULL, /* domainGetSecurityLabel */
-    NULL, /* nodeGetSecurityModel */
+    qemudDomainGetSecurityLabel, /* domainGetSecurityLabel */
+    qemudNodeGetSecurityModel, /* nodeGetSecurityModel */
     qemudDomainDumpXML, /* domainDumpXML */
     qemudListDefinedDomains, /* listDomains */
     qemudNumDefinedDomains, /* numOfDomains */

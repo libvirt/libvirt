@@ -420,8 +420,8 @@ __virExec(virConnectPtr conn,
         close(childerr);
 
     if (hook)
-        (hook)(data);
-
+        if ((hook)(data) != 0)
+            _exit(1);
     if (envp)
         execve(argv[0], (char **) argv, (char**)envp);
     else

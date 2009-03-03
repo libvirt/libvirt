@@ -151,6 +151,16 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
+    p = virConfGetValue (conf, "security_driver");
+    CHECK_TYPE ("security_river", VIR_CONF_STRING);
+    if (p && p->str) {
+        if (!(driver->securityDriverName = strdup(p->str))) {
+            virReportOOMError(NULL);
+            virConfFree(conf);
+            return -1;
+        }
+    }
+
     virConfFree (conf);
     return 0;
 }

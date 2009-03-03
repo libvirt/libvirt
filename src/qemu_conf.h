@@ -33,6 +33,7 @@
 #include "domain_conf.h"
 #include "domain_event.h"
 #include "threads.h"
+#include "security.h"
 
 #define qemudDebug(fmt, ...) do {} while(0)
 
@@ -83,6 +84,9 @@ struct qemud_driver {
     virDomainEventQueuePtr domainEventQueue;
     int domainEventTimer;
     int domainEventDispatching;
+
+    char *securityDriverName;
+    virSecurityDriverPtr securityDriver;
 };
 
 /* Status needed to reconenct to running VMs */

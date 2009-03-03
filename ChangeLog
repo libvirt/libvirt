@@ -1,3 +1,12 @@
+Tue Mar  3 12:01:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	QEMU security driver usage for sVirt support (James Morris, Dan Walsh
+	& Daniel Berrange)
+	* src/qemu.conf: Add security_driver config option
+	* src/qemu_conf.c, src/qemu_conf.h, src/qemu_driver.c,
+	src/util.c: Use a security driver (if available) when
+	running virtual machines
+
 Tue Mar  3 11:31:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/iptables.c, src/qemu_conf.c, src/qemu_driver.c,
