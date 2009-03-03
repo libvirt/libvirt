@@ -102,3 +102,4 @@
     remote_node_device_dettach_args val_remote_node_device_dettach_args;
     remote_node_device_re_attach_args val_remote_node_device_re_attach_args;
     remote_node_device_reset_args val_remote_node_device_reset_args;
+    remote_domain_get_security_label_args val_remote_domain_get_security_label_args;

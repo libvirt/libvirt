@@ -115,6 +115,21 @@ const REMOTE_DOMAIN_BLOCK_PEEK_BUFFER_MAX = 65536;
  */
 const REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX = 65536;
 
+/*
+ * Maximum length of a security model field.
+ */
+const REMOTE_SECURITY_MODEL_MAX = VIR_SECURITY_MODEL_BUFLEN;
+
+/*
+ * Maximum length of a security label field.
+ */
+const REMOTE_SECURITY_LABEL_MAX = VIR_SECURITY_LABEL_BUFLEN;
+
+/*
+ * Maximum length of a security DOI field.
+ */
+const REMOTE_SECURITY_DOI_MAX = VIR_SECURITY_DOI_BUFLEN;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -615,6 +630,20 @@ struct remote_domain_get_max_vcpus_args {
 
 struct remote_domain_get_max_vcpus_ret {
     int num;
+};
+
+struct remote_domain_get_security_label_args {
+    remote_nonnull_domain dom;
+};
+
+struct remote_domain_get_security_label_ret {
+    char label<REMOTE_SECURITY_LABEL_MAX>;
+    int enforcing;
+};
+
+struct remote_node_get_security_model_ret {
+    char model<REMOTE_SECURITY_MODEL_MAX>;
+    char doi<REMOTE_SECURITY_DOI_MAX>;
 };
 
 struct remote_domain_attach_device_args {
@@ -1238,7 +1267,10 @@ enum remote_procedure {
     REMOTE_PROC_NODE_DEVICE_LIST_CAPS = 117,
     REMOTE_PROC_NODE_DEVICE_DETTACH = 118,
     REMOTE_PROC_NODE_DEVICE_RE_ATTACH = 119,
-    REMOTE_PROC_NODE_DEVICE_RESET = 120
+    REMOTE_PROC_NODE_DEVICE_RESET = 120,
+
+    REMOTE_PROC_DOMAIN_GET_SECURITY_LABEL = 121,
+    REMOTE_PROC_NODE_GET_SECURITY_MODEL = 122
 };
 
 /* Custom RPC structure. */

@@ -1,3 +1,14 @@
+Tue Mar  3 09:25:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Remote protocol / RPC API for sVirt support (James Morris & Dan Walsh)
+	* qemud/remote.c: Handle new RPC calls
+	* qemud/remote_protocol.x: Add definitions for new RPC calls
+	* src/remote_internal.c: Implement virDomainGetSecurityLabel()
+	and virNodeGetSecurityModel() driver methods
+	* qemud/remote_dispatch_args.h, qemud/remote_dispatch_prototypes.h,
+	qemud/remote_dispatch_ret.h, qemud/remote_dispatch_table.h,
+	qemud/remote_protocol.c, qemud/remote_protocol.h: Regenerate
+
 Tue Mar  3 09:12:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Internal driver API for sVirt support (James Morris & Dan Walsh)

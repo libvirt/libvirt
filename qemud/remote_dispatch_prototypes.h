@@ -184,6 +184,13 @@ static int remoteDispatchDomainGetSchedulerType(
     remote_error *err,
     remote_domain_get_scheduler_type_args *args,
     remote_domain_get_scheduler_type_ret *ret);
+static int remoteDispatchDomainGetSecurityLabel(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_domain_get_security_label_args *args,
+    remote_domain_get_security_label_ret *ret);
 static int remoteDispatchDomainGetVcpus(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -597,6 +604,13 @@ static int remoteDispatchNodeGetInfo(
     remote_error *err,
     void *args,
     remote_node_get_info_ret *ret);
+static int remoteDispatchNodeGetSecurityModel(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    void *args,
+    remote_node_get_security_model_ret *ret);
 static int remoteDispatchNodeListDevices(
     struct qemud_server *server,
     struct qemud_client *client,

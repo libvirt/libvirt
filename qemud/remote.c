@@ -1345,6 +1345,76 @@ remoteDispatchDomainGetMaxVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 static int
+remoteDispatchDomainGetSecurityLabel(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                     struct qemud_client *client ATTRIBUTE_UNUSED,
+                                     virConnectPtr conn,
+                                     remote_error *rerr,
+                                     remote_domain_get_security_label_args *args,
+                                     remote_domain_get_security_label_ret *ret)
+{
+    virDomainPtr dom;
+    virSecurityLabel seclabel;
+
+    dom = get_nonnull_domain(conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    memset(&seclabel, 0, sizeof seclabel);
+    if (virDomainGetSecurityLabel(dom, &seclabel) == -1) {
+        virDomainFree(dom);
+        remoteDispatchFormatError(rerr, "%s", _("unable to get security label"));
+        return -1;
+    }
+
+    ret->label.label_len = strlen(seclabel.label) + 1;
+    if (VIR_ALLOC_N(ret->label.label_val, ret->label.label_len) < 0) {
+        virDomainFree(dom);
+        remoteDispatchOOMError(rerr);
+        return -1;
+    }
+    strcpy(ret->label.label_val, seclabel.label);
+    ret->enforcing = seclabel.enforcing;
+    virDomainFree(dom);
+
+    return 0;
+}
+
+static int
+remoteDispatchNodeGetSecurityModel(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
+                                   remote_error *rerr,
+                                   void *args ATTRIBUTE_UNUSED,
+                                   remote_node_get_security_model_ret *ret)
+{
+    virSecurityModel secmodel;
+
+    memset(&secmodel, 0, sizeof secmodel);
+    if (virNodeGetSecurityModel(conn, &secmodel) == -1) {
+        remoteDispatchFormatError(rerr, "%s", _("unable to get security model"));
+        return -1;
+    }
+
+    ret->model.model_len = strlen(secmodel.model) + 1;
+    if (VIR_ALLOC_N(ret->model.model_val, ret->model.model_len) < 0) {
+        remoteDispatchOOMError(rerr);
+        return -1;
+    }
+    strcpy(ret->model.model_val, secmodel.model);
+
+    ret->doi.doi_len = strlen(secmodel.doi) + 1;
+    if (VIR_ALLOC_N(ret->doi.doi_val, ret->doi.doi_len) < 0) {
+        remoteDispatchOOMError(rerr);
+        return -1;
+    }
+    strcpy(ret->doi.doi_val, secmodel.doi);
+
+    return 0;
+}
+
+static int
 remoteDispatchDomainGetOsType (struct qemud_server *server ATTRIBUTE_UNUSED,
                                struct qemud_client *client ATTRIBUTE_UNUSED,
                                virConnectPtr conn,
