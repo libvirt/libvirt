@@ -37,8 +37,7 @@
 #include "internal.h"
 #include "util.h"
 #include "virterror_internal.h"
-
-#define qemudLog(level, msg...) fprintf(stderr, msg)
+#include "logging.h"
 
 #ifndef ENODATA
 #define ENODATA EIO
@@ -102,8 +101,7 @@ virUUIDGenerate(unsigned char *uuid)
 
     if ((err = virUUIDGenerateRandomBytes(uuid, VIR_UUID_BUFLEN))) {
         char ebuf[1024];
-        qemudLog(QEMUD_WARN,
-                 _("Falling back to pseudorandom UUID,"
+        VIR_WARN(_("Falling back to pseudorandom UUID,"
                    " failed to generate random bytes: %s"),
                  virStrerror(err, ebuf, sizeof ebuf));
     }

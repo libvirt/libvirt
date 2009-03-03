@@ -47,6 +47,7 @@
 #include "datatypes.h"
 #include "xml.h"
 #include "nodeinfo.h"
+#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -76,8 +77,6 @@ VIR_ENUM_IMPL(qemuDiskCacheV2, VIR_DOMAIN_DISK_CACHE_LAST,
               "writethrough",
               "writeback");
 
-
-#define qemudLog(level, msg...) fprintf(stderr, msg)
 
 int qemudLoadDriverConfig(struct qemud_driver *driver,
                           const char *filename) {
@@ -469,17 +468,15 @@ rewait:
         if (errno == EINTR)
             goto rewait;
 
-        qemudLog(QEMUD_ERR,
-                 _("Unexpected exit status from qemu %d pid %lu"),
-                 WEXITSTATUS(status), (unsigned long)child);
+        VIR_ERROR(_("Unexpected exit status from qemu %d pid %lu"),
+                  WEXITSTATUS(status), (unsigned long)child);
         ret = -1;
     }
     /* Check & log unexpected exit status, but don't fail,
      * as there's really no need to throw an error if we did
      * actually read a valid version number above */
     if (WEXITSTATUS(status) != 0) {
-        qemudLog(QEMUD_WARN,
-                 _("Unexpected exit status '%d', qemu probably failed"),
+        VIR_WARN(_("Unexpected exit status '%d', qemu probably failed"),
                  WEXITSTATUS(status));
     }
 

@@ -1,3 +1,9 @@
+Tue Mar  3 11:31:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/iptables.c, src/qemu_conf.c, src/qemu_driver.c,
+	src/uuid.c: Replace qemudLogging with calls to logging.h
+	APIs
+
 Tue Mar 3 12:22:51 +0100 2009 Jim Meyering <meyering@redhat.com>
 
 	avoid file descriptor leak when fd == 0

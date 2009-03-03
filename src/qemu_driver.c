@@ -82,8 +82,6 @@
 
 static int qemudShutdown(void);
 
-#define qemudLog(level, msg...) fprintf(stderr, msg)
-
 static void qemuDriverLock(struct qemud_driver *driver)
 {
     virMutexLock(&driver->lock);
@@ -220,9 +218,9 @@ qemudAutostartConfigs(struct qemud_driver *driver) {
             int ret = qemudStartVMDaemon(conn, driver, vm, NULL, -1);
             if (ret < 0) {
                 virErrorPtr err = virGetLastError();
-                qemudLog(QEMUD_ERROR, _("Failed to autostart VM '%s': %s\n"),
-                         vm->def->name,
-                         err ? err->message : NULL);
+                VIR_ERROR(_("Failed to autostart VM '%s': %s\n"),
+                          vm->def->name,
+                          err ? err->message : NULL);
             } else {
                 virDomainEventPtr event =
                     virDomainEventNewFromObj(vm,
@@ -306,8 +304,8 @@ qemudReconnectVMs(struct qemud_driver *driver)
         if ((config = virDomainConfigFile(NULL,
                                           driver->stateDir,
                                           vm->def->name)) == NULL) {
-            qemudLog(QEMUD_ERROR, _("Failed to read domain status for %s\n"),
-                     vm->def->name);
+            VIR_ERROR(_("Failed to read domain status for %s\n"),
+                      vm->def->name);
             goto next_error;
         }
 
@@ -316,14 +314,14 @@ qemudReconnectVMs(struct qemud_driver *driver)
             vm->newDef = vm->def;
             vm->def = status->def;
         } else {
-            qemudLog(QEMUD_ERROR, _("Failed to parse domain status for %s\n"),
-                     vm->def->name);
+            VIR_ERROR(_("Failed to parse domain status for %s\n"),
+                      vm->def->name);
             goto next_error;
         }
 
         if ((rc = qemudOpenMonitor(NULL, driver, vm, status->monitorpath, 1)) != 0) {
-            qemudLog(QEMUD_ERROR, _("Failed to reconnect monitor for %s: %d\n"),
-                     vm->def->name, rc);
+            VIR_ERROR(_("Failed to reconnect monitor for %s: %d\n"),
+                      vm->def->name, rc);
             goto next_error;
         }
 
@@ -369,7 +367,7 @@ qemudStartup(void) {
         return -1;
 
     if (virMutexInit(&qemu_driver->lock) < 0) {
-        qemudLog(QEMUD_ERROR, "%s", _("cannot initialize mutex"));
+        VIR_ERROR("%s", _("cannot initialize mutex"));
         VIR_FREE(qemu_driver);
         return -1;
     }
@@ -422,8 +420,8 @@ qemudStartup(void) {
 
     if (virFileMakePath(qemu_driver->stateDir) < 0) {
         char ebuf[1024];
-        qemudLog(QEMUD_ERROR, _("Failed to create state dir '%s': %s\n"),
-                 qemu_driver->stateDir, virStrerror(errno, ebuf, sizeof ebuf));
+        VIR_ERROR(_("Failed to create state dir '%s': %s\n"),
+                  qemu_driver->stateDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
 
@@ -901,7 +899,7 @@ static int qemudWaitForMonitor(virConnectPtr conn,
                              "console", 3);
     if (close(logfd) < 0) {
         char ebuf[1024];
-        qemudLog(QEMUD_WARN, _("Unable to close logfile: %s\n"),
+        VIR_WARN(_("Unable to close logfile: %s\n"),
                  virStrerror(errno, ebuf, sizeof ebuf));
     }
 
@@ -1299,29 +1297,29 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     tmp = progenv;
     while (*tmp) {
         if (safewrite(vm->logfile, *tmp, strlen(*tmp)) < 0)
-            qemudLog(QEMUD_WARN, _("Unable to write envv to logfile: %s\n"),
+            VIR_WARN(_("Unable to write envv to logfile: %s\n"),
                      virStrerror(errno, ebuf, sizeof ebuf));
         if (safewrite(vm->logfile, " ", 1) < 0)
-            qemudLog(QEMUD_WARN, _("Unable to write envv to logfile: %s\n"),
+            VIR_WARN(_("Unable to write envv to logfile: %s\n"),
                      virStrerror(errno, ebuf, sizeof ebuf));
         tmp++;
     }
     tmp = argv;
     while (*tmp) {
         if (safewrite(vm->logfile, *tmp, strlen(*tmp)) < 0)
-            qemudLog(QEMUD_WARN, _("Unable to write argv to logfile: %s\n"),
+            VIR_WARN(_("Unable to write argv to logfile: %s\n"),
                      virStrerror(errno, ebuf, sizeof ebuf));
         if (safewrite(vm->logfile, " ", 1) < 0)
-            qemudLog(QEMUD_WARN, _("Unable to write argv to logfile: %s\n"),
+            VIR_WARN(_("Unable to write argv to logfile: %s\n"),
                      virStrerror(errno, ebuf, sizeof ebuf));
         tmp++;
     }
     if (safewrite(vm->logfile, "\n", 1) < 0)
-        qemudLog(QEMUD_WARN, _("Unable to write argv to logfile: %s\n"),
+        VIR_WARN(_("Unable to write argv to logfile: %s\n"),
                  virStrerror(errno, ebuf, sizeof ebuf));
 
     if ((pos = lseek(vm->logfile, 0, SEEK_END)) < 0)
-        qemudLog(QEMUD_WARN, _("Unable to seek to end of logfile: %s\n"),
+        VIR_WARN(_("Unable to seek to end of logfile: %s\n"),
                  virStrerror(errno, ebuf, sizeof ebuf));
 
     for (i = 0 ; i < ntapfds ; i++)
@@ -1399,7 +1397,7 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!virDomainIsActive(vm))
         return;
 
-    qemudLog(QEMUD_DEBUG, _("Shutting down VM '%s'\n"), vm->def->name);
+    VIR_DEBUG(_("Shutting down VM '%s'\n"), vm->def->name);
 
     if (virKillProcess(vm->pid, 0) == 0 &&
         virKillProcess(vm->pid, SIGTERM) < 0)
@@ -1414,7 +1412,7 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (close(vm->logfile) < 0) {
         char ebuf[1024];
-        qemudLog(QEMUD_WARN, _("Unable to close logfile: %s\n"),
+        VIR_WARN(_("Unable to close logfile: %s\n"),
                  virStrerror(errno, ebuf, sizeof ebuf));
     }
     if (vm->monitor != -1)
@@ -1426,7 +1424,7 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     virKillProcess(vm->pid, SIGKILL);
 
     if (qemudRemoveDomainStatus(conn, driver, vm) < 0) {
-        qemudLog(QEMUD_WARN, _("Failed to remove domain status for %s"),
+        VIR_WARN(_("Failed to remove domain status for %s"),
                  vm->def->name);
     }
     vm->pid = -1;
@@ -1473,8 +1471,8 @@ qemudDispatchVMEvent(int watch, int fd, int events, void *opaque) {
         if (events & (VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR))
             quit = 1;
         else {
-            qemudLog(QEMUD_ERROR, _("unhandled fd event %d for %s"),
-                                    events, vm->def->name);
+            VIR_ERROR(_("unhandled fd event %d for %s"),
+                      events, vm->def->name);
             failed = 1;
         }
     }
@@ -1587,7 +1585,7 @@ qemudMonitorCommandExtra(const virDomainObjPtr vm,
     /* Log, but ignore failures to write logfile for VM */
     if (safewrite(vm->logfile, buf, strlen(buf)) < 0) {
         char ebuf[1024];
-        qemudLog(QEMUD_WARN, _("Unable to log VM console data: %s\n"),
+        VIR_WARN(_("Unable to log VM console data: %s\n"),
                  virStrerror(errno, ebuf, sizeof ebuf));
     }
 
@@ -1599,7 +1597,7 @@ qemudMonitorCommandExtra(const virDomainObjPtr vm,
         /* Log, but ignore failures to write logfile for VM */
         if (safewrite(vm->logfile, buf, strlen(buf)) < 0) {
             char ebuf[1024];
-            qemudLog(QEMUD_WARN, _("Unable to log VM console data: %s\n"),
+            VIR_WARN(_("Unable to log VM console data: %s\n"),
                      virStrerror(errno, ebuf, sizeof ebuf));
         }
         VIR_FREE(buf);
@@ -3380,7 +3378,7 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
         s += strlen(PCI_ATTACH_OK_MSG);
 
         if (virStrToLong_i ((const char*)s, &dummy, 10, &dev->data.disk->slotnum) == -1)
-            qemudLog(QEMUD_WARN, "%s", _("Unable to parse slot number\n"));
+            VIR_WARN("%s", _("Unable to parse slot number\n"));
     } else {
         qemudReportError (conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                           _("adding %s disk failed"), type);
@@ -4512,8 +4510,8 @@ cleanup:
              * overwrite the previous error, though, so we just throw something
              * to the logs and hope for the best
              */
-            qemudLog(QEMUD_ERROR, _("Failed to resume guest %s after failure\n"),
-                     vm->def->name);
+            VIR_ERROR(_("Failed to resume guest %s after failure\n"),
+                      vm->def->name);
         }
         else {
             DEBUG ("cont reply: %s", info);
