@@ -111,6 +111,68 @@ typedef enum {
 } virDomainCreateFlags;
 
 /**
+ * VIR_SECURITY_LABEL_BUFLEN:
+ *
+ * Macro providing the maximum length of the virSecurityLabel label string.
+ * Note that this value is based on that used by Labeled NFS.
+ */
+#define VIR_SECURITY_LABEL_BUFLEN (4096 + 1)
+
+/**
+ * virSecurityLabel:
+ *
+ * a virSecurityLabel is a structure filled by virDomainGetSecurityLabel(),
+ * providing the security label and associated attributes for the specified
+ * domain.
+ *
+ */
+typedef struct _virSecurityLabel {
+    char label[VIR_SECURITY_LABEL_BUFLEN];    /* security label string */
+    int enforcing;                            /* 1 if security policy is being enforced for domain */
+} virSecurityLabel;
+
+/**
+ * virSecurityLabelPtr:
+ *
+ * a virSecurityLabelPtr is a pointer to a virSecurityLabel.
+ */
+typedef virSecurityLabel *virSecurityLabelPtr;
+
+/**
+ * VIR_SECURITY_MODEL_BUFLEN:
+ *
+ * Macro providing the maximum length of the virSecurityModel model string.
+ */
+#define VIR_SECURITY_MODEL_BUFLEN (256 + 1)
+
+/**
+ * VIR_SECURITY_DOI_BUFLEN:
+ *
+ * Macro providing the maximum length of the virSecurityModel doi string.
+ */
+#define VIR_SECURITY_DOI_BUFLEN (256 + 1)
+
+/**
+ * virSecurityModel:
+ *
+ * a virSecurityModel is a structure filled by virNodeGetSecurityModel(),
+ * providing the per-hypervisor security model and DOI attributes for the
+ * specified domain.
+ *
+ */
+typedef struct _virSecurityModel {
+    char model[VIR_SECURITY_MODEL_BUFLEN];      /* security model string */
+    char doi[VIR_SECURITY_DOI_BUFLEN];          /* domain of interpetation */
+} virSecurityModel;
+
+/**
+ * virSecurityModelPtr:
+ *
+ * a virSecurityModelPtr is a pointer to a virSecurityModel.
+ */
+typedef virSecurityModel *virSecurityModelPtr;
+
+/**
  * virNodeInfoPtr:
  *
  * a virNodeInfo is a structure filled by virNodeGetInfo() and providing
@@ -417,6 +479,9 @@ char *                  virConnectGetCapabilities (virConnectPtr conn);
 
 unsigned long long      virNodeGetFreeMemory    (virConnectPtr conn);
 
+int                     virNodeGetSecurityModel (virConnectPtr conn,
+                                                 virSecurityModelPtr secmodel);
+
 /*
  * Gather list of running domains
  */
@@ -506,6 +571,8 @@ int                     virDomainSetMaxMemory   (virDomainPtr domain,
 int                     virDomainSetMemory      (virDomainPtr domain,
                                                  unsigned long memory);
 int                     virDomainGetMaxVcpus    (virDomainPtr domain);
+int                     virDomainGetSecurityLabel (virDomainPtr domain,
+                                                   virSecurityLabelPtr seclabel);
 
 /*
  * XML domain description

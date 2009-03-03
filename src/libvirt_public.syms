@@ -254,6 +254,8 @@ LIBVIRT_0.6.1 {
 	virNodeDeviceDettach;
 	virNodeDeviceReAttach;
 	virNodeDeviceReset;
+	virDomainGetSecurityLabel;
+	virNodeGetSecurityModel;
 } LIBVIRT_0.6.0;
 
 # .... define new API here using predicted next version number ....

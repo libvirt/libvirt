@@ -1,3 +1,10 @@
+Tue Mar  3 09:10:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Public API for sVirt support (James Morris & Dan Walsh)
+	* include/libvirt/libvirt.h.in, src/libvirt_public.syms: added
+	virNodeGetSecurityModel() and virDomainGetSecurityLabel() APIs
+	* include/libvirt/libvirt.h: Regenerated
+
 Tue Mar  3 08:55:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Don't try to detach & reset PCI devices while running test
