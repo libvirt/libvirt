@@ -1,3 +1,11 @@
+Tue Mar  3 16:55:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Mingw32 portability fixes
+	* src/pci.c: Use lseek+read/write instead of pread/pwrite
+	to avoid mingw compile break
+	* test/nodedevxml2xmltest.c: Don't link to QEMU driver, since
+	its not required and breaks build when QEMU is turned off
+
 Tue Mar  3 16:43:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Explicitly track static declared vs dynamically generated

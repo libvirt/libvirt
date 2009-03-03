@@ -156,7 +156,8 @@ pciRead(pciDevice *dev, unsigned pos, uint8_t *buf, unsigned buflen)
     if (pciOpenConfig(dev) < 0)
         return -1;
 
-    if (pread(dev->fd, buf, buflen, pos) < 0) {
+    if (lseek(dev->fd, pos, SEEK_SET) != pos ||
+        saferead(dev->fd, buf, buflen) != buflen) {
         char ebuf[1024];
         VIR_WARN(_("Failed to read from '%s' : %s"), dev->path,
                  virStrerror(errno, ebuf, sizeof(ebuf)));
@@ -195,7 +196,8 @@ pciWrite(pciDevice *dev, unsigned pos, uint8_t *buf, unsigned buflen)
     if (pciOpenConfig(dev) < 0)
         return -1;
 
-    if (pwrite(dev->fd, buf, buflen, pos) < 0) {
+    if (lseek(dev->fd, pos, SEEK_SET) != pos ||
+        safewrite(dev->fd, buf, buflen) != buflen) {
         char ebuf[1024];
         VIR_WARN(_("Failed to write to '%s' : %s"), dev->path,
                  virStrerror(errno, ebuf, sizeof(ebuf)));

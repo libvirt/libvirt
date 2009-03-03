@@ -185,7 +185,7 @@ endif
 nodedevxml2xmltest_SOURCES = \
 	nodedevxml2xmltest.c \
 	testutils.c testutils.h
-nodedevxml2xmltest_LDADD = ../src/libvirt_driver_qemu.la $(LDADDS)
+nodedevxml2xmltest_LDADD = $(LDADDS)
 
 virshtest_SOURCES = \
 	virshtest.c \
