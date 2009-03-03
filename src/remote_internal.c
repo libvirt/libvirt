@@ -2302,26 +2302,33 @@ remoteDomainGetSecurityLabel (virDomainPtr domain, virSecurityLabelPtr seclabel)
     remote_domain_get_security_label_args args;
     remote_domain_get_security_label_ret ret;
     struct private_data *priv = domain->conn->privateData;
+    int rv = -1;
+
+    remoteDriverLock(priv);
 
     make_nonnull_domain (&args.dom, domain);
     memset (&ret, 0, sizeof ret);
     if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_SECURITY_LABEL,
               (xdrproc_t) xdr_remote_domain_get_security_label_args, (char *)&args,
               (xdrproc_t) xdr_remote_domain_get_security_label_ret, (char *)&ret) == -1) {
-        return -1;
+        goto done;
     }
 
     if (ret.label.label_val != NULL) {
         if (strlen (ret.label.label_val) >= sizeof seclabel->label) {
             errorf (domain->conn, VIR_ERR_RPC, _("security label exceeds maximum: %zd"),
                     sizeof seclabel->label - 1);
-            return -1;
+            goto done;
         }
         strcpy (seclabel->label, ret.label.label_val);
         seclabel->enforcing = ret.enforcing;
     }
 
-    return 0;
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
 }
 
 static int
@@ -2329,19 +2336,22 @@ remoteNodeGetSecurityModel (virConnectPtr conn, virSecurityModelPtr secmodel)
 {
     remote_node_get_security_model_ret ret;
     struct private_data *priv = conn->privateData;
+    int rv = -1;
+
+    remoteDriverLock(priv);
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, 0, REMOTE_PROC_NODE_GET_SECURITY_MODEL,
               (xdrproc_t) xdr_void, NULL,
               (xdrproc_t) xdr_remote_node_get_security_model_ret, (char *)&ret) == -1) {
-        return -1;
+        goto done;
     }
 
     if (ret.model.model_val != NULL) {
         if (strlen (ret.model.model_val) >= sizeof secmodel->model) {
             errorf (conn, VIR_ERR_RPC, _("security model exceeds maximum: %zd"),
                     sizeof secmodel->model - 1);
-            return -1;
+            goto done;
         }
         strcpy (secmodel->model, ret.model.model_val);
     }
@@ -2350,11 +2360,16 @@ remoteNodeGetSecurityModel (virConnectPtr conn, virSecurityModelPtr secmodel)
         if (strlen (ret.doi.doi_val) >= sizeof secmodel->doi) {
             errorf (conn, VIR_ERR_RPC, _("security doi exceeds maximum: %zd"),
                     sizeof secmodel->doi - 1);
-            return -1;
+            goto done;
         }
         strcpy (secmodel->doi, ret.doi.doi_val);
     }
-    return 0;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
 }
 
 static char *

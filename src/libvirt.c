@@ -4206,7 +4206,7 @@ virDomainGetSecurityLabel(virDomainPtr domain, virSecurityLabelPtr seclabel)
         return conn->driver->domainGetSecurityLabel(domain, seclabel);
 
     virLibConnWarning(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return -2;
+    return -1;
 }
 
 /**
@@ -4236,7 +4236,7 @@ virNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
         return conn->driver->nodeGetSecurityModel(conn, secmodel);
 
     virLibConnWarning(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return -2;
+    return -1;
 }
 
 /**

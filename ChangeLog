@@ -1,3 +1,10 @@
+Tue Mar  3 19:31:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt.c: Fix return status s/-2/-1/ for virNodeGetSecurityModel
+	and virDomainGetSecurityLabel()
+	* src/remote_driver.c:Add missing mutex lock/unlock calls for
+	virNodeGetSecurityModel and virDomainGetSecurityLabel drivers
+
 Tue Mar  3 16:55:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Mingw32 portability fixes
