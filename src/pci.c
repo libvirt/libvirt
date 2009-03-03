@@ -789,6 +789,7 @@ pciGetDevice(virConnectPtr conn,
         return NULL;
     }
 
+    dev->fd       = -1;
     dev->domain   = domain;
     dev->bus      = bus;
     dev->slot     = slot;
@@ -827,7 +828,7 @@ void
 pciFreeDevice(virConnectPtr conn ATTRIBUTE_UNUSED, pciDevice *dev)
 {
     VIR_DEBUG("%s %s: freeing", dev->id, dev->name);
-    if (dev->fd)
+    if (dev->fd >= 0)
         close(dev->fd);
     VIR_FREE(dev);
 }

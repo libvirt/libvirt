@@ -1,5 +1,11 @@
 Tue Mar 3 12:22:51 +0100 2009 Jim Meyering <meyering@redhat.com>
 
+	avoid file descriptor leak when fd == 0
+	* src/pci.c (pciGetDevice): Initialize dev->fd to -1, not 0.
+	(pciFreeDevice): Close fd also when it is 0.
+
+Tue Mar 3 12:22:51 +0100 2009 Jim Meyering <meyering@redhat.com>
+
 	don't leak a file descriptor on failed pciGetDevice call
 	* src/pci.c (pciIterDevices): Always close dir handle.
 
