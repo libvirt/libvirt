@@ -82,7 +82,6 @@ test_scripts +=				\
 	define-dev-segfault		\
 	int-overflow			\
 	libvirtd-fail			\
-	libvirtd-net-persist		\
 	libvirtd-pool			\
 	read-bufsiz			\
 	read-non-seekable		\
@@ -127,7 +126,7 @@ TESTS_ENVIRONMENT =				\
   abs_top_srcdir=`cd '$(top_srcdir)'; pwd`	\
   abs_builddir=`cd '$(builddir)'; pwd`		\
   abs_srcdir=`cd '$(srcdir)'; pwd`		\
-  CONFIG_HEADER='$(abs_top_builddir)/config.h'	\
+  CONFIG_HEADER="`cd '$(top_builddir)'; pwd`/config.h"	\
   PATH="$(path_add)$(PATH_SEPARATOR)$$PATH"	\
   SHELL="$(SHELL)"				\
   LIBVIRT_DRIVER_DIR="$(abs_top_builddir)/src/.libs" \

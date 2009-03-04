@@ -2923,6 +2923,7 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdOptDef opts_pool_X_as[] = {
     {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the pool")},
+    {"print-xml", VSH_OT_BOOL, 0, gettext_noop("print XML document, but don't define/create")},
     {"type", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("type of the pool")},
     {"source-host", VSH_OT_DATA, 0, gettext_noop("source-host for underlying storage")},
     {"source-path", VSH_OT_DATA, 0, gettext_noop("source path for underlying storage")},
@@ -3002,6 +3003,7 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolPtr pool;
     char *xml, *name;
+    int printXML = vshCommandOptBool(cmd, "print-xml");
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -3009,18 +3011,22 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
     if (!buildPoolXML(cmd, &name, &xml))
         return FALSE;
 
-    pool = virStoragePoolCreateXML(ctl->conn, xml, 0);
-    free (xml);
-
-    if (pool != NULL) {
-        vshPrint(ctl, _("Pool %s created\n"), name);
-        virStoragePoolFree(pool);
-        return TRUE;
+    if (printXML) {
+        printf("%s", xml);
+        free (xml);
     } else {
-        vshError(ctl, FALSE, _("Failed to create pool %s"), name);
-    }
+        pool = virStoragePoolCreateXML(ctl->conn, xml, 0);
+        free (xml);
 
-    return FALSE;
+        if (pool != NULL) {
+            vshPrint(ctl, _("Pool %s created\n"), name);
+            virStoragePoolFree(pool);
+        } else {
+            vshError(ctl, FALSE, _("Failed to create pool %s"), name);
+            return FALSE;
+        }
+    }
+    return TRUE;
 }
 
 
@@ -3085,6 +3091,7 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolPtr pool;
     char *xml, *name;
+    int printXML = vshCommandOptBool(cmd, "print-xml");
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -3092,18 +3099,22 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
     if (!buildPoolXML(cmd, &name, &xml))
         return FALSE;
 
-    pool = virStoragePoolDefineXML(ctl->conn, xml, 0);
-    free (xml);
-
-    if (pool != NULL) {
-        vshPrint(ctl, _("Pool %s defined\n"), name);
-        virStoragePoolFree(pool);
-        return TRUE;
+    if (printXML) {
+        printf("%s", xml);
+        free (xml);
     } else {
-        vshError(ctl, FALSE, _("Failed to define pool %s"), name);
-    }
+        pool = virStoragePoolDefineXML(ctl->conn, xml, 0);
+        free (xml);
 
-    return FALSE;
+        if (pool != NULL) {
+            vshPrint(ctl, _("Pool %s defined\n"), name);
+            virStoragePoolFree(pool);
+        } else {
+            vshError(ctl, FALSE, _("Failed to define pool %s"), name);
+            return FALSE;
+        }
+    }
+    return TRUE;
 }
 
 

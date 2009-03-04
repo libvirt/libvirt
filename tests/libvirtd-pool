@@ -1,9 +1,8 @@
 #!/bin/sh
-# Get coverage of libvirtd's config-parsing code.
+# Get coverage of virsh pool-define-as XML formatting
 
 if test "$VERBOSE" = yes; then
   set -x
-  libvirtd --version
   virsh --version
 fi
 
@@ -14,50 +13,28 @@ test -z "$abs_top_srcdir" && abs_top_srcdir=$(pwd)/..
 fail=0
 
 pwd=$(pwd) || fail=1
-sock_dir="$pwd"
-cat > conf <<EOF || fail=1
-unix_sock_dir = "$sock_dir"
-log_outputs = "3:file:$pwd/log"
-EOF
 
-libvirtd --config=conf > libvirtd-log 2>&1 & pid=$!
-sleep 1
-
-url="qemu:///session?socket=@$sock_dir/libvirt-sock"
-virsh --connect "$url" \
-    pool-define-as P dir src-host /src/path /src/dev S /target-path > out 2>&1 \
-  || fail=1
-virsh --connect "$url" pool-dumpxml P >> out 2>&1 || fail=1
-
-# remove random uuid
-sed 's/<uuid>.*/-/' out > k && mv k out || fail=1
-
-kill $pid
+virsh --connect test:///default \
+  pool-define-as --print-xml \
+  P dir src-host /src/path /src/dev S /target-path \
+  1>out 2>&1
 
 cat <<EOF > pool-list-exp
-Pool P defined
-
 <pool type='dir'>
   <name>P</name>
-  -
-  <capacity>0</capacity>
-  <allocation>0</allocation>
-  <available>0</available>
   <source>
+    <host name='src-host'/>
+    <dir path='/src/path'/>
+    <device path='/src/dev'/>
+    <name>S</name>
   </source>
   <target>
     <path>/target-path</path>
-    <permissions>
-      <mode>0700</mode>
-      <owner>500</owner>
-      <group>500</group>
-    </permissions>
   </target>
 </pool>
 
 EOF
 
 compare pool-list-exp out || fail=1
-compare /dev/null libvirtd-log || fail=1
 
 exit $fail

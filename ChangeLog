@@ -1,3 +1,23 @@
+Wed Mar  4 12:37:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix misc failures in test suite & make test cases more robust
+	to future changes
+	* src/virsh.c: Add a new --print-xml option to pool-define-as
+	and pool-create-as, to allow printing of generated XML doc.
+	* tests/Makefile.am: Fix setting of CONFIG_HEADER variable
+	* tests/daemon-conf: Don't diff entire of libvirtd stdout,
+	just grep for the diagnostic we care about, to avoid breaking
+	everytime libvirtd prints new unrelated diagnostics
+	* tests/libvirtd-fail: Check status of libvirtd when run with
+	bogus config file to detect failure, rather than relying on
+	diff of unpredictable stdout logs
+	* tests/libvirtd-net-persist: Remove test which breaks if
+	QEMU driver can't be started, and conflicts with running
+	session daemon
+	* tests/libvirtd-pool: Use new --print-xml option to virsh
+	to directly test XML generation, rather than indirectly
+	checking via the QEMU driver
+
 Tue Mar  3 19:31:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt.c: Fix return status s/-2/-1/ for virNodeGetSecurityModel
