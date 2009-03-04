@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.ru\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-03-03 11:21+0100\n"
+"POT-Creation-Date: 2009-03-04 14:01+0100\n"
 "PO-Revision-Date: 2008-10-17 15:08+1100\n"
 "Last-Translator: Yulia Poyarkova <yulia.poyarkova@redhat.com>\n"
 "Language-Team: \n"
@@ -249,9 +249,9 @@ msgstr "Длина полученного пути слишком велика �
 msgid "Failed to allocate struct qemud_server"
 msgstr "Не удалось выделить struct qemud_server"
 
-#: qemud/qemud.c:806 qemud/qemud.c:1285 src/domain_conf.c:517
+#: qemud/qemud.c:806 qemud/qemud.c:1285 src/domain_conf.c:521
 #: src/network_conf.c:170 src/node_device_conf.c:137 src/openvz_conf.c:402
-#: src/qemu_driver.c:372 src/remote_internal.c:903 src/remote_internal.c:5737
+#: src/qemu_driver.c:423 src/remote_internal.c:903 src/remote_internal.c:5752
 #: src/storage_conf.c:1310 src/test.c:235 src/test.c:363
 #, fuzzy
 msgid "cannot initialize mutex"
@@ -614,7 +614,7 @@ msgstr "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
 msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 
-#: qemud/remote.c:2597 src/remote_internal.c:5068
+#: qemud/remote.c:2597 src/remote_internal.c:5083
 #, c-format
 msgid "Cannot resolve address %d: %s"
 msgstr "Не удается разрешить адрес %d: %s"
@@ -661,7 +661,7 @@ msgstr ""
 msgid "cannot allocate mechlist"
 msgstr ""
 
-#: qemud/remote.c:2790 src/remote_internal.c:5564
+#: qemud/remote.c:2790 src/remote_internal.c:5579
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr ""
@@ -931,539 +931,539 @@ msgstr "не удалось добавить хранилище vol в хэш-т
 msgid "dev missing from connection hash table"
 msgstr "vol отсутствует в хэш-таблице соединений"
 
-#: src/domain_conf.c:608
+#: src/domain_conf.c:612
 #, fuzzy, c-format
 msgid "unknown disk type '%s'"
 msgstr "неизвестный тип '%s'"
 
-#: src/domain_conf.c:661
+#: src/domain_conf.c:665
 #, fuzzy, c-format
 msgid "unknown disk device '%s'"
 msgstr "неизвестное загрузочное устройство '%s'"
 
-#: src/domain_conf.c:687
+#: src/domain_conf.c:691
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "Недопустимое имя дисковода: %s"
 
-#: src/domain_conf.c:702
+#: src/domain_conf.c:706
 #, c-format
 msgid "Invalid harddisk device name: %s"
 msgstr "Недопустимое имя жесткого диска: %s"
 
-#: src/domain_conf.c:709
+#: src/domain_conf.c:713
 #, fuzzy, c-format
 msgid "unknown disk bus type '%s'"
 msgstr "неизвестный тип auth '%s'"
 
-#: src/domain_conf.c:734
+#: src/domain_conf.c:738
 #, c-format
 msgid "Invalid bus type '%s' for floppy disk"
 msgstr "Недопустимый тип шины '%s' для дисковода"
 
-#: src/domain_conf.c:740
+#: src/domain_conf.c:744
 #, fuzzy, c-format
 msgid "Invalid bus type '%s' for disk"
 msgstr "Недопустимый тип шины '%s' для дисковода"
 
-#: src/domain_conf.c:747
+#: src/domain_conf.c:751
 #, fuzzy, c-format
 msgid "unknown disk cache mode '%s'"
 msgstr "неизвестное загрузочное устройство '%s'"
 
-#: src/domain_conf.c:801
+#: src/domain_conf.c:805
 #, fuzzy, c-format
 msgid "unknown filesystem type '%s'"
 msgstr "неизвестный тип auth '%s'"
 
-#: src/domain_conf.c:895
+#: src/domain_conf.c:899
 #, fuzzy, c-format
 msgid "unknown interface type '%s'"
 msgstr "неизвестный тип auth '%s'"
 
-#: src/domain_conf.c:961
+#: src/domain_conf.c:965
 msgid ""
 "No <source> 'network' attribute specified with <interface type='network'/>"
 msgstr "Нет <source> атрибута 'network' с <interface type='network'/>"
 
-#: src/domain_conf.c:987
+#: src/domain_conf.c:991
 msgid "No <source> 'dev' attribute specified with <interface type='bridge'/>"
 msgstr "Нет <source> атрибута 'dev' с <interface type='bridge'/>"
 
-#: src/domain_conf.c:1007
+#: src/domain_conf.c:1011
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr ""
 
-#: src/domain_conf.c:1012
+#: src/domain_conf.c:1016
 msgid "Cannot parse <source> 'port' attribute with socket interface"
 msgstr "Невозможно разобрать атрибут <source> 'port' с интерфейсом сокета"
 
-#: src/domain_conf.c:1020
+#: src/domain_conf.c:1024
 msgid "No <source> 'address' attribute specified with socket interface"
 msgstr ""
 
-#: src/domain_conf.c:1045
+#: src/domain_conf.c:1049
 msgid "Model name contains invalid characters"
 msgstr ""
 
-#: src/domain_conf.c:1219 src/domain_conf.c:1296
+#: src/domain_conf.c:1223 src/domain_conf.c:1300
 #, fuzzy
 msgid "Missing source path attribute for char device"
 msgstr "отсутствует исходная информация для устройства"
 
-#: src/domain_conf.c:1236 src/domain_conf.c:1253
+#: src/domain_conf.c:1240 src/domain_conf.c:1257
 #, fuzzy
 msgid "Missing source host attribute for char device"
 msgstr "отсутствует исходная информация для устройства"
 
-#: src/domain_conf.c:1241 src/domain_conf.c:1258 src/domain_conf.c:1278
+#: src/domain_conf.c:1245 src/domain_conf.c:1262 src/domain_conf.c:1282
 msgid "Missing source service attribute for char device"
 msgstr "Отсутствует исходный атрибут службы для символьного устройства"
 
-#: src/domain_conf.c:1349
+#: src/domain_conf.c:1353
 msgid "missing input device type"
 msgstr "отсутствует информация о типе устройства ввода"
 
-#: src/domain_conf.c:1355
+#: src/domain_conf.c:1359
 #, fuzzy, c-format
 msgid "unknown input device type '%s'"
 msgstr "неизвестное загрузочное устройство '%s'"
 
-#: src/domain_conf.c:1362
+#: src/domain_conf.c:1366
 #, fuzzy, c-format
 msgid "unknown input bus type '%s'"
 msgstr "неизвестный тип auth '%s'"
 
-#: src/domain_conf.c:1370
+#: src/domain_conf.c:1374
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr "шина ps2 не поддерживает устройство ввода %s"
 
-#: src/domain_conf.c:1376 src/domain_conf.c:1383
+#: src/domain_conf.c:1380 src/domain_conf.c:1387
 #, c-format
 msgid "unsupported input bus %s"
 msgstr "шина ввода %s не поддерживается"
 
-#: src/domain_conf.c:1388
+#: src/domain_conf.c:1392
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "шина xen не поддерживает устройство ввода %s"
 
-#: src/domain_conf.c:1433
+#: src/domain_conf.c:1437
 #, fuzzy
 msgid "missing graphics device type"
 msgstr "отсутствует информация о типе устройства ввода"
 
-#: src/domain_conf.c:1439
+#: src/domain_conf.c:1443
 #, fuzzy, c-format
 msgid "unknown graphics device type '%s'"
 msgstr "неизвестный тип устройства"
 
-#: src/domain_conf.c:1450
+#: src/domain_conf.c:1454
 #, fuzzy, c-format
 msgid "cannot parse vnc port %s"
 msgstr "не удается удалить конфигурацию для %s"
 
-#: src/domain_conf.c:1488
+#: src/domain_conf.c:1492
 #, fuzzy, c-format
 msgid "unknown fullscreen value '%s'"
 msgstr "неизвестный тип auth '%s'"
 
-#: src/domain_conf.c:1527
+#: src/domain_conf.c:1531
 #, fuzzy, c-format
 msgid "unknown sound model '%s'"
 msgstr "неизвестный тип модели звукового устройства"
 
-#: src/domain_conf.c:1561
+#: src/domain_conf.c:1565
 #, fuzzy, c-format
 msgid "cannot parse vendor id %s"
 msgstr "невозможно прочитать каталог %s: %s"
 
-#: src/domain_conf.c:1568
+#: src/domain_conf.c:1572
 msgid "usb vendor needs id"
 msgstr ""
 
-#: src/domain_conf.c:1578
+#: src/domain_conf.c:1582
 #, fuzzy, c-format
 msgid "cannot parse product %s"
 msgstr "невозможно открыть устройство %s"
 
-#: src/domain_conf.c:1586
+#: src/domain_conf.c:1590
 msgid "usb product needs id"
 msgstr ""
 
-#: src/domain_conf.c:1597 src/domain_conf.c:1684
+#: src/domain_conf.c:1601 src/domain_conf.c:1688
 #, fuzzy, c-format
 msgid "cannot parse bus %s"
 msgstr "невозможно прочитать %s: %s"
 
-#: src/domain_conf.c:1604
+#: src/domain_conf.c:1608
 msgid "usb address needs bus id"
 msgstr ""
 
-#: src/domain_conf.c:1613
+#: src/domain_conf.c:1617
 #, fuzzy, c-format
 msgid "cannot parse device %s"
 msgstr "невозможно открыть устройство %s"
 
-#: src/domain_conf.c:1621
+#: src/domain_conf.c:1625
 msgid "usb address needs device id"
 msgstr ""
 
-#: src/domain_conf.c:1626
+#: src/domain_conf.c:1630
 #, fuzzy, c-format
 msgid "unknown usb source type '%s'"
 msgstr "неизвестный тип auth '%s'"
 
-#: src/domain_conf.c:1637
+#: src/domain_conf.c:1641
 #, fuzzy
 msgid "missing vendor"
 msgstr "отсутствует \""
 
-#: src/domain_conf.c:1643
+#: src/domain_conf.c:1647
 #, fuzzy
 msgid "missing product"
 msgstr "отсутствует узел источника"
 
-#: src/domain_conf.c:1671
+#: src/domain_conf.c:1675
 #, fuzzy, c-format
 msgid "cannot parse domain %s"
 msgstr "невозможно открыть устройство %s"
 
-#: src/domain_conf.c:1691
+#: src/domain_conf.c:1695
 msgid "pci address needs bus id"
 msgstr ""
 
-#: src/domain_conf.c:1700
+#: src/domain_conf.c:1704
 #, fuzzy, c-format
 msgid "cannot parse slot %s"
 msgstr "невозможно прочитать %s: %s"
 
-#: src/domain_conf.c:1708
+#: src/domain_conf.c:1712
 msgid "pci address needs slot id"
 msgstr ""
 
-#: src/domain_conf.c:1717
+#: src/domain_conf.c:1721
 #, fuzzy, c-format
 msgid "cannot parse function %s"
 msgstr "невозможно открыть устройство %s"
 
-#: src/domain_conf.c:1725
+#: src/domain_conf.c:1729
 msgid "pci address needs function id"
 msgstr ""
 
-#: src/domain_conf.c:1730
+#: src/domain_conf.c:1734
 #, fuzzy, c-format
 msgid "unknown pci source type '%s'"
 msgstr "неизвестный тип auth '%s'"
 
-#: src/domain_conf.c:1763
+#: src/domain_conf.c:1767
 #, fuzzy, c-format
 msgid "unknown hostdev mode '%s'"
 msgstr "неизвестное загрузочное устройство '%s'"
 
-#: src/domain_conf.c:1774
+#: src/domain_conf.c:1778
 #, fuzzy, c-format
 msgid "unknown host device type '%s'"
 msgstr "неизвестное загрузочное устройство '%s'"
 
-#: src/domain_conf.c:1779
+#: src/domain_conf.c:1783
 #, fuzzy
 msgid "missing type in hostdev"
 msgstr "отсутствует узел источника"
 
-#: src/domain_conf.c:1807
+#: src/domain_conf.c:1811
 #, fuzzy, c-format
 msgid "unknown node %s"
 msgstr "неизвестный узел %s"
 
-#: src/domain_conf.c:1838
+#: src/domain_conf.c:1842
 #, fuzzy, c-format
 msgid "unknown lifecycle action %s"
 msgstr "неизвестный тип аутентификации %s"
 
-#: src/domain_conf.c:1896 src/domain_conf.c:2527 src/domain_conf.c:2568
+#: src/domain_conf.c:1925 src/domain_conf.c:2556 src/domain_conf.c:2597
 #: src/network_conf.c:480 src/network_conf.c:520 src/node_device_conf.c:1045
-#: src/qemu_conf.c:1511 src/storage_conf.c:653 src/storage_conf.c:1075
+#: src/qemu_conf.c:1518 src/storage_conf.c:653 src/storage_conf.c:1075
 msgid "missing root element"
 msgstr "отсутствует информация о корневом элементе"
 
-#: src/domain_conf.c:1932
+#: src/domain_conf.c:1961
 msgid "unknown device type"
 msgstr "неизвестный тип устройства"
 
-#: src/domain_conf.c:1979
+#: src/domain_conf.c:2008
 msgid "missing domain type attribute"
 msgstr "отсутствует атрибут типа домена"
 
-#: src/domain_conf.c:1985
+#: src/domain_conf.c:2014
 #, fuzzy, c-format
 msgid "invalid domain type %s"
 msgstr "недопустимый тип домена"
 
-#: src/domain_conf.c:2002 src/network_conf.c:335
+#: src/domain_conf.c:2031 src/network_conf.c:335
 #, fuzzy
 msgid "Failed to generate UUID"
 msgstr "Не удалось сгенерировать UUID: %s"
 
-#: src/domain_conf.c:2008 src/network_conf.c:342 src/storage_conf.c:478
+#: src/domain_conf.c:2037 src/network_conf.c:342 src/storage_conf.c:478
 msgid "malformed uuid element"
 msgstr "неверно сформированный элемент uuid"
 
-#: src/domain_conf.c:2017
+#: src/domain_conf.c:2046
 msgid "missing memory element"
 msgstr "отсутствует элемент памяти"
 
-#: src/domain_conf.c:2047
+#: src/domain_conf.c:2076
 #, fuzzy, c-format
 msgid "unexpected feature %s"
 msgstr "неожидаемые данные '%s'"
 
-#: src/domain_conf.c:2087
+#: src/domain_conf.c:2116
 msgid "no OS type"
 msgstr "не указан тип ОС"
 
-#: src/domain_conf.c:2115
+#: src/domain_conf.c:2144
 #, c-format
 msgid "os type '%s' & arch '%s' combination is not supported"
 msgstr ""
 
-#: src/domain_conf.c:2123 src/xm_internal.c:701
+#: src/domain_conf.c:2152 src/xm_internal.c:701
 #, fuzzy, c-format
 msgid "no supported architecture for os type '%s'"
 msgstr "неподдерживаемая архитектура"
 
-#: src/domain_conf.c:2173
+#: src/domain_conf.c:2202
 #, fuzzy
 msgid "cannot extract boot device"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/domain_conf.c:2181
+#: src/domain_conf.c:2210
 #, fuzzy
 msgid "missing boot device"
 msgstr "отсутствует исходное устройство"
 
-#: src/domain_conf.c:2186
+#: src/domain_conf.c:2215
 #, c-format
 msgid "unknown boot device '%s'"
 msgstr "неизвестное загрузочное устройство '%s'"
 
-#: src/domain_conf.c:2206
+#: src/domain_conf.c:2235
 #, fuzzy
 msgid "cannot extract disk devices"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/domain_conf.c:2227
+#: src/domain_conf.c:2256
 #, fuzzy
 msgid "cannot extract filesystem devices"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/domain_conf.c:2246
+#: src/domain_conf.c:2275
 #, fuzzy
 msgid "cannot extract network devices"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/domain_conf.c:2267
+#: src/domain_conf.c:2296
 #, fuzzy
 msgid "cannot extract parallel devices"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/domain_conf.c:2287
+#: src/domain_conf.c:2316
 #, fuzzy
 msgid "cannot extract serial devices"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/domain_conf.c:2337
+#: src/domain_conf.c:2366
 #, fuzzy
 msgid "cannot extract input devices"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/domain_conf.c:2372
+#: src/domain_conf.c:2401
 #, fuzzy
 msgid "cannot extract graphics devices"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/domain_conf.c:2414
+#: src/domain_conf.c:2443
 #, fuzzy
 msgid "cannot extract sound devices"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/domain_conf.c:2444
+#: src/domain_conf.c:2473
 #, fuzzy
 msgid "cannot extract host devices"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/domain_conf.c:2490 src/network_conf.c:445 src/node_device_conf.c:1010
-#: src/qemu_conf.c:1457 src/storage_conf.c:608
+#: src/domain_conf.c:2519 src/network_conf.c:445 src/node_device_conf.c:1010
+#: src/qemu_conf.c:1464 src/storage_conf.c:608
 #, fuzzy, c-format
 msgid "at line %d: %s"
 msgstr "привязка: %s"
 
-#: src/domain_conf.c:2521 src/domain_conf.c:2562 src/network_conf.c:474
-#: src/network_conf.c:514 src/node_device_conf.c:1039 src/qemu_conf.c:1505
+#: src/domain_conf.c:2550 src/domain_conf.c:2591 src/network_conf.c:474
+#: src/network_conf.c:514 src/node_device_conf.c:1039 src/qemu_conf.c:1512
 #: src/storage_conf.c:640 src/storage_conf.c:1062
 #, fuzzy
 msgid "failed to parse xml document"
 msgstr "не удалось приостановить домен"
 
-#: src/domain_conf.c:2592 src/network_conf.c:542 src/node_device_conf.c:979
-#: src/qemu_conf.c:1523
+#: src/domain_conf.c:2621 src/network_conf.c:542 src/node_device_conf.c:979
+#: src/qemu_conf.c:1530
 msgid "incorrect root element"
 msgstr "неверный корневой элемент"
 
-#: src/domain_conf.c:2801
+#: src/domain_conf.c:2830
 msgid "topology cpuset syntax error"
 msgstr "синтаксическая ошибка cpuset топологии "
 
-#: src/domain_conf.c:2815
+#: src/domain_conf.c:2844
 #, fuzzy, c-format
 msgid "unexpected lifecycle type %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:2837
+#: src/domain_conf.c:2866
 #, fuzzy, c-format
 msgid "unexpected disk type %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:2842
+#: src/domain_conf.c:2871
 #, fuzzy, c-format
 msgid "unexpected disk device %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:2847
+#: src/domain_conf.c:2876
 #, fuzzy, c-format
 msgid "unexpected disk bus %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:2852
+#: src/domain_conf.c:2881
 #, fuzzy, c-format
 msgid "unexpected disk cache mode %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:2900
+#: src/domain_conf.c:2929
 #, fuzzy, c-format
 msgid "unexpected filesystem type %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:2951 src/domain_conf.c:3171
+#: src/domain_conf.c:2980 src/domain_conf.c:3200
 #, fuzzy, c-format
 msgid "unexpected net type %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:3025
+#: src/domain_conf.c:3054
 #, fuzzy, c-format
 msgid "unexpected char type %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:3124 src/xend_internal.c:5269
+#: src/domain_conf.c:3153 src/xend_internal.c:5269
 #, fuzzy, c-format
 msgid "unexpected sound model %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:3144 src/xend_internal.c:5291
+#: src/domain_conf.c:3173 src/xend_internal.c:5291
 #, fuzzy, c-format
 msgid "unexpected input type %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:3149
+#: src/domain_conf.c:3178
 #, fuzzy, c-format
 msgid "unexpected input bus type %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:3234
+#: src/domain_conf.c:3263
 #, fuzzy, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "непредвиденный узел dict"
 
-#: src/domain_conf.c:3241
+#: src/domain_conf.c:3270
 #, fuzzy, c-format
 msgid "unexpected hostdev type %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:3289
+#: src/domain_conf.c:3318
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:3374
+#: src/domain_conf.c:3403
 #, fuzzy, c-format
 msgid "unexpected boot device type %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:3392
+#: src/domain_conf.c:3421
 #, fuzzy, c-format
 msgid "unexpected feature %d"
 msgstr "непредвиденный узел значений"
 
-#: src/domain_conf.c:3521 src/network_conf.c:657
+#: src/domain_conf.c:3566 src/network_conf.c:657
 #, fuzzy, c-format
 msgid "cannot create config directory '%s'"
 msgstr "не удается создать каталог конфигурации %s: %s"
 
-#: src/domain_conf.c:3530 src/network_conf.c:666
+#: src/domain_conf.c:3575 src/network_conf.c:666
 #, fuzzy, c-format
 msgid "cannot create config file '%s'"
 msgstr "не удается создать файл конфигурации %s: %s"
 
-#: src/domain_conf.c:3538 src/network_conf.c:674
+#: src/domain_conf.c:3583 src/network_conf.c:674
 #, fuzzy, c-format
 msgid "cannot write config file '%s'"
 msgstr "не удается записать файл конфигурации %s: %s"
 
-#: src/domain_conf.c:3545 src/network_conf.c:681
+#: src/domain_conf.c:3590 src/network_conf.c:681
 #, fuzzy, c-format
 msgid "cannot save config file '%s'"
 msgstr "не удается сохранить файл конфигурации %s: %s"
 
-#: src/domain_conf.c:3646 src/network_conf.c:783
+#: src/domain_conf.c:3691 src/network_conf.c:783
 #, fuzzy, c-format
 msgid "Failed to open dir '%s'"
 msgstr "Не удалось открыть каталог '%s': %s"
 
-#: src/domain_conf.c:3700
+#: src/domain_conf.c:3745
 #, fuzzy, c-format
 msgid "cannot remove config %s"
 msgstr "не удается удалить конфигурацию для %s"
 
-#: src/domain_conf.c:3774
+#: src/domain_conf.c:3819
 msgid "unknown virt type"
 msgstr "неизвестный тип virt"
 
-#: src/domain_conf.c:3785
+#: src/domain_conf.c:3830
 #, c-format
 msgid "no emulator for domain %s os type %s on architecture %s"
 msgstr ""
 
-#: src/iptables.c:104
+#: src/iptables.c:103
 #, fuzzy, c-format
 msgid "Failed to run '%s %s': %s"
 msgstr "Не удалось выполнить '"
 
-#: src/iptables.c:152
+#: src/iptables.c:151
 msgid "Failed to read "
 msgstr "Не удалось прочитать "
 
-#: src/iptables.c:181
+#: src/iptables.c:180
 msgid "Failed to write to "
 msgstr "Не удалось осуществить запись в "
 
-#: src/iptables.c:247
+#: src/iptables.c:246
 #, c-format
 msgid "Failed to create directory %s : %s"
 msgstr "Не удалось создать каталог %s : %s"
 
-#: src/iptables.c:253
+#: src/iptables.c:252
 #, c-format
 msgid "Failed to saves iptables rules to %s : %s"
 msgstr "Не удалось сохранить правила iptables в %s : %s"
 
-#: src/iptables.c:555
+#: src/iptables.c:553
 #, c-format
 msgid "Failed to remove iptables rule '%s' from chain '%s' in table '%s': %s"
 msgstr ""
 "Не удалось удалить правило iptables '%s' из цепочки '%s' в таблице '%s': %s"
 
-#: src/iptables.c:565
+#: src/iptables.c:563
 #, c-format
 msgid "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s"
 msgstr ""
@@ -1735,21 +1735,21 @@ msgstr ""
 #: src/lxc_driver.c:433 src/openvz_driver.c:289 src/openvz_driver.c:328
 #: src/openvz_driver.c:372 src/openvz_driver.c:409 src/openvz_driver.c:866
 #: src/openvz_driver.c:908 src/openvz_driver.c:939 src/openvz_driver.c:1011
-#: src/qemu_driver.c:2231 src/qemu_driver.c:2353 src/qemu_driver.c:2976
-#: src/qemu_driver.c:3046 src/qemu_driver.c:3133 src/qemu_driver.c:3527
-#: src/qemu_driver.c:3675 src/qemu_driver.c:3724 src/qemu_driver.c:3750
-#: src/qemu_driver.c:4024 src/uml_driver.c:1327 src/uml_driver.c:1450
+#: src/qemu_driver.c:2338 src/qemu_driver.c:2460 src/qemu_driver.c:3170
+#: src/qemu_driver.c:3240 src/qemu_driver.c:3327 src/qemu_driver.c:3721
+#: src/qemu_driver.c:3871 src/qemu_driver.c:3923 src/qemu_driver.c:3949
+#: src/qemu_driver.c:4223 src/uml_driver.c:1327 src/uml_driver.c:1450
 #: src/uml_driver.c:1490 src/uml_driver.c:1562 src/uml_driver.c:1623
 #: src/uml_driver.c:1667 src/uml_driver.c:1693 src/uml_driver.c:1766
 msgid "no domain with matching uuid"
 msgstr "нет домена с соответствующим UUID"
 
-#: src/lxc_driver.c:333 src/openvz_driver.c:871 src/qemu_driver.c:3139
+#: src/lxc_driver.c:333 src/openvz_driver.c:871 src/qemu_driver.c:3333
 #: src/uml_driver.c:1629
 msgid "cannot delete active domain"
 msgstr "нельзя удалить активный домен"
 
-#: src/lxc_driver.c:339 src/qemu_driver.c:3145 src/uml_driver.c:1635
+#: src/lxc_driver.c:339 src/qemu_driver.c:3339 src/uml_driver.c:1635
 #, fuzzy
 msgid "cannot undefine transient domain"
 msgstr "нельзя удалить активный домен"
@@ -2082,7 +2082,7 @@ msgstr "невозможно создать каталог автозапуск�
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "Не удалось создать символьную ссылку '%s' к '%s': %s"
 
-#: src/network_driver.c:1390 src/qemu_driver.c:3787 src/storage_driver.c:951
+#: src/network_driver.c:1390 src/qemu_driver.c:3986 src/storage_driver.c:951
 #: src/uml_driver.c:1730
 #, fuzzy, c-format
 msgid "Failed to delete symlink '%s'"
@@ -2514,7 +2514,7 @@ msgstr "работа домена не завершена"
 msgid "Could not read container config"
 msgstr "не удается разобрать URI подключения"
 
-#: src/openvz_driver.c:965 src/qemu_driver.c:1736
+#: src/openvz_driver.c:965 src/qemu_driver.c:1843
 #, c-format
 msgid "unknown type '%s'"
 msgstr "неизвестный тип '%s'"
@@ -2533,62 +2533,62 @@ msgstr "не удается разобрать URI подключения"
 msgid "Failed to open config space file '%s': %s"
 msgstr "Не удалось открыть файл pid '%s' : %s"
 
-#: src/pci.c:161
+#: src/pci.c:162
 #, fuzzy, c-format
 msgid "Failed to read from '%s' : %s"
 msgstr "Ошибка чтения канала сигналов: %s"
 
-#: src/pci.c:200
+#: src/pci.c:202
 #, fuzzy, c-format
 msgid "Failed to write to '%s' : %s"
 msgstr "Не удалось выполнить запись в файл PID '%s' : %s"
 
-#: src/pci.c:569
+#: src/pci.c:575
 #, fuzzy, c-format
 msgid "Failed to open config space file '%s'"
 msgstr "Не удалось открыть файл pid '%s' : %s"
 
-#: src/pci.c:606
+#: src/pci.c:612
 #, c-format
 msgid "No PCI reset capability available for %s"
 msgstr ""
 
-#: src/pci.c:627
+#: src/pci.c:633
 #, fuzzy, c-format
 msgid "modprobe %s failed: %s"
 msgstr "ошибка действия: %s"
 
-#: src/pci.c:633
+#: src/pci.c:639
 #, c-format
 msgid "%s module not available, cannot bind device %s to it"
 msgstr ""
 
-#: src/pci.c:647
+#: src/pci.c:653
 #, fuzzy, c-format
 msgid "Failed to add PCI device ID '%s' to %s"
 msgstr "Не удалось привязать сокет к '%s': %s"
 
-#: src/pci.c:662
+#: src/pci.c:668
 #, fuzzy, c-format
 msgid "Failed to unbind PCI device '%s'"
 msgstr "Ошибка подключения к гипервизору"
 
-#: src/pci.c:674 src/pci.c:716
+#: src/pci.c:680 src/pci.c:722
 #, fuzzy, c-format
 msgid "Failed to bind PCI device '%s' to %s"
 msgstr "Не удалось привязать сокет к '%s': %s"
 
-#: src/pci.c:686
+#: src/pci.c:692
 #, fuzzy, c-format
 msgid "Failed to remove PCI ID '%s' from %s"
 msgstr "Ошибка создания домена из %s"
 
-#: src/pci.c:731
+#: src/pci.c:737
 #, fuzzy, c-format
 msgid "Failed to trigger a re-probe for PCI device '%s'"
 msgstr "Не найдена запись пользователя для uid '%d': %s"
 
-#: src/pci.c:803
+#: src/pci.c:810
 #, fuzzy, c-format
 msgid "Failed to read product/vendor ID for %s"
 msgstr "Ошибка создания домена из %s"
@@ -2637,91 +2637,91 @@ msgstr "Ошибка связи с прокси: плохо сформирова
 msgid "got asynchronous packet number %d\n"
 msgstr "получен асинхронный номер пакета - %d\n"
 
-#: src/qemu_conf.c:473
+#: src/qemu_conf.c:481
 #, c-format
 msgid "Unexpected exit status from qemu %d pid %lu"
 msgstr "Неожиданный статус выхода qemu %d pid %lu"
 
-#: src/qemu_conf.c:482
+#: src/qemu_conf.c:489
 #, c-format
 msgid "Unexpected exit status '%d', qemu probably failed"
 msgstr "Неожиданный статус выхода '%d', возможный сбой qemu"
 
-#: src/qemu_conf.c:522
+#: src/qemu_conf.c:529
 #, c-format
 msgid "Cannot find QEMU binary %s: %s"
 msgstr "Не удается найти бинарный компонент QEMU %s: %s"
 
-#: src/qemu_conf.c:555
+#: src/qemu_conf.c:562
 #, c-format
 msgid "Network '%s' not found"
 msgstr "Сеть '%s' не найдена"
 
-#: src/qemu_conf.c:570
+#: src/qemu_conf.c:577
 #, c-format
 msgid "Network type %d is not supported"
 msgstr "Тип сети %d не поддерживается"
 
-#: src/qemu_conf.c:587
+#: src/qemu_conf.c:594
 #, c-format
 msgid "cannot initialize bridge support: %s"
 msgstr "не удается инициализировать поддержку моста: %s"
 
-#: src/qemu_conf.c:597
+#: src/qemu_conf.c:604
 #, fuzzy, c-format
 msgid "Failed to add tap interface to bridge. %s is not a bridge device"
 msgstr "Не удалось добавить интерфейс '%s' к мосту '%s' : %s"
 
-#: src/qemu_conf.c:601
+#: src/qemu_conf.c:608
 #, c-format
 msgid "Failed to add tap interface '%s' to bridge '%s' : %s"
 msgstr "Не удалось добавить интерфейс '%s' к мосту '%s' : %s"
 
-#: src/qemu_conf.c:750
+#: src/qemu_conf.c:757
 #, fuzzy
 msgid "TCP migration is not supported with this QEMU binary"
 msgstr "команда 'info blockstats' не поддерживается этим qemu"
 
-#: src/qemu_conf.c:758 src/qemu_conf.c:764
+#: src/qemu_conf.c:765 src/qemu_conf.c:771
 #, fuzzy
 msgid "STDIO migration is not supported with this QEMU binary"
 msgstr "команда 'info blockstats' не поддерживается этим qemu"
 
-#: src/qemu_conf.c:974
+#: src/qemu_conf.c:981
 #, fuzzy, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "неподдерживаемый тип диска '%s'"
 
-#: src/qemu_conf.c:1014 src/qemu_conf.c:1084
+#: src/qemu_conf.c:1021 src/qemu_conf.c:1091
 #, fuzzy, c-format
 msgid "unsupported usb disk type for '%s'"
 msgstr "неподдерживаемый тип диска '%s'"
 
-#: src/qemu_conf.c:1022 src/qemu_conf.c:1103 src/uml_conf.c:273
+#: src/qemu_conf.c:1029 src/qemu_conf.c:1110 src/uml_conf.c:273
 #, c-format
 msgid "unsupported disk type '%s'"
 msgstr "неподдерживаемый тип диска '%s'"
 
-#: src/qemu_conf.c:1343
+#: src/qemu_conf.c:1350
 msgid "invalid sound model"
 msgstr "недопустимая модель звукового устройства"
 
-#: src/qemu_conf.c:1530
+#: src/qemu_conf.c:1537
 #, fuzzy
 msgid "invalid domain state"
 msgstr "недопустимое имя домена"
 
-#: src/qemu_conf.c:1539
+#: src/qemu_conf.c:1546
 #, fuzzy
 msgid "invalid pid"
 msgstr "недопустимый путь"
 
-#: src/qemu_conf.c:1546
+#: src/qemu_conf.c:1553
 #, fuzzy
 msgid "no monitor path"
 msgstr "Не удается открыть путь %s"
 
-#: src/qemu_conf.c:1553
+#: src/qemu_conf.c:1560
 #, fuzzy
 msgid "no domain config"
 msgstr "список доменов узла"
@@ -2771,267 +2771,291 @@ msgstr "Ошибка сохранения домена %s в %s"
 msgid "Failed to reconnect monitor for %s: %d\n"
 msgstr "Не удалось создать каталог %s : %s"
 
-#: src/qemu_driver.c:425
+#: src/qemu_driver.c:367
+#, fuzzy
+msgid "Failed to start security driver"
+msgstr "не удается получить текущее время"
+
+#: src/qemu_driver.c:372
+msgid "No security driver available"
+msgstr ""
+
+#: src/qemu_driver.c:392
+#, fuzzy, c-format
+msgid "Failed to copy secModel model: %s"
+msgstr "Не удалось обработать режим '%s'"
+
+#: src/qemu_driver.c:400
+#, fuzzy, c-format
+msgid "Failed to copy secModel DOI: %s"
+msgstr "Не удалось обработать режим '%s'"
+
+#: src/qemu_driver.c:476
 #, fuzzy, c-format
 msgid "Failed to create state dir '%s': %s\n"
 msgstr "Не удалось автоматически запустить виртуальную машину '%s': %s"
 
-#: src/qemu_driver.c:621 src/qemu_driver.c:634 src/qemu_driver.c:645
+#: src/qemu_driver.c:677 src/qemu_driver.c:690 src/qemu_driver.c:701
 #, c-format
 msgid "Failure while reading %s startup output"
 msgstr "Сбай при чтении вывода запуска %s"
 
-#: src/qemu_driver.c:629
+#: src/qemu_driver.c:685
 #, c-format
 msgid "Timed out while reading %s startup output"
 msgstr "Время ожидания истело при чтении вывода запуска %s"
 
-#: src/qemu_driver.c:663
+#: src/qemu_driver.c:719
 #, c-format
 msgid "Out of space while reading %s startup output"
 msgstr "Недостаточно места при чтении вывода запуска %s"
 
-#: src/qemu_driver.c:694
+#: src/qemu_driver.c:750
 #, fuzzy, c-format
 msgid "Out of space while reading %s log output"
 msgstr "Недостаточно места при чтении вывода запуска %s"
 
-#: src/qemu_driver.c:701
+#: src/qemu_driver.c:757
 #, fuzzy, c-format
 msgid "Failure while reading %s log output"
 msgstr "Сбай при чтении вывода запуска %s"
 
-#: src/qemu_driver.c:715
+#: src/qemu_driver.c:771
 #, fuzzy, c-format
 msgid "Timed out while reading %s log output"
 msgstr "Время ожидания истело при чтении вывода запуска %s"
 
-#: src/qemu_driver.c:744
+#: src/qemu_driver.c:800
 #, c-format
 msgid "Unable to open monitor path %s"
 msgstr "Не удается открыть путь %s"
 
-#: src/qemu_driver.c:749
+#: src/qemu_driver.c:805
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "Не удается задать флаг close-on-exec для монитора"
 
-#: src/qemu_driver.c:754
+#: src/qemu_driver.c:810
 msgid "Unable to put monitor into non-blocking mode"
 msgstr "Не удается перевести монитор в режим без блокирования"
 
-#: src/qemu_driver.c:904 src/qemu_driver.c:1417
+#: src/qemu_driver.c:960 src/qemu_driver.c:1513
 #, fuzzy, c-format
 msgid "Unable to close logfile: %s\n"
 msgstr "Не удается закрыть файл журнала %d: %s"
 
-#: src/qemu_driver.c:913
+#: src/qemu_driver.c:969
 #, fuzzy, c-format
 msgid "unable to start guest: %s"
 msgstr "не удается установить атрибуты: %s\n"
 
-#: src/qemu_driver.c:943
+#: src/qemu_driver.c:999
 msgid "cannot run monitor command to fetch CPU thread info"
 msgstr ""
 
-#: src/qemu_driver.c:1047
+#: src/qemu_driver.c:1103
 #, fuzzy
 msgid "failed to set CPU affinity"
 msgstr "ошибка при получении домена '%s'"
 
-#: src/qemu_driver.c:1057 src/qemu_driver.c:2129
+#: src/qemu_driver.c:1113 src/qemu_driver.c:2236
 msgid "resume operation failed"
 msgstr "не удалось возобновить операцию"
 
-#: src/qemu_driver.c:1090
+#: src/qemu_driver.c:1146
 msgid "setting VNC password failed"
 msgstr ""
 
-#: src/qemu_driver.c:1234 src/uml_driver.c:736
+#: src/qemu_driver.c:1288
+#, fuzzy
+msgid "Failed to set security label"
+msgstr "не удается получить текущее время"
+
+#: src/qemu_driver.c:1329 src/uml_driver.c:736
 msgid "VM is already active"
 msgstr "Виртуальная машина уже активна"
 
-#: src/qemu_driver.c:1244
+#: src/qemu_driver.c:1339
 msgid "Unable to find an unused VNC port"
 msgstr "Не удается найти незанятый порт VNC"
 
-#: src/qemu_driver.c:1252 src/uml_driver.c:758
+#: src/qemu_driver.c:1347 src/uml_driver.c:758
 #, fuzzy, c-format
 msgid "cannot create log directory %s"
 msgstr "не удается создать каталог журналирования %s: %s"
 
-#: src/qemu_driver.c:1272
+#: src/qemu_driver.c:1367
 #, fuzzy, c-format
 msgid "Cannot find QEMU binary %s"
 msgstr "Не удается найти бинарный компонент QEMU %s: %s"
 
-#: src/qemu_driver.c:1281 src/qemu_driver.c:3251
+#: src/qemu_driver.c:1376 src/qemu_driver.c:3445
 #, fuzzy, c-format
 msgid "Cannot determine QEMU argv syntax %s"
 msgstr "Не удается найти бинарный компонент QEMU %s: %s"
 
-#: src/qemu_driver.c:1302 src/qemu_driver.c:1305 src/uml_driver.c:796
+#: src/qemu_driver.c:1397 src/qemu_driver.c:1400 src/uml_driver.c:796
 #: src/uml_driver.c:799
 #, fuzzy, c-format
 msgid "Unable to write envv to logfile: %s\n"
 msgstr "Не удается записать argv в журнал %d: %s"
 
-#: src/qemu_driver.c:1312 src/qemu_driver.c:1315 src/qemu_driver.c:1320
+#: src/qemu_driver.c:1407 src/qemu_driver.c:1410 src/qemu_driver.c:1415
 #: src/uml_driver.c:806 src/uml_driver.c:809 src/uml_driver.c:814
 #, fuzzy, c-format
 msgid "Unable to write argv to logfile: %s\n"
 msgstr "Не удается записать argv в журнал %d: %s"
 
-#: src/qemu_driver.c:1324
+#: src/qemu_driver.c:1419
 #, fuzzy, c-format
 msgid "Unable to seek to end of logfile: %s\n"
 msgstr "Не удается записать argv в журнал %d: %s"
 
-#: src/qemu_driver.c:1351
+#: src/qemu_driver.c:1447
 #, fuzzy, c-format
 msgid "Domain %s didn't show up\n"
 msgstr "Отключение домена %s\n"
 
-#: src/qemu_driver.c:1356
+#: src/qemu_driver.c:1452
 msgid "Unable to daemonize QEMU process"
 msgstr ""
 
-#: src/qemu_driver.c:1402
+#: src/qemu_driver.c:1498
 #, fuzzy, c-format
 msgid "Shutting down VM '%s'\n"
 msgstr "Завершение работы виртуальной машины '%s'"
 
-#: src/qemu_driver.c:1407
+#: src/qemu_driver.c:1503
 #, fuzzy, c-format
 msgid "Failed to send SIGTERM to %s (%d)"
 msgstr "Не удалось привязать сокет к '%s': %s"
 
-#: src/qemu_driver.c:1429
+#: src/qemu_driver.c:1536
 #, fuzzy, c-format
 msgid "Failed to remove domain status for %s"
 msgstr "Ошибка создания домена из %s"
 
-#: src/qemu_driver.c:1476
+#: src/qemu_driver.c:1583
 #, c-format
 msgid "unhandled fd event %d for %s"
 msgstr ""
 
-#: src/qemu_driver.c:1590 src/qemu_driver.c:1602
+#: src/qemu_driver.c:1697 src/qemu_driver.c:1709
 #, fuzzy, c-format
 msgid "Unable to log VM console data: %s\n"
 msgstr "Журналирование данных консоли виртуальной машины не удалось: %s"
 
-#: src/qemu_driver.c:1709
+#: src/qemu_driver.c:1816
 #, fuzzy, c-format
 msgid "Unable to open %s"
 msgstr "не удается открыть tty %s: %s\n"
 
-#: src/qemu_driver.c:1771 src/qemu_driver.c:1801 src/uml_driver.c:972
+#: src/qemu_driver.c:1878 src/qemu_driver.c:1908 src/uml_driver.c:972
 #: src/uml_driver.c:1003
 msgid "NUMA not supported on this host"
 msgstr "на этом узле NUMA не поддерживается"
 
-#: src/qemu_driver.c:1782 src/qemu_driver.c:1809 src/uml_driver.c:983
+#: src/qemu_driver.c:1889 src/qemu_driver.c:1916 src/uml_driver.c:983
 #: src/uml_driver.c:1011
 msgid "Failed to query NUMA free memory"
 msgstr "Не удалось запросить свободную память NUMA"
 
-#: src/qemu_driver.c:1953 src/qemu_driver.c:4293
+#: src/qemu_driver.c:2060 src/qemu_driver.c:4492
 #, fuzzy
 msgid "failed to determine host name"
 msgstr "ошибка получения типа гипервизора"
 
-#: src/qemu_driver.c:2008 src/uml_driver.c:1216
+#: src/qemu_driver.c:2115 src/uml_driver.c:1216
 #, fuzzy, c-format
 msgid "domain '%s' is already defined"
 msgstr "домен %s уже существует"
 
-#: src/qemu_driver.c:2018 src/uml_driver.c:1226
+#: src/qemu_driver.c:2125 src/uml_driver.c:1226
 #, fuzzy, c-format
 msgid "domain with uuid '%s' is already defined"
 msgstr "домен %s уже существует"
 
-#: src/qemu_driver.c:2067 src/qemu_driver.c:2118 src/qemu_driver.c:2167
-#: src/qemu_driver.c:2196 src/qemu_driver.c:2495 src/qemu_driver.c:3828
-#: src/qemu_driver.c:3960 src/qemu_driver.c:4096 src/qemu_driver.c:4427
+#: src/qemu_driver.c:2174 src/qemu_driver.c:2225 src/qemu_driver.c:2274
+#: src/qemu_driver.c:2303 src/qemu_driver.c:2602 src/qemu_driver.c:4027
+#: src/qemu_driver.c:4159 src/qemu_driver.c:4295 src/qemu_driver.c:4626
 #: src/uml_driver.c:1267 src/uml_driver.c:1297
 #, c-format
 msgid "no domain with matching id %d"
 msgstr "нет домена с совпадающим идентификатором %d"
 
-#: src/qemu_driver.c:2072 src/qemu_driver.c:2123 src/qemu_driver.c:2501
-#: src/qemu_driver.c:3833 src/qemu_driver.c:3966 src/qemu_driver.c:4108
-#: src/qemu_driver.c:4433
+#: src/qemu_driver.c:2179 src/qemu_driver.c:2230 src/qemu_driver.c:2608
+#: src/qemu_driver.c:4032 src/qemu_driver.c:4165 src/qemu_driver.c:4307
+#: src/qemu_driver.c:4632
 msgid "domain is not running"
 msgstr "домен не выполняется"
 
-#: src/qemu_driver.c:2078 src/qemu_driver.c:2510
+#: src/qemu_driver.c:2185 src/qemu_driver.c:2617
 msgid "suspend operation failed"
 msgstr "операция приостановки не удалась"
 
-#: src/qemu_driver.c:2173 src/uml_driver.c:1274
+#: src/qemu_driver.c:2280 src/uml_driver.c:1274
 msgid "shutdown operation failed"
 msgstr "операция завершения работы не удалась"
 
-#: src/qemu_driver.c:2259 src/qemu_driver.c:2285 src/qemu_driver.c:2317
-#: src/qemu_driver.c:2630 src/qemu_driver.c:2818 src/uml_driver.c:1355
-#: src/uml_driver.c:1380 src/uml_driver.c:1413
+#: src/qemu_driver.c:2366 src/qemu_driver.c:2392 src/qemu_driver.c:2424
+#: src/qemu_driver.c:2737 src/qemu_driver.c:2925 src/qemu_driver.c:2960
+#: src/uml_driver.c:1355 src/uml_driver.c:1380 src/uml_driver.c:1413
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "нет домена с совпадающим UUID '%s'"
 
-#: src/qemu_driver.c:2291 src/uml_driver.c:1386
+#: src/qemu_driver.c:2398 src/uml_driver.c:1386
 msgid "cannot set max memory lower than current memory"
 msgstr "максимальный объем памяти не может быть меньше текущего объема"
 
-#: src/qemu_driver.c:2323 src/uml_driver.c:1419
+#: src/qemu_driver.c:2430 src/uml_driver.c:1419
 msgid "cannot set memory of an active domain"
 msgstr "нельзя задать память для активного домена"
 
-#: src/qemu_driver.c:2329 src/uml_driver.c:1425
+#: src/qemu_driver.c:2436 src/uml_driver.c:1425
 msgid "cannot set memory higher than max memory"
 msgstr "значение объема памяти не может превышать максимальный объем"
 
-#: src/qemu_driver.c:2522
+#: src/qemu_driver.c:2629
 msgid "failed to get domain xml"
 msgstr "не удалось получить xml домена"
 
-#: src/qemu_driver.c:2530
+#: src/qemu_driver.c:2637
 #, c-format
 msgid "failed to create '%s'"
 msgstr "не удалось создать '%s'"
 
-#: src/qemu_driver.c:2536
+#: src/qemu_driver.c:2643
 msgid "failed to write save header"
 msgstr "не удалось записать заголовок"
 
-#: src/qemu_driver.c:2542
+#: src/qemu_driver.c:2649
 msgid "failed to write xml"
 msgstr "ошибка записи файла xml"
 
-#: src/qemu_driver.c:2548
+#: src/qemu_driver.c:2655
 #, fuzzy, c-format
 msgid "unable to save file %s"
 msgstr "Не удается закрыть файл журнала %d: %s"
 
-#: src/qemu_driver.c:2570 src/qemu_driver.c:4476
+#: src/qemu_driver.c:2677 src/qemu_driver.c:4675
 msgid "migrate operation failed"
 msgstr "попытка миграции завершилась неудачей"
 
-#: src/qemu_driver.c:2581
+#: src/qemu_driver.c:2688
 #, fuzzy
 msgid "'migrate' not supported by this qemu"
 msgstr "команда 'info blockstats' не поддерживается этим qemu"
 
-#: src/qemu_driver.c:2636
+#: src/qemu_driver.c:2743
 msgid "cannot change vcpu count of an active domain"
 msgstr "нельзя изменить счетчик VCPU для активного домена"
 
-#: src/qemu_driver.c:2642
+#: src/qemu_driver.c:2749
 msgid "could not determine max vcpus for the domain"
 msgstr ""
 "не удалось определить максимальное число виртуальных процессоров для домена"
 
-#: src/qemu_driver.c:2648
+#: src/qemu_driver.c:2755
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
@@ -3039,326 +3063,341 @@ msgstr ""
 "запрошенное число виртуальных доменов превышает максимально допустимое "
 "значение для домена: %d > %d"
 
-#: src/qemu_driver.c:2682 src/qemu_driver.c:2743
+#: src/qemu_driver.c:2789 src/qemu_driver.c:2850
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "нельзя назначить виртуальные процессоры неактивному домену"
 
-#: src/qemu_driver.c:2688
+#: src/qemu_driver.c:2795
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr "число виртуальных процессоров превышает допустимый диапазон %d > %d"
 
-#: src/qemu_driver.c:2709
+#: src/qemu_driver.c:2816
 #, fuzzy
 msgid "cannot set affinity"
 msgstr "невозможно сохранить домен"
 
-#: src/qemu_driver.c:2714
+#: src/qemu_driver.c:2821
 msgid "cpu affinity is not supported"
 msgstr ""
 
-#: src/qemu_driver.c:2778
+#: src/qemu_driver.c:2885
 #, fuzzy
 msgid "cannot get affinity"
 msgstr "невозможно сохранить домен"
 
-#: src/qemu_driver.c:2788
+#: src/qemu_driver.c:2895
 msgid "cpu affinity is not available"
 msgstr ""
 
-#: src/qemu_driver.c:2824
+#: src/qemu_driver.c:2931 src/qemu_driver.c:2966
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "неизвестный тип virt в определении домена '%d'"
 
-#: src/qemu_driver.c:2853
+#: src/qemu_driver.c:2989
+#, fuzzy
+msgid "Failed to get security label"
+msgstr "не удается получить текущее время"
+
+#: src/qemu_driver.c:3014
+#, fuzzy, c-format
+msgid "security model string exceeds max %d bytes"
+msgstr "число VCPU превышает максимально допустимое значение: %d > %d"
+
+#: src/qemu_driver.c:3023
+#, fuzzy, c-format
+msgid "security DOI string exceeds max %d bytes"
+msgstr "число VCPU превышает максимально допустимое значение: %d > %d"
+
+#: src/qemu_driver.c:3047
 msgid "cannot read domain image"
 msgstr "невозможно прочитать образ домена"
 
-#: src/qemu_driver.c:2859
+#: src/qemu_driver.c:3053
 msgid "failed to read qemu header"
 msgstr "ошибка чтения заголовка qemu"
 
-#: src/qemu_driver.c:2865
+#: src/qemu_driver.c:3059
 msgid "image magic is incorrect"
 msgstr ""
 
-#: src/qemu_driver.c:2871
+#: src/qemu_driver.c:3065
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "версия образа не поддерживается (%d > %d)"
 
-#: src/qemu_driver.c:2883
+#: src/qemu_driver.c:3077
 msgid "failed to read XML"
 msgstr "ошибка чтения XML"
 
-#: src/qemu_driver.c:2891 src/qemu_driver.c:4328
+#: src/qemu_driver.c:3085 src/qemu_driver.c:4527
 msgid "failed to parse XML"
 msgstr "ошибка разбора XML"
 
-#: src/qemu_driver.c:2902
+#: src/qemu_driver.c:3096
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "домен уже активен как '%s'"
 
-#: src/qemu_driver.c:2913 src/qemu_driver.c:4364
+#: src/qemu_driver.c:3107 src/qemu_driver.c:4563
 #, fuzzy
 msgid "failed to assign new VM"
 msgstr "ошибка при получении сети '%s'"
 
-#: src/qemu_driver.c:2924
+#: src/qemu_driver.c:3118
 #, fuzzy
 msgid "failed to start VM"
 msgstr "Ошибка запуска домена %s"
 
-#: src/qemu_driver.c:2942
+#: src/qemu_driver.c:3136
 #, fuzzy
 msgid "failed to resume domain"
 msgstr "Ошибка возобновления работы домена %s"
 
-#: src/qemu_driver.c:3180
+#: src/qemu_driver.c:3374
 #, c-format
 msgid "cannot convert disk '%s' to bus/device index"
 msgstr ""
 
-#: src/qemu_driver.c:3206
+#: src/qemu_driver.c:3400
 #, fuzzy, c-format
 msgid "Unsupported disk name mapping for bus '%s'"
 msgstr "неподдерживаемый тип диска '%s'"
 
-#: src/qemu_driver.c:3241
+#: src/qemu_driver.c:3435
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3268
+#: src/qemu_driver.c:3462
 #, c-format
 msgid ""
 "Emulator version does not support removable media for device '%s' and target "
 "'%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3305
+#: src/qemu_driver.c:3499
 #, fuzzy
 msgid "could not change cdrom media"
 msgstr "нельзя изменить носитель CDROM"
 
-#: src/qemu_driver.c:3316
+#: src/qemu_driver.c:3510
 #, fuzzy, c-format
 msgid "changing cdrom media failed: %s"
 msgstr "нельзя изменить носитель CDROM"
 
-#: src/qemu_driver.c:3343 src/qemu_driver.c:3412
+#: src/qemu_driver.c:3537 src/qemu_driver.c:3606
 #, fuzzy, c-format
 msgid "target %s already exists"
 msgstr "пул хранилищ уже существует"
 
-#: src/qemu_driver.c:3369
+#: src/qemu_driver.c:3563
 #, fuzzy, c-format
 msgid "cannot attach %s disk"
 msgstr "невозможно прочитать %s: %s"
 
-#: src/qemu_driver.c:3383
+#: src/qemu_driver.c:3577
 msgid "Unable to parse slot number\n"
 msgstr ""
 
-#: src/qemu_driver.c:3386
+#: src/qemu_driver.c:3580
 #, fuzzy, c-format
 msgid "adding %s disk failed"
 msgstr "домен %s уже существует"
 
-#: src/qemu_driver.c:3437
+#: src/qemu_driver.c:3631
 #, fuzzy
 msgid "cannot attach usb disk"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/qemu_driver.c:3448
+#: src/qemu_driver.c:3642
 #, fuzzy
 msgid "adding usb disk failed"
 msgstr "загрузка файла определения хоста"
 
-#: src/qemu_driver.c:3491
+#: src/qemu_driver.c:3685
 #, fuzzy
 msgid "cannot attach usb device"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/qemu_driver.c:3502
+#: src/qemu_driver.c:3696
 #, fuzzy
 msgid "adding usb device failed"
 msgstr "загрузка файла определения хоста"
 
-#: src/qemu_driver.c:3534
+#: src/qemu_driver.c:3728
 msgid "cannot attach device on inactive domain"
 msgstr "нельзя сопоставить устройство неактивному домену"
 
-#: src/qemu_driver.c:3560
+#: src/qemu_driver.c:3754
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr ""
 
-#: src/qemu_driver.c:3568
+#: src/qemu_driver.c:3764
 #, fuzzy, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "можно присоединить только устройства CDROM"
 
-#: src/qemu_driver.c:3578
+#: src/qemu_driver.c:3774
 #, fuzzy, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "можно присоединить только устройства CDROM"
 
-#: src/qemu_driver.c:3611
+#: src/qemu_driver.c:3807
 #, fuzzy, c-format
 msgid "disk %s not found"
 msgstr "домен не найден"
 
-#: src/qemu_driver.c:3617
+#: src/qemu_driver.c:3813
 #, c-format
 msgid "disk %s cannot be detached - invalid slot number %d"
 msgstr ""
 
-#: src/qemu_driver.c:3629
+#: src/qemu_driver.c:3825
 #, fuzzy, c-format
 msgid "failed to execute detach disk %s command"
 msgstr "Ошибка возобновления работы домена %s"
 
-#: src/qemu_driver.c:3638
+#: src/qemu_driver.c:3834
 #, fuzzy, c-format
 msgid "failed to detach disk %s: invalid slot %d"
 msgstr "Ошибка создания домена из %s"
 
-#: src/qemu_driver.c:3682
+#: src/qemu_driver.c:3878
 #, fuzzy
 msgid "cannot detach device on inactive domain"
 msgstr "нельзя сопоставить устройство неактивному домену"
 
-#: src/qemu_driver.c:3700
+#: src/qemu_driver.c:3899
 #, fuzzy
 msgid "only SCSI or virtio disk device can be detached dynamically"
 msgstr "можно присоединить только устройства CDROM"
 
-#: src/qemu_driver.c:3756 src/uml_driver.c:1699
+#: src/qemu_driver.c:3955 src/uml_driver.c:1699
 #, fuzzy
 msgid "cannot set autostart for transient domain"
 msgstr "нельзя задать память для активного домена"
 
-#: src/qemu_driver.c:3773 src/storage_driver.c:936 src/uml_driver.c:1716
+#: src/qemu_driver.c:3972 src/storage_driver.c:936 src/uml_driver.c:1716
 #, fuzzy, c-format
 msgid "cannot create autostart directory %s"
 msgstr "невозможно создать каталог автозапуска %s: %s"
 
-#: src/qemu_driver.c:3780 src/uml_driver.c:1723
+#: src/qemu_driver.c:3979 src/uml_driver.c:1723
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "Не удалось создать символьную ссылку '%s' к '%s': %s"
 
-#: src/qemu_driver.c:3846
+#: src/qemu_driver.c:4045
 #, c-format
 msgid "invalid path: %s"
 msgstr "недопустимый путь: %s"
 
-#: src/qemu_driver.c:3857
+#: src/qemu_driver.c:4056
 msgid "'info blockstats' command failed"
 msgstr "сбой команды 'info blockstats'"
 
-#: src/qemu_driver.c:3870
+#: src/qemu_driver.c:4069
 msgid "'info blockstats' not supported by this qemu"
 msgstr "команда 'info blockstats' не поддерживается этим qemu"
 
-#: src/qemu_driver.c:3934
+#: src/qemu_driver.c:4133
 #, c-format
 msgid "device not found: %s (%s)"
 msgstr "устройство не найдено: %s (%s)"
 
-#: src/qemu_driver.c:3972 src/qemu_driver.c:4030 src/uml_driver.c:1772
+#: src/qemu_driver.c:4171 src/qemu_driver.c:4229 src/uml_driver.c:1772
 msgid "NULL or empty path"
 msgstr "путь NULL или пустой"
 
-#: src/qemu_driver.c:3989
+#: src/qemu_driver.c:4188
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "недопустимый путь, '%s' не является известным интерфейсом"
 
-#: src/qemu_driver.c:4049
+#: src/qemu_driver.c:4248
 #, fuzzy, c-format
 msgid "%s: failed to open"
 msgstr "Не удалось открыть каталог '%s': %s"
 
-#: src/qemu_driver.c:4060
+#: src/qemu_driver.c:4259
 #, fuzzy, c-format
 msgid "%s: failed to seek or read"
 msgstr "ошибка чтения файла конфигурации %s"
 
-#: src/qemu_driver.c:4067 src/uml_driver.c:1809
+#: src/qemu_driver.c:4266 src/uml_driver.c:1809
 msgid "invalid path"
 msgstr "недопустимый путь"
 
-#: src/qemu_driver.c:4102
+#: src/qemu_driver.c:4301
 msgid "QEMU driver only supports virtual memory addrs"
 msgstr "Драйвер QEMU поддерживает только адреса виртуальной памяти"
 
-#: src/qemu_driver.c:4115
+#: src/qemu_driver.c:4314
 #, fuzzy, c-format
 msgid "mkstemp(\"%s\") failed"
 msgstr "сбой open(%s): %s"
 
-#: src/qemu_driver.c:4123
+#: src/qemu_driver.c:4322
 #, fuzzy
 msgid "'memsave' command failed"
 msgstr "сбой команды lvs"
 
-#: src/qemu_driver.c:4132
+#: src/qemu_driver.c:4331
 #, fuzzy, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "ошибка записи файла конфигурации"
 
-#: src/qemu_driver.c:4272
+#: src/qemu_driver.c:4471
 #, fuzzy
 msgid "no domain XML passed"
 msgstr "список доменов узла"
 
-#: src/qemu_driver.c:4309
+#: src/qemu_driver.c:4508
 msgid "only tcp URIs are supported for KVM migrations"
 msgstr ""
 
-#: src/qemu_driver.c:4319
+#: src/qemu_driver.c:4518
 msgid "URI did not have ':port' at the end"
 msgstr ""
 
-#: src/qemu_driver.c:4345
+#: src/qemu_driver.c:4544
 #, fuzzy
 msgid "could not generate random UUID"
 msgstr "Не удалсь сгенерировать UUID"
 
-#: src/qemu_driver.c:4354
+#: src/qemu_driver.c:4553
 #, fuzzy, c-format
 msgid "domain with the same name or UUID already exists as '%s'"
 msgstr "домен уже активен как '%s'"
 
-#: src/qemu_driver.c:4378
+#: src/qemu_driver.c:4577
 #, fuzzy
 msgid "failed to start listening VM"
 msgstr "Ошибка запуска домена %s"
 
-#: src/qemu_driver.c:4441
+#: src/qemu_driver.c:4640
 msgid "off-line migration specified, but suspend operation failed"
 msgstr ""
 
-#: src/qemu_driver.c:4485
+#: src/qemu_driver.c:4684
 #, fuzzy, c-format
 msgid "migrate failed: %s"
 msgstr "ошибка действия: %s"
 
-#: src/qemu_driver.c:4515
+#: src/qemu_driver.c:4714
 #, fuzzy, c-format
 msgid "Failed to resume guest %s after failure\n"
 msgstr "Ошибка возобновления работы домена %s"
 
-#: src/qemu_driver.c:4556
+#: src/qemu_driver.c:4755
 #, fuzzy, c-format
 msgid "no domain with matching name %s"
 msgstr "нет домена с соответствующим именем"
 
-#: src/qemu_driver.c:4625
+#: src/qemu_driver.c:4824
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr ""
@@ -3592,27 +3631,27 @@ msgstr ""
 "длина зарегистрированного узлом буфера соответствий превышает максимально "
 "допустимое значение: %d > %d"
 
-#: src/remote_internal.c:2316
+#: src/remote_internal.c:2319
 #, fuzzy, c-format
 msgid "security label exceeds maximum: %zd"
 msgstr "число VCPU превышает максимально допустимое значение: %d > %d"
 
-#: src/remote_internal.c:2342
+#: src/remote_internal.c:2352
 #, fuzzy, c-format
 msgid "security model exceeds maximum: %zd"
 msgstr "число VCPU превышает максимально допустимое значение: %d > %d"
 
-#: src/remote_internal.c:2351
+#: src/remote_internal.c:2361
 #, fuzzy, c-format
 msgid "security doi exceeds maximum: %zd"
 msgstr "число VCPU превышает максимально допустимое значение: %d > %d"
 
-#: src/remote_internal.c:2587 src/remote_internal.c:2601
+#: src/remote_internal.c:2602 src/remote_internal.c:2616
 #, c-format
 msgid "too many remote domain names: %d > %d"
 msgstr "слишком много имен удаленных доменов: %d > %d"
 
-#: src/remote_internal.c:2869
+#: src/remote_internal.c:2884
 msgid ""
 "remoteDomainGetSchedulerParameters: returned number of parameters exceeds "
 "limit"
@@ -3620,282 +3659,282 @@ msgstr ""
 "remoteDomainGetSchedulerParameters: полученное число параметров превышает "
 "допустимый лимит"
 
-#: src/remote_internal.c:2896
+#: src/remote_internal.c:2911
 msgid "remoteDomainGetSchedulerParameters: unknown parameter type"
 msgstr "remoteDomainGetSchedulerParameters: неизвестный тип параметра"
 
-#: src/remote_internal.c:2927
+#: src/remote_internal.c:2942
 msgid "out of memory allocating array"
 msgstr "недостаточно памяти при выделении массива"
 
-#: src/remote_internal.c:2954
+#: src/remote_internal.c:2969
 msgid "unknown parameter type"
 msgstr "неизвестный тип параметра"
 
-#: src/remote_internal.c:3065
+#: src/remote_internal.c:3080
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr ""
 
-#: src/remote_internal.c:3086 src/remote_internal.c:3137
+#: src/remote_internal.c:3101 src/remote_internal.c:3152
 msgid "returned buffer is not same size as requested"
 msgstr "размер полученного в результате буфера не равен запрошенному размеру"
 
-#: src/remote_internal.c:3117
+#: src/remote_internal.c:3132
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"
 msgstr ""
 
-#: src/remote_internal.c:3250 src/remote_internal.c:3264
-#: src/remote_internal.c:3323 src/remote_internal.c:3337
+#: src/remote_internal.c:3265 src/remote_internal.c:3279
+#: src/remote_internal.c:3338 src/remote_internal.c:3352
 #, c-format
 msgid "too many remote networks: %d > %d"
 msgstr "слишком много удаленных сетей: %d > %d"
 
-#: src/remote_internal.c:3746 src/remote_internal.c:3815
+#: src/remote_internal.c:3761 src/remote_internal.c:3830
 msgid "too many storage pools requested"
 msgstr "запрошено слишком большое число  пулов хранения"
 
-#: src/remote_internal.c:3758 src/remote_internal.c:3827
+#: src/remote_internal.c:3773 src/remote_internal.c:3842
 msgid "too many storage pools received"
 msgstr "получено слишком много пулов хранилищ"
 
-#: src/remote_internal.c:4321
+#: src/remote_internal.c:4336
 msgid "too many storage volumes requested"
 msgstr "запрошено слишком большое число томов хранилищ"
 
-#: src/remote_internal.c:4334
+#: src/remote_internal.c:4349
 msgid "too many storage volumes received"
 msgstr "получено слишком много томов хранилищ"
 
-#: src/remote_internal.c:4689
+#: src/remote_internal.c:4704
 #, fuzzy
 msgid "too many device names requested"
 msgstr "запрошено слишком большое число томов хранилищ"
 
-#: src/remote_internal.c:4703
+#: src/remote_internal.c:4718
 #, fuzzy
 msgid "too many device names received"
 msgstr "получено слишком много томов хранилищ"
 
-#: src/remote_internal.c:4842
+#: src/remote_internal.c:4857
 #, fuzzy
 msgid "too many capability names requested"
 msgstr "запрошено слишком большое число томов хранилищ"
 
-#: src/remote_internal.c:4855
+#: src/remote_internal.c:4870
 #, fuzzy
 msgid "too many capability names received"
 msgstr "получено слишком много томов хранилищ"
 
-#: src/remote_internal.c:4987
+#: src/remote_internal.c:5002
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "неизвестный тип аутентификации %s"
 
-#: src/remote_internal.c:4997
+#: src/remote_internal.c:5012
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr "отказ запрошенного типа аутентификации %s"
 
-#: src/remote_internal.c:5038
+#: src/remote_internal.c:5053
 #, c-format
 msgid "unsupported authentication type %d"
 msgstr "тип аутентификации %d не поддерживается"
 
-#: src/remote_internal.c:5283
+#: src/remote_internal.c:5298
 #, c-format
 msgid "failed to initialize SASL library: %d (%s)"
 msgstr "ошибка инициализации библиотеки SASL: %d (%s)"
 
-#: src/remote_internal.c:5292
+#: src/remote_internal.c:5307
 #, fuzzy
 msgid "failed to get sock address"
 msgstr "не удалось получить адрес сокета %d (%s)"
 
-#: src/remote_internal.c:5302
+#: src/remote_internal.c:5317
 #, fuzzy
 msgid "failed to get peer address"
 msgstr "не удалось получить адрес узла %d (%s)"
 
-#: src/remote_internal.c:5327
+#: src/remote_internal.c:5342
 #, c-format
 msgid "Failed to create SASL client context: %d (%s)"
 msgstr "Ошибка создания контекста клиента SASL: %d (%s)"
 
-#: src/remote_internal.c:5340
+#: src/remote_internal.c:5355
 msgid "invalid cipher size for TLS session"
 msgstr "недопустимый размер ключа для сессии TLS"
 
-#: src/remote_internal.c:5350
+#: src/remote_internal.c:5365
 #, c-format
 msgid "cannot set external SSF %d (%s)"
 msgstr "невозможно задать внешний SSF %d (%s)"
 
-#: src/remote_internal.c:5369
+#: src/remote_internal.c:5384
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr ""
 
-#: src/remote_internal.c:5388
+#: src/remote_internal.c:5403
 #, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "механизм SASL %s не поддерживается сервером"
 
-#: src/remote_internal.c:5407
+#: src/remote_internal.c:5422
 #, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
 msgstr "Не удалось запустить согласование SASL: %d (%s)"
 
-#: src/remote_internal.c:5425 src/remote_internal.c:5503
+#: src/remote_internal.c:5440 src/remote_internal.c:5518
 msgid "Failed to make auth credentials"
 msgstr "Не удалось создать данные аутентификации"
 
-#: src/remote_internal.c:5449
+#: src/remote_internal.c:5464
 #, c-format
 msgid "SASL negotiation data too long: %d bytes"
 msgstr "Слишком длиные данные согласования SASL: %d байт"
 
-#: src/remote_internal.c:5489
+#: src/remote_internal.c:5504
 #, fuzzy, c-format
 msgid "Failed SASL step: %d (%s)"
 msgstr "Ошибка запуска домена %s"
 
-#: src/remote_internal.c:5573
+#: src/remote_internal.c:5588
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr ""
 
-#: src/remote_internal.c:5628
+#: src/remote_internal.c:5643
 msgid "Failed to collect auth credentials"
 msgstr "Ошибка сбора данных аутентификации"
 
-#: src/remote_internal.c:5662
+#: src/remote_internal.c:5677
 msgid "no event support"
 msgstr ""
 
-#: src/remote_internal.c:5667
+#: src/remote_internal.c:5682
 msgid "adding cb to list"
 msgstr ""
 
-#: src/remote_internal.c:5696
+#: src/remote_internal.c:5711
 msgid "removing cb fron list"
 msgstr ""
 
-#: src/remote_internal.c:5758
+#: src/remote_internal.c:5773
 msgid "xdr_remote_message_header failed"
 msgstr "сбой xdr_remote_message_header"
 
-#: src/remote_internal.c:5764
+#: src/remote_internal.c:5779
 msgid "marshalling args"
 msgstr ""
 
-#: src/remote_internal.c:5781
+#: src/remote_internal.c:5796
 #, fuzzy
 msgid "xdr_u_int (length word)"
 msgstr "xdr_int (длина слова)"
 
-#: src/remote_internal.c:5827
+#: src/remote_internal.c:5842
 #, fuzzy
 msgid "cannot send data"
 msgstr "невозможно сохранить данные домена"
 
-#: src/remote_internal.c:5858
+#: src/remote_internal.c:5873
 #, fuzzy, c-format
 msgid "failed to read from TLS socket %s"
 msgstr "Ошибка чтения сокета %d\n"
 
-#: src/remote_internal.c:5863 src/remote_internal.c:5881
+#: src/remote_internal.c:5878 src/remote_internal.c:5896
 #, fuzzy
 msgid "server closed connection"
 msgstr "соединение только для чтения"
 
-#: src/remote_internal.c:5877
+#: src/remote_internal.c:5892
 #, fuzzy
 msgid "cannot recv data"
 msgstr "невозможно записать метаданные"
 
-#: src/remote_internal.c:5910
+#: src/remote_internal.c:5925
 #, fuzzy, c-format
 msgid "failed to encode SASL data: %s"
 msgstr "не удалось создать '%s'"
 
-#: src/remote_internal.c:6008
+#: src/remote_internal.c:6023
 #, fuzzy, c-format
 msgid "failed to decode SASL data: %s"
 msgstr "Ошибка разрушения домена %s"
 
-#: src/remote_internal.c:6082
+#: src/remote_internal.c:6097
 #, fuzzy
 msgid "xdr_u_int (length word, reply)"
 msgstr "xdr_int (длина слова)"
 
-#: src/remote_internal.c:6089
+#: src/remote_internal.c:6104
 #, fuzzy
 msgid "packet received from server too small"
 msgstr "с сервера получен слишком длинный пакет"
 
-#: src/remote_internal.c:6098
+#: src/remote_internal.c:6113
 msgid "packet received from server too large"
 msgstr "с сервера получен слишком длинный пакет"
 
-#: src/remote_internal.c:6122
+#: src/remote_internal.c:6137
 msgid "invalid header in reply"
 msgstr "ответ содержит неверный заголовок"
 
-#: src/remote_internal.c:6131
+#: src/remote_internal.c:6146
 #, c-format
 msgid "unknown program (received %x, expected %x)"
 msgstr "неизвестная программа (получено %x, ожидается %x)"
 
-#: src/remote_internal.c:6139
+#: src/remote_internal.c:6154
 #, c-format
 msgid "unknown protocol version (received %x, expected %x)"
 msgstr "неизвестная версия протокола (получено %x, ожидается %x)"
 
-#: src/remote_internal.c:6156
+#: src/remote_internal.c:6171
 #, c-format
 msgid "got unexpected RPC call %d from server"
 msgstr ""
 
-#: src/remote_internal.c:6174
+#: src/remote_internal.c:6189
 #, c-format
 msgid "no call waiting for reply with serial %d"
 msgstr ""
 
-#: src/remote_internal.c:6184
+#: src/remote_internal.c:6199
 #, c-format
 msgid "unknown procedure (received %x, expected %x)"
 msgstr "неизвестная процедура (получено %x, ожидается %x)"
 
-#: src/remote_internal.c:6198
+#: src/remote_internal.c:6213
 msgid "unmarshalling ret"
 msgstr ""
 
-#: src/remote_internal.c:6209
+#: src/remote_internal.c:6224
 msgid "unmarshalling remote_error"
 msgstr ""
 
-#: src/remote_internal.c:6219
+#: src/remote_internal.c:6234
 #, c-format
 msgid "unknown status (received %x)"
 msgstr "неизвестный статус (получен %x)"
 
-#: src/remote_internal.c:6325
+#: src/remote_internal.c:6340
 #, fuzzy
 msgid "poll on socket failed"
 msgstr "сбой calloc"
 
-#: src/remote_internal.c:6386
+#: src/remote_internal.c:6401
 msgid "received hangup / error event on socket"
 msgstr ""
 
-#: src/remote_internal.c:6488
+#: src/remote_internal.c:6503
 #, fuzzy
 msgid "failed to wait on condition"
 msgstr "ошибка при ожидании команды: %s"
 
-#: src/remote_internal.c:6588
+#: src/remote_internal.c:6603
 msgid "remoteDomainProcessEvent: unmarshalling ret"
 msgstr ""
 
@@ -3904,54 +3943,63 @@ msgstr ""
 msgid "%s: DOI '%s' is longer than the maximum allowed length of %d"
 msgstr ""
 
-#: src/security_selinux.c:108
+#: src/security_selinux.c:112
 #, fuzzy, c-format
 msgid "%s: cannot open SELinux virtual domain context file %s: %s"
 msgstr "не удается открыть файл pid tty %s: %s"
 
-#: src/security_selinux.c:116
+#: src/security_selinux.c:120
 #, fuzzy, c-format
 msgid "%s: cannot read SELinux virtual domain context file %s: %s"
 msgstr "не удается прочитать файл pid tty %s: %s"
 
-#: src/security_selinux.c:129
+#: src/security_selinux.c:133
 #, fuzzy, c-format
 msgid "%s: cannot open SELinux virtual image context file %s: %s"
 msgstr "не удается открыть файл pid tty %s: %s"
 
-#: src/security_selinux.c:137
+#: src/security_selinux.c:141
 #, fuzzy, c-format
 msgid "%s: cannot read SELinux virtual image context file %s: %s"
 msgstr "не удается прочитать файл pid tty %s: %s"
 
-#: src/security_selinux.c:222
+#: src/security_selinux.c:168
+msgid "security labellin already defined for VM"
+msgstr ""
+
+#: src/security_selinux.c:189 src/security_selinux.c:195
+#, fuzzy, c-format
+msgid "cannot generate selinux context for %s"
+msgstr "не удается получить контекст файла %s: %s"
+
+#: src/security_selinux.c:242
 #, c-format
 msgid "%s: error calling getpidcon(): %s"
 msgstr ""
 
-#: src/security_selinux.c:230
+#: src/security_selinux.c:250
 #, fuzzy, c-format
 msgid "%s: security label exceeds maximum lenth: %d"
 msgstr "число VCPU превышает максимально допустимое значение: %d > %d"
 
-#: src/security_selinux.c:242
+#: src/security_selinux.c:262
 #, c-format
 msgid "%s: error calling security_getenforce(): %s"
 msgstr ""
 
-#: src/security_selinux.c:258 src/security_selinux.c:353
+#: src/security_selinux.c:278 src/security_selinux.c:373
 #, fuzzy, c-format
 msgid "%s: unable to set security context '\\%s' on %s: %s."
 msgstr "не удается открыть tty %s: %s\n"
 
-#: src/security_selinux.c:332
+#: src/security_selinux.c:352
 #, c-format
 msgid ""
 "%s: security label driver mismatch: '%s' model configured for domain, but "
 "hypervisor driver is '%s'."
 msgstr ""
 
-#: src/security_selinux.c:342
+#: src/security_selinux.c:362
 #, fuzzy, c-format
 msgid "%s: unable to set security context '\\%s': %s."
 msgstr "не удается открыть tty %s: %s\n"
@@ -4922,7 +4970,7 @@ msgstr ""
 msgid "Failed to find user record for uid '%d'"
 msgstr "Не найдена запись пользователя для uid '%d': %s"
 
-#: src/uuid.c:106
+#: src/uuid.c:104
 #, c-format
 msgid "Falling back to pseudorandom UUID, failed to generate random bytes: %s"
 msgstr ""
@@ -4967,9 +5015,9 @@ msgstr "Настроить домен на автоматический запу
 #: src/virsh.c:1337 src/virsh.c:1381 src/virsh.c:1419 src/virsh.c:1457
 #: src/virsh.c:1495 src/virsh.c:1533 src/virsh.c:1680 src/virsh.c:1766
 #: src/virsh.c:1899 src/virsh.c:1955 src/virsh.c:2011 src/virsh.c:2130
-#: src/virsh.c:2280 src/virsh.c:4651 src/virsh.c:4726 src/virsh.c:4786
-#: src/virsh.c:4844 src/virsh.c:4902 src/virsh.c:5018 src/virsh.c:5138
-#: src/virsh.c:5302 src/virsh.c:5532
+#: src/virsh.c:2280 src/virsh.c:4662 src/virsh.c:4737 src/virsh.c:4797
+#: src/virsh.c:4855 src/virsh.c:4913 src/virsh.c:5029 src/virsh.c:5149
+#: src/virsh.c:5313 src/virsh.c:5543
 msgid "domain name, id or uuid"
 msgstr "имя домена, id или uuid"
 
@@ -5068,15 +5116,15 @@ msgstr "Ошибка отображения списка неактивных д
 msgid "Id"
 msgstr "ID"
 
-#: src/virsh.c:628 src/virsh.c:2624 src/virsh.c:3373 src/virsh.c:4158
+#: src/virsh.c:628 src/virsh.c:2624 src/virsh.c:3384 src/virsh.c:4169
 msgid "Name"
 msgstr "Имя"
 
-#: src/virsh.c:628 src/virsh.c:2624 src/virsh.c:3373
+#: src/virsh.c:628 src/virsh.c:2624 src/virsh.c:3384
 msgid "State"
 msgstr "Статус"
 
-#: src/virsh.c:641 src/virsh.c:663 src/virsh.c:6545 src/virsh.c:6561
+#: src/virsh.c:641 src/virsh.c:663 src/virsh.c:6556 src/virsh.c:6572
 msgid "no state"
 msgstr "нет статуса"
 
@@ -5434,11 +5482,11 @@ msgstr "Возвращает основную информацию о домен
 msgid "Id:"
 msgstr "ID:"
 
-#: src/virsh.c:1559 src/virsh.c:3608 src/virsh.c:4048
+#: src/virsh.c:1559 src/virsh.c:3619 src/virsh.c:4059
 msgid "Name:"
 msgstr "Имя:"
 
-#: src/virsh.c:1562 src/virsh.c:3611
+#: src/virsh.c:1562 src/virsh.c:3622
 msgid "UUID:"
 msgstr "UUID:"
 
@@ -5446,8 +5494,8 @@ msgstr "UUID:"
 msgid "OS Type:"
 msgstr "Тип ОС:"
 
-#: src/virsh.c:1570 src/virsh.c:1724 src/virsh.c:3618 src/virsh.c:3622
-#: src/virsh.c:3626 src/virsh.c:3630
+#: src/virsh.c:1570 src/virsh.c:1724 src/virsh.c:3629 src/virsh.c:3633
+#: src/virsh.c:3637 src/virsh.c:3641
 msgid "State:"
 msgstr "Статус:"
 
@@ -5871,7 +5919,7 @@ msgstr "разрушить сеть"
 msgid "Destroy a given network."
 msgstr "Разрушить данную сеть."
 
-#: src/virsh.c:2488 src/virsh.c:2527 src/virsh.c:5635
+#: src/virsh.c:2488 src/virsh.c:2527 src/virsh.c:5646
 msgid "network name, id or uuid"
 msgstr "имя сети, id или uuid"
 
@@ -5917,19 +5965,19 @@ msgstr "Ошибка отображения списка активных сет
 msgid "Failed to list inactive networks"
 msgstr "Ошибка отображения списка неактивных сетей"
 
-#: src/virsh.c:2624 src/virsh.c:3373
+#: src/virsh.c:2624 src/virsh.c:3384
 msgid "Autostart"
 msgstr "Автозапуск"
 
-#: src/virsh.c:2639 src/virsh.c:2662 src/virsh.c:3388 src/virsh.c:3411
+#: src/virsh.c:2639 src/virsh.c:2662 src/virsh.c:3399 src/virsh.c:3422
 msgid "no autostart"
 msgstr "без автозапуска"
 
-#: src/virsh.c:2645 src/virsh.c:3394
+#: src/virsh.c:2645 src/virsh.c:3405
 msgid "active"
 msgstr "активно"
 
-#: src/virsh.c:2668 src/virsh.c:3417 src/virsh.c:3619
+#: src/virsh.c:2668 src/virsh.c:3428 src/virsh.c:3630
 msgid "inactive"
 msgstr "неактивен(-на)"
 
@@ -6003,10 +6051,10 @@ msgstr "автозапуск домена"
 msgid "Configure a pool to be automatically started at boot."
 msgstr "Настроить домен на автоматический запуск при загрузке."
 
-#: src/virsh.c:2834 src/virsh.c:3120 src/virsh.c:3159 src/virsh.c:3198
-#: src/virsh.c:3237 src/virsh.c:3276 src/virsh.c:3590 src/virsh.c:3855
-#: src/virsh.c:3989 src/virsh.c:4030 src/virsh.c:4081 src/virsh.c:4122
-#: src/virsh.c:4266 src/virsh.c:5652
+#: src/virsh.c:2834 src/virsh.c:3131 src/virsh.c:3170 src/virsh.c:3209
+#: src/virsh.c:3248 src/virsh.c:3287 src/virsh.c:3601 src/virsh.c:3866
+#: src/virsh.c:4000 src/virsh.c:4041 src/virsh.c:4092 src/virsh.c:4133
+#: src/virsh.c:4277 src/virsh.c:5663
 #, fuzzy
 msgid "pool name or uuid"
 msgstr "имя домена или uuid"
@@ -6036,12 +6084,12 @@ msgstr "Домен %s отмечен как не запускаемый авто
 msgid "create a pool from an XML file"
 msgstr "создать домен из файла XML"
 
-#: src/virsh.c:2878 src/virsh.c:2996
+#: src/virsh.c:2878 src/virsh.c:2997
 #, fuzzy
 msgid "Create a pool."
 msgstr "Создать домен."
 
-#: src/virsh.c:2884 src/virsh.c:3037
+#: src/virsh.c:2884 src/virsh.c:3043
 #, fuzzy
 msgid "file containing an XML pool description"
 msgstr "файл, содержащий XML описание домена"
@@ -6062,1005 +6110,1009 @@ msgid "name of the pool"
 msgstr "имя неактивного домена"
 
 #: src/virsh.c:2926
-msgid "type of the pool"
+msgid "print XML document, but don't define/create"
 msgstr ""
 
 #: src/virsh.c:2927
-msgid "source-host for underlying storage"
+msgid "type of the pool"
 msgstr ""
 
 #: src/virsh.c:2928
-msgid "source path for underlying storage"
+msgid "source-host for underlying storage"
 msgstr ""
 
 #: src/virsh.c:2929
-msgid "source device for underlying storage"
+msgid "source path for underlying storage"
 msgstr ""
 
 #: src/virsh.c:2930
-msgid "source name for underlying storage"
+msgid "source device for underlying storage"
 msgstr ""
 
 #: src/virsh.c:2931
+msgid "source name for underlying storage"
+msgstr ""
+
+#: src/virsh.c:2932
 msgid "target for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2978 src/virsh.c:3821
+#: src/virsh.c:2979 src/virsh.c:3832
 #, fuzzy
 msgid "Failed to allocate XML buffer"
 msgstr "ошибка выделения узла"
 
-#: src/virsh.c:2995
+#: src/virsh.c:2996
 #, fuzzy
 msgid "create a pool from a set of args"
 msgstr "создать домен из файла XML"
 
-#: src/virsh.c:3016
+#: src/virsh.c:3022
 #, fuzzy, c-format
 msgid "Pool %s created\n"
 msgstr "Домен %s создан из %s\n"
 
-#: src/virsh.c:3020
+#: src/virsh.c:3025
 #, fuzzy, c-format
 msgid "Failed to create pool %s"
 msgstr "Ошибка создания домена из %s"
 
-#: src/virsh.c:3031
+#: src/virsh.c:3037
 #, fuzzy
 msgid "define (but don't start) a pool from an XML file"
 msgstr "определить (но не запускать) домен из файла XML"
 
-#: src/virsh.c:3032 src/virsh.c:3079
+#: src/virsh.c:3038 src/virsh.c:3085
 #, fuzzy
 msgid "Define a pool."
 msgstr "Определить домен."
 
-#: src/virsh.c:3064
+#: src/virsh.c:3070
 #, fuzzy, c-format
 msgid "Pool %s defined from %s\n"
 msgstr "Домен %s определен на основе %s\n"
 
-#: src/virsh.c:3067
+#: src/virsh.c:3073
 #, fuzzy, c-format
 msgid "Failed to define pool from %s"
 msgstr "Ошибка определения домена на основе %s"
 
-#: src/virsh.c:3078
+#: src/virsh.c:3084
 msgid "define a pool from a set of args"
 msgstr ""
 
-#: src/virsh.c:3099
+#: src/virsh.c:3110
 #, fuzzy, c-format
 msgid "Pool %s defined\n"
 msgstr "Домен %s определен на основе %s\n"
 
-#: src/virsh.c:3103
+#: src/virsh.c:3113
 #, fuzzy, c-format
 msgid "Failed to define pool %s"
 msgstr "Ошибка отмены конфигурации домена %s"
 
-#: src/virsh.c:3114
+#: src/virsh.c:3125
 msgid "build a pool"
 msgstr ""
 
-#: src/virsh.c:3115
+#: src/virsh.c:3126
 msgid "Build a given pool."
 msgstr ""
 
-#: src/virsh.c:3138
+#: src/virsh.c:3149
 #, fuzzy, c-format
 msgid "Pool %s built\n"
 msgstr "Домен %s разрушен\n"
 
-#: src/virsh.c:3140
+#: src/virsh.c:3151
 #, fuzzy, c-format
 msgid "Failed to build pool %s"
 msgstr "Ошибка при переведении домена %s в состояние ожидания"
 
-#: src/virsh.c:3153
+#: src/virsh.c:3164
 #, fuzzy
 msgid "destroy a pool"
 msgstr "разрушить домен"
 
-#: src/virsh.c:3154
+#: src/virsh.c:3165
 #, fuzzy
 msgid "Destroy a given pool."
 msgstr "Разрушить заданный домен."
 
-#: src/virsh.c:3177
+#: src/virsh.c:3188
 #, fuzzy, c-format
 msgid "Pool %s destroyed\n"
 msgstr "Домен %s разрушен\n"
 
-#: src/virsh.c:3179
+#: src/virsh.c:3190
 #, fuzzy, c-format
 msgid "Failed to destroy pool %s"
 msgstr "Ошибка разрушения домена %s"
 
-#: src/virsh.c:3192
+#: src/virsh.c:3203
 msgid "delete a pool"
 msgstr ""
 
-#: src/virsh.c:3193
+#: src/virsh.c:3204
 #, fuzzy
 msgid "Delete a given pool."
 msgstr "Разрушить заданный домен."
 
-#: src/virsh.c:3216
+#: src/virsh.c:3227
 #, fuzzy, c-format
 msgid "Pool %s deleted\n"
 msgstr "Домен %s разрушен\n"
 
-#: src/virsh.c:3218
+#: src/virsh.c:3229
 #, fuzzy, c-format
 msgid "Failed to delete pool %s"
 msgstr "Ошибка разрушения домена %s"
 
-#: src/virsh.c:3231
+#: src/virsh.c:3242
 msgid "refresh a pool"
 msgstr ""
 
-#: src/virsh.c:3232
+#: src/virsh.c:3243
 msgid "Refresh a given pool."
 msgstr ""
 
-#: src/virsh.c:3255
+#: src/virsh.c:3266
 #, fuzzy, c-format
 msgid "Pool %s refreshed\n"
 msgstr "Выполнение домена %s возобновлено\n"
 
-#: src/virsh.c:3257
+#: src/virsh.c:3268
 #, fuzzy, c-format
 msgid "Failed to refresh pool %s"
 msgstr "Ошибка возобновления работы домена %s"
 
-#: src/virsh.c:3270
+#: src/virsh.c:3281
 #, fuzzy
 msgid "pool information in XML"
 msgstr "информация о домене в XML"
 
-#: src/virsh.c:3271
+#: src/virsh.c:3282
 #, fuzzy
 msgid "Output the pool information as an XML dump to stdout."
 msgstr "Вывод информации о домене в виде XML или на stdout."
 
-#: src/virsh.c:3310
+#: src/virsh.c:3321
 #, fuzzy
 msgid "list pools"
 msgstr "просмотр доменов"
 
-#: src/virsh.c:3311
+#: src/virsh.c:3322
 #, fuzzy
 msgid "Returns list of pools."
 msgstr "Возвращает список доменов."
 
-#: src/virsh.c:3316
+#: src/virsh.c:3327
 #, fuzzy
 msgid "list inactive pools"
 msgstr "просмотр неактивных доменов"
 
-#: src/virsh.c:3317
+#: src/virsh.c:3328
 #, fuzzy
 msgid "list inactive & active pools"
 msgstr "просмотр неактивных и активных доменов"
 
-#: src/virsh.c:3337 src/virsh.c:3345
+#: src/virsh.c:3348 src/virsh.c:3356
 #, fuzzy
 msgid "Failed to list active pools"
 msgstr "Ошибка отображения списка активных доменов"
 
-#: src/virsh.c:3356 src/virsh.c:3364
+#: src/virsh.c:3367 src/virsh.c:3375
 #, fuzzy
 msgid "Failed to list inactive pools"
 msgstr "Ошибка отображения списка неактивных доменов"
 
-#: src/virsh.c:3432
+#: src/virsh.c:3443
 #, fuzzy
 msgid "find potential storage pool sources"
 msgstr "неправильный указатель сети в %s"
 
-#: src/virsh.c:3433 src/virsh.c:3513
+#: src/virsh.c:3444 src/virsh.c:3524
 msgid "Returns XML <sources> document."
 msgstr ""
 
-#: src/virsh.c:3439
+#: src/virsh.c:3450
 #, fuzzy
 msgid "type of storage pool sources to find"
 msgstr "получено слишком много пулов хранилищ"
 
-#: src/virsh.c:3440
+#: src/virsh.c:3451
 msgid "optional host to query"
 msgstr ""
 
-#: src/virsh.c:3441
+#: src/virsh.c:3452
 msgid "optional port to query"
 msgstr ""
 
-#: src/virsh.c:3486
+#: src/virsh.c:3497
 #, fuzzy
 msgid "Out of memory"
 msgstr "недостаточно памяти"
 
-#: src/virsh.c:3489
+#: src/virsh.c:3500
 #, c-format
 msgid "virAsprintf failed (errno %d)"
 msgstr ""
 
-#: src/virsh.c:3498 src/virsh.c:3549
+#: src/virsh.c:3509 src/virsh.c:3560
 #, fuzzy, c-format
 msgid "Failed to find any %s pool sources"
 msgstr "Ошибка отмены конфигурации домена %s"
 
-#: src/virsh.c:3512
+#: src/virsh.c:3523
 msgid "discover potential storage pool sources"
 msgstr ""
 
-#: src/virsh.c:3519
+#: src/virsh.c:3530
 #, fuzzy
 msgid "type of storage pool sources to discover"
 msgstr "получено слишком много пулов хранилищ"
 
-#: src/virsh.c:3521
+#: src/virsh.c:3532
 msgid "optional file of source xml to query for pools"
 msgstr ""
 
-#: src/virsh.c:3584
+#: src/virsh.c:3595
 #, fuzzy
 msgid "storage pool information"
 msgstr "информация об узле"
 
-#: src/virsh.c:3585
+#: src/virsh.c:3596
 #, fuzzy
 msgid "Returns basic information about the storage pool."
 msgstr "Возвращает общую информацию об узле."
 
-#: src/virsh.c:3623
+#: src/virsh.c:3634
 msgid "building"
 msgstr ""
 
-#: src/virsh.c:3627 src/virsh.c:6531 src/virsh.c:6557
+#: src/virsh.c:3638 src/virsh.c:6542 src/virsh.c:6568
 msgid "running"
 msgstr "выполнение"
 
-#: src/virsh.c:3631
+#: src/virsh.c:3642
 msgid "degraded"
 msgstr ""
 
-#: src/virsh.c:3638 src/virsh.c:4058
+#: src/virsh.c:3649 src/virsh.c:4069
 msgid "Capacity:"
 msgstr ""
 
-#: src/virsh.c:3641 src/virsh.c:4061
+#: src/virsh.c:3652 src/virsh.c:4072
 #, fuzzy
 msgid "Allocation:"
 msgstr "выделение домена"
 
-#: src/virsh.c:3644
+#: src/virsh.c:3655
 msgid "Available:"
 msgstr ""
 
-#: src/virsh.c:3659
+#: src/virsh.c:3670
 #, fuzzy
 msgid "convert a pool UUID to pool name"
 msgstr "преобразовать UUID в сетевое имя"
 
-#: src/virsh.c:3665
+#: src/virsh.c:3676
 #, fuzzy
 msgid "pool uuid"
 msgstr "uuid домена"
 
-#: src/virsh.c:3690
+#: src/virsh.c:3701
 #, fuzzy
 msgid "start a (previously defined) inactive pool"
 msgstr "запустить ранее определенный неактивный домен"
 
-#: src/virsh.c:3691
+#: src/virsh.c:3702
 #, fuzzy
 msgid "Start a pool."
 msgstr "Запуск домена."
 
-#: src/virsh.c:3696
+#: src/virsh.c:3707
 #, fuzzy
 msgid "name of the inactive pool"
 msgstr "имя неактивного домена"
 
-#: src/virsh.c:3713
+#: src/virsh.c:3724
 #, fuzzy, c-format
 msgid "Pool %s started\n"
 msgstr "Домен %s запущен\n"
 
-#: src/virsh.c:3716
+#: src/virsh.c:3727
 #, fuzzy, c-format
 msgid "Failed to start pool %s"
 msgstr "Ошибка запуска домена %s"
 
-#: src/virsh.c:3728
+#: src/virsh.c:3739
 #, fuzzy
 msgid "create a volume from a set of args"
 msgstr "создать домен из файла XML"
 
-#: src/virsh.c:3729 src/virsh.c:3926
+#: src/virsh.c:3740 src/virsh.c:3937
 #, fuzzy
 msgid "Create a vol."
 msgstr "Создать домен."
 
-#: src/virsh.c:3734 src/virsh.c:3893 src/virsh.c:3931
+#: src/virsh.c:3745 src/virsh.c:3904 src/virsh.c:3942
 #, fuzzy
 msgid "pool name"
 msgstr "имя домена"
 
-#: src/virsh.c:3735
+#: src/virsh.c:3746
 #, fuzzy
 msgid "name of the volume"
 msgstr "имя неактивного домена"
 
-#: src/virsh.c:3736
+#: src/virsh.c:3747
 msgid "size of the vol with optional k,M,G,T suffix"
 msgstr ""
 
-#: src/virsh.c:3737
+#: src/virsh.c:3748
 msgid "initial allocation size with optional k,M,G,T suffix"
 msgstr ""
 
-#: src/virsh.c:3738
+#: src/virsh.c:3749
 msgid "file format type raw,bochs,qcow,qcow2,vmdk"
 msgstr ""
 
-#: src/virsh.c:3796 src/virsh.c:3801
+#: src/virsh.c:3807 src/virsh.c:3812
 #, c-format
 msgid "Malformed size %s"
 msgstr ""
 
-#: src/virsh.c:3830
+#: src/virsh.c:3841
 #, fuzzy, c-format
 msgid "Vol %s created\n"
 msgstr "Домен %s создан из %s\n"
 
-#: src/virsh.c:3834
+#: src/virsh.c:3845
 #, fuzzy, c-format
 msgid "Failed to create vol %s"
 msgstr "Ошибка чтения сокета %d\n"
 
-#: src/virsh.c:3849
+#: src/virsh.c:3860
 #, fuzzy
 msgid "undefine an inactive pool"
 msgstr "отменить определение неактивного домена"
 
-#: src/virsh.c:3850
+#: src/virsh.c:3861
 #, fuzzy
 msgid "Undefine the configuration for an inactive pool."
 msgstr "Отменить назначение конфигурации для неактивного домена."
 
-#: src/virsh.c:3873
+#: src/virsh.c:3884
 #, fuzzy, c-format
 msgid "Pool %s has been undefined\n"
 msgstr "Конфигурация домена %s отменена\n"
 
-#: src/virsh.c:3875
+#: src/virsh.c:3886
 #, fuzzy, c-format
 msgid "Failed to undefine pool %s"
 msgstr "Ошибка отмены конфигурации домена %s"
 
-#: src/virsh.c:3887
+#: src/virsh.c:3898
 #, fuzzy
 msgid "convert a pool name to pool UUID"
 msgstr "преобразовать имя сети в UUID сети"
 
-#: src/virsh.c:3913
+#: src/virsh.c:3924
 #, fuzzy
 msgid "failed to get pool UUID"
 msgstr "ошибка получения UUID домена"
 
-#: src/virsh.c:3925
+#: src/virsh.c:3936
 #, fuzzy
 msgid "create a vol from an XML file"
 msgstr "создать домен из файла XML"
 
-#: src/virsh.c:3932
+#: src/virsh.c:3943
 #, fuzzy
 msgid "file containing an XML vol description"
 msgstr "файл, содержащий XML описание домена"
 
-#: src/virsh.c:3969
+#: src/virsh.c:3980
 #, fuzzy, c-format
 msgid "Vol %s created from %s\n"
 msgstr "Домен %s создан из %s\n"
 
-#: src/virsh.c:3973
+#: src/virsh.c:3984
 #, fuzzy, c-format
 msgid "Failed to create vol from %s"
 msgstr "Ошибка создания домена из %s"
 
-#: src/virsh.c:3983
+#: src/virsh.c:3994
 msgid "delete a vol"
 msgstr ""
 
-#: src/virsh.c:3984
+#: src/virsh.c:3995
 #, fuzzy
 msgid "Delete a given vol."
 msgstr "Разрушить заданный домен."
 
-#: src/virsh.c:3990 src/virsh.c:4031 src/virsh.c:4082
+#: src/virsh.c:4001 src/virsh.c:4042 src/virsh.c:4093
 msgid "vol name, key or path"
 msgstr ""
 
-#: src/virsh.c:4009
+#: src/virsh.c:4020
 #, fuzzy, c-format
 msgid "Vol %s deleted\n"
 msgstr "Домен %s разрушен\n"
 
-#: src/virsh.c:4011
+#: src/virsh.c:4022
 #, fuzzy, c-format
 msgid "Failed to delete vol %s"
 msgstr "Ошибка разрушения домена %s"
 
-#: src/virsh.c:4024
+#: src/virsh.c:4035
 #, fuzzy
 msgid "storage vol information"
 msgstr "информация об узле"
 
-#: src/virsh.c:4025
+#: src/virsh.c:4036
 #, fuzzy
 msgid "Returns basic information about the storage vol."
 msgstr "Возвращает общую информацию об узле."
 
-#: src/virsh.c:4053
+#: src/virsh.c:4064
 #, fuzzy
 msgid "Type:"
 msgstr "Тип ОС:"
 
-#: src/virsh.c:4055
+#: src/virsh.c:4066
 msgid "file"
 msgstr ""
 
-#: src/virsh.c:4055
+#: src/virsh.c:4066
 #, fuzzy
 msgid "block"
 msgstr "заблокирован"
 
-#: src/virsh.c:4075
+#: src/virsh.c:4086
 #, fuzzy
 msgid "vol information in XML"
 msgstr "информация о домене в XML"
 
-#: src/virsh.c:4076
+#: src/virsh.c:4087
 #, fuzzy
 msgid "Output the vol information as an XML dump to stdout."
 msgstr "Вывод информации о домене в виде XML или на stdout."
 
-#: src/virsh.c:4116
+#: src/virsh.c:4127
 #, fuzzy
 msgid "list vols"
 msgstr "просмотр доменов"
 
-#: src/virsh.c:4117
+#: src/virsh.c:4128
 #, fuzzy
 msgid "Returns list of vols by pool."
 msgstr "Возвращает список доменов."
 
-#: src/virsh.c:4142 src/virsh.c:4150
+#: src/virsh.c:4153 src/virsh.c:4161
 #, fuzzy
 msgid "Failed to list active vols"
 msgstr "Ошибка отображения списка активных доменов"
 
-#: src/virsh.c:4158
+#: src/virsh.c:4169
 msgid "Path"
 msgstr ""
 
-#: src/virsh.c:4194
+#: src/virsh.c:4205
 #, fuzzy
 msgid "convert a vol UUID to vol name"
 msgstr "преобразовать UUID в сетевое имя"
 
-#: src/virsh.c:4200
+#: src/virsh.c:4211
 msgid "vol key or path"
 msgstr ""
 
-#: src/virsh.c:4227
+#: src/virsh.c:4238
 #, fuzzy
 msgid "convert a vol UUID to vol key"
 msgstr "преобразовать UUID в сетевое имя"
 
-#: src/virsh.c:4233
+#: src/virsh.c:4244
 #, fuzzy
 msgid "vol uuid"
 msgstr "uuid домена"
 
-#: src/virsh.c:4260
+#: src/virsh.c:4271
 #, fuzzy
 msgid "convert a vol UUID to vol path"
 msgstr "преобразовать UUID в сетевое имя"
 
-#: src/virsh.c:4267
+#: src/virsh.c:4278
 msgid "vol name or key"
 msgstr ""
 
-#: src/virsh.c:4297
+#: src/virsh.c:4308
 msgid "show version"
 msgstr "показать версию"
 
-#: src/virsh.c:4298
+#: src/virsh.c:4309
 msgid "Display the system version information."
 msgstr "Отобразить информацию о версии системы"
 
-#: src/virsh.c:4321
+#: src/virsh.c:4332
 msgid "failed to get hypervisor type"
 msgstr "ошибка получения типа гипервизора"
 
-#: src/virsh.c:4330
+#: src/virsh.c:4341
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "Выполнена компиляция на базе библиотеки: libvir %d.%d.%d\n"
 
-#: src/virsh.c:4335
+#: src/virsh.c:4346
 msgid "failed to get the library version"
 msgstr "ошибка получения версии библиотеки"
 
-#: src/virsh.c:4342
+#: src/virsh.c:4353
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "Используется библиотека: libvir %d.%d.%d\n"
 
-#: src/virsh.c:4349
+#: src/virsh.c:4360
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "Используется API: %s %d.%d.%d\n"
 
-#: src/virsh.c:4354
+#: src/virsh.c:4365
 msgid "failed to get the hypervisor version"
 msgstr "ошибка получения версии гипервизора"
 
-#: src/virsh.c:4359
+#: src/virsh.c:4370
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "Невозможно извлечь версию гипервизора, выполняющего %s\n"
 
-#: src/virsh.c:4366
+#: src/virsh.c:4377
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Выполняется гипервизор: %s %d.%d.%d\n"
 
-#: src/virsh.c:4376
+#: src/virsh.c:4387
 #, fuzzy
 msgid "enumerate devices on this host"
 msgstr "на этом узле NUMA не поддерживается"
 
-#: src/virsh.c:4382
+#: src/virsh.c:4393
 #, fuzzy
 msgid "capability name"
 msgstr "возможности"
 
-#: src/virsh.c:4402
+#: src/virsh.c:4413
 #, fuzzy
 msgid "Failed to count node devices"
 msgstr "Ошибка подключения к гипервизору"
 
-#: src/virsh.c:4412
+#: src/virsh.c:4423
 #, fuzzy
 msgid "Failed to list node devices"
 msgstr "Ошибка отображения списка неактивных доменов"
 
-#: src/virsh.c:4429
+#: src/virsh.c:4440
 msgid "node device details in XML"
 msgstr ""
 
-#: src/virsh.c:4430
+#: src/virsh.c:4441
 #, fuzzy
 msgid "Output the node device details as an XML dump to stdout."
 msgstr "Вывод информации о домене в виде XML или на stdout."
 
-#: src/virsh.c:4436 src/virsh.c:4471 src/virsh.c:4512 src/virsh.c:4553
+#: src/virsh.c:4447 src/virsh.c:4482 src/virsh.c:4523 src/virsh.c:4564
 #, fuzzy
 msgid "device key"
 msgstr "устройство"
 
-#: src/virsh.c:4451 src/virsh.c:4487 src/virsh.c:4528 src/virsh.c:4569
+#: src/virsh.c:4462 src/virsh.c:4498 src/virsh.c:4539 src/virsh.c:4580
 msgid "Could not find matching device"
 msgstr ""
 
-#: src/virsh.c:4464
+#: src/virsh.c:4475
 msgid "dettach node device its device driver"
 msgstr ""
 
-#: src/virsh.c:4465 src/virsh.c:4506
+#: src/virsh.c:4476 src/virsh.c:4517
 msgid "Dettach node device its device driver before assigning to a domain."
 msgstr ""
 
-#: src/virsh.c:4492
+#: src/virsh.c:4503
 #, fuzzy, c-format
 msgid "Device %s dettached\n"
 msgstr "Домен %s разрушен\n"
 
-#: src/virsh.c:4494
+#: src/virsh.c:4505
 #, fuzzy, c-format
 msgid "Failed to dettach device %s"
 msgstr "Ошибка создания домена из %s"
 
-#: src/virsh.c:4505
+#: src/virsh.c:4516
 msgid "reattach node device its device driver"
 msgstr ""
 
-#: src/virsh.c:4533
+#: src/virsh.c:4544
 #, c-format
 msgid "Device %s re-attached\n"
 msgstr ""
 
-#: src/virsh.c:4535
+#: src/virsh.c:4546
 #, fuzzy, c-format
 msgid "Failed to re-attach device %s"
 msgstr "Ошибка создания домена из %s"
 
-#: src/virsh.c:4546
+#: src/virsh.c:4557
 #, fuzzy
 msgid "reset node device"
 msgstr "Ошибка отображения списка неактивных доменов"
 
-#: src/virsh.c:4547
+#: src/virsh.c:4558
 #, fuzzy
 msgid "Reset node device before or after assigning to a domain."
 msgstr "Получить статистику блока устройств для выполняющегося домена."
 
-#: src/virsh.c:4574
+#: src/virsh.c:4585
 #, fuzzy, c-format
 msgid "Device %s reset\n"
 msgstr "Выполнение домена %s возобновлено\n"
 
-#: src/virsh.c:4576
+#: src/virsh.c:4587
 #, fuzzy, c-format
 msgid "Failed to reset device %s"
 msgstr "не удалось создать файл журнала %s: %s"
 
-#: src/virsh.c:4587
+#: src/virsh.c:4598
 #, fuzzy
 msgid "print the hypervisor hostname"
 msgstr "ошибка получения типа гипервизора"
 
-#: src/virsh.c:4602
+#: src/virsh.c:4613
 #, fuzzy
 msgid "failed to get hostname"
 msgstr "ошибка получения типа гипервизора"
 
-#: src/virsh.c:4616
+#: src/virsh.c:4627
 #, fuzzy
 msgid "print the hypervisor canonical URI"
 msgstr "URI соединения гипервизора"
 
-#: src/virsh.c:4631
+#: src/virsh.c:4642
 #, fuzzy
 msgid "failed to get URI"
 msgstr "ошибка получения UUID домена"
 
-#: src/virsh.c:4645
+#: src/virsh.c:4656
 msgid "vnc display"
 msgstr "дисплей vnc"
 
-#: src/virsh.c:4646
+#: src/virsh.c:4657
 msgid "Output the IP address and port number for the VNC display."
 msgstr "Вывод IP адреса и номера порта на дисплей VNC."
 
-#: src/virsh.c:4720
+#: src/virsh.c:4731
 msgid "tty console"
 msgstr ""
 
-#: src/virsh.c:4721
+#: src/virsh.c:4732
 msgid "Output the device for the TTY console."
 msgstr ""
 
-#: src/virsh.c:4780
+#: src/virsh.c:4791
 #, fuzzy
 msgid "attach device from an XML file"
 msgstr "создать домен из файла XML"
 
-#: src/virsh.c:4781
+#: src/virsh.c:4792
 #, fuzzy
 msgid "Attach device from an XML <file>."
 msgstr "создать домен из файла XML"
 
-#: src/virsh.c:4787 src/virsh.c:4845
+#: src/virsh.c:4798 src/virsh.c:4856
 msgid "XML file"
 msgstr ""
 
-#: src/virsh.c:4808
+#: src/virsh.c:4819
 msgid "attach-device: Missing <file> option"
 msgstr ""
 
-#: src/virsh.c:4822
+#: src/virsh.c:4833
 #, fuzzy, c-format
 msgid "Failed to attach device from %s"
 msgstr "Ошибка создания домена из %s"
 
-#: src/virsh.c:4826
+#: src/virsh.c:4837
 msgid "Device attached successfully\n"
 msgstr ""
 
-#: src/virsh.c:4838
+#: src/virsh.c:4849
 #, fuzzy
 msgid "detach device from an XML file"
 msgstr "создать домен из файла XML"
 
-#: src/virsh.c:4839
+#: src/virsh.c:4850
 #, fuzzy
 msgid "Detach device from an XML <file>"
 msgstr "создать домен из файла XML"
 
-#: src/virsh.c:4866
+#: src/virsh.c:4877
 msgid "detach-device: Missing <file> option"
 msgstr ""
 
-#: src/virsh.c:4880
+#: src/virsh.c:4891
 #, fuzzy, c-format
 msgid "Failed to detach device from %s"
 msgstr "Ошибка создания домена из %s"
 
-#: src/virsh.c:4884
+#: src/virsh.c:4895
 msgid "Device detached successfully\n"
 msgstr ""
 
-#: src/virsh.c:4896
+#: src/virsh.c:4907
 #, fuzzy
 msgid "attach network interface"
 msgstr "имя сети"
 
-#: src/virsh.c:4897
+#: src/virsh.c:4908
 msgid "Attach new network interface."
 msgstr ""
 
-#: src/virsh.c:4903 src/virsh.c:5019
+#: src/virsh.c:4914 src/virsh.c:5030
 #, fuzzy
 msgid "network interface type"
 msgstr "имя сети"
 
-#: src/virsh.c:4904
+#: src/virsh.c:4915
 #, fuzzy
 msgid "source of network interface"
 msgstr "неопределенное имя сети"
 
-#: src/virsh.c:4905
+#: src/virsh.c:4916
 #, fuzzy
 msgid "target network name"
 msgstr "имя сети"
 
-#: src/virsh.c:4906 src/virsh.c:5020
+#: src/virsh.c:4917 src/virsh.c:5031
 #, fuzzy
 msgid "MAC address"
 msgstr "неверный аргумент %s"
 
-#: src/virsh.c:4907
+#: src/virsh.c:4918
 msgid "script used to bridge network interface"
 msgstr ""
 
-#: src/virsh.c:4939
+#: src/virsh.c:4950
 #, c-format
 msgid "No support %s in command 'attach-interface'"
 msgstr ""
 
-#: src/virsh.c:4995
+#: src/virsh.c:5006
 msgid "Interface attached successfully\n"
 msgstr ""
 
-#: src/virsh.c:5012
+#: src/virsh.c:5023
 #, fuzzy
 msgid "detach network interface"
 msgstr "имя сети"
 
-#: src/virsh.c:5013
+#: src/virsh.c:5024
 msgid "Detach network interface."
 msgstr ""
 
-#: src/virsh.c:5058 src/virsh.c:5063
+#: src/virsh.c:5069 src/virsh.c:5074
 #, fuzzy
 msgid "Failed to get interface information"
 msgstr "ошибка получения данных узла"
 
-#: src/virsh.c:5071
+#: src/virsh.c:5082
 #, c-format
 msgid "No found interface whose type is %s"
 msgstr ""
 
-#: src/virsh.c:5093
+#: src/virsh.c:5104
 #, c-format
 msgid "No found interface whose MAC address is %s"
 msgstr ""
 
-#: src/virsh.c:5099 src/virsh.c:5375
+#: src/virsh.c:5110 src/virsh.c:5386
 #, fuzzy
 msgid "Failed to allocate memory"
 msgstr "ошибка выделения узла"
 
-#: src/virsh.c:5104 src/virsh.c:5380
+#: src/virsh.c:5115 src/virsh.c:5391
 #, fuzzy
 msgid "Failed to create XML"
 msgstr "Ошибка чтения сокета %d\n"
 
-#: src/virsh.c:5112
+#: src/virsh.c:5123
 msgid "Interface detached successfully\n"
 msgstr ""
 
-#: src/virsh.c:5132
+#: src/virsh.c:5143
 msgid "attach disk device"
 msgstr ""
 
-#: src/virsh.c:5133
+#: src/virsh.c:5144
 msgid "Attach new disk device."
 msgstr ""
 
-#: src/virsh.c:5139
+#: src/virsh.c:5150
 msgid "source of disk device"
 msgstr ""
 
-#: src/virsh.c:5140 src/virsh.c:5303
+#: src/virsh.c:5151 src/virsh.c:5314
 msgid "target of disk device"
 msgstr ""
 
-#: src/virsh.c:5141
+#: src/virsh.c:5152
 msgid "driver of disk device"
 msgstr ""
 
-#: src/virsh.c:5142
+#: src/virsh.c:5153
 msgid "subdriver of disk device"
 msgstr ""
 
-#: src/virsh.c:5143
+#: src/virsh.c:5154
 msgid "target device type"
 msgstr ""
 
-#: src/virsh.c:5144
+#: src/virsh.c:5155
 msgid "mode of device reading and writing"
 msgstr ""
 
-#: src/virsh.c:5175 src/virsh.c:5184 src/virsh.c:5191
+#: src/virsh.c:5186 src/virsh.c:5195 src/virsh.c:5202
 #, c-format
 msgid "No support %s in command 'attach-disk'"
 msgstr ""
 
-#: src/virsh.c:5280
+#: src/virsh.c:5291
 msgid "Disk attached successfully\n"
 msgstr ""
 
-#: src/virsh.c:5296
+#: src/virsh.c:5307
 msgid "detach disk device"
 msgstr ""
 
-#: src/virsh.c:5297
+#: src/virsh.c:5308
 msgid "Detach disk device."
 msgstr ""
 
-#: src/virsh.c:5338 src/virsh.c:5343 src/virsh.c:5350
+#: src/virsh.c:5349 src/virsh.c:5354 src/virsh.c:5361
 #, fuzzy
 msgid "Failed to get disk information"
 msgstr "ошибка получения данных узла"
 
-#: src/virsh.c:5369
+#: src/virsh.c:5380
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr ""
 
-#: src/virsh.c:5388
+#: src/virsh.c:5399
 msgid "Disk detached successfully\n"
 msgstr ""
 
-#: src/virsh.c:5415
+#: src/virsh.c:5426
 #, fuzzy, c-format
 msgid "malloc: failed to allocate temporary file name: %s"
 msgstr "ошибка копирования строки"
 
-#: src/virsh.c:5426
+#: src/virsh.c:5437
 #, fuzzy, c-format
 msgid "mkstemp: failed to create temporary file: %s"
 msgstr "ошибка записи файла конфигурации"
 
-#: src/virsh.c:5433
+#: src/virsh.c:5444
 #, fuzzy, c-format
 msgid "write: %s: failed to write to temporary file: %s"
 msgstr "ошибка записи файла конфигурации"
 
-#: src/virsh.c:5442
+#: src/virsh.c:5453
 #, fuzzy, c-format
 msgid "close: %s: failed to write or close temporary file: %s"
 msgstr "ошибка записи файла конфигурации"
 
-#: src/virsh.c:5472
+#: src/virsh.c:5483
 #, c-format
 msgid ""
 "%s: $EDITOR environment variable contains shell meta or other unacceptable "
 "characters"
 msgstr ""
 
-#: src/virsh.c:5479
+#: src/virsh.c:5490
 #, c-format
 msgid ""
 "%s: temporary filename contains shell meta or other unacceptable characters "
 "(is $TMPDIR wrong?)"
 msgstr ""
 
-#: src/virsh.c:5486
+#: src/virsh.c:5497
 #, fuzzy, c-format
 msgid "virAsprintf: could not create editing command: %s"
 msgstr "Ошибка создания неактивного домена %s\n"
 
-#: src/virsh.c:5494
+#: src/virsh.c:5505
 #, fuzzy, c-format
 msgid "%s: edit command failed: %s"
 msgstr "сбой команды lvs"
 
-#: src/virsh.c:5500
+#: src/virsh.c:5511
 #, fuzzy, c-format
 msgid "%s: command exited with non-zero status"
 msgstr "сбой команды lvs. статус выхода: %d"
 
-#: src/virsh.c:5515
+#: src/virsh.c:5526
 #, fuzzy, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "ошибка записи файла конфигурации"
 
-#: src/virsh.c:5526
+#: src/virsh.c:5537
 #, fuzzy
 msgid "edit XML configuration for a domain"
 msgstr "Отменить назначение конфигурации для неактивного домена."
 
-#: src/virsh.c:5527
+#: src/virsh.c:5538
 #, fuzzy
 msgid "Edit the XML configuration for a domain."
 msgstr "Отменить назначение конфигурации для неактивного домена."
 
-#: src/virsh.c:5578
+#: src/virsh.c:5589
 #, c-format
 msgid "Domain %s XML configuration not changed.\n"
 msgstr ""
 
-#: src/virsh.c:5594
+#: src/virsh.c:5605
 msgid "ERROR: the XML configuration was changed by another user"
 msgstr ""
 
-#: src/virsh.c:5604
+#: src/virsh.c:5615
 #, fuzzy, c-format
 msgid "Domain %s XML configuration edited.\n"
 msgstr "ошибка чтения файла конфигурации"
 
-#: src/virsh.c:5629
+#: src/virsh.c:5640
 #, fuzzy
 msgid "edit XML configuration for a network"
 msgstr "Отменить назначение конфигурации для неактивной сети."
 
-#: src/virsh.c:5630
+#: src/virsh.c:5641
 #, fuzzy
 msgid "Edit the XML configuration for a network."
 msgstr "Отменить назначение конфигурации для неактивной сети."
 
-#: src/virsh.c:5646
+#: src/virsh.c:5657
 #, fuzzy
 msgid "edit XML configuration for a storage pool"
 msgstr "Отменить назначение конфигурации для неактивного домена."
 
-#: src/virsh.c:5647
+#: src/virsh.c:5658
 #, fuzzy
 msgid "Edit the XML configuration for a storage pool."
 msgstr "Отменить назначение конфигурации для неактивного домена."
 
-#: src/virsh.c:5663
+#: src/virsh.c:5674
 msgid "quit this interactive terminal"
 msgstr "выйти из интерактивного терминала"
 
-#: src/virsh.c:5848
+#: src/virsh.c:5859
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "формат команды '%s' требует указания опции <%s>"
 
-#: src/virsh.c:5849
+#: src/virsh.c:5860
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "формат команды '%s' требует указания опции --%s"
 
-#: src/virsh.c:5876
+#: src/virsh.c:5887
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "команда '%s' не существует"
 
-#: src/virsh.c:5883
+#: src/virsh.c:5894
 msgid "  NAME\n"
 msgstr "  ИМЯ\n"
 
-#: src/virsh.c:5886
+#: src/virsh.c:5897
 #, fuzzy
 msgid ""
 "\n"
@@ -7069,17 +7121,17 @@ msgstr ""
 "\n"
 "  ПАРАМЕТРЫ\n"
 
-#: src/virsh.c:5895
+#: src/virsh.c:5906
 #, fuzzy, c-format
 msgid "[--%s <number>]"
 msgstr "--%s <число>"
 
-#: src/virsh.c:5897
+#: src/virsh.c:5908
 #, fuzzy, c-format
 msgid "[--%s <string>]"
 msgstr "--%s <строка>"
 
-#: src/virsh.c:5910
+#: src/virsh.c:5921
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -7087,7 +7139,7 @@ msgstr ""
 "\n"
 "  ОПИСАНИЕ\n"
 
-#: src/virsh.c:5916
+#: src/virsh.c:5927
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -7095,60 +7147,60 @@ msgstr ""
 "\n"
 "  ПАРАМЕТРЫ\n"
 
-#: src/virsh.c:5921
+#: src/virsh.c:5932
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <число>"
 
-#: src/virsh.c:5923
+#: src/virsh.c:5934
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <строка>"
 
-#: src/virsh.c:6076
+#: src/virsh.c:6087
 #, c-format
 msgid "internal error: virsh %s: no %s VSH_OT_DATA option"
 msgstr ""
 
-#: src/virsh.c:6093
+#: src/virsh.c:6104
 msgid "undefined domain name or id"
 msgstr "неопределенное имя домена или ID"
 
-#: src/virsh.c:6125
+#: src/virsh.c:6136
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "ошибка при получении домена '%s'"
 
-#: src/virsh.c:6141
+#: src/virsh.c:6152
 msgid "undefined network name"
 msgstr "неопределенное имя сети"
 
-#: src/virsh.c:6165
+#: src/virsh.c:6176
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "ошибка при получении сети '%s'"
 
-#: src/virsh.c:6178 src/virsh.c:6224
+#: src/virsh.c:6189 src/virsh.c:6235
 #, fuzzy
 msgid "undefined pool name"
 msgstr "неопределенное имя сети"
 
-#: src/virsh.c:6202
+#: src/virsh.c:6213
 #, fuzzy, c-format
 msgid "failed to get pool '%s'"
 msgstr "ошибка при получении домена '%s'"
 
-#: src/virsh.c:6219
+#: src/virsh.c:6230
 #, fuzzy
 msgid "undefined vol name"
 msgstr "неопределенное имя сети"
 
-#: src/virsh.c:6255
+#: src/virsh.c:6266
 #, fuzzy, c-format
 msgid "failed to get vol '%s'"
 msgstr "ошибка при получении домена '%s'"
 
-#: src/virsh.c:6289
+#: src/virsh.c:6300
 #, c-format
 msgid ""
 "\n"
@@ -7159,131 +7211,131 @@ msgstr ""
 "(Время: %.3f мс)\n"
 "\n"
 
-#: src/virsh.c:6363
+#: src/virsh.c:6374
 msgid "missing \""
 msgstr "отсутствует \""
 
-#: src/virsh.c:6424
+#: src/virsh.c:6435
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "непредвиденный признак (имя команды): '%s'"
 
-#: src/virsh.c:6429
+#: src/virsh.c:6440
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "неизвестная команда: '%s'"
 
-#: src/virsh.c:6436
+#: src/virsh.c:6447
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "команда '%s' не поддерживает опции --%s"
 
-#: src/virsh.c:6451
+#: src/virsh.c:6462
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "ожидаемый формат: --%s <%s>"
 
-#: src/virsh.c:6454
+#: src/virsh.c:6465
 msgid "number"
 msgstr "число"
 
-#: src/virsh.c:6454
+#: src/virsh.c:6465
 msgid "string"
 msgstr "строка"
 
-#: src/virsh.c:6460
+#: src/virsh.c:6471
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "неожидаемые данные '%s'"
 
-#: src/virsh.c:6482
+#: src/virsh.c:6493
 msgid "OPTION"
 msgstr "ПАРАМЕТР"
 
-#: src/virsh.c:6482
+#: src/virsh.c:6493
 msgid "DATA"
 msgstr "ДАННЫЕ"
 
-#: src/virsh.c:6533 src/virsh.c:6555
+#: src/virsh.c:6544 src/virsh.c:6566
 msgid "idle"
 msgstr ""
 
-#: src/virsh.c:6535
+#: src/virsh.c:6546
 msgid "paused"
 msgstr "приостановлен"
 
-#: src/virsh.c:6537
+#: src/virsh.c:6548
 msgid "in shutdown"
 msgstr "отключается"
 
-#: src/virsh.c:6539
+#: src/virsh.c:6550
 msgid "shut off"
 msgstr "отключить"
 
-#: src/virsh.c:6541
+#: src/virsh.c:6552
 msgid "crashed"
 msgstr "аварийный сбой"
 
-#: src/virsh.c:6553
+#: src/virsh.c:6564
 msgid "offline"
 msgstr "автономный режим"
 
-#: src/virsh.c:6572
+#: src/virsh.c:6583
 msgid "no valid connection"
 msgstr "нет действительного соединения"
 
-#: src/virsh.c:6619
+#: src/virsh.c:6630
 #, c-format
 msgid "%s: error: "
 msgstr "%s: ошибка: "
 
-#: src/virsh.c:6621
+#: src/virsh.c:6632
 msgid "error: "
 msgstr "ошибка: "
 
-#: src/virsh.c:6643 src/virsh.c:6655 src/virsh.c:6668
+#: src/virsh.c:6654 src/virsh.c:6666 src/virsh.c:6679
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "Сбой %s: %d: при попытке выделения %d байт"
 
-#: src/virsh.c:6682
+#: src/virsh.c:6693
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "Сбой %s: %d: при попытке выделения %lu байт"
 
-#: src/virsh.c:6711
+#: src/virsh.c:6722
 msgid "failed to connect to the hypervisor"
 msgstr "ошибка подключения к гипервизору"
 
-#: src/virsh.c:6743
+#: src/virsh.c:6754
 #, fuzzy
 msgid "failed to get the log file information"
 msgstr "ошибка получения данных узла"
 
-#: src/virsh.c:6748
+#: src/virsh.c:6759
 msgid "the log path is not a file"
 msgstr ""
 
-#: src/virsh.c:6755
+#: src/virsh.c:6766
 msgid "failed to open the log file. check the log file path"
 msgstr ""
 
-#: src/virsh.c:6823
+#: src/virsh.c:6834
 #, fuzzy
 msgid "failed to write the log file"
 msgstr "ошибка записи файла конфигурации"
 
-#: src/virsh.c:6838
+#: src/virsh.c:6849
 #, fuzzy, c-format
 msgid "%s: failed to write log file: %s"
 msgstr "ошибка записи файла конфигурации"
 
-#: src/virsh.c:7018
+#: src/virsh.c:7029
 #, fuzzy
 msgid "failed to disconnect from the hypervisor"
 msgstr "Ошибка отключения от гипервизора"
 
-#: src/virsh.c:7033
+#: src/virsh.c:7044
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -7315,7 +7367,7 @@ msgstr ""
 "\n"
 "  команды (текстовый режим):\n"
 
-#: src/virsh.c:7051
+#: src/virsh.c:7062
 #, fuzzy
 msgid ""
 "\n"
@@ -7326,17 +7378,17 @@ msgstr ""
 "  (наберите --help <команда> для подробной информации о команде)\n"
 "\n"
 
-#: src/virsh.c:7144
+#: src/virsh.c:7155
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "неподдерживаемая опция '-%c'. Обратитесь к --help."
 
-#: src/virsh.c:7152
+#: src/virsh.c:7163
 #, c-format
 msgid "extra argument '%s'. See --help."
 msgstr ""
 
-#: src/virsh.c:7234
+#: src/virsh.c:7245
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -7345,7 +7397,7 @@ msgstr ""
 "Добро пожаловать в %s - интерактивный терминал виртуализации.\n"
 "\n"
 
-#: src/virsh.c:7237
+#: src/virsh.c:7248
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"

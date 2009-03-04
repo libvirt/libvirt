@@ -84,6 +84,7 @@
     <reference name='VIR_ERR_NO_NODE_DEVICE' href='html/libvirt-virterror.html#VIR_ERR_NO_NODE_DEVICE'/>
     <reference name='VIR_ERR_NO_OS' href='html/libvirt-virterror.html#VIR_ERR_NO_OS'/>
     <reference name='VIR_ERR_NO_ROOT' href='html/libvirt-virterror.html#VIR_ERR_NO_ROOT'/>
+    <reference name='VIR_ERR_NO_SECURITY_MODEL' href='html/libvirt-virterror.html#VIR_ERR_NO_SECURITY_MODEL'/>
     <reference name='VIR_ERR_NO_SOURCE' href='html/libvirt-virterror.html#VIR_ERR_NO_SOURCE'/>
     <reference name='VIR_ERR_NO_STORAGE_POOL' href='html/libvirt-virterror.html#VIR_ERR_NO_STORAGE_POOL'/>
     <reference name='VIR_ERR_NO_STORAGE_VOL' href='html/libvirt-virterror.html#VIR_ERR_NO_STORAGE_VOL'/>
@@ -125,6 +126,7 @@
     <reference name='VIR_FROM_QEMU' href='html/libvirt-virterror.html#VIR_FROM_QEMU'/>
     <reference name='VIR_FROM_REMOTE' href='html/libvirt-virterror.html#VIR_FROM_REMOTE'/>
     <reference name='VIR_FROM_RPC' href='html/libvirt-virterror.html#VIR_FROM_RPC'/>
+    <reference name='VIR_FROM_SECURITY' href='html/libvirt-virterror.html#VIR_FROM_SECURITY'/>
     <reference name='VIR_FROM_SEXPR' href='html/libvirt-virterror.html#VIR_FROM_SEXPR'/>
     <reference name='VIR_FROM_STATS_LINUX' href='html/libvirt-virterror.html#VIR_FROM_STATS_LINUX'/>
     <reference name='VIR_FROM_STORAGE' href='html/libvirt-virterror.html#VIR_FROM_STORAGE'/>
@@ -140,6 +142,9 @@
     <reference name='VIR_MEMORY_VIRTUAL' href='html/libvirt-libvirt.html#VIR_MEMORY_VIRTUAL'/>
     <reference name='VIR_MIGRATE_LIVE' href='html/libvirt-libvirt.html#VIR_MIGRATE_LIVE'/>
     <reference name='VIR_NODEINFO_MAXCPUS' href='html/libvirt-libvirt.html#VIR_NODEINFO_MAXCPUS'/>
+    <reference name='VIR_SECURITY_DOI_BUFLEN' href='html/libvirt-libvirt.html#VIR_SECURITY_DOI_BUFLEN'/>
+    <reference name='VIR_SECURITY_LABEL_BUFLEN' href='html/libvirt-libvirt.html#VIR_SECURITY_LABEL_BUFLEN'/>
+    <reference name='VIR_SECURITY_MODEL_BUFLEN' href='html/libvirt-libvirt.html#VIR_SECURITY_MODEL_BUFLEN'/>
     <reference name='VIR_STORAGE_POOL_BUILDING' href='html/libvirt-libvirt.html#VIR_STORAGE_POOL_BUILDING'/>
     <reference name='VIR_STORAGE_POOL_BUILD_NEW' href='html/libvirt-libvirt.html#VIR_STORAGE_POOL_BUILD_NEW'/>
     <reference name='VIR_STORAGE_POOL_BUILD_REPAIR' href='html/libvirt-libvirt.html#VIR_STORAGE_POOL_BUILD_REPAIR'/>
@@ -171,6 +176,8 @@
     <reference name='_virError' href='html/libvirt-virterror.html#_virError'/>
     <reference name='_virNodeInfo' href='html/libvirt-libvirt.html#_virNodeInfo'/>
     <reference name='_virSchedParameter' href='html/libvirt-libvirt.html#_virSchedParameter'/>
+    <reference name='_virSecurityLabel' href='html/libvirt-libvirt.html#_virSecurityLabel'/>
+    <reference name='_virSecurityModel' href='html/libvirt-libvirt.html#_virSecurityModel'/>
     <reference name='_virStoragePoolInfo' href='html/libvirt-libvirt.html#_virStoragePoolInfo'/>
     <reference name='_virStorageVolInfo' href='html/libvirt-libvirt.html#_virStorageVolInfo'/>
     <reference name='_virVcpuInfo' href='html/libvirt-libvirt.html#_virVcpuInfo'/>
@@ -249,6 +256,7 @@
     <reference name='virDomainGetOSType' href='html/libvirt-libvirt.html#virDomainGetOSType'/>
     <reference name='virDomainGetSchedulerParameters' href='html/libvirt-libvirt.html#virDomainGetSchedulerParameters'/>
     <reference name='virDomainGetSchedulerType' href='html/libvirt-libvirt.html#virDomainGetSchedulerType'/>
+    <reference name='virDomainGetSecurityLabel' href='html/libvirt-libvirt.html#virDomainGetSecurityLabel'/>
     <reference name='virDomainGetUUID' href='html/libvirt-libvirt.html#virDomainGetUUID'/>
     <reference name='virDomainGetUUIDString' href='html/libvirt-libvirt.html#virDomainGetUUIDString'/>
     <reference name='virDomainGetVcpus' href='html/libvirt-libvirt.html#virDomainGetVcpus'/>
@@ -325,6 +333,7 @@
     <reference name='virNetworkSetAutostart' href='html/libvirt-libvirt.html#virNetworkSetAutostart'/>
     <reference name='virNetworkUndefine' href='html/libvirt-libvirt.html#virNetworkUndefine'/>
     <reference name='virNodeDevice' href='html/libvirt-libvirt.html#virNodeDevice'/>
+    <reference name='virNodeDeviceDettach' href='html/libvirt-libvirt.html#virNodeDeviceDettach'/>
     <reference name='virNodeDeviceFree' href='html/libvirt-libvirt.html#virNodeDeviceFree'/>
     <reference name='virNodeDeviceGetName' href='html/libvirt-libvirt.html#virNodeDeviceGetName'/>
     <reference name='virNodeDeviceGetParent' href='html/libvirt-libvirt.html#virNodeDeviceGetParent'/>
@@ -333,10 +342,13 @@
     <reference name='virNodeDeviceLookupByName' href='html/libvirt-libvirt.html#virNodeDeviceLookupByName'/>
     <reference name='virNodeDeviceNumOfCaps' href='html/libvirt-libvirt.html#virNodeDeviceNumOfCaps'/>
     <reference name='virNodeDevicePtr' href='html/libvirt-libvirt.html#virNodeDevicePtr'/>
+    <reference name='virNodeDeviceReAttach' href='html/libvirt-libvirt.html#virNodeDeviceReAttach'/>
     <reference name='virNodeDeviceRef' href='html/libvirt-libvirt.html#virNodeDeviceRef'/>
+    <reference name='virNodeDeviceReset' href='html/libvirt-libvirt.html#virNodeDeviceReset'/>
     <reference name='virNodeGetCellsFreeMemory' href='html/libvirt-libvirt.html#virNodeGetCellsFreeMemory'/>
     <reference name='virNodeGetFreeMemory' href='html/libvirt-libvirt.html#virNodeGetFreeMemory'/>
     <reference name='virNodeGetInfo' href='html/libvirt-libvirt.html#virNodeGetInfo'/>
+    <reference name='virNodeGetSecurityModel' href='html/libvirt-libvirt.html#virNodeGetSecurityModel'/>
     <reference name='virNodeInfo' href='html/libvirt-libvirt.html#virNodeInfo'/>
     <reference name='virNodeInfoPtr' href='html/libvirt-libvirt.html#virNodeInfoPtr'/>
     <reference name='virNodeListDevices' href='html/libvirt-libvirt.html#virNodeListDevices'/>
@@ -347,6 +359,10 @@
     <reference name='virSchedParameter' href='html/libvirt-libvirt.html#virSchedParameter'/>
     <reference name='virSchedParameterPtr' href='html/libvirt-libvirt.html#virSchedParameterPtr'/>
     <reference name='virSchedParameterType' href='html/libvirt-libvirt.html#virSchedParameterType'/>
+    <reference name='virSecurityLabel' href='html/libvirt-libvirt.html#virSecurityLabel'/>
+    <reference name='virSecurityLabelPtr' href='html/libvirt-libvirt.html#virSecurityLabelPtr'/>
+    <reference name='virSecurityModel' href='html/libvirt-libvirt.html#virSecurityModel'/>
+    <reference name='virSecurityModelPtr' href='html/libvirt-libvirt.html#virSecurityModelPtr'/>
     <reference name='virSetErrorFunc' href='html/libvirt-virterror.html#virSetErrorFunc'/>
     <reference name='virStoragePool' href='html/libvirt-libvirt.html#virStoragePool'/>
     <reference name='virStoragePoolBuild' href='html/libvirt-libvirt.html#virStoragePoolBuild'/>
@@ -489,6 +505,7 @@
       <ref name='VIR_ERR_NO_NODE_DEVICE'/>
       <ref name='VIR_ERR_NO_OS'/>
       <ref name='VIR_ERR_NO_ROOT'/>
+      <ref name='VIR_ERR_NO_SECURITY_MODEL'/>
       <ref name='VIR_ERR_NO_SOURCE'/>
       <ref name='VIR_ERR_NO_STORAGE_POOL'/>
       <ref name='VIR_ERR_NO_STORAGE_VOL'/>
@@ -530,6 +547,7 @@
       <ref name='VIR_FROM_QEMU'/>
       <ref name='VIR_FROM_REMOTE'/>
       <ref name='VIR_FROM_RPC'/>
+      <ref name='VIR_FROM_SECURITY'/>
       <ref name='VIR_FROM_SEXPR'/>
       <ref name='VIR_FROM_STATS_LINUX'/>
       <ref name='VIR_FROM_STORAGE'/>
@@ -545,6 +563,9 @@
       <ref name='VIR_MEMORY_VIRTUAL'/>
       <ref name='VIR_MIGRATE_LIVE'/>
       <ref name='VIR_NODEINFO_MAXCPUS'/>
+      <ref name='VIR_SECURITY_DOI_BUFLEN'/>
+      <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
+      <ref name='VIR_SECURITY_MODEL_BUFLEN'/>
       <ref name='VIR_STORAGE_POOL_BUILDING'/>
       <ref name='VIR_STORAGE_POOL_BUILD_NEW'/>
       <ref name='VIR_STORAGE_POOL_BUILD_REPAIR'/>
@@ -578,6 +599,8 @@
       <ref name='_virError'/>
       <ref name='_virNodeInfo'/>
       <ref name='_virSchedParameter'/>
+      <ref name='_virSecurityLabel'/>
+      <ref name='_virSecurityModel'/>
       <ref name='_virStoragePoolInfo'/>
       <ref name='_virStorageVolInfo'/>
       <ref name='_virVcpuInfo'/>
@@ -658,6 +681,7 @@
       <ref name='virDomainGetOSType'/>
       <ref name='virDomainGetSchedulerParameters'/>
       <ref name='virDomainGetSchedulerType'/>
+      <ref name='virDomainGetSecurityLabel'/>
       <ref name='virDomainGetUUID'/>
       <ref name='virDomainGetUUIDString'/>
       <ref name='virDomainGetVcpus'/>
@@ -734,6 +758,7 @@
       <ref name='virNetworkSetAutostart'/>
       <ref name='virNetworkUndefine'/>
       <ref name='virNodeDevice'/>
+      <ref name='virNodeDeviceDettach'/>
       <ref name='virNodeDeviceFree'/>
       <ref name='virNodeDeviceGetName'/>
       <ref name='virNodeDeviceGetParent'/>
@@ -742,10 +767,13 @@
       <ref name='virNodeDeviceLookupByName'/>
       <ref name='virNodeDeviceNumOfCaps'/>
       <ref name='virNodeDevicePtr'/>
+      <ref name='virNodeDeviceReAttach'/>
       <ref name='virNodeDeviceRef'/>
+      <ref name='virNodeDeviceReset'/>
       <ref name='virNodeGetCellsFreeMemory'/>
       <ref name='virNodeGetFreeMemory'/>
       <ref name='virNodeGetInfo'/>
+      <ref name='virNodeGetSecurityModel'/>
       <ref name='virNodeInfo'/>
       <ref name='virNodeInfoPtr'/>
       <ref name='virNodeListDevices'/>
@@ -756,6 +784,10 @@
       <ref name='virSchedParameter'/>
       <ref name='virSchedParameterPtr'/>
       <ref name='virSchedParameterType'/>
+      <ref name='virSecurityLabel'/>
+      <ref name='virSecurityLabelPtr'/>
+      <ref name='virSecurityModel'/>
+      <ref name='virSecurityModelPtr'/>
       <ref name='virSetErrorFunc'/>
       <ref name='virStoragePool'/>
       <ref name='virStoragePoolBuild'/>
@@ -1005,6 +1037,7 @@
       <ref name='virNodeGetCellsFreeMemory'/>
       <ref name='virNodeGetFreeMemory'/>
       <ref name='virNodeGetInfo'/>
+      <ref name='virNodeGetSecurityModel'/>
       <ref name='virNodeListDevices'/>
       <ref name='virNodeNumOfDevices'/>
       <ref name='virStoragePoolCreateXML'/>
@@ -1044,6 +1077,7 @@
       <ref name='virDomainGetOSType'/>
       <ref name='virDomainGetSchedulerParameters'/>
       <ref name='virDomainGetSchedulerType'/>
+      <ref name='virDomainGetSecurityLabel'/>
       <ref name='virDomainGetUUID'/>
       <ref name='virDomainGetUUIDString'/>
       <ref name='virDomainGetVcpus'/>
@@ -1122,13 +1156,16 @@
       <ref name='virNetworkUndefine'/>
     </type>
     <type name='virNodeDevicePtr'>
+      <ref name='virNodeDeviceDettach'/>
       <ref name='virNodeDeviceFree'/>
       <ref name='virNodeDeviceGetName'/>
       <ref name='virNodeDeviceGetParent'/>
       <ref name='virNodeDeviceGetXMLDesc'/>
       <ref name='virNodeDeviceListCaps'/>
       <ref name='virNodeDeviceNumOfCaps'/>
+      <ref name='virNodeDeviceReAttach'/>
       <ref name='virNodeDeviceRef'/>
+      <ref name='virNodeDeviceReset'/>
     </type>
     <type name='virNodeInfoPtr'>
       <ref name='virNodeGetInfo'/>
@@ -1136,6 +1173,12 @@
     <type name='virSchedParameterPtr'>
       <ref name='virDomainGetSchedulerParameters'/>
       <ref name='virDomainSetSchedulerParameters'/>
+    </type>
+    <type name='virSecurityLabelPtr'>
+      <ref name='virDomainGetSecurityLabel'/>
+    </type>
+    <type name='virSecurityModelPtr'>
+      <ref name='virNodeGetSecurityModel'/>
     </type>
     <type name='virStoragePoolInfoPtr'>
       <ref name='virStoragePoolGetInfo'/>
@@ -1259,6 +1302,9 @@
       <ref name='VIR_MEMORY_VIRTUAL'/>
       <ref name='VIR_MIGRATE_LIVE'/>
       <ref name='VIR_NODEINFO_MAXCPUS'/>
+      <ref name='VIR_SECURITY_DOI_BUFLEN'/>
+      <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
+      <ref name='VIR_SECURITY_MODEL_BUFLEN'/>
       <ref name='VIR_STORAGE_POOL_BUILDING'/>
       <ref name='VIR_STORAGE_POOL_BUILD_NEW'/>
       <ref name='VIR_STORAGE_POOL_BUILD_REPAIR'/>
@@ -1286,6 +1332,8 @@
       <ref name='_virDomainInterfaceStats'/>
       <ref name='_virNodeInfo'/>
       <ref name='_virSchedParameter'/>
+      <ref name='_virSecurityLabel'/>
+      <ref name='_virSecurityModel'/>
       <ref name='_virStoragePoolInfo'/>
       <ref name='_virStorageVolInfo'/>
       <ref name='_virVcpuInfo'/>
@@ -1358,6 +1406,7 @@
       <ref name='virDomainGetOSType'/>
       <ref name='virDomainGetSchedulerParameters'/>
       <ref name='virDomainGetSchedulerType'/>
+      <ref name='virDomainGetSecurityLabel'/>
       <ref name='virDomainGetUUID'/>
       <ref name='virDomainGetUUIDString'/>
       <ref name='virDomainGetVcpus'/>
@@ -1426,6 +1475,7 @@
       <ref name='virNetworkSetAutostart'/>
       <ref name='virNetworkUndefine'/>
       <ref name='virNodeDevice'/>
+      <ref name='virNodeDeviceDettach'/>
       <ref name='virNodeDeviceFree'/>
       <ref name='virNodeDeviceGetName'/>
       <ref name='virNodeDeviceGetParent'/>
@@ -1434,10 +1484,13 @@
       <ref name='virNodeDeviceLookupByName'/>
       <ref name='virNodeDeviceNumOfCaps'/>
       <ref name='virNodeDevicePtr'/>
+      <ref name='virNodeDeviceReAttach'/>
       <ref name='virNodeDeviceRef'/>
+      <ref name='virNodeDeviceReset'/>
       <ref name='virNodeGetCellsFreeMemory'/>
       <ref name='virNodeGetFreeMemory'/>
       <ref name='virNodeGetInfo'/>
+      <ref name='virNodeGetSecurityModel'/>
       <ref name='virNodeInfo'/>
       <ref name='virNodeInfoPtr'/>
       <ref name='virNodeListDevices'/>
@@ -1445,6 +1498,10 @@
       <ref name='virSchedParameter'/>
       <ref name='virSchedParameterPtr'/>
       <ref name='virSchedParameterType'/>
+      <ref name='virSecurityLabel'/>
+      <ref name='virSecurityLabelPtr'/>
+      <ref name='virSecurityModel'/>
+      <ref name='virSecurityModelPtr'/>
       <ref name='virStoragePool'/>
       <ref name='virStoragePoolBuild'/>
       <ref name='virStoragePoolBuildFlags'/>
@@ -1530,6 +1587,7 @@
       <ref name='VIR_ERR_NO_NODE_DEVICE'/>
       <ref name='VIR_ERR_NO_OS'/>
       <ref name='VIR_ERR_NO_ROOT'/>
+      <ref name='VIR_ERR_NO_SECURITY_MODEL'/>
       <ref name='VIR_ERR_NO_SOURCE'/>
       <ref name='VIR_ERR_NO_STORAGE_POOL'/>
       <ref name='VIR_ERR_NO_STORAGE_VOL'/>
@@ -1567,6 +1625,7 @@
       <ref name='VIR_FROM_QEMU'/>
       <ref name='VIR_FROM_REMOTE'/>
       <ref name='VIR_FROM_RPC'/>
+      <ref name='VIR_FROM_SECURITY'/>
       <ref name='VIR_FROM_SEXPR'/>
       <ref name='VIR_FROM_STATS_LINUX'/>
       <ref name='VIR_FROM_STORAGE'/>
@@ -1652,6 +1711,9 @@
         <word name='Build'>
           <ref name='virStoragePoolBuild'/>
         </word>
+        <word name='Bus'>
+          <ref name='virNodeDeviceReset'/>
+        </word>
         <word name='Bytes'>
           <ref name='virDomainPinVcpu'/>
         </word>
@@ -1726,6 +1788,9 @@
         </word>
       </letter>
       <letter name='D'>
+        <word name='D-State'>
+          <ref name='virNodeDeviceReset'/>
+        </word>
         <word name='Daemon'>
           <ref name='virDomainCoreDump'/>
         </word>
@@ -1745,6 +1810,7 @@
           <ref name='virStorageVolDelete'/>
         </word>
         <word name='Depending'>
+          <ref name='virNodeDeviceReAttach'/>
           <ref name='virStorageVolGetPath'/>
         </word>
         <word name='Deprecated'>
@@ -1803,8 +1869,10 @@
         </word>
         <word name='Extract'>
           <ref name='virDomainGetInfo'/>
+          <ref name='virDomainGetSecurityLabel'/>
           <ref name='virDomainGetVcpus'/>
           <ref name='virNodeGetInfo'/>
+          <ref name='virNodeGetSecurityModel'/>
         </word>
       </letter>
       <letter name='F'>
@@ -1853,6 +1921,9 @@
           <ref name='virDomainFree'/>
           <ref name='virNetworkFree'/>
           <ref name='virStoragePoolFree'/>
+        </word>
+        <word name='Function'>
+          <ref name='virNodeDeviceReset'/>
         </word>
       </letter>
       <letter name='G'>
@@ -1920,13 +1991,22 @@
         <word name='KBytes'>
           <ref name='_virDomainInfo'/>
         </word>
+        <word name='KVM'>
+          <ref name='virNodeDeviceReset'/>
+        </word>
       </letter>
       <letter name='L'>
+        <word name='Labeled'>
+          <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
+        </word>
         <word name='Launch'>
           <ref name='virDomainCreateXML'/>
         </word>
         <word name='Length'>
           <ref name='_virConnectCredential'/>
+        </word>
+        <word name='Level'>
+          <ref name='virNodeDeviceReset'/>
         </word>
         <word name='Linux'>
           <ref name='virDomainMemoryPeek'/>
@@ -1949,6 +2029,12 @@
         <word name='Macro'>
           <ref name='LIBVIR_VERSION_NUMBER'/>
           <ref name='VIR_DOMAIN_SCHED_FIELD_LENGTH'/>
+          <ref name='VIR_SECURITY_DOI_BUFLEN'/>
+          <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
+          <ref name='VIR_SECURITY_MODEL_BUFLEN'/>
+        </word>
+        <word name='Management'>
+          <ref name='virNodeDeviceReset'/>
         </word>
         <word name='Master'>
           <ref name='virDomainBlockPeek'/>
@@ -1963,8 +2049,11 @@
           <ref name='virDomainMigrate'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk1'>
       <letter name='N'>
         <word name='NFS'>
+          <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
           <ref name='virConnectFindStoragePoolSources'/>
         </word>
         <word name='NUMA'>
@@ -1984,6 +2073,7 @@
           <ref name='virStorageVolCreateXML'/>
         </word>
         <word name='Note'>
+          <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainCoreDump'/>
           <ref name='virDomainGetInfo'/>
@@ -1994,8 +2084,6 @@
           <ref name='virDomainShutdown'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk1'>
       <letter name='O'>
         <word name='OUT'>
           <ref name='cpumap'/>
@@ -2017,6 +2105,9 @@
         </word>
       </letter>
       <letter name='P'>
+        <word name='PCI'>
+          <ref name='virNodeDeviceReset'/>
+        </word>
         <word name='Part'>
           <ref name='virEventAddHandleFunc'/>
           <ref name='virEventAddTimeoutFunc'/>
@@ -2024,6 +2115,9 @@
           <ref name='virEventRemoveTimeoutFunc'/>
           <ref name='virEventUpdateHandleFunc'/>
           <ref name='virEventUpdateTimeoutFunc'/>
+        </word>
+        <word name='Power'>
+          <ref name='virNodeDeviceReset'/>
         </word>
         <word name='Prompt'>
           <ref name='_virConnectCredential'/>
@@ -2062,6 +2156,9 @@
           <ref name='virDomainGetUUIDString'/>
           <ref name='virNetworkGetUUIDString'/>
         </word>
+        <word name='Re-attach'>
+          <ref name='virNodeDeviceReAttach'/>
+        </word>
         <word name='Read-Only'>
           <ref name='virConnectGetVersion'/>
         </word>
@@ -2094,6 +2191,7 @@
         </word>
         <word name='Reset'>
           <ref name='virConnResetLastError'/>
+          <ref name='virNodeDeviceReset'/>
           <ref name='virResetError'/>
           <ref name='virResetLastError'/>
         </word>
@@ -2116,6 +2214,9 @@
       <letter name='S'>
         <word name='Save'>
           <ref name='virSaveLastError'/>
+        </word>
+        <word name='Secondary'>
+          <ref name='virNodeDeviceReset'/>
         </word>
         <word name='See'>
           <ref name='virConnectGetType'/>
@@ -2359,6 +2460,7 @@
           <ref name='virConnectNumOfDomains'/>
           <ref name='virConnectNumOfNetworks'/>
           <ref name='virConnectNumOfStoragePools'/>
+          <ref name='virDomainGetSecurityLabel'/>
           <ref name='virDomainSuspend'/>
           <ref name='virStoragePoolDestroy'/>
         </word>
@@ -2383,6 +2485,9 @@
         <word name='addresses'>
           <ref name='virDomainMemoryPeek'/>
         </word>
+        <word name='affect'>
+          <ref name='virNodeDeviceReset'/>
+        </word>
         <word name='after'>
           <ref name='virConnectDomainEventRegister'/>
           <ref name='virConnectGetCapabilities'/>
@@ -2392,6 +2497,10 @@
           <ref name='virDomainShutdown'/>
           <ref name='virEventRemoveHandleFunc'/>
           <ref name='virEventRemoveTimeoutFunc'/>
+          <ref name='virNodeDeviceReset'/>
+        </word>
+        <word name='again'>
+          <ref name='virNodeDeviceReAttach'/>
         </word>
         <word name='against'>
           <ref name='virConnCopyLastError'/>
@@ -2502,6 +2611,7 @@
         </word>
         <word name='appropriate'>
           <ref name='virConnectFindStoragePoolSources'/>
+          <ref name='virNodeDeviceReAttach'/>
         </word>
         <word name='arbitrary'>
           <ref name='virDomainSetVcpus'/>
@@ -2533,6 +2643,7 @@
           <ref name='virNetworkDestroy'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virNodeDeviceReset'/>
           <ref name='virSetErrorFunc'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
@@ -2551,6 +2662,9 @@
         </word>
         <word name='assigned'>
           <ref name='virStorageVolGetPath'/>
+        </word>
+        <word name='assigning'>
+          <ref name='virNodeDeviceReset'/>
         </word>
         <word name='associated'>
           <ref name='virDomainDestroy'/>
@@ -2573,6 +2687,9 @@
         <word name='attachment'>
           <ref name='virDomainAttachDevice'/>
           <ref name='virDomainDetachDevice'/>
+        </word>
+        <word name='attempt'>
+          <ref name='virNodeDeviceReset'/>
         </word>
         <word name='attempts'>
           <ref name='virConnectFindStoragePoolSources'/>
@@ -2636,6 +2753,7 @@
           <ref name='virDomainMigrate'/>
         </word>
         <word name='based'>
+          <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
           <ref name='virDomainCreateXML'/>
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
@@ -2661,6 +2779,9 @@
         <word name='because'>
           <ref name='virDomainMemoryPeek'/>
         </word>
+        <word name='before'>
+          <ref name='virNodeDeviceReset'/>
+        </word>
         <word name='behaviour'>
           <ref name='virStoragePoolRefresh'/>
         </word>
@@ -2683,6 +2804,9 @@
         <word name='between'>
           <ref name='VIR_CPU_MAPLEN'/>
           <ref name='virDomainMigrate'/>
+        </word>
+        <word name='binding'>
+          <ref name='virNodeDeviceReAttach'/>
         </word>
         <word name='bindings'>
           <ref name='virDomainGetConnect'/>
@@ -2753,6 +2877,7 @@
           <ref name='virDomainUndefine'/>
           <ref name='virNetworkDefineXML'/>
           <ref name='virNetworkUndefine'/>
+          <ref name='virNodeDeviceReset'/>
           <ref name='virStoragePoolDestroy'/>
         </word>
         <word name='byte'>
@@ -2784,6 +2909,7 @@
           <ref name='virConnectRef'/>
           <ref name='virDomainGetOSType'/>
           <ref name='virDomainGetSchedulerType'/>
+          <ref name='virDomainGetSecurityLabel'/>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainRef'/>
           <ref name='virNetworkGetBridgeName'/>
@@ -2791,6 +2917,7 @@
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
           <ref name='virNodeGetCellsFreeMemory'/>
+          <ref name='virNodeGetSecurityModel'/>
           <ref name='virSaveLastError'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
@@ -3098,6 +3225,8 @@
         </word>
         <word name='currently'>
           <ref name='virDomainCoreDump'/>
+          <ref name='virNodeDeviceReAttach'/>
+          <ref name='virNodeDeviceReset'/>
           <ref name='virStoragePoolRefresh'/>
         </word>
       </letter>
@@ -3132,6 +3261,10 @@
           <ref name='virDomainGetName'/>
           <ref name='virNetworkGetName'/>
         </word>
+        <word name='decides'>
+          <ref name='virDomainGetSecurityLabel'/>
+          <ref name='virNodeGetSecurityModel'/>
+        </word>
         <word name='default'>
           <ref name='_virConnectCredential'/>
           <ref name='virConnSetErrorFunc'/>
@@ -3163,6 +3296,9 @@
         <word name='delivery'>
           <ref name='virConnectDomainEventDeregister'/>
           <ref name='virConnectDomainEventRegister'/>
+        </word>
+        <word name='depends'>
+          <ref name='virNodeDeviceReset'/>
         </word>
         <word name='deprecated'>
           <ref name='_virError'/>
@@ -3214,6 +3350,10 @@
         <word name='determines'>
           <ref name='virStoragePoolGetAutostart'/>
         </word>
+        <word name='dettached'>
+          <ref name='virNodeDeviceReAttach'/>
+          <ref name='virNodeDeviceReset'/>
+        </word>
         <word name='dev'>
           <ref name='virNodeDeviceRef'/>
         </word>
@@ -3223,6 +3363,7 @@
         </word>
         <word name='devices'>
           <ref name='virDomainBlockStats'/>
+          <ref name='virNodeDeviceReset'/>
           <ref name='virNodeListDevices'/>
           <ref name='virNodeNumOfDevices'/>
           <ref name='virStoragePoolRefresh'/>
@@ -3291,6 +3432,9 @@
           <ref name='virNetworkUndefine'/>
           <ref name='virStoragePoolDestroy'/>
         </word>
+        <word name='doi'>
+          <ref name='VIR_SECURITY_DOI_BUFLEN'/>
+        </word>
         <word name='domains'>
           <ref name='virConnectListDefinedDomains'/>
           <ref name='virConnectListDomains'/>
@@ -3319,6 +3463,10 @@
           <ref name='virDomainMemoryPeek'/>
           <ref name='virDomainMigrate'/>
           <ref name='virGetVersion'/>
+          <ref name='virNodeDeviceReAttach'/>
+        </word>
+        <word name='dummy'>
+          <ref name='virNodeDeviceReAttach'/>
         </word>
         <word name='dump'>
           <ref name='virDomainCoreDump'/>
@@ -3416,9 +3564,13 @@
           <ref name='virEventTimeoutCallback'/>
           <ref name='virEventUpdateHandleFunc'/>
         </word>
+        <word name='exact'>
+          <ref name='virNodeDeviceReset'/>
+        </word>
         <word name='example'>
           <ref name='virDomainBlockStats'/>
           <ref name='virDomainMigrate'/>
+          <ref name='virNodeDeviceReset'/>
         </word>
         <word name='execution'>
           <ref name='virConnectDomainEventRegister'/>
@@ -3461,12 +3613,16 @@
           <ref name='virNetworkGetXMLDesc'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk4'>
       <letter name='f'>
         <word name='fact'>
           <ref name='virDomainMemoryPeek'/>
         </word>
         <word name='fail'>
           <ref name='virDomainSetVcpus'/>
+          <ref name='virNodeDeviceReAttach'/>
+          <ref name='virNodeDeviceReset'/>
         </word>
         <word name='failed'>
           <ref name='virSaveLastError'/>
@@ -3669,6 +3825,7 @@
           <ref name='virDomainResume'/>
           <ref name='virEventHandleCallback'/>
           <ref name='virNetworkCreate'/>
+          <ref name='virNodeDeviceReAttach'/>
           <ref name='virStorageVolDelete'/>
           <ref name='virStorageVolGetKey'/>
         </word>
@@ -3694,8 +3851,6 @@
           <ref name='virStorageVolDelete'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk4'>
       <letter name='g'>
         <word name='general'>
           <ref name='virDomainShutdown'/>
@@ -3762,8 +3917,12 @@
           <ref name='virDomainGetMaxVcpus'/>
           <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
+          <ref name='virNodeDeviceReAttach'/>
+          <ref name='virNodeDeviceReset'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk5'>
       <letter name='h'>
         <word name='handle'>
           <ref name='virConnectDomainEventRegister'/>
@@ -4025,6 +4184,7 @@
           <ref name='virEventRemoveTimeoutFunc'/>
         </word>
         <word name='involve'>
+          <ref name='virNodeDeviceReAttach'/>
           <ref name='virStoragePoolRefresh'/>
         </word>
         <word name='isn'>
@@ -4043,6 +4203,7 @@
           <ref name='virNetworkLookupByUUID'/>
           <ref name='virNetworkLookupByUUIDString'/>
           <ref name='virNodeDeviceLookupByName'/>
+          <ref name='virNodeDeviceReAttach'/>
           <ref name='virStoragePoolCreateXML'/>
           <ref name='virStoragePoolDefineXML'/>
           <ref name='virStoragePoolLookupByName'/>
@@ -4058,8 +4219,6 @@
           <ref name='virStoragePoolDelete'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk5'>
       <letter name='j'>
         <word name='join'>
           <ref name='virNetworkGetBridgeName'/>
@@ -4100,7 +4259,13 @@
           <ref name='virDomainShutdown'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk6'>
       <letter name='l'>
+        <word name='label'>
+          <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
+          <ref name='virDomainGetSecurityLabel'/>
+        </word>
         <word name='lack'>
           <ref name='virConnectGetVersion'/>
         </word>
@@ -4149,6 +4314,9 @@
         <word name='length'>
           <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_DOMAIN_SCHED_FIELD_LENGTH'/>
+          <ref name='VIR_SECURITY_DOI_BUFLEN'/>
+          <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
+          <ref name='VIR_SECURITY_MODEL_BUFLEN'/>
           <ref name='VIR_UUID_BUFLEN'/>
           <ref name='VIR_UUID_STRING_BUFLEN'/>
           <ref name='maplen'/>
@@ -4351,6 +4519,9 @@
           <ref name='virNodeGetCellsFreeMemory'/>
         </word>
         <word name='maximum'>
+          <ref name='VIR_SECURITY_DOI_BUFLEN'/>
+          <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
+          <ref name='VIR_SECURITY_MODEL_BUFLEN'/>
           <ref name='_virDomainInfo'/>
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virDomainGetMaxMemory'/>
@@ -4365,29 +4536,6 @@
           <ref name='virConnectListDefinedStoragePools'/>
           <ref name='virConnectListStoragePools'/>
           <ref name='virStoragePoolListVolumes'/>
-        </word>
-        <word name='may'>
-          <ref name='virConnectGetURI'/>
-          <ref name='virConnectGetVersion'/>
-          <ref name='virDomainBlockPeek'/>
-          <ref name='virDomainBlockStats'/>
-          <ref name='virDomainCreateXML'/>
-          <ref name='virDomainDestroy'/>
-          <ref name='virDomainGetXMLDesc'/>
-          <ref name='virDomainInterfaceStats'/>
-          <ref name='virDomainMemoryPeek'/>
-          <ref name='virDomainMigrate'/>
-          <ref name='virDomainReboot'/>
-          <ref name='virDomainResume'/>
-          <ref name='virDomainSave'/>
-          <ref name='virDomainSetMemory'/>
-          <ref name='virDomainSetVcpus'/>
-          <ref name='virDomainShutdown'/>
-          <ref name='virDomainSuspend'/>
-          <ref name='virNetworkDestroy'/>
-          <ref name='virNetworkGetBridgeName'/>
-          <ref name='virNetworkGetXMLDesc'/>
-          <ref name='virStoragePoolRefresh'/>
         </word>
         <word name='means'>
           <ref name='virDomainPinVcpu'/>
@@ -4422,6 +4570,7 @@
           <ref name='virDomainRestore'/>
           <ref name='virDomainSave'/>
           <ref name='virNetworkRef'/>
+          <ref name='virNodeDeviceReAttach'/>
           <ref name='virNodeDeviceRef'/>
           <ref name='virStoragePoolGetXMLDesc'/>
           <ref name='virStoragePoolRef'/>
@@ -4454,7 +4603,9 @@
           <ref name='virDomainPinVcpu'/>
         </word>
         <word name='model'>
+          <ref name='VIR_SECURITY_MODEL_BUFLEN'/>
           <ref name='_virNodeInfo'/>
+          <ref name='virNodeGetSecurityModel'/>
         </word>
         <word name='modify'>
           <ref name='virEventUpdateHandleFunc'/>
@@ -4530,7 +4681,7 @@
         </word>
       </letter>
     </chunk>
-    <chunk name='chunk6'>
+    <chunk name='chunk7'>
       <letter name='n'>
         <word name='names'>
           <ref name='virConnectListDefinedDomains'/>
@@ -4586,6 +4737,8 @@
           <ref name='virNodeDeviceFree'/>
           <ref name='virNodeDeviceGetXMLDesc'/>
           <ref name='virNodeDeviceLookupByName'/>
+          <ref name='virNodeDeviceReAttach'/>
+          <ref name='virNodeDeviceReset'/>
           <ref name='virNodeGetCellsFreeMemory'/>
           <ref name='virNodeGetInfo'/>
           <ref name='virNodeListDevices'/>
@@ -4713,8 +4866,13 @@
         </word>
         <word name='operation'>
           <ref name='virDomainGetOSType'/>
+          <ref name='virDomainGetSecurityLabel'/>
           <ref name='virDomainReboot'/>
+          <ref name='virNodeGetSecurityModel'/>
           <ref name='virStoragePoolDelete'/>
+        </word>
+        <word name='operations'>
+          <ref name='virNodeDeviceReAttach'/>
         </word>
         <word name='option'>
           <ref name='virDomainShutdown'/>
@@ -4747,6 +4905,7 @@
           <ref name='virDomainGetConnect'/>
           <ref name='virDomainMigrate'/>
           <ref name='virNetworkGetConnect'/>
+          <ref name='virNodeDeviceReset'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -4917,6 +5076,8 @@
         </word>
         <word name='previously'>
           <ref name='cpumap'/>
+          <ref name='virNodeDeviceReAttach'/>
+          <ref name='virNodeDeviceReset'/>
         </word>
         <word name='printing'>
           <ref name='virSetErrorFunc'/>
@@ -4968,6 +5129,9 @@
         <word name='providing'>
           <ref name='LIBVIR_VERSION_NUMBER'/>
           <ref name='VIR_DOMAIN_SCHED_FIELD_LENGTH'/>
+          <ref name='VIR_SECURITY_DOI_BUFLEN'/>
+          <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
+          <ref name='VIR_SECURITY_MODEL_BUFLEN'/>
           <ref name='virDomainCreateLinux'/>
         </word>
         <word name='public'>
@@ -4981,7 +5145,7 @@
         </word>
       </letter>
     </chunk>
-    <chunk name='chunk7'>
+    <chunk name='chunk8'>
       <letter name='q'>
         <word name='querying'>
           <ref name='virConnectFindStoragePoolSources'/>
@@ -5181,9 +5345,11 @@
         <word name='reset'>
           <ref name='VIR_UNUSE_CPU'/>
           <ref name='virConnSetErrorFunc'/>
+          <ref name='virNodeDeviceReset'/>
           <ref name='virSetErrorFunc'/>
         </word>
         <word name='resetting'>
+          <ref name='virNodeDeviceReAttach'/>
           <ref name='virResetLastError'/>
         </word>
         <word name='resources'>
@@ -5338,6 +5504,10 @@
           <ref name='virDomainMigrate'/>
           <ref name='virStorageVolGetName'/>
         </word>
+        <word name='security'>
+          <ref name='virDomainGetSecurityLabel'/>
+          <ref name='virNodeGetSecurityModel'/>
+        </word>
         <word name='see'>
           <ref name='_virError'/>
           <ref name='virDomainCreateXML'/>
@@ -5348,6 +5518,9 @@
         </word>
         <word name='seen'>
           <ref name='virDomainMigrate'/>
+        </word>
+        <word name='semantics'>
+          <ref name='virNodeDeviceReset'/>
         </word>
         <word name='separate'>
           <ref name='virConnResetLastError'/>
@@ -5569,6 +5742,9 @@
           <ref name='virConnectListDefinedNetworks'/>
         </word>
         <word name='string'>
+          <ref name='VIR_SECURITY_DOI_BUFLEN'/>
+          <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
+          <ref name='VIR_SECURITY_MODEL_BUFLEN'/>
           <ref name='_virError'/>
           <ref name='_virNodeInfo'/>
           <ref name='virConnectGetCapabilities'/>
@@ -5591,9 +5767,11 @@
           <ref name='virDomainBlockStats'/>
           <ref name='virDomainFree'/>
           <ref name='virDomainGetInfo'/>
+          <ref name='virDomainGetSecurityLabel'/>
           <ref name='virDomainInterfaceStats'/>
           <ref name='virNetworkFree'/>
           <ref name='virNodeGetInfo'/>
+          <ref name='virNodeGetSecurityModel'/>
         </word>
         <word name='structures'>
           <ref name='virDomainGetVcpus'/>
@@ -5611,6 +5789,7 @@
         <word name='such'>
           <ref name='virConnCopyLastError'/>
           <ref name='virConnGetLastError'/>
+          <ref name='virNodeDeviceReAttach'/>
           <ref name='virStoragePoolGetInfo'/>
           <ref name='virStorageVolGetInfo'/>
         </word>
@@ -5642,9 +5821,11 @@
           <ref name='_virConnectAuth'/>
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virDomainGetMaxVcpus'/>
+          <ref name='virDomainGetSecurityLabel'/>
           <ref name='virDomainMigrate'/>
           <ref name='virNodeDeviceListCaps'/>
           <ref name='virNodeDeviceNumOfCaps'/>
+          <ref name='virNodeGetSecurityModel'/>
         </word>
         <word name='supports'>
           <ref name='virDomainMigrate'/>
@@ -5663,7 +5844,7 @@
         </word>
       </letter>
     </chunk>
-    <chunk name='chunk8'>
+    <chunk name='chunk9'>
       <letter name='t'>
         <word name='take'>
           <ref name='virConnectDomainEventRegister'/>
@@ -5700,32 +5881,6 @@
           <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainInterfaceStats'/>
           <ref name='virDomainSetSchedulerParameters'/>
-        </word>
-        <word name='that'>
-          <ref name='virConnCopyLastError'/>
-          <ref name='virConnGetLastError'/>
-          <ref name='virConnResetLastError'/>
-          <ref name='virConnectRef'/>
-          <ref name='virDomainBlockPeek'/>
-          <ref name='virDomainBlockStats'/>
-          <ref name='virDomainCoreDump'/>
-          <ref name='virDomainGetInfo'/>
-          <ref name='virDomainGetName'/>
-          <ref name='virDomainInterfaceStats'/>
-          <ref name='virDomainLookupByID'/>
-          <ref name='virDomainMemoryPeek'/>
-          <ref name='virDomainMigrate'/>
-          <ref name='virDomainPinVcpu'/>
-          <ref name='virDomainReboot'/>
-          <ref name='virDomainRef'/>
-          <ref name='virDomainSetVcpus'/>
-          <ref name='virDomainShutdown'/>
-          <ref name='virNetworkGetName'/>
-          <ref name='virNetworkRef'/>
-          <ref name='virNodeDeviceRef'/>
-          <ref name='virStoragePoolRef'/>
-          <ref name='virStoragePoolRefresh'/>
-          <ref name='virStorageVolRef'/>
         </word>
         <word name='their'>
           <ref name='virConnectListDomains'/>
@@ -5863,6 +6018,7 @@
           <ref name='virDomainGetOSType'/>
           <ref name='virDomainGetSchedulerType'/>
           <ref name='virGetVersion'/>
+          <ref name='virNodeDeviceReset'/>
         </word>
         <word name='types'>
           <ref name='virConnectFindStoragePoolSources'/>
@@ -5879,6 +6035,9 @@
         </word>
       </letter>
       <letter name='u'>
+        <word name='unbinding'>
+          <ref name='virNodeDeviceReAttach'/>
+        </word>
         <word name='undefined'>
           <ref name='virDomainDefineXML'/>
           <ref name='virStoragePoolDefineXML'/>
@@ -5982,6 +6141,8 @@
           <ref name='virDomainGetConnect'/>
           <ref name='virErrorFunc'/>
           <ref name='virNetworkGetConnect'/>
+          <ref name='virNodeDeviceReAttach'/>
+          <ref name='virNodeDeviceReset'/>
           <ref name='virStoragePoolBuild'/>
           <ref name='virStoragePoolCreate'/>
           <ref name='virStoragePoolCreateXML'/>
@@ -5996,6 +6157,7 @@
           <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_CPU_USABLE'/>
           <ref name='VIR_GET_CPUMAP'/>
+          <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
           <ref name='VIR_UNUSE_CPU'/>
           <ref name='VIR_USE_CPU'/>
           <ref name='_virConnectAuth'/>
@@ -6015,6 +6177,7 @@
           <ref name='virNetworkDestroy'/>
           <ref name='virNetworkFree'/>
           <ref name='virNetworkGetXMLDesc'/>
+          <ref name='virNodeDeviceReAttach'/>
         </word>
         <word name='useful'>
           <ref name='virConnectRef'/>
@@ -6065,13 +6228,14 @@
         </word>
       </letter>
     </chunk>
-    <chunk name='chunk9'>
+    <chunk name='chunk10'>
       <letter name='v'>
         <word name='valid'>
           <ref name='virConnectDomainEventRegister'/>
         </word>
         <word name='value'>
           <ref name='VIR_CPU_USABLE'/>
+          <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
           <ref name='_virVcpuInfo'/>
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virConnectGetVersion'/>
@@ -6258,6 +6422,15 @@
         </word>
         <word name='virSchedParameter'>
           <ref name='VIR_DOMAIN_SCHED_FIELD_LENGTH'/>
+        </word>
+        <word name='virSecurityLabel'>
+          <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
+          <ref name='virDomainGetSecurityLabel'/>
+        </word>
+        <word name='virSecurityModel'>
+          <ref name='VIR_SECURITY_DOI_BUFLEN'/>
+          <ref name='VIR_SECURITY_MODEL_BUFLEN'/>
+          <ref name='virNodeGetSecurityModel'/>
         </word>
         <word name='virStoragePoolCreate'>
           <ref name='virStoragePoolDestroy'/>
@@ -6460,7 +6633,7 @@
         </word>
       </letter>
     </chunk>
-    <chunk name='chunk10'>
+    <chunk name='chunk11'>
       <letter name='x'>
         <word name='xen'>
           <ref name='virConnectOpen'/>
@@ -6498,17 +6671,18 @@
       </letter>
     </chunk>
     <chunks>
-      <chunk name='chunk0' start='A' end='N'/>
-      <chunk name='chunk1' start='O' end='a'/>
+      <chunk name='chunk0' start='A' end='M'/>
+      <chunk name='chunk1' start='N' end='a'/>
       <chunk name='chunk2' start='b' end='c'/>
-      <chunk name='chunk3' start='d' end='f'/>
-      <chunk name='chunk4' start='g' end='i'/>
-      <chunk name='chunk5' start='j' end='m'/>
-      <chunk name='chunk6' start='n' end='p'/>
-      <chunk name='chunk7' start='q' end='s'/>
-      <chunk name='chunk8' start='t' end='u'/>
-      <chunk name='chunk9' start='v' end='w'/>
-      <chunk name='chunk10' start='x' end='z'/>
+      <chunk name='chunk3' start='d' end='e'/>
+      <chunk name='chunk4' start='f' end='g'/>
+      <chunk name='chunk5' start='h' end='k'/>
+      <chunk name='chunk6' start='l' end='m'/>
+      <chunk name='chunk7' start='n' end='p'/>
+      <chunk name='chunk8' start='q' end='s'/>
+      <chunk name='chunk9' start='t' end='u'/>
+      <chunk name='chunk10' start='v' end='w'/>
+      <chunk name='chunk11' start='x' end='z'/>
     </chunks>
   </index>
 </apirefs>

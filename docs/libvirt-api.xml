@@ -8,13 +8,16 @@
      <exports symbol='VIR_NODEINFO_MAXCPUS' type='macro'/>
      <exports symbol='LIBVIR_VERSION_NUMBER' type='macro'/>
      <exports symbol='VIR_USE_CPU' type='macro'/>
+     <exports symbol='VIR_SECURITY_DOI_BUFLEN' type='macro'/>
      <exports symbol='VIR_CPU_MAPLEN' type='macro'/>
-     <exports symbol='VIR_UUID_BUFLEN' type='macro'/>
+     <exports symbol='VIR_SECURITY_LABEL_BUFLEN' type='macro'/>
      <exports symbol='VIR_CPU_USABLE' type='macro'/>
      <exports symbol='VIR_COPY_CPUMAP' type='macro'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_LENGTH' type='macro'/>
+     <exports symbol='VIR_SECURITY_MODEL_BUFLEN' type='macro'/>
      <exports symbol='VIR_UUID_STRING_BUFLEN' type='macro'/>
      <exports symbol='VIR_GET_CPUMAP' type='macro'/>
+     <exports symbol='VIR_UUID_BUFLEN' type='macro'/>
      <exports symbol='VIR_UNUSE_CPU' type='macro'/>
      <exports symbol='VIR_DOMAIN_EVENT_DEFINED' type='enum'/>
      <exports symbol='VIR_CRED_EXTERNAL' type='enum'/>
@@ -107,6 +110,7 @@
      <exports symbol='virConnectAuthPtr' type='typedef'/>
      <exports symbol='virStorageVolInfo' type='typedef'/>
      <exports symbol='virSchedParameterType' type='typedef'/>
+     <exports symbol='virSecurityLabel' type='typedef'/>
      <exports symbol='virStorageVolInfoPtr' type='typedef'/>
      <exports symbol='virConnectCredentialPtr' type='typedef'/>
      <exports symbol='virStoragePoolPtr' type='typedef'/>
@@ -129,6 +133,7 @@
      <exports symbol='virSchedParameterPtr' type='typedef'/>
      <exports symbol='virConnectAuth' type='typedef'/>
      <exports symbol='virConnectCredential' type='typedef'/>
+     <exports symbol='virSecurityModelPtr' type='typedef'/>
      <exports symbol='virDomainEventSuspendedDetailType' type='typedef'/>
      <exports symbol='virVcpuInfoPtr' type='typedef'/>
      <exports symbol='virStoragePoolBuildFlags' type='typedef'/>
@@ -140,13 +145,17 @@
      <exports symbol='virStoragePoolState' type='typedef'/>
      <exports symbol='virStoragePoolInfoPtr' type='typedef'/>
      <exports symbol='virDomainCreateFlags' type='typedef'/>
+     <exports symbol='virSecurityLabelPtr' type='typedef'/>
+     <exports symbol='virSecurityModel' type='typedef'/>
      <exports symbol='_virDomainInfo' type='struct'/>
      <exports symbol='_virConnectAuth' type='struct'/>
      <exports symbol='_virVcpuInfo' type='struct'/>
      <exports symbol='_virDomainInterfaceStats' type='struct'/>
      <exports symbol='_virStoragePoolInfo' type='struct'/>
      <exports symbol='_virConnectCredential' type='struct'/>
+     <exports symbol='_virSecurityLabel' type='struct'/>
      <exports symbol='_virStorageVolInfo' type='struct'/>
+     <exports symbol='_virSecurityModel' type='struct'/>
      <exports symbol='_virDomainBlockStats' type='struct'/>
      <exports symbol='_virNodeInfo' type='struct'/>
      <exports symbol='_virSchedParameter' type='struct'/>
@@ -163,7 +172,8 @@
      <exports symbol='virInitialize' type='function'/>
      <exports symbol='virNodeDeviceGetName' type='function'/>
      <exports symbol='virStoragePoolSetAutostart' type='function'/>
-     <exports symbol='virStorageVolCreateXML' type='function'/>
+     <exports symbol='virNodeDeviceDettach' type='function'/>
+     <exports symbol='virDomainGetSecurityLabel' type='function'/>
      <exports symbol='virConnectDomainEventDeregister' type='function'/>
      <exports symbol='virDomainGetSchedulerParameters' type='function'/>
      <exports symbol='virDomainLookupByUUIDString' type='function'/>
@@ -203,6 +213,7 @@
      <exports symbol='virStorageVolGetXMLDesc' type='function'/>
      <exports symbol='virDomainSetSchedulerParameters' type='function'/>
      <exports symbol='virConnectGetType' type='function'/>
+     <exports symbol='virStorageVolCreateXML' type='function'/>
      <exports symbol='virDomainSave' type='function'/>
      <exports symbol='virDomainCreate' type='function'/>
      <exports symbol='virConnectListDomains' type='function'/>
@@ -236,6 +247,7 @@
      <exports symbol='virDomainLookupByName' type='function'/>
      <exports symbol='virConnectFindStoragePoolSources' type='function'/>
      <exports symbol='virDomainPinVcpu' type='function'/>
+     <exports symbol='virNodeGetSecurityModel' type='function'/>
      <exports symbol='virDomainRestore' type='function'/>
      <exports symbol='virStorageVolGetPath' type='function'/>
      <exports symbol='virNetworkLookupByUUIDString' type='function'/>
@@ -265,9 +277,11 @@
      <exports symbol='virDomainGetMaxVcpus' type='function'/>
      <exports symbol='virEventHandleCallback' type='function'/>
      <exports symbol='virDomainGetSchedulerType' type='function'/>
+     <exports symbol='virNodeDeviceReset' type='function'/>
      <exports symbol='virDomainDetachDevice' type='function'/>
      <exports symbol='virStoragePoolNumOfVolumes' type='function'/>
      <exports symbol='virStoragePoolGetUUIDString' type='function'/>
+     <exports symbol='virNodeDeviceReAttach' type='function'/>
      <exports symbol='virStoragePoolUndefine' type='function'/>
      <exports symbol='virConnectAuthCallbackPtr' type='function'/>
      <exports symbol='virDomainAttachDevice' type='function'/>
@@ -344,6 +358,7 @@
      <exports symbol='VIR_ERR_OPERATION_DENIED' type='enum'/>
      <exports symbol='VIR_FROM_STORAGE' type='enum'/>
      <exports symbol='VIR_ERR_NO_KERNEL' type='enum'/>
+     <exports symbol='VIR_WAR_NO_STORAGE' type='enum'/>
      <exports symbol='VIR_ERR_GNUTLS_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_POST_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_OS_TYPE' type='enum'/>
@@ -352,6 +367,7 @@
      <exports symbol='VIR_ERR_INVALID_CONN' type='enum'/>
      <exports symbol='VIR_ERR_NONE' type='enum'/>
      <exports symbol='VIR_ERR_OK' type='enum'/>
+     <exports symbol='VIR_FROM_NETWORK' type='enum'/>
      <exports symbol='VIR_ERR_XML_DETAIL' type='enum'/>
      <exports symbol='VIR_FROM_NET' type='enum'/>
      <exports symbol='VIR_FROM_XENXM' type='enum'/>
@@ -368,14 +384,14 @@
      <exports symbol='VIR_FROM_DOMAIN' type='enum'/>
      <exports symbol='VIR_ERR_NO_TARGET' type='enum'/>
      <exports symbol='VIR_ERR_NETWORK_EXIST' type='enum'/>
-     <exports symbol='VIR_WAR_NO_STORAGE' type='enum'/>
+     <exports symbol='VIR_FROM_SECURITY' type='enum'/>
      <exports symbol='VIR_ERR_WRITE_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_INTERNAL_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_CONF_SYNTAX' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_STORAGE_POOL' type='enum'/>
      <exports symbol='VIR_FROM_REMOTE' type='enum'/>
      <exports symbol='VIR_ERR_NO_SUPPORT' type='enum'/>
-     <exports symbol='VIR_FROM_NETWORK' type='enum'/>
+     <exports symbol='VIR_ERR_NO_SECURITY_MODEL' type='enum'/>
      <exports symbol='VIR_FROM_QEMU' type='enum'/>
      <exports symbol='VIR_FROM_XEND' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_STORAGE_VOL' type='enum'/>
@@ -446,6 +462,15 @@
     <macro name='VIR_NODEINFO_MAXCPUS' file='libvirt'>
       <info>This macro is to calculate the total number of CPUs supported but not necessary active in the host.</info>
       <arg name='nodeinfo' info='virNodeInfo instance'/>
+    </macro>
+    <macro name='VIR_SECURITY_DOI_BUFLEN' file='libvirt'>
+      <info>Macro providing the maximum length of the virSecurityModel doi string.</info>
+    </macro>
+    <macro name='VIR_SECURITY_LABEL_BUFLEN' file='libvirt'>
+      <info>Macro providing the maximum length of the virSecurityLabel label string. Note that this value is based on that used by Labeled NFS.</info>
+    </macro>
+    <macro name='VIR_SECURITY_MODEL_BUFLEN' file='libvirt'>
+      <info>Macro providing the maximum length of the virSecurityModel model string.</info>
     </macro>
     <macro name='VIR_UNUSE_CPU' file='libvirt'>
       <info>This macro is to be used in conjunction with virDomainPinVcpu() API. USE_CPU macro reset the bit (CPU not usable) of the related cpu in cpumap.</info>
@@ -538,9 +563,10 @@
     <enum name='VIR_ERR_NO_MEMORY' file='virterror' value='2' type='virErrorNumber' info='memory allocation failure'/>
     <enum name='VIR_ERR_NO_NAME' file='virterror' value='21' type='virErrorNumber' info='missing domain name information'/>
     <enum name='VIR_ERR_NO_NETWORK' file='virterror' value='43' type='virErrorNumber' info='network not found'/>
-    <enum name='VIR_ERR_NO_NODE_DEVICE' file='virterror' value='53' type='virErrorNumber' info=' node device not found'/>
+    <enum name='VIR_ERR_NO_NODE_DEVICE' file='virterror' value='53' type='virErrorNumber' info='node device not found'/>
     <enum name='VIR_ERR_NO_OS' file='virterror' value='22' type='virErrorNumber' info='missing domain OS information'/>
     <enum name='VIR_ERR_NO_ROOT' file='virterror' value='18' type='virErrorNumber' info='missing root device information'/>
+    <enum name='VIR_ERR_NO_SECURITY_MODEL' file='virterror' value='54' type='virErrorNumber' info=' security model not found'/>
     <enum name='VIR_ERR_NO_SOURCE' file='virterror' value='19' type='virErrorNumber' info='missing source device information'/>
     <enum name='VIR_ERR_NO_STORAGE_POOL' file='virterror' value='49' type='virErrorNumber' info='storage pool not found'/>
     <enum name='VIR_ERR_NO_STORAGE_VOL' file='virterror' value='50' type='virErrorNumber' info='storage pool not found'/>
@@ -582,6 +608,7 @@
     <enum name='VIR_FROM_QEMU' file='virterror' value='10' type='virErrorDomain' info='Error at the QEMU daemon'/>
     <enum name='VIR_FROM_REMOTE' file='virterror' value='13' type='virErrorDomain' info='Error from remote driver'/>
     <enum name='VIR_FROM_RPC' file='virterror' value='7' type='virErrorDomain' info='Error in the XML-RPC code'/>
+    <enum name='VIR_FROM_SECURITY' file='virterror' value='24' type='virErrorDomain' info=' Error from security framework'/>
     <enum name='VIR_FROM_SEXPR' file='virterror' value='4' type='virErrorDomain' info='Error in the S-Expression code'/>
     <enum name='VIR_FROM_STATS_LINUX' file='virterror' value='16' type='virErrorDomain' info='Error in the Linux Stats code'/>
     <enum name='VIR_FROM_STORAGE' file='virterror' value='18' type='virErrorDomain' info='Error from storage driver'/>
@@ -591,7 +618,7 @@
     <enum name='VIR_FROM_XEND' file='virterror' value='2' type='virErrorDomain' info='Error at connection with xend daemon'/>
     <enum name='VIR_FROM_XENSTORE' file='virterror' value='3' type='virErrorDomain' info='Error at connection with xen store'/>
     <enum name='VIR_FROM_XENXM' file='virterror' value='15' type='virErrorDomain' info='Error at Xen XM layer'/>
-    <enum name='VIR_FROM_XEN_INOTIFY' file='virterror' value='23' type='virErrorDomain' info=' Error from xen inotify layer'/>
+    <enum name='VIR_FROM_XEN_INOTIFY' file='virterror' value='23' type='virErrorDomain' info='Error from xen inotify layer'/>
     <enum name='VIR_FROM_XML' file='virterror' value='5' type='virErrorDomain' info='Error in the XML code'/>
     <enum name='VIR_MEMORY_VIRTUAL' file='libvirt' value='1' type='virDomainMemoryFlags' info=' addresses are virtual addresses'/>
     <enum name='VIR_MIGRATE_LIVE' file='libvirt' value='1' type='virDomainMigrateFlags' info=' live migration'/>
@@ -736,6 +763,14 @@ see note above'/>
       <info>a virSchedParameterPtr is a pointer to a virSchedParameter structure.</info>
     </typedef>
     <typedef name='virSchedParameterType' file='libvirt' type='enum'/>
+    <struct name='virSecurityLabel' file='libvirt' type='struct _virSecurityLabel'/>
+    <typedef name='virSecurityLabelPtr' file='libvirt' type='virSecurityLabel *'>
+      <info>a virSecurityLabelPtr is a pointer to a virSecurityLabel.</info>
+    </typedef>
+    <struct name='virSecurityModel' file='libvirt' type='struct _virSecurityModel'/>
+    <typedef name='virSecurityModelPtr' file='libvirt' type='virSecurityModel *'>
+      <info>a virSecurityModelPtr is a pointer to a virSecurityModel.</info>
+    </typedef>
     <struct name='virStoragePool' file='libvirt' type='struct _virStoragePool'/>
     <typedef name='virStoragePoolBuildFlags' file='libvirt' type='enum'/>
     <typedef name='virStoragePoolDeleteFlags' file='libvirt' type='enum'/>
@@ -1100,6 +1135,12 @@ see note above'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='nparams' type='int *' info='number of scheduler parameters(return value)'/>
     </function>
+    <function name='virDomainGetSecurityLabel' file='libvirt' module='libvirt'>
+      <info>Extract security label of an active domain.</info>
+      <return type='int' info='0 in case of success, -1 in case of failure, and -2 if the operation is not supported (caller decides if that&apos;s an error).'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='seclabel' type='virSecurityLabelPtr' info='pointer to a virSecurityLabel structure'/>
+    </function>
     <function name='virDomainGetUUID' file='libvirt' module='libvirt'>
       <info>Get the UUID for a domain</info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
@@ -1454,6 +1495,11 @@ see note above'/>
       <return type='int' info='0 in case of success, -1 in case of error'/>
       <arg name='network' type='virNetworkPtr' info='pointer to a defined network'/>
     </function>
+    <function name='virNodeDeviceDettach' file='libvirt' module='libvirt'>
+      <info></info>
+      <return type='int' info=''/>
+      <arg name='dev' type='virNodeDevicePtr' info=''/>
+    </function>
     <function name='virNodeDeviceFree' file='libvirt' module='libvirt'>
       <info>Drops a reference to the node device, freeing it if this was the last reference.</info>
       <return type='int' info='the 0 for success, -1 for error.'/>
@@ -1493,10 +1539,20 @@ see note above'/>
       <return type='int' info='the number of capabilities supported by the device.'/>
       <arg name='dev' type='virNodeDevicePtr' info='the device'/>
     </function>
+    <function name='virNodeDeviceReAttach' file='libvirt' module='libvirt'>
+      <info>Re-attach a previously dettached node device to the node so that it may be used by the node again.  Depending on the hypervisor, this may involve operations such as resetting the device, unbinding it from a dummy device driver and binding it to its appropriate driver.  If the device is currently in use by a guest, this method may fail.</info>
+      <return type='int' info=''/>
+      <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
+    </function>
     <function name='virNodeDeviceRef' file='libvirt' module='libvirt'>
       <info>Increment the reference count on the dev. For each additional call to this method, there shall be a corresponding call to virNodeDeviceFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a dev would increment the reference count.</info>
       <return type='int' info=''/>
       <arg name='dev' type='virNodeDevicePtr' info=''/>
+    </function>
+    <function name='virNodeDeviceReset' file='libvirt' module='libvirt'>
+      <info>Reset a previously dettached node device to the node before or after assigning it to a guest.  The exact reset semantics depends on the hypervisor and device type but, for example, KVM will attempt to reset PCI devices with a Function Level Reset, Secondary Bus Reset or a Power Management D-State reset.  If the reset will affect other devices which are currently in use, this function may fail.</info>
+      <return type='int' info=''/>
+      <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
     </function>
     <function name='virNodeGetCellsFreeMemory' file='libvirt' module='libvirt'>
       <info>This call returns the amount of free memory in one or more NUMA cells. The @freeMems array must be allocated by the caller and will be filled with the amount of free memory in kilobytes for each cell requested, starting with startCell (in freeMems[0]), up to either (startCell + maxCells), or the number of additional cells in the node, whichever is smaller.</info>
@@ -1516,6 +1572,12 @@ see note above'/>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='info' type='virNodeInfoPtr' info='pointer to a virNodeInfo structure allocated by the user'/>
+    </function>
+    <function name='virNodeGetSecurityModel' file='libvirt' module='libvirt'>
+      <info>Extract the security model of a hypervisor.</info>
+      <return type='int' info='0 in case of success, -1 in case of failure, and -2 if the operation is not supported (caller decides if that&apos;s an error).'/>
+      <arg name='conn' type='virConnectPtr' info='a connection object'/>
+      <arg name='secmodel' type='virSecurityModelPtr' info='pointer to a virSecurityModel structure'/>
     </function>
     <function name='virNodeListDevices' file='libvirt' module='libvirt'>
       <info>Collect the list of node devices, and store their names in @names  If the optional &apos;cap&apos;  argument is non-NULL, then the count will be restricted to devices with the specified capability</info>

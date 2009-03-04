@@ -76,6 +76,51 @@
         <p>Here is the list of official releases, however since it is early on in the
 development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
+        <h3>0.6.1: Mar  3 2009</h3>
+        <ul><li>New features: new APIs for Node device detach reattach and reset
+          (Mark McLoughlin), sVirt mandatory access control support (James
+          Morris and Dan Walsh)</li><li>Portability: non gcc toolchain (John Levon), gcc-4.4 warnings fixes
+          (Mark McLoughlin), fix build without LXC and QEmu (Jim Meyering)</li><li>Documentation: man page bugzilla URL (Mark McLoughlin), typo
+          in domain format (Jesse Farinacci), clock offset fix (Mark
+          McLoughlin), hostdev description typo (Mark McLoughlin), static
+          host IP (Charles Duffy), new example program (David Allan)</li><li>Bug fixes: NULL dereference in LXC (Jim Meyering), fix domain
+          error reporting (John Levon), fix loop of libvirtd --timeout
+          (Daniel Berrange), limit history to 500 to restrict virsh memory
+          (Daniel Berrange), wrong lvm volume format check (Cole Robinson),
+          I/O error in daemon and associated remote acces crash (Daniel
+          Berrange), fix autostart of session daemon (Daniel Berrange),
+          restart guest on qemu migration failures (Chris Lalancette),
+          config parsing leaks (Ryota Ozaki), DBus multithreading activation
+          to avoid crashes (Daniel Berrange), mark defined network descriptions
+          as persistent (Cole Robinson), qemu+tls handshake negotiation hang
+          (Chris Lalancette)</li><li>Improvements: don't hardcode ssh port (Guido Günther), new test
+          cases and testing infrastructure (Jim Meyering), improve the
+          SExpr parser (John Levon), proper error reporting on xend
+          shutdown command (John Levon), proper handling of errors when
+          saving QEmu domains state (Guido Günther), revamp of the internal
+          error memory APIs (John Levon), better virsh error reporting (John
+          Levon), more daemon options to allow running multiple daemons (Jim
+          Meyering), error handling when creating a QEmu domain (Guido Günther),
+          fix timeouts in QEmu log reading (Guido Günther), migration with
+          xend 3.3 fixes (John Levon), virsh XML dump flags cleanup (Cole
+          Robinson), fix build with loadable drivers (Maximilian Wilhelm),
+          internal XML APIs to read long long and hexa values (Mark
+          McLoughlin), function to parse node device XML descriptions and
+          associated test (Mark McLoughlin), generate network bridge names if
+          not provided (Cole Robinson), recognize ejectable media in hostdev
+          hal driver (Cole Robinson), integration of sVirt (Daniel Berrange)</li><li>Cleanups: printf NULL string checks (John Levon), remove uses of
+          strerror and use virStrerror (Jim Meyering), remove redundant NULL
+          assignments (Jim Meyering), QEmu driver logging and exec cleanups
+          (Jim Meyering), many error handling cleanups (Jim Meyering), XML
+          module cleanups (Mark McLoughlin), compiler warning (Maximilian
+          Wilhelm), daemon TCP listen cleanup (Cole Robinson), size_t type
+          cleanup (Guido Günther), parallel make fix (Michael Marineau),
+          storage error diagnostic fix (Ryota Ozaki), remove redundant monitor
+          watch variable (Cole Robinson), qemu AttachDevice error report
+          improvement (Cole Robinson), virsh output cleanup (Jim Meyering),
+          various tests cleanups and improvements (Jim Meyering), fix the
+          internal export list with new APIs (Daniel Berrange), cleanups on
+          new APIs for Node device (Daniel Berrange)</li></ul>
         <h3>0.6.0: Jan 31 2009</h3>
         <ul><li>New features: thread safety of the API and event handling (Daniel
           Berrange), allow QEmu domains to survive daemon restart (Guido

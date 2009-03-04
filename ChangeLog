@@ -1,3 +1,10 @@
+Wed Mar  4 14:11:15 CET 2009 Daniel Veillard <veilard@redhat.com>
+
+	* NEWS configure.in libvirt.spec.in doc/* include/libvirt/libvirt.h:
+	  release of 0.6.1
+	* po/*: rebuilt
+	* AUTHORS: updated to list new contributors
+
 Wed Mar  4 12:37:13 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix misc failures in test suite & make test cases more robust

@@ -14,7 +14,7 @@
 %define with_network   0%{!?_without_network:1}
 
 # Xen is available only on i386 x86_64 ia64
-%ifnarch i386 i686 x86_64 ia64
+%ifnarch i386 i586 i686 x86_64 ia64
 %define with_xen 0
 %endif
 
@@ -249,7 +249,9 @@ rm -fr %{buildroot}
 
 %makeinstall
 (cd docs/examples ; make clean ; rm -rf .deps Makefile Makefile.in)
-(cd docs/examples/python ; rm -f Makefile Makefile.in)
+(cd docs/examples/python ; rm -rf .deps Makefile Makefile.in)
+(cd examples/hellolibvirt ; make clean ; rm -rf .deps .libs Makefile Makefile.in)
+(cd examples/domain-events/events-c ;  make clean ;rm -rf .deps .libs Makefile Makefile.in)
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.la
@@ -437,6 +439,7 @@ fi
 %doc docs/*.html docs/html docs/*.gif
 %doc docs/examples
 %doc docs/libvirt-api.xml
+%doc examples
 
 %if %{with_python}
 %files python
