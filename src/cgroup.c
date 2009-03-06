@@ -38,6 +38,7 @@ struct virCgroup {
 const char *supported_controllers[] = {
     "memory",
     "devices",
+    "cpuacct",
     NULL
 };
 
@@ -796,4 +797,9 @@ int virCgroupSetCpuShares(virCgroupPtr group, unsigned long shares)
 int virCgroupGetCpuShares(virCgroupPtr group, unsigned long *shares)
 {
     return virCgroupGetValueU64(group, "cpu.shares", (uint64_t *)shares);
+}
+
+int virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage)
+{
+    return virCgroupGetValueU64(group, "cpuacct.usage", (uint64_t *)usage);
 }

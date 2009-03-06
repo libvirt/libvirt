@@ -362,6 +362,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
 {
     lxc_driver_t *driver = dom->conn->privateData;
     virDomainObjPtr vm;
+    virCgroupPtr cgroup = NULL;
     int ret = -1;
 
     lxcDriverLock(driver);
@@ -376,10 +377,19 @@ static int lxcDomainGetInfo(virDomainPtr dom,
 
     info->state = vm->state;
 
-    if (!virDomainIsActive(vm)) {
+    if (!virDomainIsActive(vm) || virCgroupHaveSupport() != 0) {
         info->cpuTime = 0;
     } else {
-        info->cpuTime = 0;
+        if (virCgroupForDomain(vm->def, "lxc", &cgroup) != 0) {
+            lxcError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
+                     _("Unable to get cgroup for %s\n"), vm->def->name);
+            goto cleanup;
+        }
+
+        if (virCgroupGetCpuacctUsage(cgroup, &(info->cpuTime)) < 0) {
+            lxcError(dom->conn, dom, VIR_ERR_OPERATION_FAILED, ("cannot read cputime for domain"));
+            goto cleanup;
+        }
     }
 
     info->maxMem = vm->def->maxmem;
@@ -388,6 +398,8 @@ static int lxcDomainGetInfo(virDomainPtr dom,
     ret = 0;
 
 cleanup:
+    if (cgroup)
+        virCgroupFree(&cgroup);
     if (vm)
         virDomainObjUnlock(vm);
     return ret;

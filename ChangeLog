@@ -1,3 +1,9 @@
+Fri Mar  6 15:42:46 CET 2009 Daniel Veillard <veilard@redhat.com>
+
+	* src/cgroup.c src/cgroup.h src/lxc_driver.c: allows to get
+	  CPU usage of a lxc using cpuacct subsystem of cgroups, patch
+	  by Ryota Ozaki
+
 Wed Mar  4 14:11:15 CET 2009 Daniel Veillard <veilard@redhat.com>
 
 	* NEWS configure.in libvirt.spec.in doc/* include/libvirt/libvirt.h:
