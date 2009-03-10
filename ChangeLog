@@ -1,3 +1,8 @@
+Tue Mar 10 10:29:46 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Fix tap vs vbd type for block detach
+	(Cole Robinson / Takahashi Tomohiro)
+
 Fri Mar  6 15:42:46 CET 2009 Daniel Veillard <veilard@redhat.com>
 
 	* src/cgroup.c src/cgroup.h src/lxc_driver.c: allows to get

@@ -5566,7 +5566,12 @@ virDomainXMLDevID(virDomainPtr domain,
     char *xref;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-        strcpy(class, "vbd");
+        if (dev->data.disk->driverName &&
+            STREQ(dev->data.disk->driverName, "tap"))
+            strcpy(class, "tap");
+        else
+            strcpy(class, "vbd");
+
         if (dev->data.disk->dst == NULL)
             return -1;
         xenUnifiedLock(priv);
