@@ -904,7 +904,15 @@ xenDaemonListDomainsOld(virConnectPtr xend)
         count++;
     }
 
-    if (VIR_ALLOC_N(ptr, count + 1 + extra) < 0)
+    /*
+     * We can'tuse the normal allocation routines as we are mixing
+     * an array of char * at the beginning followed by an array of char
+     * ret points to the NULL terminated array of char *
+     * ptr points to the current string after that array but in the same
+     * allocated block
+     */
+    if (virAlloc((void *)&ptr,
+                 (count + 1) * sizeof(char *) + extra * sizeof(char)) < 0)
         goto error;
 
     ret = (char **) ptr;

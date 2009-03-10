@@ -1,3 +1,8 @@
+Tue Mar 10 12:03:37 CET 2009 Daniel Veillard <veilard@redhat.com>
+
+	* src/xend_internal.c: fix an allocation problem in 
+	  xenDaemonDomainLookupByName_ids
+
 Tue Mar 10 10:29:46 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Fix tap vs vbd type for block detach
