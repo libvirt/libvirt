@@ -1,6 +1,10 @@
+Wed Mar 11 14:42:24 CET 2009 Daniel Veillard <veilard@redhat.com>
+
+	* src/xs_internal.c: fix xen events handling problem (Dan Berrange)
+
 Tue Mar 10 12:03:37 CET 2009 Daniel Veillard <veilard@redhat.com>
 
-	* src/xend_internal.c: fix an allocation problem in 
+	* src/xend_internal.c: fix an allocation problem in
 	  xenDaemonDomainLookupByName_ids
 
 Tue Mar 10 10:29:46 GMT 2009 Daniel P. Berrange <berrange@redhat.com>

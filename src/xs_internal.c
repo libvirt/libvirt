@@ -1215,7 +1215,7 @@ xenStoreFindWatch(xenStoreWatchListPtr list,
 static void
 xenStoreWatchEvent(int watch ATTRIBUTE_UNUSED,
                    int fd ATTRIBUTE_UNUSED,
-                   int events ATTRIBUTE_UNUSED,
+                   int events,
                    void *data)
 {
     char		 **event;
@@ -1226,7 +1226,11 @@ xenStoreWatchEvent(int watch ATTRIBUTE_UNUSED,
 
     virConnectPtr        conn = data;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
+
     if(!priv) return;
+
+    /* only set a watch on read and write events */
+    if (events & (VIR_EVENT_HANDLE_ERROR | VIR_EVENT_HANDLE_HANGUP)) return;
 
     xenUnifiedLock(priv);
 
