@@ -371,15 +371,33 @@ virStoragePoolDefParseAuthChap(virConnectPtr conn,
 
 
 static int
-virStoragePoolDefParsePerms(virConnectPtr conn,
-                            xmlXPathContextPtr ctxt,
-                            virStoragePermsPtr perms) {
+virStorageDefParsePerms(virConnectPtr conn,
+                        xmlXPathContextPtr ctxt,
+                        virStoragePermsPtr perms,
+                        const char *permxpath,
+                        int defaultmode) {
     char *mode;
     long v;
+    int ret = -1;
+    xmlNodePtr relnode;
+    xmlNodePtr node;
 
-    mode = virXPathString(conn, "string(/pool/permissions/mode)", ctxt);
+    node = virXPathNode(conn, permxpath, ctxt);
+    if (node == NULL) {
+        /* Set default values if there is not <permissions> element */
+        perms->mode = defaultmode;
+        perms->uid = getuid();
+        perms->gid = getgid();
+        perms->label = NULL;
+        return 0;
+    }
+
+    relnode = ctxt->node;
+    ctxt->node = node;
+
+    mode = virXPathString(conn, "string(./mode)", ctxt);
     if (!mode) {
-        perms->mode = 0700;
+        perms->mode = defaultmode;
     } else {
         char *end = NULL;
         perms->mode = strtol(mode, &end, 8);
@@ -387,36 +405,39 @@ virStoragePoolDefParsePerms(virConnectPtr conn,
         if (*end || perms->mode < 0 || perms->mode > 0777) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   "%s", _("malformed octal mode"));
-            return -1;
+            goto error;
         }
     }
 
-    if (virXPathNode(conn, "/pool/permissions/owner", ctxt) == NULL) {
+    if (virXPathNode(conn, "./owner", ctxt) == NULL) {
         perms->uid = getuid();
     } else {
-        if (virXPathLong(conn, "number(/pool/permissions/owner)", ctxt, &v) < 0) {
+        if (virXPathLong(conn, "number(./owner)", ctxt, &v) < 0) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   "%s", _("malformed owner element"));
-            return -1;
+            goto error;
         }
         perms->uid = (int)v;
     }
 
-    if (virXPathNode(conn, "/pool/permissions/group", ctxt) == NULL) {
+    if (virXPathNode(conn, "./group", ctxt) == NULL) {
         perms->gid = getgid();
     } else {
-        if (virXPathLong(conn, "number(/pool/permissions/group)", ctxt, &v) < 0) {
+        if (virXPathLong(conn, "number(./group)", ctxt, &v) < 0) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   "%s", _("malformed group element"));
-            return -1;
+            goto error;
         }
         perms->gid = (int)v;
     }
 
     /* NB, we're ignoring missing labels here - they'll simply inherit */
-    perms->label = virXPathString(conn, "string(/pool/permissions/label)", ctxt);
+    perms->label = virXPathString(conn, "string(./label)", ctxt);
 
-    return 0;
+    ret = 0;
+error:
+    ctxt->node = relnode;
+    return ret;
 }
 
 
@@ -579,7 +600,8 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (virStoragePoolDefParsePerms(conn, ctxt, &ret->target.perms) < 0)
+    if (virStorageDefParsePerms(conn, ctxt, &ret->target.perms,
+                                "/pool/target/permissions", 0700) < 0)
         goto cleanup;
 
     return ret;
@@ -801,55 +823,6 @@ virStoragePoolDefFormat(virConnectPtr conn,
 
 
 static int
-virStorageVolDefParsePerms(virConnectPtr conn,
-                           xmlXPathContextPtr ctxt,
-                           virStoragePermsPtr perms) {
-    char *mode;
-    long v;
-
-    mode = virXPathString(conn, "string(/volume/permissions/mode)", ctxt);
-    if (!mode) {
-        perms->mode = 0600;
-    } else {
-        char *end = NULL;
-        perms->mode = strtol(mode, &end, 8);
-        VIR_FREE(mode);
-        if (*end || perms->mode < 0 || perms->mode > 0777) {
-            virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                                  "%s", _("malformed octal mode"));
-            return -1;
-        }
-    }
-
-    if (virXPathNode(conn, "/volume/permissions/owner", ctxt) == NULL) {
-        perms->uid = getuid();
-    } else {
-        if (virXPathLong(conn, "number(/volume/permissions/owner)", ctxt, &v) < 0) {
-            virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                                  "%s", _("missing owner element"));
-            return -1;
-        }
-        perms->uid = (int)v;
-    }
-    if (virXPathNode(conn, "/volume/permissions/group", ctxt) == NULL) {
-        perms->gid = getgid();
-    } else {
-        if (virXPathLong(conn, "number(/volume/permissions/group)", ctxt, &v) < 0) {
-            virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                                  "%s", _("missing group element"));
-            return -1;
-        }
-        perms->gid = (int)v;
-    }
-
-    /* NB, we're ignoring missing labels here - they'll simply inherit */
-    perms->label = virXPathString(conn, "string(/volume/permissions/label)", ctxt);
-
-    return 0;
-}
-
-
-static int
 virStorageSize(virConnectPtr conn,
                const char *unit,
                const char *val,
@@ -997,7 +970,8 @@ virStorageVolDefParseDoc(virConnectPtr conn,
         VIR_FREE(format);
     }
 
-    if (virStorageVolDefParsePerms(conn, ctxt, &ret->target.perms) < 0)
+    if (virStorageDefParsePerms(conn, ctxt, &ret->target.perms,
+                                "/volume/target/permissions", 0600) < 0)
         goto cleanup;
 
 
@@ -1019,7 +993,8 @@ virStorageVolDefParseDoc(virConnectPtr conn,
         VIR_FREE(format);
     }
 
-    if (virStorageVolDefParsePerms(conn, ctxt, &ret->backingStore.perms) < 0)
+    if (virStorageDefParsePerms(conn, ctxt, &ret->backingStore.perms,
+                                "/volume/backingStore/permissions", 0600) < 0)
         goto cleanup;
 
     return ret;
