@@ -1,3 +1,8 @@
+Mon Mar 16 11:40:00 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/qemud.c src/cgroup.c src/uml_driver.c src/util.c: close
+	  some potential FILE * leaks
+
 Mon Mar 16 10:35:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/event.c: Fix dispatch of FD events when one or more

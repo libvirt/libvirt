@@ -1058,6 +1058,7 @@ int virFileReadPid(const char *dir,
 
     if (fscanf(file, "%d", pid) != 1) {
         rc = EINVAL;
+        fclose(file);
         goto cleanup;
     }
 

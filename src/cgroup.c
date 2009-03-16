@@ -57,7 +57,7 @@ void virCgroupFree(virCgroupPtr *group)
 
 static virCgroupPtr virCgroupGetMount(const char *controller)
 {
-    FILE *mounts;
+    FILE *mounts = NULL;
     struct mntent entry;
     char buf[CGROUP_MAX_VAL];
     virCgroupPtr root = NULL;
@@ -90,6 +90,8 @@ static virCgroupPtr virCgroupGetMount(const char *controller)
 
     return root;
 err:
+    if (mounts != NULL)
+        fclose(mounts);
     virCgroupFree(&root);
 
     return NULL;

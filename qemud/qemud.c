@@ -488,7 +488,7 @@ static int qemudWritePidFile(const char *pidFile) {
     if (fprintf(fh, "%lu\n", (unsigned long)getpid()) < 0) {
         VIR_ERROR(_("Failed to write to pid file '%s' : %s"),
                   pidFile, virStrerror(errno, ebuf, sizeof ebuf));
-        close(fd);
+        fclose(fh);
         return -1;
     }
 

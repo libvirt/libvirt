@@ -547,6 +547,7 @@ reopen:
 
     if (fscanf(file, "%d", &vm->pid) != 1) {
         errno = EINVAL;
+        fclose(file);
         goto cleanup;
     }
 
@@ -1040,6 +1041,7 @@ static int umlGetProcessInfo(unsigned long long *cpuTime, int pid) {
 
     if (fscanf(pidinfo, "%*d %*s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %llu %llu", &usertime, &systime) != 2) {
         umlDebug("not enough arg");
+        fclose(pidinfo);
         return -1;
     }
 
