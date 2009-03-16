@@ -409,25 +409,26 @@ static int virEventDispatchTimeouts(void) {
  * Returns 0 upon success, -1 if an error occurred
  */
 static int virEventDispatchHandles(int nfds, struct pollfd *fds) {
-    int i;
+    int i, n;
 
-    for (i = 0 ; i < nfds ; i++) {
+    for (i = 0, n = 0 ; i < eventLoop.handlesCount && n < nfds ; i++) {
         if (eventLoop.handles[i].deleted) {
             EVENT_DEBUG("Skip deleted %d", eventLoop.handles[i].fd);
             continue;
         }
 
-        if (fds[i].revents) {
+        if (fds[n].revents) {
             virEventHandleCallback cb = eventLoop.handles[i].cb;
             void *opaque = eventLoop.handles[i].opaque;
-            int hEvents = virPollEventToEventHandleType(fds[i].revents);
-            EVENT_DEBUG("Dispatch %d %d %p", fds[i].fd,
-                        fds[i].revents, eventLoop.handles[i].opaque);
+            int hEvents = virPollEventToEventHandleType(fds[n].revents);
+            EVENT_DEBUG("Dispatch %d %d %p", fds[n].fd,
+                        fds[n].revents, eventLoop.handles[i].opaque);
             virEventUnlock();
             (cb)(eventLoop.handles[i].watch,
-                 fds[i].fd, hEvents, opaque);
+                 fds[n].fd, hEvents, opaque);
             virEventLock();
         }
+        n++;
     }
 
     return 0;

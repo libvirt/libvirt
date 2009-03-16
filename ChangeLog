@@ -1,3 +1,8 @@
+Mon Mar 16 10:35:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/event.c: Fix dispatch of FD events when one or more
+	handles has been marked as deleted
+
 Mon Mar 16 10:30:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/remote.c: Don't allocate cpumaps arg if maplength is
