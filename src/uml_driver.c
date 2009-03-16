@@ -146,7 +146,8 @@ umlAutostartConfigs(struct uml_driver *driver) {
         }
     }
 
-    virConnectClose(conn);
+    if (conn)
+        virConnectClose(conn);
 }
 
 

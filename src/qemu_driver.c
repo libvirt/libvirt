@@ -235,7 +235,8 @@ qemudAutostartConfigs(struct qemud_driver *driver) {
         virDomainObjUnlock(vm);
     }
 
-    virConnectClose(conn);
+    if (conn)
+        virConnectClose(conn);
 }
 
 

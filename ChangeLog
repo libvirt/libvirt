@@ -1,3 +1,9 @@
+Mon Mar 16 10:29:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Avoid harmless warning message
+	* src/qemu_driver.c, src/uml_driver.c: Don't try to close a
+	NULL virConnectPtr object.
+
 Thu Mar 12 21:13:40 CET 2009 Daniel Veillard <veilard@redhat.com>
 
 	* src/storage_conf.c: fix storage pool mode parsing, and refactoring
