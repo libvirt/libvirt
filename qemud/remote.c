@@ -1475,7 +1475,8 @@ remoteDispatchDomainGetVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
     /* Allocate buffers to take the results. */
     if (VIR_ALLOC_N(info, args->maxinfo) < 0)
         goto oom;
-    if (VIR_ALLOC_N(cpumaps, args->maxinfo) < 0)
+    if (args->maplen > 0 &&
+        VIR_ALLOC_N(cpumaps, args->maxinfo * args->maplen) < 0)
         goto oom;
 
     info_len = virDomainGetVcpus (dom,

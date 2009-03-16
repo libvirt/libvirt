@@ -1,5 +1,10 @@
 Mon Mar 16 10:30:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
+	* qemud/remote.c: Don't allocate cpumaps arg if maplength is
+	0, and fix size of cpumaps allocation
+
+Mon Mar 16 10:30:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
 	* src/storage_driver.c: Don't free storage volume in error
 	path, since it may still be referenced elsewhere
 
