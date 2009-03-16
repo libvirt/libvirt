@@ -73,9 +73,11 @@ struct qemud_driver {
     char *stateDir;
     unsigned int vncTLS : 1;
     unsigned int vncTLSx509verify : 1;
+    unsigned int vncSASL : 1;
     char *vncTLSx509certdir;
     char *vncListen;
     char *vncPassword;
+    char *vncSASLdir;
 
     virCapsPtr caps;
 

@@ -161,6 +161,21 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
+    p = virConfGetValue (conf, "vnc_sasl");
+    CHECK_TYPE ("vnc_sasl", VIR_CONF_LONG);
+    if (p) driver->vncSASL = p->l;
+
+    p = virConfGetValue (conf, "vnc_sasl_dir");
+    CHECK_TYPE ("vnc_sasl_dir", VIR_CONF_STRING);
+    if (p && p->str) {
+        VIR_FREE(driver->vncSASLdir);
+        if (!(driver->vncSASLdir = strdup(p->str))) {
+            virReportOOMError(NULL);
+            virConfFree(conf);
+            return -1;
+        }
+    }
+
     virConfFree (conf);
     return 0;
 }
@@ -838,15 +853,20 @@ int qemudBuildCommandLine(virConnectPtr conn,
             goto no_memory;                                             \
     } while (0)
 
+#define ADD_ENV_PAIR(envname, val)                                      \
+    do {                                                                \
+        char *envval;                                                   \
+        ADD_ENV_SPACE;                                                  \
+        if (virAsprintf(&envval, "%s=%s", envname, val) < 0)            \
+            goto no_memory;                                             \
+        qenv[qenvc++] = envval;                                         \
+    } while (0)
+
 #define ADD_ENV_COPY(envname)                                           \
     do {                                                                \
         char *val = getenv(envname);                                    \
-        char *envval;                                                   \
-        ADD_ENV_SPACE;                                                  \
         if (val != NULL) {                                              \
-            if (virAsprintf(&envval, "%s=%s", envname, val) < 0)        \
-                goto no_memory;                                         \
-            qenv[qenvc++] = envval;                                     \
+            ADD_ENV_PAIR(envname, val);                                 \
         }                                                               \
     } while (0)
 
@@ -1294,6 +1314,15 @@ int qemudBuildCommandLine(virConnectPtr conn,
                     virBufferVSprintf(&opt, ",x509=%s",
                                       driver->vncTLSx509certdir);
                 }
+            }
+
+            if (driver->vncSASL) {
+                virBufferAddLit(&opt, ",sasl");
+
+                if (driver->vncSASLdir)
+                    ADD_ENV_PAIR("SASL_CONF_DIR", driver->vncSASLdir);
+
+                /* TODO: Support ACLs later */
             }
         } else {
             virBufferVSprintf(&opt, "%d",

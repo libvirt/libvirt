@@ -60,6 +60,25 @@ vnc_tls_x509_verify = 1
 # example here before you set this
 #
 vnc_password = \"XYZ12345\"
+
+
+# Enable use of SASL encryption on the VNC server. This requires
+# a VNC client which supports the SASL protocol extension.
+# Examples include vinagre, virt-viewer and virt-manager
+# itself. UltraVNC, RealVNC, TightVNC do not support this
+#
+# It is necessary to configure /etc/sasl2/qemu.conf to choose
+# the desired SASL plugin (eg, GSSPI for Kerberos)
+#
+vnc_sasl = 1
+
+
+# The default SASL configuration file is located in /etc/sasl2/
+# When running libvirtd unprivileged, it may be desirable to
+# override the configs in this location. Set this parameter to
+# point to the directory, and create a qemu.conf in that location
+#
+vnc_sasl_dir = \"/some/directory/sasl2\"
 "
 
    test Libvirtd_qemu.lns get conf =
@@ -123,3 +142,22 @@ vnc_password = \"XYZ12345\"
 { "#comment" = "example here before you set this" }
 { "#comment" = "" }
 { "vnc_password" = "XYZ12345" }
+{ "#empty" }
+{ "#empty" }
+{ "#comment" = "Enable use of SASL encryption on the VNC server. This requires" }
+{ "#comment" = "a VNC client which supports the SASL protocol extension." }
+{ "#comment" = "Examples include vinagre, virt-viewer and virt-manager" }
+{ "#comment" = "itself. UltraVNC, RealVNC, TightVNC do not support this" }
+{ "#comment" = "" }
+{ "#comment" = "It is necessary to configure /etc/sasl2/qemu.conf to choose" }
+{ "#comment" = "the desired SASL plugin (eg, GSSPI for Kerberos)" }
+{ "#comment" = "" }
+{ "vnc_sasl" = "1" }
+{ "#empty" }
+{ "#empty" }
+{ "#comment" = "The default SASL configuration file is located in /etc/sasl2/" }
+{ "#comment" = "When running libvirtd unprivileged, it may be desirable to" }
+{ "#comment" = "override the configs in this location. Set this parameter to" }
+{ "#comment" = "point to the directory, and create a qemu.conf in that location" }
+{ "#comment" = "" }
+{ "vnc_sasl_dir" = "/some/directory/sasl2" }

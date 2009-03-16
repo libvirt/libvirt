@@ -27,6 +27,8 @@ module Libvirtd_qemu =
                  | str_entry "vnc_tls_x509_cert_dir"
                  | bool_entry "vnc_tls_x509_verify"
                  | str_entry "vnc_password"
+                 | bool_entry "vnc_sasl"
+                 | str_entry "vnc_sasl_dir"
 
    (* Each enty in the config is one of the following three ... *)
    let entry = vnc_entry

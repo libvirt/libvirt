@@ -1,3 +1,19 @@
+Mon Mar 16 13:52:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Support SASL auth for VNC server.
+	* qemud/libvirtd_qemu.aug, qemud/test_libvirtd_qemu.aug: Add
+	support for VNC sasl config options
+	* src/qemu.conf: Example VNC sasl config options
+	* src/qemu_conf.c, src/qemu_conf.h, src/qemu_driver.c: Add
+	ability to set SASL authentication on VNC servers
+	* tests/qemuxml2argvtest.c: Test for VNC SASL and TLS security
+	options
+	* tests/qemuxml2argvdata/qemuxml2argv-graphics-vnc-sasl.args,
+	tests/qemuxml2argvdata/qemuxml2argv-graphics-vnc-sasl.xml,
+	tests/qemuxml2argvdata/qemuxml2argv-graphics-vnc-tls.args,
+	tests/qemuxml2argvdata/qemuxml2argv-graphics-vnc-tls.xml: Data
+	files for tests
+
 Mon Mar 16 11:44:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Avoid deadlock in virDomainSetVcpus

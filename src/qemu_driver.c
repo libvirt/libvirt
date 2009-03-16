@@ -621,6 +621,7 @@ qemudShutdown(void) {
     VIR_FREE(qemu_driver->vncTLSx509certdir);
     VIR_FREE(qemu_driver->vncListen);
     VIR_FREE(qemu_driver->vncPassword);
+    VIR_FREE(qemu_driver->vncSASLdir);
 
     /* Free domain callback list */
     virDomainEventCallbackListFree(qemu_driver->domainEventCallbacks);

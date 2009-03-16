@@ -213,6 +213,19 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_DRIVE_CACHE_V2);
     DO_TEST("disk-usb", 0);
     DO_TEST("graphics-vnc", 0);
+
+    driver.vncSASL = 1;
+    driver.vncSASLdir = strdup("/root/.sasl2");
+    DO_TEST("graphics-vnc-sasl", 0);
+    driver.vncTLS = 1;
+    driver.vncTLSx509verify = 1;
+    driver.vncTLSx509certdir = strdup("/etc/pki/tls/qemu");
+    DO_TEST("graphics-vnc-tls", 0);
+    driver.vncSASL = driver.vncTLSx509verify = driver.vncTLS = 0;
+    free(driver.vncSASLdir);
+    free(driver.vncTLSx509certdir);
+    driver.vncSASLdir = driver.vncTLSx509certdir = NULL;
+
     DO_TEST("graphics-sdl", 0);
     DO_TEST("graphics-sdl-fullscreen", 0);
     DO_TEST("input-usbmouse", 0);
