@@ -1,3 +1,8 @@
+Mon Mar 16 10:55:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix subsystem lookup for older HAL releases
+	* src/node_device_hal.c: Check for linux.subsystem property
+
 Mon Mar 16 10:45:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Add ac97 to test case & RNG schema (Pritesh Kothari)

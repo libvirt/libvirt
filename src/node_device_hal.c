@@ -357,7 +357,8 @@ static int gather_capabilities(LibHalContext *ctx, const char *udi,
             goto failure;
     }
 
-    if (get_str_prop(ctx, udi, "info.subsystem", &bus_name) == 0) {
+    if (get_str_prop(ctx, udi, "info.subsystem", &bus_name) == 0 ||
+        get_str_prop(ctx, udi, "linux.subsystem", &bus_name) == 0) {
         rv = gather_capability(ctx, udi, bus_name, &caps);
         if (rv != 0)
             goto failure;
