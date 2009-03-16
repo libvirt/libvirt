@@ -2619,6 +2619,12 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
 
     conn = domain->conn;
 
+    if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
+        virLibConnError(conn, VIR_ERR_OPERATION_DENIED,
+                        _("virDomainGetXMLDesc with secure flag"));
+        goto error;
+    }
+
     if (conn->driver->domainDumpXML) {
         char *ret;
         ret = conn->driver->domainDumpXML (domain, flags);

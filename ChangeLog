@@ -1,3 +1,7 @@
+Mon Mar 16 13:17:05 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/libvirt.c: Don't allow readonly connections to dump secure xml.
+
 Mon Mar 16 13:15:11 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/qemu_driver.c: Initialize security driver after config parsing
