@@ -1172,8 +1172,6 @@ cleanup:
     return ret;
 }
 
-static char *testDomainDumpXML(virDomainPtr domain, int flags);
-
 #define TEST_SAVE_MAGIC "TestGuestMagic"
 
 static int testDomainSave(virDomainPtr domain,
@@ -1196,7 +1194,10 @@ static int testDomainSave(virDomainPtr domain,
         goto cleanup;
     }
 
-    xml = testDomainDumpXML(domain, 0);
+    xml = virDomainDefFormat(domain->conn,
+                             privdom->def,
+                             VIR_DOMAIN_XML_SECURE);
+
     if (xml == NULL) {
         virReportSystemError(domain->conn, errno,
                              _("saving domain '%s' failed to allocate space for metadata"),

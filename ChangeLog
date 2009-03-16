@@ -1,3 +1,7 @@
+Mon Mar 16 13:12:59 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/test.c: Fix test driver 'save' deadlock
+
 Mon Mar 16 13:52:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Support SASL auth for VNC server.
