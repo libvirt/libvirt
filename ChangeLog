@@ -1,3 +1,8 @@
+Mon Mar 16 10:30:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/storage_driver.c: Don't free storage volume in error
+	path, since it may still be referenced elsewhere
+
 Mon Mar 16 10:29:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Avoid harmless warning message

@@ -1296,7 +1296,6 @@ storageVolumeDelete(virStorageVolPtr obj,
     ret = 0;
 
 cleanup:
-    virStorageVolDefFree(vol);
     if (pool)
         virStoragePoolObjUnlock(pool);
     return ret;
