@@ -497,11 +497,11 @@ qemudStartup(void) {
     if ((qemu_driver->caps = qemudCapsInit()) == NULL)
         goto out_of_memory;
 
-    if (qemudSecurityInit(qemu_driver) < 0) {
+    if (qemudLoadDriverConfig(qemu_driver, driverConf) < 0) {
         goto error;
     }
 
-    if (qemudLoadDriverConfig(qemu_driver, driverConf) < 0) {
+    if (qemudSecurityInit(qemu_driver) < 0) {
         goto error;
     }
 
