@@ -2725,6 +2725,7 @@ static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
     virDomainObjPtr vm;
     int max;
     int ret = -1;
+    const char *type;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -2745,7 +2746,14 @@ static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
         goto cleanup;
     }
 
-    if ((max = qemudDomainGetMaxVcpus(dom)) < 0) {
+    if (!(type = virDomainVirtTypeToString(vm->def->virtType))) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unknown virt type in domain definition '%d'"),
+                         vm->def->virtType);
+        goto cleanup;
+    }
+
+    if ((max = qemudGetMaxVCPUs(dom->conn, type)) < 0) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                          _("could not determine max vcpus for the domain"));
         goto cleanup;

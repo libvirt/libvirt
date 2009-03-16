@@ -1,3 +1,8 @@
+Mon Mar 16 11:44:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: Avoid deadlock in virDomainSetVcpus
+	driver impl
+
 Mon Mar 16 10:55:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix subsystem lookup for older HAL releases
