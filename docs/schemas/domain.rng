@@ -874,6 +874,7 @@
           <value>sb16</value>
           <value>es1370</value>
           <value>pcspk</value>
+          <value>ac97</value>
         </choice>
       </attribute>
     </element>

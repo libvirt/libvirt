@@ -21,5 +21,6 @@
     <sound model='pcspk'/>
     <sound model='es1370'/>
     <sound model='sb16'/>
+    <sound model='ac97'/>
   </devices>
 </domain>

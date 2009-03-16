@@ -1,3 +1,11 @@
+Mon Mar 16 10:45:00 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Add ac97 to test case & RNG schema (Pritesh Kothari)
+	* docs/schemas/domain.rng: Add ac97 as valid soundcard
+	* tests/qemuxml2argvdata/qemuxml2argv-sound.args,
+	tests/qemuxml2argvdata/qemuxml2argv-sound.xml: Extend test to
+	cover ac97 soundcard.
+
 Mon Mar 16 11:40:00 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/qemud.c src/cgroup.c src/uml_driver.c src/util.c: close
