@@ -332,7 +332,7 @@ doRemoteOpen (virConnectPtr conn,
               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
               int flags)
 {
-    int wakeupFD[2];
+    int wakeupFD[2] = { -1, -1 };
     char *transport_str = NULL;
 
     if (conn->uri) {
@@ -885,6 +885,11 @@ doRemoteOpen (virConnectPtr conn,
 #endif
     }
 
+    if (wakeupFD[0] >= 0) {
+        close(wakeupFD[0]);
+        close(wakeupFD[1]);
+    }
+
     VIR_FREE(priv->hostname);
     goto cleanup;
 }
@@ -1350,6 +1355,11 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
         } while (reap != -1 && reap != priv->pid);
     }
 #endif
+    if (priv->wakeupReadFD >= 0) {
+        close(priv->wakeupReadFD);
+        close(priv->wakeupSendFD);
+    }
+
 
     /* Free hostname copy */
     free (priv->hostname);
