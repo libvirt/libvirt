@@ -3766,7 +3766,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                 goto cleanup;
             }
             if (driver->securityDriver)
-                driver->securityDriver->domainSetSecurityImageLabel(dom->conn, vm, dev);
+                driver->securityDriver->domainSetSecurityImageLabel(dom->conn, vm, dev->data.disk);
             break;
 
         default:
@@ -3902,7 +3902,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
          dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)) {
         ret = qemudDomainDetachPciDiskDevice(dom->conn, vm, dev);
         if (driver->securityDriver)
-            driver->securityDriver->domainRestoreSecurityImageLabel(dom->conn, vm, dev);
+            driver->securityDriver->domainRestoreSecurityImageLabel(dom->conn, dev->data.disk);
     }
     else
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,

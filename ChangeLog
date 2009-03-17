@@ -1,3 +1,11 @@
+Tue Mar 17 11:35:58 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix labelling of shared/readonly devices (Dan Walsh)
+	* src/qemu_driver.c, src/security.h: Disk label commands
+	take virDomainDiskDefPtr instead of virDomainDefPtr
+	* src/security_selinux.c: Do not relabel shared or readonly
+	disk images with MCS label.
+
 Tue Mar 17 11:58:58 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/remote_internal.c: remove file descriptors leak
