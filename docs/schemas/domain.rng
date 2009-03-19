@@ -34,6 +34,12 @@
       <attribute name='model'>
 	<text/>
       </attribute>
+      <attribute name='type'>
+        <choice>
+          <value>dynamic</value>
+          <value>static</value>
+        </choice>
+      </attribute>
       <element name='label'>
 	<text/>
       </element>

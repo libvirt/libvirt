@@ -1,3 +1,7 @@
+Thu Mar 19 15:25:40 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/schemas/domain.rng: extend definition for security attributes
+
 Tue Mar 17 11:35:58 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix labelling of shared/readonly devices (Dan Walsh)
