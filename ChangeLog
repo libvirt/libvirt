@@ -1,3 +1,15 @@
+Fri Mar 20 11:41:40 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix test breakage on x86_64 from previous change
+	* tests/qemuxml2argvdata/qemuxml2argv-migrate.args,
+	tests/qemuxml2argvdata/qemuxml2argv-migrate.xml,
+	tests/qemuxml2argvdata/qemuxml2argv-restore-v1.args,
+	tests/qemuxml2argvdata/qemuxml2argv-restore-v1.xml,
+	tests/qemuxml2argvdata/qemuxml2argv-restore-v2.args,
+	tests/qemuxml2argvdata/qemuxml2argv-restore-v2.xml: Switch
+	to base 'qemu' emulator to avoid arch-dependant options
+	needed by 'qemu-kvm' emulator.
+
 Fri Mar 20 11:21:40 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Make use of emulator binaries more flexible

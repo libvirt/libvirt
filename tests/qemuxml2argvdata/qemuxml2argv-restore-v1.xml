@@ -1,4 +1,4 @@
-<domain type='kvm'>
+<domain type='qemu'>
   <name>QEMUGuest1</name>
   <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
   <memory>219200</memory>
@@ -13,7 +13,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-    <emulator>/usr/bin/qemu-kvm</emulator>
+    <emulator>/usr/bin/qemu</emulator>
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
