@@ -55,6 +55,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP  = (1 << 10), /* New migration syntax after merge to QEMU with TCP transport */
     QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC = (1 << 11), /* New migration syntax after merge to QEMU with EXEC transport */
     QEMUD_CMD_FLAG_DRIVE_CACHE_V2    = (1 << 12), /* Is the cache= flag wanting new v2 values */
+    QEMUD_CMD_FLAG_KVM               = (1 << 13), /* Whether KVM is compiled in */
 };
 
 /* Main driver state */

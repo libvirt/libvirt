@@ -211,6 +211,7 @@ struct qemu_arch_info {
     const char *const *machines;
     int nmachines;
     const char *binary;
+    const char *altbinary;
     const struct qemu_feature_flags *flags;
     int nflags;
 };
@@ -231,24 +232,24 @@ static const struct qemu_feature_flags const arch_info_x86_64_flags [] = {
 /* The archicture tables for supported QEMU archs */
 static const struct qemu_arch_info const arch_info_hvm[] = {
     {  "i686", 32, arch_info_hvm_x86_machines, 2,
-       "/usr/bin/qemu", arch_info_i686_flags, 4 },
+       "/usr/bin/qemu", "/usr/bin/qemu-system-x86_64", arch_info_i686_flags, 4 },
     {  "x86_64", 64, arch_info_hvm_x86_machines, 2,
-       "/usr/bin/qemu-system-x86_64", arch_info_x86_64_flags, 2 },
+       "/usr/bin/qemu-system-x86_64", NULL, arch_info_x86_64_flags, 2 },
     {  "mips", 32, arch_info_hvm_mips_machines, 1,
-       "/usr/bin/qemu-system-mips", NULL, 0 },
+       "/usr/bin/qemu-system-mips", NULL, NULL, 0 },
     {  "mipsel", 32, arch_info_hvm_mips_machines, 1,
-       "/usr/bin/qemu-system-mipsel", NULL, 0 },
+       "/usr/bin/qemu-system-mipsel", NULL, NULL, 0 },
     {  "sparc", 32, arch_info_hvm_sparc_machines, 1,
-       "/usr/bin/qemu-system-sparc", NULL, 0 },
+       "/usr/bin/qemu-system-sparc", NULL, NULL, 0 },
     {  "ppc", 32, arch_info_hvm_ppc_machines, 3,
-       "/usr/bin/qemu-system-ppc", NULL, 0 },
+       "/usr/bin/qemu-system-ppc", NULL, NULL, 0 },
 };
 
 static const struct qemu_arch_info const arch_info_xen[] = {
     {  "i686", 32, arch_info_xen_x86_machines, 1,
-       "/usr/bin/xenner", arch_info_i686_flags, 4 },
+       "/usr/bin/xenner", NULL, arch_info_i686_flags, 4 },
     {  "x86_64", 64, arch_info_xen_x86_machines, 1,
-       "/usr/bin/xenner", arch_info_x86_64_flags, 2 },
+       "/usr/bin/xenner", NULL, arch_info_x86_64_flags, 2 },
 };
 
 static int
@@ -257,43 +258,62 @@ qemudCapsInitGuest(virCapsPtr caps,
                    const struct qemu_arch_info *info,
                    int hvm) {
     virCapsGuestPtr guest;
-    int i, haskvm, hasbase, samearch;
+    int i;
+    int hasbase = 0;
+    int hasaltbase = 0;
+    int haskvm = 0;
+    int haskqemu = 0;
     const char *kvmbin = NULL;
 
-    /* Check for existance of base emulator */
+    /* Check for existance of base emulator, or alternate base
+     * which can be used with magic cpu choice
+     */
     hasbase = (access(info->binary, X_OK) == 0);
+    hasaltbase = (access(info->altbinary, X_OK) == 0);
 
-    samearch = STREQ(info->arch, hostmachine);
-    if (samearch) {
+    /* Can use acceleration for KVM/KQEMU if
+     *  - host & guest arches match
+     * Or
+     *  - hostarch is x86_64 and guest arch is i686
+     * The latter simply needs "-cpu qemu32"
+     */
+    if (STREQ(info->arch, hostmachine) ||
+        (STREQ(hostmachine, "x86_64") && STREQ(info->arch, "i686"))) {
         const char *const kvmbins[] = { "/usr/bin/qemu-kvm", /* Fedora */
                                         "/usr/bin/kvm" }; /* Upstream .spec */
 
         for (i = 0; i < ARRAY_CARDINALITY(kvmbins); ++i) {
-            if ((haskvm = (access(kvmbins[i], X_OK) == 0))) {
+            if (access(kvmbins[i], X_OK) == 0 &&
+                access("/dev/kvm", F_OK) == 0) {
+                haskvm = 1;
                 kvmbin = kvmbins[i];
                 break;
             }
         }
-    } else {
-        haskvm = 0;
+
+        if (access("/dev/kqemu", F_OK) == 0)
+            haskqemu = 1;
     }
 
-    if (!hasbase && !haskvm)
+
+    if (!hasbase && !hasaltbase && !haskvm)
         return 0;
 
+    /* We register kvm as the base emulator too, since we can
+     * just give -no-kvm to disable acceleration if required */
     if ((guest = virCapabilitiesAddGuest(caps,
                                          hvm ? "hvm" : "xen",
                                          info->arch,
                                          info->wordsize,
-                                         info->binary,
+                                         (hasbase ? info->binary :
+                                          (hasaltbase ? info->altbinary : kvmbin)),
                                          NULL,
                                          info->nmachines,
                                          info->machines)) == NULL)
         return -1;
 
     if (hvm) {
-        if (hasbase &&
-            virCapabilitiesAddGuestDomain(guest,
+        if (virCapabilitiesAddGuestDomain(guest,
                                           "qemu",
                                           NULL,
                                           NULL,
@@ -301,27 +321,23 @@ qemudCapsInitGuest(virCapsPtr caps,
                                           NULL) == NULL)
             return -1;
 
-        /* If guest & host match, then we can accelerate */
-        if (samearch) {
-            if (access("/dev/kqemu", F_OK) == 0 &&
-                virCapabilitiesAddGuestDomain(guest,
-                                              "kqemu",
-                                              NULL,
-                                              NULL,
-                                              0,
-                                              NULL) == NULL)
-                return -1;
+        if (haskqemu &&
+            virCapabilitiesAddGuestDomain(guest,
+                                          "kqemu",
+                                          NULL,
+                                          NULL,
+                                          0,
+                                          NULL) == NULL)
+            return -1;
 
-            if (access("/dev/kvm", F_OK) == 0 &&
-                haskvm &&
-                virCapabilitiesAddGuestDomain(guest,
-                                              "kvm",
-                                              kvmbin,
-                                              NULL,
-                                              0,
-                                              NULL) == NULL)
-                return -1;
-        }
+        if (haskvm &&
+            virCapabilitiesAddGuestDomain(guest,
+                                          "kvm",
+                                          kvmbin,
+                                          NULL,
+                                          0,
+                                          NULL) == NULL)
+            return -1;
     } else {
         if (virCapabilitiesAddGuestDomain(guest,
                                           "kvm",
@@ -363,12 +379,14 @@ virCapsPtr qemudCapsInit(void) {
     if (virCapsInitNUMA(caps) < 0)
         goto no_memory;
 
+    /* First the pure HVM guests */
     for (i = 0 ; i < ARRAY_CARDINALITY(arch_info_hvm) ; i++)
         if (qemudCapsInitGuest(caps,
                                utsname.machine,
                                &arch_info_hvm[i], 1) < 0)
             goto no_memory;
 
+    /* Then possibly the Xen paravirt guests (ie Xenner */
     if (access("/usr/bin/xenner", X_OK) == 0 &&
         access("/dev/kvm", F_OK) == 0) {
         for (i = 0 ; i < ARRAY_CARDINALITY(arch_info_xen) ; i++)
@@ -430,6 +448,8 @@ int qemudExtractVersionInfo(const char *qemu,
 
     if (strstr(help, "-no-kqemu"))
         flags |= QEMUD_CMD_FLAG_KQEMU;
+    if (strstr(help, "-no-kvm"))
+        flags |= QEMUD_CMD_FLAG_KVM;
     if (strstr(help, "-no-reboot"))
         flags |= QEMUD_CMD_FLAG_NO_REBOOT;
     if (strstr(help, "-name"))
@@ -749,6 +769,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     char boot[VIR_DOMAIN_BOOT_LAST];
     struct utsname ut;
     int disableKQEMU = 0;
+    int disableKVM = 0;
     int qargc = 0, qarga = 0;
     const char **qargv = NULL;
     int qenvc = 0, qenva = 0;
@@ -757,6 +778,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     char uuid[VIR_UUID_STRING_BUFLEN];
     char domid[50];
     char *pidfile;
+    const char *cpu = NULL;
 
     uname_normalize(&ut);
 
@@ -789,15 +811,50 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
     }
 
+    emulator = vm->def->emulator;
+    if (!emulator)
+        emulator = virDomainDefDefaultEmulator(conn, vm->def, driver->caps);
+    if (!emulator)
+        return -1;
+
+
     /* Need to explicitly disable KQEMU if
      * 1. Arch matches host arch
-     * 2. Guest is 'qemu'
+     * 2. Guest domain is 'qemu'
      * 3. The qemu binary has the -no-kqemu flag
      */
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_KQEMU) &&
         STREQ(ut.machine, vm->def->os.arch) &&
         vm->def->virtType == VIR_DOMAIN_VIRT_QEMU)
         disableKQEMU = 1;
+
+    /* Need to explicitly disable KVM if
+     * 1. Arch matches host arch
+     * 2. Guest domain is 'qemu'
+     * 3. The qemu binary has the -no-kvm flag
+     */
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_KVM) &&
+        STREQ(ut.machine, vm->def->os.arch) &&
+        vm->def->virtType == VIR_DOMAIN_VIRT_QEMU)
+        disableKVM = 1;
+
+    /*
+     * Need to force a 32-bit guest CPU type if
+     *
+     *  1. guest OS is i686
+     *  2. host OS is x86_64
+     *  3. emulator is qemu-kvm or kvm
+     *
+     * Or
+     *
+     *  1. guest OS is i686
+     *  2. emulator is qemu-system-x86_64
+     */
+    if (STREQ(vm->def->os.arch, "i686") &&
+        ((STREQ(ut.machine, "x86_64") &&
+          strstr(emulator, "kvm")) ||
+         strstr(emulator, "x86_64")))
+        cpu = "qemu32";
 
 #define ADD_ARG_SPACE                                                   \
     do { \
@@ -887,12 +944,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
     ADD_ENV_COPY("LOGNAME");
     ADD_ENV_COPY("TMPDIR");
 
-    emulator = vm->def->emulator;
-    if (!emulator)
-        emulator = virDomainDefDefaultEmulator(conn, vm->def, driver->caps);
-    if (!emulator)
-        return -1;
-
     ADD_ARG_LIT(emulator);
     ADD_ARG_LIT("-S");
 
@@ -904,9 +955,15 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT("-M");
         ADD_ARG_LIT(vm->def->os.machine);
     }
+    if (cpu) {
+        ADD_ARG_LIT("-cpu");
+        ADD_ARG_LIT(cpu);
+    }
 
     if (disableKQEMU)
         ADD_ARG_LIT("-no-kqemu");
+    if (disableKVM)
+        ADD_ARG_LIT("-no-kvm");
     ADD_ARG_LIT("-m");
     ADD_ARG_LIT(memory);
     ADD_ARG_LIT("-smp");

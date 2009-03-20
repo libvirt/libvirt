@@ -1,3 +1,12 @@
+Fri Mar 20 11:21:40 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Make use of emulator binaries more flexible
+	* src/qemu_conf.h: Add flag for -no-kvm option
+	* src/qemu_conf.c: Allow i686 on x86_64 for KVM guests using
+	-cpu flag. Allow qemu-system-x86_64 to be used for 32-bit
+	guests. Allow KVM binary to be used for non-KVM guests using
+	-no-kvm flag
+
 Thu Mar 19 15:25:40 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/schemas/domain.rng: extend definition for security attributes
