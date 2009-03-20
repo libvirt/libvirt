@@ -308,6 +308,7 @@ virStrToLong_ui;
 virFileLinkPointsTo;
 saferead;
 safewrite;
+safezero;
 virMacAddrCompare;
 virEnumFromString;
 virEnumToString;

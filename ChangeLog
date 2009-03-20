@@ -1,3 +1,9 @@
+Fri Mar 20 13:16:01 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt_private.syms src/storage_backend_fs.c src/util.c
+	  src/util.h: use posix_fallocate() on supported systems to
+	  allocate diskspace faster, patches by Amit Shah
+
 Fri Mar 20 11:41:40 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix test breakage on x86_64 from previous change

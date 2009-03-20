@@ -72,7 +72,7 @@ dnl Use --disable-largefile if you don't want this.
 AC_SYS_LARGEFILE
 
 dnl Availability of various common functions (non-fatal if missing).
-AC_CHECK_FUNCS([cfmakeraw regexec uname sched_getaffinity getuid getgid])
+AC_CHECK_FUNCS([cfmakeraw regexec uname sched_getaffinity getuid getgid posix_fallocate mmap])
 
 dnl Availability of various not common threadsafe functions
 AC_CHECK_FUNCS([strerror_r strtok_r getmntent_r getgrnam_r getpwuid_r])

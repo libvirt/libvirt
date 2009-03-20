@@ -62,6 +62,8 @@ static int qcowXGetBackingStore(virConnectPtr, char **,
 static int vmdk4GetBackingStore(virConnectPtr, char **,
                                 const unsigned char *, size_t);
 
+static int track_allocation_progress = 0;
+
 /* Either 'magic' or 'extension' *must* be provided */
 struct FileTypeInfo {
     int type;           /* One of the constants above */
@@ -1016,24 +1018,44 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         }
 
         /* Pre-allocate any data if requested */
-        /* XXX slooooooooooooooooow.
-         * Need to add in progress bars & bg thread somehow */
+        /* XXX slooooooooooooooooow on non-extents-based file systems */
+        /* FIXME: Add in progress bars & bg thread if progress bar requested */
         if (vol->allocation) {
-            unsigned long long remain = vol->allocation;
-            static char const zeros[4096];
-            while (remain) {
-                int bytes = sizeof(zeros);
-                if (bytes > remain)
-                    bytes = remain;
-                if ((bytes = safewrite(fd, zeros, bytes)) < 0) {
-                    virReportSystemError(conn, errno,
+            if (track_allocation_progress) {
+                unsigned long long remain = vol->allocation;
+
+                while (remain) {
+                    /* Allocate in chunks of 512MiB: big-enough chunk
+                     * size and takes approx. 9s on ext3. A progress
+                     * update every 9s is a fair-enough trade-off
+                     */
+                    unsigned long long bytes = 512 * 1024 * 1024;
+                    int r;
+
+                    if (bytes > remain)
+                        bytes = remain;
+                    if ((r = safezero(fd, 0, vol->allocation - remain,
+                                      bytes)) != 0) {
+                        virReportSystemError(conn, r,
+                                             _("cannot fill file '%s'"),
+                                             vol->target.path);
+                        unlink(vol->target.path);
+                        close(fd);
+                        return -1;
+                    }
+                    remain -= bytes;
+                }
+            } else { /* No progress bars to be shown */
+                int r;
+
+                if ((r = safezero(fd, 0, 0, vol->allocation)) != 0) {
+                    virReportSystemError(conn, r,
                                          _("cannot fill file '%s'"),
                                          vol->target.path);
                     unlink(vol->target.path);
                     close(fd);
                     return -1;
                 }
-                remain -= bytes;
             }
         }
 

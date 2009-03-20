@@ -39,6 +39,9 @@
 #if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif
+#if HAVE_MMAP
+#include <sys/mman.h>
+#endif
 #include <string.h>
 #include <signal.h>
 #if HAVE_TERMIOS_H
@@ -116,6 +119,71 @@ ssize_t safewrite(int fd, const void *buf, size_t count)
         }
         return nwritten;
 }
+
+#ifdef HAVE_POSIX_FALLOCATE
+int safezero(int fd, int flags, off_t offset, off_t len)
+{
+    return posix_fallocate(fd, offset, len);
+}
+#else
+
+#ifdef HAVE_MMAP
+int safezero(int fd, int flags, off_t offset, off_t len)
+{
+    int r;
+    char *buf;
+
+    /* memset wants the mmap'ed file to be present on disk so create a
+     * sparse file
+     */
+    r = ftruncate(fd, len);
+    if (r < 0)
+        return -errno;
+
+    buf = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, offset);
+    if (buf == MAP_FAILED)
+        return -errno;
+
+    memset(buf, 0, len);
+    munmap(buf, len);
+
+    return 0;
+}
+
+#else /* HAVE_MMAP */
+
+int safezero(int fd, int flags, off_t offset, off_t len)
+{
+    int r;
+    char *buf;
+    unsigned long long remain, bytes;
+
+    /* Split up the write in small chunks so as not to allocate lots of RAM */
+    remain = len;
+    bytes = 1024 * 1024;
+
+    r = VIR_ALLOC_N(buf, bytes);
+    if (r < 0)
+        return -ENOMEM;
+
+    while (remain) {
+        if (bytes > remain)
+            bytes = remain;
+
+        r = safewrite(fd, buf, len);
+        if (r < 0) {
+            VIR_FREE(buf);
+            return r;
+        }
+
+        /* safewrite() guarantees all data will be written */
+        remain -= bytes;
+    }
+    VIR_FREE(buf);
+    return 0;
+}
+#endif /* HAVE_MMAP */
+#endif /* HAVE_POSIX_FALLOCATE */
 
 #ifndef PROXY
 
