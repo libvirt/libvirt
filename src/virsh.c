@@ -468,12 +468,13 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     ctl->name = vshStrdup(ctl, vshCommandOptString(cmd, "name", NULL));
 
     if (!ro) {
-        ctl->conn = virConnectOpen(ctl->name);
         ctl->readonly = 0;
     } else {
-        ctl->conn = virConnectOpenReadOnly(ctl->name);
         ctl->readonly = 1;
     }
+
+    ctl->conn = virConnectOpenAuth(ctl->name, virConnectAuthPtrDefault,
+                                   ctl->readonly ? VIR_CONNECT_RO : 0);
 
     if (!ctl->conn)
         vshError(ctl, FALSE, "%s", _("Failed to connect to the hypervisor"));
@@ -2315,7 +2316,7 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_MIGRATE_LIVE;
 
     /* Temporarily connect to the destination host. */
-    dconn = virConnectOpen (desturi);
+    dconn = virConnectOpenAuth (desturi, virConnectAuthPtrDefault, 0);
     if (!dconn) goto done;
 
     /* Migrate. */

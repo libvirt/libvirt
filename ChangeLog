@@ -1,3 +1,8 @@
+Mon Mar 23 17:33:17 CET 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: fix missing authentication when command are issued
+	  from the shell, patch by Matthias Bolte
+
 Fri Mar 20 21:43:57 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/util.c: flag unused parameters, by Maximilian Wilhelm
