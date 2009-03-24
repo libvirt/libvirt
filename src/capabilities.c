@@ -468,14 +468,26 @@ virCapabilitiesSupportsGuestArch(virCapsPtr caps,
  */
 extern const char *
 virCapabilitiesDefaultGuestArch(virCapsPtr caps,
-                                const char *ostype)
+                                const char *ostype,
+                                const char *domain)
 {
-    int i;
+    int i, j;
+    const char *arch = NULL;
     for (i = 0 ; i < caps->nguests ; i++) {
-        if (STREQ(caps->guests[i]->ostype, ostype))
-            return caps->guests[i]->arch.name;
+        if (STREQ(caps->guests[i]->ostype, ostype)) {
+            for (j = 0 ; j < caps->guests[i]->arch.ndomains ; j++) {
+                if (STREQ(caps->guests[i]->arch.domains[j]->type, domain)) {
+                    /* Use the first match... */
+                    if (!arch)
+                        arch = caps->guests[i]->arch.name;
+                    /* ...unless we can match the host's architecture. */
+                    if (STREQ(caps->guests[i]->arch.name, caps->host.arch))
+                        return caps->guests[i]->arch.name;
+                }
+            }
+        }
     }
-    return NULL;
+    return arch;
 }
 
 /**

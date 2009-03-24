@@ -177,7 +177,8 @@ virCapabilitiesSupportsGuestArch(virCapsPtr caps,
 
 extern const char *
 virCapabilitiesDefaultGuestArch(virCapsPtr caps,
-                                const char *ostype);
+                                const char *ostype,
+                                const char *domain);
 extern const char *
 virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
                                    const char *ostype,

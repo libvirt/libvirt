@@ -695,7 +695,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
     if (!(def->os.type = strdup(hvm ? "hvm" : "xen")))
         goto no_memory;
 
-    defaultArch = virCapabilitiesDefaultGuestArch(priv->caps, def->os.type);
+    defaultArch = virCapabilitiesDefaultGuestArch(priv->caps, def->os.type, virDomainVirtTypeToString(def->virtType));
     if (defaultArch == NULL) {
         xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
                    _("no supported architecture for os type '%s'"),

@@ -2146,7 +2146,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
             goto error;
         }
     } else {
-        const char *defaultArch = virCapabilitiesDefaultGuestArch(caps, def->os.type);
+        const char *defaultArch = virCapabilitiesDefaultGuestArch(caps, def->os.type, virDomainVirtTypeToString(def->virtType));
         if (defaultArch == NULL) {
             virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                  _("no supported architecture for os type '%s'"),

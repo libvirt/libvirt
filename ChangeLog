@@ -1,3 +1,10 @@
+Tue Mar 24 11:14:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/capabilities.c, file src/capabilities.h,
+	src/domain_conf.c, src/xm_internal.c: Prefer native arch
+	when auto-filling guest architecture. Match on domain type
+	when auto-filling architecture (Soren Hansen)
+
 Tue Mar 24 10:51:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/Makefile.maint: Include 'CHECK: ' prefix when printing
