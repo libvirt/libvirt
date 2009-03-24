@@ -1,3 +1,8 @@
+Tue Mar 24 10:51:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/openvz_conf.c, src/openvz_conf.h, src/openvz_driver.c: Add
+	support for a non-template filesystem root. (Florian Vichot)
+
 Mon Mar 23 17:33:17 CET 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: fix missing authentication when command are issued

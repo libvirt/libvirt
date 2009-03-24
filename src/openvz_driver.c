@@ -132,19 +132,9 @@ static int openvzDomainDefineCmd(virConnectPtr conn,
     ADD_ARG_LIT("create");
     ADD_ARG_LIT(vmdef->name);
 
-    if (vmdef->nfss) {
-        if (vmdef->fss[0]->type != VIR_DOMAIN_FS_TYPE_TEMPLATE) {
-            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("only filesystem templates are supported"));
-            return -1;
-        }
-
-        if (vmdef->nfss > 1) {
-            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("only one filesystem supported"));
-            return -1;
-        }
-
+    if (vmdef->nfss == 1 &&
+        vmdef->fss[0]->type == VIR_DOMAIN_FS_TYPE_TEMPLATE)
+    {
         ADD_ARG_LIT("--ostemplate");
         ADD_ARG_LIT(vmdef->fss[0]->src);
     }
@@ -163,6 +153,77 @@ static int openvzDomainDefineCmd(virConnectPtr conn,
     return -1;
 #undef ADD_ARG
 #undef ADD_ARG_LIT
+}
+
+
+static int openvzSetInitialConfig(virConnectPtr conn,
+                                  virDomainDefPtr vmdef)
+{
+    int ret = -1;
+    int vpsid;
+    char * confdir = NULL;
+    const char *prog[OPENVZ_MAX_ARG];
+    prog[0] = NULL;
+
+    if (vmdef->nfss > 1) {
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("only one filesystem supported"));
+        goto cleanup;
+    }
+
+    if (vmdef->nfss == 1 &&
+        vmdef->fss[0]->type != VIR_DOMAIN_FS_TYPE_TEMPLATE &&
+        vmdef->fss[0]->type != VIR_DOMAIN_FS_TYPE_MOUNT)
+    {
+        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("filesystem is not of type 'template' or 'mount'"));
+        goto cleanup;
+    }
+
+
+    if (vmdef->nfss == 1 &&
+        vmdef->fss[0]->type == VIR_DOMAIN_FS_TYPE_MOUNT)
+    {
+
+        if(virStrToLong_i(vmdef->name, NULL, 10, &vpsid) < 0) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("Could not convert domain name to VEID"));
+            goto cleanup;
+        }
+
+        if (openvzCopyDefaultConfig(vpsid) < 0) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("Could not copy default config"));
+            goto cleanup;
+        }
+
+        if (openvzWriteVPSConfigParam(vpsid, "VE_PRIVATE", vmdef->fss[0]->src) < 0) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("Could not set the source dir for the filesystem"));
+            goto cleanup;
+        }
+    }
+    else
+    {
+        if (openvzDomainDefineCmd(conn, prog, OPENVZ_MAX_ARG, vmdef) < 0) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("Error creating command for container"));
+            goto cleanup;
+        }
+
+        if (virRun(conn, prog, NULL) < 0) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                   _("Could not exec %s"), VZCTL);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+  VIR_FREE(confdir);
+  cmdExecFree(prog);
+  return ret;
 }
 
 
@@ -447,7 +508,7 @@ openvzGenerateContainerVethName(int veid)
     char    temp[1024];
 
     /* try to get line "^NETIF=..." from config */
-    if ( (ret = openvzReadConfigParam(veid, "NETIF", temp, sizeof(temp))) <= 0) {
+    if ( (ret = openvzReadVPSConfigParam(veid, "NETIF", temp, sizeof(temp))) <= 0) {
         snprintf(temp, sizeof(temp), "eth0");
     } else {
         char *saveptr;
@@ -630,7 +691,7 @@ openvzDomainSetNetworkConfig(virConnectPtr conn,
     if (driver->version < VZCTL_BRIDGE_MIN_VERSION && def->nnets) {
         param = virBufferContentAndReset(&buf);
         if (param) {
-            if (openvzWriteConfigParam(strtoI(def->name), "NETIF", param) < 0) {
+            if (openvzWriteVPSConfigParam(strtoI(def->name), "NETIF", param) < 0) {
                 VIR_FREE(param);
                 openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                             "%s", _("cannot replace NETIF config"));
@@ -656,8 +717,6 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainDefPtr vmdef = NULL;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
-    const char *prog[OPENVZ_MAX_ARG];
-    prog[0] = NULL;
 
     openvzDriverLock(driver);
     if ((vmdef = virDomainDefParseString(conn, driver->caps, xml,
@@ -680,19 +739,13 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
     vmdef = NULL;
 
-    if (openvzDomainDefineCmd(conn, prog, OPENVZ_MAX_ARG, vm->def) < 0) {
+    if (openvzSetInitialConfig(conn, vm->def) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                "%s", _("Error creating command for container"));
+                "%s", _("Error creating intial configuration"));
         goto cleanup;
     }
 
     //TODO: set quota
-
-    if (virRun(conn, prog, NULL) < 0) {
-        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-               _("Could not exec %s"), VZCTL);
-        goto cleanup;
-    }
 
     if (openvzSetDefinedUUID(strtoI(vm->def->name), vm->def->uuid) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -717,7 +770,6 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
 
 cleanup:
     virDomainDefFree(vmdef);
-    cmdExecFree(prog);
     if (vm)
         virDomainObjUnlock(vm);
     openvzDriverUnlock(driver);
@@ -733,8 +785,6 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
     const char *progstart[] = {VZCTL, "--quiet", "start", PROGRAM_SENTINAL, NULL};
-    const char *progcreate[OPENVZ_MAX_ARG];
-    progcreate[0] = NULL;
 
     openvzDriverLock(driver);
     if ((vmdef = virDomainDefParseString(conn, driver->caps, xml,
@@ -756,15 +806,9 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
         goto cleanup;
     vmdef = NULL;
 
-    if (openvzDomainDefineCmd(conn, progcreate, OPENVZ_MAX_ARG, vm->def) < 0) {
+    if (openvzSetInitialConfig(conn, vm->def) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                    "%s", _("Error creating command for container"));
-        goto cleanup;
-    }
-
-    if (virRun(conn, progcreate, NULL) < 0) {
-        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-               _("Could not exec %s"), VZCTL);
+                "%s", _("Error creating intial configuration"));
         goto cleanup;
     }
 
@@ -803,7 +847,6 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
 
 cleanup:
     virDomainDefFree(vmdef);
-    cmdExecFree(progcreate);
     if (vm)
         virDomainObjUnlock(vm);
     openvzDriverUnlock(driver);
@@ -940,7 +983,7 @@ openvzDomainGetAutostart(virDomainPtr dom, int *autostart)
         goto cleanup;
     }
 
-    if (openvzReadConfigParam(strtoI(vm->def->name), "ONBOOT", value, sizeof(value)) < 0) {
+    if (openvzReadVPSConfigParam(strtoI(vm->def->name), "ONBOOT", value, sizeof(value)) < 0) {
         openvzError(dom->conn, VIR_ERR_INTERNAL_ERROR,
                     "%s", _("Could not read container config"));
         goto cleanup;

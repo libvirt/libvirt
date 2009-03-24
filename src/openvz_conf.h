@@ -42,6 +42,7 @@ enum { OPENVZ_WARN, OPENVZ_ERR };
 /* OpenVZ commands - Replace with wrapper scripts later? */
 #define VZLIST  "/usr/sbin/vzlist"
 #define VZCTL   "/usr/sbin/vzctl"
+#define VZ_CONF_FILE "/etc/vz/vz.conf"
 
 #define VZCTL_BRIDGE_MIN_VERSION ((3 * 1000 * 1000) + (0 * 1000) + 22 + 1)
 
@@ -56,8 +57,9 @@ struct openvz_driver {
 int openvz_readline(int fd, char *ptr, int maxlen);
 int openvzExtractVersion(virConnectPtr conn,
                          struct openvz_driver *driver);
-int openvzReadConfigParam(int vpsid ,const char * param, char *value, int maxlen);
-int openvzWriteConfigParam(int vpsid, const char *param, const char *value);
+int openvzReadVPSConfigParam(int vpsid ,const char * param, char *value, int maxlen);
+int openvzWriteVPSConfigParam(int vpsid, const char *param, const char *value);
+int openvzCopyDefaultConfig(int vpsid);
 virCapsPtr openvzCapsInit(void);
 int openvzLoadDomains(struct openvz_driver *driver);
 void openvzFreeDriver(struct openvz_driver *driver);
