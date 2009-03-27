@@ -2429,6 +2429,9 @@ static int qemudDomainGetMemoryBalloon(virConnectPtr conn,
     int ret = -1;
     char *offset;
 
+    if (!virDomainIsActive(vm))
+        return 0;
+
     if (qemudMonitorCommand(vm, "info balloon", &reply) < 0) {
         qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("could not query memory balloon allocation"));

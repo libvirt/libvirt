@@ -1,5 +1,10 @@
 Fri Mar 27 11:44:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
+	* src/qemu_driver.c: Don't try to query balloon if guest
+	isn't running
+
+Fri Mar 27 11:44:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
 	Support memory ballooning in QEMU
 	* src/qemu_conf.c: Fix initial QEMU startup memory allocation
 	to be based on 'max memory'
