@@ -122,6 +122,9 @@ static int qemudMonitorCommandExtra(const virDomainObjPtr vm,
                                     const char *extra,
                                     const char *extraPrompt,
                                     char **reply);
+static int qemudDomainSetMemoryBalloon(virConnectPtr conn,
+                                       virDomainObjPtr vm,
+                                       unsigned long newmem);
 
 static struct qemud_driver *qemu_driver = NULL;
 
@@ -1481,6 +1484,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
             (qemudDetectVcpuPIDs(conn, vm) < 0) ||
             (qemudInitCpus(conn, vm, migrateFrom) < 0) ||
             (qemudInitPasswords(conn, driver, vm) < 0) ||
+            (qemudDomainSetMemoryBalloon(conn, vm, vm->def->memory) < 0) ||
             (qemudSaveDomainStatus(conn, qemu_driver, vm) < 0)) {
             qemudShutdownVMDaemon(conn, driver, vm);
             return -1;
@@ -2410,6 +2414,95 @@ cleanup:
     return ret;
 }
 
+
+/* The reply from QEMU contains 'ballon: actual=421' where value is in MB */
+#define BALLOON_PREFIX "balloon: actual="
+
+/*
+ * Returns: 0 if balloon not supported, +1 if balloon query worked
+ * or -1 on failure
+ */
+static int qemudDomainGetMemoryBalloon(virConnectPtr conn,
+                                       virDomainObjPtr vm,
+                                       unsigned long *currmem) {
+    char *reply = NULL;
+    int ret = -1;
+    char *offset;
+
+    if (qemudMonitorCommand(vm, "info balloon", &reply) < 0) {
+        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("could not query memory balloon allocation"));
+        goto cleanup;
+    }
+
+    DEBUG ("balloon reply: '%s'", reply);
+    if ((offset = strstr(reply, BALLOON_PREFIX)) != NULL) {
+        unsigned int memMB;
+        char *end;
+        offset += strlen(BALLOON_PREFIX);
+        if (virStrToLong_ui(offset, &end, 10, &memMB) < 0) {
+            qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                             "%s", _("could not parse memory balloon allocation"));
+            goto cleanup;
+        }
+        *currmem = memMB * 1024;
+        ret = 1;
+    } else {
+        /* We don't raise an error here, since its to be expected that
+         * many QEMU's don't support ballooning
+         */
+        ret = 0;
+    }
+
+cleanup:
+    VIR_FREE(reply);
+    return ret;
+}
+
+/*
+ * Returns: 0 if balloon not supported, +1 if balloon query worked
+ * or -1 on failure
+ */
+static int qemudDomainSetMemoryBalloon(virConnectPtr conn,
+                                       virDomainObjPtr vm,
+                                       unsigned long newmem) {
+    char *cmd;
+    char *reply = NULL;
+    int ret = -1;
+
+    /*
+     * 'newmem' is in KB, QEMU monitor works in MB, and we all wish
+     * we just worked in bytes with unsigned long long everywhere.
+     */
+    if (virAsprintf(&cmd, "balloon %lu", (newmem / 1024)) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
+        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("could not balloon memory allocation"));
+        VIR_FREE(cmd);
+        goto cleanup;
+    }
+    VIR_FREE(cmd);
+
+    /* If the command failed qemu prints: 'unknown command'
+     * No message is printed on success it seems */
+    DEBUG ("balloon reply: %s", reply);
+    if (strstr(reply, "\nunknown command:")) {
+        /* Don't set error - it is expected memory balloon fails on many qemu */
+        ret = 0;
+    } else {
+        ret = 1;
+    }
+
+cleanup:
+    VIR_FREE(reply);
+    return ret;
+}
+
+
 static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -2427,20 +2520,21 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
         goto cleanup;
     }
 
-    if (virDomainIsActive(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
-                         "%s", _("cannot set memory of an active domain"));
-        goto cleanup;
-    }
-
     if (newmem > vm->def->maxmem) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
                          "%s", _("cannot set memory higher than max memory"));
         goto cleanup;
     }
 
-    vm->def->memory = newmem;
-    ret = 0;
+    if (virDomainIsActive(vm)) {
+        ret = qemudDomainSetMemoryBalloon(dom->conn, vm, newmem);
+        if (ret == 0)
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                             "%s", _("cannot set memory of an active domain"));
+    } else {
+        vm->def->memory = newmem;
+        ret = 0;
+    }
 
 cleanup:
     if (vm)
@@ -2453,6 +2547,8 @@ static int qemudDomainGetInfo(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
+    int err;
+    unsigned long balloon;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -2474,8 +2570,16 @@ static int qemudDomainGetInfo(virDomainPtr dom,
         }
     }
 
+    err = qemudDomainGetMemoryBalloon(dom->conn, vm, &balloon);
+    if (err < 0)
+        goto cleanup;
+
     info->maxMem = vm->def->maxmem;
-    info->memory = vm->def->memory;
+    if (err == 0)
+        /* Balloon not supported, so maxmem is always the allocation */
+        info->memory = vm->def->maxmem;
+    else
+        info->memory = balloon;
     info->nrVirtCpu = vm->def->vcpus;
     ret = 0;
 
@@ -3170,6 +3274,8 @@ static char *qemudDomainDumpXML(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *ret = NULL;
+    unsigned long balloon;
+    int err;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -3180,6 +3286,13 @@ static char *qemudDomainDumpXML(virDomainPtr dom,
                          "%s", _("no domain with matching uuid"));
         goto cleanup;
     }
+
+    /* Refresh current memory based on balloon info */
+    err = qemudDomainGetMemoryBalloon(dom->conn, vm, &balloon);
+    if (err < 0)
+        goto cleanup;
+    if (err > 0)
+        vm->def->memory = balloon;
 
     ret = virDomainDefFormat(dom->conn,
                              (flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef ?

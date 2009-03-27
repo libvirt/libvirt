@@ -1,3 +1,13 @@
+Fri Mar 27 11:44:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Support memory ballooning in QEMU
+	* src/qemu_conf.c: Fix initial QEMU startup memory allocation
+	to be based on 'max memory'
+	* src/qemu_driver.c: Balloon down allocation to 'memory'
+	setting at startup. Implement virDomainSetMemory() for running
+	guests via memory balloon. Report mem current usage by querying
+	memory balloon.
+
 Tue Mar 24 11:14:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/capabilities.c, file src/capabilities.h,

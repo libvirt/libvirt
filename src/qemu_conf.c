@@ -927,7 +927,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }                                                               \
     } while (0)
 
-    snprintf(memory, sizeof(memory), "%lu", vm->def->memory/1024);
+    /* Set '-m MB' based on maxmem, because the lower 'memory' limit
+     * is set post-startup using the balloon driver. If balloon driver
+     * is not supported, then they're out of luck anyway
+     */
+    snprintf(memory, sizeof(memory), "%lu", vm->def->maxmem/1024);
     snprintf(vcpus, sizeof(vcpus), "%lu", vm->def->vcpus);
     snprintf(domid, sizeof(domid), "%d", vm->def->id);
     pidfile = virFilePid(driver->stateDir, vm->def->name);
