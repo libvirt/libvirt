@@ -1,3 +1,8 @@
+Tue Mar 31 14:44:16 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.spec.in: better modularization of the spec file,
+	  patch by Ryota Ozaki
+
 Tue Mar 31 14:25:18 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/util.c: fix virRun() to prevent zombies on pipe errors,

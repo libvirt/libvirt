@@ -1,17 +1,22 @@
 # -*- rpm-spec -*-
 
-%define with_xen       0%{!?_without_xen:1}
-%define with_xen_proxy 0%{!?_without_xen_proxy:1}
-%define with_qemu      0%{!?_without_qemu:1}
-%define with_openvz    0%{!?_without_openvz:1}
-%define with_lxc       0%{!?_without_lxc:1}
-%define with_sasl      0%{!?_without_sasl:1}
-%define with_avahi     0%{!?_without_avahi:1}
-%define with_polkit    0%{!?_without_polkit:0}
-%define with_python    0%{!?_without_python:1}
-%define with_libvirtd  0%{!?_without_libvirtd:1}
-%define with_uml       0%{!?_without_uml:1}
-%define with_network   0%{!?_without_network:1}
+%define with_xen           0%{!?_without_xen:1}
+%define with_xen_proxy     0%{!?_without_xen_proxy:1}
+%define with_qemu          0%{!?_without_qemu:1}
+%define with_openvz        0%{!?_without_openvz:1}
+%define with_lxc           0%{!?_without_lxc:1}
+%define with_sasl          0%{!?_without_sasl:1}
+%define with_avahi         0%{!?_without_avahi:1}
+%define with_polkit        0%{!?_without_polkit:1}
+%define with_python        0%{!?_without_python:1}
+%define with_libvirtd      0%{!?_without_libvirtd:1}
+%define with_uml           0%{!?_without_uml:1}
+%define with_network       0%{!?_without_network:1}
+%define with_storage_fs    0%{!?_without_storage_fs:1}
+%define with_storage_lvm   0%{!?_without_storage_lvm:1}
+%define with_storage_iscsi 0%{!?_without_storage_iscsi:1}
+%define with_storage_disk  0%{!?_without_storage_disk:1}
+%define with_numactl       0%{!?_without_numactl:1}
 
 # Xen is available only on i386 x86_64 ia64
 %ifnarch i386 i586 i686 x86_64 ia64
@@ -74,11 +79,13 @@ Requires: cyrus-sasl-md5
 %if %{with_polkit}
 Requires: PolicyKit >= 0.6
 %endif
+%if %{with_storage_fs}
 # For mount/umount in FS driver
 BuildRequires: util-linux
 # For showmount in FS driver (netfs discovery)
 BuildRequires: nfs-utils
 Requires: nfs-utils
+%endif
 %if %{with_qemu}
 # From QEMU RPMs
 Requires: /usr/bin/qemu-img
@@ -88,12 +95,18 @@ Requires: /usr/bin/qemu-img
 Requires: /usr/sbin/qcow-create
 %endif
 %endif
+%if %{with_storage_lvm}
 # For LVM drivers
 Requires: lvm2
+%endif
+%if %{with_storage_iscsi}
 # For ISCSI driver
 Requires: iscsi-initiator-utils
+%endif
+%if %{with_storage_disk}
 # For disk driver
 Requires: parted
+%endif
 %if %{with_xen}
 BuildRequires: xen-devel
 %endif
@@ -119,8 +132,10 @@ BuildRequires: cyrus-sasl-devel
 %if %{with_polkit}
 BuildRequires: PolicyKit-devel >= 0.6
 %endif
+%if %{with_storage_fs}
 # For mount/umount in FS driver
 BuildRequires: util-linux
+%endif
 %if %{with_qemu}
 # From QEMU RPMs
 BuildRequires: /usr/bin/qemu-img
@@ -130,14 +145,22 @@ BuildRequires: /usr/bin/qemu-img
 BuildRequires: /usr/sbin/qcow-create
 %endif
 %endif
+%if %{with_storage_lvm}
 # For LVM drivers
 BuildRequires: lvm2
+%endif
+%if %{with_storage_iscsi}
 # For ISCSI driver
 BuildRequires: iscsi-initiator-utils
+%endif
+%if %{with_storage_disk}
 # For disk driver
 BuildRequires: parted-devel
+%endif
+%if %{with_numactl}
 # For QEMU/LXC numa info
 BuildRequires: numactl-devel
+%endif
 Obsoletes: libvir
 
 # Fedora build root suckage
@@ -227,6 +250,26 @@ of recent versions of Linux (and other OSes).
 %define _without_network --without-network
 %endif
 
+%if ! %{with_storage_fs}
+%define _without_storage_fs --without-storage-fs
+%endif
+
+%if ! %{with_storage_lvm}
+%define _without_storage_lvm --without-storage-lvm
+%endif
+
+%if ! %{with_storage_iscsi}
+%define _without_storage_iscsi --without-storage-iscsi
+%endif
+
+%if ! %{with_storage_disk}
+%define _without_storage_disk --without-storage-disk
+%endif
+
+%if ! %{with_numactl}
+%define _without_numactl --without-numactl
+%endif
+
 %configure %{?_without_xen} \
            %{?_without_qemu} \
            %{?_without_openvz} \
@@ -239,6 +282,11 @@ of recent versions of Linux (and other OSes).
            %{?_without_uml} \
            %{?_without_network} \
            %{?_with_rhel5_api} \
+           %{?_without_storage_fs} \
+           %{?_without_storage_lvm} \
+           %{?_without_storage_iscsi} \
+           %{?_without_storage_disk} \
+           %{?_without_numactl} \
            --with-init-script=redhat \
            --with-qemud-pid-file=%{_localstatedir}/run/libvirt_qemud.pid \
            --with-remote-file=%{_localstatedir}/run/libvirtd.pid
