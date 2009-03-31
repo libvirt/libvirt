@@ -61,7 +61,6 @@ struct xenUnifiedDriver {
         virDrvClose			close;
         virDrvGetVersion		version;
     virDrvGetHostname       getHostname;
-    virDrvGetURI            getURI;
         virDrvNodeGetInfo		nodeGetInfo;
         virDrvGetCapabilities		getCapabilities;
         virDrvListDomains		listDomains;

@@ -351,7 +351,6 @@ struct _virDriver {
     virDrvGetType			type;
     virDrvGetVersion		version;
     virDrvGetHostname       getHostname;
-    virDrvGetURI            getURI;
     virDrvGetMaxVcpus		getMaxVcpus;
     virDrvNodeGetInfo		nodeGetInfo;
     virDrvGetCapabilities		getCapabilities;

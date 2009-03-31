@@ -54,7 +54,6 @@ struct xenUnifiedDriver xenInotifyDriver = {
     xenInotifyClose, /* close */
     NULL, /* version */
     NULL, /* hostname */
-    NULL, /* URI */
     NULL, /* nodeGetInfo */
     NULL, /* getCapabilities */
     NULL, /* listDomains */

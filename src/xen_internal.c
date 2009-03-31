@@ -697,7 +697,6 @@ struct xenUnifiedDriver xenHypervisorDriver = {
     xenHypervisorClose, /* close */
     xenHypervisorGetVersion, /* version */
     NULL, /* hostname */
-    NULL, /* URI */
     NULL, /* nodeGetInfo */
     xenHypervisorGetCapabilities, /* getCapabilities */
     xenHypervisorListDomains, /* listDomains */

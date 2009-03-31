@@ -3474,8 +3474,7 @@ static virDriver testDriver = {
     NULL, /* supports_feature */
     NULL, /* type */
     testGetVersion, /* version */
-    testGetHostname, /* hostname */
-    NULL, /* URI */
+    testGetHostname, /* getHostname */
     testGetMaxVCPUs, /* getMaxVcpus */
     testNodeGetInfo, /* nodeGetInfo */
     testGetCapabilities, /* getCapabilities */
@@ -3530,7 +3529,7 @@ static virDriver testDriver = {
     testDomainEventDeregister, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */
     NULL, /* domainMigrateFinish2 */
-    NULL, /* nodeDeviceAttach */
+    NULL, /* nodeDeviceDettach */
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
 };

@@ -1829,8 +1829,7 @@ static virDriver umlDriver = {
     NULL, /* supports_feature */
     umlGetType, /* type */
     umlGetVersion, /* version */
-    umlGetHostname, /* hostname */
-    NULL, /* URI  */
+    umlGetHostname, /* getHostname */
     NULL, /* getMaxVcpus */
     umlGetNodeInfo, /* nodeGetInfo */
     umlGetCapabilities, /* getCapabilities */
@@ -1860,8 +1859,8 @@ static virDriver umlDriver = {
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
     umlDomainDumpXML, /* domainDumpXML */
-    umlListDefinedDomains, /* listDomains */
-    umlNumDefinedDomains, /* numOfDomains */
+    umlListDefinedDomains, /* listDefinedDomains */
+    umlNumDefinedDomains, /* numOfDefinedDomains */
     umlDomainStart, /* domainCreate */
     umlDomainDefine, /* domainDefineXML */
     umlDomainUndefine, /* domainUndefine */
@@ -1887,10 +1886,10 @@ static virDriver umlDriver = {
     NULL, /* getFreeMemory */
 #endif
     NULL, /* domainEventRegister */
-    NULL, /* domainEventUnregister */
+    NULL, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */
     NULL, /* domainMigrateFinish2 */
-    NULL, /* nodeDeviceAttach */
+    NULL, /* nodeDeviceDettach */
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
 };

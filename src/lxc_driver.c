@@ -1414,7 +1414,6 @@ static virDriver lxcDriver = {
     NULL, /* type */
     lxcVersion, /* version */
     NULL, /* getHostname */
-    NULL, /* getURI */
     NULL, /* getMaxVcpus */
     NULL, /* nodeGetInfo */
     NULL, /* getCapabilities */
@@ -1469,7 +1468,7 @@ static virDriver lxcDriver = {
     NULL, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */
     NULL, /* domainMigrateFinish2 */
-    NULL, /* nodeDeviceAttach */
+    NULL, /* nodeDeviceDettach */
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
 };

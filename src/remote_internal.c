@@ -6837,71 +6837,71 @@ unsigned long remoteVersion(void)
 }
 
 static virDriver driver = {
-    .no = VIR_DRV_REMOTE,
-    .name = "remote",
-    .open = remoteOpen,
-    .close = remoteClose,
-    .supports_feature = remoteSupportsFeature,
-        .type = remoteType,
-        .version = remoteGetVersion,
-    .getHostname = remoteGetHostname,
-        .getMaxVcpus = remoteGetMaxVcpus,
-        .nodeGetInfo = remoteNodeGetInfo,
-    .getCapabilities = remoteGetCapabilities,
-    .listDomains = remoteListDomains,
-    .numOfDomains = remoteNumOfDomains,
-    .domainCreateXML = remoteDomainCreateXML,
-    .domainLookupByID = remoteDomainLookupByID,
-    .domainLookupByUUID = remoteDomainLookupByUUID,
-    .domainLookupByName = remoteDomainLookupByName,
-    .domainSuspend = remoteDomainSuspend,
-    .domainResume = remoteDomainResume,
-    .domainShutdown = remoteDomainShutdown,
-    .domainReboot = remoteDomainReboot,
-    .domainDestroy = remoteDomainDestroy,
-    .domainGetOSType = remoteDomainGetOSType,
-    .domainGetMaxMemory = remoteDomainGetMaxMemory,
-    .domainSetMaxMemory = remoteDomainSetMaxMemory,
-    .domainSetMemory = remoteDomainSetMemory,
-    .domainGetInfo = remoteDomainGetInfo,
-    .domainSave = remoteDomainSave,
-    .domainRestore = remoteDomainRestore,
-    .domainCoreDump = remoteDomainCoreDump,
-    .domainSetVcpus = remoteDomainSetVcpus,
-    .domainPinVcpu = remoteDomainPinVcpu,
-    .domainGetVcpus = remoteDomainGetVcpus,
-    .domainGetMaxVcpus = remoteDomainGetMaxVcpus,
-    .domainGetSecurityLabel = remoteDomainGetSecurityLabel,
-    .nodeGetSecurityModel = remoteNodeGetSecurityModel,
-    .domainDumpXML = remoteDomainDumpXML,
-    .listDefinedDomains = remoteListDefinedDomains,
-    .numOfDefinedDomains = remoteNumOfDefinedDomains,
-    .domainCreate = remoteDomainCreate,
-    .domainDefineXML = remoteDomainDefineXML,
-    .domainUndefine = remoteDomainUndefine,
-    .domainAttachDevice = remoteDomainAttachDevice,
-    .domainDetachDevice = remoteDomainDetachDevice,
-    .domainGetAutostart = remoteDomainGetAutostart,
-    .domainSetAutostart = remoteDomainSetAutostart,
-    .domainGetSchedulerType = remoteDomainGetSchedulerType,
-    .domainGetSchedulerParameters = remoteDomainGetSchedulerParameters,
-    .domainSetSchedulerParameters = remoteDomainSetSchedulerParameters,
-    .domainMigratePrepare = remoteDomainMigratePrepare,
-    .domainMigratePerform = remoteDomainMigratePerform,
-    .domainMigrateFinish = remoteDomainMigrateFinish,
-    .domainBlockStats = remoteDomainBlockStats,
-    .domainInterfaceStats = remoteDomainInterfaceStats,
-    .domainBlockPeek = remoteDomainBlockPeek,
-    .domainMemoryPeek = remoteDomainMemoryPeek,
-    .nodeGetCellsFreeMemory = remoteNodeGetCellsFreeMemory,
-    .getFreeMemory = remoteNodeGetFreeMemory,
-    .domainEventRegister = remoteDomainEventRegister,
-    .domainEventDeregister = remoteDomainEventDeregister,
-    .domainMigratePrepare2 = remoteDomainMigratePrepare2,
-    .domainMigrateFinish2 = remoteDomainMigrateFinish2,
-    .nodeDeviceDettach = remoteNodeDeviceDettach,
-    .nodeDeviceReAttach = remoteNodeDeviceReAttach,
-    .nodeDeviceReset = remoteNodeDeviceReset,
+    VIR_DRV_REMOTE,
+    "remote",
+    remoteOpen, /* open */
+    remoteClose, /* close */
+    remoteSupportsFeature, /* supports_feature */
+    remoteType, /* type */
+    remoteGetVersion, /* version */
+    remoteGetHostname, /* getHostname */
+    remoteGetMaxVcpus, /* getMaxVcpus */
+    remoteNodeGetInfo, /* nodeGetInfo */
+    remoteGetCapabilities, /* getCapabilities */
+    remoteListDomains, /* listDomains */
+    remoteNumOfDomains, /* numOfDomains */
+    remoteDomainCreateXML, /* domainCreateXML */
+    remoteDomainLookupByID, /* domainLookupByID */
+    remoteDomainLookupByUUID, /* domainLookupByUUID */
+    remoteDomainLookupByName, /* domainLookupByName */
+    remoteDomainSuspend, /* domainSuspend */
+    remoteDomainResume, /* domainResume */
+    remoteDomainShutdown, /* domainShutdown */
+    remoteDomainReboot, /* domainReboot */
+    remoteDomainDestroy, /* domainDestroy */
+    remoteDomainGetOSType, /* domainGetOSType */
+    remoteDomainGetMaxMemory, /* domainGetMaxMemory */
+    remoteDomainSetMaxMemory, /* domainSetMaxMemory */
+    remoteDomainSetMemory, /* domainSetMemory */
+    remoteDomainGetInfo, /* domainGetInfo */
+    remoteDomainSave, /* domainSave */
+    remoteDomainRestore, /* domainRestore */
+    remoteDomainCoreDump, /* domainCoreDump */
+    remoteDomainSetVcpus, /* domainSetVcpus */
+    remoteDomainPinVcpu, /* domainPinVcpu */
+    remoteDomainGetVcpus, /* domainGetVcpus */
+    remoteDomainGetMaxVcpus, /* domainGetMaxVcpus */
+    remoteDomainGetSecurityLabel, /* domainGetSecurityLabel */
+    remoteNodeGetSecurityModel, /* nodeGetSecurityModel */
+    remoteDomainDumpXML, /* domainDumpXML */
+    remoteListDefinedDomains, /* listDefinedDomains */
+    remoteNumOfDefinedDomains, /* numOfDefinedDomains */
+    remoteDomainCreate, /* domainCreate */
+    remoteDomainDefineXML, /* domainDefineXML */
+    remoteDomainUndefine, /* domainUndefine */
+    remoteDomainAttachDevice, /* domainAttachDevice */
+    remoteDomainDetachDevice, /* domainDetachDevice */
+    remoteDomainGetAutostart, /* domainGetAutostart */
+    remoteDomainSetAutostart, /* domainSetAutostart */
+    remoteDomainGetSchedulerType, /* domainGetSchedulerType */
+    remoteDomainGetSchedulerParameters, /* domainGetSchedulerParameters */
+    remoteDomainSetSchedulerParameters, /* domainSetSchedulerParameters */
+    remoteDomainMigratePrepare, /* domainMigratePrepare */
+    remoteDomainMigratePerform, /* domainMigratePerform */
+    remoteDomainMigrateFinish, /* domainMigrateFinish */
+    remoteDomainBlockStats, /* domainBlockStats */
+    remoteDomainInterfaceStats, /* domainInterfaceStats */
+    remoteDomainBlockPeek, /* domainBlockPeek */
+    remoteDomainMemoryPeek, /* domainMemoryPeek */
+    remoteNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
+    remoteNodeGetFreeMemory, /* getFreeMemory */
+    remoteDomainEventRegister, /* domainEventRegister */
+    remoteDomainEventDeregister, /* domainEventDeregister */
+    remoteDomainMigratePrepare2, /* domainMigratePrepare2 */
+    remoteDomainMigrateFinish2, /* domainMigrateFinish2 */
+    remoteNodeDeviceDettach, /* nodeDeviceDettach */
+    remoteNodeDeviceReAttach, /* nodeDeviceReAttach */
+    remoteNodeDeviceReset, /* nodeDeviceReset */
 };
 
 static virNetworkDriver network_driver = {

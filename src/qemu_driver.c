@@ -5035,8 +5035,7 @@ static virDriver qemuDriver = {
     qemudSupportsFeature, /* supports_feature */
     qemudGetType, /* type */
     qemudGetVersion, /* version */
-    qemudGetHostname, /* hostname */
-    NULL, /* URI  */
+    qemudGetHostname, /* getHostname */
     qemudGetMaxVCPUs, /* getMaxVcpus */
     qemudGetNodeInfo, /* nodeGetInfo */
     qemudGetCapabilities, /* getCapabilities */
@@ -5071,8 +5070,8 @@ static virDriver qemuDriver = {
     qemudDomainGetSecurityLabel, /* domainGetSecurityLabel */
     qemudNodeGetSecurityModel, /* nodeGetSecurityModel */
     qemudDomainDumpXML, /* domainDumpXML */
-    qemudListDefinedDomains, /* listDomains */
-    qemudNumDefinedDomains, /* numOfDomains */
+    qemudListDefinedDomains, /* listDefinedDomains */
+    qemudNumDefinedDomains, /* numOfDefinedDomains */
     qemudDomainStart, /* domainCreate */
     qemudDomainDefine, /* domainDefineXML */
     qemudDomainUndefine, /* domainUndefine */

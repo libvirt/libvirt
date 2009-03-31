@@ -1321,15 +1321,6 @@ virConnectGetURI (virConnectPtr conn)
         return NULL;
     }
 
-    /* Drivers may override getURI, but if they don't then
-     * we provide a default implementation.
-     */
-    if (conn->driver->getURI) {
-        name = conn->driver->getURI (conn);
-        if (!name)
-            goto error;
-    }
-
     name = (char *)xmlSaveUri(conn->uri);
     if (!name) {
         virReportOOMError (conn);

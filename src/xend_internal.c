@@ -4839,7 +4839,6 @@ struct xenUnifiedDriver xenDaemonDriver = {
     xenDaemonClose,              /* close */
     xenDaemonGetVersion,         /* version */
     NULL,                        /* hostname */
-    NULL,                        /* URI */
     xenDaemonNodeGetInfo,        /* nodeGetInfo */
     NULL,                        /* getCapabilities */
     xenDaemonListDomains,        /* listDomains */

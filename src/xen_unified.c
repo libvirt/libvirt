@@ -1424,63 +1424,71 @@ xenUnifiedDomainEventDeregister (virConnectPtr conn,
 
 /* The interface which we export upwards to libvirt.c. */
 static virDriver xenUnifiedDriver = {
-    .no = VIR_DRV_XEN_UNIFIED,
-    .name = "Xen",
-    .open 			= xenUnifiedOpen,
-    .close 			= xenUnifiedClose,
-    .supports_feature   = xenUnifiedSupportsFeature,
-    .type 			= xenUnifiedType,
-    .version 			= xenUnifiedGetVersion,
-    .getHostname    = xenUnifiedGetHostname,
-    .getMaxVcpus 			= xenUnifiedGetMaxVcpus,
-    .nodeGetInfo 			= xenUnifiedNodeGetInfo,
-    .getCapabilities 		= xenUnifiedGetCapabilities,
-    .listDomains 			= xenUnifiedListDomains,
-    .numOfDomains 		= xenUnifiedNumOfDomains,
-    .domainCreateXML 		= xenUnifiedDomainCreateXML,
-    .domainLookupByID 		= xenUnifiedDomainLookupByID,
-    .domainLookupByUUID 		= xenUnifiedDomainLookupByUUID,
-    .domainLookupByName 		= xenUnifiedDomainLookupByName,
-    .domainSuspend 		= xenUnifiedDomainSuspend,
-    .domainResume 		= xenUnifiedDomainResume,
-    .domainShutdown 		= xenUnifiedDomainShutdown,
-    .domainReboot 		= xenUnifiedDomainReboot,
-    .domainDestroy 		= xenUnifiedDomainDestroy,
-    .domainGetOSType 		= xenUnifiedDomainGetOSType,
-    .domainGetMaxMemory 		= xenUnifiedDomainGetMaxMemory,
-    .domainSetMaxMemory 		= xenUnifiedDomainSetMaxMemory,
-    .domainSetMemory 		= xenUnifiedDomainSetMemory,
-    .domainGetInfo 		= xenUnifiedDomainGetInfo,
-    .domainSave 			= xenUnifiedDomainSave,
-    .domainRestore 		= xenUnifiedDomainRestore,
-    .domainCoreDump 		= xenUnifiedDomainCoreDump,
-    .domainSetVcpus 		= xenUnifiedDomainSetVcpus,
-    .domainPinVcpu 		= xenUnifiedDomainPinVcpu,
-    .domainGetVcpus 		= xenUnifiedDomainGetVcpus,
-    .domainGetMaxVcpus 		= xenUnifiedDomainGetMaxVcpus,
-    .domainDumpXML 		= xenUnifiedDomainDumpXML,
-    .listDefinedDomains 		= xenUnifiedListDefinedDomains,
-    .numOfDefinedDomains 		= xenUnifiedNumOfDefinedDomains,
-    .domainCreate 		= xenUnifiedDomainCreate,
-    .domainDefineXML 		= xenUnifiedDomainDefineXML,
-    .domainUndefine 		= xenUnifiedDomainUndefine,
-    .domainAttachDevice 		= xenUnifiedDomainAttachDevice,
-    .domainDetachDevice 		= xenUnifiedDomainDetachDevice,
-    .domainGetAutostart             = xenUnifiedDomainGetAutostart,
-    .domainSetAutostart             = xenUnifiedDomainSetAutostart,
-    .domainGetSchedulerType	= xenUnifiedDomainGetSchedulerType,
-    .domainGetSchedulerParameters	= xenUnifiedDomainGetSchedulerParameters,
-    .domainSetSchedulerParameters	= xenUnifiedDomainSetSchedulerParameters,
-    .domainMigratePrepare		= xenUnifiedDomainMigratePrepare,
-    .domainMigratePerform		= xenUnifiedDomainMigratePerform,
-    .domainMigrateFinish		= xenUnifiedDomainMigrateFinish,
-    .domainBlockStats	= xenUnifiedDomainBlockStats,
-    .domainInterfaceStats = xenUnifiedDomainInterfaceStats,
-    .domainBlockPeek	= xenUnifiedDomainBlockPeek,
-    .nodeGetCellsFreeMemory = xenUnifiedNodeGetCellsFreeMemory,
-    .getFreeMemory = xenUnifiedNodeGetFreeMemory,
-    .domainEventRegister = xenUnifiedDomainEventRegister,
-    .domainEventDeregister = xenUnifiedDomainEventDeregister,
+    VIR_DRV_XEN_UNIFIED,
+    "Xen",
+    xenUnifiedOpen, /* open */
+    xenUnifiedClose, /* close */
+    xenUnifiedSupportsFeature, /* supports_feature */
+    xenUnifiedType, /* type */
+    xenUnifiedGetVersion, /* version */
+    xenUnifiedGetHostname, /* getHostname */
+    xenUnifiedGetMaxVcpus, /* getMaxVcpus */
+    xenUnifiedNodeGetInfo, /* nodeGetInfo */
+    xenUnifiedGetCapabilities, /* getCapabilities */
+    xenUnifiedListDomains, /* listDomains */
+    xenUnifiedNumOfDomains, /* numOfDomains */
+    xenUnifiedDomainCreateXML, /* domainCreateXML */
+    xenUnifiedDomainLookupByID, /* domainLookupByID */
+    xenUnifiedDomainLookupByUUID, /* domainLookupByUUID */
+    xenUnifiedDomainLookupByName, /* domainLookupByName */
+    xenUnifiedDomainSuspend, /* domainSuspend */
+    xenUnifiedDomainResume, /* domainResume */
+    xenUnifiedDomainShutdown, /* domainShutdown */
+    xenUnifiedDomainReboot, /* domainReboot */
+    xenUnifiedDomainDestroy, /* domainDestroy */
+    xenUnifiedDomainGetOSType, /* domainGetOSType */
+    xenUnifiedDomainGetMaxMemory, /* domainGetMaxMemory */
+    xenUnifiedDomainSetMaxMemory, /* domainSetMaxMemory */
+    xenUnifiedDomainSetMemory, /* domainSetMemory */
+    xenUnifiedDomainGetInfo, /* domainGetInfo */
+    xenUnifiedDomainSave, /* domainSave */
+    xenUnifiedDomainRestore, /* domainRestore */
+    xenUnifiedDomainCoreDump, /* domainCoreDump */
+    xenUnifiedDomainSetVcpus, /* domainSetVcpus */
+    xenUnifiedDomainPinVcpu, /* domainPinVcpu */
+    xenUnifiedDomainGetVcpus, /* domainGetVcpus */
+    xenUnifiedDomainGetMaxVcpus, /* domainGetMaxVcpus */
+    NULL, /* domainGetSecurityLabel */
+    NULL, /* nodeGetSecurityModel */
+    xenUnifiedDomainDumpXML, /* domainDumpXML */
+    xenUnifiedListDefinedDomains, /* listDefinedDomains */
+    xenUnifiedNumOfDefinedDomains, /* numOfDefinedDomains */
+    xenUnifiedDomainCreate, /* domainCreate */
+    xenUnifiedDomainDefineXML, /* domainDefineXML */
+    xenUnifiedDomainUndefine, /* domainUndefine */
+    xenUnifiedDomainAttachDevice, /* domainAttachDevice */
+    xenUnifiedDomainDetachDevice, /* domainDetachDevice */
+    xenUnifiedDomainGetAutostart, /* domainGetAutostart */
+    xenUnifiedDomainSetAutostart, /* domainSetAutostart */
+    xenUnifiedDomainGetSchedulerType, /* domainGetSchedulerType */
+    xenUnifiedDomainGetSchedulerParameters, /* domainGetSchedulerParameters */
+    xenUnifiedDomainSetSchedulerParameters, /* domainSetSchedulerParameters */
+    xenUnifiedDomainMigratePrepare, /* domainMigratePrepare */
+    xenUnifiedDomainMigratePerform, /* domainMigratePerform */
+    xenUnifiedDomainMigrateFinish, /* domainMigrateFinish */
+    xenUnifiedDomainBlockStats, /* domainBlockStats */
+    xenUnifiedDomainInterfaceStats, /* domainInterfaceStats */
+    xenUnifiedDomainBlockPeek, /* domainBlockPeek */
+    NULL, /* domainMemoryPeek */
+    xenUnifiedNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
+    xenUnifiedNodeGetFreeMemory, /* getFreeMemory */
+    xenUnifiedDomainEventRegister, /* domainEventRegister */
+    xenUnifiedDomainEventDeregister, /* domainEventDeregister */
+    NULL, /* domainMigratePrepare2 */
+    NULL, /* domainMigrateFinish2 */
+    NULL, /* nodeDeviceDettach */
+    NULL, /* nodeDeviceReAttach */
+    NULL, /* nodeDeviceReset */
 };
 
 /**

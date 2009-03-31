@@ -1314,8 +1314,7 @@ static virDriver openvzDriver = {
     NULL, /* supports_feature */
     openvzGetType, /* type */
     openvzGetVersion, /* version */
-    NULL, /* hostname */
-    NULL, /* uri */
+    NULL, /* getHostname */
     openvzGetMaxVCPUs, /* getMaxVcpus */
     openvzGetNodeInfo, /* nodeGetInfo */
     openvzGetCapabilities, /* getCapabilities */
@@ -1345,8 +1344,8 @@ static virDriver openvzDriver = {
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
     openvzDomainDumpXML, /* domainDumpXML */
-    openvzListDefinedDomains, /* listDomains */
-    openvzNumDefinedDomains, /* numOfDomains */
+    openvzListDefinedDomains, /* listDefinedDomains */
+    openvzNumDefinedDomains, /* numOfDefinedDomains */
     openvzDomainCreate, /* domainCreate */
     openvzDomainDefineXML, /* domainDefineXML */
     openvzDomainUndefine, /* domainUndefine */
@@ -1365,12 +1364,12 @@ static virDriver openvzDriver = {
     NULL, /* domainBlockPeek */
     NULL, /* domainMemoryPeek */
     NULL, /* nodeGetCellsFreeMemory */
-    NULL, /* nodeGetFreeMemory */
+    NULL, /* getFreeMemory */
     NULL, /* domainEventRegister */
     NULL, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */
     NULL, /* domainMigrateFinish2 */
-    NULL, /* nodeDeviceAttach */
+    NULL, /* nodeDeviceDettach */
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
 };

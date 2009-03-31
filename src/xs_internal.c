@@ -49,7 +49,6 @@ struct xenUnifiedDriver xenStoreDriver = {
     xenStoreClose, /* close */
     NULL, /* version */
     NULL, /* hostname */
-    NULL, /* URI */
     NULL, /* nodeGetInfo */
     NULL, /* getCapabilities */
     xenStoreListDomains, /* listDomains */

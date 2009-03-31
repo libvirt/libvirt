@@ -82,7 +82,6 @@ struct xenUnifiedDriver xenXMDriver = {
     xenXMClose, /* close */
     NULL, /* version */
     NULL, /* hostname */
-    NULL, /* URI */
     NULL, /* nodeGetInfo */
     NULL, /* getCapabilities */
     NULL, /* listDomains */

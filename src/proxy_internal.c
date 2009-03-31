@@ -50,7 +50,6 @@ struct xenUnifiedDriver xenProxyDriver = {
     xenProxyClose, /* close */
     xenProxyGetVersion, /* version */
     NULL, /* hostname */
-    NULL, /* URI */
     xenProxyNodeGetInfo, /* nodeGetInfo */
     xenProxyGetCapabilities, /* getCapabilities */
     xenProxyListDomains, /* listDomains */
