@@ -681,8 +681,11 @@ virRun(virConnectPtr conn,
         goto error;
     }
 
-    if (virPipeReadUntilEOF(conn, outfd, errfd, &outbuf, &errbuf) < 0)
+    if (virPipeReadUntilEOF(conn, outfd, errfd, &outbuf, &errbuf) < 0) {
+        while (waitpid(childpid, &exitstatus, 0) == -1 && errno == EINTR)
+            ;
         goto error;
+    }
 
     if (outbuf)
         DEBUG("Command stdout: %s", outbuf);

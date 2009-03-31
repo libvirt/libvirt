@@ -1,3 +1,8 @@
+Tue Mar 31 14:25:18 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/util.c: fix virRun() to prevent zombies on pipe errors,
+	  patch by Ryota Ozaki
+
 Fri Mar 27 11:44:22 GMT 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Don't try to query balloon if guest
