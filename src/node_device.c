@@ -175,9 +175,14 @@ static char *nodeDeviceGetParent(virNodeDevicePtr dev)
         goto cleanup;
     }
 
-    ret = strdup(obj->def->parent);
-    if (!ret)
-        virReportOOMError(dev->conn);
+    if (obj->def->parent) {
+        ret = strdup(obj->def->parent);
+        if (!ret)
+            virReportOOMError(dev->conn);
+    } else {
+        virNodeDeviceReportError(dev->conn, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("no parent for this device"));
+    }
 
 cleanup:
     if (obj)

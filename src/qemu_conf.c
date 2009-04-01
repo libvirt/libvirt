@@ -269,7 +269,7 @@ qemudCapsInitGuest(virCapsPtr caps,
      * which can be used with magic cpu choice
      */
     hasbase = (access(info->binary, X_OK) == 0);
-    hasaltbase = (access(info->altbinary, X_OK) == 0);
+    hasaltbase = (info->altbinary && access(info->altbinary, X_OK) == 0);
 
     /* Can use acceleration for KVM/KQEMU if
      *  - host & guest arches match

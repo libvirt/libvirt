@@ -1,3 +1,12 @@
+Wed Apr  1 11:18:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Misc memory handling fixes
+	* src/node_device.c: Don't strdup() a NULL parent device name
+	* src/qemu_conf.c: Don't try to access() a NULL alternative
+	binary name
+	* src/storage_conf.c: Don't free mode string while its still
+	in use
+
 Wed Apr  1 11:16:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xm_internal.c: Add support for vifname= parameter in

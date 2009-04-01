@@ -401,12 +401,13 @@ virStorageDefParsePerms(virConnectPtr conn,
     } else {
         char *end = NULL;
         perms->mode = strtol(mode, &end, 8);
-        VIR_FREE(mode);
         if (*end || perms->mode < 0 || perms->mode > 0777) {
+            VIR_FREE(mode);
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   "%s", _("malformed octal mode"));
             goto error;
         }
+        VIR_FREE(mode);
     }
 
     if (virXPathNode(conn, "./owner", ctxt) == NULL) {
