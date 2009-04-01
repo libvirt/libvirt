@@ -121,8 +121,7 @@ static virNodeDevicePtr nodeDeviceLookupByName(virConnectPtr conn,
     nodeDeviceUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(conn, VIR_ERR_INVALID_NODE_DEVICE,
-                                 "%s", _("no node device with matching name"));
+        virNodeDeviceReportError(conn, VIR_ERR_NO_NODE_DEVICE, NULL);
         goto cleanup;
     }
 
