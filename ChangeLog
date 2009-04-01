@@ -1,3 +1,12 @@
+Wed Apr  1 11:16:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xm_internal.c: Add support for vifname= parameter in
+	VIF config
+	* tests/xmconfigtest.c: Add test for vifname= handling
+	* tests/xmconfigdata/test-paravirt-net-vifname.cfg,
+	tests/xmconfigdata/test-paravirt-net-vifname.xml: Data file
+	for new test
+
 Wed Apr  1 10:58:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Improve error reporting in SEXPR generation

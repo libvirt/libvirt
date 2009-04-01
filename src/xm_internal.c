@@ -989,6 +989,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
             char ip[16];
             char mac[18];
             char bridge[50];
+            char vifname[50];
             char *key;
 
             bridge[0] = '\0';
@@ -996,6 +997,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
             script[0] = '\0';
             ip[0] = '\0';
             model[0] = '\0';
+            vifname[0] = '\0';
 
             if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
                 goto skipnic;
@@ -1034,6 +1036,12 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                         len = sizeof(model)-1;
                     strncpy(model, data, len);
                     model[len] = '\0';
+                } else if (STRPREFIX(key, "vifname=")) {
+                    int len = nextkey ? (nextkey - data) : sizeof(vifname)-1;
+                    if (len > (sizeof(vifname)-1))
+                        len = sizeof(vifname)-1;
+                    strncpy(vifname, data, len);
+                    vifname[len] = '\0';
                 } else if (STRPREFIX(key, "ip=")) {
                     int len = nextkey ? (nextkey - data) : 15;
                     if (len > 15)
@@ -1101,6 +1109,10 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
             }
             if (model[0] &&
                 !(net->model = strdup(model)))
+                goto no_memory;
+
+            if (vifname[0] &&
+                !(net->ifname = strdup(vifname)))
                 goto no_memory;
 
             if (VIR_REALLOC_N(def->nets, def->nnets+1) < 0)
@@ -1909,6 +1921,10 @@ static int xenXMDomainConfigFormatNet(virConnectPtr conn,
     if (net->model)
         virBufferVSprintf(&buf, ",model=%s",
                           net->model);
+
+    if (net->ifname)
+        virBufferVSprintf(&buf, ",vifname=%s",
+                          net->ifname);
 
     if (VIR_ALLOC(val) < 0) {
         virReportOOMError(conn);
