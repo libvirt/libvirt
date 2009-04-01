@@ -4629,7 +4629,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
          * URI when passing it to the qemu monitor, so bad
          * characters in hostname part don't matter.
          */
-        if (!STREQLEN (uri_in, "tcp:", 6)) {
+        if (!STRPREFIX (uri_in, "tcp:")) {
             qemudReportError (dconn, NULL, NULL, VIR_ERR_INVALID_ARG,
                   "%s", _("only tcp URIs are supported for KVM migrations"));
             goto cleanup;

@@ -1,3 +1,7 @@
+Wed Apr  1 10:54:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu-driver.c: Fix URI check in migration
+
 Wed Apr  1 10:50:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Add a tree view of node devices
