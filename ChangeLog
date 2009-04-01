@@ -1,3 +1,10 @@
+Wed Apr  1 10:58:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Improve error reporting in SEXPR generation
+	* src/xm_internal.c, src/xend_internal.c: Avoid overwriting
+	previously set error message. Clarify message when network
+	lookup fails
+
 Wed Apr  1 10:55:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/node_device.c: Fix error message for missing node device

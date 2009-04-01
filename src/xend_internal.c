@@ -3850,8 +3850,6 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc,
         return (NULL);
 
     if (!(sexpr = xenDaemonFormatSxpr(conn, def, priv->xendConfigVersion))) {
-        virXendError(conn, VIR_ERR_XML_ERROR,
-                     "%s", _("failed to build sexpr"));
         virDomainDefFree(def);
         return (NULL);
     }
@@ -5214,7 +5212,7 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
         char *bridge;
 
         if (!network) {
-            virXendError(conn, VIR_ERR_NO_SOURCE, "%s",
+            virXendError(conn, VIR_ERR_NO_NETWORK, "%s",
                          def->data.network.name);
             return -1;
         }
@@ -5222,7 +5220,8 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
         bridge = virNetworkGetBridgeName(network);
         virNetworkFree(network);
         if (!bridge) {
-            virXendError(conn, VIR_ERR_NO_SOURCE, "%s",
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         _("network %s is not active"),
                          def->data.network.name);
             return -1;
         }

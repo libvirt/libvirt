@@ -1734,11 +1734,8 @@ int xenXMDomainCreate(virDomainPtr domain) {
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto error;
 
-    if (!(sexpr = xenDaemonFormatSxpr(domain->conn, entry->def, priv->xendConfigVersion))) {
-        xenXMError(domain->conn, VIR_ERR_XML_ERROR,
-                   "%s", _("failed to build sexpr"));
+    if (!(sexpr = xenDaemonFormatSxpr(domain->conn, entry->def, priv->xendConfigVersion)))
         goto error;
-    }
 
     ret = xenDaemonDomainCreateXML(domain->conn, sexpr);
     VIR_FREE(sexpr);
