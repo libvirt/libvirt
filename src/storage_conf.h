@@ -117,6 +117,13 @@ enum virStoragePoolType {
 
 VIR_ENUM_DECL(virStoragePool)
 
+enum virStoragePoolDeviceType {
+    VIR_STORAGE_DEVICE_TYPE_DISK = 0x00,
+    VIR_STORAGE_DEVICE_TYPE_ROM = 0x05,
+
+    VIR_STORAGE_DEVICE_TYPE_LAST,
+};
+
 
 enum virStoragePoolAuthType {
     VIR_STORAGE_POOL_AUTH_NONE,

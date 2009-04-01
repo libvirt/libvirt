@@ -30,6 +30,7 @@ src/storage_backend_disk.c
 src/storage_backend_fs.c
 src/storage_backend_iscsi.c
 src/storage_backend_logical.c
+src/storage_backend_scsi.c
 src/storage_conf.c
 src/storage_driver.c
 src/test.c

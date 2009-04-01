@@ -159,6 +159,9 @@ STORAGE_DRIVER_LVM_SOURCES =					\
 STORAGE_DRIVER_ISCSI_SOURCES =					\
 		storage_backend_iscsi.h storage_backend_iscsi.c
 
+STORAGE_DRIVER_SCSI_SOURCES =					\
+		storage_backend_scsi.h storage_backend_scsi.c
+
 STORAGE_DRIVER_DISK_SOURCES =					\
 		storage_backend_disk.h storage_backend_disk.c
 
@@ -353,6 +356,10 @@ if WITH_STORAGE_ISCSI
 libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_ISCSI_SOURCES)
 endif
 
+if WITH_STORAGE_SCSI
+libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_SCSI_SOURCES)
+endif
+
 if WITH_STORAGE_DISK
 libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_DISK_SOURCES)
 endif
@@ -408,6 +415,7 @@ EXTRA_DIST +=							\
 		$(STORAGE_DRIVER_FS_SOURCES)			\
 		$(STORAGE_DRIVER_LVM_SOURCES)			\
 		$(STORAGE_DRIVER_ISCSI_SOURCES)			\
+		$(STORAGE_DRIVER_SCSI_SOURCES)			\
 		$(STORAGE_DRIVER_DISK_SOURCES)			\
 		$(NODE_DEVICE_DRIVER_SOURCES)			\
 		$(NODE_DEVICE_DRIVER_HAL_SOURCES)		\

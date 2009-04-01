@@ -187,6 +187,14 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
             .formatToString = virStoragePoolFormatDiskTypeToString,
         }
     },
+    { .poolType = VIR_STORAGE_POOL_SCSI,
+      .poolOptions = {
+            .flags = (VIR_STORAGE_POOL_SOURCE_ADAPTER),
+        },
+      .volOptions = {
+            .formatToString = virStoragePoolFormatDiskTypeToString,
+        }
+    },
     { .poolType = VIR_STORAGE_POOL_DISK,
       .poolOptions = {
             .flags = (VIR_STORAGE_POOL_SOURCE_DEVICE),
@@ -269,6 +277,7 @@ virStoragePoolSourceFree(virStoragePoolSourcePtr source) {
     VIR_FREE(source->devices);
     VIR_FREE(source->dir);
     VIR_FREE(source->name);
+    VIR_FREE(source->adapter);
 
     if (source->authType == VIR_STORAGE_POOL_AUTH_CHAP) {
         VIR_FREE(source->auth.chap.login);
@@ -573,6 +582,15 @@ virStoragePoolDefParseDoc(virConnectPtr conn,
         }
     }
 
+    if (options->flags & VIR_STORAGE_POOL_SOURCE_ADAPTER) {
+        if ((ret->source.adapter = virXPathString(conn,
+                                                  "string(/pool/source/adapter/@name)",
+                                                  ctxt)) == NULL) {
+            virStorageReportError(conn, VIR_ERR_XML_ERROR,
+                             "%s", _("missing storage pool source adapter name"));
+            goto cleanup;
+        }
+    }
 
     authType = virXPathString(conn, "string(/pool/source/auth/@type)", ctxt);
     if (authType == NULL) {

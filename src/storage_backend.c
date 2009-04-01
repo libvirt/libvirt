@@ -54,6 +54,9 @@
 #if WITH_STORAGE_ISCSI
 #include "storage_backend_iscsi.h"
 #endif
+#if WITH_STORAGE_SCSI
+#include "storage_backend_scsi.h"
+#endif
 #if WITH_STORAGE_DISK
 #include "storage_backend_disk.h"
 #endif
@@ -77,6 +80,9 @@ static virStorageBackendPtr backends[] = {
 #endif
 #if WITH_STORAGE_ISCSI
     &virStorageBackendISCSI,
+#endif
+#if WITH_STORAGE_SCSI
+    &virStorageBackendSCSI,
 #endif
 #if WITH_STORAGE_DISK
     &virStorageBackendDisk,

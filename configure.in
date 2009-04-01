@@ -792,6 +792,8 @@ AC_ARG_WITH([storage-lvm],
 [  --with-storage-lvm          with LVM backend for the storage driver (on)],[],[with_storage_lvm=check])
 AC_ARG_WITH([storage-iscsi],
 [  --with-storage-iscsi        with iSCSI backend for the storage driver (on)],[],[with_storage_iscsi=check])
+AC_ARG_WITH([storage-scsi],
+[  --with-storage-scsi         with SCSI backend for the storage driver (on)],[],[with_storage_scsi=check])
 AC_ARG_WITH([storage-disk],
 [  --with-storage-disk         with GPartd Disk backend for the storage driver (on)],[],[with_storage_disk=check])
 
@@ -801,6 +803,7 @@ if test "$with_libvirtd" = "no"; then
   with_storage_fs=no
   with_storage_lvm=no
   with_storage_iscsi=no
+  with_storage_scsi=no
   with_storage_disk=no
 fi
 if test "$with_storage_dir" = "yes" ; then
@@ -929,6 +932,13 @@ if test "$with_storage_iscsi" = "yes" -o "$with_storage_iscsi" = "check"; then
 fi
 AM_CONDITIONAL([WITH_STORAGE_ISCSI], [test "$with_storage_iscsi" = "yes"])
 
+if test "$with_storage_scsi" = "check"; then
+   with_storage_scsi=yes
+
+   AC_DEFINE_UNQUOTED([WITH_STORAGE_SCSI], 1,
+     [whether SCSI backend for storage driver is enabled])
+   AM_CONDITIONAL([WITH_STORAGE_SCSI], [test "$with_storage_scsi" = "yes"])
+fi
 
 
 LIBPARTED_CFLAGS=
@@ -1365,6 +1375,7 @@ AC_MSG_NOTICE([      FS: $with_storage_fs])
 AC_MSG_NOTICE([   NetFS: $with_storage_fs])
 AC_MSG_NOTICE([     LVM: $with_storage_lvm])
 AC_MSG_NOTICE([   iSCSI: $with_storage_iscsi])
+AC_MSG_NOTICE([    SCSI: $with_storage_scsi])
 AC_MSG_NOTICE([    Disk: $with_storage_disk])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Security Drivers])
