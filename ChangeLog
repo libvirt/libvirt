@@ -1,3 +1,9 @@
+Wed Apr  1 10:50:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Add a tree view of node devices
+	* src/remote_internal.c: Fix memory leak in virNodeDeviceGetParent() impl
+	* src/virsh.c: Add --tree flag to nodedev-list command
+
 Tue Mar 31 17:40:00 CEST 2009 Chris Lalancette <clalance@redhat.com>
 	* src/lxc_driver.c, src/openvz_driver.c, src/qemu_driver.c,
 	src/remote_internal.c, src/test.c, src/uml_driver.c, src/xen_unified.c,

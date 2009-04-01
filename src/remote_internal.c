@@ -4821,6 +4821,7 @@ static char *remoteNodeDeviceGetParent(virNodeDevicePtr dev)
 
     /* Caller frees. */
     rv = ret.parent ? *ret.parent : NULL;
+    VIR_FREE(ret.parent);
 
 done:
     remoteDriverUnlock(priv);

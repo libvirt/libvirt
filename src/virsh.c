@@ -4391,9 +4391,88 @@ static const vshCmdInfo info_node_list_devices[] = {
 };
 
 static const vshCmdOptDef opts_node_list_devices[] = {
+    {"tree", VSH_OT_BOOL, 0, gettext_noop("list devices in a tree")},
     {"cap", VSH_OT_STRING, VSH_OFLAG_NONE, gettext_noop("capability name")},
     {NULL, 0, 0, NULL}
 };
+
+#define MAX_DEPTH 100
+#define INDENT_SIZE 4
+#define INDENT_BUFLEN ((MAX_DEPTH * INDENT_SIZE) + 1)
+
+static void
+cmdNodeListDevicesPrint(vshControl *ctl,
+                        char **devices,
+                        char **parents,
+                        int num_devices,
+                        int devid,
+                        int lastdev,
+                        unsigned int depth,
+                        unsigned int indentIdx,
+                        char *indentBuf)
+{
+    int i;
+    int nextlastdev = -1;
+
+    /* Prepare indent for this device, but not if at root */
+    if (depth && depth < MAX_DEPTH) {
+        indentBuf[indentIdx] = '+';
+        indentBuf[indentIdx+1] = '-';
+    }
+
+    /* Print this device */
+    vshPrint(ctl, indentBuf);
+    vshPrint(ctl, "%s\n", devices[devid]);
+
+
+    /* Update indent to show '|' or ' ' for child devices */
+    if (depth && depth < MAX_DEPTH) {
+        if (devid == lastdev)
+            indentBuf[indentIdx] = ' ';
+        else
+            indentBuf[indentIdx] = '|';
+        indentBuf[indentIdx+1] = ' ';
+        indentIdx+=2;
+    }
+
+    /* Determine the index of the last child device */
+    for (i = 0 ; i < num_devices ; i++) {
+        if (parents[i] &&
+            STREQ(parents[i], devices[devid])) {
+            nextlastdev = i;
+        }
+    }
+
+    /* If there is a child device, then print another blank line */
+    if (nextlastdev != -1) {
+        vshPrint(ctl, indentBuf);
+        vshPrint(ctl, "  |\n");
+    }
+
+    /* Finally print all children */
+    if (depth < MAX_DEPTH)
+        indentBuf[indentIdx] = ' ';
+    for (i = 0 ; i < num_devices ; i++) {
+        if (depth < MAX_DEPTH) {
+            indentBuf[indentIdx] = ' ';
+            indentBuf[indentIdx+1] = ' ';
+        }
+        if (parents[i] &&
+            STREQ(parents[i], devices[devid]))
+            cmdNodeListDevicesPrint(ctl, devices, parents,
+                                    num_devices, i, nextlastdev,
+                                    depth + 1, indentIdx + 2, indentBuf);
+        if (depth < MAX_DEPTH)
+            indentBuf[indentIdx] = '\0';
+    }
+
+    /* If there was no child device, and we're the last in
+     * a list of devices, then print another blank line */
+    if (nextlastdev == -1 && devid == lastdev) {
+        vshPrint(ctl, indentBuf);
+        vshPrint(ctl, "\n");
+    }
+}
 
 static int
 cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
@@ -4401,6 +4480,7 @@ cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     char *cap;
     char **devices;
     int found, num_devices, i;
+    int tree = vshCommandOptBool(cmd, "tree");
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -4426,9 +4506,42 @@ cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         return FALSE;
     }
     qsort(&devices[0], num_devices, sizeof(char*), namesorter);
-    for (i = 0; i < num_devices; i++) {
-        vshPrint(ctl, "%s\n", devices[i]);
-        free(devices[i]);
+    if (tree) {
+        char indentBuf[INDENT_BUFLEN];
+        char **parents = vshMalloc(ctl, sizeof(char *) * num_devices);
+        for (i = 0; i < num_devices; i++) {
+            virNodeDevicePtr dev = virNodeDeviceLookupByName(ctl->conn, devices[i]);
+            if (dev && STRNEQ(devices[i], "computer")) {
+                const char *parent = virNodeDeviceGetParent(dev);
+                parents[i] = parent ? strdup(parent) : NULL;
+            } else {
+                parents[i] = NULL;
+            }
+            virNodeDeviceFree(dev);
+        }
+        for (i = 0 ; i < num_devices ; i++) {
+            memset(indentBuf, '\0', sizeof indentBuf);
+            if (parents[i] == NULL)
+                cmdNodeListDevicesPrint(ctl,
+                                        devices,
+                                        parents,
+                                        num_devices,
+                                        i,
+                                        i,
+                                        0,
+                                        0,
+                                        indentBuf);
+        }
+        for (i = 0 ; i < num_devices ; i++) {
+            free(devices[i]);
+            free(parents[i]);
+        }
+        free(parents);
+    } else {
+        for (i = 0; i < num_devices; i++) {
+            vshPrint(ctl, "%s\n", devices[i]);
+            free(devices[i]);
+        }
     }
     free(devices);
     return TRUE;
