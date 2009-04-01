@@ -1,3 +1,8 @@
+Wed Apr  1 11:38:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* python/generator.py: Clear internal reference to underlying
+	virConnectPtr object after calling virConnectClose()
+
 Wed Apr  1 11:37:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* python/generator.py: Fix generation of networkCreateXML

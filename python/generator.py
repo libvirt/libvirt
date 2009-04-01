@@ -1072,6 +1072,9 @@ def buildWrappers():
 		    n = n + 1
 		classes.write(")\n");
 
+                if name == "virConnectClose":
+                    classes.write("        self._o = None\n")
+
                 # For functions returning object types:
                 if ret[0] != "void":
 		    if classes_type.has_key(ret[0]):
