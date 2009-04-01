@@ -64,7 +64,8 @@ static int testCompareFiles(const char *xml, const char *sexpr,
  fail:
   free(gotxml);
   virDomainDefFree(def);
-  virUnrefConnect(conn);
+  if (conn)
+    virUnrefConnect(conn);
 
   return ret;
 }
@@ -115,6 +116,7 @@ mymain(int argc, char **argv)
 #define DO_TEST(in, out, version)                                      \
     do {                                                               \
         struct testInfo info = { in, out, version };                   \
+        virResetLastError();                                           \
         if (virtTestRun("Xen SEXPR-2-XML " in " -> " out,              \
                         1, testCompareHelper, &info) < 0)              \
             ret = -1;                                                  \
@@ -162,6 +164,8 @@ mymain(int argc, char **argv)
 
     DO_TEST("fv-sound", "fv-sound", 1);
     DO_TEST("fv-sound-all", "fv-sound-all", 1);
+
+    virCapabilitiesFree(caps);
 
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

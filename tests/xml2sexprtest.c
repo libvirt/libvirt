@@ -95,6 +95,7 @@ mymain(int argc, char **argv)
 #define DO_TEST(in, out, name, version)                                \
     do {                                                               \
         struct testInfo info = { in, out, name, version };             \
+        virResetLastError();                                           \
         if (virtTestRun("Xen XML-2-SEXPR " in " -> " out,              \
                         1, testCompareHelper, &info) < 0)     \
             ret = -1;                                                  \

@@ -28,31 +28,15 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+#define virLibConnError(conn, code, fmt...)                       \
+    virReportErrorHelper(conn, VIR_FROM_THIS, code, __FILE__,     \
+                         __FUNCTION__, __LINE__, fmt)
+
 /************************************************************************
  *									*
  *			Domain and Connections allocations		*
  *									*
  ************************************************************************/
-/**
- * virLibConnError:
- * @conn: the connection if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the connection level
- */
-static void
-virLibConnError(virConnectPtr conn, virErrorNumber error, const char *info)
-{
-    const char *errmsg;
-
-    if (error == VIR_ERR_OK)
-        return;
-
-    errmsg = virErrorMsg(error, info);
-    virRaiseError(conn, NULL, NULL, VIR_FROM_NONE, error, VIR_ERR_ERROR,
-                  errmsg, info, NULL, 0, 0, errmsg, info);
-}
 
 /**
  * virDomainFreeName:

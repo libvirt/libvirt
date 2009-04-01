@@ -5538,6 +5538,11 @@ xenDaemonFormatSxpr(virConnectPtr conn,
 
     virBufferAddLit(&buf, ")"); /* closes (vm */
 
+    if (virBufferError(&buf)) {
+        virReportOOMError(conn);
+        return NULL;
+    }
+
     return virBufferContentAndReset(&buf);
 
 error:

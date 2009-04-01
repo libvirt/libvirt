@@ -409,7 +409,8 @@ int virtTestMain(int argc,
         /* Run once for each alloc, failing a different one
            and validating that the test case failed */
         for (n = 0; n < approxAlloc && (!mp || worker) ; n++) {
-            if ((n % mp) != (worker - 1))
+            if (mp &&
+                (n % mp) != (worker - 1))
                 continue;
             if (!testDebug) {
                 if (mp)

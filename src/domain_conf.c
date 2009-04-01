@@ -2068,7 +2068,10 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         VIR_FREE(tmp);
     }
 
-    if ((n = virXPathNodeSet(conn, "./features/*", ctxt, &nodes)) > 0) {
+    n = virXPathNodeSet(conn, "./features/*", ctxt, &nodes);
+    if (n < 0)
+        goto error;
+    if (n) {
         for (i = 0 ; i < n ; i++) {
             int val = virDomainFeatureTypeFromString((const char *)nodes[i]->name);
             if (val < 0) {
@@ -2079,8 +2082,8 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
             }
             def->features |= (1 << val);
         }
+        VIR_FREE(nodes);
     }
-    VIR_FREE(nodes);
 
     if (virDomainLifecycleParseXML(conn, ctxt, "string(./on_reboot[1])",
                                    &def->onReboot, VIR_DOMAIN_LIFECYCLE_RESTART) < 0)

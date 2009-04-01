@@ -1,3 +1,18 @@
+Wed Apr  1 11:27:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Misc fixes uncovered from OOM testing
+	* src/datatypes.c: Switch to virReportErrorHelper for error
+	reporting, so source line/file/function info is correct
+	* src/domain_conf.c: Check for failure in virXPathNodeSet()
+	* src/noeinfo.c: Translate error strings
+	* src/xend_internal.c: Check for OOM failure after generating
+	SEXPR buffer
+	* tests/sexpr2xmltest.c: Don't unref a NULL connection object.
+	Reset error object between tests. Free capabilities on exit
+	* tests/testutils.c: Fix crash in OOM testing for non-SMP
+	usage
+	* tests/xml2sexprtest.c: Reset error object between tests
+
 Wed Apr  1 11:22:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Sanitise symlink resolving

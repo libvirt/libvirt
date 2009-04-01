@@ -74,8 +74,8 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
                 buf++;
             if (*buf != ':') {
                 virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
-                                VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                                "parsing cpuinfo processor");
+                              VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                              "%s", _("parsing cpuinfo processor"));
                 return -1;
             }
             nodeinfo->cpus++;
@@ -87,8 +87,8 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
                 buf++;
             if (*buf != ':' || !buf[1]) {
                 virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
-                                VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                                "parsing cpuinfo cpu MHz");
+                              VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                              "%s", _("parsing cpuinfo cpu MHz"));
                 return -1;
             }
             if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0
@@ -103,8 +103,8 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
                 buf++;
             if (*buf != ':' || !buf[1]) {
                 virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
-                                VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                                "parsing cpuinfo cpu cores %c", *buf);
+                              VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                              "parsing cpuinfo cpu cores %c", *buf);
                 return -1;
             }
             if (virStrToLong_ui(buf+1, &p, 10, &id) == 0
@@ -116,8 +116,8 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
 
     if (!nodeinfo->cpus) {
         virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
-                        VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                        "no cpus found");
+                      VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                      "%s", _("no cpus found"));
         return -1;
     }
 
