@@ -937,6 +937,53 @@ int virFileLinkPointsTo(const char *checkLink,
             && SAME_INODE (src_sb, dest_sb));
 }
 
+
+
+/*
+ * Attempt to resolve a symbolic link, returning the
+ * real path
+ *
+ * Return 0 if path was not a symbolic, or the link was
+ * resolved. Return -1 upon error
+ */
+int virFileResolveLink(const char *linkpath,
+                       char **resultpath)
+{
+    struct stat st;
+    char *buf;
+    int n;
+
+    *resultpath = NULL;
+
+    if (lstat(linkpath, &st) < 0)
+        return errno;
+
+    if (!S_ISLNK(st.st_mode)) {
+        if (!(*resultpath = strdup(linkpath)))
+            return -ENOMEM;
+        return 0;
+    }
+
+    /* Posix says that 'st_size' field from
+     * result of an lstat() call is filled with
+     * number of bytes in the destination
+     * filename.
+     */
+    if (VIR_ALLOC_N(buf, st.st_size + 1) < 0)
+        return -ENOMEM;
+
+    if ((n = readlink(linkpath, buf, st.st_size)) < 0) {
+        VIR_FREE(buf);
+        return -errno;
+    }
+
+    buf[n] = '\0';
+
+    *resultpath = buf;
+    return 0;
+}
+
+
 int virFileExists(const char *path)
 {
     struct stat st;

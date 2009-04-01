@@ -362,20 +362,16 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn,
                                unsigned int flags ATTRIBUTE_UNUSED)
 {
     char *part_num = NULL;
-    int n;
-    char devpath[PATH_MAX];
+    int err;
+    char *devpath = NULL;
     char *devname, *srcname;
+    int rc = -1;
 
-    if ((n = readlink(vol->target.path, devpath, sizeof(devpath))) < 0 &&
-        errno != EINVAL) {
-        virReportSystemError(conn, errno,
+    if ((err = virFileResolveLink(vol->target.path, &devpath)) < 0) {
+        virReportSystemError(conn, err,
                              _("Couldn't read volume target path '%s'"),
                              vol->target.path);
-        return -1;
-    } else if (n <= 0) {
-        strncpy(devpath, vol->target.path, PATH_MAX);
-    } else {
-        devpath[n] = '\0';
+        goto cleanup;
     }
 
     devname = basename(devpath);
@@ -386,7 +382,7 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn,
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               _("Volume path '%s' did not start with parent "
                                 "pool source device name."), devname);
-        return -1;
+        goto cleanup;
     }
 
     part_num = devname + strlen(srcname);
@@ -395,7 +391,7 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn,
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               _("cannot parse partition number from target "
                                 "'%s'"), devname);
-        return -1;
+        goto cleanup;
     }
 
     /* eg parted /dev/sda rm 2 */
@@ -409,9 +405,12 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn,
     };
 
     if (virRun(conn, prog, NULL) < 0)
-        return -1;
+        goto cleanup;
 
-    return 0;
+    rc = 0;
+cleanup:
+    VIR_FREE(devpath);
+    return rc;
 }
 
 

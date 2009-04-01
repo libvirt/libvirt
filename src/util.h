@@ -87,6 +87,9 @@ int virFileStripSuffix(char *str,
 int virFileLinkPointsTo(const char *checkLink,
                         const char *checkDest);
 
+int virFileResolveLink(const char *linkpath,
+                       char **resultpath);
+
 int virFileExists(const char *path);
 
 int virFileMakePath(const char *path);

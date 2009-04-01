@@ -1,3 +1,12 @@
+Wed Apr  1 11:22:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Sanitise symlink resolving
+	* src/libvirt_private.syms: Add virFileResolveLink
+	* src/util.c, src/util.h: Add convenient virFileResolveLink
+	for reading symlink destination safely
+	* src/storage_backend_disk.c, src/security_selinux.c: Switch
+	over to calling virFileResolveLink
+
 Wed Apr  1 11:18:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Misc memory handling fixes

@@ -293,28 +293,24 @@ SELinuxRestoreSecurityImageLabel(virConnectPtr conn,
     struct stat buf;
     security_context_t fcon = NULL;
     int rc = -1;
+    int err;
     char *newpath = NULL;
     const char *path = disk->src;
 
     if (disk->readonly || disk->shared)
         return 0;
 
-    if (lstat(path, &buf) != 0)
-        return -1;
-
-    if (S_ISLNK(buf.st_mode)) {
-        if (VIR_ALLOC_N(newpath, buf.st_size + 1) < 0)
-            return -1;
-
-        if (readlink(path, newpath, buf.st_size) < 0)
-            goto err;
-        path = newpath;
-        if (stat(path, &buf) != 0)
-            goto err;
+    if ((err = virFileResolveLink(path, &newpath)) < 0) {
+        virReportSystemError(conn, err,
+                             _("cannot resolve symlink %s"), path);
+        goto err;
     }
 
-    if (matchpathcon(path, buf.st_mode, &fcon) == 0)  {
-        rc = SELinuxSetFilecon(conn, path, fcon);
+    if (stat(newpath, &buf) != 0)
+        goto err;
+
+    if (matchpathcon(newpath, buf.st_mode, &fcon) == 0)  {
+        rc = SELinuxSetFilecon(conn, newpath, fcon);
     }
 err:
     VIR_FREE(fcon);
