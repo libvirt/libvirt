@@ -1,3 +1,9 @@
+Wed Apr  1 11:37:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* python/generator.py: Fix generation of networkCreateXML
+	and storagePoolCreateXML to avoid clash with createXML()
+	method
+
 Wed Apr  1 11:36:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix localtime handling for new XenD
