@@ -817,10 +817,10 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
             goto cleanup;
         else if (val)
             def->features |= (1 << VIR_DOMAIN_FEATURE_APIC);
-
-        if (xenXMConfigGetBool(conn, conf, "localtime", &def->localtime, 0) < 0)
-            goto cleanup;
     }
+    if (xenXMConfigGetBool(conn, conf, "localtime", &def->localtime, 0) < 0)
+        goto cleanup;
+
     if (xenXMConfigCopyStringOpt(conn, conf, "device_model", &def->emulator) < 0)
         goto cleanup;
 

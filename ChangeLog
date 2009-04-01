@@ -1,3 +1,19 @@
+Wed Apr  1 11:36:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix localtime handling for new XenD
+	* src/xend_internal.c: Update SEXPR for new location of
+	(localtime 1) field.
+	* src/xm_internal.c: Read localtime=1 param for PV guests
+	too
+	* tests/xml2sexprtest.c, tests/sexpr2xmltest.c: Add testing
+	of new (localtime 1) handling
+	* tests/sexpr2xmldata/sexpr2xml-pv-localtime.sexpr,
+	tests/sexpr2xmldata/sexpr2xml-pv-localtime.xml,
+	tests/xml2sexprdata/xml2sexpr-fv-localtime.sexpr,
+	tests/xml2sexprdata/xml2sexpr-pv-localtime.sexpr,
+	tests/xml2sexprdata/xml2sexpr-pv-localtime.xml: Data files
+	for extended tests
+
 Wed Apr  1 11:27:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Misc fixes uncovered from OOM testing

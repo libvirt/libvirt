@@ -2293,9 +2293,14 @@ xenDaemonParseSxpr(virConnectPtr conn,
         if (sexpr_int(root, "domain/image/hvm/pae"))
             def->features |= (1 << VIR_DOMAIN_FEATURE_PAE);
 
+        /* Old XenD only allows localtime here for HVM */
         if (sexpr_int(root, "domain/image/hvm/localtime"))
             def->localtime = 1;
     }
+
+    /* Current XenD allows localtime here, for PV and HVM */
+    if (sexpr_int(root, "domain/localtime"))
+        def->localtime = 1;
 
     if (sexpr_node_copy(root, hvm ?
                         "domain/image/hvm/device_model" :
@@ -5375,6 +5380,10 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     }
     virBufferVSprintf(&buf, "(on_crash '%s')", tmp);
 
+    /* Set localtime here for current XenD (both PV & HVM) */
+    if (def->localtime)
+        virBufferAddLit(&buf, "(localtime 1)");
+
     if (!def->os.bootloader) {
         if (STREQ(def->os.type, "hvm"))
             hvm = 1;
@@ -5490,6 +5499,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
                 virBufferAddLit(&buf, "(serial none)");
             }
 
+            /* Set localtime here to keep old XenD happy for HVM */
             if (def->localtime)
                 virBufferAddLit(&buf, "(localtime 1)");
 
