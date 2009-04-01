@@ -516,18 +516,26 @@ if test "x$with_sasl" != "xno"; then
         fail=1
     fi])
   if test "x$with_sasl" != "xno" ; then
-    AC_CHECK_LIB([sasl2], [sasl_client_init],[with_sasl=yes],[
-      if test "x$with_sasl" = "xcheck" ; then
+    AC_CHECK_LIB([sasl2], [sasl_client_init],[
+      SASL_LIBS="$SASL_LIBS -lsasl2"
+      with_sasl=yes
+    ],[
+      AC_CHECK_LIB([sasl], [sasl_client_init],[
+        SASL_LIBS="$SASL_LIBS -lsasl"
+        with_sasl=yes
+      ],[
+        if test "x$with_sasl" = "xcheck" ; then
           with_sasl=no
-      else
+        else
           fail=1
-      fi])
+        fi
+      ])
+    ])
   fi
   test $fail = 1 &&
     AC_MSG_ERROR([You must install the Cyrus SASL development package in order to compile libvirt])
   CFLAGS="$old_cflags"
   LIBS="$old_libs"
-  SASL_LIBS="$SASL_LIBS -lsasl2"
   if test "x$with_sasl" = "xyes" ; then
     AC_DEFINE_UNQUOTED([HAVE_SASL], 1,
       [whether Cyrus SASL is available for authentication])

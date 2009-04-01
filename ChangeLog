@@ -1,3 +1,8 @@
+Wed Apr  1 11:40:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: Check for libsasl.so as well as libsasl2.so
+	since former is used on some OS platforms that aren't Linux
+
 Wed Apr  1 11:38:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* python/generator.py: Clear internal reference to underlying
