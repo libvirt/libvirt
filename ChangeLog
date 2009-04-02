@@ -1,3 +1,7 @@
+Thu Apr  2 15:18:00 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/schemas/domain.rng: some missing disk bus values and cleanups
+
 Thu Apr  2 14:00:14 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/*: start cleanup/revamp of architecture docs
