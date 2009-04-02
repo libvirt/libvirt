@@ -2,45 +2,11 @@
 <html>
   <body>
     <h1>Architecture</h1>
-    <p>Libvirt is a C toolkit to interact with the virtualization capabilities of
-recent versions of Linux (and other OSes), but libvirt won't try to provide
-all possible interfaces for interacting with the virtualization features.</p>
-    <p>To avoid ambiguity about the terms used here here are the definitions for
-some of the specific concepts used in libvirt documentation:</p>
-    <ul>
-      <li>a <strong>node</strong> is a single physical machine</li>
-      <li>an <strong>hypervisor</strong> is a layer of software allowing to
-    virtualize a node in a set of virtual machines with possibly different
-    configurations than the node itself</li>
-      <li>a <strong>domain</strong> is an instance of an operating system running
-    on a virtualized machine provided by the hypervisor</li>
-    </ul>
-    <p class="image">
-      <img alt="Hypervisor and domains running on a node" src="node.gif"/>
+    <p>Libvirt is a C toolkit manage the virtualization capabilities
+    of recent versions of Linux (and other OSes).</p>
+    <p>To avoid ambiguity about the goals, terms and specific concepts used
+    in libvirt documentation please see the <a href="goals.html">Goal
+    section</a>.
     </p>
-    <p>Now we can define the goal of libvirt: to provide the lowest possible
-generic and stable layer to manage domains on a node.</p>
-    <p>This implies the following:</p>
-    <ul>
-      <li>the API should not be targeted to a single virtualization environment
-    though Xen is the current default, which also means that some very
-    specific capabilities which are not generic enough may not be provided as
-    libvirt APIs</li>
-      <li>the API should allow to do efficiently and cleanly all the operations
-    needed to manage domains on a node</li>
-      <li>the API will not try to provide high level multi-nodes management
-    features like load balancing, though they could be implemented on top of
-    libvirt</li>
-      <li>stability of the API is a big concern, libvirt should isolate
-    applications from the frequent changes expected at the lower level of the
-    virtualization framework</li>
-    </ul>
-    <p>So libvirt should be a building block for higher level management tools
-and for applications focusing on virtualization of a single node (the only
-exception being domain migration between node capabilities which may need to
-be added at the libvirt level). Where possible libvirt should be extendable
-to be able to provide the same API for remote nodes, however this is not the
-case at the moment, the code currently handle only local node accesses
-(extension for remote access support is being worked on, see <a href="bugs.html">the mailing list</a> discussions about it).</p>
   </body>
 </html>

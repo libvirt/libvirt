@@ -57,6 +57,10 @@
             <span>Overview of the logical subsystems in the libvirt API</span>
             <ul>
               <li>
+                <a href="goals.html">Goals</a>
+                <span>Terminology and goals of libvirt API</span>
+              </li>
+              <li>
                 <a href="archdomain.html">Domains</a>
                 <span>Managing virtual machines</span>
               </li>
