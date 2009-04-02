@@ -1,3 +1,10 @@
+Thu Apr  2 19:41:00 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Mingw portability fixes
+	* src/util.c: Fix virFileResolveLink for Win32 platform.
+	Fix offset usage in safezero for mmap() and write() impls
+	* configure.in: Add check for readlink()
+
 Thu Apr  2 15:18:00 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/schemas/domain.rng: some missing disk bus values and cleanups

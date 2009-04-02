@@ -136,7 +136,7 @@ int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
     /* memset wants the mmap'ed file to be present on disk so create a
      * sparse file
      */
-    r = ftruncate(fd, len);
+    r = ftruncate(fd, offset + len);
     if (r < 0)
         return -errno;
 
@@ -157,6 +157,9 @@ int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
     int r;
     char *buf;
     unsigned long long remain, bytes;
+
+    if (lseek(fd, offset, SEEK_SET) < 0)
+        return errno;
 
     /* Split up the write in small chunks so as not to allocate lots of RAM */
     remain = len;
@@ -949,6 +952,7 @@ int virFileLinkPointsTo(const char *checkLink,
 int virFileResolveLink(const char *linkpath,
                        char **resultpath)
 {
+#ifdef HAVE_READLINK
     struct stat st;
     char *buf;
     int n;
@@ -981,6 +985,11 @@ int virFileResolveLink(const char *linkpath,
 
     *resultpath = buf;
     return 0;
+#else
+    if (!(*resultpath = strdup(linkpath)))
+        return -ENOMEM;
+    return 0;
+#endif
 }
 
 

@@ -72,7 +72,7 @@ dnl Use --disable-largefile if you don't want this.
 AC_SYS_LARGEFILE
 
 dnl Availability of various common functions (non-fatal if missing).
-AC_CHECK_FUNCS([cfmakeraw regexec uname sched_getaffinity getuid getgid posix_fallocate mmap])
+AC_CHECK_FUNCS([cfmakeraw regexec uname sched_getaffinity getuid getgid posix_fallocate mmap readlink])
 
 dnl Availability of various not common threadsafe functions
 AC_CHECK_FUNCS([strerror_r strtok_r getmntent_r getgrnam_r getpwuid_r])
@@ -937,8 +937,8 @@ if test "$with_storage_scsi" = "check"; then
 
    AC_DEFINE_UNQUOTED([WITH_STORAGE_SCSI], 1,
      [whether SCSI backend for storage driver is enabled])
-   AM_CONDITIONAL([WITH_STORAGE_SCSI], [test "$with_storage_scsi" = "yes"])
 fi
+AM_CONDITIONAL([WITH_STORAGE_SCSI], [test "$with_storage_scsi" = "yes"])
 
 
 LIBPARTED_CFLAGS=
