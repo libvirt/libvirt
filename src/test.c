@@ -1337,7 +1337,7 @@ static int testDomainRestore(virConnectPtr conn,
     event = virDomainEventNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_RESTORED);
-    ret = dom->def->id;
+    ret = 0;
 
 cleanup:
     virDomainDefFree(def);

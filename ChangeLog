@@ -1,3 +1,7 @@
+Fri Apr  3 10:13:38 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/test.c: Fix test driver domain restore return value.
+
 Fri Apr  3 10:02:57 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/storage_backend.c: Fix sparse volume allocation reporting.
