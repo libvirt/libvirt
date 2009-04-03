@@ -1,3 +1,7 @@
+Fri Apr  3 10:02:57 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/storage_backend.c: Fix sparse volume allocation reporting.
+
 Fri Apr  3 15:07:00 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix crash in svirt verification, and incorrect cleanup in

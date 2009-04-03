@@ -36,6 +36,7 @@
 #include <fcntl.h>
 #include <stdint.h>
 #include <sys/stat.h>
+#include <sys/param.h>
 #include <dirent.h>
 
 #if HAVE_SELINUX
@@ -64,6 +65,9 @@
 #include "storage_backend_fs.h"
 #endif
 
+#ifndef DEV_BSIZE
+#define DEV_BSIZE 512
+#endif
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -211,7 +215,7 @@ virStorageBackendUpdateVolTargetInfoFD(virConnectPtr conn,
         if (S_ISREG(sb.st_mode)) {
 #ifndef __MINGW32__
             *allocation = (unsigned long long)sb.st_blocks *
-                (unsigned long long)sb.st_blksize;
+                          (unsigned long long)DEV_BSIZE;
 #else
             *allocation = sb.st_size;
 #endif
