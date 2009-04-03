@@ -1,3 +1,8 @@
+Fri Apr  3 10:16:55 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/storage_backend.c src/storage_backend_scsi.c:
+	Don't lose file format info on volume refresh.
+
 Fri Apr  3 10:15:01 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/storage_driver.c: Refresh volume alloc/capacity when dumping XML.
