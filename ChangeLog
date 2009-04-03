@@ -1,4 +1,24 @@
-Thu Apr  3 11:55:00 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+Fri Apr  3 11:55:00 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Support PCI passthrough in Xen driver
+	* src/pci.c: Refactor to support Xen's pci-back.ko too
+	* src/xen_unified.c: Implement node device reattach/detach
+	reset APIs
+	* src/xend_internal.c: Handle creation of VMs with PCI
+	devices
+	* src/xm_internal.c: serialization of PCI device config
+	* tests/sexpr2xmltest.c, tests/xmconfigtest.c,
+	tests/xml2sexprtest.c: Add tests for PCI devices
+	* tests/sexpr2xmldata/sexpr2xml-pci-devs.sexpr,
+	tests/sexpr2xmldata/sexpr2xml-pci-devs.xml,
+	tests/xmconfigdata/test-pci-devs.cfg,
+	tests/xmconfigdata/test-pci-devs.xml,
+	tests/xml2sexprdata/xml2sexpr-pci-devs.sexpr,
+	tests/xml2sexprdata/xml2sexpr-pci-devs.xml: Add data
+	files for PCI testing
+
+
+Fri Apr  3 11:55:00 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Improve error reporting/ verification of security labels
 	(Dan Walsh)

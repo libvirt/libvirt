@@ -614,46 +614,86 @@ pciResetDevice(virConnectPtr conn, pciDevice *dev)
     return ret;
 }
 
-static int
-pciBindDeviceToStub(virConnectPtr conn, pciDevice *dev, const char *stub_module)
+
+static void
+pciDriverDir(char *buf, size_t buflen, const char *driver)
 {
-    char stub_dir[PATH_MAX];
-    char path[PATH_MAX];
+    snprintf(buf, buflen, PCI_SYSFS "drivers/%s", driver);
+}
 
-    snprintf(stub_dir, sizeof(stub_dir), PCI_SYSFS "drivers/%s", stub_module);
+static void
+pciDriverFile(char *buf, size_t buflen, const char *driver, const char *file)
+{
+    snprintf(buf, buflen, PCI_SYSFS "drivers/%s/%s", driver, file);
+}
 
-    /* Try loading the stub module if it isn't already loaded;
-     * Do not return an error if the stub module is not available.
-     */
-    if (!virFileExists(stub_dir)) {
-        const char *const modprobeargv[] = { MODPROBE, stub_module, NULL };
+static void
+pciDeviceFile(char *buf, size_t buflen, const char *device, const char *file)
+{
+    snprintf(buf, buflen, PCI_SYSFS "devices/%s/%s", device, file);
+}
 
-        if (virRun(conn, modprobeargv, NULL) < 0) {
+
+static const char *
+pciFindStubDriver(virConnectPtr conn)
+{
+    char drvpath[PATH_MAX];
+    int probed = 0;
+
+recheck:
+    pciDriverDir(drvpath, sizeof(drvpath), "pci-stub");
+    if (virFileExists(drvpath))
+        return "pci-stub";
+    pciDriverDir(drvpath, sizeof(drvpath), "pciback");
+    if (virFileExists(drvpath))
+        return "pciback";
+
+    if (!probed) {
+        const char *const stubprobe[] = { MODPROBE, "pci-stub", NULL };
+        const char *const backprobe[] = { MODPROBE, "pciback", NULL };
+
+        probed = 1;
+        /*
+         * Probing for pci-stub will succeed regardless of whether
+         * on native or Xen kernels.
+         * On Xen though, we want to prefer pciback, so probe
+         * for that first, because that will only work on Xen
+         */
+        if (virRun(conn, backprobe, NULL) < 0 &&
+            virRun(conn, stubprobe, NULL) < 0) {
             char ebuf[1024];
-            VIR_WARN(_("modprobe %s failed: %s"), stub_module,
+            VIR_WARN(_("failed to load pci-stub or pciback drivers: %s"),
                      virStrerror(errno, ebuf, sizeof ebuf));
+            return 0;
         }
+
+        goto recheck;
     }
 
-    if (!virFileExists(stub_dir)) {
-        VIR_WARN(_("%s module not available, cannot bind device %s to it"),
-                 stub_module, dev->name);
-    } else {
-        /* Add the PCI device ID to the stub's dynamic ID table;
-         * this is needed to allow us to bind the device to the stub.
-         * Note: if the device is not currently bound to any driver,
-         * stub will immediately be bound to the device. Also, note
-         * that if a new device with this ID is hotplugged, or if a probe
-         * is triggered for such a device, it will also be immediately
-         * bound by the stub.
-         */
-        snprintf(path, sizeof(path), "%s/new_id", stub_dir);
-        if (virFileWriteStr(path, dev->id) < 0) {
-            virReportSystemError(conn, errno,
-                                 _("Failed to add PCI device ID '%s' to %s"),
-                                 dev->id, stub_module);
-            return -1;
-        }
+    return NULL;
+}
+
+
+static int
+pciBindDeviceToStub(virConnectPtr conn, pciDevice *dev, const char *driver)
+{
+    char drvdir[PATH_MAX];
+    char path[PATH_MAX];
+
+    /* Add the PCI device ID to the stub's dynamic ID table;
+     * this is needed to allow us to bind the device to the stub.
+     * Note: if the device is not currently bound to any driver,
+     * stub will immediately be bound to the device. Also, note
+     * that if a new device with this ID is hotplugged, or if a probe
+     * is triggered for such a device, it will also be immediately
+     * bound by the stub.
+     */
+    pciDriverFile(path, sizeof(path), driver, "new_id");
+    if (virFileWriteStr(path, dev->id) < 0) {
+        virReportSystemError(conn, errno,
+                             _("Failed to add PCI device ID '%s' to %s"),
+                             dev->id, driver);
+        return -1;
     }
 
     /* If the device is already bound to a driver, unbind it.
@@ -661,38 +701,45 @@ pciBindDeviceToStub(virConnectPtr conn, pciDevice *dev, const char *stub_module)
      * PCI device happens to be IDE controller for the disk hosting
      * your root filesystem.
      */
-    snprintf(path, sizeof(path),
-             PCI_SYSFS "devices/%s/driver/unbind", dev->name);
+    pciDeviceFile(path, sizeof(path), dev->name, "driver/unbind");
     if (virFileExists(path) && virFileWriteStr(path, dev->name) < 0) {
         virReportSystemError(conn, errno,
                              _("Failed to unbind PCI device '%s'"), dev->name);
         return -1;
     }
 
-    if (virFileExists(stub_dir)) {
-        /* If the device isn't already bound to pci-stub, try binding it now.
-         */
-        snprintf(path, sizeof(path), PCI_SYSFS "devices/%s/driver", dev->name);
-        if (!virFileLinkPointsTo(path, stub_dir)) {
-            snprintf(path, sizeof(path), "%s/bind", stub_dir);
-            if (virFileWriteStr(path, dev->name) < 0) {
-                virReportSystemError(conn, errno,
-                                     _("Failed to bind PCI device '%s' to %s"),
-                                     dev->name, stub_module);
-                return -1;
-            }
-        }
-
-        /* If 'remove_id' exists, remove the device id from pci-stub's dynamic
-         * ID table so that 'drivers_probe' works below.
-         */
-        snprintf(path, sizeof(path), "%s/remove_id", stub_dir);
-        if (virFileExists(path) && virFileWriteStr(path, dev->id) < 0) {
+    /* If the device isn't already bound to pci-stub, try binding it now.
+     */
+    pciDriverDir(drvdir, sizeof(drvdir), driver);
+    pciDeviceFile(path, sizeof(path), dev->name, "driver");
+    if (!virFileLinkPointsTo(path, drvdir)) {
+        /* Xen's pciback.ko wants you to use new_slot first */
+        pciDriverFile(path, sizeof(path), driver, "new_slot");
+        if (virFileExists(path) && virFileWriteStr(path, dev->name) < 0) {
             virReportSystemError(conn, errno,
-                                 _("Failed to remove PCI ID '%s' from %s"),
-                                 dev->id, stub_module);
+                                 _("Failed to add slot for PCI device '%s' to %s"),
+                                 dev->name, driver);
             return -1;
         }
+
+        pciDriverFile(path, sizeof(path), driver, "bind");
+        if (virFileWriteStr(path, dev->name) < 0) {
+            virReportSystemError(conn, errno,
+                                 _("Failed to bind PCI device '%s' to %s"),
+                                 dev->name, driver);
+            return -1;
+        }
+    }
+
+    /* If 'remove_id' exists, remove the device id from pci-stub's dynamic
+     * ID table so that 'drivers_probe' works below.
+     */
+    pciDriverFile(path, sizeof(path), driver, "remove_id");
+    if (virFileExists(path) && virFileWriteStr(path, dev->id) < 0) {
+        virReportSystemError(conn, errno,
+                             _("Failed to remove PCI ID '%s' from %s"),
+                             dev->id, driver);
+        return -1;
     }
 
     return 0;
@@ -701,37 +748,53 @@ pciBindDeviceToStub(virConnectPtr conn, pciDevice *dev, const char *stub_module)
 int
 pciDettachDevice(virConnectPtr conn, pciDevice *dev)
 {
-    return pciBindDeviceToStub(conn, dev, "pci-stub");
+    const char *driver = pciFindStubDriver(conn);
+    if (!driver) {
+        pciReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot find any PCI stub module"));
+        return -1;
+    }
+
+    return pciBindDeviceToStub(conn, dev, driver);
 }
 
 static int
-pciUnBindDeviceFromStub(virConnectPtr conn, pciDevice *dev, const char *stub_module)
+pciUnBindDeviceFromStub(virConnectPtr conn, pciDevice *dev, const char *driver)
 {
-    char stub_dir[PATH_MAX];
+    char drvdir[PATH_MAX];
     char path[PATH_MAX];
-
-    snprintf(stub_dir, sizeof(stub_dir), PCI_SYSFS "drivers/%s", stub_module);
 
     /* If the device is bound to stub, unbind it.
      */
-    snprintf(path, sizeof(path), PCI_SYSFS "devices/%s/driver", dev->name);
-    if (virFileExists(stub_dir) && virFileLinkPointsTo(path, stub_dir)) {
-        snprintf(path, sizeof(path), "%s/unbind", stub_dir);
+    pciDriverDir(drvdir, sizeof(drvdir), driver);
+    pciDeviceFile(path, sizeof(path), dev->name, "driver");
+    if (virFileExists(drvdir) && virFileLinkPointsTo(path, drvdir)) {
+        pciDriverFile(path, sizeof(path), driver, "unbind");
         if (virFileWriteStr(path, dev->name) < 0) {
             virReportSystemError(conn, errno,
                                  _("Failed to bind PCI device '%s' to %s"),
-                                 dev->name, stub_module);
+                                 dev->name, driver);
             return -1;
         }
     }
+
+    /* Xen's pciback.ko wants you to use remove_slot on the specific device */
+    pciDriverFile(path, sizeof(path), driver, "remove_slot");
+    if (virFileExists(path) && virFileWriteStr(path, dev->name) < 0) {
+        virReportSystemError(conn, errno,
+                             _("Failed to remove slot for PCI device '%s' to %s"),
+                             dev->name, driver);
+        return -1;
+    }
+
 
     /* Trigger a re-probe of the device is not in the stub's dynamic
      * ID table. If the stub is available, but 'remove_id' isn't
      * available, then re-probing would just cause the device to be
      * re-bound to the stub.
      */
-    snprintf(path, sizeof(path), "%s/remove_id", stub_dir);
-    if (!virFileExists(stub_dir) || virFileExists(path)) {
+    pciDriverFile(path, sizeof(path), driver, "remove_id");
+    if (!virFileExists(drvdir) || virFileExists(path)) {
         if (virFileWriteStr(PCI_SYSFS "drivers_probe", dev->name) < 0) {
             virReportSystemError(conn, errno,
                                  _("Failed to trigger a re-probe for PCI device '%s'"),
@@ -746,7 +809,14 @@ pciUnBindDeviceFromStub(virConnectPtr conn, pciDevice *dev, const char *stub_mod
 int
 pciReAttachDevice(virConnectPtr conn, pciDevice *dev)
 {
-    return pciUnBindDeviceFromStub(conn, dev, "pci-stub");
+    const char *driver = pciFindStubDriver(conn);
+    if (!driver) {
+        pciReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot find any PCI stub module"));
+        return -1;
+    }
+
+    return pciUnBindDeviceFromStub(conn, dev, driver);
 }
 
 static char *

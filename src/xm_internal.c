@@ -672,6 +672,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
     virDomainDiskDefPtr disk = NULL;
     virDomainNetDefPtr net = NULL;
     virDomainGraphicsDefPtr graphics = NULL;
+    virDomainHostdevDefPtr hostdev = NULL;
     int i;
     const char *defaultArch, *defaultMachine;
 
@@ -1123,6 +1124,88 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
         skipnic:
             list = list->next;
             virDomainNetDefFree(net);
+        }
+    }
+
+    list = virConfGetValue(conf, "pci");
+    if (list && list->type == VIR_CONF_LIST) {
+        list = list->list;
+        while (list) {
+            char domain[5];
+            char bus[3];
+            char slot[3];
+            char func[2];
+            char *key, *nextkey;
+            int domainID;
+            int busID;
+            int slotID;
+            int funcID;
+
+            domain[0] = bus[0] = slot[0] = func[0] = '\0';
+
+            if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
+                goto skippci;
+
+            /* pci=['0000:00:1b.0','0000:00:13.0'] */
+            key = list->str;
+            if (!(key = list->str))
+                goto skippci;
+            if (!(nextkey = strchr(key, ':')))
+                goto skippci;
+
+            if ((nextkey - key) > (sizeof(domain)-1))
+                goto skippci;
+
+            strncpy(domain, key, sizeof(domain));
+            domain[sizeof(domain)-1] = '\0';
+
+            key = nextkey + 1;
+            if (!(nextkey = strchr(key, ':')))
+                goto skippci;
+
+            strncpy(bus, key, sizeof(bus));
+            bus[sizeof(bus)-1] = '\0';
+
+            key = nextkey + 1;
+            if (!(nextkey = strchr(key, '.')))
+                goto skippci;
+
+            strncpy(slot, key, sizeof(slot));
+            slot[sizeof(slot)-1] = '\0';
+
+            key = nextkey + 1;
+            if (strlen(key) != 1)
+                goto skippci;
+
+            strncpy(func, key, sizeof(func));
+            func[sizeof(func)-1] = '\0';
+
+            if (virStrToLong_i(domain, NULL, 16, &domainID) < 0)
+                goto skippci;
+            if (virStrToLong_i(bus, NULL, 16, &busID) < 0)
+                goto skippci;
+            if (virStrToLong_i(slot, NULL, 16, &slotID) < 0)
+                goto skippci;
+            if (virStrToLong_i(func, NULL, 16, &funcID) < 0)
+                goto skippci;
+
+            if (VIR_ALLOC(hostdev) < 0)
+                goto cleanup;
+
+            hostdev->managed = 0;
+            hostdev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
+            hostdev->source.subsys.u.pci.domain = domainID;
+            hostdev->source.subsys.u.pci.bus = busID;
+            hostdev->source.subsys.u.pci.slot = slotID;
+            hostdev->source.subsys.u.pci.function = funcID;
+
+            if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs+1) < 0)
+                goto no_memory;
+            def->hostdevs[def->nhostdevs++] = hostdev;
+            hostdev = NULL;
+
+        skippci:
+            list = list->next;
         }
     }
 
@@ -1951,6 +2034,76 @@ cleanup:
 
 
 
+static int
+xenXMDomainConfigFormatPCI(virConnectPtr conn,
+                           virConfPtr conf,
+                           virDomainDefPtr def)
+{
+
+    virConfValuePtr pciVal = NULL;
+    int hasPCI = 0;
+    int i;
+
+    for (i = 0 ; i < def->nhostdevs ; i++)
+        if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            def->hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            hasPCI = 1;
+
+    if (!hasPCI)
+        return 0;
+
+    if (VIR_ALLOC(pciVal) < 0)
+        return -1;
+
+    pciVal->type = VIR_CONF_LIST;
+    pciVal->list = NULL;
+
+    for (i = 0 ; i < def->nhostdevs ; i++) {
+        if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            def->hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+            virConfValuePtr val, tmp;
+            char *buf;
+
+            if (virAsprintf(&buf, "%04x:%02x:%02x.%x",
+                            def->hostdevs[i]->source.subsys.u.pci.domain,
+                            def->hostdevs[i]->source.subsys.u.pci.bus,
+                            def->hostdevs[i]->source.subsys.u.pci.slot,
+                            def->hostdevs[i]->source.subsys.u.pci.function) < 0)
+                goto error;
+
+            if (VIR_ALLOC(val) < 0) {
+                VIR_FREE(buf);
+                virReportOOMError(conn);
+                goto error;
+            }
+            val->type = VIR_CONF_STRING;
+            val->str = buf;
+            tmp = pciVal->list;
+            while (tmp && tmp->next)
+                tmp = tmp->next;
+            if (tmp)
+                tmp->next = val;
+            else
+                pciVal->list = val;
+        }
+    }
+
+    if (pciVal->list != NULL) {
+        int ret = virConfSetValue(conf, "pci", pciVal);
+        pciVal = NULL;
+        if (ret < 0)
+            return -1;
+    }
+    VIR_FREE(pciVal);
+
+    return 0;
+
+error:
+    virConfFreeValue(pciVal);
+    return -1;
+}
+
+
 virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
                                    virDomainDefPtr def) {
     virConfPtr conf = NULL;
@@ -2271,6 +2424,9 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
             goto no_memory;
     }
     VIR_FREE(netVal);
+
+    if (xenXMDomainConfigFormatPCI(conn, conf, def) < 0)
+        goto cleanup;
 
     if (hvm) {
         if (def->nparallels) {

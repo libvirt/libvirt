@@ -130,6 +130,7 @@ mymain(int argc, char **argv)
     DO_TEST("bridge-ipaddr", "bridge-ipaddr", "pvtest", 2);
     DO_TEST("no-source-cdrom", "no-source-cdrom", "test", 2);
     DO_TEST("pv-localtime", "pv-localtime", "pvtest", 1);
+    DO_TEST("pci-devs", "pci-devs", "pvtest", 2);
 
     DO_TEST("fv-utc", "fv-utc", "fvtest", 1);
     DO_TEST("fv-localtime", "fv-localtime", "fvtest", 1);

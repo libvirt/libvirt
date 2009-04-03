@@ -43,6 +43,8 @@
 #include "xml.h"
 #include "util.h"
 #include "memory.h"
+#include "node_device_conf.h"
+#include "pci.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 
@@ -1420,6 +1422,123 @@ xenUnifiedDomainEventDeregister (virConnectPtr conn,
     return ret;
 }
 
+
+static int
+xenUnifiedNodeDeviceGetPciInfo (virNodeDevicePtr dev,
+                           unsigned *domain,
+                           unsigned *bus,
+                           unsigned *slot,
+                           unsigned *function)
+{
+    virNodeDeviceDefPtr def = NULL;
+    virNodeDevCapsDefPtr cap;
+    char *xml = NULL;
+    int ret = -1;
+
+    xml = virNodeDeviceGetXMLDesc(dev, 0);
+    if (!xml)
+        goto out;
+
+    def = virNodeDeviceDefParseString(dev->conn, xml);
+    if (!def)
+        goto out;
+
+    cap = def->caps;
+    while (cap) {
+        if (cap->type == VIR_NODE_DEV_CAP_PCI_DEV) {
+            *domain   = cap->data.pci_dev.domain;
+            *bus      = cap->data.pci_dev.bus;
+            *slot     = cap->data.pci_dev.slot;
+            *function = cap->data.pci_dev.function;
+            break;
+        }
+
+        cap = cap->next;
+    }
+
+    if (!cap) {
+        xenUnifiedError(dev->conn, VIR_ERR_INVALID_ARG,
+                        _("device %s is not a PCI device"), dev->name);
+        goto out;
+    }
+
+    ret = 0;
+out:
+    virNodeDeviceDefFree(def);
+    VIR_FREE(xml);
+    return ret;
+}
+
+static int
+xenUnifiedNodeDeviceDettach (virNodeDevicePtr dev)
+{
+    pciDevice *pci;
+    unsigned domain, bus, slot, function;
+    int ret = -1;
+
+    if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
+        return -1;
+
+    pci = pciGetDevice(dev->conn, domain, bus, slot, function);
+    if (!pci)
+        return -1;
+
+    if (pciDettachDevice(dev->conn, pci) < 0)
+        goto out;
+
+    ret = 0;
+out:
+    pciFreeDevice(dev->conn, pci);
+    return ret;
+}
+
+static int
+xenUnifiedNodeDeviceReAttach (virNodeDevicePtr dev)
+{
+    pciDevice *pci;
+    unsigned domain, bus, slot, function;
+    int ret = -1;
+
+    if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
+        return -1;
+
+    pci = pciGetDevice(dev->conn, domain, bus, slot, function);
+    if (!pci)
+        return -1;
+
+    if (pciReAttachDevice(dev->conn, pci) < 0)
+        goto out;
+
+    ret = 0;
+out:
+    pciFreeDevice(dev->conn, pci);
+    return ret;
+}
+
+static int
+xenUnifiedNodeDeviceReset (virNodeDevicePtr dev)
+{
+    pciDevice *pci;
+    unsigned domain, bus, slot, function;
+    int ret = -1;
+
+    if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
+        return -1;
+
+    pci = pciGetDevice(dev->conn, domain, bus, slot, function);
+    if (!pci)
+        return -1;
+
+    if (pciResetDevice(dev->conn, pci) < 0)
+        goto out;
+
+    ret = 0;
+out:
+    pciFreeDevice(dev->conn, pci);
+    return ret;
+}
+
+
 /*----- Register with libvirt.c, and initialise Xen drivers. -----*/
 
 /* The interface which we export upwards to libvirt.c. */
@@ -1486,9 +1605,9 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedDomainEventDeregister, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */
     NULL, /* domainMigrateFinish2 */
-    NULL, /* nodeDeviceDettach */
-    NULL, /* nodeDeviceReAttach */
-    NULL, /* nodeDeviceReset */
+    xenUnifiedNodeDeviceDettach, /* nodeDeviceDettach */
+    xenUnifiedNodeDeviceReAttach, /* nodeDeviceReAttach */
+    xenUnifiedNodeDeviceReset, /* nodeDeviceReset */
 };
 
 /**

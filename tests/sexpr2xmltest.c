@@ -145,6 +145,7 @@ mymain(int argc, char **argv)
     DO_TEST("bridge-ipaddr", "bridge-ipaddr", 3);
     DO_TEST("no-source-cdrom", "no-source-cdrom", 2);
     DO_TEST("pv-localtime", "pv-localtime", 2);
+    DO_TEST("pci-devs", "pci-devs", 2);
 
     DO_TEST("fv-utc", "fv-utc", 1);
     DO_TEST("fv-localtime", "fv-localtime", 1);

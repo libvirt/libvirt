@@ -92,6 +92,11 @@ xenDaemonFormatSxprNet(virConnectPtr conn ATTRIBUTE_UNUSED,
                        int xendConfigVersion,
                        int isAttach);
 static int
+xenDaemonFormatSxprOnePCI(virConnectPtr conn,
+                          virDomainHostdevDefPtr def,
+                          virBufferPtr buf);
+
+static int
 virDomainXMLDevID(virDomainPtr domain,
                   virDomainDeviceDefPtr dev,
                   char *class,
@@ -2145,6 +2150,131 @@ error:
     return -1;
 }
 
+/**
+ * xenDaemonParseSxprPCI
+ * @conn: connection
+ * @root: root sexpr
+ *
+ * This parses out block devices from the domain sexpr
+ *
+ * Returns 0 if successful or -1 if failed.
+ */
+static int
+xenDaemonParseSxprPCI(virConnectPtr conn,
+                      virDomainDefPtr def,
+                      const struct sexpr *root)
+{
+    const struct sexpr *cur, *tmp = NULL, *node;
+    virDomainHostdevDefPtr dev = NULL;
+
+    /*
+     * With the (domain ...) block we have the following odd setup
+     *
+     * (device
+     *    (pci
+     *       (dev (domain 0x0000) (bus 0x00) (slot 0x1b) (func 0x0))
+     *       (dev (domain 0x0000) (bus 0x00) (slot 0x13) (func 0x0))
+     *    )
+     * )
+     *
+     * Normally there is one (device ...) block per device, but in
+     * wierd world of Xen PCI, once (device ...) covers multiple
+     * devices.
+     */
+
+    for (cur = root; cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
+        node = cur->u.s.car;
+        if ((tmp = sexpr_lookup(node, "device/pci")) != NULL)
+            break;
+    }
+
+    if (!tmp)
+        return 0;
+
+    for (cur = tmp; cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
+        const char *domain = NULL;
+        const char *bus = NULL;
+        const char *slot = NULL;
+        const char *func = NULL;
+        int domainID;
+        int busID;
+        int slotID;
+        int funcID;
+
+        node = cur->u.s.car;
+        if (!sexpr_lookup(node, "dev"))
+            continue;
+
+        if (!(domain = sexpr_node(node, "dev/domain"))) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("missing PCI domain"));
+            goto error;
+        }
+        if (!(bus = sexpr_node(node, "dev/bus"))) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("missing PCI bus"));
+            goto error;
+        }
+        if (!(slot = sexpr_node(node, "dev/slot"))) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("missing PCI slot"));
+            goto error;
+        }
+        if (!(func = sexpr_node(node, "dev/func"))) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("missing PCI func"));
+            goto error;
+        }
+
+        if (virStrToLong_i(domain, NULL, 0, &domainID) < 0) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot parse PCI domain '%s'"), domain);
+            goto error;
+        }
+        if (virStrToLong_i(bus, NULL, 0, &busID) < 0) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot parse PCI bus '%s'"), bus);
+            goto error;
+        }
+        if (virStrToLong_i(slot, NULL, 0, &slotID) < 0) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot parse PCI slot '%s'"), slot);
+            goto error;
+        }
+        if (virStrToLong_i(func, NULL, 0, &funcID) < 0) {
+            virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot parse PCI func '%s'"), func);
+            goto error;
+        }
+
+        if (VIR_ALLOC(dev) < 0)
+            goto no_memory;
+
+        dev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
+        dev->managed = 0;
+        dev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
+        dev->source.subsys.u.pci.domain = domainID;
+        dev->source.subsys.u.pci.bus = busID;
+        dev->source.subsys.u.pci.slot = slotID;
+        dev->source.subsys.u.pci.function = funcID;
+
+        if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs+1) < 0) {
+            goto no_memory;
+        }
+
+        def->hostdevs[def->nhostdevs++] = dev;
+    }
+
+    return 0;
+
+no_memory:
+    virReportOOMError(conn);
+
+error:
+    virDomainHostdevDefFree(dev);
+    return -1;
+}
+
 
 /**
  * xenDaemonParseSxpr:
@@ -2313,6 +2443,9 @@ xenDaemonParseSxpr(virConnectPtr conn,
         goto error;
 
     if (xenDaemonParseSxprNets(conn, def, root) < 0)
+        goto error;
+
+    if (xenDaemonParseSxprPCI(conn, def, root) < 0)
         goto error;
 
     /* New style graphics device config */
@@ -3956,6 +4089,20 @@ xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
             goto cleanup;
         break;
 
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        if (dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+            if (xenDaemonFormatSxprOnePCI(domain->conn,
+                                          dev->data.hostdev,
+                                          &buf) < 0)
+                goto cleanup;
+        } else {
+            virXendError(domain->conn, VIR_ERR_NO_SUPPORT, "%s",
+                         _("unsupported device type"));
+            goto cleanup;
+        }
+        break;
+
     default:
         virXendError(domain->conn, VIR_ERR_NO_SUPPORT, "%s",
                      _("unsupported device type"));
@@ -5266,6 +5413,85 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
     return 0;
 }
 
+
+static void
+xenDaemonFormatSxprPCI(virDomainHostdevDefPtr def,
+                       virBufferPtr buf)
+{
+    virBufferVSprintf(buf, "(dev (domain 0x%04x)(bus 0x%02x)(slot 0x%02x)(func 0x%x))",
+                      def->source.subsys.u.pci.domain,
+                      def->source.subsys.u.pci.bus,
+                      def->source.subsys.u.pci.slot,
+                      def->source.subsys.u.pci.function);
+}
+
+static int
+xenDaemonFormatSxprOnePCI(virConnectPtr conn,
+                          virDomainHostdevDefPtr def,
+                          virBufferPtr buf)
+{
+    if (def->managed) {
+        virXendError(conn, VIR_ERR_NO_SUPPORT, "%s",
+                     _("managed PCI devices not supported with XenD"));
+        return -1;
+    }
+
+    virBufferAddLit(buf, "(pci ");
+    xenDaemonFormatSxprPCI(def, buf);
+    virBufferAddLit(buf, ")");
+
+    return 0;
+}
+
+static int
+xenDaemonFormatSxprAllPCI(virConnectPtr conn,
+                          virDomainDefPtr def,
+                          virBufferPtr buf)
+{
+    int hasPCI = 0;
+    int i;
+
+    for (i = 0 ; i < def->nhostdevs ; i++)
+        if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            def->hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            hasPCI = 1;
+
+    if (!hasPCI)
+        return 0;
+
+    /*
+     * With the (domain ...) block we have the following odd setup
+     *
+     * (device
+     *    (pci
+     *       (dev (domain 0x0000) (bus 0x00) (slot 0x1b) (func 0x0))
+     *       (dev (domain 0x0000) (bus 0x00) (slot 0x13) (func 0x0))
+     *    )
+     * )
+     *
+     * Normally there is one (device ...) block per device, but in
+     * wierd world of Xen PCI, once (device ...) covers multiple
+     * devices.
+     */
+
+    virBufferAddLit(buf, "(device (pci ");
+    for (i = 0 ; i < def->nhostdevs ; i++) {
+        if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            def->hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+            if (def->hostdevs[i]->managed) {
+                virXendError(conn, VIR_ERR_NO_SUPPORT, "%s",
+                             _("managed PCI devices not supported with XenD"));
+                return -1;
+            }
+
+            xenDaemonFormatSxprPCI(def->hostdevs[i], buf);
+        }
+    }
+    virBufferAddLit(buf, "))");
+
+    return 0;
+}
+
 int
 xenDaemonFormatSxprSound(virConnectPtr conn,
                          virDomainDefPtr def,
@@ -5537,6 +5763,9 @@ xenDaemonFormatSxpr(virConnectPtr conn,
                                    &buf, hvm, xendConfigVersion, 0) < 0)
             goto error;
 
+    if (xenDaemonFormatSxprAllPCI(conn, def, &buf) < 0)
+        goto error;
+
     /* New style PV graphics config xen >= 3.0.4,
      * or HVM graphics config xen >= 3.0.5 */
     if ((xendConfigVersion >= XEND_CONFIG_MIN_VERS_PVFB_NEWCONF && !hvm) ||
@@ -5624,6 +5853,9 @@ virDomainXMLDevID(virDomainPtr domain,
         strncpy(ref, xref, ref_len);
         free(xref);
         ref[ref_len - 1] = '\0';
+    } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
+               dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+               dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
     } else {
         virXendError(NULL, VIR_ERR_NO_SUPPORT,
                      "%s", _("hotplug of device type not supported"));
