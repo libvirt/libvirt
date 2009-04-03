@@ -1,3 +1,9 @@
+Fri Apr  3 15:03:00 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/virsh.c: Add --console arg for create & start commands
+	to auto-attach to console. Print info about escape key for
+	console. Refuse to connect to remote consoles.
+
 Fri Apr  3 13:41:00 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Misc NUMA memory fixes

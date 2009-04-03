@@ -500,20 +500,30 @@ static const vshCmdOptDef opts_console[] = {
 #ifndef __MINGW32__
 
 static int
-cmdConsole(vshControl *ctl, const vshCmd *cmd)
+cmdRunConsole(vshControl *ctl, virDomainPtr dom)
 {
     xmlDocPtr xml = NULL;
     xmlXPathObjectPtr obj = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    virDomainPtr dom;
     int ret = FALSE;
     char *doc;
+    char *thatHost = NULL;
+    char *thisHost = NULL;
 
-    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
-        return FALSE;
+    if (!(thisHost = virGetHostname())) {
+        vshError(ctl, FALSE, "%s", _("Failed to get local hostname"));
+        goto cleanup;
+    }
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
-        return FALSE;
+    if (!(thatHost = virConnectGetHostname(ctl->conn))) {
+        vshError(ctl, FALSE, "%s", _("Failed to get connection hostname"));
+        goto cleanup;
+    }
+
+    if (STRNEQ(thisHost, thatHost)) {
+        vshError(ctl, FALSE, "%s", _("Cannot connect to a remote console device"));
+        goto cleanup;
+    }
 
     doc = virDomainGetXMLDesc(dom, 0);
     if (!doc)
@@ -532,6 +542,8 @@ cmdConsole(vshControl *ctl, const vshCmd *cmd)
     obj = xmlXPathEval(BAD_CAST "string(/domain/devices/console/@tty)", ctxt);
     if ((obj != NULL) && ((obj->type == XPATH_STRING) &&
                           (obj->stringval != NULL) && (obj->stringval[0] != 0))) {
+        vshPrintExtra(ctl, _("Connected to domain %s\n"), virDomainGetName(dom));
+        vshPrintExtra(ctl, "%s", _("Escape character is ^]\n"));
         if (vshRunConsole((const char *)obj->stringval) == 0)
             ret = TRUE;
     } else {
@@ -543,20 +555,40 @@ cmdConsole(vshControl *ctl, const vshCmd *cmd)
     xmlXPathFreeContext(ctxt);
     if (xml)
         xmlFreeDoc(xml);
-    virDomainFree(dom);
+    free(thisHost);
+    free(thatHost);
+
     return ret;
 }
 
 #else /* __MINGW32__ */
 
 static int
-cmdConsole(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdRunConsole(vshControl *ctl, virDomainPtr dom ATTRIBUTE_UNUSED)
 {
     vshError (ctl, FALSE, "%s", _("console not implemented on this platform"));
     return FALSE;
 }
 
 #endif /* __MINGW32__ */
+
+static int
+cmdConsole(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    int ret;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return FALSE;
+
+    ret = cmdRunConsole(ctl, dom);
+
+    virDomainFree(dom);
+    return ret;
+}
 
 /*
  * "list" command
@@ -882,6 +914,7 @@ static const vshCmdInfo info_create[] = {
 
 static const vshCmdOptDef opts_create[] = {
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML domain description")},
+    {"console", VSH_OT_BOOL, 0, gettext_noop("attach to console after creation")},
     {NULL, 0, 0, NULL}
 };
 
@@ -893,6 +926,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     int found;
     int ret = TRUE;
     char *buffer;
+    int console = vshCommandOptBool(cmd, "console");
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -910,6 +944,8 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     if (dom != NULL) {
         vshPrint(ctl, _("Domain %s created from %s\n"),
                  virDomainGetName(dom), from);
+        if (console)
+            cmdRunConsole(ctl, dom);
         virDomainFree(dom);
     } else {
         vshError(ctl, FALSE, _("Failed to create domain from %s"), from);
@@ -1030,6 +1066,7 @@ static const vshCmdInfo info_start[] = {
 
 static const vshCmdOptDef opts_start[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the inactive domain")},
+    {"console", VSH_OT_BOOL, 0, gettext_noop("attach to console after creation")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1038,6 +1075,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     int ret = TRUE;
+    int console = vshCommandOptBool(cmd, "console");
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -1054,6 +1092,8 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     if (virDomainCreate(dom) == 0) {
         vshPrint(ctl, _("Domain %s started\n"),
                  virDomainGetName(dom));
+        if (console)
+            cmdRunConsole(ctl, dom);
     } else {
         vshError(ctl, FALSE, _("Failed to start domain %s"),
                  virDomainGetName(dom));
