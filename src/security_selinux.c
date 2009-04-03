@@ -162,11 +162,12 @@ SELinuxGenSecurityLabel(virConnectPtr conn,
     char *scontext = NULL;
     int c1 = 0;
     int c2 = 0;
-    if ( ( vm->def->seclabel.label ) ||
-         ( vm->def->seclabel.model ) ||
-         ( vm->def->seclabel.imagelabel )) {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
-                               "%s", _("security labellin already defined for VM"));
+
+    if (vm->def->seclabel.label ||
+        vm->def->seclabel.model ||
+        vm->def->seclabel.imagelabel) {
+        virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("security label already defined for VM"));
         return rc;
     }
 
@@ -197,7 +198,7 @@ SELinuxGenSecurityLabel(virConnectPtr conn,
         goto err;
     }
     vm->def->seclabel.model = strdup(SECURITY_SELINUX_NAME);
-    if (! vm->def->seclabel.model) {
+    if (!vm->def->seclabel.model) {
         virReportOOMError(conn);
         goto err;
     }

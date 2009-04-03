@@ -1,3 +1,16 @@
+Fri Apr  3 15:07:00 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix crash in svirt verification, and incorrect cleanup in
+	VM failure paths.
+	* src/domain_conf.c: Don't extract 'model' from seclabel unless
+	requesting 'live' config, or if its a static label. Add missing
+	error report
+	* src/qemu_driver.c: Fix cleanup in auto-reconnect to running VMs.
+	Fix cleanup of resources if starting a new VM fails
+	* src/security.c: Fix crash if no seclabel model is defined in
+	the virSecuriyDriverVerify method
+	* src/security_selinux.c: Fix error message typo & fix whitespace
+
 Fri Apr  3 15:03:00 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/virsh.c: Add --console arg for create & start commands

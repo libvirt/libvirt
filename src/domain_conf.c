@@ -1859,15 +1859,6 @@ virSecurityLabelDefParseXML(virConnectPtr conn,
     if (virXPathNode(conn, "./seclabel", ctxt) == NULL)
         return 0;
 
-    p = virXPathStringLimit(conn, "string(./seclabel/@model)",
-                            VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
-    if (p == NULL) {
-        virDomainReportError(conn, VIR_ERR_XML_ERROR,
-                             "%s", _("missing security model"));
-        goto error;
-    }
-    def->seclabel.model = p;
-
     p = virXPathStringLimit(conn, "string(./seclabel/@type)",
                             VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
     if (p == NULL) {
@@ -1888,6 +1879,14 @@ virSecurityLabelDefParseXML(virConnectPtr conn,
      */
     if (def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC ||
         !(flags & VIR_DOMAIN_XML_INACTIVE)) {
+        p = virXPathStringLimit(conn, "string(./seclabel/@model)",
+                                VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
+        if (p == NULL) {
+            virDomainReportError(conn, VIR_ERR_XML_ERROR,
+                                 "%s", _("missing security model"));
+            goto error;
+        }
+        def->seclabel.model = p;
 
         p = virXPathStringLimit(conn, "string(./seclabel/label[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
@@ -1905,8 +1904,11 @@ virSecurityLabelDefParseXML(virConnectPtr conn,
         !(flags & VIR_DOMAIN_XML_INACTIVE)) {
         p = virXPathStringLimit(conn, "string(./seclabel/imagelabel[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-        if (p == NULL)
+        if (p == NULL) {
+            virDomainReportError(conn, VIR_ERR_XML_ERROR,
+                                 _("security imagelabel is missing"));
             goto error;
+        }
         def->seclabel.imagelabel = p;
     }
 

@@ -332,7 +332,7 @@ qemudReconnectVMs(struct qemud_driver *driver)
         }
 
         if ((vm->logfile = qemudLogFD(NULL, driver->logDir, vm->def->name)) < 0)
-            return -1;
+            goto next_error;
 
         if (vm->def->id >= driver->nextvmid)
             driver->nextvmid = vm->def->id + 1;
@@ -344,9 +344,12 @@ next_error:
         /* we failed to reconnect the vm so remove it's traces */
         vm->def->id = -1;
         qemudRemoveDomainStatus(NULL, driver, vm);
-        virDomainDefFree(vm->def);
-        vm->def = vm->newDef;
-        vm->newDef = NULL;
+        /* Restore orignal def, if we'd loaded a live one */
+        if (vm->newDef) {
+            virDomainDefFree(vm->def);
+            vm->def = vm->newDef;
+            vm->newDef = NULL;
+        }
 next:
         virDomainObjUnlock(vm);
         if (status)
@@ -1319,14 +1322,6 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     hookData.vm = vm;
     hookData.driver = driver;
 
-   /* If you are using a SecurityDriver with dynamic labelling,
-      then generate a security label for isolation */
-    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
-        driver->securityDriver &&
-        driver->securityDriver->domainGenSecurityLabel &&
-        driver->securityDriver->domainGenSecurityLabel(conn, vm) < 0)
-        return -1;
-
     FD_ZERO(&keepfd);
 
     if (virDomainIsActive(vm)) {
@@ -1335,6 +1330,14 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         return -1;
     }
 
+    /* If you are using a SecurityDriver with dynamic labelling,
+       then generate a security label for isolation */
+    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
+        driver->securityDriver &&
+        driver->securityDriver->domainGenSecurityLabel &&
+        driver->securityDriver->domainGenSecurityLabel(conn, vm) < 0)
+        return -1;
+
     if (vm->def->graphics &&
         vm->def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
         vm->def->graphics->data.vnc.autoport) {
@@ -1342,7 +1345,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         if (port < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("Unable to find an unused VNC port"));
-            return -1;
+            goto cleanup;
         }
         vm->def->graphics->data.vnc.port = port;
     }
@@ -1351,17 +1354,17 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         virReportSystemError(conn, errno,
                              _("cannot create log directory %s"),
                              driver->logDir);
-        return -1;
+        goto cleanup;
     }
 
     if((vm->logfile = qemudLogFD(conn, driver->logDir, vm->def->name)) < 0)
-        return -1;
+        goto cleanup;
 
     emulator = vm->def->emulator;
     if (!emulator)
         emulator = virDomainDefDefaultEmulator(conn, vm->def, driver->caps);
     if (!emulator)
-        return -1;
+        goto cleanup;
 
     /* Make sure the binary we are about to try exec'ing exists.
      * Technically we could catch the exec() failure, but that's
@@ -1371,7 +1374,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         virReportSystemError(conn, errno,
                              _("Cannot find QEMU binary %s"),
                              emulator);
-        return -1;
+        goto cleanup;
     }
 
     if (qemudExtractVersionInfo(emulator,
@@ -1380,21 +1383,17 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Cannot determine QEMU argv syntax %s"),
                          emulator);
-        return -1;
+        goto cleanup;
     }
 
     if (qemuPrepareHostDevices(conn, vm->def) < 0)
-        return -1;
+        goto cleanup;
 
     vm->def->id = driver->nextvmid++;
     if (qemudBuildCommandLine(conn, driver, vm,
                               qemuCmdFlags, &argv, &progenv,
-                              &tapfds, &ntapfds, migrateFrom) < 0) {
-        close(vm->logfile);
-        vm->def->id = -1;
-        vm->logfile = -1;
-        return -1;
-    }
+                              &tapfds, &ntapfds, migrateFrom) < 0)
+        goto cleanup;
 
     tmp = progenv;
     while (*tmp) {
@@ -1457,12 +1456,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                              "%s", _("Unable to daemonize QEMU process"));
             ret = -1;
         }
-    }
-
-    if (ret == 0) {
         vm->state = migrateFrom ? VIR_DOMAIN_PAUSED : VIR_DOMAIN_RUNNING;
-    } else
-        vm->def->id = -1;
+    }
 
     for (i = 0 ; argv[i] ; i++)
         VIR_FREE(argv[i]);
@@ -1479,19 +1474,38 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         VIR_FREE(tapfds);
     }
 
-    if (ret == 0) {
-        if ((qemudWaitForMonitor(conn, driver, vm, pos) < 0) ||
-            (qemudDetectVcpuPIDs(conn, vm) < 0) ||
-            (qemudInitCpus(conn, vm, migrateFrom) < 0) ||
-            (qemudInitPasswords(conn, driver, vm) < 0) ||
-            (qemudDomainSetMemoryBalloon(conn, vm, vm->def->memory) < 0) ||
-            (qemudSaveDomainStatus(conn, qemu_driver, vm) < 0)) {
-            qemudShutdownVMDaemon(conn, driver, vm);
-            return -1;
-        }
+    if (ret == -1)
+        goto cleanup;
+
+    if ((qemudWaitForMonitor(conn, driver, vm, pos) < 0) ||
+        (qemudDetectVcpuPIDs(conn, vm) < 0) ||
+        (qemudInitCpus(conn, vm, migrateFrom) < 0) ||
+        (qemudInitPasswords(conn, driver, vm) < 0) ||
+        (qemudDomainSetMemoryBalloon(conn, vm, vm->def->memory) < 0) ||
+        (qemudSaveDomainStatus(conn, qemu_driver, vm) < 0)) {
+        qemudShutdownVMDaemon(conn, driver, vm);
+        ret = -1;
+        /* No need for 'goto cleanup' now since qemudShutdownVMDaemon does enough */
     }
 
     return ret;
+
+cleanup:
+    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
+        VIR_FREE(vm->def->seclabel.model);
+        VIR_FREE(vm->def->seclabel.label);
+        VIR_FREE(vm->def->seclabel.imagelabel);
+    }
+    if (vm->def->graphics &&
+        vm->def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+        vm->def->graphics->data.vnc.autoport)
+        vm->def->graphics->data.vnc.port = -1;
+    if (vm->logfile != -1) {
+        close(vm->logfile);
+        vm->logfile = -1;
+    }
+    vm->def->id = -1;
+    return -1;
 }
 
 

@@ -33,7 +33,8 @@ virSecurityDriverVerify(virConnectPtr conn, virDomainDefPtr def)
     unsigned int i;
     const virSecurityLabelDefPtr secdef = &def->seclabel;
 
-    if (STREQ(secdef->model, "none"))
+    if (!secdef->model ||
+        STREQ(secdef->model, "none"))
         return 0;
 
     for (i = 0; security_drivers[i] != NULL ; i++) {
@@ -42,7 +43,7 @@ virSecurityDriverVerify(virConnectPtr conn, virDomainDefPtr def)
         }
     }
     virSecurityReportError(conn, VIR_ERR_XML_ERROR,
-                           _("invalid security model"));
+                           _("invalid security model '%s'"), secdef->model);
     return -1;
 }
 
