@@ -1,3 +1,13 @@
+Fri Apr  3 13:41:00 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Misc NUMA memory fixes
+	* qemud/remote.c: Fix check of error status in the helper
+	remoteDispatchNodeGetCellsFreeMemory
+	* src/qemu_driver.c: Report error if requested start cell
+	is out of range. Fix return value if NUMA is not available
+	* src/virsh.c: Convert memory to KB for freecell command.
+	Check return value of virNodeGetFreeMemory
+
 Fri Apr  3 11:55:00 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Support PCI passthrough in Xen driver

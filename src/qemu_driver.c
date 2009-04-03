@@ -1878,15 +1878,23 @@ qemudNodeGetCellsFreeMemory(virConnectPtr conn,
 {
     int n, lastCell, numCells;
     int ret = -1;
+    int maxCell;
 
     if (numa_available() < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
                          "%s", _("NUMA not supported on this host"));
         goto cleanup;
     }
+    maxCell = numa_max_node();
+    if (startCell > maxCell) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("start cell %d out of range (0-%d)"),
+                         startCell, maxCell);
+        goto cleanup;
+    }
     lastCell = startCell + maxCells - 1;
-    if (lastCell > numa_max_node())
-        lastCell = numa_max_node();
+    if (lastCell > maxCell)
+        lastCell = maxCell;
 
     for (numCells = 0, n = startCell ; n <= lastCell ; n++) {
         long long mem;
@@ -1906,7 +1914,7 @@ cleanup:
 static unsigned long long
 qemudNodeGetFreeMemory (virConnectPtr conn)
 {
-    unsigned long long freeMem = -1;
+    unsigned long long freeMem = 0;
     int n;
 
     if (numa_available() < 0) {

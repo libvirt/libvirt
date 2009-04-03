@@ -662,6 +662,7 @@ remoteDispatchNodeGetCellsFreeMemory (struct qemud_server *server ATTRIBUTE_UNUS
                                       remote_node_get_cells_free_memory_args *args,
                                       remote_node_get_cells_free_memory_ret *ret)
 {
+    int err;
 
     if (args->maxCells > REMOTE_NODE_MAX_CELLS) {
         remoteDispatchFormatError (rerr,
@@ -675,15 +676,16 @@ remoteDispatchNodeGetCellsFreeMemory (struct qemud_server *server ATTRIBUTE_UNUS
         return -1;
     }
 
-    ret->freeMems.freeMems_len = virNodeGetCellsFreeMemory(conn,
-                                                           (unsigned long long *)ret->freeMems.freeMems_val,
-                                                           args->startCell,
-                                                           args->maxCells);
-    if (ret->freeMems.freeMems_len == 0) {
+    err = virNodeGetCellsFreeMemory(conn,
+                                    (unsigned long long *)ret->freeMems.freeMems_val,
+                                    args->startCell,
+                                    args->maxCells);
+    if (err <= 0) {
         VIR_FREE(ret->freeMems.freeMems_val);
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
+    ret->freeMems.freeMems_len = err;
 
     return 0;
 }

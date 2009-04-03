@@ -1654,6 +1654,8 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
     cell = vshCommandOptInt(cmd, "cellno", &cell_given);
     if (!cell_given) {
         memory = virNodeGetFreeMemory(ctl->conn);
+        if (memory == 0)
+            return FALSE;
     } else {
         ret = virNodeGetCellsFreeMemory(ctl->conn, &memory, cell, 1);
         if (ret != 1)
@@ -1661,9 +1663,9 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (cell == -1)
-        vshPrint(ctl, "%s: %llu kB\n", _("Total"), memory);
+        vshPrint(ctl, "%s: %llu kB\n", _("Total"), (memory/1024));
     else
-        vshPrint(ctl, "%d: %llu kB\n", cell, memory);
+        vshPrint(ctl, "%d: %llu kB\n", cell, (memory/1024));
 
     return TRUE;
 }
