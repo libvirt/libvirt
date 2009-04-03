@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([libvirt], [0.6.1])
+AC_INIT([libvirt], [0.6.2])
 AC_CONFIG_SRCDIR([src/libvirt.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_CONFIG_HEADER([config.h])
@@ -23,7 +23,7 @@ AC_SUBST([LIBVIRT_VERSION_INFO])
 AC_SUBST([LIBVIRT_VERSION_NUMBER])
 
 dnl Required minimum versions of all libs we depend on
-LIBXML_REQUIRED="2.5.0"
+LIBXML_REQUIRED="2.6.0"
 GNUTLS_REQUIRED="1.0.25"
 AVAHI_REQUIRED="0.6.0"
 POLKIT_REQUIRED="0.6"

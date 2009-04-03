@@ -503,6 +503,15 @@ fi
 %endif
 
 %changelog
+* Fri Apr  3 2009 Daniel Veillard <veillard@redhat.com> - 0.6.2-1
+- release of 0.6.2
+
+* Fri Mar  4 2009 Daniel Veillard <veillard@redhat.com> - 0.6.1-1
+- release of 0.6.1
+
+* Sat Jan 31 2009 Daniel Veillard <veillard@redhat.com> - 0.6.0-1
+- release of 0.6.0
+
 * Tue Nov 25 2008 Daniel Veillard <veillard@redhat.com> - 0.5.0-1
 - release of 0.5.0
 

@@ -76,6 +76,43 @@
         <p>Here is the list of official releases, however since it is early on in the
 development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
+        <h3>0.6.2: Apr  3 2009</h3>
+        <ul><li>New features: support SASL auth for VNC server (Daniel Berrange),
+          memory ballooning in QEMU (Daniel Berrange), SCSI HBA storage pool
+          support (Dave Allan), PCI passthrough in Xen driver (Daniel
+          Berrange)</li><li>Portability: be more flexible in QEmu binaries paths (Daniel
+          Berrange), Mingw portability fixes (Daniel Berrange),</li><li>Documentation: add security attributes in RNG schemas, cleanup
+          of architecture docs, missing disk bus values in RNG schemas,</li><li>Bug fixes: tap vs vbd type on block detach (Cole Robinson and
+          Takahashi Tomohiro), bad free on storage volume error (Daniel
+          Berrange), maplenght computations in remote driver (Daniel Berrange),
+          event dispatching in the daemon (Daniel Berrange), virDomainSetVcpus
+          deadlock (Daniel Berrange), save deadlock in test driver (Cole
+          Robinson), fix timing of security driver init (Cole Robinson),
+          forbid readonly connections from dumping the XML safe info (Cole
+          Robinson), file descriptor leak on remote access,
+          fix labelling of shared/readonly devices (Dan Walsh),
+          virsh missing auth on shell commands (Matthias Bolte),
+          avoid zombie on exec pipe errors (Ryota Ozaki),
+          memory leak in virNodeDeviceGetParent (Daniel Berrange),
+          URI check in migration (Daniel Berrange), various memory bug fixes
+          (Daniel Berrange), python bindings generator fix (Daniel Berrange),
+          NUMA memory fixes (Daniel Berrange), various svirt fixes (Daniel
+          Berrange), fix sparse volume allocation reporting (Cole Robinson),
+          test driver domain restore return value (Cole Robinson),
+          do not lose file format info on volume refresh (Cole Robinson)</li><li>Improvements: get CPU usage info for LXC (Ryota Ozaki), fix domain
+          RNG to add ac97 and tests (Pritesh Kothari), OpenVZ support for
+          non-template filesystem root (Florian Vichot), improve arch
+          capabilities generation (Daniel Berrange), modularization of spec
+          file (Ryota Ozaki), better error reports in SEXPR generation (Daniel
+          Berrange), support for vifname parameter in VIF config (Daniel
+          Berrange), localtime handling for new xen (Daniel Berrange),
+          error reporting/ verification of security labels (Dan Walsh),
+          add --console arg for create and start virsh commands (Daniel
+          Berrange), refresh volume alloc/capacity when dumping XML (Cole
+          Robinson)</li><li>Cleanups: FILE * leaks removal, unused parameters flagging
+          (Maximilian Wilhelm), switch to pre-C99 struct initialization
+           for drivers (Chris Lalancette), symlinks resolving cleanup (Daniel
+           Berrange)</li></ul>
         <h3>0.6.1: Mar  3 2009</h3>
         <ul><li>New features: new APIs for Node device detach reattach and reset
           (Mark McLoughlin), sVirt mandatory access control support (James
