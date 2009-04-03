@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Red Hat, Inc.
+ * Copyright (C) 2008,2009 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -8,6 +8,7 @@
  *
  * Authors:
  *     James Morris <jmorris@namei.org>
+ *     Dan Walsh <dwalsh@redhat.com>
  *
  * SELinux security driver.
  */
@@ -357,6 +358,20 @@ SELinuxRestoreSecurityLabel(virConnectPtr conn,
 }
 
 static int
+SELinuxSecurityVerify(virConnectPtr conn, virDomainDefPtr def)
+{
+    const virSecurityLabelDefPtr secdef = &def->seclabel;
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC) {
+        if (security_check_context(secdef->label) != 0) {
+            virSecurityReportError(conn, VIR_ERR_XML_ERROR,
+                                   _("Invalid security label %s"), secdef->label);
+            return -1;
+        }
+    }
+    return 0;
+}
+
+static int
 SELinuxSetSecurityLabel(virConnectPtr conn,
                         virSecurityDriverPtr drv,
                         virDomainObjPtr vm)
@@ -402,6 +417,7 @@ virSecurityDriver virSELinuxSecurityDriver = {
     .name                       = SECURITY_SELINUX_NAME,
     .probe                      = SELinuxSecurityDriverProbe,
     .open                       = SELinuxSecurityDriverOpen,
+    .domainSecurityVerify       = SELinuxSecurityVerify,
     .domainSetSecurityImageLabel = SELinuxSetSecurityImageLabel,
     .domainRestoreSecurityImageLabel = SELinuxRestoreSecurityImageLabel,
     .domainGenSecurityLabel     = SELinuxGenSecurityLabel,

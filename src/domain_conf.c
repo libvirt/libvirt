@@ -1859,29 +1859,44 @@ virSecurityLabelDefParseXML(virConnectPtr conn,
     if (virXPathNode(conn, "./seclabel", ctxt) == NULL)
         return 0;
 
+    p = virXPathStringLimit(conn, "string(./seclabel/@model)",
+                            VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
+    if (p == NULL) {
+        virDomainReportError(conn, VIR_ERR_XML_ERROR,
+                             "%s", _("missing security model"));
+        goto error;
+    }
+    def->seclabel.model = p;
+
     p = virXPathStringLimit(conn, "string(./seclabel/@type)",
                             VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-    if (p == NULL)
+    if (p == NULL) {
+        virDomainReportError(conn, VIR_ERR_XML_ERROR,
+                             "%s", _("missing security type"));
         goto error;
-    if ((def->seclabel.type = virDomainSeclabelTypeFromString(p)) < 0)
-        goto error;
+    }
+    def->seclabel.type = virDomainSeclabelTypeFromString(p);
     VIR_FREE(p);
+    if (def->seclabel.type < 0) {
+        virDomainReportError(conn, VIR_ERR_XML_ERROR,
+                             _("invalid security type"));
+        goto error;
+    }
 
     /* Only parse details, if using static labels, or
      * if the 'live' VM XML is requested
      */
     if (def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC ||
         !(flags & VIR_DOMAIN_XML_INACTIVE)) {
-        p = virXPathStringLimit(conn, "string(./seclabel/@model)",
-                                VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
-        if (p == NULL)
-            goto error;
-        def->seclabel.model = p;
 
         p = virXPathStringLimit(conn, "string(./seclabel/label[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-        if (p == NULL)
+        if (p == NULL) {
+            virDomainReportError(conn, VIR_ERR_XML_ERROR,
+                                 _("security label is missing"));
             goto error;
+        }
+
         def->seclabel.label = p;
     }
 

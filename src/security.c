@@ -28,6 +28,25 @@ static virSecurityDriverPtr security_drivers[] = {
 };
 
 int
+virSecurityDriverVerify(virConnectPtr conn, virDomainDefPtr def)
+{
+    unsigned int i;
+    const virSecurityLabelDefPtr secdef = &def->seclabel;
+
+    if (STREQ(secdef->model, "none"))
+        return 0;
+
+    for (i = 0; security_drivers[i] != NULL ; i++) {
+        if (STREQ(security_drivers[i]->name, secdef->model)) {
+            return security_drivers[i]->domainSecurityVerify(conn, def);
+        }
+    }
+    virSecurityReportError(conn, VIR_ERR_XML_ERROR,
+                           _("invalid security model"));
+    return -1;
+}
+
+int
 virSecurityDriverStartup(virSecurityDriverPtr *drv,
                          const char *name)
 {

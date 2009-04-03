@@ -1,3 +1,18 @@
+Thu Apr  3 11:55:00 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Improve error reporting/ verification of security labels
+	(Dan Walsh)
+	* src/domain_conf.c: Improve error reporting for parsing of
+	seclabel XML
+	* src/libvirt_private.syms: Export virSecurityDriverVerify
+	* src/qemu_driver.c: Verify seclabel when creating or
+	defining a new domain
+	* src/security.c, src/security.h, src/security_linux.c: Add
+	functions for verifying security labels
+	* tests/.gitignore: Ignore seclabeltest
+	* tests/Makefile.am, tests/seclabeltest.c: Add test for
+	security driver
+
 Thu Apr  2 19:41:00 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Mingw portability fixes

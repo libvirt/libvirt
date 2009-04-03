@@ -15,6 +15,7 @@ nodedevxml2xmltest
 nodeinfotest
 statstest
 qparamtest
+seclabeltest
 *.gcda
 *.gcno
 *.exe

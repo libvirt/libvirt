@@ -2115,6 +2115,9 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
+    if (virSecurityDriverVerify(conn, def) < 0)
+        goto cleanup;
+
     vm = virDomainFindByName(&driver->domains, def->name);
     if (vm) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
@@ -3396,6 +3399,9 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     qemuDriverLock(driver);
     if (!(def = virDomainDefParseString(conn, driver->caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    if (virSecurityDriverVerify(conn, def) < 0)
         goto cleanup;
 
     vm = virDomainFindByName(&driver->domains, def->name);

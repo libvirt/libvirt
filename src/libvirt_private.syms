@@ -248,6 +248,7 @@ free_qparam_set;
 
 
 # security.h
+virSecurityDriverVerify;
 virSecurityDriverStartup;
 virSecurityDriverInit;
 virSecurityDriverSetDOI;

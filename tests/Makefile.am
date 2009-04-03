@@ -64,6 +64,10 @@ if WITH_QEMU
 noinst_PROGRAMS += qemuxml2argvtest qemuxml2xmltest
 endif
 
+if WITH_SECDRIVER_SELINUX
+noinst_PROGRAMS += seclabeltest
+endif
+
 noinst_PROGRAMS += nodedevxml2xmltest
 
 test_scripts = \
@@ -112,6 +116,10 @@ endif
 
 if WITH_QEMU
 TESTS += qemuxml2argvtest qemuxml2xmltest
+endif
+
+if WITH_SECDRIVER_SELINUX
+TESTS += seclabeltest
 endif
 
 TESTS += nodedevxml2xmltest
@@ -202,6 +210,14 @@ nodeinfotest_LDADD = $(LDADDS)
 statstest_SOURCES = \
 	statstest.c testutils.h testutils.c
 statstest_LDADD = $(LDADDS)
+
+if WITH_SECDRIVER_SELINUX
+seclabeltest_SOURCES = \
+	seclabeltest.c
+seclabeltest_LDADD = ../src/libvirt_driver_security.la $(LDADDS)
+else
+EXTRA_DIST += seclabeltest.c
+endif
 
 qparamtest_SOURCES = \
 	qparamtest.c testutils.h testutils.c
