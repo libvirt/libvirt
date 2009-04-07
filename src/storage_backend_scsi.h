@@ -28,6 +28,7 @@
 
 #define LINUX_SYSFS_SCSI_HOST_PREFIX "/sys/class/scsi_host"
 #define LINUX_SYSFS_SCSI_HOST_POSTFIX "device"
+#define LINUX_SYSFS_SCSI_HOST_SCAN_STRING "- - -"
 
 extern virStorageBackend virStorageBackendSCSI;
 

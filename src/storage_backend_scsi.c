@@ -566,6 +566,53 @@ out:
 
 
 static int
+virStorageBackendSCSITriggerRescan(virConnectPtr conn,
+                                   uint32_t host)
+{
+    int fd = -1;
+    int retval = 0;
+    char *path;
+
+    VIR_DEBUG(_("Triggering rescan of host %d"), host);
+
+    if (virAsprintf(&path, "/sys/class/scsi_host/host%u/scan", host) < 0) {
+        virReportOOMError(conn);
+        retval = -1;
+        goto out;
+    }
+
+    VIR_DEBUG(_("Scan trigger path is '%s'"), path);
+
+    fd = open(path, O_WRONLY);
+
+    if (fd < 0) {
+        virReportSystemError(conn, errno,
+                             _("Could not open '%s' to trigger host scan"),
+                             path);
+        retval = -1;
+        goto free_path;
+    }
+
+    if (safewrite(fd,
+                  LINUX_SYSFS_SCSI_HOST_SCAN_STRING,
+                  sizeof(LINUX_SYSFS_SCSI_HOST_SCAN_STRING)) < 0) {
+
+        virReportSystemError(conn, errno,
+                             _("Write to '%s' to trigger host scan failed"),
+                             path);
+        retval = -1;
+    }
+
+    close(fd);
+free_path:
+    VIR_FREE(path);
+out:
+    VIR_DEBUG(_("Rescan of host %d complete"), host);
+    return retval;
+}
+
+
+static int
 virStorageBackendSCSIRefreshPool(virConnectPtr conn,
                                  virStoragePoolObjPtr pool)
 {
@@ -575,12 +622,18 @@ virStorageBackendSCSIRefreshPool(virConnectPtr conn,
     pool->def->allocation = pool->def->capacity = pool->def->available = 0;
 
     if (sscanf(pool->def->source.adapter, "host%u", &host) != 1) {
-        VIR_DEBUG(_("Failed to get host number from '%s'"), pool->def->source.adapter);
+        VIR_DEBUG(_("Failed to get host number from '%s'"),
+                    pool->def->source.adapter);
         retval = -1;
         goto out;
     }
 
     VIR_DEBUG(_("Scanning host%u"), host);
+
+    if (virStorageBackendSCSITriggerRescan(conn, host) < 0) {
+        retval = -1;
+        goto out;
+    }
 
     virStorageBackendSCSIFindLUs(conn, pool, host);
 

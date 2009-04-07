@@ -1,3 +1,8 @@
+Tue Apr  7 14:48:35 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/storage_backend_scsi.[ch]: add SCSI storage rescan support,
+	  patch by David Allan
+
 Fri Apr  3 16:47:22 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in libvirt.spec.in NEWS docs/*: release of 0.6.2
