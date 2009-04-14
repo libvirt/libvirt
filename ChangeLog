@@ -1,3 +1,7 @@
+Tue Apr 14 14:46:29 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.spec.in: fix build on RHEL and Centos 5.x
+
 Tue Apr  7 14:48:35 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/storage_backend_scsi.[ch]: add SCSI storage rescan support,

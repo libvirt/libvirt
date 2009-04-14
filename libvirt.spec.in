@@ -46,6 +46,7 @@
 %define with_rhel5 0
 %else
 %define with_rhel5 1
+%define with_polkit 0
 %endif
 
 
