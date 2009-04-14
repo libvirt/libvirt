@@ -1,3 +1,11 @@
+Tue Apr 14 10:46:44 PDT 2009 Dan Smith <danms@us.ibm.com>
+
+	* src/veth.c: Fix veth off-by-one error
+	  patch by Serge Hallyn
+	* src/lxc_container.c: Stop rootless containers from messing with
+	  system mounts.  Also, make pivot_root code more robust.
+	  patch by Serge Hallyn
+
 Tue Apr 14 14:46:29 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* libvirt.spec.in: fix build on RHEL and Centos 5.x

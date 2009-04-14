@@ -264,50 +264,117 @@ static int lxcContainerChildMountSort(const void *a, const void *b)
   return strcmp(*sb, *sa);
 }
 
+#ifndef MS_REC
+#define MS_REC          16384
+#endif
+
+#ifndef MNT_DETACH
+#define MNT_DETACH      0x00000002
+#endif
+
+#ifndef MS_PRIVATE
+#define MS_PRIVATE              (1<<18)
+#endif
+
+#ifndef MS_SLAVE
+#define MS_SLAVE		(1<<19)
+#endif
+
 static int lxcContainerPivotRoot(virDomainFSDefPtr root)
 {
     int rc;
-    char *oldroot;
+    char *oldroot = NULL, *newroot = NULL;
 
-    /* First step is to ensure the new root itself is
-       a mount point */
-    if (mount(root->src, root->src, NULL, MS_BIND, NULL) < 0) {
-        virReportSystemError(NULL, errno,
-                             _("failed to bind new root %s"),
-                             root->src);
-        return -1;
+    /* root->parent must be private, so make / private. */
+    if (mount("", "/", NULL, MS_PRIVATE|MS_REC, NULL) < 0) {
+        virReportSystemError(NULL, errno, "%s",
+                             _("failed to make root private"));
+        goto err;
     }
 
     if (virAsprintf(&oldroot, "%s/.oldroot", root->src) < 0) {
         virReportOOMError(NULL);
-        return -1;
+        goto err;
     }
 
     if ((rc = virFileMakePath(oldroot)) < 0) {
         virReportSystemError(NULL, rc,
                              _("failed to create %s"),
                              oldroot);
-        VIR_FREE(oldroot);
-        return -1;
+        goto err;
+    }
+
+    /* Create a tmpfs root since old and new roots must be
+     * on separate filesystems */
+    if (mount("", oldroot, "tmpfs", 0, NULL) < 0) {
+        virReportSystemError(NULL, errno,
+                             _("failed to mount empty tmpfs at %s"),
+                             oldroot);
+        goto err;
+    }
+	
+    /* Create a directory called 'new' in tmpfs */
+    if (virAsprintf(&newroot, "%s/new", oldroot) < 0) {
+        virReportOOMError(NULL);
+        goto err;
+    }
+
+    if ((rc = virFileMakePath(newroot)) < 0) {
+        virReportSystemError(NULL, rc,
+                             _("failed to create %s"),
+                             newroot);
+        goto err;
+    }
+
+    /* ... and mount our root onto it */
+    if (mount(root->src, newroot, NULL, MS_BIND|MS_REC, NULL) < 0) {
+        virReportSystemError(NULL, errno,
+                             _("failed to bind new root %s into tmpfs"),
+                             root->src);
+        goto err;
+    }
+
+    /* Now we chroot into the tmpfs, then pivot into the
+     * root->src bind-mounted onto '/new' */
+    if (chroot(oldroot) < 0) {
+        virReportSystemError(NULL, errno, "%s",
+                             _("failed to chroot into tmpfs"));
+        goto err;
+    }
+
+    if (chdir("/new") < 0) {
+        virReportSystemError(NULL, errno, "%s",
+                             _("failed to chdir into /new on tmpfs"));
+        goto err;
     }
 
     /* The old root directory will live at /.oldroot after
      * this and will soon be unmounted completely */
-    if (pivot_root(root->src, oldroot) < 0) {
-        virReportSystemError(NULL, errno,
-                             _("failed to pivot root %s to %s"),
-                             oldroot, root->src);
-        VIR_FREE(oldroot);
-        return -1;
+    if (pivot_root(".", ".oldroot") < 0) {
+        virReportSystemError(NULL, errno, "%s",
+                             _("failed to pivot root"));
+        goto err;
     }
-    VIR_FREE(oldroot);
 
     /* CWD is undefined after pivot_root, so go to / */
-    if (chdir("/") < 0) {
-        return -1;
+    if (chdir("/") < 0)
+        goto err;
+
+    if (umount2(".oldroot", MNT_DETACH) < 0) {
+        virReportSystemError(NULL, errno, "%s",
+                             _("failed to lazily unmount old root"));
+        goto err;
     }
 
+    VIR_FREE(oldroot);
+    VIR_FREE(newroot);
+
     return 0;
+
+err:
+    if (oldroot) VIR_FREE(oldroot);
+    if (newroot) VIR_FREE(newroot);
+    return -1;
 }
 
 static int lxcContainerPopulateDevices(void)
@@ -349,10 +416,9 @@ static int lxcContainerPopulateDevices(void)
                              _("cannot create /dev/pts"));
         return -1;
     }
-    if (mount("/.oldroot/dev/pts", "/dev/pts", NULL,
-              MS_MOVE, NULL) < 0) {
+    if (mount("devpts", "/dev/pts", "devpts", 0, NULL) < 0) {
         virReportSystemError(NULL, errno, "%s",
-                             _("failed to move /dev/pts into container"));
+                             _("failed to mount /dev/pts in container"));
         return -1;
     }
 
@@ -496,6 +562,11 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef)
 {
     int i;
 
+    if (mount("", "/", NULL, MS_SLAVE|MS_REC, NULL) < 0) {
+        virReportSystemError(NULL, errno, "%s",
+                             _("failed to make / slave"));
+        return -1;
+    }
     for (i = 0 ; i < vmDef->nfss ; i++) {
         // XXX fix to support other mount types
         if (vmDef->fss[i]->type != VIR_DOMAIN_FS_TYPE_MOUNT)

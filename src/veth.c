@@ -35,12 +35,12 @@
 static int getFreeVethName(char *veth, int maxLen, int startDev)
 {
     int rc = -1;
-    int devNum = startDev;
+    int devNum = startDev-1;
     char path[PATH_MAX];
 
     do {
-        snprintf(path, PATH_MAX, "/sys/class/net/veth%d/", devNum);
         ++devNum;
+        snprintf(path, PATH_MAX, "/sys/class/net/veth%d/", devNum);
     } while (virFileExists(path));
 
     snprintf(veth, maxLen, "veth%d", devNum);
@@ -97,6 +97,7 @@ int vethCreate(char* veth1, int veth1MaxLen,
 
     while ((1 > strlen(veth2)) || STREQ(veth1, veth2)) {
         vethDev = getFreeVethName(veth2, veth2MaxLen, vethDev);
+        ++vethDev;
         DEBUG("assigned veth2: %s", veth2);
     }
 
