@@ -29,6 +29,9 @@ png = \
   libvirtLogo.png \
   libvirt-net-logical.png \
   libvirt-net-physical.png \
+  libvirt-daemon-arch.png \
+  libvirt-driver-arch.png \
+  libvirt-object-model.png \
   madeWith.png \
   windows-cygwin-1.png \
   windows-cygwin-2.png \
@@ -54,7 +57,10 @@ xml = \
 
 fig = \
   libvirt-net-logical.fig \
-  libvirt-net-physical.fig
+  libvirt-net-physical.fig \
+  libvirt-daemon-arch.fig \
+  libvirt-driver-arch.fig \
+  libvirt-object-model.fig
 
 EXTRA_DIST=					\
   libvirt-api.xml libvirt-refs.xml apibuild.py	\
@@ -82,6 +88,9 @@ ChangeLog.html.in: ChangeLog.xml ChangeLog.xsl
 	  echo "Generating $@"; \
 	  name=`echo $@ | sed -e 's/.tmp//'`; \
 	  $(XSLTPROC) --nonet $(top_srcdir)/docs/ChangeLog.xsl $< > $@ || (rm $@ && exit 1) ; fi )
+
+%.png: %.fig
+	convert -rotate 90 $< $@
 
 %.html.tmp: %.html.in site.xsl page.xsl sitemap.html.in
 	@(if [ -x $(XSLTPROC) ] ; then \

@@ -8,6 +8,22 @@
   <!-- The sitemap.html.in page contains the master navigation structure -->
   <xsl:variable name="sitemap" select="document('sitemap.html.in')/html/body/div[@id='sitemap']"/>
 
+  <xsl:template match="code[@class='docref']" mode="content">
+    <xsl:variable name="name"><xsl:value-of select="."/></xsl:variable>
+    <a href="html/libvirt-libvirt.html#{$name}"><code><xsl:value-of select="$name"/></code></a>
+  </xsl:template>
+
+  <xsl:template match="node() | @*" mode="content">
+    <xsl:copy>
+      <xsl:apply-templates select="node() | @*" mode="content"/>
+    </xsl:copy>
+  </xsl:template>
+
+
+  <xsl:template match="ul[@id='toc']" mode="content">
+    <xsl:call-template name="toc"/>
+  </xsl:template>
+
   <!-- This processes the sitemap to form a context sensitive
        navigation menu for the current page -->
   <xsl:template match="ul" mode="menu">
@@ -143,16 +159,7 @@
             </xsl:apply-templates>
           </div>
           <div id="content">
-            <xsl:for-each select="html/body/*">
-              <xsl:choose>
-                <xsl:when test="name() = 'ul' and @id = 'toc'">
-                  <xsl:call-template name="toc"/>
-                </xsl:when>
-                <xsl:otherwise>
-                  <xsl:copy-of select="."/>
-                </xsl:otherwise>
-              </xsl:choose>
-            </xsl:for-each>
+            <xsl:apply-templates select="/html/body/*" mode="content"/>
           </div>
         </div>
         <div id="footer">

@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<html>
+  <body>
+    <h1>The libvirt API concepts</h1>
+
+    <p> This page describes the main principles and architecture choices
+    behind the definition of the libvirt API:
+    <ul>
+      <li>
+        <a href="#Objects">Objects exposed</a>
+      </li>
+      <li>
+        <a href="#Functions">Functions and naming conventions</a>
+      </li>
+      <li>
+        <a href="#Driver">The drivers</a>
+      </li>
+      <li>
+        <a href="#Remote">Daemon and remote access</a>
+      </li>
+    </ul>
+    <h2><a name="Objects" id="Objects">Objects exposed</a></h2>
+    <p> As defined in the <a href="goals.html">goals section</a>, libvirt
+    API need to expose all the resources needed to manage the virtualization
+    support of recent operating systems. The first object manipulated though
+    the API is <code>virConnectPtr</code> which represent a connection to
+    an hypervisor. Any application using libvirt is likely to start using the
+    API by calling one of <a href="html/libvirt-libvirt.html#virConnectOpen"
+    >the virConnectOpen functions</a>. You will note that those functions take
+    a name argument which is actually an URI to select the right hypervisor to
+    open, this is needed to allow remote connections and also select between
+    different possible hypervisors (for example on a Linux system it may be
+    possible to use both KVM and LinuxContainers on the same node). A NULL
+    name will default to a preselected hypervisor but it's probably not a
+    wise thing to do in most cases. See the <a href="uri.html">connection
+    URI</a> page for a full descriptions of the values allowed.<p>
+    <p> Once the application obtained a <code class='docref'>virConnectPtr</code>
+    connection to the
+    hypervisor it can then use it to manage domains and related resources
+    available for virtualization like storage and networking. All those are
+    exposed as first class objects, and connected to the hypervisor connection
+    (and the node or cluster where it is available).</p>
+    <p class="image">
+      <img alt="first class objects exposed by the API"
+           src="libvirt-object-model.png"/>
+    </p>
+    <p> The figure above shows the five main objects exported by the API:</p>
+    <ul>
+      <li>virConnectPtr: represent a connection to an hypervisor.</li>
+      <li>virDomainPtr: represent one domain either active or defined (i.e.
+      existing as permanent config file and storage but not currently running
+      on that node). The function <code class='docref'>virConnectListDomains</code>
+      allows to list all the IDs for the domains active on this hypervisor.</li>
+      <li>virNetworkPtr: represent one network either active or defined (i.e.
+      existing as permanent config file and storage but not currently activated.
+      The function <code class='docref'>virConnectListNetworks</code>
+      allows to list all the virtualization networks actived on this node.</li>
+      <li>virStorageVolPtr: represent one storage volume, usually this is used
+      as a block device available to one of the domains. The function
+      <code class="docref">virStorageVolLookupByPath</code> allows to find
+      the object based on its path on the node.</li>
+      <li>virStoragePoolPtr: represent a storage pool, i.e. a logical area
+      which can be used to allocate and store storage volumes. The function
+      <code class="docref">virStoragePoolLookupByVolume</code> allows to find
+      the storage pool containing a given storage volume.</li>
+    </ul>
+    <p> Most object manipulated by the library can also be represented using
+      XML descriptions. This is used primarily to create those object, but is
+      also helpful to modify or save their description back.</p>
+    <p> Domains, network and storage pools can be either <code>active</code>
+      i.e. either running or available for immediate use, or
+      <code>defined</code> in which case they are inactive but there is
+      a permanent definition available in the system for them. Based on this
+      thay can be activated dynamically in order to be used.</p>
+    <p> Most kind of object can also be named in various ways:<p>
+    <ul>
+      <li>by their <code>name</code>, an user friendly identifier but
+      whose unicity cannot be garanteed between two nodes.</li>
+      <li>by their <code>ID</code>, which is a runtime unique identifier
+      provided by the hypervisor for one given activation of the object,
+      but it becomes invalid once the resource is deactivated.</li >
+      <li>by their <code>UUID</code>, a 16 bytes unique identifier
+      as defined in <a href="http://www.ietf.org/rfc/rfc4122.txt">RFC 4122</a>,
+      which is garanteed to be unique for long term usage and across a
+      set of nodes.</li>
+    </ul>
+    
+    <h2><a name="Functions" id="Functions">Functions and naming
+      conventions</a></h2>
+    <p> The naming of the functions present in the library is usually
+      made of a prefix describing the object associated to the function
+      and a verb describing the action on that object.</p>
+    <p> For each first class object you will find apis
+      for the following actions:</p>
+    <ul>
+      <li><b>Lookup</b>:...LookupByName, 
+      <li><b>Enumeration</b>:virConnectList... and virConnectNumOf...:
+        those are used to enumerate a set of object available to an given
+        hypervisor connection like:
+        <code class='docref'>virConnectListDomains</code>,
+        <code class='docref'>virConnectNumOfDomains</code>,
+        <code class='docref'>virConnectListNetworks</code>,
+        <code class='docref'>virConnectListStoragePools</code>, etc.</li>
+      <li><b>Description</b>: ...GetInfo: those are generic accessor providing
+        a set of informations about an object, they are
+        <code class='docref'>virNodeGetInfo</code>,
+        <code class='docref'>virDomainGetInfo</code>,
+        <code class='docref'>virStoragePoolGetInfo</code>,
+        <code class='docref'>virStorageVolGetInfo</code>.</li>
+      <li><b>Accessors</b>: ...Get... and ...Set...: those are more specific
+        accessors to query or modify the given object, like
+        <code class='docref'>virConnectGetType</code>,
+        <code class='docref'>virDomainGetMaxMemory</code>,
+        <code class='docref'>virDomainSetMemory</code>,
+        <code class='docref'>virDomainGetVcpus</code>,
+        <code class='docref'>virStoragePoolSetAutostart</code>,
+        <code class='docref'>virNetworkGetBridgeName</code>, etc.</li>
+      <li><b>Creation</b>: </li>
+      <li><b>Destruction</b>: ... </li>
+    </ul>
+    <p> For more in-depth details of the storage related APIs see
+      <a href="storage.html">the storage management page</a>, 
+    <h2><a name="Driver" id="Driver">The libvirt drivers</a></h2>
+    <p></p>
+    <p class="image">
+      <img alt="The libvirt driver architecture"
+           src="libvirt-driver-arch.png"/>
+    </p>
+    <h2><a name="Remote" id="Remote">Daemon and remote access</a></h2>
+    <p></p>
+    <p class="image">
+      <img alt="The libvirt daemon and remote architecture"
+           src="libvirt-daemon-arch.png"/>
+    </p>
+  </body>
+</html>

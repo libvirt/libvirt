@@ -1,3 +1,15 @@
+Wed Apr 15 22:40:50 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/Makefile.am docs/api.html docs/api.html.in docs/archdomain.html
+	 docs/archnetwork.html docs/archnode.html docs/archstorage.html
+	 docs/goals.html docs/intro.html
+	 docs/libvirt-daemon-arch.fig docs/libvirt-daemon-arch.png
+	 docs/libvirt-driver-arch.fig docs/libvirt-driver-arch.png
+	 docs/libvirt-object-model.fig docs/libvirt-object-model.png
+	 docs/page.xsl docs/sitemap.html docs/sitemap.html.in:
+	 adding a new api page, extending the stylesheet to allow references
+	 and including images from Dan Berrange
+
 Wed Apr 15 22:08:12 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: fix for virsh ttyconsole return value bug #495954
