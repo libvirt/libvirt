@@ -1,3 +1,8 @@
+Wed Apr 15 11:52:15 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/xm_internal.c: fix a crash on vcpupin to inactive Xen domains,
+	  as raised by Takahashi Tomohiro
+
 Wed Apr 15 11:33:33 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/lxc_driver.c: adds the getHostname method to the lxc driver

@@ -1624,7 +1624,7 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
     const char *filename;
     xenXMConfCachePtr entry;
     virBuffer mapbuf = VIR_BUFFER_INITIALIZER;
-    char *mapstr = NULL;
+    char *mapstr = NULL, *mapsave = NULL;
     int i, j, n, comma = 0;
     int ret = -1;
     char *cpuset = NULL;
@@ -1679,6 +1679,7 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
     }
 
     mapstr = virBufferContentAndReset(&mapbuf);
+    mapsave = mapstr;
 
     if (VIR_ALLOC_N(cpuset, maxcpu) < 0) {
         virReportOOMError(domain->conn);
@@ -1700,7 +1701,7 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
     ret = 0;
 
  cleanup:
-    VIR_FREE(mapstr);
+    VIR_FREE(mapsave);
     VIR_FREE(cpuset);
     xenUnifiedUnlock(priv);
     return (ret);
