@@ -4930,6 +4930,7 @@ cmdTTYConsole(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
     vshPrint(ctl, "%s\n", (const char *)obj->stringval);
+    ret = TRUE;
 
  cleanup:
     xmlXPathFreeObject(obj);
