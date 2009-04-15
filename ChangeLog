@@ -1,3 +1,7 @@
+Wed Apr 15 21:59:09 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* drvlxc.html.in drvlxc.html: some examples from Serge Hallyn
+
 Wed Apr 15 11:52:15 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/xm_internal.c: fix a crash on vcpupin to inactive Xen domains,
