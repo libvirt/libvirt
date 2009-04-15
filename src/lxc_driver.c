@@ -1404,6 +1404,20 @@ cleanup:
     return ret;
 }
 
+static char *lxcGetHostname (virConnectPtr conn)
+{
+    char *result;
+
+    result = virGetHostname();
+    if (result == NULL) {
+        virReportSystemError (conn, errno,
+                              "%s", _("failed to determine host name"));
+        return NULL;
+    }
+    /* Caller frees this string. */
+    return result;
+}
+
 /* Function Tables */
 static virDriver lxcDriver = {
     VIR_DRV_LXC, /* the number virDrvNo */
@@ -1413,7 +1427,7 @@ static virDriver lxcDriver = {
     NULL, /* supports_feature */
     NULL, /* type */
     lxcVersion, /* version */
-    NULL, /* getHostname */
+    lxcGetHostname, /* getHostname */
     NULL, /* getMaxVcpus */
     NULL, /* nodeGetInfo */
     NULL, /* getCapabilities */

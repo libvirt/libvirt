@@ -1,3 +1,8 @@
+Wed Apr 15 11:33:33 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/lxc_driver.c: adds the getHostname method to the lxc driver
+	  patch by Dan Smith
+
 Tue Apr 14 10:46:44 PDT 2009 Dan Smith <danms@us.ibm.com>
 
 	* src/veth.c: Fix veth off-by-one error
@@ -8,7 +13,8 @@ Tue Apr 14 10:46:44 PDT 2009 Dan Smith <danms@us.ibm.com>
 
 Tue Apr 14 14:46:29 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
-	* libvirt.spec.in: fix build on RHEL and Centos 5.x
+	* libvirt.spec.in: fix build on RHEL and Centos 5.x, patch
+	  by Joseph Shraibman, fixes #495610
 
 Tue Apr  7 14:48:35 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
