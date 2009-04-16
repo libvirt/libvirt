@@ -1,3 +1,7 @@
+Thu Apr 16 14:05:28 GMT 2009 Mark McLoughlin <markmc@redhat.com>
+
+	* src/lxc_container.c: syntax-check fixes
+
 Wed Apr 15 22:40:50 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/Makefile.am docs/api.html docs/api.html.in docs/archdomain.html

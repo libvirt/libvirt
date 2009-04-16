@@ -282,8 +282,10 @@ static int lxcContainerChildMountSort(const void *a, const void *b)
 
 static int lxcContainerPivotRoot(virDomainFSDefPtr root)
 {
-    int rc;
+    int rc, ret;
     char *oldroot = NULL, *newroot = NULL;
+
+    ret = -1;
 
     /* root->parent must be private, so make / private. */
     if (mount("", "/", NULL, MS_PRIVATE|MS_REC, NULL) < 0) {
@@ -312,7 +314,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
                              oldroot);
         goto err;
     }
-	
+
     /* Create a directory called 'new' in tmpfs */
     if (virAsprintf(&newroot, "%s/new", oldroot) < 0) {
         virReportOOMError(NULL);
@@ -366,15 +368,13 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
         goto err;
     }
 
+    ret = 0;
+
+err:
     VIR_FREE(oldroot);
     VIR_FREE(newroot);
 
-    return 0;
-
-err:
-    if (oldroot) VIR_FREE(oldroot);
-    if (newroot) VIR_FREE(newroot);
-    return -1;
+    return ret;
 }
 
 static int lxcContainerPopulateDevices(void)
