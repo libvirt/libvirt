@@ -2529,6 +2529,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     char *unix_sock_ro_perms = NULL;
     char *unix_sock_rw_perms = NULL;
     char *unix_sock_group = NULL;
+    char *buf = NULL;
 
 #if HAVE_POLKIT
     /* Change the default back to no auth for non-root */
@@ -2574,13 +2575,34 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
         if (getuid() != 0) {
             VIR_WARN0(_("Cannot set group when not running as root"));
         } else {
-            char buf[1024];
+            int ret;
             struct group grpdata, *grp;
-            if (getgrnam_r(unix_sock_group, &grpdata, buf, sizeof(buf), &grp) != 0 || !grp) {
+            size_t maxbuf = sysconf(_SC_GETGR_R_SIZE_MAX);
+
+            if (maxbuf == -1)
+                maxbuf = 1024;
+
+            if (VIR_ALLOC_N(buf, maxbuf) < 0) {
+                VIR_ERROR("%s", _("Failed to allocate memory for buffer"));
+                goto free_and_fail;
+            }
+
+            while ((ret = getgrnam_r(unix_sock_group, &grpdata,
+                                     buf, maxbuf,
+                                     &grp)) == ERANGE) {
+                    maxbuf *= 2;
+                    if (maxbuf > 65536 || VIR_REALLOC_N(buf, maxbuf) < 0) {
+                        VIR_ERROR("%s", _("Failed to reallocate enough memory for buffer"));
+                        goto free_and_fail;
+                    }
+            }
+
+            if (ret != 0 || !grp) {
                 VIR_ERROR(_("Failed to lookup group '%s'"), unix_sock_group);
                 goto free_and_fail;
             }
             unix_sock_gid = grp->gr_gid;
+            VIR_FREE (buf);
         }
         free (unix_sock_group);
         unix_sock_group = NULL;
@@ -2643,6 +2665,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     free (unix_sock_ro_perms);
     free (unix_sock_rw_perms);
     free (unix_sock_group);
+    VIR_FREE (buf);
 
     /* Don't bother trying to free listen_addr, tcp_port, tls_port, key_file,
        cert_file, ca_file, or crl_file, since they are initialized to

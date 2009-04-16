@@ -1,3 +1,8 @@
+Do Apr 16 16:48:51 CEST 2009 Guido Günther <agx@sigxcpu.org>
+
+	* src/qemud.c (remoteReadConfigFile): don't hardcode buffer for
+	  getgrnam_r to 1024 bytes and increase it on ERANGE. 
+
 Thu Apr 16 15:20:02 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* src/qemu_conf.c: pass "format=" to qemu -drive rather
