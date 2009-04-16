@@ -1135,7 +1135,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
                 virBufferAddLit(&opt, ",boot=on");
             if (disk->driverType)
-                virBufferVSprintf(&opt, ",fmt=%s", disk->driverType);
+                virBufferVSprintf(&opt, ",format=%s", disk->driverType);
 
             if (disk->cachemode) {
                 const char *mode =

@@ -1,3 +1,10 @@
+Thu Apr 16 15:20:02 GMT 2009 Mark McLoughlin <markmc@redhat.com>
+
+	* src/qemu_conf.c: pass "format=" to qemu -drive rather
+	than "fmt="
+
+	* tests/qemuxml2argvdata/*: fix test cases.
+
 Thu Apr 16 14:05:28 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* src/lxc_container.c: syntax-check fixes
