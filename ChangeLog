@@ -1,3 +1,15 @@
+Do Apr 16 17:48:30 CEST 2009 Guido Günther <agx@sigxcpu.org>
+
+	* src/qemu_driver.c (qemudMonitorCommandExtra): don't log monitor
+	  output to domain log file. It's logged via the logging system
+	  already.
+	  (qemudDomainGetMemoryBalloon, qemudDomainSave,
+	   qemudDomainChangeEjectableMedia, qemudDomainAttachPciDiskDevice,
+	   qemudDomainAttachUsbMassstorageDevice, qemudDomainAttachHostDevice,
+	   qemudDomainDetachPciDiskDevice, qemudDomainBlockStats,
+	   qemudDomainMemoryPeek, qemudDomainMigratePerform): prefix monitor
+	   debug output with vm name.
+
 Do Apr 16 16:48:51 CEST 2009 Guido Günther <agx@sigxcpu.org>
 
 	* src/qemud.c (remoteReadConfigFile): don't hardcode buffer for
