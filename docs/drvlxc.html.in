@@ -70,12 +70,12 @@ debootstrap, whatever) under /opt/vm-1-root:
 <p>
 In both cases, you can define and start a container using:</p>
 <pre>
-lxc --connect lxc:/// define v1.xml
-lxc --connect lxc:/// start v1.xml
+virsh --connect lxc:/// define v1.xml
+virsh --connect lxc:/// start v1.xml
 </pre>
 and then get a console  using:
 <pre>
-lxc --connect lxc:/// console v1
+virsh --connect lxc:/// console v1
 </pre>
 <p>Now doing 'ps -ef' will only show processes in the container, for
 instance.

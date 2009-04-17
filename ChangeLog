@@ -1,3 +1,8 @@
+Fri Apr 17 17:32:16 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c: fix the doc of virNodeGetFreeMemory to say bytes
+	* docs/drvlxc.html.in docs/drvlxc.html: fix command used in examples
+
 Thu Apr 16 17:48:30 CEST 2009 Guido Günther <agx@sigxcpu.org>
 
 	* src/qemu_driver.c (qemudMonitorCommandExtra): don't log monitor

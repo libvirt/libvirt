@@ -3158,8 +3158,10 @@ error:
  * @conn: pointer to the hypervisor connection
  *
  * provides the free memory available on the Node
+ * Note: most libvirt APIs provide memory sizes in kilobytes, but in this
+ * function the returned value is in bytes. Divide by 1024 as necessary.
  *
- * Returns the available free memory in kilobytes or 0 in case of error
+ * Returns the available free memory in bytes or 0 in case of error
  */
 unsigned long long
 virNodeGetFreeMemory(virConnectPtr conn)
