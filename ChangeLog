@@ -1,3 +1,9 @@
+Fri Apr 17 21:10:28 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt_private.syms src/storage_backend.h
+	  src/storage_backend_fs.c src/storage_conf.h src/storage_driver.c:
+	  drop the pool lock when allocating fs volumes, patch by Cole Robinson
+
 Fri Apr 17 18:05:52 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in include/libvirt/virterror.h src/Makefile.am

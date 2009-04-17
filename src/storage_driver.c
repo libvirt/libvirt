@@ -564,6 +564,13 @@ storagePoolUndefine(virStoragePoolPtr obj) {
         goto cleanup;
     }
 
+    if (pool->asyncjobs > 0) {
+        virStorageReportError(obj->conn, VIR_ERR_INTERNAL_ERROR,
+                              _("pool '%s' has asynchronous jobs running."),
+                              pool->def->name);
+        goto cleanup;
+    }
+
     if (virStoragePoolObjDeleteDef(obj->conn, pool) < 0)
         goto cleanup;
 
@@ -696,6 +703,13 @@ storagePoolDestroy(virStoragePoolPtr obj) {
         goto cleanup;
     }
 
+    if (pool->asyncjobs > 0) {
+        virStorageReportError(obj->conn, VIR_ERR_INTERNAL_ERROR,
+                              _("pool '%s' has asynchronous jobs running."),
+                              pool->def->name);
+        goto cleanup;
+    }
+
     if (backend->stopPool &&
         backend->stopPool(obj->conn, pool) < 0)
         goto cleanup;
@@ -745,6 +759,13 @@ storagePoolDelete(virStoragePoolPtr obj,
         goto cleanup;
     }
 
+    if (pool->asyncjobs > 0) {
+        virStorageReportError(obj->conn, VIR_ERR_INTERNAL_ERROR,
+                              _("pool '%s' has asynchronous jobs running."),
+                              pool->def->name);
+        goto cleanup;
+    }
+
     if (!backend->deletePool) {
         virStorageReportError(obj->conn, VIR_ERR_NO_SUPPORT,
                               "%s", _("pool does not support volume delete"));
@@ -785,6 +806,13 @@ storagePoolRefresh(virStoragePoolPtr obj,
     if (!virStoragePoolObjIsActive(pool)) {
         virStorageReportError(obj->conn, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("storage pool is not active"));
+        goto cleanup;
+    }
+
+    if (pool->asyncjobs > 0) {
+        virStorageReportError(obj->conn, VIR_ERR_INTERNAL_ERROR,
+                              _("pool '%s' has asynchronous jobs running."),
+                              pool->def->name);
         goto cleanup;
     }
 
@@ -1161,6 +1189,8 @@ cleanup:
     return ret;
 }
 
+static int storageVolumeDelete(virStorageVolPtr obj, unsigned int flags);
+
 static virStorageVolPtr
 storageVolumeCreateXML(virStoragePoolPtr obj,
                        const char *xmldesc,
@@ -1168,8 +1198,8 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
     virStorageBackendPtr backend;
-    virStorageVolDefPtr vol = NULL;
-    virStorageVolPtr ret = NULL;
+    virStorageVolDefPtr voldef = NULL;
+    virStorageVolPtr ret = NULL, volobj = NULL;
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid);
@@ -1190,11 +1220,11 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
     if ((backend = virStorageBackendForType(pool->def->type)) == NULL)
         goto cleanup;
 
-    vol = virStorageVolDefParse(obj->conn, pool->def, xmldesc, NULL);
-    if (vol == NULL)
+    voldef = virStorageVolDefParse(obj->conn, pool->def, xmldesc, NULL);
+    if (voldef == NULL)
         goto cleanup;
 
-    if (virStorageVolDefFindByName(pool, vol->name)) {
+    if (virStorageVolDefFindByName(pool, voldef->name)) {
         virStorageReportError(obj->conn, VIR_ERR_INVALID_STORAGE_POOL,
                               "%s", _("storage vol already exists"));
         goto cleanup;
@@ -1208,22 +1238,72 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
 
     if (!backend->createVol) {
         virStorageReportError(obj->conn, VIR_ERR_NO_SUPPORT,
-                              "%s", _("storage pool does not support volume creation"));
+                              "%s", _("storage pool does not support volume "
+                                      "creation"));
         goto cleanup;
     }
 
-    /* XXX ought to drop pool lock while creating instance */
-    if (backend->createVol(obj->conn, pool, vol) < 0) {
+    if (backend->createVol(obj->conn, pool, voldef) < 0) {
         goto cleanup;
     }
 
-    pool->volumes.objs[pool->volumes.count++] = vol;
+    pool->volumes.objs[pool->volumes.count++] = voldef;
+    volobj = virGetStorageVol(obj->conn, pool->def->name, voldef->name,
+                              voldef->key);
 
-    ret = virGetStorageVol(obj->conn, pool->def->name, vol->name, vol->key);
-    vol = NULL;
+    if (0) {
+        printf("after vol lookup.\n");
+        virReportOOMError(obj->conn);
+        goto cleanup;
+    }
+
+    if (volobj && backend->buildVol) {
+        int buildret;
+        virStorageVolDefPtr buildvoldef = NULL;
+
+        if (VIR_ALLOC(buildvoldef) < 0) {
+            virReportOOMError(obj->conn);
+            voldef = NULL;
+            goto cleanup;
+        }
+
+        /* Make a shallow copy of the 'defined' volume definition, since the
+         * original allocation value will change as the user polls 'info',
+         * but we only need the initial requested values
+         */
+        memcpy(buildvoldef, voldef, sizeof(*voldef));
+
+        /* Drop the pool lock during volume allocation */
+        pool->asyncjobs++;
+        voldef->building = 1;
+        virStoragePoolObjUnlock(pool);
+
+        buildret = backend->buildVol(obj->conn, buildvoldef);
+
+        virStoragePoolObjLock(pool);
+        voldef->building = 0;
+        pool->asyncjobs--;
+
+        voldef = NULL;
+        VIR_FREE(buildvoldef);
+
+        if (buildret < 0) {
+            virStoragePoolObjUnlock(pool);
+            storageVolumeDelete(volobj, 0);
+            pool = NULL;
+            goto cleanup;
+        }
+
+    }
+
+    ret = volobj;
+    volobj = NULL;
+    voldef = NULL;
 
 cleanup:
-    virStorageVolDefFree(vol);
+    if (volobj)
+        virUnrefStorageVol(volobj);
+    virStorageVolDefFree(voldef);
     if (pool)
         virStoragePoolObjUnlock(pool);
     return ret;
@@ -1263,6 +1343,13 @@ storageVolumeDelete(virStorageVolPtr obj,
     if (!vol) {
         virStorageReportError(obj->conn, VIR_ERR_INVALID_STORAGE_POOL,
                               "%s", _("no storage vol with matching name"));
+        goto cleanup;
+    }
+
+    if (vol->building) {
+        virStorageReportError(obj->conn, VIR_ERR_INTERNAL_ERROR,
+                              _("volume '%s' is still being allocated."),
+                              vol->name);
         goto cleanup;
     }
 

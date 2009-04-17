@@ -46,6 +46,7 @@ virGetDomain;
 virGetNetwork;
 virGetStoragePool;
 virGetStorageVol;
+virUnrefStorageVol;
 virGetNodeDevice;
 virUnrefDomain;
 virUnrefConnect;

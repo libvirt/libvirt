@@ -982,16 +982,16 @@ virStorageBackendFileSystemDelete(virConnectPtr conn,
 
 
 /**
- * Allocate a new file as a volume. This is either done directly
- * for raw/sparse files, or by calling qemu-img/qcow-create for
- * special kinds of files
+ * Set up a volume definition to be added to a pool's volume list, but
+ * don't do any file creation or allocation. By separating the two processes,
+ * we allow allocation progress reporting (by polling the volume's 'info'
+ * function), and can drop the parent pool lock during the (slow) allocation.
  */
 static int
 virStorageBackendFileSystemVolCreate(virConnectPtr conn,
                                      virStoragePoolObjPtr pool,
                                      virStorageVolDefPtr vol)
 {
-    int fd;
 
     if (VIR_ALLOC_N(vol->target.path, strlen(pool->def->target.path) +
                     1 + strlen(vol->name) + 1) < 0) {
@@ -1008,12 +1008,36 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         return -1;
     }
 
+    return 0;
+}
+
+/**
+ * Allocate a new file as a volume. This is either done directly
+ * for raw/sparse files, or by calling qemu-img/qcow-create for
+ * special kinds of files
+ */
+static int
+virStorageBackendFileSystemVolBuild(virConnectPtr conn,
+                                    virStorageVolDefPtr vol)
+{
+    int fd;
+
     if (vol->target.format == VIR_STORAGE_VOL_FILE_RAW) {
         if ((fd = open(vol->target.path, O_RDWR | O_CREAT | O_EXCL,
                        vol->target.perms.mode)) < 0) {
             virReportSystemError(conn, errno,
                                  _("cannot create path '%s'"),
                                  vol->target.path);
+            return -1;
+        }
+
+        /* Seek to the final size, so the capacity is available upfront
+         * for progress reporting */
+        if (ftruncate(fd, vol->capacity) < 0) {
+            virReportSystemError(conn, errno,
+                                 _("cannot extend file '%s'"),
+                                 vol->target.path);
+            close(fd);
             return -1;
         }
 
@@ -1039,7 +1063,6 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
                         virReportSystemError(conn, r,
                                              _("cannot fill file '%s'"),
                                              vol->target.path);
-                        unlink(vol->target.path);
                         close(fd);
                         return -1;
                     }
@@ -1052,22 +1075,12 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
                     virReportSystemError(conn, r,
                                          _("cannot fill file '%s'"),
                                          vol->target.path);
-                    unlink(vol->target.path);
                     close(fd);
                     return -1;
                 }
             }
         }
 
-        /* Now seek to final size, possibly making the file sparse */
-        if (ftruncate(fd, vol->capacity) < 0) {
-            virReportSystemError(conn, errno,
-                                 _("cannot extend file '%s'"),
-                                 vol->target.path);
-            unlink(vol->target.path);
-            close(fd);
-            return -1;
-        }
     } else if (vol->target.format == VIR_STORAGE_VOL_FILE_DIR) {
         if (mkdir(vol->target.path, vol->target.perms.mode) < 0) {
             virReportSystemError(conn, errno,
@@ -1127,7 +1140,6 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         snprintf(size, sizeof(size), "%llu", vol->capacity/1024);
 
         if (virRun(conn, imgargv, NULL) < 0) {
-            unlink(vol->target.path);
             return -1;
         }
 
@@ -1135,7 +1147,6 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
             virReportSystemError(conn, errno,
                                  _("cannot read path '%s'"),
                                  vol->target.path);
-            unlink(vol->target.path);
             return -1;
         }
 #elif HAVE_QCOW_CREATE
@@ -1168,7 +1179,6 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         imgargv[3] = NULL;
 
         if (virRun(conn, imgargv, NULL) < 0) {
-            unlink(vol->target.path);
             return -1;
         }
 
@@ -1176,7 +1186,6 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
             virReportSystemError(conn, errno,
                                  _("cannot read path '%s'"),
                                  vol->target.path);
-            unlink(vol->target.path);
             return -1;
         }
 #else
@@ -1193,7 +1202,6 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
             virReportSystemError(conn, errno,
                                  _("cannot set file owner '%s'"),
                                  vol->target.path);
-            unlink(vol->target.path);
             close(fd);
             return -1;
         }
@@ -1202,7 +1210,6 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         virReportSystemError(conn, errno,
                              _("cannot set file mode '%s'"),
                              vol->target.path);
-        unlink(vol->target.path);
         close(fd);
         return -1;
     }
@@ -1211,7 +1218,6 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
     if (virStorageBackendUpdateVolTargetInfoFD(conn, &vol->target, fd,
                                                &vol->allocation,
                                                NULL) < 0) {
-        unlink(vol->target.path);
         close(fd);
         return -1;
     }
@@ -1220,7 +1226,6 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         virReportSystemError(conn, errno,
                              _("cannot close file '%s'"),
                              vol->target.path);
-        unlink(vol->target.path);
         return -1;
     }
 
@@ -1268,6 +1273,7 @@ virStorageBackend virStorageBackendDirectory = {
     .buildPool = virStorageBackendFileSystemBuild,
     .refreshPool = virStorageBackendFileSystemRefresh,
     .deletePool = virStorageBackendFileSystemDelete,
+    .buildVol = virStorageBackendFileSystemVolBuild,
     .createVol = virStorageBackendFileSystemVolCreate,
     .refreshVol = virStorageBackendFileSystemVolRefresh,
     .deleteVol = virStorageBackendFileSystemVolDelete,
@@ -1282,6 +1288,7 @@ virStorageBackend virStorageBackendFileSystem = {
     .refreshPool = virStorageBackendFileSystemRefresh,
     .stopPool = virStorageBackendFileSystemStop,
     .deletePool = virStorageBackendFileSystemDelete,
+    .buildVol = virStorageBackendFileSystemVolBuild,
     .createVol = virStorageBackendFileSystemVolCreate,
     .refreshVol = virStorageBackendFileSystemVolRefresh,
     .deleteVol = virStorageBackendFileSystemVolDelete,
@@ -1295,6 +1302,7 @@ virStorageBackend virStorageBackendNetFileSystem = {
     .refreshPool = virStorageBackendFileSystemRefresh,
     .stopPool = virStorageBackendFileSystemStop,
     .deletePool = virStorageBackendFileSystemDelete,
+    .buildVol = virStorageBackendFileSystemVolBuild,
     .createVol = virStorageBackendFileSystemVolCreate,
     .refreshVol = virStorageBackendFileSystemVolRefresh,
     .deleteVol = virStorageBackendFileSystemVolDelete,

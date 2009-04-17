@@ -84,6 +84,8 @@ struct _virStorageVolDef {
     char *key;
     int type; /* virStorageVolType enum */
 
+    unsigned int building;
+
     unsigned long long allocation;
     unsigned long long capacity;
 
@@ -238,6 +240,7 @@ struct _virStoragePoolObj {
     char *autostartLink;
     int active;
     int autostart;
+    unsigned int asyncjobs;
 
     virStoragePoolDefPtr def;
     virStoragePoolDefPtr newDef;
