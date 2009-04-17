@@ -182,6 +182,8 @@ AC_ARG_WITH([uml],
 [  --with-uml              add UML support (on)],[],[with_uml=yes])
 AC_ARG_WITH([openvz],
 [  --with-openvz           add OpenVZ support (on)],[],[with_openvz=yes])
+AC_ARG_WITH([vbox],
+[  --with-vbox             add VirtualBox support (on)],[],[with_vbox=yes])
 AC_ARG_WITH([lxc],
 [  --with-lxc              add Linux Container support (on)],[],[with_lxc=yes])
 AC_ARG_WITH([test],
@@ -276,6 +278,11 @@ if test "$with_openvz" = "yes"; then
     AC_DEFINE_UNQUOTED([WITH_OPENVZ], 1, [whether OpenVZ driver is enabled])
 fi
 AM_CONDITIONAL([WITH_OPENVZ], [test "$with_openvz" = "yes"])
+
+if test "x$with_vbox" = "xyes"; then
+    AC_DEFINE_UNQUOTED([WITH_VBOX], 1, [whether VirtualBox driver is enabled])
+fi
+AM_CONDITIONAL([WITH_VBOX], [test "$with_vbox" = "yes"])
 
 if test "$with_libvirtd" = "no" ; then
   with_lxc=no
@@ -1362,6 +1369,7 @@ AC_MSG_NOTICE([   Proxy: $with_xen_proxy])
 AC_MSG_NOTICE([    QEMU: $with_qemu])
 AC_MSG_NOTICE([     UML: $with_uml])
 AC_MSG_NOTICE([  OpenVZ: $with_openvz])
+AC_MSG_NOTICE([    VBox: $with_vbox])
 AC_MSG_NOTICE([     LXC: $with_lxc])
 AC_MSG_NOTICE([    Test: $with_test])
 AC_MSG_NOTICE([  Remote: $with_remote])

@@ -129,6 +129,11 @@ OPENVZ_DRIVER_SOURCES =						\
 		openvz_conf.c openvz_conf.h			\
 		openvz_driver.c openvz_driver.h
 
+VBOX_DRIVER_SOURCES =                                 \
+        vbox/vbox_XPCOMCGlue.c vbox/vbox_XPCOMCGlue.h \
+        vbox/vbox_driver.c vbox/vbox_driver.h         \
+        vbox/vbox_V2_2.c
+
 QEMU_DRIVER_SOURCES =						\
 		qemu_conf.c qemu_conf.h				\
 		qemu_driver.c qemu_driver.h
@@ -271,6 +276,19 @@ endif
 libvirt_driver_openvz_la_SOURCES = $(OPENVZ_DRIVER_SOURCES)
 endif
 
+if WITH_VBOX
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_vbox.la
+else
+noinst_LTLIBRARIES += libvirt_driver_vbox.la
+libvirt_la_LIBADD += libvirt_driver_vbox.la
+endif
+if WITH_DRIVER_MODULES
+libvirt_driver_vbox_la_LDFLAGS = -module -avoid-version
+endif
+libvirt_driver_vbox_la_SOURCES = $(VBOX_DRIVER_SOURCES)
+endif
+
 if WITH_QEMU
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_qemu.la
@@ -410,6 +428,7 @@ EXTRA_DIST +=							\
 		$(LXC_DRIVER_SOURCES)				\
 		$(UML_DRIVER_SOURCES)				\
 		$(OPENVZ_DRIVER_SOURCES)			\
+		$(VBOX_DRIVER_SOURCES)				\
 		$(NETWORK_DRIVER_SOURCES)			\
 		$(STORAGE_DRIVER_SOURCES)			\
 		$(STORAGE_DRIVER_FS_SOURCES)			\

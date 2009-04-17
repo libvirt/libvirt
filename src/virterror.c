@@ -153,6 +153,8 @@ static const char *virErrorDomainName(virErrorDomain domain) {
             break;
         case VIR_FROM_SECURITY:
             dom = "Security Labeling ";
+        case VIR_FROM_VBOX:
+            dom = "VBOX ";
             break;
     }
     return(dom);

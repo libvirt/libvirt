@@ -1,3 +1,12 @@
+Fri Apr 17 18:05:52 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in include/libvirt/virterror.h src/Makefile.am
+	  src/domain_conf.[ch] src/driver.h src/virterror.c src/vbox/README
+	  src/vbox/vbox_CAPI_v2_2.h src/vbox/vbox_V2_2.c
+	  src/vbox/vbox_XPCOMCGlue.[ch] src/vbox/vbox_driver.[ch]
+	  src/vbox/vbox_tmpl.c: integration of the VirtualBox support
+	  patches by Pritesh Kothari
+
 Fri Apr 17 17:32:16 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c: fix the doc of virNodeGetFreeMemory to say bytes

@@ -62,6 +62,7 @@ typedef enum {
     VIR_FROM_NODEDEV, /* Error from node device monitor */
     VIR_FROM_XEN_INOTIFY, /* Error from xen inotify layer */
     VIR_FROM_SECURITY,  /* Error from security framework */
+    VIR_FROM_VBOX,    /* Error from VirtualBox driver */
 } virErrorDomain;
 
 

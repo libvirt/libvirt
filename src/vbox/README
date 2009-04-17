@@ -1,0 +1,33 @@
+
+    Explanation about the how multi-version support
+    for VirtualBox libvirt driver is implemented.
+
+Since VirtualBox adds multiple new features for each release, it is but
+natural that the C API which VirtualBox exposes is volatile across
+versions and thus needs a good mechanism to handle multiple versions
+during runtime. The solution was something like this:
+
+Firstly the file structure is as below:
+
+vbox_CAPI_v2_2.h
+vbox_XPCOMCGlue.h
+vbox_XPCOMCGlue.c
+These files are C API/glue code files directly taken from the
+VirtualBox OSE source and is needed for C API to work as expected.
+
+vbox_driver.h
+vbox_driver.c
+These files have the main logic for registering the virtualbox driver
+with libvirt.
+
+vbox_V2_2.c
+The file which has version dependent changes and includes the template
+file for given below for all of its functionality.
+
+vbox_tmpl.c
+The file where all the real driver implementation code exists.
+
+Now there would be a vbox_V*.c file (for eg: vbox_V2_2.c for V2.2) for
+each major virtualbox version which would do some preprocessor magic
+and include the template file (vbox_tmpl.c) in it for the functionality
+it offers.
