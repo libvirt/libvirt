@@ -1,4 +1,4 @@
-Do Apr 16 17:48:30 CEST 2009 Guido Günther <agx@sigxcpu.org>
+Thu Apr 16 17:48:30 CEST 2009 Guido Günther <agx@sigxcpu.org>
 
 	* src/qemu_driver.c (qemudMonitorCommandExtra): don't log monitor
 	  output to domain log file. It's logged via the logging system
@@ -10,7 +10,7 @@ Do Apr 16 17:48:30 CEST 2009 Guido Günther <agx@sigxcpu.org>
 	   qemudDomainMemoryPeek, qemudDomainMigratePerform): prefix monitor
 	   debug output with vm name.
 
-Do Apr 16 16:48:51 CEST 2009 Guido Günther <agx@sigxcpu.org>
+Thu Apr 16 16:48:51 CEST 2009 Guido Günther <agx@sigxcpu.org>
 
 	* src/qemud.c (remoteReadConfigFile): don't hardcode buffer for
 	  getgrnam_r to 1024 bytes and increase it on ERANGE. 
