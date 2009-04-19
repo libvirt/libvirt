@@ -1390,7 +1390,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         goto cleanup;
 
     vm->def->id = driver->nextvmid++;
-    if (qemudBuildCommandLine(conn, driver, vm,
+    if (qemudBuildCommandLine(conn, driver, vm->def,
                               qemuCmdFlags, &argv, &progenv,
                               &tapfds, &ntapfds, migrateFrom) < 0)
         goto cleanup;

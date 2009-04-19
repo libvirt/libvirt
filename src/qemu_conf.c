@@ -756,7 +756,7 @@ static int qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
  */
 int qemudBuildCommandLine(virConnectPtr conn,
                           struct qemud_driver *driver,
-                          virDomainObjPtr vm,
+                          virDomainDefPtr def,
                           unsigned int qemuCmdFlags,
                           const char ***retargv,
                           const char ***retenv,
@@ -782,7 +782,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     uname_normalize(&ut);
 
-    virUUIDFormat(vm->def->uuid, uuid);
+    virUUIDFormat(def->uuid, uuid);
 
     /* Migration is very annoying due to wildly varying syntax & capabilities
      * over time of KVM / QEMU codebases
@@ -811,9 +811,9 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    emulator = vm->def->emulator;
+    emulator = def->emulator;
     if (!emulator)
-        emulator = virDomainDefDefaultEmulator(conn, vm->def, driver->caps);
+        emulator = virDomainDefDefaultEmulator(conn, def, driver->caps);
     if (!emulator)
         return -1;
 
@@ -824,8 +824,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
      * 3. The qemu binary has the -no-kqemu flag
      */
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_KQEMU) &&
-        STREQ(ut.machine, vm->def->os.arch) &&
-        vm->def->virtType == VIR_DOMAIN_VIRT_QEMU)
+        STREQ(ut.machine, def->os.arch) &&
+        def->virtType == VIR_DOMAIN_VIRT_QEMU)
         disableKQEMU = 1;
 
     /* Need to explicitly disable KVM if
@@ -834,8 +834,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
      * 3. The qemu binary has the -no-kvm flag
      */
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_KVM) &&
-        STREQ(ut.machine, vm->def->os.arch) &&
-        vm->def->virtType == VIR_DOMAIN_VIRT_QEMU)
+        STREQ(ut.machine, def->os.arch) &&
+        def->virtType == VIR_DOMAIN_VIRT_QEMU)
         disableKVM = 1;
 
     /*
@@ -850,7 +850,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
      *  1. guest OS is i686
      *  2. emulator is qemu-system-x86_64
      */
-    if (STREQ(vm->def->os.arch, "i686") &&
+    if (STREQ(def->os.arch, "i686") &&
         ((STREQ(ut.machine, "x86_64") &&
           strstr(emulator, "kvm")) ||
          strstr(emulator, "x86_64")))
@@ -931,10 +931,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
      * is set post-startup using the balloon driver. If balloon driver
      * is not supported, then they're out of luck anyway
      */
-    snprintf(memory, sizeof(memory), "%lu", vm->def->maxmem/1024);
-    snprintf(vcpus, sizeof(vcpus), "%lu", vm->def->vcpus);
-    snprintf(domid, sizeof(domid), "%d", vm->def->id);
-    pidfile = virFilePid(driver->stateDir, vm->def->name);
+    snprintf(memory, sizeof(memory), "%lu", def->maxmem/1024);
+    snprintf(vcpus, sizeof(vcpus), "%lu", def->vcpus);
+    snprintf(domid, sizeof(domid), "%d", def->id);
+    pidfile = virFilePid(driver->stateDir, def->name);
     if (!pidfile)
         goto error;
 
@@ -955,9 +955,9 @@ int qemudBuildCommandLine(virConnectPtr conn,
      * a machine in the capabilities data for QEMU. So this
      * check is just here as a safety in case the unexpected
      * happens */
-    if (vm->def->os.machine) {
+    if (def->os.machine) {
         ADD_ARG_LIT("-M");
-        ADD_ARG_LIT(vm->def->os.machine);
+        ADD_ARG_LIT(def->os.machine);
     }
     if (cpu) {
         ADD_ARG_LIT("-cpu");
@@ -975,7 +975,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_NAME) {
         ADD_ARG_LIT("-name");
-        ADD_ARG_LIT(vm->def->name);
+        ADD_ARG_LIT(def->name);
     }
     if (qemuCmdFlags & QEMUD_CMD_FLAG_UUID) {
         ADD_ARG_LIT("-uuid");
@@ -993,7 +993,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
      * if you ask for nographic. So we have to make sure we override
      * these defaults ourselves...
      */
-    if (!vm->def->graphics)
+    if (!def->graphics)
         ADD_ARG_LIT("-nographic");
 
     ADD_ARG_LIT("-monitor");
@@ -1002,19 +1002,19 @@ int qemudBuildCommandLine(virConnectPtr conn,
     ADD_ARG_LIT("-pidfile");
     ADD_ARG(pidfile);
 
-    if (vm->def->localtime)
+    if (def->localtime)
         ADD_ARG_LIT("-localtime");
 
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT) &&
-        vm->def->onReboot != VIR_DOMAIN_LIFECYCLE_RESTART)
+        def->onReboot != VIR_DOMAIN_LIFECYCLE_RESTART)
         ADD_ARG_LIT("-no-reboot");
 
-    if (!(vm->def->features & (1 << VIR_DOMAIN_FEATURE_ACPI)))
+    if (!(def->features & (1 << VIR_DOMAIN_FEATURE_ACPI)))
         ADD_ARG_LIT("-no-acpi");
 
-    if (!vm->def->os.bootloader) {
-        for (i = 0 ; i < vm->def->os.nBootDevs ; i++) {
-            switch (vm->def->os.bootDevs[i]) {
+    if (!def->os.bootloader) {
+        for (i = 0 ; i < def->os.nBootDevs ; i++) {
+            switch (def->os.bootDevs[i]) {
             case VIR_DOMAIN_BOOT_CDROM:
                 boot[i] = 'd';
                 break;
@@ -1032,29 +1032,29 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 break;
             }
         }
-        boot[vm->def->os.nBootDevs] = '\0';
+        boot[def->os.nBootDevs] = '\0';
         ADD_ARG_LIT("-boot");
         ADD_ARG_LIT(boot);
 
-        if (vm->def->os.kernel) {
+        if (def->os.kernel) {
             ADD_ARG_LIT("-kernel");
-            ADD_ARG_LIT(vm->def->os.kernel);
+            ADD_ARG_LIT(def->os.kernel);
         }
-        if (vm->def->os.initrd) {
+        if (def->os.initrd) {
             ADD_ARG_LIT("-initrd");
-            ADD_ARG_LIT(vm->def->os.initrd);
+            ADD_ARG_LIT(def->os.initrd);
         }
-        if (vm->def->os.cmdline) {
+        if (def->os.cmdline) {
             ADD_ARG_LIT("-append");
-            ADD_ARG_LIT(vm->def->os.cmdline);
+            ADD_ARG_LIT(def->os.cmdline);
         }
     } else {
         ADD_ARG_LIT("-bootloader");
-        ADD_ARG_LIT(vm->def->os.bootloader);
+        ADD_ARG_LIT(def->os.bootloader);
     }
 
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
+    for (i = 0 ; i < def->ndisks ; i++) {
+        virDomainDiskDefPtr disk = def->disks[i];
 
         if (disk->driverName != NULL &&
             !STREQ(disk->driverName, "qemu")) {
@@ -1071,8 +1071,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
         /* If QEMU supports boot=on for -drive param... */
         if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_BOOT) {
-            for (i = 0 ; i < vm->def->os.nBootDevs ; i++) {
-                switch (vm->def->os.bootDevs[i]) {
+            for (i = 0 ; i < def->os.nBootDevs ; i++) {
+                switch (def->os.bootDevs[i]) {
                 case VIR_DOMAIN_BOOT_CDROM:
                     bootCD = 1;
                     break;
@@ -1086,11 +1086,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
             }
         }
 
-        for (i = 0 ; i < vm->def->ndisks ; i++) {
+        for (i = 0 ; i < def->ndisks ; i++) {
             virBuffer opt = VIR_BUFFER_INITIALIZER;
             char *optstr;
             int bootable = 0;
-            virDomainDiskDefPtr disk = vm->def->disks[i];
+            virDomainDiskDefPtr disk = def->disks[i];
             int idx = virDiskNameToIndex(disk->dst);
             const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
 
@@ -1159,10 +1159,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
             ADD_ARG(optstr);
         }
     } else {
-        for (i = 0 ; i < vm->def->ndisks ; i++) {
+        for (i = 0 ; i < def->ndisks ; i++) {
             char dev[NAME_MAX];
             char file[PATH_MAX];
-            virDomainDiskDefPtr disk = vm->def->disks[i];
+            virDomainDiskDefPtr disk = def->disks[i];
 
             if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
                 if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
@@ -1200,14 +1200,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (!vm->def->nnets) {
+    if (!def->nnets) {
         ADD_ARG_LIT("-net");
         ADD_ARG_LIT("none");
     } else {
         int vlan = 0;
-        for (i = 0 ; i < vm->def->nnets ; i++) {
+        for (i = 0 ; i < def->nnets ; i++) {
             char nic[100];
-            virDomainNetDefPtr net = vm->def->nets[i];
+            virDomainNetDefPtr net = def->nets[i];
 
             if (snprintf(nic, sizeof(nic),
                          "nic,macaddr=%02x:%02x:%02x:%02x:%02x:%02x,vlan=%d%s%s",
@@ -1306,13 +1306,13 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (!vm->def->nserials) {
+    if (!def->nserials) {
         ADD_ARG_LIT("-serial");
         ADD_ARG_LIT("none");
     } else {
-        for (i = 0 ; i < vm->def->nserials ; i++) {
+        for (i = 0 ; i < def->nserials ; i++) {
             char buf[4096];
-            virDomainChrDefPtr serial = vm->def->serials[i];
+            virDomainChrDefPtr serial = def->serials[i];
 
             if (qemudBuildCommandLineChrDevStr(serial, buf, sizeof(buf)) < 0)
                 goto error;
@@ -1322,13 +1322,13 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (!vm->def->nparallels) {
+    if (!def->nparallels) {
         ADD_ARG_LIT("-parallel");
         ADD_ARG_LIT("none");
     } else {
-        for (i = 0 ; i < vm->def->nparallels ; i++) {
+        for (i = 0 ; i < def->nparallels ; i++) {
             char buf[4096];
-            virDomainChrDefPtr parallel = vm->def->parallels[i];
+            virDomainChrDefPtr parallel = def->parallels[i];
 
             if (qemudBuildCommandLineChrDevStr(parallel, buf, sizeof(buf)) < 0)
                 goto error;
@@ -1339,8 +1339,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     ADD_ARG_LIT("-usb");
-    for (i = 0 ; i < vm->def->ninputs ; i++) {
-        virDomainInputDefPtr input = vm->def->inputs[i];
+    for (i = 0 ; i < def->ninputs ; i++) {
+        virDomainInputDefPtr input = def->inputs[i];
 
         if (input->bus == VIR_DOMAIN_INPUT_BUS_USB) {
             ADD_ARG_LIT("-usbdevice");
@@ -1348,21 +1348,21 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (vm->def->graphics &&
-        vm->def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+    if (def->graphics &&
+        def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virBuffer opt = VIR_BUFFER_INITIALIZER;
         char *optstr;
 
         if (qemuCmdFlags & QEMUD_CMD_FLAG_VNC_COLON) {
-            if (vm->def->graphics->data.vnc.listenAddr)
-                virBufferAdd(&opt, vm->def->graphics->data.vnc.listenAddr, -1);
+            if (def->graphics->data.vnc.listenAddr)
+                virBufferAdd(&opt, def->graphics->data.vnc.listenAddr, -1);
             else if (driver->vncListen)
                 virBufferAdd(&opt, driver->vncListen, -1);
 
             virBufferVSprintf(&opt, ":%d",
-                              vm->def->graphics->data.vnc.port - 5900);
+                              def->graphics->data.vnc.port - 5900);
 
-            if (vm->def->graphics->data.vnc.passwd ||
+            if (def->graphics->data.vnc.passwd ||
                 driver->vncPassword)
                 virBufferAddLit(&opt, ",password");
 
@@ -1387,7 +1387,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
             }
         } else {
             virBufferVSprintf(&opt, "%d",
-                              vm->def->graphics->data.vnc.port - 5900);
+                              def->graphics->data.vnc.port - 5900);
         }
         if (virBufferError(&opt))
             goto no_memory;
@@ -1396,22 +1396,22 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
         ADD_ARG_LIT("-vnc");
         ADD_ARG(optstr);
-        if (vm->def->graphics->data.vnc.keymap) {
+        if (def->graphics->data.vnc.keymap) {
             ADD_ARG_LIT("-k");
-            ADD_ARG_LIT(vm->def->graphics->data.vnc.keymap);
+            ADD_ARG_LIT(def->graphics->data.vnc.keymap);
         }
-    } else if (vm->def->graphics &&
-               vm->def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
+    } else if (def->graphics &&
+               def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
         char *xauth = NULL;
         char *display = NULL;
 
-        if (vm->def->graphics->data.sdl.xauth &&
+        if (def->graphics->data.sdl.xauth &&
             virAsprintf(&xauth, "XAUTHORITY=%s",
-                        vm->def->graphics->data.sdl.xauth) < 0)
+                        def->graphics->data.sdl.xauth) < 0)
             goto no_memory;
-        if (vm->def->graphics->data.sdl.display &&
+        if (def->graphics->data.sdl.display &&
             virAsprintf(&display, "DISPLAY=%s",
-                        vm->def->graphics->data.sdl.display) < 0) {
+                        def->graphics->data.sdl.display) < 0) {
             VIR_FREE(xauth);
             goto no_memory;
         }
@@ -1420,19 +1420,19 @@ int qemudBuildCommandLine(virConnectPtr conn,
             ADD_ENV(xauth);
         if (display)
             ADD_ENV(display);
-        if (vm->def->graphics->data.sdl.fullscreen)
+        if (def->graphics->data.sdl.fullscreen)
             ADD_ARG_LIT("-full-screen");
     }
 
     /* Add sound hardware */
-    if (vm->def->nsounds) {
+    if (def->nsounds) {
         int size = 100;
         char *modstr;
         if (VIR_ALLOC_N(modstr, size+1) < 0)
             goto no_memory;
 
-        for (i = 0 ; i < vm->def->nsounds && size > 0 ; i++) {
-            virDomainSoundDefPtr sound = vm->def->sounds[i];
+        for (i = 0 ; i < def->nsounds && size > 0 ; i++) {
+            virDomainSoundDefPtr sound = def->sounds[i];
             const char *model = virDomainSoundModelTypeToString(sound->model);
             if (!model) {
                 VIR_FREE(modstr);
@@ -1442,7 +1442,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
             }
             strncat(modstr, model, size);
             size -= strlen(model);
-            if (i < (vm->def->nsounds - 1))
+            if (i < (def->nsounds - 1))
                strncat(modstr, ",", size--);
         }
         ADD_ARG_LIT("-soundhw");
@@ -1450,11 +1450,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     /* Add host passthrough hardware */
-    for (i = 0 ; i < vm->def->nhostdevs ; i++) {
+    for (i = 0 ; i < def->nhostdevs ; i++) {
         int ret;
         char* usbdev;
         char* pcidev;
-        virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
+        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
 
         /* USB */
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&

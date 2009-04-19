@@ -1,3 +1,10 @@
+Sun Apr 19 15:44:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c, src/qemu_conf.h: Pass in virDomainDefPtr to
+	qemudBuildCommandLine, instead of virDomainObjPtr
+	* src/qemu_driver.c, tests/qemuxml2argvtest.c: Update for above
+	API change.
+
 Fri Apr 17 21:10:28 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt_private.syms src/storage_backend.h

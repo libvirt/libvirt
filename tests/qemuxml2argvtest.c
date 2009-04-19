@@ -34,7 +34,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     const char **tmp = NULL;
     int ret = -1, len, flags;
     virDomainDefPtr vmdef = NULL;
-    virDomainObj vm;
 
     if (virtTestLoadFile(cmd, &expectargv, MAX_FILE) < 0)
         goto fail;
@@ -43,20 +42,17 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
 
-    memset(&vm, 0, sizeof vm);
-    vm.def = vmdef;
     if (extraFlags & QEMUD_CMD_FLAG_DOMID)
-        vm.def->id = 6;
+        vmdef->id = 6;
     else
-        vm.def->id = -1;
-    vm.pid = -1;
+        vmdef->id = -1;
 
     flags = QEMUD_CMD_FLAG_VNC_COLON |
         QEMUD_CMD_FLAG_NO_REBOOT |
         extraFlags;
 
     if (qemudBuildCommandLine(NULL, &driver,
-                              &vm, flags, &argv, &qenv,
+                              vmdef, flags, &argv, &qenv,
                               NULL, NULL, migrateFrom) < 0)
         goto fail;
 

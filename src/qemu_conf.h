@@ -124,7 +124,7 @@ int         qemudExtractVersionInfo     (const char *qemu,
 
 int         qemudBuildCommandLine       (virConnectPtr conn,
                                          struct qemud_driver *driver,
-                                         virDomainObjPtr dom,
+                                         virDomainDefPtr def,
                                          unsigned int qemuCmdFlags,
                                          const char ***retargv,
                                          const char ***retenv,
