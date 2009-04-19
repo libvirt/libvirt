@@ -50,6 +50,7 @@ MinGW Windows libvirt virtualization library.
   --without-qemu \
   --without-lxc \
   --without-uml \
+  --without-vbox \
   --without-openvz \
   --without-libvirtd
 make

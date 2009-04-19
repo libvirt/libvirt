@@ -1,5 +1,10 @@
 Sun Apr 19 17:36:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
+	* autobuild.sh, mingw32-libvirt.spec.in: Disable vbox driver
+	for Win32 builds
+
+Sun Apr 19 17:36:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
 	* src/Makefile.am: Add another vbox file to EXTRA_DIST
 
 Sun Apr 19 16:49:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
