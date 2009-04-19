@@ -1939,6 +1939,7 @@ remoteDomainDestroy (virDomainPtr domain)
         goto done;
 
     rv = 0;
+    domain->id = -1;
 
 done:
     remoteDriverUnlock(priv);
@@ -2673,6 +2674,8 @@ remoteDomainCreate (virDomainPtr domain)
 {
     int rv = -1;
     remote_domain_create_args args;
+    remote_domain_lookup_by_uuid_args args2;
+    remote_domain_lookup_by_uuid_ret ret2;
     struct private_data *priv = domain->conn->privateData;
 
     remoteDriverLock(priv);
@@ -2683,6 +2686,20 @@ remoteDomainCreate (virDomainPtr domain)
               (xdrproc_t) xdr_remote_domain_create_args, (char *) &args,
               (xdrproc_t) xdr_void, (char *) NULL) == -1)
         goto done;
+
+    /* Need to do a lookup figure out ID of newly started guest, because
+     * bug in design of REMOTE_PROC_DOMAIN_CREATE means we aren't getting
+     * it returned.
+     */
+    memcpy (args2.uuid, domain->uuid, VIR_UUID_BUFLEN);
+    memset (&ret2, 0, sizeof ret2);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_LOOKUP_BY_UUID,
+              (xdrproc_t) xdr_remote_domain_lookup_by_uuid_args, (char *) &args2,
+              (xdrproc_t) xdr_remote_domain_lookup_by_uuid_ret, (char *) &ret2) == -1)
+        goto done;
+
+    domain->id = ret2.dom.id;
+    xdr_free ((xdrproc_t) &xdr_remote_domain_lookup_by_uuid_ret, (char *) &ret2);
 
     rv = 0;
 

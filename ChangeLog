@@ -1,3 +1,10 @@
+Sun Apr 19 16:19:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix 2 domain ID handling bugs in remote driver
+	* src/remote_internal.c: Add virDomainCreate(), do a lookup
+	to find the ID of newly created domain. Reset ID to -1 after
+	doing a destroy operation on a domain
+
 Sun Apr 19 16:14:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/domain_conf.c: Switch over todo domain lookup based
