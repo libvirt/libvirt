@@ -1,3 +1,8 @@
+Sun Apr 19 17:46:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* mingw32-libvirt.spec.in: Added new virt-xml-validate tool
+	missed from previous commit
+
 Sun Apr 19 17:36:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* autobuild.sh, mingw32-libvirt.spec.in: Disable vbox driver
