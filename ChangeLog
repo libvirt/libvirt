@@ -1,3 +1,7 @@
+Sun Apr 19 17:36:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/Makefile.am: Add another vbox file to EXTRA_DIST
+
 Sun Apr 19 16:49:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/virterror.c: Add missing 'break' in error code string

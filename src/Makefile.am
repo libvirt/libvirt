@@ -134,6 +134,8 @@ VBOX_DRIVER_SOURCES =                                 \
         vbox/vbox_driver.c vbox/vbox_driver.h         \
         vbox/vbox_V2_2.c vbox/vbox_CAPI_v2_2.h
 
+VBOX_DRIVER_EXTRA_DIST = vbox/vbox_tmpl.c vbox/README
+
 QEMU_DRIVER_SOURCES =						\
 		qemu_conf.c qemu_conf.h				\
 		qemu_driver.c qemu_driver.h
@@ -440,7 +442,7 @@ EXTRA_DIST +=							\
 		$(NODE_DEVICE_DRIVER_HAL_SOURCES)		\
 		$(NODE_DEVICE_DRIVER_DEVKIT_SOURCES)		\
 		$(SECURITY_DRIVER_SELINUX_SOURCES)		\
-		vbox/README
+		$(VBOX_DRIVER_EXTRA_DIST)
 
 #
 # Build our version script.  This is composed of three parts:
