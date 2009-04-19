@@ -1,3 +1,10 @@
+Sun Apr 19 16:14:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* docs/libvirt-api.xml, docs/libvirt-refs.xml,
+	docs/devhelp/libvirt-libvirt.html, docs/devhelp/libvirt-virterror.html,
+	docs/html/libvirt-libvirt.html, docs/html/libvirt-virterror.html:
+	Regenerate API docs to pull in latest VBox error code definitions
+
 Sun Apr 19 16:12:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/Makefile.am: Add 2 missing vbox files to EXTRA_DIST

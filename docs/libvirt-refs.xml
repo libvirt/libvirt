@@ -132,6 +132,7 @@
     <reference name='VIR_FROM_STORAGE' href='html/libvirt-virterror.html#VIR_FROM_STORAGE'/>
     <reference name='VIR_FROM_TEST' href='html/libvirt-virterror.html#VIR_FROM_TEST'/>
     <reference name='VIR_FROM_UML' href='html/libvirt-virterror.html#VIR_FROM_UML'/>
+    <reference name='VIR_FROM_VBOX' href='html/libvirt-virterror.html#VIR_FROM_VBOX'/>
     <reference name='VIR_FROM_XEN' href='html/libvirt-virterror.html#VIR_FROM_XEN'/>
     <reference name='VIR_FROM_XEND' href='html/libvirt-virterror.html#VIR_FROM_XEND'/>
     <reference name='VIR_FROM_XENSTORE' href='html/libvirt-virterror.html#VIR_FROM_XENSTORE'/>
@@ -553,6 +554,7 @@
       <ref name='VIR_FROM_STORAGE'/>
       <ref name='VIR_FROM_TEST'/>
       <ref name='VIR_FROM_UML'/>
+      <ref name='VIR_FROM_VBOX'/>
       <ref name='VIR_FROM_XEN'/>
       <ref name='VIR_FROM_XEND'/>
       <ref name='VIR_FROM_XENSTORE'/>
@@ -1631,6 +1633,7 @@
       <ref name='VIR_FROM_STORAGE'/>
       <ref name='VIR_FROM_TEST'/>
       <ref name='VIR_FROM_UML'/>
+      <ref name='VIR_FROM_VBOX'/>
       <ref name='VIR_FROM_XEN'/>
       <ref name='VIR_FROM_XEND'/>
       <ref name='VIR_FROM_XENSTORE'/>
@@ -1679,6 +1682,7 @@
           <ref name='VIR_COPY_CPUMAP'/>
           <ref name='VIR_GET_CPUMAP'/>
           <ref name='virConnectOpenReadOnly'/>
+          <ref name='virNodeGetFreeMemory'/>
         </word>
         <word name='Accessor'>
           <ref name='virNodeDeviceGetParent'/>
@@ -1821,6 +1825,9 @@
           <ref name='virDomainDetachDevice'/>
           <ref name='virNetworkDestroy'/>
           <ref name='virStoragePoolDestroy'/>
+        </word>
+        <word name='Divide'>
+          <ref name='virNodeGetFreeMemory'/>
         </word>
         <word name='Does'>
           <ref name='virStoragePoolFree'/>
@@ -2025,6 +2032,8 @@
           <ref name='virNodeDeviceLookupByName'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk1'>
       <letter name='M'>
         <word name='Macro'>
           <ref name='LIBVIR_VERSION_NUMBER'/>
@@ -2049,8 +2058,6 @@
           <ref name='virDomainMigrate'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk1'>
       <letter name='N'>
         <word name='NFS'>
           <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
@@ -2082,6 +2089,9 @@
           <ref name='virDomainReboot'/>
           <ref name='virDomainSetVcpus'/>
           <ref name='virDomainShutdown'/>
+        </word>
+        <word name='Note:'>
+          <ref name='virNodeGetFreeMemory'/>
         </word>
       </letter>
       <letter name='O'>
@@ -2878,6 +2888,7 @@
           <ref name='virNetworkDefineXML'/>
           <ref name='virNetworkUndefine'/>
           <ref name='virNodeDeviceReset'/>
+          <ref name='virNodeGetFreeMemory'/>
           <ref name='virStoragePoolDestroy'/>
         </word>
         <word name='byte'>
@@ -4355,6 +4366,7 @@
           <ref name='virDomainGetConnect'/>
           <ref name='virDomainMigrate'/>
           <ref name='virNetworkGetConnect'/>
+          <ref name='virNodeGetFreeMemory'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -4631,6 +4643,7 @@
           <ref name='virNodeGetCellsFreeMemory'/>
         </word>
         <word name='most'>
+          <ref name='virNodeGetFreeMemory'/>
           <ref name='virStoragePoolListVolumes'/>
         </word>
         <word name='moves'>
@@ -4703,6 +4716,7 @@
         <word name='necessary'>
           <ref name='VIR_NODEINFO_MAXCPUS'/>
           <ref name='virConnectOpenAuth'/>
+          <ref name='virNodeGetFreeMemory'/>
         </word>
         <word name='need'>
           <ref name='virConnCopyLastError'/>
@@ -5113,6 +5127,9 @@
           <ref name='virConnCopyLastError'/>
           <ref name='virConnGetLastError'/>
         </word>
+        <word name='provide'>
+          <ref name='virNodeGetFreeMemory'/>
+        </word>
         <word name='provided'>
           <ref name='virConnSetErrorFunc'/>
           <ref name='virConnectListDefinedDomains'/>
@@ -5420,6 +5437,7 @@
           <ref name='virNetworkGetBridgeName'/>
           <ref name='virNetworkGetXMLDesc'/>
           <ref name='virNodeGetCellsFreeMemory'/>
+          <ref name='virNodeGetFreeMemory'/>
         </word>
         <word name='returns'>
           <ref name='VIR_CPU_MAPLEN'/>
@@ -5464,6 +5482,8 @@
           <ref name='virDomainSetMemory'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk9'>
       <letter name='s'>
         <word name='safe'>
           <ref name='virEventRemoveHandleFunc'/>
@@ -5597,6 +5617,9 @@
         </word>
         <word name='single'>
           <ref name='VIR_CPU_MAPLEN'/>
+        </word>
+        <word name='sizes'>
+          <ref name='virNodeGetFreeMemory'/>
         </word>
         <word name='smaller'>
           <ref name='virNodeGetCellsFreeMemory'/>
@@ -5844,7 +5867,7 @@
         </word>
       </letter>
     </chunk>
-    <chunk name='chunk9'>
+    <chunk name='chunk10'>
       <letter name='t'>
         <word name='take'>
           <ref name='virConnectDomainEventRegister'/>
@@ -6228,7 +6251,7 @@
         </word>
       </letter>
     </chunk>
-    <chunk name='chunk10'>
+    <chunk name='chunk11'>
       <letter name='v'>
         <word name='valid'>
           <ref name='virConnectDomainEventRegister'/>
@@ -6250,6 +6273,7 @@
           <ref name='virNetworkGetAutostart'/>
           <ref name='virNetworkGetBridgeName'/>
           <ref name='virNetworkGetXMLDesc'/>
+          <ref name='virNodeGetFreeMemory'/>
           <ref name='virStoragePoolGetAutostart'/>
         </word>
         <word name='values'>
@@ -6633,7 +6657,7 @@
         </word>
       </letter>
     </chunk>
-    <chunk name='chunk11'>
+    <chunk name='chunk12'>
       <letter name='x'>
         <word name='xen'>
           <ref name='virConnectOpen'/>
@@ -6671,18 +6695,19 @@
       </letter>
     </chunk>
     <chunks>
-      <chunk name='chunk0' start='A' end='M'/>
-      <chunk name='chunk1' start='N' end='a'/>
+      <chunk name='chunk0' start='A' end='L'/>
+      <chunk name='chunk1' start='M' end='a'/>
       <chunk name='chunk2' start='b' end='c'/>
       <chunk name='chunk3' start='d' end='e'/>
       <chunk name='chunk4' start='f' end='g'/>
       <chunk name='chunk5' start='h' end='k'/>
       <chunk name='chunk6' start='l' end='m'/>
       <chunk name='chunk7' start='n' end='p'/>
-      <chunk name='chunk8' start='q' end='s'/>
-      <chunk name='chunk9' start='t' end='u'/>
-      <chunk name='chunk10' start='v' end='w'/>
-      <chunk name='chunk11' start='x' end='z'/>
+      <chunk name='chunk8' start='q' end='r'/>
+      <chunk name='chunk9' start='s' end='s'/>
+      <chunk name='chunk10' start='t' end='u'/>
+      <chunk name='chunk11' start='v' end='w'/>
+      <chunk name='chunk12' start='x' end='z'/>
     </chunks>
   </index>
 </apirefs>

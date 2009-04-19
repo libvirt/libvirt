@@ -356,6 +356,7 @@
      <exports symbol='VIR_ERR_AUTH_FAILED' type='enum'/>
      <exports symbol='VIR_FROM_XML' type='enum'/>
      <exports symbol='VIR_ERR_OPERATION_DENIED' type='enum'/>
+     <exports symbol='VIR_FROM_VBOX' type='enum'/>
      <exports symbol='VIR_FROM_STORAGE' type='enum'/>
      <exports symbol='VIR_ERR_NO_KERNEL' type='enum'/>
      <exports symbol='VIR_WAR_NO_STORAGE' type='enum'/>
@@ -608,12 +609,13 @@
     <enum name='VIR_FROM_QEMU' file='virterror' value='10' type='virErrorDomain' info='Error at the QEMU daemon'/>
     <enum name='VIR_FROM_REMOTE' file='virterror' value='13' type='virErrorDomain' info='Error from remote driver'/>
     <enum name='VIR_FROM_RPC' file='virterror' value='7' type='virErrorDomain' info='Error in the XML-RPC code'/>
-    <enum name='VIR_FROM_SECURITY' file='virterror' value='24' type='virErrorDomain' info=' Error from security framework'/>
+    <enum name='VIR_FROM_SECURITY' file='virterror' value='24' type='virErrorDomain' info='Error from security framework'/>
     <enum name='VIR_FROM_SEXPR' file='virterror' value='4' type='virErrorDomain' info='Error in the S-Expression code'/>
     <enum name='VIR_FROM_STATS_LINUX' file='virterror' value='16' type='virErrorDomain' info='Error in the Linux Stats code'/>
     <enum name='VIR_FROM_STORAGE' file='virterror' value='18' type='virErrorDomain' info='Error from storage driver'/>
     <enum name='VIR_FROM_TEST' file='virterror' value='12' type='virErrorDomain' info='Error from test driver'/>
     <enum name='VIR_FROM_UML' file='virterror' value='21' type='virErrorDomain' info='Error at the UML driver'/>
+    <enum name='VIR_FROM_VBOX' file='virterror' value='25' type='virErrorDomain' info=' Error from VirtualBox driver'/>
     <enum name='VIR_FROM_XEN' file='virterror' value='1' type='virErrorDomain' info='Error at Xen hypervisor layer'/>
     <enum name='VIR_FROM_XEND' file='virterror' value='2' type='virErrorDomain' info='Error at connection with xend daemon'/>
     <enum name='VIR_FROM_XENSTORE' file='virterror' value='3' type='virErrorDomain' info='Error at connection with xen store'/>
@@ -1563,8 +1565,8 @@ see note above'/>
       <arg name='maxCells' type='int' info='Maximum number of cells for which freeMems information can be returned.'/>
     </function>
     <function name='virNodeGetFreeMemory' file='libvirt' module='libvirt'>
-      <info>provides the free memory available on the Node</info>
-      <return type='unsigned long long' info='the available free memory in kilobytes or 0 in case of error'/>
+      <info>provides the free memory available on the Node Note: most libvirt APIs provide memory sizes in kilobytes, but in this function the returned value is in bytes. Divide by 1024 as necessary.</info>
+      <return type='unsigned long long' info='the available free memory in bytes or 0 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virNodeGetInfo' file='libvirt' module='libvirt'>
