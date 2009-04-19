@@ -1,3 +1,9 @@
+Sun Apr 19 16:29:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Improve error reporting for lookup failures on inactive domains
+	* src/qemu_driver.c: Do all domain lookups based on UUID and
+	use correct error code for missing domains.
+
 Sun Apr 19 16:19:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix 2 domain ID handling bugs in remote driver

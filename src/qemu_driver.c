@@ -1984,7 +1984,8 @@ static virDomainPtr qemudDomainLookupByID(virConnectPtr conn,
     qemuDriverUnlock(driver);
 
     if (!vm) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_DOMAIN, NULL);
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching id %d"), id);
         goto cleanup;
     }
 
@@ -2008,7 +2009,10 @@ static virDomainPtr qemudDomainLookupByUUID(virConnectPtr conn,
     qemuDriverUnlock(driver);
 
     if (!vm) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_DOMAIN, NULL);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(uuid, uuidstr);
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuid);
         goto cleanup;
     }
 
@@ -2032,7 +2036,8 @@ static virDomainPtr qemudDomainLookupByName(virConnectPtr conn,
     qemuDriverUnlock(driver);
 
     if (!vm) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_DOMAIN, NULL);
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching name '%s'"), name);
         goto cleanup;
     }
 
@@ -2182,11 +2187,14 @@ static int qemudDomainSuspend(virDomainPtr dom) {
     virDomainEventPtr event = NULL;
 
     qemuDriverLock(driver);
-    vm = virDomainFindByID(&driver->domains, dom->id);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     qemuDriverUnlock(driver);
 
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN, _("no domain with matching id %d"), dom->id);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
     if (!virDomainIsActive(vm)) {
@@ -2232,12 +2240,14 @@ static int qemudDomainResume(virDomainPtr dom) {
     virDomainEventPtr event = NULL;
 
     qemuDriverLock(driver);
-    vm = virDomainFindByID(&driver->domains, dom->id);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     qemuDriverUnlock(driver);
 
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         _("no domain with matching id %d"), dom->id);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
     if (!virDomainIsActive(vm)) {
@@ -2281,12 +2291,14 @@ static int qemudDomainShutdown(virDomainPtr dom) {
     int ret = -1;
 
     qemuDriverLock(driver);
-    vm = virDomainFindByID(&driver->domains, dom->id);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     qemuDriverUnlock(driver);
 
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         _("no domain with matching id %d"), dom->id);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -2312,10 +2324,12 @@ static int qemudDomainDestroy(virDomainPtr dom) {
     virDomainEventPtr event = NULL;
 
     qemuDriverLock(driver);
-    vm  = virDomainFindByID(&driver->domains, dom->id);
+    vm  = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         _("no domain with matching id %d"), dom->id);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -2349,8 +2363,10 @@ static char *qemudDomainGetOSType(virDomainPtr dom) {
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     qemuDriverUnlock(driver);
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         "%s", _("no domain with matching uuid"));
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -2375,9 +2391,8 @@ static unsigned long qemudDomainGetMaxMemory(virDomainPtr dom) {
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
-
         virUUIDFormat(dom->uuid, uuidstr);
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
                          _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
@@ -2401,9 +2416,8 @@ static int qemudDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
-
         virUUIDFormat(dom->uuid, uuidstr);
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
                          _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
@@ -2525,9 +2539,8 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     qemuDriverUnlock(driver);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
-
         virUUIDFormat(dom->uuid, uuidstr);
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
                          _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
@@ -2566,8 +2579,10 @@ static int qemudDomainGetInfo(virDomainPtr dom,
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     qemuDriverUnlock(driver);
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         "%s", _("no domain with matching uuid"));
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -2713,11 +2728,13 @@ static int qemudDomainSave(virDomainPtr dom,
     header.version = QEMUD_SAVE_VERSION;
 
     qemuDriverLock(driver);
-    vm = virDomainFindByID(&driver->domains, dom->id);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         _("no domain with matching id %d"), dom->id);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -2850,9 +2867,8 @@ static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
-
         virUUIDFormat(dom->uuid, uuidstr);
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
                          _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
@@ -3045,9 +3061,8 @@ static int qemudDomainGetMaxVcpus(virDomainPtr dom) {
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
-
         virUUIDFormat(dom->uuid, uuidstr);
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
                          _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
@@ -3080,9 +3095,8 @@ static int qemudDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr sec
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
-
         virUUIDFormat(dom->uuid, uuidstr);
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
                          _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
@@ -3294,8 +3308,10 @@ static char *qemudDomainDumpXML(virDomainPtr dom,
     qemuDriverUnlock(driver);
 
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         "%s", _("no domain with matching uuid"));
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -3371,8 +3387,10 @@ static int qemudDomainStart(virDomainPtr dom) {
     qemuDriverUnlock(driver);
 
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         "%s", _("no domain with matching uuid"));
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -3461,8 +3479,10 @@ static int qemudDomainUndefine(virDomainPtr dom) {
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         "%s", _("no domain with matching uuid"));
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -3854,9 +3874,11 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
         qemuDriverUnlock(driver);
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         "%s", _("no domain with matching uuid"));
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -4004,9 +4026,11 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
         qemuDriverUnlock(driver);
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         "%s", _("no domain with matching uuid"));
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -4057,8 +4081,10 @@ static int qemudDomainGetAutostart(virDomainPtr dom,
     qemuDriverUnlock(driver);
 
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         "%s", _("no domain with matching uuid"));
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -4083,8 +4109,10 @@ static int qemudDomainSetAutostart(virDomainPtr dom,
     qemuDriverUnlock(driver);
 
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         "%s", _("no domain with matching uuid"));
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -4158,11 +4186,13 @@ qemudDomainBlockStats (virDomainPtr dom,
     virDomainDiskDefPtr disk = NULL;
 
     qemuDriverLock(driver);
-    vm = virDomainFindByID(&driver->domains, dom->id);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     qemuDriverUnlock(driver);
     if (!vm) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                          _("no domain with matching id %d"), dom->id);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
     if (!virDomainIsActive (vm)) {
@@ -4293,12 +4323,14 @@ qemudDomainInterfaceStats (virDomainPtr dom,
     int ret = -1;
 
     qemuDriverLock(driver);
-    vm = virDomainFindByID(&driver->domains, dom->id);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     qemuDriverUnlock(driver);
 
     if (!vm) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                          _("no domain with matching id %d"), dom->id);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -4361,8 +4393,10 @@ qemudDomainBlockPeek (virDomainPtr dom,
     qemuDriverUnlock(driver);
 
     if (!vm) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                          "%s", _("no domain with matching uuid"));
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -4429,12 +4463,14 @@ qemudDomainMemoryPeek (virDomainPtr dom,
     int fd = -1, ret = -1;
 
     qemuDriverLock(driver);
-    vm = virDomainFindByID(&driver->domains, dom->id);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     qemuDriverUnlock(driver);
 
     if (!vm) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                          _("no domain with matching id %d"), dom->id);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -4762,10 +4798,12 @@ qemudDomainMigratePerform (virDomainPtr dom,
     int paused = 0;
 
     qemuDriverLock(driver);
-    vm = virDomainFindByID(&driver->domains, dom->id);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                          _("no domain with matching id %d"), dom->id);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -4893,8 +4931,8 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
     qemuDriverLock(driver);
     vm = virDomainFindByName(&driver->domains, dname);
     if (!vm) {
-        qemudReportError (dconn, NULL, NULL, VIR_ERR_INVALID_DOMAIN,
-                          _("no domain with matching name %s"), dname);
+        qemudReportError (dconn, NULL, NULL, VIR_ERR_NO_DOMAIN,
+                          _("no domain with matching name '%s'"), dname);
         goto cleanup;
     }
 
