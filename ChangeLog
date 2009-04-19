@@ -1,5 +1,10 @@
 Sun Apr 19 16:14:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
+	* src/domain_conf.c: Switch over todo domain lookup based
+	on UUID in virDomainAssignDef
+
+Sun Apr 19 16:14:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
 	* docs/libvirt-api.xml, docs/libvirt-refs.xml,
 	docs/devhelp/libvirt-libvirt.html, docs/devhelp/libvirt-virterror.html,
 	docs/html/libvirt-libvirt.html, docs/html/libvirt-virterror.html:

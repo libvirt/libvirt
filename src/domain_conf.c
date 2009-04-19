@@ -499,7 +499,7 @@ virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
 {
     virDomainObjPtr domain;
 
-    if ((domain = virDomainFindByName(doms, def->name))) {
+    if ((domain = virDomainFindByUUID(doms, def->uuid))) {
         if (!virDomainIsActive(domain)) {
             virDomainDefFree(domain->def);
             domain->def = def;
