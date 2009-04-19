@@ -132,7 +132,7 @@ OPENVZ_DRIVER_SOURCES =						\
 VBOX_DRIVER_SOURCES =                                 \
         vbox/vbox_XPCOMCGlue.c vbox/vbox_XPCOMCGlue.h \
         vbox/vbox_driver.c vbox/vbox_driver.h         \
-        vbox/vbox_V2_2.c
+        vbox/vbox_V2_2.c vbox/vbox_CAPI_v2_2.h
 
 QEMU_DRIVER_SOURCES =						\
 		qemu_conf.c qemu_conf.h				\
@@ -439,7 +439,8 @@ EXTRA_DIST +=							\
 		$(NODE_DEVICE_DRIVER_SOURCES)			\
 		$(NODE_DEVICE_DRIVER_HAL_SOURCES)		\
 		$(NODE_DEVICE_DRIVER_DEVKIT_SOURCES)		\
-		$(SECURITY_DRIVER_SELINUX_SOURCES)
+		$(SECURITY_DRIVER_SELINUX_SOURCES)		\
+		vbox/README
 
 #
 # Build our version script.  This is composed of three parts:
