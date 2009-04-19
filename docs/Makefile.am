@@ -72,7 +72,7 @@ EXTRA_DIST=					\
 all: web $(top_builddir)/NEWS $(man_MANS)
 
 virsh.1: virsh.pod
-	pod2man -c "Virtualization Support" $(srcdir)/virsh.pod > $@-t
+	pod2man -c "Virtualization Support" -r "$(PACKAGE)-$(VERSION)" $(srcdir)/virsh.pod > $@-t
 	mv $@-t $@
 	cp $@ $(top_builddir)
 

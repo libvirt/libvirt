@@ -3,7 +3,7 @@
 LCOV = lcov
 GENHTML = genhtml
 
-SUBDIRS = gnulib/lib include src qemud proxy docs gnulib/tests \
+SUBDIRS = gnulib/lib include src qemud tools proxy docs gnulib/tests \
   python tests po examples/domain-events/events-c examples/hellolibvirt
 
 ACLOCAL_AMFLAGS = -I m4 -I gnulib/m4

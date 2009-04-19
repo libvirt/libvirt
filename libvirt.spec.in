@@ -373,8 +373,10 @@ fi
 %defattr(-, root, root)
 
 %doc AUTHORS ChangeLog NEWS README COPYING.LIB TODO
-%doc %{_mandir}/man1/virsh.1*
+%{_mandir}/man1/virsh.1*
+%{_mandir}/man1/virt-xml-validate.1*
 %{_bindir}/virsh
+%{_bindir}/virt-xml-validate
 %{_libdir}/lib*.so.*
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
 

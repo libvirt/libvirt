@@ -150,12 +150,12 @@ B<virsh> list
 Name is the name of the domain.  ID the domain numeric id.
 State is the run state (see below).
 
-=over 4
-
 B<STATES>
 
 The State field lists 6 states for a domain, and which ones the
 current domain is in.
+
+=over 4
 
 =item B<running>
 
@@ -198,11 +198,15 @@ crashed.
 Prints the available amount of memory on the machine or within a
 NUMA cell if I<cellno> is provided.
 
+=back
+
 =head1 DOMAIN COMMANDS
 
 The following commands manipulate domains directly, as stated
 previously most commands take domain-id as the first parameter. The
 I<domain-id> can be specified as an short integer, a name or a full UUID.
+
+=over 4
 
 =item B<autostart> optional I<--disable> I<domain-id>
 
@@ -401,13 +405,17 @@ and I<cpulist> is a comma separated list of physical CPU numbers.
 Output the IP address and port number for the VNC display. If the information
 is not available the processes will provide an exit code of 1.
 
-=head1 DEVICES COMMANDS
+=back
+
+=head1 DEVICE COMMANDS
 
 The following commands manipulate devices associated to domains.
 The domain-id can be specified as an short integer, a name or a full UUID.
 To better understand the values allowed as options for the command
 reading the documentation at L<http://libvirt.org/format.html> on the
 format of the device sections to get the most accurate set of accepted values.
+
+=over 4
 
 =item B<attach-device> I<domain-id> I<FILE>
 
@@ -449,7 +457,9 @@ I<type> can be either I<network> to indicate a physical network device or I<brid
 It is recommended to use the I<mac> option to distinguish between the interfaces
 if more than one are present on the domain.
 
-=head1 VIRTUAL NETWORKS COMMANDS
+=back
+
+=head1 VIRTUAL NETWORK COMMANDS
 
 The following commands manipulate networks. Libvirt has the capability to
 define virtual networks which can then be used by domains and linked to
@@ -457,6 +467,8 @@ actual network devices. For more detailed information about this feature
 see the documentation at L<http://libvirt.org/format.html#Net1> . A lot
 of the command for virtual networks are similar to the one used for domains,
 but the way to name a virtual network is either by its name or UUID.
+
+=over 4
 
 =item B<net-autostart> I<network> optional I<--disable>
 
@@ -517,18 +529,55 @@ Undefine the configuration for an inactive network.
 
 Convert a network name to network UUID.
 
+=back
+
 =head1 ENVIRONMENT
+
+The following environment variables can be set to alter the behaviour
+of C<virsh>
+
+=over 4
 
 =item VIRSH_DEFAULT_CONNECT_URI
 
 The hypervisor to connect to by default. Set this to a URI, in the same
 format as accepted by the B<connect> option.
 
-=head1 SEE ALSO
+=item LIBVIRT_DEBUG=LEVEL
 
-L<virt-install(1)>, L<xm(1)>, L<virt-top(1)>, L<virt-mem(1)>, L<virt-df(1)>, L<http://www.libvirt.org/>
+Turn on verbose debugging of all libvirt API calls. Valid levels are
 
-=head1 AUTHOR
+=over 4
+
+=item * LIBVIRT_DEBUG=1
+
+Messages at level DEBUG or above
+
+=item * LIBVIRT_DEBUG=2
+
+Messages at level INFO or above
+
+=item * LIBVIRT_DEBUG=3
+
+Messages at level WARNING or above
+
+=item * LIBVIRT_DEBUG=4
+
+Messages at level ERROR or above
+
+=back
+
+For further information about debugging options consult C<http://libvirt.org/logging.html>
+
+=back
+
+=head1 BUGS
+
+Report any bugs discovered to the libvirt community via the mailing
+list C<http://libvirt.org/contact.html> or bug tracker C<http://libvirt.org/bugs.html>.
+Alternatively report bugs to your software distributor / vendor.
+
+=head1 AUTHORS
 
   Andrew Puch <apuch @ redhat.com>
   Daniel Veillard <veillard @ redhat.com>
@@ -537,12 +586,19 @@ L<virt-install(1)>, L<xm(1)>, L<virt-top(1)>, L<virt-mem(1)>, L<virt-df(1)>, L<h
   Sean Dague <sean at dague dot net>
   Daniel Stekloff <dsteklof at us dot ibm dot com>
 
+=head1 COPYRIGHT
 
-=head1 BUGS
+Copyright (C) 2005, 2007-2009 Red Hat, Inc.
 
-Bugs can be filed in Red Hat bugzilla under the Virtualization Tools/libvirt
-L<https://bugzilla.redhat.com/>
+=head1 LICENSE
 
-L<https://bugzilla.redhat.com/buglist.cgi?product=Virtualization+Tools&component=libvirt&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED>
+virsh is distributed under the terms of the GNU LGPL v2+.
+This is free software; see the source for copying conditions. There
+is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE
 
-=end
+=head1 SEE ALSO
+
+L<virt-install(1)>, L<virt-xml-validate(1)>, L<virt-top(1)>, L<virt-mem(1)>, L<virt-df(1)>, L<http://www.libvirt.org/>
+
+=cut

@@ -1,3 +1,16 @@
+Sun Apr 19 16:00:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Add command line tool for validating XML and improve POD docs
+	for virsh
+	* Makefile.am, configure.in: Add tools/ sub-directory
+	* docs/virsh.pod, docs/Makefile.am, virsh.1: Fix misc errors
+	in POD formating, and improve licensing/copyright/bugs section
+	* libvirt.spec.in: Add virt-xml-validate tool & man page
+	* tools/virt-xml-validate.in, tools/Makefile.am: Add tool for
+	validating XML files against schemas
+	* .hgignore, tools/.gitignore, tools/.cvsignore, m4/.gitignore:
+	Update to ignore more generated files
+
 Sun Apr 19 15:44:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c, src/qemu_conf.h: Pass in virDomainDefPtr to
@@ -40,7 +53,7 @@ Thu Apr 16 17:48:30 CEST 2009 Guido Günther <agx@sigxcpu.org>
 Thu Apr 16 16:48:51 CEST 2009 Guido Günther <agx@sigxcpu.org>
 
 	* src/qemud.c (remoteReadConfigFile): don't hardcode buffer for
-	  getgrnam_r to 1024 bytes and increase it on ERANGE. 
+	  getgrnam_r to 1024 bytes and increase it on ERANGE.
 
 Thu Apr 16 15:20:02 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 

@@ -46,12 +46,19 @@ docs/examples/info1
 docs/examples/python/Makefile
 docs/examples/python/Makefile.in
 docs/examples/suspend
+docs/schemas/Makefile
+docs/schemas/Makefile.in
 examples/domain-events/events-c/*.exe
 examples/domain-events/events-c/.deps
 examples/domain-events/events-c/.libs
 examples/domain-events/events-c/Makefile
 examples/domain-events/events-c/Makefile.in
 examples/domain-events/events-c/event-test
+examples/hellolibvirt/.deps
+examples/hellolibvirt/.libs
+examples/hellolibvirt/Makefile
+examples/hellolibvirt/Makefile.in
+examples/hellolibvirt/hellolibvirt
 gnulib/lib/*.la
 gnulib/lib/*.lo
 gnulib/lib/.deps
@@ -260,6 +267,7 @@ tests/qemuxml2argvtest
 tests/qemuxml2xmltest
 tests/qparamtest
 tests/reconnect
+tests/seclabeltest
 tests/sexpr2xmldata/Makefile
 tests/sexpr2xmldata/Makefile.in
 tests/sexpr2xmltest
@@ -274,4 +282,8 @@ tests/xmconfigtest
 tests/xml2sexprdata/Makefile
 tests/xml2sexprdata/Makefile.in
 tests/xml2sexprtest
+tools/Makefile
+tools/Makefile.in
+tools/virt-xml-validate
+tools/virt-xml-validate.1
 update.log
