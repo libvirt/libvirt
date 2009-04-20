@@ -1,18 +1,18 @@
 # translation of ja.po to Japanese
-# Copyright (C) 2006, 2007, 2008 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # Saori Fukuta <fukuta.saori@jp.fujitsu.com>. 2007.
 #
 # Noriko Mizumoto <noriko@redhat.com>, 2006.
 # Kiyoto James Hashida <khashida@redhat.com>, 2006.
 # Hyu_gabaru Ryu_ichi <hyu_gabaru@yahoo.co.jp>, 2007.
-# Kiyoto Hashida <khashida@redhat.com>, 2007, 2008.
+# Kiyoto Hashida <khashida@redhat.com>, 2007, 2008, 2009.
 msgid ""
 msgstr ""
 "Project-Id-Version: ja\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-04-03 17:01+0200\n"
-"PO-Revision-Date: 2008-10-21 14:33+1000\n"
+"POT-Creation-Date: 2009-04-20 11:21+0200\n"
+"PO-Revision-Date: 2009-04-07 16:48+1000\n"
 "Last-Translator: Kiyoto Hashida <khashida@redhat.com>\n"
 "Language-Team: Japanese <jp@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -97,9 +97,9 @@ msgid "Unknown error"
 msgstr "不明なエラー"
 
 #: qemud/qemud.c:240
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot access %s '%s': %s"
-msgstr "%s '%s' にアクセスできません: %s (%d)"
+msgstr "%s '%s' にアクセスできません: %s"
 
 #: qemud/qemud.c:257
 #, c-format
@@ -150,9 +150,9 @@ msgid "Shutting down on signal %d"
 msgstr "シグナル %d でシャットダウンしています"
 
 #: qemud/qemud.c:364
-#, fuzzy, c-format
+#, c-format
 msgid "Received unexpected signal %d"
-msgstr "予期しない value ノード"
+msgstr "予期しない信号 %d を受信しました"
 
 #: qemud/qemud.c:383 src/util.c:324 src/util.c:355
 msgid "Failed to set close-on-exec file descriptor flag"
@@ -243,23 +243,20 @@ msgstr "結果で出るパスは qemudInitPaths() のバッファにとって長
 msgid "Failed to allocate struct qemud_server"
 msgstr "struct qemud_server の割り当てに失敗"
 
-#: qemud/qemud.c:806 qemud/qemud.c:1285 src/domain_conf.c:521
+#: qemud/qemud.c:806 qemud/qemud.c:1285 src/domain_conf.c:522
 #: src/network_conf.c:170 src/node_device_conf.c:137 src/openvz_conf.c:453
-#: src/qemu_driver.c:430 src/remote_internal.c:908 src/remote_internal.c:5763
+#: src/qemu_driver.c:430 src/remote_internal.c:908 src/remote_internal.c:5780
 #: src/storage_conf.c:1304 src/test.c:235 src/test.c:363
-#, fuzzy
 msgid "cannot initialize mutex"
-msgstr "ブリッジサポートを初期化できません: %s"
+msgstr "mutex を初期化できません"
 
 #: qemud/qemud.c:810
-#, fuzzy
 msgid "cannot initialize condition variable"
-msgstr "ブリッジサポートを初期化できません: %s"
+msgstr ""
 
 #: qemud/qemud.c:818
-#, fuzzy
 msgid "Failed to initialize event system"
-msgstr "SASL 認証 %s の初期化に失敗"
+msgstr "イベントシステムの初期化に失敗"
 
 #: qemud/qemud.c:903
 #, c-format
@@ -375,9 +372,8 @@ msgid "Too many active clients (%d), dropping connection"
 msgstr ""
 
 #: qemud/qemud.c:1244
-#, fuzzy
 msgid "Out of memory allocating clients"
-msgstr "アレイの割り当てでメモリー不足です"
+msgstr "クライアント割り当てでメモリー不足です"
 
 #: qemud/qemud.c:1319
 #, c-format
@@ -390,9 +386,9 @@ msgid "TLS handshake failed: %s"
 msgstr "TLS のハンドシェークに失敗: %s"
 
 #: qemud/qemud.c:1531 qemud/qemud.c:1759
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected negative length request %lld"
-msgstr "予期しないドメインタイプ %d"
+msgstr ""
 
 #: qemud/qemud.c:1547
 #, c-format
@@ -405,9 +401,9 @@ msgid "gnutls_record_recv: %s"
 msgstr "gnutls_record_recv: %s"
 
 #: qemud/qemud.c:1622
-#, fuzzy, c-format
+#, c-format
 msgid "failed to decode SASL data %s"
-msgstr "'%s' の作成に失敗しました"
+msgstr "SASL データ'%s' の復号に失敗しました"
 
 #: qemud/qemud.c:1770
 #, c-format
@@ -420,9 +416,9 @@ msgid "gnutls_record_send: %s"
 msgstr "gnutls_record_send: %s"
 
 #: qemud/qemud.c:1830
-#, fuzzy, c-format
+#, c-format
 msgid "failed to encode SASL data %s"
-msgstr "'%s' の作成に失敗しました"
+msgstr "SASL データ'%s' の暗号化に失敗しました"
 
 #: qemud/qemud.c:2075
 #, c-format
@@ -430,14 +426,12 @@ msgid "Signal handler reported %d errors: last error: %s"
 msgstr "シグナルハンドラーが %d エラーを報告: 最後のエラー: %s"
 
 #: qemud/qemud.c:2130
-#, fuzzy
 msgid "Failed to register shutdown timeout"
-msgstr "以下への書き込みに失敗しました"
+msgstr "シャットダウンタイムアウトの登録に失敗しました"
 
 #: qemud/qemud.c:2139
-#, fuzzy
 msgid "Failed to allocate workers"
-msgstr "メモリーの割り当てに失敗しました"
+msgstr "worker の割り当てに失敗しました"
 
 #: qemud/qemud.c:2300 qemud/qemud.c:2319
 #, c-format
@@ -471,41 +465,50 @@ msgstr "remoteReadConfigFile: %s\n"
 msgid "remoteReadConfigFile: %s: %s: unsupported auth %s\n"
 msgstr "remoteReadConfigFile: %s: %s: サポートのない認証 %s\n"
 
-#: qemud/qemud.c:2575
+#: qemud/qemud.c:2576
 msgid "Cannot set group when not running as root"
 msgstr "root として実行している場合はグループを設定できません"
 
-#: qemud/qemud.c:2580
+#: qemud/qemud.c:2586
+#, fuzzy
+msgid "Failed to allocate memory for buffer"
+msgstr "メモリーの割り当てに失敗しました"
+
+#: qemud/qemud.c:2595
+#, fuzzy
+msgid "Failed to reallocate enough memory for buffer"
+msgstr "メモリーの割り当てに失敗しました"
+
+#: qemud/qemud.c:2601
 #, c-format
 msgid "Failed to lookup group '%s'"
 msgstr "グループ '%s' のルックアップに失敗"
 
-#: qemud/qemud.c:2592 qemud/qemud.c:2602
+#: qemud/qemud.c:2614 qemud/qemud.c:2624
 #, c-format
 msgid "Failed to parse mode '%s'"
 msgstr "モード '%s' の構文解析に失敗"
 
-#: qemud/qemud.c:2834
+#: qemud/qemud.c:2857
 #, c-format
 msgid "Failed to fork as daemon: %s"
 msgstr "デーモンとしてフォークするのに失敗: %s"
 
-#: qemud/qemud.c:2857
+#: qemud/qemud.c:2880
 #, c-format
 msgid "Failed to create pipe: %s"
 msgstr "パイプの作成に失敗: %s"
 
-#: qemud/qemud.c:2882
-#, fuzzy
+#: qemud/qemud.c:2905
 msgid "unable to create rundir"
-msgstr "uuid を生成できません"
+msgstr "rundir を生成できません"
 
-#: qemud/qemud.c:2903
+#: qemud/qemud.c:2926
 #, c-format
 msgid "Failed to change group ownership of %s"
 msgstr "%s のグループ所有権の変更に失敗"
 
-#: qemud/qemud.c:2911
+#: qemud/qemud.c:2934
 msgid "Failed to register callback for signal pipe"
 msgstr "シグナルパイプ用のコールバックの登録に失敗"
 
@@ -571,14 +574,12 @@ msgid "size > maximum buffer size"
 msgstr "サイズ > 最大バッファサイズ"
 
 #: qemud/remote.c:1369
-#, fuzzy
 msgid "unable to get security label"
-msgstr "現在の時刻を取得できません"
+msgstr "セキュリティレベルを取得できません"
 
 #: qemud/remote.c:1398
-#, fuzzy
 msgid "unable to get security model"
-msgstr "現在の時刻を取得できません"
+msgstr "セキュリティモデルを取得できません"
 
 #: qemud/remote.c:1467
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
@@ -604,7 +605,7 @@ msgstr "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
 msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 
-#: qemud/remote.c:2600 src/remote_internal.c:5094
+#: qemud/remote.c:2600 src/remote_internal.c:5111
 #, c-format
 msgid "Cannot resolve address %d: %s"
 msgstr "アドレス %d を解決できません: %s"
@@ -614,14 +615,14 @@ msgid "client tried invalid SASL init request"
 msgstr "クライアントは無効な SASL init 要求を試行しました"
 
 #: qemud/remote.c:2654
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get sock address: %s"
-msgstr "sock アドレス  %d (%s) の取得に失敗"
+msgstr "sock アドレスの取得に失敗: %s"
 
 #: qemud/remote.c:2666
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get peer address: %s"
-msgstr "ピアアドレス %d (%s)  の取得に失敗"
+msgstr "ピアアドレスの取得に失敗: %s"
 
 #: qemud/remote.c:2687
 #, c-format
@@ -651,7 +652,7 @@ msgstr "SASL メカニズム %d (%s) をリストできません"
 msgid "cannot allocate mechlist"
 msgstr "メカリストを割り当てできません"
 
-#: qemud/remote.c:2793 src/remote_internal.c:5590
+#: qemud/remote.c:2793 src/remote_internal.c:5607
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr "接続 %d (%s) 上の SASL ssf をクエリできません"
@@ -775,21 +776,18 @@ msgid "maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX"
 msgstr "maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX"
 
 #: qemud/remote.c:4059 qemud/remote.c:4225
-#, fuzzy
 msgid "maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX"
-msgstr "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"
+msgstr "maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX"
 
 #: qemud/remote.c:4120 qemud/remote.c:4150 qemud/remote.c:4191
 #: qemud/remote.c:4219 qemud/remote.c:4261 qemud/remote.c:4287
 #: qemud/remote.c:4313
-#, fuzzy
 msgid "node_device not found"
-msgstr "デバイスは見つかりません: %s (%s)"
+msgstr "node_device は見つかりません"
 
 #: qemud/remote.c:4341
-#, fuzzy
 msgid "unexpected async event method call"
-msgstr "予期しない dict ノード"
+msgstr ""
 
 #: src/bridge.c:414
 msgid "Not enabling IFF_VNET_HDR; TUNGETFEATURES ioctl() not implemented"
@@ -915,545 +913,522 @@ msgid "vol missing from connection hash table"
 msgstr "接続ハッシュ表にボリュームがありません"
 
 #: src/datatypes.c:800
-#, fuzzy
 msgid "failed to add node dev to conn hash table"
-msgstr "接続ハッシュ表へのストレージボリュームの追加に失敗しました"
+msgstr "接続ハッシュ表への node dev の追加に失敗しました"
 
 #: src/datatypes.c:838
-#, fuzzy
 msgid "dev missing from connection hash table"
-msgstr "接続ハッシュ表にボリュームがありません"
+msgstr "接続ハッシュ表に dev がありません"
 
-#: src/domain_conf.c:612
-#, fuzzy, c-format
+#: src/domain_conf.c:613
+#, c-format
 msgid "unknown disk type '%s'"
-msgstr "不明なタイプ %s"
+msgstr "不明なディスクタイプ %s"
 
-#: src/domain_conf.c:665
-#, fuzzy, c-format
+#: src/domain_conf.c:666
+#, c-format
 msgid "unknown disk device '%s'"
-msgstr "不明なブートデバイス: '%s'"
+msgstr "不明なディスクデバイス: '%s'"
 
-#: src/domain_conf.c:691
+#: src/domain_conf.c:692
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "無効なフロッピーデバイス名: %s"
 
-#: src/domain_conf.c:706
+#: src/domain_conf.c:707
 #, c-format
 msgid "Invalid harddisk device name: %s"
 msgstr "無効なハードディスクデバイス名: %s"
 
-#: src/domain_conf.c:713
-#, fuzzy, c-format
+#: src/domain_conf.c:714
+#, c-format
 msgid "unknown disk bus type '%s'"
-msgstr "不明な認証タイプ %s"
+msgstr "不明なディスクバスタイプ %s"
 
-#: src/domain_conf.c:738
+#: src/domain_conf.c:739
 #, c-format
 msgid "Invalid bus type '%s' for floppy disk"
 msgstr "フロッピーディスクに無効なバスタイプ '%s'"
 
-#: src/domain_conf.c:744
-#, fuzzy, c-format
+#: src/domain_conf.c:745
+#, c-format
 msgid "Invalid bus type '%s' for disk"
-msgstr "フロッピーディスクに無効なバスタイプ '%s'"
+msgstr "ディスクに無効なバスタイプ '%s'"
 
-#: src/domain_conf.c:751
-#, fuzzy, c-format
+#: src/domain_conf.c:752
+#, c-format
 msgid "unknown disk cache mode '%s'"
-msgstr "不明なブートデバイス: '%s'"
+msgstr "不明なディスクキャッシュモード %s"
 
-#: src/domain_conf.c:805
-#, fuzzy, c-format
+#: src/domain_conf.c:806
+#, c-format
 msgid "unknown filesystem type '%s'"
-msgstr "不明な認証タイプ %s"
+msgstr "不明なファイルシステムタイプ %s"
 
-#: src/domain_conf.c:899
-#, fuzzy, c-format
+#: src/domain_conf.c:900
+#, c-format
 msgid "unknown interface type '%s'"
-msgstr "不明な認証タイプ %s"
+msgstr "不明なインターフェイスタイプ %s"
 
-#: src/domain_conf.c:965
+#: src/domain_conf.c:966
 msgid ""
 "No <source> 'network' attribute specified with <interface type='network'/>"
 msgstr ""
 "<source><interface type='network'/> で指定した 'network' 属性はありません"
 
-#: src/domain_conf.c:991
+#: src/domain_conf.c:992
 msgid "No <source> 'dev' attribute specified with <interface type='bridge'/>"
 msgstr "<source> <interface type='bridge'/>で指定した  'dev' 属性はありません"
 
-#: src/domain_conf.c:1011
+#: src/domain_conf.c:1012
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr "<source>ソケットインターフェイスで指定した 'port' 属性はありません"
 
-#: src/domain_conf.c:1016
+#: src/domain_conf.c:1017
 msgid "Cannot parse <source> 'port' attribute with socket interface"
 msgstr "ソケットインターフェイスを持つ<source> 'port' 属性を構文解析できません"
 
-#: src/domain_conf.c:1024
+#: src/domain_conf.c:1025
 msgid "No <source> 'address' attribute specified with socket interface"
 msgstr "ソケットインターフェイスで指定した<source> 'address' 属性はありません"
 
-#: src/domain_conf.c:1049
+#: src/domain_conf.c:1050
 msgid "Model name contains invalid characters"
 msgstr "モデル名は無効な文字を含んでいます"
 
-#: src/domain_conf.c:1223 src/domain_conf.c:1300
+#: src/domain_conf.c:1224 src/domain_conf.c:1301
 msgid "Missing source path attribute for char device"
 msgstr "char デバイス用のソースパス属性がありません"
 
-#: src/domain_conf.c:1240 src/domain_conf.c:1257
+#: src/domain_conf.c:1241 src/domain_conf.c:1258
 msgid "Missing source host attribute for char device"
 msgstr "char デバイスのソースホスト属性がありません"
 
-#: src/domain_conf.c:1245 src/domain_conf.c:1262 src/domain_conf.c:1282
+#: src/domain_conf.c:1246 src/domain_conf.c:1263 src/domain_conf.c:1283
 msgid "Missing source service attribute for char device"
 msgstr "char デバイスのソースサービス属性がありません"
 
-#: src/domain_conf.c:1353
+#: src/domain_conf.c:1354
 msgid "missing input device type"
 msgstr "入力デバイスタイプがありません"
 
-#: src/domain_conf.c:1359
-#, fuzzy, c-format
+#: src/domain_conf.c:1360
+#, c-format
 msgid "unknown input device type '%s'"
-msgstr "不明なブートデバイス: '%s'"
+msgstr "不明な入力デバイスタイプ '%s'"
 
-#: src/domain_conf.c:1366
-#, fuzzy, c-format
+#: src/domain_conf.c:1367
+#, c-format
 msgid "unknown input bus type '%s'"
-msgstr "不明な認証タイプ %s"
+msgstr "不明な入力バスタイプ %s"
 
-#: src/domain_conf.c:1374
+#: src/domain_conf.c:1375
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr "ps2 バスは %s 入力デバイスをサポートしません"
 
-#: src/domain_conf.c:1380 src/domain_conf.c:1387
+#: src/domain_conf.c:1381 src/domain_conf.c:1388
 #, c-format
 msgid "unsupported input bus %s"
 msgstr "サポートのない入力バス %s"
 
-#: src/domain_conf.c:1392
+#: src/domain_conf.c:1393
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "xen バスは %s 入力デバイスをサポートしません"
 
-#: src/domain_conf.c:1437
-#, fuzzy
+#: src/domain_conf.c:1438
 msgid "missing graphics device type"
-msgstr "入力デバイスタイプがありません"
+msgstr "グラフィックデバイスタイプがありません"
 
-#: src/domain_conf.c:1443
-#, fuzzy, c-format
+#: src/domain_conf.c:1444
+#, c-format
 msgid "unknown graphics device type '%s'"
-msgstr "不明なデバイスタイプ"
+msgstr "不明なグラフィックデバイスタイプ'%s'"
 
-#: src/domain_conf.c:1454
-#, fuzzy, c-format
+#: src/domain_conf.c:1455
+#, c-format
 msgid "cannot parse vnc port %s"
-msgstr "%s 用の設定を削除できません"
+msgstr "vnc ポート %s をパースできません"
 
-#: src/domain_conf.c:1492
-#, fuzzy, c-format
+#: src/domain_conf.c:1493
+#, c-format
 msgid "unknown fullscreen value '%s'"
-msgstr "不明な認証タイプ %s"
+msgstr "不明な全画面の値 %s"
 
-#: src/domain_conf.c:1531
-#, fuzzy, c-format
+#: src/domain_conf.c:1532
+#, c-format
 msgid "unknown sound model '%s'"
-msgstr "不明なサウンドモデルタイプ"
+msgstr "不明なサウンドモデル '%s'"
 
-#: src/domain_conf.c:1565
-#, fuzzy, c-format
+#: src/domain_conf.c:1566
+#, c-format
 msgid "cannot parse vendor id %s"
-msgstr "ディレクトリ %s を読み込めません: %s"
+msgstr "vendor id %s をパースできません"
 
-#: src/domain_conf.c:1572
+#: src/domain_conf.c:1573
 msgid "usb vendor needs id"
 msgstr ""
 
-#: src/domain_conf.c:1582
-#, fuzzy, c-format
+#: src/domain_conf.c:1583
+#, c-format
 msgid "cannot parse product %s"
-msgstr "デバイス %s を開けません"
+msgstr "製品 %s をパースできません"
 
-#: src/domain_conf.c:1590
+#: src/domain_conf.c:1591
 msgid "usb product needs id"
 msgstr ""
 
-#: src/domain_conf.c:1601 src/domain_conf.c:1688
-#, fuzzy, c-format
+#: src/domain_conf.c:1602 src/domain_conf.c:1689
+#, c-format
 msgid "cannot parse bus %s"
-msgstr "%s を読み込めません: %s"
+msgstr "バス %s をパースできません"
 
-#: src/domain_conf.c:1608
+#: src/domain_conf.c:1609
 msgid "usb address needs bus id"
 msgstr ""
 
-#: src/domain_conf.c:1617
-#, fuzzy, c-format
+#: src/domain_conf.c:1618
+#, c-format
 msgid "cannot parse device %s"
-msgstr "デバイス %s を開けません"
+msgstr "デバイス %s をパース出来ません"
 
-#: src/domain_conf.c:1625
+#: src/domain_conf.c:1626
 msgid "usb address needs device id"
 msgstr ""
 
-#: src/domain_conf.c:1630
-#, fuzzy, c-format
+#: src/domain_conf.c:1631
+#, c-format
 msgid "unknown usb source type '%s'"
-msgstr "不明な認証タイプ %s"
+msgstr "不明な usb ソースタイプ %s"
 
-#: src/domain_conf.c:1641
-#, fuzzy
+#: src/domain_conf.c:1642
 msgid "missing vendor"
-msgstr "不足 \""
+msgstr "製造元がありません"
 
-#: src/domain_conf.c:1647
-#, fuzzy
+#: src/domain_conf.c:1648
 msgid "missing product"
-msgstr "ソースホストがありません"
+msgstr "製品がありません"
 
-#: src/domain_conf.c:1675
-#, fuzzy, c-format
+#: src/domain_conf.c:1676
+#, c-format
 msgid "cannot parse domain %s"
-msgstr "デバイス %s を開けません"
+msgstr "ドメイン %s をパースできません"
 
-#: src/domain_conf.c:1695
+#: src/domain_conf.c:1696
 msgid "pci address needs bus id"
 msgstr ""
 
-#: src/domain_conf.c:1704
-#, fuzzy, c-format
+#: src/domain_conf.c:1705
+#, c-format
 msgid "cannot parse slot %s"
-msgstr "%s を読み込めません: %s"
+msgstr "スロット %s をパースできません"
 
-#: src/domain_conf.c:1712
+#: src/domain_conf.c:1713
 msgid "pci address needs slot id"
 msgstr ""
 
-#: src/domain_conf.c:1721
-#, fuzzy, c-format
+#: src/domain_conf.c:1722
+#, c-format
 msgid "cannot parse function %s"
-msgstr "デバイス %s を開けません"
+msgstr "関数 %s をパースできません"
 
-#: src/domain_conf.c:1729
+#: src/domain_conf.c:1730
 msgid "pci address needs function id"
+msgstr "pci アドレスは関数 id が必要です"
+
+#: src/domain_conf.c:1735
+#, c-format
+msgid "unknown pci source type '%s'"
+msgstr "不明な pci ソースタイプ %s"
+
+#: src/domain_conf.c:1768
+#, c-format
+msgid "unknown hostdev mode '%s'"
+msgstr "不明な hostdev モード '%s'"
+
+#: src/domain_conf.c:1779
+#, c-format
+msgid "unknown host device type '%s'"
+msgstr "不明なホストデバイスタイプ '%s'"
+
+#: src/domain_conf.c:1784
+msgid "missing type in hostdev"
+msgstr "hostdev でタイプがありません"
+
+#: src/domain_conf.c:1812
+#, c-format
+msgid "unknown node %s"
+msgstr "不明なノード %s"
+
+#: src/domain_conf.c:1843
+#, c-format
+msgid "unknown lifecycle action %s"
+msgstr "不明なライフサイクルアクション %s"
+
+#: src/domain_conf.c:1867
+msgid "missing security type"
+msgstr "セキュリティタイプがありません"
+
+#: src/domain_conf.c:1874
+msgid "invalid security type"
+msgstr "無効なセキュリティタイプ"
+
+#: src/domain_conf.c:1887
+msgid "missing security model"
+msgstr "セキュリティモデルがありません"
+
+#: src/domain_conf.c:1896
+msgid "security label is missing"
 msgstr ""
 
-#: src/domain_conf.c:1734
-#, fuzzy, c-format
-msgid "unknown pci source type '%s'"
-msgstr "不明な認証タイプ %s"
-
-#: src/domain_conf.c:1767
-#, fuzzy, c-format
-msgid "unknown hostdev mode '%s'"
-msgstr "不明なブートデバイス: '%s'"
-
-#: src/domain_conf.c:1778
-#, fuzzy, c-format
-msgid "unknown host device type '%s'"
-msgstr "不明なブートデバイス: '%s'"
-
-#: src/domain_conf.c:1783
-#, fuzzy
-msgid "missing type in hostdev"
-msgstr "ソースホストがありません"
-
-#: src/domain_conf.c:1811
-#, fuzzy, c-format
-msgid "unknown node %s"
-msgstr "不明なホスト %s"
-
-#: src/domain_conf.c:1842
-#, fuzzy, c-format
-msgid "unknown lifecycle action %s"
-msgstr "不明な認証タイプです: %s"
-
-#: src/domain_conf.c:1866
-#, fuzzy
-msgid "missing security type"
-msgstr "能力要素がありません"
-
-#: src/domain_conf.c:1873
-#, fuzzy
-msgid "invalid security type"
-msgstr "無効なドメインタイプ"
-
-#: src/domain_conf.c:1886
-#, fuzzy
-msgid "missing security model"
-msgstr "サウンドモデルがありません"
-
-#: src/domain_conf.c:1895
-#, fuzzy
-msgid "security label is missing"
-msgstr "vCPU カウントは最大限を越えています: %d > %d"
-
-#: src/domain_conf.c:1909
+#: src/domain_conf.c:1910
 msgid "security imagelabel is missing"
 msgstr ""
 
-#: src/domain_conf.c:1942 src/domain_conf.c:2576 src/domain_conf.c:2617
+#: src/domain_conf.c:1943 src/domain_conf.c:2577 src/domain_conf.c:2618
 #: src/network_conf.c:480 src/network_conf.c:520 src/node_device_conf.c:1045
 #: src/qemu_conf.c:1608 src/storage_conf.c:694 src/storage_conf.c:1069
 msgid "missing root element"
 msgstr "root 要素がありません"
 
-#: src/domain_conf.c:1978
+#: src/domain_conf.c:1979
 msgid "unknown device type"
 msgstr "不明なデバイスタイプ"
 
-#: src/domain_conf.c:2025
+#: src/domain_conf.c:2026
 msgid "missing domain type attribute"
 msgstr "ドメインタイプの属性がありません"
 
-#: src/domain_conf.c:2031
-#, fuzzy, c-format
+#: src/domain_conf.c:2032
+#, c-format
 msgid "invalid domain type %s"
-msgstr "無効なドメインタイプ"
+msgstr "無効なドメインタイプ %s"
 
-#: src/domain_conf.c:2048 src/network_conf.c:335
-#, fuzzy
+#: src/domain_conf.c:2049 src/network_conf.c:335
 msgid "Failed to generate UUID"
-msgstr "UUID の生成に失敗しました: %s"
+msgstr "UUID の生成に失敗しました"
 
-#: src/domain_conf.c:2054 src/network_conf.c:342 src/storage_conf.c:509
+#: src/domain_conf.c:2055 src/network_conf.c:342 src/storage_conf.c:509
 msgid "malformed uuid element"
 msgstr "異常形成の uuid 要素"
 
-#: src/domain_conf.c:2063
+#: src/domain_conf.c:2064
 msgid "missing memory element"
 msgstr "メモリー要素がありません"
 
-#: src/domain_conf.c:2096
-#, fuzzy, c-format
+#: src/domain_conf.c:2097
+#, c-format
 msgid "unexpected feature %s"
-msgstr "予期しないデータ '%s'"
+msgstr "予期しない機能 '%s'"
 
-#: src/domain_conf.c:2136
+#: src/domain_conf.c:2137
 msgid "no OS type"
 msgstr "OS タイプがありません"
 
-#: src/domain_conf.c:2164
+#: src/domain_conf.c:2165
 #, c-format
 msgid "os type '%s' & arch '%s' combination is not supported"
 msgstr ""
 
-#: src/domain_conf.c:2172 src/xm_internal.c:701
-#, fuzzy, c-format
+#: src/domain_conf.c:2173 src/xm_internal.c:701
+#, c-format
 msgid "no supported architecture for os type '%s'"
-msgstr "サポートされていないアーキテクチャ"
+msgstr "OS タイプ用にサポートのないアーキテクチャ '%s'"
 
-#: src/domain_conf.c:2222
-#, fuzzy
+#: src/domain_conf.c:2223
 msgid "cannot extract boot device"
-msgstr "ソースデバイスを取り出せません"
+msgstr "ブートデバイスを取り出せません"
 
-#: src/domain_conf.c:2230
-#, fuzzy
+#: src/domain_conf.c:2231
 msgid "missing boot device"
-msgstr "ソースデバイスがありません"
+msgstr "ブートデバイスがありません"
 
-#: src/domain_conf.c:2235
+#: src/domain_conf.c:2236
 #, c-format
 msgid "unknown boot device '%s'"
 msgstr "不明なブートデバイス: '%s'"
 
-#: src/domain_conf.c:2255
-#, fuzzy
+#: src/domain_conf.c:2256
 msgid "cannot extract disk devices"
-msgstr "ソースデバイスを取り出せません"
+msgstr "ディスクデバイスを取り出せません"
 
-#: src/domain_conf.c:2276
-#, fuzzy
+#: src/domain_conf.c:2277
 msgid "cannot extract filesystem devices"
-msgstr "ソースデバイスを取り出せません"
+msgstr "ファイルシステムデバイスを取り出せません"
 
-#: src/domain_conf.c:2295
-#, fuzzy
+#: src/domain_conf.c:2296
 msgid "cannot extract network devices"
-msgstr "ソースデバイスを取り出せません"
+msgstr "ネットワークデバイスを取り出せません"
 
-#: src/domain_conf.c:2316
-#, fuzzy
+#: src/domain_conf.c:2317
 msgid "cannot extract parallel devices"
-msgstr "ソースデバイスを取り出せません"
+msgstr "パラレルデバイスを取り出せません"
 
-#: src/domain_conf.c:2336
-#, fuzzy
+#: src/domain_conf.c:2337
 msgid "cannot extract serial devices"
-msgstr "ソースデバイスを取り出せません"
+msgstr "シリアルデバイスを取り出せません"
 
-#: src/domain_conf.c:2386
-#, fuzzy
+#: src/domain_conf.c:2387
 msgid "cannot extract input devices"
-msgstr "ソースデバイスを取り出せません"
+msgstr "入力デバイスを取り出せません"
 
-#: src/domain_conf.c:2421
-#, fuzzy
+#: src/domain_conf.c:2422
 msgid "cannot extract graphics devices"
-msgstr "ソースデバイスを取り出せません"
+msgstr "グラフィックデバイスを取り出せません"
 
-#: src/domain_conf.c:2463
-#, fuzzy
+#: src/domain_conf.c:2464
 msgid "cannot extract sound devices"
-msgstr "ソースデバイスを取り出せません"
+msgstr "サウンドデバイスを取り出せません"
 
-#: src/domain_conf.c:2493
-#, fuzzy
+#: src/domain_conf.c:2494
 msgid "cannot extract host devices"
-msgstr "ソースデバイスを取り出せません"
+msgstr "ホストデバイスを取り出せません"
 
-#: src/domain_conf.c:2539 src/network_conf.c:445 src/node_device_conf.c:1010
+#: src/domain_conf.c:2540 src/network_conf.c:445 src/node_device_conf.c:1010
 #: src/qemu_conf.c:1554 src/storage_conf.c:649
-#, fuzzy, c-format
+#, c-format
 msgid "at line %d: %s"
-msgstr "バインド: %s"
+msgstr "%d 行で: %s"
 
-#: src/domain_conf.c:2570 src/domain_conf.c:2611 src/network_conf.c:474
+#: src/domain_conf.c:2571 src/domain_conf.c:2612 src/network_conf.c:474
 #: src/network_conf.c:514 src/node_device_conf.c:1039 src/qemu_conf.c:1602
 #: src/storage_conf.c:681 src/storage_conf.c:1056
-#, fuzzy
 msgid "failed to parse xml document"
-msgstr "ドメインの一時停止に失敗しました"
+msgstr "xml ドキュメントパースに失敗"
 
-#: src/domain_conf.c:2641 src/network_conf.c:542 src/node_device_conf.c:979
+#: src/domain_conf.c:2642 src/network_conf.c:542 src/node_device_conf.c:979
 #: src/qemu_conf.c:1620
 msgid "incorrect root element"
 msgstr "間違えた root 要素"
 
-#: src/domain_conf.c:2850
+#: src/domain_conf.c:2851
 msgid "topology cpuset syntax error"
 msgstr "トポロジー cpuset 構文エラー"
 
-#: src/domain_conf.c:2864
-#, fuzzy, c-format
+#: src/domain_conf.c:2865
+#, c-format
 msgid "unexpected lifecycle type %d"
-msgstr "予期しないドメインタイプ %d"
+msgstr "予期しないライフサイクルタイプ %d"
 
-#: src/domain_conf.c:2886
-#, fuzzy, c-format
+#: src/domain_conf.c:2887
+#, c-format
 msgid "unexpected disk type %d"
-msgstr "予期しないドメインタイプ %d"
+msgstr "予期しないディスクタイプ %d"
 
-#: src/domain_conf.c:2891
-#, fuzzy, c-format
+#: src/domain_conf.c:2892
+#, c-format
 msgid "unexpected disk device %d"
-msgstr "予期しないドメインタイプ %d"
+msgstr "予期しないディスクデバイス %d"
 
-#: src/domain_conf.c:2896
-#, fuzzy, c-format
+#: src/domain_conf.c:2897
+#, c-format
 msgid "unexpected disk bus %d"
-msgstr "予期しないドメインタイプ %d"
+msgstr "予期しないディスクバス %d"
 
-#: src/domain_conf.c:2901
-#, fuzzy, c-format
+#: src/domain_conf.c:2902
+#, c-format
 msgid "unexpected disk cache mode %d"
-msgstr "予期しないドメインタイプ %d"
+msgstr "予期しないディスクキャッシュモード  %d"
 
-#: src/domain_conf.c:2949
-#, fuzzy, c-format
+#: src/domain_conf.c:2950
+#, c-format
 msgid "unexpected filesystem type %d"
-msgstr "予期しないドメインタイプ %d"
+msgstr "予期しないファイルシステムタイプ %d"
 
-#: src/domain_conf.c:3000 src/domain_conf.c:3220
-#, fuzzy, c-format
+#: src/domain_conf.c:3001 src/domain_conf.c:3221
+#, c-format
 msgid "unexpected net type %d"
-msgstr "予期しないドメインタイプ %d"
+msgstr "予期しないネットタイプ %d"
 
-#: src/domain_conf.c:3074
-#, fuzzy, c-format
+#: src/domain_conf.c:3075
+#, c-format
 msgid "unexpected char type %d"
-msgstr "予期しないドメインタイプ %d"
+msgstr "予期しない文字タイプ %d"
 
-#: src/domain_conf.c:3173 src/xend_internal.c:5506
-#, fuzzy, c-format
+#: src/domain_conf.c:3174 src/xend_internal.c:5506
+#, c-format
 msgid "unexpected sound model %d"
-msgstr "予期しないドメインタイプ %d"
+msgstr "予期しないサウンドモデル %d"
 
-#: src/domain_conf.c:3193 src/xend_internal.c:5528
-#, fuzzy, c-format
+#: src/domain_conf.c:3194 src/xend_internal.c:5528
+#, c-format
 msgid "unexpected input type %d"
-msgstr "予期しないドメインタイプ %d"
+msgstr "予期しないド入力タイプ %d"
 
-#: src/domain_conf.c:3198
-#, fuzzy, c-format
+#: src/domain_conf.c:3199
+#, c-format
 msgid "unexpected input bus type %d"
-msgstr "予期しないドメインタイプ %d"
+msgstr "予期しない入力バスタイプ %d"
 
-#: src/domain_conf.c:3283
-#, fuzzy, c-format
+#: src/domain_conf.c:3284
+#, c-format
 msgid "unexpected hostdev mode %d"
-msgstr "予期しない dict ノード"
+msgstr "予期しない hostdev モード %d"
 
-#: src/domain_conf.c:3290
-#, fuzzy, c-format
+#: src/domain_conf.c:3291
+#, c-format
 msgid "unexpected hostdev type %d"
-msgstr "予期しないドメインタイプ %d"
+msgstr "予期しない hostdev タイプ %d"
 
-#: src/domain_conf.c:3338
+#: src/domain_conf.c:3339
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "予期しないドメインタイプ %d"
 
-#: src/domain_conf.c:3423
-#, fuzzy, c-format
+#: src/domain_conf.c:3424
+#, c-format
 msgid "unexpected boot device type %d"
-msgstr "予期しないドメインタイプ %d"
+msgstr "予期しないブートデバイスタイプ %d"
 
-#: src/domain_conf.c:3441
-#, fuzzy, c-format
+#: src/domain_conf.c:3442
+#, c-format
 msgid "unexpected feature %d"
-msgstr "予期しない value ノード"
+msgstr "予期しない機能 %d"
 
-#: src/domain_conf.c:3586 src/network_conf.c:657
-#, fuzzy, c-format
+#: src/domain_conf.c:3587 src/network_conf.c:657
+#, c-format
 msgid "cannot create config directory '%s'"
-msgstr "設定ディレクトリ %s を作成できません: %s"
+msgstr "設定ディレクトリ %s を作成できません"
 
-#: src/domain_conf.c:3595 src/network_conf.c:666
-#, fuzzy, c-format
+#: src/domain_conf.c:3596 src/network_conf.c:666
+#, c-format
 msgid "cannot create config file '%s'"
-msgstr "設定ファイル %s を作成できません: %s"
+msgstr "設定ファイル %s を作成できません"
 
-#: src/domain_conf.c:3603 src/network_conf.c:674
-#, fuzzy, c-format
+#: src/domain_conf.c:3604 src/network_conf.c:674
+#, c-format
 msgid "cannot write config file '%s'"
-msgstr "設定ファイル %s の書き込みができません: %s"
+msgstr "設定ファイル %s の書き込みができません"
 
-#: src/domain_conf.c:3610 src/network_conf.c:681
-#, fuzzy, c-format
+#: src/domain_conf.c:3611 src/network_conf.c:681
+#, c-format
 msgid "cannot save config file '%s'"
-msgstr "設定ファイル %s を保存できません: %s"
+msgstr "設定ファイル %s を保存できません"
 
-#: src/domain_conf.c:3711 src/network_conf.c:783
-#, fuzzy, c-format
+#: src/domain_conf.c:3712 src/network_conf.c:783
+#, c-format
 msgid "Failed to open dir '%s'"
-msgstr "ディレクトリ '%s' を開くのに失敗: %s"
+msgstr "ディレクトリ '%s' を開くのに失敗"
 
-#: src/domain_conf.c:3765
-#, fuzzy, c-format
+#: src/domain_conf.c:3766
+#, c-format
 msgid "cannot remove config %s"
-msgstr "%s 用の設定を削除できません"
+msgstr "設定 %s を削除できません"
 
-#: src/domain_conf.c:3839
+#: src/domain_conf.c:3840
 msgid "unknown virt type"
 msgstr "不明な virt タイプ"
 
-#: src/domain_conf.c:3850
+#: src/domain_conf.c:3851
 #, c-format
 msgid "no emulator for domain %s os type %s on architecture %s"
 msgstr ""
 
 #: src/iptables.c:103
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to run '%s %s': %s"
-msgstr "実行できませんでした"
+msgstr "'%s %s' の実行に失敗: %s"
 
 #: src/iptables.c:151
 msgid "Failed to read "
@@ -1484,217 +1459,226 @@ msgstr ""
 msgid "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s"
 msgstr "テーブル '%s'内のチェーン'%s' へ iptables ルール '%s' の追加に失敗: %s"
 
-#: src/libvirt.c:893
+#: src/libvirt.c:904
 msgid "could not parse connection URI"
 msgstr "接続 URI の構文解析ができませんでした"
 
-#: src/libvirt.c:2039
-#, fuzzy
+#: src/libvirt.c:2050
 msgid "cannot get working directory"
-msgstr "ログディレクトリ %s を作成できません: %s"
+msgstr "作業ディレクトリを取得できません"
 
-#: src/libvirt.c:2046 src/libvirt.c:2122
-#, fuzzy
+#: src/libvirt.c:2057 src/libvirt.c:2133
 msgid "path too long"
-msgstr "カーネルパスが長すぎます"
+msgstr "パスが長すぎます"
 
-#: src/libvirt.c:2115
-#, fuzzy
+#: src/libvirt.c:2126
 msgid "cannot get current directory"
-msgstr "パイプを作成できません: %s"
+msgstr "現在のディレクトリを取得できません"
 
-#: src/libvirt.c:2615
+#: src/libvirt.c:2626
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr ""
 
-#: src/libvirt.c:2756
+#: src/libvirt.c:2767
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare は uri をセットしませんでした"
 
-#: src/libvirt.c:2785
-#, fuzzy
+#: src/libvirt.c:2796
 msgid "domainMigratePrepare2 did not set uri"
-msgstr "domainMigratePrepare は uri をセットしませんでした"
+msgstr "domainMigratePrepare2 は uri をセットしませんでした"
 
-#: src/libvirt.c:3508
+#: src/libvirt.c:3521
 msgid "path is NULL"
 msgstr "パスは NULL です"
 
-#: src/libvirt.c:3514
+#: src/libvirt.c:3527
 msgid "flags must be zero"
 msgstr "フラグはゼロでなければなりません"
 
-#: src/libvirt.c:3521
+#: src/libvirt.c:3534
 msgid "buffer is NULL"
 msgstr "バッファは NULL です"
 
-#: src/libvirt.c:3620
+#: src/libvirt.c:3633
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL"
 msgstr "フラグパラメータは VIR_MEMORY_VIRTUAL でなければなりません"
 
-#: src/libvirt.c:3627
+#: src/libvirt.c:3640
 msgid "buffer is NULL but size is non-zero"
 msgstr "バッファは NULL ですが、サイズはゼロではありません"
 
 #: src/lxc_container.c:124
-#, fuzzy
 msgid "setsid failed"
-msgstr "setsid は失敗しました: %s"
+msgstr "setsid は失敗しました"
 
 #: src/lxc_container.c:130
-#, fuzzy
 msgid "ioctl(TIOCSTTY) failed"
-msgstr "ioctl(TIOCSTTY) は失敗: %s"
+msgstr "ioctl(TIOCSTTY) は失敗"
 
 #: src/lxc_container.c:143
-#, fuzzy
 msgid "dup2(stdin) failed"
-msgstr "dup2(stdin) は失敗しました: %s"
+msgstr "dup2(stdin) は失敗"
 
 #: src/lxc_container.c:149
-#, fuzzy
 msgid "dup2(stdout) failed"
-msgstr "dup2(stdout) は失敗しました: %s"
+msgstr "dup2(stdout) は失敗"
 
 #: src/lxc_container.c:155
-#, fuzzy
 msgid "dup2(stderr) failed"
-msgstr "dup2(stderr) は失敗しました: %s"
+msgstr "dup2(stderr) は失敗"
 
 #: src/lxc_container.c:183
-#, fuzzy
 msgid "unable to send container continue message"
-msgstr "コンテナ名文字列の割り当てができません"
+msgstr "コンテナ連続メッセージを送信できません"
 
 #: src/lxc_container.c:212
-#, fuzzy
 msgid "Failed to read the container continue message"
-msgstr "停止中のドメイン %s の作成に失敗しました\n"
+msgstr "コンテナ連続メッセージの読み取りに失敗"
 
-#: src/lxc_container.c:276
-#, fuzzy, c-format
-msgid "failed to bind new root %s"
-msgstr "ソケットを '%s' にバインドするのに失敗: %s"
+#: src/lxc_container.c:293
+#, fuzzy
+msgid "failed to make root private"
+msgstr "デバイス %s の作成に失敗"
 
-#: src/lxc_container.c:288 src/lxc_container.c:395
-#, fuzzy, c-format
+#: src/lxc_container.c:304 src/lxc_container.c:326 src/lxc_container.c:461
+#, c-format
 msgid "failed to create %s"
-msgstr "'%s' の作成に失敗しました"
+msgstr "'%s' の作成に失敗"
 
-#: src/lxc_container.c:298
+#: src/lxc_container.c:313
 #, fuzzy, c-format
-msgid "failed to pivot root %s to %s"
-msgstr "ソケットを '%s' にバインドするのに失敗: %s"
+msgid "failed to mount empty tmpfs at %s"
+msgstr "%s で %s をマウントするのに失敗"
 
-#: src/lxc_container.c:333
-#, fuzzy
-msgid "cannot create /dev/"
-msgstr "パイプを作成できません: %s"
+#: src/lxc_container.c:334
+#, fuzzy, c-format
+msgid "failed to bind new root %s into tmpfs"
+msgstr "新規 root %s のバインドに失敗"
 
-#: src/lxc_container.c:338
+#: src/lxc_container.c:343
 #, fuzzy
-msgid "failed to mount /dev tmpfs"
-msgstr "コンテナ用に /proc をマウントするのに失敗: %s"
+msgid "failed to chroot into tmpfs"
+msgstr "/dev tmpfs のマウントに失敗"
 
 #: src/lxc_container.c:349
 #, fuzzy
+msgid "failed to chdir into /new on tmpfs"
+msgstr "/dev tmpfs のマウントに失敗"
+
+#: src/lxc_container.c:357
+#, fuzzy
+msgid "failed to pivot root"
+msgstr "%s への root  %s の ピボットに失敗"
+
+#: src/lxc_container.c:367
+#, fuzzy
+msgid "failed to lazily unmount old root"
+msgstr "/proc をマウントするのに失敗"
+
+#: src/lxc_container.c:400
+msgid "cannot create /dev/"
+msgstr "/dev/ を作成できません"
+
+#: src/lxc_container.c:405
+msgid "failed to mount /dev tmpfs"
+msgstr "/dev tmpfs のマウントに失敗"
+
+#: src/lxc_container.c:416
 msgid "cannot create /dev/pts"
-msgstr "パイプを作成できません: %s"
+msgstr "/dev/pts を作成できません"
 
-#: src/lxc_container.c:355
+#: src/lxc_container.c:421
 #, fuzzy
-msgid "failed to move /dev/pts into container"
-msgstr "コンテナ用に /proc をマウントするのに失敗: %s"
+msgid "failed to mount /dev/pts in container"
+msgstr "/dev/pts をコンテナに移動するのに失敗"
 
-#: src/lxc_container.c:365
-#, fuzzy, c-format
+#: src/lxc_container.c:431
+#, c-format
 msgid "failed to make device %s"
-msgstr "ログファイル %s の作成に失敗: %s"
+msgstr "デバイス %s の作成に失敗"
 
-#: src/lxc_container.c:403 src/lxc_container.c:510
-#, fuzzy, c-format
+#: src/lxc_container.c:469 src/lxc_container.c:581
+#, c-format
 msgid "failed to mount %s at %s"
-msgstr "ディレクトリ '%s' を開くのに失敗: %s"
+msgstr "%s で %s をマウントするのに失敗"
 
-#: src/lxc_container.c:426
-#, fuzzy
+#: src/lxc_container.c:492
 msgid "failed to read /proc/mounts"
-msgstr "プール %s の作成に失敗しました"
+msgstr "/proc/mounts の読み込みに失敗"
 
-#: src/lxc_container.c:452
-#, fuzzy, c-format
+#: src/lxc_container.c:518
+#, c-format
 msgid "failed to unmount '%s'"
-msgstr "ディレクトリ '%s' を開くのに失敗: %s"
+msgstr "'%s' のアンマウントに失敗"
 
-#: src/lxc_container.c:477 src/lxc_container.c:520
-#, fuzzy
+#: src/lxc_container.c:543 src/lxc_container.c:591
 msgid "failed to mount /proc"
-msgstr "ディレクトリ '%s' を開くのに失敗: %s"
+msgstr "/proc をマウントするのに失敗"
 
-#: src/lxc_container.c:565
+#: src/lxc_container.c:567
+#, fuzzy
+msgid "failed to make / slave"
+msgstr "デバイス %s の作成に失敗"
+
+#: src/lxc_container.c:636
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() は無効な vm 定義を渡しました"
 
-#: src/lxc_container.c:575
-#, fuzzy, c-format
+#: src/lxc_container.c:646
+#, c-format
 msgid "failed to open %s"
-msgstr "ディレクトリ '%s' を開くのに失敗: %s"
+msgstr "%s を開くのに失敗"
 
-#: src/lxc_container.c:637
-#, fuzzy
+#: src/lxc_container.c:708
 msgid "failed to run clone container"
-msgstr "コンテナ用に /proc をマウントするのに失敗: %s"
+msgstr "クローンコンテナの実行に失敗"
 
 #: src/lxc_controller.c:85
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create cgroup for %s\n"
-msgstr "%s からのボリューム作成に失敗しました"
+msgstr "%s 用に cgroup を作成できません\n"
 
 #: src/lxc_controller.c:115
-#, fuzzy
 msgid "Failed to set lxc resources"
-msgstr "ソケットの作成に失敗しました: %s"
+msgstr "lxc リソースの設定に失敗しました"
 
 #: src/lxc_controller.c:141
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create server socket '%s'"
-msgstr "ソケットの作成に失敗しました: %s"
+msgstr "サーバーソケット  %s の作成に失敗"
 
 #: src/lxc_controller.c:153
-#, fuzzy, c-format
+#, c-format
 msgid "failed to bind server socket '%s'"
-msgstr "ソケットを '%s' にバインドするのに失敗: %s"
+msgstr "サーバーソケット '%s' のバインドに失敗"
 
 #: src/lxc_controller.c:159
-#, fuzzy, c-format
+#, c-format
 msgid "failed to listen server socket %s"
-msgstr "ソケットを '%s' にバインドするのに失敗: %s"
+msgstr "サーバーソケット %s のリッスンに失敗"
 
 #: src/lxc_controller.c:193
-#, fuzzy, c-format
+#, c-format
 msgid "read of fd %d failed"
-msgstr "fd %d の読み込みは失敗しました: %s"
+msgstr "fd %d の読み込みに失敗"
 
 #: src/lxc_controller.c:200
-#, fuzzy, c-format
+#, c-format
 msgid "write to fd %d failed"
-msgstr "fd %d への書き込みは失敗しました: %s"
+msgstr "fd %d への書き込みに失敗"
 
 #: src/lxc_controller.c:252
-#, fuzzy
 msgid "epoll_create(2) failed"
-msgstr "epoll_create(2) は失敗しました: %s"
+msgstr "epoll_create(2) に失敗"
 
 #: src/lxc_controller.c:262
-#, fuzzy
 msgid "epoll_ctl(appPty) failed"
-msgstr "epoll_ctl(fd1) は失敗: %s"
+msgstr "epoll_ctl(appPty) に失敗"
 
 #: src/lxc_controller.c:268 src/lxc_controller.c:276 src/lxc_controller.c:284
 #: src/lxc_controller.c:304 src/lxc_controller.c:310
-#, fuzzy
 msgid "epoll_ctl(contPty) failed"
-msgstr "epoll_ctl(fd1) は失敗: %s"
+msgstr "epoll_ctl(contPty) に失敗"
 
 #: src/lxc_controller.c:327
 #, c-format
@@ -1702,49 +1686,43 @@ msgid "error event %d"
 msgstr "エラーイベント %d"
 
 #: src/lxc_controller.c:348
-#, fuzzy
 msgid "epoll_wait() failed"
-msgstr "epoll_wait() は失敗しました: %s"
+msgstr "epoll_wait() に失敗"
 
 #: src/lxc_controller.c:398
-#, fuzzy, c-format
+#, c-format
 msgid "failed to move interface %s to ns %d"
-msgstr "インターフェース情報 %s %s の取得に失敗しました"
+msgstr "インターフェース %s  を ns %d に移動するのに失敗"
 
 #: src/lxc_controller.c:423
-#, fuzzy, c-format
+#, c-format
 msgid "failed to delete veth: %s"
-msgstr "ボリューム %s の削除に失敗しました"
+msgstr "veth  の削除に失敗しました: %s"
 
 #: src/lxc_controller.c:446
-#, fuzzy
 msgid "sockpair failed"
-msgstr "unlockpt は失敗しました: %s"
+msgstr "sockpair は失敗しました"
 
 #: src/lxc_controller.c:454 src/lxc_driver.c:876
-#, fuzzy
 msgid "failed to allocate tty"
-msgstr "ノードの割り当てに失敗しました"
+msgstr "tty の割り当てに失敗しました"
 
 #: src/lxc_controller.c:622
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
-msgstr "pid ファイル '%s' の書き込みに失敗: %s"
+msgstr "pid ファイル '%s/%s.pid' の書き込みができません"
 
 #: src/lxc_controller.c:636
-#, fuzzy
 msgid "Unable to change to root dir"
-msgstr "ログファイル %d へ argv を書き込めません: %s"
+msgstr "root ディレクトリを変更できません"
 
 #: src/lxc_controller.c:642
-#, fuzzy
 msgid "Unable to become session leader"
-msgstr "ログファイル %d を終了できません: %s"
+msgstr "セッションリーダーになれません"
 
 #: src/lxc_controller.c:650
-#, fuzzy
 msgid "Failed connection from LXC driver"
-msgstr "ストレージドライバーの検出に失敗しました: %s"
+msgstr "LXC ドライバーからの接続に失敗しました"
 
 #: src/lxc_driver.c:288 src/lxc_driver.c:981 src/lxc_driver.c:1020
 msgid "System lacks NETNS support"
@@ -1754,84 +1732,75 @@ msgstr ""
 #: src/lxc_driver.c:445 src/openvz_driver.c:350 src/openvz_driver.c:389
 #: src/openvz_driver.c:433 src/openvz_driver.c:470 src/openvz_driver.c:909
 #: src/openvz_driver.c:951 src/openvz_driver.c:982 src/openvz_driver.c:1054
-#: src/qemu_driver.c:2369 src/qemu_driver.c:2586 src/qemu_driver.c:3314
-#: src/qemu_driver.c:3391 src/qemu_driver.c:3481 src/qemu_driver.c:3875
-#: src/qemu_driver.c:4025 src/qemu_driver.c:4077 src/qemu_driver.c:4103
-#: src/qemu_driver.c:4377 src/uml_driver.c:1330 src/uml_driver.c:1453
-#: src/uml_driver.c:1493 src/uml_driver.c:1565 src/uml_driver.c:1626
-#: src/uml_driver.c:1670 src/uml_driver.c:1696 src/uml_driver.c:1769
+#: src/uml_driver.c:1330 src/uml_driver.c:1453 src/uml_driver.c:1493
+#: src/uml_driver.c:1565 src/uml_driver.c:1626 src/uml_driver.c:1670
+#: src/uml_driver.c:1696 src/uml_driver.c:1769
 msgid "no domain with matching uuid"
 msgstr "マッチする uuid を持つドメインはありません"
 
-#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3487
+#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3491
 #: src/uml_driver.c:1632
 msgid "cannot delete active domain"
 msgstr "稼働中ドメインは削除できません"
 
-#: src/lxc_driver.c:339 src/qemu_driver.c:3493 src/uml_driver.c:1638
-#, fuzzy
+#: src/lxc_driver.c:339 src/qemu_driver.c:3497 src/uml_driver.c:1638
 msgid "cannot undefine transient domain"
-msgstr "稼働中ドメインは削除できません"
+msgstr "一時的なドメインを定義解除できません"
 
 #: src/lxc_driver.c:385
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get cgroup for %s\n"
-msgstr "%s からのボリューム作成に失敗しました"
+msgstr "%s の cgroup を取得できません\n"
 
 #: src/lxc_driver.c:487
-#, fuzzy, c-format
+#, c-format
 msgid "waitpid failed to wait for container %d: %d"
-msgstr "waitpid はコンテナ %d への待機に失敗しました: %d %s"
+msgstr "waitpid はコンテナ %d の待機に失敗しました: %d"
 
 #: src/lxc_driver.c:569
-#, fuzzy
 msgid "failed to get bridge for interface"
-msgstr "ネットワークインターフェースを接続するのに使われるスクリプト"
+msgstr "インターフェースのブリッジの取得に失敗"
 
 #: src/lxc_driver.c:580
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create veth device pair: %d"
-msgstr "%s からデバイスの追加に失敗しました"
+msgstr "veth デバイスペアの作成に失敗しました: %d"
 
 #: src/lxc_driver.c:593
-#, fuzzy
 msgid "failed to allocate veth names"
-msgstr "ノードの割り当てに失敗しました"
+msgstr "veth の名前の割り当てに失敗しました"
 
 #: src/lxc_driver.c:599
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add %s device to %s"
-msgstr "ソケットを '%s' にバインドするのに失敗: %s"
+msgstr "%s へ %s デバイスの追加に失敗しました"
 
 #: src/lxc_driver.c:606
-#, fuzzy
 msgid "failed to enable parent ns veth device"
-msgstr "char デバイス用の領域割り当てに失敗しました"
+msgstr "ペアレント ns veth デバイスの有効化に失敗"
 
 #: src/lxc_driver.c:636
-#, fuzzy
 msgid "failed to create client socket"
-msgstr "ソケットの作成に失敗しました: %s"
+msgstr "クライアントソケットの作成に失敗"
 
 #: src/lxc_driver.c:646
-#, fuzzy
 msgid "failed to connect to client socket"
-msgstr "Xen Store への接続に失敗しました"
+msgstr "クライアントソケットへの接続に失敗"
 
 #: src/lxc_driver.c:671
-#, fuzzy, c-format
+#, c-format
 msgid "invalid PID %d for container"
-msgstr "無効なドメインポインター"
+msgstr "コンテナ用の無効な PID %d"
 
 #: src/lxc_driver.c:678
-#, fuzzy, c-format
+#, c-format
 msgid "failed to kill pid %d"
-msgstr "tty pid ファイル '%s' を閉じるのに失敗: %s"
+msgstr "pid %d にキルに失敗"
 
 #: src/lxc_driver.c:807 src/util.c:702
-#, fuzzy, c-format
+#, c-format
 msgid "cannot wait for '%s'"
-msgstr "ファイル '%s' の統計が出来ません: %s"
+msgstr "'%s' を待つことができません"
 
 #: src/lxc_driver.c:814
 #, c-format
@@ -1839,24 +1808,24 @@ msgid "container '%s' unexpectedly shutdown during startup"
 msgstr ""
 
 #: src/lxc_driver.c:862
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create log directory '%s'"
-msgstr "ログディレクトリ %s を作成できません: %s"
+msgstr "ログディレクトリ %s を作成できません"
 
 #: src/lxc_driver.c:899
-#, fuzzy, c-format
+#, c-format
 msgid "failed to open '%s'"
-msgstr "ディレクトリ '%s' を開くのに失敗: %s"
+msgstr "'%s' を開くのに失敗しました"
 
 #: src/lxc_driver.c:919
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read pid file %s/%s.pid"
-msgstr "pid ファイル '%s' を開くのに失敗: %s"
+msgstr "pid ファイル %s/%s.pid の読み込みに失敗"
 
 #: src/lxc_driver.c:975
-#, fuzzy, c-format
+#, c-format
 msgid "no domain named %s"
-msgstr "ドメイン名"
+msgstr "ドメイン named %s がありません"
 
 #: src/lxc_driver.c:1065 src/lxc_driver.c:1101
 #, c-format
@@ -1864,53 +1833,56 @@ msgid "no domain with id %d"
 msgstr "id %d を持つドメインはありません"
 
 #: src/lxc_driver.c:1295
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown release: %s"
-msgstr "不明な手続きです: %d"
+msgstr "不明なリリース: %s"
 
 #: src/lxc_driver.c:1332 src/lxc_driver.c:1385
-#, fuzzy, c-format
+#, c-format
 msgid "No such domain %s"
-msgstr "ドメイン %s の再開に失敗しました"
+msgstr "ドメイン %s はありません"
 
 #: src/lxc_driver.c:1347
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid parameter `%s'"
-msgstr "無効なパスです: %s"
+msgstr "無効なパラメータ `%s' です"
 
 #: src/lxc_driver.c:1375
-#, fuzzy
 msgid "Invalid parameter count"
-msgstr "virXPathNode() への無効なパラメータ"
+msgstr "無効なパラメータカウントです"
+
+#: src/lxc_driver.c:1414 src/qemu_driver.c:2077 src/qemu_driver.c:4670
+msgid "failed to determine host name"
+msgstr "ホスト名の決定に失敗しました"
 
 #: src/network_conf.c:260
-#, fuzzy, c-format
+#, c-format
 msgid "cannot parse MAC address '%s'"
-msgstr "アドレス %d を解決できません: %s"
+msgstr "MAC アドレス '%s' をパースできません"
 
 #: src/network_conf.c:267
-#, fuzzy, c-format
+#, c-format
 msgid "cannot use name address '%s'"
-msgstr "アドレス %d を解決できません: %s"
+msgstr "ネームアドレス '%s' は使用できません"
 
 #: src/network_conf.c:283 src/network_conf.c:371
-#, fuzzy, c-format
+#, c-format
 msgid "cannot parse IP address '%s'"
-msgstr "アドレス %d を解決できません: %s"
+msgstr "IP アドレス '%s' をパースできません"
 
 #: src/network_conf.c:377
-#, fuzzy, c-format
+#, c-format
 msgid "cannot parse netmask '%s'"
-msgstr "ヘッダー'%s' を読み込めません: %s"
+msgstr "ネットマスク '%s' をパースできません"
 
 #: src/network_conf.c:401
 msgid "Forwarding requested, but no IPv4 address/netmask provided"
 msgstr "要求を転送していますが、IPv4 のアドレス/ネットマスクがありません"
 
 #: src/network_conf.c:409
-#, fuzzy, c-format
+#, c-format
 msgid "unknown forwarding type '%s'"
-msgstr "不明な認証タイプ %s"
+msgstr "不明な転送タイプ %s"
 
 #: src/network_conf.c:741
 #, c-format
@@ -1918,9 +1890,9 @@ msgid "Network config filename '%s' does not match network name '%s'"
 msgstr "ネットワーク設定ファイル名 '%s' はネットワーク名 '%s' に一致しません"
 
 #: src/network_conf.c:831
-#, fuzzy, c-format
+#, c-format
 msgid "cannot remove config file '%s'"
-msgstr "%s 用の設定を削除できません"
+msgstr "設定ファイル %s を削除できません"
 
 #: src/network_conf.c:901
 #, c-format
@@ -1928,137 +1900,129 @@ msgid "Bridge generation exceeded max id %d"
 msgstr ""
 
 #: src/network_conf.c:915
-#, fuzzy, c-format
+#, c-format
 msgid "bridge name '%s' already in use."
-msgstr "ドメイン %s はすでに存在しています"
+msgstr ""
 
 #: src/network_driver.c:177
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to autostart network '%s': %s\n"
-msgstr "ネットワーク %s の自動起動に失敗: %s"
+msgstr "ネットワーク %s の自動起動に失敗: %s\n"
 
 #: src/network_driver.c:245
-#, fuzzy
 msgid "cannot initialize bridge support"
-msgstr "ブリッジサポートを初期化できません: %s"
+msgstr "ブリッジサポートを初期化できません"
 
 #: src/network_driver.c:270
-#, fuzzy
 msgid "networkStartup: out of memory\n"
-msgstr "qemudStartup: メモリー不足です"
+msgstr "networkStartup: メモリー不足です\n"
 
 #: src/network_driver.c:300
-#, fuzzy
 msgid "Reloading iptables rules\n"
-msgstr "iptables ルールを再ロード中"
+msgstr "iptables ルールを再ロード中\n"
 
 #: src/network_driver.c:516
 msgid "cannot start dhcp daemon without IP address for server"
 msgstr "サーバー用の IP アドレスがないと dhcp デーモンを開始できません"
 
 #: src/network_driver.c:522 src/network_driver.c:528
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create directory %s"
-msgstr "ログディレクトリ %s を作成できません: %s"
+msgstr "ディレクトリ %s を作成できません"
 
 #: src/network_driver.c:581
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to allow forwarding from '%s'"
-msgstr "'%s' から転送するための iptables ルールの追加に失敗しました: %s\n"
+msgstr "'%s' からの転送を許可する iptables ルールの追加に失敗"
 
 #: src/network_driver.c:592
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to allow forwarding to '%s'"
-msgstr "'%s' への転送を許可する iptables ルールの追加に失敗 : %s\n"
+msgstr "'%s' への転送を許可する iptables ルールの追加に失敗"
 
 #: src/network_driver.c:602
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to enable masquerading to '%s'\n"
-msgstr "マスカレードを有効にする為の iptables ルールの追加に失敗: %s\n"
+msgstr "'%s' へのマスカレードを有効にする iptables ルールの追加に失敗\n"
 
 #: src/network_driver.c:634
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to allow routing from '%s'"
-msgstr ""
-"'%s' からのルーティングを許可する為の iptables ルールの追加に失敗 : %s\n"
+msgstr "'%s' からのルーティングを許可する iptables ルールの追加に失敗"
 
 #: src/network_driver.c:645
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to allow routing to '%s'"
-msgstr "'%s' へのルーティングを許可する為の iptables ルールの追加に失敗 : %s\n"
+msgstr "'%s' へのルーティングを許可する iptables ルールの追加に失敗"
 
 #: src/network_driver.c:671 src/network_driver.c:678
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to allow DHCP requests from '%s'"
-msgstr "'%s' からの DHCP 要求を許可する為の  iptables ルールの追加に失敗 : %s"
+msgstr "'%s' からの DHCP 要求を許可する  iptables ルールの追加に失敗"
 
 #: src/network_driver.c:686 src/network_driver.c:693
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to allow DNS requests from '%s'"
-msgstr "'%s' からの DNS 要求を許可する為の iptables ルールの追加に失敗: %s"
+msgstr "'%s' からの DNS 要求を許可する iptables ルールの追加に失敗"
 
 #: src/network_driver.c:703
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to block outbound traffic from '%s'"
-msgstr ""
-"'%s' からの 発信トラフィックを阻止する為の iptables ルールの追加に失敗: %s"
+msgstr "'%s' からの発信トラフィックを阻止する iptables ルールの追加に失敗"
 
 #: src/network_driver.c:710
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to block inbound traffic to '%s'"
-msgstr ""
-"'%s' への 受信トラフィックを阻止する為の iptables ルールの追加に失敗: %s"
+msgstr "'%s' への 受信トラフィックを阻止する iptables ルールの追加に失敗"
 
 #: src/network_driver.c:718
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to allow cross bridge traffic on '%s'"
 msgstr ""
-"'%s' 上のクロスブリッジトラフィックを許可する為の iptables ルールの追加に失"
-"敗 : %s"
+"'%s' 上のクロスブリッジトラフィックを許可する iptables ルールの追加に失敗"
 
 #: src/network_driver.c:806
 msgid "network is already active"
 msgstr "ネットワークはすでにアクティブです"
 
 #: src/network_driver.c:812
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create bridge '%s'"
-msgstr "ブリッジ'%s' を作成できません : %s"
+msgstr "ブリッジ'%s' を作成できません"
 
 #: src/network_driver.c:826
-#, fuzzy, c-format
+#, c-format
 msgid "cannot set IP address on bridge '%s' to '%s'"
-msgstr "ブリッジ '%s 上の IP アドレスを '%s' にセットできません: %s"
+msgstr "ブリッジ '%s 上の IP アドレスを '%s' にセットできません"
 
 #: src/network_driver.c:834
-#, fuzzy, c-format
+#, c-format
 msgid "cannot set netmask on bridge '%s' to '%s'"
-msgstr "ブリッジ '%s 上の ネットマスクを '%s' にセットできません: %s"
+msgstr "ブリッジ '%s 上の ネットマスクを '%s' にセットできません"
 
 #: src/network_driver.c:842
-#, fuzzy, c-format
+#, c-format
 msgid "failed to bring the bridge '%s' up"
-msgstr "ブリッジ '%s' を立ち上げるのに失敗: %s"
+msgstr "ブリッジ '%s' を立ち上げるのに失敗"
 
 #: src/network_driver.c:853
-#, fuzzy
 msgid "failed to enable IP forwarding"
-msgstr "IP ホワーディングを有効にするのに失敗: %s"
+msgstr "IP ホワーディングを有効にするのに失敗"
 
 #: src/network_driver.c:884 src/network_driver.c:925
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bring down bridge '%s' : %s\n"
-msgstr "ブリッジ '%s' を停止するのに失敗: %s"
+msgstr "ブリッジ '%s' を停止するのに失敗: %s\n"
 
 #: src/network_driver.c:891 src/network_driver.c:930
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete bridge '%s' : %s\n"
-msgstr "ブリッジ '%s' を削除するのに失敗: %s"
+msgstr "ブリッジ '%s' を削除するのに失敗: %s\n"
 
 #: src/network_driver.c:905
-#, fuzzy, c-format
+#, c-format
 msgid "Shutting down network '%s'\n"
-msgstr "ネットワーク '%s' のシャットダウンに失敗"
+msgstr "ネットワーク '%s' のシャットダウン\n"
 
 #: src/network_driver.c:963 src/network_driver.c:1188
 #: src/network_driver.c:1227 src/network_driver.c:1250
@@ -2072,50 +2036,47 @@ msgid "no network with matching name"
 msgstr "一致する名前のネットワークはありません"
 
 #: src/network_driver.c:1194
-#, fuzzy
 msgid "network is still active"
-msgstr "ネットワークはすでにアクティブです"
+msgstr "ネットワークはまだアクティブです"
 
 #: src/network_driver.c:1301
 msgid "no network with matching id"
 msgstr "一致する id を持つネットワークはありません"
 
 #: src/network_driver.c:1307
-#, fuzzy, c-format
+#, c-format
 msgid "network '%s' does not have a bridge name."
-msgstr "ネットワーク %s は稼働していません"
+msgstr ""
 
 #: src/network_driver.c:1376
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create autostart directory '%s'"
-msgstr "autostart ディレクトリ %s を作成できません: %s"
+msgstr "autostart ディレクトリ %s を作成できません"
 
-#: src/network_driver.c:1383 src/storage_driver.c:943
-#, fuzzy, c-format
+#: src/network_driver.c:1383 src/storage_driver.c:971
+#, c-format
 msgid "Failed to create symlink '%s' to '%s'"
-msgstr "'%s' へのシンボルリンク %s の作成に失敗しました: %s"
+msgstr "'%s' へのシンボルリンク %s の作成に失敗しました"
 
-#: src/network_driver.c:1390 src/qemu_driver.c:4140 src/storage_driver.c:951
+#: src/network_driver.c:1390 src/qemu_driver.c:4152 src/storage_driver.c:979
 #: src/uml_driver.c:1733
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete symlink '%s'"
-msgstr "シンボルリンク'%s' の削除に失敗しました: %s"
+msgstr "シンボルリンク'%s' の削除に失敗しました"
 
 #: src/node_device.c:149 src/node_device.c:174 src/node_device.c:208
 #: src/node_device.c:238
-#, fuzzy
 msgid "no node device with matching name"
-msgstr "一致する名前のストレージボリュームはありません"
+msgstr "一致する名前のノードデバイスはありません"
 
 #: src/node_device.c:184
-#, fuzzy
 msgid "no parent for this device"
-msgstr "ディスク装置のターゲット"
+msgstr "このデバイス用のペアレントはありません"
 
 #: src/node_device_conf.c:436
-#, fuzzy, c-format
+#, c-format
 msgid "no block device path supplied for '%s'"
-msgstr "デバイスヘッダー%s を消去できません"
+msgstr ""
 
 #: src/node_device_conf.c:448
 #, c-format
@@ -2123,9 +2084,9 @@ msgid "error parsing storage capabilities for '%s'"
 msgstr ""
 
 #: src/node_device_conf.c:458
-#, fuzzy, c-format
+#, c-format
 msgid "missing storage capability type for '%s'"
-msgstr "ソースパスがありません"
+msgstr ""
 
 #: src/node_device_conf.c:478
 #, c-format
@@ -2138,19 +2099,19 @@ msgid "invalid removable media size supplied for '%s'"
 msgstr ""
 
 #: src/node_device_conf.c:489
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage capability type '%s' for '%s'"
-msgstr "不明なストレージボリュームタイプ %d"
+msgstr "'%s' 用の不明なストレージ能力タイプ '%s'"
 
 #: src/node_device_conf.c:501
-#, fuzzy, c-format
+#, c-format
 msgid "no size supplied for '%s'"
-msgstr "ファイルオーナー '%s' を設定できません: %s"
+msgstr " '%s' にサイズがありません"
 
 #: src/node_device_conf.c:502
-#, fuzzy, c-format
+#, c-format
 msgid "invalid size supplied for '%s'"
-msgstr "無効なサウンドモデル '%s'"
+msgstr "'%s' 用に無効なサイズがあります"
 
 #: src/node_device_conf.c:529 src/node_device_conf.c:574
 #, c-format
@@ -2193,14 +2154,14 @@ msgid "invalid SCSI LUN ID supplied for '%s'"
 msgstr ""
 
 #: src/node_device_conf.c:601
-#, fuzzy, c-format
+#, c-format
 msgid "no network interface supplied for '%s'"
-msgstr "ネットワークインターフェースタイプ"
+msgstr "'%s' 用にネットワークインターフェースがありません"
 
 #: src/node_device_conf.c:616
-#, fuzzy, c-format
+#, c-format
 msgid "invalid network type supplied for '%s'"
-msgstr "%s で無効なネットワークポインターです"
+msgstr "%s 用に無効なネットワークタイプです"
 
 #: src/node_device_conf.c:644
 #, c-format
@@ -2233,19 +2194,19 @@ msgid "invalid USB interface subclass supplied for '%s'"
 msgstr ""
 
 #: src/node_device_conf.c:662
-#, fuzzy, c-format
+#, c-format
 msgid "no USB interface protocol supplied for '%s'"
-msgstr "不明な認証タイプ %s"
+msgstr ""
 
 #: src/node_device_conf.c:663
-#, fuzzy, c-format
+#, c-format
 msgid "invalid USB interface protocol supplied for '%s'"
-msgstr "%s に無効なストレージプールポインターがあります"
+msgstr "%s 用に無効な USB インターフェイスがあります"
 
 #: src/node_device_conf.c:713
 #, c-format
 msgid "no USB bus number supplied for '%s'"
-msgstr ""
+msgstr "'%s' 用に USB バスナンバーがありません"
 
 #: src/node_device_conf.c:714
 #, c-format
@@ -2258,9 +2219,9 @@ msgid "no USB device number supplied for '%s'"
 msgstr ""
 
 #: src/node_device_conf.c:720
-#, fuzzy, c-format
+#, c-format
 msgid "invalid USB device number supplied for '%s'"
-msgstr "%s で無効なドメインポインターです"
+msgstr ""
 
 #: src/node_device_conf.c:725
 #, c-format
@@ -2288,9 +2249,9 @@ msgid "no PCI domain ID supplied for '%s'"
 msgstr ""
 
 #: src/node_device_conf.c:760
-#, fuzzy, c-format
+#, c-format
 msgid "invalid PCI domain ID supplied for '%s'"
-msgstr "%s で無効なドメインポインターです"
+msgstr "%s 用に無効な PCI ドメイン ID があります。"
 
 #: src/node_device_conf.c:765
 #, c-format
@@ -2298,9 +2259,9 @@ msgid "no PCI bus ID supplied for '%s'"
 msgstr ""
 
 #: src/node_device_conf.c:766
-#, fuzzy, c-format
+#, c-format
 msgid "invalid PCI bus ID supplied for '%s'"
-msgstr "無効なサウンドモデル '%s'"
+msgstr "'%s' 用に無効な PCI バス ID があります"
 
 #: src/node_device_conf.c:771
 #, c-format
@@ -2308,9 +2269,9 @@ msgid "no PCI slot ID supplied for '%s'"
 msgstr ""
 
 #: src/node_device_conf.c:772
-#, fuzzy, c-format
+#, c-format
 msgid "invalid PCI slot ID supplied for '%s'"
-msgstr "無効なサウンドモデル '%s'"
+msgstr "'%s' 用に無効な PCI スロット ID があります"
 
 #: src/node_device_conf.c:777
 #, c-format
@@ -2318,9 +2279,9 @@ msgid "no PCI function ID supplied for '%s'"
 msgstr ""
 
 #: src/node_device_conf.c:778
-#, fuzzy, c-format
+#, c-format
 msgid "invalid PCI function ID supplied for '%s'"
-msgstr "%s で無効な接続ポインターです"
+msgstr "%s 用に無効な PCI 機能 ID があります"
 
 #: src/node_device_conf.c:783
 #, c-format
@@ -2348,24 +2309,23 @@ msgid "no system UUID supplied for '%s'"
 msgstr ""
 
 #: src/node_device_conf.c:831
-#, fuzzy, c-format
+#, c-format
 msgid "malformed uuid element for '%s'"
-msgstr "異常形成の uuid 要素"
+msgstr "'%s' 用に異常形成の uuid 要素"
 
 #: src/node_device_conf.c:865
-#, fuzzy
 msgid "missing capability type"
-msgstr "能力要素がありません"
+msgstr "能力タイプがありません"
 
 #: src/node_device_conf.c:871
-#, fuzzy, c-format
+#, c-format
 msgid "unknown capability type '%s'"
-msgstr "不明な認証タイプ %s"
+msgstr "不明な能力タイプ %s"
 
 #: src/node_device_conf.c:905
-#, fuzzy, c-format
+#, c-format
 msgid "unknown capability type '%d' for '%s'"
-msgstr "不明な認証タイプ %s"
+msgstr "不明な能力タイプ '%d' が %s 用に存在"
 
 #: src/node_device_conf.c:947
 #, c-format
@@ -2373,28 +2333,25 @@ msgid "no device capabilities for '%s'"
 msgstr ""
 
 #: src/nodeinfo.c:78
-#, fuzzy
 msgid "parsing cpuinfo processor"
-msgstr "ドメイン uuid"
+msgstr ""
 
 #: src/nodeinfo.c:91
 msgid "parsing cpuinfo cpu MHz"
 msgstr ""
 
 #: src/nodeinfo.c:120
-#, fuzzy
 msgid "no cpus found"
-msgstr "node cpu numa nodes"
+msgstr "cpus が見付かりません"
 
 #: src/nodeinfo.c:158 src/uml_driver.c:1794 src/util.c:302
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s"
-msgstr "'%s' を開けません: %s"
+msgstr "'%s' を開けません"
 
 #: src/openvz_conf.c:131
-#, fuzzy
 msgid "Cound not extract vzctl version"
-msgstr "実行中の %s ハイパーバイザーのバージョンを抽出できません\n"
+msgstr "vzctl  バージョンを抽出できません"
 
 #: src/openvz_conf.c:198
 #, c-format
@@ -2407,23 +2364,20 @@ msgid "Cound not read 'NETIF' from config for container %d"
 msgstr ""
 
 #: src/openvz_conf.c:257
-#, fuzzy
 msgid "Too long network device name"
-msgstr "ネットワークファイル名を解決中"
+msgstr "ネットワークデバイス名が長すぎます"
 
 #: src/openvz_conf.c:271
 msgid "Too long bridge device name"
 msgstr ""
 
 #: src/openvz_conf.c:285
-#, fuzzy
 msgid "Wrong length MAC address"
-msgstr "無効な MAC アドレス"
+msgstr "MAC アドレスの長さが違います"
 
 #: src/openvz_conf.c:292
-#, fuzzy
 msgid "Wrong MAC address"
-msgstr "MAC アドレス"
+msgstr "MAC アドレスが違います"
 
 #: src/openvz_conf.c:359
 #, c-format
@@ -2431,9 +2385,9 @@ msgid "Cound not read 'OSTEMPLATE' from config for container %d"
 msgstr ""
 
 #: src/openvz_conf.c:373
-#, fuzzy, c-format
+#, c-format
 msgid "Cound not read 'VE_PRIVATE' from config for container %d"
-msgstr "%s 用の設定を削除できません"
+msgstr ""
 
 #: src/openvz_conf.c:434
 msgid "popen failed"
@@ -2448,42 +2402,38 @@ msgid "UUID in config file malformed"
 msgstr "設定ファイル内の UUID は異常形成"
 
 #: src/openvz_conf.c:489
-#, fuzzy, c-format
+#, c-format
 msgid "Cound not read config for container %d"
-msgstr "%s 用の設定を削除できません"
+msgstr "コンテナ %d 用の設定を読み込めません"
 
 #: src/openvz_conf.c:532
 msgid "Cound not read nodeinfo"
 msgstr ""
 
 #: src/openvz_driver.c:110
-#, fuzzy
 msgid "Container is not defined"
-msgstr "ドメインは稼働していません"
+msgstr "コンテナは定義されていません"
 
 #: src/openvz_driver.c:152 src/openvz_driver.c:657
-#, fuzzy, c-format
+#, c-format
 msgid "Could not put argument to %s"
-msgstr "%s に接続できませんでした"
+msgstr "%s に引数を挿入できません"
 
 #: src/openvz_driver.c:170
-#, fuzzy
 msgid "only one filesystem supported"
-msgstr "無効なファイルシステムタイプ"
+msgstr "ファイルシステム１つのみサポート"
 
 #: src/openvz_driver.c:179
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr ""
 
 #: src/openvz_driver.c:190
-#, fuzzy
 msgid "Could not convert domain name to VEID"
-msgstr "ドメイン名または id をドメイン UUID に変換"
+msgstr "ドメイン名を VEID に変換できません"
 
 #: src/openvz_driver.c:196
-#, fuzzy
 msgid "Could not copy default config"
-msgstr "接続 URI の構文解析ができませんでした"
+msgstr ""
 
 #: src/openvz_driver.c:202
 msgid "Could not set the source dir for the filesystem"
@@ -2496,14 +2446,14 @@ msgstr ""
 #: src/openvz_driver.c:216 src/openvz_driver.c:644 src/openvz_driver.c:828
 #: src/openvz_driver.c:883 src/openvz_driver.c:921 src/openvz_driver.c:957
 #: src/openvz_driver.c:1034 src/openvz_driver.c:1170 src/openvz_driver.c:1221
-#, fuzzy, c-format
+#, c-format
 msgid "Could not exec %s"
-msgstr "%s に接続できませんでした"
+msgstr "%s を実行できませんでした"
 
 #: src/openvz_driver.c:361
-#, fuzzy, c-format
+#, c-format
 msgid "cannot read cputime for domain %d"
-msgstr "稼働中ドメインは削除できません"
+msgstr "ドメイン %d 用の cputime を読み込めません"
 
 #: src/openvz_driver.c:440 src/openvz_driver.c:477
 msgid "domain is not in running state"
@@ -2522,14 +2472,12 @@ msgid "Could not generate veth name"
 msgstr ""
 
 #: src/openvz_driver.c:686
-#, fuzzy
 msgid "Could not configure network"
-msgstr "%s に接続できませんでした"
+msgstr "ネットワークを設定できませんでした"
 
 #: src/openvz_driver.c:697
-#, fuzzy
 msgid "cannot replace NETIF config"
-msgstr "%s 用の設定を削除できません"
+msgstr "NETIF 設定を入れ替えできません"
 
 #: src/openvz_driver.c:734
 #, c-format
@@ -2537,24 +2485,21 @@ msgid "Already an OPENVZ VM active with the id '%s'"
 msgstr "OPENVZ VM は既に id '%s' で アクティブです"
 
 #: src/openvz_driver.c:744 src/openvz_driver.c:811
-#, fuzzy
 msgid "Error creating intial configuration"
-msgstr "設定を割り当て中"
+msgstr "初期設定の作成中にエラー"
 
 #: src/openvz_driver.c:752 src/openvz_driver.c:817
-#, fuzzy
 msgid "Could not set UUID"
-msgstr "接続 URI の構文解析ができませんでした"
+msgstr "UUID をセットできませんでした"
 
 #: src/openvz_driver.c:762 src/openvz_driver.c:839
-#, fuzzy
 msgid "Could not set number of virtual cpu"
-msgstr "仮想 CPU 数の変更"
+msgstr "仮想 CPU 数をセットできません"
 
 #: src/openvz_driver.c:801
-#, fuzzy, c-format
+#, c-format
 msgid "Already an OPENVZ VM defined with the id '%s'"
-msgstr "OPENVZ VM は既に id '%d' で定義済です"
+msgstr "OPENVZ VM は既に id '%s' で定義済です"
 
 #: src/openvz_driver.c:870
 msgid "no domain with matching id"
@@ -2565,11 +2510,10 @@ msgid "domain is not in shutoff state"
 msgstr "ドメインはシャットオフ状態ではありません"
 
 #: src/openvz_driver.c:988
-#, fuzzy
 msgid "Could not read container config"
-msgstr "接続 URI の構文解析ができませんでした"
+msgstr "コンテナ設定を読み込めません"
 
-#: src/openvz_driver.c:1008 src/qemu_driver.c:1863
+#: src/openvz_driver.c:1008 src/qemu_driver.c:1847
 #, c-format
 msgid "unknown type '%s'"
 msgstr "不明なタイプ %s"
@@ -2579,29 +2523,29 @@ msgid "VCPUs should be >= 1"
 msgstr ""
 
 #: src/openvz_driver.c:1179 src/openvz_driver.c:1230
-#, fuzzy, c-format
+#, c-format
 msgid "Could not parse VPS ID %s"
-msgstr "接続 URI の構文解析ができませんでした"
+msgstr "VPS ID %s をパースできません"
 
 #: src/pci.c:142
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open config space file '%s': %s"
-msgstr "pid ファイル '%s' を開くのに失敗: %s"
+msgstr "設定スペースファイル '%s' を開くのに失敗: %s"
 
 #: src/pci.c:162
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read from '%s' : %s"
-msgstr "シグナルパイプからの読み込みに失敗しました: %s"
+msgstr "'%s' からの読み込みに失敗しました: %s"
 
 #: src/pci.c:202
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write to '%s' : %s"
-msgstr "pid ファイル '%s' の書き込みに失敗: %s"
+msgstr "'%s' への書き込みに失敗: %s"
 
 #: src/pci.c:575
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open config space file '%s'"
-msgstr "pid ファイル '%s' を開くのに失敗: %s"
+msgstr "設定スペースファイル '%s' を開くのに失敗"
 
 #: src/pci.c:612
 #, c-format
@@ -2609,53 +2553,53 @@ msgid "No PCI reset capability available for %s"
 msgstr ""
 
 #: src/pci.c:665
-#, fuzzy, c-format
+#, c-format
 msgid "failed to load pci-stub or pciback drivers: %s"
-msgstr "ストレージドライバーの検出に失敗しました: %s"
+msgstr "pci-stub 又は pciback ドライバーのロードに失敗しました: %s"
 
 #: src/pci.c:694
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "ソケットを '%s' にバインドするのに失敗: %s"
+msgstr "PCI デバイス ID '%s' を %s  に追加するのに失敗"
 
 #: src/pci.c:707
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to unbind PCI device '%s'"
-msgstr "ハイパーバイザーへの接続に失敗しました"
+msgstr "PCI デバイス '%s' のバインド解除に失敗"
 
 #: src/pci.c:720
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "ソケットを '%s' にバインドするのに失敗: %s"
+msgstr "PCI デバイス '%s' 用のスロットを %s  へ追加するのに失敗"
 
 #: src/pci.c:728 src/pci.c:775
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bind PCI device '%s' to %s"
-msgstr "ソケットを '%s' にバインドするのに失敗: %s"
+msgstr "PCI デバイス '%s' を %s にバインドするのに失敗"
 
 #: src/pci.c:740
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "%s からのボリューム作成に失敗しました"
+msgstr "%s から PCI ID '%s' の削除に失敗しました"
 
 #: src/pci.c:754 src/pci.c:815
 msgid "cannot find any PCI stub module"
 msgstr ""
 
 #: src/pci.c:785
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to remove slot for PCI device '%s' to %s"
-msgstr "ソケットを '%s' にバインドするのに失敗: %s"
+msgstr "PCI デバイス '%s' 用のスロットを %s へ削除するのに失敗"
 
 #: src/pci.c:800
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "uid '%d' のユーザー記録を見つけることができません: %s"
+msgstr "PCI デバイス '%s' 用の再プローブのトリガに失敗"
 
 #: src/pci.c:880
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read product/vendor ID for %s"
-msgstr "%s からのプール作成に失敗しました"
+msgstr "%s 用の 製品/製造元 ID の読み込みに失敗"
 
 #: src/proxy_internal.c:250
 #, c-format
@@ -2668,14 +2612,12 @@ msgid "Failed to write to socket %d\n"
 msgstr "ソケット %d の書き込みに失敗しました\n"
 
 #: src/proxy_internal.c:389
-#, fuzzy
 msgid "failed to write proxy request"
-msgstr "以下への書き込みに失敗しました"
+msgstr "プロキシ要求の書き込みに失敗しました"
 
 #: src/proxy_internal.c:400 src/proxy_internal.c:423
-#, fuzzy
 msgid "failed to read proxy reply"
-msgstr "読み込みに失敗しました"
+msgstr "プロキシ応答の読み込みに失敗しました"
 
 #: src/proxy_internal.c:405 src/proxy_internal.c:428 src/proxy_internal.c:446
 #, c-format
@@ -2732,9 +2674,11 @@ msgid "cannot initialize bridge support: %s"
 msgstr "ブリッジサポートを初期化できません: %s"
 
 #: src/qemu_conf.c:639
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add tap interface to bridge. %s is not a bridge device"
-msgstr "%s をブリッジする為の tap インターフェース %s の追加に失敗: %s"
+msgstr ""
+"ブリッジする tap インターフェースの追加に失敗。 %s はブリッジデバイスではあり"
+"ません"
 
 #: src/qemu_conf.c:643
 #, c-format
@@ -2742,24 +2686,22 @@ msgid "Failed to add tap interface '%s' to bridge '%s' : %s"
 msgstr "%s をブリッジする為の tap インターフェース %s の追加に失敗: %s"
 
 #: src/qemu_conf.c:794
-#, fuzzy
 msgid "TCP migration is not supported with this QEMU binary"
-msgstr "'info blockstats'  はこの qemu ではサポートがありません"
+msgstr "TCP の移行はこの QEMU バイナリではサポートしていません"
 
 #: src/qemu_conf.c:802 src/qemu_conf.c:808
-#, fuzzy
 msgid "STDIO migration is not supported with this QEMU binary"
-msgstr "'info blockstats'  はこの qemu ではサポートがありません"
+msgstr ""
 
 #: src/qemu_conf.c:1062
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
-msgstr "サポートのないディスクタイプ '%s'"
+msgstr "ディスク '%s' 用のドライバー名 '%s' にはサポートがありません"
 
 #: src/qemu_conf.c:1102 src/qemu_conf.c:1172
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported usb disk type for '%s'"
-msgstr "サポートのないディスクタイプ '%s'"
+msgstr "'%s' 用のサポートのない usb ディスクタイプ "
 
 #: src/qemu_conf.c:1110 src/qemu_conf.c:1191 src/uml_conf.c:273
 #, c-format
@@ -2771,98 +2713,92 @@ msgid "invalid sound model"
 msgstr "無効なサウンドモデル"
 
 #: src/qemu_conf.c:1627
-#, fuzzy
 msgid "invalid domain state"
-msgstr "無効なドメイン名"
+msgstr "無効なドメインの状態"
 
 #: src/qemu_conf.c:1636
-#, fuzzy
 msgid "invalid pid"
-msgstr "無効なパス"
+msgstr "無効な pid"
 
 #: src/qemu_conf.c:1643
-#, fuzzy
 msgid "no monitor path"
-msgstr "モニターパス %s を開くことができません"
+msgstr "モニターパスがありません"
 
 #: src/qemu_conf.c:1650
-#, fuzzy
 msgid "no domain config"
-msgstr "ノードドメイン一覧"
+msgstr "ドメイン設定がありません"
 
 #: src/qemu_driver.c:153 src/qemu_driver.c:185 src/uml_driver.c:774
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create logfile %s"
-msgstr "ログファイル %s の作成に失敗: %s"
+msgstr "ログファイル %s の作成に失敗"
 
 #: src/qemu_driver.c:159 src/qemu_driver.c:191 src/uml_driver.c:783
-#, fuzzy
 msgid "Unable to set VM logfile close-on-exec flag"
-msgstr "VM ログファイルの close-on-exec フラグ %s をセットできません"
+msgstr "VM ログファイルの close-on-exec フラグをセットできません"
 
 #: src/qemu_driver.c:177
-#, fuzzy, c-format
+#, c-format
 msgid "failed to build logfile name %s/%s.log"
-msgstr "ログファイル %s の作成に失敗: %s"
+msgstr "ログファイル名 %s/%s.log の構築に失敗"
 
 #: src/qemu_driver.c:197
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to seek to %lld in %s"
-msgstr "tty '%s' を開けません: %s\n"
+msgstr "%lld を %s 内で探すことができません"
 
 #: src/qemu_driver.c:226 src/uml_driver.c:144
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to autostart VM '%s': %s\n"
-msgstr "VM '%s' の自動起動に失敗: %s"
+msgstr "VM '%s' の自動起動に失敗: %s\n"
 
 #: src/qemu_driver.c:268
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to unlink status file %s"
-msgstr "ブロックの状態 %s  %s の取得に失敗しました"
+msgstr "状態ファイル %s のリンク解除に失敗"
 
 #: src/qemu_driver.c:313
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read domain status for %s\n"
-msgstr "%s からのドメイン作成に失敗しました"
+msgstr "%s 用のドメイン状態の読み込みに失敗しました\n"
 
 #: src/qemu_driver.c:323
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse domain status for %s\n"
-msgstr "ドメイン %s の %s への保存に失敗しました"
+msgstr "%s 用のドメイン状態のパースに失敗しました\n"
 
 #: src/qemu_driver.c:329
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reconnect monitor for %s: %d\n"
-msgstr "ディレクトリ %s の作成に失敗しました: %s"
+msgstr "%s 用のモニター再接続に失敗しました: %d\n"
 
 #: src/qemu_driver.c:374
-#, fuzzy
 msgid "Failed to start security driver"
-msgstr "現在の時刻を取得できません"
+msgstr "セキュリティドライバーの開始に失敗"
 
 #: src/qemu_driver.c:379
 msgid "No security driver available"
-msgstr ""
+msgstr "セキュリティドライバーがありません"
 
 #: src/qemu_driver.c:399
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to copy secModel model: %s"
-msgstr "モード '%s' の構文解析に失敗"
+msgstr "secModel モデルのコピーに失敗: %s"
 
 #: src/qemu_driver.c:407
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to copy secModel DOI: %s"
-msgstr "モード '%s' の構文解析に失敗"
+msgstr "secModel DOI のコピーに失敗: %s"
 
 #: src/qemu_driver.c:483
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create state dir '%s': %s\n"
-msgstr "VM '%s' の自動起動に失敗: %s"
+msgstr "状態ディレクトリ '%s' の作成に失敗: %s\n"
 
 #: src/qemu_driver.c:685 src/qemu_driver.c:698 src/qemu_driver.c:709
 #, c-format
 msgid "Failure while reading %s startup output"
-msgstr "%s 開始の出力読み込みで失敗"
+msgstr "%s 開始の出力読み込み中に失敗"
 
 #: src/qemu_driver.c:693
 #, c-format
@@ -2875,19 +2811,19 @@ msgid "Out of space while reading %s startup output"
 msgstr "%s 開始の出力読み込みで領域不足"
 
 #: src/qemu_driver.c:758
-#, fuzzy, c-format
+#, c-format
 msgid "Out of space while reading %s log output"
-msgstr "%s 開始の出力読み込みで領域不足"
+msgstr "%s ログの出力読み込み中に領域不足"
 
 #: src/qemu_driver.c:765
-#, fuzzy, c-format
+#, c-format
 msgid "Failure while reading %s log output"
-msgstr "%s 開始の出力読み込みで失敗"
+msgstr "%s ログの出力読み込み中に失敗"
 
 #: src/qemu_driver.c:779
-#, fuzzy, c-format
+#, c-format
 msgid "Timed out while reading %s log output"
-msgstr "%s 開始の出力の読み込みで時間切れ"
+msgstr "%s ログの出力の読み込み中に時間切れ"
 
 #: src/qemu_driver.c:808
 #, c-format
@@ -2903,36 +2839,34 @@ msgid "Unable to put monitor into non-blocking mode"
 msgstr "モニターを non-blocking モードにできません"
 
 #: src/qemu_driver.c:968 src/qemu_driver.c:1533
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to close logfile: %s\n"
-msgstr "ログファイル %d を終了できません: %s"
+msgstr "ログファイルを終了できません: %s\n"
 
 #: src/qemu_driver.c:977
-#, fuzzy, c-format
+#, c-format
 msgid "unable to start guest: %s"
-msgstr "tty 属性をセットできません: %s\n"
+msgstr "ゲストを開始できません: %s"
 
 #: src/qemu_driver.c:1007
 msgid "cannot run monitor command to fetch CPU thread info"
 msgstr "CPU スレッド情報をフェッチするためのモニターコマンドを実行できません"
 
 #: src/qemu_driver.c:1111
-#, fuzzy
 msgid "failed to set CPU affinity"
-msgstr "CPU affinity '%s' の設定に失敗"
+msgstr "CPU affinity の設定に失敗"
 
-#: src/qemu_driver.c:1121 src/qemu_driver.c:2267
+#: src/qemu_driver.c:1121 src/qemu_driver.c:2261
 msgid "resume operation failed"
 msgstr "レジューム操作は失敗しました"
 
 #: src/qemu_driver.c:1154
 msgid "setting VNC password failed"
-msgstr ""
+msgstr "VNC パスワードの設定に失敗しました"
 
 #: src/qemu_driver.c:1296
-#, fuzzy
 msgid "Failed to set security label"
-msgstr "現在の時刻を取得できません"
+msgstr "セキュリティレベルの設定に失敗"
 
 #: src/qemu_driver.c:1329 src/uml_driver.c:738
 msgid "VM is already active"
@@ -2943,198 +2877,193 @@ msgid "Unable to find an unused VNC port"
 msgstr "未使用の VNC ポートを見つけることができません"
 
 #: src/qemu_driver.c:1355 src/uml_driver.c:760
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create log directory %s"
-msgstr "ログディレクトリ %s を作成できません: %s"
+msgstr "ログディレクトリ %s を作成できません"
 
 #: src/qemu_driver.c:1375
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot find QEMU binary %s"
-msgstr "QEMU バイナリ %s が見つかりません: %s"
+msgstr "QEMU バイナリ %s が見つかりません"
 
-#: src/qemu_driver.c:1384 src/qemu_driver.c:3599
-#, fuzzy, c-format
+#: src/qemu_driver.c:1384 src/qemu_driver.c:3603
+#, c-format
 msgid "Cannot determine QEMU argv syntax %s"
-msgstr "QEMU バイナリ %s が見つかりません: %s"
+msgstr "QEMU argv 構文 %s を決定できません"
 
 #: src/qemu_driver.c:1401 src/qemu_driver.c:1404 src/uml_driver.c:798
 #: src/uml_driver.c:801
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write envv to logfile: %s\n"
-msgstr "ログファイル %d へ argv を書き込めません: %s"
+msgstr "envv をログファイルへ書き込めません: %s\n"
 
 #: src/qemu_driver.c:1411 src/qemu_driver.c:1414 src/qemu_driver.c:1419
 #: src/uml_driver.c:808 src/uml_driver.c:811 src/uml_driver.c:816
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write argv to logfile: %s\n"
-msgstr "ログファイル %d へ argv を書き込めません: %s"
+msgstr "argv をログファイルへ書き込めません: %s\n"
 
 #: src/qemu_driver.c:1423
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to seek to end of logfile: %s\n"
-msgstr "ログファイル %d へ argv を書き込めません: %s"
+msgstr "ログファイルの末尾を探せません: %s\n"
 
 #: src/qemu_driver.c:1451
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s didn't show up\n"
-msgstr "ドメイン %s をシャットダウンしています\n"
+msgstr "ドメイン %s は出ませんでした\n"
 
 #: src/qemu_driver.c:1456
 msgid "Unable to daemonize QEMU process"
-msgstr ""
+msgstr "QEMU プロセスをデーモン化することができません"
 
 #: src/qemu_driver.c:1518
-#, fuzzy, c-format
+#, c-format
 msgid "Shutting down VM '%s'\n"
-msgstr "VM '%s' をシャットダウンしています"
+msgstr "VM '%s' をシャットダウン中\n"
 
 #: src/qemu_driver.c:1523
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to send SIGTERM to %s (%d)"
-msgstr "ソケットを '%s' にバインドするのに失敗: %s"
+msgstr "SIGTERM を %s (%d) に送信するのに失敗"
 
 #: src/qemu_driver.c:1556
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to remove domain status for %s"
-msgstr "%s からのドメイン作成に失敗しました"
+msgstr "%s 用のドメイン状態の削除に失敗しました"
 
 #: src/qemu_driver.c:1603
 #, c-format
 msgid "unhandled fd event %d for %s"
-msgstr ""
+msgstr "処理のない fd イベント %d が %s 用に存在"
 
-#: src/qemu_driver.c:1717 src/qemu_driver.c:1729
-#, fuzzy, c-format
-msgid "Unable to log VM console data: %s\n"
-msgstr "VM コンソールデータをログできません: %s"
-
-#: src/qemu_driver.c:1836
-#, fuzzy, c-format
+#: src/qemu_driver.c:1820
+#, c-format
 msgid "Unable to open %s"
-msgstr "tty '%s' を開けません: %s\n"
+msgstr "'%s' を開けません"
 
-#: src/qemu_driver.c:1899 src/qemu_driver.c:1936 src/uml_driver.c:974
+#: src/qemu_driver.c:1883 src/qemu_driver.c:1920 src/uml_driver.c:974
 #: src/uml_driver.c:1005
 msgid "NUMA not supported on this host"
 msgstr "NUMA はこのホスト上ではサポートがありません"
 
-#: src/qemu_driver.c:1905
+#: src/qemu_driver.c:1889
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr ""
 
-#: src/qemu_driver.c:1917 src/qemu_driver.c:1944 src/uml_driver.c:985
+#: src/qemu_driver.c:1901 src/qemu_driver.c:1928 src/uml_driver.c:985
 #: src/uml_driver.c:1013
 msgid "Failed to query NUMA free memory"
 msgstr "NUMA 空きメモリーのクエリに失敗"
 
-#: src/qemu_driver.c:2088 src/qemu_driver.c:4646
-#, fuzzy
-msgid "failed to determine host name"
-msgstr "ホスト名の取得に失敗しました"
-
-#: src/qemu_driver.c:2146 src/uml_driver.c:1219
-#, fuzzy, c-format
-msgid "domain '%s' is already defined"
-msgstr "ドメイン %s はすでに存在しています"
-
-#: src/qemu_driver.c:2156 src/uml_driver.c:1229
-#, fuzzy, c-format
-msgid "domain with uuid '%s' is already defined"
-msgstr "ドメイン %s はすでに存在しています"
-
-#: src/qemu_driver.c:2205 src/qemu_driver.c:2256 src/qemu_driver.c:2305
-#: src/qemu_driver.c:2334 src/qemu_driver.c:2736 src/qemu_driver.c:4181
-#: src/qemu_driver.c:4313 src/qemu_driver.c:4449 src/qemu_driver.c:4780
-#: src/uml_driver.c:1270 src/uml_driver.c:1300
+#: src/qemu_driver.c:1988 src/uml_driver.c:1270 src/uml_driver.c:1300
 #, c-format
 msgid "no domain with matching id %d"
 msgstr "一致する id %d のドメインはありません"
 
-#: src/qemu_driver.c:2210 src/qemu_driver.c:2261 src/qemu_driver.c:2742
-#: src/qemu_driver.c:4186 src/qemu_driver.c:4319 src/qemu_driver.c:4461
-#: src/qemu_driver.c:4786
-msgid "domain is not running"
-msgstr "ドメインは稼働していません"
-
-#: src/qemu_driver.c:2216 src/qemu_driver.c:2751
-msgid "suspend operation failed"
-msgstr "サスペンド操作は失敗しました"
-
-#: src/qemu_driver.c:2311 src/uml_driver.c:1277
-msgid "shutdown operation failed"
-msgstr "シャットダウン操作は失敗しました"
-
-#: src/qemu_driver.c:2397 src/qemu_driver.c:2423 src/qemu_driver.c:2547
-#: src/qemu_driver.c:2872 src/qemu_driver.c:3067 src/qemu_driver.c:3102
-#: src/uml_driver.c:1358 src/uml_driver.c:1383 src/uml_driver.c:1416
+#: src/qemu_driver.c:2015 src/qemu_driver.c:2197 src/qemu_driver.c:2250
+#: src/qemu_driver.c:2301 src/qemu_driver.c:2332 src/qemu_driver.c:2369
+#: src/qemu_driver.c:2396 src/qemu_driver.c:2421 src/qemu_driver.c:2544
+#: src/qemu_driver.c:2585 src/qemu_driver.c:2737 src/qemu_driver.c:2872
+#: src/qemu_driver.c:3066 src/qemu_driver.c:3100 src/qemu_driver.c:3314
+#: src/qemu_driver.c:3393 src/qemu_driver.c:3485 src/qemu_driver.c:3881
+#: src/qemu_driver.c:4033 src/qemu_driver.c:4087 src/qemu_driver.c:4115
+#: src/qemu_driver.c:4195 src/qemu_driver.c:4333 src/qemu_driver.c:4399
+#: src/qemu_driver.c:4473 src/qemu_driver.c:4806 src/uml_driver.c:1358
+#: src/uml_driver.c:1383 src/uml_driver.c:1416
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "一致する uuid '%s' のドメインはありません"
 
-#: src/qemu_driver.c:2429 src/uml_driver.c:1389
+#: src/qemu_driver.c:2040 src/qemu_driver.c:4935
+#, fuzzy, c-format
+msgid "no domain with matching name '%s'"
+msgstr "マッチする名前のドメイン名はありません"
+
+#: src/qemu_driver.c:2135 src/uml_driver.c:1219
+#, c-format
+msgid "domain '%s' is already defined"
+msgstr "ドメイン %s は既に定義されています"
+
+#: src/qemu_driver.c:2145 src/uml_driver.c:1229
+#, c-format
+msgid "domain with uuid '%s' is already defined"
+msgstr "uuid '%s' を持つドメインはすでに定義されています"
+
+#: src/qemu_driver.c:2202 src/qemu_driver.c:2255 src/qemu_driver.c:2743
+#: src/qemu_driver.c:4200 src/qemu_driver.c:4339 src/qemu_driver.c:4485
+#: src/qemu_driver.c:4812
+msgid "domain is not running"
+msgstr "ドメインは稼働していません"
+
+#: src/qemu_driver.c:2208 src/qemu_driver.c:2752
+msgid "suspend operation failed"
+msgstr "サスペンド操作は失敗しました"
+
+#: src/qemu_driver.c:2307 src/uml_driver.c:1277
+msgid "shutdown operation failed"
+msgstr "シャットダウン操作は失敗しました"
+
+#: src/qemu_driver.c:2427 src/uml_driver.c:1389
 msgid "cannot set max memory lower than current memory"
 msgstr "最大メモリーは現在のメモリー以下にはセットできません"
 
-#: src/qemu_driver.c:2462
-#, fuzzy
+#: src/qemu_driver.c:2460
 msgid "could not query memory balloon allocation"
-msgstr "メモリーサイズの変更"
+msgstr "メモリーバルーン割り当てをクエリできません"
 
-#: src/qemu_driver.c:2473
-#, fuzzy
+#: src/qemu_driver.c:2471
 msgid "could not parse memory balloon allocation"
-msgstr "接続 URI の構文解析ができませんでした"
+msgstr "メモリーバルーン割り当てをパースできません"
 
-#: src/qemu_driver.c:2512
-#, fuzzy
+#: src/qemu_driver.c:2510
 msgid "could not balloon memory allocation"
-msgstr "メモリーサイズの変更"
+msgstr "メモリー割り当てをバルーンできません"
 
-#: src/qemu_driver.c:2553 src/uml_driver.c:1428
+#: src/qemu_driver.c:2550 src/uml_driver.c:1428
 msgid "cannot set memory higher than max memory"
 msgstr "メモリーは最大メモリー以上にセットできません"
 
-#: src/qemu_driver.c:2561 src/uml_driver.c:1422
+#: src/qemu_driver.c:2558 src/uml_driver.c:1422
 msgid "cannot set memory of an active domain"
 msgstr "アクティブドメインのメモリーをセットできません"
 
-#: src/qemu_driver.c:2763
+#: src/qemu_driver.c:2764
 msgid "failed to get domain xml"
 msgstr "ドメイン xml の取得に失敗しました"
 
-#: src/qemu_driver.c:2771
+#: src/qemu_driver.c:2772
 #, c-format
 msgid "failed to create '%s'"
 msgstr "'%s' の作成に失敗しました"
 
-#: src/qemu_driver.c:2777
+#: src/qemu_driver.c:2778
 msgid "failed to write save header"
 msgstr "保存ヘッダーの書き込みに失敗しました"
 
-#: src/qemu_driver.c:2783
+#: src/qemu_driver.c:2784
 msgid "failed to write xml"
 msgstr "xml の書き込みに失敗しました"
 
-#: src/qemu_driver.c:2789
-#, fuzzy, c-format
+#: src/qemu_driver.c:2790
+#, c-format
 msgid "unable to save file %s"
-msgstr "ログファイル %d を終了できません: %s"
+msgstr "ファイル %s を保存できません"
 
-#: src/qemu_driver.c:2811 src/qemu_driver.c:4829
+#: src/qemu_driver.c:2812 src/qemu_driver.c:4855
 msgid "migrate operation failed"
 msgstr "移行操作は失敗しました"
 
-#: src/qemu_driver.c:2822
-#, fuzzy
+#: src/qemu_driver.c:2823
 msgid "'migrate' not supported by this qemu"
-msgstr "'info blockstats'  はこの qemu ではサポートがありません"
+msgstr "'migrate' はこの qemu ではサポートがありません"
 
 #: src/qemu_driver.c:2878
 msgid "cannot change vcpu count of an active domain"
 msgstr "アクティブドメインの vcpu カウントは変更できません"
 
-#: src/qemu_driver.c:2884 src/qemu_driver.c:3073 src/qemu_driver.c:3108
+#: src/qemu_driver.c:2884 src/qemu_driver.c:3072 src/qemu_driver.c:3106
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "ドメイン定義 '%d' に不明な virt タイプがあります"
@@ -3160,326 +3089,310 @@ msgid "vcpu number out of range %d > %d"
 msgstr "vcpu 数は範囲外です %d > %d"
 
 #: src/qemu_driver.c:2958
-#, fuzzy
 msgid "cannot set affinity"
-msgstr "アフィニティをセットできません: %s"
+msgstr "アフィニティをセットできません"
 
 #: src/qemu_driver.c:2963
 msgid "cpu affinity is not supported"
 msgstr "cpu アフィニティはサポートされていません"
 
 #: src/qemu_driver.c:3027
-#, fuzzy
 msgid "cannot get affinity"
-msgstr "アフィニティを取得できません: %s"
+msgstr "アフィニティを取得できません"
 
 #: src/qemu_driver.c:3037
 msgid "cpu affinity is not available"
 msgstr "cpu アフィニティは使用できません"
 
-#: src/qemu_driver.c:3131
-#, fuzzy
+#: src/qemu_driver.c:3129
 msgid "Failed to get security label"
-msgstr "現在の時刻を取得できません"
+msgstr "セキュリティレベルの取得に失敗しました"
 
-#: src/qemu_driver.c:3156
-#, fuzzy, c-format
+#: src/qemu_driver.c:3154
+#, c-format
 msgid "security model string exceeds max %d bytes"
-msgstr "vCPU カウントは最大限を越えています: %d > %d"
+msgstr ""
 
-#: src/qemu_driver.c:3165
-#, fuzzy, c-format
+#: src/qemu_driver.c:3163
+#, c-format
 msgid "security DOI string exceeds max %d bytes"
-msgstr "vCPU カウントは最大限を越えています: %d > %d"
+msgstr ""
 
-#: src/qemu_driver.c:3189
+#: src/qemu_driver.c:3187
 msgid "cannot read domain image"
 msgstr "ドメインイメージを読み込めません"
 
-#: src/qemu_driver.c:3195
+#: src/qemu_driver.c:3193
 msgid "failed to read qemu header"
 msgstr "qemu ヘッダーの読み込みに失敗しました"
 
-#: src/qemu_driver.c:3201
+#: src/qemu_driver.c:3199
 msgid "image magic is incorrect"
 msgstr "イメージマジックは正しくありません"
 
-#: src/qemu_driver.c:3207
+#: src/qemu_driver.c:3205
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "イメージバージョンはサポートがありません (%d > %d)"
 
-#: src/qemu_driver.c:3219
+#: src/qemu_driver.c:3217
 msgid "failed to read XML"
 msgstr "XML の読み込みに失敗しました"
 
-#: src/qemu_driver.c:3227 src/qemu_driver.c:4681
+#: src/qemu_driver.c:3225 src/qemu_driver.c:4705
 msgid "failed to parse XML"
 msgstr "XML の構文解析に失敗しました"
 
-#: src/qemu_driver.c:3238
+#: src/qemu_driver.c:3236
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "ドメインはすでに '%s' としてアクティブです"
 
-#: src/qemu_driver.c:3249 src/qemu_driver.c:4717
+#: src/qemu_driver.c:3247 src/qemu_driver.c:4741
 msgid "failed to assign new VM"
 msgstr "新規 VM の割り当てに失敗しました"
 
-#: src/qemu_driver.c:3260
+#: src/qemu_driver.c:3258
 msgid "failed to start VM"
 msgstr "VM の起動に失敗しました"
 
-#: src/qemu_driver.c:3278
+#: src/qemu_driver.c:3276
 msgid "failed to resume domain"
 msgstr "ドメインの再開に失敗しました"
 
-#: src/qemu_driver.c:3528
+#: src/qemu_driver.c:3532
 #, c-format
 msgid "cannot convert disk '%s' to bus/device index"
 msgstr ""
 
-#: src/qemu_driver.c:3554
-#, fuzzy, c-format
+#: src/qemu_driver.c:3558
+#, c-format
 msgid "Unsupported disk name mapping for bus '%s'"
-msgstr "サポートのないディスクタイプ '%s'"
+msgstr "バス '%s' 用にはディスク名マッピングのサポートがありません"
 
-#: src/qemu_driver.c:3589
+#: src/qemu_driver.c:3593
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3616
+#: src/qemu_driver.c:3620
 #, c-format
 msgid ""
 "Emulator version does not support removable media for device '%s' and target "
 "'%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3653
-#, fuzzy
+#: src/qemu_driver.c:3657
 msgid "could not change cdrom media"
-msgstr "cdrom メディアを変更出来ません"
+msgstr "cdrom メディアを変更出来ませんでした"
 
-#: src/qemu_driver.c:3664
-#, fuzzy, c-format
+#: src/qemu_driver.c:3668
+#, c-format
 msgid "changing cdrom media failed: %s"
-msgstr "cdrom メディアを変更出来ません"
+msgstr "cdrom メディアの変更は失敗です: %s"
 
-#: src/qemu_driver.c:3691 src/qemu_driver.c:3760
-#, fuzzy, c-format
+#: src/qemu_driver.c:3695 src/qemu_driver.c:3764
+#, c-format
 msgid "target %s already exists"
-msgstr "ストレージボリュームは既に存在します"
+msgstr "ターゲット %s は既に存在します"
 
-#: src/qemu_driver.c:3717
-#, fuzzy, c-format
+#: src/qemu_driver.c:3721
+#, c-format
 msgid "cannot attach %s disk"
-msgstr "%s を読み込めません: %s"
+msgstr "%s ディスクを添付できません"
 
-#: src/qemu_driver.c:3731
+#: src/qemu_driver.c:3735
 msgid "Unable to parse slot number\n"
 msgstr ""
 
-#: src/qemu_driver.c:3734
-#, fuzzy, c-format
+#: src/qemu_driver.c:3738
+#, c-format
 msgid "adding %s disk failed"
-msgstr "ドメイン %s はすでに存在しています"
+msgstr " %s ディスクの追加は失敗"
 
-#: src/qemu_driver.c:3785
-#, fuzzy
+#: src/qemu_driver.c:3789
 msgid "cannot attach usb disk"
-msgstr "ソースデバイスを取り出せません"
+msgstr "usb ディスクを添付できません"
 
-#: src/qemu_driver.c:3796
-#, fuzzy
+#: src/qemu_driver.c:3800
 msgid "adding usb disk failed"
-msgstr "ホストの定義ファイルをロード中"
+msgstr "usb ディスクの追加は失敗"
 
-#: src/qemu_driver.c:3839
-#, fuzzy
+#: src/qemu_driver.c:3843
 msgid "cannot attach usb device"
-msgstr "ソースデバイスを取り出せません"
+msgstr "usb デバイスを添付できません"
 
-#: src/qemu_driver.c:3850
-#, fuzzy
+#: src/qemu_driver.c:3854
 msgid "adding usb device failed"
-msgstr "ホストの定義ファイルをロード中"
+msgstr "usb デバイスの追加は失敗"
 
-#: src/qemu_driver.c:3882
+#: src/qemu_driver.c:3888
 msgid "cannot attach device on inactive domain"
 msgstr "停止状態のドメインでデバイスを添付できません"
 
-#: src/qemu_driver.c:3908
+#: src/qemu_driver.c:3914
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr ""
 
-#: src/qemu_driver.c:3918
-#, fuzzy, c-format
+#: src/qemu_driver.c:3924
+#, c-format
 msgid "disk device type '%s' cannot be hotplugged"
-msgstr "CDROM ディスクデバイスのみが添付できます"
+msgstr ""
 
-#: src/qemu_driver.c:3928
-#, fuzzy, c-format
+#: src/qemu_driver.c:3934
+#, c-format
 msgid "device type '%s' cannot be attached"
-msgstr "CDROM ディスクデバイスのみが添付できます"
-
-#: src/qemu_driver.c:3961
-#, fuzzy, c-format
-msgid "disk %s not found"
-msgstr "ドメインが見つかりません"
+msgstr "デバイスタイプ '%s' は添付できません"
 
 #: src/qemu_driver.c:3967
+#, c-format
+msgid "disk %s not found"
+msgstr "ディスク %s が見つかりません"
+
+#: src/qemu_driver.c:3973
 #, c-format
 msgid "disk %s cannot be detached - invalid slot number %d"
 msgstr ""
 
-#: src/qemu_driver.c:3979
-#, fuzzy, c-format
+#: src/qemu_driver.c:3985
+#, c-format
 msgid "failed to execute detach disk %s command"
-msgstr "ドメインの再開に失敗しました"
+msgstr "detach disk %s コマンドの実行に失敗しました"
 
-#: src/qemu_driver.c:3988
-#, fuzzy, c-format
+#: src/qemu_driver.c:3994
+#, c-format
 msgid "failed to detach disk %s: invalid slot %d"
-msgstr "%s からデバイスの削除に失敗しました"
+msgstr "ディスク %s の取り外しに失敗: 無効なスロット %d"
 
-#: src/qemu_driver.c:4032
-#, fuzzy
+#: src/qemu_driver.c:4040
 msgid "cannot detach device on inactive domain"
-msgstr "停止状態のドメインでデバイスを添付できません"
+msgstr "停止状態のドメインではデバイスを外せません"
 
-#: src/qemu_driver.c:4053
-#, fuzzy
+#: src/qemu_driver.c:4061
 msgid "only SCSI or virtio disk device can be detached dynamically"
-msgstr "CDROM ディスクデバイスのみが添付できます"
+msgstr "SCSI か virtio ディスクデバイスのみが動的に取り外しできます"
 
-#: src/qemu_driver.c:4109 src/uml_driver.c:1702
-#, fuzzy
+#: src/qemu_driver.c:4121 src/uml_driver.c:1702
 msgid "cannot set autostart for transient domain"
-msgstr "アクティブドメインのメモリーをセットできません"
+msgstr "一時的なドメインの自動開始はセットできません"
 
-#: src/qemu_driver.c:4126 src/storage_driver.c:936 src/uml_driver.c:1719
-#, fuzzy, c-format
+#: src/qemu_driver.c:4138 src/storage_driver.c:964 src/uml_driver.c:1719
+#, c-format
 msgid "cannot create autostart directory %s"
-msgstr "autostart ディレクトリ %s を作成できません: %s"
+msgstr "autostart ディレクトリ %s を作成できません"
 
-#: src/qemu_driver.c:4133 src/uml_driver.c:1726
-#, fuzzy, c-format
+#: src/qemu_driver.c:4145 src/uml_driver.c:1726
+#, c-format
 msgid "Failed to create symlink '%s to '%s'"
-msgstr "'%s' へのシンボルリンク %s の作成に失敗しました: %s"
+msgstr "'%s' へのシンボルリンク %s の作成に失敗しました"
 
-#: src/qemu_driver.c:4199
+#: src/qemu_driver.c:4213
 #, c-format
 msgid "invalid path: %s"
 msgstr "無効なパスです: %s"
 
-#: src/qemu_driver.c:4210
+#: src/qemu_driver.c:4224
 msgid "'info blockstats' command failed"
 msgstr "'info blockstats' コマンドは失敗です"
 
-#: src/qemu_driver.c:4223
+#: src/qemu_driver.c:4237
 msgid "'info blockstats' not supported by this qemu"
 msgstr "'info blockstats'  はこの qemu ではサポートがありません"
 
-#: src/qemu_driver.c:4287
+#: src/qemu_driver.c:4305
 #, c-format
 msgid "device not found: %s (%s)"
 msgstr "デバイスは見つかりません: %s (%s)"
 
-#: src/qemu_driver.c:4325 src/qemu_driver.c:4383 src/uml_driver.c:1775
+#: src/qemu_driver.c:4345 src/qemu_driver.c:4405 src/uml_driver.c:1775
 msgid "NULL or empty path"
 msgstr "NULL 又は空のパス"
 
-#: src/qemu_driver.c:4342
+#: src/qemu_driver.c:4362
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "無効なパス、'%s' は不明なインターフェイスです"
 
-#: src/qemu_driver.c:4402
-#, fuzzy, c-format
+#: src/qemu_driver.c:4424
+#, c-format
 msgid "%s: failed to open"
-msgstr "ディレクトリ '%s' を開くのに失敗: %s"
+msgstr "%s: 開くのに失敗"
 
-#: src/qemu_driver.c:4413
-#, fuzzy, c-format
+#: src/qemu_driver.c:4435
+#, c-format
 msgid "%s: failed to seek or read"
-msgstr "ファイルからの lseek 又は読み込みに失敗しました: %s: %s"
+msgstr "%s: 探索、又は読み込みに失敗"
 
-#: src/qemu_driver.c:4420 src/uml_driver.c:1812
+#: src/qemu_driver.c:4442 src/uml_driver.c:1812
 msgid "invalid path"
 msgstr "無効なパス"
 
-#: src/qemu_driver.c:4455
+#: src/qemu_driver.c:4479
 msgid "QEMU driver only supports virtual memory addrs"
 msgstr "QEMU ドライバーは仮想メモリーアドレスのみをサポートします。"
 
-#: src/qemu_driver.c:4468
-#, fuzzy, c-format
+#: src/qemu_driver.c:4492
+#, c-format
 msgid "mkstemp(\"%s\") failed"
-msgstr "open(%s) は失敗しました: %s"
+msgstr "mkstemp(\"%s\") は失敗しました"
 
-#: src/qemu_driver.c:4476
+#: src/qemu_driver.c:4500
 #, fuzzy
 msgid "'memsave' command failed"
 msgstr "lvs コマンドは失敗です"
 
-#: src/qemu_driver.c:4485
+#: src/qemu_driver.c:4509
 #, fuzzy, c-format
 msgid "failed to read temporary file created with template %s"
-msgstr "%s: ログファイルの書き込みに失敗しました: %s"
+msgstr "設定ファイル %s の読み込みに失敗しました"
 
-#: src/qemu_driver.c:4625
+#: src/qemu_driver.c:4649
 #, fuzzy
 msgid "no domain XML passed"
 msgstr "ノードドメイン一覧"
 
-#: src/qemu_driver.c:4662
+#: src/qemu_driver.c:4686
 msgid "only tcp URIs are supported for KVM migrations"
-msgstr ""
+msgstr "tcp URI のみが KVM 移行の為にサポートがあります"
 
-#: src/qemu_driver.c:4672
+#: src/qemu_driver.c:4696
 msgid "URI did not have ':port' at the end"
-msgstr ""
+msgstr "URI には末尾に ':port' がありませんでした"
 
-#: src/qemu_driver.c:4698
+#: src/qemu_driver.c:4722
 #, fuzzy
 msgid "could not generate random UUID"
 msgstr "UUID の生成に失敗しました"
 
-#: src/qemu_driver.c:4707
+#: src/qemu_driver.c:4731
 #, fuzzy, c-format
 msgid "domain with the same name or UUID already exists as '%s'"
 msgstr "ドメインはすでに '%s' としてアクティブです"
 
-#: src/qemu_driver.c:4731
+#: src/qemu_driver.c:4755
 #, fuzzy
 msgid "failed to start listening VM"
 msgstr "VM の起動に失敗しました"
 
-#: src/qemu_driver.c:4794
+#: src/qemu_driver.c:4820
 msgid "off-line migration specified, but suspend operation failed"
-msgstr ""
+msgstr "オフライン移行が指定されています、しかしサスペンド操作は失敗です"
 
-#: src/qemu_driver.c:4838
+#: src/qemu_driver.c:4864
 #, fuzzy, c-format
 msgid "migrate failed: %s"
 msgstr "操作は失敗しました: %s"
 
-#: src/qemu_driver.c:4868
+#: src/qemu_driver.c:4894
 #, fuzzy, c-format
 msgid "Failed to resume guest %s after failure\n"
 msgstr "ドメイン %s の再開に失敗しました"
 
-#: src/qemu_driver.c:4909
-#, fuzzy, c-format
-msgid "no domain with matching name %s"
-msgstr "マッチする名前のドメイン名はありません"
-
-#: src/qemu_driver.c:4978 src/xen_unified.c:1461
+#: src/qemu_driver.c:5004 src/xen_unified.c:1461
 #, c-format
 msgid "device %s is not a PCI device"
-msgstr ""
+msgstr "デバイス %s  PCI デバイスではありません"
 
 #: src/remote_internal.c:291
 msgid "failed to find libvirtd binary"
@@ -3504,12 +3417,12 @@ msgstr "tty '%s' を開けません: %s\n"
 #: src/remote_internal.c:589 src/remote_internal.c:665
 #, fuzzy, c-format
 msgid "unable to connect to '%s'"
-msgstr "tty '%s' を開けません: %s\n"
+msgstr "%s に接続できませんでした"
 
 #: src/remote_internal.c:641
 #, fuzzy
 msgid "unable to create socket"
-msgstr "ソケットの作成に失敗しました: %s"
+msgstr "ソケットの作成に失敗しました"
 
 #: src/remote_internal.c:728
 #, fuzzy
@@ -3524,12 +3437,12 @@ msgstr ""
 #: src/remote_internal.c:756
 #, fuzzy
 msgid "unable to make socket non-blocking"
-msgstr "ソケットの作成に失敗しました: %s"
+msgstr "モニターを non-blocking モードにできません"
 
 #: src/remote_internal.c:762
 #, fuzzy
 msgid "unable to make pipe"
-msgstr "ログファイル %d を終了できません: %s"
+msgstr "uuid を生成できません"
 
 #: src/remote_internal.c:796
 #, fuzzy
@@ -3538,7 +3451,7 @@ msgstr "URI の取得に失敗しました"
 
 #: src/remote_internal.c:813
 msgid "Error allocating callbacks list"
-msgstr ""
+msgstr "コールバックリストの割り当て中にエラー"
 
 #: src/remote_internal.c:818
 #, fuzzy
@@ -3563,7 +3476,7 @@ msgstr "VM コンソールデータをログできません: %s"
 #: src/remote_internal.c:1103
 #, c-format
 msgid "unable to load private key/certificate: %s"
-msgstr ""
+msgstr "個人のキー/証明証のロードができません: %s"
 
 #: src/remote_internal.c:1132
 #, fuzzy, c-format
@@ -3593,7 +3506,7 @@ msgstr "tty '%s' を開けません: %s\n"
 #: src/remote_internal.c:1197
 #, c-format
 msgid "unable to complete TLS initialization: %s"
-msgstr ""
+msgstr "TLS 初期化を完了できません: %s"
 
 #: src/remote_internal.c:1203
 msgid "server verification (of our certificate or IP address) failed\n"
@@ -3607,7 +3520,7 @@ msgstr "クライアントの証明証を確証するのに失敗: %s"
 #: src/remote_internal.c:1235
 #, fuzzy
 msgid "cannot get current time"
-msgstr "パイプを作成できません: %s"
+msgstr "現在の時刻を取得できません"
 
 #: src/remote_internal.c:1240
 #, fuzzy
@@ -3639,7 +3552,7 @@ msgstr ""
 #: src/remote_internal.c:1257
 #, c-format
 msgid "server certificate failed validation: %s"
-msgstr ""
+msgstr "サーバー証明証が確証に失敗: %s"
 
 #: src/remote_internal.c:1263
 msgid "Certificate type is not X.509"
@@ -3682,375 +3595,367 @@ msgstr "NUMA セルが多すぎます: %d > %d"
 msgid "too many remote domain IDs: %d > %d"
 msgstr "リモートドメイン ID が多すぎます: %d > %d"
 
-#: src/remote_internal.c:2188
+#: src/remote_internal.c:2189
 #, c-format
 msgid "map length greater than maximum: %d > %d"
 msgstr "マップ長は最大限を越えています: %d > %d"
 
-#: src/remote_internal.c:2227
+#: src/remote_internal.c:2228
 #, c-format
 msgid "vCPU count exceeds maximum: %d > %d"
 msgstr "vCPU カウントは最大限を越えています: %d > %d"
 
-#: src/remote_internal.c:2233
+#: src/remote_internal.c:2234
 #, c-format
 msgid "vCPU map buffer length exceeds maximum: %d > %d"
 msgstr "vCPU マップバッファ長は最大限を越えています: %d > %d"
 
-#: src/remote_internal.c:2250
+#: src/remote_internal.c:2251
 #, c-format
 msgid "host reports too many vCPUs: %d > %d"
 msgstr "ホストの vCPU 報告は多すぎます: %d > %d"
 
-#: src/remote_internal.c:2256
+#: src/remote_internal.c:2257
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "ホスト報告のマップバッファ長は最大限を越えています: %d > %d"
 
-#: src/remote_internal.c:2329
+#: src/remote_internal.c:2330
 #, fuzzy, c-format
 msgid "security label exceeds maximum: %zd"
 msgstr "vCPU カウントは最大限を越えています: %d > %d"
 
-#: src/remote_internal.c:2362
+#: src/remote_internal.c:2363
 #, fuzzy, c-format
 msgid "security model exceeds maximum: %zd"
 msgstr "vCPU カウントは最大限を越えています: %d > %d"
 
-#: src/remote_internal.c:2371
+#: src/remote_internal.c:2372
 #, fuzzy, c-format
 msgid "security doi exceeds maximum: %zd"
 msgstr "vCPU カウントは最大限を越えています: %d > %d"
 
-#: src/remote_internal.c:2612 src/remote_internal.c:2626
+#: src/remote_internal.c:2613 src/remote_internal.c:2627
 #, c-format
 msgid "too many remote domain names: %d > %d"
 msgstr "リモートドメイン名が多すぎます: %d > %d"
 
-#: src/remote_internal.c:2894
+#: src/remote_internal.c:2911
 msgid ""
 "remoteDomainGetSchedulerParameters: returned number of parameters exceeds "
 "limit"
 msgstr ""
 "remoteDomainGetSchedulerParameters: パラメータの戻り数は限度を越えています"
 
-#: src/remote_internal.c:2921
+#: src/remote_internal.c:2938
 msgid "remoteDomainGetSchedulerParameters: unknown parameter type"
 msgstr "remoteDomainGetSchedulerParameters: 不明なパラメータタイプ"
 
-#: src/remote_internal.c:2952
+#: src/remote_internal.c:2969
 msgid "out of memory allocating array"
 msgstr "アレイの割り当てでメモリー不足です"
 
-#: src/remote_internal.c:2979
+#: src/remote_internal.c:2996
 msgid "unknown parameter type"
 msgstr "不明なパラメータタイプ"
 
-#: src/remote_internal.c:3090
+#: src/remote_internal.c:3107
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr "block peek 要求はリモートプロトコルには大きすぎます %zi > %d"
 
-#: src/remote_internal.c:3111 src/remote_internal.c:3162
+#: src/remote_internal.c:3128 src/remote_internal.c:3179
 msgid "returned buffer is not same size as requested"
 msgstr "戻りバッファは要求値と同じサイズではありません"
 
-#: src/remote_internal.c:3142
+#: src/remote_internal.c:3159
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"
 msgstr "memory peek 要求はリモートプロトコルには大きすぎます %zi > %d"
 
-#: src/remote_internal.c:3275 src/remote_internal.c:3289
-#: src/remote_internal.c:3348 src/remote_internal.c:3362
+#: src/remote_internal.c:3292 src/remote_internal.c:3306
+#: src/remote_internal.c:3365 src/remote_internal.c:3379
 #, c-format
 msgid "too many remote networks: %d > %d"
 msgstr "リモートネットワークが多すぎます: %d > %d"
 
-#: src/remote_internal.c:3771 src/remote_internal.c:3840
+#: src/remote_internal.c:3788 src/remote_internal.c:3857
 msgid "too many storage pools requested"
 msgstr "要求されたストレージプールが多すぎます"
 
-#: src/remote_internal.c:3783 src/remote_internal.c:3852
+#: src/remote_internal.c:3800 src/remote_internal.c:3869
 msgid "too many storage pools received"
 msgstr "受理したストレージプールが多すぎます"
 
-#: src/remote_internal.c:4346
+#: src/remote_internal.c:4363
 msgid "too many storage volumes requested"
 msgstr "要求されたストレージボリュームが多すぎます"
 
-#: src/remote_internal.c:4359
+#: src/remote_internal.c:4376
 msgid "too many storage volumes received"
 msgstr "受理したストレージボリュームが多すぎます"
 
-#: src/remote_internal.c:4714
+#: src/remote_internal.c:4731
 #, fuzzy
 msgid "too many device names requested"
 msgstr "要求されたストレージボリュームが多すぎます"
 
-#: src/remote_internal.c:4728
+#: src/remote_internal.c:4745
 #, fuzzy
 msgid "too many device names received"
 msgstr "受理したストレージボリュームが多すぎます"
 
-#: src/remote_internal.c:4868
+#: src/remote_internal.c:4885
 #, fuzzy
 msgid "too many capability names requested"
 msgstr "要求されたストレージボリュームが多すぎます"
 
-#: src/remote_internal.c:4881
+#: src/remote_internal.c:4898
 #, fuzzy
 msgid "too many capability names received"
 msgstr "受理したストレージボリュームが多すぎます"
 
-#: src/remote_internal.c:5013
+#: src/remote_internal.c:5030
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "不明な認証タイプです: %s"
 
-#: src/remote_internal.c:5023
+#: src/remote_internal.c:5040
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr "要求された認証タイプ %s は拒否されました"
 
-#: src/remote_internal.c:5064
+#: src/remote_internal.c:5081
 #, c-format
 msgid "unsupported authentication type %d"
 msgstr "サポートのない認証タイプ %d です"
 
-#: src/remote_internal.c:5309
+#: src/remote_internal.c:5326
 #, c-format
 msgid "failed to initialize SASL library: %d (%s)"
 msgstr "SASL ライブラリの初期化に失敗しました:%d (%s)"
 
-#: src/remote_internal.c:5318
+#: src/remote_internal.c:5335
 #, fuzzy
 msgid "failed to get sock address"
 msgstr "sock アドレス  %d (%s) の取得に失敗"
 
-#: src/remote_internal.c:5328
+#: src/remote_internal.c:5345
 #, fuzzy
 msgid "failed to get peer address"
 msgstr "ピアアドレス %d (%s)  の取得に失敗"
 
-#: src/remote_internal.c:5353
+#: src/remote_internal.c:5370
 #, c-format
 msgid "Failed to create SASL client context: %d (%s)"
 msgstr "SASL クライアントコンテキストの作成に失敗しました: %d (%s)"
 
-#: src/remote_internal.c:5366
+#: src/remote_internal.c:5383
 msgid "invalid cipher size for TLS session"
 msgstr "TLS セッションには無効な暗号サイズです"
 
-#: src/remote_internal.c:5376
+#: src/remote_internal.c:5393
 #, c-format
 msgid "cannot set external SSF %d (%s)"
 msgstr "外部 SSF %d (%s) をセットできません"
 
-#: src/remote_internal.c:5395
+#: src/remote_internal.c:5412
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "セキュリティプロパティ %d (%s) をセットできません"
 
-#: src/remote_internal.c:5414
+#: src/remote_internal.c:5431
 #, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "SASL メカニズム %s はサーバーでサポートされていません"
 
-#: src/remote_internal.c:5433
+#: src/remote_internal.c:5450
 #, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
 msgstr "SASL 交渉の起動に失敗しました: %d (%s)"
 
-#: src/remote_internal.c:5451 src/remote_internal.c:5529
+#: src/remote_internal.c:5468 src/remote_internal.c:5546
 msgid "Failed to make auth credentials"
 msgstr "証明証の認証作成に失敗しました"
 
-#: src/remote_internal.c:5475
+#: src/remote_internal.c:5492
 #, c-format
 msgid "SASL negotiation data too long: %d bytes"
 msgstr "SASL 交渉データは長すぎます: %d バイト"
 
-#: src/remote_internal.c:5515
+#: src/remote_internal.c:5532
 #, c-format
 msgid "Failed SASL step: %d (%s)"
 msgstr "SASL の手順に失敗しました: %d (%s)"
 
-#: src/remote_internal.c:5599
+#: src/remote_internal.c:5616
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr "交渉 SSF %d は強度不足です"
 
-#: src/remote_internal.c:5654
+#: src/remote_internal.c:5671
 msgid "Failed to collect auth credentials"
 msgstr "証明証の認証収集に失敗しました"
 
-#: src/remote_internal.c:5688
+#: src/remote_internal.c:5705
 msgid "no event support"
-msgstr ""
+msgstr "イベントサポートはありません"
 
-#: src/remote_internal.c:5693
+#: src/remote_internal.c:5710
 msgid "adding cb to list"
-msgstr ""
+msgstr "cb を一覧に追加中"
 
-#: src/remote_internal.c:5722
+#: src/remote_internal.c:5739
 msgid "removing cb fron list"
 msgstr ""
 
-#: src/remote_internal.c:5784
+#: src/remote_internal.c:5801
 msgid "xdr_remote_message_header failed"
 msgstr "xdr_remote_message_header は失敗です"
 
-#: src/remote_internal.c:5790
+#: src/remote_internal.c:5807
 msgid "marshalling args"
 msgstr "marshalling 引数"
 
-#: src/remote_internal.c:5807
-#, fuzzy
+#: src/remote_internal.c:5824
 msgid "xdr_u_int (length word)"
-msgstr "xdr_int (長さ、単語)"
+msgstr "xdr_u_int (長さ、単語)"
 
-#: src/remote_internal.c:5853
-#, fuzzy
+#: src/remote_internal.c:5870
 msgid "cannot send data"
-msgstr "ドメインデータを保存できません"
+msgstr "データを送信できません"
 
-#: src/remote_internal.c:5884
-#, fuzzy, c-format
+#: src/remote_internal.c:5901
+#, c-format
 msgid "failed to read from TLS socket %s"
-msgstr "ソケット %d の読み込みに失敗しました\n"
+msgstr "TLS ソケット %s の読み込みに失敗しました"
 
-#: src/remote_internal.c:5889 src/remote_internal.c:5907
-#, fuzzy
+#: src/remote_internal.c:5906 src/remote_internal.c:5924
 msgid "server closed connection"
-msgstr "読み込み専用接続"
+msgstr "サーバーは接続を切断しました"
 
-#: src/remote_internal.c:5903
-#, fuzzy
+#: src/remote_internal.c:5920
 msgid "cannot recv data"
-msgstr "メタデータを書き込めません"
+msgstr "データを受信できません"
 
-#: src/remote_internal.c:5936
-#, fuzzy, c-format
+#: src/remote_internal.c:5953
+#, c-format
 msgid "failed to encode SASL data: %s"
-msgstr "'%s' の作成に失敗しました"
+msgstr "SASL データの符号化に失敗しました: %s"
 
-#: src/remote_internal.c:6034
-#, fuzzy, c-format
+#: src/remote_internal.c:6051
+#, c-format
 msgid "failed to decode SASL data: %s"
-msgstr "ボリューム %s の削除に失敗しました"
+msgstr "SASL データの復号化に失敗しました: %s"
 
-#: src/remote_internal.c:6108
-#, fuzzy
+#: src/remote_internal.c:6125
 msgid "xdr_u_int (length word, reply)"
-msgstr "xdr_int (長さ、単語、応答)"
+msgstr "xdr_u_int (長さ、単語、応答)"
 
-#: src/remote_internal.c:6115
-#, fuzzy
+#: src/remote_internal.c:6132
 msgid "packet received from server too small"
-msgstr "サーバーから受理したパケットは長すぎます"
+msgstr "サーバーから受理したパケットは小さすぎます"
 
-#: src/remote_internal.c:6124
+#: src/remote_internal.c:6141
 msgid "packet received from server too large"
 msgstr "サーバーから受理したパケットは長すぎます"
 
-#: src/remote_internal.c:6148
+#: src/remote_internal.c:6165
 msgid "invalid header in reply"
 msgstr "応答内に無効なヘッダー"
 
-#: src/remote_internal.c:6157
+#: src/remote_internal.c:6174
 #, c-format
 msgid "unknown program (received %x, expected %x)"
 msgstr "不明なプログラム (受理 %x, 予期値 %x)"
 
-#: src/remote_internal.c:6165
+#: src/remote_internal.c:6182
 #, c-format
 msgid "unknown protocol version (received %x, expected %x)"
 msgstr "不明なプロトコルバージョン (受理 %x, 予期値 %x)"
 
-#: src/remote_internal.c:6182
+#: src/remote_internal.c:6199
 #, c-format
 msgid "got unexpected RPC call %d from server"
 msgstr ""
 
-#: src/remote_internal.c:6200
+#: src/remote_internal.c:6217
 #, c-format
 msgid "no call waiting for reply with serial %d"
 msgstr ""
 
-#: src/remote_internal.c:6210
+#: src/remote_internal.c:6227
 #, c-format
 msgid "unknown procedure (received %x, expected %x)"
 msgstr "不明な手続き (受理 %x, 予期値 %x)"
 
-#: src/remote_internal.c:6224
+#: src/remote_internal.c:6241
 msgid "unmarshalling ret"
 msgstr "ret の整列化解除"
 
-#: src/remote_internal.c:6235
+#: src/remote_internal.c:6252
 msgid "unmarshalling remote_error"
 msgstr "remote_error の整列化解除 "
 
-#: src/remote_internal.c:6245
+#: src/remote_internal.c:6262
 #, c-format
 msgid "unknown status (received %x)"
 msgstr "不明なステータス (受理 %x)"
 
-#: src/remote_internal.c:6351
-#, fuzzy
+#: src/remote_internal.c:6368
 msgid "poll on socket failed"
-msgstr "calloc は失敗しました"
+msgstr "ソケット上の投票のは失敗しました"
 
-#: src/remote_internal.c:6412
+#: src/remote_internal.c:6429
 msgid "received hangup / error event on socket"
 msgstr ""
 
-#: src/remote_internal.c:6514
-#, fuzzy
+#: src/remote_internal.c:6531
 msgid "failed to wait on condition"
-msgstr "コマンドの待機に失敗しました: %s"
+msgstr "条件の待機に失敗しました"
 
-#: src/remote_internal.c:6614
+#: src/remote_internal.c:6631
 msgid "remoteDomainProcessEvent: unmarshalling ret"
 msgstr ""
 
 #: src/security.c:46
-#, fuzzy, c-format
+#, c-format
 msgid "invalid security model '%s'"
-msgstr "無効なサウンドモデル"
+msgstr "無効なセキュリティモデル '%s'"
 
 #: src/security.c:120
 #, c-format
 msgid "%s: DOI '%s' is longer than the maximum allowed length of %d"
-msgstr ""
+msgstr "%s: DOI '%s' は %d の最大許容長さよりも長くなっています。"
 
 #: src/security_selinux.c:113
-#, fuzzy, c-format
+#, c-format
 msgid "%s: cannot open SELinux virtual domain context file %s: %s"
-msgstr "tty pid ファイル %s を開けません: %s"
+msgstr "%s: SELinux 仮想ドメインコンテキストファイル %s を開けません: %s"
 
 #: src/security_selinux.c:121
-#, fuzzy, c-format
+#, c-format
 msgid "%s: cannot read SELinux virtual domain context file %s: %s"
-msgstr "tty pid ファイル %s を読み込めません: %s"
+msgstr "%s: SELinux 仮想ドメインコンテキストファイル %s を読み込めません: %s"
 
 #: src/security_selinux.c:134
-#, fuzzy, c-format
+#, c-format
 msgid "%s: cannot open SELinux virtual image context file %s: %s"
-msgstr "tty pid ファイル %s を開けません: %s"
+msgstr "%s: SELinux 仮想イメージコンテキストファイル %s を開けません: %s"
 
 #: src/security_selinux.c:142
-#, fuzzy, c-format
+#, c-format
 msgid "%s: cannot read SELinux virtual image context file %s: %s"
-msgstr "tty pid ファイル %s を読み込めません: %s"
+msgstr "%s: SELinux 仮想イメージコンテキストファイル %s を読み込めません: %s"
 
 #: src/security_selinux.c:170
 msgid "security label already defined for VM"
 msgstr ""
 
 #: src/security_selinux.c:191 src/security_selinux.c:197
-#, fuzzy, c-format
+#, c-format
 msgid "cannot generate selinux context for %s"
-msgstr "%s のファイルコンテキストを取得できません: %s"
+msgstr "%s の SElinux ファイルコンテキストを生成できません"
 
 #: src/security_selinux.c:244
 #, c-format
@@ -4058,9 +3963,9 @@ msgid "%s: error calling getpidcon(): %s"
 msgstr ""
 
 #: src/security_selinux.c:252
-#, fuzzy, c-format
+#, c-format
 msgid "%s: security label exceeds maximum lenth: %d"
-msgstr "vCPU カウントは最大限を越えています: %d > %d"
+msgstr "%s: セキュリティレベルは最大長を越えています: %d"
 
 #: src/security_selinux.c:264
 #, c-format
@@ -4068,19 +3973,19 @@ msgid "%s: error calling security_getenforce(): %s"
 msgstr ""
 
 #: src/security_selinux.c:280
-#, fuzzy, c-format
+#, c-format
 msgid "%s: unable to set security context '\\%s' on %s: %s."
-msgstr "tty '%s' を開けません: %s\n"
+msgstr ""
 
 #: src/security_selinux.c:307
-#, fuzzy, c-format
+#, c-format
 msgid "cannot resolve symlink %s"
-msgstr "デバイス %s を開けません"
+msgstr "symlink %s を解決できません"
 
 #: src/security_selinux.c:368
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid security label %s"
-msgstr "現在の時刻を取得できません"
+msgstr "無効なセキュリティレベル %s"
 
 #: src/security_selinux.c:387
 #, c-format
@@ -4090,9 +3995,9 @@ msgid ""
 msgstr ""
 
 #: src/security_selinux.c:397
-#, fuzzy, c-format
+#, c-format
 msgid "%s: unable to set security context '\\%s': %s."
-msgstr "tty '%s' を開けません: %s\n"
+msgstr "%s: セキュリティコンテキスト '\\%s' をセットできません: %s"
 
 #: src/storage_backend.c:106 src/storage_conf.c:222
 #, c-format
@@ -4101,29 +4006,29 @@ msgstr "プールタイプ %d のバックエンドがありません"
 
 #: src/storage_backend.c:121 src/storage_backend_fs.c:297
 #: src/storage_backend_scsi.c:147
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open volume '%s'"
-msgstr "ボリューム '%s' を開くのに失敗: %s"
+msgstr "ボリューム '%s' を開けません"
 
 #: src/storage_backend.c:173
-#, fuzzy, c-format
+#, c-format
 msgid "cannot stat file '%s'"
-msgstr "ファイル '%s' の統計が出来ません: %s"
+msgstr "ファイル '%s' の統計が出来ません"
 
 #: src/storage_backend.c:206
-#, fuzzy, c-format
+#, c-format
 msgid "cannot seek to end of file '%s'"
-msgstr "ファイル '%s' の末尾が見付かりません: %s"
+msgstr "ファイル '%s' の末尾が見付かりません"
 
 #: src/storage_backend.c:227
-#, fuzzy, c-format
+#, c-format
 msgid "cannot get file context of '%s'"
-msgstr "%s のファイルコンテキストを取得できません: %s"
+msgstr "%s のファイルコンテキストを取得できません"
 
 #: src/storage_backend.c:320
-#, fuzzy, c-format
+#, c-format
 msgid "cannot read dir '%s'"
-msgstr "ディレクトリ %s を読み込めません: %s"
+msgstr "ディレクトリ %s を読み込めません"
 
 #: src/storage_backend.c:410
 #, c-format
@@ -4135,18 +4040,18 @@ msgid "cannot read fd"
 msgstr "fd を読み込めません"
 
 #: src/storage_backend.c:513 src/storage_backend.c:631
-#, fuzzy, c-format
+#, c-format
 msgid "failed to wait for command '%s'"
-msgstr "コマンドの待機に失敗しました: %s"
+msgstr "コマンド '%s' の待機に失敗しました"
 
 #: src/storage_backend.c:522 src/storage_backend.c:644
 msgid "command did not exit cleanly"
 msgstr "コマンドは正常に終了しませんでした"
 
 #: src/storage_backend.c:610
-#, fuzzy, c-format
+#, c-format
 msgid "read error on pipe to '%s'"
-msgstr "読み込みエラー: %s"
+msgstr "'%s'  へのパイプで読み込みエラー"
 
 #: src/storage_backend.c:638
 #, c-format
@@ -4154,9 +4059,9 @@ msgid "non-zero exit status from command %d"
 msgstr "コマンド %d からのゼロ以外の終了ステータス"
 
 #: src/storage_backend.c:665 src/storage_backend.c:677
-#, fuzzy, c-format
+#, c-format
 msgid "%s not implemented on Win32"
-msgstr "%s: 実装されていません\n"
+msgstr "%s Win32 上で実装されていません"
 
 #: src/storage_backend_disk.c:109
 msgid "cannot parse device start location"
@@ -4171,9 +4076,9 @@ msgid "no large enough free extent"
 msgstr "空き拡張に十分な領域がありません"
 
 #: src/storage_backend_disk.c:372
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't read volume target path '%s'"
-msgstr "パス '%s' を作成出来ません: %s"
+msgstr ""
 
 #: src/storage_backend_disk.c:383
 #, c-format
@@ -4186,33 +4091,32 @@ msgid "cannot parse partition number from target '%s'"
 msgstr ""
 
 #: src/storage_backend_fs.c:311
-#, fuzzy, c-format
+#, c-format
 msgid "cannot read header '%s'"
-msgstr "ヘッダー'%s' を読み込めません: %s"
+msgstr "ヘッダー'%s' を読み込めません"
 
 #: src/storage_backend_fs.c:451
-#, fuzzy, c-format
+#, c-format
 msgid "invalid netfs path (no /): %s"
-msgstr "無効なパスです: %s"
+msgstr "無効な netfs パスです(/ が不在) : %s"
 
 #: src/storage_backend_fs.c:457
-#, fuzzy, c-format
+#, c-format
 msgid "invalid netfs path (ends in /): %s"
-msgstr "%s で無効なネットワークポインターです"
+msgstr "無効な netfs パスです（/ で終結）: %s"
 
 #: src/storage_backend_fs.c:514
 msgid "bad <source> spec"
 msgstr ""
 
 #: src/storage_backend_fs.c:527
-#, fuzzy
 msgid "missing <host> in <source> spec"
-msgstr "マウントソースがありません"
+msgstr "<source> 仕様に <host> がありません"
 
 #: src/storage_backend_fs.c:574
-#, fuzzy, c-format
+#, c-format
 msgid "cannot read mount list '%s'"
-msgstr "%s を読み込めません: %s"
+msgstr "マウント一覧 %s を読み込めません"
 
 #: src/storage_backend_fs.c:644 src/storage_backend_fs.c:711
 #: src/storage_backend_iscsi.c:276
@@ -4232,91 +4136,90 @@ msgstr "ソースデバイスがありません"
 msgid "missing source dir"
 msgstr "ソースディレクトリがありません"
 
-#: src/storage_backend_fs.c:789 src/storage_backend_fs.c:1015
-#: src/storage_backend_fs.c:1074
-#, fuzzy, c-format
+#: src/storage_backend_fs.c:789 src/storage_backend_fs.c:1029
+#: src/storage_backend_fs.c:1087
+#, c-format
 msgid "cannot create path '%s'"
-msgstr "パス '%s' を作成出来ません: %s"
+msgstr "パス '%s' を作成出来ません"
 
 #: src/storage_backend_fs.c:813
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open path '%s'"
-msgstr "パス '%s' を開けません: %s"
+msgstr "パス '%s' を開けません"
 
 #: src/storage_backend_fs.c:909
-#, fuzzy, c-format
+#, c-format
 msgid "cannot statvfs path '%s'"
-msgstr "パス '%s' を statvfs できません: %s"
+msgstr "パス '%s' を statvfs できません"
 
 #: src/storage_backend_fs.c:975
-#, fuzzy, c-format
+#, c-format
 msgid "cannot unlink path '%s'"
-msgstr "パス '%s' をリンク解除できません: %s"
+msgstr "パス '%s' をリンク解除できません"
 
-#: src/storage_backend_fs.c:1040 src/storage_backend_fs.c:1053
-#, fuzzy, c-format
-msgid "cannot fill file '%s'"
-msgstr "ファイル '%s' を充填できません: %s"
-
-#: src/storage_backend_fs.c:1065
-#, fuzzy, c-format
+#: src/storage_backend_fs.c:1038
+#, c-format
 msgid "cannot extend file '%s'"
-msgstr "ファイル '%s' を拡張できません: %s"
+msgstr "ファイル '%s' を拡張できません"
 
-#: src/storage_backend_fs.c:1081 src/storage_backend_fs.c:1136
-#: src/storage_backend_fs.c:1177 src/storage_backend_logical.c:611
-#, fuzzy, c-format
+#: src/storage_backend_fs.c:1064 src/storage_backend_fs.c:1076
+#, c-format
+msgid "cannot fill file '%s'"
+msgstr "ファイル '%s' を充填できません"
+
+#: src/storage_backend_fs.c:1094 src/storage_backend_fs.c:1148
+#: src/storage_backend_fs.c:1187 src/storage_backend_logical.c:611
+#, c-format
 msgid "cannot read path '%s'"
-msgstr "パス '%s' を読み込めません: %s"
+msgstr "パス '%s' を読み込めません"
 
-#: src/storage_backend_fs.c:1103
+#: src/storage_backend_fs.c:1116
 #, c-format
 msgid "unknown storage vol type %d"
 msgstr "不明なストレージボリュームタイプ %d"
 
-#: src/storage_backend_fs.c:1112
-#, fuzzy, c-format
+#: src/storage_backend_fs.c:1125
+#, c-format
 msgid "unknown storage vol backing store type %d"
-msgstr "不明なストレージバックエンドタイプ %d"
+msgstr "不明なストレージボリュームバッキングストアタイプ %d"
 
-#: src/storage_backend_fs.c:1118
+#: src/storage_backend_fs.c:1131
 #, c-format
 msgid "inaccessible backing store volume %s"
 msgstr ""
 
-#: src/storage_backend_fs.c:1151
+#: src/storage_backend_fs.c:1162
 #, c-format
 msgid "unsupported storage vol type %d"
 msgstr "サポートされていないストレージボリュームタイプ %d"
 
-#: src/storage_backend_fs.c:1157
-#, fuzzy
+#: src/storage_backend_fs.c:1168
 msgid "copy-on-write image not supported with qcow-create"
-msgstr "生ではないイメージの作成は、qemu-img 無しではサポートされていません"
+msgstr "書き込みのコピーイメージは qcow-create ではサポートされません"
 
-#: src/storage_backend_fs.c:1184
+#: src/storage_backend_fs.c:1193
 msgid "creation of non-raw images is not supported without qemu-img"
 msgstr "生ではないイメージの作成は、qemu-img 無しではサポートされていません"
 
-#: src/storage_backend_fs.c:1194 src/storage_backend_logical.c:620
-#, fuzzy, c-format
+#: src/storage_backend_fs.c:1203 src/storage_backend_logical.c:620
+#, c-format
 msgid "cannot set file owner '%s'"
-msgstr "ファイルオーナー '%s' を設定できません: %s"
+msgstr "ファイルオーナー '%s' をセットできません"
 
-#: src/storage_backend_fs.c:1203 src/storage_backend_logical.c:627
-#, fuzzy, c-format
+#: src/storage_backend_fs.c:1211 src/storage_backend_logical.c:627
+#, c-format
 msgid "cannot set file mode '%s'"
-msgstr "ファイルモード'%s' をセットできません: %s"
+msgstr "ファイルモード'%s' をセットできません"
 
-#: src/storage_backend_fs.c:1221 src/storage_backend_logical.c:634
-#, fuzzy, c-format
+#: src/storage_backend_fs.c:1227 src/storage_backend_logical.c:634
+#, c-format
 msgid "cannot close file '%s'"
-msgstr "ファイル '%s' を閉じることが出来ません: %s"
+msgstr "ファイル '%s' を閉じれません"
 
-#: src/storage_backend_fs.c:1244
-#, fuzzy, c-format
+#: src/storage_backend_fs.c:1249
+#, c-format
 msgid "cannot unlink file '%s'"
-msgstr "ファイル '%s' をリンク解除できません: %s"
+msgstr "ファイル '%s' をリンク解除できません"
 
 #: src/storage_backend_iscsi.c:65
 #, c-format
@@ -4343,9 +4246,9 @@ msgid "Failed to get host number for iSCSI session with path '%s'"
 msgstr ""
 
 #: src/storage_backend_iscsi.c:196
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find LUs on host %u"
-msgstr "セッション %s 用の LUN の検索に失敗: %s"
+msgstr "ホスト %u 上で LU の検索に失敗"
 
 #: src/storage_backend_logical.c:153
 msgid "malformed volume extent offset value"
@@ -4369,14 +4272,13 @@ msgid "lvs command failed with exitstatus %d"
 msgstr "lvs コマンドは終了ステータス %d で失敗しました"
 
 #: src/storage_backend_logical.c:357
-#, fuzzy
 msgid "failed to get source from sourceList"
-msgstr "ソケットの作成に失敗しました"
+msgstr "sourceList からのソースの取得に失敗しました"
 
 #: src/storage_backend_logical.c:412
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open device '%s'"
-msgstr "デバイス %s を開けません"
+msgstr "デバイス '%s' を開けません"
 
 #: src/storage_backend_logical.c:418
 #, fuzzy, c-format
@@ -4391,7 +4293,7 @@ msgstr "デバイス %s を閉じることができません"
 #: src/storage_backend_logical.c:550
 #, fuzzy, c-format
 msgid "cannot remove PV device '%s'"
-msgstr "tty Pid ファイル %s を削除できません: %s"
+msgstr "デバイス %s を開けません"
 
 #: src/storage_backend_logical.c:643
 #, fuzzy, c-format
@@ -4401,22 +4303,22 @@ msgstr "新規作成のボリューム '%s' が見付かりません: %s"
 #: src/storage_backend_scsi.c:65
 #, fuzzy, c-format
 msgid "Could not find typefile '%s'"
-msgstr "%s に接続できませんでした"
+msgstr "不明なタイプ %s"
 
 #: src/storage_backend_scsi.c:77
 #, fuzzy, c-format
 msgid "Could not read typefile '%s'"
-msgstr "%s を読み込めません: %s"
+msgstr "tty pid ファイル %s を読み込めません: %s"
 
 #: src/storage_backend_scsi.c:89
 #, fuzzy, c-format
 msgid "Device type '%s' is not an integer"
-msgstr "CDROM ディスクデバイスのみが添付できます"
+msgstr "無効なパス、'%s' は不明なインターフェイスです"
 
 #: src/storage_backend_scsi.c:96
-#, c-format
+#, fuzzy, c-format
 msgid "Device type is %d"
-msgstr ""
+msgstr "無効なデバイスタイプ: %s"
 
 #: src/storage_backend_scsi.c:165
 #, fuzzy, c-format
@@ -4436,12 +4338,12 @@ msgstr "%s からのボリューム作成に失敗しました"
 #: src/storage_backend_scsi.c:242
 #, c-format
 msgid "No stable path found for '%s' in '%s'"
-msgstr ""
+msgstr "'%s' で '%s' 用の安定したパスが見付かりません"
 
 #: src/storage_backend_scsi.c:255
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to update volume for '%s'"
-msgstr "%s からのボリューム作成に失敗しました"
+msgstr "%s 用のボリューム更新に失敗しました"
 
 #: src/storage_backend_scsi.c:306
 #, fuzzy, c-format
@@ -4466,7 +4368,7 @@ msgstr "ブロックパス %s の構文解析に失敗しました"
 #: src/storage_backend_scsi.c:431
 #, c-format
 msgid "Processing LU %u:%u:%u:%u"
-msgstr ""
+msgstr "LU %u:%u:%u:%u を処理しています"
 
 #: src/storage_backend_scsi.c:436
 #, c-format
@@ -4486,39 +4388,64 @@ msgstr "%s からのネットワーク作成に失敗しました"
 #: src/storage_backend_scsi.c:468
 #, c-format
 msgid "Created new storage volume for %u:%u:%u:%u successfully"
-msgstr ""
+msgstr "%u:%u:%u:%u 用の新規ストレージボリュームが正常に作成できました"
 
 #: src/storage_backend_scsi.c:490
 #, c-format
 msgid "Discovering LUs on host %u"
-msgstr ""
+msgstr "ホスト %u 上で LU を検索中"
 
 #: src/storage_backend_scsi.c:503 src/storage_backend_scsi.c:546
 #, fuzzy, c-format
 msgid "Failed to opendir path '%s'"
-msgstr "opendir sysfs パス'%s' を開くのに失敗: %s"
+msgstr "ディレクトリ '%s' を開くのに失敗: %s"
 
 #: src/storage_backend_scsi.c:516
 #, c-format
 msgid "Found LU '%s'"
-msgstr ""
+msgstr "LU '%s' を見つけました"
 
 #: src/storage_backend_scsi.c:538
 #, c-format
 msgid "Finding host number from '%s'"
-msgstr ""
+msgstr "'%s' からホスト番号を見つけています"
 
 #: src/storage_backend_scsi.c:555
 #, fuzzy, c-format
 msgid "Failed to parse target '%s'"
 msgstr "モード '%s' の構文解析に失敗"
 
-#: src/storage_backend_scsi.c:578
+#: src/storage_backend_scsi.c:576
+#, fuzzy, c-format
+msgid "Triggering rescan of host %d"
+msgstr "ホスト %u 上で LU を検索中"
+
+#: src/storage_backend_scsi.c:584
+#, fuzzy, c-format
+msgid "Scan trigger path is '%s'"
+msgstr "パス '%s' を読み込めません"
+
+#: src/storage_backend_scsi.c:590
+#, c-format
+msgid "Could not open '%s' to trigger host scan"
+msgstr ""
+
+#: src/storage_backend_scsi.c:601
+#, c-format
+msgid "Write to '%s' to trigger host scan failed"
+msgstr ""
+
+#: src/storage_backend_scsi.c:610
+#, c-format
+msgid "Rescan of host %d complete"
+msgstr ""
+
+#: src/storage_backend_scsi.c:625
 #, fuzzy, c-format
 msgid "Failed to get host number from '%s'"
 msgstr "%s からのネットワーク作成に失敗しました"
 
-#: src/storage_backend_scsi.c:583
+#: src/storage_backend_scsi.c:631
 #, fuzzy, c-format
 msgid "Scanning host%u"
 msgstr "不明なホスト %s"
@@ -4689,7 +4616,7 @@ msgstr "%s 用の設定ファイルはありません"
 msgid "cannot remove config for %s"
 msgstr "%s 用の設定を削除できません"
 
-#: src/storage_driver.c:273 src/storage_driver.c:888 src/storage_driver.c:918
+#: src/storage_driver.c:273 src/storage_driver.c:916 src/storage_driver.c:946
 msgid "no pool with matching uuid"
 msgstr "一致する uuid のプールはありません"
 
@@ -4701,13 +4628,13 @@ msgstr "一致する名前のプールはありません"
 msgid "storage pool already exists"
 msgstr "ストレージプールは既に存在します"
 
-#: src/storage_driver.c:557 src/storage_driver.c:604 src/storage_driver.c:649
-#: src/storage_driver.c:686 src/storage_driver.c:735 src/storage_driver.c:778
-#: src/storage_driver.c:827 src/storage_driver.c:863 src/storage_driver.c:979
-#: src/storage_driver.c:1012 src/storage_driver.c:1057
-#: src/storage_driver.c:1180 src/storage_driver.c:1248
-#: src/storage_driver.c:1319 src/storage_driver.c:1371
-#: src/storage_driver.c:1417
+#: src/storage_driver.c:557 src/storage_driver.c:611 src/storage_driver.c:656
+#: src/storage_driver.c:693 src/storage_driver.c:749 src/storage_driver.c:799
+#: src/storage_driver.c:855 src/storage_driver.c:891 src/storage_driver.c:1007
+#: src/storage_driver.c:1040 src/storage_driver.c:1085
+#: src/storage_driver.c:1210 src/storage_driver.c:1328
+#: src/storage_driver.c:1406 src/storage_driver.c:1458
+#: src/storage_driver.c:1504
 msgid "no storage pool with matching uuid"
 msgstr "一致する uuid のストレージプールはありません"
 
@@ -4715,57 +4642,68 @@ msgstr "一致する uuid のストレージプールはありません"
 msgid "pool is still active"
 msgstr "プールはまだアクティブです"
 
-#: src/storage_driver.c:613
+#: src/storage_driver.c:569 src/storage_driver.c:708 src/storage_driver.c:764
+#: src/storage_driver.c:814
+#, c-format
+msgid "pool '%s' has asynchronous jobs running."
+msgstr ""
+
+#: src/storage_driver.c:620
 msgid "pool already active"
 msgstr "プールはすでにアクティブです"
 
-#: src/storage_driver.c:658
+#: src/storage_driver.c:665
 msgid "storage pool is already active"
 msgstr "ストレージプールはすでにアクティブです"
 
-#: src/storage_driver.c:695 src/storage_driver.c:787 src/storage_driver.c:985
-#: src/storage_driver.c:1018 src/storage_driver.c:1063
-#: src/storage_driver.c:1186 src/storage_driver.c:1254
-#: src/storage_driver.c:1325 src/storage_driver.c:1377
-#: src/storage_driver.c:1423
+#: src/storage_driver.c:702 src/storage_driver.c:808 src/storage_driver.c:1013
+#: src/storage_driver.c:1046 src/storage_driver.c:1091
+#: src/storage_driver.c:1216 src/storage_driver.c:1334
+#: src/storage_driver.c:1412 src/storage_driver.c:1464
+#: src/storage_driver.c:1510
 msgid "storage pool is not active"
 msgstr "ストレージプールはアクティブではありません"
 
-#: src/storage_driver.c:744
+#: src/storage_driver.c:758
 msgid "storage pool is still active"
 msgstr "ストレージプールはまだアクティブです"
 
-#: src/storage_driver.c:750
+#: src/storage_driver.c:771
 msgid "pool does not support volume delete"
 msgstr "プールはボリューム削除をサポートしていません"
 
-#: src/storage_driver.c:924 src/test.c:2856
+#: src/storage_driver.c:952 src/test.c:2856
 msgid "pool has no config file"
 msgstr "プールは設定ファイルを持ちません"
 
-#: src/storage_driver.c:1071 src/storage_driver.c:1265
-#: src/storage_driver.c:1333 src/storage_driver.c:1385
-#: src/storage_driver.c:1431
+#: src/storage_driver.c:1099 src/storage_driver.c:1345
+#: src/storage_driver.c:1420 src/storage_driver.c:1472
+#: src/storage_driver.c:1518
 msgid "no storage vol with matching name"
 msgstr "一致する名前のストレージボリュームはありません"
 
-#: src/storage_driver.c:1110
+#: src/storage_driver.c:1138
 msgid "no storage vol with matching key"
 msgstr "一致するキーのストレージボリュームはありません"
 
-#: src/storage_driver.c:1157
+#: src/storage_driver.c:1185
 msgid "no storage vol with matching path"
 msgstr "一致するパスのストレージボリュームはありません"
 
-#: src/storage_driver.c:1199 src/test.c:3093
+#: src/storage_driver.c:1229 src/test.c:3093
 msgid "storage vol already exists"
 msgstr "ストレージボリュームは既に存在します"
 
-#: src/storage_driver.c:1211
+#: src/storage_driver.c:1241
 msgid "storage pool does not support volume creation"
 msgstr "ストレージプールはボリューム作成をサポートしていません"
 
-#: src/storage_driver.c:1271
+#: src/storage_driver.c:1351
+#, fuzzy, c-format
+msgid "volume '%s' is still being allocated."
+msgstr "ドメインはまだ実行中です"
+
+#: src/storage_driver.c:1358
 msgid "storage pool does not support vol deletion"
 msgstr "ストレージプールはボリューム削除をサポートしていません"
 
@@ -4850,9 +4788,8 @@ msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: パスを指定するか、test:を使用する///省略値"
 
 #: src/test.c:716 src/uml_driver.c:1167 src/xen_unified.c:468
-#, fuzzy
 msgid "cannot lookup hostname"
-msgstr "ファイル '%s' を閉じることが出来ません: %s"
+msgstr "ホスト名をルックアップ出来ません"
 
 #: src/test.c:960
 #, fuzzy, c-format
@@ -4913,9 +4850,9 @@ msgid "domain '%s' coredump: failed to open %s"
 msgstr "ドメイン %s は %s にダンプ\n"
 
 #: src/test.c:1382
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%s' coredump: failed to write header to %s"
-msgstr "%s: ログファイルの書き込みに失敗しました: %s"
+msgstr "ドメイン '%s' coredump: ヘッダの %s への書き込み失敗"
 
 #: src/test.c:1388
 #, fuzzy, c-format
@@ -4977,67 +4914,61 @@ msgstr "一致するパスのストレージボリュームはありません"
 #: src/test.c:3101
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
-msgstr ""
+msgstr "ボリューム '%s' 用のプールに十分な空き領域がありません"
 
 #: src/uml_conf.c:134
-#, fuzzy
 msgid "only TCP listen is supported for chr device"
-msgstr "char デバイス用の領域割り当てに失敗しました"
+msgstr "TCP リッスンのみが文字デバイス用にサポートされています"
 
 #: src/uml_conf.c:154
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported chr device type %d"
-msgstr "サポートのない入力デバイスタイプ  %s"
+msgstr "サポートのない文字デバイスタイプ %d"
 
 #: src/uml_driver.c:104
-#, fuzzy
 msgid "Failed to set close-on-exec file descriptor flag\n"
-msgstr "close-on-exec ファイルの記述子フラグの設定に失敗"
+msgstr "close-on-exec ファイルの記述子フラグの設定に失敗\n"
 
 #: src/uml_driver.c:375
-#, fuzzy
 msgid "cannot initialize inotify"
-msgstr "ブリッジサポートを初期化できません: %s"
+msgstr "inotify を初期化できません"
 
 #: src/uml_driver.c:381
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create monitor directory %s: %s"
-msgstr "ディレクトリ %s の作成に失敗しました: %s"
+msgstr "モニターディレクトリ %s の作成に失敗しました: %s"
 
 #: src/uml_driver.c:414
-#, fuzzy
 msgid "umlStartup: out of memory\n"
-msgstr "qemudStartup: メモリー不足です"
+msgstr "umlStartup: メモリー不足です\n"
 
 #: src/uml_driver.c:562
-#, fuzzy, c-format
+#, c-format
 msgid "failed to read pid: %s"
-msgstr "ログファイル %s の作成に失敗: %s"
+msgstr "pid の読み込みに失敗: %s"
 
 #: src/uml_driver.c:610
-#, fuzzy
 msgid "cannot open socket"
-msgstr "'%s' を開けません: %s"
+msgstr "ソケットを開けません"
 
 #: src/uml_driver.c:618
-#, fuzzy
 msgid "cannot bind socket"
-msgstr "セッションが見つかりません"
+msgstr "ソケットをバインドできません"
 
 #: src/uml_driver.c:671
-#, fuzzy, c-format
+#, c-format
 msgid "cannot send too long command %s (%d bytes)"
-msgstr "ファイルモード'%s' をセットできません: %s"
+msgstr ""
 
 #: src/uml_driver.c:681
 #, fuzzy, c-format
 msgid "cannot send command %s"
-msgstr "%s を読み込めません: %s"
+msgstr "ドメインは保存できません"
 
 #: src/uml_driver.c:691
 #, fuzzy, c-format
 msgid "cannot read reply %s"
-msgstr "ディレクトリ %s を読み込めません: %s"
+msgstr "%s を読み込めません: %s"
 
 #: src/uml_driver.c:744
 msgid "no kernel specified"
@@ -5074,9 +5005,8 @@ msgid "cannot read %s"
 msgstr "%s を読み込めません: %s"
 
 #: src/util.c:296
-#, fuzzy
 msgid "cannot block signals"
-msgstr "ファイル '%s' を閉じることが出来ません: %s"
+msgstr ""
 
 #: src/util.c:311
 #, fuzzy
@@ -5101,7 +5031,7 @@ msgstr "ファイル '%s' をリンク解除できません: %s"
 #: src/util.c:444
 #, fuzzy
 msgid "cannot become session leader"
-msgstr "デバイスヘッダー%s を消去できません"
+msgstr "セッションが見つかりません"
 
 #: src/util.c:450
 #, fuzzy, c-format
@@ -5111,22 +5041,22 @@ msgstr "autostart ディレクトリ %s を作成できません: %s"
 #: src/util.c:468
 #, fuzzy
 msgid "failed to setup stdin file handle"
-msgstr "ホスト名の strdup に失敗しました: %s"
+msgstr "設定ファイルハンドルの格納に失敗しました"
 
 #: src/util.c:474
 #, fuzzy
 msgid "failed to setup stdout file handle"
-msgstr "ホスト名の strdup に失敗しました: %s"
+msgstr "設定ファイルハンドルの格納に失敗しました"
 
 #: src/util.c:480
 #, fuzzy
 msgid "failed to setup stderr file handle"
-msgstr "ホスト名の strdup に失敗しました: %s"
+msgstr "設定ファイルハンドルの格納に失敗しました"
 
 #: src/util.c:502
 #, fuzzy, c-format
 msgid "cannot execute binary %s"
-msgstr "ファイル '%s' を拡張できません: %s"
+msgstr "アフィニティをセットできません: %s"
 
 #: src/util.c:604
 msgid "Unknown poll response."
@@ -5135,7 +5065,7 @@ msgstr ""
 #: src/util.c:635
 #, fuzzy
 msgid "poll error"
-msgstr "読み込みエラー: %s"
+msgstr "エラー"
 
 #: src/util.c:711
 #, c-format
@@ -5190,9 +5120,9 @@ msgstr "起動時にドメインを自動で起動するように設定します
 #: src/virsh.c:1378 src/virsh.c:1422 src/virsh.c:1460 src/virsh.c:1498
 #: src/virsh.c:1536 src/virsh.c:1574 src/virsh.c:1723 src/virsh.c:1809
 #: src/virsh.c:1942 src/virsh.c:1998 src/virsh.c:2054 src/virsh.c:2173
-#: src/virsh.c:2323 src/virsh.c:4818 src/virsh.c:4893 src/virsh.c:4953
-#: src/virsh.c:5011 src/virsh.c:5069 src/virsh.c:5185 src/virsh.c:5305
-#: src/virsh.c:5469 src/virsh.c:5699
+#: src/virsh.c:2323 src/virsh.c:4818 src/virsh.c:4893 src/virsh.c:4954
+#: src/virsh.c:5012 src/virsh.c:5070 src/virsh.c:5186 src/virsh.c:5306
+#: src/virsh.c:5470 src/virsh.c:5700
 msgid "domain name, id or uuid"
 msgstr "ドメイン名、id または uuid"
 
@@ -5323,7 +5253,7 @@ msgstr "名前"
 msgid "State"
 msgstr "状態"
 
-#: src/virsh.c:674 src/virsh.c:696 src/virsh.c:6712 src/virsh.c:6728
+#: src/virsh.c:674 src/virsh.c:696 src/virsh.c:6713 src/virsh.c:6729
 msgid "no state"
 msgstr "状態なし"
 
@@ -6108,7 +6038,7 @@ msgstr "ネットワークの停止"
 msgid "Destroy a given network."
 msgstr "ネットワークを停止します。"
 
-#: src/virsh.c:2531 src/virsh.c:2570 src/virsh.c:5802
+#: src/virsh.c:2531 src/virsh.c:2570 src/virsh.c:5803
 msgid "network name, id or uuid"
 msgstr "ネットワーク名、id または uuid"
 
@@ -6241,7 +6171,7 @@ msgstr "起動時にプールを自動で起動するように設定します。
 #: src/virsh.c:2877 src/virsh.c:3174 src/virsh.c:3213 src/virsh.c:3252
 #: src/virsh.c:3291 src/virsh.c:3330 src/virsh.c:3644 src/virsh.c:3909
 #: src/virsh.c:4043 src/virsh.c:4084 src/virsh.c:4135 src/virsh.c:4176
-#: src/virsh.c:4320 src/virsh.c:5819
+#: src/virsh.c:4320 src/virsh.c:5820
 msgid "pool name or uuid"
 msgstr "プール名または uuid"
 
@@ -6536,7 +6466,7 @@ msgstr "ストレージプールの基本情報を返します。"
 msgid "building"
 msgstr "構築中"
 
-#: src/virsh.c:3681 src/virsh.c:6698 src/virsh.c:6724
+#: src/virsh.c:3681 src/virsh.c:6699 src/virsh.c:6725
 msgid "running"
 msgstr "実行中"
 
@@ -6903,7 +6833,7 @@ msgstr "ドメイン %s が再開されました\n"
 #: src/virsh.c:4743
 #, fuzzy, c-format
 msgid "Failed to reset device %s"
-msgstr "ログファイル %s の作成に失敗: %s"
+msgstr "%s からデバイスの削除に失敗しました"
 
 #: src/virsh.c:4754
 msgid "print the hypervisor hostname"
@@ -6937,307 +6867,307 @@ msgstr "tty コンソール"
 msgid "Output the device for the TTY console."
 msgstr "TTY コンソールのための装置を出力します。"
 
-#: src/virsh.c:4947
+#: src/virsh.c:4948
 msgid "attach device from an XML file"
 msgstr "XML ファイルからデバイスを追加"
 
-#: src/virsh.c:4948
+#: src/virsh.c:4949
 msgid "Attach device from an XML <file>."
 msgstr "XML <ファイル>からデバイスを追加"
 
-#: src/virsh.c:4954 src/virsh.c:5012
+#: src/virsh.c:4955 src/virsh.c:5013
 msgid "XML file"
 msgstr "XML ファイル"
 
-#: src/virsh.c:4975
+#: src/virsh.c:4976
 msgid "attach-device: Missing <file> option"
 msgstr "attach-device: <file> オプションがありません"
 
-#: src/virsh.c:4989
+#: src/virsh.c:4990
 #, c-format
 msgid "Failed to attach device from %s"
 msgstr "%s からデバイスの追加に失敗しました"
 
-#: src/virsh.c:4993
+#: src/virsh.c:4994
 msgid "Device attached successfully\n"
 msgstr ""
 
-#: src/virsh.c:5005
+#: src/virsh.c:5006
 msgid "detach device from an XML file"
 msgstr "XML ファイルからデバイスを削除"
 
-#: src/virsh.c:5006
+#: src/virsh.c:5007
 msgid "Detach device from an XML <file>"
 msgstr "XML <ファイル>からデバイスを削除"
 
-#: src/virsh.c:5033
+#: src/virsh.c:5034
 msgid "detach-device: Missing <file> option"
 msgstr "detach-device: <file> オプションがありません"
 
-#: src/virsh.c:5047
+#: src/virsh.c:5048
 #, c-format
 msgid "Failed to detach device from %s"
 msgstr "%s からデバイスの削除に失敗しました"
 
-#: src/virsh.c:5051
+#: src/virsh.c:5052
 msgid "Device detached successfully\n"
 msgstr ""
 
-#: src/virsh.c:5063
+#: src/virsh.c:5064
 msgid "attach network interface"
 msgstr "ネットワークインターフェースを接続します"
 
-#: src/virsh.c:5064
+#: src/virsh.c:5065
 msgid "Attach new network interface."
 msgstr "新しいネットワークインターフェースを接続します。"
 
-#: src/virsh.c:5070 src/virsh.c:5186
+#: src/virsh.c:5071 src/virsh.c:5187
 msgid "network interface type"
 msgstr "ネットワークインターフェースタイプ"
 
-#: src/virsh.c:5071
+#: src/virsh.c:5072
 msgid "source of network interface"
 msgstr "ネットワークインターフェースのソース"
 
-#: src/virsh.c:5072
+#: src/virsh.c:5073
 msgid "target network name"
 msgstr "ターゲットネットワーク名"
 
-#: src/virsh.c:5073 src/virsh.c:5187
+#: src/virsh.c:5074 src/virsh.c:5188
 msgid "MAC address"
 msgstr "MAC アドレス"
 
-#: src/virsh.c:5074
+#: src/virsh.c:5075
 msgid "script used to bridge network interface"
 msgstr "ネットワークインターフェースを接続するのに使われるスクリプト"
 
-#: src/virsh.c:5106
+#: src/virsh.c:5107
 #, c-format
 msgid "No support %s in command 'attach-interface'"
 msgstr "'attach-interface' コマンドでは %s をサポートしていません"
 
-#: src/virsh.c:5162
+#: src/virsh.c:5163
 msgid "Interface attached successfully\n"
 msgstr ""
 
-#: src/virsh.c:5179
+#: src/virsh.c:5180
 msgid "detach network interface"
 msgstr "ネットワークインターフェースの削除"
 
-#: src/virsh.c:5180
+#: src/virsh.c:5181
 msgid "Detach network interface."
 msgstr "ネットワークインターフェースの削除。"
 
-#: src/virsh.c:5225 src/virsh.c:5230
+#: src/virsh.c:5226 src/virsh.c:5231
 msgid "Failed to get interface information"
 msgstr "インターフェース情報の取得に失敗しました"
 
-#: src/virsh.c:5238
+#: src/virsh.c:5239
 #, c-format
 msgid "No found interface whose type is %s"
 msgstr "%s というタイプのインターフェースは見つかりませんでした"
 
-#: src/virsh.c:5260
+#: src/virsh.c:5261
 #, c-format
 msgid "No found interface whose MAC address is %s"
 msgstr "%s という MAC アドレスのインターフェースは見つかりませんでした"
 
-#: src/virsh.c:5266 src/virsh.c:5542
+#: src/virsh.c:5267 src/virsh.c:5543
 msgid "Failed to allocate memory"
 msgstr "メモリーの割り当てに失敗しました"
 
-#: src/virsh.c:5271 src/virsh.c:5547
+#: src/virsh.c:5272 src/virsh.c:5548
 msgid "Failed to create XML"
 msgstr "XML の作成に失敗しました"
 
-#: src/virsh.c:5279
+#: src/virsh.c:5280
 msgid "Interface detached successfully\n"
 msgstr ""
 
-#: src/virsh.c:5299
+#: src/virsh.c:5300
 msgid "attach disk device"
 msgstr "ディスク装置の接続"
 
-#: src/virsh.c:5300
+#: src/virsh.c:5301
 msgid "Attach new disk device."
 msgstr "新しいディスク装置の接続。"
 
-#: src/virsh.c:5306
+#: src/virsh.c:5307
 msgid "source of disk device"
 msgstr "ディスク装置のソース"
 
-#: src/virsh.c:5307 src/virsh.c:5470
+#: src/virsh.c:5308 src/virsh.c:5471
 msgid "target of disk device"
 msgstr "ディスク装置のターゲット"
 
-#: src/virsh.c:5308
+#: src/virsh.c:5309
 msgid "driver of disk device"
 msgstr "ディスク装置のドライバー"
 
-#: src/virsh.c:5309
+#: src/virsh.c:5310
 msgid "subdriver of disk device"
 msgstr "ディスク装置のサブドライバー"
 
-#: src/virsh.c:5310
+#: src/virsh.c:5311
 msgid "target device type"
 msgstr "ターゲット装置タイプ"
 
-#: src/virsh.c:5311
+#: src/virsh.c:5312
 msgid "mode of device reading and writing"
 msgstr "装置の読み書きモード"
 
-#: src/virsh.c:5342 src/virsh.c:5351 src/virsh.c:5358
+#: src/virsh.c:5343 src/virsh.c:5352 src/virsh.c:5359
 #, c-format
 msgid "No support %s in command 'attach-disk'"
 msgstr "'attach-disk' コマンドでは %s をサポートしていません"
 
-#: src/virsh.c:5447
+#: src/virsh.c:5448
 msgid "Disk attached successfully\n"
 msgstr ""
 
-#: src/virsh.c:5463
+#: src/virsh.c:5464
 msgid "detach disk device"
 msgstr "ディスク装置の削除"
 
-#: src/virsh.c:5464
+#: src/virsh.c:5465
 msgid "Detach disk device."
 msgstr "ディスク装置の削除。"
 
-#: src/virsh.c:5505 src/virsh.c:5510 src/virsh.c:5517
+#: src/virsh.c:5506 src/virsh.c:5511 src/virsh.c:5518
 msgid "Failed to get disk information"
 msgstr "ディスク情報の取得に失敗しました"
 
-#: src/virsh.c:5536
+#: src/virsh.c:5537
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr "ターゲットが %s であるディスクは見つかりませんでした"
 
-#: src/virsh.c:5555
+#: src/virsh.c:5556
 msgid "Disk detached successfully\n"
 msgstr ""
 
-#: src/virsh.c:5582
+#: src/virsh.c:5583
 #, fuzzy, c-format
 msgid "malloc: failed to allocate temporary file name: %s"
 msgstr "init 文字列用の calloc メモリー割り当てに失敗: %s"
 
-#: src/virsh.c:5593
+#: src/virsh.c:5594
 #, fuzzy, c-format
 msgid "mkstemp: failed to create temporary file: %s"
 msgstr "%s: ログファイルの書き込みに失敗しました: %s"
 
-#: src/virsh.c:5600
+#: src/virsh.c:5601
 #, fuzzy, c-format
 msgid "write: %s: failed to write to temporary file: %s"
 msgstr "%s: ログファイルの書き込みに失敗しました: %s"
 
-#: src/virsh.c:5609
+#: src/virsh.c:5610
 #, fuzzy, c-format
 msgid "close: %s: failed to write or close temporary file: %s"
 msgstr "%s: ログファイルの書き込みに失敗しました: %s"
 
-#: src/virsh.c:5639
+#: src/virsh.c:5640
 #, c-format
 msgid ""
 "%s: $EDITOR environment variable contains shell meta or other unacceptable "
 "characters"
 msgstr ""
 
-#: src/virsh.c:5646
+#: src/virsh.c:5647
 #, c-format
 msgid ""
 "%s: temporary filename contains shell meta or other unacceptable characters "
 "(is $TMPDIR wrong?)"
 msgstr ""
 
-#: src/virsh.c:5653
-#, fuzzy, c-format
+#: src/virsh.c:5654
+#, c-format
 msgid "virAsprintf: could not create editing command: %s"
-msgstr "停止中のドメイン %s の作成に失敗しました\n"
+msgstr ""
 
-#: src/virsh.c:5661
+#: src/virsh.c:5662
 #, fuzzy, c-format
 msgid "%s: edit command failed: %s"
 msgstr "lvs コマンドは失敗です"
 
-#: src/virsh.c:5667
+#: src/virsh.c:5668
 #, fuzzy, c-format
 msgid "%s: command exited with non-zero status"
 msgstr "lvs コマンドは終了ステータス %d で失敗しました"
 
-#: src/virsh.c:5682
+#: src/virsh.c:5683
 #, fuzzy, c-format
 msgid "%s: failed to read temporary file: %s"
 msgstr "%s: ログファイルの書き込みに失敗しました: %s"
 
-#: src/virsh.c:5693
+#: src/virsh.c:5694
 #, fuzzy
 msgid "edit XML configuration for a domain"
 msgstr "登録されている停止状態のドメインを削除します。"
 
-#: src/virsh.c:5694
+#: src/virsh.c:5695
 #, fuzzy
 msgid "Edit the XML configuration for a domain."
 msgstr "登録されている停止状態のドメインを削除します。"
 
-#: src/virsh.c:5745
+#: src/virsh.c:5746
 #, c-format
 msgid "Domain %s XML configuration not changed.\n"
 msgstr ""
 
-#: src/virsh.c:5761
+#: src/virsh.c:5762
 msgid "ERROR: the XML configuration was changed by another user"
 msgstr ""
 
-#: src/virsh.c:5771
+#: src/virsh.c:5772
 #, fuzzy, c-format
 msgid "Domain %s XML configuration edited.\n"
 msgstr "設定ファイルの読み込みに失敗しました"
 
-#: src/virsh.c:5796
+#: src/virsh.c:5797
 #, fuzzy
 msgid "edit XML configuration for a network"
 msgstr "登録されている停止状態のネットワークを削除します。"
 
-#: src/virsh.c:5797
+#: src/virsh.c:5798
 #, fuzzy
 msgid "Edit the XML configuration for a network."
 msgstr "登録されている停止状態のネットワークを削除します。"
 
-#: src/virsh.c:5813
+#: src/virsh.c:5814
 #, fuzzy
 msgid "edit XML configuration for a storage pool"
 msgstr "停止状態プールの設定を定義解除します。"
 
-#: src/virsh.c:5814
+#: src/virsh.c:5815
 #, fuzzy
 msgid "Edit the XML configuration for a storage pool."
 msgstr "停止状態プールの設定を定義解除します。"
 
-#: src/virsh.c:5830
+#: src/virsh.c:5831
 msgid "quit this interactive terminal"
 msgstr "対話式ターミナルの終了"
 
-#: src/virsh.c:6015
+#: src/virsh.c:6016
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "コマンド '%s' には <%s> オプションが必要です"
 
-#: src/virsh.c:6016
+#: src/virsh.c:6017
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "コマンド '%s' には --%s オプションが必要です"
 
-#: src/virsh.c:6043
+#: src/virsh.c:6044
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "コマンド '%s' は存在していません"
 
-#: src/virsh.c:6050
+#: src/virsh.c:6051
 msgid "  NAME\n"
 msgstr "  名前\n"
 
-#: src/virsh.c:6053
+#: src/virsh.c:6054
 msgid ""
 "\n"
 "  SYNOPSIS\n"
@@ -7245,17 +7175,17 @@ msgstr ""
 "\n"
 "  形式\n"
 
-#: src/virsh.c:6062
+#: src/virsh.c:6063
 #, fuzzy, c-format
 msgid "[--%s <number>]"
 msgstr "--%s <number>"
 
-#: src/virsh.c:6064
+#: src/virsh.c:6065
 #, fuzzy, c-format
 msgid "[--%s <string>]"
 msgstr "--%s <string>"
 
-#: src/virsh.c:6077
+#: src/virsh.c:6078
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -7263,7 +7193,7 @@ msgstr ""
 "\n"
 "  詳細\n"
 
-#: src/virsh.c:6083
+#: src/virsh.c:6084
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -7271,58 +7201,58 @@ msgstr ""
 "\n"
 "  オプション\n"
 
-#: src/virsh.c:6088
+#: src/virsh.c:6089
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <number>"
 
-#: src/virsh.c:6090
+#: src/virsh.c:6091
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <string>"
 
-#: src/virsh.c:6243
+#: src/virsh.c:6244
 #, c-format
 msgid "internal error: virsh %s: no %s VSH_OT_DATA option"
 msgstr ""
 
-#: src/virsh.c:6260
+#: src/virsh.c:6261
 msgid "undefined domain name or id"
 msgstr "未定義のドメイン名または id です"
 
-#: src/virsh.c:6292
+#: src/virsh.c:6293
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "ドメイン '%s' の取得に失敗しました"
 
-#: src/virsh.c:6308
+#: src/virsh.c:6309
 msgid "undefined network name"
 msgstr "未定義のネットワーク名です"
 
-#: src/virsh.c:6332
+#: src/virsh.c:6333
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "ネットワーク '%s' の取得に失敗しました"
 
-#: src/virsh.c:6345 src/virsh.c:6391
+#: src/virsh.c:6346 src/virsh.c:6392
 msgid "undefined pool name"
 msgstr "未定義のプール名です"
 
-#: src/virsh.c:6369
+#: src/virsh.c:6370
 #, c-format
 msgid "failed to get pool '%s'"
 msgstr "プール '%s' の取得に失敗しました"
 
-#: src/virsh.c:6386
+#: src/virsh.c:6387
 msgid "undefined vol name"
 msgstr "未定義のボリューム名です"
 
-#: src/virsh.c:6422
+#: src/virsh.c:6423
 #, c-format
 msgid "failed to get vol '%s'"
 msgstr "ボリューム '%s' の取得に失敗しました"
 
-#: src/virsh.c:6456
+#: src/virsh.c:6457
 #, c-format
 msgid ""
 "\n"
@@ -7333,129 +7263,129 @@ msgstr ""
 "(時間: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:6530
+#: src/virsh.c:6531
 msgid "missing \""
 msgstr "不足 \""
 
-#: src/virsh.c:6591
+#: src/virsh.c:6592
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "予期しないトークン(コマンド名): '%s'"
 
-#: src/virsh.c:6596
+#: src/virsh.c:6597
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "不明なコマンド: '%s'"
 
-#: src/virsh.c:6603
+#: src/virsh.c:6604
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "コマンド '%s' はオプション --%s をサポートしていません"
 
-#: src/virsh.c:6618
+#: src/virsh.c:6619
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "予期される構文: --%s <%s>"
 
-#: src/virsh.c:6621
+#: src/virsh.c:6622
 msgid "number"
 msgstr "番号"
 
-#: src/virsh.c:6621
+#: src/virsh.c:6622
 msgid "string"
 msgstr "文字列"
 
-#: src/virsh.c:6627
+#: src/virsh.c:6628
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "予期しないデータ '%s'"
 
-#: src/virsh.c:6649
+#: src/virsh.c:6650
 msgid "OPTION"
 msgstr "オプション"
 
-#: src/virsh.c:6649
+#: src/virsh.c:6650
 msgid "DATA"
 msgstr "データ"
 
-#: src/virsh.c:6700 src/virsh.c:6722
+#: src/virsh.c:6701 src/virsh.c:6723
 #, fuzzy
 msgid "idle"
 msgstr "ファイル"
 
-#: src/virsh.c:6702
+#: src/virsh.c:6703
 msgid "paused"
 msgstr "一時停止中"
 
-#: src/virsh.c:6704
+#: src/virsh.c:6705
 msgid "in shutdown"
 msgstr "シャットダウン中"
 
-#: src/virsh.c:6706
+#: src/virsh.c:6707
 msgid "shut off"
 msgstr "シャットオフ"
 
-#: src/virsh.c:6708
+#: src/virsh.c:6709
 msgid "crashed"
 msgstr "クラッシュしました"
 
-#: src/virsh.c:6720
+#: src/virsh.c:6721
 msgid "offline"
 msgstr "オフライン"
 
-#: src/virsh.c:6739
+#: src/virsh.c:6740
 msgid "no valid connection"
 msgstr "有効な接続ではありません"
 
-#: src/virsh.c:6786
+#: src/virsh.c:6787
 #, c-format
 msgid "%s: error: "
 msgstr "%s: エラー: "
 
-#: src/virsh.c:6788
+#: src/virsh.c:6789
 msgid "error: "
 msgstr "エラー: "
 
-#: src/virsh.c:6810 src/virsh.c:6822 src/virsh.c:6835
+#: src/virsh.c:6811 src/virsh.c:6823 src/virsh.c:6836
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: %d バイトを割り当てるのに失敗しました"
 
-#: src/virsh.c:6849
+#: src/virsh.c:6850
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: %lu バイトを割り当てるのに失敗しました"
 
-#: src/virsh.c:6878
+#: src/virsh.c:6879
 msgid "failed to connect to the hypervisor"
 msgstr "ハイパーバイザーへの接続に失敗しました"
 
-#: src/virsh.c:6910
+#: src/virsh.c:6911
 msgid "failed to get the log file information"
 msgstr "ログファイル情報の取得に失敗しました"
 
-#: src/virsh.c:6915
+#: src/virsh.c:6916
 msgid "the log path is not a file"
 msgstr "ログパスがファイルではありません"
 
-#: src/virsh.c:6922
+#: src/virsh.c:6923
 msgid "failed to open the log file. check the log file path"
 msgstr "ログファイルを開けません。ログファイルのパスを確認してください"
 
-#: src/virsh.c:6990
+#: src/virsh.c:6991
 msgid "failed to write the log file"
 msgstr "ログファイルの書き込みに失敗しました"
 
-#: src/virsh.c:7005
+#: src/virsh.c:7006
 #, c-format
 msgid "%s: failed to write log file: %s"
 msgstr "%s: ログファイルの書き込みに失敗しました: %s"
 
-#: src/virsh.c:7185
+#: src/virsh.c:7186
 msgid "failed to disconnect from the hypervisor"
 msgstr "ハイパバイザーからの切断に失敗しました"
 
-#: src/virsh.c:7200
+#: src/virsh.c:7201
 #, c-format
 msgid ""
 "\n"
@@ -7488,7 +7418,7 @@ msgstr ""
 "\n"
 "  コマンド (非対話式モード):\n"
 
-#: src/virsh.c:7218
+#: src/virsh.c:7219
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
@@ -7498,17 +7428,17 @@ msgstr ""
 "  (コマンドに関する詳細は、 help <command> を指定します)\n"
 "\n"
 
-#: src/virsh.c:7311
+#: src/virsh.c:7312
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "サポートされていないオプション '-%c' です。--help を参照してください。"
 
-#: src/virsh.c:7319
+#: src/virsh.c:7320
 #, c-format
 msgid "extra argument '%s'. See --help."
 msgstr ""
 
-#: src/virsh.c:7401
+#: src/virsh.c:7402
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -7517,7 +7447,7 @@ msgstr ""
 "%s にようこそ、仮想化対話式ターミナルです。\n"
 "\n"
 
-#: src/virsh.c:7404
+#: src/virsh.c:7405
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -7527,477 +7457,477 @@ msgstr ""
 "          'quit' 終了します\n"
 "\n"
 
-#: src/virterror.c:195
+#: src/virterror.c:198
 #, fuzzy
 msgid "Unknown failure"
 msgstr "不明なエラー"
 
-#: src/virterror.c:509
+#: src/virterror.c:512
 msgid "warning"
 msgstr "警告"
 
-#: src/virterror.c:512
+#: src/virterror.c:515
 msgid "error"
 msgstr "エラー"
 
-#: src/virterror.c:634
+#: src/virterror.c:637
 msgid "No error message provided"
 msgstr "エラーメッセージはありませんでした"
 
-#: src/virterror.c:697
+#: src/virterror.c:700
 #, c-format
 msgid "internal error %s"
 msgstr "内部エラー %s"
 
-#: src/virterror.c:699
+#: src/virterror.c:702
 msgid "internal error"
 msgstr "内部エラー"
 
-#: src/virterror.c:702
+#: src/virterror.c:705
 msgid "out of memory"
 msgstr "メモリー不足"
 
-#: src/virterror.c:706
+#: src/virterror.c:709
 msgid "this function is not supported by the hypervisor"
 msgstr "この機能はハイパーバイザーがサポートしていません"
 
-#: src/virterror.c:708
+#: src/virterror.c:711
 #, c-format
 msgid "this function is not supported by the hypervisor: %s"
 msgstr "この機能はハイパーバイザーがサポートしていません: %s"
 
-#: src/virterror.c:712
+#: src/virterror.c:715
 msgid "could not connect to hypervisor"
 msgstr "ハイパーバイザーに接続できませんでした"
 
-#: src/virterror.c:714
+#: src/virterror.c:717
 #, c-format
 msgid "could not connect to %s"
 msgstr "%s に接続できませんでした"
 
-#: src/virterror.c:718
+#: src/virterror.c:721
 msgid "invalid connection pointer in"
 msgstr "無効な接続ポインター"
 
-#: src/virterror.c:720
+#: src/virterror.c:723
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "%s で無効な接続ポインターです"
 
-#: src/virterror.c:724
+#: src/virterror.c:727
 msgid "invalid domain pointer in"
 msgstr "無効なドメインポインター"
 
-#: src/virterror.c:726
+#: src/virterror.c:729
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "%s で無効なドメインポインターです"
 
-#: src/virterror.c:730
+#: src/virterror.c:733
 msgid "invalid argument in"
 msgstr "無効な引数"
 
-#: src/virterror.c:732
+#: src/virterror.c:735
 #, c-format
 msgid "invalid argument in %s"
 msgstr "%s で無効な引数です"
 
-#: src/virterror.c:736
+#: src/virterror.c:739
 #, c-format
 msgid "operation failed: %s"
 msgstr "操作は失敗しました: %s"
 
-#: src/virterror.c:738
+#: src/virterror.c:741
 msgid "operation failed"
 msgstr "操作は失敗しました"
 
-#: src/virterror.c:742
+#: src/virterror.c:745
 #, c-format
 msgid "GET operation failed: %s"
 msgstr "GET 操作は失敗しました: %s"
 
-#: src/virterror.c:744
+#: src/virterror.c:747
 msgid "GET operation failed"
 msgstr "GET 操作は失敗しました"
 
-#: src/virterror.c:748
+#: src/virterror.c:751
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "POST 操作は失敗しました: %s"
 
-#: src/virterror.c:750
+#: src/virterror.c:753
 msgid "POST operation failed"
 msgstr "POST 操作は失敗しました"
 
-#: src/virterror.c:753
+#: src/virterror.c:756
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr "不明な HTTP エラーコード %d を取得しました"
 
-#: src/virterror.c:757
+#: src/virterror.c:760
 #, c-format
 msgid "unknown host %s"
 msgstr "不明なホスト %s"
 
-#: src/virterror.c:759
+#: src/virterror.c:762
 msgid "unknown host"
 msgstr "不明なホスト"
 
-#: src/virterror.c:763
+#: src/virterror.c:766
 #, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr "S 式のシリアライズに失敗しました: %s"
 
-#: src/virterror.c:765
+#: src/virterror.c:768
 msgid "failed to serialize S-Expr"
 msgstr "S 式のシリアライズに失敗しました"
 
-#: src/virterror.c:769
+#: src/virterror.c:772
 msgid "could not use Xen hypervisor entry"
 msgstr "Xen ハイパーバイザーエントリーを使用できませんでした"
 
-#: src/virterror.c:771
+#: src/virterror.c:774
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "Xen ハイパーバイザーエントリー %s を使用できませんでした"
 
-#: src/virterror.c:775
+#: src/virterror.c:778
 msgid "could not connect to Xen Store"
 msgstr "Xen Store に接続できませんでした"
 
-#: src/virterror.c:777
+#: src/virterror.c:780
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr "Xen Store %s に接続できませんでした"
 
-#: src/virterror.c:780
+#: src/virterror.c:783
 #, fuzzy, c-format
 msgid "failed Xen syscall %s"
 msgstr "Xen syscall %s %d に失敗"
 
-#: src/virterror.c:784
+#: src/virterror.c:787
 msgid "unknown OS type"
 msgstr "不明な OS タイプ"
 
-#: src/virterror.c:786
+#: src/virterror.c:789
 #, c-format
 msgid "unknown OS type %s"
 msgstr "不明な OS タイプ %s"
 
-#: src/virterror.c:789
+#: src/virterror.c:792
 msgid "missing kernel information"
 msgstr "カーネル情報が不足しています"
 
-#: src/virterror.c:793
+#: src/virterror.c:796
 msgid "missing root device information"
 msgstr "root 装置の情報が不足しています"
 
-#: src/virterror.c:795
+#: src/virterror.c:798
 #, c-format
 msgid "missing root device information in %s"
 msgstr "%s の root 装置の情報が不足しています"
 
-#: src/virterror.c:799
+#: src/virterror.c:802
 msgid "missing source information for device"
 msgstr "装置のソース情報が不足しています"
 
-#: src/virterror.c:801
+#: src/virterror.c:804
 #, c-format
 msgid "missing source information for device %s"
 msgstr "装置 %s のソース情報が不足しています"
 
-#: src/virterror.c:805
+#: src/virterror.c:808
 msgid "missing target information for device"
 msgstr "装置のターゲット情報が不足しています"
 
-#: src/virterror.c:807
+#: src/virterror.c:810
 #, c-format
 msgid "missing target information for device %s"
 msgstr "装置 %s のターゲット情報が不足しています"
 
-#: src/virterror.c:811
+#: src/virterror.c:814
 msgid "missing domain name information"
 msgstr "ドメイン名情報が不足しています"
 
-#: src/virterror.c:813
+#: src/virterror.c:816
 #, c-format
 msgid "missing domain name information in %s"
 msgstr "%s のドメイン名情報が不足しています"
 
-#: src/virterror.c:817
+#: src/virterror.c:820
 msgid "missing operating system information"
 msgstr "オペレーティングシステム情報が不足しています"
 
-#: src/virterror.c:819
+#: src/virterror.c:822
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "%s のオペレーティングシステム情報が不足しています"
 
-#: src/virterror.c:823
+#: src/virterror.c:826
 msgid "missing devices information"
 msgstr "装置の情報が不足しています"
 
-#: src/virterror.c:825
+#: src/virterror.c:828
 #, c-format
 msgid "missing devices information for %s"
 msgstr "%s の装置情報が不足しています"
 
-#: src/virterror.c:829
+#: src/virterror.c:832
 msgid "too many drivers registered"
 msgstr "登録しているドライバーが多すぎます"
 
-#: src/virterror.c:831
+#: src/virterror.c:834
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "%s に登録しているドライバーが多すぎます"
 
-#: src/virterror.c:835
+#: src/virterror.c:838
 msgid "library call failed, possibly not supported"
 msgstr "ライブラリー呼出しが失敗しました、サポートされていない可能性があります"
 
-#: src/virterror.c:837
+#: src/virterror.c:840
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr ""
 "ライブラリー呼出し %s が失敗しました、サポートされていない可能性があります"
 
-#: src/virterror.c:841
+#: src/virterror.c:844
 msgid "XML description not well formed or invalid"
 msgstr "XML 記述が正しく構成されていないか無効です"
 
-#: src/virterror.c:843
+#: src/virterror.c:846
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
 msgstr "%s の XML 記述が正しく構成されていないか無効です"
 
-#: src/virterror.c:847
+#: src/virterror.c:850
 msgid "this domain exists already"
 msgstr "このドメインはすでに存在しています"
 
-#: src/virterror.c:849
+#: src/virterror.c:852
 #, c-format
 msgid "domain %s exists already"
 msgstr "ドメイン %s はすでに存在しています"
 
-#: src/virterror.c:853
+#: src/virterror.c:856
 msgid "operation forbidden for read only access"
 msgstr "読み込み専用アクセスに対して操作は禁止されています"
 
-#: src/virterror.c:855
+#: src/virterror.c:858
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr "読み込み専用アクセスに対して操作 %s は禁止されています"
 
-#: src/virterror.c:859
+#: src/virterror.c:862
 msgid "failed to open configuration file for reading"
 msgstr "読み込みのため設定ファイルを開くのに失敗しました"
 
-#: src/virterror.c:861
+#: src/virterror.c:864
 #, c-format
 msgid "failed to open %s for reading"
 msgstr "読み込みのため %s を開くのに失敗しました"
 
-#: src/virterror.c:865
+#: src/virterror.c:868
 msgid "failed to read configuration file"
 msgstr "設定ファイルの読み込みに失敗しました"
 
-#: src/virterror.c:867
+#: src/virterror.c:870
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "設定ファイル %s の読み込みに失敗しました"
 
-#: src/virterror.c:871
+#: src/virterror.c:874
 msgid "failed to parse configuration file"
 msgstr "設定ファイルの解析に失敗しました"
 
-#: src/virterror.c:873
+#: src/virterror.c:876
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "設定ファイル %s の解析に失敗しました"
 
-#: src/virterror.c:877
+#: src/virterror.c:880
 msgid "configuration file syntax error"
 msgstr "設定ファイルの構文エラー"
 
-#: src/virterror.c:879
+#: src/virterror.c:882
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "設定ファイルの構文エラー: %s"
 
-#: src/virterror.c:883
+#: src/virterror.c:886
 msgid "failed to write configuration file"
 msgstr "設定ファイルの書き込みに失敗しました"
 
-#: src/virterror.c:885
+#: src/virterror.c:888
 #, c-format
 msgid "failed to write configuration file: %s"
 msgstr "設定ファイルの書き込みに失敗しました: %s"
 
-#: src/virterror.c:889
+#: src/virterror.c:892
 msgid "parser error"
 msgstr "構文解析エラー"
 
-#: src/virterror.c:895
+#: src/virterror.c:898
 msgid "invalid network pointer in"
 msgstr "無効なネットワークポインター"
 
-#: src/virterror.c:897
+#: src/virterror.c:900
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "%s で無効なネットワークポインターです"
 
-#: src/virterror.c:901
+#: src/virterror.c:904
 msgid "this network exists already"
 msgstr "このネットワークはすでに存在しています"
 
-#: src/virterror.c:903
+#: src/virterror.c:906
 #, c-format
 msgid "network %s exists already"
 msgstr "ネットワーク %s はすでに存在しています"
 
-#: src/virterror.c:907
+#: src/virterror.c:910
 msgid "system call error"
 msgstr "システムコールエラー"
 
-#: src/virterror.c:913
+#: src/virterror.c:916
 msgid "RPC error"
 msgstr "RPC エラー"
 
-#: src/virterror.c:919
+#: src/virterror.c:922
 msgid "GNUTLS call error"
 msgstr "GNUTLS 呼び出しエラー"
 
-#: src/virterror.c:925
+#: src/virterror.c:928
 msgid "Failed to find the network"
 msgstr "ネットワークを見つけられませんでした"
 
-#: src/virterror.c:927
+#: src/virterror.c:930
 #, c-format
 msgid "Failed to find the network: %s"
 msgstr "ネットワーク %s を見つけられませんでした"
 
-#: src/virterror.c:931
+#: src/virterror.c:934
 msgid "Domain not found"
 msgstr "ドメインが見つかりません"
 
-#: src/virterror.c:933
+#: src/virterror.c:936
 #, c-format
 msgid "Domain not found: %s"
 msgstr "ドメインは見つかりませんでした: %s "
 
-#: src/virterror.c:937
+#: src/virterror.c:940
 msgid "Network not found"
 msgstr "ネットワークが見つかりません"
 
-#: src/virterror.c:939
+#: src/virterror.c:942
 #, c-format
 msgid "Network not found: %s"
 msgstr "ネットワークが見つかりませんでした: %s "
 
-#: src/virterror.c:943
+#: src/virterror.c:946
 msgid "invalid MAC address"
 msgstr "無効な MAC アドレス"
 
-#: src/virterror.c:945
+#: src/virterror.c:948
 #, c-format
 msgid "invalid MAC address: %s"
 msgstr "無効な MAC アドレス: %s"
 
-#: src/virterror.c:949
+#: src/virterror.c:952
 msgid "authentication failed"
 msgstr "認証に失敗しました"
 
-#: src/virterror.c:951
+#: src/virterror.c:954
 #, c-format
 msgid "authentication failed: %s"
 msgstr "認証に失敗しました: %s"
 
-#: src/virterror.c:955
+#: src/virterror.c:958
 msgid "Storage pool not found"
 msgstr "ストレージプールが見つかりません"
 
-#: src/virterror.c:957
+#: src/virterror.c:960
 #, c-format
 msgid "Storage pool not found: %s"
 msgstr "ストレージプールが見つかりません: %s "
 
-#: src/virterror.c:961
+#: src/virterror.c:964
 msgid "Storage volume not found"
 msgstr "ストレージボリュームが見つかりません"
 
-#: src/virterror.c:963
+#: src/virterror.c:966
 #, c-format
 msgid "Storage volume not found: %s"
 msgstr "ストレージボリュームが見つかりません: %s "
 
-#: src/virterror.c:967
+#: src/virterror.c:970
 msgid "invalid storage pool pointer in"
 msgstr "無効なストレージプールポインターがあります"
 
-#: src/virterror.c:969
+#: src/virterror.c:972
 #, c-format
 msgid "invalid storage pool pointer in %s"
 msgstr "%s に無効なストレージプールポインターがあります"
 
-#: src/virterror.c:973
+#: src/virterror.c:976
 msgid "invalid storage volume pointer in"
 msgstr "無効なストレージボリュームポインターがあります"
 
-#: src/virterror.c:975
+#: src/virterror.c:978
 #, c-format
 msgid "invalid storage volume pointer in %s"
 msgstr "%s に無効なストレージボリュームポインターがあります"
 
-#: src/virterror.c:979
+#: src/virterror.c:982
 msgid "Failed to find a storage driver"
 msgstr "ストレージドライバーの検出に失敗しました"
 
-#: src/virterror.c:981
+#: src/virterror.c:984
 #, c-format
 msgid "Failed to find a storage driver: %s"
 msgstr "ストレージドライバーの検出に失敗しました: %s"
 
-#: src/virterror.c:985
+#: src/virterror.c:988
 #, fuzzy
 msgid "Failed to find a node driver"
 msgstr "ストレージドライバーの検出に失敗しました"
 
-#: src/virterror.c:987
+#: src/virterror.c:990
 #, fuzzy, c-format
 msgid "Failed to find a node driver: %s"
 msgstr "ストレージドライバーの検出に失敗しました: %s"
 
-#: src/virterror.c:991
+#: src/virterror.c:994
 #, fuzzy
 msgid "invalid node device pointer"
 msgstr "無効なストレージボリュームポインターがあります"
 
-#: src/virterror.c:993
+#: src/virterror.c:996
 #, fuzzy, c-format
 msgid "invalid node device pointer in %s"
 msgstr "%s で無効なドメインポインターです"
 
-#: src/virterror.c:997
+#: src/virterror.c:1000
 #, fuzzy
 msgid "Node device not found"
 msgstr "デバイスは見つかりません: %s (%s)"
 
-#: src/virterror.c:999
+#: src/virterror.c:1002
 #, fuzzy, c-format
 msgid "Node device not found: %s"
 msgstr "デバイスは見つかりません: %s (%s)"
 
-#: src/virterror.c:1003
+#: src/virterror.c:1006
 #, fuzzy
 msgid "Security model not found"
 msgstr "ストレージプールが見つかりません"
 
-#: src/virterror.c:1005
+#: src/virterror.c:1008
 #, fuzzy, c-format
 msgid "Security model not found: %s"
 msgstr "ストレージプールが見つかりません: %s "
 
-#: src/virterror.c:1068
+#: src/virterror.c:1071
 #, fuzzy
 msgid "internal error: buffer too small"
 msgstr "引数バッファーが小さすぎます"
@@ -8192,17 +8122,17 @@ msgstr "不足 \""
 #: src/xend_internal.c:2220
 #, fuzzy
 msgid "missing PCI slot"
-msgstr "ソースホストがありません"
+msgstr "不足 \""
 
 #: src/xend_internal.c:2225
 #, fuzzy
 msgid "missing PCI func"
-msgstr "ソースホストがありません"
+msgstr "不足 \""
 
 #: src/xend_internal.c:2231
 #, fuzzy, c-format
 msgid "cannot parse PCI domain '%s'"
-msgstr "デバイス %s を開けません"
+msgstr "ドメインは保存できません"
 
 #: src/xend_internal.c:2236
 #, fuzzy, c-format
@@ -8217,7 +8147,7 @@ msgstr "%s を読み込めません: %s"
 #: src/xend_internal.c:2246
 #, fuzzy, c-format
 msgid "cannot parse PCI func '%s'"
-msgstr "デバイス %s を開けません"
+msgstr "ファイル '%s' を閉じることが出来ません: %s"
 
 #: src/xend_internal.c:2312
 msgid "domain information incomplete, missing id"
@@ -8246,7 +8176,7 @@ msgstr "Xend ドメイン情報の解析に失敗しました"
 #: src/xend_internal.c:3207 src/xend_internal.c:3781
 #, fuzzy, c-format
 msgid "Domain %s isn't running."
-msgstr "ドメインは稼働していません"
+msgstr "ドメインはまだ実行中です"
 
 #: src/xend_internal.c:3365
 #, fuzzy
@@ -8289,7 +8219,7 @@ msgstr "on_xend_start は sexpr にありません"
 #: src/xend_internal.c:4320
 #, fuzzy, c-format
 msgid "unable to resolve name %s"
-msgstr "tty '%s' を開けません: %s\n"
+msgstr "モード '%s' の構文解析に失敗"
 
 #: src/xend_internal.c:4356
 msgid ""
@@ -8407,7 +8337,7 @@ msgstr ""
 msgid "Cannot directly attach CDROM %s"
 msgstr ""
 
-#: src/xend_internal.c:5335 src/xm_internal.c:1996
+#: src/xend_internal.c:5335 src/xm_internal.c:1997
 #, fuzzy, c-format
 msgid "unsupported network type %d"
 msgstr "サポートされていないストレージボリュームタイプ %d"
@@ -8415,7 +8345,7 @@ msgstr "サポートされていないストレージボリュームタイプ %d
 #: src/xend_internal.c:5376
 #, fuzzy, c-format
 msgid "network %s is not active"
-msgstr "ネットワークはすでにアクティブです"
+msgstr "ネットワーク %s は稼働していません"
 
 #: src/xend_internal.c:5435 src/xend_internal.c:5483
 msgid "managed PCI devices not supported with XenD"
@@ -8454,7 +8384,7 @@ msgstr ""
 #: src/xm_internal.c:392
 #, fuzzy, c-format
 msgid "cannot stat: %s"
-msgstr "ファイル '%s' の統計が出来ません: %s"
+msgstr "アフィニティをセットできません: %s"
 
 #: src/xm_internal.c:450
 msgid "xenXMConfigCacheRefresh: virHashAddEntry"
@@ -8501,53 +8431,53 @@ msgstr "virHashLookup"
 msgid "can't retrieve config file for domain"
 msgstr "ドメインの設定ファイルを取り込めません"
 
-#: src/xm_internal.c:2242 src/xm_internal.c:2251 src/xm_internal.c:2260
+#: src/xm_internal.c:2243 src/xm_internal.c:2252 src/xm_internal.c:2261
 #, fuzzy, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "予期しない dict ノード"
 
-#: src/xm_internal.c:2541
+#: src/xm_internal.c:2542
 msgid "can't retrieve config filename for domain to overwrite"
 msgstr "上書きする為のドメインの設定ファイル名を取り込めません"
 
-#: src/xm_internal.c:2547
+#: src/xm_internal.c:2548
 msgid "can't retrieve config entry for domain to overwrite"
 msgstr "上書きする為のドメインの設定エントリを取り込めません"
 
-#: src/xm_internal.c:2558 src/xm_internal.c:2565
+#: src/xm_internal.c:2559 src/xm_internal.c:2566
 msgid "failed to remove old domain from config map"
 msgstr "設定マップからの古いドメインの削除に失敗しました"
 
-#: src/xm_internal.c:2574
+#: src/xm_internal.c:2575
 msgid "config file name is too long"
 msgstr "設定ファイル名は長すぎます"
 
-#: src/xm_internal.c:2592
+#: src/xm_internal.c:2593
 msgid "unable to get current time"
 msgstr "現在の時刻を取得できません"
 
-#: src/xm_internal.c:2601 src/xm_internal.c:2608
+#: src/xm_internal.c:2602 src/xm_internal.c:2609
 msgid "unable to store config file handle"
 msgstr "設定ファイルハンドルの格納に失敗しました"
 
-#: src/xm_internal.c:2839 src/xm_internal.c:2940
+#: src/xm_internal.c:2840 src/xm_internal.c:2941
 msgid "unknown device"
 msgstr "不明なデバイス"
 
-#: src/xm_internal.c:2998
+#: src/xm_internal.c:2999
 #, c-format
 msgid "cannot check link %s points to config %s"
 msgstr ""
 
-#: src/xm_internal.c:3027
+#: src/xm_internal.c:3028
 #, fuzzy, c-format
 msgid "failed to create link %s to %s"
 msgstr "ログファイル %s の作成に失敗: %s"
 
-#: src/xm_internal.c:3035
+#: src/xm_internal.c:3036
 #, fuzzy, c-format
 msgid "failed to remove link %s"
-msgstr "ログファイル %s の作成に失敗: %s"
+msgstr "ドメイン %s の再開に失敗しました"
 
 #: src/xml.c:60
 msgid "Invalid parameter to virXPathString()"
@@ -8616,854 +8546,5 @@ msgstr "プールはすでにアクティブです"
 msgid "reallocating list"
 msgstr "ドメインを割り当て中"
 
-#, fuzzy
-#~ msgid "modprobe %s failed: %s"
-#~ msgstr "操作は失敗しました: %s"
-
-#, fuzzy
-#~ msgid "cannot open '%s'"
-#~ msgstr "'%s' を開けません: %s"
-
-#~ msgid "Failed to parse target from sysfs path %s/%s"
-#~ msgstr "sysfs パス  %s/%s  からのターゲットの構文解析に失敗しました"
-
-#~ msgid "Failed to find device link for lun %d"
-#~ msgstr "LUN %d 用のデバイスリンクの検索に失敗しました"
-
-#~ msgid "missing owner element"
-#~ msgstr "オーナー要素がありません"
-
-#, fuzzy
-#~ msgid "missing group element"
-#~ msgstr "root 要素がありません"
-
-#~ msgid "Cannot access %s '%s': %s (%d)"
-#~ msgstr "%s '%s' にアクセスできません: %s (%d)"
-
-#~ msgid "failed to get sock address %d (%s)"
-#~ msgstr "sock アドレス  %d (%s) の取得に失敗"
-
-#~ msgid "failed to get peer address %d (%s)"
-#~ msgstr "ピアアドレス %d (%s)  の取得に失敗"
-
-#, fuzzy
-#~ msgid "Failed to set non-blocking file descriptor flag\n"
-#~ msgstr "non-blocking ファイルの記述子フラグの設定に失敗"
-
-#~ msgid "failed to create logfile %s: %s"
-#~ msgstr "ログファイル %s の作成に失敗: %s"
-
-#, fuzzy
-#~ msgid "Unable to set VM logfile close-on-exec flag: %s"
-#~ msgstr "VM ログファイルの close-on-exec フラグ %s をセットできません"
-
-#, fuzzy
-#~ msgid "qemudStartup: out of memory\n"
-#~ msgstr "qemudStartup: メモリー不足です"
-
-#, fuzzy
-#~ msgid "Unable to close logfile %d: %s\n"
-#~ msgstr "ログファイル %d を終了できません: %s"
-
-#~ msgid "allocate buffer"
-#~ msgstr "バッファを割り当て"
-
-#~ msgid "allocating connection"
-#~ msgstr "接続を割り当て中"
-
-#~ msgid "allocating domain"
-#~ msgstr "ドメインを割り当て中"
-
-#~ msgid "allocating network"
-#~ msgstr "ネットワークの割り当て中"
-
-#~ msgid "allocating storage pool"
-#~ msgstr "ストレージプールを割り当て中"
-
-#~ msgid "allocating storage vol"
-#~ msgstr "ストレージボリュームの割り当て中"
-
-#, fuzzy
-#~ msgid "allocating node dev"
-#~ msgstr "ストレージボリュームの割り当て中"
-
-#, fuzzy
-#~ msgid "copying node dev name"
-#~ msgstr "ノードの内容をコピー中"
-
-#~ msgid "failed to allocate space for xmlXPathContext"
-#~ msgstr "xmlXPathContext 用の領域割り当てに失敗しました"
-
-#, fuzzy
-#~ msgid "cannot remove config for %s: %s"
-#~ msgstr "%s 用の設定を削除できません"
-
-#, fuzzy
-#~ msgid "unable to open connection"
-#~ msgstr "接続の受理に失敗: %s"
-
-#, fuzzy
-#~ msgid "while loading LXC driver config"
-#~ msgstr "ドライバーの再ロード中にエラー"
-
-#~ msgid "failed to mount %s at %s for container: %s"
-#~ msgstr "コンテナ用の %s に %s をマウントするのに失敗: %s"
-
-#~ msgid "clone() failed, %s"
-#~ msgstr "clone() は失敗しました: %s"
-
-#~ msgid "failed to allocate space for VM name string"
-#~ msgstr "VM の名前文字列用領域の割り当てに失敗"
-
-#~ msgid "cannot create log directory %s: %s"
-#~ msgstr "ログディレクトリ %s を作成できません: %s"
-
-#, fuzzy
-#~ msgid "uname(): %s"
-#~ msgstr "名前"
-
-#, fuzzy
-#~ msgid "Failed to find user record for uid '%d': %s\n"
-#~ msgstr "uid '%d' のユーザー記録を見つけることができません: %s"
-
-#~ msgid "failed to allocate space for dnsmasq argv"
-#~ msgstr "dnsmasq argv 用領域の割り当てに失敗"
-
-#~ msgid "failed to allocate space for IP tables support"
-#~ msgstr "IP テーブルサポート用の領域割り当てに失敗しました"
-
-#, fuzzy
-#~ msgid "Got unexpected pid for dnsmasq\n"
-#~ msgstr "dnsmasq 用の予期しない pid を得ました"
-
-#~ msgid "failed to allocate space for network bridge string"
-#~ msgstr "ネットワークブリッジ文字列用領域の割り当てに失敗"
-
-#, fuzzy
-#~ msgid "failed to allocate vncListen"
-#~ msgstr "ノードの割り当てに失敗しました"
-
-#~ msgid "failed to allocate vncTLSx509certdir"
-#~ msgstr "vncTLSx509certdir の割り当てに失敗しました"
-
-#, fuzzy
-#~ msgid "failed to allocate vnc_listen"
-#~ msgstr "ノードの割り当てに失敗しました"
-
-#~ msgid "failed to allocate space for tapfds string"
-#~ msgstr "tapfds 文字列用領域の割り当てに失敗"
-
-#~ msgid "failed to allocate space for argv string"
-#~ msgstr "argv 文字列用領域の割り当てに失敗"
-
-#, fuzzy
-#~ msgid "failed to allocate space for vm status"
-#~ msgstr "vm 文字列用領域の割り当てに失敗"
-
-#, fuzzy
-#~ msgid "failed to allocate space for status file"
-#~ msgstr "ostype 用領域の割り当てに失敗"
-
-#~ msgid ""
-#~ "QEMU quit during %s startup\n"
-#~ "%s"
-#~ msgstr ""
-#~ "QEMU は %s 開始時に停止しました\n"
-#~ "%s"
-
-#~ msgid "Failure while reading %s startup output: %s"
-#~ msgstr "%s 開始の出力の読み込みで失敗: %s"
-
-#, fuzzy
-#~ msgid "failed to allocate space for monitor path"
-#~ msgstr "ostype 用領域の割り当てに失敗"
-
-#~ msgid "allocate cpumap"
-#~ msgstr "cpumap を割り当て"
-
-#, fuzzy
-#~ msgid "Got unexpected pid, damn\n"
-#~ msgstr "予期しない pid を得ました、ダメです"
-
-#~ msgid "failed to allocate space for capabilities support"
-#~ msgstr "機能サポート用領域の割り当てに失敗"
-
-#~ msgid "failed to allocate space for ostype"
-#~ msgstr "ostype 用領域の割り当てに失敗"
-
-#~ msgid "failed to pause domain"
-#~ msgstr "ドメインの一時停止に失敗しました"
-
-#, fuzzy
-#~ msgid "unable to lookup user '%d': %s"
-#~ msgstr "tty '%s' を開けません: %s\n"
-
-#~ msgid "struct private_data"
-#~ msgstr "private_data の構成"
-
-#~ msgid "unknown direction (received %x, expected %x)"
-#~ msgstr "不明な方向 (受理 %x, 予期値 %x)"
-
-#~ msgid "unknown serial (received %x, expected %x)"
-#~ msgstr "不明なシリアル (受理 %x, 予期値 %x)"
-
-#~ msgid "socket closed unexpectedly"
-#~ msgstr "予期しないソケットの停止"
-
-#, fuzzy
-#~ msgid "invalid header in event firing"
-#~ msgstr "応答内に無効なヘッダー"
-
-#, fuzzy
-#~ msgid "invalid proc in event firing"
-#~ msgstr "無効なドメインポインター"
-
-#~ msgid "failed to allocate a node"
-#~ msgstr "ノードの割り当てに失敗しました"
-
-#~ msgid "failed to copy a string"
-#~ msgstr "文字列のコピーに失敗しました"
-
-#~ msgid "context"
-#~ msgstr "コンテキスト"
-
-#~ msgid "path"
-#~ msgstr "パス"
-
-#, fuzzy
-#~ msgid "dup path"
-#~ msgstr "パス"
-
-#~ msgid "regex"
-#~ msgstr "regex"
-
-#~ msgid "regex groups"
-#~ msgstr "regex グループ"
-
-#~ msgid "n_columns too large"
-#~ msgstr "n_columns は長すぎます"
-
-#~ msgid "volume"
-#~ msgstr "ボリューム"
-
-#~ msgid "volume extents"
-#~ msgstr "ボリューム拡張"
-
-#~ msgid "extents"
-#~ msgstr "拡張"
-
-#, fuzzy
-#~ msgid "retval"
-#~ msgstr "ポータル"
-
-#~ msgid "source"
-#~ msgstr "ソース"
-
-#~ msgid "target"
-#~ msgstr "ターゲット"
-
-#~ msgid "storage vol key"
-#~ msgstr "ストレージボリュームキー"
-
-#~ msgid "session"
-#~ msgstr "セッション"
-
-#~ msgid "name"
-#~ msgstr "名前"
-
-#~ msgid "devpath"
-#~ msgstr "devpath"
-
-#~ msgid "key"
-#~ msgstr "キー"
-
-#~ msgid "Failed allocating memory for scsidev"
-#~ msgstr "scsidev 用メモリーの割り当てに失敗しました"
-
-#~ msgid "portal"
-#~ msgstr "ポータル"
-
-#, fuzzy
-#~ msgid "allocating pvname or vgname"
-#~ msgstr "allocating priv->ホスト名"
-
-#, fuzzy
-#~ msgid "allocating new source"
-#~ msgstr "ネットワークの割り当て中"
-
-#, fuzzy
-#~ msgid "allocating new device"
-#~ msgstr "ネットワークの割り当て中"
-
-#~ msgid "command line"
-#~ msgstr "コマンドライン"
-
-#~ msgid "cannot allocate storage pool"
-#~ msgstr "ストレージプールを割り当てできません"
-
-#~ msgid "device"
-#~ msgstr "デバイス"
-
-#~ msgid "xmlXPathContext"
-#~ msgstr "xmlXPathContext"
-
-#~ msgid "xml"
-#~ msgstr "xml"
-
-#~ msgid "cannot allocate storage vol"
-#~ msgstr "ストレージボリュームを割り当てできません"
-
-#~ msgid "pool"
-#~ msgstr "プール"
-
-#~ msgid "configFile"
-#~ msgstr "configFile"
-
-#~ msgid "config file"
-#~ msgstr "設定ファイル"
-
-#~ msgid "names"
-#~ msgstr "名前"
-
-#, fuzzy
-#~ msgid "command debug string"
-#~ msgstr "コマンドライン"
-
-#~ msgid "allocating %d domain info"
-#~ msgstr "%d ドメイン情報を割り当て中"
-
-#~ msgid "allocate new buffer"
-#~ msgstr "新しいバッファを割り当て"
-
-#~ msgid "gethostbyname failed: %s"
-#~ msgstr "gethostbyname は失敗しました: %s"
-
-#~ msgid "no memory for char device config"
-#~ msgstr "文字デバイス設定にメモリーがありません"
-
-#~ msgid "gethostname failed: %s"
-#~ msgstr "gethostname は失敗しました: %s"
-
-#~ msgid "failed to strdup hostname: %s"
-#~ msgstr "ホスト名の strdup に失敗しました: %s"
-
-#~ msgid "config"
-#~ msgstr "config"
-
-#, fuzzy
-#~ msgid "failed to check autostart link %s: %s"
-#~ msgstr "自動起動のリンク %s の削除に失敗しました: %s"
-
-#, fuzzy
-#~ msgid "allocate string array size %lu"
-#~ msgstr "string array の割り当て"
-
-#, fuzzy
-#~ msgid "failed to allocate domids"
-#~ msgstr "ノードの割り当てに失敗しました"
-
-#~ msgid "config file path too long: %s/%s.log"
-#~ msgstr "設定ファイルのパスが長すぎます: %s/%s.log"
-
-#~ msgid "tried to use a closed or uninitialised handle"
-#~ msgstr "閉じた、又は初期化のないハンドルの使用を試しました"
-
-#~ msgid "xend_get: error from xen daemon: %s"
-#~ msgstr "xend_get: xen デーモンからのエラー: %s"
-
-#~ msgid "failed to parse topology information"
-#~ msgstr "トポロジー情報の解析に失敗しました"
-
-#~ msgid "xdr_remote_message_header"
-#~ msgstr "xdr_remote_message_header"
-
-#~ msgid "internal error - dispatch function returned invalid code %d"
-#~ msgstr "内部エラー - ディスパッチ機能が無効なコード %d を返しました"
-
-#~ msgid "dummy length"
-#~ msgstr "ダミー長"
-
-#~ msgid "serialise reply header"
-#~ msgstr "返信ヘッダをシリアル化"
-
-#~ msgid "serialise return struct"
-#~ msgstr "リターン構造をシリアル化"
-
-#~ msgid "serialise return error"
-#~ msgstr "リターンエラーをシリアル化"
-
-#~ msgid "xdr_setpos"
-#~ msgstr "xdr_setpos"
-
-#~ msgid "serialise return length"
-#~ msgstr "リターン長をシリアル化"
-
-#~ msgid "domain not found"
-#~ msgstr "ドメインが見つかりません"
-
-#~ msgid "network not found"
-#~ msgstr "ネットワークが見つかりません"
-
-#~ msgid "storage_pool not found"
-#~ msgstr "storage_pool が見つかりません"
-
-#~ msgid "storage_vol not found"
-#~ msgstr "storage_vol が見つかりません"
-
-#, fuzzy
-#~ msgid "Invalid Client"
-#~ msgstr "無効な uuid 要素"
-
-#, fuzzy
-#~ msgid "xdr_int failed (1)"
-#~ msgstr "xdr_int (長さ、単語)"
-
-#, fuzzy
-#~ msgid "xdr_setpos failed"
-#~ msgstr "xdr_setpos"
-
-#, fuzzy
-#~ msgid "xdr_int failed (2)"
-#~ msgstr "xdr_int (長さ、単語)"
-
-#, fuzzy
-#~ msgid "out of memory in asprintf\n"
-#~ msgstr "asprintf 内でメモリー不足です"
-
-#~ msgid "allocate value"
-#~ msgstr "値を割り当て"
-
-#~ msgid "copying node content"
-#~ msgstr "ノードの内容をコピー中"
-
-#~ msgid "allocate value array"
-#~ msgstr "value array の割り当て"
-
-#~ msgid "allocate dict"
-#~ msgstr "dict を割り当て"
-
-#~ msgid "unexpected dict node"
-#~ msgstr "予期しない dict ノード"
-
-#~ msgid "unexpected value node"
-#~ msgstr "予期しない value ノード"
-
-#~ msgid "send request"
-#~ msgstr "要求の送信"
-
-#~ msgid "unexpected mime type"
-#~ msgstr "予期しない mime タイプ"
-
-#~ msgid "allocate response"
-#~ msgstr "応答の割り当て"
-
-#~ msgid "read response"
-#~ msgstr "応答の読み込み"
-
-#~ msgid "allocate string array"
-#~ msgstr "string array の割り当て"
-
-#~ msgid "parse server response failed"
-#~ msgstr "サーバー応答の解析に失敗しました"
-
-#~ msgid "allocate new context"
-#~ msgstr "新しいコンテキストの割り当て"
-
-#~ msgid "Received signal %d, dispatching to drivers"
-#~ msgstr "シグナル %d を受けました、ドライバーを送付します"
-
-#~ msgid "allocating conn->name"
-#~ msgstr "接続->名前を割り当て中"
-
-#~ msgid "missing filesystem type"
-#~ msgstr "欠如しているファイルシステムタイプ"
-
-#~ msgid "empty or invalid mount source"
-#~ msgstr "空又は無効なマウントソール"
-
-#~ msgid "missing mount target"
-#~ msgstr "マウントターゲットがありません"
-
-#~ msgid "empty or invalid mount target"
-#~ msgstr "空又は無効なマウントターゲット"
-
-#~ msgid "failed to generate uuid"
-#~ msgstr "uuid の生成に失敗しました"
-
-#~ msgid "invalid or missing init element"
-#~ msgstr "無効な又は欠如した init 要素"
-
-#~ msgid "init string too long"
-#~ msgstr "init の文字列は長すぎます"
-
-#~ msgid "invalid memory value"
-#~ msgstr "無効なメモリーの値"
-
-#~ msgid "invalid root element"
-#~ msgstr "無効な root 要素"
-
-#~ msgid "invalid domain id"
-#~ msgstr "無効なドメイン id"
-
-#~ msgid "Can't redefine active VM with name %s"
-#~ msgstr "アクティブな VM を名前 %s で再定義できません"
-
-#~ msgid "error checking container process: %d %s"
-#~ msgstr "コンテナプロセスをチェック中にエラー: %d %s"
-
-#~ msgid "failed to open config directory %s: %s"
-#~ msgstr "設定ディレクトリ %s を開くのに失敗しました: %s"
-
-#~ msgid "cannot create lxc state directory %s: %s"
-#~ msgstr "lxc の状態ディレクトリ %s を作成できません: %s"
-
-#~ msgid "cannot construct tty pid file path"
-#~ msgstr "tty pid ファイルのパスを構成できません"
-
-#~ msgid "cannot create tty pid file %s: %s"
-#~ msgstr "tty pid ファイル %s を作成できません: %s"
-
-#~ msgid "cannot fdopen tty pid file %s: %s"
-#~ msgstr "ty pid ファイル %s を fdopen 出来ません: %s"
-
-#~ msgid "cannot write tty pid file %s: %s"
-#~ msgstr "tty pid ファイル %s を書き込めません: %s"
-
-#~ msgid "execl failed to exec init: %s"
-#~ msgstr "execl は init の実行に失敗: %s"
-
-#~ msgid "unable to get storage for vm tty name"
-#~ msgstr "vm tty の名前用にストレージの取得ができません"
-
-#~ msgid "posix_openpt failed: %s"
-#~ msgstr "posix_openpt は失敗しました: %s"
-
-#~ msgid "ptsname_r failed: %s"
-#~ msgstr "ptsname_r  は失敗しました: %s"
-
-#~ msgid "epoll_ctl(fd2) failed: %s"
-#~ msgstr "epoll_ctl(fd2) は失敗: %s"
-
-#~ msgid "unable to fork tty forwarding process: %s"
-#~ msgstr "tty 転送プロセスをフォークできません: %s"
-
-#~ msgid "sending SIGTERM failed: %s"
-#~ msgstr "SIGTERM の送信は失敗しました: %s"
-
-#~ msgid "sending SIGKILL to tty process failed: %s"
-#~ msgstr "tty プロセスへの SIGKILL 送信は失敗しました: %s"
-
-#~ msgid "waitpid failed to wait for tty %d: %d %s"
-#~ msgstr "waitpid は tty %d への待機に失敗しました: %d %s"
-
-#~ msgid "sending SIGKILL failed: %s"
-#~ msgstr "SIGKILL の送信は失敗しました: %s"
-
-#~ msgid "Error already an active OPENVZ VM having id '%s'"
-#~ msgstr "エラー：既にアクティブ OPENVZ VM は id '%s'を持ちます"
-
-#~ msgid "invalid domain type attribute"
-#~ msgstr "無効なドメインタイプの属性"
-
-#~ msgid "VPS ID Error (must be an integer greater than 100"
-#~ msgstr "VPS ID エラー（100 以上の整数でなければなりません）"
-
-#~ msgid "No IP address in the given xml config file '%s'"
-#~ msgstr "該当 xml 設定ファイル '%s' 内に  IP アドレスがありません"
-
-#~ msgid "ipaddress length too long"
-#~ msgstr "ipaddress が長すぎます"
-
-#~ msgid "Failed to Create Memory for 'ovz_ip' structure"
-#~ msgstr " 'ovz_ip' 構造用のメモリー作成に失敗しました"
-
-#~ msgid "No Netmask address in the given xml config file '%s'"
-#~ msgstr "該当の xml 設定ファイル '%s' 内に Netmask アドレスがありません"
-
-#~ msgid "netmask length too long"
-#~ msgstr "netmask は長すぎます"
-
-#~ msgid "No hostname in the given xml config file '%s'"
-#~ msgstr "該当の xml 設定ファイル '%s' 内にホスト名がありません"
-
-#~ msgid "hostname length too long"
-#~ msgstr "ホスト名は長すぎます"
-
-#~ msgid "No Gateway address in the given xml config file '%s'"
-#~ msgstr "該当の xml 設定ファイル '%s' 内にゲートウェイアドレスがありません"
-
-#~ msgid "gateway length too long"
-#~ msgstr "ゲートウェイは長すぎます"
-
-#~ msgid "No Nameserver address inthe given xml config file '%s'"
-#~ msgstr "該当の xml 設定ファイル  '%s' 内に Nameserver アドレスがありません"
-
-#~ msgid "nameserver length too long"
-#~ msgstr "nameserver は長すぎます"
-
-#~ msgid "Failed to Create Memory for 'ovz_ns' structure"
-#~ msgstr "'ovz_ns' 構造用のメモリー作成に失敗しました"
-
-#~ msgid "profile length too long"
-#~ msgstr "プロフィールは長すぎます"
-
-#~ msgid "Error in parsing Options to OPENVZ"
-#~ msgstr "OPENVZ へのオプションの構文解析でエラー"
-
-#~ msgid "Error creating OPENVZ VM"
-#~ msgstr "OPENVZ VM の作成でエラー"
-
-#~ msgid "failed to exec %s\n"
-#~ msgstr "%s の実行に失敗しました\n"
-
-#~ msgid "Invalid cdrom device name: %s"
-#~ msgstr "無効な cdrom デバイス名です: %s"
-
-#~ msgid "Invalid bus type: %s"
-#~ msgstr "無効なバスタイプ: %s"
-
-#~ msgid "Network name '%s' too long"
-#~ msgstr "ネットワーク名 '%s' は長すぎます"
-
-#~ msgid "TAP interface name '%s' is too long"
-#~ msgstr "TAP インターフェイス名 '%s' は長すぎます"
-
-#~ msgid "TAP script path '%s' is too long"
-#~ msgstr "TAP スクリプトパス '%s' は長すぎます"
-
-#~ msgid "TAP bridge path '%s' is too long"
-#~ msgstr "TAP ブリッジパス '%s' は長すぎます"
-
-#~ msgid "IP address '%s' is too long"
-#~ msgstr "IP アドレス '%s' は長すぎます"
-
-#~ msgid "Model name '%s' is too long"
-#~ msgstr "モデル名 '%s' は長すぎます"
-
-#~ msgid "too many character devices"
-#~ msgstr "char デバイスが多すぎます"
-
-#~ msgid "domain name length too long"
-#~ msgstr "ドメイン名は長すぎます"
-
-#~ msgid "malformed memory information"
-#~ msgstr "誤りのあるメモリー情報"
-
-#~ msgid "malformed vcpu information"
-#~ msgstr "誤りの有る vcpu 情報"
-
-#~ msgid "malformed vcpu mask information"
-#~ msgstr "誤りの有る vcpu マスク情報"
-
-#~ msgid "architecture type too long"
-#~ msgstr "アーキテクチャタイプが長すぎます"
-
-#~ msgid "machine type too long"
-#~ msgstr "マシンタイプが長すぎます"
-
-#~ msgid "initrd path too long"
-#~ msgstr "initrd パスが長すぎます"
-
-#~ msgid "cmdline arguments too long"
-#~ msgstr "cmdline 引数が長すぎます"
-
-#~ msgid "unsupported guest type"
-#~ msgstr "サポートのないゲストタイプ"
-
-#~ msgid "emulator path too long"
-#~ msgstr "emulator パスが長すぎます"
-
-#~ msgid "Unsupported graphics type %s"
-#~ msgstr "サポートされていないグラフィックタイプ %s"
-
-#~ msgid "failed to allocate space for disk string"
-#~ msgstr "ディスク文字列用領域の割り当てに失敗"
-
-#~ msgid "failed to allocate space for net string"
-#~ msgstr "ネット文字列用領域の割り当てに失敗"
-
-#~ msgid "failed to allocate space for input string"
-#~ msgstr "入力文字列用領域の割り当てに失敗"
-
-#~ msgid "failed to allocate space for sound dev"
-#~ msgstr "サウンドデバイス用領域の割り当てに失敗"
-
-#~ msgid "failed to allocate space for range string"
-#~ msgstr "範囲文字列用領域の割り当てに失敗"
-
-#~ msgid "failed to allocate space for network_def string"
-#~ msgstr "network_def 文字列用領域の割り当てに失敗"
-
-#~ msgid "failed to allocate space for xmlXPathContext string"
-#~ msgstr "xmlXPathContext 文字列用領域の割り当てに失敗"
-
-#~ msgid "network name length too long"
-#~ msgstr "ネットワーク名は長すぎます"
-
-#~ msgid "forward device name '%s' is too long"
-#~ msgstr "転送デバイスの名前 '%s' は長すぎます"
-
-#~ msgid "failed to allocate space for network string"
-#~ msgstr "network 文字列用領域の割り当てに失敗"
-
-#~ msgid "Error parsing QEMU guest config '%s' : %s"
-#~ msgstr "QEMU ゲスト設定 %s' の構文解析でエラー: %s"
-
-#~ msgid "BUG: unknown error - please report it\n"
-#~ msgstr "BUG: 不明エラー - 報告を提出して下さい\n"
-
-#~ msgid "QEMU guest config filename '%s' does not match guest name '%s'"
-#~ msgstr "QEMU ゲスト設定ファイル名'%s' はゲスト名 '%s' に一致しません"
-
-#~ msgid "Failed to load QEMU guest config '%s': out of memory"
-#~ msgstr "QEMU ゲスト設定'%s' のロードに失敗: メモリー不足"
-
-#~ msgid "Failed to load network config '%s': out of memory"
-#~ msgstr "ネットワーク設定 '%s' のロードに失敗: メモリー不足です"
-
-#~ msgid "Config filename '%s/%s' is too long"
-#~ msgstr "設定ファイル名 '%s/%s' は長すぎます"
-
-#~ msgid "Autostart link path '%s/%s' is too long"
-#~ msgstr "Autostart リンクのパス '%s/%s' は長すぎます"
-
-#~ msgid "allocating cpu mask"
-#~ msgstr "cpu マスクを割り当て中"
-
-#~ msgid "failed to generate XML: out of memory"
-#~ msgstr "XML の生成に失敗: メモリー不足です"
-
-#~ msgid "Resulting path to long for buffer in qemudInitPaths()"
-#~ msgstr "結果のパスは qemudInitPaths() 内のバッファに長すぎます"
-
-#~ msgid "failed to set bridge forward delay to %d"
-#~ msgstr "ブリッジ転送遅延を %d にセットするのに失敗"
-
-#~ msgid "failed to set bridge STP to %s"
-#~ msgstr "ブリッジ STP を %s にセットするのに失敗しました"
-
-#~ msgid "CDROM not attached, cannot change media"
-#~ msgstr "CDROM は添付されていません、メディアを変更できません"
-
-#~ msgid "uri params"
-#~ msgstr "uri パラメータ"
-
-#~ msgid "unknown storage backend type %s"
-#~ msgstr "不明なストレージバックエンドタイプ %s"
-
-#~ msgid "unsupported pool format %s"
-#~ msgstr "サポートされていないプール形式 %s"
-
-#~ msgid "unsupported volume format %s"
-#~ msgstr "サポートされていないボリューム形式 %s"
-
-#~ msgid "Disk pools are not yet supported"
-#~ msgstr "ディスクプールはまだサポートされていません"
-
-#~ msgid "volume name"
-#~ msgstr "ボリューム名"
-
-#~ msgid "volume key"
-#~ msgstr "ボリュームキー"
-
-#~ msgid "malformed xml document"
-#~ msgstr "異常形成の xml ドキュメント"
-
-#~ msgid "domain"
-#~ msgstr "ドメイン"
-
-#~ msgid "domain memory"
-#~ msgstr "ドメインメモリー"
-
-#~ msgid "domain current memory"
-#~ msgstr "現在のドメインメモリー"
-
-#~ msgid "domain vcpus"
-#~ msgstr "ドメイン vcpus"
-
-#~ msgid "domain reboot behaviour"
-#~ msgstr "ドメインの再起動動作"
-
-#~ msgid "domain poweroff behaviour"
-#~ msgstr "ドメインの電源オフ動作"
-
-#~ msgid "domain crash behaviour"
-#~ msgstr "ドメインのクラッシュ動作"
-
-#~ msgid "load domain definition file"
-#~ msgstr "ドメインの定義ファイルをロード"
-
-#~ msgid "network"
-#~ msgstr "ネットワーク"
-
-#~ msgid "network forward"
-#~ msgstr "ネットワークフォワード"
-
-#~ msgid "ip address"
-#~ msgstr "ip アドレス"
-
-#~ msgid "ip netmask"
-#~ msgstr "ip ネットマスク"
-
-#~ msgid "load network definition file"
-#~ msgstr "ネットワークの定義ファイルをロード"
-
-#~ msgid "too many domains"
-#~ msgstr "ドメインが多すぎます"
-
-#~ msgid "cannot save domain"
-#~ msgstr "ドメインは保存できません"
-
-#~ msgid "cannot write header"
-#~ msgstr "ヘッダーの書き込みはできません"
-
-#~ msgid "cannot write metadata length"
-#~ msgstr "メタデータの長さを書き込めません"
-
-#~ msgid "cannot save domain core"
-#~ msgstr "ドメインコアを保存できません"
-
-#~ msgid "too many networks"
-#~ msgstr "ネットワークが多すぎます"
-
-#~ msgid "blocked"
-#~ msgstr "ブロックされています"
-
-#~ msgid "parsing soundhw string failed."
-#~ msgstr "soundhw ストリングの構文解析に失敗"
-
-#~ msgid "xenDaemonDomainDumpXMLByID failed to find this domain"
-#~ msgstr "xenDaemonDomainDumpXMLByID はこのドメインの検出に失敗しました"
-
-#~ msgid "xenXMConfigCacheRefresh: name"
-#~ msgstr "xenXMConfigCacheRefresh: 名前"
-
-#~ msgid "cannot read XML domain definition"
-#~ msgstr "XML ドメインの定義を読み込めません"
-
-#~ msgid "missing top level domain element"
-#~ msgstr "トップレベルのドメイン要素がありません"
-
-#~ msgid "domain type is invalid"
-#~ msgstr "ドメインタイプは無効です"
-
-#~ msgid "cannot create XPath context"
-#~ msgstr "XPath コンテキストを作成できません"
-
-#~ msgid "uuid config parameter is missing"
-#~ msgstr "uuid 設定パラメータがありません"
-
-#~ msgid "unable to write config file"
-#~ msgstr "設定ファイルの書き込みが出来ません"
-
-#~ msgid "failed to allocate sound string"
-#~ msgstr "サウンドストリングの割り当てに失敗しました"
-
-#~ msgid "no model for sound device"
-#~ msgstr "サウンドデバイス用のモデルがありません"
-
-#~ msgid "too many boot devices"
-#~ msgstr "ブートデバイスが多すぎます"
-
-#~ msgid "invalid input device"
-#~ msgstr "無効な入力デバイス"
+#~ msgid "Unable to log VM console data: %s\n"
+#~ msgstr "VM コンソールデータをログできません: %s\n"

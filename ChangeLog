@@ -1,3 +1,7 @@
+Mon Apr 20 11:24:23 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* po/*: merge in a lot of localization updates and regenerate
+
 Mon Apr 20 11:06:20 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/bridge.c: fix a compilation breakage raised by Anton Protopopov
