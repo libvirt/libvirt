@@ -139,7 +139,7 @@ brAddBridge(brControl *ctl,
 }
 #else
 int brAddBridge (brControl *ctl ATTRIBUTE_UNUSED,
-                 char **name ATTRIBUTE_UNUSED)
+                 const char *name ATTRIBUTE_UNUSED)
 {
     return EINVAL;
 }
@@ -175,8 +175,8 @@ brHasBridge(brControl *ctl,
 }
 #else
 int
-brHasBridge(brControl *ctl,
-            const char *name)
+brHasBridge(brControl *ctl ATTRIBUTE_UNUSED,
+            const char *name ATTRIBUTE_UNUSED)
 {
     return EINVAL;
 }

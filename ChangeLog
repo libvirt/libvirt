@@ -1,3 +1,7 @@
+Mon Apr 20 11:06:20 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/bridge.c: fix a compilation breakage raised by Anton Protopopov
+
 Sun Apr 19 17:46:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* mingw32-libvirt.spec.in: Added new virt-xml-validate tool
