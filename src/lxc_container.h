@@ -28,6 +28,7 @@
 
 enum {
     LXC_CONTAINER_FEATURE_NET = (1 << 0),
+    LXC_CONTAINER_FEATURE_USER = (1 << 1),
 };
 
 #define LXC_DEV_MAJ_MEMORY  1

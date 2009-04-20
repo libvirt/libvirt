@@ -1,3 +1,8 @@
+Mon Apr 20 14:25:41 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/lxc_container.c src/lxc_container.h: cope with kernels
+	  where CLONE_NEWUSER is not supported, patch by Serge Hallyn
+
 Mon Apr 20 12:54:02 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* docs/virsh.pod, virsh.1: fix typo reported by Robert P. J. Day

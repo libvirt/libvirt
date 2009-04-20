@@ -277,7 +277,7 @@ static int lxcContainerChildMountSort(const void *a, const void *b)
 #endif
 
 #ifndef MS_SLAVE
-#define MS_SLAVE		(1<<19)
+#define MS_SLAVE                (1<<19)
 #endif
 
 static int lxcContainerPivotRoot(virDomainFSDefPtr root)
@@ -666,6 +666,11 @@ static int lxcContainerChild( void *data )
     return lxcContainerExecInit(vmDef);
 }
 
+static int userns_supported(void)
+{
+    return lxcContainerAvailable(LXC_CONTAINER_FEATURE_USER) == 0;
+}
+
 /**
  * lxcContainerStart:
  * @driver: pointer to driver structure
@@ -694,7 +699,10 @@ int lxcContainerStart(virDomainDefPtr def,
     }
     stacktop = stack + stacksize;
 
-    flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWUSER|CLONE_NEWIPC|SIGCHLD;
+    flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWIPC|SIGCHLD;
+
+    if (userns_supported())
+        flags |= CLONE_NEWUSER;
 
     if (def->nets != NULL)
         flags |= CLONE_NEWNET;
@@ -719,12 +727,15 @@ static int lxcContainerDummyChild(void *argv ATTRIBUTE_UNUSED)
 
 int lxcContainerAvailable(int features)
 {
-    int flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWUSER|
+    int flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|
         CLONE_NEWIPC|SIGCHLD;
     int cpid;
     char *childStack;
     char *stack;
     int childStatus;
+
+    if (features & LXC_CONTAINER_FEATURE_USER)
+        flags |= CLONE_NEWUSER;
 
     if (features & LXC_CONTAINER_FEATURE_NET)
         flags |= CLONE_NEWNET;
