@@ -34,7 +34,7 @@ the program.
 
 All B<virsh> operations rely upon the libvirt library.
 For any virsh commands to run xend/qemu, or what ever virtual library that libvirt supports.  For this reason you should start xend/qemu as a service when your system first boots using xen/qemu. This can usually be done using the command
-B<service start libvirtd> .
+B<service libvirtd start> .
 
 Most B<virsh> commands require root privileges to run due to the
 communications channels used to talk to the hypervisor.  Running as

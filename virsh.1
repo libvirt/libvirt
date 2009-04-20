@@ -171,7 +171,7 @@ the program.
 .IX Header "NOTES"
 All \fBvirsh\fR operations rely upon the libvirt library.
 For any virsh commands to run xend/qemu, or what ever virtual library that libvirt supports.  For this reason you should start xend/qemu as a service when your system first boots using xen/qemu. This can usually be done using the command
-\&\fBservice start libvirtd\fR .
+\&\fBservice libvirtd start\fR .
 .PP
 Most \fBvirsh\fR commands require root privileges to run due to the
 communications channels used to talk to the hypervisor.  Running as
