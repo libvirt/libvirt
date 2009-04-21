@@ -144,6 +144,10 @@
                 <a href="storage.html">Storage</a>
                 <span>Driver for the storage management APIs</span>
               </li>
+              <li>
+                <a href="drvvbox.html">VirtualBox</a>
+                <span>Driver for VirtualBox</span>
+              </li>
             </ul>
           </li>
           <li>

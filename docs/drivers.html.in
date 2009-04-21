@@ -22,6 +22,7 @@
       <li><strong><a href="drvlxc.html">LXC</a></strong></li>
       <li><strong><a href="drvtest.html">Test</a></strong></li>
       <li><strong><a href="drvopenvz.html">OpenVZ</a></strong></li>
+      <li><strong><a href="drvvbox.html">VirtualBox</a></strong></li>
     </ul>
   </body>
 </html>

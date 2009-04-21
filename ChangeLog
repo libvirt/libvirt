@@ -1,3 +1,9 @@
+Tue Apr 21 14:22:03 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/drvvbox.html.in docs/hvsupport.html.in docs/drivers.html.in
+	  docs/sitemap.html.in docs/*.html: VirtualBox Documentation by
+	  Pritesh Kothari
+
 Mon Apr 20 14:25:41 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/lxc_container.c src/lxc_container.h: cope with kernels
