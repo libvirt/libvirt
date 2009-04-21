@@ -1,3 +1,8 @@
+Tue Apr 21 17:08:57 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: let xend try vcpu pinning operation even
+	  if the domain is not running, patch by Takahashi Tomohiro
+
 Tue Apr 21 15:38:29 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/drvvbox.html.in docs/drvvbox.html: tiny fixes to VirtualBox

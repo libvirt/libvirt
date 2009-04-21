@@ -3776,12 +3776,6 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
         return (-1);
     }
 
-    if (domain->id < 0) {
-        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
-                     _("Domain %s isn't running."), domain->name);
-        return(-1);
-    }
-
     /* from bit map, build character string of mapped CPU numbers */
     for (i = 0; i < maplen; i++) for (j = 0; j < 8; j++)
      if (cpumap[i] & (1 << j)) {
@@ -3834,8 +3828,6 @@ xenDaemonDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
                      __FUNCTION__);
         return (-1);
     }
-    if (domain->id < 0)
-        return(-1);
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?op=vcpuinfo", domain->name);
     if (root == NULL)
