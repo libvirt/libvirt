@@ -137,7 +137,7 @@
         <h2>Connections to VirtualBox driver</h2>
         <p>
     The libvirt VirtualBox driver provides per-user drivers (the "session" instance).
-    The uri of the driver protocol is "vbox". Some example conection URIs for the driver are:
+    The uri of the driver protocol is "vbox". Some example connection URIs for the driver are:
     </p>
         <pre>
     vbox:///session                      (local access to per-user instance)
@@ -187,12 +187,6 @@
             &lt;target dev='fda'/&gt;
         &lt;/disk&gt;
 
-        &lt;!--INTERNAL NETWORK
-        &lt;interface type='internal'&gt;
-            &lt;source name='int_net'/&gt;
-            &lt;model type='am79c970a'/&gt;
-        &lt;/interface&gt; --&gt;
-
         &lt;!--BRIDGE--&gt;
         &lt;interface type='bridge'&gt;
             &lt;source bridge='eth0'/&gt;
@@ -205,13 +199,6 @@
             &lt;mac address='56:16:3e:5d:c7:9e'/&gt;
             &lt;model type='82540eM'/&gt;
         &lt;/interface&gt;
-
-        &lt;!-- HOST ONLY NETWORK
-        &lt;interface type='hostonly'&gt;
-            &lt;source name='vboxnet0'/&gt;
-            &lt;mac address='78:16:3e:4d:c7:9e'/&gt;
-            &lt;model type='82543gc'/&gt;
-        &lt;/interface&gt; --&gt;
 
         &lt;sound model='sb16'/&gt;
 
@@ -234,10 +221,6 @@
             &lt;source path="/tmp/serial.txt"/&gt;
             &lt;target port="1"/&gt;
         &lt;/serial&gt;
-
-        &lt;!-- VRDP Support
-        &lt;graphics type='rdp' port='3389' auth='guest' reuseconnection='yes'
-        multiconnections='yes' authtimeout='4999' listen='10.16.203.214'/&gt; --&gt;
 
         &lt;hostdev mode='subsystem' type='usb'&gt;
             &lt;source&gt;

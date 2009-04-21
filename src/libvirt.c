@@ -3672,7 +3672,8 @@ error:
  *
  * Define a domain, but does not start it.
  * This definition is persistent, until explicitly undefined with
- * virDomainUndefine().
+ * virDomainUndefine(). A previous definition for this domain would be
+ * overriden if it already exists.
  *
  * Returns NULL in case of error, a pointer to the domain otherwise
  */
