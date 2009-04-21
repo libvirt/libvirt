@@ -174,7 +174,8 @@ int virNetworkBridgeInUse(const virNetworkObjListPtr nets,
                           const char *skipname);
 
 char *virNetworkAllocateBridge(virConnectPtr conn,
-                               const virNetworkObjListPtr nets);
+                               const virNetworkObjListPtr nets,
+                               const char *template);
 
 int virNetworkSetBridgeName(virConnectPtr conn,
                             const virNetworkObjListPtr nets,

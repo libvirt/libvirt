@@ -724,6 +724,7 @@ virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
     virNetworkDefPtr def = NULL;
     virNetworkObjPtr net;
     int autostart;
+    char *tmp;
 
     if ((configFile = virNetworkConfigFile(conn, configDir, name)) == NULL)
         goto error;
@@ -747,7 +748,10 @@ virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
     /* Generate a bridge if none is found, but don't check for collisions
      * if a bridge is hardcoded, so the network is at least defined
      */
-    if (!def->bridge && !(def->bridge = virNetworkAllocateBridge(conn, nets)))
+    if (tmp = virNetworkAllocateBridge(conn, nets, def->bridge)) {
+        VIR_FREE(def->bridge);
+        def->bridge = tmp;
+    } else
         goto error;
 
     if (!(net = virNetworkAssignDef(conn, nets, def)))
@@ -875,16 +879,20 @@ int virNetworkBridgeInUse(const virNetworkObjListPtr nets,
 }
 
 char *virNetworkAllocateBridge(virConnectPtr conn,
-                               const virNetworkObjListPtr nets)
+                               const virNetworkObjListPtr nets,
+                               const char *template)
 {
 
     int id = 0;
     char *newname;
 
+    if (!template)
+        template = "virbr%d";
+
     do {
         char try[50];
 
-        snprintf(try, sizeof(try), "virbr%d", id);
+        snprintf(try, sizeof(try), template, id);
 
         if (!virNetworkBridgeInUse(nets, try, NULL)) {
             if (!(newname = strdup(try))) {
@@ -909,7 +917,7 @@ int virNetworkSetBridgeName(virConnectPtr conn,
 
     int ret = -1;
 
-    if (def->bridge) {
+    if (def->bridge && !strstr(def->bridge, "%d")) {
         if (virNetworkBridgeInUse(nets, def->bridge, def->name)) {
             networkReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                                _("bridge name '%s' already in use."),
@@ -918,7 +926,7 @@ int virNetworkSetBridgeName(virConnectPtr conn,
         }
     } else {
         /* Allocate a bridge name */
-        if (!(def->bridge = virNetworkAllocateBridge(conn, nets)))
+        if (!(def->bridge = virNetworkAllocateBridge(conn, nets, def->bridge)))
             goto error;
     }
 

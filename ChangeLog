@@ -1,3 +1,9 @@
+Tue Apr 21 20:58:50 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/network_conf.c src/network_conf.h: add dynamic bridge names
+	  support, patch by Soren Hansen
+	* AUTHORS: add Soren
+
 Tue Apr 21 17:08:57 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: let xend try vcpu pinning operation even
