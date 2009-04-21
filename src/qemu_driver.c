@@ -1389,6 +1389,14 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (qemuPrepareHostDevices(conn, vm->def) < 0)
         goto cleanup;
 
+    if ((ret = virFileDeletePid(driver->stateDir, vm->def->name)) != 0) {
+        virReportSystemError(conn, ret,
+                             _("Cannot remove stale PID file for %s"),
+                             vm->def->name);
+        goto cleanup;
+    }
+
+
     vm->def->id = driver->nextvmid++;
     if (qemudBuildCommandLine(conn, driver, vm->def,
                               qemuCmdFlags, &argv, &progenv,
@@ -1512,6 +1520,8 @@ cleanup:
 static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   struct qemud_driver *driver,
                                   virDomainObjPtr vm) {
+    int ret;
+
     if (!virDomainIsActive(vm))
         return;
 
@@ -1556,6 +1566,12 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
         VIR_WARN(_("Failed to remove domain status for %s"),
                  vm->def->name);
     }
+    if ((ret = virFileDeletePid(driver->stateDir, vm->def->name)) != 0) {
+        char ebuf[1024];
+        VIR_WARN(_("Failed to remove PID file for %s: %s"),
+                 vm->def->name, virStrerror(errno, ebuf, sizeof ebuf));
+    }
+
     vm->pid = -1;
     vm->def->id = -1;
     vm->state = VIR_DOMAIN_SHUTOFF;

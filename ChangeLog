@@ -1,3 +1,8 @@
+Tue Apr 21 20:14:03 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: Remove pidfile when domain shuts down and
+	cleanup stale pidfile before domain startup.
+
 Tue Apr 21 14:39:03 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* po/POTFILES.in: Add vbox_tmpl.c file
