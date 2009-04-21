@@ -434,7 +434,7 @@ static int vboxListDomains(virConnectPtr conn, int *ids, int nids) {
                     if ((state == MachineState_Running) ||
                         (state == MachineState_Paused) ) {
                         ret++;
-                        ids[j++] = i;
+                        ids[j++] = i + 1;
                     }
                 }
             }
@@ -535,6 +535,15 @@ static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id) {
     PRUint32 state;
     int i;
 
+    /* Internal vbox IDs start from 0, the public libvirt ID
+     * starts from 1, so refuse id==0, and adjust the rest*/
+    if (id == 0) {
+        vboxError(conn, VIR_ERR_NO_DOMAIN,
+                  _("no domain with matching id %d"), id);
+        return NULL;
+    }
+    id = id - 1;
+
     if(data->vboxObj) {
         rc = data->vboxObj->vtbl->GetMachines(data->vboxObj, &machineCnt, &machines);
         if (NS_FAILED(rc)) {
@@ -568,7 +577,7 @@ static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id) {
 
                         dom = virGetDomain(conn, machineName, iidl);
                         if (dom)
-                            dom->id = id;
+                            dom->id = id + 1;
 
                         /* Cleanup all the XPCOM allocated stuff here */
                         g_pVBoxFuncs->pfnComUnallocMem(iid);
@@ -645,7 +654,7 @@ static virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn, const unsigned ch
                     if (dom)
                         if ((state == MachineState_Running) ||
                             (state == MachineState_Paused) )
-                            dom->id = i;
+                            dom->id = i + 1;
                 }
 
                 if (iid) {
@@ -725,7 +734,7 @@ static virDomainPtr vboxDomainLookupByName(virConnectPtr conn, const char *name)
                     if (dom)
                         if ((state == MachineState_Running) ||
                             (state == MachineState_Paused) )
-                            dom->id = i;
+                            dom->id = i + 1;
                 }
 
                 if (machineName) {
@@ -2311,7 +2320,7 @@ static int vboxDomainCreate(virDomainPtr dom) {
                                 ret = -1;
                             } else {
                                 /* all ok set the domid */
-                                dom->id = i;
+                                dom->id = i + 1;
                                 ret = 0;
                             }
                         }

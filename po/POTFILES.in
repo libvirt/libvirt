@@ -38,6 +38,7 @@ src/uml_conf.c
 src/uml_driver.c
 src/util.c
 src/uuid.c
+src/vbox/vbox_tmpl.c
 src/virsh.c
 src/virterror.c
 src/xen_inotify.c

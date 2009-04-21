@@ -1,3 +1,9 @@
+Tue Apr 21 14:39:03 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* po/POTFILES.in: Add vbox_tmpl.c file
+	* src/vbox/vbox_tmpl.c: Adjust domain IDs to start from 1
+	instead of 0, refuse domain ID 0.
+
 Tue Apr 21 20:58:50 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/network_conf.c src/network_conf.h: add dynamic bridge names
