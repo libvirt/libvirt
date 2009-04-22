@@ -33,6 +33,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <getopt.h>
+#include <sys/mount.h>
 
 #include "virterror_internal.h"
 #include "logging.h"
@@ -426,6 +427,13 @@ static int lxcControllerCleanupInterfaces(unsigned int nveths,
     return 0;
 }
 
+#ifndef MS_REC
+#define MS_REC          16384
+#endif
+
+#ifndef MS_SLAVE
+#define MS_SLAVE              (1<<19)
+#endif
 
 static int
 lxcControllerRun(virDomainDefPtr def,
@@ -440,6 +448,9 @@ lxcControllerRun(virDomainDefPtr def,
     int containerPty;
     char *containerPtyPath;
     pid_t container = -1;
+    virDomainFSDefPtr root;
+    char *devpts = NULL;
+    char *devptmx = NULL;
 
     if (socketpair(PF_UNIX, SOCK_STREAM, 0, control) < 0) {
         virReportSystemError(NULL, errno, "%s",
@@ -447,13 +458,90 @@ lxcControllerRun(virDomainDefPtr def,
         goto cleanup;
     }
 
-    if (virFileOpenTty(&containerPty,
-                       &containerPtyPath,
-                       0) < 0) {
-        virReportSystemError(NULL, errno, "%s",
-                             _("failed to allocate tty"));
-        goto cleanup;
+    root = virDomainGetRootFilesystem(def);
+
+    /*
+     * If doing a chroot style setup, we need to prepare
+     * a private /dev/pts for the child now, which they
+     * will later move into position.
+     *
+     * This is complex because 'virsh console' needs to
+     * use /dev/pts from the host OS, and the guest OS
+     * needs to use /dev/pts from the guest.
+     *
+     * This means that we (libvirt_lxc) need to see and
+     * use both /dev/pts instances. We're running in the
+     * host OS context though and don't want to expose
+     * the guest OS /dev/pts there.
+     *
+     * Thus we call unshare(CLONE_NS) so that we can see
+     * the guest's new /dev/pts, without it becoming
+     * visible to the host OS. We also put the root FS
+     * into slave mode, just in case it was currently
+     * marked as shared
+     */
+    if (root) {
+        VIR_DEBUG0("Setting up private /dev/pts");
+        if (unshare(CLONE_NEWNS) < 0) {
+            virReportSystemError(NULL, errno, "%s",
+                                 _("cannot unshare mount namespace"));
+            goto cleanup;
+        }
+
+        if (mount("", "/", NULL, MS_SLAVE|MS_REC, NULL) < 0) {
+            virReportSystemError(NULL, errno, "%s",
+                                 _("failed to switch root mount into slave mode"));
+            goto cleanup;
+        }
+
+        if (virAsprintf(&devpts, "%s/dev/pts", root->src) < 0 ||
+            virAsprintf(&devptmx, "%s/dev/pts/ptmx", root->src) < 0) {
+            virReportOOMError(NULL);
+            goto cleanup;
+        }
+
+        if (virFileMakePath(devpts) < 0) {
+            virReportSystemError(NULL, errno,
+                                 _("failed to make path %s"),
+                                 devpts);
+            goto cleanup;
+        }
+
+        VIR_DEBUG("Mouting 'devpts' on %s", devpts);
+        if (mount("devpts", devpts, "devpts", 0, "newinstance,ptmxmode=0666") < 0) {
+            virReportSystemError(NULL, errno,
+                                 _("failed to mount devpts on %s"),
+                                 devpts);
+            goto cleanup;
+        }
+
+        if (access(devptmx, R_OK) < 0) {
+            VIR_WARN0("kernel does not support private devpts, using shared devpts");
+            VIR_FREE(devptmx);
+        }
     }
+
+    if (devptmx) {
+        VIR_DEBUG("Opening tty on private %s", devptmx);
+        if (virFileOpenTtyAt(devptmx,
+                             &containerPty,
+                             &containerPtyPath,
+                             0) < 0) {
+            virReportSystemError(NULL, errno, "%s",
+                                 _("failed to allocate tty"));
+            goto cleanup;
+        }
+    } else {
+        VIR_DEBUG0("Opening tty on shared /dev/ptmx");
+        if (virFileOpenTty(&containerPty,
+                           &containerPtyPath,
+                           0) < 0) {
+            virReportSystemError(NULL, errno, "%s",
+                                 _("failed to allocate tty"));
+            goto cleanup;
+        }
+    }
+
 
     if (lxcSetContainerResources(def) < 0)
         goto cleanup;
@@ -476,6 +564,8 @@ lxcControllerRun(virDomainDefPtr def,
     rc = lxcControllerMain(monitor, client, appPty, containerPty);
 
 cleanup:
+    VIR_FREE(devptmx);
+    VIR_FREE(devpts);
     if (control[0] != -1)
         close(control[0]);
     if (control[1] != -1)

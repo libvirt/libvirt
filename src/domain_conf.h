@@ -636,6 +636,8 @@ const char *virDomainDefDefaultEmulator(virConnectPtr conn,
                                         virDomainDefPtr def,
                                         virCapsPtr caps);
 
+virDomainFSDefPtr virDomainGetRootFilesystem(virDomainDefPtr def);
+
 void virDomainObjLock(virDomainObjPtr obj);
 void virDomainObjUnlock(virDomainObjPtr obj);
 

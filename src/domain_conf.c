@@ -3066,7 +3066,8 @@ static int
 virDomainChrDefFormat(virConnectPtr conn,
                       virBufferPtr buf,
                       virDomainChrDefPtr def,
-                      const char *name)
+                      const char *name,
+                      int flags)
 {
     const char *type = virDomainChrTypeToString(def->type);
 
@@ -3081,6 +3082,7 @@ virDomainChrDefFormat(virConnectPtr conn,
                       name, type);
     if (STREQ(name, "console") &&
         def->type == VIR_DOMAIN_CHR_TYPE_PTY &&
+        !(flags & VIR_DOMAIN_XML_INACTIVE) &&
         def->data.file.path) {
         virBufferEscapeString(buf, " tty='%s'>\n",
                               def->data.file.path);
@@ -3100,7 +3102,7 @@ virDomainChrDefFormat(virConnectPtr conn,
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         if (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
-            def->data.file.path) {
+            (def->data.file.path && !(flags & VIR_DOMAIN_XML_INACTIVE))) {
             virBufferEscapeString(buf, "      <source path='%s'/>\n",
                                   def->data.file.path);
         }
@@ -3481,21 +3483,21 @@ char *virDomainDefFormat(virConnectPtr conn,
             goto cleanup;
 
     for (n = 0 ; n < def->nserials ; n++)
-        if (virDomainChrDefFormat(conn, &buf, def->serials[n], "serial") < 0)
+        if (virDomainChrDefFormat(conn, &buf, def->serials[n], "serial", flags) < 0)
             goto cleanup;
 
     for (n = 0 ; n < def->nparallels ; n++)
-        if (virDomainChrDefFormat(conn, &buf, def->parallels[n], "parallel") < 0)
+        if (virDomainChrDefFormat(conn, &buf, def->parallels[n], "parallel", flags) < 0)
             goto cleanup;
 
     /* If there's a PV console that's preferred.. */
     if (def->console) {
-        if (virDomainChrDefFormat(conn, &buf, def->console, "console") < 0)
+        if (virDomainChrDefFormat(conn, &buf, def->console, "console", flags) < 0)
             goto cleanup;
     } else if (def->nserials != 0) {
         /* ..else for legacy compat duplicate the first serial device as a
          * console */
-        if (virDomainChrDefFormat(conn, &buf, def->serials[0], "console") < 0)
+        if (virDomainChrDefFormat(conn, &buf, def->serials[0], "console", flags) < 0)
             goto cleanup;
     }
 
@@ -3854,6 +3856,21 @@ const char *virDomainDefDefaultEmulator(virConnectPtr conn,
     }
 
     return emulator;
+}
+
+virDomainFSDefPtr virDomainGetRootFilesystem(virDomainDefPtr def)
+{
+    int i;
+
+    for (i = 0 ; i < def->nfss ; i++) {
+        if (def->fss[i]->type != VIR_DOMAIN_FS_TYPE_MOUNT)
+            continue;
+
+        if (STREQ(def->fss[i]->dst, "/"))
+            return def->fss[i];
+    }
+
+    return NULL;
 }
 
 

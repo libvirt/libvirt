@@ -79,6 +79,7 @@ virDomainDiskQSort;
 virDomainFindByID;
 virDomainFindByName;
 virDomainFindByUUID;
+virDomainGetRootFilesystem;
 virDomainGraphicsTypeFromString;
 virDomainGraphicsDefFree;
 virDomainInputDefFree;

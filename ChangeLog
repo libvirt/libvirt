@@ -1,3 +1,20 @@
+Wed Apr 22 15:27:03 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Use private /dev/pts instance for containers (needs 'newinstance'
+	mount flag for devpts since 2.6.29 kernels), fallback to shared
+	instance if not supported
+	* src/domain_conf.h, src/domain_conf.c: Add a convenient
+	routine virDomainGetRootFilesystem()
+	* src/libvirt_private.sym: export virDomainGetRootFilesystem
+	to drivers
+	* src/util.c, src/util.h: Add virFileOpenTtyAt() to allow
+	alternate path to /dev/ptmx to be given
+	* src/lxc_controller.c: Attempt to setup a private /dev/pts
+	instance for the container's stdio I/O
+	* src/lxc_container.h, src/lxc_container.c: Pull in the
+	private /dev/pts instance setup by controller, and create
+	a symlink for /dev/ptmx.
+
 Tue Apr 21 20:14:03 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Remove pidfile when domain shuts down and

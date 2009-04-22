@@ -103,6 +103,10 @@ int virFileBuildPath(const char *dir,
 int virFileOpenTty(int *ttymaster,
                    char **ttyName,
                    int rawmode);
+int virFileOpenTtyAt(const char *ptmx,
+                     int *ttymaster,
+                     char **ttyName,
+                     int rawmode);
 
 char* virFilePid(const char *dir,
                  const char *name);
