@@ -1,3 +1,9 @@
+Wed Apr 22 15:28:03 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/network_driver.c: Explicit check for NULL, to avoid
+	compiler complaining about "assignment treated as truth value
+	in conditional".
+
 Wed Apr 22 15:27:03 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Use private /dev/pts instance for containers (needs 'newinstance'

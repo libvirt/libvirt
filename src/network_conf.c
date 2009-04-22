@@ -748,7 +748,7 @@ virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
     /* Generate a bridge if none is found, but don't check for collisions
      * if a bridge is hardcoded, so the network is at least defined
      */
-    if (tmp = virNetworkAllocateBridge(conn, nets, def->bridge)) {
+    if ((tmp = virNetworkAllocateBridge(conn, nets, def->bridge)) != NULL) {
         VIR_FREE(def->bridge);
         def->bridge = tmp;
     } else
