@@ -1,3 +1,8 @@
+Fri Apr 24 13:19:47 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt_private.syms: Add virDomainHostdevDefFree needed
+	by Xen driver when built as a module.
+
 Fri Apr 24 13:17:47 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix network config in XM driver

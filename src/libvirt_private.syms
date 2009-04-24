@@ -82,6 +82,7 @@ virDomainFindByUUID;
 virDomainGetRootFilesystem;
 virDomainGraphicsTypeFromString;
 virDomainGraphicsDefFree;
+virDomainHostdevDefFree;
 virDomainInputDefFree;
 virDomainLifecycleTypeFromString;
 virDomainLifecycleTypeToString;
