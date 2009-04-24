@@ -2230,6 +2230,35 @@ xdr_remote_node_device_reset_args (XDR *xdrs, remote_node_device_reset_args *obj
 }
 
 bool_t
+xdr_remote_node_device_create_xml_args (XDR *xdrs, remote_node_device_create_xml_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->xml_desc))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_device_create_xml_ret (XDR *xdrs, remote_node_device_create_xml_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_node_device (xdrs, &objp->dev))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_node_device_destroy_args (XDR *xdrs, remote_node_device_destroy_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_domain_events_register_ret (XDR *xdrs, remote_domain_events_register_ret *objp)
 {
 

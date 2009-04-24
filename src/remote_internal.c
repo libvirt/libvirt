@@ -4987,6 +4987,59 @@ done:
 }
 
 
+static virNodeDevicePtr
+remoteNodeDeviceCreateXML(virConnectPtr conn,
+                          const char *xmlDesc,
+                          unsigned int flags)
+{
+    remote_node_device_create_xml_args args;
+    remote_node_device_create_xml_ret ret;
+    virNodeDevicePtr dev = NULL;
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    memset(&ret, 0, sizeof ret);
+    args.xml_desc = (char *)xmlDesc;
+    args.flags = flags;
+
+    if (call(conn, priv, 0, REMOTE_PROC_NODE_DEVICE_CREATE_XML,
+             (xdrproc_t) xdr_remote_node_device_create_xml_args, (char *) &args,
+             (xdrproc_t) xdr_remote_node_device_create_xml_ret, (char *) &ret) == -1)
+        goto done;
+
+    dev = get_nonnull_node_device(conn, ret.dev);
+    xdr_free ((xdrproc_t) xdr_remote_node_device_create_xml_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return dev;
+}
+
+static int
+remoteNodeDeviceDestroy(virNodeDevicePtr dev)
+{
+    int rv = -1;
+    remote_node_device_destroy_args args;
+    struct private_data *priv = dev->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.name = dev->name;
+
+    if (call(dev->conn, priv, 0, REMOTE_PROC_NODE_DEVICE_RESET,
+             (xdrproc_t) xdr_remote_node_device_destroy_args, (char *) &args,
+             (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 /*----------------------------------------------------------------------*/
 
 static int
@@ -6991,6 +7044,8 @@ static virDeviceMonitor dev_monitor = {
     .deviceGetParent = remoteNodeDeviceGetParent,
     .deviceNumOfCaps = remoteNodeDeviceNumOfCaps,
     .deviceListCaps = remoteNodeDeviceListCaps,
+    .deviceCreateXML = remoteNodeDeviceCreateXML,
+    .deviceDestroy = remoteNodeDeviceDestroy
 };
 
 

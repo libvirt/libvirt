@@ -1124,6 +1124,12 @@ int                     virNodeDeviceDettach    (virNodeDevicePtr dev);
 int                     virNodeDeviceReAttach   (virNodeDevicePtr dev);
 int                     virNodeDeviceReset      (virNodeDevicePtr dev);
 
+virNodeDevicePtr        virNodeDeviceCreateXML  (virConnectPtr conn,
+                                                 const char *xmlDesc,
+                                                 unsigned int flags);
+
+int                     virNodeDeviceDestroy    (virNodeDevicePtr dev);
+
 /*
  * Domain Event Notification
  */

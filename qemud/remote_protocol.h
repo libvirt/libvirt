@@ -1255,6 +1255,22 @@ struct remote_node_device_reset_args {
 };
 typedef struct remote_node_device_reset_args remote_node_device_reset_args;
 
+struct remote_node_device_create_xml_args {
+        remote_nonnull_string xml_desc;
+        int flags;
+};
+typedef struct remote_node_device_create_xml_args remote_node_device_create_xml_args;
+
+struct remote_node_device_create_xml_ret {
+        remote_nonnull_node_device dev;
+};
+typedef struct remote_node_device_create_xml_ret remote_node_device_create_xml_ret;
+
+struct remote_node_device_destroy_args {
+        remote_nonnull_string name;
+};
+typedef struct remote_node_device_destroy_args remote_node_device_destroy_args;
+
 struct remote_domain_events_register_ret {
         int cb_registered;
 };
@@ -1397,6 +1413,8 @@ enum remote_procedure {
         REMOTE_PROC_NODE_DEVICE_RESET = 120,
         REMOTE_PROC_DOMAIN_GET_SECURITY_LABEL = 121,
         REMOTE_PROC_NODE_GET_SECURITY_MODEL = 122,
+        REMOTE_PROC_NODE_DEVICE_CREATE_XML = 123,
+        REMOTE_PROC_NODE_DEVICE_DESTROY = 124,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -1629,6 +1647,9 @@ extern  bool_t xdr_remote_node_device_list_caps_ret (XDR *, remote_node_device_l
 extern  bool_t xdr_remote_node_device_dettach_args (XDR *, remote_node_device_dettach_args*);
 extern  bool_t xdr_remote_node_device_re_attach_args (XDR *, remote_node_device_re_attach_args*);
 extern  bool_t xdr_remote_node_device_reset_args (XDR *, remote_node_device_reset_args*);
+extern  bool_t xdr_remote_node_device_create_xml_args (XDR *, remote_node_device_create_xml_args*);
+extern  bool_t xdr_remote_node_device_create_xml_ret (XDR *, remote_node_device_create_xml_ret*);
+extern  bool_t xdr_remote_node_device_destroy_args (XDR *, remote_node_device_destroy_args*);
 extern  bool_t xdr_remote_domain_events_register_ret (XDR *, remote_domain_events_register_ret*);
 extern  bool_t xdr_remote_domain_events_deregister_ret (XDR *, remote_domain_events_deregister_ret*);
 extern  bool_t xdr_remote_domain_event_ret (XDR *, remote_domain_event_ret*);
@@ -1840,6 +1861,9 @@ extern bool_t xdr_remote_node_device_list_caps_ret ();
 extern bool_t xdr_remote_node_device_dettach_args ();
 extern bool_t xdr_remote_node_device_re_attach_args ();
 extern bool_t xdr_remote_node_device_reset_args ();
+extern bool_t xdr_remote_node_device_create_xml_args ();
+extern bool_t xdr_remote_node_device_create_xml_ret ();
+extern bool_t xdr_remote_node_device_destroy_args ();
 extern bool_t xdr_remote_domain_events_register_ret ();
 extern bool_t xdr_remote_domain_events_deregister_ret ();
 extern bool_t xdr_remote_domain_event_ret ();

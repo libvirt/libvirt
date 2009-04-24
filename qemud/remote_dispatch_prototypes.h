@@ -527,6 +527,20 @@ static int remoteDispatchNetworkUndefine(
     remote_error *err,
     remote_network_undefine_args *args,
     void *ret);
+static int remoteDispatchNodeDeviceCreateXml(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_node_device_create_xml_args *args,
+    remote_node_device_create_xml_ret *ret);
+static int remoteDispatchNodeDeviceDestroy(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_node_device_destroy_args *args,
+    void *ret);
 static int remoteDispatchNodeDeviceDettach(
     struct qemud_server *server,
     struct qemud_client *client,

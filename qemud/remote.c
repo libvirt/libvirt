@@ -4323,6 +4323,54 @@ remoteDispatchNodeDeviceReset (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 
+static int
+remoteDispatchNodeDeviceCreateXml(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
+                                  remote_error *rerr,
+                                  remote_node_device_create_xml_args *args,
+                                  remote_node_device_create_xml_ret *ret)
+{
+    virNodeDevicePtr dev;
+
+    dev = virNodeDeviceCreateXML (conn, args->xml_desc, args->flags);
+    if (dev == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    make_nonnull_node_device (&ret->dev, dev);
+    virNodeDeviceFree(dev);
+
+    return 0;
+}
+
+
+static int
+remoteDispatchNodeDeviceDestroy(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                struct qemud_client *client ATTRIBUTE_UNUSED,
+                                virConnectPtr conn,
+                                remote_error *rerr,
+                                remote_node_device_destroy_args *args,
+                                void *ret ATTRIBUTE_UNUSED)
+{
+    virNodeDevicePtr dev;
+
+    dev = virNodeDeviceLookupByName(conn, args->name);
+    if (dev == NULL) {
+        remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
+        return -1;
+    }
+
+    if (virNodeDeviceDestroy(dev) == -1) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /**************************
  * Async Events
  **************************/

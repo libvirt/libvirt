@@ -607,13 +607,23 @@
     .args_filter = (xdrproc_t) xdr_remote_node_device_reset_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
-{   /* DomainGetSecurityLabel => 118 */
+{   /* DomainGetSecurityLabel => 121 */
     .fn = (dispatch_fn) remoteDispatchDomainGetSecurityLabel,
     .args_filter = (xdrproc_t) xdr_remote_domain_get_security_label_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_get_security_label_ret,
 },
-{   /* NodeGetSecurityModel => 119 */
+{   /* NodeGetSecurityModel => 122 */
     .fn = (dispatch_fn) remoteDispatchNodeGetSecurityModel,
     .args_filter = (xdrproc_t) xdr_void,
     .ret_filter = (xdrproc_t) xdr_remote_node_get_security_model_ret,
+},
+{   /* NodeDeviceCreateXml => 123 */
+    .fn = (dispatch_fn) remoteDispatchNodeDeviceCreateXml,
+    .args_filter = (xdrproc_t) xdr_remote_node_device_create_xml_args,
+    .ret_filter = (xdrproc_t) xdr_remote_node_device_create_xml_ret,
+},
+{   /* NodeDeviceDestroy => 124 */
+    .fn = (dispatch_fn) remoteDispatchNodeDeviceDestroy,
+    .args_filter = (xdrproc_t) xdr_remote_node_device_destroy_args,
+    .ret_filter = (xdrproc_t) xdr_void,
 },

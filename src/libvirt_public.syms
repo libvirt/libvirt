@@ -258,4 +258,10 @@ LIBVIRT_0.6.1 {
 	virNodeGetSecurityModel;
 } LIBVIRT_0.6.0;
 
+LIBVIRT_0.6.3 {
+    global:
+	virNodeDeviceCreateXML;
+	virNodeDeviceDestroy;
+} LIBVIRT_0.6.1;
+
 # .... define new API here using predicted next version number ....

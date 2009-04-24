@@ -684,6 +684,11 @@ typedef int (*virDevMonDeviceListCaps)(virNodeDevicePtr dev,
                                        char **const names,
                                        int maxnames);
 
+typedef virNodeDevicePtr (*virDrvNodeDeviceCreateXML)(virConnectPtr conn,
+                                                      const char *xmlDesc,
+                                                      unsigned int flags);
+typedef int (*virDrvNodeDeviceDestroy)(virNodeDevicePtr dev);
+
 /**
  * _virDeviceMonitor:
  *
@@ -702,6 +707,8 @@ struct _virDeviceMonitor {
     virDevMonDeviceGetParent deviceGetParent;
     virDevMonDeviceNumOfCaps deviceNumOfCaps;
     virDevMonDeviceListCaps deviceListCaps;
+    virDrvNodeDeviceCreateXML deviceCreateXML;
+    virDrvNodeDeviceDestroy deviceDestroy;
 };
 
 /*

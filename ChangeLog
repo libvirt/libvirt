@@ -1,3 +1,24 @@
+Fri Apr 24 14:07:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Add virNodeDeviceCreateXML / virNodeDeviceDestroy boilerplate
+	public API and remote protocol impl
+	* include/libvirt/libvirt.h, include/libvirt/libvirt.h.in,
+	 src/libvirt_public.syms: Public API definition of new
+	virNodeDeviceCreateXML and virNodeDeviceDestroy methods
+	* qemud/remote.c: Dispatch code for new APIs
+	* qemud/remote_dispatch_args.h, qemud/remote_dispatch_prototypes.h,
+	qemud/remote_dispatch_ret.h, qemud/remote_dispatch_table.h:
+	Re-generate stubs for dispatcher
+	* qemud/remote_protocol.x: Define wire protocol for node
+	device create / destroy APIs
+	* qemud/remote_protocol.c, qemud/remote_protocol.h:
+	Re-generate based off protocol additions
+	* src/driver.h: Define internal driver API contract for
+	new public APIs
+	* src/libvirt.c: Wire up public API to driver API for
+	virNodeDeviceCreateXML/virNodeDeviceDestroy
+	* src/remote_internal.c: Client for new node device methods
+
 Fri Apr 24 13:19:47 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt_private.syms: Add virDomainHostdevDefFree needed

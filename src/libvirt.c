@@ -7491,6 +7491,103 @@ error:
 }
 
 
+/**
+ * virNodeDeviceCreateXML:
+ * @conn: pointer to the hypervisor connection
+ * @xmlDesc: string containing an XML description of the device to be created
+ * @flags: callers should always pass 0
+ *
+ * Create a new device on the VM host machine, for example, virtual
+ * HBAs created using vport_create.
+ *
+ * Returns a node device object if successful, NULL in case of failure
+ */
+virNodeDevicePtr
+virNodeDeviceCreateXML(virConnectPtr conn,
+                       const char *xmlDesc,
+                       unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=%d", conn, xmlDesc, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return NULL;
+    }
+
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (xmlDesc == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->deviceMonitor &&
+        conn->deviceMonitor->deviceCreateXML) {
+        virNodeDevicePtr dev = conn->deviceMonitor->deviceCreateXML(conn, xmlDesc, flags);
+        if (dev == NULL)
+            goto error;
+        return dev;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return NULL;
+}
+
+
+/**
+ * virNodeDeviceDestroy:
+ * @dev: a device object
+ *
+ * Destroy the device object. The virtual device is removed from the host operating system.
+ * This function may require privileged access
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virNodeDeviceDestroy(virNodeDevicePtr dev)
+{
+    DEBUG("dev=%p", dev);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
+        virLibNodeDeviceError(NULL, VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        return (-1);
+    }
+
+    if (dev->conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(dev->conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (dev->conn->deviceMonitor &&
+        dev->conn->deviceMonitor->deviceDestroy) {
+        int retval = dev->conn->deviceMonitor->deviceDestroy(dev);
+        if (retval < 0) {
+            goto error;
+        }
+
+        return 0;
+    }
+
+    virLibConnError (dev->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(dev->conn);
+    return -1;
+}
+
+
 /*
  * Domain Event Notification
  */

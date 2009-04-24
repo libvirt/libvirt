@@ -1109,6 +1109,19 @@ struct remote_node_device_reset_args {
     remote_nonnull_string name;
 };
 
+struct remote_node_device_create_xml_args {
+    remote_nonnull_string xml_desc;
+    int flags;
+};
+
+struct remote_node_device_create_xml_ret {
+    remote_nonnull_node_device dev;
+};
+
+struct remote_node_device_destroy_args {
+    remote_nonnull_string name;
+};
+
 
 /**
  * Events Register/Deregister:
@@ -1270,7 +1283,10 @@ enum remote_procedure {
     REMOTE_PROC_NODE_DEVICE_RESET = 120,
 
     REMOTE_PROC_DOMAIN_GET_SECURITY_LABEL = 121,
-    REMOTE_PROC_NODE_GET_SECURITY_MODEL = 122
+    REMOTE_PROC_NODE_GET_SECURITY_MODEL = 122,
+
+    REMOTE_PROC_NODE_DEVICE_CREATE_XML = 123,
+    REMOTE_PROC_NODE_DEVICE_DESTROY = 124
 };
 
 /* Custom RPC structure. */
