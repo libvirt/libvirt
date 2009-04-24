@@ -61,12 +61,6 @@
 
 #endif /* PROXY */
 
-#ifdef __sun
-#define DEFAULT_VIF_SCRIPT "vif-vnic"
-#else
-#define DEFAULT_VIF_SCRIPT "vif-bridge"
-#endif
-
 #ifdef WITH_RHEL5_API
 #define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 0
 #define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 2

@@ -1980,6 +1980,7 @@ static int xenXMDomainConfigFormatNet(virConnectPtr conn,
         virBufferVSprintf(&buf, ",bridge=%s", net->data.bridge.brname);
         if (net->data.bridge.ipaddr)
             virBufferVSprintf(&buf, ",ip=%s", net->data.bridge.ipaddr);
+        virBufferVSprintf(&buf, ",script=%s", DEFAULT_VIF_SCRIPT);
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -1990,7 +1991,27 @@ static int xenXMDomainConfigFormatNet(virConnectPtr conn,
         break;
 
     case VIR_DOMAIN_NET_TYPE_NETWORK:
-        break;
+    {
+        virNetworkPtr network = virNetworkLookupByName(conn, net->data.network.name);
+        char *bridge;
+        if (!network) {
+            xenXMError(conn, VIR_ERR_NO_NETWORK, "%s",
+                       net->data.network.name);
+            return -1;
+        }
+        bridge = virNetworkGetBridgeName(network);
+        virNetworkFree(network);
+        if (!bridge) {
+            xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                       _("network %s is not active"),
+                       net->data.network.name);
+            return -1;
+        }
+
+        virBufferVSprintf(&buf, ",bridge=%s", bridge);
+        virBufferVSprintf(&buf, ",script=%s", DEFAULT_VIF_SCRIPT);
+    }
+    break;
 
     default:
         xenXMError(conn, VIR_ERR_INTERNAL_ERROR,

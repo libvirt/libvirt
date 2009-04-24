@@ -21,6 +21,7 @@
     <interface type='bridge'>
       <mac address='00:16:3e:66:94:9c'/>
       <source bridge='br0'/>
+      <script path='vif-bridge'/>
       <target dev='net0'/>
       <model type='e1000'/>
     </interface>

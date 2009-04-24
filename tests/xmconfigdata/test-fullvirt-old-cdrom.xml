@@ -34,6 +34,7 @@
     <interface type='bridge'>
       <mac address='00:16:3e:66:92:9c'/>
       <source bridge='xenbr0'/>
+      <script path='vif-bridge'/>
     </interface>
     <input type='mouse' bus='ps2'/>
     <graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1' passwd='123poi'/>

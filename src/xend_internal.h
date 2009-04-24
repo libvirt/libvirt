@@ -27,6 +27,12 @@
 #include "driver.h"
 #include "buf.h"
 
+#ifdef __sun
+#define DEFAULT_VIF_SCRIPT "vif-vnic"
+#else
+#define DEFAULT_VIF_SCRIPT "vif-bridge"
+#endif
+
 int
 xenDaemonOpen_unix(virConnectPtr conn, const char *path);
 
