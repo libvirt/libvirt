@@ -2568,6 +2568,7 @@
           <ref name='virDomainMemoryPeek'/>
         </word>
         <word name='already'>
+          <ref name='virDomainDefineXML'/>
           <ref name='virDomainDestroy'/>
           <ref name='virNetworkDestroy'/>
         </word>
@@ -3593,6 +3594,7 @@
           <ref name='virDomainCreateLinux'/>
         </word>
         <word name='exists'>
+          <ref name='virDomainDefineXML'/>
           <ref name='virDomainMigrate'/>
         </word>
         <word name='expected'>
@@ -4945,6 +4947,9 @@
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainMemoryPeek'/>
         </word>
+        <word name='overriden'>
+          <ref name='virDomainDefineXML'/>
+        </word>
         <word name='own'>
           <ref name='virResetLastError'/>
         </word>
@@ -5087,6 +5092,9 @@
         <word name='preferably'>
           <ref name='virDomainDefineXML'/>
           <ref name='virNetworkDefineXML'/>
+        </word>
+        <word name='previous'>
+          <ref name='virDomainDefineXML'/>
         </word>
         <word name='previously'>
           <ref name='cpumap'/>
@@ -6632,6 +6640,7 @@
           <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virConnectRef'/>
           <ref name='virDomainBlockPeek'/>
+          <ref name='virDomainDefineXML'/>
           <ref name='virDomainMemoryPeek'/>
           <ref name='virDomainRef'/>
           <ref name='virNetworkRef'/>

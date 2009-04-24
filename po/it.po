@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-04-20 11:21+0200\n"
+"POT-Creation-Date: 2009-04-24 12:05+0200\n"
 "PO-Revision-Date: 2009-02-28 01:31+0100\n"
 "Last-Translator: Guido Grazioli <guido.grazioli@gmail.com>\n"
 "Language-Team:  <it@li.org>\n"
@@ -1361,91 +1361,91 @@ msgstr "modalità di cache del disco %d inaspettato"
 msgid "unexpected filesystem type %d"
 msgstr "tipo di filesystem %d inaspettato"
 
-#: src/domain_conf.c:3001 src/domain_conf.c:3221
+#: src/domain_conf.c:3001 src/domain_conf.c:3223
 #, c-format
 msgid "unexpected net type %d"
 msgstr "tipo di rete %d inaspettato"
 
-#: src/domain_conf.c:3075
+#: src/domain_conf.c:3076
 #, c-format
 msgid "unexpected char type %d"
 msgstr "tipo di carattere %d inaspettato"
 
-#: src/domain_conf.c:3174 src/xend_internal.c:5506
+#: src/domain_conf.c:3176 src/xend_internal.c:5498
 #, c-format
 msgid "unexpected sound model %d"
 msgstr "modello sonoro %d inaspettato"
 
-#: src/domain_conf.c:3194 src/xend_internal.c:5528
+#: src/domain_conf.c:3196 src/xend_internal.c:5520
 #, c-format
 msgid "unexpected input type %d"
 msgstr "tipo di input %d inaspettato"
 
-#: src/domain_conf.c:3199
+#: src/domain_conf.c:3201
 #, c-format
 msgid "unexpected input bus type %d"
 msgstr "tipo di bus di input %d inaspettato"
 
-#: src/domain_conf.c:3284
+#: src/domain_conf.c:3286
 #, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "modo hostdev %d inaspettato"
 
-#: src/domain_conf.c:3291
+#: src/domain_conf.c:3293
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "tipo di hostdev %d inaspettato"
 
-#: src/domain_conf.c:3339
+#: src/domain_conf.c:3341
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "tipo di dominio %d inaspettato"
 
-#: src/domain_conf.c:3424
+#: src/domain_conf.c:3426
 #, c-format
 msgid "unexpected boot device type %d"
 msgstr "tipo di dispositivo di avvio %d inaspettato"
 
-#: src/domain_conf.c:3442
+#: src/domain_conf.c:3444
 #, c-format
 msgid "unexpected feature %d"
 msgstr "caratteristica %d inaspettata"
 
-#: src/domain_conf.c:3587 src/network_conf.c:657
+#: src/domain_conf.c:3589 src/network_conf.c:657
 #, c-format
 msgid "cannot create config directory '%s'"
 msgstr "impossibile creare la cartella di configurazione '%s'"
 
-#: src/domain_conf.c:3596 src/network_conf.c:666
+#: src/domain_conf.c:3598 src/network_conf.c:666
 #, c-format
 msgid "cannot create config file '%s'"
 msgstr "impossibile creare il file di configurazione '%s'"
 
-#: src/domain_conf.c:3604 src/network_conf.c:674
+#: src/domain_conf.c:3606 src/network_conf.c:674
 #, c-format
 msgid "cannot write config file '%s'"
 msgstr "impossibile scrivere il file di configurazione '%s'"
 
-#: src/domain_conf.c:3611 src/network_conf.c:681
+#: src/domain_conf.c:3613 src/network_conf.c:681
 #, c-format
 msgid "cannot save config file '%s'"
 msgstr "impossibile salvare il file di configurazione '%s'"
 
-#: src/domain_conf.c:3712 src/network_conf.c:783
+#: src/domain_conf.c:3714 src/network_conf.c:787
 #, c-format
 msgid "Failed to open dir '%s'"
 msgstr "Impossibile aprire la cartella '%s'"
 
-#: src/domain_conf.c:3766
+#: src/domain_conf.c:3768
 #, c-format
 msgid "cannot remove config %s"
 msgstr "impossibile rimuovere la configurazione %s"
 
-#: src/domain_conf.c:3840
+#: src/domain_conf.c:3842
 msgid "unknown virt type"
 msgstr "tipo di virt sconosciuto"
 
-#: src/domain_conf.c:3851
+#: src/domain_conf.c:3853
 #, c-format
 msgid "no emulator for domain %s os type %s on architecture %s"
 msgstr ""
@@ -1569,7 +1569,7 @@ msgstr "Impossibile leggere il mesaggio di continua contenitore"
 msgid "failed to make root private"
 msgstr "impossibile eseguire il dispositivo %s"
 
-#: src/lxc_container.c:304 src/lxc_container.c:326 src/lxc_container.c:461
+#: src/lxc_container.c:304 src/lxc_container.c:326 src/lxc_container.c:493
 #, c-format
 msgid "failed to create %s"
 msgstr "Impossibile creare %s"
@@ -1585,171 +1585,193 @@ msgid "failed to bind new root %s into tmpfs"
 msgstr "Impossibile legare la nuova root %s"
 
 #: src/lxc_container.c:343
-#, fuzzy
-msgid "failed to chroot into tmpfs"
+#, fuzzy, c-format
+msgid "failed to chroot into %s"
 msgstr "impossibile montare /dev tmpfs"
 
-#: src/lxc_container.c:349
-#, fuzzy
-msgid "failed to chdir into /new on tmpfs"
-msgstr "impossibile montare /dev tmpfs"
-
-#: src/lxc_container.c:357
+#: src/lxc_container.c:351
 #, fuzzy
 msgid "failed to pivot root"
 msgstr "Impossibile fare il pivot di root %s su %s"
 
-#: src/lxc_container.c:367
-#, fuzzy
-msgid "failed to lazily unmount old root"
-msgstr "impossibile montare /proc"
+#: src/lxc_container.c:394
+#, fuzzy, c-format
+msgid "failed to mkdir %s"
+msgstr "impossibile eseguire il dispositivo %s"
 
 #: src/lxc_container.c:400
-msgid "cannot create /dev/"
-msgstr "impossibile creare /dev/"
+#, fuzzy, c-format
+msgid "failed to mount %s on %s"
+msgstr "impossibile montare %s su %s"
 
-#: src/lxc_container.c:405
-msgid "failed to mount /dev tmpfs"
-msgstr "impossibile montare /dev tmpfs"
-
-#: src/lxc_container.c:416
+#: src/lxc_container.c:408
 msgid "cannot create /dev/pts"
 msgstr "impossibile creare /dev/pts"
 
-#: src/lxc_container.c:421
+#: src/lxc_container.c:415
 #, fuzzy
 msgid "failed to mount /dev/pts in container"
 msgstr "impossibile spostare /dev/pts nel contenitore"
 
-#: src/lxc_container.c:431
+#: src/lxc_container.c:446
 #, c-format
 msgid "failed to make device %s"
 msgstr "impossibile eseguire il dispositivo %s"
 
-#: src/lxc_container.c:469 src/lxc_container.c:581
+#: src/lxc_container.c:455
+#, fuzzy
+msgid "failed to create symlink /dev/ptmx to /dev/pts/ptmx"
+msgstr "Impossibile creare il symlink '%s' verso '%s'"
+
+#: src/lxc_container.c:463
+#, fuzzy
+msgid "failed to make device /dev/ptmx"
+msgstr "impossibile eseguire il dispositivo %s"
+
+#: src/lxc_container.c:501 src/lxc_container.c:616
 #, c-format
 msgid "failed to mount %s at %s"
 msgstr "impossibile montare %s su %s"
 
-#: src/lxc_container.c:492
+#: src/lxc_container.c:524
 msgid "failed to read /proc/mounts"
 msgstr "impossibile leggere /proc/mounts"
 
-#: src/lxc_container.c:518
+#: src/lxc_container.c:552
 #, c-format
 msgid "failed to unmount '%s'"
 msgstr "impossibile smontare '%s'"
 
-#: src/lxc_container.c:543 src/lxc_container.c:591
-msgid "failed to mount /proc"
-msgstr "impossibile montare /proc"
-
-#: src/lxc_container.c:567
+#: src/lxc_container.c:602
 #, fuzzy
 msgid "failed to make / slave"
 msgstr "impossibile eseguire il dispositivo %s"
 
-#: src/lxc_container.c:636
+#: src/lxc_container.c:626
+msgid "failed to mount /proc"
+msgstr "impossibile montare /proc"
+
+#: src/lxc_container.c:664
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() ha passato una definizione vm non valida"
 
-#: src/lxc_container.c:646
-#, c-format
-msgid "failed to open %s"
+#: src/lxc_container.c:685
+#, fuzzy, c-format
+msgid "failed to open tty %s"
 msgstr "impossibile aprire %s"
 
-#: src/lxc_container.c:708
+#: src/lxc_container.c:759
 msgid "failed to run clone container"
 msgstr "impossibile eseguire il contenitore clone"
 
-#: src/lxc_controller.c:85
+#: src/lxc_controller.c:86
 #, c-format
 msgid "Unable to create cgroup for %s\n"
 msgstr "Impossibile creare il cgroup per %s\n"
 
-#: src/lxc_controller.c:115
+#: src/lxc_controller.c:116
 msgid "Failed to set lxc resources"
 msgstr "Impossibile impostare le risorse lxc"
 
-#: src/lxc_controller.c:141
+#: src/lxc_controller.c:142
 #, c-format
 msgid "failed to create server socket '%s'"
 msgstr "impossibile creare il server socket '%s'"
 
-#: src/lxc_controller.c:153
+#: src/lxc_controller.c:154
 #, c-format
 msgid "failed to bind server socket '%s'"
 msgstr "impossibile collegarsi al server socket '%s'"
 
-#: src/lxc_controller.c:159
+#: src/lxc_controller.c:160
 #, c-format
 msgid "failed to listen server socket %s"
 msgstr "impossibile attendere connessioni sul server socket %s"
 
-#: src/lxc_controller.c:193
+#: src/lxc_controller.c:194
 #, c-format
 msgid "read of fd %d failed"
 msgstr "lettura dal fd %d fallita"
 
-#: src/lxc_controller.c:200
+#: src/lxc_controller.c:201
 #, c-format
 msgid "write to fd %d failed"
 msgstr "scrittura sul fd %d fallita"
 
-#: src/lxc_controller.c:252
+#: src/lxc_controller.c:253
 msgid "epoll_create(2) failed"
 msgstr "epoll_create(2) fallita"
 
-#: src/lxc_controller.c:262
+#: src/lxc_controller.c:263
 msgid "epoll_ctl(appPty) failed"
 msgstr "epoll_ctl(appPty) fallita"
 
-#: src/lxc_controller.c:268 src/lxc_controller.c:276 src/lxc_controller.c:284
-#: src/lxc_controller.c:304 src/lxc_controller.c:310
+#: src/lxc_controller.c:269 src/lxc_controller.c:277 src/lxc_controller.c:285
+#: src/lxc_controller.c:305 src/lxc_controller.c:311
 msgid "epoll_ctl(contPty) failed"
 msgstr "epoll_ctl(contPty) fallita"
 
-#: src/lxc_controller.c:327
+#: src/lxc_controller.c:328
 #, c-format
 msgid "error event %d"
 msgstr "evento errore %d"
 
-#: src/lxc_controller.c:348
+#: src/lxc_controller.c:349
 msgid "epoll_wait() failed"
 msgstr "epoll_wait() fallito"
 
-#: src/lxc_controller.c:398
+#: src/lxc_controller.c:399
 #, c-format
 msgid "failed to move interface %s to ns %d"
 msgstr "Impossibile spostare l'interfaccia %s a ns %d"
 
-#: src/lxc_controller.c:423
+#: src/lxc_controller.c:424
 #, c-format
 msgid "failed to delete veth: %s"
 msgstr "Impossibile eliminare veth: %s"
 
-#: src/lxc_controller.c:446
+#: src/lxc_controller.c:457
 msgid "sockpair failed"
 msgstr "sockpair fallita"
 
-#: src/lxc_controller.c:454 src/lxc_driver.c:876
+#: src/lxc_controller.c:487
+#, fuzzy
+msgid "cannot unshare mount namespace"
+msgstr "impossibile analizzare il prodotto %s"
+
+#: src/lxc_controller.c:493
+#, fuzzy
+msgid "failed to switch root mount into slave mode"
+msgstr "impossibile montare /dev tmpfs"
+
+#: src/lxc_controller.c:505
+#, fuzzy, c-format
+msgid "failed to make path %s"
+msgstr "impossibile eseguire il dispositivo %s"
+
+#: src/lxc_controller.c:513
+#, fuzzy, c-format
+msgid "failed to mount devpts on %s"
+msgstr "impossibile montare %s su %s"
+
+#: src/lxc_controller.c:531 src/lxc_controller.c:540 src/lxc_driver.c:876
 msgid "failed to allocate tty"
 msgstr "Impossibile allocare tty"
 
-#: src/lxc_controller.c:622
+#: src/lxc_controller.c:712
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
 msgstr "Impossibile scrivere sul file pid '%s/%s.pid'"
 
-#: src/lxc_controller.c:636
+#: src/lxc_controller.c:726
 msgid "Unable to change to root dir"
 msgstr "Impossibile cambiare la root dir"
 
-#: src/lxc_controller.c:642
+#: src/lxc_controller.c:732
 msgid "Unable to become session leader"
 msgstr "impossibile diventare il leader della sessione"
 
-#: src/lxc_controller.c:650
+#: src/lxc_controller.c:740
 msgid "Failed connection from LXC driver"
 msgstr "Impossibile connettersi dal driver LXC"
 
@@ -1767,12 +1789,12 @@ msgstr "Non è presente il supporto NETNS di sistema"
 msgid "no domain with matching uuid"
 msgstr "non ci sono domini con uuid corrispondente"
 
-#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3491
+#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3507
 #: src/uml_driver.c:1632
 msgid "cannot delete active domain"
 msgstr "impossibile cancellare il dominio attivo"
 
-#: src/lxc_driver.c:339 src/qemu_driver.c:3497 src/uml_driver.c:1638
+#: src/lxc_driver.c:339 src/qemu_driver.c:3513 src/uml_driver.c:1638
 msgid "cannot undefine transient domain"
 msgstr "impossibile rimuovere la definizione di un dominio transitorio"
 
@@ -1880,7 +1902,7 @@ msgstr "parametro non valido '%s'"
 msgid "Invalid parameter count"
 msgstr "Parametro count non valido"
 
-#: src/lxc_driver.c:1414 src/qemu_driver.c:2077 src/qemu_driver.c:4670
+#: src/lxc_driver.c:1414 src/qemu_driver.c:2093 src/qemu_driver.c:4686
 msgid "failed to determine host name"
 msgstr "impossibile determinare il nome host"
 
@@ -1913,24 +1935,24 @@ msgstr "Forwarding richiesto ma nessun indirizzo/maschera di rete IPv4 fornita"
 msgid "unknown forwarding type '%s'"
 msgstr "tipo di forwarding sconosciuto '%s'"
 
-#: src/network_conf.c:741
+#: src/network_conf.c:742
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr ""
 "Il nome del file di configurazione di rete '%s' non coincide col nome della "
 "rete '%s'"
 
-#: src/network_conf.c:831
+#: src/network_conf.c:835
 #, c-format
 msgid "cannot remove config file '%s'"
 msgstr "impossibile rimuovere il file di configurazione '%s'"
 
-#: src/network_conf.c:901
+#: src/network_conf.c:909
 #, c-format
 msgid "Bridge generation exceeded max id %d"
 msgstr ""
 
-#: src/network_conf.c:915
+#: src/network_conf.c:923
 #, fuzzy, c-format
 msgid "bridge name '%s' already in use."
 msgstr "il dominio '%s' è già esistente"
@@ -2106,7 +2128,7 @@ msgstr "impossibile creare la cartella di avvio automatico '%s'"
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "Impossibile creare il symlink '%s' verso '%s'"
 
-#: src/network_driver.c:1390 src/qemu_driver.c:4152 src/storage_driver.c:979
+#: src/network_driver.c:1390 src/qemu_driver.c:4168 src/storage_driver.c:979
 #: src/uml_driver.c:1733
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -2570,7 +2592,7 @@ msgstr "il dominio non è in uno stato di interruzione"
 msgid "Could not read container config"
 msgstr "Impossibile leggere la configurazione del contenitore"
 
-#: src/openvz_driver.c:1008 src/qemu_driver.c:1847
+#: src/openvz_driver.c:1008 src/qemu_driver.c:1863
 #, c-format
 msgid "unknown type '%s'"
 msgstr "tipo '%s' sconosciuto"
@@ -2897,7 +2919,7 @@ msgstr "Impossibile impostare il flag close-on-exec del monitor"
 msgid "Unable to put monitor into non-blocking mode"
 msgstr "Impossibile impostare il monitor in modalità non-blocking"
 
-#: src/qemu_driver.c:968 src/qemu_driver.c:1533
+#: src/qemu_driver.c:968 src/qemu_driver.c:1543
 #, c-format
 msgid "Unable to close logfile: %s\n"
 msgstr "Impossibile chiudere il file di log %s\n"
@@ -2917,7 +2939,7 @@ msgstr ""
 msgid "failed to set CPU affinity"
 msgstr "impossibile impostare l'affinità della CPU"
 
-#: src/qemu_driver.c:1121 src/qemu_driver.c:2261
+#: src/qemu_driver.c:1121 src/qemu_driver.c:2277
 msgid "resume operation failed"
 msgstr "operazione di ripristino fallita"
 
@@ -2948,197 +2970,208 @@ msgstr "impossibile creare la directory di log %s"
 msgid "Cannot find QEMU binary %s"
 msgstr "Impossibile trovare il binario di QEMU %s"
 
-#: src/qemu_driver.c:1384 src/qemu_driver.c:3603
+#: src/qemu_driver.c:1384 src/qemu_driver.c:3619
 #, c-format
 msgid "Cannot determine QEMU argv syntax %s"
 msgstr "Impossibile determinare la sintassi dell'argv QEMU %s"
 
-#: src/qemu_driver.c:1401 src/qemu_driver.c:1404 src/uml_driver.c:798
+#: src/qemu_driver.c:1394
+#, fuzzy, c-format
+msgid "Cannot remove stale PID file for %s"
+msgstr "impossibile rimuovere la configurazione per %s"
+
+#: src/qemu_driver.c:1409 src/qemu_driver.c:1412 src/uml_driver.c:798
 #: src/uml_driver.c:801
 #, c-format
 msgid "Unable to write envv to logfile: %s\n"
 msgstr "Impossibile scrivere envv sul file di log %s\n"
 
-#: src/qemu_driver.c:1411 src/qemu_driver.c:1414 src/qemu_driver.c:1419
+#: src/qemu_driver.c:1419 src/qemu_driver.c:1422 src/qemu_driver.c:1427
 #: src/uml_driver.c:808 src/uml_driver.c:811 src/uml_driver.c:816
 #, c-format
 msgid "Unable to write argv to logfile: %s\n"
 msgstr "Impossibile scrivere argv sul file di log: %s\n"
 
-#: src/qemu_driver.c:1423
+#: src/qemu_driver.c:1431
 #, c-format
 msgid "Unable to seek to end of logfile: %s\n"
 msgstr "Impossibile scorrere fino alla fine del file di log %s\n"
 
-#: src/qemu_driver.c:1451
+#: src/qemu_driver.c:1459
 #, c-format
 msgid "Domain %s didn't show up\n"
 msgstr "Dominio %s non mostrato\n"
 
-#: src/qemu_driver.c:1456
+#: src/qemu_driver.c:1464
 msgid "Unable to daemonize QEMU process"
 msgstr "Impossibile demonizzare il processo QEMU"
 
-#: src/qemu_driver.c:1518
+#: src/qemu_driver.c:1528
 #, c-format
 msgid "Shutting down VM '%s'\n"
 msgstr "Chiusura VM '%s'\n"
 
-#: src/qemu_driver.c:1523
+#: src/qemu_driver.c:1533
 #, c-format
 msgid "Failed to send SIGTERM to %s (%d)"
 msgstr "Impossibile inviare SIGTERM a %s (%d)"
 
-#: src/qemu_driver.c:1556
+#: src/qemu_driver.c:1566
 #, c-format
 msgid "Failed to remove domain status for %s"
 msgstr "Impossibile rimuovere lo stato del dominio per %s"
 
-#: src/qemu_driver.c:1603
+#: src/qemu_driver.c:1571
+#, fuzzy, c-format
+msgid "Failed to remove PID file for %s: %s"
+msgstr "Impossibile creare il volume da %s"
+
+#: src/qemu_driver.c:1619
 #, c-format
 msgid "unhandled fd event %d for %s"
 msgstr "evento fd non gestito %d per %s"
 
-#: src/qemu_driver.c:1820
+#: src/qemu_driver.c:1836
 #, c-format
 msgid "Unable to open %s"
 msgstr "Impossibile aprire %s"
 
-#: src/qemu_driver.c:1883 src/qemu_driver.c:1920 src/uml_driver.c:974
+#: src/qemu_driver.c:1899 src/qemu_driver.c:1936 src/uml_driver.c:974
 #: src/uml_driver.c:1005
 msgid "NUMA not supported on this host"
 msgstr "NUMA non supportato su questo host"
 
-#: src/qemu_driver.c:1889
+#: src/qemu_driver.c:1905
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr ""
 
-#: src/qemu_driver.c:1901 src/qemu_driver.c:1928 src/uml_driver.c:985
+#: src/qemu_driver.c:1917 src/qemu_driver.c:1944 src/uml_driver.c:985
 #: src/uml_driver.c:1013
 msgid "Failed to query NUMA free memory"
 msgstr "Impossibile interrogare la memoria disponibile di NUMA"
 
-#: src/qemu_driver.c:1988 src/uml_driver.c:1270 src/uml_driver.c:1300
+#: src/qemu_driver.c:2004 src/uml_driver.c:1270 src/uml_driver.c:1300
+#: src/vbox/vbox_tmpl.c:542
 #, c-format
 msgid "no domain with matching id %d"
 msgstr "non ci sono domini con id corrispondente: %d"
 
-#: src/qemu_driver.c:2015 src/qemu_driver.c:2197 src/qemu_driver.c:2250
-#: src/qemu_driver.c:2301 src/qemu_driver.c:2332 src/qemu_driver.c:2369
-#: src/qemu_driver.c:2396 src/qemu_driver.c:2421 src/qemu_driver.c:2544
-#: src/qemu_driver.c:2585 src/qemu_driver.c:2737 src/qemu_driver.c:2872
-#: src/qemu_driver.c:3066 src/qemu_driver.c:3100 src/qemu_driver.c:3314
-#: src/qemu_driver.c:3393 src/qemu_driver.c:3485 src/qemu_driver.c:3881
-#: src/qemu_driver.c:4033 src/qemu_driver.c:4087 src/qemu_driver.c:4115
-#: src/qemu_driver.c:4195 src/qemu_driver.c:4333 src/qemu_driver.c:4399
-#: src/qemu_driver.c:4473 src/qemu_driver.c:4806 src/uml_driver.c:1358
+#: src/qemu_driver.c:2031 src/qemu_driver.c:2213 src/qemu_driver.c:2266
+#: src/qemu_driver.c:2317 src/qemu_driver.c:2348 src/qemu_driver.c:2385
+#: src/qemu_driver.c:2412 src/qemu_driver.c:2437 src/qemu_driver.c:2560
+#: src/qemu_driver.c:2601 src/qemu_driver.c:2753 src/qemu_driver.c:2888
+#: src/qemu_driver.c:3082 src/qemu_driver.c:3116 src/qemu_driver.c:3330
+#: src/qemu_driver.c:3409 src/qemu_driver.c:3501 src/qemu_driver.c:3897
+#: src/qemu_driver.c:4049 src/qemu_driver.c:4103 src/qemu_driver.c:4131
+#: src/qemu_driver.c:4211 src/qemu_driver.c:4349 src/qemu_driver.c:4415
+#: src/qemu_driver.c:4489 src/qemu_driver.c:4822 src/uml_driver.c:1358
 #: src/uml_driver.c:1383 src/uml_driver.c:1416
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "non ci sono domini con uuid corrispondente a '%s'"
 
-#: src/qemu_driver.c:2040 src/qemu_driver.c:4935
+#: src/qemu_driver.c:2056 src/qemu_driver.c:4951
 #, fuzzy, c-format
 msgid "no domain with matching name '%s'"
 msgstr "non ci sono domini con nome corrispondente %s"
 
-#: src/qemu_driver.c:2135 src/uml_driver.c:1219
+#: src/qemu_driver.c:2151 src/uml_driver.c:1219
 #, c-format
 msgid "domain '%s' is already defined"
 msgstr "il dominio '%s' è già esistente"
 
-#: src/qemu_driver.c:2145 src/uml_driver.c:1229
+#: src/qemu_driver.c:2161 src/uml_driver.c:1229
 #, c-format
 msgid "domain with uuid '%s' is already defined"
 msgstr "il dominio con uuid '%s' è già definito"
 
-#: src/qemu_driver.c:2202 src/qemu_driver.c:2255 src/qemu_driver.c:2743
-#: src/qemu_driver.c:4200 src/qemu_driver.c:4339 src/qemu_driver.c:4485
-#: src/qemu_driver.c:4812
+#: src/qemu_driver.c:2218 src/qemu_driver.c:2271 src/qemu_driver.c:2759
+#: src/qemu_driver.c:4216 src/qemu_driver.c:4355 src/qemu_driver.c:4501
+#: src/qemu_driver.c:4828
 msgid "domain is not running"
 msgstr "Il dominio non è in esecuzione"
 
-#: src/qemu_driver.c:2208 src/qemu_driver.c:2752
+#: src/qemu_driver.c:2224 src/qemu_driver.c:2768
 msgid "suspend operation failed"
 msgstr "operazione di sospensione fallita"
 
-#: src/qemu_driver.c:2307 src/uml_driver.c:1277
+#: src/qemu_driver.c:2323 src/uml_driver.c:1277
 msgid "shutdown operation failed"
 msgstr "operazione di interruzione fallita"
 
-#: src/qemu_driver.c:2427 src/uml_driver.c:1389
+#: src/qemu_driver.c:2443 src/uml_driver.c:1389
 msgid "cannot set max memory lower than current memory"
 msgstr ""
 "impossibile impostare la memoria massima al di sotto della memoria corrente"
 
-#: src/qemu_driver.c:2460
+#: src/qemu_driver.c:2476
 #, fuzzy
 msgid "could not query memory balloon allocation"
 msgstr "modifica allocazione della memoria"
 
-#: src/qemu_driver.c:2471
+#: src/qemu_driver.c:2487
 #, fuzzy
 msgid "could not parse memory balloon allocation"
 msgstr "errore di parsing dell'URI di connessione"
 
-#: src/qemu_driver.c:2510
+#: src/qemu_driver.c:2526
 #, fuzzy
 msgid "could not balloon memory allocation"
 msgstr "modifica allocazione della memoria"
 
-#: src/qemu_driver.c:2550 src/uml_driver.c:1428
+#: src/qemu_driver.c:2566 src/uml_driver.c:1428
 msgid "cannot set memory higher than max memory"
 msgstr "impossibile impostare la memoria al di sopra della memoria massima"
 
-#: src/qemu_driver.c:2558 src/uml_driver.c:1422
+#: src/qemu_driver.c:2574 src/uml_driver.c:1422
 msgid "cannot set memory of an active domain"
 msgstr "impossibile impostare la memoria di un dominio attivo"
 
-#: src/qemu_driver.c:2764
+#: src/qemu_driver.c:2780
 msgid "failed to get domain xml"
 msgstr "impossibile ottenere l'xml del dominio"
 
-#: src/qemu_driver.c:2772
+#: src/qemu_driver.c:2788
 #, c-format
 msgid "failed to create '%s'"
 msgstr "Impossibile creare '%s'"
 
-#: src/qemu_driver.c:2778
+#: src/qemu_driver.c:2794
 msgid "failed to write save header"
 msgstr "Impossibile scrivere l'header di salvataggio"
 
-#: src/qemu_driver.c:2784
+#: src/qemu_driver.c:2800
 msgid "failed to write xml"
 msgstr "Impossibile scrivere su xml"
 
-#: src/qemu_driver.c:2790
+#: src/qemu_driver.c:2806
 #, c-format
 msgid "unable to save file %s"
 msgstr "impossibile salvare il file %s"
 
-#: src/qemu_driver.c:2812 src/qemu_driver.c:4855
+#: src/qemu_driver.c:2828 src/qemu_driver.c:4871
 msgid "migrate operation failed"
 msgstr "operazione di migrazione fallita"
 
-#: src/qemu_driver.c:2823
+#: src/qemu_driver.c:2839
 msgid "'migrate' not supported by this qemu"
 msgstr "'migrate' non è supportato da questo qemu"
 
-#: src/qemu_driver.c:2878
+#: src/qemu_driver.c:2894
 msgid "cannot change vcpu count of an active domain"
 msgstr "impossibile modificare il totale delle vcpu di un dominio attivo"
 
-#: src/qemu_driver.c:2884 src/qemu_driver.c:3072 src/qemu_driver.c:3106
+#: src/qemu_driver.c:2900 src/qemu_driver.c:3088 src/qemu_driver.c:3122
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "tipo di virt sconosciuto nella definizione del dominio '%d'"
 
-#: src/qemu_driver.c:2891
+#: src/qemu_driver.c:2907
 msgid "could not determine max vcpus for the domain"
 msgstr "impossibile determinare le vcpu massime per il dominio"
 
-#: src/qemu_driver.c:2897
+#: src/qemu_driver.c:2913
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
@@ -3146,104 +3179,104 @@ msgstr ""
 "le vcpu richieste sono maggiori delle vcpu massime permesse per il dominio: %"
 "d > %d"
 
-#: src/qemu_driver.c:2931 src/qemu_driver.c:2992
+#: src/qemu_driver.c:2947 src/qemu_driver.c:3008
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "impossibile collegare le vcpu su di un dominio inattivo"
 
-#: src/qemu_driver.c:2937
+#: src/qemu_driver.c:2953
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr "numero vcpu fuori dalla gamma %d > %d"
 
-#: src/qemu_driver.c:2958
+#: src/qemu_driver.c:2974
 msgid "cannot set affinity"
 msgstr "impossibile impostare l'affinità"
 
-#: src/qemu_driver.c:2963
+#: src/qemu_driver.c:2979
 msgid "cpu affinity is not supported"
 msgstr "affinità cpu non supportata"
 
-#: src/qemu_driver.c:3027
+#: src/qemu_driver.c:3043
 msgid "cannot get affinity"
 msgstr "Impossibile ottenere l'affinità"
 
-#: src/qemu_driver.c:3037
+#: src/qemu_driver.c:3053
 msgid "cpu affinity is not available"
 msgstr "affinità cpu non disponibile"
 
-#: src/qemu_driver.c:3129
+#: src/qemu_driver.c:3145
 #, fuzzy
 msgid "Failed to get security label"
 msgstr "impossibile ottenere l'ora attuale"
 
-#: src/qemu_driver.c:3154
+#: src/qemu_driver.c:3170
 #, fuzzy, c-format
 msgid "security model string exceeds max %d bytes"
 msgstr "il conteggio vCPU eccede il valore massimo: %d > %d"
 
-#: src/qemu_driver.c:3163
+#: src/qemu_driver.c:3179
 #, fuzzy, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "il conteggio vCPU eccede il valore massimo: %d > %d"
 
-#: src/qemu_driver.c:3187
+#: src/qemu_driver.c:3203
 msgid "cannot read domain image"
 msgstr "impossibile leggere l'immagine del dominio"
 
-#: src/qemu_driver.c:3193
+#: src/qemu_driver.c:3209
 msgid "failed to read qemu header"
 msgstr "impossibile leggere l'intestazione qemu"
 
-#: src/qemu_driver.c:3199
+#: src/qemu_driver.c:3215
 msgid "image magic is incorrect"
 msgstr "image magic non è corretto"
 
-#: src/qemu_driver.c:3205
+#: src/qemu_driver.c:3221
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "versione immagine non supportata (%d > %d)"
 
-#: src/qemu_driver.c:3217
+#: src/qemu_driver.c:3233
 msgid "failed to read XML"
 msgstr "impossibile leggere XML"
 
-#: src/qemu_driver.c:3225 src/qemu_driver.c:4705
+#: src/qemu_driver.c:3241 src/qemu_driver.c:4721
 msgid "failed to parse XML"
 msgstr "impossibile analizzare XML"
 
-#: src/qemu_driver.c:3236
+#: src/qemu_driver.c:3252
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "il dominio è già attivo come '%s'"
 
-#: src/qemu_driver.c:3247 src/qemu_driver.c:4741
+#: src/qemu_driver.c:3263 src/qemu_driver.c:4757
 msgid "failed to assign new VM"
 msgstr "impossibile assegnare una nuova VM"
 
-#: src/qemu_driver.c:3258
+#: src/qemu_driver.c:3274
 msgid "failed to start VM"
 msgstr "impossibile avviare la VM"
 
-#: src/qemu_driver.c:3276
+#: src/qemu_driver.c:3292
 msgid "failed to resume domain"
 msgstr "impossibile ripristinare il dominio"
 
-#: src/qemu_driver.c:3532
+#: src/qemu_driver.c:3548
 #, c-format
 msgid "cannot convert disk '%s' to bus/device index"
 msgstr "impossibile convertire il disco '%s' in indice bus/dispositivo"
 
-#: src/qemu_driver.c:3558
+#: src/qemu_driver.c:3574
 #, c-format
 msgid "Unsupported disk name mapping for bus '%s'"
 msgstr "Mappatura del nome disco per il bus '%s' non supportata"
 
-#: src/qemu_driver.c:3593
+#: src/qemu_driver.c:3609
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "Nessun dispositivo con bus '%s' e target '%s'"
 
-#: src/qemu_driver.c:3620
+#: src/qemu_driver.c:3636
 #, c-format
 msgid ""
 "Emulator version does not support removable media for device '%s' and target "
@@ -3252,212 +3285,212 @@ msgstr ""
 "La versione di emulatore non supporta i supporti rimovibili per il "
 "dispositivo '%s' e il target '%s'"
 
-#: src/qemu_driver.c:3657
+#: src/qemu_driver.c:3673
 msgid "could not change cdrom media"
 msgstr "impossibile cambiare il supporto cdrom"
 
-#: src/qemu_driver.c:3668
+#: src/qemu_driver.c:3684
 #, c-format
 msgid "changing cdrom media failed: %s"
 msgstr "impossibile modificare il supporto cdrom: %s"
 
-#: src/qemu_driver.c:3695 src/qemu_driver.c:3764
+#: src/qemu_driver.c:3711 src/qemu_driver.c:3780
 #, c-format
 msgid "target %s already exists"
 msgstr "il target %s esiste già"
 
-#: src/qemu_driver.c:3721
+#: src/qemu_driver.c:3737
 #, c-format
 msgid "cannot attach %s disk"
 msgstr "impossibile collegare il disco %s"
 
-#: src/qemu_driver.c:3735
+#: src/qemu_driver.c:3751
 msgid "Unable to parse slot number\n"
 msgstr "Impossibile analizzare il numero slot\n"
 
-#: src/qemu_driver.c:3738
+#: src/qemu_driver.c:3754
 #, c-format
 msgid "adding %s disk failed"
 msgstr "impossibile aggiungere il disco %s"
 
-#: src/qemu_driver.c:3789
+#: src/qemu_driver.c:3805
 msgid "cannot attach usb disk"
 msgstr "impossibile collegare il disco usb"
 
-#: src/qemu_driver.c:3800
+#: src/qemu_driver.c:3816
 msgid "adding usb disk failed"
 msgstr "aggiunta del disco usb fallita"
 
-#: src/qemu_driver.c:3843
+#: src/qemu_driver.c:3859
 msgid "cannot attach usb device"
 msgstr "impossibile collegare il dispositivo usb"
 
-#: src/qemu_driver.c:3854
+#: src/qemu_driver.c:3870
 msgid "adding usb device failed"
 msgstr "aggiunta del dispositivo usb fallita"
 
-#: src/qemu_driver.c:3888
+#: src/qemu_driver.c:3904
 msgid "cannot attach device on inactive domain"
 msgstr "impossibile collegare il dispositivo ad un dominio inattivo"
 
-#: src/qemu_driver.c:3914
+#: src/qemu_driver.c:3930
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr ""
 
-#: src/qemu_driver.c:3924
+#: src/qemu_driver.c:3940
 #, fuzzy, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "questo tipo di dispositivo a disco non può essere collegato"
 
-#: src/qemu_driver.c:3934
+#: src/qemu_driver.c:3950
 #, fuzzy, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "questo tipo di dispositivo non può essere collegato"
 
-#: src/qemu_driver.c:3967
+#: src/qemu_driver.c:3983
 #, c-format
 msgid "disk %s not found"
 msgstr "disco %s non trovato"
 
-#: src/qemu_driver.c:3973
+#: src/qemu_driver.c:3989
 #, c-format
 msgid "disk %s cannot be detached - invalid slot number %d"
 msgstr "il disco %s non può essere scollegato - numero slot non valido %d"
 
-#: src/qemu_driver.c:3985
+#: src/qemu_driver.c:4001
 #, c-format
 msgid "failed to execute detach disk %s command"
 msgstr "impossibile eseguire il comando di estrazione del disco %s"
 
-#: src/qemu_driver.c:3994
+#: src/qemu_driver.c:4010
 #, c-format
 msgid "failed to detach disk %s: invalid slot %d"
 msgstr "impossibile scollegare il dispositivo %s: slot non valido %d"
 
-#: src/qemu_driver.c:4040
+#: src/qemu_driver.c:4056
 msgid "cannot detach device on inactive domain"
 msgstr "impossibile scollegare il dispositivo su un dominio inattivo"
 
-#: src/qemu_driver.c:4061
+#: src/qemu_driver.c:4077
 msgid "only SCSI or virtio disk device can be detached dynamically"
 msgstr ""
 "solo i dispositivi SCSI o i dischi virtio possono essere scollegati "
 "dinamicamente"
 
-#: src/qemu_driver.c:4121 src/uml_driver.c:1702
+#: src/qemu_driver.c:4137 src/uml_driver.c:1702
 msgid "cannot set autostart for transient domain"
 msgstr "impossibile impostare l'autostart di un dominio transitorio"
 
-#: src/qemu_driver.c:4138 src/storage_driver.c:964 src/uml_driver.c:1719
+#: src/qemu_driver.c:4154 src/storage_driver.c:964 src/uml_driver.c:1719
 #, c-format
 msgid "cannot create autostart directory %s"
 msgstr "impossibile creare la cartella di avvio automatico %s"
 
-#: src/qemu_driver.c:4145 src/uml_driver.c:1726
+#: src/qemu_driver.c:4161 src/uml_driver.c:1726
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "Impossibile creare il symlink '%s' verso '%s'"
 
-#: src/qemu_driver.c:4213
+#: src/qemu_driver.c:4229
 #, c-format
 msgid "invalid path: %s"
 msgstr "percorso non valido: %s"
 
-#: src/qemu_driver.c:4224
+#: src/qemu_driver.c:4240
 msgid "'info blockstats' command failed"
 msgstr "comando fallito 'info blockstats'"
 
-#: src/qemu_driver.c:4237
+#: src/qemu_driver.c:4253
 msgid "'info blockstats' not supported by this qemu"
 msgstr "'info blockstats' non è supportato da questo qemu"
 
-#: src/qemu_driver.c:4305
+#: src/qemu_driver.c:4321
 #, c-format
 msgid "device not found: %s (%s)"
 msgstr "dispositivo non trovato: %s (%s)"
 
-#: src/qemu_driver.c:4345 src/qemu_driver.c:4405 src/uml_driver.c:1775
+#: src/qemu_driver.c:4361 src/qemu_driver.c:4421 src/uml_driver.c:1775
 msgid "NULL or empty path"
 msgstr "percorso vuoto o NULL"
 
-#: src/qemu_driver.c:4362
+#: src/qemu_driver.c:4378
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "percorso non valido, '%s' non è una interfaccia conosciuta"
 
-#: src/qemu_driver.c:4424
+#: src/qemu_driver.c:4440
 #, c-format
 msgid "%s: failed to open"
 msgstr "%s: impossibile aprire"
 
-#: src/qemu_driver.c:4435
+#: src/qemu_driver.c:4451
 #, c-format
 msgid "%s: failed to seek or read"
 msgstr "%s: impossibile scorrere o leggere il file"
 
-#: src/qemu_driver.c:4442 src/uml_driver.c:1812
+#: src/qemu_driver.c:4458 src/uml_driver.c:1812
 msgid "invalid path"
 msgstr "percorso non valido"
 
-#: src/qemu_driver.c:4479
+#: src/qemu_driver.c:4495
 msgid "QEMU driver only supports virtual memory addrs"
 msgstr "il driver QEMU supporta solo gli indirizzi della memoria virtuale"
 
-#: src/qemu_driver.c:4492
+#: src/qemu_driver.c:4508
 #, c-format
 msgid "mkstemp(\"%s\") failed"
 msgstr "mkstemp(\"%s\") fallita"
 
-#: src/qemu_driver.c:4500
+#: src/qemu_driver.c:4516
 msgid "'memsave' command failed"
 msgstr "comando 'memsave' fallito"
 
-#: src/qemu_driver.c:4509
+#: src/qemu_driver.c:4525
 #, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "impossibile leggere il file temporaneo creato con il template %s"
 
-#: src/qemu_driver.c:4649
+#: src/qemu_driver.c:4665
 msgid "no domain XML passed"
 msgstr "nessun dominio XML fornito"
 
-#: src/qemu_driver.c:4686
+#: src/qemu_driver.c:4702
 msgid "only tcp URIs are supported for KVM migrations"
 msgstr "solo gli URI tcp sono supportati dalle migrazioni KVM"
 
-#: src/qemu_driver.c:4696
+#: src/qemu_driver.c:4712
 msgid "URI did not have ':port' at the end"
 msgstr "L'URI non ha ':porta' alla fine"
 
-#: src/qemu_driver.c:4722
+#: src/qemu_driver.c:4738
 msgid "could not generate random UUID"
 msgstr "Impossibile generare un UUID casuale"
 
-#: src/qemu_driver.c:4731
+#: src/qemu_driver.c:4747
 #, c-format
 msgid "domain with the same name or UUID already exists as '%s'"
 msgstr "esiste un dominio con lo stesso nome o UUID di '%s'"
 
-#: src/qemu_driver.c:4755
+#: src/qemu_driver.c:4771
 msgid "failed to start listening VM"
 msgstr "impossibile avviare la VM in ascolto"
 
-#: src/qemu_driver.c:4820
+#: src/qemu_driver.c:4836
 msgid "off-line migration specified, but suspend operation failed"
 msgstr ""
 
-#: src/qemu_driver.c:4864
+#: src/qemu_driver.c:4880
 #, c-format
 msgid "migrate failed: %s"
 msgstr "migrazione fallita: %s"
 
-#: src/qemu_driver.c:4894
+#: src/qemu_driver.c:4910
 #, fuzzy, c-format
 msgid "Failed to resume guest %s after failure\n"
 msgstr "Impossibile ripristinare il dominio %s"
 
-#: src/qemu_driver.c:5004 src/xen_unified.c:1461
+#: src/qemu_driver.c:5020 src/xen_unified.c:1461
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr ""
@@ -5107,7 +5140,7 @@ msgstr "errore di poll"
 msgid "'%s' exited with non-zero status %d and signal %d: %s"
 msgstr "'%s' uscito con stato non zero %d e segnale %d: %s"
 
-#: src/util.c:1674
+#: src/util.c:1686
 #, c-format
 msgid "Failed to find user record for uid '%d'"
 msgstr "Impossibile trovare il record utente per l'uid '%d'"
@@ -8200,7 +8233,7 @@ msgstr "errore nel parsing delle informazioni del dominio Xend"
 
 #: src/xend_internal.c:2980 src/xend_internal.c:3007 src/xend_internal.c:3035
 #: src/xend_internal.c:3064 src/xend_internal.c:3095 src/xend_internal.c:3170
-#: src/xend_internal.c:3207 src/xend_internal.c:3781
+#: src/xend_internal.c:3207
 #, c-format
 msgid "Domain %s isn't running."
 msgstr "Il dominio '%s' non è in esecuzione."
@@ -8209,44 +8242,44 @@ msgstr "Il dominio '%s' non è in esecuzione."
 msgid "xenDaemonDomainFetch failed to find this domain"
 msgstr "xenDaemonDomainFetch impossibile trovare questo dominio"
 
-#: src/xend_internal.c:4101 src/xend_internal.c:4108
+#: src/xend_internal.c:4093 src/xend_internal.c:4100
 msgid "unsupported device type"
 msgstr "tipo di dispositivo non supportato"
 
-#: src/xend_internal.c:4213
+#: src/xend_internal.c:4205
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr "xenDaemonGetAutostart non è riuscito a trovare questo dominio"
 
-#: src/xend_internal.c:4254
+#: src/xend_internal.c:4246
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr "xenDaemonSetAutostart non è riuscito a trovare questo dominio"
 
-#: src/xend_internal.c:4262
+#: src/xend_internal.c:4254
 msgid "unexpected value from on_xend_start"
 msgstr "valore inaspettato da on_xend_start"
 
-#: src/xend_internal.c:4273
+#: src/xend_internal.c:4265
 msgid "no memory"
 msgstr "memoria non disponibile"
 
-#: src/xend_internal.c:4279
+#: src/xend_internal.c:4271
 msgid "sexpr2string failed"
 msgstr "sexpr2string fallito"
 
-#: src/xend_internal.c:4284
+#: src/xend_internal.c:4276
 msgid "Failed to redefine sexpr"
 msgstr "Errore nella ridefinizione di sexpr"
 
-#: src/xend_internal.c:4289
+#: src/xend_internal.c:4281
 msgid "on_xend_start not present in sexpr"
 msgstr "on_xend_start non è presente in sexpr"
 
-#: src/xend_internal.c:4320
+#: src/xend_internal.c:4312
 #, c-format
 msgid "unable to resolve name %s"
 msgstr "Impossibile risolvere il nome %s"
 
-#: src/xend_internal.c:4356
+#: src/xend_internal.c:4348
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
@@ -8254,7 +8287,7 @@ msgstr ""
 "xenDaemonDomainMigrate: Xen non supporta la rinomina del dominio durante la "
 "migrazione"
 
-#: src/xend_internal.c:4366
+#: src/xend_internal.c:4358
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
@@ -8262,130 +8295,130 @@ msgstr ""
 "xenDaemonDomainMigrate: Xen non supporta la limitazione di banda durante la "
 "migrazione"
 
-#: src/xend_internal.c:4378
+#: src/xend_internal.c:4370
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr "xenDaemonDomainMigrate: flag non supportato"
 
-#: src/xend_internal.c:4391
+#: src/xend_internal.c:4383
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr "xenDaemonDomainMigrate: URI non valido"
 
-#: src/xend_internal.c:4396
+#: src/xend_internal.c:4388
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
 "xenDaemonDomainMigrate: solo le migrazioni xenmigr:// sono supportate da Xen"
 
-#: src/xend_internal.c:4403
+#: src/xend_internal.c:4395
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr "xenDaemonDomainMigrate: un hostname deve essere specificato nell'URI"
 
-#: src/xend_internal.c:4423
+#: src/xend_internal.c:4415
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr "xenDaemonDomainMigrate: numero di porta non valido"
 
-#: src/xend_internal.c:4479
+#: src/xend_internal.c:4471
 msgid "failed to parse domain description"
 msgstr "errore nel parsing della descrizione del dominio"
 
-#: src/xend_internal.c:4485
+#: src/xend_internal.c:4477
 msgid "failed to build sexpr"
 msgstr "Impossibile creare sexpr"
 
-#: src/xend_internal.c:4495
+#: src/xend_internal.c:4487
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Impossibile creare il dominio inattivo %s\n"
 
-#: src/xend_internal.c:4651 src/xend_internal.c:4727 src/xend_internal.c:4817
+#: src/xend_internal.c:4643 src/xend_internal.c:4719 src/xend_internal.c:4809
 msgid "unsupported in xendConfigVersion < 4"
 msgstr "non supportato in xendConfigVersion < 4"
 
-#: src/xend_internal.c:4663
+#: src/xend_internal.c:4655
 msgid "node information incomplete, missing scheduler name"
 msgstr "informazioni del nodo incomplete, nome scheduler mancante"
 
-#: src/xend_internal.c:4669 src/xend_internal.c:4676
+#: src/xend_internal.c:4661 src/xend_internal.c:4668
 msgid "strdup failed"
 msgstr "strdup fallito"
 
-#: src/xend_internal.c:4681 src/xend_internal.c:4775 src/xend_internal.c:4887
+#: src/xend_internal.c:4673 src/xend_internal.c:4767 src/xend_internal.c:4879
 msgid "Unknown scheduler"
 msgstr "Scheduler sconosciuto"
 
-#: src/xend_internal.c:4740 src/xend_internal.c:4830
+#: src/xend_internal.c:4732 src/xend_internal.c:4822
 msgid "Failed to get a scheduler name"
 msgstr "Impossibile ottenere un nome per lo scheduler"
 
-#: src/xend_internal.c:4753 src/xend_internal.c:4866
+#: src/xend_internal.c:4745 src/xend_internal.c:4858
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "informazioni del dominio incomplete, cpu_weight mancante"
 
-#: src/xend_internal.c:4758 src/xend_internal.c:4875
+#: src/xend_internal.c:4750 src/xend_internal.c:4867
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "informazioni del dominio incomplete, cpu_cap mancante"
 
-#: src/xend_internal.c:4933
+#: src/xend_internal.c:4925
 msgid "domainBlockPeek is not supported for dom0"
 msgstr "domainBlockPeek non è supportato per dom0"
 
-#: src/xend_internal.c:4954
+#: src/xend_internal.c:4946
 #, c-format
 msgid "%s: invalid path"
 msgstr "%s: percorso non valido"
 
-#: src/xend_internal.c:4962
+#: src/xend_internal.c:4954
 #, c-format
 msgid "failed to open for reading: %s"
 msgstr "impossibile aprire per la lettura: %s"
 
-#: src/xend_internal.c:4974
+#: src/xend_internal.c:4966
 #, c-format
 msgid "failed to lseek or read from file: %s"
 msgstr "Impossibile eseguire Iseek o la lettura dal file: %s"
 
-#: src/xend_internal.c:5056 src/xend_internal.c:5102
+#: src/xend_internal.c:5048 src/xend_internal.c:5094
 #, c-format
 msgid "unexpected graphics type %d"
 msgstr "tipo di grafica inaspettata %d"
 
-#: src/xend_internal.c:5145
+#: src/xend_internal.c:5137
 msgid "unexpected chr device type"
 msgstr "tipo carattere dispositivo inatteso"
 
-#: src/xend_internal.c:5223
+#: src/xend_internal.c:5215
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr "Impossibile collegare direttamente il floppy %s"
 
-#: src/xend_internal.c:5235
+#: src/xend_internal.c:5227
 #, c-format
 msgid "Cannot directly attach CDROM %s"
 msgstr "Impossibile collegare direttamente il CDROM %s"
 
-#: src/xend_internal.c:5335 src/xm_internal.c:1997
+#: src/xend_internal.c:5327 src/xm_internal.c:1997
 #, c-format
 msgid "unsupported network type %d"
 msgstr "tipo di rete non supportata %d"
 
-#: src/xend_internal.c:5376
+#: src/xend_internal.c:5368
 #, fuzzy, c-format
 msgid "network %s is not active"
 msgstr "Rete '%s' non attiva"
 
-#: src/xend_internal.c:5435 src/xend_internal.c:5483
+#: src/xend_internal.c:5427 src/xend_internal.c:5475
 msgid "managed PCI devices not supported with XenD"
 msgstr ""
 
-#: src/xend_internal.c:5590 src/xend_internal.c:5597 src/xend_internal.c:5604
+#: src/xend_internal.c:5582 src/xend_internal.c:5589 src/xend_internal.c:5596
 #, c-format
 msgid "unexpected lifecycle value %d"
 msgstr "valore ciclo vita inatteso %d"
 
-#: src/xend_internal.c:5625
+#: src/xend_internal.c:5617
 msgid "no HVM domain loader"
 msgstr "loader di dominio HVM non presente"
 
-#: src/xend_internal.c:5861
+#: src/xend_internal.c:5853
 msgid "hotplug of device type not supported"
 msgstr "collegamento a caldo del tipo di dispositivo non supportata"
 
@@ -8566,6 +8599,20 @@ msgstr "orologio già tracciato"
 #: src/xs_internal.c:1134
 msgid "reallocating list"
 msgstr "riassegnazione lista in corso"
+
+#, fuzzy
+#~ msgid "failed to chdir into /new on tmpfs"
+#~ msgstr "impossibile montare /dev tmpfs"
+
+#, fuzzy
+#~ msgid "failed to lazily unmount old root"
+#~ msgstr "impossibile montare /proc"
+
+#~ msgid "cannot create /dev/"
+#~ msgstr "impossibile creare /dev/"
+
+#~ msgid "failed to mount /dev tmpfs"
+#~ msgstr "impossibile montare /dev tmpfs"
 
 #~ msgid "Unable to log VM console data: %s\n"
 #~ msgstr "Impossibile loggare i dati della console VM: %s\n"

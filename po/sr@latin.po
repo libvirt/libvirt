@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-04-20 11:21+0200\n"
+"POT-Creation-Date: 2009-04-24 12:05+0200\n"
 "PO-Revision-Date: 2008-10-21 22:22+0100\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
@@ -1367,91 +1367,91 @@ msgstr "neočekivana vrsta domena %d"
 msgid "unexpected filesystem type %d"
 msgstr "neočekivana vrsta domena %d"
 
-#: src/domain_conf.c:3001 src/domain_conf.c:3221
+#: src/domain_conf.c:3001 src/domain_conf.c:3223
 #, fuzzy, c-format
 msgid "unexpected net type %d"
 msgstr "neočekivana vrsta domena %d"
 
-#: src/domain_conf.c:3075
+#: src/domain_conf.c:3076
 #, fuzzy, c-format
 msgid "unexpected char type %d"
 msgstr "neočekivana vrsta domena %d"
 
-#: src/domain_conf.c:3174 src/xend_internal.c:5506
+#: src/domain_conf.c:3176 src/xend_internal.c:5498
 #, fuzzy, c-format
 msgid "unexpected sound model %d"
 msgstr "neočekivana vrsta domena %d"
 
-#: src/domain_conf.c:3194 src/xend_internal.c:5528
+#: src/domain_conf.c:3196 src/xend_internal.c:5520
 #, fuzzy, c-format
 msgid "unexpected input type %d"
 msgstr "neočekivana vrsta domena %d"
 
-#: src/domain_conf.c:3199
+#: src/domain_conf.c:3201
 #, fuzzy, c-format
 msgid "unexpected input bus type %d"
 msgstr "neočekivana vrsta domena %d"
 
-#: src/domain_conf.c:3284
+#: src/domain_conf.c:3286
 #, fuzzy, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "neočekivan dict čvor"
 
-#: src/domain_conf.c:3291
+#: src/domain_conf.c:3293
 #, fuzzy, c-format
 msgid "unexpected hostdev type %d"
 msgstr "neočekivana vrsta domena %d"
 
-#: src/domain_conf.c:3339
+#: src/domain_conf.c:3341
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "neočekivana vrsta domena %d"
 
-#: src/domain_conf.c:3424
+#: src/domain_conf.c:3426
 #, fuzzy, c-format
 msgid "unexpected boot device type %d"
 msgstr "neočekivana vrsta domena %d"
 
-#: src/domain_conf.c:3442
+#: src/domain_conf.c:3444
 #, fuzzy, c-format
 msgid "unexpected feature %d"
 msgstr "neočekivan čvor vrednosti"
 
-#: src/domain_conf.c:3587 src/network_conf.c:657
+#: src/domain_conf.c:3589 src/network_conf.c:657
 #, fuzzy, c-format
 msgid "cannot create config directory '%s'"
 msgstr "neuspelo upisivanje direktorijuma podešavanja %s: %s"
 
-#: src/domain_conf.c:3596 src/network_conf.c:666
+#: src/domain_conf.c:3598 src/network_conf.c:666
 #, fuzzy, c-format
 msgid "cannot create config file '%s'"
 msgstr "neuspelo upisivanje datoteke podešavanja %s: %s"
 
-#: src/domain_conf.c:3604 src/network_conf.c:674
+#: src/domain_conf.c:3606 src/network_conf.c:674
 #, fuzzy, c-format
 msgid "cannot write config file '%s'"
 msgstr "neuspelo upisivanje datoteke podešavanja %s: %s"
 
-#: src/domain_conf.c:3611 src/network_conf.c:681
+#: src/domain_conf.c:3613 src/network_conf.c:681
 #, fuzzy, c-format
 msgid "cannot save config file '%s'"
 msgstr "neuspelo čuvanje datoteke podešavanja %s: %s"
 
-#: src/domain_conf.c:3712 src/network_conf.c:783
+#: src/domain_conf.c:3714 src/network_conf.c:787
 #, fuzzy, c-format
 msgid "Failed to open dir '%s'"
 msgstr "Neuspelo otvaranje direktorijuma „%s“: %s"
 
-#: src/domain_conf.c:3766
+#: src/domain_conf.c:3768
 #, fuzzy, c-format
 msgid "cannot remove config %s"
 msgstr "ne mogu da uklonim podešavanje za %s"
 
-#: src/domain_conf.c:3840
+#: src/domain_conf.c:3842
 msgid "unknown virt type"
 msgstr "nepoznata vrsta virtualizacije"
 
-#: src/domain_conf.c:3851
+#: src/domain_conf.c:3853
 #, c-format
 msgid "no emulator for domain %s os type %s on architecture %s"
 msgstr ""
@@ -1583,7 +1583,7 @@ msgstr "Neuspelo pravljenje ne aktiviranog domena %s\n"
 msgid "failed to make root private"
 msgstr "neuspelo pravljenje datoteke dnevnika %s: %s"
 
-#: src/lxc_container.c:304 src/lxc_container.c:326 src/lxc_container.c:461
+#: src/lxc_container.c:304 src/lxc_container.c:326 src/lxc_container.c:493
 #, fuzzy, c-format
 msgid "failed to create %s"
 msgstr "neuspelo pravljenje „%s“"
@@ -1599,186 +1599,206 @@ msgid "failed to bind new root %s into tmpfs"
 msgstr "Neuspelo povezivanje priključka sa „%s“: %s"
 
 #: src/lxc_container.c:343
-#, fuzzy
-msgid "failed to chroot into tmpfs"
+#, fuzzy, c-format
+msgid "failed to chroot into %s"
 msgstr "neuspelo čekanje na komandu: %s"
 
-#: src/lxc_container.c:349
-#, fuzzy
-msgid "failed to chdir into /new on tmpfs"
-msgstr "neuspelo čekanje na komandu: %s"
-
-#: src/lxc_container.c:357
+#: src/lxc_container.c:351
 #, fuzzy
 msgid "failed to pivot root"
 msgstr "Neuspelo povezivanje priključka sa „%s“: %s"
 
-#: src/lxc_container.c:367
-#, fuzzy
-msgid "failed to lazily unmount old root"
-msgstr "Neuspelo otvaranje direktorijuma „%s“: %s"
+#: src/lxc_container.c:394
+#, fuzzy, c-format
+msgid "failed to mkdir %s"
+msgstr "neuspelo pravljenje datoteke dnevnika %s: %s"
 
 #: src/lxc_container.c:400
-#, fuzzy
-msgid "cannot create /dev/"
-msgstr "ne mogu da napravim cev: %s"
+#, fuzzy, c-format
+msgid "failed to mount %s on %s"
+msgstr "Neuspelo otvaranje direktorijuma „%s“: %s"
 
-#: src/lxc_container.c:405
-#, fuzzy
-msgid "failed to mount /dev tmpfs"
-msgstr "neuspelo čekanje na komandu: %s"
-
-#: src/lxc_container.c:416
+#: src/lxc_container.c:408
 #, fuzzy
 msgid "cannot create /dev/pts"
 msgstr "ne mogu da napravim cev: %s"
 
-#: src/lxc_container.c:421
+#: src/lxc_container.c:415
 #, fuzzy
 msgid "failed to mount /dev/pts in container"
 msgstr "neuspelo čekanje na komandu: %s"
 
-#: src/lxc_container.c:431
+#: src/lxc_container.c:446
 #, fuzzy, c-format
 msgid "failed to make device %s"
 msgstr "neuspelo pravljenje datoteke dnevnika %s: %s"
 
-#: src/lxc_container.c:469 src/lxc_container.c:581
+#: src/lxc_container.c:455
+#, fuzzy
+msgid "failed to create symlink /dev/ptmx to /dev/pts/ptmx"
+msgstr "Neuspelo pravljenje simboličke veze „%s“ ka „%s“: %s"
+
+#: src/lxc_container.c:463
+#, fuzzy
+msgid "failed to make device /dev/ptmx"
+msgstr "neuspelo pravljenje datoteke dnevnika %s: %s"
+
+#: src/lxc_container.c:501 src/lxc_container.c:616
 #, fuzzy, c-format
 msgid "failed to mount %s at %s"
 msgstr "Neuspelo otvaranje direktorijuma „%s“: %s"
 
-#: src/lxc_container.c:492
+#: src/lxc_container.c:524
 #, fuzzy
 msgid "failed to read /proc/mounts"
 msgstr "Neuspelo pravljenje skladišta %s"
 
-#: src/lxc_container.c:518
+#: src/lxc_container.c:552
 #, fuzzy, c-format
 msgid "failed to unmount '%s'"
 msgstr "Neuspelo otvaranje direktorijuma „%s“: %s"
 
-#: src/lxc_container.c:543 src/lxc_container.c:591
-#, fuzzy
-msgid "failed to mount /proc"
-msgstr "Neuspelo otvaranje direktorijuma „%s“: %s"
-
-#: src/lxc_container.c:567
+#: src/lxc_container.c:602
 #, fuzzy
 msgid "failed to make / slave"
 msgstr "neuspelo pravljenje datoteke dnevnika %s: %s"
 
-#: src/lxc_container.c:636
+#: src/lxc_container.c:626
+#, fuzzy
+msgid "failed to mount /proc"
+msgstr "Neuspelo otvaranje direktorijuma „%s“: %s"
+
+#: src/lxc_container.c:664
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() je prosledio neispravnu vm definiciju"
 
-#: src/lxc_container.c:646
+#: src/lxc_container.c:685
 #, fuzzy, c-format
-msgid "failed to open %s"
+msgid "failed to open tty %s"
 msgstr "Neuspelo otvaranje direktorijuma „%s“: %s"
 
-#: src/lxc_container.c:708
+#: src/lxc_container.c:759
 #, fuzzy
 msgid "failed to run clone container"
 msgstr "neuspelo čekanje na komandu: %s"
 
-#: src/lxc_controller.c:85
+#: src/lxc_controller.c:86
 #, fuzzy, c-format
 msgid "Unable to create cgroup for %s\n"
 msgstr "Neuspelo pravljenje diska iz %s"
 
-#: src/lxc_controller.c:115
+#: src/lxc_controller.c:116
 #, fuzzy
 msgid "Failed to set lxc resources"
 msgstr "Neuspelo pravljenje priključka: %s"
 
-#: src/lxc_controller.c:141
+#: src/lxc_controller.c:142
 #, fuzzy, c-format
 msgid "failed to create server socket '%s'"
 msgstr "Neuspelo pravljenje priključka: %s"
 
-#: src/lxc_controller.c:153
+#: src/lxc_controller.c:154
 #, fuzzy, c-format
 msgid "failed to bind server socket '%s'"
 msgstr "Neuspelo povezivanje priključka sa „%s“: %s"
 
-#: src/lxc_controller.c:159
+#: src/lxc_controller.c:160
 #, fuzzy, c-format
 msgid "failed to listen server socket %s"
 msgstr "Neuspelo povezivanje priključka sa „%s“: %s"
 
-#: src/lxc_controller.c:193
+#: src/lxc_controller.c:194
 #, fuzzy, c-format
 msgid "read of fd %d failed"
 msgstr "čitanje fd %d nije uspelo: %s"
 
-#: src/lxc_controller.c:200
+#: src/lxc_controller.c:201
 #, fuzzy, c-format
 msgid "write to fd %d failed"
 msgstr "upis u fd %d nije uspeo: %s"
 
-#: src/lxc_controller.c:252
+#: src/lxc_controller.c:253
 #, fuzzy
 msgid "epoll_create(2) failed"
 msgstr "neuspela epoll_create(2) radnja: %s"
 
-#: src/lxc_controller.c:262
+#: src/lxc_controller.c:263
 #, fuzzy
 msgid "epoll_ctl(appPty) failed"
 msgstr "neuspela epoll_ctl(fd1) radnja: %s"
 
-#: src/lxc_controller.c:268 src/lxc_controller.c:276 src/lxc_controller.c:284
-#: src/lxc_controller.c:304 src/lxc_controller.c:310
+#: src/lxc_controller.c:269 src/lxc_controller.c:277 src/lxc_controller.c:285
+#: src/lxc_controller.c:305 src/lxc_controller.c:311
 #, fuzzy
 msgid "epoll_ctl(contPty) failed"
 msgstr "neuspela epoll_ctl(fd1) radnja: %s"
 
-#: src/lxc_controller.c:327
+#: src/lxc_controller.c:328
 #, c-format
 msgid "error event %d"
 msgstr "greška %d"
 
-#: src/lxc_controller.c:348
+#: src/lxc_controller.c:349
 #, fuzzy
 msgid "epoll_wait() failed"
 msgstr "neuspela epoll_wait() radnja: %s"
 
-#: src/lxc_controller.c:398
+#: src/lxc_controller.c:399
 #, fuzzy, c-format
 msgid "failed to move interface %s to ns %d"
 msgstr "Neuspelo dobavljanje statistike sprege %s %s"
 
-#: src/lxc_controller.c:423
+#: src/lxc_controller.c:424
 #, fuzzy, c-format
 msgid "failed to delete veth: %s"
 msgstr "Neuspelo uništavanje diska %s"
 
-#: src/lxc_controller.c:446
+#: src/lxc_controller.c:457
 #, fuzzy
 msgid "sockpair failed"
 msgstr "neuspela unlockpt radnja: %s"
 
-#: src/lxc_controller.c:454 src/lxc_driver.c:876
+#: src/lxc_controller.c:487
+#, fuzzy
+msgid "cannot unshare mount namespace"
+msgstr "ne mogu da otvorim uređaj %s"
+
+#: src/lxc_controller.c:493
+#, fuzzy
+msgid "failed to switch root mount into slave mode"
+msgstr "neuspelo čekanje na komandu: %s"
+
+#: src/lxc_controller.c:505
+#, fuzzy, c-format
+msgid "failed to make path %s"
+msgstr "neuspelo pravljenje datoteke dnevnika %s: %s"
+
+#: src/lxc_controller.c:513
+#, fuzzy, c-format
+msgid "failed to mount devpts on %s"
+msgstr "Neuspelo otvaranje direktorijuma „%s“: %s"
+
+#: src/lxc_controller.c:531 src/lxc_controller.c:540 src/lxc_driver.c:876
 #, fuzzy
 msgid "failed to allocate tty"
 msgstr "neuspelo zauzimanje čvora"
 
-#: src/lxc_controller.c:622
+#: src/lxc_controller.c:712
 #, fuzzy, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
 msgstr "Neuspelo pisanje u pid datoteku „%s“: %s"
 
-#: src/lxc_controller.c:636
+#: src/lxc_controller.c:726
 #, fuzzy
 msgid "Unable to change to root dir"
 msgstr "Nije moguće pisati argv u datoteku dnevnika %d: %s"
 
-#: src/lxc_controller.c:642
+#: src/lxc_controller.c:732
 #, fuzzy
 msgid "Unable to become session leader"
 msgstr "Nije moguće zatvoriti datoteku dnevnika %d: %s"
 
-#: src/lxc_controller.c:650
+#: src/lxc_controller.c:740
 #, fuzzy
 msgid "Failed connection from LXC driver"
 msgstr "Neuspelo pronalaženje upravljačkog programa skladišta: %s"
@@ -1797,12 +1817,12 @@ msgstr ""
 msgid "no domain with matching uuid"
 msgstr "ne postoji domen koji se podudara sa uuid"
 
-#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3491
+#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3507
 #: src/uml_driver.c:1632
 msgid "cannot delete active domain"
 msgstr "neuspelo brisanje aktivnog domena"
 
-#: src/lxc_driver.c:339 src/qemu_driver.c:3497 src/uml_driver.c:1638
+#: src/lxc_driver.c:339 src/qemu_driver.c:3513 src/uml_driver.c:1638
 #, fuzzy
 msgid "cannot undefine transient domain"
 msgstr "neuspelo brisanje aktivnog domena"
@@ -1917,7 +1937,7 @@ msgstr "neispravna putanja: %s"
 msgid "Invalid parameter count"
 msgstr "Nevažeći parametar za virXPathNode()"
 
-#: src/lxc_driver.c:1414 src/qemu_driver.c:2077 src/qemu_driver.c:4670
+#: src/lxc_driver.c:1414 src/qemu_driver.c:2093 src/qemu_driver.c:4686
 #, fuzzy
 msgid "failed to determine host name"
 msgstr "neuspelo dobavljanje imena domaćina"
@@ -1951,23 +1971,23 @@ msgstr "Prosleđujem zahtev, ali nije obezbeđena IPv4 adresa/mrežna maska"
 msgid "unknown forwarding type '%s'"
 msgstr "nepoznata vrsta autorizacije %s"
 
-#: src/network_conf.c:741
+#: src/network_conf.c:742
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr ""
 "Naziv datoteke mrežnog podešavanja „%s“ se ne poklapa sa nazivom mreže „%s“"
 
-#: src/network_conf.c:831
+#: src/network_conf.c:835
 #, fuzzy, c-format
 msgid "cannot remove config file '%s'"
 msgstr "ne mogu da uklonim podešavanje za %s"
 
-#: src/network_conf.c:901
+#: src/network_conf.c:909
 #, c-format
 msgid "Bridge generation exceeded max id %d"
 msgstr ""
 
-#: src/network_conf.c:915
+#: src/network_conf.c:923
 #, fuzzy, c-format
 msgid "bridge name '%s' already in use."
 msgstr "domen %s već postoji"
@@ -2142,7 +2162,7 @@ msgstr "ne mogu da napravim direktorijum automatskog pokretanja %s: %s"
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "Neuspelo pravljenje simboličke veze „%s“ ka „%s“: %s"
 
-#: src/network_driver.c:1390 src/qemu_driver.c:4152 src/storage_driver.c:979
+#: src/network_driver.c:1390 src/qemu_driver.c:4168 src/storage_driver.c:979
 #: src/uml_driver.c:1733
 #, fuzzy, c-format
 msgid "Failed to delete symlink '%s'"
@@ -2616,7 +2636,7 @@ msgstr "domen nije u stanju gašenja"
 msgid "Could not read container config"
 msgstr "ne mogu da raščlanim URI veze"
 
-#: src/openvz_driver.c:1008 src/qemu_driver.c:1847
+#: src/openvz_driver.c:1008 src/qemu_driver.c:1863
 #, c-format
 msgid "unknown type '%s'"
 msgstr "nepoznata vrsta „%s“"
@@ -2953,7 +2973,7 @@ msgstr ""
 msgid "Unable to put monitor into non-blocking mode"
 msgstr "Nije moguće postaviti nadgledanje u neblokirajući režim"
 
-#: src/qemu_driver.c:968 src/qemu_driver.c:1533
+#: src/qemu_driver.c:968 src/qemu_driver.c:1543
 #, fuzzy, c-format
 msgid "Unable to close logfile: %s\n"
 msgstr "Nije moguće zatvoriti datoteku dnevnika %d: %s"
@@ -2974,7 +2994,7 @@ msgstr ""
 msgid "failed to set CPU affinity"
 msgstr "neuspelo dobavljanje domena „%s“"
 
-#: src/qemu_driver.c:1121 src/qemu_driver.c:2261
+#: src/qemu_driver.c:1121 src/qemu_driver.c:2277
 msgid "resume operation failed"
 msgstr "neuspeo nastavak operacije"
 
@@ -3005,528 +3025,539 @@ msgstr "ne mogu da napravim direktorijum dnevnika %s: %s"
 msgid "Cannot find QEMU binary %s"
 msgstr "Ne mogu da pronađem QEMU binary %s: %s"
 
-#: src/qemu_driver.c:1384 src/qemu_driver.c:3603
+#: src/qemu_driver.c:1384 src/qemu_driver.c:3619
 #, fuzzy, c-format
 msgid "Cannot determine QEMU argv syntax %s"
 msgstr "Ne mogu da pronađem QEMU binary %s: %s"
 
-#: src/qemu_driver.c:1401 src/qemu_driver.c:1404 src/uml_driver.c:798
+#: src/qemu_driver.c:1394
+#, fuzzy, c-format
+msgid "Cannot remove stale PID file for %s"
+msgstr "ne mogu da uklonim podešavanje za %s"
+
+#: src/qemu_driver.c:1409 src/qemu_driver.c:1412 src/uml_driver.c:798
 #: src/uml_driver.c:801
 #, fuzzy, c-format
 msgid "Unable to write envv to logfile: %s\n"
 msgstr "Nije moguće pisati argv u datoteku dnevnika %d: %s"
 
-#: src/qemu_driver.c:1411 src/qemu_driver.c:1414 src/qemu_driver.c:1419
+#: src/qemu_driver.c:1419 src/qemu_driver.c:1422 src/qemu_driver.c:1427
 #: src/uml_driver.c:808 src/uml_driver.c:811 src/uml_driver.c:816
 #, fuzzy, c-format
 msgid "Unable to write argv to logfile: %s\n"
 msgstr "Nije moguće pisati argv u datoteku dnevnika %d: %s"
 
-#: src/qemu_driver.c:1423
+#: src/qemu_driver.c:1431
 #, fuzzy, c-format
 msgid "Unable to seek to end of logfile: %s\n"
 msgstr "Nije moguće pisati argv u datoteku dnevnika %d: %s"
 
-#: src/qemu_driver.c:1451
+#: src/qemu_driver.c:1459
 #, fuzzy, c-format
 msgid "Domain %s didn't show up\n"
 msgstr "Domen %s se gasi\n"
 
-#: src/qemu_driver.c:1456
+#: src/qemu_driver.c:1464
 msgid "Unable to daemonize QEMU process"
 msgstr ""
 
-#: src/qemu_driver.c:1518
+#: src/qemu_driver.c:1528
 #, fuzzy, c-format
 msgid "Shutting down VM '%s'\n"
 msgstr "Spuštam VM „%s“"
 
-#: src/qemu_driver.c:1523
+#: src/qemu_driver.c:1533
 #, fuzzy, c-format
 msgid "Failed to send SIGTERM to %s (%d)"
 msgstr "Neuspelo povezivanje priključka sa „%s“: %s"
 
-#: src/qemu_driver.c:1556
+#: src/qemu_driver.c:1566
 #, fuzzy, c-format
 msgid "Failed to remove domain status for %s"
 msgstr "Neuspelo pravljenje domena iz %s"
 
-#: src/qemu_driver.c:1603
+#: src/qemu_driver.c:1571
+#, fuzzy, c-format
+msgid "Failed to remove PID file for %s: %s"
+msgstr "Neuspelo pravljenje diska iz %s"
+
+#: src/qemu_driver.c:1619
 #, c-format
 msgid "unhandled fd event %d for %s"
 msgstr ""
 
-#: src/qemu_driver.c:1820
+#: src/qemu_driver.c:1836
 #, fuzzy, c-format
 msgid "Unable to open %s"
 msgstr "ne mogu da otvorim tty %s: %s\n"
 
-#: src/qemu_driver.c:1883 src/qemu_driver.c:1920 src/uml_driver.c:974
+#: src/qemu_driver.c:1899 src/qemu_driver.c:1936 src/uml_driver.c:974
 #: src/uml_driver.c:1005
 msgid "NUMA not supported on this host"
 msgstr "NUMA nije podržana za ovom domaćinu"
 
-#: src/qemu_driver.c:1889
+#: src/qemu_driver.c:1905
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr ""
 
-#: src/qemu_driver.c:1901 src/qemu_driver.c:1928 src/uml_driver.c:985
+#: src/qemu_driver.c:1917 src/qemu_driver.c:1944 src/uml_driver.c:985
 #: src/uml_driver.c:1013
 msgid "Failed to query NUMA free memory"
 msgstr "Neuspelo određivanje slobodne NUMA memorije"
 
-#: src/qemu_driver.c:1988 src/uml_driver.c:1270 src/uml_driver.c:1300
+#: src/qemu_driver.c:2004 src/uml_driver.c:1270 src/uml_driver.c:1300
+#: src/vbox/vbox_tmpl.c:542
 #, c-format
 msgid "no domain with matching id %d"
 msgstr "nema domena koji se poklapa sa id %d"
 
-#: src/qemu_driver.c:2015 src/qemu_driver.c:2197 src/qemu_driver.c:2250
-#: src/qemu_driver.c:2301 src/qemu_driver.c:2332 src/qemu_driver.c:2369
-#: src/qemu_driver.c:2396 src/qemu_driver.c:2421 src/qemu_driver.c:2544
-#: src/qemu_driver.c:2585 src/qemu_driver.c:2737 src/qemu_driver.c:2872
-#: src/qemu_driver.c:3066 src/qemu_driver.c:3100 src/qemu_driver.c:3314
-#: src/qemu_driver.c:3393 src/qemu_driver.c:3485 src/qemu_driver.c:3881
-#: src/qemu_driver.c:4033 src/qemu_driver.c:4087 src/qemu_driver.c:4115
-#: src/qemu_driver.c:4195 src/qemu_driver.c:4333 src/qemu_driver.c:4399
-#: src/qemu_driver.c:4473 src/qemu_driver.c:4806 src/uml_driver.c:1358
+#: src/qemu_driver.c:2031 src/qemu_driver.c:2213 src/qemu_driver.c:2266
+#: src/qemu_driver.c:2317 src/qemu_driver.c:2348 src/qemu_driver.c:2385
+#: src/qemu_driver.c:2412 src/qemu_driver.c:2437 src/qemu_driver.c:2560
+#: src/qemu_driver.c:2601 src/qemu_driver.c:2753 src/qemu_driver.c:2888
+#: src/qemu_driver.c:3082 src/qemu_driver.c:3116 src/qemu_driver.c:3330
+#: src/qemu_driver.c:3409 src/qemu_driver.c:3501 src/qemu_driver.c:3897
+#: src/qemu_driver.c:4049 src/qemu_driver.c:4103 src/qemu_driver.c:4131
+#: src/qemu_driver.c:4211 src/qemu_driver.c:4349 src/qemu_driver.c:4415
+#: src/qemu_driver.c:4489 src/qemu_driver.c:4822 src/uml_driver.c:1358
 #: src/uml_driver.c:1383 src/uml_driver.c:1416
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "nema domena koji se podudara sa uuid „%s“"
 
-#: src/qemu_driver.c:2040 src/qemu_driver.c:4935
+#: src/qemu_driver.c:2056 src/qemu_driver.c:4951
 #, fuzzy, c-format
 msgid "no domain with matching name '%s'"
 msgstr "nema domena koji se poklapaju sa imenom"
 
-#: src/qemu_driver.c:2135 src/uml_driver.c:1219
+#: src/qemu_driver.c:2151 src/uml_driver.c:1219
 #, fuzzy, c-format
 msgid "domain '%s' is already defined"
 msgstr "domen %s već postoji"
 
-#: src/qemu_driver.c:2145 src/uml_driver.c:1229
+#: src/qemu_driver.c:2161 src/uml_driver.c:1229
 #, fuzzy, c-format
 msgid "domain with uuid '%s' is already defined"
 msgstr "domen %s već postoji"
 
-#: src/qemu_driver.c:2202 src/qemu_driver.c:2255 src/qemu_driver.c:2743
-#: src/qemu_driver.c:4200 src/qemu_driver.c:4339 src/qemu_driver.c:4485
-#: src/qemu_driver.c:4812
+#: src/qemu_driver.c:2218 src/qemu_driver.c:2271 src/qemu_driver.c:2759
+#: src/qemu_driver.c:4216 src/qemu_driver.c:4355 src/qemu_driver.c:4501
+#: src/qemu_driver.c:4828
 msgid "domain is not running"
 msgstr "domen se ne izvršava"
 
-#: src/qemu_driver.c:2208 src/qemu_driver.c:2752
+#: src/qemu_driver.c:2224 src/qemu_driver.c:2768
 msgid "suspend operation failed"
 msgstr "neuspela obustava domena"
 
-#: src/qemu_driver.c:2307 src/uml_driver.c:1277
+#: src/qemu_driver.c:2323 src/uml_driver.c:1277
 msgid "shutdown operation failed"
 msgstr "neuspešna operacija spuštanja"
 
-#: src/qemu_driver.c:2427 src/uml_driver.c:1389
+#: src/qemu_driver.c:2443 src/uml_driver.c:1389
 msgid "cannot set max memory lower than current memory"
 msgstr "ne mogu da postavim maksimalnu memoriju manju od trenutne memorije"
 
-#: src/qemu_driver.c:2460
+#: src/qemu_driver.c:2476
 #, fuzzy
 msgid "could not query memory balloon allocation"
 msgstr "promeni dodelu memorije"
 
-#: src/qemu_driver.c:2471
+#: src/qemu_driver.c:2487
 #, fuzzy
 msgid "could not parse memory balloon allocation"
 msgstr "ne mogu da raščlanim URI veze"
 
-#: src/qemu_driver.c:2510
+#: src/qemu_driver.c:2526
 #, fuzzy
 msgid "could not balloon memory allocation"
 msgstr "promeni dodelu memorije"
 
-#: src/qemu_driver.c:2550 src/uml_driver.c:1428
+#: src/qemu_driver.c:2566 src/uml_driver.c:1428
 msgid "cannot set memory higher than max memory"
 msgstr "ne mogu da postavim memoriju veću od maksimalne memorije"
 
-#: src/qemu_driver.c:2558 src/uml_driver.c:1422
+#: src/qemu_driver.c:2574 src/uml_driver.c:1422
 msgid "cannot set memory of an active domain"
 msgstr "ne mogu da postavim memoriju aktivnog domena"
 
-#: src/qemu_driver.c:2764
+#: src/qemu_driver.c:2780
 msgid "failed to get domain xml"
 msgstr "neuspelo dobavljanje xml-a domena"
 
-#: src/qemu_driver.c:2772
+#: src/qemu_driver.c:2788
 #, c-format
 msgid "failed to create '%s'"
 msgstr "neuspelo pravljenje „%s“"
 
-#: src/qemu_driver.c:2778
+#: src/qemu_driver.c:2794
 msgid "failed to write save header"
 msgstr "neuspelo upisivanje čuvanja zaglavlja"
 
-#: src/qemu_driver.c:2784
+#: src/qemu_driver.c:2800
 msgid "failed to write xml"
 msgstr "neuspelo upisivanje xml-a"
 
-#: src/qemu_driver.c:2790
+#: src/qemu_driver.c:2806
 #, fuzzy, c-format
 msgid "unable to save file %s"
 msgstr "Nije moguće zatvoriti datoteku dnevnika %d: %s"
 
-#: src/qemu_driver.c:2812 src/qemu_driver.c:4855
+#: src/qemu_driver.c:2828 src/qemu_driver.c:4871
 msgid "migrate operation failed"
 msgstr "operacija prelaska nije uspela"
 
-#: src/qemu_driver.c:2823
+#: src/qemu_driver.c:2839
 #, fuzzy
 msgid "'migrate' not supported by this qemu"
 msgstr "ovaj qemu ne podržava „info blockstats“"
 
-#: src/qemu_driver.c:2878
+#: src/qemu_driver.c:2894
 #, fuzzy
 msgid "cannot change vcpu count of an active domain"
 msgstr "ne mogu da postavim memoriju aktivnog domena"
 
-#: src/qemu_driver.c:2884 src/qemu_driver.c:3072 src/qemu_driver.c:3106
+#: src/qemu_driver.c:2900 src/qemu_driver.c:3088 src/qemu_driver.c:3122
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "nepoznata vrsta virtualizacije u definiciji domena „%d“"
 
-#: src/qemu_driver.c:2891
+#: src/qemu_driver.c:2907
 msgid "could not determine max vcpus for the domain"
 msgstr "ne mogu da odredim maksimalne vcpus za domen"
 
-#: src/qemu_driver.c:2897
+#: src/qemu_driver.c:2913
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
 msgstr ""
 "zahtevani vcpus je veći nego maksimalni dozvoljeni vcpus za domen: %d > %d"
 
-#: src/qemu_driver.c:2931 src/qemu_driver.c:2992
+#: src/qemu_driver.c:2947 src/qemu_driver.c:3008
 #, fuzzy
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "ne mogu da prikačim uređaj na neaktivni domen"
 
-#: src/qemu_driver.c:2937
+#: src/qemu_driver.c:2953
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr "vcpu broj je izvan opsega %d > %d"
 
-#: src/qemu_driver.c:2958
+#: src/qemu_driver.c:2974
 #, fuzzy
 msgid "cannot set affinity"
 msgstr "ne mogu da postavim vlasnika datoteke „%s“: %s"
 
-#: src/qemu_driver.c:2963
+#: src/qemu_driver.c:2979
 #, fuzzy
 msgid "cpu affinity is not supported"
 msgstr "ai_family nije podržana"
 
-#: src/qemu_driver.c:3027
+#: src/qemu_driver.c:3043
 #, fuzzy
 msgid "cannot get affinity"
 msgstr "ne mogu da preuzmem kontekst datoteke od %s: %s"
 
-#: src/qemu_driver.c:3037
+#: src/qemu_driver.c:3053
 msgid "cpu affinity is not available"
 msgstr "cpu sklonost nije dostupna"
 
-#: src/qemu_driver.c:3129
+#: src/qemu_driver.c:3145
 #, fuzzy
 msgid "Failed to get security label"
 msgstr "neuspelo dobijanje trenutnog vremena"
 
-#: src/qemu_driver.c:3154
+#: src/qemu_driver.c:3170
 #, fuzzy, c-format
 msgid "security model string exceeds max %d bytes"
 msgstr "vCPU brojač je prešao svoj maksimum: %d > %d"
 
-#: src/qemu_driver.c:3163
+#: src/qemu_driver.c:3179
 #, fuzzy, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "vCPU brojač je prešao svoj maksimum: %d > %d"
 
-#: src/qemu_driver.c:3187
+#: src/qemu_driver.c:3203
 msgid "cannot read domain image"
 msgstr "ne mogu da pročitam otisak domena"
 
-#: src/qemu_driver.c:3193
+#: src/qemu_driver.c:3209
 msgid "failed to read qemu header"
 msgstr "neuspelo čitanje qemu zaglavlja"
 
-#: src/qemu_driver.c:3199
+#: src/qemu_driver.c:3215
 msgid "image magic is incorrect"
 msgstr "magija otiska nije ispravna"
 
-#: src/qemu_driver.c:3205
+#: src/qemu_driver.c:3221
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "verzija otiska nije podržana (%d > %d)"
 
-#: src/qemu_driver.c:3217
+#: src/qemu_driver.c:3233
 msgid "failed to read XML"
 msgstr "neuspelo čitanje XML-a"
 
-#: src/qemu_driver.c:3225 src/qemu_driver.c:4705
+#: src/qemu_driver.c:3241 src/qemu_driver.c:4721
 msgid "failed to parse XML"
 msgstr "neuspelo raščlanjivanje XML-a"
 
-#: src/qemu_driver.c:3236
+#: src/qemu_driver.c:3252
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "domen je već aktivan kao „%s“"
 
-#: src/qemu_driver.c:3247 src/qemu_driver.c:4741
+#: src/qemu_driver.c:3263 src/qemu_driver.c:4757
 msgid "failed to assign new VM"
 msgstr "neuspelo dodeljivanje novog VM"
 
-#: src/qemu_driver.c:3258
+#: src/qemu_driver.c:3274
 msgid "failed to start VM"
 msgstr "neuspelo pokretanje VM"
 
-#: src/qemu_driver.c:3276
+#: src/qemu_driver.c:3292
 msgid "failed to resume domain"
 msgstr "neuspelo nastavljanje domena"
 
-#: src/qemu_driver.c:3532
+#: src/qemu_driver.c:3548
 #, c-format
 msgid "cannot convert disk '%s' to bus/device index"
 msgstr ""
 
-#: src/qemu_driver.c:3558
+#: src/qemu_driver.c:3574
 #, fuzzy, c-format
 msgid "Unsupported disk name mapping for bus '%s'"
 msgstr "nije podržana vrsta diska „%s“"
 
-#: src/qemu_driver.c:3593
+#: src/qemu_driver.c:3609
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3620
+#: src/qemu_driver.c:3636
 #, c-format
 msgid ""
 "Emulator version does not support removable media for device '%s' and target "
 "'%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3657
+#: src/qemu_driver.c:3673
 #, fuzzy
 msgid "could not change cdrom media"
 msgstr "ne mogu da promenim cdrom medijum"
 
-#: src/qemu_driver.c:3668
+#: src/qemu_driver.c:3684
 #, fuzzy, c-format
 msgid "changing cdrom media failed: %s"
 msgstr "ne mogu da promenim cdrom medijum"
 
-#: src/qemu_driver.c:3695 src/qemu_driver.c:3764
+#: src/qemu_driver.c:3711 src/qemu_driver.c:3780
 #, fuzzy, c-format
 msgid "target %s already exists"
 msgstr "disk skladištenja već postoji"
 
-#: src/qemu_driver.c:3721
+#: src/qemu_driver.c:3737
 #, fuzzy, c-format
 msgid "cannot attach %s disk"
 msgstr "ne mogu da pročitam %s: %s"
 
-#: src/qemu_driver.c:3735
+#: src/qemu_driver.c:3751
 msgid "Unable to parse slot number\n"
 msgstr ""
 
-#: src/qemu_driver.c:3738
+#: src/qemu_driver.c:3754
 #, fuzzy, c-format
 msgid "adding %s disk failed"
 msgstr "domen %s već postoji"
 
-#: src/qemu_driver.c:3789
+#: src/qemu_driver.c:3805
 #, fuzzy
 msgid "cannot attach usb disk"
 msgstr "ne mogu da izdvojim izvorne uređaje"
 
-#: src/qemu_driver.c:3800
+#: src/qemu_driver.c:3816
 #, fuzzy
 msgid "adding usb disk failed"
 msgstr "učitavam datoteku definicije domaćina"
 
-#: src/qemu_driver.c:3843
+#: src/qemu_driver.c:3859
 #, fuzzy
 msgid "cannot attach usb device"
 msgstr "ne mogu da izdvojim izvorne uređaje"
 
-#: src/qemu_driver.c:3854
+#: src/qemu_driver.c:3870
 #, fuzzy
 msgid "adding usb device failed"
 msgstr "učitavam datoteku definicije domaćina"
 
-#: src/qemu_driver.c:3888
+#: src/qemu_driver.c:3904
 msgid "cannot attach device on inactive domain"
 msgstr "ne mogu da prikačim uređaj na neaktivni domen"
 
-#: src/qemu_driver.c:3914
+#: src/qemu_driver.c:3930
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr ""
 
-#: src/qemu_driver.c:3924
+#: src/qemu_driver.c:3940
 #, fuzzy, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "jedino uređaji CDROM diska mogu biti prikačeni"
 
-#: src/qemu_driver.c:3934
+#: src/qemu_driver.c:3950
 #, fuzzy, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "jedino uređaji CDROM diska mogu biti prikačeni"
 
-#: src/qemu_driver.c:3967
+#: src/qemu_driver.c:3983
 #, fuzzy, c-format
 msgid "disk %s not found"
 msgstr "domen nije pronađen"
 
-#: src/qemu_driver.c:3973
+#: src/qemu_driver.c:3989
 #, c-format
 msgid "disk %s cannot be detached - invalid slot number %d"
 msgstr ""
 
-#: src/qemu_driver.c:3985
+#: src/qemu_driver.c:4001
 #, fuzzy, c-format
 msgid "failed to execute detach disk %s command"
 msgstr "neuspelo nastavljanje domena"
 
-#: src/qemu_driver.c:3994
+#: src/qemu_driver.c:4010
 #, fuzzy, c-format
 msgid "failed to detach disk %s: invalid slot %d"
 msgstr "Neuspelo otkačinjanje uređaja iz %s"
 
-#: src/qemu_driver.c:4040
+#: src/qemu_driver.c:4056
 #, fuzzy
 msgid "cannot detach device on inactive domain"
 msgstr "ne mogu da prikačim uređaj na neaktivni domen"
 
-#: src/qemu_driver.c:4061
+#: src/qemu_driver.c:4077
 #, fuzzy
 msgid "only SCSI or virtio disk device can be detached dynamically"
 msgstr "jedino uređaji CDROM diska mogu biti prikačeni"
 
-#: src/qemu_driver.c:4121 src/uml_driver.c:1702
+#: src/qemu_driver.c:4137 src/uml_driver.c:1702
 #, fuzzy
 msgid "cannot set autostart for transient domain"
 msgstr "ne mogu da postavim memoriju aktivnog domena"
 
-#: src/qemu_driver.c:4138 src/storage_driver.c:964 src/uml_driver.c:1719
+#: src/qemu_driver.c:4154 src/storage_driver.c:964 src/uml_driver.c:1719
 #, fuzzy, c-format
 msgid "cannot create autostart directory %s"
 msgstr "ne mogu da napravim direktorijum automatskog pokretanja %s: %s"
 
-#: src/qemu_driver.c:4145 src/uml_driver.c:1726
+#: src/qemu_driver.c:4161 src/uml_driver.c:1726
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "Neuspelo pravljenje simboličke veze „%s“ ka „%s“: %s"
 
-#: src/qemu_driver.c:4213
+#: src/qemu_driver.c:4229
 #, c-format
 msgid "invalid path: %s"
 msgstr "neispravna putanja: %s"
 
-#: src/qemu_driver.c:4224
+#: src/qemu_driver.c:4240
 msgid "'info blockstats' command failed"
 msgstr "„info blockstats“ komanda nije uspela"
 
-#: src/qemu_driver.c:4237
+#: src/qemu_driver.c:4253
 msgid "'info blockstats' not supported by this qemu"
 msgstr "ovaj qemu ne podržava „info blockstats“"
 
-#: src/qemu_driver.c:4305
+#: src/qemu_driver.c:4321
 #, c-format
 msgid "device not found: %s (%s)"
 msgstr "uređaj nije pronađen: %s (%s)"
 
-#: src/qemu_driver.c:4345 src/qemu_driver.c:4405 src/uml_driver.c:1775
+#: src/qemu_driver.c:4361 src/qemu_driver.c:4421 src/uml_driver.c:1775
 msgid "NULL or empty path"
 msgstr "NULL ili prazna putanja"
 
-#: src/qemu_driver.c:4362
+#: src/qemu_driver.c:4378
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "neispravna putanja, „%s“ nije poznata sprega"
 
-#: src/qemu_driver.c:4424
+#: src/qemu_driver.c:4440
 #, fuzzy, c-format
 msgid "%s: failed to open"
 msgstr "Neuspelo otvaranje direktorijuma „%s“: %s"
 
-#: src/qemu_driver.c:4435
+#: src/qemu_driver.c:4451
 #, fuzzy, c-format
 msgid "%s: failed to seek or read"
 msgstr "neuspela lseek radnja ili čitanje iz datoteke: %s: %s"
 
-#: src/qemu_driver.c:4442 src/uml_driver.c:1812
+#: src/qemu_driver.c:4458 src/uml_driver.c:1812
 msgid "invalid path"
 msgstr "neispravna putanja"
 
-#: src/qemu_driver.c:4479
+#: src/qemu_driver.c:4495
 msgid "QEMU driver only supports virtual memory addrs"
 msgstr "QEMU upravljački program podržava samo virtuelne memorijske adrese"
 
-#: src/qemu_driver.c:4492
+#: src/qemu_driver.c:4508
 #, fuzzy, c-format
 msgid "mkstemp(\"%s\") failed"
 msgstr "neuspela open(%s) radnja: %s"
 
-#: src/qemu_driver.c:4500
+#: src/qemu_driver.c:4516
 #, fuzzy
 msgid "'memsave' command failed"
 msgstr "neuspela lvs komanda"
 
-#: src/qemu_driver.c:4509
+#: src/qemu_driver.c:4525
 #, fuzzy, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "%s: neuspelo upisivanje datoteke dnevnika: %s"
 
-#: src/qemu_driver.c:4649
+#: src/qemu_driver.c:4665
 #, fuzzy
 msgid "no domain XML passed"
 msgstr "spisak domena za čvor"
 
-#: src/qemu_driver.c:4686
+#: src/qemu_driver.c:4702
 msgid "only tcp URIs are supported for KVM migrations"
 msgstr ""
 
-#: src/qemu_driver.c:4696
+#: src/qemu_driver.c:4712
 msgid "URI did not have ':port' at the end"
 msgstr ""
 
-#: src/qemu_driver.c:4722
+#: src/qemu_driver.c:4738
 #, fuzzy
 msgid "could not generate random UUID"
 msgstr "Neuspešno pravljenje UUID"
 
-#: src/qemu_driver.c:4731
+#: src/qemu_driver.c:4747
 #, fuzzy, c-format
 msgid "domain with the same name or UUID already exists as '%s'"
 msgstr "domen je već aktivan kao „%s“"
 
-#: src/qemu_driver.c:4755
+#: src/qemu_driver.c:4771
 #, fuzzy
 msgid "failed to start listening VM"
 msgstr "neuspelo pokretanje VM"
 
-#: src/qemu_driver.c:4820
+#: src/qemu_driver.c:4836
 msgid "off-line migration specified, but suspend operation failed"
 msgstr ""
 
-#: src/qemu_driver.c:4864
+#: src/qemu_driver.c:4880
 #, fuzzy, c-format
 msgid "migrate failed: %s"
 msgstr "neuspela radnja: %s"
 
-#: src/qemu_driver.c:4894
+#: src/qemu_driver.c:4910
 #, fuzzy, c-format
 msgid "Failed to resume guest %s after failure\n"
 msgstr "Neuspelo nastavljanje domena %s"
 
-#: src/qemu_driver.c:5004 src/xen_unified.c:1461
+#: src/qemu_driver.c:5020 src/xen_unified.c:1461
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr ""
@@ -5230,7 +5261,7 @@ msgstr "greška tokom čitanja: %s"
 msgid "'%s' exited with non-zero status %d and signal %d: %s"
 msgstr ""
 
-#: src/util.c:1674
+#: src/util.c:1686
 #, fuzzy, c-format
 msgid "Failed to find user record for uid '%d'"
 msgstr "Neuspelo pronalaženje zapisa korisnika za uid „%d“: %s"
@@ -8337,7 +8368,7 @@ msgstr "neuspelo tumačenje podataka o Xend domenu"
 
 #: src/xend_internal.c:2980 src/xend_internal.c:3007 src/xend_internal.c:3035
 #: src/xend_internal.c:3064 src/xend_internal.c:3095 src/xend_internal.c:3170
-#: src/xend_internal.c:3207 src/xend_internal.c:3781
+#: src/xend_internal.c:3207
 #, fuzzy, c-format
 msgid "Domain %s isn't running."
 msgstr "domen se ne izvršava"
@@ -8347,47 +8378,47 @@ msgstr "domen se ne izvršava"
 msgid "xenDaemonDomainFetch failed to find this domain"
 msgstr "xenDaemonDomainDumpXMLByName nije uspeo da pronađe ovaj domen"
 
-#: src/xend_internal.c:4101 src/xend_internal.c:4108
+#: src/xend_internal.c:4093 src/xend_internal.c:4100
 #, fuzzy
 msgid "unsupported device type"
 msgstr "vrsta uređaja za unos %s nije podržana"
 
-#: src/xend_internal.c:4213
+#: src/xend_internal.c:4205
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr "xenDaemonGetAutostart nije uspeo da pronađe ovaj domen"
 
-#: src/xend_internal.c:4254
+#: src/xend_internal.c:4246
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr "xenDaemonSetAutostart nije uspeo da pronađe ovaj domen"
 
-#: src/xend_internal.c:4262
+#: src/xend_internal.c:4254
 msgid "unexpected value from on_xend_start"
 msgstr "neočekivana vrednost od on_xend_start"
 
-#: src/xend_internal.c:4273
+#: src/xend_internal.c:4265
 msgid "no memory"
 msgstr "bez memorije"
 
-#: src/xend_internal.c:4279
+#: src/xend_internal.c:4271
 msgid "sexpr2string failed"
 msgstr "neuspela sexpr2string radnja"
 
-#: src/xend_internal.c:4284
+#: src/xend_internal.c:4276
 #, fuzzy
 msgid "Failed to redefine sexpr"
 msgstr "Neuspelo ukidanje definicije skladišta %s"
 
-#: src/xend_internal.c:4289
+#: src/xend_internal.c:4281
 #, fuzzy
 msgid "on_xend_start not present in sexpr"
 msgstr "on_xend_start se ne nalazi u sexpr"
 
-#: src/xend_internal.c:4320
+#: src/xend_internal.c:4312
 #, fuzzy, c-format
 msgid "unable to resolve name %s"
 msgstr "ne mogu da otvorim tty %s: %s\n"
 
-#: src/xend_internal.c:4356
+#: src/xend_internal.c:4348
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
@@ -8395,7 +8426,7 @@ msgstr ""
 "xenDaemonDomainMigrate: Xen ne podržava promenu imena domena prilikom "
 "premeštanja"
 
-#: src/xend_internal.c:4366
+#: src/xend_internal.c:4358
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
@@ -8403,131 +8434,131 @@ msgstr ""
 "xenDaemonDomainMigrate: Xen ne podržava ograničavanje propusnog opsega "
 "prilikom premeštanja"
 
-#: src/xend_internal.c:4378
+#: src/xend_internal.c:4370
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr "xenDaemonDomainMigrate: zastavica nije podržana"
 
-#: src/xend_internal.c:4391
+#: src/xend_internal.c:4383
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr "xenDaemonDomainMigrate: neispravan URI"
 
-#: src/xend_internal.c:4396
+#: src/xend_internal.c:4388
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr "xenDaemonDomainMigrate: Xen podržava samo xenmigr:// premeštanja"
 
-#: src/xend_internal.c:4403
+#: src/xend_internal.c:4395
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr "xenDaemonDomainMigrate: ime domaćina mora biti navedeno u URI-u"
 
-#: src/xend_internal.c:4423
+#: src/xend_internal.c:4415
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr "xenDaemonDomainMigrate: neispravan broj porta"
 
-#: src/xend_internal.c:4479
+#: src/xend_internal.c:4471
 msgid "failed to parse domain description"
 msgstr "neuspeloraščlanjenje opisa domena"
 
-#: src/xend_internal.c:4485
+#: src/xend_internal.c:4477
 #, fuzzy
 msgid "failed to build sexpr"
 msgstr "neuspela izgradnja skladišta %s"
 
-#: src/xend_internal.c:4495
+#: src/xend_internal.c:4487
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Neuspelo pravljenje ne aktiviranog domena %s\n"
 
-#: src/xend_internal.c:4651 src/xend_internal.c:4727 src/xend_internal.c:4817
+#: src/xend_internal.c:4643 src/xend_internal.c:4719 src/xend_internal.c:4809
 msgid "unsupported in xendConfigVersion < 4"
 msgstr "nije podržano u xendConfigVersion < 4"
 
-#: src/xend_internal.c:4663
+#: src/xend_internal.c:4655
 msgid "node information incomplete, missing scheduler name"
 msgstr "nepotpuni podaci o čvoru, nedostaje naziv planera"
 
-#: src/xend_internal.c:4669 src/xend_internal.c:4676
+#: src/xend_internal.c:4661 src/xend_internal.c:4668
 msgid "strdup failed"
 msgstr "strdup nije uspeo"
 
-#: src/xend_internal.c:4681 src/xend_internal.c:4775 src/xend_internal.c:4887
+#: src/xend_internal.c:4673 src/xend_internal.c:4767 src/xend_internal.c:4879
 msgid "Unknown scheduler"
 msgstr "Nepoznat planer"
 
-#: src/xend_internal.c:4740 src/xend_internal.c:4830
+#: src/xend_internal.c:4732 src/xend_internal.c:4822
 msgid "Failed to get a scheduler name"
 msgstr "Neuspelo pribavljanje naziva planera"
 
-#: src/xend_internal.c:4753 src/xend_internal.c:4866
+#: src/xend_internal.c:4745 src/xend_internal.c:4858
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "nepotpuni podaci o domenu, nedostaje cpu_weight"
 
-#: src/xend_internal.c:4758 src/xend_internal.c:4875
+#: src/xend_internal.c:4750 src/xend_internal.c:4867
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "nepotpuni podaci o domenu, nedostaje cpu_cap"
 
-#: src/xend_internal.c:4933
+#: src/xend_internal.c:4925
 msgid "domainBlockPeek is not supported for dom0"
 msgstr "domainBlockPeek nije podržan za dom0"
 
-#: src/xend_internal.c:4954
+#: src/xend_internal.c:4946
 #, c-format
 msgid "%s: invalid path"
 msgstr "%s: neispravna putanja"
 
-#: src/xend_internal.c:4962
+#: src/xend_internal.c:4954
 #, fuzzy, c-format
 msgid "failed to open for reading: %s"
 msgstr "neuspelo otvaranje za čitanje: %s: %s"
 
-#: src/xend_internal.c:4974
+#: src/xend_internal.c:4966
 #, fuzzy, c-format
 msgid "failed to lseek or read from file: %s"
 msgstr "neuspela lseek radnja ili čitanje iz datoteke: %s: %s"
 
-#: src/xend_internal.c:5056 src/xend_internal.c:5102
+#: src/xend_internal.c:5048 src/xend_internal.c:5094
 #, fuzzy, c-format
 msgid "unexpected graphics type %d"
 msgstr "neočekivana vrsta domena %d"
 
-#: src/xend_internal.c:5145
+#: src/xend_internal.c:5137
 #, fuzzy
 msgid "unexpected chr device type"
 msgstr "neočekivana mime vrsta"
 
-#: src/xend_internal.c:5223
+#: src/xend_internal.c:5215
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr ""
 
-#: src/xend_internal.c:5235
+#: src/xend_internal.c:5227
 #, c-format
 msgid "Cannot directly attach CDROM %s"
 msgstr ""
 
-#: src/xend_internal.c:5335 src/xm_internal.c:1997
+#: src/xend_internal.c:5327 src/xm_internal.c:1997
 #, fuzzy, c-format
 msgid "unsupported network type %d"
 msgstr "vrsta %d diska za skladištenje nije podržana"
 
-#: src/xend_internal.c:5376
+#: src/xend_internal.c:5368
 #, fuzzy, c-format
 msgid "network %s is not active"
 msgstr "mreža je već aktivna"
 
-#: src/xend_internal.c:5435 src/xend_internal.c:5483
+#: src/xend_internal.c:5427 src/xend_internal.c:5475
 msgid "managed PCI devices not supported with XenD"
 msgstr ""
 
-#: src/xend_internal.c:5590 src/xend_internal.c:5597 src/xend_internal.c:5604
+#: src/xend_internal.c:5582 src/xend_internal.c:5589 src/xend_internal.c:5596
 #, fuzzy, c-format
 msgid "unexpected lifecycle value %d"
 msgstr "neočekivan čvor vrednosti"
 
-#: src/xend_internal.c:5625
+#: src/xend_internal.c:5617
 msgid "no HVM domain loader"
 msgstr "nema programa za učitavanje HVM domena"
 
-#: src/xend_internal.c:5861
+#: src/xend_internal.c:5853
 #, fuzzy
 msgid "hotplug of device type not supported"
 msgstr "ai_socktype nije podržan"
@@ -8713,6 +8744,22 @@ msgstr "skladište je već aktivno"
 #, fuzzy
 msgid "reallocating list"
 msgstr "zauzimam domen"
+
+#, fuzzy
+#~ msgid "failed to chdir into /new on tmpfs"
+#~ msgstr "neuspelo čekanje na komandu: %s"
+
+#, fuzzy
+#~ msgid "failed to lazily unmount old root"
+#~ msgstr "Neuspelo otvaranje direktorijuma „%s“: %s"
+
+#, fuzzy
+#~ msgid "cannot create /dev/"
+#~ msgstr "ne mogu da napravim cev: %s"
+
+#, fuzzy
+#~ msgid "failed to mount /dev tmpfs"
+#~ msgstr "neuspelo čekanje na komandu: %s"
 
 #, fuzzy
 #~ msgid "Unable to log VM console data: %s\n"

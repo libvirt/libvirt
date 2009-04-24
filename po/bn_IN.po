@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-04-20 11:21+0200\n"
+"POT-Creation-Date: 2009-04-24 12:05+0200\n"
 "PO-Revision-Date: 2009-04-09 17:31+0530\n"
 "Last-Translator: Runa Bhattacharjee <runab@fedoraproject.org>\n"
 "Language-Team: Bengali INDIA <fedora-trans-bn_in@redhat.com>\n"
@@ -1325,91 +1325,91 @@ msgstr "অপ্রত্যাশিত ডিস্ক ক্যাশে ম
 msgid "unexpected filesystem type %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির ফাইল-সিস্টেম %d"
 
-#: src/domain_conf.c:3001 src/domain_conf.c:3221
+#: src/domain_conf.c:3001 src/domain_conf.c:3223
 #, c-format
 msgid "unexpected net type %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির নেট %d"
 
-#: src/domain_conf.c:3075
+#: src/domain_conf.c:3076
 #, c-format
 msgid "unexpected char type %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির char %d"
 
-#: src/domain_conf.c:3174 src/xend_internal.c:5506
+#: src/domain_conf.c:3176 src/xend_internal.c:5498
 #, c-format
 msgid "unexpected sound model %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির শব্দের মডেল %d"
 
-#: src/domain_conf.c:3194 src/xend_internal.c:5528
+#: src/domain_conf.c:3196 src/xend_internal.c:5520
 #, c-format
 msgid "unexpected input type %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির ইনপুট %d"
 
-#: src/domain_conf.c:3199
+#: src/domain_conf.c:3201
 #, c-format
 msgid "unexpected input bus type %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির ইনপুট বাস %d"
 
-#: src/domain_conf.c:3284
+#: src/domain_conf.c:3286
 #, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "অপ্রত্যাশিত hostdev মোড %d"
 
-#: src/domain_conf.c:3291
+#: src/domain_conf.c:3293
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির hostdev %d"
 
-#: src/domain_conf.c:3339
+#: src/domain_conf.c:3341
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির ডোমেইন %d"
 
-#: src/domain_conf.c:3424
+#: src/domain_conf.c:3426
 #, c-format
 msgid "unexpected boot device type %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির বুট ডিভাইস %d"
 
-#: src/domain_conf.c:3442
+#: src/domain_conf.c:3444
 #, c-format
 msgid "unexpected feature %d"
 msgstr "অপ্রত্যাশিত বৈশিষ্ট্য %d"
 
-#: src/domain_conf.c:3587 src/network_conf.c:657
+#: src/domain_conf.c:3589 src/network_conf.c:657
 #, c-format
 msgid "cannot create config directory '%s'"
 msgstr "কনফিগ ডিরেক্টরি '%s' নির্মাণ করতে ব্যর্থ"
 
-#: src/domain_conf.c:3596 src/network_conf.c:666
+#: src/domain_conf.c:3598 src/network_conf.c:666
 #, c-format
 msgid "cannot create config file '%s'"
 msgstr "কনফিগ ফাইল '%s' নির্মাণ করতে ব্যর্থ"
 
-#: src/domain_conf.c:3604 src/network_conf.c:674
+#: src/domain_conf.c:3606 src/network_conf.c:674
 #, c-format
 msgid "cannot write config file '%s'"
 msgstr "কনফিগ ফাইল '%s' লিখতে ব্যর্থ"
 
-#: src/domain_conf.c:3611 src/network_conf.c:681
+#: src/domain_conf.c:3613 src/network_conf.c:681
 #, c-format
 msgid "cannot save config file '%s'"
 msgstr "কনফিগ ফাইল '%s' সংরক্ষণ করতে ব্যর্থ"
 
-#: src/domain_conf.c:3712 src/network_conf.c:783
+#: src/domain_conf.c:3714 src/network_conf.c:787
 #, c-format
 msgid "Failed to open dir '%s'"
 msgstr "ডিরেক্টরি খুলতে ব্যর্থ: '%s'"
 
-#: src/domain_conf.c:3766
+#: src/domain_conf.c:3768
 #, c-format
 msgid "cannot remove config %s"
 msgstr "%s কনফিগ মুছে ফেলতে ব্যর্থ"
 
-#: src/domain_conf.c:3840
+#: src/domain_conf.c:3842
 msgid "unknown virt type"
 msgstr "virt-র প্রকৃতি অজানা"
 
-#: src/domain_conf.c:3851
+#: src/domain_conf.c:3853
 #, c-format
 msgid "no emulator for domain %s os type %s on architecture %s"
 msgstr ""
@@ -1532,7 +1532,7 @@ msgstr ""
 msgid "failed to make root private"
 msgstr "ডিভাইস %s নির্মাণ করতে ব্যর্থ"
 
-#: src/lxc_container.c:304 src/lxc_container.c:326 src/lxc_container.c:461
+#: src/lxc_container.c:304 src/lxc_container.c:326 src/lxc_container.c:493
 #, c-format
 msgid "failed to create %s"
 msgstr "%s নির্মাণ করতে ব্যর্থ"
@@ -1548,171 +1548,193 @@ msgid "failed to bind new root %s into tmpfs"
 msgstr "নতুন root %s বাইন্ড করতে ব্যর্থ"
 
 #: src/lxc_container.c:343
-#, fuzzy
-msgid "failed to chroot into tmpfs"
+#, fuzzy, c-format
+msgid "failed to chroot into %s"
 msgstr "/dev tmpfs মাউন্ট করতে ব্যর্থ"
 
-#: src/lxc_container.c:349
-#, fuzzy
-msgid "failed to chdir into /new on tmpfs"
-msgstr "/dev tmpfs মাউন্ট করতে ব্যর্থ"
-
-#: src/lxc_container.c:357
+#: src/lxc_container.c:351
 #, fuzzy
 msgid "failed to pivot root"
 msgstr "/proc-কে মাউন্ট করতে ব্যর্থ"
 
-#: src/lxc_container.c:367
-#, fuzzy
-msgid "failed to lazily unmount old root"
-msgstr "/proc-কে মাউন্ট করতে ব্যর্থ"
+#: src/lxc_container.c:394
+#, fuzzy, c-format
+msgid "failed to mkdir %s"
+msgstr "ডিভাইস %s নির্মাণ করতে ব্যর্থ"
 
 #: src/lxc_container.c:400
-msgid "cannot create /dev/"
-msgstr "/dev/ নির্মাণ করা সম্ভব নয়"
+#, fuzzy, c-format
+msgid "failed to mount %s on %s"
+msgstr "%s-কে %s-এ মাউন্ট করতে ব্যর্থ"
 
-#: src/lxc_container.c:405
-msgid "failed to mount /dev tmpfs"
-msgstr "/dev tmpfs মাউন্ট করতে ব্যর্থ"
-
-#: src/lxc_container.c:416
+#: src/lxc_container.c:408
 msgid "cannot create /dev/pts"
 msgstr "/dev/pts নির্মাণ করতে ব্যর্থ"
 
-#: src/lxc_container.c:421
+#: src/lxc_container.c:415
 #, fuzzy
 msgid "failed to mount /dev/pts in container"
 msgstr "ধারণকারীর মধ্যে /dev/pts স্থানান্তর করতে ব্যর্থ"
 
-#: src/lxc_container.c:431
+#: src/lxc_container.c:446
 #, c-format
 msgid "failed to make device %s"
 msgstr "ডিভাইস %s নির্মাণ করতে ব্যর্থ"
 
-#: src/lxc_container.c:469 src/lxc_container.c:581
+#: src/lxc_container.c:455
+#, fuzzy
+msgid "failed to create symlink /dev/ptmx to /dev/pts/ptmx"
+msgstr "'%s' সিমলিংক '%s'-এ নির্মাণ করতে ব্যর্থ: %s"
+
+#: src/lxc_container.c:463
+#, fuzzy
+msgid "failed to make device /dev/ptmx"
+msgstr "ডিভাইস %s নির্মাণ করতে ব্যর্থ"
+
+#: src/lxc_container.c:501 src/lxc_container.c:616
 #, c-format
 msgid "failed to mount %s at %s"
 msgstr "%s-কে %s-এ মাউন্ট করতে ব্যর্থ"
 
-#: src/lxc_container.c:492
+#: src/lxc_container.c:524
 msgid "failed to read /proc/mounts"
 msgstr "/proc/mounts পড়তে ব্যর্থ"
 
-#: src/lxc_container.c:518
+#: src/lxc_container.c:552
 #, c-format
 msgid "failed to unmount '%s'"
 msgstr "'%s' আন-মাউন্ট করতে ব্যর্থ"
 
-#: src/lxc_container.c:543 src/lxc_container.c:591
-msgid "failed to mount /proc"
-msgstr "/proc-কে মাউন্ট করতে ব্যর্থ"
-
-#: src/lxc_container.c:567
+#: src/lxc_container.c:602
 #, fuzzy
 msgid "failed to make / slave"
 msgstr "ডিভাইস %s নির্মাণ করতে ব্যর্থ"
 
-#: src/lxc_container.c:636
+#: src/lxc_container.c:626
+msgid "failed to mount /proc"
+msgstr "/proc-কে মাউন্ট করতে ব্যর্থ"
+
+#: src/lxc_container.c:664
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() দ্বারা অবৈধ vm ব্যাখ্যা প্রেরিত হয়েছে"
 
-#: src/lxc_container.c:646
-#, c-format
-msgid "failed to open %s"
+#: src/lxc_container.c:685
+#, fuzzy, c-format
+msgid "failed to open tty %s"
 msgstr "%s খুলতে ব্যর্থ"
 
-#: src/lxc_container.c:708
+#: src/lxc_container.c:759
 msgid "failed to run clone container"
 msgstr ""
 
-#: src/lxc_controller.c:85
+#: src/lxc_controller.c:86
 #, c-format
 msgid "Unable to create cgroup for %s\n"
 msgstr "%s-র জন্য দল নির্মাণ করতে ব্যর্থ\n"
 
-#: src/lxc_controller.c:115
+#: src/lxc_controller.c:116
 msgid "Failed to set lxc resources"
 msgstr "lxc-র রিসোর্স নির্মাণ করতে ব্যর্থ"
 
-#: src/lxc_controller.c:141
+#: src/lxc_controller.c:142
 #, c-format
 msgid "failed to create server socket '%s'"
 msgstr "সার্ভারে সকেট '%s' নির্মাণ করতে ব্যর্থ"
 
-#: src/lxc_controller.c:153
+#: src/lxc_controller.c:154
 #, c-format
 msgid "failed to bind server socket '%s'"
 msgstr "সার্ভার সকেট '%s' বাইন্ড করতে ব্যর্থ"
 
-#: src/lxc_controller.c:159
+#: src/lxc_controller.c:160
 #, c-format
 msgid "failed to listen server socket %s"
 msgstr "সার্ভার সকেট %s-এ অপেক্ষা করতে ব্যর্থ"
 
-#: src/lxc_controller.c:193
+#: src/lxc_controller.c:194
 #, c-format
 msgid "read of fd %d failed"
 msgstr "fd %d পড়তে ব্যর্থ"
 
-#: src/lxc_controller.c:200
+#: src/lxc_controller.c:201
 #, c-format
 msgid "write to fd %d failed"
 msgstr "fd %d লেখার কর্ম বিফল"
 
-#: src/lxc_controller.c:252
+#: src/lxc_controller.c:253
 msgid "epoll_create(2) failed"
 msgstr "epoll_create(2) কর্ম বিফল"
 
-#: src/lxc_controller.c:262
+#: src/lxc_controller.c:263
 msgid "epoll_ctl(appPty) failed"
 msgstr "epoll_ctl(appPty) বিফল"
 
-#: src/lxc_controller.c:268 src/lxc_controller.c:276 src/lxc_controller.c:284
-#: src/lxc_controller.c:304 src/lxc_controller.c:310
+#: src/lxc_controller.c:269 src/lxc_controller.c:277 src/lxc_controller.c:285
+#: src/lxc_controller.c:305 src/lxc_controller.c:311
 msgid "epoll_ctl(contPty) failed"
 msgstr "epoll_ctl(contPty) বিফল"
 
-#: src/lxc_controller.c:327
+#: src/lxc_controller.c:328
 #, c-format
 msgid "error event %d"
 msgstr "ত্রুটির ইভেন্ট %d"
 
-#: src/lxc_controller.c:348
+#: src/lxc_controller.c:349
 msgid "epoll_wait() failed"
 msgstr "epoll_wait() বিফল"
 
-#: src/lxc_controller.c:398
+#: src/lxc_controller.c:399
 #, c-format
 msgid "failed to move interface %s to ns %d"
 msgstr ""
 
-#: src/lxc_controller.c:423
+#: src/lxc_controller.c:424
 #, c-format
 msgid "failed to delete veth: %s"
 msgstr "veth মুছতে ব্যর্থ: %s"
 
-#: src/lxc_controller.c:446
+#: src/lxc_controller.c:457
 msgid "sockpair failed"
 msgstr "sockpair বিফল"
 
-#: src/lxc_controller.c:454 src/lxc_driver.c:876
+#: src/lxc_controller.c:487
+#, fuzzy
+msgid "cannot unshare mount namespace"
+msgstr "উৎপাদন %s পার্স করতে ব্যর্থ"
+
+#: src/lxc_controller.c:493
+#, fuzzy
+msgid "failed to switch root mount into slave mode"
+msgstr "/dev tmpfs মাউন্ট করতে ব্যর্থ"
+
+#: src/lxc_controller.c:505
+#, fuzzy, c-format
+msgid "failed to make path %s"
+msgstr "ডিভাইস %s নির্মাণ করতে ব্যর্থ"
+
+#: src/lxc_controller.c:513
+#, fuzzy, c-format
+msgid "failed to mount devpts on %s"
+msgstr "%s-কে %s-এ মাউন্ট করতে ব্যর্থ"
+
+#: src/lxc_controller.c:531 src/lxc_controller.c:540 src/lxc_driver.c:876
 msgid "failed to allocate tty"
 msgstr "tty বরাদ্দ করতে ব্যর্থ"
 
-#: src/lxc_controller.c:622
+#: src/lxc_controller.c:712
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
 msgstr "pid ফাইল '%s/%s.pid' লিখতে ব্যর্থ"
 
-#: src/lxc_controller.c:636
+#: src/lxc_controller.c:726
 msgid "Unable to change to root dir"
 msgstr "root ডিরেক্টরি পরিবর্তন করতে ব্যর্থ"
 
-#: src/lxc_controller.c:642
+#: src/lxc_controller.c:732
 msgid "Unable to become session leader"
 msgstr ""
 
-#: src/lxc_controller.c:650
+#: src/lxc_controller.c:740
 msgid "Failed connection from LXC driver"
 msgstr "LXC ড্রাইভার থেকে বিফল সংযোগ"
 
@@ -1730,12 +1752,12 @@ msgstr "সিস্টেমের মধ্যে NETNS সমর্থন অ
 msgid "no domain with matching uuid"
 msgstr "uuid-র সাথে সুসংগত কোনো ডোমেইন উপস্থিত নেই"
 
-#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3491
+#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3507
 #: src/uml_driver.c:1632
 msgid "cannot delete active domain"
 msgstr "সক্রিয় ডোমেইন মুছে ফেলা সম্ভব নয়"
 
-#: src/lxc_driver.c:339 src/qemu_driver.c:3497 src/uml_driver.c:1638
+#: src/lxc_driver.c:339 src/qemu_driver.c:3513 src/uml_driver.c:1638
 msgid "cannot undefine transient domain"
 msgstr "সাময়িক (ট্রান্সিয়েন্ট) ডোমেইনের ব্যাখ্যা বাতিল করা সম্ভব নয়"
 
@@ -1843,7 +1865,7 @@ msgstr "অবৈধ পরামিতি `%s'"
 msgid "Invalid parameter count"
 msgstr "অবৈধ পরামিতি সংখ্যা"
 
-#: src/lxc_driver.c:1414 src/qemu_driver.c:2077 src/qemu_driver.c:4670
+#: src/lxc_driver.c:1414 src/qemu_driver.c:2093 src/qemu_driver.c:4686
 #, fuzzy
 msgid "failed to determine host name"
 msgstr "হোস্ট-নেম প্রাপ্ত করতে ব্যর্থ"
@@ -1877,23 +1899,23 @@ msgstr "অনুরোধ অনুবর্তন করা হচ্ছে, �
 msgid "unknown forwarding type '%s'"
 msgstr ""
 
-#: src/network_conf.c:741
+#: src/network_conf.c:742
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr ""
 "নেটওয়ার্ক কনফিগারেশনের ফাইল '%s'-র নাম নেটওয়ার্কের নাম '%s'-র সাথে সুসংগত নয়"
 
-#: src/network_conf.c:831
+#: src/network_conf.c:835
 #, c-format
 msgid "cannot remove config file '%s'"
 msgstr "কনফিগ ফাইল '%s' মুছে ফেলতে ব্যর্থ"
 
-#: src/network_conf.c:901
+#: src/network_conf.c:909
 #, c-format
 msgid "Bridge generation exceeded max id %d"
 msgstr ""
 
-#: src/network_conf.c:915
+#: src/network_conf.c:923
 #, c-format
 msgid "bridge name '%s' already in use."
 msgstr "'%s' নামক ব্রিজ বর্তমানে উপস্থিত রয়েছে।"
@@ -2054,7 +2076,7 @@ msgstr "autostart ডিরেক্টরি '%s' নির্মাণ কর�
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "'%s' সিমলিংক '%s'-এ নির্মাণ করতে ব্যর্থ"
 
-#: src/network_driver.c:1390 src/qemu_driver.c:4152 src/storage_driver.c:979
+#: src/network_driver.c:1390 src/qemu_driver.c:4168 src/storage_driver.c:979
 #: src/uml_driver.c:1733
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -2509,7 +2531,7 @@ msgstr "ডোমেইন বর্তমানে shutoff (বন্ধ) অ�
 msgid "Could not read container config"
 msgstr "ধারণকারীর কনফিগ পড়তে ব্যর্থ"
 
-#: src/openvz_driver.c:1008 src/qemu_driver.c:1847
+#: src/openvz_driver.c:1008 src/qemu_driver.c:1863
 #, c-format
 msgid "unknown type '%s'"
 msgstr "অজানা ধরন '%s'"
@@ -2832,7 +2854,7 @@ msgstr "মনিটর সংক্রান্ত close-on-exec ফ্ল্�
 msgid "Unable to put monitor into non-blocking mode"
 msgstr ""
 
-#: src/qemu_driver.c:968 src/qemu_driver.c:1533
+#: src/qemu_driver.c:968 src/qemu_driver.c:1543
 #, c-format
 msgid "Unable to close logfile: %s\n"
 msgstr "লগ-ফাইল বন্ধ করতে ব্যর্থ: %s\n"
@@ -2851,7 +2873,7 @@ msgstr "CPU thread সংক্রান্ত তথ্য প্রাপ্�
 msgid "failed to set CPU affinity"
 msgstr "ক্ষমতা সম্বন্ধীয় তথ্য প্রাপ্ত করতে ব্যর্থ"
 
-#: src/qemu_driver.c:1121 src/qemu_driver.c:2261
+#: src/qemu_driver.c:1121 src/qemu_driver.c:2277
 msgid "resume operation failed"
 msgstr "পুনরারম্ভের কর্ম বিফল"
 
@@ -2882,523 +2904,534 @@ msgstr "লগ ডিরেক্টরি নির্মাণ করতে �
 msgid "Cannot find QEMU binary %s"
 msgstr "QEMU বাইনারি %s অনুসন্ধান করতে ব্যর্থ: %s"
 
-#: src/qemu_driver.c:1384 src/qemu_driver.c:3603
+#: src/qemu_driver.c:1384 src/qemu_driver.c:3619
 #, fuzzy, c-format
 msgid "Cannot determine QEMU argv syntax %s"
 msgstr "QEMU বাইনারি %s অনুসন্ধান করতে ব্যর্থ: %s"
 
-#: src/qemu_driver.c:1401 src/qemu_driver.c:1404 src/uml_driver.c:798
+#: src/qemu_driver.c:1394
+#, fuzzy, c-format
+msgid "Cannot remove stale PID file for %s"
+msgstr "%s-র কনফিগ মুছে ফেলতে ব্যর্থ"
+
+#: src/qemu_driver.c:1409 src/qemu_driver.c:1412 src/uml_driver.c:798
 #: src/uml_driver.c:801
 #, fuzzy, c-format
 msgid "Unable to write envv to logfile: %s\n"
 msgstr "%d লগ ফাইলের মধ্যে argv লিখতে ব্যর্থ: %s"
 
-#: src/qemu_driver.c:1411 src/qemu_driver.c:1414 src/qemu_driver.c:1419
+#: src/qemu_driver.c:1419 src/qemu_driver.c:1422 src/qemu_driver.c:1427
 #: src/uml_driver.c:808 src/uml_driver.c:811 src/uml_driver.c:816
 #, fuzzy, c-format
 msgid "Unable to write argv to logfile: %s\n"
 msgstr "%d লগ ফাইলের মধ্যে argv লিখতে ব্যর্থ: %s"
 
-#: src/qemu_driver.c:1423
+#: src/qemu_driver.c:1431
 #, fuzzy, c-format
 msgid "Unable to seek to end of logfile: %s\n"
 msgstr "%d লগ-ফাইল বন্ধ করতে ব্যর্থ: %s"
 
-#: src/qemu_driver.c:1451
+#: src/qemu_driver.c:1459
 #, fuzzy, c-format
 msgid "Domain %s didn't show up\n"
 msgstr "ডোমেইন %s, %s-এ সংরক্ষণ করা হয়েছে\n"
 
-#: src/qemu_driver.c:1456
+#: src/qemu_driver.c:1464
 msgid "Unable to daemonize QEMU process"
 msgstr "QEMU প্রসেসের ডেমন তৈরি করতে ব্যর্থ"
 
-#: src/qemu_driver.c:1518
+#: src/qemu_driver.c:1528
 #, fuzzy, c-format
 msgid "Shutting down VM '%s'\n"
 msgstr "VM '%s' বন্ধ করা হচ্ছে"
 
-#: src/qemu_driver.c:1523
+#: src/qemu_driver.c:1533
 #, fuzzy, c-format
 msgid "Failed to send SIGTERM to %s (%d)"
 msgstr "ব্রিজ STP-র মান %s নির্ধারণ করতে ব্যর্থ"
 
-#: src/qemu_driver.c:1556
+#: src/qemu_driver.c:1566
 #, fuzzy, c-format
 msgid "Failed to remove domain status for %s"
 msgstr "%s থেকে ডোমেইন পুনরুদ্ধার করতে ব্যর্থ"
 
-#: src/qemu_driver.c:1603
+#: src/qemu_driver.c:1571
+#, fuzzy, c-format
+msgid "Failed to remove PID file for %s: %s"
+msgstr "PCI ID '%s'-কে %s থেকে মুছে ফেলতে ব্যর্থ"
+
+#: src/qemu_driver.c:1619
 #, c-format
 msgid "unhandled fd event %d for %s"
 msgstr ""
 
-#: src/qemu_driver.c:1820
+#: src/qemu_driver.c:1836
 #, fuzzy, c-format
 msgid "Unable to open %s"
 msgstr "tty %s খুলতে ব্যর্থ: %s\n"
 
-#: src/qemu_driver.c:1883 src/qemu_driver.c:1920 src/uml_driver.c:974
+#: src/qemu_driver.c:1899 src/qemu_driver.c:1936 src/uml_driver.c:974
 #: src/uml_driver.c:1005
 msgid "NUMA not supported on this host"
 msgstr "এই হোস্ট সিস্টেমে NUMA সমর্থিত হবে না"
 
-#: src/qemu_driver.c:1889
+#: src/qemu_driver.c:1905
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr ""
 
-#: src/qemu_driver.c:1901 src/qemu_driver.c:1928 src/uml_driver.c:985
+#: src/qemu_driver.c:1917 src/qemu_driver.c:1944 src/uml_driver.c:985
 #: src/uml_driver.c:1013
 msgid "Failed to query NUMA free memory"
 msgstr "NUMA-র মুক্ত মেমরির পরিমাণ অনুসন্ধান করতে ব্যর্থ"
 
-#: src/qemu_driver.c:1988 src/uml_driver.c:1270 src/uml_driver.c:1300
+#: src/qemu_driver.c:2004 src/uml_driver.c:1270 src/uml_driver.c:1300
+#: src/vbox/vbox_tmpl.c:542
 #, c-format
 msgid "no domain with matching id %d"
 msgstr "%d id-র সাথে সুসংগত ডোমেইন অনুপস্থিত"
 
-#: src/qemu_driver.c:2015 src/qemu_driver.c:2197 src/qemu_driver.c:2250
-#: src/qemu_driver.c:2301 src/qemu_driver.c:2332 src/qemu_driver.c:2369
-#: src/qemu_driver.c:2396 src/qemu_driver.c:2421 src/qemu_driver.c:2544
-#: src/qemu_driver.c:2585 src/qemu_driver.c:2737 src/qemu_driver.c:2872
-#: src/qemu_driver.c:3066 src/qemu_driver.c:3100 src/qemu_driver.c:3314
-#: src/qemu_driver.c:3393 src/qemu_driver.c:3485 src/qemu_driver.c:3881
-#: src/qemu_driver.c:4033 src/qemu_driver.c:4087 src/qemu_driver.c:4115
-#: src/qemu_driver.c:4195 src/qemu_driver.c:4333 src/qemu_driver.c:4399
-#: src/qemu_driver.c:4473 src/qemu_driver.c:4806 src/uml_driver.c:1358
+#: src/qemu_driver.c:2031 src/qemu_driver.c:2213 src/qemu_driver.c:2266
+#: src/qemu_driver.c:2317 src/qemu_driver.c:2348 src/qemu_driver.c:2385
+#: src/qemu_driver.c:2412 src/qemu_driver.c:2437 src/qemu_driver.c:2560
+#: src/qemu_driver.c:2601 src/qemu_driver.c:2753 src/qemu_driver.c:2888
+#: src/qemu_driver.c:3082 src/qemu_driver.c:3116 src/qemu_driver.c:3330
+#: src/qemu_driver.c:3409 src/qemu_driver.c:3501 src/qemu_driver.c:3897
+#: src/qemu_driver.c:4049 src/qemu_driver.c:4103 src/qemu_driver.c:4131
+#: src/qemu_driver.c:4211 src/qemu_driver.c:4349 src/qemu_driver.c:4415
+#: src/qemu_driver.c:4489 src/qemu_driver.c:4822 src/uml_driver.c:1358
 #: src/uml_driver.c:1383 src/uml_driver.c:1416
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "uuid '%s'-র সাথে সুসংগত ডোমেইন অনুপস্থিত"
 
-#: src/qemu_driver.c:2040 src/qemu_driver.c:4935
+#: src/qemu_driver.c:2056 src/qemu_driver.c:4951
 #, fuzzy, c-format
 msgid "no domain with matching name '%s'"
 msgstr "সুসংগত নাম সহ কোনো ডোমেইন উপস্থিত নেই"
 
-#: src/qemu_driver.c:2135 src/uml_driver.c:1219
+#: src/qemu_driver.c:2151 src/uml_driver.c:1219
 #, fuzzy, c-format
 msgid "domain '%s' is already defined"
 msgstr "%s ডোমেইন বর্তমানে উপস্থিত"
 
-#: src/qemu_driver.c:2145 src/uml_driver.c:1229
+#: src/qemu_driver.c:2161 src/uml_driver.c:1229
 #, fuzzy, c-format
 msgid "domain with uuid '%s' is already defined"
 msgstr "%s ডোমেইন বর্তমানে উপস্থিত"
 
-#: src/qemu_driver.c:2202 src/qemu_driver.c:2255 src/qemu_driver.c:2743
-#: src/qemu_driver.c:4200 src/qemu_driver.c:4339 src/qemu_driver.c:4485
-#: src/qemu_driver.c:4812
+#: src/qemu_driver.c:2218 src/qemu_driver.c:2271 src/qemu_driver.c:2759
+#: src/qemu_driver.c:4216 src/qemu_driver.c:4355 src/qemu_driver.c:4501
+#: src/qemu_driver.c:4828
 msgid "domain is not running"
 msgstr "ডোমেইন বর্তমানে সক্রিয় নয়"
 
-#: src/qemu_driver.c:2208 src/qemu_driver.c:2752
+#: src/qemu_driver.c:2224 src/qemu_driver.c:2768
 msgid "suspend operation failed"
 msgstr "স্থগিত করার কর্ম বিফল"
 
-#: src/qemu_driver.c:2307 src/uml_driver.c:1277
+#: src/qemu_driver.c:2323 src/uml_driver.c:1277
 msgid "shutdown operation failed"
 msgstr "বন্ধ করার কর্ম বিফল"
 
-#: src/qemu_driver.c:2427 src/uml_driver.c:1389
+#: src/qemu_driver.c:2443 src/uml_driver.c:1389
 msgid "cannot set max memory lower than current memory"
 msgstr ""
 "সর্বাধিক মেমরির পরিমাণ বর্তমান মেমরির তূলনায় কম পরিমাণে নির্ধারণ করা যাবে না"
 
-#: src/qemu_driver.c:2460
+#: src/qemu_driver.c:2476
 #, fuzzy
 msgid "could not query memory balloon allocation"
 msgstr "বরাদ্দ মেমরির মান পরিবর্তন করুন"
 
-#: src/qemu_driver.c:2471
+#: src/qemu_driver.c:2487
 #, fuzzy
 msgid "could not parse memory balloon allocation"
 msgstr "সংযোগের URI পার্স করতে ব্যর্থ"
 
-#: src/qemu_driver.c:2510
+#: src/qemu_driver.c:2526
 #, fuzzy
 msgid "could not balloon memory allocation"
 msgstr "বরাদ্দ মেমরির মান পরিবর্তন করুন"
 
-#: src/qemu_driver.c:2550 src/uml_driver.c:1428
+#: src/qemu_driver.c:2566 src/uml_driver.c:1428
 msgid "cannot set memory higher than max memory"
 msgstr "সর্বাধিক মেমরির পরিমাণের তূলনায় অধিক পরিমাণে মেমরি নির্ধারণ করা যাবে না"
 
-#: src/qemu_driver.c:2558 src/uml_driver.c:1422
+#: src/qemu_driver.c:2574 src/uml_driver.c:1422
 msgid "cannot set memory of an active domain"
 msgstr "সক্রিয় ডোমেইনের মেমরি নির্ধারণ করা যাবে না"
 
-#: src/qemu_driver.c:2764
+#: src/qemu_driver.c:2780
 msgid "failed to get domain xml"
 msgstr "ডোমেইন xml প্রাপ্ত করতে ব্যর্থ"
 
-#: src/qemu_driver.c:2772
+#: src/qemu_driver.c:2788
 #, c-format
 msgid "failed to create '%s'"
 msgstr "'%s' নির্মাণ করতে ব্যর্থ"
 
-#: src/qemu_driver.c:2778
+#: src/qemu_driver.c:2794
 msgid "failed to write save header"
 msgstr "সংরক্ষণের হেডার লিখতে ব্যর্থ"
 
-#: src/qemu_driver.c:2784
+#: src/qemu_driver.c:2800
 msgid "failed to write xml"
 msgstr "xml লিখতে ব্যর্থ"
 
-#: src/qemu_driver.c:2790
+#: src/qemu_driver.c:2806
 #, fuzzy, c-format
 msgid "unable to save file %s"
 msgstr "%d লগ-ফাইল বন্ধ করতে ব্যর্থ: %s"
 
-#: src/qemu_driver.c:2812 src/qemu_driver.c:4855
+#: src/qemu_driver.c:2828 src/qemu_driver.c:4871
 msgid "migrate operation failed"
 msgstr "মাইগ্রেট কর্ম বিফল"
 
-#: src/qemu_driver.c:2823
+#: src/qemu_driver.c:2839
 #, fuzzy
 msgid "'migrate' not supported by this qemu"
 msgstr "'info blockstats' কমান্ড এই qemu দ্বারা সমর্থিত নয়"
 
-#: src/qemu_driver.c:2878
+#: src/qemu_driver.c:2894
 msgid "cannot change vcpu count of an active domain"
 msgstr "সক্রিয় ডোমেইনের মধ্যে vcpu-র সংখ্যা পরিবর্তন করতে ব্যর্থ"
 
-#: src/qemu_driver.c:2884 src/qemu_driver.c:3072 src/qemu_driver.c:3106
+#: src/qemu_driver.c:2900 src/qemu_driver.c:3088 src/qemu_driver.c:3122
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "'%d' ডোমেইন ব্যাখ্যাকালে অজানা virt type উল্লিখিত"
 
-#: src/qemu_driver.c:2891
+#: src/qemu_driver.c:2907
 msgid "could not determine max vcpus for the domain"
 msgstr "ডোমেইনের ক্ষেত্রে প্রযোজ্য সর্বাধিক vcpu নির্ধারণ করা যায়নি"
 
-#: src/qemu_driver.c:2897
+#: src/qemu_driver.c:2913
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
 msgstr ""
 "ডোমেইনের জন্য নির্ধারিত সর্বাধিক vcpu থেকে অনুরোধ করা vcpu-র সংখ্যা অধিক: %d > %d"
 
-#: src/qemu_driver.c:2931 src/qemu_driver.c:2992
+#: src/qemu_driver.c:2947 src/qemu_driver.c:3008
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "নিষ্ক্রিয় ডোমেইনের মধ্যে vcpu pin করা সম্ভব নয়"
 
-#: src/qemu_driver.c:2937
+#: src/qemu_driver.c:2953
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr "vcpu সংখ্যা সীমা বহির্ভূত %d > %d"
 
-#: src/qemu_driver.c:2958
+#: src/qemu_driver.c:2974
 #, fuzzy
 msgid "cannot set affinity"
 msgstr "ডোমেইন পুনরায় বুট করা হবে"
 
-#: src/qemu_driver.c:2963
+#: src/qemu_driver.c:2979
 msgid "cpu affinity is not supported"
 msgstr "cpu অ্যাফিনিটি সমর্থিত নয়"
 
-#: src/qemu_driver.c:3027
+#: src/qemu_driver.c:3043
 #, fuzzy
 msgid "cannot get affinity"
 msgstr "ডোমেইন পুনরায় বুট করা হবে"
 
-#: src/qemu_driver.c:3037
+#: src/qemu_driver.c:3053
 msgid "cpu affinity is not available"
 msgstr "cpu অফিনিটি উপলব্ধ নেই"
 
-#: src/qemu_driver.c:3129
+#: src/qemu_driver.c:3145
 #, fuzzy
 msgid "Failed to get security label"
 msgstr "হোস্ট-নেম প্রাপ্ত করতে ব্যর্থ"
 
-#: src/qemu_driver.c:3154
+#: src/qemu_driver.c:3170
 #, c-format
 msgid "security model string exceeds max %d bytes"
 msgstr ""
 
-#: src/qemu_driver.c:3163
+#: src/qemu_driver.c:3179
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr ""
 
-#: src/qemu_driver.c:3187
+#: src/qemu_driver.c:3203
 msgid "cannot read domain image"
 msgstr "ডোমেইনের ইমেজ নির্মাণ করতে ব্যর্থ"
 
-#: src/qemu_driver.c:3193
+#: src/qemu_driver.c:3209
 msgid "failed to read qemu header"
 msgstr "qemu হেডার পড়তে ব্যর্থ"
 
-#: src/qemu_driver.c:3199
+#: src/qemu_driver.c:3215
 msgid "image magic is incorrect"
 msgstr "image magic সঠিক নয়"
 
-#: src/qemu_driver.c:3205
+#: src/qemu_driver.c:3221
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "image-র সংস্করণ সমর্থিত নয় (%d > %d)"
 
-#: src/qemu_driver.c:3217
+#: src/qemu_driver.c:3233
 msgid "failed to read XML"
 msgstr "XML পড়তে ব্যর্থ"
 
-#: src/qemu_driver.c:3225 src/qemu_driver.c:4705
+#: src/qemu_driver.c:3241 src/qemu_driver.c:4721
 msgid "failed to parse XML"
 msgstr "XML পার্স করতে ব্যর্থ"
 
-#: src/qemu_driver.c:3236
+#: src/qemu_driver.c:3252
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "'%s' রূপে ডোমেইন বর্তমানে সক্রিয়"
 
-#: src/qemu_driver.c:3247 src/qemu_driver.c:4741
+#: src/qemu_driver.c:3263 src/qemu_driver.c:4757
 msgid "failed to assign new VM"
 msgstr "নতুন VM ধার্য করতে ব্যর্থ"
 
-#: src/qemu_driver.c:3258
+#: src/qemu_driver.c:3274
 msgid "failed to start VM"
 msgstr "VM আরম্ভ করতে ব্যর্থ"
 
-#: src/qemu_driver.c:3276
+#: src/qemu_driver.c:3292
 msgid "failed to resume domain"
 msgstr "ডোমেইন পুনরারম্ভ করতে ব্যর্থ"
 
-#: src/qemu_driver.c:3532
+#: src/qemu_driver.c:3548
 #, c-format
 msgid "cannot convert disk '%s' to bus/device index"
 msgstr ""
 
-#: src/qemu_driver.c:3558
+#: src/qemu_driver.c:3574
 #, fuzzy, c-format
 msgid "Unsupported disk name mapping for bus '%s'"
 msgstr "'%s' ধরনের ডিস্ক সমর্থিত নয়"
 
-#: src/qemu_driver.c:3593
+#: src/qemu_driver.c:3609
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3620
+#: src/qemu_driver.c:3636
 #, c-format
 msgid ""
 "Emulator version does not support removable media for device '%s' and target "
 "'%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3657
+#: src/qemu_driver.c:3673
 #, fuzzy
 msgid "could not change cdrom media"
 msgstr "cdrom মিডিয়া মুছে ফেলতে ব্যর্থ"
 
-#: src/qemu_driver.c:3668
+#: src/qemu_driver.c:3684
 #, fuzzy, c-format
 msgid "changing cdrom media failed: %s"
 msgstr "cdrom মিডিয়া মুছে ফেলতে ব্যর্থ"
 
-#: src/qemu_driver.c:3695 src/qemu_driver.c:3764
+#: src/qemu_driver.c:3711 src/qemu_driver.c:3780
 #, c-format
 msgid "target %s already exists"
 msgstr "%s টার্গেট বর্তমানে উপস্থিত রয়েছে"
 
-#: src/qemu_driver.c:3721
+#: src/qemu_driver.c:3737
 #, c-format
 msgid "cannot attach %s disk"
 msgstr "%s ডিস্ক সংযুক্ত করতে ব্যর্থ"
 
-#: src/qemu_driver.c:3735
+#: src/qemu_driver.c:3751
 msgid "Unable to parse slot number\n"
 msgstr "স্লটের সংখ্যা পার্স করতে ব্যর্থ\n"
 
-#: src/qemu_driver.c:3738
+#: src/qemu_driver.c:3754
 #, c-format
 msgid "adding %s disk failed"
 msgstr "%s ডিস্ক যোগ করতে ব্যর্থ"
 
-#: src/qemu_driver.c:3789
+#: src/qemu_driver.c:3805
 msgid "cannot attach usb disk"
 msgstr "usb ডিস্ক যোগ করতে ব্যর্থ"
 
-#: src/qemu_driver.c:3800
+#: src/qemu_driver.c:3816
 msgid "adding usb disk failed"
 msgstr "usb ডিস্ক যোগ করতে ব্যর্থ"
 
-#: src/qemu_driver.c:3843
+#: src/qemu_driver.c:3859
 msgid "cannot attach usb device"
 msgstr "usb ডিভাইস যোগ করা সম্ভব নয়"
 
-#: src/qemu_driver.c:3854
+#: src/qemu_driver.c:3870
 #, fuzzy
 msgid "adding usb device failed"
 msgstr "হোস্ট ব্যাখ্যাকারী ফাইল লোড করা হচ্ছে"
 
-#: src/qemu_driver.c:3888
+#: src/qemu_driver.c:3904
 msgid "cannot attach device on inactive domain"
 msgstr "নিষ্ক্রিয় ডোমেইনের সাথে ডিভাইস সংযুক্ত করা যাবে না"
 
-#: src/qemu_driver.c:3914
+#: src/qemu_driver.c:3930
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "ডিস্ক বাস '%s' হট-প্লাগ করা সম্ভব নয়"
 
-#: src/qemu_driver.c:3924
+#: src/qemu_driver.c:3940
 #, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "'%s' ডিস্ক ডিভাইসের ধরন হট-প্লাগ করা সম্ভব নয়"
 
-#: src/qemu_driver.c:3934
+#: src/qemu_driver.c:3950
 #, fuzzy, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "শুধুমাত্র CDROM ডিস্ক ডিভাইস সংযুক্ত করা যাবে"
 
-#: src/qemu_driver.c:3967
+#: src/qemu_driver.c:3983
 #, fuzzy, c-format
 msgid "disk %s not found"
 msgstr "ডোমেইন পাওয়া যায়নি"
 
-#: src/qemu_driver.c:3973
+#: src/qemu_driver.c:3989
 #, c-format
 msgid "disk %s cannot be detached - invalid slot number %d"
 msgstr ""
 
-#: src/qemu_driver.c:3985
+#: src/qemu_driver.c:4001
 #, fuzzy, c-format
 msgid "failed to execute detach disk %s command"
 msgstr "ডোমেইন পুনরারম্ভ করতে ব্যর্থ"
 
-#: src/qemu_driver.c:3994
+#: src/qemu_driver.c:4010
 #, fuzzy, c-format
 msgid "failed to detach disk %s: invalid slot %d"
 msgstr "%s থেকে ডিভাইস বিচ্ছিন্ন করতে ব্যর্থ"
 
-#: src/qemu_driver.c:4040
+#: src/qemu_driver.c:4056
 #, fuzzy
 msgid "cannot detach device on inactive domain"
 msgstr "নিষ্ক্রিয় ডোমেইনের সাথে ডিভাইস সংযুক্ত করা যাবে না"
 
-#: src/qemu_driver.c:4061
+#: src/qemu_driver.c:4077
 #, fuzzy
 msgid "only SCSI or virtio disk device can be detached dynamically"
 msgstr "শুধুমাত্র CDROM ডিস্ক ডিভাইস সংযুক্ত করা যাবে"
 
-#: src/qemu_driver.c:4121 src/uml_driver.c:1702
+#: src/qemu_driver.c:4137 src/uml_driver.c:1702
 #, fuzzy
 msgid "cannot set autostart for transient domain"
 msgstr "সক্রিয় ডোমেইনের মেমরি নির্ধারণ করা যাবে না"
 
-#: src/qemu_driver.c:4138 src/storage_driver.c:964 src/uml_driver.c:1719
+#: src/qemu_driver.c:4154 src/storage_driver.c:964 src/uml_driver.c:1719
 #, fuzzy, c-format
 msgid "cannot create autostart directory %s"
 msgstr "autostart ডিরেক্টরি %s নির্মাণ করতে ব্যর্থ : %s"
 
-#: src/qemu_driver.c:4145 src/uml_driver.c:1726
+#: src/qemu_driver.c:4161 src/uml_driver.c:1726
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "'%s' সিমলিংক '%s'-এ নির্মাণ করতে ব্যর্থ: %s"
 
-#: src/qemu_driver.c:4213
+#: src/qemu_driver.c:4229
 #, c-format
 msgid "invalid path: %s"
 msgstr "পাথ বৈধ নয়: %s"
 
-#: src/qemu_driver.c:4224
+#: src/qemu_driver.c:4240
 msgid "'info blockstats' command failed"
 msgstr "'info blockstats' কমান্ড বিফল"
 
-#: src/qemu_driver.c:4237
+#: src/qemu_driver.c:4253
 msgid "'info blockstats' not supported by this qemu"
 msgstr "'info blockstats' কমান্ড এই qemu দ্বারা সমর্থিত নয়"
 
-#: src/qemu_driver.c:4305
+#: src/qemu_driver.c:4321
 #, c-format
 msgid "device not found: %s (%s)"
 msgstr "ডিভাইস পাওয়া যায়নি: %s (%s)"
 
-#: src/qemu_driver.c:4345 src/qemu_driver.c:4405 src/uml_driver.c:1775
+#: src/qemu_driver.c:4361 src/qemu_driver.c:4421 src/uml_driver.c:1775
 msgid "NULL or empty path"
 msgstr "NULL অথবা পাথ ফাঁকা"
 
-#: src/qemu_driver.c:4362
+#: src/qemu_driver.c:4378
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "পাথ বৈধ নয়, '%s' পরিচিত ইন্টারফেস নয়"
 
-#: src/qemu_driver.c:4424
+#: src/qemu_driver.c:4440
 #, fuzzy, c-format
 msgid "%s: failed to open"
 msgstr "ফাইল খুলতে ব্যর্থ"
 
-#: src/qemu_driver.c:4435
+#: src/qemu_driver.c:4451
 #, fuzzy, c-format
 msgid "%s: failed to seek or read"
 msgstr "পড়ার উদ্দেশ্যে %s খুলতে ব্যর্থ"
 
-#: src/qemu_driver.c:4442 src/uml_driver.c:1812
+#: src/qemu_driver.c:4458 src/uml_driver.c:1812
 msgid "invalid path"
 msgstr "অবৈধ পাথ"
 
-#: src/qemu_driver.c:4479
+#: src/qemu_driver.c:4495
 msgid "QEMU driver only supports virtual memory addrs"
 msgstr ""
 
-#: src/qemu_driver.c:4492
+#: src/qemu_driver.c:4508
 #, fuzzy, c-format
 msgid "mkstemp(\"%s\") failed"
 msgstr "open(%s) বিফল: %s"
 
-#: src/qemu_driver.c:4500
+#: src/qemu_driver.c:4516
 #, fuzzy
 msgid "'memsave' command failed"
 msgstr "lvs কমান্ড বিফল"
 
-#: src/qemu_driver.c:4509
+#: src/qemu_driver.c:4525
 #, fuzzy, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "কনফিগারেশন ফাইল %s পড়তে ব্যর্থ"
 
-#: src/qemu_driver.c:4649
+#: src/qemu_driver.c:4665
 #, fuzzy
 msgid "no domain XML passed"
 msgstr "নোডের ডোমেইন তালিকা"
 
-#: src/qemu_driver.c:4686
+#: src/qemu_driver.c:4702
 msgid "only tcp URIs are supported for KVM migrations"
 msgstr ""
 
-#: src/qemu_driver.c:4696
+#: src/qemu_driver.c:4712
 msgid "URI did not have ':port' at the end"
 msgstr ""
 
-#: src/qemu_driver.c:4722
+#: src/qemu_driver.c:4738
 #, fuzzy
 msgid "could not generate random UUID"
 msgstr "UUID নির্মাণ করতে ব্যর্থ"
 
-#: src/qemu_driver.c:4731
+#: src/qemu_driver.c:4747
 #, fuzzy, c-format
 msgid "domain with the same name or UUID already exists as '%s'"
 msgstr "'%s' রূপে ডোমেইন বর্তমানে সক্রিয়"
 
-#: src/qemu_driver.c:4755
+#: src/qemu_driver.c:4771
 #, fuzzy
 msgid "failed to start listening VM"
 msgstr "VM আরম্ভ করতে ব্যর্থ"
 
-#: src/qemu_driver.c:4820
+#: src/qemu_driver.c:4836
 msgid "off-line migration specified, but suspend operation failed"
 msgstr ""
 
-#: src/qemu_driver.c:4864
+#: src/qemu_driver.c:4880
 #, fuzzy, c-format
 msgid "migrate failed: %s"
 msgstr "কর্ম বিফল: %s"
 
-#: src/qemu_driver.c:4894
+#: src/qemu_driver.c:4910
 #, fuzzy, c-format
 msgid "Failed to resume guest %s after failure\n"
 msgstr "ডোমেইন %s পুনরারম্ভ করতে ব্যর্থ"
 
-#: src/qemu_driver.c:5004 src/xen_unified.c:1461
+#: src/qemu_driver.c:5020 src/xen_unified.c:1461
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "%s ডিভাইসটি PCI ডিভাইস নয়"
@@ -5081,7 +5114,7 @@ msgstr "ত্রুটি"
 msgid "'%s' exited with non-zero status %d and signal %d: %s"
 msgstr ""
 
-#: src/util.c:1674
+#: src/util.c:1686
 #, fuzzy, c-format
 msgid "Failed to find user record for uid '%d'"
 msgstr "uid '%d'-র ব্যবহারকারীর রেকর্ড অনুসন্ধান করতে ব্যর্থ: %s"
@@ -8263,7 +8296,7 @@ msgstr "Xend ডোমেইন সংক্রান্ত তথ্য পা�
 
 #: src/xend_internal.c:2980 src/xend_internal.c:3007 src/xend_internal.c:3035
 #: src/xend_internal.c:3064 src/xend_internal.c:3095 src/xend_internal.c:3170
-#: src/xend_internal.c:3207 src/xend_internal.c:3781
+#: src/xend_internal.c:3207
 #, fuzzy, c-format
 msgid "Domain %s isn't running."
 msgstr "ডোমেইন বর্তমানে সক্রিয়"
@@ -8272,192 +8305,192 @@ msgstr "ডোমেইন বর্তমানে সক্রিয়"
 msgid "xenDaemonDomainFetch failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4101 src/xend_internal.c:4108
+#: src/xend_internal.c:4093 src/xend_internal.c:4100
 #, fuzzy
 msgid "unsupported device type"
 msgstr "%s প্রকৃতির ইনপুট ডিভাইস সমর্থিত নয়"
 
-#: src/xend_internal.c:4213
+#: src/xend_internal.c:4205
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4254
+#: src/xend_internal.c:4246
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4262
+#: src/xend_internal.c:4254
 #, fuzzy
 msgid "unexpected value from on_xend_start"
 msgstr "অপ্রত্যাশিত value নোড"
 
-#: src/xend_internal.c:4273
+#: src/xend_internal.c:4265
 #, fuzzy
 msgid "no memory"
 msgstr "নোডের মেমরি"
 
-#: src/xend_internal.c:4279
+#: src/xend_internal.c:4271
 #, fuzzy
 msgid "sexpr2string failed"
 msgstr "কর্ম বিফল"
 
-#: src/xend_internal.c:4284
+#: src/xend_internal.c:4276
 #, fuzzy
 msgid "Failed to redefine sexpr"
 msgstr "নেটওয়ার্ক %s-র ব্যাখ্যা মুছে ফেলতে ব্যর্থ"
 
-#: src/xend_internal.c:4289
+#: src/xend_internal.c:4281
 msgid "on_xend_start not present in sexpr"
 msgstr ""
 
-#: src/xend_internal.c:4320
+#: src/xend_internal.c:4312
 #, fuzzy, c-format
 msgid "unable to resolve name %s"
 msgstr "মোড '%s' পার্স করতে ব্যর্থ"
 
-#: src/xend_internal.c:4356
+#: src/xend_internal.c:4348
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:4366
+#: src/xend_internal.c:4358
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:4378
+#: src/xend_internal.c:4370
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr ""
 
-#: src/xend_internal.c:4391
+#: src/xend_internal.c:4383
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr ""
 
-#: src/xend_internal.c:4396
+#: src/xend_internal.c:4388
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
 
-#: src/xend_internal.c:4403
+#: src/xend_internal.c:4395
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr ""
 
-#: src/xend_internal.c:4423
+#: src/xend_internal.c:4415
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr ""
 
-#: src/xend_internal.c:4479
+#: src/xend_internal.c:4471
 #, fuzzy
 msgid "failed to parse domain description"
 msgstr "Xend ডোমেইন সংক্রান্ত তথ্য পার্স করতে ব্যর্থ"
 
-#: src/xend_internal.c:4485
+#: src/xend_internal.c:4477
 #, fuzzy
 msgid "failed to build sexpr"
 msgstr "ডোমেইন %s সাসপেন্ড অবস্থায় স্থাপন করতে ব্যর্থ"
 
-#: src/xend_internal.c:4495
+#: src/xend_internal.c:4487
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "নিষ্ক্রিয় ডোমেইন %s নির্মাণ করতে ব্যর্থ\n"
 
-#: src/xend_internal.c:4651 src/xend_internal.c:4727 src/xend_internal.c:4817
+#: src/xend_internal.c:4643 src/xend_internal.c:4719 src/xend_internal.c:4809
 msgid "unsupported in xendConfigVersion < 4"
 msgstr ""
 
-#: src/xend_internal.c:4663
+#: src/xend_internal.c:4655
 #, fuzzy
 msgid "node information incomplete, missing scheduler name"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, নাম অনুপস্থিত"
 
-#: src/xend_internal.c:4669 src/xend_internal.c:4676
+#: src/xend_internal.c:4661 src/xend_internal.c:4668
 msgid "strdup failed"
 msgstr ""
 
-#: src/xend_internal.c:4681 src/xend_internal.c:4775 src/xend_internal.c:4887
+#: src/xend_internal.c:4673 src/xend_internal.c:4767 src/xend_internal.c:4879
 #, fuzzy
 msgid "Unknown scheduler"
 msgstr "সময়নির্ধারণকারী"
 
-#: src/xend_internal.c:4740 src/xend_internal.c:4830
+#: src/xend_internal.c:4732 src/xend_internal.c:4822
 #, fuzzy
 msgid "Failed to get a scheduler name"
 msgstr "হোস্ট-নেম প্রাপ্ত করতে ব্যর্থ"
 
-#: src/xend_internal.c:4753 src/xend_internal.c:4866
+#: src/xend_internal.c:4745 src/xend_internal.c:4858
 #, fuzzy
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, uuid অনুপস্থিত"
 
-#: src/xend_internal.c:4758 src/xend_internal.c:4875
+#: src/xend_internal.c:4750 src/xend_internal.c:4867
 #, fuzzy
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, নাম অনুপস্থিত"
 
-#: src/xend_internal.c:4933
+#: src/xend_internal.c:4925
 msgid "domainBlockPeek is not supported for dom0"
 msgstr ""
 
-#: src/xend_internal.c:4954
+#: src/xend_internal.c:4946
 #, c-format
 msgid "%s: invalid path"
 msgstr ""
 
-#: src/xend_internal.c:4962
+#: src/xend_internal.c:4954
 #, fuzzy, c-format
 msgid "failed to open for reading: %s"
 msgstr "পড়ার উদ্দেশ্যে %s খুলতে ব্যর্থ"
 
-#: src/xend_internal.c:4974
+#: src/xend_internal.c:4966
 #, fuzzy, c-format
 msgid "failed to lseek or read from file: %s"
 msgstr "কনফিগারেশন ফাইল %s পড়তে ব্যর্থ"
 
-#: src/xend_internal.c:5056 src/xend_internal.c:5102
+#: src/xend_internal.c:5048 src/xend_internal.c:5094
 #, fuzzy, c-format
 msgid "unexpected graphics type %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির ডোমেইন %d"
 
-#: src/xend_internal.c:5145
+#: src/xend_internal.c:5137
 #, fuzzy
 msgid "unexpected chr device type"
 msgstr "অপ্রত্যাশিত mime প্রকৃতি"
 
-#: src/xend_internal.c:5223
+#: src/xend_internal.c:5215
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr ""
 
-#: src/xend_internal.c:5235
+#: src/xend_internal.c:5227
 #, c-format
 msgid "Cannot directly attach CDROM %s"
 msgstr ""
 
-#: src/xend_internal.c:5335 src/xm_internal.c:1997
+#: src/xend_internal.c:5327 src/xm_internal.c:1997
 #, fuzzy, c-format
 msgid "unsupported network type %d"
 msgstr "guest-র ধরন সমর্থিত নয়"
 
-#: src/xend_internal.c:5376
+#: src/xend_internal.c:5368
 #, fuzzy, c-format
 msgid "network %s is not active"
 msgstr "নেটওয়ার্ক '%s' সক্রিয় নয়"
 
-#: src/xend_internal.c:5435 src/xend_internal.c:5483
+#: src/xend_internal.c:5427 src/xend_internal.c:5475
 msgid "managed PCI devices not supported with XenD"
 msgstr ""
 
-#: src/xend_internal.c:5590 src/xend_internal.c:5597 src/xend_internal.c:5604
+#: src/xend_internal.c:5582 src/xend_internal.c:5589 src/xend_internal.c:5596
 #, fuzzy, c-format
 msgid "unexpected lifecycle value %d"
 msgstr "অপ্রত্যাশিত value নোড"
 
-#: src/xend_internal.c:5625
+#: src/xend_internal.c:5617
 #, fuzzy
 msgid "no HVM domain loader"
 msgstr "নোডের ডোমেইন তালিকা"
 
-#: src/xend_internal.c:5861
+#: src/xend_internal.c:5853
 #, fuzzy
 msgid "hotplug of device type not supported"
 msgstr "ai_socktype সমর্থিত নয়"
@@ -8646,6 +8679,20 @@ msgstr "ডোমেইন বর্তমানে সক্রিয়"
 #, fuzzy
 msgid "reallocating list"
 msgstr "ডোমেইন বরাদ্দকরণ"
+
+#, fuzzy
+#~ msgid "failed to chdir into /new on tmpfs"
+#~ msgstr "/dev tmpfs মাউন্ট করতে ব্যর্থ"
+
+#, fuzzy
+#~ msgid "failed to lazily unmount old root"
+#~ msgstr "/proc-কে মাউন্ট করতে ব্যর্থ"
+
+#~ msgid "cannot create /dev/"
+#~ msgstr "/dev/ নির্মাণ করা সম্ভব নয়"
+
+#~ msgid "failed to mount /dev tmpfs"
+#~ msgstr "/dev tmpfs মাউন্ট করতে ব্যর্থ"
 
 #, fuzzy
 #~ msgid "Unable to log VM console data: %s\n"

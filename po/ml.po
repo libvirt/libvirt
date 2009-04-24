@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.ml\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-04-20 11:21+0200\n"
+"POT-Creation-Date: 2009-04-24 12:05+0200\n"
 "PO-Revision-Date: 2008-10-27 17:25+0530\n"
 "Last-Translator: \n"
 "Language-Team:  <en@li.org>\n"
@@ -1362,91 +1362,91 @@ msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ �
 msgid "unexpected filesystem type %d"
 msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ രീതി %d"
 
-#: src/domain_conf.c:3001 src/domain_conf.c:3221
+#: src/domain_conf.c:3001 src/domain_conf.c:3223
 #, fuzzy, c-format
 msgid "unexpected net type %d"
 msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ രീതി %d"
 
-#: src/domain_conf.c:3075
+#: src/domain_conf.c:3076
 #, fuzzy, c-format
 msgid "unexpected char type %d"
 msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ രീതി %d"
 
-#: src/domain_conf.c:3174 src/xend_internal.c:5506
+#: src/domain_conf.c:3176 src/xend_internal.c:5498
 #, fuzzy, c-format
 msgid "unexpected sound model %d"
 msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ രീതി %d"
 
-#: src/domain_conf.c:3194 src/xend_internal.c:5528
+#: src/domain_conf.c:3196 src/xend_internal.c:5520
 #, fuzzy, c-format
 msgid "unexpected input type %d"
 msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ രീതി %d"
 
-#: src/domain_conf.c:3199
+#: src/domain_conf.c:3201
 #, fuzzy, c-format
 msgid "unexpected input bus type %d"
 msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ രീതി %d"
 
-#: src/domain_conf.c:3284
+#: src/domain_conf.c:3286
 #, fuzzy, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "അപ്രതീക്ഷിതമായ dict നോഡ്"
 
-#: src/domain_conf.c:3291
+#: src/domain_conf.c:3293
 #, fuzzy, c-format
 msgid "unexpected hostdev type %d"
 msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ രീതി %d"
 
-#: src/domain_conf.c:3339
+#: src/domain_conf.c:3341
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ രീതി %d"
 
-#: src/domain_conf.c:3424
+#: src/domain_conf.c:3426
 #, fuzzy, c-format
 msgid "unexpected boot device type %d"
 msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ രീതി %d"
 
-#: src/domain_conf.c:3442
+#: src/domain_conf.c:3444
 #, fuzzy, c-format
 msgid "unexpected feature %d"
 msgstr "അപ്രതീക്ഷിതമായ value നോഡ്"
 
-#: src/domain_conf.c:3587 src/network_conf.c:657
+#: src/domain_conf.c:3589 src/network_conf.c:657
 #, fuzzy, c-format
 msgid "cannot create config directory '%s'"
 msgstr "cannot create config directory %s: %s"
 
-#: src/domain_conf.c:3596 src/network_conf.c:666
+#: src/domain_conf.c:3598 src/network_conf.c:666
 #, fuzzy, c-format
 msgid "cannot create config file '%s'"
 msgstr "ക്രമികരണ ഫയല്‍ %s ഉണ്ടാക്കുവാന്‍ സാധ്യമായില്ല: %s"
 
-#: src/domain_conf.c:3604 src/network_conf.c:674
+#: src/domain_conf.c:3606 src/network_conf.c:674
 #, fuzzy, c-format
 msgid "cannot write config file '%s'"
 msgstr "ക്രമികരണ ഫയല്‍ %s എഴുതുവാന്‍ സാധ്യമായില്ല: %s"
 
-#: src/domain_conf.c:3611 src/network_conf.c:681
+#: src/domain_conf.c:3613 src/network_conf.c:681
 #, fuzzy, c-format
 msgid "cannot save config file '%s'"
 msgstr "cannot save config file %s: %s"
 
-#: src/domain_conf.c:3712 src/network_conf.c:783
+#: src/domain_conf.c:3714 src/network_conf.c:787
 #, fuzzy, c-format
 msgid "Failed to open dir '%s'"
 msgstr "ഡയറക്ടറി '%s' തുറക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/domain_conf.c:3766
+#: src/domain_conf.c:3768
 #, fuzzy, c-format
 msgid "cannot remove config %s"
 msgstr "cannot remove config for %s"
 
-#: src/domain_conf.c:3840
+#: src/domain_conf.c:3842
 msgid "unknown virt type"
 msgstr "അപരിചിതമായ virt രീതി"
 
-#: src/domain_conf.c:3851
+#: src/domain_conf.c:3853
 #, c-format
 msgid "no emulator for domain %s os type %s on architecture %s"
 msgstr ""
@@ -1576,7 +1576,7 @@ msgstr "നിഷ്ക്റിയമായ ഡൊമെയിന്‍ %s ഉ�
 msgid "failed to make root private"
 msgstr "%s ലോഗ് ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം: %s"
 
-#: src/lxc_container.c:304 src/lxc_container.c:326 src/lxc_container.c:461
+#: src/lxc_container.c:304 src/lxc_container.c:326 src/lxc_container.c:493
 #, fuzzy, c-format
 msgid "failed to create %s"
 msgstr "'%s' ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
@@ -1592,186 +1592,206 @@ msgid "failed to bind new root %s into tmpfs"
 msgstr "സോക്കറ്റ് '%s'-ലേക്കു് ചേര്‍ക്കുന്നതില്‍ പരാജയം: %s"
 
 #: src/lxc_container.c:343
-#, fuzzy
-msgid "failed to chroot into tmpfs"
+#, fuzzy, c-format
+msgid "failed to chroot into %s"
 msgstr "കണ്ടെയിനറിനായി /proc മൌണ്ട് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/lxc_container.c:349
-#, fuzzy
-msgid "failed to chdir into /new on tmpfs"
-msgstr "കണ്ടെയിനറിനായി /proc മൌണ്ട് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
-
-#: src/lxc_container.c:357
+#: src/lxc_container.c:351
 #, fuzzy
 msgid "failed to pivot root"
 msgstr "സോക്കറ്റ് '%s'-ലേക്കു് ചേര്‍ക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/lxc_container.c:367
-#, fuzzy
-msgid "failed to lazily unmount old root"
-msgstr "ഡയറക്ടറി '%s' തുറക്കുന്നതില്‍ പരാജയം: %s"
+#: src/lxc_container.c:394
+#, fuzzy, c-format
+msgid "failed to mkdir %s"
+msgstr "%s ലോഗ് ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം: %s"
 
 #: src/lxc_container.c:400
-#, fuzzy
-msgid "cannot create /dev/"
-msgstr "പൈപ്പ് ഉണ്ടാക്കുവാന്‍ സാധ്യമല്ല: %s"
+#, fuzzy, c-format
+msgid "failed to mount %s on %s"
+msgstr "ഡയറക്ടറി '%s' തുറക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/lxc_container.c:405
-#, fuzzy
-msgid "failed to mount /dev tmpfs"
-msgstr "കണ്ടെയിനറിനായി /proc മൌണ്ട് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
-
-#: src/lxc_container.c:416
+#: src/lxc_container.c:408
 #, fuzzy
 msgid "cannot create /dev/pts"
 msgstr "പൈപ്പ് ഉണ്ടാക്കുവാന്‍ സാധ്യമല്ല: %s"
 
-#: src/lxc_container.c:421
+#: src/lxc_container.c:415
 #, fuzzy
 msgid "failed to mount /dev/pts in container"
 msgstr "കണ്ടെയിനറിനായി /proc മൌണ്ട് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/lxc_container.c:431
+#: src/lxc_container.c:446
 #, fuzzy, c-format
 msgid "failed to make device %s"
 msgstr "%s ലോഗ് ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം: %s"
 
-#: src/lxc_container.c:469 src/lxc_container.c:581
+#: src/lxc_container.c:455
+#, fuzzy
+msgid "failed to create symlink /dev/ptmx to /dev/pts/ptmx"
+msgstr "symlink '%s' -> '%s' ഉണ്ടാക്കുന്നതില്‍ പരാജയം: %s"
+
+#: src/lxc_container.c:463
+#, fuzzy
+msgid "failed to make device /dev/ptmx"
+msgstr "%s ലോഗ് ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം: %s"
+
+#: src/lxc_container.c:501 src/lxc_container.c:616
 #, fuzzy, c-format
 msgid "failed to mount %s at %s"
 msgstr "ഡയറക്ടറി '%s' തുറക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/lxc_container.c:492
+#: src/lxc_container.c:524
 #, fuzzy
 msgid "failed to read /proc/mounts"
 msgstr "പൂള്‍ %s ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/lxc_container.c:518
+#: src/lxc_container.c:552
 #, fuzzy, c-format
 msgid "failed to unmount '%s'"
 msgstr "ഡയറക്ടറി '%s' തുറക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/lxc_container.c:543 src/lxc_container.c:591
-#, fuzzy
-msgid "failed to mount /proc"
-msgstr "ഡയറക്ടറി '%s' തുറക്കുന്നതില്‍ പരാജയം: %s"
-
-#: src/lxc_container.c:567
+#: src/lxc_container.c:602
 #, fuzzy
 msgid "failed to make / slave"
 msgstr "%s ലോഗ് ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം: %s"
 
-#: src/lxc_container.c:636
+#: src/lxc_container.c:626
+#, fuzzy
+msgid "failed to mount /proc"
+msgstr "ഡയറക്ടറി '%s' തുറക്കുന്നതില്‍ പരാജയം: %s"
+
+#: src/lxc_container.c:664
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() passed invalid vm definition"
 
-#: src/lxc_container.c:646
+#: src/lxc_container.c:685
 #, fuzzy, c-format
-msgid "failed to open %s"
+msgid "failed to open tty %s"
 msgstr "ഡയറക്ടറി '%s' തുറക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/lxc_container.c:708
+#: src/lxc_container.c:759
 #, fuzzy
 msgid "failed to run clone container"
 msgstr "കണ്ടെയിനറിനായി /proc മൌണ്ട് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/lxc_controller.c:85
+#: src/lxc_controller.c:86
 #, fuzzy, c-format
 msgid "Unable to create cgroup for %s\n"
 msgstr "%s-ല്‍ നിന്നും വോള്യം ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/lxc_controller.c:115
+#: src/lxc_controller.c:116
 #, fuzzy
 msgid "Failed to set lxc resources"
 msgstr "സോക്കറ്റ് ഉണ്ടാക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/lxc_controller.c:141
+#: src/lxc_controller.c:142
 #, fuzzy, c-format
 msgid "failed to create server socket '%s'"
 msgstr "സോക്കറ്റ് ഉണ്ടാക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/lxc_controller.c:153
+#: src/lxc_controller.c:154
 #, fuzzy, c-format
 msgid "failed to bind server socket '%s'"
 msgstr "സോക്കറ്റ് '%s'-ലേക്കു് ചേര്‍ക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/lxc_controller.c:159
+#: src/lxc_controller.c:160
 #, fuzzy, c-format
 msgid "failed to listen server socket %s"
 msgstr "സോക്കറ്റ് '%s'-ലേക്കു് ചേര്‍ക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/lxc_controller.c:193
+#: src/lxc_controller.c:194
 #, fuzzy, c-format
 msgid "read of fd %d failed"
 msgstr "fd %d ലഭ്യമാക്കുന്നതു് പരാജയപ്പെട്ടു: %s"
 
-#: src/lxc_controller.c:200
+#: src/lxc_controller.c:201
 #, fuzzy, c-format
 msgid "write to fd %d failed"
 msgstr "fd %d-ലേക്കു് എഴുതുന്നതു് പരാജയപ്പെട്ടു: %s"
 
-#: src/lxc_controller.c:252
+#: src/lxc_controller.c:253
 #, fuzzy
 msgid "epoll_create(2) failed"
 msgstr "epoll_create(2) പരാജയപ്പെട്ടു: %s"
 
-#: src/lxc_controller.c:262
+#: src/lxc_controller.c:263
 #, fuzzy
 msgid "epoll_ctl(appPty) failed"
 msgstr "epoll_ctl(fd1) പരാജയപ്പെട്ടു: %s"
 
-#: src/lxc_controller.c:268 src/lxc_controller.c:276 src/lxc_controller.c:284
-#: src/lxc_controller.c:304 src/lxc_controller.c:310
+#: src/lxc_controller.c:269 src/lxc_controller.c:277 src/lxc_controller.c:285
+#: src/lxc_controller.c:305 src/lxc_controller.c:311
 #, fuzzy
 msgid "epoll_ctl(contPty) failed"
 msgstr "epoll_ctl(fd1) പരാജയപ്പെട്ടു: %s"
 
-#: src/lxc_controller.c:327
+#: src/lxc_controller.c:328
 #, c-format
 msgid "error event %d"
 msgstr "error event %d"
 
-#: src/lxc_controller.c:348
+#: src/lxc_controller.c:349
 #, fuzzy
 msgid "epoll_wait() failed"
 msgstr "epoll_wait() പരാജയപ്പെട്ടു: %s"
 
-#: src/lxc_controller.c:398
+#: src/lxc_controller.c:399
 #, fuzzy, c-format
 msgid "failed to move interface %s to ns %d"
 msgstr "സംയോജക ഘടകത്തിന്‍റെ വിവരം ലഭ്യമാക്കുന്നതില്‍ പരാജയം %s %s"
 
-#: src/lxc_controller.c:423
+#: src/lxc_controller.c:424
 #, fuzzy, c-format
 msgid "failed to delete veth: %s"
 msgstr "വോള്യം %s നശിപ്പിക്കുന്നതിന്‍ പരാജയം"
 
-#: src/lxc_controller.c:446
+#: src/lxc_controller.c:457
 #, fuzzy
 msgid "sockpair failed"
 msgstr "unlockpt പരാജയപ്പെട്ടു: %s"
 
-#: src/lxc_controller.c:454 src/lxc_driver.c:876
+#: src/lxc_controller.c:487
+#, fuzzy
+msgid "cannot unshare mount namespace"
+msgstr "ഡിവൈസ് %s തുറക്കുവാന്‍ സാധ്യമായില്ല"
+
+#: src/lxc_controller.c:493
+#, fuzzy
+msgid "failed to switch root mount into slave mode"
+msgstr "കണ്ടെയിനറിനായി /proc മൌണ്ട് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
+
+#: src/lxc_controller.c:505
+#, fuzzy, c-format
+msgid "failed to make path %s"
+msgstr "%s ലോഗ് ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം: %s"
+
+#: src/lxc_controller.c:513
+#, fuzzy, c-format
+msgid "failed to mount devpts on %s"
+msgstr "ഡയറക്ടറി '%s' തുറക്കുന്നതില്‍ പരാജയം: %s"
+
+#: src/lxc_controller.c:531 src/lxc_controller.c:540 src/lxc_driver.c:876
 #, fuzzy
 msgid "failed to allocate tty"
 msgstr "ഒരു നോഡ് ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/lxc_controller.c:622
+#: src/lxc_controller.c:712
 #, fuzzy, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
 msgstr "pid ഫയല്‍ '%s' തുറക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/lxc_controller.c:636
+#: src/lxc_controller.c:726
 #, fuzzy
 msgid "Unable to change to root dir"
 msgstr "%d ലോഗ് ഫയലിലേക്കു് argv എഴുതുന്നതില്‍ പരാജയം: %s"
 
-#: src/lxc_controller.c:642
+#: src/lxc_controller.c:732
 #, fuzzy
 msgid "Unable to become session leader"
 msgstr "%d ലോഗ് ഫയല്‍ അടയ്ക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/lxc_controller.c:650
+#: src/lxc_controller.c:740
 #, fuzzy
 msgid "Failed connection from LXC driver"
 msgstr "ഒരു സ്റ്റോറേജ് ഡ്രൈവര്‍ ലഭ്യമാക്കുവാന്‍ പരാജയപ്പെട്ടു: %s"
@@ -1790,12 +1810,12 @@ msgstr ""
 msgid "no domain with matching uuid"
 msgstr "ചേരുന്ന uuid-യുള്ള ഡൊമെയിന്‍ ലഭ്യമല്ല"
 
-#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3491
+#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3507
 #: src/uml_driver.c:1632
 msgid "cannot delete active domain"
 msgstr "സജീവമായ ഡൊമെയിന്‍ വെട്ടി മാറ്റുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc_driver.c:339 src/qemu_driver.c:3497 src/uml_driver.c:1638
+#: src/lxc_driver.c:339 src/qemu_driver.c:3513 src/uml_driver.c:1638
 #, fuzzy
 msgid "cannot undefine transient domain"
 msgstr "സജീവമായ ഡൊമെയിന്‍ വെട്ടി മാറ്റുവാന്‍ സാധ്യമല്ല"
@@ -1910,7 +1930,7 @@ msgstr "തെറ്റായ പാഥ്: %s"
 msgid "Invalid parameter count"
 msgstr "virXPathNode()-ലേക്കുള്ള തെറ്റായ പരാമീറ്റര്‍"
 
-#: src/lxc_driver.c:1414 src/qemu_driver.c:2077 src/qemu_driver.c:4670
+#: src/lxc_driver.c:1414 src/qemu_driver.c:2093 src/qemu_driver.c:4686
 #, fuzzy
 msgid "failed to determine host name"
 msgstr "ഹോസ്റ്റിന്‍റെ നാമം ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
@@ -1944,22 +1964,22 @@ msgstr "Forwarding requested, but no IPv4 address/netmask provided"
 msgid "unknown forwarding type '%s'"
 msgstr "അപരിചിതമായ auth രീതി '%s'"
 
-#: src/network_conf.c:741
+#: src/network_conf.c:742
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr "നെറ്റ്‌വര്‍ക്ക് കോണ്‍ഫിഗ് നാമം '%s' നെറ്റ്‌വര്‍ക്ക് നാമവുമായി '%s' ചേരുന്നില്ല"
 
-#: src/network_conf.c:831
+#: src/network_conf.c:835
 #, fuzzy, c-format
 msgid "cannot remove config file '%s'"
 msgstr "cannot remove config for %s"
 
-#: src/network_conf.c:901
+#: src/network_conf.c:909
 #, c-format
 msgid "Bridge generation exceeded max id %d"
 msgstr ""
 
-#: src/network_conf.c:915
+#: src/network_conf.c:923
 #, fuzzy, c-format
 msgid "bridge name '%s' already in use."
 msgstr "%s ഡൊമെയിന്‍ നിലവിലുണ്ട്"
@@ -2122,7 +2142,7 @@ msgstr "ഓട്ടോസ്റ്റാര്‍ട്ട് ഡയറക്�
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "symlink '%s' -> '%s' ഉണ്ടാക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/network_driver.c:1390 src/qemu_driver.c:4152 src/storage_driver.c:979
+#: src/network_driver.c:1390 src/qemu_driver.c:4168 src/storage_driver.c:979
 #: src/uml_driver.c:1733
 #, fuzzy, c-format
 msgid "Failed to delete symlink '%s'"
@@ -2596,7 +2616,7 @@ msgstr "domain is not in shutoff state"
 msgid "Could not read container config"
 msgstr "URI കണക്ഷന്‍ പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമായില്ല"
 
-#: src/openvz_driver.c:1008 src/qemu_driver.c:1847
+#: src/openvz_driver.c:1008 src/qemu_driver.c:1863
 #, c-format
 msgid "unknown type '%s'"
 msgstr "അപരിചിതമായ രീതി %s"
@@ -2929,7 +2949,7 @@ msgstr "Unable to set monitor close-on-exec flag"
 msgid "Unable to put monitor into non-blocking mode"
 msgstr "Unable to put monitor into non-blocking mode"
 
-#: src/qemu_driver.c:968 src/qemu_driver.c:1533
+#: src/qemu_driver.c:968 src/qemu_driver.c:1543
 #, fuzzy, c-format
 msgid "Unable to close logfile: %s\n"
 msgstr "%d ലോഗ് ഫയല്‍ അടയ്ക്കുന്നതില്‍ പരാജയം: %s"
@@ -2948,7 +2968,7 @@ msgstr "cannot run monitor command to fetch CPU thread info"
 msgid "failed to set CPU affinity"
 msgstr "CPU അഫിനിറ്റി %s സജ്ജാക്കുവാന്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu_driver.c:1121 src/qemu_driver.c:2261
+#: src/qemu_driver.c:1121 src/qemu_driver.c:2277
 msgid "resume operation failed"
 msgstr "പ്രക്രിയ വീണ്ടും ആരംഭിക്കുന്നതു് പരാജയപ്പെട്ടു"
 
@@ -2979,526 +2999,537 @@ msgstr "ലോഗ് ഡയറക്ടറി %s ഉണ്ടാക്കുവ�
 msgid "Cannot find QEMU binary %s"
 msgstr "Cannot find QEMU binary %s: %s"
 
-#: src/qemu_driver.c:1384 src/qemu_driver.c:3603
+#: src/qemu_driver.c:1384 src/qemu_driver.c:3619
 #, fuzzy, c-format
 msgid "Cannot determine QEMU argv syntax %s"
 msgstr "Cannot find QEMU binary %s: %s"
 
-#: src/qemu_driver.c:1401 src/qemu_driver.c:1404 src/uml_driver.c:798
+#: src/qemu_driver.c:1394
+#, fuzzy, c-format
+msgid "Cannot remove stale PID file for %s"
+msgstr "cannot remove config for %s"
+
+#: src/qemu_driver.c:1409 src/qemu_driver.c:1412 src/uml_driver.c:798
 #: src/uml_driver.c:801
 #, fuzzy, c-format
 msgid "Unable to write envv to logfile: %s\n"
 msgstr "%d ലോഗ് ഫയലിലേക്കു് argv എഴുതുന്നതില്‍ പരാജയം: %s"
 
-#: src/qemu_driver.c:1411 src/qemu_driver.c:1414 src/qemu_driver.c:1419
+#: src/qemu_driver.c:1419 src/qemu_driver.c:1422 src/qemu_driver.c:1427
 #: src/uml_driver.c:808 src/uml_driver.c:811 src/uml_driver.c:816
 #, fuzzy, c-format
 msgid "Unable to write argv to logfile: %s\n"
 msgstr "%d ലോഗ് ഫയലിലേക്കു് argv എഴുതുന്നതില്‍ പരാജയം: %s"
 
-#: src/qemu_driver.c:1423
+#: src/qemu_driver.c:1431
 #, fuzzy, c-format
 msgid "Unable to seek to end of logfile: %s\n"
 msgstr "%d ലോഗ് ഫയലിലേക്കു് argv എഴുതുന്നതില്‍ പരാജയം: %s"
 
-#: src/qemu_driver.c:1451
+#: src/qemu_driver.c:1459
 #, fuzzy, c-format
 msgid "Domain %s didn't show up\n"
 msgstr "ഡൊമെയിന്‍ %s അടച്ചു പൂട്ടുന്നു\n"
 
-#: src/qemu_driver.c:1456
+#: src/qemu_driver.c:1464
 msgid "Unable to daemonize QEMU process"
 msgstr ""
 
-#: src/qemu_driver.c:1518
+#: src/qemu_driver.c:1528
 #, fuzzy, c-format
 msgid "Shutting down VM '%s'\n"
 msgstr "VM '%s' അടച്ചു പൂട്ടുന്നു"
 
-#: src/qemu_driver.c:1523
+#: src/qemu_driver.c:1533
 #, fuzzy, c-format
 msgid "Failed to send SIGTERM to %s (%d)"
 msgstr "സോക്കറ്റ് '%s'-ലേക്കു് ചേര്‍ക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/qemu_driver.c:1556
+#: src/qemu_driver.c:1566
 #, fuzzy, c-format
 msgid "Failed to remove domain status for %s"
 msgstr "%s-ല്‍ നിന്നും ഡൊമെയിന്‍ ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu_driver.c:1603
+#: src/qemu_driver.c:1571
+#, fuzzy, c-format
+msgid "Failed to remove PID file for %s: %s"
+msgstr "%s-ല്‍ നിന്നും വോള്യം ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
+
+#: src/qemu_driver.c:1619
 #, c-format
 msgid "unhandled fd event %d for %s"
 msgstr ""
 
-#: src/qemu_driver.c:1820
+#: src/qemu_driver.c:1836
 #, fuzzy, c-format
 msgid "Unable to open %s"
 msgstr "tty %s തുറക്കുവാന്‍ സാധ്യമായില്ല: %s\n"
 
-#: src/qemu_driver.c:1883 src/qemu_driver.c:1920 src/uml_driver.c:974
+#: src/qemu_driver.c:1899 src/qemu_driver.c:1936 src/uml_driver.c:974
 #: src/uml_driver.c:1005
 msgid "NUMA not supported on this host"
 msgstr "ഈ ഹോസ്റ്റില്‍ NUMA പിന്തുണ നല്‍കുന്നില്ല"
 
-#: src/qemu_driver.c:1889
+#: src/qemu_driver.c:1905
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr ""
 
-#: src/qemu_driver.c:1901 src/qemu_driver.c:1928 src/uml_driver.c:985
+#: src/qemu_driver.c:1917 src/qemu_driver.c:1944 src/uml_driver.c:985
 #: src/uml_driver.c:1013
 msgid "Failed to query NUMA free memory"
 msgstr "NUMA-യില്‍ ഉപയോഗത്തിലില്ലാത്ത മെമ്മറിയെപ്പറ്റി ചോദിക്കുവാന്‍ സാധ്യമായില്ല:"
 
-#: src/qemu_driver.c:1988 src/uml_driver.c:1270 src/uml_driver.c:1300
+#: src/qemu_driver.c:2004 src/uml_driver.c:1270 src/uml_driver.c:1300
+#: src/vbox/vbox_tmpl.c:542
 #, c-format
 msgid "no domain with matching id %d"
 msgstr "ചേരുന്ന id %d ഉള്ള ഡൊമെയിന്‍ ലഭ്യമല്ല"
 
-#: src/qemu_driver.c:2015 src/qemu_driver.c:2197 src/qemu_driver.c:2250
-#: src/qemu_driver.c:2301 src/qemu_driver.c:2332 src/qemu_driver.c:2369
-#: src/qemu_driver.c:2396 src/qemu_driver.c:2421 src/qemu_driver.c:2544
-#: src/qemu_driver.c:2585 src/qemu_driver.c:2737 src/qemu_driver.c:2872
-#: src/qemu_driver.c:3066 src/qemu_driver.c:3100 src/qemu_driver.c:3314
-#: src/qemu_driver.c:3393 src/qemu_driver.c:3485 src/qemu_driver.c:3881
-#: src/qemu_driver.c:4033 src/qemu_driver.c:4087 src/qemu_driver.c:4115
-#: src/qemu_driver.c:4195 src/qemu_driver.c:4333 src/qemu_driver.c:4399
-#: src/qemu_driver.c:4473 src/qemu_driver.c:4806 src/uml_driver.c:1358
+#: src/qemu_driver.c:2031 src/qemu_driver.c:2213 src/qemu_driver.c:2266
+#: src/qemu_driver.c:2317 src/qemu_driver.c:2348 src/qemu_driver.c:2385
+#: src/qemu_driver.c:2412 src/qemu_driver.c:2437 src/qemu_driver.c:2560
+#: src/qemu_driver.c:2601 src/qemu_driver.c:2753 src/qemu_driver.c:2888
+#: src/qemu_driver.c:3082 src/qemu_driver.c:3116 src/qemu_driver.c:3330
+#: src/qemu_driver.c:3409 src/qemu_driver.c:3501 src/qemu_driver.c:3897
+#: src/qemu_driver.c:4049 src/qemu_driver.c:4103 src/qemu_driver.c:4131
+#: src/qemu_driver.c:4211 src/qemu_driver.c:4349 src/qemu_driver.c:4415
+#: src/qemu_driver.c:4489 src/qemu_driver.c:4822 src/uml_driver.c:1358
 #: src/uml_driver.c:1383 src/uml_driver.c:1416
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "ചേരുന്ന uuid '%s' ഉള്ള ഡൊമെയിന്‍ ലഭ്യമല്ല"
 
-#: src/qemu_driver.c:2040 src/qemu_driver.c:4935
+#: src/qemu_driver.c:2056 src/qemu_driver.c:4951
 #, fuzzy, c-format
 msgid "no domain with matching name '%s'"
 msgstr "ചേരുന്ന പേരുള്ള ഡൊമെയിന്‍ ലഭ്യമല്ല"
 
-#: src/qemu_driver.c:2135 src/uml_driver.c:1219
+#: src/qemu_driver.c:2151 src/uml_driver.c:1219
 #, fuzzy, c-format
 msgid "domain '%s' is already defined"
 msgstr "%s ഡൊമെയിന്‍ നിലവിലുണ്ട്"
 
-#: src/qemu_driver.c:2145 src/uml_driver.c:1229
+#: src/qemu_driver.c:2161 src/uml_driver.c:1229
 #, fuzzy, c-format
 msgid "domain with uuid '%s' is already defined"
 msgstr "%s ഡൊമെയിന്‍ നിലവിലുണ്ട്"
 
-#: src/qemu_driver.c:2202 src/qemu_driver.c:2255 src/qemu_driver.c:2743
-#: src/qemu_driver.c:4200 src/qemu_driver.c:4339 src/qemu_driver.c:4485
-#: src/qemu_driver.c:4812
+#: src/qemu_driver.c:2218 src/qemu_driver.c:2271 src/qemu_driver.c:2759
+#: src/qemu_driver.c:4216 src/qemu_driver.c:4355 src/qemu_driver.c:4501
+#: src/qemu_driver.c:4828
 msgid "domain is not running"
 msgstr "ഡൊമെയിന്‍ പ്രവര്‍ത്തിക്കുന്നില്ല"
 
-#: src/qemu_driver.c:2208 src/qemu_driver.c:2752
+#: src/qemu_driver.c:2224 src/qemu_driver.c:2768
 msgid "suspend operation failed"
 msgstr "സസ്പെന്‍ഡ് പ്രക്രിയ പരാജയപ്പെട്ടു"
 
-#: src/qemu_driver.c:2307 src/uml_driver.c:1277
+#: src/qemu_driver.c:2323 src/uml_driver.c:1277
 msgid "shutdown operation failed"
 msgstr "അടച്ചുപൂട്ടുന്ന പ്രക്രിയ പരാജയപ്പെട്ടു"
 
-#: src/qemu_driver.c:2427 src/uml_driver.c:1389
+#: src/qemu_driver.c:2443 src/uml_driver.c:1389
 msgid "cannot set max memory lower than current memory"
 msgstr ""
 "നിലവിലുള്ള മെമ്മറിയേക്കാള്‍ നല്‍കിയിരിക്കുന്ന ഏറ്റവും കുറഞ്ഞ മെമ്മറി സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu_driver.c:2460
+#: src/qemu_driver.c:2476
 #, fuzzy
 msgid "could not query memory balloon allocation"
 msgstr "മെമ്മറി അലോക്കേഷന്‍ മാറ്റുക"
 
-#: src/qemu_driver.c:2471
+#: src/qemu_driver.c:2487
 #, fuzzy
 msgid "could not parse memory balloon allocation"
 msgstr "URI കണക്ഷന്‍ പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമായില്ല"
 
-#: src/qemu_driver.c:2510
+#: src/qemu_driver.c:2526
 #, fuzzy
 msgid "could not balloon memory allocation"
 msgstr "മെമ്മറി അലോക്കേഷന്‍ മാറ്റുക"
 
-#: src/qemu_driver.c:2550 src/uml_driver.c:1428
+#: src/qemu_driver.c:2566 src/uml_driver.c:1428
 msgid "cannot set memory higher than max memory"
 msgstr "നല്‍കിയിരിക്കുന്ന ഏറ്റവും കൂടുതല്‍ മെമ്മറിയേക്കാള്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu_driver.c:2558 src/uml_driver.c:1422
+#: src/qemu_driver.c:2574 src/uml_driver.c:1422
 msgid "cannot set memory of an active domain"
 msgstr "സജീവമായ ഒരു ഡൊമെയിനിനു് മെമ്മറി സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu_driver.c:2764
+#: src/qemu_driver.c:2780
 msgid "failed to get domain xml"
 msgstr "ഡൊമെയിന്‍ xml ലഭ്യമാകുന്നതില്‍ പരാജയം"
 
-#: src/qemu_driver.c:2772
+#: src/qemu_driver.c:2788
 #, c-format
 msgid "failed to create '%s'"
 msgstr "'%s' ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu_driver.c:2778
+#: src/qemu_driver.c:2794
 msgid "failed to write save header"
 msgstr "സേവ് ഹെഡര്‍ എഴുതുന്നതില്‍ പരാജയം"
 
-#: src/qemu_driver.c:2784
+#: src/qemu_driver.c:2800
 msgid "failed to write xml"
 msgstr "xml എഴുതുന്നതില്‍ പരാജയം"
 
-#: src/qemu_driver.c:2790
+#: src/qemu_driver.c:2806
 #, fuzzy, c-format
 msgid "unable to save file %s"
 msgstr "%d ലോഗ് ഫയല്‍ അടയ്ക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/qemu_driver.c:2812 src/qemu_driver.c:4855
+#: src/qemu_driver.c:2828 src/qemu_driver.c:4871
 msgid "migrate operation failed"
 msgstr "മാറ്റുന്ന പ്രക്രിയ പരാജയപ്പെട്ടു"
 
-#: src/qemu_driver.c:2823
+#: src/qemu_driver.c:2839
 #, fuzzy
 msgid "'migrate' not supported by this qemu"
 msgstr "qemu 'info blockstats'-നുള്ള പിന്തുണ നല്‍കുന്നില്ല"
 
-#: src/qemu_driver.c:2878
+#: src/qemu_driver.c:2894
 msgid "cannot change vcpu count of an active domain"
 msgstr "ഒരു സജീവമായ ഡൊമെയിനില്‍ vcpu കൌണ്ടു് മാറ്റുവാന്‍ സാധ്യമായില്ല"
 
-#: src/qemu_driver.c:2884 src/qemu_driver.c:3072 src/qemu_driver.c:3106
+#: src/qemu_driver.c:2900 src/qemu_driver.c:3088 src/qemu_driver.c:3122
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "ഡൊമെയിന്‍ '%d'-ല്‍ അപരിചിതമായ virt തരം"
 
-#: src/qemu_driver.c:2891
+#: src/qemu_driver.c:2907
 msgid "could not determine max vcpus for the domain"
 msgstr "ഡൊമെയിനുള്ള ഏറ്റവും കൂടുതല്‍ vcpus ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/qemu_driver.c:2897
+#: src/qemu_driver.c:2913
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
 msgstr ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
 
-#: src/qemu_driver.c:2931 src/qemu_driver.c:2992
+#: src/qemu_driver.c:2947 src/qemu_driver.c:3008
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "സജീവമല്ലാത്ത ഡൊമെയിനില്‍ vcpus പിന്‍ ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu_driver.c:2937
+#: src/qemu_driver.c:2953
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr "vcpu നമ്പര്‍ പരിധിയ്ക്കു് പുറത്തു് %d > %d"
 
-#: src/qemu_driver.c:2958
+#: src/qemu_driver.c:2974
 #, fuzzy
 msgid "cannot set affinity"
 msgstr "അഫിനിറ്റി സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല: %s"
 
-#: src/qemu_driver.c:2963
+#: src/qemu_driver.c:2979
 msgid "cpu affinity is not supported"
 msgstr "cpu അഫിനിറ്റി പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/qemu_driver.c:3027
+#: src/qemu_driver.c:3043
 #, fuzzy
 msgid "cannot get affinity"
 msgstr "അഫിനിറ്റി ലഭ്യമല്ല: %s"
 
-#: src/qemu_driver.c:3037
+#: src/qemu_driver.c:3053
 msgid "cpu affinity is not available"
 msgstr "cpu അഫിനിറ്റി ലഭ്യമല്ല"
 
-#: src/qemu_driver.c:3129
+#: src/qemu_driver.c:3145
 #, fuzzy
 msgid "Failed to get security label"
 msgstr "നിലവിലുളള സമയം ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu_driver.c:3154
+#: src/qemu_driver.c:3170
 #, fuzzy, c-format
 msgid "security model string exceeds max %d bytes"
 msgstr "vCPU count exceeds maximum: %d > %d"
 
-#: src/qemu_driver.c:3163
+#: src/qemu_driver.c:3179
 #, fuzzy, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "vCPU count exceeds maximum: %d > %d"
 
-#: src/qemu_driver.c:3187
+#: src/qemu_driver.c:3203
 msgid "cannot read domain image"
 msgstr "ഡൊമെയിന്‍ ഇമേജ് ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/qemu_driver.c:3193
+#: src/qemu_driver.c:3209
 msgid "failed to read qemu header"
 msgstr "qemu ഹെഡര്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu_driver.c:3199
+#: src/qemu_driver.c:3215
 msgid "image magic is incorrect"
 msgstr "ഇമേജ് മാജിക് തെറ്റാണു്"
 
-#: src/qemu_driver.c:3205
+#: src/qemu_driver.c:3221
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "ഇമേജ് പതിപ്പിനുള്ള പിന്തുണ ലഭ്യമല്ല (%d > %d)"
 
-#: src/qemu_driver.c:3217
+#: src/qemu_driver.c:3233
 msgid "failed to read XML"
 msgstr "XML വായിക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu_driver.c:3225 src/qemu_driver.c:4705
+#: src/qemu_driver.c:3241 src/qemu_driver.c:4721
 msgid "failed to parse XML"
 msgstr "XML പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/qemu_driver.c:3236
+#: src/qemu_driver.c:3252
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "ഡൊമെയിന്‍ '%s' നിലിവില്‍ പ്രവര്‍ത്തനത്തിലാണ്"
 
-#: src/qemu_driver.c:3247 src/qemu_driver.c:4741
+#: src/qemu_driver.c:3263 src/qemu_driver.c:4757
 msgid "failed to assign new VM"
 msgstr "പുതിയ വിഎം ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu_driver.c:3258
+#: src/qemu_driver.c:3274
 msgid "failed to start VM"
 msgstr "വിഎം തുടങ്ങുന്നതില്‍ പരാജയം"
 
-#: src/qemu_driver.c:3276
+#: src/qemu_driver.c:3292
 msgid "failed to resume domain"
 msgstr "ഡൊമെയിന്‍ വീണ്ടും ആരംഭിക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu_driver.c:3532
+#: src/qemu_driver.c:3548
 #, c-format
 msgid "cannot convert disk '%s' to bus/device index"
 msgstr ""
 
-#: src/qemu_driver.c:3558
+#: src/qemu_driver.c:3574
 #, fuzzy, c-format
 msgid "Unsupported disk name mapping for bus '%s'"
 msgstr "അപ്രതീക്ഷിതമായ ഡിസ്ക് തരം '%s'"
 
-#: src/qemu_driver.c:3593
+#: src/qemu_driver.c:3609
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3620
+#: src/qemu_driver.c:3636
 #, c-format
 msgid ""
 "Emulator version does not support removable media for device '%s' and target "
 "'%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3657
+#: src/qemu_driver.c:3673
 #, fuzzy
 msgid "could not change cdrom media"
 msgstr "സിഡിറോം മീഡിയാ മാറ്റുവാന്‍ സാധ്യമായില്ല"
 
-#: src/qemu_driver.c:3668
+#: src/qemu_driver.c:3684
 #, fuzzy, c-format
 msgid "changing cdrom media failed: %s"
 msgstr "സിഡിറോം മീഡിയാ മാറ്റുവാന്‍ സാധ്യമായില്ല"
 
-#: src/qemu_driver.c:3695 src/qemu_driver.c:3764
+#: src/qemu_driver.c:3711 src/qemu_driver.c:3780
 #, fuzzy, c-format
 msgid "target %s already exists"
 msgstr "സ്റ്റോറേജ് വോള്യം നിലവിലുണ്ട്"
 
-#: src/qemu_driver.c:3721
+#: src/qemu_driver.c:3737
 #, fuzzy, c-format
 msgid "cannot attach %s disk"
 msgstr "%s ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല: %s"
 
-#: src/qemu_driver.c:3735
+#: src/qemu_driver.c:3751
 msgid "Unable to parse slot number\n"
 msgstr ""
 
-#: src/qemu_driver.c:3738
+#: src/qemu_driver.c:3754
 #, fuzzy, c-format
 msgid "adding %s disk failed"
 msgstr "%s ഡൊമെയിന്‍ നിലവിലുണ്ട്"
 
-#: src/qemu_driver.c:3789
+#: src/qemu_driver.c:3805
 #, fuzzy
 msgid "cannot attach usb disk"
 msgstr "സോഴ്സ് ഡിവൈസുകള്‍ ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu_driver.c:3800
+#: src/qemu_driver.c:3816
 #, fuzzy
 msgid "adding usb disk failed"
 msgstr "ഹോസ്റ്റ് ഡെഫനിഷന്‍ ഫയല്‍ ലോഡ് ചെയ്യുന്നു"
 
-#: src/qemu_driver.c:3843
+#: src/qemu_driver.c:3859
 #, fuzzy
 msgid "cannot attach usb device"
 msgstr "സോഴ്സ് ഡിവൈസുകള്‍ ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu_driver.c:3854
+#: src/qemu_driver.c:3870
 #, fuzzy
 msgid "adding usb device failed"
 msgstr "ഹോസ്റ്റ് ഡെഫനിഷന്‍ ഫയല്‍ ലോഡ് ചെയ്യുന്നു"
 
-#: src/qemu_driver.c:3888
+#: src/qemu_driver.c:3904
 msgid "cannot attach device on inactive domain"
 msgstr "നിര്‍ജ്ജീവമായ ഡൊമെയിനില്‍ ഡിവൈസ് കൂട്ടിച്ചേര്‍ക്കുന്നതിനു് സാധ്യമായില്ല"
 
-#: src/qemu_driver.c:3914
+#: src/qemu_driver.c:3930
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr ""
 
-#: src/qemu_driver.c:3924
+#: src/qemu_driver.c:3940
 #, fuzzy, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "സിഡിറോം ഡിസ്ക് ഡിവൈസുകള്‍ മാത്രമേ കൂട്ടിച്ചേര്‍ക്കുവാന്‍ സാധിക്കൂ"
 
-#: src/qemu_driver.c:3934
+#: src/qemu_driver.c:3950
 #, fuzzy, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "സിഡിറോം ഡിസ്ക് ഡിവൈസുകള്‍ മാത്രമേ കൂട്ടിച്ചേര്‍ക്കുവാന്‍ സാധിക്കൂ"
 
-#: src/qemu_driver.c:3967
+#: src/qemu_driver.c:3983
 #, fuzzy, c-format
 msgid "disk %s not found"
 msgstr "ഡൊമെയിന്‍ ലഭ്യമല്ല"
 
-#: src/qemu_driver.c:3973
+#: src/qemu_driver.c:3989
 #, c-format
 msgid "disk %s cannot be detached - invalid slot number %d"
 msgstr ""
 
-#: src/qemu_driver.c:3985
+#: src/qemu_driver.c:4001
 #, fuzzy, c-format
 msgid "failed to execute detach disk %s command"
 msgstr "ഡൊമെയിന്‍ വീണ്ടും ആരംഭിക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu_driver.c:3994
+#: src/qemu_driver.c:4010
 #, fuzzy, c-format
 msgid "failed to detach disk %s: invalid slot %d"
 msgstr "%s-ല്‍ നിന്നും ഡിവൈസ് നീക്കുന്നതില്‍ പരാജയം "
 
-#: src/qemu_driver.c:4040
+#: src/qemu_driver.c:4056
 #, fuzzy
 msgid "cannot detach device on inactive domain"
 msgstr "നിര്‍ജ്ജീവമായ ഡൊമെയിനില്‍ ഡിവൈസ് കൂട്ടിച്ചേര്‍ക്കുന്നതിനു് സാധ്യമായില്ല"
 
-#: src/qemu_driver.c:4061
+#: src/qemu_driver.c:4077
 #, fuzzy
 msgid "only SCSI or virtio disk device can be detached dynamically"
 msgstr "സിഡിറോം ഡിസ്ക് ഡിവൈസുകള്‍ മാത്രമേ കൂട്ടിച്ചേര്‍ക്കുവാന്‍ സാധിക്കൂ"
 
-#: src/qemu_driver.c:4121 src/uml_driver.c:1702
+#: src/qemu_driver.c:4137 src/uml_driver.c:1702
 #, fuzzy
 msgid "cannot set autostart for transient domain"
 msgstr "സജീവമായ ഒരു ഡൊമെയിനിനു് മെമ്മറി സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu_driver.c:4138 src/storage_driver.c:964 src/uml_driver.c:1719
+#: src/qemu_driver.c:4154 src/storage_driver.c:964 src/uml_driver.c:1719
 #, fuzzy, c-format
 msgid "cannot create autostart directory %s"
 msgstr "ഓട്ടോസ്റ്റാര്‍ട്ട് ഡയറക്ടറി %s ഉണ്ടാക്കുവാന്‍ സാധ്യമായില്ല: %s"
 
-#: src/qemu_driver.c:4145 src/uml_driver.c:1726
+#: src/qemu_driver.c:4161 src/uml_driver.c:1726
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "symlink '%s' -> '%s' ഉണ്ടാക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/qemu_driver.c:4213
+#: src/qemu_driver.c:4229
 #, c-format
 msgid "invalid path: %s"
 msgstr "തെറ്റായ പാഥ്: %s"
 
-#: src/qemu_driver.c:4224
+#: src/qemu_driver.c:4240
 msgid "'info blockstats' command failed"
 msgstr "'info blockstats' നിര്‍ദ്ദേശം പരാജയപ്പെട്ടു"
 
-#: src/qemu_driver.c:4237
+#: src/qemu_driver.c:4253
 msgid "'info blockstats' not supported by this qemu"
 msgstr "qemu 'info blockstats'-നുള്ള പിന്തുണ നല്‍കുന്നില്ല"
 
-#: src/qemu_driver.c:4305
+#: src/qemu_driver.c:4321
 #, c-format
 msgid "device not found: %s (%s)"
 msgstr "ഡിവൈസ് ലഭ്യമല്ല: %s (%s)"
 
-#: src/qemu_driver.c:4345 src/qemu_driver.c:4405 src/uml_driver.c:1775
+#: src/qemu_driver.c:4361 src/qemu_driver.c:4421 src/uml_driver.c:1775
 msgid "NULL or empty path"
 msgstr "NULL അല്ലെങ്കില്‍ ശൂന്യമായ പാഥ്"
 
-#: src/qemu_driver.c:4362
+#: src/qemu_driver.c:4378
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "തെറ്റായ പാഥ്, '%s' ലഭ്യമായ ഒരു സംയോജകഘടമകല്ല"
 
-#: src/qemu_driver.c:4424
+#: src/qemu_driver.c:4440
 #, fuzzy, c-format
 msgid "%s: failed to open"
 msgstr "ഡയറക്ടറി '%s' തുറക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/qemu_driver.c:4435
+#: src/qemu_driver.c:4451
 #, fuzzy, c-format
 msgid "%s: failed to seek or read"
 msgstr "ഫയലില്‍ നിന്നും lseek അല്ലെങ്കില്‍ read ചെയ്യുന്നതില്‍ പരാജയം: %s: %s"
 
-#: src/qemu_driver.c:4442 src/uml_driver.c:1812
+#: src/qemu_driver.c:4458 src/uml_driver.c:1812
 msgid "invalid path"
 msgstr "തെറ്റായ പാഥ്"
 
-#: src/qemu_driver.c:4479
+#: src/qemu_driver.c:4495
 msgid "QEMU driver only supports virtual memory addrs"
 msgstr "QEMU driver only supports virtual memory addrs"
 
-#: src/qemu_driver.c:4492
+#: src/qemu_driver.c:4508
 #, fuzzy, c-format
 msgid "mkstemp(\"%s\") failed"
 msgstr "open(%s) പരാജയപ്പെട്ടു: %s"
 
-#: src/qemu_driver.c:4500
+#: src/qemu_driver.c:4516
 #, fuzzy
 msgid "'memsave' command failed"
 msgstr "lvs നിര്‍ദ്ദേശം പരാജയപ്പെട്ടു"
 
-#: src/qemu_driver.c:4509
+#: src/qemu_driver.c:4525
 #, fuzzy, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "%s: ലോഗ് ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം: %s"
 
-#: src/qemu_driver.c:4649
+#: src/qemu_driver.c:4665
 #, fuzzy
 msgid "no domain XML passed"
 msgstr "നോഡ് ഡൊമെയിന്‍ ലിസ്റ്റ്"
 
-#: src/qemu_driver.c:4686
+#: src/qemu_driver.c:4702
 msgid "only tcp URIs are supported for KVM migrations"
 msgstr ""
 
-#: src/qemu_driver.c:4696
+#: src/qemu_driver.c:4712
 msgid "URI did not have ':port' at the end"
 msgstr ""
 
-#: src/qemu_driver.c:4722
+#: src/qemu_driver.c:4738
 #, fuzzy
 msgid "could not generate random UUID"
 msgstr "UUID ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu_driver.c:4731
+#: src/qemu_driver.c:4747
 #, fuzzy, c-format
 msgid "domain with the same name or UUID already exists as '%s'"
 msgstr "ഡൊമെയിന്‍ '%s' നിലിവില്‍ പ്രവര്‍ത്തനത്തിലാണ്"
 
-#: src/qemu_driver.c:4755
+#: src/qemu_driver.c:4771
 #, fuzzy
 msgid "failed to start listening VM"
 msgstr "വിഎം തുടങ്ങുന്നതില്‍ പരാജയം"
 
-#: src/qemu_driver.c:4820
+#: src/qemu_driver.c:4836
 msgid "off-line migration specified, but suspend operation failed"
 msgstr ""
 
-#: src/qemu_driver.c:4864
+#: src/qemu_driver.c:4880
 #, fuzzy, c-format
 msgid "migrate failed: %s"
 msgstr "പ്രക്രിയ പരാജയപ്പെട്ടു: %s"
 
-#: src/qemu_driver.c:4894
+#: src/qemu_driver.c:4910
 #, fuzzy, c-format
 msgid "Failed to resume guest %s after failure\n"
 msgstr "ഡൊമെയിന്‍ %s വീണ്ടും ആരംഭിക്കുന്നതില്‍ പരാജയം"
 
-#: src/qemu_driver.c:5004 src/xen_unified.c:1461
+#: src/qemu_driver.c:5020 src/xen_unified.c:1461
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr ""
@@ -5198,7 +5229,7 @@ msgstr "റീഡ് പിശക്: %s"
 msgid "'%s' exited with non-zero status %d and signal %d: %s"
 msgstr ""
 
-#: src/util.c:1674
+#: src/util.c:1686
 #, fuzzy, c-format
 msgid "Failed to find user record for uid '%d'"
 msgstr "uid '%d'-നുള്ള യൂസര്‍ റിക്കോര്‍ഡ് ലഭ്യമാക്കുന്നതില്‍ പരാജയം: %s"
@@ -8300,7 +8331,7 @@ msgstr "Xend ഡൊമെയിന്‍ വിവരം പാര്‍സ് �
 
 #: src/xend_internal.c:2980 src/xend_internal.c:3007 src/xend_internal.c:3035
 #: src/xend_internal.c:3064 src/xend_internal.c:3095 src/xend_internal.c:3170
-#: src/xend_internal.c:3207 src/xend_internal.c:3781
+#: src/xend_internal.c:3207
 #, fuzzy, c-format
 msgid "Domain %s isn't running."
 msgstr "ഡൊമെയിന്‍ പ്രവര്‍ത്തിക്കുന്നില്ല"
@@ -8310,45 +8341,45 @@ msgstr "ഡൊമെയിന്‍ പ്രവര്‍ത്തിക്ക�
 msgid "xenDaemonDomainFetch failed to find this domain"
 msgstr "ഈ ഡൊമെയില്‍ ലഭ്യമാക്കുന്നതില്‍ xenDaemonDomainDumpXMLByName പരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:4101 src/xend_internal.c:4108
+#: src/xend_internal.c:4093 src/xend_internal.c:4100
 #, fuzzy
 msgid "unsupported device type"
 msgstr "പിന്തുണയില്ലാത്ത തരത്തിലുള്ള ഇന്‍പുട്ട് ഡിവൈസ് %s"
 
-#: src/xend_internal.c:4213
+#: src/xend_internal.c:4205
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr "ഈ ഡൊമെയില്‍ ലഭ്യമാക്കുന്നതില്‍ xenDaemonGetAutostartപരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:4254
+#: src/xend_internal.c:4246
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr "ഈ ഡൊമെയില്‍ ലഭ്യമാക്കുന്നതില്‍ xenDaemonSetAutostart പരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:4262
+#: src/xend_internal.c:4254
 msgid "unexpected value from on_xend_start"
 msgstr "on_xend_start നിന്നും അപ്രതീക്ഷിതമായ മൂല്ല്യം"
 
-#: src/xend_internal.c:4273
+#: src/xend_internal.c:4265
 msgid "no memory"
 msgstr "മെമ്മറി ലഭ്യമല്ല"
 
-#: src/xend_internal.c:4279
+#: src/xend_internal.c:4271
 msgid "sexpr2string failed"
 msgstr "sexpr2string പരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:4284
+#: src/xend_internal.c:4276
 msgid "Failed to redefine sexpr"
 msgstr "sexpr വീണ്ടും നിഷ്കര്‍ഷിക്കുന്നതില്‍ പരാജയം"
 
-#: src/xend_internal.c:4289
+#: src/xend_internal.c:4281
 msgid "on_xend_start not present in sexpr"
 msgstr "sexpr-ല്‍ on_xend_start ലഭ്യമല്ല"
 
-#: src/xend_internal.c:4320
+#: src/xend_internal.c:4312
 #, fuzzy, c-format
 msgid "unable to resolve name %s"
 msgstr "tty %s തുറക്കുവാന്‍ സാധ്യമായില്ല: %s\n"
 
-#: src/xend_internal.c:4356
+#: src/xend_internal.c:4348
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
@@ -8356,137 +8387,137 @@ msgstr ""
 "xenDaemonDomainMigrate: xenDaemonDomainMigrate: മാറ്റുന്ന സമയത്ത് Xen ഡൊമെയിനുകളുടെ "
 "പേരു് മാറ്റുന്നതിനുള്ള പിന്തുണ നല്‍കുന്നതല്ല"
 
-#: src/xend_internal.c:4366
+#: src/xend_internal.c:4358
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr "xenDaemonDomainMigrate: മാറ്റുന്ന സമയത്ത് Xen ബാന്‍ഡ് വിഡ്തിനുള്ള പിന്തുണ നല്‍കുന്നതല്ല"
 
-#: src/xend_internal.c:4378
+#: src/xend_internal.c:4370
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr "xenDaemonDomainMigrate: പിന്തുണ ലഭ്യമല്ലാത്ത ഫ്ലാഗ്"
 
-#: src/xend_internal.c:4391
+#: src/xend_internal.c:4383
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr "xenDaemonDomainMigrate: തെറ്റായ യുആര്‍ഐ"
 
-#: src/xend_internal.c:4396
+#: src/xend_internal.c:4388
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr "xenDaemonDomainMigrate: xenmigr:// മാറ്റങ്ങള്‍ മാത്രമേ Xen-ല്‍ പിന്തുണയ്ക്കുന്നുള്ളൂ."
 
-#: src/xend_internal.c:4403
+#: src/xend_internal.c:4395
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr "xenDaemonDomainMigrate: യുആര്‍ഐല്‍ ഒരു ഹോസ്റ്റ്നാമം നല്‍കേണ്ടതാണു്"
 
-#: src/xend_internal.c:4423
+#: src/xend_internal.c:4415
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr "xenDaemonDomainMigrate: തെറ്റായ പോര്‍ട്ട് നമ്പര്‍"
 
-#: src/xend_internal.c:4479
+#: src/xend_internal.c:4471
 msgid "failed to parse domain description"
 msgstr "ഡൊമെയിന്‍ വിവരം പാര്‍സ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:4485
+#: src/xend_internal.c:4477
 #, fuzzy
 msgid "failed to build sexpr"
 msgstr "പൂള്‍ %s ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:4495
+#: src/xend_internal.c:4487
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "നിഷ്ക്റിയമായ ഡൊമെയിന്‍ %s ഉണ്ടാക്കുന്നതില്‍ പരാജയം\n"
 
-#: src/xend_internal.c:4651 src/xend_internal.c:4727 src/xend_internal.c:4817
+#: src/xend_internal.c:4643 src/xend_internal.c:4719 src/xend_internal.c:4809
 msgid "unsupported in xendConfigVersion < 4"
 msgstr "xendConfigVersion < 4-ല്‍ പിന്തുണ ലഭ്യമല്ല"
 
-#: src/xend_internal.c:4663
+#: src/xend_internal.c:4655
 msgid "node information incomplete, missing scheduler name"
 msgstr "നോഡ് വിവരം പൂര്‍ണ്ണമല്ല, ഷെഡ്യൂളറിന്റെ പേര് ലഭ്യമല്ല"
 
-#: src/xend_internal.c:4669 src/xend_internal.c:4676
+#: src/xend_internal.c:4661 src/xend_internal.c:4668
 msgid "strdup failed"
 msgstr "strdup പരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:4681 src/xend_internal.c:4775 src/xend_internal.c:4887
+#: src/xend_internal.c:4673 src/xend_internal.c:4767 src/xend_internal.c:4879
 msgid "Unknown scheduler"
 msgstr "അപരിചിതമായ ഷെഡ്യൂളര്‍"
 
-#: src/xend_internal.c:4740 src/xend_internal.c:4830
+#: src/xend_internal.c:4732 src/xend_internal.c:4822
 msgid "Failed to get a scheduler name"
 msgstr "ഷെഡ്യൂളറിന്റെ നാമം ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/xend_internal.c:4753 src/xend_internal.c:4866
+#: src/xend_internal.c:4745 src/xend_internal.c:4858
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, cpu_weight ലഭ്യമല്ല"
 
-#: src/xend_internal.c:4758 src/xend_internal.c:4875
+#: src/xend_internal.c:4750 src/xend_internal.c:4867
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, cpu_cap ലഭ്യമല്ല"
 
-#: src/xend_internal.c:4933
+#: src/xend_internal.c:4925
 msgid "domainBlockPeek is not supported for dom0"
 msgstr "dom0-നു് domainBlockPeek-നുള്ള പിന്തുണ ലഭ്യമല്ല"
 
-#: src/xend_internal.c:4954
+#: src/xend_internal.c:4946
 #, c-format
 msgid "%s: invalid path"
 msgstr "%s: തെറ്റായ പാഥ്"
 
-#: src/xend_internal.c:4962
+#: src/xend_internal.c:4954
 #, fuzzy, c-format
 msgid "failed to open for reading: %s"
 msgstr "ലഭ്യമാക്കുവാന്‍ തുറക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s: %s"
 
-#: src/xend_internal.c:4974
+#: src/xend_internal.c:4966
 #, fuzzy, c-format
 msgid "failed to lseek or read from file: %s"
 msgstr "ഫയലില്‍ നിന്നും lseek അല്ലെങ്കില്‍ read ചെയ്യുന്നതില്‍ പരാജയം: %s: %s"
 
-#: src/xend_internal.c:5056 src/xend_internal.c:5102
+#: src/xend_internal.c:5048 src/xend_internal.c:5094
 #, fuzzy, c-format
 msgid "unexpected graphics type %d"
 msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ രീതി %d"
 
-#: src/xend_internal.c:5145
+#: src/xend_internal.c:5137
 #, fuzzy
 msgid "unexpected chr device type"
 msgstr "അപ്രതീക്ഷിതമായ mime രീതി"
 
-#: src/xend_internal.c:5223
+#: src/xend_internal.c:5215
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr ""
 
-#: src/xend_internal.c:5235
+#: src/xend_internal.c:5227
 #, c-format
 msgid "Cannot directly attach CDROM %s"
 msgstr ""
 
-#: src/xend_internal.c:5335 src/xm_internal.c:1997
+#: src/xend_internal.c:5327 src/xm_internal.c:1997
 #, fuzzy, c-format
 msgid "unsupported network type %d"
 msgstr "പിന്തുണയില്ലാത്ത സ്റ്റോറേജ് വോള്യം തരം %d"
 
-#: src/xend_internal.c:5376
+#: src/xend_internal.c:5368
 #, fuzzy, c-format
 msgid "network %s is not active"
 msgstr "നെറ്റ്‌വര്‍ക്കു് നിലിവില്‍ പ്രവര്‍ത്തനത്തിലാണ്"
 
-#: src/xend_internal.c:5435 src/xend_internal.c:5483
+#: src/xend_internal.c:5427 src/xend_internal.c:5475
 msgid "managed PCI devices not supported with XenD"
 msgstr ""
 
-#: src/xend_internal.c:5590 src/xend_internal.c:5597 src/xend_internal.c:5604
+#: src/xend_internal.c:5582 src/xend_internal.c:5589 src/xend_internal.c:5596
 #, fuzzy, c-format
 msgid "unexpected lifecycle value %d"
 msgstr "അപ്രതീക്ഷിതമായ value നോഡ്"
 
-#: src/xend_internal.c:5625
+#: src/xend_internal.c:5617
 msgid "no HVM domain loader"
 msgstr "HVM ഡൊമെയിന്‍ ലോഡര്‍ ലഭ്യമല്ല"
 
-#: src/xend_internal.c:5861
+#: src/xend_internal.c:5853
 #, fuzzy
 msgid "hotplug of device type not supported"
 msgstr "ai_socktype-നുള്ള പിന്തുണ ലഭ്യമല്ല"
@@ -8671,6 +8702,22 @@ msgstr "പൂള്‍ നിലിവില്‍ പ്രവര്‍ത്�
 #, fuzzy
 msgid "reallocating list"
 msgstr "‍ഡൊമെയിന്‍ അനുവദിക്കുന്നു"
+
+#, fuzzy
+#~ msgid "failed to chdir into /new on tmpfs"
+#~ msgstr "കണ്ടെയിനറിനായി /proc മൌണ്ട് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
+
+#, fuzzy
+#~ msgid "failed to lazily unmount old root"
+#~ msgstr "ഡയറക്ടറി '%s' തുറക്കുന്നതില്‍ പരാജയം: %s"
+
+#, fuzzy
+#~ msgid "cannot create /dev/"
+#~ msgstr "പൈപ്പ് ഉണ്ടാക്കുവാന്‍ സാധ്യമല്ല: %s"
+
+#, fuzzy
+#~ msgid "failed to mount /dev tmpfs"
+#~ msgstr "കണ്ടെയിനറിനായി /proc മൌണ്ട് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
 #, fuzzy
 #~ msgid "Unable to log VM console data: %s\n"

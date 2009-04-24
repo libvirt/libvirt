@@ -1061,7 +1061,7 @@ see note above'/>
       <arg name='flags' type='unsigned int' info='callers should always pass 0'/>
     </function>
     <function name='virDomainDefineXML' file='libvirt' module='libvirt'>
-      <info>Define a domain, but does not start it. This definition is persistent, until explicitly undefined with virDomainUndefine().</info>
+      <info>Define a domain, but does not start it. This definition is persistent, until explicitly undefined with virDomainUndefine(). A previous definition for this domain would be overriden if it already exists.</info>
       <return type='virDomainPtr' info='NULL in case of error, a pointer to the domain otherwise'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xml' type='const char *' info='the XML description for the domain, preferably in UTF-8'/>
