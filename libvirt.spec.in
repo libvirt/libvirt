@@ -506,6 +506,10 @@ fi
 %endif
 
 %changelog
+* Fri Apr 24 2009 Daniel Veillard <veillard@redhat.com> - 0.6.3-1
+- release of 0.6.3
+- VirtualBox driver
+
 * Fri Apr  3 2009 Daniel Veillard <veillard@redhat.com> - 0.6.2-1
 - release of 0.6.2
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-04-24 12:05+0200\n"
+"POT-Creation-Date: 2009-04-24 15:38+0200\n"
 "PO-Revision-Date: 2007-08-03 01:24+0800\n"
 "Last-Translator: Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>\n"
 "Language-Team: ms <ms@li.org>\n"
@@ -247,7 +247,7 @@ msgstr "malloc() gagal. Tidak dapat memperuntukkan memori yang cukup."
 
 #: qemud/qemud.c:806 qemud/qemud.c:1285 src/domain_conf.c:522
 #: src/network_conf.c:170 src/node_device_conf.c:137 src/openvz_conf.c:453
-#: src/qemu_driver.c:430 src/remote_internal.c:908 src/remote_internal.c:5780
+#: src/qemu_driver.c:430 src/remote_internal.c:908 src/remote_internal.c:5833
 #: src/storage_conf.c:1304 src/test.c:235 src/test.c:363
 msgid "cannot initialize mutex"
 msgstr ""
@@ -610,7 +610,7 @@ msgstr ""
 msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 msgstr ""
 
-#: qemud/remote.c:2600 src/remote_internal.c:5111
+#: qemud/remote.c:2600 src/remote_internal.c:5164
 #, c-format
 msgid "Cannot resolve address %d: %s"
 msgstr ""
@@ -657,7 +657,7 @@ msgstr ""
 msgid "cannot allocate mechlist"
 msgstr ""
 
-#: qemud/remote.c:2793 src/remote_internal.c:5607
+#: qemud/remote.c:2793 src/remote_internal.c:5660
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr ""
@@ -783,12 +783,12 @@ msgstr ""
 
 #: qemud/remote.c:4120 qemud/remote.c:4150 qemud/remote.c:4191
 #: qemud/remote.c:4219 qemud/remote.c:4261 qemud/remote.c:4287
-#: qemud/remote.c:4313
+#: qemud/remote.c:4313 qemud/remote.c:4361
 #, fuzzy
 msgid "node_device not found"
 msgstr "CD Tidak Dijumpai"
 
-#: qemud/remote.c:4341
+#: qemud/remote.c:4389
 #, fuzzy
 msgid "unexpected async event method call"
 msgstr "Pelayan Kamus Dict"
@@ -1381,12 +1381,12 @@ msgstr "Jenis tetikus dikesan: %s"
 msgid "unexpected char type %d"
 msgstr "Jenis tetikus dikesan: %s"
 
-#: src/domain_conf.c:3176 src/xend_internal.c:5498
+#: src/domain_conf.c:3176 src/xend_internal.c:5492
 #, fuzzy, c-format
 msgid "unexpected sound model %d"
 msgstr "Pelayan Kamus Dict"
 
-#: src/domain_conf.c:3196 src/xend_internal.c:5520
+#: src/domain_conf.c:3196 src/xend_internal.c:5514
 #, fuzzy, c-format
 msgid "unexpected input type %d"
 msgstr "Jenis tetikus dikesan: %s"
@@ -1501,49 +1501,49 @@ msgstr ""
 msgid "could not parse connection URI"
 msgstr "Tidak dapat menulis ke fail %s."
 
-#: src/libvirt.c:2050
+#: src/libvirt.c:2054
 #, fuzzy
 msgid "cannot get working directory"
 msgstr "Ulangtetap antaramuka rangkaian"
 
-#: src/libvirt.c:2057 src/libvirt.c:2133
+#: src/libvirt.c:2061 src/libvirt.c:2137
 msgid "path too long"
 msgstr ""
 
-#: src/libvirt.c:2126
+#: src/libvirt.c:2130
 #, fuzzy
 msgid "cannot get current directory"
 msgstr "Saiz _memori tersendiri"
 
-#: src/libvirt.c:2626
+#: src/libvirt.c:2630
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr ""
 
-#: src/libvirt.c:2767
+#: src/libvirt.c:2771
 msgid "domainMigratePrepare did not set uri"
 msgstr ""
 
-#: src/libvirt.c:2796
+#: src/libvirt.c:2800
 msgid "domainMigratePrepare2 did not set uri"
 msgstr ""
 
-#: src/libvirt.c:3521
+#: src/libvirt.c:3525
 msgid "path is NULL"
 msgstr ""
 
-#: src/libvirt.c:3527
+#: src/libvirt.c:3531
 msgid "flags must be zero"
 msgstr ""
 
-#: src/libvirt.c:3534
+#: src/libvirt.c:3538
 msgid "buffer is NULL"
 msgstr ""
 
-#: src/libvirt.c:3633
+#: src/libvirt.c:3637
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL"
 msgstr ""
 
-#: src/libvirt.c:3640
+#: src/libvirt.c:3644
 msgid "buffer is NULL but size is non-zero"
 msgstr ""
 
@@ -3566,7 +3566,7 @@ msgstr ""
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr ""
 
-#: src/remote_internal.c:538 src/xend_internal.c:814
+#: src/remote_internal.c:538 src/xend_internal.c:808
 #, fuzzy, c-format
 msgid "unable to resolve hostname '%s': %s"
 msgstr "Gagal untuk membuka %s: %s\n"
@@ -3870,214 +3870,214 @@ msgstr "Terlalu banyak fail salinan?"
 msgid "too many capability names received"
 msgstr ""
 
-#: src/remote_internal.c:5030
+#: src/remote_internal.c:5083
 #, fuzzy, c-format
 msgid "unknown authentication type %s"
 msgstr "Operasi antaramuka HTTP gagal\n"
 
-#: src/remote_internal.c:5040
+#: src/remote_internal.c:5093
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr ""
 
-#: src/remote_internal.c:5081
+#: src/remote_internal.c:5134
 #, fuzzy, c-format
 msgid "unsupported authentication type %d"
 msgstr "Operasi antaramuka HTTP gagal\n"
 
-#: src/remote_internal.c:5326
+#: src/remote_internal.c:5379
 #, fuzzy, c-format
 msgid "failed to initialize SASL library: %d (%s)"
 msgstr "Gagal untuk melekapkan partisyen."
 
-#: src/remote_internal.c:5335
+#: src/remote_internal.c:5388
 #, fuzzy
 msgid "failed to get sock address"
 msgstr "gagal untuk menyimpan kandungan"
 
-#: src/remote_internal.c:5345
+#: src/remote_internal.c:5398
 #, fuzzy
 msgid "failed to get peer address"
 msgstr "Gagal menukar maklumat usia untuk %s: %s\n"
 
-#: src/remote_internal.c:5370
+#: src/remote_internal.c:5423
 #, fuzzy, c-format
 msgid "Failed to create SASL client context: %d (%s)"
 msgstr "Gagal mencipta direktori %s"
 
-#: src/remote_internal.c:5383
+#: src/remote_internal.c:5436
 msgid "invalid cipher size for TLS session"
 msgstr ""
 
-#: src/remote_internal.c:5393
+#: src/remote_internal.c:5446
 #, c-format
 msgid "cannot set external SSF %d (%s)"
 msgstr ""
 
-#: src/remote_internal.c:5412
+#: src/remote_internal.c:5465
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr ""
 
-#: src/remote_internal.c:5431
+#: src/remote_internal.c:5484
 #, fuzzy, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "Antaramuka untuk sokongan kebolehcapaian."
 
-#: src/remote_internal.c:5450
+#: src/remote_internal.c:5503
 #, fuzzy, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
 msgstr "Ralat, tidak dapat memulakan pelayan X."
 
-#: src/remote_internal.c:5468 src/remote_internal.c:5546
+#: src/remote_internal.c:5521 src/remote_internal.c:5599
 #, fuzzy
 msgid "Failed to make auth credentials"
 msgstr "gagal untuk menyimpan kandungan"
 
-#: src/remote_internal.c:5492
+#: src/remote_internal.c:5545
 #, c-format
 msgid "SASL negotiation data too long: %d bytes"
 msgstr ""
 
-#: src/remote_internal.c:5532
+#: src/remote_internal.c:5585
 #, fuzzy, c-format
 msgid "Failed SASL step: %d (%s)"
 msgstr "Ralat, tidak dapat memulakan pelayan X."
 
-#: src/remote_internal.c:5616
+#: src/remote_internal.c:5669
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr ""
 
-#: src/remote_internal.c:5671
+#: src/remote_internal.c:5724
 #, fuzzy
 msgid "Failed to collect auth credentials"
 msgstr "Tidak dapat menyambung ke RHN..."
 
-#: src/remote_internal.c:5705
+#: src/remote_internal.c:5758
 msgid "no event support"
 msgstr ""
 
-#: src/remote_internal.c:5710
+#: src/remote_internal.c:5763
 msgid "adding cb to list"
 msgstr ""
 
-#: src/remote_internal.c:5739
+#: src/remote_internal.c:5792
 msgid "removing cb fron list"
 msgstr ""
 
-#: src/remote_internal.c:5801
+#: src/remote_internal.c:5854
 msgid "xdr_remote_message_header failed"
 msgstr ""
 
-#: src/remote_internal.c:5807
+#: src/remote_internal.c:5860
 msgid "marshalling args"
 msgstr ""
 
-#: src/remote_internal.c:5824
+#: src/remote_internal.c:5877
 msgid "xdr_u_int (length word)"
 msgstr ""
 
-#: src/remote_internal.c:5870
+#: src/remote_internal.c:5923
 #, fuzzy
 msgid "cannot send data"
 msgstr "penggunaan:   %s --list [nama]\n"
 
-#: src/remote_internal.c:5901
+#: src/remote_internal.c:5954
 #, fuzzy, c-format
 msgid "failed to read from TLS socket %s"
 msgstr "Gagal untuk membaca soket %d\n"
 
-#: src/remote_internal.c:5906 src/remote_internal.c:5924
+#: src/remote_internal.c:5959 src/remote_internal.c:5977
 #, fuzzy
 msgid "server closed connection"
 msgstr "Mod lihat (baca sahaja)"
 
-#: src/remote_internal.c:5920
+#: src/remote_internal.c:5973
 #, fuzzy
 msgid "cannot recv data"
 msgstr "penggunaan:   %s --list [nama]\n"
 
-#: src/remote_internal.c:5953
+#: src/remote_internal.c:6006
 #, fuzzy, c-format
 msgid "failed to encode SASL data: %s"
 msgstr "Gagal mencipta direktori %s"
 
-#: src/remote_internal.c:6051
+#: src/remote_internal.c:6104
 #, fuzzy, c-format
 msgid "failed to decode SASL data: %s"
 msgstr "gagal untuk mendapatkan rangkaian '%s'"
 
-#: src/remote_internal.c:6125
+#: src/remote_internal.c:6178
 msgid "xdr_u_int (length word, reply)"
 msgstr ""
 
-#: src/remote_internal.c:6132
+#: src/remote_internal.c:6185
 msgid "packet received from server too small"
 msgstr ""
 
-#: src/remote_internal.c:6141
+#: src/remote_internal.c:6194
 msgid "packet received from server too large"
 msgstr ""
 
-#: src/remote_internal.c:6165
+#: src/remote_internal.c:6218
 #, fuzzy
 msgid "invalid header in reply"
 msgstr "hujah tidak sah %s untuk %s"
 
-#: src/remote_internal.c:6174
+#: src/remote_internal.c:6227
 #, c-format
 msgid "unknown program (received %x, expected %x)"
 msgstr ""
 
-#: src/remote_internal.c:6182
+#: src/remote_internal.c:6235
 #, c-format
 msgid "unknown protocol version (received %x, expected %x)"
 msgstr ""
 
-#: src/remote_internal.c:6199
+#: src/remote_internal.c:6252
 #, c-format
 msgid "got unexpected RPC call %d from server"
 msgstr ""
 
-#: src/remote_internal.c:6217
+#: src/remote_internal.c:6270
 #, c-format
 msgid "no call waiting for reply with serial %d"
 msgstr ""
 
-#: src/remote_internal.c:6227
+#: src/remote_internal.c:6280
 #, c-format
 msgid "unknown procedure (received %x, expected %x)"
 msgstr ""
 
-#: src/remote_internal.c:6241
+#: src/remote_internal.c:6294
 msgid "unmarshalling ret"
 msgstr ""
 
-#: src/remote_internal.c:6252
+#: src/remote_internal.c:6305
 msgid "unmarshalling remote_error"
 msgstr ""
 
-#: src/remote_internal.c:6262
+#: src/remote_internal.c:6315
 #, c-format
 msgid "unknown status (received %x)"
 msgstr ""
 
-#: src/remote_internal.c:6368
+#: src/remote_internal.c:6421
 #, fuzzy
 msgid "poll on socket failed"
 msgstr "Operasi antaramuka HTTP gagal\n"
 
-#: src/remote_internal.c:6429
+#: src/remote_internal.c:6482
 msgid "received hangup / error event on socket"
 msgstr ""
 
-#: src/remote_internal.c:6531
+#: src/remote_internal.c:6584
 #, fuzzy
 msgid "failed to wait on condition"
 msgstr "Ralat, tidak dapat memulakan pelayan X."
 
-#: src/remote_internal.c:6631
+#: src/remote_internal.c:6684
 msgid "remoteDomainProcessEvent: unmarshalling ret"
 msgstr ""
 
@@ -7788,519 +7788,519 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/virterror.c:198
+#: src/virterror.c:205
 #, fuzzy
 msgid "Unknown failure"
 msgstr "Entah"
 
-#: src/virterror.c:512
+#: src/virterror.c:519
 msgid "warning"
 msgstr "amaran"
 
-#: src/virterror.c:515
+#: src/virterror.c:522
 msgid "error"
 msgstr "ralat"
 
-#: src/virterror.c:637
+#: src/virterror.c:648
 #, fuzzy
 msgid "No error message provided"
 msgstr "Terdapat ralat RPM.  Mesejnya ialah:\n"
 
-#: src/virterror.c:700
+#: src/virterror.c:711
 #, fuzzy, c-format
 msgid "internal error %s"
 msgstr "Ralat dalaman.\n"
 
-#: src/virterror.c:702
+#: src/virterror.c:713
 #, fuzzy
 msgid "internal error"
 msgstr "Ralat dalaman.\n"
 
-#: src/virterror.c:705
+#: src/virterror.c:716
 #, fuzzy
 msgid "out of memory"
 msgstr "Memori tidak cukup."
 
-#: src/virterror.c:709
+#: src/virterror.c:720
 #, fuzzy
 msgid "this function is not supported by the hypervisor"
 msgstr "Antaramuka untuk sokongan kebolehcapaian."
 
-#: src/virterror.c:711
+#: src/virterror.c:722
 #, fuzzy, c-format
 msgid "this function is not supported by the hypervisor: %s"
 msgstr "Antaramuka untuk sokongan kebolehcapaian."
 
-#: src/virterror.c:715
+#: src/virterror.c:726
 #, fuzzy
 msgid "could not connect to hypervisor"
 msgstr "Tidak dapat menulis ke fail %s."
 
-#: src/virterror.c:717
+#: src/virterror.c:728
 #, fuzzy, c-format
 msgid "could not connect to %s"
 msgstr "Tidak dapat menulis ke fail %s."
 
-#: src/virterror.c:721
+#: src/virterror.c:732
 #, fuzzy
 msgid "invalid connection pointer in"
 msgstr "aksara tidak sah pada %s pada rentetan mod %s"
 
-#: src/virterror.c:723
+#: src/virterror.c:734
 #, fuzzy, c-format
 msgid "invalid connection pointer in %s"
 msgstr "aksara tidak sah pada %s pada rentetan mod %s"
 
-#: src/virterror.c:727
+#: src/virterror.c:738
 #, fuzzy
 msgid "invalid domain pointer in"
 msgstr "aksara tidak sah pada %s pada rentetan mod %s"
 
-#: src/virterror.c:729
+#: src/virterror.c:740
 #, fuzzy, c-format
 msgid "invalid domain pointer in %s"
 msgstr "aksara tidak sah pada %s pada rentetan mod %s"
 
-#: src/virterror.c:733
+#: src/virterror.c:744
 #, fuzzy
 msgid "invalid argument in"
 msgstr "hujah tidak sah %s untuk %s"
 
-#: src/virterror.c:735
+#: src/virterror.c:746
 #, fuzzy, c-format
 msgid "invalid argument in %s"
 msgstr "hujah tidak sah %s untuk %s"
 
-#: src/virterror.c:739
+#: src/virterror.c:750
 #, fuzzy, c-format
 msgid "operation failed: %s"
 msgstr "Operasi antaramuka HTTP gagal\n"
 
-#: src/virterror.c:741
+#: src/virterror.c:752
 #, fuzzy
 msgid "operation failed"
 msgstr "Operasi antaramuka HTTP gagal\n"
 
-#: src/virterror.c:745
+#: src/virterror.c:756
 #, fuzzy, c-format
 msgid "GET operation failed: %s"
 msgstr "Mendapatkan subrentetan %d gagal (%d)."
 
-#: src/virterror.c:747
+#: src/virterror.c:758
 #, fuzzy
 msgid "GET operation failed"
 msgstr "Mendapatkan subrentetan %d gagal (%d)."
 
-#: src/virterror.c:751
+#: src/virterror.c:762
 #, fuzzy, c-format
 msgid "POST operation failed: %s"
 msgstr "Operasi antaramuka HTTP gagal\n"
 
-#: src/virterror.c:753
+#: src/virterror.c:764
 #, fuzzy
 msgid "POST operation failed"
 msgstr "Operasi antaramuka HTTP gagal\n"
 
-#: src/virterror.c:756
+#: src/virterror.c:767
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr ""
 
-#: src/virterror.c:760
+#: src/virterror.c:771
 #, fuzzy, c-format
 msgid "unknown host %s"
 msgstr "Hos tidak diketahui"
 
-#: src/virterror.c:762
+#: src/virterror.c:773
 #, fuzzy
 msgid "unknown host"
 msgstr "Hos tidak diketahui"
 
-#: src/virterror.c:766
+#: src/virterror.c:777
 #, fuzzy, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr "Gagal untuk melekapkan partisyen."
 
-#: src/virterror.c:768
+#: src/virterror.c:779
 #, fuzzy
 msgid "failed to serialize S-Expr"
 msgstr "Gagal untuk melekapkan partisyen."
 
-#: src/virterror.c:772
+#: src/virterror.c:783
 msgid "could not use Xen hypervisor entry"
 msgstr ""
 
-#: src/virterror.c:774
+#: src/virterror.c:785
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr ""
 
-#: src/virterror.c:778
+#: src/virterror.c:789
 msgid "could not connect to Xen Store"
 msgstr ""
 
-#: src/virterror.c:780
+#: src/virterror.c:791
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr ""
 
-#: src/virterror.c:783
+#: src/virterror.c:794
 #, fuzzy, c-format
 msgid "failed Xen syscall %s"
 msgstr "/xen/demo.img"
 
-#: src/virterror.c:787
+#: src/virterror.c:798
 #, fuzzy
 msgid "unknown OS type"
 msgstr "Jenis data tidak diketahui: %s\n"
 
-#: src/virterror.c:789
+#: src/virterror.c:800
 #, fuzzy, c-format
 msgid "unknown OS type %s"
 msgstr "Jenis data tidak diketahui: %s\n"
 
-#: src/virterror.c:792
+#: src/virterror.c:803
 #, fuzzy
 msgid "missing kernel information"
 msgstr "Membaca maklumat pakej..."
 
-#: src/virterror.c:796
+#: src/virterror.c:807
 #, fuzzy
 msgid "missing root device information"
 msgstr "Parameter tidak mencukupi  'device' (arg 1)"
 
-#: src/virterror.c:798
+#: src/virterror.c:809
 #, c-format
 msgid "missing root device information in %s"
 msgstr ""
 
-#: src/virterror.c:802
+#: src/virterror.c:813
 #, fuzzy
 msgid "missing source information for device"
 msgstr "Menentukan maklumat IP bagi ${DEVICE}..."
 
-#: src/virterror.c:804
+#: src/virterror.c:815
 #, fuzzy, c-format
 msgid "missing source information for device %s"
 msgstr "Menentukan maklumat IP bagi ${DEVICE}..."
 
-#: src/virterror.c:808
+#: src/virterror.c:819
 #, fuzzy
 msgid "missing target information for device"
 msgstr "Menentukan maklumat IP bagi ${DEVICE}..."
 
-#: src/virterror.c:810
+#: src/virterror.c:821
 #, fuzzy, c-format
 msgid "missing target information for device %s"
 msgstr "Menentukan maklumat IP bagi ${DEVICE}..."
 
-#: src/virterror.c:814
+#: src/virterror.c:825
 #, fuzzy
 msgid "missing domain name information"
 msgstr "Set nama domain NIS %s: "
 
-#: src/virterror.c:816
+#: src/virterror.c:827
 #, fuzzy, c-format
 msgid "missing domain name information in %s"
 msgstr "Domain Nama s dalam"
 
-#: src/virterror.c:820
+#: src/virterror.c:831
 #, fuzzy
 msgid "missing operating system information"
 msgstr "Maklumat sistem bunyi ALSA"
 
-#: src/virterror.c:822
+#: src/virterror.c:833
 #, fuzzy, c-format
 msgid "missing operating system information for %s"
 msgstr "tak dapat membaca maklumat sistem fail bagi %s"
 
-#: src/virterror.c:826
+#: src/virterror.c:837
 #, fuzzy
 msgid "missing devices information"
 msgstr "Membaca maklumat pakej..."
 
-#: src/virterror.c:828
+#: src/virterror.c:839
 #, fuzzy, c-format
 msgid "missing devices information for %s"
 msgstr "Maklumat logmasuk untuk RHN yang diperlukan tiada: %s"
 
-#: src/virterror.c:832
+#: src/virterror.c:843
 #, fuzzy
 msgid "too many drivers registered"
 msgstr "Terlalu banyak fail salinan?"
 
-#: src/virterror.c:834
+#: src/virterror.c:845
 #, fuzzy, c-format
 msgid "too many drivers registered in %s"
 msgstr "terlalu banyak spesifikasi penukaran %% pada suffiks"
 
-#: src/virterror.c:838
+#: src/virterror.c:849
 msgid "library call failed, possibly not supported"
 msgstr ""
 
-#: src/virterror.c:840
+#: src/virterror.c:851
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr ""
 
-#: src/virterror.c:844
+#: src/virterror.c:855
 msgid "XML description not well formed or invalid"
 msgstr ""
 
-#: src/virterror.c:846
+#: src/virterror.c:857
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
 msgstr ""
 
-#: src/virterror.c:850
+#: src/virterror.c:861
 #, fuzzy
 msgid "this domain exists already"
 msgstr "Direktori bernama %s telah wujud."
 
-#: src/virterror.c:852
+#: src/virterror.c:863
 #, fuzzy, c-format
 msgid "domain %s exists already"
 msgstr "Profil \"%s\" telah wujud!"
 
-#: src/virterror.c:856
+#: src/virterror.c:867
 msgid "operation forbidden for read only access"
 msgstr ""
 
-#: src/virterror.c:858
+#: src/virterror.c:869
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr ""
 
-#: src/virterror.c:862
+#: src/virterror.c:873
 msgid "failed to open configuration file for reading"
 msgstr ""
 
-#: src/virterror.c:864
+#: src/virterror.c:875
 #, fuzzy, c-format
 msgid "failed to open %s for reading"
 msgstr "xinetd gagal untuk mengulangmuat untuk"
 
-#: src/virterror.c:868
+#: src/virterror.c:879
 #, fuzzy
 msgid "failed to read configuration file"
 msgstr "tidak dapat membaca fail tetapan `%s': %s"
 
-#: src/virterror.c:870
+#: src/virterror.c:881
 #, fuzzy, c-format
 msgid "failed to read configuration file %s"
 msgstr "tidak dapat membaca fail tetapan `%s': %s"
 
-#: src/virterror.c:874
+#: src/virterror.c:885
 #, fuzzy
 msgid "failed to parse configuration file"
 msgstr "terap perubahan ke fail tetapan"
 
-#: src/virterror.c:876
+#: src/virterror.c:887
 #, fuzzy, c-format
 msgid "failed to parse configuration file %s"
 msgstr "terap perubahan ke fail tetapan"
 
-#: src/virterror.c:880
+#: src/virterror.c:891
 #, fuzzy
 msgid "configuration file syntax error"
 msgstr "Ralat Permulaan Fail Tetapan DNS %s:"
 
-#: src/virterror.c:882
+#: src/virterror.c:893
 #, fuzzy, c-format
 msgid "configuration file syntax error: %s"
 msgstr "Ralat Permulaan Fail Tetapan DNS %s:"
 
-#: src/virterror.c:886
+#: src/virterror.c:897
 #, fuzzy
 msgid "failed to write configuration file"
 msgstr "Ralat bila cuba menulis ke fail konfigurasi."
 
-#: src/virterror.c:888
+#: src/virterror.c:899
 #, fuzzy, c-format
 msgid "failed to write configuration file: %s"
 msgstr "Ralat bila cuba menulis ke fail konfigurasi."
 
-#: src/virterror.c:892
+#: src/virterror.c:903
 #, fuzzy
 msgid "parser error"
 msgstr "Ralat Tidak Diketahui"
 
-#: src/virterror.c:898
+#: src/virterror.c:909
 #, fuzzy
 msgid "invalid network pointer in"
 msgstr "Sila penuhkan maklumat rangkaian"
 
-#: src/virterror.c:900
+#: src/virterror.c:911
 #, fuzzy, c-format
 msgid "invalid network pointer in %s"
 msgstr "Sila penuhkan maklumat rangkaian"
 
-#: src/virterror.c:904
+#: src/virterror.c:915
 #, fuzzy
 msgid "this network exists already"
 msgstr "Direktori bernama %s telah wujud."
 
-#: src/virterror.c:906
+#: src/virterror.c:917
 #, fuzzy, c-format
 msgid "network %s exists already"
 msgstr "Profil \"%s\" telah wujud!"
 
-#: src/virterror.c:910
+#: src/virterror.c:921
 #, fuzzy
 msgid "system call error"
 msgstr "Ralat sistem tidak diketahui"
 
-#: src/virterror.c:916
+#: src/virterror.c:927
 #, fuzzy
 msgid "RPC error"
 msgstr "Ralat Tidak Diketahui"
 
-#: src/virterror.c:922
+#: src/virterror.c:933
 #, fuzzy
 msgid "GNUTLS call error"
 msgstr "Ralat Menyimpan Cekupanskrin"
 
-#: src/virterror.c:928
+#: src/virterror.c:939
 #, fuzzy
 msgid "Failed to find the network"
 msgstr "Gagal menjumpai program dipilih."
 
-#: src/virterror.c:930
+#: src/virterror.c:941
 #, fuzzy, c-format
 msgid "Failed to find the network: %s"
 msgstr "Gagal menjumpai program dipilih."
 
-#: src/virterror.c:934
+#: src/virterror.c:945
 #, fuzzy
 msgid "Domain not found"
 msgstr "CD Tidak Dijumpai"
 
-#: src/virterror.c:936
+#: src/virterror.c:947
 #, fuzzy, c-format
 msgid "Domain not found: %s"
 msgstr "CD Tidak Dijumpai"
 
-#: src/virterror.c:940
+#: src/virterror.c:951
 #, fuzzy
 msgid "Network not found"
 msgstr "CD Tidak Dijumpai"
 
-#: src/virterror.c:942
+#: src/virterror.c:953
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "CD Tidak Dijumpai"
 
-#: src/virterror.c:946
+#: src/virterror.c:957
 #, fuzzy
 msgid "invalid MAC address"
 msgstr "Alamat MAC dibenarkan"
 
-#: src/virterror.c:948
+#: src/virterror.c:959
 #, fuzzy, c-format
 msgid "invalid MAC address: %s"
 msgstr "Alamat MAC dibenarkan"
 
-#: src/virterror.c:952
+#: src/virterror.c:963
 #, fuzzy
 msgid "authentication failed"
 msgstr "Operasi antaramuka HTTP gagal\n"
 
-#: src/virterror.c:954
+#: src/virterror.c:965
 #, fuzzy, c-format
 msgid "authentication failed: %s"
 msgstr "Operasi antaramuka HTTP gagal\n"
 
-#: src/virterror.c:958
+#: src/virterror.c:969
 #, fuzzy
 msgid "Storage pool not found"
 msgstr "CD Tidak Dijumpai"
 
-#: src/virterror.c:960
+#: src/virterror.c:971
 #, fuzzy, c-format
 msgid "Storage pool not found: %s"
 msgstr "CD Tidak Dijumpai"
 
-#: src/virterror.c:964
+#: src/virterror.c:975
 #, fuzzy
 msgid "Storage volume not found"
 msgstr "CD Tidak Dijumpai"
 
-#: src/virterror.c:966
+#: src/virterror.c:977
 #, fuzzy, c-format
 msgid "Storage volume not found: %s"
 msgstr "CD Tidak Dijumpai"
 
-#: src/virterror.c:970
+#: src/virterror.c:981
 #, fuzzy
 msgid "invalid storage pool pointer in"
 msgstr "Sila penuhkan maklumat rangkaian"
 
-#: src/virterror.c:972
+#: src/virterror.c:983
 #, fuzzy, c-format
 msgid "invalid storage pool pointer in %s"
 msgstr "Sila penuhkan maklumat rangkaian"
 
-#: src/virterror.c:976
+#: src/virterror.c:987
 #, fuzzy
 msgid "invalid storage volume pointer in"
 msgstr "Sila penuhkan maklumat rangkaian"
 
-#: src/virterror.c:978
+#: src/virterror.c:989
 #, fuzzy, c-format
 msgid "invalid storage volume pointer in %s"
 msgstr "Sila penuhkan maklumat rangkaian"
 
-#: src/virterror.c:982
+#: src/virterror.c:993
 #, fuzzy
 msgid "Failed to find a storage driver"
 msgstr "Gagal menjumpai program dipilih."
 
-#: src/virterror.c:984
+#: src/virterror.c:995
 #, fuzzy, c-format
 msgid "Failed to find a storage driver: %s"
 msgstr "Gagal menjumpai program dipilih."
 
-#: src/virterror.c:988
+#: src/virterror.c:999
 #, fuzzy
 msgid "Failed to find a node driver"
 msgstr "Gagal menjumpai program dipilih."
 
-#: src/virterror.c:990
+#: src/virterror.c:1001
 #, fuzzy, c-format
 msgid "Failed to find a node driver: %s"
 msgstr "Gagal menjumpai program dipilih."
 
-#: src/virterror.c:994
+#: src/virterror.c:1005
 #, fuzzy
 msgid "invalid node device pointer"
 msgstr "aksara tidak sah pada %s pada rentetan mod %s"
 
-#: src/virterror.c:996
+#: src/virterror.c:1007
 #, fuzzy, c-format
 msgid "invalid node device pointer in %s"
 msgstr "aksara tidak sah pada %s pada rentetan mod %s"
 
-#: src/virterror.c:1000
+#: src/virterror.c:1011
 #, fuzzy
 msgid "Node device not found"
 msgstr "CD Tidak Dijumpai"
 
-#: src/virterror.c:1002
+#: src/virterror.c:1013
 #, fuzzy, c-format
 msgid "Node device not found: %s"
 msgstr "CD Tidak Dijumpai"
 
-#: src/virterror.c:1006
+#: src/virterror.c:1017
 #, fuzzy
 msgid "Security model not found"
 msgstr "CD Tidak Dijumpai"
 
-#: src/virterror.c:1008
+#: src/virterror.c:1019
 #, fuzzy, c-format
 msgid "Security model not found: %s"
 msgstr "CD Tidak Dijumpai"
 
-#: src/virterror.c:1071
+#: src/virterror.c:1082
 #, fuzzy
 msgid "internal error: buffer too small"
 msgstr "Ralat dalaman.\n"
@@ -8378,372 +8378,372 @@ msgstr "Pilih Jenis Peranti"
 msgid "cannot initialise mutex"
 msgstr ""
 
-#: src/xend_internal.c:133
+#: src/xend_internal.c:127
 #, fuzzy
 msgid "failed to create a socket"
 msgstr "Tiada nod utk buang"
 
-#: src/xend_internal.c:156
+#: src/xend_internal.c:150
 #, fuzzy
 msgid "failed to connect to xend"
 msgstr "gala untuk menyambung ke hipervisor"
 
-#: src/xend_internal.c:203 src/xend_internal.c:206
+#: src/xend_internal.c:197 src/xend_internal.c:200
 msgid "failed to read from Xen Daemon"
 msgstr ""
 
-#: src/xend_internal.c:394
+#: src/xend_internal.c:388
 #, fuzzy, c-format
 msgid "%d status from xen daemon: %s:%s"
 msgstr "Mengikat ke domain NIS: "
 
-#: src/xend_internal.c:445 src/xend_internal.c:448 src/xend_internal.c:456
+#: src/xend_internal.c:439 src/xend_internal.c:442 src/xend_internal.c:450
 #, c-format
 msgid "xend_post: error from xen daemon: %s"
 msgstr ""
 
-#: src/xend_internal.c:851
+#: src/xend_internal.c:845
 #, fuzzy, c-format
 msgid "unable to connect to '%s:%s'"
 msgstr "Tidak dapat menulis ke fail %s."
 
-#: src/xend_internal.c:969
+#: src/xend_internal.c:963
 msgid "failed to urlencode the create S-Expr"
 msgstr ""
 
-#: src/xend_internal.c:1010
+#: src/xend_internal.c:1004
 msgid "domain information incomplete, missing domid"
 msgstr ""
 
-#: src/xend_internal.c:1016
+#: src/xend_internal.c:1010
 msgid "domain information incorrect domid not numeric"
 msgstr ""
 
-#: src/xend_internal.c:1021 src/xend_internal.c:1068
+#: src/xend_internal.c:1015 src/xend_internal.c:1062
 msgid "domain information incomplete, missing uuid"
 msgstr ""
 
-#: src/xend_internal.c:1060 src/xend_internal.c:2325 src/xend_internal.c:2332
+#: src/xend_internal.c:1054 src/xend_internal.c:2319 src/xend_internal.c:2326
 msgid "domain information incomplete, missing name"
 msgstr ""
 
-#: src/xend_internal.c:1149
+#: src/xend_internal.c:1143
 #, fuzzy
 msgid "domain information incomplete, missing HVM loader"
 msgstr "Sila isikan maklumat pengesahan"
 
-#: src/xend_internal.c:1203
+#: src/xend_internal.c:1197
 #, fuzzy
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "Sila isikan maklumat pengesahan"
 
-#: src/xend_internal.c:1267
+#: src/xend_internal.c:1261
 #, fuzzy
 msgid "Unknown char device type"
 msgstr "Pilih Jenis Peranti"
 
-#: src/xend_internal.c:1301 src/xend_internal.c:1341 src/xend_internal.c:1357
-#: src/xend_internal.c:1495 src/xend_internal.c:1523 src/xend_internal.c:1539
+#: src/xend_internal.c:1295 src/xend_internal.c:1335 src/xend_internal.c:1351
+#: src/xend_internal.c:1489 src/xend_internal.c:1517 src/xend_internal.c:1533
 msgid "malformed char device string"
 msgstr ""
 
-#: src/xend_internal.c:1468
+#: src/xend_internal.c:1462
 #, fuzzy, c-format
 msgid "unknown chr device type '%s'"
 msgstr "Jenis data tidak diketahui: %s\n"
 
-#: src/xend_internal.c:1630
+#: src/xend_internal.c:1624
 msgid "domain information incomplete, vbd has no dev"
 msgstr ""
 
-#: src/xend_internal.c:1641
+#: src/xend_internal.c:1635
 #, fuzzy
 msgid "domain information incomplete, vbd has no src"
 msgstr "Sila isikan maklumat pengesahan"
 
-#: src/xend_internal.c:1650
+#: src/xend_internal.c:1644
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
 
-#: src/xend_internal.c:1665
+#: src/xend_internal.c:1659
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1821
+#: src/xend_internal.c:1815
 #, c-format
 msgid "malformed mac address '%s'"
 msgstr ""
 
-#: src/xend_internal.c:1902
+#: src/xend_internal.c:1896
 #, fuzzy, c-format
 msgid "unexpected sound model %s"
 msgstr "Pelayan Kamus Dict"
 
-#: src/xend_internal.c:2087
+#: src/xend_internal.c:2081
 #, fuzzy, c-format
 msgid "unknown graphics type '%s'"
 msgstr "Jenis data tidak diketahui: %s\n"
 
-#: src/xend_internal.c:2210
+#: src/xend_internal.c:2204
 #, fuzzy
 msgid "missing PCI domain"
 msgstr "_Domain NIS:"
 
-#: src/xend_internal.c:2215
+#: src/xend_internal.c:2209
 #, fuzzy
 msgid "missing PCI bus"
 msgstr "hilang \""
 
-#: src/xend_internal.c:2220
+#: src/xend_internal.c:2214
 #, fuzzy
 msgid "missing PCI slot"
 msgstr "hilang \""
 
-#: src/xend_internal.c:2225
+#: src/xend_internal.c:2219
 #, fuzzy
 msgid "missing PCI func"
 msgstr "hilang \""
 
-#: src/xend_internal.c:2231
+#: src/xend_internal.c:2225
 #, fuzzy, c-format
 msgid "cannot parse PCI domain '%s'"
 msgstr "Pilih Jenis Peranti"
 
-#: src/xend_internal.c:2236
+#: src/xend_internal.c:2230
 #, fuzzy, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "Alamat MAC dibenarkan"
 
-#: src/xend_internal.c:2241
+#: src/xend_internal.c:2235
 #, fuzzy, c-format
 msgid "cannot parse PCI slot '%s'"
 msgstr "Tidak dapat menulis ke fail %s."
 
-#: src/xend_internal.c:2246
+#: src/xend_internal.c:2240
 #, fuzzy, c-format
 msgid "cannot parse PCI func '%s'"
 msgstr "Tidak dapat menulis ke fail %s."
 
-#: src/xend_internal.c:2312
+#: src/xend_internal.c:2306
 #, fuzzy
 msgid "domain information incomplete, missing id"
 msgstr "Sila isikan maklumat pengesahan"
 
-#: src/xend_internal.c:2380
+#: src/xend_internal.c:2374
 #, fuzzy, c-format
 msgid "invalid CPU mask %s"
 msgstr "Alamat MAC dibenarkan"
 
-#: src/xend_internal.c:2391 src/xend_internal.c:2401 src/xend_internal.c:2411
+#: src/xend_internal.c:2385 src/xend_internal.c:2395 src/xend_internal.c:2405
 #, fuzzy, c-format
 msgid "unknown lifecycle type %s"
 msgstr "Jenis data tidak diketahui: %s\n"
 
-#: src/xend_internal.c:2795
+#: src/xend_internal.c:2789
 #, fuzzy
 msgid "topology syntax error"
 msgstr "Ralat Permulaan Fail Tetapan DNS %s:"
 
-#: src/xend_internal.c:2859
+#: src/xend_internal.c:2853
 msgid "failed to parse Xend domain information"
 msgstr ""
 
-#: src/xend_internal.c:2980 src/xend_internal.c:3007 src/xend_internal.c:3035
-#: src/xend_internal.c:3064 src/xend_internal.c:3095 src/xend_internal.c:3170
-#: src/xend_internal.c:3207
+#: src/xend_internal.c:2974 src/xend_internal.c:3001 src/xend_internal.c:3029
+#: src/xend_internal.c:3058 src/xend_internal.c:3089 src/xend_internal.c:3164
+#: src/xend_internal.c:3201
 #, fuzzy, c-format
 msgid "Domain %s isn't running."
 msgstr "autorun sedang berjalan!\n"
 
-#: src/xend_internal.c:3365
+#: src/xend_internal.c:3359
 msgid "xenDaemonDomainFetch failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4093 src/xend_internal.c:4100
+#: src/xend_internal.c:4087 src/xend_internal.c:4094
 #, fuzzy
 msgid "unsupported device type"
 msgstr "Pilih Jenis Peranti"
 
-#: src/xend_internal.c:4205
+#: src/xend_internal.c:4199
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4246
+#: src/xend_internal.c:4240
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4254
+#: src/xend_internal.c:4248
 #, fuzzy
 msgid "unexpected value from on_xend_start"
 msgstr "%s: saiz alamat mempunyai nilai %u tidak dijangka\n"
 
-#: src/xend_internal.c:4265
+#: src/xend_internal.c:4259
 #, fuzzy
 msgid "no memory"
 msgstr "Memori Rendah"
 
-#: src/xend_internal.c:4271
+#: src/xend_internal.c:4265
 #, fuzzy
 msgid "sexpr2string failed"
 msgstr "Operasi antaramuka HTTP gagal\n"
 
-#: src/xend_internal.c:4276
+#: src/xend_internal.c:4270
 #, fuzzy
 msgid "Failed to redefine sexpr"
 msgstr "akses ke alatan rangkaian"
 
-#: src/xend_internal.c:4281
+#: src/xend_internal.c:4275
 msgid "on_xend_start not present in sexpr"
 msgstr ""
 
-#: src/xend_internal.c:4312
+#: src/xend_internal.c:4306
 #, fuzzy, c-format
 msgid "unable to resolve name %s"
 msgstr "Gagal untuk membuka %s: %s\n"
 
-#: src/xend_internal.c:4348
+#: src/xend_internal.c:4342
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:4358
+#: src/xend_internal.c:4352
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:4370
+#: src/xend_internal.c:4364
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr ""
 
-#: src/xend_internal.c:4383
+#: src/xend_internal.c:4377
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr ""
 
-#: src/xend_internal.c:4388
+#: src/xend_internal.c:4382
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
 
-#: src/xend_internal.c:4395
+#: src/xend_internal.c:4389
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr ""
 
-#: src/xend_internal.c:4415
+#: src/xend_internal.c:4409
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr ""
 
-#: src/xend_internal.c:4471
+#: src/xend_internal.c:4465
 #, fuzzy
 msgid "failed to parse domain description"
 msgstr "Mengikat ke domain NIS: "
 
-#: src/xend_internal.c:4477
+#: src/xend_internal.c:4471
 #, fuzzy
 msgid "failed to build sexpr"
 msgstr "Gagal untuk melekapkan partisyen."
 
-#: src/xend_internal.c:4487
+#: src/xend_internal.c:4481
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Gagal mencipta direktori %s"
 
-#: src/xend_internal.c:4643 src/xend_internal.c:4719 src/xend_internal.c:4809
+#: src/xend_internal.c:4637 src/xend_internal.c:4713 src/xend_internal.c:4803
 msgid "unsupported in xendConfigVersion < 4"
 msgstr ""
 
-#: src/xend_internal.c:4655
+#: src/xend_internal.c:4649
 #, fuzzy
 msgid "node information incomplete, missing scheduler name"
 msgstr "Sila isikan maklumat pengesahan"
 
-#: src/xend_internal.c:4661 src/xend_internal.c:4668
+#: src/xend_internal.c:4655 src/xend_internal.c:4662
 msgid "strdup failed"
 msgstr ""
 
-#: src/xend_internal.c:4673 src/xend_internal.c:4767 src/xend_internal.c:4879
+#: src/xend_internal.c:4667 src/xend_internal.c:4761 src/xend_internal.c:4873
 msgid "Unknown scheduler"
 msgstr ""
 
-#: src/xend_internal.c:4732 src/xend_internal.c:4822
+#: src/xend_internal.c:4726 src/xend_internal.c:4816
 #, fuzzy
 msgid "Failed to get a scheduler name"
 msgstr "gagal mendapatkan atribut bagi %s"
 
-#: src/xend_internal.c:4745 src/xend_internal.c:4858
+#: src/xend_internal.c:4739 src/xend_internal.c:4852
 #, fuzzy
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "Sila isikan maklumat pengesahan"
 
-#: src/xend_internal.c:4750 src/xend_internal.c:4867
+#: src/xend_internal.c:4744 src/xend_internal.c:4861
 #, fuzzy
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "Sila isikan maklumat pengesahan"
 
-#: src/xend_internal.c:4925
+#: src/xend_internal.c:4919
 msgid "domainBlockPeek is not supported for dom0"
 msgstr ""
 
-#: src/xend_internal.c:4946
+#: src/xend_internal.c:4940
 #, c-format
 msgid "%s: invalid path"
 msgstr ""
 
-#: src/xend_internal.c:4954
+#: src/xend_internal.c:4948
 #, fuzzy, c-format
 msgid "failed to open for reading: %s"
 msgstr "xinetd gagal untuk mengulangmuat untuk"
 
-#: src/xend_internal.c:4966
+#: src/xend_internal.c:4960
 #, fuzzy, c-format
 msgid "failed to lseek or read from file: %s"
 msgstr "tidak dapat membaca fail tetapan `%s': %s"
 
-#: src/xend_internal.c:5048 src/xend_internal.c:5094
+#: src/xend_internal.c:5042 src/xend_internal.c:5088
 #, fuzzy, c-format
 msgid "unexpected graphics type %d"
 msgstr "Jenis tetikus dikesan: %s"
 
-#: src/xend_internal.c:5137
+#: src/xend_internal.c:5131
 #, fuzzy
 msgid "unexpected chr device type"
 msgstr "Jenis tetikus dikesan: %s"
 
-#: src/xend_internal.c:5215
+#: src/xend_internal.c:5209
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr ""
 
-#: src/xend_internal.c:5227
+#: src/xend_internal.c:5221
 #, c-format
 msgid "Cannot directly attach CDROM %s"
 msgstr ""
 
-#: src/xend_internal.c:5327 src/xm_internal.c:1997
+#: src/xend_internal.c:5321 src/xm_internal.c:2018
 #, c-format
 msgid "unsupported network type %d"
 msgstr ""
 
-#: src/xend_internal.c:5368
+#: src/xend_internal.c:5362 src/xm_internal.c:2006
 #, fuzzy, c-format
 msgid "network %s is not active"
 msgstr "autorun sedang berjalan!\n"
 
-#: src/xend_internal.c:5427 src/xend_internal.c:5475
+#: src/xend_internal.c:5421 src/xend_internal.c:5469
 msgid "managed PCI devices not supported with XenD"
 msgstr ""
 
-#: src/xend_internal.c:5582 src/xend_internal.c:5589 src/xend_internal.c:5596
+#: src/xend_internal.c:5576 src/xend_internal.c:5583 src/xend_internal.c:5590
 #, fuzzy, c-format
 msgid "unexpected lifecycle value %d"
 msgstr "%s: saiz alamat mempunyai nilai %u tidak dijangka\n"
 
-#: src/xend_internal.c:5617
+#: src/xend_internal.c:5611
 #, fuzzy
 msgid "no HVM domain loader"
 msgstr "penggunaan:   %s --list [nama]\n"
 
-#: src/xend_internal.c:5853
+#: src/xend_internal.c:5847
 msgid "hotplug of device type not supported"
 msgstr ""
 
@@ -8815,54 +8815,54 @@ msgstr ""
 msgid "can't retrieve config file for domain"
 msgstr ""
 
-#: src/xm_internal.c:2243 src/xm_internal.c:2252 src/xm_internal.c:2261
+#: src/xm_internal.c:2264 src/xm_internal.c:2273 src/xm_internal.c:2282
 #, fuzzy, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "Pelayan Kamus Dict"
 
-#: src/xm_internal.c:2542
+#: src/xm_internal.c:2563
 msgid "can't retrieve config filename for domain to overwrite"
 msgstr ""
 
-#: src/xm_internal.c:2548
+#: src/xm_internal.c:2569
 msgid "can't retrieve config entry for domain to overwrite"
 msgstr ""
 
-#: src/xm_internal.c:2559 src/xm_internal.c:2566
+#: src/xm_internal.c:2580 src/xm_internal.c:2587
 #, fuzzy
 msgid "failed to remove old domain from config map"
 msgstr "Gagal untuk memuatkan cakera pemandu daripada fail."
 
-#: src/xm_internal.c:2575
+#: src/xm_internal.c:2596
 msgid "config file name is too long"
 msgstr ""
 
-#: src/xm_internal.c:2593
+#: src/xm_internal.c:2614
 #, fuzzy
 msgid "unable to get current time"
 msgstr "Saiz _memori tersendiri"
 
-#: src/xm_internal.c:2602 src/xm_internal.c:2609
+#: src/xm_internal.c:2623 src/xm_internal.c:2630
 #, fuzzy
 msgid "unable to store config file handle"
 msgstr "tidak dapat membaca fail tetapan `%s': %s"
 
-#: src/xm_internal.c:2840 src/xm_internal.c:2941
+#: src/xm_internal.c:2861 src/xm_internal.c:2962
 #, fuzzy
 msgid "unknown device"
 msgstr "Jenis data tidak diketahui: %s\n"
 
-#: src/xm_internal.c:2999
+#: src/xm_internal.c:3020
 #, c-format
 msgid "cannot check link %s points to config %s"
 msgstr ""
 
-#: src/xm_internal.c:3028
+#: src/xm_internal.c:3049
 #, fuzzy, c-format
 msgid "failed to create link %s to %s"
 msgstr "Gagal untuk memuatkan cakera pemandu daripada fail."
 
-#: src/xm_internal.c:3036
+#: src/xm_internal.c:3057
 #, fuzzy, c-format
 msgid "failed to remove link %s"
 msgstr "Gagal untuk membuka %s: %s\n"

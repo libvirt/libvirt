@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.fr-4\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-04-24 12:05+0200\n"
+"POT-Creation-Date: 2009-04-24 15:38+0200\n"
 "PO-Revision-Date: 2008-06-18 10:39+0200\n"
 "Last-Translator: Mathieu Schopfer <mat.schopfer@bluewin.ch>\n"
 "Language-Team: Français <fedora-trans-fr@redhat.com>\n"
@@ -250,7 +250,7 @@ msgstr "Impossible d'allouer struct qemud_server"
 
 #: qemud/qemud.c:806 qemud/qemud.c:1285 src/domain_conf.c:522
 #: src/network_conf.c:170 src/node_device_conf.c:137 src/openvz_conf.c:453
-#: src/qemu_driver.c:430 src/remote_internal.c:908 src/remote_internal.c:5780
+#: src/qemu_driver.c:430 src/remote_internal.c:908 src/remote_internal.c:5833
 #: src/storage_conf.c:1304 src/test.c:235 src/test.c:363
 #, fuzzy
 msgid "cannot initialize mutex"
@@ -637,7 +637,7 @@ msgstr "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
 msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 
-#: qemud/remote.c:2600 src/remote_internal.c:5111
+#: qemud/remote.c:2600 src/remote_internal.c:5164
 #, fuzzy, c-format
 msgid "Cannot resolve address %d: %s"
 msgstr "impossible de lire le répertoire '%s' : %s"
@@ -684,7 +684,7 @@ msgstr "impossible de lister les mécanismes SASL %d (%s)"
 msgid "cannot allocate mechlist"
 msgstr "impossible d'allouer la liste des mécanismes"
 
-#: qemud/remote.c:2793 src/remote_internal.c:5607
+#: qemud/remote.c:2793 src/remote_internal.c:5660
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr "impossible d'envoyer une requête SSF SASL lors de la connexion %d (%s)"
@@ -817,12 +817,12 @@ msgstr "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"
 
 #: qemud/remote.c:4120 qemud/remote.c:4150 qemud/remote.c:4191
 #: qemud/remote.c:4219 qemud/remote.c:4261 qemud/remote.c:4287
-#: qemud/remote.c:4313
+#: qemud/remote.c:4313 qemud/remote.c:4361
 #, fuzzy
 msgid "node_device not found"
 msgstr "périphérique non trouvé : %s (%s)"
 
-#: qemud/remote.c:4341
+#: qemud/remote.c:4389
 #, fuzzy
 msgid "unexpected async event method call"
 msgstr "noeud dict inattendu"
@@ -1417,12 +1417,12 @@ msgstr "type mime inattendu"
 msgid "unexpected char type %d"
 msgstr "type de pool inattendu"
 
-#: src/domain_conf.c:3176 src/xend_internal.c:5498
+#: src/domain_conf.c:3176 src/xend_internal.c:5492
 #, fuzzy, c-format
 msgid "unexpected sound model %d"
 msgstr "noeud dict inattendu"
 
-#: src/domain_conf.c:3196 src/xend_internal.c:5520
+#: src/domain_conf.c:3196 src/xend_internal.c:5514
 #, fuzzy, c-format
 msgid "unexpected input type %d"
 msgstr "type de pool inattendu"
@@ -1538,51 +1538,51 @@ msgstr ""
 msgid "could not parse connection URI"
 msgstr "impossible d'analyser l'URI de connexion"
 
-#: src/libvirt.c:2050
+#: src/libvirt.c:2054
 #, fuzzy
 msgid "cannot get working directory"
 msgstr "impossible de créer le répertoire de configuration %s : %s"
 
-#: src/libvirt.c:2057 src/libvirt.c:2133
+#: src/libvirt.c:2061 src/libvirt.c:2137
 #, fuzzy
 msgid "path too long"
 msgstr "n_columns trop grand"
 
-#: src/libvirt.c:2126
+#: src/libvirt.c:2130
 #, fuzzy
 msgid "cannot get current directory"
 msgstr "impossible d'étendre le fichier '%s' : %s"
 
-#: src/libvirt.c:2626
+#: src/libvirt.c:2630
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr ""
 
-#: src/libvirt.c:2767
+#: src/libvirt.c:2771
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare n'a pas paramétré URI"
 
-#: src/libvirt.c:2796
+#: src/libvirt.c:2800
 #, fuzzy
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare n'a pas paramétré URI"
 
-#: src/libvirt.c:3521
+#: src/libvirt.c:3525
 msgid "path is NULL"
 msgstr ""
 
-#: src/libvirt.c:3527
+#: src/libvirt.c:3531
 msgid "flags must be zero"
 msgstr ""
 
-#: src/libvirt.c:3534
+#: src/libvirt.c:3538
 msgid "buffer is NULL"
 msgstr ""
 
-#: src/libvirt.c:3633
+#: src/libvirt.c:3637
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL"
 msgstr ""
 
-#: src/libvirt.c:3640
+#: src/libvirt.c:3644
 msgid "buffer is NULL but size is non-zero"
 msgstr ""
 
@@ -3654,7 +3654,7 @@ msgstr ""
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open : pour le transport « ext », une commande est requise"
 
-#: src/remote_internal.c:538 src/xend_internal.c:814
+#: src/remote_internal.c:538 src/xend_internal.c:808
 #, fuzzy, c-format
 msgid "unable to resolve hostname '%s': %s"
 msgstr "Impossible d'ouvrir tty %s : %s\n"
@@ -3967,218 +3967,218 @@ msgstr "trop de volumes de stockage requis"
 msgid "too many capability names received"
 msgstr "trop de volumes de stockages reçus"
 
-#: src/remote_internal.c:5030
+#: src/remote_internal.c:5083
 #, fuzzy, c-format
 msgid "unknown authentication type %s"
 msgstr "type auth '%s' inconnu"
 
-#: src/remote_internal.c:5040
+#: src/remote_internal.c:5093
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr ""
 
-#: src/remote_internal.c:5081
+#: src/remote_internal.c:5134
 #, fuzzy, c-format
 msgid "unsupported authentication type %d"
 msgstr "type de volume de stockage %d non pris en charge"
 
-#: src/remote_internal.c:5326
+#: src/remote_internal.c:5379
 #, fuzzy, c-format
 msgid "failed to initialize SASL library: %d (%s)"
 msgstr "Impossible d'initialiser l'authentification SASL %s"
 
-#: src/remote_internal.c:5335
+#: src/remote_internal.c:5388
 #, fuzzy
 msgid "failed to get sock address"
 msgstr "Impossible d'obtenir les statistiques du bloc %s %s"
 
-#: src/remote_internal.c:5345
+#: src/remote_internal.c:5398
 #, fuzzy
 msgid "failed to get peer address"
 msgstr "Impossible de récupérer les statistiques relatives à l'interface %s %s"
 
-#: src/remote_internal.c:5370
+#: src/remote_internal.c:5423
 #, fuzzy, c-format
 msgid "Failed to create SASL client context: %d (%s)"
 msgstr "Impossible de créer le contexte polkit %s\n"
 
-#: src/remote_internal.c:5383
+#: src/remote_internal.c:5436
 msgid "invalid cipher size for TLS session"
 msgstr ""
 
-#: src/remote_internal.c:5393
+#: src/remote_internal.c:5446
 #, fuzzy, c-format
 msgid "cannot set external SSF %d (%s)"
 msgstr "impossible de définir le SSF externe SASL %d (%s)"
 
-#: src/remote_internal.c:5412
+#: src/remote_internal.c:5465
 #, fuzzy, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "impossible de définir les propriétés de sécurité SASL %d (%s)"
 
-#: src/remote_internal.c:5431
+#: src/remote_internal.c:5484
 #, fuzzy, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "cette fonction n'est pas prise en charge par l'hyperviseur"
 
-#: src/remote_internal.c:5450
+#: src/remote_internal.c:5503
 #, fuzzy, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
 msgstr "Impossible de démarrer le domaine %s"
 
-#: src/remote_internal.c:5468 src/remote_internal.c:5546
+#: src/remote_internal.c:5521 src/remote_internal.c:5599
 #, fuzzy
 msgid "Failed to make auth credentials"
 msgstr "Impossible de vérifier les références du client : %s"
 
-#: src/remote_internal.c:5492
+#: src/remote_internal.c:5545
 #, c-format
 msgid "SASL negotiation data too long: %d bytes"
 msgstr ""
 
-#: src/remote_internal.c:5532
+#: src/remote_internal.c:5585
 #, fuzzy, c-format
 msgid "Failed SASL step: %d (%s)"
 msgstr "l'étape SASL a échoué %d (%s)"
 
-#: src/remote_internal.c:5616
+#: src/remote_internal.c:5669
 #, fuzzy, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr "le SSF %d negocié n'était pas assez robuste"
 
-#: src/remote_internal.c:5671
+#: src/remote_internal.c:5724
 #, fuzzy
 msgid "Failed to collect auth credentials"
 msgstr "Impossible de vérifier les références du client : %s"
 
-#: src/remote_internal.c:5705
+#: src/remote_internal.c:5758
 msgid "no event support"
 msgstr ""
 
-#: src/remote_internal.c:5710
+#: src/remote_internal.c:5763
 msgid "adding cb to list"
 msgstr ""
 
-#: src/remote_internal.c:5739
+#: src/remote_internal.c:5792
 msgid "removing cb fron list"
 msgstr ""
 
-#: src/remote_internal.c:5801
+#: src/remote_internal.c:5854
 msgid "xdr_remote_message_header failed"
 msgstr ""
 
-#: src/remote_internal.c:5807
+#: src/remote_internal.c:5860
 msgid "marshalling args"
 msgstr "conversion des arguments"
 
-#: src/remote_internal.c:5824
+#: src/remote_internal.c:5877
 #, fuzzy
 msgid "xdr_u_int (length word)"
 msgstr "xdr_int (longueur du mot)"
 
-#: src/remote_internal.c:5870
+#: src/remote_internal.c:5923
 #, fuzzy
 msgid "cannot send data"
 msgstr "impossible de lire fd"
 
-#: src/remote_internal.c:5901
+#: src/remote_internal.c:5954
 #, fuzzy, c-format
 msgid "failed to read from TLS socket %s"
 msgstr "Impossible de lire la socket %d\n"
 
-#: src/remote_internal.c:5906 src/remote_internal.c:5924
+#: src/remote_internal.c:5959 src/remote_internal.c:5977
 #, fuzzy
 msgid "server closed connection"
 msgstr "connexion en lecture seule"
 
-#: src/remote_internal.c:5920
+#: src/remote_internal.c:5973
 #, fuzzy
 msgid "cannot recv data"
 msgstr "impossible de lire fd"
 
-#: src/remote_internal.c:5953
+#: src/remote_internal.c:6006
 #, fuzzy, c-format
 msgid "failed to encode SASL data: %s"
 msgstr "Impossible de créer le socket : %s"
 
-#: src/remote_internal.c:6051
+#: src/remote_internal.c:6104
 #, fuzzy, c-format
 msgid "failed to decode SASL data: %s"
 msgstr "Impossible de détruire le volume %s"
 
-#: src/remote_internal.c:6125
+#: src/remote_internal.c:6178
 #, fuzzy
 msgid "xdr_u_int (length word, reply)"
 msgstr "xdr_int (longueur du mot)"
 
-#: src/remote_internal.c:6132
+#: src/remote_internal.c:6185
 #, fuzzy
 msgid "packet received from server too small"
 msgstr "valeur de la capacité de l'élément trop large"
 
-#: src/remote_internal.c:6141
+#: src/remote_internal.c:6194
 #, fuzzy
 msgid "packet received from server too large"
 msgstr "valeur de la capacité de l'élément trop large"
 
-#: src/remote_internal.c:6165
+#: src/remote_internal.c:6218
 #, fuzzy
 msgid "invalid header in reply"
 msgstr "argument invalide dans %s"
 
-#: src/remote_internal.c:6174
+#: src/remote_internal.c:6227
 #, c-format
 msgid "unknown program (received %x, expected %x)"
 msgstr ""
 
-#: src/remote_internal.c:6182
+#: src/remote_internal.c:6235
 #, c-format
 msgid "unknown protocol version (received %x, expected %x)"
 msgstr ""
 
-#: src/remote_internal.c:6199
+#: src/remote_internal.c:6252
 #, c-format
 msgid "got unexpected RPC call %d from server"
 msgstr ""
 
-#: src/remote_internal.c:6217
+#: src/remote_internal.c:6270
 #, c-format
 msgid "no call waiting for reply with serial %d"
 msgstr ""
 
-#: src/remote_internal.c:6227
+#: src/remote_internal.c:6280
 #, c-format
 msgid "unknown procedure (received %x, expected %x)"
 msgstr ""
 
-#: src/remote_internal.c:6241
+#: src/remote_internal.c:6294
 msgid "unmarshalling ret"
 msgstr "décodage de ret"
 
-#: src/remote_internal.c:6252
+#: src/remote_internal.c:6305
 msgid "unmarshalling remote_error"
 msgstr "décodage de remote_error"
 
-#: src/remote_internal.c:6262
+#: src/remote_internal.c:6315
 #, c-format
 msgid "unknown status (received %x)"
 msgstr ""
 
-#: src/remote_internal.c:6368
+#: src/remote_internal.c:6421
 #, fuzzy
 msgid "poll on socket failed"
 msgstr "opération échouée"
 
-#: src/remote_internal.c:6429
+#: src/remote_internal.c:6482
 msgid "received hangup / error event on socket"
 msgstr ""
 
-#: src/remote_internal.c:6531
+#: src/remote_internal.c:6584
 #, fuzzy
 msgid "failed to wait on condition"
 msgstr "impossible d'attendre la commande : %s"
 
-#: src/remote_internal.c:6631
+#: src/remote_internal.c:6684
 msgid "remoteDomainProcessEvent: unmarshalling ret"
 msgstr ""
 
@@ -7758,476 +7758,476 @@ msgstr ""
 "         « quit » pour quitter\n"
 "\n"
 
-#: src/virterror.c:198
+#: src/virterror.c:205
 #, fuzzy
 msgid "Unknown failure"
 msgstr "Erreur inconnue"
 
-#: src/virterror.c:512
+#: src/virterror.c:519
 msgid "warning"
 msgstr "attention"
 
-#: src/virterror.c:515
+#: src/virterror.c:522
 msgid "error"
 msgstr "erreur"
 
-#: src/virterror.c:637
+#: src/virterror.c:648
 msgid "No error message provided"
 msgstr "Pas de message d'erreur fourni"
 
-#: src/virterror.c:700
+#: src/virterror.c:711
 #, c-format
 msgid "internal error %s"
 msgstr "erreur interne %s"
 
-#: src/virterror.c:702
+#: src/virterror.c:713
 msgid "internal error"
 msgstr "erreur interne"
 
-#: src/virterror.c:705
+#: src/virterror.c:716
 msgid "out of memory"
 msgstr "plus de mémoire disponible"
 
-#: src/virterror.c:709
+#: src/virterror.c:720
 msgid "this function is not supported by the hypervisor"
 msgstr "cette fonction n'est pas prise en charge par l'hyperviseur"
 
-#: src/virterror.c:711
+#: src/virterror.c:722
 #, c-format
 msgid "this function is not supported by the hypervisor: %s"
 msgstr "cette fonction n'est pas prise en charge par l'hyperviseur : %s"
 
-#: src/virterror.c:715
+#: src/virterror.c:726
 msgid "could not connect to hypervisor"
 msgstr "connexion à l'hyperviseur impossible"
 
-#: src/virterror.c:717
+#: src/virterror.c:728
 #, c-format
 msgid "could not connect to %s"
 msgstr "impossible de se connecter à %s"
 
-#: src/virterror.c:721
+#: src/virterror.c:732
 msgid "invalid connection pointer in"
 msgstr "pointeur de connexion invalide dans"
 
-#: src/virterror.c:723
+#: src/virterror.c:734
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "pointeur de connexion invalide dans %s"
 
-#: src/virterror.c:727
+#: src/virterror.c:738
 msgid "invalid domain pointer in"
 msgstr "pointeur de domaine invalide dans"
 
-#: src/virterror.c:729
+#: src/virterror.c:740
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "pointeur de domaine invalide dans %s"
 
-#: src/virterror.c:733
+#: src/virterror.c:744
 msgid "invalid argument in"
 msgstr "argument invalide dans"
 
-#: src/virterror.c:735
+#: src/virterror.c:746
 #, c-format
 msgid "invalid argument in %s"
 msgstr "argument invalide dans %s"
 
-#: src/virterror.c:739
+#: src/virterror.c:750
 #, c-format
 msgid "operation failed: %s"
 msgstr "opération échouée : %s"
 
-#: src/virterror.c:741
+#: src/virterror.c:752
 msgid "operation failed"
 msgstr "opération échouée"
 
-#: src/virterror.c:745
+#: src/virterror.c:756
 #, c-format
 msgid "GET operation failed: %s"
 msgstr "opération GET échouée : %s"
 
-#: src/virterror.c:747
+#: src/virterror.c:758
 msgid "GET operation failed"
 msgstr "opération GET échouée"
 
-#: src/virterror.c:751
+#: src/virterror.c:762
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "opération POST échouée : %s"
 
-#: src/virterror.c:753
+#: src/virterror.c:764
 msgid "POST operation failed"
 msgstr "opération POST échouée"
 
-#: src/virterror.c:756
+#: src/virterror.c:767
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr "réception d'un code d'erreur HTTP %d inconnu"
 
-#: src/virterror.c:760
+#: src/virterror.c:771
 #, c-format
 msgid "unknown host %s"
 msgstr "hôte %s inconnu"
 
-#: src/virterror.c:762
+#: src/virterror.c:773
 msgid "unknown host"
 msgstr "hôte inconnu"
 
-#: src/virterror.c:766
+#: src/virterror.c:777
 #, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr "impossible de sérialiser S-Expr : %s"
 
-#: src/virterror.c:768
+#: src/virterror.c:779
 msgid "failed to serialize S-Expr"
 msgstr "impossible de sérialiser S-Expr"
 
-#: src/virterror.c:772
+#: src/virterror.c:783
 msgid "could not use Xen hypervisor entry"
 msgstr "impossible d'utiliser l'entrée de l'hyperviseur Xen"
 
-#: src/virterror.c:774
+#: src/virterror.c:785
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "impossible d'utiliser l'entrée de l'hyperviseur Xen %s"
 
-#: src/virterror.c:778
+#: src/virterror.c:789
 msgid "could not connect to Xen Store"
 msgstr "impossible de se connecter au magasin Xen"
 
-#: src/virterror.c:780
+#: src/virterror.c:791
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr "impossible de se connecter au magasin Xen %s"
 
-#: src/virterror.c:783
+#: src/virterror.c:794
 #, fuzzy, c-format
 msgid "failed Xen syscall %s"
 msgstr "échec de l'appel système Xen %s %d"
 
-#: src/virterror.c:787
+#: src/virterror.c:798
 msgid "unknown OS type"
 msgstr "type de SE inconnu"
 
-#: src/virterror.c:789
+#: src/virterror.c:800
 #, c-format
 msgid "unknown OS type %s"
 msgstr "type de SE inconnu %s"
 
-#: src/virterror.c:792
+#: src/virterror.c:803
 msgid "missing kernel information"
 msgstr "noyau non spécifié"
 
-#: src/virterror.c:796
+#: src/virterror.c:807
 msgid "missing root device information"
 msgstr "périphérique racine non spécifié"
 
-#: src/virterror.c:798
+#: src/virterror.c:809
 #, c-format
 msgid "missing root device information in %s"
 msgstr "périphérique racine non spécifié dans %s"
 
-#: src/virterror.c:802
+#: src/virterror.c:813
 msgid "missing source information for device"
 msgstr "source non spécifiée pour le périphérique"
 
-#: src/virterror.c:804
+#: src/virterror.c:815
 #, c-format
 msgid "missing source information for device %s"
 msgstr "source non spécifiée pour le périphérique %s"
 
-#: src/virterror.c:808
+#: src/virterror.c:819
 msgid "missing target information for device"
 msgstr "cible non spécifiée pour le périphérique"
 
-#: src/virterror.c:810
+#: src/virterror.c:821
 #, c-format
 msgid "missing target information for device %s"
 msgstr "cible non spécifiée pour le périphérique %s"
 
-#: src/virterror.c:814
+#: src/virterror.c:825
 msgid "missing domain name information"
 msgstr "nom de domaine non spécifié"
 
-#: src/virterror.c:816
+#: src/virterror.c:827
 #, c-format
 msgid "missing domain name information in %s"
 msgstr "nom de domaine non spécifié dans %s"
 
-#: src/virterror.c:820
+#: src/virterror.c:831
 msgid "missing operating system information"
 msgstr "système d'exploitation non spécifié"
 
-#: src/virterror.c:822
+#: src/virterror.c:833
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "système d'exploitation non spécifié pour %s"
 
-#: src/virterror.c:826
+#: src/virterror.c:837
 msgid "missing devices information"
 msgstr "périphériques non spécifiés"
 
-#: src/virterror.c:828
+#: src/virterror.c:839
 #, c-format
 msgid "missing devices information for %s"
 msgstr "périphériques non spécifiés pour %s"
 
-#: src/virterror.c:832
+#: src/virterror.c:843
 msgid "too many drivers registered"
 msgstr "trop de pilotes enregistrés"
 
-#: src/virterror.c:834
+#: src/virterror.c:845
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "trop de pilotes enregistrés dans %s"
 
-#: src/virterror.c:838
+#: src/virterror.c:849
 msgid "library call failed, possibly not supported"
 msgstr "échec de l'appel de la bibliothèque, elle n'est peut être pas gérée"
 
-#: src/virterror.c:840
+#: src/virterror.c:851
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr "échec de l'appel de la bibliothèque %s, elle n'est peut être pas gérée"
 
-#: src/virterror.c:844
+#: src/virterror.c:855
 msgid "XML description not well formed or invalid"
 msgstr "description XML malformée ou invalide"
 
-#: src/virterror.c:846
+#: src/virterror.c:857
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
 msgstr "description XML pour %s malformée ou invalide"
 
-#: src/virterror.c:850
+#: src/virterror.c:861
 msgid "this domain exists already"
 msgstr "ce domaine existe déjà"
 
-#: src/virterror.c:852
+#: src/virterror.c:863
 #, c-format
 msgid "domain %s exists already"
 msgstr "le domaine %s existe déjà"
 
-#: src/virterror.c:856
+#: src/virterror.c:867
 msgid "operation forbidden for read only access"
 msgstr "opération interdite pour l'accès en lecture seule"
 
-#: src/virterror.c:858
+#: src/virterror.c:869
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr "opération %s interdite pour l'accès en lecture seule"
 
-#: src/virterror.c:862
+#: src/virterror.c:873
 msgid "failed to open configuration file for reading"
 msgstr "impossible d'ouvrir le fichier pour la lecture de la configuration"
 
-#: src/virterror.c:864
+#: src/virterror.c:875
 #, c-format
 msgid "failed to open %s for reading"
 msgstr "impossible d'ouvrir %s en lecture"
 
-#: src/virterror.c:868
+#: src/virterror.c:879
 msgid "failed to read configuration file"
 msgstr "impossible de lire le fichier de configuration"
 
-#: src/virterror.c:870
+#: src/virterror.c:881
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "impossible de lire le fichier de configuration %s"
 
-#: src/virterror.c:874
+#: src/virterror.c:885
 msgid "failed to parse configuration file"
 msgstr "impossible d'analyser le fichier de configuration"
 
-#: src/virterror.c:876
+#: src/virterror.c:887
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "impossible d'analyser le fichier de configuration %s"
 
-#: src/virterror.c:880
+#: src/virterror.c:891
 msgid "configuration file syntax error"
 msgstr "erreur de syntaxe dans le fichier de configuration"
 
-#: src/virterror.c:882
+#: src/virterror.c:893
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "erreur de syntaxe dans le fichier de configuration : %s"
 
-#: src/virterror.c:886
+#: src/virterror.c:897
 msgid "failed to write configuration file"
 msgstr "impossible d'écrire le fichier de configuration"
 
-#: src/virterror.c:888
+#: src/virterror.c:899
 #, c-format
 msgid "failed to write configuration file: %s"
 msgstr "impossible d'écrire le fichier de configuration : %s"
 
-#: src/virterror.c:892
+#: src/virterror.c:903
 msgid "parser error"
 msgstr "erreur de l'analyseur"
 
-#: src/virterror.c:898
+#: src/virterror.c:909
 msgid "invalid network pointer in"
 msgstr "pointeur de réseau invalide dans"
 
-#: src/virterror.c:900
+#: src/virterror.c:911
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "pointeur de réseau invalide dans %s"
 
-#: src/virterror.c:904
+#: src/virterror.c:915
 msgid "this network exists already"
 msgstr "ce domaine existe déjà"
 
-#: src/virterror.c:906
+#: src/virterror.c:917
 #, c-format
 msgid "network %s exists already"
 msgstr "le domaine %s existe déjà"
 
-#: src/virterror.c:910
+#: src/virterror.c:921
 msgid "system call error"
 msgstr "erreur lors de l'appel système"
 
-#: src/virterror.c:916
+#: src/virterror.c:927
 msgid "RPC error"
 msgstr "erreur RPC"
 
-#: src/virterror.c:922
+#: src/virterror.c:933
 msgid "GNUTLS call error"
 msgstr "erreur lors de l'appel système GNUTLS"
 
-#: src/virterror.c:928
+#: src/virterror.c:939
 msgid "Failed to find the network"
 msgstr "Impossible d'accéder au réseau"
 
-#: src/virterror.c:930
+#: src/virterror.c:941
 #, c-format
 msgid "Failed to find the network: %s"
 msgstr "Impossible d'accéder au réseau : %s"
 
-#: src/virterror.c:934
+#: src/virterror.c:945
 msgid "Domain not found"
 msgstr "Domaine non trouvé"
 
-#: src/virterror.c:936
+#: src/virterror.c:947
 #, c-format
 msgid "Domain not found: %s"
 msgstr "Domaine non trouvé : %s"
 
-#: src/virterror.c:940
+#: src/virterror.c:951
 msgid "Network not found"
 msgstr "Réseau non trouvé"
 
-#: src/virterror.c:942
+#: src/virterror.c:953
 #, c-format
 msgid "Network not found: %s"
 msgstr "Réseau non trouvé : %s"
 
-#: src/virterror.c:946
+#: src/virterror.c:957
 msgid "invalid MAC address"
 msgstr "adresse MAC invalide"
 
-#: src/virterror.c:948
+#: src/virterror.c:959
 #, c-format
 msgid "invalid MAC address: %s"
 msgstr "adresse MAC invalide : %s"
 
-#: src/virterror.c:952
+#: src/virterror.c:963
 msgid "authentication failed"
 msgstr "l'authentification a échoué"
 
-#: src/virterror.c:954
+#: src/virterror.c:965
 #, c-format
 msgid "authentication failed: %s"
 msgstr "l'authentification a échoué : %s"
 
-#: src/virterror.c:958
+#: src/virterror.c:969
 msgid "Storage pool not found"
 msgstr "Pool de stockage introuvable"
 
-#: src/virterror.c:960
+#: src/virterror.c:971
 #, c-format
 msgid "Storage pool not found: %s"
 msgstr "Pool de stockage introuvable : %s"
 
-#: src/virterror.c:964
+#: src/virterror.c:975
 msgid "Storage volume not found"
 msgstr "Volume de stockage introuvable"
 
-#: src/virterror.c:966
+#: src/virterror.c:977
 #, c-format
 msgid "Storage volume not found: %s"
 msgstr "Volume de stockage introuvable : %s"
 
-#: src/virterror.c:970
+#: src/virterror.c:981
 msgid "invalid storage pool pointer in"
 msgstr "pointeur de pool de stockage invalide dans"
 
-#: src/virterror.c:972
+#: src/virterror.c:983
 #, c-format
 msgid "invalid storage pool pointer in %s"
 msgstr "pointeur de pool de stockage invalide dans %s"
 
-#: src/virterror.c:976
+#: src/virterror.c:987
 msgid "invalid storage volume pointer in"
 msgstr "pointeur de volume de stockage invalide dans"
 
-#: src/virterror.c:978
+#: src/virterror.c:989
 #, c-format
 msgid "invalid storage volume pointer in %s"
 msgstr "pointeur de volume de stockage invalide dans %s"
 
-#: src/virterror.c:982
+#: src/virterror.c:993
 msgid "Failed to find a storage driver"
 msgstr "Impossible de trouver un lecteur de stockage"
 
-#: src/virterror.c:984
+#: src/virterror.c:995
 #, c-format
 msgid "Failed to find a storage driver: %s"
 msgstr "Impossible de trouver un lecteur de stockage : %s"
 
-#: src/virterror.c:988
+#: src/virterror.c:999
 #, fuzzy
 msgid "Failed to find a node driver"
 msgstr "Impossible de trouver un lecteur de stockage"
 
-#: src/virterror.c:990
+#: src/virterror.c:1001
 #, fuzzy, c-format
 msgid "Failed to find a node driver: %s"
 msgstr "Impossible de trouver un lecteur de stockage : %s"
 
-#: src/virterror.c:994
+#: src/virterror.c:1005
 #, fuzzy
 msgid "invalid node device pointer"
 msgstr "pointeur de volume de stockage invalide dans"
 
-#: src/virterror.c:996
+#: src/virterror.c:1007
 #, fuzzy, c-format
 msgid "invalid node device pointer in %s"
 msgstr "pointeur de domaine invalide dans %s"
 
-#: src/virterror.c:1000
+#: src/virterror.c:1011
 #, fuzzy
 msgid "Node device not found"
 msgstr "périphérique non trouvé : %s (%s)"
 
-#: src/virterror.c:1002
+#: src/virterror.c:1013
 #, fuzzy, c-format
 msgid "Node device not found: %s"
 msgstr "périphérique non trouvé : %s (%s)"
 
-#: src/virterror.c:1006
+#: src/virterror.c:1017
 #, fuzzy
 msgid "Security model not found"
 msgstr "Pool de stockage introuvable"
 
-#: src/virterror.c:1008
+#: src/virterror.c:1019
 #, fuzzy, c-format
 msgid "Security model not found: %s"
 msgstr "Pool de stockage introuvable : %s"
 
-#: src/virterror.c:1071
+#: src/virterror.c:1082
 #, fuzzy
 msgid "internal error: buffer too small"
 msgstr "Tampon d'arguments trop petit"
@@ -8312,229 +8312,229 @@ msgstr "impossible de lire '%s' : %s"
 msgid "cannot initialise mutex"
 msgstr "impossible de configurer le mode de fichier '%s' : %s"
 
-#: src/xend_internal.c:133
+#: src/xend_internal.c:127
 msgid "failed to create a socket"
 msgstr "impossible de créer un socket"
 
-#: src/xend_internal.c:156
+#: src/xend_internal.c:150
 msgid "failed to connect to xend"
 msgstr "impossible de se connecter à Xen"
 
-#: src/xend_internal.c:203 src/xend_internal.c:206
+#: src/xend_internal.c:197 src/xend_internal.c:200
 msgid "failed to read from Xen Daemon"
 msgstr "impossible de lire depuis le démon Xen"
 
-#: src/xend_internal.c:394
+#: src/xend_internal.c:388
 #, fuzzy, c-format
 msgid "%d status from xen daemon: %s:%s"
 msgstr "Impossible de cloner en tant que démon : %s"
 
-#: src/xend_internal.c:445 src/xend_internal.c:448 src/xend_internal.c:456
+#: src/xend_internal.c:439 src/xend_internal.c:442 src/xend_internal.c:450
 #, c-format
 msgid "xend_post: error from xen daemon: %s"
 msgstr ""
 
-#: src/xend_internal.c:851
+#: src/xend_internal.c:845
 #, fuzzy, c-format
 msgid "unable to connect to '%s:%s'"
 msgstr "Impossible d'ouvrir tty %s : %s\n"
 
-#: src/xend_internal.c:969
+#: src/xend_internal.c:963
 msgid "failed to urlencode the create S-Expr"
 msgstr "échec de l'urlencode du S-Expr créé"
 
-#: src/xend_internal.c:1010
+#: src/xend_internal.c:1004
 msgid "domain information incomplete, missing domid"
 msgstr "informations de domaine incomplètes, domid manquant"
 
-#: src/xend_internal.c:1016
+#: src/xend_internal.c:1010
 msgid "domain information incorrect domid not numeric"
 msgstr "informations de domaine incorrectes, domid non numérique"
 
-#: src/xend_internal.c:1021 src/xend_internal.c:1068
+#: src/xend_internal.c:1015 src/xend_internal.c:1062
 msgid "domain information incomplete, missing uuid"
 msgstr "informations de domaine incomplètes, UUID manquant"
 
-#: src/xend_internal.c:1060 src/xend_internal.c:2325 src/xend_internal.c:2332
+#: src/xend_internal.c:1054 src/xend_internal.c:2319 src/xend_internal.c:2326
 msgid "domain information incomplete, missing name"
 msgstr "informations de domaine incomplètes, nom manquant"
 
-#: src/xend_internal.c:1149
+#: src/xend_internal.c:1143
 msgid "domain information incomplete, missing HVM loader"
 msgstr "informations de domaine incomplètes, chargeur HVM manquant"
 
-#: src/xend_internal.c:1203
+#: src/xend_internal.c:1197
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr ""
 "informations de domaine incomplètes, noyau et chargeur de démarrage manquants"
 
-#: src/xend_internal.c:1267
+#: src/xend_internal.c:1261
 #, fuzzy
 msgid "Unknown char device type"
 msgstr "type de paramètre inconnu"
 
-#: src/xend_internal.c:1301 src/xend_internal.c:1341 src/xend_internal.c:1357
-#: src/xend_internal.c:1495 src/xend_internal.c:1523 src/xend_internal.c:1539
+#: src/xend_internal.c:1295 src/xend_internal.c:1335 src/xend_internal.c:1351
+#: src/xend_internal.c:1489 src/xend_internal.c:1517 src/xend_internal.c:1533
 #, fuzzy
 msgid "malformed char device string"
 msgstr "mode octal non conforme"
 
-#: src/xend_internal.c:1468
+#: src/xend_internal.c:1462
 #, fuzzy, c-format
 msgid "unknown chr device type '%s'"
 msgstr "type auth '%s' inconnu"
 
-#: src/xend_internal.c:1630
+#: src/xend_internal.c:1624
 msgid "domain information incomplete, vbd has no dev"
 msgstr "informations de domaine incomplètes, vbd n'a pas de dev"
 
-#: src/xend_internal.c:1641
+#: src/xend_internal.c:1635
 msgid "domain information incomplete, vbd has no src"
 msgstr "informations de domaine incomplètes, vbd n'a pas de src"
 
-#: src/xend_internal.c:1650
+#: src/xend_internal.c:1644
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "impossible d'analyser le nom de fichier de vdb, nom de pilote manquant"
 
-#: src/xend_internal.c:1665
+#: src/xend_internal.c:1659
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 "impossible d'analyser le nom de fichier de vdb, type du pilote manquant"
 
-#: src/xend_internal.c:1821
+#: src/xend_internal.c:1815
 #, fuzzy, c-format
 msgid "malformed mac address '%s'"
 msgstr "adresse MAC invalide : %s"
 
-#: src/xend_internal.c:1902
+#: src/xend_internal.c:1896
 #, fuzzy, c-format
 msgid "unexpected sound model %s"
 msgstr "noeud dict inattendu"
 
-#: src/xend_internal.c:2087
+#: src/xend_internal.c:2081
 #, fuzzy, c-format
 msgid "unknown graphics type '%s'"
 msgstr "type auth '%s' inconnu"
 
-#: src/xend_internal.c:2210
+#: src/xend_internal.c:2204
 #, fuzzy
 msgid "missing PCI domain"
 msgstr "suspendre un domaine"
 
-#: src/xend_internal.c:2215
+#: src/xend_internal.c:2209
 #, fuzzy
 msgid "missing PCI bus"
 msgstr "manquant \""
 
-#: src/xend_internal.c:2220
+#: src/xend_internal.c:2214
 #, fuzzy
 msgid "missing PCI slot"
 msgstr "hôte source non spécifié"
 
-#: src/xend_internal.c:2225
+#: src/xend_internal.c:2219
 #, fuzzy
 msgid "missing PCI func"
 msgstr "hôte source non spécifié"
 
-#: src/xend_internal.c:2231
+#: src/xend_internal.c:2225
 #, fuzzy, c-format
 msgid "cannot parse PCI domain '%s'"
 msgstr "impossible d'ouvrir le périphérique %s"
 
-#: src/xend_internal.c:2236
+#: src/xend_internal.c:2230
 #, fuzzy, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "impossible de lire '%s' : %s"
 
-#: src/xend_internal.c:2241
+#: src/xend_internal.c:2235
 #, fuzzy, c-format
 msgid "cannot parse PCI slot '%s'"
 msgstr "impossible de lire '%s' : %s"
 
-#: src/xend_internal.c:2246
+#: src/xend_internal.c:2240
 #, fuzzy, c-format
 msgid "cannot parse PCI func '%s'"
 msgstr "impossible d'ouvrir le périphérique %s"
 
-#: src/xend_internal.c:2312
+#: src/xend_internal.c:2306
 msgid "domain information incomplete, missing id"
 msgstr "informations de domaine incomplètes, ID manquant"
 
-#: src/xend_internal.c:2380
+#: src/xend_internal.c:2374
 #, fuzzy, c-format
 msgid "invalid CPU mask %s"
 msgstr "adresse MAC invalide : %s"
 
-#: src/xend_internal.c:2391 src/xend_internal.c:2401 src/xend_internal.c:2411
+#: src/xend_internal.c:2385 src/xend_internal.c:2395 src/xend_internal.c:2405
 #, fuzzy, c-format
 msgid "unknown lifecycle type %s"
 msgstr "type de SE inconnu %s"
 
-#: src/xend_internal.c:2795
+#: src/xend_internal.c:2789
 msgid "topology syntax error"
 msgstr "erreur de syntaxe dans la topologie"
 
-#: src/xend_internal.c:2859
+#: src/xend_internal.c:2853
 msgid "failed to parse Xend domain information"
 msgstr "impossible d'analyser les informations du domaine Xen"
 
-#: src/xend_internal.c:2980 src/xend_internal.c:3007 src/xend_internal.c:3035
-#: src/xend_internal.c:3064 src/xend_internal.c:3095 src/xend_internal.c:3170
-#: src/xend_internal.c:3207
+#: src/xend_internal.c:2974 src/xend_internal.c:3001 src/xend_internal.c:3029
+#: src/xend_internal.c:3058 src/xend_internal.c:3089 src/xend_internal.c:3164
+#: src/xend_internal.c:3201
 #, fuzzy, c-format
 msgid "Domain %s isn't running."
 msgstr "le domaine n'est pas actif"
 
-#: src/xend_internal.c:3365
+#: src/xend_internal.c:3359
 #, fuzzy
 msgid "xenDaemonDomainFetch failed to find this domain"
 msgstr "xenDaemonDomainDumpXMLByName n'a pas réussi à trouver ce domaine"
 
-#: src/xend_internal.c:4093 src/xend_internal.c:4100
+#: src/xend_internal.c:4087 src/xend_internal.c:4094
 #, fuzzy
 msgid "unsupported device type"
 msgstr "type de volume de stockage %d non pris en charge"
 
-#: src/xend_internal.c:4205
+#: src/xend_internal.c:4199
 #, fuzzy
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr "xenDaemonDomainDumpXMLByID n'a pas réussi à trouver ce domaine"
 
-#: src/xend_internal.c:4246
+#: src/xend_internal.c:4240
 #, fuzzy
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr "xenDaemonDomainDumpXMLByID n'a pas réussi à trouver ce domaine"
 
-#: src/xend_internal.c:4254
+#: src/xend_internal.c:4248
 #, fuzzy
 msgid "unexpected value from on_xend_start"
 msgstr "valeur de noeud inattendue"
 
-#: src/xend_internal.c:4265
+#: src/xend_internal.c:4259
 #, fuzzy
 msgid "no memory"
 msgstr "mémoire du noeud"
 
-#: src/xend_internal.c:4271
+#: src/xend_internal.c:4265
 #, fuzzy
 msgid "sexpr2string failed"
 msgstr "opération échouée"
 
-#: src/xend_internal.c:4276
+#: src/xend_internal.c:4270
 #, fuzzy
 msgid "Failed to redefine sexpr"
 msgstr "Impossible de définir le pool %s"
 
-#: src/xend_internal.c:4281
+#: src/xend_internal.c:4275
 msgid "on_xend_start not present in sexpr"
 msgstr ""
 
-#: src/xend_internal.c:4312
+#: src/xend_internal.c:4306
 #, fuzzy, c-format
 msgid "unable to resolve name %s"
 msgstr "Impossible d'ouvrir tty %s : %s\n"
 
-#: src/xend_internal.c:4348
+#: src/xend_internal.c:4342
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
@@ -8542,7 +8542,7 @@ msgstr ""
 "xenDaemonDomainMigrate : Xen ne prend pas en charge que les domaines soient "
 "renommés durant la migration"
 
-#: src/xend_internal.c:4358
+#: src/xend_internal.c:4352
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
@@ -8550,139 +8550,139 @@ msgstr ""
 "xenDaemonDomainMigrate : Xen ne prend pas en charge la limitation de bande "
 "passante durant la migration"
 
-#: src/xend_internal.c:4370
+#: src/xend_internal.c:4364
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr "xenDaemonDomainMigrate : indicateur non supporté"
 
-#: src/xend_internal.c:4383
+#: src/xend_internal.c:4377
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr "xenDaemonDomainMigrate : URI invalide"
 
-#: src/xend_internal.c:4388
+#: src/xend_internal.c:4382
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
 "xenDaemonDomainMigrate : seules les migrations de xenmigr:// sont supportées "
 "par Xen"
 
-#: src/xend_internal.c:4395
+#: src/xend_internal.c:4389
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr "xenDaemonDomainMigrate : un nom d'hôte doit être spécifié dans l'URI"
 
-#: src/xend_internal.c:4415
+#: src/xend_internal.c:4409
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr "xenDaemonDomainMigrate : numéro de port invalide"
 
-#: src/xend_internal.c:4471
+#: src/xend_internal.c:4465
 msgid "failed to parse domain description"
 msgstr "impossible d'analyser la description du domaine"
 
-#: src/xend_internal.c:4477
+#: src/xend_internal.c:4471
 #, fuzzy
 msgid "failed to build sexpr"
 msgstr "Impossible de construire le pool %s"
 
-#: src/xend_internal.c:4487
+#: src/xend_internal.c:4481
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Impossible de créer le domaine inactif %s\n"
 
-#: src/xend_internal.c:4643 src/xend_internal.c:4719 src/xend_internal.c:4809
+#: src/xend_internal.c:4637 src/xend_internal.c:4713 src/xend_internal.c:4803
 msgid "unsupported in xendConfigVersion < 4"
 msgstr ""
 
-#: src/xend_internal.c:4655
+#: src/xend_internal.c:4649
 #, fuzzy
 msgid "node information incomplete, missing scheduler name"
 msgstr "informations de domaine incomplètes, nom manquant"
 
-#: src/xend_internal.c:4661 src/xend_internal.c:4668
+#: src/xend_internal.c:4655 src/xend_internal.c:4662
 msgid "strdup failed"
 msgstr "strdup a échoué"
 
-#: src/xend_internal.c:4673 src/xend_internal.c:4767 src/xend_internal.c:4879
+#: src/xend_internal.c:4667 src/xend_internal.c:4761 src/xend_internal.c:4873
 #, fuzzy
 msgid "Unknown scheduler"
 msgstr "Erreur inconnue"
 
-#: src/xend_internal.c:4732 src/xend_internal.c:4822
+#: src/xend_internal.c:4726 src/xend_internal.c:4816
 #, fuzzy
 msgid "Failed to get a scheduler name"
 msgstr "impossible de récupérer le nom de l'hôte"
 
-#: src/xend_internal.c:4745 src/xend_internal.c:4858
+#: src/xend_internal.c:4739 src/xend_internal.c:4852
 #, fuzzy
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "informations de domaine incomplètes, UUID manquant"
 
-#: src/xend_internal.c:4750 src/xend_internal.c:4867
+#: src/xend_internal.c:4744 src/xend_internal.c:4861
 #, fuzzy
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "informations de domaine incomplètes, UUID manquant"
 
-#: src/xend_internal.c:4925
+#: src/xend_internal.c:4919
 #, fuzzy
 msgid "domainBlockPeek is not supported for dom0"
 msgstr "ai_socktype non pris en charge"
 
-#: src/xend_internal.c:4946
+#: src/xend_internal.c:4940
 #, fuzzy, c-format
 msgid "%s: invalid path"
 msgstr "chemin invalide : %s"
 
-#: src/xend_internal.c:4954
+#: src/xend_internal.c:4948
 #, fuzzy, c-format
 msgid "failed to open for reading: %s"
 msgstr "impossible d'ouvrir %s en lecture"
 
-#: src/xend_internal.c:4966
+#: src/xend_internal.c:4960
 #, fuzzy, c-format
 msgid "failed to lseek or read from file: %s"
 msgstr "Impossible de fermer le fichier pid « %s » : %s"
 
-#: src/xend_internal.c:5048 src/xend_internal.c:5094
+#: src/xend_internal.c:5042 src/xend_internal.c:5088
 #, fuzzy, c-format
 msgid "unexpected graphics type %d"
 msgstr "type de pool inattendu"
 
-#: src/xend_internal.c:5137
+#: src/xend_internal.c:5131
 #, fuzzy
 msgid "unexpected chr device type"
 msgstr "type mime inattendu"
 
-#: src/xend_internal.c:5215
+#: src/xend_internal.c:5209
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr ""
 
-#: src/xend_internal.c:5227
+#: src/xend_internal.c:5221
 #, c-format
 msgid "Cannot directly attach CDROM %s"
 msgstr ""
 
-#: src/xend_internal.c:5327 src/xm_internal.c:1997
+#: src/xend_internal.c:5321 src/xm_internal.c:2018
 #, fuzzy, c-format
 msgid "unsupported network type %d"
 msgstr "type de volume de stockage %d non pris en charge"
 
-#: src/xend_internal.c:5368
+#: src/xend_internal.c:5362 src/xm_internal.c:2006
 #, fuzzy, c-format
 msgid "network %s is not active"
 msgstr "le pool est encore actif"
 
-#: src/xend_internal.c:5427 src/xend_internal.c:5475
+#: src/xend_internal.c:5421 src/xend_internal.c:5469
 msgid "managed PCI devices not supported with XenD"
 msgstr ""
 
-#: src/xend_internal.c:5582 src/xend_internal.c:5589 src/xend_internal.c:5596
+#: src/xend_internal.c:5576 src/xend_internal.c:5583 src/xend_internal.c:5590
 #, fuzzy, c-format
 msgid "unexpected lifecycle value %d"
 msgstr "valeur de noeud inattendue"
 
-#: src/xend_internal.c:5617
+#: src/xend_internal.c:5611
 msgid "no HVM domain loader"
 msgstr "aucun chargeur de domaine HVM"
 
-#: src/xend_internal.c:5853
+#: src/xend_internal.c:5847
 #, fuzzy
 msgid "hotplug of device type not supported"
 msgstr "ai_socktype non pris en charge"
@@ -8756,55 +8756,55 @@ msgstr ""
 msgid "can't retrieve config file for domain"
 msgstr "impossible de créer le fichier de configuration %s : %s"
 
-#: src/xm_internal.c:2243 src/xm_internal.c:2252 src/xm_internal.c:2261
+#: src/xm_internal.c:2264 src/xm_internal.c:2273 src/xm_internal.c:2282
 #, fuzzy, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "noeud dict inattendu"
 
-#: src/xm_internal.c:2542
+#: src/xm_internal.c:2563
 msgid "can't retrieve config filename for domain to overwrite"
 msgstr ""
 
-#: src/xm_internal.c:2548
+#: src/xm_internal.c:2569
 msgid "can't retrieve config entry for domain to overwrite"
 msgstr ""
 
-#: src/xm_internal.c:2559 src/xm_internal.c:2566
+#: src/xm_internal.c:2580 src/xm_internal.c:2587
 #, fuzzy
 msgid "failed to remove old domain from config map"
 msgstr "Impossible de restaurer le domaine depuis %s"
 
-#: src/xm_internal.c:2575
+#: src/xm_internal.c:2596
 #, fuzzy
 msgid "config file name is too long"
 msgstr "Le nom du fichier de configuration '%s/%s' est trop long"
 
-#: src/xm_internal.c:2593
+#: src/xm_internal.c:2614
 #, fuzzy
 msgid "unable to get current time"
 msgstr "Impossible de vérifier la valeur actuelle de MemorySize"
 
-#: src/xm_internal.c:2602 src/xm_internal.c:2609
+#: src/xm_internal.c:2623 src/xm_internal.c:2630
 #, fuzzy
 msgid "unable to store config file handle"
 msgstr "impossible de lire le fichier de configuration %s"
 
-#: src/xm_internal.c:2840 src/xm_internal.c:2941
+#: src/xm_internal.c:2861 src/xm_internal.c:2962
 #, fuzzy
 msgid "unknown device"
 msgstr "impossible d'ouvrir le périphérique %s"
 
-#: src/xm_internal.c:2999
+#: src/xm_internal.c:3020
 #, c-format
 msgid "cannot check link %s points to config %s"
 msgstr ""
 
-#: src/xm_internal.c:3028
+#: src/xm_internal.c:3049
 #, fuzzy, c-format
 msgid "failed to create link %s to %s"
 msgstr "Impossible de créer le tube : %s"
 
-#: src/xm_internal.c:3036
+#: src/xm_internal.c:3057
 #, fuzzy, c-format
 msgid "failed to remove link %s"
 msgstr "Impossible de supprimer le lien symbolique '%s' : %s"

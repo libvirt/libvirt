@@ -76,6 +76,32 @@
         <p>Here is the list of official releases, however since it is early on in the
 development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
+        <h3>0.6.3: Apr 24 2009</h3>
+        <ul><li>New features: VirtualBox driver support (Pritesh Kothari),
+          virt-xml-validate new command (Daniel Berrange)</li><li>Portability: patch to build on Centos (Joseph Shraibman),
+          build breakage (Anton Protopopov), </li><li>Documentation: Linux Containers documentation (Serge Hallyn),
+          improvement and updates of architecture pages, fix
+          virNodeGetFreeMemory documentation to reflect reality,
+          man page cleanups (Daniel Berrange), man page typo
+          (Robert P. J. Day), VirtualBox Documentation (Pritesh Kothari),
+          </li><li>Bug fixes: veth off-by-one error (Dan Smith), vcpupin to inactive
+          Xen crash (Takahashi Tomohiro), virsh ttyconsole return value,
+          use format= not fmt= on QEmu commandline (Mark McLoughlin),
+          use UUID for internal domain lookups (Daniel Berrange), remote
+          domain ID related bugs (Daniel Berrange), QEmu pidfile handling
+          bugs (Daniel Berrange), network config handling on old Xen (Daniel
+          Berrange)</li><li>Improvements: add SCSI storage rescan (David Allan), rootless
+          LXC containers support improvements (Serge Hallyn), getHostname
+          support for LXC (Dan Smith), cleanup and logging output of some
+          domain functions (Guido Günther), drop pool lock when allocating
+          volumes (Cole Robinson), LXC handle kernel without CLONE_NEWUSER
+          support (Serge Hallyn), cpu pinning on defined Xen domains (Takahashi
+          Tomohiro), dynamic bridge names support (Soren Hansen), LXC use
+          of private /dev/pts when available (Daniel Berrange),
+          virNodeDeviceCreateXML and virNodeDeviceDestroy entry points
+          (Dave Allan)</li><li>Cleanups: don't hardcode getgrnam_r buffer to 1024 bytes (Guido
+          Günther), qemudBuildCommandLine API cleanup (Daniel Berrange),
+          </li></ul>
         <h3>0.6.2: Apr  3 2009</h3>
         <ul><li>New features: support SASL auth for VNC server (Daniel Berrange),
           memory ballooning in QEMU (Daniel Berrange), SCSI HBA storage pool

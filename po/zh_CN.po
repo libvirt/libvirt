@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-04-24 12:05+0200\n"
+"POT-Creation-Date: 2009-04-24 15:38+0200\n"
 "PO-Revision-Date: 2009-04-06 11:11+1000\n"
 "Last-Translator: Leah Liu <lliu@redhat.com>\n"
 "Language-Team: Simplified Chinese <zh@li.org>\n"
@@ -248,7 +248,7 @@ msgstr "建立 qemud_server 时分配内存失败"
 
 #: qemud/qemud.c:806 qemud/qemud.c:1285 src/domain_conf.c:522
 #: src/network_conf.c:170 src/node_device_conf.c:137 src/openvz_conf.c:453
-#: src/qemu_driver.c:430 src/remote_internal.c:908 src/remote_internal.c:5780
+#: src/qemu_driver.c:430 src/remote_internal.c:908 src/remote_internal.c:5833
 #: src/storage_conf.c:1304 src/test.c:235 src/test.c:363
 msgid "cannot initialize mutex"
 msgstr "无法初始化 mutex"
@@ -601,7 +601,7 @@ msgstr "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
 msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 
-#: qemud/remote.c:2600 src/remote_internal.c:5111
+#: qemud/remote.c:2600 src/remote_internal.c:5164
 #, c-format
 msgid "Cannot resolve address %d: %s"
 msgstr "无法解析地址 %d：%s"
@@ -648,7 +648,7 @@ msgstr "无法列出 SASL 机制 %d（%s）"
 msgid "cannot allocate mechlist"
 msgstr "无法分配 mechlist"
 
-#: qemud/remote.c:2793 src/remote_internal.c:5607
+#: qemud/remote.c:2793 src/remote_internal.c:5660
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr "无法在连接 %d（%s）是查询 SASL"
@@ -773,11 +773,11 @@ msgstr "maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX"
 
 #: qemud/remote.c:4120 qemud/remote.c:4150 qemud/remote.c:4191
 #: qemud/remote.c:4219 qemud/remote.c:4261 qemud/remote.c:4287
-#: qemud/remote.c:4313
+#: qemud/remote.c:4313 qemud/remote.c:4361
 msgid "node_device not found"
 msgstr "未找到节点设备（_d）"
 
-#: qemud/remote.c:4341
+#: qemud/remote.c:4389
 msgid "unexpected async event method call"
 msgstr "意外 async 事件方法调用"
 
@@ -1337,12 +1337,12 @@ msgstr "意外的网络类型 %d"
 msgid "unexpected char type %d"
 msgstr "意外的字符类型 %d"
 
-#: src/domain_conf.c:3176 src/xend_internal.c:5498
+#: src/domain_conf.c:3176 src/xend_internal.c:5492
 #, c-format
 msgid "unexpected sound model %d"
 msgstr "意外的声音模式 %d"
 
-#: src/domain_conf.c:3196 src/xend_internal.c:5520
+#: src/domain_conf.c:3196 src/xend_internal.c:5514
 #, c-format
 msgid "unexpected input type %d"
 msgstr "意外的输入类型 %d"
@@ -1453,47 +1453,47 @@ msgstr "无法向表 '%s' 中的链 '%s' 添加路由表规则 '%s'：%s"
 msgid "could not parse connection URI"
 msgstr "无法解析连接 URI"
 
-#: src/libvirt.c:2050
+#: src/libvirt.c:2054
 msgid "cannot get working directory"
 msgstr "无法获得工作目录"
 
-#: src/libvirt.c:2057 src/libvirt.c:2133
+#: src/libvirt.c:2061 src/libvirt.c:2137
 msgid "path too long"
 msgstr "路径过长"
 
-#: src/libvirt.c:2126
+#: src/libvirt.c:2130
 msgid "cannot get current directory"
 msgstr "无法获得当前目录"
 
-#: src/libvirt.c:2626
+#: src/libvirt.c:2630
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr "带安全标志的 virDomainGetXMLDesc"
 
-#: src/libvirt.c:2767
+#: src/libvirt.c:2771
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare 没有设定 uri"
 
-#: src/libvirt.c:2796
+#: src/libvirt.c:2800
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare2 没有设定 uri"
 
-#: src/libvirt.c:3521
+#: src/libvirt.c:3525
 msgid "path is NULL"
 msgstr "路径为 NULL"
 
-#: src/libvirt.c:3527
+#: src/libvirt.c:3531
 msgid "flags must be zero"
 msgstr "标签必须为零"
 
-#: src/libvirt.c:3534
+#: src/libvirt.c:3538
 msgid "buffer is NULL"
 msgstr "缓冲为 NULL"
 
-#: src/libvirt.c:3633
+#: src/libvirt.c:3637
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL"
 msgstr "标签参数必须为 VIR_MEMORY_VIRTUAL"
 
-#: src/libvirt.c:3640
+#: src/libvirt.c:3644
 msgid "buffer is NULL but size is non-zero"
 msgstr "缓冲为 NULL 但大小是非零数"
 
@@ -3422,7 +3422,7 @@ msgstr "remote_open：URL 中的传输无法识别（应该是 tls|unix|ssh|ext|tcp）"
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open：'ext' 传输需要命令"
 
-#: src/remote_internal.c:538 src/xend_internal.c:814
+#: src/remote_internal.c:538 src/xend_internal.c:808
 #, c-format
 msgid "unable to resolve hostname '%s': %s"
 msgstr "无法解析主机名 '%s'：%s"
@@ -3708,204 +3708,204 @@ msgstr "能力名称请求过多"
 msgid "too many capability names received"
 msgstr "接收到的能力名称过多"
 
-#: src/remote_internal.c:5030
+#: src/remote_internal.c:5083
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "未知验证类型 %s"
 
-#: src/remote_internal.c:5040
+#: src/remote_internal.c:5093
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr "请求的验证类型 %s 被拒绝"
 
-#: src/remote_internal.c:5081
+#: src/remote_internal.c:5134
 #, c-format
 msgid "unsupported authentication type %d"
 msgstr "不支持的验证类型 %d"
 
-#: src/remote_internal.c:5326
+#: src/remote_internal.c:5379
 #, c-format
 msgid "failed to initialize SASL library: %d (%s)"
 msgstr "初始化 SASL 程序库验证失败：%d（%s）"
 
-#: src/remote_internal.c:5335
+#: src/remote_internal.c:5388
 msgid "failed to get sock address"
 msgstr "无法获得 sock 地址"
 
-#: src/remote_internal.c:5345
+#: src/remote_internal.c:5398
 msgid "failed to get peer address"
 msgstr "无法获得 peer 地址"
 
-#: src/remote_internal.c:5370
+#: src/remote_internal.c:5423
 #, c-format
 msgid "Failed to create SASL client context: %d (%s)"
 msgstr "创建 SASL 客户端环境失败：%d（%s）"
 
-#: src/remote_internal.c:5383
+#: src/remote_internal.c:5436
 msgid "invalid cipher size for TLS session"
 msgstr "对 TLS 会话无效的密码大小"
 
-#: src/remote_internal.c:5393
+#: src/remote_internal.c:5446
 #, c-format
 msgid "cannot set external SSF %d (%s)"
 msgstr "无法设定外部 SSF %d（%s）"
 
-#: src/remote_internal.c:5412
+#: src/remote_internal.c:5465
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "无法设定安全支持 %d（%s）"
 
-#: src/remote_internal.c:5431
+#: src/remote_internal.c:5484
 #, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "服务器不支持 SASL 机制 %s"
 
-#: src/remote_internal.c:5450
+#: src/remote_internal.c:5503
 #, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
 msgstr "启动 SASL 协商失败：%d（%s）"
 
-#: src/remote_internal.c:5468 src/remote_internal.c:5546
+#: src/remote_internal.c:5521 src/remote_internal.c:5599
 msgid "Failed to make auth credentials"
 msgstr "生成验证证书失败"
 
-#: src/remote_internal.c:5492
+#: src/remote_internal.c:5545
 #, c-format
 msgid "SASL negotiation data too long: %d bytes"
 msgstr "SASL 协商数据过长：%d 字节"
 
-#: src/remote_internal.c:5532
+#: src/remote_internal.c:5585
 #, c-format
 msgid "Failed SASL step: %d (%s)"
 msgstr "SASL 步骤失败：%d（%s）"
 
-#: src/remote_internal.c:5616
+#: src/remote_internal.c:5669
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr "协商 SSF %d 不够强大"
 
-#: src/remote_internal.c:5671
+#: src/remote_internal.c:5724
 msgid "Failed to collect auth credentials"
 msgstr "收集验证证书失败"
 
-#: src/remote_internal.c:5705
+#: src/remote_internal.c:5758
 msgid "no event support"
 msgstr "没有事件支持"
 
-#: src/remote_internal.c:5710
+#: src/remote_internal.c:5763
 msgid "adding cb to list"
 msgstr "在列表中添加 cb"
 
-#: src/remote_internal.c:5739
+#: src/remote_internal.c:5792
 msgid "removing cb fron list"
 msgstr "从列表中删除 cb"
 
-#: src/remote_internal.c:5801
+#: src/remote_internal.c:5854
 msgid "xdr_remote_message_header failed"
 msgstr "xdr_remote_message_header 失败"
 
-#: src/remote_internal.c:5807
+#: src/remote_internal.c:5860
 msgid "marshalling args"
 msgstr "marshalling args"
 
-#: src/remote_internal.c:5824
+#: src/remote_internal.c:5877
 msgid "xdr_u_int (length word)"
 msgstr "xdr_u_int (length word)"
 
-#: src/remote_internal.c:5870
+#: src/remote_internal.c:5923
 msgid "cannot send data"
 msgstr "无法发送数据"
 
-#: src/remote_internal.c:5901
+#: src/remote_internal.c:5954
 #, c-format
 msgid "failed to read from TLS socket %s"
 msgstr "从 TLS 套接字读取 %s"
 
-#: src/remote_internal.c:5906 src/remote_internal.c:5924
+#: src/remote_internal.c:5959 src/remote_internal.c:5977
 msgid "server closed connection"
 msgstr "服务器关闭连接"
 
-#: src/remote_internal.c:5920
+#: src/remote_internal.c:5973
 msgid "cannot recv data"
 msgstr "无法 recv 数据"
 
-#: src/remote_internal.c:5953
+#: src/remote_internal.c:6006
 #, c-format
 msgid "failed to encode SASL data: %s"
 msgstr "编码 SASL 数据失败：%s "
 
-#: src/remote_internal.c:6051
+#: src/remote_internal.c:6104
 #, c-format
 msgid "failed to decode SASL data: %s"
 msgstr "解码 SAL 数据失败：%s"
 
-#: src/remote_internal.c:6125
+#: src/remote_internal.c:6178
 msgid "xdr_u_int (length word, reply)"
 msgstr "xdr_u_int (length word, reply)"
 
-#: src/remote_internal.c:6132
+#: src/remote_internal.c:6185
 msgid "packet received from server too small"
 msgstr "从服务器接收的数据包过小"
 
-#: src/remote_internal.c:6141
+#: src/remote_internal.c:6194
 msgid "packet received from server too large"
 msgstr "从服务器接收的数据包过大"
 
-#: src/remote_internal.c:6165
+#: src/remote_internal.c:6218
 msgid "invalid header in reply"
 msgstr "回复中的无效标题"
 
-#: src/remote_internal.c:6174
+#: src/remote_internal.c:6227
 #, c-format
 msgid "unknown program (received %x, expected %x)"
 msgstr "未知程序（接收 %x，预期的是 %x）"
 
-#: src/remote_internal.c:6182
+#: src/remote_internal.c:6235
 #, c-format
 msgid "unknown protocol version (received %x, expected %x)"
 msgstr "未知协议版本（接收 %x，预期的是 %x）"
 
-#: src/remote_internal.c:6199
+#: src/remote_internal.c:6252
 #, c-format
 msgid "got unexpected RPC call %d from server"
 msgstr "从服务器获得以外 RPC 调用 %d"
 
-#: src/remote_internal.c:6217
+#: src/remote_internal.c:6270
 #, c-format
 msgid "no call waiting for reply with serial %d"
 msgstr "没有用于等待回应串口 %d 的调用"
 
-#: src/remote_internal.c:6227
+#: src/remote_internal.c:6280
 #, c-format
 msgid "unknown procedure (received %x, expected %x)"
 msgstr "未知过程（接收 %x，预期的是 %x）"
 
-#: src/remote_internal.c:6241
+#: src/remote_internal.c:6294
 msgid "unmarshalling ret"
 msgstr "unmarshalling ret"
 
-#: src/remote_internal.c:6252
+#: src/remote_internal.c:6305
 msgid "unmarshalling remote_error"
 msgstr "unmarshalling remote_error"
 
-#: src/remote_internal.c:6262
+#: src/remote_internal.c:6315
 #, c-format
 msgid "unknown status (received %x)"
 msgstr "未知状态（接收 %x）"
 
-#: src/remote_internal.c:6368
+#: src/remote_internal.c:6421
 msgid "poll on socket failed"
 msgstr "poll on 套接字失败"
 
-#: src/remote_internal.c:6429
+#: src/remote_internal.c:6482
 msgid "received hangup / error event on socket"
 msgstr "在套接字中收到 hangup / error 事件"
 
-#: src/remote_internal.c:6531
+#: src/remote_internal.c:6584
 msgid "failed to wait on condition"
 msgstr "等待命令失败：%s"
 
-#: src/remote_internal.c:6631
+#: src/remote_internal.c:6684
 msgid "remoteDomainProcessEvent: unmarshalling ret"
 msgstr "remoteDomainProcessEvent: unmarshalling ret"
 
@@ -7399,471 +7399,471 @@ msgstr ""
 "       'quit' 退出\n"
 "\n"
 
-#: src/virterror.c:198
+#: src/virterror.c:205
 msgid "Unknown failure"
 msgstr "未知失败"
 
-#: src/virterror.c:512
+#: src/virterror.c:519
 msgid "warning"
 msgstr "警告"
 
-#: src/virterror.c:515
+#: src/virterror.c:522
 msgid "error"
 msgstr "错误"
 
-#: src/virterror.c:637
+#: src/virterror.c:648
 msgid "No error message provided"
 msgstr "没有错误讯息提供"
 
-#: src/virterror.c:700
+#: src/virterror.c:711
 #, c-format
 msgid "internal error %s"
 msgstr "内部错误 %s"
 
-#: src/virterror.c:702
+#: src/virterror.c:713
 msgid "internal error"
 msgstr "内部错误"
 
-#: src/virterror.c:705
+#: src/virterror.c:716
 msgid "out of memory"
 msgstr "内存溢出"
 
-#: src/virterror.c:709
+#: src/virterror.c:720
 msgid "this function is not supported by the hypervisor"
 msgstr "此功能不被管理程序支持"
 
-#: src/virterror.c:711
+#: src/virterror.c:722
 #, c-format
 msgid "this function is not supported by the hypervisor: %s"
 msgstr "此功能不被管理程序支持 %s"
 
-#: src/virterror.c:715
+#: src/virterror.c:726
 msgid "could not connect to hypervisor"
 msgstr "不能连接到管理程序"
 
-#: src/virterror.c:717
+#: src/virterror.c:728
 #, c-format
 msgid "could not connect to %s"
 msgstr "不能连接到 %s"
 
-#: src/virterror.c:721
+#: src/virterror.c:732
 msgid "invalid connection pointer in"
 msgstr "无效的连接指向"
 
-#: src/virterror.c:723
+#: src/virterror.c:734
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "无效的连接指向 %s"
 
-#: src/virterror.c:727
+#: src/virterror.c:738
 msgid "invalid domain pointer in"
 msgstr "无效的域名指向"
 
-#: src/virterror.c:729
+#: src/virterror.c:740
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "无效的域名指向 %s"
 
-#: src/virterror.c:733
+#: src/virterror.c:744
 msgid "invalid argument in"
 msgstr "无效的参数"
 
-#: src/virterror.c:735
+#: src/virterror.c:746
 #, c-format
 msgid "invalid argument in %s"
 msgstr "无效的参数 %s"
 
-#: src/virterror.c:739
+#: src/virterror.c:750
 #, c-format
 msgid "operation failed: %s"
 msgstr "操作失败: %s"
 
-#: src/virterror.c:741
+#: src/virterror.c:752
 msgid "operation failed"
 msgstr "操作失败"
 
-#: src/virterror.c:745
+#: src/virterror.c:756
 #, c-format
 msgid "GET operation failed: %s"
 msgstr "GET操作失败: %s"
 
-#: src/virterror.c:747
+#: src/virterror.c:758
 msgid "GET operation failed"
 msgstr "GET操作失败"
 
-#: src/virterror.c:751
+#: src/virterror.c:762
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "POST操作失败: %s"
 
-#: src/virterror.c:753
+#: src/virterror.c:764
 msgid "POST operation failed"
 msgstr "POST操作失败"
 
-#: src/virterror.c:756
+#: src/virterror.c:767
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr "得到未知的HTTP错误代码 %d"
 
-#: src/virterror.c:760
+#: src/virterror.c:771
 #, c-format
 msgid "unknown host %s"
 msgstr "未知的主机 %s"
 
-#: src/virterror.c:762
+#: src/virterror.c:773
 msgid "unknown host"
 msgstr "未知的主机"
 
-#: src/virterror.c:766
+#: src/virterror.c:777
 #, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr "序列化S-Expr失败: %s"
 
-#: src/virterror.c:768
+#: src/virterror.c:779
 msgid "failed to serialize S-Expr"
 msgstr "序列化S-Expr失败"
 
-#: src/virterror.c:772
+#: src/virterror.c:783
 msgid "could not use Xen hypervisor entry"
 msgstr "不能使用Xen管理程序登录"
 
-#: src/virterror.c:774
+#: src/virterror.c:785
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "不能使用Xen管理程序登录 %s"
 
-#: src/virterror.c:778
+#: src/virterror.c:789
 msgid "could not connect to Xen Store"
 msgstr "不能连接Xen存储器"
 
-#: src/virterror.c:780
+#: src/virterror.c:791
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr "不能连接Xen存储器 %s"
 
-#: src/virterror.c:783
+#: src/virterror.c:794
 #, c-format
 msgid "failed Xen syscall %s"
 msgstr "Xen系统调用失败 %s"
 
-#: src/virterror.c:787
+#: src/virterror.c:798
 msgid "unknown OS type"
 msgstr "未知操作系统类型"
 
-#: src/virterror.c:789
+#: src/virterror.c:800
 #, c-format
 msgid "unknown OS type %s"
 msgstr "未知操作系统类型 %s"
 
-#: src/virterror.c:792
+#: src/virterror.c:803
 msgid "missing kernel information"
 msgstr "丢失内核信息"
 
-#: src/virterror.c:796
+#: src/virterror.c:807
 msgid "missing root device information"
 msgstr "丢失root设备信息"
 
-#: src/virterror.c:798
+#: src/virterror.c:809
 #, c-format
 msgid "missing root device information in %s"
 msgstr "丢失root信息 %s"
 
-#: src/virterror.c:802
+#: src/virterror.c:813
 msgid "missing source information for device"
 msgstr "丢失设备的源代码信息"
 
-#: src/virterror.c:804
+#: src/virterror.c:815
 #, c-format
 msgid "missing source information for device %s"
 msgstr "丢失设备的源代码信息 %s"
 
-#: src/virterror.c:808
+#: src/virterror.c:819
 msgid "missing target information for device"
 msgstr "丢失设备的目标信息"
 
-#: src/virterror.c:810
+#: src/virterror.c:821
 #, c-format
 msgid "missing target information for device %s"
 msgstr "丢失设备的目标信息 %s"
 
-#: src/virterror.c:814
+#: src/virterror.c:825
 msgid "missing domain name information"
 msgstr "丢失域名信息"
 
-#: src/virterror.c:816
+#: src/virterror.c:827
 #, c-format
 msgid "missing domain name information in %s"
 msgstr "丢失域名信息 %s"
 
-#: src/virterror.c:820
+#: src/virterror.c:831
 msgid "missing operating system information"
 msgstr "丢失操作系统信息"
 
-#: src/virterror.c:822
+#: src/virterror.c:833
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "丢失操作系统信息 %s"
 
-#: src/virterror.c:826
+#: src/virterror.c:837
 msgid "missing devices information"
 msgstr "丢失设备信息"
 
-#: src/virterror.c:828
+#: src/virterror.c:839
 #, c-format
 msgid "missing devices information for %s"
 msgstr "丢失设备信息 %s"
 
-#: src/virterror.c:832
+#: src/virterror.c:843
 msgid "too many drivers registered"
 msgstr "注册了太多的设备"
 
-#: src/virterror.c:834
+#: src/virterror.c:845
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "注册了太多的设备 %s"
 
-#: src/virterror.c:838
+#: src/virterror.c:849
 msgid "library call failed, possibly not supported"
 msgstr "库调用失败，可能不支持"
 
-#: src/virterror.c:840
+#: src/virterror.c:851
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr "库调用 %s 失败，可能不支持"
 
-#: src/virterror.c:844
+#: src/virterror.c:855
 msgid "XML description not well formed or invalid"
 msgstr "XML描述不是良好的格式或者无效"
 
-#: src/virterror.c:846
+#: src/virterror.c:857
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
 msgstr "XML描述 %s 不是良好的格式或者无效"
 
-#: src/virterror.c:850
+#: src/virterror.c:861
 msgid "this domain exists already"
 msgstr "这个域名已经存在"
 
-#: src/virterror.c:852
+#: src/virterror.c:863
 #, c-format
 msgid "domain %s exists already"
 msgstr "域名 %s 已经存在"
 
-#: src/virterror.c:856
+#: src/virterror.c:867
 msgid "operation forbidden for read only access"
 msgstr "只读权限禁止此操作"
 
-#: src/virterror.c:858
+#: src/virterror.c:869
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr "只读权限禁止操作 %s "
 
-#: src/virterror.c:862
+#: src/virterror.c:873
 msgid "failed to open configuration file for reading"
 msgstr "打开并读取配置文件失败"
 
-#: src/virterror.c:864
+#: src/virterror.c:875
 #, c-format
 msgid "failed to open %s for reading"
 msgstr "打开并读取 %s 文件失败"
 
-#: src/virterror.c:868
+#: src/virterror.c:879
 msgid "failed to read configuration file"
 msgstr "读取配置文件失败"
 
-#: src/virterror.c:870
+#: src/virterror.c:881
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "读取配置文件 %s 失败"
 
-#: src/virterror.c:874
+#: src/virterror.c:885
 msgid "failed to parse configuration file"
 msgstr "解析配置文件失败"
 
-#: src/virterror.c:876
+#: src/virterror.c:887
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "解析配置文件%s失败"
 
-#: src/virterror.c:880
+#: src/virterror.c:891
 msgid "configuration file syntax error"
 msgstr "配置文件语法错误"
 
-#: src/virterror.c:882
+#: src/virterror.c:893
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "配置文件语法错误: %s"
 
-#: src/virterror.c:886
+#: src/virterror.c:897
 msgid "failed to write configuration file"
 msgstr "写入配置文件失败"
 
-#: src/virterror.c:888
+#: src/virterror.c:899
 #, c-format
 msgid "failed to write configuration file: %s"
 msgstr "写入配置文件失败: %s"
 
-#: src/virterror.c:892
+#: src/virterror.c:903
 msgid "parser error"
 msgstr "语法错误"
 
-#: src/virterror.c:898
+#: src/virterror.c:909
 msgid "invalid network pointer in"
 msgstr "无效的网络指针"
 
-#: src/virterror.c:900
+#: src/virterror.c:911
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "无效的网络指针 %s"
 
-#: src/virterror.c:904
+#: src/virterror.c:915
 msgid "this network exists already"
 msgstr "这个网络已存在"
 
-#: src/virterror.c:906
+#: src/virterror.c:917
 #, c-format
 msgid "network %s exists already"
 msgstr "网络%s 已经存在"
 
-#: src/virterror.c:910
+#: src/virterror.c:921
 msgid "system call error"
 msgstr "系统调用错误"
 
-#: src/virterror.c:916
+#: src/virterror.c:927
 msgid "RPC error"
 msgstr "RPC错误"
 
-#: src/virterror.c:922
+#: src/virterror.c:933
 msgid "GNUTLS call error"
 msgstr "GNUTLS调用错误"
 
-#: src/virterror.c:928
+#: src/virterror.c:939
 msgid "Failed to find the network"
 msgstr "查找网络失败"
 
-#: src/virterror.c:930
+#: src/virterror.c:941
 #, c-format
 msgid "Failed to find the network: %s"
 msgstr "查找网络失败: %s"
 
-#: src/virterror.c:934
+#: src/virterror.c:945
 msgid "Domain not found"
 msgstr "未找到域"
 
-#: src/virterror.c:936
+#: src/virterror.c:947
 #, c-format
 msgid "Domain not found: %s"
 msgstr "未找到域: %s"
 
-#: src/virterror.c:940
+#: src/virterror.c:951
 msgid "Network not found"
 msgstr "未找到网络"
 
-#: src/virterror.c:942
+#: src/virterror.c:953
 #, c-format
 msgid "Network not found: %s"
 msgstr "未找到网络: %s"
 
-#: src/virterror.c:946
+#: src/virterror.c:957
 msgid "invalid MAC address"
 msgstr "无效的 MAC 地址"
 
-#: src/virterror.c:948
+#: src/virterror.c:959
 #, c-format
 msgid "invalid MAC address: %s"
 msgstr "无效的 MAC 地址: %s"
 
-#: src/virterror.c:952
+#: src/virterror.c:963
 msgid "authentication failed"
 msgstr "验证失败"
 
-#: src/virterror.c:954
+#: src/virterror.c:965
 #, c-format
 msgid "authentication failed: %s"
 msgstr "验证失败: %s"
 
-#: src/virterror.c:958
+#: src/virterror.c:969
 msgid "Storage pool not found"
 msgstr "未找到存储池"
 
-#: src/virterror.c:960
+#: src/virterror.c:971
 #, c-format
 msgid "Storage pool not found: %s"
 msgstr "未找到存储池: %s"
 
-#: src/virterror.c:964
+#: src/virterror.c:975
 msgid "Storage volume not found"
 msgstr "未找到存储卷"
 
-#: src/virterror.c:966
+#: src/virterror.c:977
 #, c-format
 msgid "Storage volume not found: %s"
 msgstr "未找到存储卷: %s"
 
-#: src/virterror.c:970
+#: src/virterror.c:981
 msgid "invalid storage pool pointer in"
 msgstr "无效的存储池指针"
 
-#: src/virterror.c:972
+#: src/virterror.c:983
 #, c-format
 msgid "invalid storage pool pointer in %s"
 msgstr "%s 中无效的存储池指针"
 
-#: src/virterror.c:976
+#: src/virterror.c:987
 msgid "invalid storage volume pointer in"
 msgstr "无效的存储卷指针"
 
-#: src/virterror.c:978
+#: src/virterror.c:989
 #, c-format
 msgid "invalid storage volume pointer in %s"
 msgstr "%s 中无效的存储卷指针"
 
-#: src/virterror.c:982
+#: src/virterror.c:993
 msgid "Failed to find a storage driver"
 msgstr "查找存储驱动程序失败"
 
-#: src/virterror.c:984
+#: src/virterror.c:995
 #, c-format
 msgid "Failed to find a storage driver: %s"
 msgstr "查找存储驱动程序失败： %s"
 
-#: src/virterror.c:988
+#: src/virterror.c:999
 msgid "Failed to find a node driver"
 msgstr "查找节点程序失败"
 
-#: src/virterror.c:990
+#: src/virterror.c:1001
 #, c-format
 msgid "Failed to find a node driver: %s"
 msgstr "查找节点程序失败：%s"
 
-#: src/virterror.c:994
+#: src/virterror.c:1005
 msgid "invalid node device pointer"
 msgstr "无效的节点设备"
 
-#: src/virterror.c:996
+#: src/virterror.c:1007
 #, c-format
 msgid "invalid node device pointer in %s"
 msgstr "%s 中的无效节点设备指针"
 
-#: src/virterror.c:1000
+#: src/virterror.c:1011
 msgid "Node device not found"
 msgstr "未找到节点设备"
 
-#: src/virterror.c:1002
+#: src/virterror.c:1013
 #, c-format
 msgid "Node device not found: %s"
 msgstr "未找到节点设备：%s"
 
-#: src/virterror.c:1006
+#: src/virterror.c:1017
 msgid "Security model not found"
 msgstr "未找到安全性模式"
 
-#: src/virterror.c:1008
+#: src/virterror.c:1019
 #, c-format
 msgid "Security model not found: %s"
 msgstr "未找到安全性模式：%s"
 
-#: src/virterror.c:1071
+#: src/virterror.c:1082
 msgid "internal error: buffer too small"
 msgstr "内部错误：缓冲太小"
 
@@ -7938,347 +7938,347 @@ msgstr "无法读取文件 %s"
 msgid "cannot initialise mutex"
 msgstr "无法初始化 mutex"
 
-#: src/xend_internal.c:133
+#: src/xend_internal.c:127
 msgid "failed to create a socket"
 msgstr "生成套接字失败"
 
-#: src/xend_internal.c:156
+#: src/xend_internal.c:150
 msgid "failed to connect to xend"
 msgstr "连接到 xend 失败"
 
-#: src/xend_internal.c:203 src/xend_internal.c:206
+#: src/xend_internal.c:197 src/xend_internal.c:200
 msgid "failed to read from Xen Daemon"
 msgstr "从 Xen 守护进程读失败"
 
-#: src/xend_internal.c:394
+#: src/xend_internal.c:388
 #, c-format
 msgid "%d status from xen daemon: %s:%s"
 msgstr "来自 xen 守护进程的 %d 状态：%s:%s"
 
-#: src/xend_internal.c:445 src/xend_internal.c:448 src/xend_internal.c:456
+#: src/xend_internal.c:439 src/xend_internal.c:442 src/xend_internal.c:450
 #, c-format
 msgid "xend_post: error from xen daemon: %s"
 msgstr "xend_post：来自 xen 守护进程的错误：%s"
 
-#: src/xend_internal.c:851
+#: src/xend_internal.c:845
 #, c-format
 msgid "unable to connect to '%s:%s'"
 msgstr "无法连接到 '%s:%s'"
 
-#: src/xend_internal.c:969
+#: src/xend_internal.c:963
 msgid "failed to urlencode the create S-Expr"
 msgstr "urlencode 创建的 S-Expr 失败"
 
-#: src/xend_internal.c:1010
+#: src/xend_internal.c:1004
 msgid "domain information incomplete, missing domid"
 msgstr "域信息不完全，缺少 domid"
 
-#: src/xend_internal.c:1016
+#: src/xend_internal.c:1010
 msgid "domain information incorrect domid not numeric"
 msgstr "域信息不正确，domid 不是数字值"
 
-#: src/xend_internal.c:1021 src/xend_internal.c:1068
+#: src/xend_internal.c:1015 src/xend_internal.c:1062
 msgid "domain information incomplete, missing uuid"
 msgstr "域信息不完全，缺少 uuid"
 
-#: src/xend_internal.c:1060 src/xend_internal.c:2325 src/xend_internal.c:2332
+#: src/xend_internal.c:1054 src/xend_internal.c:2319 src/xend_internal.c:2326
 msgid "domain information incomplete, missing name"
 msgstr "域信息不完全，缺少名称"
 
-#: src/xend_internal.c:1149
+#: src/xend_internal.c:1143
 msgid "domain information incomplete, missing HVM loader"
 msgstr "域信息不完全，缺少 HVM 装载程序"
 
-#: src/xend_internal.c:1203
+#: src/xend_internal.c:1197
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "域信息不完全,缺少内核和启动器"
 
-#: src/xend_internal.c:1267
+#: src/xend_internal.c:1261
 msgid "Unknown char device type"
 msgstr "未知字符设备类型"
 
-#: src/xend_internal.c:1301 src/xend_internal.c:1341 src/xend_internal.c:1357
-#: src/xend_internal.c:1495 src/xend_internal.c:1523 src/xend_internal.c:1539
+#: src/xend_internal.c:1295 src/xend_internal.c:1335 src/xend_internal.c:1351
+#: src/xend_internal.c:1489 src/xend_internal.c:1517 src/xend_internal.c:1533
 msgid "malformed char device string"
 msgstr "畸形字符设备字符串"
 
-#: src/xend_internal.c:1468
+#: src/xend_internal.c:1462
 #, c-format
 msgid "unknown chr device type '%s'"
 msgstr "未知字符设备类型 '%s'"
 
-#: src/xend_internal.c:1630
+#: src/xend_internal.c:1624
 msgid "domain information incomplete, vbd has no dev"
 msgstr "域信息不完全，vbd 没有 dev"
 
-#: src/xend_internal.c:1641
+#: src/xend_internal.c:1635
 msgid "domain information incomplete, vbd has no src"
 msgstr "域信息不完全，vbd 没有 src"
 
-#: src/xend_internal.c:1650
+#: src/xend_internal.c:1644
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "缺少驱动名，无法解释 vbd 文件名"
 
-#: src/xend_internal.c:1665
+#: src/xend_internal.c:1659
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "缺少驱动类型，无法解释 vbd 文件名"
 
-#: src/xend_internal.c:1821
+#: src/xend_internal.c:1815
 #, c-format
 msgid "malformed mac address '%s'"
 msgstr "畸形 mac 地址 '%s'"
 
-#: src/xend_internal.c:1902
+#: src/xend_internal.c:1896
 #, c-format
 msgid "unexpected sound model %s"
 msgstr "意外的声音模式 %s"
 
-#: src/xend_internal.c:2087
+#: src/xend_internal.c:2081
 #, c-format
 msgid "unknown graphics type '%s'"
 msgstr "未知图形类型 '%s'"
 
-#: src/xend_internal.c:2210
+#: src/xend_internal.c:2204
 msgid "missing PCI domain"
 msgstr "缺少 PCI 域"
 
-#: src/xend_internal.c:2215
+#: src/xend_internal.c:2209
 msgid "missing PCI bus"
 msgstr "缺少 PCI 总线"
 
-#: src/xend_internal.c:2220
+#: src/xend_internal.c:2214
 msgid "missing PCI slot"
 msgstr "缺少 PCI 插槽"
 
-#: src/xend_internal.c:2225
+#: src/xend_internal.c:2219
 msgid "missing PCI func"
 msgstr "缺少 PCI 功能"
 
-#: src/xend_internal.c:2231
+#: src/xend_internal.c:2225
 #, c-format
 msgid "cannot parse PCI domain '%s'"
 msgstr "无法解析 PCI 域 '%s'"
 
-#: src/xend_internal.c:2236
+#: src/xend_internal.c:2230
 #, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "无法解析 PCI 总线 '%s'"
 
-#: src/xend_internal.c:2241
+#: src/xend_internal.c:2235
 #, c-format
 msgid "cannot parse PCI slot '%s'"
 msgstr "无法解析 PCI 插槽 '%s'"
 
-#: src/xend_internal.c:2246
+#: src/xend_internal.c:2240
 #, c-format
 msgid "cannot parse PCI func '%s'"
 msgstr "无法解析 PCI 功能 '%s'"
 
-#: src/xend_internal.c:2312
+#: src/xend_internal.c:2306
 msgid "domain information incomplete, missing id"
 msgstr "域信息不完全，缺少 id"
 
-#: src/xend_internal.c:2380
+#: src/xend_internal.c:2374
 #, c-format
 msgid "invalid CPU mask %s"
 msgstr "无效 CPU 掩码 %s"
 
-#: src/xend_internal.c:2391 src/xend_internal.c:2401 src/xend_internal.c:2411
+#: src/xend_internal.c:2385 src/xend_internal.c:2395 src/xend_internal.c:2405
 #, c-format
 msgid "unknown lifecycle type %s"
 msgstr "未知周期类型 %s"
 
-#: src/xend_internal.c:2795
+#: src/xend_internal.c:2789
 msgid "topology syntax error"
 msgstr "拓扑结构句法错误"
 
-#: src/xend_internal.c:2859
+#: src/xend_internal.c:2853
 msgid "failed to parse Xend domain information"
 msgstr "解释 Xend 域信息失败"
 
-#: src/xend_internal.c:2980 src/xend_internal.c:3007 src/xend_internal.c:3035
-#: src/xend_internal.c:3064 src/xend_internal.c:3095 src/xend_internal.c:3170
-#: src/xend_internal.c:3207
+#: src/xend_internal.c:2974 src/xend_internal.c:3001 src/xend_internal.c:3029
+#: src/xend_internal.c:3058 src/xend_internal.c:3089 src/xend_internal.c:3164
+#: src/xend_internal.c:3201
 #, c-format
 msgid "Domain %s isn't running."
 msgstr "域 %s 没有在运行。"
 
-#: src/xend_internal.c:3365
+#: src/xend_internal.c:3359
 msgid "xenDaemonDomainFetch failed to find this domain"
 msgstr "xenDaemonDomainFetch 查找这个域失败"
 
-#: src/xend_internal.c:4093 src/xend_internal.c:4100
+#: src/xend_internal.c:4087 src/xend_internal.c:4094
 msgid "unsupported device type"
 msgstr "不支持的设备类型"
 
-#: src/xend_internal.c:4205
+#: src/xend_internal.c:4199
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr "xenDaemonGetAutostart 无法找到这个域"
 
-#: src/xend_internal.c:4246
+#: src/xend_internal.c:4240
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr "xenDaemonGetAutostart 无法找到这个域"
 
-#: src/xend_internal.c:4254
+#: src/xend_internal.c:4248
 msgid "unexpected value from on_xend_start"
 msgstr "on_xend_start 中的意外值"
 
-#: src/xend_internal.c:4265
+#: src/xend_internal.c:4259
 msgid "no memory"
 msgstr "没有内存"
 
-#: src/xend_internal.c:4271
+#: src/xend_internal.c:4265
 msgid "sexpr2string failed"
 msgstr "sexpr2string 失败"
 
-#: src/xend_internal.c:4276
+#: src/xend_internal.c:4270
 msgid "Failed to redefine sexpr"
 msgstr "重新定义 sexpr 失败"
 
-#: src/xend_internal.c:4281
+#: src/xend_internal.c:4275
 msgid "on_xend_start not present in sexpr"
 msgstr "sexpr 中没有 on_xend_start"
 
-#: src/xend_internal.c:4312
+#: src/xend_internal.c:4306
 #, c-format
 msgid "unable to resolve name %s"
 msgstr "无法解析名称 %s"
 
-#: src/xend_internal.c:4348
+#: src/xend_internal.c:4342
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr "xenDaemonDomainMigrate：Xen 不支持在迁移时重新命名域"
 
-#: src/xend_internal.c:4358
+#: src/xend_internal.c:4352
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr "xenDaemonDomainMigrate：Xen 不支持在迁移时的带宽限制"
 
-#: src/xend_internal.c:4370
+#: src/xend_internal.c:4364
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr "xenDaemonDomainMigrate：不支持的标记"
 
-#: src/xend_internal.c:4383
+#: src/xend_internal.c:4377
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr "xenDaemonDomainMigrate：无效 URI"
 
-#: src/xend_internal.c:4388
+#: src/xend_internal.c:4382
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr "xenDaemonDomainMigrate：Xen 只支持 xenmigr:// 迁移"
 
-#: src/xend_internal.c:4395
+#: src/xend_internal.c:4389
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr "xenDaemonDomainMigrate：在 URI 中必须指定主机名"
 
-#: src/xend_internal.c:4415
+#: src/xend_internal.c:4409
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr "xenDaemonDomainMigrate：无效端口号"
 
-#: src/xend_internal.c:4471
+#: src/xend_internal.c:4465
 msgid "failed to parse domain description"
 msgstr "解释域描述失败"
 
-#: src/xend_internal.c:4477
+#: src/xend_internal.c:4471
 msgid "failed to build sexpr"
 msgstr "构建 sexpr 失败"
 
-#: src/xend_internal.c:4487
+#: src/xend_internal.c:4481
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "创建不活动域 %s 失败\n"
 
-#: src/xend_internal.c:4643 src/xend_internal.c:4719 src/xend_internal.c:4809
+#: src/xend_internal.c:4637 src/xend_internal.c:4713 src/xend_internal.c:4803
 msgid "unsupported in xendConfigVersion < 4"
 msgstr "xendConfigVersion < 4 不支持"
 
-#: src/xend_internal.c:4655
+#: src/xend_internal.c:4649
 msgid "node information incomplete, missing scheduler name"
 msgstr "节点信息不完整，缺少调度程序名称"
 
-#: src/xend_internal.c:4661 src/xend_internal.c:4668
+#: src/xend_internal.c:4655 src/xend_internal.c:4662
 msgid "strdup failed"
 msgstr "strdup 失败"
 
-#: src/xend_internal.c:4673 src/xend_internal.c:4767 src/xend_internal.c:4879
+#: src/xend_internal.c:4667 src/xend_internal.c:4761 src/xend_internal.c:4873
 msgid "Unknown scheduler"
 msgstr "未知调度程序"
 
-#: src/xend_internal.c:4732 src/xend_internal.c:4822
+#: src/xend_internal.c:4726 src/xend_internal.c:4816
 msgid "Failed to get a scheduler name"
 msgstr "获得调度程序名失败"
 
-#: src/xend_internal.c:4745 src/xend_internal.c:4858
+#: src/xend_internal.c:4739 src/xend_internal.c:4852
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "域信息不完整，缺少 cpu_weight"
 
-#: src/xend_internal.c:4750 src/xend_internal.c:4867
+#: src/xend_internal.c:4744 src/xend_internal.c:4861
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "域信息不完整，缺少 cpu_cap"
 
-#: src/xend_internal.c:4925
+#: src/xend_internal.c:4919
 msgid "domainBlockPeek is not supported for dom0"
 msgstr "不支持 dom0 中的 domainBlockPeek"
 
-#: src/xend_internal.c:4946
+#: src/xend_internal.c:4940
 #, c-format
 msgid "%s: invalid path"
 msgstr "%s：无效路径"
 
-#: src/xend_internal.c:4954
+#: src/xend_internal.c:4948
 #, c-format
 msgid "failed to open for reading: %s"
 msgstr "打开并读取失败：%s"
 
-#: src/xend_internal.c:4966
+#: src/xend_internal.c:4960
 #, c-format
 msgid "failed to lseek or read from file: %s"
 msgstr "从文件 lseek 或者读取失败：%s"
 
-#: src/xend_internal.c:5048 src/xend_internal.c:5094
+#: src/xend_internal.c:5042 src/xend_internal.c:5088
 #, c-format
 msgid "unexpected graphics type %d"
 msgstr "意外的图形类型 %d"
 
-#: src/xend_internal.c:5137
+#: src/xend_internal.c:5131
 msgid "unexpected chr device type"
 msgstr "意外的字符设备类型"
 
-#: src/xend_internal.c:5215
+#: src/xend_internal.c:5209
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr "无法直接附加软盘 %s"
 
-#: src/xend_internal.c:5227
+#: src/xend_internal.c:5221
 #, c-format
 msgid "Cannot directly attach CDROM %s"
 msgstr "无法直接附加光驱 %s"
 
-#: src/xend_internal.c:5327 src/xm_internal.c:1997
+#: src/xend_internal.c:5321 src/xm_internal.c:2018
 #, c-format
 msgid "unsupported network type %d"
 msgstr "不支持的网络类型 %d"
 
-#: src/xend_internal.c:5368
+#: src/xend_internal.c:5362 src/xm_internal.c:2006
 #, c-format
 msgid "network %s is not active"
 msgstr "网络 %s 不活跃"
 
-#: src/xend_internal.c:5427 src/xend_internal.c:5475
+#: src/xend_internal.c:5421 src/xend_internal.c:5469
 msgid "managed PCI devices not supported with XenD"
 msgstr "XenD 不支持管理的 PCI 设备"
 
-#: src/xend_internal.c:5582 src/xend_internal.c:5589 src/xend_internal.c:5596
+#: src/xend_internal.c:5576 src/xend_internal.c:5583 src/xend_internal.c:5590
 #, c-format
 msgid "unexpected lifecycle value %d"
 msgstr "意外的周期值 %d"
 
-#: src/xend_internal.c:5617
+#: src/xend_internal.c:5611
 msgid "no HVM domain loader"
 msgstr "无 HVM 域装载程序"
 
-#: src/xend_internal.c:5853
+#: src/xend_internal.c:5847
 msgid "hotplug of device type not supported"
 msgstr "不支持热查报设备类型"
 
@@ -8347,50 +8347,50 @@ msgstr "virHashLookup"
 msgid "can't retrieve config file for domain"
 msgstr "无法为域搜索配置文件"
 
-#: src/xm_internal.c:2243 src/xm_internal.c:2252 src/xm_internal.c:2261
+#: src/xm_internal.c:2264 src/xm_internal.c:2273 src/xm_internal.c:2282
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "意外的周期动作 %d"
 
-#: src/xm_internal.c:2542
+#: src/xm_internal.c:2563
 msgid "can't retrieve config filename for domain to overwrite"
 msgstr "无法为域搜索用来覆盖的配置文件文件名"
 
-#: src/xm_internal.c:2548
+#: src/xm_internal.c:2569
 msgid "can't retrieve config entry for domain to overwrite"
 msgstr "无法为域搜索用来覆盖的配置文件条目"
 
-#: src/xm_internal.c:2559 src/xm_internal.c:2566
+#: src/xm_internal.c:2580 src/xm_internal.c:2587
 msgid "failed to remove old domain from config map"
 msgstr "从配置映像中删除原来的域失败"
 
-#: src/xm_internal.c:2575
+#: src/xm_internal.c:2596
 msgid "config file name is too long"
 msgstr "配置文件名称过长"
 
-#: src/xm_internal.c:2593
+#: src/xm_internal.c:2614
 msgid "unable to get current time"
 msgstr "无法获得当前时间"
 
-#: src/xm_internal.c:2602 src/xm_internal.c:2609
+#: src/xm_internal.c:2623 src/xm_internal.c:2630
 msgid "unable to store config file handle"
 msgstr "无法保存配置文件软件"
 
-#: src/xm_internal.c:2840 src/xm_internal.c:2941
+#: src/xm_internal.c:2861 src/xm_internal.c:2962
 msgid "unknown device"
 msgstr "未知设备"
 
-#: src/xm_internal.c:2999
+#: src/xm_internal.c:3020
 #, c-format
 msgid "cannot check link %s points to config %s"
 msgstr "无法检查 config %s 的链接 %s"
 
-#: src/xm_internal.c:3028
+#: src/xm_internal.c:3049
 #, c-format
 msgid "failed to create link %s to %s"
 msgstr "创建 %s 到 %s 的链接失败"
 
-#: src/xm_internal.c:3036
+#: src/xm_internal.c:3057
 #, c-format
 msgid "failed to remove link %s"
 msgstr "删除链接 %s 失败"

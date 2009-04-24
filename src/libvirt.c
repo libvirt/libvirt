@@ -1151,6 +1151,8 @@ virConnectClose(virConnectPtr conn)
  * connection remain open until all threads have finished using
  * it. ie, each new thread using a connection would increment
  * the reference count.
+ *
+ * Returns 0 in case of success, -1 in case of failure
  */
 int
 virConnectRef(virConnectPtr conn)
@@ -1816,7 +1818,7 @@ virDomainFree(virDomainPtr domain)
 
 /**
  * virDomainRef:
- * @conn: the domain to hold a reference on
+ * @domain: the domain to hold a reference on
  *
  * Increment the reference count on the domain. For each
  * additional call to this method, there shall be a corresponding
@@ -1828,6 +1830,8 @@ virDomainFree(virDomainPtr domain)
  * connection remain open until all threads have finished using
  * it. ie, each new thread using a domain would increment
  * the reference count.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
  */
 int
 virDomainRef(virDomainPtr domain)
@@ -4967,7 +4971,7 @@ virNetworkFree(virNetworkPtr network)
 
 /**
  * virNetworkRef:
- * @conn: the network to hold a reference on
+ * @network: the network to hold a reference on
  *
  * Increment the reference count on the network. For each
  * additional call to this method, there shall be a corresponding
@@ -4979,6 +4983,8 @@ virNetworkFree(virNetworkPtr network)
  * connection remain open until all threads have finished using
  * it. ie, each new thread using a network would increment
  * the reference count.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
  */
 int
 virNetworkRef(virNetworkPtr network)
@@ -6051,7 +6057,7 @@ virStoragePoolFree(virStoragePoolPtr pool)
 
 /**
  * virStoragePoolRef:
- * @conn: the pool to hold a reference on
+ * @pool: the pool to hold a reference on
  *
  * Increment the reference count on the pool. For each
  * additional call to this method, there shall be a corresponding
@@ -6063,6 +6069,8 @@ virStoragePoolFree(virStoragePoolPtr pool)
  * connection remain open until all threads have finished using
  * it. ie, each new thread using a pool would increment
  * the reference count.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
  */
 int
 virStoragePoolRef(virStoragePoolPtr pool)
@@ -6832,7 +6840,7 @@ virStorageVolFree(virStorageVolPtr vol)
 
 /**
  * virStorageVolRef:
- * @conn: the vol to hold a reference on
+ * @vol: the vol to hold a reference on
  *
  * Increment the reference count on the vol. For each
  * additional call to this method, there shall be a corresponding
@@ -6844,6 +6852,8 @@ virStorageVolFree(virStorageVolPtr vol)
  * connection remain open until all threads have finished using
  * it. ie, each new thread using a vol would increment
  * the reference count.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
  */
 int
 virStorageVolRef(virStorageVolPtr vol)
@@ -7334,7 +7344,7 @@ int virNodeDeviceFree(virNodeDevicePtr dev)
 
 /**
  * virNodeDeviceRef:
- * @conn: the dev to hold a reference on
+ * @dev: the dev to hold a reference on
  *
  * Increment the reference count on the dev. For each
  * additional call to this method, there shall be a corresponding
@@ -7346,6 +7356,8 @@ int virNodeDeviceFree(virNodeDevicePtr dev)
  * connection remain open until all threads have finished using
  * it. ie, each new thread using a dev would increment
  * the reference count.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
  */
 int
 virNodeDeviceRef(virNodeDevicePtr dev)
@@ -7362,7 +7374,7 @@ virNodeDeviceRef(virNodeDevicePtr dev)
 }
 
 /**
- * virNodeDeviceAttach:
+ * virNodeDeviceDettach:
  * @dev: pointer to the node device
  *
  * Dettach the node device from the node itself so that it may be
@@ -7377,6 +7389,8 @@ virNodeDeviceRef(virNodeDevicePtr dev)
  *
  * Once the device is not assigned to any guest, it may be re-attached
  * to the node using the virNodeDeviceReattach() method.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
  */
 int
 virNodeDeviceDettach(virNodeDevicePtr dev)
@@ -7418,6 +7432,8 @@ error:
  * and binding it to its appropriate driver.
  *
  * If the device is currently in use by a guest, this method may fail.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
  */
 int
 virNodeDeviceReAttach(virNodeDevicePtr dev)
@@ -7461,6 +7477,8 @@ error:
  *
  * If the reset will affect other devices which are currently in use,
  * this function may fail.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
  */
 int
 virNodeDeviceReset(virNodeDevicePtr dev)

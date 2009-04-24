@@ -180,6 +180,7 @@
      <exports symbol='virConnectNumOfDefinedNetworks' type='function'/>
      <exports symbol='virConnectNumOfDomains' type='function'/>
      <exports symbol='virNetworkGetUUID' type='function'/>
+     <exports symbol='virNodeDeviceCreateXML' type='function'/>
      <exports symbol='virStoragePoolGetConnect' type='function'/>
      <exports symbol='virConnectGetVersion' type='function'/>
      <exports symbol='virDomainFree' type='function'/>
@@ -249,6 +250,7 @@
      <exports symbol='virDomainPinVcpu' type='function'/>
      <exports symbol='virNodeGetSecurityModel' type='function'/>
      <exports symbol='virDomainRestore' type='function'/>
+     <exports symbol='virNodeDeviceDestroy' type='function'/>
      <exports symbol='virStorageVolGetPath' type='function'/>
      <exports symbol='virNetworkLookupByUUIDString' type='function'/>
      <exports symbol='virConnectDomainEventCallback' type='function'/>
@@ -997,7 +999,7 @@ see note above'/>
     </function>
     <function name='virConnectRef' file='libvirt' module='libvirt'>
       <info>Increment the reference count on the connection. For each additional call to this method, there shall be a corresponding call to virConnectClose to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a connection would increment the reference count.</info>
-      <return type='int' info=''/>
+      <return type='int' info='0 in case of success, -1 in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='the connection to hold a reference on'/>
     </function>
     <function name='virCopyLastError' file='virterror' module='virterror'>
@@ -1237,8 +1239,8 @@ see note above'/>
     </function>
     <function name='virDomainRef' file='libvirt' module='libvirt'>
       <info>Increment the reference count on the domain. For each additional call to this method, there shall be a corresponding call to virDomainFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a domain would increment the reference count.</info>
-      <return type='int' info=''/>
-      <arg name='domain' type='virDomainPtr' info=''/>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='domain' type='virDomainPtr' info='the domain to hold a reference on'/>
     </function>
     <function name='virDomainRestore' file='libvirt' module='libvirt'>
       <info>This method will restore a domain saved to disk by virDomainSave().</info>
@@ -1483,8 +1485,8 @@ see note above'/>
     </function>
     <function name='virNetworkRef' file='libvirt' module='libvirt'>
       <info>Increment the reference count on the network. For each additional call to this method, there shall be a corresponding call to virNetworkFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a network would increment the reference count.</info>
-      <return type='int' info=''/>
-      <arg name='network' type='virNetworkPtr' info=''/>
+      <return type='int' info='0 in case of success, -1 in case of failure.'/>
+      <arg name='network' type='virNetworkPtr' info='the network to hold a reference on'/>
     </function>
     <function name='virNetworkSetAutostart' file='libvirt' module='libvirt'>
       <info>Configure the network to be automatically started when the host machine boots.</info>
@@ -1497,10 +1499,22 @@ see note above'/>
       <return type='int' info='0 in case of success, -1 in case of error'/>
       <arg name='network' type='virNetworkPtr' info='pointer to a defined network'/>
     </function>
+    <function name='virNodeDeviceCreateXML' file='libvirt' module='libvirt'>
+      <info>Create a new device on the VM host machine, for example, virtual HBAs created using vport_create.</info>
+      <return type='virNodeDevicePtr' info='a node device object if successful, NULL in case of failure'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='xmlDesc' type='const char *' info='string containing an XML description of the device to be created'/>
+      <arg name='flags' type='unsigned int' info='callers should always pass 0'/>
+    </function>
+    <function name='virNodeDeviceDestroy' file='libvirt' module='libvirt'>
+      <info>Destroy the device object. The virtual device is removed from the host operating system. This function may require privileged access</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='dev' type='virNodeDevicePtr' info='a device object'/>
+    </function>
     <function name='virNodeDeviceDettach' file='libvirt' module='libvirt'>
-      <info></info>
-      <return type='int' info=''/>
-      <arg name='dev' type='virNodeDevicePtr' info=''/>
+      <info>Dettach the node device from the node itself so that it may be assigned to a guest domain.  Depending on the hypervisor, this may involve operations such as unbinding any device drivers from the device, binding the device to a dummy device driver and resetting the device.  If the device is currently in use by the node, this method may fail.  Once the device is not assigned to any guest, it may be re-attached to the node using the virNodeDeviceReattach() method.</info>
+      <return type='int' info='0 in case of success, -1 in case of failure.'/>
+      <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
     </function>
     <function name='virNodeDeviceFree' file='libvirt' module='libvirt'>
       <info>Drops a reference to the node device, freeing it if this was the last reference.</info>
@@ -1543,17 +1557,17 @@ see note above'/>
     </function>
     <function name='virNodeDeviceReAttach' file='libvirt' module='libvirt'>
       <info>Re-attach a previously dettached node device to the node so that it may be used by the node again.  Depending on the hypervisor, this may involve operations such as resetting the device, unbinding it from a dummy device driver and binding it to its appropriate driver.  If the device is currently in use by a guest, this method may fail.</info>
-      <return type='int' info=''/>
+      <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
     </function>
     <function name='virNodeDeviceRef' file='libvirt' module='libvirt'>
       <info>Increment the reference count on the dev. For each additional call to this method, there shall be a corresponding call to virNodeDeviceFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a dev would increment the reference count.</info>
-      <return type='int' info=''/>
-      <arg name='dev' type='virNodeDevicePtr' info=''/>
+      <return type='int' info='0 in case of success, -1 in case of failure.'/>
+      <arg name='dev' type='virNodeDevicePtr' info='the dev to hold a reference on'/>
     </function>
     <function name='virNodeDeviceReset' file='libvirt' module='libvirt'>
       <info>Reset a previously dettached node device to the node before or after assigning it to a guest.  The exact reset semantics depends on the hypervisor and device type but, for example, KVM will attempt to reset PCI devices with a Function Level Reset, Secondary Bus Reset or a Power Management D-State reset.  If the reset will affect other devices which are currently in use, this function may fail.</info>
-      <return type='int' info=''/>
+      <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
     </function>
     <function name='virNodeGetCellsFreeMemory' file='libvirt' module='libvirt'>
@@ -1735,8 +1749,8 @@ see note above'/>
     </function>
     <function name='virStoragePoolRef' file='libvirt' module='libvirt'>
       <info>Increment the reference count on the pool. For each additional call to this method, there shall be a corresponding call to virStoragePoolFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a pool would increment the reference count.</info>
-      <return type='int' info=''/>
-      <arg name='pool' type='virStoragePoolPtr' info=''/>
+      <return type='int' info='0 in case of success, -1 in case of failure.'/>
+      <arg name='pool' type='virStoragePoolPtr' info='the pool to hold a reference on'/>
     </function>
     <function name='virStoragePoolRefresh' file='libvirt' module='libvirt'>
       <info>Request that the pool refresh its list of volumes. This may involve communicating with a remote server, and/or initializing new devices at the OS layer</info>
@@ -1825,8 +1839,8 @@ see note above'/>
     </function>
     <function name='virStorageVolRef' file='libvirt' module='libvirt'>
       <info>Increment the reference count on the vol. For each additional call to this method, there shall be a corresponding call to virStorageVolFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a vol would increment the reference count.</info>
-      <return type='int' info=''/>
-      <arg name='vol' type='virStorageVolPtr' info=''/>
+      <return type='int' info='0 in case of success, -1 in case of failure.'/>
+      <arg name='vol' type='virStorageVolPtr' info='the vol to hold a reference on'/>
     </function>
   </symbols>
 </api>

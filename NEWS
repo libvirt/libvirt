@@ -5,6 +5,39 @@
        http://libvirt.org/news.html
 
 
+0.6.3: Apr 24 2009:
+   - New features: VirtualBox driver support (Pritesh Kothari),
+          virt-xml-validate new command (Daniel Berrange)
+   - Portability: patch to build on Centos (Joseph Shraibman),
+          build breakage (Anton Protopopov), 
+   - Documentation: Linux Containers documentation (Serge Hallyn),
+          improvement and updates of architecture pages, fix
+          virNodeGetFreeMemory documentation to reflect reality,
+          man page cleanups (Daniel Berrange), man page typo
+          (Robert P. J. Day), VirtualBox Documentation (Pritesh Kothari),
+          
+   - Bug fixes: veth off-by-one error (Dan Smith), vcpupin to inactive
+          Xen crash (Takahashi Tomohiro), virsh ttyconsole return value,
+          use format= not fmt= on QEmu commandline (Mark McLoughlin),
+          use UUID for internal domain lookups (Daniel Berrange), remote
+          domain ID related bugs (Daniel Berrange), QEmu pidfile handling
+          bugs (Daniel Berrange), network config handling on old Xen (Daniel
+          Berrange)
+   - Improvements: add SCSI storage rescan (David Allan), rootless
+          LXC containers support improvements (Serge Hallyn), getHostname
+          support for LXC (Dan Smith), cleanup and logging output of some
+          domain functions (Guido Günther), drop pool lock when allocating
+          volumes (Cole Robinson), LXC handle kernel without CLONE_NEWUSER
+          support (Serge Hallyn), cpu pinning on defined Xen domains (Takahashi
+          Tomohiro), dynamic bridge names support (Soren Hansen), LXC use
+          of private /dev/pts when available (Daniel Berrange),
+          virNodeDeviceCreateXML and virNodeDeviceDestroy entry points
+          (Dave Allan)
+   - Cleanups: don't hardcode getgrnam_r buffer to 1024 bytes (Guido
+          Günther), qemudBuildCommandLine API cleanup (Daniel Berrange),
+          
+
+
 0.6.2: Apr  3 2009:
    - New features: support SASL auth for VNC server (Daniel Berrange),
           memory ballooning in QEMU (Daniel Berrange), SCSI HBA storage pool

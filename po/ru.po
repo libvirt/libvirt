@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.ru\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-04-24 12:05+0200\n"
+"POT-Creation-Date: 2009-04-24 15:38+0200\n"
 "PO-Revision-Date: 2008-10-17 15:08+1100\n"
 "Last-Translator: Yulia Poyarkova <yulia.poyarkova@redhat.com>\n"
 "Language-Team: \n"
@@ -251,7 +251,7 @@ msgstr "Не удалось выделить struct qemud_server"
 
 #: qemud/qemud.c:806 qemud/qemud.c:1285 src/domain_conf.c:522
 #: src/network_conf.c:170 src/node_device_conf.c:137 src/openvz_conf.c:453
-#: src/qemu_driver.c:430 src/remote_internal.c:908 src/remote_internal.c:5780
+#: src/qemu_driver.c:430 src/remote_internal.c:908 src/remote_internal.c:5833
 #: src/storage_conf.c:1304 src/test.c:235 src/test.c:363
 #, fuzzy
 msgid "cannot initialize mutex"
@@ -624,7 +624,7 @@ msgstr "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
 msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 
-#: qemud/remote.c:2600 src/remote_internal.c:5111
+#: qemud/remote.c:2600 src/remote_internal.c:5164
 #, c-format
 msgid "Cannot resolve address %d: %s"
 msgstr "Не удается разрешить адрес %d: %s"
@@ -671,7 +671,7 @@ msgstr ""
 msgid "cannot allocate mechlist"
 msgstr ""
 
-#: qemud/remote.c:2793 src/remote_internal.c:5607
+#: qemud/remote.c:2793 src/remote_internal.c:5660
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr ""
@@ -797,12 +797,12 @@ msgstr "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"
 
 #: qemud/remote.c:4120 qemud/remote.c:4150 qemud/remote.c:4191
 #: qemud/remote.c:4219 qemud/remote.c:4261 qemud/remote.c:4287
-#: qemud/remote.c:4313
+#: qemud/remote.c:4313 qemud/remote.c:4361
 #, fuzzy
 msgid "node_device not found"
 msgstr "устройство не найдено: %s (%s)"
 
-#: qemud/remote.c:4341
+#: qemud/remote.c:4389
 #, fuzzy
 msgid "unexpected async event method call"
 msgstr "непредвиденный узел dict"
@@ -1389,12 +1389,12 @@ msgstr "непредвиденный тип домена %d"
 msgid "unexpected char type %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:3176 src/xend_internal.c:5498
+#: src/domain_conf.c:3176 src/xend_internal.c:5492
 #, fuzzy, c-format
 msgid "unexpected sound model %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/domain_conf.c:3196 src/xend_internal.c:5520
+#: src/domain_conf.c:3196 src/xend_internal.c:5514
 #, fuzzy, c-format
 msgid "unexpected input type %d"
 msgstr "непредвиденный тип домена %d"
@@ -1507,51 +1507,51 @@ msgstr ""
 msgid "could not parse connection URI"
 msgstr "не удается разобрать URI подключения"
 
-#: src/libvirt.c:2050
+#: src/libvirt.c:2054
 #, fuzzy
 msgid "cannot get working directory"
 msgstr "не удается создать каталог журналирования %s: %s"
 
-#: src/libvirt.c:2057 src/libvirt.c:2133
+#: src/libvirt.c:2061 src/libvirt.c:2137
 #, fuzzy
 msgid "path too long"
 msgstr "путь к ядру слишком длинный"
 
-#: src/libvirt.c:2126
+#: src/libvirt.c:2130
 #, fuzzy
 msgid "cannot get current directory"
 msgstr "невозможно создать канал: %s"
 
-#: src/libvirt.c:2626
+#: src/libvirt.c:2630
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr ""
 
-#: src/libvirt.c:2767
+#: src/libvirt.c:2771
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare не задал uri"
 
-#: src/libvirt.c:2796
+#: src/libvirt.c:2800
 #, fuzzy
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare не задал uri"
 
-#: src/libvirt.c:3521
+#: src/libvirt.c:3525
 msgid "path is NULL"
 msgstr "пустой путь (NULL)"
 
-#: src/libvirt.c:3527
+#: src/libvirt.c:3531
 msgid "flags must be zero"
 msgstr "flags должен быть нулевым"
 
-#: src/libvirt.c:3534
+#: src/libvirt.c:3538
 msgid "buffer is NULL"
 msgstr "буфер пуст (NULL)"
 
-#: src/libvirt.c:3633
+#: src/libvirt.c:3637
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL"
 msgstr "параметр flags должен быть установлен в VIR_MEMORY_VIRTUAL"
 
-#: src/libvirt.c:3640
+#: src/libvirt.c:3644
 msgid "buffer is NULL but size is non-zero"
 msgstr "буфер пуст, но его размер ненулевой"
 
@@ -3588,7 +3588,7 @@ msgstr ""
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: для протокола 'ext' необходимо указать команду"
 
-#: src/remote_internal.c:538 src/xend_internal.c:814
+#: src/remote_internal.c:538 src/xend_internal.c:808
 #, fuzzy, c-format
 msgid "unable to resolve hostname '%s': %s"
 msgstr "не удается открыть tty %s: %s\n"
@@ -3898,214 +3898,214 @@ msgstr "запрошено слишком большое число томов �
 msgid "too many capability names received"
 msgstr "получено слишком много томов хранилищ"
 
-#: src/remote_internal.c:5030
+#: src/remote_internal.c:5083
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "неизвестный тип аутентификации %s"
 
-#: src/remote_internal.c:5040
+#: src/remote_internal.c:5093
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr "отказ запрошенного типа аутентификации %s"
 
-#: src/remote_internal.c:5081
+#: src/remote_internal.c:5134
 #, c-format
 msgid "unsupported authentication type %d"
 msgstr "тип аутентификации %d не поддерживается"
 
-#: src/remote_internal.c:5326
+#: src/remote_internal.c:5379
 #, c-format
 msgid "failed to initialize SASL library: %d (%s)"
 msgstr "ошибка инициализации библиотеки SASL: %d (%s)"
 
-#: src/remote_internal.c:5335
+#: src/remote_internal.c:5388
 #, fuzzy
 msgid "failed to get sock address"
 msgstr "не удалось получить адрес сокета %d (%s)"
 
-#: src/remote_internal.c:5345
+#: src/remote_internal.c:5398
 #, fuzzy
 msgid "failed to get peer address"
 msgstr "не удалось получить адрес узла %d (%s)"
 
-#: src/remote_internal.c:5370
+#: src/remote_internal.c:5423
 #, c-format
 msgid "Failed to create SASL client context: %d (%s)"
 msgstr "Ошибка создания контекста клиента SASL: %d (%s)"
 
-#: src/remote_internal.c:5383
+#: src/remote_internal.c:5436
 msgid "invalid cipher size for TLS session"
 msgstr "недопустимый размер ключа для сессии TLS"
 
-#: src/remote_internal.c:5393
+#: src/remote_internal.c:5446
 #, c-format
 msgid "cannot set external SSF %d (%s)"
 msgstr "невозможно задать внешний SSF %d (%s)"
 
-#: src/remote_internal.c:5412
+#: src/remote_internal.c:5465
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr ""
 
-#: src/remote_internal.c:5431
+#: src/remote_internal.c:5484
 #, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "механизм SASL %s не поддерживается сервером"
 
-#: src/remote_internal.c:5450
+#: src/remote_internal.c:5503
 #, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
 msgstr "Не удалось запустить согласование SASL: %d (%s)"
 
-#: src/remote_internal.c:5468 src/remote_internal.c:5546
+#: src/remote_internal.c:5521 src/remote_internal.c:5599
 msgid "Failed to make auth credentials"
 msgstr "Не удалось создать данные аутентификации"
 
-#: src/remote_internal.c:5492
+#: src/remote_internal.c:5545
 #, c-format
 msgid "SASL negotiation data too long: %d bytes"
 msgstr "Слишком длиные данные согласования SASL: %d байт"
 
-#: src/remote_internal.c:5532
+#: src/remote_internal.c:5585
 #, fuzzy, c-format
 msgid "Failed SASL step: %d (%s)"
 msgstr "Ошибка запуска домена %s"
 
-#: src/remote_internal.c:5616
+#: src/remote_internal.c:5669
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr ""
 
-#: src/remote_internal.c:5671
+#: src/remote_internal.c:5724
 msgid "Failed to collect auth credentials"
 msgstr "Ошибка сбора данных аутентификации"
 
-#: src/remote_internal.c:5705
+#: src/remote_internal.c:5758
 msgid "no event support"
 msgstr ""
 
-#: src/remote_internal.c:5710
+#: src/remote_internal.c:5763
 msgid "adding cb to list"
 msgstr ""
 
-#: src/remote_internal.c:5739
+#: src/remote_internal.c:5792
 msgid "removing cb fron list"
 msgstr ""
 
-#: src/remote_internal.c:5801
+#: src/remote_internal.c:5854
 msgid "xdr_remote_message_header failed"
 msgstr "сбой xdr_remote_message_header"
 
-#: src/remote_internal.c:5807
+#: src/remote_internal.c:5860
 msgid "marshalling args"
 msgstr ""
 
-#: src/remote_internal.c:5824
+#: src/remote_internal.c:5877
 #, fuzzy
 msgid "xdr_u_int (length word)"
 msgstr "xdr_int (длина слова)"
 
-#: src/remote_internal.c:5870
+#: src/remote_internal.c:5923
 #, fuzzy
 msgid "cannot send data"
 msgstr "невозможно сохранить данные домена"
 
-#: src/remote_internal.c:5901
+#: src/remote_internal.c:5954
 #, fuzzy, c-format
 msgid "failed to read from TLS socket %s"
 msgstr "Ошибка чтения сокета %d\n"
 
-#: src/remote_internal.c:5906 src/remote_internal.c:5924
+#: src/remote_internal.c:5959 src/remote_internal.c:5977
 #, fuzzy
 msgid "server closed connection"
 msgstr "соединение только для чтения"
 
-#: src/remote_internal.c:5920
+#: src/remote_internal.c:5973
 #, fuzzy
 msgid "cannot recv data"
 msgstr "невозможно записать метаданные"
 
-#: src/remote_internal.c:5953
+#: src/remote_internal.c:6006
 #, fuzzy, c-format
 msgid "failed to encode SASL data: %s"
 msgstr "не удалось создать '%s'"
 
-#: src/remote_internal.c:6051
+#: src/remote_internal.c:6104
 #, fuzzy, c-format
 msgid "failed to decode SASL data: %s"
 msgstr "Ошибка разрушения домена %s"
 
-#: src/remote_internal.c:6125
+#: src/remote_internal.c:6178
 #, fuzzy
 msgid "xdr_u_int (length word, reply)"
 msgstr "xdr_int (длина слова)"
 
-#: src/remote_internal.c:6132
+#: src/remote_internal.c:6185
 #, fuzzy
 msgid "packet received from server too small"
 msgstr "с сервера получен слишком длинный пакет"
 
-#: src/remote_internal.c:6141
+#: src/remote_internal.c:6194
 msgid "packet received from server too large"
 msgstr "с сервера получен слишком длинный пакет"
 
-#: src/remote_internal.c:6165
+#: src/remote_internal.c:6218
 msgid "invalid header in reply"
 msgstr "ответ содержит неверный заголовок"
 
-#: src/remote_internal.c:6174
+#: src/remote_internal.c:6227
 #, c-format
 msgid "unknown program (received %x, expected %x)"
 msgstr "неизвестная программа (получено %x, ожидается %x)"
 
-#: src/remote_internal.c:6182
+#: src/remote_internal.c:6235
 #, c-format
 msgid "unknown protocol version (received %x, expected %x)"
 msgstr "неизвестная версия протокола (получено %x, ожидается %x)"
 
-#: src/remote_internal.c:6199
+#: src/remote_internal.c:6252
 #, c-format
 msgid "got unexpected RPC call %d from server"
 msgstr ""
 
-#: src/remote_internal.c:6217
+#: src/remote_internal.c:6270
 #, c-format
 msgid "no call waiting for reply with serial %d"
 msgstr ""
 
-#: src/remote_internal.c:6227
+#: src/remote_internal.c:6280
 #, c-format
 msgid "unknown procedure (received %x, expected %x)"
 msgstr "неизвестная процедура (получено %x, ожидается %x)"
 
-#: src/remote_internal.c:6241
+#: src/remote_internal.c:6294
 msgid "unmarshalling ret"
 msgstr ""
 
-#: src/remote_internal.c:6252
+#: src/remote_internal.c:6305
 msgid "unmarshalling remote_error"
 msgstr ""
 
-#: src/remote_internal.c:6262
+#: src/remote_internal.c:6315
 #, c-format
 msgid "unknown status (received %x)"
 msgstr "неизвестный статус (получен %x)"
 
-#: src/remote_internal.c:6368
+#: src/remote_internal.c:6421
 #, fuzzy
 msgid "poll on socket failed"
 msgstr "сбой calloc"
 
-#: src/remote_internal.c:6429
+#: src/remote_internal.c:6482
 msgid "received hangup / error event on socket"
 msgstr ""
 
-#: src/remote_internal.c:6531
+#: src/remote_internal.c:6584
 #, fuzzy
 msgid "failed to wait on condition"
 msgstr "ошибка при ожидании команды: %s"
 
-#: src/remote_internal.c:6631
+#: src/remote_internal.c:6684
 msgid "remoteDomainProcessEvent: unmarshalling ret"
 msgstr ""
 
@@ -7748,489 +7748,489 @@ msgstr ""
 "       'quit' для выхода\n"
 "\n"
 
-#: src/virterror.c:198
+#: src/virterror.c:205
 #, fuzzy
 msgid "Unknown failure"
 msgstr "Неизвестная ошибка"
 
-#: src/virterror.c:512
+#: src/virterror.c:519
 msgid "warning"
 msgstr "предупреждение"
 
-#: src/virterror.c:515
+#: src/virterror.c:522
 msgid "error"
 msgstr "ошибка"
 
-#: src/virterror.c:637
+#: src/virterror.c:648
 msgid "No error message provided"
 msgstr "Не указано сообщение об ошибке"
 
-#: src/virterror.c:700
+#: src/virterror.c:711
 #, c-format
 msgid "internal error %s"
 msgstr "внутренняя ошибка %s"
 
-#: src/virterror.c:702
+#: src/virterror.c:713
 msgid "internal error"
 msgstr "внутренняя ошибка"
 
-#: src/virterror.c:705
+#: src/virterror.c:716
 msgid "out of memory"
 msgstr "недостаточно памяти"
 
-#: src/virterror.c:709
+#: src/virterror.c:720
 #, fuzzy
 msgid "this function is not supported by the hypervisor"
 msgstr "нет поддержки гипервизора"
 
-#: src/virterror.c:711
+#: src/virterror.c:722
 #, fuzzy, c-format
 msgid "this function is not supported by the hypervisor: %s"
 msgstr "нет поддержки гипервизора %s"
 
-#: src/virterror.c:715
+#: src/virterror.c:726
 msgid "could not connect to hypervisor"
 msgstr "невозможно подключиться к гипервизору"
 
-#: src/virterror.c:717
+#: src/virterror.c:728
 #, c-format
 msgid "could not connect to %s"
 msgstr "невозможно подключиться к %s"
 
-#: src/virterror.c:721
+#: src/virterror.c:732
 msgid "invalid connection pointer in"
 msgstr "неправильный указатель соединения в"
 
-#: src/virterror.c:723
+#: src/virterror.c:734
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "неправильный указатель соединения в %s"
 
-#: src/virterror.c:727
+#: src/virterror.c:738
 msgid "invalid domain pointer in"
 msgstr "неправильный указатель домена в"
 
-#: src/virterror.c:729
+#: src/virterror.c:740
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "неправильный указатель домена в %s"
 
-#: src/virterror.c:733
+#: src/virterror.c:744
 msgid "invalid argument in"
 msgstr "неверный аргумент в"
 
-#: src/virterror.c:735
+#: src/virterror.c:746
 #, c-format
 msgid "invalid argument in %s"
 msgstr "неверный аргумент %s"
 
-#: src/virterror.c:739
+#: src/virterror.c:750
 #, c-format
 msgid "operation failed: %s"
 msgstr "ошибка действия: %s"
 
-#: src/virterror.c:741
+#: src/virterror.c:752
 msgid "operation failed"
 msgstr "ошибка действия"
 
-#: src/virterror.c:745
+#: src/virterror.c:756
 #, c-format
 msgid "GET operation failed: %s"
 msgstr "Ошибка действия GET: %s"
 
-#: src/virterror.c:747
+#: src/virterror.c:758
 msgid "GET operation failed"
 msgstr "Ошибка действия GET"
 
-#: src/virterror.c:751
+#: src/virterror.c:762
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "Ошибка действия POST: %s"
 
-#: src/virterror.c:753
+#: src/virterror.c:764
 msgid "POST operation failed"
 msgstr "Ошибка действия POST"
 
-#: src/virterror.c:756
+#: src/virterror.c:767
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr "неизвестный код ошибки HTTP %d"
 
-#: src/virterror.c:760
+#: src/virterror.c:771
 #, c-format
 msgid "unknown host %s"
 msgstr "неизвестный узел %s"
 
-#: src/virterror.c:762
+#: src/virterror.c:773
 msgid "unknown host"
 msgstr "неизвестный узел"
 
-#: src/virterror.c:766
+#: src/virterror.c:777
 #, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr "ошибка преобразования S-Expr: %s"
 
-#: src/virterror.c:768
+#: src/virterror.c:779
 msgid "failed to serialize S-Expr"
 msgstr "ошибка преобразования S-Expr"
 
-#: src/virterror.c:772
+#: src/virterror.c:783
 msgid "could not use Xen hypervisor entry"
 msgstr "невозможно использовать запись Xen гипервизора"
 
-#: src/virterror.c:774
+#: src/virterror.c:785
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "невозможно использовать запись Xen %s "
 
-#: src/virterror.c:778
+#: src/virterror.c:789
 msgid "could not connect to Xen Store"
 msgstr "невозможно подключиться к хранилищу Xen"
 
-#: src/virterror.c:780
+#: src/virterror.c:791
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr "невозможно подключиться к хранилищу Xen %s"
 
-#: src/virterror.c:783
+#: src/virterror.c:794
 #, fuzzy, c-format
 msgid "failed Xen syscall %s"
 msgstr "ошибка Xen syscall %s %d"
 
-#: src/virterror.c:787
+#: src/virterror.c:798
 msgid "unknown OS type"
 msgstr "неизвестный тип ОС"
 
-#: src/virterror.c:789
+#: src/virterror.c:800
 #, c-format
 msgid "unknown OS type %s"
 msgstr "неизвестный тип ОС %s"
 
-#: src/virterror.c:792
+#: src/virterror.c:803
 msgid "missing kernel information"
 msgstr "отсутствует информация ядра"
 
-#: src/virterror.c:796
+#: src/virterror.c:807
 msgid "missing root device information"
 msgstr "отсутствует информация о корневом устройстве"
 
-#: src/virterror.c:798
+#: src/virterror.c:809
 #, c-format
 msgid "missing root device information in %s"
 msgstr "отсутствует информация о корневом устройстве %s"
 
-#: src/virterror.c:802
+#: src/virterror.c:813
 msgid "missing source information for device"
 msgstr "отсутствует исходная информация для устройства"
 
-#: src/virterror.c:804
+#: src/virterror.c:815
 #, c-format
 msgid "missing source information for device %s"
 msgstr "отсутствует исходная информация для устройства %s"
 
-#: src/virterror.c:808
+#: src/virterror.c:819
 msgid "missing target information for device"
 msgstr "отсутствует целевая информация для устройства"
 
-#: src/virterror.c:810
+#: src/virterror.c:821
 #, c-format
 msgid "missing target information for device %s"
 msgstr "отсутствует целевая информация для устройства %s"
 
-#: src/virterror.c:814
+#: src/virterror.c:825
 msgid "missing domain name information"
 msgstr "отсутствует информация об имени домена"
 
-#: src/virterror.c:816
+#: src/virterror.c:827
 #, c-format
 msgid "missing domain name information in %s"
 msgstr "отсутствует информация об имени домена в %s"
 
-#: src/virterror.c:820
+#: src/virterror.c:831
 msgid "missing operating system information"
 msgstr "отсутствует информация об ОС"
 
-#: src/virterror.c:822
+#: src/virterror.c:833
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "отсутствует информация об ОС для %s"
 
-#: src/virterror.c:826
+#: src/virterror.c:837
 msgid "missing devices information"
 msgstr "отсутствует информация об устройствах"
 
-#: src/virterror.c:828
+#: src/virterror.c:839
 #, c-format
 msgid "missing devices information for %s"
 msgstr "отсутствует информация об устройствах для %s"
 
-#: src/virterror.c:832
+#: src/virterror.c:843
 msgid "too many drivers registered"
 msgstr "зарегистрировано слишком много драйверов"
 
-#: src/virterror.c:834
+#: src/virterror.c:845
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "зарегистрировано слишком много драйверов в %s"
 
-#: src/virterror.c:838
+#: src/virterror.c:849
 msgid "library call failed, possibly not supported"
 msgstr "ошибка обращения к библиотеке, возможно не поддерживается"
 
-#: src/virterror.c:840
+#: src/virterror.c:851
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr "ошибка обращения %s к библиотеке, возможно не поддерживается"
 
-#: src/virterror.c:844
+#: src/virterror.c:855
 msgid "XML description not well formed or invalid"
 msgstr "описание XML неправильно сформировано или неверно"
 
-#: src/virterror.c:846
+#: src/virterror.c:857
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
 msgstr "описание XML для %s неправильно сформировано или неверно"
 
-#: src/virterror.c:850
+#: src/virterror.c:861
 msgid "this domain exists already"
 msgstr "домен уже существует"
 
-#: src/virterror.c:852
+#: src/virterror.c:863
 #, c-format
 msgid "domain %s exists already"
 msgstr "домен %s уже существует"
 
-#: src/virterror.c:856
+#: src/virterror.c:867
 msgid "operation forbidden for read only access"
 msgstr "действию запрещен доступ в режиме чтения"
 
-#: src/virterror.c:858
+#: src/virterror.c:869
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr "действию %s запрещен доступ в режиме чтения"
 
-#: src/virterror.c:862
+#: src/virterror.c:873
 msgid "failed to open configuration file for reading"
 msgstr "ошибка при попытке открыть файл конфигурации для чтения"
 
-#: src/virterror.c:864
+#: src/virterror.c:875
 #, c-format
 msgid "failed to open %s for reading"
 msgstr "ошибка при попытке открыть %s для чтения"
 
-#: src/virterror.c:868
+#: src/virterror.c:879
 msgid "failed to read configuration file"
 msgstr "ошибка чтения файла конфигурации"
 
-#: src/virterror.c:870
+#: src/virterror.c:881
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "ошибка чтения файла конфигурации %s"
 
-#: src/virterror.c:874
+#: src/virterror.c:885
 msgid "failed to parse configuration file"
 msgstr "ошибка разбора файла конфигурации"
 
-#: src/virterror.c:876
+#: src/virterror.c:887
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "ошибка разбора файла конфигурации %s"
 
-#: src/virterror.c:880
+#: src/virterror.c:891
 msgid "configuration file syntax error"
 msgstr "ошибка синтаксиса файла конфигурации"
 
-#: src/virterror.c:882
+#: src/virterror.c:893
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "ошибка синтаксиса файла конфигурации: %s"
 
-#: src/virterror.c:886
+#: src/virterror.c:897
 msgid "failed to write configuration file"
 msgstr "ошибка записи файла конфигурации"
 
-#: src/virterror.c:888
+#: src/virterror.c:899
 #, c-format
 msgid "failed to write configuration file: %s"
 msgstr "ошибка записи файла конфигурации: %s"
 
-#: src/virterror.c:892
+#: src/virterror.c:903
 msgid "parser error"
 msgstr "ошибка разбора"
 
-#: src/virterror.c:898
+#: src/virterror.c:909
 msgid "invalid network pointer in"
 msgstr "неправильный указатель сети в"
 
-#: src/virterror.c:900
+#: src/virterror.c:911
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "неправильный указатель сети в %s"
 
-#: src/virterror.c:904
+#: src/virterror.c:915
 msgid "this network exists already"
 msgstr "эта сеть уже существует"
 
-#: src/virterror.c:906
+#: src/virterror.c:917
 #, c-format
 msgid "network %s exists already"
 msgstr "сеть %s уже существует"
 
-#: src/virterror.c:910
+#: src/virterror.c:921
 msgid "system call error"
 msgstr "ошибка системного вызова"
 
-#: src/virterror.c:916
+#: src/virterror.c:927
 #, fuzzy
 msgid "RPC error"
 msgstr "ошибка"
 
-#: src/virterror.c:922
+#: src/virterror.c:933
 #, fuzzy
 msgid "GNUTLS call error"
 msgstr "ошибка системного вызова"
 
-#: src/virterror.c:928
+#: src/virterror.c:939
 #, fuzzy
 msgid "Failed to find the network"
 msgstr "Ошибка отмены конфигурации сети %s"
 
-#: src/virterror.c:930
+#: src/virterror.c:941
 #, fuzzy, c-format
 msgid "Failed to find the network: %s"
 msgstr "Ошибка отмены конфигурации сети %s"
 
-#: src/virterror.c:934
+#: src/virterror.c:945
 #, fuzzy
 msgid "Domain not found"
 msgstr "информация о домене"
 
-#: src/virterror.c:936
+#: src/virterror.c:947
 #, fuzzy, c-format
 msgid "Domain not found: %s"
 msgstr "Домен восстановлен из %s\n"
 
-#: src/virterror.c:940
+#: src/virterror.c:951
 #, fuzzy
 msgid "Network not found"
 msgstr "имя сети или uuid"
 
-#: src/virterror.c:942
+#: src/virterror.c:953
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "Сеть %s создана из %s\n"
 
-#: src/virterror.c:946
+#: src/virterror.c:957
 #, fuzzy
 msgid "invalid MAC address"
 msgstr "неверный аргумент %s"
 
-#: src/virterror.c:948
+#: src/virterror.c:959
 #, fuzzy, c-format
 msgid "invalid MAC address: %s"
 msgstr "неверный аргумент %s"
 
-#: src/virterror.c:952
+#: src/virterror.c:963
 #, fuzzy
 msgid "authentication failed"
 msgstr "ошибка действия"
 
-#: src/virterror.c:954
+#: src/virterror.c:965
 #, fuzzy, c-format
 msgid "authentication failed: %s"
 msgstr "ошибка действия: %s"
 
-#: src/virterror.c:958
+#: src/virterror.c:969
 #, fuzzy
 msgid "Storage pool not found"
 msgstr "имя сети или uuid"
 
-#: src/virterror.c:960
+#: src/virterror.c:971
 #, fuzzy, c-format
 msgid "Storage pool not found: %s"
 msgstr "Сеть %s создана из %s\n"
 
-#: src/virterror.c:964
+#: src/virterror.c:975
 #, fuzzy
 msgid "Storage volume not found"
 msgstr "имя сети или uuid"
 
-#: src/virterror.c:966
+#: src/virterror.c:977
 #, fuzzy, c-format
 msgid "Storage volume not found: %s"
 msgstr "Сеть %s создана из %s\n"
 
-#: src/virterror.c:970
+#: src/virterror.c:981
 #, fuzzy
 msgid "invalid storage pool pointer in"
 msgstr "неправильный указатель сети в"
 
-#: src/virterror.c:972
+#: src/virterror.c:983
 #, fuzzy, c-format
 msgid "invalid storage pool pointer in %s"
 msgstr "неправильный указатель сети в %s"
 
-#: src/virterror.c:976
+#: src/virterror.c:987
 #, fuzzy
 msgid "invalid storage volume pointer in"
 msgstr "неправильный указатель сети в"
 
-#: src/virterror.c:978
+#: src/virterror.c:989
 #, fuzzy, c-format
 msgid "invalid storage volume pointer in %s"
 msgstr "неправильный указатель сети в %s"
 
-#: src/virterror.c:982
+#: src/virterror.c:993
 #, fuzzy
 msgid "Failed to find a storage driver"
 msgstr "Ошибка отмены конфигурации сети %s"
 
-#: src/virterror.c:984
+#: src/virterror.c:995
 #, fuzzy, c-format
 msgid "Failed to find a storage driver: %s"
 msgstr "Ошибка отмены конфигурации сети %s"
 
-#: src/virterror.c:988
+#: src/virterror.c:999
 #, fuzzy
 msgid "Failed to find a node driver"
 msgstr "Ошибка отмены конфигурации сети %s"
 
-#: src/virterror.c:990
+#: src/virterror.c:1001
 #, fuzzy, c-format
 msgid "Failed to find a node driver: %s"
 msgstr "Ошибка отмены конфигурации сети %s"
 
-#: src/virterror.c:994
+#: src/virterror.c:1005
 #, fuzzy
 msgid "invalid node device pointer"
 msgstr "неправильный указатель сети в"
 
-#: src/virterror.c:996
+#: src/virterror.c:1007
 #, fuzzy, c-format
 msgid "invalid node device pointer in %s"
 msgstr "неправильный указатель домена в %s"
 
-#: src/virterror.c:1000
+#: src/virterror.c:1011
 #, fuzzy
 msgid "Node device not found"
 msgstr "устройство не найдено: %s (%s)"
 
-#: src/virterror.c:1002
+#: src/virterror.c:1013
 #, fuzzy, c-format
 msgid "Node device not found: %s"
 msgstr "устройство не найдено: %s (%s)"
 
-#: src/virterror.c:1006
+#: src/virterror.c:1017
 #, fuzzy
 msgid "Security model not found"
 msgstr "имя сети или uuid"
 
-#: src/virterror.c:1008
+#: src/virterror.c:1019
 #, fuzzy, c-format
 msgid "Security model not found: %s"
 msgstr "Сеть %s создана из %s\n"
 
-#: src/virterror.c:1071
+#: src/virterror.c:1082
 #, fuzzy
 msgid "internal error: buffer too small"
 msgstr "Буфер аргументов слишком мал"
@@ -8311,369 +8311,369 @@ msgstr "невозможно прочитать %s: %s"
 msgid "cannot initialise mutex"
 msgstr "не удается инициализировать поддержку моста: %s"
 
-#: src/xend_internal.c:133
+#: src/xend_internal.c:127
 #, fuzzy
 msgid "failed to create a socket"
 msgstr "ошибка выделения узла"
 
-#: src/xend_internal.c:156
+#: src/xend_internal.c:150
 #, fuzzy
 msgid "failed to connect to xend"
 msgstr "ошибка подключения к Xen Store"
 
-#: src/xend_internal.c:203 src/xend_internal.c:206
+#: src/xend_internal.c:197 src/xend_internal.c:200
 msgid "failed to read from Xen Daemon"
 msgstr "ошибка чтения из демона Xen"
 
-#: src/xend_internal.c:394
+#: src/xend_internal.c:388
 #, fuzzy, c-format
 msgid "%d status from xen daemon: %s:%s"
 msgstr "Не удалось отделить как демон: %s"
 
-#: src/xend_internal.c:445 src/xend_internal.c:448 src/xend_internal.c:456
+#: src/xend_internal.c:439 src/xend_internal.c:442 src/xend_internal.c:450
 #, c-format
 msgid "xend_post: error from xen daemon: %s"
 msgstr ""
 
-#: src/xend_internal.c:851
+#: src/xend_internal.c:845
 #, fuzzy, c-format
 msgid "unable to connect to '%s:%s'"
 msgstr "не удается открыть tty %s: %s\n"
 
-#: src/xend_internal.c:969
+#: src/xend_internal.c:963
 msgid "failed to urlencode the create S-Expr"
 msgstr "ошибка urlencode при создании S-Expr"
 
-#: src/xend_internal.c:1010
+#: src/xend_internal.c:1004
 msgid "domain information incomplete, missing domid"
 msgstr "неполная информация домена, отсутствует domid"
 
-#: src/xend_internal.c:1016
+#: src/xend_internal.c:1010
 msgid "domain information incorrect domid not numeric"
 msgstr "неверная информация домена, domid должен быть числом"
 
-#: src/xend_internal.c:1021 src/xend_internal.c:1068
+#: src/xend_internal.c:1015 src/xend_internal.c:1062
 msgid "domain information incomplete, missing uuid"
 msgstr "неполная информация домена, отсутствует uuid"
 
-#: src/xend_internal.c:1060 src/xend_internal.c:2325 src/xend_internal.c:2332
+#: src/xend_internal.c:1054 src/xend_internal.c:2319 src/xend_internal.c:2326
 msgid "domain information incomplete, missing name"
 msgstr "неполная информация домена, отсутствует имя"
 
-#: src/xend_internal.c:1149
+#: src/xend_internal.c:1143
 #, fuzzy
 msgid "domain information incomplete, missing HVM loader"
 msgstr "неполная информация домена, отсутствует имя"
 
-#: src/xend_internal.c:1203
+#: src/xend_internal.c:1197
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "неполная информация домена, отсутствует ядро и загрузчик"
 
-#: src/xend_internal.c:1267
+#: src/xend_internal.c:1261
 #, fuzzy
 msgid "Unknown char device type"
 msgstr "неизвестный тип ОС"
 
-#: src/xend_internal.c:1301 src/xend_internal.c:1341 src/xend_internal.c:1357
-#: src/xend_internal.c:1495 src/xend_internal.c:1523 src/xend_internal.c:1539
+#: src/xend_internal.c:1295 src/xend_internal.c:1335 src/xend_internal.c:1351
+#: src/xend_internal.c:1489 src/xend_internal.c:1517 src/xend_internal.c:1533
 msgid "malformed char device string"
 msgstr ""
 
-#: src/xend_internal.c:1468
+#: src/xend_internal.c:1462
 #, fuzzy, c-format
 msgid "unknown chr device type '%s'"
 msgstr "неизвестный тип ОС"
 
-#: src/xend_internal.c:1630
+#: src/xend_internal.c:1624
 msgid "domain information incomplete, vbd has no dev"
 msgstr "неполная информация домена, нет dev для vbd"
 
-#: src/xend_internal.c:1641
+#: src/xend_internal.c:1635
 msgid "domain information incomplete, vbd has no src"
 msgstr "неполная информация домена, нет src для vbd"
 
-#: src/xend_internal.c:1650
+#: src/xend_internal.c:1644
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "ошибка разбора имени файла vbd, отсутствует имя драйвера"
 
-#: src/xend_internal.c:1665
+#: src/xend_internal.c:1659
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "ошибка разбора имени файла vbd, отсутствует тип драйвера"
 
-#: src/xend_internal.c:1821
+#: src/xend_internal.c:1815
 #, fuzzy, c-format
 msgid "malformed mac address '%s'"
 msgstr "неверный аргумент %s"
 
-#: src/xend_internal.c:1902
+#: src/xend_internal.c:1896
 #, fuzzy, c-format
 msgid "unexpected sound model %s"
 msgstr "непредвиденный узел dict"
 
-#: src/xend_internal.c:2087
+#: src/xend_internal.c:2081
 #, fuzzy, c-format
 msgid "unknown graphics type '%s'"
 msgstr "неизвестный тип auth '%s'"
 
-#: src/xend_internal.c:2210
+#: src/xend_internal.c:2204
 #, fuzzy
 msgid "missing PCI domain"
 msgstr "перевести домен в состояние ожидания"
 
-#: src/xend_internal.c:2215
+#: src/xend_internal.c:2209
 #, fuzzy
 msgid "missing PCI bus"
 msgstr "отсутствует \""
 
-#: src/xend_internal.c:2220
+#: src/xend_internal.c:2214
 #, fuzzy
 msgid "missing PCI slot"
 msgstr "отсутствует узел источника"
 
-#: src/xend_internal.c:2225
+#: src/xend_internal.c:2219
 #, fuzzy
 msgid "missing PCI func"
 msgstr "отсутствует узел источника"
 
-#: src/xend_internal.c:2231
+#: src/xend_internal.c:2225
 #, fuzzy, c-format
 msgid "cannot parse PCI domain '%s'"
 msgstr "невозможно открыть устройство %s"
 
-#: src/xend_internal.c:2236
+#: src/xend_internal.c:2230
 #, fuzzy, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "невозможно прочитать %s: %s"
 
-#: src/xend_internal.c:2241
+#: src/xend_internal.c:2235
 #, fuzzy, c-format
 msgid "cannot parse PCI slot '%s'"
 msgstr "невозможно прочитать %s: %s"
 
-#: src/xend_internal.c:2246
+#: src/xend_internal.c:2240
 #, fuzzy, c-format
 msgid "cannot parse PCI func '%s'"
 msgstr "невозможно открыть устройство %s"
 
-#: src/xend_internal.c:2312
+#: src/xend_internal.c:2306
 msgid "domain information incomplete, missing id"
 msgstr "неполная информация домена, отсутствует id"
 
-#: src/xend_internal.c:2380
+#: src/xend_internal.c:2374
 #, fuzzy, c-format
 msgid "invalid CPU mask %s"
 msgstr "неверный аргумент %s"
 
-#: src/xend_internal.c:2391 src/xend_internal.c:2401 src/xend_internal.c:2411
+#: src/xend_internal.c:2385 src/xend_internal.c:2395 src/xend_internal.c:2405
 #, fuzzy, c-format
 msgid "unknown lifecycle type %s"
 msgstr "неизвестный тип ОС %s"
 
-#: src/xend_internal.c:2795
+#: src/xend_internal.c:2789
 #, fuzzy
 msgid "topology syntax error"
 msgstr "ошибка синтаксиса файла конфигурации"
 
-#: src/xend_internal.c:2859
+#: src/xend_internal.c:2853
 msgid "failed to parse Xend domain information"
 msgstr "ошибка разбора информации домена Xend"
 
-#: src/xend_internal.c:2980 src/xend_internal.c:3007 src/xend_internal.c:3035
-#: src/xend_internal.c:3064 src/xend_internal.c:3095 src/xend_internal.c:3170
-#: src/xend_internal.c:3207
+#: src/xend_internal.c:2974 src/xend_internal.c:3001 src/xend_internal.c:3029
+#: src/xend_internal.c:3058 src/xend_internal.c:3089 src/xend_internal.c:3164
+#: src/xend_internal.c:3201
 #, fuzzy, c-format
 msgid "Domain %s isn't running."
 msgstr "домен не выполняется"
 
-#: src/xend_internal.c:3365
+#: src/xend_internal.c:3359
 msgid "xenDaemonDomainFetch failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4093 src/xend_internal.c:4100
+#: src/xend_internal.c:4087 src/xend_internal.c:4094
 #, fuzzy
 msgid "unsupported device type"
 msgstr "неподдерживаемый тип устройства ввода: %s"
 
-#: src/xend_internal.c:4205
+#: src/xend_internal.c:4199
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4246
+#: src/xend_internal.c:4240
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4254
+#: src/xend_internal.c:4248
 #, fuzzy
 msgid "unexpected value from on_xend_start"
 msgstr "непредвиденный узел значений"
 
-#: src/xend_internal.c:4265
+#: src/xend_internal.c:4259
 #, fuzzy
 msgid "no memory"
 msgstr "память узла"
 
-#: src/xend_internal.c:4271
+#: src/xend_internal.c:4265
 #, fuzzy
 msgid "sexpr2string failed"
 msgstr "ошибка действия"
 
-#: src/xend_internal.c:4276
+#: src/xend_internal.c:4270
 #, fuzzy
 msgid "Failed to redefine sexpr"
 msgstr "Ошибка отмены конфигурации сети %s"
 
-#: src/xend_internal.c:4281
+#: src/xend_internal.c:4275
 msgid "on_xend_start not present in sexpr"
 msgstr ""
 
-#: src/xend_internal.c:4312
+#: src/xend_internal.c:4306
 #, fuzzy, c-format
 msgid "unable to resolve name %s"
 msgstr "не удается открыть tty %s: %s\n"
 
-#: src/xend_internal.c:4348
+#: src/xend_internal.c:4342
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:4358
+#: src/xend_internal.c:4352
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:4370
+#: src/xend_internal.c:4364
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr ""
 
-#: src/xend_internal.c:4383
+#: src/xend_internal.c:4377
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr ""
 
-#: src/xend_internal.c:4388
+#: src/xend_internal.c:4382
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
 
-#: src/xend_internal.c:4395
+#: src/xend_internal.c:4389
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr ""
 
-#: src/xend_internal.c:4415
+#: src/xend_internal.c:4409
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr ""
 
-#: src/xend_internal.c:4471
+#: src/xend_internal.c:4465
 #, fuzzy
 msgid "failed to parse domain description"
 msgstr "ошибка разбора информации домена Xend"
 
-#: src/xend_internal.c:4477
+#: src/xend_internal.c:4471
 #, fuzzy
 msgid "failed to build sexpr"
 msgstr "Ошибка при переведении домена %s в состояние ожидания"
 
-#: src/xend_internal.c:4487
+#: src/xend_internal.c:4481
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Ошибка создания неактивного домена %s\n"
 
-#: src/xend_internal.c:4643 src/xend_internal.c:4719 src/xend_internal.c:4809
+#: src/xend_internal.c:4637 src/xend_internal.c:4713 src/xend_internal.c:4803
 msgid "unsupported in xendConfigVersion < 4"
 msgstr ""
 
-#: src/xend_internal.c:4655
+#: src/xend_internal.c:4649
 #, fuzzy
 msgid "node information incomplete, missing scheduler name"
 msgstr "неполная информация домена, отсутствует имя"
 
-#: src/xend_internal.c:4661 src/xend_internal.c:4668
+#: src/xend_internal.c:4655 src/xend_internal.c:4662
 msgid "strdup failed"
 msgstr ""
 
-#: src/xend_internal.c:4673 src/xend_internal.c:4767 src/xend_internal.c:4879
+#: src/xend_internal.c:4667 src/xend_internal.c:4761 src/xend_internal.c:4873
 msgid "Unknown scheduler"
 msgstr ""
 
-#: src/xend_internal.c:4732 src/xend_internal.c:4822
+#: src/xend_internal.c:4726 src/xend_internal.c:4816
 #, fuzzy
 msgid "Failed to get a scheduler name"
 msgstr "ошибка получения типа гипервизора"
 
-#: src/xend_internal.c:4745 src/xend_internal.c:4858
+#: src/xend_internal.c:4739 src/xend_internal.c:4852
 #, fuzzy
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "неполная информация домена, отсутствует uuid"
 
-#: src/xend_internal.c:4750 src/xend_internal.c:4867
+#: src/xend_internal.c:4744 src/xend_internal.c:4861
 #, fuzzy
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "неполная информация домена, отсутствует имя"
 
-#: src/xend_internal.c:4925
+#: src/xend_internal.c:4919
 msgid "domainBlockPeek is not supported for dom0"
 msgstr ""
 
-#: src/xend_internal.c:4946
+#: src/xend_internal.c:4940
 #, c-format
 msgid "%s: invalid path"
 msgstr ""
 
-#: src/xend_internal.c:4954
+#: src/xend_internal.c:4948
 #, fuzzy, c-format
 msgid "failed to open for reading: %s"
 msgstr "ошибка при попытке открыть %s для чтения"
 
-#: src/xend_internal.c:4966
+#: src/xend_internal.c:4960
 #, fuzzy, c-format
 msgid "failed to lseek or read from file: %s"
 msgstr "ошибка чтения файла конфигурации %s"
 
-#: src/xend_internal.c:5048 src/xend_internal.c:5094
+#: src/xend_internal.c:5042 src/xend_internal.c:5088
 #, fuzzy, c-format
 msgid "unexpected graphics type %d"
 msgstr "непредвиденный тип домена %d"
 
-#: src/xend_internal.c:5137
+#: src/xend_internal.c:5131
 #, fuzzy
 msgid "unexpected chr device type"
 msgstr "непредвиденный тип mime"
 
-#: src/xend_internal.c:5215
+#: src/xend_internal.c:5209
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr ""
 
-#: src/xend_internal.c:5227
+#: src/xend_internal.c:5221
 #, c-format
 msgid "Cannot directly attach CDROM %s"
 msgstr ""
 
-#: src/xend_internal.c:5327 src/xm_internal.c:1997
+#: src/xend_internal.c:5321 src/xm_internal.c:2018
 #, fuzzy, c-format
 msgid "unsupported network type %d"
 msgstr "тип тома хранилища не поддерживается: %d"
 
-#: src/xend_internal.c:5368
+#: src/xend_internal.c:5362 src/xm_internal.c:2006
 #, fuzzy, c-format
 msgid "network %s is not active"
 msgstr "сеть уже активна"
 
-#: src/xend_internal.c:5427 src/xend_internal.c:5475
+#: src/xend_internal.c:5421 src/xend_internal.c:5469
 msgid "managed PCI devices not supported with XenD"
 msgstr ""
 
-#: src/xend_internal.c:5582 src/xend_internal.c:5589 src/xend_internal.c:5596
+#: src/xend_internal.c:5576 src/xend_internal.c:5583 src/xend_internal.c:5590
 #, fuzzy, c-format
 msgid "unexpected lifecycle value %d"
 msgstr "непредвиденный узел значений"
 
-#: src/xend_internal.c:5617
+#: src/xend_internal.c:5611
 #, fuzzy
 msgid "no HVM domain loader"
 msgstr "список доменов узла"
 
-#: src/xend_internal.c:5853
+#: src/xend_internal.c:5847
 #, fuzzy
 msgid "hotplug of device type not supported"
 msgstr "ai_socktype не поддерживается"
@@ -8746,52 +8746,52 @@ msgstr ""
 msgid "can't retrieve config file for domain"
 msgstr ""
 
-#: src/xm_internal.c:2243 src/xm_internal.c:2252 src/xm_internal.c:2261
+#: src/xm_internal.c:2264 src/xm_internal.c:2273 src/xm_internal.c:2282
 #, fuzzy, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "непредвиденный узел dict"
 
-#: src/xm_internal.c:2542
+#: src/xm_internal.c:2563
 msgid "can't retrieve config filename for domain to overwrite"
 msgstr ""
 
-#: src/xm_internal.c:2548
+#: src/xm_internal.c:2569
 msgid "can't retrieve config entry for domain to overwrite"
 msgstr ""
 
-#: src/xm_internal.c:2559 src/xm_internal.c:2566
+#: src/xm_internal.c:2580 src/xm_internal.c:2587
 #, fuzzy
 msgid "failed to remove old domain from config map"
 msgstr "Ошибка восстановления домена из %s"
 
-#: src/xm_internal.c:2575
+#: src/xm_internal.c:2596
 msgid "config file name is too long"
 msgstr "имя файла конфигурации слишком длинное"
 
-#: src/xm_internal.c:2593
+#: src/xm_internal.c:2614
 msgid "unable to get current time"
 msgstr "не удается получить текущее время"
 
-#: src/xm_internal.c:2602 src/xm_internal.c:2609
+#: src/xm_internal.c:2623 src/xm_internal.c:2630
 #, fuzzy
 msgid "unable to store config file handle"
 msgstr "ошибка чтения файла конфигурации %s"
 
-#: src/xm_internal.c:2840 src/xm_internal.c:2941
+#: src/xm_internal.c:2861 src/xm_internal.c:2962
 msgid "unknown device"
 msgstr "неизвестное устройство"
 
-#: src/xm_internal.c:2999
+#: src/xm_internal.c:3020
 #, c-format
 msgid "cannot check link %s points to config %s"
 msgstr ""
 
-#: src/xm_internal.c:3028
+#: src/xm_internal.c:3049
 #, fuzzy, c-format
 msgid "failed to create link %s to %s"
 msgstr "не удалось создать файл журнала %s: %s"
 
-#: src/xm_internal.c:3036
+#: src/xm_internal.c:3057
 #, fuzzy, c-format
 msgid "failed to remove link %s"
 msgstr "не удалось создать файл журнала %s: %s"

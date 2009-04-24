@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.ml\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-04-24 12:05+0200\n"
+"POT-Creation-Date: 2009-04-24 15:38+0200\n"
 "PO-Revision-Date: 2008-10-27 17:25+0530\n"
 "Last-Translator: \n"
 "Language-Team:  <en@li.org>\n"
@@ -243,7 +243,7 @@ msgstr "struct qemud_server-നുള്ള മെമ്മറി ലഭ്യ�
 
 #: qemud/qemud.c:806 qemud/qemud.c:1285 src/domain_conf.c:522
 #: src/network_conf.c:170 src/node_device_conf.c:137 src/openvz_conf.c:453
-#: src/qemu_driver.c:430 src/remote_internal.c:908 src/remote_internal.c:5780
+#: src/qemu_driver.c:430 src/remote_internal.c:908 src/remote_internal.c:5833
 #: src/storage_conf.c:1304 src/test.c:235 src/test.c:363
 #, fuzzy
 msgid "cannot initialize mutex"
@@ -609,7 +609,7 @@ msgstr "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
 msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 
-#: qemud/remote.c:2600 src/remote_internal.c:5111
+#: qemud/remote.c:2600 src/remote_internal.c:5164
 #, c-format
 msgid "Cannot resolve address %d: %s"
 msgstr "Cannot resolve address %d: %s"
@@ -656,7 +656,7 @@ msgstr "cannot list SASL mechanisms %d (%s)"
 msgid "cannot allocate mechlist"
 msgstr "cannot allocate mechlist"
 
-#: qemud/remote.c:2793 src/remote_internal.c:5607
+#: qemud/remote.c:2793 src/remote_internal.c:5660
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr "cannot query SASL ssf on connection %d (%s)"
@@ -782,12 +782,12 @@ msgstr "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"
 
 #: qemud/remote.c:4120 qemud/remote.c:4150 qemud/remote.c:4191
 #: qemud/remote.c:4219 qemud/remote.c:4261 qemud/remote.c:4287
-#: qemud/remote.c:4313
+#: qemud/remote.c:4313 qemud/remote.c:4361
 #, fuzzy
 msgid "node_device not found"
 msgstr "ഡിവൈസ് ലഭ്യമല്ല: %s (%s)"
 
-#: qemud/remote.c:4341
+#: qemud/remote.c:4389
 #, fuzzy
 msgid "unexpected async event method call"
 msgstr "അപ്രതീക്ഷിതമായ dict നോഡ്"
@@ -1372,12 +1372,12 @@ msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ �
 msgid "unexpected char type %d"
 msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ രീതി %d"
 
-#: src/domain_conf.c:3176 src/xend_internal.c:5498
+#: src/domain_conf.c:3176 src/xend_internal.c:5492
 #, fuzzy, c-format
 msgid "unexpected sound model %d"
 msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ രീതി %d"
 
-#: src/domain_conf.c:3196 src/xend_internal.c:5520
+#: src/domain_conf.c:3196 src/xend_internal.c:5514
 #, fuzzy, c-format
 msgid "unexpected input type %d"
 msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ രീതി %d"
@@ -1488,51 +1488,51 @@ msgstr "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s"
 msgid "could not parse connection URI"
 msgstr "URI കണക്ഷന്‍ പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമായില്ല"
 
-#: src/libvirt.c:2050
+#: src/libvirt.c:2054
 #, fuzzy
 msgid "cannot get working directory"
 msgstr "ലോഗ് ഡയറക്ടറി %s ഉണ്ടാക്കുവാന്‍ സാധ്യമല്ല: %s"
 
-#: src/libvirt.c:2057 src/libvirt.c:2133
+#: src/libvirt.c:2061 src/libvirt.c:2137
 #, fuzzy
 msgid "path too long"
 msgstr "kernel path too long"
 
-#: src/libvirt.c:2126
+#: src/libvirt.c:2130
 #, fuzzy
 msgid "cannot get current directory"
 msgstr "പൈപ്പ് ഉണ്ടാക്കുവാന്‍ സാധ്യമല്ല: %s"
 
-#: src/libvirt.c:2626
+#: src/libvirt.c:2630
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr ""
 
-#: src/libvirt.c:2767
+#: src/libvirt.c:2771
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare യുആര്‍ഐ സജ്ജമാക്കിയില്ല"
 
-#: src/libvirt.c:2796
+#: src/libvirt.c:2800
 #, fuzzy
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare യുആര്‍ഐ സജ്ജമാക്കിയില്ല"
 
-#: src/libvirt.c:3521
+#: src/libvirt.c:3525
 msgid "path is NULL"
 msgstr "path is NULL"
 
-#: src/libvirt.c:3527
+#: src/libvirt.c:3531
 msgid "flags must be zero"
 msgstr "flags must be zero"
 
-#: src/libvirt.c:3534
+#: src/libvirt.c:3538
 msgid "buffer is NULL"
 msgstr "buffer is NULL"
 
-#: src/libvirt.c:3633
+#: src/libvirt.c:3637
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL"
 msgstr "flags parameter must be VIR_MEMORY_VIRTUAL"
 
-#: src/libvirt.c:3640
+#: src/libvirt.c:3644
 msgid "buffer is NULL but size is non-zero"
 msgstr "buffer is NULL but size is non-zero"
 
@@ -3548,7 +3548,7 @@ msgstr ""
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: for 'ext' transport, command is required"
 
-#: src/remote_internal.c:538 src/xend_internal.c:814
+#: src/remote_internal.c:538 src/xend_internal.c:808
 #, fuzzy, c-format
 msgid "unable to resolve hostname '%s': %s"
 msgstr "tty %s തുറക്കുവാന്‍ സാധ്യമായില്ല: %s\n"
@@ -3853,214 +3853,214 @@ msgstr "ഒരുപാടു് സ്റ്റോറേജ് വോള്യ�
 msgid "too many capability names received"
 msgstr "ഒരുപാടു് സ്റ്റോറേജ് വോള്യമുകള്‍ ലഭിച്ചിരിക്കുന്നു"
 
-#: src/remote_internal.c:5030
+#: src/remote_internal.c:5083
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "അപരിചിതമായ ഓഥന്റിക്കേഷന്‍ തരം %s"
 
-#: src/remote_internal.c:5040
+#: src/remote_internal.c:5093
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr "ആവശ്യപ്പെട്ട ഓഥന്റിക്കേഷന്‍ തരം %s നിഷേധിച്ചു"
 
-#: src/remote_internal.c:5081
+#: src/remote_internal.c:5134
 #, c-format
 msgid "unsupported authentication type %d"
 msgstr "പിന്തുണയില്ലാത്ത ഓഥന്റിക്കേഷന്‍ തരം %d"
 
-#: src/remote_internal.c:5326
+#: src/remote_internal.c:5379
 #, c-format
 msgid "failed to initialize SASL library: %d (%s)"
 msgstr "SASL ലൈബ്രറി ആരംഭിക്കുന്നതില്‍ പരാജയം: %d (%s)"
 
-#: src/remote_internal.c:5335
+#: src/remote_internal.c:5388
 #, fuzzy
 msgid "failed to get sock address"
 msgstr "സോക്ക് വിലാസം %d (%s) ലഭിക്കുന്നതില്‍ പരാജയം "
 
-#: src/remote_internal.c:5345
+#: src/remote_internal.c:5398
 #, fuzzy
 msgid "failed to get peer address"
 msgstr "പിയര്‍ വിലാസം %d (%s) ലഭ്യമാക്കുന്നതില്‍ പിശക്"
 
-#: src/remote_internal.c:5370
+#: src/remote_internal.c:5423
 #, c-format
 msgid "Failed to create SASL client context: %d (%s)"
 msgstr "Failed to create SASL client context: %d (%s)"
 
-#: src/remote_internal.c:5383
+#: src/remote_internal.c:5436
 msgid "invalid cipher size for TLS session"
 msgstr "TLS സെഷനുള്ള തെറ്റായ സിഫര്‍ വ്യാപ്തി"
 
-#: src/remote_internal.c:5393
+#: src/remote_internal.c:5446
 #, c-format
 msgid "cannot set external SSF %d (%s)"
 msgstr "എക്സ്റ്റേര്‍ണല്‍ SSF %d (%s) ക്രമികരിക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/remote_internal.c:5412
+#: src/remote_internal.c:5465
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "cannot set security props %d (%s)"
 
-#: src/remote_internal.c:5431
+#: src/remote_internal.c:5484
 #, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "SASL mechanism %s not supported by server"
 
-#: src/remote_internal.c:5450
+#: src/remote_internal.c:5503
 #, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
 msgstr "Failed to start SASL negotiation: %d (%s)"
 
-#: src/remote_internal.c:5468 src/remote_internal.c:5546
+#: src/remote_internal.c:5521 src/remote_internal.c:5599
 msgid "Failed to make auth credentials"
 msgstr "Failed to make auth credentials"
 
-#: src/remote_internal.c:5492
+#: src/remote_internal.c:5545
 #, c-format
 msgid "SASL negotiation data too long: %d bytes"
 msgstr "SASL negotiation data too long: %d bytes"
 
-#: src/remote_internal.c:5532
+#: src/remote_internal.c:5585
 #, c-format
 msgid "Failed SASL step: %d (%s)"
 msgstr "Failed SASL step: %d (%s)"
 
-#: src/remote_internal.c:5616
+#: src/remote_internal.c:5669
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr "negotiation SSF %d was not strong enough"
 
-#: src/remote_internal.c:5671
+#: src/remote_internal.c:5724
 msgid "Failed to collect auth credentials"
 msgstr "Failed to collect auth credentials"
 
-#: src/remote_internal.c:5705
+#: src/remote_internal.c:5758
 msgid "no event support"
 msgstr ""
 
-#: src/remote_internal.c:5710
+#: src/remote_internal.c:5763
 msgid "adding cb to list"
 msgstr ""
 
-#: src/remote_internal.c:5739
+#: src/remote_internal.c:5792
 msgid "removing cb fron list"
 msgstr ""
 
-#: src/remote_internal.c:5801
+#: src/remote_internal.c:5854
 msgid "xdr_remote_message_header failed"
 msgstr "xdr_remote_message_header പരാജയപ്പെട്ടു"
 
-#: src/remote_internal.c:5807
+#: src/remote_internal.c:5860
 msgid "marshalling args"
 msgstr "marshalling args"
 
-#: src/remote_internal.c:5824
+#: src/remote_internal.c:5877
 #, fuzzy
 msgid "xdr_u_int (length word)"
 msgstr "xdr_int (length word)"
 
-#: src/remote_internal.c:5870
+#: src/remote_internal.c:5923
 #, fuzzy
 msgid "cannot send data"
 msgstr "ഡൊമെയിന്‍ ഡേറ്റാ സൂക്ഷിക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/remote_internal.c:5901
+#: src/remote_internal.c:5954
 #, fuzzy, c-format
 msgid "failed to read from TLS socket %s"
 msgstr "സോക്കറ്റ് %d വായിക്കുന്നതില്‍ പരാജയം\n"
 
-#: src/remote_internal.c:5906 src/remote_internal.c:5924
+#: src/remote_internal.c:5959 src/remote_internal.c:5977
 #, fuzzy
 msgid "server closed connection"
 msgstr "റീഡ്-ഒണ്‍ലി കണക്ഷന്‍ "
 
-#: src/remote_internal.c:5920
+#: src/remote_internal.c:5973
 #, fuzzy
 msgid "cannot recv data"
 msgstr "മെറ്റാഡേറ്റാ എഴുതുവാന്‍ സാധ്യമല്ല"
 
-#: src/remote_internal.c:5953
+#: src/remote_internal.c:6006
 #, fuzzy, c-format
 msgid "failed to encode SASL data: %s"
 msgstr "'%s' ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
 
-#: src/remote_internal.c:6051
+#: src/remote_internal.c:6104
 #, fuzzy, c-format
 msgid "failed to decode SASL data: %s"
 msgstr "വോള്യം %s നശിപ്പിക്കുന്നതിന്‍ പരാജയം"
 
-#: src/remote_internal.c:6125
+#: src/remote_internal.c:6178
 #, fuzzy
 msgid "xdr_u_int (length word, reply)"
 msgstr "xdr_int (length word, reply)"
 
-#: src/remote_internal.c:6132
+#: src/remote_internal.c:6185
 #, fuzzy
 msgid "packet received from server too small"
 msgstr "സര്‍വറില്‍ നിന്നും ലഭിച്ച പാക്കറ്റ് വളരെ വലുതാണു്"
 
-#: src/remote_internal.c:6141
+#: src/remote_internal.c:6194
 msgid "packet received from server too large"
 msgstr "സര്‍വറില്‍ നിന്നും ലഭിച്ച പാക്കറ്റ് വളരെ വലുതാണു്"
 
-#: src/remote_internal.c:6165
+#: src/remote_internal.c:6218
 msgid "invalid header in reply"
 msgstr "മറുപടിയില്‍ തെറ്റായ ഹെഡര്‍"
 
-#: src/remote_internal.c:6174
+#: src/remote_internal.c:6227
 #, c-format
 msgid "unknown program (received %x, expected %x)"
 msgstr "അപരിചിതമായ പ്രോഗ്രാം (%x ലഭിച്ചു, പ്രതീക്ഷിച്ചതു് %x)"
 
-#: src/remote_internal.c:6182
+#: src/remote_internal.c:6235
 #, c-format
 msgid "unknown protocol version (received %x, expected %x)"
 msgstr "അപരിചിതമായ സമ്പ്രദായ പതിപ്പു് (%x ലഭിച്ചു, പ്രതീക്ഷിച്ചതു് %x)"
 
-#: src/remote_internal.c:6199
+#: src/remote_internal.c:6252
 #, c-format
 msgid "got unexpected RPC call %d from server"
 msgstr ""
 
-#: src/remote_internal.c:6217
+#: src/remote_internal.c:6270
 #, c-format
 msgid "no call waiting for reply with serial %d"
 msgstr ""
 
-#: src/remote_internal.c:6227
+#: src/remote_internal.c:6280
 #, c-format
 msgid "unknown procedure (received %x, expected %x)"
 msgstr "അപരിചിതമായ പ്രക്രിയ (%x ലഭിച്ചു, പ്രതീക്ഷിച്ചതു് %x)"
 
-#: src/remote_internal.c:6241
+#: src/remote_internal.c:6294
 msgid "unmarshalling ret"
 msgstr "unmarshalling ret"
 
-#: src/remote_internal.c:6252
+#: src/remote_internal.c:6305
 msgid "unmarshalling remote_error"
 msgstr "unmarshalling remote_error"
 
-#: src/remote_internal.c:6262
+#: src/remote_internal.c:6315
 #, c-format
 msgid "unknown status (received %x)"
 msgstr "അപരിചിതമായ അവസ്ഥ (%x ലഭിച്ചു)"
 
-#: src/remote_internal.c:6368
+#: src/remote_internal.c:6421
 #, fuzzy
 msgid "poll on socket failed"
 msgstr "calloc പരാജയപ്പെട്ടു"
 
-#: src/remote_internal.c:6429
+#: src/remote_internal.c:6482
 msgid "received hangup / error event on socket"
 msgstr ""
 
-#: src/remote_internal.c:6531
+#: src/remote_internal.c:6584
 #, fuzzy
 msgid "failed to wait on condition"
 msgstr "നിര്‍ദ്ദേശത്തിനായി കാത്തിരിക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/remote_internal.c:6631
+#: src/remote_internal.c:6684
 msgid "remoteDomainProcessEvent: unmarshalling ret"
 msgstr ""
 
@@ -7617,476 +7617,476 @@ msgstr ""
 "       പുറത്ത് കടക്കുന്നതിനായി 'quit'\n"
 "\n"
 
-#: src/virterror.c:198
+#: src/virterror.c:205
 #, fuzzy
 msgid "Unknown failure"
 msgstr "അപരിചിതമായ പിശക്"
 
-#: src/virterror.c:512
+#: src/virterror.c:519
 msgid "warning"
 msgstr "മുന്നറിയിപ്പ്"
 
-#: src/virterror.c:515
+#: src/virterror.c:522
 msgid "error"
 msgstr "പിശക്"
 
-#: src/virterror.c:637
+#: src/virterror.c:648
 msgid "No error message provided"
 msgstr "പിശക് കാണിക്കുന്ന സന്ദേശം ലഭ്യമല്ല"
 
-#: src/virterror.c:700
+#: src/virterror.c:711
 #, c-format
 msgid "internal error %s"
 msgstr "ആന്തരിക പിശക് %s"
 
-#: src/virterror.c:702
+#: src/virterror.c:713
 msgid "internal error"
 msgstr "ആന്തരിക പിശക് "
 
-#: src/virterror.c:705
+#: src/virterror.c:716
 msgid "out of memory"
 msgstr "മെമ്മറി ലഭ്യമല്ല"
 
-#: src/virterror.c:709
+#: src/virterror.c:720
 msgid "this function is not supported by the hypervisor"
 msgstr "ഹൈപ്പര്‍വൈസറിന് പിന്തുണ ലഭ്യമല്ല"
 
-#: src/virterror.c:711
+#: src/virterror.c:722
 #, c-format
 msgid "this function is not supported by the hypervisor: %s"
 msgstr "ഹൈപ്പര്‍വൈസറ്‍ ഈ ഫംഗ്ഷന്‍ പിന്തുണയ്ക്കുന്നില്ല: %s"
 
-#: src/virterror.c:715
+#: src/virterror.c:726
 msgid "could not connect to hypervisor"
 msgstr "ഹൈപ്പര്‍‍വൈസറിലേക്ക് കണക്ട് ചെയ്യുവാന്‍ സാധ്യമായില്ല"
 
-#: src/virterror.c:717
+#: src/virterror.c:728
 #, c-format
 msgid "could not connect to %s"
 msgstr "%s-ലേക്ക് കണക്ട് ചെയ്യുവാന്‍ സാധ്യമായില്ല"
 
-#: src/virterror.c:721
+#: src/virterror.c:732
 msgid "invalid connection pointer in"
 msgstr "തെറ്റായ കണക്ഷന്‍ പോയിന്‍റര്‍"
 
-#: src/virterror.c:723
+#: src/virterror.c:734
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "%s-ല്‍ തെറ്റായ കണക്ഷന്‍ പോയിന്‍റര്‍"
 
-#: src/virterror.c:727
+#: src/virterror.c:738
 msgid "invalid domain pointer in"
 msgstr "തെറ്റായ ഡൊമെയിന്‍ പോയിന്‍റര്‍"
 
-#: src/virterror.c:729
+#: src/virterror.c:740
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "%s-ല്‍ തെറ്റായ ഡൊമെയിന്‍ പോയിന്‍റര്‍"
 
-#: src/virterror.c:733
+#: src/virterror.c:744
 msgid "invalid argument in"
 msgstr "തെറ്റായ ആര്‍ഗ്യുമെന്‍റ്"
 
-#: src/virterror.c:735
+#: src/virterror.c:746
 #, c-format
 msgid "invalid argument in %s"
 msgstr "%s-ല്‍ തെറ്റായ ആര്‍ഗ്യുമെന്‍റ്"
 
-#: src/virterror.c:739
+#: src/virterror.c:750
 #, c-format
 msgid "operation failed: %s"
 msgstr "പ്രക്രിയ പരാജയപ്പെട്ടു: %s"
 
-#: src/virterror.c:741
+#: src/virterror.c:752
 msgid "operation failed"
 msgstr "പ്രക്രിയ പരാജയപ്പെട്ടു"
 
-#: src/virterror.c:745
+#: src/virterror.c:756
 #, c-format
 msgid "GET operation failed: %s"
 msgstr "GET പ്രക്രിയ പരാജയപ്പെട്ടു: %s"
 
-#: src/virterror.c:747
+#: src/virterror.c:758
 msgid "GET operation failed"
 msgstr "GET പ്രക്രിയ പരാജയപ്പെട്ടു"
 
-#: src/virterror.c:751
+#: src/virterror.c:762
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "POST പ്രക്രിയ പരാജയപ്പെട്ടു: %s"
 
-#: src/virterror.c:753
+#: src/virterror.c:764
 msgid "POST operation failed"
 msgstr "POST പ്രക്രിയ പരാജയപ്പെട്ടു"
 
-#: src/virterror.c:756
+#: src/virterror.c:767
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr "അപരിചിതമായ HTTP പിശക് കോഡ് %d ലഭിച്ചു"
 
-#: src/virterror.c:760
+#: src/virterror.c:771
 #, c-format
 msgid "unknown host %s"
 msgstr "അപരിചിതമായ ഹോസ്റ്റ് %s"
 
-#: src/virterror.c:762
+#: src/virterror.c:773
 msgid "unknown host"
 msgstr "അപരിചിതമായ ഹോസ്റ്റ്"
 
-#: src/virterror.c:766
+#: src/virterror.c:777
 #, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr "S-Expr സീരിയലൈസ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/virterror.c:768
+#: src/virterror.c:779
 msgid "failed to serialize S-Expr"
 msgstr "S-Expr സീരിയലൈസ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/virterror.c:772
+#: src/virterror.c:783
 msgid "could not use Xen hypervisor entry"
 msgstr "Xen hypervisor എന്‍ട്രി ഉപയോഗിക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/virterror.c:774
+#: src/virterror.c:785
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "Xen hypervisor എന്‍ട്രി %s ഉപയോഗിക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/virterror.c:778
+#: src/virterror.c:789
 msgid "could not connect to Xen Store"
 msgstr "Xen സ്റ്റോറിലേക്ക് കണക്ട് ചെയ്യുവാന്‍ സാധ്യമായില്ല"
 
-#: src/virterror.c:780
+#: src/virterror.c:791
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr "Xen സ്റ്റോര്‍ %s-ലേക്ക് കണക്ട് ചെയ്യുവാന്‍ സാധ്യമായില്ല "
 
-#: src/virterror.c:783
+#: src/virterror.c:794
 #, fuzzy, c-format
 msgid "failed Xen syscall %s"
 msgstr "Xen syscall %s %d പരാജയപ്പെട്ടു"
 
-#: src/virterror.c:787
+#: src/virterror.c:798
 msgid "unknown OS type"
 msgstr "അപരിചിതമായ OS രീതി"
 
-#: src/virterror.c:789
+#: src/virterror.c:800
 #, c-format
 msgid "unknown OS type %s"
 msgstr "അപരിചിതമായ OS രീതി %s"
 
-#: src/virterror.c:792
+#: src/virterror.c:803
 msgid "missing kernel information"
 msgstr "കേര്‍ണല്‍ വിവരം ലഭ്യമല്ല"
 
-#: src/virterror.c:796
+#: src/virterror.c:807
 msgid "missing root device information"
 msgstr "റൂട്ട് ഡിവൈസ് വിവരം ലഭ്യമല്ല"
 
-#: src/virterror.c:798
+#: src/virterror.c:809
 #, c-format
 msgid "missing root device information in %s"
 msgstr "%s-ല്‍ റൂട്ട് ഡിവൈസ് വിവരം ലഭ്യമല്ല"
 
-#: src/virterror.c:802
+#: src/virterror.c:813
 msgid "missing source information for device"
 msgstr "ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്‍റെ വിവരം"
 
-#: src/virterror.c:804
+#: src/virterror.c:815
 #, c-format
 msgid "missing source information for device %s"
 msgstr "ഡിവൈസ് %s-നുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്‍റെ വിവരം"
 
-#: src/virterror.c:808
+#: src/virterror.c:819
 msgid "missing target information for device"
 msgstr "ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ലക്ഷ്യസ്ഥാനത്തിന്‍റെ വിവരം"
 
-#: src/virterror.c:810
+#: src/virterror.c:821
 #, c-format
 msgid "missing target information for device %s"
 msgstr "ഡിവൈസ് %s-നുള്ള ലഭ്യമല്ലാത്ത ലക്ഷ്യസ്ഥാനത്തിന്‍റെ വിവരം"
 
-#: src/virterror.c:814
+#: src/virterror.c:825
 msgid "missing domain name information"
 msgstr "ലഭ്യമല്ലാത്ത ഡൊമെയില്‍ പേരിന്‍റെ വിവരം"
 
-#: src/virterror.c:816
+#: src/virterror.c:827
 #, c-format
 msgid "missing domain name information in %s"
 msgstr "%s-ലുളള ലഭ്യമല്ലാത്ത ഡൊമെയില്‍ പേരിന്‍റെ വിവരം"
 
-#: src/virterror.c:820
+#: src/virterror.c:831
 msgid "missing operating system information"
 msgstr "ലഭ്യമല്ലാത്ത ഓപ്പറേറ്റിങ് സിസ്റ്റമിന്‍റെ വിവരം"
 
-#: src/virterror.c:822
+#: src/virterror.c:833
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "%s-നുളള ലഭ്യമല്ലാത്ത ഓപ്പറേറ്റിങ് സിസ്റ്റമിന്‍റെ വിവരം"
 
-#: src/virterror.c:826
+#: src/virterror.c:837
 msgid "missing devices information"
 msgstr "ലഭ്യമല്ലാത്ത ഡിവൈസുകളുടെ വിവരം"
 
-#: src/virterror.c:828
+#: src/virterror.c:839
 #, c-format
 msgid "missing devices information for %s"
 msgstr "%s-നുളള ലഭ്യമല്ലാത്ത ഡിവൈസുകളുടെ വിവരം"
 
-#: src/virterror.c:832
+#: src/virterror.c:843
 msgid "too many drivers registered"
 msgstr "അനവധി ഡ്രൈവറുകള്‍ രജിസ്ടര്‍ ചെയ്തിരിക്കുന്നു"
 
-#: src/virterror.c:834
+#: src/virterror.c:845
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "%s-ല്‍ അനവധി ഡ്രൈവറുകള്‍ രജിസ്ടര്‍ ചെയ്തിരിക്കുന്നു"
 
-#: src/virterror.c:838
+#: src/virterror.c:849
 msgid "library call failed, possibly not supported"
 msgstr "ലൈബ്രറി കോള്‍ പരാജയപ്പെട്ടിരിക്കുന്നു, പിന്തുണ ലഭ്യമല്ല"
 
-#: src/virterror.c:840
+#: src/virterror.c:851
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr "ലൈബ്രറി കോള്‍ %s പരാജയപ്പെട്ടിരിക്കുന്നു, പിന്തുണ ലഭ്യമല്ല"
 
-#: src/virterror.c:844
+#: src/virterror.c:855
 msgid "XML description not well formed or invalid"
 msgstr "XML വിവരണം തെറ്റാണ് അല്ലേല്‍ ശരിയായി ക്രമികരിച്ചിട്ടില്ല"
 
-#: src/virterror.c:846
+#: src/virterror.c:857
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
 msgstr "%s-നുളള XML വിവരണം തെറ്റാണ് അല്ലേല്‍ ശരിയായി ക്രമികരിച്ചിട്ടില്ല"
 
-#: src/virterror.c:850
+#: src/virterror.c:861
 msgid "this domain exists already"
 msgstr "ഈ ഡൊമെയിന്‍ നിലവിലുണ്ട്"
 
-#: src/virterror.c:852
+#: src/virterror.c:863
 #, c-format
 msgid "domain %s exists already"
 msgstr "%s ഡൊമെയിന്‍ നിലവിലുണ്ട്"
 
-#: src/virterror.c:856
+#: src/virterror.c:867
 msgid "operation forbidden for read only access"
 msgstr "റീഡ് ഒണ്‍ലിയ്ക്ക് മാത്രം പ്രക്രിയ അനുവദനീയമല്ല"
 
-#: src/virterror.c:858
+#: src/virterror.c:869
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr "റീഡ് ഒണ്‍ലിയ്ക്ക് മാത്രം പ്രക്രിയ %s അനുവദനീയമല്ല"
 
-#: src/virterror.c:862
+#: src/virterror.c:873
 msgid "failed to open configuration file for reading"
 msgstr "വായിക്കുന്നതിനായി കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ തുറക്കുന്നതില്‍ പരാജയം"
 
-#: src/virterror.c:864
+#: src/virterror.c:875
 #, c-format
 msgid "failed to open %s for reading"
 msgstr "വായിക്കുന്നതിനായി %s തുറക്കുന്നതില്‍ പരാജയം"
 
-#: src/virterror.c:868
+#: src/virterror.c:879
 msgid "failed to read configuration file"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ വായിക്കുന്നതില്‍ പരാജയം"
 
-#: src/virterror.c:870
+#: src/virterror.c:881
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ %s വായിക്കുന്നതില്‍ പരാജയം"
 
-#: src/virterror.c:874
+#: src/virterror.c:885
 msgid "failed to parse configuration file"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/virterror.c:876
+#: src/virterror.c:887
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ %s പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/virterror.c:880
+#: src/virterror.c:891
 msgid "configuration file syntax error"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയലില്‍ സിന്‍റ്റാക്സ് പിശക്"
 
-#: src/virterror.c:882
+#: src/virterror.c:893
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയലില്‍ സിന്‍റ്റാക്സ് പിശക്: %s"
 
-#: src/virterror.c:886
+#: src/virterror.c:897
 msgid "failed to write configuration file"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം"
 
-#: src/virterror.c:888
+#: src/virterror.c:899
 #, c-format
 msgid "failed to write configuration file: %s"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം: %s"
 
-#: src/virterror.c:892
+#: src/virterror.c:903
 msgid "parser error"
 msgstr "പാഴ്സറിലുളള പിശക് "
 
-#: src/virterror.c:898
+#: src/virterror.c:909
 msgid "invalid network pointer in"
 msgstr "തെറ്റായ നെറ്റ്‌വറ്‍ക്ക് പോയിന്‍റര്‍"
 
-#: src/virterror.c:900
+#: src/virterror.c:911
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "%s-ല്‍ തെറ്റായ നെറ്റ്‌വറ്‍ക്ക് പോയിന്‍റര്‍"
 
-#: src/virterror.c:904
+#: src/virterror.c:915
 msgid "this network exists already"
 msgstr "ഈ നെറ്റ്‌വറ്‍ക്ക് നിലവിലുണ്ട്"
 
-#: src/virterror.c:906
+#: src/virterror.c:917
 #, c-format
 msgid "network %s exists already"
 msgstr "%s നെറ്റ്‌വറ്‍ക്ക് നിലവിലുണ്ട്"
 
-#: src/virterror.c:910
+#: src/virterror.c:921
 msgid "system call error"
 msgstr "സിസ്റ്റം കോളില്‍ പിശക് "
 
-#: src/virterror.c:916
+#: src/virterror.c:927
 msgid "RPC error"
 msgstr "RPC പിശക്"
 
-#: src/virterror.c:922
+#: src/virterror.c:933
 msgid "GNUTLS call error"
 msgstr "GNUTLS കോളില്‍ പിശക് "
 
-#: src/virterror.c:928
+#: src/virterror.c:939
 msgid "Failed to find the network"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/virterror.c:930
+#: src/virterror.c:941
 #, c-format
 msgid "Failed to find the network: %s"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/virterror.c:934
+#: src/virterror.c:945
 msgid "Domain not found"
 msgstr "ഡൊമെയിന്‍ ലഭ്യമായില്ല"
 
-#: src/virterror.c:936
+#: src/virterror.c:947
 #, c-format
 msgid "Domain not found: %s"
 msgstr "ഡൊമെയിന്‍ ലഭ്യമായില്ല: %s"
 
-#: src/virterror.c:940
+#: src/virterror.c:951
 msgid "Network not found"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് ലഭ്യമായില്ല"
 
-#: src/virterror.c:942
+#: src/virterror.c:953
 #, c-format
 msgid "Network not found: %s"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് ലഭ്യമായില്ല: %s"
 
-#: src/virterror.c:946
+#: src/virterror.c:957
 msgid "invalid MAC address"
 msgstr "തെറ്റായ MAC adress "
 
-#: src/virterror.c:948
+#: src/virterror.c:959
 #, c-format
 msgid "invalid MAC address: %s"
 msgstr "തെറ്റായ MAC adress: %s"
 
-#: src/virterror.c:952
+#: src/virterror.c:963
 msgid "authentication failed"
 msgstr "തിരിച്ചറിയല്‍ പരാജയപ്പെട്ടു"
 
-#: src/virterror.c:954
+#: src/virterror.c:965
 #, c-format
 msgid "authentication failed: %s"
 msgstr "തിരിച്ചറിയല്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/virterror.c:958
+#: src/virterror.c:969
 msgid "Storage pool not found"
 msgstr "സ്റ്റോറേജ് പൂള്‍ ലഭ്യമായില്ല"
 
-#: src/virterror.c:960
+#: src/virterror.c:971
 #, c-format
 msgid "Storage pool not found: %s"
 msgstr "സ്റ്റോറേജ് പൂള്‍ ലഭ്യമായില്ല: %s"
 
-#: src/virterror.c:964
+#: src/virterror.c:975
 msgid "Storage volume not found"
 msgstr "സ്റ്റോറേജ് വോള്യം ലഭ്യമായില്ല"
 
-#: src/virterror.c:966
+#: src/virterror.c:977
 #, c-format
 msgid "Storage volume not found: %s"
 msgstr "സ്റ്റോറേജ് വോള്യം ലഭ്യമായില്ല: %s"
 
-#: src/virterror.c:970
+#: src/virterror.c:981
 msgid "invalid storage pool pointer in"
 msgstr "തെറ്റായ സ്റ്റോറേജ് പൂള്‍ പോയിന്റര്‍"
 
-#: src/virterror.c:972
+#: src/virterror.c:983
 #, c-format
 msgid "invalid storage pool pointer in %s"
 msgstr "%s-ല്‍ തെറ്റായ സ്റ്റോറേജ് പൂള്‍ പോയിന്റര്‍"
 
-#: src/virterror.c:976
+#: src/virterror.c:987
 msgid "invalid storage volume pointer in"
 msgstr "തെറ്റായ സ്റ്റോറേജ് വോള്യം പോയിന്റര്‍"
 
-#: src/virterror.c:978
+#: src/virterror.c:989
 #, c-format
 msgid "invalid storage volume pointer in %s"
 msgstr "%s-ല്‍ തെറ്റായ സ്റ്റോറേജ് വോള്യം പോയിന്റര്‍"
 
-#: src/virterror.c:982
+#: src/virterror.c:993
 msgid "Failed to find a storage driver"
 msgstr "സ്റ്റോറേജ് ഡ്രൈവര്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/virterror.c:984
+#: src/virterror.c:995
 #, c-format
 msgid "Failed to find a storage driver: %s"
 msgstr "ഒരു സ്റ്റോറേജ് ഡ്രൈവര്‍ ലഭ്യമാക്കുവാന്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/virterror.c:988
+#: src/virterror.c:999
 #, fuzzy
 msgid "Failed to find a node driver"
 msgstr "സ്റ്റോറേജ് ഡ്രൈവര്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/virterror.c:990
+#: src/virterror.c:1001
 #, fuzzy, c-format
 msgid "Failed to find a node driver: %s"
 msgstr "ഒരു സ്റ്റോറേജ് ഡ്രൈവര്‍ ലഭ്യമാക്കുവാന്‍ പരാജയപ്പെട്ടു: %s"
 
-#: src/virterror.c:994
+#: src/virterror.c:1005
 #, fuzzy
 msgid "invalid node device pointer"
 msgstr "തെറ്റായ സ്റ്റോറേജ് വോള്യം പോയിന്റര്‍"
 
-#: src/virterror.c:996
+#: src/virterror.c:1007
 #, fuzzy, c-format
 msgid "invalid node device pointer in %s"
 msgstr "%s-ല്‍ തെറ്റായ ഡൊമെയിന്‍ പോയിന്‍റര്‍"
 
-#: src/virterror.c:1000
+#: src/virterror.c:1011
 #, fuzzy
 msgid "Node device not found"
 msgstr "ഡിവൈസ് ലഭ്യമല്ല: %s (%s)"
 
-#: src/virterror.c:1002
+#: src/virterror.c:1013
 #, fuzzy, c-format
 msgid "Node device not found: %s"
 msgstr "ഡിവൈസ് ലഭ്യമല്ല: %s (%s)"
 
-#: src/virterror.c:1006
+#: src/virterror.c:1017
 #, fuzzy
 msgid "Security model not found"
 msgstr "സ്റ്റോറേജ് പൂള്‍ ലഭ്യമായില്ല"
 
-#: src/virterror.c:1008
+#: src/virterror.c:1019
 #, fuzzy, c-format
 msgid "Security model not found: %s"
 msgstr "സ്റ്റോറേജ് പൂള്‍ ലഭ്യമായില്ല: %s"
 
-#: src/virterror.c:1071
+#: src/virterror.c:1082
 #, fuzzy
 msgid "internal error: buffer too small"
 msgstr "ആര്‍ഗ്യുമെന്റ് ബഫര്‍ വളരെ ചെറുത്"
@@ -8167,219 +8167,219 @@ msgstr "%s ലഭ്യമാക്കുവാന്‍ സാധ്യമാ�
 msgid "cannot initialise mutex"
 msgstr "cannot initialize bridge support: %s"
 
-#: src/xend_internal.c:133
+#: src/xend_internal.c:127
 msgid "failed to create a socket"
 msgstr "ഒരു സോക്കറ്റ് ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/xend_internal.c:156
+#: src/xend_internal.c:150
 msgid "failed to connect to xend"
 msgstr "Xen-ലേക്ക് കണക്ട് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/xend_internal.c:203 src/xend_internal.c:206
+#: src/xend_internal.c:197 src/xend_internal.c:200
 msgid "failed to read from Xen Daemon"
 msgstr "Xen ഡെമണില്‍ നിന്നും വായിക്കുന്നതില്‍ പരാജയം"
 
-#: src/xend_internal.c:394
+#: src/xend_internal.c:388
 #, fuzzy, c-format
 msgid "%d status from xen daemon: %s:%s"
 msgstr "xend_post: xen ഡെമണില്‍ നിന്നും പിശക്: %s"
 
-#: src/xend_internal.c:445 src/xend_internal.c:448 src/xend_internal.c:456
+#: src/xend_internal.c:439 src/xend_internal.c:442 src/xend_internal.c:450
 #, c-format
 msgid "xend_post: error from xen daemon: %s"
 msgstr "xend_post: xen ഡെമണില്‍ നിന്നും പിശക്: %s"
 
-#: src/xend_internal.c:851
+#: src/xend_internal.c:845
 #, fuzzy, c-format
 msgid "unable to connect to '%s:%s'"
 msgstr "tty %s തുറക്കുവാന്‍ സാധ്യമായില്ല: %s\n"
 
-#: src/xend_internal.c:969
+#: src/xend_internal.c:963
 msgid "failed to urlencode the create S-Expr"
 msgstr "failed to urlencode the create S-Expr"
 
-#: src/xend_internal.c:1010
+#: src/xend_internal.c:1004
 msgid "domain information incomplete, missing domid"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, domid ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1016
+#: src/xend_internal.c:1010
 msgid "domain information incorrect domid not numeric"
 msgstr "ഡൊമെയിന്‍ വിവരം തെറ്റാണ്, domid അക്കത്തിലല്ല"
 
-#: src/xend_internal.c:1021 src/xend_internal.c:1068
+#: src/xend_internal.c:1015 src/xend_internal.c:1062
 msgid "domain information incomplete, missing uuid"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, uuid ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1060 src/xend_internal.c:2325 src/xend_internal.c:2332
+#: src/xend_internal.c:1054 src/xend_internal.c:2319 src/xend_internal.c:2326
 msgid "domain information incomplete, missing name"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, പേര് ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1149
+#: src/xend_internal.c:1143
 msgid "domain information incomplete, missing HVM loader"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, HVM ലോഡര്‍ ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1203
+#: src/xend_internal.c:1197
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, കേര്‍ണലും ബൂട്ട് ലോഡറും ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1267
+#: src/xend_internal.c:1261
 msgid "Unknown char device type"
 msgstr "അപരിചിതമായ ക്യാര്‍ ഡിവൈസ് തരം"
 
-#: src/xend_internal.c:1301 src/xend_internal.c:1341 src/xend_internal.c:1357
-#: src/xend_internal.c:1495 src/xend_internal.c:1523 src/xend_internal.c:1539
+#: src/xend_internal.c:1295 src/xend_internal.c:1335 src/xend_internal.c:1351
+#: src/xend_internal.c:1489 src/xend_internal.c:1517 src/xend_internal.c:1533
 msgid "malformed char device string"
 msgstr "തെറ്റായ ക്യാര്‍ ഡിവൈസ് സ്ട്രിങ്"
 
-#: src/xend_internal.c:1468
+#: src/xend_internal.c:1462
 #, fuzzy, c-format
 msgid "unknown chr device type '%s'"
 msgstr "അപരിചിതമായ ക്യാര്‍ ഡിവൈസ് തരം"
 
-#: src/xend_internal.c:1630
+#: src/xend_internal.c:1624
 msgid "domain information incomplete, vbd has no dev"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, vbd-യ്ക്ക് dev ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1641
+#: src/xend_internal.c:1635
 msgid "domain information incomplete, vbd has no src"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, vbd-യ്ക്ക് src ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1650
+#: src/xend_internal.c:1644
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd ഫയല്‍ നെയിം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല, ഡ്റൈവറിന്‍റെ പേര് ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1665
+#: src/xend_internal.c:1659
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd ഫയല്‍ നെയിം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല, ഡ്റൈവറിന്‍റെ ടൈപ്പ് ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1821
+#: src/xend_internal.c:1815
 #, fuzzy, c-format
 msgid "malformed mac address '%s'"
 msgstr "തെറ്റായ MAC adress: %s"
 
-#: src/xend_internal.c:1902
+#: src/xend_internal.c:1896
 #, fuzzy, c-format
 msgid "unexpected sound model %s"
 msgstr "അപ്രതീക്ഷിതമായ dict നോഡ്"
 
-#: src/xend_internal.c:2087
+#: src/xend_internal.c:2081
 #, fuzzy, c-format
 msgid "unknown graphics type '%s'"
 msgstr "അപരിചിതമായ auth രീതി '%s'"
 
-#: src/xend_internal.c:2210
+#: src/xend_internal.c:2204
 #, fuzzy
 msgid "missing PCI domain"
 msgstr "ലഭ്യമല്ലാത്ത തരത്തിലുള്ള ഡൊമെയിന്‍"
 
-#: src/xend_internal.c:2215
+#: src/xend_internal.c:2209
 #, fuzzy
 msgid "missing PCI bus"
 msgstr "\" ലഭ്യമല്ല"
 
-#: src/xend_internal.c:2220
+#: src/xend_internal.c:2214
 #, fuzzy
 msgid "missing PCI slot"
 msgstr "സോഴ്സ് ഹോസ്റ്റ് ലഭ്യമല്ല"
 
-#: src/xend_internal.c:2225
+#: src/xend_internal.c:2219
 #, fuzzy
 msgid "missing PCI func"
 msgstr "സോഴ്സ് ഹോസ്റ്റ് ലഭ്യമല്ല"
 
-#: src/xend_internal.c:2231
+#: src/xend_internal.c:2225
 #, fuzzy, c-format
 msgid "cannot parse PCI domain '%s'"
 msgstr "ഡിവൈസ് %s തുറക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/xend_internal.c:2236
+#: src/xend_internal.c:2230
 #, fuzzy, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "%s ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല: %s"
 
-#: src/xend_internal.c:2241
+#: src/xend_internal.c:2235
 #, fuzzy, c-format
 msgid "cannot parse PCI slot '%s'"
 msgstr "%s ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല: %s"
 
-#: src/xend_internal.c:2246
+#: src/xend_internal.c:2240
 #, fuzzy, c-format
 msgid "cannot parse PCI func '%s'"
 msgstr "ഡിവൈസ് %s തുറക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/xend_internal.c:2312
+#: src/xend_internal.c:2306
 msgid "domain information incomplete, missing id"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, id ലഭ്യമല്ല"
 
-#: src/xend_internal.c:2380
+#: src/xend_internal.c:2374
 #, fuzzy, c-format
 msgid "invalid CPU mask %s"
 msgstr "തെറ്റായ MAC adress: %s"
 
-#: src/xend_internal.c:2391 src/xend_internal.c:2401 src/xend_internal.c:2411
+#: src/xend_internal.c:2385 src/xend_internal.c:2395 src/xend_internal.c:2405
 #, fuzzy, c-format
 msgid "unknown lifecycle type %s"
 msgstr "അപരിചിതമായ OS രീതി %s"
 
-#: src/xend_internal.c:2795
+#: src/xend_internal.c:2789
 msgid "topology syntax error"
 msgstr "ടോപോളജിയുടെ സിന്രാക്സില്‍ പിശക്"
 
-#: src/xend_internal.c:2859
+#: src/xend_internal.c:2853
 msgid "failed to parse Xend domain information"
 msgstr "Xend ഡൊമെയിന്‍ വിവരം പാര്‍സ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:2980 src/xend_internal.c:3007 src/xend_internal.c:3035
-#: src/xend_internal.c:3064 src/xend_internal.c:3095 src/xend_internal.c:3170
-#: src/xend_internal.c:3207
+#: src/xend_internal.c:2974 src/xend_internal.c:3001 src/xend_internal.c:3029
+#: src/xend_internal.c:3058 src/xend_internal.c:3089 src/xend_internal.c:3164
+#: src/xend_internal.c:3201
 #, fuzzy, c-format
 msgid "Domain %s isn't running."
 msgstr "ഡൊമെയിന്‍ പ്രവര്‍ത്തിക്കുന്നില്ല"
 
-#: src/xend_internal.c:3365
+#: src/xend_internal.c:3359
 #, fuzzy
 msgid "xenDaemonDomainFetch failed to find this domain"
 msgstr "ഈ ഡൊമെയില്‍ ലഭ്യമാക്കുന്നതില്‍ xenDaemonDomainDumpXMLByName പരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:4093 src/xend_internal.c:4100
+#: src/xend_internal.c:4087 src/xend_internal.c:4094
 #, fuzzy
 msgid "unsupported device type"
 msgstr "പിന്തുണയില്ലാത്ത തരത്തിലുള്ള ഇന്‍പുട്ട് ഡിവൈസ് %s"
 
-#: src/xend_internal.c:4205
+#: src/xend_internal.c:4199
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr "ഈ ഡൊമെയില്‍ ലഭ്യമാക്കുന്നതില്‍ xenDaemonGetAutostartപരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:4246
+#: src/xend_internal.c:4240
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr "ഈ ഡൊമെയില്‍ ലഭ്യമാക്കുന്നതില്‍ xenDaemonSetAutostart പരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:4254
+#: src/xend_internal.c:4248
 msgid "unexpected value from on_xend_start"
 msgstr "on_xend_start നിന്നും അപ്രതീക്ഷിതമായ മൂല്ല്യം"
 
-#: src/xend_internal.c:4265
+#: src/xend_internal.c:4259
 msgid "no memory"
 msgstr "മെമ്മറി ലഭ്യമല്ല"
 
-#: src/xend_internal.c:4271
+#: src/xend_internal.c:4265
 msgid "sexpr2string failed"
 msgstr "sexpr2string പരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:4276
+#: src/xend_internal.c:4270
 msgid "Failed to redefine sexpr"
 msgstr "sexpr വീണ്ടും നിഷ്കര്‍ഷിക്കുന്നതില്‍ പരാജയം"
 
-#: src/xend_internal.c:4281
+#: src/xend_internal.c:4275
 msgid "on_xend_start not present in sexpr"
 msgstr "sexpr-ല്‍ on_xend_start ലഭ്യമല്ല"
 
-#: src/xend_internal.c:4312
+#: src/xend_internal.c:4306
 #, fuzzy, c-format
 msgid "unable to resolve name %s"
 msgstr "tty %s തുറക്കുവാന്‍ സാധ്യമായില്ല: %s\n"
 
-#: src/xend_internal.c:4348
+#: src/xend_internal.c:4342
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
@@ -8387,137 +8387,137 @@ msgstr ""
 "xenDaemonDomainMigrate: xenDaemonDomainMigrate: മാറ്റുന്ന സമയത്ത് Xen ഡൊമെയിനുകളുടെ "
 "പേരു് മാറ്റുന്നതിനുള്ള പിന്തുണ നല്‍കുന്നതല്ല"
 
-#: src/xend_internal.c:4358
+#: src/xend_internal.c:4352
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr "xenDaemonDomainMigrate: മാറ്റുന്ന സമയത്ത് Xen ബാന്‍ഡ് വിഡ്തിനുള്ള പിന്തുണ നല്‍കുന്നതല്ല"
 
-#: src/xend_internal.c:4370
+#: src/xend_internal.c:4364
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr "xenDaemonDomainMigrate: പിന്തുണ ലഭ്യമല്ലാത്ത ഫ്ലാഗ്"
 
-#: src/xend_internal.c:4383
+#: src/xend_internal.c:4377
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr "xenDaemonDomainMigrate: തെറ്റായ യുആര്‍ഐ"
 
-#: src/xend_internal.c:4388
+#: src/xend_internal.c:4382
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr "xenDaemonDomainMigrate: xenmigr:// മാറ്റങ്ങള്‍ മാത്രമേ Xen-ല്‍ പിന്തുണയ്ക്കുന്നുള്ളൂ."
 
-#: src/xend_internal.c:4395
+#: src/xend_internal.c:4389
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr "xenDaemonDomainMigrate: യുആര്‍ഐല്‍ ഒരു ഹോസ്റ്റ്നാമം നല്‍കേണ്ടതാണു്"
 
-#: src/xend_internal.c:4415
+#: src/xend_internal.c:4409
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr "xenDaemonDomainMigrate: തെറ്റായ പോര്‍ട്ട് നമ്പര്‍"
 
-#: src/xend_internal.c:4471
+#: src/xend_internal.c:4465
 msgid "failed to parse domain description"
 msgstr "ഡൊമെയിന്‍ വിവരം പാര്‍സ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:4477
+#: src/xend_internal.c:4471
 #, fuzzy
 msgid "failed to build sexpr"
 msgstr "പൂള്‍ %s ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:4487
+#: src/xend_internal.c:4481
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "നിഷ്ക്റിയമായ ഡൊമെയിന്‍ %s ഉണ്ടാക്കുന്നതില്‍ പരാജയം\n"
 
-#: src/xend_internal.c:4643 src/xend_internal.c:4719 src/xend_internal.c:4809
+#: src/xend_internal.c:4637 src/xend_internal.c:4713 src/xend_internal.c:4803
 msgid "unsupported in xendConfigVersion < 4"
 msgstr "xendConfigVersion < 4-ല്‍ പിന്തുണ ലഭ്യമല്ല"
 
-#: src/xend_internal.c:4655
+#: src/xend_internal.c:4649
 msgid "node information incomplete, missing scheduler name"
 msgstr "നോഡ് വിവരം പൂര്‍ണ്ണമല്ല, ഷെഡ്യൂളറിന്റെ പേര് ലഭ്യമല്ല"
 
-#: src/xend_internal.c:4661 src/xend_internal.c:4668
+#: src/xend_internal.c:4655 src/xend_internal.c:4662
 msgid "strdup failed"
 msgstr "strdup പരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:4673 src/xend_internal.c:4767 src/xend_internal.c:4879
+#: src/xend_internal.c:4667 src/xend_internal.c:4761 src/xend_internal.c:4873
 msgid "Unknown scheduler"
 msgstr "അപരിചിതമായ ഷെഡ്യൂളര്‍"
 
-#: src/xend_internal.c:4732 src/xend_internal.c:4822
+#: src/xend_internal.c:4726 src/xend_internal.c:4816
 msgid "Failed to get a scheduler name"
 msgstr "ഷെഡ്യൂളറിന്റെ നാമം ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/xend_internal.c:4745 src/xend_internal.c:4858
+#: src/xend_internal.c:4739 src/xend_internal.c:4852
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, cpu_weight ലഭ്യമല്ല"
 
-#: src/xend_internal.c:4750 src/xend_internal.c:4867
+#: src/xend_internal.c:4744 src/xend_internal.c:4861
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, cpu_cap ലഭ്യമല്ല"
 
-#: src/xend_internal.c:4925
+#: src/xend_internal.c:4919
 msgid "domainBlockPeek is not supported for dom0"
 msgstr "dom0-നു് domainBlockPeek-നുള്ള പിന്തുണ ലഭ്യമല്ല"
 
-#: src/xend_internal.c:4946
+#: src/xend_internal.c:4940
 #, c-format
 msgid "%s: invalid path"
 msgstr "%s: തെറ്റായ പാഥ്"
 
-#: src/xend_internal.c:4954
+#: src/xend_internal.c:4948
 #, fuzzy, c-format
 msgid "failed to open for reading: %s"
 msgstr "ലഭ്യമാക്കുവാന്‍ തുറക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s: %s"
 
-#: src/xend_internal.c:4966
+#: src/xend_internal.c:4960
 #, fuzzy, c-format
 msgid "failed to lseek or read from file: %s"
 msgstr "ഫയലില്‍ നിന്നും lseek അല്ലെങ്കില്‍ read ചെയ്യുന്നതില്‍ പരാജയം: %s: %s"
 
-#: src/xend_internal.c:5048 src/xend_internal.c:5094
+#: src/xend_internal.c:5042 src/xend_internal.c:5088
 #, fuzzy, c-format
 msgid "unexpected graphics type %d"
 msgstr "അപ്രതീക്ഷിതമായ ഡൊമെയിന്‍ രീതി %d"
 
-#: src/xend_internal.c:5137
+#: src/xend_internal.c:5131
 #, fuzzy
 msgid "unexpected chr device type"
 msgstr "അപ്രതീക്ഷിതമായ mime രീതി"
 
-#: src/xend_internal.c:5215
+#: src/xend_internal.c:5209
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr ""
 
-#: src/xend_internal.c:5227
+#: src/xend_internal.c:5221
 #, c-format
 msgid "Cannot directly attach CDROM %s"
 msgstr ""
 
-#: src/xend_internal.c:5327 src/xm_internal.c:1997
+#: src/xend_internal.c:5321 src/xm_internal.c:2018
 #, fuzzy, c-format
 msgid "unsupported network type %d"
 msgstr "പിന്തുണയില്ലാത്ത സ്റ്റോറേജ് വോള്യം തരം %d"
 
-#: src/xend_internal.c:5368
+#: src/xend_internal.c:5362 src/xm_internal.c:2006
 #, fuzzy, c-format
 msgid "network %s is not active"
 msgstr "നെറ്റ്‌വര്‍ക്കു് നിലിവില്‍ പ്രവര്‍ത്തനത്തിലാണ്"
 
-#: src/xend_internal.c:5427 src/xend_internal.c:5475
+#: src/xend_internal.c:5421 src/xend_internal.c:5469
 msgid "managed PCI devices not supported with XenD"
 msgstr ""
 
-#: src/xend_internal.c:5582 src/xend_internal.c:5589 src/xend_internal.c:5596
+#: src/xend_internal.c:5576 src/xend_internal.c:5583 src/xend_internal.c:5590
 #, fuzzy, c-format
 msgid "unexpected lifecycle value %d"
 msgstr "അപ്രതീക്ഷിതമായ value നോഡ്"
 
-#: src/xend_internal.c:5617
+#: src/xend_internal.c:5611
 msgid "no HVM domain loader"
 msgstr "HVM ഡൊമെയിന്‍ ലോഡര്‍ ലഭ്യമല്ല"
 
-#: src/xend_internal.c:5853
+#: src/xend_internal.c:5847
 #, fuzzy
 msgid "hotplug of device type not supported"
 msgstr "ai_socktype-നുള്ള പിന്തുണ ലഭ്യമല്ല"
@@ -8588,50 +8588,50 @@ msgstr "virHashLookup"
 msgid "can't retrieve config file for domain"
 msgstr "ഡൊമെയിനുള്ള കോണ്‍ഫിഗ് ഫയല്‍ ലഭ്യമല്ല"
 
-#: src/xm_internal.c:2243 src/xm_internal.c:2252 src/xm_internal.c:2261
+#: src/xm_internal.c:2264 src/xm_internal.c:2273 src/xm_internal.c:2282
 #, fuzzy, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "അപ്രതീക്ഷിതമായ dict നോഡ്"
 
-#: src/xm_internal.c:2542
+#: src/xm_internal.c:2563
 msgid "can't retrieve config filename for domain to overwrite"
 msgstr "തിരുത്തി എഴുതുന്നതിനായി ഡൊമെയിനുള്ള കോണ്‍ഫിഗ് ഫയല്‍നാമം ലഭ്യമല്ല"
 
-#: src/xm_internal.c:2548
+#: src/xm_internal.c:2569
 msgid "can't retrieve config entry for domain to overwrite"
 msgstr "തിരുത്തി എഴുതുന്നതിനായി ഡൊമെയിനുള്ള കോണ്‍ഫിഗ് എന്‍ട്രി ലഭ്യമല്ല"
 
-#: src/xm_internal.c:2559 src/xm_internal.c:2566
+#: src/xm_internal.c:2580 src/xm_internal.c:2587
 msgid "failed to remove old domain from config map"
 msgstr "കോണ്‍ഫിഗ് മാപ്പില്‍ നിന്നും പഴയ ഡൊമെയിന്‍ നീക്കം ചെയ്യുവാന്‍ പരാജയപ്പെട്ടു"
 
-#: src/xm_internal.c:2575
+#: src/xm_internal.c:2596
 msgid "config file name is too long"
 msgstr "ക്രമികരണ ഫയല്‍ നാമം വളരെ വലുതാണു്"
 
-#: src/xm_internal.c:2593
+#: src/xm_internal.c:2614
 msgid "unable to get current time"
 msgstr "നിലവിലുളള സമയം ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/xm_internal.c:2602 src/xm_internal.c:2609
+#: src/xm_internal.c:2623 src/xm_internal.c:2630
 msgid "unable to store config file handle"
 msgstr "കോണ്‍ഫിഗ് ഫയല്‍ ഹാഡില്‍ സൂക്ഷിക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/xm_internal.c:2840 src/xm_internal.c:2941
+#: src/xm_internal.c:2861 src/xm_internal.c:2962
 msgid "unknown device"
 msgstr "അപരിചിതമായ ഡിവൈസ്"
 
-#: src/xm_internal.c:2999
+#: src/xm_internal.c:3020
 #, c-format
 msgid "cannot check link %s points to config %s"
 msgstr ""
 
-#: src/xm_internal.c:3028
+#: src/xm_internal.c:3049
 #, fuzzy, c-format
 msgid "failed to create link %s to %s"
 msgstr "%s ലോഗ് ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം: %s"
 
-#: src/xm_internal.c:3036
+#: src/xm_internal.c:3057
 #, fuzzy, c-format
 msgid "failed to remove link %s"
 msgstr "%s ലോഗ് ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം: %s"

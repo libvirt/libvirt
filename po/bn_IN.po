@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-04-24 12:05+0200\n"
+"POT-Creation-Date: 2009-04-24 15:38+0200\n"
 "PO-Revision-Date: 2009-04-09 17:31+0530\n"
 "Last-Translator: Runa Bhattacharjee <runab@fedoraproject.org>\n"
 "Language-Team: Bengali INDIA <fedora-trans-bn_in@redhat.com>\n"
@@ -245,7 +245,7 @@ msgstr "struct qemud_server বরাদ্দ করতে ব্যর্থ"
 
 #: qemud/qemud.c:806 qemud/qemud.c:1285 src/domain_conf.c:522
 #: src/network_conf.c:170 src/node_device_conf.c:137 src/openvz_conf.c:453
-#: src/qemu_driver.c:430 src/remote_internal.c:908 src/remote_internal.c:5780
+#: src/qemu_driver.c:430 src/remote_internal.c:908 src/remote_internal.c:5833
 #: src/storage_conf.c:1304 src/test.c:235 src/test.c:363
 msgid "cannot initialize mutex"
 msgstr "mutex আরম্ভ করতে ব্যর্থ: %s"
@@ -597,7 +597,7 @@ msgstr "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
 msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 
-#: qemud/remote.c:2600 src/remote_internal.c:5111
+#: qemud/remote.c:2600 src/remote_internal.c:5164
 #, c-format
 msgid "Cannot resolve address %d: %s"
 msgstr "%d ঠিকানা মীমাংসা করতে ব্যর্থ: %s"
@@ -644,7 +644,7 @@ msgstr "SASL পদ্ধতি %d-র তালিকা নির্মাণ 
 msgid "cannot allocate mechlist"
 msgstr "mechlist বরাদ্দ করতে ব্যর্থ"
 
-#: qemud/remote.c:2793 src/remote_internal.c:5607
+#: qemud/remote.c:2793 src/remote_internal.c:5660
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr "%d সংযোগের মধ্যে SASL ssf অনুসন্ধান করতে ব্যর্থ (%s)"
@@ -770,11 +770,11 @@ msgstr "maxnames > REMOTE_NODE_DEVICE_NAME_LIST_MAX"
 
 #: qemud/remote.c:4120 qemud/remote.c:4150 qemud/remote.c:4191
 #: qemud/remote.c:4219 qemud/remote.c:4261 qemud/remote.c:4287
-#: qemud/remote.c:4313
+#: qemud/remote.c:4313 qemud/remote.c:4361
 msgid "node_device not found"
 msgstr "node_device পাওয়া যায়নি"
 
-#: qemud/remote.c:4341
+#: qemud/remote.c:4389
 msgid "unexpected async event method call"
 msgstr ""
 
@@ -1335,12 +1335,12 @@ msgstr "অপ্রত্যাশিত প্রকৃতির নেট %d"
 msgid "unexpected char type %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির char %d"
 
-#: src/domain_conf.c:3176 src/xend_internal.c:5498
+#: src/domain_conf.c:3176 src/xend_internal.c:5492
 #, c-format
 msgid "unexpected sound model %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির শব্দের মডেল %d"
 
-#: src/domain_conf.c:3196 src/xend_internal.c:5520
+#: src/domain_conf.c:3196 src/xend_internal.c:5514
 #, c-format
 msgid "unexpected input type %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির ইনপুট %d"
@@ -1455,47 +1455,47 @@ msgstr ""
 msgid "could not parse connection URI"
 msgstr "সংযোগের URI পার্স করতে ব্যর্থ"
 
-#: src/libvirt.c:2050
+#: src/libvirt.c:2054
 msgid "cannot get working directory"
 msgstr ""
 
-#: src/libvirt.c:2057 src/libvirt.c:2133
+#: src/libvirt.c:2061 src/libvirt.c:2137
 msgid "path too long"
 msgstr "পাথ অত্যাধিক লম্বা"
 
-#: src/libvirt.c:2126
+#: src/libvirt.c:2130
 msgid "cannot get current directory"
 msgstr "বর্তমান ডিরেক্টরি প্রাপ্ত করতে ব্যর্থ"
 
-#: src/libvirt.c:2626
+#: src/libvirt.c:2630
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr "নিরাপত্তার ফ্ল্যাগ সহ virDomainGetXMLDesc"
 
-#: src/libvirt.c:2767
+#: src/libvirt.c:2771
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare দ্বারা uri নির্ধারণ করা হয়নি"
 
-#: src/libvirt.c:2796
+#: src/libvirt.c:2800
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare2 দ্বারা uri নির্ধারণ করা হয়নি"
 
-#: src/libvirt.c:3521
+#: src/libvirt.c:3525
 msgid "path is NULL"
 msgstr "পাথের মান NULL"
 
-#: src/libvirt.c:3527
+#: src/libvirt.c:3531
 msgid "flags must be zero"
 msgstr "ফ্ল্যাগের মান শূণ্য হওয়া আবশ্যক"
 
-#: src/libvirt.c:3534
+#: src/libvirt.c:3538
 msgid "buffer is NULL"
 msgstr "বাফারের মান NULL"
 
-#: src/libvirt.c:3633
+#: src/libvirt.c:3637
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL"
 msgstr "ফ্ল্যাগের পরামিতি VIR_MEMORY_VIRTUAL হওয়া আবশ্যক"
 
-#: src/libvirt.c:3640
+#: src/libvirt.c:3644
 msgid "buffer is NULL but size is non-zero"
 msgstr "বাফারের মধ্যে NULL হলেও মাপ শূণ্য নয়"
 
@@ -3449,7 +3449,7 @@ msgstr ""
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: 'ext' সম্প্রচারের জন্য কমান্ড আবশ্যক"
 
-#: src/remote_internal.c:538 src/xend_internal.c:814
+#: src/remote_internal.c:538 src/xend_internal.c:808
 #, fuzzy, c-format
 msgid "unable to resolve hostname '%s': %s"
 msgstr "tty %s খুলতে ব্যর্থ: %s\n"
@@ -3746,206 +3746,206 @@ msgstr "অত্যাধিক সংখ্যক ড্রাইভার ন
 msgid "too many capability names received"
 msgstr "অত্যাধিক সংখ্যক ক্যারেক্টার ডিভাইস উপস্থিত"
 
-#: src/remote_internal.c:5030
+#: src/remote_internal.c:5083
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "অজানা প্রকৃতির অনুমোদন প্রণালী %s"
 
-#: src/remote_internal.c:5040
+#: src/remote_internal.c:5093
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr "অনুরোধ করা অনুমোদনের প্রণালী %s প্রত্যাখ্যাত"
 
-#: src/remote_internal.c:5081
+#: src/remote_internal.c:5134
 #, c-format
 msgid "unsupported authentication type %d"
 msgstr "অনুমোদন প্রণালী সমর্থিত নয় %d"
 
-#: src/remote_internal.c:5326
+#: src/remote_internal.c:5379
 #, c-format
 msgid "failed to initialize SASL library: %d (%s)"
 msgstr "SASL লাইব্রেরি আরম্ভ করতে ব্যর্থ : %d (%s)"
 
-#: src/remote_internal.c:5335
+#: src/remote_internal.c:5388
 #, fuzzy
 msgid "failed to get sock address"
 msgstr "sock ঠিকানা %d প্রাপ্ত করতে ব্যর্থ (%s)"
 
-#: src/remote_internal.c:5345
+#: src/remote_internal.c:5398
 #, fuzzy
 msgid "failed to get peer address"
 msgstr "সমতূল্য ঠিকানা %d প্রাপ্ত করতে ব্যর্থ (%s)"
 
-#: src/remote_internal.c:5370
+#: src/remote_internal.c:5423
 #, c-format
 msgid "Failed to create SASL client context: %d (%s)"
 msgstr "SASL ক্লায়েন্ট context নির্মাণ করতে ব্যর্থ: %d (%s)"
 
-#: src/remote_internal.c:5383
+#: src/remote_internal.c:5436
 msgid "invalid cipher size for TLS session"
 msgstr "TLS সেশানের ক্ষেত্রে সাইফারের মাপ বৈধ নয়"
 
-#: src/remote_internal.c:5393
+#: src/remote_internal.c:5446
 #, c-format
 msgid "cannot set external SSF %d (%s)"
 msgstr "বহিস্থিত SSF %d নির্ধারণ করতে ব্যর্থ (%s)"
 
-#: src/remote_internal.c:5412
+#: src/remote_internal.c:5465
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr ""
 
-#: src/remote_internal.c:5431
+#: src/remote_internal.c:5484
 #, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "SASL প্রণালী %s, সার্ভার দ্বারা সমর্থিত নয়"
 
-#: src/remote_internal.c:5450
+#: src/remote_internal.c:5503
 #, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
 msgstr "SASL মীমাংসা আরম্ভ করতে ব্যর্থ: %d (%s)"
 
-#: src/remote_internal.c:5468 src/remote_internal.c:5546
+#: src/remote_internal.c:5521 src/remote_internal.c:5599
 msgid "Failed to make auth credentials"
 msgstr ""
 
-#: src/remote_internal.c:5492
+#: src/remote_internal.c:5545
 #, c-format
 msgid "SASL negotiation data too long: %d bytes"
 msgstr ""
 
-#: src/remote_internal.c:5532
+#: src/remote_internal.c:5585
 #, c-format
 msgid "Failed SASL step: %d (%s)"
 msgstr ""
 
-#: src/remote_internal.c:5616
+#: src/remote_internal.c:5669
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr ""
 
-#: src/remote_internal.c:5671
+#: src/remote_internal.c:5724
 msgid "Failed to collect auth credentials"
 msgstr ""
 
-#: src/remote_internal.c:5705
+#: src/remote_internal.c:5758
 msgid "no event support"
 msgstr ""
 
-#: src/remote_internal.c:5710
+#: src/remote_internal.c:5763
 msgid "adding cb to list"
 msgstr "তালিকায় cb যোগ করা হচ্ছে"
 
-#: src/remote_internal.c:5739
+#: src/remote_internal.c:5792
 msgid "removing cb fron list"
 msgstr "তালিকা থেকে cb মুছে ফেলা হবে"
 
-#: src/remote_internal.c:5801
+#: src/remote_internal.c:5854
 msgid "xdr_remote_message_header failed"
 msgstr "xdr_remote_message_header বিফল"
 
-#: src/remote_internal.c:5807
+#: src/remote_internal.c:5860
 msgid "marshalling args"
 msgstr ""
 
-#: src/remote_internal.c:5824
+#: src/remote_internal.c:5877
 msgid "xdr_u_int (length word)"
 msgstr "xdr_u_int (length word)"
 
-#: src/remote_internal.c:5870
+#: src/remote_internal.c:5923
 msgid "cannot send data"
 msgstr "তথ্য পাঠানো সম্ভব নয়"
 
-#: src/remote_internal.c:5901
+#: src/remote_internal.c:5954
 #, c-format
 msgid "failed to read from TLS socket %s"
 msgstr "TLS সকেট %s থেকে পড়তে ব্যর্থ"
 
-#: src/remote_internal.c:5906 src/remote_internal.c:5924
+#: src/remote_internal.c:5959 src/remote_internal.c:5977
 msgid "server closed connection"
 msgstr "সার্ভারের সংযোগ বন্ধ করা হয়েছে"
 
-#: src/remote_internal.c:5920
+#: src/remote_internal.c:5973
 msgid "cannot recv data"
 msgstr "তথ্য প্রাপ্ত করা সম্ভব নয়"
 
-#: src/remote_internal.c:5953
+#: src/remote_internal.c:6006
 #, c-format
 msgid "failed to encode SASL data: %s"
 msgstr "SASL-র তথ্য এনকোড করতে ব্যর্থ: %s"
 
-#: src/remote_internal.c:6051
+#: src/remote_internal.c:6104
 #, c-format
 msgid "failed to decode SASL data: %s"
 msgstr "SASL তথ্য ডি-কোড করতে ব্যর্থ: %s"
 
-#: src/remote_internal.c:6125
+#: src/remote_internal.c:6178
 msgid "xdr_u_int (length word, reply)"
 msgstr "xdr_u_int (length word, reply)"
 
-#: src/remote_internal.c:6132
+#: src/remote_internal.c:6185
 msgid "packet received from server too small"
 msgstr "সার্ভার থেকে প্রাপ্ত প্যাকেট অত্যাধিক ছোট"
 
-#: src/remote_internal.c:6141
+#: src/remote_internal.c:6194
 msgid "packet received from server too large"
 msgstr "সার্ভার থেকে প্রাপ্ত প্যাকেট অত্যাধিক বড়"
 
-#: src/remote_internal.c:6165
+#: src/remote_internal.c:6218
 msgid "invalid header in reply"
 msgstr "উত্তরের মধ্যে অবৈধ হেডার"
 
-#: src/remote_internal.c:6174
+#: src/remote_internal.c:6227
 #, c-format
 msgid "unknown program (received %x, expected %x)"
 msgstr "অজানা প্রোগ্রাম (প্রাপ্ত %x, প্রত্যাশিত %x)"
 
-#: src/remote_internal.c:6182
+#: src/remote_internal.c:6235
 #, c-format
 msgid "unknown protocol version (received %x, expected %x)"
 msgstr "প্রোটোকলের সংস্করণ অজানা (প্রাপ্ত %x, প্রত্যাশিত %x)"
 
-#: src/remote_internal.c:6199
+#: src/remote_internal.c:6252
 #, c-format
 msgid "got unexpected RPC call %d from server"
 msgstr ""
 
-#: src/remote_internal.c:6217
+#: src/remote_internal.c:6270
 #, c-format
 msgid "no call waiting for reply with serial %d"
 msgstr ""
 
-#: src/remote_internal.c:6227
+#: src/remote_internal.c:6280
 #, c-format
 msgid "unknown procedure (received %x, expected %x)"
 msgstr "অজানা প্রণালী (প্রাপ্ত %x, প্রত্যাশিত %x)"
 
-#: src/remote_internal.c:6241
+#: src/remote_internal.c:6294
 msgid "unmarshalling ret"
 msgstr ""
 
-#: src/remote_internal.c:6252
+#: src/remote_internal.c:6305
 msgid "unmarshalling remote_error"
 msgstr ""
 
-#: src/remote_internal.c:6262
+#: src/remote_internal.c:6315
 #, c-format
 msgid "unknown status (received %x)"
 msgstr "অজানা অবস্থা (প্রাপ্ত %x)"
 
-#: src/remote_internal.c:6368
+#: src/remote_internal.c:6421
 msgid "poll on socket failed"
 msgstr "সকেটের পোল করতে ব্যর্থ"
 
-#: src/remote_internal.c:6429
+#: src/remote_internal.c:6482
 msgid "received hangup / error event on socket"
 msgstr ""
 
-#: src/remote_internal.c:6531
+#: src/remote_internal.c:6584
 msgid "failed to wait on condition"
 msgstr "চিহ্নিত অবস্থায় অপেক্ষা করতে ব্যর্থ"
 
-#: src/remote_internal.c:6631
+#: src/remote_internal.c:6684
 msgid "remoteDomainProcessEvent: unmarshalling ret"
 msgstr ""
 
@@ -7569,483 +7569,483 @@ msgstr ""
 "       প্রস্থান করতে 'quit' লিখুন\n"
 "\n"
 
-#: src/virterror.c:198
+#: src/virterror.c:205
 #, fuzzy
 msgid "Unknown failure"
 msgstr "অজানা ত্রুটি"
 
-#: src/virterror.c:512
+#: src/virterror.c:519
 msgid "warning"
 msgstr "সতর্কবার্তা"
 
-#: src/virterror.c:515
+#: src/virterror.c:522
 msgid "error"
 msgstr "ত্রুটি"
 
-#: src/virterror.c:637
+#: src/virterror.c:648
 msgid "No error message provided"
 msgstr "কোনো ত্রুটির বার্তা উপস্থিত নেই"
 
-#: src/virterror.c:700
+#: src/virterror.c:711
 #, c-format
 msgid "internal error %s"
 msgstr "অভ্যন্তরীণ ত্রুটি %s"
 
-#: src/virterror.c:702
+#: src/virterror.c:713
 msgid "internal error"
 msgstr "অভ্যন্তরীণ ত্রুটি"
 
-#: src/virterror.c:705
+#: src/virterror.c:716
 msgid "out of memory"
 msgstr "মেমরি অবশিষ্ট নেই"
 
-#: src/virterror.c:709
+#: src/virterror.c:720
 msgid "this function is not supported by the hypervisor"
 msgstr "হাইপার-ভাইসর দ্বারা এই কর্ম সমর্থিত নয়"
 
-#: src/virterror.c:711
+#: src/virterror.c:722
 #, c-format
 msgid "this function is not supported by the hypervisor: %s"
 msgstr "হাইপার-ভাইসর দ্বারা এই কর্ম সমর্থিত নয়: %s"
 
-#: src/virterror.c:715
+#: src/virterror.c:726
 msgid "could not connect to hypervisor"
 msgstr "হাইপার-ভাইসরের সাথে সংযোগ করতে ব্যর্থ"
 
-#: src/virterror.c:717
+#: src/virterror.c:728
 #, c-format
 msgid "could not connect to %s"
 msgstr "%s-র সাথে সংযোগ করতে ব্যর্থ"
 
-#: src/virterror.c:721
+#: src/virterror.c:732
 msgid "invalid connection pointer in"
 msgstr "এর মধ্যে সংযোগ সংক্রান্ত অবৈধ নির্দেশক"
 
-#: src/virterror.c:723
+#: src/virterror.c:734
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "%s-র মধ্যে সংযোগ সংক্রান্ত অবৈধ নির্দেশক"
 
-#: src/virterror.c:727
+#: src/virterror.c:738
 msgid "invalid domain pointer in"
 msgstr "অবৈধ ডোমেইন নির্দেশক উপস্থিত"
 
-#: src/virterror.c:729
+#: src/virterror.c:740
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "%s-র মধ্যে অবৈধ ডোমেইন নির্দেশক"
 
-#: src/virterror.c:733
+#: src/virterror.c:744
 msgid "invalid argument in"
 msgstr "অবৈধ আর্গুমেন্ট উপস্থিত"
 
-#: src/virterror.c:735
+#: src/virterror.c:746
 #, c-format
 msgid "invalid argument in %s"
 msgstr "%s-র মধ্যে অবৈধ আর্গুমেন্ট"
 
-#: src/virterror.c:739
+#: src/virterror.c:750
 #, c-format
 msgid "operation failed: %s"
 msgstr "কর্ম বিফল: %s"
 
-#: src/virterror.c:741
+#: src/virterror.c:752
 msgid "operation failed"
 msgstr "কর্ম বিফল"
 
-#: src/virterror.c:745
+#: src/virterror.c:756
 #, c-format
 msgid "GET operation failed: %s"
 msgstr "GET কর্ম বিফল: %s"
 
-#: src/virterror.c:747
+#: src/virterror.c:758
 msgid "GET operation failed"
 msgstr "GET কর্ম বিফল"
 
-#: src/virterror.c:751
+#: src/virterror.c:762
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "POST কর্ম বিফল: %s"
 
-#: src/virterror.c:753
+#: src/virterror.c:764
 msgid "POST operation failed"
 msgstr "POST কর্ম বিফল"
 
-#: src/virterror.c:756
+#: src/virterror.c:767
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr "অজানা HTTP ত্রুটির কোড %d প্রাপ্ত"
 
-#: src/virterror.c:760
+#: src/virterror.c:771
 #, c-format
 msgid "unknown host %s"
 msgstr "অজানা হোস্ট %s"
 
-#: src/virterror.c:762
+#: src/virterror.c:773
 msgid "unknown host"
 msgstr "অজানা হোস্ট"
 
-#: src/virterror.c:766
+#: src/virterror.c:777
 #, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr "S-Expr সিরিয়ালাইজ করতে ব্যর্থ: %s"
 
-#: src/virterror.c:768
+#: src/virterror.c:779
 msgid "failed to serialize S-Expr"
 msgstr "S-Expr সিরিয়ালাইজ করতে ব্যর্থ"
 
-#: src/virterror.c:772
+#: src/virterror.c:783
 msgid "could not use Xen hypervisor entry"
 msgstr "Xen হাইপার-ভাইসর এন্ট্রি ব্যবহার করতে ব্যর্থ"
 
-#: src/virterror.c:774
+#: src/virterror.c:785
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "Xen হাইপার-ভাইসর এন্ট্রি %s ব্যবহার করতে ব্যর্থ"
 
-#: src/virterror.c:778
+#: src/virterror.c:789
 msgid "could not connect to Xen Store"
 msgstr "Xen Store-র সাথে সংযোগ করতে ব্যর্থ"
 
-#: src/virterror.c:780
+#: src/virterror.c:791
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr "Xen Store %s-র সাথে সংযোগ করতে ব্যর্থ"
 
-#: src/virterror.c:783
+#: src/virterror.c:794
 #, fuzzy, c-format
 msgid "failed Xen syscall %s"
 msgstr "Xen syscall %s %d ব্যর্থ"
 
-#: src/virterror.c:787
+#: src/virterror.c:798
 msgid "unknown OS type"
 msgstr "অজানা OS-র প্রকৃতি"
 
-#: src/virterror.c:789
+#: src/virterror.c:800
 #, c-format
 msgid "unknown OS type %s"
 msgstr "অজানা OS প্রকৃতি %s"
 
-#: src/virterror.c:792
+#: src/virterror.c:803
 msgid "missing kernel information"
 msgstr "কার্নেল সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:796
+#: src/virterror.c:807
 msgid "missing root device information"
 msgstr "root ডিভাইস সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:798
+#: src/virterror.c:809
 #, c-format
 msgid "missing root device information in %s"
 msgstr "%s-র মধ্যে root ডিভাইস সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:802
+#: src/virterror.c:813
 msgid "missing source information for device"
 msgstr "ডিভাইসের উৎস সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:804
+#: src/virterror.c:815
 #, c-format
 msgid "missing source information for device %s"
 msgstr "ডিভাইস %s-র উৎস সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:808
+#: src/virterror.c:819
 msgid "missing target information for device"
 msgstr "ডিভাইসের গন্তব্য সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:810
+#: src/virterror.c:821
 #, c-format
 msgid "missing target information for device %s"
 msgstr "%s ডিভাইসের গন্তব্য সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:814
+#: src/virterror.c:825
 msgid "missing domain name information"
 msgstr "ডোমেইনের নাম সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:816
+#: src/virterror.c:827
 #, c-format
 msgid "missing domain name information in %s"
 msgstr "%s-র মধ্যে ডোমেইন সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:820
+#: src/virterror.c:831
 msgid "missing operating system information"
 msgstr "অপারেটিং সিস্টেম সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:822
+#: src/virterror.c:833
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "%s-র মধ্যে অপারেটিং সিস্টেম সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:826
+#: src/virterror.c:837
 msgid "missing devices information"
 msgstr "ডিভাইস সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:828
+#: src/virterror.c:839
 #, c-format
 msgid "missing devices information for %s"
 msgstr "%s-র জন্য ডিভাইস সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:832
+#: src/virterror.c:843
 msgid "too many drivers registered"
 msgstr "অত্যাধিক সংখ্যক ড্রাইভার নিবন্ধিত"
 
-#: src/virterror.c:834
+#: src/virterror.c:845
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "%s-র মধ্যে অত্যাধিক সংখ্যক ড্রাইভার নিবন্ধিত"
 
-#: src/virterror.c:838
+#: src/virterror.c:849
 msgid "library call failed, possibly not supported"
 msgstr "লাইব্রেরি কল বিফল, সম্ভবত সমর্থিত নয়"
 
-#: src/virterror.c:840
+#: src/virterror.c:851
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr "লাইব্রেরি কল %s বিফল, সম্ভবত সমর্থিত নয়"
 
-#: src/virterror.c:844
+#: src/virterror.c:855
 msgid "XML description not well formed or invalid"
 msgstr "XML বিবরণ সঠিকরূপে গঠিত নয় অথবা বৈধ নয়"
 
-#: src/virterror.c:846
+#: src/virterror.c:857
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
 msgstr "%s-র জন্য XML বিবরণ সঠিকরূপে গঠিত নয় অথবা বৈধ নয়"
 
-#: src/virterror.c:850
+#: src/virterror.c:861
 msgid "this domain exists already"
 msgstr "চিহ্নিত ডোমেইন বর্তমানে উপস্থিত রয়েছে"
 
-#: src/virterror.c:852
+#: src/virterror.c:863
 #, c-format
 msgid "domain %s exists already"
 msgstr "%s ডোমেইন বর্তমানে উপস্থিত"
 
-#: src/virterror.c:856
+#: src/virterror.c:867
 msgid "operation forbidden for read only access"
 msgstr "শুধুমাত্র পাঠযোগ্য অবস্থায় ব্যবহারের সময় কর্ম সঞ্চালন নিষিদ্ধ"
 
-#: src/virterror.c:858
+#: src/virterror.c:869
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr "শুধুমাত্র পাঠযোগ্য অবস্থায় ব্যবহারের সময় %s কর্ম সঞ্চালন নিষিদ্ধ"
 
-#: src/virterror.c:862
+#: src/virterror.c:873
 msgid "failed to open configuration file for reading"
 msgstr "পড়ার উদ্দেশ্যে কনফিগারেশন ফাইল খুলতে ব্যর্থ"
 
-#: src/virterror.c:864
+#: src/virterror.c:875
 #, c-format
 msgid "failed to open %s for reading"
 msgstr "পড়ার উদ্দেশ্যে %s খুলতে ব্যর্থ"
 
-#: src/virterror.c:868
+#: src/virterror.c:879
 msgid "failed to read configuration file"
 msgstr "কনফিগারেশন ফাইল পড়তে ব্যর্থ"
 
-#: src/virterror.c:870
+#: src/virterror.c:881
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "কনফিগারেশন ফাইল %s পড়তে ব্যর্থ"
 
-#: src/virterror.c:874
+#: src/virterror.c:885
 msgid "failed to parse configuration file"
 msgstr "কনফিগারেশন ফাইল পার্স করতে ব্যর্থ"
 
-#: src/virterror.c:876
+#: src/virterror.c:887
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "কনফিগারেশন ফাইল %s পার্স করতে ব্যর্থ"
 
-#: src/virterror.c:880
+#: src/virterror.c:891
 msgid "configuration file syntax error"
 msgstr "কনফিগারেশন ফাইলের মধ্যে সিন্টেক্স সংক্রান্ত সমস্যা"
 
-#: src/virterror.c:882
+#: src/virterror.c:893
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "কনফিগারেশন ফাইলের মধ্যে সিন্টেক্স সংক্রান্ত সমস্যা: %s"
 
-#: src/virterror.c:886
+#: src/virterror.c:897
 msgid "failed to write configuration file"
 msgstr "কনফিগারেশন ফাইলের মধ্যে লিখতে ব্যর্থ"
 
-#: src/virterror.c:888
+#: src/virterror.c:899
 #, c-format
 msgid "failed to write configuration file: %s"
 msgstr "কনফিগারেশন ফাইলের মধ্যে লিখতে ব্যর্থ: %s"
 
-#: src/virterror.c:892
+#: src/virterror.c:903
 msgid "parser error"
 msgstr "পার্সার সংক্রান্ত ত্রুটি"
 
-#: src/virterror.c:898
+#: src/virterror.c:909
 msgid "invalid network pointer in"
 msgstr "এর মধ্যে নেটওয়ার্ক সংক্রান্ত অবৈধ নির্দেশক"
 
-#: src/virterror.c:900
+#: src/virterror.c:911
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "%s-র মধ্যে নেটওয়ার্ক সংক্রান্ত অবৈধ নির্দেশক"
 
-#: src/virterror.c:904
+#: src/virterror.c:915
 msgid "this network exists already"
 msgstr "চিহ্নিত নেটওয়ার্ক বর্তমানে উপস্থিত রয়েছে"
 
-#: src/virterror.c:906
+#: src/virterror.c:917
 #, c-format
 msgid "network %s exists already"
 msgstr "%s নেটওয়ার্ক বর্তমানে উপস্থিত"
 
-#: src/virterror.c:910
+#: src/virterror.c:921
 msgid "system call error"
 msgstr "সিস্টেম কল সংক্রান্ত ত্রুটি"
 
-#: src/virterror.c:916
+#: src/virterror.c:927
 msgid "RPC error"
 msgstr "RPC সংক্রান্ত ত্রুটি"
 
-#: src/virterror.c:922
+#: src/virterror.c:933
 msgid "GNUTLS call error"
 msgstr "GNUTLS কল সংক্রান্ত ত্রুটি"
 
-#: src/virterror.c:928
+#: src/virterror.c:939
 msgid "Failed to find the network"
 msgstr "নেটওয়ার্ক অনুসন্ধান করতে ব্যর্থ"
 
-#: src/virterror.c:930
+#: src/virterror.c:941
 #, c-format
 msgid "Failed to find the network: %s"
 msgstr "নেটওয়ার্ক অনুসন্ধান করতে ব্যর্থ: %s"
 
-#: src/virterror.c:934
+#: src/virterror.c:945
 msgid "Domain not found"
 msgstr "ডোমেইন পাওয়া যায়নি"
 
-#: src/virterror.c:936
+#: src/virterror.c:947
 #, c-format
 msgid "Domain not found: %s"
 msgstr "ডোমেইন পাওয়া যায়নি: %s"
 
-#: src/virterror.c:940
+#: src/virterror.c:951
 msgid "Network not found"
 msgstr "নেটওয়ার্ক পাওয়া যায়নি"
 
-#: src/virterror.c:942
+#: src/virterror.c:953
 #, c-format
 msgid "Network not found: %s"
 msgstr "নেটওয়ার্ক পাওয়া যায়নি: %s"
 
-#: src/virterror.c:946
+#: src/virterror.c:957
 #, fuzzy
 msgid "invalid MAC address"
 msgstr "অবৈধ MAC ঠিকানা"
 
-#: src/virterror.c:948
+#: src/virterror.c:959
 #, fuzzy, c-format
 msgid "invalid MAC address: %s"
 msgstr "অবৈধ MAC ঠিকানা: %s"
 
-#: src/virterror.c:952
+#: src/virterror.c:963
 #, fuzzy
 msgid "authentication failed"
 msgstr "কর্ম বিফল"
 
-#: src/virterror.c:954
+#: src/virterror.c:965
 #, fuzzy, c-format
 msgid "authentication failed: %s"
 msgstr "কর্ম বিফল: %s"
 
-#: src/virterror.c:958
+#: src/virterror.c:969
 #, fuzzy
 msgid "Storage pool not found"
 msgstr "নেটওয়ার্ক পাওয়া যায়নি"
 
-#: src/virterror.c:960
+#: src/virterror.c:971
 #, fuzzy, c-format
 msgid "Storage pool not found: %s"
 msgstr "নেটওয়ার্ক পাওয়া যায়নি: %s"
 
-#: src/virterror.c:964
+#: src/virterror.c:975
 #, fuzzy
 msgid "Storage volume not found"
 msgstr "নেটওয়ার্ক পাওয়া যায়নি"
 
-#: src/virterror.c:966
+#: src/virterror.c:977
 #, fuzzy, c-format
 msgid "Storage volume not found: %s"
 msgstr "নেটওয়ার্ক পাওয়া যায়নি: %s"
 
-#: src/virterror.c:970
+#: src/virterror.c:981
 #, fuzzy
 msgid "invalid storage pool pointer in"
 msgstr "এর মধ্যে নেটওয়ার্ক সংক্রান্ত অবৈধ নির্দেশক"
 
-#: src/virterror.c:972
+#: src/virterror.c:983
 #, fuzzy, c-format
 msgid "invalid storage pool pointer in %s"
 msgstr "%s-র মধ্যে নেটওয়ার্ক সংক্রান্ত অবৈধ নির্দেশক"
 
-#: src/virterror.c:976
+#: src/virterror.c:987
 #, fuzzy
 msgid "invalid storage volume pointer in"
 msgstr "এর মধ্যে নেটওয়ার্ক সংক্রান্ত অবৈধ নির্দেশক"
 
-#: src/virterror.c:978
+#: src/virterror.c:989
 #, fuzzy, c-format
 msgid "invalid storage volume pointer in %s"
 msgstr "%s-র মধ্যে নেটওয়ার্ক সংক্রান্ত অবৈধ নির্দেশক"
 
-#: src/virterror.c:982
+#: src/virterror.c:993
 #, fuzzy
 msgid "Failed to find a storage driver"
 msgstr "নেটওয়ার্ক অনুসন্ধান করতে ব্যর্থ"
 
-#: src/virterror.c:984
+#: src/virterror.c:995
 #, fuzzy, c-format
 msgid "Failed to find a storage driver: %s"
 msgstr "নেটওয়ার্ক অনুসন্ধান করতে ব্যর্থ: %s"
 
-#: src/virterror.c:988
+#: src/virterror.c:999
 #, fuzzy
 msgid "Failed to find a node driver"
 msgstr "নেটওয়ার্ক অনুসন্ধান করতে ব্যর্থ"
 
-#: src/virterror.c:990
+#: src/virterror.c:1001
 #, fuzzy, c-format
 msgid "Failed to find a node driver: %s"
 msgstr "নেটওয়ার্ক অনুসন্ধান করতে ব্যর্থ: %s"
 
-#: src/virterror.c:994
+#: src/virterror.c:1005
 #, fuzzy
 msgid "invalid node device pointer"
 msgstr "এর মধ্যে নেটওয়ার্ক সংক্রান্ত অবৈধ নির্দেশক"
 
-#: src/virterror.c:996
+#: src/virterror.c:1007
 #, fuzzy, c-format
 msgid "invalid node device pointer in %s"
 msgstr "%s-র মধ্যে অবৈধ ডোমেইন নির্দেশক"
 
-#: src/virterror.c:1000
+#: src/virterror.c:1011
 #, fuzzy
 msgid "Node device not found"
 msgstr "ডিভাইস পাওয়া যায়নি: %s (%s)"
 
-#: src/virterror.c:1002
+#: src/virterror.c:1013
 #, fuzzy, c-format
 msgid "Node device not found: %s"
 msgstr "ডিভাইস পাওয়া যায়নি: %s (%s)"
 
-#: src/virterror.c:1006
+#: src/virterror.c:1017
 #, fuzzy
 msgid "Security model not found"
 msgstr "নেটওয়ার্ক পাওয়া যায়নি"
 
-#: src/virterror.c:1008
+#: src/virterror.c:1019
 #, fuzzy, c-format
 msgid "Security model not found: %s"
 msgstr "নেটওয়ার্ক পাওয়া যায়নি: %s"
 
-#: src/virterror.c:1071
+#: src/virterror.c:1082
 #, fuzzy
 msgid "internal error: buffer too small"
 msgstr "আর্গুমেন্টের বাফার অত্যন্ত ক্ষুদ্র"
@@ -8127,370 +8127,370 @@ msgstr "%s পড়তে ব্যর্থ: %s"
 msgid "cannot initialise mutex"
 msgstr "ব্রিজ সমর্থন আরম্ভ করতে ব্যর্থ: %s"
 
-#: src/xend_internal.c:133
+#: src/xend_internal.c:127
 #, fuzzy
 msgid "failed to create a socket"
 msgstr "নোড বরাদ্দ করতে ব্যর্থ"
 
-#: src/xend_internal.c:156
+#: src/xend_internal.c:150
 #, fuzzy
 msgid "failed to connect to xend"
 msgstr "Xen Store-র সাথে সংযোগ করতে ব্যর্থ"
 
-#: src/xend_internal.c:203 src/xend_internal.c:206
+#: src/xend_internal.c:197 src/xend_internal.c:200
 msgid "failed to read from Xen Daemon"
 msgstr "Xen Daemon থেকে পড়তে ব্যর্থ"
 
-#: src/xend_internal.c:394
+#: src/xend_internal.c:388
 #, fuzzy, c-format
 msgid "%d status from xen daemon: %s:%s"
 msgstr "ডেমন রূপে fork করতে ব্যর্থ: %s"
 
-#: src/xend_internal.c:445 src/xend_internal.c:448 src/xend_internal.c:456
+#: src/xend_internal.c:439 src/xend_internal.c:442 src/xend_internal.c:450
 #, c-format
 msgid "xend_post: error from xen daemon: %s"
 msgstr ""
 
-#: src/xend_internal.c:851
+#: src/xend_internal.c:845
 #, fuzzy, c-format
 msgid "unable to connect to '%s:%s'"
 msgstr "tty %s খুলতে ব্যর্থ: %s\n"
 
-#: src/xend_internal.c:969
+#: src/xend_internal.c:963
 msgid "failed to urlencode the create S-Expr"
 msgstr "create S-Expr-র urlencode করতে ব্যর্থ"
 
-#: src/xend_internal.c:1010
+#: src/xend_internal.c:1004
 msgid "domain information incomplete, missing domid"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, domid অনুপস্থিত"
 
-#: src/xend_internal.c:1016
+#: src/xend_internal.c:1010
 msgid "domain information incorrect domid not numeric"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, domid সংখ্যামূলক নয়"
 
-#: src/xend_internal.c:1021 src/xend_internal.c:1068
+#: src/xend_internal.c:1015 src/xend_internal.c:1062
 msgid "domain information incomplete, missing uuid"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, uuid অনুপস্থিত"
 
-#: src/xend_internal.c:1060 src/xend_internal.c:2325 src/xend_internal.c:2332
+#: src/xend_internal.c:1054 src/xend_internal.c:2319 src/xend_internal.c:2326
 msgid "domain information incomplete, missing name"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, নাম অনুপস্থিত"
 
-#: src/xend_internal.c:1149
+#: src/xend_internal.c:1143
 #, fuzzy
 msgid "domain information incomplete, missing HVM loader"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, নাম অনুপস্থিত"
 
-#: src/xend_internal.c:1203
+#: src/xend_internal.c:1197
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, কার্নেল ও বুট-লোডার অনুপস্থিত"
 
-#: src/xend_internal.c:1267
+#: src/xend_internal.c:1261
 #, fuzzy
 msgid "Unknown char device type"
 msgstr "উদ্দিষ্ট ডিভাইসের প্রকৃতি"
 
-#: src/xend_internal.c:1301 src/xend_internal.c:1341 src/xend_internal.c:1357
-#: src/xend_internal.c:1495 src/xend_internal.c:1523 src/xend_internal.c:1539
+#: src/xend_internal.c:1295 src/xend_internal.c:1335 src/xend_internal.c:1351
+#: src/xend_internal.c:1489 src/xend_internal.c:1517 src/xend_internal.c:1533
 msgid "malformed char device string"
 msgstr ""
 
-#: src/xend_internal.c:1468
+#: src/xend_internal.c:1462
 #, fuzzy, c-format
 msgid "unknown chr device type '%s'"
 msgstr "উদ্দিষ্ট ডিভাইসের প্রকৃতি"
 
-#: src/xend_internal.c:1630
+#: src/xend_internal.c:1624
 msgid "domain information incomplete, vbd has no dev"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, vbd-র মধ্যে dev অনুপস্থিত"
 
-#: src/xend_internal.c:1641
+#: src/xend_internal.c:1635
 msgid "domain information incomplete, vbd has no src"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, vbd-র মধ্যে src অনুপস্থিত"
 
-#: src/xend_internal.c:1650
+#: src/xend_internal.c:1644
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd ফাইলের নাম পার্স করতে ব্যর্থ, ড্রাইভারের নাম অনুপস্থিত"
 
-#: src/xend_internal.c:1665
+#: src/xend_internal.c:1659
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd ফাইলের নাম পার্স করতে ব্যর্থ, ড্রাইভারের ধরন অনুপস্থিত"
 
-#: src/xend_internal.c:1821
+#: src/xend_internal.c:1815
 #, fuzzy, c-format
 msgid "malformed mac address '%s'"
 msgstr "অবৈধ MAC ঠিকানা: %s"
 
-#: src/xend_internal.c:1902
+#: src/xend_internal.c:1896
 #, fuzzy, c-format
 msgid "unexpected sound model %s"
 msgstr "অপ্রত্যাশিত dict নোড"
 
-#: src/xend_internal.c:2087
+#: src/xend_internal.c:2081
 #, fuzzy, c-format
 msgid "unknown graphics type '%s'"
 msgstr "অজানা OS প্রকৃতি %s"
 
-#: src/xend_internal.c:2210
+#: src/xend_internal.c:2204
 #, fuzzy
 msgid "missing PCI domain"
 msgstr "ডোমেইনের ধরন সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/xend_internal.c:2215
+#: src/xend_internal.c:2209
 #, fuzzy
 msgid "missing PCI bus"
 msgstr "অনুপস্থিত \""
 
-#: src/xend_internal.c:2220
+#: src/xend_internal.c:2214
 #, fuzzy
 msgid "missing PCI slot"
 msgstr "অনুপস্থিত \""
 
-#: src/xend_internal.c:2225
+#: src/xend_internal.c:2219
 #, fuzzy
 msgid "missing PCI func"
 msgstr "অনুপস্থিত \""
 
-#: src/xend_internal.c:2231
+#: src/xend_internal.c:2225
 #, fuzzy, c-format
 msgid "cannot parse PCI domain '%s'"
 msgstr "ডোমেইন পুনরায় বুট করা হবে"
 
-#: src/xend_internal.c:2236
+#: src/xend_internal.c:2230
 #, fuzzy, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "%s পড়তে ব্যর্থ: %s"
 
-#: src/xend_internal.c:2241
+#: src/xend_internal.c:2235
 #, fuzzy, c-format
 msgid "cannot parse PCI slot '%s'"
 msgstr "%s পড়তে ব্যর্থ: %s"
 
-#: src/xend_internal.c:2246
+#: src/xend_internal.c:2240
 #, fuzzy, c-format
 msgid "cannot parse PCI func '%s'"
 msgstr "'%s' ফাইল বন্ধ করতে ব্যর্থ: %s"
 
-#: src/xend_internal.c:2312
+#: src/xend_internal.c:2306
 msgid "domain information incomplete, missing id"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, id অনুপস্থিত"
 
-#: src/xend_internal.c:2380
+#: src/xend_internal.c:2374
 #, fuzzy, c-format
 msgid "invalid CPU mask %s"
 msgstr "অবৈধ MAC ঠিকানা: %s"
 
-#: src/xend_internal.c:2391 src/xend_internal.c:2401 src/xend_internal.c:2411
+#: src/xend_internal.c:2385 src/xend_internal.c:2395 src/xend_internal.c:2405
 #, fuzzy, c-format
 msgid "unknown lifecycle type %s"
 msgstr "অজানা OS প্রকৃতি %s"
 
-#: src/xend_internal.c:2795
+#: src/xend_internal.c:2789
 #, fuzzy
 msgid "topology syntax error"
 msgstr "কনফিগারেশন ফাইলের মধ্যে সিন্টেক্স সংক্রান্ত সমস্যা"
 
-#: src/xend_internal.c:2859
+#: src/xend_internal.c:2853
 msgid "failed to parse Xend domain information"
 msgstr "Xend ডোমেইন সংক্রান্ত তথ্য পার্স করতে ব্যর্থ"
 
-#: src/xend_internal.c:2980 src/xend_internal.c:3007 src/xend_internal.c:3035
-#: src/xend_internal.c:3064 src/xend_internal.c:3095 src/xend_internal.c:3170
-#: src/xend_internal.c:3207
+#: src/xend_internal.c:2974 src/xend_internal.c:3001 src/xend_internal.c:3029
+#: src/xend_internal.c:3058 src/xend_internal.c:3089 src/xend_internal.c:3164
+#: src/xend_internal.c:3201
 #, fuzzy, c-format
 msgid "Domain %s isn't running."
 msgstr "ডোমেইন বর্তমানে সক্রিয়"
 
-#: src/xend_internal.c:3365
+#: src/xend_internal.c:3359
 msgid "xenDaemonDomainFetch failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4093 src/xend_internal.c:4100
+#: src/xend_internal.c:4087 src/xend_internal.c:4094
 #, fuzzy
 msgid "unsupported device type"
 msgstr "%s প্রকৃতির ইনপুট ডিভাইস সমর্থিত নয়"
 
-#: src/xend_internal.c:4205
+#: src/xend_internal.c:4199
 msgid "xenDaemonGetAutostart failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4246
+#: src/xend_internal.c:4240
 msgid "xenDaemonSetAutostart failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:4254
+#: src/xend_internal.c:4248
 #, fuzzy
 msgid "unexpected value from on_xend_start"
 msgstr "অপ্রত্যাশিত value নোড"
 
-#: src/xend_internal.c:4265
+#: src/xend_internal.c:4259
 #, fuzzy
 msgid "no memory"
 msgstr "নোডের মেমরি"
 
-#: src/xend_internal.c:4271
+#: src/xend_internal.c:4265
 #, fuzzy
 msgid "sexpr2string failed"
 msgstr "কর্ম বিফল"
 
-#: src/xend_internal.c:4276
+#: src/xend_internal.c:4270
 #, fuzzy
 msgid "Failed to redefine sexpr"
 msgstr "নেটওয়ার্ক %s-র ব্যাখ্যা মুছে ফেলতে ব্যর্থ"
 
-#: src/xend_internal.c:4281
+#: src/xend_internal.c:4275
 msgid "on_xend_start not present in sexpr"
 msgstr ""
 
-#: src/xend_internal.c:4312
+#: src/xend_internal.c:4306
 #, fuzzy, c-format
 msgid "unable to resolve name %s"
 msgstr "মোড '%s' পার্স করতে ব্যর্থ"
 
-#: src/xend_internal.c:4348
+#: src/xend_internal.c:4342
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:4358
+#: src/xend_internal.c:4352
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:4370
+#: src/xend_internal.c:4364
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr ""
 
-#: src/xend_internal.c:4383
+#: src/xend_internal.c:4377
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr ""
 
-#: src/xend_internal.c:4388
+#: src/xend_internal.c:4382
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
 
-#: src/xend_internal.c:4395
+#: src/xend_internal.c:4389
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr ""
 
-#: src/xend_internal.c:4415
+#: src/xend_internal.c:4409
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr ""
 
-#: src/xend_internal.c:4471
+#: src/xend_internal.c:4465
 #, fuzzy
 msgid "failed to parse domain description"
 msgstr "Xend ডোমেইন সংক্রান্ত তথ্য পার্স করতে ব্যর্থ"
 
-#: src/xend_internal.c:4477
+#: src/xend_internal.c:4471
 #, fuzzy
 msgid "failed to build sexpr"
 msgstr "ডোমেইন %s সাসপেন্ড অবস্থায় স্থাপন করতে ব্যর্থ"
 
-#: src/xend_internal.c:4487
+#: src/xend_internal.c:4481
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "নিষ্ক্রিয় ডোমেইন %s নির্মাণ করতে ব্যর্থ\n"
 
-#: src/xend_internal.c:4643 src/xend_internal.c:4719 src/xend_internal.c:4809
+#: src/xend_internal.c:4637 src/xend_internal.c:4713 src/xend_internal.c:4803
 msgid "unsupported in xendConfigVersion < 4"
 msgstr ""
 
-#: src/xend_internal.c:4655
+#: src/xend_internal.c:4649
 #, fuzzy
 msgid "node information incomplete, missing scheduler name"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, নাম অনুপস্থিত"
 
-#: src/xend_internal.c:4661 src/xend_internal.c:4668
+#: src/xend_internal.c:4655 src/xend_internal.c:4662
 msgid "strdup failed"
 msgstr ""
 
-#: src/xend_internal.c:4673 src/xend_internal.c:4767 src/xend_internal.c:4879
+#: src/xend_internal.c:4667 src/xend_internal.c:4761 src/xend_internal.c:4873
 #, fuzzy
 msgid "Unknown scheduler"
 msgstr "সময়নির্ধারণকারী"
 
-#: src/xend_internal.c:4732 src/xend_internal.c:4822
+#: src/xend_internal.c:4726 src/xend_internal.c:4816
 #, fuzzy
 msgid "Failed to get a scheduler name"
 msgstr "হোস্ট-নেম প্রাপ্ত করতে ব্যর্থ"
 
-#: src/xend_internal.c:4745 src/xend_internal.c:4858
+#: src/xend_internal.c:4739 src/xend_internal.c:4852
 #, fuzzy
 msgid "domain information incomplete, missing cpu_weight"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, uuid অনুপস্থিত"
 
-#: src/xend_internal.c:4750 src/xend_internal.c:4867
+#: src/xend_internal.c:4744 src/xend_internal.c:4861
 #, fuzzy
 msgid "domain information incomplete, missing cpu_cap"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, নাম অনুপস্থিত"
 
-#: src/xend_internal.c:4925
+#: src/xend_internal.c:4919
 msgid "domainBlockPeek is not supported for dom0"
 msgstr ""
 
-#: src/xend_internal.c:4946
+#: src/xend_internal.c:4940
 #, c-format
 msgid "%s: invalid path"
 msgstr ""
 
-#: src/xend_internal.c:4954
+#: src/xend_internal.c:4948
 #, fuzzy, c-format
 msgid "failed to open for reading: %s"
 msgstr "পড়ার উদ্দেশ্যে %s খুলতে ব্যর্থ"
 
-#: src/xend_internal.c:4966
+#: src/xend_internal.c:4960
 #, fuzzy, c-format
 msgid "failed to lseek or read from file: %s"
 msgstr "কনফিগারেশন ফাইল %s পড়তে ব্যর্থ"
 
-#: src/xend_internal.c:5048 src/xend_internal.c:5094
+#: src/xend_internal.c:5042 src/xend_internal.c:5088
 #, fuzzy, c-format
 msgid "unexpected graphics type %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির ডোমেইন %d"
 
-#: src/xend_internal.c:5137
+#: src/xend_internal.c:5131
 #, fuzzy
 msgid "unexpected chr device type"
 msgstr "অপ্রত্যাশিত mime প্রকৃতি"
 
-#: src/xend_internal.c:5215
+#: src/xend_internal.c:5209
 #, c-format
 msgid "Cannot directly attach floppy %s"
 msgstr ""
 
-#: src/xend_internal.c:5227
+#: src/xend_internal.c:5221
 #, c-format
 msgid "Cannot directly attach CDROM %s"
 msgstr ""
 
-#: src/xend_internal.c:5327 src/xm_internal.c:1997
+#: src/xend_internal.c:5321 src/xm_internal.c:2018
 #, fuzzy, c-format
 msgid "unsupported network type %d"
 msgstr "guest-র ধরন সমর্থিত নয়"
 
-#: src/xend_internal.c:5368
+#: src/xend_internal.c:5362 src/xm_internal.c:2006
 #, fuzzy, c-format
 msgid "network %s is not active"
 msgstr "নেটওয়ার্ক '%s' সক্রিয় নয়"
 
-#: src/xend_internal.c:5427 src/xend_internal.c:5475
+#: src/xend_internal.c:5421 src/xend_internal.c:5469
 msgid "managed PCI devices not supported with XenD"
 msgstr ""
 
-#: src/xend_internal.c:5582 src/xend_internal.c:5589 src/xend_internal.c:5596
+#: src/xend_internal.c:5576 src/xend_internal.c:5583 src/xend_internal.c:5590
 #, fuzzy, c-format
 msgid "unexpected lifecycle value %d"
 msgstr "অপ্রত্যাশিত value নোড"
 
-#: src/xend_internal.c:5617
+#: src/xend_internal.c:5611
 #, fuzzy
 msgid "no HVM domain loader"
 msgstr "নোডের ডোমেইন তালিকা"
 
-#: src/xend_internal.c:5853
+#: src/xend_internal.c:5847
 #, fuzzy
 msgid "hotplug of device type not supported"
 msgstr "ai_socktype সমর্থিত নয়"
@@ -8563,54 +8563,54 @@ msgstr ""
 msgid "can't retrieve config file for domain"
 msgstr ""
 
-#: src/xm_internal.c:2243 src/xm_internal.c:2252 src/xm_internal.c:2261
+#: src/xm_internal.c:2264 src/xm_internal.c:2273 src/xm_internal.c:2282
 #, fuzzy, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "অপ্রত্যাশিত dict নোড"
 
-#: src/xm_internal.c:2542
+#: src/xm_internal.c:2563
 msgid "can't retrieve config filename for domain to overwrite"
 msgstr ""
 
-#: src/xm_internal.c:2548
+#: src/xm_internal.c:2569
 msgid "can't retrieve config entry for domain to overwrite"
 msgstr ""
 
-#: src/xm_internal.c:2559 src/xm_internal.c:2566
+#: src/xm_internal.c:2580 src/xm_internal.c:2587
 #, fuzzy
 msgid "failed to remove old domain from config map"
 msgstr "%s থেকে ডোমেইন পুনরুদ্ধার করতে ব্যর্থ"
 
-#: src/xm_internal.c:2575
+#: src/xm_internal.c:2596
 msgid "config file name is too long"
 msgstr ""
 
-#: src/xm_internal.c:2593
+#: src/xm_internal.c:2614
 #, fuzzy
 msgid "unable to get current time"
 msgstr "বর্তমানMemorySize পরীক্ষা করতে ব্যর্থ"
 
-#: src/xm_internal.c:2602 src/xm_internal.c:2609
+#: src/xm_internal.c:2623 src/xm_internal.c:2630
 #, fuzzy
 msgid "unable to store config file handle"
 msgstr "কনফিগারেশন ফাইল %s পড়তে ব্যর্থ"
 
-#: src/xm_internal.c:2840 src/xm_internal.c:2941
+#: src/xm_internal.c:2861 src/xm_internal.c:2962
 #, fuzzy
 msgid "unknown device"
 msgstr "অজানা OS-র প্রকৃতি"
 
-#: src/xm_internal.c:2999
+#: src/xm_internal.c:3020
 #, c-format
 msgid "cannot check link %s points to config %s"
 msgstr ""
 
-#: src/xm_internal.c:3028
+#: src/xm_internal.c:3049
 #, fuzzy, c-format
 msgid "failed to create link %s to %s"
 msgstr "%s লগ-ফাইল নির্মাণ করতে ব্যর্থ: %s"
 
-#: src/xm_internal.c:3036
+#: src/xm_internal.c:3057
 #, fuzzy, c-format
 msgid "failed to remove link %s"
 msgstr "ডোমেইন %s পুনরারম্ভ করতে ব্যর্থ"
