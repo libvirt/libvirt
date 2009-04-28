@@ -24,7 +24,15 @@ AC_DEFUN([gl_COMPILER_FLAGS],
   [AC_MSG_CHECKING(whether compiler accepts $1)
    AC_SUBST(COMPILER_FLAGS)
    ac_save_CFLAGS="$CFLAGS"
-   CFLAGS="$CFLAGS $1"
+   dnl Some flags are dependant, so we set all previously checked
+   dnl flags when testing. Except for -Werror which we have to 
+   dnl check on its own, because some of our compiler flags cause
+   dnl warnings from the autoconf test program!
+   if test "$1" = "-Werror" ; then
+     CFLAGS="$CFLAGS $1"
+   else
+     CFLAGS="$CFLAGS $COMPILER_FLAGS $1"
+   fi
    AC_TRY_LINK([], [], has_option=yes, has_option=no,)
    echo 'int x;' >conftest.c
    $CC $CFLAGS -c conftest.c 2>conftest.err

@@ -4463,7 +4463,7 @@ cmdNodeListDevicesPrint(vshControl *ctl,
     }
 
     /* Print this device */
-    vshPrint(ctl, indentBuf);
+    vshPrint(ctl, "%s", indentBuf);
     vshPrint(ctl, "%s\n", devices[devid]);
 
 
@@ -4487,7 +4487,7 @@ cmdNodeListDevicesPrint(vshControl *ctl,
 
     /* If there is a child device, then print another blank line */
     if (nextlastdev != -1) {
-        vshPrint(ctl, indentBuf);
+        vshPrint(ctl, "%s", indentBuf);
         vshPrint(ctl, "  |\n");
     }
 
@@ -4511,7 +4511,7 @@ cmdNodeListDevicesPrint(vshControl *ctl,
     /* If there was no child device, and we're the last in
      * a list of devices, then print another blank line */
     if (nextlastdev == -1 && devid == lastdev) {
-        vshPrint(ctl, indentBuf);
+        vshPrint(ctl, "%s", indentBuf);
         vshPrint(ctl, "\n");
     }
 }
