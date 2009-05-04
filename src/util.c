@@ -266,6 +266,26 @@ int virSetCloseExec(int fd) {
     return 0;
 }
 
+/*
+ * @conn Connection to report errors against
+ * @argv argv to exec
+ * @envp optional enviroment to use for exec
+ * @keepfd options fd_ret to keep open for child process
+ * @retpid optional pointer to store child process pid
+ * @infd optional file descriptor to use as child input, otherwise /dev/null
+ * @outfd optional pointer to communicate output fd behavior
+ *        outfd == NULL : Use /dev/null
+ *        *outfd == -1  : Use a new fd
+ *        *outfd != -1  : Use *outfd
+ * @errfd optional pointer to communcate error fd behavior. See outfd
+ * @flags possible combination of the following:
+ *        VIR_EXEC_NONE     : Default function behavior
+ *        VIR_EXEC_NONBLOCK : Set child process output fd's as non-blocking
+ *        VIR_EXEC_DAEMON   : Daemonize the child process (don't use directly,
+ *                            use virExecDaemonize wrapper)
+ * @hook optional virExecHook function to call prior to exec
+ * @data data to pass to the hook function
+ */
 static int
 __virExec(virConnectPtr conn,
           const char *const*argv,
@@ -550,6 +570,13 @@ virExecWithHook(virConnectPtr conn,
                      flags, hook, data);
 }
 
+/*
+ * See __virExec for explanation of the arguments.
+ *
+ * Wrapper function for __virExec, with a simpler set of parameters.
+ * Used to insulate the numerous callers from changes to __virExec argument
+ * list.
+ */
 int
 virExec(virConnectPtr conn,
         const char *const*argv,

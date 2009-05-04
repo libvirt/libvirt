@@ -1,3 +1,7 @@
+Mon May  4 11:40:27 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/util.c: Add some documentation to __virExec and virExec
+
 Tue Apr 28 11:54:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix check for -Wformat-security which depends on -Wformat
