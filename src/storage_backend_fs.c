@@ -89,7 +89,7 @@ struct FileTypeInfo {
 struct FileTypeInfo const fileTypeInfo[] = {
     /* Bochs */
     /* XXX Untested
-    { VIR_STORAGE_VOL_BOCHS, "Bochs Virtual HD Image", NULL,
+    { VIR_STORAGE_VOL_FILE_BOCHS, "Bochs Virtual HD Image", NULL,
       LV_LITTLE_ENDIAN, 64, 0x20000,
       32+16+16+4+4+4+4+4, 8, 1, NULL },*/
     /* CLoop */
