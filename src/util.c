@@ -445,7 +445,7 @@ __virExec(virConnectPtr conn,
     if (pthread_sigmask(SIG_SETMASK, &newmask, NULL) != 0) {
         virReportSystemError(conn, errno,
                              "%s", _("cannot unblock signals"));
-        return -1;
+        _exit(1);
     }
 
     openmax = sysconf (_SC_OPEN_MAX);
@@ -457,31 +457,6 @@ __virExec(virConnectPtr conn,
             (!keepfd ||
              !FD_ISSET(i, keepfd)))
             close(i);
-
-    if (flags & VIR_EXEC_DAEMON) {
-        if (setsid() < 0) {
-            virReportSystemError(conn, errno,
-                                 "%s", _("cannot become session leader"));
-            _exit(1);
-        }
-
-        if (chdir("/") < 0) {
-            virReportSystemError(conn, errno,
-                                 "%s", _("cannot change to root directory: %s"));
-            _exit(1);
-        }
-
-        pid = fork();
-        if (pid < 0) {
-            virReportSystemError(conn, errno,
-                                 "%s", _("cannot fork child process"));
-            _exit(1);
-        }
-
-        if (pid > 0)
-            _exit(0);
-    }
-
 
     if (dup2(infd >= 0 ? infd : null, STDIN_FILENO) < 0) {
         virReportSystemError(conn, errno,
@@ -513,6 +488,33 @@ __virExec(virConnectPtr conn,
     if (hook)
         if ((hook)(data) != 0)
             _exit(1);
+
+    /* Daemonize as late as possible, so the parent process can detect
+     * the above errors with wait* */
+    if (flags & VIR_EXEC_DAEMON) {
+        if (setsid() < 0) {
+            virReportSystemError(conn, errno,
+                                 "%s", _("cannot become session leader"));
+            _exit(1);
+        }
+
+        if (chdir("/") < 0) {
+            virReportSystemError(conn, errno,
+                                 "%s", _("cannot change to root directory: %s"));
+            _exit(1);
+        }
+
+        pid = fork();
+        if (pid < 0) {
+            virReportSystemError(conn, errno,
+                                 "%s", _("cannot fork child process"));
+            _exit(1);
+        }
+
+        if (pid > 0)
+            _exit(0);
+    }
+
     if (envp)
         execve(argv[0], (char **) argv, (char**)envp);
     else
@@ -523,8 +525,6 @@ __virExec(virConnectPtr conn,
                          argv[0]);
 
     _exit(1);
-
-    return 0;
 
  cleanup:
     /* This is cleanup of parent process only - child

@@ -1,3 +1,7 @@
+Mon May  4 11:42:01 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/util.c: virExec: Delay daemonizing as long as possible.
+
 Mon May  4 11:40:27 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/util.c: Add some documentation to __virExec and virExec
