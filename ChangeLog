@@ -1,3 +1,7 @@
+Tue May  5 10:19:14 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/test.c: Small cleanups in test driver VolCreateXML
+
 Tue May  5 10:18:15 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/storage_driver.c: Remove some debug code from storage_driver.c

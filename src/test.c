@@ -3076,20 +3076,18 @@ testStorageVolumeCreateXML(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-
     if (!virStoragePoolObjIsActive(privpool)) {
         testError(pool->conn, VIR_ERR_INTERNAL_ERROR,
                   _("storage pool '%s' is not active"), pool->name);
         goto cleanup;
     }
 
-
     privvol = virStorageVolDefParse(pool->conn, privpool->def, xmldesc, NULL);
     if (privvol == NULL)
         goto cleanup;
 
     if (virStorageVolDefFindByName(privpool, privvol->name)) {
-        testError(pool->conn, VIR_ERR_INVALID_STORAGE_POOL,
+        testError(pool->conn, VIR_ERR_INVALID_STORAGE_VOL,
                   "%s", _("storage vol already exists"));
         goto cleanup;
     }
@@ -3102,8 +3100,6 @@ testStorageVolumeCreateXML(virStoragePoolPtr pool,
                   privvol->name);
         goto cleanup;
     }
-    privpool->def->available = (privpool->def->capacity -
-                                privpool->def->allocation);
 
     if (VIR_REALLOC_N(privpool->volumes.objs,
                       privpool->volumes.count+1) < 0) {
