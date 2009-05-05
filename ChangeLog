@@ -1,3 +1,8 @@
+Tue May  5 10:20:27 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/qemu_driver.c: Don't throw away StartVM errors when
+	migrating/restoring in qemu driver.
+
 Tue May  5 10:19:14 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/test.c: Small cleanups in test driver VolCreateXML

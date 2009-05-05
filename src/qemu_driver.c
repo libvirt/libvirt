@@ -225,7 +225,7 @@ qemudAutostartConfigs(struct qemud_driver *driver) {
                 virErrorPtr err = virGetLastError();
                 VIR_ERROR(_("Failed to autostart VM '%s': %s\n"),
                           vm->def->name,
-                          err ? err->message : NULL);
+                          err ? err->message : "");
             } else {
                 virDomainEventPtr event =
                     virDomainEventNewFromObj(vm,
@@ -3270,8 +3270,6 @@ static int qemudDomainRestore(virConnectPtr conn,
     close(fd);
     fd = -1;
     if (ret < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("failed to start VM"));
         if (!vm->persistent) {
             virDomainRemoveInactive(&driver->domains,
                                     vm);
@@ -4767,8 +4765,6 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
      */
     snprintf (migrateFrom, sizeof (migrateFrom), "tcp:0.0.0.0:%d", this_port);
     if (qemudStartVMDaemon (dconn, driver, vm, migrateFrom, -1) < 0) {
-        qemudReportError (dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                          "%s", _("failed to start listening VM"));
         if (!vm->persistent) {
             virDomainRemoveInactive(&driver->domains, vm);
             vm = NULL;
