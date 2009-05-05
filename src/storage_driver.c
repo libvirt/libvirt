@@ -1251,12 +1251,6 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
     volobj = virGetStorageVol(obj->conn, pool->def->name, voldef->name,
                               voldef->key);
 
-    if (0) {
-        printf("after vol lookup.\n");
-        virReportOOMError(obj->conn);
-        goto cleanup;
-    }
-
     if (volobj && backend->buildVol) {
         int buildret;
         virStorageVolDefPtr buildvoldef = NULL;

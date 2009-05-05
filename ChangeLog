@@ -1,3 +1,7 @@
+Tue May  5 10:18:15 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/storage_driver.c: Remove some debug code from storage_driver.c
+
 Tue May  5 10:16:56 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/libvirt.c: Use proper error code in virStorageVolCreateXML
