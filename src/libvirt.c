@@ -6740,7 +6740,7 @@ virStorageVolCreateXML(virStoragePoolPtr pool,
     virResetLastError();
 
     if (!VIR_IS_STORAGE_POOL(pool)) {
-        virLibConnError(NULL, VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        virLibConnError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
         return (NULL);
     }
 
