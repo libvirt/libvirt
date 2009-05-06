@@ -1872,10 +1872,12 @@ static int qemudGetNodeInfo(virConnectPtr conn,
 
 static char *qemudGetCapabilities(virConnectPtr conn) {
     struct qemud_driver *driver = conn->privateData;
-    char *xml;
+    char *xml = NULL;
 
     qemuDriverLock(driver);
-    if ((xml = virCapabilitiesFormatXML(driver->caps)) == NULL)
+    virCapabilitiesFree(qemu_driver->caps);
+    if ((qemu_driver->caps = qemudCapsInit()) == NULL ||
+        (xml = virCapabilitiesFormatXML(driver->caps)) == NULL)
         virReportOOMError(conn);
     qemuDriverUnlock(driver);
 
@@ -3156,20 +3158,26 @@ cleanup:
     return ret;
 }
 
-static int qemudNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
+static int qemudNodeGetSecurityModel(virConnectPtr conn,
+                                     virSecurityModelPtr secmodel)
 {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
     char *p;
+    int ret = 0;
 
-    if (!driver->securityDriver)
-        return -2;
+    qemuDriverLock(driver);
+    if (!driver->securityDriver) {
+        ret = -2;
+        goto cleanup;
+    }
 
     p = driver->caps->host.secModel.model;
     if (strlen(p) >= VIR_SECURITY_MODEL_BUFLEN-1) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("security model string exceeds max %d bytes"),
                          VIR_SECURITY_MODEL_BUFLEN-1);
-        return -1;
+        ret = -1;
+        goto cleanup;
     }
     strcpy(secmodel->model, p);
 
@@ -3178,10 +3186,14 @@ static int qemudNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr sec
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("security DOI string exceeds max %d bytes"),
                          VIR_SECURITY_DOI_BUFLEN-1);
-        return -1;
+        ret = -1;
+        goto cleanup;
     }
     strcpy(secmodel->doi, p);
-    return 0;
+
+cleanup:
+    qemuDriverUnlock(driver);
+    return ret;
 }
 
 /* TODO: check seclabel restore */
