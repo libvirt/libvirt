@@ -1,3 +1,10 @@
+Wed May  6 15:42:08 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/vbox/vbox_driver.c src/vbox/vbox_tmpl.c: changes in
+	  VirtualBox driver version detection and move informations
+	  from a global variable into a driver structure, patch by Pritesh
+	  Kothari.
+
 Wed May  6 15:27:04 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* libvirt.spec.in: add a couple of missing directories

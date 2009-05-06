@@ -39,65 +39,48 @@
 
 
 extern virDriver vbox22Driver;
+#if 0
 extern virDriver vbox25Driver;
+#endif
 
-int errorval = 0;
 
 int vboxRegister(void) {
-    virDriver *driver;
-    uint32_t uVersion = 0;
-    uint32_t major    = 0;
-    uint32_t minor    = 0;
-    uint32_t intVer   = 0;
-    uint32_t build    = 0;
+    virDriverPtr        driver;
+    uint32_t            uVersion;
 
-    if (VBoxCGlueInit() != 0)
-        errorval = -1;
+    /* vboxRegister() shouldn't fail as that will render libvirt unless.
+     * So, we use the v2.2 driver as a fallback/dummy.
+     */
+    driver        = &vbox22Driver;
 
-    if (errorval != -1) {
-
+    /* Init the glue and get the API version. */
+    if (VBoxCGlueInit() == 0) {
         uVersion = g_pVBoxFuncs->pfnGetVersion();
+        DEBUG("VBoxCGlueInit found API version: %d.%d.%d (%u)",
+              uVersion / 1000000,
+              uVersion % 1000000 / 1000,
+              uVersion % 1000,
+              uVersion);
 
-        major  = uVersion / 1000000;
-        intVer = uVersion % 1000000;
-        minor  = intVer / 1000;
-        build  = intVer % 1000;
-
-        DEBUG("VBoxCGlueInit worked for version: %d.%d.%d", major, minor, build);
-    } else {
-        DEBUG("VBoxCGlueInit failed: %d.%d.%d, errorval=%d", major, minor, build, errorval);
-    }
-    /* select driver implementation based on version.
-     * here returning -1 as initially thought is not
-     * possible as that doesn't even allow libvirt to
-     * load and thus drop to safe version which is
-     * v2.2, but dont return -1 unless until it is
-     * really bad like can't register the driver
-     * itself using virRegisterDriver()
-     */
-    if (errorval == -1) {
-        /* If initialization fails then always drop
-         * back to the intial version i.e V2.2
+        /* Select driver implementation based on version.
+         * Note that the VirtualBox development usually happens at build
+         * number 51, thus the version ranges in the if statements below.
          */
-        driver = &vbox22Driver;
-    } else if ( ((major == 2) && (minor == 1) && (build > 51)) ||
-                ((major == 2) && (minor == 2)) ) {
-        /* currently the OSE edition is still stuck at 2.1.52
-         * while the beta is at 2.2 so check for both currently*/
-        driver = &vbox22Driver;
+        if (uVersion >= 2001052 && uVersion < 2002051) {
+            DEBUG0("VirtualBox API version: 2.2");
+            driver        = &vbox22Driver;
+#if 0
+        } else if (uVersion >= 2002051 && uVersion < 2005051) {
+            DEBUG0("VirtualBox API version: 2.5");
+            driver        = &vbox25Driver;
+#endif
+        } else {
+            DEBUG0("Unsupport VirtualBox API version");
+        }
+
     } else {
-        /* Always drop to some default if none of the above
-         * cases are matched, else virRegisterDriver() will fail
-         * and cause the whole of libvirt to be non-operative.
-         */
-        driver = &vbox22Driver;
+        DEBUG0("VBoxCGlueInit failed");
     }
-    /** @todo r=bird:
-     *   1. What about if (uVersion > 2001051 && uVersion <= 2002999)
-     *      instead of the complicated stuff above?
-     */
-
-
 
     if (virRegisterDriver(driver) < 0)
         return -1;

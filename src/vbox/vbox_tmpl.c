@@ -40,13 +40,13 @@
 
 #include "datatypes.h"
 #include "domain_conf.h"
+#include "network_conf.h"
 #include "virterror_internal.h"
 #include "uuid.h"
 #include "memory.h"
 #include "nodeinfo.h"
 #include "logging.h"
 #include "vbox_driver.h"
-#include "vbox_XPCOMCGlue.h"
 
 /* This one changes from version to version. */
 #if VBOX_API_VERSION == 2002
@@ -57,6 +57,10 @@
 # include "VBoxCAPI_v2_5.h"
 */
 #endif
+
+/* Include this *last* or we'll get the wrong vbox_CAPI_*.h. */
+#include "vbox_XPCOMCGlue.h"
+
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
@@ -73,14 +77,17 @@ typedef struct {
 
     IVirtualBox *vboxObj;
     ISession *vboxSession;
+
+    /** Our version specific API table pointer. */
+    PCVBOXXPCOM pFuncs;
 } vboxGlobalData;
 
-extern int errorval;
+
 static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml);
 static int vboxDomainCreate(virDomainPtr dom);
 static int vboxDomainUndefine(virDomainPtr dom);
 
-static void nsIDtoChar(unsigned char *uuid, nsID *iid) {
+static void nsIDtoChar(unsigned char *uuid, const nsID *iid) {
     char uuidstrsrc[VIR_UUID_STRING_BUFLEN];
     char uuidstrdst[VIR_UUID_STRING_BUFLEN];
     unsigned char uuidinterim[VIR_UUID_BUFLEN];
@@ -128,7 +135,7 @@ static void vboxDriverUnlock(vboxGlobalData *data) {
     virMutexUnlock(&data->lock);
 }
 
-static void nsIDFromChar(nsID *iid, unsigned char *uuid) {
+static void nsIDFromChar(nsID *iid, const unsigned char *uuid) {
     char uuidstrsrc[VIR_UUID_STRING_BUFLEN];
     char uuidstrdst[VIR_UUID_STRING_BUFLEN];
     unsigned char uuidinterim[VIR_UUID_BUFLEN];
@@ -215,11 +222,33 @@ static int vboxInitialize(virConnectPtr conn, vboxGlobalData *data) {
         goto cleanup;
     }
 
-    g_pVBoxFuncs->pfnComInitialize(&data->vboxObj, &data->vboxSession);
-    if (data->vboxObj == NULL)
+    /* This is for when glue init failed and we're serving as dummy driver. */
+    if (g_pfnGetFunctions == NULL)
         goto cleanup;
-    if (data->vboxSession == NULL)
+
+    /* Get the API table for out version, g_pVBoxFuncs is for the oldest
+       version of the API that we support so we cannot use that. */
+    data->pFuncs = g_pfnGetFunctions(VBOX_XPCOMC_VERSION);
+
+    if (data->pFuncs == NULL)
         goto cleanup;
+
+#if VBOX_XPCOMC_VERSION == 0x00010000U
+    data->pFuncs->pfnComInitialize(&data->vboxObj, &data->vboxSession);
+#else
+    data->pFuncs->pfnComInitialize(IVIRTUALBOX_IID_STR, &data->vboxObj,
+                               ISESSION_IID_STR, &data->vboxSession);
+#endif
+
+    if (data->vboxObj == NULL) {
+        vboxError(conn, VIR_ERR_INTERNAL_ERROR, "IVirtualBox object is null");
+        goto cleanup;
+    }
+
+    if (data->vboxSession == NULL) {
+        vboxError(conn, VIR_ERR_INTERNAL_ERROR, "ISession object is null");
+        goto cleanup;
+    }
 
     return 0;
 
@@ -242,13 +271,13 @@ static int vboxExtractVersion(virConnectPtr conn, vboxGlobalData *data) {
     if (NS_SUCCEEDED(rc)) {
         char *vboxVersion = NULL;
 
-        g_pVBoxFuncs->pfnUtf16ToUtf8(versionUtf16, &vboxVersion);
+        data->pFuncs->pfnUtf16ToUtf8(versionUtf16, &vboxVersion);
 
         if (sscanf(vboxVersion, "%u.%u.%u", &major, &minor, &micro) == 3)
             ret = 0;
 
-        g_pVBoxFuncs->pfnUtf8Free(vboxVersion);
-        g_pVBoxFuncs->pfnComUnallocMem(versionUtf16);
+        data->pFuncs->pfnUtf8Free(vboxVersion);
+        data->pFuncs->pfnComUnallocMem(versionUtf16);
     } else {
         ret = -1;
     }
@@ -262,7 +291,7 @@ static int vboxExtractVersion(virConnectPtr conn, vboxGlobalData *data) {
 }
 
 static void vboxUninitialize(vboxGlobalData *data) {
-    g_pVBoxFuncs->pfnComUninitialize();
+    data->pFuncs->pfnComUninitialize();
     VBoxCGlueTerm();
 
     if (!data)
@@ -278,9 +307,6 @@ static virDrvOpenStatus vboxOpen(virConnectPtr conn,
                                  int flags ATTRIBUTE_UNUSED) {
     vboxGlobalData *data;
     uid_t uid = getuid();
-
-    if (errorval == -1)
-        return VIR_DRV_OPEN_DECLINED;
 
     if (conn->uri == NULL) {
         conn->uri = xmlParseURI(uid ? "vbox:///session" : "vbox:///system");
@@ -564,7 +590,7 @@ static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id) {
                         char *machineName;
 
                         machines[id]->vtbl->GetName(machines[id], &machineNameUtf16);
-                        g_pVBoxFuncs->pfnUtf16ToUtf8(machineNameUtf16, &machineName);
+                        data->pFuncs->pfnUtf16ToUtf8(machineNameUtf16, &machineName);
 
                         machines[id]->vtbl->GetId(machines[id], &iid);
                         nsIDtoChar(iidl, iid);
@@ -580,9 +606,9 @@ static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id) {
                             dom->id = id + 1;
 
                         /* Cleanup all the XPCOM allocated stuff here */
-                        g_pVBoxFuncs->pfnComUnallocMem(iid);
-                        g_pVBoxFuncs->pfnUtf8Free(machineName);
-                        g_pVBoxFuncs->pfnComUnallocMem(machineNameUtf16);
+                        data->pFuncs->pfnComUnallocMem(iid);
+                        data->pFuncs->pfnUtf8Free(machineName);
+                        data->pFuncs->pfnComUnallocMem(machineNameUtf16);
                     }
                 }
             }
@@ -640,7 +666,7 @@ static virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn, const unsigned ch
                     matched = 1;
 
                     machine->vtbl->GetName(machine, &machineNameUtf16);
-                    g_pVBoxFuncs->pfnUtf16ToUtf8(machineNameUtf16, &machineName);
+                    data->pFuncs->pfnUtf16ToUtf8(machineNameUtf16, &machineName);
 
                     machine->vtbl->GetState(machine, &state);
 
@@ -658,7 +684,7 @@ static virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn, const unsigned ch
                 }
 
                 if (iid) {
-                    g_pVBoxFuncs->pfnComUnallocMem(iid);
+                    data->pFuncs->pfnComUnallocMem(iid);
                     iid = NULL;
                 }
                 if (matched == 1)
@@ -668,9 +694,9 @@ static virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn, const unsigned ch
 
         /* Do the cleanup and take care you dont leak any memory */
         if (machineName)
-            g_pVBoxFuncs->pfnUtf8Free(machineName);
+            data->pFuncs->pfnUtf8Free(machineName);
         if (machineNameUtf16)
-            g_pVBoxFuncs->pfnComUnallocMem(machineNameUtf16);
+            data->pFuncs->pfnComUnallocMem(machineNameUtf16);
         for (i = 0; i < machineCnt; ++i) {
             if (machines[i])
                 machines[i]->vtbl->nsisupports.Release((nsISupports *)machines[i]);
@@ -711,7 +737,7 @@ static virDomainPtr vboxDomainLookupByName(virConnectPtr conn, const char *name)
             if (isAccessible) {
 
                 machine->vtbl->GetName(machine, &machineNameUtf16);
-                g_pVBoxFuncs->pfnUtf16ToUtf8(machineNameUtf16, &machineName);
+                data->pFuncs->pfnUtf16ToUtf8(machineNameUtf16, &machineName);
 
                 if (machineName && (STREQ(name, machineName))) {
 
@@ -738,11 +764,11 @@ static virDomainPtr vboxDomainLookupByName(virConnectPtr conn, const char *name)
                 }
 
                 if (machineName) {
-                    g_pVBoxFuncs->pfnUtf8Free(machineName);
+                    data->pFuncs->pfnUtf8Free(machineName);
                     machineName = NULL;
                 }
                 if (machineNameUtf16) {
-                    g_pVBoxFuncs->pfnComUnallocMem(machineNameUtf16);
+                    data->pFuncs->pfnComUnallocMem(machineNameUtf16);
                     machineNameUtf16 = NULL;
                 }
                 if (matched == 1)
@@ -752,7 +778,7 @@ static virDomainPtr vboxDomainLookupByName(virConnectPtr conn, const char *name)
 
         /* Do the cleanup and take care you dont leak any memory */
         if (iid)
-            g_pVBoxFuncs->pfnComUnallocMem(iid);
+            data->pFuncs->pfnComUnallocMem(iid);
         for (i = 0; i < machineCnt; ++i) {
             if (machines[i])
                 machines[i]->vtbl->nsisupports.Release((nsISupports *)machines[i]);
@@ -1164,7 +1190,7 @@ static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info) {
             if (isAccessible) {
 
                 machine->vtbl->GetName(machine, &machineNameUtf16);
-                g_pVBoxFuncs->pfnUtf16ToUtf8(machineNameUtf16, &machineName);
+                data->pFuncs->pfnUtf16ToUtf8(machineNameUtf16, &machineName);
 
                 if (STREQ(dom->name, machineName)) {
                     /* Get the Machine State (also match it with
@@ -1225,9 +1251,9 @@ static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info) {
                 }
 
                 if (machineName)
-                    g_pVBoxFuncs->pfnUtf8Free(machineName);
+                    data->pFuncs->pfnUtf8Free(machineName);
                 if (machineNameUtf16)
-                    g_pVBoxFuncs->pfnComUnallocMem(machineNameUtf16);
+                    data->pFuncs->pfnComUnallocMem(machineNameUtf16);
                 if (info->nrVirtCpu)
                     break;
             }
@@ -1481,11 +1507,11 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
 
                             VRDPServer->vtbl->GetNetAddress(VRDPServer, &netAddressUtf16);
                             if (netAddressUtf16) {
-                                g_pVBoxFuncs->pfnUtf16ToUtf8(netAddressUtf16, &netAddressUtf8);
+                                data->pFuncs->pfnUtf16ToUtf8(netAddressUtf16, &netAddressUtf8);
                                 if (STRNEQ(netAddressUtf8, ""))
                                         def->graphics->data.rdp.listenAddr = strdup(netAddressUtf8);
-                                g_pVBoxFuncs->pfnUtf16Free(netAddressUtf16);
-                                g_pVBoxFuncs->pfnUtf8Free(netAddressUtf8);
+                                data->pFuncs->pfnUtf16Free(netAddressUtf16);
+                                data->pFuncs->pfnUtf8Free(netAddressUtf8);
                             }
 
                             VRDPServer->vtbl->GetAuthType(VRDPServer, &authType);
@@ -1519,13 +1545,13 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                             machine->vtbl->GetSessionType(machine, &sessionTypeUtf16);
                             DEBUG0("Session Type:");
                             if (sessionTypeUtf16) {
-                                g_pVBoxFuncs->pfnUtf16ToUtf8(sessionTypeUtf16, &sessionTypeUtf8);
+                                data->pFuncs->pfnUtf16ToUtf8(sessionTypeUtf16, &sessionTypeUtf8);
                                 DEBUG("Session Type: %s", sessionTypeUtf8);
                                 if (STREQ(sessionTypeUtf8, "vrdp")) {
                                     def->graphics->data.rdp.headless = 1;
                                 }
-                                g_pVBoxFuncs->pfnUtf16Free(sessionTypeUtf16);
-                                g_pVBoxFuncs->pfnUtf8Free(sessionTypeUtf8);
+                                data->pFuncs->pfnUtf16Free(sessionTypeUtf16);
+                                data->pFuncs->pfnUtf8Free(sessionTypeUtf8);
                             }
                         }
                     }
@@ -1534,7 +1560,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
 #endif
 
                 /* dump IDE hdds if present */
-                g_pVBoxFuncs->pfnUtf8ToUtf16(hddBus, &hddBusUtf16);
+                data->pFuncs->pfnUtf8ToUtf16(hddBus, &hddBusUtf16);
                 VIR_FREE(hddBus);
 
                 def->ndisks = 0;
@@ -1550,7 +1576,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                 if (hardDiskSS)
                     def->ndisks++;
 
-                g_pVBoxFuncs->pfnUtf16Free(hddBusUtf16);
+                data->pFuncs->pfnUtf16Free(hddBusUtf16);
 
                 if ((def->ndisks > 0) && (VIR_ALLOC_N(def->disks, def->ndisks) >= 0)) {
                     for (i = 0; i < def->ndisks; i++) {
@@ -1568,7 +1594,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                     PRUint32 hddType            = HardDiskType_Normal;
 
                     hardDiskPM->vtbl->imedium.GetLocation((IMedium *)hardDiskPM, &hddlocationUtf16);
-                    g_pVBoxFuncs->pfnUtf16ToUtf8(hddlocationUtf16, &hddlocation);
+                    data->pFuncs->pfnUtf16ToUtf8(hddlocationUtf16, &hddlocation);
 
                     hardDiskPM->vtbl->GetType(hardDiskPM, &hddType);
 
@@ -1578,8 +1604,8 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                     def->disks[hddNum]->dst = strdup("hda");
                     hddNum++;
 
-                    g_pVBoxFuncs->pfnUtf8Free(hddlocation);
-                    g_pVBoxFuncs->pfnUtf16Free(hddlocationUtf16);
+                    data->pFuncs->pfnUtf8Free(hddlocation);
+                    data->pFuncs->pfnUtf16Free(hddlocationUtf16);
                     hardDiskPM->vtbl->imedium.nsisupports.Release((nsISupports *)hardDiskPM);
                 }
 
@@ -1589,7 +1615,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                     PRUint32 hddType            = HardDiskType_Normal;
 
                     hardDiskPS->vtbl->imedium.GetLocation((IMedium *)hardDiskPS, &hddlocationUtf16);
-                    g_pVBoxFuncs->pfnUtf16ToUtf8(hddlocationUtf16, &hddlocation);
+                    data->pFuncs->pfnUtf16ToUtf8(hddlocationUtf16, &hddlocation);
 
                     hardDiskPS->vtbl->GetType(hardDiskPS, &hddType);
 
@@ -1599,8 +1625,8 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                     def->disks[hddNum]->dst = strdup("hdb");
                     hddNum++;
 
-                    g_pVBoxFuncs->pfnUtf8Free(hddlocation);
-                    g_pVBoxFuncs->pfnUtf16Free(hddlocationUtf16);
+                    data->pFuncs->pfnUtf8Free(hddlocation);
+                    data->pFuncs->pfnUtf16Free(hddlocationUtf16);
                     hardDiskPS->vtbl->imedium.nsisupports.Release((nsISupports *)hardDiskPS);
                 }
 
@@ -1610,7 +1636,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                     PRUint32 hddType            = HardDiskType_Normal;
 
                     hardDiskSS->vtbl->imedium.GetLocation((IMedium *)hardDiskSS, &hddlocationUtf16);
-                    g_pVBoxFuncs->pfnUtf16ToUtf8(hddlocationUtf16, &hddlocation);
+                    data->pFuncs->pfnUtf16ToUtf8(hddlocationUtf16, &hddlocation);
 
                     hardDiskSS->vtbl->GetType(hardDiskSS, &hddType);
 
@@ -1620,8 +1646,8 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                     def->disks[hddNum]->dst = strdup("hdd");
                     hddNum++;
 
-                    g_pVBoxFuncs->pfnUtf8Free(hddlocation);
-                    g_pVBoxFuncs->pfnUtf16Free(hddlocationUtf16);
+                    data->pFuncs->pfnUtf8Free(hddlocation);
+                    data->pFuncs->pfnUtf16Free(hddlocationUtf16);
                     hardDiskSS->vtbl->imedium.nsisupports.Release((nsISupports *)hardDiskSS);
                 }
 
@@ -1681,11 +1707,11 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
 
                                 adapter->vtbl->GetHostInterface(adapter, &hostIntUtf16);
 
-                                g_pVBoxFuncs->pfnUtf16ToUtf8(hostIntUtf16, &hostInt);
+                                data->pFuncs->pfnUtf16ToUtf8(hostIntUtf16, &hostInt);
                                 def->nets[netAdpIncCnt]->data.bridge.brname = strdup(hostInt);
 
-                                g_pVBoxFuncs->pfnUtf8Free(hostInt);
-                                g_pVBoxFuncs->pfnUtf16Free(hostIntUtf16);
+                                data->pFuncs->pfnUtf8Free(hostInt);
+                                data->pFuncs->pfnUtf16Free(hostIntUtf16);
 
 #if 0
                             } else if (attachmentType == NetworkAttachmentType_Internal) {
@@ -1696,11 +1722,11 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
 
                                 adapter->vtbl->GetInternalNetwork(adapter, &intNetUtf16);
 
-                                g_pVBoxFuncs->pfnUtf16ToUtf8(intNetUtf16, &intNet);
+                                data->pFuncs->pfnUtf16ToUtf8(intNetUtf16, &intNet);
                                 def->nets[netAdpIncCnt]->data.internal.name = strdup(intNet);
 
-                                g_pVBoxFuncs->pfnUtf8Free(intNet);
-                                g_pVBoxFuncs->pfnUtf16Free(intNetUtf16);
+                                data->pFuncs->pfnUtf8Free(intNet);
+                                data->pFuncs->pfnUtf16Free(intNetUtf16);
 
                             } else if (attachmentType == NetworkAttachmentType_HostOnly) {
                                 PRUnichar *hostIntUtf16 = NULL;
@@ -1710,11 +1736,11 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
 
                                 adapter->vtbl->GetHostInterface(adapter, &hostIntUtf16);
 
-                                g_pVBoxFuncs->pfnUtf16ToUtf8(hostIntUtf16, &hostInt);
+                                data->pFuncs->pfnUtf16ToUtf8(hostIntUtf16, &hostInt);
                                 def->nets[netAdpIncCnt]->data.hostonly.name = strdup(hostInt);
 
-                                g_pVBoxFuncs->pfnUtf8Free(hostInt);
-                                g_pVBoxFuncs->pfnUtf16Free(hostIntUtf16);
+                                data->pFuncs->pfnUtf8Free(hostInt);
+                                data->pFuncs->pfnUtf16Free(hostIntUtf16);
 
 #endif
                             } else {
@@ -1738,7 +1764,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                             }
 
                             adapter->vtbl->GetMACAddress(adapter, &MACAddressUtf16);
-                            g_pVBoxFuncs->pfnUtf16ToUtf8(MACAddressUtf16, &MACAddress);
+                            data->pFuncs->pfnUtf16ToUtf8(MACAddressUtf16, &MACAddress);
                             snprintf(macaddr, VIR_MAC_STRING_BUFLEN,
                                      "%c%c:%c%c:%c%c:%c%c:%c%c:%c%c",
                                      MACAddress[0], MACAddress[1], MACAddress[2], MACAddress[3],
@@ -1749,8 +1775,8 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
 
                             netAdpIncCnt++;
 
-                            g_pVBoxFuncs->pfnUtf16Free(MACAddressUtf16);
-                            g_pVBoxFuncs->pfnUtf8Free(MACAddress);
+                            data->pFuncs->pfnUtf16Free(MACAddressUtf16);
+                            data->pFuncs->pfnUtf8Free(MACAddress);
                         }
 
                         adapter->vtbl->nsisupports.Release((nsISupports *)adapter);
@@ -1806,7 +1832,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                             char *location           = NULL;
 
                             dvdImage->vtbl->imedium.GetLocation((IMedium *)dvdImage, &locationUtf16);
-                            g_pVBoxFuncs->pfnUtf16ToUtf8(locationUtf16, &location);
+                            data->pFuncs->pfnUtf16ToUtf8(locationUtf16, &location);
 
                             def->ndisks++;
                             if (VIR_REALLOC_N(def->disks, def->ndisks) >= 0) {
@@ -1824,8 +1850,8 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                 def->ndisks--;
                             }
 
-                            g_pVBoxFuncs->pfnUtf8Free(location);
-                            g_pVBoxFuncs->pfnUtf16Free(locationUtf16);
+                            data->pFuncs->pfnUtf8Free(location);
+                            data->pFuncs->pfnUtf16Free(locationUtf16);
                             dvdImage->vtbl->imedium.nsisupports.Release((nsISupports *)dvdImage);
                         }
                     }
@@ -1851,7 +1877,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                 char *location           = NULL;
 
                                 floppyImage->vtbl->imedium.GetLocation((IMedium *)floppyImage, &locationUtf16);
-                                g_pVBoxFuncs->pfnUtf16ToUtf8(locationUtf16, &location);
+                                data->pFuncs->pfnUtf16ToUtf8(locationUtf16, &location);
 
                                 def->ndisks++;
                                 if (VIR_REALLOC_N(def->disks, def->ndisks) >= 0) {
@@ -1869,8 +1895,8 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                     def->ndisks--;
                                 }
 
-                                g_pVBoxFuncs->pfnUtf8Free(location);
-                                g_pVBoxFuncs->pfnUtf16Free(locationUtf16);
+                                data->pFuncs->pfnUtf8Free(location);
+                                data->pFuncs->pfnUtf16Free(locationUtf16);
                                 floppyImage->vtbl->imedium.nsisupports.Release((nsISupports *)floppyImage);
                             }
                         }
@@ -1941,13 +1967,13 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
 
                             serialPort->vtbl->GetPath(serialPort, &pathUtf16);
 
-                            g_pVBoxFuncs->pfnUtf16ToUtf8(pathUtf16, &path);
+                            data->pFuncs->pfnUtf16ToUtf8(pathUtf16, &path);
                             def->serials[serialPortIncCount]->data.file.path = strdup(path);
 
                             serialPortIncCount++;
 
-                            g_pVBoxFuncs->pfnUtf16Free(pathUtf16);
-                            g_pVBoxFuncs->pfnUtf8Free(path);
+                            data->pFuncs->pfnUtf16Free(pathUtf16);
+                            data->pFuncs->pfnUtf8Free(path);
                         }
 
                         serialPort->vtbl->nsisupports.Release((nsISupports *)serialPort);
@@ -2008,13 +2034,13 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
 
                             parallelPort->vtbl->GetPath(parallelPort, &pathUtf16);
 
-                            g_pVBoxFuncs->pfnUtf16ToUtf8(pathUtf16, &path);
+                            data->pFuncs->pfnUtf16ToUtf8(pathUtf16, &path);
                             def->parallels[parallelPortIncCount]->data.file.path = strdup(path);
 
                             parallelPortIncCount++;
 
-                            g_pVBoxFuncs->pfnUtf16Free(pathUtf16);
-                            g_pVBoxFuncs->pfnUtf8Free(path);
+                            data->pFuncs->pfnUtf16Free(pathUtf16);
+                            data->pFuncs->pfnUtf8Free(path);
                         }
 
                         parallelPort->vtbl->nsisupports.Release((nsISupports *)parallelPort);
@@ -2077,8 +2103,8 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                                 deviceFilters[i]->vtbl->GetVendorId(deviceFilters[i], &vendorIdUtf16);
                                                 deviceFilters[i]->vtbl->GetProductId(deviceFilters[i], &productIdUtf16);
 
-                                                g_pVBoxFuncs->pfnUtf16ToUtf8(vendorIdUtf16, &vendorIdUtf8);
-                                                g_pVBoxFuncs->pfnUtf16ToUtf8(productIdUtf16, &productIdUtf8);
+                                                data->pFuncs->pfnUtf16ToUtf8(vendorIdUtf16, &vendorIdUtf8);
+                                                data->pFuncs->pfnUtf16ToUtf8(productIdUtf16, &productIdUtf8);
 
                                                 vendorId  = strtol(vendorIdUtf8, &endptr, 16);
                                                 productId = strtol(productIdUtf8, &endptr, 16);
@@ -2086,11 +2112,11 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                                 def->hostdevs[USBFilterCount]->source.subsys.u.usb.vendor  = vendorId;
                                                 def->hostdevs[USBFilterCount]->source.subsys.u.usb.product = productId;
 
-                                                g_pVBoxFuncs->pfnUtf16Free(vendorIdUtf16);
-                                                g_pVBoxFuncs->pfnUtf8Free(vendorIdUtf8);
+                                                data->pFuncs->pfnUtf16Free(vendorIdUtf16);
+                                                data->pFuncs->pfnUtf8Free(vendorIdUtf8);
 
-                                                g_pVBoxFuncs->pfnUtf16Free(productIdUtf16);
-                                                g_pVBoxFuncs->pfnUtf8Free(productIdUtf8);
+                                                data->pFuncs->pfnUtf16Free(productIdUtf16);
+                                                data->pFuncs->pfnUtf8Free(productIdUtf8);
 
                                                 USBFilterCount++;
                                             }
@@ -2163,7 +2189,7 @@ static int vboxListDefinedDomains(virConnectPtr conn, char ** const names, int m
                     if ((state != MachineState_Running) &&
                         (state != MachineState_Paused) ) {
                         machine->vtbl->GetName(machine, &machineNameUtf16);
-                        g_pVBoxFuncs->pfnUtf16ToUtf8(machineNameUtf16, &machineName);
+                        data->pFuncs->pfnUtf16ToUtf8(machineNameUtf16, &machineName);
                         if (!(names[j++] = strdup(machineName))) {
                             virReportOOMError(conn);
                             for ( ; j >= 0 ; j--)
@@ -2180,8 +2206,8 @@ static int vboxListDefinedDomains(virConnectPtr conn, char ** const names, int m
     }
 
 cleanup:
-    g_pVBoxFuncs->pfnUtf8Free(machineName);
-    g_pVBoxFuncs->pfnUtf16Free(machineNameUtf16);
+    data->pFuncs->pfnUtf8Free(machineName);
+    data->pFuncs->pfnUtf16Free(machineNameUtf16);
     for (i = 0; i < machineCnt; ++i)
         if (machines[i])
             machines[i]->vtbl->nsisupports.Release((nsISupports *)machines[i]);
@@ -2252,10 +2278,10 @@ static int vboxDomainCreate(virDomainPtr dom) {
 
     if (display) {
         sprintf(displayutf8, "DISPLAY=%s", display);
-        g_pVBoxFuncs->pfnUtf8ToUtf16(displayutf8, &env);
+        data->pFuncs->pfnUtf8ToUtf16(displayutf8, &env);
     }
 
-    g_pVBoxFuncs->pfnUtf8ToUtf16("gui", &sessionType);
+    data->pFuncs->pfnUtf8ToUtf16("gui", &sessionType);
 
     if (!dom->name) {
         vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,"%s",
@@ -2339,7 +2365,7 @@ static int vboxDomainCreate(virDomainPtr dom) {
                 }
 
                 if (iid)
-                    g_pVBoxFuncs->pfnComUnallocMem(iid);
+                    data->pFuncs->pfnComUnallocMem(iid);
                 if (ret != -1)
                     break;
             }
@@ -2352,8 +2378,8 @@ static int vboxDomainCreate(virDomainPtr dom) {
         }
     }
 
-    g_pVBoxFuncs->pfnUtf16Free(env);
-    g_pVBoxFuncs->pfnUtf16Free(sessionType);
+    data->pFuncs->pfnUtf16Free(env);
+    data->pFuncs->pfnUtf16Free(sessionType);
 
 cleanup:
     return ret;
@@ -2381,7 +2407,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
     }
 
     if (data->vboxObj) {
-        g_pVBoxFuncs->pfnUtf8ToUtf16(def->name, &machineNameUtf16);
+        data->pFuncs->pfnUtf8ToUtf16(def->name, &machineNameUtf16);
         nsIDFromChar(iid, def->uuid);
         rc = data->vboxObj->vtbl->CreateMachine(data->vboxObj,
                                                 machineNameUtf16,
@@ -2389,7 +2415,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                                 NULL,
                                                 iid,
                                                 &machine);
-        g_pVBoxFuncs->pfnUtf16Free(machineNameUtf16);
+        data->pFuncs->pfnUtf16Free(machineNameUtf16);
 
         if (NS_FAILED(rc)) {
             vboxError(conn, VIR_ERR_INTERNAL_ERROR,"%s, rc=%08x",
@@ -2544,7 +2570,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
 
                                 memset(&dvdemptyuuid, 0, sizeof(dvdemptyuuid));
 
-                                g_pVBoxFuncs->pfnUtf8ToUtf16(def->disks[i]->src, &dvdfileUtf16);
+                                data->pFuncs->pfnUtf8ToUtf16(def->disks[i]->src, &dvdfileUtf16);
 
                                 data->vboxObj->vtbl->FindDVDImage(data->vboxObj, dvdfileUtf16, &dvdImage);
                                 if (!dvdImage) {
@@ -2570,12 +2596,12 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                             (unsigned)dvduuid->m3[4], (unsigned)dvduuid->m3[5],
                                             (unsigned)dvduuid->m3[6], (unsigned)dvduuid->m3[7]);
                                         }
-                                        g_pVBoxFuncs->pfnComUnallocMem(dvduuid);
+                                        data->pFuncs->pfnComUnallocMem(dvduuid);
                                     }
 
                                     dvdImage->vtbl->imedium.nsisupports.Release((nsISupports *)dvdImage);
                                 }
-                                g_pVBoxFuncs->pfnUtf16Free(dvdfileUtf16);
+                                data->pFuncs->pfnUtf16Free(dvdfileUtf16);
                                 dvdDrive->vtbl->nsisupports.Release((nsISupports *)dvdDrive);
                             }
                         } else if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
@@ -2591,7 +2617,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                              * is requested to be connected to Secondary master
                              */
 
-                            g_pVBoxFuncs->pfnUtf8ToUtf16(def->disks[i]->src, &hddfileUtf16);
+                            data->pFuncs->pfnUtf8ToUtf16(def->disks[i]->src, &hddfileUtf16);
 
                             data->vboxObj->vtbl->FindHardDisk(data->vboxObj, hddfileUtf16, &hardDisk);
 
@@ -2626,7 +2652,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                             PRUnichar *hddcnameUtf16 = NULL;
 
                                             char *hddcname = strdup("IDE");
-                                            g_pVBoxFuncs->pfnUtf8ToUtf16(hddcname, &hddcnameUtf16);
+                                            data->pFuncs->pfnUtf8ToUtf16(hddcname, &hddcnameUtf16);
                                             VIR_FREE(hddcname);
 
                                             if (STREQ(def->disks[i]->dst, "hda")) {
@@ -2643,7 +2669,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                             rc = machine->vtbl->AttachHardDisk(machine, hdduuid,
                                                                                hddcnameUtf16,
                                                                                channel, device);
-                                            g_pVBoxFuncs->pfnUtf16Free(hddcnameUtf16);
+                                            data->pFuncs->pfnUtf16Free(hddcnameUtf16);
 
                                             if (NS_FAILED(rc)) {
                                                 vboxError(conn, VIR_ERR_INTERNAL_ERROR,"%s:%s, rc=%08x",
@@ -2661,11 +2687,11 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                             }
                                         }
                                     }
-                                    g_pVBoxFuncs->pfnComUnallocMem(hdduuid);
+                                    data->pFuncs->pfnComUnallocMem(hdduuid);
                                 }
                                 hardDisk->vtbl->imedium.nsisupports.Release((nsISupports *)hardDisk);
                             }
-                            g_pVBoxFuncs->pfnUtf16Free(hddfileUtf16);
+                            data->pFuncs->pfnUtf16Free(hddfileUtf16);
                         } else if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
                         }
                     } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
@@ -2682,7 +2708,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
 
                                     memset(&fdemptyuuid, 0, sizeof(fdemptyuuid));
 
-                                    g_pVBoxFuncs->pfnUtf8ToUtf16(def->disks[i]->src, &fdfileUtf16);
+                                    data->pFuncs->pfnUtf8ToUtf16(def->disks[i]->src, &fdfileUtf16);
                                     rc = data->vboxObj->vtbl->FindFloppyImage(data->vboxObj, fdfileUtf16,
                                                                               &floppyImage);
 
@@ -2713,11 +2739,11 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                                 (unsigned)fduuid->m3[4], (unsigned)fduuid->m3[5],
                                                 (unsigned)fduuid->m3[6], (unsigned)fduuid->m3[7]);
                                             }
-                                            g_pVBoxFuncs->pfnComUnallocMem(fduuid);
+                                            data->pFuncs->pfnComUnallocMem(fduuid);
                                         }
                                         floppyImage->vtbl->imedium.nsisupports.Release((nsISupports *)floppyImage);
                                     }
-                                    g_pVBoxFuncs->pfnUtf16Free(fdfileUtf16);
+                                    data->pFuncs->pfnUtf16Free(fdfileUtf16);
                                 }
                                 floppyDrive->vtbl->nsisupports.Release((nsISupports *)floppyDrive);
                             }
@@ -2829,9 +2855,9 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                         adapter->vtbl->AttachToBridgedInterface(adapter);
 
                         if (def->nets[i]->data.bridge.brname) {
-                            g_pVBoxFuncs->pfnUtf8ToUtf16(def->nets[i]->data.bridge.brname, &hostInterface);
+                            data->pFuncs->pfnUtf8ToUtf16(def->nets[i]->data.bridge.brname, &hostInterface);
                             adapter->vtbl->SetHostInterface(adapter, hostInterface);
-                            g_pVBoxFuncs->pfnUtf16Free(hostInterface);
+                            data->pFuncs->pfnUtf16Free(hostInterface);
                         }
 #if 0
                     } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_INTERNAL) {
@@ -2841,9 +2867,9 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                         adapter->vtbl->AttachToInternalNetwork(adapter);
 
                         if (def->nets[i]->data.network.name) {
-                            g_pVBoxFuncs->pfnUtf8ToUtf16(def->nets[i]->data.internal.name, &internalNetwork);
+                            data->pFuncs->pfnUtf8ToUtf16(def->nets[i]->data.network.name, &internalNetwork);
                             adapter->vtbl->SetInternalNetwork(adapter, internalNetwork);
-                            g_pVBoxFuncs->pfnUtf16Free(internalNetwork);
+                            data->pFuncs->pfnUtf16Free(internalNetwork);
                         }
                     } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_HOSTONLY) {
                         PRUnichar *hostInterface = NULL;
@@ -2856,7 +2882,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                         if (def->nets[i]->data.ethernet.dev) {
                             g_pVBoxFuncs->pfnUtf8ToUtf16(def->nets[i]->data.hostonly.name, &hostInterface);
                             adapter->vtbl->SetHostInterface(adapter, hostInterface);
-                            g_pVBoxFuncs->pfnUtf16Free(hostInterface);
+                            data->pFuncs->pfnUtf16Free(hostInterface);
                         }
 #endif
                     } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_USER) {
@@ -2869,11 +2895,11 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                         adapter->vtbl->AttachToNAT(adapter);
                     }
 
-                    g_pVBoxFuncs->pfnUtf8ToUtf16(macaddrvbox, &MACAddress);
+                    data->pFuncs->pfnUtf8ToUtf16(macaddrvbox, &MACAddress);
                     if (def->nets[i]->mac) {
                         adapter->vtbl->SetMACAddress(adapter, MACAddress);
                     }
-                    g_pVBoxFuncs->pfnUtf16Free(MACAddress);
+                    data->pFuncs->pfnUtf16Free(MACAddress);
                 }
             }
         }   /* Finished:Block to attach the Network Card to the VM */
@@ -2903,7 +2929,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                     PRUnichar *pathUtf16 = NULL;
 
                     serialPort->vtbl->SetEnabled(serialPort, 1);
-                    g_pVBoxFuncs->pfnUtf8ToUtf16(def->serials[i]->data.file.path, &pathUtf16);
+                    data->pFuncs->pfnUtf8ToUtf16(def->serials[i]->data.file.path, &pathUtf16);
 
                     /* For now hard code the serial ports to COM1 and COM2,
                      * COM1 (Base Addr: 0x3F8 (decimal: 1016), IRQ: 4)
@@ -2951,7 +2977,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
 
                     serialPort->vtbl->nsisupports.Release((nsISupports *)serialPort);
                     if (pathUtf16) {
-                        g_pVBoxFuncs->pfnUtf16Free(pathUtf16);
+                        data->pFuncs->pfnUtf16Free(pathUtf16);
                         pathUtf16 = NULL;
                     }
                 }
@@ -2982,7 +3008,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                 if (parallelPort) {
                     PRUnichar *pathUtf16 = NULL;
 
-                    g_pVBoxFuncs->pfnUtf8ToUtf16(def->parallels[i]->data.file.path, &pathUtf16);
+                    data->pFuncs->pfnUtf8ToUtf16(def->parallels[i]->data.file.path, &pathUtf16);
 
                     /* For now hard code the parallel ports to
                      * LPT1 (Base Addr: 0x378 (decimal: 888), IRQ: 7)
@@ -3014,7 +3040,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
 
                     parallelPort->vtbl->nsisupports.Release((nsISupports *)parallelPort);
                     if (pathUtf16) {
-                        g_pVBoxFuncs->pfnUtf16Free(pathUtf16);
+                        data->pFuncs->pfnUtf16Free(pathUtf16);
                         pathUtf16 = NULL;
                     }
                 }
@@ -3074,11 +3100,11 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                         if (def->graphics->data.rdp.listenAddr) {
                             PRUnichar *netAddressUtf16 = NULL;
 
-                            g_pVBoxFuncs->pfnUtf8ToUtf16(def->graphics->data.rdp.listenAddr, &netAddressUtf16);
+                            data->pFuncs->pfnUtf8ToUtf16(def->graphics->data.rdp.listenAddr, &netAddressUtf16);
                             VRDPServer->vtbl->SetNetAddress(VRDPServer, netAddressUtf16);
                             DEBUG("VRDP listen address is set to: %s", def->graphics->data.rdp.listenAddr);
 
-                            g_pVBoxFuncs->pfnUtf16Free(netAddressUtf16);
+                            data->pFuncs->pfnUtf16Free(netAddressUtf16);
                         }
 
                         VRDPServer->vtbl->nsisupports.Release((nsISupports *)VRDPServer);
@@ -3136,12 +3162,12 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                      * restricting to %04d
                                      */
                                     sprintf(filtername, "filter%04d", i);
-                                    g_pVBoxFuncs->pfnUtf8ToUtf16(filtername, &filternameUtf16);
+                                    data->pFuncs->pfnUtf8ToUtf16(filtername, &filternameUtf16);
 
                                     USBController->vtbl->CreateDeviceFilter(USBController,
                                                                             filternameUtf16,
                                                                             &filter);
-                                    g_pVBoxFuncs->pfnUtf16Free(filternameUtf16);
+                                    data->pFuncs->pfnUtf16Free(filternameUtf16);
 
                                     if (filter &&
                                         (def->hostdevs[i]->source.subsys.u.usb.vendor ||
@@ -3154,15 +3180,15 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
 
                                         if (def->hostdevs[i]->source.subsys.u.usb.vendor) {
                                             sprintf(vendorId, "%x", def->hostdevs[i]->source.subsys.u.usb.vendor);
-                                            g_pVBoxFuncs->pfnUtf8ToUtf16(vendorId, &vendorIdUtf16);
+                                            data->pFuncs->pfnUtf8ToUtf16(vendorId, &vendorIdUtf16);
                                             filter->vtbl->SetVendorId(filter, vendorIdUtf16);
-                                            g_pVBoxFuncs->pfnUtf16Free(vendorIdUtf16);
+                                            data->pFuncs->pfnUtf16Free(vendorIdUtf16);
                                         }
                                         if (def->hostdevs[i]->source.subsys.u.usb.product) {
                                             sprintf(productId, "%x", def->hostdevs[i]->source.subsys.u.usb.product);
-                                            g_pVBoxFuncs->pfnUtf8ToUtf16(productId, &productIdUtf16);
+                                            data->pFuncs->pfnUtf8ToUtf16(productId, &productIdUtf16);
                                             filter->vtbl->SetProductId(filter, productIdUtf16);
-                                            g_pVBoxFuncs->pfnUtf16Free(productIdUtf16);
+                                            data->pFuncs->pfnUtf16Free(productIdUtf16);
                                         }
                                         filter->vtbl->SetActive(filter, 1);
                                         USBController->vtbl->InsertDeviceFilter(USBController,
@@ -3185,7 +3211,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
          */
         rc = machine->vtbl->SaveSettings(machine);
         data->vboxSession->vtbl->Close(data->vboxSession);
-        g_pVBoxFuncs->pfnComUnallocMem(mchiid);
+        data->pFuncs->pfnComUnallocMem(mchiid);
 
         dom = virGetDomain(conn, def->name, def->uuid);
         if(machine) {
@@ -3231,7 +3257,7 @@ static int vboxDomainUndefine(virDomainPtr dom) {
             PRUnichar *hddcnameUtf16 = NULL;
 
             char *hddcname = strdup("IDE");
-            g_pVBoxFuncs->pfnUtf8ToUtf16(hddcname, &hddcnameUtf16);
+            data->pFuncs->pfnUtf8ToUtf16(hddcname, &hddcnameUtf16);
             VIR_FREE(hddcname);
 
             /* Open a Session for the machine */
@@ -3249,7 +3275,7 @@ static int vboxDomainUndefine(virDomainPtr dom) {
                 }
                 data->vboxSession->vtbl->Close(data->vboxSession);
             }
-            g_pVBoxFuncs->pfnUtf16Free(hddcnameUtf16);
+            data->pFuncs->pfnUtf16Free(hddcnameUtf16);
         }
 
         rc = data->vboxObj->vtbl->UnregisterMachine(data->vboxObj, iid, &machine);
@@ -3356,7 +3382,7 @@ static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
 
                                     memset(&dvdemptyuuid, 0, sizeof(dvdemptyuuid));
 
-                                    g_pVBoxFuncs->pfnUtf8ToUtf16(dev->data.disk->src, &dvdfileUtf16);
+                                    data->pFuncs->pfnUtf8ToUtf16(dev->data.disk->src, &dvdfileUtf16);
 
                                     data->vboxObj->vtbl->FindDVDImage(data->vboxObj, dvdfileUtf16, &dvdImage);
                                     if (!dvdImage) {
@@ -3387,12 +3413,12 @@ static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
                                                       (unsigned)dvduuid->m3[5], (unsigned)dvduuid->m3[6],
                                                       (unsigned)dvduuid->m3[7]);
                                             }
-                                            g_pVBoxFuncs->pfnComUnallocMem(dvduuid);
+                                            data->pFuncs->pfnComUnallocMem(dvduuid);
                                         }
 
                                         dvdImage->vtbl->imedium.nsisupports.Release((nsISupports *)dvdImage);
                                     }
-                                    g_pVBoxFuncs->pfnUtf16Free(dvdfileUtf16);
+                                    data->pFuncs->pfnUtf16Free(dvdfileUtf16);
                                     dvdDrive->vtbl->nsisupports.Release((nsISupports *)dvdDrive);
                                 }
                             } else if (dev->data.disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
@@ -3411,7 +3437,7 @@ static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
 
                                         memset(&fdemptyuuid, 0, sizeof(fdemptyuuid));
 
-                                        g_pVBoxFuncs->pfnUtf8ToUtf16(dev->data.disk->src, &fdfileUtf16);
+                                        data->pFuncs->pfnUtf8ToUtf16(dev->data.disk->src, &fdfileUtf16);
                                         rc = data->vboxObj->vtbl->FindFloppyImage(data->vboxObj, fdfileUtf16,
                                                                                   &floppyImage);
 
@@ -3443,11 +3469,11 @@ static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
                                                           (unsigned)fduuid->m3[4], (unsigned)fduuid->m3[5],
                                                           (unsigned)fduuid->m3[6], (unsigned)fduuid->m3[7]);
                                                 }
-                                                g_pVBoxFuncs->pfnComUnallocMem(fduuid);
+                                                data->pFuncs->pfnComUnallocMem(fduuid);
                                             }
                                             floppyImage->vtbl->imedium.nsisupports.Release((nsISupports *)floppyImage);
                                         }
-                                        g_pVBoxFuncs->pfnUtf16Free(fdfileUtf16);
+                                        data->pFuncs->pfnUtf16Free(fdfileUtf16);
                                     }
                                     floppyDrive->vtbl->nsisupports.Release((nsISupports *)floppyDrive);
                                 }
