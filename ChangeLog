@@ -1,3 +1,7 @@
+Wed May  6 15:27:04 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.spec.in: add a couple of missing directories
+
 Wed May  6 15:22:08 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/vbox/vbox_XPCOMCGlue.[ch]: improve VirtualBox path detection
