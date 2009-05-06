@@ -1,3 +1,8 @@
+Wed May  6 15:22:08 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/vbox/vbox_XPCOMCGlue.[ch]: improve VirtualBox path detection
+	  patch by Pritesh Kothari
+
 Tue May  5 10:20:27 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/qemu_driver.c: Don't throw away StartVM errors when
