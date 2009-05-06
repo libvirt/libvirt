@@ -1215,7 +1215,7 @@ static int qemuPrepareHostDevices(virConnectPtr conn,
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        if (!hostdev->managed) {
+        if (hostdev->managed) {
             pciDevice *dev = pciGetDevice(conn,
                                           hostdev->source.subsys.u.pci.domain,
                                           hostdev->source.subsys.u.pci.bus,

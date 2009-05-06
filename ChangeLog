@@ -1,3 +1,7 @@
+Wed May  6 16:55:02 GMT 2009 Mark McLoughlin <markmc@redhat.com>
+
+	* src/qemu_driver.c: fix handling of <hostdev managed='yes'>
+
 Wed May  6 10:19:36 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/qemu_driver.c : Refresh QEMU driver capabilities for each
