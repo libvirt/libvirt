@@ -1,3 +1,8 @@
+Thu May  7 09:31:22 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/libvirtd.init.in: improve the LSB init header for the
+	  init.d file, patch by Frederik Himpe
+
 Thu May  7 09:26:50 CEST 2009 Guido Günther <agx@sigxcpu.org>
 
 	* src/util.c (virFileWritePid): check for NULL pointers

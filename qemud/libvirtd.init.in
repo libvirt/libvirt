@@ -5,7 +5,13 @@
 #
 ### BEGIN INIT INFO
 # Provides: libvirtd
+# Required-Start: $network messagebus
+# Should-Start: $named
 # Should-Start: xend
+# Should-Start: hal
+# Should-Start: avahi
+# Required-Stop: $network messagebus
+# Should-Stop: $named
 # Default-Start: 3 4 5
 # Short-Description: daemon for libvirt virtualization API
 # Description: This is a daemon for managing guest instances
