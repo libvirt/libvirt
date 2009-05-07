@@ -1348,21 +1348,21 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (def->graphics &&
-        def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+    if ((def->ngraphics == 1) &&
+        def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virBuffer opt = VIR_BUFFER_INITIALIZER;
         char *optstr;
 
         if (qemuCmdFlags & QEMUD_CMD_FLAG_VNC_COLON) {
-            if (def->graphics->data.vnc.listenAddr)
-                virBufferAdd(&opt, def->graphics->data.vnc.listenAddr, -1);
+            if (def->graphics[0]->data.vnc.listenAddr)
+                virBufferAdd(&opt, def->graphics[0]->data.vnc.listenAddr, -1);
             else if (driver->vncListen)
                 virBufferAdd(&opt, driver->vncListen, -1);
 
             virBufferVSprintf(&opt, ":%d",
-                              def->graphics->data.vnc.port - 5900);
+                              def->graphics[0]->data.vnc.port - 5900);
 
-            if (def->graphics->data.vnc.passwd ||
+            if (def->graphics[0]->data.vnc.passwd ||
                 driver->vncPassword)
                 virBufferAddLit(&opt, ",password");
 
@@ -1387,7 +1387,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
             }
         } else {
             virBufferVSprintf(&opt, "%d",
-                              def->graphics->data.vnc.port - 5900);
+                              def->graphics[0]->data.vnc.port - 5900);
         }
         if (virBufferError(&opt))
             goto no_memory;
@@ -1396,22 +1396,22 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
         ADD_ARG_LIT("-vnc");
         ADD_ARG(optstr);
-        if (def->graphics->data.vnc.keymap) {
+        if (def->graphics[0]->data.vnc.keymap) {
             ADD_ARG_LIT("-k");
-            ADD_ARG_LIT(def->graphics->data.vnc.keymap);
+            ADD_ARG_LIT(def->graphics[0]->data.vnc.keymap);
         }
-    } else if (def->graphics &&
-               def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
+    } else if ((def->ngraphics == 1) &&
+               def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
         char *xauth = NULL;
         char *display = NULL;
 
-        if (def->graphics->data.sdl.xauth &&
+        if (def->graphics[0]->data.sdl.xauth &&
             virAsprintf(&xauth, "XAUTHORITY=%s",
-                        def->graphics->data.sdl.xauth) < 0)
+                        def->graphics[0]->data.sdl.xauth) < 0)
             goto no_memory;
-        if (def->graphics->data.sdl.display &&
+        if (def->graphics[0]->data.sdl.display &&
             virAsprintf(&display, "DISPLAY=%s",
-                        def->graphics->data.sdl.display) < 0) {
+                        def->graphics[0]->data.sdl.display) < 0) {
             VIR_FREE(xauth);
             goto no_memory;
         }
@@ -1420,7 +1420,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
             ADD_ENV(xauth);
         if (display)
             ADD_ENV(display);
-        if (def->graphics->data.sdl.fullscreen)
+        if (def->graphics[0]->data.sdl.fullscreen)
             ADD_ARG_LIT("-full-screen");
     }
 

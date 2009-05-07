@@ -1257,7 +1257,10 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
             if (xenXMConfigCopyStringOpt(conn, conf, "keymap", &graphics->data.vnc.keymap) < 0)
                 goto cleanup;
 
-            def->graphics = graphics;
+            if (VIR_ALLOC_N(def->graphics, 1) < 0)
+                goto no_memory;
+            def->graphics[0] = graphics;
+            def->ngraphics = 1;
             graphics = NULL;
         } else {
             if (xenXMConfigGetBool(conn, conf, "sdl", &val, 0) < 0)
@@ -1270,7 +1273,10 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                     goto cleanup;
                 if (xenXMConfigCopyStringOpt(conn, conf, "xauthority", &graphics->data.sdl.xauth) < 0)
                     goto cleanup;
-                def->graphics = graphics;
+                if (VIR_ALLOC_N(def->graphics, 1) < 0)
+                    goto no_memory;
+                def->graphics[0] = graphics;
+                def->ngraphics = 1;
                 graphics = NULL;
             }
         }
@@ -1339,7 +1345,10 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                     nextkey++;
                 key = nextkey;
             }
-            def->graphics = graphics;
+            if (VIR_ALLOC_N(def->graphics, 1) < 0)
+                goto no_memory;
+            def->graphics[0] = graphics;
+            def->ngraphics = 1;
             graphics = NULL;
         }
     }
@@ -2305,20 +2314,20 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
         }
     }
 
-    if (def->graphics) {
+    if (def->ngraphics == 1) {
         if (priv->xendConfigVersion < (hvm ? 4 : XEND_CONFIG_MIN_VERS_PVFB_NEWCONF)) {
-            if (def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
+            if (def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
                 if (xenXMConfigSetInt(conf, "sdl", 1) < 0)
                     goto no_memory;
                 if (xenXMConfigSetInt(conf, "vnc", 0) < 0)
                     goto no_memory;
-                if (def->graphics->data.sdl.display &&
+                if (def->graphics[0]->data.sdl.display &&
                     xenXMConfigSetString(conf, "display",
-                                         def->graphics->data.sdl.display) < 0)
+                                     def->graphics[0]->data.sdl.display) < 0)
                     goto no_memory;
-                if (def->graphics->data.sdl.xauth &&
+                if (def->graphics[0]->data.sdl.xauth &&
                     xenXMConfigSetString(conf, "xauthority",
-                                         def->graphics->data.sdl.xauth) < 0)
+                                         def->graphics[0]->data.sdl.xauth) < 0)
                     goto no_memory;
             } else {
                 if (xenXMConfigSetInt(conf, "sdl", 0) < 0)
@@ -2326,53 +2335,53 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
                 if (xenXMConfigSetInt(conf, "vnc", 1) < 0)
                     goto no_memory;
                 if (xenXMConfigSetInt(conf, "vncunused",
-                                      def->graphics->data.vnc.autoport ? 1 : 0) < 0)
+                              def->graphics[0]->data.vnc.autoport ? 1 : 0) < 0)
                     goto no_memory;
-                if (!def->graphics->data.vnc.autoport &&
+                if (!def->graphics[0]->data.vnc.autoport &&
                     xenXMConfigSetInt(conf, "vncdisplay",
-                                      def->graphics->data.vnc.port - 5900) < 0)
+                                  def->graphics[0]->data.vnc.port - 5900) < 0)
                     goto no_memory;
-                if (def->graphics->data.vnc.listenAddr &&
+                if (def->graphics[0]->data.vnc.listenAddr &&
                     xenXMConfigSetString(conf, "vnclisten",
-                                         def->graphics->data.vnc.listenAddr) < 0)
+                                    def->graphics[0]->data.vnc.listenAddr) < 0)
                     goto no_memory;
-                if (def->graphics->data.vnc.passwd &&
+                if (def->graphics[0]->data.vnc.passwd &&
                     xenXMConfigSetString(conf, "vncpasswd",
-                                         def->graphics->data.vnc.passwd) < 0)
+                                        def->graphics[0]->data.vnc.passwd) < 0)
                     goto no_memory;
-                if (def->graphics->data.vnc.keymap &&
+                if (def->graphics[0]->data.vnc.keymap &&
                     xenXMConfigSetString(conf, "keymap",
-                                         def->graphics->data.vnc.keymap) < 0)
+                                        def->graphics[0]->data.vnc.keymap) < 0)
                     goto no_memory;
             }
         } else {
             virConfValuePtr vfb, disp;
             char *vfbstr = NULL;
             virBuffer buf = VIR_BUFFER_INITIALIZER;
-            if (def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
+            if (def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
                 virBufferAddLit(&buf, "type=sdl");
-                if (def->graphics->data.sdl.display)
+                if (def->graphics[0]->data.sdl.display)
                     virBufferVSprintf(&buf, ",display=%s",
-                                      def->graphics->data.sdl.display);
-                if (def->graphics->data.sdl.xauth)
+                                      def->graphics[0]->data.sdl.display);
+                if (def->graphics[0]->data.sdl.xauth)
                     virBufferVSprintf(&buf, ",xauthority=%s",
-                                      def->graphics->data.sdl.xauth);
+                                      def->graphics[0]->data.sdl.xauth);
             } else {
                 virBufferAddLit(&buf, "type=vnc");
                 virBufferVSprintf(&buf, ",vncunused=%d",
-                                  def->graphics->data.vnc.autoport ? 1 : 0);
-                if (!def->graphics->data.vnc.autoport)
+                                  def->graphics[0]->data.vnc.autoport ? 1 : 0);
+                if (!def->graphics[0]->data.vnc.autoport)
                     virBufferVSprintf(&buf, ",vncdisplay=%d",
-                                      def->graphics->data.vnc.port - 5900);
-                if (def->graphics->data.vnc.listenAddr)
+                                      def->graphics[0]->data.vnc.port - 5900);
+                if (def->graphics[0]->data.vnc.listenAddr)
                     virBufferVSprintf(&buf, ",vnclisten=%s",
-                                      def->graphics->data.vnc.listenAddr);
-                if (def->graphics->data.vnc.passwd)
+                                      def->graphics[0]->data.vnc.listenAddr);
+                if (def->graphics[0]->data.vnc.passwd)
                     virBufferVSprintf(&buf, ",vncpasswd=%s",
-                                      def->graphics->data.vnc.passwd);
-                if (def->graphics->data.vnc.keymap)
+                                      def->graphics[0]->data.vnc.passwd);
+                if (def->graphics[0]->data.vnc.keymap)
                     virBufferVSprintf(&buf, ",keymap=%s",
-                                      def->graphics->data.vnc.keymap);
+                                      def->graphics[0]->data.vnc.keymap);
             }
             if (virBufferError(&buf))
                 goto no_memory;

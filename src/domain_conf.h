@@ -456,8 +456,8 @@ struct _virDomainDef {
 
     int localtime;
 
-    /* Only 1 */
-    virDomainGraphicsDefPtr graphics;
+    int ngraphics;
+    virDomainGraphicsDefPtr *graphics;
 
     int ndisks;
     virDomainDiskDefPtr *disks;

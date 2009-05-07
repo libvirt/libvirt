@@ -1,3 +1,11 @@
+Thu May  7 09:24:47 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/domain_conf.c src/domain_conf.h: parse and save multiple
+	  graphics elements instead of one, patch by Pritesh Kothari
+	* src/qemu_conf.c src/qemu_driver.c: adapt the qemu/kvm driver for
+	  the new structures, patch by Pritesh Kothari
+	* src/xend_internal.c src/xm_internal.c: same thing for Xen drivers
+
 Thu May  7 09:16:05 CEST 2009 Guido Günther <agx@sigxcpu.org>
 
 	* src/lxc_controller.c (main): don't crash when called without

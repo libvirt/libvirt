@@ -1140,13 +1140,13 @@ qemudInitPasswords(virConnectPtr conn,
      * for that yet...
      */
 
-    if (vm->def->graphics &&
-        vm->def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-        (vm->def->graphics->data.vnc.passwd || driver->vncPassword)) {
+    if ((vm->def->ngraphics == 1) &&
+        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+        (vm->def->graphics[0]->data.vnc.passwd || driver->vncPassword)) {
 
         if (qemudMonitorCommandExtra(vm, "change vnc password",
-                                     vm->def->graphics->data.vnc.passwd ?
-                                     vm->def->graphics->data.vnc.passwd :
+                                     vm->def->graphics[0]->data.vnc.passwd ?
+                                     vm->def->graphics[0]->data.vnc.passwd :
                                      driver->vncPassword,
                                      QEMU_PASSWD_PROMPT,
                                      &info) < 0) {
@@ -1338,16 +1338,16 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         driver->securityDriver->domainGenSecurityLabel(conn, vm) < 0)
         return -1;
 
-    if (vm->def->graphics &&
-        vm->def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-        vm->def->graphics->data.vnc.autoport) {
+    if ((vm->def->ngraphics == 1) &&
+        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+        vm->def->graphics[0]->data.vnc.autoport) {
         int port = qemudNextFreeVNCPort(driver);
         if (port < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("Unable to find an unused VNC port"));
             goto cleanup;
         }
-        vm->def->graphics->data.vnc.port = port;
+        vm->def->graphics[0]->data.vnc.port = port;
     }
 
     if (virFileMakePath(driver->logDir) < 0) {
@@ -1504,10 +1504,10 @@ cleanup:
         VIR_FREE(vm->def->seclabel.label);
         VIR_FREE(vm->def->seclabel.imagelabel);
     }
-    if (vm->def->graphics &&
-        vm->def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-        vm->def->graphics->data.vnc.autoport)
-        vm->def->graphics->data.vnc.port = -1;
+    if ((vm->def->ngraphics == 1) &&
+        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+        vm->def->graphics[0]->data.vnc.autoport)
+        vm->def->graphics[0]->data.vnc.port = -1;
     if (vm->logfile != -1) {
         close(vm->logfile);
         vm->logfile = -1;

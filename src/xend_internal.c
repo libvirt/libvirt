@@ -2023,7 +2023,11 @@ xenDaemonParseSxprGraphicsOld(virConnectPtr conn,
             !(graphics->data.vnc.keymap = strdup(keymap)))
             goto no_memory;
 
-        def->graphics = graphics;
+        if (VIR_ALLOC_N(def->graphics, 1) < 0)
+            goto no_memory;
+        def->graphics[0] = graphics;
+        def->ngraphics = 1;
+        graphics = NULL;
     } else if ((tmp = sexpr_fmt_node(root, "domain/image/%s/sdl", hvm ? "hvm" : "linux")) &&
                tmp[0] == '1') {
         /* Graphics device (HVM, or old (pre-3.0.4) style PV sdl config) */
@@ -2041,7 +2045,11 @@ xenDaemonParseSxprGraphicsOld(virConnectPtr conn,
             !(graphics->data.sdl.xauth = strdup(xauth)))
             goto no_memory;
 
-        def->graphics = graphics;
+        if (VIR_ALLOC_N(def->graphics, 1) < 0)
+            goto no_memory;
+        def->graphics[0] = graphics;
+        def->ngraphics = 1;
+        graphics = NULL;
     }
 
     return 0;
@@ -2130,7 +2138,11 @@ xenDaemonParseSxprGraphicsNew(virConnectPtr conn,
                     goto no_memory;
             }
 
-            def->graphics = graphics;
+            if (VIR_ALLOC_N(def->graphics, 1) < 0)
+                goto no_memory;
+            def->graphics[0] = graphics;
+            def->ngraphics = 1;
+            graphics = NULL;
             break;
         }
     }
@@ -2447,7 +2459,7 @@ xenDaemonParseSxpr(virConnectPtr conn,
         goto error;
 
     /* Graphics device (HVM <= 3.0.4, or PV <= 3.0.3) vnc config */
-    if (!def->graphics &&
+    if ((def->ngraphics == 0) &&
         xenDaemonParseSxprGraphicsOld(conn, def, root, hvm, xendConfigVersion) < 0)
         goto error;
 
@@ -5731,8 +5743,9 @@ xenDaemonFormatSxpr(virConnectPtr conn,
         /* PV graphics for xen <= 3.0.4, or HVM graphics for xen <= 3.1.0 */
         if ((!hvm && xendConfigVersion < XEND_CONFIG_MIN_VERS_PVFB_NEWCONF) ||
             (hvm && xendConfigVersion < 4)) {
-            if (def->graphics &&
-                xenDaemonFormatSxprGraphicsOld(conn, def->graphics, &buf, xendConfigVersion) < 0)
+            if ((def->ngraphics == 1) &&
+                xenDaemonFormatSxprGraphicsOld(conn, def->graphics[0],
+                                               &buf, xendConfigVersion) < 0)
                 goto error;
         }
 
@@ -5756,8 +5769,8 @@ xenDaemonFormatSxpr(virConnectPtr conn,
      * or HVM graphics config xen >= 3.0.5 */
     if ((xendConfigVersion >= XEND_CONFIG_MIN_VERS_PVFB_NEWCONF && !hvm) ||
         (xendConfigVersion >= 4 && hvm)) {
-        if (def->graphics &&
-            xenDaemonFormatSxprGraphicsNew(conn, def->graphics, &buf) < 0)
+        if ((def->ngraphics == 1) &&
+            xenDaemonFormatSxprGraphicsNew(conn, def->graphics[0], &buf) < 0)
             goto error;
     }
 
