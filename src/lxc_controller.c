@@ -745,7 +745,8 @@ int main(int argc, char *argv[])
 
 
 cleanup:
-    virFileDeletePid(LXC_STATE_DIR, def->name);
+    if (def)
+        virFileDeletePid(LXC_STATE_DIR, def->name);
     lxcControllerCleanupInterfaces(nveths, veths);
     unlink(sockpath);
     VIR_FREE(sockpath);

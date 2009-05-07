@@ -1,3 +1,8 @@
+Thu May  7 09:16:05 CEST 2009 Guido Günther <agx@sigxcpu.org>
+
+	* src/lxc_controller.c (main): don't crash when called without
+	arguments
+
 Wed May  6 16:55:02 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* src/qemu_driver.c: fix handling of <hostdev managed='yes'>
