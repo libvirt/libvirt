@@ -1165,6 +1165,11 @@ int virFileWritePid(const char *dir,
     FILE *file = NULL;
     char *pidfile = NULL;
 
+    if (name == NULL || dir == NULL) {
+        rc = EINVAL;
+        goto cleanup;
+    }
+
     if ((rc = virFileMakePath(dir)))
         goto cleanup;
 
@@ -1212,6 +1217,11 @@ int virFileReadPid(const char *dir,
     char *pidfile = NULL;
     *pid = 0;
 
+    if (name == NULL || dir == NULL) {
+        rc = EINVAL;
+        goto cleanup;
+    }
+
     if (!(pidfile = virFilePid(dir, name))) {
         rc = ENOMEM;
         goto cleanup;
@@ -1245,6 +1255,11 @@ int virFileDeletePid(const char *dir,
 {
     int rc = 0;
     char *pidfile = NULL;
+
+    if (name == NULL || dir == NULL) {
+        rc = EINVAL;
+        goto cleanup;
+    }
 
     if (!(pidfile = virFilePid(dir, name))) {
         rc = ENOMEM;
