@@ -1,3 +1,9 @@
+Fri May  8 12:15:05 CEST 2009 Guido Günther <agx@sigxcpu.org>
+
+	* src/vbox/vbox_tmpl.c (virDrvOpen): return VIR_DRV_OPEN_DECLINED
+	  instead of VIR_DRV_OPEN_ERROR when vbox can't be found so other
+	  hypervisors can be probed. Patch by Pritesh Kothari.
+
 Fri May  8 12:09:12 CEST 2009 Guido Günther <agx@sigxcpu.org>
 
 	* src/vbox/vbox_tmpl.c (vboxUninitialize): fix crash when init fails

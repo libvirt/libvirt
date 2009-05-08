@@ -351,7 +351,7 @@ static virDrvOpenStatus vboxOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 cleanup:
     vboxUninitialize(data);
-    return VIR_DRV_OPEN_ERROR;
+    return VIR_DRV_OPEN_DECLINED;
 }
 
 static int vboxClose(virConnectPtr conn) {
