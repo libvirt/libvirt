@@ -1,3 +1,10 @@
+Fri May  8 11:22:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix /dev/ population to use char devices (Ryota Ozaki)
+	* src/lxc_controller.c: Add /dev/ptmx to allow cgroup resources
+	* src/lxc_container.c: Create dev nodes as char devices, not
+	plain files
+
 Fri May  8 12:15:05 CEST 2009 Guido Günther <agx@sigxcpu.org>
 
 	* src/vbox/vbox_tmpl.c (virDrvOpen): return VIR_DRV_OPEN_DECLINED

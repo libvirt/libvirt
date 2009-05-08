@@ -440,7 +440,7 @@ static int lxcContainerPopulateDevices(void)
     /* Populate /dev/ with a few important bits */
     for (i = 0 ; i < ARRAY_CARDINALITY(devs) ; i++) {
         dev_t dev = makedev(devs[i].maj, devs[i].min);
-        if (mknod(devs[i].path, 0, dev) < 0 ||
+        if (mknod(devs[i].path, S_IFCHR, dev) < 0 ||
             chmod(devs[i].path, devs[i].mode)) {
             virReportSystemError(NULL, errno,
                                  _("failed to make device %s"),
@@ -457,7 +457,7 @@ static int lxcContainerPopulateDevices(void)
         }
     } else {
         dev_t dev = makedev(LXC_DEV_MAJ_TTY, LXC_DEV_MIN_PTMX);
-        if (mknod("/dev/ptmx", 0, dev) < 0 ||
+        if (mknod("/dev/ptmx", S_IFCHR, dev) < 0 ||
             chmod("/dev/ptmx", 0666)) {
             virReportSystemError(NULL, errno, "%s",
                                  _("failed to make device /dev/ptmx"));
