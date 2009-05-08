@@ -436,7 +436,7 @@ static int virCgroupMakeGroup(const char *name)
         virCgroupFree(&root);
 
         if (access(path, F_OK) != 0) {
-            if (mkdir(path, 0655) < 0) {
+            if (mkdir(path, 0755) < 0) {
                 rc = -errno;
                 VIR_FREE(path);
                 break;
