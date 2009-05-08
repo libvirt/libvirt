@@ -291,7 +291,8 @@ static int vboxExtractVersion(virConnectPtr conn, vboxGlobalData *data) {
 }
 
 static void vboxUninitialize(vboxGlobalData *data) {
-    data->pFuncs->pfnComUninitialize();
+    if (data->pFuncs)
+        data->pFuncs->pfnComUninitialize();
     VBoxCGlueTerm();
 
     if (!data)
