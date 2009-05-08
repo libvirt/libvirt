@@ -1,3 +1,8 @@
+Fri May  8 11:07:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c: Enable migrate/save/restore for QEMU
+	0.10.0 or later releases
+
 Fri May  8 11:05:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/driver.c: Log dlopen related errors at higher log level

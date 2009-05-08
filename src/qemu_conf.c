@@ -472,16 +472,13 @@ int qemudExtractVersionInfo(const char *qemu,
 
     /*
      * Handling of -incoming arg with varying features
-     *  -incoming tcp    (kvm >= 79)
-     *  -incoming exec   (kvm >= 80)
+     *  -incoming tcp    (kvm >= 79, qemu >= 0.10.0)
+     *  -incoming exec   (kvm >= 80, qemu >= 0.10.0)
      *  -incoming stdio  (all earlier kvm)
      *
      * NB, there was a pre-kvm-79 'tcp' support, but it
      * was broken, because it blocked the monitor console
      * while waiting for data, so pretend it doesn't exist
-     *
-     * XXX when next QEMU release after 0.9.1 arrives,
-     * we'll need to add MIGRATE_QEMU_TCP/EXEC here too
      */
     if (kvm_version >= 79) {
         flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP;
@@ -489,6 +486,9 @@ int qemudExtractVersionInfo(const char *qemu,
             flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC;
     } else if (kvm_version > 0) {
         flags |= QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO;
+    } else if (version >= 10000) {
+        flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP;
+        flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC;
     }
 
     if (retversion)
