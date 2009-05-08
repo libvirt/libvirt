@@ -1018,6 +1018,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                     errmsg = _("Security model not found: %s");
             break;
+        case VIR_ERR_OPERATION_INVALID:
+            if (info == NULL)
+                    errmsg = _("Requested operation is not valid");
+            else
+                    errmsg = _("Requested operation is not valid: %s");
+            break;
     }
     return (errmsg);
 }

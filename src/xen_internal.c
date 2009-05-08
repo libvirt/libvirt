@@ -1068,9 +1068,14 @@ xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
     }
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
-    if (priv->handle < 0 || domain->id < 0) {
+    if (priv->handle < 0) {
         virXenErrorFunc(domain->conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        "priv->handle or domain->id invalid", 0);
+                        "priv->handle invalid", 0);
+        return NULL;
+    }
+    if (domain->id < 0) {
+        virXenError(domain->conn, VIR_ERR_OPERATION_INVALID,
+                    "%s", _("domain is not running"));
         return NULL;
     }
 
@@ -1143,9 +1148,14 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
     }
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
-    if (priv->handle < 0 || domain->id < 0) {
+    if (priv->handle < 0) {
         virXenErrorFunc(domain->conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        "priv->handle or domain->id invalid", 0);
+                        "priv->handle invalid", 0);
+        return -1;
+    }
+    if (domain->id < 0) {
+        virXenError(domain->conn, VIR_ERR_OPERATION_INVALID,
+                    "%s", _("domain is not running"));
         return -1;
     }
 
@@ -1241,9 +1251,14 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
     }
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
-    if (priv->handle < 0 || domain->id < 0) {
-        virXenErrorFunc (domain->conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                         "priv->handle or domain->id invalid", 0);
+    if (priv->handle < 0) {
+        virXenErrorFunc(domain->conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+                        "priv->handle invalid", 0);
+        return -1;
+    }
+    if (domain->id < 0) {
+        virXenError(domain->conn, VIR_ERR_OPERATION_INVALID,
+                    "%s", _("domain is not running"));
         return -1;
     }
 

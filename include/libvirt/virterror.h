@@ -157,6 +157,7 @@ typedef enum {
     VIR_ERR_INVALID_NODE_DEVICE,/* invalid node device object */
     VIR_ERR_NO_NODE_DEVICE,/* node device not found */
     VIR_ERR_NO_SECURITY_MODEL, /* security model not found */
+    VIR_ERR_OPERATION_INVALID, /* operation is not applicable at this time */
 } virErrorNumber;
 
 /**

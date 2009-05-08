@@ -1,3 +1,11 @@
+Fri May  8 10:56:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* include/libvirt/virterror.h, src/virterror.c: Add new error
+	code VIR_ERR_OPERATION_INVALID for operations that are not
+	applicable at this time (eg, pause on an inactive guest)
+	* src/qemu_driver.c, src/xen_internal.c, src/xend_internal.c:
+	Use new error code where relevant.
+
 Thu May  7 09:31:22 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/libvirtd.init.in: improve the LSB init header for the

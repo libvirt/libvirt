@@ -2982,7 +2982,7 @@ xenDaemonDomainSuspend(virDomainPtr domain)
     }
 
     if (domain->id < 0) {
-        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
+        virXendError(domain->conn, VIR_ERR_OPERATION_INVALID,
                      _("Domain %s isn't running."), domain->name);
         return(-1);
     }
@@ -3009,7 +3009,7 @@ xenDaemonDomainResume(virDomainPtr domain)
     }
 
     if (domain->id < 0) {
-        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
+        virXendError(domain->conn, VIR_ERR_OPERATION_INVALID,
                      _("Domain %s isn't running."), domain->name);
         return(-1);
     }
@@ -3037,7 +3037,7 @@ xenDaemonDomainShutdown(virDomainPtr domain)
     }
 
     if (domain->id < 0) {
-        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
+        virXendError(domain->conn, VIR_ERR_OPERATION_INVALID,
                      _("Domain %s isn't running."), domain->name);
         return(-1);
     }
@@ -3066,7 +3066,7 @@ xenDaemonDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
     }
 
     if (domain->id < 0) {
-        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
+        virXendError(domain->conn, VIR_ERR_OPERATION_INVALID,
                      _("Domain %s isn't running."), domain->name);
         return(-1);
     }
@@ -3097,7 +3097,7 @@ xenDaemonDomainDestroy(virDomainPtr domain)
     }
 
     if (domain->id < 0) {
-        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
+        virXendError(domain->conn, VIR_ERR_OPERATION_INVALID,
                      _("Domain %s isn't running."), domain->name);
         return(-1);
     }
@@ -3172,7 +3172,7 @@ xenDaemonDomainSave(virDomainPtr domain, const char *filename)
     }
 
     if (domain->id < 0) {
-        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
+        virXendError(domain->conn, VIR_ERR_OPERATION_INVALID,
                      _("Domain %s isn't running."), domain->name);
         return(-1);
     }
@@ -3209,7 +3209,7 @@ xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
     }
 
     if (domain->id < 0) {
-        virXendError(domain->conn, VIR_ERR_INVALID_ARG,
+        virXendError(domain->conn, VIR_ERR_OPERATION_INVALID,
                      _("Domain %s isn't running."), domain->name);
         return(-1);
     }

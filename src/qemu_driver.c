@@ -1325,7 +1325,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     FD_ZERO(&keepfd);
 
     if (virDomainIsActive(vm)) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_INVALID,
                          "%s", _("VM is already active"));
         return -1;
     }
@@ -2216,7 +2216,7 @@ static int qemudDomainSuspend(virDomainPtr dom) {
         goto cleanup;
     }
     if (!virDomainIsActive(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                          "%s", _("domain is not running"));
         goto cleanup;
     }
@@ -2269,7 +2269,7 @@ static int qemudDomainResume(virDomainPtr dom) {
         goto cleanup;
     }
     if (!virDomainIsActive(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                          "%s", _("domain is not running"));
         goto cleanup;
     }
@@ -2757,7 +2757,7 @@ static int qemudDomainSave(virDomainPtr dom,
     }
 
     if (!virDomainIsActive(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                          "%s", _("domain is not running"));
         goto cleanup;
     }
@@ -2892,7 +2892,7 @@ static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
     }
 
     if (virDomainIsActive(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT, "%s",
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID, "%s",
                          _("cannot change vcpu count of an active domain"));
         goto cleanup;
     }
@@ -2944,8 +2944,16 @@ qemudDomainPinVcpu(virDomainPtr dom,
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     qemuDriverUnlock(driver);
 
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
     if (!virDomainIsActive(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                          "%s",_("cannot pin vcpus on an inactive domain"));
         goto cleanup;
     }
@@ -3005,8 +3013,16 @@ qemudDomainGetVcpus(virDomainPtr dom,
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     qemuDriverUnlock(driver);
 
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
     if (!virDomainIsActive(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                          "%s",_("cannot pin vcpus on an inactive domain"));
         goto cleanup;
     }
@@ -3260,7 +3276,7 @@ static int qemudDomainRestore(virConnectPtr conn,
         vm = virDomainFindByName(&driver->domains, def->name);
     if (vm) {
         if (virDomainIsActive(vm)) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+            qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_INVALID,
                              _("domain is already active as '%s'"), vm->def->name);
             goto cleanup;
         } else {
@@ -3513,7 +3529,7 @@ static int qemudDomainUndefine(virDomainPtr dom) {
     }
 
     if (virDomainIsActive(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                          "%s", _("cannot delete active domain"));
         goto cleanup;
     }
@@ -3910,7 +3926,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
 
     if (!virDomainIsActive(vm)) {
         qemuDriverUnlock(driver);
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                          "%s", _("cannot attach device on inactive domain"));
         goto cleanup;
     }
@@ -4062,7 +4078,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
 
     if (!virDomainIsActive(vm)) {
         qemuDriverUnlock(driver);
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                          "%s", _("cannot detach device on inactive domain"));
         goto cleanup;
     }
@@ -4222,7 +4238,7 @@ qemudDomainBlockStats (virDomainPtr dom,
         goto cleanup;
     }
     if (!virDomainIsActive (vm)) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                           "%s", _("domain is not running"));
         goto cleanup;
     }
@@ -4361,7 +4377,7 @@ qemudDomainInterfaceStats (virDomainPtr dom,
     }
 
     if (!virDomainIsActive(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                          "%s", _("domain is not running"));
         goto cleanup;
     }
@@ -4507,7 +4523,7 @@ qemudDomainMemoryPeek (virDomainPtr dom,
     }
 
     if (!virDomainIsActive(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                          "%s", _("domain is not running"));
         goto cleanup;
     }
@@ -4832,7 +4848,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
     }
 
     if (!virDomainIsActive(vm)) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                           "%s", _("domain is not running"));
         goto cleanup;
     }
