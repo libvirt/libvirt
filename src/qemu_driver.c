@@ -1456,8 +1456,17 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                              _("Domain %s didn't show up\n"), vm->def->name);
             ret = -1;
         }
-    } else
-        ret = -1;
+    } else if (ret == -2) {
+        /* The virExec process that launches the daemon failed. Pending on
+         * when it failed (we can't determine for sure), there may be
+         * extra info in the domain log (if the hook failed for example).
+         *
+         * Pretend like things succeeded, and let 'WaitForMonitor' report
+         * the log contents for us.
+         */
+        vm->pid = child;
+        ret = 0;
+    }
 
     vm->state = migrateFrom ? VIR_DOMAIN_PAUSED : VIR_DOMAIN_RUNNING;
 

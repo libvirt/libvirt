@@ -1,3 +1,7 @@
+Mon May 11 09:35:26 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/qemu_driver.c: Report qemu log data if we fail to daemonize.
+
 Mon May 11 09:29:52 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/libvirt_private.syms src/util.[ch]: Add a helper function
