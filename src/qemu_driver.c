@@ -744,26 +744,37 @@ qemudReadLogOutput(virConnectPtr conn,
                    int timeout)
 {
     int retries = timeout*10;
+    int got = 0;
     buf[0] = '\0';
 
     while (retries) {
         ssize_t ret;
-        size_t got = 0;
+        int isdead = 0;
 
-        while((ret = read(fd, buf+got, buflen-got-1)) > 0) {
-            got += ret;
-            buf[got] = '\0';
-            if ((buflen-got-1) == 0) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("Out of space while reading %s log output"), what);
-                return -1;
-            }
-        }
+        if (kill(vm->pid, 0) == -1 && errno == ESRCH)
+            isdead = 1;
 
-        if (ret < 0 && errno != EINTR) {
+        ret = saferead(fd, buf+got, buflen-got-1);
+        if (ret < 0) {
             virReportSystemError(conn, errno,
                                  _("Failure while reading %s log output"),
                                  what);
+            return -1;
+        }
+
+        got += ret;
+        buf[got] = '\0';
+        if (got == buflen-1) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("Out of space while reading %s log output"),
+                             what);
+            return -1;
+        }
+
+        if (isdead) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("Process exited while reading %s log output"),
+                             what);
             return -1;
         }
 
