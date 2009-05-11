@@ -320,7 +320,7 @@ virEnumToString;
 virEventAddHandle;
 virEventRemoveHandle;
 virExec;
-virExecWithHook;
+virExecDaemonize;
 virSetCloseExec;
 virSetNonBlock;
 virFormatMacAddr;

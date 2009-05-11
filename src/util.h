@@ -46,6 +46,15 @@ int virSetCloseExec(int fd);
  * after fork() but before execve() */
 typedef int (*virExecHook)(void *data);
 
+int virExecDaemonize(virConnectPtr conn,
+                     const char *const*argv,
+                     const char *const*envp,
+                     const fd_set *keepfd,
+                     pid_t *retpid,
+                     int infd, int *outfd, int *errfd,
+                     int flags,
+                     virExecHook hook,
+                     void *data);
 int virExecWithHook(virConnectPtr conn,
                     const char *const*argv,
                     const char *const*envp,

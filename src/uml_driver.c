@@ -821,15 +821,10 @@ static int umlStartVMDaemon(virConnectPtr conn,
     for (i = 0 ; i < ntapfds ; i++)
         FD_SET(tapfds[i], &keepfd);
 
-    ret = virExec(conn, argv, progenv, &keepfd, &pid,
-                  -1, &logfd, &logfd,
-                  VIR_EXEC_DAEMON);
+    ret = virExecDaemonize(conn, argv, progenv, &keepfd, &pid,
+                           -1, &logfd, &logfd,
+                           0, NULL, NULL);
     close(logfd);
-
-    /* Cleanup intermediate proces */
-    if (waitpid(pid, NULL, 0) != pid)
-        umlLog(VIR_LOG_WARN, _("failed to wait on process: %d: %s\n"),
-               pid, virStrerror(errno, ebuf, sizeof ebuf));
 
     for (i = 0 ; argv[i] ; i++)
         VIR_FREE(argv[i]);

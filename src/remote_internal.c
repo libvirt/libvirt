@@ -284,7 +284,6 @@ remoteForkDaemon(virConnectPtr conn)
 {
     const char *daemonPath = remoteFindDaemonPath();
     const char *const daemonargs[] = { daemonPath, "--timeout=30", NULL };
-    int ret, status;
     pid_t pid;
 
     if (!daemonPath) {
@@ -292,18 +291,10 @@ remoteForkDaemon(virConnectPtr conn)
         return -1;
     }
 
-    if (virExec(NULL, daemonargs, NULL, NULL,
-                &pid, -1, NULL, NULL, VIR_EXEC_DAEMON) < 0)
+    if (virExecDaemonize(NULL, daemonargs, NULL, NULL,
+                         &pid, -1, NULL, NULL, 0,
+                         NULL, NULL) < 0)
         return -1;
-    /*
-     * do a waitpid on the intermediate process to avoid zombies.
-     */
- retry_wait:
-    ret = waitpid(pid, &status, 0);
-    if (ret < 0) {
-        if (errno == EINTR)
-            goto retry_wait;
-    }
 
     return 0;
 }

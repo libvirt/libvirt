@@ -1434,38 +1434,32 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     for (i = 0 ; i < ntapfds ; i++)
         FD_SET(tapfds[i], &keepfd);
 
-    ret = virExecWithHook(conn, argv, progenv, &keepfd, &child,
-                          stdin_fd, &vm->logfile, &vm->logfile,
-                          VIR_EXEC_NONBLOCK | VIR_EXEC_DAEMON,
-                          qemudSecurityHook, &hookData);
+    ret = virExecDaemonize(conn, argv, progenv, &keepfd, &child,
+                           stdin_fd, &vm->logfile, &vm->logfile,
+                           VIR_EXEC_NONBLOCK,
+                           qemudSecurityHook, &hookData);
 
     /* wait for qemu process to to show up */
     if (ret == 0) {
         int retries = 100;
-        int childstat;
 
-        while (waitpid(child, &childstat, 0) == -1 &&
-               errno == EINTR);
+        while (retries) {
+            if ((ret = virFileReadPid(driver->stateDir,
+                                      vm->def->name, &vm->pid)) == 0)
+                break;
 
-        if (childstat == 0) {
-            while (retries) {
-                if ((ret = virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) == 0)
-                    break;
-                usleep(100*1000);
-                retries--;
-            }
-            if (ret) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("Domain %s didn't show up\n"), vm->def->name);
-                ret = -1;
-            }
-        } else {
+            usleep(100*1000);
+            retries--;
+        }
+        if (ret) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("Unable to daemonize QEMU process"));
+                             _("Domain %s didn't show up\n"), vm->def->name);
             ret = -1;
         }
-        vm->state = migrateFrom ? VIR_DOMAIN_PAUSED : VIR_DOMAIN_RUNNING;
-    }
+    } else
+        ret = -1;
+
+    vm->state = migrateFrom ? VIR_DOMAIN_PAUSED : VIR_DOMAIN_RUNNING;
 
     for (i = 0 ; argv[i] ; i++)
         VIR_FREE(argv[i]);

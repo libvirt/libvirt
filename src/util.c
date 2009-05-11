@@ -591,6 +591,55 @@ virExec(virConnectPtr conn,
                            flags, NULL, NULL);
 }
 
+/*
+ * See __virExec for explanation of the arguments.
+ *
+ * This function will wait for the intermediate process (between the caller
+ * and the daemon) to exit. retpid will be the pid of the daemon, which can
+ * be checked for example to see if the daemon crashed immediately.
+ *
+ * Returns 0 on success
+ *         -1 if initial fork failed (will have a reported error)
+ *         -2 if intermediate process failed
+ *         (won't have a reported error. pending on where the failure
+ *          occured and when in the process occured, the error output
+ *          could have gone to stderr or the passed errfd).
+ */
+int virExecDaemonize(virConnectPtr conn,
+                     const char *const*argv,
+                     const char *const*envp,
+                     const fd_set *keepfd,
+                     pid_t *retpid,
+                     int infd, int *outfd, int *errfd,
+                     int flags,
+                     virExecHook hook,
+                     void *data) {
+    int ret;
+    int childstat = 0;
+
+    ret = virExecWithHook(conn, argv, envp, keepfd, retpid,
+                          infd, outfd, errfd,
+                          flags |= VIR_EXEC_DAEMON,
+                          hook, data);
+
+    /* __virExec should have set an error */
+    if (ret != 0)
+        return -1;
+
+    /* Wait for intermediate process to exit */
+    while (waitpid(*retpid, &childstat, 0) == -1 &&
+                   errno == EINTR);
+
+    if (childstat != 0) {
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("Intermediate daemon process exited with status %d."),
+                    WEXITSTATUS(childstat));
+        ret = -2;
+    }
+
+    return ret;
+}
+
 static int
 virPipeReadUntilEOF(virConnectPtr conn, int outfd, int errfd,
                     char **outbuf, char **errbuf) {

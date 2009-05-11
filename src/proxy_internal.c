@@ -143,7 +143,6 @@ static int
 virProxyForkServer(void)
 {
     const char *proxyPath = virProxyFindServerPath();
-    int ret, status;
     pid_t pid;
     const char *proxyarg[2];
 
@@ -157,19 +156,10 @@ virProxyForkServer(void)
     proxyarg[0] = proxyPath;
     proxyarg[1] = NULL;
 
-    if (virExec(NULL, proxyarg, NULL, NULL,
-                &pid, -1, NULL, NULL, VIR_EXEC_DAEMON) < 0)
+    if (virExecDaemonize(NULL, proxyarg, NULL, NULL,
+                         &pid, -1, NULL, NULL, 0,
+                         NULL, NULL) < 0)
         VIR_ERROR0("Failed to fork libvirt_proxy\n");
-
-    /*
-     * do a waitpid on the intermediate process to avoid zombies.
-     */
-retry_wait:
-    ret = waitpid(pid, &status, 0);
-    if (ret < 0) {
-        if (errno == EINTR)
-            goto retry_wait;
-    }
 
     return (0);
 }
