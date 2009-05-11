@@ -642,7 +642,7 @@ static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
         return lxcContainerSetupExtraMounts(vmDef);
 }
 
-static int lxcContainerDropCapabilities( virDomainDefPtr vmDef )
+static int lxcContainerDropCapabilities(virDomainDefPtr vmDef ATTRIBUTE_UNUSED)
 {
     int i;
     const struct {

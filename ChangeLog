@@ -1,3 +1,7 @@
+Mon May 11 16:25:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/lxc_container.c: Fix unused variable warning
+
 Mon May 11 16:15:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix QEMU ARGV detection with kvm >= 85
