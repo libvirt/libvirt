@@ -41,6 +41,9 @@
 /* For MS_MOVE */
 #include <linux/fs.h>
 
+#include <sys/prctl.h>
+#include <sys/capability.h>
+
 #include "virterror_internal.h"
 #include "logging.h"
 #include "lxc_container.h"
@@ -639,6 +642,29 @@ static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
         return lxcContainerSetupExtraMounts(vmDef);
 }
 
+static int lxcContainerDropCapabilities( virDomainDefPtr vmDef )
+{
+    int i;
+    const struct {
+        int id;
+        const char *name;
+    } caps[] = {
+#define ID_STRING(name) name, #name
+        { ID_STRING(CAP_SYS_BOOT) },
+    };
+
+    for (i = 0 ; i < ARRAY_CARDINALITY(caps) ; i++) {
+        if (prctl(PR_CAPBSET_DROP, caps[i].id, 0, 0, 0)) {
+            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("failed to drop %s"), caps[i].name);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 /**
  * lxcChild:
  * @argv: Pointer to container arguments
@@ -703,6 +729,10 @@ static int lxcContainerChild( void *data )
 
     /* enable interfaces */
     if (lxcContainerEnableInterfaces(argv->nveths, argv->veths) < 0)
+        return -1;
+
+    /* drop a set of root capabilities */
+    if (lxcContainerDropCapabilities(vmDef) < 0)
         return -1;
 
     /* this function will only return if an error occured */

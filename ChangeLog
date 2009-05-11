@@ -1,3 +1,8 @@
+Mon May 11 16:03:37 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/lxc_container.c: drop LXC CAP_SYS_BOOT capability to avoid
+	  reboot from inside containers, patch by Ryota Ozaki
+
 Mon May 11 09:51:00 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/qemu_driver.c : Check that QEMU is still alive while
