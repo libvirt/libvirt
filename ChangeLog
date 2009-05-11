@@ -1,3 +1,8 @@
+Mon May 11 11:54:53 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/vbox/vbox_tmpl.c: "Host only" and "Internal" network support
+	  for vbox, patch by Pritesh Kothari
+
 Mon May 11 11:47:51 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/domain_conf.[ch] docs/schemas/domain.rng: add support

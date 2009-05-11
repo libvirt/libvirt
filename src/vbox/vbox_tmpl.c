@@ -1714,7 +1714,6 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                 data->pFuncs->pfnUtf8Free(hostInt);
                                 data->pFuncs->pfnUtf16Free(hostIntUtf16);
 
-#if 0
                             } else if (attachmentType == NetworkAttachmentType_Internal) {
                                 PRUnichar *intNetUtf16 = NULL;
                                 char *intNet           = NULL;
@@ -1733,17 +1732,16 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                 PRUnichar *hostIntUtf16 = NULL;
                                 char *hostInt           = NULL;
 
-                                def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_HOSTONLY;
+                                def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_NETWORK;
 
                                 adapter->vtbl->GetHostInterface(adapter, &hostIntUtf16);
 
                                 data->pFuncs->pfnUtf16ToUtf8(hostIntUtf16, &hostInt);
-                                def->nets[netAdpIncCnt]->data.hostonly.name = strdup(hostInt);
+                                def->nets[netAdpIncCnt]->data.network.name = strdup(hostInt);
 
                                 data->pFuncs->pfnUtf8Free(hostInt);
                                 data->pFuncs->pfnUtf16Free(hostIntUtf16);
 
-#endif
                             } else {
                                 /* default to user type i.e. NAT in VirtualBox if this
                                  * dump is ever used to create a machine.
@@ -2814,14 +2812,11 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                 DEBUG("NIC(%d): Model:  %s", i, def->nets[i]->model);
                 DEBUG("NIC(%d): Mac:    %s", i, macaddr);
                 DEBUG("NIC(%d): ifname: %s", i, def->nets[i]->ifname);
-#if 0
-                if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_HOSTONLY) {
-                    DEBUG("NIC(%d): name:    %s", i, def->nets[i]->data.hostonly.name);
+                if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+                    DEBUG("NIC(%d): name:    %s", i, def->nets[i]->data.network.name);
                 } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_INTERNAL) {
                     DEBUG("NIC(%d): name:   %s", i, def->nets[i]->data.internal.name);
-                } else
-#endif
-                if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_USER) {
+                } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_USER) {
                     DEBUG("NIC(%d): NAT.", i);
                 } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
                     DEBUG("NIC(%d): brname: %s", i, def->nets[i]->data.bridge.brname);
@@ -2860,19 +2855,18 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                             adapter->vtbl->SetHostInterface(adapter, hostInterface);
                             data->pFuncs->pfnUtf16Free(hostInterface);
                         }
-#if 0
                     } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_INTERNAL) {
                         PRUnichar *internalNetwork = NULL;
                         /* Internal Network */
 
                         adapter->vtbl->AttachToInternalNetwork(adapter);
 
-                        if (def->nets[i]->data.network.name) {
-                            data->pFuncs->pfnUtf8ToUtf16(def->nets[i]->data.network.name, &internalNetwork);
+                        if (def->nets[i]->data.internal.name) {
+                            data->pFuncs->pfnUtf8ToUtf16(def->nets[i]->data.internal.name, &internalNetwork);
                             adapter->vtbl->SetInternalNetwork(adapter, internalNetwork);
                             data->pFuncs->pfnUtf16Free(internalNetwork);
                         }
-                    } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_HOSTONLY) {
+                    } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
                         PRUnichar *hostInterface = NULL;
                         /* Host Only Networking (currently only vboxnet0 available
                          * on *nix and mac, on windows you can create and configure
@@ -2880,12 +2874,11 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                          */
                         adapter->vtbl->AttachToHostOnlyInterface(adapter);
 
-                        if (def->nets[i]->data.ethernet.dev) {
-                            g_pVBoxFuncs->pfnUtf8ToUtf16(def->nets[i]->data.hostonly.name, &hostInterface);
+                        if (def->nets[i]->data.network.name) {
+                            g_pVBoxFuncs->pfnUtf8ToUtf16(def->nets[i]->data.network.name, &hostInterface);
                             adapter->vtbl->SetHostInterface(adapter, hostInterface);
                             data->pFuncs->pfnUtf16Free(hostInterface);
                         }
-#endif
                     } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_USER) {
                         /* NAT */
                         adapter->vtbl->AttachToNAT(adapter);
