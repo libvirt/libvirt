@@ -6876,6 +6876,7 @@ vshInit(vshControl *ctl)
      * such as "help".
      */
     if (!ctl->conn) {
+        virshReportError(ctl);
         vshError(ctl, FALSE, "%s", _("failed to connect to the hypervisor"));
         return FALSE;
     }

@@ -1,3 +1,8 @@
+Mon May 11 15:55:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/virsh.c: Report detailed error if initial connection open
+	attempt fails
+
 Mon May 11 16:03:37 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/lxc_container.c: drop LXC CAP_SYS_BOOT capability to avoid
