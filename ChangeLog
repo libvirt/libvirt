@@ -1,3 +1,11 @@
+Mon May 11 16:15:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix QEMU ARGV detection with kvm >= 85
+	* src/qemu_conf.c: Increase limit on QEMU -help output size.
+	Improve error reporting when handling help output
+	* src/qemu_driver.c: Don't overwrite errors when extracting
+	QEMU versio ninfo
+
 Mon May 11 15:55:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/virsh.c: Report detailed error if initial connection open

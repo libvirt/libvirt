@@ -1391,12 +1391,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     if (qemudExtractVersionInfo(emulator,
                                 NULL,
-                                &qemuCmdFlags) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Cannot determine QEMU argv syntax %s"),
-                         emulator);
+                                &qemuCmdFlags) < 0)
         goto cleanup;
-    }
 
     if (qemuPrepareHostDevices(conn, vm->def) < 0)
         goto cleanup;
@@ -3715,12 +3711,8 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
 
     if (qemudExtractVersionInfo(vm->def->emulator,
                                 NULL,
-                                &qemuCmdFlags) < 0) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Cannot determine QEMU argv syntax %s"),
-                         vm->def->emulator);
+                                &qemuCmdFlags) < 0)
         return -1;
-    }
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE) {
         if (!(devname = qemudDiskDeviceName(conn, newdisk)))

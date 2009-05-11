@@ -431,18 +431,28 @@ int qemudExtractVersionInfo(const char *qemu,
         return -1;
 
     char *help = NULL;
-    enum { MAX_HELP_OUTPUT_SIZE = 8192 };
+    enum { MAX_HELP_OUTPUT_SIZE = 1024*64 };
     int len = virFileReadLimFD(newstdout, MAX_HELP_OUTPUT_SIZE, &help);
-    if (len < 0)
+    if (len < 0) {
+        virReportSystemError(NULL, errno, "%s",
+                             _("Unable to read QEMU help output"));
         goto cleanup2;
+    }
 
     if (sscanf(help, "QEMU PC emulator version %u.%u.%u (kvm-%u)",
                &major, &minor, &micro, &kvm_version) != 4)
         kvm_version = 0;
 
-    if (!kvm_version && sscanf(help, "QEMU PC emulator version %u.%u.%u",
-               &major, &minor, &micro) != 3)
+    if (!kvm_version &&
+        sscanf(help, "QEMU PC emulator version %u.%u.%u",
+               &major, &minor, &micro) != 3) {
+        char *eol = strchr(help, '\n');
+        if (eol) *eol = '\0';
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot parse QEMU version number in '%s'"),
+                         help);
         goto cleanup2;
+    }
 
     version = (major * 1000 * 1000) + (minor * 1000) + micro;
 
