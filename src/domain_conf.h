@@ -138,6 +138,7 @@ enum virDomainNetType {
     VIR_DOMAIN_NET_TYPE_MCAST,
     VIR_DOMAIN_NET_TYPE_NETWORK,
     VIR_DOMAIN_NET_TYPE_BRIDGE,
+    VIR_DOMAIN_NET_TYPE_INTERNAL,
 
     VIR_DOMAIN_NET_TYPE_LAST,
 };
@@ -168,6 +169,9 @@ struct _virDomainNetDef {
             char *script;
             char *ipaddr;
         } bridge;
+        struct {
+            char *name;
+        } internal;
     } data;
     char *ifname;
 };

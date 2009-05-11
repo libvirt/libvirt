@@ -1,3 +1,9 @@
+Mon May 11 11:47:51 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/domain_conf.[ch] docs/schemas/domain.rng: add support
+	  for internal network in the generic part of the code, and
+	  update the Relax-NG grammar accordingly, patch by Pritesh Kothari
+
 Fri May  8 11:24:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/cgroup.c: Create cgroups mode 755, not 655 (Ryota Ozaki)

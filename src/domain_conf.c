@@ -119,7 +119,8 @@ VIR_ENUM_IMPL(virDomainNet, VIR_DOMAIN_NET_TYPE_LAST,
               "client",
               "mcast",
               "network",
-              "bridge")
+              "bridge",
+              "internal")
 
 VIR_ENUM_IMPL(virDomainChr, VIR_DOMAIN_CHR_TYPE_LAST,
               "null",
@@ -309,6 +310,10 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
         VIR_FREE(def->data.bridge.brname);
         VIR_FREE(def->data.bridge.script);
         VIR_FREE(def->data.bridge.ipaddr);
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        VIR_FREE(def->data.internal.name);
         break;
     }
 
@@ -889,6 +894,7 @@ virDomainNetDefParseXML(virConnectPtr conn,
     char *address = NULL;
     char *port = NULL;
     char *model = NULL;
+    char *internal = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError(conn);
@@ -916,6 +922,10 @@ virDomainNetDefParseXML(virConnectPtr conn,
                        (def->type == VIR_DOMAIN_NET_TYPE_NETWORK) &&
                        (xmlStrEqual(cur->name, BAD_CAST "source"))) {
                 network = virXMLPropString(cur, "network");
+            } else if ((internal == NULL) &&
+                       (def->type == VIR_DOMAIN_NET_TYPE_INTERNAL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "source"))) {
+                internal = virXMLPropString(cur, "name");
             } else if ((network == NULL) &&
                        (def->type == VIR_DOMAIN_NET_TYPE_BRIDGE) &&
                        (xmlStrEqual(cur->name, BAD_CAST "source"))) {
@@ -1031,6 +1041,15 @@ virDomainNetDefParseXML(virConnectPtr conn,
             def->data.socket.address = address;
             address = NULL;
         }
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        if (internal == NULL) {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+        _("No <source> 'name' attribute specified with <interface type='internal'/>"));
+            goto error;
+        }
+        def->data.internal.name = internal;
+        internal = NULL;
+        break;
     }
 
     if (ifname != NULL) {
@@ -1068,6 +1087,7 @@ cleanup:
     VIR_FREE(bridge);
     VIR_FREE(model);
     VIR_FREE(type);
+    VIR_FREE(internal);
 
     return def;
 
@@ -3051,6 +3071,12 @@ virDomainNetDefFormat(virConnectPtr conn,
         else
             virBufferVSprintf(buf, "      <source port='%d'/>\n",
                               def->data.socket.port);
+
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        virBufferEscapeString(buf, "      <source name='%s'/>\n",
+                              def->data.internal.name);
+        break;
+
     }
 
     if (def->ifname)

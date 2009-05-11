@@ -586,6 +586,20 @@
             <ref name="interface-options"/>
           </interleave>
         </group>
+        <group>
+          <attribute name="type">
+            <value>internal</value>
+          </attribute>
+          <interleave>
+            <element name="source">
+              <attribute name="name">
+                <ref name="deviceName"/>
+              </attribute>
+              <empty/>
+            </element>
+            <ref name="interface-options"/>
+          </interleave>
+        </group>
       </choice>
     </element>
   </define>
