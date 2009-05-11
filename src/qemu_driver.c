@@ -952,7 +952,7 @@ static int qemudWaitForMonitor(virConnectPtr conn,
                                struct qemud_driver* driver,
                                virDomainObjPtr vm, off_t pos)
 {
-    char buf[1024]; /* Plenty of space to get startup greeting */
+    char buf[4096]; /* Plenty of space to get startup greeting */
     int logfd;
     int ret;
 
@@ -964,7 +964,7 @@ static int qemudWaitForMonitor(virConnectPtr conn,
                              qemudFindCharDevicePTYs,
                              "console", 3);
     if (close(logfd) < 0) {
-        char ebuf[1024];
+        char ebuf[4096];
         VIR_WARN(_("Unable to close logfile: %s\n"),
                  virStrerror(errno, ebuf, sizeof ebuf));
     }
@@ -1316,6 +1316,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     pid_t child;
     int pos = -1;
     char ebuf[1024];
+    char *pidfile = NULL;
 
     struct gemudHookData hookData;
     hookData.conn = conn;
@@ -1396,6 +1397,11 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         goto cleanup;
     }
 
+    if (!(pidfile = virFilePid(driver->stateDir, vm->def->name))) {
+        virReportSystemError(conn, errno,
+                             "%s", _("Failed to build pidfile path."));
+        goto cleanup;
+    }
 
     vm->def->id = driver->nextvmid++;
     if (qemudBuildCommandLine(conn, driver, vm->def,
@@ -1437,21 +1443,13 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     ret = virExecDaemonize(conn, argv, progenv, &keepfd, &child,
                            stdin_fd, &vm->logfile, &vm->logfile,
                            VIR_EXEC_NONBLOCK,
-                           qemudSecurityHook, &hookData);
+                           qemudSecurityHook, &hookData,
+                           pidfile);
+    VIR_FREE(pidfile);
 
     /* wait for qemu process to to show up */
     if (ret == 0) {
-        int retries = 100;
-
-        while (retries) {
-            if ((ret = virFileReadPid(driver->stateDir,
-                                      vm->def->name, &vm->pid)) == 0)
-                break;
-
-            usleep(100*1000);
-            retries--;
-        }
-        if (ret) {
+        if (virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              _("Domain %s didn't show up\n"), vm->def->name);
             ret = -1;

@@ -293,7 +293,7 @@ remoteForkDaemon(virConnectPtr conn)
 
     if (virExecDaemonize(NULL, daemonargs, NULL, NULL,
                          &pid, -1, NULL, NULL, 0,
-                         NULL, NULL) < 0)
+                         NULL, NULL, NULL) < 0)
         return -1;
 
     return 0;

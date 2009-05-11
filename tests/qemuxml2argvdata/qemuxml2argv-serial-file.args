@@ -1,1 +1,1 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -monitor pty -pidfile /nowhere/QEMUGuest1.pid -no-acpi -boot c -hda /dev/HostVG/QEMUGuest1 -net none -serial file:/tmp/serial.log -parallel none -usb
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -monitor pty -no-acpi -boot c -hda /dev/HostVG/QEMUGuest1 -net none -serial file:/tmp/serial.log -parallel none -usb

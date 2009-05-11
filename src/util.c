@@ -285,6 +285,7 @@ int virSetCloseExec(int fd) {
  *                            use virExecDaemonize wrapper)
  * @hook optional virExecHook function to call prior to exec
  * @data data to pass to the hook function
+ * @pidfile path to use as pidfile for daemonized process (needs DAEMON flag)
  */
 static int
 __virExec(virConnectPtr conn,
@@ -295,7 +296,8 @@ __virExec(virConnectPtr conn,
           int infd, int *outfd, int *errfd,
           int flags,
           virExecHook hook,
-          void *data)
+          void *data,
+          char *pidfile)
 {
     pid_t pid;
     int null, i, openmax;
@@ -511,8 +513,14 @@ __virExec(virConnectPtr conn,
             _exit(1);
         }
 
-        if (pid > 0)
+        if (pid > 0) {
+            if (pidfile && virFileWritePidPath(pidfile,pid)) {
+                virReportSystemError(conn, errno,
+                                     "%s", _("could not write pidfile"));
+                _exit(1);
+            }
             _exit(0);
+        }
     }
 
     if (envp)
@@ -555,7 +563,8 @@ virExecWithHook(virConnectPtr conn,
                 int infd, int *outfd, int *errfd,
                 int flags,
                 virExecHook hook,
-                void *data)
+                void *data,
+                char *pidfile)
 {
     char *argv_str;
 
@@ -567,7 +576,7 @@ virExecWithHook(virConnectPtr conn,
     VIR_FREE(argv_str);
 
     return __virExec(conn, argv, envp, keepfd, retpid, infd, outfd, errfd,
-                     flags, hook, data);
+                     flags, hook, data, pidfile);
 }
 
 /*
@@ -588,7 +597,7 @@ virExec(virConnectPtr conn,
 {
     return virExecWithHook(conn, argv, envp, keepfd, retpid,
                            infd, outfd, errfd,
-                           flags, NULL, NULL);
+                           flags, NULL, NULL, NULL);
 }
 
 /*
@@ -613,14 +622,15 @@ int virExecDaemonize(virConnectPtr conn,
                      int infd, int *outfd, int *errfd,
                      int flags,
                      virExecHook hook,
-                     void *data) {
+                     void *data,
+                     char *pidfile) {
     int ret;
     int childstat = 0;
 
     ret = virExecWithHook(conn, argv, envp, keepfd, retpid,
                           infd, outfd, errfd,
                           flags |= VIR_EXEC_DAEMON,
-                          hook, data);
+                          hook, data, pidfile);
 
     /* __virExec should have set an error */
     if (ret != 0)
@@ -755,7 +765,7 @@ virRun(virConnectPtr conn,
 
     if ((execret = __virExec(conn, argv, NULL, NULL,
                              &childpid, -1, &outfd, &errfd,
-                             VIR_EXEC_NONE, NULL, NULL)) < 0) {
+                             VIR_EXEC_NONE, NULL, NULL, NULL)) < 0) {
         ret = execret;
         goto error;
     }
@@ -1196,7 +1206,6 @@ int virFileOpenTtyAt(const char *ptmx ATTRIBUTE_UNUSED,
 }
 #endif
 
-
 char* virFilePid(const char *dir, const char* name)
 {
     char *pidfile;
@@ -1204,14 +1213,11 @@ char* virFilePid(const char *dir, const char* name)
     return pidfile;
 }
 
-
 int virFileWritePid(const char *dir,
                     const char *name,
                     pid_t pid)
 {
     int rc;
-    int fd;
-    FILE *file = NULL;
     char *pidfile = NULL;
 
     if (name == NULL || dir == NULL) {
@@ -1226,6 +1232,20 @@ int virFileWritePid(const char *dir,
         rc = ENOMEM;
         goto cleanup;
     }
+
+    rc = virFileWritePidPath(pidfile, pid);
+
+cleanup:
+    VIR_FREE(pidfile);
+    return rc;
+}
+
+int virFileWritePidPath(const char *pidfile,
+                        pid_t pid)
+{
+    int rc;
+    int fd;
+    FILE *file = NULL;
 
     if ((fd = open(pidfile,
                    O_WRONLY | O_CREAT | O_TRUNC,
@@ -1253,7 +1273,6 @@ cleanup:
         rc = errno;
     }
 
-    VIR_FREE(pidfile);
     return rc;
 }
 
