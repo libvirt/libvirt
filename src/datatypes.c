@@ -49,7 +49,7 @@
 static int
 virDomainFreeName(virDomainPtr domain, const char *name ATTRIBUTE_UNUSED)
 {
-    return (virDomainFree(domain));
+    return (virUnrefDomain(domain));
 }
 
 /**
@@ -63,7 +63,7 @@ virDomainFreeName(virDomainPtr domain, const char *name ATTRIBUTE_UNUSED)
 static int
 virNetworkFreeName(virNetworkPtr network, const char *name ATTRIBUTE_UNUSED)
 {
-    return (virNetworkFree(network));
+    return (virUnrefNetwork(network));
 }
 
 /**
@@ -77,7 +77,7 @@ virNetworkFreeName(virNetworkPtr network, const char *name ATTRIBUTE_UNUSED)
 static int
 virStoragePoolFreeName(virStoragePoolPtr pool, const char *name ATTRIBUTE_UNUSED)
 {
-    return (virStoragePoolFree(pool));
+    return (virUnrefStoragePool(pool));
 }
 
 /**
@@ -91,7 +91,7 @@ virStoragePoolFreeName(virStoragePoolPtr pool, const char *name ATTRIBUTE_UNUSED
 static int
 virStorageVolFreeName(virStorageVolPtr vol, const char *name ATTRIBUTE_UNUSED)
 {
-    return (virStorageVolFree(vol));
+    return (virUnrefStorageVol(vol));
 }
 
 /**

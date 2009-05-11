@@ -1,5 +1,11 @@
 Mon May 11 16:25:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
+	* src/datatypes.c: Change hash destructors to call the internal
+	virUnrefXXX methods instead of public virXXXFree methods (Laine
+	Stump)
+
+Mon May 11 16:25:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
 	* src/lxc_container.c: Fix unused variable warning
 
 Mon May 11 16:15:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
