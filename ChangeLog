@@ -1,3 +1,9 @@
+Tue May 12 17:42:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/event.c: Start watch/timer IDs from 1 to avoid problem
+	with accidental uninitialized variables at 0. Fix interrupting
+	of main thread when updating/deleting watches/timers.
+
 Tue May 12 16:38:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c, qemud/qemud.h, qemud/event.c: Remove use
