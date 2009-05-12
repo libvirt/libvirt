@@ -30,6 +30,7 @@
 #include "internal.h"
 #include "threads.h"
 #include "logging.h"
+#include "util.h"
 #include "../qemud/event.h"
 
 #define NUM_FDS 5
@@ -309,7 +310,7 @@ mymain(int argc, char **argv)
     /* First time, is easy - just try triggering one of our
      * registered handles */
     startJob("Simple write", &test);
-    ret = write(handles[1].pipeFD[1], &one, 1);
+    ret = safewrite(handles[1].pipeFD[1], &one, 1);
     if (finishJob(1, -1) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
@@ -319,7 +320,7 @@ mymain(int argc, char **argv)
      * try triggering another handle */
     virEventRemoveHandleImpl(handles[0].watch);
     startJob("Deleted before poll", &test);
-    ret = write(handles[1].pipeFD[1], &one, 1);
+    ret = safewrite(handles[1].pipeFD[1], &one, 1);
     if (finishJob(1, -1) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
@@ -346,13 +347,13 @@ mymain(int argc, char **argv)
 
     /* NB: this case is subject to a bit of a race condition.
      * Only 1 time in 3 does the 2nd write get triggered by
-     * before poll() exits for the first write(). We don't
+     * before poll() exits for the first safewrite(). We don't
      * see a hard failure in other cases, so nothing to worry
      * about */
     startJob("Deleted during dispatch", &test);
     handles[2].delete = handles[3].watch;
-    ret = write(handles[2].pipeFD[1], &one, 1);
-    ret = write(handles[3].pipeFD[1], &one, 1);
+    ret = safewrite(handles[2].pipeFD[1], &one, 1);
+    ret = safewrite(handles[3].pipeFD[1], &one, 1);
     if (finishJob(2, -1) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
@@ -361,7 +362,7 @@ mymain(int argc, char **argv)
     /* Extreme fun, lets delete ourselves during dispatch */
     startJob("Deleted during dispatch", &test);
     handles[2].delete = handles[2].watch;
-    ret = write(handles[2].pipeFD[1], &one, 1);
+    ret = safewrite(handles[2].pipeFD[1], &one, 1);
     if (finishJob(2, -1) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
@@ -410,7 +411,7 @@ mymain(int argc, char **argv)
 
     /* NB: this case is subject to a bit of a race condition.
      * Only 1 time in 3 does the 2nd write get triggered by
-     * before poll() exits for the first write(). We don't
+     * before poll() exits for the first safewrite(). We don't
      * see a hard failure in other cases, so nothing to worry
      * about */
     virEventUpdateTimeoutImpl(timers[2].timer, 100);

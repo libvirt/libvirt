@@ -1,3 +1,8 @@
+Tue May 12 16:39:06 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* tests/eventtest.c: Use safewrite instead of write
+	* po/POTFILES.in: Add src/vbox/vbox_driver.c
+
 Tue May 12 16:25:59 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/storage_backend_fs.c: Break out FS volume build routines to
