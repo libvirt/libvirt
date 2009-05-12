@@ -261,6 +261,7 @@ tests/Makefile.in
 tests/confdata/Makefile
 tests/confdata/Makefile.in
 tests/conftest
+tests/eventtest
 tests/nodedevxml2xmltest
 tests/nodeinfotest
 tests/qemuxml2argvtest

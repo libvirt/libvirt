@@ -1,3 +1,10 @@
+Tue May 12 17:45:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* .hgignore, tests/.cvsignore, tests/.gitignore: Ignore
+	new eventtest binary.
+	* tests/Makefile.am, tests/eventtest.c, tests/testutils.h: Add
+	test case for exercising the event loop
+
 Tue May 12 17:43:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix watch/timer event deletion

@@ -122,6 +122,11 @@ if WITH_SECDRIVER_SELINUX
 TESTS += seclabeltest
 endif
 
+if WITH_LIBVIRTD
+noinst_PROGRAMS += eventtest
+TESTS += eventtest
+endif
+
 TESTS += nodedevxml2xmltest
 
 path_add = $$abs_top_builddir/src$(PATH_SEPARATOR)$$abs_top_builddir/qemud
@@ -222,5 +227,11 @@ endif
 qparamtest_SOURCES = \
 	qparamtest.c testutils.h testutils.c
 qparamtest_LDADD = $(LDADDS)
+
+if WITH_LIBVIRTD
+eventtest_SOURCES = \
+	eventtest.c testutils.h testutils.c ../qemud/event.c
+eventtest_LDADD = -lrt $(LDADDS)
+endif
 
 CLEANFILES = *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda

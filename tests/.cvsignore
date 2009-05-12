@@ -16,6 +16,7 @@ nodeinfotest
 statstest
 qparamtest
 seclabeltest
+eventtest
 *.gcda
 *.gcno
 *.exe

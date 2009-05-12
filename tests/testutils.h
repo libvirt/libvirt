@@ -11,6 +11,8 @@
 #ifndef __VIT_TEST_UTILS_H__
 #define __VIT_TEST_UTILS_H__
 
+#include <stdio.h>
+
 double virtTestCountAverage(double *items,
                             int nitems);
 
