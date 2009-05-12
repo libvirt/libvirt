@@ -836,8 +836,7 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
         goto err_delbr;
     }
 
-    if (network->def->ipAddress &&
-        (err = brSetInterfaceUp(driver->brctl, network->def->bridge, 1))) {
+    if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 1))) {
         virReportSystemError(conn, err,
                              _("failed to bring the bridge '%s' up"),
                              network->def->bridge);
@@ -878,8 +877,7 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
     networkRemoveIptablesRules(driver, network);
 
  err_delbr1:
-    if (network->def->ipAddress &&
-        (err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
+    if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
         char ebuf[1024];
         networkLog(NETWORK_WARN, _("Failed to bring down bridge '%s' : %s\n"),
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
@@ -920,8 +918,7 @@ static int networkShutdownNetworkDaemon(virConnectPtr conn,
     networkRemoveIptablesRules(driver, network);
 
     char ebuf[1024];
-    if (network->def->ipAddress &&
-        (err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
+    if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
         networkLog(NETWORK_WARN, _("Failed to bring down bridge '%s' : %s\n"),
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
