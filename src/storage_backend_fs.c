@@ -843,7 +843,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
                                                 &vol->allocation,
                                                 &vol->capacity) < 0)) {
             if (ret == -1)
-                goto no_memory;
+                goto cleanup;
             else {
                 /* Silently ignore non-regular files,
                  * eg '.' '..', 'lost+found' */
@@ -883,7 +883,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
                                                         &vol->backingStore,
                                                         NULL, NULL, NULL)) < 0) {
                     if (ret == -1)
-                        goto no_memory;
+                        goto cleanup;
                     else {
                         /* Silently ignore non-regular files,
                          * eg '.' '..', 'lost+found' */

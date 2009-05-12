@@ -1,3 +1,8 @@
+Tue May 12 15:58:28 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/storage_backend.c: Document a function
+	* src/storage_backend_fs.c: Don't squash file probe errors.
+
 Tue May 12 17:45:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* .hgignore, tests/.cvsignore, tests/.gitignore: Ignore

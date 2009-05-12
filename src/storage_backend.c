@@ -156,6 +156,17 @@ virStorageBackendUpdateVolInfo(virConnectPtr conn,
     return 0;
 }
 
+/*
+ * virStorageBackendUpdateVolTargetInfoFD:
+ * @conn: connection to report errors on
+ * @target: target definition ptr of volume to update
+ * @fd: fd of storage volume to update
+ * @allocation: If not NULL, updated allocation information will be stored
+ * @capacity: If not NULL, updated capacity info will be stored
+ *
+ * Returns 0 for success-1 on a legitimate error condition,
+ *    -2 if passed FD isn't a regular, char, or block file.
+ */
 int
 virStorageBackendUpdateVolTargetInfoFD(virConnectPtr conn,
                                        virStorageVolTargetPtr target,
