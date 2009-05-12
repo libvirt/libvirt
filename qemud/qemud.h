@@ -198,9 +198,6 @@ void qemudLog(int priority, const char *fmt, ...)
     ATTRIBUTE_FORMAT(printf,2,3);
 
 
-int qemudSetCloseExec(int fd);
-int qemudSetNonBlock(int fd);
-
 int
 remoteDispatchClientRequest (struct qemud_server *server,
                              struct qemud_client *client,

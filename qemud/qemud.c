@@ -371,32 +371,6 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
     virMutexUnlock(&server->lock);
 }
 
-int qemudSetCloseExec(int fd) {
-    int flags;
-    if ((flags = fcntl(fd, F_GETFD)) < 0)
-        goto error;
-    flags |= FD_CLOEXEC;
-    if ((fcntl(fd, F_SETFD, flags)) < 0)
-        goto error;
-    return 0;
- error:
-    VIR_ERROR0(_("Failed to set close-on-exec file descriptor flag"));
-    return -1;
-}
-
-
-int qemudSetNonBlock(int fd) {
-    int flags;
-    if ((flags = fcntl(fd, F_GETFL)) < 0)
-        goto error;
-    flags |= O_NONBLOCK;
-    if ((fcntl(fd, F_SETFL, flags)) < 0)
-        goto error;
-    return 0;
- error:
-    VIR_ERROR0(_("Failed to set non-blocking file descriptor flag"));
-    return -1;
-}
 
 static int qemudGoDaemon(void) {
     int pid = fork();
@@ -525,8 +499,8 @@ static int qemudListenUnix(struct qemud_server *server,
         goto cleanup;
     }
 
-    if (qemudSetCloseExec(sock->fd) < 0 ||
-        qemudSetNonBlock(sock->fd) < 0)
+    if (virSetCloseExec(sock->fd) < 0 ||
+        virSetNonBlock(sock->fd) < 0)
         goto cleanup;
 
     memset(&addr, 0, sizeof(addr));
@@ -687,8 +661,8 @@ remoteListenTCP (struct qemud_server *server,
         else
             sock->port = -1;
 
-        if (qemudSetCloseExec(sock->fd) < 0 ||
-            qemudSetNonBlock(sock->fd) < 0)
+        if (virSetCloseExec(sock->fd) < 0 ||
+            virSetNonBlock(sock->fd) < 0)
             goto cleanup;
 
         if (listen (sock->fd, 30) < 0) {
@@ -1273,8 +1247,8 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     setsockopt (fd, IPPROTO_TCP, TCP_NODELAY, (void *)&no_slow_start,
                 sizeof no_slow_start);
 
-    if (qemudSetCloseExec(fd) < 0 ||
-        qemudSetNonBlock(fd) < 0) {
+    if (virSetCloseExec(fd) < 0 ||
+        virSetNonBlock(fd) < 0) {
         close(fd);
         return -1;
     }
@@ -2872,10 +2846,10 @@ int main(int argc, char **argv) {
         goto error1;
 
     if (pipe(sigpipe) < 0 ||
-        qemudSetNonBlock(sigpipe[0]) < 0 ||
-        qemudSetNonBlock(sigpipe[1]) < 0 ||
-        qemudSetCloseExec(sigpipe[0]) < 0 ||
-        qemudSetCloseExec(sigpipe[1]) < 0) {
+        virSetNonBlock(sigpipe[0]) < 0 ||
+        virSetNonBlock(sigpipe[1]) < 0 ||
+        virSetCloseExec(sigpipe[0]) < 0 ||
+        virSetCloseExec(sigpipe[1]) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create pipe: %s"),
                   virStrerror(errno, ebuf, sizeof ebuf));

@@ -30,7 +30,8 @@
 #include <errno.h>
 #include <unistd.h>
 
-#include "qemud.h"
+#include "threads.h"
+#include "logging.h"
 #include "event.h"
 #include "memory.h"
 #include "util.h"
@@ -597,10 +598,10 @@ int virEventInit(void)
         return -1;
 
     if (pipe(eventLoop.wakeupfd) < 0 ||
-        qemudSetNonBlock(eventLoop.wakeupfd[0]) < 0 ||
-        qemudSetNonBlock(eventLoop.wakeupfd[1]) < 0 ||
-        qemudSetCloseExec(eventLoop.wakeupfd[0]) < 0 ||
-        qemudSetCloseExec(eventLoop.wakeupfd[1]) < 0)
+        virSetNonBlock(eventLoop.wakeupfd[0]) < 0 ||
+        virSetNonBlock(eventLoop.wakeupfd[1]) < 0 ||
+        virSetCloseExec(eventLoop.wakeupfd[0]) < 0 ||
+        virSetCloseExec(eventLoop.wakeupfd[1]) < 0)
         return -1;
 
     if (virEventAddHandleImpl(eventLoop.wakeupfd[0],

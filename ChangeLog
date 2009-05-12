@@ -1,5 +1,11 @@
 Tue May 12 16:38:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
+	* qemud/qemud.c, qemud/qemud.h, qemud/event.c: Remove use
+	of qemudSetNonBock/SetCloseExec in favour of virSetNonBlock
+	and virSetCloseExec.
+
+Tue May 12 16:38:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
 	Allow for quieter build with 'make -s'
 	* configure.in: Use 'mylibtool' wrapper around 'libtool'
 	* mylibtool: Quiet version of libtool just printing build
