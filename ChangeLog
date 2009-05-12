@@ -1,3 +1,7 @@
+Tue May 12 16:16:09 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/virsh.c: Virsh commands vol-clone and vol-create-from
+
 Tue May 12 16:14:43 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/test.c: Test driver implementation of
