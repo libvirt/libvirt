@@ -1,3 +1,8 @@
+Tue May 12 16:14:43 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/test.c: Test driver implementation of
+	virStorageVolCreateXMLFrom
+
 Tue May 12 16:11:14 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* qemud/remote.c qemud/remote_dispatch_args.h
