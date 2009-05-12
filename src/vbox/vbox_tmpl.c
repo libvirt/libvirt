@@ -216,16 +216,6 @@ no_memory:
 }
 
 static int vboxInitialize(virConnectPtr conn, vboxGlobalData *data) {
-
-    if (VBoxCGlueInit() != 0) {
-        vboxError(conn, VIR_ERR_INTERNAL_ERROR, "Can't Initialize VirtualBox, VBoxCGlueInit failed.");
-        goto cleanup;
-    }
-
-    /* This is for when glue init failed and we're serving as dummy driver. */
-    if (g_pfnGetFunctions == NULL)
-        goto cleanup;
-
     /* Get the API table for out version, g_pVBoxFuncs is for the oldest
        version of the API that we support so we cannot use that. */
     data->pFuncs = g_pfnGetFunctions(VBOX_XPCOMC_VERSION);
@@ -291,12 +281,12 @@ static int vboxExtractVersion(virConnectPtr conn, vboxGlobalData *data) {
 }
 
 static void vboxUninitialize(vboxGlobalData *data) {
+    if (!data)
+        return;
+
     if (data->pFuncs)
         data->pFuncs->pfnComUninitialize();
     VBoxCGlueTerm();
-
-    if (!data)
-        return;
 
     virDomainObjListFree(&data->domains);
     virCapabilitiesFree(data->caps);
@@ -306,52 +296,62 @@ static void vboxUninitialize(vboxGlobalData *data) {
 static virDrvOpenStatus vboxOpen(virConnectPtr conn,
                                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                  int flags ATTRIBUTE_UNUSED) {
-    vboxGlobalData *data;
+    vboxGlobalData *data = NULL;
     uid_t uid = getuid();
 
     if (conn->uri == NULL) {
         conn->uri = xmlParseURI(uid ? "vbox:///session" : "vbox:///system");
         if (conn->uri == NULL) {
+            virReportOOMError(conn);
             return VIR_DRV_OPEN_ERROR;
         }
-    } else if (conn->uri->scheme == NULL ||
-               conn->uri->path == NULL ) {
-        return VIR_DRV_OPEN_DECLINED;
     }
 
-    if (STRNEQ (conn->uri->scheme, "vbox"))
+    if (conn->uri->scheme == NULL ||
+        STRNEQ (conn->uri->scheme, "vbox"))
         return VIR_DRV_OPEN_DECLINED;
 
+    /* Leave for remote driver */
+    if (conn->uri->server != NULL)
+        return VIR_DRV_OPEN_DECLINED;
+
+    if (conn->uri->path == NULL || STREQ(conn->uri->path, "")) {
+        vboxError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("no VirtualBox driver path specified (try vbox:///session)"));
+        return VIR_DRV_OPEN_ERROR;
+    }
+
     if (uid != 0) {
-        if (STRNEQ (conn->uri->path, "/session"))
-            return VIR_DRV_OPEN_DECLINED;
+        if (STRNEQ (conn->uri->path, "/session")) {
+            vboxError(conn, VIR_ERR_INTERNAL_ERROR,
+                      _("unknown driver path '%s' specified (try vbox:///session)"), conn->uri->path);
+            return VIR_DRV_OPEN_ERROR;
+        }
     } else { /* root */
         if (STRNEQ (conn->uri->path, "/system") &&
-            STRNEQ (conn->uri->path, "/session"))
-            return VIR_DRV_OPEN_DECLINED;
+            STRNEQ (conn->uri->path, "/session")) {
+            vboxError(conn, VIR_ERR_INTERNAL_ERROR,
+                      _("unknown driver path '%s' specified (try vbox:///system)"), conn->uri->path);
+            return VIR_DRV_OPEN_ERROR;
+        }
     }
 
     if (VIR_ALLOC(data) < 0) {
         virReportOOMError(conn);
-        goto cleanup;
+        return VIR_DRV_OPEN_ERROR;
     }
 
-    if (!(data->caps = vboxCapsInit()))
-        goto cleanup;
-
-    if (vboxInitialize(conn, data) < 0)
-        goto cleanup;
-
-    if (vboxExtractVersion(conn, data) < 0)
-        goto cleanup;
+    if (!(data->caps = vboxCapsInit()) ||
+        vboxInitialize(conn, data) < 0 ||
+        vboxExtractVersion(conn, data) < 0) {
+        vboxUninitialize(data);
+        return VIR_DRV_OPEN_ERROR;
+    }
 
     conn->privateData = data;
     DEBUG0("in vboxOpen");
 
     return VIR_DRV_OPEN_SUCCESS;
-cleanup:
-    vboxUninitialize(data);
-    return VIR_DRV_OPEN_DECLINED;
 }
 
 static int vboxClose(virConnectPtr conn) {

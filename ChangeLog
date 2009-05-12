@@ -1,3 +1,11 @@
+Tue May 12 16:35:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Improve driver open URI handling
+	* src/vbox/vbox_driver.c: Register dummy no-op driver if
+	the virtualbox libraries are not avialable
+	* src/vbox/vbox_tmpl.c: Return fatal error if open fails
+	for a URI we expect to handle
+
 Tue May 12 17:25:52 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/network_driver.c: enable bridges which are not up, i.e.

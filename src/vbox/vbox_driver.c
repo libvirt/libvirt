@@ -34,6 +34,7 @@
 #include "logging.h"
 #include "vbox_driver.h"
 #include "vbox_XPCOMCGlue.h"
+#include "virterror_internal.h"
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
@@ -43,15 +44,25 @@ extern virDriver vbox22Driver;
 extern virDriver vbox25Driver;
 #endif
 
+static virDriver vboxDriverDummy;
+
+#define VIR_FROM_THIS VIR_FROM_VBOX
+
+#define vboxError(conn, code, fmt...) \
+        virReportErrorHelper(conn, VIR_FROM_VBOX, code, __FILE__, \
+                            __FUNCTION__, __LINE__, fmt)
 
 int vboxRegister(void) {
     virDriverPtr        driver;
     uint32_t            uVersion;
 
-    /* vboxRegister() shouldn't fail as that will render libvirt unless.
-     * So, we use the v2.2 driver as a fallback/dummy.
+    /*
+     * If the glue layer does not initialize, we register a driver
+     * with a dummy open method, so we can report nicer errors
+     * if the user requests a vbox:// URI which we know will
+     * never work
      */
-    driver        = &vbox22Driver;
+    driver        = &vboxDriverDummy;
 
     /* Init the glue and get the API version. */
     if (VBoxCGlueInit() == 0) {
@@ -79,7 +90,7 @@ int vboxRegister(void) {
         }
 
     } else {
-        DEBUG0("VBoxCGlueInit failed");
+        DEBUG0("VBoxCGlueInit failed, using dummy driver");
     }
 
     if (virRegisterDriver(driver) < 0)
@@ -87,3 +98,46 @@ int vboxRegister(void) {
 
     return 0;
 }
+
+static virDrvOpenStatus vboxOpenDummy(virConnectPtr conn,
+                                      virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                      int flags ATTRIBUTE_UNUSED) {
+    uid_t uid = getuid();
+
+    if (conn->uri == NULL ||
+        conn->uri->scheme == NULL ||
+        STRNEQ (conn->uri->scheme, "vbox") ||
+        conn->uri->server != NULL)
+        return VIR_DRV_OPEN_DECLINED;
+
+    if (conn->uri->path == NULL || STREQ(conn->uri->path, "")) {
+        vboxError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("no VirtualBox driver path specified (try vbox:///session)"));
+        return VIR_DRV_OPEN_ERROR;
+    }
+
+    if (uid != 0) {
+        if (STRNEQ (conn->uri->path, "/session")) {
+            vboxError(conn, VIR_ERR_INTERNAL_ERROR,
+                      _("unknown driver path '%s' specified (try vbox:///session)"), conn->uri->path);
+            return VIR_DRV_OPEN_ERROR;
+        }
+    } else { /* root */
+        if (STRNEQ (conn->uri->path, "/system") &&
+            STRNEQ (conn->uri->path, "/session")) {
+            vboxError(conn, VIR_ERR_INTERNAL_ERROR,
+                      _("unknown driver path '%s' specified (try vbox:///system)"), conn->uri->path);
+            return VIR_DRV_OPEN_ERROR;
+        }
+    }
+
+    vboxError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+              _("unable to initialize VirtualBox driver API"));
+    return VIR_DRV_OPEN_ERROR;
+}
+
+static virDriver vboxDriverDummy = {
+    VIR_DRV_VBOX,
+    "VBOX",
+    .open = vboxOpenDummy,
+};
