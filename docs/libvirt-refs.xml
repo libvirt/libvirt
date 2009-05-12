@@ -96,6 +96,7 @@
     <reference name='VIR_ERR_OPEN_FAILED' href='html/libvirt-virterror.html#VIR_ERR_OPEN_FAILED'/>
     <reference name='VIR_ERR_OPERATION_DENIED' href='html/libvirt-virterror.html#VIR_ERR_OPERATION_DENIED'/>
     <reference name='VIR_ERR_OPERATION_FAILED' href='html/libvirt-virterror.html#VIR_ERR_OPERATION_FAILED'/>
+    <reference name='VIR_ERR_OPERATION_INVALID' href='html/libvirt-virterror.html#VIR_ERR_OPERATION_INVALID'/>
     <reference name='VIR_ERR_OS_TYPE' href='html/libvirt-virterror.html#VIR_ERR_OS_TYPE'/>
     <reference name='VIR_ERR_PARSE_FAILED' href='html/libvirt-virterror.html#VIR_ERR_PARSE_FAILED'/>
     <reference name='VIR_ERR_POST_FAILED' href='html/libvirt-virterror.html#VIR_ERR_POST_FAILED'/>
@@ -400,6 +401,7 @@
     <reference name='virStoragePoolUndefine' href='html/libvirt-libvirt.html#virStoragePoolUndefine'/>
     <reference name='virStorageVol' href='html/libvirt-libvirt.html#virStorageVol'/>
     <reference name='virStorageVolCreateXML' href='html/libvirt-libvirt.html#virStorageVolCreateXML'/>
+    <reference name='virStorageVolCreateXMLFrom' href='html/libvirt-libvirt.html#virStorageVolCreateXMLFrom'/>
     <reference name='virStorageVolDelete' href='html/libvirt-libvirt.html#virStorageVolDelete'/>
     <reference name='virStorageVolDeleteFlags' href='html/libvirt-libvirt.html#virStorageVolDeleteFlags'/>
     <reference name='virStorageVolFree' href='html/libvirt-libvirt.html#virStorageVolFree'/>
@@ -520,6 +522,7 @@
       <ref name='VIR_ERR_OPEN_FAILED'/>
       <ref name='VIR_ERR_OPERATION_DENIED'/>
       <ref name='VIR_ERR_OPERATION_FAILED'/>
+      <ref name='VIR_ERR_OPERATION_INVALID'/>
       <ref name='VIR_ERR_OS_TYPE'/>
       <ref name='VIR_ERR_PARSE_FAILED'/>
       <ref name='VIR_ERR_POST_FAILED'/>
@@ -828,6 +831,7 @@
       <ref name='virStoragePoolUndefine'/>
       <ref name='virStorageVol'/>
       <ref name='virStorageVolCreateXML'/>
+      <ref name='virStorageVolCreateXMLFrom'/>
       <ref name='virStorageVolDelete'/>
       <ref name='virStorageVolDeleteFlags'/>
       <ref name='virStorageVolFree'/>
@@ -905,6 +909,7 @@
     </type>
     <type name='virStorageVolPtr'>
       <ref name='virStorageVolCreateXML'/>
+      <ref name='virStorageVolCreateXMLFrom'/>
       <ref name='virStorageVolLookupByKey'/>
       <ref name='virStorageVolLookupByName'/>
       <ref name='virStorageVolLookupByPath'/>
@@ -969,6 +974,7 @@
       <ref name='virStoragePoolGetXMLDesc'/>
       <ref name='virStoragePoolRefresh'/>
       <ref name='virStorageVolCreateXML'/>
+      <ref name='virStorageVolCreateXMLFrom'/>
       <ref name='virStorageVolDelete'/>
       <ref name='virStorageVolGetXMLDesc'/>
     </type>
@@ -1213,6 +1219,7 @@
       <ref name='virStoragePoolSetAutostart'/>
       <ref name='virStoragePoolUndefine'/>
       <ref name='virStorageVolCreateXML'/>
+      <ref name='virStorageVolCreateXMLFrom'/>
       <ref name='virStorageVolLookupByName'/>
     </type>
     <type name='virStorageVolInfoPtr'>
@@ -1220,6 +1227,7 @@
     </type>
     <type name='virStorageVolPtr'>
       <ref name='virStoragePoolLookupByVolume'/>
+      <ref name='virStorageVolCreateXMLFrom'/>
       <ref name='virStorageVolDelete'/>
       <ref name='virStorageVolFree'/>
       <ref name='virStorageVolGetConnect'/>
@@ -1547,6 +1555,7 @@
       <ref name='virStoragePoolUndefine'/>
       <ref name='virStorageVol'/>
       <ref name='virStorageVolCreateXML'/>
+      <ref name='virStorageVolCreateXMLFrom'/>
       <ref name='virStorageVolDelete'/>
       <ref name='virStorageVolDeleteFlags'/>
       <ref name='virStorageVolFree'/>
@@ -1611,6 +1620,7 @@
       <ref name='VIR_ERR_OPEN_FAILED'/>
       <ref name='VIR_ERR_OPERATION_DENIED'/>
       <ref name='VIR_ERR_OPERATION_FAILED'/>
+      <ref name='VIR_ERR_OPERATION_INVALID'/>
       <ref name='VIR_ERR_OS_TYPE'/>
       <ref name='VIR_ERR_PARSE_FAILED'/>
       <ref name='VIR_ERR_POST_FAILED'/>
@@ -1796,6 +1806,7 @@
           <ref name='virNodeDeviceCreateXML'/>
           <ref name='virStoragePoolCreateXML'/>
           <ref name='virStorageVolCreateXML'/>
+          <ref name='virStorageVolCreateXMLFrom'/>
         </word>
         <word name='Current'>
           <ref name='_virStoragePoolInfo'/>
@@ -1997,6 +2008,9 @@
         <word name='Individual'>
           <ref name='virDomainBlockStats'/>
           <ref name='virDomainInterfaceStats'/>
+        </word>
+        <word name='Information'>
+          <ref name='virStorageVolCreateXMLFrom'/>
         </word>
         <word name='Initialize'>
           <ref name='virInitialize'/>
@@ -2662,6 +2676,7 @@
           <ref name='virNodeDeviceReset'/>
           <ref name='virSetErrorFunc'/>
           <ref name='virStoragePoolRef'/>
+          <ref name='virStorageVolCreateXMLFrom'/>
           <ref name='virStorageVolRef'/>
         </word>
         <word name='area'>
@@ -3047,6 +3062,9 @@
         <word name='client'>
           <ref name='virConnectGetCapabilities'/>
         </word>
+        <word name='clonevol'>
+          <ref name='virStorageVolCreateXMLFrom'/>
+        </word>
         <word name='closes'>
           <ref name='virConnectClose'/>
         </word>
@@ -3229,6 +3247,7 @@
         <word name='create'>
           <ref name='virNetworkDefineXML'/>
           <ref name='virStorageVolCreateXML'/>
+          <ref name='virStorageVolCreateXMLFrom'/>
         </word>
         <word name='created'>
           <ref name='virNodeDeviceCreateXML'/>
@@ -3238,6 +3257,7 @@
           <ref name='virStoragePoolDefineXML'/>
           <ref name='virStoragePoolUndefine'/>
           <ref name='virStorageVolCreateXML'/>
+          <ref name='virStorageVolCreateXMLFrom'/>
         </word>
         <word name='credentials'>
           <ref name='_virConnectAuth'/>
@@ -3350,6 +3370,7 @@
           <ref name='virStoragePoolCreateXML'/>
           <ref name='virStoragePoolDefineXML'/>
           <ref name='virStorageVolCreateXML'/>
+          <ref name='virStorageVolCreateXMLFrom'/>
         </word>
         <word name='descriptor'>
           <ref name='virEventAddHandleFunc'/>
@@ -3762,6 +3783,7 @@
           <ref name='virStoragePoolGetXMLDesc'/>
           <ref name='virStoragePoolRefresh'/>
           <ref name='virStorageVolCreateXML'/>
+          <ref name='virStorageVolCreateXMLFrom'/>
           <ref name='virStorageVolDelete'/>
           <ref name='virStorageVolGetXMLDesc'/>
         </word>
@@ -4173,6 +4195,9 @@
         <word name='initializing'>
           <ref name='virInitialize'/>
           <ref name='virStoragePoolRefresh'/>
+        </word>
+        <word name='input'>
+          <ref name='virStorageVolCreateXMLFrom'/>
         </word>
         <word name='inside'>
           <ref name='virDomainGetVcpus'/>
@@ -5016,6 +5041,7 @@
         </word>
         <word name='parent'>
           <ref name='virNodeDeviceGetParent'/>
+          <ref name='virStorageVolCreateXMLFrom'/>
         </word>
         <word name='part'>
           <ref name='_virError'/>
@@ -5043,11 +5069,13 @@
           <ref name='virNodeListDevices'/>
           <ref name='virNodeNumOfDevices'/>
           <ref name='virStorageVolCreateXML'/>
+          <ref name='virStorageVolCreateXMLFrom'/>
           <ref name='virStorageVolGetXMLDesc'/>
         </word>
         <word name='passed'>
           <ref name='virConnectDomainEventRegister'/>
           <ref name='virConnectGetURI'/>
+          <ref name='virStorageVolCreateXMLFrom'/>
         </word>
         <word name='path'>
           <ref name='virDomainBlockPeek'/>
@@ -5084,6 +5112,9 @@
         </word>
         <word name='permission'>
           <ref name='virDomainBlockPeek'/>
+        </word>
+        <word name='perms'>
+          <ref name='virStorageVolCreateXMLFrom'/>
         </word>
         <word name='persistent'>
           <ref name='virDomainCreateXML'/>
@@ -6111,6 +6142,9 @@
           <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virDomainMigrate'/>
         </word>
+        <word name='typical'>
+          <ref name='virStorageVolCreateXMLFrom'/>
+        </word>
         <word name='typically'>
           <ref name='virConnectRef'/>
           <ref name='virDomainMigrate'/>
@@ -6188,6 +6222,7 @@
           <ref name='virNodeNumOfDevices'/>
           <ref name='virStoragePoolRefresh'/>
           <ref name='virStorageVolCreateXML'/>
+          <ref name='virStorageVolCreateXMLFrom'/>
           <ref name='virStorageVolGetXMLDesc'/>
         </word>
         <word name='updates'>
@@ -6238,6 +6273,7 @@
           <ref name='virStoragePoolDefineXML'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStoragePoolRefresh'/>
+          <ref name='virStorageVolCreateXMLFrom'/>
           <ref name='virStorageVolDelete'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -6312,6 +6348,7 @@
           <ref name='virNodeDeviceDettach'/>
           <ref name='virNodeDeviceRef'/>
           <ref name='virStoragePoolRef'/>
+          <ref name='virStorageVolCreateXMLFrom'/>
           <ref name='virStorageVolRef'/>
         </word>
         <word name='usual'>
@@ -6364,6 +6401,7 @@
         </word>
         <word name='via'>
           <ref name='virConnectOpenAuth'/>
+          <ref name='virStorageVolCreateXMLFrom'/>
         </word>
         <word name='virConnect'>
           <ref name='virConnectDomainEventCallback'/>

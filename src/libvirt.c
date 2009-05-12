@@ -6767,6 +6767,65 @@ error:
 
 
 /**
+ * virStorageVolCreateXMLFrom:
+ * @pool: pointer to parent pool for the new volume
+ * @xmldesc: description of volume to create
+ * @clonevol: storage volume to use as input
+ * @flags: flags for creation (unused, pass 0)
+ *
+ * Create a storage volume in the parent pool, using the
+ * 'clonevol' volume as input. Information for the new
+ * volume (name, perms)  are passed via a typical volume
+ * XML description.
+ *
+ * return the storage volume, or NULL on error
+ */
+virStorageVolPtr
+virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
+                           const char *xmldesc,
+                           virStorageVolPtr clonevol,
+                           unsigned int flags)
+{
+    DEBUG("pool=%p, flags=%u, clonevol=%p", pool, flags, clonevol);
+
+    virResetLastError();
+
+    if (!VIR_IS_STORAGE_POOL(pool)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        return (NULL);
+    }
+
+    if (!VIR_IS_STORAGE_VOL(clonevol)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        return (NULL);
+    }
+
+    if (pool->conn->flags & VIR_CONNECT_RO ||
+        clonevol->conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(pool->conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (pool->conn->storageDriver &&
+        pool->conn->storageDriver->volCreateXMLFrom) {
+        virStorageVolPtr ret;
+        ret = pool->conn->storageDriver->volCreateXMLFrom (pool, xmldesc,
+                                                           clonevol, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (pool->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(pool->conn);
+    return NULL;
+}
+
+
+/**
  * virStorageVolDelete:
  * @vol: pointer to storage volume
  * @flags: future flags, use 0 for now
@@ -7007,8 +7066,6 @@ error:
     virSetConnError(vol->conn);
     return NULL;
 }
-
-
 
 
 /**

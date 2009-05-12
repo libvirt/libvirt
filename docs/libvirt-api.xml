@@ -295,6 +295,7 @@
      <exports symbol='virNetworkUndefine' type='function'/>
      <exports symbol='virConnectListDefinedStoragePools' type='function'/>
      <exports symbol='virEventTimeoutCallback' type='function'/>
+     <exports symbol='virStorageVolCreateXMLFrom' type='function'/>
      <exports symbol='virNodeDeviceNumOfCaps' type='function'/>
      <exports symbol='virNetworkGetConnect' type='function'/>
      <exports symbol='virNodeGetFreeMemory' type='function'/>
@@ -365,15 +366,16 @@
      <exports symbol='VIR_ERR_GNUTLS_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_POST_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_OS_TYPE' type='enum'/>
-     <exports symbol='VIR_FROM_XENSTORE' type='enum'/>
+     <exports symbol='VIR_ERR_OPERATION_INVALID' type='enum'/>
      <exports symbol='VIR_WAR_NO_NETWORK' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_CONN' type='enum'/>
      <exports symbol='VIR_ERR_NONE' type='enum'/>
      <exports symbol='VIR_ERR_OK' type='enum'/>
+     <exports symbol='VIR_FROM_XENXM' type='enum'/>
      <exports symbol='VIR_FROM_NETWORK' type='enum'/>
      <exports symbol='VIR_ERR_XML_DETAIL' type='enum'/>
      <exports symbol='VIR_FROM_NET' type='enum'/>
-     <exports symbol='VIR_FROM_XENXM' type='enum'/>
+     <exports symbol='VIR_FROM_XENSTORE' type='enum'/>
      <exports symbol='VIR_ERR_NO_NAME' type='enum'/>
      <exports symbol='VIR_ERR_NO_ROOT' type='enum'/>
      <exports symbol='VIR_ERR_OPERATION_FAILED' type='enum'/>
@@ -569,7 +571,7 @@
     <enum name='VIR_ERR_NO_NODE_DEVICE' file='virterror' value='53' type='virErrorNumber' info='node device not found'/>
     <enum name='VIR_ERR_NO_OS' file='virterror' value='22' type='virErrorNumber' info='missing domain OS information'/>
     <enum name='VIR_ERR_NO_ROOT' file='virterror' value='18' type='virErrorNumber' info='missing root device information'/>
-    <enum name='VIR_ERR_NO_SECURITY_MODEL' file='virterror' value='54' type='virErrorNumber' info=' security model not found'/>
+    <enum name='VIR_ERR_NO_SECURITY_MODEL' file='virterror' value='54' type='virErrorNumber' info='security model not found'/>
     <enum name='VIR_ERR_NO_SOURCE' file='virterror' value='19' type='virErrorNumber' info='missing source device information'/>
     <enum name='VIR_ERR_NO_STORAGE_POOL' file='virterror' value='49' type='virErrorNumber' info='storage pool not found'/>
     <enum name='VIR_ERR_NO_STORAGE_VOL' file='virterror' value='50' type='virErrorNumber' info='storage pool not found'/>
@@ -581,6 +583,7 @@
     <enum name='VIR_ERR_OPEN_FAILED' file='virterror' value='30' type='virErrorNumber' info='failed to open a conf file'/>
     <enum name='VIR_ERR_OPERATION_DENIED' file='virterror' value='29' type='virErrorNumber' info='operation forbidden on read-only connections'/>
     <enum name='VIR_ERR_OPERATION_FAILED' file='virterror' value='9' type='virErrorNumber' info='a command to hypervisor failed'/>
+    <enum name='VIR_ERR_OPERATION_INVALID' file='virterror' value='55' type='virErrorNumber' info=' operation is not applicable at this time'/>
     <enum name='VIR_ERR_OS_TYPE' file='virterror' value='16' type='virErrorNumber' info='unknown OS type'/>
     <enum name='VIR_ERR_PARSE_FAILED' file='virterror' value='32' type='virErrorNumber' info='failed to parse a conf file'/>
     <enum name='VIR_ERR_POST_FAILED' file='virterror' value='11' type='virErrorNumber' info='a HTTP POST command to failed'/>
@@ -1774,6 +1777,14 @@ see note above'/>
       <return type='virStorageVolPtr' info='the storage volume, or NULL on error'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
       <arg name='xmldesc' type='const char *' info='description of volume to create'/>
+      <arg name='flags' type='unsigned int' info='flags for creation (unused, pass 0)'/>
+    </function>
+    <function name='virStorageVolCreateXMLFrom' file='libvirt' module='libvirt'>
+      <info>Create a storage volume in the parent pool, using the &apos;clonevol&apos; volume as input. Information for the new volume (name, perms)  are passed via a typical volume XML description.</info>
+      <return type='virStorageVolPtr' info='the storage volume, or NULL on error'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to parent pool for the new volume'/>
+      <arg name='xmldesc' type='const char *' info='description of volume to create'/>
+      <arg name='clonevol' type='virStorageVolPtr' info='storage volume to use as input'/>
       <arg name='flags' type='unsigned int' info='flags for creation (unused, pass 0)'/>
     </function>
     <function name='virStorageVolDelete' file='libvirt' module='libvirt'>

@@ -1047,6 +1047,10 @@ const char*             virStorageVolGetKey             (virStorageVolPtr vol);
 virStorageVolPtr        virStorageVolCreateXML          (virStoragePoolPtr pool,
                                                          const char *xmldesc,
                                                          unsigned int flags);
+virStorageVolPtr        virStorageVolCreateXMLFrom      (virStoragePoolPtr pool,
+                                                         const char *xmldesc,
+                                                         virStorageVolPtr clonevol,
+                                                         unsigned int flags);
 int                     virStorageVolDelete             (virStorageVolPtr vol,
                                                          unsigned int flags);
 int                     virStorageVolRef                (virStorageVolPtr vol);

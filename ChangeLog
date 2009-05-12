@@ -1,3 +1,14 @@
+Tue May 12 16:00:49 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* include/libvirt/libvirt.h include/libvirt/libvirt.c
+	  src/driver.h src/libvirt.c src/libvirt_public.syms:
+	  Public API definition for virStorageVolCreateXMLFrom
+	* docs/devhelp/libvirt-libvirt.html
+	  docs/devhelp/libvirt-virterror.html
+	  docs/html/libvirt-libvirt.html docs/html/libvirt-virterror.html
+	  docs/libvirt-api.xml docs/libvirt-refs.xml:
+	  Regenerate API documentation.
+
 Tue May 12 15:58:28 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/storage_backend.c: Document a function

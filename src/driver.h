@@ -586,6 +586,11 @@ typedef char *
 typedef char *
     (*virDrvStorageVolGetPath)               (virStorageVolPtr vol);
 
+typedef virStorageVolPtr
+    (*virDrvStorageVolCreateXMLFrom)         (virStoragePoolPtr pool,
+                                              const char *xmldesc,
+                                              virStorageVolPtr clone,
+                                              unsigned int flags);
 
 
 typedef struct _virStorageDriver virStorageDriver;
@@ -633,6 +638,7 @@ struct _virStorageDriver {
     virDrvStorageVolLookupByKey volLookupByKey;
     virDrvStorageVolLookupByPath volLookupByPath;
     virDrvStorageVolCreateXML volCreateXML;
+    virDrvStorageVolCreateXMLFrom volCreateXMLFrom;
     virDrvStorageVolDelete volDelete;
     virDrvStorageVolGetInfo volGetInfo;
     virDrvStorageVolGetXMLDesc volGetXMLDesc;
