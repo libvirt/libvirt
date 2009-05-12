@@ -313,7 +313,7 @@ static int virEventCalculateTimeout(int *timeout) {
     EVENT_DEBUG("Calculate expiry of %d timers", eventLoop.timeoutsCount);
     /* Figure out if we need a timeout */
     for (i = 0 ; i < eventLoop.timeoutsCount ; i++) {
-        if (eventLoop.timeouts[i].deleted || eventLoop.timeouts[i].frequency < 0)
+        if (eventLoop.timeouts[i].frequency < 0)
             continue;
 
         EVENT_DEBUG("Got a timeout scheduled for %llu", eventLoop.timeouts[i].expiresAt);
@@ -350,32 +350,26 @@ static int virEventCalculateTimeout(int *timeout) {
  * file handles. The caller must free the returned data struct
  * returns: the pollfd array, or NULL on error
  */
-static int virEventMakePollFDs(struct pollfd **retfds) {
+static struct pollfd *virEventMakePollFDs(void) {
     struct pollfd *fds;
-    int i, nfds = 0;
+    int i;
+
+    /* Setup the poll file handle data structs */
+    if (VIR_ALLOC_N(fds, eventLoop.handlesCount) < 0)
+        return NULL;
 
     for (i = 0 ; i < eventLoop.handlesCount ; i++) {
-        if (eventLoop.handles[i].deleted)
-            continue;
-        nfds++;
-    }
-    *retfds = NULL;
-    /* Setup the poll file handle data structs */
-    if (VIR_ALLOC_N(fds, nfds) < 0)
-        return -1;
-
-    for (i = 0, nfds = 0 ; i < eventLoop.handlesCount ; i++) {
-        if (eventLoop.handles[i].deleted)
-            continue;
-        fds[nfds].fd = eventLoop.handles[i].fd;
-        fds[nfds].events = eventLoop.handles[i].events;
-        fds[nfds].revents = 0;
+        EVENT_DEBUG("Prepare n=%d w=%d, f=%d e=%d", i,
+                    eventLoop.handles[i].watch,
+                    eventLoop.handles[i].fd,
+                    eventLoop.handles[i].events);
+        fds[i].fd = eventLoop.handles[i].fd;
+        fds[i].events = eventLoop.handles[i].events;
+        fds[i].revents = 0;
         //EVENT_DEBUG("Wait for %d %d", eventLoop.handles[i].fd, eventLoop.handles[i].events);
-        nfds++;
     }
 
-    *retfds = fds;
-    return nfds;
+    return fds;
 }
 
 
@@ -435,26 +429,30 @@ static int virEventDispatchTimeouts(void) {
  * Returns 0 upon success, -1 if an error occurred
  */
 static int virEventDispatchHandles(int nfds, struct pollfd *fds) {
-    int i, n;
+    int i;
 
-    for (i = 0, n = 0 ; i < eventLoop.handlesCount && n < nfds ; i++) {
+    /* NB, use nfds not eventLoop.handlesCount, because new
+     * fds might be added on end of list, and they're not
+     * in the fds array we've got */
+    for (i = 0 ; i < nfds ; i++) {
         if (eventLoop.handles[i].deleted) {
-            EVENT_DEBUG("Skip deleted %d", eventLoop.handles[i].fd);
+            EVENT_DEBUG("Skip deleted n=%d w=%d f=%d", i,
+                        eventLoop.handles[i].watch, eventLoop.handles[i].fd);
             continue;
         }
 
-        if (fds[n].revents) {
+        if (fds[i].revents) {
             virEventHandleCallback cb = eventLoop.handles[i].cb;
             void *opaque = eventLoop.handles[i].opaque;
-            int hEvents = virPollEventToEventHandleType(fds[n].revents);
-            EVENT_DEBUG("Dispatch %d %d %p", fds[n].fd,
-                        fds[n].revents, eventLoop.handles[i].opaque);
+            int hEvents = virPollEventToEventHandleType(fds[i].revents);
+            EVENT_DEBUG("Dispatch n=%d f=%d w=%d e=%d %p", i,
+                        fds[i].fd, eventLoop.handles[i].watch,
+                        fds[i].revents, eventLoop.handles[i].opaque);
             virEventUnlock();
             (cb)(eventLoop.handles[i].watch,
-                 fds[n].fd, hEvents, opaque);
+                 fds[i].fd, hEvents, opaque);
             virEventLock();
         }
-        n++;
     }
 
     return 0;
@@ -545,22 +543,21 @@ static int virEventCleanupHandles(void) {
  * at least one file handle has an event, or a timer expires
  */
 int virEventRunOnce(void) {
-    struct pollfd *fds;
+    struct pollfd *fds = NULL;
     int ret, timeout, nfds;
 
     virEventLock();
     eventLoop.running = 1;
     eventLoop.leader = pthread_self();
-    if ((nfds = virEventMakePollFDs(&fds)) < 0) {
-        virEventUnlock();
-        return -1;
-    }
 
-    if (virEventCalculateTimeout(&timeout) < 0) {
-        VIR_FREE(fds);
-        virEventUnlock();
-        return -1;
-    }
+    if (virEventCleanupTimeouts() < 0 ||
+        virEventCleanupHandles() < 0)
+        goto error;
+
+    if (!(fds = virEventMakePollFDs()) ||
+        virEventCalculateTimeout(&timeout) < 0)
+        goto error;
+    nfds = eventLoop.handlesCount;
 
     virEventUnlock();
 
@@ -572,38 +569,31 @@ int virEventRunOnce(void) {
         if (errno == EINTR) {
             goto retry;
         }
-        VIR_FREE(fds);
-        return -1;
+        goto error_unlocked;
     }
 
     virEventLock();
-    if (virEventDispatchTimeouts() < 0) {
-        VIR_FREE(fds);
-        virEventUnlock();
-        return -1;
-    }
+    if (virEventDispatchTimeouts() < 0)
+        goto error;
 
     if (ret > 0 &&
-        virEventDispatchHandles(nfds, fds) < 0) {
-        VIR_FREE(fds);
-        virEventUnlock();
-        return -1;
-    }
-    VIR_FREE(fds);
+        virEventDispatchHandles(nfds, fds) < 0)
+        goto error;
 
-    if (virEventCleanupTimeouts() < 0) {
-        virEventUnlock();
-        return -1;
-    }
-
-    if (virEventCleanupHandles() < 0) {
-        virEventUnlock();
-        return -1;
-    }
+    if (virEventCleanupTimeouts() < 0 ||
+        virEventCleanupHandles() < 0)
+        goto error;
 
     eventLoop.running = 0;
     virEventUnlock();
+    VIR_FREE(fds);
     return 0;
+
+error:
+    virEventUnlock();
+error_unlocked:
+    VIR_FREE(fds);
+    return -1;
 }
 
 static void virEventHandleWakeup(int watch ATTRIBUTE_UNUSED,

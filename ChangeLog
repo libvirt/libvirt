@@ -1,3 +1,10 @@
+Tue May 12 17:43:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix watch/timer event deletion
+	* qemud/event.c: Change handling of deleted watches/timers
+	to ensure correct dispatch of callbacks when deleted flag
+	is set
+
 Tue May 12 17:42:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/event.c: Start watch/timer IDs from 1 to avoid problem
