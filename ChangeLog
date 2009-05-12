@@ -1,3 +1,8 @@
+Tue May 12 16:25:59 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/storage_backend_fs.c: Break out FS volume build routines to
+	their own functions.
+
 Tue May 12 16:16:09 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/virsh.c: Virsh commands vol-clone and vol-create-from
