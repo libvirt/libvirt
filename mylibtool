@@ -1,0 +1,58 @@
+#!/bin/sh
+
+mode=libtool
+cfiles=""
+ofiles=""
+afiles=""
+
+wantnext=0
+for v in "$@"
+do
+  case $v
+  in
+     --mode=compile)
+        mode=CC
+        ;;
+     --mode=link)
+        mode=LD
+        ;;
+  esac
+
+  case $v
+  in
+    *.c)
+    cfiles="$cfiles $v"
+    ;;
+    *.o)
+    if [ "$mode" = "LD" -o "$wantnext" = "1" ]; then
+      ofiles="$ofiles $v"
+    fi
+    ;;
+    *.lo)
+    if [ "$mode" = "LD" -o "$wantnext" = "1" ]; then
+      ofiles="$ofiles $v"
+    fi
+    ;;
+  esac
+
+  if [ "$mode" = "LD" -a "$wantnext" = "1" ]; then
+      afiles="$afiles $v"
+  fi
+
+  if [ "$v" = "-o" ]; then
+    wantnext=1
+  else
+    wantnext=0
+  fi
+done
+
+args=""
+test -n "$afiles" && args="$args -o$afiles"
+test -n "$ofiles" -a "$mode" = "CC" && args="$args -o"
+test -n "$ofiles" && args="$args$ofiles"
+test -n "$cfiles" && args="$args$cfiles"
+
+echo "($mode)$args"
+
+here=`dirname $0`
+exec $here/libtool --silent "$@"

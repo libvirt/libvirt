@@ -57,6 +57,9 @@ dnl Support building Win32 DLLs (must appear *before* AM_PROG_LIBTOOL)
 AC_LIBTOOL_WIN32_DLL
 
 AM_PROG_LIBTOOL
+dnl Override normal libtool in favour of our quiet version
+LIBTOOL='$(SHELL) $(top_srcdir)/mylibtool'
+AC_SUBST([LIBTOOL])
 
 AM_PROG_CC_C_O
 

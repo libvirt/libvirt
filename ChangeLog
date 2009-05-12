@@ -1,3 +1,10 @@
+Tue May 12 16:38:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Allow for quieter build with 'make -s'
+	* configure.in: Use 'mylibtool' wrapper around 'libtool'
+	* mylibtool: Quiet version of libtool just printing build
+	target name without flags.
+
 Tue May 12 16:35:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Improve driver open URI handling
