@@ -1,3 +1,12 @@
+Tue May 12 16:11:14 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* qemud/remote.c qemud/remote_dispatch_args.h
+	  qemud/remote_dispatch_prototypes.h qemud/remote_distpatch_ret.h
+	  qemud/remote_dispatch_table.h qemud/remote_protocol.c
+	  qemud/remote_protocol.h qemud/remote_protocol.x
+	  src/remote_internal.c:
+	  Remote support for virStorageVolCreateXMLFrom
+
 Tue May 12 16:00:49 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* include/libvirt/libvirt.h include/libvirt/libvirt.c

@@ -1992,6 +1992,30 @@ xdr_remote_storage_vol_create_xml_ret (XDR *xdrs, remote_storage_vol_create_xml_
 }
 
 bool_t
+xdr_remote_storage_vol_create_xml_from_args (XDR *xdrs, remote_storage_vol_create_xml_from_args *objp)
+{
+
+         if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->xml))
+                 return FALSE;
+         if (!xdr_remote_nonnull_storage_vol (xdrs, &objp->clonevol))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_create_xml_from_ret (XDR *xdrs, remote_storage_vol_create_xml_from_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_storage_vol (xdrs, &objp->vol))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_storage_vol_delete_args (XDR *xdrs, remote_storage_vol_delete_args *objp)
 {
 

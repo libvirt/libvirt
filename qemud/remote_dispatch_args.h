@@ -105,3 +105,4 @@
     remote_domain_get_security_label_args val_remote_domain_get_security_label_args;
     remote_node_device_create_xml_args val_remote_node_device_create_xml_args;
     remote_node_device_destroy_args val_remote_node_device_destroy_args;
+    remote_storage_vol_create_xml_from_args val_remote_storage_vol_create_xml_from_args;

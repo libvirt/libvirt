@@ -1120,6 +1120,19 @@ struct remote_storage_vol_create_xml_ret {
 };
 typedef struct remote_storage_vol_create_xml_ret remote_storage_vol_create_xml_ret;
 
+struct remote_storage_vol_create_xml_from_args {
+        remote_nonnull_storage_pool pool;
+        remote_nonnull_string xml;
+        remote_nonnull_storage_vol clonevol;
+        u_int flags;
+};
+typedef struct remote_storage_vol_create_xml_from_args remote_storage_vol_create_xml_from_args;
+
+struct remote_storage_vol_create_xml_from_ret {
+        remote_nonnull_storage_vol vol;
+};
+typedef struct remote_storage_vol_create_xml_from_ret remote_storage_vol_create_xml_from_ret;
+
 struct remote_storage_vol_delete_args {
         remote_nonnull_storage_vol vol;
         u_int flags;
@@ -1415,6 +1428,7 @@ enum remote_procedure {
         REMOTE_PROC_NODE_GET_SECURITY_MODEL = 122,
         REMOTE_PROC_NODE_DEVICE_CREATE_XML = 123,
         REMOTE_PROC_NODE_DEVICE_DESTROY = 124,
+        REMOTE_PROC_STORAGE_VOL_CREATE_XML_FROM = 125,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -1623,6 +1637,8 @@ extern  bool_t xdr_remote_storage_vol_lookup_by_path_args (XDR *, remote_storage
 extern  bool_t xdr_remote_storage_vol_lookup_by_path_ret (XDR *, remote_storage_vol_lookup_by_path_ret*);
 extern  bool_t xdr_remote_storage_vol_create_xml_args (XDR *, remote_storage_vol_create_xml_args*);
 extern  bool_t xdr_remote_storage_vol_create_xml_ret (XDR *, remote_storage_vol_create_xml_ret*);
+extern  bool_t xdr_remote_storage_vol_create_xml_from_args (XDR *, remote_storage_vol_create_xml_from_args*);
+extern  bool_t xdr_remote_storage_vol_create_xml_from_ret (XDR *, remote_storage_vol_create_xml_from_ret*);
 extern  bool_t xdr_remote_storage_vol_delete_args (XDR *, remote_storage_vol_delete_args*);
 extern  bool_t xdr_remote_storage_vol_dump_xml_args (XDR *, remote_storage_vol_dump_xml_args*);
 extern  bool_t xdr_remote_storage_vol_dump_xml_ret (XDR *, remote_storage_vol_dump_xml_ret*);
@@ -1837,6 +1853,8 @@ extern bool_t xdr_remote_storage_vol_lookup_by_path_args ();
 extern bool_t xdr_remote_storage_vol_lookup_by_path_ret ();
 extern bool_t xdr_remote_storage_vol_create_xml_args ();
 extern bool_t xdr_remote_storage_vol_create_xml_ret ();
+extern bool_t xdr_remote_storage_vol_create_xml_from_args ();
+extern bool_t xdr_remote_storage_vol_create_xml_from_ret ();
 extern bool_t xdr_remote_storage_vol_delete_args ();
 extern bool_t xdr_remote_storage_vol_dump_xml_args ();
 extern bool_t xdr_remote_storage_vol_dump_xml_ret ();

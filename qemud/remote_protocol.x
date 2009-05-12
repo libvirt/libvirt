@@ -1002,6 +1002,17 @@ struct remote_storage_vol_create_xml_ret {
     remote_nonnull_storage_vol vol;
 };
 
+struct remote_storage_vol_create_xml_from_args {
+    remote_nonnull_storage_pool pool;
+    remote_nonnull_string xml;
+    remote_nonnull_storage_vol clonevol;
+    unsigned flags;
+};
+
+struct remote_storage_vol_create_xml_from_ret {
+    remote_nonnull_storage_vol vol;
+};
+
 struct remote_storage_vol_delete_args {
     remote_nonnull_storage_vol vol;
     unsigned flags;
@@ -1286,7 +1297,9 @@ enum remote_procedure {
     REMOTE_PROC_NODE_GET_SECURITY_MODEL = 122,
 
     REMOTE_PROC_NODE_DEVICE_CREATE_XML = 123,
-    REMOTE_PROC_NODE_DEVICE_DESTROY = 124
+    REMOTE_PROC_NODE_DEVICE_DESTROY = 124,
+
+    REMOTE_PROC_STORAGE_VOL_CREATE_XML_FROM = 125
 };
 
 /* Custom RPC structure. */

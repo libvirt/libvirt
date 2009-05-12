@@ -4499,6 +4499,38 @@ done:
     return vol;
 }
 
+static virStorageVolPtr
+remoteStorageVolCreateXMLFrom (virStoragePoolPtr pool,
+                               const char *xmlDesc,
+                               virStorageVolPtr clonevol,
+                               unsigned int flags)
+{
+    virStorageVolPtr newvol = NULL;
+    remote_storage_vol_create_xml_from_args args;
+    remote_storage_vol_create_xml_from_ret ret;
+    struct private_data *priv = pool->conn->storagePrivateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_storage_pool (&args.pool, pool);
+    make_nonnull_storage_vol (&args.clonevol, clonevol);
+    args.xml = (char *) xmlDesc;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_VOL_CREATE_XML_FROM,
+              (xdrproc_t) xdr_remote_storage_vol_create_xml_from_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_vol_create_xml_from_ret, (char *) &ret) == -1)
+        goto done;
+
+    newvol = get_nonnull_storage_vol (pool->conn, ret.vol);
+    xdr_free ((xdrproc_t) &xdr_remote_storage_vol_create_xml_from_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return newvol;
+}
+
 static int
 remoteStorageVolDelete (virStorageVolPtr vol,
                         unsigned int flags)
@@ -7018,6 +7050,7 @@ static virStorageDriver storage_driver = {
     .volLookupByKey = remoteStorageVolLookupByKey,
     .volLookupByPath = remoteStorageVolLookupByPath,
     .volCreateXML = remoteStorageVolCreateXML,
+    .volCreateXMLFrom = remoteStorageVolCreateXMLFrom,
     .volDelete = remoteStorageVolDelete,
     .volGetInfo = remoteStorageVolGetInfo,
     .volGetXMLDesc = remoteStorageVolDumpXML,

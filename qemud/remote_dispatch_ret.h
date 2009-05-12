@@ -89,3 +89,4 @@
     remote_domain_get_security_label_ret val_remote_domain_get_security_label_ret;
     remote_node_get_security_model_ret val_remote_node_get_security_model_ret;
     remote_node_device_create_xml_ret val_remote_node_device_create_xml_ret;
+    remote_storage_vol_create_xml_from_ret val_remote_storage_vol_create_xml_from_ret;

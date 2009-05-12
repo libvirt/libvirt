@@ -3831,6 +3831,40 @@ remoteDispatchStorageVolCreateXml (struct qemud_server *server ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+remoteDispatchStorageVolCreateXmlFrom (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                       struct qemud_client *client ATTRIBUTE_UNUSED,
+                                       virConnectPtr conn,
+                                       remote_error *rerr,
+                                       remote_storage_vol_create_xml_from_args *args,
+                                       remote_storage_vol_create_xml_from_ret *ret)
+{
+    virStoragePoolPtr pool;
+    virStorageVolPtr clonevol, newvol;
+
+    pool = get_nonnull_storage_pool (conn, args->pool);
+    if (pool == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    clonevol = get_nonnull_storage_vol (conn, args->clonevol);
+    if (clonevol == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    newvol = virStorageVolCreateXMLFrom (pool, args->xml, clonevol,
+                                         args->flags);
+    if (newvol == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    make_nonnull_storage_vol (&ret->vol, newvol);
+    virStorageVolFree(newvol);
+    return 0;
+}
 
 static int
 remoteDispatchStorageVolDelete (struct qemud_server *server ATTRIBUTE_UNUSED,

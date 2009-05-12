@@ -814,6 +814,13 @@ static int remoteDispatchStorageVolCreateXml(
     remote_error *err,
     remote_storage_vol_create_xml_args *args,
     remote_storage_vol_create_xml_ret *ret);
+static int remoteDispatchStorageVolCreateXmlFrom(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_storage_vol_create_xml_from_args *args,
+    remote_storage_vol_create_xml_from_ret *ret);
 static int remoteDispatchStorageVolDelete(
     struct qemud_server *server,
     struct qemud_client *client,

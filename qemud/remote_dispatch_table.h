@@ -627,3 +627,8 @@
     .args_filter = (xdrproc_t) xdr_remote_node_device_destroy_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
+{   /* StorageVolCreateXmlFrom => 125 */
+    .fn = (dispatch_fn) remoteDispatchStorageVolCreateXmlFrom,
+    .args_filter = (xdrproc_t) xdr_remote_storage_vol_create_xml_from_args,
+    .ret_filter = (xdrproc_t) xdr_remote_storage_vol_create_xml_from_ret,
+},
