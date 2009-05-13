@@ -42,7 +42,7 @@
 #include <linux/fs.h>
 
 #include <sys/prctl.h>
-#include <sys/capability.h>
+#include <linux/capability.h>
 
 #include "virterror_internal.h"
 #include "logging.h"

@@ -1,3 +1,9 @@
+Wed May 13 12:34:06 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/lxc_container.c: Replace sys/capability.h with
+	linux/capability.h, to avoid unneccessary dependancy
+	on the libcap package.
+
 Tue May 12 16:39:06 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* tests/eventtest.c: Use safewrite instead of write
