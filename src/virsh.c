@@ -4096,9 +4096,9 @@ cleanup:
 static xmlChar *
 makeCloneXML(char *origxml, char *newname) {
 
-    xmlDocPtr doc;
-    xmlXPathContextPtr ctxt;
-    xmlXPathObjectPtr obj;
+    xmlDocPtr doc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlXPathObjectPtr obj = NULL;
     xmlChar *newxml = NULL;
     int size;
 

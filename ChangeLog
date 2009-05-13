@@ -1,3 +1,7 @@
+Wed May 13 13:37:02 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/virsh.c: Fix a few 'used uninitialized' warnings.
+
 Wed May 13 18:06:17 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/buf.c: avoid an XML attribute escaping bug #499791
