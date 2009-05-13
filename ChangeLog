@@ -1,3 +1,7 @@
+Wed May 13 18:06:17 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/buf.c: avoid an XML attribute escaping bug #499791
+
 Wed May 13 12:34:06 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/lxc_container.c: Replace sys/capability.h with

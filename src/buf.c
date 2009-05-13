@@ -266,7 +266,7 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
         return;
 
     len = strlen(str);
-    if (VIR_ALLOC_N(escaped, 5 * len + 1) < 0) {
+    if (VIR_ALLOC_N(escaped, 6 * len + 1) < 0) {
         virBufferNoMemory(buf);
         return;
     }
@@ -289,6 +289,20 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
             *out++ = 'a';
             *out++ = 'm';
             *out++ = 'p';
+            *out++ = ';';
+        } else if (*cur == '"') {
+            *out++ = '&';
+            *out++ = 'q';
+            *out++ = 'u';
+            *out++ = 'o';
+            *out++ = 't';
+            *out++ = ';';
+        } else if (*cur == '\'') {
+            *out++ = '&';
+            *out++ = 'a';
+            *out++ = 'p';
+            *out++ = 'o';
+            *out++ = 's';
             *out++ = ';';
         } else if ((*cur >= 0x20) || (*cur == '\n') || (*cur == '\t') ||
                    (*cur == '\r')) {
