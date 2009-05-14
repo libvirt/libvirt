@@ -1,3 +1,8 @@
+Thu May 14 12:29:41 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: remove [] around cpumaps for recent xend
+	  patch by Tatsuro Enokura
+
 Wed May 13 13:37:02 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/virsh.c: Fix a few 'used uninitialized' warnings.

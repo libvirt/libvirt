@@ -3765,6 +3765,11 @@ xenDaemonDomainSetVcpus(virDomainPtr domain, unsigned int vcpus)
  * @maplen: length of cpumap in bytes
  *
  * Dynamically change the real CPUs which can be allocated to a virtual CPU.
+ * NOTE: The XenD cpu affinity map format changed from "[0,1,2]" to
+ *       "0,1,2"
+ *       the XenD cpu affinity works only after cset 19579.
+ *       there is no fine grained xend version detection possible, so we
+ *       use the old format for anything before version 3
  *
  * Returns 0 for success; -1 (with errno) on error
  */
@@ -3772,8 +3777,9 @@ int
 xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
                      unsigned char *cpumap, int maplen)
 {
-    char buf[VIR_UUID_BUFLEN], mapstr[sizeof(cpumap_t) * 64] = "[";
+    char buf[VIR_UUID_BUFLEN], mapstr[sizeof(cpumap_t) * 64];
     int i, j;
+    xenUnifiedPrivatePtr priv;
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)
      || (cpumap == NULL) || (maplen < 1) || (maplen > (int)sizeof(cpumap_t))) {
@@ -3782,13 +3788,25 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
         return (-1);
     }
 
+    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
+    if (priv->xendConfigVersion < 3) {
+        buf[0] = ']';
+        buf[1] = 0;
+    } else {
+        buf[0] = 0;
+    }
+
     /* from bit map, build character string of mapped CPU numbers */
     for (i = 0; i < maplen; i++) for (j = 0; j < 8; j++)
      if (cpumap[i] & (1 << j)) {
         snprintf(buf, sizeof(buf), "%d,", (8 * i) + j);
         strcat(mapstr, buf);
     }
-    mapstr[strlen(mapstr) - 1] = ']';
+    if (priv->xendConfigVersion < 3)
+        mapstr[strlen(mapstr) - 1] = ']';
+    else
+        mapstr[strlen(mapstr) - 1] = 0;
+
     snprintf(buf, sizeof(buf), "%d", vcpu);
     return(xend_op(domain->conn, domain->name, "op", "pincpu", "vcpu", buf,
                   "cpumap", mapstr, NULL));
