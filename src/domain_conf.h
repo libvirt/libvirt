@@ -268,6 +268,8 @@ struct _virDomainSoundDef {
 enum virDomainGraphicsType {
     VIR_DOMAIN_GRAPHICS_TYPE_SDL,
     VIR_DOMAIN_GRAPHICS_TYPE_VNC,
+    VIR_DOMAIN_GRAPHICS_TYPE_RDP,
+    VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP,
 
     VIR_DOMAIN_GRAPHICS_TYPE_LAST,
 };
@@ -289,6 +291,17 @@ struct _virDomainGraphicsDef {
             char *xauth;
             int fullscreen;
         } sdl;
+        struct {
+            int port;
+            char *listenAddr;
+            int autoport : 1;
+            int replaceUser : 1;
+            int multiUser : 1;
+        } rdp;
+        struct {
+            char *display;
+            int fullscreen : 1;
+        } desktop;
     } data;
 };
 

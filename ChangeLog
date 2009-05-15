@@ -1,3 +1,9 @@
+Fri May 15 11:41:46 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/schemas/domain.rng src/domain_conf.[ch] src/qemu_driver.c:
+	  extend the generic code for the RDP and desktop extensions of
+	  the graphic tag needed for vbox, patch by Pritesh Kothari
+
 Thu May 14 12:29:41 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: remove [] around cpumaps for recent xend

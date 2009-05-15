@@ -4841,6 +4841,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
                               vm->def->name);
             goto cleanup;
         }
+        virDomainObjUnlock(vm);
     }
 
     if (!(vm = virDomainAssignDef(dconn,

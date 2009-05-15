@@ -151,7 +151,9 @@ VIR_ENUM_IMPL(virDomainInputBus, VIR_DOMAIN_INPUT_BUS_LAST,
 
 VIR_ENUM_IMPL(virDomainGraphics, VIR_DOMAIN_GRAPHICS_TYPE_LAST,
               "sdl",
-              "vnc")
+              "vnc",
+              "rdp",
+              "desktop")
 
 VIR_ENUM_IMPL(virDomainHostdevMode, VIR_DOMAIN_HOSTDEV_MODE_LAST,
               "subsystem",
@@ -244,6 +246,14 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
         VIR_FREE(def->data.sdl.display);
         VIR_FREE(def->data.sdl.xauth);
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        VIR_FREE(def->data.rdp.listenAddr);
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+        VIR_FREE(def->data.desktop.display);
         break;
     }
 
@@ -1521,6 +1531,68 @@ virDomainGraphicsDefParseXML(virConnectPtr conn,
             def->data.sdl.fullscreen = 0;
         def->data.sdl.xauth = virXMLPropString(node, "xauth");
         def->data.sdl.display = virXMLPropString(node, "display");
+    } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP) {
+        char *port = virXMLPropString(node, "port");
+        char *autoport;
+        char *replaceUser;
+        char *multiUser;
+
+        if (port) {
+            if (virStrToLong_i(port, NULL, 10, &def->data.rdp.port) < 0) {
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                     _("cannot parse rdp port %s"), port);
+                VIR_FREE(port);
+                goto error;
+            }
+            VIR_FREE(port);
+        } else {
+            def->data.rdp.port = 0;
+            def->data.rdp.autoport = 1;
+        }
+
+        if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
+            if (STREQ(autoport, "yes")) {
+                if (flags & VIR_DOMAIN_XML_INACTIVE)
+                    def->data.rdp.port = 0;
+                def->data.rdp.autoport = 1;
+            }
+            VIR_FREE(autoport);
+        }
+
+        if ((replaceUser = virXMLPropString(node, "replaceUser")) != NULL) {
+            if (STREQ(replaceUser, "yes")) {
+                def->data.rdp.replaceUser = 1;
+            }
+            VIR_FREE(replaceUser);
+        }
+
+        if ((multiUser = virXMLPropString(node, "multiUser")) != NULL) {
+            if (STREQ(multiUser, "yes")) {
+                def->data.rdp.multiUser = 1;
+            }
+            VIR_FREE(multiUser);
+        }
+
+        def->data.rdp.listenAddr = virXMLPropString(node, "listen");
+    } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP) {
+        char *fullscreen = virXMLPropString(node, "fullscreen");
+
+        if (fullscreen != NULL) {
+            if (STREQ(fullscreen, "yes")) {
+                def->data.desktop.fullscreen = 1;
+            } else if (STREQ(fullscreen, "no")) {
+                def->data.desktop.fullscreen = 0;
+            } else {
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unknown fullscreen value '%s'"), fullscreen);
+                VIR_FREE(fullscreen);
+                goto error;
+            }
+            VIR_FREE(fullscreen);
+        } else
+            def->data.desktop.fullscreen = 0;
+
+        def->data.desktop.display = virXMLPropString(node, "display");
     }
 
 cleanup:
@@ -3295,6 +3367,38 @@ virDomainGraphicsDefFormat(virConnectPtr conn,
             virBufferAddLit(buf, " fullscreen='yes'");
 
         break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        if (def->data.rdp.port)
+            virBufferVSprintf(buf, " port='%d'",
+                              def->data.rdp.port);
+        else if (def->data.rdp.autoport)
+            virBufferAddLit(buf, " port='0'");
+
+        if (def->data.rdp.autoport)
+            virBufferVSprintf(buf, " autoport='yes'");
+
+        if (def->data.rdp.replaceUser)
+            virBufferVSprintf(buf, " replaceUser='yes'");
+
+        if (def->data.rdp.multiUser)
+            virBufferVSprintf(buf, " multiUser='yes'");
+
+        if (def->data.rdp.listenAddr)
+            virBufferVSprintf(buf, " listen='%s'", def->data.rdp.listenAddr);
+
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+        if (def->data.desktop.display)
+            virBufferEscapeString(buf, " display='%s'",
+                                  def->data.desktop.display);
+
+        if (def->data.desktop.fullscreen)
+            virBufferAddLit(buf, " fullscreen='yes'");
+
+        break;
+
     }
 
     virBufferAddLit(buf, "/>\n");
