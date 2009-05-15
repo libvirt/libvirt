@@ -1366,9 +1366,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                 PRBool PAEEnabled                   = PR_FALSE;
                 PRBool ACPIEnabled                  = PR_FALSE;
                 PRBool IOAPICEnabled                = PR_FALSE;
-#if 0
                 PRBool VRDPEnabled                  = PR_FALSE;
-#endif
                 PRInt32 hddNum                      = 0;
                 PRUint32 CPUCount                   = 0;
                 PRUint32 memorySize                 = 0;
@@ -1387,9 +1385,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                 IHardDisk *hardDiskPS               = NULL;
                 IHardDisk *hardDiskSS               = NULL;
                 PRUnichar *hddBusUtf16              = NULL;
-#if 0
                 IVRDPServer *VRDPServer             = NULL;
-#endif
                 IFloppyDrive *floppyDrive           = NULL;
                 IAudioAdapter *audioAdapter         = NULL;
                 IUSBController *USBController       = NULL;
@@ -1482,83 +1478,162 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                  * so locatime is always true here */
                 def->localtime = 1;
 
-#if 0
-                machine->vtbl->GetVRDPServer(machine, &VRDPServer);
-                if (VRDPServer) {
-                    VRDPServer->vtbl->GetEnabled(VRDPServer, &VRDPEnabled);
-                    if (VRDPEnabled) {
-                        if (VIR_ALLOC(def->graphics) >= 0) {
-                            PRUint32 VRDPport            = 0;
-                            PRUnichar *netAddressUtf16   = NULL;
-                            PRUnichar *sessionTypeUtf16  = NULL;
-                            char *sessionTypeUtf8        = NULL;
-                            char *netAddressUtf8         = NULL;
-                            PRUint32 authType            = VRDPAuthType_Null;
-                            PRBool allowMultiConnection  = PR_FALSE;
-                            PRBool reuseSingleConnection = PR_FALSE;
+                /* dump display options vrdp/gui/sdl */
+                {
+                    int vrdpPresent           = 0;
+                    int sdlPresent            = 0;
+                    int guiPresent            = 0;
+                    int totalPresent          = 0;
+                    char *guiDisplay          = NULL;
+                    char *sdlDisplay          = NULL;
+                    PRUnichar *keyTypeUtf16   = NULL;
+                    PRUnichar *valueTypeUtf16 = NULL;
+                    char      *valueTypeUtf8  = NULL;
 
-                            def->graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_RDP;
+                    def->ngraphics = 0;
 
-                            VRDPServer->vtbl->GetPort(VRDPServer, &VRDPport);
-                            if (VRDPport) {
-                                def->graphics->data.rdp.port = VRDPport;
-                            } else {
-                                def->graphics->data.rdp.autoport = 1;
-                            }
+                    data->pFuncs->pfnUtf8ToUtf16("FRONTEND/Type", &keyTypeUtf16);
+                    machine->vtbl->GetExtraData(machine, keyTypeUtf16, &valueTypeUtf16);
+                    data->pFuncs->pfnUtf16Free(keyTypeUtf16);
 
-                            VRDPServer->vtbl->GetNetAddress(VRDPServer, &netAddressUtf16);
-                            if (netAddressUtf16) {
-                                data->pFuncs->pfnUtf16ToUtf8(netAddressUtf16, &netAddressUtf8);
-                                if (STRNEQ(netAddressUtf8, ""))
-                                        def->graphics->data.rdp.listenAddr = strdup(netAddressUtf8);
-                                data->pFuncs->pfnUtf16Free(netAddressUtf16);
-                                data->pFuncs->pfnUtf8Free(netAddressUtf8);
-                            }
+                    if (valueTypeUtf16) {
+                        data->pFuncs->pfnUtf16ToUtf8(valueTypeUtf16, &valueTypeUtf8);
+                        data->pFuncs->pfnUtf16Free(valueTypeUtf16);
 
-                            VRDPServer->vtbl->GetAuthType(VRDPServer, &authType);
-                            if (authType == VRDPAuthType_External) {
-                                PRUint32 authTimeout = 0;
+                        if ( STREQ(valueTypeUtf8, "sdl") || STREQ(valueTypeUtf8, "gui") ) {
+                            PRUnichar *keyDislpayUtf16   = NULL;
+                            PRUnichar *valueDisplayUtf16 = NULL;
+                            char      *valueDisplayUtf8  = NULL;
 
-                                VRDPServer->vtbl->GetAuthTimeout(VRDPServer, &authTimeout);
+                            data->pFuncs->pfnUtf8ToUtf16("FRONTEND/Display", &keyDislpayUtf16);
+                            machine->vtbl->GetExtraData(machine, keyDislpayUtf16, &valueDisplayUtf16);
+                            data->pFuncs->pfnUtf16Free(keyDislpayUtf16);
 
-                                def->graphics->data.rdp.auth = strdup("external");
-                                def->graphics->data.rdp.authtimeout = authTimeout;
-                            } else if (authType == VRDPAuthType_Guest) {
-                                PRUint32 authTimeout = 0;
+                            if (valueDisplayUtf16) {
+                                data->pFuncs->pfnUtf16ToUtf8(valueDisplayUtf16, &valueDisplayUtf8);
+                                data->pFuncs->pfnUtf16Free(valueDisplayUtf16);
 
-                                VRDPServer->vtbl->GetAuthTimeout(VRDPServer, &authTimeout);
-
-                                def->graphics->data.rdp.auth = strdup("guest");
-                                def->graphics->data.rdp.authtimeout = authTimeout;
-                            }
-
-
-                            VRDPServer->vtbl->GetAllowMultiConnection(VRDPServer, &allowMultiConnection);
-                            if (allowMultiConnection) {
-                                def->graphics->data.rdp.multiconnections = 1;
-                            }
-
-                            VRDPServer->vtbl->GetReuseSingleConnection(VRDPServer, &reuseSingleConnection);
-                            if (reuseSingleConnection) {
-                                def->graphics->data.rdp.reuseconnection = 1;
-                            }
-
-                            machine->vtbl->GetSessionType(machine, &sessionTypeUtf16);
-                            DEBUG0("Session Type:");
-                            if (sessionTypeUtf16) {
-                                data->pFuncs->pfnUtf16ToUtf8(sessionTypeUtf16, &sessionTypeUtf8);
-                                DEBUG("Session Type: %s", sessionTypeUtf8);
-                                if (STREQ(sessionTypeUtf8, "vrdp")) {
-                                    def->graphics->data.rdp.headless = 1;
+                                if (strlen(valueDisplayUtf8) <= 0) {
+                                    data->pFuncs->pfnUtf8Free(valueDisplayUtf8);
+                                    valueDisplayUtf8 = NULL;
                                 }
-                                data->pFuncs->pfnUtf16Free(sessionTypeUtf16);
-                                data->pFuncs->pfnUtf8Free(sessionTypeUtf8);
                             }
+
+                            if (STREQ(valueTypeUtf8, "sdl")) {
+                                sdlPresent = 1;
+                                if (valueDisplayUtf8)
+                                    sdlDisplay = strdup(valueDisplayUtf8);
+                                if (sdlDisplay == NULL) {
+                                    vboxError(dom->conn, VIR_ERR_SYSTEM_ERROR, "%s", "strdup failed");
+                                    /* just don't go to cleanup yet as it is ok to have
+                                     * sdlDisplay as NULL and we check it below if it
+                                     * exist and then only use it there
+                                     */
+                                }
+                                totalPresent++;
+                            }
+
+                            if (STREQ(valueTypeUtf8, "gui")) {
+                                guiPresent = 1;
+                                if (valueDisplayUtf8)
+                                    guiDisplay = strdup(valueDisplayUtf8);
+                                if (guiDisplay == NULL) {
+                                    vboxError(dom->conn, VIR_ERR_SYSTEM_ERROR, "%s", "strdup failed");
+                                    /* just don't go to cleanup yet as it is ok to have
+                                     * guiDisplay as NULL and we check it below if it
+                                     * exist and then only use it there
+                                     */
+                                }
+                                totalPresent++;
+                            }
+                            if (valueDisplayUtf8)
+                                data->pFuncs->pfnUtf8Free(valueDisplayUtf8);
+                        }
+
+                        if (STREQ(valueTypeUtf8, "vrdp"))
+                            vrdpPresent = 1;
+
+                        data->pFuncs->pfnUtf8Free(valueTypeUtf8);
+                    }
+
+                    if ((totalPresent > 0) && (VIR_ALLOC_N(def->graphics, totalPresent) >= 0)) {
+                        if ((guiPresent) && (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0)) {
+                            def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
+                            if (guiDisplay)
+                                def->graphics[def->ngraphics]->data.desktop.display = guiDisplay;
+                            def->ngraphics++;
+                        }
+
+                        if ((sdlPresent) && (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0)) {
+                            def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
+                            if (sdlDisplay)
+                                def->graphics[def->ngraphics]->data.sdl.display = sdlDisplay;
+                            def->ngraphics++;
+                        }
+                    } else if ((vrdpPresent != 1) && (totalPresent == 0) && (VIR_ALLOC_N(def->graphics, 1) >= 0)) {
+                        if (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0) {
+                            def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
+                            def->graphics[def->ngraphics]->data.desktop.display = strdup(getenv("DISPLAY"));
+                            if (def->graphics[def->ngraphics]->data.desktop.display == NULL) {
+                                vboxError(dom->conn, VIR_ERR_SYSTEM_ERROR, "%s", "strdup failed");
+                                /* just don't go to cleanup yet as it is ok to have
+                                 * display as NULL
+                                 */
+                            }
+                            totalPresent++;
+                            def->ngraphics++;
                         }
                     }
-                    VRDPServer->vtbl->nsisupports.Release((nsISupports *)VRDPServer);
+
+                    machine->vtbl->GetVRDPServer(machine, &VRDPServer);
+                    if (VRDPServer) {
+                        VRDPServer->vtbl->GetEnabled(VRDPServer, &VRDPEnabled);
+                        if (VRDPEnabled) {
+
+                            totalPresent++;
+
+                            if ((VIR_REALLOC_N(def->graphics, totalPresent) >= 0) &&
+                                (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0)) {
+                                PRUint32 VRDPport            = 0;
+                                PRUnichar *netAddressUtf16   = NULL;
+                                char      *netAddressUtf8    = NULL;
+                                PRBool allowMultiConnection  = PR_FALSE;
+                                PRBool reuseSingleConnection = PR_FALSE;
+
+                                def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_RDP;
+
+                                VRDPServer->vtbl->GetPort(VRDPServer, &VRDPport);
+                                if (VRDPport) {
+                                    def->graphics[def->ngraphics]->data.rdp.port = VRDPport;
+                                } else {
+                                    def->graphics[def->ngraphics]->data.rdp.autoport = 1;
+                                }
+
+                                VRDPServer->vtbl->GetNetAddress(VRDPServer, &netAddressUtf16);
+                                if (netAddressUtf16) {
+                                    data->pFuncs->pfnUtf16ToUtf8(netAddressUtf16, &netAddressUtf8);
+                                    if (STRNEQ(netAddressUtf8, ""))
+                                            def->graphics[def->ngraphics]->data.rdp.listenAddr = strdup(netAddressUtf8);
+                                    data->pFuncs->pfnUtf16Free(netAddressUtf16);
+                                    data->pFuncs->pfnUtf8Free(netAddressUtf8);
+                                }
+
+                                VRDPServer->vtbl->GetAllowMultiConnection(VRDPServer, &allowMultiConnection);
+                                if (allowMultiConnection) {
+                                    def->graphics[def->ngraphics]->data.rdp.multiUser = 1;
+                                }
+
+                                VRDPServer->vtbl->GetReuseSingleConnection(VRDPServer, &reuseSingleConnection);
+                                if (reuseSingleConnection) {
+                                    def->graphics[def->ngraphics]->data.rdp.replaceUser = 1;
+                                }
+
+                                def->ngraphics++;
+                            }
+                        }
+                        VRDPServer->vtbl->nsisupports.Release((nsISupports *)VRDPServer);
+                    }
                 }
-#endif
 
                 /* dump IDE hdds if present */
                 data->pFuncs->pfnUtf8ToUtf16(hddBus, &hddBusUtf16);
@@ -2268,19 +2343,11 @@ static int vboxDomainCreate(virDomainPtr dom) {
     IProgress *progress    = NULL;
     PRUint32 machineCnt    = 0;
     PRUnichar *env         = NULL;
-    const char *display    = getenv("DISPLAY");
     PRUnichar *sessionType = NULL;
     char displayutf8[32]   = {0};
     unsigned char iidl[VIR_UUID_BUFLEN] = {0};
     int i, ret = -1;
 
-
-    if (display) {
-        sprintf(displayutf8, "DISPLAY=%s", display);
-        data->pFuncs->pfnUtf8ToUtf16(displayutf8, &env);
-    }
-
-    data->pFuncs->pfnUtf8ToUtf16("gui", &sessionType);
 
     if (!dom->name) {
         vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,"%s",
@@ -2319,6 +2386,106 @@ static int vboxDomainCreate(virDomainPtr dom) {
                     if ( (state == MachineState_PoweredOff) ||
                          (state == MachineState_Saved) ||
                          (state == MachineState_Aborted) ) {
+                        int vrdpPresent              = 0;
+                        int sdlPresent               = 0;
+                        int guiPresent               = 0;
+                        char *guiDisplay             = NULL;
+                        char *sdlDisplay             = NULL;
+                        PRUnichar *keyTypeUtf16      = NULL;
+                        PRUnichar *valueTypeUtf16    = NULL;
+                        char      *valueTypeUtf8     = NULL;
+                        PRUnichar *keyDislpayUtf16   = NULL;
+                        PRUnichar *valueDisplayUtf16 = NULL;
+                        char      *valueDisplayUtf8  = NULL;
+
+                        data->pFuncs->pfnUtf8ToUtf16("FRONTEND/Type", &keyTypeUtf16);
+                        machine->vtbl->GetExtraData(machine, keyTypeUtf16, &valueTypeUtf16);
+                        data->pFuncs->pfnUtf16Free(keyTypeUtf16);
+
+                        if (valueTypeUtf16) {
+                            data->pFuncs->pfnUtf16ToUtf8(valueTypeUtf16, &valueTypeUtf8);
+                            data->pFuncs->pfnUtf16Free(valueTypeUtf16);
+
+                            if ( STREQ(valueTypeUtf8, "sdl") || STREQ(valueTypeUtf8, "gui") ) {
+
+                                data->pFuncs->pfnUtf8ToUtf16("FRONTEND/Display", &keyDislpayUtf16);
+                                machine->vtbl->GetExtraData(machine, keyDislpayUtf16, &valueDisplayUtf16);
+                                data->pFuncs->pfnUtf16Free(keyDislpayUtf16);
+
+                                if (valueDisplayUtf16) {
+                                    data->pFuncs->pfnUtf16ToUtf8(valueDisplayUtf16, &valueDisplayUtf8);
+                                    data->pFuncs->pfnUtf16Free(valueDisplayUtf16);
+
+                                    if (strlen(valueDisplayUtf8) <= 0) {
+                                        data->pFuncs->pfnUtf8Free(valueDisplayUtf8);
+                                        valueDisplayUtf8 = NULL;
+                                    }
+                                }
+
+                                if (STREQ(valueTypeUtf8, "sdl")) {
+                                    sdlPresent = 1;
+                                    if (valueDisplayUtf8) {
+                                        sdlDisplay = strdup(valueDisplayUtf8);
+                                        if (sdlDisplay == NULL) {
+                                            vboxError(dom->conn, VIR_ERR_SYSTEM_ERROR, "%s", "strdup failed");
+                                            /* just don't go to cleanup yet as it is ok to have
+                                             * sdlDisplay as NULL and we check it below if it
+                                             * exist and then only use it there
+                                             */
+                                        }
+                                    }
+                                }
+
+                                if (STREQ(valueTypeUtf8, "gui")) {
+                                    guiPresent = 1;
+                                    if (valueDisplayUtf8) {
+                                        guiDisplay = strdup(valueDisplayUtf8);
+                                        if (guiDisplay == NULL) {
+                                            vboxError(dom->conn, VIR_ERR_SYSTEM_ERROR, "%s", "strdup failed");
+                                            /* just don't go to cleanup yet as it is ok to have
+                                             * guiDisplay as NULL and we check it below if it
+                                             * exist and then only use it there
+                                             */
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (STREQ(valueTypeUtf8, "vrdp")) {
+                                vrdpPresent = 1;
+                            }
+
+                            data->pFuncs->pfnUtf8Free(valueTypeUtf8);
+
+                        } else {
+                            guiPresent = 1;
+                        }
+                        if (valueDisplayUtf8)
+                            data->pFuncs->pfnUtf8Free(valueDisplayUtf8);
+
+                        if (guiPresent) {
+                            if (guiDisplay) {
+                                sprintf(displayutf8, "DISPLAY=%.24s", guiDisplay);
+                                data->pFuncs->pfnUtf8ToUtf16(displayutf8, &env);
+                                VIR_FREE(guiDisplay);
+                            }
+
+                            data->pFuncs->pfnUtf8ToUtf16("gui", &sessionType);
+                        }
+
+                        if (sdlPresent) {
+                            if (sdlDisplay) {
+                                sprintf(displayutf8, "DISPLAY=%.24s", sdlDisplay);
+                                data->pFuncs->pfnUtf8ToUtf16(displayutf8, &env);
+                                VIR_FREE(sdlDisplay);
+                            }
+
+                            data->pFuncs->pfnUtf8ToUtf16("sdl", &sessionType);
+                        }
+
+                        if (vrdpPresent) {
+                            data->pFuncs->pfnUtf8ToUtf16("vrdp", &sessionType);
+                        }
 
                         data->vboxObj->vtbl->OpenRemoteSession(data->vboxObj,
                                                                data->vboxSession,
@@ -3041,24 +3208,29 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
             }
         }   /* Finished:Block to attach the Parallel Port to the VM */
 
-#if 0
         {   /* Started:Block to attach the Remote Display to VM */
-            if (def->graphics) {
+            int vrdpPresent  = 0;
+            int sdlPresent   = 0;
+            int guiPresent   = 0;
+            char *guiDisplay = NULL;
+            char *sdlDisplay = NULL;
+            int i = 0;
+
+            for (i = 0; i < def->ngraphics; i++) {
                 IVRDPServer *VRDPServer = NULL;
 
-                /* TODO: include the support for headless stuff
-                 */
+                if ((def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP) && (vrdpPresent == 0)) {
 
-                if (def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP) {
+                    vrdpPresent = 1;
                     machine->vtbl->GetVRDPServer(machine, &VRDPServer);
                     if (VRDPServer) {
                         VRDPServer->vtbl->SetEnabled(VRDPServer, PR_TRUE);
                         DEBUG0("VRDP Support turned ON on port: 3389");
 
-                        if (def->graphics->data.rdp.port) {
-                            VRDPServer->vtbl->SetPort(VRDPServer, def->graphics->data.rdp.port);
-                            DEBUG("VRDP Port changed to: %d", def->graphics->data.rdp.port);
-                        } else if (def->graphics->data.rdp.autoport) {
+                        if (def->graphics[i]->data.rdp.port) {
+                            VRDPServer->vtbl->SetPort(VRDPServer, def->graphics[i]->data.rdp.port);
+                            DEBUG("VRDP Port changed to: %d", def->graphics[i]->data.rdp.port);
+                        } else if (def->graphics[i]->data.rdp.autoport) {
                             /* Setting the port to 0 will reset its value to
                              * the default one which is 3389 currently
                              */
@@ -3066,37 +3238,22 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                             DEBUG0("VRDP Port changed to default, which is 3389 currently");
                         }
 
-                        if (def->graphics->data.rdp.reuseconnection) {
+                        if (def->graphics[i]->data.rdp.replaceUser) {
                             VRDPServer->vtbl->SetReuseSingleConnection(VRDPServer, PR_TRUE);
                             DEBUG0("VRDP set to reuse single connection");
                         }
 
-                        if (def->graphics->data.rdp.multiconnections) {
+                        if (def->graphics[i]->data.rdp.multiUser) {
                             VRDPServer->vtbl->SetAllowMultiConnection(VRDPServer, PR_TRUE);
                             DEBUG0("VRDP set to allow multiple connection");
                         }
 
-                        if (def->graphics->data.rdp.auth) {
-                            if (STREQ(def->graphics->data.rdp.auth, "guest")) {
-                                VRDPServer->vtbl->SetAuthType(VRDPServer, VRDPAuthType_Guest);
-                                DEBUG0("VRDP authentication method set to Guest");
-                            } else if (STREQ(def->graphics->data.rdp.auth, "external")) {
-                                VRDPServer->vtbl->SetAuthType(VRDPServer, VRDPAuthType_External);
-                                DEBUG0("VRDP authentication method set to External");
-                            }
-
-                            if (def->graphics->data.rdp.authtimeout) {
-                                VRDPServer->vtbl->SetAuthTimeout(VRDPServer, def->graphics->data.rdp.authtimeout);
-                                DEBUG("VRDP authentication timeout is set to %llu", def->graphics->data.rdp.authtimeout);
-                            }
-                        }
-
-                        if (def->graphics->data.rdp.listenAddr) {
+                        if (def->graphics[i]->data.rdp.listenAddr) {
                             PRUnichar *netAddressUtf16 = NULL;
 
-                            data->pFuncs->pfnUtf8ToUtf16(def->graphics->data.rdp.listenAddr, &netAddressUtf16);
+                            data->pFuncs->pfnUtf8ToUtf16(def->graphics[i]->data.rdp.listenAddr, &netAddressUtf16);
                             VRDPServer->vtbl->SetNetAddress(VRDPServer, netAddressUtf16);
-                            DEBUG("VRDP listen address is set to: %s", def->graphics->data.rdp.listenAddr);
+                            DEBUG("VRDP listen address is set to: %s", def->graphics[i]->data.rdp.listenAddr);
 
                             data->pFuncs->pfnUtf16Free(netAddressUtf16);
                         }
@@ -3104,9 +3261,100 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                         VRDPServer->vtbl->nsisupports.Release((nsISupports *)VRDPServer);
                     }
                 }
+
+                if ((def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP) && (guiPresent == 0)) {
+                    guiPresent = 1;
+                    guiDisplay = strdup(def->graphics[i]->data.desktop.display);
+                    if (guiDisplay == NULL) {
+                        vboxError(conn, VIR_ERR_SYSTEM_ERROR, "%s", "strdup failed");
+                        /* just don't go to cleanup yet as it is ok to have
+                         * guiDisplay as NULL and we check it below if it
+                         * exist and then only use it there
+                         */
+                    }
+                }
+
+                if ((def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) && (sdlPresent == 0)) {
+                    sdlPresent = 1;
+                    sdlDisplay = strdup(def->graphics[i]->data.sdl.display);
+                    if (sdlDisplay == NULL) {
+                        vboxError(conn, VIR_ERR_SYSTEM_ERROR, "%s", "strdup failed");
+                        /* just don't go to cleanup yet as it is ok to have
+                         * sdlDisplay as NULL and we check it below if it
+                         * exist and then only use it there
+                         */
+                    }
+                }
             }
+
+            if ((vrdpPresent == 1) && (guiPresent == 0) && (sdlPresent == 0)) {
+                /* store extradata key that frontend is set to vrdp */
+                PRUnichar *keyTypeUtf16   = NULL;
+                PRUnichar *valueTypeUtf16 = NULL;
+
+                data->pFuncs->pfnUtf8ToUtf16("FRONTEND/Type", &keyTypeUtf16);
+                data->pFuncs->pfnUtf8ToUtf16("vrdp", &valueTypeUtf16);
+
+                machine->vtbl->SetExtraData(machine, keyTypeUtf16, valueTypeUtf16);
+
+                data->pFuncs->pfnUtf16Free(keyTypeUtf16);
+                data->pFuncs->pfnUtf16Free(valueTypeUtf16);
+
+            } else if ((guiPresent == 0) && (sdlPresent == 1)) {
+                /* store extradata key that frontend is set to sdl */
+                PRUnichar *keyTypeUtf16      = NULL;
+                PRUnichar *valueTypeUtf16    = NULL;
+                PRUnichar *keyDislpayUtf16   = NULL;
+                PRUnichar *valueDisplayUtf16 = NULL;
+
+                data->pFuncs->pfnUtf8ToUtf16("FRONTEND/Type", &keyTypeUtf16);
+                data->pFuncs->pfnUtf8ToUtf16("sdl", &valueTypeUtf16);
+
+                machine->vtbl->SetExtraData(machine, keyTypeUtf16, valueTypeUtf16);
+
+                data->pFuncs->pfnUtf16Free(keyTypeUtf16);
+                data->pFuncs->pfnUtf16Free(valueTypeUtf16);
+
+                if (sdlDisplay) {
+                    data->pFuncs->pfnUtf8ToUtf16("FRONTEND/Display", &keyDislpayUtf16);
+                    data->pFuncs->pfnUtf8ToUtf16(sdlDisplay, &valueDisplayUtf16);
+
+                    machine->vtbl->SetExtraData(machine, keyDislpayUtf16, valueDisplayUtf16);
+
+                    data->pFuncs->pfnUtf16Free(keyDislpayUtf16);
+                    data->pFuncs->pfnUtf16Free(valueDisplayUtf16);
+                }
+
+            } else {
+                /* if all are set then default is gui, with vrdp turned on */
+                PRUnichar *keyTypeUtf16      = NULL;
+                PRUnichar *valueTypeUtf16    = NULL;
+                PRUnichar *keyDislpayUtf16   = NULL;
+                PRUnichar *valueDisplayUtf16 = NULL;
+
+                data->pFuncs->pfnUtf8ToUtf16("FRONTEND/Type", &keyTypeUtf16);
+                data->pFuncs->pfnUtf8ToUtf16("gui", &valueTypeUtf16);
+
+                machine->vtbl->SetExtraData(machine, keyTypeUtf16, valueTypeUtf16);
+
+                data->pFuncs->pfnUtf16Free(keyTypeUtf16);
+                data->pFuncs->pfnUtf16Free(valueTypeUtf16);
+
+                if (guiDisplay) {
+                    data->pFuncs->pfnUtf8ToUtf16("FRONTEND/Display", &keyDislpayUtf16);
+                    data->pFuncs->pfnUtf8ToUtf16(guiDisplay, &valueDisplayUtf16);
+
+                    machine->vtbl->SetExtraData(machine, keyDislpayUtf16, valueDisplayUtf16);
+
+                    data->pFuncs->pfnUtf16Free(keyDislpayUtf16);
+                    data->pFuncs->pfnUtf16Free(valueDisplayUtf16);
+                }
+            }
+
+            VIR_FREE(guiDisplay);
+            VIR_FREE(sdlDisplay);
+
         }   /* Finished:Block to attach the Remote Display to VM */
-#endif
 
         {   /* Started:Block to attach USB Devices to VM */
             if (def->nhostdevs > 0) {

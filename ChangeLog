@@ -1,3 +1,8 @@
+Fri May 15 15:44:01 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/vbox/vbox_tmpl.c: implement vbox vrdp/sdl/gui support,
+	  patches by Pritesh Kothari
+
 Fri May 15 11:41:46 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/schemas/domain.rng src/domain_conf.[ch] src/qemu_driver.c:
