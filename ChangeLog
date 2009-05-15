@@ -1,3 +1,8 @@
+Fri May 15 15:59:08 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/vbox/vbox_driver.c src/vbox/vbox_tmpl.c: last patch for
+	  hostonly networks support in vbox driver, patch by Pritesh Kothari
+
 Fri May 15 15:44:01 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/vbox/vbox_tmpl.c: implement vbox vrdp/sdl/gui support,

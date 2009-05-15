@@ -40,8 +40,10 @@
 
 
 extern virDriver vbox22Driver;
+extern virNetworkDriver vbox22NetworkDriver;
 #if 0
 extern virDriver vbox25Driver;
+extern virNetworkDriver vbox25NetworkDriver;
 #endif
 
 static virDriver vboxDriverDummy;
@@ -54,6 +56,7 @@ static virDriver vboxDriverDummy;
 
 int vboxRegister(void) {
     virDriverPtr        driver;
+    virNetworkDriverPtr networkDriver;
     uint32_t            uVersion;
 
     /*
@@ -63,6 +66,7 @@ int vboxRegister(void) {
      * never work
      */
     driver        = &vboxDriverDummy;
+    networkDriver = &vbox22NetworkDriver;
 
     /* Init the glue and get the API version. */
     if (VBoxCGlueInit() == 0) {
@@ -80,10 +84,12 @@ int vboxRegister(void) {
         if (uVersion >= 2001052 && uVersion < 2002051) {
             DEBUG0("VirtualBox API version: 2.2");
             driver        = &vbox22Driver;
+            networkDriver = &vbox22NetworkDriver;
 #if 0
         } else if (uVersion >= 2002051 && uVersion < 2005051) {
             DEBUG0("VirtualBox API version: 2.5");
             driver        = &vbox25Driver;
+            networkDriver = &vbox25NetworkDriver;
 #endif
         } else {
             DEBUG0("Unsupport VirtualBox API version");
@@ -94,6 +100,8 @@ int vboxRegister(void) {
     }
 
     if (virRegisterDriver(driver) < 0)
+        return -1;
+    if (virRegisterNetworkDriver(networkDriver) < 0)
         return -1;
 
     return 0;

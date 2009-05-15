@@ -3881,6 +3881,1024 @@ cleanup:
     return ret;
 }
 
+/**
+ * The Network Functions here on
+ */
+static virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
+                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                        int flags ATTRIBUTE_UNUSED) {
+    vboxGlobalData *data = conn->privateData;
+
+    if (STRNEQ(conn->driver->name, "VBOX"))
+        goto cleanup;
+
+    if ((data->pFuncs      == NULL) ||
+        (data->vboxObj     == NULL) ||
+        (data->vboxSession == NULL))
+        goto cleanup;
+
+    DEBUG0("network intialized");
+    /* conn->networkPrivateData = some network specific data */
+    return VIR_DRV_OPEN_SUCCESS;
+
+cleanup:
+    return VIR_DRV_OPEN_DECLINED;
+}
+
+static int vboxNetworkClose(virConnectPtr conn) {
+    DEBUG0("network unintialized");
+    conn->networkPrivateData = NULL;
+    return 0;
+}
+
+static int vboxNumOfNetworks(virConnectPtr conn) {
+    vboxGlobalData *data = conn->privateData;
+    int numActive = 0;
+
+    if (data->vboxObj) {
+        IHost *host = NULL;
+
+        data->vboxObj->vtbl->GetHost(data->vboxObj, &host);
+        if (host) {
+            int i = 0;
+            PRUint32 networkInterfacesSize = 0;
+            IHostNetworkInterface **networkInterfaces = NULL;
+
+            host->vtbl->GetNetworkInterfaces(host, &networkInterfacesSize, &networkInterfaces);
+
+            for (i = 0; i < networkInterfacesSize; i++) {
+                if (networkInterfaces[i]) {
+                    PRUint32 interfaceType = 0;
+
+                    networkInterfaces[i]->vtbl->GetInterfaceType(networkInterfaces[i], &interfaceType);
+                    if (interfaceType == HostNetworkInterfaceType_HostOnly) {
+                        PRUint32 status = HostNetworkInterfaceStatus_Unknown;
+
+                        networkInterfaces[i]->vtbl->GetStatus(networkInterfaces[i], &status);
+
+                        if (status == HostNetworkInterfaceStatus_Up) {
+                            numActive++;
+                        }
+                    }
+
+                    networkInterfaces[i]->vtbl->nsisupports.Release((nsISupports *) networkInterfaces[i]);
+                }
+            }
+
+            host->vtbl->nsisupports.Release((nsISupports *) host);
+        }
+    }
+
+    DEBUG("numActive: %d", numActive);
+    return numActive;
+}
+
+static int vboxListNetworks(virConnectPtr conn, char **const names, int nnames) {
+    vboxGlobalData *data = conn->privateData;
+    int numActive = 0;
+
+    if (data->vboxObj) {
+        IHost *host = NULL;
+
+        data->vboxObj->vtbl->GetHost(data->vboxObj, &host);
+        if (host) {
+            int i = 0;
+            PRUint32 networkInterfacesSize = 0;
+            IHostNetworkInterface **networkInterfaces = NULL;
+
+            host->vtbl->GetNetworkInterfaces(host, &networkInterfacesSize, &networkInterfaces);
+
+            for (i = 0; (numActive < nnames) && (i < networkInterfacesSize); i++) {
+                if (networkInterfaces[i]) {
+                    PRUint32 interfaceType = 0;
+
+                    networkInterfaces[i]->vtbl->GetInterfaceType(networkInterfaces[i], &interfaceType);
+
+                    if (interfaceType == HostNetworkInterfaceType_HostOnly) {
+                        PRUint32 status = HostNetworkInterfaceStatus_Unknown;
+
+                        networkInterfaces[i]->vtbl->GetStatus(networkInterfaces[i], &status);
+
+                        if (status == HostNetworkInterfaceStatus_Up) {
+                            char *nameUtf8       = NULL;
+                            PRUnichar *nameUtf16 = NULL;
+
+                            networkInterfaces[i]->vtbl->GetName(networkInterfaces[i], &nameUtf16);
+                            data->pFuncs->pfnUtf16ToUtf8(nameUtf16, &nameUtf8);
+
+                            DEBUG("nnames[%d]: %s", numActive, nameUtf8);
+                            names[numActive] = strdup(nameUtf8);
+                            if (names[numActive] == NULL) {
+                                vboxError(conn, VIR_ERR_SYSTEM_ERROR, "%s", "strdup failed");
+                            } else {
+                                numActive++;
+                            }
+
+                            data->pFuncs->pfnUtf8Free(nameUtf8);
+                            data->pFuncs->pfnUtf16Free(nameUtf16);
+                        }
+                    }
+                }
+            }
+
+            for (i = 0; i < networkInterfacesSize; i++) {
+                if (networkInterfaces[i]) {
+                    networkInterfaces[i]->vtbl->nsisupports.Release((nsISupports *) networkInterfaces[i]);
+                }
+            }
+
+            host->vtbl->nsisupports.Release((nsISupports *) host);
+        }
+    }
+
+    return numActive;
+}
+
+static int vboxNumOfDefinedNetworks(virConnectPtr conn) {
+    vboxGlobalData *data = conn->privateData;
+    int numActive = 0;
+
+    if (data->vboxObj) {
+        IHost *host = NULL;
+
+        data->vboxObj->vtbl->GetHost(data->vboxObj, &host);
+        if (host) {
+            int i = 0;
+            PRUint32 networkInterfacesSize = 0;
+            IHostNetworkInterface **networkInterfaces = NULL;
+
+            host->vtbl->GetNetworkInterfaces(host, &networkInterfacesSize, &networkInterfaces);
+
+            for (i = 0; i < networkInterfacesSize; i++) {
+                if (networkInterfaces[i]) {
+                    PRUint32 interfaceType = 0;
+
+                    networkInterfaces[i]->vtbl->GetInterfaceType(networkInterfaces[i], &interfaceType);
+                    if (interfaceType == HostNetworkInterfaceType_HostOnly) {
+                        PRUint32 status = HostNetworkInterfaceStatus_Unknown;
+
+                        networkInterfaces[i]->vtbl->GetStatus(networkInterfaces[i], &status);
+
+                        if (status == HostNetworkInterfaceStatus_Down) {
+                            numActive++;
+                        }
+                    }
+
+                    networkInterfaces[i]->vtbl->nsisupports.Release((nsISupports *) networkInterfaces[i]);
+                }
+            }
+
+            host->vtbl->nsisupports.Release((nsISupports *) host);
+        }
+    }
+
+    DEBUG("numActive: %d", numActive);
+    return numActive;
+}
+
+static int vboxListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
+    vboxGlobalData *data = conn->privateData;
+    int numActive = 0;
+
+    if (data->vboxObj) {
+        IHost *host = NULL;
+
+        data->vboxObj->vtbl->GetHost(data->vboxObj, &host);
+        if (host) {
+            int i = 0;
+            PRUint32 networkInterfacesSize = 0;
+            IHostNetworkInterface **networkInterfaces = NULL;
+
+            host->vtbl->GetNetworkInterfaces(host, &networkInterfacesSize, &networkInterfaces);
+
+            for (i = 0; (numActive < nnames) && (i < networkInterfacesSize); i++) {
+                if (networkInterfaces[i]) {
+                    PRUint32 interfaceType = 0;
+
+                    networkInterfaces[i]->vtbl->GetInterfaceType(networkInterfaces[i], &interfaceType);
+
+                    if (interfaceType == HostNetworkInterfaceType_HostOnly) {
+                        PRUint32 status = HostNetworkInterfaceStatus_Unknown;
+
+                        networkInterfaces[i]->vtbl->GetStatus(networkInterfaces[i], &status);
+
+                        if (status == HostNetworkInterfaceStatus_Down) {
+                            char *nameUtf8       = NULL;
+                            PRUnichar *nameUtf16 = NULL;
+
+                            networkInterfaces[i]->vtbl->GetName(networkInterfaces[i], &nameUtf16);
+                            data->pFuncs->pfnUtf16ToUtf8(nameUtf16, &nameUtf8);
+
+                            DEBUG("nnames[%d]: %s", numActive, nameUtf8);
+                            names[numActive] = strdup(nameUtf8);
+                            if (names[numActive] == NULL) {
+                                vboxError(conn, VIR_ERR_SYSTEM_ERROR, "%s", "strdup failed");
+                            } else {
+                                numActive++;
+                            }
+
+                            data->pFuncs->pfnUtf8Free(nameUtf8);
+                            data->pFuncs->pfnUtf16Free(nameUtf16);
+                        }
+                    }
+                }
+            }
+
+            for (i = 0; i < networkInterfacesSize; i++) {
+                if (networkInterfaces[i]) {
+                    networkInterfaces[i]->vtbl->nsisupports.Release((nsISupports *) networkInterfaces[i]);
+                }
+            }
+
+            host->vtbl->nsisupports.Release((nsISupports *) host);
+        }
+    }
+
+    return numActive;
+}
+
+static virNetworkPtr vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid) {
+    vboxGlobalData *data = conn->privateData;
+    virNetworkPtr ret    = NULL;
+    nsID *iid            = NULL;
+
+    if (VIR_ALLOC(iid) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    if (data->vboxObj) {
+        IHost *host = NULL;
+
+        data->vboxObj->vtbl->GetHost(data->vboxObj, &host);
+        if (host) {
+            IHostNetworkInterface *networkInterface = NULL;
+
+            nsIDFromChar(iid, uuid);
+            host->vtbl->FindHostNetworkInterfaceById(host, iid, &networkInterface);
+            if (networkInterface) {
+                PRUint32 interfaceType = 0;
+
+                networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
+
+                if (interfaceType == HostNetworkInterfaceType_HostOnly) {
+                    char *nameUtf8       = NULL;
+                    PRUnichar *nameUtf16 = NULL;
+
+                    networkInterface->vtbl->GetName(networkInterface, &nameUtf16);
+                    data->pFuncs->pfnUtf16ToUtf8(nameUtf16, &nameUtf8);
+
+                    ret = virGetNetwork(conn, nameUtf8, uuid);
+
+                    DEBUG("Network Name: %s", nameUtf8);
+                    DEBUG("Network UUID: "
+                          "{%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}",
+                          (unsigned)iid->m0,    (unsigned)iid->m1,
+                          (unsigned)iid->m2,    (unsigned)iid->m3[0],
+                          (unsigned)iid->m3[1], (unsigned)iid->m3[2],
+                          (unsigned)iid->m3[3], (unsigned)iid->m3[4],
+                          (unsigned)iid->m3[5], (unsigned)iid->m3[6],
+                          (unsigned)iid->m3[7]);
+
+                    data->pFuncs->pfnUtf8Free(nameUtf8);
+                    data->pFuncs->pfnUtf16Free(nameUtf16);
+                }
+
+                networkInterface->vtbl->nsisupports.Release((nsISupports *) networkInterface);
+            }
+
+            host->vtbl->nsisupports.Release((nsISupports *) host);
+        }
+    }
+
+cleanup:
+    VIR_FREE(iid);
+    return ret;
+}
+
+static virNetworkPtr vboxNetworkLookupByName(virConnectPtr conn, const char *name) {
+    vboxGlobalData *data = conn->privateData;
+    virNetworkPtr ret    = NULL;
+
+    if (data->vboxObj) {
+        IHost *host = NULL;
+
+        data->vboxObj->vtbl->GetHost(data->vboxObj, &host);
+        if (host) {
+            PRUnichar *nameUtf16                    = NULL;
+            IHostNetworkInterface *networkInterface = NULL;
+
+            data->pFuncs->pfnUtf8ToUtf16(name, &nameUtf16);
+
+            host->vtbl->FindHostNetworkInterfaceByName(host, nameUtf16, &networkInterface);
+
+            if (networkInterface) {
+                PRUint32 interfaceType = 0;
+
+                networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
+
+                if (interfaceType == HostNetworkInterfaceType_HostOnly) {
+                    unsigned char uuid[VIR_UUID_BUFLEN];
+                    nsID *iid = NULL;
+
+                    networkInterface->vtbl->GetId(networkInterface, &iid);
+
+                    nsIDtoChar(uuid, iid);
+
+                    ret = virGetNetwork(conn, name, uuid);
+
+                    DEBUG("Network Name: %s", name);
+                    DEBUG("Network UUID: "
+                          "{%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}",
+                          (unsigned)iid->m0,    (unsigned)iid->m1,
+                          (unsigned)iid->m2,    (unsigned)iid->m3[0],
+                          (unsigned)iid->m3[1], (unsigned)iid->m3[2],
+                          (unsigned)iid->m3[3], (unsigned)iid->m3[4],
+                          (unsigned)iid->m3[5], (unsigned)iid->m3[6],
+                          (unsigned)iid->m3[7]);
+
+                    data->pFuncs->pfnComUnallocMem(iid);
+                }
+
+                networkInterface->vtbl->nsisupports.Release((nsISupports *) networkInterface);
+            }
+
+            data->pFuncs->pfnUtf16Free(nameUtf16);
+            host->vtbl->nsisupports.Release((nsISupports *) host);
+        }
+    }
+
+    return ret;
+}
+
+static virNetworkPtr vboxNetworkCreateXML(virConnectPtr conn, const char *xml) {
+    vboxGlobalData *data  = conn->privateData;
+    virNetworkDefPtr def  = NULL;
+    virNetworkPtr ret     = NULL;
+    nsID *iid             = NULL;
+    char *networkNameUtf8 = NULL;
+
+    if ((def = virNetworkDefParseString(conn, xml)) == NULL)
+        goto cleanup;
+
+    if (VIR_ALLOC(iid) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", def->name) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    nsIDFromChar(iid, def->uuid);
+
+    DEBUG("Network Name: %s", def->name);
+    DEBUG("Network UUID: "
+          "{%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}",
+          (unsigned)iid->m0,    (unsigned)iid->m1,
+          (unsigned)iid->m2,    (unsigned)iid->m3[0],
+          (unsigned)iid->m3[1], (unsigned)iid->m3[2],
+          (unsigned)iid->m3[3], (unsigned)iid->m3[4],
+          (unsigned)iid->m3[5], (unsigned)iid->m3[6],
+          (unsigned)iid->m3[7]);
+
+    if ((data->vboxObj) && (def->forwardType == VIR_NETWORK_FORWARD_NONE)) {
+        /* VirtualBox version 2.2.* has only one "hostonly"
+         * network called "vboxnet0" for linux
+         */
+        if (STREQ(def->name, "vboxnet0")) {
+            IHost *host = NULL;
+
+            data->vboxObj->vtbl->GetHost(data->vboxObj, &host);
+            if (host) {
+                PRUnichar *networkInterfaceNameUtf16    = NULL;
+                IHostNetworkInterface *networkInterface = NULL;
+
+                data->pFuncs->pfnUtf8ToUtf16(def->name, &networkInterfaceNameUtf16);
+
+                host->vtbl->FindHostNetworkInterfaceByName(host, networkInterfaceNameUtf16, &networkInterface);
+
+                if (networkInterface) {
+                    PRUint32 interfaceType = 0;
+
+                    networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
+
+                    if (interfaceType == HostNetworkInterfaceType_HostOnly) {
+                        unsigned char uuid[VIR_UUID_BUFLEN];
+                        nsID *vboxnet0IID           = NULL;
+                        PRUnichar *networkNameUtf16 = NULL;
+
+                        data->pFuncs->pfnUtf8ToUtf16(networkNameUtf8 , &networkNameUtf16);
+
+                        networkInterface->vtbl->GetId(networkInterface, &vboxnet0IID);
+
+                        nsIDtoChar(uuid, vboxnet0IID);
+
+                        /* Currently support only one dhcp server per network
+                         * with contigious address space from start to end
+                         */
+                        if ((def->nranges >= 1) &&
+                            (def->ranges[0].start) &&
+                            (def->ranges[0].end)) {
+                            IDHCPServer *dhcpServer = NULL;
+
+                            data->vboxObj->vtbl->FindDHCPServerByNetworkName(data->vboxObj,
+                                                                             networkNameUtf16,
+                                                                             &dhcpServer);
+                            if (!dhcpServer) {
+                                /* create a dhcp server */
+                                data->vboxObj->vtbl->CreateDHCPServer(data->vboxObj,
+                                                                      networkNameUtf16,
+                                                                      &dhcpServer);
+                                DEBUG0("couldn't find dhcp server so creating one");
+                            }
+                            if (dhcpServer) {
+                                PRUnichar *ipAddressUtf16     = NULL;
+                                PRUnichar *networkMaskUtf16   = NULL;
+                                PRUnichar *fromIPAddressUtf16 = NULL;
+                                PRUnichar *toIPAddressUtf16   = NULL;
+                                PRUnichar *trunkTypeUtf16     = NULL;
+
+
+                                data->pFuncs->pfnUtf8ToUtf16(def->ipAddress, &ipAddressUtf16);
+                                data->pFuncs->pfnUtf8ToUtf16(def->netmask, &networkMaskUtf16);
+                                data->pFuncs->pfnUtf8ToUtf16(def->ranges[0].start, &fromIPAddressUtf16);
+                                data->pFuncs->pfnUtf8ToUtf16(def->ranges[0].end, &toIPAddressUtf16);
+                                data->pFuncs->pfnUtf8ToUtf16("netflt", &trunkTypeUtf16);
+
+                                dhcpServer->vtbl->SetEnabled(dhcpServer, PR_TRUE);
+
+                                dhcpServer->vtbl->SetConfiguration(dhcpServer,
+                                                                   ipAddressUtf16,
+                                                                   networkMaskUtf16,
+                                                                   fromIPAddressUtf16,
+                                                                   toIPAddressUtf16);
+
+                                dhcpServer->vtbl->Start(dhcpServer,
+                                                        networkNameUtf16,
+                                                        networkInterfaceNameUtf16,
+                                                        trunkTypeUtf16);
+
+                                data->pFuncs->pfnUtf16Free(ipAddressUtf16);
+                                data->pFuncs->pfnUtf16Free(networkMaskUtf16);
+                                data->pFuncs->pfnUtf16Free(fromIPAddressUtf16);
+                                data->pFuncs->pfnUtf16Free(toIPAddressUtf16);
+                                data->pFuncs->pfnUtf16Free(trunkTypeUtf16);
+                                dhcpServer->vtbl->nsisupports.Release((nsISupports *) dhcpServer);
+                            }
+                        }
+
+                        ret = virGetNetwork(conn, def->name, uuid);
+
+                        DEBUG("Real Network UUID: "
+                              "{%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}",
+                              (unsigned)vboxnet0IID->m0,    (unsigned)vboxnet0IID->m1,
+                              (unsigned)vboxnet0IID->m2,    (unsigned)vboxnet0IID->m3[0],
+                              (unsigned)vboxnet0IID->m3[1], (unsigned)vboxnet0IID->m3[2],
+                              (unsigned)vboxnet0IID->m3[3], (unsigned)vboxnet0IID->m3[4],
+                              (unsigned)vboxnet0IID->m3[5], (unsigned)vboxnet0IID->m3[6],
+                              (unsigned)vboxnet0IID->m3[7]);
+
+                        data->pFuncs->pfnComUnallocMem(vboxnet0IID);
+                        data->pFuncs->pfnUtf16Free(networkNameUtf16);
+                    }
+
+                    networkInterface->vtbl->nsisupports.Release((nsISupports *) networkInterface);
+                }
+
+                data->pFuncs->pfnUtf16Free(networkInterfaceNameUtf16);
+                host->vtbl->nsisupports.Release((nsISupports *) host);
+            }
+        }
+    }
+
+cleanup:
+    VIR_FREE(iid);
+    VIR_FREE(networkNameUtf8);
+    virNetworkDefFree(def);
+    return ret;
+}
+
+static virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml) {
+    vboxGlobalData *data  = conn->privateData;
+    virNetworkDefPtr def  = NULL;
+    virNetworkPtr ret     = NULL;
+    nsID *iid             = NULL;
+    char *networkNameUtf8 = NULL;
+
+    /* vboxNetworkDefineXML() is not exactly "network definition"
+     * as the network is up and running, only the DHCP server is off,
+     * so you can always assign static IP and get the network running.
+     */
+    if ((def = virNetworkDefParseString(conn, xml)) == NULL)
+        goto cleanup;
+
+    if (VIR_ALLOC(iid) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", def->name) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    nsIDFromChar(iid, def->uuid);
+
+    DEBUG("Network Name: %s", def->name);
+    DEBUG("Network UUID: "
+          "{%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}",
+          (unsigned)iid->m0,    (unsigned)iid->m1,
+          (unsigned)iid->m2,    (unsigned)iid->m3[0],
+          (unsigned)iid->m3[1], (unsigned)iid->m3[2],
+          (unsigned)iid->m3[3], (unsigned)iid->m3[4],
+          (unsigned)iid->m3[5], (unsigned)iid->m3[6],
+          (unsigned)iid->m3[7]);
+
+    if ((data->vboxObj) && (def->forwardType == VIR_NETWORK_FORWARD_NONE)) {
+        /* VirtualBox version 2.2.* has only one "hostonly"
+         * network called "vboxnet0" for linux
+         */
+        if (STREQ(def->name, "vboxnet0")) {
+            IHost *host = NULL;
+
+            data->vboxObj->vtbl->GetHost(data->vboxObj, &host);
+            if (host) {
+                PRUnichar *networkInterfaceNameUtf16    = NULL;
+                IHostNetworkInterface *networkInterface = NULL;
+
+                data->pFuncs->pfnUtf8ToUtf16(def->name, &networkInterfaceNameUtf16);
+
+                host->vtbl->FindHostNetworkInterfaceByName(host, networkInterfaceNameUtf16, &networkInterface);
+
+                if (networkInterface) {
+                    PRUint32 interfaceType = 0;
+
+                    networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
+
+                    if (interfaceType == HostNetworkInterfaceType_HostOnly) {
+                        unsigned char uuid[VIR_UUID_BUFLEN];
+                        nsID *vboxnet0IID           = NULL;
+                        PRUnichar *networkNameUtf16 = NULL;
+
+                        data->pFuncs->pfnUtf8ToUtf16(networkNameUtf8 , &networkNameUtf16);
+
+                        networkInterface->vtbl->GetId(networkInterface, &vboxnet0IID);
+
+                        nsIDtoChar(uuid, vboxnet0IID);
+
+                        /* Currently support only one dhcp server per network
+                         * with contigious address space from start to end
+                         */
+                        if ((def->nranges >= 1) &&
+                            (def->ranges[0].start) &&
+                            (def->ranges[0].end)) {
+                            IDHCPServer *dhcpServer = NULL;
+
+                            data->vboxObj->vtbl->FindDHCPServerByNetworkName(data->vboxObj,
+                                                                             networkNameUtf16,
+                                                                             &dhcpServer);
+                            if (!dhcpServer) {
+                                /* create a dhcp server */
+                                data->vboxObj->vtbl->CreateDHCPServer(data->vboxObj,
+                                                                      networkNameUtf16,
+                                                                      &dhcpServer);
+                                DEBUG0("couldn't find dhcp server so creating one");
+                            }
+                            if (dhcpServer) {
+                                PRUnichar *ipAddressUtf16     = NULL;
+                                PRUnichar *networkMaskUtf16   = NULL;
+                                PRUnichar *fromIPAddressUtf16 = NULL;
+                                PRUnichar *toIPAddressUtf16   = NULL;
+
+
+                                data->pFuncs->pfnUtf8ToUtf16(def->ipAddress, &ipAddressUtf16);
+                                data->pFuncs->pfnUtf8ToUtf16(def->netmask, &networkMaskUtf16);
+                                data->pFuncs->pfnUtf8ToUtf16(def->ranges[0].start, &fromIPAddressUtf16);
+                                data->pFuncs->pfnUtf8ToUtf16(def->ranges[0].end, &toIPAddressUtf16);
+
+                                dhcpServer->vtbl->SetEnabled(dhcpServer, PR_FALSE);
+
+                                dhcpServer->vtbl->SetConfiguration(dhcpServer,
+                                                                   ipAddressUtf16,
+                                                                   networkMaskUtf16,
+                                                                   fromIPAddressUtf16,
+                                                                   toIPAddressUtf16);
+
+                                data->pFuncs->pfnUtf16Free(ipAddressUtf16);
+                                data->pFuncs->pfnUtf16Free(networkMaskUtf16);
+                                data->pFuncs->pfnUtf16Free(fromIPAddressUtf16);
+                                data->pFuncs->pfnUtf16Free(toIPAddressUtf16);
+                                dhcpServer->vtbl->nsisupports.Release((nsISupports *) dhcpServer);
+                            }
+                        }
+
+                        ret = virGetNetwork(conn, def->name, uuid);
+
+                        DEBUG("Real Network UUID: "
+                              "{%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}",
+                              (unsigned)vboxnet0IID->m0,    (unsigned)vboxnet0IID->m1,
+                              (unsigned)vboxnet0IID->m2,    (unsigned)vboxnet0IID->m3[0],
+                              (unsigned)vboxnet0IID->m3[1], (unsigned)vboxnet0IID->m3[2],
+                              (unsigned)vboxnet0IID->m3[3], (unsigned)vboxnet0IID->m3[4],
+                              (unsigned)vboxnet0IID->m3[5], (unsigned)vboxnet0IID->m3[6],
+                              (unsigned)vboxnet0IID->m3[7]);
+
+                        data->pFuncs->pfnComUnallocMem(vboxnet0IID);
+                        data->pFuncs->pfnUtf16Free(networkNameUtf16);
+                    }
+
+                    networkInterface->vtbl->nsisupports.Release((nsISupports *) networkInterface);
+                }
+
+                data->pFuncs->pfnUtf16Free(networkInterfaceNameUtf16);
+                host->vtbl->nsisupports.Release((nsISupports *) host);
+            }
+        }
+    }
+
+cleanup:
+    VIR_FREE(iid);
+    VIR_FREE(networkNameUtf8);
+    virNetworkDefFree(def);
+    return ret;
+}
+
+static int vboxNetworkUndefine(virNetworkPtr network) {
+    vboxGlobalData *data  = network->conn->privateData;
+    char *networkNameUtf8 = NULL;
+    int ret = -1;
+
+    /* Current limitation of the function for VirtualBox 2.2.* is
+     * that you can't delete the default hostonly adaptor namely:
+     * vboxnet0 and thus all this functions does is remove the
+     * dhcp server configuration, but the network can still be used
+     * by giving the machine static IP and also it will still
+     * show up in the net-list in virsh
+     */
+
+    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0) {
+        virReportOOMError(network->conn);
+        goto cleanup;
+    }
+
+    if (data->vboxObj) {
+        IHost *host = NULL;
+
+        data->vboxObj->vtbl->GetHost(data->vboxObj, &host);
+        if (host) {
+            PRUnichar *networkInterfaceNameUtf16    = NULL;
+            IHostNetworkInterface *networkInterface = NULL;
+
+            data->pFuncs->pfnUtf8ToUtf16(network->name, &networkInterfaceNameUtf16);
+
+            host->vtbl->FindHostNetworkInterfaceByName(host, networkInterfaceNameUtf16, &networkInterface);
+
+            if (networkInterface) {
+                PRUint32 interfaceType = 0;
+
+                networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
+
+                if (interfaceType == HostNetworkInterfaceType_HostOnly) {
+                    PRUnichar *networkNameUtf16 = NULL;
+                    IDHCPServer *dhcpServer     = NULL;
+
+                    data->pFuncs->pfnUtf8ToUtf16(networkNameUtf8 , &networkNameUtf16);
+
+                    data->vboxObj->vtbl->FindDHCPServerByNetworkName(data->vboxObj,
+                                                                     networkNameUtf16,
+                                                                     &dhcpServer);
+                    if (dhcpServer) {
+                        data->vboxObj->vtbl->RemoveDHCPServer(data->vboxObj, dhcpServer);
+                        dhcpServer->vtbl->nsisupports.Release((nsISupports *) dhcpServer);
+                    }
+
+                    data->pFuncs->pfnUtf16Free(networkNameUtf16);
+                }
+
+                networkInterface->vtbl->nsisupports.Release((nsISupports *) networkInterface);
+            }
+
+            data->pFuncs->pfnUtf16Free(networkInterfaceNameUtf16);
+            host->vtbl->nsisupports.Release((nsISupports *) host);
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(networkNameUtf8);
+    return ret;
+}
+
+static int vboxNetworkCreate(virNetworkPtr network) {
+    vboxGlobalData *data  = network->conn->privateData;
+    char *networkNameUtf8 = NULL;
+    int ret = -1;
+
+    /* Current limitation of the function for VirtualBox 2.2.* is
+     * that the default hostonly network "vboxnet0" is always active
+     * and thus all this functions does is start the dhcp server,
+     * but the network can still be used without starting the dhcp
+     * server by giving the machine static IP
+     */
+
+    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0) {
+        virReportOOMError(network->conn);
+        goto cleanup;
+    }
+
+    if (data->vboxObj) {
+        IHost *host = NULL;
+
+        data->vboxObj->vtbl->GetHost(data->vboxObj, &host);
+        if (host) {
+            PRUnichar *networkInterfaceNameUtf16    = NULL;
+            IHostNetworkInterface *networkInterface = NULL;
+
+            data->pFuncs->pfnUtf8ToUtf16(network->name, &networkInterfaceNameUtf16);
+
+            host->vtbl->FindHostNetworkInterfaceByName(host, networkInterfaceNameUtf16, &networkInterface);
+
+            if (networkInterface) {
+                PRUint32 interfaceType = 0;
+
+                networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
+
+                if (interfaceType == HostNetworkInterfaceType_HostOnly) {
+                    PRUnichar *networkNameUtf16 = NULL;
+                    IDHCPServer *dhcpServer     = NULL;
+
+
+                    data->pFuncs->pfnUtf8ToUtf16(networkNameUtf8 , &networkNameUtf16);
+
+                    data->vboxObj->vtbl->FindDHCPServerByNetworkName(data->vboxObj,
+                                                                     networkNameUtf16,
+                                                                     &dhcpServer);
+                    if (dhcpServer) {
+                        PRUnichar *trunkTypeUtf16 = NULL;
+
+                        dhcpServer->vtbl->SetEnabled(dhcpServer, PR_TRUE);
+
+                        data->pFuncs->pfnUtf8ToUtf16("netflt", &trunkTypeUtf16);
+
+                        dhcpServer->vtbl->Start(dhcpServer,
+                                                networkNameUtf16,
+                                                networkInterfaceNameUtf16,
+                                                trunkTypeUtf16);
+
+                        data->pFuncs->pfnUtf16Free(trunkTypeUtf16);
+                        dhcpServer->vtbl->nsisupports.Release((nsISupports *) dhcpServer);
+                    }
+
+                    data->pFuncs->pfnUtf16Free(networkNameUtf16);
+                }
+
+                networkInterface->vtbl->nsisupports.Release((nsISupports *) networkInterface);
+            }
+
+            data->pFuncs->pfnUtf16Free(networkInterfaceNameUtf16);
+            host->vtbl->nsisupports.Release((nsISupports *) host);
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(networkNameUtf8);
+    return ret;
+}
+
+static int vboxNetworkDestroy(virNetworkPtr network) {
+    vboxGlobalData *data  = network->conn->privateData;
+    char *networkNameUtf8 = NULL;
+    int ret = -1;
+
+    /* Current limitation of the function for VirtualBox 2.2.* is
+     * that the default hostonly network "vboxnet0" is always active
+     * and thus all this functions does is stop the dhcp server,
+     * but the network can still be used without the dhcp server
+     * by giving the machine static IP
+     */
+
+    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0) {
+        virReportOOMError(network->conn);
+        goto cleanup;
+    }
+
+    if (data->vboxObj) {
+        IHost *host = NULL;
+
+        data->vboxObj->vtbl->GetHost(data->vboxObj, &host);
+        if (host) {
+            PRUnichar *networkInterfaceNameUtf16    = NULL;
+            IHostNetworkInterface *networkInterface = NULL;
+
+            data->pFuncs->pfnUtf8ToUtf16(network->name, &networkInterfaceNameUtf16);
+
+            host->vtbl->FindHostNetworkInterfaceByName(host, networkInterfaceNameUtf16, &networkInterface);
+
+            if (networkInterface) {
+                PRUint32 interfaceType = 0;
+
+                networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
+
+                if (interfaceType == HostNetworkInterfaceType_HostOnly) {
+                    PRUnichar *networkNameUtf16 = NULL;
+                    IDHCPServer *dhcpServer     = NULL;
+
+
+                    data->pFuncs->pfnUtf8ToUtf16(networkNameUtf8 , &networkNameUtf16);
+
+                    data->vboxObj->vtbl->FindDHCPServerByNetworkName(data->vboxObj,
+                                                                     networkNameUtf16,
+                                                                     &dhcpServer);
+                    if (dhcpServer) {
+
+                        dhcpServer->vtbl->SetEnabled(dhcpServer, PR_FALSE);
+
+                        dhcpServer->vtbl->Stop(dhcpServer);
+
+                        dhcpServer->vtbl->nsisupports.Release((nsISupports *) dhcpServer);
+                    }
+
+                    data->pFuncs->pfnUtf16Free(networkNameUtf16);
+                }
+
+                networkInterface->vtbl->nsisupports.Release((nsISupports *) networkInterface);
+            }
+
+            data->pFuncs->pfnUtf16Free(networkInterfaceNameUtf16);
+            host->vtbl->nsisupports.Release((nsISupports *) host);
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(networkNameUtf8);
+    return ret;
+}
+
+static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSED) {
+    vboxGlobalData *data  = network->conn->privateData;
+    virNetworkDefPtr def  = NULL;
+    char *ret             = NULL;
+    char *networkNameUtf8 = NULL;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError(network->conn);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&networkNameUtf8, "HostInterfaceNetworking-%s", network->name) < 0) {
+        virReportOOMError(network->conn);
+        goto cleanup;
+    }
+
+    if (data->vboxObj) {
+        IHost *host = NULL;
+
+        data->vboxObj->vtbl->GetHost(data->vboxObj, &host);
+        if (host) {
+            PRUnichar *networkInterfaceNameUtf16    = NULL;
+            IHostNetworkInterface *networkInterface = NULL;
+
+            data->pFuncs->pfnUtf8ToUtf16(network->name, &networkInterfaceNameUtf16);
+
+            host->vtbl->FindHostNetworkInterfaceByName(host, networkInterfaceNameUtf16, &networkInterface);
+
+            if (networkInterface) {
+                PRUint32 interfaceType = 0;
+
+                networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
+
+                if (interfaceType == HostNetworkInterfaceType_HostOnly) {
+                    def->name = strdup(network->name);
+                    if (def->name != NULL) {
+                        nsID *vboxnet0IID           = NULL;
+                        PRUnichar *networkNameUtf16 = NULL;
+                        IDHCPServer *dhcpServer     = NULL;
+
+                        data->pFuncs->pfnUtf8ToUtf16(networkNameUtf8 , &networkNameUtf16);
+
+                        networkInterface->vtbl->GetId(networkInterface, &vboxnet0IID);
+
+                        nsIDtoChar(def->uuid, vboxnet0IID);
+
+                        def->forwardType = VIR_NETWORK_FORWARD_NONE;
+
+                        data->vboxObj->vtbl->FindDHCPServerByNetworkName(data->vboxObj,
+                                                                         networkNameUtf16,
+                                                                         &dhcpServer);
+                        if (dhcpServer) {
+                            def->nranges = 1;
+                            if (VIR_ALLOC_N(def->ranges, def->nranges) >=0 ) {
+                                PRUnichar *ipAddressUtf16     = NULL;
+                                PRUnichar *networkMaskUtf16   = NULL;
+                                PRUnichar *fromIPAddressUtf16 = NULL;
+                                PRUnichar *toIPAddressUtf16   = NULL;
+
+                                dhcpServer->vtbl->GetIPAddress(dhcpServer, &ipAddressUtf16);
+                                dhcpServer->vtbl->GetNetworkMask(dhcpServer, &networkMaskUtf16);
+                                dhcpServer->vtbl->GetLowerIP(dhcpServer, &fromIPAddressUtf16);
+                                dhcpServer->vtbl->GetUpperIP(dhcpServer, &toIPAddressUtf16);
+                                /* Currently virtualbox supports only one dhcp server per network
+                                 * with contigious address space from start to end
+                                 */
+                                data->pFuncs->pfnUtf16ToUtf8(ipAddressUtf16, &def->ipAddress);
+                                data->pFuncs->pfnUtf16ToUtf8(networkMaskUtf16, &def->netmask);
+                                data->pFuncs->pfnUtf16ToUtf8(fromIPAddressUtf16, &def->ranges[0].start);
+                                data->pFuncs->pfnUtf16ToUtf8(toIPAddressUtf16, &def->ranges[0].end);
+
+                                data->pFuncs->pfnUtf16Free(ipAddressUtf16);
+                                data->pFuncs->pfnUtf16Free(networkMaskUtf16);
+                                data->pFuncs->pfnUtf16Free(fromIPAddressUtf16);
+                                data->pFuncs->pfnUtf16Free(toIPAddressUtf16);
+                            } else {
+                                def->nranges = 0;
+                            }
+
+                            def->nhosts = 1;
+                            if (VIR_ALLOC_N(def->hosts, def->nhosts) >=0 ) {
+                                def->hosts[0].name = strdup(network->name);
+                                if (def->hosts[0].name == NULL) {
+                                    VIR_FREE(def->hosts);
+                                    def->nhosts = 0;
+                                    vboxError(network->conn,
+                                              VIR_ERR_SYSTEM_ERROR,
+                                              "%s", "strdup failed");
+                                } else {
+                                    PRUnichar *macAddressUtf16 = NULL;
+                                    PRUnichar *ipAddressUtf16  = NULL;
+
+                                    networkInterface->vtbl->GetHardwareAddress(networkInterface, &macAddressUtf16);
+                                    networkInterface->vtbl->GetIPAddress(networkInterface, &ipAddressUtf16);
+
+                                    data->pFuncs->pfnUtf16ToUtf8(macAddressUtf16, &def->hosts[0].mac);
+                                    data->pFuncs->pfnUtf16ToUtf8(ipAddressUtf16, &def->hosts[0].ip);
+
+                                    data->pFuncs->pfnUtf16Free(macAddressUtf16);
+                                    data->pFuncs->pfnUtf16Free(ipAddressUtf16);
+                                }
+                            } else {
+                                def->nhosts = 0;
+                            }
+
+                            dhcpServer->vtbl->nsisupports.Release((nsISupports *) dhcpServer);
+                        } else {
+                            PRUnichar *networkMaskUtf16 = NULL;
+                            PRUnichar *ipAddressUtf16   = NULL;
+
+                            networkInterface->vtbl->GetNetworkMask(networkInterface, &networkMaskUtf16);
+                            networkInterface->vtbl->GetIPAddress(networkInterface, &ipAddressUtf16);
+
+                            data->pFuncs->pfnUtf16ToUtf8(networkMaskUtf16, &def->netmask);
+                            data->pFuncs->pfnUtf16ToUtf8(ipAddressUtf16, &def->ipAddress);
+
+                            data->pFuncs->pfnUtf16Free(networkMaskUtf16);
+                            data->pFuncs->pfnUtf16Free(ipAddressUtf16);
+                        }
+
+
+                        DEBUG("Network UUID: "
+                              "{%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}",
+                              (unsigned)vboxnet0IID->m0,    (unsigned)vboxnet0IID->m1,
+                              (unsigned)vboxnet0IID->m2,    (unsigned)vboxnet0IID->m3[0],
+                              (unsigned)vboxnet0IID->m3[1], (unsigned)vboxnet0IID->m3[2],
+                              (unsigned)vboxnet0IID->m3[3], (unsigned)vboxnet0IID->m3[4],
+                              (unsigned)vboxnet0IID->m3[5], (unsigned)vboxnet0IID->m3[6],
+                              (unsigned)vboxnet0IID->m3[7]);
+
+                        data->pFuncs->pfnComUnallocMem(vboxnet0IID);
+                        data->pFuncs->pfnUtf16Free(networkNameUtf16);
+                    } else {
+                        vboxError(network->conn, VIR_ERR_SYSTEM_ERROR,
+                                   "%s", "strdup failed");
+                    }
+                }
+
+                networkInterface->vtbl->nsisupports.Release((nsISupports *) networkInterface);
+            }
+
+            data->pFuncs->pfnUtf16Free(networkInterfaceNameUtf16);
+            host->vtbl->nsisupports.Release((nsISupports *) host);
+        }
+    }
+
+    ret = virNetworkDefFormat(network->conn, def);
+
+cleanup:
+    VIR_FREE(networkNameUtf8);
+    return ret;
+}
+
+
+/**
+ * Function Tables
+ */
+
 virDriver NAME(Driver) = {
     VIR_DRV_VBOX,
     "VBOX",
@@ -3942,4 +4960,25 @@ virDriver NAME(Driver) = {
     .domainEventDeregister         = NULL,
     .domainMigratePrepare2         = NULL,
     .domainMigrateFinish2          = NULL,
+};
+
+virNetworkDriver NAME(NetworkDriver) = {
+    "VBOX",
+    .open                   = vboxNetworkOpen,
+    .close                  = vboxNetworkClose,
+    .numOfNetworks          = vboxNumOfNetworks,
+    .listNetworks           = vboxListNetworks,
+    .numOfDefinedNetworks   = vboxNumOfDefinedNetworks,
+    .listDefinedNetworks    = vboxListDefinedNetworks,
+    .networkLookupByUUID    = vboxNetworkLookupByUUID,
+    .networkLookupByName    = vboxNetworkLookupByName,
+    .networkCreateXML       = vboxNetworkCreateXML,
+    .networkDefineXML       = vboxNetworkDefineXML,
+    .networkUndefine        = vboxNetworkUndefine,
+    .networkCreate          = vboxNetworkCreate,
+    .networkDestroy         = vboxNetworkDestroy,
+    .networkDumpXML         = vboxNetworkDumpXML,
+    .networkGetBridgeName   = NULL,
+    .networkGetAutostart    = NULL,
+    .networkSetAutostart    = NULL
 };
