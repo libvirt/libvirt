@@ -370,7 +370,7 @@ virCapsPtr qemudCapsInit(void) {
     uname (&utsname);
 
     if ((caps = virCapabilitiesNew(utsname.machine,
-                                   0, 0)) == NULL)
+                                   1, 1)) == NULL)
         goto no_memory;
 
     /* Using KVM's mac prefix for QEMU too */
@@ -378,6 +378,9 @@ virCapsPtr qemudCapsInit(void) {
 
     if (virCapsInitNUMA(caps) < 0)
         goto no_memory;
+
+    virCapabilitiesAddHostMigrateTransport(caps,
+                                           "tcp");
 
     /* First the pure HVM guests */
     for (i = 0 ; i < ARRAY_CARDINALITY(arch_info_hvm) ; i++)
