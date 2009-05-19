@@ -462,6 +462,26 @@ cleanup:
     nodeDeviceUnlock(driverState);
 }
 
+static void dev_refresh(const char *udi)
+{
+    const char *name = hal_name(udi);
+    virNodeDeviceObjPtr dev;
+
+    nodeDeviceLock(driverState);
+    dev = virNodeDeviceFindByName(&driverState->devs, name);
+    if (dev) {
+        /* Simply "rediscover" device -- incrementally handling changes
+         * to sub-capabilities (like net.80203) is nasty ... so avoid it.
+         */
+        virNodeDeviceObjRemove(&driverState->devs, dev);
+    } else
+        DEBUG("no device named %s", name);
+    nodeDeviceUnlock(driverState);
+
+    if (dev) {
+        dev_create(udi);
+    }
+}
 
 static void device_added(LibHalContext *ctx ATTRIBUTE_UNUSED,
                          const char *udi)
@@ -512,20 +532,9 @@ static void device_cap_lost(LibHalContext *ctx ATTRIBUTE_UNUSED,
                             const char *cap)
 {
     const char *name = hal_name(udi);
-    virNodeDeviceObjPtr dev;
-
-    nodeDeviceLock(driverState);
-    dev = virNodeDeviceFindByName(&driverState->devs,name);
     DEBUG("%s %s", cap, name);
-    if (dev) {
-        /* Simply "rediscover" device -- incrementally handling changes
-         * to sub-capabilities (like net.80203) is nasty ... so avoid it.
-         */
-        virNodeDeviceObjRemove(&driverState->devs, dev);
-        dev_create(udi);
-    } else
-        DEBUG("no device named %s", name);
-    nodeDeviceUnlock(driverState);
+
+    dev_refresh(udi);
 }
 
 
@@ -536,21 +545,9 @@ static void device_prop_modified(LibHalContext *ctx ATTRIBUTE_UNUSED,
                                  dbus_bool_t is_added ATTRIBUTE_UNUSED)
 {
     const char *name = hal_name(udi);
-    virNodeDeviceObjPtr dev;
+    DEBUG("%s %s", name, key);
 
-    nodeDeviceLock(driverState);
-    dev = virNodeDeviceFindByName(&driverState->devs,name);
-    DEBUG("%s %s", key, name);
-    if (dev) {
-        /* Simply "rediscover" device -- incrementally handling changes
-         * to properties (which are mapped into caps in very capability-
-         * specific ways) is nasty ... so avoid it.
-         */
-        virNodeDeviceObjRemove(&driverState->devs, dev);
-        dev_create(udi);
-    } else
-        DEBUG("no device named %s", name);
-    nodeDeviceUnlock(driverState);
+    dev_refresh(udi);
 }
 
 
