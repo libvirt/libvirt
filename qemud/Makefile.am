@@ -31,6 +31,8 @@ EXTRA_DIST =						\
 	$(AVAHI_SOURCES)				\
 	$(DAEMON_SOURCES)
 
+BUILT_SOURCES = libvirtd.init libvirtd.logrotate
+
 if HAVE_RPCGEN
 #
 # Maintainer-only target for re-generating the derived .c/.h source
@@ -212,7 +214,6 @@ remote_dispatch_args.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
 remote_dispatch_ret.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
 	perl -w $(srcdir)/remote_generate_stubs.pl -r $(srcdir)/remote_protocol.x > $@
 
-DISTCLEANFILES += libvirtd.logrotate
 libvirtd.logrotate: libvirtd.logrotate.in
 	sed						\
 	    -e s!\@localstatedir\@!@localstatedir@!g	\
@@ -256,6 +257,7 @@ else
 
 install-init:
 uninstall-init:
+libvirtd.init:
 
 endif # DBUS_INIT_SCRIPTS_RED_HAT
 
@@ -265,5 +267,5 @@ libvirtd_LDADD += ../gnulib/lib/libgnu.la $(LIBSOCKET)
 
 endif # WITH_LIBVIRTD
 
-CLEANFILES = libvirtd.init
+CLEANFILES = $(BUILT_SOURCES)
 CLEANFILES += *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
