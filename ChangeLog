@@ -1,3 +1,23 @@
+Tue May 19 12:04:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix misc locking bugs identified by lock checker
+	* src/test.c: Add missing driver lock calls in testOpen()
+	* src/uml_driver.c: Remove bogus driver unlock call in
+	umlDomainStart. Ensure driver lock is held for the duration
+	of umlDomainSetAutostart.
+	* src/network_driver.c: Ensure driver lock is held for the
+	duration of networkStart, networkDestroy and networkSetAutostart
+	* src/storage_driver.c: Ensure driver lock is held for the
+	duration of storagePoolRefresh, and storagePoolSetAutostart.
+	Ensure driver is locked before re-obtaining pool lock in
+	storageVolumeCreateXML.
+	* src/qemu_driver.c: Ensure lock is held when removing domain
+	event callbacks in qemudClose(). Drop driver lock before calling
+	qemudAutostartConfigs, since that will obtain a lock when calling
+	virConnectClose. Hold lock across duration of suspend, resume,
+	start, get security label, device attach and device detach
+	operations.
+
 Tue May 19 11:10:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Add an optional OCaml+CIL mutex lock checker

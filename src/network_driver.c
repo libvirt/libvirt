@@ -1217,7 +1217,6 @@ static int networkStart(virNetworkPtr net) {
 
     networkDriverLock(driver);
     network = virNetworkFindByUUID(&driver->networks, net->uuid);
-    networkDriverUnlock(driver);
 
     if (!network) {
         networkReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
@@ -1230,6 +1229,7 @@ static int networkStart(virNetworkPtr net) {
 cleanup:
     if (network)
         virNetworkObjUnlock(network);
+    networkDriverUnlock(driver);
     return ret;
 }
 
@@ -1240,7 +1240,6 @@ static int networkDestroy(virNetworkPtr net) {
 
     networkDriverLock(driver);
     network = virNetworkFindByUUID(&driver->networks, net->uuid);
-    networkDriverUnlock(driver);
 
     if (!network) {
         networkReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
@@ -1258,6 +1257,7 @@ static int networkDestroy(virNetworkPtr net) {
 cleanup:
     if (network)
         virNetworkObjUnlock(network);
+    networkDriverUnlock(driver);
     return ret;
 }
 
@@ -1349,7 +1349,6 @@ static int networkSetAutostart(virNetworkPtr net,
 
     networkDriverLock(driver);
     network = virNetworkFindByUUID(&driver->networks, net->uuid);
-    networkDriverUnlock(driver);
 
     if (!network) {
         networkReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
@@ -1399,6 +1398,7 @@ cleanup:
     VIR_FREE(autostartLink);
     if (network)
         virNetworkObjUnlock(network);
+    networkDriverUnlock(driver);
     return ret;
 }
 

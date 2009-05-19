@@ -215,6 +215,7 @@ qemudAutostartConfigs(struct qemud_driver *driver) {
                                         "qemu:///system");
     /* Ignoring NULL conn which is mostly harmless here */
 
+    qemuDriverLock(driver);
     for (i = 0 ; i < driver->domains.count ; i++) {
         virDomainObjPtr vm = driver->domains.objs[i];
         virDomainObjLock(vm);
@@ -237,6 +238,7 @@ qemudAutostartConfigs(struct qemud_driver *driver) {
         }
         virDomainObjUnlock(vm);
     }
+    qemuDriverUnlock(driver);
 
     if (conn)
         virConnectClose(conn);
@@ -519,9 +521,10 @@ qemudStartup(void) {
                                 NULL, NULL) < 0)
         goto error;
     qemudReconnectVMs(qemu_driver);
+    qemuDriverUnlock(qemu_driver);
+
     qemudAutostartConfigs(qemu_driver);
 
-    qemuDriverUnlock(qemu_driver);
 
     return 0;
 
@@ -567,9 +570,9 @@ qemudReload(void) {
                             qemu_driver->configDir,
                             qemu_driver->autostartDir,
                             qemudNotifyLoadDomain, qemu_driver);
+    qemuDriverUnlock(qemu_driver);
 
     qemudAutostartConfigs(qemu_driver);
-    qemuDriverUnlock(qemu_driver);
 
     return 0;
 }
@@ -1812,7 +1815,9 @@ static int qemudClose(virConnectPtr conn) {
     struct qemud_driver *driver = conn->privateData;
 
     /* Get rid of callbacks registered for this conn */
+    qemuDriverLock(driver);
     virDomainEventCallbackListRemoveConn(conn, driver->domainEventCallbacks);
+    qemuDriverUnlock(driver);
 
     conn->privateData = NULL;
 
@@ -2229,7 +2234,6 @@ static int qemudDomainSuspend(virDomainPtr dom) {
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    qemuDriverUnlock(driver);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -2264,11 +2268,9 @@ cleanup:
     if (vm)
         virDomainObjUnlock(vm);
 
-    if (event) {
-        qemuDriverLock(driver);
+    if (event)
         qemuDomainEventQueue(driver, event);
-        qemuDriverUnlock(driver);
-    }
+    qemuDriverUnlock(driver);
     return ret;
 }
 
@@ -2282,7 +2284,6 @@ static int qemudDomainResume(virDomainPtr dom) {
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    qemuDriverUnlock(driver);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -2316,11 +2317,9 @@ static int qemudDomainResume(virDomainPtr dom) {
 cleanup:
     if (vm)
         virDomainObjUnlock(vm);
-    if (event) {
-        qemuDriverLock(driver);
+    if (event)
         qemuDomainEventQueue(driver, event);
-        qemuDriverUnlock(driver);
-    }
+    qemuDriverUnlock(driver);
     return ret;
 }
 
@@ -3153,7 +3152,6 @@ static int qemudDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr sec
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    qemuDriverUnlock(driver);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -3199,6 +3197,7 @@ static int qemudDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr sec
 cleanup:
     if (vm)
         virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
     return ret;
 }
 
@@ -3473,7 +3472,6 @@ static int qemudDomainStart(virDomainPtr dom) {
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    qemuDriverUnlock(driver);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -3492,11 +3490,9 @@ static int qemudDomainStart(virDomainPtr dom) {
 cleanup:
     if (vm)
         virDomainObjUnlock(vm);
-    if (event) {
-        qemuDriverLock(driver);
+    if (event)
         qemuDomainEventQueue(driver, event);
-        qemuDriverUnlock(driver);
-    }
+    qemuDriverUnlock(driver);
     return ret;
 }
 
@@ -3984,7 +3980,6 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
-        qemuDriverUnlock(driver);
         virUUIDFormat(dom->uuid, uuidstr);
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
                          _("no domain with matching uuid '%s'"), uuidstr);
@@ -3992,7 +3987,6 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     }
 
     if (!virDomainIsActive(vm)) {
-        qemuDriverUnlock(driver);
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                          "%s", _("cannot attach device on inactive domain"));
         goto cleanup;
@@ -4000,7 +3994,6 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
 
     dev = virDomainDeviceDefParse(dom->conn, driver->caps, vm->def, xml,
                                   VIR_DOMAIN_XML_INACTIVE);
-    qemuDriverUnlock(driver);
     if (dev == NULL)
         goto cleanup;
 
@@ -4053,6 +4046,7 @@ cleanup:
         virDomainDeviceDefFree(dev);
     if (vm)
         virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
     return ret;
 }
 
@@ -4136,7 +4130,6 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
-        qemuDriverUnlock(driver);
         virUUIDFormat(dom->uuid, uuidstr);
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
                          _("no domain with matching uuid '%s'"), uuidstr);
@@ -4144,7 +4137,6 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
     }
 
     if (!virDomainIsActive(vm)) {
-        qemuDriverUnlock(driver);
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                          "%s", _("cannot detach device on inactive domain"));
         goto cleanup;
@@ -4152,7 +4144,6 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
 
     dev = virDomainDeviceDefParse(dom->conn, driver->caps, vm->def, xml,
                                   VIR_DOMAIN_XML_INACTIVE);
-    qemuDriverUnlock(driver);
     if (dev == NULL)
         goto cleanup;
 
@@ -4176,6 +4167,7 @@ cleanup:
     virDomainDeviceDefFree(dev);
     if (vm)
         virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
     return ret;
 }
 
@@ -4215,7 +4207,6 @@ static int qemudDomainSetAutostart(virDomainPtr dom,
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    qemuDriverUnlock(driver);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -4273,6 +4264,7 @@ cleanup:
     VIR_FREE(autostartLink);
     if (vm)
         virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
     return ret;
 }
 

@@ -1553,7 +1553,6 @@ static int umlDomainStart(virDomainPtr dom) {
 
     umlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    umlDriverUnlock(driver);
 
     if (!vm) {
         umlReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -1672,6 +1671,7 @@ static int umlDomainGetAutostart(virDomainPtr dom,
 cleanup:
     if (vm)
         virDomainObjUnlock(vm);
+    umlDriverUnlock(driver);
     return ret;
 }
 
@@ -1684,7 +1684,6 @@ static int umlDomainSetAutostart(virDomainPtr dom,
 
     umlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    umlDriverUnlock(driver);
 
     if (!vm) {
         umlReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -1740,6 +1739,7 @@ cleanup:
     VIR_FREE(autostartLink);
     if (vm)
         virDomainObjUnlock(vm);
+    umlDriverUnlock(driver);
     return ret;
 }
 

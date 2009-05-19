@@ -659,10 +659,12 @@ static virDrvOpenStatus testOpen(virConnectPtr conn,
 
     if (ret == VIR_DRV_OPEN_SUCCESS) {
         testConnPtr privconn = conn->privateData;
+        testDriverLock(privconn);
         /* Init callback list */
         if (VIR_ALLOC(privconn->domainEventCallbacks) < 0 ||
             !(privconn->domainEventQueue = virDomainEventQueueNew())) {
             virReportOOMError(NULL);
+            testDriverUnlock(privconn);
             testClose(conn);
             return VIR_DRV_OPEN_ERROR;
         }
@@ -671,6 +673,7 @@ static virDrvOpenStatus testOpen(virConnectPtr conn,
              virEventAddTimeout(-1, testDomainEventFlush, privconn, NULL)) < 0)
             DEBUG0("virEventAddTimeout failed: No addTimeoutImpl defined. "
                    "continuing without events.");
+        testDriverUnlock(privconn);
     }
 
     return (ret);

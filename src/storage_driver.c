@@ -792,7 +792,6 @@ storagePoolRefresh(virStoragePoolPtr obj,
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid);
-    storageDriverUnlock(driver);
 
     if (!pool) {
         virStorageReportError(obj->conn, VIR_ERR_INVALID_STORAGE_POOL,
@@ -834,6 +833,7 @@ storagePoolRefresh(virStoragePoolPtr obj,
 cleanup:
     if (pool)
         virStoragePoolObjUnlock(pool);
+    storageDriverUnlock(driver);
     return ret;
 }
 
@@ -939,7 +939,6 @@ storagePoolSetAutostart(virStoragePoolPtr obj,
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid);
-    storageDriverUnlock(driver);
 
     if (!pool) {
         virStorageReportError(obj->conn, VIR_ERR_INVALID_STORAGE_POOL,
@@ -988,6 +987,7 @@ storagePoolSetAutostart(virStoragePoolPtr obj,
 cleanup:
     if (pool)
         virStoragePoolObjUnlock(pool);
+    storageDriverUnlock(driver);
     return ret;
 }
 
@@ -1274,7 +1274,10 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
 
         buildret = backend->buildVol(obj->conn, buildvoldef);
 
+        storageDriverLock(driver);
         virStoragePoolObjLock(pool);
+        storageDriverUnlock(driver);
+
         voldef->building = 0;
         pool->asyncjobs--;
 
