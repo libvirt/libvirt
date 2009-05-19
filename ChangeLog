@@ -1,3 +1,8 @@
+Tue May 19 09:16:37 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	Add documentation for <sound> device XML format.
+	* docs/formatdomain.html docs/formatdomain.html.in
+
 Tue May 19 09:14:12 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	Use virAsprintf, rather than VIR_ALLOC + strcpy + strcat

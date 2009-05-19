@@ -183,6 +183,8 @@
                       </li><li>
                         <a href="#elementsCharUNIX">UNIX domain socket client/server</a>
                       </li></ul>
+                  </li><li>
+                    <a href="#elementsSound">Sound devices</a>
                   </li></ul>
               </li></ul>
           </li><li>
@@ -916,6 +918,24 @@ qemu-kvm -net nic,model=? /dev/null
         &lt;target port="1"/&gt;
       &lt;/serial&gt;
       ...</pre>
+        <h4>
+          <a name="elementsSound" id="elementsSound">Sound devices</a>
+        </h4>
+        <p>
+      A virtual sound card can be attached to the host via the
+      <code>sound</code> element. <span class="since">Since 0.4.3</span>
+    </p>
+        <pre>
+      ...
+      &lt;sound model='es1370'/&gt;
+      ...</pre>
+        <dl><dt><code>sound</code></dt><dd>
+        The <code>sound</code> element has one mandatory attribute,
+        <code>model</code>, which specifies what real sound device is emulated.
+        Valid values are specific to the underlying hypervisor, though typical
+        choices are 'es1370', 'sb16', and 'ac97'
+        (<span class="since">'ac97' only since 0.6.0</span>)
+      </dd></dl>
         <h2>
           <a name="examples" id="examples">Example configs</a>
         </h2>
