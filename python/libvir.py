@@ -8,8 +8,12 @@
 # On cygwin, the DLL is called cygvirtmod.dll
 try:
     import libvirtmod
-except:
-    import cygvirtmod as libvirtmod
+except ImportError, lib_e:
+    try:
+        import cygvirtmod as libvirtmod
+    except ImportError, cyg_e:
+        if str(cyg_e).count("No module named"):
+            raise lib_e
 
 import types
 
