@@ -1,3 +1,7 @@
+Tue May 19 09:22:43 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* Makefile.am: Fix rpm build: add 'mylibtool' to EXTRADIST.
+
 Tue May 19 09:20:54 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* qemud/Makefile.am: Generate some config files at build time.

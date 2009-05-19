@@ -19,7 +19,8 @@ EXTRA_DIST = \
   .x-sc_require_config_h \
   .x-sc_prohibit_nonreentrant \
   Makefile.nonreentrant \
-  autogen.sh
+  autogen.sh \
+  mylibtool
 
 man_MANS = virsh.1
 
