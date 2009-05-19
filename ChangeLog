@@ -1,3 +1,8 @@
+Tue May 19 09:36:48 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/storage_backend.h src/storage_driver.c: Storage driver
+	implementation for CreateXMLFrom
+
 Tue May 19 09:26:53 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/node_device_hal.c: Fix node device media insert/eject
