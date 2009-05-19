@@ -594,14 +594,13 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
         /* A target path passed to CreateVol has no meaning */
         VIR_FREE(vol->target.path);
     }
-    if (VIR_ALLOC_N(vol->target.path, strlen(pool->def->target.path) +
-                    1 + strlen(vol->name) + 1) < 0) {
+
+    if (virAsprintf(&vol->target.path, "%s/%s",
+                    pool->def->target.path,
+                    vol->name) == -1) {
         virReportOOMError(conn);
         return -1;
     }
-    strcpy(vol->target.path, pool->def->target.path);
-    strcat(vol->target.path, "/");
-    strcat(vol->target.path, vol->name);
 
     if (virRun(conn, cmdargv, NULL) < 0)
         return -1;

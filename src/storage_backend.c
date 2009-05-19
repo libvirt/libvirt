@@ -342,16 +342,13 @@ virStorageBackendStablePath(virConnectPtr conn,
         if (dent->d_name[0] == '.')
             continue;
 
-        if (VIR_ALLOC_N(stablepath, strlen(pool->def->target.path) +
-                        1 + strlen(dent->d_name) + 1) < 0) {
+        if (virAsprintf(&stablepath, "%s/%s",
+                        pool->def->target.path,
+                        dent->d_name) == -1) {
             virReportOOMError(conn);
             closedir(dh);
             return NULL;
         }
-
-        strcpy(stablepath, pool->def->target.path);
-        strcat(stablepath, "/");
-        strcat(stablepath, dent->d_name);
 
         if (virFileLinkPointsTo(stablepath, devpath)) {
             closedir(dh);

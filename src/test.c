@@ -3110,16 +3110,13 @@ testStorageVolumeCreateXML(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(privvol->target.path,
-                    strlen(privpool->def->target.path) +
-                    1 + strlen(privvol->name) + 1) < 0) {
+    if (virAsprintf(&privvol->target.path, "%s/%s",
+                    privpool->def->target.path,
+                    privvol->name) == -1) {
         virReportOOMError(pool->conn);
         goto cleanup;
     }
 
-    strcpy(privvol->target.path, privpool->def->target.path);
-    strcat(privvol->target.path, "/");
-    strcat(privvol->target.path, privvol->name);
     privvol->key = strdup(privvol->target.path);
     if (privvol->key == NULL) {
         virReportOOMError(pool->conn);
@@ -3204,16 +3201,13 @@ testStorageVolumeCreateXMLFrom(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(privvol->target.path,
-                    strlen(privpool->def->target.path) +
-                    1 + strlen(privvol->name) + 1) < 0) {
+    if (virAsprintf(&privvol->target.path, "%s/%s",
+                    privpool->def->target.path,
+                    privvol->name) == -1) {
         virReportOOMError(pool->conn);
         goto cleanup;
     }
 
-    strcpy(privvol->target.path, privpool->def->target.path);
-    strcat(privvol->target.path, "/");
-    strcat(privvol->target.path, privvol->name);
     privvol->key = strdup(privvol->target.path);
     if (privvol->key == NULL) {
         virReportOOMError(pool->conn);

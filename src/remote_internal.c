@@ -5189,14 +5189,11 @@ static char *addrToString(struct sockaddr_storage *sa, socklen_t salen)
         return NULL;
     }
 
-    if (VIR_ALLOC_N(addr, strlen(host) + 1 + strlen(port) + 1) < 0) {
-        virReportOOMError (NULL);
+    if (virAsprintf(&addr, "%s;%s", host, port) == -1) {
+        virReportOOMError(NULL);
         return NULL;
     }
 
-    strcpy(addr, host);
-    strcat(addr, ";");
-    strcat(addr, port);
     return addr;
 }
 

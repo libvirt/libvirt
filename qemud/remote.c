@@ -52,7 +52,9 @@
 #include "datatypes.h"
 #include "qemud.h"
 #include "memory.h"
+#include "util.h"
 
+#define VIR_FROM_THIS VIR_FROM_REMOTE
 #define REMOTE_DEBUG(fmt, ...) DEBUG(fmt, __VA_ARGS__)
 
 static void remoteDispatchFormatError (remote_error *rerr,
@@ -2602,14 +2604,11 @@ static char *addrToString(remote_error *rerr,
         return NULL;
     }
 
-    if (VIR_ALLOC_N(addr, strlen(host) + 1 + strlen(port) + 1) < 0) {
-        remoteDispatchOOMError(rerr);
+    if (virAsprintf(&addr, "%s;%s", host, port) == -1) {
+        virReportOOMError(NULL);
         return NULL;
     }
 
-    strcpy(addr, host);
-    strcat(addr, ";");
-    strcat(addr, port);
     return addr;
 }
 

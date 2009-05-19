@@ -668,14 +668,13 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
     }
 
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
-        if (VIR_ALLOC_N(src, strlen(pool->def->source.host.name) +
-                        1 + strlen(pool->def->source.dir) + 1) < 0) {
+        if (virAsprintf(&src, "%s:%s",
+                        pool->def->source.host.name,
+                        pool->def->source.dir) == -1) {
             virReportOOMError(conn);
             return -1;
         }
-        strcpy(src, pool->def->source.host.name);
-        strcat(src, ":");
-        strcat(src, pool->def->source.dir);
+
     } else {
         if ((src = strdup(pool->def->source.devices[0].path)) == NULL) {
             virReportOOMError(conn);
@@ -829,13 +828,11 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
 
         vol->type = VIR_STORAGE_VOL_FILE;
         vol->target.format = VIR_STORAGE_VOL_FILE_RAW; /* Real value is filled in during probe */
-        if (VIR_ALLOC_N(vol->target.path, strlen(pool->def->target.path) +
-                        1 + strlen(vol->name) + 1) < 0)
+        if (virAsprintf(&vol->target.path, "%s/%s",
+                        pool->def->target.path,
+                        vol->name) == -1)
             goto no_memory;
 
-        strcpy(vol->target.path, pool->def->target.path);
-        strcat(vol->target.path, "/");
-        strcat(vol->target.path, vol->name);
         if ((vol->key = strdup(vol->target.path)) == NULL)
             goto no_memory;
 
@@ -995,15 +992,15 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
                                      virStorageVolDefPtr vol)
 {
 
-    if (VIR_ALLOC_N(vol->target.path, strlen(pool->def->target.path) +
-                    1 + strlen(vol->name) + 1) < 0) {
+    vol->type = VIR_STORAGE_VOL_FILE;
+
+    if (virAsprintf(&vol->target.path, "%s/%s",
+                    pool->def->target.path,
+                    vol->name) == -1) {
         virReportOOMError(conn);
         return -1;
     }
-    vol->type = VIR_STORAGE_VOL_FILE;
-    strcpy(vol->target.path, pool->def->target.path);
-    strcat(vol->target.path, "/");
-    strcat(vol->target.path, vol->name);
+
     vol->key = strdup(vol->target.path);
     if (vol->key == NULL) {
         virReportOOMError(conn);
