@@ -1,3 +1,7 @@
+Tue May 19 09:04:05 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/virsh.c: Don't validate disk type in virsh attach-disk
+
 Tue May 19 09:00:43 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* python/libvir.py: Don't overwrite legitimate python import error.

@@ -5509,13 +5509,6 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     type = vshCommandOptString(cmd, "type", NULL);
     mode = vshCommandOptString(cmd, "mode", NULL);
 
-    if (type) {
-        if (STRNEQ(type, "cdrom") && STRNEQ(type, "disk")) {
-            vshError(ctl, FALSE, _("No support %s in command 'attach-disk'"), type);
-            goto cleanup;
-        }
-    }
-
     if (driver) {
         if (STREQ(driver, "file") || STREQ(driver, "tap")) {
             isFile = 1;
