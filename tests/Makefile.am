@@ -68,6 +68,10 @@ if WITH_SECDRIVER_SELINUX
 noinst_PROGRAMS += seclabeltest
 endif
 
+if WITH_CIL
+noinst_PROGRAMS += object-locking
+endif
+
 noinst_PROGRAMS += nodedevxml2xmltest
 
 test_scripts = \
@@ -234,4 +238,25 @@ eventtest_SOURCES = \
 eventtest_LDADD = -lrt $(LDADDS)
 endif
 
-CLEANFILES = *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
+if WITH_CIL
+CILOPTFLAGS =
+CILOPTINCS =
+CILOPTPACKAGES = -package unix,str,cil
+CILOPTLIBS = -linkpkg
+
+object_locking_SOURCES = object-locking.ml
+
+%.cmx: %.ml
+	ocamlfind ocamlopt $(CILOPTFLAGS) $(CILOPTINCS) $(CILOPTPACKAGES) -c $<
+
+object-locking: object-locking.cmx object-locking-files.txt
+	ocamlfind ocamlopt $(CILOPTFLAGS) $(CILOPTINCS) $(CILOPTPACKAGES) $(CILOPTLIBS) $< -o $@
+
+object-locking-files.txt:
+	find $(top_builddir)/src/ -name '*.i' > $@
+
+else
+EXTRA_DIST += object-locking.ml
+endif
+
+CLEANFILES = *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda object-locking-files.txt

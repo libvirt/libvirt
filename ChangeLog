@@ -1,3 +1,16 @@
+Tue May 19 11:10:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Add an optional OCaml+CIL mutex lock checker
+	* .hgignore, src/.cvsignore, src/.gitignore, tests/.gitignore,
+	tests/.cvsignore: Ignore binary files from ocaml build. Ignore
+	.i and .s files from gcc -save-temps
+	* configure.in: Add --enable-test-locking arg to turn on build
+	of OCaml/CIL mutex locking test
+	* src/Makefile.am: Add $(LOCK_CHECKING_CFLAGS) used when lock
+	checking tests are enabled.
+	* tests/Makefile.am, tests/object-locking.ml: Add OCaml/CIL
+	program for validating mutex locking correctness
+
 Mon May 18 16:10:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c: Declare support for migration in capabilities

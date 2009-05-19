@@ -235,9 +235,11 @@ src/*.exe
 src/*.gcda
 src/*.gcno
 src/*.gcov
+src/*.i
 src/*.la
 src/*.lo
 src/*.loT
+src/*.s
 src/.deps
 src/.libs
 src/Makefile
@@ -264,6 +266,10 @@ tests/conftest
 tests/eventtest
 tests/nodedevxml2xmltest
 tests/nodeinfotest
+tests/object-locking
+tests/object-locking-files.txt
+tests/object-locking.cmi
+tests/object-locking.cmx
 tests/qemuxml2argvtest
 tests/qemuxml2xmltest
 tests/qparamtest

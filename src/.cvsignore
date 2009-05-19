@@ -16,3 +16,5 @@ libvirt_lxc
 virsh-net-edit.c
 virsh-pool-edit.c
 libvirt.syms
+*.i
+*.s

@@ -16,7 +16,8 @@ INCLUDES = \
 	   -DLOCALEBASEDIR=\""$(datadir)/locale"\" \
            -DLOCAL_STATE_DIR=\""$(localstatedir)"\" \
            -DGETTEXT_PACKAGE=\"$(PACKAGE)\" \
-	   $(WARN_CFLAGS)
+	   $(WARN_CFLAGS) \
+	   $(LOCK_CHECKING_CFLAGS)
 
 confdir = $(sysconfdir)/libvirt/
 conf_DATA = qemu.conf
@@ -662,5 +663,5 @@ if WITH_NETWORK
 endif
 
 
-CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
+CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
 DISTCLEANFILES = $(BUILT_SOURCES)
