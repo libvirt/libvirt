@@ -725,7 +725,8 @@ static int halDeviceMonitorStartup(void)
         !libhal_ctx_set_device_removed(hal_ctx, device_removed) ||
         !libhal_ctx_set_device_new_capability(hal_ctx, device_cap_added) ||
         !libhal_ctx_set_device_lost_capability(hal_ctx, device_cap_lost) ||
-        !libhal_ctx_set_device_property_modified(hal_ctx, device_prop_modified)) {
+        !libhal_ctx_set_device_property_modified(hal_ctx, device_prop_modified) ||
+        !libhal_device_property_watch_all(hal_ctx, &err))    {
         fprintf(stderr, "%s: setting up HAL callbacks failed\n", __FUNCTION__);
         goto failure;
     }
