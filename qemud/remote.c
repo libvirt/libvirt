@@ -62,10 +62,12 @@ static void remoteDispatchFormatError (remote_error *rerr,
     ATTRIBUTE_FORMAT(printf, 2, 3);
 static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain);
 static virNetworkPtr get_nonnull_network (virConnectPtr conn, remote_nonnull_network network);
+static virInterfacePtr get_nonnull_interface (virConnectPtr conn, remote_nonnull_interface interface);
 static virStoragePoolPtr get_nonnull_storage_pool (virConnectPtr conn, remote_nonnull_storage_pool pool);
 static virStorageVolPtr get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol);
 static void make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src);
 static void make_nonnull_network (remote_nonnull_network *net_dst, virNetworkPtr net_src);
+static void make_nonnull_interface (remote_nonnull_interface *interface_dst, virInterfacePtr interface_src);
 static void make_nonnull_storage_pool (remote_nonnull_storage_pool *pool_dst, virStoragePoolPtr pool_src);
 static void make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src);
 static void make_nonnull_node_device (remote_nonnull_node_device *dev_dst, virNodeDevicePtr dev_src);
@@ -2561,6 +2563,225 @@ remoteDispatchNumOfNetworks (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 
+/*-------------------------------------------------------------*/
+static int
+remoteDispatchNumOfInterfaces (struct qemud_server *server ATTRIBUTE_UNUSED,
+                               struct qemud_client *client ATTRIBUTE_UNUSED,
+                               virConnectPtr conn,
+                               remote_error *rerr,
+                               void *args ATTRIBUTE_UNUSED,
+                               remote_num_of_interfaces_ret *ret)
+{
+
+    ret->num = virConnectNumOfInterfaces (conn);
+    if (ret->num == -1) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+remoteDispatchListInterfaces (struct qemud_server *server ATTRIBUTE_UNUSED,
+                              struct qemud_client *client ATTRIBUTE_UNUSED,
+                              virConnectPtr conn,
+                              remote_error *rerr,
+                              remote_list_interfaces_args *args,
+                              remote_list_interfaces_ret *ret)
+{
+
+    if (args->maxnames > REMOTE_INTERFACE_NAME_LIST_MAX) {
+        remoteDispatchFormatError (rerr,
+                                   "%s", _("maxnames > REMOTE_INTERFACE_NAME_LIST_MAX"));
+        return -1;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        remoteDispatchOOMError(rerr);
+        return -1;
+    }
+
+    ret->names.names_len =
+        virConnectListInterfaces (conn,
+                                  ret->names.names_val, args->maxnames);
+    if (ret->names.names_len == -1) {
+        VIR_FREE(ret->names.names_len);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+remoteDispatchInterfaceLookupByName (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                     struct qemud_client *client ATTRIBUTE_UNUSED,
+                                     virConnectPtr conn,
+                                     remote_error *rerr,
+                                     remote_interface_lookup_by_name_args *args,
+                                     remote_interface_lookup_by_name_ret *ret)
+{
+    virInterfacePtr interface;
+
+    interface = virInterfaceLookupByName (conn, args->name);
+    if (interface == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    make_nonnull_interface (&ret->interface, interface);
+    virInterfaceFree(interface);
+    return 0;
+}
+
+static int
+remoteDispatchInterfaceLookupByMacString (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                          struct qemud_client *client ATTRIBUTE_UNUSED,
+                                          virConnectPtr conn,
+                                          remote_error *rerr,
+                                          remote_interface_lookup_by_mac_string_args *args,
+                                          remote_interface_lookup_by_mac_string_ret *ret)
+{
+    virInterfacePtr interface;
+
+    interface = virInterfaceLookupByMACString (conn, args->mac);
+    if (interface == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    make_nonnull_interface (&ret->interface, interface);
+    virInterfaceFree(interface);
+    return 0;
+}
+
+static int
+remoteDispatchInterfaceGetXmlDesc (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
+                                   remote_error *rerr,
+                                   remote_interface_get_xml_desc_args *args,
+                                   remote_interface_get_xml_desc_ret *ret)
+{
+    virInterfacePtr interface;
+
+    interface = get_nonnull_interface (conn, args->interface);
+    if (interface == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    /* remoteDispatchClientRequest will free this. */
+    ret->xml = virInterfaceGetXMLDesc (interface, args->flags);
+    if (!ret->xml) {
+        virInterfaceFree(interface);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+    virInterfaceFree(interface);
+    return 0;
+}
+
+static int
+remoteDispatchInterfaceDefineXml (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
+                                  remote_error *rerr,
+                                  remote_interface_define_xml_args *args,
+                                  remote_interface_define_xml_ret *ret)
+{
+    virInterfacePtr interface;
+
+    interface = virInterfaceDefineXML (conn, args->xml, args->flags);
+    if (interface == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    make_nonnull_interface (&ret->interface, interface);
+    virInterfaceFree(interface);
+    return 0;
+}
+
+static int
+remoteDispatchInterfaceUndefine (struct qemud_server *server ATTRIBUTE_UNUSED,
+                               struct qemud_client *client ATTRIBUTE_UNUSED,
+                               virConnectPtr conn,
+                               remote_error *rerr,
+                               remote_interface_undefine_args *args,
+                               void *ret ATTRIBUTE_UNUSED)
+{
+    virInterfacePtr interface;
+
+    interface = get_nonnull_interface (conn, args->interface);
+    if (interface == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (virInterfaceUndefine (interface) == -1) {
+        virInterfaceFree(interface);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+    virInterfaceFree(interface);
+    return 0;
+}
+
+static int
+remoteDispatchInterfaceCreate (struct qemud_server *server ATTRIBUTE_UNUSED,
+                             struct qemud_client *client ATTRIBUTE_UNUSED,
+                             virConnectPtr conn,
+                             remote_error *rerr,
+                             remote_interface_create_args *args,
+                             void *ret ATTRIBUTE_UNUSED)
+{
+    virInterfacePtr interface;
+
+    interface = get_nonnull_interface (conn, args->interface);
+    if (interface == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (virInterfaceCreate (interface, args->flags) == -1) {
+        virInterfaceFree(interface);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+    virInterfaceFree(interface);
+    return 0;
+}
+
+static int
+remoteDispatchInterfaceDestroy (struct qemud_server *server ATTRIBUTE_UNUSED,
+                              struct qemud_client *client ATTRIBUTE_UNUSED,
+                              virConnectPtr conn,
+                              remote_error *rerr,
+                              remote_interface_destroy_args *args,
+                              void *ret ATTRIBUTE_UNUSED)
+{
+    virInterfacePtr interface;
+
+    interface = get_nonnull_interface (conn, args->interface);
+    if (interface == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (virInterfaceDestroy (interface, args->flags) == -1) {
+        virInterfaceFree(interface);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+    virInterfaceFree(interface);
+    return 0;
+}
+
+/*-------------------------------------------------------------*/
+
 static int
 remoteDispatchAuthList (struct qemud_server *server,
                         struct qemud_client *client,
@@ -4560,6 +4781,12 @@ get_nonnull_network (virConnectPtr conn, remote_nonnull_network network)
     return virGetNetwork (conn, network.name, BAD_CAST network.uuid);
 }
 
+static virInterfacePtr
+get_nonnull_interface (virConnectPtr conn, remote_nonnull_interface interface)
+{
+    return virGetInterface (conn, interface.name, interface.mac);
+}
+
 static virStoragePoolPtr
 get_nonnull_storage_pool (virConnectPtr conn, remote_nonnull_storage_pool pool)
 {
@@ -4588,6 +4815,14 @@ make_nonnull_network (remote_nonnull_network *net_dst, virNetworkPtr net_src)
 {
     net_dst->name = strdup (net_src->name);
     memcpy (net_dst->uuid, net_src->uuid, VIR_UUID_BUFLEN);
+}
+
+static void
+make_nonnull_interface (remote_nonnull_interface *interface_dst,
+                        virInterfacePtr interface_src)
+{
+    interface_dst->name = strdup (interface_src->name);
+    interface_dst->mac = strdup (interface_src->mac);
 }
 
 static void

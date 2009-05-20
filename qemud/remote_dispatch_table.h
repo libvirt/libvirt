@@ -632,3 +632,48 @@
     .args_filter = (xdrproc_t) xdr_remote_storage_vol_create_xml_from_args,
     .ret_filter = (xdrproc_t) xdr_remote_storage_vol_create_xml_from_ret,
 },
+{   /* NumOfInterfaces => 126 */
+    .fn = (dispatch_fn) remoteDispatchNumOfInterfaces,
+    .args_filter = (xdrproc_t) xdr_void,
+    .ret_filter = (xdrproc_t) xdr_remote_num_of_interfaces_ret,
+},
+{   /* ListInterfaces => 127 */
+    .fn = (dispatch_fn) remoteDispatchListInterfaces,
+    .args_filter = (xdrproc_t) xdr_remote_list_interfaces_args,
+    .ret_filter = (xdrproc_t) xdr_remote_list_interfaces_ret,
+},
+{   /* InterfaceLookupByName => 128 */
+    .fn = (dispatch_fn) remoteDispatchInterfaceLookupByName,
+    .args_filter = (xdrproc_t) xdr_remote_interface_lookup_by_name_args,
+    .ret_filter = (xdrproc_t) xdr_remote_interface_lookup_by_name_ret,
+},
+{   /* InterfaceLookupByMacString => 129 */
+    .fn = (dispatch_fn) remoteDispatchInterfaceLookupByMacString,
+    .args_filter = (xdrproc_t) xdr_remote_interface_lookup_by_mac_string_args,
+    .ret_filter = (xdrproc_t) xdr_remote_interface_lookup_by_mac_string_ret,
+},
+{   /* InterfaceGetXmlDesc => 130 */
+    .fn = (dispatch_fn) remoteDispatchInterfaceGetXmlDesc,
+    .args_filter = (xdrproc_t) xdr_remote_interface_get_xml_desc_args,
+    .ret_filter = (xdrproc_t) xdr_remote_interface_get_xml_desc_ret,
+},
+{   /* InterfaceDefineXml => 131 */
+    .fn = (dispatch_fn) remoteDispatchInterfaceDefineXml,
+    .args_filter = (xdrproc_t) xdr_remote_interface_define_xml_args,
+    .ret_filter = (xdrproc_t) xdr_remote_interface_define_xml_ret,
+},
+{   /* InterfaceUndefine => 132 */
+    .fn = (dispatch_fn) remoteDispatchInterfaceUndefine,
+    .args_filter = (xdrproc_t) xdr_remote_interface_undefine_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
+{   /* InterfaceCreate => 133 */
+    .fn = (dispatch_fn) remoteDispatchInterfaceCreate,
+    .args_filter = (xdrproc_t) xdr_remote_interface_create_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
+{   /* InterfaceDestroy => 134 */
+    .fn = (dispatch_fn) remoteDispatchInterfaceDestroy,
+    .args_filter = (xdrproc_t) xdr_remote_interface_destroy_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},

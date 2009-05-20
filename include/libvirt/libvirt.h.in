@@ -854,6 +854,56 @@ int                     virNetworkGetAutostart  (virNetworkPtr network,
 int                     virNetworkSetAutostart  (virNetworkPtr network,
                                                  int autostart);
 
+/*
+ * Physical host interface configuration API
+ */
+
+/**
+ * virInterface:
+ *
+ * a virInterface is a private structure representing a virtual interface.
+ */
+typedef struct _virInterface virInterface;
+
+/**
+ * virInterfacePtr:
+ *
+ * a virInterfacePtr is pointer to a virInterface private structure, this is the
+ * type used to reference a virtual interface in the API.
+ */
+typedef virInterface *virInterfacePtr;
+
+virConnectPtr           virInterfaceGetConnect    (virInterfacePtr interface);
+
+int                     virConnectNumOfInterfaces (virConnectPtr conn);
+int                     virConnectListInterfaces  (virConnectPtr conn,
+                                                   char **const names,
+                                                   int maxnames);
+
+virInterfacePtr         virInterfaceLookupByName  (virConnectPtr conn,
+                                                   const char *name);
+virInterfacePtr         virInterfaceLookupByMACString (virConnectPtr conn,
+                                                       const char *mac);
+
+const char*             virInterfaceGetName       (virInterfacePtr interface);
+const char*             virInterfaceGetMACString  (virInterfacePtr interface);
+
+char *                  virInterfaceGetXMLDesc    (virInterfacePtr interface,
+                                                   unsigned int flags);
+virInterfacePtr         virInterfaceDefineXML     (virConnectPtr conn,
+                                                   const char *xmlDesc,
+                                                   unsigned int flags);
+
+int                     virInterfaceUndefine      (virInterfacePtr interface);
+
+int                     virInterfaceCreate        (virInterfacePtr interface,
+                                                   unsigned int flags);
+
+int                     virInterfaceDestroy       (virInterfacePtr interface,
+                                                   unsigned int flags);
+
+int                     virInterfaceRef           (virInterfacePtr interface);
+int                     virInterfaceFree          (virInterfacePtr interface);
 
 /**
  * virStoragePool:

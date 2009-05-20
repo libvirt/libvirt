@@ -268,5 +268,19 @@ LIBVIRT_0.6.3 {
 
 LIBVIRT_0.6.4 {
     global:
+	virInterfaceGetConnect;
+	virConnectNumOfInterfaces;
+	virConnectListInterfaces;
+	virInterfaceLookupByName;
+	virInterfaceLookupByMACString;
+	virInterfaceGetName;
+	virInterfaceGetMACString;
+	virInterfaceGetXMLDesc;
+	virInterfaceRef;
+	virInterfaceFree;
+	virInterfaceDefineXML;
+	virInterfaceUndefine;
+	virInterfaceCreate;
+	virInterfaceDestroy;
 	virStorageVolCreateXMLFrom;
 } LIBVIRT_0.6.3;

@@ -408,6 +408,55 @@ static int remoteDispatchGetVersion(
     remote_error *err,
     void *args,
     remote_get_version_ret *ret);
+static int remoteDispatchInterfaceCreate(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_interface_create_args *args,
+    void *ret);
+static int remoteDispatchInterfaceDefineXml(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_interface_define_xml_args *args,
+    remote_interface_define_xml_ret *ret);
+static int remoteDispatchInterfaceDestroy(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_interface_destroy_args *args,
+    void *ret);
+static int remoteDispatchInterfaceGetXmlDesc(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_interface_get_xml_desc_args *args,
+    remote_interface_get_xml_desc_ret *ret);
+static int remoteDispatchInterfaceLookupByMacString(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_interface_lookup_by_mac_string_args *args,
+    remote_interface_lookup_by_mac_string_ret *ret);
+static int remoteDispatchInterfaceLookupByName(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_interface_lookup_by_name_args *args,
+    remote_interface_lookup_by_name_ret *ret);
+static int remoteDispatchInterfaceUndefine(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_interface_undefine_args *args,
+    void *ret);
 static int remoteDispatchListDefinedDomains(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -436,6 +485,13 @@ static int remoteDispatchListDomains(
     remote_error *err,
     remote_list_domains_args *args,
     remote_list_domains_ret *ret);
+static int remoteDispatchListInterfaces(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_list_interfaces_args *args,
+    remote_list_interfaces_ret *ret);
 static int remoteDispatchListNetworks(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -667,6 +723,13 @@ static int remoteDispatchNumOfDomains(
     remote_error *err,
     void *args,
     remote_num_of_domains_ret *ret);
+static int remoteDispatchNumOfInterfaces(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    void *args,
+    remote_num_of_interfaces_ret *ret);
 static int remoteDispatchNumOfNetworks(
     struct qemud_server *server,
     struct qemud_client *client,

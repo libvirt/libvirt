@@ -43,6 +43,7 @@ virConfWriteMem;
 
 # datatypes.h
 virGetDomain;
+virGetInterface;
 virGetNetwork;
 virGetStoragePool;
 virGetStorageVol;

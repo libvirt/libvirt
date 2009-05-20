@@ -157,6 +157,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_VBOX:
             dom = "VBOX ";
             break;
+        case VIR_FROM_INTERFACE:
+            dom = "Interface ";
+            break;
     }
     return(dom);
 }
@@ -1023,6 +1026,24 @@ virErrorMsg(virErrorNumber error, const char *info)
                     errmsg = _("Requested operation is not valid");
             else
                     errmsg = _("Requested operation is not valid: %s");
+            break;
+        case VIR_WAR_NO_INTERFACE:
+            if (info == NULL)
+                errmsg = _("Failed to find the interface");
+            else
+                errmsg = _("Failed to find the interface: %s");
+            break;
+        case VIR_ERR_NO_INTERFACE:
+            if (info == NULL)
+                errmsg = _("Interface not found");
+            else
+                errmsg = _("Interface not found: %s");
+            break;
+        case VIR_ERR_INVALID_INTERFACE:
+            if (info == NULL)
+                errmsg = _("invalid interface pointer in");
+            else
+                errmsg = _("invalid interface pointer in %s");
             break;
     }
     return (errmsg);

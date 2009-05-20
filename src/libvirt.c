@@ -74,6 +74,8 @@ static virDriverPtr virDriverTab[MAX_DRIVERS];
 static int virDriverTabCount = 0;
 static virNetworkDriverPtr virNetworkDriverTab[MAX_DRIVERS];
 static int virNetworkDriverTabCount = 0;
+static virInterfaceDriverPtr virInterfaceDriverTab[MAX_DRIVERS];
+static int virInterfaceDriverTabCount = 0;
 static virStorageDriverPtr virStorageDriverTab[MAX_DRIVERS];
 static int virStorageDriverTabCount = 0;
 static virDeviceMonitorPtr virDeviceMonitorTab[MAX_DRIVERS];
@@ -462,6 +464,32 @@ virLibNetworkError(virNetworkPtr network, virErrorNumber error,
 }
 
 /**
+ * virLibInterfaceError:
+ * @conn: the connection if available
+ * @error: the error number
+ * @info: extra information string
+ *
+ * Handle an error at the connection level
+ */
+static void
+virLibInterfaceError(virInterfacePtr interface, virErrorNumber error,
+                   const char *info)
+{
+    virConnectPtr conn = NULL;
+    const char *errmsg;
+
+    if (error == VIR_ERR_OK)
+        return;
+
+    errmsg = virErrorMsg(error, info);
+    if (error != VIR_ERR_INVALID_INTERFACE) {
+        conn = interface->conn;
+    }
+    virRaiseError(conn, NULL, NULL, VIR_FROM_INTERFACE, error, VIR_ERR_ERROR,
+                  errmsg, info, NULL, 0, 0, errmsg, info);
+}
+
+/**
  * virLibStoragePoolError:
  * @conn: the connection if available
  * @error: the error number
@@ -568,6 +596,37 @@ virRegisterNetworkDriver(virNetworkDriverPtr driver)
 
     virNetworkDriverTab[virNetworkDriverTabCount] = driver;
     return virNetworkDriverTabCount++;
+}
+
+/**
+ * virRegisterInterfaceDriver:
+ * @driver: pointer to a interface driver block
+ *
+ * Register a interface virtualization driver
+ *
+ * Returns the driver priority or -1 in case of error.
+ */
+int
+virRegisterInterfaceDriver(virInterfaceDriverPtr driver)
+{
+    if (virInitialize() < 0)
+      return -1;
+
+    if (driver == NULL) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+
+    if (virInterfaceDriverTabCount >= MAX_DRIVERS) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+
+    DEBUG ("registering %s as interface driver %d",
+           driver->name, virInterfaceDriverTabCount);
+
+    virInterfaceDriverTab[virInterfaceDriverTabCount] = driver;
+    return virInterfaceDriverTabCount++;
 }
 
 /**
@@ -966,6 +1025,28 @@ do_open (const char *name,
         }
     }
 
+#if 0
+    /* TODO: reactivate once we have an interface driver */
+
+    for (i = 0; i < virInterfaceDriverTabCount; i++) {
+        res = virInterfaceDriverTab[i]->open (ret, auth, flags);
+        DEBUG("interface driver %d %s returned %s",
+              i, virInterfaceDriverTab[i]->name,
+              res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
+              (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
+               (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
+        if (res == VIR_DRV_OPEN_ERROR) {
+            if (STREQ(virInterfaceDriverTab[i]->name, "remote")) {
+                virLibConnWarning (NULL, VIR_WAR_NO_INTERFACE,
+                                   "Is the daemon running ?");
+            }
+            break;
+        } else if (res == VIR_DRV_OPEN_SUCCESS) {
+            ret->interfaceDriver = virInterfaceDriverTab[i];
+            break;
+        }
+    }
+#endif
 
     /* Secondary driver for storage. Optional */
     for (i = 0; i < virStorageDriverTabCount; i++) {
@@ -1126,6 +1207,8 @@ virConnectClose(virConnectPtr conn)
 
     if (conn->networkDriver)
         conn->networkDriver->close (conn);
+    if (conn->interfaceDriver)
+        conn->interfaceDriver->close (conn);
     if (conn->storageDriver)
         conn->storageDriver->close (conn);
     if (conn->deviceMonitor)
@@ -5276,6 +5359,524 @@ error:
     /* Copy to connection error object for back compatability */
     virSetConnError(network->conn);
     return -1;
+}
+
+/**
+ * virInterfaceGetConnect:
+ * @net: pointer to a interface
+ *
+ * Provides the connection pointer associated with an interface.  The
+ * reference counter on the connection is not increased by this
+ * call.
+ *
+ * WARNING: When writing libvirt bindings in other languages, do
+ * not use this function.  Instead, store the connection and
+ * the interface object together.
+ *
+ * Returns the virConnectPtr or NULL in case of failure.
+ */
+virConnectPtr
+virInterfaceGetConnect (virInterfacePtr interface)
+{
+    DEBUG("interface=%p", interface);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_INTERFACE (interface)) {
+        virLibInterfaceError (NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        return NULL;
+    }
+    return interface->conn;
+}
+
+/**
+ * virConnectNumOfInterfaces:
+ * @conn: pointer to the hypervisor connection
+ *
+ * Provides the number of interfaces on the physical host.
+ *
+ * Returns the number of interface found or -1 in case of error
+ */
+int
+virConnectNumOfInterfaces(virConnectPtr conn)
+{
+    DEBUG("conn=%p", conn);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+
+    if (conn->interfaceDriver && conn->interfaceDriver->numOfInterfaces) {
+        int ret;
+        ret = conn->interfaceDriver->numOfInterfaces (conn);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return -1;
+}
+
+/**
+ * virConnectListInterfaces:
+ * @conn: pointer to the hypervisor connection
+ * @names: array to collect the list of names of interfaces
+ * @maxnames: size of @names
+ *
+ * Collect the list of physical host interfaces, and store their names in @names
+ *
+ * Returns the number of interfaces found or -1 in case of error
+ */
+int
+virConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
+{
+    DEBUG("conn=%p, names=%p, maxnames=%d", conn, names, maxnames);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+
+    if ((names == NULL) || (maxnames < 0)) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->interfaceDriver && conn->interfaceDriver->listInterfaces) {
+        int ret;
+        ret = conn->interfaceDriver->listInterfaces (conn, names, maxnames);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return -1;
+}
+
+/**
+ * virInterfaceLookupByName:
+ * @conn: pointer to the hypervisor connection
+ * @name: name for the interface
+ *
+ * Try to lookup an interface on the given hypervisor based on its name.
+ *
+ * Returns a new interface object or NULL in case of failure.  If the
+ * interface cannot be found, then VIR_ERR_NO_INTERFACE error is raised.
+ */
+virInterfacePtr
+virInterfaceLookupByName(virConnectPtr conn, const char *name)
+{
+    DEBUG("conn=%p, name=%s", conn, name);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (NULL);
+    }
+    if (name == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto  error;
+    }
+
+    if (conn->interfaceDriver && conn->interfaceDriver->interfaceLookupByName) {
+        virInterfacePtr ret;
+        ret = conn->interfaceDriver->interfaceLookupByName (conn, name);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return NULL;
+}
+
+/**
+ * virInterfaceLookupByMACString:
+ * @conn: pointer to the hypervisor connection
+ * @macstr: the MAC for the interface (null-terminated ASCII format)
+ *
+ * Try to lookup an interface on the given hypervisor based on its MAC.
+ *
+ * Returns a new interface object or NULL in case of failure.  If the
+ * interface cannot be found, then VIR_ERR_NO_INTERFACE error is raised.
+ */
+virInterfacePtr
+virInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
+{
+    DEBUG("conn=%p, macstr=%s", conn, macstr);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (NULL);
+    }
+    if (macstr == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto  error;
+    }
+
+    if (conn->interfaceDriver && conn->interfaceDriver->interfaceLookupByMACString) {
+        virInterfacePtr ret;
+        ret = conn->interfaceDriver->interfaceLookupByMACString (conn, macstr);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return NULL;
+}
+
+/**
+ * virInterfaceGetName:
+ * @interface: a interface object
+ *
+ * Get the public name for that interface
+ *
+ * Returns a pointer to the name or NULL, the string need not be deallocated
+ * its lifetime will be the same as the interface object.
+ */
+const char *
+virInterfaceGetName(virInterfacePtr interface)
+{
+    DEBUG("interface=%p", interface);
+
+    virResetLastError();
+
+    if (!VIR_IS_INTERFACE(interface)) {
+        virLibInterfaceError(NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        return (NULL);
+    }
+    return (interface->name);
+}
+
+/**
+ * virInterfaceGetMACString:
+ * @interface: a interface object
+ *
+ * Get the MAC for a interface as string. For more information about
+ * MAC see RFC4122.
+ *
+ * Returns a pointer to the MAC address (in null-terminated ASCII
+ * format) or NULL, the string need not be deallocated its lifetime
+ * will be the same as the interface object.
+ */
+const char *
+virInterfaceGetMACString(virInterfacePtr interface)
+{
+    DEBUG("interface=%p", interface);
+
+    virResetLastError();
+
+    if (!VIR_IS_INTERFACE(interface)) {
+        virLibInterfaceError(NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        return (NULL);
+    }
+    return (interface->mac);
+}
+
+/**
+ * virInterfaceGetXMLDesc:
+ * @interface: a interface object
+ * @flags: and OR'ed set of extraction flags, not used yet
+ *
+ * Provide an XML description of the interface. The description may be reused
+ * later to recreate the interface with virInterfaceCreateXML().
+ *
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
+ *         the caller must free() the returned value.
+ */
+char *
+virInterfaceGetXMLDesc(virInterfacePtr interface, unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("interface=%p, flags=%d", interface, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_INTERFACE(interface)) {
+        virLibInterfaceError(NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        return (NULL);
+    }
+    if (flags != 0) {
+        virLibInterfaceError(interface, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    conn = interface->conn;
+
+    if (conn->interfaceDriver && conn->interfaceDriver->interfaceGetXMLDesc) {
+        char *ret;
+        ret = conn->interfaceDriver->interfaceGetXMLDesc (interface, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(interface->conn);
+    return NULL;
+}
+
+/**
+ * virInterfaceDefineXML:
+ * @conn: pointer to the hypervisor connection
+ * @xml: the XML description for the interface, preferably in UTF-8
+ * @flags: and OR'ed set of extraction flags, not used yet
+ *
+ * Define an interface (or modify existing interface configuration)
+ *
+ * Returns NULL in case of error, a pointer to the interface otherwise
+ */
+virInterfacePtr
+virInterfaceDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
+{
+    DEBUG("conn=%p, xml=%s, flags=%d", conn, xml, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (NULL);
+    }
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+    if (xml == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->interfaceDriver && conn->interfaceDriver->interfaceDefineXML) {
+        virInterfacePtr ret;
+        ret = conn->interfaceDriver->interfaceDefineXML (conn, xml, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return NULL;
+}
+
+/**
+ * virInterfaceUndefine:
+ * @interface: pointer to a defined interface
+ *
+ * Undefine an interface, ie remove it from the config.
+ * This does not free the associated virInterfacePtr object.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+int
+virInterfaceUndefine(virInterfacePtr interface) {
+    virConnectPtr conn;
+    DEBUG("interface=%p", interface);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_INTERFACE(interface)) {
+        virLibInterfaceError(NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        return (-1);
+    }
+    conn = interface->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibInterfaceError(interface, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->interfaceDriver && conn->interfaceDriver->interfaceUndefine) {
+        int ret;
+        ret = conn->interfaceDriver->interfaceUndefine (interface);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(interface->conn);
+    return -1;
+}
+
+/**
+ * virInterfaceCreate:
+ * @interface: pointer to a defined interface
+ * @flags: and OR'ed set of extraction flags, not used yet
+ *
+ * Activate an interface (ie call "ifup")
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+int
+virInterfaceCreate(virInterfacePtr interface, unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("interface=%p, flags=%d", interface, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_INTERFACE(interface)) {
+        virLibInterfaceError(NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        return (-1);
+    }
+    conn = interface->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibInterfaceError(interface, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->interfaceDriver && conn->interfaceDriver->interfaceCreate) {
+        int ret;
+        ret = conn->interfaceDriver->interfaceCreate (interface, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(interface->conn);
+    return -1;
+}
+
+/**
+ * virInterfaceDestroy:
+ * @interface: an interface object
+ * @flags: and OR'ed set of extraction flags, not used yet
+ *
+ * deactivate an interface (ie call "ifdown")
+ * This does not remove the interface from the config, and
+ * does not free the associated virInterfacePtr object.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virInterfaceDestroy(virInterfacePtr interface, unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("interface=%p, flags=%d", interface, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_INTERFACE(interface)) {
+        virLibInterfaceError(NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        return (-1);
+    }
+
+    conn = interface->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibInterfaceError(interface, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->interfaceDriver && conn->interfaceDriver->interfaceDestroy) {
+        int ret;
+        ret = conn->interfaceDriver->interfaceDestroy (interface, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(interface->conn);
+    return -1;
+}
+
+/**
+ * virInterfaceRef:
+ * @interface: the interface to hold a reference on
+ *
+ * Increment the reference count on the interface. For each
+ * additional call to this method, there shall be a corresponding
+ * call to virInterfaceFree to release the reference count, once
+ * the caller no longer needs the reference to this object.
+ *
+ * This method is typically useful for applications where multiple
+ * threads are using a connection, and it is required that the
+ * connection remain open until all threads have finished using
+ * it. ie, each new thread using a interface would increment
+ * the reference count.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virInterfaceRef(virInterfacePtr interface)
+{
+    if ((!VIR_IS_CONNECTED_INTERFACE(interface))) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+    virMutexLock(&interface->conn->lock);
+    DEBUG("interface=%p refs=%d", interface, interface->refs);
+    interface->refs++;
+    virMutexUnlock(&interface->conn->lock);
+    return 0;
+}
+
+/**
+ * virInterfaceFree:
+ * @interface: a interface object
+ *
+ * Free the interface object. The interface itself is unaltered.
+ * The data structure is freed and should not be used thereafter.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virInterfaceFree(virInterfacePtr interface)
+{
+    DEBUG("interface=%p", interface);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_INTERFACE(interface)) {
+        virLibInterfaceError(NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
+        return (-1);
+    }
+    if (virUnrefInterface(interface) < 0)
+        return (-1);
+    return(0);
 }
 
 

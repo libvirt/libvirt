@@ -488,6 +488,65 @@ struct _virNetworkDriver {
         virDrvNetworkSetAutostart	networkSetAutostart;
 };
 
+/*-------*/
+typedef int
+        (*virDrvNumOfInterfaces)        (virConnectPtr conn);
+typedef int
+        (*virDrvListInterfaces)         (virConnectPtr conn,
+                                         char **const names,
+                                         int maxnames);
+typedef virInterfacePtr
+        (*virDrvInterfaceLookupByName)  (virConnectPtr conn,
+                                         const char *name);
+typedef virInterfacePtr
+        (*virDrvInterfaceLookupByMACString)   (virConnectPtr conn,
+                                               const char *mac);
+
+typedef char *
+        (*virDrvInterfaceGetXMLDesc)    (virInterfacePtr interface,
+                                         unsigned int flags);
+
+typedef virInterfacePtr
+        (*virDrvInterfaceDefineXML)     (virConnectPtr conn,
+                                         const char *xmlDesc,
+                                         unsigned int flags);
+typedef int
+        (*virDrvInterfaceUndefine)      (virInterfacePtr interface);
+typedef int
+        (*virDrvInterfaceCreate)        (virInterfacePtr interface,
+                                         unsigned int flags);
+typedef int
+        (*virDrvInterfaceDestroy)       (virInterfacePtr interface,
+                                         unsigned int flags);
+
+typedef struct _virInterfaceDriver virInterfaceDriver;
+typedef virInterfaceDriver *virInterfaceDriverPtr;
+
+/**
+ * _virInterfaceDriver:
+ *
+ * Structure associated to a network virtualization driver, defining the various
+ * entry points for it.
+ *
+ * All drivers must support the following fields/methods:
+ *  - open
+ *  - close
+ */
+struct _virInterfaceDriver {
+    const char                      *name; /* the name of the driver */
+    virDrvOpen                       open;
+    virDrvClose                      close;
+    virDrvNumOfInterfaces            numOfInterfaces;
+    virDrvListInterfaces             listInterfaces;
+    virDrvInterfaceLookupByName      interfaceLookupByName;
+    virDrvInterfaceLookupByMACString interfaceLookupByMACString;
+    virDrvInterfaceGetXMLDesc        interfaceGetXMLDesc;
+    virDrvInterfaceDefineXML         interfaceDefineXML;
+    virDrvInterfaceUndefine          interfaceUndefine;
+    virDrvInterfaceCreate            interfaceCreate;
+    virDrvInterfaceDestroy           interfaceDestroy;
+};
+
 
 typedef int
     (*virDrvConnectNumOfStoragePools)        (virConnectPtr conn);
@@ -724,6 +783,7 @@ struct _virDeviceMonitor {
  */
 int virRegisterDriver(virDriverPtr);
 int virRegisterNetworkDriver(virNetworkDriverPtr);
+int virRegisterInterfaceDriver(virInterfaceDriverPtr);
 int virRegisterStorageDriver(virStorageDriverPtr);
 int virRegisterDeviceMonitor(virDeviceMonitorPtr);
 #ifdef WITH_LIBVIRTD

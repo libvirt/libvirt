@@ -90,3 +90,9 @@
     remote_node_get_security_model_ret val_remote_node_get_security_model_ret;
     remote_node_device_create_xml_ret val_remote_node_device_create_xml_ret;
     remote_storage_vol_create_xml_from_ret val_remote_storage_vol_create_xml_from_ret;
+    remote_num_of_interfaces_ret val_remote_num_of_interfaces_ret;
+    remote_list_interfaces_ret val_remote_list_interfaces_ret;
+    remote_interface_lookup_by_name_ret val_remote_interface_lookup_by_name_ret;
+    remote_interface_lookup_by_mac_string_ret val_remote_interface_lookup_by_mac_string_ret;
+    remote_interface_get_xml_desc_ret val_remote_interface_get_xml_desc_ret;
+    remote_interface_define_xml_ret val_remote_interface_define_xml_ret;

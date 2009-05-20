@@ -1,3 +1,16 @@
+Wed May 20 16:23:10 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in include/libvirt/libvirt.h[.in]
+	  include/libvirt/virterror.h qemud/remote.c
+	  qemud/remote_dispatch_args.h qemud/remote_dispatch_prototypes.h
+	  qemud/remote_dispatch_ret.h qemud/remote_dispatch_table.h
+	  qemud/remote_protocol.[chx] src/Makefile.am src/datatypes.c
+	  src/datatypes.h src/driver.h src/libvirt.c src/remote_internal.c
+	  src/virterror.c src/libvirt_private.syms src/libvirt_public.syms:
+	  Add the Interface config APIs and remote stubs for those, patch
+	  by Laine Stump
+	* AUTHORS: add Laine
+
 Wed May 20 15:35:35 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/qemud.c src/console.c src/network_driver.c

@@ -352,6 +352,11 @@ endif
 libvirt_driver_network_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
 endif
 
+if WITH_NETCF
+libvirt_driver_interface_la_CFLAGS = $(NETCF_CFLAGS)
+libvirt_driver_interface_la_LDFLAGS = $(NETCF_LIBS)
+endif
+
 # Needed to keep automake quiet about conditionals
 libvirt_driver_storage_la_SOURCES =
 if WITH_STORAGE_DIR

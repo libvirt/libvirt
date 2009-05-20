@@ -63,6 +63,7 @@ typedef enum {
     VIR_FROM_XEN_INOTIFY, /* Error from xen inotify layer */
     VIR_FROM_SECURITY,  /* Error from security framework */
     VIR_FROM_VBOX,    /* Error from VirtualBox driver */
+    VIR_FROM_INTERFACE, /* Error when operating on an interface */
 } virErrorDomain;
 
 
@@ -158,6 +159,9 @@ typedef enum {
     VIR_ERR_NO_NODE_DEVICE,/* node device not found */
     VIR_ERR_NO_SECURITY_MODEL, /* security model not found */
     VIR_ERR_OPERATION_INVALID, /* operation is not applicable at this time */
+    VIR_WAR_NO_INTERFACE, /* failed to start interface driver */
+    VIR_ERR_NO_INTERFACE, /* interface driver not running */
+    VIR_ERR_INVALID_INTERFACE, /* invalid interface object */
 } virErrorNumber;
 
 /**

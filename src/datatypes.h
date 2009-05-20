@@ -59,6 +59,16 @@
 #define VIR_IS_CONNECTED_NETWORK(obj)	(VIR_IS_NETWORK(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /**
+ * VIR_INTERFACE_MAGIC:
+ *
+ * magic value used to protect the API when pointers to interface structures
+ * are passed down by the users.
+ */
+#define VIR_INTERFACE_MAGIC		0xDEAD5309
+#define VIR_IS_INTERFACE(obj)		((obj) && (obj)->magic==VIR_INTERFACE_MAGIC)
+#define VIR_IS_CONNECTED_INTERFACE(obj)	(VIR_IS_INTERFACE(obj) && VIR_IS_CONNECT((obj)->conn))
+
+/**
  * VIR_STORAGE_POOL_MAGIC:
  *
  * magic value used to protect the API when pointers to storage pool structures
@@ -106,6 +116,7 @@ struct _virConnect {
     /* The underlying hypervisor driver and network driver. */
     virDriverPtr      driver;
     virNetworkDriverPtr networkDriver;
+    virInterfaceDriverPtr interfaceDriver;
     virStorageDriverPtr storageDriver;
     virDeviceMonitorPtr  deviceMonitor;
 
@@ -115,6 +126,7 @@ struct _virConnect {
      */
     void *            privateData;
     void *            networkPrivateData;
+    void *            interfacePrivateData;
     void *            storagePrivateData;
     void *            devMonPrivateData;
 
@@ -133,6 +145,7 @@ struct _virConnect {
 
     virHashTablePtr domains;  /* hash table for known domains */
     virHashTablePtr networks; /* hash table for known domains */
+    virHashTablePtr interfaces; /* hash table for known interfaces */
     virHashTablePtr storagePools;/* hash table for known storage pools */
     virHashTablePtr storageVols;/* hash table for known storage vols */
     virHashTablePtr nodeDevices; /* hash table for known node devices */
@@ -164,6 +177,19 @@ struct _virNetwork {
     virConnectPtr conn;                  /* pointer back to the connection */
     char *name;                          /* the network external name */
     unsigned char uuid[VIR_UUID_BUFLEN]; /* the network unique identifier */
+};
+
+/**
+* _virInterface:
+*
+* Internal structure associated to a physical host interface
+*/
+struct _virInterface {
+    unsigned int magic;                  /* specific value to check */
+    int refs;                            /* reference count */
+    virConnectPtr conn;                  /* pointer back to the connection */
+    char *name;                          /* the network external name */
+    char *mac;                           /* the interface MAC address */
 };
 
 /**
@@ -224,6 +250,11 @@ virNetworkPtr virGetNetwork(virConnectPtr conn,
                               const char *name,
                               const unsigned char *uuid);
 int virUnrefNetwork(virNetworkPtr network);
+
+virInterfacePtr virGetInterface(virConnectPtr conn,
+                                const char *name,
+                                const char *mac);
+int virUnrefInterface(virInterfacePtr interface);
 
 virStoragePoolPtr virGetStoragePool(virConnectPtr conn,
                                       const char *name,
