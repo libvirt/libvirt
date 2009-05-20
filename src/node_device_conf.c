@@ -53,9 +53,6 @@ VIR_ENUM_IMPL(virNodeDevNetCap, VIR_NODE_DEV_CAP_NET_LAST,
               "80203",
               "80211")
 
-
-#define virNodeDeviceLog(msg...) fprintf(stderr, msg)
-
 virNodeDeviceObjPtr virNodeDeviceFindByName(const virNodeDeviceObjListPtr devs,
                                             const char *name)
 {

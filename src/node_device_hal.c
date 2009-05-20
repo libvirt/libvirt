@@ -689,23 +689,22 @@ static int halDeviceMonitorStartup(void)
     dbus_error_init(&err);
     hal_ctx = libhal_ctx_new();
     if (hal_ctx == NULL) {
-        fprintf(stderr, "%s: libhal_ctx_new returned NULL\n", __FUNCTION__);
+        VIR_ERROR0("libhal_ctx_new returned NULL\n");
         goto failure;
     }
     dbus_conn = dbus_bus_get(DBUS_BUS_SYSTEM, &err);
     if (dbus_conn == NULL) {
-        fprintf(stderr, "%s: dbus_bus_get failed\n", __FUNCTION__);
+        VIR_ERROR0("dbus_bus_get failed\n");
         goto failure;
     }
     dbus_connection_set_exit_on_disconnect(dbus_conn, FALSE);
 
     if (!libhal_ctx_set_dbus_connection(hal_ctx, dbus_conn)) {
-        fprintf(stderr, "%s: libhal_ctx_set_dbus_connection failed\n",
-                __FUNCTION__);
+        VIR_ERROR0("libhal_ctx_set_dbus_connection failed\n");
         goto failure;
     }
     if (!libhal_ctx_init(hal_ctx, &err)) {
-        fprintf(stderr, "%s: libhal_ctx_init failed\n", __FUNCTION__);
+        VIR_ERROR0("libhal_ctx_init failed\n");
         goto failure;
     }
 
@@ -715,8 +714,7 @@ static int halDeviceMonitorStartup(void)
                                              remove_dbus_watch,
                                              toggle_dbus_watch,
                                              NULL, NULL)) {
-        fprintf(stderr, "%s: dbus_connection_set_watch_functions failed\n",
-                __FUNCTION__);
+        VIR_ERROR0("dbus_connection_set_watch_functions failed\n");
         goto failure;
     }
 
@@ -726,8 +724,8 @@ static int halDeviceMonitorStartup(void)
         !libhal_ctx_set_device_new_capability(hal_ctx, device_cap_added) ||
         !libhal_ctx_set_device_lost_capability(hal_ctx, device_cap_lost) ||
         !libhal_ctx_set_device_property_modified(hal_ctx, device_prop_modified) ||
-        !libhal_device_property_watch_all(hal_ctx, &err))    {
-        fprintf(stderr, "%s: setting up HAL callbacks failed\n", __FUNCTION__);
+        !libhal_device_property_watch_all(hal_ctx, &err)) {
+        VIR_ERROR0("setting up HAL callbacks failed\n");
         goto failure;
     }
 
@@ -737,7 +735,7 @@ static int halDeviceMonitorStartup(void)
     nodeDeviceUnlock(driverState);
     udi = libhal_get_all_devices(hal_ctx, &num_devs, &err);
     if (udi == NULL) {
-        fprintf(stderr, "%s: libhal_get_all_devices failed\n", __FUNCTION__);
+        VIR_ERROR0("libhal_get_all_devices failed\n");
         goto failure;
     }
     for (i = 0; i < num_devs; i++) {
@@ -750,7 +748,7 @@ static int halDeviceMonitorStartup(void)
 
  failure:
     if (dbus_error_is_set(&err)) {
-        fprintf(stderr, "\t%s: %s\n", err.name, err.message);
+        VIR_ERROR("%s: %s\n", err.name, err.message);
         dbus_error_free(&err);
     }
     virNodeDeviceObjListFree(&driverState->devs);

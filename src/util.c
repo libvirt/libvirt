@@ -73,8 +73,6 @@
 # define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
-#define virLog(msg...) fprintf(stderr, msg)
-
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 #define ReportError(conn, code, fmt...)                                      \
@@ -938,19 +936,16 @@ int virFileReadLimFD(int fd_arg, int maxlen, char **buf)
 
 int virFileReadAll(const char *path, int maxlen, char **buf)
 {
-    char ebuf[1024];
     FILE *fh = fopen(path, "r");
     if (fh == NULL) {
-        virLog("Failed to open file '%s': %s\n",
-               path, virStrerror(errno, ebuf, sizeof ebuf));
+        virReportSystemError(NULL, errno, _("Failed to open file '%s'"), path);
         return -1;
     }
 
     int len = virFileReadLimFP (fh, maxlen, buf);
     fclose(fh);
     if (len < 0) {
-        virLog("Failed to read '%s': %s\n", path,
-               virStrerror(errno, ebuf, sizeof ebuf));
+        virReportSystemError(NULL, errno, _("Failed to read file '%s'"), path);
         return -1;
     }
 

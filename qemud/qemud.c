@@ -2673,13 +2673,13 @@ qemudSetupPrivs (void)
 
     if (__init_daemon_priv (PU_RESETGROUPS | PU_CLEARLIMITSET,
         SYSTEM_UID, SYSTEM_UID, PRIV_XVM_CONTROL, NULL)) {
-        fprintf (stderr, "additional privileges are required\n");
+        VIR_ERROR0(_("additional privileges are required\n"));
         return -1;
     }
 
     if (priv_set (PRIV_OFF, PRIV_ALLSETS, PRIV_FILE_LINK_ANY, PRIV_PROC_INFO,
         PRIV_PROC_SESSION, PRIV_PROC_EXEC, PRIV_PROC_FORK, NULL)) {
-        fprintf (stderr, "failed to set reduced privileges\n");
+        VIR_ERROR0(_("failed to set reduced privileges\n"));
         return -1;
     }
 

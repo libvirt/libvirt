@@ -50,7 +50,9 @@
 # define ULLONG_MAX   ULONG_LONG_MAX
 #endif
 
-#define virStorageLog(msg...) fprintf(stderr, msg)
+#define virStorageError(conn, code, fmt...)                             \
+            virReportErrorHelper(conn, VIR_FROM_STORAGE, code, __FILE__,\
+                                  __FUNCTION__, __LINE__, fmt)
 
 VIR_ENUM_IMPL(virStoragePool,
               VIR_STORAGE_POOL_LAST,
@@ -1332,34 +1334,31 @@ virStoragePoolObjLoad(virConnectPtr conn,
     virStoragePoolObjPtr pool;
 
     if (!(def = virStoragePoolDefParse(NULL, xml, file))) {
-        virErrorPtr err = virGetLastError();
-        virStorageLog("Error parsing storage pool config '%s' : %s",
-                      path, err ? err->message : NULL);
         return NULL;
     }
 
     if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
-        virStorageLog("Storage pool config filename '%s' does not match pool name '%s'",
+        virStorageError(conn, VIR_ERR_INVALID_STORAGE_POOL,
+            "Storage pool config filename '%s' does not match pool name '%s'",
                       path, def->name);
         virStoragePoolDefFree(def);
         return NULL;
     }
 
     if (!(pool = virStoragePoolObjAssignDef(conn, pools, def))) {
-        virStorageLog("Failed to load storage pool config '%s': out of memory", path);
         virStoragePoolDefFree(def);
         return NULL;
     }
 
     pool->configFile = strdup(path);
     if (pool->configFile == NULL) {
-        virStorageLog("Failed to load storage pool config '%s': out of memory", path);
+        virReportOOMError(conn);
         virStoragePoolDefFree(def);
         return NULL;
     }
     pool->autostartLink = strdup(autostartLink);
     if (pool->autostartLink == NULL) {
-        virStorageLog("Failed to load storage pool config '%s': out of memory", path);
+        virReportOOMError(conn);
         virStoragePoolDefFree(def);
         return NULL;
     }
@@ -1380,11 +1379,10 @@ virStoragePoolLoadAllConfigs(virConnectPtr conn,
     struct dirent *entry;
 
     if (!(dir = opendir(configDir))) {
-        char ebuf[1024];
         if (errno == ENOENT)
             return 0;
-        virStorageLog("Failed to open dir '%s': %s",
-                      configDir, virStrerror(errno, ebuf, sizeof ebuf));
+        virReportSystemError(conn, errno, _("Failed to open dir '%s'"),
+                             configDir);
         return -1;
     }
 
@@ -1402,15 +1400,17 @@ virStoragePoolLoadAllConfigs(virConnectPtr conn,
 
         if (virFileBuildPath(configDir, entry->d_name,
                              NULL, path, PATH_MAX) < 0) {
-            virStorageLog("Config filename '%s/%s' is too long",
-                          configDir, entry->d_name);
+            virStorageError(conn, VIR_ERR_INTERNAL_ERROR,
+                            "Config filename '%s/%s' is too long",
+                            configDir, entry->d_name);
             continue;
         }
 
         if (virFileBuildPath(autostartDir, entry->d_name,
                              NULL, autostartLink, PATH_MAX) < 0) {
-            virStorageLog("Autostart link path '%s/%s' is too long",
-                          autostartDir, entry->d_name);
+            virStorageError(conn, VIR_ERR_INTERNAL_ERROR,
+                            "Autostart link path '%s/%s' is too long",
+                            autostartDir, entry->d_name);
             continue;
         }
 

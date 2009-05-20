@@ -1,3 +1,9 @@
+Wed May 20 15:35:35 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/qemud.c src/console.c src/network_driver.c
+	  src/node_device_conf.c src/node_device_hal.c src/storage_conf.c
+	  src/util.c: cleanup of some direct stderr logging
+
 Wed May 20 15:33:27 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/pci.c: small portability patch

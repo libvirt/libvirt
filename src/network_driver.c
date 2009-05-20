@@ -56,6 +56,7 @@
 #include "uuid.h"
 #include "iptables.h"
 #include "bridge.h"
+#include "logging.h"
 
 #define NETWORK_PID_DIR LOCAL_STATE_DIR "/run/libvirt/network"
 #define NETWORK_STATE_DIR LOCAL_STATE_DIR "/lib/libvirt/network"
@@ -86,10 +87,6 @@ static void networkDriverUnlock(struct network_driver *driver)
 }
 
 static int networkShutdown(void);
-
-/* networkDebug statements should be changed to use this macro instead. */
-
-#define networkLog(level, msg...) fprintf(stderr, msg)
 
 static int networkStartNetworkDaemon(virConnectPtr conn,
                                    struct network_driver *driver,
@@ -173,10 +170,7 @@ networkAutostartConfigs(struct network_driver *driver) {
         if (driver->networks.objs[i]->autostart &&
             !virNetworkIsActive(driver->networks.objs[i]) &&
             networkStartNetworkDaemon(NULL, driver, driver->networks.objs[i]) < 0) {
-            virErrorPtr err = virGetLastError();
-            networkLog(NETWORK_ERR, _("Failed to autostart network '%s': %s\n"),
-                       driver->networks.objs[i]->def->name,
-                       err ? err->message : NULL);
+            /* failed to start but already logged */
         }
         virNetworkObjUnlock(driver->networks.objs[i]);
     }
@@ -247,8 +241,7 @@ networkStartup(void) {
     }
 
     if (!(driverState->iptables = iptablesContextNew())) {
-        virReportOOMError(NULL);
-        goto error;
+        goto out_of_memory;
     }
 
 
@@ -266,8 +259,7 @@ networkStartup(void) {
     return 0;
 
 out_of_memory:
-    networkLog (NETWORK_ERR,
-              "%s", _("networkStartup: out of memory\n"));
+    virReportOOMError(NULL);
 
 error:
     if (driverState)
@@ -296,8 +288,7 @@ networkReload(void) {
                              driverState->networkAutostartDir);
 
      if (driverState->iptables) {
-        networkLog(NETWORK_INFO,
-                 "%s", _("Reloading iptables rules\n"));
+        VIR_INFO0(_("Reloading iptables rules\n"));
         iptablesReloadRules(driverState->iptables);
     }
 
@@ -879,14 +870,14 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
  err_delbr1:
     if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
         char ebuf[1024];
-        networkLog(NETWORK_WARN, _("Failed to bring down bridge '%s' : %s\n"),
+        VIR_WARN(_("Failed to bring down bridge '%s' : %s\n"),
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 
  err_delbr:
     if ((err = brDeleteBridge(driver->brctl, network->def->bridge))) {
         char ebuf[1024];
-        networkLog(NETWORK_WARN, _("Failed to delete bridge '%s' : %s\n"),
+        VIR_WARN(_("Failed to delete bridge '%s' : %s\n"),
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 
@@ -900,7 +891,7 @@ static int networkShutdownNetworkDaemon(virConnectPtr conn,
     int err;
     char *stateFile;
 
-    networkLog(NETWORK_INFO, _("Shutting down network '%s'\n"), network->def->name);
+    VIR_INFO(_("Shutting down network '%s'\n"), network->def->name);
 
     if (!virNetworkIsActive(network))
         return 0;
@@ -919,12 +910,12 @@ static int networkShutdownNetworkDaemon(virConnectPtr conn,
 
     char ebuf[1024];
     if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
-        networkLog(NETWORK_WARN, _("Failed to bring down bridge '%s' : %s\n"),
+        VIR_WARN(_("Failed to bring down bridge '%s' : %s\n"),
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 
     if ((err = brDeleteBridge(driver->brctl, network->def->bridge))) {
-        networkLog(NETWORK_WARN, _("Failed to delete bridge '%s' : %s\n"),
+        VIR_WARN(_("Failed to delete bridge '%s' : %s\n"),
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 

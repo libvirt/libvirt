@@ -37,6 +37,7 @@
 
 #include "console.h"
 #include "internal.h"
+#include "logging.h"
 #include "util.h"
 
 /* ie  Ctrl-]  as per telnet */
@@ -72,8 +73,8 @@ int vshRunConsole(const char *tty) {
 
     /* We do not want this to become the controlling TTY */
     if ((ttyfd = open(tty, O_NOCTTY | O_RDWR)) < 0) {
-        fprintf(stderr, _("unable to open tty %s: %s\n"),
-                tty, strerror(errno));
+        VIR_ERROR(_("unable to open tty %s: %s\n"),
+                  tty, strerror(errno));
         return -1;
     }
 
@@ -83,8 +84,8 @@ int vshRunConsole(const char *tty) {
        also ensure Ctrl-C, etc is blocked, and misc
        other bits */
     if (tcgetattr(STDIN_FILENO, &ttyattr) < 0) {
-        fprintf(stderr, _("unable to get tty attributes: %s\n"),
-                strerror(errno));
+        VIR_ERROR(_("unable to get tty attributes: %s\n"),
+                  strerror(errno));
         goto closetty;
     }
 
@@ -92,8 +93,8 @@ int vshRunConsole(const char *tty) {
     cfmakeraw(&rawattr);
 
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &rawattr) < 0) {
-        fprintf(stderr, _("unable to set tty attributes: %s\n"),
-                strerror(errno));
+        VIR_ERROR(_("unable to set tty attributes: %s\n"),
+                  strerror(errno));
         goto closetty;
     }
 
@@ -127,8 +128,7 @@ int vshRunConsole(const char *tty) {
             if (errno == EINTR || errno == EAGAIN)
                 continue;
 
-            fprintf(stderr, _("failure waiting for I/O: %s\n"),
-                    strerror(errno));
+            VIR_ERROR(_("failure waiting for I/O: %s\n"), strerror(errno));
             goto cleanup;
         }
 
@@ -142,8 +142,8 @@ int vshRunConsole(const char *tty) {
                 int got, sent = 0, destfd;
 
                 if ((got = read(fds[i].fd, buf, sizeof(buf))) < 0) {
-                    fprintf(stderr, _("failure reading input: %s\n"),
-                            strerror(errno));
+                    VIR_ERROR(_("failure reading input: %s\n"),
+                              strerror(errno));
                     goto cleanup;
                 }
 
@@ -164,8 +164,8 @@ int vshRunConsole(const char *tty) {
                     int done;
                     if ((done = safewrite(destfd, buf + sent, got - sent))
                         <= 0) {
-                        fprintf(stderr, _("failure writing output: %s\n"),
-                                strerror(errno));
+                        VIR_ERROR(_("failure writing output: %s\n"),
+                                  strerror(errno));
                         goto cleanup;
                     }
                     sent += done;
