@@ -38,6 +38,11 @@
 #include "util.h"
 #include "virterror_internal.h"
 
+/* avoid compilation breakage on some systems */
+#ifndef MODPROBE
+#define MODPROBE "modprobe"
+#endif
+
 #define PCI_SYSFS "/sys/bus/pci/"
 #define PCI_ID_LEN 10   /* "XXXX XXXX" */
 #define PCI_ADDR_LEN 13 /* "XXXX:XX:XX.X" */
