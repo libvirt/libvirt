@@ -246,6 +246,11 @@ py_types = {
     'virNetwork *':  ('O', "virNetwork", "virNetworkPtr", "virNetworkPtr"),
     'const virNetwork *':  ('O', "virNetwork", "virNetworkPtr", "virNetworkPtr"),
 
+    'virInterfacePtr':  ('O', "virInterface", "virInterfacePtr", "virInterfacePtr"),
+    'const virInterfacePtr':  ('O', "virInterface", "virInterfacePtr", "virInterfacePtr"),
+    'virInterface *':  ('O', "virInterface", "virInterfacePtr", "virInterfacePtr"),
+    'const virInterface *':  ('O', "virInterface", "virInterfacePtr", "virInterfacePtr"),
+
     'virStoragePoolPtr':  ('O', "virStoragePool", "virStoragePoolPtr", "virStoragePoolPtr"),
     'const virStoragePoolPtr':  ('O', "virStoragePool", "virStoragePoolPtr", "virStoragePoolPtr"),
     'virStoragePool *':  ('O', "virStoragePool", "virStoragePoolPtr", "virStoragePoolPtr"),
@@ -289,6 +294,8 @@ skip_impl = (
     'virConnectListDefinedDomains',
     'virConnectListNetworks',
     'virConnectListDefinedNetworks',
+    'virConnectListInterfaces',
+    'virConnectListDefinedInterfaces',
     'virConnectListStoragePools',
     'virConnectListDefinedStoragePools',
     'virConnectListStorageVols',
@@ -608,6 +615,8 @@ classes_type = {
     "virDomain *": ("._o", "virDomain(self, _obj=%s)", "virDomain"),
     "virNetworkPtr": ("._o", "virNetwork(self, _obj=%s)", "virNetwork"),
     "virNetwork *": ("._o", "virNetwork(self, _obj=%s)", "virNetwork"),
+    "virInterfacePtr": ("._o", "virInterface(self, _obj=%s)", "virInterface"),
+    "virInterface *": ("._o", "virInterface(self, _obj=%s)", "virInterface"),
     "virStoragePoolPtr": ("._o", "virStoragePool(self, _obj=%s)", "virStoragePool"),
     "virStoragePool *": ("._o", "virStoragePool(self, _obj=%s)", "virStoragePool"),
     "virStorageVolPtr": ("._o", "virStorageVol(self, _obj=%s)", "virStorageVol"),
@@ -621,7 +630,8 @@ classes_type = {
 converter_type = {
 }
 
-primary_classes = ["virDomain", "virNetwork", "virStoragePool", "virStorageVol",
+primary_classes = ["virDomain", "virNetwork", "virInterface",
+                   "virStoragePool", "virStorageVol",
                    "virConnect", "virNodeDevice" ]
 
 classes_ancestor = {
@@ -629,6 +639,7 @@ classes_ancestor = {
 classes_destructors = {
     "virDomain": "virDomainFree",
     "virNetwork": "virNetworkFree",
+    "virInterface": "virInterfaceFree",
     "virStoragePool": "virStoragePoolFree",
     "virStorageVol": "virStorageVolFree",
     "virNodeDevice" : "virNodeDeviceFree"
@@ -638,6 +649,7 @@ functions_noexcept = {
     'virDomainGetID': True,
     'virDomainGetName': True,
     'virNetworkGetName': True,
+    'virInterfaceGetName': True,
     'virStoragePoolGetName': True,
     'virStorageVolGetName': True,
     'virStorageVolGetkey': True,
@@ -690,6 +702,15 @@ def nameFixup(name, classe, type, file):
     elif name[0:16] == "virNetworkLookup":
         func = name[3:]
         func = string.lower(func[0:1]) + func[1:]
+    elif name[0:18] == "virInterfaceDefine":
+        func = name[3:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:21] == "virInterfaceCreateXML":
+        func = name[3:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:18] == "virInterfaceLookup":
+        func = name[3:]
+        func = string.lower(func[0:1]) + func[1:]
     elif name[0:20] == "virStoragePoolDefine":
         func = name[3:]
         func = string.lower(func[0:1]) + func[1:]
@@ -715,6 +736,12 @@ def nameFixup(name, classe, type, file):
         func = name[13:]
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:10] == "virNetwork":
+        func = name[10:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:15] == "virInterfaceGet":
+        func = name[13:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:12] == "virInterface":
         func = name[10:]
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:17] == "virStoragePoolGet":
@@ -988,7 +1015,7 @@ def buildWrappers():
 	    else:
 		txt.write("Class %s()\n" % (classname))
 		classes.write("class %s:\n" % (classname))
-                if classname in [ "virDomain", "virNetwork", "virStoragePool", "virStorageVol", "virNodeDevice" ]:
+                if classname in [ "virDomain", "virNetwork", "virInterface", "virStoragePool", "virStorageVol", "virNodeDevice" ]:
                     classes.write("    def __init__(self, conn, _obj=None):\n")
                 else:
                     classes.write("    def __init__(self, _obj=None):\n")
@@ -996,7 +1023,7 @@ def buildWrappers():
 		    list = reference_keepers[classname]
 		    for ref in list:
 		        classes.write("        self.%s = None\n" % ref[1])
-                if classname in [ "virDomain", "virNetwork", "virNodeDevice" ]:
+                if classname in [ "virDomain", "virNetwork", "virInterface", "virNodeDevice" ]:
                     classes.write("        self._conn = conn\n")
                 elif classname in [ "virStorageVol", "virStoragePool" ]:
                     classes.write("        self._conn = conn\n" + \
@@ -1097,6 +1124,10 @@ def buildWrappers():
                                 classes.write(
 		     "        if ret is None:raise libvirtError('%s() failed', net=self)\n" %
                                               (name))
+                            elif classname == "virInterface":
+                                classes.write(
+		     "        if ret is None:raise libvirtError('%s() failed', net=self)\n" %
+                                              (name))
                             elif classname == "virStoragePool":
                                 classes.write(
 		     "        if ret is None:raise libvirtError('%s() failed', pool=self)\n" %
@@ -1177,6 +1208,10 @@ def buildWrappers():
                                 classes.write (("        if " + test +
                                                 ": raise libvirtError ('%s() failed', net=self)\n") %
                                                ("ret", name))
+                            elif classname == "virInterface":
+                                classes.write (("        if " + test +
+                                                ": raise libvirtError ('%s() failed', net=self)\n") %
+                                               ("ret", name))
                             elif classname == "virStoragePool":
                                 classes.write (("        if " + test +
                                                 ": raise libvirtError ('%s() failed', pool=self)\n") %
@@ -1212,6 +1247,10 @@ def buildWrappers():
                                                 ": raise libvirtError ('%s() failed', dom=self)\n") %
                                                ("ret", name))
                             elif classname == "virNetwork":
+                                classes.write (("        if " + test +
+                                                ": raise libvirtError ('%s() failed', net=self)\n") %
+                                               ("ret", name))
+                            elif classname == "virInterface":
                                 classes.write (("        if " + test +
                                                 ": raise libvirtError ('%s() failed', net=self)\n") %
                                                ("ret", name))

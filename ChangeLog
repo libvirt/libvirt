@@ -1,3 +1,8 @@
+Thu May 21 11:52:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* python/generator.py, python/libvirt_wrap.h, python/types.c: Add
+	rules for generating virInterface APIs in python
+
 Thu May 21 10:01:43 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/formatstorage.html[.in]: fix a error in format type example

@@ -119,6 +119,21 @@ libvirt_virNetworkPtrWrap(virNetworkPtr node)
 }
 
 PyObject *
+libvirt_virInterfacePtrWrap(virInterfacePtr node)
+{
+    PyObject *ret;
+
+    if (node == NULL) {
+        Py_INCREF(Py_None);
+        return (Py_None);
+    }
+    ret =
+        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virInterfacePtr",
+                                     NULL);
+    return (ret);
+}
+
+PyObject *
 libvirt_virStoragePoolPtrWrap(virStoragePoolPtr node)
 {
     PyObject *ret;
