@@ -46,6 +46,9 @@ extern int xenRegister (void);
 
 #define MIN_XEN_GUEST_SIZE 64  /* 64 megabytes */
 
+#define XEN_CONFIG_FORMAT_XM    "xen-xm"
+#define XEN_CONFIG_FORMAT_SEXPR "xen-sxpr"
+
 /* _xenUnifiedDriver:
  *
  * Entry points into the underlying Xen drivers.  This structure

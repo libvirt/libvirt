@@ -1043,6 +1043,97 @@ xenUnifiedDomainDumpXML (virDomainPtr dom, int flags)
     return NULL;
 }
 
+
+static char *
+xenUnifiedDomainXMLFromNative(virConnectPtr conn,
+                              const char *format,
+                              const char *config,
+                              unsigned int flags ATTRIBUTE_UNUSED)
+{
+    virDomainDefPtr def = NULL;
+    char *ret = NULL;
+    virConfPtr conf = NULL;
+    GET_PRIVATE(conn);
+
+    if (STRNEQ(format, XEN_CONFIG_FORMAT_XM) &&
+        STRNEQ(format, XEN_CONFIG_FORMAT_SEXPR)) {
+        xenUnifiedError(conn, VIR_ERR_INVALID_ARG,
+                        _("unsupported config type %s"), format);
+        return NULL;
+    }
+
+    if (STREQ(format, XEN_CONFIG_FORMAT_XM)) {
+        conf = virConfReadMem(config, strlen(config));
+        if (!conf)
+            goto cleanup;
+
+        def = xenXMDomainConfigParse(conn, conf);
+    } else if (STREQ(format, XEN_CONFIG_FORMAT_SEXPR)) {
+        def = xenDaemonParseSxprString(conn, config, priv->xendConfigVersion);
+    }
+    if (!def)
+        goto cleanup;
+
+    ret = virDomainDefFormat(conn, def, 0);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
+}
+
+
+#define MAX_CONFIG_SIZE (1024 * 65)
+static char *
+xenUnifiedDomainXMLToNative(virConnectPtr conn,
+                            const char *format,
+                            const char *xmlData,
+                            unsigned int flags ATTRIBUTE_UNUSED)
+{
+    virDomainDefPtr def = NULL;
+    char *ret = NULL;
+    virConfPtr conf = NULL;
+    GET_PRIVATE(conn);
+
+    if (STRNEQ(format, XEN_CONFIG_FORMAT_XM) &&
+        STRNEQ(format, XEN_CONFIG_FORMAT_SEXPR)) {
+        xenUnifiedError(conn, VIR_ERR_INVALID_ARG,
+                        _("unsupported config type %s"), format);
+        goto cleanup;
+    }
+
+    if (!(def = virDomainDefParseString(conn,
+                                        priv->caps,
+                                        xmlData,
+                                        0)))
+        goto cleanup;
+
+    if (STREQ(format, XEN_CONFIG_FORMAT_XM)) {
+        int len = MAX_CONFIG_SIZE;
+        conf = xenXMDomainConfigFormat(conn, def);
+        if (!conf)
+            goto cleanup;
+
+        if (VIR_ALLOC_N(ret, len) < 0) {
+            virReportOOMError(conn);
+            goto cleanup;
+        }
+
+        if (virConfWriteMem(ret, &len, conf) < 0) {
+            VIR_FREE(ret);
+            goto cleanup;
+        }
+    } else if (STREQ(format, XEN_CONFIG_FORMAT_SEXPR)) {
+        ret = xenDaemonFormatSxpr(conn, def, priv->xendConfigVersion);
+    }
+
+cleanup:
+    virDomainDefFree(def);
+    if (conf)
+        virConfFree(conf);
+    return ret;
+}
+
+
 static int
 xenUnifiedDomainMigratePrepare (virConnectPtr dconn,
                                 char **cookie,
@@ -1580,8 +1671,8 @@ static virDriver xenUnifiedDriver = {
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
     xenUnifiedDomainDumpXML, /* domainDumpXML */
-    NULL, /* domainXmlFromNative */
-    NULL, /* domainXmlToNative */
+    xenUnifiedDomainXMLFromNative, /* domainXmlFromNative */
+    xenUnifiedDomainXMLToNative, /* domainXmlToNative */
     xenUnifiedListDefinedDomains, /* listDefinedDomains */
     xenUnifiedNumOfDefinedDomains, /* numOfDefinedDomains */
     xenUnifiedDomainCreate, /* domainCreate */

@@ -106,6 +106,9 @@ struct _qemudDomainStatus {
 #define QEMUD_MIGRATION_FIRST_PORT 49152
 #define QEMUD_MIGRATION_NUM_PORTS 64
 
+/* Config type for XML import/export conversions */
+#define QEMU_CONFIG_FORMAT_ARGV "qemu-argv"
+
 #define qemudReportError(conn, dom, net, code, fmt...)                       \
         virReportErrorHelper(conn, VIR_FROM_QEMU, code, __FILE__,          \
                                __FUNCTION__, __LINE__, fmt)

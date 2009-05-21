@@ -1,3 +1,11 @@
+Thu May 21 14:59:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Basic domain XML conversions
+	* src/qemu_conf.c, src/qemu_conf.h, src/qemu_driver.c: Wire up
+	API for conversion from XML to native argv
+	* src/xen_unified.c, src/xen_unified.h: Wire up API for domain
+	XML conversions to & from native
+
 Thu May 21 14:48:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Remote protocol support for domain XML conversion APIs

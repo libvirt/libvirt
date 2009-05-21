@@ -3422,6 +3422,133 @@ cleanup:
 }
 
 
+static char *qemuDomainXMLToNative(virConnectPtr conn,
+                                   const char *format,
+                                   const char *xmlData,
+                                   unsigned int flags ATTRIBUTE_UNUSED) {
+    struct qemud_driver *driver = conn->privateData;
+    virDomainDefPtr def = NULL;
+    const char *emulator;
+    unsigned int qemuCmdFlags;
+    struct stat sb;
+    const char **retargv = NULL;
+    const char **retenv = NULL;
+    const char **tmp;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *ret = NULL;
+    int i;
+
+    if (STRNEQ(format, QEMU_CONFIG_FORMAT_ARGV)) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INVALID_ARG,
+                         _("unsupported config type %s"), format);
+        goto cleanup;
+    }
+
+    def = virDomainDefParseString(conn, driver->caps, xmlData, 0);
+    if (!def)
+        goto cleanup;
+
+    /* Since we're just exporting args, we can't do bridge/network
+     * setups, since libvirt will normally create TAP devices
+     * directly. We convert those configs into generic 'ethernet'
+     * config and assume the user has suitable 'ifup-qemu' scripts
+     */
+    for (i = 0 ; i < def->nnets ; i++) {
+        virDomainNetDefPtr net = def->nets[i];
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            VIR_FREE(net->data.network.name);
+
+            memset(net, 0, sizeof *net);
+
+            net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+            net->data.ethernet.dev = NULL;
+            net->data.ethernet.script = NULL;
+            net->data.ethernet.ipaddr = NULL;
+        } else if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+            char *brname = net->data.bridge.brname;
+            char *script = net->data.bridge.script;
+            char *ipaddr = net->data.bridge.ipaddr;
+
+            memset(net, 0, sizeof *net);
+
+            net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+            net->data.ethernet.dev = brname;
+            net->data.ethernet.script = script;
+            net->data.ethernet.ipaddr = ipaddr;
+        }
+    }
+    for (i = 0 ; i < def->ngraphics ; i++) {
+        if (def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+            def->graphics[i]->data.vnc.autoport)
+            def->graphics[i]->data.vnc.port = 5900;
+    }
+    emulator = def->emulator;
+    if (!emulator)
+        emulator = virDomainDefDefaultEmulator(conn, def, driver->caps);
+    if (!emulator)
+        goto cleanup;
+
+    /* Make sure the binary we are about to try exec'ing exists.
+     * Technically we could catch the exec() failure, but that's
+     * in a sub-process so its hard to feed back a useful error
+     */
+    if (stat(emulator, &sb) < 0) {
+        virReportSystemError(conn, errno,
+                             _("Cannot find QEMU binary %s"),
+                             emulator);
+        goto cleanup;
+    }
+
+    if (qemudExtractVersionInfo(emulator,
+                                NULL,
+                                &qemuCmdFlags) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Cannot determine QEMU argv syntax %s"),
+                         emulator);
+        goto cleanup;
+    }
+
+
+    if (qemudBuildCommandLine(conn, driver, def,
+                              qemuCmdFlags,
+                              &retargv, &retenv,
+                              NULL, NULL, /* Don't want it to create TAP devices */
+                              NULL) < 0) {
+        goto cleanup;
+    }
+
+    tmp = retenv;
+    while (*tmp) {
+        virBufferAdd(&buf, *tmp, strlen(*tmp));
+        virBufferAddLit(&buf, " ");
+        tmp++;
+    }
+    tmp = retargv;
+    while (*tmp) {
+        virBufferAdd(&buf, *tmp, strlen(*tmp));
+        virBufferAddLit(&buf, " ");
+        tmp++;
+    }
+
+    if (virBufferError(&buf))
+        goto cleanup;
+
+    ret = virBufferContentAndReset(&buf);
+
+cleanup:
+    for (tmp = retargv ; tmp && *tmp ; tmp++)
+        VIR_FREE(*tmp);
+    VIR_FREE(retargv);
+
+    for (tmp = retenv ; tmp && *tmp ; tmp++)
+        VIR_FREE(*tmp);
+    VIR_FREE(retenv);
+
+    virDomainDefFree(def);
+    return ret;
+}
+
+
 static int qemudListDefinedDomains(virConnectPtr conn,
                             char **const names, int nnames) {
     struct qemud_driver *driver = conn->privateData;
@@ -5225,7 +5352,7 @@ static virDriver qemuDriver = {
     qemudNodeGetSecurityModel, /* nodeGetSecurityModel */
     qemudDomainDumpXML, /* domainDumpXML */
     NULL, /* domainXmlFromNative */
-    NULL, /* domainXmlToNative */
+    qemuDomainXMLToNative, /* domainXMLToNative */
     qemudListDefinedDomains, /* listDefinedDomains */
     qemudNumDefinedDomains, /* numOfDefinedDomains */
     qemudDomainStart, /* domainCreate */

@@ -1251,21 +1251,18 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             case VIR_DOMAIN_NET_TYPE_ETHERNET:
                 {
-                    char arg[PATH_MAX];
-                    if (net->ifname) {
-                        if (snprintf(arg, PATH_MAX-1, "tap,ifname=%s,script=%s,vlan=%d",
-                                     net->ifname,
-                                     net->data.ethernet.script,
-                                     vlan) >= (PATH_MAX-1))
-                            goto error;
-                    } else {
-                        if (snprintf(arg, PATH_MAX-1, "tap,script=%s,vlan=%d",
-                                     net->data.ethernet.script,
-                                     vlan) >= (PATH_MAX-1))
-                            goto error;
-                    }
+                    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-                    ADD_ARG_LIT(arg);
+                    virBufferAddLit(&buf, "tap");
+                    if (net->ifname)
+                        virBufferVSprintf(&buf, ",ifname=%s", net->ifname);
+                    if (net->data.ethernet.script)
+                        virBufferVSprintf(&buf, ",script=%s", net->data.ethernet.script);
+                    virBufferVSprintf(&buf, ",vlan=%d", vlan);
+                    if (virBufferError(&buf))
+                        goto error;
+
+                    ADD_ARG(virBufferContentAndReset(&buf));
                 }
                 break;
 
