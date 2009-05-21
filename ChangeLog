@@ -1,3 +1,7 @@
+Thu May 21 15:15:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/domain_conf.h, src/vbox/vbox_tmp.c: Fix typo s/ES97/AC97/
+
 Thu May 21 14:59:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Basic domain XML conversions

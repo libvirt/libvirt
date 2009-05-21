@@ -1878,7 +1878,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                 if (audioController == AudioControllerType_SB16) {
                                     def->sounds[0]->model = VIR_DOMAIN_SOUND_MODEL_SB16;
                                 } else if (audioController == AudioControllerType_AC97) {
-                                    def->sounds[0]->model = VIR_DOMAIN_SOUND_MODEL_ES97;
+                                    def->sounds[0]->model = VIR_DOMAIN_SOUND_MODEL_AC97;
                                 }
                             } else {
                                 VIR_FREE(def->sounds);
@@ -2934,7 +2934,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                     if (NS_SUCCEEDED(rc)) {
                         if (def->sounds[0]->model == VIR_DOMAIN_SOUND_MODEL_SB16) {
                             audioAdapter->vtbl->SetAudioController(audioAdapter, AudioControllerType_SB16);
-                        } else if (def->sounds[0]->model == VIR_DOMAIN_SOUND_MODEL_ES97) {
+                        } else if (def->sounds[0]->model == VIR_DOMAIN_SOUND_MODEL_AC97) {
                             audioAdapter->vtbl->SetAudioController(audioAdapter, AudioControllerType_AC97);
                         }
                     }
