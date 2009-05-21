@@ -1,3 +1,8 @@
+Thu May 21 10:01:43 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/formatstorage.html[.in]: fix a error in format type example
+	  pointed out by Ryota Ozaki
+
 Wed May 20 16:23:10 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in include/libvirt/libvirt.h[.in]
