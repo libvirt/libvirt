@@ -1,5 +1,5 @@
 /*
- * config.h: VM configuration management
+ * qemu_conf.h: QEMU configuration management
  *
  * Copyright (C) 2006, 2007, 2009 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
@@ -134,6 +134,12 @@ int         qemudBuildCommandLine       (virConnectPtr conn,
                                          int **tapfds,
                                          int *ntapfds,
                                          const char *migrateFrom);
+
+virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
+                                     const char **progenv,
+                                     const char **progargv);
+virDomainDefPtr qemuParseCommandLineString(virConnectPtr conn,
+                                           const char *args);
 
 const char *qemudVirtTypeToString       (int type);
 qemudDomainStatusPtr qemudDomainStatusParseFile(virConnectPtr conn,

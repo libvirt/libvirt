@@ -3422,6 +3422,30 @@ cleanup:
 }
 
 
+static char *qemuDomainXMLFromNative(virConnectPtr conn,
+                                     const char *format,
+                                     const char *config,
+                                     unsigned int flags ATTRIBUTE_UNUSED) {
+    virDomainDefPtr def = NULL;
+    char *xml = NULL;
+
+    if (STRNEQ(format, QEMU_CONFIG_FORMAT_ARGV)) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INVALID_ARG,
+                         _("unsupported config type %s"), format);
+        goto cleanup;
+    }
+
+    def = qemuParseCommandLineString(conn, config);
+    if (!def)
+        goto cleanup;
+
+    xml = virDomainDefFormat(conn, def, VIR_DOMAIN_XML_INACTIVE);
+
+cleanup:
+    virDomainDefFree(def);
+    return xml;
+}
+
 static char *qemuDomainXMLToNative(virConnectPtr conn,
                                    const char *format,
                                    const char *xmlData,
@@ -3437,6 +3461,8 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *ret = NULL;
     int i;
+
+    qemuDriverLock(driver);
 
     if (STRNEQ(format, QEMU_CONFIG_FORMAT_ARGV)) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INVALID_ARG,
@@ -3536,6 +3562,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     ret = virBufferContentAndReset(&buf);
 
 cleanup:
+    qemuDriverUnlock(driver);
     for (tmp = retargv ; tmp && *tmp ; tmp++)
         VIR_FREE(*tmp);
     VIR_FREE(retargv);
@@ -5351,7 +5378,7 @@ static virDriver qemuDriver = {
     qemudDomainGetSecurityLabel, /* domainGetSecurityLabel */
     qemudNodeGetSecurityModel, /* nodeGetSecurityModel */
     qemudDomainDumpXML, /* domainDumpXML */
-    NULL, /* domainXmlFromNative */
+    qemuDomainXMLFromNative, /* domainXmlFromNative */
     qemuDomainXMLToNative, /* domainXMLToNative */
     qemudListDefinedDomains, /* listDefinedDomains */
     qemudNumDefinedDomains, /* numOfDefinedDomains */

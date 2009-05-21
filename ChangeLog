@@ -1,3 +1,9 @@
+Thu May 21 15:16:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c, src/qemu_conf.c, src/qemu_conf.h: Add new
+	APIs for converting from QEMU argv into domain XML, and use for
+	domain XML conversion APIs.
+
 Thu May 21 15:15:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/domain_conf.h, src/vbox/vbox_tmp.c: Fix typo s/ES97/AC97/
