@@ -2,12 +2,14 @@
   <body>
     <h1>Xen hypervisor driver</h1>
 
+    <ul id="toc"></ul>
+
     <p>
       The libvirt Xen driver provides the ability to manage virtual machines
       on any Xen release from 3.0.1 onwards.
     </p>
 
-    <h2>Deployment pre-requisites</h2>
+    <h2><a name="prereq">Deployment pre-requisites</a></h2>
 
     <p>
       The libvirt Xen driver uses a combination of channels to manage Xen
@@ -44,7 +46,7 @@
       </li>
     </ul>
 
-    <h2>Connections to Xen driver</h2>
+    <h2><a name="uri">Connections to Xen driver</a></h2>
 
     <p>
     The libvirt Xen driver is a single-instance privileged driver,
@@ -60,6 +62,89 @@
     xen+ssh://root@example.com/    (remote access, SSH tunnelled)
     </pre>
 
+    <h2><a name="imex">Import and export of libvirt domain XML configs</a></h2>
+
+    <p>The Xen driver currently supports two native
+      config formats. The first known as <code>xen-xm</code> is the format
+      used by the XM tool for files in <code>/etc/xen</code>. The second
+      known as <code>xen-sxpr</code>, is the format used for interacting
+      with the XenD's legacy HTTP RPC service.</p>
+
+    <h3><a name="xmlimport">Converting from XM config files to domain XML</a></h3>
+
+    <p>
+      The <code>virsh domxml-from-native</code> provides a way to convert an
+      existing set of XM config files into a guest description using libvirt Domain XML
+      that can then be used by libvirt.
+    </p>
+
+    <pre>$ virsh -c xen:/// domxml-from-native xen-xm rhel5.cfg
+&lt;domain type='xen'&gt;
+  &lt;name&gt;rhel5pv&lt;/name&gt;
+  &lt;uuid&gt;8f07fe28-753f-2729-d76d-bdbd892f949a&lt;/uuid&gt;
+  &lt;memory&gt;2560000&lt;/memory&gt;
+  &lt;currentMemory&gt;307200&lt;/currentMemory&gt;
+  &lt;vcpu&gt;4&lt;/vcpu&gt;
+  &lt;bootloader&gt;/usr/bin/pygrub&lt;/bootloader&gt;
+  &lt;os&gt;
+    &lt;type arch='x86_64' machine='xenpv'&gt;linux&lt;/type&gt;
+  &lt;/os&gt;
+  &lt;clock offset='utc'/&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_crash&gt;restart&lt;/on_crash&gt;
+  &lt;devices&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;driver name='tap' type='aio'/&gt;
+      &lt;source file='/var/lib/xen/images/rhel5pv.img'/&gt;
+      &lt;target dev='xvda' bus='xen'/&gt;
+    &lt;/disk&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;driver name='tap' type='qcow'/&gt;
+      &lt;source file='/root/qcow1-xen.img'/&gt;
+      &lt;target dev='xvdd' bus='xen'/&gt;
+    &lt;/disk&gt;
+    &lt;interface type='bridge'&gt;
+      &lt;mac address='00:16:3e:60:36:ba'/&gt;
+      &lt;source bridge='xenbr0'/&gt;
+    &lt;/interface&gt;
+    &lt;console type='pty'&gt;
+      &lt;target port='0'/&gt;
+    &lt;/console&gt;
+    &lt;input type='mouse' bus='xen'/&gt;
+    &lt;graphics type='vnc' port='-1' autoport='yes' listen='0.0.0.0'/&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;
+    </pre>
+
+    <h3><a name="xmlexport">Converting from domain XML to XM config files</a></h3>
+
+    <p>
+      The <code>virsh domxml-to-native</code> provides a way to convert a
+      guest description using libvirt Domain XML, into the XM config file
+      format.
+    </p>
+
+    <pre># virsh  -c xen:/// domxml-to-native xen-xm rhel5pv.xml
+name = "rhel5pv"
+uuid = "8f07fe28-753f-2729-d76d-bdbd892f949a"
+maxmem = 2500
+memory = 300
+vcpus = 4
+bootloader = "/usr/bin/pygrub"
+kernel = "/var/lib/xen/boot_kernel.0YK-cS"
+ramdisk = "/var/lib/xen/boot_ramdisk.vWgrxK"
+extra = "ro root=/dev/VolGroup00/LogVol00 rhgb quiet"
+on_poweroff = "destroy"
+on_reboot = "restart"
+on_crash = "restart"
+sdl = 0
+vnc = 1
+vncunused = 1
+vnclisten = "0.0.0.0"
+disk = [ "tap:aio:/var/lib/xen/images/rhel5pv.img,xvda,w", "tap:qcow:/root/qcow1-xen.img,xvdd,w" ]
+vif = [ "mac=00:16:3e:60:36:ba,bridge=virbr0,script=vif-bridge,vifname=vif5.0" ]
+    </pre>
 
     <h2><a name="xmlconfig">Example domain XML config</a></h2>
 

@@ -2,13 +2,15 @@
   <body>
     <h1>QEMU/KVM hypervisor driver</h1>
 
+    <ul id="toc"></ul>
+
     <p>
       The libvirt QEMU driver can manage any QEMU emulator from version 0.8.1
       or later. It can also manage anything that provides the same QEMU command
       line syntax and monitor interaction. This includes KVM, and Xenner.
     </p>
 
-    <h2>Deployment pre-requisites</h2>
+    <h2><a name="prereq">Deployment pre-requisites</a></h2>
 
     <ul>
       <li>
@@ -32,7 +34,7 @@
       </li>
     </ul>
 
-    <h2>Connections to QEMU driver</h2>
+    <h2><a name="uris">Connections to QEMU driver</a></h2>
 
     <p>
     The libvirt QEMU driver is a multi-instance driver, providing a single
@@ -50,6 +52,96 @@
     qemu://example.com/system            (remote access, TLS/x509)
     qemu+tcp://example.com/system        (remote access, SASl/Kerberos)
     qemu+ssh://root@example.com/system   (remote access, SSH tunnelled)
+    </pre>
+
+    <h2><a name="imex">Import and export of libvirt domain XML configs</a></h2>
+
+    <p>The QEMU driver currently supports a single native
+      config format known as <code>qemu-argv</code>. The data for this format
+      is expected to be a single line first a list of environment variables,
+      then the QEMu binary name, finally followed by the QEMU command line
+      arguments</p>
+
+    <h3><a name="xmlimport">Converting from QEMU args to domain XML</a></h3>
+
+    <p>
+      The <code>virsh domxml-from-native</code> provides a way to convert an
+      existing set of QEMU args into a guest description using libvirt Domain XML
+      that can then be used by libvirt.
+    </p>
+
+    <pre>$ cat &gt; demo.args &lt;&lt;EOF
+LC_ALL=C PATH=/bin HOME=/home/test USER=test \
+LOGNAME=test /usr/bin/qemu -S -M pc -m 214 -smp 1 \
+-nographic -monitor pty -no-acpi -boot c -hda \
+/dev/HostVG/QEMUGuest1 -net none -serial none \
+-parallel none -usb
+EOF
+$ virsh domxml-from-native qemu-argv demo.args
+&lt;domain type='qemu'&gt;
+  &lt;uuid&gt;00000000-0000-0000-0000-000000000000&lt;/uuid&gt;
+  &lt;memory&gt;219136&lt;/memory&gt;
+  &lt;currentMemory&gt;219136&lt;/currentMemory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;os&gt;
+    &lt;type arch='i686' machine='pc'&gt;hvm&lt;/type&gt;
+    &lt;boot dev='hd'/&gt;
+  &lt;/os&gt;
+  &lt;clock offset='utc'/&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_crash&gt;destroy&lt;/on_crash&gt;
+  &lt;devices&gt;
+    &lt;emulator&gt;/usr/bin/qemu&lt;/emulator&gt;
+    &lt;disk type='block' device='disk'&gt;
+      &lt;source dev='/dev/HostVG/QEMUGuest1'/&gt;
+      &lt;target dev='hda' bus='ide'/&gt;
+    &lt;/disk&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;
+    </pre>
+
+    <p>NB, don't include the literral \ in the args, put everything on one line</p>
+
+    <h3><a name="xmlexport">Converting from domain XML to QEMU args</a></h3>
+
+    <p>
+      The <code>virsh domxml-to-native</code> provides a way to convert a
+      guest description using libvirt Domain XML, into a set of QEMU args
+      that can be run manually.
+    </p>
+
+    <pre>$ cat &gt; demo.xml &lt;&lt;EOF
+&lt;domain type='qemu'&gt;
+  &lt;name&gt;QEMUGuest1&lt;/name&gt;
+  &lt;uuid&gt;c7a5fdbd-edaf-9455-926a-d65c16db1809&lt;/uuid&gt;
+  &lt;memory&gt;219200&lt;/memory&gt;
+  &lt;currentMemory&gt;219200&lt;/currentMemory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;os&gt;
+    &lt;type arch='i686' machine='pc'&gt;hvm&lt;/type&gt;
+    &lt;boot dev='hd'/&gt;
+  &lt;/os&gt;
+  &lt;clock offset='utc'/&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_crash&gt;destroy&lt;/on_crash&gt;
+  &lt;devices&gt;
+    &lt;emulator&gt;/usr/bin/qemu&lt;/emulator&gt;
+    &lt;disk type='block' device='disk'&gt;
+      &lt;source dev='/dev/HostVG/QEMUGuest1'/&gt;
+      &lt;target dev='hda' bus='ide'/&gt;
+    &lt;/disk&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;
+EOF
+$ virsh domxml-to-native qemu-argv demo.xml
+  LC_ALL=C PATH=/usr/bin:/bin HOME=/home/test \
+  USER=test LOGNAME=test /usr/bin/qemu -S -M pc \
+  -no-kqemu -m 214 -smp 1 -name QEMUGuest1 -nographic \
+  -monitor pty -no-acpi -boot c -drive \
+  file=/dev/HostVG/QEMUGuest1,if=ide,index=0 -net none \
+  -serial none -parallel none -usb
     </pre>
 
     <h2><a name="xmlconfig">Example domain XML config</a></h2>
