@@ -1384,6 +1384,30 @@ struct remote_domain_event_ret {
         int detail;
 };
 typedef struct remote_domain_event_ret remote_domain_event_ret;
+
+struct remote_domain_xml_from_native_args {
+        remote_nonnull_string nativeFormat;
+        remote_nonnull_string nativeConfig;
+        u_int flags;
+};
+typedef struct remote_domain_xml_from_native_args remote_domain_xml_from_native_args;
+
+struct remote_domain_xml_from_native_ret {
+        remote_nonnull_string domainXml;
+};
+typedef struct remote_domain_xml_from_native_ret remote_domain_xml_from_native_ret;
+
+struct remote_domain_xml_to_native_args {
+        remote_nonnull_string nativeFormat;
+        remote_nonnull_string domainXml;
+        u_int flags;
+};
+typedef struct remote_domain_xml_to_native_args remote_domain_xml_to_native_args;
+
+struct remote_domain_xml_to_native_ret {
+        remote_nonnull_string nativeConfig;
+};
+typedef struct remote_domain_xml_to_native_ret remote_domain_xml_to_native_ret;
 #define REMOTE_PROGRAM 0x20008086
 #define REMOTE_PROTOCOL_VERSION 1
 
@@ -1522,6 +1546,8 @@ enum remote_procedure {
         REMOTE_PROC_INTERFACE_UNDEFINE = 132,
         REMOTE_PROC_INTERFACE_CREATE = 133,
         REMOTE_PROC_INTERFACE_DESTROY = 134,
+        REMOTE_PROC_DOMAIN_XML_FROM_NATIVE = 135,
+        REMOTE_PROC_DOMAIN_XML_TO_NATIVE = 136,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -1777,6 +1803,10 @@ extern  bool_t xdr_remote_node_device_destroy_args (XDR *, remote_node_device_de
 extern  bool_t xdr_remote_domain_events_register_ret (XDR *, remote_domain_events_register_ret*);
 extern  bool_t xdr_remote_domain_events_deregister_ret (XDR *, remote_domain_events_deregister_ret*);
 extern  bool_t xdr_remote_domain_event_ret (XDR *, remote_domain_event_ret*);
+extern  bool_t xdr_remote_domain_xml_from_native_args (XDR *, remote_domain_xml_from_native_args*);
+extern  bool_t xdr_remote_domain_xml_from_native_ret (XDR *, remote_domain_xml_from_native_ret*);
+extern  bool_t xdr_remote_domain_xml_to_native_args (XDR *, remote_domain_xml_to_native_args*);
+extern  bool_t xdr_remote_domain_xml_to_native_ret (XDR *, remote_domain_xml_to_native_ret*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_direction (XDR *, remote_message_direction*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
@@ -2008,6 +2038,10 @@ extern bool_t xdr_remote_node_device_destroy_args ();
 extern bool_t xdr_remote_domain_events_register_ret ();
 extern bool_t xdr_remote_domain_events_deregister_ret ();
 extern bool_t xdr_remote_domain_event_ret ();
+extern bool_t xdr_remote_domain_xml_from_native_args ();
+extern bool_t xdr_remote_domain_xml_from_native_ret ();
+extern bool_t xdr_remote_domain_xml_to_native_args ();
+extern bool_t xdr_remote_domain_xml_to_native_ret ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_direction ();
 extern bool_t xdr_remote_message_status ();

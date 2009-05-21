@@ -677,3 +677,13 @@
     .args_filter = (xdrproc_t) xdr_remote_interface_destroy_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
+{   /* DomainXmlFromNative => 135 */
+    .fn = (dispatch_fn) remoteDispatchDomainXmlFromNative,
+    .args_filter = (xdrproc_t) xdr_remote_domain_xml_from_native_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_xml_from_native_ret,
+},
+{   /* DomainXmlToNative => 136 */
+    .fn = (dispatch_fn) remoteDispatchDomainXmlToNative,
+    .args_filter = (xdrproc_t) xdr_remote_domain_xml_to_native_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_xml_to_native_ret,
+},

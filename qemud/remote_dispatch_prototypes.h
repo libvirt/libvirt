@@ -359,6 +359,20 @@ static int remoteDispatchDomainUndefine(
     remote_error *err,
     remote_domain_undefine_args *args,
     void *ret);
+static int remoteDispatchDomainXmlFromNative(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_domain_xml_from_native_args *args,
+    remote_domain_xml_from_native_ret *ret);
+static int remoteDispatchDomainXmlToNative(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_domain_xml_to_native_args *args,
+    remote_domain_xml_to_native_ret *ret);
 static int remoteDispatchFindStoragePoolSources(
     struct qemud_server *server,
     struct qemud_client *client,

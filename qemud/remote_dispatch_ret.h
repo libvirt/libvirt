@@ -96,3 +96,5 @@
     remote_interface_lookup_by_mac_string_ret val_remote_interface_lookup_by_mac_string_ret;
     remote_interface_get_xml_desc_ret val_remote_interface_get_xml_desc_ret;
     remote_interface_define_xml_ret val_remote_interface_define_xml_ret;
+    remote_domain_xml_from_native_ret val_remote_domain_xml_from_native_ret;
+    remote_domain_xml_to_native_ret val_remote_domain_xml_to_native_ret;

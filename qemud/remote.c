@@ -1240,6 +1240,47 @@ remoteDispatchDomainDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 static int
+remoteDispatchDomainXmlFromNative (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn,
+                                   remote_error *rerr,
+                                   remote_domain_xml_from_native_args *args,
+                                   remote_domain_xml_from_native_ret *ret)
+{
+    /* remoteDispatchClientRequest will free this. */
+    ret->domainXml = virConnectDomainXMLFromNative (conn,
+                                                    args->nativeFormat,
+                                                    args->nativeConfig,
+                                                    args->flags);
+    if (!ret->domainXml) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+    return 0;
+}
+
+static int
+remoteDispatchDomainXmlToNative (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
+                                 remote_error *rerr,
+                                 remote_domain_xml_to_native_args *args,
+                                 remote_domain_xml_to_native_ret *ret)
+{
+    /* remoteDispatchClientRequest will free this. */
+    ret->nativeConfig = virConnectDomainXMLToNative (conn,
+                                                     args->nativeFormat,
+                                                     args->domainXml,
+                                                     args->flags);
+    if (!ret->nativeConfig) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+    return 0;
+}
+
+
+static int
 remoteDispatchDomainGetAutostart (struct qemud_server *server ATTRIBUTE_UNUSED,
                                   struct qemud_client *client ATTRIBUTE_UNUSED,
                                   virConnectPtr conn,

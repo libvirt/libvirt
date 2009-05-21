@@ -2404,6 +2404,68 @@ done:
     return rv;
 }
 
+static char *
+remoteDomainXMLFromNative (virConnectPtr conn,
+                           const char *format,
+                           const char *config,
+                           unsigned int flags)
+{
+    char *rv = NULL;
+    remote_domain_xml_from_native_args args;
+    remote_domain_xml_from_native_ret ret;
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.nativeFormat = (char *)format;
+    args.nativeConfig = (char *)config;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_XML_FROM_NATIVE,
+              (xdrproc_t) xdr_remote_domain_xml_from_native_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_xml_from_native_ret, (char *) &ret) == -1)
+        goto done;
+
+    /* Caller frees. */
+    rv = ret.domainXml;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static char *
+remoteDomainXMLToNative (virConnectPtr conn,
+                         const char *format,
+                         const char *xml,
+                         unsigned int flags)
+{
+    char *rv = NULL;
+    remote_domain_xml_to_native_args args;
+    remote_domain_xml_to_native_ret ret;
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.nativeFormat = (char *)format;
+    args.domainXml = (char *)xml;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_XML_TO_NATIVE,
+              (xdrproc_t) xdr_remote_domain_xml_to_native_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_xml_to_native_ret, (char *) &ret) == -1)
+        goto done;
+
+    /* Caller frees. */
+    rv = ret.nativeConfig;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 static int
 remoteDomainMigratePrepare (virConnectPtr dconn,
                             char **cookie, int *cookielen,
@@ -7301,8 +7363,8 @@ static virDriver driver = {
     remoteDomainGetSecurityLabel, /* domainGetSecurityLabel */
     remoteNodeGetSecurityModel, /* nodeGetSecurityModel */
     remoteDomainDumpXML, /* domainDumpXML */
-    NULL, /* domainXmlFromNative */
-    NULL, /* domainXmlToNative */
+    remoteDomainXMLFromNative, /* domainXMLFromNative */
+    remoteDomainXMLToNative, /* domainXMLToNative */
     remoteListDefinedDomains, /* listDefinedDomains */
     remoteNumOfDefinedDomains, /* numOfDefinedDomains */
     remoteDomainCreate, /* domainCreate */

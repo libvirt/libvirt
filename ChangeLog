@@ -1,3 +1,14 @@
+Thu May 21 14:48:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Remote protocol support for domain XML conversion APIs
+	* qemud/remote.c: Handlers for new RPC messages
+	* qemud/remote_dispatch_*.h, qemud/remote_protocol.c,
+	qemud/remote_protocol.h: Re-generate for new RPC calls
+	* qemud/remote_protocol.x: Add domain XML conversion APIs
+	* src/remote_internal.c: Client for domain XML conversion
+	APIs
+
+
 Thu May 21 14:32:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Public APIs for domain XML conversions.

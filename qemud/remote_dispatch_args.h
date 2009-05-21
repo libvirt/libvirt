@@ -114,3 +114,5 @@
     remote_interface_undefine_args val_remote_interface_undefine_args;
     remote_interface_create_args val_remote_interface_create_args;
     remote_interface_destroy_args val_remote_interface_destroy_args;
+    remote_domain_xml_from_native_args val_remote_domain_xml_from_native_args;
+    remote_domain_xml_to_native_args val_remote_domain_xml_to_native_args;

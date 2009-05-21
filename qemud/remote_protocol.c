@@ -2461,6 +2461,50 @@ xdr_remote_domain_event_ret (XDR *xdrs, remote_domain_event_ret *objp)
 }
 
 bool_t
+xdr_remote_domain_xml_from_native_args (XDR *xdrs, remote_domain_xml_from_native_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->nativeFormat))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->nativeConfig))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_xml_from_native_ret (XDR *xdrs, remote_domain_xml_from_native_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->domainXml))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_xml_to_native_args (XDR *xdrs, remote_domain_xml_to_native_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->nativeFormat))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->domainXml))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_xml_to_native_ret (XDR *xdrs, remote_domain_xml_to_native_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->nativeConfig))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 
