@@ -591,6 +591,16 @@ typedef enum {
 char *                  virDomainGetXMLDesc     (virDomainPtr domain,
                                                  int flags);
 
+
+char *                  virConnectDomainXMLFromNative(virConnectPtr conn,
+                                                      const char *nativeFormat,
+                                                      const char *nativeConfig,
+                                                      unsigned int flags);
+char *                  virConnectDomainXMLToNative(virConnectPtr conn,
+                                                    const char *nativeFormat,
+                                                    const char *domainXml,
+                                                    unsigned int flags);
+
 int                     virDomainBlockStats     (virDomainPtr dom,
                                                  const char *path,
                                                  virDomainBlockStatsPtr stats,

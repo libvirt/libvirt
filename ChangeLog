@@ -1,3 +1,18 @@
+Thu May 21 14:32:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Public APIs for domain XML conversions.
+	* docs/devhelp/libvirt-libvirt.html, docs/devhelp/libvirt-virterror.html,
+	docs/html/libvirt-libvirt.html, docs/html/libvirt-virterror.html,
+	docs/libvirt-api.xml, docs/libvirt-refs.xml: Regenerate with new public
+	APIs
+	* include/libvirt/libvirt.h, include/libvirt/libvirt.h.in,
+	src/driver.h, src/libvirt.c, src/libvirt_public.syms: Add
+	virConnectDomainXMLFromNative and virConnectDomainXMLToNative
+	* src/lxc_driver.c, src/openvz_driver.c, src/qemu_driver.c,
+	src/remote_internal.c, src/test.c, src/uml_driver.c,
+	src/xen_unified.c: Stub out new API entry points
+	* src/virsh.c: Add domxml-to-native and domxml-from-native commands
+
 Thu May 21 11:52:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* python/generator.py, python/libvirt_wrap.h, python/types.c: Add

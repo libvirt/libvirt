@@ -3591,6 +3591,8 @@ static virDriver testDriver = {
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
     testDomainDumpXML, /* domainDumpXML */
+    NULL, /* domainXmlFromNative */
+    NULL, /* domainXmlToNative */
     testListDefinedDomains, /* listDefinedDomains */
     testNumOfDefinedDomains, /* numOfDefinedDomains */
     testDomainCreate, /* domainCreate */

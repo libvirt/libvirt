@@ -7301,6 +7301,8 @@ static virDriver driver = {
     remoteDomainGetSecurityLabel, /* domainGetSecurityLabel */
     remoteNodeGetSecurityModel, /* nodeGetSecurityModel */
     remoteDomainDumpXML, /* domainDumpXML */
+    NULL, /* domainXmlFromNative */
+    NULL, /* domainXmlToNative */
     remoteListDefinedDomains, /* listDefinedDomains */
     remoteNumOfDefinedDomains, /* numOfDefinedDomains */
     remoteDomainCreate, /* domainCreate */

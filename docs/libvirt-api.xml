@@ -121,9 +121,11 @@
      <exports symbol='virConnectPtr' type='typedef'/>
      <exports symbol='virStorageVol' type='typedef'/>
      <exports symbol='virNodeDevicePtr' type='typedef'/>
+     <exports symbol='virInterface' type='typedef'/>
      <exports symbol='virSchedParameter' type='typedef'/>
      <exports symbol='virConnectFlags' type='typedef'/>
      <exports symbol='virDomainEventDefinedDetailType' type='typedef'/>
+     <exports symbol='virInterfacePtr' type='typedef'/>
      <exports symbol='virDomainMemoryFlags' type='typedef'/>
      <exports symbol='virDomainEventStoppedDetailType' type='typedef'/>
      <exports symbol='virStorageVolPtr' type='typedef'/>
@@ -172,6 +174,7 @@
      <exports symbol='virInitialize' type='function'/>
      <exports symbol='virNodeDeviceGetName' type='function'/>
      <exports symbol='virStoragePoolSetAutostart' type='function'/>
+     <exports symbol='virConnectDomainXMLFromNative' type='function'/>
      <exports symbol='virNodeDeviceDettach' type='function'/>
      <exports symbol='virDomainGetSecurityLabel' type='function'/>
      <exports symbol='virConnectDomainEventDeregister' type='function'/>
@@ -180,7 +183,7 @@
      <exports symbol='virConnectNumOfDefinedNetworks' type='function'/>
      <exports symbol='virConnectNumOfDomains' type='function'/>
      <exports symbol='virNetworkGetUUID' type='function'/>
-     <exports symbol='virNodeDeviceCreateXML' type='function'/>
+     <exports symbol='virInterfaceGetXMLDesc' type='function'/>
      <exports symbol='virStoragePoolGetConnect' type='function'/>
      <exports symbol='virConnectGetVersion' type='function'/>
      <exports symbol='virDomainFree' type='function'/>
@@ -193,6 +196,7 @@
      <exports symbol='virNetworkCreate' type='function'/>
      <exports symbol='virDomainSetMaxMemory' type='function'/>
      <exports symbol='virEventRegisterImpl' type='function'/>
+     <exports symbol='virInterfaceDefineXML' type='function'/>
      <exports symbol='virDomainMigrate' type='function'/>
      <exports symbol='virDomainSuspend' type='function'/>
      <exports symbol='virDomainCreateLinux' type='function'/>
@@ -201,17 +205,20 @@
      <exports symbol='virDomainDestroy' type='function'/>
      <exports symbol='virConnectNumOfNetworks' type='function'/>
      <exports symbol='virStoragePoolLookupByUUIDString' type='function'/>
+     <exports symbol='virInterfaceCreate' type='function'/>
      <exports symbol='virDomainGetXMLDesc' type='function'/>
      <exports symbol='virStoragePoolGetUUID' type='function'/>
      <exports symbol='virNodeDeviceFree' type='function'/>
      <exports symbol='virStorageVolGetInfo' type='function'/>
      <exports symbol='virDomainGetInfo' type='function'/>
+     <exports symbol='virNodeDeviceCreateXML' type='function'/>
      <exports symbol='virNetworkDestroy' type='function'/>
      <exports symbol='virStoragePoolLookupByName' type='function'/>
      <exports symbol='virStoragePoolCreateXML' type='function'/>
      <exports symbol='virNetworkGetAutostart' type='function'/>
      <exports symbol='virNetworkGetBridgeName' type='function'/>
      <exports symbol='virStorageVolGetXMLDesc' type='function'/>
+     <exports symbol='virConnectDomainXMLToNative' type='function'/>
      <exports symbol='virDomainSetSchedulerParameters' type='function'/>
      <exports symbol='virConnectGetType' type='function'/>
      <exports symbol='virStorageVolCreateXML' type='function'/>
@@ -220,6 +227,7 @@
      <exports symbol='virConnectListDomains' type='function'/>
      <exports symbol='virDomainCoreDump' type='function'/>
      <exports symbol='virDomainSetMemory' type='function'/>
+     <exports symbol='virInterfaceGetName' type='function'/>
      <exports symbol='virStoragePoolCreate' type='function'/>
      <exports symbol='virNodeGetInfo' type='function'/>
      <exports symbol='virNetworkSetAutostart' type='function'/>
@@ -242,6 +250,7 @@
      <exports symbol='virStoragePoolRef' type='function'/>
      <exports symbol='virNetworkGetXMLDesc' type='function'/>
      <exports symbol='virConnectNumOfStoragePools' type='function'/>
+     <exports symbol='virInterfaceGetConnect' type='function'/>
      <exports symbol='virNetworkGetName' type='function'/>
      <exports symbol='virConnectListDefinedDomains' type='function'/>
      <exports symbol='virConnectGetCapabilities' type='function'/>
@@ -257,21 +266,24 @@
      <exports symbol='virDomainLookupByID' type='function'/>
      <exports symbol='virStorageVolDelete' type='function'/>
      <exports symbol='virStorageVolFree' type='function'/>
+     <exports symbol='virConnectListInterfaces' type='function'/>
      <exports symbol='virDomainMemoryPeek' type='function'/>
      <exports symbol='virNetworkLookupByUUID' type='function'/>
      <exports symbol='virConnectListDefinedNetworks' type='function'/>
      <exports symbol='virConnectRef' type='function'/>
      <exports symbol='virDomainGetUUID' type='function'/>
      <exports symbol='virNetworkCreateXML' type='function'/>
+     <exports symbol='virConnectDomainEventRegister' type='function'/>
      <exports symbol='virDomainGetVcpus' type='function'/>
      <exports symbol='virNodeDeviceLookupByName' type='function'/>
      <exports symbol='virStoragePoolGetInfo' type='function'/>
      <exports symbol='virDomainResume' type='function'/>
-     <exports symbol='virNodeListDevices' type='function'/>
+     <exports symbol='virInterfaceRef' type='function'/>
+     <exports symbol='virInterfaceGetMACString' type='function'/>
      <exports symbol='virNetworkRef' type='function'/>
      <exports symbol='virStoragePoolRefresh' type='function'/>
      <exports symbol='virConnectNumOfDefinedDomains' type='function'/>
-     <exports symbol='virStorageVolLookupByKey' type='function'/>
+     <exports symbol='virStorageVolCreateXMLFrom' type='function'/>
      <exports symbol='virDomainUndefine' type='function'/>
      <exports symbol='virDomainReboot' type='function'/>
      <exports symbol='virNetworkGetUUIDString' type='function'/>
@@ -295,10 +307,12 @@
      <exports symbol='virNetworkUndefine' type='function'/>
      <exports symbol='virConnectListDefinedStoragePools' type='function'/>
      <exports symbol='virEventTimeoutCallback' type='function'/>
-     <exports symbol='virStorageVolCreateXMLFrom' type='function'/>
+     <exports symbol='virInterfaceFree' type='function'/>
      <exports symbol='virNodeDeviceNumOfCaps' type='function'/>
+     <exports symbol='virInterfaceLookupByMACString' type='function'/>
      <exports symbol='virNetworkGetConnect' type='function'/>
      <exports symbol='virNodeGetFreeMemory' type='function'/>
+     <exports symbol='virInterfaceDestroy' type='function'/>
      <exports symbol='virStorageVolGetConnect' type='function'/>
      <exports symbol='virNodeNumOfDevices' type='function'/>
      <exports symbol='virStoragePoolDestroy' type='function'/>
@@ -310,108 +324,116 @@
      <exports symbol='virDomainGetUUIDString' type='function'/>
      <exports symbol='virDomainGetConnect' type='function'/>
      <exports symbol='virConnectNumOfDefinedStoragePools' type='function'/>
+     <exports symbol='virNodeListDevices' type='function'/>
      <exports symbol='virNodeDeviceGetParent' type='function'/>
      <exports symbol='virConnectOpen' type='function'/>
      <exports symbol='virDomainCreateXML' type='function'/>
      <exports symbol='virNodeDeviceRef' type='function'/>
+     <exports symbol='virInterfaceUndefine' type='function'/>
      <exports symbol='virDomainSetVcpus' type='function'/>
      <exports symbol='virDomainRef' type='function'/>
-     <exports symbol='virConnectDomainEventRegister' type='function'/>
+     <exports symbol='virConnectNumOfInterfaces' type='function'/>
      <exports symbol='virDomainGetID' type='function'/>
      <exports symbol='virDomainBlockPeek' type='function'/>
      <exports symbol='virEventAddTimeoutFunc' type='function'/>
+     <exports symbol='virInterfaceLookupByName' type='function'/>
      <exports symbol='virDomainInterfaceStats' type='function'/>
      <exports symbol='virConnectListNetworks' type='function'/>
+     <exports symbol='virStorageVolLookupByKey' type='function'/>
     </file>
     <file name='virterror'>
      <summary>error handling interfaces for the libvirt library</summary>
      <description>Provides the interfaces of the libvirt library to handle errors raised while using the library. </description>
      <author>Daniel Veillard &lt;veillard@redhat.com&gt; </author>
-     <exports symbol='VIR_ERR_XML_ERROR' type='enum'/>
-     <exports symbol='VIR_ERR_RPC' type='enum'/>
-     <exports symbol='VIR_ERR_SYSTEM_ERROR' type='enum'/>
-     <exports symbol='VIR_FROM_TEST' type='enum'/>
-     <exports symbol='VIR_ERR_WARNING' type='enum'/>
-     <exports symbol='VIR_FROM_OPENVZ' type='enum'/>
      <exports symbol='VIR_ERR_NO_XEN' type='enum'/>
-     <exports symbol='VIR_FROM_STATS_LINUX' type='enum'/>
-     <exports symbol='VIR_ERR_INVALID_ARG' type='enum'/>
-     <exports symbol='VIR_FROM_XEN_INOTIFY' type='enum'/>
-     <exports symbol='VIR_ERR_ERROR' type='enum'/>
-     <exports symbol='VIR_ERR_NO_OS' type='enum'/>
+     <exports symbol='VIR_FROM_NETWORK' type='enum'/>
      <exports symbol='VIR_ERR_NO_NODE_DEVICE' type='enum'/>
-     <exports symbol='VIR_ERR_NO_DEVICE' type='enum'/>
      <exports symbol='VIR_ERR_NO_MEMORY' type='enum'/>
-     <exports symbol='VIR_FROM_SEXPR' type='enum'/>
      <exports symbol='VIR_WAR_NO_NODE' type='enum'/>
-     <exports symbol='VIR_FROM_RPC' type='enum'/>
-     <exports symbol='VIR_FROM_UML' type='enum'/>
-     <exports symbol='VIR_ERR_INVALID_MAC' type='enum'/>
      <exports symbol='VIR_ERR_NO_STORAGE_VOL' type='enum'/>
-     <exports symbol='VIR_FROM_NONE' type='enum'/>
-     <exports symbol='VIR_ERR_DOM_EXIST' type='enum'/>
-     <exports symbol='VIR_ERR_NO_XENSTORE' type='enum'/>
-     <exports symbol='VIR_FROM_DOM' type='enum'/>
-     <exports symbol='VIR_ERR_INVALID_DOMAIN' type='enum'/>
-     <exports symbol='VIR_ERR_NO_STORAGE_POOL' type='enum'/>
      <exports symbol='VIR_FROM_CONF' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_NETWORK' type='enum'/>
-     <exports symbol='VIR_ERR_AUTH_FAILED' type='enum'/>
-     <exports symbol='VIR_FROM_XML' type='enum'/>
-     <exports symbol='VIR_ERR_OPERATION_DENIED' type='enum'/>
-     <exports symbol='VIR_FROM_VBOX' type='enum'/>
-     <exports symbol='VIR_FROM_STORAGE' type='enum'/>
-     <exports symbol='VIR_ERR_NO_KERNEL' type='enum'/>
-     <exports symbol='VIR_WAR_NO_STORAGE' type='enum'/>
-     <exports symbol='VIR_ERR_GNUTLS_ERROR' type='enum'/>
+     <exports symbol='VIR_ERR_PARSE_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_POST_FAILED' type='enum'/>
-     <exports symbol='VIR_ERR_OS_TYPE' type='enum'/>
-     <exports symbol='VIR_ERR_OPERATION_INVALID' type='enum'/>
-     <exports symbol='VIR_WAR_NO_NETWORK' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_CONN' type='enum'/>
+     <exports symbol='VIR_ERR_GET_FAILED' type='enum'/>
+     <exports symbol='VIR_ERR_NO_SOURCE' type='enum'/>
+     <exports symbol='VIR_ERR_NETWORK_EXIST' type='enum'/>
      <exports symbol='VIR_ERR_NONE' type='enum'/>
-     <exports symbol='VIR_ERR_OK' type='enum'/>
-     <exports symbol='VIR_FROM_XENXM' type='enum'/>
-     <exports symbol='VIR_FROM_NETWORK' type='enum'/>
-     <exports symbol='VIR_ERR_XML_DETAIL' type='enum'/>
-     <exports symbol='VIR_FROM_NET' type='enum'/>
-     <exports symbol='VIR_FROM_XENSTORE' type='enum'/>
+     <exports symbol='VIR_FROM_REMOTE' type='enum'/>
+     <exports symbol='VIR_FROM_XEN_INOTIFY' type='enum'/>
+     <exports symbol='VIR_ERR_NO_NETWORK' type='enum'/>
+     <exports symbol='VIR_ERR_READ_FAILED' type='enum'/>
+     <exports symbol='VIR_FROM_INTERFACE' type='enum'/>
+     <exports symbol='VIR_ERR_NO_CONNECT' type='enum'/>
+     <exports symbol='VIR_ERR_CALL_FAILED' type='enum'/>
+     <exports symbol='VIR_FROM_VBOX' type='enum'/>
+     <exports symbol='VIR_FROM_TEST' type='enum'/>
+     <exports symbol='VIR_ERR_NO_DEVICE' type='enum'/>
+     <exports symbol='VIR_FROM_SEXPR' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_MAC' type='enum'/>
+     <exports symbol='VIR_ERR_HTTP_ERROR' type='enum'/>
+     <exports symbol='VIR_ERR_NO_XENSTORE' type='enum'/>
+     <exports symbol='VIR_FROM_XEND' type='enum'/>
+     <exports symbol='VIR_FROM_STATS_LINUX' type='enum'/>
+     <exports symbol='VIR_FROM_OPENVZ' type='enum'/>
+     <exports symbol='VIR_ERR_OS_TYPE' type='enum'/>
+     <exports symbol='VIR_WAR_NO_NETWORK' type='enum'/>
+     <exports symbol='VIR_FROM_UML' type='enum'/>
      <exports symbol='VIR_ERR_NO_NAME' type='enum'/>
      <exports symbol='VIR_ERR_NO_ROOT' type='enum'/>
      <exports symbol='VIR_ERR_OPERATION_FAILED' type='enum'/>
-     <exports symbol='VIR_ERR_GET_FAILED' type='enum'/>
      <exports symbol='VIR_FROM_NODEDEV' type='enum'/>
-     <exports symbol='VIR_ERR_DRIVER_FULL' type='enum'/>
-     <exports symbol='VIR_ERR_HTTP_ERROR' type='enum'/>
-     <exports symbol='VIR_ERR_INVALID_NODE_DEVICE' type='enum'/>
-     <exports symbol='VIR_ERR_PARSE_FAILED' type='enum'/>
-     <exports symbol='VIR_ERR_NO_SOURCE' type='enum'/>
-     <exports symbol='VIR_FROM_DOMAIN' type='enum'/>
      <exports symbol='VIR_ERR_NO_TARGET' type='enum'/>
-     <exports symbol='VIR_ERR_NETWORK_EXIST' type='enum'/>
      <exports symbol='VIR_FROM_SECURITY' type='enum'/>
-     <exports symbol='VIR_ERR_WRITE_FAILED' type='enum'/>
-     <exports symbol='VIR_ERR_INTERNAL_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_CONF_SYNTAX' type='enum'/>
-     <exports symbol='VIR_ERR_INVALID_STORAGE_POOL' type='enum'/>
-     <exports symbol='VIR_FROM_REMOTE' type='enum'/>
      <exports symbol='VIR_ERR_NO_SUPPORT' type='enum'/>
      <exports symbol='VIR_ERR_NO_SECURITY_MODEL' type='enum'/>
-     <exports symbol='VIR_FROM_QEMU' type='enum'/>
-     <exports symbol='VIR_FROM_XEND' type='enum'/>
-     <exports symbol='VIR_ERR_INVALID_STORAGE_VOL' type='enum'/>
-     <exports symbol='VIR_FROM_PROXY' type='enum'/>
-     <exports symbol='VIR_ERR_NO_NETWORK' type='enum'/>
-     <exports symbol='VIR_ERR_NO_DOMAIN' type='enum'/>
-     <exports symbol='VIR_ERR_READ_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_SEXPR_SERIAL' type='enum'/>
-     <exports symbol='VIR_FROM_LXC' type='enum'/>
-     <exports symbol='VIR_FROM_XEN' type='enum'/>
+     <exports symbol='VIR_FROM_XENSTORE' type='enum'/>
      <exports symbol='VIR_ERR_OPEN_FAILED' type='enum'/>
+     <exports symbol='VIR_ERR_NO_OS' type='enum'/>
+     <exports symbol='VIR_FROM_RPC' type='enum'/>
+     <exports symbol='VIR_FROM_NONE' type='enum'/>
+     <exports symbol='VIR_FROM_DOM' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_DOMAIN' type='enum'/>
+     <exports symbol='VIR_ERR_OPERATION_INVALID' type='enum'/>
+     <exports symbol='VIR_WAR_NO_STORAGE' type='enum'/>
+     <exports symbol='VIR_ERR_GNUTLS_ERROR' type='enum'/>
+     <exports symbol='VIR_ERR_XML_ERROR' type='enum'/>
+     <exports symbol='VIR_ERR_OK' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_INTERFACE' type='enum'/>
+     <exports symbol='VIR_FROM_STORAGE' type='enum'/>
+     <exports symbol='VIR_FROM_PROXY' type='enum'/>
+     <exports symbol='VIR_ERR_DRIVER_FULL' type='enum'/>
+     <exports symbol='VIR_FROM_DOMAIN' type='enum'/>
+     <exports symbol='VIR_FROM_XML' type='enum'/>
+     <exports symbol='VIR_ERR_OPERATION_DENIED' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_STORAGE_POOL' type='enum'/>
+     <exports symbol='VIR_ERR_NO_DOMAIN' type='enum'/>
+     <exports symbol='VIR_FROM_XEN' type='enum'/>
+     <exports symbol='VIR_ERR_RPC' type='enum'/>
+     <exports symbol='VIR_ERR_WARNING' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_ARG' type='enum'/>
+     <exports symbol='VIR_ERR_ERROR' type='enum'/>
+     <exports symbol='VIR_WAR_NO_INTERFACE' type='enum'/>
+     <exports symbol='VIR_ERR_DOM_EXIST' type='enum'/>
+     <exports symbol='VIR_FROM_LXC' type='enum'/>
+     <exports symbol='VIR_ERR_NO_STORAGE_POOL' type='enum'/>
+     <exports symbol='VIR_ERR_NO_KERNEL' type='enum'/>
+     <exports symbol='VIR_ERR_NO_INTERFACE' type='enum'/>
+     <exports symbol='VIR_ERR_XML_DETAIL' type='enum'/>
+     <exports symbol='VIR_FROM_NET' type='enum'/>
+     <exports symbol='VIR_ERR_AUTH_FAILED' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_NODE_DEVICE' type='enum'/>
+     <exports symbol='VIR_ERR_SYSTEM_ERROR' type='enum'/>
+     <exports symbol='VIR_FROM_QEMU' type='enum'/>
+     <exports symbol='VIR_ERR_WRITE_FAILED' type='enum'/>
+     <exports symbol='VIR_ERR_INTERNAL_ERROR' type='enum'/>
+     <exports symbol='VIR_FROM_XENXM' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_STORAGE_VOL' type='enum'/>
      <exports symbol='VIR_ERR_XEN_CALL' type='enum'/>
      <exports symbol='VIR_ERR_UNKNOWN_HOST' type='enum'/>
-     <exports symbol='VIR_ERR_NO_CONNECT' type='enum'/>
-     <exports symbol='VIR_ERR_CALL_FAILED' type='enum'/>
      <exports symbol='virErrorPtr' type='typedef'/>
      <exports symbol='virErrorLevel' type='typedef'/>
      <exports symbol='virErrorDomain' type='typedef'/>
@@ -554,6 +576,7 @@
     <enum name='VIR_ERR_INVALID_ARG' file='virterror' value='8' type='virErrorNumber' info='invalid function argument'/>
     <enum name='VIR_ERR_INVALID_CONN' file='virterror' value='6' type='virErrorNumber' info='invalid connection object'/>
     <enum name='VIR_ERR_INVALID_DOMAIN' file='virterror' value='7' type='virErrorNumber' info='invalid domain object'/>
+    <enum name='VIR_ERR_INVALID_INTERFACE' file='virterror' value='58' type='virErrorNumber' info=' invalid interface object'/>
     <enum name='VIR_ERR_INVALID_MAC' file='virterror' value='44' type='virErrorNumber' info='invalid MAC address'/>
     <enum name='VIR_ERR_INVALID_NETWORK' file='virterror' value='36' type='virErrorNumber' info='invalid network object'/>
     <enum name='VIR_ERR_INVALID_NODE_DEVICE' file='virterror' value='52' type='virErrorNumber' info='invalid node device object'/>
@@ -564,6 +587,7 @@
     <enum name='VIR_ERR_NO_CONNECT' file='virterror' value='5' type='virErrorNumber' info='can&apos;t connect to hypervisor'/>
     <enum name='VIR_ERR_NO_DEVICE' file='virterror' value='23' type='virErrorNumber' info='missing domain devices information'/>
     <enum name='VIR_ERR_NO_DOMAIN' file='virterror' value='42' type='virErrorNumber' info='domain not found or unexpectedly disappeared'/>
+    <enum name='VIR_ERR_NO_INTERFACE' file='virterror' value='57' type='virErrorNumber' info='interface driver not running'/>
     <enum name='VIR_ERR_NO_KERNEL' file='virterror' value='17' type='virErrorNumber' info='missing kernel information'/>
     <enum name='VIR_ERR_NO_MEMORY' file='virterror' value='2' type='virErrorNumber' info='memory allocation failure'/>
     <enum name='VIR_ERR_NO_NAME' file='virterror' value='21' type='virErrorNumber' info='missing domain name information'/>
@@ -583,7 +607,7 @@
     <enum name='VIR_ERR_OPEN_FAILED' file='virterror' value='30' type='virErrorNumber' info='failed to open a conf file'/>
     <enum name='VIR_ERR_OPERATION_DENIED' file='virterror' value='29' type='virErrorNumber' info='operation forbidden on read-only connections'/>
     <enum name='VIR_ERR_OPERATION_FAILED' file='virterror' value='9' type='virErrorNumber' info='a command to hypervisor failed'/>
-    <enum name='VIR_ERR_OPERATION_INVALID' file='virterror' value='55' type='virErrorNumber' info=' operation is not applicable at this time'/>
+    <enum name='VIR_ERR_OPERATION_INVALID' file='virterror' value='55' type='virErrorNumber' info='operation is not applicable at this time'/>
     <enum name='VIR_ERR_OS_TYPE' file='virterror' value='16' type='virErrorNumber' info='unknown OS type'/>
     <enum name='VIR_ERR_PARSE_FAILED' file='virterror' value='32' type='virErrorNumber' info='failed to parse a conf file'/>
     <enum name='VIR_ERR_POST_FAILED' file='virterror' value='11' type='virErrorNumber' info='a HTTP POST command to failed'/>
@@ -604,6 +628,7 @@
     <enum name='VIR_FROM_CONF' file='virterror' value='9' type='virErrorDomain' info='Error in the configuration file handling'/>
     <enum name='VIR_FROM_DOM' file='virterror' value='6' type='virErrorDomain' info='Error when operating on a domain'/>
     <enum name='VIR_FROM_DOMAIN' file='virterror' value='20' type='virErrorDomain' info='Error from domain config'/>
+    <enum name='VIR_FROM_INTERFACE' file='virterror' value='26' type='virErrorDomain' info=' Error when operating on an interface'/>
     <enum name='VIR_FROM_LXC' file='virterror' value='17' type='virErrorDomain' info='Error from Linux Container driver'/>
     <enum name='VIR_FROM_NET' file='virterror' value='11' type='virErrorDomain' info='Error when operating on a network'/>
     <enum name='VIR_FROM_NETWORK' file='virterror' value='19' type='virErrorDomain' info='Error from network config'/>
@@ -620,7 +645,7 @@
     <enum name='VIR_FROM_STORAGE' file='virterror' value='18' type='virErrorDomain' info='Error from storage driver'/>
     <enum name='VIR_FROM_TEST' file='virterror' value='12' type='virErrorDomain' info='Error from test driver'/>
     <enum name='VIR_FROM_UML' file='virterror' value='21' type='virErrorDomain' info='Error at the UML driver'/>
-    <enum name='VIR_FROM_VBOX' file='virterror' value='25' type='virErrorDomain' info=' Error from VirtualBox driver'/>
+    <enum name='VIR_FROM_VBOX' file='virterror' value='25' type='virErrorDomain' info='Error from VirtualBox driver'/>
     <enum name='VIR_FROM_XEN' file='virterror' value='1' type='virErrorDomain' info='Error at Xen hypervisor layer'/>
     <enum name='VIR_FROM_XEND' file='virterror' value='2' type='virErrorDomain' info='Error at connection with xend daemon'/>
     <enum name='VIR_FROM_XENSTORE' file='virterror' value='3' type='virErrorDomain' info='Error at connection with xen store'/>
@@ -645,6 +670,7 @@
     <enum name='VIR_VCPU_BLOCKED' file='libvirt' value='2' type='virVcpuState' info=' the virtual CPU is blocked on resource'/>
     <enum name='VIR_VCPU_OFFLINE' file='libvirt' value='0' type='virVcpuState' info='the virtual CPU is offline'/>
     <enum name='VIR_VCPU_RUNNING' file='libvirt' value='1' type='virVcpuState' info='the virtual CPU is running'/>
+    <enum name='VIR_WAR_NO_INTERFACE' file='virterror' value='56' type='virErrorNumber' info='failed to start interface driver'/>
     <enum name='VIR_WAR_NO_NETWORK' file='virterror' value='41' type='virErrorNumber' info='failed to start network'/>
     <enum name='VIR_WAR_NO_NODE' file='virterror' value='51' type='virErrorNumber' info='failed to start node driver'/>
     <enum name='VIR_WAR_NO_STORAGE' file='virterror' value='48' type='virErrorNumber' info='failed to start storage'/>
@@ -741,6 +767,10 @@ see note above'/>
     <typedef name='virErrorNumber' file='virterror' type='enum'/>
     <typedef name='virErrorPtr' file='virterror' type='virError *'/>
     <typedef name='virEventHandleType' file='libvirt' type='enum'/>
+    <struct name='virInterface' file='libvirt' type='struct _virInterface'/>
+    <typedef name='virInterfacePtr' file='libvirt' type='virInterface *'>
+      <info>a virInterfacePtr is pointer to a virInterface private structure, this is the type used to reference a virtual interface in the API.</info>
+    </typedef>
     <struct name='virNetwork' file='libvirt' type='struct _virNetwork'/>
     <typedef name='virNetworkPtr' file='libvirt' type='virNetwork *'>
       <info>a virNetworkPtr is pointer to a virNetwork private structure, this is the type used to reference a virtual network in the API.</info>
@@ -871,6 +901,22 @@ see note above'/>
       <arg name='opaque' type='void *' info='opaque data to pass on to the callback'/>
       <arg name='freecb' type='virFreeCallback' info='optional function to deallocate opaque when not used anymore'/>
     </function>
+    <function name='virConnectDomainXMLFromNative' file='libvirt' module='libvirt'>
+      <info>Reads native configuration data  describing a domain, and generates libvirt domain XML. The format of the native data is hypervisor dependant.</info>
+      <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
+      <arg name='conn' type='virConnectPtr' info='a connection object'/>
+      <arg name='nativeFormat' type='const char *' info='configuration format importing from'/>
+      <arg name='nativeConfig' type='const char *' info='the configuration data to import'/>
+      <arg name='flags' type='unsigned int' info='currently unused, pass 0'/>
+    </function>
+    <function name='virConnectDomainXMLToNative' file='libvirt' module='libvirt'>
+      <info>Reads a domain XML configuration document, and generates generates a native configuration file describing the domain. The format of the native data is hypervisor dependant.</info>
+      <return type='char *' info='a 0 terminated UTF-8 encoded native config datafile, or NULL in case of error. the caller must free() the returned value.'/>
+      <arg name='conn' type='virConnectPtr' info='a connection object'/>
+      <arg name='nativeFormat' type='const char *' info='configuration format exporting to'/>
+      <arg name='domainXml' type='const char *' info='the domain configuration to export'/>
+      <arg name='flags' type='unsigned int' info='currently unused, pass 0'/>
+    </function>
     <function name='virConnectFindStoragePoolSources' file='libvirt' module='libvirt'>
       <info>Talks to a storage backend and attempts to auto-discover the set of available storage pool sources. e.g. For iSCSI this would be a set of iSCSI targets. For NFS this would be a list of exported paths.  The srcSpec (optional for some storage pool types, e.g. local ones) is an instance of the storage pool&apos;s source element specifying where to look for the pools.  srcSpec is not required for some types (e.g., those querying local storage resources only)</info>
       <return type='char *' info='an xml document consisting of a SourceList element containing a source document appropriate to the given pool type for each discovered source.'/>
@@ -939,6 +985,13 @@ see note above'/>
       <arg name='ids' type='int *' info='array to collect the list of IDs of active domains'/>
       <arg name='maxids' type='int' info='size of @ids'/>
     </function>
+    <function name='virConnectListInterfaces' file='libvirt' module='libvirt'>
+      <info>Collect the list of physical host interfaces, and store their names in @names</info>
+      <return type='int' info='the number of interfaces found or -1 in case of error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='names' type='char ** const' info='array to collect the list of names of interfaces'/>
+      <arg name='maxnames' type='int' info='size of @names'/>
+    </function>
     <function name='virConnectListNetworks' file='libvirt' module='libvirt'>
       <info>Collect the list of active networks, and store their names in @names</info>
       <return type='int' info='the number of networks found or -1 in case of error'/>
@@ -971,6 +1024,11 @@ see note above'/>
     <function name='virConnectNumOfDomains' file='libvirt' module='libvirt'>
       <info>Provides the number of active domains.</info>
       <return type='int' info='the number of domain found or -1 in case of error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+    </function>
+    <function name='virConnectNumOfInterfaces' file='libvirt' module='libvirt'>
+      <info>Provides the number of interfaces on the physical host.</info>
+      <return type='int' info='the number of interface found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnectNumOfNetworks' file='libvirt' module='libvirt'>
@@ -1401,6 +1459,73 @@ see note above'/>
     <function name='virInitialize' file='libvirt' module='libvirt'>
       <info>Initialize the library. It&apos;s better to call this routine at startup in multithreaded applications to avoid potential race when initializing the library.</info>
       <return type='int' info='0 in case of success, -1 in case of error'/>
+    </function>
+    <function name='virInterfaceCreate' file='libvirt' module='libvirt'>
+      <info>Activate an interface (ie call &quot;ifup&quot;)</info>
+      <return type='int' info='0 in case of success, -1 in case of error'/>
+      <arg name='interface' type='virInterfacePtr' info='pointer to a defined interface'/>
+      <arg name='flags' type='unsigned int' info='and OR&apos;ed set of extraction flags, not used yet'/>
+    </function>
+    <function name='virInterfaceDefineXML' file='libvirt' module='libvirt'>
+      <info>Define an interface (or modify existing interface configuration)</info>
+      <return type='virInterfacePtr' info='NULL in case of error, a pointer to the interface otherwise'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='xml' type='const char *' info='the XML description for the interface, preferably in UTF-8'/>
+      <arg name='flags' type='unsigned int' info='and OR&apos;ed set of extraction flags, not used yet'/>
+    </function>
+    <function name='virInterfaceDestroy' file='libvirt' module='libvirt'>
+      <info>deactivate an interface (ie call &quot;ifdown&quot;) This does not remove the interface from the config, and does not free the associated virInterfacePtr object.</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='interface' type='virInterfacePtr' info='an interface object'/>
+      <arg name='flags' type='unsigned int' info='and OR&apos;ed set of extraction flags, not used yet'/>
+    </function>
+    <function name='virInterfaceFree' file='libvirt' module='libvirt'>
+      <info>Free the interface object. The interface itself is unaltered. The data structure is freed and should not be used thereafter.</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='interface' type='virInterfacePtr' info='a interface object'/>
+    </function>
+    <function name='virInterfaceGetConnect' file='libvirt' module='libvirt'>
+      <info>Provides the connection pointer associated with an interface.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the interface object together.</info>
+      <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
+      <arg name='interface' type='virInterfacePtr' info=''/>
+    </function>
+    <function name='virInterfaceGetMACString' file='libvirt' module='libvirt'>
+      <info>Get the MAC for a interface as string. For more information about MAC see RFC4122.</info>
+      <return type='const char *' info='a pointer to the MAC address (in null-terminated ASCII format) or NULL, the string need not be deallocated its lifetime will be the same as the interface object.'/>
+      <arg name='interface' type='virInterfacePtr' info='a interface object'/>
+    </function>
+    <function name='virInterfaceGetName' file='libvirt' module='libvirt'>
+      <info>Get the public name for that interface</info>
+      <return type='const char *' info='a pointer to the name or NULL, the string need not be deallocated its lifetime will be the same as the interface object.'/>
+      <arg name='interface' type='virInterfacePtr' info='a interface object'/>
+    </function>
+    <function name='virInterfaceGetXMLDesc' file='libvirt' module='libvirt'>
+      <info>Provide an XML description of the interface. The description may be reused later to recreate the interface with virInterfaceCreateXML().</info>
+      <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
+      <arg name='interface' type='virInterfacePtr' info='a interface object'/>
+      <arg name='flags' type='unsigned int' info='and OR&apos;ed set of extraction flags, not used yet'/>
+    </function>
+    <function name='virInterfaceLookupByMACString' file='libvirt' module='libvirt'>
+      <info>Try to lookup an interface on the given hypervisor based on its MAC.</info>
+      <return type='virInterfacePtr' info='a new interface object or NULL in case of failure.  If the interface cannot be found, then VIR_ERR_NO_INTERFACE error is raised.'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='macstr' type='const char *' info='the MAC for the interface (null-terminated ASCII format)'/>
+    </function>
+    <function name='virInterfaceLookupByName' file='libvirt' module='libvirt'>
+      <info>Try to lookup an interface on the given hypervisor based on its name.</info>
+      <return type='virInterfacePtr' info='a new interface object or NULL in case of failure.  If the interface cannot be found, then VIR_ERR_NO_INTERFACE error is raised.'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='name' type='const char *' info='name for the interface'/>
+    </function>
+    <function name='virInterfaceRef' file='libvirt' module='libvirt'>
+      <info>Increment the reference count on the interface. For each additional call to this method, there shall be a corresponding call to virInterfaceFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a interface would increment the reference count.</info>
+      <return type='int' info='0 in case of success, -1 in case of failure.'/>
+      <arg name='interface' type='virInterfacePtr' info='the interface to hold a reference on'/>
+    </function>
+    <function name='virInterfaceUndefine' file='libvirt' module='libvirt'>
+      <info>Undefine an interface, ie remove it from the config. This does not free the associated virInterfacePtr object.</info>
+      <return type='int' info='0 in case of success, -1 in case of error'/>
+      <arg name='interface' type='virInterfacePtr' info='pointer to a defined interface'/>
     </function>
     <function name='virNetworkCreate' file='libvirt' module='libvirt'>
       <info>Create and start a defined network. If the call succeed the network moves from the defined to the running networks pools.</info>

@@ -2731,6 +2731,111 @@ error:
 }
 
 /**
+ * virConnectDomainXMLFromNative:
+ * @conn: a connection object
+ * @nativeFormat: configuration format importing from
+ * @nativeConfig: the configuration data to import
+ * @flags: currently unused, pass 0
+ *
+ * Reads native configuration data  describing a domain, and
+ * generates libvirt domain XML. The format of the native
+ * data is hypervisor dependant.
+ *
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
+ *         the caller must free() the returned value.
+ */
+char *virConnectDomainXMLFromNative(virConnectPtr conn,
+                                    const char *nativeFormat,
+                                    const char *nativeConfig,
+                                    unsigned int flags)
+{
+    DEBUG("conn=%p, format=%s config=%s flags=%u", conn, nativeFormat, nativeConfig, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (NULL);
+    }
+
+    if (nativeFormat == NULL || nativeConfig == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (NULL);
+    }
+
+    if (conn->driver->domainXMLFromNative) {
+        char *ret;
+        ret = conn->driver->domainXMLFromNative (conn,
+                                                 nativeFormat,
+                                                 nativeConfig,
+                                                 flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return NULL;
+}
+
+/**
+ * virConnectDomainXMLToNative:
+ * @conn: a connection object
+ * @nativeFormat: configuration format exporting to
+ * @domainXml: the domain configuration to export
+ * @flags: currently unused, pass 0
+ *
+ * Reads a domain XML configuration document, and generates
+ * generates a native configuration file describing the domain.
+ * The format of the native data is hypervisor dependant.
+ *
+ * Returns a 0 terminated UTF-8 encoded native config datafile, or NULL in case of error.
+ *         the caller must free() the returned value.
+ */
+char *virConnectDomainXMLToNative(virConnectPtr conn,
+                                  const char *nativeFormat,
+                                  const char *domainXml,
+                                  unsigned int flags)
+{
+    DEBUG("conn=%p, format=%s xml=%s flags=%u", conn, nativeFormat, domainXml, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (NULL);
+    }
+
+    if (nativeFormat == NULL || domainXml == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (NULL);
+    }
+
+    if (conn->driver->domainXMLToNative) {
+        char *ret;
+        ret = conn->driver->domainXMLToNative(conn,
+                                              nativeFormat,
+                                              domainXml,
+                                              flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return NULL;
+}
+
+
+/**
  * virDomainMigrate:
  * @domain: a domain object
  * @dconn: destination host (a connection object)

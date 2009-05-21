@@ -264,8 +264,6 @@ LIBVIRT_0.6.3 {
 	virNodeDeviceDestroy;
 } LIBVIRT_0.6.1;
 
-# .... define new API here using predicted next version number ....
-
 LIBVIRT_0.6.4 {
     global:
 	virInterfaceGetConnect;
@@ -283,4 +281,8 @@ LIBVIRT_0.6.4 {
 	virInterfaceCreate;
 	virInterfaceDestroy;
 	virStorageVolCreateXMLFrom;
+	virConnectDomainXMLFromNative;
+	virConnectDomainXMLToNative;
 } LIBVIRT_0.6.3;
+
+# .... define new API here using predicted next version number ....

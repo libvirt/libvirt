@@ -152,6 +152,16 @@ typedef int
 typedef char *
         (*virDrvDomainDumpXML)		(virDomainPtr dom,
                                          int flags);
+typedef char *
+        (*virDrvConnectDomainXMLFromNative) (virConnectPtr conn,
+                                             const char *nativeFormat,
+                                             const char *nativeConfig,
+                                             unsigned int flags);
+typedef char *
+        (*virDrvConnectDomainXMLToNative) (virConnectPtr conn,
+                                           const char *nativeFormat,
+                                           const char *domainXml,
+                                           unsigned int flags);
 typedef int
         (*virDrvListDefinedDomains)	(virConnectPtr conn,
                                          char **const names,
@@ -381,6 +391,8 @@ struct _virDriver {
     virDrvDomainGetSecurityLabel     domainGetSecurityLabel;
     virDrvNodeGetSecurityModel  nodeGetSecurityModel;
     virDrvDomainDumpXML		domainDumpXML;
+    virDrvConnectDomainXMLFromNative domainXMLFromNative;
+    virDrvConnectDomainXMLToNative domainXMLToNative;
     virDrvListDefinedDomains	listDefinedDomains;
     virDrvNumOfDefinedDomains	numOfDefinedDomains;
     virDrvDomainCreate		domainCreate;

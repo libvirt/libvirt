@@ -1457,6 +1457,8 @@ static virDriver lxcDriver = {
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
     lxcDomainDumpXML, /* domainDumpXML */
+    NULL, /* domainXmlFromNative */
+    NULL, /* domainXmlToNative */
     lxcListDefinedDomains, /* listDefinedDomains */
     lxcNumDefinedDomains, /* numOfDefinedDomains */
     lxcDomainStart, /* domainCreate */

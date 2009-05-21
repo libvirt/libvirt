@@ -1344,6 +1344,8 @@ static virDriver openvzDriver = {
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
     openvzDomainDumpXML, /* domainDumpXML */
+    NULL, /* domainXmlFromNative */
+    NULL, /* domainXmlToNative */
     openvzListDefinedDomains, /* listDefinedDomains */
     openvzNumDefinedDomains, /* numOfDefinedDomains */
     openvzDomainCreate, /* domainCreate */

@@ -2210,6 +2210,98 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "domxml-from-native" command
+ */
+static const vshCmdInfo info_domxmlfromnative[] = {
+    {"help", gettext_noop("Convert native config to domain XML")},
+    {"desc", gettext_noop("Convert native guest configuration format to domain XML format.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_domxmlfromnative[] = {
+    {"format", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("source config data format")},
+    {"config", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("config data file to import from")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdDomXMLFromNative(vshControl *ctl, const vshCmd *cmd)
+{
+    int ret = TRUE;
+    char *format;
+    char *configFile;
+    char *configData;
+    char *xmlData;
+    int flags = 0;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    format = vshCommandOptString(cmd, "format", NULL);
+    configFile = vshCommandOptString(cmd, "config", NULL);
+
+    if (virFileReadAll(configFile, 1024*1024, &configData) < 0) {
+        return FALSE;
+    }
+
+    xmlData = virConnectDomainXMLFromNative(ctl->conn, format, configData, flags);
+    if (xmlData != NULL) {
+        printf("%s", xmlData);
+        free(xmlData);
+    } else {
+        ret = FALSE;
+    }
+
+    return ret;
+}
+
+/*
+ * "domxml-to-native" command
+ */
+static const vshCmdInfo info_domxmltonative[] = {
+    {"help", gettext_noop("Convert domain XML to native config")},
+    {"desc", gettext_noop("Convert domain XML config to a native guest configuration format.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_domxmltonative[] = {
+    {"format", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("target config data type format")},
+    {"xml", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("xml data file to export from")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdDomXMLToNative(vshControl *ctl, const vshCmd *cmd)
+{
+    int ret = TRUE;
+    char *format;
+    char *xmlFile;
+    char *configData;
+    char *xmlData;
+    int flags = 0;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    format = vshCommandOptString(cmd, "format", NULL);
+    xmlFile = vshCommandOptString(cmd, "xml", NULL);
+
+    if (virFileReadAll(xmlFile, 1024*1024, &xmlData) < 0) {
+        return FALSE;
+    }
+
+    configData = virConnectDomainXMLToNative(ctl->conn, format, xmlData, flags);
+    if (configData != NULL) {
+        printf("%s", configData);
+        free(configData);
+    } else {
+        ret = FALSE;
+    }
+
+    return ret;
+}
+
+/*
  * "domname" command
  */
 static const vshCmdInfo info_domname[] = {
@@ -6030,6 +6122,8 @@ static const vshCmdDef commands[] = {
     {"domstate", cmdDomstate, opts_domstate, info_domstate},
     {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat},
     {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat},
+    {"domxml-from-native", cmdDomXMLFromNative, opts_domxmlfromnative, info_domxmlfromnative},
+    {"domxml-to-native", cmdDomXMLToNative, opts_domxmltonative, info_domxmltonative},
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
     {"edit", cmdEdit, opts_edit, info_edit},
     {"find-storage-pool-sources", cmdPoolDiscoverSources,

@@ -1580,6 +1580,8 @@ static virDriver xenUnifiedDriver = {
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
     xenUnifiedDomainDumpXML, /* domainDumpXML */
+    NULL, /* domainXmlFromNative */
+    NULL, /* domainXmlToNative */
     xenUnifiedListDefinedDomains, /* listDefinedDomains */
     xenUnifiedNumOfDefinedDomains, /* numOfDefinedDomains */
     xenUnifiedDomainCreate, /* domainCreate */

@@ -5224,6 +5224,8 @@ static virDriver qemuDriver = {
     qemudDomainGetSecurityLabel, /* domainGetSecurityLabel */
     qemudNodeGetSecurityModel, /* nodeGetSecurityModel */
     qemudDomainDumpXML, /* domainDumpXML */
+    NULL, /* domainXmlFromNative */
+    NULL, /* domainXmlToNative */
     qemudListDefinedDomains, /* listDefinedDomains */
     qemudNumDefinedDomains, /* numOfDefinedDomains */
     qemudDomainStart, /* domainCreate */
