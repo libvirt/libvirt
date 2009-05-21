@@ -1,3 +1,20 @@
+Thu May 21 15:22:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Test case for QEMU driver ARGV -> XML conversion
+	* tests/qemuargv2xmltest.c: Add test case for ARGV -> XML
+	conversion in QEMU driver
+	* tests/qemuxml2argvdata/qemuxml2argv-bootloader.args,
+	tests/qemuxml2argvdata/qemuxml2argv-bootloader.xml: Fix QEMU
+	binary to be xenner, not qemu-kvm
+	* tests/qemuxml2argvdata/qemuxml2argv-disk-cdrom-empty.xml: Remove
+	trailing blank line
+	* tests/qemuxml2argvdata/qemuxml2argv-hostdev-pci-address.xml:
+	Switch to unmanaged PCI device for tests
+	* tests/testutils.c, tests/testutils.h: Add API for stripping
+	lines matching a pattern.
+	* .hgignore, tests/.cvsignore, tests/.gitignore: Ignore new
+	test case binary
+
 Thu May 21 15:20:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* docs/drvqemu.html[.in], docs/drvxen.html[.in]: Add docs on
