@@ -1,3 +1,8 @@
+Mon May 25 11:42:15 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* examples/domain-events/events-c/event-test.c: fixed the example
+	  code for event handling, patch by Pritesh Kothari
+
 Thu May 21 15:22:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Test case for QEMU driver ARGV -> XML conversion

@@ -116,7 +116,7 @@ static const char *eventDetailToString(int event, int detail) {
             break;
         case VIR_DOMAIN_EVENT_SUSPENDED:
             if (detail == VIR_DOMAIN_EVENT_SUSPENDED_PAUSED)
-                ret = "Unpaused";
+                ret = "Paused";
             else if (detail == VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED)
                 ret = "Migrated";
             break;
@@ -291,6 +291,8 @@ static void stop(int sig)
 int main(int argc, char **argv)
 {
     int sts;
+    int callback1ret = -1;
+    int callback2ret = -1;
     struct sigaction action_stop = {
         .sa_handler = stop
     };
@@ -320,47 +322,50 @@ int main(int argc, char **argv)
     DEBUG0("Registering domain event cbs");
 
     /* Add 2 callbacks to prove this works with more than just one */
-    virConnectDomainEventRegister(dconn, myDomainEventCallback1,
-                                  strdup("callback 1"), myFreeFunc);
-    virConnectDomainEventRegister(dconn, myDomainEventCallback2,
-                                  strdup("callback 2"), myFreeFunc);
+    callback1ret = virConnectDomainEventRegister(dconn, myDomainEventCallback1,
+                                                 strdup("callback 1"), myFreeFunc);
+    callback2ret = virConnectDomainEventRegister(dconn, myDomainEventCallback2,
+                                                 strdup("callback 2"), myFreeFunc);
 
-    while(run) {
-        struct pollfd pfd = { .fd = h_fd,
-                          .events = h_event,
-                          .revents = 0};
+    if ((callback1ret == 0) && (callback2ret == 0) ) {
+        while(run) {
+            struct pollfd pfd = { .fd = h_fd,
+                              .events = h_event,
+                              .revents = 0};
 
-        sts = poll(&pfd, 1, TIMEOUT_MS);
+            sts = poll(&pfd, 1, TIMEOUT_MS);
 
-        /* We are assuming timeout of 0 here - so execute every time */
-        if(t_cb && t_active)
-            t_cb(t_timeout,t_opaque);
+            /* We are assuming timeout of 0 here - so execute every time */
+            if(t_cb && t_active)
+                t_cb(t_timeout,t_opaque);
 
-        if (sts == 0) {
-            /* DEBUG0("Poll timeout"); */
-            continue;
+            if (sts == 0) {
+                /* DEBUG0("Poll timeout"); */
+                continue;
+            }
+            if (sts < 0 ) {
+                DEBUG0("Poll failed");
+                continue;
+            }
+            if ( pfd.revents & POLLHUP ) {
+                DEBUG0("Reset by peer");
+                return -1;
+            }
+
+            if(h_cb) {
+                h_cb(0,
+                     h_fd,
+                     myPollEventToEventHandleType(pfd.revents & h_event),
+                     h_opaque);
+            }
+
         }
-        if (sts < 0 ) {
-            DEBUG0("Poll failed");
-            continue;
-        }
-        if ( pfd.revents & POLLHUP ) {
-            DEBUG0("Reset by peer");
-            return -1;
-        }
 
-        if(h_cb) {
-            h_cb(0,
-                 h_fd,
-                 myPollEventToEventHandleType(pfd.revents & h_event),
-                 h_opaque);
-        }
+        DEBUG0("Deregistering event handlers");
+        virConnectDomainEventDeregister(dconn, myDomainEventCallback1);
+        virConnectDomainEventDeregister(dconn, myDomainEventCallback2);
 
     }
-
-    DEBUG0("Deregistering event handlers");
-    virConnectDomainEventDeregister(dconn, myDomainEventCallback1);
-    virConnectDomainEventDeregister(dconn, myDomainEventCallback2);
 
     DEBUG0("Closing connection");
     if( dconn && virConnectClose(dconn)<0 ) {
