@@ -160,6 +160,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_INTERFACE:
             dom = "Interface ";
             break;
+        case VIR_FROM_ONE:
+            dom = "ONE ";
+            break;
     }
     return(dom);
 }

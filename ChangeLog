@@ -1,3 +1,13 @@
+Mon May 25 13:52:30 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/opennebula/one_conf.[ch] src/opennebula/one_driver.[ch]:
+	  the OpenNebula driver
+	* configure.in include/libvirt/virterror.h qemud/Makefile.am
+	  qemud/qemud.c src/Makefile.am src/domain_conf.[ch] src/driver.h
+	  src/libvirt.c src/virterror.c: integration of the OpenNebula
+	  driver in the libvirt infrastructure
+	* AUTHORS: add Abel Miguez Rodriguez
+
 Mon May 25 11:42:15 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* examples/domain-events/events-c/event-test.c: fixed the example

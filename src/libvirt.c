@@ -904,6 +904,10 @@ virGetVersion(unsigned long *libVer, const char *type,
         if (STRCASEEQ(type, "UML"))
             *typeVer = LIBVIR_VERSION_NUMBER;
 #endif
+#if WITH_ONE
+        if (STRCASEEQ(type, "ONE"))
+            *typeVer = LIBVIR_VERSION_NUMBER;
+#endif
 #if WITH_REMOTE
         if (STRCASEEQ(type, "Remote"))
             *typeVer = remoteVersion();

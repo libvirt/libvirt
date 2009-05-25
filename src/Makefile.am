@@ -145,6 +145,12 @@ UML_DRIVER_SOURCES =						\
 		uml_conf.c uml_conf.h				\
 		uml_driver.c uml_driver.h
 
+ONE_DRIVER_SOURCES =					\
+		./opennebula/one_conf.c			\
+		./opennebula/one_conf.h			\
+		./opennebula/one_driver.c		\
+		./opennebula/one_driver.h
+
 NETWORK_DRIVER_SOURCES =					\
 		network_driver.h network_driver.c
 
@@ -338,6 +344,25 @@ endif
 libvirt_driver_uml_la_SOURCES = $(UML_DRIVER_SOURCES)
 endif
 
+if WITH_ONE
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_one.la
+else
+noinst_LTLIBRARIES += libvirt_driver_one.la
+# Stateful, so linked to daemon instead
+#libvirt_la_LIBADD  += libvirt_driver_one.la
+endif
+libvirt_driver_one_la_LDFLAGS = $(ONE_LIBS)
+#libvirt_driver_one_la_CFLAGS  = "-DWITH_ONE"
+if WITH_DRIVER_MODULES
+libvirt_driver_one_la_LDFLAGS += -module -avoid-version
+endif
+libvirt_driver_one_la_SOURCES = $(ONE_DRIVER_SOURCES)
+endif
+
+
+
+
 if WITH_NETWORK
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_network.la
@@ -435,6 +460,7 @@ EXTRA_DIST +=							\
 		$(QEMU_DRIVER_SOURCES)				\
 		$(LXC_DRIVER_SOURCES)				\
 		$(UML_DRIVER_SOURCES)				\
+		$(ONE_DRIVER_SOURCES)				\
 		$(OPENVZ_DRIVER_SOURCES)			\
 		$(VBOX_DRIVER_SOURCES)				\
 		$(NETWORK_DRIVER_SOURCES)			\
