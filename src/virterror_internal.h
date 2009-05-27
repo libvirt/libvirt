@@ -33,17 +33,28 @@ extern void *virUserData;
  *									*
  ************************************************************************/
 int virErrorInitialize(void);
-void virRaiseError(virConnectPtr conn,
-                   virDomainPtr dom,
-                   virNetworkPtr net,
-                   int domain,
-                   int code,
-                   virErrorLevel level,
-                   const char *str1,
-                   const char *str2,
-                   const char *str3,
-                   int int1, int int2, const char *msg, ...)
-  ATTRIBUTE_FORMAT(printf, 12, 13);
+void virRaiseErrorFull(virConnectPtr conn,
+                       const char *filename,
+                       const char *funcname,
+                       size_t linenr,
+                       int domain,
+                       int code,
+                       virErrorLevel level,
+                       const char *str1,
+                       const char *str2,
+                       const char *str3,
+                       int int1,
+                       int int2,
+                       const char *fmt, ...)
+    ATTRIBUTE_FORMAT(printf, 13, 14);
+
+/* Includes 'dom' and 'net' for compatbility, but they're ignored */
+#define virRaiseError(conn, dom, net, domain, code, level,              \
+                      str1, str2, str3, int1, int2, msg, ...)           \
+    virRaiseErrorFull(conn, __FILE__, __FUNCTION__, __LINE__,           \
+                      domain, code, level, str1, str2, str3, int1, int2, \
+                      msg, __VA_ARGS__)
+
 const char *virErrorMsg(virErrorNumber error, const char *info);
 void virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
                           const char *filename ATTRIBUTE_UNUSED,

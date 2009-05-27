@@ -590,10 +590,11 @@ virSetConnError(virConnectPtr conn)
 
 
 /**
- * virRaiseError:
+ * virRaiseErrorFull:
  * @conn: the connection to the hypervisor if available
- * @dom: the domain if available
- * @net: the network if available
+ * @filename: filename where error was raised
+ * @funcname: function name where error was raised
+ * @linenr: line number where error was raised
  * @domain: the virErrorDomain indicating where it's coming from
  * @code: the virErrorNumber code for the error
  * @level: the virErrorLevel for the error
@@ -609,12 +610,19 @@ virSetConnError(virConnectPtr conn)
  * immediately if a callback is found and store it for later handling.
  */
 void
-virRaiseError(virConnectPtr conn,
-              virDomainPtr dom ATTRIBUTE_UNUSED,
-              virNetworkPtr net ATTRIBUTE_UNUSED,
-              int domain, int code, virErrorLevel level,
-              const char *str1, const char *str2, const char *str3,
-              int int1, int int2, const char *msg, ...)
+virRaiseErrorFull(virConnectPtr conn,
+                  const char *filename ATTRIBUTE_UNUSED,
+                  const char *funcname,
+                  size_t linenr,
+                  int domain,
+                  int code,
+                  virErrorLevel level,
+                  const char *str1,
+                  const char *str2,
+                  const char *str3,
+                  int int1,
+                  int int2,
+                  const char *fmt, ...)
 {
     virErrorPtr to;
     void *userData = virUserData;
@@ -650,18 +658,18 @@ virRaiseError(virConnectPtr conn,
     /*
      * formats the message
      */
-    if (msg == NULL) {
+    if (fmt == NULL) {
         str = strdup(_("No error message provided"));
     } else {
-        VIR_GET_VAR_STR(msg, str);
+        VIR_GET_VAR_STR(fmt, str);
     }
 
     /*
      * Hook up the error or warning to the logging facility
-     * TODO: pass function name and lineno
+     * XXXX should we include filename as 'category' instead of domain name ?
      */
     virLogMessage(virErrorDomainName(domain), virErrorLevelPriority(level),
-                  NULL, 0, 1, "%s", str);
+                  funcname, linenr, 1, "%s", str);
 
     /*
      * Save the information about the error
@@ -1067,10 +1075,12 @@ virErrorMsg(virErrorNumber error, const char *info)
  * Helper function to do most of the grunt work for individual driver
  * ReportError
  */
-void virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
-                          const char *filename ATTRIBUTE_UNUSED,
-                          const char *funcname ATTRIBUTE_UNUSED,
-                          size_t linenr ATTRIBUTE_UNUSED,
+void virReportErrorHelper(virConnectPtr conn,
+                          int domcode,
+                          int errcode,
+                          const char *filename,
+                          const char *funcname,
+                          size_t linenr,
                           const char *fmt, ...)
 {
     va_list args;
@@ -1086,8 +1096,10 @@ void virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
     }
 
     virerr = virErrorMsg(errcode, (errorMessage[0] ? errorMessage : NULL));
-    virRaiseError(conn, NULL, NULL, domcode, errcode, VIR_ERR_ERROR,
-                  virerr, errorMessage, NULL, -1, -1, virerr, errorMessage);
+    virRaiseErrorFull(conn, filename, funcname, linenr,
+                      domcode, errcode, VIR_ERR_ERROR,
+                      virerr, errorMessage, NULL,
+                      -1, -1, virerr, errorMessage);
 
 }
 
@@ -1116,9 +1128,9 @@ const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen)
 void virReportSystemErrorFull(virConnectPtr conn,
                               int domcode,
                               int theerrno,
-                              const char *filename ATTRIBUTE_UNUSED,
-                              const char *funcname ATTRIBUTE_UNUSED,
-                              size_t linenr ATTRIBUTE_UNUSED,
+                              const char *filename,
+                              const char *funcname,
+                              size_t linenr,
                               const char *fmt, ...)
 {
     char strerror_buf[1024];
@@ -1148,19 +1160,21 @@ void virReportSystemErrorFull(virConnectPtr conn,
     if (!msgDetail)
         msgDetail = errnoDetail;
 
-    virRaiseError(conn, NULL, NULL, domcode, VIR_ERR_SYSTEM_ERROR, VIR_ERR_ERROR,
-                  msg, msgDetail, NULL, -1, -1, msg, msgDetail);
+    virRaiseErrorFull(conn, filename, funcname, linenr,
+                      domcode, VIR_ERR_SYSTEM_ERROR, VIR_ERR_ERROR,
+                      msg, msgDetail, NULL, -1, -1, msg, msgDetail);
 }
 
 void virReportOOMErrorFull(virConnectPtr conn,
                            int domcode,
-                           const char *filename ATTRIBUTE_UNUSED,
-                           const char *funcname ATTRIBUTE_UNUSED,
-                           size_t linenr ATTRIBUTE_UNUSED)
+                           const char *filename,
+                           const char *funcname,
+                           size_t linenr)
 {
     const char *virerr;
 
     virerr = virErrorMsg(VIR_ERR_NO_MEMORY, NULL);
-    virRaiseError(conn, NULL, NULL, domcode, VIR_ERR_NO_MEMORY, VIR_ERR_ERROR,
-                  virerr, NULL, NULL, -1, -1, virerr, NULL);
+    virRaiseErrorFull(conn, filename, funcname, linenr,
+                      domcode, VIR_ERR_NO_MEMORY, VIR_ERR_ERROR,
+                      virerr, NULL, NULL, -1, -1, virerr, NULL);
 }

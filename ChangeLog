@@ -1,3 +1,10 @@
+Tue May 26 13:09:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix error location logging
+	* src/virterror.c, src/virterror_internal.h: Re-factor error
+	reporting APIs to ensure correct source location info is
+	passed through to eventual virLogMessage call.
+
 Tue May 26 11:25:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/Makefile.am: Add ocaml intermediate files to CLEANFILES
