@@ -264,4 +264,4 @@ else
 EXTRA_DIST += object-locking.ml
 endif
 
-CLEANFILES = *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda object-locking-files.txt
+CLEANFILES = *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.cmi *.cmx object-locking-files.txt

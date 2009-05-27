@@ -1,3 +1,7 @@
+Tue May 26 11:25:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* tests/Makefile.am: Add ocaml intermediate files to CLEANFILES
+
 Mon May 25 13:52:30 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/opennebula/one_conf.[ch] src/opennebula/one_driver.[ch]:
