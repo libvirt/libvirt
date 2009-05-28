@@ -1,3 +1,8 @@
+Thu May 28 13:27:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/logging.c: Include function name & line number in all
+	logging levels.
+
 Thu May 28 12:00:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix python domain events example & binding.

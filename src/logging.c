@@ -516,7 +516,7 @@ void virLogMessage(const char *category, int priority, const char *funcname,
     gettimeofday(&cur_time, NULL);
     localtime_r(&cur_time.tv_sec, &time_info);
 
-    if ((funcname != NULL) && (priority == VIR_LOG_DEBUG)) {
+    if ((funcname != NULL)) {
         ret = virAsprintf(&msg, "%02d:%02d:%02d.%03d: %s : %s:%lld : %s\n",
                           time_info.tm_hour, time_info.tm_min,
                           time_info.tm_sec, (int) cur_time.tv_usec / 1000,
