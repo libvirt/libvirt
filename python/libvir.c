@@ -1653,6 +1653,7 @@ libvirt_virConnectDomainEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     LIBVIRT_ENSURE_THREAD_STATE;
 
     /* Create a python instance of this virDomainPtr */
+    virDomainRef(dom);
     pyobj_dom = libvirt_virDomainPtrWrap(dom);
     pyobj_dom_args = PyTuple_New(2);
     if(PyTuple_SetItem(pyobj_dom_args, 0, pyobj_conn_inst)!=0) {

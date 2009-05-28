@@ -6,6 +6,8 @@ import select
 mypoll = select.poll()
 TIMEOUT_MS = 1000
 
+debug = False
+
 # handle globals
 h_fd       = 0
 h_events   = 0
@@ -66,8 +68,9 @@ def myPollEventToEventHandleType(events):
     return ret;
 
 def myAddHandle(fd, events, cb, opaque):
-    global h_fd, h_events, h_cb, h_opaque
-    #print "Adding Handle %s %s %s %s" % (str(fd), str(events), str(cb), str(opaque))
+    global h_fd, h_events, h_cb, h_opaque, debug
+    if debug:
+        print "Adding Handle %s %s %s %s" % (str(fd), str(events), str(cb), str(opaque))
     h_fd = fd
     h_events = events
     h_cb = cb
@@ -76,36 +79,48 @@ def myAddHandle(fd, events, cb, opaque):
     return 0
 
 def myUpdateHandle(watch, event):
-    global h_fd, h_events
-    #print "Updating Handle %s %s" % (str(h_fd), str(event))
+    global h_fd, h_events, debug
+    if debug:
+        print "Updating Handle %s %s" % (str(h_fd), str(event))
     h_events = event
     mypoll.unregister(h_fd)
     mypoll.register(h_fd, myEventHandleTypeToPollEvent(event))
 
 def myRemoveHandle(watch):
-    global h_fd
-    #print "Removing Handle %s" % str(h_fd)
+    global h_fd, debug
+    if debug:
+        print "Removing Handle %s" % str(h_fd)
     mypoll.unregister(h_fd)
     h_fd = 0
     return h_opaque
 
 def myAddTimeout(timeout, cb, opaque):
-    global t_active, t_timeout, t_cb, t_opaque
-    #print "Adding Timeout %s %s %s" % (str(timeout), str(cb), str(opaque))
-    t_active = 1;
+    global t_active, t_timeout, t_cb, t_opaque, debug
+    if debug:
+        print "Adding Timeout %s %s %s" % (str(timeout), str(cb), str(opaque))
+    if timeout == -1:
+        t_active = 0
+    else:
+        t_active = 1
     t_timeout = timeout;
     t_cb = cb;
     t_opaque = opaque;
     return 0
 
 def myUpdateTimeout(timer, timeout):
-    global t_timeout
-    #print "Updating Timeout %s %s" % (str(timer), str(timeout))
+    global t_timeout, t_active, debug
+    if debug:
+        print "Updating Timeout %s %s" % (str(timer), str(timeout))
+    if timeout == -1:
+        t_active = 0
+    else:
+        t_active = 1
     t_timeout = timeout;
 
 def myRemoveTimeout(timer):
-    global t_active
-    #print "Removing Timeout %s" % str(timer)
+    global t_active, debug
+    if debug:
+        print "Removing Timeout %s" % str(timer)
     t_active = 0;
     return t_opaque
 
@@ -159,6 +174,8 @@ def main():
 
     while 1:
         try:
+            if debug:
+                print "Poll sleep %d" % t_active
             sts = mypoll.poll(TIMEOUT_MS)
         except select.error, err:
             if err[0] == errno.EINTR:
@@ -168,16 +185,18 @@ def main():
             print "Keyboard Interrupt caught - exiting cleanly"
             break
 
+        if t_cb and t_active == 1:
+            if debug:
+                print "Invoking Timeout CB"
+            t_cb(t_timeout, t_opaque[0], t_opaque[1])
+
         if not sts:
-            #print "Timed out"
+            if debug:
+                print "Timed out"
             continue
 
         rfd = sts[0][0]
         revents = sts[0][1]
-
-        if t_active:
-            #print "Invoking Timeout CB"
-            t_cb(t_timeout, t_opaque[0], t_opaque[1])
 
         if revents & select.POLLHUP:
             print "Reset by peer";

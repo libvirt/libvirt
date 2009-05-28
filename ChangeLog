@@ -1,3 +1,11 @@
+Thu May 28 12:00:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix python domain events example & binding.
+	* examples/domain-events/events-python/event-test.py: Fix
+	broken handling of timers
+	* python/libvir.c: Take reference on virDomainPtr object
+	before wrapping it to avoid double-free.
+
 Tue May 26 13:09:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix error location logging
