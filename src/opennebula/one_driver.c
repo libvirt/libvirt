@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*/
-/* Copyright 2002-2009, Distributed Systems Architecture Group, Universidad   
- * Complutense de Madrid (dsa-research.org)                                   
- *                                                                            
+/* Copyright 2002-2009, Distributed Systems Architecture Group, Universidad
+ * Complutense de Madrid (dsa-research.org)
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- */ 
+ */
 /*---------------------------------------------------------------------------*/
 
 #include <config.h>
@@ -66,7 +66,7 @@ static virDrvOpenStatus oneOpen(virConnectPtr conn,
                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                 int flags ATTRIBUTE_UNUSED)
 {
-     /* Verify uri was specified */
+    /* Verify uri was specified */
     if (conn->uri == NULL) {
         conn->uri = xmlParseURI("one:///");
         if (!conn->uri) {
@@ -78,7 +78,7 @@ static virDrvOpenStatus oneOpen(virConnectPtr conn,
         goto declineConnection;
     }
     conn->privateData = one_driver;
-    
+
     return VIR_DRV_OPEN_SUCCESS;
 
 declineConnection:
@@ -86,7 +86,7 @@ declineConnection:
 }
 
 static int oneClose(virConnectPtr conn)
-{	
+{
     conn->privateData = NULL;
     return 0;
 }
@@ -116,7 +116,7 @@ return_point:
     if(vm) {
         virDomainObjUnlock(vm);
     }
-    
+
     return dom;
 }
 
@@ -144,7 +144,7 @@ return_point:
     if(vm) {
         virDomainObjUnlock(vm);
     }
-    
+
     return dom;
 }
 
@@ -172,7 +172,7 @@ return_point:
     if(vm) {
         virDomainObjUnlock(vm);
     }
-    
+
     return dom;
 }
 
@@ -204,7 +204,7 @@ static int oneNumDomains(virConnectPtr conn)
         if (virDomainIsActive(driver->domains.objs[i]))
             n++;
         virDomainObjUnlock(driver->domains.objs[i]);
-	}
+    }
     oneDriverUnlock(driver);
 
     return n;
@@ -217,25 +217,25 @@ static int oneListDefinedDomains(virConnectPtr conn,
 
     oneDriverLock(driver);
     for (i = 0 ; i < driver->domains.count && got < nnames ; i++) {
-		virDomainObjLock(driver->domains.objs[i]);
+        virDomainObjLock(driver->domains.objs[i]);
         if (!virDomainIsActive(driver->domains.objs[i])) {
             if (!(names[got++] = strdup(driver->domains.objs[i]->def->name))) {
                 virReportOOMError(conn);
-				virDomainObjUnlock(driver->domains.objs[i]);
+                virDomainObjUnlock(driver->domains.objs[i]);
                 goto cleanup;
             }
         }
         virDomainObjUnlock(driver->domains.objs[i]);
     }
     oneDriverUnlock(driver);
-    
+
     return got;
 
- cleanup:
+cleanup:
     for (i = 0 ; i < got ; i++)
         VIR_FREE(names[i]);
     oneDriverUnlock(driver);
-    
+
     return -1;
 }
 
@@ -250,7 +250,7 @@ static int oneNumDefinedDomains(virConnectPtr conn)
         if (!virDomainIsActive(driver->domains.objs[i]))
             n++;
         virDomainObjUnlock(driver->domains.objs[i]);
-	}
+    }
     oneDriverUnlock(driver);
 
     return n;
@@ -264,7 +264,7 @@ static virDomainPtr oneDomainDefine(virConnectPtr conn, const char *xml)
     virDomainPtr dom=NULL;
 
     oneDriverLock(driver);
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml, 
+    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto return_point;
 
@@ -292,18 +292,18 @@ static int oneDomainUndefine(virDomainPtr dom)
     one_driver_t *driver = (one_driver_t *)dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     int ret=-1;
-    
+
     oneDriverLock(driver);
     vm =virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
         oneError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
-                 "no domain with matching uuid");
+                 _("no domain with matching uuid"));
         goto return_point;
     }
 
     if (!vm->persistent) {
         oneError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
-                 "cannot undefine transient domain");
+                 _("cannot undefine transient domain"));
         goto return_point;
     }
     virDomainRemoveInactive(&driver->domains, vm);
@@ -332,7 +332,7 @@ static int oneDomainGetInfo(virDomainPtr dom,
 
     if(gettimeofday(&tv,NULL)<0) {
         oneError(dom->conn,dom, VIR_ERR_INTERNAL_ERROR,
-                    "%s",_("getting time of day"));
+                 "%s",_("getting time of day"));
         virDomainObjUnlock(vm);
         return -1;
     }
@@ -347,24 +347,24 @@ static int oneDomainGetInfo(virDomainPtr dom,
         cptr = index(cptr, ':');
         cptr++;
         int one_state=atoi(cptr);
-        
+
         switch(one_state) {
-            case 3:                                     /** running */
-                if (vm->state!=VIR_DOMAIN_SHUTDOWN)
-                    vm->state=VIR_DOMAIN_RUNNING;
-                break;
-            case 5:                                     /** pause */
-                vm->state=VIR_DOMAIN_PAUSED;
-                break;
-            case 6:                                     /** done */
-                vm->state=VIR_DOMAIN_SHUTOFF;
-                vm->def->id=-1;
-                break;
-            case 7:                                     /** error */
-                vm->state=VIR_DOMAIN_CRASHED;
-                break;
-            default: 
-                break;
+        case 3:                                     /** running */
+            if (vm->state!=VIR_DOMAIN_SHUTDOWN)
+                vm->state=VIR_DOMAIN_RUNNING;
+            break;
+        case 5:                                     /** pause */
+            vm->state=VIR_DOMAIN_PAUSED;
+            break;
+        case 6:                                     /** done */
+            vm->state=VIR_DOMAIN_SHUTOFF;
+            vm->def->id=-1;
+            break;
+        case 7:                                     /** error */
+            vm->state=VIR_DOMAIN_CRASHED;
+            break;
+        default:
+            break;
         };
         //Memory:
         cptr=strstr(vm_info,"MEMORY");
@@ -380,7 +380,7 @@ static int oneDomainGetInfo(virDomainPtr dom,
         info->cpuTime = (tv.tv_sec - starttime) *1000ll *1000ll *1000ll;
 
     }
-    
+
     info->state = vm->state;
     info->maxMem = vm->def->maxmem;
     info->memory = vm->def->memory;
@@ -416,13 +416,13 @@ static int oneDomainStart(virDomainPtr dom)
     virDomainObjPtr vm;
     int ret = -1;
     int oneid;
-   
+
     oneDriverLock(driver);
     vm = virDomainFindByName(&driver->domains, dom->name);
 
     if (!vm) {
         oneError(conn, dom, VIR_ERR_INVALID_DOMAIN,
-                 "no domain named %s", dom->name);
+                 _("no domain named %s"), dom->name);
         goto return_point;
     }
     if((oneid = oneSubmitVM(dom->conn,driver,vm)) < 0) {
@@ -437,7 +437,7 @@ return_point:
     if(vm)
         virDomainObjUnlock(vm);
     oneDriverUnlock(driver);
-    
+
     return ret;
 }
 
@@ -449,21 +449,21 @@ oneDomainCreateAndStart(virConnectPtr conn,
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def;
     virDomainPtr dom = NULL;
-	int oneid;
+    int oneid;
 
     oneDriverLock(driver);
     if (!(def = virDomainDefParseString(conn, driver->caps, xml,
-                                         VIR_DOMAIN_XML_INACTIVE)))
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto return_point;
 
     vm = virDomainFindByName(&driver->domains, def->name);
     if (vm) {
         oneError(conn,NULL, VIR_ERR_OPERATION_FAILED,
-            _("Already an OpenNebula VM active with the name: \"%s\" id: %d "),
-            def->name,def->id);
+                 _("Already an OpenNebula VM active with the name: '%s' id: %d "),
+                 def->name,def->id);
         goto return_point;
     }
-    
+
     if (!(vm = virDomainAssignDef(conn, &driver->domains, def))) {
         virDomainDefFree(def);
         goto return_point;
@@ -473,7 +473,7 @@ oneDomainCreateAndStart(virConnectPtr conn,
         vm=NULL;
         goto return_point;
     }
-    
+
     vm->def->id=driver->nextid++;
     vm->persistent=0;
     vm->pid=oneid;
@@ -483,12 +483,12 @@ oneDomainCreateAndStart(virConnectPtr conn,
     if (dom) {
         dom->id = vm->def->id;
     }
-    
+
 return_point:
     if(vm)
         virDomainObjUnlock(vm);
     oneDriverUnlock(driver);
-    
+
     return dom;
 }
 
@@ -506,22 +506,22 @@ static int oneDomainShutdown(virDomainPtr dom)
             goto return_point;
         }
         oneError(dom->conn, dom, VIR_ERR_OPERATION_FAILED,
-                "Wrong state to perform action");
+                 _("Wrong state to perform action"));
         goto return_point;
     }
     oneError(dom->conn,dom, VIR_ERR_INVALID_DOMAIN,
-                 _("no domain with id %d"), dom->id);
-        goto return_point;
+             _("no domain with id %d"), dom->id);
+    goto return_point;
 
     if (!vm->persistent) {
-        virDomainRemoveInactive(&driver->domains, vm); 
+        virDomainRemoveInactive(&driver->domains, vm);
         vm = NULL;
     }
 return_point:
     if(vm)
         virDomainObjUnlock(vm);
     oneDriverUnlock(driver);
-    
+
     return ret;
 }
 
@@ -535,15 +535,15 @@ static int oneDomainDestroy(virDomainPtr dom)
     vm= virDomainFindByID(&driver->domains, dom->id);
     if (!vm) {
         oneError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
-                 "no domain with id %d", dom->id);
+                 _("no domain with id %d"), dom->id);
         goto return_point;
     }
     if(c_oneCancel(vm->pid)) {
-    /* VM not running, delete the instance at ONE DB */
-      if(c_oneFinalize(vm->pid)){
-        oneError(dom->conn, dom, VIR_ERR_OPERATION_FAILED,
-                "Wrong state to perform action");
-        goto return_point;
+        /* VM not running, delete the instance at ONE DB */
+        if(c_oneFinalize(vm->pid)){
+            oneError(dom->conn, dom, VIR_ERR_OPERATION_FAILED,
+                     _("Wrong state to perform action"));
+            goto return_point;
         }
     }
     if(!vm->persistent) {
@@ -557,7 +557,7 @@ return_point:
         virDomainObjUnlock(vm);
 
     oneDriverUnlock(driver);
-    
+
     return ret;
 }
 
@@ -566,32 +566,32 @@ static int oneDomainSuspend(virDomainPtr dom)
     one_driver_t* driver=dom->conn->privateData;
     virDomainObjPtr vm;
     int ret=-1;
-    
+
     oneDriverLock(driver);
     if ((vm=virDomainFindByID(&driver->domains,dom->id))){
 
-    if (vm->state == VIR_DOMAIN_RUNNING) {
-        if( !(c_oneSuspend(vm->pid)) ) {
-            vm->state=VIR_DOMAIN_PAUSED;
-            ret=0;
+        if (vm->state == VIR_DOMAIN_RUNNING) {
+            if( !(c_oneSuspend(vm->pid)) ) {
+                vm->state=VIR_DOMAIN_PAUSED;
+                ret=0;
+                goto return_point;
+            }
+            oneError(dom->conn, dom, VIR_ERR_OPERATION_FAILED,
+                     _("Wrong state to perform action"));
             goto return_point;
         }
-        oneError(dom->conn, dom, VIR_ERR_OPERATION_FAILED,
-                 "Wrong state to perform action");
-        goto return_point;
-    }
-    oneError(dom->conn,dom,VIR_ERR_OPERATION_FAILED,
-             "domain is not running");
+        oneError(dom->conn,dom,VIR_ERR_OPERATION_FAILED,
+                 _("domain is not running"));
     } else {
         oneError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
-                "no domain with matching id %d", dom->id);
+                 _("no domain with matching id %d"), dom->id);
     }
 
 return_point:
     if(vm)
         virDomainObjUnlock(vm);
     oneDriverUnlock(driver);
-    
+
     return ret;
 };
 
@@ -608,23 +608,23 @@ static int oneDomainResume(virDomainPtr dom)
                 vm->state=VIR_DOMAIN_RUNNING;
                 ret=0;
                 goto return_point;
-            }                                                                               
+            }
             oneError(dom->conn, dom, VIR_ERR_OPERATION_FAILED,
-                      "Wrong state to perform action");
+                     _("Wrong state to perform action"));
             goto return_point;
-        } 
+        }
         oneError(dom->conn,dom,VIR_ERR_OPERATION_FAILED,
-                 "domain is not paused ");
+                 _("domain is not paused "));
     } else {
         oneError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
-                 "no domain with matching id %d", dom->id);
-}
+                 _("no domain with matching id %d"), dom->id);
+    }
 
 return_point:
     if(vm)
         virDomainObjUnlock(vm);
     oneDriverUnlock(driver);
-    
+
     return ret;
 };
 
@@ -638,7 +638,7 @@ static int oneStartup(void){
         VIR_FREE(one_driver);
         return -1;
     }
-    
+
     c_oneStart();
     oneDriverLock(one_driver);
     one_driver->nextid=1;
@@ -647,8 +647,8 @@ static int oneStartup(void){
         VIR_FREE(one_driver);
         return -1;
     }
-   oneDriverUnlock(one_driver);
-    
+    oneDriverUnlock(one_driver);
+
     return 0;
 }
 
@@ -670,7 +670,7 @@ static int oneShutdown(void){
 
 static int oneActive(void){
     unsigned int i;
-    int active = 0; 
+    int active = 0;
 
     if (one_driver == NULL)
         return(0);
@@ -679,9 +679,9 @@ static int oneActive(void){
     for (i = 0 ; i < one_driver->domains.count ; i++) {
         virDomainObjLock(one_driver->domains.objs[i]);
         if (virDomainIsActive(one_driver->domains.objs[i]))
-            active = 1; 
+            active = 1;
         virDomainObjUnlock(one_driver->domains.objs[i]);
-    }    
+    }
     oneDriverUnlock(one_driver);
 
     return active;
@@ -697,12 +697,12 @@ static int oneVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *hvVer)
 
 static int oneGetAutostart(virDomainPtr domain ATTRIBUTE_UNUSED, int *autostart)
 {
-	autostart=0;
+    autostart=0;
     return 0;
 }
 
 static char*  oneGetCapabilities(virConnectPtr conn){
-	one_driver_t* privconn=conn->privateData;
+    one_driver_t* privconn=conn->privateData;
     char *xml;
     oneDriverLock(privconn);
     if ((xml = virCapabilitiesFormatXML(privconn->caps)) == NULL)
@@ -778,7 +778,7 @@ static virDriver oneDriver = {
     NULL, /* nodeDeviceReAttach; */
     NULL, /* nodeDeviceReset; */
 };
-    
+
 static virStateDriver oneStateDriver = {
     .initialize = oneStartup,
     .cleanup    = oneShutdown,

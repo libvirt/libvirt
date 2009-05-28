@@ -332,6 +332,7 @@ msg_gen_function += errorf
 msg_gen_function += lxcError
 msg_gen_function += networkLog
 msg_gen_function += networkReportError
+msg_gen_function += oneError
 msg_gen_function += openvzError
 msg_gen_function += openvzLog
 msg_gen_function += qemudDispatchClientFailure

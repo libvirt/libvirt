@@ -1,3 +1,14 @@
+Thu May 28 14:11:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix misc syntax check failures with OpenNebula driver
+	* src/opennebula/one_conf.c, src/opennebula/one_conf.h,
+	src/opennebula/one_driver.c, src/opennebula/one_driver.h: Kill
+	trailing whitespace, automatic re-indent of all code, added
+	missing translation marking
+	* Makefile.maint: Add oneError() as a function with translatable
+	strings.
+	* po/POTFILES.in: Add one_conf.c, one_driver.c
+
 Thu May 28 13:27:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/logging.c: Include function name & line number in all

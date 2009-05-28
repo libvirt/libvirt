@@ -16,6 +16,8 @@ src/network_driver.c
 src/node_device.c
 src/node_device_conf.c
 src/nodeinfo.c
+src/opennebula/one_conf.c
+src/opennebula/one_driver.c
 src/openvz_conf.c
 src/openvz_driver.c
 src/pci.c

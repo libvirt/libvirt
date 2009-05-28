@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------------*/
-/* Copyright 2002-2009, Distributed Systems Architecture Group, Universidad   
- * Complutense de Madrid (dsa-research.org)                                   
- *                                                                            
+/* Copyright 2002-2009, Distributed Systems Architecture Group, Universidad
+ * Complutense de Madrid (dsa-research.org)
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- */ 
+ */
 /*-----------------------------------------------------------------------------------*/
 
 #ifndef ONE_CONF_H
@@ -34,7 +34,7 @@ struct one_driver{
     virCapsPtr caps;
     virDomainObjList domains;
     int nextid;
-}; 
+};
 
 typedef struct one_driver one_driver_t;
 
@@ -44,9 +44,9 @@ int oneSubmitVM(virConnectPtr conn ,one_driver_t* driver, virDomainObjPtr  vm);
 
 char* xmlOneTemplate(virConnectPtr conn,virDomainDefPtr def);
 
-#define oneError(conn, dom, code, fmt...)                                  \
-        virReportErrorHelper(conn, VIR_FROM_ONE, code, __FILE__,           \
-                               __FUNCTION__, __LINE__, fmt)
+#define oneError(conn, dom, code, fmt...)                               \
+    virReportErrorHelper(conn, VIR_FROM_ONE, code, __FILE__,            \
+                         __FUNCTION__, __LINE__, fmt)
 
 #endif /* ONE_CONF_H */
 
