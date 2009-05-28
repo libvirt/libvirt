@@ -136,9 +136,11 @@ int         qemudBuildCommandLine       (virConnectPtr conn,
                                          const char *migrateFrom);
 
 virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
+                                     virCapsPtr caps,
                                      const char **progenv,
                                      const char **progargv);
 virDomainDefPtr qemuParseCommandLineString(virConnectPtr conn,
+                                           virCapsPtr caps,
                                            const char *args);
 
 const char *qemudVirtTypeToString       (int type);

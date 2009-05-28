@@ -1565,14 +1565,27 @@ static int qemuStringToArgvEnv(const char *args,
     /* Iterate over string, splitting on sequences of ' ' */
     while (curr && *curr != '\0') {
         char *arg;
-        const char *next = strchr(curr, ' ');
+        const char *next;
+        if (*curr == '\'') {
+            curr++;
+            next = strchr(curr, '\'');
+        } else if (*curr == '"') {
+            curr++;
+            next = strchr(curr, '"');
+        } else {
+            next = strchr(curr, ' ');
+        }
         if (!next)
             next = strchr(curr, '\n');
 
-        if (next)
+        if (next) {
             arg = strndup(curr, next-curr);
-        else
+            if (*next == '\'' ||
+                *next == '"')
+                next++;
+        } else {
             arg = strdup(curr);
+        }
 
         if (!arg)
             goto no_memory;
@@ -1644,7 +1657,7 @@ static const char *qemuFindEnv(const char **progenv,
     int i;
     int len = strlen(name);
 
-    for (i = 0 ; progenv[i] ; i++) {
+    for (i = 0 ; progenv && progenv[i] ; i++) {
         if (STREQLEN(progenv[i], name, len) &&
             progenv[i][len] == '=')
             return progenv[i] + len + 1;
@@ -1883,8 +1896,10 @@ qemuFindNICForVLAN(virConnectPtr conn,
         int gotvlan;
         const char *tmp = strstr(nics[i], "vlan=");
         char *end;
-        if (tmp)
-            tmp += strlen("vlan=");
+        if (!tmp)
+            continue;
+
+        tmp += strlen("vlan=");
 
         if (virStrToLong_i(tmp, &end, 10, &gotvlan) < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -1895,6 +1910,9 @@ qemuFindNICForVLAN(virConnectPtr conn,
         if (gotvlan == wantvlan)
             return nics[i];
     }
+
+    if (wantvlan == 0 && nnics > 0)
+        return nics[0];
 
     qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                      _("cannot find NIC definition for vlan %d"), wantvlan);
@@ -1909,31 +1927,32 @@ qemuFindNICForVLAN(virConnectPtr conn,
  */
 static virDomainNetDefPtr
 qemuParseCommandLineNet(virConnectPtr conn,
+                        virCapsPtr caps,
                         const char *val,
                         int nnics,
                         const char **nics)
 {
     virDomainNetDefPtr def = NULL;
-    char **keywords;
-    char **values;
+    char **keywords = NULL;
+    char **values = NULL;
     int nkeywords;
     const char *nic;
     int wantvlan = 0;
     const char *tmp;
+    int genmac = 1;
     int i;
 
     tmp = strchr(val, ',');
-    if (!tmp) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot extract NIC type from '%s'"), val);
-        return NULL;
-    }
 
-    if ((nkeywords = qemuParseCommandLineKeywords(conn,
-                                                  tmp+1,
-                                                  &keywords,
-                                                  &values)) < 0)
-        return NULL;
+    if (tmp) {
+        if ((nkeywords = qemuParseCommandLineKeywords(conn,
+                                                      tmp+1,
+                                                      &keywords,
+                                                      &values)) < 0)
+            return NULL;
+    } else {
+        nkeywords = 0;
+    }
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError(conn);
@@ -1983,7 +2002,9 @@ qemuParseCommandLineNet(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!STRPREFIX(nic, "nic,")) {
+    if (!STRPREFIX(nic, "nic")) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot parse NIC definition '%s'"), nic);
         virDomainNetDefFree(def);
         def = NULL;
         goto cleanup;
@@ -1996,23 +2017,31 @@ qemuParseCommandLineNet(virConnectPtr conn,
     VIR_FREE(keywords);
     VIR_FREE(values);
 
-    if ((nkeywords = qemuParseCommandLineKeywords(conn,
-                                                  nic + strlen("nic,"),
-                                                  &keywords,
-                                                  &values)) < 0) {
-        virDomainNetDefFree(def);
-        def = NULL;
-        goto cleanup;
+    if (STRPREFIX(nic, "nic,")) {
+        if ((nkeywords = qemuParseCommandLineKeywords(conn,
+                                                      nic + strlen("nic,"),
+                                                      &keywords,
+                                                      &values)) < 0) {
+            virDomainNetDefFree(def);
+            def = NULL;
+            goto cleanup;
+        }
+    } else {
+        nkeywords = 0;
     }
 
     for (i = 0 ; i < nkeywords ; i++) {
         if (STREQ(keywords[i], "macaddr")) {
+            genmac = 0;
             virParseMacAddr(values[i], def->mac);
         } else if (STREQ(keywords[i], "model")) {
             def->model = values[i];
             values[i] = NULL;
         }
     }
+
+    if (genmac)
+        virCapabilitiesGenerateMac(caps, def->mac);
 
 cleanup:
     for (i = 0 ; i < nkeywords ; i++) {
@@ -2283,6 +2312,7 @@ error:
  * as is practical. This is not an exact science....
  */
 virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
+                                     virCapsPtr caps,
                                      const char **progenv,
                                      const char **progargv)
 {
@@ -2302,6 +2332,8 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
 
     if (VIR_ALLOC(def) < 0)
         goto no_memory;
+
+    virUUIDGenerate(def->uuid);
 
     def->id = -1;
     def->memory = def->maxmem = 64 * 1024;
@@ -2604,7 +2636,7 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
             WANT_VALUE();
             if (!STRPREFIX(val, "nic") && STRNEQ(val, "none")) {
                 virDomainNetDefPtr net;
-                if (!(net = qemuParseCommandLineNet(conn, val, nnics, nics)))
+                if (!(net = qemuParseCommandLineNet(conn, caps, val, nnics, nics)))
                     goto error;
                 if (VIR_REALLOC_N(def->nets, def->nnets+1) < 0) {
                     virDomainNetDefFree(net);
@@ -2741,6 +2773,7 @@ error:
 
 
 virDomainDefPtr qemuParseCommandLineString(virConnectPtr conn,
+                                           virCapsPtr caps,
                                            const char *args)
 {
     const char **progenv = NULL;
@@ -2751,7 +2784,7 @@ virDomainDefPtr qemuParseCommandLineString(virConnectPtr conn,
     if (qemuStringToArgvEnv(args, &progenv, &progargv) < 0)
         goto cleanup;
 
-    def = qemuParseCommandLine(conn, progenv, progargv);
+    def = qemuParseCommandLine(conn, caps, progenv, progargv);
 
 cleanup:
     for (i = 0 ; progargv && progargv[i] ; i++)

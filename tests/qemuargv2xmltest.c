@@ -49,7 +49,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (virtTestLoadFile(xml, &expectxml, MAX_FILE) < 0)
         goto fail;
 
-    if (!(vmdef = qemuParseCommandLineString(NULL, cmd)))
+    if (!(vmdef = qemuParseCommandLineString(NULL, driver.caps, cmd)))
         goto fail;
 
     if (!(actualxml = virDomainDefFormat(NULL, vmdef, 0)))
@@ -108,6 +108,8 @@ mymain(int argc, char **argv)
     abs_srcdir = getenv("abs_srcdir");
     if (!abs_srcdir)
         abs_srcdir = getcwd(cwd, sizeof(cwd));
+
+    virRandomInitialize(0);
 
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;

@@ -3426,6 +3426,7 @@ static char *qemuDomainXMLFromNative(virConnectPtr conn,
                                      const char *format,
                                      const char *config,
                                      unsigned int flags ATTRIBUTE_UNUSED) {
+    struct qemud_driver *driver = conn->privateData;
     virDomainDefPtr def = NULL;
     char *xml = NULL;
 
@@ -3435,7 +3436,7 @@ static char *qemuDomainXMLFromNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    def = qemuParseCommandLineString(conn, config);
+    def = qemuParseCommandLineString(conn, driver->caps, config);
     if (!def)
         goto cleanup;
 
