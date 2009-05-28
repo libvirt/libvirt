@@ -662,8 +662,8 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     }
 
     snprintf(tapfdstr, sizeof(tapfdstr),
-             "tap,fd=%d,script=,vlan=%d,ifname=%s",
-             tapfd, vlan, net->ifname);
+             "tap,fd=%d,vlan=%d",
+             tapfd, vlan);
 
     if (!(retval = strdup(tapfdstr)))
         goto no_memory;

@@ -1,3 +1,9 @@
+Thu May 28 14:13:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Avoid broken networking with new QEMU/KVM >= 86
+	* src/qemu_conf.c: Remove ifname= and script= args to QEMU
+	when passing a TAP device file handle.
+
 Thu May 28 14:11:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix misc syntax check failures with OpenNebula driver
