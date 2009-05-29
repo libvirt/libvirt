@@ -3,7 +3,7 @@
   <key>/var/lib/libvirt/images/OtherDemo.img</key>
   <source>
   </source>
-  <capacity>5242880000</capacity>
+  <capacity unit="G">5</capacity>
   <allocation>294912</allocation>
   <target>
     <path>/var/lib/libvirt/images/OtherDemo.img</path>

@@ -1,3 +1,9 @@
+Fri May 29 14:26:10 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/schemas/storagevol.rng docs/formatstorage.html[.in]
+	  tests/storagevolschemadata/vol-qcow2.xml: fix storage volume
+	  inconsistencies in schema and document, patch by Ryota Ozaki
+
 Fri May 29 14:07:13 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* po/*: update of many localizations, regenerate the po

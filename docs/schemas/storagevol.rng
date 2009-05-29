@@ -29,6 +29,11 @@
   <define name='sizing'>
     <optional>
       <element name='capacity'>
+        <optional>
+	  <attribute name='unit'>
+	    <ref name='unit'/>
+	  </attribute>
+        </optional>
 	<ref name='uint'/>
       </element>
     </optional>
@@ -180,6 +185,12 @@
   <define name='path'>
     <data type='string'>
       <param name="pattern">/[a-zA-Z0-9_\+\-\./%]+</param>
+    </data>
+  </define>
+
+  <define name='unit'>
+    <data type='string'>
+      <param name="pattern">[kKmMgGtTpPyYzZ]</param>
     </data>
   </define>
 
