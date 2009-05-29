@@ -644,6 +644,7 @@ static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
 
 static int lxcContainerDropCapabilities(virDomainDefPtr vmDef ATTRIBUTE_UNUSED)
 {
+#ifdef PR_CAPBSET_DROP
     int i;
     const struct {
         int id;
@@ -660,7 +661,9 @@ static int lxcContainerDropCapabilities(virDomainDefPtr vmDef ATTRIBUTE_UNUSED)
             return -1;
         }
     }
-
+#else /* ! PR_CAPBSET_DROP */
+    VIR_WARN0(_("failed to drop capabilities PR_CAPBSET_DROP undefined"));
+#endif
     return 0;
 }
 
