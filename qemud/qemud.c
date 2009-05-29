@@ -1378,7 +1378,10 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
  * jobs have finished, then clean it up elsehwere
  */
 void qemudDispatchClientFailure(struct qemud_client *client) {
-    virEventRemoveHandleImpl(client->watch);
+    if (client->watch != -1) {
+        virEventRemoveHandleImpl(client->watch);
+        client->watch = -1;
+    }
 
     /* Deregister event delivery callback */
     if(client->conn) {
@@ -1387,12 +1390,21 @@ void qemudDispatchClientFailure(struct qemud_client *client) {
     }
 
 #if HAVE_SASL
-    if (client->saslconn) sasl_dispose(&client->saslconn);
+    if (client->saslconn) {
+        sasl_dispose(&client->saslconn);
+        client->saslconn = NULL;
+    }
     free(client->saslUsername);
+    client->saslUsername = NULL;
 #endif
-    if (client->tlssession) gnutls_deinit (client->tlssession);
-    close(client->fd);
-    client->fd = -1;
+    if (client->tlssession) {
+        gnutls_deinit (client->tlssession);
+        client->tlssession = NULL;
+    }
+    if (client->fd != -1) {
+        close(client->fd);
+        client->fd = -1;
+    }
 }
 
 

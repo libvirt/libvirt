@@ -1,3 +1,8 @@
+Fri May 29 15:34:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c: Set free'd variables to NULL to avoid potential
+	double-free() scenario when client unexpectedly closes connection
+
 Fri May 29 15:26:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Win32 portability fixes
