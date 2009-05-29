@@ -1,3 +1,8 @@
+Fri May 29 10:13:55 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/network_driver.c: networkDestroy: Report error if network
+	is inactive
+
 Fri May 29 10:10:00 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/qemu_driver.c: qemu_driver: Fix another domain startup error

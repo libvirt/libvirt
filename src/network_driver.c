@@ -1238,6 +1238,12 @@ static int networkDestroy(virNetworkPtr net) {
         goto cleanup;
     }
 
+    if (!virNetworkIsActive(network)) {
+        networkReportError(net->conn, NULL, net, VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("network is not active"));
+        goto cleanup;
+    }
+
     ret = networkShutdownNetworkDaemon(net->conn, driver, network);
     if (!network->persistent) {
         virNetworkRemoveInactive(&driver->networks,
