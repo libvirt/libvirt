@@ -1,3 +1,8 @@
+Fri May 29 10:01:19 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/qemu_driver.c : qemuDomainLookupByUUID: print correct UUID
+	string on failed lookup.
+
 Fri May 29 10:00:01 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/virsh.c : virsh: Use consistent spacing for net-list

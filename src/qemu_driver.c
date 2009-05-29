@@ -2043,7 +2043,7 @@ static virDomainPtr qemudDomainLookupByUUID(virConnectPtr conn,
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(uuid, uuidstr);
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_DOMAIN,
-                         _("no domain with matching uuid '%s'"), uuid);
+                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
