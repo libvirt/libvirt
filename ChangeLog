@@ -1,3 +1,8 @@
+Fri May 29 10:10:00 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/qemu_driver.c: qemu_driver: Fix another domain startup error
+	reporting race.
+
 Fri May 29 10:01:19 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/qemu_driver.c : qemuDomainLookupByUUID: print correct UUID

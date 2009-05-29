@@ -746,17 +746,21 @@ qemudReadLogOutput(virConnectPtr conn,
                    const char *what,
                    int timeout)
 {
-    int retries = timeout*10;
+    int retries = (timeout*10);
     int got = 0;
     buf[0] = '\0';
 
     while (retries) {
-        ssize_t ret;
+        ssize_t func_ret, ret;
         int isdead = 0;
+
+        func_ret = func(conn, vm, buf, fd);
 
         if (kill(vm->pid, 0) == -1 && errno == ESRCH)
             isdead = 1;
 
+        /* Any failures should be detected before we read the log, so we
+         * always have something useful to report on failure. */
         ret = saferead(fd, buf+got, buflen-got-1);
         if (ret < 0) {
             virReportSystemError(conn, errno,
@@ -781,9 +785,8 @@ qemudReadLogOutput(virConnectPtr conn,
             return -1;
         }
 
-        ret = func(conn, vm, buf, fd);
-        if (ret <= 0)
-            return ret;
+        if (func_ret <= 0)
+            return func_ret;
 
         usleep(100*1000);
         retries--;
