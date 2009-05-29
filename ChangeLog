@@ -1,3 +1,7 @@
+Fri May 29 14:07:13 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* po/*: update of many localizations, regenerate the po
+
 Thu May 28 14:20:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix misc bugs in ARGV -> XML convertor
