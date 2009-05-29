@@ -1530,7 +1530,7 @@ bool_t
 xdr_remote_interface_lookup_by_name_ret (XDR *xdrs, remote_interface_lookup_by_name_ret *objp)
 {
 
-         if (!xdr_remote_nonnull_interface (xdrs, &objp->interface))
+         if (!xdr_remote_nonnull_interface (xdrs, &objp->iface))
                  return FALSE;
         return TRUE;
 }
@@ -1548,7 +1548,7 @@ bool_t
 xdr_remote_interface_lookup_by_mac_string_ret (XDR *xdrs, remote_interface_lookup_by_mac_string_ret *objp)
 {
 
-         if (!xdr_remote_nonnull_interface (xdrs, &objp->interface))
+         if (!xdr_remote_nonnull_interface (xdrs, &objp->iface))
                  return FALSE;
         return TRUE;
 }
@@ -1557,7 +1557,7 @@ bool_t
 xdr_remote_interface_get_xml_desc_args (XDR *xdrs, remote_interface_get_xml_desc_args *objp)
 {
 
-         if (!xdr_remote_nonnull_interface (xdrs, &objp->interface))
+         if (!xdr_remote_nonnull_interface (xdrs, &objp->iface))
                  return FALSE;
          if (!xdr_u_int (xdrs, &objp->flags))
                  return FALSE;
@@ -1588,7 +1588,7 @@ bool_t
 xdr_remote_interface_define_xml_ret (XDR *xdrs, remote_interface_define_xml_ret *objp)
 {
 
-         if (!xdr_remote_nonnull_interface (xdrs, &objp->interface))
+         if (!xdr_remote_nonnull_interface (xdrs, &objp->iface))
                  return FALSE;
         return TRUE;
 }
@@ -1597,7 +1597,7 @@ bool_t
 xdr_remote_interface_undefine_args (XDR *xdrs, remote_interface_undefine_args *objp)
 {
 
-         if (!xdr_remote_nonnull_interface (xdrs, &objp->interface))
+         if (!xdr_remote_nonnull_interface (xdrs, &objp->iface))
                  return FALSE;
         return TRUE;
 }
@@ -1606,7 +1606,7 @@ bool_t
 xdr_remote_interface_create_args (XDR *xdrs, remote_interface_create_args *objp)
 {
 
-         if (!xdr_remote_nonnull_interface (xdrs, &objp->interface))
+         if (!xdr_remote_nonnull_interface (xdrs, &objp->iface))
                  return FALSE;
          if (!xdr_u_int (xdrs, &objp->flags))
                  return FALSE;
@@ -1617,7 +1617,7 @@ bool_t
 xdr_remote_interface_destroy_args (XDR *xdrs, remote_interface_destroy_args *objp)
 {
 
-         if (!xdr_remote_nonnull_interface (xdrs, &objp->interface))
+         if (!xdr_remote_nonnull_interface (xdrs, &objp->iface))
                  return FALSE;
          if (!xdr_u_int (xdrs, &objp->flags))
                  return FALSE;

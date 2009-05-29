@@ -798,7 +798,7 @@ struct remote_interface_lookup_by_name_args {
 };
 
 struct remote_interface_lookup_by_name_ret {
-    remote_nonnull_interface interface;
+    remote_nonnull_interface iface;
 };
 
 struct remote_interface_lookup_by_mac_string_args {
@@ -806,11 +806,11 @@ struct remote_interface_lookup_by_mac_string_args {
 };
 
 struct remote_interface_lookup_by_mac_string_ret {
-    remote_nonnull_interface interface;
+    remote_nonnull_interface iface;
 };
 
 struct remote_interface_get_xml_desc_args {
-    remote_nonnull_interface interface;
+    remote_nonnull_interface iface;
     unsigned int flags;
 };
 
@@ -824,20 +824,20 @@ struct remote_interface_define_xml_args {
 };
 
 struct remote_interface_define_xml_ret {
-    remote_nonnull_interface interface;
+    remote_nonnull_interface iface;
 };
 
 struct remote_interface_undefine_args {
-    remote_nonnull_interface interface;
+    remote_nonnull_interface iface;
 };
 
 struct remote_interface_create_args {
-    remote_nonnull_interface interface;
+    remote_nonnull_interface iface;
     unsigned int flags;
 };
 
 struct remote_interface_destroy_args {
-    remote_nonnull_interface interface;
+    remote_nonnull_interface iface;
     unsigned int flags;
 };
 

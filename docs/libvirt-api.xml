@@ -346,6 +346,7 @@
      <description>Provides the interfaces of the libvirt library to handle errors raised while using the library. </description>
      <author>Daniel Veillard &lt;veillard@redhat.com&gt; </author>
      <exports symbol='VIR_ERR_NO_XEN' type='enum'/>
+     <exports symbol='VIR_FROM_ONE' type='enum'/>
      <exports symbol='VIR_FROM_NETWORK' type='enum'/>
      <exports symbol='VIR_ERR_NO_NODE_DEVICE' type='enum'/>
      <exports symbol='VIR_ERR_NO_MEMORY' type='enum'/>
@@ -628,12 +629,13 @@
     <enum name='VIR_FROM_CONF' file='virterror' value='9' type='virErrorDomain' info='Error in the configuration file handling'/>
     <enum name='VIR_FROM_DOM' file='virterror' value='6' type='virErrorDomain' info='Error when operating on a domain'/>
     <enum name='VIR_FROM_DOMAIN' file='virterror' value='20' type='virErrorDomain' info='Error from domain config'/>
-    <enum name='VIR_FROM_INTERFACE' file='virterror' value='26' type='virErrorDomain' info=' Error when operating on an interface'/>
+    <enum name='VIR_FROM_INTERFACE' file='virterror' value='26' type='virErrorDomain' info='Error when operating on an interface'/>
     <enum name='VIR_FROM_LXC' file='virterror' value='17' type='virErrorDomain' info='Error from Linux Container driver'/>
     <enum name='VIR_FROM_NET' file='virterror' value='11' type='virErrorDomain' info='Error when operating on a network'/>
     <enum name='VIR_FROM_NETWORK' file='virterror' value='19' type='virErrorDomain' info='Error from network config'/>
     <enum name='VIR_FROM_NODEDEV' file='virterror' value='22' type='virErrorDomain' info='Error from node device monitor'/>
     <enum name='VIR_FROM_NONE' file='virterror' value='0' type='virErrorDomain'/>
+    <enum name='VIR_FROM_ONE' file='virterror' value='27' type='virErrorDomain' info=' Error from OpenNebula driver'/>
     <enum name='VIR_FROM_OPENVZ' file='virterror' value='14' type='virErrorDomain' info='Error from OpenVZ driver'/>
     <enum name='VIR_FROM_PROXY' file='virterror' value='8' type='virErrorDomain' info='Error in the proxy code'/>
     <enum name='VIR_FROM_QEMU' file='virterror' value='10' type='virErrorDomain' info='Error at the QEMU daemon'/>
@@ -1463,7 +1465,7 @@ see note above'/>
     <function name='virInterfaceCreate' file='libvirt' module='libvirt'>
       <info>Activate an interface (ie call &quot;ifup&quot;)</info>
       <return type='int' info='0 in case of success, -1 in case of error'/>
-      <arg name='interface' type='virInterfacePtr' info='pointer to a defined interface'/>
+      <arg name='iface' type='virInterfacePtr' info='pointer to a defined interface'/>
       <arg name='flags' type='unsigned int' info='and OR&apos;ed set of extraction flags, not used yet'/>
     </function>
     <function name='virInterfaceDefineXML' file='libvirt' module='libvirt'>
@@ -1476,33 +1478,33 @@ see note above'/>
     <function name='virInterfaceDestroy' file='libvirt' module='libvirt'>
       <info>deactivate an interface (ie call &quot;ifdown&quot;) This does not remove the interface from the config, and does not free the associated virInterfacePtr object.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
-      <arg name='interface' type='virInterfacePtr' info='an interface object'/>
+      <arg name='iface' type='virInterfacePtr' info='an interface object'/>
       <arg name='flags' type='unsigned int' info='and OR&apos;ed set of extraction flags, not used yet'/>
     </function>
     <function name='virInterfaceFree' file='libvirt' module='libvirt'>
       <info>Free the interface object. The interface itself is unaltered. The data structure is freed and should not be used thereafter.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
-      <arg name='interface' type='virInterfacePtr' info='a interface object'/>
+      <arg name='iface' type='virInterfacePtr' info='a interface object'/>
     </function>
     <function name='virInterfaceGetConnect' file='libvirt' module='libvirt'>
       <info>Provides the connection pointer associated with an interface.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the interface object together.</info>
       <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
-      <arg name='interface' type='virInterfacePtr' info=''/>
+      <arg name='iface' type='virInterfacePtr' info=''/>
     </function>
     <function name='virInterfaceGetMACString' file='libvirt' module='libvirt'>
       <info>Get the MAC for a interface as string. For more information about MAC see RFC4122.</info>
       <return type='const char *' info='a pointer to the MAC address (in null-terminated ASCII format) or NULL, the string need not be deallocated its lifetime will be the same as the interface object.'/>
-      <arg name='interface' type='virInterfacePtr' info='a interface object'/>
+      <arg name='iface' type='virInterfacePtr' info='a interface object'/>
     </function>
     <function name='virInterfaceGetName' file='libvirt' module='libvirt'>
       <info>Get the public name for that interface</info>
       <return type='const char *' info='a pointer to the name or NULL, the string need not be deallocated its lifetime will be the same as the interface object.'/>
-      <arg name='interface' type='virInterfacePtr' info='a interface object'/>
+      <arg name='iface' type='virInterfacePtr' info='a interface object'/>
     </function>
     <function name='virInterfaceGetXMLDesc' file='libvirt' module='libvirt'>
       <info>Provide an XML description of the interface. The description may be reused later to recreate the interface with virInterfaceCreateXML().</info>
       <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
-      <arg name='interface' type='virInterfacePtr' info='a interface object'/>
+      <arg name='iface' type='virInterfacePtr' info='a interface object'/>
       <arg name='flags' type='unsigned int' info='and OR&apos;ed set of extraction flags, not used yet'/>
     </function>
     <function name='virInterfaceLookupByMACString' file='libvirt' module='libvirt'>
@@ -1520,12 +1522,12 @@ see note above'/>
     <function name='virInterfaceRef' file='libvirt' module='libvirt'>
       <info>Increment the reference count on the interface. For each additional call to this method, there shall be a corresponding call to virInterfaceFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a interface would increment the reference count.</info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
-      <arg name='interface' type='virInterfacePtr' info='the interface to hold a reference on'/>
+      <arg name='iface' type='virInterfacePtr' info='the interface to hold a reference on'/>
     </function>
     <function name='virInterfaceUndefine' file='libvirt' module='libvirt'>
       <info>Undefine an interface, ie remove it from the config. This does not free the associated virInterfacePtr object.</info>
       <return type='int' info='0 in case of success, -1 in case of error'/>
-      <arg name='interface' type='virInterfacePtr' info='pointer to a defined interface'/>
+      <arg name='iface' type='virInterfacePtr' info='pointer to a defined interface'/>
     </function>
     <function name='virNetworkCreate' file='libvirt' module='libvirt'>
       <info>Create and start a defined network. If the call succeed the network moves from the defined to the running networks pools.</info>

@@ -212,7 +212,7 @@ static void errorf (virConnectPtr conn, virErrorNumber code,
 static void server_error (virConnectPtr conn, remote_error *err);
 static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain);
 static virNetworkPtr get_nonnull_network (virConnectPtr conn, remote_nonnull_network network);
-static virInterfacePtr get_nonnull_interface (virConnectPtr conn, remote_nonnull_interface interface);
+static virInterfacePtr get_nonnull_interface (virConnectPtr conn, remote_nonnull_interface iface);
 static virStoragePoolPtr get_nonnull_storage_pool (virConnectPtr conn, remote_nonnull_storage_pool pool);
 static virStorageVolPtr get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol);
 static virNodeDevicePtr get_nonnull_node_device (virConnectPtr conn, remote_nonnull_node_device dev);
@@ -3876,7 +3876,7 @@ static virInterfacePtr
 remoteInterfaceLookupByName (virConnectPtr conn,
                              const char *name)
 {
-    virInterfacePtr interface = NULL;
+    virInterfacePtr iface = NULL;
     remote_interface_lookup_by_name_args args;
     remote_interface_lookup_by_name_ret ret;
     struct private_data *priv = conn->interfacePrivateData;
@@ -3891,19 +3891,19 @@ remoteInterfaceLookupByName (virConnectPtr conn,
               (xdrproc_t) xdr_remote_interface_lookup_by_name_ret, (char *) &ret) == -1)
         goto done;
 
-    interface = get_nonnull_interface (conn, ret.interface);
+    iface = get_nonnull_interface (conn, ret.iface);
     xdr_free ((xdrproc_t) &xdr_remote_interface_lookup_by_name_ret, (char *) &ret);
 
 done:
     remoteDriverUnlock(priv);
-    return interface;
+    return iface;
 }
 
 static virInterfacePtr
 remoteInterfaceLookupByMACString (virConnectPtr conn,
                                   const char *mac)
 {
-    virInterfacePtr interface = NULL;
+    virInterfacePtr iface = NULL;
     remote_interface_lookup_by_mac_string_args args;
     remote_interface_lookup_by_mac_string_ret ret;
     struct private_data *priv = conn->interfacePrivateData;
@@ -3918,30 +3918,30 @@ remoteInterfaceLookupByMACString (virConnectPtr conn,
               (xdrproc_t) xdr_remote_interface_lookup_by_mac_string_ret, (char *) &ret) == -1)
         goto done;
 
-    interface = get_nonnull_interface (conn, ret.interface);
+    iface = get_nonnull_interface (conn, ret.iface);
     xdr_free ((xdrproc_t) &xdr_remote_interface_lookup_by_mac_string_ret, (char *) &ret);
 
 done:
     remoteDriverUnlock(priv);
-    return interface;
+    return iface;
 }
 
 static char *
-remoteInterfaceGetXMLDesc (virInterfacePtr interface,
+remoteInterfaceGetXMLDesc (virInterfacePtr iface,
                            unsigned int flags)
 {
     char *rv = NULL;
     remote_interface_get_xml_desc_args args;
     remote_interface_get_xml_desc_ret ret;
-    struct private_data *priv = interface->conn->interfacePrivateData;
+    struct private_data *priv = iface->conn->interfacePrivateData;
 
     remoteDriverLock(priv);
 
-    make_nonnull_interface (&args.interface, interface);
+    make_nonnull_interface (&args.iface, iface);
     args.flags = flags;
 
     memset (&ret, 0, sizeof ret);
-    if (call (interface->conn, priv, 0, REMOTE_PROC_INTERFACE_GET_XML_DESC,
+    if (call (iface->conn, priv, 0, REMOTE_PROC_INTERFACE_GET_XML_DESC,
               (xdrproc_t) xdr_remote_interface_get_xml_desc_args, (char *) &args,
               (xdrproc_t) xdr_remote_interface_get_xml_desc_ret, (char *) &ret) == -1)
         goto done;
@@ -3959,7 +3959,7 @@ remoteInterfaceDefineXML (virConnectPtr conn,
                           const char *xmlDesc,
                           unsigned int flags)
 {
-    virInterfacePtr interface = NULL;
+    virInterfacePtr iface = NULL;
     remote_interface_define_xml_args args;
     remote_interface_define_xml_ret ret;
     struct private_data *priv = conn->interfacePrivateData;
@@ -3975,26 +3975,26 @@ remoteInterfaceDefineXML (virConnectPtr conn,
               (xdrproc_t) xdr_remote_interface_define_xml_ret, (char *) &ret) == -1)
         goto done;
 
-    interface = get_nonnull_interface (conn, ret.interface);
+    iface = get_nonnull_interface (conn, ret.iface);
     xdr_free ((xdrproc_t) &xdr_remote_interface_define_xml_ret, (char *) &ret);
 
 done:
     remoteDriverUnlock(priv);
-    return interface;
+    return iface;
 }
 
 static int
-remoteInterfaceUndefine (virInterfacePtr interface)
+remoteInterfaceUndefine (virInterfacePtr iface)
 {
     int rv = -1;
     remote_interface_undefine_args args;
-    struct private_data *priv = interface->conn->interfacePrivateData;
+    struct private_data *priv = iface->conn->interfacePrivateData;
 
     remoteDriverLock(priv);
 
-    make_nonnull_interface (&args.interface, interface);
+    make_nonnull_interface (&args.iface, iface);
 
-    if (call (interface->conn, priv, 0, REMOTE_PROC_INTERFACE_UNDEFINE,
+    if (call (iface->conn, priv, 0, REMOTE_PROC_INTERFACE_UNDEFINE,
               (xdrproc_t) xdr_remote_interface_undefine_args, (char *) &args,
               (xdrproc_t) xdr_void, (char *) NULL) == -1)
         goto done;
@@ -4007,19 +4007,19 @@ done:
 }
 
 static int
-remoteInterfaceCreate (virInterfacePtr interface,
+remoteInterfaceCreate (virInterfacePtr iface,
                        unsigned int flags)
 {
     int rv = -1;
     remote_interface_create_args args;
-    struct private_data *priv = interface->conn->interfacePrivateData;
+    struct private_data *priv = iface->conn->interfacePrivateData;
 
     remoteDriverLock(priv);
 
-    make_nonnull_interface (&args.interface, interface);
+    make_nonnull_interface (&args.iface, iface);
     args.flags = flags;
 
-    if (call (interface->conn, priv, 0, REMOTE_PROC_INTERFACE_CREATE,
+    if (call (iface->conn, priv, 0, REMOTE_PROC_INTERFACE_CREATE,
               (xdrproc_t) xdr_remote_interface_create_args, (char *) &args,
               (xdrproc_t) xdr_void, (char *) NULL) == -1)
         goto done;
@@ -4032,19 +4032,19 @@ done:
 }
 
 static int
-remoteInterfaceDestroy (virInterfacePtr interface,
+remoteInterfaceDestroy (virInterfacePtr iface,
                         unsigned int flags)
 {
     int rv = -1;
     remote_interface_destroy_args args;
-    struct private_data *priv = interface->conn->interfacePrivateData;
+    struct private_data *priv = iface->conn->interfacePrivateData;
 
     remoteDriverLock(priv);
 
-    make_nonnull_interface (&args.interface, interface);
+    make_nonnull_interface (&args.iface, iface);
     args.flags = flags;
 
-    if (call (interface->conn, priv, 0, REMOTE_PROC_INTERFACE_DESTROY,
+    if (call (iface->conn, priv, 0, REMOTE_PROC_INTERFACE_DESTROY,
               (xdrproc_t) xdr_remote_interface_destroy_args, (char *) &args,
               (xdrproc_t) xdr_void, (char *) NULL) == -1)
         goto done;
@@ -7256,9 +7256,9 @@ get_nonnull_network (virConnectPtr conn, remote_nonnull_network network)
 }
 
 static virInterfacePtr
-get_nonnull_interface (virConnectPtr conn, remote_nonnull_interface interface)
+get_nonnull_interface (virConnectPtr conn, remote_nonnull_interface iface)
 {
-    return virGetInterface (conn, interface.name, interface.mac);
+    return virGetInterface (conn, iface.name, iface.mac);
 }
 
 static virStoragePoolPtr

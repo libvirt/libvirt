@@ -254,7 +254,7 @@ int virUnrefNetwork(virNetworkPtr network);
 virInterfacePtr virGetInterface(virConnectPtr conn,
                                 const char *name,
                                 const char *mac);
-int virUnrefInterface(virInterfacePtr interface);
+int virUnrefInterface(virInterfacePtr iface);
 
 virStoragePoolPtr virGetStoragePool(virConnectPtr conn,
                                       const char *name,

@@ -31,7 +31,7 @@ EXTRA_DIST =						\
 	$(AVAHI_SOURCES)				\
 	$(DAEMON_SOURCES)
 
-BUILT_SOURCES = libvirtd.init libvirtd.logrotate
+BUILT_SOURCES =
 
 if HAVE_RPCGEN
 #
@@ -218,6 +218,8 @@ remote_dispatch_args.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
 remote_dispatch_ret.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
 	perl -w $(srcdir)/remote_generate_stubs.pl -r $(srcdir)/remote_protocol.x > $@
 
+BUILT_SOURCES += libvirtd.logrotate
+
 libvirtd.logrotate: libvirtd.logrotate.in
 	sed						\
 	    -e s!\@localstatedir\@!@localstatedir@!g	\
@@ -241,6 +243,8 @@ install-init: libvirtd.init
 uninstall-init:
 	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd \
 		$(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
+
+BUILT_SOURCES += libvirtd.init
 
 libvirtd.init: libvirtd.init.in
 	sed						\

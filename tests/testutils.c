@@ -18,7 +18,9 @@
 #ifndef WIN32
 #include <sys/wait.h>
 #endif
+#ifdef HAVE_REGEX_H
 #include <regex.h>
+#endif
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
@@ -460,6 +462,7 @@ cleanup:
 }
 
 
+#ifdef HAVE_REGEX_H
 int virtTestClearLineRegex(const char *pattern,
                            char *str)
 {
@@ -503,3 +506,10 @@ int virtTestClearLineRegex(const char *pattern,
 
     return 0;
 }
+#else
+int virtTestClearLineRegex(const char *pattern ATTRIBUTE_UNUSED,
+                           char *str ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+#endif

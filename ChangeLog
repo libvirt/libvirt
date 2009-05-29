@@ -1,3 +1,19 @@
+Fri May 29 15:26:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Win32 portability fixes
+	* docs/libvirt-api.xml, docs/libvirt-refs.xml,
+	docs/devhelp/libvirt-libvirt.html, docs/devhelp/libvirt-virterror.html,
+	docs/html/libvirt-libvirt.html, docs/html/libvirt-virterror.html:
+	Regenerate docs from new API docs
+	* include/libvirt/libvirt.h, include/libvirt/libvirt.h.in,
+	qemud/remote.c, qemud/remote_protocol.c, qemud/remote_protocol.h,
+	qemud/remote_protocol.x, src/datatypes.c, src/datatypes.h,
+	src/driver.h, src/libvirt.c, src/remote_internal.c: Change
+	all variable and field names from 'interface' to 'iface' to
+	avoid clash with Win32 COM object name
+	* tests/testutils.c: Disable regex code if not avaialble
+	* qemud/Makefile.am: Fix BUILT_SOURCES on non-libvirtd builds
+
 Fri May 29 16:25:32 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/lxc_container.c: fix a portability issue if PR_CAPBSET_DROP

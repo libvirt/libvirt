@@ -883,7 +883,7 @@ typedef struct _virInterface virInterface;
  */
 typedef virInterface *virInterfacePtr;
 
-virConnectPtr           virInterfaceGetConnect    (virInterfacePtr interface);
+virConnectPtr           virInterfaceGetConnect    (virInterfacePtr iface);
 
 int                     virConnectNumOfInterfaces (virConnectPtr conn);
 int                     virConnectListInterfaces  (virConnectPtr conn,
@@ -895,25 +895,25 @@ virInterfacePtr         virInterfaceLookupByName  (virConnectPtr conn,
 virInterfacePtr         virInterfaceLookupByMACString (virConnectPtr conn,
                                                        const char *mac);
 
-const char*             virInterfaceGetName       (virInterfacePtr interface);
-const char*             virInterfaceGetMACString  (virInterfacePtr interface);
+const char*             virInterfaceGetName       (virInterfacePtr iface);
+const char*             virInterfaceGetMACString  (virInterfacePtr iface);
 
-char *                  virInterfaceGetXMLDesc    (virInterfacePtr interface,
+char *                  virInterfaceGetXMLDesc    (virInterfacePtr iface,
                                                    unsigned int flags);
 virInterfacePtr         virInterfaceDefineXML     (virConnectPtr conn,
                                                    const char *xmlDesc,
                                                    unsigned int flags);
 
-int                     virInterfaceUndefine      (virInterfacePtr interface);
+int                     virInterfaceUndefine      (virInterfacePtr iface);
 
-int                     virInterfaceCreate        (virInterfacePtr interface,
+int                     virInterfaceCreate        (virInterfacePtr iface,
                                                    unsigned int flags);
 
-int                     virInterfaceDestroy       (virInterfacePtr interface,
+int                     virInterfaceDestroy       (virInterfacePtr iface,
                                                    unsigned int flags);
 
-int                     virInterfaceRef           (virInterfacePtr interface);
-int                     virInterfaceFree          (virInterfacePtr interface);
+int                     virInterfaceRef           (virInterfacePtr iface);
+int                     virInterfaceFree          (virInterfacePtr iface);
 
 /**
  * virStoragePool:

@@ -75,9 +75,9 @@ virNetworkFreeName(virNetworkPtr network, const char *name ATTRIBUTE_UNUSED)
  * Returns 0 in case of success and -1 in case of failure.
  */
 static int
-virInterfaceFreeName(virInterfacePtr interface, const char *name ATTRIBUTE_UNUSED)
+virInterfaceFreeName(virInterfacePtr iface, const char *name ATTRIBUTE_UNUSED)
 {
-    return (virUnrefInterface(interface));
+    return (virUnrefInterface(iface));
 }
 
 /**
@@ -589,19 +589,19 @@ virGetInterface(virConnectPtr conn, const char *name, const char *mac) {
  * which may also be released if its ref count hits zero.
  */
 static void
-virReleaseInterface(virInterfacePtr interface) {
-    virConnectPtr conn = interface->conn;
-    DEBUG("release interface %p %s", interface, interface->name);
+virReleaseInterface(virInterfacePtr iface) {
+    virConnectPtr conn = iface->conn;
+    DEBUG("release interface %p %s", iface, iface->name);
 
     /* TODO search by MAC first as they are better differenciators */
-    if (virHashRemoveEntry(conn->interfaces, interface->name, NULL) < 0)
+    if (virHashRemoveEntry(conn->interfaces, iface->name, NULL) < 0)
         virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
                         _("interface missing from connection hash table"));
 
-    interface->magic = -1;
-    VIR_FREE(interface->name);
-    VIR_FREE(interface->mac);
-    VIR_FREE(interface);
+    iface->magic = -1;
+    VIR_FREE(iface->name);
+    VIR_FREE(iface->mac);
+    VIR_FREE(iface);
 
     DEBUG("unref connection %p %d", conn, conn->refs);
     conn->refs--;
@@ -625,24 +625,24 @@ virReleaseInterface(virInterfacePtr interface) {
  * Returns the reference count or -1 in case of failure.
  */
 int
-virUnrefInterface(virInterfacePtr interface) {
+virUnrefInterface(virInterfacePtr iface) {
     int refs;
 
-    if (!VIR_IS_CONNECTED_INTERFACE(interface)) {
+    if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
         virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
-    virMutexLock(&interface->conn->lock);
-    DEBUG("unref interface %p %s %d", interface, interface->name, interface->refs);
-    interface->refs--;
-    refs = interface->refs;
+    virMutexLock(&iface->conn->lock);
+    DEBUG("unref interface %p %s %d", iface, iface->name, iface->refs);
+    iface->refs--;
+    refs = iface->refs;
     if (refs == 0) {
-        virReleaseInterface(interface);
+        virReleaseInterface(iface);
         /* Already unlocked mutex */
         return (0);
     }
 
-    virMutexUnlock(&interface->conn->lock);
+    virMutexUnlock(&iface->conn->lock);
     return (refs);
 }
 

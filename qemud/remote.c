@@ -2664,16 +2664,16 @@ remoteDispatchInterfaceLookupByName (struct qemud_server *server ATTRIBUTE_UNUSE
                                      remote_interface_lookup_by_name_args *args,
                                      remote_interface_lookup_by_name_ret *ret)
 {
-    virInterfacePtr interface;
+    virInterfacePtr iface;
 
-    interface = virInterfaceLookupByName (conn, args->name);
-    if (interface == NULL) {
+    iface = virInterfaceLookupByName (conn, args->name);
+    if (iface == NULL) {
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
-    make_nonnull_interface (&ret->interface, interface);
-    virInterfaceFree(interface);
+    make_nonnull_interface (&ret->iface, iface);
+    virInterfaceFree(iface);
     return 0;
 }
 
@@ -2685,16 +2685,16 @@ remoteDispatchInterfaceLookupByMacString (struct qemud_server *server ATTRIBUTE_
                                           remote_interface_lookup_by_mac_string_args *args,
                                           remote_interface_lookup_by_mac_string_ret *ret)
 {
-    virInterfacePtr interface;
+    virInterfacePtr iface;
 
-    interface = virInterfaceLookupByMACString (conn, args->mac);
-    if (interface == NULL) {
+    iface = virInterfaceLookupByMACString (conn, args->mac);
+    if (iface == NULL) {
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
-    make_nonnull_interface (&ret->interface, interface);
-    virInterfaceFree(interface);
+    make_nonnull_interface (&ret->iface, iface);
+    virInterfaceFree(iface);
     return 0;
 }
 
@@ -2706,22 +2706,22 @@ remoteDispatchInterfaceGetXmlDesc (struct qemud_server *server ATTRIBUTE_UNUSED,
                                    remote_interface_get_xml_desc_args *args,
                                    remote_interface_get_xml_desc_ret *ret)
 {
-    virInterfacePtr interface;
+    virInterfacePtr iface;
 
-    interface = get_nonnull_interface (conn, args->interface);
-    if (interface == NULL) {
+    iface = get_nonnull_interface (conn, args->iface);
+    if (iface == NULL) {
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     /* remoteDispatchClientRequest will free this. */
-    ret->xml = virInterfaceGetXMLDesc (interface, args->flags);
+    ret->xml = virInterfaceGetXMLDesc (iface, args->flags);
     if (!ret->xml) {
-        virInterfaceFree(interface);
+        virInterfaceFree(iface);
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
-    virInterfaceFree(interface);
+    virInterfaceFree(iface);
     return 0;
 }
 
@@ -2733,16 +2733,16 @@ remoteDispatchInterfaceDefineXml (struct qemud_server *server ATTRIBUTE_UNUSED,
                                   remote_interface_define_xml_args *args,
                                   remote_interface_define_xml_ret *ret)
 {
-    virInterfacePtr interface;
+    virInterfacePtr iface;
 
-    interface = virInterfaceDefineXML (conn, args->xml, args->flags);
-    if (interface == NULL) {
+    iface = virInterfaceDefineXML (conn, args->xml, args->flags);
+    if (iface == NULL) {
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
-    make_nonnull_interface (&ret->interface, interface);
-    virInterfaceFree(interface);
+    make_nonnull_interface (&ret->iface, iface);
+    virInterfaceFree(iface);
     return 0;
 }
 
@@ -2754,20 +2754,20 @@ remoteDispatchInterfaceUndefine (struct qemud_server *server ATTRIBUTE_UNUSED,
                                remote_interface_undefine_args *args,
                                void *ret ATTRIBUTE_UNUSED)
 {
-    virInterfacePtr interface;
+    virInterfacePtr iface;
 
-    interface = get_nonnull_interface (conn, args->interface);
-    if (interface == NULL) {
+    iface = get_nonnull_interface (conn, args->iface);
+    if (iface == NULL) {
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
-    if (virInterfaceUndefine (interface) == -1) {
-        virInterfaceFree(interface);
+    if (virInterfaceUndefine (iface) == -1) {
+        virInterfaceFree(iface);
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
-    virInterfaceFree(interface);
+    virInterfaceFree(iface);
     return 0;
 }
 
@@ -2779,20 +2779,20 @@ remoteDispatchInterfaceCreate (struct qemud_server *server ATTRIBUTE_UNUSED,
                              remote_interface_create_args *args,
                              void *ret ATTRIBUTE_UNUSED)
 {
-    virInterfacePtr interface;
+    virInterfacePtr iface;
 
-    interface = get_nonnull_interface (conn, args->interface);
-    if (interface == NULL) {
+    iface = get_nonnull_interface (conn, args->iface);
+    if (iface == NULL) {
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
-    if (virInterfaceCreate (interface, args->flags) == -1) {
-        virInterfaceFree(interface);
+    if (virInterfaceCreate (iface, args->flags) == -1) {
+        virInterfaceFree(iface);
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
-    virInterfaceFree(interface);
+    virInterfaceFree(iface);
     return 0;
 }
 
@@ -2804,20 +2804,20 @@ remoteDispatchInterfaceDestroy (struct qemud_server *server ATTRIBUTE_UNUSED,
                               remote_interface_destroy_args *args,
                               void *ret ATTRIBUTE_UNUSED)
 {
-    virInterfacePtr interface;
+    virInterfacePtr iface;
 
-    interface = get_nonnull_interface (conn, args->interface);
-    if (interface == NULL) {
+    iface = get_nonnull_interface (conn, args->iface);
+    if (iface == NULL) {
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
-    if (virInterfaceDestroy (interface, args->flags) == -1) {
-        virInterfaceFree(interface);
+    if (virInterfaceDestroy (iface, args->flags) == -1) {
+        virInterfaceFree(iface);
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
-    virInterfaceFree(interface);
+    virInterfaceFree(iface);
     return 0;
 }
 
@@ -4823,9 +4823,9 @@ get_nonnull_network (virConnectPtr conn, remote_nonnull_network network)
 }
 
 static virInterfacePtr
-get_nonnull_interface (virConnectPtr conn, remote_nonnull_interface interface)
+get_nonnull_interface (virConnectPtr conn, remote_nonnull_interface iface)
 {
-    return virGetInterface (conn, interface.name, interface.mac);
+    return virGetInterface (conn, iface.name, iface.mac);
 }
 
 static virStoragePoolPtr

@@ -125,6 +125,7 @@
     <reference name='VIR_FROM_NETWORK' href='html/libvirt-virterror.html#VIR_FROM_NETWORK'/>
     <reference name='VIR_FROM_NODEDEV' href='html/libvirt-virterror.html#VIR_FROM_NODEDEV'/>
     <reference name='VIR_FROM_NONE' href='html/libvirt-virterror.html#VIR_FROM_NONE'/>
+    <reference name='VIR_FROM_ONE' href='html/libvirt-virterror.html#VIR_FROM_ONE'/>
     <reference name='VIR_FROM_OPENVZ' href='html/libvirt-virterror.html#VIR_FROM_OPENVZ'/>
     <reference name='VIR_FROM_PROXY' href='html/libvirt-virterror.html#VIR_FROM_PROXY'/>
     <reference name='VIR_FROM_QEMU' href='html/libvirt-virterror.html#VIR_FROM_QEMU'/>
@@ -573,6 +574,7 @@
       <ref name='VIR_FROM_NETWORK'/>
       <ref name='VIR_FROM_NODEDEV'/>
       <ref name='VIR_FROM_NONE'/>
+      <ref name='VIR_FROM_ONE'/>
       <ref name='VIR_FROM_OPENVZ'/>
       <ref name='VIR_FROM_PROXY'/>
       <ref name='VIR_FROM_QEMU'/>
@@ -1738,6 +1740,7 @@
       <ref name='VIR_FROM_NETWORK'/>
       <ref name='VIR_FROM_NODEDEV'/>
       <ref name='VIR_FROM_NONE'/>
+      <ref name='VIR_FROM_ONE'/>
       <ref name='VIR_FROM_OPENVZ'/>
       <ref name='VIR_FROM_PROXY'/>
       <ref name='VIR_FROM_QEMU'/>

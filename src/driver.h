@@ -516,7 +516,7 @@ typedef virInterfacePtr
                                                const char *mac);
 
 typedef char *
-        (*virDrvInterfaceGetXMLDesc)    (virInterfacePtr interface,
+        (*virDrvInterfaceGetXMLDesc)    (virInterfacePtr iface,
                                          unsigned int flags);
 
 typedef virInterfacePtr
@@ -524,12 +524,12 @@ typedef virInterfacePtr
                                          const char *xmlDesc,
                                          unsigned int flags);
 typedef int
-        (*virDrvInterfaceUndefine)      (virInterfacePtr interface);
+        (*virDrvInterfaceUndefine)      (virInterfacePtr iface);
 typedef int
-        (*virDrvInterfaceCreate)        (virInterfacePtr interface,
+        (*virDrvInterfaceCreate)        (virInterfacePtr iface,
                                          unsigned int flags);
 typedef int
-        (*virDrvInterfaceDestroy)       (virInterfacePtr interface,
+        (*virDrvInterfaceDestroy)       (virInterfacePtr iface,
                                          unsigned int flags);
 
 typedef struct _virInterfaceDriver virInterfaceDriver;
