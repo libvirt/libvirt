@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-05-29 14:01+0200\n"
+"POT-Creation-Date: 2009-05-29 18:42+0200\n"
 "PO-Revision-Date: 2009-03-28 19:46-0300\n"
 "Last-Translator: Mario Italo Filizzola Junior <marioitalo@yahoo.com.br>\n"
 "Language-Team: Brazilian Portuguese <fedora-trans-pt_br@redhat.com>\n"
@@ -380,145 +380,145 @@ msgstr "Excedidos os limites da memória na alocação dos clientes"
 msgid "Turn off polkit auth for privileged client %d"
 msgstr "Desliga a autenticação do polkit para cliente privilegiado %d"
 
-#: qemud/qemud.c:1339 qemud/qemud.c:1932
+#: qemud/qemud.c:1339 qemud/qemud.c:1944
 #, c-format
 msgid "TLS handshake failed: %s"
 msgstr "Falha na negociação TLS: %s"
 
-#: qemud/qemud.c:1512 qemud/qemud.c:1740
+#: qemud/qemud.c:1524 qemud/qemud.c:1752
 #, c-format
 msgid "unexpected negative length request %lld"
 msgstr "requisição de comprimento negativo inesperado %lld"
 
-#: qemud/qemud.c:1528
+#: qemud/qemud.c:1540
 #, c-format
 msgid "read: %s"
 msgstr "ler: %s"
 
-#: qemud/qemud.c:1541
+#: qemud/qemud.c:1553
 #, c-format
 msgid "gnutls_record_recv: %s"
 msgstr "gnutls_record_recv: %s"
 
-#: qemud/qemud.c:1603
+#: qemud/qemud.c:1615
 #, c-format
 msgid "failed to decode SASL data %s"
 msgstr "falha ao decodificar dados SASL %s"
 
-#: qemud/qemud.c:1751
+#: qemud/qemud.c:1763
 #, c-format
 msgid "write: %s"
 msgstr "gravar: %s"
 
-#: qemud/qemud.c:1762
+#: qemud/qemud.c:1774
 #, c-format
 msgid "gnutls_record_send: %s"
 msgstr "gnutls_record_send: %s"
 
-#: qemud/qemud.c:1811
+#: qemud/qemud.c:1823
 #, c-format
 msgid "failed to encode SASL data %s"
 msgstr "falha ao codificar dado SASL %s"
 
-#: qemud/qemud.c:2056
+#: qemud/qemud.c:2068
 #, c-format
 msgid "Signal handler reported %d errors: last error: %s"
 msgstr "O manipulador de sinal relatou %d erros: último erro: %s"
 
-#: qemud/qemud.c:2111
+#: qemud/qemud.c:2123
 msgid "Failed to register shutdown timeout"
 msgstr "Falha ao registrar o tempo limite do desligamento"
 
-#: qemud/qemud.c:2120
+#: qemud/qemud.c:2132
 msgid "Failed to allocate workers"
 msgstr "Falha ao alocar trabalhadores"
 
-#: qemud/qemud.c:2281 qemud/qemud.c:2300
+#: qemud/qemud.c:2293 qemud/qemud.c:2312
 #, c-format
 msgid "failed to allocate memory for %s config list"
 msgstr "falha ao alocar memória para lista de configuração %s"
 
-#: qemud/qemud.c:2287 qemud/qemud.c:2317
+#: qemud/qemud.c:2299 qemud/qemud.c:2329
 #, c-format
 msgid "failed to allocate memory for %s config list value"
 msgstr "falha ao alocar memória para o valor da lista de configuração %s"
 
-#: qemud/qemud.c:2305 qemud/qemud.c:2328
+#: qemud/qemud.c:2317 qemud/qemud.c:2340
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: must be a string or list of strings\n"
 msgstr ""
 "remoteReadConfigFile: %s: %s: deve ser uma string ou uma lista de strings\n"
 
-#: qemud/qemud.c:2344
+#: qemud/qemud.c:2356
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: invalid type: got %s; expected %s\n"
 msgstr ""
 "remoteReadConfigFile: %s: %s: tipo inválido: obtido %s; esperava-se %s\n"
 
-#: qemud/qemud.c:2366
+#: qemud/qemud.c:2378
 #, c-format
 msgid "remoteReadConfigFile: %s\n"
 msgstr "remoteReadConfigFile: %s\n"
 
-#: qemud/qemud.c:2409
+#: qemud/qemud.c:2421
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: unsupported auth %s\n"
 msgstr "remoteReadConfigFile: %s: %s: não há suporte para auth %s\n"
 
-#: qemud/qemud.c:2557
+#: qemud/qemud.c:2569
 msgid "Cannot set group when not running as root"
 msgstr ""
 "Não é possível definir um grupo quando não se está executando como root"
 
-#: qemud/qemud.c:2567
+#: qemud/qemud.c:2579
 #, fuzzy
 msgid "Failed to allocate memory for buffer"
 msgstr "Falha ao alocar a memória"
 
-#: qemud/qemud.c:2576
+#: qemud/qemud.c:2588
 #, fuzzy
 msgid "Failed to reallocate enough memory for buffer"
 msgstr "Falha ao alocar memória para o scsidev"
 
-#: qemud/qemud.c:2582
+#: qemud/qemud.c:2594
 #, c-format
 msgid "Failed to lookup group '%s'"
 msgstr "Falha ao procurar grupo \"%s\""
 
-#: qemud/qemud.c:2595 qemud/qemud.c:2605
+#: qemud/qemud.c:2607 qemud/qemud.c:2617
 #, c-format
 msgid "Failed to parse mode '%s'"
 msgstr "Falha ao analisar o modo \"%s\""
 
-#: qemud/qemud.c:2683
+#: qemud/qemud.c:2695
 msgid "additional privileges are required\n"
 msgstr ""
 
-#: qemud/qemud.c:2689
+#: qemud/qemud.c:2701
 #, fuzzy
 msgid "failed to set reduced privileges\n"
 msgstr "falha na criação do dispositivo %s"
 
-#: qemud/qemud.c:2838
+#: qemud/qemud.c:2850
 #, c-format
 msgid "Failed to fork as daemon: %s"
 msgstr "Falha ao realizar fork como daemon: %s"
 
-#: qemud/qemud.c:2861
+#: qemud/qemud.c:2873
 #, c-format
 msgid "Failed to create pipe: %s"
 msgstr "Falha ao criar pipe: %s"
 
-#: qemud/qemud.c:2886
+#: qemud/qemud.c:2898
 msgid "unable to create rundir"
 msgstr "não foi possível criar o rundir"
 
-#: qemud/qemud.c:2907
+#: qemud/qemud.c:2919
 #, c-format
 msgid "Failed to change group ownership of %s"
 msgstr "Falha ao mudar a propriedade do grupo de %s"
 
-#: qemud/qemud.c:2915
+#: qemud/qemud.c:2927
 msgid "Failed to register callback for signal pipe"
 msgstr "Falha ao registrar o retorno de chamada para o pipe de sinal"
 
@@ -1026,7 +1026,7 @@ msgstr ""
 "Não foi especificado o atributo do \"endereço\" <source> com a interface do "
 "socket"
 
-#: src/domain_conf.c:1058
+#: src/domain_conf.c:1060
 #, fuzzy
 msgid ""
 "No <source> 'name' attribute specified with <interface type='internal'/>"
@@ -1034,445 +1034,445 @@ msgstr ""
 "Não foi especificado o atributo do \"dispositivo\" <source> com a <interface "
 "type='bridge'/>"
 
-#: src/domain_conf.c:1082
+#: src/domain_conf.c:1084
 msgid "Model name contains invalid characters"
 msgstr "O nome do modelo contém caracteres inválidos"
 
-#: src/domain_conf.c:1257 src/domain_conf.c:1334
+#: src/domain_conf.c:1259 src/domain_conf.c:1336
 msgid "Missing source path attribute for char device"
 msgstr "Falta o atributo do caminho da origem para o dispositivo char"
 
-#: src/domain_conf.c:1274 src/domain_conf.c:1291
+#: src/domain_conf.c:1276 src/domain_conf.c:1293
 msgid "Missing source host attribute for char device"
 msgstr "Falta o atributo da máquina de origem para o dispositivo de caractere"
 
-#: src/domain_conf.c:1279 src/domain_conf.c:1296 src/domain_conf.c:1316
+#: src/domain_conf.c:1281 src/domain_conf.c:1298 src/domain_conf.c:1318
 msgid "Missing source service attribute for char device"
 msgstr "Falta o atributo da fonte do dispositivo de caractere"
 
-#: src/domain_conf.c:1387
+#: src/domain_conf.c:1389
 msgid "missing input device type"
 msgstr "falta o tipo de dispositivo de entrada"
 
-#: src/domain_conf.c:1393
+#: src/domain_conf.c:1395
 #, c-format
 msgid "unknown input device type '%s'"
 msgstr "tipo de dispositivo de entrada desconhecido \"%s\""
 
-#: src/domain_conf.c:1400
+#: src/domain_conf.c:1402
 #, c-format
 msgid "unknown input bus type '%s'"
 msgstr "tipo de barramento de entrada desconhecido \"%s\""
 
-#: src/domain_conf.c:1408
+#: src/domain_conf.c:1410
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr "O barramento ps2 não dá suporte ao dispositivo de entrada %s"
 
-#: src/domain_conf.c:1414 src/domain_conf.c:1421
+#: src/domain_conf.c:1416 src/domain_conf.c:1423
 #, c-format
 msgid "unsupported input bus %s"
 msgstr "não há suporte para o barramento de entrada %s"
 
-#: src/domain_conf.c:1426
+#: src/domain_conf.c:1428
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "O barramento do xen não dá suporte ao dispositivo de entrada %s"
 
-#: src/domain_conf.c:1471
+#: src/domain_conf.c:1473
 msgid "missing graphics device type"
 msgstr "falta o tipo de dispositivo de vídeo"
 
-#: src/domain_conf.c:1477
+#: src/domain_conf.c:1479
 #, c-format
 msgid "unknown graphics device type '%s'"
 msgstr "tipo de dispositivo de vídeo desconhecido \"%s\""
 
-#: src/domain_conf.c:1488
+#: src/domain_conf.c:1490
 #, c-format
 msgid "cannot parse vnc port %s"
 msgstr "não foi possível analisar a porta vnc %s"
 
-#: src/domain_conf.c:1526 src/domain_conf.c:1588
+#: src/domain_conf.c:1528 src/domain_conf.c:1590
 #, c-format
 msgid "unknown fullscreen value '%s'"
 msgstr "valor \"%s\" de tela cheia desconhecido"
 
-#: src/domain_conf.c:1544
+#: src/domain_conf.c:1546
 #, fuzzy, c-format
 msgid "cannot parse rdp port %s"
 msgstr "não foi possível analisar a porta vnc %s"
 
-#: src/domain_conf.c:1627
+#: src/domain_conf.c:1629
 #, c-format
 msgid "unknown sound model '%s'"
 msgstr "modelo de som \"%s\" desconhecido"
 
-#: src/domain_conf.c:1661
+#: src/domain_conf.c:1663
 #, c-format
 msgid "cannot parse vendor id %s"
 msgstr "Não foi possível analisar a id do fornecedor %s"
 
-#: src/domain_conf.c:1668
+#: src/domain_conf.c:1670
 msgid "usb vendor needs id"
 msgstr "o fornecedor usb necessita do id"
 
-#: src/domain_conf.c:1678
+#: src/domain_conf.c:1680
 #, c-format
 msgid "cannot parse product %s"
 msgstr "não foi possível analisar o produto %s"
 
-#: src/domain_conf.c:1686
+#: src/domain_conf.c:1688
 msgid "usb product needs id"
 msgstr "produto usb necessita da id"
 
-#: src/domain_conf.c:1697 src/domain_conf.c:1784
+#: src/domain_conf.c:1699 src/domain_conf.c:1786
 #, c-format
 msgid "cannot parse bus %s"
 msgstr "não foi possível analisar o barramento %s"
 
-#: src/domain_conf.c:1704
+#: src/domain_conf.c:1706
 msgid "usb address needs bus id"
 msgstr "o endereço usb necessita do id do barramento"
 
-#: src/domain_conf.c:1713
+#: src/domain_conf.c:1715
 #, c-format
 msgid "cannot parse device %s"
 msgstr "não foi possível analisar o dispositivo %s"
 
-#: src/domain_conf.c:1721
+#: src/domain_conf.c:1723
 msgid "usb address needs device id"
 msgstr "o endereço usb necessita do id do dispositivo"
 
-#: src/domain_conf.c:1726
+#: src/domain_conf.c:1728
 #, c-format
 msgid "unknown usb source type '%s'"
 msgstr "tipo \"%s\" de origem usb desconhecido"
 
-#: src/domain_conf.c:1737
+#: src/domain_conf.c:1739
 msgid "missing vendor"
 msgstr "falta o fornecedor"
 
-#: src/domain_conf.c:1743
+#: src/domain_conf.c:1745
 msgid "missing product"
 msgstr "falta o produto"
 
-#: src/domain_conf.c:1771
+#: src/domain_conf.c:1773
 #, c-format
 msgid "cannot parse domain %s"
 msgstr "não foi possível analisar o domínio %s"
 
-#: src/domain_conf.c:1791
+#: src/domain_conf.c:1793
 msgid "pci address needs bus id"
 msgstr "o endereço pci necessita do id do barramento"
 
-#: src/domain_conf.c:1800
+#: src/domain_conf.c:1802
 #, c-format
 msgid "cannot parse slot %s"
 msgstr "não foi possível analisar o slot %s"
 
-#: src/domain_conf.c:1808
+#: src/domain_conf.c:1810
 msgid "pci address needs slot id"
 msgstr "o endereço pci necessita do id do slot"
 
-#: src/domain_conf.c:1817
+#: src/domain_conf.c:1819
 #, c-format
 msgid "cannot parse function %s"
 msgstr "não foi possível analisar a função %s"
 
-#: src/domain_conf.c:1825
+#: src/domain_conf.c:1827
 msgid "pci address needs function id"
 msgstr "o endereço pci necessita do id da função"
 
-#: src/domain_conf.c:1830
+#: src/domain_conf.c:1832
 #, c-format
 msgid "unknown pci source type '%s'"
 msgstr "tipo \"%s\" de origem pci desconhecido"
 
-#: src/domain_conf.c:1863
+#: src/domain_conf.c:1865
 #, c-format
 msgid "unknown hostdev mode '%s'"
 msgstr "modo \"%s\" de hostdev desconhecido"
 
-#: src/domain_conf.c:1874
+#: src/domain_conf.c:1876
 #, c-format
 msgid "unknown host device type '%s'"
 msgstr "tipo \"%s\" de dispositivo hospedeiro desconhecido"
 
-#: src/domain_conf.c:1879
+#: src/domain_conf.c:1881
 msgid "missing type in hostdev"
 msgstr "falta o tipo no hostdev"
 
-#: src/domain_conf.c:1907
+#: src/domain_conf.c:1909
 #, c-format
 msgid "unknown node %s"
 msgstr "nó %s desconhecido"
 
-#: src/domain_conf.c:1938
+#: src/domain_conf.c:1940
 #, c-format
 msgid "unknown lifecycle action %s"
 msgstr "ação de ciclo de vida %s desconhecida"
 
-#: src/domain_conf.c:1962
+#: src/domain_conf.c:1964
 #, fuzzy
 msgid "missing security type"
 msgstr "falta o elemento capacidade"
 
-#: src/domain_conf.c:1969
+#: src/domain_conf.c:1971
 #, fuzzy
 msgid "invalid security type"
 msgstr "tipo %s de domínio inválido"
 
-#: src/domain_conf.c:1982
+#: src/domain_conf.c:1984
 #, fuzzy
 msgid "missing security model"
 msgstr "falta o modelo de som"
 
-#: src/domain_conf.c:1991
+#: src/domain_conf.c:1993
 #, fuzzy
 msgid "security label is missing"
 msgstr "Rótulo de segurança:"
 
-#: src/domain_conf.c:2005
+#: src/domain_conf.c:2007
 msgid "security imagelabel is missing"
 msgstr ""
 
-#: src/domain_conf.c:2038 src/domain_conf.c:2674 src/domain_conf.c:2715
+#: src/domain_conf.c:2040 src/domain_conf.c:2676 src/domain_conf.c:2717
 #: src/network_conf.c:480 src/network_conf.c:520 src/node_device_conf.c:1042
 #: src/qemu_conf.c:2868 src/storage_conf.c:696 src/storage_conf.c:1071
 msgid "missing root element"
 msgstr "falta o elemento root"
 
-#: src/domain_conf.c:2074
+#: src/domain_conf.c:2076
 msgid "unknown device type"
 msgstr "tipo de dispositivo desconhecido"
 
-#: src/domain_conf.c:2121
+#: src/domain_conf.c:2123
 msgid "missing domain type attribute"
 msgstr "falta o atributo do tipo do domínio"
 
-#: src/domain_conf.c:2127
+#: src/domain_conf.c:2129
 #, c-format
 msgid "invalid domain type %s"
 msgstr "tipo %s de domínio inválido"
 
-#: src/domain_conf.c:2144 src/network_conf.c:335
+#: src/domain_conf.c:2146 src/network_conf.c:335
 msgid "Failed to generate UUID"
 msgstr "Falha ao gerar o UUID"
 
-#: src/domain_conf.c:2150 src/network_conf.c:342 src/storage_conf.c:511
+#: src/domain_conf.c:2152 src/network_conf.c:342 src/storage_conf.c:511
 msgid "malformed uuid element"
 msgstr "elemento uuid inválido"
 
-#: src/domain_conf.c:2159
+#: src/domain_conf.c:2161
 msgid "missing memory element"
 msgstr "falta elemento de memória"
 
-#: src/domain_conf.c:2192
+#: src/domain_conf.c:2194
 #, c-format
 msgid "unexpected feature %s"
 msgstr "recurso %s inesperado"
 
-#: src/domain_conf.c:2232
+#: src/domain_conf.c:2234
 msgid "no OS type"
 msgstr "não há tipo de SO"
 
-#: src/domain_conf.c:2260
+#: src/domain_conf.c:2262
 #, c-format
 msgid "os type '%s' & arch '%s' combination is not supported"
 msgstr ""
 "não há suporte para a combinação tipo de so \"%s\" & arquitetura \"%s\""
 
-#: src/domain_conf.c:2268 src/xm_internal.c:701
+#: src/domain_conf.c:2270 src/xm_internal.c:701
 #, c-format
 msgid "no supported architecture for os type '%s'"
 msgstr "não há arquitetura suportada para o tipo de SO \"%s\""
 
-#: src/domain_conf.c:2318
+#: src/domain_conf.c:2320
 msgid "cannot extract boot device"
 msgstr "não foi possível extrair o dispositivo de inicialização"
 
-#: src/domain_conf.c:2326
+#: src/domain_conf.c:2328
 msgid "missing boot device"
 msgstr "falta o dispositivo de inicialização"
 
-#: src/domain_conf.c:2331
+#: src/domain_conf.c:2333
 #, c-format
 msgid "unknown boot device '%s'"
 msgstr "dispositivo de inicialização \"%s\" desconhecido"
 
-#: src/domain_conf.c:2351
+#: src/domain_conf.c:2353
 msgid "cannot extract disk devices"
 msgstr "não foi possível extrair os dispositivos de disco"
 
-#: src/domain_conf.c:2372
+#: src/domain_conf.c:2374
 msgid "cannot extract filesystem devices"
 msgstr "não foi possível extrair os dispositivos de sistema de arquivos"
 
-#: src/domain_conf.c:2391
+#: src/domain_conf.c:2393
 msgid "cannot extract network devices"
 msgstr "não foi possível extrair os dispositivos de rede"
 
-#: src/domain_conf.c:2412
+#: src/domain_conf.c:2414
 msgid "cannot extract parallel devices"
 msgstr "não foi possível extrair os dispositivos paralelos"
 
-#: src/domain_conf.c:2432
+#: src/domain_conf.c:2434
 msgid "cannot extract serial devices"
 msgstr "não foi possível extrair os dispositivos seriais"
 
-#: src/domain_conf.c:2482
+#: src/domain_conf.c:2484
 msgid "cannot extract input devices"
 msgstr "não foi possível extrair os dispositivos de entrada"
 
-#: src/domain_conf.c:2517
+#: src/domain_conf.c:2519
 msgid "cannot extract graphics devices"
 msgstr "não foi possível extrair os dispositivos de vídeo"
 
-#: src/domain_conf.c:2561
+#: src/domain_conf.c:2563
 msgid "cannot extract sound devices"
 msgstr "não foi possível extrair os dispositivos de som"
 
-#: src/domain_conf.c:2591
+#: src/domain_conf.c:2593
 msgid "cannot extract host devices"
 msgstr "não foi possível extrair os dispositivos do hospedeiro"
 
-#: src/domain_conf.c:2637 src/network_conf.c:445 src/node_device_conf.c:1007
+#: src/domain_conf.c:2639 src/network_conf.c:445 src/node_device_conf.c:1007
 #: src/qemu_conf.c:2814 src/storage_conf.c:651
 #, c-format
 msgid "at line %d: %s"
 msgstr "na linha %d: %s"
 
-#: src/domain_conf.c:2668 src/domain_conf.c:2709 src/network_conf.c:474
+#: src/domain_conf.c:2670 src/domain_conf.c:2711 src/network_conf.c:474
 #: src/network_conf.c:514 src/node_device_conf.c:1036 src/qemu_conf.c:2862
 #: src/storage_conf.c:683 src/storage_conf.c:1058
 msgid "failed to parse xml document"
 msgstr "falha ao analisar o documento xml"
 
-#: src/domain_conf.c:2739 src/network_conf.c:542 src/node_device_conf.c:976
+#: src/domain_conf.c:2741 src/network_conf.c:542 src/node_device_conf.c:976
 #: src/qemu_conf.c:2880
 msgid "incorrect root element"
 msgstr "elemento root incorreto"
 
-#: src/domain_conf.c:2948
+#: src/domain_conf.c:2950
 msgid "topology cpuset syntax error"
 msgstr "erro de sintaxe na topologia da cpuset"
 
-#: src/domain_conf.c:2962
+#: src/domain_conf.c:2964
 #, c-format
 msgid "unexpected lifecycle type %d"
 msgstr "tipo de ciclo de vida %d inesperado"
 
-#: src/domain_conf.c:2984
+#: src/domain_conf.c:2986
 #, c-format
 msgid "unexpected disk type %d"
 msgstr "tipo de disco %d inesperado"
 
-#: src/domain_conf.c:2989
+#: src/domain_conf.c:2991
 #, c-format
 msgid "unexpected disk device %d"
 msgstr "dispositivo de disco %d inesperado"
 
-#: src/domain_conf.c:2994
+#: src/domain_conf.c:2996
 #, c-format
 msgid "unexpected disk bus %d"
 msgstr "barramento de disco %d inesperado"
 
-#: src/domain_conf.c:2999
+#: src/domain_conf.c:3001
 #, c-format
 msgid "unexpected disk cache mode %d"
 msgstr "modo de cache de disco %d inesperado"
 
-#: src/domain_conf.c:3047
+#: src/domain_conf.c:3049
 #, c-format
 msgid "unexpected filesystem type %d"
 msgstr "tipo de sistema de arquivos %d inesperado"
 
-#: src/domain_conf.c:3098 src/domain_conf.c:3326
+#: src/domain_conf.c:3100 src/domain_conf.c:3328
 #, c-format
 msgid "unexpected net type %d"
 msgstr "tipo de rede %d inesperado"
 
-#: src/domain_conf.c:3179
+#: src/domain_conf.c:3181
 #, c-format
 msgid "unexpected char type %d"
 msgstr "tipo de caractere %d inesperado"
 
-#: src/domain_conf.c:3279 src/xend_internal.c:5522
+#: src/domain_conf.c:3281 src/xend_internal.c:5522
 #, c-format
 msgid "unexpected sound model %d"
 msgstr "modelo de som %d inesperado"
 
-#: src/domain_conf.c:3299 src/xend_internal.c:5544
+#: src/domain_conf.c:3301 src/xend_internal.c:5544
 #, c-format
 msgid "unexpected input type %d"
 msgstr "tipo de entrada %d inesperado"
 
-#: src/domain_conf.c:3304
+#: src/domain_conf.c:3306
 #, c-format
 msgid "unexpected input bus type %d"
 msgstr "tipo de barramento de entrada %d inesperado"
 
-#: src/domain_conf.c:3421
+#: src/domain_conf.c:3423
 #, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "modo hostdev %d inesperado"
 
-#: src/domain_conf.c:3428
+#: src/domain_conf.c:3430
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "tipo de hostdev %d inesperado"
 
-#: src/domain_conf.c:3476
+#: src/domain_conf.c:3478
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "tipo de domínio %d inesperado"
 
-#: src/domain_conf.c:3561
+#: src/domain_conf.c:3563
 #, c-format
 msgid "unexpected boot device type %d"
 msgstr "tipo de dispositivo de inicialização %d inesperado"
 
-#: src/domain_conf.c:3579
+#: src/domain_conf.c:3581
 #, c-format
 msgid "unexpected feature %d"
 msgstr "recurso %d inesperado"
 
-#: src/domain_conf.c:3725 src/network_conf.c:657
+#: src/domain_conf.c:3727 src/network_conf.c:657
 #, c-format
 msgid "cannot create config directory '%s'"
 msgstr "não foi possível criar o diretório de configuração \"%s\""
 
-#: src/domain_conf.c:3734 src/network_conf.c:666
+#: src/domain_conf.c:3736 src/network_conf.c:666
 #, c-format
 msgid "cannot create config file '%s'"
 msgstr "não foi possível criar o arquivo de configuração \"%s\""
 
-#: src/domain_conf.c:3742 src/network_conf.c:674
+#: src/domain_conf.c:3744 src/network_conf.c:674
 #, c-format
 msgid "cannot write config file '%s'"
 msgstr "não foi possível gravar o arquivo de configuração \"%s\""
 
-#: src/domain_conf.c:3749 src/network_conf.c:681
+#: src/domain_conf.c:3751 src/network_conf.c:681
 #, c-format
 msgid "cannot save config file '%s'"
 msgstr "não foi possível salvar o arquivo de configuração \"%s\""
 
-#: src/domain_conf.c:3850 src/network_conf.c:787 src/storage_conf.c:1384
+#: src/domain_conf.c:3852 src/network_conf.c:783 src/storage_conf.c:1384
 #, c-format
 msgid "Failed to open dir '%s'"
 msgstr "Falha ao abrir o diretório \"%s\""
 
-#: src/domain_conf.c:3904
+#: src/domain_conf.c:3906
 #, c-format
 msgid "cannot remove config %s"
 msgstr "não foi possível remover a configuração para \"%s\""
 
-#: src/domain_conf.c:3978
+#: src/domain_conf.c:3980
 msgid "unknown virt type"
 msgstr "tipo de virt desconhecido"
 
-#: src/domain_conf.c:3989
+#: src/domain_conf.c:3991
 #, c-format
 msgid "no emulator for domain %s os type %s on architecture %s"
 msgstr "nenhum emulador para o domínio %s, tipo de SO %s na arquitetura %s"
@@ -1677,21 +1677,25 @@ msgstr "falha na criação do dispositivo %s"
 msgid "failed to mount /proc"
 msgstr "falha ao montar /proc"
 
-#: src/lxc_container.c:659
+#: src/lxc_container.c:660
 #, fuzzy, c-format
 msgid "failed to drop %s"
 msgstr "falha na criação do dispositivo %s"
 
-#: src/lxc_container.c:690
+#: src/lxc_container.c:665
+msgid "failed to drop capabilities PR_CAPBSET_DROP undefined"
+msgstr ""
+
+#: src/lxc_container.c:693
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() passou uma definição da mv inválida"
 
-#: src/lxc_container.c:711
+#: src/lxc_container.c:714
 #, fuzzy, c-format
 msgid "failed to open tty %s"
 msgstr "falha ao abrir %s"
 
-#: src/lxc_container.c:789
+#: src/lxc_container.c:792
 msgid "failed to run clone container"
 msgstr "falha ao executar o contêiner clone"
 
@@ -1822,12 +1826,12 @@ msgstr "Sistema não possui suporte a NETNS"
 msgid "no domain with matching uuid"
 msgstr "não existe domínio associado ao uuid"
 
-#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3755
+#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3758
 #: src/uml_driver.c:1626
 msgid "cannot delete active domain"
 msgstr "não foi possível excluir o domínio ativo"
 
-#: src/lxc_driver.c:339 src/opennebula/one_driver.c:306 src/qemu_driver.c:3761
+#: src/lxc_driver.c:339 src/opennebula/one_driver.c:306 src/qemu_driver.c:3764
 #: src/uml_driver.c:1632
 msgid "cannot undefine transient domain"
 msgstr "não foi possível tornar domínio transitório indefinido"
@@ -1937,7 +1941,7 @@ msgstr "Parâmetro inválido \"%s\""
 msgid "Invalid parameter count"
 msgstr "Contagem inválida de parâmetros"
 
-#: src/lxc_driver.c:1414 src/qemu_driver.c:2108 src/qemu_driver.c:4926
+#: src/lxc_driver.c:1414 src/qemu_driver.c:2111 src/qemu_driver.c:4929
 #, fuzzy
 msgid "failed to determine host name"
 msgstr "falha ao obter o nome de máquina"
@@ -1973,24 +1977,24 @@ msgstr ""
 msgid "unknown forwarding type '%s'"
 msgstr "tipo de encaminhamento \"%s\" desconhecido"
 
-#: src/network_conf.c:742
+#: src/network_conf.c:741
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr ""
 "O nome do arquivo de configuração da rede \"%s\" não corresponde ao nome da "
 "rede \"%s\""
 
-#: src/network_conf.c:835
+#: src/network_conf.c:831
 #, c-format
 msgid "cannot remove config file '%s'"
 msgstr "não foi possível remover o arquivo de configuração \"%s\""
 
-#: src/network_conf.c:909
+#: src/network_conf.c:905
 #, c-format
 msgid "Bridge generation exceeded max id %d"
 msgstr "Geração da ponte excedeu a id máxima %d"
 
-#: src/network_conf.c:923
+#: src/network_conf.c:924
 #, fuzzy, c-format
 msgid "bridge name '%s' already in use."
 msgstr "o domínio \"%s\" já está definido"
@@ -2125,8 +2129,8 @@ msgstr "Desligando a rede \"%s\"\n"
 
 #: src/network_driver.c:951 src/network_driver.c:1176
 #: src/network_driver.c:1214 src/network_driver.c:1237
-#: src/network_driver.c:1266 src/network_driver.c:1321
-#: src/network_driver.c:1346
+#: src/network_driver.c:1272 src/network_driver.c:1327
+#: src/network_driver.c:1352
 msgid "no network with matching uuid"
 msgstr "não existe rede que corresponda com o uuid"
 
@@ -2138,26 +2142,31 @@ msgstr "não existe rede que corresponda com o nome"
 msgid "network is still active"
 msgstr "a rede ainda está ativa"
 
-#: src/network_driver.c:1289
+#: src/network_driver.c:1243
+#, fuzzy
+msgid "network is not active"
+msgstr "a rede ainda está ativa"
+
+#: src/network_driver.c:1295
 msgid "no network with matching id"
 msgstr "não existe rede que corresponda com o id"
 
-#: src/network_driver.c:1295
+#: src/network_driver.c:1301
 #, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "A rede \"%s\" não tem um nome de ponte."
 
-#: src/network_driver.c:1363
+#: src/network_driver.c:1369
 #, c-format
 msgid "cannot create autostart directory '%s'"
 msgstr "não foi possível criar o diretório de início automático \"%s\""
 
-#: src/network_driver.c:1370 src/storage_driver.c:970
+#: src/network_driver.c:1376 src/storage_driver.c:970
 #, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "Falha ao criar o link simbólico \"%s\" para \"%s\""
 
-#: src/network_driver.c:1377 src/qemu_driver.c:4407 src/storage_driver.c:978
+#: src/network_driver.c:1383 src/qemu_driver.c:4410 src/storage_driver.c:978
 #: src/uml_driver.c:1727
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -2471,16 +2480,16 @@ msgstr "Já existe uma MV OPENVZ ativa com a id \"%s\""
 msgid "Wrong state to perform action"
 msgstr "informação do volume de armazenamento"
 
-#: src/opennebula/one_driver.c:584 src/qemu_driver.c:2247
-#: src/qemu_driver.c:2297 src/qemu_driver.c:2377 src/qemu_driver.c:2788
-#: src/qemu_driver.c:4456 src/qemu_driver.c:4595 src/qemu_driver.c:4741
-#: src/qemu_driver.c:5067 src/xen_internal.c:1078 src/xen_internal.c:1158
+#: src/opennebula/one_driver.c:584 src/qemu_driver.c:2250
+#: src/qemu_driver.c:2300 src/qemu_driver.c:2380 src/qemu_driver.c:2791
+#: src/qemu_driver.c:4459 src/qemu_driver.c:4598 src/qemu_driver.c:4744
+#: src/qemu_driver.c:5070 src/xen_internal.c:1078 src/xen_internal.c:1158
 #: src/xen_internal.c:1261
 msgid "domain is not running"
 msgstr "o domínio não está executando"
 
 #: src/opennebula/one_driver.c:587 src/opennebula/one_driver.c:620
-#: src/qemu_driver.c:2019 src/uml_driver.c:1265 src/uml_driver.c:1295
+#: src/qemu_driver.c:2022 src/uml_driver.c:1265 src/uml_driver.c:1295
 #: src/vbox/vbox_tmpl.c:569
 #, c-format
 msgid "no domain with matching id %d"
@@ -2661,7 +2670,7 @@ msgstr "o domínio não está no estado desligado"
 msgid "Could not read container config"
 msgstr "Não foi possível ler a configuração do contêiner"
 
-#: src/openvz_driver.c:1008 src/qemu_driver.c:1876
+#: src/openvz_driver.c:1008 src/qemu_driver.c:1879
 #, c-format
 msgid "unknown type '%s'"
 msgstr "tipo desconhecido \"%s\""
@@ -3093,281 +3102,281 @@ msgstr "O tempo expirou enquanto era lida a saída inicial do %s"
 msgid "Out of space while reading %s startup output"
 msgstr "Excedido o espaço enquanto era lida a saída inicial do %s"
 
-#: src/qemu_driver.c:763
+#: src/qemu_driver.c:767
 #, c-format
 msgid "Failure while reading %s log output"
 msgstr "Falha enquanto era lida a saída de log do %s"
 
-#: src/qemu_driver.c:772
+#: src/qemu_driver.c:776
 #, c-format
 msgid "Out of space while reading %s log output"
 msgstr "Excedido o espaço enquanto era lida a saída do log do %s"
 
-#: src/qemu_driver.c:779
+#: src/qemu_driver.c:783
 #, fuzzy, c-format
 msgid "Process exited while reading %s log output"
 msgstr "O tempo expirou enquanto era lida a saída de log do %s"
 
-#: src/qemu_driver.c:793
+#: src/qemu_driver.c:796
 #, c-format
 msgid "Timed out while reading %s log output"
 msgstr "O tempo expirou enquanto era lida a saída de log do %s"
 
-#: src/qemu_driver.c:822
+#: src/qemu_driver.c:825
 #, c-format
 msgid "Unable to open monitor path %s"
 msgstr "Não foi possível abrir o caminho do monitor %s"
 
-#: src/qemu_driver.c:827
+#: src/qemu_driver.c:830
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "Não foi possível definir a flag close-on-exec do monitor"
 
-#: src/qemu_driver.c:832
+#: src/qemu_driver.c:835
 msgid "Unable to put monitor into non-blocking mode"
 msgstr "Não foi possível colocar o monitor no modo non-blocking"
 
-#: src/qemu_driver.c:982 src/qemu_driver.c:1554
+#: src/qemu_driver.c:985 src/qemu_driver.c:1557
 #, c-format
 msgid "Unable to close logfile: %s\n"
 msgstr "Não foi possível fechar o arquivo de log: %s\n"
 
-#: src/qemu_driver.c:991
+#: src/qemu_driver.c:994
 #, c-format
 msgid "unable to start guest: %s"
 msgstr "não foi possível iniciar o convidado: %s"
 
-#: src/qemu_driver.c:1021
+#: src/qemu_driver.c:1024
 msgid "cannot run monitor command to fetch CPU thread info"
 msgstr ""
 "não foi possível executar o comando de monitoração para trazer a informação "
 "da thread da CPU"
 
-#: src/qemu_driver.c:1125
+#: src/qemu_driver.c:1128
 msgid "failed to set CPU affinity"
 msgstr "falha ao definir a afinidade da CPU"
 
-#: src/qemu_driver.c:1135 src/qemu_driver.c:2303
+#: src/qemu_driver.c:1138 src/qemu_driver.c:2306
 msgid "resume operation failed"
 msgstr "falha ao retomar a operação"
 
-#: src/qemu_driver.c:1168
+#: src/qemu_driver.c:1171
 msgid "setting VNC password failed"
 msgstr "falha ao definir a senha VNC"
 
-#: src/qemu_driver.c:1310
+#: src/qemu_driver.c:1313
 #, fuzzy
 msgid "Failed to set security label"
 msgstr "não foi possível obter a hora atual"
 
-#: src/qemu_driver.c:1344 src/uml_driver.c:738
+#: src/qemu_driver.c:1347 src/uml_driver.c:738
 msgid "VM is already active"
 msgstr "A MV já está ativa"
 
-#: src/qemu_driver.c:1362
+#: src/qemu_driver.c:1365
 msgid "Unable to find an unused VNC port"
 msgstr "Não foi possível localizar uma porta VNC disponível"
 
-#: src/qemu_driver.c:1370 src/uml_driver.c:760
+#: src/qemu_driver.c:1373 src/uml_driver.c:760
 #, c-format
 msgid "cannot create log directory %s"
 msgstr "não foi possível criar o diretório de log %s"
 
-#: src/qemu_driver.c:1390 src/qemu_driver.c:3524
+#: src/qemu_driver.c:1393 src/qemu_driver.c:3527
 #, c-format
 msgid "Cannot find QEMU binary %s"
 msgstr "Não foi possível encontrar o binário do QEMU %s"
 
-#: src/qemu_driver.c:1405
+#: src/qemu_driver.c:1408
 #, fuzzy, c-format
 msgid "Cannot remove stale PID file for %s"
 msgstr "não foi possível remover a configuração para %s"
 
-#: src/qemu_driver.c:1412
+#: src/qemu_driver.c:1415
 #, fuzzy
 msgid "Failed to build pidfile path."
 msgstr "Falha ao construir o pool %s"
 
-#: src/qemu_driver.c:1425 src/qemu_driver.c:1428 src/uml_driver.c:798
+#: src/qemu_driver.c:1428 src/qemu_driver.c:1431 src/uml_driver.c:798
 #: src/uml_driver.c:801
 #, c-format
 msgid "Unable to write envv to logfile: %s\n"
 msgstr "Não foi possível gravar o envv no arquivo log: %s\n"
 
-#: src/qemu_driver.c:1435 src/qemu_driver.c:1438 src/qemu_driver.c:1443
+#: src/qemu_driver.c:1438 src/qemu_driver.c:1441 src/qemu_driver.c:1446
 #: src/uml_driver.c:808 src/uml_driver.c:811 src/uml_driver.c:816
 #, c-format
 msgid "Unable to write argv to logfile: %s\n"
 msgstr "Não foi possível gravar o argv no arquivo log: %s\n"
 
-#: src/qemu_driver.c:1447
+#: src/qemu_driver.c:1450
 #, c-format
 msgid "Unable to seek to end of logfile: %s\n"
 msgstr "Não foi possível buscar o final do arquivo de log: %s\n"
 
-#: src/qemu_driver.c:1464
+#: src/qemu_driver.c:1467
 #, c-format
 msgid "Domain %s didn't show up\n"
 msgstr "O domínio %s não apareceu\n"
 
-#: src/qemu_driver.c:1539
+#: src/qemu_driver.c:1542
 #, c-format
 msgid "Shutting down VM '%s'\n"
 msgstr "Desligando a MV \"%s\"\n"
 
-#: src/qemu_driver.c:1544
+#: src/qemu_driver.c:1547
 #, c-format
 msgid "Failed to send SIGTERM to %s (%d)"
 msgstr "Falha ao enviar sinal SIGTERM ao %s (%d)"
 
-#: src/qemu_driver.c:1577
+#: src/qemu_driver.c:1580
 #, c-format
 msgid "Failed to remove domain status for %s"
 msgstr "Falha ao remover o status do domínio para %s"
 
-#: src/qemu_driver.c:1582
+#: src/qemu_driver.c:1585
 #, fuzzy, c-format
 msgid "Failed to remove PID file for %s: %s"
 msgstr "Falha ao remover a ID PCI \"%s\" de %s"
 
-#: src/qemu_driver.c:1630
+#: src/qemu_driver.c:1633
 #, c-format
 msgid "unhandled fd event %d for %s"
 msgstr "evento de fd %d para %s não manipulado"
 
-#: src/qemu_driver.c:1849
+#: src/qemu_driver.c:1852
 #, c-format
 msgid "Unable to open %s"
 msgstr "Não foi possível abrir %s"
 
-#: src/qemu_driver.c:1914 src/qemu_driver.c:1951 src/uml_driver.c:969
+#: src/qemu_driver.c:1917 src/qemu_driver.c:1954 src/uml_driver.c:969
 #: src/uml_driver.c:1000
 msgid "NUMA not supported on this host"
 msgstr "Não há suporte para NUMA neste hospedeiro"
 
-#: src/qemu_driver.c:1920
+#: src/qemu_driver.c:1923
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr ""
 
-#: src/qemu_driver.c:1932 src/qemu_driver.c:1959 src/uml_driver.c:980
+#: src/qemu_driver.c:1935 src/qemu_driver.c:1962 src/uml_driver.c:980
 #: src/uml_driver.c:1008
 msgid "Failed to query NUMA free memory"
 msgstr "Falha ao consultar a memória livre da NUMA"
 
-#: src/qemu_driver.c:2046 src/qemu_driver.c:2242 src/qemu_driver.c:2292
-#: src/qemu_driver.c:2341 src/qemu_driver.c:2372 src/qemu_driver.c:2414
-#: src/qemu_driver.c:2441 src/qemu_driver.c:2466 src/qemu_driver.c:2589
-#: src/qemu_driver.c:2630 src/qemu_driver.c:2782 src/qemu_driver.c:2917
-#: src/qemu_driver.c:2978 src/qemu_driver.c:3047 src/qemu_driver.c:3127
-#: src/qemu_driver.c:3160 src/qemu_driver.c:3402 src/qemu_driver.c:3635
-#: src/qemu_driver.c:3749 src/qemu_driver.c:4140 src/qemu_driver.c:4290
-#: src/qemu_driver.c:4343 src/qemu_driver.c:4370 src/qemu_driver.c:4451
-#: src/qemu_driver.c:4589 src/qemu_driver.c:4655 src/qemu_driver.c:4729
-#: src/qemu_driver.c:5061 src/uml_driver.c:1353 src/uml_driver.c:1378
+#: src/qemu_driver.c:2049 src/qemu_driver.c:2245 src/qemu_driver.c:2295
+#: src/qemu_driver.c:2344 src/qemu_driver.c:2375 src/qemu_driver.c:2417
+#: src/qemu_driver.c:2444 src/qemu_driver.c:2469 src/qemu_driver.c:2592
+#: src/qemu_driver.c:2633 src/qemu_driver.c:2785 src/qemu_driver.c:2920
+#: src/qemu_driver.c:2981 src/qemu_driver.c:3050 src/qemu_driver.c:3130
+#: src/qemu_driver.c:3163 src/qemu_driver.c:3405 src/qemu_driver.c:3638
+#: src/qemu_driver.c:3752 src/qemu_driver.c:4143 src/qemu_driver.c:4293
+#: src/qemu_driver.c:4346 src/qemu_driver.c:4373 src/qemu_driver.c:4454
+#: src/qemu_driver.c:4592 src/qemu_driver.c:4658 src/qemu_driver.c:4732
+#: src/qemu_driver.c:5064 src/uml_driver.c:1353 src/uml_driver.c:1378
 #: src/uml_driver.c:1411
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "não existe domínio que corresponda ao uuid \"%s\""
 
-#: src/qemu_driver.c:2071 src/qemu_driver.c:5190
+#: src/qemu_driver.c:2074 src/qemu_driver.c:5193
 #, fuzzy, c-format
 msgid "no domain with matching name '%s'"
 msgstr "nenhum domínio com nome correspondente a %s"
 
-#: src/qemu_driver.c:2171 src/qemu_driver.c:2190 src/qemu_driver.c:3308
-#: src/qemu_driver.c:3327 src/qemu_driver.c:3679 src/qemu_driver.c:3694
+#: src/qemu_driver.c:2174 src/qemu_driver.c:2193 src/qemu_driver.c:3311
+#: src/qemu_driver.c:3330 src/qemu_driver.c:3682 src/qemu_driver.c:3697
 #, fuzzy, c-format
 msgid "domain '%s' is already defined with uuid %s"
 msgstr "o domínio \"%s\" já está definido"
 
-#: src/qemu_driver.c:2179 src/qemu_driver.c:3316
+#: src/qemu_driver.c:2182 src/qemu_driver.c:3319
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "o domínio já está ativo como \"%s\""
 
-#: src/qemu_driver.c:2253 src/qemu_driver.c:2797
+#: src/qemu_driver.c:2256 src/qemu_driver.c:2800
 msgid "suspend operation failed"
 msgstr "falha ao suspender a operação"
 
-#: src/qemu_driver.c:2347 src/uml_driver.c:1272
+#: src/qemu_driver.c:2350 src/uml_driver.c:1272
 msgid "shutdown operation failed"
 msgstr "falha na operação de desligamento"
 
-#: src/qemu_driver.c:2472 src/uml_driver.c:1384
+#: src/qemu_driver.c:2475 src/uml_driver.c:1384
 msgid "cannot set max memory lower than current memory"
 msgstr ""
 "não foi possível ajustar o valor máximo da memória para que seja menor do "
 "que a memória atual"
 
-#: src/qemu_driver.c:2505
+#: src/qemu_driver.c:2508
 #, fuzzy
 msgid "could not query memory balloon allocation"
 msgstr "altera a alocação de memória"
 
-#: src/qemu_driver.c:2516
+#: src/qemu_driver.c:2519
 #, fuzzy
 msgid "could not parse memory balloon allocation"
 msgstr "não foi possível analisar a URI da conexão"
 
-#: src/qemu_driver.c:2555
+#: src/qemu_driver.c:2558
 #, fuzzy
 msgid "could not balloon memory allocation"
 msgstr "altera a alocação de memória"
 
-#: src/qemu_driver.c:2595 src/uml_driver.c:1423
+#: src/qemu_driver.c:2598 src/uml_driver.c:1423
 msgid "cannot set memory higher than max memory"
 msgstr ""
 "não foi possível ajustar a memória para um valor maior do que a memória "
 "máxima"
 
-#: src/qemu_driver.c:2603 src/uml_driver.c:1417
+#: src/qemu_driver.c:2606 src/uml_driver.c:1417
 msgid "cannot set memory of an active domain"
 msgstr "não foi possível ajustar a memória de um domínio ativo"
 
-#: src/qemu_driver.c:2809
+#: src/qemu_driver.c:2812
 msgid "failed to get domain xml"
 msgstr "falha ao obter o xml do domínio"
 
-#: src/qemu_driver.c:2817
+#: src/qemu_driver.c:2820
 #, c-format
 msgid "failed to create '%s'"
 msgstr "falha ao criar \"%s\""
 
-#: src/qemu_driver.c:2823
+#: src/qemu_driver.c:2826
 msgid "failed to write save header"
 msgstr "falha ao gravar o cabeçalho salvar"
 
-#: src/qemu_driver.c:2829
+#: src/qemu_driver.c:2832
 msgid "failed to write xml"
 msgstr "falha ao gravar xml"
 
-#: src/qemu_driver.c:2835
+#: src/qemu_driver.c:2838
 #, c-format
 msgid "unable to save file %s"
 msgstr "não foi possível salvar o arquivo %s"
 
-#: src/qemu_driver.c:2857 src/qemu_driver.c:5110
+#: src/qemu_driver.c:2860 src/qemu_driver.c:5113
 msgid "migrate operation failed"
 msgstr "falha na operação de migração"
 
-#: src/qemu_driver.c:2868
+#: src/qemu_driver.c:2871
 msgid "'migrate' not supported by this qemu"
 msgstr "não há suporte a \"migrate\" neste qemu"
 
-#: src/qemu_driver.c:2923
+#: src/qemu_driver.c:2926
 msgid "cannot change vcpu count of an active domain"
 msgstr "não foi possível alterar a contagem de vcpu em um domínio ativo"
 
-#: src/qemu_driver.c:2929 src/qemu_driver.c:3133 src/qemu_driver.c:3166
+#: src/qemu_driver.c:2932 src/qemu_driver.c:3136 src/qemu_driver.c:3169
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "tipo de virt desconhecido na definição do domínio \"%d\""
 
-#: src/qemu_driver.c:2936
+#: src/qemu_driver.c:2939
 msgid "could not determine max vcpus for the domain"
 msgstr "não foi possível determinar o número máximo de vcpus para o domínio"
 
-#: src/qemu_driver.c:2942
+#: src/qemu_driver.c:2945
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
@@ -3375,108 +3384,108 @@ msgstr ""
 "quantidade de vcpus requeridos é maior do que o máximo de vcpus permitidos "
 "para o domínio: %d > %d"
 
-#: src/qemu_driver.c:2984 src/qemu_driver.c:3053
+#: src/qemu_driver.c:2987 src/qemu_driver.c:3056
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "não é possível ligar um vcpus a um domínio inativo"
 
-#: src/qemu_driver.c:2990
+#: src/qemu_driver.c:2993
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr "o número do vcpu está fora da faixa %d > %d"
 
-#: src/qemu_driver.c:3011
+#: src/qemu_driver.c:3014
 msgid "cannot set affinity"
 msgstr "não foi possível definir a afinidade"
 
-#: src/qemu_driver.c:3016
+#: src/qemu_driver.c:3019
 msgid "cpu affinity is not supported"
 msgstr "não há suporte para afinidade de cpu"
 
-#: src/qemu_driver.c:3088
+#: src/qemu_driver.c:3091
 msgid "cannot get affinity"
 msgstr "não foi possível obter a afinidade"
 
-#: src/qemu_driver.c:3098
+#: src/qemu_driver.c:3101
 msgid "cpu affinity is not available"
 msgstr "a afinidade da cpu não está disponível"
 
-#: src/qemu_driver.c:3189
+#: src/qemu_driver.c:3192
 #, fuzzy
 msgid "Failed to get security label"
 msgstr "não foi possível obter a hora atual"
 
-#: src/qemu_driver.c:3220
+#: src/qemu_driver.c:3223
 #, fuzzy, c-format
 msgid "security model string exceeds max %d bytes"
 msgstr "a contagem de vCPU excede o máximo: %d > %d"
 
-#: src/qemu_driver.c:3230
+#: src/qemu_driver.c:3233
 #, fuzzy, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "a contagem de vCPU excede o máximo: %d > %d"
 
-#: src/qemu_driver.c:3258
+#: src/qemu_driver.c:3261
 msgid "cannot read domain image"
 msgstr "não foi possível ler a imagem do domínio"
 
-#: src/qemu_driver.c:3264
+#: src/qemu_driver.c:3267
 msgid "failed to read qemu header"
 msgstr "falha ao ler o cabeçalho do qemu"
 
-#: src/qemu_driver.c:3270
+#: src/qemu_driver.c:3273
 msgid "image magic is incorrect"
 msgstr "o image magic está incorreto"
 
-#: src/qemu_driver.c:3276
+#: src/qemu_driver.c:3279
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "não há suporte para a versão da imagem (%d > %d)"
 
-#: src/qemu_driver.c:3288
+#: src/qemu_driver.c:3291
 msgid "failed to read XML"
 msgstr "falha ao ler o XML"
 
-#: src/qemu_driver.c:3296 src/qemu_driver.c:4961
+#: src/qemu_driver.c:3299 src/qemu_driver.c:4964
 msgid "failed to parse XML"
 msgstr "falha ao analisar o XML"
 
-#: src/qemu_driver.c:3337 src/qemu_driver.c:4998
+#: src/qemu_driver.c:3340 src/qemu_driver.c:5001
 msgid "failed to assign new VM"
 msgstr "falha ao atribuir nova MV"
 
-#: src/qemu_driver.c:3364
+#: src/qemu_driver.c:3367
 msgid "failed to resume domain"
 msgstr "falha ao retomar o domínio"
 
-#: src/qemu_driver.c:3435 src/qemu_driver.c:3470 src/xen_unified.c:1061
+#: src/qemu_driver.c:3438 src/qemu_driver.c:3473 src/xen_unified.c:1061
 #: src/xen_unified.c:1100
 #, fuzzy, c-format
 msgid "unsupported config type %s"
 msgstr "não há suporte para o tipo de disco \"%s\""
 
-#: src/qemu_driver.c:3533
+#: src/qemu_driver.c:3536
 #, c-format
 msgid "Cannot determine QEMU argv syntax %s"
 msgstr "Não foi possível determinar sintaxe argv do QEMU %s"
 
-#: src/qemu_driver.c:3796
+#: src/qemu_driver.c:3799
 #, c-format
 msgid "cannot convert disk '%s' to bus/device index"
 msgstr ""
 "não foi possível converter o disco \"%s\" para o índice de barramento/"
 "dispositivo"
 
-#: src/qemu_driver.c:3822
+#: src/qemu_driver.c:3825
 #, c-format
 msgid "Unsupported disk name mapping for bus '%s'"
 msgstr "Mapeamento de nome de disco não suportado para o barramento \"%s\""
 
-#: src/qemu_driver.c:3857
+#: src/qemu_driver.c:3860
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "Não há dispositivo com barramento \"%s\" e alvo \"%s\""
 
-#: src/qemu_driver.c:3880
+#: src/qemu_driver.c:3883
 #, c-format
 msgid ""
 "Emulator version does not support removable media for device '%s' and target "
@@ -3485,208 +3494,208 @@ msgstr ""
 "A versão do emulador não suporta mídia removível para o dispositivo \"%s\" e "
 "alvo \"%s\""
 
-#: src/qemu_driver.c:3917
+#: src/qemu_driver.c:3920
 msgid "could not change cdrom media"
 msgstr "não foi possível alterar a mídia de cdrom"
 
-#: src/qemu_driver.c:3928
+#: src/qemu_driver.c:3931
 #, c-format
 msgid "changing cdrom media failed: %s"
 msgstr "falha ao alterar a mídia de cdrom: %s"
 
-#: src/qemu_driver.c:3955 src/qemu_driver.c:4024
+#: src/qemu_driver.c:3958 src/qemu_driver.c:4027
 #, c-format
 msgid "target %s already exists"
 msgstr "o alvo %s já existe"
 
-#: src/qemu_driver.c:3981
+#: src/qemu_driver.c:3984
 #, c-format
 msgid "cannot attach %s disk"
 msgstr "não foi possível conectar o disco %s"
 
-#: src/qemu_driver.c:3995
+#: src/qemu_driver.c:3998
 msgid "Unable to parse slot number\n"
 msgstr "Não foi possível analisar o número do slot\n"
 
-#: src/qemu_driver.c:3998
+#: src/qemu_driver.c:4001
 #, c-format
 msgid "adding %s disk failed"
 msgstr "falha ao adicionar o disco %s"
 
-#: src/qemu_driver.c:4049
+#: src/qemu_driver.c:4052
 msgid "cannot attach usb disk"
 msgstr "não foi possível conectar disco usb"
 
-#: src/qemu_driver.c:4060
+#: src/qemu_driver.c:4063
 msgid "adding usb disk failed"
 msgstr "falha ao adicionar o disco usb"
 
-#: src/qemu_driver.c:4103
+#: src/qemu_driver.c:4106
 msgid "cannot attach usb device"
 msgstr "não foi possível conectar o dispositivo usb"
 
-#: src/qemu_driver.c:4114
+#: src/qemu_driver.c:4117
 msgid "adding usb device failed"
 msgstr "falha ao adicionar dispositivo usb"
 
-#: src/qemu_driver.c:4146
+#: src/qemu_driver.c:4149
 msgid "cannot attach device on inactive domain"
 msgstr "não foi possível conectar o dispositivo a um domínio inativo"
 
-#: src/qemu_driver.c:4171
+#: src/qemu_driver.c:4174
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "barramento de disco \"%s\" não pode ser conectado ligado"
 
-#: src/qemu_driver.c:4181
+#: src/qemu_driver.c:4184
 #, fuzzy, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "esse tipo de dispositivo de disco não pode ser conectado"
 
-#: src/qemu_driver.c:4191
+#: src/qemu_driver.c:4194
 #, fuzzy, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "esse tipo de dispositivo não pode ser conectado"
 
-#: src/qemu_driver.c:4225
+#: src/qemu_driver.c:4228
 #, c-format
 msgid "disk %s not found"
 msgstr "disco %s não localizado"
 
-#: src/qemu_driver.c:4231
+#: src/qemu_driver.c:4234
 #, c-format
 msgid "disk %s cannot be detached - invalid slot number %d"
 msgstr "disco %s não pôde ser desconectado - número de slot %d inválido"
 
-#: src/qemu_driver.c:4243
+#: src/qemu_driver.c:4246
 #, c-format
 msgid "failed to execute detach disk %s command"
 msgstr "falha ao executar comando de desconexão do disco %s"
 
-#: src/qemu_driver.c:4252
+#: src/qemu_driver.c:4255
 #, c-format
 msgid "failed to detach disk %s: invalid slot %d"
 msgstr "falha ao desconectar disco %s: slot %d inválido"
 
-#: src/qemu_driver.c:4296
+#: src/qemu_driver.c:4299
 msgid "cannot detach device on inactive domain"
 msgstr "não foi possível desconectar o dispositivo do domínio inativo"
 
-#: src/qemu_driver.c:4316
+#: src/qemu_driver.c:4319
 msgid "only SCSI or virtio disk device can be detached dynamically"
 msgstr ""
 "somente dispositivos de disco virtio ou SCSI podem ser desconectados "
 "dinamicamente"
 
-#: src/qemu_driver.c:4376 src/uml_driver.c:1696
+#: src/qemu_driver.c:4379 src/uml_driver.c:1696
 msgid "cannot set autostart for transient domain"
 msgstr "não foi possível definir auto início para domínio transitório"
 
-#: src/qemu_driver.c:4393 src/storage_driver.c:963 src/uml_driver.c:1713
+#: src/qemu_driver.c:4396 src/storage_driver.c:963 src/uml_driver.c:1713
 #, c-format
 msgid "cannot create autostart directory %s"
 msgstr "não foi possível criar o diretório de início automático %s"
 
-#: src/qemu_driver.c:4400 src/uml_driver.c:1720
+#: src/qemu_driver.c:4403 src/uml_driver.c:1720
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "Falha ao criar link simbólico \"%s\" para \"%s\""
 
-#: src/qemu_driver.c:4469
+#: src/qemu_driver.c:4472
 #, c-format
 msgid "invalid path: %s"
 msgstr "Caminho inválido: %s"
 
-#: src/qemu_driver.c:4480
+#: src/qemu_driver.c:4483
 msgid "'info blockstats' command failed"
 msgstr "o comando \"info blockstats\" falhou"
 
-#: src/qemu_driver.c:4493
+#: src/qemu_driver.c:4496
 msgid "'info blockstats' not supported by this qemu"
 msgstr "o \"info blockstats\" não é suportado por este qemu"
 
-#: src/qemu_driver.c:4561
+#: src/qemu_driver.c:4564
 #, c-format
 msgid "device not found: %s (%s)"
 msgstr "dispositivo não localizado: %s (%s)"
 
-#: src/qemu_driver.c:4601 src/qemu_driver.c:4661 src/uml_driver.c:1770
+#: src/qemu_driver.c:4604 src/qemu_driver.c:4664 src/uml_driver.c:1770
 msgid "NULL or empty path"
 msgstr "caminho NULL (nulo) ou vazio "
 
-#: src/qemu_driver.c:4618
+#: src/qemu_driver.c:4621
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "caminho inválido, \"%s\" não é uma interface conhecida"
 
-#: src/qemu_driver.c:4680
+#: src/qemu_driver.c:4683
 #, fuzzy, c-format
 msgid "%s: failed to open"
 msgstr "falha ao abrir %s"
 
-#: src/qemu_driver.c:4691
+#: src/qemu_driver.c:4694
 #, fuzzy, c-format
 msgid "%s: failed to seek or read"
 msgstr "falha ao realizar lseek ou ler o arquivo: %s"
 
-#: src/qemu_driver.c:4698 src/uml_driver.c:1807
+#: src/qemu_driver.c:4701 src/uml_driver.c:1807
 msgid "invalid path"
 msgstr "caminho inválido"
 
-#: src/qemu_driver.c:4735
+#: src/qemu_driver.c:4738
 msgid "QEMU driver only supports virtual memory addrs"
 msgstr "o driver do QEMU só dá suporte a endereços de memória virtuais"
 
-#: src/qemu_driver.c:4748
+#: src/qemu_driver.c:4751
 #, fuzzy, c-format
 msgid "mkstemp(\"%s\") failed"
 msgstr "falha em open(%s): %s"
 
-#: src/qemu_driver.c:4756
+#: src/qemu_driver.c:4759
 msgid "'memsave' command failed"
 msgstr "falha no comando \"memsave\""
 
-#: src/qemu_driver.c:4765
+#: src/qemu_driver.c:4768
 #, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "falha ao ler o arquivo temporário criado com o modelo %s"
 
-#: src/qemu_driver.c:4905
+#: src/qemu_driver.c:4908
 msgid "no domain XML passed"
 msgstr "nenhum domínio XML aprovado"
 
-#: src/qemu_driver.c:4942
+#: src/qemu_driver.c:4945
 msgid "only tcp URIs are supported for KVM migrations"
 msgstr "para migrações KVM, somente há suporte a URIs de tcp"
 
-#: src/qemu_driver.c:4952
+#: src/qemu_driver.c:4955
 msgid "URI did not have ':port' at the end"
 msgstr "URI não possui \":port\" ao final"
 
-#: src/qemu_driver.c:4978
+#: src/qemu_driver.c:4981
 msgid "could not generate random UUID"
 msgstr "não foi possível gerar o UUID aleatório"
 
-#: src/qemu_driver.c:4987
+#: src/qemu_driver.c:4990
 #, c-format
 msgid "domain with the same name or UUID already exists as '%s'"
 msgstr "domínio com o mesmo nome ou UUID já existe como \"%s\""
 
-#: src/qemu_driver.c:5075
+#: src/qemu_driver.c:5078
 msgid "off-line migration specified, but suspend operation failed"
 msgstr "migração off-line especificada, mas houve falha ao suspender"
 
-#: src/qemu_driver.c:5119
+#: src/qemu_driver.c:5122
 #, c-format
 msgid "migrate failed: %s"
 msgstr "falha ao migrar: %s"
 
-#: src/qemu_driver.c:5149
+#: src/qemu_driver.c:5152
 #, c-format
 msgid "Failed to resume guest %s after failure\n"
 msgstr "Falha ao retomar o convidado %s após falha\n"
 
-#: src/qemu_driver.c:5259 src/xen_unified.c:1552
+#: src/qemu_driver.c:5262 src/xen_unified.c:1552
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "dispositivo %s não é um dispositivo PCI"

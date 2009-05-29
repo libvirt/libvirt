@@ -1489,7 +1489,7 @@ see note above'/>
     <function name='virInterfaceGetConnect' file='libvirt' module='libvirt'>
       <info>Provides the connection pointer associated with an interface.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the interface object together.</info>
       <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
-      <arg name='iface' type='virInterfacePtr' info=''/>
+      <arg name='iface' type='virInterfacePtr' info='pointer to a interface'/>
     </function>
     <function name='virInterfaceGetMACString' file='libvirt' module='libvirt'>
       <info>Get the MAC for a interface as string. For more information about MAC see RFC4122.</info>

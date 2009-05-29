@@ -603,7 +603,7 @@ virSetConnError(virConnectPtr conn)
  * @str3: extra string info
  * @int1: extra int info
  * @int2: extra int info
- * @msg:  the message to display/transmit
+ * @fmt:  the message to display/transmit
  * @...:  extra parameters for the message display
  *
  * Internal routine called when an error is detected. It will raise it

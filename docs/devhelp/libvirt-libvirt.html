@@ -1149,7 +1149,7 @@ The content of this structure is not made public by the API.
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virInterfaceGetConnect"/>virInterfaceGetConnect ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virInterfaceGetConnect	(<a href="libvirt-libvirt.html#virInterfacePtr">virInterfacePtr</a> iface)<br/>
 </pre><p>Provides the connection pointer associated with an interface. The reference counter on the connection is not increased by this call. WARNING: When writing libvirt bindings in other languages, do not use this function. Instead, store the connection and the interface object together.</p>
-<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>iface</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> or NULL in case of failure.</td></tr></tbody></table></div></div>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>iface</tt></i>:</span></td><td>pointer to a interface</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> or NULL in case of failure.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virInterfaceGetMACString"/>virInterfaceGetMACString ()</h3><pre class="programlisting">const char *	virInterfaceGetMACString	(<a href="libvirt-libvirt.html#virInterfacePtr">virInterfacePtr</a> iface)<br/>
 </pre><p>Get the MAC for a interface as string. For more information about MAC see RFC4122.</p>

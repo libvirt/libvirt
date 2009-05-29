@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zh_TW\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-05-29 14:01+0200\n"
+"POT-Creation-Date: 2009-05-29 18:42+0200\n"
 "PO-Revision-Date: 2007-04-10 16:18+1000\n"
 "Last-Translator: Chester Cheng <ccheng@redhat.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
@@ -370,145 +370,145 @@ msgstr "改變記憶體分配"
 msgid "Turn off polkit auth for privileged client %d"
 msgstr ""
 
-#: qemud/qemud.c:1339 qemud/qemud.c:1932
+#: qemud/qemud.c:1339 qemud/qemud.c:1944
 #, fuzzy, c-format
 msgid "TLS handshake failed: %s"
 msgstr "GET 操作失敗：%s"
 
-#: qemud/qemud.c:1512 qemud/qemud.c:1740
+#: qemud/qemud.c:1524 qemud/qemud.c:1752
 #, fuzzy, c-format
 msgid "unexpected negative length request %lld"
 msgstr "無預期的 mime 類型"
 
-#: qemud/qemud.c:1528
+#: qemud/qemud.c:1540
 #, c-format
 msgid "read: %s"
 msgstr ""
 
-#: qemud/qemud.c:1541
+#: qemud/qemud.c:1553
 #, c-format
 msgid "gnutls_record_recv: %s"
 msgstr ""
 
-#: qemud/qemud.c:1603
+#: qemud/qemud.c:1615
 #, fuzzy, c-format
 msgid "failed to decode SASL data %s"
 msgstr "無法讀取插槽 %d\n"
 
-#: qemud/qemud.c:1751
+#: qemud/qemud.c:1763
 #, c-format
 msgid "write: %s"
 msgstr ""
 
-#: qemud/qemud.c:1762
+#: qemud/qemud.c:1774
 #, c-format
 msgid "gnutls_record_send: %s"
 msgstr ""
 
-#: qemud/qemud.c:1811
+#: qemud/qemud.c:1823
 #, fuzzy, c-format
 msgid "failed to encode SASL data %s"
 msgstr "無法讀取插槽 %d\n"
 
-#: qemud/qemud.c:2056
+#: qemud/qemud.c:2068
 #, c-format
 msgid "Signal handler reported %d errors: last error: %s"
 msgstr ""
 
-#: qemud/qemud.c:2111
+#: qemud/qemud.c:2123
 #, fuzzy
 msgid "Failed to register shutdown timeout"
 msgstr "無法寫入插槽 %d\n"
 
-#: qemud/qemud.c:2120
+#: qemud/qemud.c:2132
 #, fuzzy
 msgid "Failed to allocate workers"
 msgstr "無法分配節點"
 
-#: qemud/qemud.c:2281 qemud/qemud.c:2300
+#: qemud/qemud.c:2293 qemud/qemud.c:2312
 #, fuzzy, c-format
 msgid "failed to allocate memory for %s config list"
 msgstr "無法分配節點"
 
-#: qemud/qemud.c:2287 qemud/qemud.c:2317
+#: qemud/qemud.c:2299 qemud/qemud.c:2329
 #, fuzzy, c-format
 msgid "failed to allocate memory for %s config list value"
 msgstr "無法分配節點"
 
-#: qemud/qemud.c:2305 qemud/qemud.c:2328
+#: qemud/qemud.c:2317 qemud/qemud.c:2340
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: must be a string or list of strings\n"
 msgstr ""
 
-#: qemud/qemud.c:2344
+#: qemud/qemud.c:2356
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: invalid type: got %s; expected %s\n"
 msgstr ""
 
-#: qemud/qemud.c:2366
+#: qemud/qemud.c:2378
 #, c-format
 msgid "remoteReadConfigFile: %s\n"
 msgstr ""
 
-#: qemud/qemud.c:2409
+#: qemud/qemud.c:2421
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: unsupported auth %s\n"
 msgstr ""
 
-#: qemud/qemud.c:2557
+#: qemud/qemud.c:2569
 msgid "Cannot set group when not running as root"
 msgstr ""
 
-#: qemud/qemud.c:2567
+#: qemud/qemud.c:2579
 #, fuzzy
 msgid "Failed to allocate memory for buffer"
 msgstr "無法分配節點"
 
-#: qemud/qemud.c:2576
+#: qemud/qemud.c:2588
 #, fuzzy
 msgid "Failed to reallocate enough memory for buffer"
 msgstr "無法分配節點"
 
-#: qemud/qemud.c:2582
+#: qemud/qemud.c:2594
 #, fuzzy, c-format
 msgid "Failed to lookup group '%s'"
 msgstr "無法暫停區域 %s"
 
-#: qemud/qemud.c:2595 qemud/qemud.c:2605
+#: qemud/qemud.c:2607 qemud/qemud.c:2617
 #, fuzzy, c-format
 msgid "Failed to parse mode '%s'"
 msgstr "無法暫停區域 %s"
 
-#: qemud/qemud.c:2683
+#: qemud/qemud.c:2695
 msgid "additional privileges are required\n"
 msgstr ""
 
-#: qemud/qemud.c:2689
+#: qemud/qemud.c:2701
 #, fuzzy
 msgid "failed to set reduced privileges\n"
 msgstr "無法從 %s 建立區域"
 
-#: qemud/qemud.c:2838
+#: qemud/qemud.c:2850
 #, fuzzy, c-format
 msgid "Failed to fork as daemon: %s"
 msgstr "無法繼續區域 %s"
 
-#: qemud/qemud.c:2861
+#: qemud/qemud.c:2873
 #, fuzzy, c-format
 msgid "Failed to create pipe: %s"
 msgstr "無法讀取插槽 %d\n"
 
-#: qemud/qemud.c:2886
+#: qemud/qemud.c:2898
 #, fuzzy
 msgid "unable to create rundir"
 msgstr "網路名稱或 uuid"
 
-#: qemud/qemud.c:2907
+#: qemud/qemud.c:2919
 #, fuzzy, c-format
 msgid "Failed to change group ownership of %s"
 msgstr "無法將區域 %s 的核心傾印至 %s"
 
-#: qemud/qemud.c:2915
+#: qemud/qemud.c:2927
 msgid "Failed to register callback for signal pipe"
 msgstr ""
 
@@ -1018,469 +1018,469 @@ msgstr ""
 msgid "No <source> 'address' attribute specified with socket interface"
 msgstr ""
 
-#: src/domain_conf.c:1058
+#: src/domain_conf.c:1060
 msgid ""
 "No <source> 'name' attribute specified with <interface type='internal'/>"
 msgstr ""
 
-#: src/domain_conf.c:1082
+#: src/domain_conf.c:1084
 msgid "Model name contains invalid characters"
 msgstr ""
 
-#: src/domain_conf.c:1257 src/domain_conf.c:1334
+#: src/domain_conf.c:1259 src/domain_conf.c:1336
 #, fuzzy
 msgid "Missing source path attribute for char device"
 msgstr "找不到裝置的來源資訊"
 
-#: src/domain_conf.c:1274 src/domain_conf.c:1291
+#: src/domain_conf.c:1276 src/domain_conf.c:1293
 #, fuzzy
 msgid "Missing source host attribute for char device"
 msgstr "找不到裝置的來源資訊"
 
-#: src/domain_conf.c:1279 src/domain_conf.c:1296 src/domain_conf.c:1316
+#: src/domain_conf.c:1281 src/domain_conf.c:1298 src/domain_conf.c:1318
 #, fuzzy
 msgid "Missing source service attribute for char device"
 msgstr "找不到裝置的來源資訊"
 
-#: src/domain_conf.c:1387
+#: src/domain_conf.c:1389
 #, fuzzy
 msgid "missing input device type"
 msgstr "找不到 root 裝置的資訊"
 
-#: src/domain_conf.c:1393
+#: src/domain_conf.c:1395
 #, fuzzy, c-format
 msgid "unknown input device type '%s'"
 msgstr "未知的作業系統類型 %s"
 
-#: src/domain_conf.c:1400
+#: src/domain_conf.c:1402
 #, fuzzy, c-format
 msgid "unknown input bus type '%s'"
 msgstr "未知的作業系統類型 %s"
 
-#: src/domain_conf.c:1408
+#: src/domain_conf.c:1410
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr ""
 
-#: src/domain_conf.c:1414 src/domain_conf.c:1421
+#: src/domain_conf.c:1416 src/domain_conf.c:1423
 #, c-format
 msgid "unsupported input bus %s"
 msgstr ""
 
-#: src/domain_conf.c:1426
+#: src/domain_conf.c:1428
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr ""
 
-#: src/domain_conf.c:1471
+#: src/domain_conf.c:1473
 #, fuzzy
 msgid "missing graphics device type"
 msgstr "找不到 root 裝置的資訊"
 
-#: src/domain_conf.c:1477
+#: src/domain_conf.c:1479
 #, fuzzy, c-format
 msgid "unknown graphics device type '%s'"
 msgstr "未知的作業系統類型 %s"
 
-#: src/domain_conf.c:1488
+#: src/domain_conf.c:1490
 #, c-format
 msgid "cannot parse vnc port %s"
 msgstr ""
 
-#: src/domain_conf.c:1526 src/domain_conf.c:1588
+#: src/domain_conf.c:1528 src/domain_conf.c:1590
 #, fuzzy, c-format
 msgid "unknown fullscreen value '%s'"
 msgstr "未知的作業系統類型 %s"
 
-#: src/domain_conf.c:1544
+#: src/domain_conf.c:1546
 #, fuzzy, c-format
 msgid "cannot parse rdp port %s"
 msgstr "無法連上 %s"
 
-#: src/domain_conf.c:1627
+#: src/domain_conf.c:1629
 #, fuzzy, c-format
 msgid "unknown sound model '%s'"
 msgstr "未知的指令：「%s」"
 
-#: src/domain_conf.c:1661
+#: src/domain_conf.c:1663
 #, c-format
 msgid "cannot parse vendor id %s"
 msgstr ""
 
-#: src/domain_conf.c:1668
+#: src/domain_conf.c:1670
 msgid "usb vendor needs id"
 msgstr ""
 
-#: src/domain_conf.c:1678
+#: src/domain_conf.c:1680
 #, c-format
 msgid "cannot parse product %s"
 msgstr ""
 
-#: src/domain_conf.c:1686
+#: src/domain_conf.c:1688
 msgid "usb product needs id"
 msgstr ""
 
-#: src/domain_conf.c:1697 src/domain_conf.c:1784
+#: src/domain_conf.c:1699 src/domain_conf.c:1786
 #, c-format
 msgid "cannot parse bus %s"
 msgstr ""
 
-#: src/domain_conf.c:1704
+#: src/domain_conf.c:1706
 msgid "usb address needs bus id"
 msgstr ""
 
-#: src/domain_conf.c:1713
+#: src/domain_conf.c:1715
 #, c-format
 msgid "cannot parse device %s"
 msgstr ""
 
-#: src/domain_conf.c:1721
+#: src/domain_conf.c:1723
 msgid "usb address needs device id"
 msgstr ""
 
-#: src/domain_conf.c:1726
+#: src/domain_conf.c:1728
 #, fuzzy, c-format
 msgid "unknown usb source type '%s'"
 msgstr "未知的作業系統類型 %s"
 
-#: src/domain_conf.c:1737
+#: src/domain_conf.c:1739
 #, fuzzy
 msgid "missing vendor"
 msgstr "找不到 \""
 
-#: src/domain_conf.c:1743
+#: src/domain_conf.c:1745
 #, fuzzy
 msgid "missing product"
 msgstr "找不到 \""
 
-#: src/domain_conf.c:1771
+#: src/domain_conf.c:1773
 #, fuzzy, c-format
 msgid "cannot parse domain %s"
 msgstr "無法連上 %s"
 
-#: src/domain_conf.c:1791
+#: src/domain_conf.c:1793
 msgid "pci address needs bus id"
 msgstr ""
 
-#: src/domain_conf.c:1800
+#: src/domain_conf.c:1802
 #, fuzzy, c-format
 msgid "cannot parse slot %s"
 msgstr "無法連上 %s"
 
-#: src/domain_conf.c:1808
+#: src/domain_conf.c:1810
 msgid "pci address needs slot id"
 msgstr ""
 
-#: src/domain_conf.c:1817
+#: src/domain_conf.c:1819
 #, fuzzy, c-format
 msgid "cannot parse function %s"
 msgstr "無法連上 %s"
 
-#: src/domain_conf.c:1825
+#: src/domain_conf.c:1827
 msgid "pci address needs function id"
 msgstr ""
 
-#: src/domain_conf.c:1830
+#: src/domain_conf.c:1832
 #, fuzzy, c-format
 msgid "unknown pci source type '%s'"
 msgstr "未知的作業系統類型 %s"
 
-#: src/domain_conf.c:1863
+#: src/domain_conf.c:1865
 #, fuzzy, c-format
 msgid "unknown hostdev mode '%s'"
 msgstr "未知的主機 %s"
 
-#: src/domain_conf.c:1874
+#: src/domain_conf.c:1876
 #, fuzzy, c-format
 msgid "unknown host device type '%s'"
 msgstr "未知的主機 %s"
 
-#: src/domain_conf.c:1879
+#: src/domain_conf.c:1881
 #, fuzzy
 msgid "missing type in hostdev"
 msgstr "找不到裝置的目標資訊"
 
-#: src/domain_conf.c:1907
+#: src/domain_conf.c:1909
 #, fuzzy, c-format
 msgid "unknown node %s"
 msgstr "未知的主機 %s"
 
-#: src/domain_conf.c:1938
+#: src/domain_conf.c:1940
 #, c-format
 msgid "unknown lifecycle action %s"
 msgstr ""
 
-#: src/domain_conf.c:1962
+#: src/domain_conf.c:1964
 #, fuzzy
 msgid "missing security type"
 msgstr "找不到 root 裝置的資訊"
 
-#: src/domain_conf.c:1969
+#: src/domain_conf.c:1971
 #, fuzzy
 msgid "invalid security type"
 msgstr "無效的區域指標，於 %s"
 
-#: src/domain_conf.c:1982
+#: src/domain_conf.c:1984
 #, fuzzy
 msgid "missing security model"
 msgstr "區域目前的記憶體"
 
-#: src/domain_conf.c:1991
+#: src/domain_conf.c:1993
 msgid "security label is missing"
 msgstr ""
 
-#: src/domain_conf.c:2005
+#: src/domain_conf.c:2007
 msgid "security imagelabel is missing"
 msgstr ""
 
-#: src/domain_conf.c:2038 src/domain_conf.c:2674 src/domain_conf.c:2715
+#: src/domain_conf.c:2040 src/domain_conf.c:2676 src/domain_conf.c:2717
 #: src/network_conf.c:480 src/network_conf.c:520 src/node_device_conf.c:1042
 #: src/qemu_conf.c:2868 src/storage_conf.c:696 src/storage_conf.c:1071
 #, fuzzy
 msgid "missing root element"
 msgstr "找不到 root 裝置的資訊"
 
-#: src/domain_conf.c:2074
+#: src/domain_conf.c:2076
 #, fuzzy
 msgid "unknown device type"
 msgstr "未知的作業系統類型"
 
-#: src/domain_conf.c:2121
+#: src/domain_conf.c:2123
 #, fuzzy
 msgid "missing domain type attribute"
 msgstr "找不到區域名稱的資訊"
 
-#: src/domain_conf.c:2127
+#: src/domain_conf.c:2129
 #, fuzzy, c-format
 msgid "invalid domain type %s"
 msgstr "無效的區域指標，於 %s"
 
-#: src/domain_conf.c:2144 src/network_conf.c:335
+#: src/domain_conf.c:2146 src/network_conf.c:335
 #, fuzzy
 msgid "Failed to generate UUID"
 msgstr "無法取得網路 UUID"
 
-#: src/domain_conf.c:2150 src/network_conf.c:342 src/storage_conf.c:511
+#: src/domain_conf.c:2152 src/network_conf.c:342 src/storage_conf.c:511
 msgid "malformed uuid element"
 msgstr ""
 
-#: src/domain_conf.c:2159
+#: src/domain_conf.c:2161
 msgid "missing memory element"
 msgstr ""
 
-#: src/domain_conf.c:2192
+#: src/domain_conf.c:2194
 #, fuzzy, c-format
 msgid "unexpected feature %s"
 msgstr "無預期的資料「%s」"
 
-#: src/domain_conf.c:2232
+#: src/domain_conf.c:2234
 #, fuzzy
 msgid "no OS type"
 msgstr "未知的作業系統類型"
 
-#: src/domain_conf.c:2260
+#: src/domain_conf.c:2262
 #, c-format
 msgid "os type '%s' & arch '%s' combination is not supported"
 msgstr ""
 
-#: src/domain_conf.c:2268 src/xm_internal.c:701
+#: src/domain_conf.c:2270 src/xm_internal.c:701
 #, c-format
 msgid "no supported architecture for os type '%s'"
 msgstr ""
 
-#: src/domain_conf.c:2318
+#: src/domain_conf.c:2320
 msgid "cannot extract boot device"
 msgstr ""
 
-#: src/domain_conf.c:2326
+#: src/domain_conf.c:2328
 #, fuzzy
 msgid "missing boot device"
 msgstr "找不到 root 裝置的資訊"
 
-#: src/domain_conf.c:2331
+#: src/domain_conf.c:2333
 #, fuzzy, c-format
 msgid "unknown boot device '%s'"
 msgstr "未知的主機 %s"
 
-#: src/domain_conf.c:2351
+#: src/domain_conf.c:2353
 #, fuzzy
 msgid "cannot extract disk devices"
 msgstr "無法解開執行中 %s hypervisor 的版本\n"
 
-#: src/domain_conf.c:2372
+#: src/domain_conf.c:2374
 msgid "cannot extract filesystem devices"
 msgstr ""
 
-#: src/domain_conf.c:2391
+#: src/domain_conf.c:2393
 #, fuzzy
 msgid "cannot extract network devices"
 msgstr "網路名稱"
 
-#: src/domain_conf.c:2412
+#: src/domain_conf.c:2414
 msgid "cannot extract parallel devices"
 msgstr ""
 
-#: src/domain_conf.c:2432
+#: src/domain_conf.c:2434
 msgid "cannot extract serial devices"
 msgstr ""
 
-#: src/domain_conf.c:2482
+#: src/domain_conf.c:2484
 #, fuzzy
 msgid "cannot extract input devices"
 msgstr "無法解開執行中 %s hypervisor 的版本\n"
 
-#: src/domain_conf.c:2517
+#: src/domain_conf.c:2519
 #, fuzzy
 msgid "cannot extract graphics devices"
 msgstr "無法解開執行中 %s hypervisor 的版本\n"
 
-#: src/domain_conf.c:2561
+#: src/domain_conf.c:2563
 #, fuzzy
 msgid "cannot extract sound devices"
 msgstr "無法解開執行中 %s hypervisor 的版本\n"
 
-#: src/domain_conf.c:2591
+#: src/domain_conf.c:2593
 msgid "cannot extract host devices"
 msgstr ""
 
-#: src/domain_conf.c:2637 src/network_conf.c:445 src/node_device_conf.c:1007
+#: src/domain_conf.c:2639 src/network_conf.c:445 src/node_device_conf.c:1007
 #: src/qemu_conf.c:2814 src/storage_conf.c:651
 #, c-format
 msgid "at line %d: %s"
 msgstr ""
 
-#: src/domain_conf.c:2668 src/domain_conf.c:2709 src/network_conf.c:474
+#: src/domain_conf.c:2670 src/domain_conf.c:2711 src/network_conf.c:474
 #: src/network_conf.c:514 src/node_device_conf.c:1036 src/qemu_conf.c:2862
 #: src/storage_conf.c:683 src/storage_conf.c:1058
 #, fuzzy
 msgid "failed to parse xml document"
 msgstr "無法存入內容"
 
-#: src/domain_conf.c:2739 src/network_conf.c:542 src/node_device_conf.c:976
+#: src/domain_conf.c:2741 src/network_conf.c:542 src/node_device_conf.c:976
 #: src/qemu_conf.c:2880
 msgid "incorrect root element"
 msgstr ""
 
-#: src/domain_conf.c:2948
+#: src/domain_conf.c:2950
 msgid "topology cpuset syntax error"
 msgstr ""
 
-#: src/domain_conf.c:2962
+#: src/domain_conf.c:2964
 #, fuzzy, c-format
 msgid "unexpected lifecycle type %d"
 msgstr "無預期的 mime 類型"
 
-#: src/domain_conf.c:2984
+#: src/domain_conf.c:2986
 #, fuzzy, c-format
 msgid "unexpected disk type %d"
 msgstr "無預期的 mime 類型"
 
-#: src/domain_conf.c:2989
+#: src/domain_conf.c:2991
 #, fuzzy, c-format
 msgid "unexpected disk device %d"
 msgstr "無預期的 dict 節點"
 
-#: src/domain_conf.c:2994
+#: src/domain_conf.c:2996
 #, fuzzy, c-format
 msgid "unexpected disk bus %d"
 msgstr "無預期的 dict 節點"
 
-#: src/domain_conf.c:2999
+#: src/domain_conf.c:3001
 #, fuzzy, c-format
 msgid "unexpected disk cache mode %d"
 msgstr "無預期的 dict 節點"
 
-#: src/domain_conf.c:3047
+#: src/domain_conf.c:3049
 #, fuzzy, c-format
 msgid "unexpected filesystem type %d"
 msgstr "無預期的 mime 類型"
 
-#: src/domain_conf.c:3098 src/domain_conf.c:3326
+#: src/domain_conf.c:3100 src/domain_conf.c:3328
 #, fuzzy, c-format
 msgid "unexpected net type %d"
 msgstr "無預期的 mime 類型"
 
-#: src/domain_conf.c:3179
+#: src/domain_conf.c:3181
 #, fuzzy, c-format
 msgid "unexpected char type %d"
 msgstr "無預期的 mime 類型"
 
-#: src/domain_conf.c:3279 src/xend_internal.c:5522
+#: src/domain_conf.c:3281 src/xend_internal.c:5522
 #, fuzzy, c-format
 msgid "unexpected sound model %d"
 msgstr "無預期的 dict 節點"
 
-#: src/domain_conf.c:3299 src/xend_internal.c:5544
+#: src/domain_conf.c:3301 src/xend_internal.c:5544
 #, fuzzy, c-format
 msgid "unexpected input type %d"
 msgstr "無預期的 mime 類型"
 
-#: src/domain_conf.c:3304
+#: src/domain_conf.c:3306
 #, fuzzy, c-format
 msgid "unexpected input bus type %d"
 msgstr "無預期的 mime 類型"
 
-#: src/domain_conf.c:3421
+#: src/domain_conf.c:3423
 #, fuzzy, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "無預期的 dict 節點"
 
-#: src/domain_conf.c:3428
+#: src/domain_conf.c:3430
 #, fuzzy, c-format
 msgid "unexpected hostdev type %d"
 msgstr "無預期的 mime 類型"
 
-#: src/domain_conf.c:3476
+#: src/domain_conf.c:3478
 #, fuzzy, c-format
 msgid "unexpected domain type %d"
 msgstr "無預期的 mime 類型"
 
-#: src/domain_conf.c:3561
+#: src/domain_conf.c:3563
 #, fuzzy, c-format
 msgid "unexpected boot device type %d"
 msgstr "無預期的 mime 類型"
 
-#: src/domain_conf.c:3579
+#: src/domain_conf.c:3581
 #, fuzzy, c-format
 msgid "unexpected feature %d"
 msgstr "無預期的數值節點"
 
-#: src/domain_conf.c:3725 src/network_conf.c:657
+#: src/domain_conf.c:3727 src/network_conf.c:657
 #, fuzzy, c-format
 msgid "cannot create config directory '%s'"
 msgstr "無法寫入設定檔：%s"
 
-#: src/domain_conf.c:3734 src/network_conf.c:666
+#: src/domain_conf.c:3736 src/network_conf.c:666
 #, fuzzy, c-format
 msgid "cannot create config file '%s'"
 msgstr "無法寫入設定檔：%s"
 
-#: src/domain_conf.c:3742 src/network_conf.c:674
+#: src/domain_conf.c:3744 src/network_conf.c:674
 #, fuzzy, c-format
 msgid "cannot write config file '%s'"
 msgstr "無法寫入設定檔：%s"
 
-#: src/domain_conf.c:3749 src/network_conf.c:681
+#: src/domain_conf.c:3751 src/network_conf.c:681
 #, fuzzy, c-format
 msgid "cannot save config file '%s'"
 msgstr "無法寫入設定檔：%s"
 
-#: src/domain_conf.c:3850 src/network_conf.c:787 src/storage_conf.c:1384
+#: src/domain_conf.c:3852 src/network_conf.c:783 src/storage_conf.c:1384
 #, fuzzy, c-format
 msgid "Failed to open dir '%s'"
 msgstr "無法暫停區域 %s"
 
-#: src/domain_conf.c:3904
+#: src/domain_conf.c:3906
 #, fuzzy, c-format
 msgid "cannot remove config %s"
 msgstr "無法寫入設定檔：%s"
 
-#: src/domain_conf.c:3978
+#: src/domain_conf.c:3980
 #, fuzzy
 msgid "unknown virt type"
 msgstr "未知的作業系統類型"
 
-#: src/domain_conf.c:3989
+#: src/domain_conf.c:3991
 #, c-format
 msgid "no emulator for domain %s os type %s on architecture %s"
 msgstr ""
@@ -1697,21 +1697,25 @@ msgstr "無法從 %s 建立區域"
 msgid "failed to mount /proc"
 msgstr "無法暫停區域 %s"
 
-#: src/lxc_container.c:659
+#: src/lxc_container.c:660
 #, fuzzy, c-format
 msgid "failed to drop %s"
 msgstr "無法從 %s 建立區域"
 
-#: src/lxc_container.c:690
+#: src/lxc_container.c:665
+msgid "failed to drop capabilities PR_CAPBSET_DROP undefined"
+msgstr ""
+
+#: src/lxc_container.c:693
 msgid "lxcChild() passed invalid vm definition"
 msgstr ""
 
-#: src/lxc_container.c:711
+#: src/lxc_container.c:714
 #, fuzzy, c-format
 msgid "failed to open tty %s"
 msgstr "無法暫停區域 %s"
 
-#: src/lxc_container.c:789
+#: src/lxc_container.c:792
 #, fuzzy
 msgid "failed to run clone container"
 msgstr "無法開啟要讀取的 %s"
@@ -1854,13 +1858,13 @@ msgstr ""
 msgid "no domain with matching uuid"
 msgstr "區域 id 或 uuid"
 
-#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3755
+#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3758
 #: src/uml_driver.c:1626
 #, fuzzy
 msgid "cannot delete active domain"
 msgstr "非作用中區域的名稱"
 
-#: src/lxc_driver.c:339 src/opennebula/one_driver.c:306 src/qemu_driver.c:3761
+#: src/lxc_driver.c:339 src/opennebula/one_driver.c:306 src/qemu_driver.c:3764
 #: src/uml_driver.c:1632
 #, fuzzy
 msgid "cannot undefine transient domain"
@@ -1977,7 +1981,7 @@ msgstr "無效的參數，於 %s"
 msgid "Invalid parameter count"
 msgstr "無效的參數，於 "
 
-#: src/lxc_driver.c:1414 src/qemu_driver.c:2108 src/qemu_driver.c:4926
+#: src/lxc_driver.c:1414 src/qemu_driver.c:2111 src/qemu_driver.c:4929
 #, fuzzy
 msgid "failed to determine host name"
 msgstr "無法取得 hypervisor 類型"
@@ -2011,22 +2015,22 @@ msgstr ""
 msgid "unknown forwarding type '%s'"
 msgstr "未知的作業系統類型 %s"
 
-#: src/network_conf.c:742
+#: src/network_conf.c:741
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr ""
 
-#: src/network_conf.c:835
+#: src/network_conf.c:831
 #, fuzzy, c-format
 msgid "cannot remove config file '%s'"
 msgstr "無法寫入設定檔：%s"
 
-#: src/network_conf.c:909
+#: src/network_conf.c:905
 #, c-format
 msgid "Bridge generation exceeded max id %d"
 msgstr ""
 
-#: src/network_conf.c:923
+#: src/network_conf.c:924
 #, fuzzy, c-format
 msgid "bridge name '%s' already in use."
 msgstr "區域 %s 已經存在"
@@ -2145,8 +2149,8 @@ msgstr "無法取得網路「%s」"
 
 #: src/network_driver.c:951 src/network_driver.c:1176
 #: src/network_driver.c:1214 src/network_driver.c:1237
-#: src/network_driver.c:1266 src/network_driver.c:1321
-#: src/network_driver.c:1346
+#: src/network_driver.c:1272 src/network_driver.c:1327
+#: src/network_driver.c:1352
 msgid "no network with matching uuid"
 msgstr ""
 
@@ -2159,27 +2163,32 @@ msgstr ""
 msgid "network is still active"
 msgstr "區域還在執行中"
 
-#: src/network_driver.c:1289
+#: src/network_driver.c:1243
+#, fuzzy
+msgid "network is not active"
+msgstr "區域還在執行中"
+
+#: src/network_driver.c:1295
 #, fuzzy
 msgid "no network with matching id"
 msgstr "XML 格式的網路資訊"
 
-#: src/network_driver.c:1295
+#: src/network_driver.c:1301
 #, fuzzy, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "網路 %s 已開啟\n"
 
-#: src/network_driver.c:1363
+#: src/network_driver.c:1369
 #, fuzzy, c-format
 msgid "cannot create autostart directory '%s'"
 msgstr "無法從 %s 建立網路"
 
-#: src/network_driver.c:1370 src/storage_driver.c:970
+#: src/network_driver.c:1376 src/storage_driver.c:970
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "無法將區域 %s 存至 %s"
 
-#: src/network_driver.c:1377 src/qemu_driver.c:4407 src/storage_driver.c:978
+#: src/network_driver.c:1383 src/qemu_driver.c:4410 src/storage_driver.c:978
 #: src/uml_driver.c:1727
 #, fuzzy, c-format
 msgid "Failed to delete symlink '%s'"
@@ -2492,17 +2501,17 @@ msgstr ""
 msgid "Wrong state to perform action"
 msgstr "節點資訊"
 
-#: src/opennebula/one_driver.c:584 src/qemu_driver.c:2247
-#: src/qemu_driver.c:2297 src/qemu_driver.c:2377 src/qemu_driver.c:2788
-#: src/qemu_driver.c:4456 src/qemu_driver.c:4595 src/qemu_driver.c:4741
-#: src/qemu_driver.c:5067 src/xen_internal.c:1078 src/xen_internal.c:1158
+#: src/opennebula/one_driver.c:584 src/qemu_driver.c:2250
+#: src/qemu_driver.c:2300 src/qemu_driver.c:2380 src/qemu_driver.c:2791
+#: src/qemu_driver.c:4459 src/qemu_driver.c:4598 src/qemu_driver.c:4744
+#: src/qemu_driver.c:5070 src/xen_internal.c:1078 src/xen_internal.c:1158
 #: src/xen_internal.c:1261
 #, fuzzy
 msgid "domain is not running"
 msgstr "區域還在執行中"
 
 #: src/opennebula/one_driver.c:587 src/opennebula/one_driver.c:620
-#: src/qemu_driver.c:2019 src/uml_driver.c:1265 src/uml_driver.c:1295
+#: src/qemu_driver.c:2022 src/uml_driver.c:1265 src/uml_driver.c:1295
 #: src/vbox/vbox_tmpl.c:569
 #, c-format
 msgid "no domain with matching id %d"
@@ -2691,7 +2700,7 @@ msgstr ""
 msgid "Could not read container config"
 msgstr "無法連上 %s"
 
-#: src/openvz_driver.c:1008 src/qemu_driver.c:1876
+#: src/openvz_driver.c:1008 src/qemu_driver.c:1879
 #, fuzzy, c-format
 msgid "unknown type '%s'"
 msgstr "未知的作業系統類型 %s"
@@ -3127,616 +3136,616 @@ msgstr ""
 msgid "Out of space while reading %s startup output"
 msgstr ""
 
-#: src/qemu_driver.c:763
+#: src/qemu_driver.c:767
 #, c-format
 msgid "Failure while reading %s log output"
 msgstr ""
 
-#: src/qemu_driver.c:772
+#: src/qemu_driver.c:776
 #, c-format
 msgid "Out of space while reading %s log output"
 msgstr ""
 
-#: src/qemu_driver.c:779
+#: src/qemu_driver.c:783
 #, c-format
 msgid "Process exited while reading %s log output"
 msgstr ""
 
-#: src/qemu_driver.c:793
+#: src/qemu_driver.c:796
 #, c-format
 msgid "Timed out while reading %s log output"
 msgstr ""
 
-#: src/qemu_driver.c:822
+#: src/qemu_driver.c:825
 #, c-format
 msgid "Unable to open monitor path %s"
 msgstr ""
 
-#: src/qemu_driver.c:827
+#: src/qemu_driver.c:830
 msgid "Unable to set monitor close-on-exec flag"
 msgstr ""
 
-#: src/qemu_driver.c:832
+#: src/qemu_driver.c:835
 msgid "Unable to put monitor into non-blocking mode"
 msgstr ""
 
-#: src/qemu_driver.c:982 src/qemu_driver.c:1554
+#: src/qemu_driver.c:985 src/qemu_driver.c:1557
 #, fuzzy, c-format
 msgid "Unable to close logfile: %s\n"
 msgstr "無法關閉插槽 %d\n"
 
-#: src/qemu_driver.c:991
+#: src/qemu_driver.c:994
 #, fuzzy, c-format
 msgid "unable to start guest: %s"
 msgstr "無法關閉插槽 %d\n"
 
-#: src/qemu_driver.c:1021
+#: src/qemu_driver.c:1024
 msgid "cannot run monitor command to fetch CPU thread info"
 msgstr ""
 
-#: src/qemu_driver.c:1125
+#: src/qemu_driver.c:1128
 #, fuzzy
 msgid "failed to set CPU affinity"
 msgstr "無法取得區域「%s」"
 
-#: src/qemu_driver.c:1135 src/qemu_driver.c:2303
+#: src/qemu_driver.c:1138 src/qemu_driver.c:2306
 #, fuzzy
 msgid "resume operation failed"
 msgstr "操作失敗"
 
-#: src/qemu_driver.c:1168
+#: src/qemu_driver.c:1171
 msgid "setting VNC password failed"
 msgstr ""
 
-#: src/qemu_driver.c:1310
+#: src/qemu_driver.c:1313
 #, fuzzy
 msgid "Failed to set security label"
 msgstr "區域目前的記憶體"
 
-#: src/qemu_driver.c:1344 src/uml_driver.c:738
+#: src/qemu_driver.c:1347 src/uml_driver.c:738
 #, fuzzy
 msgid "VM is already active"
 msgstr "區域已經啟動"
 
-#: src/qemu_driver.c:1362
+#: src/qemu_driver.c:1365
 msgid "Unable to find an unused VNC port"
 msgstr ""
 
-#: src/qemu_driver.c:1370 src/uml_driver.c:760
+#: src/qemu_driver.c:1373 src/uml_driver.c:760
 #, c-format
 msgid "cannot create log directory %s"
 msgstr ""
 
-#: src/qemu_driver.c:1390 src/qemu_driver.c:3524
+#: src/qemu_driver.c:1393 src/qemu_driver.c:3527
 #, c-format
 msgid "Cannot find QEMU binary %s"
 msgstr ""
 
-#: src/qemu_driver.c:1405
+#: src/qemu_driver.c:1408
 #, fuzzy, c-format
 msgid "Cannot remove stale PID file for %s"
 msgstr "無法寫入設定檔：%s"
 
-#: src/qemu_driver.c:1412
+#: src/qemu_driver.c:1415
 #, fuzzy
 msgid "Failed to build pidfile path."
 msgstr "無法暫停區域 %s"
 
-#: src/qemu_driver.c:1425 src/qemu_driver.c:1428 src/uml_driver.c:798
+#: src/qemu_driver.c:1428 src/qemu_driver.c:1431 src/uml_driver.c:798
 #: src/uml_driver.c:801
 #, fuzzy, c-format
 msgid "Unable to write envv to logfile: %s\n"
 msgstr "無法寫入設定檔"
 
-#: src/qemu_driver.c:1435 src/qemu_driver.c:1438 src/qemu_driver.c:1443
+#: src/qemu_driver.c:1438 src/qemu_driver.c:1441 src/qemu_driver.c:1446
 #: src/uml_driver.c:808 src/uml_driver.c:811 src/uml_driver.c:816
 #, fuzzy, c-format
 msgid "Unable to write argv to logfile: %s\n"
 msgstr "無法寫入設定檔"
 
-#: src/qemu_driver.c:1447
+#: src/qemu_driver.c:1450
 #, fuzzy, c-format
 msgid "Unable to seek to end of logfile: %s\n"
 msgstr "無法寫入設定檔"
 
-#: src/qemu_driver.c:1464
+#: src/qemu_driver.c:1467
 #, fuzzy, c-format
 msgid "Domain %s didn't show up\n"
 msgstr "區域 %s 正在執行關機\n"
 
-#: src/qemu_driver.c:1539
+#: src/qemu_driver.c:1542
 #, c-format
 msgid "Shutting down VM '%s'\n"
 msgstr ""
 
-#: src/qemu_driver.c:1544
+#: src/qemu_driver.c:1547
 #, fuzzy, c-format
 msgid "Failed to send SIGTERM to %s (%d)"
 msgstr "無法暫停區域 %s"
 
-#: src/qemu_driver.c:1577
+#: src/qemu_driver.c:1580
 #, fuzzy, c-format
 msgid "Failed to remove domain status for %s"
 msgstr "無法從 %s 建立區域"
 
-#: src/qemu_driver.c:1582
+#: src/qemu_driver.c:1585
 #, fuzzy, c-format
 msgid "Failed to remove PID file for %s: %s"
 msgstr "無法從 %s 建立區域"
 
-#: src/qemu_driver.c:1630
+#: src/qemu_driver.c:1633
 #, c-format
 msgid "unhandled fd event %d for %s"
 msgstr ""
 
-#: src/qemu_driver.c:1849
+#: src/qemu_driver.c:1852
 #, fuzzy, c-format
 msgid "Unable to open %s"
 msgstr "無法暫停區域 %s"
 
-#: src/qemu_driver.c:1914 src/qemu_driver.c:1951 src/uml_driver.c:969
+#: src/qemu_driver.c:1917 src/qemu_driver.c:1954 src/uml_driver.c:969
 #: src/uml_driver.c:1000
 msgid "NUMA not supported on this host"
 msgstr ""
 
-#: src/qemu_driver.c:1920
+#: src/qemu_driver.c:1923
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr ""
 
-#: src/qemu_driver.c:1932 src/qemu_driver.c:1959 src/uml_driver.c:980
+#: src/qemu_driver.c:1935 src/qemu_driver.c:1962 src/uml_driver.c:980
 #: src/uml_driver.c:1008
 #, fuzzy
 msgid "Failed to query NUMA free memory"
 msgstr "已使用的記憶體："
 
-#: src/qemu_driver.c:2046 src/qemu_driver.c:2242 src/qemu_driver.c:2292
-#: src/qemu_driver.c:2341 src/qemu_driver.c:2372 src/qemu_driver.c:2414
-#: src/qemu_driver.c:2441 src/qemu_driver.c:2466 src/qemu_driver.c:2589
-#: src/qemu_driver.c:2630 src/qemu_driver.c:2782 src/qemu_driver.c:2917
-#: src/qemu_driver.c:2978 src/qemu_driver.c:3047 src/qemu_driver.c:3127
-#: src/qemu_driver.c:3160 src/qemu_driver.c:3402 src/qemu_driver.c:3635
-#: src/qemu_driver.c:3749 src/qemu_driver.c:4140 src/qemu_driver.c:4290
-#: src/qemu_driver.c:4343 src/qemu_driver.c:4370 src/qemu_driver.c:4451
-#: src/qemu_driver.c:4589 src/qemu_driver.c:4655 src/qemu_driver.c:4729
-#: src/qemu_driver.c:5061 src/uml_driver.c:1353 src/uml_driver.c:1378
+#: src/qemu_driver.c:2049 src/qemu_driver.c:2245 src/qemu_driver.c:2295
+#: src/qemu_driver.c:2344 src/qemu_driver.c:2375 src/qemu_driver.c:2417
+#: src/qemu_driver.c:2444 src/qemu_driver.c:2469 src/qemu_driver.c:2592
+#: src/qemu_driver.c:2633 src/qemu_driver.c:2785 src/qemu_driver.c:2920
+#: src/qemu_driver.c:2981 src/qemu_driver.c:3050 src/qemu_driver.c:3130
+#: src/qemu_driver.c:3163 src/qemu_driver.c:3405 src/qemu_driver.c:3638
+#: src/qemu_driver.c:3752 src/qemu_driver.c:4143 src/qemu_driver.c:4293
+#: src/qemu_driver.c:4346 src/qemu_driver.c:4373 src/qemu_driver.c:4454
+#: src/qemu_driver.c:4592 src/qemu_driver.c:4658 src/qemu_driver.c:4732
+#: src/qemu_driver.c:5064 src/uml_driver.c:1353 src/uml_driver.c:1378
 #: src/uml_driver.c:1411
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:2071 src/qemu_driver.c:5190
+#: src/qemu_driver.c:2074 src/qemu_driver.c:5193
 #, fuzzy, c-format
 msgid "no domain with matching name '%s'"
 msgstr "區域 id 或 uuid"
 
-#: src/qemu_driver.c:2171 src/qemu_driver.c:2190 src/qemu_driver.c:3308
-#: src/qemu_driver.c:3327 src/qemu_driver.c:3679 src/qemu_driver.c:3694
+#: src/qemu_driver.c:2174 src/qemu_driver.c:2193 src/qemu_driver.c:3311
+#: src/qemu_driver.c:3330 src/qemu_driver.c:3682 src/qemu_driver.c:3697
 #, fuzzy, c-format
 msgid "domain '%s' is already defined with uuid %s"
 msgstr "區域 %s 已經存在"
 
-#: src/qemu_driver.c:2179 src/qemu_driver.c:3316
+#: src/qemu_driver.c:2182 src/qemu_driver.c:3319
 #, fuzzy, c-format
 msgid "domain is already active as '%s'"
 msgstr "區域已經啟動"
 
-#: src/qemu_driver.c:2253 src/qemu_driver.c:2797
+#: src/qemu_driver.c:2256 src/qemu_driver.c:2800
 #, fuzzy
 msgid "suspend operation failed"
 msgstr "操作失敗"
 
-#: src/qemu_driver.c:2347 src/uml_driver.c:1272
+#: src/qemu_driver.c:2350 src/uml_driver.c:1272
 #, fuzzy
 msgid "shutdown operation failed"
 msgstr "操作失敗"
 
-#: src/qemu_driver.c:2472 src/uml_driver.c:1384
+#: src/qemu_driver.c:2475 src/uml_driver.c:1384
 msgid "cannot set max memory lower than current memory"
 msgstr ""
 
-#: src/qemu_driver.c:2505
+#: src/qemu_driver.c:2508
 #, fuzzy
 msgid "could not query memory balloon allocation"
 msgstr "改變記憶體分配"
 
-#: src/qemu_driver.c:2516
+#: src/qemu_driver.c:2519
 #, fuzzy
 msgid "could not parse memory balloon allocation"
 msgstr "無法連上 %s"
 
-#: src/qemu_driver.c:2555
+#: src/qemu_driver.c:2558
 #, fuzzy
 msgid "could not balloon memory allocation"
 msgstr "改變記憶體分配"
 
-#: src/qemu_driver.c:2595 src/uml_driver.c:1423
+#: src/qemu_driver.c:2598 src/uml_driver.c:1423
 msgid "cannot set memory higher than max memory"
 msgstr ""
 
-#: src/qemu_driver.c:2603 src/uml_driver.c:1417
+#: src/qemu_driver.c:2606 src/uml_driver.c:1417
 #, fuzzy
 msgid "cannot set memory of an active domain"
 msgstr "非作用中區域的名稱"
 
-#: src/qemu_driver.c:2809
+#: src/qemu_driver.c:2812
 #, fuzzy
 msgid "failed to get domain xml"
 msgstr "無法取得區域 UUID"
 
-#: src/qemu_driver.c:2817
+#: src/qemu_driver.c:2820
 #, fuzzy, c-format
 msgid "failed to create '%s'"
 msgstr "無法讀取插槽 %d\n"
 
-#: src/qemu_driver.c:2823
+#: src/qemu_driver.c:2826
 #, fuzzy
 msgid "failed to write save header"
 msgstr "無法寫入設定檔"
 
-#: src/qemu_driver.c:2829
+#: src/qemu_driver.c:2832
 #, fuzzy
 msgid "failed to write xml"
 msgstr "無法寫入設定檔"
 
-#: src/qemu_driver.c:2835
+#: src/qemu_driver.c:2838
 #, fuzzy, c-format
 msgid "unable to save file %s"
 msgstr "無法關閉插槽 %d\n"
 
-#: src/qemu_driver.c:2857 src/qemu_driver.c:5110
+#: src/qemu_driver.c:2860 src/qemu_driver.c:5113
 #, fuzzy
 msgid "migrate operation failed"
 msgstr "操作失敗"
 
-#: src/qemu_driver.c:2868
+#: src/qemu_driver.c:2871
 msgid "'migrate' not supported by this qemu"
 msgstr ""
 
-#: src/qemu_driver.c:2923
+#: src/qemu_driver.c:2926
 #, fuzzy
 msgid "cannot change vcpu count of an active domain"
 msgstr "為非作用中的區域取消定義。"
 
-#: src/qemu_driver.c:2929 src/qemu_driver.c:3133 src/qemu_driver.c:3166
+#: src/qemu_driver.c:2932 src/qemu_driver.c:3136 src/qemu_driver.c:3169
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr ""
 
-#: src/qemu_driver.c:2936
+#: src/qemu_driver.c:2939
 msgid "could not determine max vcpus for the domain"
 msgstr ""
 
-#: src/qemu_driver.c:2942
+#: src/qemu_driver.c:2945
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
 msgstr ""
 
-#: src/qemu_driver.c:2984 src/qemu_driver.c:3053
+#: src/qemu_driver.c:2987 src/qemu_driver.c:3056
 #, fuzzy
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "取消定義非作用中的區域"
 
-#: src/qemu_driver.c:2990
+#: src/qemu_driver.c:2993
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr ""
 
-#: src/qemu_driver.c:3011
+#: src/qemu_driver.c:3014
 #, fuzzy
 msgid "cannot set affinity"
 msgstr "無法連上 %s"
 
-#: src/qemu_driver.c:3016
+#: src/qemu_driver.c:3019
 msgid "cpu affinity is not supported"
 msgstr ""
 
-#: src/qemu_driver.c:3088
+#: src/qemu_driver.c:3091
 #, fuzzy
 msgid "cannot get affinity"
 msgstr "節點的區域清單"
 
-#: src/qemu_driver.c:3098
+#: src/qemu_driver.c:3101
 msgid "cpu affinity is not available"
 msgstr ""
 
-#: src/qemu_driver.c:3189
+#: src/qemu_driver.c:3192
 #, fuzzy
 msgid "Failed to get security label"
 msgstr "區域目前的記憶體"
 
-#: src/qemu_driver.c:3220
+#: src/qemu_driver.c:3223
 #, c-format
 msgid "security model string exceeds max %d bytes"
 msgstr ""
 
-#: src/qemu_driver.c:3230
+#: src/qemu_driver.c:3233
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr ""
 
-#: src/qemu_driver.c:3258
+#: src/qemu_driver.c:3261
 #, fuzzy
 msgid "cannot read domain image"
 msgstr "節點的區域清單"
 
-#: src/qemu_driver.c:3264
+#: src/qemu_driver.c:3267
 #, fuzzy
 msgid "failed to read qemu header"
 msgstr "無法從 Xen 系統程式讀取"
 
-#: src/qemu_driver.c:3270
+#: src/qemu_driver.c:3273
 msgid "image magic is incorrect"
 msgstr ""
 
-#: src/qemu_driver.c:3276
+#: src/qemu_driver.c:3279
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr ""
 
-#: src/qemu_driver.c:3288
+#: src/qemu_driver.c:3291
 #, fuzzy
 msgid "failed to read XML"
 msgstr "無法讀取插槽 %d\n"
 
-#: src/qemu_driver.c:3296 src/qemu_driver.c:4961
+#: src/qemu_driver.c:3299 src/qemu_driver.c:4964
 #, fuzzy
 msgid "failed to parse XML"
 msgstr "無法讀取插槽 %d\n"
 
-#: src/qemu_driver.c:3337 src/qemu_driver.c:4998
+#: src/qemu_driver.c:3340 src/qemu_driver.c:5001
 #, fuzzy
 msgid "failed to assign new VM"
 msgstr "無法取得網路 UUID"
 
-#: src/qemu_driver.c:3364
+#: src/qemu_driver.c:3367
 #, fuzzy
 msgid "failed to resume domain"
 msgstr "無法繼續區域 %s"
 
-#: src/qemu_driver.c:3435 src/qemu_driver.c:3470 src/xen_unified.c:1061
+#: src/qemu_driver.c:3438 src/qemu_driver.c:3473 src/xen_unified.c:1061
 #: src/xen_unified.c:1100
 #, fuzzy, c-format
 msgid "unsupported config type %s"
 msgstr "無預期的資料「%s」"
 
-#: src/qemu_driver.c:3533
+#: src/qemu_driver.c:3536
 #, c-format
 msgid "Cannot determine QEMU argv syntax %s"
 msgstr ""
 
-#: src/qemu_driver.c:3796
+#: src/qemu_driver.c:3799
 #, c-format
 msgid "cannot convert disk '%s' to bus/device index"
 msgstr ""
 
-#: src/qemu_driver.c:3822
+#: src/qemu_driver.c:3825
 #, c-format
 msgid "Unsupported disk name mapping for bus '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3857
+#: src/qemu_driver.c:3860
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3880
+#: src/qemu_driver.c:3883
 #, c-format
 msgid ""
 "Emulator version does not support removable media for device '%s' and target "
 "'%s'"
 msgstr ""
 
-#: src/qemu_driver.c:3917
+#: src/qemu_driver.c:3920
 #, fuzzy
 msgid "could not change cdrom media"
 msgstr "無法連上 %s"
 
-#: src/qemu_driver.c:3928
+#: src/qemu_driver.c:3931
 #, fuzzy, c-format
 msgid "changing cdrom media failed: %s"
 msgstr "無法寫入設定檔"
 
-#: src/qemu_driver.c:3955 src/qemu_driver.c:4024
+#: src/qemu_driver.c:3958 src/qemu_driver.c:4027
 #, c-format
 msgid "target %s already exists"
 msgstr ""
 
-#: src/qemu_driver.c:3981
+#: src/qemu_driver.c:3984
 #, c-format
 msgid "cannot attach %s disk"
 msgstr ""
 
-#: src/qemu_driver.c:3995
+#: src/qemu_driver.c:3998
 msgid "Unable to parse slot number\n"
 msgstr ""
 
-#: src/qemu_driver.c:3998
+#: src/qemu_driver.c:4001
 #, fuzzy, c-format
 msgid "adding %s disk failed"
 msgstr "區域 %s 已經存在"
 
-#: src/qemu_driver.c:4049
+#: src/qemu_driver.c:4052
 msgid "cannot attach usb disk"
 msgstr ""
 
-#: src/qemu_driver.c:4060
+#: src/qemu_driver.c:4063
 #, fuzzy
 msgid "adding usb disk failed"
 msgstr "載入主機定義檔"
 
-#: src/qemu_driver.c:4103
+#: src/qemu_driver.c:4106
 msgid "cannot attach usb device"
 msgstr ""
 
-#: src/qemu_driver.c:4114
+#: src/qemu_driver.c:4117
 #, fuzzy
 msgid "adding usb device failed"
 msgstr "載入主機定義檔"
 
-#: src/qemu_driver.c:4146
+#: src/qemu_driver.c:4149
 #, fuzzy
 msgid "cannot attach device on inactive domain"
 msgstr "取消定義非作用中的區域"
 
-#: src/qemu_driver.c:4171
+#: src/qemu_driver.c:4174
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr ""
 
-#: src/qemu_driver.c:4181
+#: src/qemu_driver.c:4184
 #, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr ""
 
-#: src/qemu_driver.c:4191
+#: src/qemu_driver.c:4194
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr ""
 
-#: src/qemu_driver.c:4225
+#: src/qemu_driver.c:4228
 #, fuzzy, c-format
 msgid "disk %s not found"
 msgstr "區域資訊"
 
-#: src/qemu_driver.c:4231
+#: src/qemu_driver.c:4234
 #, c-format
 msgid "disk %s cannot be detached - invalid slot number %d"
 msgstr ""
 
-#: src/qemu_driver.c:4243
+#: src/qemu_driver.c:4246
 #, fuzzy, c-format
 msgid "failed to execute detach disk %s command"
 msgstr "無法取得節點資訊"
 
-#: src/qemu_driver.c:4252
+#: src/qemu_driver.c:4255
 #, fuzzy, c-format
 msgid "failed to detach disk %s: invalid slot %d"
 msgstr "無法從 %s 建立區域"
 
-#: src/qemu_driver.c:4296
+#: src/qemu_driver.c:4299
 #, fuzzy
 msgid "cannot detach device on inactive domain"
 msgstr "取消定義非作用中的區域"
 
-#: src/qemu_driver.c:4316
+#: src/qemu_driver.c:4319
 msgid "only SCSI or virtio disk device can be detached dynamically"
 msgstr ""
 
-#: src/qemu_driver.c:4376 src/uml_driver.c:1696
+#: src/qemu_driver.c:4379 src/uml_driver.c:1696
 #, fuzzy
 msgid "cannot set autostart for transient domain"
 msgstr "自動啟動一個區域"
 
-#: src/qemu_driver.c:4393 src/storage_driver.c:963 src/uml_driver.c:1713
+#: src/qemu_driver.c:4396 src/storage_driver.c:963 src/uml_driver.c:1713
 #, fuzzy, c-format
 msgid "cannot create autostart directory %s"
 msgstr "無法從 %s 建立網路"
 
-#: src/qemu_driver.c:4400 src/uml_driver.c:1720
+#: src/qemu_driver.c:4403 src/uml_driver.c:1720
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "無法將區域 %s 存至 %s"
 
-#: src/qemu_driver.c:4469
+#: src/qemu_driver.c:4472
 #, fuzzy, c-format
 msgid "invalid path: %s"
 msgstr "無效的參數，於 %s"
 
-#: src/qemu_driver.c:4480
+#: src/qemu_driver.c:4483
 msgid "'info blockstats' command failed"
 msgstr ""
 
-#: src/qemu_driver.c:4493
+#: src/qemu_driver.c:4496
 msgid "'info blockstats' not supported by this qemu"
 msgstr ""
 
-#: src/qemu_driver.c:4561
+#: src/qemu_driver.c:4564
 #, fuzzy, c-format
 msgid "device not found: %s (%s)"
 msgstr "從 %s 回復區域\n"
 
-#: src/qemu_driver.c:4601 src/qemu_driver.c:4661 src/uml_driver.c:1770
+#: src/qemu_driver.c:4604 src/qemu_driver.c:4664 src/uml_driver.c:1770
 msgid "NULL or empty path"
 msgstr ""
 
-#: src/qemu_driver.c:4618
+#: src/qemu_driver.c:4621
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr ""
 
-#: src/qemu_driver.c:4680
+#: src/qemu_driver.c:4683
 #, fuzzy, c-format
 msgid "%s: failed to open"
 msgstr "無法暫停區域 %s"
 
-#: src/qemu_driver.c:4691
+#: src/qemu_driver.c:4694
 #, fuzzy, c-format
 msgid "%s: failed to seek or read"
 msgstr "無法讀取設定檔 %s"
 
-#: src/qemu_driver.c:4698 src/uml_driver.c:1807
+#: src/qemu_driver.c:4701 src/uml_driver.c:1807
 #, fuzzy
 msgid "invalid path"
 msgstr "無效的參數，於 "
 
-#: src/qemu_driver.c:4735
+#: src/qemu_driver.c:4738
 msgid "QEMU driver only supports virtual memory addrs"
 msgstr ""
 
-#: src/qemu_driver.c:4748
+#: src/qemu_driver.c:4751
 #, fuzzy, c-format
 msgid "mkstemp(\"%s\") failed"
 msgstr "操作失敗：%s"
 
-#: src/qemu_driver.c:4756
+#: src/qemu_driver.c:4759
 msgid "'memsave' command failed"
 msgstr ""
 
-#: src/qemu_driver.c:4765
+#: src/qemu_driver.c:4768
 #, fuzzy, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "無法寫入設定檔"
 
-#: src/qemu_driver.c:4905
+#: src/qemu_driver.c:4908
 #, fuzzy
 msgid "no domain XML passed"
 msgstr "節點的區域清單"
 
-#: src/qemu_driver.c:4942
+#: src/qemu_driver.c:4945
 msgid "only tcp URIs are supported for KVM migrations"
 msgstr ""
 
-#: src/qemu_driver.c:4952
+#: src/qemu_driver.c:4955
 msgid "URI did not have ':port' at the end"
 msgstr ""
 
-#: src/qemu_driver.c:4978
+#: src/qemu_driver.c:4981
 #, fuzzy
 msgid "could not generate random UUID"
 msgstr "無法取得區域 UUID"
 
-#: src/qemu_driver.c:4987
+#: src/qemu_driver.c:4990
 #, c-format
 msgid "domain with the same name or UUID already exists as '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:5075
+#: src/qemu_driver.c:5078
 msgid "off-line migration specified, but suspend operation failed"
 msgstr ""
 
-#: src/qemu_driver.c:5119
+#: src/qemu_driver.c:5122
 #, fuzzy, c-format
 msgid "migrate failed: %s"
 msgstr "操作失敗：%s"
 
-#: src/qemu_driver.c:5149
+#: src/qemu_driver.c:5152
 #, fuzzy, c-format
 msgid "Failed to resume guest %s after failure\n"
 msgstr "無法繼續區域 %s"
 
-#: src/qemu_driver.c:5259 src/xen_unified.c:1552
+#: src/qemu_driver.c:5262 src/xen_unified.c:1552
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr ""

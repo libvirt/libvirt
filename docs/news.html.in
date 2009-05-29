@@ -5,6 +5,61 @@
     <p>Here is the list of official releases, however since it is early on in the
 development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
+    <h3>0.6.4: May 29 2009</h3>
+    <ul>
+      <li>New features: new API virStorageVolCreateXMLFrom (Cole Robinson),
+          full VBox graphic capabilities (Pritesh Kothari), Interface config
+          APIs (Laine Stump), APIs for domain XML conversions (Daniel
+          Berrange), initial version of OpenNebula driver (Abel Miguez
+          Rodriguez)</li>
+      <li>Portability: better compiler warning selection (Daniel Berrange),
+          Win32 portability fixes (Daniel Berrange)</li>
+      <li>Documentation: documentation for &lt;sound&gt; device XML format (Cole
+          Robinson), storage format documentation fixes (Ryota Ozaki),
+          docs for XML conversion APIs (Daniel Berrange), inconsistencies
+          in storage volume docs and schemas (Ryota Ozaki)</li>
+      <li>Bug fixes: fix hostdev managed handling (Mark McLoughlin),
+          lxc_controller should not cash without args (Guido Gunther),
+          bug fixes in I/O routines (Guido Gunther), fix migrationsave/restore
+          for QEmu 0.10.0 (Daniel Berrange), avoid crash on VBox init
+          (Guido Gunther), fix dev and cgroup init in LXC (Ryota Ozaki),
+          QEmu startup fix (Cole Robinson), block node reboots from LXCs (Ryota
+          Ozaki), QEmu argv detection fix for recent kvm (Daniel Berrange),
+          fix watch/timer event deletion (Daniel Berrange), fix XML escaping
+          bug, various locking bugs (Daniel Berrange), avoid a deadlock in
+          HAL nodedev driver (Cole Robinson), detection of node device media
+          insert/eject (Cole Robinson), broken networking with new QEMU/KVM
+          &gt;= 86 (Daniel Berrange), various fixes in domain and network
+          startup error report (Cole Robinson), double free on unexpected
+          client disconnect (Daniel Berrange)</li>
+      <li>Improvements: cleanups and doc on virExec (Cole Robinson), error
+          reporting in QEmu migrations (Cole Robinson), better path and driver
+          detection in VBox (Pritesh Kothari), avoid caching QEMU driver
+          capabilities(Cole Robinson), multiple graphics elements definitions
+          (Pritesh Kothari), LSB init header init.d improvements (Frederik
+          Himpe), special erro code for invalid operations (Daniel Berrange),
+          dlopen error logging (Daniel Berrange), fix UUID and name uniqueness
+          (Daniel Berrange), improvement on VBox initialization (Pritesh
+          Kothari and Dan Berrange), "Host only" and "Internal" network in VBox
+          (Pritesh Kothari), add utility virExecDaemonize (Cole Robinson),
+          enable bridges without IP (Ludwig Nussel), 'make -s' silencing
+          (Daniel Berrange), test case for exercising the event loop (Daniel
+          Berrange), virsh commands vol-clone and vol-create-from (Cole
+          Robinson), new xend don't use [] around cpumaps (Tatsuro Enokura),
+          add the CIL mutex lock checker (Daniel Berrange), fix some LXC
+          error code (Amy Griffis), virInterface python bindings (Daniel
+          Berrange), fix to the example code for event handling (Pritesh
+          Kothari), always add location informations to logging (Daniel
+          Berrange), python domain events example and binding (Daniel
+          Berrange), PPC Qemu Machine Type update (Thomas Baker)</li>
+      <li>Cleanups: strings bug in virsh (Daniel Berrange), various cleanups
+          in storage code (Cole Robinson), rpm spec cleanups, destructors
+          data cleanups (Laine Stump), some QEmu code refactoring (Daniel
+          Berrange), avoid dependancy on libcap (Daniel Berrange), python
+          import cleanup (Cole Robinson), virAsprintf based cleanups in
+          storage code (Cole Robinson), fix some direct stderr logging,
+          OpenNebula driver cleanups (Daniel Berrange)</li>
+    </ul>
     <h3>0.6.3: Apr 24 2009</h3>
     <ul>
       <li>New features: VirtualBox driver support (Pritesh Kothari),

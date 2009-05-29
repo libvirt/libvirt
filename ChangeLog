@@ -1,3 +1,9 @@
+Fri May 29 18:37:17 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in libvirt.spec.in NEWS docs/* po/*: release of
+	  libvirt-0.6.4
+	* src/libvirt.c src/virterror.c: some comments cleanups
+
 Fri May 29 15:34:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c: Set free'd variables to NULL to avoid potential

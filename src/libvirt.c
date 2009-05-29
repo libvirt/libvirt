@@ -5472,7 +5472,7 @@ error:
 
 /**
  * virInterfaceGetConnect:
- * @net: pointer to a interface
+ * @iface: pointer to a interface
  *
  * Provides the connection pointer associated with an interface.  The
  * reference counter on the connection is not increased by this

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.te\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-05-29 14:01+0200\n"
+"POT-Creation-Date: 2009-05-29 18:42+0200\n"
 "PO-Revision-Date: 2009-05-26 14:09+0530\n"
 "Last-Translator: Krishna Babu K <kkrothap@redhat.com>\n"
 "Language-Team: Telugu <en@li.org>\n"
@@ -371,140 +371,140 @@ msgstr "కక్షిదారులను కేటాయించుటల�
 msgid "Turn off polkit auth for privileged client %d"
 msgstr "అనుమతిగల కక్షిదారి %dకు polkit authను ఆఫ్‌చేయుము"
 
-#: qemud/qemud.c:1339 qemud/qemud.c:1932
+#: qemud/qemud.c:1339 qemud/qemud.c:1944
 #, c-format
 msgid "TLS handshake failed: %s"
 msgstr "TLS హాండ్‌షేక్ విఫలమైంది: %s"
 
-#: qemud/qemud.c:1512 qemud/qemud.c:1740
+#: qemud/qemud.c:1524 qemud/qemud.c:1752
 #, c-format
 msgid "unexpected negative length request %lld"
 msgstr "అనుకోని ఋణ పొడవుగల అభ్యర్ధన %lld"
 
-#: qemud/qemud.c:1528
+#: qemud/qemud.c:1540
 #, c-format
 msgid "read: %s"
 msgstr "చదువు: %s"
 
-#: qemud/qemud.c:1541
+#: qemud/qemud.c:1553
 #, c-format
 msgid "gnutls_record_recv: %s"
 msgstr "gnutls_record_recv: %s"
 
-#: qemud/qemud.c:1603
+#: qemud/qemud.c:1615
 #, c-format
 msgid "failed to decode SASL data %s"
 msgstr "SASL డాటా %s డీకోడ్ చేయుటకు విఫలమైంది"
 
-#: qemud/qemud.c:1751
+#: qemud/qemud.c:1763
 #, c-format
 msgid "write: %s"
 msgstr "వ్రాయు: %s"
 
-#: qemud/qemud.c:1762
+#: qemud/qemud.c:1774
 #, c-format
 msgid "gnutls_record_send: %s"
 msgstr "gnutls_record_send: %s"
 
-#: qemud/qemud.c:1811
+#: qemud/qemud.c:1823
 #, c-format
 msgid "failed to encode SASL data %s"
 msgstr "SASL డాటా %s ఎన్‌కోడ్ చేయుటకు విఫలమైంది"
 
-#: qemud/qemud.c:2056
+#: qemud/qemud.c:2068
 #, c-format
 msgid "Signal handler reported %d errors: last error: %s"
 msgstr "సంకేత సంభాలిక %d దోషములను నివేదించినది: ఆఖరి దోషము: %s"
 
-#: qemud/qemud.c:2111
+#: qemud/qemud.c:2123
 msgid "Failed to register shutdown timeout"
 msgstr "మూసివేత కాలముగింపును నమోదుచేయుటకు విఫలమైంది"
 
-#: qemud/qemud.c:2120
+#: qemud/qemud.c:2132
 msgid "Failed to allocate workers"
 msgstr "పనివారిని కేటాయించుటలో విఫలమైంది"
 
-#: qemud/qemud.c:2281 qemud/qemud.c:2300
+#: qemud/qemud.c:2293 qemud/qemud.c:2312
 #, c-format
 msgid "failed to allocate memory for %s config list"
 msgstr "%s config జాబితాకొరకు మెమొరీని కేటాయించుటలో విఫలమైంది"
 
-#: qemud/qemud.c:2287 qemud/qemud.c:2317
+#: qemud/qemud.c:2299 qemud/qemud.c:2329
 #, c-format
 msgid "failed to allocate memory for %s config list value"
 msgstr "%s config జాబితా విలువకు మెమొరీని కేటాయించుటలో విఫలమైంది"
 
-#: qemud/qemud.c:2305 qemud/qemud.c:2328
+#: qemud/qemud.c:2317 qemud/qemud.c:2340
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: must be a string or list of strings\n"
 msgstr "remoteReadConfigFile: %s: %s: స్ట్రింగ్ కావాలి లేదా స్ట్రింగు జాబితా కావాలి\n"
 
-#: qemud/qemud.c:2344
+#: qemud/qemud.c:2356
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: invalid type: got %s; expected %s\n"
 msgstr "remoteReadConfigFile: %s: %s: విలువకాని రకము: పొందింది %s; అనుకొన్నది %s\n"
 
-#: qemud/qemud.c:2366
+#: qemud/qemud.c:2378
 #, c-format
 msgid "remoteReadConfigFile: %s\n"
 msgstr "remoteReadConfigFile: %s\n"
 
-#: qemud/qemud.c:2409
+#: qemud/qemud.c:2421
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: unsupported auth %s\n"
 msgstr "remoteReadConfigFile: %s: %s: మద్దతీయని auth %s\n"
 
-#: qemud/qemud.c:2557
+#: qemud/qemud.c:2569
 msgid "Cannot set group when not running as root"
 msgstr "rootగా నడువనప్పుడు సమూహంను అమర్చలేక పోయింది"
 
-#: qemud/qemud.c:2567
+#: qemud/qemud.c:2579
 msgid "Failed to allocate memory for buffer"
 msgstr "బఫర్‌కు మెమొరీ కేటాయించటంలో విఫలమైంది"
 
-#: qemud/qemud.c:2576
+#: qemud/qemud.c:2588
 msgid "Failed to reallocate enough memory for buffer"
 msgstr "బఫర్ సరిపోవునంత మెమొరీ తిరిగికేటాయించటంలో విఫలమైంది"
 
-#: qemud/qemud.c:2582
+#: qemud/qemud.c:2594
 #, c-format
 msgid "Failed to lookup group '%s'"
 msgstr "సమూహం '%s'ను చూచుకొనుటలో విఫలమైంది"
 
-#: qemud/qemud.c:2595 qemud/qemud.c:2605
+#: qemud/qemud.c:2607 qemud/qemud.c:2617
 #, c-format
 msgid "Failed to parse mode '%s'"
 msgstr "రీతి '%s'ను పార్శ్‍ చేయుటలో విఫలమైంది"
 
-#: qemud/qemud.c:2683
+#: qemud/qemud.c:2695
 msgid "additional privileges are required\n"
 msgstr ""
 
-#: qemud/qemud.c:2689
+#: qemud/qemud.c:2701
 #, fuzzy
 msgid "failed to set reduced privileges\n"
 msgstr "పరికరము %s తిరిగివుంచుటకు విఫలమైంది"
 
-#: qemud/qemud.c:2838
+#: qemud/qemud.c:2850
 #, c-format
 msgid "Failed to fork as daemon: %s"
 msgstr "డెమోన్‌లా ఫోర్కు చేయుటలో విఫలమైంది: %s"
 
-#: qemud/qemud.c:2861
+#: qemud/qemud.c:2873
 #, c-format
 msgid "Failed to create pipe: %s"
 msgstr "పైప్ సృష్టించుటలో విఫలమైంది: %s"
 
-#: qemud/qemud.c:2886
+#: qemud/qemud.c:2898
 msgid "unable to create rundir"
 msgstr "rundirను సృష్టించలేక పోయింది"
 
-#: qemud/qemud.c:2907
+#: qemud/qemud.c:2919
 #, c-format
 msgid "Failed to change group ownership of %s"
 msgstr "%sయొక్క సమూహపు యాజమానిత్వాన్ని మార్చుటకు విఫలమైంది"
 
-#: qemud/qemud.c:2915
+#: qemud/qemud.c:2927
 msgid "Failed to register callback for signal pipe"
 msgstr "కాల్‌బ్యాక్‌ను సంకేతము పైప్‌కొరకు నమోదుచేయుటకు విఫలమైంది"
 
@@ -1000,446 +1000,446 @@ msgstr "<source> 'పోర్టు' యాట్రిబ్యూట్ స�
 msgid "No <source> 'address' attribute specified with socket interface"
 msgstr "ఎటువంటి <source> 'చిరునామా' యాట్రిబ్యూట్ సాకెట్ ఇంటర్‌ఫేస్‌తో తెలుపబడలేదు"
 
-#: src/domain_conf.c:1058
+#: src/domain_conf.c:1060
 #, fuzzy
 msgid ""
 "No <source> 'name' attribute specified with <interface type='internal'/>"
 msgstr "ఎటువంటి <source> 'dev' యాట్రిబ్యూట్ <interface type='bridge'/>తో తెలుపబడలేదు"
 
-#: src/domain_conf.c:1082
+#: src/domain_conf.c:1084
 msgid "Model name contains invalid characters"
 msgstr "మోడల్ నామము చెల్లని అక్షరములను కలిగివుంది"
 
-#: src/domain_conf.c:1257 src/domain_conf.c:1334
+#: src/domain_conf.c:1259 src/domain_conf.c:1336
 msgid "Missing source path attribute for char device"
 msgstr "మూలపు పాత్ యాట్రిబ్యూట్‌ను అక్షర పరికరము కొరకు తప్పిస్తున్నది"
 
-#: src/domain_conf.c:1274 src/domain_conf.c:1291
+#: src/domain_conf.c:1276 src/domain_conf.c:1293
 msgid "Missing source host attribute for char device"
 msgstr "అక్షర పరికరము కొరకు మూలపు హోస్టు యాట్రిబ్యూట్‌ను తప్పిస్తున్నది"
 
-#: src/domain_conf.c:1279 src/domain_conf.c:1296 src/domain_conf.c:1316
+#: src/domain_conf.c:1281 src/domain_conf.c:1298 src/domain_conf.c:1318
 msgid "Missing source service attribute for char device"
 msgstr "అక్షర పరికరము కొరకు మూలపు సేవ యాట్రిబ్యూట్‌ను తప్పిస్తున్నది"
 
-#: src/domain_conf.c:1387
+#: src/domain_conf.c:1389
 msgid "missing input device type"
 msgstr "తప్పిపోయిన ఇన్‌పుట్ పరికరము రకము"
 
-#: src/domain_conf.c:1393
+#: src/domain_conf.c:1395
 #, c-format
 msgid "unknown input device type '%s'"
 msgstr "తెలియని ఇన్పుట్ పరికరము రకము '%s'"
 
-#: src/domain_conf.c:1400
+#: src/domain_conf.c:1402
 #, c-format
 msgid "unknown input bus type '%s'"
 msgstr "తెలియని ఇన్పుట్ బస్ రకము '%s'"
 
-#: src/domain_conf.c:1408
+#: src/domain_conf.c:1410
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr "ps2 బస్ అనునది %s ఇన్‌పుట్ పరికరమును మద్దతీయుటలేదు"
 
-#: src/domain_conf.c:1414 src/domain_conf.c:1421
+#: src/domain_conf.c:1416 src/domain_conf.c:1423
 #, c-format
 msgid "unsupported input bus %s"
 msgstr "మద్దతీయని ఇన్‌పుట్ బస్ %s"
 
-#: src/domain_conf.c:1426
+#: src/domain_conf.c:1428
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "xen బస్ అనునది %s ఇన్‌పుట్ పరికరమును మద్దతీయుటలేదు"
 
-#: src/domain_conf.c:1471
+#: src/domain_conf.c:1473
 msgid "missing graphics device type"
 msgstr "గ్రాఫిక్స్ పరికరము రకము తప్పిపోయినది"
 
-#: src/domain_conf.c:1477
+#: src/domain_conf.c:1479
 #, c-format
 msgid "unknown graphics device type '%s'"
 msgstr "తెలియని గ్రాఫిక్స్ పరికరము రకము '%s'"
 
-#: src/domain_conf.c:1488
+#: src/domain_conf.c:1490
 #, c-format
 msgid "cannot parse vnc port %s"
 msgstr "vnc పోర్టు %sను పార్శ్ చేయలేదు"
 
-#: src/domain_conf.c:1526 src/domain_conf.c:1588
+#: src/domain_conf.c:1528 src/domain_conf.c:1590
 #, c-format
 msgid "unknown fullscreen value '%s'"
 msgstr "తెలియని పూర్తితెర విలువ '%s'"
 
-#: src/domain_conf.c:1544
+#: src/domain_conf.c:1546
 #, fuzzy, c-format
 msgid "cannot parse rdp port %s"
 msgstr "vnc పోర్టు %sను పార్శ్ చేయలేదు"
 
-#: src/domain_conf.c:1627
+#: src/domain_conf.c:1629
 #, c-format
 msgid "unknown sound model '%s'"
 msgstr "తెలియని శబ్ధపు రీతి '%s'"
 
-#: src/domain_conf.c:1661
+#: src/domain_conf.c:1663
 #, c-format
 msgid "cannot parse vendor id %s"
 msgstr "అమ్మకందారి id %sను పార్శ్ చేయలేదు"
 
-#: src/domain_conf.c:1668
+#: src/domain_conf.c:1670
 msgid "usb vendor needs id"
 msgstr "usb అమ్మకందారికి id అవసరము"
 
-#: src/domain_conf.c:1678
+#: src/domain_conf.c:1680
 #, c-format
 msgid "cannot parse product %s"
 msgstr "ఉత్పత్తి %s పార్శ్ చేయలేము"
 
-#: src/domain_conf.c:1686
+#: src/domain_conf.c:1688
 msgid "usb product needs id"
 msgstr "usb ఉత్పత్తికి id అవసరము"
 
-#: src/domain_conf.c:1697 src/domain_conf.c:1784
+#: src/domain_conf.c:1699 src/domain_conf.c:1786
 #, c-format
 msgid "cannot parse bus %s"
 msgstr "బస్ %s పార్శ్ చేయలేము"
 
-#: src/domain_conf.c:1704
+#: src/domain_conf.c:1706
 msgid "usb address needs bus id"
 msgstr "usb చిరునామాకు bus id అవసరము"
 
-#: src/domain_conf.c:1713
+#: src/domain_conf.c:1715
 #, c-format
 msgid "cannot parse device %s"
 msgstr "పరికరము %sను పార్శ్ చేయలేదు"
 
-#: src/domain_conf.c:1721
+#: src/domain_conf.c:1723
 msgid "usb address needs device id"
 msgstr "usb చిరునామాకు పరికరము id అవసరము"
 
-#: src/domain_conf.c:1726
+#: src/domain_conf.c:1728
 #, c-format
 msgid "unknown usb source type '%s'"
 msgstr "తెలియని usb మూలము రకము '%s'"
 
-#: src/domain_conf.c:1737
+#: src/domain_conf.c:1739
 msgid "missing vendor"
 msgstr "పోయిన అమ్మకందారి"
 
-#: src/domain_conf.c:1743
+#: src/domain_conf.c:1745
 msgid "missing product"
 msgstr "పోయిన వుత్పత్తి"
 
-#: src/domain_conf.c:1771
+#: src/domain_conf.c:1773
 #, c-format
 msgid "cannot parse domain %s"
 msgstr "డొమైన్ %sను పార్శ్ చేయలేదు"
 
-#: src/domain_conf.c:1791
+#: src/domain_conf.c:1793
 msgid "pci address needs bus id"
 msgstr "pci చిరునామాకు bus id అవసరము"
 
-#: src/domain_conf.c:1800
+#: src/domain_conf.c:1802
 #, c-format
 msgid "cannot parse slot %s"
 msgstr "slot %sను పార్శ్ చేయలేదు"
 
-#: src/domain_conf.c:1808
+#: src/domain_conf.c:1810
 msgid "pci address needs slot id"
 msgstr "pci చిరునామాకు slot id అవసరము"
 
-#: src/domain_conf.c:1817
+#: src/domain_conf.c:1819
 #, c-format
 msgid "cannot parse function %s"
 msgstr "ప్రమేయం %sను పార్శ్ చేయలేదు"
 
-#: src/domain_conf.c:1825
+#: src/domain_conf.c:1827
 msgid "pci address needs function id"
 msgstr "pci చిరునామాకు ప్రమేయం id అవసరము"
 
-#: src/domain_conf.c:1830
+#: src/domain_conf.c:1832
 #, c-format
 msgid "unknown pci source type '%s'"
 msgstr "తెలియని pci మూలము రకము '%s'"
 
-#: src/domain_conf.c:1863
+#: src/domain_conf.c:1865
 #, c-format
 msgid "unknown hostdev mode '%s'"
 msgstr "తెలియని hostdev రీతి '%s'"
 
-#: src/domain_conf.c:1874
+#: src/domain_conf.c:1876
 #, c-format
 msgid "unknown host device type '%s'"
 msgstr "తెలియని హోస్ట్ పరికరము రకము '%s'"
 
-#: src/domain_conf.c:1879
+#: src/domain_conf.c:1881
 msgid "missing type in hostdev"
 msgstr "hostdev నందు తప్పిపోయిన రకము"
 
-#: src/domain_conf.c:1907
+#: src/domain_conf.c:1909
 #, c-format
 msgid "unknown node %s"
 msgstr "తెలియని నోడ్ %s"
 
-#: src/domain_conf.c:1938
+#: src/domain_conf.c:1940
 #, c-format
 msgid "unknown lifecycle action %s"
 msgstr "తెలియని జీవితచక్ర చర్య %s"
 
-#: src/domain_conf.c:1962
+#: src/domain_conf.c:1964
 msgid "missing security type"
 msgstr "తప్పిపోయిన రక్షణ రకము"
 
-#: src/domain_conf.c:1969
+#: src/domain_conf.c:1971
 msgid "invalid security type"
 msgstr "చెల్లని రక్షణ రకము"
 
-#: src/domain_conf.c:1982
+#: src/domain_conf.c:1984
 msgid "missing security model"
 msgstr "తప్పిపోయిన రక్షణ రీతి"
 
-#: src/domain_conf.c:1991
+#: src/domain_conf.c:1993
 msgid "security label is missing"
 msgstr "రక్షణ లేబుల్ తప్పిపోయినది"
 
-#: src/domain_conf.c:2005
+#: src/domain_conf.c:2007
 msgid "security imagelabel is missing"
 msgstr "రక్షణ యిమేజ్‌లేబుల్ తప్పిపోయినది"
 
-#: src/domain_conf.c:2038 src/domain_conf.c:2674 src/domain_conf.c:2715
+#: src/domain_conf.c:2040 src/domain_conf.c:2676 src/domain_conf.c:2717
 #: src/network_conf.c:480 src/network_conf.c:520 src/node_device_conf.c:1042
 #: src/qemu_conf.c:2868 src/storage_conf.c:696 src/storage_conf.c:1071
 msgid "missing root element"
 msgstr "తప్పిపోయిన root మూలకము"
 
-#: src/domain_conf.c:2074
+#: src/domain_conf.c:2076
 msgid "unknown device type"
 msgstr "తెలియని పరికరము రకము"
 
-#: src/domain_conf.c:2121
+#: src/domain_conf.c:2123
 msgid "missing domain type attribute"
 msgstr "తప్పిపోయిన డొమైన్ రకము యాట్రిబ్యూట్"
 
-#: src/domain_conf.c:2127
+#: src/domain_conf.c:2129
 #, c-format
 msgid "invalid domain type %s"
 msgstr "చెల్లని డొమైన్ రకము %s"
 
-#: src/domain_conf.c:2144 src/network_conf.c:335
+#: src/domain_conf.c:2146 src/network_conf.c:335
 msgid "Failed to generate UUID"
 msgstr "UUIDను వుద్భవించుటలో విఫలమైంది"
 
-#: src/domain_conf.c:2150 src/network_conf.c:342 src/storage_conf.c:511
+#: src/domain_conf.c:2152 src/network_conf.c:342 src/storage_conf.c:511
 msgid "malformed uuid element"
 msgstr "తప్పుగాపని చేయుచున్న uuid మూలకము"
 
-#: src/domain_conf.c:2159
+#: src/domain_conf.c:2161
 msgid "missing memory element"
 msgstr "మెమొరీ మూలకం తప్పిపోయినది"
 
-#: src/domain_conf.c:2192
+#: src/domain_conf.c:2194
 #, c-format
 msgid "unexpected feature %s"
 msgstr "ఊహించని సౌలభ్యము %s"
 
-#: src/domain_conf.c:2232
+#: src/domain_conf.c:2234
 msgid "no OS type"
 msgstr "ఏ OS రకంకాదు"
 
-#: src/domain_conf.c:2260
+#: src/domain_conf.c:2262
 #, c-format
 msgid "os type '%s' & arch '%s' combination is not supported"
 msgstr "os రకము '%s' & ఆకృతి '%s' మిశ్రమం మద్దతీయదు"
 
-#: src/domain_conf.c:2268 src/xm_internal.c:701
+#: src/domain_conf.c:2270 src/xm_internal.c:701
 #, c-format
 msgid "no supported architecture for os type '%s'"
 msgstr "os రకము '%s'కు యెటువంటి మద్దతిచ్చు ఆకృతి లేదు"
 
-#: src/domain_conf.c:2318
+#: src/domain_conf.c:2320
 msgid "cannot extract boot device"
 msgstr "బూట్ పరికరమును బయల్పరచలేము"
 
-#: src/domain_conf.c:2326
+#: src/domain_conf.c:2328
 msgid "missing boot device"
 msgstr "తప్పిపోయిన బూట్ పరికరము"
 
-#: src/domain_conf.c:2331
+#: src/domain_conf.c:2333
 #, c-format
 msgid "unknown boot device '%s'"
 msgstr "తెలియని బూట్ పరికరము '%s'"
 
-#: src/domain_conf.c:2351
+#: src/domain_conf.c:2353
 msgid "cannot extract disk devices"
 msgstr "డిస్కు పరికరములను బయల్పరచలేదు"
 
-#: src/domain_conf.c:2372
+#: src/domain_conf.c:2374
 msgid "cannot extract filesystem devices"
 msgstr "దస్త్రవ్యవస్థ పరికరములను బయల్పరచలేదు"
 
-#: src/domain_conf.c:2391
+#: src/domain_conf.c:2393
 msgid "cannot extract network devices"
 msgstr "నెట్వర్కు పరికరాలను బయల్పరచలేదు"
 
-#: src/domain_conf.c:2412
+#: src/domain_conf.c:2414
 msgid "cannot extract parallel devices"
 msgstr "సమాంతర పరికరాలను బయల్పరచలేదు"
 
-#: src/domain_conf.c:2432
+#: src/domain_conf.c:2434
 msgid "cannot extract serial devices"
 msgstr "వరుస పరికరాలను బయల్పరచలేదు"
 
-#: src/domain_conf.c:2482
+#: src/domain_conf.c:2484
 msgid "cannot extract input devices"
 msgstr "ఇన్పుట్ పరికరాలను బయల్పరచలేదు"
 
-#: src/domain_conf.c:2517
+#: src/domain_conf.c:2519
 msgid "cannot extract graphics devices"
 msgstr "గ్రాఫిక్స్ పరికరాలను బయల్పరచలేదు"
 
-#: src/domain_conf.c:2561
+#: src/domain_conf.c:2563
 msgid "cannot extract sound devices"
 msgstr "శబ్దపు పరికరాలను బయల్పరచలేదు"
 
-#: src/domain_conf.c:2591
+#: src/domain_conf.c:2593
 msgid "cannot extract host devices"
 msgstr "హోస్టు పరికరాలను బయల్పరచలేదు"
 
-#: src/domain_conf.c:2637 src/network_conf.c:445 src/node_device_conf.c:1007
+#: src/domain_conf.c:2639 src/network_conf.c:445 src/node_device_conf.c:1007
 #: src/qemu_conf.c:2814 src/storage_conf.c:651
 #, c-format
 msgid "at line %d: %s"
 msgstr "వరుస %d: %s వద్ద"
 
-#: src/domain_conf.c:2668 src/domain_conf.c:2709 src/network_conf.c:474
+#: src/domain_conf.c:2670 src/domain_conf.c:2711 src/network_conf.c:474
 #: src/network_conf.c:514 src/node_device_conf.c:1036 src/qemu_conf.c:2862
 #: src/storage_conf.c:683 src/storage_conf.c:1058
 msgid "failed to parse xml document"
 msgstr "xml పత్రమును పార్శ్ చేయుటలో విఫలమైంది"
 
-#: src/domain_conf.c:2739 src/network_conf.c:542 src/node_device_conf.c:976
+#: src/domain_conf.c:2741 src/network_conf.c:542 src/node_device_conf.c:976
 #: src/qemu_conf.c:2880
 msgid "incorrect root element"
 msgstr "సరికాని root మూలకము"
 
-#: src/domain_conf.c:2948
+#: src/domain_conf.c:2950
 msgid "topology cpuset syntax error"
 msgstr "టోపాలజీ కప్‌సెట్ సిన్టాక్స్  దోషం"
 
-#: src/domain_conf.c:2962
+#: src/domain_conf.c:2964
 #, c-format
 msgid "unexpected lifecycle type %d"
 msgstr "అనుకోని లైఫ్‌సైకిల్ రకము %d"
 
-#: src/domain_conf.c:2984
+#: src/domain_conf.c:2986
 #, c-format
 msgid "unexpected disk type %d"
 msgstr "అనుకోని డిస్కు రకము %d"
 
-#: src/domain_conf.c:2989
+#: src/domain_conf.c:2991
 #, c-format
 msgid "unexpected disk device %d"
 msgstr "అనుకోని డిస్కు పరికరము %d"
 
-#: src/domain_conf.c:2994
+#: src/domain_conf.c:2996
 #, c-format
 msgid "unexpected disk bus %d"
 msgstr "అనుకోని డిస్కు బస్ %d"
 
-#: src/domain_conf.c:2999
+#: src/domain_conf.c:3001
 #, c-format
 msgid "unexpected disk cache mode %d"
 msgstr "అనుకోని డిస్కు క్యాచీ రీతి %d"
 
-#: src/domain_conf.c:3047
+#: src/domain_conf.c:3049
 #, c-format
 msgid "unexpected filesystem type %d"
 msgstr "అనుకోని దస్త్రవ్యవస్థ రకము %d"
 
-#: src/domain_conf.c:3098 src/domain_conf.c:3326
+#: src/domain_conf.c:3100 src/domain_conf.c:3328
 #, c-format
 msgid "unexpected net type %d"
 msgstr "అనుకోని నెట్ రకము %d"
 
-#: src/domain_conf.c:3179
+#: src/domain_conf.c:3181
 #, c-format
 msgid "unexpected char type %d"
 msgstr "అనుకోని అక్షరపు రకము %d"
 
-#: src/domain_conf.c:3279 src/xend_internal.c:5522
+#: src/domain_conf.c:3281 src/xend_internal.c:5522
 #, c-format
 msgid "unexpected sound model %d"
 msgstr "అనుకోని శబ్దపు రీతి %d"
 
-#: src/domain_conf.c:3299 src/xend_internal.c:5544
+#: src/domain_conf.c:3301 src/xend_internal.c:5544
 #, c-format
 msgid "unexpected input type %d"
 msgstr "అనుకోని ఇన్పుట్ రకము %d"
 
-#: src/domain_conf.c:3304
+#: src/domain_conf.c:3306
 #, c-format
 msgid "unexpected input bus type %d"
 msgstr "అనుకోని ఇన్పుట్ బస్ రకము %d"
 
-#: src/domain_conf.c:3421
+#: src/domain_conf.c:3423
 #, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "అనుకోని hostdev రీతి %d"
 
-#: src/domain_conf.c:3428
+#: src/domain_conf.c:3430
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "అనుకోని hostdev రకము %d"
 
-#: src/domain_conf.c:3476
+#: src/domain_conf.c:3478
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "అనుకోని డొమైన్ రకము %d"
 
-#: src/domain_conf.c:3561
+#: src/domain_conf.c:3563
 #, c-format
 msgid "unexpected boot device type %d"
 msgstr "అనుకోని బూట్ పరికరము రకము %d"
 
-#: src/domain_conf.c:3579
+#: src/domain_conf.c:3581
 #, c-format
 msgid "unexpected feature %d"
 msgstr "అనుకోని సౌలభ్యము %d"
 
-#: src/domain_conf.c:3725 src/network_conf.c:657
+#: src/domain_conf.c:3727 src/network_conf.c:657
 #, c-format
 msgid "cannot create config directory '%s'"
 msgstr "ఆకృతీకరణ డైరెక్టరీ '%s'ను సృష్టించలేదు"
 
-#: src/domain_conf.c:3734 src/network_conf.c:666
+#: src/domain_conf.c:3736 src/network_conf.c:666
 #, c-format
 msgid "cannot create config file '%s'"
 msgstr "ఆకృతీకరణ దస్త్రము '%s'ను సృష్టించలేదు"
 
-#: src/domain_conf.c:3742 src/network_conf.c:674
+#: src/domain_conf.c:3744 src/network_conf.c:674
 #, c-format
 msgid "cannot write config file '%s'"
 msgstr "ఆకృతీకరణ దస్త్రము '%s'ను వ్రాయలేదు"
 
-#: src/domain_conf.c:3749 src/network_conf.c:681
+#: src/domain_conf.c:3751 src/network_conf.c:681
 #, c-format
 msgid "cannot save config file '%s'"
 msgstr "ఆకృతీకరణ ఫైలును భద్రపరచలేదు %s"
 
-#: src/domain_conf.c:3850 src/network_conf.c:787 src/storage_conf.c:1384
+#: src/domain_conf.c:3852 src/network_conf.c:783 src/storage_conf.c:1384
 #, c-format
 msgid "Failed to open dir '%s'"
 msgstr "dir '%s'ను తెరువుటకు విఫలమైంది"
 
-#: src/domain_conf.c:3904
+#: src/domain_conf.c:3906
 #, c-format
 msgid "cannot remove config %s"
 msgstr "%s కొరకు ఆకృతీకరణ ఫైలును తీసివేయలేదు"
 
-#: src/domain_conf.c:3978
+#: src/domain_conf.c:3980
 msgid "unknown virt type"
 msgstr "తెలియని virt రకము"
 
-#: src/domain_conf.c:3989
+#: src/domain_conf.c:3991
 #, c-format
 msgid "no emulator for domain %s os type %s on architecture %s"
 msgstr "డొమైన్ %s os రకము %s ఆకృతి %s పైన ఎమ్యులేటర్ లేదు"
@@ -1634,21 +1634,25 @@ msgstr " / స్లేవ్ చేయుటకు విఫలమైంది"
 msgid "failed to mount /proc"
 msgstr "/proc మరల్పుకు విఫలమైంది"
 
-#: src/lxc_container.c:659
+#: src/lxc_container.c:660
 #, fuzzy, c-format
 msgid "failed to drop %s"
 msgstr "mkdir %sకు విఫలమైంది"
 
-#: src/lxc_container.c:690
+#: src/lxc_container.c:665
+msgid "failed to drop capabilities PR_CAPBSET_DROP undefined"
+msgstr ""
+
+#: src/lxc_container.c:693
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() అనునది సరికాని vm నిర్వచనంను పంపినది"
 
-#: src/lxc_container.c:711
+#: src/lxc_container.c:714
 #, c-format
 msgid "failed to open tty %s"
 msgstr "tty %s తెరుచుటకు విఫలమైంది"
 
-#: src/lxc_container.c:789
+#: src/lxc_container.c:792
 msgid "failed to run clone container"
 msgstr "క్లోన్ కంటైనర్ నడుపుటకు విఫలమైంది"
 
@@ -1777,12 +1781,12 @@ msgstr "సిస్టమ్‌కు NETNS మద్దతు లేదు"
 msgid "no domain with matching uuid"
 msgstr "సరిపోవు uuidతో ఏ డొమైన్ లేదు"
 
-#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3755
+#: src/lxc_driver.c:333 src/openvz_driver.c:914 src/qemu_driver.c:3758
 #: src/uml_driver.c:1626
 msgid "cannot delete active domain"
 msgstr "క్రియాశీల డొమైన్‌ను తొలగించలేక పోయింది"
 
-#: src/lxc_driver.c:339 src/opennebula/one_driver.c:306 src/qemu_driver.c:3761
+#: src/lxc_driver.c:339 src/opennebula/one_driver.c:306 src/qemu_driver.c:3764
 #: src/uml_driver.c:1632
 msgid "cannot undefine transient domain"
 msgstr "ట్రాన్సియన్టు డొమైన్‌ను అనిర్వచనీయము చేయలేము"
@@ -1892,7 +1896,7 @@ msgstr "చెల్లని పారామితి `%s'"
 msgid "Invalid parameter count"
 msgstr "చెల్లని పారామితి లెక్క"
 
-#: src/lxc_driver.c:1414 src/qemu_driver.c:2108 src/qemu_driver.c:4926
+#: src/lxc_driver.c:1414 src/qemu_driver.c:2111 src/qemu_driver.c:4929
 msgid "failed to determine host name"
 msgstr "అతిధేయ నామమును పొందుటలో విఫలం"
 
@@ -1925,22 +1929,22 @@ msgstr "ఫార్వాడింగ్ అభ్యర్ధించబడ�
 msgid "unknown forwarding type '%s'"
 msgstr "తెలియని ఫార్వార్డింగ్ రకము '%s'"
 
-#: src/network_conf.c:742
+#: src/network_conf.c:741
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr "నెట్వర్కు ఆకృతీకరణ ఫైలు నామము '%s' నెట్వర్కు నామము '%s'తో సరిపోలటం లేదు"
 
-#: src/network_conf.c:835
+#: src/network_conf.c:831
 #, c-format
 msgid "cannot remove config file '%s'"
 msgstr "ఆకృతీకరణ దస్త్రము '%s'ను తీసివేయలేదు"
 
-#: src/network_conf.c:909
+#: src/network_conf.c:905
 #, c-format
 msgid "Bridge generation exceeded max id %d"
 msgstr "బ్రిడ్జు నిష్పాదనము గరిష్ట id %dను మించినది"
 
-#: src/network_conf.c:923
+#: src/network_conf.c:924
 #, c-format
 msgid "bridge name '%s' already in use."
 msgstr "బ్రిడ్జు నామము '%s' యిప్పటికే వుపయోగంలో వుంది."
@@ -2057,8 +2061,8 @@ msgstr "నెట్వర్కును మూసివేస్తోంద�
 
 #: src/network_driver.c:951 src/network_driver.c:1176
 #: src/network_driver.c:1214 src/network_driver.c:1237
-#: src/network_driver.c:1266 src/network_driver.c:1321
-#: src/network_driver.c:1346
+#: src/network_driver.c:1272 src/network_driver.c:1327
+#: src/network_driver.c:1352
 msgid "no network with matching uuid"
 msgstr "సరిపోలు uuidతో యెటువంటి నెట్వర్కు లేదు"
 
@@ -2070,26 +2074,31 @@ msgstr "సరిపోలు నామముతో యెటువంటి న
 msgid "network is still active"
 msgstr "నెట్వర్కు యిప్పటికే క్రియాశీలంగా వుంది"
 
-#: src/network_driver.c:1289
+#: src/network_driver.c:1243
+#, fuzzy
+msgid "network is not active"
+msgstr "నెట్వర్కు %s క్రియాశీలముగా లేదు"
+
+#: src/network_driver.c:1295
 msgid "no network with matching id"
 msgstr "సరిపోలు idతో యెటువంటి నెట్వర్కు లేదు"
 
-#: src/network_driver.c:1295
+#: src/network_driver.c:1301
 #, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "నెట్వర్కు '%s' బ్రిడ్జు నామమును కలిగిలేదు"
 
-#: src/network_driver.c:1363
+#: src/network_driver.c:1369
 #, c-format
 msgid "cannot create autostart directory '%s'"
 msgstr "స్వయంచాలక డైరెక్టరీ %sని సృష్టించలేము"
 
-#: src/network_driver.c:1370 src/storage_driver.c:970
+#: src/network_driver.c:1376 src/storage_driver.c:970
 #, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "సిమ్‌లింకు '%s'ను %sకుసృష్టించుటలో విఫలమైంది"
 
-#: src/network_driver.c:1377 src/qemu_driver.c:4407 src/storage_driver.c:978
+#: src/network_driver.c:1383 src/qemu_driver.c:4410 src/storage_driver.c:978
 #: src/uml_driver.c:1727
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -2399,16 +2408,16 @@ msgstr "యిప్పటికే తెరిసిన OPENVZ VM అనున
 msgid "Wrong state to perform action"
 msgstr "నిల్వ vol సమాచారము"
 
-#: src/opennebula/one_driver.c:584 src/qemu_driver.c:2247
-#: src/qemu_driver.c:2297 src/qemu_driver.c:2377 src/qemu_driver.c:2788
-#: src/qemu_driver.c:4456 src/qemu_driver.c:4595 src/qemu_driver.c:4741
-#: src/qemu_driver.c:5067 src/xen_internal.c:1078 src/xen_internal.c:1158
+#: src/opennebula/one_driver.c:584 src/qemu_driver.c:2250
+#: src/qemu_driver.c:2300 src/qemu_driver.c:2380 src/qemu_driver.c:2791
+#: src/qemu_driver.c:4459 src/qemu_driver.c:4598 src/qemu_driver.c:4744
+#: src/qemu_driver.c:5070 src/xen_internal.c:1078 src/xen_internal.c:1158
 #: src/xen_internal.c:1261
 msgid "domain is not running"
 msgstr "డొమైన్ నడుచుట లేదు"
 
 #: src/opennebula/one_driver.c:587 src/opennebula/one_driver.c:620
-#: src/qemu_driver.c:2019 src/uml_driver.c:1265 src/uml_driver.c:1295
+#: src/qemu_driver.c:2022 src/uml_driver.c:1265 src/uml_driver.c:1295
 #: src/vbox/vbox_tmpl.c:569
 #, c-format
 msgid "no domain with matching id %d"
@@ -2583,7 +2592,7 @@ msgstr "డొమైన్ అనునది shutoff స్థితినం�
 msgid "Could not read container config"
 msgstr "కంటైనర్ ఆకృతీకరణని చదువలేక పోయింది"
 
-#: src/openvz_driver.c:1008 src/qemu_driver.c:1876
+#: src/openvz_driver.c:1008 src/qemu_driver.c:1879
 #, c-format
 msgid "unknown type '%s'"
 msgstr "తెలియని రకము '%s'"
@@ -3013,581 +3022,581 @@ msgstr "%s ప్రారంభం అవుట్‌పుట్‌ను చ�
 msgid "Out of space while reading %s startup output"
 msgstr "%s ప్రారంభం అవుట్‌పుట్‌ను చదువుచున్నప్పుడు ఖాళీ మించినది"
 
-#: src/qemu_driver.c:763
+#: src/qemu_driver.c:767
 #, c-format
 msgid "Failure while reading %s log output"
 msgstr "%s లాగ్ అవుట్పుట్‌ను చదువుచున్నప్పుడు దోషము"
 
-#: src/qemu_driver.c:772
+#: src/qemu_driver.c:776
 #, c-format
 msgid "Out of space while reading %s log output"
 msgstr "%s లాగ్ అవుట్పుట్ చదువునప్పుడు స్పేసు మించిపోయినది"
 
-#: src/qemu_driver.c:779
+#: src/qemu_driver.c:783
 #, fuzzy, c-format
 msgid "Process exited while reading %s log output"
 msgstr "%s లాగ్ అవుట్పుట్‌ను చదువుచున్నప్పుడు సమయం ముగిసినది"
 
-#: src/qemu_driver.c:793
+#: src/qemu_driver.c:796
 #, c-format
 msgid "Timed out while reading %s log output"
 msgstr "%s లాగ్ అవుట్పుట్‌ను చదువుచున్నప్పుడు సమయం ముగిసినది"
 
-#: src/qemu_driver.c:822
+#: src/qemu_driver.c:825
 #, c-format
 msgid "Unable to open monitor path %s"
 msgstr "మానిటర్ పాత్ %sను తెరువలేక పోయింది"
 
-#: src/qemu_driver.c:827
+#: src/qemu_driver.c:830
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "మానిటర్‌కు close-on-exec ఫ్లాగ్‌ను అమర్చలేక పోయింది"
 
-#: src/qemu_driver.c:832
+#: src/qemu_driver.c:835
 msgid "Unable to put monitor into non-blocking mode"
 msgstr "మానిటర్‌ను నాన్-బ్లాకింగ్ రీతినందు వుంచలేదు"
 
-#: src/qemu_driver.c:982 src/qemu_driver.c:1554
+#: src/qemu_driver.c:985 src/qemu_driver.c:1557
 #, c-format
 msgid "Unable to close logfile: %s\n"
 msgstr "లాగ్‌ఫైలును మూయలేక పోయింది: %s\n"
 
-#: src/qemu_driver.c:991
+#: src/qemu_driver.c:994
 #, c-format
 msgid "unable to start guest: %s"
 msgstr "గెస్టును ప్రారంభించలేక పోయింది: %s"
 
-#: src/qemu_driver.c:1021
+#: src/qemu_driver.c:1024
 msgid "cannot run monitor command to fetch CPU thread info"
 msgstr "CPU తంతి సమాచారమును పొందుటకు మానిటర్ ఆదేశమును నడుపలేము"
 
-#: src/qemu_driver.c:1125
+#: src/qemu_driver.c:1128
 msgid "failed to set CPU affinity"
 msgstr "CPU ఎఫినిటీని అమర్చుటలో విఫలమైంది"
 
-#: src/qemu_driver.c:1135 src/qemu_driver.c:2303
+#: src/qemu_driver.c:1138 src/qemu_driver.c:2306
 msgid "resume operation failed"
 msgstr "ఆపరేషన్ తిరిగికొనసాగింపు విఫలమైంది"
 
-#: src/qemu_driver.c:1168
+#: src/qemu_driver.c:1171
 msgid "setting VNC password failed"
 msgstr "VNC సంకేతపదమును అమర్చుటలో విఫలమైంది"
 
-#: src/qemu_driver.c:1310
+#: src/qemu_driver.c:1313
 msgid "Failed to set security label"
 msgstr "రక్షణ లేబుల్‌ను అమర్చుటలో విఫలమైంది"
 
-#: src/qemu_driver.c:1344 src/uml_driver.c:738
+#: src/qemu_driver.c:1347 src/uml_driver.c:738
 msgid "VM is already active"
 msgstr "VM యిప్పటికే క్రియాశీల పర్చబడింది"
 
-#: src/qemu_driver.c:1362
+#: src/qemu_driver.c:1365
 msgid "Unable to find an unused VNC port"
 msgstr "ఉపయోగించని VNC పోర్టును కనుగొనలేక పోయింది"
 
-#: src/qemu_driver.c:1370 src/uml_driver.c:760
+#: src/qemu_driver.c:1373 src/uml_driver.c:760
 #, c-format
 msgid "cannot create log directory %s"
 msgstr "లాగ్ డైరెక్టరీ %sను సృష్టించలేక పోయింది"
 
-#: src/qemu_driver.c:1390 src/qemu_driver.c:3524
+#: src/qemu_driver.c:1393 src/qemu_driver.c:3527
 #, c-format
 msgid "Cannot find QEMU binary %s"
 msgstr "QEMU బైనరీ %sను కనుగొనలేక పోయింది"
 
-#: src/qemu_driver.c:1405
+#: src/qemu_driver.c:1408
 #, c-format
 msgid "Cannot remove stale PID file for %s"
 msgstr "%s కొరకు స్టేల్ PID ఫైలును తొలగించలేదు"
 
-#: src/qemu_driver.c:1412
+#: src/qemu_driver.c:1415
 #, fuzzy
 msgid "Failed to build pidfile path."
 msgstr "పూల్ %s నిర్మించుటకు విఫలమైంది"
 
-#: src/qemu_driver.c:1425 src/qemu_driver.c:1428 src/uml_driver.c:798
+#: src/qemu_driver.c:1428 src/qemu_driver.c:1431 src/uml_driver.c:798
 #: src/uml_driver.c:801
 #, c-format
 msgid "Unable to write envv to logfile: %s\n"
 msgstr "envvను లాగ్‌దస్త్రమునకు వ్రాయలేక పోయింది: %s\n"
 
-#: src/qemu_driver.c:1435 src/qemu_driver.c:1438 src/qemu_driver.c:1443
+#: src/qemu_driver.c:1438 src/qemu_driver.c:1441 src/qemu_driver.c:1446
 #: src/uml_driver.c:808 src/uml_driver.c:811 src/uml_driver.c:816
 #, c-format
 msgid "Unable to write argv to logfile: %s\n"
 msgstr "argvను లాగ్‌ఫైలుకు వ్రాయలేక పోయింది: %s\n"
 
-#: src/qemu_driver.c:1447
+#: src/qemu_driver.c:1450
 #, c-format
 msgid "Unable to seek to end of logfile: %s\n"
 msgstr "లాగ్‌పైలు అంత్యము వరకు లాగలేదు: %s\n"
 
-#: src/qemu_driver.c:1464
+#: src/qemu_driver.c:1467
 #, c-format
 msgid "Domain %s didn't show up\n"
 msgstr "డొమైన్ %s చూపబడలేదు\n"
 
-#: src/qemu_driver.c:1539
+#: src/qemu_driver.c:1542
 #, c-format
 msgid "Shutting down VM '%s'\n"
 msgstr "VM '%s'ను మూసివేస్తోంది\n"
 
-#: src/qemu_driver.c:1544
+#: src/qemu_driver.c:1547
 #, c-format
 msgid "Failed to send SIGTERM to %s (%d)"
 msgstr "SIGTERMను %s (%d)కు పంపుటలో విఫలమైంది"
 
-#: src/qemu_driver.c:1577
+#: src/qemu_driver.c:1580
 #, c-format
 msgid "Failed to remove domain status for %s"
 msgstr "%s కొరకు డొమైన్ స్థితిని తీసివేయుటలో విఫలమైంది"
 
-#: src/qemu_driver.c:1582
+#: src/qemu_driver.c:1585
 #, c-format
 msgid "Failed to remove PID file for %s: %s"
 msgstr "PID ఫైలును %s కొరకు తొలగించుటలో విఫలమైంది: %s"
 
-#: src/qemu_driver.c:1630
+#: src/qemu_driver.c:1633
 #, c-format
 msgid "unhandled fd event %d for %s"
 msgstr "సంభాలించని fd ఘటన %d దీనికొరకు %s"
 
-#: src/qemu_driver.c:1849
+#: src/qemu_driver.c:1852
 #, c-format
 msgid "Unable to open %s"
 msgstr "%sను తెరువలేక పోయింది"
 
-#: src/qemu_driver.c:1914 src/qemu_driver.c:1951 src/uml_driver.c:969
+#: src/qemu_driver.c:1917 src/qemu_driver.c:1954 src/uml_driver.c:969
 #: src/uml_driver.c:1000
 msgid "NUMA not supported on this host"
 msgstr "NUMA ఈ హోస్టునందు మద్దతీయుటలేదు"
 
-#: src/qemu_driver.c:1920
+#: src/qemu_driver.c:1923
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr "ప్రారంభ అర %d విస్తృతి (0-%d) దాటివుంది"
 
-#: src/qemu_driver.c:1932 src/qemu_driver.c:1959 src/uml_driver.c:980
+#: src/qemu_driver.c:1935 src/qemu_driver.c:1962 src/uml_driver.c:980
 #: src/uml_driver.c:1008
 msgid "Failed to query NUMA free memory"
 msgstr "NUMA ఫ్రీ మెమొరీని క్వరీచేయుటకు విఫలమైంది"
 
-#: src/qemu_driver.c:2046 src/qemu_driver.c:2242 src/qemu_driver.c:2292
-#: src/qemu_driver.c:2341 src/qemu_driver.c:2372 src/qemu_driver.c:2414
-#: src/qemu_driver.c:2441 src/qemu_driver.c:2466 src/qemu_driver.c:2589
-#: src/qemu_driver.c:2630 src/qemu_driver.c:2782 src/qemu_driver.c:2917
-#: src/qemu_driver.c:2978 src/qemu_driver.c:3047 src/qemu_driver.c:3127
-#: src/qemu_driver.c:3160 src/qemu_driver.c:3402 src/qemu_driver.c:3635
-#: src/qemu_driver.c:3749 src/qemu_driver.c:4140 src/qemu_driver.c:4290
-#: src/qemu_driver.c:4343 src/qemu_driver.c:4370 src/qemu_driver.c:4451
-#: src/qemu_driver.c:4589 src/qemu_driver.c:4655 src/qemu_driver.c:4729
-#: src/qemu_driver.c:5061 src/uml_driver.c:1353 src/uml_driver.c:1378
+#: src/qemu_driver.c:2049 src/qemu_driver.c:2245 src/qemu_driver.c:2295
+#: src/qemu_driver.c:2344 src/qemu_driver.c:2375 src/qemu_driver.c:2417
+#: src/qemu_driver.c:2444 src/qemu_driver.c:2469 src/qemu_driver.c:2592
+#: src/qemu_driver.c:2633 src/qemu_driver.c:2785 src/qemu_driver.c:2920
+#: src/qemu_driver.c:2981 src/qemu_driver.c:3050 src/qemu_driver.c:3130
+#: src/qemu_driver.c:3163 src/qemu_driver.c:3405 src/qemu_driver.c:3638
+#: src/qemu_driver.c:3752 src/qemu_driver.c:4143 src/qemu_driver.c:4293
+#: src/qemu_driver.c:4346 src/qemu_driver.c:4373 src/qemu_driver.c:4454
+#: src/qemu_driver.c:4592 src/qemu_driver.c:4658 src/qemu_driver.c:4732
+#: src/qemu_driver.c:5064 src/uml_driver.c:1353 src/uml_driver.c:1378
 #: src/uml_driver.c:1411
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "సరిపోలు uuid '%s'తో యెటువంటి డొమైన్ లేదు"
 
-#: src/qemu_driver.c:2071 src/qemu_driver.c:5190
+#: src/qemu_driver.c:2074 src/qemu_driver.c:5193
 #, c-format
 msgid "no domain with matching name '%s'"
 msgstr "సరిపోలు నామము '%s'తో ఏ డొమైన్ లేదు"
 
-#: src/qemu_driver.c:2171 src/qemu_driver.c:2190 src/qemu_driver.c:3308
-#: src/qemu_driver.c:3327 src/qemu_driver.c:3679 src/qemu_driver.c:3694
+#: src/qemu_driver.c:2174 src/qemu_driver.c:2193 src/qemu_driver.c:3311
+#: src/qemu_driver.c:3330 src/qemu_driver.c:3682 src/qemu_driver.c:3697
 #, fuzzy, c-format
 msgid "domain '%s' is already defined with uuid %s"
 msgstr "'%s' క్షేత్రం ఇప్పటికే ఉంది"
 
-#: src/qemu_driver.c:2179 src/qemu_driver.c:3316
+#: src/qemu_driver.c:2182 src/qemu_driver.c:3319
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "డొమైన్ యిప్పటికే '%s'లా క్రియాశీలమైనది"
 
-#: src/qemu_driver.c:2253 src/qemu_driver.c:2797
+#: src/qemu_driver.c:2256 src/qemu_driver.c:2800
 msgid "suspend operation failed"
 msgstr "సస్పెండ్ ఆపరేషన్ విఫలమైంది"
 
-#: src/qemu_driver.c:2347 src/uml_driver.c:1272
+#: src/qemu_driver.c:2350 src/uml_driver.c:1272
 msgid "shutdown operation failed"
 msgstr "మూసివేత ఆపరేషన్ విఫలమైంది"
 
-#: src/qemu_driver.c:2472 src/uml_driver.c:1384
+#: src/qemu_driver.c:2475 src/uml_driver.c:1384
 msgid "cannot set max memory lower than current memory"
 msgstr "ప్రస్తుత మెమొరీకన్నా తక్కువగా గరిష్ట మెమొరీని పెట్టలేరు"
 
-#: src/qemu_driver.c:2505
+#: src/qemu_driver.c:2508
 msgid "could not query memory balloon allocation"
 msgstr "మెమొరి బెలూన్ కేటాయింపును ప్రశ్నించలేక పోయింది"
 
-#: src/qemu_driver.c:2516
+#: src/qemu_driver.c:2519
 msgid "could not parse memory balloon allocation"
 msgstr "మెమొరి బెలూన్ కేటాయింపును పార్శ్ చేయలేక పోయింది"
 
-#: src/qemu_driver.c:2555
+#: src/qemu_driver.c:2558
 msgid "could not balloon memory allocation"
 msgstr "మెమోరీ కేటాయింపును పెంచలేదు"
 
-#: src/qemu_driver.c:2595 src/uml_driver.c:1423
+#: src/qemu_driver.c:2598 src/uml_driver.c:1423
 msgid "cannot set memory higher than max memory"
 msgstr "గరిష్ట మెమొరీకన్నా యెక్కువగా మెమొరీని అమర్చలేము"
 
-#: src/qemu_driver.c:2603 src/uml_driver.c:1417
+#: src/qemu_driver.c:2606 src/uml_driver.c:1417
 msgid "cannot set memory of an active domain"
 msgstr "క్రియాశీల డొమైన్‌యొక్క మెమొరీని అమర్చలేము"
 
-#: src/qemu_driver.c:2809
+#: src/qemu_driver.c:2812
 msgid "failed to get domain xml"
 msgstr "డొమైన్ xml పొందుటలో విఫలమైంది"
 
-#: src/qemu_driver.c:2817
+#: src/qemu_driver.c:2820
 #, c-format
 msgid "failed to create '%s'"
 msgstr "'%s' సృష్టించుటకు విఫలమైంది"
 
-#: src/qemu_driver.c:2823
+#: src/qemu_driver.c:2826
 msgid "failed to write save header"
 msgstr "భద్రపరచిన పీఠిక వ్రాయుటకు విఫలమైంది"
 
-#: src/qemu_driver.c:2829
+#: src/qemu_driver.c:2832
 msgid "failed to write xml"
 msgstr "xml వ్రాయుటకు విఫలమైంది"
 
-#: src/qemu_driver.c:2835
+#: src/qemu_driver.c:2838
 #, c-format
 msgid "unable to save file %s"
 msgstr "దస్త్రము %sను దాయలేక పోయింది"
 
-#: src/qemu_driver.c:2857 src/qemu_driver.c:5110
+#: src/qemu_driver.c:2860 src/qemu_driver.c:5113
 msgid "migrate operation failed"
 msgstr "వలస ఆపరేషన్ విఫలమైంది"
 
-#: src/qemu_driver.c:2868
+#: src/qemu_driver.c:2871
 msgid "'migrate' not supported by this qemu"
 msgstr "'migrate' ఈ qemuతో మద్దతించబడదు"
 
-#: src/qemu_driver.c:2923
+#: src/qemu_driver.c:2926
 msgid "cannot change vcpu count of an active domain"
 msgstr "క్రియాశీల డొమైన్‌యొక్క vcpu లెక్కను మార్చలేము"
 
-#: src/qemu_driver.c:2929 src/qemu_driver.c:3133 src/qemu_driver.c:3166
+#: src/qemu_driver.c:2932 src/qemu_driver.c:3136 src/qemu_driver.c:3169
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "డొమైన్ నిర్వచనం '%d'నందు తెలియని virt రకము"
 
-#: src/qemu_driver.c:2936
+#: src/qemu_driver.c:2939
 msgid "could not determine max vcpus for the domain"
 msgstr "డొమైన్‌కొరకు గరిష్ట vcpusను నిర్ణయించలేక పోయింది"
 
-#: src/qemu_driver.c:2942
+#: src/qemu_driver.c:2945
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
 msgstr "అభ్యర్ధించిన vcpus డొమైన్‌కు అనుమతైన vcpus కన్నా యెక్కువ: %d > %d"
 
-#: src/qemu_driver.c:2984 src/qemu_driver.c:3053
+#: src/qemu_driver.c:2987 src/qemu_driver.c:3056
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "vcpus క్రియాశీల డొమైన్‌నందు పిన్ చేయలేము"
 
-#: src/qemu_driver.c:2990
+#: src/qemu_driver.c:2993
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr "vcpu సంఖ్య స్థాయిని దాటివుంది %d > %d"
 
-#: src/qemu_driver.c:3011
+#: src/qemu_driver.c:3014
 msgid "cannot set affinity"
 msgstr "ఎఫినిటీని అమర్చలేదు"
 
-#: src/qemu_driver.c:3016
+#: src/qemu_driver.c:3019
 msgid "cpu affinity is not supported"
 msgstr "cpu ఎఫినిటి మద్దతీయుటలేదు"
 
-#: src/qemu_driver.c:3088
+#: src/qemu_driver.c:3091
 msgid "cannot get affinity"
 msgstr "ఎఫినిటీని పొందలేదు"
 
-#: src/qemu_driver.c:3098
+#: src/qemu_driver.c:3101
 msgid "cpu affinity is not available"
 msgstr "cpu ఎఫినిటి అందుబాటులో లేదు"
 
-#: src/qemu_driver.c:3189
+#: src/qemu_driver.c:3192
 msgid "Failed to get security label"
 msgstr "రక్షణ లేబుల్ పొందుటకు విఫలమైంది"
 
-#: src/qemu_driver.c:3220
+#: src/qemu_driver.c:3223
 #, c-format
 msgid "security model string exceeds max %d bytes"
 msgstr "రక్షణ రీతి స్ట్రింగ్ గరిష్ట %d బైట్లను మించుతుంది"
 
-#: src/qemu_driver.c:3230
+#: src/qemu_driver.c:3233
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "రక్షణ DOI స్ట్రింగ్ గరిష్ట %d బైట్లను మించుతుంది"
 
-#: src/qemu_driver.c:3258
+#: src/qemu_driver.c:3261
 msgid "cannot read domain image"
 msgstr "డొమైన్ ప్రతిబింబమును చదువలేదు"
 
-#: src/qemu_driver.c:3264
+#: src/qemu_driver.c:3267
 msgid "failed to read qemu header"
 msgstr "qemu పీఠికను చదువుటకు విఫలమైంది"
 
-#: src/qemu_driver.c:3270
+#: src/qemu_driver.c:3273
 msgid "image magic is incorrect"
 msgstr "ప్రతిబింబము మాజిక్ సరికానిది"
 
-#: src/qemu_driver.c:3276
+#: src/qemu_driver.c:3279
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "ప్రతిబింబము వర్షన్ మద్దతీయుట లేదు (%d > %d)"
 
-#: src/qemu_driver.c:3288
+#: src/qemu_driver.c:3291
 msgid "failed to read XML"
 msgstr "XML చదువుటకు విఫలమైంది"
 
-#: src/qemu_driver.c:3296 src/qemu_driver.c:4961
+#: src/qemu_driver.c:3299 src/qemu_driver.c:4964
 msgid "failed to parse XML"
 msgstr "XML పార్శ్‍ చేయుటకు విఫలమైంది"
 
-#: src/qemu_driver.c:3337 src/qemu_driver.c:4998
+#: src/qemu_driver.c:3340 src/qemu_driver.c:5001
 msgid "failed to assign new VM"
 msgstr "కొత్త VMకు అప్పగించుటకు విఫలమైంది"
 
-#: src/qemu_driver.c:3364
+#: src/qemu_driver.c:3367
 msgid "failed to resume domain"
 msgstr "డొమైన్ తిరిగికొనసాగించుటకు విఫలమైనది"
 
-#: src/qemu_driver.c:3435 src/qemu_driver.c:3470 src/xen_unified.c:1061
+#: src/qemu_driver.c:3438 src/qemu_driver.c:3473 src/xen_unified.c:1061
 #: src/xen_unified.c:1100
 #, fuzzy, c-format
 msgid "unsupported config type %s"
 msgstr "మద్దతీయని డిస్కురకము '%s'"
 
-#: src/qemu_driver.c:3533
+#: src/qemu_driver.c:3536
 #, c-format
 msgid "Cannot determine QEMU argv syntax %s"
 msgstr "QEMU argv సిన్టాక్సు %sను నిర్ణయించలేక పోయింది"
 
-#: src/qemu_driver.c:3796
+#: src/qemu_driver.c:3799
 #, c-format
 msgid "cannot convert disk '%s' to bus/device index"
 msgstr "డిస్కు '%s'ను bus/device విషయసూచికకు మార్చలేము"
 
-#: src/qemu_driver.c:3822
+#: src/qemu_driver.c:3825
 #, c-format
 msgid "Unsupported disk name mapping for bus '%s'"
 msgstr "బస్ '%s' కొరకు మద్దతీయని డిస్కు నామపు మాపింగ్"
 
-#: src/qemu_driver.c:3857
+#: src/qemu_driver.c:3860
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "బస్ '%s' మరియు లక్ష్యము '%s' తో యెటువంటి పరికరము లేదు"
 
-#: src/qemu_driver.c:3880
+#: src/qemu_driver.c:3883
 #, c-format
 msgid ""
 "Emulator version does not support removable media for device '%s' and target "
 "'%s'"
 msgstr "పరికరము '%s' మరియు లక్ష్యము '%s'కు ఎమ్యులేటర్ వర్షన్ తీసివేయదగు మాధ్యమాన్ని మద్దతించదు"
 
-#: src/qemu_driver.c:3917
+#: src/qemu_driver.c:3920
 msgid "could not change cdrom media"
 msgstr "cdrom మాధ్యమాన్ని మార్చలేక పోయింది"
 
-#: src/qemu_driver.c:3928
+#: src/qemu_driver.c:3931
 #, c-format
 msgid "changing cdrom media failed: %s"
 msgstr "cdrom మాధ్యమాన్ని మార్చుట విఫలమైంది: %s"
 
-#: src/qemu_driver.c:3955 src/qemu_driver.c:4024
+#: src/qemu_driver.c:3958 src/qemu_driver.c:4027
 #, c-format
 msgid "target %s already exists"
 msgstr "లక్ష్యము %s యిప్పటికే వుంది"
 
-#: src/qemu_driver.c:3981
+#: src/qemu_driver.c:3984
 #, c-format
 msgid "cannot attach %s disk"
 msgstr "%s డిస్కును అనుభందించలేదు"
 
-#: src/qemu_driver.c:3995
+#: src/qemu_driver.c:3998
 msgid "Unable to parse slot number\n"
 msgstr "స్లాట్ సంఖ్యను పార్శ్ చేయలేక పోయింది\n"
 
-#: src/qemu_driver.c:3998
+#: src/qemu_driver.c:4001
 #, c-format
 msgid "adding %s disk failed"
 msgstr "%s డిస్కును జతచేయుట విఫలమైంది"
 
-#: src/qemu_driver.c:4049
+#: src/qemu_driver.c:4052
 msgid "cannot attach usb disk"
 msgstr "usb డిస్కును జతచేయులేక పోయింది"
 
-#: src/qemu_driver.c:4060
+#: src/qemu_driver.c:4063
 msgid "adding usb disk failed"
 msgstr "usb డిస్కును జతచేయుట విఫలమైంది"
 
-#: src/qemu_driver.c:4103
+#: src/qemu_driver.c:4106
 msgid "cannot attach usb device"
 msgstr "usb పరికరమును అనుబందించలేక పోయింది"
 
-#: src/qemu_driver.c:4114
+#: src/qemu_driver.c:4117
 msgid "adding usb device failed"
 msgstr "usb పరికరమును జతచేయుట విఫలమైంది"
 
-#: src/qemu_driver.c:4146
+#: src/qemu_driver.c:4149
 msgid "cannot attach device on inactive domain"
 msgstr "క్రియాహీన డొమైన్‌నందు పరికరాన్ని అనుభందించలేము"
 
-#: src/qemu_driver.c:4171
+#: src/qemu_driver.c:4174
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "డిస్కు బస్ '%s' హాట్‌ప్లగ్ కాలేదు"
 
-#: src/qemu_driver.c:4181
+#: src/qemu_driver.c:4184
 #, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "డిస్కు పరికరము '%s' హాట్‌ప్లగ్ కాలేదు"
 
-#: src/qemu_driver.c:4191
+#: src/qemu_driver.c:4194
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "పరికరము రకము '%s' అనుభందిచలేక పోయింది"
 
-#: src/qemu_driver.c:4225
+#: src/qemu_driver.c:4228
 #, c-format
 msgid "disk %s not found"
 msgstr "డిస్కు %s కనబడలేదు"
 
-#: src/qemu_driver.c:4231
+#: src/qemu_driver.c:4234
 #, c-format
 msgid "disk %s cannot be detached - invalid slot number %d"
 msgstr "డిస్కు %s విడదీయబడలేదు - సరికాని స్లాట్ సంఖ్య %d"
 
-#: src/qemu_driver.c:4243
+#: src/qemu_driver.c:4246
 #, c-format
 msgid "failed to execute detach disk %s command"
 msgstr "డిస్కును విడదీయు %s ఆదేశమును నిర్వర్తించుటకు విఫలమైంది"
 
-#: src/qemu_driver.c:4252
+#: src/qemu_driver.c:4255
 #, c-format
 msgid "failed to detach disk %s: invalid slot %d"
 msgstr "డిస్కును విడదీయుటకు విఫలమైంది  %s: చెల్లని స్లాట్ %d"
 
-#: src/qemu_driver.c:4296
+#: src/qemu_driver.c:4299
 msgid "cannot detach device on inactive domain"
 msgstr "క్రియాహీన డొమైన్‌నందు పరికరాన్ని విడదీయలేము"
 
-#: src/qemu_driver.c:4316
+#: src/qemu_driver.c:4319
 msgid "only SCSI or virtio disk device can be detached dynamically"
 msgstr "SCSI లేదా virtio డిస్కు పరికరము మాత్రమే గతికంగా విడదీయబడుతుంది"
 
-#: src/qemu_driver.c:4376 src/uml_driver.c:1696
+#: src/qemu_driver.c:4379 src/uml_driver.c:1696
 msgid "cannot set autostart for transient domain"
 msgstr "ట్రాన్సియంట్ డొమైన్ కొరకు స్వయంచాలక డొమైన్‌ను అమర్చలేదు"
 
-#: src/qemu_driver.c:4393 src/storage_driver.c:963 src/uml_driver.c:1713
+#: src/qemu_driver.c:4396 src/storage_driver.c:963 src/uml_driver.c:1713
 #, c-format
 msgid "cannot create autostart directory %s"
 msgstr "%s కొరకు స్వయంచాలక డైరెక్టరీను సృష్టించలేదు"
 
-#: src/qemu_driver.c:4400 src/uml_driver.c:1720
+#: src/qemu_driver.c:4403 src/uml_driver.c:1720
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "సిమ్‌లింకు  %s నుండి ' %s'కు సృష్టించుటలో విఫలమైంది"
 
-#: src/qemu_driver.c:4469
+#: src/qemu_driver.c:4472
 #, c-format
 msgid "invalid path: %s"
 msgstr "సరికాని పాత్: %s"
 
-#: src/qemu_driver.c:4480
+#: src/qemu_driver.c:4483
 msgid "'info blockstats' command failed"
 msgstr "'info blockstats' ఆదేశము విఫలమైంది"
 
-#: src/qemu_driver.c:4493
+#: src/qemu_driver.c:4496
 msgid "'info blockstats' not supported by this qemu"
 msgstr "'info blockstats' అనునది ఈ qemuచేత మద్దతివ్వబడుటలేదు"
 
-#: src/qemu_driver.c:4561
+#: src/qemu_driver.c:4564
 #, c-format
 msgid "device not found: %s (%s)"
 msgstr "పరికరము కనుగొనబడలేదు: %s (%s)"
 
-#: src/qemu_driver.c:4601 src/qemu_driver.c:4661 src/uml_driver.c:1770
+#: src/qemu_driver.c:4604 src/qemu_driver.c:4664 src/uml_driver.c:1770
 msgid "NULL or empty path"
 msgstr "NULL లేదా ఖాళీ పాత్"
 
-#: src/qemu_driver.c:4618
+#: src/qemu_driver.c:4621
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "సరికాని పాత్, '%s' అనునది తెలిసిన ఇంటర్‌ఫేస్ కాదు"
 
-#: src/qemu_driver.c:4680
+#: src/qemu_driver.c:4683
 #, c-format
 msgid "%s: failed to open"
 msgstr "%s: తెరుచుటకు విఫలమైంది"
 
-#: src/qemu_driver.c:4691
+#: src/qemu_driver.c:4694
 #, c-format
 msgid "%s: failed to seek or read"
 msgstr "%s: చదువుటకు విఫలమైంది"
 
-#: src/qemu_driver.c:4698 src/uml_driver.c:1807
+#: src/qemu_driver.c:4701 src/uml_driver.c:1807
 msgid "invalid path"
 msgstr "సరికాని పాత్"
 
-#: src/qemu_driver.c:4735
+#: src/qemu_driver.c:4738
 msgid "QEMU driver only supports virtual memory addrs"
 msgstr "QEMU డ్రైవర్ అనునది వర్చ్యువల్ మెమొరీ చిరునామాను మాత్రమే మద్దతిస్తుంది"
 
-#: src/qemu_driver.c:4748
+#: src/qemu_driver.c:4751
 #, c-format
 msgid "mkstemp(\"%s\") failed"
 msgstr "mkstemp(\"%s\") విఫలమైంది"
 
-#: src/qemu_driver.c:4756
+#: src/qemu_driver.c:4759
 msgid "'memsave' command failed"
 msgstr "'memsave' ఆదేశము విఫలమైంది"
 
-#: src/qemu_driver.c:4765
+#: src/qemu_driver.c:4768
 #, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "టెంప్లేట్  %s తో సృష్టించిన తాత్కాలిక దస్త్రము చదువుటకు విఫలమైంది"
 
-#: src/qemu_driver.c:4905
+#: src/qemu_driver.c:4908
 msgid "no domain XML passed"
 msgstr "ఏ డొమైన్ XML పంపబడలేదు"
 
-#: src/qemu_driver.c:4942
+#: src/qemu_driver.c:4945
 msgid "only tcp URIs are supported for KVM migrations"
 msgstr "KVM వలసల కొరకు tcp URIలు మాత్రమే మద్దతించబడతాయి"
 
-#: src/qemu_driver.c:4952
+#: src/qemu_driver.c:4955
 msgid "URI did not have ':port' at the end"
 msgstr "URI అంత్యము వద్ద ':port'ను కలిగివుండదు"
 
-#: src/qemu_driver.c:4978
+#: src/qemu_driver.c:4981
 msgid "could not generate random UUID"
 msgstr "యాదృచ్ఛిక UUIDను నిష్పాదించలేక పోయింది"
 
-#: src/qemu_driver.c:4987
+#: src/qemu_driver.c:4990
 #, c-format
 msgid "domain with the same name or UUID already exists as '%s'"
 msgstr "అదే నామముతో డొమైన్ లేదా UUID యిప్పటికే ' %s' వలెవుంది"
 
-#: src/qemu_driver.c:5075
+#: src/qemu_driver.c:5078
 msgid "off-line migration specified, but suspend operation failed"
 msgstr "ఆఫ్-లైన్ వలసవిధానం తెలుపబడింది, కాని సస్పెండ్ కార్యము విఫలమైంది"
 
-#: src/qemu_driver.c:5119
+#: src/qemu_driver.c:5122
 #, c-format
 msgid "migrate failed: %s"
 msgstr "వలస విఫలమైంది:  %s"
 
-#: src/qemu_driver.c:5149
+#: src/qemu_driver.c:5152
 #, c-format
 msgid "Failed to resume guest %s after failure\n"
 msgstr "వైఫల్యం తరువాత గెస్టు  %s తిరిగికొనసాగించుట విఫలమైంది\n"
 
-#: src/qemu_driver.c:5259 src/xen_unified.c:1552
+#: src/qemu_driver.c:5262 src/xen_unified.c:1552
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "పరికరము %s PCI పరికరము కాదు"
