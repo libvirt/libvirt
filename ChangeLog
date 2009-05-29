@@ -1,3 +1,8 @@
+Fri May 29 10:16:13 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/network_driver.c src/network_conf.c src/network_conf.h:
+	Fix regression defining colliding networks at daemon startup.
+
 Fri May 29 10:13:55 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/network_driver.c: networkDestroy: Report error if network

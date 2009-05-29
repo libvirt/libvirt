@@ -179,7 +179,8 @@ char *virNetworkAllocateBridge(virConnectPtr conn,
 
 int virNetworkSetBridgeName(virConnectPtr conn,
                             const virNetworkObjListPtr nets,
-                            virNetworkDefPtr def);
+                            virNetworkDefPtr def,
+                            int check_collision);
 
 void virNetworkObjLock(virNetworkObjPtr obj);
 void virNetworkObjUnlock(virNetworkObjPtr obj);

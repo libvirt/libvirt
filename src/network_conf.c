@@ -724,7 +724,6 @@ virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
     virNetworkDefPtr def = NULL;
     virNetworkObjPtr net;
     int autostart;
-    char *tmp;
 
     if ((configFile = virNetworkConfigFile(conn, configDir, name)) == NULL)
         goto error;
@@ -745,13 +744,10 @@ virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
         goto error;
     }
 
-    /* Generate a bridge if none is found, but don't check for collisions
+    /* Generate a bridge if none is specified, but don't check for collisions
      * if a bridge is hardcoded, so the network is at least defined
      */
-    if ((tmp = virNetworkAllocateBridge(conn, nets, def->bridge)) != NULL) {
-        VIR_FREE(def->bridge);
-        def->bridge = tmp;
-    } else
+    if (virNetworkSetBridgeName(conn, nets, def, 0))
         goto error;
 
     if (!(net = virNetworkAssignDef(conn, nets, def)))
@@ -913,12 +909,17 @@ char *virNetworkAllocateBridge(virConnectPtr conn,
 
 int virNetworkSetBridgeName(virConnectPtr conn,
                             const virNetworkObjListPtr nets,
-                            virNetworkDefPtr def) {
+                            virNetworkDefPtr def,
+                            int check_collision) {
 
     int ret = -1;
 
     if (def->bridge && !strstr(def->bridge, "%d")) {
-        if (virNetworkBridgeInUse(nets, def->bridge, def->name)) {
+        /* We may want to skip collision detection in this case (ex. when
+         * loading configs at daemon startup, so the network is at least
+         * defined. */
+        if (check_collision &&
+            virNetworkBridgeInUse(nets, def->bridge, def->name)) {
             networkReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                                _("bridge name '%s' already in use."),
                                def->bridge);

@@ -1096,7 +1096,7 @@ static virNetworkPtr networkCreate(virConnectPtr conn, const char *xml) {
     if (!(def = virNetworkDefParseString(conn, xml)))
         goto cleanup;
 
-    if (virNetworkSetBridgeName(conn, &driver->networks, def))
+    if (virNetworkSetBridgeName(conn, &driver->networks, def, 1))
         goto cleanup;
 
     if (!(network = virNetworkAssignDef(conn,
@@ -1133,7 +1133,7 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
     if (!(def = virNetworkDefParseString(conn, xml)))
         goto cleanup;
 
-    if (virNetworkSetBridgeName(conn, &driver->networks, def))
+    if (virNetworkSetBridgeName(conn, &driver->networks, def, 1))
         goto cleanup;
 
     if (!(network = virNetworkAssignDef(conn,
