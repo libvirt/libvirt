@@ -1052,6 +1052,8 @@ virDomainNetDefParseXML(virConnectPtr conn,
             def->data.socket.address = address;
             address = NULL;
         }
+        break;
+
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
         if (internal == NULL) {
             virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
