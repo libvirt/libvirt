@@ -184,7 +184,7 @@
       </attribute>
       <attribute name="machine">
         <choice>
-          <value>g3bw</value>
+          <value>g3beige</value>
           <value>mac99</value>
           <value>prep</value>
         </choice>

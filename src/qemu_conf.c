@@ -193,7 +193,7 @@ static const char *const arch_info_hvm_sparc_machines[] = {
     "sun4m"
 };
 static const char *const arch_info_hvm_ppc_machines[] = {
-    "g3bw", "mac99", "prep"
+    "g3beige", "mac99", "prep"
 };
 
 static const char *const arch_info_xen_x86_machines[] = {

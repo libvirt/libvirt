@@ -81,7 +81,7 @@
     <arch name='ppc'>
       <wordsize>32</wordsize>
       <emulator>/usr/bin/qemu-system-ppc</emulator>
-      <machine>g3bw</machine>
+      <machine>g3beige</machine>
       <machine>mac99</machine>
       <machine>prep</machine>
       <domain type='qemu'>

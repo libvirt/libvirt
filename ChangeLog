@@ -1,3 +1,9 @@
+Fri May 29 15:29:32 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_conf.c docs/schemas/domain.rng
+	  tests/capabilityschemadata/caps-qemu-kvm.xml: PPC Qemu Machine Type
+	  changed from g3bw to g3beige some time ago, patch by Thomas Baker
+
 Fri May 29 14:26:30 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix regression with network interface parsing
