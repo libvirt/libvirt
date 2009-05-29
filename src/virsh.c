@@ -2798,7 +2798,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         else
             autostartStr = autostart ? "yes" : "no";
 
-        vshPrint(ctl, "%-20s %s %s\n",
+        vshPrint(ctl, "%-20s %-10s %-10s\n",
                  inactiveNames[i],
                  _("inactive"),
                  autostartStr);
