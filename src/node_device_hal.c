@@ -28,6 +28,7 @@
 #include <libhal.h>
 
 #include "node_device_conf.h"
+#include "node_device_hal.h"
 #include "virterror_internal.h"
 #include "driver.h"
 #include "datatypes.h"
@@ -36,6 +37,8 @@
 #include "uuid.h"
 #include "logging.h"
 #include "node_device.h"
+
+#define VIR_FROM_THIS VIR_FROM_NODEDEV
 
 /*
  * Host device enumeration (HAL implementation)
@@ -214,8 +217,20 @@ static int gather_net_cap(LibHalContext *ctx, const char *udi,
 static int gather_scsi_host_cap(LibHalContext *ctx, const char *udi,
                                 union _virNodeDevCapData *d)
 {
+    int retval = 0;
+
     (void)get_int_prop(ctx, udi, "scsi_host.host", (int *)&d->scsi_host.host);
-    return 0;
+
+    retval = check_fc_host(d);
+
+    if (retval == -1) {
+        goto out;
+    }
+
+    retval = check_vport_capable(d);
+
+out:
+    return retval;
 }
 
 

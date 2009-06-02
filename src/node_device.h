@@ -28,6 +28,17 @@
 #include "driver.h"
 #include "node_device_conf.h"
 
+#define LINUX_SYSFS_SCSI_HOST_PREFIX "/sys/class/scsi_host"
+#define LINUX_SYSFS_SCSI_HOST_POSTFIX "device"
+#define LINUX_SYSFS_FC_HOST_PREFIX "/sys/class/fc_host/"
+
+#define VPORT_CREATE 0
+#define VPORT_DELETE 1
+#define LINUX_SYSFS_VPORT_CREATE_POSTFIX "/vport_create"
+#define LINUX_SYSFS_VPORT_DELETE_POSTFIX "/vport_delete"
+
+#define LINUX_NEW_DEVICE_WAIT_TIME 60
+
 #ifdef HAVE_HAL
 int halNodeRegister(void);
 #endif
@@ -41,5 +52,7 @@ void nodeDeviceUnlock(virDeviceMonitorStatePtr driver);
 void registerCommonNodeFuncs(virDeviceMonitorPtr mon);
 
 int nodedevRegister(void);
+
+void virNodeDeviceWaitForDevices(virConnectPtr conn);
 
 #endif /* __VIR_NODE_DEVICE_H__ */

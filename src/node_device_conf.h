@@ -28,6 +28,9 @@
 #include "util.h"
 #include "threads.h"
 
+#define CREATE_DEVICE 1
+#define EXISTING_DEVICE 0
+
 enum virNodeDevCapType {
     /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
     VIR_NODE_DEV_CAP_SYSTEM,		/* System capability */
@@ -48,13 +51,26 @@ enum virNodeDevNetCapType {
     VIR_NODE_DEV_CAP_NET_LAST
 };
 
+enum virNodeDevHBACapType {
+    /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
+    VIR_NODE_DEV_CAP_HBA_FC_HOST,	/* fibre channel HBA */
+    VIR_NODE_DEV_CAP_HBA_VPORT_OPS,	/* capable of vport operations */
+    VIR_NODE_DEV_CAP_HBA_LAST
+};
+
 VIR_ENUM_DECL(virNodeDevCap)
 VIR_ENUM_DECL(virNodeDevNetCap)
+VIR_ENUM_DECL(virNodeDevHBACap)
 
 enum virNodeDevStorageCapFlags {
     VIR_NODE_DEV_CAP_STORAGE_REMOVABLE			= (1 << 0),
     VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE	= (1 << 1),
     VIR_NODE_DEV_CAP_STORAGE_HOTPLUGGABLE		= (1 << 2),
+};
+
+enum virNodeDevScsiHostCapFlags {
+    VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST			= (1 << 0),
+    VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS			= (1 << 1),
 };
 
 typedef struct _virNodeDevCapsDef virNodeDevCapsDef;
@@ -108,6 +124,9 @@ struct _virNodeDevCapsDef {
         } net;
         struct {
             unsigned host;
+            char *wwnn;
+            char *wwpn;
+            unsigned flags;
         } scsi_host;
         struct {
             unsigned host;
@@ -185,7 +204,8 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
                              const virNodeDeviceDefPtr def);
 
 virNodeDeviceDefPtr virNodeDeviceDefParseString(virConnectPtr conn,
-                                                const char *str);
+                                                const char *str,
+                                                int create);
 
 void virNodeDeviceDefFree(virNodeDeviceDefPtr def);
 

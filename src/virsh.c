@@ -3054,6 +3054,107 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
 
 
 /*
+ * "nodedev-create" command
+ */
+static const vshCmdInfo info_node_device_create[] = {
+    {"help", gettext_noop("create a device defined "
+                          "by an XML file on the node")},
+    {"desc", gettext_noop("Create a device on the node.  Note that this "
+                          "command creates devices on the physical host "
+                          "that can then be assigned to a virtual machine.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_node_device_create[] = {
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ,
+     gettext_noop("file containing an XML description of the device")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
+{
+    virNodeDevicePtr dev = NULL;
+    char *from;
+    int found = 0;
+    int ret = TRUE;
+    char *buffer;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    from = vshCommandOptString(cmd, "file", &found);
+    if (!found) {
+        return FALSE;
+    }
+
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
+        return FALSE;
+    }
+
+    dev = virNodeDeviceCreateXML(ctl->conn, buffer, 0);
+    free (buffer);
+
+    if (dev != NULL) {
+        vshPrint(ctl, _("Node device %s created from %s\n"),
+                 virNodeDeviceGetName(dev), from);
+    } else {
+        vshError(ctl, FALSE, _("Failed to create node device from %s"), from);
+        ret = FALSE;
+    }
+
+    return ret;
+}
+
+
+/*
+ * "nodedev-destroy" command
+ */
+static const vshCmdInfo info_node_device_destroy[] = {
+    {"help", gettext_noop("destroy a device on the node")},
+    {"desc", gettext_noop("Destroy a device on the node.  Note that this "
+                          "command destroys devices on the physical host ")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_node_device_destroy[] = {
+    {"name", VSH_OT_DATA, VSH_OFLAG_REQ,
+     gettext_noop("name of the device to be destroyed")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNodeDeviceDestroy(vshControl *ctl, const vshCmd *cmd)
+{
+    virNodeDevicePtr dev = NULL;
+    int ret = TRUE;
+    int found = 0;
+    char *name;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE)) {
+        return FALSE;
+    }
+
+    name = vshCommandOptString(cmd, "name", &found);
+    if (!found) {
+        return FALSE;
+    }
+
+    dev = virNodeDeviceLookupByName(ctl->conn, name);
+
+    if (virNodeDeviceDestroy(dev) == 0) {
+        vshPrint(ctl, _("Destroyed node device '%s'\n"), name);
+    } else {
+        vshError(ctl, FALSE, _("Failed to destroy node device '%s'"), name);
+        ret = FALSE;
+    }
+
+    virNodeDeviceFree(dev);
+    return ret;
+}
+
+
+/*
  * XML Building helper for pool-define-as and pool-create-as
  */
 static const vshCmdOptDef opts_pool_X_as[] = {
@@ -6153,6 +6254,8 @@ static const vshCmdDef commands[] = {
     {"nodedev-dettach", cmdNodeDeviceDettach, opts_node_device_dettach, info_node_device_dettach},
     {"nodedev-reattach", cmdNodeDeviceReAttach, opts_node_device_reattach, info_node_device_reattach},
     {"nodedev-reset", cmdNodeDeviceReset, opts_node_device_reset, info_node_device_reset},
+    {"nodedev-create", cmdNodeDeviceCreate, opts_node_device_create, info_node_device_create},
+    {"nodedev-destroy", cmdNodeDeviceDestroy, opts_node_device_destroy, info_node_device_destroy},
 
     {"pool-autostart", cmdPoolAutostart, opts_pool_autostart, info_pool_autostart},
     {"pool-build", cmdPoolBuild, opts_pool_build, info_pool_build},

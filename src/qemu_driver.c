@@ -5240,7 +5240,7 @@ qemudNodeDeviceGetPciInfo (virNodeDevicePtr dev,
     if (!xml)
         goto out;
 
-    def = virNodeDeviceDefParseString(dev->conn, xml);
+    def = virNodeDeviceDefParseString(dev->conn, xml, EXISTING_DEVICE);
     if (!def)
         goto out;
 

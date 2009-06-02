@@ -46,6 +46,7 @@
 #include "virterror_internal.h"
 #include "util.h"
 #include "memory.h"
+#include "node_device.h"
 
 #include "storage_backend.h"
 
@@ -256,30 +257,11 @@ virStorageBackendUpdateVolTargetInfoFD(virConnectPtr conn,
     return 0;
 }
 
-#if defined(UDEVADM) || defined(UDEVSETTLE)
 void virStorageBackendWaitForDevices(virConnectPtr conn)
 {
-#ifdef UDEVADM
-    const char *const settleprog[] = { UDEVADM, "settle", NULL };
-#else
-    const char *const settleprog[] = { UDEVSETTLE, NULL };
-#endif
-    int exitstatus;
-
-    if (access(settleprog[0], X_OK) != 0)
-        return;
-
-    /*
-     * NOTE: we ignore errors here; this is just to make sure that any device
-     * nodes that are being created finish before we try to scan them.
-     * If this fails for any reason, we still have the backup of polling for
-     * 5 seconds for device nodes.
-     */
-    virRun(conn, settleprog, &exitstatus);
+    virNodeDeviceWaitForDevices(conn);
+    return;
 }
-#else
-void virStorageBackendWaitForDevices(virConnectPtr conn ATTRIBUTE_UNUSED) {}
-#endif
 
 /*
  * Given a volume path directly in /dev/XXX, iterate over the

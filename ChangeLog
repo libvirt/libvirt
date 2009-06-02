@@ -1,3 +1,12 @@
+Tue Jun  2 17:05:52 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/Makefile.am src/node_device.[ch] src/node_device_conf.[ch]
+	  src/node_device_hal.[ch] src/node_device_hal_linux.c
+	  src/qemu_driver.c src/remote_internal.c src/storage_backend.c
+	  src/virsh.c src/xen_unified.c tests/nodedevxml2xmltest.c
+	  po/POTFILES.in: implementation for node device create and destroy
+	  in NPIV support, patch by David Allan
+
 Fri May 29 18:37:17 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in libvirt.spec.in NEWS docs/* po/*: release of

@@ -15,6 +15,7 @@ src/network_conf.c
 src/network_driver.c
 src/node_device.c
 src/node_device_conf.c
+src/node_device_hal_linux.c
 src/nodeinfo.c
 src/opennebula/one_conf.c
 src/opennebula/one_driver.c

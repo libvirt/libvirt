@@ -5434,7 +5434,7 @@ remoteNodeDeviceDestroy(virNodeDevicePtr dev)
 
     args.name = dev->name;
 
-    if (call(dev->conn, priv, 0, REMOTE_PROC_NODE_DEVICE_RESET,
+    if (call(dev->conn, priv, 0, REMOTE_PROC_NODE_DEVICE_DESTROY,
              (xdrproc_t) xdr_remote_node_device_destroy_args, (char *) &args,
              (xdrproc_t) xdr_void, (char *) NULL) == -1)
         goto done;
