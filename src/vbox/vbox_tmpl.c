@@ -4955,8 +4955,8 @@ virDriver NAME(Driver) = {
     NULL, /* domainInterfaceStats */
     NULL, /* domainBlockPeek */
     NULL, /* domainMemoryPeek */
-    NULL, /* nodeGetCellsFreeMemory */
-    NULL,  /* getFreeMemory */
+    nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
+    nodeGetFreeMemory,  /* getFreeMemory */
     NULL, /* domainEventRegister */
     NULL, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */

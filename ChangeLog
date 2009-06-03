@@ -1,3 +1,7 @@
+Wed Jun  3 15:32:52 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/vbox/vbox_tmpl.c: Add NUMA memory APIs
+
 Wed Jun  3 15:44:55 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/network_driver.c: forbid set Autostart on transcient networks
