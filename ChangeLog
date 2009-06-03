@@ -1,3 +1,11 @@
+Wed Jun  3 12:19:52 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix HAL driver restart thread safety
+	* src/node_device_hal.c: Only clear & recreate device objects,
+	not entire driver struct.
+	* src/node_device.c: Remove overly verbose logging of mutex
+	operations.
+
 Wed Jun  3 12:03:52 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Support networking in UML driver

@@ -800,10 +800,33 @@ static int halDeviceMonitorShutdown(void)
 
 static int halDeviceMonitorReload(void)
 {
-    /* XXX This isn't thread safe because its free'ing the thing
-     * we're locking */
-    (void)halDeviceMonitorShutdown();
-    return halDeviceMonitorStartup();
+    DBusError err;
+    char **udi = NULL;
+    int num_devs, i;
+    LibHalContext *hal_ctx;
+
+    VIR_INFO0("Reloading HAL device state");
+    nodeDeviceLock(driverState);
+    VIR_INFO0("Removing existing objects");
+    virNodeDeviceObjListFree(&driverState->devs);
+    nodeDeviceUnlock(driverState);
+
+    hal_ctx = DRV_STATE_HAL_CTX(driverState);
+    VIR_INFO0("Creating new objects");
+    dbus_error_init(&err);
+    udi = libhal_get_all_devices(hal_ctx, &num_devs, &err);
+    if (udi == NULL) {
+        fprintf(stderr, "%s: libhal_get_all_devices failed\n", __FUNCTION__);
+        return -1;
+    }
+    for (i = 0; i < num_devs; i++) {
+        dev_create(udi[i]);
+        VIR_FREE(udi[i]);
+    }
+    VIR_FREE(udi);
+    VIR_INFO0("HAL device reload complete");
+
+    return 0;
 }
 
 
