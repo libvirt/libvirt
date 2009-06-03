@@ -166,9 +166,10 @@ umlIdentifyOneChrPTY(virConnectPtr conn,
         return -1;
     }
 requery:
-    umlMonitorCommand(NULL, driver, dom, cmd, &res);
+    if (umlMonitorCommand(NULL, driver, dom, cmd, &res) < 0)
+        return -1;
 
-    if (STRPREFIX(res, "pts:")) {
+    if (res && STRPREFIX(res, "pts:")) {
         VIR_FREE(def->data.file.path);
         if ((def->data.file.path = strdup(res + 4)) == NULL) {
             virReportOOMError(conn);
@@ -176,7 +177,7 @@ requery:
             VIR_FREE(cmd);
             return -1;
         }
-    } else if (STRPREFIX(res, "pts")) {
+    } else if (!res || STRPREFIX(res, "pts")) {
         /* It can take a while to startup, so retry for
            upto 5 seconds */
         /* XXX should do this in a better non-blocking
@@ -263,19 +264,15 @@ reread:
         }
 
         if (e->mask & IN_DELETE) {
+            VIR_DEBUG("Got inotify domain shutdown '%s'", name);
             if (!virDomainIsActive(dom)) {
                 virDomainObjUnlock(dom);
                 continue;
             }
 
-            dom->def->id = -1;
-            dom->pid = -1;
-            if (dom->newDef) {
-                virDomainDefFree(dom->def);
-                dom->def = dom->newDef;
-            }
-            dom->state = VIR_DOMAIN_SHUTOFF;
+            umlShutdownVMDaemon(NULL, driver, dom);
         } else if (e->mask & (IN_CREATE | IN_MODIFY)) {
+            VIR_DEBUG("Got inotify domain startup '%s'", name);
             if (virDomainIsActive(dom)) {
                 virDomainObjUnlock(dom);
                 continue;
@@ -289,11 +286,13 @@ reread:
             dom->def->id = driver->nextvmid++;
             dom->state = VIR_DOMAIN_RUNNING;
 
-            if (umlOpenMonitor(NULL, driver, dom) < 0)
+            if (umlOpenMonitor(NULL, driver, dom) < 0) {
+                VIR_WARN0("Could not open monitor for new domain");
                 umlShutdownVMDaemon(NULL, driver, dom);
-
-            if (umlIdentifyChrPTY(NULL, driver, dom) < 0)
+            } else if (umlIdentifyChrPTY(NULL, driver, dom) < 0) {
+                VIR_WARN0("Could not identify charater devices for new domain");
                 umlShutdownVMDaemon(NULL, driver, dom);
+            }
         }
         virDomainObjUnlock(dom);
     }
@@ -383,6 +382,7 @@ umlStartup(void) {
         goto error;
     }
 
+    VIR_INFO("Adding inotify watch on %s", uml_driver->monitorDir);
     if (inotify_add_watch(uml_driver->inotifyFD,
                           uml_driver->monitorDir,
                           IN_CREATE | IN_MODIFY | IN_DELETE) < 0) {
@@ -595,10 +595,11 @@ static int umlOpenMonitor(virConnectPtr conn,
     if (umlMonitorAddress(conn, driver, vm, &addr) < 0)
         return -1;
 
+    VIR_DEBUG("Dest address for monitor is '%s'", addr.sun_path);
 restat:
     if (stat(addr.sun_path, &sb) < 0) {
         if (errno == ENOENT &&
-            retries < 50) {
+            retries++ < 50) {
             usleep(1000 * 100);
             goto restat;
         }
@@ -612,7 +613,8 @@ restat:
     }
 
     memset(addr.sun_path, 0, sizeof addr.sun_path);
-    sprintf(addr.sun_path + 1, "%u", getpid());
+    sprintf(addr.sun_path + 1, "libvirt-uml-%u", vm->pid);
+    VIR_DEBUG("Reply address for monitor is '%s'", addr.sun_path+1);
     if (bind(vm->monitor, (struct sockaddr *)&addr, sizeof addr) < 0) {
         virReportSystemError(conn, errno,
                              "%s", _("cannot bind socket"));
@@ -656,6 +658,8 @@ static int umlMonitorCommand(virConnectPtr conn,
     int retlen = 0, ret = 0;
     struct sockaddr_un addr;
     unsigned int addrlen;
+
+    VIR_DEBUG("Run command '%s'", cmd);
 
     *reply = NULL;
 
@@ -705,6 +709,8 @@ static int umlMonitorCommand(virConnectPtr conn,
             ret = -1;
 
     } while (res.extra);
+
+    VIR_DEBUG("Command reply is '%s'", NULLSTR(retdata));
 
     *reply = retdata;
 
@@ -852,12 +858,10 @@ static void umlShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 virDomainObjPtr vm)
 {
     int ret;
-    if (!virDomainIsActive(vm) ||
-        vm->pid <= 1)
+    if (!virDomainIsActive(vm))
         return;
 
-
-    kill(vm->pid, SIGTERM);
+    virKillProcess(vm->pid, SIGTERM);
 
     if (vm->monitor != -1)
         close(vm->monitor);

@@ -1,3 +1,12 @@
+Wed Jun  3 11:53:52 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Misc User Mode Linux startup/shutdown bugs
+	* src/util.c: Make virKillProcess refuse to kill PID==1 too
+	* src/uml_driver.c: Increment retries counter when starting
+	guest. Check for monitor command failure. Use unique source
+	socket per domain for talking to monitor.  Use virKillProcess
+	for killing guests. Fix guest cleanup when getting inotify
+
 Wed Jun  3 11:32:52 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c: Honour LIBVIRT_LOG_FILTERS/OUTPUTS env variables

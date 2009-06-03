@@ -1680,7 +1680,7 @@ char *virGetHostname(void)
 /* send signal to a single process */
 int virKillProcess(pid_t pid, int sig)
 {
-    if (pid < 1) {
+    if (pid <= 1) {
         errno = ESRCH;
         return -1;
     }
