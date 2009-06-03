@@ -451,8 +451,11 @@ brProbeVnetHdr(int tapfd)
  *
  * This function creates a new tap device on a bridge. @ifname can be either
  * a fixed name or a name template with '%d' for dynamic name allocation.
- * in either case the final name for the bridge will be stored in @ifname
- * and the associated file descriptor in @tapfd.
+ * in either case the final name for the bridge will be stored in @ifname.
+ * If the @tapfd parameter is supplied, the open tap device file
+ * descriptor will be returned, otherwise the TAP device will be made
+ * persistent and closed. The caller must use brDeleteTap to remove
+ * a persistent TAP devices when it is no longer needed.
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
@@ -465,7 +468,7 @@ brAddTap(brControl *ctl,
 {
     int id, subst, fd;
 
-    if (!ctl || !ctl->fd || !bridge || !ifname || !tapfd)
+    if (!ctl || !ctl->fd || !bridge || !ifname)
         return EINVAL;
 
     subst = id = 0;
@@ -520,10 +523,14 @@ brAddTap(brControl *ctl,
                 goto error;
             if ((errno = brSetInterfaceUp(ctl, try.ifr_name, 1)))
                 goto error;
+            if (!tapfd &&
+                (errno = ioctl(fd, TUNSETPERSIST, 1)))
+                goto error;
             VIR_FREE(*ifname);
             if (!(*ifname = strdup(try.ifr_name)))
                 goto error;
-            *tapfd = fd;
+            if (tapfd)
+                *tapfd = fd;
             return 0;
         }
 
@@ -535,6 +542,43 @@ brAddTap(brControl *ctl,
 
     return errno;
 }
+
+int brDeleteTap(brControl *ctl,
+                const char *ifname)
+{
+    struct ifreq try;
+    int len;
+    int fd;
+
+    if (!ctl || !ctl->fd || !ifname)
+        return EINVAL;
+
+    if ((fd = open("/dev/net/tun", O_RDWR)) < 0)
+        return errno;
+
+    memset(&try, 0, sizeof(struct ifreq));
+    try.ifr_flags = IFF_TAP|IFF_NO_PI;
+
+    len = strlen(ifname);
+    if (len >= BR_IFNAME_MAXLEN - 1) {
+        errno = EINVAL;
+        goto error;
+    }
+
+    strncpy(try.ifr_name, ifname, len);
+    try.ifr_name[len] = '\0';
+
+    if (ioctl(fd, TUNSETIFF, &try) == 0) {
+        if ((errno = ioctl(fd, TUNSETPERSIST, 0)))
+            goto error;
+    }
+
+ error:
+    close(fd);
+
+    return errno;
+}
+
 
 /**
  * brSetInterfaceUp:

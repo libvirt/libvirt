@@ -70,8 +70,6 @@ int         umlBuildCommandLine       (virConnectPtr conn,
                                        struct uml_driver *driver,
                                        virDomainObjPtr dom,
                                        const char ***retargv,
-                                       const char ***retenv,
-                                       int **tapfds,
-                                       int *ntapfds);
+                                       const char ***retenv);
 
 #endif /* __UML_CONF_H */

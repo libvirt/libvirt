@@ -722,6 +722,35 @@ error:
 }
 
 
+static int umlCleanupTapDevices(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                virDomainObjPtr vm) {
+    int i;
+    int err;
+    int ret = 0;
+    brControl *brctl = NULL;
+    VIR_ERROR0("Cleanup tap");
+    if (brInit(&brctl) < 0)
+        return -1;
+
+    for (i = 0 ; i < vm->def->nnets ; i++) {
+        virDomainNetDefPtr def = vm->def->nets[i];
+
+        if (def->type != VIR_DOMAIN_NET_TYPE_BRIDGE &&
+            def->type != VIR_DOMAIN_NET_TYPE_NETWORK)
+            continue;
+
+        VIR_ERROR("Cleanup '%s'", def->ifname);
+        err = brDeleteTap(brctl, def->ifname);
+        if (err) {
+            VIR_ERROR("Cleanup failed %d", err);
+            ret = -1;
+        }
+    }
+    VIR_ERROR0("Cleanup tap done");
+    brShutdown(brctl);
+    return ret;
+}
+
 static int umlStartVMDaemon(virConnectPtr conn,
                             struct uml_driver *driver,
                             virDomainObjPtr vm) {
@@ -732,8 +761,6 @@ static int umlStartVMDaemon(virConnectPtr conn,
     char *logfile;
     int logfd = -1;
     struct stat sb;
-    int *tapfds = NULL;
-    int ntapfds = 0;
     fd_set keepfd;
     char ebuf[1024];
 
@@ -792,9 +819,9 @@ static int umlStartVMDaemon(virConnectPtr conn,
     }
 
     if (umlBuildCommandLine(conn, driver, vm,
-                            &argv, &progenv,
-                            &tapfds, &ntapfds) < 0) {
+                            &argv, &progenv) < 0) {
         close(logfd);
+        umlCleanupTapDevices(conn, vm);
         return -1;
     }
 
@@ -824,9 +851,6 @@ static int umlStartVMDaemon(virConnectPtr conn,
 
     vm->monitor = -1;
 
-    for (i = 0 ; i < ntapfds ; i++)
-        FD_SET(tapfds[i], &keepfd);
-
     ret = virExecDaemonize(conn, argv, progenv, &keepfd, &pid,
                            -1, &logfd, &logfd,
                            0, NULL, NULL, NULL);
@@ -840,15 +864,14 @@ static int umlStartVMDaemon(virConnectPtr conn,
         VIR_FREE(progenv[i]);
     VIR_FREE(progenv);
 
-    if (tapfds) {
-        for (i = 0 ; i < ntapfds ; i++) {
-            close(tapfds[i]);
-        }
-        VIR_FREE(tapfds);
-    }
+    if (ret < 0)
+        umlCleanupTapDevices(conn, vm);
 
     /* NB we don't mark it running here - we do that async
        with inotify */
+    /* XXX what if someone else tries to start it again
+       before we get the inotification ? Sounds like
+       trouble.... */
 
     return ret;
 }
@@ -878,6 +901,8 @@ static void umlShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     vm->state = VIR_DOMAIN_SHUTOFF;
     VIR_FREE(vm->vcpupids);
     vm->nvcpupids = 0;
+
+    umlCleanupTapDevices(conn, vm);
 
     if (vm->newDef) {
         virDomainDefFree(vm->def);

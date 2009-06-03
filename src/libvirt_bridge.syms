@@ -8,6 +8,7 @@
 brAddBridge;
 brAddInterface;
 brAddTap;
+brDeleteTap;
 brDeleteBridge;
 brHasBridge;
 brInit;

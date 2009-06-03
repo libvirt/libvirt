@@ -3146,6 +3146,7 @@ virDomainNetDefFormat(virConnectPtr conn,
         else
             virBufferVSprintf(buf, "      <source port='%d'/>\n",
                               def->data.socket.port);
+        break;
 
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
         virBufferEscapeString(buf, "      <source name='%s'/>\n",

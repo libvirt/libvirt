@@ -1,3 +1,13 @@
+Wed Jun  3 12:03:52 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Support networking in UML driver
+	* src/bridge.c: Add new brDeleteTap function. Allow brAddTap
+	to create a persistent tap devices.
+	* src/bridge.h, src/libvirt_bridge.syms: Add brDeleteTap
+	* src/domain_conf.c: Fix missing 'break' in network XML formatter
+	* src/uml_conf.c, src/uml_conf.h, src/uml_driver.c: Add support
+	for bridge, network, mcast and user mode network interfaces
+
 Wed Jun  3 11:53:52 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Misc User Mode Linux startup/shutdown bugs

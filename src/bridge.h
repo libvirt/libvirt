@@ -60,11 +60,19 @@ int     brDeleteInterface       (brControl *ctl,
                                  const char *bridge,
                                  const char *iface);
 
+enum {
+    BR_TAP_VNET_HDR = (1 << 0),
+    BR_TAP_PERSIST =  (1 << 1),
+};
+
 int     brAddTap                (brControl *ctl,
                                  const char *bridge,
                                  char **ifname,
-                                 int vnet_hdr,
+                                 int features,
                                  int *tapfd);
+
+int     brDeleteTap             (brControl *ctl,
+                                 const char *ifname);
 
 int     brSetInterfaceUp        (brControl *ctl,
                                  const char *ifname,
