@@ -1,3 +1,7 @@
+Wed Jun  3 14:29:52 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/lxc_driver.c: Implement capabilities and nodeinfo APIs
+
 Wed Jun  3 14:28:52 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Generic shared impls of all NUMA apis

@@ -47,6 +47,7 @@
 #include "veth.h"
 #include "event.h"
 #include "cgroup.h"
+#include "nodeinfo.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LXC
@@ -114,6 +115,19 @@ static int lxcClose(virConnectPtr conn)
     conn->privateData = NULL;
     return 0;
 }
+
+static char *lxcGetCapabilities(virConnectPtr conn) {
+    lxc_driver_t *driver = conn->privateData;
+    char *xml;
+
+    lxcDriverLock(driver);
+    if ((xml = virCapabilitiesFormatXML(driver->caps)) == NULL)
+        virReportOOMError(conn);
+    lxcDriverUnlock(driver);
+
+    return xml;
+}
+
 
 static virDomainPtr lxcDomainLookupByID(virConnectPtr conn,
                                         int id)
@@ -1429,8 +1443,8 @@ static virDriver lxcDriver = {
     lxcVersion, /* version */
     lxcGetHostname, /* getHostname */
     NULL, /* getMaxVcpus */
-    NULL, /* nodeGetInfo */
-    NULL, /* getCapabilities */
+    nodeGetInfo, /* nodeGetInfo */
+    lxcGetCapabilities, /* getCapabilities */
     lxcListDomains, /* listDomains */
     lxcNumDomains, /* numOfDomains */
     lxcDomainCreateAndStart, /* domainCreateXML */
@@ -1478,8 +1492,8 @@ static virDriver lxcDriver = {
     NULL, /* domainInterfaceStats */
     NULL, /* domainBlockPeek */
     NULL, /* domainMemoryPeek */
-    NULL, /* nodeGetCellsFreeMemory */
-    NULL, /* getFreeMemory */
+    nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
+    nodeGetFreeMemory,  /* getFreeMemory */
     NULL, /* domainEventRegister */
     NULL, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */
