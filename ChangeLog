@@ -1,3 +1,8 @@
+Wed Jun  3 14:12:47 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/openvz_conf.c src/virsh.c: various typo or english fixups
+	  raised by Runa Bhattacharjee
+
 Wed Jun  3 12:19:52 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix HAL driver restart thread safety

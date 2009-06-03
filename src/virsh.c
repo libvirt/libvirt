@@ -4992,8 +4992,8 @@ cmdNodeDeviceDumpXML (vshControl *ctl, const vshCmd *cmd)
  * "nodedev-dettach" command
  */
 static const vshCmdInfo info_node_device_dettach[] = {
-    {"help", gettext_noop("dettach node device its device driver")},
-    {"desc", gettext_noop("Dettach node device its device driver before assigning to a domain.")},
+    {"help", gettext_noop("dettach node device from its device driver")},
+    {"desc", gettext_noop("Dettach node device from its device driver before assigning to a domain.")},
     {NULL, NULL}
 };
 
@@ -5033,8 +5033,8 @@ cmdNodeDeviceDettach (vshControl *ctl, const vshCmd *cmd)
  * "nodedev-reattach" command
  */
 static const vshCmdInfo info_node_device_reattach[] = {
-    {"help", gettext_noop("reattach node device its device driver")},
-    {"desc", gettext_noop("Dettach node device its device driver before assigning to a domain.")},
+    {"help", gettext_noop("reattach node device to its device driver")},
+    {"desc", gettext_noop("Reattach node device to its device driver once released by the domain.")},
     {NULL, NULL}
 };
 
