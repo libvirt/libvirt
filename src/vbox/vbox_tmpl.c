@@ -4899,64 +4899,72 @@ cleanup:
 virDriver NAME(Driver) = {
     VIR_DRV_VBOX,
     "VBOX",
-    .open                          = vboxOpen,
-    .close                         = vboxClose,
-    .supports_feature              = NULL,
-    .type                          = NULL,
-    .version                       = vboxGetVersion,
-    .getHostname                   = vboxGetHostname,
-    .getMaxVcpus                   = vboxGetMaxVcpus,
-    .nodeGetInfo                   = nodeGetInfo,
-    .getCapabilities               = vboxGetCapabilities,
-    .listDomains                   = vboxListDomains,
-    .numOfDomains                  = vboxNumOfDomains,
-    .domainCreateXML               = vboxDomainCreateXML,
-    .domainLookupByID              = vboxDomainLookupByID,
-    .domainLookupByUUID            = vboxDomainLookupByUUID,
-    .domainLookupByName            = vboxDomainLookupByName,
-    .domainSuspend                 = vboxDomainSuspend,
-    .domainResume                  = vboxDomainResume,
-    .domainShutdown                = vboxDomainShutdown,
-    .domainReboot                  = vboxDomainReboot,
-    .domainDestroy                 = vboxDomainDestroy,
-    .domainGetOSType               = vboxDomainGetOSType,
-    .domainGetMaxMemory            = NULL,
-    .domainSetMaxMemory            = NULL,
-    .domainSetMemory               = vboxDomainSetMemory,
-    .domainGetInfo                 = vboxDomainGetInfo,
-    .domainSave                    = vboxDomainSave,
-    .domainRestore                 = NULL,
-    .domainCoreDump                = NULL,
-    .domainSetVcpus                = NULL,
-    .domainPinVcpu                 = NULL,
-    .domainGetVcpus                = NULL,
-    .domainGetMaxVcpus             = NULL,
-    .domainDumpXML                 = vboxDomainDumpXML,
-    .listDefinedDomains            = vboxListDefinedDomains,
-    .numOfDefinedDomains           = vboxNumOfDefinedDomains,
-    .domainCreate                  = vboxDomainCreate,
-    .domainDefineXML               = vboxDomainDefineXML,
-    .domainUndefine                = vboxDomainUndefine,
-    .domainAttachDevice            = vboxDomainAttachDevice,
-    .domainDetachDevice            = vboxDomainDetachDevice,
-    .domainGetAutostart            = NULL,
-    .domainSetAutostart            = NULL,
-    .domainGetSchedulerType        = NULL,
-    .domainGetSchedulerParameters  = NULL,
-    .domainSetSchedulerParameters  = NULL,
-    .domainMigratePrepare          = NULL,
-    .domainMigratePerform          = NULL,
-    .domainMigrateFinish           = NULL,
-    .domainBlockStats              = NULL,
-    .domainInterfaceStats          = NULL,
-    .domainBlockPeek               = NULL,
-    .domainMemoryPeek              = NULL,
-    .nodeGetCellsFreeMemory        = NULL,
-    .getFreeMemory                 = NULL,
-    .domainEventRegister           = NULL,
-    .domainEventDeregister         = NULL,
-    .domainMigratePrepare2         = NULL,
-    .domainMigrateFinish2          = NULL,
+    vboxOpen, /* open */
+    vboxClose, /* close */
+    NULL, /* supports_feature */
+    NULL, /* type */
+    vboxGetVersion, /* version */
+    vboxGetHostname, /* getHostname */
+    vboxGetMaxVcpus, /* getMaxVcpus */
+    nodeGetInfo, /* nodeGetInfo */
+    vboxGetCapabilities, /* getCapabilities */
+    vboxListDomains, /* listDomains */
+    vboxNumOfDomains, /* numOfDomains */
+    vboxDomainCreateXML, /* domainCreateXML */
+    vboxDomainLookupByID, /* domainLookupByID */
+    vboxDomainLookupByUUID, /* domainLookupByUUID */
+    vboxDomainLookupByName, /* domainLookupByName */
+    vboxDomainSuspend, /* domainSuspend */
+    vboxDomainResume, /* domainResume */
+    vboxDomainShutdown, /* domainShutdown */
+    vboxDomainReboot, /* domainReboot */
+    vboxDomainDestroy, /* domainDestroy */
+    vboxDomainGetOSType, /* domainGetOSType */
+    NULL, /* domainGetMaxMemory */
+    NULL, /* domainSetMaxMemory */
+    vboxDomainSetMemory, /* domainSetMemory */
+    vboxDomainGetInfo, /* domainGetInfo */
+    vboxDomainSave, /* domainSave */
+    NULL, /* domainRestore */
+    NULL, /* domainCoreDump */
+    NULL, /* domainSetVcpus */
+    NULL, /* domainPinVcpu */
+    NULL, /* domainGetVcpus */
+    NULL, /* domainGetMaxVcpus */
+    NULL, /* domainGetSecurityLabel */
+    NULL, /* nodeGetSecurityModel */
+    vboxDomainDumpXML, /* domainDumpXML */
+    NULL, /* domainXmlFromNative */
+    NULL, /* domainXmlToNative */
+    vboxListDefinedDomains, /* listDefinedDomains */
+    vboxNumOfDefinedDomains, /* numOfDefinedDomains */
+    vboxDomainCreate, /* domainCreate */
+    vboxDomainDefineXML, /* domainDefineXML */
+    vboxDomainUndefine, /* domainUndefine */
+    vboxDomainAttachDevice, /* domainAttachDevice */
+    vboxDomainDetachDevice, /* domainDetachDevice */
+    NULL, /* domainGetAutostart */
+    NULL, /* domainSetAutostart */
+    NULL, /* domainGetSchedulerType */
+    NULL, /* domainGetSchedulerParameters */
+    NULL, /* domainSetSchedulerParameters */
+    NULL, /* domainMigratePrepare */
+    NULL, /* domainMigratePerform */
+    NULL, /* domainMigrateFinish */
+    NULL, /* domainBlockStats */
+    NULL, /* domainInterfaceStats */
+    NULL, /* domainBlockPeek */
+    NULL, /* domainMemoryPeek */
+    NULL, /* nodeGetCellsFreeMemory */
+    NULL,  /* getFreeMemory */
+    NULL, /* domainEventRegister */
+    NULL, /* domainEventDeregister */
+    NULL, /* domainMigratePrepare2 */
+    NULL, /* domainMigrateFinish2 */
+    NULL, /* nodeDeviceDettach */
+    NULL, /* nodeDeviceReAttach */
+    NULL, /* nodeDeviceReset */
+
 };
 
 virNetworkDriver NAME(NetworkDriver) = {

@@ -1,3 +1,8 @@
+Wed Jun  3 14:30:52 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/vbox/vbox_tmpl.c: Switch to positional struct initializers
+	instead of named initializes, to match preferred style
+
 Wed Jun  3 14:29:52 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/lxc_driver.c: Implement capabilities and nodeinfo APIs
