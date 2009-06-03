@@ -27,7 +27,14 @@
 #include "libvirt/libvirt.h"
 #include "capabilities.h"
 
-int virNodeInfoPopulate(virConnectPtr conn, virNodeInfoPtr nodeinfo);
-int virCapsInitNUMA(virCapsPtr caps);
+int nodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo);
+int nodeCapsInitNUMA(virCapsPtr caps);
+
+
+int nodeGetCellsFreeMemory(virConnectPtr conn,
+                           unsigned long long *freeMems,
+                           int startCell,
+                           int maxCells);
+unsigned long long nodeGetFreeMemory(virConnectPtr conn);
 
 #endif /* __VIR_NODEINFO_H__*/

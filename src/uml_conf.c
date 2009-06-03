@@ -63,7 +63,7 @@ virCapsPtr umlCapsInit(void) {
                                    0, 0)) == NULL)
         goto no_memory;
 
-    if (virCapsInitNUMA(caps) < 0)
+    if (nodeCapsInitNUMA(caps) < 0)
         goto no_memory;
 
     if ((guest = virCapabilitiesAddGuest(caps,

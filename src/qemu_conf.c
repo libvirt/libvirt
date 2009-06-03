@@ -377,7 +377,7 @@ virCapsPtr qemudCapsInit(void) {
     /* Using KVM's mac prefix for QEMU too */
     virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x52, 0x54, 0x00 });
 
-    if (virCapsInitNUMA(caps) < 0)
+    if (nodeCapsInitNUMA(caps) < 0)
         goto no_memory;
 
     virCapabilitiesAddHostMigrateTransport(caps,

@@ -45,11 +45,6 @@
 #include <sys/ioctl.h>
 #include <sys/inotify.h>
 
-#if HAVE_NUMACTL
-#define NUMA_VERSION1_COMPATIBILITY 1
-#include <numa.h>
-#endif
-
 #include "uml_driver.h"
 #include "uml_conf.h"
 #include "event.h"
@@ -964,11 +959,6 @@ static const char *umlGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
     return "UML";
 }
 
-static int umlGetNodeInfo(virConnectPtr conn,
-                          virNodeInfoPtr nodeinfo) {
-    return virNodeInfoPopulate(conn, nodeinfo);
-}
-
 
 static char *umlGetCapabilities(virConnectPtr conn) {
     struct uml_driver *driver = (struct uml_driver *)conn->privateData;
@@ -983,69 +973,6 @@ static char *umlGetCapabilities(virConnectPtr conn) {
 }
 
 
-#if HAVE_NUMACTL
-static int
-umlNodeGetCellsFreeMemory(virConnectPtr conn,
-                            unsigned long long *freeMems,
-                            int startCell,
-                            int maxCells)
-{
-    int n, lastCell, numCells;
-    int ret = -1;
-
-    if (numa_available() < 0) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
-                         "%s", _("NUMA not supported on this host"));
-        goto cleanup;
-    }
-    lastCell = startCell + maxCells - 1;
-    if (lastCell > numa_max_node())
-        lastCell = numa_max_node();
-
-    for (numCells = 0, n = startCell ; n <= lastCell ; n++) {
-        long long mem;
-        if (numa_node_size64(n, &mem) < 0) {
-            umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("Failed to query NUMA free memory"));
-            goto cleanup;
-        }
-        freeMems[numCells++] = mem;
-    }
-    ret = numCells;
-
-cleanup:
-    return ret;
-}
-
-static unsigned long long
-umlNodeGetFreeMemory (virConnectPtr conn)
-{
-    unsigned long long freeMem = 0;
-    unsigned long long ret = -1;
-    int n;
-
-    if (numa_available() < 0) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
-                         "%s", _("NUMA not supported on this host"));
-        goto cleanup;
-    }
-
-    for (n = 0 ; n <= numa_max_node() ; n++) {
-        long long mem;
-        if (numa_node_size64(n, &mem) < 0) {
-            umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("Failed to query NUMA free memory"));
-            goto cleanup;
-        }
-        freeMem += mem;
-    }
-    ret = freeMem;
-
-cleanup:
-    return ret;
-}
-
-#endif
 
 static int umlGetProcessInfo(unsigned long long *cpuTime, int pid) {
     char proc[PATH_MAX];
@@ -1855,7 +1782,7 @@ static virDriver umlDriver = {
     umlGetVersion, /* version */
     umlGetHostname, /* getHostname */
     NULL, /* getMaxVcpus */
-    umlGetNodeInfo, /* nodeGetInfo */
+    nodeGetInfo, /* nodeGetInfo */
     umlGetCapabilities, /* getCapabilities */
     umlListDomains, /* listDomains */
     umlNumDomains, /* numOfDomains */
@@ -1904,13 +1831,8 @@ static virDriver umlDriver = {
     NULL, /* domainInterfaceStats */
     umlDomainBlockPeek, /* domainBlockPeek */
     NULL, /* domainMemoryPeek */
-#if HAVE_NUMACTL
-    umlNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    umlNodeGetFreeMemory,  /* getFreeMemory */
-#else
-    NULL, /* nodeGetCellsFreeMemory */
-    NULL, /* getFreeMemory */
-#endif
+    virNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
+    virNodeGetFreeMemory,  /* getFreeMemory */
     NULL, /* domainEventRegister */
     NULL, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */

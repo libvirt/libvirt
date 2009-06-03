@@ -1,3 +1,16 @@
+Wed Jun  3 14:28:52 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Generic shared impls of all NUMA apis
+	* src/libvirt_private.syms: Add all nodeinfo.c APIs
+	* src/lxc_conf.c, src/openvz_conf, src/qemu_conf.c,
+	src/vbox/vbox_tmpl.c, src/uml_conf.c: Update for
+	changed API names in nodeinfo.h
+	* src/nodeinfo.c, src/nodeinfo.h: Add generic impls of
+	the virNodeGetCellsFreeMemory & virNodeGetFreeMemory APis
+	* src/openvz_driver.c: Use nodeGetInfo() directly in driver
+	* src/qemu_driver.c, src/uml_driver.c: Remove NUMA APis impls
+	in favour of generic impl in nodeinfo.c
+
 Wed Jun  3 14:12:47 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_conf.c src/virsh.c: various typo or english fixups

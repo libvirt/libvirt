@@ -219,8 +219,10 @@ virNetworkObjUnlock;
 
 
 # nodeinfo.h
-virNodeInfoPopulate;
-virCapsInitNUMA;
+nodeGetInfo;
+nodeCapsInitNUMA;
+nodeGetCellsFreeMemory;
+nodeGetFreeMemory;
 
 
 # node_device_conf.h

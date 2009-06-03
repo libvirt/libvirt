@@ -148,7 +148,7 @@ virCapsPtr openvzCapsInit(void)
                                    0, 0)) == NULL)
         goto no_memory;
 
-    if (virCapsInitNUMA(caps) < 0)
+    if (nodeCapsInitNUMA(caps) < 0)
         goto no_memory;
 
     virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x52, 0x54, 0x00 });
@@ -527,11 +527,8 @@ openvzGetNodeCPUs(void)
 {
     virNodeInfo nodeinfo;
 
-    if (virNodeInfoPopulate(NULL, &nodeinfo) < 0) {
-        openvzError(NULL, VIR_ERR_INTERNAL_ERROR,
-                    "%s", _("Could not read nodeinfo"));
+    if (nodeGetInfo(NULL, &nodeinfo) < 0)
         return 0;
-    }
 
     return nodeinfo.cpus;
 }

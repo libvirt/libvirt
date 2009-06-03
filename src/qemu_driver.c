@@ -44,11 +44,6 @@
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 
-#if HAVE_NUMACTL
-#define NUMA_VERSION1_COMPATIBILITY 1
-#include <numa.h>
-#endif
-
 #if HAVE_SCHED_H
 #include <sched.h>
 #endif
@@ -1103,7 +1098,7 @@ qemudInitCpus(virConnectPtr conn,
     int i, maxcpu = QEMUD_CPUMASK_LEN;
     virNodeInfo nodeinfo;
 
-    if (virNodeInfoPopulate(conn, &nodeinfo) < 0)
+    if (nodeGetInfo(conn, &nodeinfo) < 0)
         return -1;
 
     /* setaffinity fails if you set bits for CPUs which
@@ -1880,11 +1875,6 @@ static int qemudGetMaxVCPUs(virConnectPtr conn, const char *type) {
     return -1;
 }
 
-static int qemudGetNodeInfo(virConnectPtr conn,
-                            virNodeInfoPtr nodeinfo) {
-    return virNodeInfoPopulate(conn, nodeinfo);
-}
-
 
 static char *qemudGetCapabilities(virConnectPtr conn) {
     struct qemud_driver *driver = conn->privateData;
@@ -1900,76 +1890,6 @@ static char *qemudGetCapabilities(virConnectPtr conn) {
     return xml;
 }
 
-
-#if HAVE_NUMACTL
-static int
-qemudNodeGetCellsFreeMemory(virConnectPtr conn,
-                            unsigned long long *freeMems,
-                            int startCell,
-                            int maxCells)
-{
-    int n, lastCell, numCells;
-    int ret = -1;
-    int maxCell;
-
-    if (numa_available() < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
-                         "%s", _("NUMA not supported on this host"));
-        goto cleanup;
-    }
-    maxCell = numa_max_node();
-    if (startCell > maxCell) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("start cell %d out of range (0-%d)"),
-                         startCell, maxCell);
-        goto cleanup;
-    }
-    lastCell = startCell + maxCells - 1;
-    if (lastCell > maxCell)
-        lastCell = maxCell;
-
-    for (numCells = 0, n = startCell ; n <= lastCell ; n++) {
-        long long mem;
-        if (numa_node_size64(n, &mem) < 0) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("Failed to query NUMA free memory"));
-            goto cleanup;
-        }
-        freeMems[numCells++] = mem;
-    }
-    ret = numCells;
-
-cleanup:
-    return ret;
-}
-
-static unsigned long long
-qemudNodeGetFreeMemory (virConnectPtr conn)
-{
-    unsigned long long freeMem = 0;
-    int n;
-
-    if (numa_available() < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
-                         "%s", _("NUMA not supported on this host"));
-        goto cleanup;
-    }
-
-    for (n = 0 ; n <= numa_max_node() ; n++) {
-        long long mem;
-        if (numa_node_size64(n, &mem) < 0) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("Failed to query NUMA free memory"));
-            goto cleanup;
-        }
-        freeMem += mem;
-    }
-
-cleanup:
-    return freeMem;
-}
-
-#endif
 
 static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
     char proc[PATH_MAX];
@@ -2995,7 +2915,7 @@ qemudDomainPinVcpu(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virNodeInfoPopulate(dom->conn, &nodeinfo) < 0)
+    if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
         goto cleanup;
 
     maxcpu = maplen * 8;
@@ -3057,7 +2977,7 @@ qemudDomainGetVcpus(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virNodeInfoPopulate(dom->conn, &nodeinfo) < 0)
+    if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
         goto cleanup;
 
     maxcpu = maplen * 8;
@@ -5349,7 +5269,7 @@ static virDriver qemuDriver = {
     qemudGetVersion, /* version */
     qemudGetHostname, /* getHostname */
     qemudGetMaxVCPUs, /* getMaxVcpus */
-    qemudGetNodeInfo, /* nodeGetInfo */
+    nodeGetInfo, /* nodeGetInfo */
     qemudGetCapabilities, /* getCapabilities */
     qemudListDomains, /* listDomains */
     qemudNumDomains, /* numOfDomains */
@@ -5403,13 +5323,8 @@ static virDriver qemuDriver = {
     qemudDomainInterfaceStats, /* domainInterfaceStats */
     qemudDomainBlockPeek, /* domainBlockPeek */
     qemudDomainMemoryPeek, /* domainMemoryPeek */
-#if HAVE_NUMACTL
-    qemudNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    qemudNodeGetFreeMemory,  /* getFreeMemory */
-#else
-    NULL, /* nodeGetCellsFreeMemory */
-    NULL, /* getFreeMemory */
-#endif
+    nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
+    nodeGetFreeMemory,  /* getFreeMemory */
     qemudDomainEventRegister, /* domainEventRegister */
     qemudDomainEventDeregister, /* domainEventDeregister */
     qemudDomainMigratePrepare2, /* domainMigratePrepare2 */

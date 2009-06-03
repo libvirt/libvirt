@@ -1136,11 +1136,6 @@ static const char *openvzGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
     return strdup("OpenVZ");
 }
 
-static int openvzGetNodeInfo(virConnectPtr conn,
-                             virNodeInfoPtr nodeinfo) {
-    return virNodeInfoPopulate(conn, nodeinfo);
-}
-
 static char *openvzGetCapabilities(virConnectPtr conn) {
     struct openvz_driver *driver = conn->privateData;
     char *ret;
@@ -1316,7 +1311,7 @@ static virDriver openvzDriver = {
     openvzGetVersion, /* version */
     NULL, /* getHostname */
     openvzGetMaxVCPUs, /* getMaxVcpus */
-    openvzGetNodeInfo, /* nodeGetInfo */
+    nodeGetInfo, /* nodeGetInfo */
     openvzGetCapabilities, /* getCapabilities */
     openvzListDomains, /* listDomains */
     openvzNumDomains, /* numOfDomains */

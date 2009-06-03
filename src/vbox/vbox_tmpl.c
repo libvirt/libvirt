@@ -186,7 +186,7 @@ static virCapsPtr vboxCapsInit(void) {
                                    0, 0)) == NULL)
         goto no_memory;
 
-    if (virCapsInitNUMA(caps) < 0)
+    if (nodeCapsInitNUMA(caps) < 0)
         goto no_memory;
 
     virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x08, 0x00, 0x27 });
@@ -413,9 +413,6 @@ static int vboxGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED
     return ret;
 }
 
-static int vboxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo) {
-    return virNodeInfoPopulate(conn, nodeinfo);
-}
 
 static char *vboxGetCapabilities(virConnectPtr conn) {
     vboxGlobalData *data = conn->privateData;
@@ -4909,7 +4906,7 @@ virDriver NAME(Driver) = {
     .version                       = vboxGetVersion,
     .getHostname                   = vboxGetHostname,
     .getMaxVcpus                   = vboxGetMaxVcpus,
-    .nodeGetInfo                   = vboxNodeGetInfo,
+    .nodeGetInfo                   = nodeGetInfo,
     .getCapabilities               = vboxGetCapabilities,
     .listDomains                   = vboxListDomains,
     .numOfDomains                  = vboxNumOfDomains,
