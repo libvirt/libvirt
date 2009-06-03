@@ -2482,6 +2482,11 @@ qemudSetLogging(virConfPtr conf, const char *filename) {
 
     /* there is no default filters */
     GET_CONF_STR (conf, filename, log_filters);
+    if (!log_filters) {
+        debugEnv = getenv("LIBVIRT_LOG_FILTERS");
+        if (debugEnv)
+            log_filters = strdup(debugEnv);
+    }
     virLogParseFilters(log_filters);
 
     /*
@@ -2489,7 +2494,12 @@ qemudSetLogging(virConfPtr conf, const char *filename) {
      * all logs to stderr if not running as daemon
      */
     GET_CONF_STR (conf, filename, log_outputs);
-    if (log_outputs == NULL) {
+    if (!log_outputs) {
+        debugEnv = getenv("LIBVIRT_LOG_OUTPUTS");
+        if (debugEnv)
+            log_outputs = strdup(debugEnv);
+    }
+    if (!log_outputs) {
         if (godaemon) {
             char *tmp = NULL;
             if (virAsprintf (&tmp, "%d:syslog:libvirtd", log_level) < 0)
@@ -2499,8 +2509,9 @@ qemudSetLogging(virConfPtr conf, const char *filename) {
         } else {
             virLogParseOutputs("0:stderr:libvirtd");
         }
-    } else
+    } else {
         virLogParseOutputs(log_outputs);
+    }
     ret = 0;
 
 free_and_fail:

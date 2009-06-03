@@ -1,3 +1,8 @@
+Wed Jun  3 11:32:52 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c: Honour LIBVIRT_LOG_FILTERS/OUTPUTS env variables
+	when initializing logging.
+
 Tue Jun  2 17:05:52 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/Makefile.am src/node_device.[ch] src/node_device_conf.[ch]
