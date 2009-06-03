@@ -1353,6 +1353,12 @@ static int networkSetAutostart(virNetworkPtr net,
         goto cleanup;
     }
 
+    if (!network->persistent) {
+        networkReportError(net->conn, NULL, net, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("cannot set autostart for transient network"));
+        goto cleanup;
+    }
+
     autostart = (autostart != 0);
 
     if (network->autostart != autostart) {
