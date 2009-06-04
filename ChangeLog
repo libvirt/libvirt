@@ -1,3 +1,9 @@
+Thu Jun  4 15:54:24 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/xm_internals.c: the memory shrinking on device removal
+	  didn't copy the right amount of memory, patch by Daniel Berrange
+	  fixes #497051
+
 Wed Jun  3 15:32:52 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/vbox/vbox_tmpl.c: Add NUMA memory APIs

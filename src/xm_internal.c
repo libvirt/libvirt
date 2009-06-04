@@ -2943,7 +2943,8 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
                 if (i < (def->ndisks - 1))
                     memmove(def->disks + i,
                             def->disks + i + 1,
-                            def->ndisks - (i + 1));
+                            sizeof(*def->disks) *
+                            (def->ndisks - (i + 1)));
                 break;
             }
         }
@@ -2960,7 +2961,8 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
                 if (i < (def->nnets - 1))
                     memmove(def->nets + i,
                             def->nets + i + 1,
-                            def->nnets - (i + 1));
+                            sizeof(*def->nets) *
+                            (def->nnets - (i + 1)));
                 break;
             }
         }
