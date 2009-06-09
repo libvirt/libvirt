@@ -1,0 +1,302 @@
+<html>
+  <head>
+    <title>Implementing a new API in Libvirt</title>
+  </head>
+
+  <body>
+    <h1>Implementing a new API in Libvirt</h1>
+
+    <ul id="toc"></ul>
+
+    <p>
+      This document walks you through the process of implementing a new
+      API in libvirt.  It uses as an example the addition of the node device
+      create and destroy APIs.
+    </p>
+
+    <p>
+      Before you begin coding, it is critical that you propose your
+      changes on the libvirt mailing list and get feedback on your ideas to
+      make sure what you're proposing fits with the general direction of the
+      project.  Even before doing a proof of concept implementation, send an
+      email giving an overview of the functionality you think should be
+      added to libvirt.  Someone may already be working on the feature you
+      want.  Also, recognize that everything you write is likely to undergo
+      significant rework as you discuss it with the other developers, so
+      don't wait too long before getting feedback.
+    </p>
+
+    <p>
+      Adding a new API to libvirt is not difficult, but there are quite a
+      few steps.  This document assumes that you are familiar with C
+      programming and have checked out the libvirt code from the source code
+      repository and successfully built the existing tree.  Instructions on
+      how to check out and build the code can be found at:
+    </p>
+
+    <p>
+      <a href="http://libvirt.org/downloads.html">http://libvirt.org/downloads.html</a>
+    </p>
+
+    <p>
+      Once you have a working development environment, the steps to create a
+      new API are:
+    </p>
+    <ol>
+      <li>define the public API</li>
+      <li>define the internal driver API</li>
+      <li>implement the public API</li>
+      <li>define the wire protocol format</li>
+      <li>implement the RPC client</li>
+      <li>implement the server side dispatcher</li>
+      <li>implement the driver methods</li>
+      <li>add virsh support</li>
+    </ol>
+
+    <p>
+      It is, of course, possible to implement the pieces in any order, but
+      if the development tasks are completed in the order listed, the code
+      will compile after each step.  Given the number of changes required,
+      verification after each step is highly recommended.
+    </p>
+
+    <p>
+      Submit new code in the form shown in the example code: one patch
+      per step.  That's not to say submit patches before you have working
+      functionality--get the whole thing working and make sure you're happy
+      with it.  Then use git or some other version control system that lets
+      you rewrite your commit history and break patches into pieces so you
+      don't drop a big blob of code on the mailing list at one go.  For
+      example, I didn't follow my own advice when I originally submitted the
+      example code to the libvirt list but rather submitted it in several
+      large chunks.  I've used git's ability to rewrite my commit history to
+      break the code apart into the example patches shown.
+    </p>
+
+    <p>
+      Don't mix anything else into the patches you submit.  The patches
+      should be the minimal changes required to implement the functionality
+      you're adding.  If you notice a bug in unrelated code (i.e., code you
+      don't have to touch to implement your API change) during development,
+      create a patch that just addresses that bug and submit it
+      separately.
+    </p>
+
+    <p>With that said, let's begin.</p>
+
+    <h2><a name='publicapi'>Defining the public API</a></h2>
+
+    <p>The first task is to define the public API and add it to:</p>
+
+    <p><code>include/libvirt/libvirt.h.in</code></p>
+
+    <p>
+      This task is in many ways the most important to get right, since once
+      the API has been committed to the repository, it's libvirt's policy
+      never to change it.  Mistakes in the implementation are bugs that you
+      can fix.  Make a mistake in the API definition and you're stuck with
+      it, so think carefully about the interface and don't be afraid to
+      rework it as you go through the process of implementing it.
+    </p>
+
+    <p>Once you have defined the API, you have to add the symbol names to:</p>
+
+    <p><code>src/libvirt_public.syms</code></p>
+
+    <p class="example">See <a href="api_extension/0001-Step-1-of-8-Define-the-public-API.patch">0001-Step-1-of-8-Define-the-public-API.patch</a> for example code.</p>
+
+
+    <h2><a name='internalapi'>Defining the internal API</a></h2>
+
+    <p>
+      Each public API call is associated with a driver, such as a host
+      virtualization driver, a network virtualization driver, a storage
+      virtualization driver, a state driver, or a device monitor.  Adding
+      the internal API is ordinarily a matter of adding a new member to the
+      struct representing one of these drivers.
+    </p>
+
+    <p>
+      Of course, it's possible that the new API will involve the creation of
+      an entire new driver type, in which case the changes will include the
+      creation of a new struct type to represent the new driver type.
+    </p>
+
+    <p>The driver structs are defined in:</p>
+
+    <p><code>src/driver.h</code></p>
+
+    <p>
+      To define the internal API, first typedef the driver function
+      prototype and then add a new field for it to the relevant driver
+      struct.
+    </p>
+
+    <p class="example">See <a href="api_extension/0002-Step-2-of-8-Define-the-internal-driver-API.patch">0002-Step-2-of-8-Define-the-internal-driver-API.patch</a></p>
+
+    <h2><a name='implpublic'>Implementing the public API</a></h2>
+
+    <p>
+      Implementing the public API is largely a formality in which we wire up
+      public API to the internal driver API.  The public API implementation
+      takes care of some basic validity checks before passing control to the
+      driver implementation.  In RFC 2119 vocabulary, this function:
+    </p>
+
+    <ol class="ordinarylist">
+      <li>SHOULD log a message with VIR_DEBUG() indicating that it is
+	being called and its parameters;</li>
+      <li>MUST call virResetLastError();</li>
+      <li>SHOULD confirm that the connection is valid with
+	VIR_IS_CONNECT(conn);</li>
+      <li><strong>SECURITY: If the API requires a connection with write
+	  privileges, MUST confirm that the connection flags do not
+	  indicate that the connection is read-only;</strong></li>
+      <li>SHOULD do basic validation of the parameters that are being
+	passed in;</li>
+      <li>MUST confirm that the driver for this connection exists and that
+	it implements this function;</li>
+      <li>MUST call the internal API;</li>
+      <li>SHOULD log a message with VIR_DEBUG() indicating that it is
+	returning, its return value, and status.</li>
+      <li>MUST return status to the caller.</li>
+    </ol>
+
+    <p>The public API calls are implemented in:</p>
+
+    <p><code>src/libvirt.c</code></p>
+
+    <p class="example">See <a href="api_extension/0003-Step-3-of-8-Implement-the-public-API.patch">0003-Step-3-of-8-Implement-the-public-API.patch</a></p>
+
+
+    <h2><a name='wireproto'>Defining the wire protocol format</a></h2>
+
+    <p>
+      Defining the wire protocol is essentially a straightforward exercise
+      which is probably most easily understood by referring to the existing
+      remote protocol wire format definitions and the example patch.  It
+      involves making two additions to:
+    </p>
+
+    <p><code>qemud/remote_protocol.x</code></p>
+
+    <p>
+      First, create two new structs for each new function that you're adding
+      to the API.  One struct describes the parameters to be passed to the
+      remote function, and a second struct describes the value returned by
+      the remote function.  The one exception to this rule is that functions
+      that return only integer status do not require a struct for returned
+      data.
+    </p>
+
+    <p>
+      Second, add values to the remote_procedure enum for each new function
+      added to the API.
+    </p>
+
+    <p class="example">See <a href="api_extension/0004-Step-4-of-8-Define-the-wire-protocol-format.patch">0004-Step-4-of-8-Define-the-wire-protocol-format.patch</a></p>
+
+    <p>
+      Once these changes are in place, it's necessary to run 'make rpcgen'
+      in the qemud directory to create the .c and .h files required by the
+      remote protocol code. This must be done on a Linux host using the
+      GLibC rpcgen program. Other rpcgen versions may generate code which
+      results in bogus compile time warnings
+    </p>
+
+
+    <h2><a name='rpcclient'>Implement the RPC client</a></h2>
+
+    <p>
+      Implementing the RPC client is also relatively mechanical, so refer to
+      the exising code and example patch for guidance.  The RPC client uses
+      the rpcgen generated .h files.  The remote method calls go in:
+    </p>
+
+    <p><code>src/remote_internal.c</code></p>
+
+    <p>Each remote method invocation does the following:</p>
+
+    <ol class="ordinarylist">
+      <li>locks the remote driver;</li>
+      <li>sets up the method arguments;</li>
+      <li>invokes the remote function;</li>
+      <li>checks the return value, if necessary;</li>
+      <li>extracts any returned data;</li>
+      <li>frees any returned data;</li>
+      <li>unlocks the remote driver.</li>
+    </ol>
+
+    <p>
+      Once you have created the remote method calls, you have to add fields
+      for them to the driver structs for the appropriate remote driver.
+    </p>
+
+    <p class="example">See <a href="api_extension/0005-Step-5-of-8-Implement-the-RPC-client.patch">0005-Step-5-of-8-Implement-the-RPC-client.patch</a></p>
+
+    <h2><a name="serverdispatch">Implement the server side dispatcher</a></h2>
+
+    <p>
+      Implementing the server side of the remote function calls is simply a
+      matter of deserializing the parameters passed in from the remote
+      caller and passing them to the corresponding internal API function.
+      The server side dispatchers are implemented in:
+    </p>
+
+    <p><code>qemud/remote.c</code></p>
+
+    <p>Again, this step uses the .h files generated by make rpcgen.</p>
+
+    <p class="example">See <a href="api_extension/0006-Step-6-of-8-Implement-the-server-side-dispatcher.patch">0006-Step-6-of-8-Implement-the-server-side-dispatcher.patch</a></p>
+
+
+    <h2><a name="driverimpl">Implement the driver methods</a></h2>
+
+    <p>
+      So, after all that, we get to the fun part.  All functionality in
+      libvirt is implemented inside a driver.  Thus, here is where you
+      implement whatever functionality you're adding to libvirt.  You'll
+      either need to add additional files to the src directory or extend
+      files that are already there, depending on what functionality you're
+      adding.
+    </p>
+
+    <p>
+      In the example code, the extension is only an additional two function
+      calls in the node device API, so most of the new code is additions to
+      existing files.  The only new files are there for multi-platform
+      implementation convenience, as some of the new code is Linux specific.
+    </p>
+
+    <p>
+      The example code is probably uninteresting unless you're concerned
+      with libvirt storage, but I've included it here to show how new files
+      are added to the build environment.
+    </p>
+
+    <p class="example">See <a href="api_extension/0007-Step-7-of-8-Implement-the-driver-methods.patch">0007-Step-7-of-8-Implement-the-driver-methods.patch</a></p>
+
+    <h2><a name="virsh">Implement virsh commands</a></h2>
+
+    <p>
+      Once you have the new functionality in place, the easiest way to test
+      it and also to provide it to end users is to implement support for it
+      in virsh.
+    </p>
+
+    <p>
+      A virsh command is composed of a few pieces of code.  You need to
+      define an array of vshCmdInfo structs for each new command that
+      contain the help text and the command description text.  You also need
+      an array of vshCmdOptDef structs to describe the command options.
+      Once you have those pieces of data in place you can write the function
+      implementing the virsh command.  Finally, you need to add the new
+      command to the commands[] array.
+    </p>
+
+    <p class="example">See <a href="api_extension/0008-Step-8-of-8-Add-virsh-support.patch">0008-Step-8-of-8-Add-virsh-support.patch</a></p>
+
+    <p>Once you have working functionality, run make check and make
+      syntax-check before generating patches.</p>
+  </body>
+</html>

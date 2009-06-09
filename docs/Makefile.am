@@ -46,6 +46,8 @@ gif = \
 dot_html_in = $(wildcard *.html.in)
 dot_html = $(dot_html_in:%.html.in=%.html)
 
+patches = $(wildcard api_extension/*.patch)
+
 xml = \
   libvirt-api.xml \
   libvirt-refs.xml \
@@ -67,6 +69,7 @@ EXTRA_DIST=					\
   site.xsl newapi.xsl news.xsl page.xsl	ChangeLog.xsl	\
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(xml) $(fig) $(png) \
+  $(patches) \
   virsh.pod ChangeLog.awk
 
 all: web $(top_builddir)/NEWS $(man_MANS)

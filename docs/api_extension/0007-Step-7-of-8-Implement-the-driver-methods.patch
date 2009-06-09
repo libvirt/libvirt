@@ -1,0 +1,1172 @@
+From 04d20a662109de6727232eb1213627877bb9662f Mon Sep 17 00:00:00 2001
+From: David Allan <dallan@redhat.com>
+Date: Tue, 19 May 2009 16:35:15 -0400
+Subject: [PATCH] Step 7 of 8 Implement the driver methods
+
+---
+ src/Makefile.am             |    4 +-
+ src/node_device.c           |  430 +++++++++++++++++++++++++++++++++++++++++++
+ src/node_device.h           |   13 ++
+ src/node_device_conf.c      |  136 ++++++++++++--
+ src/node_device_conf.h      |   22 ++-
+ src/node_device_hal.c       |    5 +
+ src/node_device_hal.h       |   40 ++++
+ src/node_device_hal_linux.c |  170 +++++++++++++++++
+ src/qemu_driver.c           |    2 +-
+ src/storage_backend.c       |   24 +--
+ src/xen_unified.c           |    2 +-
+ tests/nodedevxml2xmltest.c  |    2 +-
+ 12 files changed, 810 insertions(+), 40 deletions(-)
+ create mode 100644 src/node_device_hal.h
+ create mode 100644 src/node_device_hal_linux.c
+
+diff --git a/src/Makefile.am b/src/Makefile.am
+index fd692b4..39fabce 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -188,7 +188,9 @@ NODE_DEVICE_DRIVER_SOURCES =					\
+ 		node_device.c node_device.h
+ 
+ NODE_DEVICE_DRIVER_HAL_SOURCES =				\
+-		node_device_hal.c
++		node_device_hal.c				\
++		node_device_hal_linux.c
++
+ NODE_DEVICE_DRIVER_DEVKIT_SOURCES =				\
+ 		node_device_devkit.c
+ 
+diff --git a/src/node_device.c b/src/node_device.c
+index b84729f..4f73baf 100644
+--- a/src/node_device.c
++++ b/src/node_device.c
+@@ -25,6 +25,8 @@
+ 
+ #include <unistd.h>
+ #include <errno.h>
++#include <fcntl.h>
++#include <time.h>
+ 
+ #include "virterror_internal.h"
+ #include "datatypes.h"
+@@ -133,6 +135,53 @@ cleanup:
+     return ret;
+ }
+ 
++
++static virNodeDevicePtr
++nodeDeviceLookupByWWN(virConnectPtr conn,
++                      const char *wwnn,
++                      const char *wwpn)
++{
++    unsigned int i;
++    virDeviceMonitorStatePtr driver = conn->devMonPrivateData;
++    virNodeDeviceObjListPtr devs = &driver->devs;
++    virNodeDevCapsDefPtr cap = NULL;
++    virNodeDeviceObjPtr obj = NULL;
++    virNodeDevicePtr dev = NULL;
++
++    nodeDeviceLock(driver);
++
++    for (i = 0; i < devs->count; i++) {
++
++        obj = devs->objs[i];
++        virNodeDeviceObjLock(obj);
++        cap = obj->def->caps;
++
++        while (cap) {
++
++            if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST) {
++                if (cap->data.scsi_host.flags &
++                    VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
++
++                    if (STREQ(cap->data.scsi_host.wwnn, wwnn) &&
++                        STREQ(cap->data.scsi_host.wwpn, wwpn)) {
++                        dev = virGetNodeDevice(conn, obj->def->name);
++                        virNodeDeviceObjUnlock(obj);
++                        goto out;
++                    }
++                }
++            }
++            cap = cap->next;
++        }
++
++        virNodeDeviceObjUnlock(obj);
++    }
++
++out:
++    nodeDeviceUnlock(driver);
++    return dev;
++}
++
++
+ static char *nodeDeviceDumpXML(virNodeDevicePtr dev,
+                                unsigned int flags ATTRIBUTE_UNUSED)
+ {
+@@ -258,6 +307,385 @@ cleanup:
+ }
+ 
+ 
++static int
++nodeDeviceVportCreateDelete(virConnectPtr conn,
++                            const int parent_host,
++                            const char *wwpn,
++                            const char *wwnn,
++                            int operation)
++{
++    int fd = -1;
++    int retval = 0;
++    char *operation_path = NULL, *vport_name = NULL;
++    const char *operation_file = NULL;
++    size_t towrite = 0;
++    unsigned int written = 0;
++
++    switch (operation) {
++    case VPORT_CREATE:
++        operation_file = LINUX_SYSFS_VPORT_CREATE_POSTFIX;
++        break;
++    case VPORT_DELETE:
++        operation_file = LINUX_SYSFS_VPORT_DELETE_POSTFIX;
++        break;
++    default:
++        virNodeDeviceReportError(conn, VIR_ERR_INTERNAL_ERROR,
++                                 _("Invalid vport operation (%d)"), operation);
++        retval = -1;
++        goto cleanup;
++        break;
++    }
++
++    if (virAsprintf(&operation_path,
++                    "%shost%d%s",
++                    LINUX_SYSFS_FC_HOST_PREFIX,
++                    parent_host,
++                    operation_file) < 0) {
++
++        virReportOOMError(conn);
++        retval = -1;
++        goto cleanup;
++    }
++
++    VIR_DEBUG(_("Vport operation path is '%s'"), operation_path);
++
++    fd = open(operation_path, O_WRONLY);
++
++    if (fd < 0) {
++        virReportSystemError(conn, errno,
++                             _("Could not open '%s' for vport operation"),
++                             operation_path);
++        retval = -1;
++        goto cleanup;
++    }
++
++    if (virAsprintf(&vport_name,
++                    "%s:%s",
++                    wwpn,
++                    wwnn) < 0) {
++
++        virReportOOMError(conn);
++        retval = -1;
++        goto cleanup;
++    }
++
++    towrite = strlen(vport_name);
++    written = safewrite(fd, vport_name, towrite);
++    if (written != towrite) {
++        virReportSystemError(conn, errno,
++                             _("Write of '%s' to '%s' during "
++                               "vport create/delete failed "
++                               "(towrite: %lu written: %d)"),
++                             vport_name, operation_path,
++                             towrite, written);
++        retval = -1;
++    }
++
++cleanup:
++    if (fd != -1) {
++        close(fd);
++    }
++    VIR_FREE(vport_name);
++    VIR_FREE(operation_path);
++    VIR_DEBUG("%s", _("Vport operation complete"));
++    return retval;
++}
++
++
++static int
++get_wwns(virConnectPtr conn,
++         virNodeDeviceDefPtr def,
++         char **wwnn,
++         char **wwpn)
++{
++    virNodeDevCapsDefPtr cap = NULL;
++    int ret = 0;
++
++    cap = def->caps;
++    while (cap != NULL) {
++        if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST &&
++            cap->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
++            *wwnn = strdup(cap->data.scsi_host.wwnn);
++            *wwpn = strdup(cap->data.scsi_host.wwpn);
++            break;
++        }
++
++        cap = cap->next;
++    }
++
++    if (cap == NULL) {
++        virNodeDeviceReportError(conn, VIR_ERR_NO_SUPPORT,
++                                 "%s", _("Device is not a fibre channel HBA"));
++        ret = -1;
++    }
++
++    if (*wwnn == NULL || *wwpn == NULL) {
++        /* Free the other one, if allocated... */
++        VIR_FREE(wwnn);
++        VIR_FREE(wwpn);
++        ret = -1;
++        virReportOOMError(conn);
++    }
++
++    return ret;
++}
++
++
++static int
++get_parent_host(virConnectPtr conn,
++                virDeviceMonitorStatePtr driver,
++                const char *dev_name,
++                const char *parent_name,
++                int *parent_host)
++{
++    virNodeDeviceObjPtr parent = NULL;
++    virNodeDevCapsDefPtr cap = NULL;
++    int ret = 0;
++
++    parent = virNodeDeviceFindByName(&driver->devs, parent_name);
++    if (parent == NULL) {
++        virNodeDeviceReportError(conn, VIR_ERR_INVALID_NODE_DEVICE,
++                                 _("Could not find parent device for '%s'"),
++                                 dev_name);
++        ret = -1;
++        goto out;
++    }
++
++    cap = parent->def->caps;
++    while (cap != NULL) {
++        if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST &&
++            (cap->data.scsi_host.flags &
++             VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS)) {
++                *parent_host = cap->data.scsi_host.host;
++                break;
++        }
++
++        cap = cap->next;
++    }
++
++    if (cap == NULL) {
++        virNodeDeviceReportError(conn, VIR_ERR_INVALID_NODE_DEVICE,
++                                 _("Device %s is not capable of vport operations"),
++                                 parent->def->name);
++        ret = -1;
++    }
++
++    virNodeDeviceObjUnlock(parent);
++
++out:
++    return ret;
++}
++
++
++static int
++get_time(virConnectPtr conn, time_t *t)
++{
++    int ret = 0;
++
++    *t = time(NULL);
++    if (*t == (time_t)-1) {
++        virNodeDeviceReportError(conn, VIR_ERR_INTERNAL_ERROR,
++                                 "%s", _("Could not get current time"));
++
++        *t = 0;
++        ret = -1;
++    }
++
++    return ret;
++}
++
++
++/* When large numbers of devices are present on the host, it's
++ * possible for udev not to realize that it has work to do before we
++ * get here.  We thus keep trying to find the new device we just
++ * created for up to LINUX_NEW_DEVICE_WAIT_TIME.  Note that udev's
++ * default settle time is 180 seconds, so once udev realizes that it
++ * has work to do, it might take that long for the udev wait to
++ * return.  Thus the total maximum time for this function to return is
++ * the udev settle time plus LINUX_NEW_DEVICE_WAIT_TIME.
++ *
++ * This whole area is a race, but if we retry the udev wait for
++ * LINUX_NEW_DEVICE_WAIT_TIME seconds and there's still no device,
++ * it's probably safe to assume it's not going to appear.
++ */
++static virNodeDevicePtr
++find_new_device(virConnectPtr conn, const char *wwnn, const char *wwpn)
++{
++    virDeviceMonitorStatePtr driver = conn->devMonPrivateData;
++    virNodeDevicePtr dev = NULL;
++    time_t start = 0, now = 0;
++
++    /* The thread that creates the device takes the driver lock, so we
++     * must release it in order to allow the device to be created.
++     * We're not doing anything with the driver pointer at this point,
++     * so it's safe to release it, assuming that the pointer itself
++     * doesn't become invalid.  */
++    nodeDeviceUnlock(driver);
++
++    get_time(conn, &start);
++
++    while ((now - start) < LINUX_NEW_DEVICE_WAIT_TIME) {
++
++        virNodeDeviceWaitForDevices(conn);
++
++        dev = nodeDeviceLookupByWWN(conn, wwnn, wwpn);
++
++        if (dev != NULL) {
++            break;
++        }
++
++        sleep(5);
++        if (get_time(conn, &now) == -1) {
++            break;
++        }
++    }
++
++    nodeDeviceLock(driver);
++
++    return dev;
++}
++
++static virNodeDevicePtr
++nodeDeviceCreateXML(virConnectPtr conn,
++                    const char *xmlDesc,
++                    unsigned int flags ATTRIBUTE_UNUSED)
++{
++    virDeviceMonitorStatePtr driver = conn->devMonPrivateData;
++    virNodeDeviceDefPtr def = NULL;
++    char *wwnn = NULL, *wwpn = NULL;
++    int parent_host = -1;
++    virNodeDevicePtr dev = NULL;
++
++    nodeDeviceLock(driver);
++
++    def = virNodeDeviceDefParseString(conn, xmlDesc, CREATE_DEVICE);
++    if (def == NULL) {
++        goto cleanup;
++    }
++
++    if (get_wwns(conn, def, &wwnn, &wwpn) == -1) {
++        goto cleanup;
++    }
++
++    if (get_parent_host(conn,
++                        driver,
++                        def->name,
++                        def->parent,
++                        &parent_host) == -1) {
++        goto cleanup;
++    }
++
++    if (nodeDeviceVportCreateDelete(conn,
++                                    parent_host,
++                                    wwpn,
++                                    wwnn,
++                                    VPORT_CREATE) == -1) {
++        goto cleanup;
++    }
++
++    dev = find_new_device(conn, wwnn, wwpn);
++    /* We don't check the return value, because one way or another,
++     * we're returning what we get... */
++
++    if (dev == NULL) {
++        virNodeDeviceReportError(conn, VIR_ERR_NO_NODE_DEVICE, NULL);
++    }
++
++cleanup:
++    nodeDeviceUnlock(driver);
++    virNodeDeviceDefFree(def);
++    VIR_FREE(wwnn);
++    VIR_FREE(wwpn);
++    return dev;
++}
++
++
++static int
++nodeDeviceDestroy(virNodeDevicePtr dev)
++{
++    int ret = 0;
++    virDeviceMonitorStatePtr driver = dev->conn->devMonPrivateData;
++    virNodeDeviceObjPtr obj = NULL;
++    char *parent_name = NULL, *wwnn = NULL, *wwpn = NULL;
++    int parent_host = -1;
++
++    nodeDeviceLock(driver);
++    obj = virNodeDeviceFindByName(&driver->devs, dev->name);
++    nodeDeviceUnlock(driver);
++
++    if (!obj) {
++        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_NODE_DEVICE, NULL);
++        goto out;
++    }
++
++    if (get_wwns(dev->conn, obj->def, &wwnn, &wwpn) == -1) {
++        goto out;
++    }
++
++    parent_name = strdup(obj->def->parent);
++
++    /* get_parent_host will cause the device object's lock to be
++     * taken, so we have to dup the parent's name and drop the lock
++     * before calling it.  We don't need the reference to the object
++     * any more once we have the parent's name.  */
++    virNodeDeviceObjUnlock(obj);
++    obj = NULL;
++
++    if (parent_name == NULL) {
++        virReportOOMError(dev->conn);
++        goto out;
++    }
++
++    if (get_parent_host(dev->conn,
++                        driver,
++                        dev->name,
++                        parent_name,
++                        &parent_host) == -1) {
++        goto out;
++    }
++
++    if (nodeDeviceVportCreateDelete(dev->conn,
++                                    parent_host,
++                                    wwpn,
++                                    wwnn,
++                                    VPORT_DELETE) == -1) {
++        goto out;
++    }
++
++out:
++    VIR_FREE(parent_name);
++    VIR_FREE(wwnn);
++    VIR_FREE(wwpn);
++    return ret;
++}
++
++
++#if defined(UDEVADM) || defined(UDEVSETTLE)
++void virNodeDeviceWaitForDevices(virConnectPtr conn)
++{
++#ifdef UDEVADM
++    const char *const settleprog[] = { UDEVADM, "settle", NULL };
++#else
++    const char *const settleprog[] = { UDEVSETTLE, NULL };
++#endif
++    int exitstatus;
++
++    if (access(settleprog[0], X_OK) != 0)
++        return;
++
++    /*
++     * NOTE: we ignore errors here; this is just to make sure that any device
++     * nodes that are being created finish before we try to scan them.
++     * If this fails for any reason, we still have the backup of polling for
++     * 5 seconds for device nodes.
++     */
++    virRun(conn, settleprog, &exitstatus);
++}
++#else
++void virNodeDeviceWaitForDevices(virConnectPtr conn ATTRIBUTE_UNUSED) {}
++#endif
++
++
+ void registerCommonNodeFuncs(virDeviceMonitorPtr driver)
+ {
+     driver->numOfDevices = nodeNumOfDevices;
+@@ -267,6 +695,8 @@ void registerCommonNodeFuncs(virDeviceMonitorPtr driver)
+     driver->deviceGetParent = nodeDeviceGetParent;
+     driver->deviceNumOfCaps = nodeDeviceNumOfCaps;
+     driver->deviceListCaps = nodeDeviceListCaps;
++    driver->deviceCreateXML = nodeDeviceCreateXML;
++    driver->deviceDestroy = nodeDeviceDestroy;
+ }
+ 
+ 
+diff --git a/src/node_device.h b/src/node_device.h
+index 9496120..882ba0f 100644
+--- a/src/node_device.h
++++ b/src/node_device.h
+@@ -28,6 +28,17 @@
+ #include "driver.h"
+ #include "node_device_conf.h"
+ 
++#define LINUX_SYSFS_SCSI_HOST_PREFIX "/sys/class/scsi_host"
++#define LINUX_SYSFS_SCSI_HOST_POSTFIX "device"
++#define LINUX_SYSFS_FC_HOST_PREFIX "/sys/class/fc_host/"
++
++#define VPORT_CREATE 0
++#define VPORT_DELETE 1
++#define LINUX_SYSFS_VPORT_CREATE_POSTFIX "/vport_create"
++#define LINUX_SYSFS_VPORT_DELETE_POSTFIX "/vport_delete"
++
++#define LINUX_NEW_DEVICE_WAIT_TIME 60
++
+ #ifdef HAVE_HAL
+ int halNodeRegister(void);
+ #endif
+@@ -42,4 +53,6 @@ void registerCommonNodeFuncs(virDeviceMonitorPtr mon);
+ 
+ int nodedevRegister(void);
+ 
++void virNodeDeviceWaitForDevices(virConnectPtr conn);
++
+ #endif /* __VIR_NODE_DEVICE_H__ */
+diff --git a/src/node_device_conf.c b/src/node_device_conf.c
+index 6e04112..5b35b60 100644
+--- a/src/node_device_conf.c
++++ b/src/node_device_conf.c
+@@ -53,9 +53,34 @@ VIR_ENUM_IMPL(virNodeDevNetCap, VIR_NODE_DEV_CAP_NET_LAST,
+               "80203",
+               "80211")
+ 
++VIR_ENUM_IMPL(virNodeDevHBACap, VIR_NODE_DEV_CAP_HBA_LAST,
++              "fc_host",
++              "vport_ops")
+ 
+ #define virNodeDeviceLog(msg...) fprintf(stderr, msg)
+ 
++static int
++virNodeDevCapsDefParseString(virConnectPtr conn,
++                             const char *xpath,
++                             xmlXPathContextPtr ctxt,
++                             char **string,
++                             virNodeDeviceDefPtr def,
++                             const char *missing_error_fmt)
++{
++    char *s;
++
++    s = virXPathString(conn, xpath, ctxt);
++    if (s == NULL) {
++        virNodeDeviceReportError(conn, VIR_ERR_INTERNAL_ERROR,
++                                 missing_error_fmt,
++                                 def->name);
++        return -1;
++    }
++
++    *string = s;
++    return 0;
++}
++
+ virNodeDeviceObjPtr virNodeDeviceFindByName(const virNodeDeviceObjListPtr devs,
+                                             const char *name)
+ {
+@@ -302,6 +327,18 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
+         case VIR_NODE_DEV_CAP_SCSI_HOST:
+             virBufferVSprintf(&buf, "    <host>%d</host>\n",
+                               data->scsi_host.host);
++            if (data->scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
++                virBufferAddLit(&buf, "    <capability type='fc_host'>\n");
++                virBufferVSprintf(&buf,
++                                  "      <wwnn>%s</wwnn>\n", data->scsi_host.wwnn);
++                virBufferVSprintf(&buf,
++                                  "      <wwpn>%s</wwpn>\n", data->scsi_host.wwpn);
++                virBufferAddLit(&buf, "    </capability>\n");
++            }
++            if (data->scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS) {
++                virBufferAddLit(&buf, "    <capability type='vport_ops' />\n");
++            }
++
+             break;
+         case VIR_NODE_DEV_CAP_SCSI:
+             virBufferVSprintf(&buf, "    <host>%d</host>\n", data->scsi.host);
+@@ -561,26 +598,91 @@ virNodeDevCapScsiHostParseXML(virConnectPtr conn,
+                               xmlXPathContextPtr ctxt,
+                               virNodeDeviceDefPtr def,
+                               xmlNodePtr node,
+-                              union _virNodeDevCapData *data)
++                              union _virNodeDevCapData *data,
++                              int create)
+ {
+-    xmlNodePtr orignode;
+-    int ret = -1;
++    xmlNodePtr orignode, *nodes = NULL;
++    int ret = -1, n = 0, i;
++    char *type = NULL;
+ 
+     orignode = ctxt->node;
+     ctxt->node = node;
+ 
+-    if (virNodeDevCapsDefParseULong(conn, "number(./host[1])", ctxt,
++    if (create == EXISTING_DEVICE &&
++        virNodeDevCapsDefParseULong(conn, "number(./host[1])", ctxt,
+                                     &data->scsi_host.host, def,
+                                     _("no SCSI host ID supplied for '%s'"),
+-                                    _("invalid SCSI host ID supplied for '%s'")) < 0)
++                                    _("invalid SCSI host ID supplied for '%s'")) < 0) {
+         goto out;
++    }
++
++    if ((n = virXPathNodeSet(conn, "./capability", ctxt, &nodes)) < 0) {
++        virNodeDeviceReportError(conn, VIR_ERR_INTERNAL_ERROR,
++                                 _("error parsing SCSI host capabilities for '%s'"),
++                                 def->name);
++        goto out;
++    }
++
++    for (i = 0 ; i < n ; i++) {
++        type = virXMLPropString(nodes[i], "type");
++
++        if (!type) {
++            virNodeDeviceReportError(conn, VIR_ERR_INTERNAL_ERROR,
++                                     _("missing SCSI host capability type for '%s'"),
++                                     def->name);
++            goto out;
++        }
++
++        if (STREQ(type, "vport_ops")) {
++
++            data->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS;
++
++        } else if (STREQ(type, "fc_host")) {
++
++            xmlNodePtr orignode2;
++
++            data->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST;
++
++            orignode2 = ctxt->node;
++            ctxt->node = nodes[i];
++
++            if (virNodeDevCapsDefParseString(conn, "string(./wwnn[1])",
++                                             ctxt,
++                                             &data->scsi_host.wwnn,
++                                             def,
++                                             _("no WWNN supplied for '%s'")) < 0) {
++                goto out;
++            }
++
++            if (virNodeDevCapsDefParseString(conn, "string(./wwpn[1])",
++                                             ctxt,
++                                             &data->scsi_host.wwpn,
++                                             def,
++                                             _("no WWPN supplied for '%s'")) < 0) {
++                goto out;
++            }
++
++            ctxt->node = orignode2;
++
++        } else {
++            virNodeDeviceReportError(conn, VIR_ERR_INTERNAL_ERROR,
++                                     _("unknown SCSI host capability type '%s' for '%s'"),
++                                     type, def->name);
++            goto out;
++        }
++
++        VIR_FREE(type);
++    }
+ 
+     ret = 0;
++
+ out:
++    VIR_FREE(type);
+     ctxt->node = orignode;
+     return ret;
+ }
+ 
++
+ static int
+ virNodeDevCapNetParseXML(virConnectPtr conn,
+                          xmlXPathContextPtr ctxt,
+@@ -848,7 +950,8 @@ static virNodeDevCapsDefPtr
+ virNodeDevCapsDefParseXML(virConnectPtr conn,
+                           xmlXPathContextPtr ctxt,
+                           virNodeDeviceDefPtr def,
+-                          xmlNodePtr node)
++                          xmlNodePtr node,
++                          int create)
+ {
+     virNodeDevCapsDefPtr caps;
+     char *tmp;
+@@ -892,7 +995,7 @@ virNodeDevCapsDefParseXML(virConnectPtr conn,
+         ret = virNodeDevCapNetParseXML(conn, ctxt, def, node, &caps->data);
+         break;
+     case VIR_NODE_DEV_CAP_SCSI_HOST:
+-        ret = virNodeDevCapScsiHostParseXML(conn, ctxt, def, node, &caps->data);
++        ret = virNodeDevCapScsiHostParseXML(conn, ctxt, def, node, &caps->data, create);
+         break;
+     case VIR_NODE_DEV_CAP_SCSI:
+         ret = virNodeDevCapScsiParseXML(conn, ctxt, def, node, &caps->data);
+@@ -918,7 +1021,7 @@ error:
+ }
+ 
+ static virNodeDeviceDefPtr
+-virNodeDeviceDefParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt)
++virNodeDeviceDefParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt, int create)
+ {
+     virNodeDeviceDefPtr def;
+     virNodeDevCapsDefPtr *next_cap;
+@@ -931,7 +1034,12 @@ virNodeDeviceDefParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt)
+     }
+ 
+     /* Extract device name */
+-    def->name = virXPathString(conn, "string(./name[1])", ctxt);
++    if (create == EXISTING_DEVICE) {
++        def->name = virXPathString(conn, "string(./name[1])", ctxt);
++    } else {
++        def->name = strdup("new device");
++    }
++
+     if (!def->name) {
+         virNodeDeviceReportError(conn, VIR_ERR_NO_NAME, NULL);
+         goto error;
+@@ -951,7 +1059,7 @@ virNodeDeviceDefParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt)
+ 
+     next_cap = &def->caps;
+     for (i = 0 ; i < n ; i++) {
+-        *next_cap = virNodeDevCapsDefParseXML(conn, ctxt, def, nodes[i]);
++        *next_cap = virNodeDevCapsDefParseXML(conn, ctxt, def, nodes[i], create);
+         if (!*next_cap) {
+             VIR_FREE(nodes);
+             goto error;
+@@ -969,7 +1077,7 @@ virNodeDeviceDefParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt)
+ }
+ 
+ static virNodeDeviceDefPtr
+-virNodeDeviceDefParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root)
++virNodeDeviceDefParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root, int create)
+ {
+     xmlXPathContextPtr ctxt = NULL;
+     virNodeDeviceDefPtr def = NULL;
+@@ -987,7 +1095,7 @@ virNodeDeviceDefParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root)
+     }
+ 
+     ctxt->node = root;
+-    def = virNodeDeviceDefParseXML(conn, ctxt);
++    def = virNodeDeviceDefParseXML(conn, ctxt, create);
+ 
+ cleanup:
+     xmlXPathFreeContext(ctxt);
+@@ -1015,7 +1123,7 @@ catchXMLError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
+ }
+ 
+ virNodeDeviceDefPtr
+-virNodeDeviceDefParseString(virConnectPtr conn, const char *str)
++virNodeDeviceDefParseString(virConnectPtr conn, const char *str, int create)
+ {
+     xmlParserCtxtPtr pctxt;
+     xmlDocPtr xml = NULL;
+@@ -1046,7 +1154,7 @@ virNodeDeviceDefParseString(virConnectPtr conn, const char *str)
+         goto cleanup;
+     }
+ 
+-    def = virNodeDeviceDefParseNode(conn, xml, root);
++    def = virNodeDeviceDefParseNode(conn, xml, root, create);
+ 
+ cleanup:
+     xmlFreeParserCtxt(pctxt);
+diff --git a/src/node_device_conf.h b/src/node_device_conf.h
+index 26e5558..62b4e71 100644
+--- a/src/node_device_conf.h
++++ b/src/node_device_conf.h
+@@ -28,6 +28,9 @@
+ #include "util.h"
+ #include "threads.h"
+ 
++#define CREATE_DEVICE 1
++#define EXISTING_DEVICE 0
++
+ enum virNodeDevCapType {
+     /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
+     VIR_NODE_DEV_CAP_SYSTEM,		/* System capability */
+@@ -48,8 +51,16 @@ enum virNodeDevNetCapType {
+     VIR_NODE_DEV_CAP_NET_LAST
+ };
+ 
++enum virNodeDevHBACapType {
++    /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
++    VIR_NODE_DEV_CAP_HBA_FC_HOST,	/* fibre channel HBA */
++    VIR_NODE_DEV_CAP_HBA_VPORT_OPS,	/* capable of vport operations */
++    VIR_NODE_DEV_CAP_HBA_LAST
++};
++
+ VIR_ENUM_DECL(virNodeDevCap)
+ VIR_ENUM_DECL(virNodeDevNetCap)
++VIR_ENUM_DECL(virNodeDevHBACap)
+ 
+ enum virNodeDevStorageCapFlags {
+     VIR_NODE_DEV_CAP_STORAGE_REMOVABLE			= (1 << 0),
+@@ -57,6 +68,11 @@ enum virNodeDevStorageCapFlags {
+     VIR_NODE_DEV_CAP_STORAGE_HOTPLUGGABLE		= (1 << 2),
+ };
+ 
++enum virNodeDevScsiHostCapFlags {
++    VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST			= (1 << 0),
++    VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS			= (1 << 1),
++};
++
+ typedef struct _virNodeDevCapsDef virNodeDevCapsDef;
+ typedef virNodeDevCapsDef *virNodeDevCapsDefPtr;
+ struct _virNodeDevCapsDef {
+@@ -108,6 +124,9 @@ struct _virNodeDevCapsDef {
+         } net;
+         struct {
+             unsigned host;
++            char *wwnn;
++            char *wwpn;
++            unsigned flags;
+         } scsi_host;
+         struct {
+             unsigned host;
+@@ -185,7 +204,8 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
+                              const virNodeDeviceDefPtr def);
+ 
+ virNodeDeviceDefPtr virNodeDeviceDefParseString(virConnectPtr conn,
+-                                                const char *str);
++                                                const char *str,
++                                                int create);
+ 
+ void virNodeDeviceDefFree(virNodeDeviceDefPtr def);
+ 
+diff --git a/src/node_device_hal.c b/src/node_device_hal.c
+index b214f60..5927ba1 100644
+--- a/src/node_device_hal.c
++++ b/src/node_device_hal.c
+@@ -28,6 +28,7 @@
+ #include <libhal.h>
+ 
+ #include "node_device_conf.h"
++#include "node_device_hal.h"
+ #include "virterror_internal.h"
+ #include "driver.h"
+ #include "datatypes.h"
+@@ -37,6 +38,8 @@
+ #include "logging.h"
+ #include "node_device.h"
+ 
++#define VIR_FROM_THIS VIR_FROM_NODEDEV
++
+ /*
+  * Host device enumeration (HAL implementation)
+  */
+@@ -215,6 +218,8 @@ static int gather_scsi_host_cap(LibHalContext *ctx, const char *udi,
+                                 union _virNodeDevCapData *d)
+ {
+     (void)get_int_prop(ctx, udi, "scsi_host.host", (int *)&d->scsi_host.host);
++    (void)check_fc_host(d);
++    (void)check_vport_capable(d);
+     return 0;
+ }
+ 
+diff --git a/src/node_device_hal.h b/src/node_device_hal.h
+new file mode 100644
+index 0000000..0b4a2ef
+--- /dev/null
++++ b/src/node_device_hal.h
+@@ -0,0 +1,40 @@
++/*
++ * node_device_hal.h: node device enumeration - HAL-based implementation
++ *
++ * Copyright (C) 2009 Red Hat, Inc.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
++ *
++ */
++
++#ifndef __VIR_NODE_DEVICE_HAL_H__
++#define __VIR_NODE_DEVICE_HAL_H__
++
++#ifdef __linux__
++
++#define check_fc_host(d) check_fc_host_linux(d)
++int check_fc_host_linux(union _virNodeDevCapData *d);
++
++#define check_vport_capable(d) check_vport_capable_linux(d)
++int check_vport_capable_linux(union _virNodeDevCapData *d);
++
++#else  /* __linux__ */
++
++#define check_fc_host(d)
++#define check_vport_capable(d)
++
++#endif /* __linux__ */
++
++#endif /* __VIR_NODE_DEVICE_HAL_H__ */
+diff --git a/src/node_device_hal_linux.c b/src/node_device_hal_linux.c
+new file mode 100644
+index 0000000..1deb6d2
+--- /dev/null
++++ b/src/node_device_hal_linux.c
+@@ -0,0 +1,170 @@
++/*
++ * node_device_hal_linuc.c: Linux specific code to gather device data
++ * not available through HAL.
++ *
++ * Copyright (C) 2009 Red Hat, Inc.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
++ *
++ */
++
++#include <config.h>
++
++#include <fcntl.h>
++
++#include "node_device.h"
++#include "node_device_hal.h"
++#include "virterror_internal.h"
++#include "memory.h"
++#include "logging.h"
++
++#define VIR_FROM_THIS VIR_FROM_NODEDEV
++
++#ifdef __linux__
++
++int check_fc_host_linux(union _virNodeDevCapData *d)
++{
++    char *sysfs_path = NULL;
++    char *wwnn_path = NULL;
++    char *wwpn_path = NULL;
++    char *p = NULL;
++    int fd = -1;
++    char buf[64];
++    struct stat st;
++
++    VIR_DEBUG(_("Checking if host%d is an FC HBA"), d->scsi_host.host);
++
++    if (virAsprintf(&sysfs_path, "%s/host%d",
++                    LINUX_SYSFS_FC_HOST_PREFIX,
++                    d->scsi_host.host) < 0) {
++        virReportOOMError(NULL);
++        goto out;
++    }
++
++    if (stat(sysfs_path, &st) != 0) {
++        /* Not an FC HBA */
++        goto out;
++    }
++
++    d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST;
++
++    if (virAsprintf(&wwnn_path, "%s/node_name",
++                    sysfs_path) < 0) {
++        virReportOOMError(NULL);
++        goto out;
++    }
++
++    if ((fd = open(wwnn_path, O_RDONLY)) < 0) {
++        goto out;
++    }
++
++    memset(buf, 0, sizeof(buf));
++    if (saferead(fd, buf, sizeof(buf)) < 0) {
++        goto out;
++    }
++
++    close(fd);
++    fd = -1;
++
++    p = strstr(buf, "0x");
++    if (p != NULL) {
++        p += strlen("0x");
++    } else {
++        p = buf;
++    }
++
++    d->scsi_host.wwnn = strndup(p, sizeof(buf));
++    if (d->scsi_host.wwnn == NULL) {
++        virReportOOMError(NULL);
++        goto out;
++    }
++
++    p = strchr(d->scsi_host.wwnn, '\n');
++    if (p != NULL) {
++        *p = '\0';
++    }
++
++    if (virAsprintf(&wwpn_path, "%s/port_name",
++                    sysfs_path) < 0) {
++        virReportOOMError(NULL);
++        goto out;
++    }
++
++    if ((fd = open(wwpn_path, O_RDONLY)) < 0) {
++        goto out;
++    }
++
++    memset(buf, 0, sizeof(buf));
++    if (saferead(fd, buf, sizeof(buf)) < 0) {
++        goto out;
++    }
++
++    close(fd);
++    fd = -1;
++
++    p = strstr(buf, "0x");
++    if (p != NULL) {
++        p += strlen("0x");
++    } else {
++        p = buf;
++    }
++
++    d->scsi_host.wwpn = strndup(p, sizeof(buf));
++    if (d->scsi_host.wwpn == NULL) {
++        virReportOOMError(NULL);
++        goto out;
++    }
++
++    p = strchr(d->scsi_host.wwpn, '\n');
++    if (p != NULL) {
++        *p = '\0';
++    }
++
++out:
++    if (fd != -1) {
++        close(fd);
++    }
++    VIR_FREE(sysfs_path);
++    VIR_FREE(wwnn_path);
++    VIR_FREE(wwpn_path);
++    return 0;
++}
++
++
++int check_vport_capable_linux(union _virNodeDevCapData *d)
++{
++    char *sysfs_path = NULL;
++    struct stat st;
++
++    if (virAsprintf(&sysfs_path, "%s/host%d/vport_create",
++                    LINUX_SYSFS_FC_HOST_PREFIX,
++                    d->scsi_host.host) < 0) {
++        virReportOOMError(NULL);
++        goto out;
++    }
++
++    if (stat(sysfs_path, &st) != 0) {
++        /* Not a vport capable HBA */
++        goto out;
++    }
++
++    d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS;
++
++out:
++    VIR_FREE(sysfs_path);
++    return 0;
++}
++
++#endif /* __linux__ */
+diff --git a/src/qemu_driver.c b/src/qemu_driver.c
+index bd60b29..057e97b 100644
+--- a/src/qemu_driver.c
++++ b/src/qemu_driver.c
+@@ -5089,7 +5089,7 @@ qemudNodeDeviceGetPciInfo (virNodeDevicePtr dev,
+     if (!xml)
+         goto out;
+ 
+-    def = virNodeDeviceDefParseString(dev->conn, xml);
++    def = virNodeDeviceDefParseString(dev->conn, xml, EXISTING_DEVICE);
+     if (!def)
+         goto out;
+ 
+diff --git a/src/storage_backend.c b/src/storage_backend.c
+index b154140..74759cf 100644
+--- a/src/storage_backend.c
++++ b/src/storage_backend.c
+@@ -46,6 +46,7 @@
+ #include "virterror_internal.h"
+ #include "util.h"
+ #include "memory.h"
++#include "node_device.h"
+ 
+ #include "storage_backend.h"
+ 
+@@ -245,30 +246,11 @@ virStorageBackendUpdateVolTargetInfoFD(virConnectPtr conn,
+     return 0;
+ }
+ 
+-#if defined(UDEVADM) || defined(UDEVSETTLE)
+ void virStorageBackendWaitForDevices(virConnectPtr conn)
+ {
+-#ifdef UDEVADM
+-    const char *const settleprog[] = { UDEVADM, "settle", NULL };
+-#else
+-    const char *const settleprog[] = { UDEVSETTLE, NULL };
+-#endif
+-    int exitstatus;
+-
+-    if (access(settleprog[0], X_OK) != 0)
+-        return;
+-
+-    /*
+-     * NOTE: we ignore errors here; this is just to make sure that any device
+-     * nodes that are being created finish before we try to scan them.
+-     * If this fails for any reason, we still have the backup of polling for
+-     * 5 seconds for device nodes.
+-     */
+-    virRun(conn, settleprog, &exitstatus);
++    virNodeDeviceWaitForDevices(conn);
++    return;
+ }
+-#else
+-void virStorageBackendWaitForDevices(virConnectPtr conn ATTRIBUTE_UNUSED) {}
+-#endif
+ 
+ /*
+  * Given a volume path directly in /dev/XXX, iterate over the
+diff --git a/src/xen_unified.c b/src/xen_unified.c
+index e708980..8da4e23 100644
+--- a/src/xen_unified.c
++++ b/src/xen_unified.c
+@@ -1439,7 +1439,7 @@ xenUnifiedNodeDeviceGetPciInfo (virNodeDevicePtr dev,
+     if (!xml)
+         goto out;
+ 
+-    def = virNodeDeviceDefParseString(dev->conn, xml);
++    def = virNodeDeviceDefParseString(dev->conn, xml, EXISTING_DEVICE);
+     if (!def)
+         goto out;
+ 
+diff --git a/tests/nodedevxml2xmltest.c b/tests/nodedevxml2xmltest.c
+index 29cdb9e..7621212 100644
+--- a/tests/nodedevxml2xmltest.c
++++ b/tests/nodedevxml2xmltest.c
+@@ -29,7 +29,7 @@ static int testCompareXMLToXMLFiles(const char *xml) {
+     if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
+         goto fail;
+ 
+-    if (!(dev = virNodeDeviceDefParseString(NULL, xmlData)))
++    if (!(dev = virNodeDeviceDefParseString(NULL, xmlData, EXISTING_DEVICE)))
+         goto fail;
+ 
+     if (!(actual = virNodeDeviceDefFormat(NULL, dev)))
+-- 
+1.6.0.6
+

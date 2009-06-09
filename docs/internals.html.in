@@ -1,0 +1,11 @@
+<html>
+  <body>
+    <h1>libvirt internals</h1>
+
+    <p>
+      This section provides documents useful to those working on the libvirt
+      internals, adding new public APIs, new hypervisor drivers or extending
+      the libvirtd daemon code.
+    </p>
+  </body>
+</html>

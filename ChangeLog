@@ -1,3 +1,12 @@
+Tue Jun  9 12:39:24 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	API extension docs (Dave Allen)
+	* docs/internals.html.in, docs/api_extension.html.in,
+	docs/sitemap.html.in: Start new section on libvirt internal
+	development & add doc about public API extensions
+	* docs/api_extension/*patch: Example patch files
+	* docs/*.html: Re-generate for updated sitemap
+
 Thu Jun  4 15:54:24 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/xm_internals.c: the memory shrinking on device removal
