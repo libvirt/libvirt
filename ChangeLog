@@ -1,3 +1,8 @@
+Tue Jun  9 15:21:17 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/formatdomain.html docs/formatdomain.html.in: typo fix
+	  by Garry Dolley
+
 Tue Jun  9 12:39:24 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	API extension docs (Dave Allen)

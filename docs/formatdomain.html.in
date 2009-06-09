@@ -688,7 +688,7 @@ qemu-kvm -net nic,model=? /dev/null
 	auto-allocated). The <code>autoport</code> attribute is the new
 	preferred syntax for indicating autoallocation of the TCP port to use.
 	The <code>listen</code> attribute is an IP address for the server to
-	listen on. The <code>password</code> attribute provides a VNC password
+	listen on. The <code>passwd</code> attribute provides a VNC password
 	in clear text. The <code>keymap</code> attribute specifies the keymap
 	to use.</dd>
     </dl>
