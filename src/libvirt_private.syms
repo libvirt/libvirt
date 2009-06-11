@@ -330,6 +330,7 @@ virFormatMacAddr;
 virGetHostname;
 virParseMacAddr;
 virFileDeletePid;
+virFindFileInPath;
 virFileExists;
 virFileHasSuffix;
 virFileLinkPointsTo;

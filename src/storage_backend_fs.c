@@ -1183,11 +1183,12 @@ static int createFileDir(virConnectPtr conn,
     return 0;
 }
 
-#if HAVE_QEMU_IMG
 static int createQemuImg(virConnectPtr conn,
                          virStorageVolDefPtr vol,
                          virStorageVolDefPtr inputvol) {
     char size[100];
+    char *create_tool;
+    short use_kvmimg;
 
     const char *type = virStorageVolFormatFileSystemTypeToString(vol->target.format);
     const char *backingType = vol->backingStore.path ?
@@ -1203,38 +1204,33 @@ static int createQemuImg(virConnectPtr conn,
 
     const char **imgargv;
     const char *imgargvnormal[] = {
-        QEMU_IMG, "create",
+        NULL, "create",
         "-f", type,
         vol->target.path,
         size,
         NULL,
     };
-    /* XXX including "backingType" here too, once QEMU accepts
-     * the patches to specify it. It'll probably be -F backingType */
+    /* Extra NULL fields are for including "backingType" when using
+     * kvm-img. It's -F backingType
+     */
     const char *imgargvbacking[] = {
-        QEMU_IMG, "create",
+        NULL, "create",
         "-f", type,
         "-b", vol->backingStore.path,
         vol->target.path,
         size,
         NULL,
+        NULL,
+        NULL
     };
     const char *convargv[] = {
-        QEMU_IMG, "convert",
+        NULL, "convert",
         "-f", inputType,
         "-O", type,
         inputPath,
         vol->target.path,
         NULL,
     };
-
-    if (inputvol) {
-        imgargv = convargv;
-    } else if (vol->backingStore.path) {
-        imgargv = imgargvbacking;
-    } else {
-        imgargv = imgargvnormal;
-    }
 
     if (type == NULL) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -1277,17 +1273,47 @@ static int createQemuImg(virConnectPtr conn,
         }
     }
 
+    if ((create_tool = virFindFileInPath("kvm-img")) != NULL)
+        use_kvmimg = 1;
+    else if ((create_tool = virFindFileInPath("qemu-img")) != NULL)
+        use_kvmimg = 0;
+    else {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("unable to find kvm-img or qemu-img"));
+        return -1;
+    }
+
+    if (inputvol) {
+        convargv[0] = create_tool;
+        imgargv = convargv;
+    } else if (vol->backingStore.path) {
+        imgargvbacking[0] = create_tool;
+        if (use_kvmimg) {
+            imgargvbacking[6] = "-F";
+            imgargvbacking[7] = backingType;
+            imgargvbacking[8] = vol->target.path;
+            imgargvbacking[9] = size;
+        }
+        imgargv = imgargvbacking;
+    } else {
+        imgargvnormal[0] = create_tool;
+        imgargv = imgargvnormal;
+    }
+
+
     /* Size in KB */
     snprintf(size, sizeof(size), "%llu", vol->capacity/1024);
 
     if (virRun(conn, imgargv, NULL) < 0) {
+        VIR_FREE(imgargv[0]);
         return -1;
     }
+
+    VIR_FREE(imgargv[0]);
 
     return 0;
 }
 
-#elif HAVE_QCOW_CREATE
 /*
  * Xen removed the fully-functional qemu-img, and replaced it
  * with a partially functional qcow-create. Go figure ??!?
@@ -1321,18 +1347,20 @@ static int createQemuCreate(virConnectPtr conn,
     /* Size in MB - yes different units to qemu-img :-( */
     snprintf(size, sizeof(size), "%llu", vol->capacity/1024/1024);
 
-    imgargv[0] = QCOW_CREATE;
+    imgargv[0] = virFindFileInPath("qcow-create");
     imgargv[1] = size;
     imgargv[2] = vol->target.path;
     imgargv[3] = NULL;
 
     if (virRun(conn, imgargv, NULL) < 0) {
+        VIR_FREE(imgargv[0]);
         return -1;
     }
 
+    VIR_FREE(imgargv[0]);
+
     return 0;
 }
-#endif /* HAVE_QEMU_IMG, elif HAVE_QCOW_CREATE */
 
 static int
 _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
@@ -1341,6 +1369,7 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
 {
     int fd;
     createFile create_func;
+    char *create_tool;
 
     if (vol->target.format == VIR_STORAGE_VOL_FILE_RAW &&
         (!inputvol ||
@@ -1353,17 +1382,20 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
         create_func = createRaw;
     } else if (vol->target.format == VIR_STORAGE_VOL_FILE_DIR) {
         create_func = createFileDir;
-    } else {
-#if HAVE_QEMU_IMG
+    } else if ((create_tool = virFindFileInPath("kvm-img")) != NULL) {
+        VIR_FREE(create_tool);
         create_func = createQemuImg;
-#elif HAVE_QCOW_CREATE
+    } else if ((create_tool = virFindFileInPath("qemu-img")) != NULL) {
+        VIR_FREE(create_tool);
+        create_func = createQemuImg;
+    } else if ((create_tool = virFindFileInPath("qcow-create")) != NULL) {
+        VIR_FREE(create_tool);
         create_func = createQemuCreate;
-#else
+    } else {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("creation of non-raw images "
                                       "is not supported without qemu-img"));
         return -1;
-#endif
     }
 
     if (create_func(conn, vol, inputvol) < 0)

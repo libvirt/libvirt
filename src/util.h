@@ -101,6 +101,8 @@ int virFileLinkPointsTo(const char *checkLink,
 int virFileResolveLink(const char *linkpath,
                        char **resultpath);
 
+char *virFindFileInPath(const char *file);
+
 int virFileExists(const char *path);
 
 int virFileMakePath(const char *path);

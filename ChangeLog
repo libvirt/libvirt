@@ -1,3 +1,10 @@
+Thu Jun 11 15:14:37 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in src/libvirt_private.syms src/storage_backend_fs.c
+	  src/util.c src/util.h: find and use kvm-img, qemu-img or qcow-create
+	  dynamically at runtime, patch by Doug Goldstein
+	* AUTHORS: add Doug Goldstein
+
 Tue Jun  9 15:21:17 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/formatdomain.html docs/formatdomain.html.in: typo fix

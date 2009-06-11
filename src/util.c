@@ -1073,7 +1073,35 @@ int virFileResolveLink(const char *linkpath,
 #endif
 }
 
+/*
+ * Finds a requested file in the PATH env. e.g.:
+ * "kvm-img" will return "/usr/bin/kvm-img"
+ *
+ * You must free the result
+ */
+char *virFindFileInPath(const char *file)
+{
+    char pathenv[PATH_MAX];
+    char *penv = &pathenv; /* this is for glibc 2.10 strsep chnages */
+    char *pathseg;
+    char fullpath[PATH_MAX];
 
+    /* copy PATH env so we can tweak it */
+    strncpy(pathenv, getenv("PATH"), PATH_MAX);
+    pathenv[PATH_MAX - 1] = '\0';
+
+
+    /* for each path segment, append the file to search for and test for
+     * it. return it if found.
+     */
+    while ((pathseg = strsep(&penv, ":")) != NULL) {
+       snprintf(fullpath, PATH_MAX, "%s/%s", pathseg, file);
+       if (virFileExists(fullpath))
+           return strdup(fullpath);
+    }
+
+    return NULL;
+}
 int virFileExists(const char *path)
 {
     struct stat st;
