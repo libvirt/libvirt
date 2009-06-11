@@ -414,6 +414,7 @@ virCapsPtr qemudCapsInit(void) {
 
 static unsigned int qemudComputeCmdFlags(const char *help,
                                          unsigned int version,
+                                         unsigned int is_kvm,
                                          unsigned int kvm_version)
 {
     unsigned int flags = 0;
@@ -439,7 +440,8 @@ static unsigned int qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_DRIVE_BOOT;
     if (version >= 9000)
         flags |= QEMUD_CMD_FLAG_VNC_COLON;
-    if (kvm_version >= 74)
+
+    if (is_kvm && (version >= 10000 || kvm_version >= 74))
         flags |= QEMUD_CMD_FLAG_VNET_HDR;
 
     /*
@@ -452,15 +454,15 @@ static unsigned int qemudComputeCmdFlags(const char *help,
      * was broken, because it blocked the monitor console
      * while waiting for data, so pretend it doesn't exist
      */
-    if (kvm_version >= 79) {
+    if (version >= 10000) {
+        flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP;
+        flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC;
+    } else if (kvm_version >= 79) {
         flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP;
         if (kvm_version >= 80)
             flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC;
     } else if (kvm_version > 0) {
         flags |= QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO;
-    } else if (version >= 10000) {
-        flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP;
-        flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC;
     }
 
     return flags;
@@ -470,10 +472,19 @@ static unsigned int qemudComputeCmdFlags(const char *help,
  * version number. The first bit is easy, just parse
  * 'QEMU PC emulator version x.y.z'.
  *
- * With qemu-kvm, however, that is followed by a kvm-XX
- * string in parenthesis.
+ * With qemu-kvm, however, that is followed by a string
+ * in parenthesis as follows:
+ *  - qemu-kvm-x.y.z in stable releases
+ *  - kvm-XX for kvm versions up to kvm-85
+ *  - qemu-kvm-devel-XX for kvm version kvm-86 and later
+ *
+ * For qemu-kvm versions before 0.10.z, we need to detect
+ * the KVM version number for some features. With 0.10.z
+ * and later, we just need the QEMU version number and
+ * whether it is KVM QEMU or mainline QEMU.
  */
 #define QEMU_VERSION_STR    "QEMU PC emulator version"
+#define QEMU_KVM_VER_PREFIX "(qemu-kvm-"
 #define KVM_VER_PREFIX      "(kvm-"
 
 #define SKIP_BLANKS(p) do { while ((*(p) == ' ') || (*(p) == '\t')) (p)++; } while (0)
@@ -481,12 +492,13 @@ static unsigned int qemudComputeCmdFlags(const char *help,
 static int qemudParseHelpStr(const char *help,
                              unsigned int *flags,
                              unsigned int *version,
+                             unsigned int *is_kvm,
                              unsigned int *kvm_version)
 {
     unsigned major, minor, micro;
     const char *p = help;
 
-    *flags = *version = *kvm_version = 0;
+    *flags = *version = *is_kvm = *kvm_version = 0;
 
     if (!STRPREFIX(p, QEMU_VERSION_STR))
         goto fail;
@@ -513,9 +525,13 @@ static int qemudParseHelpStr(const char *help,
 
     SKIP_BLANKS(p);
 
-    if (STRPREFIX(p, KVM_VER_PREFIX)) {
+    if (STRPREFIX(p, QEMU_KVM_VER_PREFIX)) {
+        *is_kvm = 1;
+        p += strlen(QEMU_KVM_VER_PREFIX);
+    } else if (STRPREFIX(p, KVM_VER_PREFIX)) {
         int ret;
 
+        *is_kvm = 1;
         p += strlen(KVM_VER_PREFIX);
 
         ret = virParseNumber(&p);
@@ -527,12 +543,14 @@ static int qemudParseHelpStr(const char *help,
 
     *version = (major * 1000 * 1000) + (minor * 1000) + micro;
 
-    *flags = qemudComputeCmdFlags(help, *version, *kvm_version);
+    *flags = qemudComputeCmdFlags(help, *version, *is_kvm, *kvm_version);
 
     qemudDebug("Version %u.%u.%u, cooked version %u, flags %u",
                major, minor, micro, *version, *flags);
     if (*kvm_version)
-        qemudDebug("KVM version %u detected", *kvm_version);
+        qemudDebug("KVM version %d detected", *kvm_version);
+    else if (*is_kvm)
+        qemudDebug("qemu-kvm version %u.%u.%u detected", major, minor, micro);
 
     return 0;
 
@@ -558,7 +576,7 @@ int qemudExtractVersionInfo(const char *qemu,
     pid_t child;
     int newstdout = -1;
     int ret = -1, status;
-    unsigned int version, kvm_version;
+    unsigned int version, is_kvm, kvm_version;
     unsigned int flags = 0;
 
     if (retflags)
@@ -579,7 +597,7 @@ int qemudExtractVersionInfo(const char *qemu,
         goto cleanup2;
     }
 
-    if (qemudParseHelpStr(help, &version, &kvm_version, &flags) == -1)
+    if (qemudParseHelpStr(help, &version, &kvm_version, &is_kvm, &flags) == -1)
         goto cleanup2;
 
     if (retversion)
