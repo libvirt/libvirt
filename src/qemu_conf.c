@@ -412,53 +412,11 @@ virCapsPtr qemudCapsInit(void) {
     return NULL;
 }
 
-
-int qemudExtractVersionInfo(const char *qemu,
-                            unsigned int *retversion,
-                            unsigned int *retflags) {
-    const char *const qemuarg[] = { qemu, "-help", NULL };
-    const char *const qemuenv[] = { "LC_ALL=C", NULL };
-    pid_t child;
-    int newstdout = -1;
-    int ret = -1, status;
-    unsigned int major, minor, micro;
-    unsigned int version, kvm_version;
+static unsigned int qemudComputeCmdFlags(const char *help,
+                                         unsigned int version,
+                                         unsigned int kvm_version)
+{
     unsigned int flags = 0;
-
-    if (retflags)
-        *retflags = 0;
-    if (retversion)
-        *retversion = 0;
-
-    if (virExec(NULL, qemuarg, qemuenv, NULL,
-                &child, -1, &newstdout, NULL, VIR_EXEC_NONE) < 0)
-        return -1;
-
-    char *help = NULL;
-    enum { MAX_HELP_OUTPUT_SIZE = 1024*64 };
-    int len = virFileReadLimFD(newstdout, MAX_HELP_OUTPUT_SIZE, &help);
-    if (len < 0) {
-        virReportSystemError(NULL, errno, "%s",
-                             _("Unable to read QEMU help output"));
-        goto cleanup2;
-    }
-
-    if (sscanf(help, "QEMU PC emulator version %u.%u.%u (kvm-%u)",
-               &major, &minor, &micro, &kvm_version) != 4)
-        kvm_version = 0;
-
-    if (!kvm_version &&
-        sscanf(help, "QEMU PC emulator version %u.%u.%u",
-               &major, &minor, &micro) != 3) {
-        char *eol = strchr(help, '\n');
-        if (eol) *eol = '\0';
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot parse QEMU version number in '%s'"),
-                         help);
-        goto cleanup2;
-    }
-
-    version = (major * 1000 * 1000) + (minor * 1000) + micro;
 
     if (strstr(help, "-no-kqemu"))
         flags |= QEMUD_CMD_FLAG_KQEMU;
@@ -505,17 +463,131 @@ int qemudExtractVersionInfo(const char *qemu,
         flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC;
     }
 
+    return flags;
+}
+
+/* We parse the output of 'qemu -help' to get the QEMU
+ * version number. The first bit is easy, just parse
+ * 'QEMU PC emulator version x.y.z'.
+ *
+ * With qemu-kvm, however, that is followed by a kvm-XX
+ * string in parenthesis.
+ */
+#define QEMU_VERSION_STR    "QEMU PC emulator version"
+#define KVM_VER_PREFIX      "(kvm-"
+
+#define SKIP_BLANKS(p) do { while ((*(p) == ' ') || (*(p) == '\t')) (p)++; } while (0)
+
+static int qemudParseHelpStr(const char *help,
+                             unsigned int *flags,
+                             unsigned int *version,
+                             unsigned int *kvm_version)
+{
+    unsigned major, minor, micro;
+    const char *p = help;
+
+    *flags = *version = *kvm_version = 0;
+
+    if (!STRPREFIX(p, QEMU_VERSION_STR))
+        goto fail;
+
+    p += strlen(QEMU_VERSION_STR);
+
+    SKIP_BLANKS(p);
+
+    major = virParseNumber(&p);
+    if (major == -1 || *p != '.')
+        goto fail;
+
+    ++p;
+
+    minor = virParseNumber(&p);
+    if (major == -1 || *p != '.')
+        goto fail;
+
+    ++p;
+
+    micro = virParseNumber(&p);
+    if (major == -1)
+        goto fail;
+
+    SKIP_BLANKS(p);
+
+    if (STRPREFIX(p, KVM_VER_PREFIX)) {
+        int ret;
+
+        p += strlen(KVM_VER_PREFIX);
+
+        ret = virParseNumber(&p);
+        if (ret == -1)
+            goto fail;
+
+        *kvm_version = ret;
+    }
+
+    *version = (major * 1000 * 1000) + (minor * 1000) + micro;
+
+    *flags = qemudComputeCmdFlags(help, *version, *kvm_version);
+
+    qemudDebug("Version %u.%u.%u, cooked version %u, flags %u",
+               major, minor, micro, *version, *flags);
+    if (*kvm_version)
+        qemudDebug("KVM version %u detected", *kvm_version);
+
+    return 0;
+
+fail:
+    p = strchr(help, '\n');
+    if (p)
+        p = strndup(help, p - help);
+
+    qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("cannot parse QEMU version number in '%s'"),
+                     p ? p : help);
+
+    VIR_FREE(p);
+
+    return -1;
+}
+
+int qemudExtractVersionInfo(const char *qemu,
+                            unsigned int *retversion,
+                            unsigned int *retflags) {
+    const char *const qemuarg[] = { qemu, "-help", NULL };
+    const char *const qemuenv[] = { "LC_ALL=C", NULL };
+    pid_t child;
+    int newstdout = -1;
+    int ret = -1, status;
+    unsigned int version, kvm_version;
+    unsigned int flags = 0;
+
+    if (retflags)
+        *retflags = 0;
+    if (retversion)
+        *retversion = 0;
+
+    if (virExec(NULL, qemuarg, qemuenv, NULL,
+                &child, -1, &newstdout, NULL, VIR_EXEC_NONE) < 0)
+        return -1;
+
+    char *help = NULL;
+    enum { MAX_HELP_OUTPUT_SIZE = 1024*64 };
+    int len = virFileReadLimFD(newstdout, MAX_HELP_OUTPUT_SIZE, &help);
+    if (len < 0) {
+        virReportSystemError(NULL, errno, "%s",
+                             _("Unable to read QEMU help output"));
+        goto cleanup2;
+    }
+
+    if (qemudParseHelpStr(help, &version, &kvm_version, &flags) == -1)
+        goto cleanup2;
+
     if (retversion)
         *retversion = version;
     if (retflags)
         *retflags = flags;
 
     ret = 0;
-
-    qemudDebug("Version %d %d %d  Cooked version: %d, with flags ? %d",
-               major, minor, micro, version, flags);
-    if (kvm_version)
-        qemudDebug("KVM version %d detected", kvm_version);
 
 cleanup2:
     VIR_FREE(help);
