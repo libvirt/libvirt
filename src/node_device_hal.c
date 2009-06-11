@@ -255,6 +255,7 @@ static int gather_storage_cap(LibHalContext *ctx, const char *udi,
     (void)get_str_prop(ctx, udi, "storage.drive_type", &d->storage.drive_type);
     (void)get_str_prop(ctx, udi, "storage.model", &d->storage.model);
     (void)get_str_prop(ctx, udi, "storage.vendor", &d->storage.vendor);
+    (void)get_str_prop(ctx, udi, "storage.serial", &d->storage.serial);
     if (get_bool_prop(ctx, udi, "storage.removable", &val) == 0 && val) {
         d->storage.flags |= VIR_NODE_DEV_CAP_STORAGE_REMOVABLE;
         if (get_bool_prop(ctx, udi, "storage.removable.media_available",

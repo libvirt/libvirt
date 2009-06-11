@@ -143,6 +143,7 @@ struct _virNodeDevCapsDef {
             char *drive_type;
             char *model;
             char *vendor;
+            char *serial;
             unsigned flags;	/* virNodeDevStorageCapFlags bits */
         } storage;
     } data;

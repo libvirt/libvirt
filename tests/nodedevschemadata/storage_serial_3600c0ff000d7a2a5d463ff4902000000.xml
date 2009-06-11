@@ -1,0 +1,15 @@
+<device>
+  <name>storage_serial_3600c0ff000d7a2a5d463ff4902000000</name>
+  <parent>pci_10df_fe00_scsi_host_scsi_device_lun8</parent>
+  <capability type='storage'>
+    <block>/dev/sdj</block>
+    <bus>pci</bus>
+    <drive_type>disk</drive_type>
+    <model>MSA2012fc</model>
+    <vendor>HP</vendor>
+    <serial>3600c0ff000d7a2a5d463ff4902000000</serial>
+    <size>15626928128</size>
+  </capability>
+</device>
+
+

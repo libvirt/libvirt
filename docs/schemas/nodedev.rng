@@ -283,6 +283,11 @@
 	<text/>
       </element>
     </optional>
+    <optional>
+      <element name='serial'>
+	<text/>
+      </element>
+    </optional>
 
     <choice>
       <ref name='capstorageremoveable'/>

@@ -365,6 +365,9 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
             if (data->storage.vendor)
                 virBufferVSprintf(&buf, "    <vendor>%s</vendor>\n",
                                   data->storage.vendor);
+            if (data->storage.serial)
+                virBufferVSprintf(&buf, "    <serial>%s</serial>\n",
+                                  data->storage.serial);
             if (data->storage.flags & VIR_NODE_DEV_CAP_STORAGE_REMOVABLE) {
                 int avl = data->storage.flags &
                     VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE;
@@ -479,6 +482,7 @@ virNodeDevCapStorageParseXML(virConnectPtr conn,
     data->storage.drive_type = virXPathString(conn, "string(./drive_type[1])", ctxt);
     data->storage.model      = virXPathString(conn, "string(./model[1])", ctxt);
     data->storage.vendor     = virXPathString(conn, "string(./vendor[1])", ctxt);
+    data->storage.serial     = virXPathString(conn, "string(./serial[1])", ctxt);
 
     if ((n = virXPathNodeSet(conn, "./capability", ctxt, &nodes)) < 0) {
         virNodeDeviceReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -1202,6 +1206,7 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         VIR_FREE(data->storage.drive_type);
         VIR_FREE(data->storage.model);
         VIR_FREE(data->storage.vendor);
+        VIR_FREE(data->storage.serial);
         break;
     case VIR_NODE_DEV_CAP_LAST:
         /* This case is here to shutup the compiler */
