@@ -61,7 +61,7 @@ noinst_PROGRAMS += xml2sexprtest sexpr2xmltest \
 	reconnect xmconfigtest xencapstest
 endif
 if WITH_QEMU
-noinst_PROGRAMS += qemuxml2argvtest qemuxml2xmltest qemuargv2xmltest
+noinst_PROGRAMS += qemuxml2argvtest qemuxml2xmltest qemuargv2xmltest qemuhelptest
 endif
 
 if WITH_SECDRIVER_SELINUX
@@ -119,7 +119,7 @@ endif
 endif
 
 if WITH_QEMU
-TESTS += qemuxml2argvtest qemuxml2xmltest qemuargv2xmltest
+TESTS += qemuxml2argvtest qemuxml2xmltest qemuargv2xmltest qemuhelptest
 endif
 
 if WITH_SECDRIVER_SELINUX
@@ -199,8 +199,11 @@ qemuargv2xmltest_SOURCES = \
 	qemuargv2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
 qemuargv2xmltest_LDADD = ../src/libvirt_driver_qemu.la $(LDADDS)
+
+qemuhelptest_SOURCES = qemuhelptest.c testutils.c testutils.h
+qemuhelptest_LDADD = ../src/libvirt_driver_qemu.la $(LDADDS)
 else
-EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c testutilsqemu.c testutilsqemu.h
+EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c qemuhelptest.c testutilsqemu.c testutilsqemu.h
 endif
 
 nodedevxml2xmltest_SOURCES = \

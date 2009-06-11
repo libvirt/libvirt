@@ -489,11 +489,11 @@ static unsigned int qemudComputeCmdFlags(const char *help,
 
 #define SKIP_BLANKS(p) do { while ((*(p) == ' ') || (*(p) == '\t')) (p)++; } while (0)
 
-static int qemudParseHelpStr(const char *help,
-                             unsigned int *flags,
-                             unsigned int *version,
-                             unsigned int *is_kvm,
-                             unsigned int *kvm_version)
+int qemudParseHelpStr(const char *help,
+                      unsigned int *flags,
+                      unsigned int *version,
+                      unsigned int *is_kvm,
+                      unsigned int *kvm_version)
 {
     unsigned major, minor, micro;
     const char *p = help;

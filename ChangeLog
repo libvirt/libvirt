@@ -1,3 +1,11 @@
+Thu Jun 11 15:18:44 GMT 2009 Mark McLoughlin <markmc@redhat.com>
+
+	* src/qemu_conf.[ch]: make qemuParseHelpStr() available
+	to tests
+
+	* tests/qemuhelptest.c, tests/qemuhelpdata/*: add tests
+	for 'qemu -help' parsing.
+
 Thu Jun 11 15:17:12 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	* src/qemu_conf.c: detect newer qemu-kvm versions

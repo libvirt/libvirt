@@ -1,0 +1,102 @@
+QEMU PC emulator version 0.9.1, Copyright (c) 2003-2008 Fabrice Bellard
+usage: qemu [options] [disk_image]
+
+'disk_image' is a raw hard image image for IDE hard disk 0
+
+Standard options:
+-M machine      select emulated machine (-M ? for list)
+-cpu cpu        select CPU (-cpu ? for list)
+-fda/-fdb file  use 'file' as floppy disk 0/1 image
+-hda/-hdb file  use 'file' as IDE hard disk 0/1 image
+-hdc/-hdd file  use 'file' as IDE hard disk 2/3 image
+-cdrom file     use 'file' as IDE cdrom image (cdrom is ide1 master)
+-drive [file=file][,if=type][,bus=n][,unit=m][,media=d][index=i]
+       [,cyls=c,heads=h,secs=s[,trans=t]][snapshot=on|off]       [,cache=on|off]
+                use 'file' as a drive image
+-mtdblock file  use 'file' as on-board Flash memory image
+-sd file        use 'file' as SecureDigital card image
+-pflash file    use 'file' as a parallel flash image
+-boot [a|c|d|n] boot on floppy (a), hard disk (c), CD-ROM (d), or network (n)
+-snapshot       write to temporary files instead of disk image files
+-no-frame       open SDL window without a frame and window decorations
+-alt-grab       use Ctrl-Alt-Shift to grab mouse (instead of Ctrl-Alt)
+-no-quit        disable SDL window close capability
+-no-fd-bootchk  disable boot signature checking for floppy disks
+-m megs         set virtual RAM size to megs MB [default=128]
+-smp n          set the number of CPUs to 'n' [default=1]
+-nographic      disable graphical output and redirect serial I/Os to console
+-portrait       rotate graphical output 90 deg left (only PXA LCD)
+-k language     use keyboard layout (for example "fr" for French)
+-audio-help     print list of audio drivers and their options
+-soundhw c1,... enable audio support
+                and only specified sound cards (comma separated list)
+                use -soundhw ? to get the list of supported cards
+                use -soundhw all to enable all of them
+-localtime      set the real time clock to local time [default=utc]
+-full-screen    start in full screen
+-win2k-hack     use it when installing Windows 2000 to avoid a disk full bug
+-usb            enable the USB driver (will be the default soon)
+-usbdevice name add the host or guest USB device 'name'
+-name string    set the name of the guest
+
+Network options:
+-net nic[,vlan=n][,macaddr=addr][,model=type]
+                create a new Network Interface Card and connect it to VLAN 'n'
+-net user[,vlan=n][,hostname=host]
+                connect the user mode network stack to VLAN 'n' and send
+                hostname 'host' to DHCP clients
+-net tap[,vlan=n][,fd=h][,ifname=name][,script=file][,downscript=dfile]
+                connect the host TAP network interface to VLAN 'n' and use the
+                network scripts 'file' (default=/etc/qemu-ifup)
+                and 'dfile' (default=/etc/qemu-ifdown);
+                use '[down]script=no' to disable script execution;
+                use 'fd=h' to connect to an already opened TAP interface
+-net socket[,vlan=n][,fd=h][,listen=[host]:port][,connect=host:port]
+                connect the vlan 'n' to another VLAN using a socket connection
+-net socket[,vlan=n][,fd=h][,mcast=maddr:port]
+                connect the vlan 'n' to multicast maddr and port
+-net none       use it alone to have zero network devices; if no -net option
+                is provided, the default is '-net nic -net user'
+
+-tftp dir       allow tftp access to files in dir [-net user]
+-bootp file     advertise file in BOOTP replies
+-smb dir        allow SMB access to files in 'dir' [-net user]
+-redir [tcp|udp]:host-port:[guest-host]:guest-port
+                redirect TCP or UDP connections from host to guest [-net user]
+
+Linux boot specific:
+-kernel bzImage use 'bzImage' as kernel image
+-append cmdline use 'cmdline' as kernel command line
+-initrd file    use 'file' as initial ram disk
+
+Debug/Expert options:
+-monitor dev    redirect the monitor to char device 'dev'
+-serial dev     redirect the serial port to char device 'dev'
+-parallel dev   redirect the parallel port to char device 'dev'
+-pidfile file   Write PID to 'file'
+-S              freeze CPU at startup (use 'c' to start execution)
+-s              wait gdb connection to port
+-p port         set gdb connection port [default=1234]
+-d item1,...    output log to /tmp/qemu.log (use -d ? for a list of log items)
+-hdachs c,h,s[,t]  force hard disk 0 physical geometry and the optional BIOS
+                translation (t=none or lba) (usually qemu can guess them)
+-L path         set the directory for the BIOS, VGA BIOS and keymaps
+-kernel-kqemu   enable KQEMU full virtualization (default is user mode only)
+-no-kqemu       disable KQEMU kernel module usage
+-std-vga        simulate a standard VGA card with VESA Bochs Extensions
+                (default is CL-GD5446 PCI VGA)
+-no-acpi        disable ACPI
+-no-reboot      exit instead of rebooting
+-loadvm file    start right away with a saved state (loadvm in monitor)
+-vnc display    start a VNC server on display
+-daemonize      daemonize QEMU after initializing
+-option-rom rom load a file, rom, into the option ROM space
+-clock          force the use of the given methods for timer alarm.
+                To see what timers are available use -clock help
+
+During emulation, the following keys are useful:
+ctrl-alt-f      toggle full screen
+ctrl-alt-n      switch to virtual console 'n'
+ctrl-alt        toggle mouse and keyboard grab
+
+When using -nographic, press 'ctrl-a h' to get some help.

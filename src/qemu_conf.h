@@ -125,6 +125,12 @@ int         qemudExtractVersionInfo     (const char *qemu,
                                          unsigned int *version,
                                          unsigned int *flags);
 
+int         qemudParseHelpStr           (const char *str,
+                                         unsigned int *flags,
+                                         unsigned int *version,
+                                         unsigned int *is_kvm,
+                                         unsigned int *kvm_version);
+
 int         qemudBuildCommandLine       (virConnectPtr conn,
                                          struct qemud_driver *driver,
                                          virDomainDefPtr def,
