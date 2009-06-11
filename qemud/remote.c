@@ -2958,7 +2958,7 @@ remoteDispatchAuthSaslInit (struct qemud_server *server,
 
         cipher = gnutls_cipher_get(client->tlssession);
         if (!(ssf = (sasl_ssf_t)gnutls_cipher_get_key_size(cipher))) {
-            VIR_ERROR0(_("cannot TLS get cipher size"));
+            VIR_ERROR0(_("cannot get TLS cipher size"));
             sasl_dispose(&client->saslconn);
             client->saslconn = NULL;
             goto authfail;

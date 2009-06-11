@@ -1,3 +1,7 @@
+Thu Jun 11 17:33:43 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/remote.c: fixing a typo pointed out by Runa Bhattacharjee
+
 Thu Jun 11 16:22:22 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/node_device_hal.c src/node_device_conf.[ch]: add support
