@@ -515,7 +515,6 @@ struct _virDomainObj {
     int monitor;
     char *monitorpath;
     int monitorWatch;
-    int logfile;
     int pid;
     int state;
 
@@ -589,9 +588,21 @@ virDomainDefPtr virDomainDefParseNode(virConnectPtr conn,
                                       xmlDocPtr doc,
                                       xmlNodePtr root,
                                       int flags);
+
+virDomainObjPtr virDomainObjParseFile(virConnectPtr conn,
+                                      virCapsPtr caps,
+                                      const char *filename);
+virDomainObjPtr virDomainObjParseNode(virConnectPtr conn,
+                                      virCapsPtr caps,
+                                      xmlDocPtr xml,
+                                      xmlNodePtr root);
+
 #endif
 char *virDomainDefFormat(virConnectPtr conn,
                          virDomainDefPtr def,
+                         int flags);
+char *virDomainObjFormat(virConnectPtr conn,
+                         virDomainObjPtr obj,
                          int flags);
 
 int virDomainCpuSetParse(virConnectPtr conn,
@@ -615,6 +626,9 @@ int virDomainSaveXML(virConnectPtr conn,
 int virDomainSaveConfig(virConnectPtr conn,
                         const char *configDir,
                         virDomainDefPtr def);
+int virDomainSaveStatus(virConnectPtr conn,
+                        const char *statusDir,
+                        virDomainObjPtr obj);
 
 typedef void (*virDomainLoadConfigNotify)(virDomainObjPtr dom,
                                           int newDomain,
@@ -634,6 +648,7 @@ int virDomainLoadAllConfigs(virConnectPtr conn,
                             virDomainObjListPtr doms,
                             const char *configDir,
                             const char *autostartDir,
+                            int liveStatus,
                             virDomainLoadConfigNotify notify,
                             void *opaque);
 

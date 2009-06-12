@@ -1,3 +1,19 @@
+Thu Jun 12 12:26:42 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix re-detection of transient VMs after libvirtd restart
+	* src/domain_conf.c, src/domain_conf.h, src/libvirt_private.syms:
+	Extend virDomainLoadAllConfigs to allow for loading of live
+	state info from XML files. Add APIs to format/parse state info
+	from virDomainObjPtr to XML.
+	* src/lxc_driver.c, src/uml_driver.c: Adapt for API change in
+	virDomainLoadAllConfigs.
+	* src/qemu_driver.c, src/qemu_conf.c, src/qemu_conf.h: Remove
+	all code for loading live state files, and use standard APIs
+	from domain_conf.h.
+	* src/security.h, src/security_selinux.c: Add API for reserving
+	an existing in-use MCS context from a running VM detected at
+	daemon startup.
+
 Thu Jun 11 17:33:43 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/remote.c: fixing a typo pointed out by Runa Bhattacharjee
@@ -6,9 +22,9 @@ Thu Jun 11 16:22:22 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/node_device_hal.c src/node_device_conf.[ch]: add support
 	  for serial number in HAL storage backend, patch by Dave Allan
-	* docs/schemas/nodedev.rng
-tests/nodedevschemadata/storage_serial_3600c0ff000d7a2a5d463ff4902000000.xml:
-          update the schemas and add a test case, also by Dave Allan
+	* docs/schemas/nodedev.rng,
+	tests/nodedevschemadata/storage_serial_3600c0ff000d7a2a5d463ff4902000000.xml:
+	  update the schemas and add a test case, also by Dave Allan
 
 Thu Jun 11 15:18:44 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 

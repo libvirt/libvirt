@@ -38,6 +38,8 @@ typedef int (*virSecurityDomainSetImageLabel) (virConnectPtr conn,
                                                virDomainDiskDefPtr disk);
 typedef int (*virSecurityDomainGenLabel) (virConnectPtr conn,
                                           virDomainObjPtr sec);
+typedef int (*virSecurityDomainReserveLabel) (virConnectPtr conn,
+                                           virDomainObjPtr sec);
 typedef int (*virSecurityDomainGetLabel) (virConnectPtr conn,
                                           virDomainObjPtr vm,
                                           virSecurityLabelPtr sec);
@@ -57,6 +59,7 @@ struct _virSecurityDriver {
     virSecurityDomainRestoreImageLabel domainRestoreSecurityImageLabel;
     virSecurityDomainSetImageLabel domainSetSecurityImageLabel;
     virSecurityDomainGenLabel domainGenSecurityLabel;
+    virSecurityDomainReserveLabel domainReserveSecurityLabel;
     virSecurityDomainGetLabel domainGetSecurityLabel;
     virSecurityDomainSetLabel domainSetSecurityLabel;
     virSecurityDomainRestoreLabel domainRestoreSecurityLabel;

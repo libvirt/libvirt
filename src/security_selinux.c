@@ -216,6 +216,44 @@ done:
 }
 
 static int
+SELinuxReserveSecurityLabel(virConnectPtr conn,
+                            virDomainObjPtr vm)
+{
+    security_context_t pctx;
+    context_t ctx = NULL;
+    const char *mcs;
+
+    if (getpidcon(vm->pid, &pctx) == -1) {
+        char ebuf[1024];
+        virSecurityReportError(conn, VIR_ERR_ERROR, _("%s: error calling "
+                               "getpidcon(): %s"), __func__,
+                               virStrerror(errno, ebuf, sizeof ebuf));
+        return -1;
+    }
+
+    ctx = context_new(pctx);
+    VIR_FREE(pctx);
+    if (!ctx)
+        goto err;
+
+    mcs = context_range_get(ctx);
+    if (!mcs)
+        goto err;
+
+    mcsAdd(mcs);
+
+    context_free(ctx);
+
+    return 0;
+
+err:
+    context_free(ctx);
+    return -1;
+}
+
+
+
+static int
 SELinuxSecurityDriverProbe(void)
 {
     return is_selinux_enabled() ? SECURITY_DRIVER_ENABLE : SECURITY_DRIVER_DISABLE;
@@ -422,6 +460,7 @@ virSecurityDriver virSELinuxSecurityDriver = {
     .domainSetSecurityImageLabel = SELinuxSetSecurityImageLabel,
     .domainRestoreSecurityImageLabel = SELinuxRestoreSecurityImageLabel,
     .domainGenSecurityLabel     = SELinuxGenSecurityLabel,
+    .domainReserveSecurityLabel     = SELinuxReserveSecurityLabel,
     .domainGetSecurityLabel     = SELinuxGetSecurityLabel,
     .domainRestoreSecurityLabel = SELinuxRestoreSecurityLabel,
     .domainSetSecurityLabel     = SELinuxSetSecurityLabel,

@@ -394,7 +394,7 @@ umlStartup(void) {
                                 &uml_driver->domains,
                                 uml_driver->configDir,
                                 uml_driver->autostartDir,
-                                NULL, NULL) < 0)
+                                0, NULL, NULL) < 0)
         goto error;
 
     umlAutostartConfigs(uml_driver);
@@ -433,7 +433,7 @@ umlReload(void) {
                             &uml_driver->domains,
                             uml_driver->configDir,
                             uml_driver->autostartDir,
-                            NULL, NULL);
+                            0, NULL, NULL);
 
     umlAutostartConfigs(uml_driver);
     umlDriverUnlock(uml_driver);

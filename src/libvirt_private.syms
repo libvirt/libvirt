@@ -94,6 +94,7 @@ virDomainObjListFree;
 virDomainRemoveInactive;
 virDomainSaveXML;
 virDomainSaveConfig;
+virDomainSaveStatus;
 virDomainSoundDefFree;
 virDomainSoundModelTypeFromString;
 virDomainSoundModelTypeToString;

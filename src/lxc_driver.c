@@ -1190,7 +1190,7 @@ static int lxcStartup(void)
                                 &lxc_driver->domains,
                                 lxc_driver->configDir,
                                 lxc_driver->autostartDir,
-                                NULL, NULL) < 0)
+                                0, NULL, NULL) < 0)
         goto cleanup;
 
     for (i = 0 ; i < lxc_driver->domains.count ; i++) {

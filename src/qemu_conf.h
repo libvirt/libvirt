@@ -92,15 +92,6 @@ struct qemud_driver {
     virSecurityDriverPtr securityDriver;
 };
 
-/* Status needed to reconenct to running VMs */
-typedef struct _qemudDomainStatus qemudDomainStatus;
-typedef qemudDomainStatus *qemudDomainStatusPtr;
-struct _qemudDomainStatus {
-    char *monitorpath;
-    pid_t pid;
-    int state;
-    virDomainDefPtr def;
-};
 
 /* Port numbers used for KVM migration. */
 #define QEMUD_MIGRATION_FIRST_PORT 49152
@@ -148,14 +139,5 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
 virDomainDefPtr qemuParseCommandLineString(virConnectPtr conn,
                                            virCapsPtr caps,
                                            const char *args);
-
-const char *qemudVirtTypeToString       (int type);
-qemudDomainStatusPtr qemudDomainStatusParseFile(virConnectPtr conn,
-                                                virCapsPtr caps,
-                                                const char *filename,
-                                                int flags);
-int qemudSaveDomainStatus(virConnectPtr conn,
-                          struct qemud_driver *driver,
-                          virDomainObjPtr vm);
 
 #endif /* __QEMUD_CONF_H */
