@@ -182,7 +182,7 @@ networkAutostartConfigs(struct network_driver *driver) {
  * Initialization function for the QEmu daemon
  */
 static int
-networkStartup(void) {
+networkStartup(int privileged) {
     uid_t uid = geteuid();
     char *base = NULL;
     int err;
@@ -196,7 +196,7 @@ networkStartup(void) {
     }
     networkDriverLock(driverState);
 
-    if (!uid) {
+    if (privileged) {
         if (virAsprintf(&driverState->logDir,
                         "%s/log/libvirt/qemu", LOCAL_STATE_DIR) == -1)
             goto out_of_memory;

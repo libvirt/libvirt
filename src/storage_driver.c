@@ -106,8 +106,7 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
  * Initialization function for the QEmu daemon
  */
 static int
-storageDriverStartup(void) {
-    uid_t uid = geteuid();
+storageDriverStartup(int privileged) {
     char *base = NULL;
     char driverConf[PATH_MAX];
 
@@ -120,10 +119,11 @@ storageDriverStartup(void) {
     }
     storageDriverLock(driverState);
 
-    if (!uid) {
+    if (privileged) {
         if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)
             goto out_of_memory;
     } else {
+        uid_t uid = geteuid();
         char *userdir = virGetUserDirectory(NULL, uid);
 
         if (!userdir)

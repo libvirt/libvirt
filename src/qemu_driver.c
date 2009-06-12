@@ -127,24 +127,26 @@ static struct qemud_driver *qemu_driver = NULL;
 
 
 static int
-qemudLogFD(virConnectPtr conn, const char* logDir, const char* name)
+qemudLogFD(virConnectPtr conn, struct qemud_driver *driver, const char* name)
 {
     char logfile[PATH_MAX];
     mode_t logmode;
-    uid_t uid = geteuid();
     int ret, fd = -1;
 
-    if ((ret = snprintf(logfile, sizeof(logfile), "%s/%s.log", logDir, name))
+    if ((ret = snprintf(logfile, sizeof(logfile), "%s/%s.log",
+                        driver->logDir, name))
         < 0 || ret >= sizeof(logfile)) {
         virReportOOMError(conn);
         return -1;
     }
 
     logmode = O_CREAT | O_WRONLY;
-    if (uid != 0)
-        logmode |= O_TRUNC;
-    else
+    /* Only logrotate files in /var/log, so only append if running privileged */
+    if (driver->privileged)
         logmode |= O_APPEND;
+    else
+        logmode |= O_TRUNC;
+
     if ((fd = open(logfile, logmode, S_IRUSR | S_IWUSR)) < 0) {
         virReportSystemError(conn, errno,
                              _("failed to create logfile %s"),
@@ -207,9 +209,9 @@ qemudAutostartConfigs(struct qemud_driver *driver) {
      * to lookup the bridge associated with a virtual
      * network
      */
-    virConnectPtr conn = virConnectOpen(getuid() ?
-                                        "qemu:///session" :
-                                        "qemu:///system");
+    virConnectPtr conn = virConnectOpen(driver->privileged ?
+                                        "qemu:///system" :
+                                        "qemu:///session");
     /* Ignoring NULL conn which is mostly harmless here */
 
     qemuDriverLock(driver);
@@ -403,8 +405,7 @@ qemudSecurityInit(struct qemud_driver *qemud_drv)
  * Initialization function for the QEmu daemon
  */
 static int
-qemudStartup(void) {
-    uid_t uid = geteuid();
+qemudStartup(int privileged) {
     char *base = NULL;
     char driverConf[PATH_MAX];
 
@@ -417,6 +418,7 @@ qemudStartup(void) {
         return -1;
     }
     qemuDriverLock(qemu_driver);
+    qemu_driver->privileged = privileged;
 
     /* Don't have a dom0 so start from 1 */
     qemu_driver->nextvmid = 1;
@@ -431,7 +433,7 @@ qemudStartup(void) {
          virEventAddTimeout(-1, qemuDomainEventFlush, qemu_driver, NULL)) < 0)
         goto error;
 
-    if (!uid) {
+    if (privileged) {
         if (virAsprintf(&qemu_driver->logDir,
                         "%s/log/libvirt/qemu", LOCAL_STATE_DIR) == -1)
             goto out_of_memory;
@@ -443,6 +445,7 @@ qemudStartup(void) {
                       "%s/run/libvirt/qemu/", LOCAL_STATE_DIR) == -1)
             goto out_of_memory;
     } else {
+        uid_t uid = geteuid();
         char *userdir = virGetUserDirectory(NULL, uid);
         if (!userdir)
             goto error;
@@ -1370,7 +1373,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         goto cleanup;
     }
 
-    if ((logfile = qemudLogFD(conn, driver->logDir, vm->def->name)) < 0)
+    if ((logfile = qemudLogFD(conn, driver, vm->def->name)) < 0)
         goto cleanup;
 
     emulator = vm->def->emulator;
@@ -1747,13 +1750,11 @@ qemudMonitorCommand(const virDomainObjPtr vm,
 static virDrvOpenStatus qemudOpen(virConnectPtr conn,
                                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                   int flags ATTRIBUTE_UNUSED) {
-    uid_t uid = getuid();
-
     if (conn->uri == NULL) {
         if (qemu_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
 
-        conn->uri = xmlParseURI(uid == 0 ?
+        conn->uri = xmlParseURI(qemu_driver->privileged ?
                                 "qemu:///system" :
                                 "qemu:///session");
         if (!conn->uri) {
@@ -1770,7 +1771,7 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
         if (conn->uri->server != NULL)
             return VIR_DRV_OPEN_DECLINED;
 
-        if (!uid) {
+        if (qemu_driver->privileged) {
             if (STRNEQ (conn->uri->path, "/system") &&
                 STRNEQ (conn->uri->path, "/session")) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,

@@ -235,7 +235,7 @@ static gnutls_session_t negotiate_gnutls_on_connection (virConnectPtr conn, stru
 
 #ifdef WITH_LIBVIRTD
 static int
-remoteStartup(void)
+remoteStartup(int privileged ATTRIBUTE_UNUSED)
 {
     /* Mark that we're inside the daemon so we can avoid
      * re-entering ourselves

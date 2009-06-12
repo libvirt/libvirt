@@ -126,9 +126,9 @@ umlAutostartConfigs(struct uml_driver *driver) {
      * to lookup the bridge associated with a virtual
      * network
      */
-    virConnectPtr conn = virConnectOpen(getuid() ?
-                                        "uml:///session" :
-                                        "uml:///system");
+    virConnectPtr conn = virConnectOpen(driver->privileged ?
+                                        "uml:///system" :
+                                        "uml:///session");
     /* Ignoring NULL conn which is mostly harmless here */
 
     for (i = 0 ; i < driver->domains.count ; i++) {
@@ -302,7 +302,7 @@ cleanup:
  * Initialization function for the Uml daemon
  */
 static int
-umlStartup(void) {
+umlStartup(int privileged) {
     uid_t uid = geteuid();
     char *base = NULL;
     char driverConf[PATH_MAX];
@@ -310,6 +310,8 @@ umlStartup(void) {
 
     if (VIR_ALLOC(uml_driver) < 0)
         return -1;
+
+    uml_driver->privileged = privileged;
 
     if (virMutexInit(&uml_driver->lock) < 0) {
         VIR_FREE(uml_driver);
@@ -325,7 +327,7 @@ umlStartup(void) {
     if (!userdir)
         goto error;
 
-    if (!uid) {
+    if (privileged) {
         if (virAsprintf(&uml_driver->logDir,
                         "%s/log/libvirt/uml", LOCAL_STATE_DIR) == -1)
             goto out_of_memory;
@@ -911,13 +913,11 @@ static void umlShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 static virDrvOpenStatus umlOpen(virConnectPtr conn,
                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                 int flags ATTRIBUTE_UNUSED) {
-    uid_t uid = getuid();
-
     if (conn->uri == NULL) {
         if (uml_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
 
-        conn->uri = xmlParseURI(uid == 0 ?
+        conn->uri = xmlParseURI(uml_driver->privileged ?
                                 "uml:///system" :
                                 "uml:///session");
         if (!conn->uri) {
@@ -935,7 +935,7 @@ static virDrvOpenStatus umlOpen(virConnectPtr conn,
 
 
         /* Check path and tell them correct path if they made a mistake */
-        if (uid == 0) {
+        if (uml_driver->privileged) {
             if (STRNEQ (conn->uri->path, "/system") &&
                 STRNEQ (conn->uri->path, "/session")) {
                 umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,

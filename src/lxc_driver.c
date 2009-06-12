@@ -52,7 +52,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
-static int lxcStartup(void);
+static int lxcStartup(int privileged);
 static int lxcShutdown(void);
 static lxc_driver_t *lxc_driver = NULL;
 
@@ -1146,9 +1146,8 @@ static int lxcCheckNetNsSupport(void)
     return 1;
 }
 
-static int lxcStartup(void)
+static int lxcStartup(int privileged)
 {
-    uid_t uid = getuid();
     unsigned int i;
     char *ld;
 
@@ -1161,7 +1160,7 @@ static int lxcStartup(void)
         return -1;
 
     /* Check that the user is root */
-    if (0 != uid) {
+    if (!privileged) {
         return -1;
     }
 

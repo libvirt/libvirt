@@ -175,7 +175,7 @@ done:
 #ifdef WITH_LIBVIRTD
 
 static int
-xenInitialize (void)
+xenInitialize (int privileged ATTRIBUTE_UNUSED)
 {
     inside_daemon = 1;
     return 0;

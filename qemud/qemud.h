@@ -172,6 +172,8 @@ struct qemud_server {
     virMutex lock;
     virCond job;
 
+    int privileged;
+
     int nworkers;
     int nactiveworkers;
     struct qemud_worker *workers;

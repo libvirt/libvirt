@@ -718,7 +718,7 @@ struct _virStorageDriver {
 };
 
 #ifdef WITH_LIBVIRTD
-typedef int (*virDrvStateInitialize) (void);
+typedef int (*virDrvStateInitialize) (int privileged);
 typedef int (*virDrvStateCleanup) (void);
 typedef int (*virDrvStateReload) (void);
 typedef int (*virDrvStateActive) (void);

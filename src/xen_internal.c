@@ -3434,6 +3434,6 @@ xenHavePrivilege()
 #ifdef __sun
     return priv_ineffect (PRIV_XVM_CONTROL);
 #else
-    return getuid () == 0;
+    return access(XEN_HYPERVISOR_SOCKET, R_OK) == 0;
 #endif
 }

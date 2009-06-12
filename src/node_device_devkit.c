@@ -284,7 +284,7 @@ static void dev_create(void *_dkdev, void *_dkclient ATTRIBUTE_UNUSED)
 }
 
 
-static int devkitDeviceMonitorStartup(void)
+static int devkitDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
 {
     size_t caps_tbl_len = sizeof(caps_tbl) / sizeof(caps_tbl[0]);
     DevkitClient *devkit_client = NULL;

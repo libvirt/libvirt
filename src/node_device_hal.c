@@ -685,7 +685,7 @@ static void toggle_dbus_watch(DBusWatch *watch,
 }
 
 
-static int halDeviceMonitorStartup(void)
+static int halDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
 {
     LibHalContext *hal_ctx = NULL;
     DBusConnection *dbus_conn = NULL;

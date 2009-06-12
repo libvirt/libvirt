@@ -765,7 +765,7 @@ virRegisterStateDriver(virStateDriverPtr driver)
  *
  * Return 0 if all succeed, -1 upon any failure.
  */
-int virStateInitialize(void) {
+int virStateInitialize(int privileged) {
     int i, ret = 0;
 
     if (virInitialize() < 0)
@@ -773,7 +773,7 @@ int virStateInitialize(void) {
 
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
         if (virStateDriverTab[i]->initialize &&
-            virStateDriverTab[i]->initialize() < 0)
+            virStateDriverTab[i]->initialize(privileged) < 0)
             ret = -1;
     }
     return ret;

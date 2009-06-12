@@ -62,6 +62,8 @@ enum qemud_cmd_flags {
 struct qemud_driver {
     virMutex lock;
 
+    int privileged;
+
     unsigned int qemuVersion;
     int nextvmid;
 

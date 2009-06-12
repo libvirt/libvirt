@@ -26,7 +26,7 @@
 
 
 #ifdef WITH_LIBVIRTD
-int virStateInitialize(void);
+int virStateInitialize(int privileged);
 int virStateCleanup(void);
 int virStateReload(void);
 int virStateActive(void);

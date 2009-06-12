@@ -115,8 +115,6 @@ static int unix_sock_ro_mask = 0666;
 
 #else
 
-#define SYSTEM_UID 0
-
 static gid_t unix_sock_gid = 0; /* Only root by default */
 static int unix_sock_rw_mask = 0700; /* Allow user only */
 static int unix_sock_ro_mask = 0777; /* Allow world */
@@ -515,7 +513,7 @@ static int qemudListenUnix(struct qemud_server *server,
 
     oldgrp = getgid();
     oldmask = umask(readonly ? ~unix_sock_ro_mask : ~unix_sock_rw_mask);
-    if (getuid() == 0)
+    if (server->privileged)
         setgid(unix_sock_gid);
 
     if (bind(sock->fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
@@ -524,7 +522,7 @@ static int qemudListenUnix(struct qemud_server *server,
         goto cleanup;
     }
     umask(oldmask);
-    if (getuid() == 0)
+    if (server->privileged)
         setgid(oldgrp);
 
     if (listen(sock->fd, 30) < 0) {
@@ -699,7 +697,6 @@ static int qemudInitPaths(struct qemud_server *server,
                           char *roSockname,
                           int maxlen)
 {
-    uid_t uid = geteuid();
     char *sock_dir;
     char *dir_prefix = NULL;
     int ret = -1;
@@ -709,7 +706,7 @@ static int qemudInitPaths(struct qemud_server *server,
         sock_dir = unix_sock_dir;
     else {
         sock_dir = sockname;
-        if (uid == SYSTEM_UID) {
+        if (server->privileged) {
             dir_prefix = strdup (LOCAL_STATE_DIR);
             if (dir_prefix == NULL) {
                 virReportOOMError(NULL);
@@ -719,6 +716,7 @@ static int qemudInitPaths(struct qemud_server *server,
                           dir_prefix) >= maxlen)
                 goto snprintf_error;
         } else {
+            uid_t uid = geteuid();
             dir_prefix = virGetUserDirectory(NULL, uid);
             if (dir_prefix == NULL) {
                 /* Do not diagnose here; virGetUserDirectory does that.  */
@@ -736,7 +734,7 @@ static int qemudInitPaths(struct qemud_server *server,
         goto cleanup;
     }
 
-    if (uid == SYSTEM_UID) {
+    if (server->privileged) {
         if (snprintf (sockname, maxlen, "%s/libvirt-sock",
                       sock_dir_prefix) >= maxlen
             || (snprintf (roSockname, maxlen, "%s/libvirt-sock-ro",
@@ -750,10 +748,10 @@ static int qemudInitPaths(struct qemud_server *server,
             goto snprintf_error;
     }
 
-    if (uid == SYSTEM_UID)
-      server->logDir = strdup (LOCAL_STATE_DIR "/log/libvirt");
+    if (server->privileged)
+        server->logDir = strdup (LOCAL_STATE_DIR "/log/libvirt");
     else
-      virAsprintf(&server->logDir, "%s/.libvirt/log", dir_prefix);
+        virAsprintf(&server->logDir, "%s/.libvirt/log", dir_prefix);
 
     if (server->logDir == NULL)
         virReportOOMError(NULL);
@@ -789,6 +787,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
         VIR_FREE(server);
     }
 
+    server->privileged = geteuid() == 0 ? 1 : 0;
     server->sigread = sigread;
 
     if (virEventInit() < 0) {
@@ -851,7 +850,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
                          virEventUpdateTimeoutImpl,
                          virEventRemoveTimeoutImpl);
 
-    virStateInitialize();
+    virStateInitialize(server->privileged);
 
     return server;
 }
@@ -922,7 +921,7 @@ static struct qemud_server *qemudNetworkInit(struct qemud_server *server) {
     }
 
 #ifdef HAVE_AVAHI
-    if (getuid() == 0 && mdns_adv) {
+    if (server->privileged && mdns_adv) {
         struct libvirtd_mdns_group *group;
         int port = 0;
 
@@ -2537,9 +2536,9 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
 
 #if HAVE_POLKIT
     /* Change the default back to no auth for non-root */
-    if (getuid() != 0 && auth_unix_rw == REMOTE_AUTH_POLKIT)
+    if (!server->privileged && auth_unix_rw == REMOTE_AUTH_POLKIT)
         auth_unix_rw = REMOTE_AUTH_NONE;
-    if (getuid() != 0 && auth_unix_ro == REMOTE_AUTH_POLKIT)
+    if (!server->privileged && auth_unix_ro == REMOTE_AUTH_POLKIT)
         auth_unix_ro = REMOTE_AUTH_NONE;
 #endif
 
@@ -2576,7 +2575,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
 
     GET_CONF_STR (conf, filename, unix_sock_group);
     if (unix_sock_group) {
-        if (getuid() != 0) {
+        if (!server->privileged) {
             VIR_WARN0(_("Cannot set group when not running as root"));
         } else {
             int ret;
@@ -2866,7 +2865,7 @@ int main(int argc, char **argv) {
 
     /* If running as root and no PID file is set, use the default */
     if (pid_file == NULL &&
-        getuid() == 0 &&
+        geteuid() == 0 &&
         REMOTE_PID_FILE[0] != '\0')
         pid_file = REMOTE_PID_FILE;
 
@@ -2901,7 +2900,7 @@ int main(int argc, char **argv) {
     sigaction(SIGPIPE, &sig_action, NULL);
 
     /* Ensure the rundir exists (on tmpfs on some systems) */
-    if (geteuid () == 0) {
+    if (geteuid() == 0) {
         const char *rundir = LOCAL_STATE_DIR "/run/libvirt";
 
         if (mkdir (rundir, 0755)) {
@@ -2912,6 +2911,12 @@ int main(int argc, char **argv) {
         }
     }
 
+    /* Beyond this point, nothing should rely on using
+     * getuid/geteuid() == 0, for privilege level checks.
+     * It must all use the flag 'server->privileged'
+     * which is also passed into all libvirt stateful
+     * drivers
+     */
     if (qemudSetupPrivs() < 0)
         goto error2;
 
@@ -2925,7 +2930,7 @@ int main(int argc, char **argv) {
         goto error2;
 
     /* Change the group ownership of /var/run/libvirt to unix_sock_gid */
-    if (unix_sock_dir && geteuid() == 0) {
+    if (unix_sock_dir && server->privileged) {
         if (chown(unix_sock_dir, -1, unix_sock_gid) < 0)
             VIR_ERROR(_("Failed to change group ownership of %s"),
                       unix_sock_dir);
