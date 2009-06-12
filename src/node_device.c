@@ -48,6 +48,60 @@ static int dev_has_cap(const virNodeDeviceObjPtr dev, const char *cap)
     return 0;
 }
 
+#ifdef __linux__
+static int update_driver_name(virConnectPtr conn,
+                              virNodeDeviceObjPtr dev)
+{
+    char *driver_link = NULL;
+    char devpath[PATH_MAX];
+    char *p;
+    int ret = -1;
+    int n;
+
+    VIR_FREE(dev->def->driver);
+
+    if (virAsprintf(&driver_link, "%s/driver", dev->devicePath) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    /* Some devices don't have an explicit driver, so just return
+       without a name */
+    if (access(driver_link, R_OK) < 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if ((n = readlink(driver_link, devpath, sizeof devpath)) < 0) {
+        virReportSystemError(conn, errno,
+                             _("cannot resolve driver link %s"), driver_link);
+        goto cleanup;
+    }
+    devpath[n] = '\0';
+
+    p = strrchr(devpath, '/');
+    if (p) {
+        dev->def->driver = strdup(p+1);
+        if (!dev->def->driver) {
+            virReportOOMError(conn);
+            goto cleanup;
+        }
+    }
+    ret = 0;
+
+cleanup:
+    VIR_FREE(driver_link);
+    return ret;
+}
+#else
+/* XXX: Implement me for non-linux */
+static int update_driver_name(virConnectPtr conn ATTRIBUTE_UNUSED,
+                              virNodeDeviceObjPtr dev ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+#endif
+
 
 void nodeDeviceLock(virDeviceMonitorStatePtr driver)
 {
@@ -197,6 +251,7 @@ static char *nodeDeviceDumpXML(virNodeDevicePtr dev,
         goto cleanup;
     }
 
+    update_driver_name(dev->conn, obj);
     ret = virNodeDeviceDefFormat(dev->conn, obj->def);
 
 cleanup:

@@ -156,6 +156,7 @@ typedef virNodeDeviceDef *virNodeDeviceDefPtr;
 struct _virNodeDeviceDef {
     char *name;                         /* device name (unique on node) */
     char *parent;			/* optional parent device name */
+    char *driver;                       /* optional driver name */
     virNodeDevCapsDefPtr caps;		/* optional device capabilities */
 };
 
@@ -165,6 +166,7 @@ typedef virNodeDeviceObj *virNodeDeviceObjPtr;
 struct _virNodeDeviceObj {
     virMutex lock;
 
+    char *devicePath;                   /* OS specific path to device metadat, eg sysfs */
     virNodeDeviceDefPtr def;		/* device definition */
     void *privateData;			/* driver-specific private data */
     void (*privateFree)(void *data);	/* destructor for private data */

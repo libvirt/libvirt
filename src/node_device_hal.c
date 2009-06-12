@@ -429,6 +429,7 @@ static void dev_create(const char *udi)
     const char *name = hal_name(udi);
     int rv;
     char *privData = strdup(udi);
+    char *devicePath = NULL;
 
     if (!privData)
         return;
@@ -455,15 +456,22 @@ static void dev_create(const char *udi)
     if (def->caps == NULL)
         goto cleanup;
 
+    /* Some devices don't have a path in sysfs, so ignore failure */
+    get_str_prop(ctx, udi, "linux.sysfs_path", &devicePath);
+
     dev = virNodeDeviceAssignDef(NULL,
                                  &driverState->devs,
                                  def);
 
-    if (!dev)
+    if (!dev) {
+        VIR_FREE(devicePath);
         goto failure;
+    }
 
     dev->privateData = privData;
     dev->privateFree = free_udi;
+    dev->devicePath = devicePath;
+
     virNodeDeviceObjUnlock(dev);
 
     nodeDeviceUnlock(driverState);

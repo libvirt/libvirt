@@ -1,6 +1,16 @@
 Thu Jun 12 13:06:42 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
-	Improve error reporting for virConnecOpen URIs
+	Include OS driver name (if any) in device XML
+	* src/node_device.c: Refresh OS driver when generating XML,
+	and include impl for Linux sysfs
+	* src/noe_device_conf.c, src/node_device_conf.h: Add field
+	for OS driver name to config
+	* src/node_device_hal.c: Record sysfs path to be used for
+	driver name fetching later.
+
+Thu Jun 12 13:06:42 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Improve error reporting for virConnectOpen URIs
 	* src/lxc_driver.c, src/openvz_driver.c, src/qemu_driver.c,
 	src/uml_driver.c, src/xen_unified.c: Always return ACCEPT
 	or ERROR for URIs without hostname set, but with the driver's

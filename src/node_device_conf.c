@@ -106,6 +106,7 @@ void virNodeDeviceDefFree(virNodeDeviceDefPtr def)
 
     VIR_FREE(def->name);
     VIR_FREE(def->parent);
+    VIR_FREE(def->driver);
 
     caps = def->caps;
     while (caps) {
@@ -122,6 +123,7 @@ void virNodeDeviceObjFree(virNodeDeviceObjPtr dev)
     if (!dev)
         return;
 
+    VIR_FREE(dev->devicePath);
     virNodeDeviceDefFree(dev->def);
     if (dev->privateFree)
         (*dev->privateFree)(dev->privateData);
@@ -219,6 +221,11 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
 
     if (def->parent)
         virBufferEscapeString(&buf, "  <parent>%s</parent>\n", def->parent);
+    if (def->driver) {
+        virBufferAddLit(&buf, "  <driver>\n");
+        virBufferEscapeString(&buf, "    <name>%s</name>\n", def->driver);
+        virBufferAddLit(&buf, "  </driver>\n");
+    }
 
     for (caps = def->caps; caps; caps = caps->next) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
