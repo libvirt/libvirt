@@ -68,46 +68,48 @@ static void lxcDriverUnlock(lxc_driver_t *driver)
 }
 
 
-static int lxcProbe(void)
-{
-    if (getuid() != 0 ||
-        lxcContainerAvailable(0) < 0)
-        return 0;
-
-    return 1;
-}
-
 static virDrvOpenStatus lxcOpen(virConnectPtr conn,
                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                 int flags ATTRIBUTE_UNUSED)
 {
-    if (lxc_driver == NULL)
-        goto declineConnection;
-
     /* Verify uri was specified */
     if (conn->uri == NULL) {
-        if (!lxcProbe())
-            goto declineConnection;
+        if (lxc_driver == NULL)
+            return VIR_DRV_OPEN_DECLINED;
 
         conn->uri = xmlParseURI("lxc:///");
         if (!conn->uri) {
             virReportOOMError(conn);
             return VIR_DRV_OPEN_ERROR;
         }
-    } else if (conn->uri->scheme == NULL ||
-               STRNEQ(conn->uri->scheme, "lxc")) {
-        goto declineConnection;
-    } else if (!lxcProbe()) {
-        goto declineConnection;
-    }
+    } else {
+        if (conn->uri->scheme == NULL ||
+            STRNEQ(conn->uri->scheme, "lxc"))
+            return VIR_DRV_OPEN_DECLINED;
 
+        /* Leave for remote driver */
+        if (conn->uri->server != NULL)
+            return VIR_DRV_OPEN_DECLINED;
+
+        /* If path isn't '/' then they typoed, tell them correct path */
+        if (STRNEQ(conn->uri->path, "/")) {
+            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("unexpected LXC URI path '%s', try lxc:///"),
+                     conn->uri->path);
+            return VIR_DRV_OPEN_ERROR;
+        }
+
+        /* URI was good, but driver isn't active */
+        if (lxc_driver == NULL) {
+            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("lxc state driver is not active"));
+            return VIR_DRV_OPEN_ERROR;
+        }
+    }
 
     conn->privateData = lxc_driver;
 
     return VIR_DRV_OPEN_SUCCESS;
-
-declineConnection:
-    return VIR_DRV_OPEN_DECLINED;
 }
 
 static int lxcClose(virConnectPtr conn)

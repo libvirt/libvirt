@@ -737,9 +737,9 @@ virErrorMsg(virErrorNumber error, const char *info)
             break;
         case VIR_ERR_NO_CONNECT:
             if (info == NULL)
-                errmsg = _("could not connect to hypervisor");
+                errmsg = _("no hypervisor driver available");
             else
-                errmsg = _("could not connect to %s");
+                errmsg = _("no hypervisor driver available for %s");
             break;
         case VIR_ERR_INVALID_CONN:
             if (info == NULL)

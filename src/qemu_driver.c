@@ -1743,62 +1743,61 @@ qemudMonitorCommand(const virDomainObjPtr vm,
 }
 
 
-/**
- * qemudProbe:
- *
- * Probe for the availability of the qemu driver, assume the
- * presence of QEmu emulation if the binaries are installed
- */
-static int qemudProbe(void)
-{
-    if ((virFileExists("/usr/bin/qemu")) ||
-        (virFileExists("/usr/bin/qemu-kvm")) ||
-        (virFileExists("/usr/bin/kvm")) ||
-        (virFileExists("/usr/bin/xenner")))
-        return 1;
-
-    return 0;
-}
 
 static virDrvOpenStatus qemudOpen(virConnectPtr conn,
                                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                   int flags ATTRIBUTE_UNUSED) {
     uid_t uid = getuid();
 
-    if (qemu_driver == NULL)
-        goto decline;
-
-    if (!qemudProbe())
-        goto decline;
-
     if (conn->uri == NULL) {
-        conn->uri = xmlParseURI(uid ? "qemu:///session" : "qemu:///system");
+        if (qemu_driver == NULL)
+            return VIR_DRV_OPEN_DECLINED;
+
+        conn->uri = xmlParseURI(uid == 0 ?
+                                "qemu:///system" :
+                                "qemu:///session");
         if (!conn->uri) {
             virReportOOMError(conn);
             return VIR_DRV_OPEN_ERROR;
         }
-    } else if (conn->uri->scheme == NULL ||
-               conn->uri->path == NULL)
-        goto decline;
+    } else {
+        /* If URI isn't 'qemu' its definitely not for us */
+        if (conn->uri->scheme == NULL ||
+            STRNEQ(conn->uri->scheme, "qemu"))
+            return VIR_DRV_OPEN_DECLINED;
 
-    if (STRNEQ (conn->uri->scheme, "qemu"))
-        goto decline;
+        /* Allow remote driver to deal with URIs with hostname server */
+        if (conn->uri->server != NULL)
+            return VIR_DRV_OPEN_DECLINED;
 
-    if (uid != 0) {
-        if (STRNEQ (conn->uri->path, "/session"))
-            goto decline;
-    } else { /* root */
-        if (STRNEQ (conn->uri->path, "/system") &&
-            STRNEQ (conn->uri->path, "/session"))
-            goto decline;
+        if (!uid) {
+            if (STRNEQ (conn->uri->path, "/system") &&
+                STRNEQ (conn->uri->path, "/session")) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("unexpected QEMU URI path '%s', try qemu:///system"),
+                                 conn->uri->path);
+                return VIR_DRV_OPEN_ERROR;
+            }
+        } else {
+            if (STRNEQ (conn->uri->path, "/session")) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("unexpected QEMU URI path '%s', try qemu:///session"),
+                                 conn->uri->path);
+                return VIR_DRV_OPEN_ERROR;
+            }
+        }
+
+        /* URI was good, but driver isn't active */
+        if (qemu_driver == NULL) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("qemu state driver is not active"));
+            return VIR_DRV_OPEN_ERROR;
+        }
+
     }
-
     conn->privateData = qemu_driver;
 
     return VIR_DRV_OPEN_SUCCESS;
-
- decline:
-    return VIR_DRV_OPEN_DECLINED;
 }
 
 static int qemudClose(virConnectPtr conn) {

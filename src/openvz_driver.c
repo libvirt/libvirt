@@ -1070,35 +1070,58 @@ cleanup:
     return ret;
 }
 
-static int openvzProbe(void)
-{
-    if (geteuid() == 0 &&
-        virFileExists("/proc/vz"))
-        return 1;
-
-    return 0;
-}
-
 static virDrvOpenStatus openvzOpen(virConnectPtr conn,
                                    virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                    int flags ATTRIBUTE_UNUSED)
 {
     struct openvz_driver *driver;
-    if (!openvzProbe())
-        return VIR_DRV_OPEN_DECLINED;
 
     if (conn->uri == NULL) {
+        if (!virFileExists("/proc/vz"))
+            return VIR_DRV_OPEN_DECLINED;
+
+        if (access("/proc/vz", W_OK) < 0)
+            return VIR_DRV_OPEN_DECLINED;
+
         conn->uri = xmlParseURI("openvz:///system");
         if (conn->uri == NULL) {
-            openvzError(conn, VIR_ERR_NO_DOMAIN, NULL);
+            virReportOOMError(conn);
             return VIR_DRV_OPEN_ERROR;
         }
-    } else if (conn->uri->scheme == NULL ||
-               conn->uri->path == NULL ||
-               STRNEQ (conn->uri->scheme, "openvz") ||
-               STRNEQ (conn->uri->path, "/system")) {
-        return VIR_DRV_OPEN_DECLINED;
+    } else {
+        /* If scheme isn't 'openvz', then its for another driver */
+        if (conn->uri->scheme == NULL ||
+            STRNEQ (conn->uri->scheme, "openvz"))
+            return VIR_DRV_OPEN_DECLINED;
+
+        /* If server name is given, its for remote driver */
+        if (conn->uri->server != NULL)
+            return VIR_DRV_OPEN_DECLINED;
+
+        /* If path isn't /system, then they typoed, so tell them correct path */
+        if (conn->uri->path == NULL ||
+            STRNEQ (conn->uri->path, "/system")) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("unexpected OpenVZ URI path '%s', try openvz:///system"),
+                        conn->uri->path);
+            return VIR_DRV_OPEN_ERROR;
+        }
+
+        if (!virFileExists("/proc/vz")) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("OpenVZ control file /proc/vz does not exist"));
+            return VIR_DRV_OPEN_ERROR;
+        }
+
+        if (access("/proc/vz", W_OK) < 0) {
+            openvzError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("OpenVZ control file /proc/vz is not accessible"));
+            return VIR_DRV_OPEN_ERROR;
+        }
     }
+
+    /* We now know the URI is definitely for this driver, so beyond
+     * here, don't return DECLINED, always use ERROR */
 
     if (VIR_ALLOC(driver) < 0) {
         virReportOOMError(conn);

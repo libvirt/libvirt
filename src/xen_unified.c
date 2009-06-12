@@ -241,25 +241,46 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
             virReportOOMError (NULL);
             return VIR_DRV_OPEN_ERROR;
         }
+    } else {
+        if (conn->uri->scheme) {
+            /* Decline any scheme which isn't "xen://" or "http://". */
+            if (STRCASENEQ(conn->uri->scheme, "xen") &&
+                STRCASENEQ(conn->uri->scheme, "http"))
+                return VIR_DRV_OPEN_DECLINED;
+
+
+            /* Return an error if the path isn't '' or '/' */
+            if (conn->uri->path &&
+                STRNEQ(conn->uri->path, "") &&
+                STRNEQ(conn->uri->path, "/")) {
+                xenUnifiedError(NULL, VIR_ERR_INTERNAL_ERROR,
+                                _("unexpected Xen URI path '%s', try xen:///"),
+                                conn->uri->path);
+                return VIR_DRV_OPEN_ERROR;
+            }
+
+            /* Decline any xen:// URI with a server specified, allowing remote
+             * driver to handle, but keep any http:/// URIs */
+            if (STRCASEEQ(conn->uri->scheme, "xen") &&
+                conn->uri->server)
+                return VIR_DRV_OPEN_DECLINED;
+        } else {
+            /* Special case URI for Xen driver only:
+             *
+             * Treat a plain path as a Xen UNIX socket path, and give
+             * error unless path is absolute
+             */
+            if (!conn->uri->path || conn->uri->path[0] != '/') {
+                xenUnifiedError(NULL, VIR_ERR_INTERNAL_ERROR,
+                                _("unexpected Xen URI path '%s', try ///var/lib/xen/xend-socket"),
+                                NULLSTR(conn->uri->path));
+                return VIR_DRV_OPEN_ERROR;
+            }
+        }
     }
 
-    /* Refuse any scheme which isn't "xen://" or "http://". */
-    if (conn->uri->scheme &&
-        STRCASENEQ(conn->uri->scheme, "xen") &&
-        STRCASENEQ(conn->uri->scheme, "http"))
-        return VIR_DRV_OPEN_DECLINED;
-
-    /* xmlParseURI will parse a naked string like "foo" as a URI with
-     * a NULL scheme.  That's not useful for us because we want to only
-     * allow full pathnames (eg. ///var/lib/xen/xend-socket).  Decline
-     * anything else.
-     */
-    if (!conn->uri->scheme && (!conn->uri->path || conn->uri->path[0] != '/'))
-        return VIR_DRV_OPEN_DECLINED;
-
-    /* Refuse any xen:// URI with a server specified - allow remote to do it */
-    if (conn->uri->scheme && STRCASEEQ(conn->uri->scheme, "xen") && conn->uri->server)
-        return VIR_DRV_OPEN_DECLINED;
+    /* We now know the URI is definitely for this driver, so beyond
+     * here, don't return DECLINED, always use ERROR */
 
     /* Allocate per-connection private data. */
     if (VIR_ALLOC(priv) < 0) {

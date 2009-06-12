@@ -913,28 +913,49 @@ static virDrvOpenStatus umlOpen(virConnectPtr conn,
                                 int flags ATTRIBUTE_UNUSED) {
     uid_t uid = getuid();
 
-    if (uml_driver == NULL)
-        goto decline;
+    if (conn->uri == NULL) {
+        if (uml_driver == NULL)
+            return VIR_DRV_OPEN_DECLINED;
 
-    if (conn->uri != NULL) {
-        if (conn->uri->scheme == NULL || conn->uri->path == NULL)
-            goto decline;
-
-        if (STRNEQ (conn->uri->scheme, "uml"))
-            goto decline;
-
-        if (uid != 0) {
-            if (STRNEQ (conn->uri->path, "/session"))
-                goto decline;
-        } else { /* root */
-            if (STRNEQ (conn->uri->path, "/system") &&
-                STRNEQ (conn->uri->path, "/session"))
-                goto decline;
-        }
-    } else {
-        conn->uri = xmlParseURI(uid ? "uml:///session" : "uml:///system");
+        conn->uri = xmlParseURI(uid == 0 ?
+                                "uml:///system" :
+                                "uml:///session");
         if (!conn->uri) {
             virReportOOMError(conn);
+            return VIR_DRV_OPEN_ERROR;
+        }
+    } else {
+        if (conn->uri->scheme == NULL ||
+            STRNEQ (conn->uri->scheme, "uml"))
+            return VIR_DRV_OPEN_DECLINED;
+
+        /* Allow remote driver to deal with URIs with hostname server */
+        if (conn->uri->server != NULL)
+            return VIR_DRV_OPEN_DECLINED;
+
+
+        /* Check path and tell them correct path if they made a mistake */
+        if (uid == 0) {
+            if (STRNEQ (conn->uri->path, "/system") &&
+                STRNEQ (conn->uri->path, "/session")) {
+                umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected UML URI path '%s', try uml:///system"),
+                               conn->uri->path);
+                return VIR_DRV_OPEN_ERROR;
+            }
+        } else {
+            if (STRNEQ (conn->uri->path, "/session")) {
+                umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected UML URI path '%s', try uml:///session"),
+                               conn->uri->path);
+                return VIR_DRV_OPEN_ERROR;
+            }
+        }
+
+        /* URI was good, but driver isn't active */
+        if (uml_driver == NULL) {
+            umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("uml state driver is not active"));
             return VIR_DRV_OPEN_ERROR;
         }
     }
@@ -942,9 +963,6 @@ static virDrvOpenStatus umlOpen(virConnectPtr conn,
     conn->privateData = uml_driver;
 
     return VIR_DRV_OPEN_SUCCESS;
-
- decline:
-    return VIR_DRV_OPEN_DECLINED;
 }
 
 static int umlClose(virConnectPtr conn) {

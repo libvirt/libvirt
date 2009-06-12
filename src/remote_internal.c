@@ -305,21 +305,28 @@ remoteForkDaemon(virConnectPtr conn)
 
 enum virDrvOpenRemoteFlags {
     VIR_DRV_OPEN_REMOTE_RO = (1 << 0),
-    VIR_DRV_OPEN_REMOTE_UNIX = (1 << 1),
-    VIR_DRV_OPEN_REMOTE_USER = (1 << 2),
-    VIR_DRV_OPEN_REMOTE_AUTOSTART = (1 << 3),
+    VIR_DRV_OPEN_REMOTE_USER      = (1 << 1), /* Use the per-user socket path */
+    VIR_DRV_OPEN_REMOTE_AUTOSTART = (1 << 2), /* Autostart a per-user daemon */
 };
 
-/* What transport? */
-enum {
-    trans_tls,
-    trans_unix,
-    trans_ssh,
-    trans_ext,
-    trans_tcp,
-} transport;
 
-
+/*
+ * URIs that this driver needs to handle:
+ *
+ * The easy answer:
+ *   - Everything that no one else has yet claimed, but nothing if
+ *     we're inside the libvirtd daemon
+ *
+ * The hard answer:
+ *   - Plain paths (///var/lib/xen/xend-socket)  -> UNIX domain socket
+ *   - xxx://servername/      -> TLS connection
+ *   - xxx+tls://servername/  -> TLS connection
+ *   - xxx+tls:///            -> TLS connection to localhost
+ *   - xxx+tcp://servername/  -> TCP connection
+ *   - xxx+tcp:///            -> TCP connection to localhost
+ *   - xxx+unix:///           -> UNIX domain socket
+ *   - xxx:///                -> UNIX domain socket
+ */
 static int
 doRemoteOpen (virConnectPtr conn,
               struct private_data *priv,
@@ -328,37 +335,51 @@ doRemoteOpen (virConnectPtr conn,
 {
     int wakeupFD[2] = { -1, -1 };
     char *transport_str = NULL;
+    enum {
+        trans_tls,
+        trans_unix,
+        trans_ssh,
+        trans_ext,
+        trans_tcp,
+    } transport;
+
+    /* We handle *ALL*  URIs here. The caller has rejected any
+     * URIs we don't care about */
 
     if (conn->uri) {
-        if (!conn->uri->scheme)
-            return VIR_DRV_OPEN_DECLINED;
-
-        transport_str = get_transport_from_scheme (conn->uri->scheme);
-
-        if (!transport_str || STRCASEEQ (transport_str, "tls"))
-            transport = trans_tls;
-        else if (STRCASEEQ (transport_str, "unix"))
+        if (!conn->uri->scheme) {
+            /* This is the ///var/lib/xen/xend-socket local path style */
             transport = trans_unix;
-        else if (STRCASEEQ (transport_str, "ssh"))
-            transport = trans_ssh;
-        else if (STRCASEEQ (transport_str, "ext"))
-            transport = trans_ext;
-        else if (STRCASEEQ (transport_str, "tcp"))
-            transport = trans_tcp;
-        else {
-            error (conn, VIR_ERR_INVALID_ARG,
-                   _("remote_open: transport in URL not recognised "
-                     "(should be tls|unix|ssh|ext|tcp)"));
-            return VIR_DRV_OPEN_ERROR;
+        } else {
+            transport_str = get_transport_from_scheme (conn->uri->scheme);
+
+            if (!transport_str) {
+                if (conn->uri->server)
+                    transport = trans_tls;
+                else
+                    transport = trans_unix;
+            } else {
+                if (STRCASEEQ (transport_str, "tls"))
+                    transport = trans_tls;
+                else if (STRCASEEQ (transport_str, "unix"))
+                    transport = trans_unix;
+                else if (STRCASEEQ (transport_str, "ssh"))
+                    transport = trans_ssh;
+                else if (STRCASEEQ (transport_str, "ext"))
+                    transport = trans_ext;
+                else if (STRCASEEQ (transport_str, "tcp"))
+                    transport = trans_tcp;
+                else {
+                    error (conn, VIR_ERR_INVALID_ARG,
+                           _("remote_open: transport in URL not recognised "
+                             "(should be tls|unix|ssh|ext|tcp)"));
+                    return VIR_DRV_OPEN_ERROR;
+                }
+            }
         }
-    }
-
-    if (!transport_str) {
-        if ((!conn->uri || !conn->uri->server) &&
-            (flags & VIR_DRV_OPEN_REMOTE_UNIX))
-            transport = trans_unix;
-        else
-            return VIR_DRV_OPEN_DECLINED; /* Decline - not a remote URL. */
+    } else {
+        /* No URI, then must be probing so use UNIX socket */
+        transport = trans_unix;
     }
 
     /* Local variables which we will initialise. These can
@@ -455,8 +476,9 @@ doRemoteOpen (virConnectPtr conn,
 
         /* Construct the original name. */
         if (!name) {
-            if (STREQ(conn->uri->scheme, "remote") ||
-                STRPREFIX(conn->uri->scheme, "remote+")) {
+            if (conn->uri->scheme &&
+                (STREQ(conn->uri->scheme, "remote") ||
+                 STRPREFIX(conn->uri->scheme, "remote+"))) {
                 /* Allow remote serve to probe */
                 name = strdup("");
             } else {
@@ -580,7 +602,7 @@ doRemoteOpen (virConnectPtr conn,
 
         freeaddrinfo (res);
         virReportSystemError(conn, saved_errno,
-                             _("unable to connect to '%s'"),
+                             _("unable to connect to libvirtd at '%s'"),
                              priv->hostname);
         goto failed;
 
@@ -925,7 +947,6 @@ remoteOpenSecondaryDriver(virConnectPtr conn,
 
     if (flags & VIR_CONNECT_RO)
         rflags |= VIR_DRV_OPEN_REMOTE_RO;
-    rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
 
     ret = doRemoteOpen(conn, *priv, auth, rflags);
     if (ret != VIR_DRV_OPEN_SUCCESS) {
@@ -958,19 +979,6 @@ remoteOpen (virConnectPtr conn,
 
     /*
      * If no servername is given, and no +XXX
-     * transport is listed, then force to a
-     * local UNIX socket connection
-     */
-    if (conn->uri &&
-        !conn->uri->server &&
-        conn->uri->scheme &&
-        !strchr(conn->uri->scheme, '+')) {
-        DEBUG0("Auto-remote UNIX socket");
-        rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
-    }
-
-    /*
-     * If no servername is given, and no +XXX
      * transport is listed, or transport is unix,
      * and path is /session, and uid is unprivileged
      * then auto-spawn a daemon.
@@ -996,7 +1004,6 @@ remoteOpen (virConnectPtr conn,
      */
     if (!conn->uri) {
         DEBUG0("Auto-probe remote URI");
-        rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
 #ifndef __sun
         if (getuid() > 0) {
             DEBUG0("Auto-spawn user daemon instance");

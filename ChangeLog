@@ -1,3 +1,17 @@
+Thu Jun 12 13:06:42 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Improve error reporting for virConnecOpen URIs
+	* src/lxc_driver.c, src/openvz_driver.c, src/qemu_driver.c,
+	src/uml_driver.c, src/xen_unified.c: Always return ACCEPT
+	or ERROR for URIs without hostname set, but with the driver's
+	matching URI scheme. ie never decline a correct URI
+	* src/xend_internal.c: Default port to 8000 if not given
+	in the http:// URI.
+	* src/remote_internal.c: Accept all URIs not handled by an
+	earlier driver.
+	* src/virterror.c: Improve error message text for
+	VIR_ERR_NO_CONNECT code
+
 Thu Jun 12 12:26:42 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix re-detection of transient VMs after libvirtd restart

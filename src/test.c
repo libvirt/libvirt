@@ -639,9 +639,6 @@ static virDrvOpenStatus testOpen(virConnectPtr conn,
     if (conn->uri->server)
         return VIR_DRV_OPEN_DECLINED;
 
-    if (conn->uri->server)
-        return VIR_DRV_OPEN_DECLINED;
-
     /* From this point on, the connection is for us. */
     if (!conn->uri->path
         || conn->uri->path[0] == '\0'
