@@ -196,6 +196,7 @@ NODE_DEVICE_DRIVER_SOURCES =					\
 
 NODE_DEVICE_DRIVER_HAL_SOURCES =				\
 		node_device_hal.c				\
+		node_device_hal.h				\
 		node_device_hal_linux.c
 
 NODE_DEVICE_DRIVER_DEVKIT_SOURCES =				\
