@@ -1082,7 +1082,7 @@ int virFileResolveLink(const char *linkpath,
 char *virFindFileInPath(const char *file)
 {
     char pathenv[PATH_MAX];
-    char *penv = &pathenv; /* this is for glibc 2.10 strsep chnages */
+    char *penv = pathenv;
     char *pathseg;
     char fullpath[PATH_MAX];
 

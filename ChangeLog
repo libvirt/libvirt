@@ -1,3 +1,7 @@
+Mon Jun 15 12:05:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/util.c: Fix bogus initialization in virFindFileInPath
+
 Fri Jun 12 14:16:42 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Remove use of getuid()==0 for privilege checks
