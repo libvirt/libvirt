@@ -1,3 +1,8 @@
+Mon Jun 15 18:15:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix build on non-Linux targets
+	* src/nodeinfo.c: s/nodeError/nodeReportError/
+
 Mon Jun 15 15:58:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix build from tar.gz

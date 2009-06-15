@@ -170,8 +170,8 @@ int nodeGetInfo(virConnectPtr conn,
     }
 #else
     /* XXX Solaris will need an impl later if they port QEMU driver */
-    nodeError(conn, VIR_ERR_NO_SUPPORT, "%s"
-              _("node info not implemented on this platform"));
+    nodeReportError(conn, VIR_ERR_NO_SUPPORT, "%s",
+                    _("node info not implemented on this platform"));
     return -1;
 #endif
 }
