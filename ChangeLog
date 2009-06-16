@@ -1,3 +1,8 @@
+Tue Jun 16 10:30:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xen_internal.c: Add new variant of availheap sysctl
+	for ABI changes in Xen
+
 Mon Jun 15 18:15:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix build on non-Linux targets

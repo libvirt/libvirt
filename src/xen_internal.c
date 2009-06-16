@@ -241,6 +241,15 @@ struct xen_v2s4_availheap {
 
 typedef struct xen_v2s4_availheap  xen_v2s4_availheap;
 
+struct xen_v2s5_availheap {
+    uint32_t min_bitwidth;  /* Smallest address width (zero if don't care). */
+    uint32_t max_bitwidth;  /* Largest address width (zero if don't care). */
+    int32_t  node;          /* NUMA node (-1 for sum across all nodes). */
+    uint64_t avail_bytes ALIGN_64;   /* Bytes available in the specified region. */
+};
+
+typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
+
 
 #define XEN_GETDOMAININFOLIST_ALLOC(domlist, size)                      \
     (hypervisor_version < 2 ?                                           \
@@ -650,6 +659,7 @@ struct xen_op_v2_sys {
         xen_v2s3_getdomaininfolistop getdomaininfolists3;
         xen_v2_getschedulerid        getschedulerid;
         xen_v2s4_availheap           availheap;
+        xen_v2s5_availheap           availheap5;
         uint8_t padding[128];
     } u;
 };
@@ -3125,12 +3135,18 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *free
     op_sys.cmd = XEN_V2_OP_GETAVAILHEAP;
 
     for (i = startCell, j = 0;(i < priv->nbNodeCells) && (j < maxCells);i++,j++) {
-        op_sys.u.availheap.node = i;
+        if (sys_interface_version >= 5)
+            op_sys.u.availheap5.node = i;
+        else
+            op_sys.u.availheap.node = i;
         ret = xenHypervisorDoV2Sys(priv->handle, &op_sys);
         if (ret < 0) {
             return(-1);
         }
-        freeMems[j] = op_sys.u.availheap.avail_bytes;
+        if (sys_interface_version >= 5)
+            freeMems[j] = op_sys.u.availheap5.avail_bytes;
+        else
+            freeMems[j] = op_sys.u.availheap.avail_bytes;
     }
     return (j);
 }
