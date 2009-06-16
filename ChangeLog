@@ -1,3 +1,8 @@
+Tue Jun 16 10:04:32 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* tests/.cvsignore tests/.hgignore tests/.gitignore:
+	Add qemuhelptest to .*ignore files
+
 Tue Jun 16 10:00:50 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/qemu_conf.c: Fix qemu command flags fetching

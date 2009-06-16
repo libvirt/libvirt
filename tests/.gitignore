@@ -12,6 +12,7 @@ xencapstest
 qemuxml2xmltest
 qemuxml2argvtest
 qemuargv2xmltest
+qemuhelptest
 nodedevxml2xmltest
 nodeinfotest
 statstest

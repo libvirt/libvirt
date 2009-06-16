@@ -271,6 +271,7 @@ tests/object-locking-files.txt
 tests/object-locking.cmi
 tests/object-locking.cmx
 tests/qemuargv2xmltest
+tests/qemuhelptest
 tests/qemuxml2argvtest
 tests/qemuxml2xmltest
 tests/qparamtest
