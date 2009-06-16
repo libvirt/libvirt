@@ -1251,8 +1251,9 @@ static int createQemuImg(virConnectPtr conn,
          * backing store, not really sure what use it serves though, and it
          * may cause issues with lvm. Untested essentially.
          */
-        if (!inputBackingPath ||
-            !STREQ(inputBackingPath, vol->backingStore.path)) {
+        if (inputvol &&
+            (!inputBackingPath ||
+             STRNEQ(inputBackingPath, vol->backingStore.path))) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                   "%s", _("a different backing store can not "
                                           "be specified."));
