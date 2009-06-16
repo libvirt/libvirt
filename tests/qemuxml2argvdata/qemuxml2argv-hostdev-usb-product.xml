@@ -24,5 +24,11 @@
         <product id='0x6025'/>
       </source>
     </hostdev>
+    <hostdev mode='subsystem' type='usb' managed='no'>
+      <source>
+        <vendor id='0x1234'/>
+        <product id='0x0000'/>
+      </source>
+    </hostdev>
   </devices>
 </domain>

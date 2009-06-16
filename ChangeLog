@@ -1,3 +1,10 @@
+Tue Jun 16 14:30:05 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/domain_conf.c
+	tests/qemuxml2argvdata/qemuxml2argv-hostdev-usb-product.args
+	tests/qemuxml2argvdata/qemuxml2argv-hostdev-usb-product.xml:
+	Allow USB hostdev product to be 0x0000
+
 Tue Jun 16 11:43:17 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/storage_backend_fs.c: Fix FS volume creation with backing stores.

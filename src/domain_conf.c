@@ -1660,7 +1660,13 @@ virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
                                      int flags ATTRIBUTE_UNUSED) {
 
     int ret = -1;
+    int got_product, got_vendor;
     xmlNodePtr cur;
+
+    /* Product can validly be 0, so we need some extra help to determine
+     * if it is uninitialized*/
+    got_product = 0;
+    got_vendor = 0;
 
     cur = node->children;
     while (cur != NULL) {
@@ -1669,6 +1675,7 @@ virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
                 char *vendor = virXMLPropString(cur, "id");
 
                 if (vendor) {
+                    got_vendor = 1;
                     if (virStrToLong_ui(vendor, NULL, 0,
                                     &def->source.subsys.u.usb.vendor) < 0) {
                         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -1686,6 +1693,7 @@ virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
                 char* product = virXMLPropString(cur, "id");
 
                 if (product) {
+                    got_product = 1;
                     if (virStrToLong_ui(product, NULL, 0,
                                         &def->source.subsys.u.usb.product) < 0) {
                         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -1745,14 +1753,18 @@ virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
         cur = cur->next;
     }
 
-    if (def->source.subsys.u.usb.vendor == 0 &&
-        def->source.subsys.u.usb.product != 0) {
+    if (got_vendor && def->source.subsys.u.usb.vendor == 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            "%s", _("vendor cannot be 0."));
+        goto out;
+    }
+
+    if (!got_vendor && got_product) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
             "%s", _("missing vendor"));
         goto out;
     }
-    if (def->source.subsys.u.usb.vendor != 0 &&
-        def->source.subsys.u.usb.product == 0) {
+    if (got_vendor && !got_product) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
             "%s", _("missing product"));
         goto out;
