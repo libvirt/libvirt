@@ -665,10 +665,6 @@ int virDiskNameToBusDeviceIndex(virDomainDiskDefPtr disk,
                                 int *busIdx,
                                 int *devIdx);
 
-const char *virDomainDefDefaultEmulator(virConnectPtr conn,
-                                        virDomainDefPtr def,
-                                        virCapsPtr caps);
-
 virDomainFSDefPtr virDomainGetRootFilesystem(virDomainDefPtr def);
 
 void virDomainObjLock(virDomainObjPtr obj);

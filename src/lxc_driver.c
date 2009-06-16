@@ -758,7 +758,6 @@ static int lxcControllerStart(virConnectPtr conn,
     fd_set keepfd;
     char appPtyStr[30];
     const char *emulator;
-    lxc_driver_t *driver = conn->privateData;
 
     FD_ZERO(&keepfd);
 
@@ -787,10 +786,6 @@ static int lxcControllerStart(virConnectPtr conn,
     snprintf(appPtyStr, sizeof(appPtyStr), "%d", appPty);
 
     emulator = vm->def->emulator;
-    if (!emulator)
-        emulator = virDomainDefDefaultEmulator(conn, vm->def, driver->caps);
-    if (!emulator)
-        return -1;
 
     ADD_ARG_LIT(emulator);
     ADD_ARG_LIT("--name");

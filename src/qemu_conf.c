@@ -920,11 +920,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     emulator = def->emulator;
-    if (!emulator)
-        emulator = virDomainDefDefaultEmulator(conn, def, driver->caps);
-    if (!emulator)
-        return -1;
-
 
     /* Need to explicitly disable KQEMU if
      * 1. Arch matches host arch

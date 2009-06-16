@@ -2109,6 +2109,39 @@ int virDomainDiskQSort(const void *a, const void *b)
 }
 
 #ifndef PROXY
+static char *virDomainDefDefaultEmulator(virConnectPtr conn,
+                                         virDomainDefPtr def,
+                                         virCapsPtr caps) {
+    const char *type;
+    const char *emulator;
+    char *retemu;
+
+    type = virDomainVirtTypeToString(def->virtType);
+    if (!type) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("unknown virt type"));
+        return NULL;
+    }
+
+    emulator = virCapabilitiesDefaultGuestEmulator(caps,
+                                                   def->os.type,
+                                                   def->os.arch,
+                                                   type);
+
+    if (!emulator) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("no emulator for domain %s os type %s on architecture %s"),
+                             type, def->os.type, def->os.arch);
+        return NULL;
+    }
+
+    retemu = strdup(emulator);
+    if (!retemu)
+        virReportOOMError(conn);
+
+    return retemu;
+}
+
 static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                                             virCapsPtr caps,
                                             xmlXPathContextPtr ctxt, int flags)
@@ -2358,6 +2391,11 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
 
     def->emulator = virXPathString(conn, "string(./devices/emulator[1])", ctxt);
+    if (!def->emulator && virCapabilitiesIsEmulatorRequired(caps)) {
+        def->emulator = virDomainDefDefaultEmulator(conn, def, caps);
+        if (!def->emulator)
+            goto error;
+    }
 
     /* analysis of the disk devices */
     if ((n = virXPathNodeSet(conn, "./devices/disk", ctxt, &nodes)) < 0) {
@@ -4228,34 +4266,6 @@ int virDiskNameToBusDeviceIndex(const virDomainDiskDefPtr disk,
     }
 
     return 0;
-}
-
-const char *virDomainDefDefaultEmulator(virConnectPtr conn,
-                                        virDomainDefPtr def,
-                                        virCapsPtr caps) {
-    const char *type;
-    const char *emulator;
-
-    type = virDomainVirtTypeToString(def->virtType);
-    if (!type) {
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("unknown virt type"));
-        return NULL;
-    }
-
-    emulator = virCapabilitiesDefaultGuestEmulator(caps,
-                                                   def->os.type,
-                                                   def->os.arch,
-                                                   type);
-
-    if (!emulator) {
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("no emulator for domain %s os type %s on architecture %s"),
-                             type, def->os.type, def->os.arch);
-        return NULL;
-    }
-
-    return emulator;
 }
 
 virDomainFSDefPtr virDomainGetRootFilesystem(virDomainDefPtr def)

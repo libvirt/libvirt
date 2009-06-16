@@ -65,7 +65,6 @@ virDomainCpuSetParse;
 virDomainChrDefFree;
 virDomainChrTypeFromString;
 virDomainChrTypeToString;
-virDomainDefDefaultEmulator;
 virDomainDefFormat;
 virDomainDefFree;
 virDomainDefParseFile;

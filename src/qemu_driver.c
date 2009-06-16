@@ -1377,10 +1377,6 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         goto cleanup;
 
     emulator = vm->def->emulator;
-    if (!emulator)
-        emulator = virDomainDefDefaultEmulator(conn, vm->def, driver->caps);
-    if (!emulator)
-        goto cleanup;
 
     /* Make sure the binary we are about to try exec'ing exists.
      * Technically we could catch the exec() failure, but that's
@@ -3425,10 +3421,6 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
             def->graphics[i]->data.vnc.port = 5900;
     }
     emulator = def->emulator;
-    if (!emulator)
-        emulator = virDomainDefDefaultEmulator(conn, def, driver->caps);
-    if (!emulator)
-        goto cleanup;
 
     /* Make sure the binary we are about to try exec'ing exists.
      * Technically we could catch the exec() failure, but that's
