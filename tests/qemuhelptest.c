@@ -90,10 +90,10 @@ mymain(int argc, char **argv)
     } while (0)
 
     DO_TEST("qemu-0.9.1",      0x002f, 9001,  0,  0);
-    DO_TEST("kvm-74",          0x233e, 9001,  1, 74);
-    DO_TEST("qemu-0.10.5",     0x1c6f, 10005, 0,  0);
-    DO_TEST("qemu-kvm-0.10.5", 0x3d7e, 10005, 1,  0);
-    DO_TEST("kvm-86",          0x3d7e, 10050, 1,  0);
+    DO_TEST("kvm-74",          0x633e, 9001,  1, 74);
+    DO_TEST("qemu-0.10.5",     0x5c6f, 10005, 0,  0);
+    DO_TEST("qemu-kvm-0.10.5", 0x7d7e, 10005, 1,  0);
+    DO_TEST("kvm-86",          0x7d7e, 10050, 1,  0);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

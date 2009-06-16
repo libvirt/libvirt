@@ -196,17 +196,21 @@ mymain(int argc, char **argv)
     DO_TEST("disk-drive-boot-cdrom", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_BOOT);
     DO_TEST("disk-drive-fmt-qcow", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_BOOT);
-    DO_TEST("disk-drive-shared", QEMUD_CMD_FLAG_DRIVE);
-    DO_TEST("disk-drive-cache-v1-wt", QEMUD_CMD_FLAG_DRIVE);
-    DO_TEST("disk-drive-cache-v1-wb", QEMUD_CMD_FLAG_DRIVE);
-    DO_TEST("disk-drive-cache-v1-none", QEMUD_CMD_FLAG_DRIVE);
+            QEMUD_CMD_FLAG_DRIVE_BOOT | QEMUD_CMD_FLAG_DRIVE_FORMAT);
+    DO_TEST("disk-drive-shared", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_FORMAT);
+    DO_TEST("disk-drive-cache-v1-wt", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_FORMAT);
+    DO_TEST("disk-drive-cache-v1-wb", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_FORMAT);
+    DO_TEST("disk-drive-cache-v1-none", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_FORMAT);
     DO_TEST("disk-drive-cache-v2-wt", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_CACHE_V2);
+            QEMUD_CMD_FLAG_DRIVE_CACHE_V2 | QEMUD_CMD_FLAG_DRIVE_FORMAT);
     DO_TEST("disk-drive-cache-v2-wb", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_CACHE_V2);
+            QEMUD_CMD_FLAG_DRIVE_CACHE_V2 | QEMUD_CMD_FLAG_DRIVE_FORMAT);
     DO_TEST("disk-drive-cache-v2-none", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_CACHE_V2);
+            QEMUD_CMD_FLAG_DRIVE_CACHE_V2 | QEMUD_CMD_FLAG_DRIVE_FORMAT);
     DO_TEST("disk-usb", 0);
     DO_TEST("graphics-vnc", 0);
 

@@ -435,6 +435,8 @@ static unsigned int qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_DRIVE;
         if (strstr(help, "cache=writethrough|writeback|none"))
             flags |= QEMUD_CMD_FLAG_DRIVE_CACHE_V2;
+        if (strstr(help, "format="))
+            flags |= QEMUD_CMD_FLAG_DRIVE_FORMAT;
     }
     if (strstr(help, "boot=on"))
         flags |= QEMUD_CMD_FLAG_DRIVE_BOOT;
@@ -1231,7 +1233,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
             if (bootable &&
                 disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
                 virBufferAddLit(&opt, ",boot=on");
-            if (disk->driverType)
+            if (disk->driverType &&
+                qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_FORMAT)
                 virBufferVSprintf(&opt, ",format=%s", disk->driverType);
 
             if (disk->cachemode) {
