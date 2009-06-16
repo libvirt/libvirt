@@ -27,6 +27,8 @@ virCapabilitiesFree;
 virCapabilitiesNew;
 virCapabilitiesSetMacPrefix;
 virCapabilitiesGenerateMac;
+virCapabilitiesSetEmulatorRequired;
+virCapabilitiesIsEmulatorRequired;
 
 
 # conf.h

@@ -106,6 +106,7 @@ struct _virCaps {
     int nguests;
     virCapsGuestPtr *guests;
     unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
+    unsigned int emulatorRequired : 1;
 };
 
 
@@ -124,6 +125,12 @@ virCapabilitiesSetMacPrefix(virCapsPtr caps,
 extern void
 virCapabilitiesGenerateMac(virCapsPtr caps,
                            unsigned char *mac);
+
+extern void
+virCapabilitiesSetEmulatorRequired(virCapsPtr caps);
+
+extern unsigned int
+virCapabilitiesIsEmulatorRequired(virCapsPtr caps);
 
 extern int
 virCapabilitiesAddHostFeature(virCapsPtr caps,

@@ -707,3 +707,13 @@ virCapabilitiesGenerateMac(virCapsPtr caps,
 {
     virGenerateMacAddr(caps->macPrefix, mac);
 }
+
+extern void
+virCapabilitiesSetEmulatorRequired(virCapsPtr caps) {
+    caps->emulatorRequired = 1;
+}
+
+extern unsigned int
+virCapabilitiesIsEmulatorRequired(virCapsPtr caps) {
+    return caps->emulatorRequired;
+}

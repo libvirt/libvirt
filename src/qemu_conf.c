@@ -405,6 +405,9 @@ virCapsPtr qemudCapsInit(void) {
             }
     }
 
+    /* QEMU Requires an emulator in the XML */
+    virCapabilitiesSetEmulatorRequired(caps);
+
     return caps;
 
  no_memory:

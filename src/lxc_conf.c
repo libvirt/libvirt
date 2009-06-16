@@ -69,6 +69,10 @@ virCapsPtr lxcCapsInit(void)
                                       0,
                                       NULL) == NULL)
         goto no_memory;
+
+    /* LXC Requires an emulator in the XML */
+    virCapabilitiesSetEmulatorRequired(caps);
+
     return caps;
 
 no_memory:
