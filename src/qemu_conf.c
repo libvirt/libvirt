@@ -597,7 +597,7 @@ int qemudExtractVersionInfo(const char *qemu,
         goto cleanup2;
     }
 
-    if (qemudParseHelpStr(help, &version, &kvm_version, &is_kvm, &flags) == -1)
+    if (qemudParseHelpStr(help, &flags, &version, &is_kvm, &kvm_version) == -1)
         goto cleanup2;
 
     if (retversion)
