@@ -53,6 +53,4 @@ void registerCommonNodeFuncs(virDeviceMonitorPtr mon);
 
 int nodedevRegister(void);
 
-void virNodeDeviceWaitForDevices(virConnectPtr conn);
-
 #endif /* __VIR_NODE_DEVICE_H__ */

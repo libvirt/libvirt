@@ -111,4 +111,6 @@ int virStorageBackendRunProgNul(virConnectPtr conn,
                                 virStorageBackendListVolNulFunc func,
                                 void *data);
 
+void virWaitForDevices(virConnectPtr conn);
+
 #endif /* __VIR_STORAGE_BACKEND_H__ */

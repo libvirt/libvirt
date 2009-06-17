@@ -1,3 +1,8 @@
+Wed Jun 17 10:31:35 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/node_device.[ch] src/storage_backend.[ch]: fixes a
+	  module dependency problem, patch by Dave Allan
+
 Tue Jun 16 14:30:05 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/domain_conf.c

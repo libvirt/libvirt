@@ -34,6 +34,7 @@
 #include "logging.h"
 #include "node_device_conf.h"
 #include "node_device.h"
+#include "storage_backend.h" /* For virWaitForDevices */
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
@@ -560,7 +561,7 @@ find_new_device(virConnectPtr conn, const char *wwnn, const char *wwpn)
 
     while ((now - start) < LINUX_NEW_DEVICE_WAIT_TIME) {
 
-        virNodeDeviceWaitForDevices(conn);
+        virWaitForDevices(conn);
 
         dev = nodeDeviceLookupByWWN(conn, wwnn, wwpn);
 
@@ -692,32 +693,6 @@ out:
     VIR_FREE(wwpn);
     return ret;
 }
-
-
-#if defined(UDEVADM) || defined(UDEVSETTLE)
-void virNodeDeviceWaitForDevices(virConnectPtr conn)
-{
-#ifdef UDEVADM
-    const char *const settleprog[] = { UDEVADM, "settle", NULL };
-#else
-    const char *const settleprog[] = { UDEVSETTLE, NULL };
-#endif
-    int exitstatus;
-
-    if (access(settleprog[0], X_OK) != 0)
-        return;
-
-    /*
-     * NOTE: we ignore errors here; this is just to make sure that any device
-     * nodes that are being created finish before we try to scan them.
-     * If this fails for any reason, we still have the backup of polling for
-     * 5 seconds for device nodes.
-     */
-    virRun(conn, settleprog, &exitstatus);
-}
-#else
-void virNodeDeviceWaitForDevices(virConnectPtr conn ATTRIBUTE_UNUSED) {}
-#endif
 
 
 void registerCommonNodeFuncs(virDeviceMonitorPtr driver)
