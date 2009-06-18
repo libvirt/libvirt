@@ -722,7 +722,10 @@ doRemoteOpen (virConnectPtr conn,
         cmd_argv[j++] = strdup (priv->hostname);
         cmd_argv[j++] = strdup (netcat ? netcat : "nc");
         cmd_argv[j++] = strdup ("-U");
-        cmd_argv[j++] = strdup (sockname ? sockname : LIBVIRTD_PRIV_UNIX_SOCKET);
+        cmd_argv[j++] = strdup (sockname ? sockname :
+                                (flags & VIR_CONNECT_RO
+                                 ? LIBVIRTD_PRIV_UNIX_SOCKET_RO
+                                 : LIBVIRTD_PRIV_UNIX_SOCKET));
         cmd_argv[j++] = 0;
         assert (j == nr_args);
         for (j = 0; j < (nr_args-1); j++)
