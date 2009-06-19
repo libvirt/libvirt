@@ -324,7 +324,7 @@ xenXMConfigReadFile(virConnectPtr conn, const char *filename) {
     virConfPtr conf;
     virDomainDefPtr def;
 
-    if (!(conf = virConfReadFile(filename)))
+    if (!(conf = virConfReadFile(filename, 0)))
         return NULL;
 
     def = xenXMDomainConfigParse(conn, conf);

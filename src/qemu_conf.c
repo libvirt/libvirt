@@ -99,7 +99,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
      */
     if (access (filename, R_OK) == -1) return 0;
 
-    conf = virConfReadFile (filename);
+    conf = virConfReadFile (filename, 0);
     if (!conf) return 0;
 
 

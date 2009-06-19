@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    conf = virConfReadFile(argv[1]);
+    conf = virConfReadFile(argv[1], 0);
     if (conf == NULL) {
         fprintf(stderr, "Failed to process %s\n", argv[1]);
         exit(2);

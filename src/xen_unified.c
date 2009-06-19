@@ -1084,7 +1084,7 @@ xenUnifiedDomainXMLFromNative(virConnectPtr conn,
     }
 
     if (STREQ(format, XEN_CONFIG_FORMAT_XM)) {
-        conf = virConfReadMem(config, strlen(config));
+        conf = virConfReadMem(config, strlen(config), 0);
         if (!conf)
             goto cleanup;
 

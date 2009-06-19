@@ -2542,7 +2542,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
         auth_unix_ro = REMOTE_AUTH_NONE;
 #endif
 
-    conf = virConfReadFile (filename);
+    conf = virConfReadFile (filename, 0);
     if (!conf) return -1;
 
     /*

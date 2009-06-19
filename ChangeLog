@@ -1,3 +1,9 @@
+Fri Jun 19 14:32:41 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/qemud.c src/conf.c src/conf.h src/qemu_conf.c src/xen_unified.c
+	  src/xm_internal.c tests/conftest.c tests/xmconfigtest.c: extend
+	  the configuration parser for VMX syntax, patch by Matthias Bolte
+
 Thu Jun 18 14:56:24 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Fix socket path for remote SSH
