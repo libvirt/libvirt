@@ -1,22 +1,17 @@
+Mon Jun 22 12:35:34 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/util.c: Fix segfault if storage pool has no type attribute
+	(possibly others)
+
 Mon Jun 22 12:33:37 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/qemu_driver.c: Fix memory reporting for inactive domains
 	in the qemu driver.
 
-Currently, 'info' will always report that mem = max mem. Make sure we
-actually return the correct mem value.
-
 Mon Jun 22 12:31:38 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/storage_backend_fs.c src/storage_driver.c:
 	Fix raw storage volume creation for allocation < capacity.
-
-CreateXMLFrom changes accidentally caused all raw volume creation to be
-fully allocated (as though allocation == capacity). Fix this.
-
-Also force CreateXMLFrom to maintain the previous behavior: sparseness
-should still be maintained since we search for holes when copying, and the
-clone behavior hasn't been tested with anything but the broken behavior.
 
 Mon Jun 22 11:09:18 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
