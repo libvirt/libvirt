@@ -1,3 +1,9 @@
+Mon Jun 22 12:40:11 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/libvirt_private.syms src/storage_conf.c src/storage_conf.h
+	src/storage_driver.c src/test.c:
+	Refactor storage XML parsing to be consistent with domain/network conf.
+
 Mon Jun 22 12:38:19 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/test.c: Activate virtual networks initialized in custom test driver.

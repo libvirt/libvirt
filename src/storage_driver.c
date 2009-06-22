@@ -466,7 +466,7 @@ storagePoolCreate(virConnectPtr conn,
     virStorageBackendPtr backend;
 
     storageDriverLock(driver);
-    if (!(def = virStoragePoolDefParse(conn, xml, NULL)))
+    if (!(def = virStoragePoolDefParseString(conn, xml)))
         goto cleanup;
 
     pool = virStoragePoolObjFindByUUID(&driver->pools, def->uuid);
@@ -520,7 +520,7 @@ storagePoolDefine(virConnectPtr conn,
     virStorageBackendPtr backend;
 
     storageDriverLock(driver);
-    if (!(def = virStoragePoolDefParse(conn, xml, NULL)))
+    if (!(def = virStoragePoolDefParseString(conn, xml)))
         goto cleanup;
 
     if ((backend = virStorageBackendForType(def->type)) == NULL)
@@ -1222,7 +1222,7 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
     if ((backend = virStorageBackendForType(pool->def->type)) == NULL)
         goto cleanup;
 
-    voldef = virStorageVolDefParse(obj->conn, pool->def, xmldesc, NULL);
+    voldef = virStorageVolDefParseString(obj->conn, pool->def, xmldesc);
     if (voldef == NULL)
         goto cleanup;
 
@@ -1364,7 +1364,7 @@ storageVolumeCreateXMLFrom(virStoragePoolPtr obj,
         goto cleanup;
     }
 
-    newvol = virStorageVolDefParse(obj->conn, pool->def, xmldesc, NULL);
+    newvol = virStorageVolDefParseString(obj->conn, pool->def, xmldesc);
     if (newvol == NULL)
         goto cleanup;
 

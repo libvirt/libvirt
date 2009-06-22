@@ -28,6 +28,8 @@
 #include "util.h"
 #include "threads.h"
 
+#include <libxml/tree.h>
+
 /* Shared structs */
 
 
@@ -306,16 +308,26 @@ virStorageVolDefPtr virStorageVolDefFindByName(virStoragePoolObjPtr pool,
 
 void virStoragePoolObjClearVols(virStoragePoolObjPtr pool);
 
-virStoragePoolDefPtr virStoragePoolDefParse(virConnectPtr conn,
-                                            const char *xml,
-                                            const char *filename);
+virStoragePoolDefPtr virStoragePoolDefParseString(virConnectPtr conn,
+                                                  const char *xml);
+virStoragePoolDefPtr virStoragePoolDefParseFile(virConnectPtr conn,
+                                                const char *filename);
+virStoragePoolDefPtr virStoragePoolDefParseNode(virConnectPtr conn,
+                                                xmlDocPtr xml,
+                                                xmlNodePtr root);
 char *virStoragePoolDefFormat(virConnectPtr conn,
                               virStoragePoolDefPtr def);
 
-virStorageVolDefPtr virStorageVolDefParse(virConnectPtr conn,
-                                          virStoragePoolDefPtr pool,
-                                          const char *xml,
-                                          const char *filename);
+virStorageVolDefPtr virStorageVolDefParseString(virConnectPtr conn,
+                                                virStoragePoolDefPtr pool,
+                                                const char *xml);
+virStorageVolDefPtr virStorageVolDefParseFile(virConnectPtr conn,
+                                              virStoragePoolDefPtr pool,
+                                              const char *filename);
+virStorageVolDefPtr virStorageVolDefParseNode(virConnectPtr conn,
+                                              virStoragePoolDefPtr pool,
+                                              xmlDocPtr xml,
+                                              xmlNodePtr root);
 char *virStorageVolDefFormat(virConnectPtr conn,
                              virStoragePoolDefPtr pool,
                              virStorageVolDefPtr def);
