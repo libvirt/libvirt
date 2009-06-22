@@ -447,6 +447,11 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
         if (str == NULL)
             return(NULL);
     } else if (CUR == '[') {
+        if (ctxt->conf->flags & VIR_CONF_FLAG_VMX_FORMAT) {
+            virConfError(ctxt, VIR_ERR_CONF_SYNTAX,
+                         _("lists not allowed in VMX format"));
+            return(NULL);
+        }
         type = VIR_CONF_LIST;
         NEXT;
         SKIP_BLANKS_AND_EOL;
@@ -486,6 +491,11 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
             return(NULL);
         }
     } else if (c_isdigit(CUR) || (CUR == '-') || (CUR == '+')) {
+        if (ctxt->conf->flags & VIR_CONF_FLAG_VMX_FORMAT) {
+            virConfError(ctxt, VIR_ERR_CONF_SYNTAX,
+                         _("numbers not allowed in VMX format"));
+            return(NULL);
+        }
         if (virConfParseLong(ctxt, &l) < 0) {
             return(NULL);
         }
@@ -530,7 +540,7 @@ virConfParseName(virConfParserCtxtPtr ctxt)
     }
     while ((ctxt->cur < ctxt->end) &&
            (c_isalnum(CUR) || (CUR == '_') ||
-            ((ctxt->conf->flags & VIR_CONF_FLAG_ALLOW_VMX_NAMES) &&
+            ((ctxt->conf->flags & VIR_CONF_FLAG_VMX_FORMAT) &&
              ((CUR == ':') || (CUR == '.')))))
         NEXT;
     ret = strndup(base, ctxt->cur - base);

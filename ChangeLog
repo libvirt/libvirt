@@ -1,3 +1,8 @@
+Mon Jun 22 12:27:39 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/conf.[ch]: restrict VMX syntax parsing types, patch by Matthias
+	  Bolte
+
 Mon Jun 22 12:14:48 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/storage_driver.c: cleanup when creating a storage pool fails,
