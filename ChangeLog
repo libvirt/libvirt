@@ -1,3 +1,11 @@
+Mon Jun 22 12:33:37 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/qemu_driver.c: Fix memory reporting for inactive domains
+	in the qemu driver.
+
+Currently, 'info' will always report that mem = max mem. Make sure we
+actually return the correct mem value.
+
 Mon Jun 22 12:31:38 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/storage_backend_fs.c src/storage_driver.c:

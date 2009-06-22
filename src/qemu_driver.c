@@ -2553,16 +2553,22 @@ static int qemudDomainGetInfo(virDomainPtr dom,
         }
     }
 
-    err = qemudDomainGetMemoryBalloon(dom->conn, vm, &balloon);
-    if (err < 0)
-        goto cleanup;
-
     info->maxMem = vm->def->maxmem;
-    if (err == 0)
-        /* Balloon not supported, so maxmem is always the allocation */
-        info->memory = vm->def->maxmem;
-    else
-        info->memory = balloon;
+
+    if (virDomainIsActive(vm)) {
+        err = qemudDomainGetMemoryBalloon(dom->conn, vm, &balloon);
+        if (err < 0)
+            goto cleanup;
+
+        if (err == 0)
+            /* Balloon not supported, so maxmem is always the allocation */
+            info->memory = vm->def->maxmem;
+        else
+            info->memory = balloon;
+    } else {
+        info->memory = vm->def->memory;
+    }
+
     info->nrVirtCpu = vm->def->vcpus;
     ret = 0;
 
