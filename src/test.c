@@ -1623,16 +1623,16 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
                                   def)) == NULL) {
         goto cleanup;
     }
+    def = NULL;
     dom->persistent = 1;
-    dom->def->id = -1;
+
     event = virDomainEventNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_DEFINED,
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED);
 
-    ret = virGetDomain(conn, def->name, def->uuid);
-    def = NULL;
+    ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
     if (ret)
-        ret->id = -1;
+        ret->id = dom->def->id;
 
 cleanup:
     virDomainDefFree(def);
