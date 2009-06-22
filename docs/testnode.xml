@@ -11,6 +11,9 @@
   <domain file="testdomfc4.xml"/>
   <network file="testnetpriv.xml"/>
   <network file="testnetdef.xml"/>
+  <pool file="testpool.xml">
+    <volume file="testvol.xml"/>
+  </pool>
 
   <cpu>
     <mhz>6000</mhz>

@@ -1,0 +1,15 @@
+<pool type='dir'>
+  <name>default-pool</name>
+  <uuid>35bb2ad9-388a-cdfe-461a-b8907f6e53fe</uuid>
+  <capacity>107374182400</capacity>
+  <allocation>0</allocation>
+  <available>107374182400</available>
+  <target>
+    <path>/default-pool</path>
+    <permissions>
+      <mode>0700</mode>
+      <owner>10736</owner>
+      <group>10736</group>
+    </permissions>
+  </target>
+</pool>

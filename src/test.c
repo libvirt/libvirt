@@ -341,6 +341,87 @@ static char *testBuildFilename(const char *relativeTo,
     }
 }
 
+static int testOpenVolumesForPool(virConnectPtr conn,
+                                  xmlDocPtr xml,
+                                  xmlXPathContextPtr ctxt,
+                                  const char *file,
+                                  virStoragePoolObjPtr pool,
+                                  int poolidx) {
+    char *vol_xpath;
+    int i, ret, func_ret = -1;
+    xmlNodePtr *vols = NULL;
+    virStorageVolDefPtr def;
+
+    /* Find storage volumes */
+    if (virAsprintf(&vol_xpath, "/node/pool[%d]/volume", poolidx) < 0) {
+        virReportOOMError(NULL);
+        goto error;
+    }
+
+    ret = virXPathNodeSet(conn, vol_xpath, ctxt, &vols);
+    VIR_FREE(vol_xpath);
+    if (ret < 0) {
+        testError(NULL, VIR_ERR_XML_ERROR,
+                  _("node vol list for pool '%s'"), pool->def->name);
+        goto error;
+    }
+
+    for (i = 0 ; i < ret ; i++) {
+        char *relFile = virXMLPropString(vols[i], "file");
+        if (relFile != NULL) {
+            char *absFile = testBuildFilename(file, relFile);
+            VIR_FREE(relFile);
+            if (!absFile) {
+                testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                          _("resolving volume filename"));
+                goto error;
+            }
+
+            def = virStorageVolDefParseFile(conn, pool->def, absFile);
+            VIR_FREE(absFile);
+            if (!def)
+                goto error;
+        } else {
+            if ((def = virStorageVolDefParseNode(conn, pool->def, xml,
+                                                 vols[i])) == NULL) {
+                goto error;
+            }
+        }
+
+        if (VIR_REALLOC_N(pool->volumes.objs,
+                          pool->volumes.count+1) < 0) {
+            virReportOOMError(conn);
+            goto error;
+        }
+
+        if (virAsprintf(&def->target.path, "%s/%s",
+                        pool->def->target.path,
+                        def->name) == -1) {
+            virReportOOMError(conn);
+            goto error;
+        }
+
+        def->key = strdup(def->target.path);
+        if (def->key == NULL) {
+            virReportOOMError(conn);
+            goto error;
+        }
+
+        pool->def->allocation += def->allocation;
+        pool->def->available = (pool->def->capacity -
+                                pool->def->allocation);
+
+        pool->volumes.objs[pool->volumes.count++] = def;
+        def = NULL;
+    }
+
+    func_ret = 0;
+error:
+    virStorageVolDefFree(def);
+    VIR_FREE(vols);
+    return func_ret;
+}
+
 static int testOpenFromFile(virConnectPtr conn,
                             const char *file) {
     int fd = -1, i, ret;
@@ -589,6 +670,13 @@ static int testOpenFromFile(virConnectPtr conn,
             goto error;
         }
         pool->active = 1;
+
+        /* Find storage volumes */
+        if (testOpenVolumesForPool(conn, xml, ctxt, file, pool, i+1) < 0) {
+            virStoragePoolObjUnlock(pool);
+            goto error;
+        }
+
         virStoragePoolObjUnlock(pool);
     }
     VIR_FREE(pools);
