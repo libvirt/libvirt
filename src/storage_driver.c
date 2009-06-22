@@ -498,11 +498,13 @@ storagePoolCreate(virConnectPtr conn,
     pool->active = 1;
 
     ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+    virStoragePoolObjUnlock(pool);
+    pool = NULL;
 
 cleanup:
     virStoragePoolDefFree(def);
     if (pool)
-        virStoragePoolObjUnlock(pool);
+        virStoragePoolObjRemove(&driver->pools, pool);
     storageDriverUnlock(driver);
     return ret;
 }

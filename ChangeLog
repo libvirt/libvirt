@@ -1,3 +1,8 @@
+Mon Jun 22 12:14:48 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/storage_driver.c: cleanup when creating a storage pool fails,
+	  patch by Henrik Persson
+
 Fri Jun 19 14:32:41 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/qemud.c src/conf.c src/conf.h src/qemu_conf.c src/xen_unified.c
