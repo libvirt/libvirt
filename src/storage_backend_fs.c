@@ -1047,7 +1047,7 @@ static int createRaw(virConnectPtr conn,
         goto cleanup;
     }
 
-    remain = vol->capacity;
+    remain = vol->allocation;
 
     if (inputfd != -1) {
         int amtread = -1;

@@ -1379,6 +1379,11 @@ storageVolumeCreateXMLFrom(virStoragePoolPtr obj,
     if (newvol->capacity < origvol->capacity)
         newvol->capacity = origvol->capacity;
 
+    /* Make sure allocation is at least as large as the destination cap,
+     * to make absolutely sure we copy all possible contents */
+    if (newvol->allocation < origvol->capacity)
+        newvol->allocation = origvol->capacity;
+
     if (!backend->buildVolFrom) {
         virStorageReportError(obj->conn, VIR_ERR_NO_SUPPORT,
                               "%s", _("storage pool does not support volume creation from an existing volume"));
