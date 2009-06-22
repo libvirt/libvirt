@@ -1,3 +1,7 @@
+Mon Jun 22 12:38:19 EDT 2009 Cole Robinson <crobinso@redhat.com>
+
+	* src/test.c: Activate virtual networks initialized in custom test driver.
+
 Mon Jun 22 12:35:34 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/util.c: Fix segfault if storage pool has no type attribute

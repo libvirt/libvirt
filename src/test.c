@@ -381,7 +381,8 @@ static int testOpenFromFile(virConnectPtr conn,
     if (!(xml = xmlReadFd(fd, file, NULL,
                           XML_PARSE_NOENT | XML_PARSE_NONET |
                           XML_PARSE_NOERROR | XML_PARSE_NOWARNING))) {
-        testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s", _("host"));
+        testError(NULL, VIR_ERR_INTERNAL_ERROR,
+                  _("Invalid XML in file '%s'"), file);
         goto error;
     }
     close(fd);
@@ -389,7 +390,8 @@ static int testOpenFromFile(virConnectPtr conn,
 
     root = xmlDocGetRootElement(xml);
     if ((root == NULL) || (!xmlStrEqual(root->name, BAD_CAST "node"))) {
-        testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node"));
+        testError(NULL, VIR_ERR_XML_ERROR, "%s",
+                  _("Root element is not 'node'"));
         goto error;
     }
 
@@ -541,6 +543,7 @@ static int testOpenFromFile(virConnectPtr conn,
             goto error;
         }
         net->persistent = 1;
+        net->active = 1;
         virNetworkObjUnlock(net);
     }
     VIR_FREE(networks);
