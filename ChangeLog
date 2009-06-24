@@ -1,3 +1,9 @@
+Wed Jun 24 18:15:56 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/opennebula/one_conf.c src/opennebula/one_driver.c: fix One
+	  driver compilation issues, patch by Javier Fontan and remove
+	  some tabs in format strings
+
 Mon Jun 22 12:40:11 EDT 2009 Cole Robinson <crobinso@redhat.com>
 
 	* src/libvirt_private.syms src/storage_conf.c src/storage_conf.h

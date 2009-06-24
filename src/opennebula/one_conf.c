@@ -172,20 +172,20 @@ char* xmlOneTemplate(virConnectPtr conn,virDomainDefPtr def)
         // missing source is only allowed at cdrom and floppy
         if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
             virBufferVSprintf(&buf, "DISK=[ type = disk,\n"
-                              "	source = \"%s\",\n",
+                              "\tsource = \"%s\",\n",
                               def->disks[i]->src);
         }
         else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
             virBufferAddLit(&buf,  "DISK=[ type = cdrom,\n");
-            if (def->disks[i]->src) virBufferVSprintf(&buf, "	source = \"%s\",\n",def->disks[i]->src);
+            if (def->disks[i]->src) virBufferVSprintf(&buf, "\tsource = \"%s\",\n",def->disks[i]->src);
         }
         else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
             virBufferAddLit(&buf,  "DISK=[ type = floppy,\n");
-            if (def->disks[i]->src) virBufferVSprintf(&buf, "	source = \"%s\",\n",def->disks[i]->src);
+            if (def->disks[i]->src) virBufferVSprintf(&buf, "\tsource = \"%s\",\n",def->disks[i]->src);
         }
 
-        virBufferVSprintf(&buf, "	target = \"%s\",\n"
-                          "	readonly =",
+        virBufferVSprintf(&buf, "\ttarget = \"%s\",\n"
+                          "\treadonly =",
                           def->disks[i]->dst);
 
         if (def->disks[i]->readonly)
@@ -225,18 +225,24 @@ char* xmlOneTemplate(virConnectPtr conn,virDomainDefPtr def)
         }
     }
 
-    if (def->graphics != NULL) {
-        if (def->graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+    for(i=0;i<def->ngraphics;i++) {
+        if (def->graphics[i] == NULL)
+            continue;
+
+        if (def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
             virBufferAddLit(&buf,"GRAPHICS = [\n  type = \"vnc\"");
 
-            if (def->graphics->data.vnc.listenAddr != NULL)
-                virBufferVSprintf(&buf,",\n  listen = \"%s\"",def->graphics->data.vnc.listenAddr);
+            if (def->graphics[i]->data.vnc.listenAddr != NULL)
+                virBufferVSprintf(&buf,",\n  listen = \"%s\"",
+                    def->graphics[i]->data.vnc.listenAddr);
 
-            if (def->graphics->data.vnc.autoport == 0)
-                virBufferVSprintf(&buf,",\n  port = \"%d\"",def->graphics->data.vnc.port);
+            if (def->graphics[i]->data.vnc.autoport == 0)
+                virBufferVSprintf(&buf,",\n  port = \"%d\"",
+                    def->graphics[i]->data.vnc.port);
 
-            if (def->graphics->data.vnc.passwd != NULL)
-                virBufferVSprintf(&buf,",\n  passwd = \"%s\"",def->graphics->data.vnc.passwd);
+            if (def->graphics[i]->data.vnc.passwd != NULL)
+                virBufferVSprintf(&buf,",\n  passwd = \"%s\"",
+                    def->graphics[i]->data.vnc.passwd);
 
             virBufferAddLit(&buf," ]\n");
 

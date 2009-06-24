@@ -749,6 +749,8 @@ static virDriver oneDriver = {
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
     NULL, /* domainDumpXML */
+    NULL, /* domainXMLFromNative */
+    NULL, /* domainXMLToNative */
     oneListDefinedDomains, /* listDefinedDomains */
     oneNumDefinedDomains, /* numOfDefinedDomains */
     oneDomainStart, /* domainCreate */
