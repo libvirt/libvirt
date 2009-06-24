@@ -45,7 +45,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_ONE
 
-static int oneStartup(void);
+static int oneStartup(int privileged);
 static int oneShutdown(void);
 static int oneActive(void);
 
@@ -628,7 +628,7 @@ return_point:
     return ret;
 };
 
-static int oneStartup(void){
+static int oneStartup(int privileged ATTRIBUTE_UNUSED){
 
     if (VIR_ALLOC(one_driver) < 0) {
         return -1;

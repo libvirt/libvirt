@@ -191,7 +191,7 @@ AC_ARG_WITH([vbox],
 AC_ARG_WITH([lxc],
 [  --with-lxc              add Linux Container support (on)],[],[with_lxc=yes])
 AC_ARG_WITH([one],
-[  --with-one              add ONE support (on)],[],[with_one=no])
+[  --with-one              add ONE support (on)],[],[with_one=check])
 AC_ARG_WITH([test],
 [  --with-test             add test driver support (on)],[],[with_test=yes])
 AC_ARG_WITH([remote],
@@ -420,11 +420,30 @@ AC_CHECK_HEADERS([linux/kvm.h])
 dnl OpenNebula driver Compilation setting
 dnl
 
-if test "$with_one" = "yes" ; then
- CFLAGS="$CFLAGS -I$ONE_LOCATION/include"
- ONE_LIBS="-L/usr/local/lib -lxmlrpc_client++ -lxmlrpc -lxmlrpc_util -lxmlrpc_xmlparse -lxmlrpc_xmltok -lxmlrpc++ -lxmlrpc_client -L$ONE_LOCATION/lib -loneapi"
- AC_SUBST([ONE_LIBS])
+XMLRPC_REQUIRED=1.14.0
+
+XMLRPC_CFLAGS=
+XMLRPC_LIBS=
+if test "x$with_one" = "xyes" -o "x$with_one" = "xcheck"; then
+    PKG_CHECK_MODULES(XMLRPC, xmlrpc_client >= $XMLRPC_REQUIRED,
+      [with_one=yes], [
+      if test "x$with_one" = "xcheck" ; then
+          with_one=no
+      else
+          AC_MSG_ERROR(
+            [You must install XMLRPC-C >= $XMLRPC_REQUIRED to compile libvirt ONE driver])
+      fi
+    ])
+    if test "x$with_one" = "xyes" ; then
+        AC_DEFINE_UNQUOTED([HAVE_XMLRPC], 1,
+          [whether One is used to broadcast server presence])
+    fi
 fi
+AM_CONDITIONAL([HAVE_XMLRPC], [test "x$with_one" = "xyes"])
+AM_CONDITIONAL([WITH_ONE], [test "x$with_one" = "xyes"])
+AC_SUBST([XMLRPC_CFLAGS])
+AC_SUBST([XMLRPC_LIBS])
+
 
 dnl Need to test if pkg-config exists
 PKG_PROG_PKG_CONFIG
@@ -1492,6 +1511,11 @@ if test "$with_netcf" = "yes" ; then
 AC_MSG_NOTICE([   netcf: $NETCF_CFLAGS $NETCF_LIBS])
 else
 AC_MSG_NOTICE([   netcf: no])
+fi
+if test "$with_one" = "yes" ; then
+AC_MSG_NOTICE([  xmlrpc: $XMLRPC_CFLAGS $XMLRPC_LIBS])
+else
+AC_MSG_NOTICE([  xmlrpc: no])
 fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])

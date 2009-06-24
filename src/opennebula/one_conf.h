@@ -27,6 +27,7 @@
 #include "domain_conf.h"
 #include "capabilities.h"
 #include "threads.h"
+#include "one_client.h"
 
 struct one_driver{
     virMutex lock;

@@ -11,6 +11,7 @@
 %define with_python        0%{!?_without_python:1}
 %define with_libvirtd      0%{!?_without_libvirtd:1}
 %define with_uml           0%{!?_without_uml:1}
+%define with_one           0%{!?_without_uml:1}
 %define with_network       0%{!?_without_network:1}
 %define with_storage_fs    0%{!?_without_storage_fs:1}
 %define with_storage_lvm   0%{!?_without_storage_lvm:1}
@@ -40,13 +41,13 @@
 
 #
 # If building on RHEL switch on the specific support
-# for the specific Xen version
 #
 %if 0%{?fedora}
-%define with_rhel5 0
+%define with_rhel5  0
 %else
-%define with_rhel5 1
+%define with_rhel5  1
 %define with_polkit 0
+%define with_one    0
 %endif
 
 
@@ -110,6 +111,9 @@ Requires: parted
 %endif
 %if %{with_xen}
 BuildRequires: xen-devel
+%endif
+%if %{with_one}
+BuildRequires: xmlrpc-c-devel >= 1.14.0
 %endif
 BuildRequires: libxml2-devel
 BuildRequires: xhtml1-dtds
@@ -243,6 +247,10 @@ of recent versions of Linux (and other OSes).
 %define _without_uml --without-uml
 %endif
 
+%if ! %{with_one}
+%define _without_one --without-one
+%endif
+
 %if %{with_rhel5}
 %define _with_rhel5_api --with-rhel5-api
 %endif
@@ -281,6 +289,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_python} \
            %{?_without_libvirtd} \
            %{?_without_uml} \
+           %{?_without_one} \
            %{?_without_network} \
            %{?_with_rhel5_api} \
            %{?_without_storage_fs} \

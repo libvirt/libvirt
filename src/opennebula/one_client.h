@@ -1,4 +1,3 @@
-/*---------------------------------------------------------------------------*/
 /* Copyright 2002-2009, Distributed Systems Architecture Group, Universidad
  * Complutense de Madrid (dsa-research.org)
  *
@@ -16,15 +15,52 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
-/*---------------------------------------------------------------------------*/
+
+#ifndef ONE_CLIENT_H_
+#define ONE_CLIENT_H_
+
+#include <xmlrpc-c/base.h>
+#include <xmlrpc-c/client.h>
+
+struct _oneClient {
+    xmlrpc_env env;
+    char *url;
+    char *session;
+    char *error;
+};
+
+typedef struct _oneClient oneClient;
+typedef oneClient *oneClientPtr;
+
+void c_oneStart(void);
+
+int c_oneDeploy(int vmid, int hid);
+
+int c_oneMigrate(int vmid, int hid, int flag);
+
+int c_oneAllocate(char* template_file);
+
+int c_oneAllocateTemplate(char* vm_template);
+
+int c_oneAction(int vmid,char* action);
+
+int c_oneShutdown(int vmid);
+
+int c_oneSuspend(int vmid);
+
+int c_oneStop(int vmid);
+
+int c_oneResume(int vmid);
+
+int c_oneCancel(int vmid);
+
+int c_oneFinalize(int vmid);
+
+int c_oneVmInfo(int vmid, char* ret_info,int leng);
+
+void c_oneFree(void);
 
 
-#ifndef ONE_DRIVER_H
-#define ONE_DRIVER_H
+#endif /* ONE_CLIENT_H_ */
 
-#include <config.h>
-#include "one_client.h"
 
-int oneRegister(void);
-
-#endif /* ONE_DRIVER_H */

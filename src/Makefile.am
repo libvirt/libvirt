@@ -149,7 +149,9 @@ ONE_DRIVER_SOURCES =					\
 		./opennebula/one_conf.c			\
 		./opennebula/one_conf.h			\
 		./opennebula/one_driver.c		\
-		./opennebula/one_driver.h
+		./opennebula/one_driver.h		\
+		./opennebula/one_client.c		\
+		./opennebula/one_client.h
 
 NETWORK_DRIVER_SOURCES =					\
 		network_driver.h network_driver.c
@@ -355,6 +357,7 @@ noinst_LTLIBRARIES += libvirt_driver_one.la
 # Stateful, so linked to daemon instead
 #libvirt_la_LIBADD  += libvirt_driver_one.la
 endif
+libvirt_driver_one_la_CFLAGS = $(ONE_LIBS)
 libvirt_driver_one_la_LDFLAGS = $(ONE_LIBS)
 #libvirt_driver_one_la_CFLAGS  = "-DWITH_ONE"
 if WITH_DRIVER_MODULES

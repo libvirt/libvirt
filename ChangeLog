@@ -1,3 +1,12 @@
+Wed Jun 24 19:28:16 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in libvirt.spec.in src/Makefile.am
+	  src/opennebula/one_client.[ch] src/opennebula/one_conf.h
+	  src/opennebula/one_driver.[ch] : Finish the integration of OpenNebula,
+	  avoid dependancy on OpenNebula libraries, require xmlrpc-c-devel
+	  and build it by default, based on patch by Javier Fontan and DanB
+	  suggestions
+
 Wed Jun 24 18:15:56 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/opennebula/one_conf.c src/opennebula/one_driver.c: fix One
