@@ -1,3 +1,7 @@
+Thu Jun 25 16:50:54 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/node_device_conf.c: fix a leak, patch by Dave Allan
+
 Thu Jun 25 15:46:11 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: fix a domain state problem after

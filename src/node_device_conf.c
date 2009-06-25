@@ -1203,6 +1203,8 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         VIR_FREE(data->net.address);
         break;
     case VIR_NODE_DEV_CAP_SCSI_HOST:
+        VIR_FREE(data->scsi_host.wwnn);
+        VIR_FREE(data->scsi_host.wwpn);
         break;
     case VIR_NODE_DEV_CAP_SCSI:
         VIR_FREE(data->scsi.type);
