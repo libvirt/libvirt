@@ -3070,6 +3070,8 @@ static int qemudDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr sec
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
+    memset(seclabel, 0, sizeof(*seclabel));
+
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
@@ -3127,7 +3129,7 @@ static int qemudNodeGetSecurityModel(virConnectPtr conn,
 
     qemuDriverLock(driver);
     if (!driver->securityDriver) {
-        ret = -2;
+        memset(secmodel, 0, sizeof (*secmodel));
         goto cleanup;
     }
 

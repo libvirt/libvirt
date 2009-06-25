@@ -1643,8 +1643,10 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
     /* Security model and label information */
     memset(&secmodel, 0, sizeof secmodel);
     if (virNodeGetSecurityModel(ctl->conn, &secmodel) == -1) {
-        virDomainFree(dom);
-        return FALSE;
+        if (last_error->code != VIR_ERR_NO_SUPPORT) {
+            virDomainFree(dom);
+            return FALSE;
+        }
     } else {
         /* Only print something if a security model is active */
         if (secmodel.model[0] != '\0') {

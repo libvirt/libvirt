@@ -1,3 +1,13 @@
+Thu Jun 25 10:32:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix broken dominfo command when no security driver is implemented
+	* src/libvirt.c: Clarify semantics of return value for
+	virDomainGetSecurityLabel and virNodeGetSecurityModel
+	* src/remote_internal.c src/qemu_driver.c: memset seclabel
+	to zero
+	* src/virsh.c: Check VIR_ERR_NO_SUPPORT when querying security
+	labels in dominfo command.
+
 Wed Jun 24 19:40:43 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* po/*: update a lot of translations, and regenerate the po* files

@@ -4386,11 +4386,11 @@ error:
  * @domain: a domain object
  * @seclabel: pointer to a virSecurityLabel structure
  *
- * Extract security label of an active domain.
+ * Extract security label of an active domain. The 'label' field
+ * in the @seclabel argument will be initialized to the empty
+ * string if the domain is not running under a security model.
  *
- * Returns 0 in case of success, -1 in case of failure, and -2
- * if the operation is not supported (caller decides if that's
- * an error).
+ * Returns 0 in case of success, -1 in case of failure
  */
 int
 virDomainGetSecurityLabel(virDomainPtr domain, virSecurityLabelPtr seclabel)
@@ -4421,10 +4421,11 @@ virDomainGetSecurityLabel(virDomainPtr domain, virSecurityLabelPtr seclabel)
  * @conn: a connection object
  * @secmodel: pointer to a virSecurityModel structure
  *
- * Extract the security model of a hypervisor.
+ * Extract the security model of a hypervisor. The 'model' field
+ * in the @secmodel argument may be initialized to the empty
+ * string if the driver has not activated a security model.
  *
- * Returns 0 in case of success, -1 in case of failure, and -2 if the
- * operation is not supported (caller decides if that's an error).
+ * Returns 0 in case of success, -1 in case of failure
  */
 int
 virNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)

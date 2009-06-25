@@ -4042,7 +4042,7 @@ msgid "returned buffer is not same size as requested"
 msgstr "প্রাপ্ত বাফারের মাপ অনুরোধ করা মাপের সমান নয়"
 
 # comment from maintainer:
-# Peek is the operation of reading something in that context. 
+# Peek is the operation of reading something in that context.
 #: src/remote_internal.c:3225
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"

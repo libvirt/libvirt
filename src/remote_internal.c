@@ -2323,6 +2323,8 @@ remoteDomainGetSecurityLabel (virDomainPtr domain, virSecurityLabelPtr seclabel)
 
     make_nonnull_domain (&args.dom, domain);
     memset (&ret, 0, sizeof ret);
+    memset (seclabel, 0, sizeof (*seclabel));
+
     if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_SECURITY_LABEL,
               (xdrproc_t) xdr_remote_domain_get_security_label_args, (char *)&args,
               (xdrproc_t) xdr_remote_domain_get_security_label_ret, (char *)&ret) == -1) {
@@ -2356,6 +2358,8 @@ remoteNodeGetSecurityModel (virConnectPtr conn, virSecurityModelPtr secmodel)
     remoteDriverLock(priv);
 
     memset (&ret, 0, sizeof ret);
+    memset (secmodel, 0, sizeof (*secmodel));
+
     if (call (conn, priv, 0, REMOTE_PROC_NODE_GET_SECURITY_MODEL,
               (xdrproc_t) xdr_void, NULL,
               (xdrproc_t) xdr_remote_node_get_security_model_ret, (char *)&ret) == -1) {
