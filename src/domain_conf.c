@@ -4187,7 +4187,8 @@ int virDomainLoadAllConfigs(virConnectPtr conn,
                                       opaque);
         if (dom) {
             virDomainObjUnlock(dom);
-            dom->persistent = 1;
+            if (!liveStatus)
+                dom->persistent = 1;
         }
     }
 

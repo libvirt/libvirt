@@ -5116,6 +5116,7 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
+        virDomainSaveStatus(dconn, driver->stateDir, vm);
     } else {
         qemudShutdownVMDaemon (dconn, driver, vm);
         event = virDomainEventNewFromObj(vm,

@@ -1,3 +1,11 @@
+Thu Jun 25 15:46:11 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: fix a domain state problem after
+	  migration, patch  by Federico Simoncelli, fixes #507537
+	* src/domain_conf.c:  fix a transcient domain state problem after
+	  destroy, patch  by Federico Simoncelli, fixes #507304
+	* AUTHORS: add Federico Simoncelli and Javier Fontan
+
 Thu Jun 25 10:32:22 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix broken dominfo command when no security driver is implemented
