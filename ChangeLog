@@ -1,3 +1,8 @@
+Thu Jun 25 17:12:09 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/storage_conf.c: fix reading of storage pool definitions at startup
+	  patch by Cole Robinson
+
 Thu Jun 25 16:57:40 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/uml_driver.c: fix UML driver logging macros, patch by Amy

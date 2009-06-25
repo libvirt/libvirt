@@ -1391,12 +1391,11 @@ virStoragePoolObjLoad(virConnectPtr conn,
                       virStoragePoolObjListPtr pools,
                       const char *file,
                       const char *path,
-                      const char *xml,
                       const char *autostartLink) {
     virStoragePoolDefPtr def;
     virStoragePoolObjPtr pool;
 
-    if (!(def = virStoragePoolDefParse(NULL, xml, file))) {
+    if (!(def = virStoragePoolDefParseFile(conn, path))) {
         return NULL;
     }
 
@@ -1450,7 +1449,6 @@ virStoragePoolLoadAllConfigs(virConnectPtr conn,
     }
 
     while ((entry = readdir(dir))) {
-        char *xml = NULL;
         char path[PATH_MAX];
         char autostartLink[PATH_MAX];
         virStoragePoolObjPtr pool;
@@ -1477,14 +1475,10 @@ virStoragePoolLoadAllConfigs(virConnectPtr conn,
             continue;
         }
 
-        if (virFileReadAll(path, 8192, &xml) < 0)
-            continue;
-
-        pool = virStoragePoolObjLoad(conn, pools, entry->d_name, path, xml, autostartLink);
+        pool = virStoragePoolObjLoad(conn, pools, entry->d_name, path,
+                                     autostartLink);
         if (pool)
             virStoragePoolObjUnlock(pool);
-
-        VIR_FREE(xml);
     }
 
     closedir(dir);
