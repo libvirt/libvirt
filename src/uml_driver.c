@@ -66,9 +66,6 @@
 
 static int umlShutdown(void);
 
-#define umlLog(level, msg, ...)                                     \
-    virLogMessage(__FILE__, level, __func__, __LINE__, 0, msg, __VA_ARGS__)
-
 static void umlDriverLock(struct uml_driver *driver)
 {
     virMutexLock(&driver->lock);
@@ -95,8 +92,7 @@ static int umlSetCloseExec(int fd) {
         goto error;
     return 0;
  error:
-    umlLog(VIR_LOG_ERROR,
-             "%s", _("Failed to set close-on-exec file descriptor flag\n"));
+    VIR_ERROR0(_("Failed to set close-on-exec file descriptor flag"));
     return -1;
 }
 
@@ -136,7 +132,7 @@ umlAutostartConfigs(struct uml_driver *driver) {
             !virDomainIsActive(driver->domains.objs[i]) &&
             umlStartVMDaemon(conn, driver, driver->domains.objs[i]) < 0) {
             virErrorPtr err = virGetLastError();
-            umlLog(VIR_LOG_ERROR, _("Failed to autostart VM '%s': %s\n"),
+            VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                      driver->domains.objs[i]->def->name, err->message);
         }
     }
@@ -368,13 +364,13 @@ umlStartup(int privileged) {
 
 
     if ((uml_driver->inotifyFD = inotify_init()) < 0) {
-        umlLog(VIR_LOG_ERROR, "%s", _("cannot initialize inotify"));
+        VIR_ERROR0(_("cannot initialize inotify"));
         goto error;
     }
 
     if (virFileMakePath(uml_driver->monitorDir) < 0) {
         char ebuf[1024];
-        umlLog(VIR_LOG_ERROR, _("Failed to create monitor directory %s: %s"),
+        VIR_ERROR(_("Failed to create monitor directory %s: %s"),
                uml_driver->monitorDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
@@ -407,8 +403,7 @@ umlStartup(int privileged) {
     return 0;
 
 out_of_memory:
-    umlLog (VIR_LOG_ERROR,
-              "%s", _("umlStartup: out of memory\n"));
+    VIR_ERROR0(_("umlStartup: out of memory"));
 
 error:
     VIR_FREE(userdir);
@@ -825,25 +820,25 @@ static int umlStartVMDaemon(virConnectPtr conn,
     tmp = progenv;
     while (*tmp) {
         if (safewrite(logfd, *tmp, strlen(*tmp)) < 0)
-            umlLog(VIR_LOG_WARN, _("Unable to write envv to logfile: %s\n"),
+            VIR_WARN(_("Unable to write envv to logfile: %s"),
                    virStrerror(errno, ebuf, sizeof ebuf));
         if (safewrite(logfd, " ", 1) < 0)
-            umlLog(VIR_LOG_WARN, _("Unable to write envv to logfile: %s\n"),
+            VIR_WARN(_("Unable to write envv to logfile: %s"),
                    virStrerror(errno, ebuf, sizeof ebuf));
         tmp++;
     }
     tmp = argv;
     while (*tmp) {
         if (safewrite(logfd, *tmp, strlen(*tmp)) < 0)
-            umlLog(VIR_LOG_WARN, _("Unable to write argv to logfile: %s\n"),
+            VIR_WARN(_("Unable to write argv to logfile: %s"),
                    virStrerror(errno, ebuf, sizeof ebuf));
         if (safewrite(logfd, " ", 1) < 0)
-            umlLog(VIR_LOG_WARN, _("Unable to write argv to logfile: %s\n"),
+            VIR_WARN(_("Unable to write argv to logfile: %s"),
                    virStrerror(errno, ebuf, sizeof ebuf));
         tmp++;
     }
     if (safewrite(logfd, "\n", 1) < 0)
-        umlLog(VIR_LOG_WARN, _("Unable to write argv to logfile: %s\n"),
+        VIR_WARN(_("Unable to write argv to logfile: %s"),
                  virStrerror(errno, ebuf, sizeof ebuf));
 
     vm->monitor = -1;
@@ -888,8 +883,7 @@ static void umlShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     vm->monitor = -1;
 
     if ((ret = waitpid(vm->pid, NULL, 0)) != vm->pid) {
-        umlLog(VIR_LOG_WARN,
-               _("Got unexpected pid %d != %d\n"),
+        VIR_WARN(_("Got unexpected pid %d != %d"),
                ret, vm->pid);
     }
 

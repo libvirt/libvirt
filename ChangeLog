@@ -1,3 +1,9 @@
+Thu Jun 25 16:57:40 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/uml_driver.c: fix UML driver logging macros, patch by Amy
+	  Griffis
+	* AUTHORS: adding Amy Griffis
+
 Thu Jun 25 16:50:54 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/node_device_conf.c: fix a leak, patch by Dave Allan
