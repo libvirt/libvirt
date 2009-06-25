@@ -55,6 +55,12 @@ enum {
     BACKING_STORE_ERROR,
 };
 
+enum {
+    TOOL_QEMU_IMG,
+    TOOL_KVM_IMG,
+    TOOL_QCOW_CREATE,
+};
+
 static int cowGetBackingStore(virConnectPtr, char **,
                               const unsigned char *, size_t);
 static int qcowXGetBackingStore(virConnectPtr, char **,
@@ -1363,6 +1369,77 @@ static int createQemuCreate(virConnectPtr conn,
     return 0;
 }
 
+static createFile
+toolTypeToFunction(virConnectPtr conn, int tool_type)
+{
+    switch (tool_type) {
+    case TOOL_KVM_IMG:
+    case TOOL_QEMU_IMG:
+        return createQemuImg;
+    case TOOL_QCOW_CREATE:
+        return createQemuCreate;
+    default:
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Unknown file create tool type '%d'."),
+                              tool_type);
+    }
+
+    return NULL;
+}
+
+static int
+findImageTool(char **tool)
+{
+    int tool_type = -1;
+    char *tmp = NULL;
+
+    if ((tmp = virFindFileInPath("kvm-img")) != NULL) {
+        tool_type = TOOL_KVM_IMG;
+    } else if ((tmp = virFindFileInPath("qemu-img")) != NULL) {
+        tool_type = TOOL_QEMU_IMG;
+    } else if ((tmp = virFindFileInPath("qcow-create")) != NULL) {
+        tool_type = TOOL_QCOW_CREATE;
+    }
+
+    if (tool)
+        *tool = tmp;
+    else
+        VIR_FREE(tmp);
+
+    return tool_type;
+}
+
+static createFile
+buildVolFromFunction(virConnectPtr conn,
+                     virStorageVolDefPtr vol,
+                     virStorageVolDefPtr inputvol)
+{
+    int tool_type;
+
+    if (!inputvol)
+        return NULL;
+
+    /* If either volume is a non-raw file vol, we need to use an external
+     * tool for converting
+     */
+    if ((vol->type == VIR_STORAGE_VOL_FILE &&
+         vol->target.format != VIR_STORAGE_VOL_FILE_RAW) ||
+        (inputvol->type == VIR_STORAGE_VOL_FILE &&
+         inputvol->target.format != VIR_STORAGE_VOL_FILE_RAW)) {
+
+        if ((tool_type = findImageTool(NULL)) != -1) {
+            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                  "%s", _("creation of non-raw file images is "
+                                          "not supported without qemu-img."));
+            return NULL;
+        }
+
+        return toolTypeToFunction(conn, tool_type);
+    }
+
+    return createRaw;
+}
+
 static int
 _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
                                      virStorageVolDefPtr vol,
@@ -1370,28 +1447,19 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
 {
     int fd;
     createFile create_func;
-    char *create_tool;
+    int tool_type;
 
-    if (vol->target.format == VIR_STORAGE_VOL_FILE_RAW &&
-        (!inputvol ||
-         (inputvol->type == VIR_STORAGE_VOL_BLOCK ||
-          inputvol->target.format == VIR_STORAGE_VOL_FILE_RAW))) {
-          /* Raw file creation
-           * Raw -> Raw copying
-           * Block dev -> Raw copying
-           */
+    if (inputvol) {
+        create_func = buildVolFromFunction(conn, vol, inputvol);
+        if (!create_func)
+            return -1;
+    } else if (vol->target.format == VIR_STORAGE_VOL_FILE_RAW) {
         create_func = createRaw;
     } else if (vol->target.format == VIR_STORAGE_VOL_FILE_DIR) {
         create_func = createFileDir;
-    } else if ((create_tool = virFindFileInPath("kvm-img")) != NULL) {
-        VIR_FREE(create_tool);
-        create_func = createQemuImg;
-    } else if ((create_tool = virFindFileInPath("qemu-img")) != NULL) {
-        VIR_FREE(create_tool);
-        create_func = createQemuImg;
-    } else if ((create_tool = virFindFileInPath("qcow-create")) != NULL) {
-        VIR_FREE(create_tool);
-        create_func = createQemuCreate;
+    } else if ((tool_type = findImageTool(NULL)) != -1) {
+        if ((create_func = toolTypeToFunction(conn, tool_type)) == NULL)
+            return -1;
     } else {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("creation of non-raw images "
