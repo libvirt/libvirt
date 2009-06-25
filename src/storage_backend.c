@@ -103,6 +103,95 @@ enum {
     TOOL_QCOW_CREATE,
 };
 
+static int
+virStorageBackendCopyToFD(virConnectPtr conn,
+                          virStorageVolDefPtr vol,
+                          virStorageVolDefPtr inputvol,
+                          int fd,
+                          unsigned long long *total)
+{
+    int inputfd = -1;
+    int amtread = -1;
+    int ret = -1;
+    unsigned long long remain;
+    size_t bytes = 1024 * 1024;
+    char zerobuf[512];
+    char *buf = NULL;
+
+    if (inputvol) {
+        if ((inputfd = open(inputvol->target.path, O_RDONLY)) < 0) {
+            virReportSystemError(conn, errno,
+                                 _("could not open input path '%s'"),
+                                 inputvol->target.path);
+            goto cleanup;
+        }
+    }
+
+    bzero(&zerobuf, sizeof(zerobuf));
+
+    if (VIR_ALLOC_N(buf, bytes) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    remain = *total;
+
+    while (amtread != 0) {
+        int amtleft;
+
+        if (remain < bytes)
+            bytes = remain;
+
+        if ((amtread = saferead(inputfd, buf, bytes)) < 0) {
+            virReportSystemError(conn, errno,
+                                 _("failed reading from file '%s'"),
+                                 inputvol->target.path);
+            goto cleanup;
+        }
+        remain -= amtread;
+
+        /* Loop over amt read in 512 byte increments, looking for sparse
+         * blocks */
+        amtleft = amtread;
+        do {
+            int interval = ((512 > amtleft) ? amtleft : 512);
+            int offset = amtread - amtleft;
+
+            if (memcmp(buf+offset, zerobuf, interval) == 0) {
+                if (lseek(fd, interval, SEEK_CUR) < 0) {
+                    virReportSystemError(conn, errno,
+                                         _("cannot extend file '%s'"),
+                                         vol->target.path);
+                    goto cleanup;
+                }
+            } else if (safewrite(fd, buf+offset, interval) < 0) {
+                virReportSystemError(conn, errno,
+                                     _("failed writing to file '%s'"),
+                                     vol->target.path);
+                goto cleanup;
+
+            }
+        } while ((amtleft -= 512) > 0);
+    }
+
+    if (inputfd != -1 && close(inputfd) < 0) {
+        virReportSystemError(conn, errno,
+                             _("cannot close file '%s'"),
+                             inputvol->target.path);
+        goto cleanup;
+    }
+    inputfd = -1;
+
+    *total -= remain;
+    ret = 0;
+
+cleanup:
+    if (inputfd != -1)
+        close(inputfd);
+
+    return ret;
+}
+
 int
 virStorageBackendCreateRaw(virConnectPtr conn,
                            virStorageVolDefPtr vol,
@@ -110,7 +199,6 @@ virStorageBackendCreateRaw(virConnectPtr conn,
                            unsigned int flags ATTRIBUTE_UNUSED)
 {
     int fd = -1;
-    int inputfd = -1;
     int ret = -1;
     unsigned long long remain;
     char *buf = NULL;
@@ -121,15 +209,6 @@ virStorageBackendCreateRaw(virConnectPtr conn,
                              _("cannot create path '%s'"),
                              vol->target.path);
         goto cleanup;
-    }
-
-    if (inputvol) {
-        if ((inputfd = open(inputvol->target.path, O_RDONLY)) < 0) {
-            virReportSystemError(conn, errno,
-                                 _("could not open input path '%s'"),
-                                 inputvol->target.path);
-            goto cleanup;
-        }
     }
 
     /* Seek to the final size, so the capacity is available upfront
@@ -143,55 +222,10 @@ virStorageBackendCreateRaw(virConnectPtr conn,
 
     remain = vol->allocation;
 
-    if (inputfd != -1) {
-        int amtread = -1;
-        size_t bytes = 1024 * 1024;
-        char zerobuf[512];
-
-        bzero(&zerobuf, sizeof(zerobuf));
-
-        if (VIR_ALLOC_N(buf, bytes) < 0) {
-            virReportOOMError(conn);
+    if (inputvol) {
+        int res = virStorageBackendCopyToFD(conn, vol, inputvol, fd, &remain);
+        if (res < 0)
             goto cleanup;
-        }
-
-        while (amtread != 0) {
-            int amtleft;
-
-            if (remain < bytes)
-                bytes = remain;
-
-            if ((amtread = saferead(inputfd, buf, bytes)) < 0) {
-                virReportSystemError(conn, errno,
-                                     _("failed reading from file '%s'"),
-                                     inputvol->target.path);
-                goto cleanup;
-            }
-            remain -= amtread;
-
-            /* Loop over amt read in 512 byte increments, looking for sparse
-             * blocks */
-            amtleft = amtread;
-            do {
-                int interval = ((512 > amtleft) ? amtleft : 512);
-                int offset = amtread - amtleft;
-
-                if (memcmp(buf+offset, zerobuf, interval) == 0) {
-                    if (lseek(fd, interval, SEEK_CUR) < 0) {
-                        virReportSystemError(conn, errno,
-                                             _("cannot extend file '%s'"),
-                                             vol->target.path);
-                        goto cleanup;
-                    }
-                } else if (safewrite(fd, buf+offset, interval) < 0) {
-                    virReportSystemError(conn, errno,
-                                         _("failed writing to file '%s'"),
-                                         vol->target.path);
-                    goto cleanup;
-
-                }
-            } while ((amtleft -= 512) > 0);
-        }
     }
 
     if (remain) {
@@ -236,20 +270,10 @@ virStorageBackendCreateRaw(virConnectPtr conn,
     }
     fd = -1;
 
-    if (inputfd != -1 && close(inputfd) < 0) {
-        virReportSystemError(conn, errno,
-                             _("cannot close file '%s'"),
-                             inputvol->target.path);
-        goto cleanup;
-    }
-    inputfd = -1;
-
     ret = 0;
 cleanup:
     if (fd != -1)
         close(fd);
-    if (inputfd != -1)
-        close(inputfd);
     VIR_FREE(buf);
 
     return ret;
