@@ -307,6 +307,7 @@ virStoragePoolFormatFileSystemNetTypeToString;
 virStorageVolFormatFileSystemTypeToString;
 virStorageVolFormatFileSystemTypeFromString;
 virStoragePoolTypeFromString;
+virStoragePartedFsTypeTypeToString;
 virStoragePoolObjLock;
 virStoragePoolObjUnlock;
 

@@ -35,26 +35,46 @@
 #include <parted/parted.h>
 #include <stdio.h>
 
+/* we don't need to include the full internal.h just for this */
+#define STRNEQ(a,b) (strcmp((a),(b)) != 0)
+
 /* Make the comparisons below fail if your parted headers
    are so old that they lack the definition.  */
 #ifndef PED_PARTITION_PROTECTED
 # define PED_PARTITION_PROTECTED 0
 #endif
 
+enum diskCommand {
+    DISK_LAYOUT = 0,
+    DISK_GEOMETRY
+};
+
 int main(int argc, char **argv)
 {
     PedDevice *dev;
     PedDisk *disk;
     PedPartition *part;
+    int cmd = DISK_LAYOUT;
 
-    if (argc !=  2) {
-        fprintf(stderr, "syntax: %s DEVICE\n", argv[0]);
+    if (argc ==  3 && STRNEQ(argv[2], "-g")) {
+        cmd = DISK_GEOMETRY;
+    } else if (argc != 2) {
+        fprintf(stderr, "syntax: %s DEVICE [-g]\n", argv[0]);
         return 1;
     }
 
     if ((dev = ped_device_get(argv[1])) == NULL) {
         fprintf(stderr, "unable to access device %s\n", argv[1]);
         return 2;
+    }
+
+    /* return the geometry of the disk and then exit */
+    if(cmd == DISK_GEOMETRY) {
+        printf("%d%c%d%c%d%c%",
+               dev->hw_geom.cylinders, '\0',
+               dev->hw_geom.heads, '\0',
+               dev->hw_geom.sectors, '\0');
+        return 0;
     }
 
     if ((disk = ped_disk_new(dev)) == NULL) {

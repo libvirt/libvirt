@@ -76,6 +76,7 @@ struct _virStorageVolTarget {
     char *path;
     int format;
     virStoragePerms perms;
+    int type; /* only used by disk backend for partition type */
 };
 
 
@@ -155,6 +156,18 @@ struct _virStoragePoolSourceHost {
 
 
 /*
+ * For MSDOS partitions, the free area
+ * is important when creating
+ * logical partitions
+ */
+enum virStorageFreeType {
+    VIR_STORAGE_FREE_NONE = 0,
+    VIR_STORAGE_FREE_NORMAL,
+    VIR_STORAGE_FREE_LOGICAL,
+    VIR_STORAGE_FREE_LAST
+};
+
+/*
  * Available extents on the underlying storage
  */
 typedef struct _virStoragePoolSourceDeviceExtent virStoragePoolSourceDeviceExtent;
@@ -162,6 +175,7 @@ typedef virStoragePoolSourceDeviceExtent *virStoragePoolSourceDeviceExtentPtr;
 struct _virStoragePoolSourceDeviceExtent {
     unsigned long long start;
     unsigned long long end;
+    int type;  /* free space type */
 };
 
 
@@ -176,6 +190,13 @@ struct _virStoragePoolSourceDevice {
     virStoragePoolSourceDeviceExtentPtr freeExtents;
     char *path;
     int format;     /* Pool specific source format */
+    /* When the source device is a physical disk,
+       the geometry data is needed */
+    struct _geometry {
+        int cyliders;
+        int heads;
+        int sectors;
+    } geometry;
 };
 
 
@@ -443,6 +464,30 @@ enum virStorageVolFormatDisk {
 };
 VIR_ENUM_DECL(virStorageVolFormatDisk)
 
+enum virStorageVolTypeDisk {
+    VIR_STORAGE_VOL_DISK_TYPE_NONE = 0,
+    VIR_STORAGE_VOL_DISK_TYPE_PRIMARY,
+    VIR_STORAGE_VOL_DISK_TYPE_LOGICAL,
+    VIR_STORAGE_VOL_DISK_TYPE_EXTENDED,
+    VIR_STORAGE_VOL_DISK_TYPE_LAST,
+};
 
+/*
+ * Mapping of Parted fs-types
+ * MUST be kept in the same order
+ * as virStorageVolFormatDisk
+ */
+enum virStoragePartedFsType {
+    VIR_STORAGE_PARTED_FS_TYPE_NONE = 0,
+    VIR_STORAGE_PARTED_FS_TYPE_LINUX,
+    VIR_STORAGE_PARTED_FS_TYPE_FAT16,
+    VIR_STORAGE_PARTED_FS_TYPE_FAT32,
+    VIR_STORAGE_PARTED_FS_TYPE_LINUX_SWAP,
+    VIR_STORAGE_PARTED_FS_TYPE_LINUX_LVM,
+    VIR_STORAGE_PARTED_FS_TYPE_LINUX_RAID,
+    VIR_STORAGE_PARTED_FS_TYPE_EXTENDED,
+    VIR_STORAGE_PARTED_FS_TYPE_LAST,
+};
+VIR_ENUM_DECL(virStoragePartedFsType)
 
 #endif /* __VIR_STORAGE_CONF_H__ */

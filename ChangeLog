@@ -1,3 +1,10 @@
+Fri Jun 26 18:15:08 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt_private.syms src/parthelper.c src/storage_backend_disk.c
+	  src/storage_conf.c src/storage_conf.h: allow to create storage
+	  volumes on disk backend, patches by Henrik Persson
+	* AUTHORS: add Henrik Persson
+
 Fri Jun 26 17:06:18 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/Makefile.am src/libvirt.c src/libvirt_private.syms src/logging.c

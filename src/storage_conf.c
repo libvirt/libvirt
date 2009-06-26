@@ -93,6 +93,12 @@ VIR_ENUM_IMPL(virStorageVolFormatFileSystem,
               "cloop", "cow", "dmg", "iso",
               "qcow", "qcow2", "vmdk", "vpc")
 
+VIR_ENUM_IMPL(virStoragePartedFsType,
+              VIR_STORAGE_PARTED_FS_TYPE_LAST,
+              "none", "ext2", "fat16",
+              "fat32", "linux-swap",
+              "ext2", "ext2",
+              "extended")
 
 typedef const char *(*virStorageVolFormatToString)(int format);
 typedef int (*virStorageVolFormatFromString)(const char *format);

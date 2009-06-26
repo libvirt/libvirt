@@ -36,6 +36,8 @@
 
 #define PARTHELPER BINDIR "/libvirt_parthelper"
 
+#define SECTOR_SIZE 512
+
 static int
 virStorageBackendDiskMakeDataVol(virConnectPtr conn,
                                  virStoragePoolObjPtr pool,
@@ -128,6 +130,16 @@ virStorageBackendDiskMakeDataVol(virConnectPtr conn,
     if (virStorageBackendUpdateVolInfo(conn, vol, 1) < 0)
         return -1;
 
+    /* set partition type */
+    if(STREQ(groups[1], "normal"))
+       vol->target.type = VIR_STORAGE_VOL_DISK_TYPE_PRIMARY;
+    else if(STREQ(groups[1], "logical"))
+       vol->target.type = VIR_STORAGE_VOL_DISK_TYPE_LOGICAL;
+    else if(STREQ(groups[1], "extended"))
+       vol->target.type = VIR_STORAGE_VOL_DISK_TYPE_EXTENDED;
+    else
+       vol->target.type = VIR_STORAGE_VOL_DISK_TYPE_NONE;
+
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
     /* The above gets allocation wrong for
@@ -158,6 +170,14 @@ virStorageBackendDiskMakeFreeExtent(virConnectPtr conn ATTRIBUTE_UNUSED,
            dev->nfreeExtent, 0,
            sizeof(dev->freeExtents[0]));
 
+    /* set type of free area */
+    if(STREQ(groups[1], "logical")) {
+        dev->freeExtents[dev->nfreeExtent].type = VIR_STORAGE_FREE_LOGICAL;
+    } else {
+        dev->freeExtents[dev->nfreeExtent].type = VIR_STORAGE_FREE_NORMAL;
+    }
+
+
     if (virStrToLong_ull(groups[3], NULL, 10,
                          &dev->freeExtents[dev->nfreeExtent].start) < 0)
         return -1; /* Don't bother to re-alloc freeExtents - it'll be free'd shortly */
@@ -165,6 +185,11 @@ virStorageBackendDiskMakeFreeExtent(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (virStrToLong_ull(groups[4], NULL, 10,
                          &dev->freeExtents[dev->nfreeExtent].end) < 0)
         return -1; /* Don't bother to re-alloc freeExtents - it'll be free'd shortly */
+
+    /* first block reported as free, even if it is not */
+    if (dev->freeExtents[dev->nfreeExtent].start == 0) {
+        dev->freeExtents[dev->nfreeExtent].start = SECTOR_SIZE;
+    }
 
     pool->def->available +=
         (dev->freeExtents[dev->nfreeExtent].end -
@@ -255,6 +280,35 @@ virStorageBackendDiskReadPartitions(virConnectPtr conn,
                                        vol);
 }
 
+static int
+virStorageBackendDiskMakePoolGeometry(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                     virStoragePoolObjPtr pool,
+                                     size_t ntok ATTRIBUTE_UNUSED,
+                                     char **const groups,
+                                     void *data ATTRIBUTE_UNUSED)
+{
+
+       pool->def->source.devices[0].geometry.cyliders = atoi(groups[0]);
+       pool->def->source.devices[0].geometry.heads = atoi(groups[1]);
+       pool->def->source.devices[0].geometry.sectors = atoi(groups[2]);
+
+       return 0;
+}
+
+static int
+virStorageBackendDiskReadGeometry(virConnectPtr conn, virStoragePoolObjPtr pool)
+{
+    const char *prog[] = {
+        PARTHELPER, pool->def->source.devices[0].path, "-g", NULL,
+    };
+
+    return virStorageBackendRunProgNul(conn,
+                                       pool,
+                                       prog,
+                                       3,
+                                       virStorageBackendDiskMakePoolGeometry,
+                                       NULL);
+}
 
 static int
 virStorageBackendDiskRefreshPool(virConnectPtr conn,
@@ -264,6 +318,10 @@ virStorageBackendDiskRefreshPool(virConnectPtr conn,
     pool->def->source.devices[0].nfreeExtent = 0;
 
     virStorageBackendWaitForDevices(conn);
+
+    if (virStorageBackendDiskReadGeometry(conn, pool) != 0) {
+        return -1;
+    }
 
     return virStorageBackendDiskReadPartitions(conn, pool, NULL);
 }
@@ -294,46 +352,218 @@ virStorageBackendDiskBuildPool(virConnectPtr conn,
     return 0;
 }
 
+/**
+ * Decides what kind of partition type that should be created.
+ * Important when the partition table is of msdos type
+ */
 static int
-virStorageBackendDiskCreateVol(virConnectPtr conn,
-                               virStoragePoolObjPtr pool,
-                               virStorageVolDefPtr vol)
+virStorageBackendDiskPartTypeToCreate(virStoragePoolObjPtr pool)
 {
-    int i;
-    char start[100], end[100];
-    unsigned long long startOffset, endOffset, smallestSize = 0;
-    int smallestExtent = -1;
-    virStoragePoolSourceDevicePtr dev = &pool->def->source.devices[0];
-    /* XXX customizable partition types */
-    const char *cmdargv[] = {
-        PARTED,
-        pool->def->source.devices[0].path,
-        "mkpart",
-        "--script",
-        "ext2",
-        start,
-        end,
-        NULL
-    };
-
-    for (i = 0 ; i < dev->nfreeExtent ; i++) {
-        unsigned long long size =
-            dev->freeExtents[i].end -
-            dev->freeExtents[i].start;
-        if (size > vol->allocation &&
-            (smallestSize == 0 ||
-             size < smallestSize)) {
-            smallestSize = size;
-            smallestExtent = i;
+    if (pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) {
+        /* count primary and extended paritions,
+           can't be more than 3 to create a new primary partition */
+        int i;
+        int count = 0;
+        for (i = 0; i < pool->volumes.count; i++) {
+             if (pool->volumes.objs[i]->target.type == VIR_STORAGE_VOL_DISK_TYPE_PRIMARY ||
+                 pool->volumes.objs[i]->target.type == VIR_STORAGE_VOL_DISK_TYPE_EXTENDED) {
+                     count++;
+             }
+        }
+        if (count >= 4) {
+            return VIR_STORAGE_VOL_DISK_TYPE_LOGICAL;
         }
     }
+
+    /* for all other cases, all partitions are primary */
+    return VIR_STORAGE_VOL_DISK_TYPE_PRIMARY;
+}
+
+static int
+virStorageBackendDiskPartFormat(virConnectPtr conn, virStoragePoolObjPtr pool,
+                                virStorageVolDefPtr vol,
+                                char* partFormat)
+{
+    int i;
+    if (pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) {
+        const char *partedFormat = virStoragePartedFsTypeTypeToString(vol->target.format);
+        if(partedFormat == NULL) {
+           virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("Invalid partition type"));
+           return -1;
+        }
+        if (vol->target.format == VIR_STORAGE_VOL_DISK_EXTENDED) {
+            /* make sure we don't have a extended partition already */
+            for (i = 0; i < pool->volumes.count; i++) {
+                 if (pool->volumes.objs[i]->target.format == VIR_STORAGE_VOL_DISK_EXTENDED) {
+                     virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                           "%s", _("extended partition already exists"));
+                     return -1;
+                 }
+            }
+            sprintf(partFormat, "%s", partedFormat);
+        } else {
+            /* create primary partition as long as it is possible
+               and after that check if an extended partition exists
+               to create logical partitions. */
+            /* XXX Only support one extended partition */
+            switch (virStorageBackendDiskPartTypeToCreate(pool)) {
+                    case VIR_STORAGE_VOL_DISK_TYPE_PRIMARY:
+                         sprintf(partFormat, "primary %s", partedFormat);
+                         break;
+                    case VIR_STORAGE_VOL_DISK_TYPE_LOGICAL:
+                         /* make sure we have a extended partition */
+                         for (i = 0; i < pool->volumes.count; i++) {
+                              if (pool->volumes.objs[i]->target.format == VIR_STORAGE_VOL_DISK_EXTENDED) {
+                                  sprintf(partFormat, "logical %s", partedFormat);
+                                  break;
+                              }
+                         }
+                         if (i == pool->volumes.count) {
+                             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                                   "%s", _("no extended partition found and no primary partition available"));
+                             return -1;
+                         }
+                         break;
+                    default:
+                         break;
+            }
+        }
+    } else {
+        sprintf(partFormat, "primary");
+    }
+    return 0;
+}
+
+/**
+ * Aligns a new partition to nearest cylinder boundry
+ * when haveing a msdos partition table type
+ * to avoid any problem with all ready existing
+ * partitions
+ */
+static int
+virStorageBackendDiskPartBoundries(virConnectPtr conn,
+                                   virStoragePoolObjPtr pool,
+                                   unsigned long long *start,
+                                   unsigned long long *end,
+                                   unsigned long long allocation)
+{
+    int i;
+    int smallestExtent = -1;
+    unsigned long long smallestSize = 0;
+    unsigned long long extraBytes = 0;
+    unsigned long long alignedAllocation = allocation;
+    virStoragePoolSourceDevicePtr dev = &pool->def->source.devices[0];
+    unsigned long long cylinderSize = dev->geometry.heads *
+                                      dev->geometry.sectors * SECTOR_SIZE;
+
+    DEBUG("find free area: allocation %llu,  cyl size %llu\n", allocation, cylinderSize);
+    int partType = virStorageBackendDiskPartTypeToCreate(pool);
+
+    /* how many extra bytes we have since we allocate
+       aligned to the cylinder boundry */
+    extraBytes = cylinderSize - (allocation % cylinderSize);
+
+    for (i = 0 ; i < dev->nfreeExtent ; i++) {
+         unsigned long long size =
+             dev->freeExtents[i].end -
+             dev->freeExtents[i].start;
+         unsigned long long neededSize = allocation;
+
+         if (pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) {
+             /* align to cylinder boundry */
+             neededSize += extraBytes;
+             if ((*start % cylinderSize) > extraBytes) {
+                 /* add an extra cylinder if the offset can't fit within
+                    the extra bytes we have */
+                 neededSize += cylinderSize;
+             }
+             /* if we are creating a logical patition, we need one extra
+                block between partitions (or actually move start one block) */
+             if (partType == VIR_STORAGE_VOL_DISK_TYPE_LOGICAL) {
+                 size -= SECTOR_SIZE;
+             }
+         }
+         if (size > neededSize &&
+             (smallestSize == 0 ||
+             size < smallestSize)) {
+             /* for logical partition, the free extent
+                must be within a logical free area */
+             if (partType == VIR_STORAGE_VOL_DISK_TYPE_LOGICAL &&
+                 dev->freeExtents[i].type != VIR_STORAGE_FREE_LOGICAL) {
+                 continue;
+                 /* for primary partition, the free extent
+                    must not be within a logical free area */
+             } else if(partType == VIR_STORAGE_VOL_DISK_TYPE_PRIMARY &&
+                       dev->freeExtents[i].type != VIR_STORAGE_FREE_NORMAL) {
+                       continue;
+             }
+             smallestSize = size;
+             smallestExtent = i;
+             alignedAllocation = neededSize;
+         }
+    }
+
     if (smallestExtent == -1) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("no large enough free extent"));
         return -1;
     }
-    startOffset = dev->freeExtents[smallestExtent].start;
-    endOffset = startOffset + vol->allocation;
+
+    DEBUG("aligned alloc %llu\n", alignedAllocation);
+    *start = dev->freeExtents[smallestExtent].start;
+
+    if (partType == VIR_STORAGE_VOL_DISK_TYPE_LOGICAL) {
+        /* for logical partition, skip one block */
+        *start += SECTOR_SIZE;
+    }
+
+    *end = *start + alignedAllocation;
+    if (pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) {
+        /* adjust our allocation if start is not at a cylinder boundry */
+        *end -= (*start % cylinderSize);
+    }
+
+    /* counting in byte, we want the last byte of the current sector */
+    *end -= 1;
+    DEBUG("final aligned start %llu, end %llu\n", *start, *end);
+    return 0;
+}
+
+
+static int
+virStorageBackendDiskCreateVol(virConnectPtr conn,
+                               virStoragePoolObjPtr pool,
+                               virStorageVolDefPtr vol)
+{
+    char start[100], end[100], partFormat[100];
+    unsigned long long startOffset = 0, endOffset = 0;
+    const char *cmdargv[] = {
+        PARTED,
+        pool->def->source.devices[0].path,
+        "mkpart",
+        "--script",
+        partFormat,
+        start,
+        end,
+        NULL
+    };
+
+    if (virStorageBackendDiskPartFormat(conn, pool, vol, partFormat) != 0) {
+        return -1;
+    }
+
+    if (vol->key == NULL) {
+        /* XXX base off a unique key of the underlying disk */
+        if ((vol->key = strdup(vol->target.path)) == NULL) {
+            virReportOOMError(conn);
+            return -1;
+        }
+    }
+
+    if(virStorageBackendDiskPartBoundries(conn, pool, &startOffset, &endOffset, vol->allocation) != 0) {
+       return -1;
+    }
 
     snprintf(start, sizeof(start)-1, "%lluB", startOffset);
     start[sizeof(start)-1] = '\0';
@@ -342,6 +572,9 @@ virStorageBackendDiskCreateVol(virConnectPtr conn,
 
     if (virRun(conn, cmdargv, NULL) < 0)
         return -1;
+
+    /* wait for device node to show up */
+    virStorageBackendWaitForDevices(conn);
 
     /* Blow away free extent info, as we're about to re-populate it */
     VIR_FREE(pool->def->source.devices[0].freeExtents);
