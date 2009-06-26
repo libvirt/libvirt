@@ -70,7 +70,7 @@ int main(int argc, char **argv)
 
     /* return the geometry of the disk and then exit */
     if(cmd == DISK_GEOMETRY) {
-        printf("%d%c%d%c%d%c%",
+        printf("%d%c%d%c%d%c",
                dev->hw_geom.cylinders, '\0',
                dev->hw_geom.heads, '\0',
                dev->hw_geom.sectors, '\0');

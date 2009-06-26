@@ -1,3 +1,8 @@
+Fri Jun 26 22:13:16 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/parthelper.c: fix a superfluous % on printf format problem
+	  raised by Matthias Bolte
+
 Fri Jun 26 22:02:22 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/nodeinfo.c: sometimes libnuma can't handle some topologies,
