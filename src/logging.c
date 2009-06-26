@@ -39,9 +39,6 @@
 #include "util.h"
 #include "threads.h"
 
-#ifdef ENABLE_DEBUG
-int debugFlag = 0;
-
 /*
  * Macro used to format the message as a string in virLogMessage
  * and borrowed from libxml2 (also used in virRaiseError)
@@ -793,5 +790,4 @@ int virLogParseFilters(const char *filters) {
     }
     return(ret);
 }
-#endif /* ENABLE_DEBUG */
 

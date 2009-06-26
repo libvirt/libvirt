@@ -1,3 +1,9 @@
+Fri Jun 26 17:06:18 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/Makefile.am src/libvirt.c src/libvirt_private.syms src/logging.c
+	  src/logging.h src/util.c src/libvirt_debug.syms: big cleanup of
+	  the debug configuration option and code by Amy Griffis
+
 Fri Jun 26 16:07:54 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/node_device.c src/node_device_hal.h src/node_device_hal_linux.c:

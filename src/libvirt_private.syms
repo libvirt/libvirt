@@ -192,6 +192,18 @@ virRegisterStorageDriver;
 virRegisterDeviceMonitor;
 
 
+# logging.h
+virLogMessage;
+virLogSetDefaultPriority;
+virLogDefineFilter;
+virLogDefineOutput;
+virLogParseFilters;
+virLogParseOutputs;
+virLogStartup;
+virLogShutdown;
+virLogReset;
+
+
 # memory.h
 virAlloc;
 virAllocN;

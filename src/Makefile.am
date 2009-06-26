@@ -501,10 +501,6 @@ EXTRA_DIST +=							\
 # symbols aren't present at all.
 #
 
-if ENABLE_DEBUG
-USED_SYM_FILES += libvirt_debug.syms
-endif
-
 if WITH_DRIVER_MODULES
 USED_SYM_FILES += libvirt_driver_modules.syms
 endif
@@ -520,7 +516,6 @@ endif
 EXTRA_DIST += \
   libvirt_public.syms		\
   libvirt_private.syms		\
-  libvirt_debug.syms		\
   libvirt_driver_modules.syms	\
   libvirt_bridge.syms		\
   libvirt_linux.syms

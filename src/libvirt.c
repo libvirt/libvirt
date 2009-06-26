@@ -256,9 +256,7 @@ winsock_init (void)
 int
 virInitialize(void)
 {
-#ifdef ENABLE_DEBUG
     char *debugEnv;
-#endif
     if (initialized)
         return(0);
 
@@ -269,7 +267,6 @@ virInitialize(void)
         virRandomInitialize(time(NULL) ^ getpid()))
         return -1;
 
-#ifdef ENABLE_DEBUG
     debugEnv = getenv("LIBVIRT_DEBUG");
     if (debugEnv && *debugEnv && *debugEnv != '0') {
         if (STREQ(debugEnv, "2") || STREQ(debugEnv, "info"))
@@ -287,7 +284,6 @@ virInitialize(void)
     debugEnv = getenv("LIBVIRT_LOG_OUTPUTS");
     if (debugEnv)
         virLogParseOutputs(debugEnv);
-#endif
 
     DEBUG0("register drivers");
 
@@ -1055,13 +1051,11 @@ do_open (const char *name,
     /* Secondary driver for storage. Optional */
     for (i = 0; i < virStorageDriverTabCount; i++) {
         res = virStorageDriverTab[i]->open (ret, auth, flags);
-#ifdef ENABLE_DEBUG
         DEBUG("storage driver %d %s returned %s",
               i, virStorageDriverTab[i]->name,
               res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
               (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
                (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-#endif
         if (res == VIR_DRV_OPEN_ERROR) {
             if (0 && STREQ(virStorageDriverTab[i]->name, "remote")) {
                 virLibConnWarning (NULL, VIR_WAR_NO_STORAGE,

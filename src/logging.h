@@ -32,22 +32,17 @@
 #ifdef ENABLE_DEBUG
 #define VIR_DEBUG_INT(category, f, l, fmt,...)                             \
     virLogMessage(category, VIR_LOG_DEBUG, f, l, 0, fmt, __VA_ARGS__)
+#else
+#define VIR_DEBUG_INT(category, f, l, fmt,...) \
+    do { } while (0)
+#endif /* !ENABLE_DEBUG */
+
 #define VIR_INFO_INT(category, f, l, fmt,...)                              \
     virLogMessage(category, VIR_LOG_INFO, f, l, 0, fmt, __VA_ARGS__)
 #define VIR_WARN_INT(category, f, l, fmt,...)                              \
     virLogMessage(category, VIR_LOG_WARN, f, l, 0, fmt, __VA_ARGS__)
 #define VIR_ERROR_INT(category, f, l, fmt,...)                             \
     virLogMessage(category, VIR_LOG_ERROR, f, l, 0, fmt, __VA_ARGS__)
-#else
-#define VIR_DEBUG_INT(category, f, l, fmt,...) \
-    do { } while (0)
-#define VIR_INFO_INT(category, f, l, fmt,...) \
-    do { } while (0)
-#define VIR_WARN_INT(category, f, l, fmt,...) \
-    do { } while (0)
-#define VIR_ERROR_INT(category, f, l, fmt,...) \
-    do { } while (0)
-#endif /* !ENABLE_DEBUG */
 
 #define VIR_DEBUG(fmt,...)                                                  \
         VIR_DEBUG_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
@@ -108,8 +103,6 @@ typedef int (*virLogOutputFunc) (const char *category, int priority,
  */
 typedef void (*virLogCloseFunc) (void *data);
 
-#ifdef ENABLE_DEBUG
-
 extern int virLogSetDefaultPriority(int priority);
 extern int virLogDefineFilter(const char *match, int priority, int flags);
 extern int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c,
@@ -127,19 +120,5 @@ extern int virLogParseOutputs(const char *output);
 extern void virLogMessage(const char *category, int priority,
                           const char *funcname, long long linenr, int flags,
                           const char *fmt, ...) ATTRIBUTE_FORMAT(printf, 6, 7);
-
-#else /* ENABLE_DEBUG */
-
-#define virLogSetDefaultPriority(p)
-#define virLogDefineFilter(m, p, f)
-#define virLogDefineOutput(func, c, d, p, f)
-#define virLogStartup()
-#define virLogReset()
-#define virLogShutdown()
-#define virLogParseFilters(f)
-#define virLogParseOutputs(o)
-#define virLogMessage(c, p, func, l, f, fmt, __VA_ARGS__)
-
-#endif /* ENABLE_DEBUG */
 
 #endif
