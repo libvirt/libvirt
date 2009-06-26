@@ -33,6 +33,7 @@
 #include "memory.h"
 #include "logging.h"
 #include "node_device_conf.h"
+#include "node_device_hal.h"
 #include "node_device.h"
 #include "storage_backend.h" /* For virWaitForDevices */
 
@@ -48,6 +49,37 @@ static int dev_has_cap(const virNodeDeviceObjPtr dev, const char *cap)
     }
     return 0;
 }
+
+
+static int update_caps(virNodeDeviceObjPtr dev)
+{
+    virNodeDevCapsDefPtr cap = dev->def->caps;
+
+    while (cap) {
+        /* The only cap that currently needs updating is the WWN of FC HBAs. */
+        if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST) {
+            if (cap->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
+                if (read_wwn(cap->data.scsi_host.host,
+                            "port_name",
+                            &cap->data.scsi_host.wwpn) == -1) {
+                    VIR_ERROR(_("Failed to refresh WWPN for host%d"),
+                              cap->data.scsi_host.host);
+                }
+
+                if (read_wwn(cap->data.scsi_host.host,
+                            "node_name",
+                            &cap->data.scsi_host.wwnn) == -1) {
+                    VIR_ERROR(_("Failed to refresh WWNN for host%d"),
+                              cap->data.scsi_host.host);
+                }
+            }
+            cap = cap->next;
+        }
+    }
+
+    return 0;
+}
+
 
 #ifdef __linux__
 static int update_driver_name(virConnectPtr conn,
@@ -253,6 +285,8 @@ static char *nodeDeviceDumpXML(virNodeDevicePtr dev,
     }
 
     update_driver_name(dev->conn, obj);
+    update_caps(obj);
+
     ret = virNodeDeviceDefFormat(dev->conn, obj->def);
 
 cleanup:

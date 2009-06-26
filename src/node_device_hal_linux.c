@@ -34,14 +34,84 @@
 
 #ifdef __linux__
 
-int check_fc_host_linux(union _virNodeDevCapData *d)
+static int open_wwn_file(const char *prefix,
+                         int host,
+                         const char *file,
+                         int *fd)
 {
-    char *sysfs_path = NULL;
-    char *wwnn_path = NULL;
-    char *wwpn_path = NULL;
+    int retval = 0;
+    char *wwn_path = NULL;
+
+    if (virAsprintf(&wwn_path, "%s/host%d/%s", prefix, host, file) < 0) {
+        virReportOOMError(NULL);
+        retval = -1;
+        goto out;
+    }
+
+    /* fd will be closed by caller */
+    if ((*fd = open(wwn_path, O_RDONLY)) != -1) {
+        VIR_ERROR(_("Opened WWN path '%s' for reading"),
+                  wwn_path);
+    } else {
+        VIR_ERROR(_("Failed to open WWN path '%s' for reading"),
+                  wwn_path);
+    }
+
+out:
+    VIR_FREE(wwn_path);
+    return retval;
+}
+
+
+int read_wwn_linux(int host, const char *file, char **wwn)
+{
     char *p = NULL;
     int fd = -1, retval = 0;
     char buf[64];
+
+    if (open_wwn_file(LINUX_SYSFS_FC_HOST_PREFIX, host, file, &fd) < 0) {
+            goto out;
+    }
+
+    memset(buf, 0, sizeof(buf));
+    if (saferead(fd, buf, sizeof(buf)) < 0) {
+        retval = -1;
+        VIR_DEBUG(_("Failed to read WWN for host%d '%s'"),
+                  host, file);
+        goto out;
+    }
+
+    p = strstr(buf, "0x");
+    if (p != NULL) {
+        p += strlen("0x");
+    } else {
+        p = buf;
+    }
+
+    *wwn = strndup(p, sizeof(buf));
+    if (*wwn == NULL) {
+        virReportOOMError(NULL);
+        retval = -1;
+        goto out;
+    }
+
+    p = strchr(*wwn, '\n');
+    if (p != NULL) {
+        *p = '\0';
+    }
+
+out:
+    if (fd != -1) {
+        close(fd);
+    }
+    return retval;
+}
+
+
+int check_fc_host_linux(union _virNodeDevCapData *d)
+{
+    char *sysfs_path = NULL;
+    int retval = 0;
     struct stat st;
 
     VIR_DEBUG(_("Checking if host%d is an FC HBA"), d->scsi_host.host);
@@ -61,101 +131,29 @@ int check_fc_host_linux(union _virNodeDevCapData *d)
 
     d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST;
 
-    if (virAsprintf(&wwnn_path, "%s/node_name",
-                    sysfs_path) < 0) {
-        virReportOOMError(NULL);
+    if (read_wwn(d->scsi_host.host,
+                 "port_name",
+                 &d->scsi_host.wwpn) == -1) {
+        VIR_ERROR(_("Failed to read WWPN for host%d"),
+                  d->scsi_host.host);
         retval = -1;
         goto out;
     }
 
-    if ((fd = open(wwnn_path, O_RDONLY)) < 0) {
+    if (read_wwn(d->scsi_host.host,
+                 "node_name",
+                 &d->scsi_host.wwnn) == -1) {
+        VIR_ERROR(_("Failed to read WWNN for host%d"),
+                  d->scsi_host.host);
         retval = -1;
-        VIR_ERROR(_("Failed to open WWNN path '%s' for reading"),
-                  wwnn_path);
-        goto out;
-    }
-
-    memset(buf, 0, sizeof(buf));
-    if (saferead(fd, buf, sizeof(buf)) < 0) {
-        retval = -1;
-        VIR_ERROR(_("Failed to read WWNN from '%s'"),
-                  wwnn_path);
-        goto out;
-    }
-
-    close(fd);
-    fd = -1;
-
-    p = strstr(buf, "0x");
-    if (p != NULL) {
-        p += strlen("0x");
-    } else {
-        p = buf;
-    }
-
-    d->scsi_host.wwnn = strndup(p, sizeof(buf));
-    if (d->scsi_host.wwnn == NULL) {
-        virReportOOMError(NULL);
-        retval = -1;
-        goto out;
-    }
-
-    p = strchr(d->scsi_host.wwnn, '\n');
-    if (p != NULL) {
-        *p = '\0';
-    }
-
-    if (virAsprintf(&wwpn_path, "%s/port_name",
-                    sysfs_path) < 0) {
-        virReportOOMError(NULL);
-        retval = -1;
-        goto out;
-    }
-
-    if ((fd = open(wwpn_path, O_RDONLY)) < 0) {
-        retval = -1;
-        VIR_ERROR(_("Failed to open WWPN path '%s' for reading"),
-                  wwpn_path);
-        goto out;
-    }
-
-    memset(buf, 0, sizeof(buf));
-    if (saferead(fd, buf, sizeof(buf)) < 0) {
-        retval = -1;
-        VIR_ERROR(_("Failed to read WWPN from '%s'"),
-                  wwpn_path);
-        goto out;
-    }
-
-    close(fd);
-    fd = -1;
-
-    p = strstr(buf, "0x");
-    if (p != NULL) {
-        p += strlen("0x");
-    } else {
-        p = buf;
-    }
-
-    d->scsi_host.wwpn = strndup(p, sizeof(buf));
-    if (d->scsi_host.wwpn == NULL) {
-        virReportOOMError(NULL);
-        retval = -1;
-        goto out;
-    }
-
-    p = strchr(d->scsi_host.wwpn, '\n');
-    if (p != NULL) {
-        *p = '\0';
     }
 
 out:
-    if (fd != -1) {
-        close(fd);
+    if (retval == -1) {
+        VIR_FREE(d->scsi_host.wwnn);
+        VIR_FREE(d->scsi_host.wwpn);
     }
     VIR_FREE(sysfs_path);
-    VIR_FREE(wwnn_path);
-    VIR_FREE(wwpn_path);
     return 0;
 }
 
