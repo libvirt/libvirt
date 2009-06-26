@@ -43,6 +43,7 @@
 #include "nodeinfo.h"
 #include "physmem.h"
 #include "util.h"
+#include "logging.h"
 #include "virterror_internal.h"
 
 
@@ -206,8 +207,11 @@ nodeCapsInitNUMA(virCapsPtr caps)
     for (n = 0 ; n <= numa_max_node() ; n++) {
         int i;
         int ncpus;
-        if (numa_node_to_cpus(n, mask, mask_n_bytes) < 0)
-            goto cleanup;
+        if (numa_node_to_cpus(n, mask, mask_n_bytes) < 0) {
+            VIR_WARN("NUMA topology for cell %d of %d not available, ignoring",
+                     n, numa_max_node());
+            continue;
+        }
 
         for (ncpus = 0, i = 0 ; i < max_n_cpus ; i++)
             if (MASK_CPU_ISSET(mask, i))

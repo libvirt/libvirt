@@ -1,3 +1,9 @@
+Fri Jun 26 22:02:22 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/nodeinfo.c: sometimes libnuma can't handle some topologies,
+	  but those failures should not completely break libvirt, patch
+	  by Dan Berrange, fixes #506590
+
 Fri Jun 26 20:11:38 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: avoid a segfault when dumping XML with recent
