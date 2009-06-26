@@ -2079,7 +2079,15 @@ xenDaemonParseSxprGraphicsNew(virConnectPtr conn,
         if (sexpr_lookup(node, "device/vfb")) {
             /* New style graphics config for PV guests in >= 3.0.4,
              * or for HVM guests in >= 3.0.5 */
-            tmp = sexpr_node(node, "device/vfb/type");
+            if (sexpr_node(node, "device/vfb/type")) {
+                tmp = sexpr_node(node, "device/vfb/type");
+            } else if (sexpr_node(node, "device/vfb/vnc")) {
+                tmp = "vnc";
+            } else if (sexpr_node(node, "device/vfb/sdl")) {
+                tmp = "sdl";
+            } else {
+                tmp = "unknown";
+            }
 
             if (VIR_ALLOC(graphics) < 0)
                 goto no_memory;

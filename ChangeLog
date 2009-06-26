@@ -1,3 +1,8 @@
+Fri Jun 26 20:11:38 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: avoid a segfault when dumping XML with recent
+	  xen versions, patch by Sascha, fixes #503254
+
 Fri Jun 26 18:15:08 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt_private.syms src/parthelper.c src/storage_backend_disk.c
