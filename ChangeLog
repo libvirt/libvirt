@@ -1,3 +1,9 @@
+Mon Jun 29 12:28:20 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Prepare for using libcap-ng
+	* configure.in: Add check for libcap-ng
+	* libvirt.spec.in: Build with libcap-ng on Fedora >= 12
+
 Mon Jun 29 12:01:20 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Add HACKING doc to the website

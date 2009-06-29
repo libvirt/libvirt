@@ -7,7 +7,8 @@
 %define with_lxc           0%{!?_without_lxc:1}
 %define with_sasl          0%{!?_without_sasl:1}
 %define with_avahi         0%{!?_without_avahi:1}
-%define with_polkit        0%{!?_without_polkit:1}
+# default to off
+%define with_polkit        0%{!?_without_polkit:0}
 %define with_python        0%{!?_without_python:1}
 %define with_libvirtd      0%{!?_without_libvirtd:1}
 %define with_uml           0%{!?_without_uml:1}
@@ -18,6 +19,8 @@
 %define with_storage_iscsi 0%{!?_without_storage_iscsi:1}
 %define with_storage_disk  0%{!?_without_storage_disk:1}
 %define with_numactl       0%{!?_without_numactl:1}
+# default to off
+%define with_capng         0%{!?_without_capng:0}
 
 # Xen is available only on i386 x86_64 ia64
 %ifnarch i386 i586 i686 x86_64 ia64
@@ -37,6 +40,10 @@
 %if 0%{?fedora} >= 8
 %define with_polkit    0%{!?_without_polkit:1}
 %define with_xen_proxy 0
+%endif
+
+%if 0%{?fedora} >= 12
+%define with_capng     0%{!?_without_capng:1}
 %endif
 
 #
@@ -165,6 +172,9 @@ BuildRequires: parted-devel
 %if %{with_numactl}
 # For QEMU/LXC numa info
 BuildRequires: numactl-devel
+%endif
+%if %{with_capng}
+BuildRequires: capng-devel >= 0.5.0
 %endif
 Obsoletes: libvir
 
