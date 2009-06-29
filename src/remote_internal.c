@@ -295,7 +295,8 @@ remoteForkDaemon(virConnectPtr conn)
     }
 
     if (virExecDaemonize(NULL, daemonargs, NULL, NULL,
-                         &pid, -1, NULL, NULL, 0,
+                         &pid, -1, NULL, NULL,
+                         VIR_EXEC_CLEAR_CAPS,
                          NULL, NULL, NULL) < 0)
         return -1;
 
@@ -749,7 +750,8 @@ doRemoteOpen (virConnectPtr conn,
         }
 
         if (virExec(conn, (const char**)cmd_argv, NULL, NULL,
-                    &pid, sv[1], &(sv[1]), NULL, VIR_EXEC_NONE) < 0)
+                    &pid, sv[1], &(sv[1]), NULL,
+                    VIR_EXEC_CLEAR_CAPS) < 0)
             goto failed;
 
         /* Parent continues here. */

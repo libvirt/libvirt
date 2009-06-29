@@ -37,6 +37,7 @@ enum {
     VIR_EXEC_NONE   = 0,
     VIR_EXEC_NONBLOCK = (1 << 0),
     VIR_EXEC_DAEMON = (1 << 1),
+    VIR_EXEC_CLEAR_CAPS = (1 << 2),
 };
 
 int virSetNonBlock(int fd);

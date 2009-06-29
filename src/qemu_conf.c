@@ -596,7 +596,7 @@ int qemudExtractVersionInfo(const char *qemu,
         *retversion = 0;
 
     if (virExec(NULL, qemuarg, qemuenv, NULL,
-                &child, -1, &newstdout, NULL, VIR_EXEC_NONE) < 0)
+                &child, -1, &newstdout, NULL, VIR_EXEC_CLEAR_CAPS) < 0)
         return -1;
 
     char *help = NULL;

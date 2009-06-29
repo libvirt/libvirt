@@ -845,7 +845,8 @@ static int umlStartVMDaemon(virConnectPtr conn,
 
     ret = virExecDaemonize(conn, argv, progenv, &keepfd, &pid,
                            -1, &logfd, &logfd,
-                           0, NULL, NULL, NULL);
+                           VIR_EXEC_CLEAR_CAPS,
+                           NULL, NULL, NULL);
     close(logfd);
 
     for (i = 0 ; argv[i] ; i++)

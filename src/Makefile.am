@@ -215,6 +215,8 @@ noinst_LTLIBRARIES = libvirt_util.la
 libvirt_la_LIBADD = libvirt_util.la
 libvirt_util_la_SOURCES =					\
 		$(UTIL_SOURCES)
+libvirt_util_la_CFLAGS =  $(CAPNG_CFLAGS)
+libvirt_util_la_LDFLAGS =  $(CAPNG_LIBS)
 
 noinst_LTLIBRARIES += libvirt_driver.la
 libvirt_la_LIBADD += libvirt_driver.la
@@ -664,9 +666,9 @@ libvirt_lxc_SOURCES =						\
 		$(LXC_CONTROLLER_SOURCES)			\
 		$(UTIL_SOURCES)					\
 		$(DOMAIN_CONF_SOURCES)
-libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS)
+libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS) $(CAPNG_LIBS)
 libvirt_lxc_LDADD = $(LIBXML_LIBS) $(NUMACTL_LIBS) ../gnulib/lib/libgnu.la
-libvirt_lxc_CFLAGS =  $(LIBPARTED_CFLAGS) $(NUMACTL_CFLAGS)
+libvirt_lxc_CFLAGS =  $(LIBPARTED_CFLAGS) $(NUMACTL_CFLAGS) $(CAPNG_CFLAGS)
 endif
 endif
 EXTRA_DIST += $(LXC_CONTROLLER_SOURCES)

@@ -56,6 +56,10 @@
 #ifdef HAVE_GETPWUID_R
 #include <pwd.h>
 #endif
+#if HAVE_CAPNG
+#include <cap-ng.h>
+#endif
+
 
 #include "virterror_internal.h"
 #include "logging.h"
@@ -263,6 +267,29 @@ int virSetCloseExec(int fd) {
         return -1;
     return 0;
 }
+
+
+#if HAVE_CAPNG
+static int virClearCapabilities(void)
+{
+    int ret;
+
+    capng_clear(CAPNG_SELECT_BOTH);
+
+    if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
+        VIR_ERROR("cannot clear process capabilities %d", ret);
+        return -1;
+    }
+
+    return 0;
+}
+#else
+static int virClearCapabilities(void)
+{
+//    VIR_WARN0("libcap-ng support not compiled in, unable to clear capabilities");
+    return 0;
+}
+#endif
 
 /*
  * @conn Connection to report errors against
@@ -480,6 +507,12 @@ __virExec(virConnectPtr conn,
     if (hook)
         if ((hook)(data) != 0)
             _exit(1);
+
+    /* The hook above may need todo something privileged, so
+     * we delay clearing capabilities until now */
+    if ((flags & VIR_EXEC_CLEAR_CAPS) &&
+        virClearCapabilities() < 0)
+        _exit(1);
 
     /* Daemonize as late as possible, so the parent process can detect
      * the above errors with wait* */
