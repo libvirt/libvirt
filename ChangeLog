@@ -1,3 +1,12 @@
+Mon Jun 29 18:01:20 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Reduce LXC capabilities
+	* src/lxc_container.c: Use libcap-ng to clear capabilities,
+	and also drop SYS_MODULE, SYS_TIME, AUDIT_CONTROL, and
+	MAC_ADMIN, in addition to SYS_BOOT.
+	* src/lxc_controller.c: Drop all capabilities once container
+	has been spawned.
+
 Mon Jun 29 12:48:20 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Use libcap-ng to clear capabilities for many child processes

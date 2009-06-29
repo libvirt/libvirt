@@ -35,6 +35,10 @@
 #include <getopt.h>
 #include <sys/mount.h>
 
+#if HAVE_CAPNG
+#include <cap-ng.h>
+#endif
+
 #include "virterror_internal.h"
 #include "logging.h"
 #include "util.h"
@@ -208,6 +212,25 @@ static int lxcFdForward(int readFd, int writeFd)
 
 cleanup:
     return rc;
+}
+
+
+static int lxcControllerClearCapabilities(void)
+{
+#if HAVE_CAPNG
+    int ret;
+
+    capng_clear(CAPNG_SELECT_BOTH);
+
+    if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("failed to apply capabilities: %d"), ret);
+        return -1;
+    }
+#else
+    VIR_WARN0(_("libcap-ng support not compiled in, unable to clear capabilities"));
+#endif
+    return 0;
 }
 
 typedef struct _lxcTtyForwardFd_t {
@@ -560,6 +583,11 @@ lxcControllerRun(virDomainDefPtr def,
         goto cleanup;
 
     if (lxcContainerSendContinue(control[0]) < 0)
+        goto cleanup;
+
+    /* Now the container is running, there's no need for us to keep
+       any elevated capabilities */
+    if (lxcControllerClearCapabilities() < 0)
         goto cleanup;
 
     rc = lxcControllerMain(monitor, client, appPty, containerPty);

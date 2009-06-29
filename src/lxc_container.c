@@ -41,8 +41,9 @@
 /* For MS_MOVE */
 #include <linux/fs.h>
 
-#include <sys/prctl.h>
-#include <linux/capability.h>
+#if HAVE_CAPNG
+#include <cap-ng.h>
+#endif
 
 #include "virterror_internal.h"
 #include "logging.h"
@@ -642,27 +643,48 @@ static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
         return lxcContainerSetupExtraMounts(vmDef);
 }
 
-static int lxcContainerDropCapabilities(virDomainDefPtr vmDef ATTRIBUTE_UNUSED)
-{
-#ifdef PR_CAPBSET_DROP
-    int i;
-    const struct {
-        int id;
-        const char *name;
-    } caps[] = {
-#define ID_STRING(name) name, #name
-        { ID_STRING(CAP_SYS_BOOT) },
-    };
 
-    for (i = 0 ; i < ARRAY_CARDINALITY(caps) ; i++) {
-        if (prctl(PR_CAPBSET_DROP, caps[i].id, 0, 0, 0)) {
-            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("failed to drop %s"), caps[i].name);
-            return -1;
-        }
+/*
+ * This is running as the 'init' process insid the container.
+ * It removes some capabilities that could be dangerous to
+ * host system, since they are not currently "containerized"
+ */
+static int lxcContainerDropCapabilities(void)
+{
+#if HAVE_CAPNG
+    int ret;
+
+    capng_get_caps_process();
+
+    if ((ret = capng_updatev(CAPNG_DROP,
+                             CAPNG_EFFECTIVE | CAPNG_PERMITTED |
+                             CAPNG_INHERITABLE | CAPNG_BOUNDING_SET,
+                             CAP_SYS_BOOT, /* No use of reboot */
+                             CAP_SYS_MODULE, /* No kernel module loading */
+                             CAP_SYS_TIME, /* No changing the clock */
+                             CAP_AUDIT_CONTROL, /* No messing with auditing status */
+                             CAP_MAC_ADMIN, /* No messing with LSM config */
+                             -1 /* sentinal */)) < 0) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("failed to remove capabilities %d"), ret);
+        return -1;
     }
-#else /* ! PR_CAPBSET_DROP */
-    VIR_WARN0(_("failed to drop capabilities PR_CAPBSET_DROP undefined"));
+
+    if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("failed to apply capabilities: %d"), ret);
+        return -1;
+    }
+
+    /* Need to prevent them regaining any caps on exec */
+    if ((ret = capng_lock()) < 0) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("failed to lock capabilities: %d"), ret);
+        return -1;
+    }
+
+#else
+    VIR_WARN0(_("libcap-ng support not compiled in, unable to clear capabilities"));
 #endif
     return 0;
 }
@@ -735,7 +757,7 @@ static int lxcContainerChild( void *data )
         return -1;
 
     /* drop a set of root capabilities */
-    if (lxcContainerDropCapabilities(vmDef) < 0)
+    if (lxcContainerDropCapabilities() < 0)
         return -1;
 
     /* this function will only return if an error occured */
