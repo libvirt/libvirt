@@ -1,3 +1,11 @@
+Mon Jun 29 12:01:20 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Add HACKING doc to the website
+	* docs/hacking.html.in, docs/sitemaps.html.in: HTML-ized
+	version of HACKING
+	* docs/internals.html, docs/sitemap.html, docs/api_extension.html,
+	docs/news.html: Re-generate for sitemap changes
+
 Mon Jun 29 10:51:20 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Fix crash in QEMU driver with bad capabilities data
