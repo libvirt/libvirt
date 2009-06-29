@@ -1,3 +1,14 @@
+Mon Jun 29 10:51:20 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	Fix crash in QEMU driver with bad capabilities data
+	* src/capabilities.c, src/capabilities.h: Export a method
+	virCapabilitiesFreeNUMAInfo()
+	* src/qemu_conf.c: Don't kill the whole QEMU driver if
+	populating capabilities with NUMA info fails.
+	* src/qemu_driver.c: Fix missing security model data
+	after capabilities refresh. Avoid leaving driver with
+	NULL capabilities if refresh fails.
+
 Fri Jun 26 22:13:16 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/parthelper.c: fix a superfluous % on printf format problem

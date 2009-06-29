@@ -347,38 +347,15 @@ qemuReconnectDomains(struct qemud_driver *driver)
     }
 }
 
+
 static int
-qemudSecurityInit(struct qemud_driver *qemud_drv)
+qemudSecurityCapsInit(virSecurityDriverPtr secdrv,
+                      virCapsPtr caps)
 {
-    int ret;
     const char *doi, *model;
-    virCapsPtr caps;
-    virSecurityDriverPtr security_drv;
 
-    ret = virSecurityDriverStartup(&security_drv,
-                                   qemud_drv->securityDriverName);
-    if (ret == -1) {
-        VIR_ERROR0(_("Failed to start security driver"));
-        return -1;
-    }
-    /* No security driver wanted to be enabled: just return */
-    if (ret == -2) {
-        VIR_INFO0(_("No security driver available"));
-        return 0;
-    }
-
-    qemud_drv->securityDriver = security_drv;
-    doi = virSecurityDriverGetDOI(security_drv);
-    model = virSecurityDriverGetModel(security_drv);
-
-    VIR_DEBUG("Initialized security driver \"%s\" with "
-              "DOI \"%s\"", model, doi);
-
-    /*
-     * Add security policy host caps now that the security driver is
-     * initialized.
-     */
-    caps = qemud_drv->caps;
+    doi = virSecurityDriverGetDOI(secdrv);
+    model = virSecurityDriverGetModel(secdrv);
 
     caps->host.secModel.model = strdup(model);
     if (!caps->host.secModel.model) {
@@ -396,8 +373,43 @@ qemudSecurityInit(struct qemud_driver *qemud_drv)
         return -1;
     }
 
+    VIR_DEBUG("Initialized caps for security driver \"%s\" with "
+              "DOI \"%s\"", model, doi);
+
     return 0;
 }
+
+
+static int
+qemudSecurityInit(struct qemud_driver *qemud_drv)
+{
+    int ret;
+    virSecurityDriverPtr security_drv;
+
+    ret = virSecurityDriverStartup(&security_drv,
+                                   qemud_drv->securityDriverName);
+    if (ret == -1) {
+        VIR_ERROR0(_("Failed to start security driver"));
+        return -1;
+    }
+    /* No security driver wanted to be enabled: just return */
+    if (ret == -2) {
+        VIR_INFO0(_("No security driver available"));
+        return 0;
+    }
+
+    qemud_drv->securityDriver = security_drv;
+
+    VIR_INFO("Initialized security driver %s", security_drv->name);
+
+    /*
+     * Add security policy host caps now that the security driver is
+     * initialized.
+     */
+    return qemudSecurityCapsInit(security_drv, qemud_drv->caps);
+}
+
+
 
 /**
  * qemudStartup:
@@ -1866,13 +1878,29 @@ static int qemudGetMaxVCPUs(virConnectPtr conn, const char *type) {
 
 static char *qemudGetCapabilities(virConnectPtr conn) {
     struct qemud_driver *driver = conn->privateData;
+    virCapsPtr caps;
     char *xml = NULL;
 
     qemuDriverLock(driver);
-    virCapabilitiesFree(qemu_driver->caps);
-    if ((qemu_driver->caps = qemudCapsInit()) == NULL ||
-        (xml = virCapabilitiesFormatXML(driver->caps)) == NULL)
+    if ((caps = qemudCapsInit()) == NULL) {
         virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    if (qemu_driver->securityDriver &&
+        qemudSecurityCapsInit(qemu_driver->securityDriver, caps) < 0) {
+        virCapabilitiesFree(caps);
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    virCapabilitiesFree(qemu_driver->caps);
+    qemu_driver->caps = caps;
+
+    if ((xml = virCapabilitiesFormatXML(driver->caps)) == NULL)
+        virReportOOMError(conn);
+
+cleanup:
     qemuDriverUnlock(driver);
 
     return xml;

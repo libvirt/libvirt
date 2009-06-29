@@ -377,8 +377,14 @@ virCapsPtr qemudCapsInit(void) {
     /* Using KVM's mac prefix for QEMU too */
     virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x52, 0x54, 0x00 });
 
-    if (nodeCapsInitNUMA(caps) < 0)
-        goto no_memory;
+    /* Some machines have problematic NUMA toplogy causing
+     * unexpected failures. We don't want to break the QEMU
+     * driver in this scenario, so log errors & carry on
+     */
+    if (nodeCapsInitNUMA(caps) < 0) {
+        virCapabilitiesFreeNUMAInfo(caps);
+        VIR_WARN0("Failed to query host NUMA topology, disabling NUMA capabilities");
+    }
 
     virCapabilitiesAddHostMigrateTransport(caps,
                                            "tcp");

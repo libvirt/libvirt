@@ -119,6 +119,9 @@ extern void
 virCapabilitiesFree(virCapsPtr caps);
 
 extern void
+virCapabilitiesFreeNUMAInfo(virCapsPtr caps);
+
+extern void
 virCapabilitiesSetMacPrefix(virCapsPtr caps,
                             unsigned char *prefix);
 

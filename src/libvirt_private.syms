@@ -24,6 +24,7 @@ virCapabilitiesDefaultGuestEmulator;
 virCapabilitiesDefaultGuestMachine;
 virCapabilitiesFormatXML;
 virCapabilitiesFree;
+virCapabilitiesFreeNUMAInfo;
 virCapabilitiesNew;
 virCapabilitiesSetMacPrefix;
 virCapabilitiesGenerateMac;

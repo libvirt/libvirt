@@ -121,6 +121,15 @@ virCapabilitiesFreeGuest(virCapsGuestPtr guest)
     VIR_FREE(guest);
 }
 
+void
+virCapabilitiesFreeNUMAInfo(virCapsPtr caps)
+{
+    int i;
+
+    for (i = 0 ; i < caps->host.nnumaCell ; i++)
+        virCapabilitiesFreeHostNUMACell(caps->host.numaCell[i]);
+    VIR_FREE(caps->host.numaCell);
+}
 
 /**
  * virCapabilitiesFree:
@@ -141,9 +150,8 @@ virCapabilitiesFree(virCapsPtr caps) {
     for (i = 0 ; i < caps->host.nfeatures ; i++)
         VIR_FREE(caps->host.features[i]);
     VIR_FREE(caps->host.features);
-    for (i = 0 ; i < caps->host.nnumaCell ; i++)
-        virCapabilitiesFreeHostNUMACell(caps->host.numaCell[i]);
-    VIR_FREE(caps->host.numaCell);
+
+    virCapabilitiesFreeNUMAInfo(caps);
 
     for (i = 0 ; i < caps->host.nmigrateTrans ; i++)
         VIR_FREE(caps->host.migrateTrans[i]);
