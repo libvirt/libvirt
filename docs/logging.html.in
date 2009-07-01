@@ -49,7 +49,6 @@
     <ul>
       <li>log_level: accepts the following values:
       <ul>
-        <li>0: no logging at all</li>
         <li>4: only errors</li>
         <li>3: warnings and errors</li>
         <li>2: informations, warnings and errors</li>
@@ -84,20 +83,19 @@
     </ul>
     <p>In all cases the x prefix is the minimal level, acting as a filter:</p>
     <ul>
-      <li>0: everything</li>
       <li>1: DEBUG</li>
       <li>2: INFO</li>
       <li>3: WARNING</li>
       <li>4: ERROR</li>
     </ul>
     <p>Multiple output can be defined , they just need to be separated by
-       spaces, e.g.: <code>"3:syslog:libvirtd 0:file:/tmp/libvirt.log"</code>
+       spaces, e.g.: <code>"3:syslog:libvirtd 1:file:/tmp/libvirt.log"</code>
        will log all warnings and errors to syslog under the libvirtd ident
        but also log everything debugging and informations included in the
        file <code>/tmp/libvirt.log</code></p>
     <p>For example setting up the following:</p>
     <pre>export LIBVIRT_DEBUG=1
-export LIBVIRT_LOG_OUTPUTS="0:file:virsh.log"</pre>
+export LIBVIRT_LOG_OUTPUTS="1:file:virsh.log"</pre>
     <p>and then running virsh will accumulate the logs in the
     <code>virsh.log</code> file in a way similar to:</p>
     <pre>14:29:04.771: debug : virInitialize:278 : register drivers

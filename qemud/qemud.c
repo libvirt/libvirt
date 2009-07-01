@@ -128,7 +128,7 @@ static int sigwrite = -1;       /* Signal handler pipe */
 static int ipsock = 0;          /* -l  Listen for TCP/IP */
 
 /* Defaults for logging */
-static int log_level = 3;
+static int log_level = VIR_LOG_DEFAULT;
 static char *log_filters = NULL;
 static char *log_outputs = NULL;
 
@@ -2499,15 +2499,16 @@ qemudSetLogging(virConfPtr conf, const char *filename) {
             log_outputs = strdup(debugEnv);
     }
     if (!log_outputs) {
+        char *tmp = NULL;
         if (godaemon) {
-            char *tmp = NULL;
             if (virAsprintf (&tmp, "%d:syslog:libvirtd", log_level) < 0)
                 goto free_and_fail;
-            virLogParseOutputs (tmp);
-            VIR_FREE (tmp);
         } else {
-            virLogParseOutputs("0:stderr:libvirtd");
+            if (virAsprintf(&tmp, "%d:stderr", log_level) < 0)
+                goto free_and_fail;
         }
+        virLogParseOutputs(tmp);
+        VIR_FREE(tmp);
     } else {
         virLogParseOutputs(log_outputs);
     }

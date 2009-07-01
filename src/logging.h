@@ -77,6 +77,8 @@ typedef enum {
     VIR_LOG_ERROR,
 } virLogPriority;
 
+#define VIR_LOG_DEFAULT VIR_LOG_WARN
+
 /**
  * virLogOutputFunc:
  * @category: the category for the message

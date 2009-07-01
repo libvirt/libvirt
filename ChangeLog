@@ -1,3 +1,10 @@
+Wed Jul  1 13:18:37 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/logging.html[.in] qemud/libvirtd.conf qemud/qemud.c
+	  src/logging.[ch]: cleanup the logging code and docs to remove
+	  all references to log level 0, cleanup hardcoded values and add
+	  a default VIR_LOG_DEFAULT value, patch by Amy Griffis
+
 Wed Jul  1 12:38:28 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/opennebula/one_conf.c src/opennebula/one_driver.c: cleanup
