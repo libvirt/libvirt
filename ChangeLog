@@ -1,3 +1,8 @@
+Wed Jul  1 12:38:28 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/opennebula/one_conf.c src/opennebula/one_driver.c: cleanup
+	  and small update for OpenNebula driver by Abel Miguez Rodriguez
+
 Wed Jul  1 11:38:15 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/opennebula/one_client.c, src/opennebula/one_client.h:

@@ -94,6 +94,26 @@ virCapsPtr oneCapsInit(void)
     {
         goto no_memory;
     }
+    if ((guest = virCapabilitiesAddGuest(caps,
+                                         "xen",
+                                         "i686",
+                                         32,
+                                         NULL,
+                                         NULL,
+                                         0,
+                                         NULL)) == NULL)
+    {
+        goto no_memory;
+    }
+    if (virCapabilitiesAddGuestDomain(guest,
+                                      "one",
+                                      NULL,
+                                      NULL,
+                                      0,
+                                      NULL) == NULL)
+    {
+        goto no_memory;
+    }
 
     return caps;
 

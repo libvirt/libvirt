@@ -505,7 +505,7 @@ static int oneDomainShutdown(virDomainPtr dom)
             ret= 0;
             goto return_point;
         }
-        oneError(dom->conn, dom, VIR_ERR_OPERATION_FAILED,
+        oneError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
                  _("Wrong state to perform action"));
         goto return_point;
     }
@@ -541,7 +541,7 @@ static int oneDomainDestroy(virDomainPtr dom)
     if(c_oneCancel(vm->pid)) {
         /* VM not running, delete the instance at ONE DB */
         if(c_oneFinalize(vm->pid)){
-            oneError(dom->conn, dom, VIR_ERR_OPERATION_FAILED,
+            oneError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
                      _("Wrong state to perform action"));
             goto return_point;
         }
@@ -576,11 +576,11 @@ static int oneDomainSuspend(virDomainPtr dom)
                 ret=0;
                 goto return_point;
             }
-            oneError(dom->conn, dom, VIR_ERR_OPERATION_FAILED,
+            oneError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
                      _("Wrong state to perform action"));
             goto return_point;
         }
-        oneError(dom->conn,dom,VIR_ERR_OPERATION_FAILED,
+        oneError(dom->conn,dom, VIR_ERR_OPERATION_INVALID,
                  _("domain is not running"));
     } else {
         oneError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
@@ -609,11 +609,11 @@ static int oneDomainResume(virDomainPtr dom)
                 ret=0;
                 goto return_point;
             }
-            oneError(dom->conn, dom, VIR_ERR_OPERATION_FAILED,
+            oneError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
                      _("Wrong state to perform action"));
             goto return_point;
         }
-        oneError(dom->conn,dom,VIR_ERR_OPERATION_FAILED,
+        oneError(dom->conn,dom, VIR_ERR_OPERATION_INVALID,
                  _("domain is not paused "));
     } else {
         oneError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
