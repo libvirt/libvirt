@@ -1103,6 +1103,17 @@ void virReportErrorHelper(virConnectPtr conn,
 
 }
 
+/**
+ * virStrerror:
+ * @theerrno: the errno value
+ * @errBuf: the buffer to save the error to
+ * @errBufLen: the buffer length
+ *
+ * Generate an erro string for the given errno
+ *
+ * Returns a pointer to the error string, possibly indicating that the
+ *         error is unknown
+ */
 const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen)
 {
 #ifdef HAVE_STRERROR_R
@@ -1125,6 +1136,19 @@ const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen)
 #endif
 }
 
+/**
+ * virReportSystemErrorFull:
+ * @conn: the hyperisor connection
+ * @domcode: the virErrorDomain indicating where it's coming from
+ * @theerrno: an errno number
+ * @filename: filename where error was raised
+ * @funcname: function name where error was raised
+ * @linenr: line number where error was raised
+ * @fmt:  the message to display/transmit
+ * @...:  extra parameters for the message display
+ *
+ * Convenience internal routine called when a system error is detected.
+ */
 void virReportSystemErrorFull(virConnectPtr conn,
                               int domcode,
                               int theerrno,
@@ -1165,6 +1189,17 @@ void virReportSystemErrorFull(virConnectPtr conn,
                       msg, msgDetail, NULL, -1, -1, msg, msgDetail);
 }
 
+/**
+ * virReportOOMErrorFull:
+ * @conn: the hyperisor connection
+ * @domcode: the virErrorDomain indicating where it's coming from
+ * @filename: filename where error was raised
+ * @funcname: function name where error was raised
+ * @linenr: line number where error was raised
+ *
+ * Convenience internal routine called when an out of memory error is
+ * detected
+ */
 void virReportOOMErrorFull(virConnectPtr conn,
                            int domcode,
                            const char *filename,

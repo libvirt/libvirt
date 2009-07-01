@@ -1,3 +1,12 @@
+Wed Jul  1 15:05:25 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c src/virterror.c: fix some missing comments in public
+	  modules.
+	* docs/libvirt-api.xml docs/libvirt-refs.xml
+	  docs/devhelp/libvirt-libvirt.html docs/html/libvirt-libvirt.html:
+	  regenerated documentation
+	* po/*: updated the polish localization and regenerated
+
 Wed Jul  1 13:18:37 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/logging.html[.in] qemud/libvirtd.conf qemud/qemud.c

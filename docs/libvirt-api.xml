@@ -1203,8 +1203,8 @@ see note above'/>
       <arg name='nparams' type='int *' info='number of scheduler parameters(return value)'/>
     </function>
     <function name='virDomainGetSecurityLabel' file='libvirt' module='libvirt'>
-      <info>Extract security label of an active domain.</info>
-      <return type='int' info='0 in case of success, -1 in case of failure, and -2 if the operation is not supported (caller decides if that&apos;s an error).'/>
+      <info>Extract security label of an active domain. The &apos;label&apos; field in the @seclabel argument will be initialized to the empty string if the domain is not running under a security model.</info>
+      <return type='int' info='0 in case of success, -1 in case of failure'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='seclabel' type='virSecurityLabelPtr' info='pointer to a virSecurityLabel structure'/>
     </function>
@@ -1720,8 +1720,8 @@ see note above'/>
       <arg name='info' type='virNodeInfoPtr' info='pointer to a virNodeInfo structure allocated by the user'/>
     </function>
     <function name='virNodeGetSecurityModel' file='libvirt' module='libvirt'>
-      <info>Extract the security model of a hypervisor.</info>
-      <return type='int' info='0 in case of success, -1 in case of failure, and -2 if the operation is not supported (caller decides if that&apos;s an error).'/>
+      <info>Extract the security model of a hypervisor. The &apos;model&apos; field in the @secmodel argument may be initialized to the empty string if the driver has not activated a security model.</info>
+      <return type='int' info='0 in case of success, -1 in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='a connection object'/>
       <arg name='secmodel' type='virSecurityModelPtr' info='pointer to a virSecurityModel structure'/>
     </function>

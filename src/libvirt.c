@@ -756,6 +756,7 @@ virRegisterStateDriver(virStateDriverPtr driver)
 
 /**
  * virStateInitialize:
+ * @privileged: set to 1 if running with root priviledge, 0 otherwise
  *
  * Initialize all virtualization drivers.
  *

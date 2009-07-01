@@ -2622,6 +2622,9 @@
         <word name='across'>
           <ref name='virStorageVolGetPath'/>
         </word>
+        <word name='activated'>
+          <ref name='virNodeGetSecurityModel'/>
+        </word>
         <word name='active'>
           <ref name='VIR_NODEINFO_MAXCPUS'/>
           <ref name='_virNodeInfo'/>
@@ -2832,6 +2835,8 @@
           <ref name='virDomainBlockPeek'/>
         </word>
         <word name='argument'>
+          <ref name='virDomainGetSecurityLabel'/>
+          <ref name='virNodeGetSecurityModel'/>
           <ref name='virNodeListDevices'/>
           <ref name='virNodeNumOfDevices'/>
         </word>
@@ -3100,7 +3105,6 @@
           <ref name='virConnectRef'/>
           <ref name='virDomainGetOSType'/>
           <ref name='virDomainGetSchedulerType'/>
-          <ref name='virDomainGetSecurityLabel'/>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainRef'/>
           <ref name='virInterfaceGetXMLDesc'/>
@@ -3110,7 +3114,6 @@
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
           <ref name='virNodeGetCellsFreeMemory'/>
-          <ref name='virNodeGetSecurityModel'/>
           <ref name='virSaveLastError'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
@@ -3488,10 +3491,6 @@
           <ref name='virInterfaceGetName'/>
           <ref name='virNetworkGetName'/>
         </word>
-        <word name='decides'>
-          <ref name='virDomainGetSecurityLabel'/>
-          <ref name='virNodeGetSecurityModel'/>
-        </word>
         <word name='default'>
           <ref name='_virConnectCredential'/>
           <ref name='virConnSetErrorFunc'/>
@@ -3707,6 +3706,7 @@
           <ref name='virGetVersion'/>
           <ref name='virNodeDeviceDettach'/>
           <ref name='virNodeDeviceReAttach'/>
+          <ref name='virNodeGetSecurityModel'/>
         </word>
         <word name='drivers'>
           <ref name='virNodeDeviceDettach'/>
@@ -3764,6 +3764,10 @@
         </word>
         <word name='emitting'>
           <ref name='virEventTimeoutCallback'/>
+        </word>
+        <word name='empty'>
+          <ref name='virDomainGetSecurityLabel'/>
+          <ref name='virNodeGetSecurityModel'/>
         </word>
         <word name='enable'>
           <ref name='virConnectDomainEventRegister'/>
@@ -3917,6 +3921,8 @@
         </word>
         <word name='field'>
           <ref name='VIR_DOMAIN_SCHED_FIELD_LENGTH'/>
+          <ref name='virDomainGetSecurityLabel'/>
+          <ref name='virNodeGetSecurityModel'/>
         </word>
         <word name='fields'>
           <ref name='virDomainBlockStats'/>
@@ -4259,6 +4265,7 @@
           <ref name='virDomainGetVcpus'/>
           <ref name='virEventAddTimeoutFunc'/>
           <ref name='virNodeDeviceGetParent'/>
+          <ref name='virNodeGetSecurityModel'/>
           <ref name='virStoragePoolDestroy'/>
         </word>
         <word name='have'>
@@ -4449,6 +4456,10 @@
         <word name='ing'>
           <ref name='virEventAddHandleFunc'/>
           <ref name='virEventAddTimeoutFunc'/>
+        </word>
+        <word name='initialized'>
+          <ref name='virDomainGetSecurityLabel'/>
+          <ref name='virNodeGetSecurityModel'/>
         </word>
         <word name='initializing'>
           <ref name='virInitialize'/>
@@ -4953,6 +4964,7 @@
         <word name='model'>
           <ref name='VIR_SECURITY_MODEL_BUFLEN'/>
           <ref name='_virNodeInfo'/>
+          <ref name='virDomainGetSecurityLabel'/>
           <ref name='virNodeGetSecurityModel'/>
         </word>
         <word name='modify'>
@@ -5241,9 +5253,7 @@
         </word>
         <word name='operation'>
           <ref name='virDomainGetOSType'/>
-          <ref name='virDomainGetSecurityLabel'/>
           <ref name='virDomainReboot'/>
-          <ref name='virNodeGetSecurityModel'/>
           <ref name='virStoragePoolDelete'/>
         </word>
         <word name='operations'>
@@ -5874,6 +5884,7 @@
           <ref name='virDomainDestroy'/>
           <ref name='virDomainFree'/>
           <ref name='virDomainGetMaxVcpus'/>
+          <ref name='virDomainGetSecurityLabel'/>
           <ref name='virDomainMemoryPeek'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainUndefine'/>
@@ -6182,31 +6193,6 @@
           <ref name='virConnectListDefinedDomains'/>
           <ref name='virConnectListDefinedNetworks'/>
         </word>
-        <word name='string'>
-          <ref name='VIR_SECURITY_DOI_BUFLEN'/>
-          <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
-          <ref name='VIR_SECURITY_MODEL_BUFLEN'/>
-          <ref name='_virError'/>
-          <ref name='_virNodeInfo'/>
-          <ref name='virConnectGetCapabilities'/>
-          <ref name='virConnectGetType'/>
-          <ref name='virConnectGetURI'/>
-          <ref name='virDomainBlockPeek'/>
-          <ref name='virDomainCreateLinux'/>
-          <ref name='virDomainCreateXML'/>
-          <ref name='virDomainGetName'/>
-          <ref name='virDomainGetOSType'/>
-          <ref name='virDomainGetSchedulerType'/>
-          <ref name='virDomainGetUUIDString'/>
-          <ref name='virDomainLookupByUUIDString'/>
-          <ref name='virInterfaceGetMACString'/>
-          <ref name='virInterfaceGetName'/>
-          <ref name='virNetworkGetName'/>
-          <ref name='virNetworkGetUUIDString'/>
-          <ref name='virNetworkLookupByUUIDString'/>
-          <ref name='virNodeDeviceCreateXML'/>
-          <ref name='virStoragePoolGetUUIDString'/>
-        </word>
         <word name='structure'>
           <ref name='virDomainBlockStats'/>
           <ref name='virDomainFree'/>
@@ -6268,11 +6254,9 @@
           <ref name='_virConnectAuth'/>
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virDomainGetMaxVcpus'/>
-          <ref name='virDomainGetSecurityLabel'/>
           <ref name='virDomainMigrate'/>
           <ref name='virNodeDeviceListCaps'/>
           <ref name='virNodeDeviceNumOfCaps'/>
-          <ref name='virNodeGetSecurityModel'/>
         </word>
         <word name='supports'>
           <ref name='virDomainMigrate'/>
@@ -6508,6 +6492,9 @@
         <word name='undefined'>
           <ref name='virDomainDefineXML'/>
           <ref name='virStoragePoolDefineXML'/>
+        </word>
+        <word name='under'>
+          <ref name='virDomainGetSecurityLabel'/>
         </word>
         <word name='underlying'>
           <ref name='virDomainGetVcpus'/>
