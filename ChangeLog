@@ -1,3 +1,8 @@
+Wed Jul  1 11:38:15 BST 2009 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/opennebula/one_client.c, src/opennebula/one_client.h:
+	Remove unused code. Ensure null termination after strncpy
+
 Wed Jul  1 10:21:15 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/storage_driver.c: don't destroy a pool when calling create

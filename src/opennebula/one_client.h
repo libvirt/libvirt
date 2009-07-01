@@ -24,8 +24,8 @@
 
 struct _oneClient {
     xmlrpc_env env;
-    char *url;
-    char *session;
+    const char *url;
+    const char *session;
     char *error;
 };
 
@@ -37,8 +37,6 @@ void c_oneStart(void);
 int c_oneDeploy(int vmid, int hid);
 
 int c_oneMigrate(int vmid, int hid, int flag);
-
-int c_oneAllocate(char* template_file);
 
 int c_oneAllocateTemplate(char* vm_template);
 

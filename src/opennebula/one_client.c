@@ -33,16 +33,9 @@ void c_oneStart()
     xmlrpc_client_init2(&one_client.env, XMLRPC_CLIENT_NO_FLAGS,
         "OpenNebula API Client", "1.2", NULL, 0);
 
-    one_client.error=0;
-
-#ifdef ONED_PORT
-    one_client.url=(char *)malloc(64);
-    snprintf(one_client.url, 63, "http://localhost:%d/RPC2", ONED_PORT);
-#else
-    one_client.url=(char *)"http://localhost:2633/RPC2";
-#endif
-
-    one_client.session=(char *)"one-session";
+    one_client.error = 0;
+    one_client.url = "http://localhost:2633/RPC2";
+    one_client.session = "one-session";
 };
 
 
@@ -92,35 +85,6 @@ int c_oneMigrate(int vmid, int hid, int flag)
         (xmlrpc_bool)flag);
 
     return c_oneReturnCode(resultP);
-}
-
-int c_oneAllocate(char* template_file)
-{
-    int file;
-    int size;
-    int bytes_read;
-    char *file_text;
-    int return_code;
-
-    file=open(template_file, O_RDONLY);
-    size=lseek(file, 0, SEEK_END);
-    lseek(file, 0, SEEK_SET);
-
-    file_text=(char *)malloc(size+1);
-    bytes_read=read(file, file_text, size);
-    close(file);
-
-    if(bytes_read==size) {
-        file_text[size]=0;
-
-        return_code=c_oneAllocateTemplate(file_text);
-        free(file_text);
-
-        return return_code;
-    } else {
-        free(file_text);
-        return -1;
-    }
 }
 
 int c_oneAllocateTemplate(char* vm_template)
@@ -222,6 +186,7 @@ int c_oneVmInfo(int vmid, char* ret_info,int length)
     if( return_code )
     {
         strncpy(ret_info, return_string, length-1);
+        ret_info[length-1] = '\0';
 
         xmlrpc_DECREF(resultP);
         free(return_string);
@@ -241,9 +206,6 @@ void c_oneFree()
 {
     xmlrpc_env_clean(&one_client.env);
     xmlrpc_client_cleanup();
-#ifdef ONE_PORT
-    free(one_client.url);
-#endif
 }
 
 
