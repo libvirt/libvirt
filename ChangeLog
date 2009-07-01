@@ -1,3 +1,8 @@
+Wed Jul  1 10:21:15 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/storage_driver.c: don't destroy a pool when calling create
+	  by mistake, patch by Dave Allan.
+
 Mon Jun 29 18:01:20 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 
 	Reduce LXC capabilities

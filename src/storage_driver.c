@@ -476,6 +476,8 @@ storagePoolCreate(virConnectPtr conn,
     if (pool) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("storage pool already exists"));
+        virStoragePoolObjUnlock(pool);
+        pool = NULL;
         goto cleanup;
     }
 
