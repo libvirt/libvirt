@@ -1,3 +1,8 @@
+Wed Jul  1 23:23:19 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/drvone.html docs/drvone.html.in: small OpenNebula driver
+	  doc update by Abel Miguez Rodriguez
+
 Wed Jul  1 16:22:38 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/drvone.html.in docs/drvone.html docs/drivers.html.in

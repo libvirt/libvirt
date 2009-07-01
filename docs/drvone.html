@@ -139,26 +139,20 @@
       <div id="content">
         <h1>OpenNebula Virtual Infrastructure Manager driver</h1>
         <p><a name="toc" id="toc"></a><a href="http://opennebula.org/">OpenNebula</a>
-is a Virtual Infrastructure Engine
-that manages Virtual Machines (VM) in a pool of distributed resources
-by orchestrating network, storage and virtualization technologies.
-The OpenNebula driver lets you manage your private cloud using a
-standard libvirt interface, including the API as well as the related
+is a Virtual Infrastructure Manager that controls Virtual Machines (VM) in a pool of distributed resources
+by orchestrating network, storage and virtualization technologies. The OpenNebula driver lets you manage your private or hybrid (<a href="http://aws.amazon.com/ec2/">Amazon EC2</a> or <a href="http://www.elastichosts.com/">Elastic Hosts</a> based) cloud using a standard libvirt interface, including the API as well as the related
 tools and VM description files.</p>
         <h2>
 <a name="prereq" id="prereq"></a>Deployment pre-requisites</h2>
         <ul><li>
 <p style="margin-bottom: 0in">A working OpenNebula installation,
-	version 1.2 or higher. 
+	version 1.2 or higher.
 	</p>
-	</li><li>
-<p>"libxmlrpc-c3" &gt;= 1.06.27-1 development package.
-		</p>
-</li></ul>
+	</li></ul>
         <h2>
 <a name="uris" id="uris"></a>Connections to OpenNebula driver</h2>
         <p>The Uri of the driver protocol is "one". Some example
-connection Uris for the driver are: 
+connection Uris for the driver are:
 </p>
         <pre>    one:///                      (local access)
     one+unix:///                 (local access)
@@ -171,8 +165,7 @@ connection Uris for the driver are:
         <p>There are some limitations on the XML attributes that may be
 specified when interfacing OpenNebula. The following xml example
 details the attributes and options supported by the OpenNebula
-driver: 
-</p>
+driver:</p>
         <h3>Paravirtualized guest direct kernel boot 
 </h3>
         <pre>    &lt;domain type='one'&gt;
@@ -223,8 +216,14 @@ driver:
         <p>
 <b>Note:</b> The "&lt;interface type='network'&gt;" will
 attach the interface to a previously configured network (named
-<tt>onenetwork</tt>) within the OpenNebula system, typically with the
+<tt>onenetwork</tt>) within the <a href="http://opennebula.org/">OpenNebula</a> system, typically with the
 <tt>onevnet</tt> CLI command.</p>
+        <p><b>Note</b>: OpenNebula supports the simultaneous use of different hypervisors, so you can specify any os type (linux or hvm) supported by your cluster.    
+</p>
+        <h2>Links</h2>
+        <ul><li><a href="http://www.opennebula.org/doku.php?id=documentation">OpenNebula Documentation</a>
+</li><li><a href="http://www.opennebula.org/doku.php?id=documentation:rel1.2:ug">OpenNebula User Guide</a>
+</li></ul>
       </div>
     </div>
     <div id="footer">
