@@ -1,3 +1,10 @@
+Wed Jul  1 16:22:38 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/drvone.html.in docs/drvone.html docs/drivers.html.in
+	  docs/hvsupport.html.in docs/sitemap.html.in docs/*: added
+	  documentation for OpenNebula driver by Abel Miguez Rodriguez
+	  and regenerated the docs
+
 Wed Jul  1 15:05:25 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c src/virterror.c: fix some missing comments in public

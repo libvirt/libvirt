@@ -22,6 +22,7 @@ updated on <i>2008-06-05</i>.
         <th><a href="drvkvm.html">KVM</a></th>
         <th><a href="remote.html">Remote</a></th>
         <th><a href="drvvbox.html">VirtualBox</a></th>
+        <th><a href="drvone.html">ONE</a></th>
       </tr>
       <tr>
         <td> virConnectClose </td>
@@ -31,6 +32,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virConnectGetCapabilities </td>
@@ -40,6 +42,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.1 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virConnectGetHostname </td>
@@ -49,6 +52,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.3.3 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virConnectGetMaxVcpus </td>
@@ -58,6 +62,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
         <td> x </td>
+        <td> x </td>	
       </tr>
       <tr>
         <td> virConnectGetType </td>
@@ -67,6 +72,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virConnectGetURI </td>
@@ -76,6 +82,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virConnectGetVersion </td>
@@ -85,6 +92,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virConnectListDefinedDomains </td>
@@ -94,6 +102,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virConnectListDomains </td>
@@ -103,6 +112,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virConnectNumOfDefinedDomains </td>
@@ -112,6 +122,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virConnectNumOfDomains </td>
@@ -121,6 +132,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virConnectOpen </td>
@@ -130,9 +142,11 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virConnectOpenAuth </td>
+        <td>  </td>
         <td>  </td>
         <td>  </td>
         <td>  </td>
@@ -148,6 +162,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> x </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainAttachDevice </td>
@@ -157,6 +172,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainBlockPeek </td>
@@ -164,6 +180,7 @@ updated on <i>2008-06-05</i>.
         <td> 0.4.3 </td>
         <td> 0.4.3 </td>
         <td> 0.4.3 </td>
+        <td> x </td>
         <td> x </td>
         <td> x </td>
       </tr>
@@ -175,6 +192,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> &#x2265; 0.3.2 </td>
         <td> x </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainCoreDump </td>
@@ -183,6 +201,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
+        <td> x </td>
         <td> x </td>
       </tr>
       <tr>
@@ -193,6 +212,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainCreateLinux </td>
@@ -202,6 +222,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainDefineXML </td>
@@ -211,6 +232,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainDestroy </td>
@@ -220,6 +242,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainDetachDevice </td>
@@ -229,6 +252,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainFree </td>
@@ -238,6 +262,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainGetAutostart </td>
@@ -247,11 +272,12 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.1 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> x </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainGetConnect </td>
         <td> 0.3.0 </td>
-        <td colspan="5"> not a HV function </td>
+        <td colspan="6"> not a HV function </td>
       </tr>
       <tr>
         <td> virDomainGetID </td>
@@ -261,6 +287,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainGetInfo </td>
@@ -270,6 +297,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainGetMaxMemory </td>
@@ -279,6 +307,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainGetMaxVcpus </td>
@@ -287,6 +316,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
+        <td> x </td>
         <td> x </td>
       </tr>
       <tr>
@@ -297,6 +327,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainGetOSType </td>
@@ -306,6 +337,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainGetSchedulerParameters </td>
@@ -314,6 +346,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
+        <td> x </td>
         <td> x </td>
       </tr>
       <tr>
@@ -324,6 +357,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
         <td> x </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainGetUUID </td>
@@ -333,6 +367,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainGetUUIDString </td>
@@ -342,6 +377,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainGetVcpus </td>
@@ -350,6 +386,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
+        <td> x </td>
         <td> x </td>
       </tr>
       <tr>
@@ -360,6 +397,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> &#x2265; 0.3.2 </td>
         <td> x </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainGetXMLDesc </td>
@@ -369,6 +407,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainLookupByID </td>
@@ -378,6 +417,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainLookupByName </td>
@@ -387,6 +427,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainLookupByUUID </td>
@@ -396,6 +437,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainLookupByUUIDString </td>
@@ -405,6 +447,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainMigrate </td>
@@ -413,6 +456,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> x </td>
         <td> 0.3.2 </td>
+        <td> x </td>
         <td> x </td>
       </tr>
       <tr>
@@ -423,6 +467,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
         <td> x </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainReboot </td>
@@ -432,6 +477,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainRestore </td>
@@ -441,6 +487,8 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.3.2 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> x </td>
+        <td> x </td>
+
       </tr>
       <tr>
         <td> virDomainResume </td>
@@ -450,6 +498,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainSave </td>
@@ -459,6 +508,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.3.2 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainSetAutostart </td>
@@ -468,6 +518,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.1 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> x </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainSetMaxMemory </td>
@@ -476,6 +527,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainSetMemory </td>
@@ -485,6 +537,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainSetSchedulerParameters </td>
@@ -493,6 +546,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
+        <td> x </td>
         <td> x </td>
       </tr>
       <tr>
@@ -503,6 +557,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> &#x2265; 0.3.0 </td>
         <td> x </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virDomainShutdown </td>
@@ -512,6 +567,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainSuspend </td>
@@ -521,6 +577,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virDomainUndefine </td>
@@ -530,17 +587,18 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> &#x2265; 0.6.4 </td>
       </tr>
       <tr>
         <td> virGetVersion </td>
         <td> All </td>
         <td> All </td>
-        <td colspan="4"> Returns -1 if HV unsupported. </td>
+        <td colspan="5"> Returns -1 if HV unsupported. </td>
       </tr>
       <tr>
         <td> virInitialize </td>
         <td> 0.1.0 </td>
-        <td colspan="5"> not a HV function </td>
+        <td colspan="6"> not a HV function </td>
       </tr>
       <tr>
         <td> virDomainMemoryPeek </td>
@@ -548,6 +606,7 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> 0.4.3 </td>
         <td> 0.4.3 </td>
+        <td> x </td>
         <td> x </td>
         <td> x </td>
       </tr>
@@ -559,6 +618,7 @@ updated on <i>2008-06-05</i>.
         <td> &#x2265; 0.2.0 </td>
         <td> &#x2265; 0.3.0 </td>
         <td> &#x2265; 0.6.3 </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virNodeGetFreeMemory </td>
@@ -568,11 +628,13 @@ updated on <i>2008-06-05</i>.
         <td> x </td>
         <td> x </td>
         <td> x </td>
+        <td> x </td>
       </tr>
       <tr>
         <td> virNodeGetCellsFreeMemory </td>
         <td> 0.3.3 </td>
         <td> &#x2265; 0.3.3 </td>
+        <td> x </td>
         <td> x </td>
         <td> x </td>
         <td> x </td>
