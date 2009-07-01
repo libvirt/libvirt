@@ -1,3 +1,8 @@
+Wed Jul  1 23:29:33 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/node_device.c: fix an endless loop in node device XML dump,
+	  patch by Cole Robinson
+
 Wed Jul  1 23:23:19 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/drvone.html docs/drvone.html.in: small OpenNebula driver

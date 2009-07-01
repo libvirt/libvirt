@@ -73,8 +73,8 @@ static int update_caps(virNodeDeviceObjPtr dev)
                               cap->data.scsi_host.host);
                 }
             }
-            cap = cap->next;
         }
+        cap = cap->next;
     }
 
     return 0;
