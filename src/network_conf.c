@@ -592,6 +592,9 @@ char *virNetworkDefFormat(virConnectPtr conn,
                       def->stp ? "on" : "off",
                       def->delay);
 
+    if (def->domain)
+        virBufferVSprintf(&buf, "  <domain name='%s'/>\n", def->domain);
+
     if (def->ipAddress || def->netmask) {
         virBufferAddLit(&buf, "  <ip");
 

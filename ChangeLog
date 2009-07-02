@@ -1,3 +1,11 @@
+Thu Jul  2 15:58:09 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* docs/schemas/network.rng: fix the network schemas to match
+	  new accepted elements, patch by Satoru SATOH
+	* src/network_conf.c: fix network driver to save the domain name
+	  in XML if present, patch by Satoru SATOH
+	* AUTHORS: adding Satoru SATOH
+
 Wed Jul  1 23:29:33 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/node_device.c: fix an endless loop in node device XML dump,

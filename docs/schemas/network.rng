@@ -1,6 +1,7 @@
 <!-- A Relax NG schema for the libvirt network XML format -->
 <element name="network" xmlns="http://relaxng.org/ns/structure/1.0"
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <interleave>
   <!-- The name of the network, used to refer to it through the API
        and in virsh -->
   <element name="name"><text/></element>
@@ -43,6 +44,11 @@
     </element>
   </optional>
   <optional>
+    <element name="domain">
+      <attribute name="name"><text/></attribute>
+    </element>
+  </optional>
+  <optional>
     <!-- The IP element sets up NAT'ing and an optional DHCP server
          local to the host. -->
     <!-- FIXME: address, netmask and the start and end of the ranges
@@ -63,7 +69,15 @@
             <attribute name="end"><text/></attribute>
           </element>
         </zeroOrMore>
+        <zeroOrMore>
+          <element name="host">
+            <attribute name="mac"><text/></attribute>
+            <attribute name="name"><text/></attribute>
+            <attribute name="ip"><text/></attribute>
+          </element>
+        </zeroOrMore>
       </element>
     </element>
   </optional>
+  </interleave>
 </element>
