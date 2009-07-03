@@ -318,10 +318,19 @@ static int
 SELinuxSetFilecon(virConnectPtr conn, const char *path, char *tcon)
 {
     char ebuf[1024];
+    security_context_t econ;
 
     VIR_INFO("Setting SELinux context on '%s' to '%s'", path, tcon);
 
-    if(setfilecon(path, tcon) < 0) {
+    if (setfilecon(path, tcon) < 0) {
+        if (getfilecon(path, &econ) >= 0) {
+            if (STREQ(tcon, econ)) {
+                freecon(econ);
+                /* It's alright, there's nothing to change anyway. */
+                return 0;
+            }
+            freecon(econ);
+        }
         virSecurityReportError(conn, VIR_ERR_ERROR,
                                _("%s: unable to set security context "
                                  "'\%s\' on %s: %s."), __func__,

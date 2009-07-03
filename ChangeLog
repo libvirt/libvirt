@@ -1,9 +1,16 @@
+Thu Jul  3 11:26:04 GMT 2009 Mark McLoughlin <markmc@redhat.com>
+
+	Patch from Tim Waugh in https://bugzilla.redhat.com/507555
+
+	* src/security_selinux.c: Don't unnecessarily try to change a
+	file context
+
 Thu Jul  3 11:24:44 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	Patch from Dan Berrange in https://bugzilla.redhat.com/493692
 
 	* src/security_selinux.c: Re-label shared and readonly images
-	
+
 Thu Jul  2 15:58:09 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* docs/schemas/network.rng: fix the network schemas to match
