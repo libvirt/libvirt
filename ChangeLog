@@ -1,3 +1,8 @@
+Fri Jul  3 15:08:24 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_conf.c: patch from C.J. Adams-Collier adding support
+	  for arm emulation if qemu-system-arm is present
+
 Thu Jul  3 11:27:14 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	Patch from Cole Robinson in https://bugzilla.redhat.com/499569

@@ -186,6 +186,12 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
 static const char *const arch_info_hvm_x86_machines[] = {
     "pc", "isapc"
 };
+static const char *const arch_info_hvm_arm_machines[] = {
+  "versatilepb","integratorcp","versatileab","realview",
+  "akita","spitz","borzoi","terrier","sx1-v1","sx1",
+  "cheetah","n800","n810","lm3s811evb","lm3s6965evb",
+  "connex","verdex","mainstone","musicpal","tosa",
+};
 static const char *const arch_info_hvm_mips_machines[] = {
     "mips"
 };
@@ -236,6 +242,8 @@ static const struct qemu_arch_info const arch_info_hvm[] = {
        "/usr/bin/qemu", "/usr/bin/qemu-system-x86_64", arch_info_i686_flags, 4 },
     {  "x86_64", 64, arch_info_hvm_x86_machines, 2,
        "/usr/bin/qemu-system-x86_64", NULL, arch_info_x86_64_flags, 2 },
+    {  "arm", 32, arch_info_hvm_arm_machines, 20,
+       "/usr/bin/qemu-system-arm", NULL, NULL, 0 },
     {  "mips", 32, arch_info_hvm_mips_machines, 1,
        "/usr/bin/qemu-system-mips", NULL, NULL, 0 },
     {  "mipsel", 32, arch_info_hvm_mips_machines, 1,
