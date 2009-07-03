@@ -1,3 +1,10 @@
+Thu Jul  3 11:27:14 GMT 2009 Mark McLoughlin <markmc@redhat.com>
+
+	Patch from Cole Robinson in https://bugzilla.redhat.com/499569
+
+	* src/security_selinux.c: Skip labelling if no src path
+	present
+
 Thu Jul  3 11:26:04 GMT 2009 Mark McLoughlin <markmc@redhat.com>
 
 	Patch from Tim Waugh in https://bugzilla.redhat.com/507555

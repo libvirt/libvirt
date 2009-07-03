@@ -380,6 +380,9 @@ SELinuxSetSecurityImageLabel(virConnectPtr conn,
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
 
+    if (!disk->src)
+        return 0;
+
     if (disk->shared) {
         return SELinuxSetFilecon(conn, disk->src, default_image_context);
     } else if (disk->readonly) {
