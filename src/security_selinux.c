@@ -24,11 +24,12 @@
 #include "virterror_internal.h"
 #include "util.h"
 #include "memory.h"
-
+#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
 static char default_domain_context[1024];
+static char default_content_context[1024];
 static char default_image_context[1024];
 #define SECURITY_SELINUX_VOID_DOI       "0"
 #define SECURITY_SELINUX_NAME "selinux"
@@ -148,8 +149,13 @@ SELinuxInitialize(virConnectPtr conn)
     close(fd);
 
     ptr = strchrnul(default_image_context, '\n');
-    *ptr = '\0';
-
+    if (*ptr == '\n') {
+        *ptr = '\0';
+        strcpy(default_content_context, ptr+1);
+        ptr = strchrnul(default_content_context, '\n');
+        if (*ptr == '\n')
+            *ptr = '\0';
+    }
     return 0;
 }
 
@@ -313,6 +319,8 @@ SELinuxSetFilecon(virConnectPtr conn, const char *path, char *tcon)
 {
     char ebuf[1024];
 
+    VIR_INFO("Setting SELinux context on '%s' to '%s'", path, tcon);
+
     if(setfilecon(path, tcon) < 0) {
         virSecurityReportError(conn, VIR_ERR_ERROR,
                                _("%s: unable to set security context "
@@ -336,9 +344,6 @@ SELinuxRestoreSecurityImageLabel(virConnectPtr conn,
     int err;
     char *newpath = NULL;
     const char *path = disk->src;
-
-    if (disk->readonly || disk->shared)
-        return 0;
 
     if ((err = virFileResolveLink(path, &newpath)) < 0) {
         virReportSystemError(conn, err,
@@ -366,8 +371,13 @@ SELinuxSetSecurityImageLabel(virConnectPtr conn,
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
 
-    if (secdef->imagelabel)
+    if (disk->shared) {
+        return SELinuxSetFilecon(conn, disk->src, default_image_context);
+    } else if (disk->readonly) {
+        return SELinuxSetFilecon(conn, disk->src, default_content_context);
+    } else if (secdef->imagelabel) {
         return SELinuxSetFilecon(conn, disk->src, secdef->imagelabel);
+    }
 
     return 0;
 }
@@ -441,9 +451,6 @@ SELinuxSetSecurityLabel(virConnectPtr conn,
 
     if (secdef->imagelabel) {
         for (i = 0 ; i < vm->def->ndisks ; i++) {
-            if (vm->def->disks[i]->readonly ||
-                vm->def->disks[i]->shared) continue;
-
             if (SELinuxSetSecurityImageLabel(conn, vm, vm->def->disks[i]) < 0)
                 return -1;
         }
