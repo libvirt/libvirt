@@ -527,6 +527,9 @@ fi
 %endif
 
 %changelog
+* Fri Jul  3 2009 Daniel Veillard <veillard@redhat.com> - 0.6.5-1
+- release of 0.6.5
+
 * Fri May 29 2009 Daniel Veillard <veillard@redhat.com> - 0.6.4-1
 - release of 0.6.4
 - various new APIs

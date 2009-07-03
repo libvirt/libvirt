@@ -19,6 +19,8 @@ config.status
 config.sub
 configure
 coverage
+cscope.files
+cscope.out
 libtool
 libvirt-*.tar.gz
 libvirt.pc

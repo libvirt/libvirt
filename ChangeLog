@@ -1,3 +1,9 @@
+Fri Jul  3 16:21:48 CEST 2009 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in libvirt.spec.in NEWS docs/* po/*: release of
+	  libvirt-0.6.5
+	* .gitignore: adding cscope files
+
 Fri Jul  3 15:08:24 CEST 2009 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_conf.c: patch from C.J. Adams-Collier adding support

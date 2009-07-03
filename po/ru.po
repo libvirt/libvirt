@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.ru\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-07-01 12:58+0200\n"
+"POT-Creation-Date: 2009-07-03 16:21+0200\n"
 "PO-Revision-Date: 2008-10-17 15:08+1100\n"
 "Last-Translator: Yulia Poyarkova <yulia.poyarkova@redhat.com>\n"
 "Language-Team: \n"
@@ -1504,22 +1504,22 @@ msgstr "непредвиденный тип домена %d"
 msgid "unexpected feature %d"
 msgstr "непредвиденный узел значений"
 
-#: src/domain_conf.c:3958 src/network_conf.c:657
+#: src/domain_conf.c:3958 src/network_conf.c:660
 #, fuzzy, c-format
 msgid "cannot create config directory '%s'"
 msgstr "не удается создать каталог конфигурации %s: %s"
 
-#: src/domain_conf.c:3967 src/network_conf.c:666
+#: src/domain_conf.c:3967 src/network_conf.c:669
 #, fuzzy, c-format
 msgid "cannot create config file '%s'"
 msgstr "не удается создать файл конфигурации %s: %s"
 
-#: src/domain_conf.c:3975 src/network_conf.c:674
+#: src/domain_conf.c:3975 src/network_conf.c:677
 #, fuzzy, c-format
 msgid "cannot write config file '%s'"
 msgstr "не удается записать файл конфигурации %s: %s"
 
-#: src/domain_conf.c:3982 src/network_conf.c:681
+#: src/domain_conf.c:3982 src/network_conf.c:684
 #, fuzzy, c-format
 msgid "cannot save config file '%s'"
 msgstr "не удается сохранить файл конфигурации %s: %s"
@@ -1529,7 +1529,7 @@ msgstr "не удается сохранить файл конфигурации
 msgid "unexpected domain %s already exists"
 msgstr "пул хранилищ уже существует"
 
-#: src/domain_conf.c:4154 src/network_conf.c:783 src/storage_conf.c:1452
+#: src/domain_conf.c:4154 src/network_conf.c:786 src/storage_conf.c:1452
 #, fuzzy, c-format
 msgid "Failed to open dir '%s'"
 msgstr "Не удалось открыть каталог '%s': %s"
@@ -2087,22 +2087,22 @@ msgstr "Перенаправление по запросу, но не указа
 msgid "unknown forwarding type '%s'"
 msgstr "неизвестный тип auth '%s'"
 
-#: src/network_conf.c:741
+#: src/network_conf.c:744
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr "Имя файла конфигурации сети '%s' не соответствует имени сети '%s'"
 
-#: src/network_conf.c:831
+#: src/network_conf.c:834
 #, fuzzy, c-format
 msgid "cannot remove config file '%s'"
 msgstr "не удается удалить конфигурацию для %s"
 
-#: src/network_conf.c:905
+#: src/network_conf.c:908
 #, c-format
 msgid "Bridge generation exceeded max id %d"
 msgstr ""
 
-#: src/network_conf.c:924
+#: src/network_conf.c:927
 #, fuzzy, c-format
 msgid "bridge name '%s' already in use."
 msgstr "домен %s уже существует"
@@ -3066,206 +3066,206 @@ msgstr "Ошибка связи с прокси: плохо сформирова
 msgid "got asynchronous packet number %d\n"
 msgstr "получен асинхронный номер пакета - %d\n"
 
-#: src/qemu_conf.c:574
+#: src/qemu_conf.c:582
 #, fuzzy, c-format
 msgid "cannot parse QEMU version number in '%s'"
 msgstr "невозможно прочитать %s: %s"
 
-#: src/qemu_conf.c:607
+#: src/qemu_conf.c:615
 #, fuzzy
 msgid "Unable to read QEMU help output"
 msgstr "Не удалось разобрать вывод vzlist"
 
-#: src/qemu_conf.c:631
+#: src/qemu_conf.c:639
 #, c-format
 msgid "Unexpected exit status from qemu %d pid %lu"
 msgstr "Неожиданный статус выхода qemu %d pid %lu"
 
-#: src/qemu_conf.c:639
+#: src/qemu_conf.c:647
 #, c-format
 msgid "Unexpected exit status '%d', qemu probably failed"
 msgstr "Неожиданный статус выхода '%d', возможный сбой qemu"
 
-#: src/qemu_conf.c:679
+#: src/qemu_conf.c:687
 #, c-format
 msgid "Cannot find QEMU binary %s: %s"
 msgstr "Не удается найти бинарный компонент QEMU %s: %s"
 
-#: src/qemu_conf.c:712 src/uml_conf.c:204
+#: src/qemu_conf.c:720 src/uml_conf.c:204
 #, c-format
 msgid "Network '%s' not found"
 msgstr "Сеть '%s' не найдена"
 
-#: src/qemu_conf.c:727
+#: src/qemu_conf.c:735
 #, c-format
 msgid "Network type %d is not supported"
 msgstr "Тип сети %d не поддерживается"
 
-#: src/qemu_conf.c:744 src/uml_conf.c:115
+#: src/qemu_conf.c:752 src/uml_conf.c:115
 #, c-format
 msgid "cannot initialize bridge support: %s"
 msgstr "не удается инициализировать поддержку моста: %s"
 
-#: src/qemu_conf.c:754 src/uml_conf.c:125
+#: src/qemu_conf.c:762 src/uml_conf.c:125
 #, fuzzy, c-format
 msgid "Failed to add tap interface to bridge. %s is not a bridge device"
 msgstr "Не удалось добавить интерфейс '%s' к мосту '%s' : %s"
 
-#: src/qemu_conf.c:758 src/uml_conf.c:130
+#: src/qemu_conf.c:766 src/uml_conf.c:130
 #, c-format
 msgid "Failed to add tap interface '%s' to bridge '%s' : %s"
 msgstr "Не удалось добавить интерфейс '%s' к мосту '%s' : %s"
 
-#: src/qemu_conf.c:908
+#: src/qemu_conf.c:916
 #, fuzzy
 msgid "TCP migration is not supported with this QEMU binary"
 msgstr "команда 'info blockstats' не поддерживается этим qemu"
 
-#: src/qemu_conf.c:916 src/qemu_conf.c:922
+#: src/qemu_conf.c:924 src/qemu_conf.c:930
 #, fuzzy
 msgid "STDIO migration is not supported with this QEMU binary"
 msgstr "команда 'info blockstats' не поддерживается этим qemu"
 
-#: src/qemu_conf.c:1165
+#: src/qemu_conf.c:1173
 #, fuzzy, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "неподдерживаемый тип диска '%s'"
 
-#: src/qemu_conf.c:1205 src/qemu_conf.c:1276
+#: src/qemu_conf.c:1213 src/qemu_conf.c:1284
 #, fuzzy, c-format
 msgid "unsupported usb disk type for '%s'"
 msgstr "неподдерживаемый тип диска '%s'"
 
-#: src/qemu_conf.c:1213 src/qemu_conf.c:1295 src/uml_conf.c:439
+#: src/qemu_conf.c:1221 src/qemu_conf.c:1303 src/uml_conf.c:439
 #, c-format
 msgid "unsupported disk type '%s'"
 msgstr "неподдерживаемый тип диска '%s'"
 
-#: src/qemu_conf.c:1541
+#: src/qemu_conf.c:1549
 msgid "invalid sound model"
 msgstr "недопустимая модель звукового устройства"
 
-#: src/qemu_conf.c:1794
+#: src/qemu_conf.c:1802
 #, fuzzy, c-format
 msgid "malformed keyword arguments in '%s'"
 msgstr "неверно сформированный элемент uuid"
 
-#: src/qemu_conf.c:1927
+#: src/qemu_conf.c:1935
 #, fuzzy, c-format
 msgid "cannot parse drive index '%s'"
 msgstr "невозможно открыть устройство %s"
 
-#: src/qemu_conf.c:1936
+#: src/qemu_conf.c:1944
 #, fuzzy, c-format
 msgid "missing file parameter in drive '%s'"
 msgstr "отсутствует информация об устройствах для %s"
 
-#: src/qemu_conf.c:1943
+#: src/qemu_conf.c:1951
 #, c-format
 msgid "missing index parameter in drive '%s'"
 msgstr ""
 
-#: src/qemu_conf.c:2003
+#: src/qemu_conf.c:2011
 #, fuzzy, c-format
 msgid "cannot parse NIC vlan in '%s'"
 msgstr "невозможно открыть устройство %s"
 
-#: src/qemu_conf.c:2015
+#: src/qemu_conf.c:2023
 #, fuzzy, c-format
 msgid "cannot find NIC definition for vlan %d"
 msgstr "Не удалось найти ссылку к устройству для LUN %d"
 
-#: src/qemu_conf.c:2074
+#: src/qemu_conf.c:2082
 #, fuzzy, c-format
 msgid "cannot parse vlan in '%s'"
 msgstr "невозможно открыть устройство %s"
 
-#: src/qemu_conf.c:2104
+#: src/qemu_conf.c:2112
 #, fuzzy, c-format
 msgid "cannot parse NIC definition '%s'"
 msgstr "невозможно открыть устройство %s"
 
-#: src/qemu_conf.c:2168 src/qemu_conf.c:2226
+#: src/qemu_conf.c:2176 src/qemu_conf.c:2234
 #, fuzzy, c-format
 msgid "unknown PCI device syntax '%s'"
 msgstr "неизвестный тип ОС"
 
-#: src/qemu_conf.c:2176 src/qemu_conf.c:2249
+#: src/qemu_conf.c:2184 src/qemu_conf.c:2257
 #, fuzzy, c-format
 msgid "cannot extract PCI device bus '%s'"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/qemu_conf.c:2183
+#: src/qemu_conf.c:2191
 #, fuzzy, c-format
 msgid "cannot extract PCI device slot '%s'"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/qemu_conf.c:2190
+#: src/qemu_conf.c:2198
 #, fuzzy, c-format
 msgid "cannot extract PCI device function '%s'"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/qemu_conf.c:2235
+#: src/qemu_conf.c:2243
 #, fuzzy, c-format
 msgid "cannot extract USB device vendor '%s'"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/qemu_conf.c:2242
+#: src/qemu_conf.c:2250
 #, fuzzy, c-format
 msgid "cannot extract PCI device product '%s'"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/qemu_conf.c:2256
+#: src/qemu_conf.c:2264
 #, fuzzy, c-format
 msgid "cannot extract PCI device address '%s'"
 msgstr "невозможно получить информацию об исходных устройствах"
 
-#: src/qemu_conf.c:2357
+#: src/qemu_conf.c:2365
 #, fuzzy, c-format
 msgid "cannot find port number in character device %s"
 msgstr "слишком много символьных устройств"
 
-#: src/qemu_conf.c:2393
+#: src/qemu_conf.c:2401
 #, fuzzy, c-format
 msgid "unknown character device syntax %s"
 msgstr "неизвестный тип ОС"
 
-#: src/qemu_conf.c:2426
+#: src/qemu_conf.c:2434
 #, fuzzy
 msgid "no emulator path found"
 msgstr "длина пути к эмулятору слишком велика"
 
-#: src/qemu_conf.c:2478
+#: src/qemu_conf.c:2486
 #, fuzzy, c-format
 msgid "missing value for %s argument"
 msgstr "отсутствует элемент имени"
 
-#: src/qemu_conf.c:2523
+#: src/qemu_conf.c:2531
 #, fuzzy, c-format
 msgid "cannot parse VNC port '%s'"
 msgstr "невозможно прочитать %s: %s"
 
-#: src/qemu_conf.c:2547
+#: src/qemu_conf.c:2555
 #, fuzzy, c-format
 msgid "cannot parse memory level '%s'"
 msgstr "невозможно открыть устройство %s"
 
-#: src/qemu_conf.c:2556
+#: src/qemu_conf.c:2564
 #, fuzzy, c-format
 msgid "cannot parse CPU count '%s'"
 msgstr "невозможно прочитать %s: %s"
 
-#: src/qemu_conf.c:2564
+#: src/qemu_conf.c:2572
 #, fuzzy, c-format
 msgid "cannot parse UUID '%s'"
 msgstr "невозможно прочитать %s: %s"
 
-#: src/qemu_conf.c:2817
+#: src/qemu_conf.c:2825
 #, c-format
 msgid "unknown QEMU argument '%s' during conversion"
 msgstr ""
 
-#: src/qemu_conf.c:2820
+#: src/qemu_conf.c:2828
 #, fuzzy, c-format
 msgid "unknown argument '%s'"
 msgstr "неизвестный тип auth '%s'"
@@ -4502,73 +4502,73 @@ msgstr "недопустимая модель звукового устройс�
 msgid "%s: DOI '%s' is longer than the maximum allowed length of %d"
 msgstr ""
 
-#: src/security_selinux.c:113
+#: src/security_selinux.c:114
 #, fuzzy, c-format
 msgid "%s: cannot open SELinux virtual domain context file %s: %s"
 msgstr "не удается открыть файл pid tty %s: %s"
 
-#: src/security_selinux.c:121
+#: src/security_selinux.c:122
 #, fuzzy, c-format
 msgid "%s: cannot read SELinux virtual domain context file %s: %s"
 msgstr "не удается прочитать файл pid tty %s: %s"
 
-#: src/security_selinux.c:134
+#: src/security_selinux.c:135
 #, fuzzy, c-format
 msgid "%s: cannot open SELinux virtual image context file %s: %s"
 msgstr "не удается открыть файл pid tty %s: %s"
 
-#: src/security_selinux.c:142
+#: src/security_selinux.c:143
 #, fuzzy, c-format
 msgid "%s: cannot read SELinux virtual image context file %s: %s"
 msgstr "не удается прочитать файл pid tty %s: %s"
 
-#: src/security_selinux.c:170
+#: src/security_selinux.c:176
 msgid "security label already defined for VM"
 msgstr ""
 
-#: src/security_selinux.c:191 src/security_selinux.c:197
+#: src/security_selinux.c:197 src/security_selinux.c:203
 #, fuzzy, c-format
 msgid "cannot generate selinux context for %s"
 msgstr "не удается получить контекст файла %s: %s"
 
-#: src/security_selinux.c:228 src/security_selinux.c:282
+#: src/security_selinux.c:234 src/security_selinux.c:288
 #, c-format
 msgid "%s: error calling getpidcon(): %s"
 msgstr ""
 
-#: src/security_selinux.c:290
+#: src/security_selinux.c:296
 #, fuzzy, c-format
 msgid "%s: security label exceeds maximum lenth: %d"
 msgstr "число VCPU превышает максимально допустимое значение: %d > %d"
 
-#: src/security_selinux.c:302
+#: src/security_selinux.c:308
 #, c-format
 msgid "%s: error calling security_getenforce(): %s"
 msgstr ""
 
-#: src/security_selinux.c:318
+#: src/security_selinux.c:335
 #, fuzzy, c-format
 msgid "%s: unable to set security context '\\%s' on %s: %s."
 msgstr "не удается открыть tty %s: %s\n"
 
-#: src/security_selinux.c:345
+#: src/security_selinux.c:359
 #, fuzzy, c-format
 msgid "cannot resolve symlink %s"
 msgstr "невозможно открыть устройство %s"
 
-#: src/security_selinux.c:406
+#: src/security_selinux.c:428
 #, fuzzy, c-format
 msgid "Invalid security label %s"
 msgstr "не удается получить текущее время"
 
-#: src/security_selinux.c:425
+#: src/security_selinux.c:447
 #, c-format
 msgid ""
 "%s: security label driver mismatch: '%s' model configured for domain, but "
 "hypervisor driver is '%s'."
 msgstr ""
 
-#: src/security_selinux.c:435
+#: src/security_selinux.c:457
 #, fuzzy, c-format
 msgid "%s: unable to set security context '\\%s': %s."
 msgstr "не удается открыть tty %s: %s\n"

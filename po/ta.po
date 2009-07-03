@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.ta\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-07-01 12:58+0200\n"
+"POT-Creation-Date: 2009-07-03 16:21+0200\n"
 "PO-Revision-Date: 2009-06-01 17:39+0530\n"
 "Last-Translator: I. Felix <ifelix@redhat.com>\n"
 "Language-Team: Tamil <fedora-trans-ta@redhat.com>\n"
@@ -1489,22 +1489,22 @@ msgstr "எதிர்பார்க்காத பூட் சாதன வ
 msgid "unexpected feature %d"
 msgstr "எதிர்பாராத பகுதி %d"
 
-#: src/domain_conf.c:3958 src/network_conf.c:657
+#: src/domain_conf.c:3958 src/network_conf.c:660
 #, c-format
 msgid "cannot create config directory '%s'"
 msgstr "கட்டமை அடைவை '%s'ஐ உருவாக்க முடியவில்லை"
 
-#: src/domain_conf.c:3967 src/network_conf.c:666
+#: src/domain_conf.c:3967 src/network_conf.c:669
 #, c-format
 msgid "cannot create config file '%s'"
 msgstr "கட்டமைப்பு கோப்பு '%s'ஐ உருவாக்க முடியவில்லை"
 
-#: src/domain_conf.c:3975 src/network_conf.c:674
+#: src/domain_conf.c:3975 src/network_conf.c:677
 #, c-format
 msgid "cannot write config file '%s'"
 msgstr "கட்டமைப்பு கோப்பு '%s'ஐ எழுத முடியவில்லை"
 
-#: src/domain_conf.c:3982 src/network_conf.c:681
+#: src/domain_conf.c:3982 src/network_conf.c:684
 #, c-format
 msgid "cannot save config file '%s'"
 msgstr "கட்டமைப்பு கோப்பு '%s'ஐ சேமிக்க முடியவில்லை"
@@ -1514,7 +1514,7 @@ msgstr "கட்டமைப்பு கோப்பு '%s'ஐ சேமி�
 msgid "unexpected domain %s already exists"
 msgstr "இலக்கு %s ஏற்கனவை இருக்கிறது"
 
-#: src/domain_conf.c:4154 src/network_conf.c:783 src/storage_conf.c:1452
+#: src/domain_conf.c:4154 src/network_conf.c:786 src/storage_conf.c:1452
 #, c-format
 msgid "Failed to open dir '%s'"
 msgstr "dir '%s'ஐ திறக்க முடியவில்லை"
@@ -2029,22 +2029,22 @@ msgstr "முன்னனுப்புதல் கோரப்பட்ட�
 msgid "unknown forwarding type '%s'"
 msgstr "தெரியாத முன்செல்லும் வகை '%s'"
 
-#: src/network_conf.c:741
+#: src/network_conf.c:744
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr "பிணைய கட்டமைப்பு கோப்பு பெயர் '%s' பிணைய பெயர் '%s'உடன் பொருந்தவில்லை"
 
-#: src/network_conf.c:831
+#: src/network_conf.c:834
 #, c-format
 msgid "cannot remove config file '%s'"
 msgstr "தொலை கட்டமைப்பட்ட கோப்பு %sஐ நீக்க முடியவில்லை"
 
-#: src/network_conf.c:905
+#: src/network_conf.c:908
 #, c-format
 msgid "Bridge generation exceeded max id %d"
 msgstr "பாலம் உருவாக்கம் max id %dஐ தாண்டியது"
 
-#: src/network_conf.c:924
+#: src/network_conf.c:927
 #, c-format
 msgid "bridge name '%s' already in use."
 msgstr "பாலம் பெயர் '%s' ஏற்கனவே பயனில் உள்ளது."
@@ -2969,204 +2969,204 @@ msgstr "பதிலாளுடன் தொடர்பு பிழை: த�
 msgid "got asynchronous packet number %d\n"
 msgstr "ஒருங்கிணைக்கப்படாத பாக்கெட் எண் %d பெறப்பட்டது\n"
 
-#: src/qemu_conf.c:574
+#: src/qemu_conf.c:582
 #, fuzzy, c-format
 msgid "cannot parse QEMU version number in '%s'"
 msgstr "%s பதிப்பை இடைநிறுத்த முடியவில்லைல்லை"
 
-#: src/qemu_conf.c:607
+#: src/qemu_conf.c:615
 #, fuzzy
 msgid "Unable to read QEMU help output"
 msgstr "QEMU செயலை டீமானைஸ்ட் செய்ய முடியவில்லை"
 
-#: src/qemu_conf.c:631
+#: src/qemu_conf.c:639
 #, c-format
 msgid "Unexpected exit status from qemu %d pid %lu"
 msgstr "qemu %d pid %luஇலிலிருந்து எதிர்பாராத வெளியேறும் நிலை"
 
-#: src/qemu_conf.c:639
+#: src/qemu_conf.c:647
 #, c-format
 msgid "Unexpected exit status '%d', qemu probably failed"
 msgstr "எதிர்பாராத வெளியேறும் நிலை '%d', qemu தோல்வி"
 
-#: src/qemu_conf.c:679
+#: src/qemu_conf.c:687
 #, c-format
 msgid "Cannot find QEMU binary %s: %s"
 msgstr "QEMU இருமத்தை காண முடியவில்லை %s: %s"
 
-#: src/qemu_conf.c:712 src/uml_conf.c:204
+#: src/qemu_conf.c:720 src/uml_conf.c:204
 #, c-format
 msgid "Network '%s' not found"
 msgstr "பிணையம் '%s' காணப்படவில்லை"
 
-#: src/qemu_conf.c:727
+#: src/qemu_conf.c:735
 #, c-format
 msgid "Network type %d is not supported"
 msgstr "பிணைய வகை %d துணைபுரியவில்லை"
 
-#: src/qemu_conf.c:744 src/uml_conf.c:115
+#: src/qemu_conf.c:752 src/uml_conf.c:115
 #, c-format
 msgid "cannot initialize bridge support: %s"
 msgstr "பாலம் துணையை துவக்க வில்லை: %s"
 
-#: src/qemu_conf.c:754 src/uml_conf.c:125
+#: src/qemu_conf.c:762 src/uml_conf.c:125
 #, c-format
 msgid "Failed to add tap interface to bridge. %s is not a bridge device"
 msgstr "பாலத்திற்கு டேப்பை முகப்பை சேர்க்க முடியவில்லை : %s ஒரு பாலம் சாதனம் இல்லை"
 
-#: src/qemu_conf.c:758 src/uml_conf.c:130
+#: src/qemu_conf.c:766 src/uml_conf.c:130
 #, c-format
 msgid "Failed to add tap interface '%s' to bridge '%s' : %s"
 msgstr "டேப் முகப்பு '%s'ஐ பாலம் '%s'க்கு சேர்க்க முடியவில்லை : %s"
 
-#: src/qemu_conf.c:908
+#: src/qemu_conf.c:916
 msgid "TCP migration is not supported with this QEMU binary"
 msgstr "QEMU பைனரியோடு TCP மாற்றம் துணைபுரியவில்லை"
 
-#: src/qemu_conf.c:916 src/qemu_conf.c:922
+#: src/qemu_conf.c:924 src/qemu_conf.c:930
 msgid "STDIO migration is not supported with this QEMU binary"
 msgstr "இந்த QEMU binary உடன் STDIO இடமாற்றம் துணைபுரியவில்லை"
 
-#: src/qemu_conf.c:1165
+#: src/qemu_conf.c:1173
 #, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "%s' கான வட்டு '%s'ஐ இயக்கியின் பெயரை துணைப்புரியவில்லை"
 
-#: src/qemu_conf.c:1205 src/qemu_conf.c:1276
+#: src/qemu_conf.c:1213 src/qemu_conf.c:1284
 #, c-format
 msgid "unsupported usb disk type for '%s'"
 msgstr "துணைபுரியாத usb வட்டு வகை '%s'"
 
-#: src/qemu_conf.c:1213 src/qemu_conf.c:1295 src/uml_conf.c:439
+#: src/qemu_conf.c:1221 src/qemu_conf.c:1303 src/uml_conf.c:439
 #, c-format
 msgid "unsupported disk type '%s'"
 msgstr "துணைபுரியாத வட்டு வகை '%s'"
 
-#: src/qemu_conf.c:1541
+#: src/qemu_conf.c:1549
 msgid "invalid sound model"
 msgstr "தவறான ஒலி மாதிரி"
 
-#: src/qemu_conf.c:1794
+#: src/qemu_conf.c:1802
 #, fuzzy, c-format
 msgid "malformed keyword arguments in '%s'"
 msgstr "'%s'ன் தவறான uuid உருப்படி"
 
-#: src/qemu_conf.c:1927
+#: src/qemu_conf.c:1935
 #, fuzzy, c-format
 msgid "cannot parse drive index '%s'"
 msgstr "%s சாதனத்தை இடைநிறுத்த முடியவில்லை"
 
-#: src/qemu_conf.c:1936
+#: src/qemu_conf.c:1944
 #, fuzzy, c-format
 msgid "missing file parameter in drive '%s'"
 msgstr "%sக்கு விடுபட்ட சாதனங்கள் தகவல்"
 
-#: src/qemu_conf.c:1943
+#: src/qemu_conf.c:1951
 #, c-format
 msgid "missing index parameter in drive '%s'"
 msgstr ""
 
-#: src/qemu_conf.c:2003
+#: src/qemu_conf.c:2011
 #, fuzzy, c-format
 msgid "cannot parse NIC vlan in '%s'"
 msgstr "PCI செயற்களம் '%s'ஐ இடைநிறுத்த முடியவில்லை"
 
-#: src/qemu_conf.c:2015
+#: src/qemu_conf.c:2023
 #, c-format
 msgid "cannot find NIC definition for vlan %d"
 msgstr ""
 
-#: src/qemu_conf.c:2074
+#: src/qemu_conf.c:2082
 #, fuzzy, c-format
 msgid "cannot parse vlan in '%s'"
 msgstr "செயற்களத்தை %sஐ ை இடைநிறுத்த முடியவில்லை"
 
-#: src/qemu_conf.c:2104
+#: src/qemu_conf.c:2112
 #, fuzzy, c-format
 msgid "cannot parse NIC definition '%s'"
 msgstr "%s இடையிறுத்த செயல் நடைபெற முடியவில்லை"
 
-#: src/qemu_conf.c:2168 src/qemu_conf.c:2226
+#: src/qemu_conf.c:2176 src/qemu_conf.c:2234
 #, fuzzy, c-format
 msgid "unknown PCI device syntax '%s'"
 msgstr "தெரியாத எழுத்து சாதன வகை '%s'"
 
-#: src/qemu_conf.c:2176 src/qemu_conf.c:2249
+#: src/qemu_conf.c:2184 src/qemu_conf.c:2257
 #, fuzzy, c-format
 msgid "cannot extract PCI device bus '%s'"
 msgstr "வட்டு சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/qemu_conf.c:2183
+#: src/qemu_conf.c:2191
 #, fuzzy, c-format
 msgid "cannot extract PCI device slot '%s'"
 msgstr "வட்டு சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/qemu_conf.c:2190
+#: src/qemu_conf.c:2198
 #, fuzzy, c-format
 msgid "cannot extract PCI device function '%s'"
 msgstr "வட்டு சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/qemu_conf.c:2235
+#: src/qemu_conf.c:2243
 #, fuzzy, c-format
 msgid "cannot extract USB device vendor '%s'"
 msgstr "வட்டு சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/qemu_conf.c:2242
+#: src/qemu_conf.c:2250
 #, fuzzy, c-format
 msgid "cannot extract PCI device product '%s'"
 msgstr "வட்டு சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/qemu_conf.c:2256
+#: src/qemu_conf.c:2264
 #, fuzzy, c-format
 msgid "cannot extract PCI device address '%s'"
 msgstr "வட்டு சாதனங்களிலிருந்து பிரிக்க முடியவில்லை"
 
-#: src/qemu_conf.c:2357
+#: src/qemu_conf.c:2365
 #, fuzzy, c-format
 msgid "cannot find port number in character device %s"
 msgstr "புதிதாக உருவாக்கப்பட்ட தொகுதி '%s'ஐ காண முடியவில்லை"
 
-#: src/qemu_conf.c:2393
+#: src/qemu_conf.c:2401
 #, fuzzy, c-format
 msgid "unknown character device syntax %s"
 msgstr "தெரியாத எழுத்து சாதன வகை '%s'"
 
-#: src/qemu_conf.c:2426
+#: src/qemu_conf.c:2434
 #, fuzzy
 msgid "no emulator path found"
 msgstr "மானிட்டர் பாதை இல்லை"
 
-#: src/qemu_conf.c:2478
+#: src/qemu_conf.c:2486
 #, fuzzy, c-format
 msgid "missing value for %s argument"
 msgstr "விடுபட்ட auth புரவலன் மதிப்புரு"
 
-#: src/qemu_conf.c:2523
+#: src/qemu_conf.c:2531
 #, fuzzy, c-format
 msgid "cannot parse VNC port '%s'"
 msgstr "PCI வரிசை '%s' இடைநிறுத்த முடியாது"
 
-#: src/qemu_conf.c:2547
+#: src/qemu_conf.c:2555
 #, fuzzy, c-format
 msgid "cannot parse memory level '%s'"
 msgstr "%s சாதனத்தை இடைநிறுத்த முடியவில்லை"
 
-#: src/qemu_conf.c:2556
+#: src/qemu_conf.c:2564
 #, fuzzy, c-format
 msgid "cannot parse CPU count '%s'"
 msgstr "PCI வரிசை '%s' இடைநிறுத்த முடியாது"
 
-#: src/qemu_conf.c:2564
+#: src/qemu_conf.c:2572
 #, fuzzy, c-format
 msgid "cannot parse UUID '%s'"
 msgstr "PCI பஸ் '%s'ஐ இடைநிறுத்த முடியவில்லை"
 
-#: src/qemu_conf.c:2817
+#: src/qemu_conf.c:2825
 #, c-format
 msgid "unknown QEMU argument '%s' during conversion"
 msgstr ""
 
-#: src/qemu_conf.c:2820
+#: src/qemu_conf.c:2828
 #, fuzzy, c-format
 msgid "unknown argument '%s'"
 msgstr "தெரியாத auth வகை '%s'"
@@ -4347,66 +4347,66 @@ msgstr "தவறான பாதுகாப்பு மாதிரி '%s'"
 msgid "%s: DOI '%s' is longer than the maximum allowed length of %d"
 msgstr "%s: DOI '%s' என்பது %d நீளத்தை விட அதிகபட்சமாக அனுமதிக்கப்பட்டது"
 
-#: src/security_selinux.c:113
+#: src/security_selinux.c:114
 #, c-format
 msgid "%s: cannot open SELinux virtual domain context file %s: %s"
 msgstr "%s: SELinux மெய்நிகர் செயற்கள சூழல் கோப்பினை திக்க முடியவில்லை %s: %s"
 
-#: src/security_selinux.c:121
+#: src/security_selinux.c:122
 #, c-format
 msgid "%s: cannot read SELinux virtual domain context file %s: %s"
 msgstr "%s: SELinux மெய்நிகர் செயற்களத்தை சூழல் கோப்பினை வாசிக்க முடியவில்லை %s: %s"
 
-#: src/security_selinux.c:134
+#: src/security_selinux.c:135
 #, c-format
 msgid "%s: cannot open SELinux virtual image context file %s: %s"
 msgstr "%s: SELinux மெய்நிகர் உருவ சூழல் கோப்பினை திறக்க முடியவில்லை %s: %s"
 
-#: src/security_selinux.c:142
+#: src/security_selinux.c:143
 #, c-format
 msgid "%s: cannot read SELinux virtual image context file %s: %s"
 msgstr "%s: SELinux மெய்நிகர் உருவ சூழல் கோப்பினை வாசிக்க முடியவில்லை %s: %s"
 
-#: src/security_selinux.c:170
+#: src/security_selinux.c:176
 msgid "security label already defined for VM"
 msgstr "VMகாக ஏற்கனவே பாதுகாப்பு லேபில் வரையறுக்கப்படுள்ளது"
 
-#: src/security_selinux.c:191 src/security_selinux.c:197
+#: src/security_selinux.c:197 src/security_selinux.c:203
 #, c-format
 msgid "cannot generate selinux context for %s"
 msgstr "'%s'க்கு  selinux சூழலை உருவாக்க முடியவில்லை"
 
-#: src/security_selinux.c:228 src/security_selinux.c:282
+#: src/security_selinux.c:234 src/security_selinux.c:288
 #, c-format
 msgid "%s: error calling getpidcon(): %s"
 msgstr "%s: getpidcon()ஐ அழைப்பதில் பிழை: %s"
 
-#: src/security_selinux.c:290
+#: src/security_selinux.c:296
 #, c-format
 msgid "%s: security label exceeds maximum lenth: %d"
 msgstr "%s: பாதுகாப்பு லேபிள் அதிகபட்ச நீளத்தை தொட்டது: %d"
 
-#: src/security_selinux.c:302
+#: src/security_selinux.c:308
 #, c-format
 msgid "%s: error calling security_getenforce(): %s"
 msgstr "%s: security_getenforce()ஐ அழைப்பதில் பிழை: %s"
 
-#: src/security_selinux.c:318
+#: src/security_selinux.c:335
 #, c-format
 msgid "%s: unable to set security context '\\%s' on %s: %s."
 msgstr "%s: பாதுகாப்பு சூழல் '\\%s'ஐ %sஇல் அமைக்க முடியவில்லை: %s."
 
-#: src/security_selinux.c:345
+#: src/security_selinux.c:359
 #, c-format
 msgid "cannot resolve symlink %s"
 msgstr "symlink %sஐ ுதீர்வு செய்ய முடியவில்லை"
 
-#: src/security_selinux.c:406
+#: src/security_selinux.c:428
 #, c-format
 msgid "Invalid security label %s"
 msgstr "தவறான பாதுகாப்பு லேபில் %s"
 
-#: src/security_selinux.c:425
+#: src/security_selinux.c:447
 #, c-format
 msgid ""
 "%s: security label driver mismatch: '%s' model configured for domain, but "
@@ -4415,7 +4415,7 @@ msgstr ""
 "%s: பாதுகாப்பு லேபிள் இயக்கி பொருந்தவில்லை: '%s' செயற்களத்திற்கு மாதிரி "
 "கட்டமைக்கப்பட்டது, ஆனால் ஹைபர்வைசர் இயக்கி '%s'."
 
-#: src/security_selinux.c:435
+#: src/security_selinux.c:457
 #, c-format
 msgid "%s: unable to set security context '\\%s': %s."
 msgstr "%s: பாதுகாப்பு சூழலை அமைக்க முடியவில்லை '\\%s': %s."

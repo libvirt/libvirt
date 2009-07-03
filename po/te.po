@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.te\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-07-01 12:58+0200\n"
+"POT-Creation-Date: 2009-07-03 16:21+0200\n"
 "PO-Revision-Date: 2009-06-02 18:33+0530\n"
 "Last-Translator: Krishna Babu K <kkrothap@redhat.com>\n"
 "Language-Team: Telugu <en@li.org>\n"
@@ -1446,22 +1446,22 @@ msgstr "అనుకోని బూట్ పరికరము రకము %d
 msgid "unexpected feature %d"
 msgstr "అనుకోని సౌలభ్యము %d"
 
-#: src/domain_conf.c:3958 src/network_conf.c:657
+#: src/domain_conf.c:3958 src/network_conf.c:660
 #, c-format
 msgid "cannot create config directory '%s'"
 msgstr "ఆకృతీకరణ డైరెక్టరీ '%s'ను సృష్టించలేదు"
 
-#: src/domain_conf.c:3967 src/network_conf.c:666
+#: src/domain_conf.c:3967 src/network_conf.c:669
 #, c-format
 msgid "cannot create config file '%s'"
 msgstr "ఆకృతీకరణ దస్త్రము '%s'ను సృష్టించలేదు"
 
-#: src/domain_conf.c:3975 src/network_conf.c:674
+#: src/domain_conf.c:3975 src/network_conf.c:677
 #, c-format
 msgid "cannot write config file '%s'"
 msgstr "ఆకృతీకరణ దస్త్రము '%s'ను వ్రాయలేదు"
 
-#: src/domain_conf.c:3982 src/network_conf.c:681
+#: src/domain_conf.c:3982 src/network_conf.c:684
 #, c-format
 msgid "cannot save config file '%s'"
 msgstr "ఆకృతీకరణ ఫైలును భద్రపరచలేదు %s"
@@ -1471,7 +1471,7 @@ msgstr "ఆకృతీకరణ ఫైలును భద్రపరచలే�
 msgid "unexpected domain %s already exists"
 msgstr "లక్ష్యము %s యిప్పటికే వుంది"
 
-#: src/domain_conf.c:4154 src/network_conf.c:783 src/storage_conf.c:1452
+#: src/domain_conf.c:4154 src/network_conf.c:786 src/storage_conf.c:1452
 #, c-format
 msgid "Failed to open dir '%s'"
 msgstr "dir '%s'ను తెరువుటకు విఫలమైంది"
@@ -1986,22 +1986,22 @@ msgstr "ఫార్వాడింగ్ అభ్యర్ధించబడ�
 msgid "unknown forwarding type '%s'"
 msgstr "తెలియని ఫార్వార్డింగ్ రకము '%s'"
 
-#: src/network_conf.c:741
+#: src/network_conf.c:744
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr "నెట్వర్కు ఆకృతీకరణ ఫైలు నామము '%s' నెట్వర్కు నామము '%s'తో సరిపోలటం లేదు"
 
-#: src/network_conf.c:831
+#: src/network_conf.c:834
 #, c-format
 msgid "cannot remove config file '%s'"
 msgstr "ఆకృతీకరణ దస్త్రము '%s'ను తీసివేయలేదు"
 
-#: src/network_conf.c:905
+#: src/network_conf.c:908
 #, c-format
 msgid "Bridge generation exceeded max id %d"
 msgstr "బ్రిడ్జు నిష్పాదనము గరిష్ట id %dను మించినది"
 
-#: src/network_conf.c:924
+#: src/network_conf.c:927
 #, c-format
 msgid "bridge name '%s' already in use."
 msgstr "బ్రిడ్జు నామము '%s' యిప్పటికే వుపయోగంలో వుంది."
@@ -2923,202 +2923,202 @@ msgstr "proxyతో సమాచార సంబంధాల దోషం: malfo
 msgid "got asynchronous packet number %d\n"
 msgstr "asynchronous పాకెత్ సంఖ్య %dను పొందాము\n"
 
-#: src/qemu_conf.c:574
+#: src/qemu_conf.c:582
 #, c-format
 msgid "cannot parse QEMU version number in '%s'"
 msgstr "QEMU వర్షన్ సంఖ్యను '%s' నందు పార్శ్ చేయలేదు"
 
-#: src/qemu_conf.c:607
+#: src/qemu_conf.c:615
 msgid "Unable to read QEMU help output"
 msgstr "QEMU సహాయ అవుట్పుట్‌ను చదువలేదు"
 
-#: src/qemu_conf.c:631
+#: src/qemu_conf.c:639
 #, c-format
 msgid "Unexpected exit status from qemu %d pid %lu"
 msgstr "qemu %d నుండి అనుకొని బహిష్కరణ స్థిది pid %lu"
 
-#: src/qemu_conf.c:639
+#: src/qemu_conf.c:647
 #, c-format
 msgid "Unexpected exit status '%d', qemu probably failed"
 msgstr "అనుకోని బహిష్కరణ స్థితి '%d', qemu బహుశా విఫలమైంది"
 
-#: src/qemu_conf.c:679
+#: src/qemu_conf.c:687
 #, c-format
 msgid "Cannot find QEMU binary %s: %s"
 msgstr "QEMU బైనరీ %sను కనుగొనలేక పోయింది: %s"
 
-#: src/qemu_conf.c:712 src/uml_conf.c:204
+#: src/qemu_conf.c:720 src/uml_conf.c:204
 #, c-format
 msgid "Network '%s' not found"
 msgstr "నెట్వర్కు '%s' కనుగొనబడలేదు"
 
-#: src/qemu_conf.c:727
+#: src/qemu_conf.c:735
 #, c-format
 msgid "Network type %d is not supported"
 msgstr "నెట్వర్కు రకము %d మద్దతీయుటలేదు"
 
-#: src/qemu_conf.c:744 src/uml_conf.c:115
+#: src/qemu_conf.c:752 src/uml_conf.c:115
 #, c-format
 msgid "cannot initialize bridge support: %s"
 msgstr "బ్రిడ్జి మద్దతును సిద్దపరచలేము: %s"
 
-#: src/qemu_conf.c:754 src/uml_conf.c:125
+#: src/qemu_conf.c:762 src/uml_conf.c:125
 #, c-format
 msgid "Failed to add tap interface to bridge. %s is not a bridge device"
 msgstr "tap ఇంటర్ఫేస్‌ను బ్రిడ్జుకు జతచేయుటలో విఫలమైంది. %s అనునది బ్రిడ్జు పరికరము కాదు"
 
-#: src/qemu_conf.c:758 src/uml_conf.c:130
+#: src/qemu_conf.c:766 src/uml_conf.c:130
 #, c-format
 msgid "Failed to add tap interface '%s' to bridge '%s' : %s"
 msgstr "tap ఇంటర్‌ఫేస్‌ '%s'ను బ్రిడ్జి '%s'కు జతచేయుటలో విఫలమైంది : %s"
 
-#: src/qemu_conf.c:908
+#: src/qemu_conf.c:916
 msgid "TCP migration is not supported with this QEMU binary"
 msgstr "TCP వలసవిధానం అనునది ఈ QEMU బైనరీతో మద్దతించబడదు"
 
-#: src/qemu_conf.c:916 src/qemu_conf.c:922
+#: src/qemu_conf.c:924 src/qemu_conf.c:930
 msgid "STDIO migration is not supported with this QEMU binary"
 msgstr "STDIO వలసవిధానం అనునది ఈ QEMU బైనరీతో మద్దతీయబడదు"
 
-#: src/qemu_conf.c:1165
+#: src/qemu_conf.c:1173
 #, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "మద్దతీయని డ్రైవర్ నామము '%s' డిస్కు '%s' కొరకు"
 
-#: src/qemu_conf.c:1205 src/qemu_conf.c:1276
+#: src/qemu_conf.c:1213 src/qemu_conf.c:1284
 #, c-format
 msgid "unsupported usb disk type for '%s'"
 msgstr "మద్దతీయని usb డిస్కు రకము '%s' కొరకు"
 
-#: src/qemu_conf.c:1213 src/qemu_conf.c:1295 src/uml_conf.c:439
+#: src/qemu_conf.c:1221 src/qemu_conf.c:1303 src/uml_conf.c:439
 #, c-format
 msgid "unsupported disk type '%s'"
 msgstr "మద్దతీయని డిస్కురకము '%s'"
 
-#: src/qemu_conf.c:1541
+#: src/qemu_conf.c:1549
 msgid "invalid sound model"
 msgstr "సరికాని ధ్వని రీతి"
 
-#: src/qemu_conf.c:1794
+#: src/qemu_conf.c:1802
 #, c-format
 msgid "malformed keyword arguments in '%s'"
 msgstr "'%s' నందు తప్పుగా ఫాంమైన కీపదపు ఆర్గుమెంట్లు"
 
-#: src/qemu_conf.c:1927
+#: src/qemu_conf.c:1935
 #, c-format
 msgid "cannot parse drive index '%s'"
 msgstr "డ్రైవ్ విషయసూచిక '%s'ను పార్శ్ చేయలేక పోయింది"
 
-#: src/qemu_conf.c:1936
+#: src/qemu_conf.c:1944
 #, c-format
 msgid "missing file parameter in drive '%s'"
 msgstr "డ్రైవ్ '%s' నందు ఫైలు పారామితి తప్పిపోయినది"
 
-#: src/qemu_conf.c:1943
+#: src/qemu_conf.c:1951
 #, c-format
 msgid "missing index parameter in drive '%s'"
 msgstr "డ్రైవ్ '%s' నందు విషయసూచిక పారామితి తప్పిపోయినది"
 
-#: src/qemu_conf.c:2003
+#: src/qemu_conf.c:2011
 #, c-format
 msgid "cannot parse NIC vlan in '%s'"
 msgstr "'%s' నందు NIC vlan పార్శ్ చేయలేదు"
 
-#: src/qemu_conf.c:2015
+#: src/qemu_conf.c:2023
 #, c-format
 msgid "cannot find NIC definition for vlan %d"
 msgstr "vlan %d కొరకు NIC నిర్వచనమును కనుగొనలేదు"
 
-#: src/qemu_conf.c:2074
+#: src/qemu_conf.c:2082
 #, c-format
 msgid "cannot parse vlan in '%s'"
 msgstr "'%s' నందు vlanను పార్శ్ చేయలేదు"
 
-#: src/qemu_conf.c:2104
+#: src/qemu_conf.c:2112
 #, c-format
 msgid "cannot parse NIC definition '%s'"
 msgstr "NIC నిర్వచనము '%s'ను పార్శ్ చేయలేదు"
 
-#: src/qemu_conf.c:2168 src/qemu_conf.c:2226
+#: src/qemu_conf.c:2176 src/qemu_conf.c:2234
 #, c-format
 msgid "unknown PCI device syntax '%s'"
 msgstr "తెలియని PCI పరికరము సిన్టాక్స్ '%s'"
 
-#: src/qemu_conf.c:2176 src/qemu_conf.c:2249
+#: src/qemu_conf.c:2184 src/qemu_conf.c:2257
 #, c-format
 msgid "cannot extract PCI device bus '%s'"
 msgstr "PCI పరికరము bus '%s'ను వెలికితీయలేదు"
 
-#: src/qemu_conf.c:2183
+#: src/qemu_conf.c:2191
 #, c-format
 msgid "cannot extract PCI device slot '%s'"
 msgstr "PCI పరికరము స్లాట్ '%s'ను వెలికితీయలేక పోయింది"
 
-#: src/qemu_conf.c:2190
+#: src/qemu_conf.c:2198
 #, c-format
 msgid "cannot extract PCI device function '%s'"
 msgstr "PCI పరికరము కార్యక్రమము '%s'ను వెలికితీయలేము"
 
-#: src/qemu_conf.c:2235
+#: src/qemu_conf.c:2243
 #, c-format
 msgid "cannot extract USB device vendor '%s'"
 msgstr "USB పరికరము అమ్మకందారి '%s'ను వెలికితీయలేము"
 
-#: src/qemu_conf.c:2242
+#: src/qemu_conf.c:2250
 #, c-format
 msgid "cannot extract PCI device product '%s'"
 msgstr "PCI పరికరము వుత్పత్తి '%s'ను వెలికితీయలేము"
 
-#: src/qemu_conf.c:2256
+#: src/qemu_conf.c:2264
 #, c-format
 msgid "cannot extract PCI device address '%s'"
 msgstr "PCI పరికరము చిరునామా '%s'ను వెలికితీయలేము"
 
-#: src/qemu_conf.c:2357
+#: src/qemu_conf.c:2365
 #, c-format
 msgid "cannot find port number in character device %s"
 msgstr "కారెక్టర్ పరికరము %s నందు పోర్టు సంఖ్యను కనుగొనలేక పోయింది"
 
-#: src/qemu_conf.c:2393
+#: src/qemu_conf.c:2401
 #, c-format
 msgid "unknown character device syntax %s"
 msgstr "తెలియని కారెక్టర్ పరికరము సిన్టాక్స్ %s"
 
-#: src/qemu_conf.c:2426
+#: src/qemu_conf.c:2434
 msgid "no emulator path found"
 msgstr "ఎటువంటి యెమ్యులేటర్ పాత్ కనబడలేదు"
 
-#: src/qemu_conf.c:2478
+#: src/qemu_conf.c:2486
 #, c-format
 msgid "missing value for %s argument"
 msgstr "%s ఆర్గుమెంట్ కొరకు తప్పిపోయిన విలువ"
 
-#: src/qemu_conf.c:2523
+#: src/qemu_conf.c:2531
 #, c-format
 msgid "cannot parse VNC port '%s'"
 msgstr "VNC పోర్ట్ '%s'ను పార్శ్ చేయలేదు"
 
-#: src/qemu_conf.c:2547
+#: src/qemu_conf.c:2555
 #, c-format
 msgid "cannot parse memory level '%s'"
 msgstr "మెమొరీ స్థాయి '%s'ను పార్శ్ చేయలేదు"
 
-#: src/qemu_conf.c:2556
+#: src/qemu_conf.c:2564
 #, c-format
 msgid "cannot parse CPU count '%s'"
 msgstr "CPU లెక్క '%s'ను పార్శ్ చేయలేదు"
 
-#: src/qemu_conf.c:2564
+#: src/qemu_conf.c:2572
 #, c-format
 msgid "cannot parse UUID '%s'"
 msgstr "UUID '%s'ను పార్శ్ చేయలేదు"
 
-#: src/qemu_conf.c:2817
+#: src/qemu_conf.c:2825
 #, c-format
 msgid "unknown QEMU argument '%s' during conversion"
 msgstr "మారకంనందు తెలియని QEMU ఆర్గుమెంట్ '%s'"
 
-#: src/qemu_conf.c:2820
+#: src/qemu_conf.c:2828
 #, c-format
 msgid "unknown argument '%s'"
 msgstr "తెలియని ఆర్గుమెంట్ '%s'"
@@ -4292,66 +4292,66 @@ msgstr "చెల్లని రక్షణ రీతి '%s'"
 msgid "%s: DOI '%s' is longer than the maximum allowed length of %d"
 msgstr "%s: DOI '%s' అనునది గరిష్టముగా అనుమతించు %d యొక్క పొడవుకన్నా పొడవైనది"
 
-#: src/security_selinux.c:113
+#: src/security_selinux.c:114
 #, c-format
 msgid "%s: cannot open SELinux virtual domain context file %s: %s"
 msgstr "%s: SELinux వర్చ్యువల్ డొమైన్ సందర్భ దస్త్రము %sను తెరువలేదు: %s"
 
-#: src/security_selinux.c:121
+#: src/security_selinux.c:122
 #, c-format
 msgid "%s: cannot read SELinux virtual domain context file %s: %s"
 msgstr "%s: SELinux వర్చ్యువల్ డొమైన్ సందర్భ దస్త్రము %sను చదువలేదు: %s"
 
-#: src/security_selinux.c:134
+#: src/security_selinux.c:135
 #, c-format
 msgid "%s: cannot open SELinux virtual image context file %s: %s"
 msgstr "%s: SELinux వర్చ్యువల్ ప్రతిబింబము సందర్భ దస్త్రము %sను తెరువలేదు: %s"
 
-#: src/security_selinux.c:142
+#: src/security_selinux.c:143
 #, c-format
 msgid "%s: cannot read SELinux virtual image context file %s: %s"
 msgstr "%s: SELinux వర్చ్యువల్ ప్రతిబింబము సందర్భ దస్త్రము %sను చదువలేదు: %s"
 
-#: src/security_selinux.c:170
+#: src/security_selinux.c:176
 msgid "security label already defined for VM"
 msgstr "VM కొరకు రక్షణ label యిప్పటికే నిర్వచించబడివుంది"
 
-#: src/security_selinux.c:191 src/security_selinux.c:197
+#: src/security_selinux.c:197 src/security_selinux.c:203
 #, c-format
 msgid "cannot generate selinux context for %s"
 msgstr "selinux సందర్భమును %s కొరకు నిష్పాదించలేదు"
 
-#: src/security_selinux.c:228 src/security_selinux.c:282
+#: src/security_selinux.c:234 src/security_selinux.c:288
 #, c-format
 msgid "%s: error calling getpidcon(): %s"
 msgstr "%s: getpidcon() కాలింగ్‌లో దోషము : %s"
 
-#: src/security_selinux.c:290
+#: src/security_selinux.c:296
 #, c-format
 msgid "%s: security label exceeds maximum lenth: %d"
 msgstr "%s: రక్షణ లేబుల్ గరిష్ట పొడవును మించినది: %d"
 
-#: src/security_selinux.c:302
+#: src/security_selinux.c:308
 #, c-format
 msgid "%s: error calling security_getenforce(): %s"
 msgstr "%s: security_getenforce() కాలింగ్‌లో దోషము: %s"
 
-#: src/security_selinux.c:318
+#: src/security_selinux.c:335
 #, c-format
 msgid "%s: unable to set security context '\\%s' on %s: %s."
 msgstr "%s: రక్షణ సందర్భమును అమర్చలేదు '\\%s' దీనిపైన %s: %s"
 
-#: src/security_selinux.c:345
+#: src/security_selinux.c:359
 #, c-format
 msgid "cannot resolve symlink %s"
 msgstr "సిమ్‌లింకును పరిష్కరించలేదు %s"
 
-#: src/security_selinux.c:406
+#: src/security_selinux.c:428
 #, c-format
 msgid "Invalid security label %s"
 msgstr "చెల్లని రక్షణ లేబుల్ %s"
 
-#: src/security_selinux.c:425
+#: src/security_selinux.c:447
 #, c-format
 msgid ""
 "%s: security label driver mismatch: '%s' model configured for domain, but "
@@ -4360,7 +4360,7 @@ msgstr ""
 "%s: రక్షణ లేబుల్ డ్రైవర్ సరిపోలలేదు: '%s' రీతి డొమైన్ కొరకు ఆకృతీకరించబడింది, కాని హైపర్విజర్ డ్రైవర్ '%"
 "s'."
 
-#: src/security_selinux.c:435
+#: src/security_selinux.c:457
 #, c-format
 msgid "%s: unable to set security context '\\%s': %s."
 msgstr "%s: రక్షణ సందర్భమును అమర్చలేక పోయింది '\\%s': %s"

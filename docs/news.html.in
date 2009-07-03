@@ -5,6 +5,62 @@
     <p>Here is the list of official releases, however since it is early on in the
 development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
+    <h3>0.6.5: Jul  3 2009</h3>
+    <ul>
+      <li>New features: create storage columes on disk backend (Henrik Persson),
+          drop of capabilities based on libcap-ng when possible (Daniel
+          Berrange)</li>
+      <li>Portability: fix build on non-Linux targets (Daniel Berrange)</li>
+      <li>Documentation: typo and english fixes (Runa Bhattacharjee and
+          Garry Dolley), Docs on extending APIs (Dave Allan), cleanup
+          of debug and logging documentation (Amy Griffis), add
+          HACKING doc to the website (Daniel Berrange),
+          documentation for OpenNebula driver (Abel Miguez Rodriguez)</li>
+      <li>Bug fixes: forbid autostart on transcient networks,
+          xen device removal crash (Daniel Berrange), re-detection of
+          transient VMs after libvirtd restart(Daniel Berrange),
+          bug in virFindFileInPath (Daniel Berrange), handle new
+          availheap sysctl in Xen (Daniel Berrange), allow USB hostdev
+          product 0 (Cole Robinson), cleanup when creating a storage pool
+          fails (Henrik Persson), domain id fix on redefinition in
+          test driver (Cole Robinson), fix raw storage allocation (Cole
+          Robinson), memory reporting for inactive qemu drivers (Cole
+          Robinson), segfault if storage pool has no type attribute (Cole
+          Robinson), OpenNebula compilation issues (Javier Fontan),
+          dominfo command without security driver (Daniel Berrange),
+          domain state problems after migration or destroy (Federico
+          Simoncelli), leak in node device parsing (Dave Allan),
+          storage pool definitions reading at startup (Cole Robinson),
+          bogus WWN in NPIV support (David Allan), avoid a segfault with
+          recent Xen (Sascha), cope with libnuma failures on weird
+          topologies (Dan Berrange), crash in QEMU driver with bad capabilities
+          data (Dan Berrange), trying to re-create a pool should not destroy
+          it (Dave Allan), endless loop in node device XML dump (Cole Robinson),
+          Re-label shared and readonly images (Dan Berrange)</li>
+      <li>Improvements: create and destroy NPIV support (David Allan),
+          networking in UML driver (Daniel Berrange), HAL driver restart
+          thread safety (Daniel Berrange), capabilities and nodeinfo
+          APIs for LXC (Daniel Berrange), iNUMA API for VBox (Daniel Berrange),
+          dynamically search and use kvm-img qemu-img or qcow-create (Doug
+          Goldstein), fix qemu and kvm version parsing (Mark McLoughlin),
+          serial number for HAL storage (Dave Allan), improve error reporting
+          for virConnectOpen URIs (Daniel Berrange), include OS driver name
+          in device XML (Daniel Berrange), fix qemu command flags fetching
+          (Cole Robinson), check that qemu support -drive format= (Cole
+          Robinson), improve emulator detection (Cole Robinson), changes
+          to config parser to accomodate VMX syntax (Matthias Bolte),
+          update network schemas and driver for missing elements (Satoru SATOH),
+          avoid changing file context if not needed (Tim Waugh),
+          skip labelling if no src path (Cole Robinson), add arm emulation
+          if qemu-system-arm is present (C.J. Adams-Collier)</li>
+      <li>Cleanups: daemon check logging env variables (Daniel Berrange),
+          User Mode Linux start and stop cleanups (Daniel Berrange),
+          share the NUMA api implementations (Daniel Berrange), storage
+          module dependancies (Dave Allan), refactor storage XML parsing
+          (Cole Robinson), big cleanup of logging code (Amy Griffis),
+          superfluous % on format (Matthias Bolte), cleanups and updates
+          on OpenNebula driver (Daniel Berrange and Abel Miguez Rodriguez)</li>
+    </ul>
     <h3>0.6.4: May 29 2009</h3>
     <ul>
       <li>New features: new API virStorageVolCreateXMLFrom (Cole Robinson),

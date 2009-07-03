@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.mr\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-07-01 12:58+0200\n"
+"POT-Creation-Date: 2009-07-03 16:21+0200\n"
 "PO-Revision-Date: 2009-06-01 18:42+0530\n"
 "Last-Translator: Sandeep Shedmake <sandeep.shedmake@gmail.com>\n"
 "Language-Team: marathi\n"
@@ -1441,22 +1441,22 @@ msgstr "अनपेक्षीत बूट साधन प्रकार %d
 msgid "unexpected feature %d"
 msgstr "अनपेक्षीत गुणविशेष %d"
 
-#: src/domain_conf.c:3958 src/network_conf.c:657
+#: src/domain_conf.c:3958 src/network_conf.c:660
 #, c-format
 msgid "cannot create config directory '%s'"
 msgstr "संयोजना डिरेक्ट्री '%s' बनवणे अशक्य"
 
-#: src/domain_conf.c:3967 src/network_conf.c:666
+#: src/domain_conf.c:3967 src/network_conf.c:669
 #, c-format
 msgid "cannot create config file '%s'"
 msgstr "संयोजना फाइल '%s' बनवणे अशक्य"
 
-#: src/domain_conf.c:3975 src/network_conf.c:674
+#: src/domain_conf.c:3975 src/network_conf.c:677
 #, c-format
 msgid "cannot write config file '%s'"
 msgstr "संयोजना फाइल '%s' लिहणे अशक्य"
 
-#: src/domain_conf.c:3982 src/network_conf.c:681
+#: src/domain_conf.c:3982 src/network_conf.c:684
 #, c-format
 msgid "cannot save config file '%s'"
 msgstr "संयोजना फाइल '%s' साठवणे अशक्य"
@@ -1466,7 +1466,7 @@ msgstr "संयोजना फाइल '%s' साठवणे अशक्�
 msgid "unexpected domain %s already exists"
 msgstr "लक्ष्य %s आधिपासूनच अस्तित्वात आहे"
 
-#: src/domain_conf.c:4154 src/network_conf.c:783 src/storage_conf.c:1452
+#: src/domain_conf.c:4154 src/network_conf.c:786 src/storage_conf.c:1452
 #, c-format
 msgid "Failed to open dir '%s'"
 msgstr "डिरेक्ट्री '%s' उघडण्यास अपयशी"
@@ -1982,22 +1982,22 @@ msgstr "फॉरवर्डींग विनंतीकृत केले,
 msgid "unknown forwarding type '%s'"
 msgstr "अपरिचीत फॉर्वडींग प्रकार '%s'"
 
-#: src/network_conf.c:741
+#: src/network_conf.c:744
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr "संजाळ संयोजना फाइलनाव '%s' संजाळ नाव '%s' सह जुळत नाही"
 
-#: src/network_conf.c:831
+#: src/network_conf.c:834
 #, c-format
 msgid "cannot remove config file '%s'"
 msgstr "संयोजना फाइल '%s' काढूण टाकू शकत नाही"
 
-#: src/network_conf.c:905
+#: src/network_conf.c:908
 #, c-format
 msgid "Bridge generation exceeded max id %d"
 msgstr "ब्रीज निर्माण कमाल id %d ओलांडले"
 
-#: src/network_conf.c:924
+#: src/network_conf.c:927
 #, c-format
 msgid "bridge name '%s' already in use."
 msgstr "ब्रीज नाव '%s' आधिपासूनच वापरणीत आहे."
@@ -2921,202 +2921,202 @@ msgstr "प्रॉक्झीसह संवादात चूक: बि�
 msgid "got asynchronous packet number %d\n"
 msgstr "असिंक्रोनस पॅकेट संख्या %d मिळाली\n"
 
-#: src/qemu_conf.c:574
+#: src/qemu_conf.c:582
 #, c-format
 msgid "cannot parse QEMU version number in '%s'"
 msgstr "'%s' अंतर्गत QEMU आवृत्ती क्रमांक वाचणे अशक्य"
 
-#: src/qemu_conf.c:607
+#: src/qemu_conf.c:615
 msgid "Unable to read QEMU help output"
 msgstr "QEMU मदत आऊटपुट वाचणे अशक्य"
 
-#: src/qemu_conf.c:631
+#: src/qemu_conf.c:639
 #, c-format
 msgid "Unexpected exit status from qemu %d pid %lu"
 msgstr "qemu %d pid %lu पासूनचे अनपेक्षीत एक्जीट् स्थिती"
 
-#: src/qemu_conf.c:639
+#: src/qemu_conf.c:647
 #, c-format
 msgid "Unexpected exit status '%d', qemu probably failed"
 msgstr "अनपेक्षीत एक्जीट् स्थिती '%d', qemu संभाव्यरित्या अपयशी"
 
-#: src/qemu_conf.c:679
+#: src/qemu_conf.c:687
 #, c-format
 msgid "Cannot find QEMU binary %s: %s"
 msgstr "QEMU बायनरी %s आढळले नाही: %s"
 
-#: src/qemu_conf.c:712 src/uml_conf.c:204
+#: src/qemu_conf.c:720 src/uml_conf.c:204
 #, c-format
 msgid "Network '%s' not found"
 msgstr "संजाळ '%s' आढळले नाही"
 
-#: src/qemu_conf.c:727
+#: src/qemu_conf.c:735
 #, c-format
 msgid "Network type %d is not supported"
 msgstr "संजाळ प्रकार %d समर्थीत नाही"
 
-#: src/qemu_conf.c:744 src/uml_conf.c:115
+#: src/qemu_conf.c:752 src/uml_conf.c:115
 #, c-format
 msgid "cannot initialize bridge support: %s"
 msgstr "ब्रीज् समर्थन प्रारंभ करणे अशक्य: %s"
 
-#: src/qemu_conf.c:754 src/uml_conf.c:125
+#: src/qemu_conf.c:762 src/uml_conf.c:125
 #, c-format
 msgid "Failed to add tap interface to bridge. %s is not a bridge device"
 msgstr "ब्रीज करीता टॅप संवाद समावेष करण्यास अपयशी. %s ब्रीज साधन नाही"
 
-#: src/qemu_conf.c:758 src/uml_conf.c:130
+#: src/qemu_conf.c:766 src/uml_conf.c:130
 #, c-format
 msgid "Failed to add tap interface '%s' to bridge '%s' : %s"
 msgstr "टॅप संवाद '%s' जोडण्यास अपयशी, ब्रीज '%s' वरील : %s"
 
-#: src/qemu_conf.c:908
+#: src/qemu_conf.c:916
 msgid "TCP migration is not supported with this QEMU binary"
 msgstr "QEMU बायनरी द्वारे TCP स्थानांतरन समर्थीत नाही"
 
-#: src/qemu_conf.c:916 src/qemu_conf.c:922
+#: src/qemu_conf.c:924 src/qemu_conf.c:930
 msgid "STDIO migration is not supported with this QEMU binary"
 msgstr "या QEMU बायनरी द्वारे STDIO स्थानांतरन समर्थीत नाही"
 
-#: src/qemu_conf.c:1165
+#: src/qemu_conf.c:1173
 #, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "डिस्क '%2$s' करीता असमर्थीत ड्राइवर नाव '%1$s'"
 
-#: src/qemu_conf.c:1205 src/qemu_conf.c:1276
+#: src/qemu_conf.c:1213 src/qemu_conf.c:1284
 #, c-format
 msgid "unsupported usb disk type for '%s'"
 msgstr "'%s' करीता असमर्थीत usb डिस्क प्रकार"
 
-#: src/qemu_conf.c:1213 src/qemu_conf.c:1295 src/uml_conf.c:439
+#: src/qemu_conf.c:1221 src/qemu_conf.c:1303 src/uml_conf.c:439
 #, c-format
 msgid "unsupported disk type '%s'"
 msgstr "असमर्थीत डिस्क प्रकार '%s'"
 
-#: src/qemu_conf.c:1541
+#: src/qemu_conf.c:1549
 msgid "invalid sound model"
 msgstr "अवैध आवाज प्रारूप"
 
-#: src/qemu_conf.c:1794
+#: src/qemu_conf.c:1802
 #, c-format
 msgid "malformed keyword arguments in '%s'"
 msgstr "'%s' अंतर्गत सदोषीत मुख्य शब्द बाब"
 
-#: src/qemu_conf.c:1927
+#: src/qemu_conf.c:1935
 #, c-format
 msgid "cannot parse drive index '%s'"
 msgstr "ड्राइव्ह निर्देशांक '%s' वाचणे अशक्य"
 
-#: src/qemu_conf.c:1936
+#: src/qemu_conf.c:1944
 #, c-format
 msgid "missing file parameter in drive '%s'"
 msgstr "ड्राइव्ह '%s' अंतर्गत न आढळणारे फाइल बाब"
 
-#: src/qemu_conf.c:1943
+#: src/qemu_conf.c:1951
 #, c-format
 msgid "missing index parameter in drive '%s'"
 msgstr "ड्राइव्ह '%s' अंतर्गत निर्देशांकीय घटक आढळले नाही"
 
-#: src/qemu_conf.c:2003
+#: src/qemu_conf.c:2011
 #, c-format
 msgid "cannot parse NIC vlan in '%s'"
 msgstr "'%s' अंतर्गत NIC vlan वाचणे अशक्य"
 
-#: src/qemu_conf.c:2015
+#: src/qemu_conf.c:2023
 #, c-format
 msgid "cannot find NIC definition for vlan %d"
 msgstr "%d करीता NIC वर्णन आढळले नाही"
 
-#: src/qemu_conf.c:2074
+#: src/qemu_conf.c:2082
 #, c-format
 msgid "cannot parse vlan in '%s'"
 msgstr "'%s' अंतर्गत vlan वाचणे अशक्य"
 
-#: src/qemu_conf.c:2104
+#: src/qemu_conf.c:2112
 #, c-format
 msgid "cannot parse NIC definition '%s'"
 msgstr "NIC वर्णन '%s' वाचणे अशक्य"
 
-#: src/qemu_conf.c:2168 src/qemu_conf.c:2226
+#: src/qemu_conf.c:2176 src/qemu_conf.c:2234
 #, c-format
 msgid "unknown PCI device syntax '%s'"
 msgstr "अपरिचीत PCI साधन व्याकरण '%s'"
 
-#: src/qemu_conf.c:2176 src/qemu_conf.c:2249
+#: src/qemu_conf.c:2184 src/qemu_conf.c:2257
 #, c-format
 msgid "cannot extract PCI device bus '%s'"
 msgstr "PCI साधन बस '%s' प्राप्त करणे अशक्य"
 
-#: src/qemu_conf.c:2183
+#: src/qemu_conf.c:2191
 #, c-format
 msgid "cannot extract PCI device slot '%s'"
 msgstr "PCI साधन स्लॉट '%s' प्राप्त करणे अशक्य"
 
-#: src/qemu_conf.c:2190
+#: src/qemu_conf.c:2198
 #, c-format
 msgid "cannot extract PCI device function '%s'"
 msgstr "PCI साधन कार्यपद्धती '%s' प्राप्त करणे अशक्य"
 
-#: src/qemu_conf.c:2235
+#: src/qemu_conf.c:2243
 #, c-format
 msgid "cannot extract USB device vendor '%s'"
 msgstr "USB साधन विक्रेता '%s' प्राप्त करणे अशक्य"
 
-#: src/qemu_conf.c:2242
+#: src/qemu_conf.c:2250
 #, c-format
 msgid "cannot extract PCI device product '%s'"
 msgstr "PCI साधन उत्पादन '%s' प्राप्त करणे अशक्य"
 
-#: src/qemu_conf.c:2256
+#: src/qemu_conf.c:2264
 #, c-format
 msgid "cannot extract PCI device address '%s'"
 msgstr "PCI साधन पत्ता '%s' प्राप्त करणे अशक्य"
 
-#: src/qemu_conf.c:2357
+#: src/qemu_conf.c:2365
 #, c-format
 msgid "cannot find port number in character device %s"
 msgstr "अक्षर साधन %s अंतर्गत पोर्ट क्रमांक आढळले नाही"
 
-#: src/qemu_conf.c:2393
+#: src/qemu_conf.c:2401
 #, c-format
 msgid "unknown character device syntax %s"
 msgstr "अपरिचीत अक्षर साधन व्याकरण %s"
 
-#: src/qemu_conf.c:2426
+#: src/qemu_conf.c:2434
 msgid "no emulator path found"
 msgstr "इम्यूलेटर मार्ग आढळले नाही"
 
-#: src/qemu_conf.c:2478
+#: src/qemu_conf.c:2486
 #, c-format
 msgid "missing value for %s argument"
 msgstr "%s घटक करीता मुल्य आढळले नाही"
 
-#: src/qemu_conf.c:2523
+#: src/qemu_conf.c:2531
 #, c-format
 msgid "cannot parse VNC port '%s'"
 msgstr "VNC पोर्ट '%s' वाचणे अशक्य"
 
-#: src/qemu_conf.c:2547
+#: src/qemu_conf.c:2555
 #, c-format
 msgid "cannot parse memory level '%s'"
 msgstr "स्मृती स्तर '%s' वाचणे अशक्य"
 
-#: src/qemu_conf.c:2556
+#: src/qemu_conf.c:2564
 #, c-format
 msgid "cannot parse CPU count '%s'"
 msgstr "CPU प्रमाण '%s' वाचणे अशक्य"
 
-#: src/qemu_conf.c:2564
+#: src/qemu_conf.c:2572
 #, c-format
 msgid "cannot parse UUID '%s'"
 msgstr "UUID '%s' वाचणे अशक्य"
 
-#: src/qemu_conf.c:2817
+#: src/qemu_conf.c:2825
 #, c-format
 msgid "unknown QEMU argument '%s' during conversion"
 msgstr "रूपांतरनवेळी अपरिचीत QEMU बाब '%s' आढळले"
 
-#: src/qemu_conf.c:2820
+#: src/qemu_conf.c:2828
 #, c-format
 msgid "unknown argument '%s'"
 msgstr "अपरिचीत घटक '%s'"
@@ -4293,66 +4293,66 @@ msgstr "अवैध सुरक्षा प्रारूप '%s'"
 msgid "%s: DOI '%s' is longer than the maximum allowed length of %d"
 msgstr "%s: DOI '%s' कमाल स्वीकार्य %d लांबी पेक्षा जास्त लांब आहे"
 
-#: src/security_selinux.c:113
+#: src/security_selinux.c:114
 #, c-format
 msgid "%s: cannot open SELinux virtual domain context file %s: %s"
 msgstr "%s: SELinux आभासी क्षेत्र संदर्भ फाइल %s उघडणे अशक्य: %s"
 
-#: src/security_selinux.c:121
+#: src/security_selinux.c:122
 #, c-format
 msgid "%s: cannot read SELinux virtual domain context file %s: %s"
 msgstr "%s: SELinux आभासी क्षेत्र संदर्भ फाइल %s वाचणे अशक्य: %s"
 
-#: src/security_selinux.c:134
+#: src/security_selinux.c:135
 #, c-format
 msgid "%s: cannot open SELinux virtual image context file %s: %s"
 msgstr "%s: SELinux आभासी प्रतिमा संदर्भ फाइल %s उघडणे अशक्य: %s"
 
-#: src/security_selinux.c:142
+#: src/security_selinux.c:143
 #, c-format
 msgid "%s: cannot read SELinux virtual image context file %s: %s"
 msgstr "%s: SELinux आभासी प्रतिमा संदर्भ फाइल %s वाचणे अशक्य: %s"
 
-#: src/security_selinux.c:170
+#: src/security_selinux.c:176
 msgid "security label already defined for VM"
 msgstr "VM करीता सुरक्षा लेबल आधिपासून वर्णीत आहे"
 
-#: src/security_selinux.c:191 src/security_selinux.c:197
+#: src/security_selinux.c:197 src/security_selinux.c:203
 #, c-format
 msgid "cannot generate selinux context for %s"
 msgstr "%s करीता selinux संदर्भ बनवणे अशक्य"
 
-#: src/security_selinux.c:228 src/security_selinux.c:282
+#: src/security_selinux.c:234 src/security_selinux.c:288
 #, c-format
 msgid "%s: error calling getpidcon(): %s"
 msgstr "%s: getpidcon() करीता कॉल करतेवेळी त्रुटी: %s"
 
-#: src/security_selinux.c:290
+#: src/security_selinux.c:296
 #, c-format
 msgid "%s: security label exceeds maximum lenth: %d"
 msgstr "%s: सुरक्षा लेबल कमाल लांबी पेक्षा जास्त आहे: %d"
 
-#: src/security_selinux.c:302
+#: src/security_selinux.c:308
 #, c-format
 msgid "%s: error calling security_getenforce(): %s"
 msgstr "%s: security_getenforce() ला कॉल करतेवेळी त्रुटी: %s"
 
-#: src/security_selinux.c:318
+#: src/security_selinux.c:335
 #, c-format
 msgid "%s: unable to set security context '\\%s' on %s: %s."
 msgstr "%s: सुरक्षा संदर्ध '\\%s', %s वरील निश्चित करणे अशक्य: %s."
 
-#: src/security_selinux.c:345
+#: src/security_selinux.c:359
 #, c-format
 msgid "cannot resolve symlink %s"
 msgstr "symlink %s निर्धारीत करणे अशक्य"
 
-#: src/security_selinux.c:406
+#: src/security_selinux.c:428
 #, c-format
 msgid "Invalid security label %s"
 msgstr "अवैध सुरक्षा लेबल %s"
 
-#: src/security_selinux.c:425
+#: src/security_selinux.c:447
 #, c-format
 msgid ""
 "%s: security label driver mismatch: '%s' model configured for domain, but "
@@ -4361,7 +4361,7 @@ msgstr ""
 "%s: सुरक्षा लेबल ड्राइवर विषमजुळवणी: '%s' प्रारूप क्षेत्र करीता संयोजीत केले, परंतु "
 "हायपरवायजर ड्राइवर '%s' असे आढळले."
 
-#: src/security_selinux.c:435
+#: src/security_selinux.c:457
 #, c-format
 msgid "%s: unable to set security context '\\%s': %s."
 msgstr "%1$s: सुरक्षा संदर्भ '\\%2$s' निश्चित करण्यास अशक्य: %3$s."
