@@ -4004,6 +4004,7 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
     char *cmd, *reply, *s;
     char *safe_path;
     const char* type = virDomainDiskBusTypeToString(dev->data.disk->bus);
+    int tryOldSyntax = 0;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (STREQ(vm->def->disks[i]->dst, dev->data.disk->dst)) {
@@ -4018,14 +4019,15 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
         return -1;
     }
 
+try_command:
     safe_path = qemudEscapeMonitorArg(dev->data.disk->src);
     if (!safe_path) {
         virReportOOMError(conn);
         return -1;
     }
 
-    ret = virAsprintf(&cmd, "pci_add 0 storage file=%s,if=%s",
-                      safe_path, type);
+    ret = virAsprintf(&cmd, "pci_add %s storage file=%s,if=%s",
+                      (tryOldSyntax ? "0": "pci_addr=auto"), safe_path, type);
     VIR_FREE(safe_path);
     if (ret == -1) {
         virReportOOMError(conn);
@@ -4041,17 +4043,27 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
 
     DEBUG ("%s: pci_add reply: %s", vm->def->name, reply);
     /* If the command succeeds qemu prints:
-     * OK bus 0... */
-#define PCI_ATTACH_OK_MSG "OK bus 0, slot "
-    if ((s=strstr(reply, PCI_ATTACH_OK_MSG))) {
-        char* dummy = s;
-        s += strlen(PCI_ATTACH_OK_MSG);
+     * OK bus 0, slot XXX...
+     * or
+     * OK domain 0, bus 0, slot XXX
+     */
+    if ((s = strstr(reply, "OK ")) &&
+        (s = strstr(s, "slot "))) {
+        char *dummy = s;
+        s += strlen("slot ");
 
         if (virStrToLong_i ((const char*)s, &dummy, 10, &dev->data.disk->slotnum) == -1)
             VIR_WARN("%s", _("Unable to parse slot number\n"));
+        /* XXX not neccessarily always going to end up in domain 0 / bus 0 :-( */
+        /* XXX this slotnum is not persistant across restarts :-( */
+    } else if (!tryOldSyntax && strstr(reply, "invalid char in expression")) {
+        VIR_FREE(reply);
+        VIR_FREE(cmd);
+        tryOldSyntax = 1;
+        goto try_command;
     } else {
         qemudReportError (conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                          _("adding %s disk failed"), type);
+                          _("adding %s disk failed: %s"), type, reply);
         VIR_FREE(reply);
         VIR_FREE(cmd);
         return -1;
@@ -4268,6 +4280,7 @@ static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
     char *cmd = NULL;
     char *reply = NULL;
     virDomainDiskDefPtr detach = NULL;
+    int tryOldSyntax = 0;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (STREQ(vm->def->disks[i]->dst, dev->data.disk->dst)) {
@@ -4289,9 +4302,17 @@ static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (virAsprintf(&cmd, "pci_del 0 %d", detach->slotnum) < 0) {
-        virReportOOMError(conn);
-        goto cleanup;
+try_command:
+    if (tryOldSyntax) {
+        if (virAsprintf(&cmd, "pci_del 0 %d", detach->slotnum) < 0) {
+            virReportOOMError(conn);
+            goto cleanup;
+        }
+    } else {
+        if (virAsprintf(&cmd, "pci_del pci_addr=0:0:%d", detach->slotnum) < 0) {
+            virReportOOMError(conn);
+            goto cleanup;
+        }
     }
 
     if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
@@ -4301,12 +4322,19 @@ static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
     }
 
     DEBUG ("%s: pci_del reply: %s",vm->def->name,  reply);
+
+    if (!tryOldSyntax &&
+        strstr(reply, "extraneous characters")) {
+        tryOldSyntax = 1;
+        goto try_command;
+    }
     /* If the command fails due to a wrong slot qemu prints: invalid slot,
      * nothing is printed on success */
-    if (strstr(reply, "invalid slot")) {
+    if (strstr(reply, "invalid slot") ||
+        strstr(reply, "Invalid pci address")) {
         qemudReportError (conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                          _("failed to detach disk %s: invalid slot %d"),
-                          detach->dst, detach->slotnum);
+                          _("failed to detach disk %s: invalid slot %d: %s"),
+                          detach->dst, detach->slotnum, reply);
         goto cleanup;
     }
 
