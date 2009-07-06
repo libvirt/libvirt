@@ -1744,6 +1744,28 @@ cleanup:
     qemuDriverUnlock(driver);
 }
 
+
+/* Throw away any data available on the monitor
+ * This is done before executing a command, in order
+ * to allow re-synchronization if something went badly
+ * wrong in the past. it also deals with problem of
+ * QEMU *sometimes* re-printing its initial greeting
+ * when we reconnect to the monitor after restarts.
+ */
+static void
+qemuMonitorDiscardPendingData(virDomainObjPtr vm) {
+    char buf[1024];
+    int ret = 0;
+
+    /* Monitor is non-blocking, so just loop till we
+     * get -1 or 0. Don't bother with detecting
+     * errors, since we'll deal with that better later */
+    do {
+        ret = read(vm->monitor, buf, sizeof (buf)-1);
+    } while (ret > 0);
+}
+
+
 static int
 qemudMonitorCommandExtra(const virDomainObjPtr vm,
                          const char *cmd,
@@ -1754,6 +1776,8 @@ qemudMonitorCommandExtra(const virDomainObjPtr vm,
     char *buf = NULL;
     size_t cmdlen = strlen(cmd);
     size_t extralen = extra ? strlen(extra) : 0;
+
+    qemuMonitorDiscardPendingData(vm);
 
     if (safewrite(vm->monitor, cmd, cmdlen) != cmdlen)
         return -1;
