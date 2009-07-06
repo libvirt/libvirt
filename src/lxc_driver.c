@@ -48,6 +48,7 @@
 #include "event.h"
 #include "cgroup.h"
 #include "nodeinfo.h"
+#include "uuid.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LXC
@@ -1301,6 +1302,48 @@ static int lxcCheckNetNsSupport(void)
     return 1;
 }
 
+
+static void
+lxcAutostartConfigs(lxc_driver_t *driver) {
+    unsigned int i;
+    /* XXX: Figure out a better way todo this. The domain
+     * startup code needs a connection handle in order
+     * to lookup the bridge associated with a virtual
+     * network
+     */
+    virConnectPtr conn = virConnectOpen("lxc:///");
+    /* Ignoring NULL conn which is mostly harmless here */
+
+    lxcDriverLock(driver);
+    for (i = 0 ; i < driver->domains.count ; i++) {
+        virDomainObjPtr vm = driver->domains.objs[i];
+        virDomainObjLock(vm);
+        if (vm->autostart &&
+            !virDomainIsActive(vm)) {
+            int ret = lxcVmStart(conn, driver, vm);
+            if (ret < 0) {
+                virErrorPtr err = virGetLastError();
+                VIR_ERROR(_("Failed to autostart VM '%s': %s\n"),
+                          vm->def->name,
+                          err ? err->message : "");
+            } else {
+                virDomainEventPtr event =
+                    virDomainEventNewFromObj(vm,
+                                             VIR_DOMAIN_EVENT_STARTED,
+                                             VIR_DOMAIN_EVENT_STARTED_BOOTED);
+                if (event)
+                    lxcDomainEventQueue(driver, event);
+            }
+        }
+        virDomainObjUnlock(vm);
+    }
+    lxcDriverUnlock(driver);
+
+    if (conn)
+        virConnectClose(conn);
+}
+
+
 static int lxcStartup(int privileged)
 {
     unsigned int i;
@@ -1411,6 +1454,45 @@ cleanup:
     lxcDriverUnlock(lxc_driver);
     lxcShutdown();
     return -1;
+}
+
+static void lxcNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
+{
+    lxc_driver_t *driver = opaque;
+
+    if (newVM) {
+        virDomainEventPtr event =
+            virDomainEventNewFromObj(vm,
+                                     VIR_DOMAIN_EVENT_DEFINED,
+                                     VIR_DOMAIN_EVENT_DEFINED_ADDED);
+        if (event)
+            lxcDomainEventQueue(driver, event);
+    }
+}
+
+/**
+ * lxcReload:
+ *
+ * Function to restart the LXC driver, it will recheck the configuration
+ * files and perform autostart
+ */
+static int
+lxcReload(void) {
+    if (!lxc_driver)
+        return 0;
+
+    lxcDriverLock(lxc_driver);
+    virDomainLoadAllConfigs(NULL,
+                            lxc_driver->caps,
+                            &lxc_driver->domains,
+                            lxc_driver->configDir,
+                            lxc_driver->autostartDir,
+                            0, lxcNotifyLoadDomain, lxc_driver);
+    lxcDriverUnlock(lxc_driver);
+
+    lxcAutostartConfigs(lxc_driver);
+
+    return 0;
 }
 
 static int lxcShutdown(void)
@@ -1589,6 +1671,103 @@ cleanup:
     return ret;
 }
 
+static int lxcDomainGetAutostart(virDomainPtr dom,
+                                   int *autostart) {
+    lxc_driver_t *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    lxcDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(dom->conn, dom, VIR_ERR_NO_DOMAIN,
+                 _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    *autostart = vm->autostart;
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int lxcDomainSetAutostart(virDomainPtr dom,
+                                   int autostart) {
+    lxc_driver_t *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    char *configFile = NULL, *autostartLink = NULL;
+    int ret = -1;
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(dom->conn, dom, VIR_ERR_NO_DOMAIN,
+                 _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!vm->persistent) {
+        lxcError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("cannot set autostart for transient domain"));
+        goto cleanup;
+    }
+
+    autostart = (autostart != 0);
+
+    if (vm->autostart != autostart) {
+        if ((configFile = virDomainConfigFile(dom->conn, driver->configDir, vm->def->name)) == NULL)
+            goto cleanup;
+        if ((autostartLink = virDomainConfigFile(dom->conn, driver->autostartDir, vm->def->name)) == NULL)
+            goto cleanup;
+
+        if (autostart) {
+            int err;
+
+            if ((err = virFileMakePath(driver->autostartDir))) {
+                virReportSystemError(dom->conn, err,
+                                     _("cannot create autostart directory %s"),
+                                     driver->autostartDir);
+                goto cleanup;
+            }
+
+            if (symlink(configFile, autostartLink) < 0) {
+                virReportSystemError(dom->conn, errno,
+                                     _("Failed to create symlink '%s to '%s'"),
+                                     autostartLink, configFile);
+                goto cleanup;
+            }
+        } else {
+            if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
+                virReportSystemError(dom->conn, errno,
+                                     _("Failed to delete symlink '%s'"),
+                                     autostartLink);
+                goto cleanup;
+            }
+        }
+
+        vm->autostart = autostart;
+    }
+    ret = 0;
+
+cleanup:
+    VIR_FREE(configFile);
+    VIR_FREE(autostartLink);
+    if (vm)
+        virDomainObjUnlock(vm);
+    lxcDriverUnlock(driver);
+    return ret;
+}
+
 static char *lxcGetHostname (virConnectPtr conn)
 {
     char *result;
@@ -1651,8 +1830,8 @@ static virDriver lxcDriver = {
     lxcDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */
     NULL, /* domainDetachDevice */
-    NULL, /* domainGetAutostart */
-    NULL, /* domainSetAutostart */
+    lxcDomainGetAutostart, /* domainGetAutostart */
+    lxcDomainSetAutostart, /* domainSetAutostart */
     lxcGetSchedulerType, /* domainGetSchedulerType */
     lxcGetSchedulerParameters, /* domainGetSchedulerParameters */
     lxcSetSchedulerParameters, /* domainSetSchedulerParameters */
@@ -1678,6 +1857,7 @@ static virStateDriver lxcStateDriver = {
     .initialize = lxcStartup,
     .cleanup = lxcShutdown,
     .active = lxcActive,
+    .reload = lxcReload,
 };
 
 int lxcRegister(void)
