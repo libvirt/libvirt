@@ -376,6 +376,8 @@ __virExec(virConnectPtr conn,
         } else {
             childout = *outfd;
         }
+    } else {
+        childout = null;
     }
 
     if (errfd != NULL) {
@@ -403,6 +405,8 @@ __virExec(virConnectPtr conn,
         } else {
             childerr = *errfd;
         }
+    } else {
+        childerr = null;
     }
 
     if ((pid = fork()) < 0) {
