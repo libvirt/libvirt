@@ -52,6 +52,10 @@ local-checks-to-skip =			\
   sc_system_h_headers			\
   sc_tight_scope			\
   sc_two_space_separator_in_usage	\
+  sc_error_message_uppercase		\
+  sc_program_name			\
+  sc_require_test_exit_idiom		\
+  sc_makefile_check			\
   sc_useless_cpp_parens
 
 useless_free_options =		\
