@@ -82,6 +82,7 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "interface",
               "input",
               "sound",
+              "video",
               "hostdev")
 
 VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
@@ -141,6 +142,13 @@ VIR_ENUM_IMPL(virDomainSoundModel, VIR_DOMAIN_SOUND_MODEL_LAST,
               "es1370",
               "pcspk",
               "ac97")
+
+VIR_ENUM_IMPL(virDomainVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
+              "vga",
+              "cirrus",
+              "vmvga",
+              "xen",
+              "vbox")
 
 VIR_ENUM_IMPL(virDomainInput, VIR_DOMAIN_INPUT_TYPE_LAST,
               "mouse",
@@ -374,6 +382,14 @@ void virDomainSoundDefFree(virDomainSoundDefPtr def)
     VIR_FREE(def);
 }
 
+void virDomainVideoDefFree(virDomainVideoDefPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def);
+}
+
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def)
 {
     if (!def)
@@ -400,6 +416,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
         break;
     case VIR_DOMAIN_DEVICE_SOUND:
         virDomainSoundDefFree(def->data.sound);
+        break;
+    case VIR_DOMAIN_DEVICE_VIDEO:
+        virDomainVideoDefFree(def->data.video);
         break;
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         virDomainHostdevDefFree(def->data.hostdev);
@@ -457,6 +476,10 @@ void virDomainDefFree(virDomainDefPtr def)
     for (i = 0 ; i < def->nsounds ; i++)
         virDomainSoundDefFree(def->sounds[i]);
     VIR_FREE(def->sounds);
+
+    for (i = 0 ; i < def->nvideos ; i++)
+        virDomainVideoDefFree(def->videos[i]);
+    VIR_FREE(def->videos);
 
     for (i = 0 ; i < def->nhostdevs ; i++)
         virDomainHostdevDefFree(def->hostdevs[i]);
@@ -1653,6 +1676,133 @@ error:
     goto cleanup;
 }
 
+
+int
+virDomainVideoDefaultRAM(virDomainDefPtr def,
+                         int type)
+{
+    switch (type) {
+        /* Wierd, QEMU defaults to 9 MB ??! */
+    case VIR_DOMAIN_VIDEO_TYPE_VGA:
+    case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+    case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
+        if (def->virtType == VIR_DOMAIN_VIRT_VBOX)
+            return 8 * 1024;
+        else
+            return 9 * 1024;
+        break;
+
+    case VIR_DOMAIN_VIDEO_TYPE_XEN:
+        /* Original Xen PVFB hardcoded to 4 MB */
+        return 4 * 1024;
+
+    default:
+        return 0;
+    }
+}
+
+
+int
+virDomainVideoDefaultType(virDomainDefPtr def)
+{
+    switch (def->virtType) {
+    case VIR_DOMAIN_VIRT_TEST:
+    case VIR_DOMAIN_VIRT_QEMU:
+    case VIR_DOMAIN_VIRT_KQEMU:
+    case VIR_DOMAIN_VIRT_KVM:
+    case VIR_DOMAIN_VIRT_XEN:
+        if (def->os.type &&
+            (STREQ(def->os.type, "xen") ||
+             STREQ(def->os.type, "linux")))
+            return VIR_DOMAIN_VIDEO_TYPE_XEN;
+        else
+            return VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
+
+    case VIR_DOMAIN_VIRT_VBOX:
+        return VIR_DOMAIN_VIDEO_TYPE_VBOX;
+
+    default:
+        return -1;
+    }
+}
+
+static virDomainVideoDefPtr
+virDomainVideoDefParseXML(virConnectPtr conn,
+                          const xmlNodePtr node,
+                          virDomainDefPtr dom,
+                          int flags ATTRIBUTE_UNUSED) {
+    virDomainVideoDefPtr def;
+    xmlNodePtr cur;
+    char *type = NULL;
+    char *heads = NULL;
+    char *vram = NULL;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError(conn);
+        return NULL;
+    }
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if ((type == NULL) && (vram == NULL) && (heads == NULL) &&
+                xmlStrEqual(cur->name, BAD_CAST "model")) {
+                type = virXMLPropString(cur, "type");
+                vram = virXMLPropString(cur, "vram");
+                heads = virXMLPropString(cur, "heads");
+            }
+        }
+        cur = cur->next;
+    }
+
+    if (type) {
+        if ((def->type = virDomainVideoTypeFromString(type)) < 0) {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown video model '%s'"), type);
+            goto error;
+        }
+    } else {
+        if ((def->type = virDomainVideoDefaultType(dom)) < 0) {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("missing video model and cannot determine default"));
+            goto error;
+        }
+    }
+
+    if (vram) {
+        if (virStrToLong_ui(vram, NULL, 10, &def->vram) < 0) {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("cannot parse video ram '%s'"), vram);
+            goto error;
+        }
+    } else {
+        def->vram = virDomainVideoDefaultRAM(dom, def->type);
+    }
+
+    if (heads) {
+        if (virStrToLong_ui(heads, NULL, 10, &def->heads) < 0) {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("cannot parse video heads '%s'"), heads);
+            goto error;
+        }
+    } else {
+        def->heads = 1;
+    }
+
+    VIR_FREE(type);
+    VIR_FREE(vram);
+    VIR_FREE(heads);
+
+    return def;
+
+error:
+    virDomainVideoDefFree(def);
+    VIR_FREE(type);
+    VIR_FREE(vram);
+    VIR_FREE(heads);
+    return NULL;
+}
+
 static int
 virDomainHostdevSubsysUsbDefParseXML(virConnectPtr conn,
                                      const xmlNodePtr node,
@@ -2090,6 +2240,10 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
     } else if (xmlStrEqual(node->name, BAD_CAST "sound")) {
         dev->type = VIR_DOMAIN_DEVICE_SOUND;
         if (!(dev->data.sound = virDomainSoundDefParseXML(conn, node, flags)))
+            goto error;
+    } else if (xmlStrEqual(node->name, BAD_CAST "video")) {
+        dev->type = VIR_DOMAIN_DEVICE_VIDEO;
+        if (!(dev->data.video = virDomainVideoDefParseXML(conn, node, def, flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "hostdev")) {
         dev->type = VIR_DOMAIN_DEVICE_HOSTDEV;
@@ -2648,6 +2802,47 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         def->sounds[def->nsounds++] = sound;
     }
     VIR_FREE(nodes);
+
+    /* analysis of the video devices */
+    if ((n = virXPathNodeSet(conn, "./devices/video", ctxt, &nodes)) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("cannot extract video devices"));
+        goto error;
+    }
+    if (n && VIR_ALLOC_N(def->videos, n) < 0)
+        goto no_memory;
+    for (i = 0 ; i < n ; i++) {
+        virDomainVideoDefPtr video = virDomainVideoDefParseXML(conn,
+                                                               nodes[i],
+                                                               def,
+                                                               flags);
+        if (!video)
+            goto error;
+        def->videos[def->nvideos++] = video;
+    }
+    VIR_FREE(nodes);
+
+    /* For backwards compatability, if no <video> tag is set but there
+     * is a <graphics> tag, then we add a single video tag */
+    if (def->ngraphics && !def->nvideos) {
+        virDomainVideoDefPtr video;
+        if (VIR_ALLOC(video) < 0)
+            goto no_memory;
+        video->type = virDomainVideoDefaultType(def);
+        if (video->type < 0) {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("cannot determine default video type"));
+            VIR_FREE(video);
+            goto error;
+        }
+        video->vram = virDomainVideoDefaultRAM(def, video->type);
+        video->heads = 1;
+        if (VIR_ALLOC_N(def->videos, 1) < 0) {
+            virDomainVideoDefFree(video);
+            goto no_memory;
+        }
+        def->videos[def->nvideos++] = video;
+    }
 
     /* analysis of the host devices */
     if ((n = virXPathNodeSet(conn, "./devices/hostdev", ctxt, &nodes)) < 0) {
@@ -3486,6 +3681,32 @@ virDomainSoundDefFormat(virConnectPtr conn,
 }
 
 static int
+virDomainVideoDefFormat(virConnectPtr conn,
+                        virBufferPtr buf,
+                        virDomainVideoDefPtr def)
+{
+    const char *model = virDomainVideoTypeToString(def->type);
+
+    if (!model) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected video model %d"), def->type);
+        return -1;
+    }
+
+    virBufferAddLit(buf, "    <video>\n");
+    virBufferVSprintf(buf, "      <model type='%s'",
+                      model);
+    if (def->vram)
+        virBufferVSprintf(buf, " vram='%u'", def->vram);
+    if (def->heads)
+        virBufferVSprintf(buf, " heads='%u'", def->heads);
+    virBufferAddLit(buf, "/>\n");
+    virBufferAddLit(buf, "    </video>\n");
+
+    return 0;
+}
+
+static int
 virDomainInputDefFormat(virConnectPtr conn,
                         virBufferPtr buf,
                         virDomainInputDefPtr def)
@@ -3858,6 +4079,10 @@ char *virDomainDefFormat(virConnectPtr conn,
 
     for (n = 0 ; n < def->nsounds ; n++)
         if (virDomainSoundDefFormat(conn, &buf, def->sounds[n]) < 0)
+            goto cleanup;
+
+    for (n = 0 ; n < def->nvideos ; n++)
+        if (virDomainVideoDefFormat(conn, &buf, def->videos[n]) < 0)
             goto cleanup;
 
     for (n = 0 ; n < def->nhostdevs ; n++)

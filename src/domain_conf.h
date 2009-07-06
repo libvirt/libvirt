@@ -265,6 +265,26 @@ struct _virDomainSoundDef {
     int model;
 };
 
+
+enum virDomainVideoType {
+    VIR_DOMAIN_VIDEO_TYPE_VGA,
+    VIR_DOMAIN_VIDEO_TYPE_CIRRUS,
+    VIR_DOMAIN_VIDEO_TYPE_VMVGA,
+    VIR_DOMAIN_VIDEO_TYPE_XEN,
+    VIR_DOMAIN_VIDEO_TYPE_VBOX,
+
+    VIR_DOMAIN_VIDEO_TYPE_LAST
+};
+
+
+typedef struct _virDomainVideoDef virDomainVideoDef;
+typedef virDomainVideoDef *virDomainVideoDefPtr;
+struct _virDomainVideoDef {
+    int type;
+    unsigned int vram;
+    unsigned int heads;
+};
+
 /* 3 possible graphics console modes */
 enum virDomainGraphicsType {
     VIR_DOMAIN_GRAPHICS_TYPE_SDL,
@@ -361,6 +381,7 @@ enum virDomainDeviceType {
     VIR_DOMAIN_DEVICE_NET,
     VIR_DOMAIN_DEVICE_INPUT,
     VIR_DOMAIN_DEVICE_SOUND,
+    VIR_DOMAIN_DEVICE_VIDEO,
     VIR_DOMAIN_DEVICE_HOSTDEV,
 
     VIR_DOMAIN_DEVICE_LAST,
@@ -376,6 +397,7 @@ struct _virDomainDeviceDef {
         virDomainNetDefPtr net;
         virDomainInputDefPtr input;
         virDomainSoundDefPtr sound;
+        virDomainVideoDefPtr video;
         virDomainHostdevDefPtr hostdev;
     } data;
 };
@@ -492,6 +514,9 @@ struct _virDomainDef {
     int nsounds;
     virDomainSoundDefPtr *sounds;
 
+    int nvideos;
+    virDomainVideoDefPtr *videos;
+
     int nhostdevs;
     virDomainHostdevDefPtr *hostdevs;
 
@@ -557,6 +582,7 @@ void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainNetDefFree(virDomainNetDefPtr def);
 void virDomainChrDefFree(virDomainChrDefPtr def);
 void virDomainSoundDefFree(virDomainSoundDefPtr def);
+void virDomainVideoDefFree(virDomainVideoDefPtr def);
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
 void virDomainDefFree(virDomainDefPtr vm);
@@ -666,6 +692,8 @@ int virDiskNameToBusDeviceIndex(virDomainDiskDefPtr disk,
                                 int *devIdx);
 
 virDomainFSDefPtr virDomainGetRootFilesystem(virDomainDefPtr def);
+int virDomainVideoDefaultType(virDomainDefPtr def);
+int virDomainVideoDefaultRAM(virDomainDefPtr def, int type);
 
 void virDomainObjLock(virDomainObjPtr obj);
 void virDomainObjUnlock(virDomainObjPtr obj);
@@ -683,6 +711,7 @@ VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainNet)
 VIR_ENUM_DECL(virDomainChr)
 VIR_ENUM_DECL(virDomainSoundModel)
+VIR_ENUM_DECL(virDomainVideo)
 VIR_ENUM_DECL(virDomainHostdevMode)
 VIR_ENUM_DECL(virDomainHostdevSubsys)
 VIR_ENUM_DECL(virDomainInput)

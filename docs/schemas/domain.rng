@@ -786,6 +786,39 @@
     </element>
   </define>
   <!--
+     A graphic description, currently in Xen only 2 types are supported:
+       - sdl with optional display, xauth and fullscreen
+       - vnc with a required port and optional listen IP address, password
+         and keymap
+   -->
+  <define name="video">
+    <element name="video">
+      <optional>
+	<element name="model">
+          <attribute name="type">
+            <choice>
+              <value>vga</value>
+              <value>cirrus</value>
+              <value>vmvga</value>
+              <value>xen</value>
+              <value>vbox</value>
+            </choice>
+          </attribute>
+          <optional>
+            <attribute name="vram">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="heads">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </optional>
+	</element>
+      </optional>
+    </element>
+  </define>
+  <!--
       When a domain terminates multiple policies can be applied depending
       on how it ended:
     -->
@@ -1032,6 +1065,7 @@
             <ref name="sound"/>
             <ref name="hostdev"/>
             <ref name="graphic"/>
+            <ref name="video"/>
             <ref name="console"/>
             <ref name="parallel"/>
             <ref name="serial"/>
