@@ -4225,10 +4225,14 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         switch (dev->data.disk->device) {
         case VIR_DOMAIN_DISK_DEVICE_CDROM:
         case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
+            if (driver->securityDriver)
+                driver->securityDriver->domainSetSecurityImageLabel(dom->conn, vm, dev->data.disk);
             ret = qemudDomainChangeEjectableMedia(dom->conn, vm, dev);
             break;
 
         case VIR_DOMAIN_DISK_DEVICE_DISK:
+            if (driver->securityDriver)
+                driver->securityDriver->domainSetSecurityImageLabel(dom->conn, vm, dev->data.disk);
             if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
                 ret = qemudDomainAttachUsbMassstorageDevice(dom->conn, vm, dev);
             } else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
@@ -4240,8 +4244,6 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                                  virDomainDiskBusTypeToString(dev->data.disk->bus));
                 goto cleanup;
             }
-            if (driver->securityDriver)
-                driver->securityDriver->domainSetSecurityImageLabel(dom->conn, vm, dev->data.disk);
             break;
 
         default:
