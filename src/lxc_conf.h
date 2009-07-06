@@ -28,6 +28,7 @@
 
 #include "internal.h"
 #include "domain_conf.h"
+#include "domain_event.h"
 #include "capabilities.h"
 #include "threads.h"
 
@@ -47,6 +48,12 @@ struct __lxc_driver {
     char *stateDir;
     char *logDir;
     int have_netns;
+
+    /* An array of callbacks */
+    virDomainEventCallbackListPtr domainEventCallbacks;
+    virDomainEventQueuePtr domainEventQueue;
+    int domainEventTimer;
+    int domainEventDispatching;
 };
 
 int lxcLoadDriverConfig(lxc_driver_t *driver);
