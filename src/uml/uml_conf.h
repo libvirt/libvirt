@@ -29,6 +29,7 @@
 # include "capabilities.h"
 # include "network_conf.h"
 # include "domain_conf.h"
+# include "domain_event.h"
 # include "virterror_internal.h"
 # include "threads.h"
 # include "command.h"
@@ -60,6 +61,9 @@ struct uml_driver {
     int inotifyWatch;
 
     virCapsPtr caps;
+
+    /* Event handling */
+    virDomainEventStatePtr domainEventState;
 };
 
 
