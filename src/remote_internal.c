@@ -972,6 +972,7 @@ remoteOpen (virConnectPtr conn,
 {
     struct private_data *priv;
     int ret, rflags = 0;
+    const char *autostart = getenv("LIBVIRT_AUTOSTART");
 
     if (inside_daemon)
         return VIR_DRV_OPEN_DECLINED;
@@ -999,7 +1000,9 @@ remoteOpen (virConnectPtr conn,
         getuid() > 0) {
         DEBUG0("Auto-spawn user daemon instance");
         rflags |= VIR_DRV_OPEN_REMOTE_USER;
-        rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
+        if (!autostart ||
+            STRNEQ(autostart, "0"))
+            rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
     }
 
     /*
@@ -1014,7 +1017,9 @@ remoteOpen (virConnectPtr conn,
         if (getuid() > 0) {
             DEBUG0("Auto-spawn user daemon instance");
             rflags |= VIR_DRV_OPEN_REMOTE_USER;
-            rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
+            if (!autostart ||
+                STRNEQ(autostart, "0"))
+                rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
         }
 #endif
     }

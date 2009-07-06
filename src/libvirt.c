@@ -1118,6 +1118,17 @@ failed:
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  *
+ * If @name is NULL then probing will be done to determine a suitable
+ * default driver to activate. This involves trying each hypervisor
+ * in turn until one successfully opens. If the LIBVIRT_DEFAULT_URI
+ * environment variable is set, then it will be used in preference
+ * to probing for a driver.
+ *
+ * If connecting to an unprivileged hypervisor driver which requires
+ * the libvirtd daemon to be active, it will automatically be launched
+ * if not already running. This can be prevented by setting the
+ * environment variable LIBVIRT_AUTOSTART=0
+ *
  * URIs are documented at http://libvirt.org/uri.html
  */
 virConnectPtr
@@ -1138,6 +1149,9 @@ virConnectOpen (const char *name)
  * This function should be called first to get a restricted connection to the
  * library functionalities. The set of APIs usable are then restricted
  * on the available methods to control the domains.
+ *
+ * See virConnectOpen for notes about environment variables which can
+ * have an effect on opening drivers
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  *
@@ -1163,6 +1177,9 @@ virConnectOpenReadOnly(const char *name)
  * This function should be called first to get a connection to the
  * Hypervisor. If necessary, authentication will be performed fetching
  * credentials via the callback
+ *
+ * See virConnectOpen for notes about environment variables which can
+ * have an effect on opening drivers
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  *
