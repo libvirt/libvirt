@@ -52,7 +52,7 @@ else:
     initrdU = "<initrd>" + initrdU + "</initrd>"
 
 
-conn = libvirt.openReadOnly(None)
+conn = libvirt.open(None)
 if conn == None:
     print 'Failed to open connection to the hypervisor'
     sys.exit(1)
