@@ -156,7 +156,6 @@ void virtTestCaptureProgramExecChild(const char *const argv[],
     int i;
     int open_max;
     int stdinfd = -1;
-    int stderrfd = -1;
     const char *const env[] = {
         "LANG=C",
 #if WITH_DRIVER_MODULES
@@ -167,13 +166,10 @@ void virtTestCaptureProgramExecChild(const char *const argv[],
 
     if ((stdinfd = open("/dev/null", O_RDONLY)) < 0)
         goto cleanup;
-    if ((stderrfd = open("/dev/null", O_WRONLY)) < 0)
-        goto cleanup;
 
     open_max = sysconf (_SC_OPEN_MAX);
     for (i = 0; i < open_max; i++) {
         if (i != stdinfd &&
-            i != stderrfd &&
             i != pipefd)
             close(i);
     }
@@ -182,7 +178,7 @@ void virtTestCaptureProgramExecChild(const char *const argv[],
         goto cleanup;
     if (dup2(pipefd, STDOUT_FILENO) != STDOUT_FILENO)
         goto cleanup;
-    if (dup2(stderrfd, STDERR_FILENO) != STDERR_FILENO)
+    if (dup2(pipefd, STDERR_FILENO) != STDERR_FILENO)
         goto cleanup;
 
     /* SUS is crazy here, hence the cast */
@@ -191,8 +187,6 @@ void virtTestCaptureProgramExecChild(const char *const argv[],
  cleanup:
     if (stdinfd != -1)
         close(stdinfd);
-    if (stderrfd != -1)
-        close(stderrfd);
 }
 
 int virtTestCaptureProgramOutput(const char *const argv[],
