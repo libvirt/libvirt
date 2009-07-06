@@ -4,7 +4,7 @@
 # It is necessary if you want to build targets usually of interest
 # only to the maintainer.
 
-# Copyright (C) 2001, 2003, 2006-2008 Free Software Foundation, Inc.
+# Copyright (C) 2001, 2003, 2006-2009 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ export TAR_OPTIONS = --owner=0 --group=0 --numeric-owner
 
 include Makefile
 
-include $(srcdir)/Makefile.cfg
+include $(srcdir)/cfg.mk
 include $(srcdir)/Makefile.maint
 
 else

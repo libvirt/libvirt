@@ -16,6 +16,7 @@ EXTRA_DIST = \
   .x-sc_avoid_if_before_free \
   .x-sc_require_config_h_first \
   .x-sc_prohibit_strcmp \
+  .x-sc_prohibit_strcmp_and_strncmp \
   .x-sc_require_config_h \
   .x-sc_prohibit_nonreentrant \
   Makefile.nonreentrant \

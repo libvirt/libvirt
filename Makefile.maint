@@ -1,6 +1,28 @@
+# -*-Makefile-*-
+# This Makefile fragment tries to be general-purpose enough to be
+# used by many projects via the gnulib maintainer-makefile module.
+
+## Copyright (C) 2001-2009 Free Software Foundation, Inc.
+##
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # This is reported not to work with make-3.79.1
 # ME := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 ME := Makefile.maint
+
+# Override this in cfg.mk if you use a non-standard build-aux directory.
+build_aux ?= $(srcdir)/build-aux
 
 # Do not save the original name or timestamp in the .tar.gz file.
 # Use --rsyncable if available.
@@ -8,31 +30,59 @@ gzip_rsyncable := \
   $(shell gzip --help 2>/dev/null|grep rsyncable >/dev/null && echo --rsyncable)
 GZIP_ENV = '--no-name --best $(gzip_rsyncable)'
 
-VC_LIST = $(srcdir)/build-aux/vc-list-files
+# cfg.mk must define the gpg_key_ID used by this package.
+GIT = git
+VC = $(GIT)
+VC-tag = git tag -s -m '$(VERSION)' -u '$(gpg_key_ID)'
+
+VC_LIST = $(build_aux)/vc-list-files -C $(srcdir)
 
 VC_LIST_EXCEPT = \
-  $(VC_LIST) | if test -f .x-$@; then grep -vEf .x-$@; else grep -v ChangeLog; fi
+  $(VC_LIST) | if test -f $(srcdir)/.x-$@; then grep -vEf $(srcdir)/.x-$@; else grep -v ChangeLog; fi
 
-include Makefile.nonreentrant
+ifeq ($(origin prev_version_file), undefined)
+  prev_version_file = $(srcdir)/.prev-version
+endif
+
+PREV_VERSION := $(shell cat $(prev_version_file))
+VERSION_REGEXP = $(subst .,\.,$(VERSION))
+PREV_VERSION_REGEXP = $(subst .,\.,$(PREV_VERSION))
+
+ifeq ($(VC),$(GIT))
+this-vc-tag = v$(VERSION)
+this-vc-tag-regexp = v$(VERSION_REGEXP)
+else
+tag-package = $(shell echo "$(PACKAGE)" | tr '[:lower:]' '[:upper:]')
+tag-this-version = $(subst .,_,$(VERSION))
+this-vc-tag = $(tag-package)-$(tag-this-version)
+this-vc-tag-regexp = $(this-vc-tag)
+endif
+my_distdir = $(PACKAGE)-$(VERSION)
+
+# Old releases are stored here.
+release_archive_dir ?= ../release
 
 # Prevent programs like 'sort' from considering distinct strings to be equal.
 # Doing it here saves us from having to set LC_ALL elsewhere in this file.
 export LC_ALL = C
 
+## --------------- ##
+## Sanity checks.  ##
+## --------------- ##
+
 # Collect the names of rules starting with `sc_'.
 syntax-check-rules := $(shell sed -n 's/^\(sc_[a-zA-Z0-9_-]*\):.*/\1/p' \
-                        $(srcdir)/$(ME))
+			$(srcdir)/$(ME) $(srcdir)/cfg.mk)
 .PHONY: $(syntax-check-rules)
 
 local-checks-available = \
-  patch-check $(syntax-check-rules) \
-  makefile-check check-AUTHORS
+  $(syntax-check-rules)
 .PHONY: $(local-checks-available)
 
 # Arrange to print the name of each syntax-checking rule just before running it.
 $(syntax-check-rules): %: %.m
 $(patsubst %, %.m, $(syntax-check-rules)):
-	@echo "CHECK:" $(patsubst sc_%.m, %, $@)
+	@echo $(patsubst sc_%.m, %, $@)
 
 local-check := $(filter-out $(local-checks-to-skip), $(local-checks-available))
 
@@ -56,7 +106,7 @@ _ignore_case = $$(test -n "$$ignore_case" && echo -i || :)
 # If the offending construct can be matched with a grep-E-style regexp,
 # use this macro.  The shell variables "re" and "msg" must be defined.
 define _prohibit_regexp
-  dummy=; : so we do not need a semicolon before each use		\
+  dummy=; : so we do not need a semicolon before each use;		\
   test "x$$re" != x || { echo '$(ME): re not defined' 1>&2; exit 1; };	\
   test "x$$msg" != x || { echo '$(ME): msg not defined' 1>&2; exit 1; };\
   grep $(_ignore_case) -nE "$$re" $$($(VC_LIST_EXCEPT)) &&		\
@@ -64,22 +114,11 @@ define _prohibit_regexp
 endef
 
 sc_avoid_if_before_free:
-	@$(srcdir)/build-aux/useless-if-before-free			\
+	@$(build_aux)/useless-if-before-free				\
 		$(useless_free_options)					\
-	    $$($(VC_LIST_EXCEPT)) &&					\
+	    $$($(VC_LIST_EXCEPT) | grep -v useless-if-before-free) &&	\
 	  { echo '$(ME): found useless "if" before "free" above' 1>&2;	\
 	    exit 1; } || :
-
-# Avoid uses of write(2).  Either switch to streams (fwrite), or use
-# the safewrite wrapper.
-sc_avoid_write:
-	@if $(VC_LIST_EXCEPT) | grep '\.c$$' > /dev/null; then		\
-	  grep '\<write *(' $$($(VC_LIST_EXCEPT) | grep '\.c$$') &&	\
-	    { echo "$(ME): the above files use write;"			\
-	      " consider using the safewrite wrapper instead"		\
-		  1>&2; exit 1; } || :;					\
-	else :;								\
-	fi
 
 sc_cast_of_argument_to_free:
 	@re='\<free *\( *\(' msg='don'\''t cast free argument'		\
@@ -102,45 +141,46 @@ sc_space_tab:
 # They provide no error checking mechanism.
 # Instead, use strto* functions.
 sc_prohibit_atoi_atof:
-	@re='\<([fs]?scanf|ato([filq]|ll))\>'				\
+	@re='\<([fs]?scanf|ato([filq]|ll)) *\('				\
 	msg='do not use *scan''f, ato''f, ato''i, ato''l, ato''ll or ato''q' \
 	  $(_prohibit_regexp)
 
 # Use STREQ rather than comparing strcmp == 0, or != 0.
-# Similarly, use STREQLEN or STRPREFIX rather than strncmp.
 sc_prohibit_strcmp:
-	@grep -nE '! *strn?cmp *\(|\<strn?cmp *\([^)]+\) *=='		\
+	@grep -nE '! *str''cmp *\(|\<str''cmp *\([^)]+\) *=='		\
 	    $$($(VC_LIST_EXCEPT))					\
-	  | grep -vE ':# *define STREQ(LEN)?\(' &&			\
-	  { echo '$(ME): use STREQ(LEN) in place of the above uses of strcmp(strncmp)' \
+	  | grep -vE ':# *define STREQ\(' &&				\
+	  { echo '$(ME): use STREQ in place of the above uses of str''cmp' \
 		1>&2; exit 1; } || :
-
-# Use virAsprintf rather than a'sprintf since *strp is undefined on error.
-sc_prohibit_asprintf:
-	@re='\<[a]sprintf\>'						\
-	msg='use virAsprintf, not a'sprintf				\
-	  $(_prohibit_regexp)
-
-sc_prohibit_VIR_ERR_NO_MEMORY:
-	@re='\<V''IR_ERR_NO_MEMORY\>'					\
-	msg='use virReportOOMError, not V'IR_ERR_NO_MEMORY		\
-	  $(_prohibit_regexp)
-
-sc_prohibit_nonreentrant:
-	@fail=0 ; \
-	for i in $(NON_REENTRANT) ; \
-	do \
-	   grep --before 2 --after 1 -nE "\<$$i\>[:space:]*\(" $$($(VC_LIST_EXCEPT)) && \
-	     fail=1 && echo "$(ME): use $${i}_r, not $${i}" || : ; \
-	done ; \
-	exit $$fail
 
 # Using EXIT_SUCCESS as the first argument to error is misleading,
 # since when that parameter is 0, error does not exit.  Use `0' instead.
 sc_error_exit_success:
-	@grep -nF 'error (EXIT_SUCCESS,'				\
-	    $$(find -type f -name '*.[chly]') &&			\
-	  { echo '$(ME): found error (EXIT_SUCCESS' 1>&2;		\
+	@grep -nE 'error \(EXIT_SUCCESS,'				\
+	    $$($(VC_LIST_EXCEPT) | grep -E '\.[chly]$$') &&		\
+	  { echo '$(ME): found error (EXIT_SUCCESS' 1>&2; exit 1; } || :
+
+# `FATAL:' should be fully upper-cased in error messages
+# `WARNING:' should be fully upper-cased, or fully lower-cased
+sc_error_message_warn_fatal:
+	@grep -nEA2 '[^rp]error \(' $$($(VC_LIST_EXCEPT))		\
+	    | grep -E '"Warning|"Fatal|"fatal' &&			\
+	  { echo '$(ME): use FATAL, WARNING or warning'	1>&2;		\
+	    exit 1; } || :
+
+# Error messages should not start with a capital letter
+sc_error_message_uppercase:
+	@grep -nEA2 '[^rp]error \(' $$($(VC_LIST_EXCEPT))		\
+	    | grep -E '"[A-Z]'						\
+	    | grep -vE '"FATAL|"WARNING|"Java|"C#|PRIuMAX' &&		\
+	  { echo '$(ME): found capitalized error message' 1>&2;		\
+	    exit 1; } || :
+
+# Error messages should not end with a period
+sc_error_message_period:
+	@grep -nEA2 '[^rp]error \(' $$($(VC_LIST_EXCEPT))		\
+	    | grep -E '[^."]\."' &&					\
+	  { echo '$(ME): found error message ending in period' 1>&2;	\
 	    exit 1; } || :
 
 sc_file_system:
@@ -154,10 +194,13 @@ sc_prohibit_have_config_h:
 	  { echo '$(ME): found use of HAVE''_CONFIG_H; remove'		\
 		1>&2; exit 1; } || :
 
-# Nearly all .c files must include <config.h>.
+# Nearly all .c files must include <config.h>.  However, we also permit this
+# via inclusion of a package-specific header, if cfg.mk specified one.
+# config_h_header must be suitable for grep -E.
+config_h_header ?= <config\.h>
 sc_require_config_h:
-	@if $(VC_LIST_EXCEPT) | grep '\.c$$' > /dev/null; then		\
-	  grep -L '^# *include <config\.h>'				\
+	@if $(VC_LIST_EXCEPT) | grep -l '\.c$$' > /dev/null; then	\
+	  grep -EL '^# *include $(config_h_header)'			\
 		$$($(VC_LIST_EXCEPT) | grep '\.c$$')			\
 	      | grep . &&						\
 	  { echo '$(ME): the above files do not include <config.h>'	\
@@ -166,12 +209,13 @@ sc_require_config_h:
 	fi
 
 # You must include <config.h> before including any other header file.
+# This can possibly be via a package-specific header, if given by cfg.mk.
 sc_require_config_h_first:
-	@if $(VC_LIST_EXCEPT) | grep '\.c$$' > /dev/null; then		\
+	@if $(VC_LIST_EXCEPT) | grep -l '\.c$$' > /dev/null; then	\
 	  fail=0;							\
 	  for i in $$($(VC_LIST_EXCEPT) | grep '\.c$$'); do		\
 	    grep '^# *include\>' $$i | sed 1q				\
-		| grep '^# *include <config\.h>' > /dev/null		\
+		| grep -E '^# *include $(config_h_header)' > /dev/null	\
 	      || { echo $$i; fail=1; };					\
 	  done;								\
 	  test $$fail = 1 &&						\
@@ -188,8 +232,8 @@ sc_prohibit_HAVE_MBRTOWC:
 # h: the header, enclosed in <> or ""
 # re: a regular expression that matches IFF something provided by $h is used.
 define _header_without_use
-  h_esc=`echo "$$h"|sed 's/\./\\./'`;					\
-  if $(VC_LIST_EXCEPT) | grep '\.c$$' > /dev/null; then			\
+  h_esc=`echo "$$h"|sed 's/\./\\./g'`;					\
+  if $(VC_LIST_EXCEPT) | grep -l '\.c$$' > /dev/null; then		\
     files=$$(grep -l '^# *include '"$$h_esc"				\
 	     $$($(VC_LIST_EXCEPT) | grep '\.c$$')) &&			\
     grep -LE "$$re" $$files | grep . &&					\
@@ -246,14 +290,47 @@ sc_prohibit_root_dev_ino_without_use:
 	  $(_header_without_use)
 
 # Prohibit the inclusion of c-ctype.h without an actual use.
+ctype_re = isalnum|isalpha|isascii|isblank|iscntrl|isdigit|isgraph|islower\
+|isprint|ispunct|isspace|isupper|isxdigit|tolower|toupper
 sc_prohibit_c_ctype_without_use:
 	@h='[<"]c-ctype.h[">]' re='\<c_($(ctype_re)) *\(' $(_header_without_use)
 
-# Prohibit the inclusion of <ctype.h>.
-sc_prohibit_ctype_h:
-	@grep -E '^# *include  *<ctype\.h>' $$($(VC_LIST_EXCEPT)) &&	\
-	  { echo "$(ME): don't use ctype.h; instead, use c-ctype.h"	\
-		1>&2; exit 1; } || :
+_empty =
+_sp = $(_empty) $(_empty)
+# The following list was generated by running:
+# man signal.h|col -b|perl -ne '/bsd_signal.*;/.../sigwaitinfo.*;/ and print' \
+#   | perl -lne '/^\s+(?:int|void).*?(\w+).*/ and print $1' | fmt
+_sig_functions = \
+  bsd_signal kill killpg pthread_kill pthread_sigmask raise sigaction \
+  sigaddset sigaltstack sigdelset sigemptyset sigfillset sighold sigignore \
+  siginterrupt sigismember signal sigpause sigpending sigprocmask sigqueue \
+  sigrelse sigset sigsuspend sigtimedwait sigwait sigwaitinfo
+_sig_function_re = $(subst $(_sp),|,$(strip $(_sig_functions)))
+# The following were extracted from "man signal.h" manually.
+_sig_types_and_consts =							\
+  MINSIGSTKSZ SA_NOCLDSTOP SA_NOCLDWAIT SA_NODEFER SA_ONSTACK		\
+  SA_RESETHAND SA_RESTART SA_SIGINFO SIGEV_NONE SIGEV_SIGNAL		\
+  SIGEV_THREAD SIGSTKSZ SIG_BLOCK SIG_SETMASK SIG_UNBLOCK SS_DISABLE	\
+  SS_ONSTACK mcontext_t pid_t sig_atomic_t sigevent siginfo_t sigset_t	\
+  sigstack sigval stack_t ucontext_t
+# generated via this:
+# perl -lne '/^#ifdef (SIG\w+)/ and print $1' lib/sig2str.c|sort -u|fmt -70
+_sig_names =								\
+  SIGABRT SIGALRM SIGALRM1 SIGBUS SIGCANCEL SIGCHLD SIGCLD SIGCONT	\
+  SIGDANGER SIGDIL SIGEMT SIGFPE SIGFREEZE SIGGRANT SIGHUP SIGILL	\
+  SIGINFO SIGINT SIGIO SIGIOT SIGKAP SIGKILL SIGKILLTHR SIGLOST SIGLWP	\
+  SIGMIGRATE SIGMSG SIGPHONE SIGPIPE SIGPOLL SIGPRE SIGPROF SIGPWR	\
+  SIGQUIT SIGRETRACT SIGSAK SIGSEGV SIGSOUND SIGSTKFLT SIGSTOP SIGSYS	\
+  SIGTERM SIGTHAW SIGTRAP SIGTSTP SIGTTIN SIGTTOU SIGURG SIGUSR1	\
+  SIGUSR2 SIGVIRT SIGVTALRM SIGWAITING SIGWINCH SIGWIND SIGWINDOW	\
+  SIGXCPU SIGXFSZ
+_sig_syms_re = $(subst $(_sp),|,$(strip $(_sig_names) $(_sig_types_and_consts)))
+
+# Prohibit the inclusion of signal.h without an actual use.
+sc_prohibit_signal_without_use:
+	@h='<signal.h>'							\
+	re='\<($(_sig_function_re)) *\(|\<($(_sig_syms_re))\>'		\
+	  $(_header_without_use)
 
 sc_obsolete_symbols:
 	@re='\<(HAVE''_FCNTL_H|O''_NDELAY)\>'				\
@@ -262,15 +339,45 @@ sc_obsolete_symbols:
 
 # FIXME: warn about definitions of EXIT_FAILURE, EXIT_SUCCESS, STREQ
 
-# Each nonempty line must start with a year number, or a TAB.
-# Or day-of-week+space.
-changelog_entry_header_regexp = \
-  ([12][0-9][0-9][0-9]|	.|(Mon|Tue|Wed|Thu|Fri|Sat|Sun) )
+# Each nonempty ChangeLog line must start with a year number, or a TAB.
 sc_changelog:
-	@grep -Evn '(^$$|^$(changelog_entry_header_regexp))'		\
-	  $$(find . -maxdepth 2 -name ChangeLog) &&			\
+	@if $(VC_LIST_EXCEPT) | grep -l '^ChangeLog$$' >/dev/null; then	\
+	  grep -n '^[^12	]'					\
+	    $$($(VC_LIST_EXCEPT) | grep '^ChangeLog$$') &&		\
 	  { echo '$(ME): found unexpected prefix in a ChangeLog' 1>&2;	\
-	    exit 1; } || :
+	    exit 1; } || :;						\
+	fi
+
+# Ensure that each .c file containing a "main" function also
+# calls set_program_name.
+sc_program_name:
+	@if $(VC_LIST_EXCEPT) | grep -l '\.c$$' > /dev/null; then	\
+	  files=$$(grep -l '^main *(' $$($(VC_LIST_EXCEPT) | grep '\.c$$')); \
+	  grep -LE 'set_program_name *\(m?argv\[0\]\);' $$files		\
+	      | grep . &&						\
+	  { echo '$(ME): the above files do not call set_program_name'	\
+		1>&2; exit 1; } || :;					\
+	else :;								\
+	fi
+
+# Require that the final line of each test-lib.sh-using test be this one:
+# Exit $fail
+# Note: this test requires GNU grep's --label= option.
+Exit_witness_file ?= tests/test-lib.sh
+Exit_base := $(notdir $(Exit_witness_file))
+sc_require_test_exit_idiom:
+	@if test -f $(srcdir)/$(Exit_witness_file); then		\
+	  die=0;							\
+	  for i in $$(grep -l -F 'srcdir/$(Exit_base)'			\
+		$$($(VC_LIST) tests)); do				\
+	    tail -n1 $$i | grep '^Exit .' > /dev/null			\
+	      && : || { die=1; echo $$i; }				\
+	  done;								\
+	  test $$die = 1 &&						\
+	    { echo 1>&2 '$(ME): the final line in each of the above is not:'; \
+	      echo 1>&2 'Exit something';				\
+	      exit 1; } || :;						\
+	fi
 
 sc_the_the:
 	@re='\<the ''the\>'						\
@@ -279,28 +386,8 @@ sc_the_the:
 
 sc_trailing_blank:
 	@re='[	 ]$$'							\
-	ignore_case=1 msg='found trailing blank(s)'			\
+	msg='found trailing blank(s)'					\
 	  $(_prohibit_regexp)
-
-# Ensure that no C source file uses TABs for indentation.
-# Also match *.h.in files, to get libvirt.h.in.
-# Exclude files in gnulib, since they're imported.
-sc_TAB_in_indentation:
-	@grep -lE '^ *	' /dev/null					\
-	     $$($(VC_LIST_EXCEPT)					\
-	        | grep -E '\.[ch](\.in)?$$'				\
-	        | grep -v '^gnulib/') &&				\
-	  { echo '$(ME): found TAB(s) used for indentation in C sources;'\
-	      'use spaces' 1>&2; exit 1; } || :
-
-ctype_re = isalnum|isalpha|isascii|isblank|iscntrl|isdigit|isgraph|islower\
-|isprint|ispunct|isspace|isupper|isxdigit|tolower|toupper
-
-sc_avoid_ctype_macros:
-	@grep -E '\b($(ctype_re)) *\(' /dev/null			\
-	     $$($(VC_LIST_EXCEPT)) &&					\
-	  { echo "$(ME): don't use ctype macros (use c-ctype.h)"	\
-		1>&2; exit 1; } || :
 
 # Match lines like the following, but where there is only one space
 # between the options and the description:
@@ -313,101 +400,14 @@ sc_two_space_separator_in_usage:
 	    echo "$(ME): an option and its description";		\
 		1>&2; exit 1; } || :
 
-# Many of the function names below came from this filter:
-# git grep -B2 '\<_('|grep -E '\.c- *[[:alpha:]_][[:alnum:]_]* ?\(.*[,;]$' \
-# |sed 's/.*\.c-  *//'|perl -pe 's/ ?\(.*//'|sort -u \
-# |grep -vE '^(qsort|if|close|assert|fputc|free|N_|vir.*GetName|.*Unlock|virNodeListDevices|virHashRemoveEntry|freeaddrinfo|.*[fF]ree|xdrmem_create|xmlXPathFreeObject|virUUIDFormat|openvzSetProgramSentinal|polkit_action_unref)$'
-
-msg_gen_function =
-msg_gen_function += DEBUG0
-msg_gen_function += DISABLE_fprintf
-msg_gen_function += ERROR
-msg_gen_function += ERROR0
-msg_gen_function += REMOTE_DEBUG
-msg_gen_function += ReportError
-msg_gen_function += VIR_FREE
-msg_gen_function += VIR_INFO
-msg_gen_function += VIR_USE_CPU
-msg_gen_function += errorf
-msg_gen_function += lxcError
-msg_gen_function += networkLog
-msg_gen_function += networkReportError
-msg_gen_function += oneError
-msg_gen_function += openvzError
-msg_gen_function += openvzLog
-msg_gen_function += qemudDispatchClientFailure
-msg_gen_function += qemudLog
-msg_gen_function += qemudReportError
-msg_gen_function += regerror
-msg_gen_function += remoteDispatchFormatError
-msg_gen_function += umlLog
-msg_gen_function += umlReportError
-msg_gen_function += virConfError
-msg_gen_function += virDomainReportError
-msg_gen_function += virSecurityReportError
-msg_gen_function += virHashError
-msg_gen_function += virLibConnError
-msg_gen_function += virLibDomainError
-msg_gen_function += virLog
-msg_gen_function += virNetworkReportError
-msg_gen_function += virNodeDeviceReportError
-msg_gen_function += virProxyError
-msg_gen_function += virRaiseError
-msg_gen_function += virReportErrorHelper
-msg_gen_function += virReportSystemError
-msg_gen_function += virSexprError
-msg_gen_function += virStorageLog
-msg_gen_function += virStorageReportError
-msg_gen_function += virXMLError
-msg_gen_function += virXenInotifyError
-msg_gen_function += virXenStoreError
-msg_gen_function += virXendError
-msg_gen_function += vshCloseLogFile
-msg_gen_function += xenUnifiedError
-msg_gen_function += xenXMError
-
-# Uncomment the following and run "make syntax-check" to see diagnostics
-# that are not yet marked for translation, but that need to be rewritten
-# so that they are translatable.
-# msg_gen_function += error
-# msg_gen_function += fprintf
-# msg_gen_function += testError
-# msg_gen_function += virXenError
-# msg_gen_function += vshPrint
-# msg_gen_function += vshError
-
-func_or := $(shell printf '$(msg_gen_function)'|tr -s '[[:space:]]' '|')
-func_re := ($(func_or))
-
 # Look for diagnostics that aren't marked for translation.
 # This won't find any for which error's format string is on a separate line.
-# The sed filters eliminate false-positives like these:
-#    _("...: "
-#    "%s", _("no storage vol w..."
 sc_unmarked_diagnostics:
 	@grep -nE							\
-            '\<$(func_re) \([^"]*"[^"]*[a-z]{3}' $$($(VC_LIST_EXCEPT))	\
+	    '\<error \([^"]*"[^"]*[a-z]{3}' $$($(VC_LIST_EXCEPT))	\
 	  | grep -v '_''(' &&						\
 	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
 	    exit 1; } || :
-	@{ grep     -nE '\<$(func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT));   \
-	   grep -A1 -nE '\<$(func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
-	   | sed 's/_("[^"][^"]*"//;s/[	 ]"%s"//'			\
-	   | grep '[	 ]"' &&						\
-	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
-	    exit 1; } || :
-
-sc_prohibit_virBufferAdd_with_string_literal:
-	@re='\<virBufferAdd *\([^,]+, *"[^"]'				\
-	msg='use virBufferAddLit, not virBufferAdd, with a string literal' \
-	  $(_prohibit_regexp)
-
-# Not only do they fail to deal well with ipv6, but the gethostby*
-# functions are also not thread-safe.
-sc_prohibit_gethostby:
-	@re='\<gethostby(addr|name2?) *\('				\
-	msg='use getaddrinfo, not gethostby*'				\
-	  $(_prohibit_regexp)
 
 # Avoid useless parentheses like those in this example:
 # #if defined (SYMBOL) || defined (SYM2)
@@ -463,10 +463,9 @@ sc_proper_name_utf8_requires_ICONV:
 # Warn about "c0nst struct Foo const foo[]",
 # but not about "char const *const foo" or "#define const const".
 sc_redundant_const:
-	@grep -E '\bconst\b[[:space:][:alnum:]]{2,}\bconst\b'		\
-		$$($(VC_LIST_EXCEPT)) &&				\
-	    { echo 1>&2 '$(ME): redundant "const" in declarations';	\
-	      exit 1; } || :
+	@re='\bconst\b[[:space:][:alnum:]]{2,}\bconst\b'		\
+	msg='redundant "const" in declarations'				\
+	  $(_prohibit_regexp)
 
 sc_const_long_option:
 	@grep '^ *static.*struct option ' $$($(VC_LIST_EXCEPT))		\
@@ -474,9 +473,12 @@ sc_const_long_option:
 	      echo 1>&2 '$(ME): add "const" to the above declarations'; \
 	      exit 1; } || :
 
-NEWS_hash = \
-  $$(sed -n '/^\*.* $(PREV_VERSION_REGEXP) ([0-9-]*)/,$$p' \
-     $(srcdir)/NEWS | md5sum -)
+NEWS_hash =								\
+  $$(sed -n '/^\*.* $(PREV_VERSION_REGEXP) ([0-9-]*)/,$$p'		\
+       $(srcdir)/NEWS							\
+     | grep -v '^Copyright .*Free Software'				\
+     | md5sum -								\
+     | sed 's/ .*//')
 
 # Ensure that we don't accidentally insert an entry into an old NEWS block.
 sc_immutable_NEWS:
@@ -491,45 +493,20 @@ update-NEWS-hash: NEWS
 	perl -pi -e 's/^(old_NEWS_hash = ).*/$${1}'"$(NEWS_hash)/" \
 	  $(srcdir)/cfg.mk
 
-epoch_date = 1970-01-01 00:00:00.000000000 +0000
-# Ensure that the c99-to-c89 patch applies cleanly.
-patch-check:
-	rm -rf src-c89 $@.1 $@.2
-	cp -a $(srcdir)/src src-c89
-	if test "x$(srcdir)" != x.; then \
-	  cp -a src/* src-c89; \
-	  dotfiles=`ls src/.[!.]* 2>/dev/null`; \
-	  test -z "$$dotfiles" || cp -a src/.[!.]* src-c89; \
-	fi
-	(cd src-c89; patch -p1 -V never --fuzz=0) < $(srcdir)/src/c99-to-c89.diff \
-	  > $@.1 2>&1
-	if test "$(REGEN_PATCH)" = yes; then			\
-	  diff -upr $(srcdir)/src src-c89 | sed 's,$(srcdir)/src-c89/,src/,'	\
-	    | grep -vE '^(Only in|File )'			\
-	    | perl -pe 's/^((?:\+\+\+|---) \S+\t).*/$${1}$(epoch_date)/;' \
-	       -e 's/^ $$//'					\
-	    > new-diff || : ; fi
-	grep -v '^patching file ' $@.1 > $@.2 || :
-	msg=ok; test -s $@.2 && msg='fuzzy patch' || : ;	\
-	rm -f src-c89/*.o || msg='rm failed';			\
-	$(MAKE) -C src-c89 CFLAGS='-Wdeclaration-after-statement -Werror' \
-	  || msg='compile failure with extra options';		\
-	test "$$msg" = ok && rm -rf src-c89 $@.1 $@.2 || echo "$$msg" 1>&2; \
-	test "$$msg" = ok
-
-check-AUTHORS:
-	$(MAKE) -C src $@
-
 # Ensure that we use only the standard $(VAR) notation,
 # not @...@ in Makefile.am, now that we can rely on automake
 # to emit a definition for each substituted variable.
-makefile-check:
-	grep -nE '@[A-Z_0-9]+@' `find . -name Makefile.am` \
-	  && { echo 'Makefile.maint: use $$(...), not @...@' 1>&2; exit 1; } || :
+# We use perl rather than "grep -nE ..." to exempt a single
+# use of an @...@-delimited variable name in src/Makefile.am.
+sc_makefile_check:
+	@perl -ne '/\@[A-Z_0-9]+\@/ && !/^cu_install_program =/'	\
+	  -e 'and (print "$$ARGV:$$.: $$_"), $$m=1; END {exit !$$m}'	\
+	    $$($(VC_LIST_EXCEPT) | grep -E '(^|/)Makefile\.am$$')	\
+	  && { echo '$(ME): use $$(...), not @...@' 1>&2; exit 1; } || :
 
 news-date-check: NEWS
 	today=`date +%Y-%m-%d`;						\
-	if head NEWS | grep '^\*.* $(VERSION_REGEXP) ('$$today')'	\
+	if head $(srcdir)/NEWS | grep '^\*.* $(VERSION_REGEXP) ('$$today')' \
 	    >/dev/null; then						\
 	  :;								\
 	else								\
@@ -537,14 +514,11 @@ news-date-check: NEWS
 	  exit 1;							\
 	fi
 
-changelog-check:
-	if head ChangeLog | grep 'Version $(VERSION_REGEXP)\.$$'	\
-	    >/dev/null; then						\
-	  :;								\
-	else								\
-	  echo "$(VERSION) not in ChangeLog" 1>&2;			\
-	  exit 1;							\
-	fi
+sc_makefile_TAB_only_indentation:
+	@grep -nE '^	[ ]{8}'						\
+	    $$($(VC_LIST_EXCEPT) | grep -E 'akefile|\.mk$$')		\
+	  && { echo '$(ME): found TAB-8-space indentation' 1>&2;	\
+	       exit 1; } || :
 
 sc_m4_quote_check:
 	@grep -nE '(AC_DEFINE(_UNQUOTED)?|AC_DEFUN)\([^[]'		\
@@ -563,9 +537,9 @@ sc_po_check:
 	  grep -E -v '^(#|$$)' $(po_file)				\
 	    | grep -v '^src/false\.c$$' | sort > $@-1;			\
 	  files=;							\
-	  for file in $$($(VC_LIST_EXCEPT)); do				\
+	  for file in $$($(VC_LIST_EXCEPT)) lib/*.[ch]; do		\
+	    test -r $$file || continue;					\
 	    case $$file in						\
-	      *.m4) continue;;						\
 	      *.?|*.??) ;;						\
 	      *) continue;;						\
 	    esac;							\
@@ -585,20 +559,18 @@ sc_po_check:
 
 # Sometimes it is useful to change the PATH environment variable
 # in Makefiles.  When doing so, it's better not to use the Unix-centric
-# path separator of `:', but rather the automake-provided `@PATH_SEPARATOR@'.
-# It'd be better to use `find -print0 ...|xargs -0 ...', but less portable,
-# and there probably aren't many projects with so many Makefile.am files
-# that we'd have to worry about limits on command line length.
-msg = '$(ME): Do not use `:'\'' above; use @PATH_SEPARATOR@ instead'
+# path separator of `:', but rather the automake-provided `$(PATH_SEPARATOR)'.
+msg = '$(ME): Do not use `:'\'' above; use $$(PATH_SEPARATOR) instead'
 sc_makefile_path_separator_check:
-	@grep -n 'PATH=.*:' `find $(srcdir) -name Makefile.am` \
+	@grep -nE 'PATH[=].*:'						\
+	    $$($(VC_LIST_EXCEPT) | grep -E 'akefile|\.mk$$')		\
 	  && { echo $(msg) 1>&2; exit 1; } || :
 
 # Check that `make alpha' will not fail at the end of the process.
 writable-files:
 	if test -d $(release_archive_dir); then :; else			\
 	  for file in $(distdir).tar.gz					\
-	              $(release_archive_dir)/$(distdir).tar.gz; do	\
+		      $(release_archive_dir)/$(distdir).tar.gz; do	\
 	    test -e $$file || continue;					\
 	    test -w $$file						\
 	      || { echo ERROR: $$file is not writable; fail=1; };	\
@@ -632,7 +604,7 @@ sc_copyright_check:
 	fi
 
 vc-diff-check:
-	$(VC) diff > vc-diffs || :
+	(unset CDPATH; cd $(srcdir) && $(VC) diff) > vc-diffs || :
 	if test -s vc-diffs; then				\
 	  cat vc-diffs;						\
 	  echo "Some files are locally modified:" 1>&2;		\
@@ -643,15 +615,18 @@ vc-diff-check:
 
 cvs-check: vc-diff-check
 
+ALL_RECURSIVE_TARGETS += maintainer-distcheck
 maintainer-distcheck:
 	$(MAKE) distcheck
+	$(MAKE) taint-distcheck
 	$(MAKE) my-distcheck
 
 
 # Don't make a distribution if checks fail.
 # Also, make sure the NEWS file is up-to-date.
+ALL_RECURSIVE_TARGETS += vc-dist
 vc-dist: $(local-check) cvs-check maintainer-distcheck
-	$(MAKE) dist
+	XZ_OPT=-9ev $(MAKE) dist
 
 # Use this to make sure we don't run these programs when building
 # from a virgin tgz file, below.
@@ -664,165 +639,132 @@ null_AM_MAKEFLAGS = \
 
 built_programs = $$(cd src && MAKEFLAGS= $(MAKE) -s built_programs.list)
 
-warn_cflags = -Dlint -O -Werror -Wall -Wformat -Wshadow -Wpointer-arith
-bin=bin-$$$$
+rel-files = $(DIST_ARCHIVES)
 
-write_loser = printf '\#!%s\necho $$0: bad path 1>&2; exit 1\n' '$(SHELL)'
+gnulib_dir ?= $(srcdir)/gnulib
+gnulib-version = $$(cd $(gnulib_dir) && git describe)
+bootstrap-tools ?= autoconf,automake,gnulib
 
-TMPDIR ?= /tmp
-t=$(TMPDIR)/$(PACKAGE)/test
-pfx=$(t)/i
+announcement: NEWS ChangeLog $(rel-files)
+	@$(build_aux)/announce-gen					\
+	    --release-type=$(RELEASE_TYPE)				\
+	    --package=$(PACKAGE)					\
+	    --prev=$(PREV_VERSION)					\
+	    --curr=$(VERSION)						\
+	    --gpg-key-id=$(gpg_key_ID)					\
+	    --news=NEWS							\
+	    --bootstrap-tools=$(bootstrap-tools)			\
+	    --gnulib-version=$(gnulib-version)				\
+	    --no-print-checksums					\
+	    $(addprefix --url-dir=, $(url_dir_list))
 
-# More than once, tainted build and source directory names would
-# have caused at least one "make check" test to apply "chmod 700"
-# to all directories under $HOME.  Make sure it doesn't happen again.
-tp := $(shell echo "$(TMPDIR)/$(PACKAGE)-$$$$")
-t_prefix = $(tp)/a
-t_taint = '$(t_prefix) b'
-fake_home = $(tp)/home
+## ---------------- ##
+## Updating files.  ##
+## ---------------- ##
 
-# Ensure that tests run from tainted build and src dir names work,
-# and don't affect anything in $HOME.  Create witness files in $HOME,
-# record their attributes, and build/test.  Then ensure that the
-# witnesses were not affected.
-taint-distcheck: $(DIST_ARCHIVES)
-	test -d $(t_taint) && chmod -R 700 $(t_taint) || :
-	-rm -rf $(t_taint) $(fake_home)
-	mkdir -p $(t_prefix) $(t_taint) $(fake_home)
-	GZIP=$(GZIP_ENV) $(AMTAR) -C $(t_taint) -zxf $(distdir).tar.gz
-	mkfifo $(fake_home)/fifo
-	touch $(fake_home)/f
-	mkdir -p $(fake_home)/d/e
-	ls -lR $(fake_home) $(t_prefix) > $(tp)/.ls-before
-	cd $(t_taint)/$(distdir)			\
-	  && ./configure				\
-	  && $(MAKE)					\
-	  && HOME=$(fake_home) $(MAKE) check		\
-	  && ls -lR $(fake_home) $(t_prefix) > $(tp)/.ls-after \
-	  && diff $(tp)/.ls-before $(tp)/.ls-after	\
-	  && test -d $(t_prefix)
-	rm -rf $(tp)
+ftp-gnu = ftp://ftp.gnu.org/gnu
+www-gnu = http://www.gnu.org
 
-# Verify that a twisted use of --program-transform-name=PROGRAM works.
-define install-transform-check
-  echo running install-transform-check			\
-    && rm -rf $(pfx)					\
-    && $(MAKE) program_transform_name='s/.*/zyx/'	\
-      prefix=$(pfx) install				\
-    && test "$$(echo $(pfx)/bin/*)" = "$(pfx)/bin/zyx"	\
-    && test "$$(find $(pfx)/share/man -type f|sed 's,.*/,,;s,\..*,,')" = "zyx"
+emit_upload_commands:
+	@echo =====================================
+	@echo =====================================
+	@echo "$(build_aux)/gnupload $(GNUPLOADFLAGS) \\"
+	@echo "    --to $(gnu_rel_host):$(PACKAGE) \\"
+	@echo "  $(rel-files)"
+	@echo '# send the /tmp/announcement e-mail'
+	@echo =====================================
+	@echo =====================================
+
+noteworthy = * Noteworthy changes in release ?.? (????-??-??) [?]
+define emit-commit-log
+  printf '%s\n' 'post-release administrivia' '' \
+    '* NEWS: Add header line for next release.' \
+    '* .prev-version: Record previous version.' \
+    '* cfg.mk (old_NEWS_hash): Auto-update.'
 endef
 
-# Install, then verify that all binaries and man pages are in place.
-# Note that neither the binary, ginstall, nor the ].1 man page is installed.
-define my-instcheck
-  $(MAKE) prefix=$(pfx) install				\
-    && test ! -f $(pfx)/bin/ginstall			\
-    && { fail=0;					\
-      for i in $(built_programs); do			\
-        test "$$i" = ginstall && i=install;		\
-        for j in "$(pfx)/bin/$$i"			\
-                 "$(pfx)/share/man/man1/$$i.1"; do	\
-          case $$j in *'[.1') continue;; esac;		\
-          test -f "$$j" && :				\
-            || { echo "$$j not installed"; fail=1; };	\
-        done;						\
-      done;						\
-      test $$fail = 1 && exit 1 || :;			\
-    }
-endef
+.PHONY: no-submodule-changes
+no-submodule-changes:
+	if test -d $(srcdir)/.git; then					\
+	  diff=$$(cd $(srcdir) && git submodule -q foreach		\
+		  git diff-index --name-only HEAD)			\
+	    || exit 1;							\
+	  case $$diff in '') ;;						\
+	    *) echo '$(ME): submodule files are locally modified:';	\
+		echo "$$diff"; exit 1;; esac;				\
+	else								\
+	  : ;								\
+	fi
 
-define coreutils-path-check
-  {							\
-    if test -f $(srcdir)/src/true.c; then		\
-      fail=1;						\
-      mkdir $(bin)					\
-	&& ($(write_loser)) > $(bin)/loser		\
-	&& chmod a+x $(bin)/loser			\
-	&& for i in $(built_programs); do		\
-	       case $$i in				\
-		 rm|expr|basename|echo|sort|ls|tr);;	\
-		 cat|dirname|mv|wc);;			\
-		 *) ln $(bin)/loser $(bin)/$$i;;	\
-	       esac;					\
-	     done					\
-	  && ln -sf ../src/true $(bin)/false		\
-	  && PATH=`pwd`/$(bin):$$PATH $(MAKE) -C tests check \
-	  && { test -d gnulib-tests			\
-	         && $(MAKE) -C gnulib-tests check	\
-	         || :; }				\
-	  && rm -rf $(bin)				\
-	  && fail=0;					\
-    else						\
-      fail=0;						\
-    fi;							\
-    test $$fail = 1 && exit 1 || :;			\
-  }
-endef
+.PHONY: alpha beta major
+ALL_RECURSIVE_TARGETS += alpha beta major
+alpha beta major: $(local-check) writable-files no-submodule-changes
+	test $@ = major						\
+	  && { echo $(VERSION) | grep -E '^[0-9]+(\.[0-9]+)+$$'	\
+	       || { echo "invalid version string: $(VERSION)" 1>&2; exit 1;};}\
+	  || :
+	$(MAKE) vc-dist
+	$(MAKE) news-date-check
+	$(MAKE) -s announcement RELEASE_TYPE=$@ > /tmp/announce-$(my_distdir)
+	if test -d $(release_archive_dir); then			\
+	  ln $(rel-files) $(release_archive_dir);		\
+	  chmod a-w $(rel-files);				\
+	fi
+	$(MAKE) -s emit_upload_commands RELEASE_TYPE=$@
+	echo $(VERSION) > $(prev_version_file)
+	$(MAKE) update-NEWS-hash
+	perl -pi -e '$$. == 3 and print "$(noteworthy)\n\n\n"' NEWS
+	$(emit-commit-log) > .ci-msg
+	$(VC) commit -F .ci-msg -a
 
-# Use -Wformat -Werror to detect format-string/arg-list mismatches.
-# Also, check for shadowing problems with -Wshadow, and for pointer
-# arithmetic problems with -Wpointer-arith.
-# These CFLAGS are pretty strict.  If you build this target, you probably
-# have to have a recent version of gcc and glibc headers.
-# The hard-linking for-loop below ensures that there is a bin/ directory
-# full of all of the programs under test (except the ones that are required
-# for basic Makefile rules), all symlinked to the just-built "false" program.
-# This is to ensure that if ever a test neglects to make PATH include
-# the build srcdir, these always-failing programs will run.
-# Otherwise, it is too easy to test the wrong programs.
-# Note that "false" itself is a symlink to true, so it too will malfunction.
-my-distcheck: $(DIST_ARCHIVES) $(local-check)
-	$(MAKE) syntax-check
-	$(MAKE) check
-	-rm -rf $(t)
-	mkdir -p $(t)
-	GZIP=$(GZIP_ENV) $(AMTAR) -C $(t) -zxf $(distdir).tar.gz
-	cd $(t)/$(distdir)				\
-	  && ./configure --disable-nls			\
-	  && $(MAKE) CFLAGS='$(warn_cflags)'		\
-	      AM_MAKEFLAGS='$(null_AM_MAKEFLAGS)'	\
-	  && $(MAKE) dvi				\
-	  && $(install-transform-check)			\
-	  && $(my-instcheck)				\
-	  && $(coreutils-path-check)			\
-	  && $(MAKE) distclean
-	(cd $(t) && mv $(distdir) $(distdir).old	\
-	  && $(AMTAR) -zxf - ) < $(distdir).tar.gz
-	diff -ur $(t)/$(distdir).old $(t)/$(distdir)
-	-rm -rf $(t)
-	@echo "========================"; \
-	echo "$(distdir).tar.gz is ready for distribution"; \
-	echo "========================"
+.PHONY: web-manual
+web-manual:
+	@test -z "$(manual_title)" \
+	  && { echo define manual_title in cfg.mk 1>&2; exit 1; } || :
+	@cd '$(srcdir)/doc'; \
+	  $(SHELL) ../build-aux/gendocs.sh -o '$(abs_builddir)/doc/manual' \
+	     --email $(PACKAGE_BUGREPORT) $(PACKAGE) \
+	    "$(PACKAGE_NAME) - $(manual_title)"
+	@echo " *** Upload the doc/manual directory to web-cvs."
 
-cvs-to-git = '\#!/usr/bin/perl\n\
-use warnings;\n\
-use strict;\n\
-use File::Find;\n\
-use File::Copy;\n\
-\n\
-find ({wanted =>\n\
-       sub {$$_ eq q/.cvsignore/ or return;\n\
-	    my $$gi = q/.gitignore/;\n\
-	    unlink $$gi;\n\
-	    copy($$_, $$gi) or die qq/copy failed: $$_->$$gi: $$!\\n/;\n\
-	    chmod 0444, $$gi;\n\
-	    }},\n\
-      q!.!);\n'
+# Code Coverage
 
-.PHONY: sync-vcs-ignore-files
-c2g = cvs-to-git
-sync-vcs-ignore-files:
-	rm -f $(c2g)-t $(c2g)
-	printf $(cvs-to-git) > $(c2g)-t
-	chmod a+x-w $(c2g)-t
-	mv $(c2g)-t $(c2g)
-	perl $(c2g)
-	rm -f $(c2g)
-	echo "syntax: glob" > .hgignore
-	( for ignore in $$($(VC_LIST)				\
-	                   | grep -E '(^|/)\.gitignore$$'); do	\
-	    dir=$$(dirname "$$ignore");				\
-	    test "$$dir" = . && pfx= || pfx=$$dir/;		\
-	    sed "s!^!$$pfx!" "$$ignore";			\
-	  done ) | sort -u >> .hgignore
+init-coverage:
+	$(MAKE) $(AM_MAKEFLAGS) clean
+	lcov --directory . --zerocounters
+
+COVERAGE_CCOPTS ?= "-g --coverage"
+COVERAGE_OUT ?= doc/coverage
+
+build-coverage:
+	$(MAKE) $(AM_MAKEFLAGS) CFLAGS=$(COVERAGE_CCOPTS) CXXFLAGS=$(COVERAGE_CCOPTS)
+	$(MAKE) $(AM_MAKEFLAGS) CFLAGS=$(COVERAGE_CCOPTS) CXXFLAGS=$(COVERAGE_CCOPTS) check
+	mkdir -p $(COVERAGE_OUT)
+	lcov --directory . --output-file $(COVERAGE_OUT)/$(PACKAGE).info \
+		--capture
+
+gen-coverage:
+	genhtml --output-directory $(COVERAGE_OUT) \
+		$(COVERAGE_OUT)/$(PACKAGE).info \
+		--highlight --frames --legend \
+		--title "$(PACKAGE_NAME)"
+
+coverage: init-coverage build-coverage gen-coverage
+
+# Update gettext files.
+PACKAGE ?= $(shell basename $(PWD))
+PO_DOMAIN ?= $(PACKAGE)
+POURL = http://translationproject.org/latest/$(PO_DOMAIN)/
+PODIR ?= po
+refresh-po:
+	rm -f $(PODIR)/*.po && \
+	echo "$(ME): getting translations into po (please ignore the robots.txt ERROR 404)..." && \
+	wget --no-verbose --directory-prefix $(PODIR) --no-directories --recursive --level 1 --accept .po --accept .po.1 $(POURL) && \
+	echo 'en@boldquot' > $(PODIR)/LINGUAS && \
+	echo 'en@quot' >> $(PODIR)/LINGUAS && \
+	ls $(PODIR)/*.po | sed 's/\.po//' | sed 's,$(PODIR)/,,' | sort >> $(PODIR)/LINGUAS
+
+INDENT_SOURCES ?= $(C_SOURCES)
+.PHONY: indent
+indent:
+	indent $(INDENT_SOURCES)

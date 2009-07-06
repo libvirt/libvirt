@@ -60,3 +60,166 @@ useless_free_options =		\
   --name=xmlFree		\
   --name=xmlXPathFreeContext	\
   --name=xmlXPathFreeObject
+
+# Avoid uses of write(2).  Either switch to streams (fwrite), or use
+# the safewrite wrapper.
+sc_avoid_write:
+	@if $(VC_LIST_EXCEPT) | grep '\.c$$' > /dev/null; then		\
+	  grep '\<write *(' $$($(VC_LIST_EXCEPT) | grep '\.c$$') &&	\
+	    { echo "$(ME): the above files use write;"			\
+	      " consider using the safewrite wrapper instead"		\
+		  1>&2; exit 1; } || :;					\
+	else :;								\
+	fi
+
+# Use STREQ rather than comparing strcmp == 0, or != 0.
+# Similarly, use STREQLEN or STRPREFIX rather than strncmp.
+sc_prohibit_strcmp_and_strncmp:
+	@grep -nE '! *strn?cmp *\(|\<strn?cmp *\([^)]+\) *=='		\
+	    $$($(VC_LIST_EXCEPT))					\
+	  | grep -vE ':# *define STREQ(LEN)?\(' &&			\
+	  { echo '$(ME): use STREQ(LEN) in place of the above uses of strcmp(strncmp)' \
+		1>&2; exit 1; } || :
+
+# Use virAsprintf rather than a'sprintf since *strp is undefined on error.
+sc_prohibit_asprintf:
+	@re='\<[a]sprintf\>'						\
+	msg='use virAsprintf, not a'sprintf				\
+	  $(_prohibit_regexp)
+
+sc_prohibit_VIR_ERR_NO_MEMORY:
+	@re='\<V''IR_ERR_NO_MEMORY\>'					\
+	msg='use virReportOOMError, not V'IR_ERR_NO_MEMORY		\
+	  $(_prohibit_regexp)
+
+include Makefile.nonreentrant
+sc_prohibit_nonreentrant:
+	@fail=0 ; \
+	for i in $(NON_REENTRANT) ; \
+	do \
+	   grep --before 2 --after 1 -nE "\<$$i\>[:space:]*\(" $$($(VC_LIST_EXCEPT)) && \
+	     fail=1 && echo "$(ME): use $${i}_r, not $${i}" || : ; \
+	done ; \
+	exit $$fail
+
+# Prohibit the inclusion of <ctype.h>.
+sc_prohibit_ctype_h:
+	@grep -E '^# *include  *<ctype\.h>' $$($(VC_LIST_EXCEPT)) &&	\
+	  { echo "$(ME): don't use ctype.h; instead, use c-ctype.h"	\
+		1>&2; exit 1; } || :
+
+# Ensure that no C source file uses TABs for indentation.
+# Also match *.h.in files, to get libvirt.h.in.
+# Exclude files in gnulib, since they're imported.
+sc_TAB_in_indentation:
+	@grep -lE '^ *	' /dev/null					\
+	     $$($(VC_LIST_EXCEPT)					\
+		| grep -E '\.[ch](\.in)?$$'				\
+		| grep -v '^gnulib/') &&				\
+	  { echo '$(ME): found TAB(s) used for indentation in C sources;'\
+	      'use spaces' 1>&2; exit 1; } || :
+
+ctype_re = isalnum|isalpha|isascii|isblank|iscntrl|isdigit|isgraph|islower\
+|isprint|ispunct|isspace|isupper|isxdigit|tolower|toupper
+
+sc_avoid_ctype_macros:
+	@grep -E '\b($(ctype_re)) *\(' /dev/null			\
+	     $$($(VC_LIST_EXCEPT)) &&					\
+	  { echo "$(ME): don't use ctype macros (use c-ctype.h)"	\
+		1>&2; exit 1; } || :
+
+sc_prohibit_virBufferAdd_with_string_literal:
+	@re='\<virBufferAdd *\([^,]+, *"[^"]'				\
+	msg='use virBufferAddLit, not virBufferAdd, with a string literal' \
+	  $(_prohibit_regexp)
+
+# Not only do they fail to deal well with ipv6, but the gethostby*
+# functions are also not thread-safe.
+sc_prohibit_gethostby:
+	@re='\<gethostby(addr|name2?) *\('				\
+	msg='use getaddrinfo, not gethostby*'				\
+	  $(_prohibit_regexp)
+
+# Many of the function names below came from this filter:
+# git grep -B2 '\<_('|grep -E '\.c- *[[:alpha:]_][[:alnum:]_]* ?\(.*[,;]$' \
+# |sed 's/.*\.c-  *//'|perl -pe 's/ ?\(.*//'|sort -u \
+# |grep -vE '^(qsort|if|close|assert|fputc|free|N_|vir.*GetName|.*Unlock|virNodeListDevices|virHashRemoveEntry|freeaddrinfo|.*[fF]ree|xdrmem_create|xmlXPathFreeObject|virUUIDFormat|openvzSetProgramSentinal|polkit_action_unref)$'
+
+msg_gen_function =
+msg_gen_function += DEBUG0
+msg_gen_function += DISABLE_fprintf
+msg_gen_function += ERROR
+msg_gen_function += ERROR0
+msg_gen_function += REMOTE_DEBUG
+msg_gen_function += ReportError
+msg_gen_function += VIR_FREE
+msg_gen_function += VIR_INFO
+msg_gen_function += VIR_USE_CPU
+msg_gen_function += errorf
+msg_gen_function += lxcError
+msg_gen_function += networkLog
+msg_gen_function += networkReportError
+msg_gen_function += oneError
+msg_gen_function += openvzError
+msg_gen_function += openvzLog
+msg_gen_function += qemudDispatchClientFailure
+msg_gen_function += qemudLog
+msg_gen_function += qemudReportError
+msg_gen_function += regerror
+msg_gen_function += remoteDispatchFormatError
+msg_gen_function += umlLog
+msg_gen_function += umlReportError
+msg_gen_function += virConfError
+msg_gen_function += virDomainReportError
+msg_gen_function += virSecurityReportError
+msg_gen_function += virHashError
+msg_gen_function += virLibConnError
+msg_gen_function += virLibDomainError
+msg_gen_function += virLog
+msg_gen_function += virNetworkReportError
+msg_gen_function += virNodeDeviceReportError
+msg_gen_function += virProxyError
+msg_gen_function += virRaiseError
+msg_gen_function += virReportErrorHelper
+msg_gen_function += virReportSystemError
+msg_gen_function += virSexprError
+msg_gen_function += virStorageLog
+msg_gen_function += virStorageReportError
+msg_gen_function += virXMLError
+msg_gen_function += virXenInotifyError
+msg_gen_function += virXenStoreError
+msg_gen_function += virXendError
+msg_gen_function += vshCloseLogFile
+msg_gen_function += xenUnifiedError
+msg_gen_function += xenXMError
+
+# Uncomment the following and run "make syntax-check" to see diagnostics
+# that are not yet marked for translation, but that need to be rewritten
+# so that they are translatable.
+# msg_gen_function += error
+# msg_gen_function += fprintf
+# msg_gen_function += testError
+# msg_gen_function += virXenError
+# msg_gen_function += vshPrint
+# msg_gen_function += vshError
+
+func_or := $(shell printf '$(msg_gen_function)'|tr -s '[[:space:]]' '|')
+func_re := ($(func_or))
+
+# Look for diagnostics that aren't marked for translation.
+# This won't find any for which error's format string is on a separate line.
+# The sed filters eliminate false-positives like these:
+#    _("...: "
+#    "%s", _("no storage vol w..."
+sc_libvirt_unmarked_diagnostics:
+	@grep -nE							\
+            '\<$(func_re) \([^"]*"[^"]*[a-z]{3}' $$($(VC_LIST_EXCEPT))	\
+	  | grep -v '_''(' &&						\
+	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
+	    exit 1; } || :
+	@{ grep     -nE '\<$(func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT));   \
+	   grep -A1 -nE '\<$(func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
+	   | sed 's/_("[^"][^"]*"//;s/[	 ]"%s"//'			\
+	   | grep '[	 ]"' &&						\
+	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
+	    exit 1; } || :
