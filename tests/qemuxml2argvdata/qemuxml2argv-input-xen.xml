@@ -20,5 +20,8 @@
     </disk>
     <input type='mouse' bus='xen'/>
     <graphics type='vnc' port='5903' autoport='no' listen='127.0.0.1'/>
+    <video>
+      <model type='xen' vram='4096' heads='1'/>
+    </video>
   </devices>
 </domain>

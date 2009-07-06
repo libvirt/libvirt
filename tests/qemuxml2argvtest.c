@@ -216,7 +216,7 @@ mymain(int argc, char **argv)
 
     driver.vncSASL = 1;
     driver.vncSASLdir = strdup("/root/.sasl2");
-    DO_TEST("graphics-vnc-sasl", 0);
+    DO_TEST("graphics-vnc-sasl", QEMUD_CMD_FLAG_VGA);
     driver.vncTLS = 1;
     driver.vncTLSx509verify = 1;
     driver.vncTLSx509certdir = strdup("/etc/pki/tls/qemu");

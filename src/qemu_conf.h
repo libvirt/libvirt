@@ -57,6 +57,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_DRIVE_CACHE_V2    = (1 << 12), /* Is the cache= flag wanting new v2 values */
     QEMUD_CMD_FLAG_KVM               = (1 << 13), /* Whether KVM is compiled in */
     QEMUD_CMD_FLAG_DRIVE_FORMAT      = (1 << 14), /* Is -drive format= avail */
+    QEMUD_CMD_FLAG_VGA               = (1 << 15), /* Is -vga avail */
 };
 
 /* Main driver state */

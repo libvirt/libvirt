@@ -102,6 +102,8 @@ mymain(int argc, char **argv)
     DO_TEST("disk-drive-cache-v1-wb");
     DO_TEST("disk-drive-cache-v1-none");
     DO_TEST("graphics-vnc");
+    DO_TEST("graphics-vnc-sasl");
+    DO_TEST("graphics-vnc-tls");
     DO_TEST("graphics-sdl");
     DO_TEST("graphics-sdl-fullscreen");
     DO_TEST("input-usbmouse");

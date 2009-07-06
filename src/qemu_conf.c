@@ -78,6 +78,15 @@ VIR_ENUM_IMPL(qemuDiskCacheV2, VIR_DOMAIN_DISK_CACHE_LAST,
               "writethrough",
               "writeback");
 
+VIR_ENUM_DECL(qemuVideo)
+
+VIR_ENUM_IMPL(qemuVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
+              "std",
+              "cirrus",
+              "vmware",
+              NULL, /* no arg needed for xen */
+              NULL /* don't support vbox */);
+
 
 int qemudLoadDriverConfig(struct qemud_driver *driver,
                           const char *filename) {
@@ -455,6 +464,8 @@ static unsigned int qemudComputeCmdFlags(const char *help,
         if (strstr(help, "format="))
             flags |= QEMUD_CMD_FLAG_DRIVE_FORMAT;
     }
+    if (strstr(help, "-vga") && !strstr(help, "-std-vga"))
+        flags |= QEMUD_CMD_FLAG_VGA;
     if (strstr(help, "boot=on"))
         flags |= QEMUD_CMD_FLAG_DRIVE_BOOT;
     if (version >= 9000)
@@ -1530,6 +1541,53 @@ int qemudBuildCommandLine(virConnectPtr conn,
             ADD_ARG_LIT("-full-screen");
     }
 
+    if (def->nvideos) {
+        if (def->nvideos > 1) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("only one video card is currentely supported"));
+            goto error;
+        }
+
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_VGA) {
+            if (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_XEN) {
+                /* nothing - vga has no effect on Xen pvfb */
+            } else {
+                const char *vgastr = qemuVideoTypeToString(def->videos[0]->type);
+                if (!vgastr) {
+                    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                     _("video type %s is not supported with QEMU"),
+                                     virDomainVideoTypeToString(def->videos[0]->type));
+                    goto error;
+                }
+
+                ADD_ARG_LIT("-vga");
+                ADD_ARG_LIT(vgastr);
+            }
+        } else {
+
+            switch (def->videos[0]->type) {
+            case VIR_DOMAIN_VIDEO_TYPE_VGA:
+                ADD_ARG_LIT("-std-vga");
+                break;
+
+            case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
+                ADD_ARG_LIT("-vmwarevga");
+                break;
+
+            case VIR_DOMAIN_VIDEO_TYPE_XEN:
+            case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+                /* No special args - this is the default */
+                break;
+
+            default:
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("video type %s is not supported with QEMU"),
+                                 virDomainVideoTypeToString(def->videos[0]->type));
+                goto error;
+            }
+        }
+    }
+
     /* Add sound hardware */
     if (def->nsounds) {
         int size = 100;
@@ -2425,6 +2483,7 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
     char *path;
     int nnics = 0;
     const char **nics = NULL;
+    int video = VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
 
     if (!progargv[0]) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -2802,6 +2861,18 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
             def->os.bootloader = strdup(val);
             if (!def->os.bootloader)
                 goto no_memory;
+        } else if (STREQ(arg, "-vmwarevga")) {
+            video = VIR_DOMAIN_VIDEO_TYPE_VMVGA;
+        } else if (STREQ(arg, "-std-vga")) {
+            video = VIR_DOMAIN_VIDEO_TYPE_VGA;
+        } else if (STREQ(arg, "-vga")) {
+            WANT_VALUE();
+            video = qemuVideoTypeFromString(val);
+            if (video < 0) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown video adapter type '%s'"), val);
+                goto error;
+            }
         } else if (STREQ(arg, "-domid")) {
             WANT_VALUE();
             /* ignore, generted on the fly */
@@ -2854,6 +2925,24 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
             goto no_memory;
         }
         def->graphics[def->ngraphics++] = sdl;
+    }
+
+    if (def->ngraphics) {
+        virDomainVideoDefPtr vid;
+        if (VIR_ALLOC(vid) < 0)
+            goto no_memory;
+        if (def->virtType == VIR_DOMAIN_VIRT_XEN)
+            vid->type = VIR_DOMAIN_VIDEO_TYPE_XEN;
+        else
+            vid->type = video;
+        vid->vram = virDomainVideoDefaultRAM(def, vid->type);
+        vid->heads = 1;
+
+        if (VIR_REALLOC_N(def->videos, def->nvideos+1) < 0) {
+            virDomainVideoDefFree(vid);
+            goto no_memory;
+        }
+        def->videos[def->nvideos++] = vid;
     }
 
     VIR_FREE(nics);

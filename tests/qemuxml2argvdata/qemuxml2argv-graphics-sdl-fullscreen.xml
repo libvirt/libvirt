@@ -20,5 +20,8 @@
     </disk>
     <input type='mouse' bus='ps2'/>
     <graphics type='sdl' display=':0.1' xauth='/root/.Xauthority' fullscreen='yes'/>
+    <video>
+      <model type='cirrus' vram='9216' heads='1'/>
+    </video>
   </devices>
 </domain>

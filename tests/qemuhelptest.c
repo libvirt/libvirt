@@ -89,11 +89,67 @@ mymain(int argc, char **argv)
             ret = -1;                                                               \
     } while (0)
 
-    DO_TEST("qemu-0.9.1",      0x002f, 9001,  0,  0);
-    DO_TEST("kvm-74",          0x633e, 9001,  1, 74);
-    DO_TEST("qemu-0.10.5",     0x5c6f, 10005, 0,  0);
-    DO_TEST("qemu-kvm-0.10.5", 0x7d7e, 10005, 1,  0);
-    DO_TEST("kvm-86",          0x7d7e, 10050, 1,  0);
+    DO_TEST("qemu-0.9.1",
+            QEMUD_CMD_FLAG_KQEMU |
+            QEMUD_CMD_FLAG_VNC_COLON |
+            QEMUD_CMD_FLAG_NO_REBOOT |
+            QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_NAME,
+            9001,  0,  0);
+    DO_TEST("kvm-74",
+            QEMUD_CMD_FLAG_VNC_COLON |
+            QEMUD_CMD_FLAG_NO_REBOOT |
+            QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_BOOT |
+            QEMUD_CMD_FLAG_NAME |
+            QEMUD_CMD_FLAG_VNET_HDR |
+            QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO |
+            QEMUD_CMD_FLAG_KVM |
+            QEMUD_CMD_FLAG_DRIVE_FORMAT,
+            9001,  1, 74);
+    DO_TEST("qemu-0.10.5",
+            QEMUD_CMD_FLAG_KQEMU |
+            QEMUD_CMD_FLAG_VNC_COLON |
+            QEMUD_CMD_FLAG_NO_REBOOT |
+            QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_NAME |
+            QEMUD_CMD_FLAG_UUID |
+            QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP |
+            QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC |
+            QEMUD_CMD_FLAG_DRIVE_CACHE_V2 |
+            QEMUD_CMD_FLAG_DRIVE_FORMAT |
+            QEMUD_CMD_FLAG_VGA,
+            10005, 0,  0);
+    DO_TEST("qemu-kvm-0.10.5",
+            QEMUD_CMD_FLAG_VNC_COLON |
+            QEMUD_CMD_FLAG_NO_REBOOT |
+            QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_BOOT |
+            QEMUD_CMD_FLAG_NAME |
+            QEMUD_CMD_FLAG_UUID |
+            QEMUD_CMD_FLAG_VNET_HDR |
+            QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP |
+            QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC |
+            QEMUD_CMD_FLAG_DRIVE_CACHE_V2 |
+            QEMUD_CMD_FLAG_KVM |
+            QEMUD_CMD_FLAG_DRIVE_FORMAT |
+            QEMUD_CMD_FLAG_VGA,
+            10005, 1,  0);
+    DO_TEST("kvm-86",
+            QEMUD_CMD_FLAG_VNC_COLON |
+            QEMUD_CMD_FLAG_NO_REBOOT |
+            QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_BOOT |
+            QEMUD_CMD_FLAG_NAME |
+            QEMUD_CMD_FLAG_UUID |
+            QEMUD_CMD_FLAG_VNET_HDR |
+            QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP |
+            QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC |
+            QEMUD_CMD_FLAG_DRIVE_CACHE_V2 |
+            QEMUD_CMD_FLAG_KVM |
+            QEMUD_CMD_FLAG_DRIVE_FORMAT |
+            QEMUD_CMD_FLAG_VGA,
+            10050, 1,  0);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
