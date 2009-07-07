@@ -227,3 +227,6 @@ sc_libvirt_unmarked_diagnostics:
 	   | grep '[	 ]"' &&						\
 	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
 	    exit 1; } || :
+
+# We don't use this feature of maint.mk.
+prev_version_file = /dev/null

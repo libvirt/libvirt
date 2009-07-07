@@ -78,8 +78,10 @@ getaddrinfo
 gethostname
 getpass
 gettext
+gnumakefile
 inet_pton
 ioctl
+maintainer-makefile
 mkstemp
 mktempd
 perror
