@@ -80,7 +80,7 @@
       about their stability:
     </p>
         <ul><li><a href="ftp://libvirt.org/libvirt/libvirt-git-snapshot.tar.gz">libvirt.org FTP server</a></li><li><a href="http://libvirt.org/sources/libvirt-git-snapshot.tar.gz">libvirt.org HTTP server</a></li></ul>
-        <h2>GIT repository mirror</h2>
+        <h2>GIT source repository</h2>
         <p> Libvirt code source is now maintained in a <a href="http://git-scm.com/">git</a> repository available on
       <a href="http://libvirt.org/git/">libvirt.org</a>:
     </p>
@@ -106,7 +106,7 @@
     </pre>
         <p> The server is maintainened temporarilly for existing uses, but all
       changes are only commited to git now and we expect to deprecate the CVS
-      server within weeks. </p>
+      server during summer 2009. </p>
         <h2>Building from a source code checkout</h2>
         <p> The libvirt build process uses GNU autotools, so after obtaining a
     checkout it is necessary to generate the configure script and Makefile.in
@@ -121,8 +121,11 @@
     </pre>
         <h2>GIT repository mirror</h2>
         <p>
-      The CVS source repository is also mirrored using GIT, and is available
-      for anonymous access via:
+      Jim Mereying was maintaining a CVS to git mirror on
+      <a href="http://git.et.redhat.com/?p=libvirt.git">git.et.redhat.com</a>.
+      Existing users should migrate to the new git server, as the
+      old one will be deprecated and turned into a mirror of the
+      libvirt.org one. It's available as:
     </p>
         <pre>
 
@@ -132,7 +135,6 @@
       It can also be browsed at
     </p>
         <pre>
-
       <a href="http://git.et.redhat.com/?p=libvirt.git;a=summary">http://git.et.redhat.com/?p=libvirt.git;a=summary</a>
     </pre>
       </div>
