@@ -8,3 +8,5 @@ ltmain.sh
 missing
 mkinstalldirs
 mktempd
+/useless-if-before-free
+/vc-list-files
