@@ -716,9 +716,6 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         virNetworkPtr network = virNetworkLookupByName(conn,
                                                       net->data.network.name);
         if (!network) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("Network '%s' not found"),
-                             net->data.network.name);
             goto error;
         }
         brname = virNetworkGetBridgeName(network);
