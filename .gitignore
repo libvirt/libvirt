@@ -34,3 +34,4 @@ stamp-h
 stamp-h.in
 stamp-h1
 update.log
+tests/*.log
