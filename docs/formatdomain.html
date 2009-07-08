@@ -181,6 +181,8 @@
                       </li><li>
                         <a href="#elementsCharHost">Host device proxy</a>
                       </li><li>
+                        <a href="#elementsCharPipe">Named pipe</a>
+                      </li><li>
                         <a href="#elementsCharTCP">TCP client/server</a>
                       </li><li>
                         <a href="#elementsCharUDP">UDP network console</a>
@@ -879,6 +881,20 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;/serial&gt;
       ...</pre>
         <h5>
+          <a name="elementsCharPipe" id="elementsCharPipe">Named pipe</a>
+        </h5>
+        <p>
+      The character device writes output to a named pipe. See pipe(7) for
+      more info.
+    </p>
+        <pre>
+      ...
+      &lt;serial type="pipe"&gt;
+        &lt;source path="/tmp/mypipe"/&gt;
+        &lt;target port="1"/&gt;
+      &lt;/serial&gt;
+      ...</pre>
+        <h5>
           <a name="elementsCharTCP" id="elementsCharTCP">TCP client/server</a>
         </h5>
         <p>
@@ -889,7 +905,7 @@ qemu-kvm -net nic,model=? /dev/null
       ...
       &lt;serial type="tcp"&gt;
         &lt;source mode="connect" host="0.0.0.0" service="2445"/&gt;
-        &lt;wiremode type="telnet"/&gt;
+        &lt;protocol type="telnet"/&gt;
         &lt;target port="1"/&gt;
       &lt;/serial&gt;
       ...</pre>

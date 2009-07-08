@@ -1170,6 +1170,7 @@ error:
  * <serial type="tcp">
  *   <source mode="bind" host="0.0.0.0" service="2445"/>
  *   <target port="1"/>
+ *   <protocol type='raw'/>
  * </serial>
  *
  * <serial type="udp">
@@ -1237,11 +1238,16 @@ virDomainChrDefParseXML(virConnectPtr conn,
                             connectHost = virXMLPropString(cur, "host");
                         if (connectService == NULL)
                             connectService = virXMLPropString(cur, "service");
-                    } else {
+                    } else if (STREQ((const char *)mode, "bind")) {
                         if (bindHost == NULL)
                             bindHost = virXMLPropString(cur, "host");
                         if (bindService == NULL)
                             bindService = virXMLPropString(cur, "service");
+                    } else {
+                        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                             _("Unknown source mode '%s'"),
+                                             mode);
+                        goto error;
                     }
 
                     if (def->type == VIR_DOMAIN_CHR_TYPE_UDP)
@@ -1320,11 +1326,18 @@ virDomainChrDefParseXML(virConnectPtr conn,
             bindService = NULL;
             def->data.tcp.listen = 1;
         }
-        if (protocol != NULL &&
-            STREQ(protocol, "telnet"))
-            def->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
-        else
+
+        if (protocol == NULL ||
+            STREQ(protocol, "raw"))
             def->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW;
+        else if (STREQ(protocol, "telnet"))
+            def->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
+        else {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("Unknown protocol '%s'"), protocol);
+            goto error;
+        }
+
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
