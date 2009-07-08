@@ -252,7 +252,8 @@ VIR_ENUM_IMPL(virDomainVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "cirrus",
               "vmvga",
               "xen",
-              "vbox")
+              "vbox",
+              "qxl")
 
 VIR_ENUM_IMPL(virDomainInput, VIR_DOMAIN_INPUT_TYPE_LAST,
               "mouse",

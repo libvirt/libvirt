@@ -1154,7 +1154,8 @@ qemu-kvm -net nic,model=? /dev/null
       <dt><code>model</code></dt>
       <dd>
         The <code>model</code> element has a mandatory <code>type</code>
-        attribute which takes the value "vga", "cirrus", "vmvga", "xen" or "vbox".
+        attribute which takes the value "vga", "cirrus", "vmvga", "qxl",
+	"xen" or "vbox", depending on the hypervisor features available.
         You can also provide the amount of video memory in kilobytes using
         <code>vram</code> and the number of screen with <code>heads</code>.
       </dd>

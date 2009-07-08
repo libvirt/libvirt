@@ -92,7 +92,8 @@ VIR_ENUM_IMPL(qemuVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "cirrus",
               "vmware",
               "", /* no arg needed for xen */
-              "" /* don't support vbox */);
+              "", /* don't support vbox */
+              "", /* Not implemented QXL yet */);
 
 int qemudLoadDriverConfig(struct qemud_driver *driver,
                           const char *filename) {

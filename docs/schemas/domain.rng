@@ -1169,6 +1169,7 @@
               <value>vmvga</value>
               <value>xen</value>
               <value>vbox</value>
+              <value>qxl</value>
             </choice>
           </attribute>
           <optional>
