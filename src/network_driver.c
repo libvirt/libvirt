@@ -971,7 +971,7 @@ static virNetworkPtr networkLookupByName(virConnectPtr conn,
     networkDriverUnlock(driver);
     if (!network) {
         networkReportError(conn, NULL, NULL, VIR_ERR_NO_NETWORK,
-                         "%s", _("no network with matching name"));
+                         _("no network with matching name '%s'"), name);
         goto cleanup;
     }
 

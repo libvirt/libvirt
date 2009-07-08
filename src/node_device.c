@@ -279,8 +279,9 @@ static char *nodeDeviceDumpXML(virNodeDevicePtr dev,
     nodeDeviceUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(dev->conn, VIR_ERR_INVALID_NODE_DEVICE,
-                              "%s", _("no node device with matching name"));
+        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_NODE_DEVICE,
+                                _("no node device with matching name '%s'"),
+                                 dev->name);
         goto cleanup;
     }
 
@@ -307,8 +308,9 @@ static char *nodeDeviceGetParent(virNodeDevicePtr dev)
     nodeDeviceUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(dev->conn, VIR_ERR_INVALID_NODE_DEVICE,
-                              "%s", _("no node device with matching name"));
+        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_NODE_DEVICE,
+                                _("no node device with matching name '%s'"),
+                                 dev->name);
         goto cleanup;
     }
 
@@ -341,8 +343,9 @@ static int nodeDeviceNumOfCaps(virNodeDevicePtr dev)
     nodeDeviceUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(dev->conn, VIR_ERR_INVALID_NODE_DEVICE,
-                              "%s", _("no node device with matching name"));
+        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_NODE_DEVICE,
+                                _("no node device with matching name '%s'"),
+                                 dev->name);
         goto cleanup;
     }
 
@@ -371,8 +374,9 @@ nodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
     nodeDeviceUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(dev->conn, VIR_ERR_INVALID_NODE_DEVICE,
-                              "%s", _("no node device with matching name"));
+        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_NODE_DEVICE,
+                                _("no node device with matching name '%s'"),
+                                 dev->name);
         goto cleanup;
     }
 

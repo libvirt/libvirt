@@ -295,7 +295,7 @@ storagePoolLookupByName(virConnectPtr conn,
 
     if (!pool) {
         virStorageReportError(conn, VIR_ERR_NO_STORAGE_POOL,
-                              "%s", _("no pool with matching name"));
+                              _("no pool with matching name '%s'"), name);
         goto cleanup;
     }
 
@@ -1099,8 +1099,9 @@ storageVolumeLookupByName(virStoragePoolPtr obj,
     vol = virStorageVolDefFindByName(pool, name);
 
     if (!vol) {
-        virStorageReportError(obj->conn, VIR_ERR_INVALID_STORAGE_POOL,
-                              "%s", _("no storage vol with matching name"));
+        virStorageReportError(obj->conn, VIR_ERR_NO_STORAGE_VOL,
+                             _("no storage vol with matching name '%s'"),
+                              name);
         goto cleanup;
     }
 
@@ -1339,8 +1340,9 @@ storageVolumeCreateXMLFrom(virStoragePoolPtr obj,
     }
 
     if (diffpool && !origpool) {
-        virStorageReportError(obj->conn, VIR_ERR_INVALID_STORAGE_POOL,
-                              "%s", _("no storage pool with matching name"));
+        virStorageReportError(obj->conn, VIR_ERR_NO_STORAGE_POOL,
+                             _("no storage pool with matching name '%s'"),
+                              vobj->pool);
         goto cleanup;
     }
 
@@ -1361,8 +1363,9 @@ storageVolumeCreateXMLFrom(virStoragePoolPtr obj,
 
     origvol = virStorageVolDefFindByName(origpool, vobj->name);
     if (!origvol) {
-        virStorageReportError(obj->conn, VIR_ERR_INVALID_STORAGE_POOL,
-                              "%s", _("no storage vol with matching name"));
+        virStorageReportError(obj->conn, VIR_ERR_NO_STORAGE_VOL,
+                             _("no storage vol with matching name '%s'"),
+                              vobj->name);
         goto cleanup;
     }
 
@@ -1501,8 +1504,9 @@ storageVolumeDelete(virStorageVolPtr obj,
     vol = virStorageVolDefFindByName(pool, obj->name);
 
     if (!vol) {
-        virStorageReportError(obj->conn, VIR_ERR_INVALID_STORAGE_POOL,
-                              "%s", _("no storage vol with matching name"));
+        virStorageReportError(obj->conn, VIR_ERR_NO_STORAGE_VOL,
+                             _("no storage vol with matching name '%s'"),
+                              obj->name);
         goto cleanup;
     }
 
@@ -1576,8 +1580,9 @@ storageVolumeGetInfo(virStorageVolPtr obj,
     vol = virStorageVolDefFindByName(pool, obj->name);
 
     if (!vol) {
-        virStorageReportError(obj->conn, VIR_ERR_INVALID_STORAGE_POOL,
-                              "%s", _("no storage vol with matching name"));
+        virStorageReportError(obj->conn, VIR_ERR_NO_STORAGE_VOL,
+                             _("no storage vol with matching name '%s'"),
+                              obj->name);
         goto cleanup;
     }
 
@@ -1628,8 +1633,9 @@ storageVolumeGetXMLDesc(virStorageVolPtr obj,
     vol = virStorageVolDefFindByName(pool, obj->name);
 
     if (!vol) {
-        virStorageReportError(obj->conn, VIR_ERR_INVALID_STORAGE_POOL,
-                              "%s", _("no storage vol with matching name"));
+        virStorageReportError(obj->conn, VIR_ERR_NO_STORAGE_VOL,
+                             _("no storage vol with matching name '%s'"),
+                              obj->name);
         goto cleanup;
     }
 
@@ -1674,8 +1680,9 @@ storageVolumeGetPath(virStorageVolPtr obj) {
     vol = virStorageVolDefFindByName(pool, obj->name);
 
     if (!vol) {
-        virStorageReportError(obj->conn, VIR_ERR_INVALID_STORAGE_POOL,
-                              "%s", _("no storage vol with matching name"));
+        virStorageReportError(obj->conn, VIR_ERR_NO_STORAGE_VOL,
+                             _("no storage vol with matching name '%s'"),
+                              obj->name);
         goto cleanup;
     }
 
