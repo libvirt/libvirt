@@ -36,6 +36,13 @@ LDADDS = \
 	$(LIBSOCKET) \
         $(COVERAGE_LDFLAGS)
 
+qemuhelpdata = \
+	kvm-74 \
+	kvm-86 \
+	qemu-0.10.5 \
+	qemu-0.9.1 \
+	qemu-kvm-0.10.5
+
 EXTRA_DIST =		\
         oomtrace.pl     \
 	test-lib.sh	\
@@ -51,7 +58,8 @@ EXTRA_DIST =		\
 	storagevolschematest \
 	storagevolschemadata \
 	nodedevschematest \
-	nodedevschemadata
+	nodedevschemadata \
+	$(patsubst %,qemuhelpdata/%,$(qemuhelpdata))
 
 noinst_PROGRAMS = virshtest conftest \
         nodeinfotest statstest qparamtest
