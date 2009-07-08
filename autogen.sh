@@ -54,6 +54,9 @@ if test -z "$*"; then
         echo "to pass any to it, please specify them on the $0 command line."
 fi
 
+# Automake requires that ChangeLog exist.
+touch ChangeLog
+
 autopoint --force
 #rm -rf m4
 libtoolize --copy --force

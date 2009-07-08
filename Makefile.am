@@ -9,6 +9,7 @@ SUBDIRS = gnulib/lib include src qemud tools proxy docs gnulib/tests \
 ACLOCAL_AMFLAGS = -I m4 -I gnulib/m4
 
 EXTRA_DIST = \
+  ChangeLog-old \
   libvirt.spec libvirt.spec.in \
   mingw32-libvirt.spec.in \
   libvirt.pc libvirt.pc.in \
@@ -49,3 +50,17 @@ clean-cov:
 
 # disable this check
 distuninstallcheck:
+
+dist-hook: gen-ChangeLog
+
+# Generate the ChangeLog file (with all entries since the switch to git)
+# and insert it into the directory we're about to use to create a tarball.
+gen_start_date = 2009-07-04
+.PHONY: gen-ChangeLog
+gen-ChangeLog:
+	if test -d .git; then					\
+	  $(top_srcdir)/build-aux/gitlog-to-changelog		\
+	    --since=$(gen_start_date) > $(distdir)/cl-t;	\
+	  rm -f $(distdir)/ChangeLog;				\
+	  mv $(distdir)/cl-t $(distdir)/ChangeLog;		\
+	fi

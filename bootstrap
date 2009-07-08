@@ -78,6 +78,7 @@ getaddrinfo
 gethostname
 getpass
 gettext
+gitlog-to-changelog
 gnumakefile
 inet_pton
 ioctl

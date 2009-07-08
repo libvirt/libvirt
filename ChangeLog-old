@@ -1207,7 +1207,7 @@ Fri Apr 24 13:17:47 BST 2009 Daniel P. Berrange <berrange@redhat.com>
 	Fix network config in XM driver
 	* src/xm_internal.c: Fix setting of bridge & script parameters
 	in VIF config
-	* src/xend_internal.h, src/xend_internal.c: Export the 
+	* src/xend_internal.h, src/xend_internal.c: Export the
 	default bridge script name to XM driver
 	* tests/xmconfigdata/*: Update to take account of script=
 	setting in VIF config
