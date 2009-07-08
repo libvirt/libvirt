@@ -55,7 +55,9 @@ xml = \
   testdomfv0.xml \
   testnetdef.xml \
   testnetpriv.xml \
-  testnode.xml
+  testnode.xml \
+  testpool.xml \
+  testvol.xml
 
 fig = \
   libvirt-net-logical.fig \
