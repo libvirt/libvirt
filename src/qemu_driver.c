@@ -1867,6 +1867,12 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
         if (conn->uri->server != NULL)
             return VIR_DRV_OPEN_DECLINED;
 
+        if (qemu_driver == NULL) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("qemu state driver is not active"));
+            return VIR_DRV_OPEN_ERROR;
+        }
+
         if (qemu_driver->privileged) {
             if (STRNEQ (conn->uri->path, "/system") &&
                 STRNEQ (conn->uri->path, "/session")) {
@@ -1883,14 +1889,6 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
                 return VIR_DRV_OPEN_ERROR;
             }
         }
-
-        /* URI was good, but driver isn't active */
-        if (qemu_driver == NULL) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
-                             _("qemu state driver is not active"));
-            return VIR_DRV_OPEN_ERROR;
-        }
-
     }
     conn->privateData = qemu_driver;
 
