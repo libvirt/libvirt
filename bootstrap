@@ -1,11 +1,5 @@
 #!/bin/sh
-# Run this after autogen.sh, to pull in all of the gnulib-related bits.
-# It's important to run *after* autogen.sh, since it updates some of
-# the same files autogen.sh does, yet those from gnulib are newer,
-# and match the tests.  So if a gnulib bug has been fixed since the
-# snapshot taken for whatever gettext release you're using, yet you
-# run "make check" against the wrong version, the corresponding unit
-# test in gl-tests/ may well fail.
+# Run this before autogen.sh, to pull in all of the gnulib-related bits.
 
 usage() {
   echo >&2 "\
