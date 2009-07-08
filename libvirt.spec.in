@@ -94,6 +94,8 @@ BuildRequires: util-linux
 # For showmount in FS driver (netfs discovery)
 BuildRequires: nfs-utils
 Requires: nfs-utils
+# For glusterfs
+Requires: glusterfs-client >= 2.0.2
 %endif
 %if %{with_qemu}
 # From QEMU RPMs

@@ -68,7 +68,7 @@ VIR_ENUM_IMPL(virStoragePoolFormatFileSystem,
 
 VIR_ENUM_IMPL(virStoragePoolFormatFileSystemNet,
               VIR_STORAGE_POOL_NETFS_LAST,
-              "auto", "nfs")
+              "auto", "nfs", "glusterfs")
 
 VIR_ENUM_IMPL(virStoragePoolFormatDisk,
               VIR_STORAGE_POOL_DISK_LAST,

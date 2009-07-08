@@ -178,7 +178,6 @@ struct _virStoragePoolSourceDeviceExtent {
     int type;  /* free space type */
 };
 
-
 /*
  * Pools can be backed by one or more devices, and some
  * allow us to track free space on underlying devices.
@@ -399,6 +398,7 @@ VIR_ENUM_DECL(virStoragePoolFormatFileSystem)
 enum virStoragePoolFormatFileSystemNet {
     VIR_STORAGE_POOL_NETFS_AUTO = 0,
     VIR_STORAGE_POOL_NETFS_NFS,
+    VIR_STORAGE_POOL_NETFS_GLUSTERFS,
     VIR_STORAGE_POOL_NETFS_LAST,
 };
 VIR_ENUM_DECL(virStoragePoolFormatFileSystemNet)
