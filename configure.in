@@ -6,6 +6,11 @@ AC_CONFIG_AUX_DIR([build-aux])
 AM_CONFIG_HEADER([config.h])
 dnl Make automake keep quiet about wildcards & other GNUmake-isms
 AM_INIT_AUTOMAKE([-Wno-portability])
+
+# Use the silent-rules feature when possible.
+m4_ifndef([AM_SILENT_RULES], [m4_define([AM_SILENT_RULES],[])])
+AM_SILENT_RULES([yes])
+
 AC_CANONICAL_HOST
 
 LIBVIRT_MAJOR_VERSION=`echo $VERSION | awk -F. '{print $1}'`
@@ -58,10 +63,6 @@ dnl Support building Win32 DLLs (must appear *before* AM_PROG_LIBTOOL)
 AC_LIBTOOL_WIN32_DLL
 
 AM_PROG_LIBTOOL
-dnl Override normal libtool in favour of our quiet version
-LIBTOOL='$(SHELL) $(top_srcdir)/mylibtool'
-AC_SUBST([LIBTOOL])
-
 AM_PROG_CC_C_O
 
 VERSION_SCRIPT_FLAGS=-Wl,--version-script=
