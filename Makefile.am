@@ -6,7 +6,7 @@ GENHTML = genhtml
 SUBDIRS = gnulib/lib include src qemud tools proxy docs gnulib/tests \
   python tests po examples/domain-events/events-c examples/hellolibvirt
 
-ACLOCAL_AMFLAGS = -I gnulib/m4 -I m4
+ACLOCAL_AMFLAGS = -I m4 -I gnulib/m4
 
 EXTRA_DIST = \
   ChangeLog-old \

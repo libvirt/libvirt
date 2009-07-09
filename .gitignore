@@ -37,3 +37,9 @@ update.log
 tests/*.log
 /GNUmakefile
 /maint.mk
+gnulib/
+*.orig
+*.rej
+*#*#
+*.#*#
+ChangeLog
