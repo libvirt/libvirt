@@ -31,15 +31,21 @@
 
 #define CGROUP_MAX_VAL 512
 
-struct virCgroup {
-    char *path;
+enum {
+    VIR_CGROUP_CONTROLLER_CPUACCT,
+    VIR_CGROUP_CONTROLLER_MEMORY,
+    VIR_CGROUP_CONTROLLER_DEVICES,
+    VIR_CGROUP_CONTROLLER_CPUSET,
+
+    VIR_CGROUP_CONTROLLER_LAST
 };
 
-const char *supported_controllers[] = {
-    "memory",
-    "devices",
-    "cpuacct",
-    NULL
+VIR_ENUM_DECL(virCgroupController);
+VIR_ENUM_IMPL(virCgroupController, VIR_CGROUP_CONTROLLER_LAST,
+              "cpuacct", "memory", "devices", "cpuset");
+
+struct virCgroup {
+    char *path;
 };
 
 /**
@@ -107,8 +113,9 @@ int virCgroupHaveSupport(void)
     virCgroupPtr root;
     int i;
 
-    for (i = 0; supported_controllers[i] != NULL; i++) {
-        root = virCgroupGetMount(supported_controllers[i]);
+    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        const char *label = virCgroupControllerTypeToString(i);
+        root = virCgroupGetMount(label);
         if (root == NULL)
             return -1;
         virCgroupFree(&root);
@@ -419,15 +426,16 @@ static int virCgroupMakeGroup(const char *name)
     int i;
     int rc = 0;
 
-    for (i = 0; supported_controllers[i] != NULL; i++) {
+    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        const char *label = virCgroupControllerTypeToString(i);
         char *path = NULL;
         virCgroupPtr root;
 
-        root = virCgroupGetMount(supported_controllers[i]);
+        root = virCgroupGetMount(label);
         if (root == NULL)
             continue;
 
-        rc = virCgroupPathOfGroup(name, supported_controllers[i], &path);
+        rc = virCgroupPathOfGroup(name, label, &path);
         if (rc != 0) {
             virCgroupFree(&root);
             break;
@@ -521,6 +529,7 @@ static int virCgroupOpen(virCgroupPtr parent,
                          virCgroupPtr *newgroup)
 {
     int rc = 0;
+    const char *label = virCgroupControllerTypeToString(0);
     char *grppath = NULL;
     bool free_parent = (parent == NULL);
 
@@ -532,7 +541,7 @@ static int virCgroupOpen(virCgroupPtr parent,
         virCgroupFree(&parent);
 
     rc = virCgroupPathOfGroup((*newgroup)->path,
-                              supported_controllers[0],
+                              label,
                               &grppath);
     if (rc != 0)
         goto err;
@@ -594,9 +603,10 @@ int virCgroupRemove(virCgroupPtr group)
     int i;
     char *grppath = NULL;
 
-    for (i = 0; supported_controllers[i] != NULL; i++) {
+    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        const char *label = virCgroupControllerTypeToString(i);
         if (virCgroupPathOfGroup(group->path,
-                                 supported_controllers[i],
+                                 label,
                                  &grppath) != 0)
             continue;
 
@@ -626,9 +636,11 @@ int virCgroupAddTask(virCgroupPtr group, pid_t pid)
     char *taskpath = NULL;
     char *pidstr = NULL;
 
-    for (i = 0; supported_controllers[i] != NULL; i++) {
+    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        const char *label = virCgroupControllerTypeToString(i);
+
         rc = virCgroupPathOfGroup(group->path,
-                                  supported_controllers[i],
+                                  label,
                                   &grppath);
         if (rc != 0)
             goto done;
