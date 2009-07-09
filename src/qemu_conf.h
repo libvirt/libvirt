@@ -34,6 +34,7 @@
 #include "domain_event.h"
 #include "threads.h"
 #include "security.h"
+#include "cgroup.h"
 
 #define qemudDebug(fmt, ...) do {} while(0)
 
@@ -77,6 +78,7 @@ struct qemud_driver {
     unsigned int qemuVersion;
     int nextvmid;
 
+    virCgroupPtr cgroup;
     virDomainObjList domains;
 
     brControl *brctl;

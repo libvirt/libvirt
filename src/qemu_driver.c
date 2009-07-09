@@ -66,6 +66,7 @@
 #include "node_device_conf.h"
 #include "pci.h"
 #include "security.h"
+#include "cgroup.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -418,6 +419,7 @@ static int
 qemudStartup(int privileged) {
     char *base = NULL;
     char driverConf[PATH_MAX];
+    int rc;
 
     if (VIR_ALLOC(qemu_driver) < 0)
         return -1;
@@ -497,6 +499,13 @@ qemudStartup(int privileged) {
         goto out_of_memory;
 
     VIR_FREE(base);
+
+    rc = virCgroupForDriver("qemu", &qemu_driver->cgroup, privileged, 1);
+    if (rc < 0) {
+        char buf[1024];
+        VIR_WARN("Unable to create cgroup for driver: %s",
+                 virStrerror(-rc, buf, sizeof(buf)));
+    }
 
     if ((qemu_driver->caps = qemudCapsInit()) == NULL)
         goto out_of_memory;
@@ -648,6 +657,8 @@ qemudShutdown(void) {
 
     if (qemu_driver->brctl)
         brShutdown(qemu_driver->brctl);
+
+    virCgroupFree(&qemu_driver->cgroup);
 
     qemuDriverUnlock(qemu_driver);
     virMutexDestroy(&qemu_driver->lock);
@@ -1377,6 +1388,93 @@ error:
     return -1;
 }
 
+static int qemuSetupCgroup(virConnectPtr conn,
+                           struct qemud_driver *driver,
+                           virDomainObjPtr vm)
+{
+    virCgroupPtr cgroup = NULL;
+    int rc;
+
+    if (driver->cgroup == NULL)
+        return 0; /* Not supported, so claim success */
+
+    rc = virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 1);
+    if (rc != 0) {
+        virReportSystemError(conn, -rc,
+                             _("Unable to create cgroup for %s"),
+                             vm->def->name);
+        goto cleanup;
+    }
+
+    virCgroupFree(&cgroup);
+    return 0;
+
+cleanup:
+    if (cgroup) {
+        virCgroupRemove(cgroup);
+        virCgroupFree(&cgroup);
+    }
+    return -1;
+}
+
+
+static int qemuRemoveCgroup(virConnectPtr conn,
+                            struct qemud_driver *driver,
+                            virDomainObjPtr vm)
+{
+    virCgroupPtr cgroup;
+    int rc;
+
+    if (driver->cgroup == NULL)
+        return 0; /* Not supported, so claim success */
+
+    rc = virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0);
+    if (rc != 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Unable to find cgroup for %s\n"),
+                         vm->def->name);
+        return rc;
+    }
+
+    rc = virCgroupRemove(cgroup);
+    virCgroupFree(&cgroup);
+    return rc;
+}
+
+static int qemuAddToCgroup(struct qemud_driver *driver,
+                           virDomainDefPtr def)
+{
+    virCgroupPtr cgroup = NULL;
+    int ret = -1;
+    int rc;
+
+    if (driver->cgroup == NULL)
+        return 0; /* Not supported, so claim success */
+
+    rc = virCgroupForDomain(driver->cgroup, def->name, &cgroup, 0);
+    if (rc != 0) {
+        virReportSystemError(NULL, -rc,
+                             _("unable to find cgroup for domain %s"),
+                             def->name);
+        goto cleanup;
+    }
+
+    rc = virCgroupAddTask(cgroup, getpid());
+    if (rc != 0) {
+        virReportSystemError(NULL, -rc,
+                             _("unable to add domain %s task %d to cgroup"),
+                             def->name, getpid());
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    virCgroupFree(&cgroup);
+    return ret;
+}
+
+
 static int qemudDomainSetSecurityLabel(virConnectPtr conn, struct qemud_driver *driver, virDomainObjPtr vm)
 {
     if (vm->def->seclabel.label != NULL)
@@ -1588,14 +1686,17 @@ static int qemuDomainSetAllDeviceOwnership(virConnectPtr conn,
 static virDomainPtr qemudDomainLookupByName(virConnectPtr conn,
                                             const char *name);
 
-struct gemudHookData {
-        virConnectPtr conn;
-        virDomainObjPtr vm;
-        struct qemud_driver *driver;
+struct qemudHookData {
+    virConnectPtr conn;
+    virDomainObjPtr vm;
+    struct qemud_driver *driver;
 };
 
 static int qemudSecurityHook(void *data) {
-    struct gemudHookData *h = (struct gemudHookData *) data;
+    struct qemudHookData *h = data;
+
+    if (qemuAddToCgroup(h->driver, h->vm->def) < 0)
+        return -1;
 
     if (qemudDomainSetSecurityLabel(h->conn, h->driver, h->vm) < 0) {
         qemudReportError(h->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -1668,7 +1769,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     char *pidfile = NULL;
     int logfile;
 
-    struct gemudHookData hookData;
+    struct qemudHookData hookData;
     hookData.conn = conn;
     hookData.vm = vm;
     hookData.driver = driver;
@@ -1688,6 +1789,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         driver->securityDriver->domainGenSecurityLabel &&
         driver->securityDriver->domainGenSecurityLabel(conn, vm) < 0)
         return -1;
+
+    /* Ensure no historical cgroup for this VM is lieing around bogus settings */
+    qemuRemoveCgroup(conn, driver, vm);
 
     if ((vm->def->ngraphics == 1) &&
         vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
@@ -1727,6 +1831,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (qemudExtractVersionInfo(emulator,
                                 NULL,
                                 &qemuCmdFlags) < 0)
+        goto cleanup;
+
+    if (qemuSetupCgroup(conn, driver, vm) < 0)
         goto cleanup;
 
     if (qemuPrepareHostDevices(conn, vm->def) < 0)
@@ -1855,6 +1962,7 @@ cleanup:
         VIR_FREE(vm->def->seclabel.label);
         VIR_FREE(vm->def->seclabel.imagelabel);
     }
+    qemuRemoveCgroup(conn, driver, vm);
     if ((vm->def->ngraphics == 1) &&
         vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
         vm->def->graphics[0]->data.vnc.autoport)
@@ -1866,10 +1974,11 @@ cleanup:
 }
 
 
-static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
+static void qemudShutdownVMDaemon(virConnectPtr conn,
                                   struct qemud_driver *driver,
                                   virDomainObjPtr vm) {
     int ret;
+    int retries = 0;
 
     if (!virDomainIsActive(vm))
         return;
@@ -1908,6 +2017,16 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (qemuDomainSetAllDeviceOwnership(conn, driver, vm->def, 1) < 0)
         VIR_WARN("Failed to restore all device ownership for %s",
                  vm->def->name);
+
+retry:
+    if ((ret = qemuRemoveCgroup(conn, driver, vm)) < 0) {
+        if (ret == -EBUSY && (retries++ < 5)) {
+            usleep(200*1000);
+            goto retry;
+        }
+        VIR_WARN("Failed to remove cgroup for %s",
+                 vm->def->name);
+    }
 
     if (qemudRemoveDomainStatus(conn, driver, vm) < 0) {
         VIR_WARN(_("Failed to remove domain status for %s"),
