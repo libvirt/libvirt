@@ -154,6 +154,9 @@ int virStrToLong_ull(char const *s,
                      char **end_ptr,
                      int base,
                      unsigned long long *result);
+int virStrToDouble(char const *s,
+                   char **end_ptr,
+                   double *result);
 
 int virMacAddrCompare (const char *mac1, const char *mac2);
 

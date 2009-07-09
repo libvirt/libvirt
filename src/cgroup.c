@@ -790,23 +790,23 @@ int virCgroupAllowDeviceMajor(virCgroupPtr group,
     return rc;
 }
 
-int virCgroupSetCpuShares(virCgroupPtr group, unsigned long shares)
+int virCgroupSetCpuShares(virCgroupPtr group, unsigned long long shares)
 {
     return virCgroupSetValueU64(group,
                                 VIR_CGROUP_CONTROLLER_CPU,
-                                "cpu.shares", (uint64_t)shares);
+                                "cpu.shares", shares);
 }
 
-int virCgroupGetCpuShares(virCgroupPtr group, unsigned long *shares)
+int virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares)
 {
     return virCgroupGetValueU64(group,
                                 VIR_CGROUP_CONTROLLER_CPU,
-                                "cpu.shares", (uint64_t *)shares);
+                                "cpu.shares", shares);
 }
 
 int virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage)
 {
     return virCgroupGetValueU64(group,
                                 VIR_CGROUP_CONTROLLER_CPUACCT,
-                                "cpuacct.usage", (uint64_t *)usage);
+                                "cpuacct.usage", usage);
 }

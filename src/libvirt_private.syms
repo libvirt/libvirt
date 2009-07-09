@@ -348,6 +348,7 @@ virStrToLong_i;
 virStrToLong_ll;
 virStrToLong_ull;
 virStrToLong_ui;
+virStrToDouble;
 virFileLinkPointsTo;
 virFileResolveLink;
 saferead;

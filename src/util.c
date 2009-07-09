@@ -1479,6 +1479,26 @@ virStrToLong_ull(char const *s, char **end_ptr, int base, unsigned long long *re
     return 0;
 }
 
+int
+virStrToDouble(char const *s,
+               char **end_ptr,
+               double *result)
+{
+    double val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtod(s, &p);
+    err = (errno || (!end_ptr && *p) || p == s);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
 /**
  * virSkipSpaces:
  * @str: pointer to the char pointer used

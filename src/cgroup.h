@@ -39,8 +39,8 @@ int virCgroupAllowDeviceMajor(virCgroupPtr group,
                               char type,
                               int major);
 
-int virCgroupSetCpuShares(virCgroupPtr group, unsigned long shares);
-int virCgroupGetCpuShares(virCgroupPtr group, unsigned long *shares);
+int virCgroupSetCpuShares(virCgroupPtr group, unsigned long long shares);
+int virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares);
 
 int virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage);
 

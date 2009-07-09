@@ -1612,9 +1612,14 @@ static int lxcSetSchedulerParameters(virDomainPtr domain,
 
     for (i = 0; i < nparams; i++) {
         virSchedParameterPtr param = &params[i];
+        if (param->type != VIR_DOMAIN_SCHED_FIELD_ULLONG) {
+            lxcError(NULL, domain, VIR_ERR_INVALID_ARG,
+                     _("invalid type for cpu_shares tunable, expected a 'ullong'"));
+            goto cleanup;
+        }
 
         if (STREQ(param->field, "cpu_shares")) {
-            if (virCgroupSetCpuShares(group, params[i].value.ui) != 0)
+            if (virCgroupSetCpuShares(group, params[i].value.ul) != 0)
                 goto cleanup;
         } else {
             lxcError(NULL, domain, VIR_ERR_INVALID_ARG,
@@ -1638,7 +1643,7 @@ static int lxcGetSchedulerParameters(virDomainPtr domain,
     lxc_driver_t *driver = domain->conn->privateData;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
-    unsigned long val;
+    unsigned long long val;
     int ret = -1;
 
     if (driver->cgroup == NULL)

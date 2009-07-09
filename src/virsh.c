@@ -1185,25 +1185,111 @@ static const vshCmdOptDef opts_schedinfo[] = {
 };
 
 static int
+cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
+                   virSchedParameterPtr param)
+{
+    int found;
+    char *data;
+
+    /* Legacy 'weight' parameter */
+    if (STREQ(param->field, "weight") &&
+        param->type == VIR_DOMAIN_SCHED_FIELD_UINT &&
+        vshCommandOptBool(cmd, "weight")) {
+        int val;
+        val = vshCommandOptInt(cmd, "weight", &found);
+        if (!found) {
+            vshError(ctl, FALSE, "%s", _("Invalid value of weight"));
+            return -1;
+        } else {
+            param->value.ui = val;
+        }
+        return 1;
+    }
+
+    /* Legacy 'cap' parameter */
+    if (STREQ(param->field, "cap") &&
+        param->type == VIR_DOMAIN_SCHED_FIELD_UINT &&
+        vshCommandOptBool(cmd, "cap")) {
+        int val;
+        val = vshCommandOptInt(cmd, "cap", &found);
+        if (!found) {
+            vshError(ctl, FALSE, "%s", _("Invalid value of cap"));
+            return -1;
+        } else {
+            param->value.ui = val;
+        }
+        return 1;
+    }
+
+    if ((data = vshCommandOptString(cmd, "set", NULL))) {
+        char *val = strchr(data, '=');
+        int match = 0;
+        if (!val) {
+            vshError(ctl, FALSE, "%s", _("Invalid syntax for --set, expecting name=value"));
+            return -1;
+        }
+        *val = '\0';
+        match = STREQ(data, param->field);
+        *val = '=';
+        val++;
+
+        if (!match)
+            return 0;
+
+        switch (param->type) {
+        case VIR_DOMAIN_SCHED_FIELD_INT:
+            if (virStrToLong_i(val, NULL, 10, &param->value.i) < 0) {
+                vshError(ctl, FALSE, "%s",
+                         _("Invalid value for parameter, expecting an int"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_SCHED_FIELD_UINT:
+            if (virStrToLong_ui(val, NULL, 10, &param->value.ui) < 0) {
+                vshError(ctl, FALSE, "%s",
+                         _("Invalid value for parameter, expecting an unsigned int"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_SCHED_FIELD_LLONG:
+            if (virStrToLong_ll(val, NULL, 10, &param->value.l) < 0) {
+                vshError(ctl, FALSE, "%s",
+                         _("Invalid value for parameter, expecting an long long"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+            if (virStrToLong_ull(val, NULL, 10, &param->value.ul) < 0) {
+                vshError(ctl, FALSE, "%s",
+                         _("Invalid value for parameter, expecting an unsigned long long"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+            if (virStrToDouble(val, NULL, &param->value.d) < 0) {
+                vshError(ctl, FALSE, "%s", _("Invalid value for parameter, expecting a double"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+            param->value.b = STREQ(val, "0") ? 0 : 1;
+        }
+        return 1;
+    }
+
+    return 0;
+}
+
+
+static int
 cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
 {
     char *schedulertype;
-    char *set;
-    char *param_name = NULL;
-    long long int param_value = 0;
     virDomainPtr dom;
     virSchedParameterPtr params = NULL;
-    int i, ret;
     int nparams = 0;
-    int nr_inputparams = 0;
-    int inputparams = 0;
-    int weightfound = 0;
-    int setfound = 0;
-    int weight = 0;
-    int capfound = 0;
-    int cap = 0;
-    char str_weight[] = "weight";
-    char str_cap[]    = "cap";
+    int update = 0;
+    int i, ret;
     int ret_val = FALSE;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
@@ -1211,85 +1297,6 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
-
-    /* Deprecated Xen-only options */
-    if(vshCommandOptBool(cmd, "weight")) {
-        weight = vshCommandOptInt(cmd, "weight", &weightfound);
-        if (!weightfound) {
-            vshError(ctl, FALSE, "%s", _("Invalid value of weight"));
-            goto cleanup;
-        } else {
-            nr_inputparams++;
-        }
-    }
-
-    if(vshCommandOptBool(cmd, "cap")) {
-        cap = vshCommandOptInt(cmd, "cap", &capfound);
-        if (!capfound) {
-            vshError(ctl, FALSE, "%s", _("Invalid value of cap"));
-            goto cleanup;
-        } else {
-            nr_inputparams++;
-        }
-    }
-
-    if(vshCommandOptBool(cmd, "set")) {
-        set = vshCommandOptString(cmd, "set", &setfound);
-        if (!setfound) {
-            vshError(ctl, FALSE, "%s", _("Error getting param"));
-            goto cleanup;
-        }
-
-        param_name = vshMalloc(ctl, strlen(set) + 1);
-        if (param_name == NULL)
-            goto cleanup;
-
-        if (sscanf(set, "%[^=]=%lli", param_name, &param_value) != 2) {
-            vshError(ctl, FALSE, "%s", _("Invalid value of param"));
-            goto cleanup;
-        }
-
-        nr_inputparams++;
-    }
-
-    params = vshMalloc(ctl, sizeof (virSchedParameter) * nr_inputparams);
-    if (params == NULL) {
-        goto cleanup;
-    }
-
-    if (weightfound) {
-         strncpy(params[inputparams].field,str_weight,sizeof(str_weight));
-         params[inputparams].type = VIR_DOMAIN_SCHED_FIELD_UINT;
-         params[inputparams].value.ui = weight;
-         inputparams++;
-    }
-
-    if (capfound) {
-         strncpy(params[inputparams].field,str_cap,sizeof(str_cap));
-         params[inputparams].type = VIR_DOMAIN_SCHED_FIELD_UINT;
-         params[inputparams].value.ui = cap;
-         inputparams++;
-    }
-    /* End Deprecated Xen-only options */
-
-    if (setfound) {
-        strncpy(params[inputparams].field,param_name,sizeof(params[0].field));
-        params[inputparams].type = VIR_DOMAIN_SCHED_FIELD_LLONG;
-        params[inputparams].value.l = param_value;
-        inputparams++;
-    }
-
-    assert (inputparams == nr_inputparams);
-
-    /* Set SchedulerParameters */
-    if (inputparams > 0) {
-        ret = virDomainSetSchedulerParameters(dom, params, inputparams);
-        if (ret == -1) {
-            goto cleanup;
-        }
-    }
-    free(params);
-    params = NULL;
 
     /* Print SchedulerType */
     schedulertype = virDomainGetSchedulerType(dom, &nparams);
@@ -1302,21 +1309,38 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    /* Get SchedulerParameters */
-    params = vshMalloc(ctl, sizeof(virSchedParameter)* nparams);
-    if (params == NULL) {
-        goto cleanup;
-    }
-    for (i = 0; i < nparams; i++){
-        params[i].type = 0;
-        memset (params[i].field, 0, sizeof params[i].field);
-    }
-    ret = virDomainGetSchedulerParameters(dom, params, &nparams);
-    if (ret == -1) {
-        goto cleanup;
-    }
-    ret_val = TRUE;
-    if(nparams){
+    if (nparams) {
+        params = vshMalloc(ctl, sizeof(virSchedParameter)* nparams);
+        if (params == NULL)
+            goto cleanup;
+
+        memset(params, 0, sizeof(virSchedParameter)* nparams);
+        ret = virDomainGetSchedulerParameters(dom, params, &nparams);
+        if (ret == -1)
+            goto cleanup;
+
+        /* See if any params are being set */
+        for (i = 0; i < nparams; i++){
+            ret = cmdSchedInfoUpdate(ctl, cmd, &(params[i]));
+            if (ret == -1)
+                goto cleanup;
+
+            if (ret == 1)
+                update = 1;
+        }
+
+        /* Update parameters & refresh data */
+        if (update) {
+            ret = virDomainSetSchedulerParameters(dom, params, nparams);
+            if (ret == -1)
+                goto cleanup;
+
+            ret = virDomainGetSchedulerParameters(dom, params, &nparams);
+            if (ret == -1)
+                goto cleanup;
+        }
+
+        ret_val = TRUE;
         for (i = 0; i < nparams; i++){
             switch (params[i].type) {
             case VIR_DOMAIN_SCHED_FIELD_INT:
@@ -1326,10 +1350,10 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
                  printf("%-15s: %u\n",  params[i].field, params[i].value.ui);
                  break;
             case VIR_DOMAIN_SCHED_FIELD_LLONG:
-                 printf("%-15s: %Ld\n",  params[i].field, params[i].value.l);
+                 printf("%-15s: %lld\n",  params[i].field, params[i].value.l);
                  break;
             case VIR_DOMAIN_SCHED_FIELD_ULLONG:
-                 printf("%-15s: %Lu\n",  params[i].field, params[i].value.ul);
+                 printf("%-15s: %llu\n",  params[i].field, params[i].value.ul);
                  break;
             case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
                  printf("%-15s: %f\n",  params[i].field, params[i].value.d);
@@ -1342,9 +1366,9 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
             }
         }
     }
+
  cleanup:
     free(params);
-    free(param_name);
     virDomainFree(dom);
     return ret_val;
 }

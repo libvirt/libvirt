@@ -5275,6 +5275,151 @@ cleanup:
     return ret;
 }
 
+
+static char *qemuGetSchedulerType(virDomainPtr dom,
+                                  int *nparams)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    char *ret;
+
+    if (driver->cgroup == NULL) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                         __FUNCTION__);
+        return NULL;
+    }
+
+    if (nparams)
+        *nparams = 1;
+
+    ret = strdup("posix");
+    if (!ret)
+        virReportOOMError(dom->conn);
+    return ret;
+}
+
+static int qemuSetSchedulerParameters(virDomainPtr dom,
+                                      virSchedParameterPtr params,
+                                      int nparams)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    int i;
+    virCgroupPtr group = NULL;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+
+    if (driver->cgroup == NULL) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                         __FUNCTION__);
+        return -1;
+    }
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (vm == NULL) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot find cgroup for domain %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    for (i = 0; i < nparams; i++) {
+        virSchedParameterPtr param = &params[i];
+
+        if (STREQ(param->field, "cpu_shares")) {
+            int rc;
+            if (param->type != VIR_DOMAIN_SCHED_FIELD_ULLONG) {
+                qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                                 _("invalid type for cpu_shares tunable, expected a 'ullong'"));
+                goto cleanup;
+            }
+
+            rc = virCgroupSetCpuShares(group, params[i].value.ul);
+            if (rc != 0) {
+                virReportSystemError(dom->conn, -rc, "%s",
+                                     _("unable to set cpu shares tunable"));
+                goto cleanup;
+            }
+        } else {
+            qemudReportError(dom->conn, domain, NULL, VIR_ERR_INVALID_ARG,
+                             _("Invalid parameter `%s'"), param->field);
+            goto cleanup;
+        }
+    }
+    ret = 0;
+
+cleanup:
+    virCgroupFree(&group);
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int qemuGetSchedulerParameters(virDomainPtr dom,
+                                      virSchedParameterPtr params,
+                                      int *nparams)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virCgroupPtr group = NULL;
+    virDomainObjPtr vm = NULL;
+    unsigned long long val;
+    int ret = -1;
+    int rc;
+
+    if (driver->cgroup == NULL) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                         __FUNCTION__);
+        return -1;
+    }
+
+    if ((*nparams) != 1) {
+        qemudReportError(dom->conn, domain, NULL, VIR_ERR_INVALID_ARG,
+                         "%s", _("Invalid parameter count"));
+        return -1;
+    }
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (vm == NULL) {
+        qemudReportError(dom->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("No such domain %s"), dom->uuid);
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot find cgroup for domain %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    rc = virCgroupGetCpuShares(group, &val);
+    if (rc != 0) {
+        virReportSystemError(dom->conn, -rc, "%s",
+                             _("unable to get cpu shares tunable"));
+        goto cleanup;
+    }
+    params[0].value.ul = val;
+    strncpy(params[0].field, "cpu_shares", sizeof(params[0].field));
+    params[0].type = VIR_DOMAIN_SCHED_FIELD_ULLONG;
+
+    ret = 0;
+
+cleanup:
+    virCgroupFree(&group);
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+
 /* This uses the 'info blockstats' monitor command which was
  * integrated into both qemu & kvm in late 2007.  If the command is
  * not supported we detect this and return the appropriate error.
@@ -6248,9 +6393,9 @@ static virDriver qemuDriver = {
     qemudDomainDetachDevice, /* domainDetachDevice */
     qemudDomainGetAutostart, /* domainGetAutostart */
     qemudDomainSetAutostart, /* domainSetAutostart */
-    NULL, /* domainGetSchedulerType */
-    NULL, /* domainGetSchedulerParameters */
-    NULL, /* domainSetSchedulerParameters */
+    qemuGetSchedulerType, /* domainGetSchedulerType */
+    qemuGetSchedulerParameters, /* domainGetSchedulerParameters */
+    qemuSetSchedulerParameters, /* domainSetSchedulerParameters */
     NULL, /* domainMigratePrepare (v1) */
     qemudDomainMigratePerform, /* domainMigratePerform */
     NULL, /* domainMigrateFinish */
