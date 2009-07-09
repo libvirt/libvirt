@@ -1,5 +1,1 @@
-^gnulib/lib/getaddrinfo\.c$
-^gnulib/lib/printf-parse\.c$
-^gnulib/lib/vasnprintf\.c$
-^build-aux/useless-if-before-free$
-^ChangeLog$
+^ChangeLog
