@@ -654,6 +654,21 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
 }
 
 static int
+virStorageBackendLogicalBuildVolFrom(virConnectPtr conn,
+                                     virStorageVolDefPtr vol,
+                                     virStorageVolDefPtr inputvol,
+                                     unsigned int flags)
+{
+    virStorageBackendBuildVolFrom build_func;
+
+    build_func = virStorageBackendGetBuildVolFromFunction(conn, vol, inputvol);
+    if (!build_func)
+        return -1;
+
+    return build_func(conn, vol, inputvol, flags);
+}
+
+static int
 virStorageBackendLogicalDeleteVol(virConnectPtr conn,
                                   virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                   virStorageVolDefPtr vol,
@@ -679,6 +694,8 @@ virStorageBackend virStorageBackendLogical = {
     .refreshPool = virStorageBackendLogicalRefreshPool,
     .stopPool = virStorageBackendLogicalStopPool,
     .deletePool = virStorageBackendLogicalDeletePool,
+    .buildVol = NULL,
+    .buildVolFrom = virStorageBackendLogicalBuildVolFrom,
     .createVol = virStorageBackendLogicalCreateVol,
     .deleteVol = virStorageBackendLogicalDeleteVol,
 };

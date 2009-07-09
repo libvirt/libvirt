@@ -592,6 +592,20 @@ virStorageBackendDiskCreateVol(virConnectPtr conn,
     return 0;
 }
 
+static int
+virStorageBackendDiskBuildVolFrom(virConnectPtr conn,
+                                  virStorageVolDefPtr vol,
+                                  virStorageVolDefPtr inputvol,
+                                  unsigned int flags)
+{
+    virStorageBackendBuildVolFrom build_func;
+
+    build_func = virStorageBackendGetBuildVolFromFunction(conn, vol, inputvol);
+    if (!build_func)
+        return -1;
+
+    return build_func(conn, vol, inputvol, flags);
+}
 
 static int
 virStorageBackendDiskDeleteVol(virConnectPtr conn,
@@ -660,4 +674,5 @@ virStorageBackend virStorageBackendDisk = {
 
     .createVol = virStorageBackendDiskCreateVol,
     .deleteVol = virStorageBackendDiskDeleteVol,
+    .buildVolFrom = virStorageBackendDiskBuildVolFrom,
 };
