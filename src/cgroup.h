@@ -38,6 +38,18 @@ int virCgroupAllowDevice(virCgroupPtr group,
 int virCgroupAllowDeviceMajor(virCgroupPtr group,
                               char type,
                               int major);
+int virCgroupAllowDevicePath(virCgroupPtr group,
+                             const char *path);
+
+int virCgroupDenyDevice(virCgroupPtr group,
+                        char type,
+                        int major,
+                        int minor);
+int virCgroupDenyDeviceMajor(virCgroupPtr group,
+                             char type,
+                             int major);
+int virCgroupDenyDevicePath(virCgroupPtr group,
+                            const char *path);
 
 int virCgroupSetCpuShares(virCgroupPtr group, unsigned long long shares);
 int virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares);

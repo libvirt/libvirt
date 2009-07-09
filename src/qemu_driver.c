@@ -1388,12 +1388,24 @@ error:
     return -1;
 }
 
+static const char *const defaultDeviceACL[] = {
+    "/dev/null", "/dev/full", "/dev/zero",
+    "/dev/random", "/dev/urandom",
+    "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
+    "/dev/rtc", "/dev/hpet", "/dev/net/tun",
+    NULL,
+};
+#define DEVICE_PTY_MAJOR 136
+#define DEVICE_SND_MAJOR 116
+
 static int qemuSetupCgroup(virConnectPtr conn,
                            struct qemud_driver *driver,
                            virDomainObjPtr vm)
 {
     virCgroupPtr cgroup = NULL;
     int rc;
+    unsigned int i;
+    const char *const *deviceACL = defaultDeviceACL;
 
     if (driver->cgroup == NULL)
         return 0; /* Not supported, so claim success */
@@ -1406,6 +1418,62 @@ static int qemuSetupCgroup(virConnectPtr conn,
         goto cleanup;
     }
 
+    rc = virCgroupDenyAllDevices(cgroup);
+    if (rc != 0) {
+        if (rc == -EPERM) {
+            VIR_WARN0("Group devices ACL is not accessible, disabling whitelisting");
+            goto done;
+        }
+
+        virReportSystemError(conn, -rc,
+                             _("Unable to deny all devices for %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    for (i = 0; i < vm->def->ndisks ; i++) {
+        if (vm->def->disks[i]->type != VIR_DOMAIN_DISK_TYPE_BLOCK ||
+            vm->def->disks[i]->src == NULL)
+            continue;
+
+        rc = virCgroupAllowDevicePath(cgroup,
+                                      vm->def->disks[i]->src);
+        if (rc != 0) {
+            virReportSystemError(conn, -rc,
+                                 _("Unable to allow device %s for %s"),
+                                 vm->def->disks[i]->src, vm->def->name);
+            goto cleanup;
+        }
+    }
+
+    rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_PTY_MAJOR);
+    if (rc != 0) {
+        virReportSystemError(conn, -rc, "%s",
+                             _("unable to allow /dev/pts/ devices"));
+        goto cleanup;
+    }
+
+    if (vm->def->nsounds) {
+        rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_SND_MAJOR);
+        if (rc != 0) {
+            virReportSystemError(conn, -rc, "%s",
+                                 _("unable to allow /dev/snd/ devices"));
+            goto cleanup;
+        }
+    }
+
+    for (i = 0; deviceACL[i] != NULL ; i++) {
+        rc = virCgroupAllowDevicePath(cgroup,
+                                      deviceACL[i]);
+        if (rc < 0 &&
+            rc != -ENOENT) {
+            virReportSystemError(conn, -rc,
+                                 _("unable to allow device %s"),
+                                 deviceACL[i]);
+            goto cleanup;
+        }
+    }
+
+done:
     virCgroupFree(&cgroup);
     return 0;
 
@@ -4836,6 +4904,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     virDomainObjPtr vm;
     virDomainDeviceDefPtr dev = NULL;
     unsigned int qemuCmdFlags;
+    virCgroupPtr cgroup = NULL;
     int ret = -1;
 
     qemuDriverLock(driver);
@@ -4865,6 +4934,27 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         goto cleanup;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
+        if (driver->cgroup != NULL) {
+            if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) !=0 ) {
+                qemudReportError(dom->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("Unable to find cgroup for %s\n"),
+                                 vm->def->name);
+                goto cleanup;
+            }
+            if (dev->data.disk->src != NULL &&
+                dev->data.disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
+                virCgroupAllowDevicePath(cgroup,
+                                         dev->data.disk->src) < 0) {
+                qemudReportError(dom->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("unable to allow device %s"),
+                                 dev->data.disk->src);
+                goto cleanup;
+            }
+        }
+
+        if (driver->securityDriver)
+            driver->securityDriver->domainSetSecurityImageLabel(dom->conn, vm, dev->data.disk);
+
         switch (dev->data.disk->device) {
         case VIR_DOMAIN_DISK_DEVICE_CDROM:
         case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
@@ -4893,7 +4983,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                 qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                                  _("disk bus '%s' cannot be hotplugged."),
                                  virDomainDiskBusTypeToString(dev->data.disk->bus));
-                goto cleanup;
+                /* fallthrough */
             }
             break;
 
@@ -4901,7 +4991,11 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                              _("disk device type '%s' cannot be hotplugged"),
                              virDomainDiskDeviceTypeToString(dev->data.disk->device));
-            goto cleanup;
+            /* Fallthrough */
+        }
+        if (ret != 0) {
+            virCgroupDenyDevicePath(cgroup,
+                                    dev->data.disk->src);
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
         ret = qemudDomainAttachNetDevice(dom->conn, vm, dev, qemuCmdFlags);
@@ -4923,6 +5017,9 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         ret = -1;
 
 cleanup:
+    if (cgroup)
+        virCgroupFree(&cgroup);
+
     if (ret < 0) {
         if (qemuDomainSetDeviceOwnership(dom->conn, driver, dev, 1) < 0)
             VIR_WARN0("Fail to restore disk device ownership");

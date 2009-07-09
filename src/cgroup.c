@@ -736,10 +736,7 @@ int virCgroupDenyAllDevices(virCgroupPtr group)
  *
  * Returns: 0 on success
  */
-int virCgroupAllowDevice(virCgroupPtr group,
-                         char type,
-                         int major,
-                         int minor)
+int virCgroupAllowDevice(virCgroupPtr group, char type, int major, int minor)
 {
     int rc;
     char *devstr = NULL;
@@ -768,9 +765,7 @@ out:
  *
  * Returns: 0 on success
  */
-int virCgroupAllowDeviceMajor(virCgroupPtr group,
-                              char type,
-                              int major)
+int virCgroupAllowDeviceMajor(virCgroupPtr group, char type, int major)
 {
     int rc;
     char *devstr = NULL;
@@ -788,6 +783,108 @@ int virCgroupAllowDeviceMajor(virCgroupPtr group,
     VIR_FREE(devstr);
 
     return rc;
+}
+
+/**
+ * virCgroupAllowDevicePath:
+ *
+ * @group: The cgroup to allow the device for
+ * @path: the device to allow
+ *
+ * Queries the type of device and its major/minor number, and
+ * adds that to the cgroup ACL
+ *
+ * Returns: 0 on success
+ */
+int virCgroupAllowDevicePath(virCgroupPtr group, const char *path)
+{
+    struct stat sb;
+
+    if (stat(path, &sb) < 0)
+        return -errno;
+
+    if (!S_ISCHR(sb.st_mode) && !S_ISBLK(sb.st_mode))
+        return -EINVAL;
+
+    return virCgroupAllowDevice(group,
+                                S_ISCHR(sb.st_mode) ? 'c' : 'b',
+                                major(sb.st_rdev),
+                                minor(sb.st_rdev));
+}
+
+/**
+ * virCgroupDenyDevice:
+ *
+ * @group: The cgroup to deny a device for
+ * @type: The device type (i.e., 'c' or 'b')
+ * @major: The major number of the device
+ * @minor: The minor number of the device
+ *
+ * Returns: 0 on success
+ */
+int virCgroupDenyDevice(virCgroupPtr group, char type, int major, int minor)
+{
+    int rc;
+    char *devstr = NULL;
+
+    if (virAsprintf(&devstr, "%c %i:%i rwm", type, major, minor) == -1) {
+        rc = -ENOMEM;
+        goto out;
+    }
+
+    rc = virCgroupSetValueStr(group,
+                              VIR_CGROUP_CONTROLLER_DEVICES,
+                              "devices.deny",
+                              devstr);
+out:
+    VIR_FREE(devstr);
+
+    return rc;
+}
+
+/**
+ * virCgroupDenyDeviceMajor:
+ *
+ * @group: The cgroup to deny an entire device major type for
+ * @type: The device type (i.e., 'c' or 'b')
+ * @major: The major number of the device type
+ *
+ * Returns: 0 on success
+ */
+int virCgroupDenyDeviceMajor(virCgroupPtr group, char type, int major)
+{
+    int rc;
+    char *devstr = NULL;
+
+    if (virAsprintf(&devstr, "%c %i:* rwm", type, major) == -1) {
+        rc = -ENOMEM;
+        goto out;
+    }
+
+    rc = virCgroupSetValueStr(group,
+                              VIR_CGROUP_CONTROLLER_DEVICES,
+                              "devices.deny",
+                              devstr);
+ out:
+    VIR_FREE(devstr);
+
+    return rc;
+}
+
+int virCgroupDenyDevicePath(virCgroupPtr group, const char *path)
+{
+    struct stat sb;
+
+    if (stat(path, &sb) < 0)
+        return -errno;
+
+    if (!S_ISCHR(sb.st_mode) && !S_ISBLK(sb.st_mode))
+        return -EINVAL;
+
+    return virCgroupDenyDevice(group,
+                               S_ISCHR(sb.st_mode) ? 'c' : 'b',
+                               major(sb.st_rdev),
+                               minor(sb.st_rdev));
 }
 
 int virCgroupSetCpuShares(virCgroupPtr group, unsigned long long shares)
