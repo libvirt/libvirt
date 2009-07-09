@@ -178,7 +178,6 @@ static int virCgroupSetValueStr(virCgroupPtr group,
                                 const char *key,
                                 const char *value)
 {
-    int fd = -1;
     int rc = 0;
     char *keypath = NULL;
 
@@ -186,30 +185,46 @@ static int virCgroupSetValueStr(virCgroupPtr group,
     if (rc != 0)
         return rc;
 
-    fd = open(keypath, O_WRONLY);
-    if (fd < 0) {
-        DEBUG("Unable to open %s: %m", keypath);
-        rc = -ENOENT;
-        goto out;
-    }
-
-    DEBUG("Writing '%s' to '%s'", value, keypath);
-
-    rc = safewrite(fd, value, strlen(value));
+    VIR_DEBUG("Set value %s", keypath);
+    rc = virFileWriteStr(keypath, value);
     if (rc < 0) {
         DEBUG("Failed to write value '%s': %m", value);
         rc = -errno;
-        goto out;
-    } else if (rc != strlen(value)) {
-        DEBUG("Short write of value '%s'", value);
-        rc = -ENOSPC;
-        goto out;
+    } else {
+        rc = 0;
     }
 
-    rc = 0;
-out:
     VIR_FREE(keypath);
-    close(fd);
+
+    return rc;
+}
+
+static int virCgroupGetValueStr(virCgroupPtr group,
+                                const char *key,
+                                char **value)
+{
+    int rc;
+    char *keypath = NULL;
+
+    *value = NULL;
+
+    rc = virCgroupPathOf(group->path, key, &keypath);
+    if (rc != 0) {
+        DEBUG("No path of %s, %s", group->path, key);
+        return rc;
+    }
+
+    VIR_DEBUG("Get value %s", keypath);
+
+    rc = virFileReadAll(keypath, 1024, value);
+    if (rc < 0) {
+        DEBUG("Failed to read %s: %m\n", keypath);
+        rc = -errno;
+    } else {
+        rc = 0;
+    }
+
+    VIR_FREE(keypath);
 
     return rc;
 }
@@ -231,54 +246,6 @@ static int virCgroupSetValueU64(virCgroupPtr group,
     return rc;
 }
 
-static int virCgroupGetValueStr(virCgroupPtr group,
-                                const char *key,
-                                char **value)
-{
-    int fd = -1;
-    int rc;
-    char *keypath = NULL;
-    char buf[CGROUP_MAX_VAL];
-
-    memset(buf, 0, sizeof(buf));
-
-    rc = virCgroupPathOf(group->path, key, &keypath);
-    if (rc != 0) {
-        DEBUG("No path of %s, %s", group->path, key);
-        return rc;
-    }
-
-    fd = open(keypath, O_RDONLY);
-    if (fd < 0) {
-        DEBUG("Unable to open %s: %m", keypath);
-        rc = -ENOENT;
-        goto out;
-    }
-
-    rc = saferead(fd, buf, sizeof(buf));
-    if (rc < 0) {
-        DEBUG("Failed to read %s: %m\n", keypath);
-        rc = -errno;
-        goto out;
-    } else if (rc == 0) {
-        DEBUG("Short read of %s\n", keypath);
-        rc = -EIO;
-        goto out;
-    }
-
-    *value = strdup(buf);
-    if (*value == NULL) {
-        rc = -ENOMEM;
-        goto out;
-    }
-
-    rc = 0;
-out:
-    VIR_FREE(keypath);
-    close(fd);
-
-    return rc;
-}
 
 #if 0
 /* This is included for completeness, but not yet used */
