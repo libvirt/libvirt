@@ -2952,6 +2952,9 @@ static virDomainObjPtr virDomainObjParseXML(virConnectPtr conn,
     case VIR_DOMAIN_CHR_TYPE_PTY:
         obj->monitor_chr->data.file.path = monitorpath;
         break;
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        obj->monitor_chr->data.nix.path = monitorpath;
+        break;
     default:
         VIR_FREE(monitorpath);
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -4168,6 +4171,9 @@ char *virDomainObjFormat(virConnectPtr conn,
                       obj->pid);
 
     switch (obj->monitor_chr->type) {
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        monitorpath = obj->monitor_chr->data.nix.path;
+        break;
     default:
     case VIR_DOMAIN_CHR_TYPE_PTY:
         monitorpath = obj->monitor_chr->data.file.path;

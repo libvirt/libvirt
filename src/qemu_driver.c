@@ -866,6 +866,42 @@ qemudOpenMonitorCommon(virConnectPtr conn,
 }
 
 static int
+qemudOpenMonitorUnix(virConnectPtr conn,
+                     struct qemud_driver* driver,
+                     virDomainObjPtr vm,
+                     const char *monitor,
+                     int reconnect)
+{
+    struct sockaddr_un addr;
+    int monfd;
+
+    if ((monfd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
+        virReportSystemError(conn, errno,
+                             "%s", _("failed to create socket"));
+        return -1;
+    }
+
+    memset(&addr, 0, sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    strncpy(addr.sun_path, monitor, sizeof(addr.sun_path));
+
+    if (connect(monfd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
+        virReportSystemError(conn, errno, "%s",
+                             _("failed to connect to monitor socket"));
+        goto error;
+    }
+
+    if (qemudOpenMonitorCommon(conn, driver, vm, monfd, reconnect) < 0)
+        goto error;
+
+    return 0;
+
+error:
+    close(monfd);
+    return -1;
+}
+
+static int
 qemudOpenMonitorPty(virConnectPtr conn,
                     struct qemud_driver* driver,
                     virDomainObjPtr vm,
@@ -897,6 +933,10 @@ qemudOpenMonitor(virConnectPtr conn,
                  int reconnect)
 {
     switch (vm->monitor_chr->type) {
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        return qemudOpenMonitorUnix(conn, driver, vm,
+                                    vm->monitor_chr->data.nix.path,
+                                    reconnect);
     case VIR_DOMAIN_CHR_TYPE_PTY:
         return qemudOpenMonitorPty(conn, driver, vm,
                                    vm->monitor_chr->data.file.path,
@@ -961,52 +1001,34 @@ qemudFindCharDevicePTYs(virConnectPtr conn,
                         const char *output,
                         int fd ATTRIBUTE_UNUSED)
 {
-    struct qemud_driver* driver = conn->privateData;
-    char *monitor = NULL;
     size_t offset = 0;
     int ret, i;
 
     /* The order in which QEMU prints out the PTY paths is
-       the order in which it procsses its monitor, serial
-       and parallel device args. This code must match that
-       ordering.... */
+       the order in which it procsses its serial and parallel
+       device args. This code must match that ordering.... */
 
-    /* So first comes the monitor device */
-    if ((ret = qemudExtractMonitorPath(conn, output, &offset, &monitor)) != 0)
-        goto cleanup;
-
-    /* then the serial devices */
+    /* first comes the serial devices */
     for (i = 0 ; i < vm->def->nserials ; i++) {
         virDomainChrDefPtr chr = vm->def->serials[i];
         if (chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
             if ((ret = qemudExtractMonitorPath(conn, output, &offset,
                                                &chr->data.file.path)) != 0)
-                goto cleanup;
+                return ret;
         }
     }
 
-    /* and finally the parallel devices */
+    /* then the parallel devices */
     for (i = 0 ; i < vm->def->nparallels ; i++) {
         virDomainChrDefPtr chr = vm->def->parallels[i];
         if (chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
             if ((ret = qemudExtractMonitorPath(conn, output, &offset,
                                                &chr->data.file.path)) != 0)
-                goto cleanup;
+                return ret;
         }
     }
 
-    /* Got them all, so now open the monitor console */
-    vm->monitor_chr->data.file.path = monitor;
-    monitor = NULL;
-
-    if ((ret = qemudOpenMonitor(conn, driver, vm, 0)) != 0)
-        goto cleanup;
-
     return 0;
-
-cleanup:
-    VIR_FREE(monitor);
-    return ret;
 }
 
 static int
@@ -1031,13 +1053,17 @@ qemudWaitForMonitor(virConnectPtr conn,
                  virStrerror(errno, ebuf, sizeof ebuf));
     }
 
-    if (ret == 0) /* success */
-        return 0;
+    if (ret < 0) {
+        /* Unexpected end of file - inform user of QEMU log data */
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unable to start guest: %s"), buf);
+        return -1;
+    }
 
-    /* Unexpected end of file - inform user of QEMU log data */
-    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("unable to start guest: %s"), buf);
-    return -1;
+    if (qemudOpenMonitor(conn, driver, vm, 0) < 0)
+        return -1;
+
+    return 0;
 }
 
 static int
@@ -1361,6 +1387,24 @@ static int qemudSecurityHook(void *data) {
         return 0;
 }
 
+static int
+qemuPrepareMonitorChr(virConnectPtr conn,
+                      struct qemud_driver *driver,
+                      virDomainChrDefPtr monitor_chr,
+                      const char *vm)
+{
+    monitor_chr->type = VIR_DOMAIN_CHR_TYPE_UNIX;
+    monitor_chr->data.nix.listen = 1;
+
+    if (virAsprintf(&monitor_chr->data.nix.path, "%s/%s.monitor",
+                    driver->stateDir, vm) < 0) {
+        virReportOOMError(conn);
+        return -1;
+    }
+
+    return 0;
+}
+
 static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
                               virDomainObjPtr vm,
@@ -1450,7 +1494,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         goto cleanup;
     }
 
-    vm->monitor_chr->type = VIR_DOMAIN_CHR_TYPE_PTY;
+    if (qemuPrepareMonitorChr(conn, driver, vm->monitor_chr, vm->def->name) < 0)
+        goto cleanup;
 
     if ((ret = virFileDeletePid(driver->stateDir, vm->def->name)) != 0) {
         virReportSystemError(conn, ret,
@@ -3522,7 +3567,8 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    monitor_chr.type = VIR_DOMAIN_CHR_TYPE_PTY;
+    if (qemuPrepareMonitorChr(conn, driver, &monitor_chr, def->name) < 0)
+        goto cleanup;
 
     if (qemudBuildCommandLine(conn, driver, def,
                               &monitor_chr, qemuCmdFlags,
