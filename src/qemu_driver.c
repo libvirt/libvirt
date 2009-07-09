@@ -820,11 +820,13 @@ qemudCheckMonitorPrompt(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
-static int qemudOpenMonitor(virConnectPtr conn,
-                            struct qemud_driver* driver,
-                            virDomainObjPtr vm,
-                            const char *monitor,
-                            int reconnect) {
+static int
+qemudOpenMonitor(virConnectPtr conn,
+                 struct qemud_driver* driver,
+                 virDomainObjPtr vm,
+                 const char *monitor,
+                 int reconnect)
+{
     int monfd;
     char buf[1024];
     int ret = -1;
@@ -878,10 +880,12 @@ static int qemudOpenMonitor(virConnectPtr conn,
 }
 
 /* Returns -1 for error, 0 success, 1 continue reading */
-static int qemudExtractMonitorPath(virConnectPtr conn,
-                                   const char *haystack,
-                                   size_t *offset,
-                                   char **path) {
+static int
+qemudExtractMonitorPath(virConnectPtr conn,
+                        const char *haystack,
+                        size_t *offset,
+                        char **path)
+{
     static const char needle[] = "char device redirected to";
     char *tmp, *dev;
 
@@ -974,9 +978,10 @@ cleanup:
     return ret;
 }
 
-static int qemudWaitForMonitor(virConnectPtr conn,
-                               struct qemud_driver* driver,
-                               virDomainObjPtr vm, off_t pos)
+static int
+qemudWaitForMonitor(virConnectPtr conn,
+                    struct qemud_driver* driver,
+                    virDomainObjPtr vm, off_t pos)
 {
     char buf[4096]; /* Plenty of space to get startup greeting */
     int logfd;
