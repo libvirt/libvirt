@@ -862,11 +862,6 @@ static int qemudOpenMonitor(virConnectPtr conn,
     if (ret != 0)
          goto error;
 
-    if (!(vm->monitorpath = strdup(monitor))) {
-        virReportOOMError(conn);
-        goto error;
-    }
-
     if ((vm->monitorWatch = virEventAddHandle(vm->monitor, 0,
                                               qemudDispatchVMEvent,
                                               driver, NULL)) < 0)
@@ -967,7 +962,12 @@ qemudFindCharDevicePTYs(virConnectPtr conn,
     }
 
     /* Got them all, so now open the monitor console */
-    ret = qemudOpenMonitor(conn, driver, vm, monitor, 0);
+    if ((ret = qemudOpenMonitor(conn, driver, vm, monitor, 0)) != 0)
+        goto cleanup;
+
+    vm->monitorpath = monitor;
+
+    return 0;
 
 cleanup:
     VIR_FREE(monitor);
