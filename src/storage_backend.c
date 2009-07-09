@@ -192,6 +192,47 @@ cleanup:
     return ret;
 }
 
+static int
+virStorageBackendCreateBlockFrom(virConnectPtr conn,
+                                 virStorageVolDefPtr vol,
+                                 virStorageVolDefPtr inputvol,
+                                 unsigned int flags ATTRIBUTE_UNUSED)
+{
+    int fd = -1;
+    int ret = -1;
+    unsigned long long remain;
+
+    if ((fd = open(vol->target.path, O_RDWR)) < 0) {
+        virReportSystemError(conn, errno,
+                             _("cannot create path '%s'"),
+                             vol->target.path);
+        goto cleanup;
+    }
+
+    remain = vol->allocation;
+
+    if (inputvol) {
+        int res = virStorageBackendCopyToFD(conn, vol, inputvol, fd, &remain);
+        if (res < 0)
+            goto cleanup;
+    }
+
+    if (close(fd) < 0) {
+        virReportSystemError(conn, errno,
+                             _("cannot close file '%s'"),
+                             vol->target.path);
+        goto cleanup;
+    }
+    fd = -1;
+
+    ret = 0;
+cleanup:
+    if (fd != -1)
+        close(fd);
+
+    return ret;
+}
+
 int
 virStorageBackendCreateRaw(virConnectPtr conn,
                            virStorageVolDefPtr vol,
@@ -533,7 +574,10 @@ virStorageBackendGetBuildVolFromFunction(virConnectPtr conn,
         return virStorageBackendFSImageToolTypeToFunc(conn, tool_type);
     }
 
-    return virStorageBackendCreateRaw;
+    if (vol->type == VIR_STORAGE_VOL_BLOCK)
+        return virStorageBackendCreateBlockFrom;
+    else
+        return virStorageBackendCreateRaw;
 }
 
 #if defined(UDEVADM) || defined(UDEVSETTLE)
