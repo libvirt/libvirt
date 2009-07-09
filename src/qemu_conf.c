@@ -888,6 +888,7 @@ static int qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
 int qemudBuildCommandLine(virConnectPtr conn,
                           struct qemud_driver *driver,
                           virDomainDefPtr def,
+                          virDomainChrDefPtr monitor_chr,
                           unsigned int qemuCmdFlags,
                           const char ***retargv,
                           const char ***retenv,
@@ -1118,8 +1119,15 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if (!def->graphics)
         ADD_ARG_LIT("-nographic");
 
-    ADD_ARG_LIT("-monitor");
-    ADD_ARG_LIT("pty");
+    if (monitor_chr) {
+        char buf[4096];
+
+        if (qemudBuildCommandLineChrDevStr(monitor_chr, buf, sizeof(buf)) < 0)
+            goto error;
+
+        ADD_ARG_LIT("-monitor");
+        ADD_ARG_LIT(buf);
+    }
 
     if (def->localtime)
         ADD_ARG_LIT("-localtime");

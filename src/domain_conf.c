@@ -516,7 +516,8 @@ void virDomainObjFree(virDomainObjPtr dom)
     virDomainDefFree(dom->def);
     virDomainDefFree(dom->newDef);
 
-    VIR_FREE(dom->monitorpath);
+    virDomainChrDefFree(dom->monitor_chr);
+
     VIR_FREE(dom->vcpupids);
 
     virMutexDestroy(&dom->lock);
@@ -2890,6 +2891,7 @@ static virDomainObjPtr virDomainObjParseXML(virConnectPtr conn,
     xmlNodePtr config;
     xmlNodePtr oldnode;
     virDomainObjPtr obj;
+    char *monitorpath;
 
     if (!(obj = virDomainObjNew(conn)))
         return NULL;
@@ -2927,16 +2929,41 @@ static virDomainObjPtr virDomainObjParseXML(virConnectPtr conn,
     }
     obj->pid = (pid_t)val;
 
-    if(!(obj->monitorpath =
-         virXPathString(conn, "string(./monitor[1]/@path)", ctxt))) {
+    if (VIR_ALLOC(obj->monitor_chr) < 0) {
+        virReportOOMError(conn);
+        goto error;
+    }
+
+    if (!(monitorpath =
+          virXPathString(conn, "string(./monitor[1]/@path)", ctxt))) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("no monitor path"));
         goto error;
     }
 
+    tmp = virXPathString(conn, "string(./monitor[1]/@type)", ctxt);
+    if (tmp)
+        obj->monitor_chr->type = virDomainChrTypeFromString(tmp);
+    else
+        obj->monitor_chr->type = VIR_DOMAIN_CHR_TYPE_PTY;
+    VIR_FREE(tmp);
+
+    switch (obj->monitor_chr->type) {
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+        obj->monitor_chr->data.file.path = monitorpath;
+        break;
+    default:
+        VIR_FREE(monitorpath);
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unsupported monitor type '%s'"),
+                             virDomainChrTypeToString(obj->monitor_chr->type));
+        break;
+    }
+
     return obj;
 
 error:
+    virDomainChrDefFree(obj->monitor_chr);
     virDomainObjFree(obj);
     return NULL;
 }
@@ -4134,11 +4161,22 @@ char *virDomainObjFormat(virConnectPtr conn,
 {
     char *config_xml = NULL, *xml = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *monitorpath;
 
     virBufferVSprintf(&buf, "<domstatus state='%s' pid='%d'>\n",
                       virDomainStateTypeToString(obj->state),
                       obj->pid);
-    virBufferEscapeString(&buf, "  <monitor path='%s'/>\n", obj->monitorpath);
+
+    switch (obj->monitor_chr->type) {
+    default:
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+        monitorpath = obj->monitor_chr->data.file.path;
+        break;
+    }
+
+    virBufferEscapeString(&buf, "  <monitor path='%s'", monitorpath);
+    virBufferVSprintf(&buf, " type='%s'/>\n",
+                      virDomainChrTypeToString(obj->monitor_chr->type));
 
     if (!(config_xml = virDomainDefFormat(conn,
                                           obj->def,

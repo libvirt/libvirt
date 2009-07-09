@@ -283,7 +283,6 @@ cleanup:
 static int qemudOpenMonitor(virConnectPtr conn,
                             struct qemud_driver* driver,
                             virDomainObjPtr vm,
-                            const char *monitor,
                             int reconnect);
 
 
@@ -297,7 +296,7 @@ qemuReconnectDomain(struct qemud_driver *driver,
 {
     int rc;
 
-    if ((rc = qemudOpenMonitor(NULL, driver, obj, obj->monitorpath, 1)) != 0) {
+    if ((rc = qemudOpenMonitor(NULL, driver, obj, 1)) != 0) {
         VIR_ERROR(_("Failed to reconnect monitor for %s: %d\n"),
                   obj->def->name, rc);
         goto error;
@@ -821,30 +820,24 @@ qemudCheckMonitorPrompt(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-qemudOpenMonitor(virConnectPtr conn,
-                 struct qemud_driver* driver,
-                 virDomainObjPtr vm,
-                 const char *monitor,
-                 int reconnect)
+qemudOpenMonitorCommon(virConnectPtr conn,
+                       struct qemud_driver* driver,
+                       virDomainObjPtr vm,
+                       int monfd,
+                       int reconnect)
 {
-    int monfd;
     char buf[1024];
-    int ret = -1;
+    int ret;
 
-    if ((monfd = open(monitor, O_RDWR)) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Unable to open monitor path %s"), monitor);
-        return -1;
-    }
     if (virSetCloseExec(monfd) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("Unable to set monitor close-on-exec flag"));
-        goto error;
+        return -1;
     }
     if (virSetNonBlock(monfd) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("Unable to put monitor into non-blocking mode"));
-        goto error;
+        return -1;
     }
 
     if (!reconnect) {
@@ -862,21 +855,58 @@ qemudOpenMonitor(virConnectPtr conn,
     }
 
     if (ret != 0)
-         goto error;
+        return ret;
 
     if ((vm->monitorWatch = virEventAddHandle(vm->monitor, 0,
                                               qemudDispatchVMEvent,
                                               driver, NULL)) < 0)
+        return -1;
+
+    return 0;
+}
+
+static int
+qemudOpenMonitorPty(virConnectPtr conn,
+                    struct qemud_driver* driver,
+                    virDomainObjPtr vm,
+                    const char *monitor,
+                    int reconnect)
+{
+    int monfd;
+
+    if ((monfd = open(monitor, O_RDWR)) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Unable to open monitor path %s"), monitor);
+        return -1;
+    }
+
+    if (qemudOpenMonitorCommon(conn, driver, vm, monfd, reconnect) < 0)
         goto error;
 
+    return 0;
 
-    /* Keep monitor open upon success */
-    if (ret == 0)
-        return ret;
-
- error:
+error:
     close(monfd);
-    return ret;
+    return -1;
+}
+
+static int
+qemudOpenMonitor(virConnectPtr conn,
+                 struct qemud_driver *driver,
+                 virDomainObjPtr vm,
+                 int reconnect)
+{
+    switch (vm->monitor_chr->type) {
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+        return qemudOpenMonitorPty(conn, driver, vm,
+                                   vm->monitor_chr->data.file.path,
+                                   reconnect);
+    default:
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unable to handle monitor type: %s"),
+                         virDomainChrTypeToString(vm->monitor_chr->type));
+        return -1;
+    }
 }
 
 /* Returns -1 for error, 0 success, 1 continue reading */
@@ -966,10 +996,11 @@ qemudFindCharDevicePTYs(virConnectPtr conn,
     }
 
     /* Got them all, so now open the monitor console */
-    if ((ret = qemudOpenMonitor(conn, driver, vm, monitor, 0)) != 0)
-        goto cleanup;
+    vm->monitor_chr->data.file.path = monitor;
+    monitor = NULL;
 
-    vm->monitorpath = monitor;
+    if ((ret = qemudOpenMonitor(conn, driver, vm, 0)) != 0)
+        goto cleanup;
 
     return 0;
 
@@ -1414,6 +1445,13 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (qemuPrepareHostDevices(conn, vm->def) < 0)
         goto cleanup;
 
+    if (VIR_ALLOC(vm->monitor_chr) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    vm->monitor_chr->type = VIR_DOMAIN_CHR_TYPE_PTY;
+
     if ((ret = virFileDeletePid(driver->stateDir, vm->def->name)) != 0) {
         virReportSystemError(conn, ret,
                              _("Cannot remove stale PID file for %s"),
@@ -1428,7 +1466,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     }
 
     vm->def->id = driver->nextvmid++;
-    if (qemudBuildCommandLine(conn, driver, vm->def,
+    if (qemudBuildCommandLine(conn, driver, vm->def, vm->monitor_chr,
                               qemuCmdFlags, &argv, &progenv,
                               &tapfds, &ntapfds, migrateFrom) < 0)
         goto cleanup;
@@ -3405,6 +3443,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
                                    unsigned int flags ATTRIBUTE_UNUSED) {
     struct qemud_driver *driver = conn->privateData;
     virDomainDefPtr def = NULL;
+    virDomainChrDef monitor_chr;
     const char *emulator;
     unsigned int qemuCmdFlags;
     struct stat sb;
@@ -3483,9 +3522,10 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
     }
 
+    monitor_chr.type = VIR_DOMAIN_CHR_TYPE_PTY;
 
     if (qemudBuildCommandLine(conn, driver, def,
-                              qemuCmdFlags,
+                              &monitor_chr, qemuCmdFlags,
                               &retargv, &retenv,
                               NULL, NULL, /* Don't want it to create TAP devices */
                               NULL) < 0) {
