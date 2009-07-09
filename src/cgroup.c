@@ -32,20 +32,29 @@
 #define CGROUP_MAX_VAL 512
 
 enum {
+    VIR_CGROUP_CONTROLLER_CPU,
     VIR_CGROUP_CONTROLLER_CPUACCT,
+    VIR_CGROUP_CONTROLLER_CPUSET,
     VIR_CGROUP_CONTROLLER_MEMORY,
     VIR_CGROUP_CONTROLLER_DEVICES,
-    VIR_CGROUP_CONTROLLER_CPUSET,
 
     VIR_CGROUP_CONTROLLER_LAST
 };
 
 VIR_ENUM_DECL(virCgroupController);
 VIR_ENUM_IMPL(virCgroupController, VIR_CGROUP_CONTROLLER_LAST,
-              "cpuacct", "memory", "devices", "cpuset");
+              "cpu", "cpuacct", "cpuset", "memory", "devices");
+
+struct virCgroupController {
+    int type;
+    char *mountPoint;
+    char *placement;
+};
 
 struct virCgroup {
     char *path;
+
+    struct virCgroupController controllers[VIR_CGROUP_CONTROLLER_LAST];
 };
 
 /**
@@ -55,133 +64,218 @@ struct virCgroup {
  */
 void virCgroupFree(virCgroupPtr *group)
 {
-    if (*group != NULL) {
-        VIR_FREE((*group)->path);
-        VIR_FREE(*group);
+    int i;
+
+    if (*group == NULL)
+        return;
+
+    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        VIR_FREE((*group)->controllers[i].mountPoint);
+        VIR_FREE((*group)->controllers[i].placement);
     }
+
+    VIR_FREE((*group)->path);
+    VIR_FREE(*group);
 }
 
-static virCgroupPtr virCgroupGetMount(const char *controller)
+
+/*
+ * Process /proc/mounts figuring out what controllers are
+ * mounted and where
+ */
+static int virCgroupDetectMounts(virCgroupPtr group)
 {
+    int i;
     FILE *mounts = NULL;
     struct mntent entry;
     char buf[CGROUP_MAX_VAL];
-    virCgroupPtr root = NULL;
-
-    if (VIR_ALLOC(root) != 0)
-        return NULL;
 
     mounts = fopen("/proc/mounts", "r");
     if (mounts == NULL) {
-        DEBUG0("Unable to open /proc/mounts: %m");
-        goto err;
+        VIR_ERROR0("Unable to open /proc/mounts");
+        return -ENOENT;
     }
 
     while (getmntent_r(mounts, &entry, buf, sizeof(buf)) != NULL) {
-        if (STREQ(entry.mnt_type, "cgroup") &&
-            (strstr(entry.mnt_opts, controller))) {
-            root->path = strdup(entry.mnt_dir);
-            break;
+        if (STRNEQ(entry.mnt_type, "cgroup"))
+            continue;
+
+        for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+            const char *typestr = virCgroupControllerTypeToString(i);
+            int typelen = strlen(typestr);
+            char *tmp = entry.mnt_opts;
+            while (tmp) {
+                char *next = strchr(tmp, ',');
+                int len;
+                if (next) {
+                    len = next-tmp;
+                    next++;
+                } else {
+                    len = strlen(tmp);
+                }
+                if (typelen == len && STREQLEN(typestr, tmp, len) &&
+                    !(group->controllers[i].mountPoint = strdup(entry.mnt_dir)))
+                    goto no_memory;
+                tmp = next;
+            }
         }
-    }
-
-    DEBUG("Mount for %s is %s\n", controller, root->path);
-
-    if (root->path == NULL) {
-        DEBUG0("Did not find cgroup mount");
-        goto err;
     }
 
     fclose(mounts);
 
-    return root;
-err:
-    if (mounts != NULL)
-        fclose(mounts);
-    virCgroupFree(&root);
+    return 0;
 
-    return NULL;
+no_memory:
+    if (mounts)
+        fclose(mounts);
+    return -ENOMEM;
 }
 
-/**
- * virCgroupHaveSupport:
- *
- * Returns 0 if support is present, negative if not
+
+/*
+ * Process /proc/self/cgroup figuring out what cgroup
+ * sub-path the current process is assigned to. ie not
+ * neccessarily in the root
  */
-int virCgroupHaveSupport(void)
+static int virCgroupDetectPlacement(virCgroupPtr group)
 {
-    virCgroupPtr root;
+    int i;
+    FILE *mapping  = NULL;
+    char line[1024];
+
+    mapping = fopen("/proc/self/cgroup", "r");
+    if (mapping == NULL) {
+        VIR_ERROR0("Unable to open /proc/self/cgroup");
+        return -ENOENT;
+    }
+
+    while (fgets(line, sizeof(line), mapping) != NULL) {
+        char *controllers = strchr(line, ':');
+        char *path = controllers ? strchr(controllers+1, ':') : NULL;
+        char *nl = path ? strchr(path, '\n') : NULL;
+
+        if (!controllers || !path)
+            continue;
+
+        if (nl)
+            *nl = '\0';
+
+        *path = '\0';
+        controllers++;
+        path++;
+
+        for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+            const char *typestr = virCgroupControllerTypeToString(i);
+            int typelen = strlen(typestr);
+            char *tmp = controllers;
+            while (tmp) {
+                char *next = strchr(tmp, ',');
+                int len;
+                if (next) {
+                    len = next-tmp;
+                    next++;
+                } else {
+                    len = strlen(tmp);
+                }
+                if (typelen == len && STREQLEN(typestr, tmp, len) &&
+                    !(group->controllers[i].placement = strdup(STREQ(path, "/") ? "" : path)))
+                    goto no_memory;
+
+                tmp = next;
+            }
+        }
+    }
+
+    fclose(mapping);
+
+    return 0;
+
+no_memory:
+    return -ENOMEM;
+
+}
+
+static int virCgroupDetect(virCgroupPtr group)
+{
+    int any = 0;
+    int rc;
     int i;
 
-    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
-        const char *label = virCgroupControllerTypeToString(i);
-        root = virCgroupGetMount(label);
-        if (root == NULL)
-            return -1;
-        virCgroupFree(&root);
+    rc = virCgroupDetectMounts(group);
+    if (rc < 0) {
+        VIR_ERROR("Failed to detect mounts for %s", group->path);
+        return rc;
     }
+
+    /* Check that at least 1 controller is available */
+    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        if (group->controllers[i].mountPoint != NULL)
+            any = 1;
+    }
+    if (!any)
+        return -ENXIO;
+
+
+    rc = virCgroupDetectPlacement(group);
+
+    if (rc == 0) {
+        /* Check that for every mounted controller, we found our placement */
+        for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+            if (!group->controllers[i].mountPoint)
+                continue;
+
+            if (!group->controllers[i].placement) {
+                VIR_ERROR("Could not find placement for controller %s at %s",
+                          virCgroupControllerTypeToString(i),
+                          group->controllers[i].placement);
+                rc = -ENOENT;
+                break;
+            }
+
+            VIR_DEBUG("Detected mount/mapping %i:%s at %s in %s", i,
+                      virCgroupControllerTypeToString(i),
+                      group->controllers[i].mountPoint,
+                      group->controllers[i].placement);
+        }
+    } else {
+        VIR_ERROR("Failed to detect mapping for %s", group->path);
+    }
+
+    return rc;
+}
+
+
+static int virCgroupPathOfController(virCgroupPtr group,
+                                     int controller,
+                                     const char *key,
+                                     char **path)
+{
+    if (group->controllers[controller].mountPoint == NULL)
+        return -ENOENT;
+
+    if (group->controllers[controller].placement == NULL)
+        return -ENOENT;
+
+    if (virAsprintf(path, "%s%s%s/%s",
+                    group->controllers[controller].mountPoint,
+                    group->controllers[controller].placement,
+                    STREQ(group->path, "/") ? "" : group->path,
+                    key ? key : "") == -1)
+        return -ENOMEM;
 
     return 0;
 }
 
-static int virCgroupPathOfGroup(const char *group,
-                                const char *controller,
-                                char **path)
-{
-    virCgroupPtr root = NULL;
-    int rc = 0;
-
-    root = virCgroupGetMount(controller);
-    if (root == NULL) {
-        rc = -ENOTDIR;
-        goto out;
-    }
-
-    if (virAsprintf(path, "%s/%s", root->path, group) == -1)
-        rc = -ENOMEM;
-out:
-    virCgroupFree(&root);
-
-    return rc;
-}
-
-static int virCgroupPathOf(const char *grppath,
-                           const char *key,
-                           char **path)
-{
-    virCgroupPtr root;
-    int rc = 0;
-    char *controller = NULL;
-
-    if (strchr(key, '.') == NULL)
-        return -EINVAL;
-
-    if (sscanf(key, "%a[^.]", &controller) != 1)
-        return -EINVAL;
-
-    root = virCgroupGetMount(controller);
-    if (root == NULL) {
-        rc = -ENOTDIR;
-        goto out;
-    }
-
-    if (virAsprintf(path, "%s/%s/%s", root->path, grppath, key) == -1)
-        rc = -ENOMEM;
-out:
-    virCgroupFree(&root);
-    VIR_FREE(controller);
-
-    return rc;
-}
 
 static int virCgroupSetValueStr(virCgroupPtr group,
+                                int controller,
                                 const char *key,
                                 const char *value)
 {
     int rc = 0;
     char *keypath = NULL;
 
-    rc = virCgroupPathOf(group->path, key, &keypath);
+    rc = virCgroupPathOfController(group, controller, key, &keypath);
     if (rc != 0)
         return rc;
 
@@ -200,6 +294,7 @@ static int virCgroupSetValueStr(virCgroupPtr group,
 }
 
 static int virCgroupGetValueStr(virCgroupPtr group,
+                                int controller,
                                 const char *key,
                                 char **value)
 {
@@ -208,7 +303,7 @@ static int virCgroupGetValueStr(virCgroupPtr group,
 
     *value = NULL;
 
-    rc = virCgroupPathOf(group->path, key, &keypath);
+    rc = virCgroupPathOfController(group, controller, key, &keypath);
     if (rc != 0) {
         DEBUG("No path of %s, %s", group->path, key);
         return rc;
@@ -230,6 +325,7 @@ static int virCgroupGetValueStr(virCgroupPtr group,
 }
 
 static int virCgroupSetValueU64(virCgroupPtr group,
+                                int controller,
                                 const char *key,
                                 uint64_t value)
 {
@@ -239,7 +335,7 @@ static int virCgroupSetValueU64(virCgroupPtr group,
     if (virAsprintf(&strval, "%" PRIu64, value) == -1)
         return -ENOMEM;
 
-    rc = virCgroupSetValueStr(group, key, strval);
+    rc = virCgroupSetValueStr(group, controller, key, strval);
 
     VIR_FREE(strval);
 
@@ -251,6 +347,7 @@ static int virCgroupSetValueU64(virCgroupPtr group,
 /* This is included for completeness, but not yet used */
 
 static int virCgroupSetValueI64(virCgroupPtr group,
+                                int controller,
                                 const char *key,
                                 int64_t value)
 {
@@ -260,7 +357,7 @@ static int virCgroupSetValueI64(virCgroupPtr group,
     if (virAsprintf(&strval, "%" PRIi64, value) == -1)
         return -ENOMEM;
 
-    rc = virCgroupSetValueStr(group, key, strval);
+    rc = virCgroupSetValueStr(group, controller, key, strval);
 
     VIR_FREE(strval);
 
@@ -268,13 +365,14 @@ static int virCgroupSetValueI64(virCgroupPtr group,
 }
 
 static int virCgroupGetValueI64(virCgroupPtr group,
+                                int controller,
                                 const char *key,
                                 int64_t *value)
 {
     char *strval = NULL;
     int rc = 0;
 
-    rc = virCgroupGetValueStr(group, key, &strval);
+    rc = virCgroupGetValueStr(group, controller, key, &strval);
     if (rc != 0)
         goto out;
 
@@ -288,13 +386,14 @@ out:
 #endif
 
 static int virCgroupGetValueU64(virCgroupPtr group,
+                                int controller,
                                 const char *key,
                                 uint64_t *value)
 {
     char *strval = NULL;
     int rc = 0;
 
-    rc = virCgroupGetValueStr(group, key, &strval);
+    rc = virCgroupGetValueStr(group, controller, key, &strval);
     if (rc != 0)
         goto out;
 
@@ -306,81 +405,38 @@ out:
     return rc;
 }
 
-static int _virCgroupInherit(const char *path,
-                             const char *key)
-{
-    int rc = 0;
-    int fd = -1;
-    char buf[CGROUP_MAX_VAL];
-    char *keypath = NULL;
-    char *pkeypath = NULL;
 
-    memset(buf, 0, sizeof(buf));
-
-    if (virAsprintf(&keypath, "%s/%s", path, key) == -1) {
-        rc = -ENOMEM;
-        goto out;
-    }
-
-    if (access(keypath, F_OK) != 0) {
-        DEBUG("Group %s has no key %s\n", path, key);
-        goto out;
-    }
-
-    if (virAsprintf(&pkeypath, "%s/../%s", path, key) == -1) {
-        rc = -ENOMEM;
-        VIR_FREE(keypath);
-        goto out;
-    }
-
-    fd = open(pkeypath, O_RDONLY);
-    if (fd < 0) {
-        rc = -errno;
-        goto out;
-    }
-
-    if (saferead(fd, buf, sizeof(buf)) <= 0) {
-        rc = -errno;
-        goto out;
-    }
-
-    close(fd);
-
-    fd = open(keypath, O_WRONLY);
-    if (fd < 0) {
-        rc = -errno;
-        goto out;
-    }
-
-    if (safewrite(fd, buf, strlen(buf)) != strlen(buf)) {
-        rc = -errno;
-        goto out;
-    }
-
-out:
-    VIR_FREE(keypath);
-    VIR_FREE(pkeypath);
-    close(fd);
-
-    return rc;
-}
-
-static int virCgroupInherit(const char *grppath)
+static int virCgroupCpuSetInherit(virCgroupPtr parent, virCgroupPtr group)
 {
     int i;
     int rc = 0;
     const char *inherit_values[] = {
         "cpuset.cpus",
         "cpuset.mems",
-        NULL
     };
 
-    for (i = 0; inherit_values[i] != NULL; i++) {
-        const char *key = inherit_values[i];
+    VIR_DEBUG("Setting up inheritance %s -> %s", parent->path, group->path);
+    for (i = 0; i < ARRAY_CARDINALITY(inherit_values) ; i++) {
+        char *value;
 
-        rc = _virCgroupInherit(grppath, key);
+        rc = virCgroupGetValueStr(parent,
+                                  VIR_CGROUP_CONTROLLER_CPUSET,
+                                  inherit_values[i],
+                                  &value);
         if (rc != 0) {
-            DEBUG("inherit of %s failed\n", key);
+            VIR_ERROR("Failed to get %s %d", inherit_values[i], rc);
+            break;
+        }
+
+        VIR_DEBUG("Inherit %s = %s", inherit_values[i], value);
+
+        rc = virCgroupSetValueStr(group,
+                                  VIR_CGROUP_CONTROLLER_CPUSET,
+                                  inherit_values[i],
+                                  value);
+
+        if (rc != 0) {
+            VIR_ERROR("Failed to set %s %d", inherit_values[i], rc);
             break;
         }
     }
@@ -388,35 +444,37 @@ static int virCgroupInherit(const char *grppath)
     return rc;
 }
 
-static int virCgroupMakeGroup(const char *name)
+static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group)
 {
     int i;
     int rc = 0;
 
+    VIR_DEBUG("Make group %s", group->path);
     for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
-        const char *label = virCgroupControllerTypeToString(i);
         char *path = NULL;
-        virCgroupPtr root;
 
-        root = virCgroupGetMount(label);
-        if (root == NULL)
+        /* Skip over controllers that aren't mounted */
+        if (!group->controllers[i].mountPoint)
             continue;
 
-        rc = virCgroupPathOfGroup(name, label, &path);
-        if (rc != 0) {
-            virCgroupFree(&root);
-            break;
-        }
+        rc = virCgroupPathOfController(group, i, "", &path);
+        if (rc < 0)
+            return rc;
 
-        virCgroupFree(&root);
-
+        VIR_DEBUG("Make controller %s", path);
         if (access(path, F_OK) != 0) {
             if (mkdir(path, 0755) < 0) {
                 rc = -errno;
                 VIR_FREE(path);
                 break;
             }
-            virCgroupInherit(path);
+            if (group->controllers[VIR_CGROUP_CONTROLLER_CPUSET].mountPoint != NULL &&
+                (i == VIR_CGROUP_CONTROLLER_CPUSET ||
+                 STREQ(group->controllers[i].mountPoint, group->controllers[VIR_CGROUP_CONTROLLER_CPUSET].mountPoint))) {
+                rc = virCgroupCpuSetInherit(parent, group);
+                if (rc != 0)
+                    break;
+            }
         }
 
         VIR_FREE(path);
@@ -425,134 +483,107 @@ static int virCgroupMakeGroup(const char *name)
     return rc;
 }
 
-static int virCgroupRoot(virCgroupPtr *root)
+
+static int virCgroupRoot(virCgroupPtr *group);
+/**
+ * virCgroupHaveSupport:
+ *
+ * Returns 0 if support is present, negative if not
+ */
+int virCgroupHaveSupport(void)
 {
-    int rc = 0;
-    char *grppath = NULL;
+    virCgroupPtr root;
+    int i;
+    int rc;
+    int any = 0;
 
-    if (VIR_ALLOC((*root)) != 0) {
-        rc = -ENOMEM;
-        goto out;
+    rc = virCgroupRoot(&root);
+    if (rc < 0)
+        return rc;
+
+    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        if (root->controllers[i].mountPoint != NULL)
+            any = 1;
     }
 
-    (*root)->path = strdup("libvirt");
-    if ((*root)->path == NULL) {
-        rc = -ENOMEM;
-        goto out;
-    }
+    virCgroupFree(&root);
 
-    rc = virCgroupMakeGroup((*root)->path);
-out:
-    if (rc != 0)
-        virCgroupFree(root);
-    VIR_FREE(grppath);
+    if (any)
+        return 0;
 
-    return rc;
+    return -ENOENT;
 }
 
-static int virCgroupNew(virCgroupPtr *parent,
-                        const char *group,
-                        virCgroupPtr *newgroup)
+static int virCgroupNew(const char *path,
+                        virCgroupPtr *group)
 {
     int rc = 0;
     char *typpath = NULL;
 
-    *newgroup = NULL;
+    VIR_DEBUG("New group %s", path);
+    *group = NULL;
 
-    if (*parent == NULL) {
-        rc = virCgroupRoot(parent);
-        if (rc != 0)
-            goto err;
-    }
-
-    if (VIR_ALLOC((*newgroup)) != 0) {
+    if (VIR_ALLOC((*group)) != 0) {
         rc = -ENOMEM;
         goto err;
     }
 
-    rc = virAsprintf(&((*newgroup)->path),
-                     "%s/%s",
-                     (*parent)->path,
-                     group);
-    if (rc == -1) {
+    if (!((*group)->path = strdup(path))) {
         rc = -ENOMEM;
         goto err;
     }
 
-    rc = 0;
+    rc = virCgroupDetect(*group);
+    if (rc < 0)
+        goto err;
 
     return rc;
 err:
-    virCgroupFree(newgroup);
-    *newgroup = NULL;
+    virCgroupFree(group);
+    *group = NULL;
 
     VIR_FREE(typpath);
 
     return rc;
 }
 
-static int virCgroupOpen(virCgroupPtr parent,
-                         const char *group,
-                         virCgroupPtr *newgroup)
+static int virCgroupRoot(virCgroupPtr *group)
 {
-    int rc = 0;
-    const char *label = virCgroupControllerTypeToString(0);
-    char *grppath = NULL;
-    bool free_parent = (parent == NULL);
-
-    rc = virCgroupNew(&parent, group, newgroup);
-    if (rc != 0)
-        goto err;
-
-    if (free_parent)
-        virCgroupFree(&parent);
-
-    rc = virCgroupPathOfGroup((*newgroup)->path,
-                              label,
-                              &grppath);
-    if (rc != 0)
-        goto err;
-
-    if (access(grppath, F_OK) != 0) {
-        rc = -ENOENT;
-        goto err;
-    }
-
-    return rc;
-err:
-    virCgroupFree(newgroup);
-    *newgroup = NULL;
-
-    return rc;
+    return virCgroupNew("/", group);
 }
 
 static int virCgroupCreate(virCgroupPtr parent,
-                           const char *group,
-                           virCgroupPtr *newgroup)
+                           const char *name,
+                           virCgroupPtr *group)
 {
     int rc = 0;
-    bool free_parent = (parent == NULL);
+    char *path;
 
-    rc = virCgroupNew(&parent, group, newgroup);
+    VIR_DEBUG("Creating %s under %s", name, parent->path);
+
+    rc = virAsprintf(&path, "%s/%s",
+                     STREQ(parent->path, "/") ?
+                     "" : parent->path,
+                     name);
+    if (rc < 0) {
+        rc = -ENOMEM;
+        goto err;
+    }
+
+    rc = virCgroupNew(path, group);
     if (rc != 0) {
         DEBUG0("Unable to allocate new virCgroup structure");
         goto err;
     }
 
-    rc = virCgroupMakeGroup((*newgroup)->path);
+    rc = virCgroupMakeGroup(parent, *group);
     if (rc != 0)
         goto err;
 
-    if (free_parent)
-        virCgroupFree(&parent);
-
     return rc;
 err:
-    virCgroupFree(newgroup);
-    *newgroup = NULL;
-
-    if (free_parent)
-        virCgroupFree(&parent);
+    virCgroupFree(group);
+    *group = NULL;
 
     return rc;
 }
@@ -571,15 +602,20 @@ int virCgroupRemove(virCgroupPtr group)
     char *grppath = NULL;
 
     for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
-        const char *label = virCgroupControllerTypeToString(i);
-        if (virCgroupPathOfGroup(group->path,
-                                 label,
-                                 &grppath) != 0)
+        /* Skip over controllers not mounted */
+        if (!group->controllers[i].mountPoint)
             continue;
 
-        if (rmdir(grppath) != 0)
-            rc = -errno;
+        if (virCgroupPathOfController(group,
+                                      i,
+                                      NULL,
+                                      &grppath) != 0)
+            continue;
 
+        DEBUG("Removing cgroup %s", grppath);
+        if (rmdir(grppath) != 0 && errno != ENOENT) {
+            rc = -errno;
+        }
         VIR_FREE(grppath);
     }
 
@@ -597,48 +633,14 @@ int virCgroupRemove(virCgroupPtr group)
 int virCgroupAddTask(virCgroupPtr group, pid_t pid)
 {
     int rc = 0;
-    int fd = -1;
     int i;
-    char *grppath = NULL;
-    char *taskpath = NULL;
-    char *pidstr = NULL;
 
     for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
-        const char *label = virCgroupControllerTypeToString(i);
+        /* Skip over controllers not mounted */
+        if (!group->controllers[i].mountPoint)
+            continue;
 
-        rc = virCgroupPathOfGroup(group->path,
-                                  label,
-                                  &grppath);
-        if (rc != 0)
-            goto done;
-
-        if (virAsprintf(&taskpath, "%s/tasks", grppath) == -1) {
-            rc = -ENOMEM;
-            goto done;
-        }
-
-        fd = open(taskpath, O_WRONLY);
-        if (fd < 0) {
-            rc = -errno;
-            goto done;
-        }
-
-        if (virAsprintf(&pidstr, "%lu", (unsigned long)pid) == -1) {
-            rc = -ENOMEM;
-            goto done;
-        }
-
-        if (safewrite(fd, pidstr, strlen(pidstr)) <= 0) {
-            rc = -errno;
-            goto done;
-        }
-
-    done:
-        VIR_FREE(grppath);
-        VIR_FREE(taskpath);
-        VIR_FREE(pidstr);
-        close(fd);
-
+        rc = virCgroupSetValueU64(group, i, "tasks", (unsigned long long)pid);
         if (rc != 0)
             break;
     }
@@ -660,21 +662,27 @@ int virCgroupForDomain(virDomainDefPtr def,
                        virCgroupPtr *group)
 {
     int rc;
+    virCgroupPtr rootgrp = NULL;
+    virCgroupPtr daemongrp = NULL;
     virCgroupPtr typegrp = NULL;
 
-    rc = virCgroupOpen(NULL, driverName, &typegrp);
-    if (rc == -ENOENT) {
-        rc = virCgroupCreate(NULL, driverName, &typegrp);
-        if (rc != 0)
-            goto out;
-    } else if (rc != 0)
+    rc = virCgroupRoot(&rootgrp);
+    if (rc != 0)
         goto out;
 
-    rc = virCgroupOpen(typegrp, def->name, group);
-    if (rc == -ENOENT)
-        rc = virCgroupCreate(typegrp, def->name, group);
+    rc = virCgroupCreate(rootgrp, "libvirt", &daemongrp);
+    if (rc != 0)
+        goto out;
+
+    rc = virCgroupCreate(daemongrp, driverName, &typegrp);
+    if (rc != 0)
+        goto out;
+
+    rc = virCgroupCreate(typegrp, def->name, group);
 out:
     virCgroupFree(&typegrp);
+    virCgroupFree(&daemongrp);
+    virCgroupFree(&rootgrp);
 
     return rc;
 }
@@ -690,6 +698,7 @@ out:
 int virCgroupSetMemory(virCgroupPtr group, unsigned long kb)
 {
     return virCgroupSetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_MEMORY,
                                 "memory.limit_in_bytes",
                                 kb << 10);
 }
@@ -704,8 +713,9 @@ int virCgroupSetMemory(virCgroupPtr group, unsigned long kb)
 int virCgroupDenyAllDevices(virCgroupPtr group)
 {
     return virCgroupSetValueStr(group,
-                              "devices.deny",
-                              "a");
+                                VIR_CGROUP_CONTROLLER_DEVICES,
+                                "devices.deny",
+                                "a");
 }
 
 /**
@@ -732,6 +742,7 @@ int virCgroupAllowDevice(virCgroupPtr group,
     }
 
     rc = virCgroupSetValueStr(group,
+                              VIR_CGROUP_CONTROLLER_DEVICES,
                               "devices.allow",
                               devstr);
 out:
@@ -762,6 +773,7 @@ int virCgroupAllowDeviceMajor(virCgroupPtr group,
     }
 
     rc = virCgroupSetValueStr(group,
+                              VIR_CGROUP_CONTROLLER_DEVICES,
                               "devices.allow",
                               devstr);
  out:
@@ -772,15 +784,21 @@ int virCgroupAllowDeviceMajor(virCgroupPtr group,
 
 int virCgroupSetCpuShares(virCgroupPtr group, unsigned long shares)
 {
-    return virCgroupSetValueU64(group, "cpu.shares", (uint64_t)shares);
+    return virCgroupSetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.shares", (uint64_t)shares);
 }
 
 int virCgroupGetCpuShares(virCgroupPtr group, unsigned long *shares)
 {
-    return virCgroupGetValueU64(group, "cpu.shares", (uint64_t *)shares);
+    return virCgroupGetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "cpu.shares", (uint64_t *)shares);
 }
 
 int virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage)
 {
-    return virCgroupGetValueU64(group, "cpuacct.usage", (uint64_t *)usage);
+    return virCgroupGetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_CPUACCT,
+                                "cpuacct.usage", (uint64_t *)usage);
 }
