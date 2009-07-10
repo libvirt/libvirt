@@ -1431,7 +1431,7 @@ static void *qemudWorker(void *data)
 
     while (1) {
         struct qemud_client *client = NULL;
-        struct qemud_client_message *reply;
+        struct qemud_client_message *msg;
 
         virMutexLock(&server->lock);
         while (((client = qemudPendingJob(server)) == NULL) &&
@@ -1454,24 +1454,18 @@ static void *qemudWorker(void *data)
         client->refs++;
 
         /* Remove our message from dispatch queue while we use it */
-        reply = qemudClientMessageQueueServe(&client->dx);
+        msg = qemudClientMessageQueueServe(&client->dx);
 
         /* This function drops the lock during dispatch,
          * and re-acquires it before returning */
-        if (remoteDecodeClientMessageHeader(reply) < 0 ||
-            remoteDispatchClientRequest (server, client, reply) < 0) {
-            VIR_FREE(reply);
+        if (remoteDecodeClientMessageHeader(msg) < 0 ||
+            remoteDispatchClientRequest (server, client, msg) < 0) {
+            VIR_FREE(msg);
             qemudDispatchClientFailure(client);
             client->refs--;
             virMutexUnlock(&client->lock);
             continue;
         }
-
-        /* Put reply on end of tx queue to send out  */
-        qemudClientMessageQueuePush(&client->tx, reply);
-
-        if (qemudRegisterClientEvent(server, client, 1) < 0)
-            qemudDispatchClientFailure(client);
 
         client->refs--;
         virMutexUnlock(&client->lock);

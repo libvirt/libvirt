@@ -387,6 +387,12 @@ rpc_error:
     msg->bufferLength = len;
     msg->bufferOffset = 0;
 
+    /* Put reply on end of tx queue to send out  */
+    qemudClientMessageQueuePush(&client->tx, msg);
+
+    if (qemudRegisterClientEvent(server, client, 1) < 0)
+        qemudDispatchClientFailure(client);
+
     return 0;
 
 fatal_error:
