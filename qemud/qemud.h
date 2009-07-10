@@ -90,6 +90,19 @@ struct qemud_client_message {
     struct qemud_client_message *next;
 };
 
+/* Allow for filtering of incoming messages to a custom
+ * dispatch processing queue, instead of client->dx.
+ */
+typedef int (*qemud_client_filter_func)(struct qemud_client_message *msg, void *opaque);
+struct qemud_client_filter {
+    qemud_client_filter_func query;
+    void *opaque;
+
+    struct qemud_client_message *dx;
+
+    struct qemud_client_filter *next;
+};
+
 /* Stores the per-client connection state */
 struct qemud_client {
     virMutex lock;
@@ -134,6 +147,9 @@ struct qemud_client {
     /* Zero or many messages waiting for transmit
      * back to client, including async events */
     struct qemud_client_message *tx;
+    /* Filters to capture messages that would otherwise
+     * end up on the 'dx' queue */
+    struct qemud_client_filter *filters;
 
     /* This is only valid if a remote open call has been made on this
      * connection, otherwise it will be NULL.  Also if remote close is

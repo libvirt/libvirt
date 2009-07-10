@@ -1457,8 +1457,7 @@ static void *qemudWorker(void *data)
 
         /* This function drops the lock during dispatch,
          * and re-acquires it before returning */
-        if (remoteDecodeClientMessageHeader(msg) < 0 ||
-            remoteDispatchClientRequest (server, client, msg) < 0) {
+        if (remoteDispatchClientRequest (server, client, msg) < 0) {
             VIR_FREE(msg);
             qemudDispatchClientFailure(client);
             client->refs--;
@@ -1705,9 +1704,30 @@ readmore:
            waiting for us */
         goto readmore;
     } else {
+        /* Grab the completed message */
+        struct qemud_client_message *msg = qemudClientMessageQueueServe(&client->rx);
+        struct qemud_client_filter *filter;
+
+        /* Decode the header so we can use it for routing decisions */
+        if (remoteDecodeClientMessageHeader(msg) < 0) {
+            VIR_FREE(msg);
+            qemudDispatchClientFailure(client);
+        }
+
+        /* Check if any filters match this message */
+        filter = client->filters;
+        while (filter) {
+            if ((filter->query)(msg, filter->opaque)) {
+                qemudClientMessageQueuePush(&filter->dx, msg);
+                msg = NULL;
+                break;
+            }
+            filter = filter->next;
+        }
+
         /* Move completed message to the end of the dispatch queue */
-        qemudClientMessageQueuePush(&client->dx, client->rx);
-        client->rx = NULL;
+        if (msg)
+            qemudClientMessageQueuePush(&client->dx, msg);
         client->nrequests++;
 
         /* Possibly need to create another receive buffer */
