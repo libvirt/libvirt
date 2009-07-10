@@ -29,6 +29,9 @@
 
 
 int
+remoteDecodeClientMessageHeader (struct qemud_client_message *req);
+
+int
 remoteDispatchClientRequest (struct qemud_server *server,
                              struct qemud_client *client,
                              struct qemud_client_message *req);

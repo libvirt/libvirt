@@ -124,13 +124,50 @@ void remoteDispatchConnError (remote_error *rerr,
 
 
 /*
+ * @msg: the complete incoming message, whose header to decode
+ *
+ * Decodes the header part of the client message, but does not
+ * validate the decoded fields in the header.
+ *
+ * returns 0 if successfully decoded, -1 upon fatal error
+ */
+int
+remoteDecodeClientMessageHeader (struct qemud_client_message *msg)
+{
+    XDR xdr;
+    int ret = -1;
+
+    msg->bufferOffset = REMOTE_MESSAGE_HEADER_XDR_LEN;
+
+    /* Parse the header. */
+    xdrmem_create (&xdr,
+                   msg->buffer + msg->bufferOffset,
+                   msg->bufferLength - msg->bufferOffset,
+                   XDR_DECODE);
+
+    if (!xdr_remote_message_header (&xdr, &msg->hdr))
+        goto cleanup;
+
+    msg->bufferOffset += xdr_getpos(&xdr);
+
+    ret = 0;
+
+cleanup:
+    xdr_destroy(&xdr);
+    return ret;
+}
+
+
+/*
  * @server: the unlocked server object
  * @client: the locked client object
- * @msg: the complete incoming message packet
+ * @msg: the complete incoming message packet, with header already decoded
  *
  * This function gets called from qemud when it pulls a incoming
  * remote protocol messsage off the dispatch queue for processing.
  *
+ * The @msg parameter must have had its header decoded already by
+ * calling remoteDecodeClientMessageHeader
  *
  * Returns 0 if the message was dispatched, -1 upon fatal error
  */
@@ -140,7 +177,7 @@ remoteDispatchClientRequest (struct qemud_server *server,
                              struct qemud_client_message *msg)
 {
     XDR xdr;
-    remote_message_header req, rep;
+    remote_message_header rep;
     remote_error rerr;
     dispatch_args args;
     dispatch_ret ret;
@@ -153,36 +190,28 @@ remoteDispatchClientRequest (struct qemud_server *server,
     memset(&ret, 0, sizeof ret);
     memset(&rerr, 0, sizeof rerr);
 
-    /* Parse the header. */
-    xdrmem_create (&xdr,
-                   msg->buffer + REMOTE_MESSAGE_HEADER_XDR_LEN,
-                   msg->bufferLength - REMOTE_MESSAGE_HEADER_XDR_LEN,
-                   XDR_DECODE);
-
-    if (!xdr_remote_message_header (&xdr, &req))
-        goto fatal_error;
 
     /* Check version, etc. */
-    if (req.prog != REMOTE_PROGRAM) {
+    if (msg->hdr.prog != REMOTE_PROGRAM) {
         remoteDispatchFormatError (&rerr,
                                    _("program mismatch (actual %x, expected %x)"),
-                                   req.prog, REMOTE_PROGRAM);
+                                   msg->hdr.prog, REMOTE_PROGRAM);
         goto rpc_error;
     }
-    if (req.vers != REMOTE_PROTOCOL_VERSION) {
+    if (msg->hdr.vers != REMOTE_PROTOCOL_VERSION) {
         remoteDispatchFormatError (&rerr,
                                    _("version mismatch (actual %x, expected %x)"),
-                                   req.vers, REMOTE_PROTOCOL_VERSION);
+                                   msg->hdr.vers, REMOTE_PROTOCOL_VERSION);
         goto rpc_error;
     }
-    if (req.direction != REMOTE_CALL) {
+    if (msg->hdr.direction != REMOTE_CALL) {
         remoteDispatchFormatError (&rerr, _("direction (%d) != REMOTE_CALL"),
-                                   (int) req.direction);
+                                   (int) msg->hdr.direction);
         goto rpc_error;
     }
-    if (req.status != REMOTE_OK) {
+    if (msg->hdr.status != REMOTE_OK) {
         remoteDispatchFormatError (&rerr, _("status (%d) != REMOTE_OK"),
-                                   (int) req.status);
+                                   (int) msg->hdr.status);
         goto rpc_error;
     }
 
@@ -190,11 +219,11 @@ remoteDispatchClientRequest (struct qemud_server *server,
      * except for authentication ones
      */
     if (client->auth) {
-        if (req.proc != REMOTE_PROC_AUTH_LIST &&
-            req.proc != REMOTE_PROC_AUTH_SASL_INIT &&
-            req.proc != REMOTE_PROC_AUTH_SASL_START &&
-            req.proc != REMOTE_PROC_AUTH_SASL_STEP &&
-            req.proc != REMOTE_PROC_AUTH_POLKIT
+        if (msg->hdr.proc != REMOTE_PROC_AUTH_LIST &&
+            msg->hdr.proc != REMOTE_PROC_AUTH_SASL_INIT &&
+            msg->hdr.proc != REMOTE_PROC_AUTH_SASL_START &&
+            msg->hdr.proc != REMOTE_PROC_AUTH_SASL_STEP &&
+            msg->hdr.proc != REMOTE_PROC_AUTH_POLKIT
             ) {
             /* Explicitly *NOT* calling  remoteDispatchAuthError() because
                we want back-compatability with libvirt clients which don't
@@ -204,19 +233,25 @@ remoteDispatchClientRequest (struct qemud_server *server,
         }
     }
 
-    data = remoteGetDispatchData(req.proc);
+    data = remoteGetDispatchData(msg->hdr.proc);
 
     if (!data) {
         remoteDispatchFormatError (&rerr, _("unknown procedure: %d"),
-                                   req.proc);
+                                   msg->hdr.proc);
         goto rpc_error;
     }
 
-    /* De-serialize args off the wire */
+    /* De-serialize payload with args from the wire message */
+    xdrmem_create (&xdr,
+                   msg->buffer + msg->bufferOffset,
+                   msg->bufferLength - msg->bufferOffset,
+                   XDR_DECODE);
     if (!((data->args_filter)(&xdr, &args))) {
+        xdr_destroy (&xdr);
         remoteDispatchFormatError (&rerr, "%s", _("parse args failed"));
         goto rpc_error;
     }
+    xdr_destroy (&xdr);
 
     /* Call function. */
     conn = client->conn;
@@ -241,14 +276,13 @@ remoteDispatchClientRequest (struct qemud_server *server,
     xdr_free (data->args_filter, (char*)&args);
 
 rpc_error:
-    xdr_destroy (&xdr);
 
     /* Return header. */
-    rep.prog = req.prog;
-    rep.vers = req.vers;
-    rep.proc = req.proc;
+    rep.prog = msg->hdr.prog;
+    rep.vers = msg->hdr.vers;
+    rep.proc = msg->hdr.proc;
     rep.direction = REMOTE_REPLY;
-    rep.serial = req.serial;
+    rep.serial = msg->hdr.serial;
     rep.status = rv < 0 ? REMOTE_ERROR : REMOTE_OK;
 
     /* Serialise the return header. */

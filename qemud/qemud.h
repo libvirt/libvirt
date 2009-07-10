@@ -85,6 +85,8 @@ struct qemud_client_message {
 
     int async : 1;
 
+    remote_message_header hdr;
+
     struct qemud_client_message *next;
 };
 

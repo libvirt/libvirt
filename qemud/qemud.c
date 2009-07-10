@@ -1458,7 +1458,8 @@ static void *qemudWorker(void *data)
 
         /* This function drops the lock during dispatch,
          * and re-acquires it before returning */
-        if (remoteDispatchClientRequest (server, client, reply) < 0) {
+        if (remoteDecodeClientMessageHeader(reply) < 0 ||
+            remoteDispatchClientRequest (server, client, reply) < 0) {
             VIR_FREE(reply);
             qemudDispatchClientFailure(client);
             client->refs--;
