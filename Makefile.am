@@ -48,6 +48,8 @@ cov: clean-cov
 clean-cov:
 	rm -rf $(top_builddir)/coverage
 
+MAINTAINERCLEANFILES = .git-module-status
+
 # disable this check
 distuninstallcheck:
 

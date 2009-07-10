@@ -2,6 +2,7 @@
 *.o
 *~
 .git
+.git-module-status
 ABOUT-NLS
 COPYING
 INSTALL

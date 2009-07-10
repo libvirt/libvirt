@@ -230,3 +230,13 @@ sc_libvirt_unmarked_diagnostics:
 
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
+
+ifeq (0,$(MAKELEVEL))
+  _curr_status = .git-module-status
+  _update_required :=							\
+    $(shell t=$$(git submodule status);					\
+      test "$$t" = "$$(cat $(_curr_status) 2>/dev/null)"; echo $$?)
+  ifeq (1,$(_update_required))
+    $(error gnulib update required; run ./autogen.sh first)
+  endif
+endif

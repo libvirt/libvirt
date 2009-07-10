@@ -28,13 +28,8 @@ You can get a copy of the source repository like this:
         $ git clone git://libvirt.org/libvirt
         $ cd libvirt
 
-The next step is to get and check other files needed to build,
-which are extracted from other source packages:
-
-        $ ./bootstrap
-
-Then run this to create e.g., Makefiles and ./configure,
-and to invoke ./configure:
+The next step is to get all required pieces from gnulib,
+to run autoreconf, and to invoke ./configure:
 
         $ ./autogen.sh
 
