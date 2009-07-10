@@ -226,10 +226,18 @@ virStorageBackendDiskMakeVol(virConnectPtr conn,
     if (STREQ(groups[2], "metadata") ||
         STREQ(groups[2], "data")) {
         virStorageVolDefPtr vol = data;
-        /* We're searching for a specific vol only, so ignore others */
-        if (vol &&
-            STRNEQ(vol->name, groups[0]))
-            return 0;
+
+        if (vol) {
+            /* We're searching for a specific vol only */
+            if (vol->key) {
+                if (STRNEQ(vol->key, groups[0]))
+                    return 0;
+            } else if (virStorageVolDefFindByKey(pool, groups[0]) != NULL) {
+                /* If no key, the volume must be newly created. If groups[0]
+                 * isn't already a volume, assume it's the path we want */
+                return 0;
+            }
+        }
 
         return virStorageBackendDiskMakeDataVol(conn, pool, groups, vol);
     } else if (STREQ(groups[2], "free")) {
@@ -553,15 +561,9 @@ virStorageBackendDiskCreateVol(virConnectPtr conn,
         return -1;
     }
 
-    if (vol->key == NULL) {
-        /* XXX base off a unique key of the underlying disk */
-        if ((vol->key = strdup(vol->target.path)) == NULL) {
-            virReportOOMError(conn);
-            return -1;
-        }
-    }
-
-    if(virStorageBackendDiskPartBoundries(conn, pool, &startOffset, &endOffset, vol->allocation) != 0) {
+    if (virStorageBackendDiskPartBoundries(conn, pool, &startOffset,
+                                           &endOffset,
+                                           vol->allocation) != 0) {
        return -1;
     }
 
@@ -580,7 +582,10 @@ virStorageBackendDiskCreateVol(virConnectPtr conn,
     VIR_FREE(pool->def->source.devices[0].freeExtents);
     pool->def->source.devices[0].nfreeExtent = 0;
 
-    /* Fetch actual extent info */
+    /* Specifying a target path is meaningless */
+    VIR_FREE(vol->target.path);
+
+    /* Fetch actual extent info, generate key */
     if (virStorageBackendDiskReadPartitions(conn, pool, vol) < 0)
         return -1;
 
