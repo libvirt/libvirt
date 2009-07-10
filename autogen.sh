@@ -57,13 +57,7 @@ fi
 # Automake requires that ChangeLog exist.
 touch ChangeLog
 
-autopoint --force
-#rm -rf m4
-libtoolize --copy --force
-aclocal -I m4 -I gnulib/m4
-autoheader
-automake --add-missing
-autoconf
+autoreconf -if
 
 cd $THEDIR
 
