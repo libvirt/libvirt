@@ -36,7 +36,7 @@
 #include <stdio.h>
 
 /* we don't need to include the full internal.h just for this */
-#define STRNEQ(a,b) (strcmp((a),(b)) != 0)
+#define STREQ(a,b) (strcmp((a),(b)) == 0)
 
 /* Make the comparisons below fail if your parted headers
    are so old that they lack the definition.  */
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
     PedPartition *part;
     int cmd = DISK_LAYOUT;
 
-    if (argc ==  3 && STRNEQ(argv[2], "-g")) {
+    if (argc == 3 && STREQ(argv[2], "-g")) {
         cmd = DISK_GEOMETRY;
     } else if (argc != 2) {
         fprintf(stderr, "syntax: %s DEVICE [-g]\n", argv[0]);
