@@ -44,6 +44,12 @@
 /* Maximum total message size (serialised). */
 const REMOTE_MESSAGE_MAX = 262144;
 
+/* Size of struct remote_message_header (serialized)*/
+const REMOTE_MESSAGE_HEADER_MAX = 24;
+
+/* Size of message payload */
+const REMOTE_MESSAGE_PAYLOAD_MAX = 262120;
+
 /* Length of long, but not unbounded, strings.
  * This is an arbitrary limit designed to stop the decoder from trying
  * to allocate unbounded amounts of memory when fed with a bad message.
@@ -1541,8 +1547,27 @@ enum remote_procedure {
  *      * serial matches that from the corresponding REMOTE_CALL
  *
  *  - type == REMOTE_MESSAGE
- *      * serial matches that from the corresponding REMOTE_CALL, or zero
+ *      * serial is always zero
  *
+ *  - type == REMOTE_STREAM
+ *      * serial matches that from the corresponding REMOTE_CALL
+ *
+ * and the 'status' field varies according to:
+ *
+ *  - type == REMOTE_CALL
+ *     * REMOTE_OK always
+ *
+ *  - type == REMOTE_REPLY
+ *     * REMOTE_OK if RPC finished successfully
+ *     * REMOTE_ERROR if something failed
+ *
+ *  - type == REMOTE_MESSAGE
+ *     * REMOTE_OK always
+ *
+ *  - type == REMOTE_STREAM
+ *     * REMOTE_CONTINUE if more data is following
+ *     * REMOTE_OK if stream is complete
+ *     * REMOTE_ERROR if stream had an error
  *
  * Payload varies according to type and status:
  *
@@ -1561,6 +1586,13 @@ enum remote_procedure {
  *     * status == REMOTE_ERROR
  *          remote_error    Error information
  *
+ *  - type == REMOTE_STREAM
+ *     * status == REMOTE_CONTINUE
+ *          byte[]       raw stream data
+ *     * status == REMOTE_ERROR
+ *          remote_error error information
+ *     * status == REMOTE_OK
+ *          <empty>
  */
 enum remote_message_type {
     /* client -> server. args from a method call */
@@ -1568,7 +1600,9 @@ enum remote_message_type {
     /* server -> client. reply/error from a method call */
     REMOTE_REPLY = 1,
     /* either direction. async notification */
-    REMOTE_MESSAGE = 2
+    REMOTE_MESSAGE = 2,
+    /* either direction. stream data packet */
+    REMOTE_STREAM = 3
 };
 
 enum remote_message_status {
@@ -1580,7 +1614,11 @@ enum remote_message_status {
     /* For replies, indicates that an error happened, and a struct
      * remote_error follows.
      */
-    REMOTE_ERROR = 1
+    REMOTE_ERROR = 1,
+
+    /* For streams, indicates that more data is still expected
+     */
+    REMOTE_CONTINUE = 2
 };
 
 /* 4 byte length word per header */

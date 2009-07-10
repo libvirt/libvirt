@@ -49,6 +49,17 @@ void remoteDispatchOOMError (remote_error *rerr);
 void remoteDispatchConnError (remote_error *rerr,
                               virConnectPtr conn);
 
+
+int
+remoteSerializeReplyError(struct qemud_client *client,
+                          remote_error *rerr,
+                          remote_message_header *req);
+int
+remoteSerializeStreamError(struct qemud_client *client,
+                           remote_error *rerr,
+                           int proc,
+                           int serial);
+
 /* Having this here is dubious. It should be in remote.h
  * but qemud.c shouldn't depend on that header directly.
  * Refactor this later to deal with this properly.
@@ -59,5 +70,11 @@ int remoteRelayDomainEvent (virConnectPtr conn ATTRIBUTE_UNUSED,
                             int detail,
                             void *opaque);
 
+
+int
+remoteSendStreamData(struct qemud_client *client,
+                     struct qemud_client_stream *stream,
+                     const char *data,
+                     size_t len);
 
 #endif /* __LIBVIRTD_DISPATCH_H__ */

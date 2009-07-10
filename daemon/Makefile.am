@@ -5,6 +5,7 @@ DAEMON_SOURCES =					\
 		libvirtd.c libvirtd.h			\
 		remote.c remote.h			\
 		dispatch.c dispatch.h			\
+		stream.c stream.h			\
 		remote_dispatch_prototypes.h		\
 		remote_dispatch_table.h			\
 		remote_dispatch_args.h			\

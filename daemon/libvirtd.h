@@ -129,24 +129,41 @@ struct qemud_client_message {
     unsigned int bufferLength;
     unsigned int bufferOffset;
 
-    int async : 1;
+    unsigned int async : 1;
 
     remote_message_header hdr;
 
     struct qemud_client_message *next;
 };
 
+struct qemud_client;
+
 /* Allow for filtering of incoming messages to a custom
  * dispatch processing queue, instead of client->dx.
  */
-typedef int (*qemud_client_filter_func)(struct qemud_client_message *msg, void *opaque);
+typedef int (*qemud_client_filter_func)(struct qemud_client *client,
+                                        struct qemud_client_message *msg, void *opaque);
 struct qemud_client_filter {
     qemud_client_filter_func query;
     void *opaque;
 
-    struct qemud_client_message *dx;
-
     struct qemud_client_filter *next;
+};
+
+struct qemud_client_stream {
+    virStreamPtr st;
+    int procedure;
+    int serial;
+
+    unsigned int recvEOF : 1;
+    unsigned int closed : 1;
+
+    struct qemud_client_filter filter;
+
+    struct qemud_client_message *rx;
+    int tx;
+
+    struct qemud_client_stream *next;
 };
 
 /* Stores the per-client connection state */
@@ -196,6 +213,10 @@ struct qemud_client {
     /* Filters to capture messages that would otherwise
      * end up on the 'dx' queue */
     struct qemud_client_filter *filters;
+
+    /* Data streams */
+    struct qemud_client_stream *streams;
+
 
     /* This is only valid if a remote open call has been made on this
      * connection, otherwise it will be NULL.  Also if remote close is
@@ -275,6 +296,9 @@ qemudClientMessageQueuePush(struct qemud_client_message **queue,
 struct qemud_client_message *
 qemudClientMessageQueueServe(struct qemud_client_message **queue);
 
+void
+qemudClientMessageRelease(struct qemud_client *client,
+                          struct qemud_client_message *msg);
 
 
 #if HAVE_POLKIT

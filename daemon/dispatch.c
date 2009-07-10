@@ -104,7 +104,7 @@ void remoteDispatchOOMError (remote_error *rerr)
 {
     remoteDispatchStringError(rerr,
                               VIR_ERR_NO_MEMORY,
-                              NULL);
+                              "out of memory");
 }
 
 
@@ -135,6 +135,10 @@ remoteSerializeError(struct qemud_client *client,
     XDR xdr;
     unsigned int len;
     struct qemud_client_message *msg = NULL;
+
+    DEBUG("prog=%d ver=%d proc=%d type=%d serial=%d, msg=%s",
+          program, version, procedure, type, serial,
+          rerr->message ? *rerr->message : "(none)");
 
     if (VIR_ALLOC(msg) < 0)
         goto fatal_error;
@@ -206,17 +210,36 @@ fatal_error:
  *
  * Returns 0 if the error was sent, -1 upon fatal error
  */
-static int
+int
 remoteSerializeReplyError(struct qemud_client *client,
                           remote_error *rerr,
                           remote_message_header *req) {
+    /*
+     * For data streams, errors are sent back as data streams
+     * For method calls, errors are sent back as method replies
+     */
     return remoteSerializeError(client,
                                 rerr,
                                 req->prog,
                                 req->vers,
                                 req->proc,
-                                REMOTE_REPLY,
+                                req->type == REMOTE_STREAM ? REMOTE_STREAM : REMOTE_REPLY,
                                 req->serial);
+}
+
+int
+remoteSerializeStreamError(struct qemud_client *client,
+                           remote_error *rerr,
+                           int proc,
+                           int serial)
+{
+    return remoteSerializeError(client,
+                                rerr,
+                                REMOTE_PROGRAM,
+                                REMOTE_PROTOCOL_VERSION,
+                                proc,
+                                REMOTE_STREAM,
+                                serial);
 }
 
 /*
@@ -338,6 +361,10 @@ remoteDispatchClientRequest (struct qemud_server *server,
 {
     remote_error rerr;
 
+    DEBUG("prog=%d ver=%d type=%d satus=%d serial=%d proc=%d",
+          msg->hdr.prog, msg->hdr.vers, msg->hdr.type,
+          msg->hdr.status, msg->hdr.serial, msg->hdr.proc);
+
     memset(&rerr, 0, sizeof rerr);
 
     /* Check version, etc. */
@@ -358,10 +385,23 @@ remoteDispatchClientRequest (struct qemud_server *server,
     case REMOTE_CALL:
         return remoteDispatchClientCall(server, client, msg);
 
+    case REMOTE_STREAM:
+        /* Since stream data is non-acked, async, we may continue to received
+         * stream packets after we closed down a stream. Just drop & ignore
+         * these.
+         */
+        VIR_INFO("Ignoring unexpected stream data serial=%d proc=%d status=%d",
+                 msg->hdr.serial, msg->hdr.proc, msg->hdr.status);
+        qemudClientMessageRelease(client, msg);
+        break;
+
     default:
         remoteDispatchFormatError (&rerr, _("type (%d) != REMOTE_CALL"),
                                    (int) msg->hdr.type);
+        goto error;
     }
+
+    return 0;
 
 error:
     return remoteSerializeReplyError(client, &rerr, &msg->hdr);
@@ -530,5 +570,86 @@ xdr_error:
     xdr_free (data->ret_filter, (char*)&ret);
     xdr_destroy (&xdr);
 fatal_error:
+    return -1;
+}
+
+
+int
+remoteSendStreamData(struct qemud_client *client,
+                     struct qemud_client_stream *stream,
+                     const char *data,
+                     size_t len)
+{
+    struct qemud_client_message *msg;
+    XDR xdr;
+
+    DEBUG("client=%p stream=%p data=%p len=%d", client, stream, data, len);
+
+    if (VIR_ALLOC(msg) < 0) {
+        return -1;
+    }
+
+    /* Return header. We're re-using same message object, so
+     * only need to tweak type/status fields */
+    msg->hdr.prog = REMOTE_PROGRAM;
+    msg->hdr.vers = REMOTE_PROTOCOL_VERSION;
+    msg->hdr.proc = stream->procedure;
+    msg->hdr.type = REMOTE_STREAM;
+    msg->hdr.serial = stream->serial;
+    /*
+     * NB
+     *   data != NULL + len > 0    => REMOTE_CONTINUE   (Sending back data)
+     *   data != NULL + len == 0   => REMOTE_CONTINUE   (Sending read EOF)
+     *   data == NULL              => REMOTE_OK         (Sending finish handshake confirmation)
+     */
+    msg->hdr.status = data ? REMOTE_CONTINUE : REMOTE_OK;
+
+    if (remoteEncodeClientMessageHeader(msg) < 0)
+        goto fatal_error;
+
+    if (data && len) {
+        if ((msg->bufferLength - msg->bufferOffset) < len)
+            goto fatal_error;
+
+        /* Now for the payload */
+        xdrmem_create (&xdr,
+                       msg->buffer,
+                       msg->bufferLength,
+                       XDR_ENCODE);
+
+        /* Skip over existing header already written */
+        if (xdr_setpos(&xdr, msg->bufferOffset) == 0)
+            goto xdr_error;
+
+        memcpy(msg->buffer + msg->bufferOffset, data, len);
+        msg->bufferOffset += len;
+
+        /* Update the length word. */
+        len = msg->bufferOffset;
+        if (xdr_setpos (&xdr, 0) == 0)
+            goto xdr_error;
+
+        if (!xdr_u_int (&xdr, &len))
+            goto xdr_error;
+
+        xdr_destroy (&xdr);
+
+        DEBUG("Total %d", msg->bufferOffset);
+    }
+
+    /* Reset ready for I/O */
+    msg->bufferLength = msg->bufferOffset;
+    msg->bufferOffset = 0;
+
+    /* Put reply on end of tx queue to send out  */
+    qemudClientMessageQueuePush(&client->tx, msg);
+    qemudUpdateClientEvent(client);
+
+    return 0;
+
+xdr_error:
+    xdr_destroy (&xdr);
+fatal_error:
+    VIR_FREE(msg);
     return -1;
 }

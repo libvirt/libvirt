@@ -61,6 +61,7 @@
 #include "conf.h"
 #include "event.h"
 #include "memory.h"
+#include "stream.h"
 #ifdef HAVE_AVAHI
 #include "mdns.h"
 #endif
@@ -1723,10 +1724,15 @@ readmore:
         /* Check if any filters match this message */
         filter = client->filters;
         while (filter) {
-            if ((filter->query)(msg, filter->opaque)) {
-                qemudClientMessageQueuePush(&filter->dx, msg);
+            int ret;
+            ret = (filter->query)(client, msg, filter->opaque);
+            if (ret == 1) {
                 msg = NULL;
                 break;
+            } else if (ret == -1) {
+                VIR_FREE(msg);
+                qemudDispatchClientFailure(client);
+                return;
             }
             filter = filter->next;
         }
@@ -1888,6 +1894,29 @@ static ssize_t qemudClientWrite(struct qemud_client *client) {
 }
 
 
+void
+qemudClientMessageRelease(struct qemud_client *client,
+                          struct qemud_client_message *msg)
+{
+    if (!msg->async)
+        client->nrequests--;
+
+    /* See if the recv queue is currently throttled */
+    if (!client->rx &&
+        client->nrequests < max_client_requests) {
+        /* Reset message record for next RX attempt */
+        memset(msg, 0, sizeof(*msg));
+        client->rx = msg;
+        /* Get ready to receive next message */
+        client->rx->bufferLength = REMOTE_MESSAGE_HEADER_XDR_LEN;
+    } else {
+        VIR_FREE(msg);
+    }
+
+    qemudUpdateClientEvent(client);
+}
+
+
 /*
  * Process all queued client->tx messages until
  * we would block on I/O
@@ -1911,26 +1940,10 @@ qemudDispatchClientWrite(struct qemud_client *client) {
             /* Get finished reply from head of tx queue */
             reply = qemudClientMessageQueueServe(&client->tx);
 
-            /* If its not an async message, then we have
-             * just completed an RPC request */
-            if (!reply->async)
-                client->nrequests--;
-
-            /* Move record to end of 'rx' ist */
-            if (!client->rx &&
-                client->nrequests < max_client_requests) {
-                /* Reset message record for next RX attempt */
-                client->rx = reply;
-                client->rx->bufferOffset = 0;
-                client->rx->bufferLength = REMOTE_MESSAGE_HEADER_XDR_LEN;
-            } else {
-                VIR_FREE(reply);
-            }
+            qemudClientMessageRelease(client, reply);
 
             if (client->closing)
                 qemudDispatchClientFailure(client);
-            else
-                qemudUpdateClientEvent(client);
          }
     }
 }
@@ -2141,6 +2154,9 @@ static void qemudFreeClient(struct qemud_client *client) {
             = qemudClientMessageQueueServe(&client->tx);
         VIR_FREE(msg);
     }
+
+    while (client->streams)
+        remoteRemoveClientStream(client, client->streams);
 
     if (client->conn)
         virConnectClose(client->conn);

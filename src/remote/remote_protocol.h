@@ -16,6 +16,8 @@ extern "C" {
 #include "internal.h"
 #include <arpa/inet.h>
 #define REMOTE_MESSAGE_MAX 262144
+#define REMOTE_MESSAGE_HEADER_MAX 24
+#define REMOTE_MESSAGE_PAYLOAD_MAX 262120
 #define REMOTE_STRING_MAX 65536
 
 typedef char *remote_nonnull_string;
@@ -1684,12 +1686,14 @@ enum remote_message_type {
         REMOTE_CALL = 0,
         REMOTE_REPLY = 1,
         REMOTE_MESSAGE = 2,
+        REMOTE_STREAM = 3,
 };
 typedef enum remote_message_type remote_message_type;
 
 enum remote_message_status {
         REMOTE_OK = 0,
         REMOTE_ERROR = 1,
+        REMOTE_CONTINUE = 2,
 };
 typedef enum remote_message_status remote_message_status;
 #define REMOTE_MESSAGE_HEADER_XDR_LEN 4
