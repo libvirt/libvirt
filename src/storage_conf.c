@@ -95,7 +95,7 @@ VIR_ENUM_IMPL(virStorageVolFormatFileSystem,
 
 VIR_ENUM_IMPL(virStoragePartedFsType,
               VIR_STORAGE_PARTED_FS_TYPE_LAST,
-              "none", "ext2", "fat16",
+              "ext2", "ext2", "fat16",
               "fat32", "linux-swap",
               "ext2", "ext2",
               "extended")
