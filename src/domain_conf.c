@@ -1204,32 +1204,11 @@ virDomainChrDefParseXML(virConnectPtr conn,
         return NULL;
     }
 
-    def->type = VIR_DOMAIN_CHR_TYPE_PTY;
     type = virXMLPropString(node, "type");
-    if (type != NULL) {
-        if (STREQ(type, "null"))
-            def->type = VIR_DOMAIN_CHR_TYPE_NULL;
-        else if (STREQ(type, "vc"))
-            def->type = VIR_DOMAIN_CHR_TYPE_VC;
-        else if (STREQ(type, "pty"))
-            def->type = VIR_DOMAIN_CHR_TYPE_PTY;
-        else if (STREQ(type, "dev"))
-            def->type = VIR_DOMAIN_CHR_TYPE_DEV;
-        else if (STREQ(type, "file"))
-            def->type = VIR_DOMAIN_CHR_TYPE_FILE;
-        else if (STREQ(type, "pipe"))
-            def->type = VIR_DOMAIN_CHR_TYPE_PIPE;
-        else if (STREQ(type, "stdio"))
-            def->type = VIR_DOMAIN_CHR_TYPE_STDIO;
-        else if (STREQ(type, "udp"))
-            def->type = VIR_DOMAIN_CHR_TYPE_UDP;
-        else if (STREQ(type, "tcp"))
-            def->type = VIR_DOMAIN_CHR_TYPE_TCP;
-        else if (STREQ(type, "unix"))
-            def->type = VIR_DOMAIN_CHR_TYPE_UNIX;
-        else
-            def->type = VIR_DOMAIN_CHR_TYPE_NULL;
-    }
+    if (type == NULL)
+        def->type = VIR_DOMAIN_CHR_TYPE_PTY;
+    else if ((def->type = virDomainChrTypeFromString(type)) < 0)
+        def->type = VIR_DOMAIN_CHR_TYPE_NULL;
 
     cur = node->children;
     while (cur != NULL) {
