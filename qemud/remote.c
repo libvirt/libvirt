@@ -91,11 +91,7 @@ const dispatch_data const *remoteGetDispatchData(int proc)
 /* Prototypes */
 static void
 remoteDispatchDomainEventSend (struct qemud_client *client,
-                               virDomainPtr dom,
-                               int event,
-                               int detail);
-
-
+                               remote_domain_event_msg *data);
 
 int remoteRelayDomainEvent (virConnectPtr conn ATTRIBUTE_UNUSED,
                             virDomainPtr dom,
@@ -107,12 +103,17 @@ int remoteRelayDomainEvent (virConnectPtr conn ATTRIBUTE_UNUSED,
     REMOTE_DEBUG("Relaying domain event %d %d", event, detail);
 
     if (client) {
+        remote_domain_event_msg data;
+
         virMutexLock(&client->lock);
 
-        remoteDispatchDomainEventSend (client, dom, event, detail);
+        /* build return data */
+        memset(&data, 0, sizeof data);
+        make_nonnull_domain (&data.dom, dom);
+        data.event = event;
+        data.detail = detail;
 
-        if (qemudRegisterClientEvent(client->server, client, 1) < 0)
-            qemudDispatchClientFailure(client);
+        remoteDispatchDomainEventSend (client, &data);
 
         virMutexUnlock(&client->lock);
     }
@@ -4409,14 +4410,11 @@ remoteDispatchDomainEventsDeregister (struct qemud_server *server ATTRIBUTE_UNUS
 
 static void
 remoteDispatchDomainEventSend (struct qemud_client *client,
-                               virDomainPtr dom,
-                               int event,
-                               int detail)
+                               remote_domain_event_msg *data)
 {
     struct qemud_client_message *msg = NULL;
     XDR xdr;
     unsigned int len;
-    remote_domain_event_msg data;
 
     if (VIR_ALLOC(msg) < 0)
         return;
@@ -4437,12 +4435,7 @@ remoteDispatchDomainEventSend (struct qemud_client *client,
                    msg->bufferLength - msg->bufferOffset,
                    XDR_ENCODE);
 
-    /* build return data */
-    make_nonnull_domain (&data.dom, dom);
-    data.event = event;
-    data.detail = detail;
-
-    if (!xdr_remote_domain_event_msg(&xdr, &data))
+    if (!xdr_remote_domain_event_msg(&xdr, data))
         goto xdr_error;
 
 
@@ -4460,6 +4453,7 @@ remoteDispatchDomainEventSend (struct qemud_client *client,
     msg->bufferLength = len;
     msg->bufferOffset = 0;
     qemudClientMessageQueuePush(&client->tx, msg);
+    qemudUpdateClientEvent(client);
 
     xdr_destroy (&xdr);
     return;

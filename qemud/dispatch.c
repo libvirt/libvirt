@@ -389,9 +389,7 @@ rpc_error:
 
     /* Put reply on end of tx queue to send out  */
     qemudClientMessageQueuePush(&client->tx, msg);
-
-    if (qemudRegisterClientEvent(server, client, 1) < 0)
-        qemudDispatchClientFailure(client);
+    qemudUpdateClientEvent(client);
 
     return 0;
 

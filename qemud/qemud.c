@@ -1276,7 +1276,6 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     client->auth = sock->auth;
     memcpy (&client->addr, &addr, sizeof addr);
     client->addrlen = addrlen;
-    client->server = server;
 
     /* Prepare one for packet receive */
     if (VIR_ALLOC(client->rx) < 0)
@@ -1306,7 +1305,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
 
     if (client->type != QEMUD_SOCK_TYPE_TLS) {
         /* Plain socket, so prepare to read first message */
-        if (qemudRegisterClientEvent (server, client, 0) < 0)
+        if (qemudRegisterClientEvent (server, client) < 0)
             goto cleanup;
     } else {
         int ret;
@@ -1328,13 +1327,13 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
                 goto cleanup;
 
             /* Handshake & cert check OK,  so prepare to read first message */
-            if (qemudRegisterClientEvent(server, client, 0) < 0)
+            if (qemudRegisterClientEvent(server, client) < 0)
                 goto cleanup;
         } else if (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN) {
             /* Most likely, need to do more handshake data */
             client->handshake = 1;
 
-            if (qemudRegisterClientEvent (server, client, 0) < 0)
+            if (qemudRegisterClientEvent (server, client) < 0)
                 goto cleanup;
         } else {
             VIR_ERROR(_("TLS handshake failed: %s"),
@@ -1699,10 +1698,7 @@ readmore:
         /* Prepare to read rest of message */
         client->rx->bufferLength += len;
 
-        if (qemudRegisterClientEvent(server, client, 1) < 0) {
-            qemudDispatchClientFailure(client);
-            return;
-        }
+        qemudUpdateClientEvent(client);
 
         /* Try and read payload immediately instead of going back
            into poll() because chances are the data is already
@@ -1722,11 +1718,10 @@ readmore:
             if (client->rx)
                 client->rx->bufferLength = REMOTE_MESSAGE_HEADER_XDR_LEN;
 
-            if (qemudRegisterClientEvent(server, client, 1) < 0)
-                qemudDispatchClientFailure(client);
-            else
-                /* Tell one of the workers to get on with it... */
-                virCondSignal(&server->job);
+            qemudUpdateClientEvent(client);
+
+            /* Tell one of the workers to get on with it... */
+            virCondSignal(&server->job);
         }
     }
 }
@@ -1872,8 +1867,7 @@ static ssize_t qemudClientWrite(struct qemud_client *client) {
  * we would block on I/O
  */
 static void
-qemudDispatchClientWrite(struct qemud_server *server,
-                         struct qemud_client *client) {
+qemudDispatchClientWrite(struct qemud_client *client) {
     while (client->tx) {
         ssize_t ret;
 
@@ -1907,16 +1901,16 @@ qemudDispatchClientWrite(struct qemud_server *server,
                 VIR_FREE(reply);
             }
 
-            if (client->closing ||
-                qemudRegisterClientEvent (server, client, 1) < 0)
-                 qemudDispatchClientFailure(client);
+            if (client->closing)
+                qemudDispatchClientFailure(client);
+            else
+                qemudUpdateClientEvent(client);
          }
     }
 }
 
 static void
-qemudDispatchClientHandshake(struct qemud_server *server,
-                             struct qemud_client *client) {
+qemudDispatchClientHandshake(struct qemud_client *client) {
     int ret;
     /* Continue the handshake. */
     ret = gnutls_handshake (client->tlssession);
@@ -1926,15 +1920,14 @@ qemudDispatchClientHandshake(struct qemud_server *server,
         /* Finished.  Next step is to check the certificate. */
         if (remoteCheckAccess (client) == -1)
             qemudDispatchClientFailure(client);
-        else if (qemudRegisterClientEvent (server, client, 1))
-            qemudDispatchClientFailure(client);
+        else
+            qemudUpdateClientEvent(client);
     } else if (ret == GNUTLS_E_AGAIN ||
                ret == GNUTLS_E_INTERRUPTED) {
         /* Carry on waiting for more handshake. Update
            the events just in case handshake data flow
            direction has changed */
-        if (qemudRegisterClientEvent (server, client, 1))
-            qemudDispatchClientFailure(client);
+        qemudUpdateClientEvent (client);
     } else {
         /* Fatal error in handshake */
         VIR_ERROR(_("TLS handshake failed: %s"),
@@ -1974,10 +1967,10 @@ qemudDispatchClientEvent(int watch, int fd, int events, void *opaque) {
     if (events & (VIR_EVENT_HANDLE_WRITABLE |
                   VIR_EVENT_HANDLE_READABLE)) {
         if (client->handshake) {
-            qemudDispatchClientHandshake(server, client);
+            qemudDispatchClientHandshake(client);
         } else {
             if (events & VIR_EVENT_HANDLE_WRITABLE)
-                qemudDispatchClientWrite(server, client);
+                qemudDispatchClientWrite(client);
             if (events & VIR_EVENT_HANDLE_READABLE)
                 qemudDispatchClientRead(server, client);
         }
@@ -1992,9 +1985,12 @@ qemudDispatchClientEvent(int watch, int fd, int events, void *opaque) {
     virMutexUnlock(&client->lock);
 }
 
-int qemudRegisterClientEvent(struct qemud_server *server,
-                             struct qemud_client *client,
-                             int update) {
+
+/*
+ * @client: a locked client object
+ */
+static int
+qemudCalculateHandleMode(struct qemud_client *client) {
     int mode = 0;
 
     if (client->handshake) {
@@ -2014,18 +2010,39 @@ int qemudRegisterClientEvent(struct qemud_server *server,
             mode |= VIR_EVENT_HANDLE_WRITABLE;
     }
 
-    if (update) {
-        virEventUpdateHandleImpl(client->watch, mode);
-    } else {
-        if ((client->watch = virEventAddHandleImpl(client->fd,
-                                                   mode,
-                                                   qemudDispatchClientEvent,
-                                                   server, NULL)) < 0)
-            return -1;
-    }
+    return mode;
+}
+
+/*
+ * @server: a locked or unlocked server object
+ * @client: a locked client object
+ */
+int qemudRegisterClientEvent(struct qemud_server *server,
+                             struct qemud_client *client) {
+    int mode;
+
+    mode = qemudCalculateHandleMode(client);
+
+    if ((client->watch = virEventAddHandleImpl(client->fd,
+                                               mode,
+                                               qemudDispatchClientEvent,
+                                               server, NULL)) < 0)
+        return -1;
 
     return 0;
 }
+
+/*
+ * @client: a locked client object
+ */
+void qemudUpdateClientEvent(struct qemud_client *client) {
+    int mode;
+
+    mode = qemudCalculateHandleMode(client);
+
+    virEventUpdateHandleImpl(client->watch, mode);
+}
+
 
 static void
 qemudDispatchServerEvent(int watch, int fd, int events, void *opaque) {

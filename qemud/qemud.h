@@ -142,8 +142,6 @@ struct qemud_client {
     virConnectPtr conn;
     int refs;
 
-    /* back-pointer to our server */
-    struct qemud_server *server;
 };
 
 #define QEMUD_CLIENT_MAGIC 0x7788aaee
@@ -204,8 +202,8 @@ void qemudLog(int priority, const char *fmt, ...)
 
 
 int qemudRegisterClientEvent(struct qemud_server *server,
-                             struct qemud_client *client,
-                             int update);
+                             struct qemud_client *client);
+void qemudUpdateClientEvent(struct qemud_client *client);
 
 void qemudDispatchClientFailure(struct qemud_client *client);
 
