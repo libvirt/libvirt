@@ -206,10 +206,13 @@ static int remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in
 static int remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
                              virConnectAuthPtr auth);
 #endif /* HAVE_POLKIT */
-static void error (virConnectPtr conn, virErrorNumber code, const char *info);
-static void errorf (virConnectPtr conn, virErrorNumber code,
-                     const char *fmt, ...) ATTRIBUTE_FORMAT(printf, 3, 4);
-static void server_error (virConnectPtr conn, remote_error *err);
+#define error(conn, code, info)                                 \
+    virReportErrorHelper(conn, VIR_FROM_QEMU, code, __FILE__,   \
+                         __FUNCTION__, __LINE__, "%s", info)
+#define errorf(conn, code, fmt...)                              \
+    virReportErrorHelper(conn, VIR_FROM_QEMU, code, __FILE__,   \
+                         __FUNCTION__, __LINE__, fmt)
+
 static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain);
 static virNetworkPtr get_nonnull_network (virConnectPtr conn, remote_nonnull_network network);
 static virInterfacePtr get_nonnull_interface (virConnectPtr conn, remote_nonnull_interface iface);
@@ -7095,8 +7098,17 @@ cleanup:
             STRPREFIX(*thiscall->err.message, "unknown procedure")) {
             rv = -2;
         } else {
-            server_error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn,
-                          &thiscall->err);
+            virRaiseErrorFull(flags & REMOTE_CALL_IN_OPEN ? NULL : conn,
+                              __FILE__, __FUNCTION__, __LINE__,
+                              thiscall->err.domain,
+                              thiscall->err.code,
+                              thiscall->err.level,
+                              thiscall->err.str1 ? *thiscall->err.str1 : NULL,
+                              thiscall->err.str2 ? *thiscall->err.str2 : NULL,
+                              thiscall->err.str3 ? *thiscall->err.str3 : NULL,
+                              thiscall->err.int1,
+                              thiscall->err.int2,
+                              "%s", thiscall->err.message ? *thiscall->err.message : NULL);
             rv = -1;
         }
         xdr_free((xdrproc_t)xdr_remote_error,  (char *)&thiscall->err);
@@ -7240,66 +7252,6 @@ remoteDomainEventQueueFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
     remoteDriverUnlock(priv);
 }
 
-
-/* For errors internal to this library. */
-static void
-error (virConnectPtr conn, virErrorNumber code, const char *info)
-{
-    const char *errmsg;
-
-    errmsg = virErrorMsg (code, info);
-    virRaiseError (conn, NULL, NULL, VIR_FROM_REMOTE,
-                     code, VIR_ERR_ERROR, errmsg, info, NULL, 0, 0,
-                     errmsg, info);
-}
-
-/* For errors internal to this library.
-   Identical to the above, but with a format string and optional params.  */
-static void
-errorf (virConnectPtr conn, virErrorNumber code, const char *fmt, ...)
-{
-    const char *errmsg;
-    va_list args;
-    char errorMessage[256];
-
-    if (fmt) {
-        va_start(args, fmt);
-        vsnprintf(errorMessage, sizeof errorMessage - 1, fmt, args);
-        va_end(args);
-    } else {
-        errorMessage[0] = '\0';
-    }
-
-    errmsg = virErrorMsg (code, errorMessage);
-    virRaiseError (conn, NULL, NULL, VIR_FROM_REMOTE,
-                     code, VIR_ERR_ERROR,
-                     errmsg, errorMessage, NULL, -1, -1,
-                     errmsg, errorMessage);
-}
-
-/* For errors generated on the server side and sent back to us. */
-static void
-server_error (virConnectPtr conn, remote_error *err)
-{
-    virDomainPtr dom;
-    virNetworkPtr net;
-
-    /* Get the domain and network, if set. */
-    dom = err->dom ? get_nonnull_domain (conn, *err->dom) : NULL;
-    net = err->net ? get_nonnull_network (conn, *err->net) : NULL;
-
-    virRaiseError (conn, dom, net,
-                     err->domain, err->code, err->level,
-                     err->str1 ? *err->str1 : NULL,
-                     err->str2 ? *err->str2 : NULL,
-                     err->str3 ? *err->str3 : NULL,
-                     err->int1, err->int2,
-                     "%s", err->message ? *err->message : NULL);
-    if (dom)
-        virDomainFree(dom);
-    if (net)
-        virNetworkFree(net);
-}
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
  * (name, uuid) pair into virDomainPtr or virNetworkPtr object.
