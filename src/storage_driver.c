@@ -1327,9 +1327,11 @@ storageVolumeCreateXMLFrom(virStoragePoolPtr obj,
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid);
-    if (diffpool)
+    if (diffpool) {
+        virStoragePoolObjUnlock(pool);
         origpool = virStoragePoolObjFindByName(&driver->pools, vobj->pool);
-    else
+        virStoragePoolObjLock(pool);
+    } else
         origpool = pool;
     storageDriverUnlock(driver);
 
