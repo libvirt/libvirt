@@ -994,7 +994,8 @@ remoteOpen (virConnectPtr conn,
         conn->uri->scheme &&
         ((strchr(conn->uri->scheme, '+') == 0)||
          (strstr(conn->uri->scheme, "+unix") != NULL)) &&
-        STREQ(conn->uri->path, "/session") &&
+        (STREQ(conn->uri->path, "/session") ||
+         STRPREFIX(conn->uri->scheme, "test+")) &&
         getuid() > 0) {
         DEBUG0("Auto-spawn user daemon instance");
         rflags |= VIR_DRV_OPEN_REMOTE_USER;
