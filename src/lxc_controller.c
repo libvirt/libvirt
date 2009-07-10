@@ -48,7 +48,6 @@
 #include "veth.h"
 #include "memory.h"
 #include "util.h"
-#include "cgroup.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -69,6 +68,7 @@ struct cgroup_device_policy {
  */
 static int lxcSetContainerResources(virDomainDefPtr def)
 {
+    virCgroupPtr driver;
     virCgroupPtr cgroup;
     int rc = -1;
     int i;
@@ -82,14 +82,18 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_PTMX},
         {0,   0, 0}};
 
-    if (virCgroupHaveSupport() != 0)
-        return 0; /* Not supported, so claim success */
+    rc = virCgroupForDriver("lxc", &driver, 1, 0);
+    if (rc != 0) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                 _("Unable to get cgroup for driver"));
+        return rc;
+    }
 
-    rc = virCgroupForDomain(def, "lxc", &cgroup);
+    rc = virCgroupForDomain(driver, def->name, &cgroup, 1);
     if (rc != 0) {
         lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("Unable to create cgroup for %s\n"), def->name);
-        return rc;
+                 _("Unable to create cgroup for domain %s"), def->name);
+        goto cleanup;
     }
 
     rc = virCgroupSetMemory(cgroup, def->maxmem);
@@ -119,9 +123,10 @@ out:
     if (rc != 0) {
         virReportSystemError(NULL, -rc, "%s",
                              _("Failed to set lxc resources"));
-        virCgroupRemove(cgroup);
     }
 
+cleanup:
+    virCgroupFree(&driver);
     virCgroupFree(&cgroup);
 
     return rc;

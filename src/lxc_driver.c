@@ -46,7 +46,6 @@
 #include "bridge.h"
 #include "veth.h"
 #include "event.h"
-#include "cgroup.h"
 #include "nodeinfo.h"
 #include "uuid.h"
 
@@ -421,10 +420,10 @@ static int lxcDomainGetInfo(virDomainPtr dom,
 
     info->state = vm->state;
 
-    if (!virDomainIsActive(vm) || virCgroupHaveSupport() != 0) {
+    if (!virDomainIsActive(vm) || driver->cgroup == NULL) {
         info->cpuTime = 0;
     } else {
-        if (virCgroupForDomain(vm->def, "lxc", &cgroup) != 0) {
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
             lxcError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
                      _("Unable to get cgroup for %s\n"), vm->def->name);
             goto cleanup;
@@ -555,7 +554,8 @@ static int lxcVMCleanup(virConnectPtr conn,
         vethDelete(vm->def->nets[i]->ifname);
     }
 
-    if (virCgroupForDomain(vm->def, "lxc", &cgroup) == 0) {
+    if (driver->cgroup &&
+        virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) == 0) {
         virCgroupRemove(cgroup);
         virCgroupFree(&cgroup);
     }
@@ -1348,6 +1348,7 @@ static int lxcStartup(int privileged)
 {
     unsigned int i;
     char *ld;
+    int rc;
 
     /* Valgrind gets very annoyed when we clone containers, so
      * disable LXC when under valgrind
@@ -1386,6 +1387,13 @@ static int lxcStartup(int privileged)
 
     lxc_driver->have_netns = lxcCheckNetNsSupport();
 
+    rc = virCgroupForDriver("lxc", &lxc_driver->cgroup, privileged, 1);
+    if (rc < 0) {
+        char buf[1024];
+        VIR_WARN("Unable to create cgroup for driver: %s",
+                 virStrerror(-rc, buf, sizeof(buf)));
+    }
+
     /* Call function to load lxc driver configuration information */
     if (lxcLoadDriverConfig(lxc_driver) < 0)
         goto cleanup;
@@ -1405,7 +1413,6 @@ static int lxcStartup(int privileged)
         virDomainObjPtr vm = lxc_driver->domains.objs[i];
         char *config = NULL;
         virDomainDefPtr tmp;
-        int rc;
 
         virDomainObjLock(vm);
         if ((vm->monitor = lxcMonitorClient(NULL, lxc_driver, vm)) < 0) {
@@ -1587,7 +1594,7 @@ static int lxcSetSchedulerParameters(virDomainPtr domain,
     virDomainObjPtr vm = NULL;
     int ret = -1;
 
-    if (virCgroupHaveSupport() != 0)
+    if (driver->cgroup == NULL)
         return -1;
 
     lxcDriverLock(driver);
@@ -1600,7 +1607,7 @@ static int lxcSetSchedulerParameters(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (virCgroupForDomain(vm->def, "lxc", &group) != 0)
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0)
         goto cleanup;
 
     for (i = 0; i < nparams; i++) {
@@ -1634,7 +1641,7 @@ static int lxcGetSchedulerParameters(virDomainPtr domain,
     unsigned long val;
     int ret = -1;
 
-    if (virCgroupHaveSupport() != 0)
+    if (driver->cgroup == NULL)
         return -1;
 
     if ((*nparams) != 1) {
@@ -1653,7 +1660,7 @@ static int lxcGetSchedulerParameters(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (virCgroupForDomain(vm->def, "lxc", &group) != 0)
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0)
         goto cleanup;
 
     if (virCgroupGetCpuShares(group, &val) != 0)

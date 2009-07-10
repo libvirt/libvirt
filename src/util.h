@@ -217,6 +217,8 @@ int virKillProcess(pid_t pid, int sig);
 #ifdef HAVE_GETPWUID_R
 char *virGetUserDirectory(virConnectPtr conn,
                           uid_t uid);
+char *virGetUserName(virConnectPtr conn,
+                     uid_t uid);
 int virGetUserID(virConnectPtr conn,
                  const char *name,
                  uid_t *uid);

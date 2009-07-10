@@ -12,18 +12,18 @@
 #ifndef CGROUP_H
 #define CGROUP_H
 
-#include <stdint.h>
-
 struct virCgroup;
 typedef struct virCgroup *virCgroupPtr;
 
-#include "domain_conf.h"
+int virCgroupForDriver(const char *name,
+                       virCgroupPtr *group,
+                       int privileged,
+                       int create);
 
-int virCgroupHaveSupport(void);
-
-int virCgroupForDomain(virDomainDefPtr def,
-                       const char *driverName,
-                       virCgroupPtr *group);
+int virCgroupForDomain(virCgroupPtr driver,
+                       const char *name,
+                       virCgroupPtr *group,
+                       int create);
 
 int virCgroupAddTask(virCgroupPtr group, pid_t pid);
 

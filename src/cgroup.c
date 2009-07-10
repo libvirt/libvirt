@@ -484,36 +484,6 @@ static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group)
 }
 
 
-static int virCgroupRoot(virCgroupPtr *group);
-/**
- * virCgroupHaveSupport:
- *
- * Returns 0 if support is present, negative if not
- */
-int virCgroupHaveSupport(void)
-{
-    virCgroupPtr root;
-    int i;
-    int rc;
-    int any = 0;
-
-    rc = virCgroupRoot(&root);
-    if (rc < 0)
-        return rc;
-
-    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
-        if (root->controllers[i].mountPoint != NULL)
-            any = 1;
-    }
-
-    virCgroupFree(&root);
-
-    if (any)
-        return 0;
-
-    return -ENOENT;
-}
-
 static int virCgroupNew(const char *path,
                         virCgroupPtr *group)
 {
@@ -547,46 +517,46 @@ err:
     return rc;
 }
 
-static int virCgroupRoot(virCgroupPtr *group)
+static int virCgroupAppRoot(int privileged,
+                            virCgroupPtr *group)
 {
-    return virCgroupNew("/", group);
-}
+    virCgroupPtr rootgrp = NULL;
+    int rc;
 
-static int virCgroupCreate(virCgroupPtr parent,
-                           const char *name,
-                           virCgroupPtr *group)
-{
-    int rc = 0;
-    char *path;
-
-    VIR_DEBUG("Creating %s under %s", name, parent->path);
-
-    rc = virAsprintf(&path, "%s/%s",
-                     STREQ(parent->path, "/") ?
-                     "" : parent->path,
-                     name);
-    if (rc < 0) {
-        rc = -ENOMEM;
-        goto err;
-    }
-
-    rc = virCgroupNew(path, group);
-    if (rc != 0) {
-        DEBUG0("Unable to allocate new virCgroup structure");
-        goto err;
-    }
-
-    rc = virCgroupMakeGroup(parent, *group);
+    rc = virCgroupNew("/", &rootgrp);
     if (rc != 0)
-        goto err;
+        return rc;
 
-    return rc;
-err:
-    virCgroupFree(group);
-    *group = NULL;
+    if (privileged) {
+        rc = virCgroupNew("/libvirt", group);
+    } else {
+        char *rootname;
+        char *username;
+        username = virGetUserName(NULL, getuid());
+        if (!username) {
+            rc = -ENOMEM;
+            goto cleanup;
+        }
+        rc = virAsprintf(&rootname, "/libvirt-%s", username);
+        VIR_FREE(username);
+        if (rc < 0) {
+            rc = -ENOMEM;
+            goto cleanup;
+        }
 
+        rc = virCgroupNew(rootname, group);
+        VIR_FREE(rootname);
+    }
+    if (rc != 0)
+        goto cleanup;
+
+    rc = virCgroupMakeGroup(rootgrp, *group);
+
+cleanup:
+    virCgroupFree(&rootgrp);
     return rc;
 }
+
 
 /**
  * virCgroupRemove:
@@ -648,41 +618,79 @@ int virCgroupAddTask(virCgroupPtr group, pid_t pid)
     return rc;
 }
 
+
 /**
- * virCgroupForDomain:
+ * virCgroupForDriver:
  *
- * @def: Domain definition to create cgroup for
- * @driverName: Classification of this domain type (e.g., xen, qemu, lxc)
+ * @name: name of this driver (e.g., xen, qemu, lxc)
  * @group: Pointer to returned virCgroupPtr
  *
  * Returns 0 on success
  */
-int virCgroupForDomain(virDomainDefPtr def,
-                       const char *driverName,
-                       virCgroupPtr *group)
+int virCgroupForDriver(const char *name,
+                       virCgroupPtr *group,
+                       int privileged,
+                       int create)
 {
     int rc;
+    char *path = NULL;
     virCgroupPtr rootgrp = NULL;
-    virCgroupPtr daemongrp = NULL;
-    virCgroupPtr typegrp = NULL;
 
-    rc = virCgroupRoot(&rootgrp);
+    rc = virCgroupAppRoot(privileged, &rootgrp);
     if (rc != 0)
         goto out;
 
-    rc = virCgroupCreate(rootgrp, "libvirt", &daemongrp);
-    if (rc != 0)
+    if (virAsprintf(&path, "%s/%s", rootgrp->path, name) < 0) {
+        rc = -ENOMEM;
         goto out;
+    }
 
-    rc = virCgroupCreate(daemongrp, driverName, &typegrp);
-    if (rc != 0)
-        goto out;
+    rc = virCgroupNew(path, group);
+    VIR_FREE(path);
 
-    rc = virCgroupCreate(typegrp, def->name, group);
+    if (rc == 0 &&
+        create) {
+        rc = virCgroupMakeGroup(rootgrp, *group);
+        if (rc != 0)
+            virCgroupFree(group);
+    }
+
 out:
-    virCgroupFree(&typegrp);
-    virCgroupFree(&daemongrp);
     virCgroupFree(&rootgrp);
+
+    return rc;
+}
+
+
+/**
+ * virCgroupForDomain:
+ *
+ * @driver: group for driver owning the domain
+ * @name: name of the domain
+ * @group: Pointer to returned virCgroupPtr
+ *
+ * Returns 0 on success
+ */
+int virCgroupForDomain(virCgroupPtr driver,
+                       const char *name,
+                       virCgroupPtr *group,
+                       int create)
+{
+    int rc;
+    char *path;
+
+    if (virAsprintf(&path, "%s/%s", driver->path, name) < 0)
+        return -ENOMEM;
+
+    rc = virCgroupNew(path, group);
+    VIR_FREE(path);
+
+    if (rc == 0 &&
+        create) {
+        rc = virCgroupMakeGroup(driver, *group);
+        if (rc != 0)
+            virCgroupFree(group);
+    }
 
     return rc;
 }

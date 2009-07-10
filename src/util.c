@@ -1826,8 +1826,14 @@ int virRandom(int max)
 
 
 #ifdef HAVE_GETPWUID_R
-char *virGetUserDirectory(virConnectPtr conn,
-                          uid_t uid)
+enum {
+    VIR_USER_ENT_DIRECTORY,
+    VIR_USER_ENT_NAME,
+};
+
+static char *virGetUserEnt(virConnectPtr conn,
+                           uid_t uid,
+                           int field)
 {
     char *strbuf;
     char *ret;
@@ -1855,13 +1861,28 @@ char *virGetUserDirectory(virConnectPtr conn,
         return NULL;
     }
 
-    ret = strdup(pw->pw_dir);
+    if (field == VIR_USER_ENT_DIRECTORY)
+        ret = strdup(pw->pw_dir);
+    else
+        ret = strdup(pw->pw_name);
 
     VIR_FREE(strbuf);
     if (!ret)
         virReportOOMError(conn);
 
     return ret;
+}
+
+char *virGetUserDirectory(virConnectPtr conn,
+                          uid_t uid)
+{
+    return virGetUserEnt(conn, uid, VIR_USER_ENT_DIRECTORY);
+}
+
+char *virGetUserName(virConnectPtr conn,
+                     uid_t uid)
+{
+    return virGetUserEnt(conn, uid, VIR_USER_ENT_NAME);
 }
 
 

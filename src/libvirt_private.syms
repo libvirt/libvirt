@@ -382,6 +382,7 @@ virRun;
 virSkipSpaces;
 virKillProcess;
 virGetUserDirectory;
+virGetUserName;
 virGetUserID;
 virGetGroupID;
 
