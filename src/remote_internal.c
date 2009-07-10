@@ -6948,7 +6948,7 @@ error:
 }
 
 /*
- * This function performs a remote procedure call to procedure PROC_NR.
+ * This function sends a message to remote server and awaits a reply
  *
  * NB. This does not free the args structure (not desirable, since you
  * often want this allocated on the stack or else it contains strings
@@ -6981,24 +6981,16 @@ error:
  * NB(5) Don't Panic!
  */
 static int
-call (virConnectPtr conn, struct private_data *priv,
-      int flags /* if we are in virConnectOpen */,
-      int proc_nr,
-      xdrproc_t args_filter, char *args,
-      xdrproc_t ret_filter, char *ret)
+remoteIO(virConnectPtr conn,
+         struct private_data *priv,
+         int flags,
+         struct remote_thread_call *thiscall)
 {
     int rv;
-    struct remote_thread_call *thiscall;
 
-    DEBUG("Doing call %d %p", proc_nr, priv->waitDispatch);
-    thiscall = prepareCall(conn, priv, flags, proc_nr,
-                           args_filter, args,
-                           ret_filter, ret);
-
-    if (!thiscall) {
-        virReportOOMError (flags & REMOTE_CALL_IN_OPEN ? NULL : conn);
-        return -1;
-    }
+    DEBUG("Do proc=%d serial=%d length=%d wait=%p",
+          thiscall->proc_nr, thiscall->serial,
+          thiscall->bufferLength, priv->waitDispatch);
 
     /* Check to see if another thread is dispatching */
     if (priv->waitDispatch) {
@@ -7015,7 +7007,7 @@ call (virConnectPtr conn, struct private_data *priv,
         /* Force other thread to wakup from poll */
         safewrite(priv->wakeupSendFD, &ignore, sizeof(ignore));
 
-        DEBUG("Going to sleep %d %p %p", proc_nr, priv->waitDispatch, thiscall);
+        DEBUG("Going to sleep %d %p %p", thiscall->proc_nr, priv->waitDispatch, thiscall);
         /* Go to sleep while other thread is working... */
         if (virCondWait(&thiscall->cond, &priv->lock) < 0) {
             if (priv->waitDispatch == thiscall) {
@@ -7036,7 +7028,7 @@ call (virConnectPtr conn, struct private_data *priv,
             return -1;
         }
 
-        DEBUG("Wokeup from sleep %d %p %p", proc_nr, priv->waitDispatch, thiscall);
+        DEBUG("Wokeup from sleep %d %p %p", thiscall->proc_nr, priv->waitDispatch, thiscall);
         /* Two reasons we can be woken up
          *  1. Other thread has got our reply ready for us
          *  2. Other thread is all done, and it is our turn to
@@ -7060,7 +7052,7 @@ call (virConnectPtr conn, struct private_data *priv,
         priv->waitDispatch = thiscall;
     }
 
-    DEBUG("We have the buck %d %p %p", proc_nr, priv->waitDispatch, thiscall);
+    DEBUG("We have the buck %d %p %p", thiscall->proc_nr, priv->waitDispatch, thiscall);
     /*
      * The buck stops here!
      *
@@ -7091,7 +7083,7 @@ call (virConnectPtr conn, struct private_data *priv,
     }
 
 cleanup:
-    DEBUG("All done with our call %d %p %p", proc_nr, priv->waitDispatch, thiscall);
+    DEBUG("All done with our call %d %p %p", thiscall->proc_nr, priv->waitDispatch, thiscall);
     if (thiscall->mode == REMOTE_MODE_ERROR) {
         /* See if caller asked us to keep quiet about missing RPCs
          * eg for interop with older servers */
@@ -7114,6 +7106,34 @@ cleanup:
     VIR_FREE(thiscall);
     return rv;
 }
+
+
+/*
+ * Serial a set of arguments into a method call message,
+ * send that to the server and wait for reply
+ */
+static int
+call (virConnectPtr conn, struct private_data *priv,
+      int flags /* if we are in virConnectOpen */,
+      int proc_nr,
+      xdrproc_t args_filter, char *args,
+      xdrproc_t ret_filter, char *ret)
+{
+    struct remote_thread_call *thiscall;
+
+    thiscall = prepareCall(conn, priv, flags, proc_nr,
+                           args_filter, args,
+                           ret_filter, ret);
+
+    if (!thiscall) {
+        virReportOOMError (flags & REMOTE_CALL_IN_OPEN ? NULL : conn);
+        return -1;
+    }
+
+    return remoteIO(conn, priv, flags, thiscall);
+}
+
+
 
 /**
  * remoteDomainReadEvent
