@@ -23,9 +23,10 @@
 
 #include <config.h>
 
-
 #include "dispatch.h"
 #include "remote.h"
+
+#include "memory.h"
 
 /* Convert a libvirt  virError object into wire format */
 static void
@@ -122,6 +123,101 @@ void remoteDispatchConnError (remote_error *rerr,
         remoteDispatchGenericError(rerr);
 }
 
+static int
+remoteSerializeError(struct qemud_client *client,
+                     remote_error *rerr,
+                     int program,
+                     int version,
+                     int procedure,
+                     int direction,
+                     int serial)
+{
+    XDR xdr;
+    unsigned int len;
+    struct qemud_client_message *msg = NULL;
+
+    if (VIR_ALLOC(msg) < 0)
+        goto fatal_error;
+
+    /* Return header. */
+    msg->hdr.prog = program;
+    msg->hdr.vers = version;
+    msg->hdr.proc = procedure;
+    msg->hdr.direction = direction;
+    msg->hdr.serial = serial;
+    msg->hdr.status = REMOTE_ERROR;
+
+    msg->bufferLength = sizeof(msg->buffer);
+
+    /* Serialise the return header. */
+    xdrmem_create (&xdr,
+                   msg->buffer,
+                   msg->bufferLength,
+                   XDR_ENCODE);
+
+    len = 0; /* We'll come back and write this later. */
+    if (!xdr_u_int (&xdr, &len))
+        goto xdr_error;
+
+    if (!xdr_remote_message_header (&xdr, &msg->hdr))
+        goto xdr_error;
+
+    /* Error was not set, so synthesize a generic error message. */
+    if (rerr->code == 0)
+        remoteDispatchGenericError(rerr);
+
+    if (!xdr_remote_error (&xdr, rerr))
+        goto xdr_error;
+
+    /* Write the length word. */
+    len = xdr_getpos (&xdr);
+    if (xdr_setpos (&xdr, 0) == 0)
+        goto xdr_error;
+
+    if (!xdr_u_int (&xdr, &len))
+        goto xdr_error;
+
+    xdr_destroy (&xdr);
+
+    msg->bufferLength = len;
+    msg->bufferOffset = 0;
+
+    /* Put reply on end of tx queue to send out  */
+    qemudClientMessageQueuePush(&client->tx, msg);
+    qemudUpdateClientEvent(client);
+    xdr_free((xdrproc_t)xdr_remote_error,  (char *)rerr);
+
+    return 0;
+
+xdr_error:
+    xdr_destroy(&xdr);
+fatal_error:
+    xdr_free((xdrproc_t)xdr_remote_error,  (char *)rerr);
+    return -1;
+}
+
+
+/*
+ * @client: the client to send the error to
+ * @rerr: the error object to send
+ * @req: the message this error is in reply to
+ *
+ * Send an error message to the client
+ *
+ * Returns 0 if the error was sent, -1 upon fatal error
+ */
+static int
+remoteSerializeReplyError(struct qemud_client *client,
+                          remote_error *rerr,
+                          remote_message_header *req) {
+    return remoteSerializeError(client,
+                                rerr,
+                                req->prog,
+                                req->vers,
+                                req->proc,
+                                REMOTE_REPLY,
+                                req->serial);
+}
 
 /*
  * @msg: the complete incoming message, whose header to decode
@@ -216,6 +312,12 @@ cleanup:
 }
 
 
+int
+remoteDispatchClientCall (struct qemud_server *server,
+                          struct qemud_client *client,
+                          struct qemud_client_message *msg);
+
+
 /*
  * @server: the unlocked server object
  * @client: the locked client object
@@ -234,6 +336,55 @@ remoteDispatchClientRequest (struct qemud_server *server,
                              struct qemud_client *client,
                              struct qemud_client_message *msg)
 {
+    remote_error rerr;
+
+    memset(&rerr, 0, sizeof rerr);
+
+    /* Check version, etc. */
+    if (msg->hdr.prog != REMOTE_PROGRAM) {
+        remoteDispatchFormatError (&rerr,
+                                   _("program mismatch (actual %x, expected %x)"),
+                                   msg->hdr.prog, REMOTE_PROGRAM);
+        goto error;
+    }
+    if (msg->hdr.vers != REMOTE_PROTOCOL_VERSION) {
+        remoteDispatchFormatError (&rerr,
+                                   _("version mismatch (actual %x, expected %x)"),
+                                   msg->hdr.vers, REMOTE_PROTOCOL_VERSION);
+        goto error;
+    }
+
+    switch (msg->hdr.direction) {
+    case REMOTE_CALL:
+        return remoteDispatchClientCall(server, client, msg);
+
+    default:
+        remoteDispatchFormatError (&rerr, _("direction (%d) != REMOTE_CALL"),
+                                   (int) msg->hdr.direction);
+    }
+
+error:
+    return remoteSerializeReplyError(client, &rerr, &msg->hdr);
+}
+
+
+/*
+ * @server: the unlocked server object
+ * @client: the locked client object
+ * @msg: the complete incoming method call, with header already decoded
+ *
+ * This method is used to dispatch an message representing an
+ * incoming method call from a client. It decodes the payload
+ * to obtain method call arguments, invokves the method and
+ * then sends a reply packet with the return values
+ *
+ * Returns 0 if the reply was sent, or -1 upon fatal error
+ */
+int
+remoteDispatchClientCall (struct qemud_server *server,
+                          struct qemud_client *client,
+                          struct qemud_client_message *msg)
+{
     XDR xdr;
     remote_error rerr;
     dispatch_args args;
@@ -247,25 +398,6 @@ remoteDispatchClientRequest (struct qemud_server *server,
     memset(&ret, 0, sizeof ret);
     memset(&rerr, 0, sizeof rerr);
 
-
-    /* Check version, etc. */
-    if (msg->hdr.prog != REMOTE_PROGRAM) {
-        remoteDispatchFormatError (&rerr,
-                                   _("program mismatch (actual %x, expected %x)"),
-                                   msg->hdr.prog, REMOTE_PROGRAM);
-        goto rpc_error;
-    }
-    if (msg->hdr.vers != REMOTE_PROTOCOL_VERSION) {
-        remoteDispatchFormatError (&rerr,
-                                   _("version mismatch (actual %x, expected %x)"),
-                                   msg->hdr.vers, REMOTE_PROTOCOL_VERSION);
-        goto rpc_error;
-    }
-    if (msg->hdr.direction != REMOTE_CALL) {
-        remoteDispatchFormatError (&rerr, _("direction (%d) != REMOTE_CALL"),
-                                   (int) msg->hdr.direction);
-        goto rpc_error;
-    }
     if (msg->hdr.status != REMOTE_OK) {
         remoteDispatchFormatError (&rerr, _("status (%d) != REMOTE_OK"),
                                    (int) msg->hdr.status);
@@ -332,7 +464,8 @@ remoteDispatchClientRequest (struct qemud_server *server,
 
     xdr_free (data->args_filter, (char*)&args);
 
-rpc_error:
+    if (rv < 0)
+        goto rpc_error;
 
     /* Return header. We're re-using same message object, so
      * only need to tweak direction/status fields */
@@ -341,10 +474,10 @@ rpc_error:
     /*msg->hdr.proc = msg->hdr.proc;*/
     msg->hdr.direction = REMOTE_REPLY;
     /*msg->hdr.serial = msg->hdr.serial;*/
-    msg->hdr.status = rv < 0 ? REMOTE_ERROR : REMOTE_OK;
+    msg->hdr.status = REMOTE_OK;
 
     if (remoteEncodeClientMessageHeader(msg) < 0) {
-        if (rv == 0) xdr_free (data->ret_filter, (char*)&ret);
+        xdr_free (data->ret_filter, (char*)&ret);
         goto fatal_error;
     }
 
@@ -356,32 +489,24 @@ rpc_error:
                    XDR_ENCODE);
 
     if (xdr_setpos(&xdr, msg->bufferOffset) == 0)
-        goto fatal_error;
+        goto xdr_error;
 
     /* If OK, serialise return structure, if error serialise error. */
-    if (rv >= 0) {
-        if (!((data->ret_filter) (&xdr, &ret)))
-            goto fatal_error;
-        xdr_free (data->ret_filter, (char*)&ret);
-    } else /* error */ {
-        /* Error was NULL so synthesize an error. */
-        if (rerr.code == 0)
-            remoteDispatchGenericError(&rerr);
-        if (!xdr_remote_error (&xdr, &rerr))
-            goto fatal_error;
-        xdr_free((xdrproc_t)xdr_remote_error,  (char *)&rerr);
-    }
+    /* Serialise reply data */
+    if (!((data->ret_filter) (&xdr, &ret)))
+        goto xdr_error;
 
     /* Update the length word. */
     msg->bufferOffset += xdr_getpos (&xdr);
     len = msg->bufferOffset;
     if (xdr_setpos (&xdr, 0) == 0)
-        goto fatal_error;
+        goto xdr_error;
 
     if (!xdr_u_int (&xdr, &len))
-        goto fatal_error;
+        goto xdr_error;
 
     xdr_destroy (&xdr);
+    xdr_free (data->ret_filter, (char*)&ret);
 
     /* Reset ready for I/O */
     msg->bufferLength = len;
@@ -393,9 +518,17 @@ rpc_error:
 
     return 0;
 
-fatal_error:
+rpc_error:
+    /* Semi-bad stuff happened, we can still try to send back
+     * an RPC error message to client */
+    return remoteSerializeReplyError(client, &rerr, &msg->hdr);
+
+
+xdr_error:
     /* Seriously bad stuff happened, so we'll kill off this client
        and not send back any RPC error */
+    xdr_free (data->ret_filter, (char*)&ret);
     xdr_destroy (&xdr);
+fatal_error:
     return -1;
 }
