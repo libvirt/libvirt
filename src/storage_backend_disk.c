@@ -563,7 +563,7 @@ virStorageBackendDiskCreateVol(virConnectPtr conn,
 
     if (virStorageBackendDiskPartBoundries(conn, pool, &startOffset,
                                            &endOffset,
-                                           vol->allocation) != 0) {
+                                           vol->capacity) != 0) {
        return -1;
     }
 
