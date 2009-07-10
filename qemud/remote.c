@@ -4422,7 +4422,7 @@ remoteDispatchDomainEventSend (struct qemud_client *client,
     msg->hdr.prog = REMOTE_PROGRAM;
     msg->hdr.vers = REMOTE_PROTOCOL_VERSION;
     msg->hdr.proc = REMOTE_PROC_DOMAIN_EVENT;
-    msg->hdr.direction = REMOTE_MESSAGE;
+    msg->hdr.type = REMOTE_MESSAGE;
     msg->hdr.serial = 1;
     msg->hdr.status = REMOTE_OK;
 

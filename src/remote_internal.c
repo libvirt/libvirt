@@ -6269,7 +6269,7 @@ prepareCall(virConnectPtr conn,
     hdr.prog = REMOTE_PROGRAM;
     hdr.vers = REMOTE_PROTOCOL_VERSION;
     hdr.proc = proc_nr;
-    hdr.direction = REMOTE_CALL;
+    hdr.type = REMOTE_CALL;
     hdr.serial = rv->serial;
     hdr.status = REMOTE_OK;
 
@@ -6664,14 +6664,14 @@ processCallRecvMsg(virConnectPtr conn, struct private_data *priv,
     }
 
     /* Async events from server need special handling */
-    if (hdr.direction == REMOTE_MESSAGE) {
+    if (hdr.type == REMOTE_MESSAGE) {
         processCallAsyncEvent(conn, priv, in_open,
                               &hdr, &xdr);
         xdr_destroy(&xdr);
         return 0;
     }
 
-    if (hdr.direction != REMOTE_REPLY) {
+    if (hdr.type != REMOTE_REPLY) {
         virRaiseError (in_open ? NULL : conn,
                        NULL, NULL, VIR_FROM_REMOTE,
                        VIR_ERR_RPC, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,

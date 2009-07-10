@@ -129,7 +129,7 @@ remoteSerializeError(struct qemud_client *client,
                      int program,
                      int version,
                      int procedure,
-                     int direction,
+                     int type,
                      int serial)
 {
     XDR xdr;
@@ -143,7 +143,7 @@ remoteSerializeError(struct qemud_client *client,
     msg->hdr.prog = program;
     msg->hdr.vers = version;
     msg->hdr.proc = procedure;
-    msg->hdr.direction = direction;
+    msg->hdr.type = type;
     msg->hdr.serial = serial;
     msg->hdr.status = REMOTE_ERROR;
 
@@ -354,13 +354,13 @@ remoteDispatchClientRequest (struct qemud_server *server,
         goto error;
     }
 
-    switch (msg->hdr.direction) {
+    switch (msg->hdr.type) {
     case REMOTE_CALL:
         return remoteDispatchClientCall(server, client, msg);
 
     default:
-        remoteDispatchFormatError (&rerr, _("direction (%d) != REMOTE_CALL"),
-                                   (int) msg->hdr.direction);
+        remoteDispatchFormatError (&rerr, _("type (%d) != REMOTE_CALL"),
+                                   (int) msg->hdr.type);
     }
 
 error:
@@ -468,11 +468,11 @@ remoteDispatchClientCall (struct qemud_server *server,
         goto rpc_error;
 
     /* Return header. We're re-using same message object, so
-     * only need to tweak direction/status fields */
+     * only need to tweak type/status fields */
     /*msg->hdr.prog = msg->hdr.prog;*/
     /*msg->hdr.vers = msg->hdr.vers;*/
     /*msg->hdr.proc = msg->hdr.proc;*/
-    msg->hdr.direction = REMOTE_REPLY;
+    msg->hdr.type = REMOTE_REPLY;
     /*msg->hdr.serial = msg->hdr.serial;*/
     msg->hdr.status = REMOTE_OK;
 

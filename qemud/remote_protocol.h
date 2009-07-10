@@ -1551,12 +1551,12 @@ enum remote_procedure {
 };
 typedef enum remote_procedure remote_procedure;
 
-enum remote_message_direction {
+enum remote_message_type {
         REMOTE_CALL = 0,
         REMOTE_REPLY = 1,
         REMOTE_MESSAGE = 2,
 };
-typedef enum remote_message_direction remote_message_direction;
+typedef enum remote_message_type remote_message_type;
 
 enum remote_message_status {
         REMOTE_OK = 0,
@@ -1569,7 +1569,7 @@ struct remote_message_header {
         u_int prog;
         u_int vers;
         remote_procedure proc;
-        remote_message_direction direction;
+        remote_message_type type;
         u_int serial;
         remote_message_status status;
 };
@@ -1808,7 +1808,7 @@ extern  bool_t xdr_remote_domain_xml_from_native_ret (XDR *, remote_domain_xml_f
 extern  bool_t xdr_remote_domain_xml_to_native_args (XDR *, remote_domain_xml_to_native_args*);
 extern  bool_t xdr_remote_domain_xml_to_native_ret (XDR *, remote_domain_xml_to_native_ret*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
-extern  bool_t xdr_remote_message_direction (XDR *, remote_message_direction*);
+extern  bool_t xdr_remote_message_type (XDR *, remote_message_type*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
 extern  bool_t xdr_remote_message_header (XDR *, remote_message_header*);
 
@@ -2043,7 +2043,7 @@ extern bool_t xdr_remote_domain_xml_from_native_ret ();
 extern bool_t xdr_remote_domain_xml_to_native_args ();
 extern bool_t xdr_remote_domain_xml_to_native_ret ();
 extern bool_t xdr_remote_procedure ();
-extern bool_t xdr_remote_message_direction ();
+extern bool_t xdr_remote_message_type ();
 extern bool_t xdr_remote_message_status ();
 extern bool_t xdr_remote_message_header ();
 

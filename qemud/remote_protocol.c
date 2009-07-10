@@ -2514,7 +2514,7 @@ xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 }
 
 bool_t
-xdr_remote_message_direction (XDR *xdrs, remote_message_direction *objp)
+xdr_remote_message_type (XDR *xdrs, remote_message_type *objp)
 {
 
          if (!xdr_enum (xdrs, (enum_t *) objp))
@@ -2541,7 +2541,7 @@ xdr_remote_message_header (XDR *xdrs, remote_message_header *objp)
                  return FALSE;
          if (!xdr_remote_procedure (xdrs, &objp->proc))
                  return FALSE;
-         if (!xdr_remote_message_direction (xdrs, &objp->direction))
+         if (!xdr_remote_message_type (xdrs, &objp->type))
                  return FALSE;
          if (!xdr_u_int (xdrs, &objp->serial))
                  return FALSE;
