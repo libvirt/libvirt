@@ -127,7 +127,10 @@ void remoteDispatchConnError (remote_error *rerr,
  * @msg: the complete incoming message, whose header to decode
  *
  * Decodes the header part of the client message, but does not
- * validate the decoded fields in the header.
+ * validate the decoded fields in the header. It expects
+ * bufferLength to refer to length of the data packet. Upon
+ * return bufferOffset will refer to the amount of the packet
+ * consumed by decoding of the header.
  *
  * returns 0 if successfully decoded, -1 upon fatal error
  */
@@ -159,6 +162,61 @@ cleanup:
 
 
 /*
+ * @msg: the outgoing message, whose header to encode
+ *
+ * Encodes the header part of the client message, setting the
+ * message offset ready to encode the payload. Leaves space
+ * for the length field later. Upon return bufferLength will
+ * refer to the total available space for message, while
+ * bufferOffset will refer to current space used by header
+ *
+ * returns 0 if successfully encoded, -1 upon fatal error
+ */
+int
+remoteEncodeClientMessageHeader (struct qemud_client_message *msg)
+{
+    XDR xdr;
+    int ret = -1;
+    unsigned int len = 0;
+
+    msg->bufferLength = sizeof(msg->buffer);
+    msg->bufferOffset = 0;
+
+    /* Format the header. */
+    xdrmem_create (&xdr,
+                   msg->buffer,
+                   msg->bufferLength,
+                   XDR_ENCODE);
+
+    /* The real value is filled in shortly */
+    if (!xdr_u_int (&xdr, &len)) {
+        goto cleanup;
+    }
+
+    if (!xdr_remote_message_header (&xdr, &msg->hdr))
+        goto cleanup;
+
+    len = xdr_getpos(&xdr);
+    xdr_setpos(&xdr, 0);
+
+    /* Fill in current length - may be re-written later
+     * if a payload is added
+     */
+    if (!xdr_u_int (&xdr, &len)) {
+        goto cleanup;
+    }
+
+    msg->bufferOffset += len;
+
+    ret = 0;
+
+cleanup:
+    xdr_destroy(&xdr);
+    return ret;
+}
+
+
+/*
  * @server: the unlocked server object
  * @client: the locked client object
  * @msg: the complete incoming message packet, with header already decoded
@@ -177,7 +235,6 @@ remoteDispatchClientRequest (struct qemud_server *server,
                              struct qemud_client_message *msg)
 {
     XDR xdr;
-    remote_message_header rep;
     remote_error rerr;
     dispatch_args args;
     dispatch_ret ret;
@@ -277,27 +334,29 @@ remoteDispatchClientRequest (struct qemud_server *server,
 
 rpc_error:
 
-    /* Return header. */
-    rep.prog = msg->hdr.prog;
-    rep.vers = msg->hdr.vers;
-    rep.proc = msg->hdr.proc;
-    rep.direction = REMOTE_REPLY;
-    rep.serial = msg->hdr.serial;
-    rep.status = rv < 0 ? REMOTE_ERROR : REMOTE_OK;
+    /* Return header. We're re-using same message object, so
+     * only need to tweak direction/status fields */
+    /*msg->hdr.prog = msg->hdr.prog;*/
+    /*msg->hdr.vers = msg->hdr.vers;*/
+    /*msg->hdr.proc = msg->hdr.proc;*/
+    msg->hdr.direction = REMOTE_REPLY;
+    /*msg->hdr.serial = msg->hdr.serial;*/
+    msg->hdr.status = rv < 0 ? REMOTE_ERROR : REMOTE_OK;
 
-    /* Serialise the return header. */
-    xdrmem_create (&xdr, msg->buffer, sizeof msg->buffer, XDR_ENCODE);
-
-    len = 0; /* We'll come back and write this later. */
-    if (!xdr_u_int (&xdr, &len)) {
+    if (remoteEncodeClientMessageHeader(msg) < 0) {
         if (rv == 0) xdr_free (data->ret_filter, (char*)&ret);
         goto fatal_error;
     }
 
-    if (!xdr_remote_message_header (&xdr, &rep)) {
-        if (rv == 0) xdr_free (data->ret_filter, (char*)&ret);
+
+    /* Now for the payload */
+    xdrmem_create (&xdr,
+                   msg->buffer,
+                   msg->bufferLength,
+                   XDR_ENCODE);
+
+    if (xdr_setpos(&xdr, msg->bufferOffset) == 0)
         goto fatal_error;
-    }
 
     /* If OK, serialise return structure, if error serialise error. */
     if (rv >= 0) {
@@ -313,8 +372,9 @@ rpc_error:
         xdr_free((xdrproc_t)xdr_remote_error,  (char *)&rerr);
     }
 
-    /* Write the length word. */
-    len = xdr_getpos (&xdr);
+    /* Update the length word. */
+    msg->bufferOffset += xdr_getpos (&xdr);
+    len = msg->bufferOffset;
     if (xdr_setpos (&xdr, 0) == 0)
         goto fatal_error;
 
@@ -323,6 +383,7 @@ rpc_error:
 
     xdr_destroy (&xdr);
 
+    /* Reset ready for I/O */
     msg->bufferLength = len;
     msg->bufferOffset = 0;
 

@@ -91,7 +91,6 @@ const dispatch_data const *remoteGetDispatchData(int proc)
 /* Prototypes */
 static void
 remoteDispatchDomainEventSend (struct qemud_client *client,
-                               struct qemud_client_message *msg,
                                virDomainPtr dom,
                                int event,
                                int detail);
@@ -108,14 +107,9 @@ int remoteRelayDomainEvent (virConnectPtr conn ATTRIBUTE_UNUSED,
     REMOTE_DEBUG("Relaying domain event %d %d", event, detail);
 
     if (client) {
-        struct qemud_client_message *ev;
-
-        if (VIR_ALLOC(ev) < 0)
-            return -1;
-
         virMutexLock(&client->lock);
 
-        remoteDispatchDomainEventSend (client, ev, dom, event, detail);
+        remoteDispatchDomainEventSend (client, dom, event, detail);
 
         if (qemudRegisterClientEvent(client->server, client, 1) < 0)
             qemudDispatchClientFailure(client);
@@ -4433,72 +4427,65 @@ remoteDispatchDomainEventsDeregister (struct qemud_server *server ATTRIBUTE_UNUS
 
 static void
 remoteDispatchDomainEventSend (struct qemud_client *client,
-                               struct qemud_client_message *msg,
                                virDomainPtr dom,
                                int event,
                                int detail)
 {
-    remote_message_header rep;
+    struct qemud_client_message *msg = NULL;
     XDR xdr;
     unsigned int len;
     remote_domain_event_ret data;
 
-    if (!client)
+    if (VIR_ALLOC(msg) < 0)
         return;
 
-    rep.prog = REMOTE_PROGRAM;
-    rep.vers = REMOTE_PROTOCOL_VERSION;
-    rep.proc = REMOTE_PROC_DOMAIN_EVENT;
-    rep.direction = REMOTE_MESSAGE;
-    rep.serial = 1;
-    rep.status = REMOTE_OK;
+    msg->hdr.prog = REMOTE_PROGRAM;
+    msg->hdr.vers = REMOTE_PROTOCOL_VERSION;
+    msg->hdr.proc = REMOTE_PROC_DOMAIN_EVENT;
+    msg->hdr.direction = REMOTE_MESSAGE;
+    msg->hdr.serial = 1;
+    msg->hdr.status = REMOTE_OK;
+
+    if (remoteEncodeClientMessageHeader(msg) < 0)
+        goto error;
 
     /* Serialise the return header and event. */
-    xdrmem_create (&xdr, msg->buffer, sizeof msg->buffer, XDR_ENCODE);
-
-    len = 0; /* We'll come back and write this later. */
-    if (!xdr_u_int (&xdr, &len)) {
-        /*remoteDispatchError (client, NULL, "%s", _("xdr_u_int failed (1)"));*/
-        xdr_destroy (&xdr);
-        return;
-    }
-
-    if (!xdr_remote_message_header (&xdr, &rep)) {
-        xdr_destroy (&xdr);
-        return;
-    }
+    xdrmem_create (&xdr,
+                   msg->buffer + msg->bufferOffset,
+                   msg->bufferLength - msg->bufferOffset,
+                   XDR_ENCODE);
 
     /* build return data */
     make_nonnull_domain (&data.dom, dom);
     data.event = event;
     data.detail = detail;
 
-    if (!xdr_remote_domain_event_ret(&xdr, &data)) {
-        /*remoteDispatchError (client, NULL, "%s", _("serialise return struct"));*/
-        xdr_destroy (&xdr);
-        return;
-    }
+    if (!xdr_remote_domain_event_ret(&xdr, &data))
+        goto xdr_error;
 
-    len = xdr_getpos (&xdr);
-    if (xdr_setpos (&xdr, 0) == 0) {
-        /*remoteDispatchError (client, NULL, "%s", _("xdr_setpos failed"));*/
-        xdr_destroy (&xdr);
-        return;
-    }
 
-    if (!xdr_u_int (&xdr, &len)) {
-        /*remoteDispatchError (client, NULL, "%s", _("xdr_u_int failed (2)"));*/
-        xdr_destroy (&xdr);
-        return;
-    }
+    /* Update length word */
+    msg->bufferOffset += xdr_getpos (&xdr);
+    len = msg->bufferOffset;
+    if (xdr_setpos (&xdr, 0) == 0)
+        goto xdr_error;
 
-    xdr_destroy (&xdr);
+    if (!xdr_u_int (&xdr, &len))
+        goto xdr_error;
 
     /* Send it. */
     msg->async = 1;
     msg->bufferLength = len;
     msg->bufferOffset = 0;
     qemudClientMessageQueuePush(&client->tx, msg);
+
+    xdr_destroy (&xdr);
+    return;
+
+xdr_error:
+    xdr_destroy(&xdr);
+error:
+    VIR_FREE(msg);
 }
 
 /*----- Helpers. -----*/
