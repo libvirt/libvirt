@@ -1,3 +1,4 @@
+qemud/dispatch.c
 qemud/qemud.c
 qemud/remote.c
 src/bridge.c

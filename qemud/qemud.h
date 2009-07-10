@@ -200,10 +200,6 @@ void qemudLog(int priority, const char *fmt, ...)
     ATTRIBUTE_FORMAT(printf,2,3);
 
 
-int
-remoteDispatchClientRequest (struct qemud_server *server,
-                             struct qemud_client *client,
-                             struct qemud_client_message *req);
 
 int qemudRegisterClientEvent(struct qemud_server *server,
                              struct qemud_client *client,
@@ -214,12 +210,9 @@ void qemudDispatchClientFailure(struct qemud_client *client);
 void
 qemudClientMessageQueuePush(struct qemud_client_message **queue,
                             struct qemud_client_message *msg);
+struct qemud_client_message *
+qemudClientMessageQueueServe(struct qemud_client_message **queue);
 
-int remoteRelayDomainEvent (virConnectPtr conn ATTRIBUTE_UNUSED,
-                            virDomainPtr dom,
-                            int event,
-                            int detail,
-                            void *opaque);
 
 
 #if HAVE_POLKIT

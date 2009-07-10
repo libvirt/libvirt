@@ -3,7 +3,8 @@
 DAEMON_SOURCES =					\
 		event.c event.h				\
 		qemud.c qemud.h				\
-		remote.c				\
+		remote.c remote.h			\
+		dispatch.c dispatch.h			\
 		remote_dispatch_prototypes.h		\
 		remote_dispatch_table.h			\
 		remote_dispatch_args.h			\

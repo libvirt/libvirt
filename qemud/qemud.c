@@ -54,6 +54,8 @@
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 #include "qemud.h"
+#include "dispatch.h"
+
 #include "util.h"
 #include "remote_internal.h"
 #include "conf.h"
@@ -219,7 +221,7 @@ qemudClientMessageQueuePush(struct qemud_client_message **queue,
     }
 }
 
-static struct qemud_client_message *
+struct qemud_client_message *
 qemudClientMessageQueueServe(struct qemud_client_message **queue)
 {
     struct qemud_client_message *tmp = *queue;

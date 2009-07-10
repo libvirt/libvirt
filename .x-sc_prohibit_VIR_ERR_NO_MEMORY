@@ -4,5 +4,5 @@ docs/html/libvirt-virterror.html
 docs/libvirt-api.xml
 docs/libvirt-refs.xml
 include/libvirt/virterror.h
-qemud/remote.c
+qemud/dispatch.c
 src/virterror.c
