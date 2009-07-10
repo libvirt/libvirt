@@ -1378,12 +1378,12 @@ struct remote_domain_events_deregister_ret {
 };
 typedef struct remote_domain_events_deregister_ret remote_domain_events_deregister_ret;
 
-struct remote_domain_event_ret {
+struct remote_domain_event_msg {
         remote_nonnull_domain dom;
         int event;
         int detail;
 };
-typedef struct remote_domain_event_ret remote_domain_event_ret;
+typedef struct remote_domain_event_msg remote_domain_event_msg;
 
 struct remote_domain_xml_from_native_args {
         remote_nonnull_string nativeFormat;
@@ -1802,7 +1802,7 @@ extern  bool_t xdr_remote_node_device_create_xml_ret (XDR *, remote_node_device_
 extern  bool_t xdr_remote_node_device_destroy_args (XDR *, remote_node_device_destroy_args*);
 extern  bool_t xdr_remote_domain_events_register_ret (XDR *, remote_domain_events_register_ret*);
 extern  bool_t xdr_remote_domain_events_deregister_ret (XDR *, remote_domain_events_deregister_ret*);
-extern  bool_t xdr_remote_domain_event_ret (XDR *, remote_domain_event_ret*);
+extern  bool_t xdr_remote_domain_event_msg (XDR *, remote_domain_event_msg*);
 extern  bool_t xdr_remote_domain_xml_from_native_args (XDR *, remote_domain_xml_from_native_args*);
 extern  bool_t xdr_remote_domain_xml_from_native_ret (XDR *, remote_domain_xml_from_native_ret*);
 extern  bool_t xdr_remote_domain_xml_to_native_args (XDR *, remote_domain_xml_to_native_args*);
@@ -2037,7 +2037,7 @@ extern bool_t xdr_remote_node_device_create_xml_ret ();
 extern bool_t xdr_remote_node_device_destroy_args ();
 extern bool_t xdr_remote_domain_events_register_ret ();
 extern bool_t xdr_remote_domain_events_deregister_ret ();
-extern bool_t xdr_remote_domain_event_ret ();
+extern bool_t xdr_remote_domain_event_msg ();
 extern bool_t xdr_remote_domain_xml_from_native_args ();
 extern bool_t xdr_remote_domain_xml_from_native_ret ();
 extern bool_t xdr_remote_domain_xml_to_native_args ();

@@ -2448,7 +2448,7 @@ xdr_remote_domain_events_deregister_ret (XDR *xdrs, remote_domain_events_deregis
 }
 
 bool_t
-xdr_remote_domain_event_ret (XDR *xdrs, remote_domain_event_ret *objp)
+xdr_remote_domain_event_msg (XDR *xdrs, remote_domain_event_msg *objp)
 {
 
          if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))

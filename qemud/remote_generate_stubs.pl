@@ -65,6 +65,16 @@ while (<>) {
 		ret => "remote_${name}_ret"
 	    }
 	}
+    } elsif (/^struct remote_(.*)_msg/) {
+	$name = $1;
+	$ProcName = name_to_ProcName ($name);
+
+	$calls{$name} = {
+	    name => $name,
+	    ProcName => $ProcName,
+	    UC_NAME => uc $name,
+	    msg => "remote_${name}_msg"
+	}
     } elsif (/^\s*REMOTE_PROC_(.*?)\s+=\s+(\d+),?$/) {
 	$name = lc $1;
 	$id = $2;
@@ -98,6 +108,9 @@ if ($opt_d) {
 elsif ($opt_p) {
     my @keys = sort (keys %calls);
     foreach (@keys) {
+	# Skip things which are REMOTE_MESSAGE
+	next if $calls{$_}->{msg};
+
 	print "static int remoteDispatch$calls{$_}->{ProcName}(\n";
 	print "    struct qemud_server *server,\n";
 	print "    struct qemud_client *client,\n";
@@ -113,6 +126,7 @@ elsif ($opt_p) {
 elsif ($opt_a) {
     for ($id = 0 ; $id <= $#calls ; $id++) {
 	if (defined $calls[$id] &&
+	    !$calls[$id]->{msg} &&
 	    $calls[$id]->{args} ne "void") {
 	    print "    $calls[$id]->{args} val_$calls[$id]->{args};\n";
 	}
@@ -124,6 +138,7 @@ elsif ($opt_a) {
 elsif ($opt_r) {
     for ($id = 0 ; $id <= $#calls ; $id++) {
 	if (defined $calls[$id] &&
+	    !$calls[$id]->{msg} &&
 	    $calls[$id]->{ret} ne "void") {
 	    print "    $calls[$id]->{ret} val_$calls[$id]->{ret};\n";
 	}
@@ -134,7 +149,7 @@ elsif ($opt_r) {
 # ("remote_dispatch_table.h").
 elsif ($opt_t) {
     for ($id = 0 ; $id <= $#calls ; $id++) {
-	if (defined $calls[$id]) {
+	if (defined $calls[$id] && !$calls[$id]->{msg}) {
 	    print "{   /* $calls[$id]->{ProcName} => $id */\n";
 	    print "    .fn = (dispatch_fn) remoteDispatch$calls[$id]->{ProcName},\n";
 	    if ($calls[$id]->{args} ne "void") {
@@ -149,7 +164,11 @@ elsif ($opt_t) {
 	    }
 	    print "},\n";
 	} else {
-	    print "{   /* (unused) => $id */\n";
+	    if ($calls[$id]->{msg}) {
+		print "{   /* Async event $calls[$id]->{ProcName} => $id */\n";
+	    } else {
+		print "{   /* (unused) => $id */\n";
+	    }
 	    print "    .fn = NULL,\n";
 	    print "    .args_filter = (xdrproc_t) xdr_void,\n";
 	    print "    .ret_filter = (xdrproc_t) xdr_void,\n";

@@ -537,10 +537,10 @@
     .args_filter = (xdrproc_t) xdr_void,
     .ret_filter = (xdrproc_t) xdr_remote_domain_events_deregister_ret,
 },
-{   /* DomainEvent => 107 */
-    .fn = (dispatch_fn) remoteDispatchDomainEvent,
+{   /* Async event DomainEvent => 107 */
+    .fn = NULL,
     .args_filter = (xdrproc_t) xdr_void,
-    .ret_filter = (xdrproc_t) xdr_remote_domain_event_ret,
+    .ret_filter = (xdrproc_t) xdr_void,
 },
 {   /* DomainMigratePrepare2 => 108 */
     .fn = (dispatch_fn) remoteDispatchDomainMigratePrepare2,

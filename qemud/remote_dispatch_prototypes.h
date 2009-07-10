@@ -114,13 +114,6 @@ static int remoteDispatchDomainDumpXml(
     remote_error *err,
     remote_domain_dump_xml_args *args,
     remote_domain_dump_xml_ret *ret);
-static int remoteDispatchDomainEvent(
-    struct qemud_server *server,
-    struct qemud_client *client,
-    virConnectPtr conn,
-    remote_error *err,
-    void *args,
-    remote_domain_event_ret *ret);
 static int remoteDispatchDomainEventsDeregister(
     struct qemud_server *server,
     struct qemud_client *client,

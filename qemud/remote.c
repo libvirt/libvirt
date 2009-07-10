@@ -4365,24 +4365,6 @@ remoteDispatchNodeDeviceDestroy(struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 
-/**************************
- * Async Events
- **************************/
-static int
-remoteDispatchDomainEvent (struct qemud_server *server ATTRIBUTE_UNUSED,
-                           struct qemud_client *client ATTRIBUTE_UNUSED,
-                           virConnectPtr conn ATTRIBUTE_UNUSED,
-                           remote_error *rerr ATTRIBUTE_UNUSED,
-                           void *args ATTRIBUTE_UNUSED,
-                           remote_domain_event_ret *ret ATTRIBUTE_UNUSED)
-{
-    /* This call gets dispatched from a client call.
-     * This does not make sense, as this should not be intiated
-     * from the client side in generated code.
-     */
-    remoteDispatchFormatError(rerr, "%s", _("unexpected async event method call"));
-    return -1;
-}
 
 /***************************
  * Register / deregister events
@@ -4434,7 +4416,7 @@ remoteDispatchDomainEventSend (struct qemud_client *client,
     struct qemud_client_message *msg = NULL;
     XDR xdr;
     unsigned int len;
-    remote_domain_event_ret data;
+    remote_domain_event_msg data;
 
     if (VIR_ALLOC(msg) < 0)
         return;
@@ -4460,7 +4442,7 @@ remoteDispatchDomainEventSend (struct qemud_client *client,
     data.event = event;
     data.detail = detail;
 
-    if (!xdr_remote_domain_event_ret(&xdr, &data))
+    if (!xdr_remote_domain_event_msg(&xdr, &data))
         goto xdr_error;
 
 

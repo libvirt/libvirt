@@ -1222,7 +1222,7 @@ struct remote_domain_events_deregister_ret {
     int cb_registered;
 };
 
-struct remote_domain_event_ret {
+struct remote_domain_event_msg {
     remote_nonnull_domain dom;
     int event;
     int detail;

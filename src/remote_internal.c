@@ -7099,23 +7099,23 @@ cleanup:
 static virDomainEventPtr
 remoteDomainReadEvent(virConnectPtr conn, XDR *xdr)
 {
-    remote_domain_event_ret ret;
+    remote_domain_event_msg msg;
     virDomainPtr dom;
     virDomainEventPtr event = NULL;
-    memset (&ret, 0, sizeof ret);
+    memset (&msg, 0, sizeof msg);
 
     /* unmarshall parameters, and process it*/
-    if (! xdr_remote_domain_event_ret(xdr, &ret) ) {
+    if (! xdr_remote_domain_event_msg(xdr, &msg) ) {
         error (conn, VIR_ERR_RPC,
-               _("remoteDomainProcessEvent: unmarshalling ret"));
+               _("remoteDomainProcessEvent: unmarshalling msg"));
         return NULL;
     }
 
-    dom = get_nonnull_domain(conn,ret.dom);
+    dom = get_nonnull_domain(conn,msg.dom);
     if (!dom)
         return NULL;
 
-    event = virDomainEventNewFromDom(dom, ret.event, ret.detail);
+    event = virDomainEventNewFromDom(dom, msg.event, msg.detail);
 
     virDomainFree(dom);
     return event;
