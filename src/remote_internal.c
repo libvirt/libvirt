@@ -6319,10 +6319,10 @@ error:
 
 
 static int
-processCallWrite(virConnectPtr conn,
-                 struct private_data *priv,
-                 int in_open /* if we are in virConnectOpen */,
-                 const char *bytes, int len)
+remoteIOWriteBuffer(virConnectPtr conn,
+                    struct private_data *priv,
+                    int in_open /* if we are in virConnectOpen */,
+                    const char *bytes, int len)
 {
     int ret;
 
@@ -6360,10 +6360,10 @@ processCallWrite(virConnectPtr conn,
 
 
 static int
-processCallRead(virConnectPtr conn,
-                struct private_data *priv,
-                int in_open /* if we are in virConnectOpen */,
-                char *bytes, int len)
+remoteIOReadBuffer(virConnectPtr conn,
+                   struct private_data *priv,
+                   int in_open /* if we are in virConnectOpen */,
+                   char *bytes, int len)
 {
     int ret;
 
@@ -6414,10 +6414,10 @@ processCallRead(virConnectPtr conn,
 
 
 static int
-processCallSendOne(virConnectPtr conn,
-                   struct private_data *priv,
-                   int in_open,
-                   struct remote_thread_call *thecall)
+remoteIOWriteMessage(virConnectPtr conn,
+                     struct private_data *priv,
+                     int in_open,
+                     struct remote_thread_call *thecall)
 {
 #if HAVE_SASL
     if (priv->saslconn) {
@@ -6443,9 +6443,9 @@ processCallSendOne(virConnectPtr conn,
             thecall->bufferOffset = thecall->bufferLength;
         }
 
-        ret = processCallWrite(conn, priv, in_open,
-                               priv->saslEncoded + priv->saslEncodedOffset,
-                               priv->saslEncodedLength - priv->saslEncodedOffset);
+        ret = remoteIOWriteBuffer(conn, priv, in_open,
+                                  priv->saslEncoded + priv->saslEncodedOffset,
+                                  priv->saslEncodedLength - priv->saslEncodedOffset);
         if (ret < 0)
             return ret;
         priv->saslEncodedOffset += ret;
@@ -6458,9 +6458,9 @@ processCallSendOne(virConnectPtr conn,
     } else {
 #endif
         int ret;
-        ret = processCallWrite(conn, priv, in_open,
-                               thecall->buffer + thecall->bufferOffset,
-                               thecall->bufferLength - thecall->bufferOffset);
+        ret = remoteIOWriteBuffer(conn, priv, in_open,
+                                  thecall->buffer + thecall->bufferOffset,
+                                  thecall->bufferLength - thecall->bufferOffset);
         if (ret < 0)
             return ret;
         thecall->bufferOffset += ret;
@@ -6477,8 +6477,8 @@ processCallSendOne(virConnectPtr conn,
 
 
 static int
-processCallSend(virConnectPtr conn, struct private_data *priv,
-                int in_open) {
+remoteIOHandleOutput(virConnectPtr conn, struct private_data *priv,
+                     int in_open) {
     struct remote_thread_call *thecall = priv->waitDispatch;
 
     while (thecall &&
@@ -6489,7 +6489,7 @@ processCallSend(virConnectPtr conn, struct private_data *priv,
         return -1; /* Shouldn't happen, but you never know... */
 
     while (thecall) {
-        int ret = processCallSendOne(conn, priv, in_open, thecall);
+        int ret = remoteIOWriteMessage(conn, priv, in_open, thecall);
         if (ret < 0)
             return ret;
 
@@ -6503,7 +6503,7 @@ processCallSend(virConnectPtr conn, struct private_data *priv,
 }
 
 static int
-processCallRecvSome(virConnectPtr conn, struct private_data *priv,
+remoteIOReadMessage(virConnectPtr conn, struct private_data *priv,
                     int in_open) {
     unsigned int wantData;
 
@@ -6519,8 +6519,8 @@ processCallRecvSome(virConnectPtr conn, struct private_data *priv,
             char encoded[8192];
             unsigned int encodedLen = sizeof(encoded);
             int ret, err;
-            ret = processCallRead(conn, priv, in_open,
-                                  encoded, encodedLen);
+            ret = remoteIOReadBuffer(conn, priv, in_open,
+                                     encoded, encodedLen);
             if (ret < 0)
                 return -1;
             if (ret == 0)
@@ -6555,9 +6555,9 @@ processCallRecvSome(virConnectPtr conn, struct private_data *priv,
 #endif
         int ret;
 
-        ret = processCallRead(conn, priv, in_open,
-                              priv->buffer + priv->bufferOffset,
-                              wantData);
+        ret = remoteIOReadBuffer(conn, priv, in_open,
+                                 priv->buffer + priv->bufferOffset,
+                                 wantData);
         if (ret < 0)
             return -1;
         if (ret == 0)
@@ -6573,8 +6573,8 @@ processCallRecvSome(virConnectPtr conn, struct private_data *priv,
 
 
 static int
-processCallRecvLen(virConnectPtr conn, struct private_data *priv,
-                   int in_open) {
+remoteIODecodeMessageLength(virConnectPtr conn, struct private_data *priv,
+                            int in_open) {
     XDR xdr;
     unsigned int len;
 
@@ -6774,14 +6774,14 @@ processCallDispatchMessage(virConnectPtr conn, struct private_data *priv,
 
 
 static int
-processCallRecv(virConnectPtr conn, struct private_data *priv,
-                int in_open)
+remoteIOHandleInput(virConnectPtr conn, struct private_data *priv,
+                    int in_open)
 {
     /* Read as much data as is available, until we get
      * EAGAIN
      */
     for (;;) {
-        int ret = processCallRecvSome(conn, priv, in_open);
+        int ret = remoteIOReadMessage(conn, priv, in_open);
 
         if (ret < 0)
             return -1;
@@ -6791,7 +6791,7 @@ processCallRecv(virConnectPtr conn, struct private_data *priv,
         /* Check for completion of our goal */
         if (priv->bufferOffset == priv->bufferLength) {
             if (priv->bufferOffset == 4) {
-                ret = processCallRecvLen(conn, priv, in_open);
+                ret = remoteIODecodeMessageLength(conn, priv, in_open);
                 if (ret < 0)
                     return -1;
 
@@ -6823,10 +6823,10 @@ processCallRecv(virConnectPtr conn, struct private_data *priv,
  * to someone else.
  */
 static int
-processCalls(virConnectPtr conn,
-             struct private_data *priv,
-             int in_open,
-             struct remote_thread_call *thiscall)
+remoteIOEventLoop(virConnectPtr conn,
+                  struct private_data *priv,
+                  int in_open,
+                  struct remote_thread_call *thiscall)
 {
     struct pollfd fds[2];
     int ret;
@@ -6876,12 +6876,12 @@ processCalls(virConnectPtr conn,
         }
 
         if (fds[0].revents & POLLOUT) {
-            if (processCallSend(conn, priv, in_open) < 0)
+            if (remoteIOHandleOutput(conn, priv, in_open) < 0)
                 goto error;
         }
 
         if (fds[0].revents & POLLIN) {
-            if (processCallRecv(conn, priv, in_open) < 0)
+            if (remoteIOHandleInput(conn, priv, in_open) < 0)
                 goto error;
         }
 
@@ -7073,9 +7073,9 @@ remoteIO(virConnectPtr conn,
     if (priv->watch >= 0)
         virEventUpdateHandle(priv->watch, 0);
 
-    rv = processCalls(conn, priv,
-                      flags & REMOTE_CALL_IN_OPEN ? 1 : 0,
-                      thiscall);
+    rv = remoteIOEventLoop(conn, priv,
+                           flags & REMOTE_CALL_IN_OPEN ? 1 : 0,
+                           thiscall);
 
     if (priv->watch >= 0)
         virEventUpdateHandle(priv->watch, VIR_EVENT_HANDLE_READABLE);
@@ -7230,7 +7230,7 @@ remoteDomainEventFired(int watch,
         goto done;
     }
 
-    if (processCallRecv(conn, priv, 0) < 0)
+    if (remoteIOHandleInput(conn, priv, 0) < 0)
         DEBUG0("Something went wrong during async message processing");
 
 done:
