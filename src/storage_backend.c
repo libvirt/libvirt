@@ -108,7 +108,8 @@ virStorageBackendCopyToFD(virConnectPtr conn,
                           virStorageVolDefPtr vol,
                           virStorageVolDefPtr inputvol,
                           int fd,
-                          unsigned long long *total)
+                          unsigned long long *total,
+                          int is_dest_file)
 {
     int inputfd = -1;
     int amtread = -1;
@@ -157,7 +158,7 @@ virStorageBackendCopyToFD(virConnectPtr conn,
             int interval = ((512 > amtleft) ? amtleft : 512);
             int offset = amtread - amtleft;
 
-            if (memcmp(buf+offset, zerobuf, interval) == 0) {
+            if (is_dest_file && memcmp(buf+offset, zerobuf, interval) == 0) {
                 if (lseek(fd, interval, SEEK_CUR) < 0) {
                     virReportSystemError(conn, errno,
                                          _("cannot extend file '%s'"),
@@ -212,7 +213,8 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn,
     remain = vol->allocation;
 
     if (inputvol) {
-        int res = virStorageBackendCopyToFD(conn, vol, inputvol, fd, &remain);
+        int res = virStorageBackendCopyToFD(conn, vol, inputvol,
+                                            fd, &remain, 0);
         if (res < 0)
             goto cleanup;
     }
@@ -264,7 +266,8 @@ virStorageBackendCreateRaw(virConnectPtr conn,
     remain = vol->allocation;
 
     if (inputvol) {
-        int res = virStorageBackendCopyToFD(conn, vol, inputvol, fd, &remain);
+        int res = virStorageBackendCopyToFD(conn, vol, inputvol,
+                                            fd, &remain, 1);
         if (res < 0)
             goto cleanup;
     }
