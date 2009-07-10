@@ -1,3 +1,4 @@
+^src/libvirt\.c$
 ^src/util/util\.c$
 ^src/xen/xend_internal\.c$
 ^daemon/libvirtd.c$

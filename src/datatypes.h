@@ -110,6 +110,17 @@
 
 
 /**
+ * VIR_STREAM_MAGIC:
+ *
+ * magic value used to protect the API when pointers to stream structures
+ * are passed down by the users.
+ */
+#define VIR_STREAM_MAGIC                   0x1DEAD666
+#define VIR_IS_STREAM(obj)                 ((obj) && (obj)->magic==VIR_STREAM_MAGIC)
+#define VIR_IS_CONNECTED_STREAM(obj)       (VIR_IS_STREAM(obj) && VIR_IS_CONNECT((obj)->conn))
+
+
+/**
  * _virConnect:
  *
  * Internal structure associated to a connection
@@ -261,6 +272,25 @@ struct _virSecret {
 };
 
 
+typedef int (*virStreamAbortFunc)(virStreamPtr, void *opaque);
+typedef int (*virStreamFinishFunc)(virStreamPtr, void *opaque);
+
+/**
+ * _virStream:
+ *
+ * Internal structure associated with an input stream
+ */
+struct _virStream {
+    unsigned int magic;
+    virConnectPtr conn;
+    int refs;
+    int flags;
+
+    virStreamDriverPtr driver;
+    void *privateData;
+};
+
+
 /************************************************************************
  *									*
  *	API for domain/connections (de)allocations and lookups		*
@@ -302,5 +332,8 @@ virSecretPtr virGetSecret(virConnectPtr conn,
                           int usageType,
                           const char *usageID);
 int virUnrefSecret(virSecretPtr secret);
+
+virStreamPtr virGetStream(virConnectPtr conn);
+int virUnrefStream(virStreamPtr st);
 
 #endif

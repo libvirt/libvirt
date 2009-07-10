@@ -312,4 +312,20 @@ LIBVIRT_0.7.1 {
         virSecretFree;
 } LIBVIRT_0.7.0;
 
+LIBVIRT_0.7.2 {
+    global:
+	virStreamNew;
+	virStreamRef;
+	virStreamSend;
+	virStreamRecv;
+	virStreamSendAll;
+	virStreamRecvAll;
+	virStreamEventAddCallback;
+	virStreamEventUpdateCallback;
+	virStreamEventRemoveCallback;
+	virStreamFinish;
+	virStreamAbort;
+	virStreamFree;
+} LIBVIRT_0.7.1;
+
 # .... define new API here using predicted next version number ....

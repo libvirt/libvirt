@@ -1162,6 +1162,7 @@ virUnrefNodeDevice(virNodeDevicePtr dev) {
     return (refs);
 }
 
+
 /**
  * virGetSecret:
  * @conn: the hypervisor connection
@@ -1296,4 +1297,62 @@ virUnrefSecret(virSecretPtr secret) {
 
     virMutexUnlock(&secret->conn->lock);
     return refs;
+}
+
+virStreamPtr virGetStream(virConnectPtr conn) {
+    virStreamPtr ret = NULL;
+
+    virMutexLock(&conn->lock);
+
+    if (VIR_ALLOC(ret) < 0) {
+        virReportOOMError(conn);
+        goto error;
+    }
+    ret->magic = VIR_STREAM_MAGIC;
+    ret->conn = conn;
+    conn->refs++;
+    ret->refs++;
+    virMutexUnlock(&conn->lock);
+    return(ret);
+
+error:
+    virMutexUnlock(&conn->lock);
+    VIR_FREE(ret);
+    return(NULL);
+}
+
+static void
+virReleaseStream(virStreamPtr st) {
+    virConnectPtr conn = st->conn;
+    DEBUG("release dev %p", st);
+
+    st->magic = -1;
+    VIR_FREE(st);
+
+    DEBUG("unref connection %p %d", conn, conn->refs);
+    conn->refs--;
+    if (conn->refs == 0) {
+        virReleaseConnect(conn);
+        /* Already unlocked mutex */
+        return;
+    }
+
+    virMutexUnlock(&conn->lock);
+}
+
+int virUnrefStream(virStreamPtr st) {
+    int refs;
+
+    virMutexLock(&st->conn->lock);
+    DEBUG("unref stream %p %d", st, st->refs);
+    st->refs--;
+    refs = st->refs;
+    if (refs == 0) {
+        virReleaseStream(st);
+        /* Already unlocked mutex */
+        return (0);
+    }
+
+    virMutexUnlock(&st->conn->lock);
+    return (refs);
 }

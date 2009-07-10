@@ -78,6 +78,8 @@ virGetNodeDevice;
 virUnrefDomain;
 virUnrefConnect;
 virUnrefSecret;
+virGetStream;
+virUnrefStream;
 
 
 # domain_conf.h

@@ -13,7 +13,9 @@ DOCS_DIR = $(datadir)/doc/libvirt-python-$(LIBVIRT_VERSION)
 
 DOCS = ${srcdir}/TODO
 
-CLASSES_EXTRA = libvirt-override-virConnect.py
+CLASSES_EXTRA = \
+	libvirt-override-virConnect.py \
+	libvirt-override-virStream.py
 
 EXTRA_DIST =			\
 	generator.py		\

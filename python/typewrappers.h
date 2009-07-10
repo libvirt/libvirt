@@ -92,6 +92,15 @@ typedef struct {
 } PyvirSecret_Object;
 
 
+#define PyvirStream_Get(v) (((v) == Py_None) ? NULL : \
+        (((PyvirStream_Object *)(v))->obj))
+
+typedef struct {
+    PyObject_HEAD
+    virStreamPtr obj;
+} PyvirStream_Object;
+
+
 #define PyvirEventHandleCallback_Get(v) (((v) == Py_None) ? NULL : \
         (((PyvirEventHandleCallback_Object *)(v))->obj))
 
@@ -144,6 +153,7 @@ PyObject * libvirt_virFreeCallbackWrap(virFreeCallback node);
 PyObject * libvirt_virVoidPtrWrap(void* node);
 PyObject * libvirt_virNodeDevicePtrWrap(virNodeDevicePtr node);
 PyObject * libvirt_virSecretPtrWrap(virSecretPtr node);
+PyObject * libvirt_virStreamPtrWrap(virStreamPtr node);
 
 
 /* Provide simple macro statement wrappers (adapted from GLib, in turn from Perl):

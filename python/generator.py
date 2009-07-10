@@ -282,6 +282,11 @@ py_types = {
     'const virSecretPtr':  ('O', "virSecret", "virSecretPtr", "virSecretPtr"),
     'virSecret *':  ('O', "virSecret", "virSecretPtr", "virSecretPtr"),
     'const virSecret *':  ('O', "virSecret", "virSecretPtr", "virSecretPtr"),
+
+    'virStreamPtr':  ('O', "virStream", "virStreamPtr", "virStreamPtr"),
+    'const virStreamPtr':  ('O', "virStream", "virStreamPtr", "virStreamPtr"),
+    'virStream *':  ('O', "virStream", "virStreamPtr", "virStreamPtr"),
+    'const virStream *':  ('O', "virStream", "virStreamPtr", "virStreamPtr"),
 }
 
 py_return_types = {
@@ -338,6 +343,8 @@ skip_impl = (
     'virSecretGetUUID',
     'virSecretGetUUIDString',
     'virSecretLookupByUUID',
+    'virStreamRecv',
+    'virStreamSend',
     'virStoragePoolGetUUID',
     'virStoragePoolGetUUIDString',
     'virStoragePoolLookupByUUID',
@@ -373,6 +380,11 @@ skip_function = (
     'virConnectDomainEventDeregister', # overridden in virConnect.py
     'virSaveLastError', # We have our own python error wrapper
     'virFreeError', # Only needed if we use virSaveLastError
+    'virStreamEventAddCallback',
+    'virStreamRecvAll',
+    'virStreamSendAll',
+    'virStreamRef',
+    'virStreamFree',
 )
 
 
@@ -643,6 +655,8 @@ classes_type = {
     "virNodeDevice *": ("._o", "virNodeDevice(self, _obj=%s)", "virNodeDevice"),
     "virSecretPtr": ("._o", "virSecret(self, _obj=%s)", "virSecret"),
     "virSecret *": ("._o", "virSecret(self, _obj=%s)", "virSecret"),
+    "virStreamPtr": ("._o", "virStream(self, _obj=%s)", "virStream"),
+    "virStream *": ("._o", "virStream(self, _obj=%s)", "virStream"),
     "virConnectPtr": ("._o", "virConnect(_obj=%s)", "virConnect"),
     "virConnect *": ("._o", "virConnect(_obj=%s)", "virConnect"),
 }
@@ -652,7 +666,8 @@ converter_type = {
 
 primary_classes = ["virDomain", "virNetwork", "virInterface",
                    "virStoragePool", "virStorageVol",
-                   "virConnect", "virNodeDevice", "virSecret" ]
+                   "virConnect", "virNodeDevice", "virSecret",
+                   "virStream"]
 
 classes_ancestor = {
 }
@@ -663,7 +678,9 @@ classes_destructors = {
     "virStoragePool": "virStoragePoolFree",
     "virStorageVol": "virStorageVolFree",
     "virNodeDevice" : "virNodeDeviceFree",
-    "virSecret": "virSecretFree"
+    "virSecret": "virSecretFree",
+    # We hand-craft __del__ for this one
+    #"virStream": "virStreamFree",
 }
 
 functions_noexcept = {
@@ -780,6 +797,11 @@ def nameFixup(name, classe, type, file):
         func = name[12:]
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:9] == 'virSecret':
+        func = name[9:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:12] == 'virStreamNew':
+        func = "newStream"
+    elif name[0:9] == 'virStream':
         func = name[9:]
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:17] == "virStoragePoolGet":
@@ -1059,7 +1081,8 @@ def buildWrappers():
 			      classes_ancestor[classname]))
 	    else:
 		classes.write("class %s:\n" % (classname))
-                if classname in [ "virDomain", "virNetwork", "virInterface", "virStoragePool", "virStorageVol", "virNodeDevice", "virSecret" ]:
+                if classname in [ "virDomain", "virNetwork", "virInterface", "virStoragePool",
+                                  "virStorageVol", "virNodeDevice", "virSecret","virStream" ]:
                     classes.write("    def __init__(self, conn, _obj=None):\n")
                 else:
                     classes.write("    def __init__(self, _obj=None):\n")
@@ -1067,7 +1090,8 @@ def buildWrappers():
 		    list = reference_keepers[classname]
 		    for ref in list:
 		        classes.write("        self.%s = None\n" % ref[1])
-                if classname in [ "virDomain", "virNetwork", "virInterface", "virNodeDevice", "virSecret" ]:
+                if classname in [ "virDomain", "virNetwork", "virInterface",
+                                  "virNodeDevice", "virSecret", "virStream" ]:
                     classes.write("        self._conn = conn\n")
                 elif classname in [ "virStorageVol", "virStoragePool" ]:
                     classes.write("        self._conn = conn\n" + \

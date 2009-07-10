@@ -207,6 +207,19 @@ libvirt_virSecretPtrWrap(virSecretPtr node)
 }
 
 PyObject *
+libvirt_virStreamPtrWrap(virStreamPtr node)
+{
+    PyObject *ret;
+
+    if (node == NULL) {
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+    ret = PyCObject_FromVoidPtrAndDesc(node, (char *) "virStreamPtr", NULL);
+    return (ret);
+}
+
+PyObject *
 libvirt_virEventHandleCallbackWrap(virEventHandleCallback node)
 {
     PyObject *ret;

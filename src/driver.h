@@ -879,6 +879,41 @@ struct _virSecretDriver {
     virDrvSecretUndefine undefine;
 };
 
+
+typedef struct _virStreamDriver virStreamDriver;
+typedef virStreamDriver *virStreamDriverPtr;
+
+typedef int (*virDrvStreamSend)(virStreamPtr st,
+                                const char *data,
+                                size_t nbytes);
+typedef int (*virDrvStreamRecv)(virStreamPtr st,
+                                char *data,
+                                size_t nbytes);
+
+typedef int (*virDrvStreamEventAddCallback)(virStreamPtr stream,
+                                            int events,
+                                            virStreamEventCallback cb,
+                                            void *opaque,
+                                            virFreeCallback ff);
+
+typedef int (*virDrvStreamEventUpdateCallback)(virStreamPtr stream,
+                                               int events);
+typedef int (*virDrvStreamEventRemoveCallback)(virStreamPtr stream);
+typedef int (*virDrvStreamFinish)(virStreamPtr st);
+typedef int (*virDrvStreamAbort)(virStreamPtr st);
+
+
+struct _virStreamDriver {
+    virDrvStreamSend streamSend;
+    virDrvStreamRecv streamRecv;
+    virDrvStreamEventAddCallback streamAddCallback;
+    virDrvStreamEventUpdateCallback streamUpdateCallback;
+    virDrvStreamEventRemoveCallback streamRemoveCallback;
+    virDrvStreamFinish streamFinish;
+    virDrvStreamAbort streamAbort;
+};
+
+
 /*
  * Registration
  * TODO: also need ways to (des)activate a given driver
