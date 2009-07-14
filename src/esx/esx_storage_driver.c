@@ -1671,6 +1671,8 @@ static virStorageDriver esxStorageDriver = {
     esxStorageVolumeLookupByPath,          /* volLookupByPath */
     esxStorageVolumeCreateXML,             /* volCreateXML */
     esxStorageVolumeCreateXMLFrom,         /* volCreateXMLFrom */
+    NULL, /* volDownload */
+    NULL, /* volUpload */
     esxStorageVolumeDelete,                /* volDelete */
     esxStorageVolumeWipe,                  /* volWipe */
     esxStorageVolumeGetInfo,               /* volGetInfo */

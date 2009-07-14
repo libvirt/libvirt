@@ -1201,6 +1201,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("Domain snapshot not found: %s");
             break;
+        case VIR_ERR_INVALID_STREAM:
+            if (info == NULL)
+                errmsg = _("invalid stream pointer");
+            else
+                errmsg = _("invalid stream pointer in %s");
+            break;
     }
     return (errmsg);
 }

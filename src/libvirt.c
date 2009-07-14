@@ -9066,6 +9066,146 @@ error:
 
 
 /**
+ * virStorageVolDownload:
+ * @vol: pointer to volume to download from
+ * @stream: stream to use as output
+ * @offset: position in @vol to start reading from
+ * @length: limit on amount of data to download
+ * @flags: future flags (unused, pass 0)
+ *
+ * Download the content of the volume as a stream. If @length
+ * is zero, then the remaining contents of the volume after
+ * @offset will be downloaded.
+ *
+ * This call sets up an asynchronous stream; subsequent use of
+ * stream APIs is necessary to transfer the actual data,
+ * determine how much data is successfully transferred, and
+ * detect any errors. The results will be unpredictable if
+ * another active stream is writing to the storage volume.
+ *
+ * Returns 0, or -1 upon error.
+ */
+int
+virStorageVolDownload(virStorageVolPtr vol,
+                      virStreamPtr stream,
+                      unsigned long long offset,
+                      unsigned long long length,
+                      unsigned int flags)
+{
+    VIR_DEBUG("vol=%p stream=%p offset=%llu length=%llu flags=%u",
+              vol, stream, offset, length, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_STORAGE_VOL(vol)) {
+        virLibConnError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        return -1;
+    }
+
+    if (!VIR_IS_STREAM(stream)) {
+        virLibConnError(VIR_ERR_INVALID_STREAM, __FUNCTION__);
+        return -1;
+    }
+
+    if (vol->conn->flags & VIR_CONNECT_RO ||
+        stream->conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (vol->conn->storageDriver &&
+        vol->conn->storageDriver->volDownload) {
+        int ret;
+        ret = vol->conn->storageDriver->volDownload(vol,
+                                                    stream,
+                                                    offset,
+                                                    length,
+                                                    flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(vol->conn);
+    return -1;
+}
+
+
+/**
+ * virStorageVolUpload:
+ * @vol: pointer to volume to upload
+ * @stream: stream to use as input
+ * @offset: position to start writing to
+ * @length: limit on amount of data to upload
+ * @flags: flags for creation (unused, pass 0)
+ *
+ * Upload new content to the volume from a stream. This call
+ * will fail if @offset + @length exceeds the size of the
+ * volume. Otherwise, if @length is non-zero, an error
+ * will be raised if an attempt is made to upload greater
+ * than @length bytes of data.
+ *
+ * This call sets up an asynchronous stream; subsequent use of
+ * stream APIs is necessary to transfer the actual data,
+ * determine how much data is successfully transferred, and
+ * detect any errors. The results will be unpredictable if
+ * another active stream is writing to the storage volume.
+ *
+ * Returns 0, or -1 upon error.
+ */
+int
+virStorageVolUpload(virStorageVolPtr vol,
+                    virStreamPtr stream,
+                    unsigned long long offset,
+                    unsigned long long length,
+                    unsigned int flags)
+{
+    VIR_DEBUG("vol=%p stream=%p offset=%llu length=%llu flags=%u",
+              vol, stream, offset, length, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_STORAGE_VOL(vol)) {
+        virLibConnError(VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        return -1;
+    }
+
+    if (!VIR_IS_STREAM(stream)) {
+        virLibConnError(VIR_ERR_INVALID_STREAM, __FUNCTION__);
+        return -1;
+    }
+
+    if (vol->conn->flags & VIR_CONNECT_RO ||
+        stream->conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (vol->conn->storageDriver &&
+        vol->conn->storageDriver->volUpload) {
+        int ret;
+        ret = vol->conn->storageDriver->volUpload(vol,
+                                                  stream,
+                                                  offset,
+                                                  length,
+                                                  flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(vol->conn);
+    return -1;
+}
+
+
+/**
  * virStorageVolDelete:
  * @vol: pointer to storage volume
  * @flags: future flags, use 0 for now

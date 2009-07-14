@@ -432,6 +432,8 @@ LIBVIRT_0.9.0 {
         virDomainSetMemoryFlags;
         virEventRegisterDefaultImpl;
         virEventRunDefaultImpl;
+        virStorageVolDownload;
+        virStorageVolUpload;
 } LIBVIRT_0.8.8;
 
 # .... define new API here using predicted next version number ....

@@ -905,6 +905,18 @@ typedef virStorageVolPtr
                                               const char *xmldesc,
                                               virStorageVolPtr clone,
                                               unsigned int flags);
+typedef int
+    (*virDrvStorageVolDownload) (virStorageVolPtr vol,
+                                 virStreamPtr stream,
+                                 unsigned long long offset,
+                                 unsigned long long length,
+                                 unsigned int flags);
+typedef int
+    (*virDrvStorageVolUpload) (virStorageVolPtr vol,
+                               virStreamPtr stream,
+                               unsigned long long offset,
+                               unsigned long long length,
+                               unsigned int flags);
 
 typedef int
         (*virDrvStoragePoolIsActive)(virStoragePoolPtr pool);
@@ -959,6 +971,8 @@ struct _virStorageDriver {
     virDrvStorageVolLookupByPath volLookupByPath;
     virDrvStorageVolCreateXML volCreateXML;
     virDrvStorageVolCreateXMLFrom volCreateXMLFrom;
+    virDrvStorageVolDownload volDownload;
+    virDrvStorageVolUpload volUpload;
     virDrvStorageVolDelete volDelete;
     virDrvStorageVolWipe volWipe;
     virDrvStorageVolGetInfo volGetInfo;

@@ -1504,6 +1504,16 @@ virStorageVolPtr        virStorageVolCreateXMLFrom      (virStoragePoolPtr pool,
                                                          const char *xmldesc,
                                                          virStorageVolPtr clonevol,
                                                          unsigned int flags);
+int                     virStorageVolDownload           (virStorageVolPtr vol,
+                                                         virStreamPtr stream,
+                                                         unsigned long long offset,
+                                                         unsigned long long length,
+                                                         unsigned int flags);
+int                     virStorageVolUpload             (virStorageVolPtr vol,
+                                                         virStreamPtr stream,
+                                                         unsigned long long offset,
+                                                         unsigned long long length,
+                                                         unsigned int flags);
 int                     virStorageVolDelete             (virStorageVolPtr vol,
                                                          unsigned int flags);
 int                     virStorageVolWipe               (virStorageVolPtr vol,

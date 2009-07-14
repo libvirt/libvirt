@@ -230,6 +230,7 @@ typedef enum {
     VIR_ERR_HOOK_SCRIPT_FAILED = 70,	/* a synchronous hook script failed */
     VIR_ERR_INVALID_DOMAIN_SNAPSHOT = 71,/* invalid domain snapshot */
     VIR_ERR_NO_DOMAIN_SNAPSHOT = 72,	/* domain snapshot not found */
+    VIR_ERR_INVALID_STREAM = 73,        /* stream pointer not valid */
 } virErrorNumber;
 
 /**
