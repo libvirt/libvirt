@@ -46,6 +46,7 @@
 #include "storage_backend.h"
 #include "logging.h"
 #include "files.h"
+#include "fdstream.h"
 #include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
@@ -1528,6 +1529,133 @@ cleanup:
 }
 
 
+static int
+storageVolumeDownload(virStorageVolPtr obj,
+                      virStreamPtr stream,
+                      unsigned long long offset,
+                      unsigned long long length,
+                      unsigned int flags)
+{
+    virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
+    virStoragePoolObjPtr pool = NULL;
+    virStorageVolDefPtr vol = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    storageDriverLock(driver);
+    pool = virStoragePoolObjFindByName(&driver->pools, obj->pool);
+    storageDriverUnlock(driver);
+
+    if (!pool) {
+        virStorageReportError(VIR_ERR_NO_STORAGE_POOL,
+                              "%s", _("no storage pool with matching uuid"));
+        goto out;
+    }
+
+    if (!virStoragePoolObjIsActive(pool)) {
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
+                              "%s", _("storage pool is not active"));
+        goto out;
+    }
+
+    vol = virStorageVolDefFindByName(pool, obj->name);
+
+    if (vol == NULL) {
+        virStorageReportError(VIR_ERR_NO_STORAGE_VOL,
+                             _("no storage vol with matching name '%s'"),
+                              obj->name);
+        goto out;
+    }
+
+    if (vol->building) {
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                              _("volume '%s' is still being allocated."),
+                              vol->name);
+        goto out;
+    }
+
+    if (virFDStreamOpenFile(stream,
+                            vol->target.path,
+                            offset, length,
+                            O_RDONLY) < 0)
+        goto out;
+
+    ret = 0;
+
+out:
+    if (pool)
+        virStoragePoolObjUnlock(pool);
+
+    return ret;
+}
+
+
+static int
+storageVolumeUpload(virStorageVolPtr obj,
+                    virStreamPtr stream,
+                    unsigned long long offset,
+                    unsigned long long length,
+                    unsigned int flags)
+{
+    virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
+    virStoragePoolObjPtr pool = NULL;
+    virStorageVolDefPtr vol = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    storageDriverLock(driver);
+    pool = virStoragePoolObjFindByName(&driver->pools, obj->pool);
+    storageDriverUnlock(driver);
+
+    if (!pool) {
+        virStorageReportError(VIR_ERR_NO_STORAGE_POOL,
+                              "%s", _("no storage pool with matching uuid"));
+        goto out;
+    }
+
+    if (!virStoragePoolObjIsActive(pool)) {
+        virStorageReportError(VIR_ERR_OPERATION_INVALID,
+                              "%s", _("storage pool is not active"));
+        goto out;
+    }
+
+    vol = virStorageVolDefFindByName(pool, obj->name);
+
+    if (vol == NULL) {
+        virStorageReportError(VIR_ERR_NO_STORAGE_VOL,
+                             _("no storage vol with matching name '%s'"),
+                              obj->name);
+        goto out;
+    }
+
+    if (vol->building) {
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                              _("volume '%s' is still being allocated."),
+                              vol->name);
+        goto out;
+    }
+
+    /* Not using O_CREAT because the file is required to
+     * already exist at this point */
+    if (virFDStreamOpenFile(stream,
+                            vol->target.path,
+                            offset, length,
+                            O_WRONLY) < 0)
+        goto out;
+
+    ret = 0;
+
+out:
+    if (pool)
+        virStoragePoolObjUnlock(pool);
+
+    return ret;
+}
+
+
+
 /* If the volume we're wiping is already a sparse file, we simply
  * truncate and extend it to its original size, filling it with
  * zeroes.  This behavior is guaranteed by POSIX:
@@ -1989,8 +2117,8 @@ static virStorageDriver storageDriver = {
     .volLookupByPath = storageVolumeLookupByPath,
     .volCreateXML = storageVolumeCreateXML,
     .volCreateXMLFrom = storageVolumeCreateXMLFrom,
-    .volDownload = NULL,
-    .volUpload = NULL,
+    .volDownload = storageVolumeDownload,
+    .volUpload = storageVolumeUpload,
     .volDelete = storageVolumeDelete,
     .volWipe = storageVolumeWipe,
     .volGetInfo = storageVolumeGetInfo,
