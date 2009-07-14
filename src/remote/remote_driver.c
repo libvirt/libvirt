@@ -8494,7 +8494,6 @@ done:
 
 static struct private_stream_data *
 remoteStreamOpen(virStreamPtr st,
-                 int output ATTRIBUTE_UNUSED,
                  unsigned int proc_nr,
                  unsigned int serial)
 {
@@ -9016,7 +9015,7 @@ remoteDomainMigratePrepareTunnel(virConnectPtr conn,
 
     remoteDriverLock(priv);
 
-    if (!(privst = remoteStreamOpen(st, 1, REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL, priv->counter)))
+    if (!(privst = remoteStreamOpen(st, REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL, priv->counter)))
         goto done;
 
     st->driver = &remoteStreamDrv;
@@ -9602,6 +9601,91 @@ done:
     return rv;
 }
 
+static int
+remoteStorageVolUpload(virStorageVolPtr vol,
+                       virStreamPtr st,
+                       unsigned long long offset,
+                       unsigned long long length,
+                       unsigned int flags)
+{
+    struct private_data *priv = vol->conn->privateData;
+    struct private_stream_data *privst = NULL;
+    int rv = -1;
+    remote_storage_vol_upload_args args;
+
+    remoteDriverLock(priv);
+
+    if (!(privst = remoteStreamOpen(st,
+                                    REMOTE_PROC_STORAGE_VOL_UPLOAD,
+                                    priv->counter)))
+        goto done;
+
+    st->driver = &remoteStreamDrv;
+    st->privateData = privst;
+
+    make_nonnull_storage_vol(&args.vol, vol);
+    args.offset = offset;
+    args.length = length;
+    args.flags = flags;
+
+    if (call (vol->conn, priv, 0, REMOTE_PROC_STORAGE_VOL_UPLOAD,
+              (xdrproc_t) xdr_remote_storage_vol_upload_args, (char *) &args,
+              (xdrproc_t) xdr_void, NULL) == -1) {
+        remoteStreamRelease(st);
+        goto done;
+    }
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+
+    return rv;
+}
+
+
+static int
+remoteStorageVolDownload(virStorageVolPtr vol,
+                         virStreamPtr st,
+                         unsigned long long offset,
+                         unsigned long long length,
+                         unsigned int flags)
+{
+    struct private_data *priv = vol->conn->privateData;
+    struct private_stream_data *privst = NULL;
+    int rv = -1;
+    remote_storage_vol_download_args args;
+
+    remoteDriverLock(priv);
+
+    if (!(privst = remoteStreamOpen(st,
+                                    REMOTE_PROC_STORAGE_VOL_DOWNLOAD,
+                                    priv->counter)))
+        goto done;
+
+    st->driver = &remoteStreamDrv;
+    st->privateData = privst;
+
+    make_nonnull_storage_vol(&args.vol, vol);
+    args.offset = offset;
+    args.length = length;
+    args.flags = flags;
+
+    if (call (vol->conn, priv, 0, REMOTE_PROC_STORAGE_VOL_DOWNLOAD,
+              (xdrproc_t) xdr_remote_storage_vol_download_args, (char *) &args,
+              (xdrproc_t) xdr_void, NULL) == -1) {
+        remoteStreamRelease(st);
+        goto done;
+    }
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+
+    return rv;
+}
+
 
 static int
 remoteDomainOpenConsole(virDomainPtr dom,
@@ -9616,7 +9700,7 @@ remoteDomainOpenConsole(virDomainPtr dom,
 
     remoteDriverLock(priv);
 
-    if (!(privst = remoteStreamOpen(st, 1, REMOTE_PROC_DOMAIN_OPEN_CONSOLE, priv->counter)))
+    if (!(privst = remoteStreamOpen(st, REMOTE_PROC_DOMAIN_OPEN_CONSOLE, priv->counter)))
         goto done;
 
     st->driver = &remoteStreamDrv;
@@ -11287,6 +11371,8 @@ static virStorageDriver storage_driver = {
     .volLookupByPath = remoteStorageVolLookupByPath,
     .volCreateXML = remoteStorageVolCreateXML,
     .volCreateXMLFrom = remoteStorageVolCreateXMLFrom,
+    .volDownload = remoteStorageVolDownload,
+    .volUpload = remoteStorageVolUpload,
     .volDelete = remoteStorageVolDelete,
     .volWipe = remoteStorageVolWipe,
     .volGetInfo = remoteStorageVolGetInfo,

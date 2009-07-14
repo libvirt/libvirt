@@ -1042,3 +1042,13 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_migrate_set_max_speed_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
+{   /* StorageVolUpload => 208 */
+    .fn = (dispatch_fn) remoteDispatchStorageVolUpload,
+    .args_filter = (xdrproc_t) xdr_remote_storage_vol_upload_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
+{   /* StorageVolDownload => 209 */
+    .fn = (dispatch_fn) remoteDispatchStorageVolDownload,
+    .args_filter = (xdrproc_t) xdr_remote_storage_vol_download_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},

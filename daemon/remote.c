@@ -5831,7 +5831,99 @@ remoteDispatchNodeDeviceDestroy(struct qemud_server *server ATTRIBUTE_UNUSED,
     virNodeDeviceFree(dev);
     return 0;
 }
+static int remoteDispatchStorageVolUpload(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                          struct qemud_client *client,
+                                          virConnectPtr conn,
+                                          remote_message_header *hdr,
+                                          remote_error *rerr,
+                                          remote_storage_vol_upload_args *args,
+                                          void *ret ATTRIBUTE_UNUSED)
+{
+    int rv = -1;
+    struct qemud_client_stream *stream = NULL;
+    virStorageVolPtr vol;
 
+    vol = get_nonnull_storage_vol(conn, args->vol);
+    if (vol == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        goto cleanup;
+    }
+
+    stream = remoteCreateClientStream(conn, hdr);
+    if (!stream) {
+        remoteDispatchConnError(rerr, conn);
+        goto cleanup;
+    }
+
+    if (virStorageVolUpload(vol, stream->st,
+                            args->offset, args->length,
+                            args->flags) < 0) {
+        remoteDispatchConnError(rerr, conn);
+        goto cleanup;
+    }
+
+    if (remoteAddClientStream(client, stream, 0) < 0) {
+        remoteDispatchConnError(rerr, conn);
+        virStreamAbort(stream->st);
+        goto cleanup;
+    }
+
+    rv = 0;
+
+cleanup:
+    if (vol)
+        virStorageVolFree(vol);
+    if (stream && rv != 0)
+        remoteFreeClientStream(client, stream);
+    return rv;
+}
+
+static int remoteDispatchStorageVolDownload(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                            struct qemud_client *client,
+                                            virConnectPtr conn,
+                                            remote_message_header *hdr,
+                                            remote_error *rerr,
+                                            remote_storage_vol_download_args *args,
+                                            void *ret ATTRIBUTE_UNUSED)
+{
+    int rv = -1;
+    struct qemud_client_stream *stream = NULL;
+    virStorageVolPtr vol;
+
+    vol = get_nonnull_storage_vol (conn, args->vol);
+    if (vol == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        goto cleanup;
+    }
+
+    stream = remoteCreateClientStream(conn, hdr);
+    if (!stream) {
+        remoteDispatchConnError(rerr, conn);
+        goto cleanup;
+    }
+
+    if (virStorageVolDownload(vol, stream->st,
+                              args->offset, args->length,
+                              args->flags) < 0) {
+        remoteDispatchConnError(rerr, conn);
+        goto cleanup;
+    }
+
+    if (remoteAddClientStream(client, stream, 1) < 0) {
+        remoteDispatchConnError(rerr, conn);
+        virStreamAbort(stream->st);
+        goto cleanup;
+    }
+
+    rv = 0;
+
+cleanup:
+    if (vol)
+        virStorageVolFree(vol);
+    if (stream && rv != 0)
+        remoteFreeClientStream(client, stream);
+    return rv;
+}
 
 
 /***************************

@@ -1926,6 +1926,21 @@ struct remote_domain_open_console_args {
     unsigned int flags;
 };
 
+struct remote_storage_vol_upload_args {
+    remote_nonnull_storage_vol vol;
+    unsigned hyper offset;
+    unsigned hyper length;
+    unsigned int flags;
+};
+
+struct remote_storage_vol_download_args {
+    remote_nonnull_storage_vol vol;
+    unsigned hyper offset;
+    unsigned hyper length;
+    unsigned int flags;
+};
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -2159,7 +2174,9 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SET_MEMORY_FLAGS = 204,
     REMOTE_PROC_DOMAIN_SET_BLKIO_PARAMETERS = 205,
     REMOTE_PROC_DOMAIN_GET_BLKIO_PARAMETERS = 206,
-    REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_SPEED = 207
+    REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_SPEED = 207,
+    REMOTE_PROC_STORAGE_VOL_UPLOAD = 208,
+    REMOTE_PROC_STORAGE_VOL_DOWNLOAD = 209
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

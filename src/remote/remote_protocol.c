@@ -3872,6 +3872,36 @@ xdr_remote_domain_open_console_args (XDR *xdrs, remote_domain_open_console_args 
 }
 
 bool_t
+xdr_remote_storage_vol_upload_args (XDR *xdrs, remote_storage_vol_upload_args *objp)
+{
+
+         if (!xdr_remote_nonnull_storage_vol (xdrs, &objp->vol))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->offset))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->length))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_download_args (XDR *xdrs, remote_storage_vol_download_args *objp)
+{
+
+         if (!xdr_remote_nonnull_storage_vol (xdrs, &objp->vol))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->offset))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->length))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 

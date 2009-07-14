@@ -1538,6 +1538,14 @@ static int remoteDispatchStorageVolDelete(
     remote_error *err,
     remote_storage_vol_delete_args *args,
     void *ret);
+static int remoteDispatchStorageVolDownload(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_storage_vol_download_args *args,
+    void *ret);
 static int remoteDispatchStorageVolDumpXml(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -1586,6 +1594,14 @@ static int remoteDispatchStorageVolLookupByPath(
     remote_error *err,
     remote_storage_vol_lookup_by_path_args *args,
     remote_storage_vol_lookup_by_path_ret *ret);
+static int remoteDispatchStorageVolUpload(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_storage_vol_upload_args *args,
+    void *ret);
 static int remoteDispatchStorageVolWipe(
     struct qemud_server *server,
     struct qemud_client *client,

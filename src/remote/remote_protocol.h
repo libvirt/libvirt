@@ -2184,6 +2184,22 @@ struct remote_domain_open_console_args {
         u_int flags;
 };
 typedef struct remote_domain_open_console_args remote_domain_open_console_args;
+
+struct remote_storage_vol_upload_args {
+        remote_nonnull_storage_vol vol;
+        uint64_t offset;
+        uint64_t length;
+        u_int flags;
+};
+typedef struct remote_storage_vol_upload_args remote_storage_vol_upload_args;
+
+struct remote_storage_vol_download_args {
+        remote_nonnull_storage_vol vol;
+        uint64_t offset;
+        uint64_t length;
+        u_int flags;
+};
+typedef struct remote_storage_vol_download_args remote_storage_vol_download_args;
 #define REMOTE_PROGRAM 0x20008086
 #define REMOTE_PROTOCOL_VERSION 1
 
@@ -2395,6 +2411,8 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SET_BLKIO_PARAMETERS = 205,
         REMOTE_PROC_DOMAIN_GET_BLKIO_PARAMETERS = 206,
         REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_SPEED = 207,
+        REMOTE_PROC_STORAGE_VOL_UPLOAD = 208,
+        REMOTE_PROC_STORAGE_VOL_DOWNLOAD = 209,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2776,6 +2794,8 @@ extern  bool_t xdr_remote_domain_snapshot_current_ret (XDR *, remote_domain_snap
 extern  bool_t xdr_remote_domain_revert_to_snapshot_args (XDR *, remote_domain_revert_to_snapshot_args*);
 extern  bool_t xdr_remote_domain_snapshot_delete_args (XDR *, remote_domain_snapshot_delete_args*);
 extern  bool_t xdr_remote_domain_open_console_args (XDR *, remote_domain_open_console_args*);
+extern  bool_t xdr_remote_storage_vol_upload_args (XDR *, remote_storage_vol_upload_args*);
+extern  bool_t xdr_remote_storage_vol_download_args (XDR *, remote_storage_vol_download_args*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_type (XDR *, remote_message_type*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
@@ -3131,6 +3151,8 @@ extern bool_t xdr_remote_domain_snapshot_current_ret ();
 extern bool_t xdr_remote_domain_revert_to_snapshot_args ();
 extern bool_t xdr_remote_domain_snapshot_delete_args ();
 extern bool_t xdr_remote_domain_open_console_args ();
+extern bool_t xdr_remote_storage_vol_upload_args ();
+extern bool_t xdr_remote_storage_vol_download_args ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_type ();
 extern bool_t xdr_remote_message_status ();
