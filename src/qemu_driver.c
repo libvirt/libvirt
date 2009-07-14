@@ -873,6 +873,8 @@ qemudOpenMonitorUnix(virConnectPtr conn,
 {
     struct sockaddr_un addr;
     int monfd;
+    int timeout = 3; /* In seconds */
+    int ret, i;
 
     if ((monfd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
         virReportSystemError(conn, errno,
@@ -884,9 +886,27 @@ qemudOpenMonitorUnix(virConnectPtr conn,
     addr.sun_family = AF_UNIX;
     strncpy(addr.sun_path, monitor, sizeof(addr.sun_path));
 
-    if (connect(monfd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
+    do {
+        ret = connect(monfd, (struct sockaddr *) &addr, sizeof(addr));
+
+        if (ret == 0)
+            break;
+
+        if (errno == EACCES || errno == ECONNREFUSED) {
+            /* EACCES       : Socket may not have shown up yet
+             * ECONNREFUSED : Leftover socket hasn't been removed yet */
+            continue;
+        }
+
         virReportSystemError(conn, errno, "%s",
                              _("failed to connect to monitor socket"));
+        goto error;
+
+    } while ((++i <= timeout*5) && (usleep(.2 * 1000000) <= 0));
+
+    if (ret != 0) {
+        virReportSystemError(conn, errno, "%s",
+                             _("monitor socket did not show up."));
         goto error;
     }
 
