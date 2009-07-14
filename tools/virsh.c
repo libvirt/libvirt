@@ -266,6 +266,9 @@ static int vshCommandOptString(const vshCmd *cmd, const char *name,
 static int vshCommandOptLongLong(const vshCmd *cmd, const char *name,
                                  long long *value)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
+static int vshCommandOptULongLong(const vshCmd *cmd, const char *name,
+                                  unsigned long long *value)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
 static int vshCommandOptBool(const vshCmd *cmd, const char *name);
 static char *vshCommandOptArgv(const vshCmd *cmd, int count);
 
@@ -7082,6 +7085,213 @@ cleanup:
     return ret;
 }
 
+
+/*
+ * "vol-upload" command
+ */
+static const vshCmdInfo info_vol_upload[] = {
+    {"help", N_("upload a file into a volume")},
+    {"desc", N_("Upload a file into a volume")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_vol_upload[] = {
+    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
+    {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol name, key or path")},
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("file")},
+    {"offset", VSH_OT_INT, 0, N_("volume offset to upload to") },
+    {"length", VSH_OT_INT, 0, N_("amount of data to upload") },
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdVolUploadSource(virStreamPtr st ATTRIBUTE_UNUSED,
+                   char *bytes, size_t nbytes, void *opaque)
+{
+    int *fd = opaque;
+
+    return saferead(*fd, bytes, nbytes);
+}
+
+static int
+cmdVolUpload (vshControl *ctl, const vshCmd *cmd)
+{
+    const char *file = NULL;
+    virStorageVolPtr vol = NULL;
+    int ret = FALSE;
+    int fd = -1;
+    virStreamPtr st = NULL;
+    const char *name = NULL;
+    unsigned long long offset = 0, length = 0;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        goto cleanup;
+
+    if (vshCommandOptULongLong(cmd, "offset", &offset) < 0) {
+        vshError(ctl, _("Unable to parse integer"));
+        return FALSE;
+    }
+
+    if (vshCommandOptULongLong(cmd, "length", &length) < 0) {
+        vshError(ctl, _("Unable to parse integer"));
+        return FALSE;
+    }
+
+    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", &name))) {
+        return FALSE;
+    }
+
+    if (vshCommandOptString(cmd, "file", &file) < 0) {
+        vshError(ctl, _("file must not be empty"));
+        goto cleanup;
+    }
+
+    if ((fd = open(file, O_RDONLY)) < 0) {
+        vshError(ctl, _("cannot read %s"), file);
+        goto cleanup;
+    }
+
+    st = virStreamNew(ctl->conn, 0);
+    if (virStorageVolUpload(vol, st, offset, length, 0) < 0) {
+        vshError(ctl, _("cannot upload to volume %s"), name);
+        goto cleanup;
+    }
+
+    if (virStreamSendAll(st, cmdVolUploadSource, &fd) < 0) {
+        vshError(ctl, _("cannot send data to volume %s"), name);
+        goto cleanup;
+    }
+
+    if (VIR_CLOSE(fd) < 0) {
+        vshError(ctl, _("cannot close file %s"), file);
+        virStreamAbort(st);
+        goto cleanup;
+    }
+
+    if (virStreamFinish(st) < 0) {
+        vshError(ctl, _("cannot close volume %s"), name);
+        goto cleanup;
+    }
+
+    ret = TRUE;
+
+cleanup:
+    if (vol)
+        virStorageVolFree(vol);
+    if (st)
+        virStreamFree(st);
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
+
+
+/*
+ * "vol-download" command
+ */
+static const vshCmdInfo info_vol_download[] = {
+    {"help", N_("Download a volume to a file")},
+    {"desc", N_("Download a volume to a file")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_vol_download[] = {
+    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
+    {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol name, key or path")},
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("file")},
+    {"offset", VSH_OT_INT, 0, N_("volume offset to download from") },
+    {"length", VSH_OT_INT, 0, N_("amount of data to download") },
+    {NULL, 0, 0, NULL}
+};
+
+
+static int
+cmdVolDownloadSink(virStreamPtr st ATTRIBUTE_UNUSED,
+                   const char *bytes, size_t nbytes, void *opaque)
+{
+    int *fd = opaque;
+
+    return safewrite(*fd, bytes, nbytes);
+}
+
+static int
+cmdVolDownload (vshControl *ctl, const vshCmd *cmd)
+{
+    const char *file = NULL;
+    virStorageVolPtr vol = NULL;
+    int ret = FALSE;
+    int fd = -1;
+    virStreamPtr st = NULL;
+    const char *name = NULL;
+    unsigned long long offset = 0, length = 0;
+    bool created = true;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        goto cleanup;
+
+    if (vshCommandOptULongLong(cmd, "offset", &offset) < 0) {
+        vshError(ctl, _("Unable to parse integer"));
+        return FALSE;
+    }
+
+    if (vshCommandOptULongLong(cmd, "length", &length) < 0) {
+        vshError(ctl, _("Unable to parse integer"));
+        return FALSE;
+    }
+
+    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", &name)))
+        return FALSE;
+
+    if (vshCommandOptString(cmd, "file", &file) < 0) {
+        vshError(ctl, _("file must not be empty"));
+        goto cleanup;
+    }
+
+    if ((fd = open(file, O_WRONLY|O_CREAT|O_EXCL, 0666)) < 0) {
+        created = false;
+        if (errno != EEXIST ||
+            (fd = open(file, O_WRONLY|O_TRUNC, 0666)) < 0) {
+            vshError(ctl, _("cannot create %s"), file);
+            goto cleanup;
+        }
+    }
+
+    st = virStreamNew(ctl->conn, 0);
+    if (virStorageVolDownload(vol, st, offset, length, 0) < 0) {
+        vshError(ctl, _("cannot download from volume %s"), name);
+        goto cleanup;
+    }
+
+    if (virStreamRecvAll(st, cmdVolDownloadSink, &fd) < 0) {
+        vshError(ctl, _("cannot receive data from volume %s"), name);
+        goto cleanup;
+    }
+
+    if (VIR_CLOSE(fd) < 0) {
+        vshError(ctl, _("cannot close file %s"), file);
+        virStreamAbort(st);
+        goto cleanup;
+    }
+
+    if (virStreamFinish(st) < 0) {
+        vshError(ctl, _("cannot close volume %s"), name);
+        goto cleanup;
+    }
+
+    ret = TRUE;
+
+cleanup:
+    if (ret == FALSE && created)
+        unlink(file);
+    if (vol)
+        virStorageVolFree(vol);
+    if (st)
+        virStreamFree(st);
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
+
 /*
  * "vol-delete" command
  */
@@ -9901,6 +10111,7 @@ cmdEdit (vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+
 /*
  * "net-edit" command
  */
@@ -10538,6 +10749,7 @@ static const vshCmdDef storageVolCmds[] = {
     {"vol-create", cmdVolCreate, opts_vol_create, info_vol_create},
     {"vol-create-from", cmdVolCreateFrom, opts_vol_create_from, info_vol_create_from},
     {"vol-delete", cmdVolDelete, opts_vol_delete, info_vol_delete},
+    {"vol-download", cmdVolDownload, opts_vol_download, info_vol_download },
     {"vol-dumpxml", cmdVolDumpXML, opts_vol_dumpxml, info_vol_dumpxml},
     {"vol-info", cmdVolInfo, opts_vol_info, info_vol_info},
     {"vol-key", cmdVolKey, opts_vol_key, info_vol_key},
@@ -10545,6 +10757,7 @@ static const vshCmdDef storageVolCmds[] = {
     {"vol-name", cmdVolName, opts_vol_name, info_vol_name},
     {"vol-path", cmdVolPath, opts_vol_path, info_vol_path},
     {"vol-pool", cmdVolPool, opts_vol_pool, info_vol_pool},
+    {"vol-upload", cmdVolUpload, opts_vol_upload, info_vol_upload },
     {"vol-wipe", cmdVolWipe, opts_vol_wipe, info_vol_wipe},
     {NULL, NULL, NULL, NULL}
 };
@@ -11036,6 +11249,27 @@ vshCommandOptLongLong(const vshCmd *cmd, const char *name,
     }
     return ret;
 }
+
+static int
+vshCommandOptULongLong(const vshCmd *cmd, const char *name,
+                       unsigned long long *value)
+{
+    vshCmdOpt *arg = vshCommandOpt(cmd, name);
+    int ret = 0;
+    unsigned long long num;
+    char *end_p = NULL;
+
+    if ((arg != NULL) && (arg->data != NULL)) {
+        num = strtoull(arg->data, &end_p, 10);
+        ret = -1;
+        if ((arg->data != end_p) && (*end_p == 0)) {
+            *value = num;
+            ret = 1;
+        }
+    }
+    return ret;
+}
+
 
 /*
  * Returns TRUE/FALSE if the option exists
