@@ -1,0 +1,13 @@
+<interface type='bridge' name='br0'>
+  <start mode='onboot'/>
+  <protocol family='ipv4'>
+    <dhcp/>
+  </protocol>
+  <bridge stp='off'>
+    <interface type='vlan' name='eth0.42'>
+      <vlan tag='42'>
+        <interface  name='eth0'/>
+      </vlan>
+    </interface>
+  </bridge>
+</interface>

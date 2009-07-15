@@ -1,0 +1,13 @@
+<interface type='bridge' name='br0'>
+  <start mode='onboot'/>
+  <mtu size='1500'/>
+  <protocol family='ipv4'>
+    <dhcp/>
+  </protocol>
+  <bridge stp='off'>
+    <interface type='ethernet' name='eth0'>
+      <mac address='ab:bb:cc:dd:ee:ff'/>
+    </interface>
+    <interface type='ethernet' name='eth1'/>
+  </bridge>
+</interface>

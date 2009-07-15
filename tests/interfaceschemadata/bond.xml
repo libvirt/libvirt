@@ -1,0 +1,12 @@
+<interface type='bond' name='bond0'>
+  <start mode='none'/>
+  <protocol family='ipv4'>
+    <ip address='192.168.50.7' prefix='24'/>
+    <route gateway='192.168.50.1'/>
+  </protocol>
+  <bond mode='active-backup'>
+    <miimon freq='100' updelay='10' carrier='ioctl'/>
+    <interface type='ethernet' name='eth1'/>
+    <interface type='ethernet' name='eth0'/>
+  </bond>
+</interface>

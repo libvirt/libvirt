@@ -1,0 +1,7 @@
+<interface type='bridge' name='br42'>
+  <start mode='onboot'/>
+  <mtu size='1500'/>
+  <bridge stp='off'>
+    <interface type='ethernet' name='eth42'/>
+  </bridge>
+</interface>
