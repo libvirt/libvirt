@@ -354,6 +354,17 @@ SELinuxRestoreSecurityImageLabel(virConnectPtr conn,
     char *newpath = NULL;
     const char *path = disk->src;
 
+    /* Don't restore labels on readoly/shared disks, because
+     * other VMs may still be accessing these
+     * Alternatively we could iterate over all running
+     * domains and try to figure out if it is in use, but
+     * this would not work for clustered filesystems, since
+     * we can't see running VMs using the file on other nodes
+     * Safest bet is thus to skip the restore step.
+     */
+    if (disk->readonly || disk->shared)
+        return 0;
+
     if ((err = virFileResolveLink(path, &newpath)) < 0) {
         virReportSystemError(conn, err,
                              _("cannot resolve symlink %s"), path);
