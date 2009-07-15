@@ -1411,7 +1411,7 @@ remoteDispatchDomainGetSecurityLabel(struct qemud_server *server ATTRIBUTE_UNUSE
     memset(&seclabel, 0, sizeof seclabel);
     if (virDomainGetSecurityLabel(dom, &seclabel) == -1) {
         virDomainFree(dom);
-        remoteDispatchFormatError(rerr, "%s", _("unable to get security label"));
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -1440,7 +1440,7 @@ remoteDispatchNodeGetSecurityModel(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     memset(&secmodel, 0, sizeof secmodel);
     if (virNodeGetSecurityModel(conn, &secmodel) == -1) {
-        remoteDispatchFormatError(rerr, "%s", _("unable to get security model"));
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 

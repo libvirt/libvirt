@@ -4399,15 +4399,24 @@ virDomainGetSecurityLabel(virDomainPtr domain, virSecurityLabelPtr seclabel)
 
     if (seclabel == NULL) {
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto error;
     }
 
     conn = domain->conn;
 
-    if (conn->driver->domainGetSecurityLabel)
-        return conn->driver->domainGetSecurityLabel(domain, seclabel);
+    if (conn->driver->domainGetSecurityLabel) {
+        int ret;
+        ret = conn->driver->domainGetSecurityLabel(domain, seclabel);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
 
-    virLibConnWarning(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(domain->conn);
     return -1;
 }
 
@@ -4432,13 +4441,22 @@ virNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
 
     if (secmodel == NULL) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
+        goto error;
     }
 
-    if (conn->driver->nodeGetSecurityModel)
-        return conn->driver->nodeGetSecurityModel(conn, secmodel);
+    if (conn->driver->nodeGetSecurityModel) {
+        int ret;
+        ret = conn->driver->nodeGetSecurityModel(conn, secmodel);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
 
-    virLibConnWarning(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
     return -1;
 }
 
