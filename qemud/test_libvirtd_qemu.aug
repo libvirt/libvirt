@@ -79,6 +79,10 @@ vnc_sasl = 1
 # point to the directory, and create a qemu.conf in that location
 #
 vnc_sasl_dir = \"/some/directory/sasl2\"
+
+user = \"root\"
+
+group = \"root\"
 "
 
    test Libvirtd_qemu.lns get conf =
@@ -161,3 +165,7 @@ vnc_sasl_dir = \"/some/directory/sasl2\"
 { "#comment" = "point to the directory, and create a qemu.conf in that location" }
 { "#comment" = "" }
 { "vnc_sasl_dir" = "/some/directory/sasl2" }
+{ "#comment" = "" }
+{ "user"= "root" }
+{ "#comment" = "" }
+{ "group" = "root" }

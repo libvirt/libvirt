@@ -1437,6 +1437,19 @@ AM_CONDITIONAL([WITH_NODE_DEVICES], [test "$with_nodedev" = "yes"])
 
 AM_CONDITIONAL([WITH_LINUX], [test `uname -s` = "Linux"])
 
+
+AC_ARG_WITH([qemu-user],
+  [  --with-qemu-user       username to run QEMU system instance as],
+  [QEMU_USER=${withval}],
+  [QEMU_USER=root])
+AC_ARG_WITH([qemu-group],
+  [  --with-qemu-group      groupname to run QEMU system instance as],
+  [QEMU_GROUP=${withval}],
+  [QEMU_GROUP=root])
+AC_DEFINE_UNQUOTED([QEMU_USER], ["$QEMU_USER"], [QEMU user account])
+AC_DEFINE_UNQUOTED([QEMU_GROUP], ["$QEMU_GROUP"], [QEMU group account])
+
+
 # Only COPYING.LIB is under version control, yet COPYING
 # is included as part of the distribution tarball.
 # Copy one to the other, but only if this is a srcdir-build.
@@ -1577,4 +1590,8 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([     Debug: $enable_debug])
 AC_MSG_NOTICE([  Warnings: $enable_compile_warnings])
 AC_MSG_NOTICE([  Readline: $lv_use_readline])
+AC_MSG_NOTICE([])
+AC_MSG_NOTICE([Privileges])
+AC_MSG_NOTICE([])
+AC_MSG_NOTICE([      QEMU: $QEMU_USER:$QEMU_GROUP])
 AC_MSG_NOTICE([])

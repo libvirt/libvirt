@@ -71,11 +71,10 @@
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 /* For storing short-lived temporary files. */
-#define TEMPDIR LOCAL_STATE_DIR "/cache/libvirt"
+#define TEMPDIR LOCAL_STATE_DIR "/cache/libvirt/qemu"
 
 #define QEMU_CMD_PROMPT "\n(qemu) "
 #define QEMU_PASSWD_PROMPT "Password: "
-
 
 static int qemudShutdown(void);
 
@@ -1367,6 +1366,205 @@ static int qemudDomainSetSecurityLabel(virConnectPtr conn, struct qemud_driver *
     return 0;
 }
 
+
+#ifdef __linux__
+static int qemuDomainSetHostdevUSBOwnership(virConnectPtr conn,
+                                            virDomainHostdevDefPtr def,
+                                            uid_t uid, gid_t gid)
+{
+    char *usbpath = NULL;
+
+    /* XXX what todo for USB devs assigned based on product/vendor ? Doom :-( */
+    if (!def->source.subsys.u.usb.bus ||
+        !def->source.subsys.u.usb.device)
+        return 0;
+
+    if (virAsprintf(&usbpath, "/dev/bus/usb/%03d/%03d",
+                    def->source.subsys.u.usb.bus,
+                    def->source.subsys.u.usb.device) < 0) {
+        virReportOOMError(conn);
+        return -1;
+    }
+
+    VIR_DEBUG("Setting ownership on %s to %d:%d", usbpath, uid, gid);
+    if (chown(usbpath, uid, gid) < 0) {
+        virReportSystemError(conn, errno, _("cannot set ownership on %s"), usbpath);
+        VIR_FREE(usbpath);
+        return -1;
+    }
+    VIR_FREE(usbpath);
+
+    return 0;
+}
+
+static int qemuDomainSetHostdevPCIOwnership(virConnectPtr conn,
+                                            virDomainHostdevDefPtr def,
+                                            uid_t uid, gid_t gid)
+{
+    char *pcidir = NULL;
+    char *file = NULL;
+    DIR *dir = NULL;
+    int ret = -1;
+    struct dirent *ent;
+
+    if (virAsprintf(&pcidir, "/sys/bus/pci/devices/%04x:%02x:%02x.%x",
+                    def->source.subsys.u.pci.domain,
+                    def->source.subsys.u.pci.bus,
+                    def->source.subsys.u.pci.slot,
+                    def->source.subsys.u.pci.function) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    if (!(dir = opendir(pcidir))) {
+        virReportSystemError(conn, errno,
+                             _("cannot open %s"), pcidir);
+        goto cleanup;
+    }
+
+    while ((ent = readdir(dir)) != NULL) {
+        /* QEMU device assignment requires:
+         *   $PCIDIR/config, $PCIDIR/resource, $PCIDIR/resourceNNN, $PCIDIR/rom
+         */
+        if (STREQ(ent->d_name, "config") ||
+            STRPREFIX(ent->d_name, "resource") ||
+            STREQ(ent->d_name, "rom")) {
+            if (virAsprintf(&file, "%s/%s", pcidir, ent->d_name) < 0) {
+                virReportOOMError(conn);
+                goto cleanup;
+            }
+            VIR_DEBUG("Setting ownership on %s to %d:%d", file, uid, gid);
+            if (chown(file, uid, gid) < 0) {
+                virReportSystemError(conn, errno, _("cannot set ownership on %s"), file);
+                goto cleanup;
+            }
+            VIR_FREE(file);
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    if (dir)
+        closedir(dir);
+    VIR_FREE(file);
+    VIR_FREE(pcidir);
+    return ret;
+}
+#endif
+
+
+static int qemuDomainSetHostdevOwnership(virConnectPtr conn,
+                                         virDomainHostdevDefPtr def,
+                                         uid_t uid, gid_t gid)
+{
+    if (def->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+        return 0;
+
+#ifdef __linux__
+    switch (def->source.subsys.type) {
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        return qemuDomainSetHostdevUSBOwnership(conn, def, uid, gid);
+
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+        return qemuDomainSetHostdevPCIOwnership(conn, def, uid, gid);
+
+    }
+    return 0;
+#else
+    qemudReportError(conn, NULL, NULL, "%s",
+                     _("unable to set host device ownership on this platform"));
+    return -1;
+#endif
+
+}
+
+static int qemuDomainSetDiskOwnership(virConnectPtr conn,
+                                      virDomainDiskDefPtr def,
+                                      uid_t uid, gid_t gid)
+{
+
+    if (!def->src)
+        return 0;
+
+    VIR_DEBUG("Setting ownership on %s to %d:%d", def->src, uid, gid);
+    if (chown(def->src, uid, gid) < 0) {
+        virReportSystemError(conn, errno, _("cannot set ownership on %s"),
+                             def->src);
+        return -1;
+    }
+    return 0;
+}
+
+static int qemuDomainSetDeviceOwnership(virConnectPtr conn,
+                                        struct qemud_driver *driver,
+                                        virDomainDeviceDefPtr def,
+                                        int restore)
+{
+    uid_t uid;
+    gid_t gid;
+
+    if (!driver->privileged)
+        return 0;
+
+    /* short circuit case of root:root */
+    if (!driver->user && !driver->group)
+        return 0;
+
+    uid = restore ? 0 : driver->user;
+    gid = restore ? 0 : driver->group;
+
+    switch (def->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        if (restore &&
+            (def->data.disk->readonly || def->data.disk->shared))
+            return 0;
+
+        return qemuDomainSetDiskOwnership(conn, def->data.disk, uid, gid);
+
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        return qemuDomainSetHostdevOwnership(conn, def->data.hostdev, uid, gid);
+    }
+
+    return 0;
+}
+
+static int qemuDomainSetAllDeviceOwnership(virConnectPtr conn,
+                                           struct qemud_driver *driver,
+                                           virDomainDefPtr def,
+                                           int restore)
+{
+    int i;
+    uid_t uid;
+    gid_t gid;
+
+    if (!driver->privileged)
+        return 0;
+
+    /* short circuit case of root:root */
+    if (!driver->user && !driver->group)
+        return 0;
+
+    uid = restore ? 0 : driver->user;
+    gid = restore ? 0 : driver->group;
+
+    for (i = 0 ; i < def->ndisks ; i++) {
+        if (restore &&
+            (def->disks[i]->readonly || def->disks[i]->shared))
+            continue;
+
+        if (qemuDomainSetDiskOwnership(conn, def->disks[i], uid, gid) < 0)
+            return -1;
+    }
+
+    for (i = 0 ; i < def->nhostdevs ; i++) {
+        if (qemuDomainSetHostdevOwnership(conn, def->hostdevs[i], uid, gid) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
 static virDomainPtr qemudDomainLookupByName(virConnectPtr conn,
                                             const char *name);
 
@@ -1377,14 +1575,39 @@ struct gemudHookData {
 };
 
 static int qemudSecurityHook(void *data) {
-        struct gemudHookData *h = (struct gemudHookData *) data;
+    struct gemudHookData *h = (struct gemudHookData *) data;
 
-        if (qemudDomainSetSecurityLabel(h->conn, h->driver, h->vm) < 0) {
-                qemudReportError(h->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("Failed to set security label"));
+    if (qemudDomainSetSecurityLabel(h->conn, h->driver, h->vm) < 0) {
+        qemudReportError(h->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Failed to set security label"));
+        return -1;
+    }
+
+    if (h->driver->privileged) {
+        DEBUG("Dropping privileges of VM to %d:%d", h->driver->user, h->driver->group);
+
+        if (qemuDomainSetAllDeviceOwnership(h->conn, h->driver, h->vm->def, 0) < 0)
+            return -1;
+
+        if (h->driver->group) {
+            if (setregid(h->driver->group, h->driver->group) < 0) {
+                virReportSystemError(NULL, errno,
+                                     _("cannot change to '%d' group"),
+                                     h->driver->group);
                 return -1;
+            }
         }
-        return 0;
+        if (h->driver->user) {
+            if (setreuid(h->driver->user, h->driver->user) < 0) {
+                virReportSystemError(NULL, errno,
+                                     _("cannot change to '%d' user"),
+                                     h->driver->user);
+                return -1;
+            }
+        }
+    }
+
+    return 0;
 }
 
 static int
@@ -1661,6 +1884,10 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
         VIR_FREE(vm->def->seclabel.label);
         VIR_FREE(vm->def->seclabel.imagelabel);
     }
+
+    if (qemuDomainSetAllDeviceOwnership(conn, driver, vm->def, 1) < 0)
+        VIR_WARN("Failed to restore all device ownership for %s",
+                 vm->def->name);
 
     if (qemudRemoveDomainStatus(conn, driver, vm) < 0) {
         VIR_WARN(_("Failed to remove domain status for %s"),
@@ -4329,12 +4556,20 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
             if (driver->securityDriver)
                 driver->securityDriver->domainSetSecurityImageLabel(dom->conn, vm, dev->data.disk);
+
+            if (qemuDomainSetDeviceOwnership(dom->conn, driver, dev, 0) < 0)
+                goto cleanup;
+
             ret = qemudDomainChangeEjectableMedia(dom->conn, vm, dev);
             break;
 
         case VIR_DOMAIN_DISK_DEVICE_DISK:
             if (driver->securityDriver)
                 driver->securityDriver->domainSetSecurityImageLabel(dom->conn, vm, dev->data.disk);
+
+            if (qemuDomainSetDeviceOwnership(dom->conn, driver, dev, 0) < 0)
+                goto cleanup;
+
             if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
                 ret = qemudDomainAttachUsbMassstorageDevice(dom->conn, vm, dev);
             } else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
@@ -4357,6 +4592,9 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
                dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
                dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+        if (qemuDomainSetDeviceOwnership(dom->conn, driver, dev, 0) < 0)
+            goto cleanup;
+
         ret = qemudDomainAttachHostDevice(dom->conn, vm, dev);
     } else {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
@@ -4369,8 +4607,11 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         ret = -1;
 
 cleanup:
-    if (ret < 0)
+    if (ret < 0) {
+        if (qemuDomainSetDeviceOwnership(dom->conn, driver, dev, 1) < 0)
+            VIR_WARN0("Fail to restore disk device ownership");
         virDomainDeviceDefFree(dev);
+    }
     if (vm)
         virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
@@ -4498,6 +4739,8 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
         ret = qemudDomainDetachPciDiskDevice(dom->conn, vm, dev);
         if (driver->securityDriver)
             driver->securityDriver->domainRestoreSecurityImageLabel(dom->conn, dev->data.disk);
+        if (qemuDomainSetDeviceOwnership(dom->conn, driver, dev, 1) < 0)
+            VIR_WARN0("Fail to restore disk device ownership");
     }
     else
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,

@@ -684,6 +684,7 @@ install-exec-local:
 if WITH_QEMU
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/qemu"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/qemu"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/cache/libvirt/qemu"
 endif
 if WITH_LXC
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lxc"

@@ -378,6 +378,8 @@ virRun;
 virSkipSpaces;
 virKillProcess;
 virGetUserDirectory;
+virGetUserID;
+virGetGroupID;
 
 
 # uuid.h

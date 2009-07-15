@@ -46,6 +46,14 @@
 %define with_capng     0%{!?_without_capng:1}
 %endif
 
+%if 0%{?fedora} >= 12
+%define qemu_user  qemu
+%define qemu_group  qemu
+%else
+%define qemu_user  root
+%define qemu_group  root
+%endif
+
 #
 # If building on RHEL switch on the specific support
 #
@@ -309,6 +317,8 @@ of recent versions of Linux (and other OSes).
            %{?_without_storage_iscsi} \
            %{?_without_storage_disk} \
            %{?_without_numactl} \
+           --with-qemu-user=%{qemu_user} \
+           --with-qemu-group=%{qemu_group} \
            --with-init-script=redhat \
            --with-remote-pid-file=%{_localstatedir}/run/libvirtd.pid
 make %{?_smp_mflags}
@@ -445,8 +455,9 @@ fi
 %dir %attr(0700, root, root) %{_localstatedir}/cache/libvirt/
 
 %if %{with_qemu}
-%dir %{_localstatedir}/run/libvirt/qemu/
-%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/qemu/
+%dir %attr(0700, %{qemu_user}, %{qemu_group}) %{_localstatedir}/run/libvirt/qemu/
+%dir %attr(0700, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/
+%dir %attr(0700, %{qemu_user}, %{qemu_group}) %{_localstatedir}/cache/libvirt/qemu/
 %endif
 %if %{with_lxc}
 %dir %{_localstatedir}/run/libvirt/lxc/

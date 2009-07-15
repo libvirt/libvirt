@@ -66,6 +66,9 @@ struct qemud_driver {
 
     int privileged;
 
+    uid_t user;
+    gid_t group;
+
     unsigned int qemuVersion;
     int nextvmid;
 

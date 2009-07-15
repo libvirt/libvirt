@@ -55,6 +55,7 @@
 #include <netdb.h>
 #ifdef HAVE_GETPWUID_R
 #include <pwd.h>
+#include <grp.h>
 #endif
 #if HAVE_CAPNG
 #include <cap-ng.h>
@@ -1861,5 +1862,79 @@ char *virGetUserDirectory(virConnectPtr conn,
         virReportOOMError(conn);
 
     return ret;
+}
+
+
+int virGetUserID(virConnectPtr conn,
+                 const char *name,
+                 uid_t *uid)
+{
+    char *strbuf;
+    struct passwd pwbuf;
+    struct passwd *pw = NULL;
+    size_t strbuflen = sysconf(_SC_GETPW_R_SIZE_MAX);
+
+    if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
+        virReportOOMError(conn);
+        return -1;
+    }
+
+    /*
+     * From the manpage (terrifying but true):
+     *
+     * ERRORS
+     *  0 or ENOENT or ESRCH or EBADF or EPERM or ...
+     *        The given name or uid was not found.
+     */
+    if (getpwnam_r(name, &pwbuf, strbuf, strbuflen, &pw) != 0 || pw == NULL) {
+        virReportSystemError(conn, errno,
+                             _("Failed to find user record for name '%s'"),
+                             name);
+        VIR_FREE(strbuf);
+        return -1;
+    }
+
+    *uid = pw->pw_uid;
+
+    VIR_FREE(strbuf);
+
+    return 0;
+}
+
+
+int virGetGroupID(virConnectPtr conn,
+                  const char *name,
+                  gid_t *gid)
+{
+    char *strbuf;
+    struct group grbuf;
+    struct group *gr = NULL;
+    size_t strbuflen = sysconf(_SC_GETGR_R_SIZE_MAX);
+
+    if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
+        virReportOOMError(conn);
+        return -1;
+    }
+
+    /*
+     * From the manpage (terrifying but true):
+     *
+     * ERRORS
+     *  0 or ENOENT or ESRCH or EBADF or EPERM or ...
+     *        The given name or uid was not found.
+     */
+    if (getgrnam_r(name, &grbuf, strbuf, strbuflen, &gr) != 0 || gr == NULL) {
+        virReportSystemError(conn, errno,
+                             _("Failed to find group record for name '%s'"),
+                             name);
+        VIR_FREE(strbuf);
+        return -1;
+    }
+
+    *gid = gr->gr_gid;
+
+    VIR_FREE(strbuf);
+
+    return 0;
 }
 #endif

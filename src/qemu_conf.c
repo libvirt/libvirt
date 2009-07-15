@@ -92,6 +92,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
                           const char *filename) {
     virConfPtr conf;
     virConfValuePtr p;
+    char *user;
+    char *group;
 
     /* Setup 2 critical defaults */
     if (!(driver->vncListen = strdup("127.0.0.1"))) {
@@ -185,6 +187,36 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
             return -1;
         }
     }
+
+    p = virConfGetValue (conf, "user");
+    CHECK_TYPE ("user", VIR_CONF_STRING);
+    if (!(user = strdup(p && p->str ? p->str : QEMU_USER))) {
+        virReportOOMError(NULL);
+        virConfFree(conf);
+        return -1;
+    }
+    if (virGetUserID(NULL, user, &driver->user) < 0) {
+        VIR_FREE(user);
+        virConfFree(conf);
+        return -1;
+    }
+    VIR_FREE(user);
+
+    p = virConfGetValue (conf, "group");
+    CHECK_TYPE ("group", VIR_CONF_STRING);
+    if (!(group = strdup(p && p->str ? p->str : QEMU_GROUP))) {
+        virReportOOMError(NULL);
+        virConfFree(conf);
+        return -1;
+    }
+
+
+    if (virGetGroupID(NULL, group, &driver->group) < 0) {
+        VIR_FREE(group);
+        virConfFree(conf);
+        return -1;
+    }
+    VIR_FREE(group);
 
     virConfFree (conf);
     return 0;

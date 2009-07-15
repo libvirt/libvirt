@@ -217,6 +217,12 @@ int virKillProcess(pid_t pid, int sig);
 #ifdef HAVE_GETPWUID_R
 char *virGetUserDirectory(virConnectPtr conn,
                           uid_t uid);
+int virGetUserID(virConnectPtr conn,
+                 const char *name,
+                 uid_t *uid);
+int virGetGroupID(virConnectPtr conn,
+                  const char *name,
+                  gid_t *gid);
 #endif
 
 int virRandomInitialize(unsigned int seed);
