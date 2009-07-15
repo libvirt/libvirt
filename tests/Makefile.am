@@ -82,8 +82,11 @@ endif
 
 noinst_PROGRAMS += nodedevxml2xmltest
 
+noinst_PROGRAMS += interfacexml2xmltest
+
 test_scripts = \
 	capabilityschematest \
+	interfaceschematest \
 	networkschematest \
 	storagepoolschematest \
 	storagevolschematest \
@@ -140,6 +143,8 @@ TESTS += eventtest
 endif
 
 TESTS += nodedevxml2xmltest
+
+TESTS += interfacexml2xmltest
 
 path_add = $$abs_top_builddir/src$(PATH_SEPARATOR)$$abs_top_builddir/qemud
 
@@ -218,6 +223,11 @@ nodedevxml2xmltest_SOURCES = \
 	nodedevxml2xmltest.c \
 	testutils.c testutils.h
 nodedevxml2xmltest_LDADD = $(LDADDS)
+
+interfacexml2xmltest_SOURCES = \
+	interfacexml2xmltest.c \
+	testutils.c testutils.h
+interfacexml2xmltest_LDADD = $(LDADDS)
 
 virshtest_SOURCES = \
 	virshtest.c \
