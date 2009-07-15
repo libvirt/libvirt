@@ -85,6 +85,9 @@ NETWORK_CONF_SOURCES =						\
 STORAGE_CONF_SOURCES =						\
 		storage_conf.h storage_conf.c
 
+# Interface driver generic impl APIs
+INTERFACE_CONF_SOURCES =					\
+		interface_conf.c interface_conf.h
 
 # The remote RPC driver, covering domains, storage, networks, etc
 REMOTE_DRIVER_SOURCES =						\
@@ -225,6 +228,7 @@ libvirt_driver_la_SOURCES =					\
 		$(DOMAIN_CONF_SOURCES)				\
 		$(NETWORK_CONF_SOURCES)				\
 		$(STORAGE_CONF_SOURCES)				\
+		$(INTERFACE_CONF_SOURCES)			\
 		$(NODE_DEVICE_CONF_SOURCES)
 
 libvirt_driver_la_CFLAGS = $(XEN_CFLAGS) $(NUMACTL_CFLAGS)
