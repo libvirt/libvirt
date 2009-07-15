@@ -43,7 +43,7 @@
 	tickets against the <code>Red Hat Enterprise Linux 5</code> product and
 	the <code>libvirt</code> component.
 	<ul>
-	  <li><a href="">View Red Hat Enterprise Linux libvirt tickets</a></li>
+	  <li><a href="http://bugzilla.redhat.com/buglist.cgi?component=libvirt&amp;product=Red%20Hat%20Enterprise%20Linux%205">View Red Hat Enterprise Linux libvirt tickets</a></li>
 	  <li><a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Red%20Hat%20Enterprise%20Linux%205&amp;component=libvirt">New Red Hat Enterprise Linux libvirt ticket</a></li>
 	</ul>
       </li>
