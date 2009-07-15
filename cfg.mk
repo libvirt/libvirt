@@ -242,9 +242,17 @@ prev_version_file = /dev/null
 
 ifeq (0,$(MAKELEVEL))
   _curr_status = .git-module-status
-  _update_required :=							\
-    $(shell t=$$(git submodule status);					\
-      test "$$t" = "$$(cat $(_curr_status) 2>/dev/null)"; echo $$?)
+  # The sed filter accommodates those who check out on a commit from which
+  # no tag is reachable.  In that case, git submodule status prints a "-"
+  # in column 1 and does not print a "git describe"-style string after the
+  # submodule name.  Contrast these:
+  # -b653eda3ac4864de205419d9f41eec267cb89eeb .gnulib
+  #  b653eda3ac4864de205419d9f41eec267cb89eeb .gnulib (v0.0-2286-gb653eda)
+  _submodule_hash = sed 's/.//;s/ .*//'
+  _update_required := $(shell						\
+      actual=$$(git submodule status | $(_submodule_hash));		\
+      stamp="$$($(_submodule_hash) $(_curr_status) 2>/dev/null)";	\
+      test "$$stamp" = "$$actual"; echo $$?)
   ifeq (1,$(_update_required))
     $(error gnulib update required; run ./autogen.sh first)
   endif
