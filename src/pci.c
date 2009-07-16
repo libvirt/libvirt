@@ -834,10 +834,8 @@ pciReadDeviceID(pciDevice *dev, const char *id_name)
              dev->name, id_name);
 
     /* ID string is '0xNNNN\n' ... i.e. 7 bytes */
-    if (virFileReadAll(path, 7, &id_str) < 7) {
-        VIR_FREE(id_str);
+    if (virFileReadAll(path, 7, &id_str) < 0)
         return NULL;
-    }
 
     /* Check for 0x suffix */
     if (id_str[0] != '0' || id_str[1] != 'x') {
