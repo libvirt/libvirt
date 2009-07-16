@@ -228,6 +228,15 @@ sc_libvirt_unmarked_diagnostics:
 	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
 	    exit 1; } || :
 
+# Disallow trailing blank lines.
+sc_prohibit_trailing_blank_lines:
+	@$(VC_LIST_EXCEPT) | xargs perl -ln -0777 -e			\
+	  '/\n\n+$$/ and print $$ARGV' > $@-t
+	@found=0; test -s $@-t && { found=1; cat $@-t 1>&2;		\
+	  echo '$(ME): found trailing blank line(s)' 1>&2; };		\
+	rm -f $@-t;							\
+	test $$found = 0
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
