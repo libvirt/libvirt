@@ -2954,6 +2954,108 @@ cleanup:
 }
 
 
+static int qemudDomainCoreDump(virDomainPtr dom,
+                               const char *path,
+                               int flags ATTRIBUTE_UNUSED) {
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    char *command = NULL;
+    char *info = NULL;
+    char *safe_path = NULL;
+    int resume = 0, paused = 0;
+    int ret = -1;
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainIsActive(vm)) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
+                         "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    /* Migrate will always stop the VM, so once we support live dumping
+       the resume condition will stay the same, independent of whether
+       the stop command is issued.  */
+    resume = (vm->state == VIR_DOMAIN_RUNNING);
+
+    /* Pause domain for non-live dump */
+    if (vm->state == VIR_DOMAIN_RUNNING) {
+        if (qemudMonitorCommand (vm, "stop", &info) < 0) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                             "%s", _("suspending before dump failed"));
+            goto cleanup;
+        }
+        DEBUG ("%s: stop reply: %s", vm->def->name, info);
+        VIR_FREE(info);
+        paused = 1;
+    }
+
+    /* Migrate to file */
+    safe_path = qemudEscapeShellArg(path);
+    if (!safe_path) {
+        virReportOOMError(dom->conn);
+        goto cleanup;
+    }
+    if (virAsprintf(&command, "migrate \"exec:"
+                  "dd of='%s' 2>/dev/null"
+                  "\"", safe_path) == -1) {
+        virReportOOMError(dom->conn);
+        command = NULL;
+        goto cleanup;
+    }
+
+    if (qemudMonitorCommand(vm, command, &info) < 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("migrate operation failed"));
+        goto cleanup;
+    }
+
+    DEBUG ("%s: migrate reply: %s", vm->def->name, info);
+
+    /* If the command isn't supported then qemu prints:
+     * unknown command: migrate" */
+    if (strstr(info, "unknown command:")) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                          "%s",
+                          _("'migrate' not supported by this qemu"));
+        goto cleanup;
+    }
+
+    paused = 1;
+    ret = 0;
+cleanup:
+    VIR_FREE(safe_path);
+    VIR_FREE(command);
+    VIR_FREE(info);
+
+    /* Since the monitor is always attached to a pty for libvirt, it
+       will support synchronous operations so we always get here after
+       the migration is complete.  */
+    if (resume && paused) {
+        if (qemudMonitorCommand(vm, "cont", &info) < 0) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                             "%s", _("resuming after dump failed"));
+            goto cleanup;
+        }
+        DEBUG ("%s: cont reply: %s", vm->def->name, info);
+        VIR_FREE(info);
+    }
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+
 static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -5453,7 +5555,7 @@ static virDriver qemuDriver = {
     qemudDomainGetInfo, /* domainGetInfo */
     qemudDomainSave, /* domainSave */
     qemudDomainRestore, /* domainRestore */
-    NULL, /* domainCoreDump */
+    qemudDomainCoreDump, /* domainCoreDump */
     qemudDomainSetVcpus, /* domainSetVcpus */
 #if HAVE_SCHED_GETAFFINITY
     qemudDomainPinVcpu, /* domainPinVcpu */
