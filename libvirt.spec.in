@@ -310,8 +310,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_storage_disk} \
            %{?_without_numactl} \
            --with-init-script=redhat \
-           --with-qemud-pid-file=%{_localstatedir}/run/libvirt_qemud.pid \
-           --with-remote-file=%{_localstatedir}/run/libvirtd.pid
+           --with-remote-pid-file=%{_localstatedir}/run/libvirtd.pid
 make %{?_smp_mflags}
 
 %install
