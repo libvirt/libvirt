@@ -6047,6 +6047,83 @@ editReadBackFile (vshControl *ctl, const char *filename)
 }
 
 /*
+ * "cd" command
+ */
+static const vshCmdInfo info_cd[] = {
+    {"help", gettext_noop("change the current directory")},
+    {"desc", gettext_noop("Change the current directory.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_cd[] = {
+    {"dir", VSH_OT_DATA, 0, gettext_noop("directory to switch to (default: home or else root)")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdCd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    const char *dir;
+    int found;
+
+    if (!ctl->imode) {
+        vshError(ctl, FALSE, _("cd: command valid only in interactive mode"));
+        return -1;
+    }
+
+    dir = vshCommandOptString(cmd, "dir", &found);
+    if (!found) {
+        uid_t uid = geteuid();
+        dir = virGetUserDirectory(NULL, uid);
+    }
+    if (!dir)
+        dir = "/";
+
+    if (chdir (dir) == -1) {
+        vshError(ctl, FALSE, _("cd: %s: %s"), strerror (errno), dir);
+        return -1;
+    }
+
+    return 0;
+}
+
+/*
+ * "pwd" command
+ */
+static const vshCmdInfo info_pwd[] = {
+    {"help", gettext_noop("print the current directory")},
+    {"desc", gettext_noop("Print the current directory.")},
+    {NULL, NULL}
+};
+
+static int
+cmdPwd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    char *cwd;
+    size_t path_max;
+    int err = TRUE;
+
+    path_max = (size_t) PATH_MAX + 2;
+    cwd = vshMalloc (ctl, path_max);
+    while (cwd) {
+        err = getcwd (cwd, path_max) == NULL;
+        if (!err || errno != ERANGE)
+            break;
+
+        path_max *= 2;
+        cwd = vshRealloc (ctl, cwd, path_max);
+    }
+
+    if (err)
+        vshError(ctl, FALSE, _("pwd: cannot get current directory: %s"), strerror (errno));
+    else
+        vshPrint (ctl, _("%s\n"), cwd);
+
+    free (cwd);
+    return !err;
+}
+
+/*
  * "edit" command
  */
 static const vshCmdInfo info_edit[] = {
@@ -6209,6 +6286,7 @@ static const vshCmdDef commands[] = {
     {"attach-interface", cmdAttachInterface, opts_attach_interface, info_attach_interface},
     {"autostart", cmdAutostart, opts_autostart, info_autostart},
     {"capabilities", cmdCapabilities, NULL, info_capabilities},
+    {"cd", cmdCd, opts_cd, info_cd},
     {"connect", cmdConnect, opts_connect, info_connect},
     {"console", cmdConsole, opts_console, info_console},
     {"create", cmdCreate, opts_create, info_create},
@@ -6277,6 +6355,7 @@ static const vshCmdDef commands[] = {
     {"pool-undefine", cmdPoolUndefine, opts_pool_undefine, info_pool_undefine},
     {"pool-uuid", cmdPoolUuid, opts_pool_uuid, info_pool_uuid},
 
+    {"pwd", cmdPwd, NULL, info_pwd},
     {"quit", cmdQuit, NULL, info_quit},
     {"reboot", cmdReboot, opts_reboot, info_reboot},
     {"restore", cmdRestore, opts_restore, info_restore},

@@ -82,6 +82,18 @@ Running hypervisor: Xen 3.0.0
 
 =back
 
+=item B<cd> I<directory> optional
+
+Will change current directory to I<directory>.  The default directory
+for the B<cd> command is the home directory or, if there is no I<HOME>
+variable in the environment, the root directory.
+
+This command is only available in interactive mode.
+
+=item B<pwd>
+
+Will print the current directory.
+
 =item B<connect> I<URI> optional I<--readonly>
 
 (Re)-Connect to the hypervisor. This is a build-in command after shell

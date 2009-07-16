@@ -132,7 +132,7 @@
 .\" ========================================================================
 .\"
 .IX Title "VIRSH 1"
-.TH VIRSH 1 "2009-04-16" "libvirt-0.6.2" "Virtualization Support"
+.TH VIRSH 1 "2009-07-02" "libvirt-0.6.4" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -214,6 +214,16 @@ Running hypervisor: Xen 3.0.0
 .RE
 .RS 4
 .RE
+.IP "\fBcd\fR \fIdirectory\fR optional" 4
+.IX Item "cd directory optional"
+Will change current directory to \fIdirectory\fR.  The default directory
+for the \fBcd\fR command is the home directory or, if there is no \fI\s-1HOME\s0\fR
+variable in the environment, the root directory.
+.Sp
+This command is only available in interactive mode.
+.IP "\fBpwd\fR" 4
+.IX Item "pwd"
+Will print the current directory.
 .IP "\fBconnect\fR \fI\s-1URI\s0\fR optional \fI\-\-readonly\fR" 4
 .IX Item "connect URI optional --readonly"
 (Re)\-Connect to the hypervisor. This is a build-in command after shell
