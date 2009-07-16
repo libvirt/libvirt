@@ -228,6 +228,7 @@ static int vshCommandOptBool(const vshCmd *cmd, const char *name);
 #define VSH_BYID     (1 << 1)
 #define VSH_BYUUID   (1 << 2)
 #define VSH_BYNAME   (1 << 3)
+#define VSH_BYMAC    (1 << 4)
 
 static virDomainPtr vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
                                           char **name, int flag);
@@ -243,6 +244,14 @@ static virNetworkPtr vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
 #define vshCommandOptNetwork(_ctl, _cmd, _name)                    \
     vshCommandOptNetworkBy(_ctl, _cmd, _name,                      \
                            VSH_BYUUID|VSH_BYNAME)
+
+static virInterfacePtr vshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
+                                                char **name, int flag);
+
+/* default is lookup by Name and MAC */
+#define vshCommandOptInterface(_ctl, _cmd, _name)                    \
+    vshCommandOptInterfaceBy(_ctl, _cmd, _name,                      \
+                           VSH_BYMAC|VSH_BYNAME)
 
 static virStoragePoolPtr vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd,
                             const char *optname, char **name, int flag);
@@ -274,6 +283,10 @@ static const char *vshDomainStateToString(int state);
 static const char *vshDomainVcpuStateToString(int state);
 static int vshConnectionUsability(vshControl *ctl, virConnectPtr conn,
                                   int showerror);
+
+static char *editWriteToTempFile (vshControl *ctl, const char *doc);
+static int   editFile (vshControl *ctl, const char *filename);
+static char *editReadBackFile (vshControl *ctl, const char *filename);
 
 static void *_vshMalloc(vshControl *ctl, size_t sz, const char *filename, int line);
 #define vshMalloc(_ctl, _sz)    _vshMalloc(_ctl, _sz, __FILE__, __LINE__)
@@ -2692,6 +2705,106 @@ cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
 
 
 /*
+ * "iface-edit" command
+ */
+static const vshCmdInfo info_interface_edit[] = {
+    {"help", gettext_noop("edit XML configuration for a physical host interface")},
+    {"desc", gettext_noop("Edit the XML configuration for a physical host interface.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_interface_edit[] = {
+    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("interface name or MAC address")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdInterfaceEdit (vshControl *ctl, const vshCmd *cmd)
+{
+    int ret = FALSE;
+    virInterfacePtr iface = NULL;
+    char *tmp = NULL;
+    char *doc = NULL;
+    char *doc_edited = NULL;
+    char *doc_reread = NULL;
+    int flags = 0;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        goto cleanup;
+
+    iface = vshCommandOptInterface (ctl, cmd, NULL);
+    if (iface == NULL)
+        goto cleanup;
+
+    /* Get the XML configuration of the interface. */
+    doc = virInterfaceGetXMLDesc (iface, flags);
+    if (!doc)
+        goto cleanup;
+
+    /* Create and open the temporary file. */
+    tmp = editWriteToTempFile (ctl, doc);
+    if (!tmp) goto cleanup;
+
+    /* Start the editor. */
+    if (editFile (ctl, tmp) == -1) goto cleanup;
+
+    /* Read back the edited file. */
+    doc_edited = editReadBackFile (ctl, tmp);
+    if (!doc_edited) goto cleanup;
+
+    unlink (tmp);
+    tmp = NULL;
+
+    /* Compare original XML with edited.  Has it changed at all? */
+    if (STREQ (doc, doc_edited)) {
+        vshPrint (ctl, _("Interface %s XML configuration not changed.\n"),
+                  virInterfaceGetName (iface));
+        ret = TRUE;
+        goto cleanup;
+    }
+
+    /* Now re-read the interface XML.  Did someone else change it while
+     * it was being edited?  This also catches problems such as us
+     * losing a connection or the interface going away.
+     */
+    doc_reread = virInterfaceGetXMLDesc (iface, flags);
+    if (!doc_reread)
+        goto cleanup;
+
+    if (STRNEQ (doc, doc_reread)) {
+        vshError (ctl, FALSE,
+                  "%s", _("ERROR: the XML configuration was changed by another user"));
+        goto cleanup;
+    }
+
+    /* Everything checks out, so redefine the interface. */
+    virInterfaceFree (iface);
+    iface = virInterfaceDefineXML (ctl->conn, doc_edited, 0);
+    if (!iface)
+        goto cleanup;
+
+    vshPrint (ctl, _("Interface %s XML configuration edited.\n"),
+              virInterfaceGetName(iface));
+
+    ret = TRUE;
+
+cleanup:
+    if (iface)
+        virInterfaceFree (iface);
+
+    free (doc);
+    free (doc_edited);
+    free (doc_reread);
+
+    if (tmp) {
+        unlink (tmp);
+        free (tmp);
+    }
+
+    return ret;
+}
+
+/*
  * "net-list" command
  */
 static const vshCmdInfo info_network_list[] = {
@@ -2957,6 +3070,378 @@ cmdNetworkUuid(vshControl *ctl, const vshCmd *cmd)
 }
 
 
+/**************************************************************************/
+/*
+ * "iface-list" command
+ */
+static const vshCmdInfo info_interface_list[] = {
+    {"help", gettext_noop("list physical host interfaces")},
+    {"desc", gettext_noop("Returns list of physical host interfaces.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_interface_list[] = {
+    {"inactive", VSH_OT_BOOL, 0, gettext_noop("list inactive interfaces")},
+    {"all", VSH_OT_BOOL, 0, gettext_noop("list inactive & active interfaces")},
+    {NULL, 0, 0, NULL}
+};
+static int
+cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    int inactive = vshCommandOptBool(cmd, "inactive");
+    int all = vshCommandOptBool(cmd, "all");
+    int active = !inactive || all ? 1 : 0;
+    int maxactive = 0, maxinactive = 0, i;
+    char **activeNames = NULL, **inactiveNames = NULL;
+    inactive |= all;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (active) {
+        maxactive = virConnectNumOfInterfaces(ctl->conn);
+        if (maxactive < 0) {
+            vshError(ctl, FALSE, "%s", _("Failed to list active interfaces"));
+            return FALSE;
+        }
+        if (maxactive) {
+            activeNames = vshMalloc(ctl, sizeof(char *) * maxactive);
+
+            if ((maxactive = virConnectListInterfaces(ctl->conn, activeNames,
+                                                    maxactive)) < 0) {
+                vshError(ctl, FALSE, "%s", _("Failed to list active interfaces"));
+                free(activeNames);
+                return FALSE;
+            }
+
+            qsort(&activeNames[0], maxactive, sizeof(char *), namesorter);
+        }
+    }
+    if (inactive) {
+        maxinactive = virConnectNumOfDefinedInterfaces(ctl->conn);
+        if (maxinactive < 0) {
+            vshError(ctl, FALSE, "%s", _("Failed to list inactive interfaces"));
+            free(activeNames);
+            return FALSE;
+        }
+        if (maxinactive) {
+            inactiveNames = vshMalloc(ctl, sizeof(char *) * maxinactive);
+
+            if ((maxinactive = virConnectListDefinedInterfaces(ctl->conn, inactiveNames, maxinactive)) < 0) {
+                vshError(ctl, FALSE, "%s", _("Failed to list inactive interfaces"));
+                free(activeNames);
+                free(inactiveNames);
+                return FALSE;
+            }
+
+            qsort(&inactiveNames[0], maxinactive, sizeof(char*), namesorter);
+        }
+    }
+    vshPrintExtra(ctl, "%-20s %-10s %s\n", _("Name"), _("State"), _("MAC Address"));
+    vshPrintExtra(ctl, "--------------------------------------------\n");
+
+    for (i = 0; i < maxactive; i++) {
+        virInterfacePtr iface = virInterfaceLookupByName(ctl->conn, activeNames[i]);
+        const char *autostartStr;
+        int autostart = 0;
+
+        /* this kind of work with interfaces is not atomic */
+        if (!iface) {
+            free(activeNames[i]);
+            continue;
+        }
+
+        vshPrint(ctl, "%-20s %-10s %s\n",
+                 virInterfaceGetName(iface),
+                 _("active"),
+                 virInterfaceGetMACString(iface));
+        virInterfaceFree(iface);
+        free(activeNames[i]);
+    }
+    for (i = 0; i < maxinactive; i++) {
+        virInterfacePtr iface = virInterfaceLookupByName(ctl->conn, inactiveNames[i]);
+        const char *autostartStr;
+        int autostart = 0;
+
+        /* this kind of work with interfaces is not atomic */
+        if (!iface) {
+            free(inactiveNames[i]);
+            continue;
+        }
+
+        vshPrint(ctl, "%-20s %-10s %s\n",
+                 virInterfaceGetName(iface),
+                 _("inactive"),
+                 virInterfaceGetMACString(iface));
+        virInterfaceFree(iface);
+        free(inactiveNames[i]);
+    }
+    free(activeNames);
+    free(inactiveNames);
+    return TRUE;
+
+}
+
+/*
+ * "iface-name" command
+ */
+static const vshCmdInfo info_interface_name[] = {
+    {"help", gettext_noop("convert an interface MAC address to interface name")},
+    {"desc", ""},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_interface_name[] = {
+    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("interface mac")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdInterfaceName(vshControl *ctl, const vshCmd *cmd)
+{
+    virInterfacePtr iface;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+    if (!(iface = vshCommandOptInterfaceBy(ctl, cmd, NULL,
+                                           VSH_BYMAC)))
+        return FALSE;
+
+    vshPrint(ctl, "%s\n", virInterfaceGetName(iface));
+    virInterfaceFree(iface);
+    return TRUE;
+}
+
+/*
+ * "iface-mac" command
+ */
+static const vshCmdInfo info_interface_mac[] = {
+    {"help", gettext_noop("convert an interface name to interface MAC address")},
+    {"desc", ""},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_interface_mac[] = {
+    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("interface name")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdInterfaceMAC(vshControl *ctl, const vshCmd *cmd)
+{
+    virInterfacePtr iface;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+    if (!(iface = vshCommandOptInterfaceBy(ctl, cmd, NULL,
+                                           VSH_BYNAME)))
+        return FALSE;
+
+    vshPrint(ctl, "%s\n", virInterfaceGetMACString(iface));
+    virInterfaceFree(iface);
+    return TRUE;
+}
+
+/*
+ * "iface-dumpxml" command
+ */
+static const vshCmdInfo info_interface_dumpxml[] = {
+    {"help", gettext_noop("interface information in XML")},
+    {"desc", gettext_noop("Output the physical host interface information as an XML dump to stdout.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_interface_dumpxml[] = {
+    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("interface name or MAC address")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdInterfaceDumpXML(vshControl *ctl, const vshCmd *cmd)
+{
+    virInterfacePtr iface;
+    int ret = TRUE;
+    char *dump;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(iface = vshCommandOptInterface(ctl, cmd, NULL)))
+        return FALSE;
+
+    dump = virInterfaceGetXMLDesc(iface, 0);
+    if (dump != NULL) {
+        printf("%s", dump);
+        free(dump);
+    } else {
+        ret = FALSE;
+    }
+
+    virInterfaceFree(iface);
+    return ret;
+}
+
+/*
+ * "iface-define" command
+ */
+static const vshCmdInfo info_interface_define[] = {
+    {"help", gettext_noop("define (but don't start) a physical host interface from an XML file")},
+    {"desc", gettext_noop("Define a physical host interface.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_interface_define[] = {
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML interface description")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
+{
+    virInterfacePtr interface;
+    char *from;
+    int found;
+    int ret = TRUE;
+    char *buffer;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    from = vshCommandOptString(cmd, "file", &found);
+    if (!found)
+        return FALSE;
+
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+        return FALSE;
+
+    interface = virInterfaceDefineXML(ctl->conn, buffer, 0);
+    free (buffer);
+
+    if (interface != NULL) {
+        vshPrint(ctl, _("Interface %s defined from %s\n"),
+                 virInterfaceGetName(interface), from);
+    } else {
+        vshError(ctl, FALSE, _("Failed to define interface from %s"), from);
+        ret = FALSE;
+    }
+    return ret;
+}
+
+/*
+ * "iface-undefine" command
+ */
+static const vshCmdInfo info_interface_undefine[] = {
+    {"help", gettext_noop("undefine a physical host interface (remove it from configuration)")},
+    {"desc", gettext_noop("undefine an interface.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_interface_undefine[] = {
+    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("interface name or MAC address")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdInterfaceUndefine(vshControl *ctl, const vshCmd *cmd)
+{
+    virInterfacePtr iface;
+    int ret = TRUE;
+    char *name;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(iface = vshCommandOptInterface(ctl, cmd, &name)))
+        return FALSE;
+
+    if (virInterfaceUndefine(iface) == 0) {
+        vshPrint(ctl, _("Interface %s undefined\n"), name);
+    } else {
+        vshError(ctl, FALSE, _("Failed to undefine interface %s"), name);
+        ret = FALSE;
+    }
+
+    virInterfaceFree(iface);
+    return ret;
+}
+
+/*
+ * "iface-start" command
+ */
+static const vshCmdInfo info_interface_start[] = {
+    {"help", gettext_noop("start a physical host interface (enable it / \"if-up\")")},
+    {"desc", gettext_noop("start a physical host interface.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_interface_start[] = {
+    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("interface name or MAC address")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdInterfaceStart(vshControl *ctl, const vshCmd *cmd)
+{
+    virInterfacePtr iface;
+    int ret = TRUE;
+    char *name;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(iface = vshCommandOptInterface(ctl, cmd, &name)))
+        return FALSE;
+
+    if (virInterfaceCreate(iface, 0) == 0) {
+        vshPrint(ctl, _("Interface %s started\n"), name);
+    } else {
+        vshError(ctl, FALSE, _("Failed to start interface %s"), name);
+        ret = FALSE;
+    }
+
+    virInterfaceFree(iface);
+    return ret;
+}
+
+/*
+ * "iface-destroy" command
+ */
+static const vshCmdInfo info_interface_destroy[] = {
+    {"help", gettext_noop("destroy a physical host interface (disable it / \"if-down\")")},
+    {"desc", gettext_noop("destroy a physical host interface.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_interface_destroy[] = {
+    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("interface name or MAC address")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdInterfaceDestroy(vshControl *ctl, const vshCmd *cmd)
+{
+    virInterfacePtr iface;
+    int ret = TRUE;
+    char *name;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(iface = vshCommandOptInterface(ctl, cmd, &name)))
+        return FALSE;
+
+    if (virInterfaceDestroy(iface, 0) == 0) {
+        vshPrint(ctl, _("Interface %s destroyed\n"), name);
+    } else {
+        vshError(ctl, FALSE, _("Failed to destroy interface %s"), name);
+        ret = FALSE;
+    }
+
+    virInterfaceFree(iface);
+    return ret;
+}
+
+/**************************************************************************/
 /*
  * "pool-autostart" command
  */
@@ -6327,6 +6812,17 @@ static const vshCmdDef commands[] = {
     {"net-start", cmdNetworkStart, opts_network_start, info_network_start},
     {"net-undefine", cmdNetworkUndefine, opts_network_undefine, info_network_undefine},
     {"net-uuid", cmdNetworkUuid, opts_network_uuid, info_network_uuid},
+
+    {"iface-list", cmdInterfaceList, opts_interface_list, info_interface_list},
+    {"iface-name", cmdInterfaceName, opts_interface_name, info_interface_name},
+    {"iface-mac", cmdInterfaceMAC, opts_interface_mac, info_interface_mac},
+    {"iface-dumpxml", cmdInterfaceDumpXML, opts_interface_dumpxml, info_interface_dumpxml},
+    {"iface-define", cmdInterfaceDefine, opts_interface_define, info_interface_define},
+    {"iface-undefine", cmdInterfaceUndefine, opts_interface_undefine, info_interface_undefine},
+    {"iface-edit", cmdInterfaceEdit, opts_interface_edit, info_interface_edit},
+    {"iface-start", cmdInterfaceStart, opts_interface_start, info_interface_start},
+    {"iface-destroy", cmdInterfaceDestroy, opts_interface_destroy, info_interface_destroy},
+
     {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo},
 
     {"nodedev-list", cmdNodeListDevices, opts_node_list_devices, info_node_list_devices},
@@ -6777,6 +7273,46 @@ vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
         vshError(ctl, FALSE, _("failed to get network '%s'"), n);
 
     return network;
+}
+
+static virInterfacePtr
+vshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
+                         char **name, int flag)
+{
+    virInterfacePtr iface = NULL;
+    char *n;
+    const char *optname = "interface";
+    if (!cmd_has_option (ctl, cmd, optname))
+        return NULL;
+
+    if (!(n = vshCommandOptString(cmd, optname, NULL))) {
+        vshError(ctl, FALSE, "%s", _("undefined interface identifier"));
+        return NULL;
+    }
+
+    vshDebug(ctl, 5, "%s: found option <%s>: %s\n",
+             cmd->def->name, optname, n);
+
+    if (name)
+        *name = n;
+
+    /* try it by NAME */
+    if ((iface == NULL) && (flag & VSH_BYNAME)) {
+        vshDebug(ctl, 5, "%s: <%s> trying as interface NAME\n",
+                 cmd->def->name, optname);
+        iface = virInterfaceLookupByName(ctl->conn, n);
+    }
+    /* try it by MAC */
+    if ((iface == NULL) && (flag & VSH_BYMAC)) {
+        vshDebug(ctl, 5, "%s: <%s> trying as interface MAC\n",
+                 cmd->def->name, optname);
+        iface = virInterfaceLookupByMACString(ctl->conn, n);
+    }
+
+    if (!iface)
+        vshError(ctl, FALSE, _("failed to get interface '%s'"), n);
+
+    return iface;
 }
 
 static virStoragePoolPtr
