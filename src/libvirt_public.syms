@@ -285,4 +285,10 @@ LIBVIRT_0.6.4 {
 	virConnectDomainXMLToNative;
 } LIBVIRT_0.6.3;
 
+LIBVIRT_0.7.0 {
+    global:
+	virConnectNumOfDefinedInterfaces;
+	virConnectListDefinedInterfaces;
+} LIBVIRT_0.6.4;
+
 # .... define new API here using predicted next version number ....

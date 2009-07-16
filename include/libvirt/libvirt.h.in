@@ -890,6 +890,11 @@ int                     virConnectListInterfaces  (virConnectPtr conn,
                                                    char **const names,
                                                    int maxnames);
 
+int                     virConnectNumOfDefinedInterfaces (virConnectPtr conn);
+int                     virConnectListDefinedInterfaces  (virConnectPtr conn,
+                                                          char **const names,
+                                                          int maxnames);
+
 virInterfacePtr         virInterfaceLookupByName  (virConnectPtr conn,
                                                    const char *name);
 virInterfacePtr         virInterfaceLookupByMACString (virConnectPtr conn,
