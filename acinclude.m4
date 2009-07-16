@@ -107,4 +107,3 @@ if test -n "$PKG_CONFIG"; then
         fi
 fi[]dnl
 ])])
-

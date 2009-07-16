@@ -694,4 +694,3 @@ virStorageBackendRunProgNul(virConnectPtr conn,
     return -1;
 }
 #endif
-

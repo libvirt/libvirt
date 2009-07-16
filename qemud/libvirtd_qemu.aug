@@ -43,4 +43,3 @@ module Libvirtd_qemu =
               . Util.stdexcl
 
    let xfm = transform lns filter
-

@@ -60,5 +60,3 @@ void c_oneFree(void);
 
 
 #endif /* ONE_CLIENT_H_ */
-
-

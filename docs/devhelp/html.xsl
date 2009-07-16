@@ -575,5 +575,3 @@ it indexes the project page, the APIs as well as the mailing-list archives. </p>
   </xsl:template>
 
 </xsl:stylesheet>
-
-

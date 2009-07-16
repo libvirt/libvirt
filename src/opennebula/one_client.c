@@ -207,5 +207,3 @@ void c_oneFree()
     xmlrpc_env_clean(&one_client.env);
     xmlrpc_client_cleanup();
 }
-
-

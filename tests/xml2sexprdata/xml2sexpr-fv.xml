@@ -33,4 +33,3 @@
     <graphics type='vnc' port='5917' keymap='ja'/>
   </devices>
 </domain>
-

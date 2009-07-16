@@ -790,4 +790,3 @@ int virLogParseFilters(const char *filters) {
     }
     return(ret);
 }
-

@@ -282,4 +282,3 @@ no_memory:
     VIR_FREE(tmp);
     return NULL;
 };
-

@@ -948,4 +948,3 @@ void virNetworkObjUnlock(virNetworkObjPtr obj)
 {
     virMutexUnlock(&obj->lock);
 }
-

@@ -823,5 +823,3 @@ let () =
       )
     | _ -> ()
   ) file.globals;
-
-

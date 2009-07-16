@@ -186,4 +186,3 @@ void virNetworkObjLock(virNetworkObjPtr obj);
 void virNetworkObjUnlock(virNetworkObjPtr obj);
 
 #endif /* __NETWORK_CONF_H__ */
-

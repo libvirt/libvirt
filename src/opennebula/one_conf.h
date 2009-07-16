@@ -50,4 +50,3 @@ char* xmlOneTemplate(virConnectPtr conn,virDomainDefPtr def);
                          __FUNCTION__, __LINE__, fmt)
 
 #endif /* ONE_CONF_H */
-

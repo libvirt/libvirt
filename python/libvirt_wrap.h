@@ -185,4 +185,3 @@ PyObject * libvirt_virNodeDevicePtrWrap(virNodeDevicePtr node);
   if (PyEval_ThreadsInitialized())			       \
     PyGILState_Release(_save);				       \
   } LIBVIRT_STMT_END
-

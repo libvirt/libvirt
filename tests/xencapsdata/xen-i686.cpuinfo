@@ -16,4 +16,3 @@ cpuid level	: 10
 wp		: yes
 flags		: fpu tsc msr mce cx8 apic mtrr mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe lm constant_tsc pni monitor
 bogomips	: 5821.44
-

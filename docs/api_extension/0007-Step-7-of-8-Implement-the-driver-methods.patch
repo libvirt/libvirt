@@ -1169,4 +1169,3 @@ index 29cdb9e..7621212 100644
      if (!(actual = virNodeDeviceDefFormat(NULL, dev)))
 -- 
 1.6.0.6
-

@@ -82,5 +82,3 @@ for d in devs:
     elif type == "bridge":
         print_xml("Source:", ctx, "source/@bridge")
         print_xml("MAC Addr:", ctx, "mac/@address")
-
-

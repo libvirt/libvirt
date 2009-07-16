@@ -242,4 +242,3 @@ void VBoxCGlueTerm(void)
     g_pfnGetFunctions = NULL;
     memset(g_szVBoxErrMsg, 0, sizeof(g_szVBoxErrMsg));
 }
-

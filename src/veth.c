@@ -216,4 +216,3 @@ error_out:
     VIR_FREE(pid);
     return rc;
 }
-

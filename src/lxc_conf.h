@@ -57,4 +57,3 @@ virCapsPtr lxcCapsInit(void);
                                __FUNCTION__, __LINE__, fmt)
 
 #endif /* LXC_CONF_H */
-

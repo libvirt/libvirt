@@ -20,4 +20,3 @@
     <console tty='/dev/pts/4'/>
   </devices>
 </domain>
-

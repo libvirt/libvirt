@@ -112,4 +112,3 @@ mymain(int argc, char **argv)
 #endif /* __linux__ */
 
 VIRT_TEST_MAIN(mymain)
-

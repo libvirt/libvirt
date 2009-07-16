@@ -331,5 +331,3 @@ unsigned long long nodeGetFreeMemory(virConnectPtr conn)
     return 0;
 }
 #endif
-
-
