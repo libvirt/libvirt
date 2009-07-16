@@ -2772,8 +2772,8 @@ cmdInterfaceEdit (vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (STRNEQ (doc, doc_reread)) {
-        vshError (ctl, FALSE,
-                  "%s", _("ERROR: the XML configuration was changed by another user"));
+        vshError (ctl, FALSE, "%s",
+               _("ERROR: the XML configuration was changed by another user"));
         goto cleanup;
     }
 
@@ -2861,8 +2861,11 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         if (maxinactive) {
             inactiveNames = vshMalloc(ctl, sizeof(char *) * maxinactive);
 
-            if ((maxinactive = virConnectListDefinedNetworks(ctl->conn, inactiveNames, maxinactive)) < 0) {
-                vshError(ctl, FALSE, "%s", _("Failed to list inactive networks"));
+            if ((maxinactive =
+                     virConnectListDefinedNetworks(ctl->conn, inactiveNames,
+                                                   maxinactive)) < 0) {
+                vshError(ctl, FALSE, "%s",
+                         _("Failed to list inactive networks"));
                 free(activeNames);
                 free(inactiveNames);
                 return FALSE;
@@ -2871,11 +2874,13 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             qsort(&inactiveNames[0], maxinactive, sizeof(char*), namesorter);
         }
     }
-    vshPrintExtra(ctl, "%-20s %-10s %s\n", _("Name"), _("State"), _("Autostart"));
+    vshPrintExtra(ctl, "%-20s %-10s %s\n", _("Name"), _("State"),
+                  _("Autostart"));
     vshPrintExtra(ctl, "-----------------------------------------\n");
 
     for (i = 0; i < maxactive; i++) {
-        virNetworkPtr network = virNetworkLookupByName(ctl->conn, activeNames[i]);
+        virNetworkPtr network =
+            virNetworkLookupByName(ctl->conn, activeNames[i]);
         const char *autostartStr;
         int autostart = 0;
 
@@ -3109,7 +3114,8 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
             if ((maxactive = virConnectListInterfaces(ctl->conn, activeNames,
                                                     maxactive)) < 0) {
-                vshError(ctl, FALSE, "%s", _("Failed to list active interfaces"));
+                vshError(ctl, FALSE, "%s",
+                         _("Failed to list active interfaces"));
                 free(activeNames);
                 return FALSE;
             }
@@ -3120,15 +3126,19 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (inactive) {
         maxinactive = virConnectNumOfDefinedInterfaces(ctl->conn);
         if (maxinactive < 0) {
-            vshError(ctl, FALSE, "%s", _("Failed to list inactive interfaces"));
+            vshError(ctl, FALSE, "%s",
+                     _("Failed to list inactive interfaces"));
             free(activeNames);
             return FALSE;
         }
         if (maxinactive) {
             inactiveNames = vshMalloc(ctl, sizeof(char *) * maxinactive);
 
-            if ((maxinactive = virConnectListDefinedInterfaces(ctl->conn, inactiveNames, maxinactive)) < 0) {
-                vshError(ctl, FALSE, "%s", _("Failed to list inactive interfaces"));
+            if ((maxinactive =
+                     virConnectListDefinedInterfaces(ctl->conn, inactiveNames,
+                                                     maxinactive)) < 0) {
+                vshError(ctl, FALSE, "%s",
+                         _("Failed to list inactive interfaces"));
                 free(activeNames);
                 free(inactiveNames);
                 return FALSE;
@@ -3137,13 +3147,13 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             qsort(&inactiveNames[0], maxinactive, sizeof(char*), namesorter);
         }
     }
-    vshPrintExtra(ctl, "%-20s %-10s %s\n", _("Name"), _("State"), _("MAC Address"));
+    vshPrintExtra(ctl, "%-20s %-10s %s\n", _("Name"), _("State"),
+                  _("MAC Address"));
     vshPrintExtra(ctl, "--------------------------------------------\n");
 
     for (i = 0; i < maxactive; i++) {
-        virInterfacePtr iface = virInterfaceLookupByName(ctl->conn, activeNames[i]);
-        const char *autostartStr;
-        int autostart = 0;
+        virInterfacePtr iface =
+            virInterfaceLookupByName(ctl->conn, activeNames[i]);
 
         /* this kind of work with interfaces is not atomic */
         if (!iface) {
@@ -3159,9 +3169,8 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         free(activeNames[i]);
     }
     for (i = 0; i < maxinactive; i++) {
-        virInterfacePtr iface = virInterfaceLookupByName(ctl->conn, inactiveNames[i]);
-        const char *autostartStr;
-        int autostart = 0;
+        virInterfacePtr iface =
+            virInterfaceLookupByName(ctl->conn, inactiveNames[i]);
 
         /* this kind of work with interfaces is not atomic */
         if (!iface) {
