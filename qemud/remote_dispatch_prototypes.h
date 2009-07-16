@@ -471,6 +471,13 @@ static int remoteDispatchListDefinedDomains(
     remote_error *err,
     remote_list_defined_domains_args *args,
     remote_list_defined_domains_ret *ret);
+static int remoteDispatchListDefinedInterfaces(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_list_defined_interfaces_args *args,
+    remote_list_defined_interfaces_ret *ret);
 static int remoteDispatchListDefinedNetworks(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -709,6 +716,13 @@ static int remoteDispatchNumOfDefinedDomains(
     remote_error *err,
     void *args,
     remote_num_of_defined_domains_ret *ret);
+static int remoteDispatchNumOfDefinedInterfaces(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    void *args,
+    remote_num_of_defined_interfaces_ret *ret);
 static int remoteDispatchNumOfDefinedNetworks(
     struct qemud_server *server,
     struct qemud_client *client,

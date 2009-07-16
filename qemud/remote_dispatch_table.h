@@ -687,3 +687,13 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_xml_to_native_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_xml_to_native_ret,
 },
+{   /* NumOfDefinedInterfaces => 137 */
+    .fn = (dispatch_fn) remoteDispatchNumOfDefinedInterfaces,
+    .args_filter = (xdrproc_t) xdr_void,
+    .ret_filter = (xdrproc_t) xdr_remote_num_of_defined_interfaces_ret,
+},
+{   /* ListDefinedInterfaces => 138 */
+    .fn = (dispatch_fn) remoteDispatchListDefinedInterfaces,
+    .args_filter = (xdrproc_t) xdr_remote_list_defined_interfaces_args,
+    .ret_filter = (xdrproc_t) xdr_remote_list_defined_interfaces_ret,
+},

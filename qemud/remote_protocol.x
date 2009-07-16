@@ -82,6 +82,9 @@ const REMOTE_NETWORK_NAME_LIST_MAX = 256;
 /* Upper limit on lists of interface names. */
 const REMOTE_INTERFACE_NAME_LIST_MAX = 256;
 
+/* Upper limit on lists of defined interface names. */
+const REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX = 256;
+
 /* Upper limit on lists of storage pool names. */
 const REMOTE_STORAGE_POOL_NAME_LIST_MAX = 256;
 
@@ -793,6 +796,18 @@ struct remote_list_interfaces_ret {
     remote_nonnull_string names<REMOTE_INTERFACE_NAME_LIST_MAX>;
 };
 
+struct remote_num_of_defined_interfaces_ret {
+    int num;
+};
+
+struct remote_list_defined_interfaces_args {
+    int maxnames;
+};
+
+struct remote_list_defined_interfaces_ret {
+    remote_nonnull_string names<REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX>;
+};
+
 struct remote_interface_lookup_by_name_args {
     remote_nonnull_string name;
 };
@@ -1406,7 +1421,10 @@ enum remote_procedure {
     REMOTE_PROC_INTERFACE_CREATE = 133,
     REMOTE_PROC_INTERFACE_DESTROY = 134,
     REMOTE_PROC_DOMAIN_XML_FROM_NATIVE = 135,
-    REMOTE_PROC_DOMAIN_XML_TO_NATIVE = 136
+    REMOTE_PROC_DOMAIN_XML_TO_NATIVE = 136,
+
+    REMOTE_PROC_NUM_OF_DEFINED_INTERFACES = 137,
+    REMOTE_PROC_LIST_DEFINED_INTERFACES = 138
 };
 
 

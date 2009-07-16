@@ -29,6 +29,7 @@ typedef remote_nonnull_string *remote_string;
 #define REMOTE_MIGRATE_COOKIE_MAX 256
 #define REMOTE_NETWORK_NAME_LIST_MAX 256
 #define REMOTE_INTERFACE_NAME_LIST_MAX 256
+#define REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX 256
 #define REMOTE_STORAGE_POOL_NAME_LIST_MAX 256
 #define REMOTE_STORAGE_VOL_NAME_LIST_MAX 1024
 #define REMOTE_NODE_DEVICE_NAME_LIST_MAX 16384
@@ -847,6 +848,24 @@ struct remote_list_interfaces_ret {
 };
 typedef struct remote_list_interfaces_ret remote_list_interfaces_ret;
 
+struct remote_num_of_defined_interfaces_ret {
+        int num;
+};
+typedef struct remote_num_of_defined_interfaces_ret remote_num_of_defined_interfaces_ret;
+
+struct remote_list_defined_interfaces_args {
+        int maxnames;
+};
+typedef struct remote_list_defined_interfaces_args remote_list_defined_interfaces_args;
+
+struct remote_list_defined_interfaces_ret {
+        struct {
+                u_int names_len;
+                remote_nonnull_string *names_val;
+        } names;
+};
+typedef struct remote_list_defined_interfaces_ret remote_list_defined_interfaces_ret;
+
 struct remote_interface_lookup_by_name_args {
         remote_nonnull_string name;
 };
@@ -1548,6 +1567,8 @@ enum remote_procedure {
         REMOTE_PROC_INTERFACE_DESTROY = 134,
         REMOTE_PROC_DOMAIN_XML_FROM_NATIVE = 135,
         REMOTE_PROC_DOMAIN_XML_TO_NATIVE = 136,
+        REMOTE_PROC_NUM_OF_DEFINED_INTERFACES = 137,
+        REMOTE_PROC_LIST_DEFINED_INTERFACES = 138,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -1710,6 +1731,9 @@ extern  bool_t xdr_remote_network_set_autostart_args (XDR *, remote_network_set_
 extern  bool_t xdr_remote_num_of_interfaces_ret (XDR *, remote_num_of_interfaces_ret*);
 extern  bool_t xdr_remote_list_interfaces_args (XDR *, remote_list_interfaces_args*);
 extern  bool_t xdr_remote_list_interfaces_ret (XDR *, remote_list_interfaces_ret*);
+extern  bool_t xdr_remote_num_of_defined_interfaces_ret (XDR *, remote_num_of_defined_interfaces_ret*);
+extern  bool_t xdr_remote_list_defined_interfaces_args (XDR *, remote_list_defined_interfaces_args*);
+extern  bool_t xdr_remote_list_defined_interfaces_ret (XDR *, remote_list_defined_interfaces_ret*);
 extern  bool_t xdr_remote_interface_lookup_by_name_args (XDR *, remote_interface_lookup_by_name_args*);
 extern  bool_t xdr_remote_interface_lookup_by_name_ret (XDR *, remote_interface_lookup_by_name_ret*);
 extern  bool_t xdr_remote_interface_lookup_by_mac_string_args (XDR *, remote_interface_lookup_by_mac_string_args*);
@@ -1945,6 +1969,9 @@ extern bool_t xdr_remote_network_set_autostart_args ();
 extern bool_t xdr_remote_num_of_interfaces_ret ();
 extern bool_t xdr_remote_list_interfaces_args ();
 extern bool_t xdr_remote_list_interfaces_ret ();
+extern bool_t xdr_remote_num_of_defined_interfaces_ret ();
+extern bool_t xdr_remote_list_defined_interfaces_args ();
+extern bool_t xdr_remote_list_defined_interfaces_ret ();
 extern bool_t xdr_remote_interface_lookup_by_name_args ();
 extern bool_t xdr_remote_interface_lookup_by_name_ret ();
 extern bool_t xdr_remote_interface_lookup_by_mac_string_args ();

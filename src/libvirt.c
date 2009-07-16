@@ -5533,9 +5533,9 @@ virInterfaceGetConnect (virInterfacePtr iface)
  * virConnectNumOfInterfaces:
  * @conn: pointer to the hypervisor connection
  *
- * Provides the number of interfaces on the physical host.
+ * Provides the number of active interfaces on the physical host.
  *
- * Returns the number of interface found or -1 in case of error
+ * Returns the number of active interfaces found or -1 in case of error
  */
 int
 virConnectNumOfInterfaces(virConnectPtr conn)
@@ -5571,7 +5571,8 @@ error:
  * @names: array to collect the list of names of interfaces
  * @maxnames: size of @names
  *
- * Collect the list of physical host interfaces, and store their names in @names
+ * Collect the list of active physical host interfaces,
+ * and store their names in @names
  *
  * Returns the number of interfaces found or -1 in case of error
  */
@@ -5595,6 +5596,88 @@ virConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
     if (conn->interfaceDriver && conn->interfaceDriver->listInterfaces) {
         int ret;
         ret = conn->interfaceDriver->listInterfaces (conn, names, maxnames);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return -1;
+}
+
+/**
+ * virConnectNumOfDefinedInterfaces:
+ * @conn: pointer to the hypervisor connection
+ *
+ * Provides the number of defined (inactive) interfaces on the physical host.
+ *
+ * Returns the number of defined interface found or -1 in case of error
+ */
+int
+virConnectNumOfDefinedInterfaces(virConnectPtr conn)
+{
+    DEBUG("conn=%p", conn);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+
+    if (conn->interfaceDriver && conn->interfaceDriver->numOfDefinedInterfaces) {
+        int ret;
+        ret = conn->interfaceDriver->numOfDefinedInterfaces (conn);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return -1;
+}
+
+/**
+ * virConnectListDefinedInterfaces:
+ * @conn: pointer to the hypervisor connection
+ * @names: array to collect the list of names of interfaces
+ * @maxnames: size of @names
+ *
+ * Collect the list of defined (inactive) physical host interfaces,
+ * and store their names in @names.
+ *
+ * Returns the number of interfaces found or -1 in case of error
+ */
+int
+virConnectListDefinedInterfaces(virConnectPtr conn,
+                                char **const names,
+                                int maxnames)
+{
+    DEBUG("conn=%p, names=%p, maxnames=%d", conn, names, maxnames);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+
+    if ((names == NULL) || (maxnames < 0)) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->interfaceDriver && conn->interfaceDriver->listDefinedInterfaces) {
+        int ret;
+        ret = conn->interfaceDriver->listDefinedInterfaces (conn, names, maxnames);
         if (ret < 0)
             goto error;
         return ret;

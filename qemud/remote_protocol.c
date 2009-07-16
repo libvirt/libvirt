@@ -1518,6 +1518,35 @@ xdr_remote_list_interfaces_ret (XDR *xdrs, remote_list_interfaces_ret *objp)
 }
 
 bool_t
+xdr_remote_num_of_defined_interfaces_ret (XDR *xdrs, remote_num_of_defined_interfaces_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->num))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_list_defined_interfaces_args (XDR *xdrs, remote_list_defined_interfaces_args *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->maxnames))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_list_defined_interfaces_ret (XDR *xdrs, remote_list_defined_interfaces_ret *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->names.names_val;
+
+         if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->names.names_len, REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX,
+                sizeof (remote_nonnull_string), (xdrproc_t) xdr_remote_nonnull_string))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_interface_lookup_by_name_args (XDR *xdrs, remote_interface_lookup_by_name_args *objp)
 {
 

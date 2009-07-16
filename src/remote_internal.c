@@ -3897,6 +3897,78 @@ done:
     return rv;
 }
 
+static int
+remoteNumOfDefinedInterfaces (virConnectPtr conn)
+{
+    int rv = -1;
+    remote_num_of_defined_interfaces_ret ret;
+    struct private_data *priv = conn->interfacePrivateData;
+
+    remoteDriverLock(priv);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_NUM_OF_DEFINED_INTERFACES,
+              (xdrproc_t) xdr_void, (char *) NULL,
+              (xdrproc_t) xdr_remote_num_of_defined_interfaces_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteListDefinedInterfaces (virConnectPtr conn, char **const names, int maxnames)
+{
+    int rv = -1;
+    int i;
+    remote_list_defined_interfaces_args args;
+    remote_list_defined_interfaces_ret ret;
+    struct private_data *priv = conn->interfacePrivateData;
+
+    remoteDriverLock(priv);
+
+    if (maxnames > REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX) {
+        errorf (conn, VIR_ERR_RPC,
+                _("too many remote interfaces: %d > %d"),
+                maxnames, REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX);
+        goto done;
+    }
+    args.maxnames = maxnames;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_LIST_DEFINED_INTERFACES,
+              (xdrproc_t) xdr_remote_list_defined_interfaces_args, (char *) &args,
+              (xdrproc_t) xdr_remote_list_defined_interfaces_ret, (char *) &ret) == -1)
+        goto done;
+
+    if (ret.names.names_len > maxnames) {
+        errorf (conn, VIR_ERR_RPC,
+                _("too many remote interfaces: %d > %d"),
+                ret.names.names_len, maxnames);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here.
+     */
+    for (i = 0; i < ret.names.names_len; ++i)
+        names[i] = strdup (ret.names.names_val[i]);
+
+    rv = ret.names.names_len;
+
+cleanup:
+    xdr_free ((xdrproc_t) xdr_remote_list_defined_interfaces_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 static virInterfacePtr
 remoteInterfaceLookupByName (virConnectPtr conn,
                              const char *name)
@@ -7440,6 +7512,8 @@ static virInterfaceDriver interface_driver = {
     .close = remoteInterfaceClose,
     .numOfInterfaces = remoteNumOfInterfaces,
     .listInterfaces = remoteListInterfaces,
+    .numOfDefinedInterfaces = remoteNumOfDefinedInterfaces,
+    .listDefinedInterfaces = remoteListDefinedInterfaces,
     .interfaceLookupByName = remoteInterfaceLookupByName,
     .interfaceLookupByMACString = remoteInterfaceLookupByMACString,
     .interfaceGetXMLDesc = remoteInterfaceGetXMLDesc,
