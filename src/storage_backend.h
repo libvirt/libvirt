@@ -40,21 +40,19 @@ typedef int (*virStorageBackendRefreshVol)(virConnectPtr conn, virStoragePoolObj
 typedef int (*virStorageBackendDeleteVol)(virConnectPtr conn, virStoragePoolObjPtr pool, virStorageVolDefPtr vol, unsigned int flags);
 typedef int (*virStorageBackendBuildVolFrom)(virConnectPtr conn, virStorageVolDefPtr origvol, virStorageVolDefPtr newvol, unsigned int flags);
 
-typedef int (*createFile)(virConnectPtr conn,
-                          virStorageVolDefPtr vol,
-                          virStorageVolDefPtr inputvol);
-
 /* File creation/cloning functions used for cloning between backends */
 int virStorageBackendCreateRaw(virConnectPtr conn,
                                virStorageVolDefPtr vol,
-                               virStorageVolDefPtr inputvol);
-createFile
+                               virStorageVolDefPtr inputvol,
+                               unsigned int flags);
+virStorageBackendBuildVolFrom
 virStorageBackendGetBuildVolFromFunction(virConnectPtr conn,
                                          virStorageVolDefPtr vol,
                                          virStorageVolDefPtr inputvol);
 int virStorageBackendFindFSImageTool(char **tool);
-createFile virStorageBackendFSImageToolTypeToFunc(virConnectPtr conn,
-                                                  int tool_type);
+virStorageBackendBuildVolFrom
+virStorageBackendFSImageToolTypeToFunc(virConnectPtr conn,
+                                       int tool_type);
 
 
 typedef struct _virStorageBackend virStorageBackend;

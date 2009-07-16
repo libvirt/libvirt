@@ -106,7 +106,8 @@ enum {
 int
 virStorageBackendCreateRaw(virConnectPtr conn,
                            virStorageVolDefPtr vol,
-                           virStorageVolDefPtr inputvol)
+                           virStorageVolDefPtr inputvol,
+                           unsigned int flags ATTRIBUTE_UNUSED)
 {
     int fd = -1;
     int inputfd = -1;
@@ -257,7 +258,8 @@ cleanup:
 static int
 virStorageBackendCreateQemuImg(virConnectPtr conn,
                                virStorageVolDefPtr vol,
-                               virStorageVolDefPtr inputvol)
+                               virStorageVolDefPtr inputvol,
+                               unsigned int flags ATTRIBUTE_UNUSED)
 {
     char size[100];
     char *create_tool;
@@ -395,7 +397,8 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
 static int
 virStorageBackendCreateQcowCreate(virConnectPtr conn,
                                   virStorageVolDefPtr vol,
-                                  virStorageVolDefPtr inputvol)
+                                  virStorageVolDefPtr inputvol,
+                                  unsigned int flags ATTRIBUTE_UNUSED)
 {
     char size[100];
     const char *imgargv[4];
@@ -438,7 +441,7 @@ virStorageBackendCreateQcowCreate(virConnectPtr conn,
     return 0;
 }
 
-createFile
+virStorageBackendBuildVolFrom
 virStorageBackendFSImageToolTypeToFunc(virConnectPtr conn, int tool_type)
 {
     switch (tool_type) {
@@ -478,7 +481,7 @@ virStorageBackendFindFSImageTool(char **tool)
     return tool_type;
 }
 
-createFile
+virStorageBackendBuildVolFrom
 virStorageBackendGetBuildVolFromFunction(virConnectPtr conn,
                                          virStorageVolDefPtr vol,
                                          virStorageVolDefPtr inputvol)

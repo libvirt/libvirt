@@ -1008,7 +1008,8 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
 
 static int createFileDir(virConnectPtr conn,
                          virStorageVolDefPtr vol,
-                         virStorageVolDefPtr inputvol) {
+                         virStorageVolDefPtr inputvol,
+                         unsigned int flags ATTRIBUTE_UNUSED) {
     if (inputvol) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               "%s",
@@ -1032,7 +1033,7 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
                                      virStorageVolDefPtr inputvol)
 {
     int fd;
-    createFile create_func;
+    virStorageBackendBuildVolFrom create_func;
     int tool_type;
 
     if (inputvol) {
@@ -1056,7 +1057,7 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
         return -1;
     }
 
-    if (create_func(conn, vol, inputvol) < 0)
+    if (create_func(conn, vol, inputvol, 0) < 0)
         return -1;
 
     if ((fd = open(vol->target.path, O_RDONLY)) < 0) {
