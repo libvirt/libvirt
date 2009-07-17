@@ -810,6 +810,68 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     return tapfd;
 }
 
+static const char *
+qemuNetTypeToHostNet(int type)
+{
+    switch (type) {
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        return "tap";
+
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+        return "socket";
+
+    case VIR_DOMAIN_NET_TYPE_USER:
+    default:
+        return "user";
+    }
+}
+
+static int
+qemuAssignNetNames(virDomainDefPtr def,
+                   virDomainNetDefPtr net)
+{
+    char *nic_name, *hostnet_name;
+    int i, nic_index = 0, hostnet_index = 0;
+
+    for (i = 0; i < def->nnets; i++) {
+        if (def->nets[i] == net)
+            continue;
+
+        if (!def->nets[i]->nic_name || !def->nets[i]->hostnet_name)
+            continue;
+
+        if ((def->nets[i]->model == NULL && net->model == NULL) ||
+            (def->nets[i]->model != NULL && net->model != NULL &&
+             STREQ(def->nets[i]->model, net->model)))
+            ++nic_index;
+
+        if (STREQ(qemuNetTypeToHostNet(def->nets[i]->type),
+                  qemuNetTypeToHostNet(net->type)))
+            ++hostnet_index;
+    }
+
+    if (virAsprintf(&nic_name, "%s.%d",
+                    net->model ? net->model : "nic",
+                    nic_index) < 0)
+        return -1;
+
+    if (virAsprintf(&hostnet_name, "%s.%d",
+                    qemuNetTypeToHostNet(net->type),
+                    hostnet_index) < 0) {
+        VIR_FREE(nic_name);
+        return -1;
+    }
+
+    net->nic_name = nic_name;
+    net->hostnet_name = hostnet_name;
+
+    return 0;
+}
+
 static int
 qemuBuildNicStr(virConnectPtr conn,
                 virDomainNetDefPtr net,
@@ -819,7 +881,7 @@ qemuBuildNicStr(virConnectPtr conn,
                 char **str)
 {
     if (virAsprintf(str,
-                    "%snic%cmacaddr=%02x:%02x:%02x:%02x:%02x:%02x,vlan=%d%s%s",
+                    "%snic%cmacaddr=%02x:%02x:%02x:%02x:%02x:%02x,vlan=%d%s%s%s%s",
                     prefix ? prefix : "",
                     type_sep,
                     net->mac[0], net->mac[1],
@@ -827,7 +889,9 @@ qemuBuildNicStr(virConnectPtr conn,
                     net->mac[4], net->mac[5],
                     vlan,
                     (net->model ? ",model=" : ""),
-                    (net->model ? net->model : "")) < 0) {
+                    (net->model ? net->model : ""),
+                    (net->nic_name ? ",name=" : ""),
+                    (net->nic_name ? net->nic_name : "")) < 0) {
         virReportOOMError(conn);
         return -1;
     }
@@ -847,9 +911,11 @@ qemuBuildHostNetStr(virConnectPtr conn,
     switch (net->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (virAsprintf(str, "%stap%cfd=%d,vlan=%d",
+        if (virAsprintf(str, "%stap%cfd=%d,vlan=%d%s%s",
                         prefix ? prefix : "",
-                        type_sep, tapfd, vlan) < 0) {
+                        type_sep, tapfd, vlan,
+                        (net->hostnet_name ? ",name=" : ""),
+                        (net->hostnet_name ? net->hostnet_name : "")) < 0) {
             virReportOOMError(conn);
             return -1;
         }
@@ -872,6 +938,11 @@ qemuBuildHostNetStr(virConnectPtr conn,
                 type_sep = ',';
             }
             virBufferVSprintf(&buf, "%cvlan=%d", type_sep, vlan);
+            if (net->hostnet_name) {
+                virBufferVSprintf(&buf, "%cname=%s", type_sep,
+                                  net->hostnet_name);
+                type_sep = ',';
+            }
             if (virBufferError(&buf)) {
                 virReportOOMError(conn);
                 return -1;
@@ -899,12 +970,14 @@ qemuBuildHostNetStr(virConnectPtr conn,
                 break;
             }
 
-            if (virAsprintf(str, "%ssocket%c%s=%s:%d,vlan=%d",
+            if (virAsprintf(str, "%ssocket%c%s=%s:%d,vlan=%d%s%s",
                             prefix ? prefix : "",
                             type_sep, mode,
                             net->data.socket.address,
                             net->data.socket.port,
-                            vlan) < 0) {
+                            vlan,
+                            (net->hostnet_name ? ",name=" : ""),
+                            (net->hostnet_name ? net->hostnet_name : "")) < 0) {
                 virReportOOMError(conn);
                 return -1;
             }
@@ -913,9 +986,11 @@ qemuBuildHostNetStr(virConnectPtr conn,
 
     case VIR_DOMAIN_NET_TYPE_USER:
     default:
-        if (virAsprintf(str, "%suser%cvlan=%d",
+        if (virAsprintf(str, "%suser%cvlan=%d%s%s",
                         prefix ? prefix : "",
-                        type_sep, vlan) < 0) {
+                        type_sep, vlan,
+                        (net->hostnet_name ? ",name=" : ""),
+                        (net->hostnet_name ? net->hostnet_name : "")) < 0) {
             virReportOOMError(conn);
             return -1;
         }
@@ -1459,6 +1534,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
             virDomainNetDefPtr net = def->nets[i];
             char *nic, *host;
             int tapfd = -1;
+
+            if ((qemuCmdFlags & QEMUD_CMD_FLAG_NET_NAME) &&
+                qemuAssignNetNames(def, net) < 0)
+                goto no_memory;
 
             if (qemuBuildNicStr(conn, net, NULL, ',', i, &nic) < 0)
                 goto error;

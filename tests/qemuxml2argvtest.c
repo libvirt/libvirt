@@ -245,6 +245,7 @@ mymain(int argc, char **argv)
     DO_TEST("net-virtio", 0);
     DO_TEST("net-eth", 0);
     DO_TEST("net-eth-ifname", 0);
+    DO_TEST("net-eth-names", QEMUD_CMD_FLAG_NET_NAME);
 
     DO_TEST("serial-vc", 0);
     DO_TEST("serial-pty", 0);

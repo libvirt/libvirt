@@ -190,6 +190,8 @@ struct _virDomainNetDef {
         } internal;
     } data;
     char *ifname;
+    char *nic_name;
+    char *hostnet_name;
 };
 
 enum virDomainChrSrcType {

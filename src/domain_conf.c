@@ -338,6 +338,8 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     }
 
     VIR_FREE(def->ifname);
+    VIR_FREE(def->nic_name);
+    VIR_FREE(def->hostnet_name);
     VIR_FREE(def);
 }
 
