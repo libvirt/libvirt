@@ -4907,6 +4907,103 @@ cleanup:
     return ret;
 }
 
+static int
+qemudDomainDetachNetDevice(virConnectPtr conn,
+                           virDomainObjPtr vm,
+                           virDomainDeviceDefPtr dev)
+{
+    int i, ret = -1;
+    char *cmd = NULL;
+    char *reply = NULL;
+    virDomainNetDefPtr detach = NULL;
+
+    for (i = 0 ; i < vm->def->nnets ; i++) {
+        virDomainNetDefPtr net = vm->def->nets[i];
+
+        if (!memcmp(net->mac, dev->data.net->mac,  sizeof(net->mac))) {
+            detach = net;
+            break;
+        }
+    }
+
+    if (!detach) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("network device %02x:%02x:%02x:%02x:%02x:%02x not found"),
+                         dev->data.net->mac[0], dev->data.net->mac[1],
+                         dev->data.net->mac[2], dev->data.net->mac[3],
+                         dev->data.net->mac[4], dev->data.net->mac[5]);
+        goto cleanup;
+    }
+
+    if (!virNetHasValidPciAddr(detach) || detach->vlan < 0 || !detach->hostnet_name) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("network device cannot be detached - device state missing"));
+        goto cleanup;
+    }
+
+    if (virAsprintf(&cmd, "pci_del pci_addr=%.4x:%.2x:%.2x",
+                    detach->pci_addr.domain,
+                    detach->pci_addr.bus,
+                    detach->pci_addr.slot) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                          _("network device dettach command '%s' failed"), cmd);
+        goto cleanup;
+    }
+
+    DEBUG("%s: pci_del reply: %s", vm->def->name,  reply);
+
+    /* If the command fails due to a wrong PCI address qemu prints
+     * 'invalid pci address'; nothing is printed on success */
+    if (strstr(reply, "Invalid pci address")) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("failed to detach network device: invalid PCI address %.4x:%.2x:%.2x: %s"),
+                         detach->pci_addr.domain,
+                         detach->pci_addr.bus,
+                         detach->pci_addr.slot,
+                         reply);
+        goto cleanup;
+    }
+
+    VIR_FREE(reply);
+    VIR_FREE(cmd);
+
+    if (virAsprintf(&cmd, "host_net_remove %d %s",
+                    detach->vlan, detach->hostnet_name) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                          _("network device dettach command '%s' failed"), cmd);
+        goto cleanup;
+    }
+
+    DEBUG("%s: host_net_remove reply: %s", vm->def->name,  reply);
+
+    if (vm->def->nnets > 1) {
+        vm->def->nets[i] = vm->def->nets[--vm->def->nnets];
+        if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets) < 0) {
+            virReportOOMError(conn);
+            goto cleanup;
+        }
+    } else {
+        VIR_FREE(vm->def->nets[0]);
+        vm->def->nnets = 0;
+    }
+    ret = 0;
+
+cleanup:
+    VIR_FREE(reply);
+    VIR_FREE(cmd);
+    return ret;
+}
+
 static int qemudDomainDetachDevice(virDomainPtr dom,
                                    const char *xml) {
     struct qemud_driver *driver = dom->conn->privateData;
@@ -4945,8 +5042,9 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
             driver->securityDriver->domainRestoreSecurityImageLabel(dom->conn, dev->data.disk);
         if (qemuDomainSetDeviceOwnership(dom->conn, driver, dev, 1) < 0)
             VIR_WARN0("Fail to restore disk device ownership");
-    }
-    else
+    } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
+        ret = qemudDomainDetachNetDevice(dom->conn, vm, dev);
+    } else
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          "%s", _("only SCSI or virtio disk device can be detached dynamically"));
 
