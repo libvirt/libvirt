@@ -4340,15 +4340,83 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
     return 0;
 }
 
+static int
+qemudParsePciAddReply(virDomainObjPtr vm,
+                      const char *reply,
+                      unsigned *domain,
+                      unsigned *bus,
+                      unsigned *slot)
+{
+    char *s, *e;
+
+    DEBUG("%s: pci_add reply: %s", vm->def->name, reply);
+
+    /* If the command succeeds qemu prints:
+     * OK bus 0, slot XXX...
+     * or
+     * OK domain 0, bus 0, slot XXX
+     */
+    if (!(s = strstr(reply, "OK ")))
+        return -1;
+
+    s += 3;
+
+    if (STRPREFIX(s, "domain ")) {
+        s += strlen("domain ");
+
+        if (virStrToLong_ui(s, &e, 10, domain) == -1) {
+            VIR_WARN(_("Unable to parse domain number '%s'\n"), s);
+            return -1;
+        }
+
+        if (!STRPREFIX(e, ", ")) {
+            VIR_WARN(_("Expected ', ' parsing pci_add reply '%s'\n"), s);
+            return -1;
+        }
+        s = e + 2;
+    }
+
+    if (!STRPREFIX(s, "bus ")) {
+        VIR_WARN(_("Expected 'bus ' parsing pci_add reply '%s'\n"), s);
+        return -1;
+    }
+    s += strlen("bus ");
+
+    if (virStrToLong_ui(s, &e, 10, bus) == -1) {
+        VIR_WARN(_("Unable to parse bus number '%s'\n"), s);
+        return -1;
+    }
+
+    if (!STRPREFIX(e, ", ")) {
+        VIR_WARN(_("Expected ', ' parsing pci_add reply '%s'\n"), s);
+        return -1;
+    }
+    s = e + 2;
+
+    if (!STRPREFIX(s, "slot ")) {
+        VIR_WARN(_("Expected 'slot ' parsing pci_add reply '%s'\n"), s);
+        return -1;
+    }
+    s += strlen("slot ");
+
+    if (virStrToLong_ui(s, &e, 10, slot) == -1) {
+        VIR_WARN(_("Unable to parse slot number '%s'\n"), s);
+        return -1;
+    }
+
+    return 0;
+}
+
 static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
                                           virDomainObjPtr vm,
                                           virDomainDeviceDefPtr dev)
 {
     int ret, i;
-    char *cmd, *reply, *s;
+    char *cmd, *reply;
     char *safe_path;
     const char* type = virDomainDiskBusTypeToString(dev->data.disk->bus);
     int tryOldSyntax = 0;
+    unsigned domain, bus, slot;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (STREQ(vm->def->disks[i]->dst, dev->data.disk->dst)) {
@@ -4387,42 +4455,28 @@ try_command:
 
     VIR_FREE(cmd);
 
-    DEBUG ("%s: pci_add reply: %s", vm->def->name, reply);
-    /* If the command succeeds qemu prints:
-     * OK bus 0, slot XXX...
-     * or
-     * OK domain 0, bus 0, slot XXX
-     */
-    if ((s = strstr(reply, "OK ")) &&
-        (s = strstr(s, "slot "))) {
-        char *dummy = s;
-        unsigned slot;
+    if (qemudParsePciAddReply(vm, reply, &domain, &bus, &slot) < 0) {
+        if (!tryOldSyntax && strstr(reply, "invalid char in expression")) {
+            VIR_FREE(reply);
+            tryOldSyntax = 1;
+            goto try_command;
+        }
 
-        s += strlen("slot ");
-
-        if (virStrToLong_ui((const char*)s, &dummy, 10, &slot) == -1)
-            VIR_WARN("%s", _("Unable to parse slot number\n"));
-
-        /* XXX not neccessarily always going to end up in domain 0 / bus 0 :-( */
-        dev->data.disk->pci_addr.domain = 0;
-        dev->data.disk->pci_addr.bus    = 0;
-        dev->data.disk->pci_addr.slot   = slot;
-    } else if (!tryOldSyntax && strstr(reply, "invalid char in expression")) {
-        VIR_FREE(reply);
-        tryOldSyntax = 1;
-        goto try_command;
-    } else {
         qemudReportError (conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                           _("adding %s disk failed: %s"), type, reply);
         VIR_FREE(reply);
         return -1;
     }
 
+    VIR_FREE(reply);
+
+    dev->data.disk->pci_addr.domain = domain;
+    dev->data.disk->pci_addr.bus    = bus;
+    dev->data.disk->pci_addr.slot   = slot;
+
     vm->def->disks[vm->def->ndisks++] = dev->data.disk;
     qsort(vm->def->disks, vm->def->ndisks, sizeof(*vm->def->disks),
           virDomainDiskQSort);
-
-    VIR_FREE(reply);
 
     return 0;
 }
