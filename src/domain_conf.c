@@ -962,6 +962,7 @@ virDomainNetDefParseXML(virConnectPtr conn,
     char *internal = NULL;
     char *nic_name = NULL;
     char *hostnet_name = NULL;
+    char *vlan = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError(conn);
@@ -1031,6 +1032,7 @@ virDomainNetDefParseXML(virConnectPtr conn,
                        xmlStrEqual(cur->name, BAD_CAST "state")) {
                 nic_name = virXMLPropString(cur, "nic");
                 hostnet_name = virXMLPropString(cur, "hostnet");
+                vlan = virXMLPropString(cur, "vlan");
             }
         }
         cur = cur->next;
@@ -1045,6 +1047,13 @@ virDomainNetDefParseXML(virConnectPtr conn,
     def->nic_name = nic_name;
     def->hostnet_name = hostnet_name;
     nic_name = hostnet_name = NULL;
+
+    def->vlan = -1;
+    if (vlan && virStrToLong_i(vlan, NULL, 10, &def->vlan) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <state> 'vlan' attribute"));
+        goto error;
+    }
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
@@ -1167,6 +1176,7 @@ cleanup:
     VIR_FREE(internal);
     VIR_FREE(nic_name);
     VIR_FREE(hostnet_name);
+    VIR_FREE(vlan);
 
     return def;
 
@@ -3624,6 +3634,8 @@ virDomainNetDefFormat(virConnectPtr conn,
             virBufferEscapeString(buf, " nic='%s'", def->nic_name);
         if (def->hostnet_name)
             virBufferEscapeString(buf, " hostnet='%s'", def->hostnet_name);
+        if (def->vlan > 0)
+            virBufferVSprintf(buf, " vlan='%d'", def->vlan);
         virBufferAddLit(buf, "/>\n");
     }
 

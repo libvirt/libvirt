@@ -1535,11 +1535,13 @@ int qemudBuildCommandLine(virConnectPtr conn,
             char *nic, *host;
             int tapfd = -1;
 
+            net->vlan = i;
+
             if ((qemuCmdFlags & QEMUD_CMD_FLAG_NET_NAME) &&
                 qemuAssignNetNames(def, net) < 0)
                 goto no_memory;
 
-            if (qemuBuildNicStr(conn, net, NULL, ',', i, &nic) < 0)
+            if (qemuBuildNicStr(conn, net, NULL, ',', net->vlan, &nic) < 0)
                 goto error;
 
             ADD_ARG_LIT("-net");
@@ -1565,7 +1567,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 (*tapfds)[(*ntapfds)++] = tapfd;
             }
 
-            if (qemuBuildHostNetStr(conn, net, NULL, ',', i, tapfd, &host) < 0)
+            if (qemuBuildHostNetStr(conn, net, NULL, ',',
+                                    net->vlan, tapfd, &host) < 0)
                 goto error;
 
             ADD_ARG_LIT("-net");

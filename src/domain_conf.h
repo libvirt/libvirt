@@ -192,6 +192,7 @@ struct _virDomainNetDef {
     char *ifname;
     char *nic_name;
     char *hostnet_name;
+    int vlan;
 };
 
 enum virDomainChrSrcType {
