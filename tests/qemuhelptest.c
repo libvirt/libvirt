@@ -118,7 +118,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC |
             QEMUD_CMD_FLAG_DRIVE_CACHE_V2 |
             QEMUD_CMD_FLAG_DRIVE_FORMAT |
-            QEMUD_CMD_FLAG_VGA,
+            QEMUD_CMD_FLAG_VGA |
+            QEMUD_CMD_FLAG_0_10,
             10005, 0,  0);
     DO_TEST("qemu-kvm-0.10.5",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -133,7 +134,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_DRIVE_CACHE_V2 |
             QEMUD_CMD_FLAG_KVM |
             QEMUD_CMD_FLAG_DRIVE_FORMAT |
-            QEMUD_CMD_FLAG_VGA,
+            QEMUD_CMD_FLAG_VGA |
+            QEMUD_CMD_FLAG_0_10,
             10005, 1,  0);
     DO_TEST("kvm-86",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -148,7 +150,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_DRIVE_CACHE_V2 |
             QEMUD_CMD_FLAG_KVM |
             QEMUD_CMD_FLAG_DRIVE_FORMAT |
-            QEMUD_CMD_FLAG_VGA,
+            QEMUD_CMD_FLAG_VGA |
+            QEMUD_CMD_FLAG_0_10,
             10050, 1,  0);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

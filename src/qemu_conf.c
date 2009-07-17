@@ -527,6 +527,9 @@ static unsigned int qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO;
     }
 
+    if (version >= 10000)
+        flags |= QEMUD_CMD_FLAG_0_10;
+
     return flags;
 }
 

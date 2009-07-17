@@ -58,6 +58,11 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_KVM               = (1 << 13), /* Whether KVM is compiled in */
     QEMUD_CMD_FLAG_DRIVE_FORMAT      = (1 << 14), /* Is -drive format= avail */
     QEMUD_CMD_FLAG_VGA               = (1 << 15), /* Is -vga avail */
+
+    /* features added in qemu-0.10.0 */
+    QEMUD_CMD_FLAG_0_10         = (1 << 16),
+    QEMUD_CMD_FLAG_NET_NAME     = QEMUD_CMD_FLAG_0_10, /* -net ...,name=str */
+    QEMUD_CMD_FLAG_HOST_NET_ADD = QEMUD_CMD_FLAG_0_10, /* host_net_add monitor command */
 };
 
 /* Main driver state */
