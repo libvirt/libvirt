@@ -740,40 +740,34 @@ int qemudExtractVersion(virConnectPtr conn,
 }
 
 
-static char *
+static int
 qemudNetworkIfaceConnect(virConnectPtr conn,
                          struct qemud_driver *driver,
-                         int **tapfds,
-                         int *ntapfds,
                          virDomainNetDefPtr net,
-                         int vlan,
                          int vnet_hdr)
 {
     char *brname;
-    char tapfdstr[4+3+32+7];
-    char *retval = NULL;
     int err;
     int tapfd = -1;
 
     if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
         virNetworkPtr network = virNetworkLookupByName(conn,
                                                       net->data.network.name);
-        if (!network) {
-            goto error;
-        }
+        if (!network)
+            return -1;
+
         brname = virNetworkGetBridgeName(network);
 
         virNetworkFree(network);
 
-        if (brname == NULL) {
-            goto error;
-        }
+        if (brname == NULL)
+            return -1;
     } else if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
         brname = net->data.bridge.brname;
     } else {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Network type %d is not supported"), net->type);
-        goto error;
+        return -1;
     }
 
     if (!net->ifname ||
@@ -782,7 +776,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         VIR_FREE(net->ifname);
         if (!(net->ifname = strdup("vnet%d"))) {
             virReportOOMError(conn);
-            goto error;
+            return -1;
         }
     }
 
@@ -791,7 +785,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("cannot initialize bridge support: %s"),
                          virStrerror(err, ebuf, sizeof ebuf));
-        goto error;
+        return -1;
     }
 
     if ((err = brAddTap(driver->brctl, brname,
@@ -807,30 +801,10 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
                                "to bridge '%s' : %s"),
                              net->ifname, brname, virStrerror(err, ebuf, sizeof ebuf));
         }
-        goto error;
+        return -1;
     }
 
-    snprintf(tapfdstr, sizeof(tapfdstr),
-             "tap,fd=%d,vlan=%d",
-             tapfd, vlan);
-
-    if (!(retval = strdup(tapfdstr)))
-        goto no_memory;
-
-    if (VIR_REALLOC_N(*tapfds, (*ntapfds)+1) < 0)
-        goto no_memory;
-
-    (*tapfds)[(*ntapfds)++] = tapfd;
-
-    return retval;
-
- no_memory:
-    virReportOOMError(conn);
- error:
-    VIR_FREE(retval);
-    if (tapfd != -1)
-        close(tapfd);
-    return NULL;
+    return tapfd;
 }
 
 static int
@@ -853,6 +827,96 @@ qemuBuildNicStr(virConnectPtr conn,
                     (net->model ? net->model : "")) < 0) {
         virReportOOMError(conn);
         return -1;
+    }
+
+    return 0;
+}
+
+static int
+qemuBuildHostNetStr(virConnectPtr conn,
+                    virDomainNetDefPtr net,
+                    const char *prefix,
+                    char type_sep,
+                    int vlan,
+                    int tapfd,
+                    char **str)
+{
+    switch (net->type) {
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        if (virAsprintf(str, "%stap%cfd=%d,vlan=%d",
+                        prefix ? prefix : "",
+                        type_sep, tapfd, vlan) < 0) {
+            virReportOOMError(conn);
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        {
+            virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+            if (prefix)
+                virBufferAdd(&buf, prefix, strlen(prefix));
+            virBufferAddLit(&buf, "tap");
+            if (net->ifname) {
+                virBufferVSprintf(&buf, "%cifname=%s", type_sep, net->ifname);
+                type_sep = ',';
+            }
+            if (net->data.ethernet.script) {
+                virBufferVSprintf(&buf, "%cscript=%s", type_sep,
+                                  net->data.ethernet.script);
+                type_sep = ',';
+            }
+            virBufferVSprintf(&buf, "%cvlan=%d", type_sep, vlan);
+            if (virBufferError(&buf)) {
+                virReportOOMError(conn);
+                return -1;
+            }
+
+            *str = virBufferContentAndReset(&buf);
+        }
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+        {
+            const char *mode = NULL;
+
+            switch (net->type) {
+            case VIR_DOMAIN_NET_TYPE_CLIENT:
+                mode = "connect";
+                break;
+            case VIR_DOMAIN_NET_TYPE_SERVER:
+                mode = "listen";
+                break;
+            case VIR_DOMAIN_NET_TYPE_MCAST:
+                mode = "mcast";
+                break;
+            }
+
+            if (virAsprintf(str, "%ssocket%c%s=%s:%d,vlan=%d",
+                            prefix ? prefix : "",
+                            type_sep, mode,
+                            net->data.socket.address,
+                            net->data.socket.port,
+                            vlan) < 0) {
+                virReportOOMError(conn);
+                return -1;
+            }
+        }
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_USER:
+    default:
+        if (virAsprintf(str, "%suser%cvlan=%d",
+                        prefix ? prefix : "",
+                        type_sep, vlan) < 0) {
+            virReportOOMError(conn);
+            return -1;
+        }
+        break;
     }
 
     return 0;
@@ -1388,95 +1452,42 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT("-net");
         ADD_ARG_LIT("none");
     } else {
-        int vlan = 0;
         for (i = 0 ; i < def->nnets ; i++) {
             virDomainNetDefPtr net = def->nets[i];
-            char *nic;
+            char *nic, *host;
+            int tapfd = -1;
 
-            if (qemuBuildNicStr(conn, net, NULL, ',', vlan, &nic) < 0)
+            if (qemuBuildNicStr(conn, net, NULL, ',', i, &nic) < 0)
                 goto error;
 
             ADD_ARG_LIT("-net");
             ADD_ARG(nic);
-            ADD_ARG_LIT("-net");
 
-            switch (net->type) {
-            case VIR_DOMAIN_NET_TYPE_NETWORK:
-            case VIR_DOMAIN_NET_TYPE_BRIDGE:
-                {
-                    char *tap;
-                    int vnet_hdr = 0;
+            if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
+                net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+                int vnet_hdr = 0;
 
-                    if (qemuCmdFlags & QEMUD_CMD_FLAG_VNET_HDR &&
-                        net->model && STREQ(net->model, "virtio"))
-                        vnet_hdr = 1;
+                if (qemuCmdFlags & QEMUD_CMD_FLAG_VNET_HDR &&
+                    net->model && STREQ(net->model, "virtio"))
+                    vnet_hdr = 1;
 
-                    tap = qemudNetworkIfaceConnect(conn, driver,
-                                                   tapfds, ntapfds,
-                                                   net, vlan, vnet_hdr);
-                    if (tap == NULL)
-                        goto error;
-                    ADD_ARG(tap);
-                    break;
+                tapfd = qemudNetworkIfaceConnect(conn, driver, net, vnet_hdr);
+                if (tapfd < 0)
+                    goto error;
+
+                if (VIR_REALLOC_N(*tapfds, (*ntapfds)+1) < 0) {
+                    close(tapfd);
+                    goto no_memory;
                 }
 
-            case VIR_DOMAIN_NET_TYPE_ETHERNET:
-                {
-                    virBuffer buf = VIR_BUFFER_INITIALIZER;
-
-                    virBufferAddLit(&buf, "tap");
-                    if (net->ifname)
-                        virBufferVSprintf(&buf, ",ifname=%s", net->ifname);
-                    if (net->data.ethernet.script)
-                        virBufferVSprintf(&buf, ",script=%s", net->data.ethernet.script);
-                    virBufferVSprintf(&buf, ",vlan=%d", vlan);
-                    if (virBufferError(&buf))
-                        goto error;
-
-                    ADD_ARG(virBufferContentAndReset(&buf));
-                }
-                break;
-
-            case VIR_DOMAIN_NET_TYPE_CLIENT:
-            case VIR_DOMAIN_NET_TYPE_SERVER:
-            case VIR_DOMAIN_NET_TYPE_MCAST:
-                {
-                    char arg[PATH_MAX];
-                    const char *mode = NULL;
-                    switch (net->type) {
-                    case VIR_DOMAIN_NET_TYPE_CLIENT:
-                        mode = "connect";
-                        break;
-                    case VIR_DOMAIN_NET_TYPE_SERVER:
-                        mode = "listen";
-                        break;
-                    case VIR_DOMAIN_NET_TYPE_MCAST:
-                        mode = "mcast";
-                        break;
-                    }
-                    if (snprintf(arg, PATH_MAX-1, "socket,%s=%s:%d,vlan=%d",
-                                 mode,
-                                 net->data.socket.address,
-                                 net->data.socket.port,
-                                 vlan) >= (PATH_MAX-1))
-                        goto error;
-
-                    ADD_ARG_LIT(arg);
-                }
-                break;
-
-            case VIR_DOMAIN_NET_TYPE_USER:
-            default:
-                {
-                    char arg[PATH_MAX];
-                    if (snprintf(arg, PATH_MAX-1, "user,vlan=%d", vlan) >= (PATH_MAX-1))
-                        goto error;
-
-                    ADD_ARG_LIT(arg);
-                }
+                (*tapfds)[(*ntapfds)++] = tapfd;
             }
 
-            vlan++;
+            if (qemuBuildHostNetStr(conn, net, NULL, ',', i, tapfd, &host) < 0)
+                goto error;
+
+            ADD_ARG_LIT("-net");
+            ADD_ARG(host);
         }
     }
 
