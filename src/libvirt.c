@@ -2726,6 +2726,8 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
         goto error;
     }
 
+    flags &= VIR_DOMAIN_XML_FLAGS_MASK;
+
     if (conn->driver->domainDumpXML) {
         char *ret;
         ret = conn->driver->domainDumpXML (domain, flags);

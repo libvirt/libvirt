@@ -33,6 +33,11 @@
 #include "util.h"
 #include "threads.h"
 
+/* Private component of virDomainXMLFlags */
+typedef enum {
+   VIR_DOMAIN_XML_INTERNAL_STATUS = (1<<16), /* dump internal domain status information */
+} virDomainXMLInternalFlags;
+
 /* Different types of hypervisor */
 /* NB: Keep in sync with virDomainVirtTypeToString impl */
 enum virDomainVirtType {

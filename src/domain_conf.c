@@ -2896,7 +2896,8 @@ static virDomainObjPtr virDomainObjParseXML(virConnectPtr conn,
 
     oldnode = ctxt->node;
     ctxt->node = config;
-    obj->def = virDomainDefParseXML(conn, caps, ctxt, 0);
+    obj->def = virDomainDefParseXML(conn, caps, ctxt,
+                                    VIR_DOMAIN_XML_INTERNAL_STATUS);
     ctxt->node = oldnode;
     if (!obj->def)
         goto error;
@@ -4277,12 +4278,11 @@ int virDomainSaveStatus(virConnectPtr conn,
                         const char *statusDir,
                         virDomainObjPtr obj)
 {
+    int flags = VIR_DOMAIN_XML_SECURE|VIR_DOMAIN_XML_INTERNAL_STATUS;
     int ret = -1;
     char *xml;
 
-    if (!(xml = virDomainObjFormat(conn,
-                                   obj,
-                                   VIR_DOMAIN_XML_SECURE)))
+    if (!(xml = virDomainObjFormat(conn, obj, flags)))
         goto cleanup;
 
     if (virDomainSaveXML(conn, statusDir, obj->def, xml))

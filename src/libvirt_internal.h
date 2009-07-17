@@ -24,6 +24,8 @@
 
 #include "internal.h"
 
+/* bits 16 and above of virDomainXMLFlags are for internal use */
+#define VIR_DOMAIN_XML_FLAGS_MASK 0xffff
 
 #ifdef WITH_LIBVIRTD
 int virStateInitialize(int privileged);
