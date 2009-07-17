@@ -833,6 +833,30 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     return NULL;
 }
 
+static int
+qemuBuildNicStr(virConnectPtr conn,
+                virDomainNetDefPtr net,
+                const char *prefix,
+                char type_sep,
+                int vlan,
+                char **str)
+{
+    if (virAsprintf(str,
+                    "%snic%cmacaddr=%02x:%02x:%02x:%02x:%02x:%02x,vlan=%d%s%s",
+                    prefix ? prefix : "",
+                    type_sep,
+                    net->mac[0], net->mac[1],
+                    net->mac[2], net->mac[3],
+                    net->mac[4], net->mac[5],
+                    vlan,
+                    (net->model ? ",model=" : ""),
+                    (net->model ? net->model : "")) < 0) {
+        virReportOOMError(conn);
+        return -1;
+    }
+
+    return 0;
+}
 
 static int qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
                                           char *buf,
@@ -1366,21 +1390,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
     } else {
         int vlan = 0;
         for (i = 0 ; i < def->nnets ; i++) {
-            char nic[100];
             virDomainNetDefPtr net = def->nets[i];
+            char *nic;
 
-            if (snprintf(nic, sizeof(nic),
-                         "nic,macaddr=%02x:%02x:%02x:%02x:%02x:%02x,vlan=%d%s%s",
-                         net->mac[0], net->mac[1],
-                         net->mac[2], net->mac[3],
-                         net->mac[4], net->mac[5],
-                         vlan,
-                         (net->model ? ",model=" : ""),
-                         (net->model ? net->model : "")) >= sizeof(nic))
+            if (qemuBuildNicStr(conn, net, NULL, ',', vlan, &nic) < 0)
                 goto error;
 
             ADD_ARG_LIT("-net");
-            ADD_ARG_LIT(nic);
+            ADD_ARG(nic);
             ADD_ARG_LIT("-net");
 
             switch (net->type) {
