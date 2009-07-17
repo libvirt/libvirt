@@ -145,6 +145,24 @@ int         qemudBuildCommandLine       (virConnectPtr conn,
                                          int *ntapfds,
                                          const char *migrateFrom);
 
+int         qemuBuildHostNetStr         (virConnectPtr conn,
+                                         virDomainNetDefPtr net,
+                                         const char *prefix,
+                                         char type_sep,
+                                         int vlan,
+                                         int tapfd,
+                                         char **str);
+
+int         qemuBuildNicStr             (virConnectPtr conn,
+                                         virDomainNetDefPtr net,
+                                         const char *prefix,
+                                         char type_sep,
+                                         int vlan,
+                                         char **str);
+
+int         qemuAssignNetNames          (virDomainDefPtr def,
+                                         virDomainNetDefPtr net);
+
 virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
                                      virCapsPtr caps,
                                      const char **progenv,

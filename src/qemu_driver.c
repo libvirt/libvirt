@@ -4489,6 +4489,86 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
     return 0;
 }
 
+static int qemudDomainAttachNetDevice(virConnectPtr conn,
+                                      virDomainObjPtr vm,
+                                      virDomainDeviceDefPtr dev,
+                                      unsigned int qemuCmdFlags)
+{
+    virDomainNetDefPtr net = dev->data.net;
+    char *cmd, *reply;
+    int i;
+
+    if (!(qemuCmdFlags & QEMUD_CMD_FLAG_HOST_NET_ADD)) {
+        qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT, "%s",
+                         _("installed qemu version does not support host_net_add"));
+        return -1;
+    }
+
+    if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+        net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                         _("network device type '%s' cannot be attached"),
+                         virDomainNetTypeToString(net->type));
+        return -1;
+    }
+
+    if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0) {
+        virReportOOMError(conn);
+        return -1;
+    }
+
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_NET_NAME) &&
+        qemuAssignNetNames(vm->def, net) < 0) {
+        virReportOOMError(conn);
+        return -1;
+    }
+
+    /* Choose a vlan value greater than all other values since
+     * older versions did not store the value in the state file.
+     */
+    net->vlan = vm->def->nnets;
+    for (i = 0; i < vm->def->nnets; i++)
+        if (vm->def->nets[i]->vlan >= net->vlan)
+            net->vlan = vm->def->nets[i]->vlan;
+
+    if (qemuBuildHostNetStr(conn, net,
+                            "host_net_add ", ' ', net->vlan, -1, &cmd) < 0)
+        return -1;
+
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
+        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("failed to add network backend with '%s'"), cmd);
+        VIR_FREE(cmd);
+        return -1;
+    }
+
+    DEBUG("%s: host_net_add reply: %s", vm->def->name, reply);
+
+    VIR_FREE(reply);
+    VIR_FREE(cmd);
+
+    if (qemuBuildNicStr(conn, net,
+                        "pci_add pci_addr=auto ", ' ', net->vlan, &cmd) < 0) {
+        /* FIXME: try and remove the backend again */
+        return -1;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
+        /* FIXME: try and remove the backend again */
+        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("failed to add NIC with '%s'"), cmd);
+        VIR_FREE(cmd);
+        return -1;
+    }
+
+    VIR_FREE(reply);
+    VIR_FREE(cmd);
+
+    vm->def->nets[vm->def->nnets++] = net;
+
+    return 0;
+}
+
 static int qemudDomainAttachHostDevice(virConnectPtr conn,
                                        virDomainObjPtr vm,
                                        virDomainDeviceDefPtr dev)
@@ -4614,6 +4694,8 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                              virDomainDiskDeviceTypeToString(dev->data.disk->device));
             goto cleanup;
         }
+    } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
+        ret = qemudDomainAttachNetDevice(dom->conn, vm, dev, qemuCmdFlags);
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
                dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
                dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {

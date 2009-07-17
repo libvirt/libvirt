@@ -91,6 +91,7 @@ virDomainLifecycleTypeFromString;
 virDomainLifecycleTypeToString;
 virDomainLoadAllConfigs;
 virDomainNetDefFree;
+virDomainNetTypeToString;
 virDomainObjFree;
 virDomainObjListFree;
 virDomainRemoveInactive;

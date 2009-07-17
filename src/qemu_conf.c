@@ -830,7 +830,7 @@ qemuNetTypeToHostNet(int type)
     }
 }
 
-static int
+int
 qemuAssignNetNames(virDomainDefPtr def,
                    virDomainNetDefPtr net)
 {
@@ -872,7 +872,7 @@ qemuAssignNetNames(virDomainDefPtr def,
     return 0;
 }
 
-static int
+int
 qemuBuildNicStr(virConnectPtr conn,
                 virDomainNetDefPtr net,
                 const char *prefix,
@@ -899,7 +899,7 @@ qemuBuildNicStr(virConnectPtr conn,
     return 0;
 }
 
-static int
+int
 qemuBuildHostNetStr(virConnectPtr conn,
                     virDomainNetDefPtr net,
                     const char *prefix,
