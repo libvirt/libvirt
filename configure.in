@@ -547,7 +547,9 @@ if test "$GNUTLS_FOUND" = "no"; then
   test $fail = 1 &&
     AC_MSG_ERROR([You must install the GnuTLS library in order to compile and run libvirt])
 
-  GNUTLS_LIBS=$LIBS
+  dnl Not all versions of gnutls include -lgcrypt, and so we add
+  dnl it explicitly for the calls to gcry_control/check_version
+  GNUTLS_LIBS="$LIBS -lgcrypt"
   LIBS="$old_libs"
 fi
 

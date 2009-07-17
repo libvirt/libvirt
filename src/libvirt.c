@@ -22,6 +22,7 @@
 #include <sys/wait.h>
 #endif
 #include <time.h>
+#include <gcrypt.h>
 
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
@@ -251,6 +252,55 @@ winsock_init (void)
 }
 #endif
 
+static int virTLSMutexInit (void **priv)
+{                                                                             \
+    virMutexPtr lock = NULL;
+
+    if (VIR_ALLOC(lock) < 0)
+        return ENOMEM;
+
+    if (virMutexInit(lock) < 0) {
+        VIR_FREE(lock);
+        return errno;
+    }
+
+    *priv = lock;
+    return 0;
+}
+
+static int virTLSMutexDestroy(void **priv)
+{
+    virMutexPtr lock = *priv;
+    virMutexDestroy(lock);
+    VIR_FREE(lock);
+    return 0;
+}
+
+static int virTLSMutexLock(void **priv)
+{
+    virMutexPtr lock = *priv;
+    virMutexLock(lock);
+    return 0;
+}
+
+static int virTLSMutexUnlock(void **priv)
+{
+    virMutexPtr lock = *priv;
+    virMutexUnlock(lock);
+    return 0;
+}
+
+static struct gcry_thread_cbs virTLSThreadImpl = {
+    (GCRY_THREAD_OPTION_PTHREAD | (GCRY_THREAD_OPTION_VERSION << 8)),
+    NULL,
+    virTLSMutexInit,
+    virTLSMutexDestroy,
+    virTLSMutexLock,
+    virTLSMutexUnlock,
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+};
+
+
 /**
  * virInitialize:
  *
@@ -272,6 +322,9 @@ virInitialize(void)
         virErrorInitialize() < 0 ||
         virRandomInitialize(time(NULL) ^ getpid()))
         return -1;
+
+    gcry_control(GCRYCTL_SET_THREAD_CBS, &virTLSThreadImpl);
+    gcry_check_version(NULL);
 
     virLogSetFromEnv();
 
