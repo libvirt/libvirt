@@ -4495,7 +4495,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
                                       unsigned int qemuCmdFlags)
 {
     virDomainNetDefPtr net = dev->data.net;
-    char *cmd, *reply;
+    char *cmd, *reply, *remove_cmd;
     int i;
 
     if (!(qemuCmdFlags & QEMUD_CMD_FLAG_HOST_NET_ADD)) {
@@ -4535,9 +4535,19 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
                             "host_net_add ", ' ', net->vlan, -1, &cmd) < 0)
         return -1;
 
+    remove_cmd = NULL;
+    if (net->vlan >= 0 && net->hostnet_name &&
+        virAsprintf(&remove_cmd, "host_net_remove %d %s",
+                    net->vlan, net->hostnet_name) < 0) {
+        VIR_FREE(cmd);
+        virReportOOMError(conn);
+        return -1;
+    }
+
     if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
         qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          _("failed to add network backend with '%s'"), cmd);
+        VIR_FREE(remove_cmd);
         VIR_FREE(cmd);
         return -1;
     }
@@ -4548,25 +4558,38 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     VIR_FREE(cmd);
 
     if (qemuBuildNicStr(conn, net,
-                        "pci_add pci_addr=auto ", ' ', net->vlan, &cmd) < 0) {
-        /* FIXME: try and remove the backend again */
-        return -1;
-    }
+                        "pci_add pci_addr=auto ", ' ', net->vlan, &cmd) < 0)
+        goto try_remove;
 
     if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
-        /* FIXME: try and remove the backend again */
         qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          _("failed to add NIC with '%s'"), cmd);
         VIR_FREE(cmd);
-        return -1;
+        goto try_remove;
     }
 
     VIR_FREE(reply);
     VIR_FREE(cmd);
+    VIR_FREE(remove_cmd);
 
     vm->def->nets[vm->def->nnets++] = net;
 
     return 0;
+
+try_remove:
+    reply = NULL;
+
+    if (!remove_cmd)
+        VIR_WARN0(_("Unable to remove network backend\n"));
+    else if (qemudMonitorCommand(vm, remove_cmd, &reply) < 0)
+        VIR_WARN(_("Failed to remove network backend with '%s'\n"), remove_cmd);
+    else
+        VIR_DEBUG("%s: host_net_remove reply: %s\n", vm->def->name, reply);
+
+    VIR_FREE(reply);
+    VIR_FREE(remove_cmd);
+
+    return -1;
 }
 
 static int qemudDomainAttachHostDevice(virConnectPtr conn,
