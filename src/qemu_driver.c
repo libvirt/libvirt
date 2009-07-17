@@ -4239,12 +4239,12 @@ static char *qemudDiskDeviceName(const virConnectPtr conn,
 
 static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
                                            virDomainObjPtr vm,
-                                           virDomainDeviceDefPtr dev)
+                                           virDomainDeviceDefPtr dev,
+                                           unsigned int qemuCmdFlags)
 {
     virDomainDiskDefPtr origdisk = NULL, newdisk;
     char *cmd, *reply, *safe_path;
     char *devname = NULL;
-    unsigned int qemuCmdFlags;
     int i;
 
     origdisk = NULL;
@@ -4264,11 +4264,6 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
                          newdisk->dst);
         return -1;
     }
-
-    if (qemudExtractVersionInfo(vm->def->emulator,
-                                NULL,
-                                &qemuCmdFlags) < 0)
-        return -1;
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE) {
         if (!(devname = qemudDiskDeviceName(conn, newdisk)))
@@ -4551,6 +4546,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainDeviceDefPtr dev = NULL;
+    unsigned int qemuCmdFlags;
     int ret = -1;
 
     qemuDriverLock(driver);
@@ -4574,6 +4570,10 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     if (dev == NULL)
         goto cleanup;
 
+    if (qemudExtractVersionInfo(vm->def->emulator,
+                                NULL,
+                                &qemuCmdFlags) < 0)
+        goto cleanup;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
         switch (dev->data.disk->device) {
@@ -4585,7 +4585,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
             if (qemuDomainSetDeviceOwnership(dom->conn, driver, dev, 0) < 0)
                 goto cleanup;
 
-            ret = qemudDomainChangeEjectableMedia(dom->conn, vm, dev);
+            ret = qemudDomainChangeEjectableMedia(dom->conn, vm, dev, qemuCmdFlags);
             break;
 
         case VIR_DOMAIN_DISK_DEVICE_DISK:
