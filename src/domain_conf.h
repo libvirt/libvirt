@@ -192,8 +192,19 @@ struct _virDomainNetDef {
     char *ifname;
     char *nic_name;
     char *hostnet_name;
+    struct {
+        unsigned domain;
+        unsigned bus;
+        unsigned slot;
+    } pci_addr;
     int vlan;
 };
+
+static inline int
+virNetHasValidPciAddr(virDomainNetDefPtr def)
+{
+    return def->pci_addr.domain || def->pci_addr.domain || def->pci_addr.slot;
+}
 
 enum virDomainChrSrcType {
     VIR_DOMAIN_CHR_TYPE_NULL,

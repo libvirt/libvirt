@@ -962,6 +962,7 @@ virDomainNetDefParseXML(virConnectPtr conn,
     char *internal = NULL;
     char *nic_name = NULL;
     char *hostnet_name = NULL;
+    char *devaddr = NULL;
     char *vlan = NULL;
 
     if (VIR_ALLOC(def) < 0) {
@@ -1032,6 +1033,7 @@ virDomainNetDefParseXML(virConnectPtr conn,
                        xmlStrEqual(cur->name, BAD_CAST "state")) {
                 nic_name = virXMLPropString(cur, "nic");
                 hostnet_name = virXMLPropString(cur, "hostnet");
+                devaddr = virXMLPropString(cur, "devaddr");
                 vlan = virXMLPropString(cur, "vlan");
             }
         }
@@ -1042,6 +1044,17 @@ virDomainNetDefParseXML(virConnectPtr conn,
         virParseMacAddr((const char *)macaddr, def->mac);
     } else {
         virCapabilitiesGenerateMac(caps, def->mac);
+    }
+
+    if (devaddr &&
+        sscanf(devaddr, "%x:%x:%x",
+               &def->pci_addr.domain,
+               &def->pci_addr.bus,
+               &def->pci_addr.slot) < 3) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("Unable to parse devaddr parameter '%s'"),
+                             devaddr);
+        goto error;
     }
 
     def->nic_name = nic_name;
@@ -1176,6 +1189,7 @@ cleanup:
     VIR_FREE(internal);
     VIR_FREE(nic_name);
     VIR_FREE(hostnet_name);
+    VIR_FREE(devaddr);
     VIR_FREE(vlan);
 
     return def;
@@ -3634,6 +3648,11 @@ virDomainNetDefFormat(virConnectPtr conn,
             virBufferEscapeString(buf, " nic='%s'", def->nic_name);
         if (def->hostnet_name)
             virBufferEscapeString(buf, " hostnet='%s'", def->hostnet_name);
+        if (virNetHasValidPciAddr(def))
+            virBufferVSprintf(buf, " devaddr='%.4x:%.2x:%.2x'",
+                              def->pci_addr.domain,
+                              def->pci_addr.bus,
+                              def->pci_addr.slot);
         if (def->vlan > 0)
             virBufferVSprintf(buf, " vlan='%d'", def->vlan);
         virBufferAddLit(buf, "/>\n");

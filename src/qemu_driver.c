@@ -4551,6 +4551,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     virDomainNetDefPtr net = dev->data.net;
     char *cmd, *reply, *remove_cmd;
     int i;
+    unsigned domain, bus, slot;
 
     if (!(qemuCmdFlags & QEMUD_CMD_FLAG_HOST_NET_ADD)) {
         qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT, "%s",
@@ -4622,9 +4623,21 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
         goto try_remove;
     }
 
-    VIR_FREE(reply);
     VIR_FREE(cmd);
+
+    if (qemudParsePciAddReply(vm, reply, &domain, &bus, &slot) < 0) {
+        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("parsing pci_add reply failed: %s"), reply);
+        VIR_FREE(reply);
+        goto try_remove;
+    }
+
+    VIR_FREE(reply);
     VIR_FREE(remove_cmd);
+
+    net->pci_addr.domain = domain;
+    net->pci_addr.bus    = bus;
+    net->pci_addr.slot   = slot;
 
     vm->def->nets[vm->def->nnets++] = net;
 
