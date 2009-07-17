@@ -960,6 +960,8 @@ virDomainNetDefParseXML(virConnectPtr conn,
     char *port = NULL;
     char *model = NULL;
     char *internal = NULL;
+    char *nic_name = NULL;
+    char *hostnet_name = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError(conn);
@@ -1025,6 +1027,10 @@ virDomainNetDefParseXML(virConnectPtr conn,
                 script = virXMLPropString(cur, "path");
             } else if (xmlStrEqual (cur->name, BAD_CAST "model")) {
                 model = virXMLPropString(cur, "type");
+            } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
+                       xmlStrEqual(cur->name, BAD_CAST "state")) {
+                nic_name = virXMLPropString(cur, "nic");
+                hostnet_name = virXMLPropString(cur, "hostnet");
             }
         }
         cur = cur->next;
@@ -1035,6 +1041,10 @@ virDomainNetDefParseXML(virConnectPtr conn,
     } else {
         virCapabilitiesGenerateMac(caps, def->mac);
     }
+
+    def->nic_name = nic_name;
+    def->hostnet_name = hostnet_name;
+    nic_name = hostnet_name = NULL;
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
@@ -1155,6 +1165,8 @@ cleanup:
     VIR_FREE(model);
     VIR_FREE(type);
     VIR_FREE(internal);
+    VIR_FREE(nic_name);
+    VIR_FREE(hostnet_name);
 
     return def;
 
@@ -3534,7 +3546,8 @@ virDomainFSDefFormat(virConnectPtr conn,
 static int
 virDomainNetDefFormat(virConnectPtr conn,
                       virBufferPtr buf,
-                      virDomainNetDefPtr def)
+                      virDomainNetDefPtr def,
+                      int flags)
 {
     const char *type = virDomainNetTypeToString(def->type);
 
@@ -3604,6 +3617,15 @@ virDomainNetDefFormat(virConnectPtr conn,
     if (def->model)
         virBufferEscapeString(buf, "      <model type='%s'/>\n",
                               def->model);
+
+    if (flags & VIR_DOMAIN_XML_INTERNAL_STATUS) {
+        virBufferAddLit(buf, "      <state");
+        if (def->nic_name)
+            virBufferEscapeString(buf, " nic='%s'", def->nic_name);
+        if (def->hostnet_name)
+            virBufferEscapeString(buf, " hostnet='%s'", def->hostnet_name);
+        virBufferAddLit(buf, "/>\n");
+    }
 
     virBufferAddLit(buf, "    </interface>\n");
 
@@ -4086,7 +4108,7 @@ char *virDomainDefFormat(virConnectPtr conn,
 
 
     for (n = 0 ; n < def->nnets ; n++)
-        if (virDomainNetDefFormat(conn, &buf, def->nets[n]) < 0)
+        if (virDomainNetDefFormat(conn, &buf, def->nets[n], flags) < 0)
             goto cleanup;
 
     for (n = 0 ; n < def->nserials ; n++)
