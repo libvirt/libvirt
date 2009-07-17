@@ -111,8 +111,18 @@ struct _virDomainDiskDef {
     int cachemode;
     unsigned int readonly : 1;
     unsigned int shared : 1;
-    int slotnum; /* pci slot number for unattach */
+    struct {
+        unsigned domain;
+        unsigned bus;
+        unsigned slot;
+    } pci_addr;
 };
+
+static inline int
+virDiskHasValidPciAddr(virDomainDiskDefPtr def)
+{
+    return def->pci_addr.domain || def->pci_addr.domain || def->pci_addr.slot;
+}
 
 
 /* Two types of disk backends */

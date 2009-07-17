@@ -2712,7 +2712,6 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                     DEBUG("disk(%d) cachemode:  %d", i, def->disks[i]->cachemode);
                     DEBUG("disk(%d) readonly:   %s", i, def->disks[i]->readonly ? "True" : "False");
                     DEBUG("disk(%d) shared:     %s", i, def->disks[i]->shared ? "True" : "False");
-                    DEBUG("disk(%d) slotnum:    %d", i, def->disks[i]->slotnum);
 
                     if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
                         if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE) {

@@ -643,7 +643,7 @@ int virDomainDiskCompare(virDomainDiskDefPtr a,
 static virDomainDiskDefPtr
 virDomainDiskDefParseXML(virConnectPtr conn,
                          xmlNodePtr node,
-                         int flags ATTRIBUTE_UNUSED) {
+                         int flags) {
     virDomainDiskDefPtr def;
     xmlNodePtr cur;
     char *type = NULL;
@@ -654,6 +654,7 @@ virDomainDiskDefParseXML(virConnectPtr conn,
     char *target = NULL;
     char *bus = NULL;
     char *cachetag = NULL;
+    char *devaddr = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError(conn);
@@ -708,6 +709,9 @@ virDomainDiskDefParseXML(virConnectPtr conn,
                 def->readonly = 1;
             } else if (xmlStrEqual(cur->name, BAD_CAST "shareable")) {
                 def->shared = 1;
+            } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
+                       xmlStrEqual(cur->name, BAD_CAST "state")) {
+                devaddr = virXMLPropString(cur, "devaddr");
             }
         }
         cur = cur->next;
@@ -807,6 +811,17 @@ virDomainDiskDefParseXML(virConnectPtr conn,
         goto error;
     }
 
+    if (devaddr &&
+        sscanf(devaddr, "%x:%x:%x",
+               &def->pci_addr.domain,
+               &def->pci_addr.bus,
+               &def->pci_addr.slot) < 3) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("Unable to parse devaddr parameter '%s'"),
+                             devaddr);
+        goto error;
+    }
+
     def->src = source;
     source = NULL;
     def->dst = target;
@@ -825,6 +840,7 @@ cleanup:
     VIR_FREE(driverType);
     VIR_FREE(driverName);
     VIR_FREE(cachetag);
+    VIR_FREE(devaddr);
 
     return def;
 
@@ -3388,7 +3404,8 @@ virDomainLifecycleDefFormat(virConnectPtr conn,
 static int
 virDomainDiskDefFormat(virConnectPtr conn,
                        virBufferPtr buf,
-                       virDomainDiskDefPtr def)
+                       virDomainDiskDefPtr def,
+                       int flags)
 {
     const char *type = virDomainDiskTypeToString(def->type);
     const char *device = virDomainDiskDeviceTypeToString(def->device);
@@ -3445,6 +3462,16 @@ virDomainDiskDefFormat(virConnectPtr conn,
         virBufferAddLit(buf, "      <readonly/>\n");
     if (def->shared)
         virBufferAddLit(buf, "      <shareable/>\n");
+
+    if (flags & VIR_DOMAIN_XML_INTERNAL_STATUS) {
+        virBufferAddLit(buf, "      <state");
+        if (virDiskHasValidPciAddr(def))
+            virBufferVSprintf(buf, " devaddr='%.4x:%.2x:%.2x'",
+                              def->pci_addr.domain,
+                              def->pci_addr.bus,
+                              def->pci_addr.slot);
+        virBufferAddLit(buf, "/>\n");
+    }
 
     virBufferAddLit(buf, "    </disk>\n");
 
@@ -4048,7 +4075,7 @@ char *virDomainDefFormat(virConnectPtr conn,
                               def->emulator);
 
     for (n = 0 ; n < def->ndisks ; n++)
-        if (virDomainDiskDefFormat(conn, &buf, def->disks[n]) < 0)
+        if (virDomainDiskDefFormat(conn, &buf, def->disks[n], flags) < 0)
             goto cleanup;
 
     for (n = 0 ; n < def->nfss ; n++)
