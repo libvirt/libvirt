@@ -567,7 +567,7 @@ virStorageBackendGetBuildVolFromFunction(virConnectPtr conn,
         (inputvol->type == VIR_STORAGE_VOL_FILE &&
          inputvol->target.format != VIR_STORAGE_VOL_FILE_RAW)) {
 
-        if ((tool_type = virStorageBackendFindFSImageTool(NULL)) != -1) {
+        if ((tool_type = virStorageBackendFindFSImageTool(NULL)) < 0) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                   "%s", _("creation of non-raw file images is "
                                           "not supported without qemu-img."));
