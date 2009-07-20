@@ -252,6 +252,9 @@
             &lt;mode&gt;0744&lt;/mode&gt;
             &lt;label&gt;virt_image_t&lt;/label&gt;
           &lt;/permissions&gt;
+          &lt;encryption type='...'&gt;
+            ...
+          &lt;/encryption&gt;
         &lt;/target&gt;
       &lt;/pool&gt;</pre>
         <dl><dt><code>path</code></dt><dd>Provides the location at which the pool will be mapped into
@@ -274,6 +277,9 @@
 	element contains the numeric group ID. The <code>label</code> element
 	contains the MAC (eg SELinux) label string.
 	<span class="since">Since 0.4.1</span>
+      </dd><dt><code>encryption</code></dt><dd>If present, specifies how the volume is encrypted.  See
+        the <a href="formatstorageencryption.html">Storage Encryption</a> page
+        for more information.
       </dd></dl>
         <h3>
           <a name="StoragePoolExtents" id="StoragePoolExtents">Device extents</a>

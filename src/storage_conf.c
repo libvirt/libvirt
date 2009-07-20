@@ -260,8 +260,10 @@ virStorageVolDefFree(virStorageVolDefPtr def) {
 
     VIR_FREE(def->target.path);
     VIR_FREE(def->target.perms.label);
+    virStorageEncryptionFree(def->target.encryption);
     VIR_FREE(def->backingStore.path);
     VIR_FREE(def->backingStore.perms.label);
+    virStorageEncryptionFree(def->backingStore.encryption);
     VIR_FREE(def);
 }
 
@@ -955,6 +957,7 @@ virStorageVolDefParseXML(virConnectPtr conn,
     char *allocation = NULL;
     char *capacity = NULL;
     char *unit = NULL;
+    xmlNodePtr node;
 
     options = virStorageVolOptionsForPoolType(pool->type);
     if (options == NULL)
@@ -1018,6 +1021,14 @@ virStorageVolDefParseXML(virConnectPtr conn,
     if (virStorageDefParsePerms(conn, ctxt, &ret->target.perms,
                                 "./target/permissions", 0600) < 0)
         goto cleanup;
+
+    node = virXPathNode(conn, "./target/encryption", ctxt);
+    if (node != NULL) {
+        ret->target.encryption = virStorageEncryptionParseNode(conn, ctxt->doc,
+                                                               node);
+        if (ret->target.encryption == NULL)
+            goto cleanup;
+    }
 
 
 
@@ -1188,6 +1199,10 @@ virStorageVolTargetDefFormat(virConnectPtr conn,
                           def->perms.label);
 
     virBufferAddLit(buf,"    </permissions>\n");
+
+    if (def->encryption != NULL &&
+        virStorageEncryptionFormat(conn, buf, def->encryption) < 0)
+        return -1;
 
     virBufferVSprintf(buf, "  </%s>\n", type);
 

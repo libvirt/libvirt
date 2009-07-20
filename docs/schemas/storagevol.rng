@@ -5,6 +5,8 @@
     <ref name='vol'/>
   </start>
 
+  <include href='storageencryption.rng'/>
+
 
   <define name='vol'>
     <element name='volume'>
@@ -73,6 +75,9 @@
       </optional>
       <ref name='format'/>
       <ref name='permissions'/>
+      <optional>
+        <ref name='encryption'/>
+      </optional>
     </element>
   </define>
 
