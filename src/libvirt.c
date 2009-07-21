@@ -1026,9 +1026,6 @@ do_open (const char *name,
         }
     }
 
-#if 0
-    /* TODO: reactivate once we have an interface driver */
-
     for (i = 0; i < virInterfaceDriverTabCount; i++) {
         res = virInterfaceDriverTab[i]->open (ret, auth, flags);
         DEBUG("interface driver %d %s returned %s",
@@ -1047,7 +1044,6 @@ do_open (const char *name,
             break;
         }
     }
-#endif
 
     /* Secondary driver for storage. Optional */
     for (i = 0; i < virStorageDriverTabCount; i++) {
