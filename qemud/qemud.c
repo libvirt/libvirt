@@ -83,6 +83,9 @@
 #ifdef WITH_NETWORK
 #include "network_driver.h"
 #endif
+#ifdef WITH_NETCF
+#include "interface_driver.h"
+#endif
 #ifdef WITH_STORAGE_DIR
 #include "storage_driver.h"
 #endif
@@ -823,6 +826,9 @@ static struct qemud_server *qemudInitialize(int sigread) {
 #else
 #ifdef WITH_NETWORK
     networkRegister();
+#endif
+#ifdef WITH_NETCF
+    interfaceRegister();
 #endif
 #ifdef WITH_STORAGE_DIR
     storageRegister();

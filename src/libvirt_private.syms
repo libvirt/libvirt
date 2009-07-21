@@ -161,6 +161,8 @@ virInterfaceDefParseFile;
 virInterfaceDefParseString;
 virInterfaceDefFree;
 
+# interface_driver.h
+interfaceRegister;
 
 # iptables.h
 iptablesAddForwardAllowCross;
@@ -199,6 +201,7 @@ virDomainMigrateFinish;
 virDomainMigratePrepare2;
 virDomainMigrateFinish2;
 virRegisterDriver;
+virRegisterInterfaceDriver;
 virRegisterNetworkDriver;
 virRegisterStateDriver;
 virRegisterStorageDriver;

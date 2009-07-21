@@ -135,6 +135,10 @@ if WITH_NETWORK
     libvirtd_LDADD += ../src/libvirt_driver_network.la
 endif
 
+if WITH_NETCF
+    libvirtd_LDADD += ../src/libvirt_driver_interface.la
+endif
+
 if WITH_NODE_DEVICES
     libvirtd_LDADD += ../src/libvirt_driver_nodedev.la
 endif

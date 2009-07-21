@@ -159,6 +159,9 @@ ONE_DRIVER_SOURCES =					\
 NETWORK_DRIVER_SOURCES =					\
 		network_driver.h network_driver.c
 
+INTERFACE_DRIVER_SOURCES =					\
+		interface_driver.h interface_driver.c
+
 # Storage backend specific impls
 STORAGE_DRIVER_SOURCES =					\
 		storage_driver.h storage_driver.c		\
@@ -390,8 +393,18 @@ libvirt_driver_network_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
 endif
 
 if WITH_NETCF
-libvirt_driver_interface_la_CFLAGS = $(NETCF_CFLAGS)
 libvirt_driver_interface_la_LDFLAGS = $(NETCF_LIBS)
+libvirt_driver_interface_la_CFLAGS = $(NETCF_CFLAGS)
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_interface.la
+else
+noinst_LTLIBRARIES += libvirt_driver_interface.la
+libvirt_la_LIBADD += libvirt_driver_interface.la
+endif
+if WITH_DRIVER_MODULES
+libvirt_driver_interface_la_LDFLAGS += -module -avoid-version
+endif
+libvirt_driver_interface_la_SOURCES = $(INTERFACE_DRIVER_SOURCES)
 endif
 
 # Needed to keep automake quiet about conditionals
@@ -476,6 +489,7 @@ EXTRA_DIST +=							\
 		$(OPENVZ_DRIVER_SOURCES)			\
 		$(VBOX_DRIVER_SOURCES)				\
 		$(NETWORK_DRIVER_SOURCES)			\
+		$(INTERFACE_DRIVER_SOURCES)			\
 		$(STORAGE_DRIVER_SOURCES)			\
 		$(STORAGE_DRIVER_FS_SOURCES)			\
 		$(STORAGE_DRIVER_LVM_SOURCES)			\
