@@ -1269,6 +1269,3 @@ void virInterfaceRemove(virInterfaceObjListPtr interfaces,
         virInterfaceObjUnlock(interfaces->objs[i]);
     }
 }
-
-
-
