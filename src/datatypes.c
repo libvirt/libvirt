@@ -516,9 +516,10 @@ virUnrefNetwork(virNetworkPtr network) {
  * @mac: pointer to the mac
  *
  * Lookup if the interface is already registered for that connection,
- * if yes return a new pointer to it, if no allocate a new structure,
- * and register it in the table. In any case a corresponding call to
- * virUnrefInterface() is needed to not leak data.
+ * if yes return a new pointer to it (possibly updating the MAC
+ * address), if no allocate a new structure, and register it in the
+ * table. In any case a corresponding call to virUnrefInterface() is
+ * needed to not leak data.
  *
  * Returns a pointer to the interface, or NULL in case of failure
  */
@@ -532,11 +533,9 @@ virGetInterface(virConnectPtr conn, const char *name, const char *mac) {
     }
     virMutexLock(&conn->lock);
 
-    /* TODO search by MAC first as they are better differentiators */
-
     ret = (virInterfacePtr) virHashLookup(conn->interfaces, name);
-    /* TODO check the MAC */
-    if (ret == NULL) {
+
+    if ((ret == NULL) || STRCASENEQ(ret->mac, mac)) {
         if (VIR_ALLOC(ret) < 0) {
             virReportOOMError(conn);
             goto error;
@@ -593,7 +592,6 @@ virReleaseInterface(virInterfacePtr iface) {
     virConnectPtr conn = iface->conn;
     DEBUG("release interface %p %s", iface, iface->name);
 
-    /* TODO search by MAC first as they are better differenciators */
     if (virHashRemoveEntry(conn->interfaces, iface->name, NULL) < 0)
         virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
                         _("interface missing from connection hash table"));
