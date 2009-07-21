@@ -1102,6 +1102,13 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
     int tool_type;
 
     if (inputvol) {
+        if (vol->target.encryption != NULL) {
+            virStorageReportError(conn, VIR_ERR_NO_SUPPORT,
+                                  "%s", _("storage pool does not support "
+                                          "building encrypted volumes from "
+                                          "other volumes"));
+            return -1;
+        }
         create_func = virStorageBackendGetBuildVolFromFunction(conn, vol,
                                                                inputvol);
         if (!create_func)

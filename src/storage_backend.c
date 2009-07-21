@@ -246,6 +246,13 @@ virStorageBackendCreateRaw(virConnectPtr conn,
     unsigned long long remain;
     char *buf = NULL;
 
+    if (vol->target.encryption != NULL) {
+        virStorageReportError(conn, VIR_ERR_NO_SUPPORT,
+                              "%s", _("storage pool does not support encrypted "
+                                      "volumes"));
+        return -1;
+    }
+
     if ((fd = open(vol->target.path, O_RDWR | O_CREAT | O_EXCL,
                    vol->target.perms.mode)) < 0) {
         virReportSystemError(conn, errno,
@@ -346,15 +353,17 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
                             NULL;
 
     const char **imgargv;
+    /* The extra NULL field is for indicating encryption (-e). */
     const char *imgargvnormal[] = {
         NULL, "create",
         "-f", type,
         vol->target.path,
         size,
         NULL,
+        NULL
     };
     /* Extra NULL fields are for including "backingType" when using
-     * kvm-img. It's -F backingType
+     * kvm-img (-F backingType), and for indicating encryption (-e).
      */
     const char *imgargvbacking[] = {
         NULL, "create",
@@ -362,6 +371,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
         "-b", vol->backingStore.path,
         vol->target.path,
         size,
+        NULL,
         NULL,
         NULL,
         NULL
@@ -417,6 +427,28 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
         }
     }
 
+    if (vol->target.encryption != NULL) {
+        if (vol->target.format != VIR_STORAGE_VOL_FILE_QCOW &&
+            vol->target.format != VIR_STORAGE_VOL_FILE_QCOW2) {
+            virStorageReportError(conn, VIR_ERR_NO_SUPPORT,
+                                  _("qcow volume encryption unsupported with "
+                                    "volume format %s"), type);
+            return -1;
+        }
+        if (vol->target.encryption->format !=
+            VIR_STORAGE_ENCRYPTION_FORMAT_QCOW) {
+            virStorageReportError(conn, VIR_ERR_NO_SUPPORT,
+                                  _("unsupported volume encryption format %d"),
+                                  vol->target.encryption->format);
+            return -1;
+        }
+        if (vol->target.encryption->nsecrets > 1) {
+            virStorageReportError(conn, VIR_ERR_INVALID_STORAGE_VOL,
+                                  _("too many secrets for qcow encryption"));
+            return -1;
+        }
+    }
+
     if ((create_tool = virFindFileInPath("kvm-img")) != NULL)
         use_kvmimg = 1;
     else if ((create_tool = virFindFileInPath("qemu-img")) != NULL)
@@ -437,11 +469,16 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
             imgargvbacking[7] = backingType;
             imgargvbacking[8] = vol->target.path;
             imgargvbacking[9] = size;
-        }
+            if (vol->target.encryption != NULL)
+                imgargvbacking[10] = "-e";
+        } else if (vol->target.encryption != NULL)
+            imgargvbacking[8] = "-e";
         imgargv = imgargvbacking;
     } else {
         imgargvnormal[0] = create_tool;
         imgargv = imgargvnormal;
+        if (vol->target.encryption != NULL)
+            imgargv[6] = "-e";
     }
 
 
@@ -486,6 +523,12 @@ virStorageBackendCreateQcowCreate(virConnectPtr conn,
     if (vol->backingStore.path != NULL) {
         virStorageReportError(conn, VIR_ERR_NO_SUPPORT, "%s",
                               _("copy-on-write image not supported with "
+                                      "qcow-create"));
+        return -1;
+    }
+    if (vol->target.encryption != NULL) {
+        virStorageReportError(conn, VIR_ERR_NO_SUPPORT,
+                              "%s", _("encrypted volumes not supported with "
                                       "qcow-create"));
         return -1;
     }

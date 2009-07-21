@@ -557,6 +557,13 @@ virStorageBackendDiskCreateVol(virConnectPtr conn,
         NULL
     };
 
+    if (vol->target.encryption != NULL) {
+        virStorageReportError(conn, VIR_ERR_NO_SUPPORT,
+                              "%s", _("storage pool does not support encrypted "
+                                      "volumes"));
+        return -1;
+    }
+
     if (virStorageBackendDiskPartFormat(conn, pool, vol, partFormat) != 0) {
         return -1;
     }
