@@ -2473,10 +2473,11 @@ qemudMonitorCommandExtra(const virDomainObjPtr vm,
                  * occurence, and inbetween the command and the newline starting
                  * the response
                  */
-                if ((commptr = strstr(buf, cmd)))
+                if ((commptr = strstr(buf, cmd))) {
                     memmove(buf, commptr, strlen(commptr)+1);
-                if ((nlptr = strchr(buf, '\n')))
-                    memmove(buf+strlen(cmd), nlptr, strlen(nlptr)+1);
+                    if ((nlptr = strchr(buf, '\n')))
+                        memmove(buf+strlen(cmd), nlptr, strlen(nlptr)+1);
+                }
 
                 break;
             }
