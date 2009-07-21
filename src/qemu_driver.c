@@ -88,6 +88,12 @@ static void qemuDriverUnlock(struct qemud_driver *driver)
     virMutexUnlock(&driver->lock);
 }
 
+/* Return -1 for error, 0 for success */
+typedef int qemudMonitorExtraPromptHandler(const virDomainObjPtr vm,
+                                           const char *buf,
+                                           const char *prompt,
+                                           void *data);
+
 static void qemuDomainEventFlush(int timer, void *opaque);
 static void qemuDomainEventQueue(struct qemud_driver *driver,
                                  virDomainEventPtr event);
@@ -116,6 +122,13 @@ static int qemudMonitorCommandWithFd(const virDomainObjPtr vm,
                                      const char *cmd,
                                      int scm_fd,
                                      char **reply);
+static int qemudMonitorCommandWithHandler(const virDomainObjPtr vm,
+                                          const char *cmd,
+                                          const char *extraPrompt,
+                                          qemudMonitorExtraPromptHandler extraHandler,
+                                          void *handlerData,
+                                          int scm_fd,
+                                          char **reply);
 static int qemudMonitorCommandExtra(const virDomainObjPtr vm,
                                     const char *cmd,
                                     const char *extra,
@@ -2406,12 +2419,13 @@ out:
 }
 
 static int
-qemudMonitorCommandExtra(const virDomainObjPtr vm,
-                         const char *cmd,
-                         const char *extra,
-                         const char *extraPrompt,
-                         int scm_fd,
-                         char **reply) {
+qemudMonitorCommandWithHandler(const virDomainObjPtr vm,
+                               const char *cmd,
+                               const char *extraPrompt,
+                               qemudMonitorExtraPromptHandler extraHandler,
+                               void *handlerData,
+                               int scm_fd,
+                               char **reply) {
     int size = 0;
     char *buf = NULL;
 
@@ -2455,12 +2469,20 @@ qemudMonitorCommandExtra(const virDomainObjPtr vm,
 
         /* Look for QEMU prompt to indicate completion */
         if (buf) {
-            if (extra) {
-                if (strstr(buf, extraPrompt) != NULL) {
-                    if (qemudMonitorSend(vm, extra, -1) < 0)
-                        return -1;
-                    extra = NULL;
-                }
+            char *foundPrompt;
+
+            if (extraPrompt &&
+                (foundPrompt = strstr(buf, extraPrompt)) != NULL) {
+                char *promptEnd;
+
+                if (extraHandler(vm, buf, foundPrompt, handlerData) < 0)
+                    return -1;
+                /* Discard output so far, necessary to detect whether
+                   extraPrompt appears again.  We don't need the output between
+                   original command and this prompt anyway. */
+                promptEnd = foundPrompt + strlen(extraPrompt);
+                memmove(buf, promptEnd, strlen(promptEnd)+1);
+                size -= promptEnd - buf;
             } else if ((tmp = strstr(buf, QEMU_CMD_PROMPT)) != NULL) {
                 char *commptr = NULL, *nlptr = NULL;
                 /* Preserve the newline */
@@ -2496,6 +2518,44 @@ qemudMonitorCommandExtra(const virDomainObjPtr vm,
  error:
     VIR_FREE(buf);
     return -1;
+}
+
+struct extraHandlerData
+{
+    const char *reply;
+    bool first;
+};
+
+static int
+qemudMonitorCommandSimpleExtraHandler(const virDomainObjPtr vm,
+                                      const char *buf ATTRIBUTE_UNUSED,
+                                      const char *prompt ATTRIBUTE_UNUSED,
+                                      void *data_)
+{
+    struct extraHandlerData *data = data_;
+
+    if (!data->first)
+        return 0;
+    if (qemudMonitorSend(vm, data->reply, -1) < 0)
+        return -1;
+    data->first = false;
+    return 0;
+}
+
+static int
+qemudMonitorCommandExtra(const virDomainObjPtr vm,
+                         const char *cmd,
+                         const char *extra,
+                         const char *extraPrompt,
+                         int scm_fd,
+                         char **reply) {
+    struct extraHandlerData data;
+
+    data.reply = extra;
+    data.first = true;
+    return qemudMonitorCommandWithHandler(vm, cmd, extraPrompt,
+                                          qemudMonitorCommandSimpleExtraHandler,
+                                          &data, scm_fd, reply);
 }
 
 static int
