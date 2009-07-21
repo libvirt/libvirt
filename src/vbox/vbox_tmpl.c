@@ -216,6 +216,7 @@ no_memory:
 }
 
 static int vboxInitialize(virConnectPtr conn, vboxGlobalData *data) {
+
     /* Get the API table for out version, g_pVBoxFuncs is for the oldest
        version of the API that we support so we cannot use that. */
     data->pFuncs = g_pfnGetFunctions(VBOX_XPCOMC_VERSION);
@@ -286,7 +287,6 @@ static void vboxUninitialize(vboxGlobalData *data) {
 
     if (data->pFuncs)
         data->pFuncs->pfnComUninitialize();
-    VBoxCGlueTerm();
 
     virDomainObjListFree(&data->domains);
     virCapabilitiesFree(data->caps);
