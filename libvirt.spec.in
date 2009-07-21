@@ -76,23 +76,15 @@ Source: libvirt-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 URL: http://libvirt.org/
 BuildRequires: python python-devel
-Requires: libxml2
-Requires: readline
-Requires: ncurses
+
+# The client side, i.e. shared libs and virsh are in a subpackage
+Requires: libvirt-client = %{version}-%{release}
+
 Requires: dnsmasq
 Requires: bridge-utils
 Requires: iptables
 # needed for device enumeration
 Requires: hal
-# So remote clients can access libvirt over SSH tunnel
-# (client invokes 'nc' against the UNIX socket on the server)
-Requires: nc
-%if %{with_sasl}
-Requires: cyrus-sasl
-# Not technically required, but makes 'out-of-box' config
-# work correctly & doesn't have onerous dependencies
-Requires: cyrus-sasl-md5
-%endif
 %if %{with_polkit}
 Requires: PolicyKit >= 0.6
 %endif
@@ -186,24 +178,43 @@ BuildRequires: numactl-devel
 %if %{with_capng}
 BuildRequires: capng-devel >= 0.5.0
 %endif
-Obsoletes: libvir
 
 # Fedora build root suckage
 BuildRequires: gawk
 
 %description
 Libvirt is a C toolkit to interact with the virtualization capabilities
-of recent versions of Linux (and other OSes).
+of recent versions of Linux (and other OSes). The main package includes
+the libvirtd server exporting the virtualization support.
+
+%package client
+Summary: client side library and utilities of the libvirt library
+Group: Development/Libraries
+Requires: libxml2
+Requires: readline
+Requires: ncurses
+# So remote clients can access libvirt over SSH tunnel
+# (client invokes 'nc' against the UNIX socket on the server)
+Requires: nc
+%if %{with_sasl}
+Requires: cyrus-sasl
+# Not technically required, but makes 'out-of-box' config
+# work correctly & doesn't have onerous dependencies
+Requires: cyrus-sasl-md5
+%endif
+
+%description client
+Shared libraries and client binaries needed to access to the
+virtualization capabilities of recent versions of Linux (and other OSes).
 
 %package devel
 Summary: Libraries, includes, etc. to compile with the libvirt library
 Group: Development/Libraries
-Requires: libvirt = %{version}
+Requires: libvirt = %{version}-%{release}
 Requires: pkgconfig
 %if %{with_xen}
 Requires: xen-devel
 %endif
-Obsoletes: libvir-devel
 
 %description devel
 Includes and documentations for the C library providing an API to use
@@ -213,8 +224,7 @@ the virtualization capabilities of recent versions of Linux (and other OSes).
 %package python
 Summary: Python bindings for the libvirt library
 Group: Development/Libraries
-Requires: libvirt = %{version}
-Obsoletes: libvir-python
+Requires: libvirt = %{version}-%{release}
 
 %description python
 The libvirt-python package contains a module that permits applications
@@ -322,6 +332,7 @@ of recent versions of Linux (and other OSes).
            --with-init-script=redhat \
            --with-remote-pid-file=%{_localstatedir}/run/libvirtd.pid
 make %{?_smp_mflags}
+gzip -9 ChangeLog
 
 %install
 rm -fr %{buildroot}
@@ -399,15 +410,10 @@ fi
 %postun
 /sbin/ldconfig
 
-%files -f %{name}.lang
+%files
 %defattr(-, root, root)
 
-%doc AUTHORS ChangeLog NEWS README COPYING.LIB TODO
-%{_mandir}/man1/virsh.1*
-%{_mandir}/man1/virt-xml-validate.1*
-%{_bindir}/virsh
-%{_bindir}/virt-xml-validate
-%{_libdir}/lib*.so.*
+%doc AUTHORS ChangeLog.gz NEWS README COPYING.LIB TODO
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
 
 %if %{with_qemu}
@@ -427,25 +433,11 @@ fi
 %config(noreplace) %{_sysconfdir}/libvirt/qemu.conf
 %endif
 
-%if %{with_sasl}
-%config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
-%endif
-
 %if %{with_qemu}
 %dir %{_datadir}/libvirt/
 %dir %{_datadir}/libvirt/networks/
 %{_datadir}/libvirt/networks/default.xml
 %endif
-
-%dir %{_datadir}/libvirt/
-%dir %{_datadir}/libvirt/schemas/
-
-%{_datadir}/libvirt/schemas/domain.rng
-%{_datadir}/libvirt/schemas/network.rng
-%{_datadir}/libvirt/schemas/storagepool.rng
-%{_datadir}/libvirt/schemas/storagevol.rng
-%{_datadir}/libvirt/schemas/nodedev.rng
-%{_datadir}/libvirt/schemas/capability.rng
 
 %dir %{_localstatedir}/run/libvirt/
 
@@ -506,6 +498,30 @@ fi
 %endif
 
 %doc docs/*.xml
+
+%files client -f %{name}.lang
+%defattr(-, root, root)
+%doc AUTHORS ChangeLog.gz NEWS README COPYING.LIB TODO
+
+%{_mandir}/man1/virsh.1*
+%{_mandir}/man1/virt-xml-validate.1*
+%{_bindir}/virsh
+%{_bindir}/virt-xml-validate
+%{_libdir}/lib*.so.*
+
+%dir %{_datadir}/libvirt/
+%dir %{_datadir}/libvirt/schemas/
+
+%{_datadir}/libvirt/schemas/domain.rng
+%{_datadir}/libvirt/schemas/network.rng
+%{_datadir}/libvirt/schemas/storagepool.rng
+%{_datadir}/libvirt/schemas/storagevol.rng
+%{_datadir}/libvirt/schemas/nodedev.rng
+%{_datadir}/libvirt/schemas/capability.rng
+
+%if %{with_sasl}
+%config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
+%endif
 
 %files devel
 %defattr(-, root, root)
