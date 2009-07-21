@@ -1056,6 +1056,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("invalid interface pointer in %s");
             break;
+        case VIR_ERR_MULTIPLE_INTERFACES:
+            if (info == NULL)
+                errmsg = _("multiple matching interfaces found");
+            else
+                errmsg = _("multiple matching interfaces found: %s");
+            break;
     }
     return (errmsg);
 }
