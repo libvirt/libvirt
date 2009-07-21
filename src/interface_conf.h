@@ -160,6 +160,7 @@ typedef virInterfaceObj *virInterfaceObjPtr;
 struct _virInterfaceObj {
     virMutex lock;
 
+    int active:1;           /* 1 if interface is active (up) */
     virInterfaceDefPtr def; /* The interface definition */
 };
 
@@ -170,9 +171,17 @@ struct _virInterfaceObjList {
     virInterfaceObjPtr *objs;
 };
 
-virInterfaceObjPtr virInterfaceFindByMACString(const virInterfaceObjListPtr interfaces,
-                                               const char *mac);
-virInterfaceObjPtr virInterfaceFindByName(const virInterfaceObjListPtr interfaces,
+static inline int
+virInterfaceIsActive(const virInterfaceObjPtr iface)
+{
+    return iface->active;
+}
+
+int virInterfaceFindByMACString(const virInterfaceObjListPtr interfaces,
+                                const char *mac,
+                                virInterfaceObjPtr *matches, int maxmatches);
+virInterfaceObjPtr virInterfaceFindByName(const virInterfaceObjListPtr
+                                          interfaces,
                                           const char *name);
 
 

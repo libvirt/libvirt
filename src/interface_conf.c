@@ -1128,6 +1128,8 @@ cleanup:
     return NULL;
 }
 
+/* virInterfaceObj manipulation */
+
 void virInterfaceObjLock(virInterfaceObjPtr obj)
 {
     virMutexLock(&obj->lock);
@@ -1137,3 +1139,136 @@ void virInterfaceObjUnlock(virInterfaceObjPtr obj)
 {
     virMutexUnlock(&obj->lock);
 }
+
+void virInterfaceObjFree(virInterfaceObjPtr iface)
+{
+    if (!iface)
+        return;
+
+    virInterfaceDefFree(iface->def);
+    virMutexDestroy(&iface->lock);
+    VIR_FREE(iface);
+}
+
+/* virInterfaceObjList manipulation */
+
+int virInterfaceFindByMACString(const virInterfaceObjListPtr interfaces,
+                                const char *mac,
+                                virInterfaceObjPtr *matches, int maxmatches)
+{
+    unsigned int i, matchct = 0;
+
+    for (i = 0 ; i < interfaces->count ; i++) {
+
+        virInterfaceObjLock(interfaces->objs[i]);
+        if (STRCASEEQ(interfaces->objs[i]->def->mac, mac)) {
+            matchct++;
+            if (matchct <= maxmatches) {
+                matches[matchct - 1] = interfaces->objs[i];
+                /* keep the lock if we're returning object to caller */
+                /* it is the caller's responsibility to unlock *all* matches */
+                continue;
+            }
+        }
+        virInterfaceObjUnlock(interfaces->objs[i]);
+
+    }
+    return matchct;
+}
+
+virInterfaceObjPtr virInterfaceFindByName(const virInterfaceObjListPtr
+                                          interfaces,
+                                          const char *name)
+{
+    unsigned int i;
+
+    for (i = 0 ; i < interfaces->count ; i++) {
+        virInterfaceObjLock(interfaces->objs[i]);
+        if (STREQ(interfaces->objs[i]->def->name, name))
+            return interfaces->objs[i];
+        virInterfaceObjUnlock(interfaces->objs[i]);
+    }
+
+    return NULL;
+}
+
+void virInterfaceObjListFree(virInterfaceObjListPtr interfaces)
+{
+    unsigned int i;
+
+    for (i = 0 ; i < interfaces->count ; i++)
+        virInterfaceObjFree(interfaces->objs[i]);
+
+    VIR_FREE(interfaces->objs);
+    interfaces->count = 0;
+}
+
+virInterfaceObjPtr virInterfaceAssignDef(virConnectPtr conn,
+                                         virInterfaceObjListPtr interfaces,
+                                         const virInterfaceDefPtr def)
+{
+    virInterfaceObjPtr interface;
+
+    if ((interface = virInterfaceFindByName(interfaces, def->name))) {
+        if (interface->def)
+            virInterfaceDefFree(interface->def);
+        interface->def = def;
+
+        return interface;
+    }
+
+    if (VIR_ALLOC(interface) < 0) {
+        virReportOOMError(conn);
+        return NULL;
+    }
+    if (virMutexInit(&interface->lock) < 0) {
+        virInterfaceReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("cannot initialize mutex"));
+        VIR_FREE(interface);
+        return NULL;
+    }
+    virInterfaceObjLock(interface);
+    interface->def = def;
+
+    if (VIR_REALLOC_N(interfaces->objs, interfaces->count + 1) < 0) {
+        virReportOOMError(conn);
+        VIR_FREE(interface);
+        return NULL;
+    }
+
+    interfaces->objs[interfaces->count] = interface;
+    interfaces->count++;
+
+    return interface;
+
+}
+
+void virInterfaceRemove(virInterfaceObjListPtr interfaces,
+                        const virInterfaceObjPtr interface)
+{
+    unsigned int i;
+
+    virInterfaceObjUnlock(interface);
+    for (i = 0 ; i < interfaces->count ; i++) {
+        virInterfaceObjLock(interfaces->objs[i]);
+        if (interfaces->objs[i] == interface) {
+            virInterfaceObjUnlock(interfaces->objs[i]);
+            virInterfaceObjFree(interfaces->objs[i]);
+
+            if (i < (interfaces->count - 1))
+                memmove(interfaces->objs + i, interfaces->objs + i + 1,
+                        sizeof(*(interfaces->objs)) * (interfaces->count - (i + 1)));
+
+            if (VIR_REALLOC_N(interfaces->objs, interfaces->count - 1) < 0) {
+                ; /* Failure to reduce memory allocation isn't fatal */
+            }
+            interfaces->count--;
+
+            break;
+        }
+        virInterfaceObjUnlock(interfaces->objs[i]);
+    }
+}
+
+
+
