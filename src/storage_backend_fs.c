@@ -686,7 +686,7 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
     }
 
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
-        if (pool->def->source.format = VIR_STORAGE_POOL_NETFS_GLUSTERFS) {
+        if (pool->def->source.format == VIR_STORAGE_POOL_NETFS_GLUSTERFS) {
             if (virAsprintf(&options, "direct-io-mode=1") == -1) {
                 virReportOOMError(conn);
                 return -1;
