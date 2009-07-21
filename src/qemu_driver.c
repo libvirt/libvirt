@@ -28,6 +28,7 @@
 #include <dirent.h>
 #include <limits.h>
 #include <string.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <strings.h>
 #include <stdarg.h>
@@ -133,6 +134,8 @@ static int qemudMonitorCommandExtra(const virDomainObjPtr vm,
                                     const char *extraPrompt,
                                     int scm_fd,
                                     char **reply);
+static int qemudMonitorSendCont(virConnectPtr conn,
+                                const virDomainObjPtr vm);
 static int qemudDomainSetMemoryBalloon(virConnectPtr conn,
                                        virDomainObjPtr vm,
                                        unsigned long newmem);
@@ -248,7 +251,10 @@ qemudAutostartConfigs(struct qemud_driver *driver) {
         virDomainObjLock(vm);
         if (vm->autostart &&
             !virDomainIsActive(vm)) {
-            int ret = qemudStartVMDaemon(conn, driver, vm, NULL, -1);
+            int ret;
+
+            virResetLastError();
+            ret = qemudStartVMDaemon(conn, driver, vm, NULL, -1);
             if (ret < 0) {
                 virErrorPtr err = virGetLastError();
                 VIR_ERROR(_("Failed to autostart VM '%s': %s\n"),
@@ -1310,7 +1316,6 @@ static int
 qemudInitCpus(virConnectPtr conn,
               virDomainObjPtr vm,
               const char *migrateFrom) {
-    char *info = NULL;
 #if HAVE_SCHED_GETAFFINITY
     cpu_set_t mask;
     int i, maxcpu = QEMUD_CPUMASK_LEN;
@@ -1346,12 +1351,12 @@ qemudInitCpus(virConnectPtr conn,
 
     if (migrateFrom == NULL) {
         /* Allow the CPUS to start executing */
-        if (qemudMonitorCommand(vm, "cont", &info) < 0) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("resume operation failed"));
+        if (qemudMonitorSendCont(conn, vm) < 0) {
+            if (virGetLastError() == NULL)
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("resume operation failed"));
             return -1;
         }
-        VIR_FREE(info);
     }
 
     return 0;
@@ -2657,6 +2662,18 @@ qemudMonitorCommand(const virDomainObjPtr vm,
     return qemudMonitorCommandWithFd(vm, cmd, -1, reply);
 }
 
+static int
+qemudMonitorSendCont(virConnectPtr conn ATTRIBUTE_UNUSED,
+                     const virDomainObjPtr vm) {
+    char *reply;
+
+    if (qemudMonitorCommand(vm, "cont", &reply) < 0)
+        return -1;
+    qemudDebug ("%s: cont reply: %s", vm->def->name, info);
+    VIR_FREE(reply);
+    return 0;
+}
+
 static virDrvOpenStatus qemudOpen(virConnectPtr conn,
                                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                   int flags ATTRIBUTE_UNUSED) {
@@ -3142,7 +3159,6 @@ cleanup:
 
 static int qemudDomainResume(virDomainPtr dom) {
     struct qemud_driver *driver = dom->conn->privateData;
-    char *info;
     virDomainObjPtr vm;
     int ret = -1;
     virDomainEventPtr event = NULL;
@@ -3163,17 +3179,16 @@ static int qemudDomainResume(virDomainPtr dom) {
         goto cleanup;
     }
     if (vm->state == VIR_DOMAIN_PAUSED) {
-        if (qemudMonitorCommand(vm, "cont", &info) < 0) {
-            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                             "%s", _("resume operation failed"));
+        if (qemudMonitorSendCont(dom->conn, vm) < 0) {
+            if (virGetLastError() == NULL)
+                qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                                 "%s", _("resume operation failed"));
             goto cleanup;
         }
         vm->state = VIR_DOMAIN_RUNNING;
-        qemudDebug("Reply %s", info);
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
-        VIR_FREE(info);
     }
     if (virDomainSaveStatus(dom->conn, driver->stateDir, vm) < 0)
         goto cleanup;
@@ -3915,13 +3930,11 @@ cleanup:
        will support synchronous operations so we always get here after
        the migration is complete.  */
     if (resume && paused) {
-        if (qemudMonitorCommand(vm, "cont", &info) < 0) {
-            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                             "%s", _("resuming after dump failed"));
-            goto cleanup;
+        if (qemudMonitorSendCont(dom->conn, vm) < 0) {
+            if (virGetLastError() == NULL)
+                qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                                 "%s", _("resuming after dump failed"));
         }
-        DEBUG ("%s: cont reply: %s", vm->def->name, info);
-        VIR_FREE(info);
     }
     if (vm)
         virDomainObjUnlock(vm);
@@ -4433,13 +4446,12 @@ static int qemudDomainRestore(virConnectPtr conn,
 
     /* If it was running before, resume it now. */
     if (header.was_running) {
-        char *info;
-        if (qemudMonitorCommand(vm, "cont", &info) < 0) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                             "%s", _("failed to resume domain"));
+        if (qemudMonitorSendCont(conn, vm) < 0) {
+            if (virGetLastError() == NULL)
+                qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                                 "%s", _("failed to resume domain"));
             goto cleanup;
         }
-        VIR_FREE(info);
         vm->state = VIR_DOMAIN_RUNNING;
         virDomainSaveStatus(conn, driver->stateDir, vm);
     }
@@ -7155,14 +7167,9 @@ qemudDomainMigratePerform (virDomainPtr dom,
     ret = 0;
 
 cleanup:
-    /* Note that we have to free info *first*, since we are re-using the
-     * variable below (and otherwise might cause a memory leak)
-     */
-    VIR_FREE(info);
-
     if (paused) {
         /* we got here through some sort of failure; start the domain again */
-        if (qemudMonitorCommand (vm, "cont", &info) < 0) {
+        if (qemudMonitorSendCont(dom->conn, vm) < 0) {
             /* Hm, we already know we are in error here.  We don't want to
              * overwrite the previous error, though, so we just throw something
              * to the logs and hope for the best
@@ -7170,16 +7177,13 @@ cleanup:
             VIR_ERROR(_("Failed to resume guest %s after failure\n"),
                       vm->def->name);
         }
-        else {
-            DEBUG ("%s: cont reply: %s", vm->def->name, info);
-            VIR_FREE(info);
-        }
 
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
     }
 
+    VIR_FREE(info);
     if (vm)
         virDomainObjUnlock(vm);
     if (event)
@@ -7202,7 +7206,6 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
-    char *info = NULL;
 
     qemuDriverLock(driver);
     vm = virDomainFindByName(&driver->domains, dname);
@@ -7222,12 +7225,12 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
          * >= 0.10.6 to work properly.  This isn't strictly necessary on
          * older qemu's, but it also doesn't hurt anything there
          */
-        if (qemudMonitorCommand(vm, "cont", &info) < 0) {
-            qemudReportError(dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("resume operation failed"));
+        if (qemudMonitorSendCont(dconn, vm) < 0) {
+            if (virGetLastError() == NULL)
+                qemudReportError(dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("resume operation failed"));
             goto cleanup;
         }
-        VIR_FREE(info);
 
         vm->state = VIR_DOMAIN_RUNNING;
         event = virDomainEventNewFromObj(vm,
