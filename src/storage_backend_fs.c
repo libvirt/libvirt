@@ -598,6 +598,7 @@ static int
 virStorageBackendFileSystemMount(virConnectPtr conn,
                                  virStoragePoolObjPtr pool) {
     char *src;
+    char *options;
     const char **mntargv;
 
     /* 'mount -t auto' doesn't seem to auto determine nfs (or cifs),
@@ -605,6 +606,10 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
      *  accommodate this */
     int netauto = (pool->def->type == VIR_STORAGE_POOL_NETFS &&
                    pool->def->source.format == VIR_STORAGE_POOL_NETFS_AUTO);
+    int glusterfs = (pool->def->type == VIR_STORAGE_POOL_NETFS &&
+                 pool->def->source.format == VIR_STORAGE_POOL_NETFS_GLUSTERFS);
+
+    int option_index;
     int source_index;
 
     const char *netfs_auto_argv[] = {
@@ -626,9 +631,26 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
         NULL,
     };
 
+    const char *glusterfs_argv[] = {
+        MOUNT,
+        "-t",
+        pool->def->type == VIR_STORAGE_POOL_FS ?
+        virStoragePoolFormatFileSystemTypeToString(pool->def->source.format) :
+        virStoragePoolFormatFileSystemNetTypeToString(pool->def->source.format),
+        NULL,
+        "-o",
+        NULL,
+        pool->def->target.path,
+        NULL,
+    };
+
     if (netauto) {
         mntargv = netfs_auto_argv;
         source_index = 1;
+    } else if (glusterfs) {
+        mntargv = glusterfs_argv;
+        source_index = 3;
+        option_index = 5;
     } else {
         mntargv = fs_argv;
         source_index = 3;
@@ -664,6 +686,12 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
     }
 
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
+        if (pool->def->source.format = VIR_STORAGE_POOL_NETFS_GLUSTERFS) {
+            if (virAsprintf(&options, "direct-io-mode=1") == -1) {
+                virReportOOMError(conn);
+                return -1;
+            }
+        }
         if (virAsprintf(&src, "%s:%s",
                         pool->def->source.host.name,
                         pool->def->source.dir) == -1) {
@@ -678,6 +706,10 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
         }
     }
     mntargv[source_index] = src;
+
+    if (glusterfs) {
+        mntargv[option_index] = options;
+    }
 
     if (virRun(conn, mntargv, NULL) < 0) {
         VIR_FREE(src);
