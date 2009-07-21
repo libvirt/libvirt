@@ -338,6 +338,9 @@
 	    &lt;driver name="tap" type="aio"&gt;
 	    &lt;source file='/var/lib/xen/images/fv0'/&gt;
 	    &lt;target dev='hda' bus='ide'/&gt;
+            &lt;encryption type='...'&gt;
+              ...
+            &lt;/encryption&gt;
 	  &lt;/disk&gt;
 	  ...</pre>
 
@@ -372,6 +375,11 @@
 	<code>driver</code> element allows them to be selected. The <code>name</code>
 	attribute is the primary backend driver name, while the optional <code>type</code>
 	attribute provides the sub-type. <span class="since">Since 0.1.8</span>
+      </dd>
+      <dt><code>encryption</code></dt>
+      <dd>If present, specifies how the volume is encrypted.  See
+        the <a href="formatstorageencryption.html">Storage Encryption</a> page
+        for more information.
       </dd>
     </dl>
 

@@ -30,6 +30,7 @@
 
 #include "internal.h"
 #include "capabilities.h"
+#include "storage_encryption_conf.h"
 #include "util.h"
 #include "threads.h"
 
@@ -117,6 +118,7 @@ struct _virDomainDiskDef {
         unsigned bus;
         unsigned slot;
     } pci_addr;
+    virStorageEncryptionPtr encryption;
 };
 
 static inline int

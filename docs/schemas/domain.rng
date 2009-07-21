@@ -4,6 +4,8 @@
   <start>
     <ref name="domain"/>
   </start>
+
+  <include href='storageencryption.rng'/>
   <!--
       We handle only document defining a domain
     -->
@@ -335,6 +337,9 @@
       <element name="shareable">
         <empty/>
       </element>
+    </optional>
+    <optional>
+      <ref name="encryption"/>
     </optional>
   </define>
   <!--
