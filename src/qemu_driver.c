@@ -112,10 +112,15 @@ static int qemudDomainGetMaxVcpus(virDomainPtr dom);
 static int qemudMonitorCommand(const virDomainObjPtr vm,
                                const char *cmd,
                                char **reply);
+static int qemudMonitorCommandWithFd(const virDomainObjPtr vm,
+                                     const char *cmd,
+                                     int scm_fd,
+                                     char **reply);
 static int qemudMonitorCommandExtra(const virDomainObjPtr vm,
                                     const char *cmd,
                                     const char *extra,
                                     const char *extraPrompt,
+                                    int scm_fd,
                                     char **reply);
 static int qemudDomainSetMemoryBalloon(virConnectPtr conn,
                                        virDomainObjPtr vm,
@@ -1276,7 +1281,7 @@ qemudInitPasswords(virConnectPtr conn,
                                      vm->def->graphics[0]->data.vnc.passwd :
                                      driver->vncPassword,
                                      QEMU_PASSWD_PROMPT,
-                                     &info) < 0) {
+                                     -1, &info) < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("setting VNC password failed"));
             return -1;
@@ -2216,7 +2221,8 @@ qemuMonitorDiscardPendingData(virDomainObjPtr vm) {
 static int
 qemudMonitorSendUnix(const virDomainObjPtr vm,
                      const char *cmd,
-                     size_t cmdlen)
+                     size_t cmdlen,
+                     int scm_fd)
 {
     struct msghdr msg;
     struct iovec iov[1];
@@ -2230,6 +2236,20 @@ qemudMonitorSendUnix(const virDomainObjPtr vm,
     msg.msg_iov = iov;
     msg.msg_iovlen = 1;
 
+    if (scm_fd != -1) {
+        char control[CMSG_SPACE(sizeof(int))];
+        struct cmsghdr *cmsg;
+
+        msg.msg_control = control;
+        msg.msg_controllen = sizeof(control);
+
+        cmsg = CMSG_FIRSTHDR(&msg);
+        cmsg->cmsg_len = CMSG_LEN(sizeof(int));
+        cmsg->cmsg_level = SOL_SOCKET;
+        cmsg->cmsg_type = SCM_RIGHTS;
+        memcpy(CMSG_DATA(cmsg), &scm_fd, sizeof(int));
+    }
+
     do {
         ret = sendmsg(vm->monitor, &msg, 0);
     } while (ret < 0 && errno == EINTR);
@@ -2239,7 +2259,8 @@ qemudMonitorSendUnix(const virDomainObjPtr vm,
 
 static int
 qemudMonitorSend(const virDomainObjPtr vm,
-                 const char *cmd)
+                 const char *cmd,
+                 int scm_fd)
 {
     char *full;
     size_t len;
@@ -2252,7 +2273,7 @@ qemudMonitorSend(const virDomainObjPtr vm,
 
     switch (vm->monitor_chr->type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if (qemudMonitorSendUnix(vm, full, len) < 0)
+        if (qemudMonitorSendUnix(vm, full, len, scm_fd) < 0)
             goto out;
         break;
     default:
@@ -2273,13 +2294,14 @@ qemudMonitorCommandExtra(const virDomainObjPtr vm,
                          const char *cmd,
                          const char *extra,
                          const char *extraPrompt,
+                         int scm_fd,
                          char **reply) {
     int size = 0;
     char *buf = NULL;
 
     qemuMonitorDiscardPendingData(vm);
 
-    if (qemudMonitorSend(vm, cmd) < 0)
+    if (qemudMonitorSend(vm, cmd, scm_fd) < 0)
         return -1;
 
     *reply = NULL;
@@ -2314,7 +2336,7 @@ qemudMonitorCommandExtra(const virDomainObjPtr vm,
         if (buf) {
             if (extra) {
                 if (strstr(buf, extraPrompt) != NULL) {
-                    if (qemudMonitorSend(vm, extra) < 0)
+                    if (qemudMonitorSend(vm, extra, -1) < 0)
                         return -1;
                     extra = NULL;
                 }
@@ -2355,13 +2377,19 @@ qemudMonitorCommandExtra(const virDomainObjPtr vm,
 }
 
 static int
+qemudMonitorCommandWithFd(const virDomainObjPtr vm,
+                          const char *cmd,
+                          int scm_fd,
+                          char **reply) {
+    return qemudMonitorCommandExtra(vm, cmd, NULL, NULL, scm_fd, reply);
+}
+
+static int
 qemudMonitorCommand(const virDomainObjPtr vm,
                     const char *cmd,
                     char **reply) {
-    return qemudMonitorCommandExtra(vm, cmd, NULL, NULL, reply);
+    return qemudMonitorCommandWithFd(vm, cmd, -1, reply);
 }
-
-
 
 static virDrvOpenStatus qemudOpen(virConnectPtr conn,
                                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
