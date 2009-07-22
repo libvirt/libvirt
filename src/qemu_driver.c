@@ -2214,6 +2214,30 @@ qemuMonitorDiscardPendingData(virDomainObjPtr vm) {
 }
 
 static int
+qemudMonitorSendUnix(const virDomainObjPtr vm,
+                     const char *cmd,
+                     size_t cmdlen)
+{
+    struct msghdr msg;
+    struct iovec iov[1];
+    ssize_t ret;
+
+    memset(&msg, 0, sizeof(msg));
+
+    iov[0].iov_base = (void *)cmd;
+    iov[0].iov_len = cmdlen;
+
+    msg.msg_iov = iov;
+    msg.msg_iovlen = 1;
+
+    do {
+        ret = sendmsg(vm->monitor, &msg, 0);
+    } while (ret < 0 && errno == EINTR);
+
+    return ret == cmdlen ? 0 : -1;
+}
+
+static int
 qemudMonitorSend(const virDomainObjPtr vm,
                  const char *cmd)
 {
@@ -2226,8 +2250,17 @@ qemudMonitorSend(const virDomainObjPtr vm,
 
     len = strlen(full);
 
-    if (safewrite(vm->monitor, full, len) != len)
-        goto out;
+    switch (vm->monitor_chr->type) {
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        if (qemudMonitorSendUnix(vm, full, len) < 0)
+            goto out;
+        break;
+    default:
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+        if (safewrite(vm->monitor, full, len) != len)
+            goto out;
+        break;
+    }
 
     ret = 0;
 out:
