@@ -1143,22 +1143,18 @@ int qemudBuildCommandLine(virConnectPtr conn,
     emulator = def->emulator;
 
     /* Need to explicitly disable KQEMU if
-     * 1. Arch matches host arch
-     * 2. Guest domain is 'qemu'
-     * 3. The qemu binary has the -no-kqemu flag
+     * 1. Guest domain is 'qemu'
+     * 2. The qemu binary has the -no-kqemu flag
      */
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_KQEMU) &&
-        STREQ(ut.machine, def->os.arch) &&
         def->virtType == VIR_DOMAIN_VIRT_QEMU)
         disableKQEMU = 1;
 
     /* Need to explicitly disable KVM if
-     * 1. Arch matches host arch
-     * 2. Guest domain is 'qemu'
-     * 3. The qemu binary has the -no-kvm flag
+     * 1. Guest domain is 'qemu'
+     * 2. The qemu binary has the -no-kvm flag
      */
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_KVM) &&
-        STREQ(ut.machine, def->os.arch) &&
         def->virtType == VIR_DOMAIN_VIRT_QEMU)
         disableKVM = 1;
 
