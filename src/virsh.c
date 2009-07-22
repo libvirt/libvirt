@@ -784,8 +784,10 @@ cmdDomblkstat (vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain (ctl, cmd, &name)))
         return FALSE;
 
-    if (!(device = vshCommandOptString (cmd, "device", NULL)))
+    if (!(device = vshCommandOptString (cmd, "device", NULL))) {
+        virDomainFree(dom);
         return FALSE;
+    }
 
     if (virDomainBlockStats (dom, device, &stats, sizeof stats) == -1) {
         vshError (ctl, FALSE, _("Failed to get block stats %s %s"),
@@ -840,8 +842,10 @@ cmdDomIfstat (vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain (ctl, cmd, &name)))
         return FALSE;
 
-    if (!(device = vshCommandOptString (cmd, "interface", NULL)))
+    if (!(device = vshCommandOptString (cmd, "interface", NULL))) {
+        virDomainFree(dom);
         return FALSE;
+    }
 
     if (virDomainInterfaceStats (dom, device, &stats, sizeof stats) == -1) {
         vshError (ctl, FALSE, _("Failed to get interface stats %s %s"),
@@ -2528,6 +2532,7 @@ cmdNetworkAutostart(vshControl *ctl, const vshCmd *cmd)
     else
         vshPrint(ctl, _("Network %s unmarked as autostarted\n"), name);
 
+    virNetworkFree(network);
     return TRUE;
 }
 
@@ -2570,6 +2575,7 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
     if (network != NULL) {
         vshPrint(ctl, _("Network %s created from %s\n"),
                  virNetworkGetName(network), from);
+        virNetworkFree(network);
     } else {
         vshError(ctl, FALSE, _("Failed to create network from %s"), from);
         ret = FALSE;
@@ -2617,6 +2623,7 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
     if (network != NULL) {
         vshPrint(ctl, _("Network %s defined from %s\n"),
                  virNetworkGetName(network), from);
+        virNetworkFree(network);
     } else {
         vshError(ctl, FALSE, _("Failed to define network from %s"), from);
         ret = FALSE;
@@ -2997,6 +3004,7 @@ cmdNetworkStart(vshControl *ctl, const vshCmd *cmd)
                  virNetworkGetName(network));
         ret = FALSE;
     }
+    virNetworkFree(network);
     return ret;
 }
 
@@ -3035,6 +3043,7 @@ cmdNetworkUndefine(vshControl *ctl, const vshCmd *cmd)
         ret = FALSE;
     }
 
+    virNetworkFree(network);
     return ret;
 }
 
@@ -3071,6 +3080,7 @@ cmdNetworkUuid(vshControl *ctl, const vshCmd *cmd)
     else
         vshError(ctl, FALSE, "%s", _("failed to get network UUID"));
 
+    virNetworkFree(network);
     return TRUE;
 }
 
@@ -3329,6 +3339,7 @@ cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
     if (iface != NULL) {
         vshPrint(ctl, _("Interface %s defined from %s\n"),
                  virInterfaceGetName(iface), from);
+        virInterfaceFree (iface);
     } else {
         vshError(ctl, FALSE, _("Failed to define interface from %s"), from);
         ret = FALSE;
@@ -3498,6 +3509,7 @@ cmdPoolAutostart(vshControl *ctl, const vshCmd *cmd)
     else
         vshPrint(ctl, _("Pool %s unmarked as autostarted\n"), name);
 
+    virStoragePoolFree(pool);
     return TRUE;
 }
 
@@ -3541,6 +3553,7 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
     if (pool != NULL) {
         vshPrint(ctl, _("Pool %s created from %s\n"),
                  virStoragePoolGetName(pool), from);
+        virStoragePoolFree(pool);
     } else {
         vshError(ctl, FALSE, _("Failed to create pool from %s"), from);
         ret = FALSE;
@@ -3594,6 +3607,7 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
     if (dev != NULL) {
         vshPrint(ctl, _("Node device %s created from %s\n"),
                  virNodeDeviceGetName(dev), from);
+        virNodeDeviceFree(dev);
     } else {
         vshError(ctl, FALSE, _("Failed to create node device from %s"), from);
         ret = FALSE;
@@ -3801,6 +3815,7 @@ cmdPoolDefine(vshControl *ctl, const vshCmd *cmd)
     if (pool != NULL) {
         vshPrint(ctl, _("Pool %s defined from %s\n"),
                  virStoragePoolGetName(pool), from);
+        virStoragePoolFree(pool);
     } else {
         vshError(ctl, FALSE, _("Failed to define pool from %s"), from);
         ret = FALSE;
@@ -3960,9 +3975,9 @@ cmdPoolDelete(vshControl *ctl, const vshCmd *cmd)
     } else {
         vshError(ctl, FALSE, _("Failed to delete pool %s"), name);
         ret = FALSE;
-        virStoragePoolFree(pool);
     }
 
+    virStoragePoolFree(pool);
     return ret;
 }
 
@@ -4460,6 +4475,8 @@ cmdPoolStart(vshControl *ctl, const vshCmd *cmd)
                  virStoragePoolGetName(pool));
         ret = FALSE;
     }
+
+    virStoragePoolFree(pool);
     return ret;
 }
 
@@ -4619,6 +4636,7 @@ cmdPoolUndefine(vshControl *ctl, const vshCmd *cmd)
         ret = FALSE;
     }
 
+    virStoragePoolFree(pool);
     return ret;
 }
 
@@ -4655,6 +4673,7 @@ cmdPoolUuid(vshControl *ctl, const vshCmd *cmd)
     else
         vshError(ctl, FALSE, "%s", _("failed to get pool UUID"));
 
+    virStoragePoolFree(pool);
     return TRUE;
 }
 
@@ -4779,6 +4798,8 @@ cleanup:
         virStoragePoolFree(pool);
     if (inputvol)
         virStorageVolFree(inputvol);
+    if (newvol)
+        virStorageVolFree(newvol);
     return ret;
 }
 
@@ -4871,7 +4892,6 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
     if (newvol != NULL) {
         vshPrint(ctl, _("Vol %s cloned from %s\n"),
                  virStorageVolGetName(newvol), virStorageVolGetName(origvol));
-        virStorageVolFree(newvol);
     } else {
         vshError(ctl, FALSE, _("Failed to clone vol from %s"),
                  virStorageVolGetName(origvol));
@@ -4885,6 +4905,8 @@ cleanup:
     xmlFree(newxml);
     if (origvol)
         virStorageVolFree(origvol);
+    if (newvol)
+        virStorageVolFree(newvol);
     if (origpool)
         virStoragePoolFree(origpool);
     return ret;
@@ -4924,9 +4946,9 @@ cmdVolDelete(vshControl *ctl, const vshCmd *cmd)
     } else {
         vshError(ctl, FALSE, _("Failed to delete vol %s"), name);
         ret = FALSE;
-        virStorageVolFree(vol);
     }
 
+    virStorageVolFree(vol);
     return ret;
 }
 
