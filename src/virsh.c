@@ -3307,7 +3307,7 @@ static const vshCmdOptDef opts_interface_define[] = {
 static int
 cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
 {
-    virInterfacePtr interface;
+    virInterfacePtr iface;
     char *from;
     int found;
     int ret = TRUE;
@@ -3323,12 +3323,12 @@ cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
         return FALSE;
 
-    interface = virInterfaceDefineXML(ctl->conn, buffer, 0);
+    iface = virInterfaceDefineXML(ctl->conn, buffer, 0);
     free (buffer);
 
-    if (interface != NULL) {
+    if (iface != NULL) {
         vshPrint(ctl, _("Interface %s defined from %s\n"),
-                 virInterfaceGetName(interface), from);
+                 virInterfaceGetName(iface), from);
     } else {
         vshError(ctl, FALSE, _("Failed to define interface from %s"), from);
         ret = FALSE;
