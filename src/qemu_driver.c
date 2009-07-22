@@ -2213,6 +2213,27 @@ qemuMonitorDiscardPendingData(virDomainObjPtr vm) {
     } while (ret > 0);
 }
 
+static int
+qemudMonitorSend(const virDomainObjPtr vm,
+                 const char *cmd)
+{
+    char *full;
+    size_t len;
+    int ret = -1;
+
+    if (virAsprintf(&full, "%s\r", cmd) < 0)
+        return -1;
+
+    len = strlen(full);
+
+    if (safewrite(vm->monitor, full, len) != len)
+        goto out;
+
+    ret = 0;
+out:
+    VIR_FREE(full);
+    return ret;
+}
 
 static int
 qemudMonitorCommandExtra(const virDomainObjPtr vm,
@@ -2222,14 +2243,10 @@ qemudMonitorCommandExtra(const virDomainObjPtr vm,
                          char **reply) {
     int size = 0;
     char *buf = NULL;
-    size_t cmdlen = strlen(cmd);
-    size_t extralen = extra ? strlen(extra) : 0;
 
     qemuMonitorDiscardPendingData(vm);
 
-    if (safewrite(vm->monitor, cmd, cmdlen) != cmdlen)
-        return -1;
-    if (safewrite(vm->monitor, "\r", 1) != 1)
+    if (qemudMonitorSend(vm, cmd) < 0)
         return -1;
 
     *reply = NULL;
@@ -2264,9 +2281,7 @@ qemudMonitorCommandExtra(const virDomainObjPtr vm,
         if (buf) {
             if (extra) {
                 if (strstr(buf, extraPrompt) != NULL) {
-                    if (safewrite(vm->monitor, extra, extralen) != extralen)
-                        return -1;
-                    if (safewrite(vm->monitor, "\r", 1) != 1)
+                    if (qemudMonitorSend(vm, extra) < 0)
                         return -1;
                     extra = NULL;
                 }
