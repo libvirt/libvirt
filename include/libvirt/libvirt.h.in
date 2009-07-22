@@ -619,6 +619,7 @@ int                     virDomainBlockPeek (virDomainPtr dom,
 /* Memory peeking flags. */
 typedef enum {
   VIR_MEMORY_VIRTUAL              = 1, /* addresses are virtual addresses */
+  VIR_MEMORY_PHYSICAL             = 2, /* addresses are physical addresses */
 } virDomainMemoryFlags;
 
 int                     virDomainMemoryPeek (virDomainPtr dom,

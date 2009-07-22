@@ -3813,18 +3813,19 @@ virDomainMemoryPeek (virDomainPtr dom,
         goto error;
     }
 
-    /* Flags must be VIR_MEMORY_VIRTUAL at the moment.
-     *
-     * Note on access to physical memory: A VIR_MEMORY_PHYSICAL flag is
+    /* Note on access to physical memory: A VIR_MEMORY_PHYSICAL flag is
      * a possibility.  However it isn't really useful unless the caller
      * can also access registers, particularly CR3 on x86 in order to
      * get the Page Table Directory.  Since registers are different on
      * every architecture, that would imply another call to get the
      * machine registers.
      *
-     * The QEMU driver handles only VIR_MEMORY_VIRTUAL, mapping it
+     * The QEMU driver handles VIR_MEMORY_VIRTUAL, mapping it
      * to the qemu 'memsave' command which does the virtual to physical
      * mapping inside qemu.
+     *
+     * The QEMU driver also handles VIR_MEMORY_PHYSICAL, mapping it
+     * to the qemu 'pmemsave' command.
      *
      * At time of writing there is no Xen driver.  However the Xen
      * hypervisor only lets you map physical pages from other domains,
@@ -3834,9 +3835,10 @@ virDomainMemoryPeek (virDomainPtr dom,
      * which does this, although we cannot copy this code directly
      * because of incompatible licensing.
      */
-    if (flags != VIR_MEMORY_VIRTUAL) {
+
+    if (flags != VIR_MEMORY_VIRTUAL && flags != VIR_MEMORY_PHYSICAL) {
         virLibDomainError (dom, VIR_ERR_INVALID_ARG,
-                           _("flags parameter must be VIR_MEMORY_VIRTUAL"));
+                     _("flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"));
         goto error;
     }
 

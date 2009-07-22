@@ -5463,9 +5463,9 @@ qemudDomainMemoryPeek (virDomainPtr dom,
         goto cleanup;
     }
 
-    if (flags != VIR_MEMORY_VIRTUAL) {
+    if (flags != VIR_MEMORY_VIRTUAL && flags != VIR_MEMORY_PHYSICAL) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
-                          "%s", _("QEMU driver only supports virtual memory addrs"));
+                     "%s", _("flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"));
         goto cleanup;
     }
 
@@ -5482,15 +5482,20 @@ qemudDomainMemoryPeek (virDomainPtr dom,
         goto cleanup;
     }
 
-    /* Issue the memsave command. */
-    snprintf (cmd, sizeof cmd, "memsave %llu %zi \"%s\"", offset, size, tmp);
+    if (flags == VIR_MEMORY_VIRTUAL)
+        /* Issue the memsave command. */
+        snprintf (cmd, sizeof cmd, "memsave %llu %zi \"%s\"", offset, size, tmp);
+    else
+        /* Issue the pmemsave command. */
+        snprintf (cmd, sizeof cmd, "pmemsave %llu %zi \"%s\"", offset, size, tmp);
+
     if (qemudMonitorCommand (vm, cmd, &info) < 0) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                           "%s", _("'memsave' command failed"));
         goto cleanup;
     }
 
-    DEBUG ("%s: memsave reply: %s", vm->def->name, info);
+    DEBUG ("%s: (p)memsave reply: %s", vm->def->name, info);
 
     /* Read the memory file into buffer. */
     if (saferead (fd, buffer, size) == (ssize_t) -1) {
