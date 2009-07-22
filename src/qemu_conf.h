@@ -165,6 +165,11 @@ int         qemuBuildNicStr             (virConnectPtr conn,
                                          int vlan,
                                          char **str);
 
+int         qemudNetworkIfaceConnect    (virConnectPtr conn,
+                                         struct qemud_driver *driver,
+                                         virDomainNetDefPtr net,
+                                         int qemuCmdFlags);
+
 int         qemuAssignNetNames          (virDomainDefPtr def,
                                          virDomainNetDefPtr net);
 

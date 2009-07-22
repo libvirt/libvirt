@@ -1014,15 +1014,16 @@ int qemudExtractVersion(virConnectPtr conn,
 }
 
 
-static int
+int
 qemudNetworkIfaceConnect(virConnectPtr conn,
                          struct qemud_driver *driver,
                          virDomainNetDefPtr net,
-                         int vnet_hdr)
+                         int qemuCmdFlags)
 {
     char *brname;
     int err;
     int tapfd = -1;
+    int vnet_hdr = 0;
 
     if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
         virNetworkPtr network = virNetworkLookupByName(conn,
@@ -1061,6 +1062,10 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
                          virStrerror(err, ebuf, sizeof ebuf));
         return -1;
     }
+
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_VNET_HDR &&
+        net->model && STREQ(net->model, "virtio"))
+        vnet_hdr = 1;
 
     if ((err = brAddTap(driver->brctl, brname,
                         &net->ifname, vnet_hdr, &tapfd))) {
@@ -1816,13 +1821,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
                 net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-                int vnet_hdr = 0;
-
-                if (qemuCmdFlags & QEMUD_CMD_FLAG_VNET_HDR &&
-                    net->model && STREQ(net->model, "virtio"))
-                    vnet_hdr = 1;
-
-                tapfd = qemudNetworkIfaceConnect(conn, driver, net, vnet_hdr);
+                tapfd = qemudNetworkIfaceConnect(conn, driver, net, qemuCmdFlags);
                 if (tapfd < 0)
                     goto error;
 
