@@ -1181,13 +1181,13 @@ qemuBuildHostNetStr(virConnectPtr conn,
                     const char *prefix,
                     char type_sep,
                     int vlan,
-                    int tapfd,
+                    const char *tapfd,
                     char **str)
 {
     switch (net->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (virAsprintf(str, "%stap%cfd=%d,vlan=%d%s%s",
+        if (virAsprintf(str, "%stap%cfd=%s,vlan=%d%s%s",
                         prefix ? prefix : "",
                         type_sep, tapfd, vlan,
                         (net->hostnet_name ? ",name=" : ""),
@@ -1805,7 +1805,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         for (i = 0 ; i < def->nnets ; i++) {
             virDomainNetDefPtr net = def->nets[i];
             char *nic, *host;
-            int tapfd = -1;
+            char *tapfd_name = NULL;
 
             net->vlan = i;
 
@@ -1821,7 +1821,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
                 net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-                tapfd = qemudNetworkIfaceConnect(conn, driver, net, qemuCmdFlags);
+                int tapfd = qemudNetworkIfaceConnect(conn, driver, net, qemuCmdFlags);
                 if (tapfd < 0)
                     goto error;
 
@@ -1831,14 +1831,21 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 }
 
                 (*tapfds)[(*ntapfds)++] = tapfd;
+
+                if (virAsprintf(&tapfd_name, "%d", tapfd) < 0)
+                    goto no_memory;
             }
 
             if (qemuBuildHostNetStr(conn, net, NULL, ',',
-                                    net->vlan, tapfd, &host) < 0)
+                                    net->vlan, tapfd_name, &host) < 0) {
+                VIR_FREE(tapfd_name);
                 goto error;
+            }
 
             ADD_ARG_LIT("-net");
             ADD_ARG(host);
+
+            VIR_FREE(tapfd_name);
         }
     }
 

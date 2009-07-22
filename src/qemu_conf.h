@@ -155,7 +155,7 @@ int         qemuBuildHostNetStr         (virConnectPtr conn,
                                          const char *prefix,
                                          char type_sep,
                                          int vlan,
-                                         int tapfd,
+                                         const char *tapfd,
                                          char **str);
 
 int         qemuBuildNicStr             (virConnectPtr conn,

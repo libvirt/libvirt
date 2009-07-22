@@ -4896,7 +4896,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
             net->vlan = vm->def->nets[i]->vlan;
 
     if (qemuBuildHostNetStr(conn, net,
-                            "host_net_add ", ' ', net->vlan, -1, &cmd) < 0)
+                            "host_net_add ", ' ', net->vlan, NULL, &cmd) < 0)
         return -1;
 
     remove_cmd = NULL;
