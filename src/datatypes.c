@@ -535,7 +535,38 @@ virGetInterface(virConnectPtr conn, const char *name, const char *mac) {
 
     ret = (virInterfacePtr) virHashLookup(conn->interfaces, name);
 
-    if ((ret == NULL) || STRCASENEQ(ret->mac, mac)) {
+    if (ret != NULL) {
+        if (STRCASENEQ(ret->mac, mac)) {
+            /*
+             * If the mac address has changed, try to modify it in
+             * place, which will only work if the new mac is the
+             * same length as, or shorter than, the old mac.
+             */
+            size_t newmaclen = strlen(mac);
+            size_t oldmaclen = strlen(ret->mac);
+            if (newmaclen <= oldmaclen) {
+                strcpy(ret->mac, mac);
+            } else {
+                /*
+                 * If it's longer, we're kind of screwed, because we
+                 * can't add a new hashtable entry (it would clash
+                 * with the existing entry of same name), and we can't
+                 * free/re-alloc the existing entry's mac, as some
+                 * other thread may already be using the existing mac
+                 * pointer.  Fortunately, this should never happen,
+                 * since the length of the mac address for any
+                 * interface is determined by the type of the
+                 * interface, and that is unlikely to change.
+                 */
+                virMutexUnlock(&conn->lock);
+                virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
+_("Failed to change interface mac address from %s to %s due to differing lengths."),
+                                ret->mac, mac);
+                ret = NULL;
+                goto error;
+            }
+        }
+    } else {
         if (VIR_ALLOC(ret) < 0) {
             virReportOOMError(conn);
             goto error;
