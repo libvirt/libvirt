@@ -186,14 +186,14 @@ virInterfaceObjPtr virInterfaceFindByName(const virInterfaceObjListPtr
 
 
 void virInterfaceDefFree(virInterfaceDefPtr def);
-void virInterfaceObjFree(virInterfaceObjPtr interface);
+void virInterfaceObjFree(virInterfaceObjPtr iface);
 void virInterfaceObjListFree(virInterfaceObjListPtr vms);
 
 virInterfaceObjPtr virInterfaceAssignDef(virConnectPtr conn,
                                          virInterfaceObjListPtr interfaces,
                                          const virInterfaceDefPtr def);
 void virInterfaceRemove(virInterfaceObjListPtr interfaces,
-                        const virInterfaceObjPtr interface);
+                        const virInterfaceObjPtr iface);
 
 virInterfaceDefPtr virInterfaceDefParseString(virConnectPtr conn,
                                               const char *xmlStr);

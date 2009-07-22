@@ -1207,51 +1207,51 @@ virInterfaceObjPtr virInterfaceAssignDef(virConnectPtr conn,
                                          virInterfaceObjListPtr interfaces,
                                          const virInterfaceDefPtr def)
 {
-    virInterfaceObjPtr interface;
+    virInterfaceObjPtr iface;
 
-    if ((interface = virInterfaceFindByName(interfaces, def->name))) {
-        if (interface->def)
-            virInterfaceDefFree(interface->def);
-        interface->def = def;
+    if ((iface = virInterfaceFindByName(interfaces, def->name))) {
+        if (iface->def)
+            virInterfaceDefFree(iface->def);
+        iface->def = def;
 
-        return interface;
+        return iface;
     }
 
-    if (VIR_ALLOC(interface) < 0) {
+    if (VIR_ALLOC(iface) < 0) {
         virReportOOMError(conn);
         return NULL;
     }
-    if (virMutexInit(&interface->lock) < 0) {
+    if (virMutexInit(&iface->lock) < 0) {
         virInterfaceReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("cannot initialize mutex"));
-        VIR_FREE(interface);
+        VIR_FREE(iface);
         return NULL;
     }
-    virInterfaceObjLock(interface);
-    interface->def = def;
+    virInterfaceObjLock(iface);
+    iface->def = def;
 
     if (VIR_REALLOC_N(interfaces->objs, interfaces->count + 1) < 0) {
         virReportOOMError(conn);
-        VIR_FREE(interface);
+        VIR_FREE(iface);
         return NULL;
     }
 
-    interfaces->objs[interfaces->count] = interface;
+    interfaces->objs[interfaces->count] = iface;
     interfaces->count++;
 
-    return interface;
+    return iface;
 
 }
 
 void virInterfaceRemove(virInterfaceObjListPtr interfaces,
-                        const virInterfaceObjPtr interface)
+                        const virInterfaceObjPtr iface)
 {
     unsigned int i;
 
-    virInterfaceObjUnlock(interface);
+    virInterfaceObjUnlock(iface);
     for (i = 0 ; i < interfaces->count ; i++) {
         virInterfaceObjLock(interfaces->objs[i]);
-        if (interfaces->objs[i] == interface) {
+        if (interfaces->objs[i] == iface) {
             virInterfaceObjUnlock(interfaces->objs[i]);
             virInterfaceObjFree(interfaces->objs[i]);
 

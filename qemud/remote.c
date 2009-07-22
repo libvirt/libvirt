@@ -61,7 +61,7 @@
 
 static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain);
 static virNetworkPtr get_nonnull_network (virConnectPtr conn, remote_nonnull_network network);
-static virInterfacePtr get_nonnull_interface (virConnectPtr conn, remote_nonnull_interface interface);
+static virInterfacePtr get_nonnull_interface (virConnectPtr conn, remote_nonnull_interface iface);
 static virStoragePoolPtr get_nonnull_storage_pool (virConnectPtr conn, remote_nonnull_storage_pool pool);
 static virStorageVolPtr get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol);
 static void make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src);

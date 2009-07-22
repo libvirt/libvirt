@@ -191,16 +191,16 @@ error_out:
  *
  * Returns 0 on success or -1 in case of error
  */
-int moveInterfaceToNetNs(const char* interface, int pidInNs)
+int moveInterfaceToNetNs(const char* iface, int pidInNs)
 {
     int rc = -1;
     char *pid = NULL;
     const char *argv[] = {
-        "ip", "link", "set", interface, "netns", NULL, NULL
+        "ip", "link", "set", iface, "netns", NULL, NULL
     };
     int cmdResult;
 
-    if (NULL == interface) {
+    if (NULL == iface) {
         goto error_out;
     }
 
