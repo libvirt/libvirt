@@ -568,16 +568,19 @@ _("Failed to change interface mac address from %s to %s due to differing lengths
         }
     } else {
         if (VIR_ALLOC(ret) < 0) {
+            virMutexUnlock(&conn->lock);
             virReportOOMError(conn);
             goto error;
         }
         ret->name = strdup(name);
         if (ret->name == NULL) {
+            virMutexUnlock(&conn->lock);
             virReportOOMError(conn);
             goto error;
         }
         ret->mac = strdup(mac);
         if (ret->mac == NULL) {
+            virMutexUnlock(&conn->lock);
             virReportOOMError(conn);
             goto error;
         }
@@ -586,6 +589,7 @@ _("Failed to change interface mac address from %s to %s due to differing lengths
         ret->conn = conn;
 
         if (virHashAddEntry(conn->interfaces, name, ret) < 0) {
+            virMutexUnlock(&conn->lock);
             virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
                             _("failed to add interface to connection hash table"));
             goto error;
@@ -597,7 +601,6 @@ _("Failed to change interface mac address from %s to %s due to differing lengths
     return(ret);
 
  error:
-    virMutexUnlock(&conn->lock);
     if (ret != NULL) {
         VIR_FREE(ret->name);
         VIR_FREE(ret->mac);
@@ -623,24 +626,30 @@ virReleaseInterface(virInterfacePtr iface) {
     virConnectPtr conn = iface->conn;
     DEBUG("release interface %p %s", iface, iface->name);
 
-    if (virHashRemoveEntry(conn->interfaces, iface->name, NULL) < 0)
+    if (virHashRemoveEntry(conn->interfaces, iface->name, NULL) < 0) {
+        /* unlock before reporting error because error report grabs lock */
+        virMutexUnlock(&conn->lock);
         virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
                         _("interface missing from connection hash table"));
+        /* don't decr the conn refct if we weren't connected to it */
+        conn = NULL;
+    }
 
     iface->magic = -1;
     VIR_FREE(iface->name);
     VIR_FREE(iface->mac);
     VIR_FREE(iface);
 
-    DEBUG("unref connection %p %d", conn, conn->refs);
-    conn->refs--;
-    if (conn->refs == 0) {
-        virReleaseConnect(conn);
-        /* Already unlocked mutex */
-        return;
+    if (conn) {
+        DEBUG("unref connection %p %d", conn, conn->refs);
+        conn->refs--;
+        if (conn->refs == 0) {
+            virReleaseConnect(conn);
+            /* Already unlocked mutex */
+            return;
+        }
+        virMutexUnlock(&conn->lock);
     }
-
-    virMutexUnlock(&conn->lock);
 }
 
 
