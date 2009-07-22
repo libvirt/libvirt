@@ -125,6 +125,15 @@ static int qemudDetectVcpuPIDs(virConnectPtr conn,
 
 static struct qemud_driver *qemu_driver = NULL;
 
+static int qemuCgroupControllerActive(struct qemud_driver *driver,
+                                      int controller)
+{
+    if (driver->cgroup == NULL)
+        return 0;
+    if (driver->cgroupControllers & (1 << controller))
+        return 1;
+    return 0;
+}
 
 static int
 qemudLogFD(virConnectPtr conn, struct qemud_driver *driver, const char* name)
@@ -1405,7 +1414,10 @@ static int qemuSetupCgroup(virConnectPtr conn,
     virCgroupPtr cgroup = NULL;
     int rc;
     unsigned int i;
-    const char *const *deviceACL = defaultDeviceACL;
+    const char *const *deviceACL =
+        driver->cgroupDeviceACL ?
+        (const char *const *)driver->cgroupDeviceACL :
+        defaultDeviceACL;
 
     if (driver->cgroup == NULL)
         return 0; /* Not supported, so claim success */
@@ -1418,58 +1430,60 @@ static int qemuSetupCgroup(virConnectPtr conn,
         goto cleanup;
     }
 
-    rc = virCgroupDenyAllDevices(cgroup);
-    if (rc != 0) {
-        if (rc == -EPERM) {
-            VIR_WARN0("Group devices ACL is not accessible, disabling whitelisting");
-            goto done;
-        }
-
-        virReportSystemError(conn, -rc,
-                             _("Unable to deny all devices for %s"), vm->def->name);
-        goto cleanup;
-    }
-
-    for (i = 0; i < vm->def->ndisks ; i++) {
-        if (vm->def->disks[i]->type != VIR_DOMAIN_DISK_TYPE_BLOCK ||
-            vm->def->disks[i]->src == NULL)
-            continue;
-
-        rc = virCgroupAllowDevicePath(cgroup,
-                                      vm->def->disks[i]->src);
+    if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        rc = virCgroupDenyAllDevices(cgroup);
         if (rc != 0) {
+            if (rc == -EPERM) {
+                VIR_WARN0("Group devices ACL is not accessible, disabling whitelisting");
+                goto done;
+            }
+
             virReportSystemError(conn, -rc,
-                                 _("Unable to allow device %s for %s"),
-                                 vm->def->disks[i]->src, vm->def->name);
+                                 _("Unable to deny all devices for %s"), vm->def->name);
             goto cleanup;
         }
-    }
 
-    rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_PTY_MAJOR);
-    if (rc != 0) {
-        virReportSystemError(conn, -rc, "%s",
-                             _("unable to allow /dev/pts/ devices"));
-        goto cleanup;
-    }
+        for (i = 0; i < vm->def->ndisks ; i++) {
+            if (vm->def->disks[i]->type != VIR_DOMAIN_DISK_TYPE_BLOCK ||
+                vm->def->disks[i]->src == NULL)
+                continue;
 
-    if (vm->def->nsounds) {
-        rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_SND_MAJOR);
+            rc = virCgroupAllowDevicePath(cgroup,
+                                          vm->def->disks[i]->src);
+            if (rc != 0) {
+                virReportSystemError(conn, -rc,
+                                     _("Unable to allow device %s for %s"),
+                                     vm->def->disks[i]->src, vm->def->name);
+                goto cleanup;
+            }
+        }
+
+        rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_PTY_MAJOR);
         if (rc != 0) {
             virReportSystemError(conn, -rc, "%s",
-                                 _("unable to allow /dev/snd/ devices"));
+                                 _("unable to allow /dev/pts/ devices"));
             goto cleanup;
         }
-    }
 
-    for (i = 0; deviceACL[i] != NULL ; i++) {
-        rc = virCgroupAllowDevicePath(cgroup,
-                                      deviceACL[i]);
-        if (rc < 0 &&
-            rc != -ENOENT) {
-            virReportSystemError(conn, -rc,
-                                 _("unable to allow device %s"),
-                                 deviceACL[i]);
-            goto cleanup;
+        if (vm->def->nsounds) {
+            rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_SND_MAJOR);
+            if (rc != 0) {
+                virReportSystemError(conn, -rc, "%s",
+                                     _("unable to allow /dev/snd/ devices"));
+                goto cleanup;
+            }
+        }
+
+        for (i = 0; deviceACL[i] != NULL ; i++) {
+            rc = virCgroupAllowDevicePath(cgroup,
+                                          deviceACL[i]);
+            if (rc < 0 &&
+                rc != -ENOENT) {
+                virReportSystemError(conn, -rc,
+                                     _("unable to allow device %s"),
+                                     deviceACL[i]);
+                goto cleanup;
+            }
         }
     }
 
@@ -4934,7 +4948,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         goto cleanup;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-        if (driver->cgroup != NULL) {
+        if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
             if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) !=0 ) {
                 qemudReportError(dom->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                                  _("Unable to find cgroup for %s\n"),
@@ -5379,7 +5393,7 @@ static char *qemuGetSchedulerType(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     char *ret;
 
-    if (driver->cgroup == NULL) {
+    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          __FUNCTION__);
         return NULL;
@@ -5404,7 +5418,7 @@ static int qemuSetSchedulerParameters(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     int ret = -1;
 
-    if (driver->cgroup == NULL) {
+    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          __FUNCTION__);
         return -1;
@@ -5469,7 +5483,7 @@ static int qemuGetSchedulerParameters(virDomainPtr dom,
     int ret = -1;
     int rc;
 
-    if (driver->cgroup == NULL) {
+    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          __FUNCTION__);
         return -1;

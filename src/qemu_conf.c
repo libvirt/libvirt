@@ -94,6 +94,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     virConfValuePtr p;
     char *user;
     char *group;
+    int i;
 
     /* Setup 2 critical defaults */
     if (!(driver->vncListen = strdup("127.0.0.1"))) {
@@ -217,6 +218,66 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         return -1;
     }
     VIR_FREE(group);
+
+    p = virConfGetValue (conf, "cgroup_controllers");
+    CHECK_TYPE ("cgroup_controllers", VIR_CONF_LIST);
+    if (p) {
+        virConfValuePtr pp;
+        for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
+            int ctl;
+            if (pp->type != VIR_CONF_STRING) {
+                VIR_ERROR("%s", _("cgroup_device_acl must be a list of strings"));
+                virConfFree(conf);
+                return -1;
+            }
+            ctl = virCgroupControllerTypeFromString(pp->str);
+            if (ctl < 0) {
+                VIR_ERROR("Unknown cgroup controller '%s'", pp->str);
+                virConfFree(conf);
+                return -1;
+            }
+            driver->cgroupControllers |= (1 << ctl);
+        }
+    } else {
+        driver->cgroupControllers =
+            (1 << VIR_CGROUP_CONTROLLER_CPU) |
+            (1 << VIR_CGROUP_CONTROLLER_DEVICES);
+    }
+    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        if (driver->cgroupControllers & (1 << i)) {
+            VIR_INFO("Configured cgroup controller '%s'",
+                     virCgroupControllerTypeToString(i));
+        }
+    }
+
+    p = virConfGetValue (conf, "cgroup_device_acl");
+    CHECK_TYPE ("cgroup_device_acl", VIR_CONF_LIST);
+    if (p) {
+        int len = 0;
+        virConfValuePtr pp;
+        for (pp = p->list; pp; pp = pp->next)
+            len++;
+        if (VIR_ALLOC_N(driver->cgroupDeviceACL, 1+len) < 0) {
+            virReportOOMError(NULL);
+            virConfFree(conf);
+            return -1;
+        }
+        for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
+            if (pp->type != VIR_CONF_STRING) {
+                VIR_ERROR("%s", _("cgroup_device_acl must be a list of strings"));
+                virConfFree(conf);
+                return -1;
+            }
+            driver->cgroupDeviceACL[i] = strdup (pp->str);
+            if (driver->cgroupDeviceACL[i] == NULL) {
+                virReportOOMError(NULL);
+                virConfFree(conf);
+                return -1;
+            }
+
+        }
+        driver->cgroupDeviceACL[i] = NULL;
+    }
 
     virConfFree (conf);
     return 0;

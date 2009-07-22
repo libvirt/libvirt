@@ -15,6 +15,18 @@
 struct virCgroup;
 typedef struct virCgroup *virCgroupPtr;
 
+enum {
+    VIR_CGROUP_CONTROLLER_CPU,
+    VIR_CGROUP_CONTROLLER_CPUACCT,
+    VIR_CGROUP_CONTROLLER_CPUSET,
+    VIR_CGROUP_CONTROLLER_MEMORY,
+    VIR_CGROUP_CONTROLLER_DEVICES,
+
+    VIR_CGROUP_CONTROLLER_LAST
+};
+
+VIR_ENUM_DECL(virCgroupController);
+
 int virCgroupForDriver(const char *name,
                        virCgroupPtr *group,
                        int privileged,

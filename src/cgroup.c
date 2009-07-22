@@ -31,17 +31,6 @@
 
 #define CGROUP_MAX_VAL 512
 
-enum {
-    VIR_CGROUP_CONTROLLER_CPU,
-    VIR_CGROUP_CONTROLLER_CPUACCT,
-    VIR_CGROUP_CONTROLLER_CPUSET,
-    VIR_CGROUP_CONTROLLER_MEMORY,
-    VIR_CGROUP_CONTROLLER_DEVICES,
-
-    VIR_CGROUP_CONTROLLER_LAST
-};
-
-VIR_ENUM_DECL(virCgroupController);
 VIR_ENUM_IMPL(virCgroupController, VIR_CGROUP_CONTROLLER_LAST,
               "cpu", "cpuacct", "cpuset", "memory", "devices");
 

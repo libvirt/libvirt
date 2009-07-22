@@ -79,6 +79,9 @@ struct qemud_driver {
     int nextvmid;
 
     virCgroupPtr cgroup;
+    int cgroupControllers;
+    char **cgroupDeviceACL;
+
     virDomainObjList domains;
 
     brControl *brctl;
