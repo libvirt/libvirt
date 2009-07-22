@@ -53,6 +53,7 @@ EXTRA_DIST =		\
 	networkschematest \
 	domainschematest \
 	domainschemadata \
+	interfaceschemadata \
 	storagepoolschematest \
 	storagepoolschemadata \
 	storagevolschematest \
