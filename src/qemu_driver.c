@@ -4929,13 +4929,15 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
 }
 
 static int qemudDomainAttachNetDevice(virConnectPtr conn,
+                                      struct qemud_driver *driver,
                                       virDomainObjPtr vm,
                                       virDomainDeviceDefPtr dev,
                                       unsigned int qemuCmdFlags)
 {
     virDomainNetDefPtr net = dev->data.net;
     char *cmd = NULL, *reply = NULL, *remove_cmd = NULL;
-    int i;
+    char *tapfd_name = NULL, *tapfd_close = NULL;
+    int i, tapfd = -1;
     unsigned domain, bus, slot;
 
     if (!(qemuCmdFlags & QEMUD_CMD_FLAG_HOST_NET_ADD)) {
@@ -4946,10 +4948,16 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
 
     if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT,
-                         _("network device type '%s' cannot be attached"),
-                         virDomainNetTypeToString(net->type));
-        return -1;
+        if (vm->monitor_chr->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
+            qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                             _("network device type '%s' cannot be attached: "
+                               "qemu is not using a unix socket monitor"),
+                             virDomainNetTypeToString(net->type));
+            return -1;
+        }
+
+        if ((tapfd = qemudNetworkIfaceConnect(conn, driver, net, qemuCmdFlags)) < 0)
+            return -1;
     }
 
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0)
@@ -4967,27 +4975,65 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
         if (vm->def->nets[i]->vlan >= net->vlan)
             net->vlan = vm->def->nets[i]->vlan;
 
-    if (qemuBuildHostNetStr(conn, net,
-                            "host_net_add ", ' ', net->vlan, NULL, &cmd) < 0)
-        goto cleanup;
+    if (tapfd != -1) {
+        if (virAsprintf(&tapfd_name, "fd-%s", net->hostnet_name) < 0)
+            goto no_memory;
+
+        if (virAsprintf(&tapfd_close, "closefd %s", tapfd_name) < 0)
+            goto no_memory;
+
+        if (virAsprintf(&cmd, "getfd %s", tapfd_name) < 0)
+            goto no_memory;
+
+        if (qemudMonitorCommandWithFd(vm, cmd, tapfd, &reply) < 0) {
+            qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                             _("failed to pass fd to qemu with '%s'"), cmd);
+            goto cleanup;
+        }
+
+        DEBUG("%s: getfd reply: %s", vm->def->name, reply);
+
+        /* If the command isn't supported then qemu prints:
+         * unknown command: getfd" */
+        if (strstr(reply, "unknown command:")) {
+            qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                             "%s",
+                             _("bridge/network interface attach not supported: "
+                               "qemu 'getfd' monitor command not available"));
+            goto cleanup;
+        }
+
+        VIR_FREE(reply);
+        VIR_FREE(cmd);
+    }
+
+    if (qemuBuildHostNetStr(conn, net, "host_net_add ", ' ',
+                            net->vlan, tapfd_name, &cmd) < 0)
+        goto try_tapfd_close;
 
     remove_cmd = NULL;
     if (net->vlan >= 0 && net->hostnet_name &&
         virAsprintf(&remove_cmd, "host_net_remove %d %s",
                     net->vlan, net->hostnet_name) < 0) {
-        goto no_memory;
+        virReportOOMError(conn);
+        goto try_tapfd_close;
     }
 
     if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
         qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          _("failed to add network backend with '%s'"), cmd);
-        goto cleanup;
+        goto try_tapfd_close;
     }
 
     DEBUG("%s: host_net_add reply: %s", vm->def->name, reply);
 
     VIR_FREE(reply);
     VIR_FREE(cmd);
+    VIR_FREE(tapfd_name);
+    VIR_FREE(tapfd_close);
+    if (tapfd != -1)
+        close(tapfd);
+    tapfd = -1;
 
     if (qemuBuildNicStr(conn, net,
                         "pci_add pci_addr=auto ", ' ', net->vlan, &cmd) < 0)
@@ -5028,12 +5074,27 @@ try_remove:
         VIR_DEBUG("%s: host_net_remove reply: %s\n", vm->def->name, reply);
     goto cleanup;
 
+try_tapfd_close:
+    VIR_FREE(reply);
+
+    if (tapfd_close) {
+        if (qemudMonitorCommand(vm, tapfd_close, &reply) < 0)
+            VIR_WARN(_("Failed to close tapfd with '%s'\n"), tapfd_close);
+        else
+            VIR_DEBUG("%s: closefd: %s\n", vm->def->name, reply);
+    }
+    goto cleanup;
+
 no_memory:
     virReportOOMError(conn);
 cleanup:
     VIR_FREE(cmd);
     VIR_FREE(reply);
     VIR_FREE(remove_cmd);
+    VIR_FREE(tapfd_close);
+    VIR_FREE(tapfd_name);
+    if (tapfd != -1)
+        close(tapfd);
     return -1;
 }
 
@@ -5189,7 +5250,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                                     dev->data.disk->src);
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
-        ret = qemudDomainAttachNetDevice(dom->conn, vm, dev, qemuCmdFlags);
+        ret = qemudDomainAttachNetDevice(dom->conn, driver, vm, dev, qemuCmdFlags);
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
                dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
                dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
