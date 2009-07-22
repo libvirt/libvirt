@@ -6671,7 +6671,7 @@ error:
  *
  * Undefine an inactive storage pool
  *
- * Returns a virStoragePoolPtr object, or NULL if creation failed
+ * Returns 0 on success, -1 on failure
  */
 int
 virStoragePoolUndefine(virStoragePoolPtr pool)
