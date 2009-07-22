@@ -3,6 +3,7 @@
 schemadir = $(pkgdatadir)/schemas
 schema_DATA = \
 	domain.rng \
+	interface.rng \
 	network.rng \
 	storagepool.rng \
 	storagevol.rng \
