@@ -157,6 +157,14 @@ ONE_DRIVER_SOURCES =					\
 		./opennebula/one_client.c		\
 		./opennebula/one_client.h
 
+ESX_DRIVER_SOURCES =								\
+		esx/esx_driver.c esx/esx_driver.h			\
+		esx/esx_util.c esx/esx_util.h				\
+		esx/esx_vi.c esx/esx_vi.h					\
+		esx/esx_vi_methods.c esx/esx_vi_methods.h	\
+		esx/esx_vi_types.c esx/esx_vi_types.h		\
+		esx/esx_vmx.c esx/esx_vmx.h
+
 NETWORK_DRIVER_SOURCES =					\
 		network_driver.h network_driver.c
 
@@ -379,6 +387,21 @@ endif
 
 
 
+if WITH_ESX
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_esx.la
+else
+noinst_LTLIBRARIES += libvirt_driver_esx.la
+libvirt_la_LIBADD += libvirt_driver_esx.la
+endif
+libvirt_driver_esx_la_CFLAGS = $(LIBCURL_CFLAGS)
+libvirt_driver_esx_la_LDFLAGS = $(LIBCURL_LIBS)
+if WITH_DRIVER_MODULES
+libvirt_driver_esx_la_LDFLAGS += -module -avoid-version
+endif
+libvirt_driver_esx_la_SOURCES = $(ESX_DRIVER_SOURCES)
+endif
+
 if WITH_NETWORK
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_network.la
@@ -489,6 +512,7 @@ EXTRA_DIST +=							\
 		$(ONE_DRIVER_SOURCES)				\
 		$(OPENVZ_DRIVER_SOURCES)			\
 		$(VBOX_DRIVER_SOURCES)				\
+		$(ESX_DRIVER_SOURCES)				\
 		$(NETWORK_DRIVER_SOURCES)			\
 		$(INTERFACE_DRIVER_SOURCES)			\
 		$(STORAGE_DRIVER_SOURCES)			\

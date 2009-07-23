@@ -65,6 +65,7 @@ typedef enum {
     VIR_FROM_VBOX,    /* Error from VirtualBox driver */
     VIR_FROM_INTERFACE, /* Error when operating on an interface */
     VIR_FROM_ONE,     /* Error from OpenNebula driver */
+    VIR_FROM_ESX,      /* Error from ESX driver */
 } virErrorDomain;
 
 

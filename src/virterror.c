@@ -163,6 +163,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_ONE:
             dom = "ONE ";
             break;
+        case VIR_FROM_ESX:
+            dom = "ESX ";
+            break;
     }
     return(dom);
 }

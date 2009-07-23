@@ -58,6 +58,9 @@
 #ifdef WITH_VBOX
 #include "vbox/vbox_driver.h"
 #endif
+#ifdef WITH_ESX
+#include "esx/esx_driver.h"
+#endif
 #endif
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -308,6 +311,7 @@ virInitialize(void)
     virDriverLoadModule("xen");
     virDriverLoadModule("openvz");
     virDriverLoadModule("vbox");
+    virDriverLoadModule("esx");
     virDriverLoadModule("remote");
 #else
 #ifdef WITH_TEST
@@ -321,6 +325,9 @@ virInitialize(void)
 #endif
 #ifdef WITH_VBOX
     if (vboxRegister() == -1) return -1;
+#endif
+#ifdef WITH_ESX
+    if (esxRegister() == -1) return -1;
 #endif
 #ifdef WITH_REMOTE
     if (remoteRegister () == -1) return -1;
@@ -903,6 +910,10 @@ virGetVersion(unsigned long *libVer, const char *type,
 #endif
 #if WITH_ONE
         if (STRCASEEQ(type, "ONE"))
+            *typeVer = LIBVIR_VERSION_NUMBER;
+#endif
+#if WITH_ESX
+        if (STRCASEEQ(type, "ESX"))
             *typeVer = LIBVIR_VERSION_NUMBER;
 #endif
 #if WITH_REMOTE
