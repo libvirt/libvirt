@@ -4287,6 +4287,34 @@ qemudCanonicalizeMachineFromInfo(virDomainDefPtr def,
 }
 
 static int
+qemudCanonicalizeMachineDirect(virDomainDefPtr def, char **canonical)
+{
+    virCapsGuestMachinePtr *machines = NULL;
+    int i, nmachines = 0;
+
+    if (qemudProbeMachineTypes(def->emulator, &machines, &nmachines) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    for (i = 0; i < nmachines; i++) {
+        if (!machines[i]->canonical)
+            continue;
+
+        if (strcmp(def->os.machine, machines[i]->name) != 0)
+            continue;
+
+        *canonical = machines[i]->canonical;
+        machines[i]->canonical = NULL;
+        break;
+    }
+
+    virCapabilitiesFreeMachines(machines, nmachines);
+
+    return 0;
+}
+
+static int
 qemudCanonicalizeMachine(virConnectPtr conn, virDomainDefPtr def)
 {
     struct qemud_driver *driver = conn->privateData;
@@ -4323,6 +4351,10 @@ qemudCanonicalizeMachine(virConnectPtr conn, virDomainDefPtr def)
             goto out;
         }
     }
+
+    if (qemudCanonicalizeMachineDirect(def, &canonical) < 0)
+        return -1;
+
 out:
     if (canonical) {
         VIR_FREE(def->os.machine);

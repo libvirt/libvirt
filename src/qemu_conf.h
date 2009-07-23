@@ -168,6 +168,10 @@ int         qemuBuildNicStr             (virConnectPtr conn,
 int         qemuAssignNetNames          (virDomainDefPtr def,
                                          virDomainNetDefPtr net);
 
+int         qemudProbeMachineTypes      (const char *binary,
+                                         virCapsGuestMachinePtr **machines,
+                                         int *nmachines);
+
 virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
                                      virCapsPtr caps,
                                      const char **progenv,

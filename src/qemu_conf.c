@@ -401,7 +401,7 @@ error:
     return -1;
 }
 
-static int
+int
 qemudProbeMachineTypes(const char *binary,
                        virCapsGuestMachinePtr **machines,
                        int *nmachines)
