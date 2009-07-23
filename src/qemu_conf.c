@@ -370,17 +370,18 @@ qemudCapsInitGuest(virCapsPtr caps,
                    int hvm) {
     virCapsGuestPtr guest;
     int i;
-    int hasbase = 0;
-    int hasaltbase = 0;
     int haskvm = 0;
     int haskqemu = 0;
     const char *kvmbin = NULL;
+    const char *binary = NULL;
 
     /* Check for existance of base emulator, or alternate base
      * which can be used with magic cpu choice
      */
-    hasbase = (access(info->binary, X_OK) == 0);
-    hasaltbase = (info->altbinary && access(info->altbinary, X_OK) == 0);
+    if (access(info->binary, X_OK) == 0)
+        binary = info->binary;
+    else if (info->altbinary && access(info->altbinary, X_OK) == 0)
+        binary = info->altbinary;
 
     /* Can use acceleration for KVM/KQEMU if
      *  - host & guest arches match
@@ -398,6 +399,8 @@ qemudCapsInitGuest(virCapsPtr caps,
                 access("/dev/kvm", F_OK) == 0) {
                 haskvm = 1;
                 kvmbin = kvmbins[i];
+                if (!binary)
+                    binary = kvmbin;
                 break;
             }
         }
@@ -406,8 +409,7 @@ qemudCapsInitGuest(virCapsPtr caps,
             haskqemu = 1;
     }
 
-
-    if (!hasbase && !hasaltbase && !haskvm)
+    if (!binary)
         return 0;
 
     /* We register kvm as the base emulator too, since we can
@@ -416,8 +418,7 @@ qemudCapsInitGuest(virCapsPtr caps,
                                          hvm ? "hvm" : "xen",
                                          info->arch,
                                          info->wordsize,
-                                         (hasbase ? info->binary :
-                                          (hasaltbase ? info->altbinary : kvmbin)),
+                                         binary,
                                          NULL,
                                          info->nmachines,
                                          info->machines)) == NULL)
