@@ -601,7 +601,7 @@ virInterfaceDefParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt) {
     tmp = virXPathString(conn, "string(./@type)", ctxt);
     if (tmp == NULL) {
         virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
-                                _("interface misses the type attribute"));
+                                "%s", _("interface misses the type attribute"));
         return(NULL);
     }
     type = virInterfaceTypeFromString(tmp);
@@ -643,7 +643,7 @@ virInterfaceDefParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt) {
             bridge = virXPathNode(conn, "./bridge[1]", ctxt);
             if (bridge == NULL) {
                 virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
-                            _("bridge interface misses the bridge element"));
+                                        "%s", _("bridge interface misses the bridge element"));
                 goto error;
             }
             tmp = virXMLPropString(bridge, "stp");

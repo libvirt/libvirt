@@ -2189,7 +2189,7 @@ virSecurityLabelDefParseXML(virConnectPtr conn,
     VIR_FREE(p);
     if (def->seclabel.type < 0) {
         virDomainReportError(conn, VIR_ERR_XML_ERROR,
-                             _("invalid security type"));
+                             "%s", _("invalid security type"));
         goto error;
     }
 
@@ -2211,7 +2211,7 @@ virSecurityLabelDefParseXML(virConnectPtr conn,
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
         if (p == NULL) {
             virDomainReportError(conn, VIR_ERR_XML_ERROR,
-                                 _("security label is missing"));
+                                 "%s", _("security label is missing"));
             goto error;
         }
 
@@ -2225,7 +2225,7 @@ virSecurityLabelDefParseXML(virConnectPtr conn,
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
         if (p == NULL) {
             virDomainReportError(conn, VIR_ERR_XML_ERROR,
-                                 _("security imagelabel is missing"));
+                                 "%s", _("security imagelabel is missing"));
             goto error;
         }
         def->seclabel.imagelabel = p;

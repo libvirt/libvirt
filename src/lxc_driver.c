@@ -107,7 +107,7 @@ static virDrvOpenStatus lxcOpen(virConnectPtr conn,
         /* URI was good, but driver isn't active */
         if (lxc_driver == NULL) {
             lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("lxc state driver is not active"));
+                     "%s", _("lxc state driver is not active"));
             return VIR_DRV_OPEN_ERROR;
         }
     }

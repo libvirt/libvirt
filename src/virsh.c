@@ -4873,7 +4873,7 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
 
     origpool = virStoragePoolLookupByVolume(origvol);
     if (!origpool) {
-        vshError(ctl, FALSE, _("failed to get parent pool"));
+        vshError(ctl, FALSE, "%s", _("failed to get parent pool"));
         goto cleanup;
     }
 
@@ -6589,7 +6589,8 @@ cmdCd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     int found;
 
     if (!ctl->imode) {
-        vshError(ctl, FALSE, _("cd: command valid only in interactive mode"));
+        vshError(ctl, FALSE, "%s",
+                 _("cd: command valid only in interactive mode"));
         return -1;
     }
 

@@ -1599,7 +1599,7 @@ static int qemudSecurityHook(void *data) {
 
     if (qemudDomainSetSecurityLabel(h->conn, h->driver, h->vm) < 0) {
         qemudReportError(h->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Failed to set security label"));
+                         "%s", _("Failed to set security label"));
         return -1;
     }
 
@@ -3592,7 +3592,7 @@ static int qemudDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr sec
         if (driver->securityDriver && driver->securityDriver->domainGetSecurityLabel) {
             if (driver->securityDriver->domainGetSecurityLabel(dom->conn, vm, seclabel) == -1) {
                 qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("Failed to get security label"));
+                                 "%s", _("Failed to get security label"));
                 goto cleanup;
             }
         }

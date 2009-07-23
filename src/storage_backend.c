@@ -423,7 +423,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
         use_kvmimg = 0;
     else {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("unable to find kvm-img or qemu-img"));
+                              "%s", _("unable to find kvm-img or qemu-img"));
         return -1;
     }
 
@@ -472,8 +472,7 @@ virStorageBackendCreateQcowCreate(virConnectPtr conn,
     const char *imgargv[4];
 
     if (inputvol) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              "%s",
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
                               _("cannot copy from volume with qcow-create"));
         return -1;
     }
@@ -485,9 +484,9 @@ virStorageBackendCreateQcowCreate(virConnectPtr conn,
         return -1;
     }
     if (vol->backingStore.path != NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_SUPPORT,
+        virStorageReportError(conn, VIR_ERR_NO_SUPPORT, "%s",
                               _("copy-on-write image not supported with "
-                              "qcow-create"));
+                                      "qcow-create"));
         return -1;
     }
 

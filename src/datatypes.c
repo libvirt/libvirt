@@ -289,7 +289,7 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
         if (virHashAddEntry(conn->domains, name, ret) < 0) {
             virMutexUnlock(&conn->lock);
             virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
-                            _("failed to add domain to connection hash table"));
+                            "%s", _("failed to add domain to connection hash table"));
             goto error;
         }
         conn->refs++;
@@ -330,7 +330,7 @@ virReleaseDomain(virDomainPtr domain) {
     if (virHashRemoveEntry(conn->domains, domain->name, NULL) < 0) {
         virMutexUnlock(&conn->lock);
         virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("domain missing from connection hash table"));
+                        "%s", _("domain missing from connection hash table"));
         conn = NULL;
     }
 
@@ -430,7 +430,7 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
         if (virHashAddEntry(conn->networks, name, ret) < 0) {
             virMutexUnlock(&conn->lock);
             virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
-                            _("failed to add network to connection hash table"));
+                            "%s", _("failed to add network to connection hash table"));
             goto error;
         }
         conn->refs++;
@@ -468,7 +468,7 @@ virReleaseNetwork(virNetworkPtr network) {
     if (virHashRemoveEntry(conn->networks, network->name, NULL) < 0) {
         virMutexUnlock(&conn->lock);
         virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("network missing from connection hash table"));
+                        "%s", _("network missing from connection hash table"));
         conn = NULL;
     }
 
@@ -603,7 +603,7 @@ _("Failed to change interface mac address from %s to %s due to differing lengths
         if (virHashAddEntry(conn->interfaces, name, ret) < 0) {
             virMutexUnlock(&conn->lock);
             virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
-                            _("failed to add interface to connection hash table"));
+                            "%s", _("failed to add interface to connection hash table"));
             goto error;
         }
         conn->refs++;
@@ -642,7 +642,7 @@ virReleaseInterface(virInterfacePtr iface) {
         /* unlock before reporting error because error report grabs lock */
         virMutexUnlock(&conn->lock);
         virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("interface missing from connection hash table"));
+                        "%s", _("interface missing from connection hash table"));
         /* don't decr the conn refct if we weren't connected to it */
         conn = NULL;
     }
@@ -744,7 +744,7 @@ virGetStoragePool(virConnectPtr conn, const char *name, const unsigned char *uui
         if (virHashAddEntry(conn->storagePools, name, ret) < 0) {
             virMutexUnlock(&conn->lock);
             virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
-                            _("failed to add storage pool to connection hash table"));
+                            "%s", _("failed to add storage pool to connection hash table"));
             goto error;
         }
         conn->refs++;
@@ -783,7 +783,7 @@ virReleaseStoragePool(virStoragePoolPtr pool) {
     if (virHashRemoveEntry(conn->storagePools, pool->name, NULL) < 0) {
         virMutexUnlock(&conn->lock);
         virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("pool missing from connection hash table"));
+                        "%s", _("pool missing from connection hash table"));
         conn = NULL;
     }
 
@@ -887,7 +887,7 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name, const c
         if (virHashAddEntry(conn->storageVols, key, ret) < 0) {
             virMutexUnlock(&conn->lock);
             virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
-                            _("failed to add storage vol to connection hash table"));
+                            "%s", _("failed to add storage vol to connection hash table"));
             goto error;
         }
         conn->refs++;
@@ -927,7 +927,7 @@ virReleaseStorageVol(virStorageVolPtr vol) {
     if (virHashRemoveEntry(conn->storageVols, vol->key, NULL) < 0) {
         virMutexUnlock(&conn->lock);
         virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("vol missing from connection hash table"));
+                        "%s", _("vol missing from connection hash table"));
         conn = NULL;
     }
 
@@ -1023,7 +1023,7 @@ virGetNodeDevice(virConnectPtr conn, const char *name)
         if (virHashAddEntry(conn->nodeDevices, name, ret) < 0) {
             virMutexUnlock(&conn->lock);
             virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
-                            _("failed to add node dev to conn hash table"));
+                            "%s", _("failed to add node dev to conn hash table"));
             goto error;
         }
         conn->refs++;
@@ -1061,7 +1061,7 @@ virReleaseNodeDevice(virNodeDevicePtr dev) {
     if (virHashRemoveEntry(conn->nodeDevices, dev->name, NULL) < 0) {
         virMutexUnlock(&conn->lock);
         virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("dev missing from connection hash table"));
+                        "%s", _("dev missing from connection hash table"));
         conn = NULL;
     }
 
