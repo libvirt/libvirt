@@ -69,6 +69,16 @@ virCapabilitiesFreeHostNUMACell(virCapsHostNUMACellPtr cell)
 }
 
 static void
+virCapabilitiesFreeGuestMachine(virCapsGuestMachinePtr machine)
+{
+    if (machine == NULL)
+        return;
+    VIR_FREE(machine->name);
+    VIR_FREE(machine->canonical);
+    VIR_FREE(machine);
+}
+
+static void
 virCapabilitiesFreeGuestDomain(virCapsGuestDomainPtr dom)
 {
     int i;
@@ -78,7 +88,7 @@ virCapabilitiesFreeGuestDomain(virCapsGuestDomainPtr dom)
     VIR_FREE(dom->info.emulator);
     VIR_FREE(dom->info.loader);
     for (i = 0 ; i < dom->info.nmachines ; i++)
-        VIR_FREE(dom->info.machines[i]);
+        virCapabilitiesFreeGuestMachine(dom->info.machines[i]);
     VIR_FREE(dom->info.machines);
     VIR_FREE(dom->type);
 
@@ -107,7 +117,7 @@ virCapabilitiesFreeGuest(virCapsGuestPtr guest)
     VIR_FREE(guest->arch.defaultInfo.emulator);
     VIR_FREE(guest->arch.defaultInfo.loader);
     for (i = 0 ; i < guest->arch.defaultInfo.nmachines ; i++)
-        VIR_FREE(guest->arch.defaultInfo.machines[i]);
+        virCapabilitiesFreeGuestMachine(guest->arch.defaultInfo.machines[i]);
     VIR_FREE(guest->arch.defaultInfo.machines);
 
     for (i = 0 ; i < guest->arch.ndomains ; i++)
@@ -252,6 +262,53 @@ virCapabilitiesAddHostNUMACell(virCapsPtr caps,
     return 0;
 }
 
+/**
+ * virCapabilitiesAllocMachines:
+ * @machines: machine variants for emulator ('pc', or 'isapc', etc)
+ * @nmachines: number of machine variants for emulator
+ *
+ * Allocate a table of virCapsGuestMachinePtr from the supplied table
+ * of machine names.
+ */
+virCapsGuestMachinePtr *
+virCapabilitiesAllocMachines(const char *const *names, int nnames)
+{
+    virCapsGuestMachinePtr *machines;
+    int i;
+
+    if (VIR_ALLOC_N(machines, nnames) < 0)
+        return NULL;
+
+    for (i = 0; i < nnames; i++) {
+        if (VIR_ALLOC(machines[i]) < 0 ||
+            !(machines[i]->name = strdup(names[i]))) {
+            virCapabilitiesFreeMachines(machines, nnames);
+            return NULL;
+        }
+    }
+
+    return machines;
+}
+
+/**
+ * virCapabilitiesFreeMachines:
+ * @machines: table of vircapsGuestMachinePtr
+ *
+ * Free a table of virCapsGuestMachinePtr
+ */
+void
+virCapabilitiesFreeMachines(virCapsGuestMachinePtr *machines,
+                            int nmachines)
+{
+    int i;
+    if (!machines)
+        return;
+    for (i = 0; i < nmachines && machines[i]; i++) {
+        virCapabilitiesFreeGuestMachine(machines[i]);
+        machines[i] = NULL;
+    }
+    VIR_FREE(machines);
+}
 
 /**
  * virCapabilitiesAddGuest:
@@ -276,10 +333,9 @@ virCapabilitiesAddGuest(virCapsPtr caps,
                         const char *emulator,
                         const char *loader,
                         int nmachines,
-                        const char *const *machines)
+                        virCapsGuestMachinePtr *machines)
 {
     virCapsGuestPtr guest;
-    int i;
 
     if (VIR_ALLOC(guest) < 0)
         goto no_memory;
@@ -298,14 +354,8 @@ virCapabilitiesAddGuest(virCapsPtr caps,
         (guest->arch.defaultInfo.loader = strdup(loader)) == NULL)
         goto no_memory;
     if (nmachines) {
-        if (VIR_ALLOC_N(guest->arch.defaultInfo.machines,
-                        nmachines) < 0)
-            goto no_memory;
-        for (i = 0 ; i < nmachines ; i++) {
-            if ((guest->arch.defaultInfo.machines[i] = strdup(machines[i])) == NULL)
-                goto no_memory;
-            guest->arch.defaultInfo.nmachines++;
-        }
+        guest->arch.defaultInfo.nmachines = nmachines;
+        guest->arch.defaultInfo.machines = machines;
     }
 
     if (VIR_REALLOC_N(caps->guests,
@@ -340,10 +390,9 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
                               const char *emulator,
                               const char *loader,
                               int nmachines,
-                              const char *const *machines)
+                              virCapsGuestMachinePtr *machines)
 {
     virCapsGuestDomainPtr dom;
-    int i;
 
     if (VIR_ALLOC(dom) < 0)
         goto no_memory;
@@ -358,13 +407,8 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
         (dom->info.loader = strdup(loader)) == NULL)
         goto no_memory;
     if (nmachines) {
-        if (VIR_ALLOC_N(dom->info.machines, nmachines) < 0)
-            goto no_memory;
-        for (i = 0 ; i < nmachines ; i++) {
-            if ((dom->info.machines[i] = strdup(machines[i])) == NULL)
-                goto no_memory;
-            dom->info.nmachines++;
-        }
+        dom->info.nmachines = nmachines;
+        dom->info.machines = machines;
     }
 
     if (VIR_REALLOC_N(guest->arch.domains,
@@ -517,7 +561,7 @@ virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
         if (STREQ(caps->guests[i]->ostype, ostype) &&
             STREQ(caps->guests[i]->arch.name, arch) &&
             caps->guests[i]->arch.defaultInfo.nmachines)
-            return caps->guests[i]->arch.defaultInfo.machines[0];
+            return caps->guests[i]->arch.defaultInfo.machines[0]->name;
     }
     return NULL;
 }
@@ -649,7 +693,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
 
         for (j = 0 ; j < caps->guests[i]->arch.defaultInfo.nmachines ; j++) {
             virBufferVSprintf(&xml, "      <machine>%s</machine>\n",
-                              caps->guests[i]->arch.defaultInfo.machines[j]);
+                              caps->guests[i]->arch.defaultInfo.machines[j]->name);
         }
 
         for (j = 0 ; j < caps->guests[i]->arch.ndomains ; j++) {
@@ -664,7 +708,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
 
             for (k = 0 ; k < caps->guests[i]->arch.domains[j]->info.nmachines ; k++) {
                 virBufferVSprintf(&xml, "        <machine>%s</machine>\n",
-                                  caps->guests[i]->arch.domains[j]->info.machines[k]);
+                                  caps->guests[i]->arch.domains[j]->info.machines[k]->name);
             }
             virBufferAddLit(&xml, "      </domain>\n");
         }

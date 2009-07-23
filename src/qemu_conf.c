@@ -336,17 +336,17 @@ static const struct qemu_arch_info const arch_info_xen[] = {
  */
 static int
 qemudParseMachineTypesStr(const char *output,
-                          char ***machines,
+                          virCapsGuestMachinePtr **machines,
                           int *nmachines)
 {
     const char *p = output;
     const char *next;
-    char **list = NULL;
-    int i, nitems = 0;
+    virCapsGuestMachinePtr *list = NULL;
+    int nitems = 0;
 
     do {
         const char *t;
-        char *machine;
+        virCapsGuestMachinePtr machine;
 
         if ((next = strchr(p, '\n')))
             ++next;
@@ -357,10 +357,16 @@ qemudParseMachineTypesStr(const char *output,
         if (!(t = strchr(p, ' ')) || (next && t >= next))
             continue;
 
-        if (!(machine = strndup(p, t - p)))
+        if (VIR_ALLOC(machine) < 0)
             goto error;
 
+        if (!(machine->name = strndup(p, t - p))) {
+            VIR_FREE(machine);
+            goto error;
+        }
+
         if (VIR_REALLOC_N(list, nitems + 1) < 0) {
+            VIR_FREE(machine->name);
             VIR_FREE(machine);
             goto error;
         }
@@ -382,15 +388,13 @@ qemudParseMachineTypesStr(const char *output,
     return 0;
 
 error:
-    for (i = 0; i < nitems; i++)
-        VIR_FREE(list[i]);
-    VIR_FREE(list);
+    virCapabilitiesFreeMachines(list, nitems);
     return -1;
 }
 
 static int
 qemudProbeMachineTypes(const char *binary,
-                       char ***machines,
+                       virCapsGuestMachinePtr **machines,
                        int *nmachines)
 {
     const char *const qemuarg[] = { binary, "-M", "?", NULL };
@@ -454,7 +458,7 @@ qemudCapsInitGuest(virCapsPtr caps,
     int haskqemu = 0;
     const char *kvmbin = NULL;
     const char *binary = NULL;
-    char **machines = NULL;
+    virCapsGuestMachinePtr *machines = NULL;
     int nmachines = 0;
 
     /* Check for existance of base emulator, or alternate base
@@ -495,12 +499,18 @@ qemudCapsInitGuest(virCapsPtr caps,
         return 0;
 
     if (info->machine) {
-        char *machine;
+        virCapsGuestMachinePtr machine;
 
-        if (!(machine = strdup(info->machine)))
+        if (VIR_ALLOC(machine) < 0)
             return -1;
 
+        if (!(machine->name = strdup(info->machine))) {
+            VIR_FREE(machine);
+            return -1;
+        }
+
         if (VIR_ALLOC_N(machines, nmachines) < 0) {
+            VIR_FREE(machine->name);
             VIR_FREE(machine);
             return -1;
         }
@@ -520,16 +530,14 @@ qemudCapsInitGuest(virCapsPtr caps,
                                          binary,
                                          NULL,
                                          nmachines,
-                                         (const char *const *)machines)) == NULL) {
-        for (i = 0; i < nmachines; i++)
+                                         machines)) == NULL) {
+        for (i = 0; i < nmachines; i++) {
+            VIR_FREE(machines[i]->name);
             VIR_FREE(machines[i]);
+        }
         VIR_FREE(machines);
         return -1;
     }
-
-    for (i = 0; i < nmachines; i++)
-        VIR_FREE(machines[i]);
-    VIR_FREE(machines);
 
     if (hvm) {
         if (virCapabilitiesAddGuestDomain(guest,

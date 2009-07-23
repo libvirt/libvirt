@@ -2202,7 +2202,11 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
 
     for (i = 0; i < nr_guest_archs; ++i) {
         virCapsGuestPtr guest;
-        char const *const machines[] = {guest_archs[i].hvm ? "xenfv" : "xenpv"};
+        char const *const xen_machines[] = {guest_archs[i].hvm ? "xenfv" : "xenpv"};
+        virCapsGuestMachinePtr *machines;
+
+        if ((machines = virCapabiltiesAllocMachines(xen_machines, 1)) == NULL)
+            goto no_memory;
 
         if ((guest = virCapabilitiesAddGuest(caps,
                                              guest_archs[i].hvm ? "hvm" : "xen",
@@ -2215,8 +2219,12 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
                                               "/usr/lib/xen/boot/hvmloader" :
                                               NULL),
                                              1,
-                                             machines)) == NULL)
+                                             machines)) == NULL) {
+            virCapabilitiesFreeMachines(machines, 1);
             goto no_memory;
+        }
+
+        virCapabilitiesFreeMachines(machines, 1);
 
         if (virCapabilitiesAddGuestDomain(guest,
                                           "xen",

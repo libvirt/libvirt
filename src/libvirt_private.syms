@@ -30,6 +30,8 @@ virCapabilitiesSetMacPrefix;
 virCapabilitiesGenerateMac;
 virCapabilitiesSetEmulatorRequired;
 virCapabilitiesIsEmulatorRequired;
+virCapabilitiesAllocMachines;
+virCapabilitiesFreeMachines;
 
 
 # conf.h
