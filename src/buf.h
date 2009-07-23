@@ -40,7 +40,7 @@ unsigned int virBufferUse(const virBufferPtr buf);
 void virBufferAdd(const virBufferPtr buf, const char *str, int len);
 void virBufferAddChar(const virBufferPtr buf, char c);
 void virBufferVSprintf(const virBufferPtr buf, const char *format, ...)
-  ATTRIBUTE_FORMAT(printf, 2, 3);
+  ATTRIBUTE_FMT_PRINTF(2, 3);
 void virBufferStrcat(const virBufferPtr buf, ...);
 void virBufferEscapeString(const virBufferPtr buf, const char *format, const char *str);
 void virBufferURIEncodeString (const virBufferPtr buf, const char *str);

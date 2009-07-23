@@ -49,7 +49,7 @@ void sexpr_free(struct sexpr *sexpr);
 const char *sexpr_node(const struct sexpr *sexpr, const char *node);
 int sexpr_node_copy(const struct sexpr *sexpr, const char *node, char **dst);
 const char *sexpr_fmt_node(const struct sexpr *sexpr, const char *fmt, ...)
-  ATTRIBUTE_FORMAT(printf,2,3);
+  ATTRIBUTE_FMT_PRINTF(2,3);
 struct sexpr *sexpr_lookup(const struct sexpr *sexpr, const char *node);
 int sexpr_has(const struct sexpr *sexpr, const char *node);
 #endif

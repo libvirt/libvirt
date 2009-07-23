@@ -312,7 +312,7 @@ gcc's printf attribute directive in the prototype.  For example, here's
 the one for virAsprintf, in util.h:
 
     int virAsprintf(char **strp, const char *fmt, ...)
-	ATTRIBUTE_FORMAT(printf, 2, 3);
+	ATTRIBUTE_FMT_PRINTF(2, 3);
 
 This makes it so gcc's -Wformat and -Wformat-security options can do
 their jobs and cross-check format strings with the number and types

@@ -52,6 +52,7 @@ MinGW Windows libvirt virtualization library.
   --without-uml \
   --without-vbox \
   --without-openvz \
+  --without-one \
   --without-libvirtd
 make
 
@@ -90,6 +91,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mingw32_datadir}/libvirt/schemas/storagevol.rng
 %{_mingw32_datadir}/libvirt/schemas/nodedev.rng
 %{_mingw32_datadir}/libvirt/schemas/capability.rng
+%{_mingw32_datadir}/libvirt/schemas/interface.rng
 
 %{_mingw32_datadir}/locale/*/LC_MESSAGES/libvirt.mo
 

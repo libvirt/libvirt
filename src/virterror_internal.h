@@ -46,7 +46,7 @@ void virRaiseErrorFull(virConnectPtr conn,
                        int int1,
                        int int2,
                        const char *fmt, ...)
-    ATTRIBUTE_FORMAT(printf, 13, 14);
+    ATTRIBUTE_FMT_PRINTF(13, 14);
 
 /* Includes 'dom' and 'net' for compatbility, but they're ignored */
 #define virRaiseError(conn, dom, net, domain, code, level,              \
@@ -61,7 +61,7 @@ void virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
                           const char *funcname ATTRIBUTE_UNUSED,
                           size_t linenr ATTRIBUTE_UNUSED,
                           const char *fmt, ...)
-  ATTRIBUTE_FORMAT(printf, 7, 8);
+  ATTRIBUTE_FMT_PRINTF(7, 8);
 
 void virReportSystemErrorFull(virConnectPtr conn,
                               int domcode,
@@ -70,7 +70,7 @@ void virReportSystemErrorFull(virConnectPtr conn,
                               const char *funcname,
                               size_t linenr,
                               const char *fmt, ...)
-    ATTRIBUTE_FORMAT(printf, 7, 8);
+    ATTRIBUTE_FMT_PRINTF(7, 8);
 
 #define virReportSystemError(conn, theerrno, fmt,...)             \
     virReportSystemErrorFull((conn),                              \

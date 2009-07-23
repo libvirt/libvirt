@@ -82,7 +82,7 @@ virSecurityDriverVerify(virConnectPtr conn, virDomainDefPtr def);
 
 void
 virSecurityReportError(virConnectPtr conn, int code, const char *fmt, ...)
-    ATTRIBUTE_FORMAT(printf, 3, 4);
+    ATTRIBUTE_FMT_PRINTF(3, 4);
 
 /* Helpers */
 void virSecurityDriverInit(virSecurityDriverPtr drv);

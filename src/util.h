@@ -160,7 +160,7 @@ int virMacAddrCompare (const char *mac1, const char *mac2);
 void virSkipSpaces(const char **str);
 int virParseNumber(const char **str);
 int virAsprintf(char **strp, const char *fmt, ...)
-    ATTRIBUTE_FORMAT(printf, 2, 3);
+    ATTRIBUTE_FMT_PRINTF(2, 3);
 
 #define VIR_MAC_BUFLEN 6
 #define VIR_MAC_PREFIX_BUFLEN 3

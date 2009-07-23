@@ -41,7 +41,7 @@ remoteDispatchClientRequest (struct qemud_server *server,
 
 void remoteDispatchFormatError (remote_error *rerr,
                                 const char *fmt, ...)
-    ATTRIBUTE_FORMAT(printf, 2, 3);
+    ATTRIBUTE_FMT_PRINTF(2, 3);
 
 void remoteDispatchAuthError (remote_error *rerr);
 void remoteDispatchGenericError (remote_error *rerr);

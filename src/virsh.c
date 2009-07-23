@@ -202,7 +202,7 @@ typedef struct __vshControl {
 static const vshCmdDef commands[];
 
 static void vshError(vshControl *ctl, int doexit, const char *format, ...)
-    ATTRIBUTE_FORMAT(printf, 3, 4);
+    ATTRIBUTE_FMT_PRINTF(3, 4);
 static int vshInit(vshControl *ctl);
 static int vshDeinit(vshControl *ctl);
 static void vshUsage(void);
@@ -272,9 +272,9 @@ static virStorageVolPtr vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
                            VSH_BYUUID|VSH_BYNAME)
 
 static void vshPrintExtra(vshControl *ctl, const char *format, ...)
-    ATTRIBUTE_FORMAT(printf, 2, 3);
+    ATTRIBUTE_FMT_PRINTF(2, 3);
 static void vshDebug(vshControl *ctl, int level, const char *format, ...)
-    ATTRIBUTE_FORMAT(printf, 3, 4);
+    ATTRIBUTE_FMT_PRINTF(3, 4);
 
 /* XXX: add batch support */
 #define vshPrint(_ctl, ...)   fprintf(stdout, __VA_ARGS__)
@@ -495,6 +495,8 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     return ctl->conn ? TRUE : FALSE;
 }
 
+#ifndef WIN32
+
 /*
  * "console" command
  */
@@ -509,8 +511,6 @@ static const vshCmdOptDef opts_console[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
-
-#ifndef __MINGW32__
 
 static int
 cmdRunConsole(vshControl *ctl, virDomainPtr dom)
@@ -574,17 +574,6 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom)
     return ret;
 }
 
-#else /* __MINGW32__ */
-
-static int
-cmdRunConsole(vshControl *ctl, virDomainPtr dom ATTRIBUTE_UNUSED)
-{
-    vshError (ctl, FALSE, "%s", _("console not implemented on this platform"));
-    return FALSE;
-}
-
-#endif /* __MINGW32__ */
-
 static int
 cmdConsole(vshControl *ctl, const vshCmd *cmd)
 {
@@ -602,6 +591,9 @@ cmdConsole(vshControl *ctl, const vshCmd *cmd)
     virDomainFree(dom);
     return ret;
 }
+
+#endif /* WIN32 */
+
 
 /*
  * "list" command
@@ -931,7 +923,9 @@ static const vshCmdInfo info_create[] = {
 
 static const vshCmdOptDef opts_create[] = {
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML domain description")},
+#ifndef WIN32
     {"console", VSH_OT_BOOL, 0, gettext_noop("attach to console after creation")},
+#endif
     {NULL, 0, 0, NULL}
 };
 
@@ -943,7 +937,9 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     int found;
     int ret = TRUE;
     char *buffer;
+#ifndef WIN32
     int console = vshCommandOptBool(cmd, "console");
+#endif
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -961,8 +957,10 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     if (dom != NULL) {
         vshPrint(ctl, _("Domain %s created from %s\n"),
                  virDomainGetName(dom), from);
+#ifndef WIN32
         if (console)
             cmdRunConsole(ctl, dom);
+#endif
         virDomainFree(dom);
     } else {
         vshError(ctl, FALSE, _("Failed to create domain from %s"), from);
@@ -1083,7 +1081,9 @@ static const vshCmdInfo info_start[] = {
 
 static const vshCmdOptDef opts_start[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the inactive domain")},
+#ifndef WIN32
     {"console", VSH_OT_BOOL, 0, gettext_noop("attach to console after creation")},
+#endif
     {NULL, 0, 0, NULL}
 };
 
@@ -1092,7 +1092,9 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     int ret = TRUE;
+#ifndef WIN32
     int console = vshCommandOptBool(cmd, "console");
+#endif
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -1109,8 +1111,10 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     if (virDomainCreate(dom) == 0) {
         vshPrint(ctl, _("Domain %s started\n"),
                  virDomainGetName(dom));
+#ifndef WIN32
         if (console)
             cmdRunConsole(ctl, dom);
+#endif
     } else {
         vshError(ctl, FALSE, _("Failed to start domain %s"),
                  virDomainGetName(dom));
@@ -6562,6 +6566,8 @@ editReadBackFile (vshControl *ctl, const char *filename)
     return ret;
 }
 
+
+#ifndef WIN32
 /*
  * "cd" command
  */
@@ -6603,6 +6609,9 @@ cmdCd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     return 0;
 }
 
+#endif
+
+#ifndef WIN32
 /*
  * "pwd" command
  */
@@ -6638,6 +6647,7 @@ cmdPwd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     free (cwd);
     return !err;
 }
+#endif
 
 /*
  * "edit" command
@@ -6802,9 +6812,13 @@ static const vshCmdDef commands[] = {
     {"attach-interface", cmdAttachInterface, opts_attach_interface, info_attach_interface},
     {"autostart", cmdAutostart, opts_autostart, info_autostart},
     {"capabilities", cmdCapabilities, NULL, info_capabilities},
+#ifndef WIN32
     {"cd", cmdCd, opts_cd, info_cd},
+#endif
     {"connect", cmdConnect, opts_connect, info_connect},
+#ifndef WIN32
     {"console", cmdConsole, opts_console, info_console},
+#endif
     {"create", cmdCreate, opts_create, info_create},
     {"start", cmdStart, opts_start, info_start},
     {"destroy", cmdDestroy, opts_destroy, info_destroy},
@@ -6882,7 +6896,9 @@ static const vshCmdDef commands[] = {
     {"pool-undefine", cmdPoolUndefine, opts_pool_undefine, info_pool_undefine},
     {"pool-uuid", cmdPoolUuid, opts_pool_uuid, info_pool_uuid},
 
+#ifndef WIN32
     {"pwd", cmdPwd, NULL, info_pwd},
+#endif
     {"quit", cmdQuit, NULL, info_quit},
     {"reboot", cmdReboot, opts_reboot, info_reboot},
     {"restore", cmdRestore, opts_restore, info_restore},

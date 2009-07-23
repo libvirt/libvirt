@@ -41,8 +41,10 @@ void virCondEventCleanup(void *data);
 
 int virThreadInitialize(void)
 {
-    virMutexInit(&virThreadLocalLock);
-    virThreadLocalInit(&virCondEvent, virCondEventCleanup);
+    if (virMutexInit(&virThreadLocalLock) < 0)
+        return -1;
+    if (virThreadLocalInit(&virCondEvent, virCondEventCleanup) < 0)
+        return -1;
 
     return 0;
 }

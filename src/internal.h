@@ -67,7 +67,12 @@
 #ifdef __GNUC__
 
 #ifndef __GNUC_PREREQ
+#if defined __GNUC__ && defined __GNUC_MINOR__
+# define __GNUC_PREREQ(maj, min)                                        \
+    ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
+#else
 #define __GNUC_PREREQ(maj,min) 0
+#endif
 #endif
 
 /**
@@ -80,13 +85,21 @@
 #endif
 
 /**
- * ATTRIBUTE_FORMAT
+ * ATTRIBUTE_FMT_PRINTF
  *
- * Macro used to check printf/scanf-like functions, if compiling
+ * Macro used to check printf like functions, if compiling
  * with gcc.
+ *
+ * We use gnulib which guarentees we always have GNU style
+ * printf format specifiers even on broken Win32 platforms
+ * hence we have to force 'gnu_printf' for new GCC
  */
-#ifndef ATTRIBUTE_FORMAT
-#define ATTRIBUTE_FORMAT(args...) __attribute__((__format__ (args)))
+#ifndef ATTRIBUTE_FMT_PRINTF
+#if __GNUC_PREREQ (4, 4)
+#define ATTRIBUTE_FMT_PRINTF(fmtpos,argpos) __attribute__((__format__ (gnu_printf, fmtpos,argpos)))
+#else
+#define ATTRIBUTE_FMT_PRINTF(fmtpos,argpos) __attribute__((__format__ (printf, fmtpos,argpos)))
+#endif
 #endif
 
 #ifndef ATTRIBUTE_RETURN_CHECK
@@ -98,9 +111,15 @@
 #endif
 
 #else
+#ifndef ATTRIBUTE_UNUSED
 #define ATTRIBUTE_UNUSED
-#define ATTRIBUTE_FORMAT(...)
+#endif
+#ifndef ATTRIBUTE_FMT_PRINTF
+#define ATTRIBUTE_FMT_PRINTF(...)
+#endif
+#ifndef ATTRIBUTE_RETURN_CHECK
 #define ATTRIBUTE_RETURN_CHECK
+#endif
 #endif				/* __GNUC__ */
 
 /*
