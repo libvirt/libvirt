@@ -332,7 +332,7 @@ static const struct qemu_arch_info const arch_info_xen[] = {
 
 
 /* Format is:
- * <machine> <desc> [(default)]
+ * <machine> <desc> [(default)|(alias of <canonical>)]
  */
 static int
 qemudParseMachineTypesStr(const char *output,
@@ -379,6 +379,15 @@ qemudParseMachineTypesStr(const char *output,
             memmove(list + 1, list, sizeof(*list) * nitems);
             list[0] = machine;
             nitems++;
+        }
+
+        if ((t = strstr(p, "(alias of ")) && (!next || t < next)) {
+            p = t + strlen("(alias of ");
+            if (!(t = strchr(p, ')')) || (next && t >= next))
+                continue;
+
+            if (!(machine->canonical = strndup(p, t - p)))
+                goto error;
         }
     } while ((p = next));
 

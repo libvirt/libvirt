@@ -4257,6 +4257,79 @@ cleanup:
     return ret;
 }
 
+static int
+qemudCanonicalizeMachineFromInfo(virDomainDefPtr def,
+                                 virCapsGuestDomainInfoPtr info,
+                                 char **canonical)
+{
+    int i;
+
+    *canonical = NULL;
+
+    for (i = 0; i < info->nmachines; i++) {
+        virCapsGuestMachinePtr machine = info->machines[i];
+
+        if (!machine->canonical)
+            continue;
+
+        if (strcmp(def->os.machine, machine->name) != 0)
+            continue;
+
+        if (!(*canonical = strdup(machine->canonical))) {
+            virReportOOMError(NULL);
+            return -1;
+        }
+
+        break;
+    }
+
+    return 0;
+}
+
+static int
+qemudCanonicalizeMachine(virConnectPtr conn, virDomainDefPtr def)
+{
+    struct qemud_driver *driver = conn->privateData;
+    char *canonical = NULL;
+    int i;
+
+    for (i = 0; i < driver->caps->nguests; i++) {
+        virCapsGuestPtr guest = driver->caps->guests[i];
+        int j;
+
+        for (j = 0; j < guest->arch.ndomains; j++) {
+            virCapsGuestDomainPtr dom = guest->arch.domains[j];
+
+            if (dom->info.emulator &&
+                STREQ(dom->info.emulator, def->emulator)) {
+                if (qemudCanonicalizeMachineFromInfo(def, &dom->info,
+                                                     &canonical) < 0)
+                    return -1;
+                if (canonical)
+                    goto out;
+                break;
+            }
+        }
+
+        /* if we matched one of the domain's emulators, or if
+         * we match the default emulator
+         */
+        if (j < guest->arch.ndomains ||
+            (guest->arch.defaultInfo.emulator &&
+             STREQ(guest->arch.defaultInfo.emulator, def->emulator))) {
+            if (qemudCanonicalizeMachineFromInfo(def, &guest->arch.defaultInfo,
+                                                 &canonical) < 0)
+                return -1;
+            goto out;
+        }
+    }
+out:
+    if (canonical) {
+        VIR_FREE(def->os.machine);
+        def->os.machine = canonical;
+    }
+    return 0;
+}
 
 static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     struct qemud_driver *driver = conn->privateData;
@@ -4302,6 +4375,9 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
             goto cleanup;
         }
     }
+
+    if (qemudCanonicalizeMachine(conn, def) < 0)
+        goto cleanup;
 
     if (!(vm = virDomainAssignDef(conn,
                                   &driver->domains,
