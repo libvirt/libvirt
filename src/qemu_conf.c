@@ -283,31 +283,6 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     return 0;
 }
 
-/* The list of possible machine types for various architectures,
-   as supported by QEMU - taken from 'qemu -M ?' for each arch */
-static const char *const arch_info_hvm_x86_machines[] = {
-    "pc", "isapc"
-};
-static const char *const arch_info_hvm_arm_machines[] = {
-  "versatilepb","integratorcp","versatileab","realview",
-  "akita","spitz","borzoi","terrier","sx1-v1","sx1",
-  "cheetah","n800","n810","lm3s811evb","lm3s6965evb",
-  "connex","verdex","mainstone","musicpal","tosa",
-};
-static const char *const arch_info_hvm_mips_machines[] = {
-    "mips"
-};
-static const char *const arch_info_hvm_sparc_machines[] = {
-    "sun4m"
-};
-static const char *const arch_info_hvm_ppc_machines[] = {
-    "g3beige", "mac99", "prep"
-};
-
-static const char *const arch_info_xen_x86_machines[] = {
-    "xenner"
-};
-
 struct qemu_feature_flags {
     const char *name;
     const int default_on;
@@ -317,8 +292,7 @@ struct qemu_feature_flags {
 struct qemu_arch_info {
     const char *arch;
     int wordsize;
-    const char *const *machines;
-    int nmachines;
+    const char *machine;
     const char *binary;
     const char *altbinary;
     const struct qemu_feature_flags *flags;
@@ -340,28 +314,134 @@ static const struct qemu_feature_flags const arch_info_x86_64_flags [] = {
 
 /* The archicture tables for supported QEMU archs */
 static const struct qemu_arch_info const arch_info_hvm[] = {
-    {  "i686", 32, arch_info_hvm_x86_machines, 2,
-       "/usr/bin/qemu", "/usr/bin/qemu-system-x86_64", arch_info_i686_flags, 4 },
-    {  "x86_64", 64, arch_info_hvm_x86_machines, 2,
-       "/usr/bin/qemu-system-x86_64", NULL, arch_info_x86_64_flags, 2 },
-    {  "arm", 32, arch_info_hvm_arm_machines, 20,
-       "/usr/bin/qemu-system-arm", NULL, NULL, 0 },
-    {  "mips", 32, arch_info_hvm_mips_machines, 1,
-       "/usr/bin/qemu-system-mips", NULL, NULL, 0 },
-    {  "mipsel", 32, arch_info_hvm_mips_machines, 1,
-       "/usr/bin/qemu-system-mipsel", NULL, NULL, 0 },
-    {  "sparc", 32, arch_info_hvm_sparc_machines, 1,
-       "/usr/bin/qemu-system-sparc", NULL, NULL, 0 },
-    {  "ppc", 32, arch_info_hvm_ppc_machines, 3,
-       "/usr/bin/qemu-system-ppc", NULL, NULL, 0 },
+    {  "i686",   32, NULL, "/usr/bin/qemu",
+       "/usr/bin/qemu-system-x86_64", arch_info_i686_flags, 4 },
+    {  "x86_64", 64, NULL, "/usr/bin/qemu-system-x86_64",
+       NULL, arch_info_x86_64_flags, 2 },
+    {  "arm",    32, NULL, "/usr/bin/qemu-system-arm",    NULL, NULL, 0 },
+    {  "mips",   32, NULL, "/usr/bin/qemu-system-mips",   NULL, NULL, 0 },
+    {  "mipsel", 32, NULL, "/usr/bin/qemu-system-mipsel", NULL, NULL, 0 },
+    {  "sparc",  32, NULL, "/usr/bin/qemu-system-sparc",  NULL, NULL, 0 },
+    {  "ppc",    32, NULL, "/usr/bin/qemu-system-ppc",    NULL, NULL, 0 },
 };
 
 static const struct qemu_arch_info const arch_info_xen[] = {
-    {  "i686", 32, arch_info_xen_x86_machines, 1,
-       "/usr/bin/xenner", NULL, arch_info_i686_flags, 4 },
-    {  "x86_64", 64, arch_info_xen_x86_machines, 1,
-       "/usr/bin/xenner", NULL, arch_info_x86_64_flags, 2 },
+    {  "i686",   32, "xenner", "/usr/bin/xenner", NULL, arch_info_i686_flags, 4 },
+    {  "x86_64", 64, "xenner", "/usr/bin/xenner", NULL, arch_info_x86_64_flags, 2 },
 };
+
+
+/* Format is:
+ * <machine> <desc> [(default)]
+ */
+static int
+qemudParseMachineTypesStr(const char *output,
+                          char ***machines,
+                          int *nmachines)
+{
+    const char *p = output;
+    const char *next;
+    char **list = NULL;
+    int i, nitems = 0;
+
+    do {
+        const char *t;
+        char *machine;
+
+        if ((next = strchr(p, '\n')))
+            ++next;
+
+        if (STRPREFIX(p, "Supported machines are:"))
+            continue;
+
+        if (!(t = strchr(p, ' ')) || (next && t >= next))
+            continue;
+
+        if (!(machine = strndup(p, t - p)))
+            goto error;
+
+        if (VIR_REALLOC_N(list, nitems + 1) < 0) {
+            VIR_FREE(machine);
+            goto error;
+        }
+
+        p = t;
+        if (!(t = strstr(p, "(default)")) || (next && t >= next)) {
+            list[nitems++] = machine;
+        } else {
+            /* put the default first in the list */
+            memmove(list + 1, list, sizeof(*list) * nitems);
+            list[0] = machine;
+            nitems++;
+        }
+    } while ((p = next));
+
+    *machines = list;
+    *nmachines = nitems;
+
+    return 0;
+
+error:
+    for (i = 0; i < nitems; i++)
+        VIR_FREE(list[i]);
+    VIR_FREE(list);
+    return -1;
+}
+
+static int
+qemudProbeMachineTypes(const char *binary,
+                       char ***machines,
+                       int *nmachines)
+{
+    const char *const qemuarg[] = { binary, "-M", "?", NULL };
+    const char *const qemuenv[] = { "LC_ALL=C", NULL };
+    char *output;
+    enum { MAX_MACHINES_OUTPUT_SIZE = 1024*4 };
+    pid_t child;
+    int newstdout = -1, len;
+    int ret = -1, status;
+
+    if (virExec(NULL, qemuarg, qemuenv, NULL,
+                &child, -1, &newstdout, NULL, VIR_EXEC_CLEAR_CAPS) < 0)
+        return -1;
+
+    len = virFileReadLimFD(newstdout, MAX_MACHINES_OUTPUT_SIZE, &output);
+    if (len < 0) {
+        virReportSystemError(NULL, errno, "%s",
+                             _("Unable to read 'qemu -M ?' output"));
+        goto cleanup;
+    }
+
+    if (qemudParseMachineTypesStr(output, machines, nmachines) < 0)
+        goto cleanup2;
+
+    ret = 0;
+
+cleanup2:
+    VIR_FREE(output);
+cleanup:
+    if (close(newstdout) < 0)
+        ret = -1;
+
+rewait:
+    if (waitpid(child, &status, 0) != child) {
+        if (errno == EINTR)
+            goto rewait;
+
+        VIR_ERROR(_("Unexpected exit status from qemu %d pid %lu"),
+                  WEXITSTATUS(status), (unsigned long)child);
+        ret = -1;
+    }
+    /* Check & log unexpected exit status, but don't fail,
+     * as there's really no need to throw an error if we did
+     * actually read a valid version number above */
+    if (WEXITSTATUS(status) != 0) {
+        VIR_WARN(_("Unexpected exit status '%d', qemu probably failed"),
+                 WEXITSTATUS(status));
+    }
+
+    return ret;
+}
 
 static int
 qemudCapsInitGuest(virCapsPtr caps,
@@ -374,6 +454,8 @@ qemudCapsInitGuest(virCapsPtr caps,
     int haskqemu = 0;
     const char *kvmbin = NULL;
     const char *binary = NULL;
+    char **machines = NULL;
+    int nmachines = 0;
 
     /* Check for existance of base emulator, or alternate base
      * which can be used with magic cpu choice
@@ -412,6 +494,23 @@ qemudCapsInitGuest(virCapsPtr caps,
     if (!binary)
         return 0;
 
+    if (info->machine) {
+        char *machine;
+
+        if (!(machine = strdup(info->machine)))
+            return -1;
+
+        if (VIR_ALLOC_N(machines, nmachines) < 0) {
+            VIR_FREE(machine);
+            return -1;
+        }
+
+        machines[0] = machine;
+        nmachines = 1;
+
+    } else if (qemudProbeMachineTypes(binary, &machines, &nmachines) < 0)
+        return -1;
+
     /* We register kvm as the base emulator too, since we can
      * just give -no-kvm to disable acceleration if required */
     if ((guest = virCapabilitiesAddGuest(caps,
@@ -420,9 +519,17 @@ qemudCapsInitGuest(virCapsPtr caps,
                                          info->wordsize,
                                          binary,
                                          NULL,
-                                         info->nmachines,
-                                         info->machines)) == NULL)
+                                         nmachines,
+                                         (const char *const *)machines)) == NULL) {
+        for (i = 0; i < nmachines; i++)
+            VIR_FREE(machines[i]);
+        VIR_FREE(machines);
         return -1;
+    }
+
+    for (i = 0; i < nmachines; i++)
+        VIR_FREE(machines[i]);
+    VIR_FREE(machines);
 
     if (hvm) {
         if (virCapabilitiesAddGuestDomain(guest,
