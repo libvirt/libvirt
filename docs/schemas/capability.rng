@@ -196,6 +196,11 @@
 
   <define name='machine'>
     <element name='machine'>
+      <optional>
+        <attribute name='canonical'>
+          <text/>
+        </attribute>
+      </optional>
       <text/>
     </element>
   </define>

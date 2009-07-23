@@ -692,8 +692,11 @@ virCapabilitiesFormatXML(virCapsPtr caps)
                                   caps->guests[i]->arch.defaultInfo.loader);
 
         for (j = 0 ; j < caps->guests[i]->arch.defaultInfo.nmachines ; j++) {
-            virBufferVSprintf(&xml, "      <machine>%s</machine>\n",
-                              caps->guests[i]->arch.defaultInfo.machines[j]->name);
+            virCapsGuestMachinePtr machine = caps->guests[i]->arch.defaultInfo.machines[j];
+            virBufferAddLit(&xml, "      <machine");
+            if (machine->canonical)
+                virBufferVSprintf(&xml, " canonical='%s'", machine->canonical);
+            virBufferVSprintf(&xml, ">%s</machine>\n", machine->name);
         }
 
         for (j = 0 ; j < caps->guests[i]->arch.ndomains ; j++) {
@@ -707,8 +710,11 @@ virCapabilitiesFormatXML(virCapsPtr caps)
                                   caps->guests[i]->arch.domains[j]->info.loader);
 
             for (k = 0 ; k < caps->guests[i]->arch.domains[j]->info.nmachines ; k++) {
-                virBufferVSprintf(&xml, "        <machine>%s</machine>\n",
-                                  caps->guests[i]->arch.domains[j]->info.machines[k]->name);
+                virCapsGuestMachinePtr machine = caps->guests[i]->arch.domains[j]->info.machines[k];
+                virBufferAddLit(&xml, "      <machine");
+                if (machine->canonical)
+                    virBufferVSprintf(&xml, " canonical='%s'", machine->canonical);
+                virBufferVSprintf(&xml, ">%s</machine>\n", machine->name);
             }
             virBufferAddLit(&xml, "      </domain>\n");
         }
