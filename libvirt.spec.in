@@ -12,7 +12,9 @@
 %define with_python        0%{!?_without_python:1}
 %define with_libvirtd      0%{!?_without_libvirtd:1}
 %define with_uml           0%{!?_without_uml:1}
-%define with_one           0%{!?_without_uml:1}
+%define with_one           0%{!?_without_one:1}
+# default to off
+%define with_phyp          0%{!?_without_phyp:0}
 %define with_network       0%{!?_without_network:1}
 %define with_storage_fs    0%{!?_without_storage_fs:1}
 %define with_storage_lvm   0%{!?_without_storage_lvm:1}
@@ -178,6 +180,9 @@ BuildRequires: numactl-devel
 %if %{with_capng}
 BuildRequires: capng-devel >= 0.5.0
 %endif
+%if %{with_phyp}
+BuildRequires: libssh-devel >= 0.3.1
+%endif
 
 # Fedora build root suckage
 BuildRequires: gawk
@@ -261,6 +266,10 @@ of recent versions of Linux (and other OSes).
 %define _without_avahi --without-avahi
 %endif
 
+%if ! %{with_phyp}
+%define _without_phyp --without-phyp
+%endif
+
 %if ! %{with_polkit}
 %define _without_polkit --without-polkit
 %endif
@@ -320,6 +329,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_libvirtd} \
            %{?_without_uml} \
            %{?_without_one} \
+           %{?_without_phyp} \
            %{?_without_network} \
            %{?_with_rhel5_api} \
            %{?_without_storage_fs} \
