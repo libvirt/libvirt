@@ -53,6 +53,8 @@ MinGW Windows libvirt virtualization library.
   --without-vbox \
   --without-openvz \
   --without-one \
+  --without-phyp \
+  --without-esx \
   --without-libvirtd
 make
 

@@ -190,7 +190,7 @@ AC_ARG_WITH([openvz],
 AC_ARG_WITH([libssh],
 [  --with-libssh=[PFX]       libssh location],[],[with_libssh=yes])
 AC_ARG_WITH([phyp],
-[  --with-phyp=[PFX]         add PHYP support (on)],[with_phyp=yes],[with_phyp=check])
+[  --with-phyp=[PFX]         add PHYP support (on)],[],[with_phyp=check])
 AC_ARG_WITH([vbox],
 [  --with-vbox             add VirtualBox support (on)],[],[with_vbox=yes])
 AC_ARG_WITH([lxc],

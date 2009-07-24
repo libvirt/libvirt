@@ -221,8 +221,8 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth)
             password = creds[0].result;
         else {
             virRaiseError(conn, NULL, NULL, 0, VIR_FROM_PHYP,
-                          VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0, "%s : %s",
-                          "Unable to get password certificate.",
+                          VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                          _("Unable to get password certificate: %s"),
                           ssh_get_error(session));
             ssh_disconnect(session);
             goto err;
@@ -235,8 +235,8 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth)
 
         if (auth_check != SSH_AUTH_SUCCESS) {
             virRaiseError(conn, NULL, NULL, 0, VIR_FROM_PHYP,
-                          VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0, "%s : %s",
-                          "Authentication failed.",
+                          VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                          _("Authentication failed: %s"),
                           ssh_get_error(session));
             ssh_disconnect(session);
             goto err;

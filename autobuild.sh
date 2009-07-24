@@ -77,6 +77,8 @@ if [ -x /usr/bin/i686-pc-mingw32-gcc ]; then
     --without-vbox \
     --without-openvz \
     --without-one \
+    --without-phyp \
+    --without-esx \
     --without-libvirtd
 
   make
