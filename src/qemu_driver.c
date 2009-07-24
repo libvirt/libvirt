@@ -5704,12 +5704,6 @@ qemudDomainInterfaceStats (virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!path || path[0] == '\0') {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
-                         "%s", _("NULL or empty path"));
-        goto cleanup;
-    }
-
     /* Check the path is one of the domain's network interfaces. */
     for (i = 0 ; i < vm->def->nnets ; i++) {
         if (vm->def->nets[i]->ifname &&

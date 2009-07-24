@@ -3599,7 +3599,7 @@ virDomainBlockStats (virDomainPtr dom, const char *path,
         virLibDomainError (NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return -1;
     }
-    if (!stats || size > sizeof stats2) {
+    if (!path || !stats || size > sizeof stats2) {
         virLibDomainError (dom, VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
@@ -3657,7 +3657,7 @@ virDomainInterfaceStats (virDomainPtr dom, const char *path,
         virLibDomainError (NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return -1;
     }
-    if (!stats || size > sizeof stats2) {
+    if (!path || !stats || size > sizeof stats2) {
         virLibDomainError (dom, VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
