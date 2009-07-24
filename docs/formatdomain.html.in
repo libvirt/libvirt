@@ -858,13 +858,45 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>
       The character device acts as a TCP client connecting to a
-      remote server, or as a server waiting for a client connection.
+      remote server.
     </p>
 
     <pre>
       ...
       &lt;serial type="tcp"&gt;
         &lt;source mode="connect" host="0.0.0.0" service="2445"/&gt;
+        &lt;protocol type="raw"/&gt;
+        &lt;target port="1"/&gt;
+      &lt;/serial&gt;
+      ...</pre>
+
+    <p>
+      Or as a TCP server waiting for a client connection.
+    </p>
+
+    <pre>
+      ...
+      &lt;serial type="tcp"&gt;
+        &lt;source mode="bind" host="127.0.0.1" service="2445"/&gt;
+        &lt;protocol type="raw"/&gt;
+        &lt;target port="1"/&gt;
+      &lt;/serial&gt;
+      ...</pre>
+
+    <p>
+      Alternatively you can use telnet instead of raw TCP.
+    <p>
+
+    <pre>
+      ...
+      &lt;serial type="tcp"&gt;
+        &lt;source mode="connect" host="0.0.0.0" service="2445"/&gt;
+        &lt;protocol type="telnet"/&gt;
+        &lt;target port="1"/&gt;
+      &lt;/serial&gt;
+      ...
+      &lt;serial type="tcp"&gt;
+        &lt;source mode="bind" host="127.0.0.1" service="2445"/&gt;
         &lt;protocol type="telnet"/&gt;
         &lt;target port="1"/&gt;
       &lt;/serial&gt;
