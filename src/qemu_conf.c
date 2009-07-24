@@ -457,7 +457,72 @@ rewait:
 }
 
 static int
+qemudGetOldMachines(const char *ostype,
+                    const char *arch,
+                    int wordsize,
+                    const char *emulator,
+                    time_t emulator_mtime,
+                    virCapsPtr old_caps,
+                    virCapsGuestMachinePtr **machines,
+                    int *nmachines)
+{
+    int i;
+
+    for (i = 0; i < old_caps->nguests; i++) {
+        virCapsGuestPtr guest = old_caps->guests[i];
+        virCapsGuestDomainInfoPtr info = &guest->arch.defaultInfo;
+        virCapsGuestMachinePtr *list;
+
+        if (!STREQ(ostype, guest->ostype) ||
+            !STREQ(arch, guest->arch.name) ||
+            wordsize != guest->arch.wordsize ||
+            !STREQ(emulator, info->emulator))
+            continue;
+
+        if (emulator_mtime != info->emulator_mtime) {
+            VIR_DEBUG("mtime on %s has changed, refreshing machine types",
+                      info->emulator);
+            return 0;
+        }
+
+        /* It sucks to have to dup these, when we're most likely going
+         * to free the old caps anyway - except if an error occurs, we'll
+         * stick with the old caps.
+         * Also, if we get OOM here, just let the caller try and probe
+         * the binary directly, which will probably fail too.
+         */
+        if (VIR_ALLOC_N(list, info->nmachines) < 0)
+            return 0;
+
+        for (i = 0; i < info->nmachines; i++) {
+            if (VIR_ALLOC(list[i]) < 0) {
+                virCapabilitiesFreeMachines(list, info->nmachines);
+                return 0;
+            }
+            if (info->machines[i]->name &&
+                !(list[i]->name = strdup(info->machines[i]->name))) {
+                virCapabilitiesFreeMachines(list, info->nmachines);
+                return 0;
+            }
+            if (info->machines[i]->canonical &&
+                !(list[i]->canonical = strdup(info->machines[i]->canonical))) {
+                virCapabilitiesFreeMachines(list, info->nmachines);
+                return 0;
+            }
+        }
+
+        *machines = list;
+        *nmachines = info->nmachines;
+
+        return 1;
+    }
+
+    return 0;
+}
+
+static int
 qemudCapsInitGuest(virCapsPtr caps,
+                   virCapsPtr old_caps,
                    const char *hostmachine,
                    const struct qemu_arch_info *info,
                    int hvm) {
@@ -467,8 +532,10 @@ qemudCapsInitGuest(virCapsPtr caps,
     int haskqemu = 0;
     const char *kvmbin = NULL;
     const char *binary = NULL;
+    time_t binary_mtime;
     virCapsGuestMachinePtr *machines = NULL;
     int nmachines = 0;
+    struct stat st;
 
     /* Check for existance of base emulator, or alternate base
      * which can be used with magic cpu choice
@@ -507,6 +574,15 @@ qemudCapsInitGuest(virCapsPtr caps,
     if (!binary)
         return 0;
 
+    if (stat(binary, &st) == 0) {
+        binary_mtime = st.st_mtime;
+    } else {
+        char ebuf[1024];
+        VIR_WARN(_("Failed to stat %s, most peculiar : %s"),
+                 binary, virStrerror(errno, ebuf, sizeof(ebuf)));
+        binary_mtime = 0;
+    }
+
     if (info->machine) {
         virCapsGuestMachinePtr machine;
 
@@ -526,9 +602,16 @@ qemudCapsInitGuest(virCapsPtr caps,
 
         machines[0] = machine;
         nmachines = 1;
-
-    } else if (qemudProbeMachineTypes(binary, &machines, &nmachines) < 0)
-        return -1;
+    } else {
+        int probe = 1;
+        if (old_caps && binary_mtime)
+            probe = !qemudGetOldMachines(hvm ? "hvm" : "xen", info->arch,
+                                         info->wordsize, binary, binary_mtime,
+                                         old_caps, &machines, &nmachines);
+        if (probe &&
+            qemudProbeMachineTypes(binary, &machines, &nmachines) < 0)
+            return -1;
+    }
 
     /* We register kvm as the base emulator too, since we can
      * just give -no-kvm to disable acceleration if required */
@@ -547,6 +630,8 @@ qemudCapsInitGuest(virCapsPtr caps,
         VIR_FREE(machines);
         return -1;
     }
+
+    guest->arch.defaultInfo.emulator_mtime = binary_mtime;
 
     if (hvm) {
         if (virCapabilitiesAddGuestDomain(guest,
@@ -597,7 +682,7 @@ qemudCapsInitGuest(virCapsPtr caps,
     return 0;
 }
 
-virCapsPtr qemudCapsInit(void) {
+virCapsPtr qemudCapsInit(virCapsPtr old_caps) {
     struct utsname utsname;
     virCapsPtr caps;
     int i;
@@ -626,7 +711,7 @@ virCapsPtr qemudCapsInit(void) {
 
     /* First the pure HVM guests */
     for (i = 0 ; i < ARRAY_CARDINALITY(arch_info_hvm) ; i++)
-        if (qemudCapsInitGuest(caps,
+        if (qemudCapsInitGuest(caps, old_caps,
                                utsname.machine,
                                &arch_info_hvm[i], 1) < 0)
             goto no_memory;
@@ -639,7 +724,7 @@ virCapsPtr qemudCapsInit(void) {
             if (STREQ(arch_info_xen[i].arch, utsname.machine) ||
                 (STREQ(utsname.machine, "x86_64") &&
                  STREQ(arch_info_xen[i].arch, "i686"))) {
-                if (qemudCapsInitGuest(caps,
+                if (qemudCapsInitGuest(caps, old_caps,
                                        utsname.machine,
                                        &arch_info_xen[i], 0) < 0)
                     goto no_memory;

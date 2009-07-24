@@ -516,7 +516,7 @@ qemudStartup(int privileged) {
                  virStrerror(-rc, buf, sizeof(buf)));
     }
 
-    if ((qemu_driver->caps = qemudCapsInit()) == NULL)
+    if ((qemu_driver->caps = qemudCapsInit(NULL)) == NULL)
         goto out_of_memory;
 
     if (qemudLoadDriverConfig(qemu_driver, driverConf) < 0) {
@@ -2440,7 +2440,7 @@ static char *qemudGetCapabilities(virConnectPtr conn) {
     char *xml = NULL;
 
     qemuDriverLock(driver);
-    if ((caps = qemudCapsInit()) == NULL) {
+    if ((caps = qemudCapsInit(qemu_driver->caps)) == NULL) {
         virReportOOMError(conn);
         goto cleanup;
     }

@@ -49,6 +49,7 @@ struct _virCapsGuestDomainInfo {
     char *loader;
     int nmachines;
     virCapsGuestMachinePtr *machines;
+    time_t emulator_mtime; /* do @machines need refreshing? */
 };
 
 typedef struct _virCapsGuestDomain virCapsGuestDomain;

@@ -125,7 +125,7 @@ struct qemud_driver {
 int qemudLoadDriverConfig(struct qemud_driver *driver,
                           const char *filename);
 
-virCapsPtr  qemudCapsInit               (void);
+virCapsPtr  qemudCapsInit               (virCapsPtr old_caps);
 
 int         qemudExtractVersion         (virConnectPtr conn,
                                          struct qemud_driver *driver);
