@@ -228,6 +228,66 @@ static const unsigned long long defaultPoolAlloc = 0;
 
 static int testStoragePoolObjSetDefaults(virConnectPtr conn, virStoragePoolObjPtr pool);
 
+static char *
+testDomainGenerateIfname(virConnectPtr conn,
+                         virDomainDefPtr domdef) {
+    int maxif = 1024;
+    int ifctr, i;
+
+    for (ifctr = 0; ifctr < maxif; ++ifctr) {
+        char *ifname;
+        int found = 0;
+
+        if (virAsprintf(&ifname, "testnet%d", ifctr) < 0) {
+            virReportOOMError(conn);
+            return NULL;
+        }
+
+        /* Generate network interface names */
+        for (i = 0 ; i < domdef->nnets ; i++) {
+            if (domdef->nets[i]->ifname &&
+                STREQ (domdef->nets[i]->ifname, ifname)) {
+                found = 1;
+                break;
+            }
+        }
+
+        if (!found)
+            return ifname;
+    }
+
+    testError(conn, VIR_ERR_INTERNAL_ERROR,
+              _("Exceeded max iface limit %d"), maxif);
+    return NULL;
+}
+
+static virDomainObjPtr
+testDomainAssignDef(virConnectPtr conn,
+                    virDomainObjList *domlist,
+                    virDomainDefPtr domdef)
+{
+    virDomainObjPtr domobj = NULL;
+    int i = 0;
+
+    for (i = 0; i < domdef->nnets; i++) {
+        char *ifname;
+        if (domdef->nets[i]->ifname)
+            continue;
+
+        ifname = testDomainGenerateIfname(conn, domdef);
+        if (!ifname)
+            goto error;
+
+        domdef->nets[i]->ifname = ifname;
+    }
+
+    if (!(domobj = virDomainAssignDef(conn, domlist, domdef)))
+        goto error;
+
+error:
+    return domobj;
+}
+
 static int testOpenDefault(virConnectPtr conn) {
     int u;
     struct timeval tv;
@@ -282,7 +342,7 @@ static int testOpenDefault(virConnectPtr conn) {
                                            defaultDomainXML,
                                            VIR_DOMAIN_XML_INACTIVE)))
         goto error;
-    if (!(domobj = virDomainAssignDef(conn, &privconn->domains, domdef))) {
+    if (!(domobj = testDomainAssignDef(conn, &privconn->domains, domdef))) {
         virDomainDefFree(domdef);
         goto error;
     }
@@ -608,7 +668,7 @@ static int testOpenFromFile(virConnectPtr conn,
                 goto error;
         }
 
-        if (!(dom = virDomainAssignDef(conn, &privconn->domains, def))) {
+        if (!(dom = testDomainAssignDef(conn, &privconn->domains, def))) {
             virDomainDefFree(def);
             goto error;
         }
@@ -920,8 +980,8 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
                                        VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
-    if ((dom = virDomainAssignDef(conn, &privconn->domains,
-                                  def)) == NULL) {
+    if ((dom = testDomainAssignDef(conn, &privconn->domains,
+                                   def)) == NULL) {
         virDomainDefFree(def);
         goto cleanup;
     }
@@ -1471,8 +1531,8 @@ static int testDomainRestore(virConnectPtr conn,
     if (!def)
         goto cleanup;
 
-    if ((dom = virDomainAssignDef(conn, &privconn->domains,
-                                  def)) == NULL)
+    if ((dom = testDomainAssignDef(conn, &privconn->domains,
+                                   def)) == NULL)
         goto cleanup;
 
     dom->state = VIR_DOMAIN_RUNNING;
@@ -1763,8 +1823,8 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
                                        VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
-    if ((dom = virDomainAssignDef(conn, &privconn->domains,
-                                  def)) == NULL) {
+    if ((dom = testDomainAssignDef(conn, &privconn->domains,
+                                   def)) == NULL) {
         goto cleanup;
     }
     def = NULL;
