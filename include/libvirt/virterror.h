@@ -53,19 +53,20 @@ typedef enum {
     VIR_FROM_REMOTE,	/* Error from remote driver */
     VIR_FROM_OPENVZ,    /* Error from OpenVZ driver */
     VIR_FROM_XENXM,	/* Error at Xen XM layer */
-    VIR_FROM_STATS_LINUX, /* Error in the Linux Stats code */
-    VIR_FROM_LXC,   /* Error from Linux Container driver */
+    VIR_FROM_STATS_LINUX,/* Error in the Linux Stats code */
+    VIR_FROM_LXC,       /* Error from Linux Container driver */
     VIR_FROM_STORAGE,   /* Error from storage driver */
     VIR_FROM_NETWORK,   /* Error from network config */
     VIR_FROM_DOMAIN,    /* Error from domain config */
     VIR_FROM_UML,       /* Error at the UML driver */
-    VIR_FROM_NODEDEV, /* Error from node device monitor */
-    VIR_FROM_XEN_INOTIFY, /* Error from xen inotify layer */
+    VIR_FROM_NODEDEV,   /* Error from node device monitor */
+    VIR_FROM_XEN_INOTIFY,/* Error from xen inotify layer */
     VIR_FROM_SECURITY,  /* Error from security framework */
-    VIR_FROM_VBOX,    /* Error from VirtualBox driver */
+    VIR_FROM_VBOX,      /* Error from VirtualBox driver */
     VIR_FROM_INTERFACE, /* Error when operating on an interface */
-    VIR_FROM_ONE,     /* Error from OpenNebula driver */
-    VIR_FROM_ESX,      /* Error from ESX driver */
+    VIR_FROM_ONE,       /* Error from OpenNebula driver */
+    VIR_FROM_ESX,       /* Error from ESX driver */
+    VIR_FROM_PHYP,      /* Error from IBM power hypervisor */
 } virErrorDomain;
 
 

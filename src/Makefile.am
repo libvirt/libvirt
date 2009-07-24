@@ -6,6 +6,7 @@ INCLUDES = \
 	   -I@top_srcdir@/include \
 	   -I@top_srcdir@/qemud \
 	   $(LIBXML_CFLAGS) \
+	   $(LIBSSH_CFLAGS) \
 	   $(XEN_CFLAGS) \
 	   $(SELINUX_CFLAGS) \
 	   $(DRIVER_MODULE_CFLAGS) \
@@ -129,13 +130,16 @@ LXC_CONTROLLER_SOURCES =					\
 		veth.c veth.h                                   \
 		cgroup.c cgroup.h
 
+PHYP_DRIVER_SOURCES =						\
+		phyp/phyp_driver.c phyp/phyp_driver.h
+
 OPENVZ_DRIVER_SOURCES =						\
 		openvz_conf.c openvz_conf.h			\
 		openvz_driver.c openvz_driver.h
 
-VBOX_DRIVER_SOURCES =                                 \
-        vbox/vbox_XPCOMCGlue.c vbox/vbox_XPCOMCGlue.h \
-        vbox/vbox_driver.c vbox/vbox_driver.h         \
+VBOX_DRIVER_SOURCES =						\
+        vbox/vbox_XPCOMCGlue.c vbox/vbox_XPCOMCGlue.h		\
+        vbox/vbox_driver.c vbox/vbox_driver.h			\
         vbox/vbox_V2_2.c vbox/vbox_CAPI_v2_2.h
 
 VBOX_DRIVER_EXTRA_DIST = vbox/vbox_tmpl.c vbox/README
@@ -149,18 +153,18 @@ UML_DRIVER_SOURCES =						\
 		uml_conf.c uml_conf.h				\
 		uml_driver.c uml_driver.h
 
-ONE_DRIVER_SOURCES =					\
-		./opennebula/one_conf.c			\
-		./opennebula/one_conf.h			\
-		./opennebula/one_driver.c		\
-		./opennebula/one_driver.h		\
-		./opennebula/one_client.c		\
+ONE_DRIVER_SOURCES =						\
+		./opennebula/one_conf.c				\
+		./opennebula/one_conf.h				\
+		./opennebula/one_driver.c			\
+		./opennebula/one_driver.h			\
+		./opennebula/one_client.c			\
 		./opennebula/one_client.h
 
-ESX_DRIVER_SOURCES =								\
-		esx/esx_driver.c esx/esx_driver.h			\
-		esx/esx_util.c esx/esx_util.h				\
-		esx/esx_vi.c esx/esx_vi.h					\
+ESX_DRIVER_SOURCES =						\
+		esx/esx_driver.c esx/esx_driver.h		\
+		esx/esx_util.c esx/esx_util.h			\
+		esx/esx_vi.c esx/esx_vi.h			\
 		esx/esx_vi_methods.c esx/esx_vi_methods.h	\
 		esx/esx_vi_types.c esx/esx_vi_types.h		\
 		esx/esx_vmx.c esx/esx_vmx.h
@@ -201,7 +205,7 @@ STORAGE_HELPER_DISK_SOURCES =					\
 
 
 # Security framework and drivers for various models
-SECURITY_DRIVER_SOURCES =                                      \
+SECURITY_DRIVER_SOURCES =					\
 		security.h security.c
 
 SECURITY_DRIVER_SELINUX_SOURCES =				\
@@ -293,6 +297,18 @@ if WITH_DRIVER_MODULES
 libvirt_driver_xen_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_xen_la_SOURCES = $(XEN_DRIVER_SOURCES)
+endif
+
+if WITH_PHYP
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_phyp.la
+else
+noinst_LTLIBRARIES += libvirt_driver_phyp.la
+libvirt_la_LIBADD += libvirt_driver_phyp.la
+endif
+libvirt_driver_phyp_la_LDFLAGS = $(LIBSSH_LIBS)
+libvirt_driver_phyp_la_CFLAGS = $(LIBSSH_CFLAGS)
+libvirt_driver_phyp_la_SOURCES = $(PHYP_DRIVER_SOURCES)
 endif
 
 if WITH_OPENVZ
@@ -511,6 +527,7 @@ EXTRA_DIST +=							\
 		$(UML_DRIVER_SOURCES)				\
 		$(ONE_DRIVER_SOURCES)				\
 		$(OPENVZ_DRIVER_SOURCES)			\
+		$(PHYP_DRIVER_SOURCES)				\
 		$(VBOX_DRIVER_SOURCES)				\
 		$(ESX_DRIVER_SOURCES)				\
 		$(NETWORK_DRIVER_SOURCES)			\

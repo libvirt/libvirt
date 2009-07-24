@@ -124,6 +124,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_CONF:
             dom = "Config ";
             break;
+        case VIR_FROM_PHYP:
+            dom = "IBM power hypervisor ";
+            break;
         case VIR_FROM_OPENVZ:
             dom = "OpenVZ ";
             break;

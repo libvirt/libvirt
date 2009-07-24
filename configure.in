@@ -187,6 +187,10 @@ AC_ARG_WITH([uml],
 [  --with-uml              add UML support (on)],[],[with_uml=yes])
 AC_ARG_WITH([openvz],
 [  --with-openvz           add OpenVZ support (on)],[],[with_openvz=yes])
+AC_ARG_WITH([libssh],
+[  --with-libssh=[PFX]       libssh location],[],[with_libssh=yes])
+AC_ARG_WITH([phyp],
+[  --with-phyp=[PFX]         add PHYP support (on)],[with_phyp=yes],[with_phyp=check])
 AC_ARG_WITH([vbox],
 [  --with-vbox             add VirtualBox support (on)],[],[with_vbox=yes])
 AC_ARG_WITH([lxc],
@@ -776,7 +780,50 @@ AM_CONDITIONAL([HAVE_NUMACTL], [test "$with_numactl" != "no"])
 AC_SUBST([NUMACTL_CFLAGS])
 AC_SUBST([NUMACTL_LIBS])
 
+if test "$with_libssh" != "yes" -a "$with_libssh" != "no"; then
+		libssh_path="$with_libssh"
+elif test "$with_libssh" = "yes"; then
+		libssh_path="/usr/local/lib/"
+elif test "$with_libssh" = "no"; then
+		with_phyp="no";
+fi
 
+if test "$with_phyp" = "check"; then
+  AC_CHECK_LIB([ssh],[ssh_new],[
+        LIBSSH_LIBS="$LIBSSH_LIBS -lssh -L$libssh_path"
+        AC_SUBST([LIBSSH_LIBS])],[
+        with_phyp="no"
+		    with_libssh="no";
+				],[])
+
+	if test "$with_phyp" != "no"; then
+  AC_CHECK_HEADERS([libssh/libssh.h],[
+		    with_phyp="yes"
+        LIBSSH_CFLAGS="-I/usr/local/include/libssh"
+        AC_SUBST([LIBSSH_CFLAGS])
+	      AC_DEFINE_UNQUOTED([WITH_PHYP], 1,
+        [whether IBM HMC / IVM driver is enabled])
+				],[
+        with_phyp="no"
+		    with_libssh="no";
+				],[])
+	fi
+elif test "$with_phyp" = "yes"; then
+  AC_CHECK_LIB([ssh],[ssh_new],[
+        LIBSSH_LIBS="$LIBSSH_LIBS -lssh -L$libssh_path"
+        AC_SUBST([LIBSSH_LIBS])],[
+        AC_MSG_ERROR([You must install the libssh to compile Phype driver.])
+				])
+
+  AC_CHECK_HEADERS([libssh/libssh.h],[
+        LIBSSH_CFLAGS="-I/usr/local/include/libssh"
+        AC_SUBST([LIBSSH_CFLAGS])],[
+        AC_MSG_ERROR([Cannot find libssh headers.Is libssh installed ?])
+				],[])
+  AC_DEFINE_UNQUOTED([WITH_PHYP], 1,
+        [whether IBM HMC / IVM driver is enabled])
+fi
+AM_CONDITIONAL([WITH_PHYP],[test "$with_phyp" = "yes"])
 
 dnl libcap-ng
 AC_ARG_WITH([capng],
@@ -1518,6 +1565,7 @@ AC_MSG_NOTICE([     UML: $with_uml])
 AC_MSG_NOTICE([  OpenVZ: $with_openvz])
 AC_MSG_NOTICE([    VBox: $with_vbox])
 AC_MSG_NOTICE([     LXC: $with_lxc])
+AC_MSG_NOTICE([    PHYP: $with_phyp])
 AC_MSG_NOTICE([     ONE: $with_one])
 AC_MSG_NOTICE([     ESX: $with_esx])
 AC_MSG_NOTICE([    Test: $with_test])
@@ -1556,6 +1604,11 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
+if test "$with_libssh" != "no" ; then
+AC_MSG_NOTICE([  libssh: $LIBSSH_CFLAGS $LIBSSH_LIBS])
+else
+AC_MSG_NOTICE([  libssh: no])
+fi
 AC_MSG_NOTICE([  gnutls: $GNUTLS_CFLAGS $GNUTLS_LIBS])
 if test "$with_sasl" != "no" ; then
 AC_MSG_NOTICE([    sasl: $SASL_CFLAGS $SASL_LIBS])

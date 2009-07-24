@@ -55,6 +55,9 @@
 #ifdef WITH_OPENVZ
 #include "openvz_driver.h"
 #endif
+#ifdef WITH_PHYP
+#include "phyp/phyp_driver.h"
+#endif
 #ifdef WITH_VBOX
 #include "vbox/vbox_driver.h"
 #endif
@@ -322,6 +325,9 @@ virInitialize(void)
 #endif
 #ifdef WITH_OPENVZ
     if (openvzRegister() == -1) return -1;
+#endif
+#ifdef WITH_PHYP
+    if (phypRegister() == -1) return -1;
 #endif
 #ifdef WITH_VBOX
     if (vboxRegister() == -1) return -1;
@@ -894,6 +900,10 @@ virGetVersion(unsigned long *libVer, const char *type,
 #endif
 #if WITH_LXC
         if (STRCASEEQ(type, "LXC"))
+            *typeVer = LIBVIR_VERSION_NUMBER;
+#endif
+#if WITH_PHYP
+        if (STRCASEEQ(type, "phyp"))
             *typeVer = LIBVIR_VERSION_NUMBER;
 #endif
 #if WITH_OPENVZ
