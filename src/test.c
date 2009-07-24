@@ -2093,6 +2093,118 @@ cleanup:
     return ret;
 }
 
+static int testDomainBlockStats(virDomainPtr domain,
+                                const char *path,
+                                struct _virDomainBlockStats *stats)
+{
+    testConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr privdom;
+    struct timeval tv;
+    unsigned long long statbase;
+    int i, found = 0, ret = -1;
+
+    testDriverLock(privconn);
+    privdom = virDomainFindByName(&privconn->domains,
+                                  domain->name);
+    testDriverUnlock(privconn);
+
+    if (privdom == NULL) {
+        testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    for (i = 0 ; i < privdom->def->ndisks ; i++) {
+        if (STREQ(path, privdom->def->disks[i]->dst)) {
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        testError(domain->conn, VIR_ERR_INVALID_ARG,
+                  _("invalid path: %s"), path);
+        goto error;
+    }
+
+    if (gettimeofday(&tv, NULL) < 0) {
+        virReportSystemError(domain->conn, errno,
+                             "%s", _("getting time of day"));
+        goto error;
+    }
+
+    /* No significance to these numbers, just enough to mix it up*/
+    statbase = (tv.tv_sec * 1000UL * 1000UL) + tv.tv_usec;
+    stats->rd_req = statbase / 10;
+    stats->rd_bytes = statbase / 20;
+    stats->wr_req = statbase / 30;
+    stats->wr_bytes = statbase / 40;
+    stats->errs = tv.tv_sec / 2;
+
+    ret = 0;
+error:
+    if (privdom)
+        virDomainObjUnlock(privdom);
+    return ret;
+}
+
+static int testDomainInterfaceStats(virDomainPtr domain,
+                                    const char *path,
+                                    struct _virDomainInterfaceStats *stats)
+{
+    testConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr privdom;
+    struct timeval tv;
+    unsigned long long statbase;
+    int i, found = 0, ret = -1;
+
+    testDriverLock(privconn);
+    privdom = virDomainFindByName(&privconn->domains,
+                                  domain->name);
+    testDriverUnlock(privconn);
+
+    if (privdom == NULL) {
+        testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    for (i = 0 ; i < privdom->def->nnets ; i++) {
+        if (privdom->def->nets[i]->ifname &&
+            STREQ (privdom->def->nets[i]->ifname, path)) {
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        testError(domain->conn, VIR_ERR_INVALID_ARG,
+                  _("invalid path, '%s' is not a known interface"), path);
+        goto error;
+    }
+
+    if (gettimeofday(&tv, NULL) < 0) {
+        virReportSystemError(domain->conn, errno,
+                             "%s", _("getting time of day"));
+        goto error;
+    }
+
+    /* No significance to these numbers, just enough to mix it up*/
+    statbase = (tv.tv_sec * 1000UL * 1000UL) + tv.tv_usec;
+    stats->rx_bytes = statbase / 10;
+    stats->rx_packets = statbase / 100;
+    stats->rx_errs = tv.tv_sec / 1;
+    stats->rx_drop = tv.tv_sec / 2;
+    stats->tx_bytes = statbase / 20;
+    stats->tx_packets = statbase / 110;
+    stats->tx_errs = tv.tv_sec / 3;
+    stats->tx_drop = tv.tv_sec / 4;
+
+    ret = 0;
+error:
+    if (privdom)
+        virDomainObjUnlock(privdom);
+    return ret;
+}
+
 static virDrvOpenStatus testOpenNetwork(virConnectPtr conn,
                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                         int flags ATTRIBUTE_UNUSED) {
@@ -4117,8 +4229,8 @@ static virDriver testDriver = {
     NULL, /* domainMigratePrepare */
     NULL, /* domainMigratePerform */
     NULL, /* domainMigrateFinish */
-    NULL, /* domainBlockStats */
-    NULL, /* domainInterfaceStats */
+    testDomainBlockStats, /* domainBlockStats */
+    testDomainInterfaceStats, /* domainInterfaceStats */
     NULL, /* domainBlockPeek */
     NULL, /* domainMemoryPeek */
     testNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
