@@ -683,7 +683,10 @@ functions_list_exception_test = {
 functions_list_default_test = "%s is None"
 
 def is_list_type (name):
-    return name[-1:] == "*"
+    whitelist = [ "virDomainBlockStats",
+                  "virDomainInterfaceStats" ]
+
+    return name[-1:] == "*" or name in whitelist
 
 def nameFixup(name, classe, type, file):
     # avoid a desastrous clash
