@@ -140,7 +140,8 @@ OPENVZ_DRIVER_SOURCES =						\
 VBOX_DRIVER_SOURCES =						\
         vbox/vbox_XPCOMCGlue.c vbox/vbox_XPCOMCGlue.h		\
         vbox/vbox_driver.c vbox/vbox_driver.h			\
-        vbox/vbox_V2_2.c vbox/vbox_CAPI_v2_2.h
+        vbox/vbox_V2_2.c vbox/vbox_CAPI_v2_2.h			\
+        vbox/vbox_V3_0.c vbox/vbox_CAPI_v3_0.h
 
 VBOX_DRIVER_EXTRA_DIST = vbox/vbox_tmpl.c vbox/README
 

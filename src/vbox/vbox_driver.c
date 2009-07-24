@@ -41,10 +41,8 @@
 
 extern virDriver vbox22Driver;
 extern virNetworkDriver vbox22NetworkDriver;
-#if 0
-extern virDriver vbox25Driver;
-extern virNetworkDriver vbox25NetworkDriver;
-#endif
+extern virDriver vbox30Driver;
+extern virNetworkDriver vbox30NetworkDriver;
 
 static virDriver vboxDriverDummy;
 
@@ -85,12 +83,10 @@ int vboxRegister(void) {
             DEBUG0("VirtualBox API version: 2.2");
             driver        = &vbox22Driver;
             networkDriver = &vbox22NetworkDriver;
-#if 0
-        } else if (uVersion >= 2002051 && uVersion < 2005051) {
-            DEBUG0("VirtualBox API version: 2.5");
-            driver        = &vbox25Driver;
-            networkDriver = &vbox25NetworkDriver;
-#endif
+        } else if (uVersion >= 2002051 && uVersion < 3000051) {
+            DEBUG0("VirtualBox API version: 3.0");
+            driver        = &vbox30Driver;
+            networkDriver = &vbox30NetworkDriver;
         } else {
             DEBUG0("Unsupport VirtualBox API version");
         }
