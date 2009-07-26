@@ -24,6 +24,7 @@ src/opennebula/one_driver.c
 src/openvz_conf.c
 src/openvz_driver.c
 src/pci.c
+src/phyp/phyp_driver.c
 src/proxy_internal.c
 src/qemu_conf.c
 src/qemu_driver.c
