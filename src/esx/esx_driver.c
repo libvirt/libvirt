@@ -2003,10 +2003,13 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
     }
 
   cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&virtualMachine);
     VIR_FREE(datastoreName);
     VIR_FREE(vmxPath);
     VIR_FREE(url);
     VIR_FREE(vmx);
+    virDomainDefFree(def);
 
     return xml;
 
@@ -2029,7 +2032,7 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     if (STRNEQ(nativeFormat, "vmware-vmx")) {
         ESX_ERROR(conn, VIR_ERR_INVALID_ARG,
                   "Unsupported config format '%s'", nativeFormat);
-        goto cleanup;
+        return NULL;
     }
 
     def = esxVMX_ParseConfig(conn, nativeConfig);
@@ -2038,7 +2041,6 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
         xml = virDomainDefFormat(conn, def, VIR_DOMAIN_XML_INACTIVE);
     }
 
-cleanup:
     virDomainDefFree(def);
 
     return xml;
