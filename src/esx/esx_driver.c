@@ -70,8 +70,21 @@ typedef struct _esxPrivate {
 
 
 /*
- * URI format: esx://[<user>@]<server>[?transport={http|https}][&vcenter=<vcenter>]
+ * URI format: esx://[<user>@]<server>[?transport={http|https}][&vcenter=<vcenter>][&no_verify={0|1}]
  *             esx:///phantom
+ *
+ * If no transport parameter is specified https is used.
+ *
+ * The vcenter parameter is only necessary for migration, because the vCenter
+ * server is in charge to initiate a migration between two ESX hosts.
+ *
+ * If the no_verify parameter is set to 1, this disables libcurl client checks
+ * of the server's certificate.
+ *
+ * The esx:///phantom URI may be used for tasks that don't require an actual
+ * connection to the hypervisor like domxml-{from,to}-native:
+ *
+ * virsh -c esx:///phantom domxml-from-native vmware-vmx dummy.vmx
  */
 static virDrvOpenStatus
 esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
@@ -80,9 +93,10 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
     char dummy_string[NI_MAXHOST] = "";
     char *url = NULL;
     char *vcenter = NULL;
+    int noVerify = 0; // boolean
     char *username = NULL;
     char *password = NULL;
-    int phantom = 0;
+    int phantom = 0; // boolean
 
     /* Decline if the URI is NULL or the scheme is not 'esx' */
     if (conn->uri == NULL || conn->uri->scheme == NULL ||
@@ -120,7 +134,8 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
 
     /* Request credentials and login to non-phantom host/vCenter */
     if (! phantom) {
-        if (esxUtil_ParseQuery(conn, &priv->transport, &vcenter) < 0) {
+        if (esxUtil_ParseQuery(conn, &priv->transport, &vcenter,
+                               &noVerify) < 0) {
             goto failure;
         }
 
@@ -169,7 +184,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         }
 
         if (esxVI_Context_Connect(conn, priv->host, url, username,
-                                  password) < 0) {
+                                  password, noVerify) < 0) {
             goto failure;
         }
 
@@ -205,7 +220,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
             }
 
             if (esxVI_Context_Connect(conn, priv->vcenter, url, username,
-                                      password) < 0) {
+                                      password, noVerify) < 0) {
                 goto failure;
             }
 
@@ -2549,7 +2564,7 @@ esxDomainMigratePrepare(virConnectPtr dconn,
     char *transport = NULL;
 
     if (uri_in == NULL) {
-        if (esxUtil_ParseQuery(dconn, &transport, NULL) < 0) {
+        if (esxUtil_ParseQuery(dconn, &transport, NULL, NULL) < 0) {
             return -1;
         }
 

@@ -188,7 +188,7 @@ _esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
 
 int
 esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx, const char *url,
-                      const char *username, const char *password)
+                      const char *username, const char *password, int noVerify)
 {
     int result = 0;
     esxVI_String *propertyNameList = NULL;
@@ -238,6 +238,7 @@ esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx, const char *url,
     curl_easy_setopt(ctx->curl_handle, CURLOPT_USERAGENT, "libvirt-esx");
     curl_easy_setopt(ctx->curl_handle, CURLOPT_HEADER, 0);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_FOLLOWLOCATION, 1);
+    curl_easy_setopt(ctx->curl_handle, CURLOPT_SSL_VERIFYPEER, noVerify ? 0 : 1);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_COOKIEFILE, "");
     curl_easy_setopt(ctx->curl_handle, CURLOPT_HTTPHEADER, ctx->curl_headers);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_WRITEFUNCTION,

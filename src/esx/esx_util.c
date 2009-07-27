@@ -127,7 +127,8 @@ esxUtil_RequestPassword(virConnectAuthPtr auth, const char *username,
 
 
 int
-esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vcenter)
+esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vcenter,
+                   int *noVerify)
 {
     int result = 0;
     int i;
@@ -174,6 +175,15 @@ esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vcenter)
 
             if (*vcenter == NULL) {
                 virReportOOMError(conn);
+                goto failure;
+            }
+        } else if (STRCASEEQ(queryParam->name, "no_verify") &&
+                   noVerify != NULL) {
+            if (virStrToLong_i(queryParam->value, NULL, 10, noVerify) < 0 ||
+                (*noVerify != 0 && *noVerify != 1)) {
+                ESX_ERROR(conn, VIR_ERR_INVALID_ARG,
+                          "Query parameter 'no_verify' has unexpected value "
+                          "'%s' (should be 0 or 1)", queryParam->value);
                 goto failure;
             }
         } else {

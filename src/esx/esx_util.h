@@ -35,7 +35,8 @@ char *esxUtil_RequestUsername(virConnectAuthPtr auth,
 char *esxUtil_RequestPassword(virConnectAuthPtr auth, const char *username,
                               const char *server);
 
-int esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vcenter);
+int esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vcenter,
+                       int *noVerify);
 
 int esxUtil_ParseVirtualMachineIDString(const char *id_string, int *id);
 
