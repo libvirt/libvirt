@@ -2223,8 +2223,7 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
             virCapabilitiesFreeMachines(machines, 1);
             goto no_memory;
         }
-
-        virCapabilitiesFreeMachines(machines, 1);
+        machines = NULL;
 
         if (virCapabilitiesAddGuestDomain(guest,
                                           "xen",

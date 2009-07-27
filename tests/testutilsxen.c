@@ -9,6 +9,8 @@ virCapsPtr testXenCapsInit(void) {
     struct utsname utsname;
     virCapsPtr caps;
     virCapsGuestPtr guest;
+    virCapsGuestMachinePtr *machines;
+    int nmachines;
     static const char *const x86_machines[] = {
         "xenfv"
     };
@@ -21,10 +23,16 @@ virCapsPtr testXenCapsInit(void) {
                                    0, 0)) == NULL)
         return NULL;
 
+    nmachines = ARRAY_CARDINALITY(x86_machines);
+    if ((machines = virCapabilitiesAllocMachines(x86_machines, nmachines)) == NULL)
+        goto cleanup;
+
     if ((guest = virCapabilitiesAddGuest(caps, "hvm", "i686", 32,
                                          "/usr/lib/xen/bin/qemu-dm", NULL,
-                                         1, x86_machines)) == NULL)
+                                         nmachines, machines)) == NULL)
         goto cleanup;
+    machines = NULL;
+
     if (virCapabilitiesAddGuestDomain(guest,
                                       "xen",
                                       NULL,
@@ -33,10 +41,16 @@ virCapsPtr testXenCapsInit(void) {
                                       NULL) == NULL)
         goto cleanup;
 
+    nmachines = ARRAY_CARDINALITY(xen_machines);
+    if ((machines = virCapabilitiesAllocMachines(xen_machines, nmachines)) == NULL)
+        goto cleanup;
+
     if ((guest = virCapabilitiesAddGuest(caps, "xen", "i686", 32,
                                          "/usr/lib/xen/bin/qemu-dm", NULL,
-                                         1, xen_machines)) == NULL)
+                                         nmachines, machines)) == NULL)
         goto cleanup;
+    machines = NULL;
+
     if (virCapabilitiesAddGuestDomain(guest,
                                       "xen",
                                       NULL,
@@ -48,6 +62,7 @@ virCapsPtr testXenCapsInit(void) {
     return caps;
 
 cleanup:
+    virCapabilitiesFreeMachines(machines, nmachines);
     virCapabilitiesFree(caps);
     return NULL;
 }
