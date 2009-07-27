@@ -534,7 +534,8 @@ virConfParseName(virConfParserCtxtPtr ctxt)
     SKIP_BLANKS;
     base = ctxt->cur;
     /* TODO: probably need encoding support and UTF-8 parsing ! */
-    if (!c_isalpha(CUR)) {
+    if (!c_isalpha(CUR) &&
+        !((ctxt->conf->flags & VIR_CONF_FLAG_VMX_FORMAT) && (CUR == '.'))) {
         virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("expecting a name"));
         return(NULL);
     }
