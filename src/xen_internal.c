@@ -2205,7 +2205,7 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
         char const *const xen_machines[] = {guest_archs[i].hvm ? "xenfv" : "xenpv"};
         virCapsGuestMachinePtr *machines;
 
-        if ((machines = virCapabiltiesAllocMachines(xen_machines, 1)) == NULL)
+        if ((machines = virCapabilitiesAllocMachines(xen_machines, 1)) == NULL)
             goto no_memory;
 
         if ((guest = virCapabilitiesAddGuest(caps,
