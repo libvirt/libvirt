@@ -2541,24 +2541,44 @@ cleanup:
 }
 
 
-static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
+static int qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, int pid, int tid) {
     char proc[PATH_MAX];
     FILE *pidinfo;
     unsigned long long usertime, systime;
+    int cpu;
+    int ret;
 
-    if (snprintf(proc, sizeof(proc), "/proc/%d/stat", pid) >= (int)sizeof(proc)) {
+    if (tid)
+        ret = snprintf(proc, sizeof(proc), "/proc/%d/task/%d/stat", pid, tid);
+    else
+        ret = snprintf(proc, sizeof(proc), "/proc/%d/stat", pid);
+    if (ret >= (int)sizeof(proc)) {
+        errno = E2BIG;
         return -1;
     }
 
     if (!(pidinfo = fopen(proc, "r"))) {
         /*printf("cannot read pid info");*/
         /* VM probably shut down, so fake 0 */
-        *cpuTime = 0;
+        if (cpuTime)
+            *cpuTime = 0;
+        if (lastCpu)
+            *lastCpu = 0;
         return 0;
     }
 
-    if (fscanf(pidinfo, "%*d %*s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %llu %llu", &usertime, &systime) != 2) {
-        qemudDebug("not enough arg");
+    /* See 'man proc' for information about what all these fields are. We're
+     * only interested in a very few of them */
+    if (fscanf(pidinfo,
+               /* pid -> stime */
+               "%*d %*s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %llu %llu"
+               /* cutime -> endcode */
+               "%*d %*d %*d %*d %*d %*u %*u %*d %*u %*u %*u %*u"
+               /* startstack -> processor */
+               "%*u %*u %*u %*u %*u %*u %*u %*u %*u %*u %*d %d",
+               &usertime, &systime, &cpu) != 3) {
+        VIR_WARN0("cannot parse process status data");
+        errno = -EINVAL;
         return -1;
     }
 
@@ -2567,9 +2587,14 @@ static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
      * _SC_CLK_TCK is jiffies per second
      * So calulate thus....
      */
-    *cpuTime = 1000ull * 1000ull * 1000ull * (usertime + systime) / (unsigned long long)sysconf(_SC_CLK_TCK);
+    if (cpuTime)
+        *cpuTime = 1000ull * 1000ull * 1000ull * (usertime + systime) / (unsigned long long)sysconf(_SC_CLK_TCK);
+    if (lastCpu)
+        *lastCpu = cpu;
 
-    qemudDebug("Got %llu %llu %llu", usertime, systime, *cpuTime);
+
+    VIR_DEBUG("Got status for %d/%d user=%llu sys=%llu cpu=%d",
+              pid, tid, usertime, systime, cpu);
 
     fclose(pidinfo);
 
@@ -3209,7 +3234,7 @@ static int qemudDomainGetInfo(virDomainPtr dom,
     if (!virDomainIsActive(vm)) {
         info->cpuTime = 0;
     } else {
-        if (qemudGetProcessInfo(&(info->cpuTime), vm->pid) < 0) {
+        if (qemudGetProcessInfo(&(info->cpuTime), NULL, vm->pid, 0) < 0) {
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, ("cannot read cputime for domain"));
             goto cleanup;
         }
@@ -3752,7 +3777,16 @@ qemudDomainGetVcpus(virDomainPtr dom,
             for (i = 0 ; i < maxinfo ; i++) {
                 info[i].number = i;
                 info[i].state = VIR_VCPU_RUNNING;
-                /* XXX cpu time, current pCPU mapping */
+
+                if (vm->vcpupids != NULL &&
+                    qemudGetProcessInfo(&(info[i].cpuTime),
+                                        &(info[i].cpu),
+                                        vm->pid,
+                                        vm->vcpupids[i]) < 0) {
+                    virReportSystemError(dom->conn, errno, "%s",
+                                         _("cannot get vCPU placement & pCPU time"));
+                    goto cleanup;
+                }
             }
         }
 
