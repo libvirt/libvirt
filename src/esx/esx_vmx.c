@@ -37,7 +37,8 @@ domain-xml                        <=>   vmx
 
 
                                         config.version = "8"                    # essential
-                                        virtualHW.version = "4"                 # essential
+                                        virtualHW.version = "4"                 # essential for ESX 3.5
+                                        virtualHW.version = "7"                 # essential for ESX 4.0
 
 
 ???                               <=>   guestOS = "<value>"                     # essential, FIXME: not representable
@@ -405,7 +406,7 @@ def->parallels[0]...
 
 
 virDomainDefPtr
-esxVMX_ParseConfig(virConnectPtr conn, const char *vmx)
+esxVMX_ParseConfig(virConnectPtr conn, const char *vmx, int serverVersion)
 {
     virConfPtr conf = NULL;
     virDomainDefPtr def = NULL;
@@ -442,8 +443,8 @@ esxVMX_ParseConfig(virConnectPtr conn, const char *vmx)
 
     if (config_version != 8) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                  "Expecting VMX entry 'config.version' to be \"8\" but "
-                  "found \"%lld\"", config_version);
+                  "Expecting VMX entry 'config.version' to be 8 but found "
+                  "%lld", config_version);
         goto failure;
     }
 
@@ -452,10 +453,41 @@ esxVMX_ParseConfig(virConnectPtr conn, const char *vmx)
         goto failure;
     }
 
-    if (virtualHW_version != 4) {
+    switch (serverVersion) {
+      case 35:
+        if (virtualHW_version != 4) {
+            ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                      "Expecting VMX entry 'virtualHW.version' to be 4 for "
+                      "server version 3.5 but found %lld", virtualHW_version);
+            goto failure;
+        }
+
+        break;
+
+      case 40:
+        if (virtualHW_version != 7) {
+            ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                      "Expecting VMX entry 'virtualHW.version' to be 7 for "
+                      "server version 4.0 but found %lld", virtualHW_version);
+            goto failure;
+        }
+
+        break;
+
+      case -1:
+        if (virtualHW_version != 4 && virtualHW_version != 7) {
+            ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                      "Expecting VMX entry 'virtualHW.version' to be 4 or 7 "
+                      "but found %lld", virtualHW_version);
+            goto failure;
+        }
+
+        break;
+
+      default:
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                  "Expecting VMX entry 'virtualHW.version' to be \"4\" but "
-                  "found \"%lld\"", virtualHW_version);
+                  "Expecting server version 3.5 or 4.0 but got %d",
+                  serverVersion);
         goto failure;
     }
 

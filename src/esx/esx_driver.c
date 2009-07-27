@@ -2011,7 +2011,7 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
         goto failure;
     }
 
-    def = esxVMX_ParseConfig(domain->conn, vmx);
+    def = esxVMX_ParseConfig(domain->conn, vmx, priv->host->serverVersion);
 
     if (def != NULL) {
         xml = virDomainDefFormat(domain->conn, def, flags);
@@ -2041,6 +2041,8 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
                        const char *nativeConfig,
                        unsigned int flags ATTRIBUTE_UNUSED)
 {
+    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    int serverVersion = -1;
     virDomainDefPtr def = NULL;
     char *xml = NULL;
 
@@ -2050,7 +2052,11 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
         return NULL;
     }
 
-    def = esxVMX_ParseConfig(conn, nativeConfig);
+    if (! priv->phantom) {
+        serverVersion = priv->host->serverVersion;
+    }
+
+    def = esxVMX_ParseConfig(conn, nativeConfig, serverVersion);
 
     if (def != NULL) {
         xml = virDomainDefFormat(conn, def, VIR_DOMAIN_XML_INACTIVE);

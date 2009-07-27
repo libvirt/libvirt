@@ -52,6 +52,8 @@ struct _esxVI_Context {
     char *username;
     char *password;
     esxVI_ServiceContent *service;
+    int apiVersion;
+    int serverVersion;
     esxVI_UserSession *session;
     esxVI_ManagedObjectReference *datacenter;
     esxVI_ManagedObjectReference *vmFolder;

@@ -266,19 +266,27 @@ esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx, const char *url,
         goto failure;
     }
 
-    if (STREQ(ctx->service->about->apiType, "HostAgent")) {
-        if (STRNEQ(ctx->service->about->apiVersion, "2.5.0") &&
-            STRNEQ(ctx->service->about->apiVersion, "2.5u2")) {
+    if (STREQ(ctx->service->about->apiType, "HostAgent") ||
+        STREQ(ctx->service->about->apiType, "VirtualCenter")) {
+        if (STRPREFIX(ctx->service->about->apiVersion, "2.5")) {
+            ctx->apiVersion = 25;
+        } else if (STRPREFIX(ctx->service->about->apiVersion, "4.0")) {
+            ctx->apiVersion = 40;
+        } else {
             ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                         "Expecting VI API version '2.5.0' or '2.5u2' but "
-                         "found '%s'", ctx->service->about->apiVersion);
+                         "Expecting VI API major/minor version '2.5' or '4.0' "
+                         "but found '%s'", ctx->service->about->apiVersion);
             goto failure;
         }
-    } else if (STREQ(ctx->service->about->apiType, "VirtualCenter")) {
-        if (STRNEQ(ctx->service->about->apiVersion, "2.5u2")) {
+
+        if (STRPREFIX(ctx->service->about->version, "3.5")) {
+            ctx->serverVersion = 35;
+        } else if (STRPREFIX(ctx->service->about->version, "4.0")) {
+            ctx->serverVersion = 40;
+        } else {
             ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                         "Expecting VI API version '2.5u2' but found '%s'",
-                         ctx->service->about->apiVersion);
+                         "Expecting server major/minor version '3.5' or '4.0' "
+                         "but found '%s'", ctx->service->about->version);
             goto failure;
         }
     } else {

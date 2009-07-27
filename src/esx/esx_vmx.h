@@ -27,7 +27,7 @@
 #include "domain_conf.h"
 
 virDomainDefPtr
-esxVMX_ParseConfig(virConnectPtr conn, const char *vmx);
+esxVMX_ParseConfig(virConnectPtr conn, const char *vmx, int serverVersion);
 
 int
 esxVMX_ParseSCSIController(virConnectPtr conn, virConfPtr conf,
