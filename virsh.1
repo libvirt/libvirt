@@ -132,7 +132,7 @@
 .\" ========================================================================
 .\"
 .IX Title "VIRSH 1"
-.TH VIRSH 1 "2009-08-11" "libvirt-0.7.0" "Virtualization Support"
+.TH VIRSH 1 "2009-08-20" "libvirt-0.7.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -593,6 +593,38 @@ Undefine the configuration for an inactive network.
 .IP "\fBnet-uuid\fR \fInetwork-name\fR" 4
 .IX Item "net-uuid network-name"
 Convert a network name to network \s-1UUID\s0.
+.SH "SECRET COMMMANDS"
+.IX Header "SECRET COMMMANDS"
+The following commands manipulate \*(L"secrets\*(R" (e.g. passwords, passphrases and
+encryption keys).  Libvirt can store secrets independently from their use, and
+other objects (e.g. volumes or domains) can refer to the secrets for encryption
+or possibly other uses.  Secrets are identified using an \s-1UUID\s0.  See
+<http://libvirt.org/formatsecret.html> for documentation of the \s-1XML\s0 format
+used to represent properties of secrets.
+.IP "\fBsecret-define\fR \fIfile\fR" 4
+.IX Item "secret-define file"
+Create a secret with the properties specified in \fIfile\fR, with no associated
+secret value.  If \fIfile\fR does not specify a \s-1UUID\s0, choose one automatically.
+If \fIfile\fR specifies an \s-1UUID\s0 of an existing secret, replace its properties by
+properties defined in \fIfile\fR, without affecting the secret value.
+.IP "\fBsecret-dumpxml\fR \fIsecret\fR" 4
+.IX Item "secret-dumpxml secret"
+Output properties of \fIsecret\fR (specified by its \s-1UUID\s0) as an \s-1XML\s0 dump to stdout.
+.IP "\fBsecret-set-value\fR \fIsecret\fR \fIbase64\fR" 4
+.IX Item "secret-set-value secret base64"
+Set the value associated with \fIsecret\fR (specified by its \s-1UUID\s0) to the value
+Base64\-encoded value \fIbase64\fR.
+.IP "\fBsecret-get-value\fR \fIsecret\fR" 4
+.IX Item "secret-get-value secret"
+Output the value associated with \fIsecret\fR (specified by its \s-1UUID\s0) to stdout,
+encoded using Base64.
+.IP "\fBsecret-undefine\fR \fIsecret\fR" 4
+.IX Item "secret-undefine secret"
+Delete a \fIsecret\fR (specified by its \s-1UUID\s0), including the associated value, if
+any.
+.IP "\fBsecret-list\fR" 4
+.IX Item "secret-list"
+Output a list of UUIDs of known secrets to stdout.
 .SH "ENVIRONMENT"
 .IX Header "ENVIRONMENT"
 The following environment variables can be set to alter the behaviour

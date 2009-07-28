@@ -41,6 +41,7 @@
 #endif
 
 #include "internal.h"
+#include "base64.h"
 #include "buf.h"
 #include "console.h"
 #include "util.h"
@@ -270,6 +271,9 @@ static virStorageVolPtr vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
 #define vshCommandOptVol(_ctl, _cmd,_optname, _pooloptname, _name)   \
     vshCommandOptVolBy(_ctl, _cmd, _optname, _pooloptname, _name,     \
                            VSH_BYUUID|VSH_BYNAME)
+
+static virSecretPtr vshCommandOptSecret(vshControl *ctl, const vshCmd *cmd,
+                                        char **name);
 
 static void vshPrintExtra(vshControl *ctl, const char *format, ...)
     ATTRIBUTE_FMT_PRINTF(2, 3);
@@ -5249,9 +5253,291 @@ cmdVolPath(vshControl *ctl, const vshCmd *cmd)
 }
 
 
+/*
+ * "secret-define" command
+ */
+static const vshCmdInfo info_secret_define[] = {
+    {"help", gettext_noop("define or modify a secret from an XML file")},
+    {"desc", gettext_noop("Define or modify a secret.")},
+    {NULL, NULL}
+};
 
+static const vshCmdOptDef opts_secret_define[] = {
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing secret attributes in XML")},
+    {NULL, 0, 0, NULL}
+};
 
+static int
+cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
+{
+    char *from, *buffer, *uuid;
+    virSecretPtr res;
 
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    from = vshCommandOptString(cmd, "file", NULL);
+    if (!from)
+        return FALSE;
+
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+        return FALSE;
+
+    res = virSecretDefineXML(ctl->conn, buffer, 0);
+    free (buffer);
+
+    if (res == NULL) {
+        vshError(ctl, FALSE, _("Failed to set attributes from %s"), from);
+        return FALSE;
+    }
+    uuid = virSecretGetUUIDString(res);
+    if (uuid == NULL) {
+        vshError(ctl, FALSE, "%s",
+                 _("Failed to get UUID of created secret"));
+        virSecretFree(res);
+        return FALSE;
+    }
+    vshPrint(ctl, _("Secret %s created\n"), uuid);
+    free(uuid);
+    virSecretFree(res);
+    return TRUE;
+}
+
+/*
+ * "secret-dumpxml" command
+ */
+static const vshCmdInfo info_secret_dumpxml[] = {
+    {"help", gettext_noop("secret attributes in XML")},
+    {"desc", gettext_noop("Output attributes of a secret as an XML dump to stdout.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_secret_dumpxml[] = {
+    {"secret", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("secret UUID")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdSecretDumpXML(vshControl *ctl, const vshCmd *cmd)
+{
+    virSecretPtr secret;
+    int ret = FALSE;
+    char *xml;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    secret = vshCommandOptSecret(ctl, cmd, NULL);
+    if (secret == NULL)
+        return FALSE;
+
+    xml = virSecretGetXMLDesc(secret, 0);
+    if (xml == NULL)
+        goto cleanup;
+    printf("%s", xml);
+    free(xml);
+    ret = TRUE;
+
+cleanup:
+    virSecretFree(secret);
+    return ret;
+}
+
+/*
+ * "secret-set-value" command
+ */
+static const vshCmdInfo info_secret_set_value[] = {
+    {"help", gettext_noop("set a secret value")},
+    {"desc", gettext_noop("Set a secret value.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_secret_set_value[] = {
+    {"secret", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("secret UUID")},
+    {"base64", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("base64-encoded secret value")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
+{
+    virSecretPtr secret;
+    size_t value_size;
+    char *base64, *value;
+    int found, res, ret = FALSE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    secret = vshCommandOptSecret(ctl, cmd, NULL);
+    if (secret == NULL)
+        return FALSE;
+
+    base64 = vshCommandOptString(cmd, "base64", &found);
+    if (!base64)
+        goto cleanup;
+
+    if (!base64_decode_alloc(base64, strlen(base64), &value, &value_size)) {
+        vshError(ctl, FALSE, _("Invalid base64 data"));
+        goto cleanup;
+    }
+    if (value == NULL) {
+        vshError(ctl, FALSE, "%s", _("Failed to allocate memory"));
+        return FALSE;
+    }
+
+    res = virSecretSetValue(secret, (unsigned char *)value, value_size, 0);
+    memset(value, 0, value_size);
+    free (value);
+
+    if (res != 0) {
+        vshError(ctl, FALSE, "%s", _("Failed to set secret value"));
+        goto cleanup;
+    }
+    vshPrint(ctl, "%s", _("Secret value set\n"));
+    ret = TRUE;
+
+cleanup:
+    virSecretFree(secret);
+    return ret;
+}
+
+/*
+ * "secret-get-value" command
+ */
+static const vshCmdInfo info_secret_get_value[] = {
+    {"help", gettext_noop("Output a secret value")},
+    {"desc", gettext_noop("Output a secret value to stdout.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_secret_get_value[] = {
+    {"secret", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("secret UUID")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
+{
+    virSecretPtr secret;
+    char *base64;
+    unsigned char *value;
+    size_t value_size;
+    int ret = FALSE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    secret = vshCommandOptSecret(ctl, cmd, NULL);
+    if (secret == NULL)
+        return FALSE;
+
+    value = virSecretGetValue(secret, &value_size, 0);
+    if (value == NULL)
+        goto cleanup;
+
+    base64_encode_alloc((char *)value, value_size, &base64);
+    memset(value, 0, value_size);
+    free(value);
+
+    if (base64 == NULL) {
+        vshError(ctl, FALSE, "%s", _("Failed to allocate memory"));
+        goto cleanup;
+    }
+    printf("%s", base64);
+    memset(base64, 0, strlen(base64));
+    free(base64);
+    ret = TRUE;
+
+cleanup:
+    virSecretFree(secret);
+    return ret;
+}
+
+/*
+ * "secret-undefine" command
+ */
+static const vshCmdInfo info_secret_undefine[] = {
+    {"help", gettext_noop("undefine a secret")},
+    {"desc", gettext_noop("Undefine a secret.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_secret_undefine[] = {
+    {"secret", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("secret UUID")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdSecretUndefine(vshControl *ctl, const vshCmd *cmd)
+{
+    virSecretPtr secret;
+    int ret = FALSE;
+    char *uuid;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    secret = vshCommandOptSecret(ctl, cmd, &uuid);
+    if (secret == NULL)
+        return FALSE;
+
+    if (virSecretUndefine(secret) < 0) {
+        vshError(ctl, FALSE, _("Failed to delete secret %s"), uuid);
+        goto cleanup;
+    }
+    vshPrint(ctl, _("Secret %s deleted\n"), uuid);
+    ret = TRUE;
+
+cleanup:
+    virSecretFree(secret);
+    return ret;
+}
+
+/*
+ * "secret-list" command
+ */
+static const vshCmdInfo info_secret_list[] = {
+    {"help", gettext_noop("list secrets")},
+    {"desc", gettext_noop("Returns a list of secrets")},
+    {NULL, NULL}
+};
+
+static int
+cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    int maxuuids = 0, i;
+    char **uuids = NULL;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    maxuuids = virConnectNumOfSecrets(ctl->conn);
+    if (maxuuids < 0) {
+        vshError(ctl, FALSE, "%s", _("Failed to list secrets"));
+        return FALSE;
+    }
+    uuids = vshMalloc(ctl, sizeof(*uuids) * maxuuids);
+
+    maxuuids = virConnectListSecrets(ctl->conn, uuids, maxuuids);
+    if (maxuuids < 0) {
+        vshError(ctl, FALSE, "%s", _("Failed to list secrets"));
+        free(uuids);
+        return FALSE;
+    }
+
+    qsort(uuids, maxuuids, sizeof(char *), namesorter);
+
+    vshPrintExtra(ctl, "%s\n", _("UUID"));
+    vshPrintExtra(ctl, "-----------------------------------------\n");
+
+    for (i = 0; i < maxuuids; i++) {
+        vshPrint(ctl, "%-36s\n", uuids[i]);
+        free(uuids[i]);
+    }
+    free(uuids);
+    return TRUE;
+}
 
 
 /*
@@ -6931,6 +7217,14 @@ static const vshCmdDef commands[] = {
     {"pool-undefine", cmdPoolUndefine, opts_pool_undefine, info_pool_undefine},
     {"pool-uuid", cmdPoolUuid, opts_pool_uuid, info_pool_uuid},
 
+    {"secret-define", cmdSecretDefine, opts_secret_define, info_secret_define},
+    {"secret-dumpxml", cmdSecretDumpXML, opts_secret_dumpxml, info_secret_dumpxml},
+    {"secret-set-value", cmdSecretSetValue, opts_secret_set_value, info_secret_set_value},
+    {"secret-get-value", cmdSecretGetValue, opts_secret_get_value, info_secret_get_value},
+    {"secret-undefine", cmdSecretUndefine, opts_secret_undefine, info_secret_undefine},
+    {"secret-list", cmdSecretList, NULL, info_secret_list},
+
+
 #ifndef WIN32
     {"pwd", cmdPwd, NULL, info_pwd},
 #endif
@@ -7488,6 +7782,35 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
         virStoragePoolFree(pool);
 
     return vol;
+}
+
+static virSecretPtr
+vshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, char **name)
+{
+    virSecretPtr secret = NULL;
+    char *n;
+    const char *optname = "secret";
+
+    if (!cmd_has_option (ctl, cmd, optname))
+        return NULL;
+
+    n = vshCommandOptString(cmd, optname, NULL);
+    if (n == NULL) {
+        vshError(ctl, FALSE, "%s", _("undefined secret UUID"));
+        return NULL;
+    }
+
+    vshDebug(ctl, 5, "%s: found option <%s>: %s\n", cmd->def->name, optname, n);
+
+    if (name != NULL)
+        *name = n;
+
+    secret = virSecretLookupByUUIDString(ctl->conn, n);
+
+    if (secret == NULL)
+        vshError(ctl, FALSE, _("failed to get secret '%s'"), n);
+
+    return secret;
 }
 
 /*

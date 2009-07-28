@@ -543,6 +543,49 @@ Convert a network name to network UUID.
 
 =back
 
+=head1 SECRET COMMMANDS
+
+The following commands manipulate "secrets" (e.g. passwords, passphrases and
+encryption keys).  Libvirt can store secrets independently from their use, and
+other objects (e.g. volumes or domains) can refer to the secrets for encryption
+or possibly other uses.  Secrets are identified using an UUID.  See
+L<http://libvirt.org/formatsecret.html> for documentation of the XML format
+used to represent properties of secrets.
+
+=over 4
+
+=item B<secret-define> I<file>
+
+Create a secret with the properties specified in I<file>, with no associated
+secret value.  If I<file> does not specify a UUID, choose one automatically.
+If I<file> specifies an UUID of an existing secret, replace its properties by
+properties defined in I<file>, without affecting the secret value.
+
+=item B<secret-dumpxml> I<secret>
+
+Output properties of I<secret> (specified by its UUID) as an XML dump to stdout.
+
+=item B<secret-set-value> I<secret> I<base64>
+
+Set the value associated with I<secret> (specified by its UUID) to the value
+Base64-encoded value I<base64>.
+
+=item B<secret-get-value> I<secret>
+
+Output the value associated with I<secret> (specified by its UUID) to stdout,
+encoded using Base64.
+
+=item B<secret-undefine> I<secret>
+
+Delete a I<secret> (specified by its UUID), including the associated value, if
+any.
+
+=item B<secret-list>
+
+Output a list of UUIDs of known secrets to stdout.
+
+=back
+
 =head1 ENVIRONMENT
 
 The following environment variables can be set to alter the behaviour
