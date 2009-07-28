@@ -99,3 +99,9 @@
     remote_domain_xml_to_native_ret val_remote_domain_xml_to_native_ret;
     remote_num_of_defined_interfaces_ret val_remote_num_of_defined_interfaces_ret;
     remote_list_defined_interfaces_ret val_remote_list_defined_interfaces_ret;
+    remote_num_of_secrets_ret val_remote_num_of_secrets_ret;
+    remote_list_secrets_ret val_remote_list_secrets_ret;
+    remote_secret_lookup_by_uuid_string_ret val_remote_secret_lookup_by_uuid_string_ret;
+    remote_secret_define_xml_ret val_remote_secret_define_xml_ret;
+    remote_secret_get_xml_desc_ret val_remote_secret_get_xml_desc_ret;
+    remote_secret_get_value_ret val_remote_secret_get_value_ret;

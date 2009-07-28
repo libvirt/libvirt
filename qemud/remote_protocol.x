@@ -136,6 +136,16 @@ const REMOTE_SECURITY_LABEL_MAX = VIR_SECURITY_LABEL_BUFLEN;
  */
 const REMOTE_SECURITY_DOI_MAX = VIR_SECURITY_DOI_BUFLEN;
 
+/*
+ * Maximum size of a secret value.
+ */
+const REMOTE_SECRET_VALUE_MAX = 65536;
+
+/*
+ * Upper limit on list of secrets.
+ */
+const REMOTE_SECRET_UUID_LIST_MAX = 16384;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -174,6 +184,11 @@ struct remote_nonnull_storage_vol {
 /* A node device which may not be NULL. */
 struct remote_nonnull_node_device {
     remote_nonnull_string name;
+};
+
+/* A secret which may not be null. */
+struct remote_nonnull_secret {
+    remote_nonnull_string uuid;
 };
 
 /* A domain or network which may be NULL. */
@@ -1266,6 +1281,63 @@ struct remote_domain_xml_to_native_ret {
 };
 
 
+struct remote_num_of_secrets_ret {
+    int num;
+};
+
+struct remote_list_secrets_args {
+    int maxuuids;
+};
+
+struct remote_list_secrets_ret {
+    remote_nonnull_string uuids<REMOTE_SECRET_UUID_LIST_MAX>;
+};
+
+struct remote_secret_lookup_by_uuid_string_args {
+    remote_nonnull_string uuid;
+};
+
+struct remote_secret_lookup_by_uuid_string_ret {
+    remote_nonnull_secret secret;
+};
+
+struct remote_secret_define_xml_args {
+    remote_nonnull_string xml;
+    unsigned flags;
+};
+
+struct remote_secret_define_xml_ret {
+    remote_nonnull_secret secret;
+};
+
+struct remote_secret_get_xml_desc_args {
+    remote_nonnull_secret secret;
+    unsigned flags;
+};
+
+struct remote_secret_get_xml_desc_ret {
+    remote_nonnull_string xml;
+};
+
+struct remote_secret_set_value_args {
+    remote_nonnull_secret secret;
+    opaque value<REMOTE_SECRET_VALUE_MAX>;
+    unsigned flags;
+};
+
+struct remote_secret_get_value_args {
+    remote_nonnull_secret secret;
+    unsigned flags;
+};
+
+struct remote_secret_get_value_ret {
+    opaque value<REMOTE_SECRET_VALUE_MAX>;
+};
+
+struct remote_secret_undefine_args {
+    remote_nonnull_secret secret;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -1424,7 +1496,16 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_XML_TO_NATIVE = 136,
 
     REMOTE_PROC_NUM_OF_DEFINED_INTERFACES = 137,
-    REMOTE_PROC_LIST_DEFINED_INTERFACES = 138
+    REMOTE_PROC_LIST_DEFINED_INTERFACES = 138,
+
+    REMOTE_PROC_NUM_OF_SECRETS = 139,
+    REMOTE_PROC_LIST_SECRETS = 140,
+    REMOTE_PROC_SECRET_LOOKUP_BY_UUID_STRING = 141,
+    REMOTE_PROC_SECRET_DEFINE_XML = 142,
+    REMOTE_PROC_SECRET_GET_XML_DESC = 143,
+    REMOTE_PROC_SECRET_SET_VALUE = 144,
+    REMOTE_PROC_SECRET_GET_VALUE = 145,
+    REMOTE_PROC_SECRET_UNDEFINE = 146
 };
 
 

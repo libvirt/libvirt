@@ -64,12 +64,14 @@ static virNetworkPtr get_nonnull_network (virConnectPtr conn, remote_nonnull_net
 static virInterfacePtr get_nonnull_interface (virConnectPtr conn, remote_nonnull_interface iface);
 static virStoragePoolPtr get_nonnull_storage_pool (virConnectPtr conn, remote_nonnull_storage_pool pool);
 static virStorageVolPtr get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol);
+static virSecretPtr get_nonnull_secret (virConnectPtr conn, remote_nonnull_secret secret);
 static void make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src);
 static void make_nonnull_network (remote_nonnull_network *net_dst, virNetworkPtr net_src);
 static void make_nonnull_interface (remote_nonnull_interface *interface_dst, virInterfacePtr interface_src);
 static void make_nonnull_storage_pool (remote_nonnull_storage_pool *pool_dst, virStoragePoolPtr pool_src);
 static void make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src);
 static void make_nonnull_node_device (remote_nonnull_node_device *dev_dst, virNodeDevicePtr dev_src);
+static void make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src);
 
 
 #include "remote_dispatch_prototypes.h"
@@ -4588,6 +4590,195 @@ error:
     VIR_FREE(msg);
 }
 
+static int
+remoteDispatchNumOfSecrets (struct qemud_server *server ATTRIBUTE_UNUSED,
+                            struct qemud_client *client ATTRIBUTE_UNUSED,
+                            virConnectPtr conn, remote_error *err,
+                            void *args ATTRIBUTE_UNUSED,
+                            remote_num_of_secrets_ret *ret)
+{
+    ret->num = virConnectNumOfSecrets (conn);
+    if (ret->num == -1) {
+        remoteDispatchConnError (err, conn);
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+remoteDispatchListSecrets (struct qemud_server *server ATTRIBUTE_UNUSED,
+                           struct qemud_client *client ATTRIBUTE_UNUSED,
+                           virConnectPtr conn, remote_error *err,
+                           remote_list_secrets_args *args,
+                           remote_list_secrets_ret *ret)
+{
+    if (args->maxuuids > REMOTE_SECRET_UUID_LIST_MAX) {
+        remoteDispatchFormatError (err, "%s",
+                                   _("maxuuids > REMOTE_SECRET_UUID_LIST_MAX"));
+        return -1;
+    }
+
+    if (VIR_ALLOC_N (ret->uuids.uuids_val, args->maxuuids) < 0) {
+        remoteDispatchOOMError (err);
+        return -1;
+    }
+
+    ret->uuids.uuids_len = virConnectListSecrets (conn, ret->uuids.uuids_val,
+                                                  args->maxuuids);
+    if (ret->uuids.uuids_len == -1) {
+        VIR_FREE (ret->uuids.uuids_val);
+        remoteDispatchConnError (err, conn);
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+remoteDispatchSecretDefineXml (struct qemud_server *server ATTRIBUTE_UNUSED,
+                               struct qemud_client *client ATTRIBUTE_UNUSED,
+                               virConnectPtr conn, remote_error *err,
+                               remote_secret_define_xml_args *args,
+                               remote_secret_define_xml_ret *ret)
+{
+    virSecretPtr secret;
+
+    secret = virSecretDefineXML (conn, args->xml, args->flags);
+    if (secret == NULL) {
+        remoteDispatchConnError (err, conn);
+        return -1;
+    }
+
+    make_nonnull_secret (&ret->secret, secret);
+    virSecretFree (secret);
+    return 0;
+}
+
+static int
+remoteDispatchSecretGetValue (struct qemud_server *server ATTRIBUTE_UNUSED,
+                              struct qemud_client *client ATTRIBUTE_UNUSED,
+                              virConnectPtr conn, remote_error *err,
+                              remote_secret_get_value_args *args,
+                              remote_secret_get_value_ret *ret)
+{
+    virSecretPtr secret;
+    size_t value_size;
+    unsigned char *value;
+
+    secret = get_nonnull_secret (conn, args->secret);
+    if (secret == NULL) {
+        remoteDispatchConnError (err, conn);
+        return -1;
+    }
+
+    value = virSecretGetValue (secret, &value_size, args->flags);
+    if (value == NULL) {
+        remoteDispatchConnError (err, conn);
+        virSecretFree(secret);
+        return -1;
+    }
+
+    ret->value.value_len = value_size;
+    ret->value.value_val = (char *)value;
+    virSecretFree(secret);
+    return 0;
+}
+
+static int
+remoteDispatchSecretGetXmlDesc (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                struct qemud_client *client ATTRIBUTE_UNUSED,
+                                virConnectPtr conn, remote_error *err,
+                                remote_secret_get_xml_desc_args *args,
+                                remote_secret_get_xml_desc_ret *ret)
+{
+    virSecretPtr secret;
+
+    secret = get_nonnull_secret (conn, args->secret);
+    if (secret == NULL) {
+        remoteDispatchConnError (err, conn);
+        return -1;
+    }
+    ret->xml = virSecretGetXMLDesc (secret, args->flags);
+    if (ret->xml == NULL) {
+        remoteDispatchConnError (err, conn);
+        virSecretFree(secret);
+        return -1;
+    }
+    virSecretFree(secret);
+    return 0;
+}
+
+static int
+remoteDispatchSecretLookupByUuidString (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                        struct qemud_client *client ATTRIBUTE_UNUSED,
+                                        virConnectPtr conn, remote_error *err,
+                                        remote_secret_lookup_by_uuid_string_args *args,
+                                        remote_secret_lookup_by_uuid_string_ret *ret)
+{
+    virSecretPtr secret;
+
+    secret = virSecretLookupByUUIDString (conn, args->uuid);
+    if (secret == NULL) {
+        remoteDispatchConnError (err, conn);
+        return -1;
+    }
+
+    make_nonnull_secret (&ret->secret, secret);
+    virSecretFree (secret);
+    return 0;
+}
+
+static int
+remoteDispatchSecretSetValue (struct qemud_server *server ATTRIBUTE_UNUSED,
+                              struct qemud_client *client ATTRIBUTE_UNUSED,
+                              virConnectPtr conn, remote_error *err,
+                              remote_secret_set_value_args *args,
+                              void *ret ATTRIBUTE_UNUSED)
+{
+    virSecretPtr secret;
+
+    secret = get_nonnull_secret (conn, args->secret);
+    if (secret == NULL) {
+        remoteDispatchConnError (err, conn);
+        return -1;
+    }
+    if (virSecretSetValue (secret, (const unsigned char *)args->value.value_val,
+                           args->value.value_len, args->flags) < 0) {
+        remoteDispatchConnError (err, conn);
+        virSecretFree(secret);
+        return -1;
+    }
+
+    virSecretFree(secret);
+    return 0;
+}
+
+static int
+remoteDispatchSecretUndefine (struct qemud_server *server ATTRIBUTE_UNUSED,
+                              struct qemud_client *client ATTRIBUTE_UNUSED,
+                              virConnectPtr conn, remote_error *err,
+                              remote_secret_undefine_args *args,
+                              void *ret ATTRIBUTE_UNUSED)
+{
+    virSecretPtr secret;
+
+    secret = get_nonnull_secret (conn, args->secret);
+    if (secret == NULL) {
+        remoteDispatchConnError (err, conn);
+        return -1;
+    }
+    if (virSecretUndefine (secret) < 0) {
+        remoteDispatchConnError (err, conn);
+        virSecretFree(secret);
+        return -1;
+    }
+
+    virSecretFree(secret);
+    return 0;
+}
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
@@ -4634,6 +4825,12 @@ get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol)
     return ret;
 }
 
+static virSecretPtr
+get_nonnull_secret (virConnectPtr conn, remote_nonnull_secret secret)
+{
+    return virGetSecret (conn, secret.uuid);
+}
+
 /* Make remote_nonnull_domain and remote_nonnull_network. */
 static void
 make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src)
@@ -4677,4 +4874,10 @@ static void
 make_nonnull_node_device (remote_nonnull_node_device *dev_dst, virNodeDevicePtr dev_src)
 {
     dev_dst->name = strdup(dev_src->name);
+}
+
+static void
+make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src)
+{
+    secret_dst->uuid = strdup(secret_src->uuid);
 }

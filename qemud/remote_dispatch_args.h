@@ -117,3 +117,10 @@
     remote_domain_xml_from_native_args val_remote_domain_xml_from_native_args;
     remote_domain_xml_to_native_args val_remote_domain_xml_to_native_args;
     remote_list_defined_interfaces_args val_remote_list_defined_interfaces_args;
+    remote_list_secrets_args val_remote_list_secrets_args;
+    remote_secret_lookup_by_uuid_string_args val_remote_secret_lookup_by_uuid_string_args;
+    remote_secret_define_xml_args val_remote_secret_define_xml_args;
+    remote_secret_get_xml_desc_args val_remote_secret_get_xml_desc_args;
+    remote_secret_set_value_args val_remote_secret_set_value_args;
+    remote_secret_get_value_args val_remote_secret_get_value_args;
+    remote_secret_undefine_args val_remote_secret_undefine_args;

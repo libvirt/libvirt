@@ -513,6 +513,13 @@ static int remoteDispatchListNetworks(
     remote_error *err,
     remote_list_networks_args *args,
     remote_list_networks_ret *ret);
+static int remoteDispatchListSecrets(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_list_secrets_args *args,
+    remote_list_secrets_ret *ret);
 static int remoteDispatchListStoragePools(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -758,6 +765,13 @@ static int remoteDispatchNumOfNetworks(
     remote_error *err,
     void *args,
     remote_num_of_networks_ret *ret);
+static int remoteDispatchNumOfSecrets(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    void *args,
+    remote_num_of_secrets_ret *ret);
 static int remoteDispatchNumOfStoragePools(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -771,6 +785,48 @@ static int remoteDispatchOpen(
     virConnectPtr conn,
     remote_error *err,
     remote_open_args *args,
+    void *ret);
+static int remoteDispatchSecretDefineXml(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_secret_define_xml_args *args,
+    remote_secret_define_xml_ret *ret);
+static int remoteDispatchSecretGetValue(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_secret_get_value_args *args,
+    remote_secret_get_value_ret *ret);
+static int remoteDispatchSecretGetXmlDesc(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_secret_get_xml_desc_args *args,
+    remote_secret_get_xml_desc_ret *ret);
+static int remoteDispatchSecretLookupByUuidString(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_secret_lookup_by_uuid_string_args *args,
+    remote_secret_lookup_by_uuid_string_ret *ret);
+static int remoteDispatchSecretSetValue(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_secret_set_value_args *args,
+    void *ret);
+static int remoteDispatchSecretUndefine(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_secret_undefine_args *args,
     void *ret);
 static int remoteDispatchStoragePoolBuild(
     struct qemud_server *server,

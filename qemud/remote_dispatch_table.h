@@ -697,3 +697,43 @@
     .args_filter = (xdrproc_t) xdr_remote_list_defined_interfaces_args,
     .ret_filter = (xdrproc_t) xdr_remote_list_defined_interfaces_ret,
 },
+{   /* NumOfSecrets => 139 */
+    .fn = (dispatch_fn) remoteDispatchNumOfSecrets,
+    .args_filter = (xdrproc_t) xdr_void,
+    .ret_filter = (xdrproc_t) xdr_remote_num_of_secrets_ret,
+},
+{   /* ListSecrets => 140 */
+    .fn = (dispatch_fn) remoteDispatchListSecrets,
+    .args_filter = (xdrproc_t) xdr_remote_list_secrets_args,
+    .ret_filter = (xdrproc_t) xdr_remote_list_secrets_ret,
+},
+{   /* SecretLookupByUuidString => 141 */
+    .fn = (dispatch_fn) remoteDispatchSecretLookupByUuidString,
+    .args_filter = (xdrproc_t) xdr_remote_secret_lookup_by_uuid_string_args,
+    .ret_filter = (xdrproc_t) xdr_remote_secret_lookup_by_uuid_string_ret,
+},
+{   /* SecretDefineXml => 142 */
+    .fn = (dispatch_fn) remoteDispatchSecretDefineXml,
+    .args_filter = (xdrproc_t) xdr_remote_secret_define_xml_args,
+    .ret_filter = (xdrproc_t) xdr_remote_secret_define_xml_ret,
+},
+{   /* SecretGetXmlDesc => 143 */
+    .fn = (dispatch_fn) remoteDispatchSecretGetXmlDesc,
+    .args_filter = (xdrproc_t) xdr_remote_secret_get_xml_desc_args,
+    .ret_filter = (xdrproc_t) xdr_remote_secret_get_xml_desc_ret,
+},
+{   /* SecretSetValue => 144 */
+    .fn = (dispatch_fn) remoteDispatchSecretSetValue,
+    .args_filter = (xdrproc_t) xdr_remote_secret_set_value_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
+{   /* SecretGetValue => 145 */
+    .fn = (dispatch_fn) remoteDispatchSecretGetValue,
+    .args_filter = (xdrproc_t) xdr_remote_secret_get_value_args,
+    .ret_filter = (xdrproc_t) xdr_remote_secret_get_value_ret,
+},
+{   /* SecretUndefine => 146 */
+    .fn = (dispatch_fn) remoteDispatchSecretUndefine,
+    .args_filter = (xdrproc_t) xdr_remote_secret_undefine_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},

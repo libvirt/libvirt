@@ -104,6 +104,15 @@ xdr_remote_nonnull_node_device (XDR *xdrs, remote_nonnull_node_device *objp)
 }
 
 bool_t
+xdr_remote_nonnull_secret (XDR *xdrs, remote_nonnull_secret *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->uuid))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_domain (XDR *xdrs, remote_domain *objp)
 {
 
@@ -2529,6 +2538,137 @@ xdr_remote_domain_xml_to_native_ret (XDR *xdrs, remote_domain_xml_to_native_ret 
 {
 
          if (!xdr_remote_nonnull_string (xdrs, &objp->nativeConfig))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_num_of_secrets_ret (XDR *xdrs, remote_num_of_secrets_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->num))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_list_secrets_args (XDR *xdrs, remote_list_secrets_args *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->maxuuids))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_list_secrets_ret (XDR *xdrs, remote_list_secrets_ret *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->uuids.uuids_val;
+
+         if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->uuids.uuids_len, REMOTE_SECRET_UUID_LIST_MAX,
+                sizeof (remote_nonnull_string), (xdrproc_t) xdr_remote_nonnull_string))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_secret_lookup_by_uuid_string_args (XDR *xdrs, remote_secret_lookup_by_uuid_string_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->uuid))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_secret_lookup_by_uuid_string_ret (XDR *xdrs, remote_secret_lookup_by_uuid_string_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_secret (xdrs, &objp->secret))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_secret_define_xml_args (XDR *xdrs, remote_secret_define_xml_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->xml))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_secret_define_xml_ret (XDR *xdrs, remote_secret_define_xml_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_secret (xdrs, &objp->secret))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_secret_get_xml_desc_args (XDR *xdrs, remote_secret_get_xml_desc_args *objp)
+{
+
+         if (!xdr_remote_nonnull_secret (xdrs, &objp->secret))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_secret_get_xml_desc_ret (XDR *xdrs, remote_secret_get_xml_desc_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->xml))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_secret_set_value_args (XDR *xdrs, remote_secret_set_value_args *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->value.value_val;
+
+         if (!xdr_remote_nonnull_secret (xdrs, &objp->secret))
+                 return FALSE;
+         if (!xdr_bytes (xdrs, objp_cpp0, (u_int *) &objp->value.value_len, REMOTE_SECRET_VALUE_MAX))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_secret_get_value_args (XDR *xdrs, remote_secret_get_value_args *objp)
+{
+
+         if (!xdr_remote_nonnull_secret (xdrs, &objp->secret))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_secret_get_value_ret (XDR *xdrs, remote_secret_get_value_ret *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->value.value_val;
+
+         if (!xdr_bytes (xdrs, objp_cpp0, (u_int *) &objp->value.value_len, REMOTE_SECRET_VALUE_MAX))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_secret_undefine_args (XDR *xdrs, remote_secret_undefine_args *objp)
+{
+
+         if (!xdr_remote_nonnull_secret (xdrs, &objp->secret))
                  return FALSE;
         return TRUE;
 }
