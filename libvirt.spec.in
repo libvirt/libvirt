@@ -318,6 +318,10 @@ of recent versions of Linux (and other OSes).
 %define _without_numactl --without-numactl
 %endif
 
+%if ! %{with_capng}
+%define _without_capng --without-capng
+%endif
+
 %configure %{?_without_xen} \
            %{?_without_qemu} \
            %{?_without_openvz} \
@@ -337,6 +341,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_storage_iscsi} \
            %{?_without_storage_disk} \
            %{?_without_numactl} \
+           %{?_without_capng} \
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
            --with-init-script=redhat \
