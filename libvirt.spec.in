@@ -8,8 +8,7 @@
 %define with_vbox          0%{!?_without_vbox:1}
 %define with_sasl          0%{!?_without_sasl:1}
 %define with_avahi         0%{!?_without_avahi:1}
-# default to off
-%define with_polkit        0%{!?_without_polkit:0}
+%define with_polkit        0%{!?_without_polkit:1}
 %define with_python        0%{!?_without_python:1}
 %define with_libvirtd      0%{!?_without_libvirtd:1}
 %define with_uml           0%{!?_without_uml:1}
