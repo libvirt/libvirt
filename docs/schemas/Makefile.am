@@ -5,6 +5,7 @@ schema_DATA = \
 	domain.rng \
 	interface.rng \
 	network.rng \
+	secret.rng \
 	storagepool.rng \
 	storagevol.rng \
 	nodedev.rng \

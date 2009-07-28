@@ -1448,6 +1448,44 @@ void virEventRegisterImpl(virEventAddHandleFunc addHandle,
                           virEventAddTimeoutFunc addTimeout,
                           virEventUpdateTimeoutFunc updateTimeout,
                           virEventRemoveTimeoutFunc removeTimeout);
+
+/*
+ * Secret manipulation API
+ */
+
+/**
+ * virSecret:
+ *
+ * A virSecret stores a secret value (e.g. a passphrase or encryption key)
+ * and associated metadata.
+ */
+typedef struct _virSecret virSecret;
+typedef virSecret *virSecretPtr;
+
+virConnectPtr           virSecretGetConnect     (virSecretPtr secret);
+int                     virConnectNumOfSecrets  (virConnectPtr conn);
+int                     virConnectListSecrets   (virConnectPtr conn,
+                                                 char **uuids,
+                                                 int maxuuids);
+virSecretPtr            virSecretLookupByUUIDString(virConnectPtr conn,
+                                                    const char *uuid);
+virSecretPtr            virSecretDefineXML      (virConnectPtr conn,
+                                                 const char *xml,
+                                                 unsigned int flags);
+char *                  virSecretGetUUIDString  (virSecretPtr secret);
+char *                  virSecretGetXMLDesc     (virSecretPtr secret,
+                                                 unsigned int flags);
+int                     virSecretSetValue       (virSecretPtr secret,
+                                                 const unsigned char *value,
+                                                 size_t value_size,
+                                                 unsigned int flags);
+unsigned char *         virSecretGetValue       (virSecretPtr secret,
+                                                 size_t *value_size,
+                                                 unsigned int flags);
+int                     virSecretUndefine       (virSecretPtr secret);
+int                     virSecretRef            (virSecretPtr secret);
+int                     virSecretFree           (virSecretPtr secret);
+
 #ifdef __cplusplus
 }
 #endif
