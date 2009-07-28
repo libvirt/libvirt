@@ -436,8 +436,7 @@ if [ $1 = 0 ]; then
 fi
 %endif
 
-%postun
-/sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-, root, root)
