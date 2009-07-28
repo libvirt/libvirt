@@ -178,7 +178,7 @@ BuildRequires: parted-devel
 BuildRequires: numactl-devel
 %endif
 %if %{with_capng}
-BuildRequires: capng-devel >= 0.5.0
+BuildRequires: libcap-ng-devel >= 0.5.0
 %endif
 %if %{with_phyp}
 BuildRequires: libssh-devel >= 0.3.1
