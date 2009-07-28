@@ -200,7 +200,6 @@ the libvirtd server exporting the virtualization support.
 %package client
 Summary: client side library and utilities of the libvirt library
 Group: Development/Libraries
-Requires: libxml2
 Requires: readline
 Requires: ncurses
 # So remote clients can access libvirt over SSH tunnel
