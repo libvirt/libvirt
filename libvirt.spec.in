@@ -492,6 +492,7 @@ fi
 %if %{with_network}
 %dir %{_localstatedir}/run/libvirt/network/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/network/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/iptables/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/iptables/filter/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/iptables/nat/
 %endif
@@ -510,6 +511,7 @@ fi
 %{_datadir}/PolicyKit/policy/org.libvirt.unix.policy
 %endif
 
+%dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/
 %if %{with_qemu}
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
 %endif
