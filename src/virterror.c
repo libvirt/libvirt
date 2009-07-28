@@ -169,6 +169,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_ESX:
             dom = "ESX ";
             break;
+        case VIR_FROM_SECRET:
+            dom = "Secret Storage ";
+            break;
     }
     return(dom);
 }
@@ -1073,6 +1076,12 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("Failed to find a secret storage driver");
             else
                 errmsg = _("Failed to find a secret storage driver: %s");
+            break;
+        case VIR_ERR_INVALID_SECRET:
+            if (info == NULL)
+                errmsg = _("Invalid secret");
+            else
+                errmsg = _("Invalid secret: %s");
             break;
     }
     return (errmsg);

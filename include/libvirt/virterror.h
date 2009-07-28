@@ -67,6 +67,7 @@ typedef enum {
     VIR_FROM_ONE,       /* Error from OpenNebula driver */
     VIR_FROM_ESX,       /* Error from ESX driver */
     VIR_FROM_PHYP,      /* Error from IBM power hypervisor */
+    VIR_FROM_SECRET,    /* Error from secret storage */
 } virErrorDomain;
 
 
@@ -167,6 +168,7 @@ typedef enum {
     VIR_ERR_INVALID_INTERFACE, /* invalid interface object */
     VIR_ERR_MULTIPLE_INTERFACES, /* more than one matching interface found */
     VIR_WAR_NO_SECRET, /* failed to start secret storage */
+    VIR_ERR_INVALID_SECRET, /* invalid secret */
 } virErrorNumber;
 
 /**

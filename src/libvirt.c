@@ -562,6 +562,31 @@ virLibNodeDeviceError(virNodeDevicePtr dev, virErrorNumber error,
 }
 
 /**
+ * virLibSecretError:
+ * @secret: the secret if available
+ * @error: the error number
+ * @info: extra information string
+ *
+ * Handle an error at the secret level
+ */
+static void
+virLibSecretError(virSecretPtr secret, virErrorNumber error, const char *info)
+{
+    virConnectPtr conn = NULL;
+    const char *errmsg;
+
+    if (error == VIR_ERR_OK)
+        return;
+
+    errmsg = virErrorMsg(error, info);
+    if (error != VIR_ERR_INVALID_SECRET)
+        conn = secret->conn;
+
+    virRaiseError(conn, NULL, NULL, VIR_FROM_SECRET, error, VIR_ERR_ERROR,
+                  errmsg, info, NULL, 0, 0, errmsg, info);
+}
+
+/**
  * virRegisterNetworkDriver:
  * @driver: pointer to a network driver block
  *
@@ -8678,4 +8703,483 @@ error:
     /* Copy to connection error object for back compatability */
     virSetConnError(conn);
     return -1;
+}
+
+/**
+ * virSecretGetConnect:
+ * @secret: A virSecret secret
+ *
+ * Provides the connection pointer associated with a secret.  The reference
+ * counter on the connection is not increased by this call.
+ *
+ * WARNING: When writing libvirt bindings in other languages, do not use this
+ * function.  Instead, store the connection and the secret object together.
+ *
+ * Returns the virConnectPtr or NULL in case of failure.
+ */
+virConnectPtr
+virSecretGetConnect (virSecretPtr secret)
+{
+    DEBUG("secret=%p", secret);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_SECRET (secret)) {
+        virLibSecretError (NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        return NULL;
+    }
+    return secret->conn;
+}
+
+/**
+ * virConnectNumOfSecrets:
+ * @conn: virConnect connection
+ *
+ * Fetch number of currently defined secrets.
+ *
+ * Returns the number currently defined secrets.
+ */
+int
+virConnectNumOfSecrets(virConnectPtr conn)
+{
+    VIR_DEBUG("conn=%p", conn);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return -1;
+    }
+
+    if (conn->secretDriver != NULL &&
+        conn->secretDriver->numOfSecrets != NULL) {
+        int ret;
+
+        ret = conn->secretDriver->numOfSecrets(conn);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return -1;
+}
+
+/**
+ * virConnectListSecrets:
+ * @conn: virConnect connection
+ * @uuids: Pointer to an array to store the UUIDs
+ * @maxuuids: size of the array.
+ *
+ * List UUIDs of defined secrets, store pointers to names in uuids.
+ *
+ * Returns the number of UUIDs provided in the array, or -1 on failure.
+ */
+int
+virConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
+{
+    VIR_DEBUG("conn=%p, uuids=%p, maxuuids=%d", conn, uuids, maxuuids);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return -1;
+    }
+    if (uuids == NULL || maxuuids < 0) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->secretDriver != NULL && conn->secretDriver->listSecrets != NULL) {
+        int ret;
+
+        ret = conn->secretDriver->listSecrets(conn, uuids, maxuuids);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return -1;
+}
+
+/**
+ * virSecretLookupByUUIDString:
+ * @conn: virConnect connection
+ * @uuid: ID of a secret
+ *
+ * Fetches a secret based on uuid.
+ *
+ * Returns the secret on success, or NULL on failure.
+ */
+virSecretPtr
+virSecretLookupByUUIDString(virConnectPtr conn, const char *uuid)
+{
+    VIR_DEBUG("conn=%p, uuid=%s", conn, uuid);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return NULL;
+    }
+    if (uuid == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->secretDriver != NULL &&
+        conn->secretDriver->lookupByUUIDString != NULL) {
+        virSecretPtr ret;
+
+        ret = conn->secretDriver->lookupByUUIDString(conn, uuid);
+        if (ret == NULL)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return NULL;
+}
+
+/**
+ * virSecretDefineXML:
+ * @conn: virConnect connection
+ * @xml: XML describing the secret.
+ * @flags: flags, use 0 for now
+ *
+ * If XML specifies an UUID, locates the specified secret and replaces all
+ * attributes of the secret specified by UUID by attributes specified in xml
+ * (any attributes not specified in xml are discarded).
+ *
+ * Otherwise, creates a new secret with an automatically chosen UUID, and
+ * initializes its attributes from xml.
+ *
+ * Returns a the secret on success, NULL on failure.
+ */
+virSecretPtr
+virSecretDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, xml=%s, flags=%u", conn, xml, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return NULL;
+    }
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+    if (xml == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->secretDriver != NULL && conn->secretDriver->defineXML != NULL) {
+        virSecretPtr ret;
+
+        ret = conn->secretDriver->defineXML(conn, xml, flags);
+        if (ret == NULL)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return NULL;
+}
+
+/**
+ * virSecretGetUUIDString:
+ * @secret: A virSecret secret
+ *
+ * Fetches the UUID of the secret.
+ *
+ * Returns ID of the secret (not necessarily in the UUID format) on success,
+ * NULL on failure.  The caller must free() the ID.
+ */
+char *
+virSecretGetUUIDString(virSecretPtr secret)
+{
+    char *ret;
+
+    VIR_DEBUG("secret=%p", secret);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_SECRET(secret)) {
+        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        return NULL;
+    }
+
+    ret = strdup(secret->uuid);
+    if (ret != NULL)
+        return ret;
+
+    virReportOOMError(secret->conn);
+    virSetConnError(secret->conn);
+    return NULL;
+}
+
+/**
+ * virSecretGetXMLDesc:
+ * @secret: A virSecret secret
+ * @flags: flags, use 0 for now
+ *
+ * Fetches an XML document describing attributes of the secret.
+ *
+ * Returns the XML document on success, NULL on failure.  The caller must
+ * free() the XML.
+ */
+char *
+virSecretGetXMLDesc(virSecretPtr secret, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("secret=%p, flags=%u", secret, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_SECRET(secret)) {
+        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        return NULL;
+    }
+
+    conn = secret->conn;
+    if (conn->secretDriver != NULL && conn->secretDriver->getXMLDesc != NULL) {
+        char *ret;
+
+        ret = conn->secretDriver->getXMLDesc(secret, flags);
+        if (ret == NULL)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return NULL;
+}
+
+/**
+ * virSecretSetValue:
+ * @secret: A virSecret secret
+ * @value: Value of the secret
+ * @value_size: Size of the value
+ * @flags: flags, use 0 for now
+ *
+ * Sets the value of a secret.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int
+virSecretSetValue(virSecretPtr secret, const unsigned char *value,
+                  size_t value_size, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("secret=%p, value=%p, value_size=%zu, flags=%u", secret, value,
+              value_size, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_SECRET(secret)) {
+        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        return -1;
+    }
+    conn = secret->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibSecretError(secret, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+    if (value == NULL) {
+        virLibSecretError(secret, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->secretDriver != NULL && conn->secretDriver->setValue != NULL) {
+        int ret;
+
+        ret = conn->secretDriver->setValue(secret, value, value_size, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return -1;
+}
+
+/**
+ * virSecretGetValue:
+ * @secret: A virSecret connection
+ * @value_size: Place for storing size of the secret value
+ * @flags: flags, use 0 for now
+ *
+ * Fetches the value of a secret.
+ *
+ * Returns the secret value on success, NULL on failure.  The caller must
+ * free() the secret value.
+ */
+unsigned char *
+virSecretGetValue(virSecretPtr secret, size_t *value_size, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("secret=%p, value_size=%p, flags=%u", secret, value_size, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_SECRET(secret)) {
+        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        return NULL;
+    }
+    conn = secret->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibSecretError(secret, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+    if (value_size == NULL) {
+        virLibSecretError(secret, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->secretDriver != NULL && conn->secretDriver->getValue != NULL) {
+        unsigned char *ret;
+
+        ret = conn->secretDriver->getValue(secret, value_size, flags);
+        if (ret == NULL)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return NULL;
+}
+
+/**
+ * virSecretUndefine:
+ * @secret: A virSecret secret
+ *
+ * Deletes the specified secret.  This does not free the associated
+ * virSecretPtr object.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int
+virSecretUndefine(virSecretPtr secret)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("secret=%p", secret);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_SECRET(secret)) {
+        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        return -1;
+    }
+    conn = secret->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibSecretError(secret, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->secretDriver != NULL && conn->secretDriver->undefine != NULL) {
+        int ret;
+
+        ret = conn->secretDriver->undefine(secret);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return -1;
+}
+
+/**
+ * virSecretRef:
+ * @secret: the secret to hold a reference on
+ *
+ * Increment the reference count on the secret. For each additional call to
+ * this method, there shall be a corresponding call to virSecretFree to release
+ * the reference count, once the caller no longer needs the reference to this
+ * object.
+ *
+ * This method is typically useful for applications where multiple threads are
+ * using a connection, and it is required that the connection remain open until
+ * all threads have finished using it. ie, each new thread using a secret would
+ * increment the reference count.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virSecretRef(virSecretPtr secret)
+{
+    if (!VIR_IS_CONNECTED_SECRET(secret)) {
+        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        return -1;
+    }
+    virMutexLock(&secret->conn->lock);
+    DEBUG("secret=%p refs=%d", secret, secret->refs);
+    secret->refs++;
+    virMutexUnlock(&secret->conn->lock);
+    return 0;
+}
+
+/**
+ * virSecretFree:
+ * @secret: pointer to a secret
+ *
+ * Release the secret handle. The underlying secret continues to exist.
+ *
+ * Return 0 on success, or -1 on error
+ */
+int
+virSecretFree(virSecretPtr secret)
+{
+    DEBUG("secret=%p", secret);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_SECRET(secret)) {
+        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        return -1;
+    }
+    if (virUnrefSecret(secret) < 0)
+        return -1;
+    return 0;
 }
