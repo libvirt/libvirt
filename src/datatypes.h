@@ -140,6 +140,7 @@ struct _virConnect {
     void *            interfacePrivateData;
     void *            storagePrivateData;
     void *            devMonPrivateData;
+    void *            secretPrivateData;
 
     /*
      * The lock mutex must be acquired before accessing/changing

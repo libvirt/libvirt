@@ -221,11 +221,13 @@ static virInterfacePtr get_nonnull_interface (virConnectPtr conn, remote_nonnull
 static virStoragePoolPtr get_nonnull_storage_pool (virConnectPtr conn, remote_nonnull_storage_pool pool);
 static virStorageVolPtr get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol);
 static virNodeDevicePtr get_nonnull_node_device (virConnectPtr conn, remote_nonnull_node_device dev);
+static virSecretPtr get_nonnull_secret (virConnectPtr conn, remote_nonnull_secret secret);
 static void make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src);
 static void make_nonnull_network (remote_nonnull_network *net_dst, virNetworkPtr net_src);
 static void make_nonnull_interface (remote_nonnull_interface *interface_dst, virInterfacePtr interface_src);
 static void make_nonnull_storage_pool (remote_nonnull_storage_pool *pool_dst, virStoragePoolPtr vol_src);
 static void make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src);
+static void make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src);
 void remoteDomainEventFired(int watch, int fd, int event, void *data);
 static void remoteDomainQueueEvent(virConnectPtr conn, XDR *xdr);
 void remoteDomainEventQueueFlush(int timer, void *opaque);
@@ -6340,6 +6342,303 @@ done:
     return rv;
 }
 
+static virDrvOpenStatus
+remoteSecretOpen (virConnectPtr conn,
+                  virConnectAuthPtr auth,
+                  int flags)
+{
+    if (inside_daemon)
+        return VIR_DRV_OPEN_DECLINED;
+
+    if (conn &&
+        conn->driver &&
+        STREQ (conn->driver->name, "remote")) {
+        struct private_data *priv;
+
+        /* If we're here, the remote driver is already
+         * in use due to a) a QEMU uri, or b) a remote
+         * URI. So we can re-use existing connection
+         */
+        priv = conn->privateData;
+        remoteDriverLock(priv);
+        priv->localUses++;
+        conn->secretPrivateData = priv;
+        remoteDriverUnlock(priv);
+        return VIR_DRV_OPEN_SUCCESS;
+    } else if (conn->networkDriver &&
+               STREQ (conn->networkDriver->name, "remote")) {
+        struct private_data *priv = conn->networkPrivateData;
+        remoteDriverLock(priv);
+        conn->secretPrivateData = priv;
+        priv->localUses++;
+        remoteDriverUnlock(priv);
+        return VIR_DRV_OPEN_SUCCESS;
+    } else {
+        /* Using a non-remote driver, so we need to open a
+         * new connection for secret APIs, forcing it to
+         * use the UNIX transport.
+         */
+        struct private_data *priv;
+        int ret;
+        ret = remoteOpenSecondaryDriver(conn,
+                                        auth,
+                                        flags,
+                                        &priv);
+        if (ret == VIR_DRV_OPEN_SUCCESS)
+            conn->secretPrivateData = priv;
+        return ret;
+    }
+}
+
+static int
+remoteSecretClose (virConnectPtr conn)
+{
+    int rv = 0;
+    struct private_data *priv = conn->secretPrivateData;
+
+    conn->secretPrivateData = NULL;
+    remoteDriverLock(priv);
+    priv->localUses--;
+    if (!priv->localUses) {
+        rv = doRemoteClose(conn, priv);
+        remoteDriverUnlock(priv);
+        virMutexDestroy(&priv->lock);
+        VIR_FREE(priv);
+    }
+    if (priv)
+        remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteSecretNumOfSecrets (virConnectPtr conn)
+{
+    int rv = -1;
+    remote_num_of_secrets_ret ret;
+    struct private_data *priv = conn->secretPrivateData;
+
+    remoteDriverLock (priv);
+
+    memset (&ret, 0, sizeof (ret));
+    if (call (conn, priv, 0, REMOTE_PROC_NUM_OF_SECRETS,
+              (xdrproc_t) xdr_void, (char *) NULL,
+              (xdrproc_t) xdr_remote_num_of_secrets_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock (priv);
+    return rv;
+}
+
+static int
+remoteSecretListSecrets (virConnectPtr conn, char **uuids, int maxuuids)
+{
+    int rv = -1;
+    int i;
+    remote_list_secrets_args args;
+    remote_list_secrets_ret ret;
+    struct private_data *priv = conn->secretPrivateData;
+
+    remoteDriverLock(priv);
+
+    if (maxuuids > REMOTE_SECRET_UUID_LIST_MAX) {
+        errorf (conn, VIR_ERR_RPC, _("too many remote secret UUIDs: %d > %d"),
+                maxuuids, REMOTE_SECRET_UUID_LIST_MAX);
+        goto done;
+    }
+    args.maxuuids = maxuuids;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_LIST_SECRETS,
+              (xdrproc_t) xdr_remote_list_secrets_args, (char *) &args,
+              (xdrproc_t) xdr_remote_list_secrets_ret, (char *) &ret) == -1)
+        goto done;
+
+    if (ret.uuids.uuids_len > maxuuids) {
+        errorf (conn, VIR_ERR_RPC, _("too many remote secret UUIDs: %d > %d"),
+                ret.uuids.uuids_len, maxuuids);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees.  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here.
+     */
+    for (i = 0; i < ret.uuids.uuids_len; ++i)
+        uuids[i] = strdup (ret.uuids.uuids_val[i]);
+
+    rv = ret.uuids.uuids_len;
+
+cleanup:
+    xdr_free ((xdrproc_t) xdr_remote_list_secrets_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static virSecretPtr
+remoteSecretLookupByUUIDString (virConnectPtr conn, const char *uuid)
+{
+    virSecretPtr rv = NULL;
+    remote_secret_lookup_by_uuid_string_args args;
+    remote_secret_lookup_by_uuid_string_ret ret;
+    struct private_data *priv = conn->secretPrivateData;
+
+    remoteDriverLock (priv);
+
+    args.uuid = (char *) uuid;
+
+    memset (&ret, 0, sizeof (ret));
+    if (call (conn, priv, 0, REMOTE_PROC_SECRET_LOOKUP_BY_UUID_STRING,
+              (xdrproc_t) xdr_remote_secret_lookup_by_uuid_string_args, (char *) &args,
+              (xdrproc_t) xdr_remote_secret_lookup_by_uuid_string_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = get_nonnull_secret (conn, ret.secret);
+    xdr_free ((xdrproc_t) xdr_remote_secret_lookup_by_uuid_string_ret,
+              (char *) &ret);
+
+done:
+    remoteDriverUnlock (priv);
+    return rv;
+}
+
+static virSecretPtr
+remoteSecretDefineXML (virConnectPtr conn, const char *xml, unsigned int flags)
+{
+    virSecretPtr rv = NULL;
+    remote_secret_define_xml_args args;
+    remote_secret_lookup_by_uuid_string_ret ret;
+    struct private_data *priv = conn->secretPrivateData;
+
+    remoteDriverLock (priv);
+
+    args.xml = (char *) xml;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof (ret));
+    if (call (conn, priv, 0, REMOTE_PROC_SECRET_DEFINE_XML,
+              (xdrproc_t) xdr_remote_secret_define_xml_args, (char *) &args,
+              (xdrproc_t) xdr_remote_secret_define_xml_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = get_nonnull_secret (conn, ret.secret);
+    xdr_free ((xdrproc_t) xdr_remote_secret_lookup_by_uuid_string_ret,
+              (char *) &ret);
+
+done:
+    remoteDriverUnlock (priv);
+    return rv;
+}
+
+static char *
+remoteSecretGetXMLDesc (virSecretPtr secret, unsigned int flags)
+{
+    char *rv = NULL;
+    remote_secret_get_xml_desc_args args;
+    remote_secret_get_xml_desc_ret ret;
+    struct private_data *priv = secret->conn->secretPrivateData;
+
+    remoteDriverLock (priv);
+
+    make_nonnull_secret (&args.secret, secret);
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof (ret));
+    if (call (secret->conn, priv, 0, REMOTE_PROC_SECRET_GET_XML_DESC,
+              (xdrproc_t) xdr_remote_secret_get_xml_desc_args, (char *) &args,
+              (xdrproc_t) xdr_remote_secret_get_xml_desc_ret, (char *) &ret) == -1)
+        goto done;
+
+    /* Caller frees. */
+    rv = ret.xml;
+
+done:
+    remoteDriverUnlock (priv);
+    return rv;
+}
+
+static int
+remoteSecretSetValue (virSecretPtr secret, const unsigned char *value,
+                      size_t value_size, unsigned int flags)
+{
+    int rv = -1;
+    remote_secret_set_value_args args;
+    struct private_data *priv = secret->conn->secretPrivateData;
+
+    remoteDriverLock (priv);
+
+    make_nonnull_secret (&args.secret, secret);
+    args.value.value_len = value_size;
+    args.value.value_val = (char *) value;
+    args.flags = flags;
+
+    if (call (secret->conn, priv, 0, REMOTE_PROC_SECRET_SET_VALUE,
+              (xdrproc_t) xdr_remote_secret_set_value_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock (priv);
+    return rv;
+}
+
+static unsigned char *
+remoteSecretGetValue (virSecretPtr secret, size_t *value_size,
+                      unsigned int flags)
+{
+    unsigned char *rv = NULL;
+    remote_secret_get_value_args args;
+    remote_secret_get_value_ret ret;
+    struct private_data *priv = secret->conn->secretPrivateData;
+
+    remoteDriverLock (priv);
+
+    make_nonnull_secret (&args.secret, secret);
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof (ret));
+    if (call (secret->conn, priv, 0, REMOTE_PROC_SECRET_GET_VALUE,
+              (xdrproc_t) xdr_remote_secret_get_value_args, (char *) &args,
+              (xdrproc_t) xdr_remote_secret_get_value_ret, (char *) &ret) == -1)
+        goto done;
+
+    *value_size = ret.value.value_len;
+    rv = (unsigned char *) ret.value.value_val; /* Caller frees. */
+
+done:
+    remoteDriverUnlock (priv);
+    return rv;
+}
+
+static int
+remoteSecretUndefine (virSecretPtr secret)
+{
+    int rv = -1;
+    remote_secret_undefine_args args;
+    struct private_data *priv = secret->conn->secretPrivateData;
+
+    remoteDriverLock (priv);
+
+    make_nonnull_secret (&args.secret, secret);
+
+    if (call (secret->conn, priv, 0, REMOTE_PROC_SECRET_UNDEFINE,
+              (xdrproc_t) xdr_remote_secret_undefine_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock (priv);
+    return rv;
+}
+
 /*----------------------------------------------------------------------*/
 
 
@@ -7436,6 +7735,12 @@ get_nonnull_node_device (virConnectPtr conn, remote_nonnull_node_device dev)
     return virGetNodeDevice(conn, dev.name);
 }
 
+static virSecretPtr
+get_nonnull_secret (virConnectPtr conn, remote_nonnull_secret secret)
+{
+    return virGetSecret(conn, secret.uuid);
+}
+
 /* Make remote_nonnull_domain and remote_nonnull_network. */
 static void
 make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src)
@@ -7473,6 +7778,12 @@ make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr 
     vol_dst->pool = vol_src->pool;
     vol_dst->name = vol_src->name;
     vol_dst->key = vol_src->key;
+}
+
+static void
+make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src)
+{
+    secret_dst->uuid = secret_src->uuid;
 }
 
 /*----------------------------------------------------------------------*/
@@ -7628,6 +7939,20 @@ static virStorageDriver storage_driver = {
     .volGetPath = remoteStorageVolGetPath,
 };
 
+static virSecretDriver secret_driver = {
+    .name = "remote",
+    .open = remoteSecretOpen,
+    .close = remoteSecretClose,
+    .numOfSecrets = remoteSecretNumOfSecrets,
+    .listSecrets = remoteSecretListSecrets,
+    .lookupByUUIDString = remoteSecretLookupByUUIDString,
+    .defineXML = remoteSecretDefineXML,
+    .getXMLDesc = remoteSecretGetXMLDesc,
+    .setValue = remoteSecretSetValue,
+    .getValue = remoteSecretGetValue,
+    .undefine = remoteSecretUndefine
+};
+
 static virDeviceMonitor dev_monitor = {
     .name = "remote",
     .open = remoteDevMonOpen,
@@ -7665,6 +7990,7 @@ remoteRegister (void)
     if (virRegisterInterfaceDriver (&interface_driver) == -1) return -1;
     if (virRegisterStorageDriver (&storage_driver) == -1) return -1;
     if (virRegisterDeviceMonitor (&dev_monitor) == -1) return -1;
+    if (virRegisterSecretDriver (&secret_driver) == -1) return -1;
 #ifdef WITH_LIBVIRTD
     if (virRegisterStateDriver (&state_driver) == -1) return -1;
 #endif
