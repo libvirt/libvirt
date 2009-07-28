@@ -144,9 +144,6 @@ BuildRequires: avahi-devel
 BuildRequires: libselinux-devel
 BuildRequires: dnsmasq
 BuildRequires: bridge-utils
-%if %{with_qemu}
-BuildRequires: qemu
-%endif
 %if %{with_sasl}
 BuildRequires: cyrus-sasl-devel
 %endif
