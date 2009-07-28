@@ -5,6 +5,7 @@
 %define with_qemu          0%{!?_without_qemu:1}
 %define with_openvz        0%{!?_without_openvz:1}
 %define with_lxc           0%{!?_without_lxc:1}
+%define with_vbox          0%{!?_without_vbox:1}
 %define with_sasl          0%{!?_without_sasl:1}
 %define with_avahi         0%{!?_without_avahi:1}
 # default to off
@@ -258,6 +259,10 @@ of recent versions of Linux (and other OSes).
 %define _without_lxc --without-lxc
 %endif
 
+%if ! %{with_vbox}
+%define _without_vbox --without-vbox
+%endif
+
 %if ! %{with_sasl}
 %define _without_sasl --without-sasl
 %endif
@@ -326,6 +331,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_qemu} \
            %{?_without_openvz} \
            %{?_without_lxc} \
+           %{?_without_vbox} \
            %{?_without_sasl} \
            %{?_without_avahi} \
            %{?_without_polkit} \
