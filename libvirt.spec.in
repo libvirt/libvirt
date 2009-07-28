@@ -403,6 +403,10 @@ rm -rf $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-python-%{version}
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu.conf
 %endif
 
+%if %{with_libvirtd}
+chmod 0644 $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/libvirtd
+%endif
+
 %clean
 rm -fr %{buildroot}
 
