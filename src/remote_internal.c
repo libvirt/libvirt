@@ -167,6 +167,8 @@ struct private_data {
     virDomainEventQueuePtr domainEvents;
     /* Timer for flushing domainEvents queue */
     int eventFlushTimer;
+    /* Flag if we're in process of dispatching */
+    int domainEventDispatching;
 
     /* Self-pipe to wakeup threads waiting in poll() */
     int wakeupSendFD;
@@ -6288,18 +6290,26 @@ static int remoteDomainEventDeregister (virConnectPtr conn,
 
     remoteDriverLock(priv);
 
-    if (virDomainEventCallbackListRemove(conn, priv->callbackList,
-                                         callback) < 0) {
-         error (conn, VIR_ERR_RPC, _("removing cb fron list"));
-         goto done;
-    }
-
-    if ( priv->callbackList->count == 0 ) {
-        /* Tell the server when we are the last callback deregistering */
-        if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER,
-                (xdrproc_t) xdr_void, (char *) NULL,
-                (xdrproc_t) xdr_void, (char *) NULL) == -1)
+    if (priv->domainEventDispatching) {
+        if (virDomainEventCallbackListMarkDelete(conn, priv->callbackList,
+                                                 callback) < 0) {
+            error (conn, VIR_ERR_RPC, _("marking cb for deletion"));
             goto done;
+        }
+    } else {
+        if (virDomainEventCallbackListRemove(conn, priv->callbackList,
+                                             callback) < 0) {
+            error (conn, VIR_ERR_RPC, _("removing cb from list"));
+            goto done;
+        }
+
+        if ( priv->callbackList->count == 0 ) {
+            /* Tell the server when we are the last callback deregistering */
+            if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER,
+                      (xdrproc_t) xdr_void, (char *) NULL,
+                      (xdrproc_t) xdr_void, (char *) NULL) == -1)
+                goto done;
+        }
     }
 
     rv = 0;
@@ -7309,17 +7319,53 @@ done:
     remoteDriverUnlock(priv);
 }
 
+static void remoteDomainEventDispatchFunc(virConnectPtr conn,
+                                          virDomainEventPtr event,
+                                          virConnectDomainEventCallback cb,
+                                          void *cbopaque,
+                                          void *opaque)
+{
+    struct private_data *priv = opaque;
+
+    /* Drop the lock whle dispatching, for sake of re-entrancy */
+    remoteDriverUnlock(priv);
+    virDomainEventDispatchDefaultFunc(conn, event, cb, cbopaque, NULL);
+    remoteDriverLock(priv);
+}
+
 void
 remoteDomainEventQueueFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
 {
     virConnectPtr conn = opaque;
     struct private_data *priv = conn->privateData;
+    virDomainEventQueue tempQueue;
 
     remoteDriverLock(priv);
 
-    virDomainEventQueueDispatch(priv->domainEvents, priv->callbackList,
-                                virDomainEventDispatchDefaultFunc, NULL);
+    priv->domainEventDispatching = 1;
+
+    /* Copy the queue, so we're reentrant safe */
+    tempQueue.count = priv->domainEvents->count;
+    tempQueue.events = priv->domainEvents->events;
+    priv->domainEvents->count = 0;
+    priv->domainEvents->events = NULL;
+
+    virDomainEventQueueDispatch(&tempQueue, priv->callbackList,
+                                remoteDomainEventDispatchFunc, priv);
     virEventUpdateTimeout(priv->eventFlushTimer, -1);
+
+    /* Purge any deleted callbacks */
+    virDomainEventCallbackListPurgeMarked(priv->callbackList);
+
+    if ( priv->callbackList->count == 0 ) {
+        /* Tell the server when we are the last callback deregistering */
+        if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER,
+                  (xdrproc_t) xdr_void, (char *) NULL,
+                  (xdrproc_t) xdr_void, (char *) NULL) == -1)
+            VIR_WARN0("Failed to de-register events");
+    }
+
+    priv->domainEventDispatching = 0;
 
     remoteDriverUnlock(priv);
 }
