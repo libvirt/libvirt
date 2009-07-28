@@ -23,6 +23,7 @@
 %define with_numactl       0%{!?_without_numactl:1}
 # default to off
 %define with_capng         0%{!?_without_capng:0}
+%define with_netcf         0%{!?_without_netcf:1}
 
 # Xen is available only on i386 x86_64 ia64
 %ifnarch i386 i586 i686 x86_64 ia64
@@ -46,6 +47,10 @@
 
 %if 0%{?fedora} >= 12
 %define with_capng     0%{!?_without_capng:1}
+%endif
+
+%if 0%{?fedora} >= 12
+%define with_netcf     0%{!?_without_netcf:1}
 %endif
 
 %if 0%{?fedora} >= 12
@@ -182,6 +187,9 @@ BuildRequires: libcap-ng-devel >= 0.5.0
 %endif
 %if %{with_phyp}
 BuildRequires: libssh-devel >= 0.3.1
+%endif
+%if %{with_netcf}
+BuildRequires: netcf-devel
 %endif
 
 # Fedora build root suckage
@@ -326,6 +334,10 @@ of recent versions of Linux (and other OSes).
 %define _without_capng --without-capng
 %endif
 
+%if ! %{with_netcf}
+%define _without_netcf --without-netcf
+%endif
+
 %configure %{?_without_xen} \
            %{?_without_qemu} \
            %{?_without_openvz} \
@@ -347,6 +359,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_storage_disk} \
            %{?_without_numactl} \
            %{?_without_capng} \
+           %{?_without_netcf} \
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
            --with-init-script=redhat \
