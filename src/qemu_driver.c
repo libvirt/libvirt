@@ -917,8 +917,8 @@ qemudOpenMonitorUnix(virConnectPtr conn,
         if (ret == 0)
             break;
 
-        if (errno == EACCES || errno == ECONNREFUSED) {
-            /* EACCES       : Socket may not have shown up yet
+        if (errno == ENOENT || errno == ECONNREFUSED) {
+            /* ENOENT       : Socket may not have shown up yet
              * ECONNREFUSED : Leftover socket hasn't been removed yet */
             continue;
         }
