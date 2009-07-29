@@ -49,8 +49,6 @@
 #include "util.h"
 #include "logging.h"
 
-#define MAX_TAP_ID 256
-
 #define JIFFIES_TO_MS(j) (((j)*1000)/HZ)
 #define MS_TO_JIFFIES(ms) (((ms)*HZ)/1000)
 
@@ -466,76 +464,52 @@ brAddTap(brControl *ctl,
          int vnet_hdr,
          int *tapfd)
 {
-    int id, subst, fd;
+    int fd, len;
+    struct ifreq ifr = {0};
 
     if (!ctl || !ctl->fd || !bridge || !ifname)
         return EINVAL;
 
-    subst = id = 0;
-
-    if (strstr(*ifname, "%d"))
-        subst = 1;
-
     if ((fd = open("/dev/net/tun", O_RDWR)) < 0)
       return errno;
 
-    if (vnet_hdr)
-        vnet_hdr = brProbeVnetHdr(fd);
-
-    do {
-        struct ifreq try;
-        int len;
-
-        memset(&try, 0, sizeof(struct ifreq));
-
-        try.ifr_flags = IFF_TAP|IFF_NO_PI;
+    ifr.ifr_flags = IFF_TAP|IFF_NO_PI;
 
 #ifdef IFF_VNET_HDR
-        if (vnet_hdr)
-            try.ifr_flags |= IFF_VNET_HDR;
+    if (vnet_hdr && brProbeVnetHdr(fd))
+        ifr.ifr_flags |= IFF_VNET_HDR;
 #endif
 
-        if (subst) {
-            len = snprintf(try.ifr_name, BR_IFNAME_MAXLEN, *ifname, id);
-            if (len >= BR_IFNAME_MAXLEN) {
-                errno = EADDRINUSE;
-                goto error;
-            }
-        } else {
-            len = strlen(*ifname);
-            if (len >= BR_IFNAME_MAXLEN - 1) {
-                errno = EINVAL;
-                goto error;
-            }
+    strncpy(ifr.ifr_name, *ifname, IFNAMSIZ-1);
 
-            strncpy(try.ifr_name, *ifname, len);
-            try.ifr_name[len] = '\0';
-        }
+    if (ioctl(fd, TUNSETIFF, &ifr) < 0)
+        goto error;
 
-        if (ioctl(fd, TUNSETIFF, &try) == 0) {
-            /* We need to set the interface MTU before adding it
-             * to the bridge, because the bridge will have its
-             * MTU adjusted automatically when we add the new interface.
-             */
-            if ((errno = brSetInterfaceMtu(ctl, bridge, try.ifr_name)))
-                goto error;
-            if ((errno = brAddInterface(ctl, bridge, try.ifr_name)))
-                goto error;
-            if ((errno = brSetInterfaceUp(ctl, try.ifr_name, 1)))
-                goto error;
-            if (!tapfd &&
-                (errno = ioctl(fd, TUNSETPERSIST, 1)))
-                goto error;
-            VIR_FREE(*ifname);
-            if (!(*ifname = strdup(try.ifr_name)))
-                goto error;
-            if (tapfd)
-                *tapfd = fd;
-            return 0;
-        }
+    len = strlen(ifr.ifr_name);
+    if (len >= BR_IFNAME_MAXLEN - 1) {
+        errno = EINVAL;
+        goto error;
+    }
 
-        id++;
-    } while (subst && id <= MAX_TAP_ID);
+    /* We need to set the interface MTU before adding it
+     * to the bridge, because the bridge will have its
+     * MTU adjusted automatically when we add the new interface.
+     */
+    if ((errno = brSetInterfaceMtu(ctl, bridge, ifr.ifr_name)))
+        goto error;
+    if ((errno = brAddInterface(ctl, bridge, ifr.ifr_name)))
+        goto error;
+    if ((errno = brSetInterfaceUp(ctl, ifr.ifr_name, 1)))
+        goto error;
+    if (!tapfd &&
+        (errno = ioctl(fd, TUNSETPERSIST, 1)))
+        goto error;
+    VIR_FREE(*ifname);
+    if (!(*ifname = strdup(ifr.ifr_name)))
+        goto error;
+    if (tapfd)
+        *tapfd = fd;
+    return 0;
 
  error:
     close(fd);
