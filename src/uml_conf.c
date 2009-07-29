@@ -326,6 +326,31 @@ umlBuildCommandLineChr(virConnectPtr conn,
 }
 
 /*
+ * Null-terminate the current argument and return a pointer to the next.
+ * This should follow the same rules as the Linux kernel: arguments are
+ * separated by spaces; arguments can be quoted with double quotes; double
+ * quotes can't be escaped.
+ */
+static char *umlNextArg(char *args)
+{
+    int in_quote = 0;
+
+    for (; *args; args++) {
+        if (*args == ' ' && !in_quote) {
+            *args++ = '\0';
+            break;
+        }
+        if (*args == '"')
+            in_quote = !in_quote;
+    }
+
+    while (*args == ' ')
+        args++;
+
+    return args;
+}
+
+/*
  * Constructs a argv suitable for launching uml with config defined
  * for a given virtual machine.
  */
@@ -342,6 +367,7 @@ int umlBuildCommandLine(virConnectPtr conn,
     const char **qargv = NULL;
     int qenvc = 0, qenva = 0;
     const char **qenv = NULL;
+    char *cmdline = NULL;
 
     uname(&ut);
 
@@ -474,6 +500,22 @@ int umlBuildCommandLine(virConnectPtr conn,
         ADD_ARG(ret);
     }
 
+    if (vm->def->os.cmdline) {
+        char *args, *next_arg;
+        if ((cmdline = strdup(vm->def->os.cmdline)) == NULL)
+            goto no_memory;
+
+        args = cmdline;
+        while (*args == ' ')
+            args++;
+
+        while (*args) {
+            next_arg = umlNextArg(args);
+            ADD_ARG_LIT(args);
+            args = next_arg;
+        }
+    }
+
     ADD_ARG(NULL);
     ADD_ENV(NULL);
 
@@ -495,6 +537,7 @@ int umlBuildCommandLine(virConnectPtr conn,
             VIR_FREE((qenv)[i]);
         VIR_FREE(qenv);
     }
+    VIR_FREE(cmdline);
     return -1;
 
 #undef ADD_ARG
