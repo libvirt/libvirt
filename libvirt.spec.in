@@ -198,7 +198,7 @@ of recent versions of Linux (and other OSes). The main package includes
 the libvirtd server exporting the virtualization support.
 
 %package client
-Summary: client side library and utilities of the libvirt library
+Summary: Client side library and utilities of the libvirt library
 Group: Development/Libraries
 Requires: readline
 Requires: ncurses
