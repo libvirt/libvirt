@@ -4,10 +4,9 @@
     <h1>Java API bindings</h1>
 
 <h2>Presentation</h2>
-    <p>The Java bindings are currently a work in progress based mostly
-on the work of Toth Istvan. The first usable release is 0.2.0, where
-most of the naming conventions were defined. Further release will try
-as much as possible to stay compatible</p>
+    <p>The Java bindings make use of <a href="https://jna.dev.java.net/">JNA</a>
+    to expose the C API in a Java friendly way. The bindings are are based on
+    work initiated by Toth Istvan.</p>
 
 <h2>Getting it</h2>
 <p>
@@ -19,19 +18,51 @@ as much as possible to stay compatible</p>
 <li><a href="http://libvirt.org/sources/java/">libvirt.org HTTP server</a></li>
 </ul>
 
-<h2>Hourly development snapshots</h2>
-<p> Once an hour, an automated snapshot is made from the latest CVS server
-  source tree. These snapshots should be usable, but we make no guarantees
-  about their stability: </p>
+<h3>Maven</h3>
+<p>A maven repository is located at <a href="http://www.libvirt.org/maven2/">http://www.libvirt.org/maven2/</a>
+which you can use to include this in your maven projects.</p>
 
-<ul>
-  <li><a href="ftp://libvirt.org/libvirt/java/libvirt-java-snapshot.tar.gz">libvirt.org FTP server</a></li>
-  <li><a href="http://libvirt.org/sources/java/libvirt-java-snapshot.tar.gz">libvirt.org HTTP server</a></li>
-</ul>
+<h2>GIT source repository</h2>
+<p> The Java bindings code source is now maintained in a <a
+href="http://git-scm.com/">git</a> repository available on
+<a href="http://libvirt.org/git/">libvirt.org</a>:
+</p>
+<pre>
+git clone git://libvirt.org/libvirt-java.git
+</pre>
+<p>
+It can also be browsed at
+</p>
+<pre>
 
-<h2>CVS repository access</h2>
+<a href="http://libvirt.org/git/?p=libvirt-java.git;a=summary">http://libvirt.org/git/?p=libvirt-java.git;a=summary</a>
+</pre>
 
-<p> The master source repository uses <a
+<p></p>
+<h2>GIT repository mirror</h2>
+
+<p>
+  The source code is also mirrored on <a href="http://www.gitorious.org">gitorious</a>
+  to aid in public development. You clone the repo with
+</p>
+
+<pre>
+  git clone git://gitorious.org/libvirt/libvirt-java.git
+</pre>
+
+<p>
+  It can also be browsed at
+</p>
+
+<pre>
+
+  <a href="http://gitorious.org/libvirt/libvirt-java">http://gitorious.org/libvirt/libvirt-java</a>
+</pre>
+
+<p></p>
+<h2>CVS repository access (Deprecated)</h2>
+
+<p> The old source repository uses <a
 href="http://ximbiot.com/cvs/cvshome/docs/">CVS</a> and anonymous access
 is provided. Prior to accessing the server is it necessary to authenticate
 using the password <code>anoncvs</code>. This can be accomplished with
@@ -47,54 +78,24 @@ the <code>cvs login</code> command:
 </p>
 
 <pre>
-
   # cvs -d :pserver:anoncvs@libvirt.org:2401/data/cvs co libvirt-java
 </pre>
 
-<p>
-The libvirt-java build process uses GNU autotools, so after obtaining a checkout
-it is necessary to generate the configure script and Makefile.in templates
-using the <code>autogen.sh</code> command. As an example, to do a complete
-build and install it into your home directory run:
-</p>
-<pre>
-  ./autogen.sh --prefix=$HOME/usr
-  make
-  make install
-</pre>
-<p>Other build system are not currently available but as usual we take patches
-(Eclipse/ant/...) would be welcome !</p>
-<p> currently libvirt-java requires a version of libvirt &gt;= 0.4.0 to be
-installed as well as the associated libvirt development files/package. It
-should compile with any java implementation &gt;= 1.5, the bindings uses
-the enum construct which appeared only in that version.</p>
-<p>Libvirt-java bindings development occurs on the same mailing-list as
-the normal libvirt work see <a href="contact.html">the associated contact
-page</a></p>
-
-<h2>GIT repository mirror</h2>
-
-<p>
-  The CVS source repository is also mirrored using GIT, and is available
-  for anonymous access via:
-</p>
-
-<pre> 
-  git clone git://git.et.redhat.com/libvirt-java
-</pre>
-
-<p>
-  It can also be browsed at
-</p>
+<p></p>
+<h2>Building</h2>
+<p>The code is built using ant, and assumes that you have the jna jar installed. Once you have downloaded
+the code you can build the code with</p>
 
 <pre>
 
-  <a href="http://git.et.redhat.com/?p=libvirt-java.git;a=summary">http://git.et.redhat.com/?p=libvirt-java.git;a=summary</a>
+% cd libvirt-java
+% ant build
 </pre>
+
 
 <h2>Content</h2>
 <p>The bindings are articulated around a few
-classes in the <code>org/libvirt</code> namespace, notably the
+classes in the <code>org/libvirt</code> package, notably the
 <code>Connect</code>, <code>Domain</code> and <code>Network</code>
 ones. Functions in the <a href="html/libvirt-libvirt.html">C API</a>
 taking <code>virConnectPtr</code>, <code>virDomainPtr</code> or
@@ -112,13 +113,13 @@ lower case, for example the C functions:</p>
     </p>
     <p>become</p>
     <p>
-      <code>virConn::numOfDomains()</code>
+      <code>virConn.numOfDomains()</code>
     </p>
     <p>
-      <code>virDomain::setMaxMemory(long memory)</code>
+      <code>virDomain.setMaxMemory(long memory)</code>
     </p>
     <p> There is of course some functions where the mapping is less direct
-and using extra classes to map complex arguments. The <a href="http://libvirt.org/org/libvirt/package-summary.html">Javadoc</a> is available online or as
+and using extra classes to map complex arguments. The <a href="http://libvirt.org/sources/java/javadoc">Javadoc</a> is available online or as
 part of a separate libvirt-java-javadoc package.</p>
     <p>So let's look at a simple example inspired from the
 <code>test.java</code> test found in <code>src</code> in the source tree:</p>
@@ -147,7 +148,7 @@ public class minitest {
     <p>There is not much to comment about it, it really is a straight mapping
 from the C API, the only points to notice are:</p>
     <ul>
-      <li>the import of the modules in the <code><span style="color: #0071FF; background-color: #FFFFFF">org.libvirt</span></code> namespace</li>
+      <li>the import of the modules in the <code><span style="color: #0071FF; background-color: #FFFFFF">org.libvirt</span></code> package</li>
       <li>getting a connection to the hypervisor, in that case using the
     readonly access to the default test hypervisor.</li>
       <li>getting an object representing the test domain using <span style="color: #007F00; background-color: #FFFFFF">lookupByName</span></li>
