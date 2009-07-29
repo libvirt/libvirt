@@ -411,7 +411,6 @@ chmod 0644 $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/libvirtd
 rm -fr %{buildroot}
 
 %post
-/sbin/ldconfig
 
 %if %{with_libvirtd}
 %if %{with_qemu}
@@ -440,7 +439,9 @@ if [ $1 = 0 ]; then
 fi
 %endif
 
-%postun -p /sbin/ldconfig
+%post client -p /sbin/ldconfig
+
+%postun client -p /sbin/ldconfig
 
 %files
 %defattr(-, root, root)
