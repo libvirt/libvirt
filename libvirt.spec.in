@@ -82,7 +82,7 @@ Group: Development/Libraries
 Source: libvirt-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 URL: http://libvirt.org/
-BuildRequires: python python-devel
+BuildRequires: python-devel
 
 # The client side, i.e. shared libs and virsh are in a subpackage
 Requires: libvirt-client = %{version}-%{release}
