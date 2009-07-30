@@ -465,13 +465,15 @@ brAddTap(brControl *ctl,
          int *tapfd)
 {
     int fd, len;
-    struct ifreq ifr = {0};
+    struct ifreq ifr;
 
     if (!ctl || !ctl->fd || !bridge || !ifname)
         return EINVAL;
 
     if ((fd = open("/dev/net/tun", O_RDWR)) < 0)
       return errno;
+
+    memset(&ifr, 0, sizeof(ifr));
 
     ifr.ifr_flags = IFF_TAP|IFF_NO_PI;
 
