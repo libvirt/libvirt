@@ -79,6 +79,7 @@ if [ -x /usr/bin/i686-pc-mingw32-gcc ]; then
     --without-one \
     --without-phyp \
     --without-esx \
+    --without-netcf \
     --without-libvirtd
 
   make
