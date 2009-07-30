@@ -3801,10 +3801,10 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
     if (priv->xendConfigVersion < 3) {
-        buf[0] = ']';
-        buf[1] = 0;
+        mapstr[0] = '[';
+        mapstr[1] = 0;
     } else {
-        buf[0] = 0;
+        mapstr[0] = 0;
     }
 
     /* from bit map, build character string of mapped CPU numbers */
