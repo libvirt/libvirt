@@ -788,6 +788,55 @@ networkEnableIpForwarding(void)
     return virFileWriteStr("/proc/sys/net/ipv4/ip_forward", "1\n");
 }
 
+#define SYSCTL_PATH "/proc/sys"
+
+static int networkDisableIPV6(virConnectPtr conn,
+                              virNetworkObjPtr network)
+{
+    char *field = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/disable_ipv6", network->def->bridge) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    if (virFileWriteStr(field, "1") < 0) {
+        virReportSystemError(conn, errno,
+                             _("cannot enable %s"), field);
+        goto cleanup;
+    }
+    VIR_FREE(field);
+
+    if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/accept_ra", network->def->bridge) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    if (virFileWriteStr(field, "0") < 0) {
+        virReportSystemError(conn, errno,
+                             _("cannot disable %s"), field);
+        goto cleanup;
+    }
+    VIR_FREE(field);
+
+    if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/autoconf", network->def->bridge) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    if (virFileWriteStr(field, "1") < 0) {
+        virReportSystemError(conn, errno,
+                             _("cannot enable %s"), field);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(field);
+    return ret;
+}
+
 static int networkStartNetworkDaemon(virConnectPtr conn,
                                    struct network_driver *driver,
                                    virNetworkObjPtr network) {
@@ -805,6 +854,9 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
                              network->def->bridge);
         return -1;
     }
+
+    if (networkDisableIPV6(conn, network) < 0)
+        goto err_delbr;
 
     if (brSetForwardDelay(driver->brctl, network->def->bridge, network->def->delay) < 0)
         goto err_delbr;
