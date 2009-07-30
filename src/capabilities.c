@@ -567,7 +567,7 @@ virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
 }
 
 /**
- * virCapabilitiesDefaultGuestMachine:
+ * virCapabilitiesDefaultGuestEmulator:
  * @caps: capabilities to query
  * @ostype: OS type to search for ('xen', 'hvm')
  * @arch: architecture to search for
