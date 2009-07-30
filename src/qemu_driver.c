@@ -468,7 +468,7 @@ qemudStartup(int privileged) {
             goto out_of_memory;
 
         if (virAsprintf(&qemu_driver->stateDir,
-                      "%s/run/libvirt/qemu/", LOCAL_STATE_DIR) == -1)
+                      "%s/run/libvirt/qemu", LOCAL_STATE_DIR) == -1)
             goto out_of_memory;
     } else {
         uid_t uid = geteuid();

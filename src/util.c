@@ -513,12 +513,6 @@ __virExec(virConnectPtr conn,
         if ((hook)(data) != 0)
             _exit(1);
 
-    /* The hook above may need todo something privileged, so
-     * we delay clearing capabilities until now */
-    if ((flags & VIR_EXEC_CLEAR_CAPS) &&
-        virClearCapabilities() < 0)
-        _exit(1);
-
     /* Daemonize as late as possible, so the parent process can detect
      * the above errors with wait* */
     if (flags & VIR_EXEC_DAEMON) {
@@ -543,6 +537,9 @@ __virExec(virConnectPtr conn,
 
         if (pid > 0) {
             if (pidfile && virFileWritePidPath(pidfile,pid)) {
+                kill(pid, SIGTERM);
+                usleep(500*1000);
+                kill(pid, SIGTERM);
                 virReportSystemError(conn, errno,
                                      "%s", _("could not write pidfile"));
                 _exit(1);
@@ -550,6 +547,12 @@ __virExec(virConnectPtr conn,
             _exit(0);
         }
     }
+
+    /* The steps above may need todo something privileged, so
+     * we delay clearing capabilities until the last minute */
+    if ((flags & VIR_EXEC_CLEAR_CAPS) &&
+        virClearCapabilities() < 0)
+        _exit(1);
 
     if (envp)
         execve(argv[0], (char **) argv, (char**)envp);
