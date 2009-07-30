@@ -3074,13 +3074,13 @@ error:
  */
 int
 virDomainMigratePrepare (virConnectPtr dconn,
-                           char **cookie,
-                           int *cookielen,
-                           const char *uri_in,
-                           char **uri_out,
-                           unsigned long flags,
-                           const char *dname,
-                           unsigned long bandwidth)
+                         char **cookie,
+                         int *cookielen,
+                         const char *uri_in,
+                         char **uri_out,
+                         unsigned long flags,
+                         const char *dname,
+                         unsigned long bandwidth)
 {
     VIR_DEBUG("dconn=%p, cookie=%p, cookielen=%p, uri_in=%s, uri_out=%p, "
               "flags=%lu, dname=%s, bandwidth=%lu", dconn, cookie, cookielen,
