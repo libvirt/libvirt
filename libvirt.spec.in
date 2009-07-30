@@ -412,6 +412,18 @@ chmod 0644 $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/libvirtd
 %clean
 rm -fr %{buildroot}
 
+%pre
+%if 0%{?fedora} >= 12
+# Normally 'setup' adds this in /etc/passwd, but this is
+# here for case of upgrades from earlier Fedora. This
+# UID/GID pair is reserved for qemu:qemu
+getent group kvm >/dev/null || groupadd -g 36 -r kvm
+getent group qemu >/dev/null || groupadd -g 107 -r qemu
+getent passwd qemu >/dev/null || \
+  useradd -r -u 107 -g qemu -G kvm -d / -s /sbin/nologin \
+    -c "qemu user" qemu
+%endif
+
 %post
 
 %if %{with_libvirtd}
