@@ -136,8 +136,9 @@ networkFindActiveConfigs(struct network_driver *driver) {
             brHasBridge(driver->brctl, obj->def->bridge) == 0) {
             obj->active = 1;
 
-            /* Finally try and read dnsmasq pid if any DHCP ranges are set */
-            if (obj->def->nranges &&
+            /* Finally try and read dnsmasq pid if any */
+            if ((obj->def->ipAddress ||
+                 obj->def->nranges) &&
                 virFileReadPid(NETWORK_PID_DIR, obj->def->name,
                                &obj->dnsmasqPid) == 0) {
 
@@ -844,7 +845,8 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
         goto err_delbr2;
     }
 
-    if (network->def->nranges &&
+    if ((network->def->ipAddress ||
+         network->def->nranges) &&
         dhcpStartDhcpDaemon(conn, network) < 0)
         goto err_delbr2;
 
