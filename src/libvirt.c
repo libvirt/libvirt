@@ -3016,7 +3016,7 @@ virDomainMigrate (virDomainPtr domain,
         ret = dconn->driver->domainMigratePrepare2
             (dconn, &cookie, &cookielen, uri, &uri_out, flags, dname,
              bandwidth, dom_xml);
-        free (dom_xml);
+        VIR_FREE (dom_xml);
         if (ret == -1) goto done;
         if (uri == NULL && uri_out == NULL) {
             virLibConnError (conn, VIR_ERR_INTERNAL_ERROR,
@@ -3058,8 +3058,8 @@ virDomainMigrate (virDomainPtr domain,
     }
 
  done:
-    free (uri_out);
-    free (cookie);
+    VIR_FREE (uri_out);
+    VIR_FREE (cookie);
     return ddomain;
 
 error:
