@@ -41,6 +41,10 @@
     virReportErrorHelper (conn, VIR_FROM_ESX, code, __FILE__, __FUNCTION__,   \
                           __LINE__, fmt)
 
+/* AI_ADDRCONFIG is missing on some systems. */
+#ifndef AI_ADDRCONFIG
+# define AI_ADDRCONFIG 0
+#endif
 
 
 char *
@@ -435,12 +439,12 @@ esxUtil_GetConfigLong(virConnectPtr conn, virConfPtr conf, const char *name,
 
 int
 esxUtil_GetConfigBoolean(virConnectPtr conn, virConfPtr conf,
-                         const char *name, int *boolean, int default_,
+                         const char *name, int *boolval, int default_,
                          int optional)
 {
     virConfValuePtr value;
 
-    *boolean = default_;
+    *boolval = default_;
     value = virConfGetValue(conf, name);
 
     if (value == NULL) {
@@ -465,9 +469,9 @@ esxUtil_GetConfigBoolean(virConnectPtr conn, virConfPtr conf,
         }
 
         if (STRCASEEQ(value->str, "true")) {
-            *boolean = 1;
+            *boolval = 1;
         } else if (STRCASEEQ(value->str, "false")) {
-            *boolean = 0;
+            *boolval = 0;
         } else {
             ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                       "Config entry '%s' must represent a boolean value "

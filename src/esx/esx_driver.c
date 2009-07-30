@@ -31,9 +31,6 @@
 
 #include <config.h>
 
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
-
 #include <netdb.h>
 
 #include "internal.h"
@@ -1769,7 +1766,7 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
                 for (value = perfMetricIntSeries->value;
                      value != NULL;
                      value = value->_next) {
-                    VIR_DEBUG("value %"PRIi64, value->value);
+                    VIR_DEBUG("value %lld", (long long int)value->value);
                 }
             }
         }
@@ -2399,8 +2396,8 @@ esxDomainGetSchedulerParameters(virDomainPtr domain,
 
               default:
                 ESX_ERROR(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                          "Shares level has unknown value %"PRIi32,
-                          sharesInfo->level);
+                          "Shares level has unknown value %d",
+                          (int)sharesInfo->level);
                 goto failure;
             }
 

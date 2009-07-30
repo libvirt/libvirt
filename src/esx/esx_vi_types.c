@@ -22,9 +22,6 @@
 
 #include <config.h>
 
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
-
 #include <libxml/parser.h>
 #include <libxml/xpathInternals.h>
 
@@ -962,7 +959,7 @@ esxVI_Int_DeepCopy(virConnectPtr conn, esxVI_Int **dest, esxVI_Int *src)
 /* esxVI_Int_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE_EXTRA(Int, "xsd:int",
 {
-    virBufferVSprintf(output, "%"PRIi32, item->value);
+    virBufferVSprintf(output, "%d", (int)item->value);
 });
 
 /* esxVI_Int_SerializeList */
@@ -992,7 +989,7 @@ ESX_VI__TEMPLATE__LIST__APPEND(Long);
 /* esxVI_Long_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE_EXTRA(Long, "xsd:long",
 {
-    virBufferVSprintf(output, "%"PRIi64, item->value);
+    virBufferVSprintf(output, "%lld", (long long int)item->value);
 });
 
 /* esxVI_Long_SerializeList */
