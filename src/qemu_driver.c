@@ -6281,11 +6281,12 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
     virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
     int this_port;
-    char hostname [HOST_NAME_MAX+1];
+    char *hostname;
     char migrateFrom [64];
     const char *p;
     virDomainEventPtr event = NULL;
     int ret = -1;;
+    int internalret;
 
     *uri_out = NULL;
 
@@ -6311,14 +6312,16 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
         if (port == QEMUD_MIGRATION_NUM_PORTS) port = 0;
 
         /* Get hostname */
-        if (gethostname (hostname, HOST_NAME_MAX+1) == -1) {
+        if ((hostname = virGetHostname()) == NULL) {
             virReportSystemError (dconn, errno,
                                   "%s", _("failed to determine host name"));
             goto cleanup;
         }
 
         /* Caller frees */
-        if (virAsprintf(uri_out, "tcp:%s:%d", hostname, this_port) < 0) {
+        internalret = virAsprintf(uri_out, "tcp:%s:%d", hostname, this_port);
+        VIR_FREE(hostname);
+        if (internalret < 0) {
             virReportOOMError (dconn);
             goto cleanup;
         }
