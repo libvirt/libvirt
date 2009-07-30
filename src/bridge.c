@@ -401,6 +401,7 @@ static int brSetInterfaceMtu(brControl *ctl,
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
+#ifdef IFF_VNET_HDR
 static int
 brProbeVnetHdr(int tapfd)
 {
@@ -438,6 +439,7 @@ brProbeVnetHdr(int tapfd)
     return 0;
 #endif
 }
+#endif
 
 /**
  * brAddTap:
@@ -480,6 +482,8 @@ brAddTap(brControl *ctl,
 #ifdef IFF_VNET_HDR
     if (vnet_hdr && brProbeVnetHdr(fd))
         ifr.ifr_flags |= IFF_VNET_HDR;
+#else
+    (void) vnet_hdr;
 #endif
 
     strncpy(ifr.ifr_name, *ifname, IFNAMSIZ-1);
