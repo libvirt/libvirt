@@ -2853,6 +2853,146 @@ error:
 }
 
 
+static virDomainPtr
+virDomainMigrateVersion1 (virDomainPtr domain,
+                          virConnectPtr dconn,
+                          unsigned long flags,
+                          const char *dname,
+                          const char *uri,
+                          unsigned long bandwidth)
+{
+    virDomainPtr ddomain = NULL;
+    char *uri_out = NULL;
+    char *cookie = NULL;
+    int cookielen = 0;
+
+    /* Prepare the migration.
+     *
+     * The destination host may return a cookie, or leave cookie as
+     * NULL.
+     *
+     * The destination host MUST set uri_out if uri_in is NULL.
+     *
+     * If uri_in is non-NULL, then the destination host may modify
+     * the URI by setting uri_out.  If it does not wish to modify
+     * the URI, it should leave uri_out as NULL.
+     */
+    if (dconn->driver->domainMigratePrepare
+        (dconn, &cookie, &cookielen, uri, &uri_out, flags, dname,
+         bandwidth) == -1)
+        goto done;
+
+    if (uri == NULL && uri_out == NULL) {
+        virLibConnError (domain->conn, VIR_ERR_INTERNAL_ERROR,
+                         _("domainMigratePrepare did not set uri"));
+        goto done;
+    }
+    if (uri_out)
+        uri = uri_out; /* Did domainMigratePrepare change URI? */
+    assert (uri != NULL);
+
+    /* Perform the migration.  The driver isn't supposed to return
+     * until the migration is complete.
+     */
+    if (domain->conn->driver->domainMigratePerform
+        (domain, cookie, cookielen, uri, flags, dname, bandwidth) == -1)
+        goto done;
+
+    /* Get the destination domain and return it or error.
+     * 'domain' no longer actually exists at this point
+     * (or so we hope), but we still use the object in memory
+     * in order to get the name.
+     */
+    dname = dname ? dname : domain->name;
+    if (dconn->driver->domainMigrateFinish)
+        ddomain = dconn->driver->domainMigrateFinish
+            (dconn, dname, cookie, cookielen, uri, flags);
+    else
+        ddomain = virDomainLookupByName (dconn, dname);
+
+ done:
+    VIR_FREE (uri_out);
+    VIR_FREE (cookie);
+    return ddomain;
+}
+
+static virDomainPtr
+virDomainMigrateVersion2 (virDomainPtr domain,
+                          virConnectPtr dconn,
+                          unsigned long flags,
+                          const char *dname,
+                          const char *uri,
+                          unsigned long bandwidth)
+{
+    virDomainPtr ddomain = NULL;
+    char *uri_out = NULL;
+    char *cookie = NULL;
+    char *dom_xml = NULL;
+    int cookielen = 0, ret;
+
+    /* Prepare the migration.
+     *
+     * The destination host may return a cookie, or leave cookie as
+     * NULL.
+     *
+     * The destination host MUST set uri_out if uri_in is NULL.
+     *
+     * If uri_in is non-NULL, then the destination host may modify
+     * the URI by setting uri_out.  If it does not wish to modify
+     * the URI, it should leave uri_out as NULL.
+     */
+
+    /* In version 2 of the protocol, the prepare step is slightly
+     * different.  We fetch the domain XML of the source domain
+     * and pass it to Prepare2.
+     */
+    if (!domain->conn->driver->domainDumpXML) {
+        virLibConnError (domain->conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+        return NULL;
+    }
+    dom_xml = domain->conn->driver->domainDumpXML (domain,
+                                                   VIR_DOMAIN_XML_SECURE);
+    if (!dom_xml)
+        return NULL;
+
+    ret = dconn->driver->domainMigratePrepare2
+        (dconn, &cookie, &cookielen, uri, &uri_out, flags, dname,
+         bandwidth, dom_xml);
+    VIR_FREE (dom_xml);
+    if (ret == -1)
+        goto done;
+
+    if (uri == NULL && uri_out == NULL) {
+        virLibConnError (domain->conn, VIR_ERR_INTERNAL_ERROR,
+                         _("domainMigratePrepare2 did not set uri"));
+        goto done;
+    }
+    if (uri_out)
+        uri = uri_out; /* Did domainMigratePrepare2 change URI? */
+    assert (uri != NULL);
+
+    /* Perform the migration.  The driver isn't supposed to return
+     * until the migration is complete.
+     */
+    ret = domain->conn->driver->domainMigratePerform
+        (domain, cookie, cookielen, uri, flags, dname, bandwidth);
+    if (ret == -1)
+        goto done;
+
+    /* In version 2 of the migration protocol, we pass the
+     * status code from the sender to the destination host,
+     * so it can do any cleanup if the migration failed.
+     */
+    dname = dname ? dname : domain->name;
+    ddomain = dconn->driver->domainMigrateFinish2
+        (dconn, dname, cookie, cookielen, uri, flags, ret);
+
+ done:
+    VIR_FREE (uri_out);
+    VIR_FREE (cookie);
+    return ddomain;
+}
+
 /**
  * virDomainMigrate:
  * @domain: a domain object
@@ -2909,140 +3049,52 @@ virDomainMigrate (virDomainPtr domain,
                   const char *uri,
                   unsigned long bandwidth)
 {
-    virConnectPtr conn;
     virDomainPtr ddomain = NULL;
-    char *uri_out = NULL;
-    char *cookie = NULL;
-    char *dom_xml = NULL;
-    int cookielen = 0, ret, version = 0;
     DEBUG("domain=%p, dconn=%p, flags=%lu, dname=%s, uri=%s, bandwidth=%lu",
           domain, dconn, flags, NULLSTR(dname), NULLSTR(uri), bandwidth);
 
     virResetLastError();
 
+    /* First checkout the source */
     if (!VIR_IS_CONNECTED_DOMAIN (domain)) {
         virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return NULL;
     }
-    conn = domain->conn;        /* Source connection. */
-    if (!VIR_IS_CONNECT (dconn)) {
-        virLibConnError (conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
-        goto error;
-    }
-
     if (domain->conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
+
+    /* Now checkout the destination */
+    if (!VIR_IS_CONNECT (dconn)) {
+        virLibConnError (domain->conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        goto error;
+    }
     if (dconn->flags & VIR_CONNECT_RO) {
-        /* NB, delibrately report error against source object, not dest here */
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        /* NB, deliberately report error against source object, not dest */
+        virLibDomainError (domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         goto error;
     }
 
     /* Check that migration is supported by both drivers. */
-    if (VIR_DRV_SUPPORTS_FEATURE (conn->driver, conn,
+    if (VIR_DRV_SUPPORTS_FEATURE (domain->conn->driver, domain->conn,
                                   VIR_DRV_FEATURE_MIGRATION_V1) &&
         VIR_DRV_SUPPORTS_FEATURE (dconn->driver, dconn,
                                   VIR_DRV_FEATURE_MIGRATION_V1))
-        version = 1;
-    else if (VIR_DRV_SUPPORTS_FEATURE (conn->driver, conn,
+        ddomain = virDomainMigrateVersion1 (domain, dconn, flags, dname, uri, bandwidth);
+    else if (VIR_DRV_SUPPORTS_FEATURE (domain->conn->driver, domain->conn,
                                        VIR_DRV_FEATURE_MIGRATION_V2) &&
              VIR_DRV_SUPPORTS_FEATURE (dconn->driver, dconn,
                                        VIR_DRV_FEATURE_MIGRATION_V2))
-        version = 2;
+        ddomain = virDomainMigrateVersion2 (domain, dconn, flags, dname, uri, bandwidth);
     else {
-        virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        virLibConnError (domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
         goto error;
     }
 
-    /* Prepare the migration.
-     *
-     * The destination host may return a cookie, or leave cookie as
-     * NULL.
-     *
-     * The destination host MUST set uri_out if uri_in is NULL.
-     *
-     * If uri_in is non-NULL, then the destination host may modify
-     * the URI by setting uri_out.  If it does not wish to modify
-     * the URI, it should leave uri_out as NULL.
-     */
-    if (version == 1) {
-        ret = dconn->driver->domainMigratePrepare
-            (dconn, &cookie, &cookielen, uri, &uri_out, flags, dname,
-             bandwidth);
-        if (ret == -1) goto done;
-        if (uri == NULL && uri_out == NULL) {
-            virLibConnError (conn, VIR_ERR_INTERNAL_ERROR,
-                             _("domainMigratePrepare did not set uri"));
-            goto done;
-        }
-        if (uri_out) uri = uri_out; /* Did domainMigratePrepare change URI? */
+     if (ddomain == NULL)
+         goto error;
 
-        assert (uri != NULL);
-    }
-    else /* if (version == 2) */ {
-        /* In version 2 of the protocol, the prepare step is slightly
-         * different.  We fetch the domain XML of the source domain
-         * and pass it to Prepare2.
-         */
-        if (!conn->driver->domainDumpXML) {
-            virLibConnError (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
-            goto error;
-        }
-        dom_xml = conn->driver->domainDumpXML (domain,
-                                               VIR_DOMAIN_XML_SECURE);
-
-        if (!dom_xml)
-            goto error;
-
-        ret = dconn->driver->domainMigratePrepare2
-            (dconn, &cookie, &cookielen, uri, &uri_out, flags, dname,
-             bandwidth, dom_xml);
-        VIR_FREE (dom_xml);
-        if (ret == -1) goto done;
-        if (uri == NULL && uri_out == NULL) {
-            virLibConnError (conn, VIR_ERR_INTERNAL_ERROR,
-                             _("domainMigratePrepare2 did not set uri"));
-            goto done;
-        }
-        if (uri_out) uri = uri_out; /* Did domainMigratePrepare2 change URI? */
-
-        assert (uri != NULL);
-    }
-
-    /* Perform the migration.  The driver isn't supposed to return
-     * until the migration is complete.
-     */
-    ret = conn->driver->domainMigratePerform
-        (domain, cookie, cookielen, uri, flags, dname, bandwidth);
-
-    if (version == 1) {
-        if (ret == -1) goto done;
-        /* Get the destination domain and return it or error.
-         * 'domain' no longer actually exists at this point
-         * (or so we hope), but we still use the object in memory
-         * in order to get the name.
-         */
-        dname = dname ? dname : domain->name;
-        if (dconn->driver->domainMigrateFinish)
-            ddomain = dconn->driver->domainMigrateFinish
-                (dconn, dname, cookie, cookielen, uri, flags);
-        else
-            ddomain = virDomainLookupByName (dconn, dname);
-    } else /* if (version == 2) */ {
-        /* In version 2 of the migration protocol, we pass the
-         * status code from the sender to the destination host,
-         * so it can do any cleanup if the migration failed.
-         */
-        dname = dname ? dname : domain->name;
-        ddomain = dconn->driver->domainMigrateFinish2
-            (dconn, dname, cookie, cookielen, uri, flags, ret);
-    }
-
- done:
-    VIR_FREE (uri_out);
-    VIR_FREE (cookie);
     return ddomain;
 
 error:
