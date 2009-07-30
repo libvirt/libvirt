@@ -39,7 +39,7 @@ ignored_functions = {
   "virDomainMigratePrepare": "private function for migration",
   "virDomainMigratePrepare2": "private function for migration",
   "virDrvSupportsFeature": "private function for remote access",
-  "DllMain": "specific function fo Win32",
+  "DllMain": "specific function for Win32",
 }
 
 def escape(raw):
