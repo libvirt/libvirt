@@ -2246,6 +2246,36 @@ esxDomainCreate(virDomainPtr domain)
 
 
 
+/*
+ * The scheduler interface exposes basically the CPU ResourceAllocationInfo:
+ *
+ * - http://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/vim.ResourceAllocationInfo.html
+ * - http://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/vim.SharesInfo.html
+ * - http://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/vim.SharesInfo.Level.html
+ *
+ *
+ * Available parameters:
+ *
+ * - reservation (VIR_DOMAIN_SCHED_FIELD_LLONG >= 0, in megaherz)
+ *
+ *   Amount of CPU resource that is guaranteed available to the domain.
+ *
+ *
+ * - limit (VIR_DOMAIN_SCHED_FIELD_LLONG >= 0, or -1, in megaherz)
+ *
+ *   The CPU utilization of the domain will not exceed this limit, even if
+ *   there are available CPU resources. If the limit is set to -1, the CPU
+ *   utilization of the domain is unlimited. If the limit is not set to -1, it
+ *   must be greater than or equal to the reservation.
+ *
+ *
+ * - shares (VIR_DOMAIN_SCHED_FIELD_INT >= 0, or in {-1, -2, -3}, no unit)
+ *
+ *   Shares are used to determine relative CPU allocation between domains. In
+ *   general, a domain with more shares gets proportionally more of the CPU
+ *   resource. The special values -1, -2 and -3 represent the predefined
+ *   SharesLevel 'low', 'normal' and 'high'.
+ */
 static char *
 esxDomainGetSchedulerType(virDomainPtr domain, int *nparams)
 {
@@ -2253,6 +2283,7 @@ esxDomainGetSchedulerType(virDomainPtr domain, int *nparams)
 
     if (type == NULL) {
         virReportOOMError(domain->conn);
+        return NULL;
     }
 
     *nparams = 3; /* reservation, limit, shares */
@@ -2410,7 +2441,6 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
     int i;
-    int32_t value;
 
     if (priv->phantom) {
         ESX_ERROR(domain->conn, VIR_ERR_OPERATION_INVALID,
@@ -2464,27 +2494,7 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
 
             spec->cpuAllocation->limit->value = params[i].value.l;
         } else if (STREQ (params[i].field, "shares") &&
-                   (params[i].type == VIR_DOMAIN_SCHED_FIELD_INT ||
-                    params[i].type == VIR_DOMAIN_SCHED_FIELD_LLONG)) {
-            if (params[i].type == VIR_DOMAIN_SCHED_FIELD_LLONG) {
-                /*
-                 * Allow VIR_DOMAIN_SCHED_FIELD_LLONG here even if the expected
-                 * data type is VIR_DOMAIN_SCHED_FIELD_INT, because virsh is
-                 * using VIR_DOMAIN_SCHED_FIELD_LLONG only.
-                 */
-                if (params[i].value.l < INT32_MIN ||
-                    params[i].value.l > INT32_MAX) {
-                    ESX_ERROR(domain->conn, VIR_ERR_INVALID_ARG,
-                              "Could not set shares to %lld, expecting 32bit "
-                              "integer value", params[i].value.l);
-                    goto failure;
-                }
-
-                value = params[i].value.l;
-            } else {
-                value = params[i].value.i;
-            }
-
+                   params[i].type == VIR_DOMAIN_SCHED_FIELD_INT) {
             if (esxVI_SharesInfo_Alloc(domain->conn, &sharesInfo) < 0 ||
                 esxVI_Int_Alloc(domain->conn, &sharesInfo->shares) < 0) {
                 goto failure;
@@ -2492,11 +2502,11 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
 
             spec->cpuAllocation->shares = sharesInfo;
 
-            if (value >= 0) {
+            if (params[i].value.i >= 0) {
                 spec->cpuAllocation->shares->level = esxVI_SharesLevel_Custom;
-                spec->cpuAllocation->shares->shares->value = value;
+                spec->cpuAllocation->shares->shares->value = params[i].value.i;
             } else {
-                switch (value) {
+                switch (params[i].value.i) {
                   case -1:
                     spec->cpuAllocation->shares->level = esxVI_SharesLevel_Low;
                     spec->cpuAllocation->shares->shares->value = -1;
