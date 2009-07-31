@@ -2940,6 +2940,12 @@ static int qemudDomainShutdown(virDomainPtr dom) {
         goto cleanup;
     }
 
+    if (!virDomainIsActive(vm)) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
+                         "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
     if (qemudMonitorCommand(vm, "system_powerdown", &info) < 0) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("shutdown operation failed"));
@@ -2971,7 +2977,7 @@ static int qemudDomainDestroy(virDomainPtr dom) {
         goto cleanup;
     }
     if (!virDomainIsActive(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                          "%s", _("domain is not running"));
         goto cleanup;
     }
