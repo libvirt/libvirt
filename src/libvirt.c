@@ -3128,6 +3128,10 @@ virDomainMigrateDirect (virDomainPtr domain,
  *   VIR_MIGRATE_LIVE      Do not pause the VM during migration
  *   VIR_MIGRATE_PEER2PEER Direct connection between source & destination hosts
  *   VIR_MIGRATE_TUNNELLED Tunnel migration data over the libvirt RPC channel
+ *   VIR_MIGRATE_PERSIST_DEST If the migration is successful, persist the domain
+ *                            on the destination host.
+ *   VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
+ *                               domain on the source host.
  *
  * VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
  * Applications using the VIR_MIGRATE_PEER2PEER flag will probably

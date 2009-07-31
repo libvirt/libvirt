@@ -339,6 +339,8 @@ typedef enum {
     VIR_MIGRATE_LIVE              = (1 << 0), /* live migration */
     VIR_MIGRATE_PEER2PEER         = (1 << 1), /* direct source -> dest host control channel */
     VIR_MIGRATE_TUNNELLED         = (1 << 2), /* tunnel migration data over libvirtd connection */
+    VIR_MIGRATE_PERSIST_DEST      = (1 << 3), /* persist the VM on the destination */
+    VIR_MIGRATE_UNDEFINE_SOURCE   = (1 << 4), /* undefine the VM on the source */
 } virDomainMigrateFlags;
 
 /* Domain migration. */

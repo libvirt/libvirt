@@ -6847,7 +6847,8 @@ qemudDomainMigratePerform (virDomainPtr dom,
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
-    if (!vm->persistent) {
+    if (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE)) {
+        virDomainDeleteConfig(dom->conn, driver->configDir, driver->autostartDir, vm);
         virDomainRemoveInactive(&driver->domains, vm);
         vm = NULL;
     }
@@ -6885,13 +6886,14 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
                            const char *cookie ATTRIBUTE_UNUSED,
                            int cookielen ATTRIBUTE_UNUSED,
                            const char *uri ATTRIBUTE_UNUSED,
-                           unsigned long flags ATTRIBUTE_UNUSED,
+                           unsigned long flags,
                            int retcode)
 {
     struct qemud_driver *driver = dconn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
+    int newVM = 1;
 
     qemuDriverLock(driver);
     vm = virDomainFindByName(&driver->domains, dname);
@@ -6905,6 +6907,34 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
      * object, but if no, clean up the empty qemu process.
      */
     if (retcode == 0) {
+        if (flags & VIR_MIGRATE_PERSIST_DEST) {
+            if (vm->persistent)
+                newVM = 0;
+            vm->persistent = 1;
+
+            if (virDomainSaveConfig(dconn, driver->configDir, vm->def) < 0) {
+                /* Hmpf.  Migration was successful, but making it persistent
+                 * was not.  If we report successful, then when this domain
+                 * shuts down, management tools are in for a surprise.  On the
+                 * other hand, if we report failure, then the management tools
+                 * might try to restart the domain on the source side, even
+                 * though the domain is actually running on the destination.
+                 * Return a NULL dom pointer, and hope that this is a rare
+                 * situation and management tools are smart.
+                 */
+                vm = NULL;
+                goto cleanup;
+            }
+
+            event = virDomainEventNewFromObj(vm,
+                                             VIR_DOMAIN_EVENT_DEFINED,
+                                             newVM ?
+                                             VIR_DOMAIN_EVENT_DEFINED_ADDED :
+                                             VIR_DOMAIN_EVENT_DEFINED_UPDATED);
+            if (event)
+                qemuDomainEventQueue(driver, event);
+
+        }
         dom = virGetDomain (dconn, vm->def->name, vm->def->uuid);
 
         /* run 'cont' on the destination, which allows migration on qemu
