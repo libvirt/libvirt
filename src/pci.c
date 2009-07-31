@@ -321,7 +321,7 @@ pciFindCapabilityOffset(pciDevice *dev, unsigned capability)
 static unsigned
 pciDetectFunctionLevelReset(pciDevice *dev)
 {
-    uint16_t caps;
+    uint32_t caps;
     uint8_t pos;
 
     /* The PCIe Function Level Reset capability allows
@@ -331,7 +331,7 @@ pciDetectFunctionLevelReset(pciDevice *dev)
      * on SR-IOV NICs at the moment.
      */
     if (dev->pcie_cap_pos) {
-        caps = pciRead16(dev, dev->pcie_cap_pos + PCI_EXP_DEVCAP);
+        caps = pciRead32(dev, dev->pcie_cap_pos + PCI_EXP_DEVCAP);
         if (caps & PCI_EXP_DEVCAP_FLR) {
             VIR_DEBUG("%s %s: detected PCIe FLR capability", dev->id, dev->name);
             return 1;
