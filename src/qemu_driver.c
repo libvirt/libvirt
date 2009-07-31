@@ -6332,7 +6332,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
          */
         if (!STRPREFIX (uri_in, "tcp:")) {
             qemudReportError (dconn, NULL, NULL, VIR_ERR_INVALID_ARG,
-                  "%s", _("only tcp URIs are supported for KVM migrations"));
+                  "%s", _("only tcp URIs are supported for KVM/QEMU migrations"));
             goto cleanup;
         }
 
