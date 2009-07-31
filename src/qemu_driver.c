@@ -6401,6 +6401,9 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
      */
     snprintf (migrateFrom, sizeof (migrateFrom), "tcp:0.0.0.0:%d", this_port);
     if (qemudStartVMDaemon (dconn, driver, vm, migrateFrom, -1) < 0) {
+        /* Note that we don't set an error here because qemudStartVMDaemon
+         * should have already done that.
+         */
         if (!vm->persistent) {
             virDomainRemoveInactive(&driver->domains, vm);
             vm = NULL;
