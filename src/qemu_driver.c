@@ -6285,7 +6285,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
     char migrateFrom [64];
     const char *p;
     virDomainEventPtr event = NULL;
-    int ret = -1;;
+    int ret = -1;
     int internalret;
 
     *uri_out = NULL;
