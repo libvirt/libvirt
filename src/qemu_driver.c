@@ -2299,6 +2299,11 @@ qemudMonitorCommandExtra(const virDomainObjPtr vm,
     int size = 0;
     char *buf = NULL;
 
+    /* Should never happen, but just in case, protect
+     * against null monitor (ocurrs when VM is inactive) */
+    if (!vm->monitor_chr)
+        return -1;
+
     qemuMonitorDiscardPendingData(vm);
 
     if (qemudMonitorSend(vm, cmd, scm_fd) < 0)
