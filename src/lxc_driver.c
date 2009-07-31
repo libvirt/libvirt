@@ -774,6 +774,10 @@ static void lxcMonitorEvent(int watch,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
     }
+    if (!vm->persistent) {
+        virDomainRemoveInactive(&driver->domains, vm);
+        vm = NULL;
+    }
 
 cleanup:
     if (vm)
