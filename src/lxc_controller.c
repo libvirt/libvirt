@@ -84,25 +84,38 @@ static int lxcSetContainerResources(virDomainDefPtr def)
 
     rc = virCgroupForDriver("lxc", &driver, 1, 0);
     if (rc != 0) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
-                 _("Unable to get cgroup for driver"));
+        /* Skip all if no driver cgroup is configured */
+        if (rc == -ENXIO || rc == -ENOENT)
+            return 0;
+
+        virReportSystemError(NULL, -rc, "%s",
+                             _("Unable to get cgroup for driver"));
         return rc;
     }
 
     rc = virCgroupForDomain(driver, def->name, &cgroup, 1);
     if (rc != 0) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("Unable to create cgroup for domain %s"), def->name);
+        virReportSystemError(NULL, -rc,
+                             _("Unable to create cgroup for domain %s"),
+                             def->name);
         goto cleanup;
     }
 
     rc = virCgroupSetMemory(cgroup, def->maxmem);
-    if (rc != 0)
-        goto out;
+    if (rc != 0) {
+        virReportSystemError(NULL, -rc,
+                             _("Unable to set memory limit for domain %s"),
+                             def->name);
+        goto cleanup;
+    }
 
     rc = virCgroupDenyAllDevices(cgroup);
-    if (rc != 0)
-        goto out;
+    if (rc != 0) {
+        virReportSystemError(NULL, -rc,
+                             _("Unable to deny devices for domain %s"),
+                             def->name);
+        goto cleanup;
+    }
 
     for (i = 0; devices[i].type != 0; i++) {
         struct cgroup_device_policy *dev = &devices[i];
@@ -110,19 +123,27 @@ static int lxcSetContainerResources(virDomainDefPtr def)
                                   dev->type,
                                   dev->major,
                                   dev->minor);
-        if (rc != 0)
-            goto out;
+        if (rc != 0) {
+            virReportSystemError(NULL, -rc,
+                                 _("Unable to allow device %c:%d:%d for domain %s"),
+                                 dev->type, dev->major, dev->minor, def->name);
+            goto cleanup;
+        }
     }
 
     rc = virCgroupAllowDeviceMajor(cgroup, 'c', LXC_DEV_MAJ_PTY);
-    if (rc != 0)
-        goto out;
+    if (rc != 0) {
+        virReportSystemError(NULL, -rc,
+                             _("Unable to allow PYT devices for domain %s"),
+                             def->name);
+        goto cleanup;
+    }
 
     rc = virCgroupAddTask(cgroup, getpid());
-out:
     if (rc != 0) {
-        virReportSystemError(NULL, -rc, "%s",
-                             _("Failed to set lxc resources"));
+        virReportSystemError(NULL, -rc,
+                             _("Unable to add task %d to cgroup for domain %s"),
+                             getpid(), def->name);
     }
 
 cleanup:
