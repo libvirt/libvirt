@@ -6435,7 +6435,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
                            const char *cookie ATTRIBUTE_UNUSED,
                            int cookielen ATTRIBUTE_UNUSED,
                            const char *uri,
-                           unsigned long flags ATTRIBUTE_UNUSED,
+                           unsigned long flags,
                            const char *dname ATTRIBUTE_UNUSED,
                            unsigned long resource)
 {
