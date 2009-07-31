@@ -541,7 +541,8 @@ __virExec(virConnectPtr conn,
                 usleep(500*1000);
                 kill(pid, SIGTERM);
                 virReportSystemError(conn, errno,
-                                     "%s", _("could not write pidfile"));
+                                     _("could not write pidfile %s for %d"),
+                                     pidfile, pid);
                 _exit(1);
             }
             _exit(0);
