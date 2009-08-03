@@ -176,6 +176,7 @@ int c_oneVmInfo(int vmid, char* ret_info,int length)
     xmlrpc_value *resultP;
     int return_code;
     char *return_string;
+    int retval = -1;
 
     resultP = xmlrpc_client_call(&one_client.env, one_client.url,
         "one.vmget_info", "(si)", one_client.session, vmid);
@@ -188,18 +189,13 @@ int c_oneVmInfo(int vmid, char* ret_info,int length)
         strncpy(ret_info, return_string, length-1);
         ret_info[length-1] = '\0';
 
-        xmlrpc_DECREF(resultP);
-        free(return_string);
-
-        return 0;
+        retval = 0;
     }
-    else
-    {
-        xmlrpc_DECREF(resultP);
-        free(return_string);
 
-        return -1;
-    }
+    xmlrpc_DECREF(resultP);
+    free(return_string);
+
+    return retval;
 }
 
 void c_oneFree()
