@@ -1418,7 +1418,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
 no_memory:
     virReportOOMError(conn);
     /* fallthrough */
-  cleanup:
+cleanup:
     virDomainGraphicsDefFree(graphics);
     virDomainNetDefFree(net);
     virDomainDiskDefFree(disk);

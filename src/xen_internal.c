@@ -1147,7 +1147,7 @@ static const char *str_cap = "cap";
  */
 int
 xenHypervisorGetSchedulerParameters(virDomainPtr domain,
-                                 virSchedParameterPtr params, int *nparams)
+                                    virSchedParameterPtr params, int *nparams)
 {
     xenUnifiedPrivatePtr priv;
 
@@ -1209,19 +1209,19 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
                     return(-1);
 
                 strncpy (params[0].field, str_weight, VIR_DOMAIN_SCHED_FIELD_LENGTH);
-        params[0].field[VIR_DOMAIN_SCHED_FIELD_LENGTH-1] = '\0';
+                params[0].field[VIR_DOMAIN_SCHED_FIELD_LENGTH-1] = '\0';
                 params[0].type = VIR_DOMAIN_SCHED_FIELD_UINT;
                 params[0].value.ui = op_dom.u.getschedinfo.u.credit.weight;
 
                 strncpy (params[1].field, str_cap, VIR_DOMAIN_SCHED_FIELD_LENGTH);
-        params[1].field[VIR_DOMAIN_SCHED_FIELD_LENGTH-1] = '\0';
+                params[1].field[VIR_DOMAIN_SCHED_FIELD_LENGTH-1] = '\0';
                 params[1].type = VIR_DOMAIN_SCHED_FIELD_UINT;
                 params[1].value.ui = op_dom.u.getschedinfo.u.credit.cap;
 
                 *nparams = 2;
                 break;
             default:
-        virXenErrorFunc(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
+                virXenErrorFunc(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
                         "Unknown scheduler", op_sys.u.getschedulerid.sched_id);
                 return -1;
         }

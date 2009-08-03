@@ -4732,7 +4732,7 @@ static const char *str_cap = "cap";
  */
 static int
 xenDaemonGetSchedulerParameters(virDomainPtr domain,
-                                 virSchedParameterPtr params, int *nparams)
+                                virSchedParameterPtr params, int *nparams)
 {
     xenUnifiedPrivatePtr priv;
     struct sexpr *root;
