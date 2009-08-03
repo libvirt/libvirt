@@ -396,12 +396,7 @@ def->parallels[0]...
 
 
 #define ESX_BUILD_VMX_NAME(_suffix)                                           \
-    do {                                                                      \
-        strncpy(_suffix##_name, prefix, sizeof (_suffix##_name) - 1);         \
-        _suffix##_name[sizeof (_suffix##_name) - 1] = '\0';                   \
-        strncat(_suffix##_name, "."#_suffix,                                  \
-                sizeof (_suffix##_name) - 1 - strlen(_suffix##_name));        \
-    } while (0)
+    snprintf(_suffix##_name, sizeof(_suffix##_name), "%s."#_suffix, prefix);
 
 
 
@@ -839,11 +834,9 @@ esxVMX_ParseSCSIController(virConnectPtr conn, virConfPtr conf, int controller,
         goto failure;
     }
 
-    strncpy(present_name, "scsiX.present", sizeof (virtualDev_name));
-    strncpy(virtualDev_name, "scsiX.virtualDev", sizeof (virtualDev_name));
-
-    present_name[4] = '0' + controller;
-    virtualDev_name[4] = '0' + controller;
+    snprintf(present_name, sizeof(present_name), "scsi%d.present", controller);
+    snprintf(virtualDev_name, sizeof(virtualDev_name), "scsi%d.virtualDev",
+             controller);
 
     if (esxUtil_GetConfigBoolean(conn, conf, present_name, present, 0, 1) < 0) {
         goto failure;
@@ -1333,8 +1326,7 @@ esxVMX_ParseEthernet(virConnectPtr conn, virConfPtr conf, int controller,
         goto failure;
     }
 
-    strncpy(prefix, "ethernetX", sizeof (prefix));
-    prefix[8] = '0' + controller;
+    snprintf(prefix, sizeof(prefix), "ethernet%d", controller);
 
     ESX_BUILD_VMX_NAME(present);
     ESX_BUILD_VMX_NAME(startConnected);
@@ -1514,8 +1506,7 @@ esxVMX_ParseSerial(virConnectPtr conn, virConfPtr conf, int port,
         goto failure;
     }
 
-    strncpy(prefix, "serialX", sizeof (prefix));
-    prefix[6] = '0' + port;
+    snprintf(prefix, sizeof(prefix), "serial%d", port);
 
     ESX_BUILD_VMX_NAME(present);
     ESX_BUILD_VMX_NAME(startConnected);
@@ -1627,8 +1618,7 @@ esxVMX_ParseParallel(virConnectPtr conn, virConfPtr conf, int port,
         goto failure;
     }
 
-    strncpy(prefix, "parallelX", sizeof (prefix));
-    prefix[8] = '0' + port;
+    snprintf(prefix, sizeof(prefix), "parallel%d", port);
 
     ESX_BUILD_VMX_NAME(present);
     ESX_BUILD_VMX_NAME(startConnected);
