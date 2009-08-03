@@ -1029,12 +1029,12 @@ qemudExtractMonitorPath(virConnectPtr conn,
      */
     while (*tmp) {
         if (c_isspace(*tmp)) {
-            if (VIR_ALLOC_N(*path, (tmp-dev)+1) < 0) {
+            *path = strndup(dev, tmp-dev);
+            if (*path == NULL) {
                 virReportOOMError(conn);
                 return -1;
             }
-            strncpy(*path, dev, (tmp-dev));
-            (*path)[(tmp-dev)] = '\0';
+
             /* ... now further update offset till we get EOL */
             *offset = tmp - haystack;
             return 0;
