@@ -53,6 +53,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_PHYP
 
+static int escape_specialcharacters(char *src, char *dst, size_t dstlen);
+
 /*
  * URI: phyp://user@[hmc|ivm]/managed_system
  * */
@@ -94,7 +96,7 @@ phypOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (escape_specialcharacters(conn->uri->path, string) == -1) {
+    if (escape_specialcharacters(conn->uri->path, string, sizeof(string)) == -1) {
         virRaiseError(conn, NULL, NULL, 0, VIR_FROM_PHYP,
                       VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0, "%s",
                       _("Error parsing 'path'. Invalid characters."));
@@ -1341,8 +1343,8 @@ init_uuid_db(virConnectPtr conn)
     return;
 }
 
-int
-escape_specialcharacters(char *src, char *dst)
+static int
+escape_specialcharacters(char *src, char *dst, size_t dstlen)
 {
     size_t len = strlen(src);
     char temp_buffer[len];
@@ -1367,7 +1369,7 @@ escape_specialcharacters(char *src, char *dst)
     }
     temp_buffer[j] = '\0';
 
-    if (strncpy(dst, temp_buffer, j) == NULL)
+    if (strncpy(dst, temp_buffer, dstlen) == NULL)
         return -1;
 
     return 0;

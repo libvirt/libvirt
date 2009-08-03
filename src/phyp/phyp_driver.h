@@ -62,5 +62,3 @@ char *phypGetBackingDevice(virConnectPtr conn, const char *managed_system,
 int phypDiskType(virConnectPtr conn, char *backing_device);
 
 SSH_SESSION *openSSHSession(virConnectPtr conn, virConnectAuthPtr auth);
-
-int escape_specialcharacters(char *src, char *dst);
