@@ -654,7 +654,11 @@ doRemoteOpen (virConnectPtr conn,
 
         memset (&addr, 0, sizeof addr);
         addr.sun_family = AF_UNIX;
-        strncpy (addr.sun_path, sockname, UNIX_PATH_MAX (addr));
+        if (virStrcpyStatic(addr.sun_path, sockname) == NULL) {
+            errorf(conn, VIR_ERR_INTERNAL_ERROR,
+                   _("Socket %s too big for destination"), sockname);
+            goto failed;
+        }
         if (addr.sun_path[0] == '@')
             addr.sun_path[0] = '\0';
 
@@ -1569,8 +1573,8 @@ remoteNodeGetInfo (virConnectPtr conn, virNodeInfoPtr info)
               (xdrproc_t) xdr_remote_node_get_info_ret, (char *) &ret) == -1)
         goto done;
 
-    strncpy (info->model, ret.model, 32);
-    info->model[31] = '\0';
+    if (virStrcpyStatic(info->model, ret.model) == NULL)
+        goto done;
     info->memory = ret.memory;
     info->cpus = ret.cpus;
     info->mhz = ret.mhz;
@@ -3001,9 +3005,12 @@ remoteDomainGetSchedulerParameters (virDomainPtr domain,
 
     /* Deserialise the result. */
     for (i = 0; i < *nparams; ++i) {
-        strncpy (params[i].field, ret.params.params_val[i].field,
-                 VIR_DOMAIN_SCHED_FIELD_LENGTH);
-        params[i].field[VIR_DOMAIN_SCHED_FIELD_LENGTH-1] = '\0';
+        if (virStrcpyStatic(params[i].field, ret.params.params_val[i].field) == NULL) {
+            errorf(domain->conn, VIR_ERR_INTERNAL_ERROR,
+                   _("Parameter %s too big for destination"),
+                   ret.params.params_val[i].field);
+            goto cleanup;
+        }
         params[i].type = ret.params.params_val[i].value.type;
         switch (params[i].type) {
         case VIR_DOMAIN_SCHED_FIELD_INT:

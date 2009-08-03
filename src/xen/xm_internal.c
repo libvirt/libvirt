@@ -872,8 +872,13 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
             } else {
                 if (VIR_ALLOC_N(disk->src, (offset - head) + 1) < 0)
                     goto no_memory;
-                strncpy(disk->src, head, (offset - head));
-                disk->src[(offset-head)] = '\0';
+                if (virStrncpy(disk->src, head, offset - head,
+                               (offset - head) + 1) == NULL) {
+                    xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                               _("Source file %s too big for destination"),
+                               head);
+                    goto cleanup;
+                }
             }
             head = offset + 1;
 
@@ -886,8 +891,12 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                 goto skipdisk;
             if (VIR_ALLOC_N(disk->dst, (offset - head) + 1) < 0)
                 goto no_memory;
-            strncpy(disk->dst, head, (offset - head));
-            disk->dst[(offset-head)] = '\0';
+            if (virStrncpy(disk->dst, head, offset - head,
+                           (offset - head) + 1) == NULL) {
+                xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                           _("Dest file %s too big for destination"), head);
+                goto cleanup;
+            }
             head = offset + 1;
 
 
@@ -897,8 +906,14 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                 if ((tmp = strchr(disk->src, ':')) != NULL) {
                     if (VIR_ALLOC_N(disk->driverName, (tmp - disk->src) + 1) < 0)
                         goto no_memory;
-                    strncpy(disk->driverName, disk->src, (tmp - disk->src));
-                    disk->driverName[tmp - disk->src] = '\0';
+                    if (virStrncpy(disk->driverName, disk->src,
+                                   (tmp - disk->src),
+                                   (tmp - disk->src) + 1) == NULL) {
+                        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("Driver name %s too big for destination"),
+                                   disk->src);
+                        goto cleanup;
+                    }
 
                     /* Strip the prefix we found off the source file name */
                     memmove(disk->src, disk->src+(tmp-disk->src)+1,
@@ -912,8 +927,14 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                         goto skipdisk;
                     if (VIR_ALLOC_N(disk->driverType, (tmp - disk->src) + 1) < 0)
                         goto no_memory;
-                    strncpy(disk->driverType, disk->src, (tmp - disk->src));
-                    disk->driverType[tmp - disk->src] = '\0';
+                    if (virStrncpy(disk->driverType, disk->src,
+                                   (tmp - disk->src),
+                                   (tmp - disk->src) + 1) == NULL) {
+                        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("Driver type %s too big for destination"),
+                                   disk->src);
+                        goto cleanup;
+                    }
 
                     /* Strip the prefix we found off the source file name */
                     memmove(disk->src, disk->src+(tmp-disk->src)+1,
@@ -1023,41 +1044,51 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                 data++;
 
                 if (STRPREFIX(key, "mac=")) {
-                    int len = nextkey ? (nextkey - data) : 17;
-                    if (len > 17)
-                        len = 17;
-                    strncpy(mac, data, len);
-                    mac[len] = '\0';
+                    int len = nextkey ? (nextkey - data) : sizeof(mac) - 1;
+                    if (virStrncpy(mac, data, len, sizeof(mac)) == NULL) {
+                        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("MAC address %s too big for destination"),
+                                   data);
+                        goto skipnic;
+                    }
                 } else if (STRPREFIX(key, "bridge=")) {
-                    int len = nextkey ? (nextkey - data) : sizeof(bridge)-1;
-                    if (len > (sizeof(bridge)-1))
-                        len = sizeof(bridge)-1;
-                    strncpy(bridge, data, len);
-                    bridge[len] = '\0';
+                    int len = nextkey ? (nextkey - data) : sizeof(bridge) - 1;
+                    if (virStrncpy(bridge, data, len, sizeof(bridge)) == NULL) {
+                        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("Bridge %s too big for destination"),
+                                   data);
+                        goto skipnic;
+                    }
                 } else if (STRPREFIX(key, "script=")) {
-                    int len = nextkey ? (nextkey - data) : PATH_MAX-1;
-                    if (len > (PATH_MAX-1))
-                        len = PATH_MAX-1;
-                    strncpy(script, data, len);
-                    script[len] = '\0';
+                    int len = nextkey ? (nextkey - data) : sizeof(script) - 1;
+                    if (virStrncpy(script, data, len, sizeof(script)) == NULL) {
+                        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("Script %s too big for destination"),
+                                   data);
+                        goto skipnic;
+                    }
                 } else if (STRPREFIX(key, "model=")) {
-                    int len = nextkey ? (nextkey - data) : sizeof(model)-1;
-                    if (len > (sizeof(model)-1))
-                        len = sizeof(model)-1;
-                    strncpy(model, data, len);
-                    model[len] = '\0';
+                    int len = nextkey ? (nextkey - data) : sizeof(model) - 1;
+                    if (virStrncpy(model, data, len, sizeof(model)) == NULL) {
+                        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("Model %s too big for destination"), data);
+                        goto skipnic;
+                    }
                 } else if (STRPREFIX(key, "vifname=")) {
-                    int len = nextkey ? (nextkey - data) : sizeof(vifname)-1;
-                    if (len > (sizeof(vifname)-1))
-                        len = sizeof(vifname)-1;
-                    strncpy(vifname, data, len);
-                    vifname[len] = '\0';
+                    int len = nextkey ? (nextkey - data) : sizeof(vifname) - 1;
+                    if (virStrncpy(vifname, data, len, sizeof(vifname)) == NULL) {
+                        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("Vifname %s too big for destination"),
+                                   data);
+                        goto skipnic;
+                    }
                 } else if (STRPREFIX(key, "ip=")) {
-                    int len = nextkey ? (nextkey - data) : 15;
-                    if (len > 15)
-                        len = 15;
-                    strncpy(ip, data, len);
-                    ip[len] = '\0';
+                    int len = nextkey ? (nextkey - data) : sizeof(ip) - 1;
+                    if (virStrncpy(ip, data, len, sizeof(ip)) == NULL) {
+                        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("IP %s too big for destination"), data);
+                        goto skipnic;
+                    }
                 }
 
                 while (nextkey && (nextkey[0] == ',' ||
@@ -1156,32 +1187,41 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
             if (!(nextkey = strchr(key, ':')))
                 goto skippci;
 
-            if ((nextkey - key) > (sizeof(domain)-1))
+            if (virStrncpy(domain, key, (nextkey - key), sizeof(domain)) == NULL) {
+                xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                           _("Domain %s too big for destination"), key);
                 goto skippci;
-
-            strncpy(domain, key, sizeof(domain));
-            domain[sizeof(domain)-1] = '\0';
+            }
 
             key = nextkey + 1;
             if (!(nextkey = strchr(key, ':')))
                 goto skippci;
 
-            strncpy(bus, key, sizeof(bus));
-            bus[sizeof(bus)-1] = '\0';
+            if (virStrncpy(bus, key, (nextkey - key), sizeof(bus)) == NULL) {
+                xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                           _("Bus %s too big for destination"), key);
+                goto skippci;
+            }
 
             key = nextkey + 1;
             if (!(nextkey = strchr(key, '.')))
                 goto skippci;
 
-            strncpy(slot, key, sizeof(slot));
-            slot[sizeof(slot)-1] = '\0';
+            if (virStrncpy(slot, key, (nextkey - key), sizeof(slot)) == NULL) {
+                xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                           _("Slot %s too big for destination"), key);
+                goto skippci;
+            }
 
             key = nextkey + 1;
             if (strlen(key) != 1)
                 goto skippci;
 
-            strncpy(func, key, sizeof(func));
-            func[sizeof(func)-1] = '\0';
+            if (virStrncpy(func, key, 1, sizeof(func)) == NULL) {
+                xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                           _("Function %s too big for destination"), key);
+                goto skippci;
+            }
 
             if (virStrToLong_i(domain, NULL, 16, &domainID) < 0)
                 goto skippci;
@@ -1292,8 +1332,13 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
             list->list->str) {
             char vfb[MAX_VFB];
             char *key = vfb;
-            strncpy(vfb, list->list->str, MAX_VFB-1);
-            vfb[MAX_VFB-1] = '\0';
+
+            if (virStrcpyStatic(vfb, list->list->str) == NULL) {
+                xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                           _("VFB %s too big for destination"),
+                           list->list->str);
+                goto cleanup;
+            }
 
             if (VIR_ALLOC(graphics) < 0)
                 goto no_memory;

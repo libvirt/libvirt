@@ -1123,9 +1123,8 @@ char *virFindFileInPath(const char *file)
     char fullpath[PATH_MAX];
 
     /* copy PATH env so we can tweak it */
-    strncpy(pathenv, getenv("PATH"), PATH_MAX);
-    pathenv[PATH_MAX - 1] = '\0';
-
+    if (virStrcpyStatic(pathenv, getenv("PATH")) == NULL)
+        return NULL;
 
     /* for each path segment, append the file to search for and test for
      * it. return it if found.
@@ -1157,8 +1156,8 @@ int virFileMakePath(const char *path)
     if (stat(path, &st) >= 0)
         return 0;
 
-    strncpy(parent, path, PATH_MAX);
-    parent[PATH_MAX - 1] = '\0';
+    if (virStrcpyStatic(parent, path) == NULL)
+        return EINVAL;
 
     if (!(p = strrchr(parent, '/')))
         return EINVAL;
@@ -1573,6 +1572,49 @@ virAsprintf(char **strp, const char *fmt, ...)
 
     va_end(ap);
     return ret;
+}
+
+/**
+ * virStrncpy
+ *
+ * A safe version of strncpy.  The last parameter is the number of bytes
+ * available in the destination string, *not* the number of bytes you want
+ * to copy.  If the destination is not large enough to hold all n of the
+ * src string bytes plus a \0, NULL is returned and no data is copied.
+ * If the destination is large enough to hold the n bytes plus \0, then the
+ * string is copied and a pointer to the destination string is returned.
+ */
+char *
+virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
+{
+    char *ret;
+
+    if (n > (destbytes - 1))
+        return NULL;
+
+    ret = strncpy(dest, src, n);
+    /* strncpy NULL terminates iff the last character is \0.  Therefore
+     * force the last byte to be \0
+     */
+    dest[n] = '\0';
+
+    return ret;
+}
+
+/**
+ * virStrcpy
+ *
+ * A safe version of strcpy.  The last parameter is the number of bytes
+ * available in the destination string, *not* the number of bytes you want
+ * to copy.  If the destination is not large enough to hold all n of the
+ * src string bytes plus a \0, NULL is returned and no data is copied.
+ * If the destination is large enough to hold the source plus \0, then the
+ * string is copied and a pointer to the destination string is returned.
+ */
+char *
+virStrcpy(char *dest, const char *src, size_t destbytes)
+{
+    return virStrncpy(dest, src, strlen(src), destbytes);
 }
 
 /* Compare two MAC addresses, ignoring differences in case,

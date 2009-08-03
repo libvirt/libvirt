@@ -170,7 +170,11 @@ proxyListenUnixSocket(const char *path) {
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
     addr.sun_path[0] = '\0';
-    strncpy(&addr.sun_path[1], path, (sizeof(addr) - 4) - 2);
+    if (virStrcpy(&addr.sun_path[1], path, sizeof(addr.sun_path) - 1) == NULL) {
+        fprintf(stderr, "Path %s too long to fit into destination\n", path);
+        close(fd);
+        return -1;
+    }
 
     /*
      * now bind the socket to that address and listen on it

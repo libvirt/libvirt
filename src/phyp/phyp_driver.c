@@ -1451,7 +1451,7 @@ escape_specialcharacters(char *src, char *dst, size_t dstlen)
     }
     temp_buffer[j] = '\0';
 
-    if (strncpy(dst, temp_buffer, dstlen) == NULL)
+    if (virStrcpy(dst, temp_buffer, dstlen) == NULL)
         return -1;
 
     return 0;

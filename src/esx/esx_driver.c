@@ -755,9 +755,14 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
                 ++ptr;
             }
 
-            strncpy (nodeinfo->model, dynamicProperty->val->string,
-                     sizeof (nodeinfo->model) - 1);
-            nodeinfo->model[sizeof (nodeinfo->model) - 1] = '\0';
+            if (virStrncpy(nodeinfo->model, dynamicProperty->val->string,
+                           sizeof(nodeinfo->model) - 1,
+                           sizeof(nodeinfo->model)) == NULL) {
+                ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                          "CPU Model %s too long for destination",
+                          dynamicProperty->val->string);
+                goto failure;
+            }
         } else {
             VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
         }

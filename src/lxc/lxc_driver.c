@@ -719,7 +719,11 @@ static int lxcMonitorClient(virConnectPtr conn,
 
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
-    strncpy(addr.sun_path, sockpath, sizeof(addr.sun_path));
+    if (virStrcpyStatic(addr.sun_path, sockpath) == NULL) {
+        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("Socket path %s too big for destination"), sockpath);
+        goto error;
+    }
 
     if (connect(fd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
         virReportSystemError(conn, errno, "%s",
@@ -1738,7 +1742,11 @@ static int lxcGetSchedulerParameters(virDomainPtr domain,
     if (virCgroupGetCpuShares(group, &val) != 0)
         goto cleanup;
     params[0].value.ul = val;
-    strncpy(params[0].field, "cpu_shares", sizeof(params[0].field));
+    if (virStrcpyStatic(params[0].field, "cpu_shares") == NULL) {
+        lxcError(NULL, domain, VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("Field cpu_shares too big for destination"));
+        goto cleanup;
+    }
     params[0].type = VIR_DOMAIN_SCHED_FIELD_ULLONG;
 
     ret = 0;

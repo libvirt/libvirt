@@ -164,6 +164,11 @@ void virSkipSpaces(const char **str);
 int virParseNumber(const char **str);
 int virAsprintf(char **strp, const char *fmt, ...)
     ATTRIBUTE_FMT_PRINTF(2, 3);
+char *virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
+    ATTRIBUTE_RETURN_CHECK;
+char *virStrcpy(char *dest, const char *src, size_t destbytes)
+    ATTRIBUTE_RETURN_CHECK;
+#define virStrcpyStatic(dest, src) virStrcpy((dest), (src), sizeof(dest))
 
 #define VIR_MAC_BUFLEN 6
 #define VIR_MAC_PREFIX_BUFLEN 3

@@ -178,7 +178,11 @@ static int lxcMonitorServer(const char *sockpath)
     unlink(sockpath);
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
-    strncpy(addr.sun_path, sockpath, sizeof(addr.sun_path));
+    if (virStrcpyStatic(addr.sun_path, sockpath) == NULL) {
+        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("Socket path %s too long for destination"), sockpath);
+        goto error;
+    }
 
     if (bind(fd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
         virReportSystemError(NULL, errno,

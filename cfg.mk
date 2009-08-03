@@ -91,6 +91,12 @@ sc_prohibit_asprintf:
 	msg='use virAsprintf, not a'sprintf				\
 	  $(_prohibit_regexp)
 
+sc_prohibit_strncpy:
+	@grep -nE 'strncpy *\('						\
+	    $$($(VC_LIST) | grep -v 'src/util.c') &&			\
+	  { echo '$(ME): use virStrncpy, not strncpy'			\
+		1>&2; exit 1; } || :
+
 sc_prohibit_VIR_ERR_NO_MEMORY:
 	@re='\<V''IR_ERR_NO_MEMORY\>'					\
 	msg='use virReportOOMError, not V'IR_ERR_NO_MEMORY		\

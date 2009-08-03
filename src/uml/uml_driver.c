@@ -563,6 +563,7 @@ static int umlMonitorAddress(virConnectPtr conn,
                              virDomainObjPtr vm,
                              struct sockaddr_un *addr) {
     char *sockname;
+    int retval = 0;
 
     if (virAsprintf(&sockname, "%s/%s/mconsole",
                     driver->monitorDir, vm->def->name) < 0) {
@@ -572,10 +573,13 @@ static int umlMonitorAddress(virConnectPtr conn,
 
     memset(addr, 0, sizeof *addr);
     addr->sun_family = AF_UNIX;
-    strncpy(addr->sun_path, sockname, sizeof(addr->sun_path)-1);
-    NUL_TERMINATE(addr->sun_path);
+    if (virStrcpyStatic(addr->sun_path, sockname) == NULL) {
+        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                       _("Unix path %s too long for destination"), sockname);
+        retval = -1;
+    }
     VIR_FREE(sockname);
-    return 0;
+    return retval;
 }
 
 static int umlOpenMonitor(virConnectPtr conn,
@@ -669,8 +673,11 @@ static int umlMonitorCommand(virConnectPtr conn,
                              cmd, req.length);
         return -1;
     }
-    strncpy(req.data, cmd, req.length);
-    req.data[req.length] = '\0';
+    if (virStrcpyStatic(req.data, cmd) == NULL) {
+        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                       _("Command %s too long for destination"), cmd);
+        return -1;
+    }
 
     if (sendto(vm->monitor, &req, sizeof req, 0,
                (struct sockaddr *)&addr, sizeof addr) != (sizeof req)) {

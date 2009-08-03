@@ -412,10 +412,13 @@ static char *testBuildFilename(const char *relativeTo,
     offset = strrchr(relativeTo, '/');
     if ((baseLen = (offset-relativeTo+1))) {
         char *absFile;
-        if (VIR_ALLOC_N(absFile, baseLen + strlen(filename) + 1) < 0)
+        int totalLen = baseLen + strlen(filename) + 1;
+        if (VIR_ALLOC_N(absFile, totalLen) < 0)
             return NULL;
-        strncpy(absFile, relativeTo, baseLen);
-        absFile[baseLen] = '\0';
+        if (virStrncpy(absFile, relativeTo, baseLen, totalLen) == NULL) {
+            VIR_FREE(absFile);
+            return NULL;
+        }
         strcat(absFile, filename);
         return absFile;
     } else {
@@ -568,8 +571,11 @@ static int testOpenFromFile(virConnectPtr conn,
 
     privconn->nextDomID = 1;
     privconn->numCells = 0;
-    strncpy(privconn->path, file, PATH_MAX-1);
-    privconn->path[PATH_MAX-1] = '\0';
+    if (virStrcpyStatic(privconn->path, file) == NULL) {
+        testError(NULL, VIR_ERR_INTERNAL_ERROR,
+                  _("Path %s too big for destination"), file);
+        goto error;
+    }
     memmove(&privconn->nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
 
     nodeInfo = &privconn->nodeInfo;
@@ -625,8 +631,12 @@ static int testOpenFromFile(virConnectPtr conn,
 
     str = virXPathString(conn, "string(/node/cpu/model[1])", ctxt);
     if (str != NULL) {
-        strncpy(nodeInfo->model, str, sizeof(nodeInfo->model)-1);
-        nodeInfo->model[sizeof(nodeInfo->model)-1] = '\0';
+        if (virStrcpyStatic(nodeInfo->model, str) == NULL) {
+            testError(NULL, VIR_ERR_INTERNAL_ERROR,
+                      _("Model %s too big for destination"), str);
+            VIR_FREE(str);
+            goto error;
+        }
         VIR_FREE(str);
     }
 

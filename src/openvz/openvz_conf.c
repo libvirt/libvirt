@@ -260,8 +260,11 @@ openvzReadNetworkConf(virConnectPtr conn,
                     if (VIR_ALLOC_N(net->ifname, len+1) < 0)
                         goto no_memory;
 
-                    strncpy(net->ifname, p, len);
-                    net->ifname[len] = '\0';
+                    if (virStrncpy(net->ifname, p, len, len+1) == NULL) {
+                        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                                    _("Network ifname %s too long for destination"), p);
+                        goto error;
+                    }
                 } else if (STRPREFIX(p, "bridge=")) {
                     p += 7;
                     len = next - p;
@@ -274,8 +277,11 @@ openvzReadNetworkConf(virConnectPtr conn,
                     if (VIR_ALLOC_N(net->data.bridge.brname, len+1) < 0)
                         goto no_memory;
 
-                    strncpy(net->data.bridge.brname, p, len);
-                    net->data.bridge.brname[len] = '\0';
+                    if (virStrncpy(net->data.bridge.brname, p, len, len+1) == NULL) {
+                        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                                    _("Bridge name %s too long for destination"), p);
+                        goto error;
+                    }
                 } else if (STRPREFIX(p, "mac=")) {
                     p += 4;
                     len = next - p;
@@ -284,8 +290,11 @@ openvzReadNetworkConf(virConnectPtr conn,
                               "%s", _("Wrong length MAC address"));
                         goto error;
                     }
-                    strncpy(cpy_temp, p, len);
-                    cpy_temp[len] = '\0';
+                    if (virStrncpy(cpy_temp, p, len, sizeof(cpy_temp)) == NULL) {
+                        openvzError(conn, VIR_ERR_INTERNAL_ERROR,
+                                    _("MAC address %s too long for destination"), p);
+                        goto error;
+                    }
                     if (virParseMacAddr(cpy_temp, net->mac) < 0) {
                         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("Wrong MAC address"));
@@ -628,8 +637,10 @@ openvzReadConfigParam(const char * conf_file ,const char * param, char *value, i
             if (sf[0] == '=' && sf[1] != '\0' ) {
                 sf ++;
                 if ((token = strtok_r(sf,"\"\t\n", &saveptr)) != NULL) {
-                    strncpy(value, token, maxlen) ;
-                    value[maxlen-1] = '\0';
+                    if (virStrcpy(value, token, maxlen) == NULL) {
+                        ret = -1;
+                        break;
+                    }
                     found = 1;
                 }
             }
@@ -810,6 +821,7 @@ openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
     char uuidbuf[1024];
     char iden[1024];
     int fd, ret;
+    int retval = 0;
 
     if (openvzLocateConfFile(vpsid, conf_file, PATH_MAX, "conf")<0)
        return -1;
@@ -832,13 +844,14 @@ openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
 
         sscanf(line, "%s %s\n", iden, uuidbuf);
         if(STREQ(iden, "#UUID:")) {
-            strncpy(uuidstr, uuidbuf, len);
+            if (virStrcpy(uuidstr, uuidbuf, len) == NULL)
+                retval = -1;
             break;
         }
     }
     close(fd);
 
-    return 0;
+    return retval;
 }
 
 /* Do actual checking for UUID presence in conf file,

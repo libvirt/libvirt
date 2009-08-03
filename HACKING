@@ -231,6 +231,37 @@ one of the following semantically named macros
 
 
 
+String copying
+==============
+
+Do not use the strncpy function.  According to the man page, it does
+*not* guarantee a NULL-terminated buffer, which makes it extremely dangerous
+to use.  Instead, use one of the functionally equivalent functions:
+
+  - virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
+      The first three arguments have the same meaning as for strncpy; namely the
+      destination, source, and number of bytes to copy, respectively.  The last
+      argument is the number of bytes available in the destination string; if a
+      copy of the source string (including a \0) will not fit into the
+      destination, no bytes are copied and the routine returns NULL.
+      Otherwise, n bytes from the source are copied into the destination and a
+      trailing \0 is appended.
+
+  - virStrcpy(char *dest, const char *src, size_t destbytes)
+      Use this variant if you know you want to copy the entire src string
+      into dest.  Note that this is a macro, so arguments could be
+      evaluated more than once.  This is equivalent to
+      virStrncpy(dest, src, strlen(src), destbytes)
+
+  - virStrcpyStatic(char *dest, const char *src)
+      Use this variant if you know you want to copy the entire src string
+      into dest *and* you know that your destination string is a static string
+      (i.e. that sizeof(dest) returns something meaningful).  Note that
+      this is a macro, so arguments could be evaluated more than once.  This is
+      equivalent to virStrncpy(dest, src, strlen(src), sizeof(dest)).
+
+
+
 Variable length string buffer
 =============================
 

@@ -1010,7 +1010,11 @@ qemudOpenMonitorUnix(virConnectPtr conn,
 
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
-    strncpy(addr.sun_path, monitor, sizeof(addr.sun_path));
+    if (virStrcpyStatic(addr.sun_path, monitor) == NULL) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Monitor path %s too big for destination"), monitor);
+        goto error;
+    }
 
     do {
         ret = connect(monfd, (struct sockaddr *) &addr, sizeof(addr));
@@ -6559,8 +6563,12 @@ static int qemuGetSchedulerParameters(virDomainPtr dom,
         goto cleanup;
     }
     params[0].value.ul = val;
-    strncpy(params[0].field, "cpu_shares", sizeof(params[0].field));
     params[0].type = VIR_DOMAIN_SCHED_FIELD_ULLONG;
+    if (virStrcpyStatic(params[0].field, "cpu_shares") == NULL) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("Field cpu_shares too long for destination"));
+        goto cleanup;
+    }
 
     ret = 0;
 

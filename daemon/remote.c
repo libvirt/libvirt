@@ -556,9 +556,11 @@ remoteDispatchDomainSetSchedulerParameters (struct qemud_server *server ATTRIBUT
 
     /* Deserialise parameters. */
     for (i = 0; i < nparams; ++i) {
-        strncpy (params[i].field, args->params.params_val[i].field,
-                 VIR_DOMAIN_SCHED_FIELD_LENGTH);
-        params[i].field[VIR_DOMAIN_SCHED_FIELD_LENGTH-1] = '\0';
+        if (virStrcpyStatic(params[i].field, args->params.params_val[i].field) == NULL) {
+            remoteDispatchFormatError(rerr, _("Field %s too big for destination"),
+                                      args->params.params_val[i].field);
+            return -1;
+        }
         params[i].type = args->params.params_val[i].value.type;
         switch (params[i].type) {
         case VIR_DOMAIN_SCHED_FIELD_INT:

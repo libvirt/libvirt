@@ -1209,13 +1209,19 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
                 if (ret < 0)
                     return(-1);
 
-                strncpy (params[0].field, str_weight, VIR_DOMAIN_SCHED_FIELD_LENGTH);
-                params[0].field[VIR_DOMAIN_SCHED_FIELD_LENGTH-1] = '\0';
+                if (virStrcpyStatic(params[0].field, str_weight) == NULL) {
+                    virXenError (domain->conn, VIR_ERR_INTERNAL_ERROR,
+                                 "Weight %s too big for destination", str_weight);
+                    return -1;
+                }
                 params[0].type = VIR_DOMAIN_SCHED_FIELD_UINT;
                 params[0].value.ui = op_dom.u.getschedinfo.u.credit.weight;
 
-                strncpy (params[1].field, str_cap, VIR_DOMAIN_SCHED_FIELD_LENGTH);
-                params[1].field[VIR_DOMAIN_SCHED_FIELD_LENGTH-1] = '\0';
+                if (virStrcpyStatic(params[1].field, str_cap) == NULL) {
+                    virXenError (domain->conn, VIR_ERR_INTERNAL_ERROR,
+                                 "Cap %s too big for destination", str_cap);
+                    return -1;
+                }
                 params[1].type = VIR_DOMAIN_SCHED_FIELD_UINT;
                 params[1].value.ui = op_dom.u.getschedinfo.u.credit.cap;
 
@@ -2427,9 +2433,11 @@ xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
         while (fgets (line, sizeof line, cpuinfo)) {
             if (regexec (&flags_hvm_rec, line, sizeof(subs)/sizeof(regmatch_t), subs, 0) == 0
                 && subs[0].rm_so != -1) {
-                strncpy (hvm_type,
-                         &line[subs[1].rm_so], subs[1].rm_eo-subs[1].rm_so+1);
-                hvm_type[subs[1].rm_eo-subs[1].rm_so] = '\0';
+                if (virStrncpy(hvm_type,
+                               &line[subs[1].rm_so],
+                               subs[1].rm_eo-subs[1].rm_so,
+                               sizeof(hvm_type)) == NULL)
+                    return NULL;
             } else if (regexec (&flags_pae_rec, line, 0, NULL, 0) == 0)
                 host_pae = 1;
         }

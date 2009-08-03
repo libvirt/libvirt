@@ -1393,18 +1393,18 @@ static int qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
 {
     switch (dev->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
-        strncpy(buf, "null", buflen);
-        buf[buflen-1] = '\0';
+        if (virStrcpy(buf, "null", buflen) == NULL)
+            return -1;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_VC:
-        strncpy(buf, "vc", buflen);
-        buf[buflen-1] = '\0';
+        if (virStrcpy(buf, "vc", buflen) == NULL)
+            return -1;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        strncpy(buf, "pty", buflen);
-        buf[buflen-1] = '\0';
+        if (virStrcpy(buf, "pty", buflen) == NULL)
+            return -1;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
@@ -1426,8 +1426,8 @@ static int qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_STDIO:
-        strncpy(buf, "stdio", buflen);
-        buf[buflen-1] = '\0';
+        if (virStrcpy(buf, "stdio", buflen) == NULL)
+            return -1;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:

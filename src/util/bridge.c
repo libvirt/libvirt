@@ -149,22 +149,18 @@ brHasBridge(brControl *ctl,
             const char *name)
 {
     struct ifreq ifr;
-    int len;
 
     if (!ctl || !name) {
         errno = EINVAL;
         return -1;
     }
 
-    if ((len = strlen(name)) >= BR_IFNAME_MAXLEN) {
+    memset(&ifr, 0, sizeof(struct ifreq));
+
+    if (virStrcpyStatic(ifr.ifr_name, name) == NULL) {
         errno = EINVAL;
         return -1;
     }
-
-    memset(&ifr, 0, sizeof(struct ifreq));
-
-    strncpy(ifr.ifr_name, name, len);
-    ifr.ifr_name[len] = '\0';
 
     if (ioctl(ctl->fd, SIOCGIFFLAGS, &ifr))
         return -1;
@@ -216,18 +212,14 @@ brAddDelInterface(brControl *ctl,
                   const char *iface)
 {
     struct ifreq ifr;
-    int len;
 
     if (!ctl || !ctl->fd || !bridge || !iface)
         return EINVAL;
 
-    if ((len = strlen(bridge)) >= BR_IFNAME_MAXLEN)
-        return EINVAL;
-
     memset(&ifr, 0, sizeof(struct ifreq));
 
-    strncpy(ifr.ifr_name, bridge, len);
-    ifr.ifr_name[len] = '\0';
+    if (virStrcpyStatic(ifr.ifr_name, bridge) == NULL)
+        return EINVAL;
 
     if (!(ifr.ifr_ifindex = if_nametoindex(iface)))
         return ENODEV;
@@ -305,22 +297,18 @@ brDeleteInterface(brControl *ctl ATTRIBUTE_UNUSED,
 static int ifGetMtu(brControl *ctl, const char *ifname)
 {
     struct ifreq ifr;
-    int len;
 
     if (!ctl || !ifname) {
         errno = EINVAL;
         return -1;
     }
 
-    if ((len = strlen(ifname)) >=  BR_IFNAME_MAXLEN) {
+    memset(&ifr, 0, sizeof(struct ifreq));
+
+    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL) {
         errno = EINVAL;
         return -1;
     }
-
-    memset(&ifr, 0, sizeof(struct ifreq));
-
-    strncpy(ifr.ifr_name, ifname, len);
-    ifr.ifr_name[len] = '\0';
 
     if (ioctl(ctl->fd, SIOCGIFMTU, &ifr))
         return -1;
@@ -343,18 +331,14 @@ static int ifGetMtu(brControl *ctl, const char *ifname)
 static int ifSetMtu(brControl *ctl, const char *ifname, int mtu)
 {
     struct ifreq ifr;
-    int len;
 
     if (!ctl || !ifname)
         return EINVAL;
 
-    if ((len = strlen(ifname)) >=  BR_IFNAME_MAXLEN)
-        return EINVAL;
-
     memset(&ifr, 0, sizeof(struct ifreq));
 
-    strncpy(ifr.ifr_name, ifname, len);
-    ifr.ifr_name[len] = '\0';
+    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
+        return EINVAL;
     ifr.ifr_mtu = mtu;
 
     return ioctl(ctl->fd, SIOCSIFMTU, &ifr) == 0 ? 0 : errno;
@@ -466,7 +450,7 @@ brAddTap(brControl *ctl,
          int vnet_hdr,
          int *tapfd)
 {
-    int fd, len;
+    int fd;
     struct ifreq ifr;
 
     if (!ctl || !ctl->fd || !bridge || !ifname)
@@ -486,16 +470,13 @@ brAddTap(brControl *ctl,
     (void) vnet_hdr;
 #endif
 
-    strncpy(ifr.ifr_name, *ifname, IFNAMSIZ-1);
-
-    if (ioctl(fd, TUNSETIFF, &ifr) < 0)
-        goto error;
-
-    len = strlen(ifr.ifr_name);
-    if (len >= BR_IFNAME_MAXLEN - 1) {
+    if (virStrcpyStatic(ifr.ifr_name, *ifname) == NULL) {
         errno = EINVAL;
         goto error;
     }
+
+    if (ioctl(fd, TUNSETIFF, &ifr) < 0)
+        goto error;
 
     /* We need to set the interface MTU before adding it
      * to the bridge, because the bridge will have its
@@ -527,7 +508,6 @@ int brDeleteTap(brControl *ctl,
                 const char *ifname)
 {
     struct ifreq try;
-    int len;
     int fd;
 
     if (!ctl || !ctl->fd || !ifname)
@@ -539,14 +519,10 @@ int brDeleteTap(brControl *ctl,
     memset(&try, 0, sizeof(struct ifreq));
     try.ifr_flags = IFF_TAP|IFF_NO_PI;
 
-    len = strlen(ifname);
-    if (len >= BR_IFNAME_MAXLEN - 1) {
+    if (virStrcpyStatic(try.ifr_name, ifname) == NULL) {
         errno = EINVAL;
         goto error;
     }
-
-    strncpy(try.ifr_name, ifname, len);
-    try.ifr_name[len] = '\0';
 
     if (ioctl(fd, TUNSETIFF, &try) == 0) {
         if ((errno = ioctl(fd, TUNSETPERSIST, 0)))
@@ -576,19 +552,15 @@ brSetInterfaceUp(brControl *ctl,
                  int up)
 {
     struct ifreq ifr;
-    int len;
     int flags;
 
     if (!ctl || !ifname)
         return EINVAL;
 
-    if ((len = strlen(ifname)) >= BR_IFNAME_MAXLEN)
-        return EINVAL;
-
     memset(&ifr, 0, sizeof(struct ifreq));
 
-    strncpy(ifr.ifr_name, ifname, len);
-    ifr.ifr_name[len] = '\0';
+    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
+        return EINVAL;
 
     if (ioctl(ctl->fd, SIOCGIFFLAGS, &ifr) < 0)
         return errno;
@@ -621,18 +593,14 @@ brGetInterfaceUp(brControl *ctl,
                  int *up)
 {
     struct ifreq ifr;
-    int len;
 
     if (!ctl || !ifname || !up)
         return EINVAL;
 
-    if ((len = strlen(ifname)) >= BR_IFNAME_MAXLEN)
-        return EINVAL;
-
     memset(&ifr, 0, sizeof(struct ifreq));
 
-    strncpy(ifr.ifr_name, ifname, len);
-    ifr.ifr_name[len] = '\0';
+    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
+        return EINVAL;
 
     if (ioctl(ctl->fd, SIOCGIFFLAGS, &ifr) < 0)
         return errno;
@@ -654,18 +622,15 @@ brSetInetAddr(brControl *ctl,
     } s;
     struct ifreq ifr;
     struct in_addr inaddr;
-    int len, ret;
+    int ret;
 
     if (!ctl || !ctl->fd || !ifname || !addr)
         return EINVAL;
 
-    if ((len = strlen(ifname)) >= BR_IFNAME_MAXLEN)
-        return EINVAL;
-
     memset(&ifr, 0, sizeof(struct ifreq));
 
-    strncpy(ifr.ifr_name, ifname, len);
-    ifr.ifr_name[len] = '\0';
+    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
+        return EINVAL;
 
     if ((ret = inet_pton(AF_INET, addr, &inaddr)) < 0)
         return errno;
@@ -692,18 +657,14 @@ brGetInetAddr(brControl *ctl,
 {
     struct ifreq ifr;
     struct in_addr *inaddr;
-    int len;
 
     if (!ctl || !ctl->fd || !ifname || !addr)
         return EINVAL;
 
-    if ((len = strlen(ifname)) >= BR_IFNAME_MAXLEN)
-        return EINVAL;
-
     memset(&ifr, 0, sizeof(struct ifreq));
 
-    strncpy(ifr.ifr_name, ifname, len);
-    ifr.ifr_name[len] = '\0';
+    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
+        return EINVAL;
 
     if (ioctl(ctl->fd, cmd, &ifr) < 0)
         return errno;

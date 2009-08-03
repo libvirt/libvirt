@@ -141,8 +141,8 @@ int nodeGetInfo(virConnectPtr conn,
 
     uname(&info);
 
-    strncpy(nodeinfo->model, info.machine, sizeof(nodeinfo->model)-1);
-    nodeinfo->model[sizeof(nodeinfo->model)-1] = '\0';
+    if (virStrcpyStatic(nodeinfo->model, info.machine) == NULL)
+        return -1;
 
 #else /* !HAVE_UNAME */
 

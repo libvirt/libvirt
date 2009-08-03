@@ -763,7 +763,8 @@ xenDaemonOpen_unix(virConnectPtr conn, const char *path)
     addr = (struct sockaddr_un *)&priv->addr;
     addr->sun_family = AF_UNIX;
     memset(addr->sun_path, 0, sizeof(addr->sun_path));
-    strncpy(addr->sun_path, path, sizeof(addr->sun_path));
+    if (virStrcpyStatic(addr->sun_path, path) == NULL)
+        return -1;
 
     return (0);
 }
@@ -1433,7 +1434,7 @@ xenDaemonParseSxprChar(virConnectPtr conn,
                        const char *value,
                        const char *tty)
 {
-    char prefix[10];
+    const char *prefix;
     char *tmp;
     virDomainChrDefPtr def;
 
@@ -1442,18 +1443,17 @@ xenDaemonParseSxprChar(virConnectPtr conn,
         return NULL;
     }
 
-    strncpy(prefix, value, sizeof(prefix)-1);
-    NUL_TERMINATE(prefix);
+    prefix = value;
 
     if (value[0] == '/') {
         def->type = VIR_DOMAIN_CHR_TYPE_DEV;
     } else {
-        if ((tmp = strchr(prefix, ':')) != NULL) {
+        if ((tmp = strchr(value, ':')) != NULL) {
             *tmp = '\0';
-            value += (tmp - prefix) + 1;
+            value = tmp + 1;
         }
 
-        if (STREQ(prefix, "telnet")) {
+        if (STRPREFIX(prefix, "telnet")) {
             def->type = VIR_DOMAIN_CHR_TYPE_TCP;
             def->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
         } else {
@@ -1647,8 +1647,13 @@ xenDaemonParseSxprDisks(virConnectPtr conn,
 
                 if (VIR_ALLOC_N(disk->driverName, (offset-src)+1) < 0)
                     goto no_memory;
-                strncpy(disk->driverName, src, (offset-src));
-                disk->driverName[offset-src] = '\0';
+                if (virStrncpy(disk->driverName, src, offset-src,
+                              (offset-src)+1) == NULL) {
+                    virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("Driver name %s too big for destination"),
+                                 src);
+                    goto error;
+                }
 
                 src = offset + 1;
 
@@ -1662,8 +1667,13 @@ xenDaemonParseSxprDisks(virConnectPtr conn,
 
                     if (VIR_ALLOC_N(disk->driverType, (offset-src)+1)< 0)
                         goto no_memory;
-                    strncpy(disk->driverType, src, (offset-src));
-                    disk->driverType[offset-src] = '\0';
+                    if (virStrncpy(disk->driverType, src, offset-src,
+                                   (offset-src)+1) == NULL) {
+                        virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                                     _("Driver type %s too big for destination"),
+                                     src);
+                        goto error;
+                    }
 
                     src = offset + 1;
                     /* Its possible to use blktap driver for block devs
@@ -1891,13 +1901,12 @@ xenDaemonParseSxprSound(virConnectPtr conn,
                 len = (offset2 - offset);
             else
                 len = strlen(offset);
-            if (len > (sizeof(model)-1)) {
+            if (virStrncpy(model, offset, len, sizeof(model)) == NULL) {
                 virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 _("unexpected sound model %s"), offset);
+                                 _("Sound model %s too big for destination"),
+                             offset);
                 goto error;
             }
-            strncpy(model, offset, len);
-            model[len] = '\0';
 
             if (VIR_ALLOC(sound) < 0)
                 goto no_memory;
@@ -4798,13 +4807,20 @@ xenDaemonGetSchedulerParameters(virDomainPtr domain,
                 goto error;
             }
 
-            strncpy (params[0].field, str_weight, VIR_DOMAIN_SCHED_FIELD_LENGTH);
-            params[0].field[VIR_DOMAIN_SCHED_FIELD_LENGTH-1] = '\0';
+            if (virStrcpyStatic(params[0].field, str_weight) == NULL) {
+                virXendError(domain->conn, VIR_ERR_INTERNAL_ERROR,
+                             _("Weight %s too big for destination"),
+                             str_weight);
+                goto error;
+            }
             params[0].type = VIR_DOMAIN_SCHED_FIELD_UINT;
             params[0].value.ui = sexpr_int(root, "domain/cpu_weight");
 
-            strncpy (params[1].field, str_cap, VIR_DOMAIN_SCHED_FIELD_LENGTH);
-            params[1].field[VIR_DOMAIN_SCHED_FIELD_LENGTH-1] = '\0';
+            if (virStrcpyStatic(params[1].field, str_cap) == NULL) {
+                virXendError(domain->conn, VIR_ERR_INTERNAL_ERROR,
+                             _("Cap %s too big for destination"), str_cap);
+                goto error;
+            }
             params[1].type = VIR_DOMAIN_SCHED_FIELD_UINT;
             params[1].value.ui = sexpr_int(root, "domain/cpu_cap");
             *nparams = XEN_SCHED_CRED_NPARAM;
@@ -5860,6 +5876,7 @@ virDomainXMLDevID(virDomainPtr domain,
 {
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
     char *xref;
+    char *tmp;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
         if (dev->data.disk->driverName &&
@@ -5877,9 +5894,10 @@ virDomainXMLDevID(virDomainPtr domain,
         if (xref == NULL)
             return -1;
 
-        strncpy(ref, xref, ref_len);
+        tmp = virStrcpy(ref, xref, ref_len);
         free(xref);
-        ref[ref_len - 1] = '\0';
+        if (tmp == NULL)
+            return -1;
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
         char mac[30];
         virDomainNetDefPtr def = dev->data.net;
@@ -5896,9 +5914,10 @@ virDomainXMLDevID(virDomainPtr domain,
         if (xref == NULL)
             return -1;
 
-        strncpy(ref, xref, ref_len);
+        tmp = virStrcpy(ref, xref, ref_len);
         free(xref);
-        ref[ref_len - 1] = '\0';
+        if (tmp == NULL)
+            return -1;
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
                dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
                dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {

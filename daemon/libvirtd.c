@@ -507,10 +507,12 @@ static int qemudListenUnix(struct qemud_server *server,
 
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
-    strncpy(addr.sun_path, path, sizeof(addr.sun_path)-1);
+    if (virStrcpyStatic(addr.sun_path, path) == NULL) {
+        VIR_ERROR(_("Path %s too long for unix socket"), path);
+        goto cleanup;
+    }
     if (addr.sun_path[0] == '@')
         addr.sun_path[0] = '\0';
-
 
     oldgrp = getgid();
     oldmask = umask(readonly ? ~unix_sock_ro_mask : ~unix_sock_rw_mask);

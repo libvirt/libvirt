@@ -877,35 +877,21 @@ failure:
 char *
 esxVMX_IndexToDiskName(virConnectPtr conn, int idx, const char *prefix)
 {
-    char buffer[32] = "";
     char *name = NULL;
-    size_t length = strlen(prefix);
 
-    if (length > sizeof (buffer) - 2 - 1) {
+    if (idx < 0) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                  "Disk name prefix '%s' is too long", prefix);
-        return NULL;
-    }
-
-    strncpy(buffer, prefix, sizeof (buffer) - 1);
-    buffer[sizeof (buffer) - 1] = '\0';
-
-    if (idx < 26) {
-        buffer[length] = 'a' + idx;
+                  "Disk index %d is negative", idx);
+    } else if (idx < 26) {
+        if (virAsprintf(&name, "%s%c", prefix, 'a' + idx) < 0)
+            virReportOOMError(conn);
     } else if (idx < 702) {
-        buffer[length] = 'a' + idx / 26 - 1;
-        buffer[length + 1] = 'a' + idx % 26;
+        if (virAsprintf(&name, "%s%c%c", prefix, 'a' + idx / 26 - 1,
+                        'a' + (idx % 26)) < 0)
+            virReportOOMError(conn);
     } else {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                   "Disk index %d is too large", idx);
-        return NULL;
-    }
-
-    name = strdup(buffer);
-
-    if (name == NULL) {
-        virReportOOMError(conn);
-        return NULL;
     }
 
     return name;

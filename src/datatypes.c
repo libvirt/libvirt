@@ -26,6 +26,7 @@
 #include "logging.h"
 #include "memory.h"
 #include "uuid.h"
+#include "util.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -926,8 +927,12 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name, const c
             virReportOOMError(conn);
             goto error;
         }
-        strncpy(ret->key, key, sizeof(ret->key)-1);
-        ret->key[sizeof(ret->key)-1] = '\0';
+        if (virStrcpyStatic(ret->key, key) == NULL) {
+            virMutexUnlock(&conn->lock);
+            virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
+                            _("Volume key %s too large for destination"), key);
+            goto error;
+        }
         ret->magic = VIR_STORAGE_VOL_MAGIC;
         ret->conn = conn;
 
