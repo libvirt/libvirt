@@ -1156,7 +1156,7 @@ static int openvzClose(virConnectPtr conn) {
 }
 
 static const char *openvzGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
-    return strdup("OpenVZ");
+    return "OpenVZ";
 }
 
 static char *openvzGetCapabilities(virConnectPtr conn) {
