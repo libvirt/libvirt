@@ -1160,7 +1160,6 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                 goto skippci;
 
             /* pci=['0000:00:1b.0','0000:00:13.0'] */
-            key = list->str;
             if (!(key = list->str))
                 goto skippci;
             if (!(nextkey = strchr(key, ':')))
