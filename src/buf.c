@@ -304,7 +304,7 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
             *out++ = 'o';
             *out++ = 's';
             *out++ = ';';
-        } else if ((*cur >= 0x20) || (*cur == '\n') || (*cur == '\t') ||
+        } else if (((unsigned char)*cur >= 0x20) || (*cur == '\n') || (*cur == '\t') ||
                    (*cur == '\r')) {
             /*
              * default case, just copy !
